@@ -1,0 +1,2 @@
+makefile_common: all
+
