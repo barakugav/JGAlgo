@@ -1,9 +1,6 @@
 package com.ugav.algo;
 
 import java.util.Objects;
-import java.util.TreeMap;
-
-import com.ugav.algo.test.Tests;
 
 public interface RMQ {
 

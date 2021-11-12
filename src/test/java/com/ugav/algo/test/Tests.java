@@ -20,7 +20,7 @@ public class Tests {
 	    StackTraceElement[] elements = Thread.currentThread().getStackTrace();
 	    StackTraceElement e = null;
 	    for (int i = 1; i < elements.length; i++) {
-		if (!elements[i].getClassName().equals(TestTemplate.class.getName())) {
+		if (elements[i].getMethodName().startsWith("test_")) {
 		    e = elements[i];
 		    break;
 		}
@@ -43,15 +43,31 @@ public class Tests {
 	    StackTraceElement e = getTestStackElement();
 	    String methodName = e.getMethodName();
 	    String classname = e.getClassName();
-	    return "[" + classname + "][" + methodName + "]";
+	    return "[" + classname + "." + methodName + "]";
 	}
 
-	public static void printFailure() {
-	    System.out.println(getTestPrefix() + " failure!");
+	public static void printTestStr(CharSequence s) {
+	    String str = s.toString();
+	    String prefix = getTestPrefix() + " ";
+
+	    boolean checkRemove = !str.endsWith(prefix);
+	    str = prefix + str.replaceAll("(\r\n|\n)", "$1" + prefix);
+	    if (checkRemove && str.endsWith(prefix))
+		str = str.substring(0, str.length() - prefix.length());
+
+	    System.out.print(str);
 	}
 
-	public static void printPassed() {
-	    System.out.println(getTestPrefix() + " passed");
+	public static void printTestBegin() {
+	    printTestStr("Test Start\n");
+	}
+
+	public static void printTestFailure() {
+	    printTestStr("failure!\n");
+	}
+
+	public static void printTestPassed() {
+	    printTestStr("passed\n");
 	}
 
     }

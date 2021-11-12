@@ -22,9 +22,22 @@ public class RMQLookupTable implements RMQ {
 	if (n == 1)
 	    return SingleElementResult.INSTANCE;
 
-	LookupTable dataStructure = new LookupTable(n);
-	dataStructure.init(comperator);
-	return dataStructure;
+	LookupTable table = new LookupTable(n);
+
+	for (int i = 0; i < n - 1; i++)
+	    table.arr[indexOf(n, i, i + 1)] = comperator.compare(i, i + 1) < 0 ? i : i + 1;
+	for (int i = 0; i < n - 2; i++) {
+	    for (int j = i + 2; j < n; j++) {
+		int m = table.arr[indexOf(n, i, j - 1)];
+		table.arr[indexOf(n, i, j)] = comperator.compare(m, j) < 0 ? m : j;
+	    }
+	}
+
+	return table;
+    }
+
+    private static int indexOf(int n, int i, int j) {
+	return (2 * n - i - 1) * i / 2 + j - i - 1;
     }
 
     private static class SingleElementResult implements RMQ.Result {
@@ -46,27 +59,8 @@ public class RMQLookupTable implements RMQ {
 	final int arr[];
 
 	LookupTable(int n) {
-	    if (n < 1)
-		throw new IllegalArgumentException();
 	    this.n = n;
-
-	    int arrSize = n * (n - 1) / 2;
-	    arr = new int[arrSize];
-	}
-
-	int indexOf(int i, int j) {
-	    return (2 * n - i - 1) * i / 2 + j - i - 1;
-	}
-
-	void init(RMQ.Comperator comperator) {
-	    for (int i = 0; i < n - 1; i++)
-		arr[indexOf(i, i + 1)] = comperator.compare(i, i + 1) < 0 ? i : i + 1;
-	    for (int i = 0; i < n - 2; i++) {
-		for (int j = i + 2; j < n; j++) {
-		    int m = arr[indexOf(i, j - 1)];
-		    arr[indexOf(i, j)] = comperator.compare(m, j) < 0 ? m : j;
-		}
-	    }
+	    arr = new int[n * (n - 1) / 2];
 	}
 
 	@Override
@@ -76,7 +70,7 @@ public class RMQLookupTable implements RMQ {
 	    if (i + 1 == j)
 		return i;
 
-	    return arr[indexOf(i, j - 1)];
+	    return arr[indexOf(n, i, j - 1)];
 	}
 
     }
