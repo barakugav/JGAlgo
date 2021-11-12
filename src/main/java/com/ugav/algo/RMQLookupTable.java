@@ -14,10 +14,10 @@ public class RMQLookupTable implements RMQ {
     }
 
     @Override
-    public RMQ.Result preprocessRMQ(RMQ.Comperator comperator, int n) {
+    public RMQ.Result preprocessRMQ(RMQ.Comperator c, int n) {
 	if (n <= 0)
 	    throw new IllegalArgumentException();
-	Objects.requireNonNull(comperator);
+	Objects.requireNonNull(c);
 
 	if (n == 1)
 	    return SingleElementResult.INSTANCE;
@@ -25,11 +25,11 @@ public class RMQLookupTable implements RMQ {
 	LookupTable table = new LookupTable(n);
 
 	for (int i = 0; i < n - 1; i++)
-	    table.arr[indexOf(n, i, i + 1)] = comperator.compare(i, i + 1) < 0 ? i : i + 1;
+	    table.arr[indexOf(n, i, i + 1)] = c.compare(i, i + 1) < 0 ? i : i + 1;
 	for (int i = 0; i < n - 2; i++) {
 	    for (int j = i + 2; j < n; j++) {
 		int m = table.arr[indexOf(n, i, j - 1)];
-		table.arr[indexOf(n, i, j)] = comperator.compare(m, j) < 0 ? m : j;
+		table.arr[indexOf(n, i, j)] = c.compare(m, j) < 0 ? m : j;
 	    }
 	}
 
@@ -59,6 +59,8 @@ public class RMQLookupTable implements RMQ {
 	final int arr[];
 
 	LookupTable(int n) {
+	    if (n > 32768)
+		throw new IllegalArgumentException("N too big (" + n + ")");
 	    this.n = n;
 	    arr = new int[n * (n - 1) / 2];
 	}

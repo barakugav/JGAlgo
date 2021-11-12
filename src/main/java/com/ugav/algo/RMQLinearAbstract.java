@@ -8,7 +8,7 @@ public abstract class RMQLinearAbstract implements RMQ {
     }
 
     void preprocessRMQ(DataStructure ds) {
-	RMQ.Comperator comperator = ds.comperator;
+	RMQ.Comperator comperator = ds.c;
 
 	for (int b = 0; b < ds.blockNum; b++) {
 	    int base = b * ds.blockSize;
@@ -35,29 +35,46 @@ public abstract class RMQLinearAbstract implements RMQ {
 
     abstract void initInterBlock(DataStructure ds);
 
+    private static class PadderComperator implements RMQ.Comperator {
+
+	final int n;
+	final RMQ.Comperator c;
+
+	PadderComperator(int n, RMQ.Comperator c) {
+	    this.n = n;
+	    this.c = c;
+	}
+
+	@Override
+	public int compare(int i, int j) {
+	    return i >= n ? i : c.compare(i, Math.min(j, n - 1));
+	}
+
+    }
+
     static abstract class DataStructure implements RMQ.Result {
 
 	final int n;
 	final int blockSize;
 	final int blockNum;
-	final RMQ.Comperator comperator;
+	final RMQ.Comperator c;
 
 	final int blocksRightMinimum[][];
 	final int blocksLeftMinimum[][];
 	final PowerOf2Table xlogxTable;
 
-	DataStructure(int n, RMQ.Comperator comperator) {
-	    this.n = n;
-	    this.comperator = comperator;
-
+	DataStructure(int n, RMQ.Comperator c) {
 	    blockSize = getBlockSize(n);
 	    blockNum = (int) Math.ceil((double) n / blockSize);
+
+	    this.n = n;
+	    this.c = n < blockNum * blockSize ? new PadderComperator(n, c) : c;
 
 	    blocksRightMinimum = new int[blockNum][blockSize - 1];
 	    blocksLeftMinimum = new int[blockNum][blockSize - 1];
 
 	    xlogxTable = new PowerOf2Table(blockNum,
-		    (i, j) -> comperator.compare(blocksRightMinimum[i][0], blocksRightMinimum[j][0]));
+		    (i, j) -> this.c.compare(blocksRightMinimum[i][0], blocksRightMinimum[j][0]));
 	}
 
 	abstract int getBlockSize(int n);
@@ -78,12 +95,12 @@ public abstract class RMQLinearAbstract implements RMQ {
 	    if (blk0 != blk1) {
 		int blk0min = innerI == blockSize - 1 ? blk0 * blockSize + innerI : blocksRightMinimum[blk0][innerI];
 		int blk1min = innerJ == 0 ? blk1 * blockSize + innerJ : blocksLeftMinimum[blk1][innerJ - 1];
-		int min = comperator.compare(blk0min, blk1min) < 0 ? blk0min : blk1min;
+		int min = c.compare(blk0min, blk1min) < 0 ? blk0min : blk1min;
 
 		if (blk0 + 1 != blk1) {
 		    int middleBlk = xlogxTable.query(blk0 + 1, blk1);
 		    int middleMin = blocksRightMinimum[middleBlk][0];
-		    min = comperator.compare(min, middleMin) < 0 ? min : middleMin;
+		    min = c.compare(min, middleMin) < 0 ? min : middleMin;
 		}
 
 		return min;

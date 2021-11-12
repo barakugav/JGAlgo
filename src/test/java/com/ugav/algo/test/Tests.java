@@ -1,75 +1,85 @@
 package com.ugav.algo.test;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 public class Tests {
 
-    public static boolean runTests() {
-	boolean passed = true;
-
-	passed &= RMQTest.runTests();
-
-	return passed;
-    }
+    static final Collection<Class<?>> testClasses = List.of(RMQLookupTableTest.class, RMQPowerOf2TableTest.class,
+	    RMQPlusMinusOneTest.class, RMQLinearTest.class);
 
     public static void main(String[] args) {
 	runTests();
     }
 
-    public static class TestTemplate {
+    public static boolean runTests() {
+	Collection<TestObj> tests = getTests();
 
-	private static StackTraceElement getTestStackElement() {
-	    StackTraceElement[] elements = Thread.currentThread().getStackTrace();
-	    StackTraceElement e = null;
-	    for (int i = 1; i < elements.length; i++) {
-		if (elements[i].getMethodName().startsWith("test_")) {
-		    e = elements[i];
-		    break;
-		}
+	boolean totalPassed = true;
+
+	for (TestObj test : tests) {
+	    boolean passed;
+	    try {
+		passed = test.invoke();
+	    } catch (Throwable e) {
+		e.printStackTrace();
+		passed = false;
 	    }
-	    if (e == null)
-		throw new InternalError();
-	    return e;
+	    System.out.println(test.getTestPrefix() + " " + (passed ? "passed" : "failure!"));
 
+	    totalPassed &= passed;
 	}
 
-	public static String getTestName() {
-	    return getTestStackElement().getMethodName();
+	return totalPassed;
+    }
+
+    private static Collection<TestObj> getTests() {
+	List<TestObj> tests = new ArrayList<>();
+	for (Method testMethod : getTestMethods())
+	    tests.add(new TestObj(testMethod));
+	return tests;
+    }
+
+    private static Collection<Method> getTestMethods() {
+	Set<Method> testMethods = new HashSet<>();
+
+	for (Class<?> testClass : testClasses) {
+	    Collection<Method> classTests = getAnnotatedMethods(testClass, Test.class);
+	    for (Method classTest : classTests)
+		testMethods.add(classTest);
 	}
 
-	public static String getTestClassName() {
-	    return getTestStackElement().getClassName();
+	List<Method> testMethodsSorted = new ArrayList<>(testMethods);
+	testMethodsSorted.sort((m1, m2) -> {
+	    Class<?> c1 = m1.getDeclaringClass();
+	    Class<?> c2 = m2.getDeclaringClass();
+
+	    int c = c1.getName().compareTo(c2.getName());
+	    if (c != 0)
+		return c;
+
+	    return m1.getName().compareTo(m2.getName());
+	});
+
+	return testMethodsSorted;
+    }
+
+    private static Collection<Method> getAnnotatedMethods(Class<?> testClass, Class<? extends Annotation> annotation) {
+	Collection<Method> methods = new ArrayList<>();
+
+	for (Method method : testClass.getDeclaredMethods()) {
+	    if (method.isAnnotationPresent(annotation)) {
+		// Annotation annotInstance = method.getAnnotation(annotation);
+		methods.add(method);
+	    }
 	}
 
-	public static String getTestPrefix() {
-	    StackTraceElement e = getTestStackElement();
-	    String methodName = e.getMethodName();
-	    String classname = e.getClassName();
-	    return "[" + classname + "." + methodName + "]";
-	}
-
-	public static void printTestStr(CharSequence s) {
-	    String str = s.toString();
-	    String prefix = getTestPrefix() + " ";
-
-	    boolean checkRemove = !str.endsWith(prefix);
-	    str = prefix + str.replaceAll("(\r\n|\n)", "$1" + prefix);
-	    if (checkRemove && str.endsWith(prefix))
-		str = str.substring(0, str.length() - prefix.length());
-
-	    System.out.print(str);
-	}
-
-	public static void printTestBegin() {
-	    printTestStr("Test Start\n");
-	}
-
-	public static void printTestFailure() {
-	    printTestStr("failure!\n");
-	}
-
-	public static void printTestPassed() {
-	    printTestStr("passed\n");
-	}
-
+	return methods;
     }
 
 }
