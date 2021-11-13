@@ -81,7 +81,7 @@ public class RMQLinear extends RMQLinearAbstract {
 	for (int b = 0; b < ds.blockNum; b++) {
 	    int key = calcBlockKey(ds, b);
 
-	    ds.interBlocksDs[b] = tables.computeIfAbsent(Integer.valueOf(key), k -> {
+	    ds.interBlocksDs[b] = tables.computeIfAbsent(key, k -> {
 		int demoBlock[] = calcDemoBlock(k, ds.blockSize);
 		return RMQLookupTable.getInstace().preprocessRMQ(new IntArrayComperator(demoBlock), demoBlock.length);
 	    });
@@ -99,8 +99,7 @@ public class RMQLinear extends RMQLinearAbstract {
 
 	@Override
 	int getBlockSize(int n) {
-//	     return (int) Math.ceil(Utils.log2(n) / 4);
-	    return (int) Math.ceil(Utils.log2(n) / 2); /* TODO */
+	    return (int) Math.ceil(Utils.log2((double) n) / 4);
 	}
 
 	@Override

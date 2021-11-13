@@ -52,7 +52,7 @@ public class RMQPowerOf2Table implements RMQ {
 
 	PowerOf2Table(int n, RMQ.Comperator c) {
 	    this.n = n;
-	    arr = new int[(int) Math.ceil(Utils.log2(n)) - 1][n - 1];
+	    arr = new int[Utils.log2ceil(n + 1) - 1][n - 1];
 	    this.comperator = c;
 	}
 
@@ -63,12 +63,13 @@ public class RMQPowerOf2Table implements RMQ {
 	    if (i + 1 == j)
 		return i;
 
-	    int k = (int) Utils.log2(j - i);
+	    int k = Utils.log2(j - i);
 	    int kSize = 1 << k;
 
 	    int idx0 = arr[k - 1][i];
 	    int idx1 = arr[k - 1][j - kSize];
 	    return comperator.compare(idx0, idx1) < 0 ? idx0 : idx1;
+
 	}
     }
 

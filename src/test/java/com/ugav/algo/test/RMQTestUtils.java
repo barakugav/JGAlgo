@@ -24,24 +24,29 @@ class RMQTestUtils {
     }
 
     static boolean testRMQ(RMQ rmq, int a[], int queries[][]) {
-	RMQ.Result res = rmq.preprocessRMQ(new IntArrayComperator(a), a.length);
+	try {
+	    RMQ.Result res = rmq.preprocessRMQ(new IntArrayComperator(a), a.length);
 
-	for (int idx = 0; idx < queries.length; idx++) {
-	    int i = queries[idx][0];
-	    int j = queries[idx][1];
-	    int expectedIdx = queries[idx][2];
-	    int expected = a[expectedIdx];
-	    int actualIdx = res.query(i, j);
-	    int actual = a[actualIdx];
+	    for (int idx = 0; idx < queries.length; idx++) {
+		int i = queries[idx][0];
+		int j = queries[idx][1];
+		int expectedIdx = queries[idx][2];
+		int expected = a[expectedIdx];
+		int actualIdx = res.query(i, j);
+		int actual = a[actualIdx];
 
-	    if (actual != expected) {
-		TestUtils.printTestStr(" [" + i + "," + j + "] -> expected[" + expectedIdx + "]=" + expected
-			+ " actual[" + actualIdx + "]=" + actual + "\n");
-		TestUtils.printTestStr("data size: " + a.length + "\n");
-		TestUtils.printTestStr("queries num: " + queries.length + "\n");
-		TestUtils.printTestStr(formatRMQDataAndQueries(a, queries));
-		return false;
+		if (actual != expected) {
+		    TestUtils.printTestStr(" [" + i + "," + j + "] -> expected[" + expectedIdx + "]=" + expected
+			    + " actual[" + actualIdx + "]=" + actual + "\n");
+		    TestUtils.printTestStr("data size: " + a.length + "\n");
+		    TestUtils.printTestStr("queries num: " + queries.length + "\n");
+		    TestUtils.printTestStr(formatRMQDataAndQueries(a, queries));
+		    return false;
+		}
 	    }
+	} catch (RuntimeException e) {
+	    TestUtils.printTestStr(formatRMQDataAndQueries(a, queries));
+	    throw e;
 	}
 
 	return true;
