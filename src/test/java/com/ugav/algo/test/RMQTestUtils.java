@@ -3,7 +3,7 @@ package com.ugav.algo.test;
 import java.util.Random;
 
 import com.ugav.algo.RMQ;
-import com.ugav.algo.RMQ.IntArrayComperator;
+import com.ugav.algo.RMQ.IntArrayComparator;
 
 class RMQTestUtils {
 
@@ -25,7 +25,7 @@ class RMQTestUtils {
 
     static boolean testRMQ(RMQ rmq, int a[], int queries[][]) {
 	try {
-	    RMQ.Result res = rmq.preprocessRMQ(new IntArrayComperator(a), a.length);
+	    RMQ.Result res = rmq.preprocessRMQ(new IntArrayComparator(a), a.length);
 
 	    for (int idx = 0; idx < queries.length; idx++) {
 		int i = queries[idx][0];

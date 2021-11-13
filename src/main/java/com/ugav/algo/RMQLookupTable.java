@@ -14,7 +14,7 @@ public class RMQLookupTable implements RMQ {
     }
 
     @Override
-    public RMQ.Result preprocessRMQ(RMQ.Comperator c, int n) {
+    public RMQ.Result preprocessRMQ(RMQ.Comparator c, int n) {
 	if (n <= 0)
 	    throw new IllegalArgumentException();
 	Objects.requireNonNull(c);

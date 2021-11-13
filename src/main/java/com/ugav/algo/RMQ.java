@@ -4,10 +4,10 @@ import java.util.Objects;
 
 public interface RMQ {
 
-    public Result preprocessRMQ(Comperator comperator, int n);
+    public Result preprocessRMQ(Comparator c, int n);
 
     @FunctionalInterface
-    public static interface Comperator {
+    public static interface Comparator {
 
 	public int compare(int i, int j);
 
@@ -19,12 +19,12 @@ public interface RMQ {
 
     }
 
-    public static class ArrayComperator<E> implements Comperator {
+    public static class ArrayComparator<E> implements Comparator {
 
 	private final E[] arr;
 	private final java.util.Comparator<? super E> c;
 
-	public ArrayComperator(E[] arr, java.util.Comparator<? super E> c) {
+	public ArrayComparator(E[] arr, java.util.Comparator<? super E> c) {
 	    this.arr = Objects.requireNonNull(arr);
 	    this.c = Objects.requireNonNull(c);
 	}
@@ -36,11 +36,11 @@ public interface RMQ {
 
     }
 
-    public static class IntArrayComperator implements Comperator {
+    public static class IntArrayComparator implements Comparator {
 
 	private final int[] arr;
 
-	public IntArrayComperator(int[] arr) {
+	public IntArrayComparator(int[] arr) {
 	    this.arr = Objects.requireNonNull(arr);
 	}
 

@@ -8,21 +8,21 @@ public abstract class RMQLinearAbstract implements RMQ {
     }
 
     void preprocessRMQ(DataStructure ds) {
-	RMQ.Comperator comperator = ds.c;
+	RMQ.Comparator c = ds.c;
 
 	for (int b = 0; b < ds.blockNum; b++) {
 	    int base = b * ds.blockSize;
 
 	    int min = 0;
 	    for (int i = 0; i < ds.blockSize - 1; i++) {
-		if (comperator.compare(base + i + 1, base + min) < 0)
+		if (c.compare(base + i + 1, base + min) < 0)
 		    min = i + 1;
 		ds.blocksLeftMinimum[b][i] = base + min;
 	    }
 
 	    min = ds.blockSize - 1;
 	    for (int i = ds.blockSize - 2; i >= 0; i--) {
-		if (comperator.compare(base + i, base + min) < 0)
+		if (c.compare(base + i, base + min) < 0)
 		    min = i;
 		ds.blocksRightMinimum[b][i] = base + min;
 	    }
@@ -35,12 +35,12 @@ public abstract class RMQLinearAbstract implements RMQ {
 
     abstract void initInterBlock(DataStructure ds);
 
-    private static class PadderComperator implements RMQ.Comperator {
+    private static class PadderComparator implements RMQ.Comparator {
 
 	final int n;
-	final RMQ.Comperator c;
+	final RMQ.Comparator c;
 
-	PadderComperator(int n, RMQ.Comperator c) {
+	PadderComparator(int n, RMQ.Comparator c) {
 	    this.n = n;
 	    this.c = c;
 	}
@@ -57,18 +57,18 @@ public abstract class RMQLinearAbstract implements RMQ {
 	final int n;
 	final int blockSize;
 	final int blockNum;
-	final RMQ.Comperator c;
+	final RMQ.Comparator c;
 
 	final int blocksRightMinimum[][];
 	final int blocksLeftMinimum[][];
 	final PowerOf2Table xlogxTable;
 
-	DataStructure(int n, RMQ.Comperator c) {
+	DataStructure(int n, RMQ.Comparator c) {
 	    blockSize = getBlockSize(n);
 	    blockNum = (int) Math.ceil((double) n / blockSize);
 
 	    this.n = n;
-	    this.c = n < blockNum * blockSize ? new PadderComperator(n, c) : c;
+	    this.c = n < blockNum * blockSize ? new PadderComparator(n, c) : c;
 
 	    blocksRightMinimum = new int[blockNum][blockSize - 1];
 	    blocksLeftMinimum = new int[blockNum][blockSize - 1];

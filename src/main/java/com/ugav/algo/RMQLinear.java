@@ -16,7 +16,7 @@ public class RMQLinear extends RMQLinearAbstract {
     }
 
     @Override
-    public RMQ.Result preprocessRMQ(RMQ.Comperator c, int n) {
+    public RMQ.Result preprocessRMQ(RMQ.Comparator c, int n) {
 	if (n <= 0)
 	    throw new IllegalArgumentException();
 	Objects.requireNonNull(c);
@@ -83,7 +83,7 @@ public class RMQLinear extends RMQLinearAbstract {
 
 	    ds.interBlocksDs[b] = tables.computeIfAbsent(key, k -> {
 		int demoBlock[] = calcDemoBlock(k, ds.blockSize);
-		return RMQLookupTable.getInstace().preprocessRMQ(new IntArrayComperator(demoBlock), demoBlock.length);
+		return RMQLookupTable.getInstace().preprocessRMQ(new IntArrayComparator(demoBlock), demoBlock.length);
 	    });
 	}
     }
@@ -92,7 +92,7 @@ public class RMQLinear extends RMQLinearAbstract {
 
 	final RMQ.Result interBlocksDs[];
 
-	DataStructure(int n, Comperator c) {
+	DataStructure(int n, Comparator c) {
 	    super(n, c);
 	    interBlocksDs = new RMQ.Result[blockNum];
 	}
