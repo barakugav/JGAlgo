@@ -2,7 +2,7 @@ package com.ugav.algo.test;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Objects;
+import java.lang.reflect.Modifier;
 
 class TestObj {
 
@@ -10,7 +10,9 @@ class TestObj {
     private String testPrefix;
 
     TestObj(Method testMethod) {
-	this.testMethod = Objects.requireNonNull(testMethod);
+	if (!Modifier.isStatic(testMethod.getModifiers()))
+	    throw new IllegalArgumentException("Test method must be static " + getTestPrefix(testMethod));
+	this.testMethod = testMethod;
 	testPrefix = null;
     }
 
@@ -19,7 +21,7 @@ class TestObj {
 	    return (Boolean) testMethod.invoke(null);
 	} catch (InvocationTargetException e) {
 	    throw e.getCause();
-	} catch (IllegalAccessException | IllegalArgumentException e) {
+	} catch (RuntimeException e) {
 	    System.out.println("Failed to execute test: " + testMethod.getName() + "." + testMethod.getName());
 	    e.printStackTrace();
 	    return false;
@@ -29,10 +31,13 @@ class TestObj {
     String getTestPrefix() {
 	if (testPrefix != null)
 	    return testPrefix;
+	return testPrefix = getTestPrefix(testMethod);
+    }
 
-	String methodName = testMethod.getName();
-	String classname = testMethod.getDeclaringClass().getName();
-	return testPrefix = ("[" + classname + "." + methodName + "]");
+    private static String getTestPrefix(Method method) {
+	String methodName = method.getName();
+	String classname = method.getDeclaringClass().getName();
+	return "[" + classname + "." + methodName + "]";
     }
 
 }

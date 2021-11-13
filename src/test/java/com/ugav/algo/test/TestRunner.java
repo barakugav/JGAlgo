@@ -8,10 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class Tests {
-
-    static final Collection<Class<?>> testClasses = List.of(RMQLookupTableTest.class, RMQPowerOf2TableTest.class,
-	    RMQPlusMinusOneTest.class, RMQLinearTest.class);
+public class TestRunner {
 
     public static void main(String[] args) {
 	runTests();
@@ -48,7 +45,7 @@ public class Tests {
     private static Collection<Method> getTestMethods() {
 	Set<Method> testMethods = new HashSet<>();
 
-	for (Class<?> testClass : testClasses) {
+	for (Class<?> testClass : TestList.TEST_CLASSES) {
 	    Collection<Method> classTests = getAnnotatedMethods(testClass, Test.class);
 	    for (Method classTest : classTests)
 		testMethods.add(classTest);
