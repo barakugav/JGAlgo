@@ -19,9 +19,8 @@ public class RMQLinearTest {
 
     @Test
     public static boolean onlyInterBlock65536() {
-	int a[] = new int[65536];
+	int a[] = Utils.randArray(65536, 0, 64);
 	int queries[][] = new int[4096][];
-	RMQTestUtils.randRMQData(a);
 	RMQTestUtils.randRMQQueries(a, queries, 4);
 
 	return RMQTestUtils.testRMQ(RMQLinear.getInstace(), a, queries);

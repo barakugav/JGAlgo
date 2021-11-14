@@ -52,21 +52,6 @@ class RMQTestUtils {
 	return true;
     }
 
-    static void printArr(int a[]) {
-	for (int i = 0; i < a.length; i++)
-	    System.out.print("" + String.format("%03d", a[i]) + ", ");
-	System.out.println();
-	for (int i = 0; i < a.length; i++)
-	    System.out.print("" + String.format("%03d", i) + ", ");
-	System.out.println();
-    }
-
-    static void randRMQData(int a[]) {
-	Random rand = new Random();
-	for (int i = 0; i < a.length; i++)
-	    a[i] = rand.nextInt(64);
-    }
-
     static void randRMQDataPlusMinusOne(int a[]) {
 	Random rand = new Random();
 	a[0] = 0;
@@ -98,7 +83,7 @@ class RMQTestUtils {
     }
 
     static void randRMQDataAndQueries(int a[], int queries[][], int blockSize) {
-	randRMQData(a);
+	Utils.randArray(a, 0, 64);
 	randRMQQueries(a, queries, blockSize);
     }
 
