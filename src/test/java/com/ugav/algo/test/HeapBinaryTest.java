@@ -4,9 +4,9 @@ import com.ugav.algo.HeapBinary;
 
 public class HeapBinaryTest {
 
-    @Test
-    public static boolean regular() {
-	return HeapTestUtils.testHeap(HeapBinary::new);
-    }
+	@Test
+	public static boolean regular() {
+		return HeapTestUtils.testHeap(HeapBinary::new);
+	}
 
 }

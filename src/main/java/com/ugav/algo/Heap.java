@@ -5,36 +5,38 @@ import java.util.Iterator;
 
 public interface Heap<E> extends Collection<E> {
 
-    int size();
+	int size();
 
-    default boolean isEmpty() {
-	return size() == 0;
-    }
+	default boolean isEmpty() {
+		return size() == 0;
+	}
 
-    Handle<E> insert(E e);
+	Handle<E> insert(E e);
 
-    boolean remove(Object e);
+	boolean remove(Object e);
 
-    E findMin();
+	E findMin();
 
-    E extractMin();
+	E extractMin();
 
-    Iterator<E> iterator();
+	Iterator<E> iterator();
 
-    void meld(Heap<? extends E> h);
+	void meld(Heap<? extends E> h);
 
-    boolean isHandlesSupported();
+	boolean isHandlesSupported();
 
-    Handle<E> findMinHandle(Handle<E> h);
+	Handle<E> findHanlde(E e);
 
-    static interface Handle<E> {
+	Handle<E> findMinHandle();
 
-	E get();
+	void decreaseKey(Handle<E> handle, E e);
 
-	void decreaseKey(E e);
+	void removeHandle(Handle<E> handle);
 
-	void remove();
+	static interface Handle<E> {
 
-    }
+		E get();
+
+	}
 
 }
