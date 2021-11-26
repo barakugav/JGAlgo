@@ -7,6 +7,7 @@ public interface Heap<E> extends Collection<E> {
 
 	int size();
 
+	@Override
 	default boolean isEmpty() {
 		return size() == 0;
 	}

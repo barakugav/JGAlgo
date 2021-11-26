@@ -7,6 +7,12 @@ import java.util.Comparator;
 public abstract class AbstractHeap<E> extends AbstractCollection<E> implements Heap<E> {
 
 	@Override
+	public boolean add(E e) {
+		insert(e);
+		return true;
+	}
+
+	@Override
 	public boolean removeAll(Collection<?> c) {
 		boolean modified = false;
 		for (Object e : c)

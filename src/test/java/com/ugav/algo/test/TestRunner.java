@@ -32,6 +32,8 @@ public class TestRunner {
 			totalPassed &= passed;
 		}
 
+		System.out.println("\nTotal: " + (totalPassed ? "passed." : "failure!"));
+
 		return totalPassed;
 	}
 

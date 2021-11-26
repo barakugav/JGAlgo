@@ -140,37 +140,31 @@ class HeapTestUtils {
 	}
 
 	static boolean testHeap(Supplier<? extends Heap<Integer>> heapBuilder) {
-//	return testHeap(heapBuilder, 4096, 4096);
-		while (testHeap(heapBuilder, 16, 16))
-			;
-		return false;
+		return testHeap(heapBuilder, 4096, 4096);
 	}
 
 	static boolean testHeap(Supplier<? extends Heap<Integer>> heapBuilder, int n, int m) {
-//	int[] a = Utils.randArray(n, 0, 128);
-//	HeapOp[] ops = randHeapOps(a, m);
-
-		int[] a = { 77, 102, 74, 86, 59, 95, 21, 41, 47, 3, 47, 20, 90, 80, 4, 115 };
-		HeapOp[] ops = parseOpsStr(
-				"[I(0), FM()=0, I(5), FM()=0, EM()=0, EM()=5, I(1), FM()=1, EM()=1, I(10), EM()=10, I(11), FM()=11, R(11), I(6), I(4)]");
+		int[] a = Utils.randArray(n, 0, 65536);
+		HeapOp[] ops = randHeapOps(a, m);
 
 		return testHeap(heapBuilder, a, ops);
 	}
 
 	static boolean testHeap(Supplier<? extends Heap<Integer>> heapBuilder, int[] a, HeapOp[] ops) {
+		RuntimeException e = null;
 		try {
 			if (testHeap0(heapBuilder, a, ops))
 				return true;
-		} catch (RuntimeException e) {
-			throw e;
+		} catch (RuntimeException e1) {
+			e = e1;
 		}
 
 		TestUtils.printTestStr(Arrays.toString(a) + "\n");
 		TestUtils.printTestStr(Arrays.toString(ops) + "\n");
+		if (e != null)
+			throw e;
 		return false;
 	}
-
-	static int aaa = 0;
 
 	static boolean testHeap0(Supplier<? extends Heap<Integer>> heapBuilder, int[] a, HeapOp[] ops) {
 		Heap<Integer> heap = heapBuilder.get();
@@ -182,10 +176,6 @@ class HeapTestUtils {
 		}
 
 		for (HeapOp op0 : ops) {
-			if (aaa++ < 10)
-				System.out.println(" " + op0);
-//	    System.out.println("" + heap + " " + op0);
-
 			if (op0 instanceof HeapOpInsert) {
 				HeapOpInsert op = (HeapOpInsert) op0;
 				heap.insert(a[op.x]);
@@ -211,12 +201,22 @@ class HeapTestUtils {
 				}
 			}
 		}
+
 		heap.clear();
 		if (heap.size() != 0 || !heap.isEmpty()) {
 			TestUtils.printTestStr("failed clear\n");
 			return false;
 		}
 		return true;
+	}
+
+	private static <E> boolean testHeapSize(Heap<E> h) {
+		int expected = h.size();
+		int actual = 0;
+		for (E e : h)
+			actual++;
+		return expected == actual;
+
 	}
 
 }
