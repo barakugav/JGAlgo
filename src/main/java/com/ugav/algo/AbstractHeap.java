@@ -31,6 +31,7 @@ public abstract class AbstractHeap<E> extends AbstractCollection<E> implements H
 	@Override
 	public void meld(Heap<? extends E> h) {
 		addAll(h);
+		h.clear();
 	}
 
 	@Override

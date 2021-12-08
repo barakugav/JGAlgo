@@ -208,7 +208,9 @@ public class HeapFibonacci<E> extends AbstractHeap<E> {
 		Node<E> parent, n = (Node<E>) handle;
 		n.value = e;
 
-		if ((parent = n.parent) != null && c.compare(e, n.parent.value) < 0) {
+		if ((parent = n.parent) == null)
+			compareToMinRoot(n);
+		if (parent != null && c.compare(e, n.parent.value) < 0) {
 			cut(n);
 			addRoot(n);
 			compareToMinRoot(n);

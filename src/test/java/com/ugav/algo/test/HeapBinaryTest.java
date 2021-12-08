@@ -5,8 +5,18 @@ import com.ugav.algo.HeapBinary;
 public class HeapBinaryTest {
 
 	@Test
-	public static boolean regular() {
-		return HeapTestUtils.testHeap(HeapBinary::new);
+	public static boolean randOps() {
+		return HeapTestUtils.testRandOps(HeapBinary::new);
+	}
+
+	@Test
+	public static boolean randOpsAfterManyInserts() {
+		return HeapTestUtils.testRandOpsAfterManyInserts(HeapBinary::new);
+	}
+
+	@Test
+	public static boolean meld() {
+		return HeapTestUtils.testMeld(HeapBinary::new);
 	}
 
 }

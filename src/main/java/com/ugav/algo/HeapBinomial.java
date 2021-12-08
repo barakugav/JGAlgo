@@ -7,18 +7,18 @@ import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.Objects;
 
-public class BinomialHeap<E> extends AbstractHeap<E> {
+public class HeapBinomial<E> extends AbstractHeap<E> {
 
 	private Node<E>[] roots;
 	private int rootsLen;
 	private int size;
 	private final Comparator<? super E> c;
 
-	public BinomialHeap() {
+	public HeapBinomial() {
 		this(null);
 	}
 
-	public BinomialHeap(Comparator<? super E> c) {
+	public HeapBinomial(Comparator<? super E> c) {
 		this.c = c != null ? c : getDefaultComparator();
 		roots = newArr(4);
 		rootsLen = 0;
@@ -34,7 +34,6 @@ public class BinomialHeap<E> extends AbstractHeap<E> {
 		parent.prev = (t = child.prev);
 		if (t != null)
 			t.next = parent;
-		parent.parent = child;
 		parent.child = child.child;
 		for (Node<E> p = child.child; p != null; p = p.next)
 			p.parent = parent;
@@ -46,6 +45,8 @@ public class BinomialHeap<E> extends AbstractHeap<E> {
 		if (pPrev != null)
 			pPrev.next = child;
 		child.child = pChild == child ? parent : pChild;
+		for (Node<E> p = child.child; p != null; p = p.next)
+			p.parent = child;
 		child.parent = pParent;
 		if (pParent != null && pParent.child == parent)
 			pParent.child = child;
@@ -189,21 +190,22 @@ public class BinomialHeap<E> extends AbstractHeap<E> {
 			while (!super.hasNext()) {
 				if (nextRootIdx >= rootsLen)
 					return false;
-				for (int i = nextRootIdx; i < rootsLen; i++) {
+				int i;
+				for (i = nextRootIdx; i < rootsLen; i++) {
 					if (roots[i] != null) {
 						reset(roots[i]);
-						nextRootIdx = i + 1;
 						break;
 					}
 				}
+				nextRootIdx = i + 1;
 			}
 			return true;
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
-		BinomialHeap.Node<E> nextNode() {
-			return (BinomialHeap.Node<E>) super.nextNode();
+		HeapBinomial.Node<E> nextNode() {
+			return (HeapBinomial.Node<E>) super.nextNode();
 		}
 
 		@Override
@@ -276,12 +278,12 @@ public class BinomialHeap<E> extends AbstractHeap<E> {
 
 	@Override
 	public void meld(Heap<? extends E> h0) {
-		if (!(h0 instanceof BinomialHeap)) {
+		if (!(h0 instanceof HeapBinomial)) {
 			super.meld(h0);
 			return;
 		}
 		@SuppressWarnings("unchecked")
-		BinomialHeap<E> h = (BinomialHeap<E>) h0;
+		HeapBinomial<E> h = (HeapBinomial<E>) h0;
 		size += meld(h.roots, h.rootsLen);
 	}
 
