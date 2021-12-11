@@ -7,6 +7,6 @@ public class TestList {
 
 	static final Collection<Class<?>> TEST_CLASSES = List.of(RMQLookupTableTest.class, RMQPowerOf2TableTest.class,
 			RMQPlusMinusOneTest.class, RMQLinearTest.class, UnionFindTest.class, HeapBinaryTest.class,
-			BinomialHeapTest.class, HeapFibonacciTest.class);
+			HeapBinomialTest.class, HeapFibonacciTest.class, LCARMQTest.class);
 
 }
