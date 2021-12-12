@@ -1,13 +1,19 @@
 package com.ugav.algo.test;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
+import java.util.Set;
 
 import com.ugav.algo.Graph;
 import com.ugav.algo.Graph.Edge;
 import com.ugav.algo.GraphLinked;
 
 class GraphsTestUtils {
+
+	private GraphsTestUtils() {
+		throw new InternalError();
+	}
 
 	static <E> Graph<E> randTree(int n) {
 		Graph.Modifiable<E> g = GraphLinked.builder().setVertexNum(n).build();
@@ -21,6 +27,10 @@ class GraphsTestUtils {
 	}
 
 	static <E> Graph<E> randGraph(int n, int m) {
+		return randGraph(n, m, false);
+	}
+
+	static <E> Graph<E> randGraph(int n, int m, boolean selfEdges) {
 		Graph.Modifiable<E> g = GraphLinked.builder().setDirected(false).setVertexNum(n).build();
 		if (m >= n * n / 3)
 			throw new IllegalArgumentException("too much edges for random sampling");
@@ -31,6 +41,8 @@ class GraphsTestUtils {
 		mainLoop: for (int i = 0; i < m;) {
 			int u = rand.nextInt(n);
 			int v = rand.nextInt(n);
+			if (!selfEdges && u == v)
+				continue;
 
 			int edgeCount = g.edges(u, edges, 0);
 			for (int j = 0; j < edgeCount; j++)
@@ -43,16 +55,31 @@ class GraphsTestUtils {
 	}
 
 	static Graph<Integer> randGraphWeightedInt(int n, int m) {
-		return randGraphWeightedInt(n, m, 1, 100);
+		int minWeight = 1;
+		int maxWeight = m < 50 ? 100 : m * 2 + 2;
+		return randGraphWeightedInt(n, m, minWeight, maxWeight);
 	}
 
 	static Graph<Integer> randGraphWeightedInt(int n, int m, int minWeight, int maxWeight) {
+		if (minWeight >= maxWeight)
+			throw new IllegalArgumentException();
+		if (maxWeight - minWeight < m * 2)
+			throw new IllegalArgumentException("weight range is too small for unique weights");
+
 		Graph<Integer> g = randGraph(n, m);
 		Random rand = new Random();
+		Set<Integer> weights = new HashSet<>(m);
 
 		for (Iterator<Edge<Integer>> it = g.edges(); it.hasNext();) {
+			/* random unique weight */
+			int w;
+			do {
+				w = rand.nextInt(minWeight, maxWeight);
+			} while (weights.contains(w));
+
 			Edge<Integer> e = it.next();
-			e.val(rand.nextInt(minWeight, maxWeight));
+			e.val(w);
+			weights.add(w);
 		}
 		return g;
 	}

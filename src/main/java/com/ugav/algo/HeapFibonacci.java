@@ -17,7 +17,7 @@ public class HeapFibonacci<E> extends AbstractHeap<E> {
 
 	public HeapFibonacci(Comparator<? super E> c) {
 		this.c = c != null ? c : getDefaultComparator();
-		minRoot = null;
+		begin = end = minRoot = null;
 		size = 0;
 	}
 

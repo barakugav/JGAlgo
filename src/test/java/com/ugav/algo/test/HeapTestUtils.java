@@ -10,6 +10,10 @@ import com.ugav.algo.Heap;
 
 class HeapTestUtils {
 
+	private HeapTestUtils() {
+		throw new InternalError();
+	}
+
 	private static HeapOp[] parseOpsStr(String s) {
 		s = s.substring(1, s.length() - 1);
 		String[] opsStr = s.split(", ");

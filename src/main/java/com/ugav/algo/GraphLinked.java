@@ -3,6 +3,7 @@ package com.ugav.algo;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 public abstract class GraphLinked<E> implements Graph.Modifiable<E> {
 
@@ -59,7 +60,7 @@ public abstract class GraphLinked<E> implements Graph.Modifiable<E> {
 		return v;
 	}
 
-	void remove0(Edge<E> e) {
+	void removeEdge0(Edge<E> e) {
 		for (Node<E> prev = null, p = edges[e.u()]; p != null; p = (prev = p).next) {
 			if (p == e) {
 				if (prev == null)
@@ -73,6 +74,8 @@ public abstract class GraphLinked<E> implements Graph.Modifiable<E> {
 	}
 
 	Node<E> addNode(int u, int v) {
+		if (u == v)
+			throw new IllegalArgumentException("Self edges are not supported");
 		Node<E> e = newNode(u, v);
 		e.next = edges[u];
 		edges[u] = e;
@@ -94,7 +97,7 @@ public abstract class GraphLinked<E> implements Graph.Modifiable<E> {
 
 		@Override
 		public void removeEdge(Edge<E> e) {
-			remove0(e);
+			removeEdge0(e);
 			m--;
 		}
 
@@ -109,7 +112,7 @@ public abstract class GraphLinked<E> implements Graph.Modifiable<E> {
 
 		@Override
 		protected Node<E> newNode(int u, int v) {
-			return new NodeUndirected<>(u, v);
+			return new NodeDirected<>(u, v);
 		}
 
 	}
@@ -126,9 +129,11 @@ public abstract class GraphLinked<E> implements Graph.Modifiable<E> {
 		}
 
 		@Override
-		public void removeEdge(Edge<E> e) {
-			remove0(e);
-			remove0(((NodeUndirected<E>) e).twin);
+		public void removeEdge(Edge<E> e0) {
+			NodeUndirected<E> e = (NodeUndirected<E>) e0;
+			removeEdge0(e);
+			if (e.twin != null)
+				removeEdge0(e.twin);
 			m--;
 		}
 
@@ -137,9 +142,11 @@ public abstract class GraphLinked<E> implements Graph.Modifiable<E> {
 			if (u >= n || v >= n)
 				throw new IllegalArgumentException();
 			NodeUndirected<E> e1 = (NodeUndirected<E>) addNode(u, v);
-			NodeUndirected<E> e2 = (NodeUndirected<E>) addNode(v, u);
-			e1.twin = e2;
-			e2.twin = e1;
+			if (u != v) {
+				NodeUndirected<E> e2 = (NodeUndirected<E>) addNode(v, u);
+				e1.twin = e2;
+				e2.twin = e1;
+			}
 			m++;
 			return e1;
 		}
@@ -183,6 +190,11 @@ public abstract class GraphLinked<E> implements Graph.Modifiable<E> {
 			value = v;
 		}
 
+		@Override
+		public String toString() {
+			return "(" + u + ", " + v + ")[" + val() + "]";
+		}
+
 	}
 
 	protected static class NodeUndirected<E> extends Node<E> {
@@ -194,7 +206,7 @@ public abstract class GraphLinked<E> implements Graph.Modifiable<E> {
 		}
 
 		boolean isApiEdge() {
-			return System.identityHashCode(this) < System.identityHashCode(twin);
+			return twin == null || System.identityHashCode(this) < System.identityHashCode(twin);
 		}
 
 		NodeUndirected<E> getApiEdge() {
@@ -209,6 +221,46 @@ public abstract class GraphLinked<E> implements Graph.Modifiable<E> {
 		@Override
 		public void val(E v) {
 			getApiEdge().value = v;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (o == this)
+				return true;
+			if (!(o instanceof Edge))
+				return false;
+
+			Edge<?> e = (Edge<?>) o;
+			return ((u == e.u() && v == e.v()) || (u == e.v() && v == e.u())) && Objects.equals(val(), e.val());
+		}
+
+		@Override
+		public int hashCode() {
+			return u ^ v ^ Objects.hashCode(val());
+		}
+
+	}
+
+	protected static class NodeDirected<E> extends Node<E> {
+
+		protected NodeDirected(int u, int v) {
+			super(u, v);
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (o == this)
+				return true;
+			if (!(o instanceof Edge))
+				return false;
+
+			Edge<?> e = (Edge<?>) o;
+			return u == e.u() && v == e.v() && Objects.equals(val(), e.val());
+		}
+
+		@Override
+		public int hashCode() {
+			return u ^ ~v ^ Objects.hashCode(val());
 		}
 
 	}

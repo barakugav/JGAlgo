@@ -73,15 +73,15 @@ public class Graphs {
 		}
 
 		int unlimitedPrecision = 64;
-		int precision = minWeight > 1 ? 2 : Math.min(unlimitedPrecision, (int) -Math.log10(minWeight));
+		int precision = minWeight >= 1 ? 2 : Math.min(unlimitedPrecision, (int) -Math.log10(minWeight));
 
 		return precision == unlimitedPrecision
-				? formatAdjacencyMatrix(g, e -> e == null ? "" : Double.toString(w.weight(e)))
-				: formatAdjacencyMatrix(g, e -> e == null ? "" : String.format("%." + precision + "f", w.weight(e)));
+				? formatAdjacencyMatrix(g, e -> e == null ? "-" : Double.toString(w.weight(e)))
+				: formatAdjacencyMatrix(g, e -> e == null ? "-" : String.format("%." + precision + "f", w.weight(e)));
 	}
 
 	public static <E> String formatAdjacencyMatrixWeightedInt(Graph<E> g, WeightFunctionInt<E> w) {
-		return formatAdjacencyMatrix(g, e -> e == null ? "" : Integer.toString(w.weightInt(e)));
+		return formatAdjacencyMatrix(g, e -> e == null ? "-" : Integer.toString(w.weightInt(e)));
 	}
 
 	public static <E> String formatAdjacencyMatrix(Graph<E> g, Function<Graph.Edge<E>, String> formatter) {
