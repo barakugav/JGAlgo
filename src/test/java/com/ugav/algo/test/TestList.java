@@ -23,7 +23,8 @@ public class TestList {
 
 	private static final Collection<Class<?>> GRAPHS_TESTS = List.of(
 			LCARMQTest.class,
-			DijkstraTest.class);
+			SSSPDijkstraTest.class,
+			SSSPBellmanFordTest.class);
 
 	private static final Collection<Class<?>> MST_TESTS = List.of(
 			MSTBoruvskaTest.class,

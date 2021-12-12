@@ -99,11 +99,11 @@ class GraphsTestUtils {
 		return g;
 	}
 
-	static Graph<Integer> createGraphFromAdjacencyMatrixWeightedInt(int[][] m) {
+	static Graph<Integer> createGraphFromAdjacencyMatrixWeightedInt(int[][] m, boolean directed) {
 		int n = m.length;
-		Graph.Modifiable<Integer> g = GraphLinked.builder().setDirected(false).setVertexNum(n).build();
+		Graph.Modifiable<Integer> g = GraphLinked.builder().setDirected(directed).setVertexNum(n).build();
 		for (int u = 0; u < n; u++) {
-			for (int v = u + 1; v < n; v++) {
+			for (int v = directed ? 0 : u + 1; v < n; v++) {
 				if (m[u][v] == 0)
 					continue;
 				g.addEdge(u, v).val(m[u][v]);
@@ -121,7 +121,7 @@ class GraphsTestUtils {
 			for (int v = u + 1; v < n; v++)
 				Integer.parseInt(esStr[v].trim());
 		}
-		return createGraphFromAdjacencyMatrixWeightedInt(m);
+		return createGraphFromAdjacencyMatrixWeightedInt(m, false);
 	}
 
 	static Graph<Void> parseGraphFromAdjacencyMatrix01(String s) {

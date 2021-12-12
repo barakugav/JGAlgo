@@ -74,8 +74,6 @@ public abstract class GraphLinked<E> implements Graph.Modifiable<E> {
 	}
 
 	Node<E> addNode(int u, int v) {
-		if (u == v)
-			throw new IllegalArgumentException("Self edges are not supported");
 		Node<E> e = newNode(u, v);
 		e.next = edges[u];
 		edges[u] = e;

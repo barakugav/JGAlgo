@@ -1,13 +1,16 @@
 package com.ugav.algo.test;
 
-import com.ugav.algo.Dijkstra;
 import com.ugav.algo.Graph;
 import com.ugav.algo.Graphs;
+import com.ugav.algo.SSSP;
 
-public class DijkstraTest {
+class SSSPTestUtils {
 
-	@Test
-	public static boolean basic() {
+	private SSSPTestUtils() {
+		throw new InternalError();
+	}
+
+	static boolean testSSSPPositive(SSSP algo) {
 		int[][][] adjacencyMatrices = new int[][][] {
 				{ { 0, 0, 35, 91, 0, 0, 0, 0, 76, 19, 49, 0, 9, 62, 77, 43 },
 						{ 0, 0, 0, 32, 0, 0, 0, 0, 0, 1, 0, 0, 19, 87, 37, 0 },
@@ -304,12 +307,12 @@ public class DijkstraTest {
 			int[] distancesExpected = expectedDistances[i];
 			int n = adjacencyMatrix.length;
 
-			Graph<Integer> g = GraphsTestUtils.createGraphFromAdjacencyMatrixWeightedInt(adjacencyMatrix);
-			double[] distancesActual = Dijkstra.getInstace().calcDistances(g, Graphs.WEIGHT_INT_FUNC_DEFAULT, source);
+			Graph<Integer> g = GraphsTestUtils.createGraphFromAdjacencyMatrixWeightedInt(adjacencyMatrix, true);
+			SSSP.Result<Integer> results = algo.calcDistances(g, Graphs.WEIGHT_INT_FUNC_DEFAULT, source);
 
 			for (int v = 0; v < n; v++) {
 				double expeced = distancesExpected[v];
-				double actual = distancesActual[v];
+				double actual = results.distance(v);
 				if (expeced != actual) {
 					TestUtils
 							.printTestStr("Distance to vertex " + v + " is wrong: " + expeced + " != " + actual + "\n");
