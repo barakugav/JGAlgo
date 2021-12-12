@@ -28,7 +28,8 @@ public class TestList {
 	private static final Collection<Class<?>> MST_TESTS = List.of(
 			MSTBoruvskaTest.class,
 			MSTKruskalTest.class,
-			MSTPrimTest.class);
+			MSTPrimTest.class,
+			MSTFredmanTarjan1987Test.class);
 
 	static final Collection<Class<?>> TEST_CLASSES;
 	static {

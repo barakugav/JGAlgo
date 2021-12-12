@@ -37,11 +37,11 @@ public class MSTPrim implements MST {
 		Arrays.fill(visited, false);
 
 		Collection<Edge<E>> mst = new ArrayList<>(n - 1);
-		treeLoop: for (int r = 0; r < n; r++) {
+		for (int r = 0; r < n; r++) {
 			if (visited[r])
 				continue;
 
-			for (int u = r;;) {
+			treeLoop: for (int u = r;;) {
 				visited[u] = true;
 				verticesPtrs[u] = null;
 
@@ -64,7 +64,7 @@ public class MSTPrim implements MST {
 				while (true) {
 					if (heap.isEmpty())
 						/* reached all vertices from current root, continue to next tree */
-						continue treeLoop;
+						break treeLoop;
 					e = heap.extractMin();
 					if (!visited[e.v()])
 						break;
