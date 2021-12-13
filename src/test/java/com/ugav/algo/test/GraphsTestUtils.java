@@ -7,7 +7,7 @@ import java.util.Set;
 
 import com.ugav.algo.Graph;
 import com.ugav.algo.Graph.Edge;
-import com.ugav.algo.GraphLinked;
+import com.ugav.algo.GraphArray;
 
 class GraphsTestUtils {
 
@@ -16,7 +16,8 @@ class GraphsTestUtils {
 	}
 
 	static <E> Graph<E> randTree(int n) {
-		Graph.Modifiable<E> g = GraphLinked.builder().setVertexNum(n).build();
+//		Graph.Modifiable<E> g = GraphLinked.builder().setVertexNum(n).build();
+		Graph.Modifiable<E> g = new GraphArray<>(false, n);
 		Random rand = new Random();
 		for (int i = 0; i < n - 1; i++) {
 			int u = rand.nextInt(i + 1);
@@ -31,7 +32,8 @@ class GraphsTestUtils {
 	}
 
 	static <E> Graph<E> randGraph(int n, int m, boolean selfEdges) {
-		Graph.Modifiable<E> g = GraphLinked.builder().setDirected(false).setVertexNum(n).build();
+//		Graph.Modifiable<E> g = GraphLinked.builder().setDirected(false).setVertexNum(n).build();
+		Graph.Modifiable<E> g = new GraphArray<>(false, n);
 		if (m >= n * n / 3)
 			throw new IllegalArgumentException("too much edges for random sampling");
 
@@ -101,7 +103,8 @@ class GraphsTestUtils {
 
 	static Graph<Integer> createGraphFromAdjacencyMatrixWeightedInt(int[][] m, boolean directed) {
 		int n = m.length;
-		Graph.Modifiable<Integer> g = GraphLinked.builder().setDirected(directed).setVertexNum(n).build();
+//		Graph.Modifiable<Integer> g = GraphLinked.builder().setDirected(directed).setVertexNum(n).build();
+		Graph.Modifiable<Integer> g = new GraphArray<>(directed, n);
 		for (int u = 0; u < n; u++) {
 			for (int v = directed ? 0 : u + 1; v < n; v++) {
 				if (m[u][v] == 0)
@@ -127,7 +130,8 @@ class GraphsTestUtils {
 	static Graph<Void> parseGraphFromAdjacencyMatrix01(String s) {
 		String[] lines = s.split("\r\n");
 		int n = lines.length;
-		Graph.Modifiable<Void> g = GraphLinked.builder().setDirected(false).setVertexNum(n).build();
+//		Graph.Modifiable<Void> g = GraphLinked.builder().setDirected(false).setVertexNum(n).build();
+		Graph.Modifiable<Void> g = new GraphArray<>(false, n);
 		for (int u = 0; u < n; u++) {
 			String[] chars = lines[u].split(" ");
 			for (int v = u + 1; v < n; v++)
@@ -140,7 +144,8 @@ class GraphsTestUtils {
 	static Graph<Void> parseGraphWeighted(String s) {
 		String[] lines = s.split("\r\n");
 		int n = lines.length;
-		Graph.Modifiable<Void> g = GraphLinked.builder().setDirected(false).setVertexNum(n).build();
+//		Graph.Modifiable<Void> g = GraphLinked.builder().setDirected(false).setVertexNum(n).build();
+		Graph.Modifiable<Void> g = new GraphArray<>(false, n);
 		for (int u = 0; u < n; u++) {
 			String[] chars = lines[u].split(" ");
 			for (int v = u + 1; v < n; v++)

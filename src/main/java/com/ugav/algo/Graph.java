@@ -24,6 +24,14 @@ public interface Graph<E> {
 
 		public void removeEdge(Edge<E> e);
 
+		public void clear();
+
+	}
+
+	public interface Flexible<E> extends Modifiable<E> {
+
+		public void addEdge(Edge<E> e);
+
 	}
 
 	public static interface Edge<E> {
@@ -35,6 +43,8 @@ public interface Graph<E> {
 		public E val();
 
 		public void val(E v);
+
+		public Edge<E> twin();
 
 	}
 

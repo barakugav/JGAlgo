@@ -80,6 +80,19 @@ public abstract class GraphLinked<E> implements Graph.Modifiable<E> {
 		return e;
 	}
 
+	@Override
+	public void clear() {
+		for (int i = 0; i < edges.length; i++) {
+			for (Node<E> p = edges[i], next; p != null; p = next) {
+				next = p.next;
+				p.next = null;
+			}
+			edges[i] = null;
+		}
+		n = 0;
+		m = 0;
+	}
+
 	protected abstract Node<E> newNode(int u, int v);
 
 	public static class Directed<E> extends GraphLinked<E> {
@@ -156,7 +169,7 @@ public abstract class GraphLinked<E> implements Graph.Modifiable<E> {
 
 	}
 
-	protected static class Node<E> implements Graph.Edge<E> {
+	protected abstract static class Node<E> implements Graph.Edge<E> {
 
 		protected final int u;
 		protected final int v;
@@ -222,6 +235,11 @@ public abstract class GraphLinked<E> implements Graph.Modifiable<E> {
 		}
 
 		@Override
+		public Edge<E> twin() {
+			return twin;
+		}
+
+		@Override
 		public boolean equals(Object o) {
 			if (o == this)
 				return true;
@@ -243,6 +261,11 @@ public abstract class GraphLinked<E> implements Graph.Modifiable<E> {
 
 		protected NodeDirected(int u, int v) {
 			super(u, v);
+		}
+
+		@Override
+		public Edge<E> twin() {
+			return null;
 		}
 
 		@Override
