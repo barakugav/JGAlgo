@@ -53,7 +53,17 @@ public class GraphArray<E> implements Graph.Flexible<E> {
 	}
 
 	@Override
-	public int edges(int u, int[] edges, int begin) {
+	public int getEdgesArr(int u, Edge<E>[] edges, int begin) {
+		int len = edgesLen[u];
+		if (len == 0)
+			return 0;
+		Edge<E>[] es = this.edges[u];
+		System.arraycopy(es, 0, edges, begin, len);
+		return len;
+	}
+
+	@Override
+	public int getEdgesArrVs(int u, int[] edges, int begin) {
 		Edge<E>[] es = this.edges[u];
 		int len = edgesLen[u];
 		for (int i = 0; i < len; i++)

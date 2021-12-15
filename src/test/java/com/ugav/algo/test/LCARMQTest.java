@@ -32,7 +32,7 @@ public class LCARMQTest {
 				int p = layer[i];
 				depth[p] = d;
 
-				int edgesCount = g.edges(p, edges, 0);
+				int edgesCount = g.getEdgesArrVs(p, edges, 0);
 				for (int e = 0; e < edgesCount; e++) {
 					int q = edges[e];
 					if (q == parent[p])

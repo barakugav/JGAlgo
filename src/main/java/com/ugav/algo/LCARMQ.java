@@ -30,7 +30,7 @@ public class LCARMQ implements LCA {
 
 		parent[0] = -1;
 		edgesOffset[0] = 0;
-		edgesCount[0] = g.edges(r, edges, 0);
+		edgesCount[0] = g.getEdgesArrVs(r, edges, 0);
 		edgesIdx[0] = 0;
 
 		int aLen = 0;
@@ -51,7 +51,7 @@ public class LCARMQ implements LCA {
 				s++;
 				parent[s] = v;
 				edgesOffset[s] = edgesOffset[s - 1] + edgesCount[s - 1];
-				edgesCount[s] = g.edges(child, edges, edgesOffset[s]);
+				edgesCount[s] = g.getEdgesArrVs(child, edges, edgesOffset[s]);
 				edgesIdx[s] = 0;
 				v = child;
 			} else {

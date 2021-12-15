@@ -36,7 +36,7 @@ public class Graphs {
 		while (layerSize > 0) {
 			for (; layerSize > 0; layerSize--) {
 				int v = layer[layerSize - 1];
-				edgesCount = graph.edges(v, edges, 0);
+				edgesCount = graph.getEdgesArrVs(v, edges, 0);
 
 				for (int i = 0; i < edgesCount; i++) {
 					int u = edges[i];

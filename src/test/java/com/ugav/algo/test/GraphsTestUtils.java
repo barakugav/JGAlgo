@@ -46,7 +46,7 @@ class GraphsTestUtils {
 			if (!selfEdges && u == v)
 				continue;
 
-			int edgeCount = g.edges(u, edges, 0);
+			int edgeCount = g.getEdgesArrVs(u, edges, 0);
 			for (int j = 0; j < edgeCount; j++)
 				if (edges[j] == v)
 					continue mainLoop;

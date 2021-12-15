@@ -12,7 +12,9 @@ public interface Graph<E> {
 
 	public Iterator<Edge<E>> edges(int u);
 
-	public int edges(int u, int[] edges, int begin);
+	public int getEdgesArr(int u, Edge<E>[] edges, int begin);
+
+	public int getEdgesArrVs(int u, int[] edges, int begin);
 
 	public boolean isDirected();
 
