@@ -2,17 +2,17 @@ package com.ugav.algo;
 
 public interface UnionFind {
 
-	<V> Element<V> make(V v);
+	public <V> Element<V> make(V v);
 
-	<V> Element<V> find(Element<V> e);
+	public <V> Element<V> find(Element<V> e);
 
-	<V> Element<V> union(Element<V> a, Element<V> b);
+	public <V> Element<V> union(Element<V> a, Element<V> b);
 
-	static interface Element<V> {
+	public static interface Element<V> {
 
-		V get();
+		public V get();
 
-		void set(V v);
+		public void set(V v);
 
 	}
 

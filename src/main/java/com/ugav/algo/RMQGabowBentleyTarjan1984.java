@@ -4,14 +4,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class RMQPlusMinusOne extends RMQLinearAbstract {
+public class RMQGabowBentleyTarjan1984 extends RMQLinearAbstract {
 
-	RMQPlusMinusOne() {
+	private RMQGabowBentleyTarjan1984() {
 	}
 
-	private static final RMQPlusMinusOne INSTANCE = new RMQPlusMinusOne();
+	private static final RMQGabowBentleyTarjan1984 INSTANCE = new RMQGabowBentleyTarjan1984();
 
-	public static RMQPlusMinusOne getInstace() {
+	public static RMQGabowBentleyTarjan1984 getInstace() {
 		return INSTANCE;
 	}
 
@@ -21,7 +21,7 @@ public class RMQPlusMinusOne extends RMQLinearAbstract {
 			throw new IllegalArgumentException();
 		Objects.requireNonNull(c);
 
-		RMQPlusMinusOne.DataStructure ds = new RMQPlusMinusOne.DataStructure(n, c);
+		RMQGabowBentleyTarjan1984.DataStructure ds = new RMQGabowBentleyTarjan1984.DataStructure(n, c);
 
 		preprocessRMQ(ds);
 
@@ -31,21 +31,42 @@ public class RMQPlusMinusOne extends RMQLinearAbstract {
 	int[] calcDemoBlock(int key, int blockSize) {
 		int demoBlock[] = new int[blockSize];
 
-		demoBlock[0] = 0;
-		for (int i = 1; i < demoBlock.length; i++)
-			demoBlock[i] = demoBlock[i - 1] + ((key & (1 << (i - 1))) != 0 ? -1 : 1);
+		int nodes[] = new int[blockSize];
+		int nodesCount = 0;
+
+		int keyIdx = 0;
+
+		for (int i = 0; i < demoBlock.length; i++) {
+			int x = nodesCount > 0 ? nodes[nodesCount - 1] + blockSize : 0;
+			while ((key & (1 << keyIdx)) != 0) {
+				x = nodes[nodesCount-- - 1] - 1;
+				keyIdx++;
+			}
+			nodes[nodesCount++] = x;
+			keyIdx++;
+
+			demoBlock[i] = x;
+		}
 
 		return demoBlock;
 	}
 
-	int calcBlockKey(RMQPlusMinusOne.DataStructure ds, int b) {
+	int calcBlockKey(RMQGabowBentleyTarjan1984.DataStructure ds, int b) {
+		int nodes[] = new int[ds.blockSize];
+		int nodesCount = 0;
+
 		int key = 0;
+		int keyIdx = 0;
 
 		int base = b * ds.blockSize;
-		for (int i = ds.blockSize - 2; i >= 0; i--) {
-			key <<= 1;
-			if (ds.c.compare(base + i + 1, base + i) < 0)
-				key |= 1;
+		for (int i = 0; i < ds.blockSize; i++) {
+			int x = base + i;
+			while (nodesCount > 0 && ds.c.compare(x, nodes[nodesCount - 1]) < 0) {
+				nodesCount--;
+				key |= 1 << (keyIdx++);
+			}
+			nodes[nodesCount++] = x;
+			keyIdx++;
 		}
 
 		return key;
@@ -53,7 +74,7 @@ public class RMQPlusMinusOne extends RMQLinearAbstract {
 
 	@Override
 	void initInterBlock(RMQLinearAbstract.DataStructure ds0) {
-		RMQPlusMinusOne.DataStructure ds = (RMQPlusMinusOne.DataStructure) ds0;
+		RMQGabowBentleyTarjan1984.DataStructure ds = (RMQGabowBentleyTarjan1984.DataStructure) ds0;
 
 		Map<Integer, RMQ.Result> tables = new HashMap<>();
 
@@ -78,7 +99,7 @@ public class RMQPlusMinusOne extends RMQLinearAbstract {
 
 		@Override
 		int getBlockSize(int n) {
-			return (int) Math.ceil(Utils.log2((double) n) / 2);
+			return (int) Math.ceil(Utils.log2((double) n) / 4);
 		}
 
 		@Override

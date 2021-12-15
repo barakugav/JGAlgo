@@ -2,7 +2,7 @@ package com.ugav.algo;
 
 public class UnionFindImpl implements UnionFind {
 
-	UnionFindImpl() {
+	private UnionFindImpl() {
 	}
 
 	private static final UnionFindImpl INSTANCE = new UnionFindImpl();

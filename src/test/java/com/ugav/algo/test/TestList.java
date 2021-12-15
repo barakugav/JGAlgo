@@ -10,8 +10,8 @@ public class TestList {
 	private static final Collection<Class<?>> RMQ_TESTS = List.of(
 			RMQLookupTableTest.class,
 			RMQPowerOf2TableTest.class,
-			RMQPlusMinusOneTest.class,
-			RMQLinearTest.class);
+			RMQPlusMinusOneBenderFarachColton2000Test.class,
+			RMQGabowBentleyTarjan1984Test.class);
 
 	private static final Collection<Class<?>> HEAP_TESTS = List.of(
 			HeapBinaryTest.class,
@@ -22,14 +22,14 @@ public class TestList {
 			UnionFindTest.class);
 
 	private static final Collection<Class<?>> GRAPHS_TESTS = List.of(
-			LCARMQTest.class,
+			LCARMQBenderFarachColton2000Test.class,
 			SSSPDijkstraTest.class,
 			SSSPBellmanFordTest.class);
 
 	private static final Collection<Class<?>> MST_TESTS = List.of(
-			MSTBoruvskaTest.class,
-			MSTKruskalTest.class,
-			MSTPrimTest.class,
+			MSTBoruvska1926Test.class,
+			MSTKruskal1956Test.class,
+			MSTPrim1957Test.class,
 			MSTFredmanTarjan1987Test.class);
 
 	static final Collection<Class<?>> TEST_CLASSES;

@@ -4,14 +4,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class RMQLinear extends RMQLinearAbstract {
+public class RMQPlusMinusOneBenderFarachColton2000 extends RMQLinearAbstract {
 
-	RMQLinear() {
+	private RMQPlusMinusOneBenderFarachColton2000() {
 	}
 
-	private static final RMQLinear INSTANCE = new RMQLinear();
+	private static final RMQPlusMinusOneBenderFarachColton2000 INSTANCE = new RMQPlusMinusOneBenderFarachColton2000();
 
-	public static RMQLinear getInstace() {
+	public static RMQPlusMinusOneBenderFarachColton2000 getInstace() {
 		return INSTANCE;
 	}
 
@@ -21,7 +21,7 @@ public class RMQLinear extends RMQLinearAbstract {
 			throw new IllegalArgumentException();
 		Objects.requireNonNull(c);
 
-		RMQLinear.DataStructure ds = new RMQLinear.DataStructure(n, c);
+		RMQPlusMinusOneBenderFarachColton2000.DataStructure ds = new RMQPlusMinusOneBenderFarachColton2000.DataStructure(n, c);
 
 		preprocessRMQ(ds);
 
@@ -31,42 +31,21 @@ public class RMQLinear extends RMQLinearAbstract {
 	int[] calcDemoBlock(int key, int blockSize) {
 		int demoBlock[] = new int[blockSize];
 
-		int nodes[] = new int[blockSize];
-		int nodesCount = 0;
-
-		int keyIdx = 0;
-
-		for (int i = 0; i < demoBlock.length; i++) {
-			int x = nodesCount > 0 ? nodes[nodesCount - 1] + blockSize : 0;
-			while ((key & (1 << keyIdx)) != 0) {
-				x = nodes[nodesCount-- - 1] - 1;
-				keyIdx++;
-			}
-			nodes[nodesCount++] = x;
-			keyIdx++;
-
-			demoBlock[i] = x;
-		}
+		demoBlock[0] = 0;
+		for (int i = 1; i < demoBlock.length; i++)
+			demoBlock[i] = demoBlock[i - 1] + ((key & (1 << (i - 1))) != 0 ? -1 : 1);
 
 		return demoBlock;
 	}
 
-	int calcBlockKey(RMQLinear.DataStructure ds, int b) {
-		int nodes[] = new int[ds.blockSize];
-		int nodesCount = 0;
-
+	int calcBlockKey(RMQPlusMinusOneBenderFarachColton2000.DataStructure ds, int b) {
 		int key = 0;
-		int keyIdx = 0;
 
 		int base = b * ds.blockSize;
-		for (int i = 0; i < ds.blockSize; i++) {
-			int x = base + i;
-			while (nodesCount > 0 && ds.c.compare(x, nodes[nodesCount - 1]) < 0) {
-				nodesCount--;
-				key |= 1 << (keyIdx++);
-			}
-			nodes[nodesCount++] = x;
-			keyIdx++;
+		for (int i = ds.blockSize - 2; i >= 0; i--) {
+			key <<= 1;
+			if (ds.c.compare(base + i + 1, base + i) < 0)
+				key |= 1;
 		}
 
 		return key;
@@ -74,7 +53,7 @@ public class RMQLinear extends RMQLinearAbstract {
 
 	@Override
 	void initInterBlock(RMQLinearAbstract.DataStructure ds0) {
-		RMQLinear.DataStructure ds = (RMQLinear.DataStructure) ds0;
+		RMQPlusMinusOneBenderFarachColton2000.DataStructure ds = (RMQPlusMinusOneBenderFarachColton2000.DataStructure) ds0;
 
 		Map<Integer, RMQ.Result> tables = new HashMap<>();
 
@@ -99,7 +78,7 @@ public class RMQLinear extends RMQLinearAbstract {
 
 		@Override
 		int getBlockSize(int n) {
-			return (int) Math.ceil(Utils.log2((double) n) / 4);
+			return (int) Math.ceil(Utils.log2((double) n) / 2);
 		}
 
 		@Override

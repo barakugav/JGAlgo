@@ -2,10 +2,7 @@ package com.ugav.algo;
 
 import com.ugav.algo.RMQPowerOf2Table.PowerOf2Table;
 
-public abstract class RMQLinearAbstract implements RMQ {
-
-	RMQLinearAbstract() {
-	}
+abstract class RMQLinearAbstract implements RMQ {
 
 	void preprocessRMQ(DataStructure ds) {
 		RMQ.Comparator c = ds.c;

@@ -1,8 +1,8 @@
 package com.ugav.algo.test;
 
-import com.ugav.algo.RMQPlusMinusOne;
+import com.ugav.algo.RMQPlusMinusOneBenderFarachColton2000;
 
-public class RMQPlusMinusOneTest {
+public class RMQPlusMinusOneBenderFarachColton2000Test {
 
 	@Test
 	public static boolean regular() {
@@ -11,7 +11,7 @@ public class RMQPlusMinusOneTest {
 		RMQTestUtils.randRMQDataPlusMinusOne(a);
 		RMQTestUtils.randRMQQueries(a, queries, a.length);
 
-		return RMQTestUtils.testRMQ(RMQPlusMinusOne.getInstace(), a, queries);
+		return RMQTestUtils.testRMQ(RMQPlusMinusOneBenderFarachColton2000.getInstace(), a, queries);
 	}
 
 	@Test
@@ -22,7 +22,7 @@ public class RMQPlusMinusOneTest {
 			RMQTestUtils.randRMQDataPlusMinusOne(a);
 			RMQTestUtils.randRMQQueries(a, queries, a.length);
 
-			if (RMQTestUtils.testRMQ(RMQPlusMinusOne.getInstace(), a, queries) != true)
+			if (RMQTestUtils.testRMQ(RMQPlusMinusOneBenderFarachColton2000.getInstace(), a, queries) != true)
 				return false;
 		}
 		return true;
@@ -35,7 +35,7 @@ public class RMQPlusMinusOneTest {
 		RMQTestUtils.randRMQDataPlusMinusOne(a);
 		RMQTestUtils.randRMQQueries(a, queries, 4);
 
-		return RMQTestUtils.testRMQ(RMQPlusMinusOne.getInstace(), a, queries);
+		return RMQTestUtils.testRMQ(RMQPlusMinusOneBenderFarachColton2000.getInstace(), a, queries);
 	}
 
 }

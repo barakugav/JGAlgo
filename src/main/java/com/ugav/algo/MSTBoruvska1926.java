@@ -8,14 +8,14 @@ import java.util.Iterator;
 
 import com.ugav.algo.Graph.Edge;
 
-public class MSTBoruvska implements MST {
+public class MSTBoruvska1926 implements MST {
 
-	private MSTBoruvska() {
+	private MSTBoruvska1926() {
 	}
 
-	private static final MSTBoruvska INSTANCE = new MSTBoruvska();
+	private static final MSTBoruvska1926 INSTANCE = new MSTBoruvska1926();
 
-	public static MSTBoruvska getInstance() {
+	public static MSTBoruvska1926 getInstance() {
 		return INSTANCE;
 	}
 

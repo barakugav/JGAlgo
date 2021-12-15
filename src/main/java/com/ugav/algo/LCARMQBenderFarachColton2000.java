@@ -4,14 +4,14 @@ import java.util.Arrays;
 
 import com.ugav.algo.RMQ.IntArrayComparator;
 
-public class LCARMQ implements LCA {
+public class LCARMQBenderFarachColton2000 implements LCA {
 
-	private LCARMQ() {
+	private LCARMQBenderFarachColton2000() {
 	}
 
-	private static final LCARMQ INSTANCE = new LCARMQ();
+	private static final LCARMQBenderFarachColton2000 INSTANCE = new LCARMQBenderFarachColton2000();
 
-	public static LCARMQ getInstace() {
+	public static LCARMQBenderFarachColton2000 getInstace() {
 		return INSTANCE;
 	}
 
@@ -71,7 +71,7 @@ public class LCARMQ implements LCA {
 				vToDepthsIdx[v] = i;
 		}
 
-		RMQ.Result rmq = RMQPlusMinusOne.getInstace().preprocessRMQ(new IntArrayComparator(depths), depths.length);
+		RMQ.Result rmq = RMQPlusMinusOneBenderFarachColton2000.getInstace().preprocessRMQ(new IntArrayComparator(depths), depths.length);
 		return new DataStructure(vs, vToDepthsIdx, rmq);
 	}
 

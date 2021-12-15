@@ -5,9 +5,9 @@ import java.util.Random;
 import com.ugav.algo.Graph;
 import com.ugav.algo.Graphs;
 import com.ugav.algo.LCA;
-import com.ugav.algo.LCARMQ;
+import com.ugav.algo.LCARMQBenderFarachColton2000;
 
-public class LCARMQTest {
+public class LCARMQBenderFarachColton2000Test {
 
 	private static int[][] randLCAQueries(Graph<Void> g, int r, int queriesNum) {
 		Random rand = new Random();
@@ -120,7 +120,7 @@ public class LCARMQTest {
 				Graph<Void> g = GraphsTestUtils.randTree(n);
 				int[][] queries = randLCAQueries(g, 0, m);
 
-				if (!testLCA(g, LCARMQ.getInstace(), queries))
+				if (!testLCA(g, LCARMQBenderFarachColton2000.getInstace(), queries))
 					return false;
 			}
 		}

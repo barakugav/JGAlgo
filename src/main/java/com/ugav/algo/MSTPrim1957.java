@@ -10,14 +10,14 @@ import java.util.Iterator;
 import com.ugav.algo.Graph.Edge;
 import com.ugav.algo.Graphs.EdgeWeightComparator;
 
-public class MSTPrim implements MST {
+public class MSTPrim1957 implements MST {
 
-	private MSTPrim() {
+	private MSTPrim1957() {
 	}
 
-	private static final MSTPrim INSTANCE = new MSTPrim();
+	private static final MSTPrim1957 INSTANCE = new MSTPrim1957();
 
-	public static MSTPrim getInstance() {
+	public static MSTPrim1957 getInstance() {
 		return INSTANCE;
 	}
 

@@ -9,14 +9,14 @@ import java.util.Iterator;
 import com.ugav.algo.Graph.Edge;
 import com.ugav.algo.Graphs.EdgeWeightComparator;
 
-public class MSTKruskal implements MST {
+public class MSTKruskal1956 implements MST {
 
-	private MSTKruskal() {
+	private MSTKruskal1956() {
 	}
 
-	private static final MSTKruskal INSTANCE = new MSTKruskal();
+	private static final MSTKruskal1956 INSTANCE = new MSTKruskal1956();
 
-	public static MSTKruskal getInstance() {
+	public static MSTKruskal1956 getInstance() {
 		return INSTANCE;
 	}
 

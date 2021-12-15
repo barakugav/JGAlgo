@@ -13,7 +13,7 @@ import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.Graph.WeightFunctionInt;
 import com.ugav.algo.Graphs;
 import com.ugav.algo.MST;
-import com.ugav.algo.MSTKruskal;
+import com.ugav.algo.MSTKruskal1956;
 
 class MSTTestUtils {
 
@@ -102,7 +102,7 @@ class MSTTestUtils {
 		 * It's hard to verify MST, we use Kruskal algorithm to verify the others, and
 		 * assume its implementation is correct
 		 */
-		Collection<Edge<E>> expected = MSTKruskal.getInstance().calcMST(g, w);
+		Collection<Edge<E>> expected = MSTKruskal1956.getInstance().calcMST(g, w);
 
 		Comparator<Edge<E>> c = new MSTEdgeComparator<>(w);
 		Set<Edge<E>> actualSet = new TreeSet<>(c);
