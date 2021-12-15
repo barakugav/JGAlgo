@@ -17,19 +17,19 @@ public class GraphArray<E> implements Graph.Flexible<E> {
 	private static final Edge[][] EDGES_EMPTY = new Edge[0][];
 	private static final int[] EDGES_LEN_EMPTY = new int[0];
 
-	public GraphArray(boolean directed) {
+	public GraphArray(DirectedType directed) {
 		this(directed, 0);
 	}
 
 	@SuppressWarnings("unchecked")
-	public GraphArray(boolean directed, int n) {
+	public GraphArray(DirectedType directed, int n) {
 		if (n < 0)
 			throw new IllegalArgumentException();
 		this.n = n;
 		m = 0;
 		edges = n == 0 ? EDGES_EMPTY : new Edge[n][];
 		edgesLen = n == 0 ? EDGES_LEN_EMPTY : new int[n];
-		this.directed = directed;
+		this.directed = directed == DirectedType.Directed ? true : false;
 	}
 
 	@Override

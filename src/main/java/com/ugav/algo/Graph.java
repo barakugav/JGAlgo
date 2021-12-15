@@ -30,10 +30,14 @@ public interface Graph<E> {
 
 	}
 
-	public interface Flexible<E> extends Modifiable<E> {
+	public static interface Flexible<E> extends Modifiable<E> {
 
 		public void addEdge(Edge<E> e);
 
+	}
+
+	public static enum DirectedType {
+		Directed, Undirected
 	}
 
 	public static interface Edge<E> {

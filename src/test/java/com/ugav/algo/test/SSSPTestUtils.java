@@ -3,6 +3,7 @@ package com.ugav.algo.test;
 import com.ugav.algo.Graph;
 import com.ugav.algo.Graphs;
 import com.ugav.algo.SSSP;
+import com.ugav.algo.Graph.DirectedType;
 
 class SSSPTestUtils {
 
@@ -307,7 +308,7 @@ class SSSPTestUtils {
 			int[] distancesExpected = expectedDistances[i];
 			int n = adjacencyMatrix.length;
 
-			Graph<Integer> g = GraphsTestUtils.createGraphFromAdjacencyMatrixWeightedInt(adjacencyMatrix, true);
+			Graph<Integer> g = GraphsTestUtils.createGraphFromAdjacencyMatrixWeightedInt(adjacencyMatrix, DirectedType.Directed);
 			SSSP.Result<Integer> results = algo.calcDistances(g, Graphs.WEIGHT_INT_FUNC_DEFAULT, source);
 
 			for (int v = 0; v < n; v++) {
