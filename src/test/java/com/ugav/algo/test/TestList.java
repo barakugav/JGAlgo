@@ -40,6 +40,7 @@ public class TestList {
 		l.addAll(MISC_TESTS);
 		l.addAll(GRAPHS_TESTS);
 		l.addAll(MST_TESTS);
+		l.add(TPMKomlos1985King1997Hagerup2009Test.class);
 		TEST_CLASSES = Collections.unmodifiableCollection(l);
 	}
 

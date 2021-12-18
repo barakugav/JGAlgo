@@ -16,8 +16,33 @@ class GraphsTestUtils {
 		throw new InternalError();
 	}
 
+	private static class RandomUnique {
+
+		private final Random rand;
+		private final int minWeight;
+		private final int maxWeight;
+		private final Set<Integer> usedWeights;
+
+		RandomUnique(int minWeight, int maxWeight) {
+			rand = new Random();
+			this.minWeight = minWeight;
+			this.maxWeight = maxWeight;
+			usedWeights = new HashSet<>();
+		}
+
+		int next() {
+			int w;
+			do {
+				w = rand.nextInt(minWeight, maxWeight);
+			} while (usedWeights.contains(w));
+
+			usedWeights.add(w);
+
+			return w;
+		}
+	}
+
 	static <E> Graph<E> randTree(int n) {
-//		Graph.Modifiable<E> g = GraphLinked.builder().setVertexNum(n).build();
 		Graph.Modifiable<E> g = new GraphArray<>(DirectedType.Undirected, n);
 		Random rand = new Random();
 		for (int i = 0; i < n - 1; i++) {
@@ -28,12 +53,37 @@ class GraphsTestUtils {
 		return g;
 	}
 
+	static void assignRandWeights(Graph<Integer> g, int minWeight, int maxWeight) {
+		if (minWeight >= maxWeight)
+			throw new IllegalArgumentException();
+		if (maxWeight - minWeight < g.edgesNum() / 2)
+			throw new IllegalArgumentException("weight range is too small for unique weights");
+
+		RandomUnique rand = new RandomUnique(minWeight, maxWeight);
+		for (Iterator<Edge<Integer>> it = g.edges(); it.hasNext();)
+			it.next().val(rand.next());
+	}
+
+	static Graph<Integer> randTreeWeighted(int n) {
+		if (n < 1)
+			throw new IllegalArgumentException();
+		int m = n - 1;
+		int minWeight = 1;
+		int maxWeight = m < 50 ? 100 : m * 2 + 2;
+		return randTreeWeighted(n, minWeight, maxWeight);
+	}
+
+	static Graph<Integer> randTreeWeighted(int n, int minWeight, int maxWeight) {
+		Graph<Integer> t = randTree(n);
+		assignRandWeights(t, minWeight, maxWeight);
+		return t;
+	}
+
 	static <E> Graph<E> randGraph(int n, int m) {
 		return randGraph(n, m, false);
 	}
 
 	static <E> Graph<E> randGraph(int n, int m, boolean selfEdges) {
-//		Graph.Modifiable<E> g = GraphLinked.builder().setDirected(false).setVertexNum(n).build();
 		Graph.Modifiable<E> g = new GraphArray<>(DirectedType.Undirected, n);
 		if (m >= n * n / 3)
 			throw new IllegalArgumentException("too much edges for random sampling");
@@ -64,26 +114,8 @@ class GraphsTestUtils {
 	}
 
 	static Graph<Integer> randGraphWeightedInt(int n, int m, int minWeight, int maxWeight) {
-		if (minWeight >= maxWeight)
-			throw new IllegalArgumentException();
-		if (maxWeight - minWeight < m * 2)
-			throw new IllegalArgumentException("weight range is too small for unique weights");
-
 		Graph<Integer> g = randGraph(n, m);
-		Random rand = new Random();
-		Set<Integer> weights = new HashSet<>(m);
-
-		for (Iterator<Edge<Integer>> it = g.edges(); it.hasNext();) {
-			/* random unique weight */
-			int w;
-			do {
-				w = rand.nextInt(minWeight, maxWeight);
-			} while (weights.contains(w));
-
-			Edge<Integer> e = it.next();
-			e.val(w);
-			weights.add(w);
-		}
+		assignRandWeights(g, minWeight, maxWeight);
 		return g;
 	}
 
@@ -104,7 +136,6 @@ class GraphsTestUtils {
 
 	static Graph<Integer> createGraphFromAdjacencyMatrixWeightedInt(int[][] m, DirectedType directed) {
 		int n = m.length;
-//		Graph.Modifiable<Integer> g = GraphLinked.builder().setDirected(directed).setVertexNum(n).build();
 		Graph.Modifiable<Integer> g = new GraphArray<>(directed, n);
 		for (int u = 0; u < n; u++) {
 			for (int v = directed == DirectedType.Directed ? 0 : u + 1; v < n; v++) {
@@ -131,7 +162,6 @@ class GraphsTestUtils {
 	static Graph<Void> parseGraphFromAdjacencyMatrix01(String s) {
 		String[] lines = s.split("\r\n");
 		int n = lines.length;
-//		Graph.Modifiable<Void> g = GraphLinked.builder().setDirected(false).setVertexNum(n).build();
 		Graph.Modifiable<Void> g = new GraphArray<>(DirectedType.Undirected, n);
 		for (int u = 0; u < n; u++) {
 			String[] chars = lines[u].split(" ");
@@ -145,7 +175,6 @@ class GraphsTestUtils {
 	static Graph<Void> parseGraphWeighted(String s) {
 		String[] lines = s.split("\r\n");
 		int n = lines.length;
-//		Graph.Modifiable<Void> g = GraphLinked.builder().setDirected(false).setVertexNum(n).build();
 		Graph.Modifiable<Void> g = new GraphArray<>(DirectedType.Undirected, n);
 		for (int u = 0; u < n; u++) {
 			String[] chars = lines[u].split(" ");

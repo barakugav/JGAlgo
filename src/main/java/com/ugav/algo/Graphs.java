@@ -1,9 +1,11 @@
 package com.ugav.algo;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
@@ -17,33 +19,91 @@ public class Graphs {
 		throw new InternalError();
 	}
 
-	public static <E> boolean isTree(Graph<E> graph) {
-		int n = graph.vertices();
+	public static <E> List<Edge<E>> findPath(Graph<E> g, int u, int v) {
+		int n = g.vertices();
+
+		@SuppressWarnings("unchecked")
+		Edge<E>[] backtrack = new Edge[n];
+
+		int[] layer = new int[n];
+		int[] layerNext = new int[n];
+		int layerSize = 0;
+
+		layer[layerSize++] = u;
+
+		for (; layerSize > 0;) {
+			int layerSizeNext = 0;
+
+			for (int p; layerSize > 0;) {
+				p = layer[--layerSize];
+
+				if (p == v) {
+					List<Edge<E>> path = new ArrayList<>();
+					for (; p != u;) {
+						Edge<E> e = backtrack[p];
+						path.add(e);
+						p = e.u();
+					}
+					Collections.reverse(path);
+					return path;
+				}
+
+				for (Iterator<Edge<E>> it = g.edges(p); it.hasNext();) {
+					Edge<E> e = it.next();
+					int w = e.v();
+					if (w == u || backtrack[w] != null)
+						continue;
+					backtrack[w] = e;
+					layerNext[layerSizeNext++] = w;
+				}
+			}
+
+			int[] temp = layer;
+			layer = layerNext;
+			layerNext = temp;
+			layerSize = layerSizeNext;
+		}
+
+		/* no path */
+		return null;
+	}
+
+	public static <E> boolean isTree(Graph<E> g) {
+		int n = g.vertices();
+		if (n == 0)
+			return true;
 
 		boolean visited[] = new boolean[n];
 		Arrays.fill(visited, false);
+		int[] parent = new int[n];
+		Arrays.fill(parent, -1);
 
 		int[] layer = new int[n];
 		int[] nextLayer = new int[n];
 		int layerSize = 0;
 		int lextLayerSize = 0;
 
-		layer[layerSize++] = 0;
+		int start = 0;
+		layer[layerSize++] = start;
+		visited[start] = true;
 
 		int[] edges = new int[n];
 		int edgesCount;
 
 		while (layerSize > 0) {
 			for (; layerSize > 0; layerSize--) {
-				int v = layer[layerSize - 1];
-				edgesCount = graph.getEdgesArrVs(v, edges, 0);
+				int u = layer[layerSize - 1];
+				edgesCount = g.getEdgesArrVs(u, edges, 0);
 
 				for (int i = 0; i < edgesCount; i++) {
-					int u = edges[i];
-					if (visited[u])
+					int v = edges[i];
+					if (!g.isDirected() && v == parent[u])
+						continue;
+					if (visited[v])
 						return false;
-					visited[u] = true;
-					nextLayer[lextLayerSize++] = u;
+					visited[v] = true;
+					nextLayer[lextLayerSize++] = v;
+					parent[v] = u;
 				}
 			}
 
@@ -58,6 +118,21 @@ public class Graphs {
 			if (!visited[v])
 				return false;
 		return true;
+	}
+
+	public static <E> int getFullyBranchingTreeDepth(Graph<E> t, int root) {
+		for (int parent = -1, u = root, depth = 0;; depth++) {
+			int v = parent;
+			for (Iterator<Edge<E>> it = t.edges(u); it.hasNext();) {
+				v = it.next().v();
+				if (v != parent)
+					break;
+			}
+			if (v == parent)
+				return depth;
+			parent = u;
+			u = v;
+		}
 	}
 
 	public static <E> String formatAdjacencyMatrix(Graph<E> g) {
