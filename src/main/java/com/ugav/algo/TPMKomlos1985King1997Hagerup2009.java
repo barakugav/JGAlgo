@@ -1,11 +1,7 @@
 package com.ugav.algo;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 import com.ugav.algo.Graph.DirectedType;
 import com.ugav.algo.Graph.Edge;
@@ -46,13 +42,12 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 		Edge<Ref<E>>[] edgeToParent = r2.e1;
 		int[] depths = r2.e2;
 
-		List<Integer>[] q = calcQueriesPerVertex(lcaQueries, depths, edgeToParent);
-		List<Edge<Ref<E>>>[] a = calcAnswersPerVertex(t0, root, q, edgeToParent);
+		int[] q = calcQueriesPerVertex(lcaQueries, depths, edgeToParent);
+		Edge<Ref<E>>[][] a = calcAnswersPerVertex(t0, root, q, edgeToParent, t.vertices());
 		return extractEdgesFromAnswers(a, q, lcaQueries, depths);
 	}
 
-	private static <E> Edge<E>[] extractEdgesFromAnswers(List<Edge<Ref<E>>>[] a, List<Integer>[] q, int[] lcaQueries,
-			int[] depths) {
+	private static <E> Edge<E>[] extractEdgesFromAnswers(Edge<Ref<E>>[][] a, int[] q, int[] lcaQueries, int[] depths) {
 		int queriesNum = lcaQueries.length / 4;
 		@SuppressWarnings("unchecked")
 		Edge<E>[] res = new Edge[queriesNum];
@@ -65,15 +60,17 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 
 			Edge<Ref<E>> ua = null, va = null;
 
-			for (int j = 0; j < q[u].size(); j++) {
-				if (q[u].get(j) == lcaDepth) {
-					ua = a[u].get(j);
+			int qusize = Integer.bitCount(q[u]);
+			for (int j = 0; j < qusize; j++) {
+				if (getIthOneBit(q[u], j) == lcaDepth) {
+					ua = a[u][j];
 					break;
 				}
 			}
-			for (int j = 0; j < q[v].size(); j++) {
-				if (q[v].get(j) == lcaDepth) {
-					va = a[v].get(j);
+			int qvsize = Integer.bitCount(q[v]);
+			for (int j = 0; j < qvsize; j++) {
+				if (getIthOneBit(q[v], j) == lcaDepth) {
+					va = a[v][j];
 					break;
 				}
 			}
@@ -85,22 +82,15 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 		return res;
 	}
 
-	private static <E> List<Edge<Ref<E>>>[] calcAnswersPerVertex(Graph<Ref<E>> t, int root, List<Integer>[] q,
-			Edge<Ref<E>>[] edgeToParent) {
+	private static <E> Edge<Ref<E>>[][] calcAnswersPerVertex(Graph<Ref<E>> t, int root, int[] q,
+			Edge<Ref<E>>[] edgeToParent, int leavesNum) {
 		int n = t.vertices();
-		@SuppressWarnings("unchecked")
-		List<Integer>[] a = new List[n];
-		for (int i = 0; i < n; i++) {
-			a[i] = new ArrayList<>(q[i].size());
-			for (int j = 0; j < q[i].size(); j++)
-				a[i].add(-1);
-		}
+		int[] a = new int[n];
 
 		int leavesDepth = Graphs.getFullyBranchingTreeDepth(t, root);
 
-		// TODO use number of leaves
 		@SuppressWarnings("unchecked")
-		List<Edge<Ref<E>>>[] res = new List[n];
+		Edge<Ref<E>>[][] res = new Edge[leavesNum][];
 
 		@SuppressWarnings("unchecked")
 		Edge<Ref<E>>[] edges = new Edge[n * 2];
@@ -131,10 +121,9 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 				int u = edgeToChild.u(); // parent
 				int v = edgeToChild.v(); // child
 
-				// TODO more efficient way
-				subseq(a[u], q[u], q[v], a[v]);
+				a[v] = subseq(a[u], q[u], q[v]);
 				int j = binarySearch(a[v], edgeToChild.val().w, edgesToRoot);
-				repSuf(a[v], depth, j);
+				a[v] = repSuf(a[v], depth + 1, j);
 
 				edgesToRoot[depth] = edgeToChild;
 				if (depth + 1 != leavesDepth) {
@@ -144,10 +133,15 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 					edgesCount[depth] = t.getEdgesArr(v, edges, edgesOffset[depth]);
 					edgesIdx[depth] = 0;
 				} else {
-					// TODO ?
-					List<Edge<Ref<E>>> resv = new ArrayList<>(q[v].size());
-					for (int i = 0; i < a[v].size(); i++)
-						resv.add(edgesToRoot[a[v].get(i)]);
+					// TODO
+					int qvsize = Integer.bitCount(q[v]);
+					@SuppressWarnings("unchecked")
+					Edge<Ref<E>>[] resv = new Edge[qvsize];
+					for (int i = 0; i < qvsize; i++) {
+						int b = getIthOneBit(q[v], i);
+						int s = Integer.numberOfTrailingZeros(successor(a[v], 1 << b));
+						resv[i] = edgesToRoot[s - 1];
+					}
 					res[v] = resv;
 
 					edgesToRoot[depth] = null;
@@ -162,37 +156,54 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 		return res;
 	}
 
-	private static void subseq(List<Integer> au, List<Integer> qu, List<Integer> qv, List<Integer> av) {
-		// TODO bit map tricks
-		// TODO remove
+	private static int successor(int a, int b) {
+//		int r = 0, bsize = Integer.bitCount(b);
+//		for (int i = 0; i < bsize; i++)
+//			for (int bit = getIthOneBit(b, i) + 1; bit < Integer.SIZE; bit++)
+//				if ((a & (1 << bit)) != 0) {
+//					r |= 1 << bit;
+//					break;
+//				}
+//		return r;
 
-		for (int iu = 0, iv = 0;;) {
-			if (iu >= qu.size() || iv >= qv.size())
-				return;
-			int qui = qu.get(iu);
-			int qvi = qv.get(iv);
-			if (qui == qvi)
-				av.set(iv++, au.get(iu));
-			else if (qui < qvi)
-				iu++;
-			else
-				iv++;
+		/*
+		 * Don't even ask why the commented code above is equivalent to the bit tricks
+		 * below. Hagerup 2009.
+		 */
+		return a & (~(a | b) ^ ((~a | b) + b));
+	}
+
+	private static int getIthOneBit(int x, int b) {
+		if (b < 0 || b >= Integer.bitCount(x))
+			throw new IndexOutOfBoundsException(Integer.toBinaryString(x) + "[" + b + "]");
+
+		while (true) {
+			int nextBit = Integer.numberOfTrailingZeros(x);
+			if (b-- == 0)
+				return nextBit;
+			x &= ~(1 << nextBit);
 		}
 	}
 
-	private static <E> int binarySearch(List<Integer> av, double w, Edge<Ref<E>>[] edgesToRoot) {
-		// TODO binary search or lookup table
-		for (int i = av.size() - 1; i >= 0; i--) {
-			int avi = av.get(i);
-			if (avi != -1 && edgesToRoot[avi].val().w >= w)
-				return i + 1;
+	private static int subseq(int au, int qu, int qv) {
+		return successor(au, qv);
+	}
+
+	private static <E> int binarySearch(int av, double w, Edge<Ref<E>>[] edgesToRoot) {
+		// TODO
+		int avsize = Integer.bitCount(av);
+		for (int i = avsize - 1; i >= 0; i--) {
+			int avi = getIthOneBit(av, i);
+			if (edgesToRoot[avi - 1].val().w >= w)
+				return avi + 1;
 		}
 		return 0;
 	}
 
-	private static void repSuf(List<Integer> av, int depth, int j) {
-		for (int i = j; i < av.size(); i++)
-			av.set(i, depth);
+	private static int repSuf(int av, int depth, int j) {
+		av &= (1 << j) - 1;
+		av |= 1 << depth;
+		return av;
 	}
 
 	private static <E> Tuple<Graph<Ref<E>>, Integer> buildBoruvkaFullyBranchingTree(Graph<E> g, WeightFunction<E> w) {
@@ -339,19 +350,14 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 		return new Tuple<>(edgeToParent, depths);
 	}
 
-	private static <E> List<Integer>[] calcQueriesPerVertex(int[] lcaQueries, int[] depths,
-			Edge<Ref<E>>[] edgeToParent) {
+	private static <E> int[] calcQueriesPerVertex(int[] lcaQueries, int[] depths, Edge<Ref<E>>[] edgeToParent) {
 		int n = edgeToParent.length;
 		int[] layer = new int[n];
 		int[] layerNext = new int[n];
 		int layerSize = 0;
 
-//		int[] q = new int[n];
-//		Arrays.fill(q, 0);
-		@SuppressWarnings("unchecked")
-		Set<Integer>[] qs = new Set[n];
-		for (int i = 0; i < n; i++)
-			qs[i] = new TreeSet<>();
+		int[] q = new int[n];
+		Arrays.fill(q, 0);
 
 		int queriesNum = lcaQueries.length / 2;
 		for (int query = 0; query < queriesNum; query++) {
@@ -359,8 +365,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 			int ancestor = lcaQueries[query * 2 + 1];
 			if (u == ancestor)
 				continue;
-//			q[u] |= 1 << depths[ancestor];
-			qs[u].add(depths[ancestor]);
+			q[u] |= 1 << depths[ancestor];
 		}
 
 		for (int u = 0; u < n; u++)
@@ -376,10 +381,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 				if (ep == null)
 					continue;
 				int parent = ep.v();
-//				q[parent] |= (q[u] & (1 << depths[parent]));
-				for (int qu : qs[u])
-					if (qu < depths[parent])
-						qs[parent].add(qu);
+				q[parent] |= q[u] & ~(1 << depths[parent]);
 
 				layerNext[layerSizeNext++] = parent;
 			}
@@ -390,12 +392,6 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 			layerSize = layerSizeNext;
 		}
 
-		@SuppressWarnings("unchecked")
-		List<Integer>[] q = new List[n];
-		for (int i = 0; i < n; i++) {
-			q[i] = new ArrayList<>(qs[i]);
-			q[i].sort(null);
-		}
 		return q;
 	}
 

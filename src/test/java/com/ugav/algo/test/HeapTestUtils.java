@@ -14,6 +14,7 @@ class HeapTestUtils {
 		throw new InternalError();
 	}
 
+	@SuppressWarnings("unused")
 	private static HeapOp[] parseOpsStr(String s) {
 		s = s.substring(1, s.length() - 1);
 		String[] opsStr = s.split(", ");
@@ -418,6 +419,7 @@ class HeapTestUtils {
 		return true;
 	}
 
+	@SuppressWarnings("unused")
 	private static <E> boolean testHeapSize(Heap<E> h) {
 		int expected = h.size();
 		int actual = 0;
