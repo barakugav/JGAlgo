@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import com.ugav.algo.Graph.DirectedType;
 import com.ugav.algo.Graph.Edge;
@@ -347,9 +349,9 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 //		int[] q = new int[n];
 //		Arrays.fill(q, 0);
 		@SuppressWarnings("unchecked")
-		List<Integer>[] q = new List[n];
+		Set<Integer>[] qs = new Set[n];
 		for (int i = 0; i < n; i++)
-			q[i] = new ArrayList<>(0);
+			qs[i] = new TreeSet<>();
 
 		int queriesNum = lcaQueries.length / 2;
 		for (int query = 0; query < queriesNum; query++) {
@@ -358,7 +360,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 			if (u == ancestor)
 				continue;
 //			q[u] |= 1 << depths[ancestor];
-			q[u].add(depths[ancestor]);
+			qs[u].add(depths[ancestor]);
 		}
 
 		for (int u = 0; u < n; u++)
@@ -375,9 +377,9 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 					continue;
 				int parent = ep.v();
 //				q[parent] |= (q[u] & (1 << depths[parent]));
-				for (int qu : q[u])
+				for (int qu : qs[u])
 					if (qu < depths[parent])
-						q[parent].add(qu);
+						qs[parent].add(qu);
 
 				layerNext[layerSizeNext++] = parent;
 			}
@@ -388,8 +390,12 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 			layerSize = layerSizeNext;
 		}
 
-		for (int i = 0; i < n; i++)
+		@SuppressWarnings("unchecked")
+		List<Integer>[] q = new List[n];
+		for (int i = 0; i < n; i++) {
+			q[i] = new ArrayList<>(qs[i]);
 			q[i].sort(null);
+		}
 		return q;
 	}
 

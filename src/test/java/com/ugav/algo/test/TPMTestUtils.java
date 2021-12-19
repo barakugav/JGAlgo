@@ -1,13 +1,20 @@
 package com.ugav.algo.test;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 import com.ugav.algo.Graph;
+import com.ugav.algo.Graph.DirectedType;
 import com.ugav.algo.Graph.Edge;
 import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.Graph.WeightFunctionInt;
+import com.ugav.algo.GraphArray;
 import com.ugav.algo.Graphs;
+import com.ugav.algo.MSTKruskal1956;
 import com.ugav.algo.TPM;
+import com.ugav.algo.test.GraphsTestUtils.RandomGraphBuilder;
 
 class TPMTestUtils {
 
@@ -68,7 +75,7 @@ class TPMTestUtils {
 		return true;
 	}
 
-	static <E> boolean testTPM(TPM algo) {
+	static boolean testTPM(TPM algo) {
 		int[][] phases = new int[][] { { 64, 16 }, { 32, 32 }, { 16, 64 }, { 8, 128 }, { 4, 256 } };
 		for (int phase = 0; phase < phases.length; phase++) {
 			int repeat = phases[phase][0];
@@ -81,7 +88,7 @@ class TPMTestUtils {
 		return true;
 	}
 
-	static <E> boolean testTPM(TPM algo, int n) {
+	static boolean testTPM(TPM algo, int n) {
 //		int[][] matrix = { { 0, 83, 0, 57, 0, 18, 0, 4 }, { 83, 0, 0, 32, 0, 79, 26, 0 }, { 0, 0, 0, 28, 53, 0, 90, 0 },
 //				{ 57, 32, 28, 0, 0, 8, 14, 65 }, { 0, 0, 53, 0, 0, 68, 76, 0 }, { 18, 79, 0, 8, 68, 0, 89, 0 },
 //				{ 0, 26, 90, 14, 76, 89, 0, 0 }, { 4, 0, 0, 65, 0, 0, 0, 0 } };
@@ -89,7 +96,8 @@ class TPMTestUtils {
 //		WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
 //		System.out.println("T:\n " + Graphs.formatAdjacencyMatrixWeightedInt(t, w));
 
-		Graph<Integer> t = GraphsTestUtils.randTreeWeighted(n);
+		Graph<Integer> t = GraphsTestUtils.randTree(n);
+		GraphsTestUtils.assignRandWeightsInt(t);
 		WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
 		return testTPM(t, w, algo);
 	}
@@ -113,6 +121,76 @@ class TPMTestUtils {
 		Edge<E>[] actual = algo.calcTPM(t, w, queries);
 		Edge<E>[] expected = calcExpectedTPM(t, w, queries);
 		return compareActualToExpectedResults(queries, actual, expected, w);
+	}
+
+	static boolean verifyMSTPositive(TPM algo) {
+		int[][] phases = new int[][] { { 64, 8, 16 }, { 32, 16, 32 }, { 16, 32, 64 }, { 8, 64, 128 }, { 4, 128, 256 } };
+		for (int phase = 0; phase < phases.length; phase++) {
+			int repeat = phases[phase][0];
+			int n = phases[phase][1];
+			int m = phases[phase][2];
+
+			for (int r = 0; r < repeat; r++) {
+				Graph<Integer> g = new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(false)
+						.selfEdges(false).cycles(true).connected(true).build();
+				GraphsTestUtils.assignRandWeightsInt(g);
+				WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
+
+				if (!verifyMSTPositive(algo, g, w))
+					return false;
+			}
+		}
+		return true;
+	}
+
+	static <E> boolean verifyMSTPositive(TPM algo, Graph<E> g, WeightFunction<E> w) {
+		Collection<Edge<E>> mstEdges = MSTKruskal1956.getInstance().calcMST(g, w);
+		Graph<E> mst = GraphArray.valueOf(g.vertices(), mstEdges, DirectedType.Undirected);
+
+		return TPM.verifyMST(algo, g, w, mst);
+	}
+
+	static boolean verifyMSTNegative(TPM algo) {
+		int[][] phases = new int[][] { { 64, 8, 16 }, { 32, 16, 32 }, { 16, 32, 64 }, { 8, 64, 128 }, { 4, 128, 256 } };
+		for (int phase = 0; phase < phases.length; phase++) {
+			int repeat = phases[phase][0];
+			int n = phases[phase][1];
+			int m = phases[phase][2];
+
+			for (int r = 0; r < repeat; r++) {
+				Graph<Integer> g = new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(false)
+						.selfEdges(false).cycles(true).connected(true).build();
+				GraphsTestUtils.assignRandWeightsInt(g);
+				WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
+
+				if (!verifyMSTNegative(algo, g, w))
+					return false;
+			}
+		}
+		return true;
+	}
+
+	static <E> boolean verifyMSTNegative(TPM algo, Graph<E> g, WeightFunction<E> w) {
+		Collection<Edge<E>> mstEdges = MSTKruskal1956.getInstance().calcMST(g, w);
+		Graph.Flexible<E> mst = GraphArray.valueOf(g.vertices(), mstEdges, DirectedType.Undirected);
+
+		@SuppressWarnings("unchecked")
+		Edge<E>[] edges = new Edge[g.edgesNum()];
+		int i = 0;
+		for (Iterator<Edge<E>> it = g.edges(); it.hasNext();)
+			edges[i++] = it.next();
+
+		Random rand = new Random();
+		Edge<E> e;
+		do {
+			e = edges[rand.nextInt(edges.length)];
+		} while (mstEdges.contains(e));
+
+		List<Edge<E>> mstPath = Graphs.findPath(mst, e.u(), e.v());
+		mst.removeEdge(mstPath.get(rand.nextInt(mstPath.size())));
+		mst.addEdge(e);
+
+		return !TPM.verifyMST(algo, g, w, mst);
 	}
 
 }

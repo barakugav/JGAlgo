@@ -9,6 +9,9 @@ import com.ugav.algo.Graph;
 import com.ugav.algo.Graph.DirectedType;
 import com.ugav.algo.Graph.Edge;
 import com.ugav.algo.GraphArray;
+import com.ugav.algo.Tuple;
+import com.ugav.algo.UnionFind;
+import com.ugav.algo.UnionFindImpl;
 
 class GraphsTestUtils {
 
@@ -42,18 +45,148 @@ class GraphsTestUtils {
 		}
 	}
 
-	static <E> Graph<E> randTree(int n) {
-		Graph.Modifiable<E> g = new GraphArray<>(DirectedType.Undirected, n);
-		Random rand = new Random();
-		for (int i = 0; i < n - 1; i++) {
-			int u = rand.nextInt(i + 1);
-			int v = i + 1;
-			g.addEdge(u, v);
+	static class RandomGraphBuilder {
+
+		private int n;
+		private int m;
+		private boolean directed;
+		private boolean doubleEdges;
+		private boolean selfEdges;
+		private boolean cycles;
+		private boolean connected;
+
+		RandomGraphBuilder() {
+			n = 0;
+			m = 0;
+			doubleEdges = false;
+			selfEdges = false;
+			cycles = false;
+			connected = false;
 		}
-		return g;
+
+		RandomGraphBuilder n(int n) {
+			this.n = n;
+			return this;
+		}
+
+		RandomGraphBuilder m(int m) {
+			this.m = m;
+			return this;
+		}
+
+		RandomGraphBuilder directed(boolean directed) {
+			this.directed = directed;
+			return this;
+		}
+
+		RandomGraphBuilder doubleEdges(boolean doubleEdges) {
+			this.doubleEdges = doubleEdges;
+			return this;
+		}
+
+		RandomGraphBuilder selfEdges(boolean selfEdges) {
+			this.selfEdges = selfEdges;
+			return this;
+		}
+
+		RandomGraphBuilder cycles(boolean cycles) {
+			this.cycles = cycles;
+			return this;
+		}
+
+		RandomGraphBuilder connected(boolean connected) {
+			this.connected = connected;
+			return this;
+		}
+
+		<E> Graph<E> build() {
+			if (n < 0 || m < 0)
+				throw new IllegalStateException();
+			if ((!cycles && connected) && m != n - 1)
+				throw new IllegalStateException();
+			if (!doubleEdges && m >= n * n / 3)
+				throw new IllegalArgumentException("too much edges for random sampling");
+
+			Graph.Modifiable<E> g = new GraphArray<>(directed ? DirectedType.Directed : DirectedType.Undirected, n);
+			Set<Tuple<Integer, Integer>> existingEdges = new HashSet<>();
+			UnionFind uf = UnionFindImpl.getInstance();
+			@SuppressWarnings("unchecked")
+			UnionFind.Element<Void>[] ufs = new UnionFind.Element[n];
+			int componentsNum = n;
+			Random rand = new Random();
+
+			for (int i = 0; i < n; i++)
+				ufs[i] = uf.make(null);
+
+			while ((connected && componentsNum > 1) || g.edgesNum() < m) {
+				int u = rand.nextInt(n);
+				int v = rand.nextInt(n);
+
+				// avoid self edges
+				if (!selfEdges && u == v)
+					continue;
+
+				// avoid double edges
+				if (!doubleEdges) {
+					int ut = u, vt = v;
+					if (!directed && ut > vt) {
+						int temp = ut;
+						ut = vt;
+						vt = temp;
+					}
+					Tuple<Integer, Integer> et = new Tuple<>(ut, vt);
+					if (!existingEdges.add(et))
+						continue;
+				}
+
+				// keep track of number of connectivity components
+				if (!cycles || connected) {
+					UnionFind.Element<Void> uElm = uf.find(ufs[u]);
+					UnionFind.Element<Void> vElm = uf.find(ufs[v]);
+
+					// avoid cycles
+					if (!cycles && uElm == vElm)
+						continue;
+
+					if (uElm != vElm)
+						componentsNum--;
+					uf.union(uElm, vElm);
+				}
+
+				g.addEdge(u, v);
+			}
+
+			return g;
+		}
+
 	}
 
-	static void assignRandWeights(Graph<Integer> g, int minWeight, int maxWeight) {
+	static <E> Graph<E> randTree(int n) {
+		return new RandomGraphBuilder().n(n).m(n - 1).directed(false).doubleEdges(false).selfEdges(false).cycles(false)
+				.connected(true).build();
+	}
+
+	static void assignRandWeights(Graph<Double> g) {
+		assignRandWeights(g, 1.0, 100.0);
+	}
+
+	static void assignRandWeights(Graph<Double> g, double minWeight, double maxWeight) {
+		if (minWeight >= maxWeight)
+			throw new IllegalArgumentException();
+
+		Random rand = new Random();
+		for (Iterator<Edge<Double>> it = g.edges(); it.hasNext();)
+			it.next().val(rand.nextDouble(minWeight, maxWeight));
+	}
+
+	static void assignRandWeightsInt(Graph<Integer> g) {
+		int m = g.edgesNum();
+		int minWeight = 1;
+		int maxWeight = m < 50 ? 100 : m * 2 + 2;
+		assignRandWeightsInt(g, minWeight, maxWeight);
+	}
+
+	static void assignRandWeightsInt(Graph<Integer> g, int minWeight, int maxWeight) {
 		if (minWeight >= maxWeight)
 			throw new IllegalArgumentException();
 		if (maxWeight - minWeight < g.edgesNum() / 2)
@@ -64,74 +197,13 @@ class GraphsTestUtils {
 			it.next().val(rand.next());
 	}
 
-	static Graph<Integer> randTreeWeighted(int n) {
-		if (n < 1)
-			throw new IllegalArgumentException();
-		int m = n - 1;
-		int minWeight = 1;
-		int maxWeight = m < 50 ? 100 : m * 2 + 2;
-		return randTreeWeighted(n, minWeight, maxWeight);
-	}
-
-	static Graph<Integer> randTreeWeighted(int n, int minWeight, int maxWeight) {
-		Graph<Integer> t = randTree(n);
-		assignRandWeights(t, minWeight, maxWeight);
-		return t;
-	}
-
 	static <E> Graph<E> randGraph(int n, int m) {
 		return randGraph(n, m, false);
 	}
 
 	static <E> Graph<E> randGraph(int n, int m, boolean selfEdges) {
-		Graph.Modifiable<E> g = new GraphArray<>(DirectedType.Undirected, n);
-		if (m >= n * n / 3)
-			throw new IllegalArgumentException("too much edges for random sampling");
-
-		int[] edges = new int[n];
-
-		Random rand = new Random();
-		mainLoop: for (int i = 0; i < m;) {
-			int u = rand.nextInt(n);
-			int v = rand.nextInt(n);
-			if (!selfEdges && u == v)
-				continue;
-
-			int edgeCount = g.getEdgesArrVs(u, edges, 0);
-			for (int j = 0; j < edgeCount; j++)
-				if (edges[j] == v)
-					continue mainLoop;
-			g.addEdge(u, v);
-			i++;
-		}
-		return g;
-	}
-
-	static Graph<Integer> randGraphWeightedInt(int n, int m) {
-		int minWeight = 1;
-		int maxWeight = m < 50 ? 100 : m * 2 + 2;
-		return randGraphWeightedInt(n, m, minWeight, maxWeight);
-	}
-
-	static Graph<Integer> randGraphWeightedInt(int n, int m, int minWeight, int maxWeight) {
-		Graph<Integer> g = randGraph(n, m);
-		assignRandWeights(g, minWeight, maxWeight);
-		return g;
-	}
-
-	static Graph<Double> randGraphWeighted(int n, int m) {
-		return randGraphWeighted(n, m, 0.1, 100);
-	}
-
-	static Graph<Double> randGraphWeighted(int n, int m, double minWeight, double maxWeight) {
-		Graph<Double> g = randGraph(n, m);
-		Random rand = new Random();
-
-		for (Iterator<Edge<Double>> it = g.edges(); it.hasNext();) {
-			Edge<Double> e = it.next();
-			e.val(rand.nextDouble(minWeight, maxWeight));
-		}
-		return g;
+		return new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(false).selfEdges(selfEdges).cycles(true)
+				.connected(false).build();
 	}
 
 	static Graph<Integer> createGraphFromAdjacencyMatrixWeightedInt(int[][] m, DirectedType directed) {

@@ -1,6 +1,7 @@
 package com.ugav.algo;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -121,10 +122,10 @@ public class GraphArray<E> implements Graph.Flexible<E> {
 			if (es[i] != e)
 				continue;
 			if (--edgesLen[u] > 0) {
-				es[i] = es[len - 2];
-				es[len - 2] = null;
-			}
-			es[i] = null;
+				es[i] = es[len - 1];
+				es[len - 1] = null;
+			} else
+				es[i] = null;
 			return;
 		}
 		throw new IllegalArgumentException("edge not in graph: " + e);
@@ -163,6 +164,13 @@ public class GraphArray<E> implements Graph.Flexible<E> {
 		Arrays.fill(edgesLen, 0);
 		n = 0;
 		m = 0;
+	}
+
+	public static <E> GraphArray<E> valueOf(int n, Collection<Edge<E>> edges, DirectedType directed) {
+		GraphArray<E> g = new GraphArray<>(directed, n);
+		for (Edge<E> e : edges)
+			g.addEdge(e);
+		return g;
 	}
 
 	private static <E> boolean isApiEdge(Edge<E> e) {
