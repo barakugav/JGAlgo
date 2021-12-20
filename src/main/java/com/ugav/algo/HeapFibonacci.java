@@ -3,7 +3,7 @@ package com.ugav.algo;
 import java.util.Comparator;
 import java.util.Iterator;
 
-public class HeapFibonacci<E> extends AbstractHeap<E> {
+public class HeapFibonacci<E> extends HeapAbstract<E> {
 
 	private Node<E> minRoot;
 	private Node<E> begin;

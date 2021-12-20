@@ -7,7 +7,7 @@ import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.Objects;
 
-public class HeapBinomial<E> extends AbstractHeap<E> {
+public class HeapBinomial<E> extends HeapAbstract<E> {
 
 	private Node<E>[] roots;
 	private int rootsLen;

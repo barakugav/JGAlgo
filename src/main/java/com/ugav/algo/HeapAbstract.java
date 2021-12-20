@@ -4,7 +4,7 @@ import java.util.AbstractCollection;
 import java.util.Collection;
 import java.util.Comparator;
 
-public abstract class AbstractHeap<E> extends AbstractCollection<E> implements Heap<E> {
+public abstract class HeapAbstract<E> extends AbstractCollection<E> implements Heap<E> {
 
 	@Override
 	public boolean add(E e) {

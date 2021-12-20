@@ -6,6 +6,7 @@ import java.util.Iterator;
 import com.ugav.algo.Graph.DirectedType;
 import com.ugav.algo.Graph.Edge;
 import com.ugav.algo.Graph.WeightFunction;
+import com.ugav.algo.Graphs.Ref;
 
 public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 
@@ -19,26 +20,25 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 	}
 
 	@Override
-	public <E> Edge<E>[] calcTPM(Graph<E> t, WeightFunction<E> w, int[] queries) {
+	public <E> Edge<E>[] calcTPM(Graph<E> t, WeightFunction<E> w, int[] queries, int queriesNum) {
 		if (t.isDirected())
 			throw new IllegalArgumentException("directed graphs are not supported");
-		if (queries.length % 2 != 0)
+		if (queries.length % 2 != 0 || queries.length / 2 != queriesNum)
 			throw new IllegalArgumentException("queries should be in format [u0, v0, u1, v1, ...]");
 		if (!Graphs.isTree(t))
 			throw new IllegalArgumentException("only trees are supported");
-		int queriesNum = queries.length / 2;
 		@SuppressWarnings("unchecked")
 		Edge<E>[] res = new Edge[queriesNum];
 		if (t.vertices() == 0)
 			return res;
 
-		Tuple<Graph<Ref<E>>, Integer> r = buildBoruvkaFullyBranchingTree(t, w);
+		Pair<Graph<Ref<E>>, Integer> r = buildBoruvkaFullyBranchingTree(t, w);
 		Graph<Ref<E>> t0 = r.e1;
 		int root = r.e2;
 
 		int[] lcaQueries = splitQueriesIntoLCAQueries(t0, root, queries);
 
-		Tuple<Edge<Ref<E>>[], int[]> r2 = getEdgeToParentsAndDepth(t0, root);
+		Pair<Edge<Ref<E>>[], int[]> r2 = getEdgeToParentsAndDepth(t0, root);
 		Edge<Ref<E>>[] edgeToParent = r2.e1;
 		int[] depths = r2.e2;
 
@@ -206,7 +206,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 		return av;
 	}
 
-	private static <E> Tuple<Graph<Ref<E>>, Integer> buildBoruvkaFullyBranchingTree(Graph<E> g, WeightFunction<E> w) {
+	private static <E> Pair<Graph<Ref<E>>, Integer> buildBoruvkaFullyBranchingTree(Graph<E> g, WeightFunction<E> w) {
 		int n = g.vertices();
 		@SuppressWarnings("unchecked")
 		Edge<Ref<E>>[] minEdges = new Edge[n];
@@ -219,8 +219,8 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 		for (int v = 0; v < n; v++)
 			vTv[v] = v;
 
-		Graph.Modifiable<Ref<E>> t = new GraphArray<>(DirectedType.Undirected, n);
-		for (Graph<Ref<E>> G = createRefGraph(g, w); (n = G.vertices()) > 1;) {
+		Graph<Ref<E>> t = new GraphArray<>(DirectedType.Undirected, n);
+		for (Graph<Ref<E>> G = Graphs.referenceGraph(g, w); (n = G.vertices()) > 1;) {
 
 			// Find minimum edge of each vertex
 			Arrays.fill(minEdges, 0, n, null);
@@ -274,7 +274,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 			vTvNext = temp;
 
 			// contract G to new graph with the super vertices
-			Graph.Modifiable<Ref<E>> gNext = new GraphArray<>(DirectedType.Undirected, nNext);
+			Graph<Ref<E>> gNext = new GraphArray<>(DirectedType.Undirected, nNext);
 			for (int u = 0; u < n; u++) {
 				int U = vNext[u];
 				for (Iterator<Edge<Ref<E>>> it = G.edges(u); it.hasNext();) {
@@ -285,12 +285,10 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 				}
 			}
 
-			@SuppressWarnings("rawtypes")
-			Graph.Modifiable tempg = ((Graph.Modifiable) G);
-			tempg.clear();
+			G.clear();
 			G = gNext;
 		}
-		return new Tuple<>(t, vTv[0]);
+		return new Pair<>(t, vTv[0]);
 	}
 
 	private static <E> int[] splitQueriesIntoLCAQueries(Graph<Ref<E>> t, int root, int[] queries) {
@@ -310,7 +308,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 		return lcaQueries;
 	}
 
-	private static <E> Tuple<Edge<Ref<E>>[], int[]> getEdgeToParentsAndDepth(Graph<Ref<E>> t, int root) {
+	private static <E> Pair<Edge<Ref<E>>[], int[]> getEdgeToParentsAndDepth(Graph<Ref<E>> t, int root) {
 		int n = t.vertices();
 		@SuppressWarnings("unchecked")
 		Edge<Ref<E>>[] edgeToParent = new Edge[n];
@@ -347,7 +345,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 			layerNext = temp;
 			layerSize = layerSizeNext;
 		}
-		return new Tuple<>(edgeToParent, depths);
+		return new Pair<>(edgeToParent, depths);
 	}
 
 	private static <E> int[] calcQueriesPerVertex(int[] lcaQueries, int[] depths, Edge<Ref<E>>[] edgeToParent) {
@@ -393,46 +391,6 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 		}
 
 		return q;
-	}
-
-	private static class Ref<E> {
-
-		final Edge<E> orig;
-		final double w;
-
-		Ref(Edge<E> e, double w) {
-			orig = e;
-			this.w = w;
-		}
-
-		public int hashCode() {
-			return orig.hashCode();
-		}
-
-		public boolean equals(Object other) {
-			if (other == this)
-				return true;
-			if (!(other instanceof Ref))
-				return false;
-
-			Ref<?> o = (Ref<?>) other;
-			return orig.equals(o.orig);
-		}
-
-		public String toString() {
-			return "R(" + orig + ")";
-		}
-
-	}
-
-	private static <E> Graph<Ref<E>> createRefGraph(Graph<E> g, WeightFunction<E> w) {
-		Graph.Modifiable<Ref<E>> g0 = GraphLinked.builder().setDirected(false).setVertexNum(g.vertices()).build();
-		for (Iterator<Edge<E>> it = g.edges(); it.hasNext();) {
-			Edge<E> e = it.next();
-			Ref<E> v = new Ref<>(e, w.weight(e));
-			g0.addEdge(e.u(), e.v()).val(v);
-		}
-		return g0;
 	}
 
 }

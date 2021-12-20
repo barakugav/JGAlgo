@@ -5,7 +5,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class HeapBinary<E> extends AbstractHeap<E> {
+public class HeapBinary<E> extends HeapAbstract<E> {
 
 	private E[] arr;
 	private int size;

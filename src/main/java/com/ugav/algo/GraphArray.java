@@ -1,18 +1,20 @@
 package com.ugav.algo;
 
+import java.util.AbstractCollection;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
-public class GraphArray<E> implements Graph.Flexible<E> {
+public class GraphArray<E> extends GraphAbstract<E> {
 
 	private int n;
 	private int m;
 	private Edge<E>[][] edges;
 	private int[] edgesLen;
 	private final boolean directed;
+	private final Collection<Edge<E>> edgesView;
 
 	@SuppressWarnings("rawtypes")
 	private static final Edge[][] EDGES_EMPTY = new Edge[0][];
@@ -31,6 +33,7 @@ public class GraphArray<E> implements Graph.Flexible<E> {
 		edges = n == 0 ? EDGES_EMPTY : new Edge[n][];
 		edgesLen = n == 0 ? EDGES_LEN_EMPTY : new int[n];
 		this.directed = directed == DirectedType.Directed ? true : false;
+		edgesView = new EdgesView();
 	}
 
 	@Override
@@ -39,18 +42,25 @@ public class GraphArray<E> implements Graph.Flexible<E> {
 	}
 
 	@Override
-	public int edgesNum() {
-		return m;
-	}
-
-	@Override
-	public Iterator<Edge<E>> edges() {
-		return new EdgesItr();
+	public Collection<Edge<E>> edges() {
+		return edgesView;
 	}
 
 	@Override
 	public Iterator<Edge<E>> edges(int u) {
 		return new EdgeVertexItr<>(edges[u], edgesLen[u]);
+	}
+
+	@Override
+	public Edge<E> getEdge(int u, int v) {
+		if (u >= n)
+			throw new IndexOutOfBoundsException();
+		int len = edgesLen[u];
+		Edge<E>[] es = edges[u];
+		for (int i = 0; i < len; i++)
+			if (es[i].v() == v)
+				return es[i];
+		return null;
 	}
 
 	@Override
@@ -107,6 +117,30 @@ public class GraphArray<E> implements Graph.Flexible<E> {
 	}
 
 	@Override
+	public void addEdge(Edge<E> e) {
+		Edge<E> twin = e.twin();
+		if (isDirected() && twin != null)
+			throw new IllegalArgumentException("twin edges are only supported in undirected graphs");
+
+		addEdge0(e);
+		if (twin != null)
+			addEdge0(twin);
+		m++;
+	}
+
+	@SuppressWarnings("unchecked")
+	private void addEdge0(Edge<E> e) {
+		int u = e.u(), len = edgesLen[u];
+		Edge<E>[] es = edges[u];
+
+		if (es == null)
+			edges[u] = es = new Edge[1];
+		else if (es.length == len)
+			edges[u] = es = Arrays.copyOf(es, len * 2);
+		es[edgesLen[u]++] = e;
+	}
+
+	@Override
 	public void removeEdge(Edge<E> e) {
 		Edge<E> twin = e.twin();
 		removeEdge0(e);
@@ -132,38 +166,9 @@ public class GraphArray<E> implements Graph.Flexible<E> {
 	}
 
 	@Override
-	public void addEdge(Edge<E> e) {
-		Edge<E> twin = e.twin();
-		if (isDirected() && twin != null)
-			throw new IllegalArgumentException("twin edges are only supported in undirected graphs");
-
-		addEdge0(e);
-		if (twin != null)
-			addEdge0(twin);
-		m++;
-	}
-
-	@SuppressWarnings("unchecked")
-	private void addEdge0(Edge<E> e) {
-		int u = e.u(), len = edgesLen[u];
-		Edge<E>[] es = edges[u];
-
-		if (es == null)
-			edges[u] = es = new Edge[1];
-		else if (es.length == len)
-			edges[u] = es = Arrays.copyOf(es, len * 2);
-		es[edgesLen[u]++] = e;
-	}
-
-	@Override
 	public void clear() {
-		Edge<E>[] es;
-		for (int i = 0; i < edges.length; i++)
-			if ((es = edges[i]) != null)
-				Arrays.fill(es, null);
-		Arrays.fill(edgesLen, 0);
+		edges().clear();
 		n = 0;
-		m = 0;
 	}
 
 	public static <E> GraphArray<E> valueOf(int n, Collection<Edge<E>> edges, DirectedType directed) {
@@ -339,6 +344,59 @@ public class GraphArray<E> implements Graph.Flexible<E> {
 		@Override
 		public int hashCode() {
 			return u ^ ~v ^ Objects.hashCode(val());
+		}
+
+	}
+
+	private class EdgesView extends AbstractCollection<Edge<E>> {
+
+		@Override
+		public int size() {
+			return m;
+		}
+
+		@Override
+		public boolean contains(Object o) {
+			if (!(o instanceof Edge<?>))
+				return false;
+			Edge<?> e = (Edge<?>) o;
+			int u = e.u();
+			if (u >= n)
+				return false;
+			int len = edgesLen[u];
+			Edge<E>[] es = edges[u];
+			for (int i = 0; i < len; i++)
+				if (es[i] == e)
+					return true;
+			return false;
+		}
+
+		@Override
+		public Iterator<Edge<E>> iterator() {
+			return new EdgesItr();
+		}
+
+		@Override
+		public boolean add(Edge<E> e) {
+			addEdge(e);
+			return true;
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public boolean remove(Object o) {
+			removeEdge((Edge<E>) o);
+			return true;
+		}
+
+		@Override
+		public void clear() {
+			Edge<E>[][] es = edges;
+			int[] lens = edgesLen;
+			for (int u = 0; u < n; u++)
+				Arrays.fill(es[u], 0, lens[u], null);
+			Arrays.fill(lens, 0, n, 0);
+			m = 0;
 		}
 
 	}

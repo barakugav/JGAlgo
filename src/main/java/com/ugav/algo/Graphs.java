@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
+import com.ugav.algo.Graph.DirectedType;
 import com.ugav.algo.Graph.Edge;
 import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.Graph.WeightFunctionInt;
@@ -25,43 +26,32 @@ public class Graphs {
 		@SuppressWarnings("unchecked")
 		Edge<E>[] backtrack = new Edge[n];
 
-		int[] layer = new int[n];
-		int[] layerNext = new int[n];
-		int layerSize = 0;
+		int[] stack = new int[n];
+		stack[0] = u;
+		int stackSize = 1;
 
-		layer[layerSize++] = u;
+		while (stackSize-- > 0) {
+			int p = stack[stackSize];
 
-		for (; layerSize > 0;) {
-			int layerSizeNext = 0;
-
-			for (int p; layerSize > 0;) {
-				p = layer[--layerSize];
-
-				if (p == v) {
-					List<Edge<E>> path = new ArrayList<>();
-					for (; p != u;) {
-						Edge<E> e = backtrack[p];
-						path.add(e);
-						p = e.u();
-					}
-					Collections.reverse(path);
-					return path;
+			if (p == v) {
+				List<Edge<E>> path = new ArrayList<>();
+				for (; p != u;) {
+					Edge<E> e = backtrack[p];
+					path.add(e);
+					p = e.u();
 				}
-
-				for (Iterator<Edge<E>> it = g.edges(p); it.hasNext();) {
-					Edge<E> e = it.next();
-					int w = e.v();
-					if (w == u || backtrack[w] != null)
-						continue;
-					backtrack[w] = e;
-					layerNext[layerSizeNext++] = w;
-				}
+				Collections.reverse(path);
+				return path;
 			}
 
-			int[] temp = layer;
-			layer = layerNext;
-			layerNext = temp;
-			layerSize = layerSizeNext;
+			for (Iterator<Edge<E>> it = g.edges(p); it.hasNext();) {
+				Edge<E> e = it.next();
+				int w = e.v();
+				if (w == u || backtrack[w] != null)
+					continue;
+				backtrack[w] = e;
+				stack[stackSize++] = w;
+			}
 		}
 
 		/* no path */
@@ -69,55 +59,91 @@ public class Graphs {
 	}
 
 	public static <E> boolean isTree(Graph<E> g) {
+		if (g.isDirected())
+			throw new IllegalArgumentException("directed graphs are not supported");
+		return isTree(g, 0);
+	}
+
+	public static <E> boolean isTree(Graph<E> g, int root) {
 		int n = g.vertices();
 		if (n == 0)
 			return true;
+		boolean directed = g.isDirected();
 
 		boolean visited[] = new boolean[n];
 		Arrays.fill(visited, false);
 		int[] parent = new int[n];
 		Arrays.fill(parent, -1);
 
-		int[] layer = new int[n];
-		int[] nextLayer = new int[n];
-		int layerSize = 0;
-		int lextLayerSize = 0;
-
-		int start = 0;
-		layer[layerSize++] = start;
-		visited[start] = true;
+		int[] stack = new int[n];
+		stack[0] = 0;
+		int stackSize = 1, visitedCount = 1;
+		visited[0] = true;
 
 		int[] edges = new int[n];
 		int edgesCount;
 
-		while (layerSize > 0) {
-			for (; layerSize > 0; layerSize--) {
-				int u = layer[layerSize - 1];
-				edgesCount = g.getEdgesArrVs(u, edges, 0);
+		while (stackSize-- > 0) {
+			int u = stack[stackSize];
+			edgesCount = g.getEdgesArrVs(u, edges, 0);
+
+			for (int i = 0; i < edgesCount; i++) {
+				int v = edges[i];
+				if (!directed && v == parent[u])
+					continue;
+				if (visited[v])
+					return false;
+				visited[v] = true;
+				visitedCount++;
+				stack[stackSize++] = v;
+				parent[v] = u;
+			}
+		}
+
+		return visitedCount == n;
+	}
+
+	static <E> Pair<int[], int[]> findConnectivityComponents(Graph<E> g) {
+		if (g.isDirected())
+			throw new IllegalArgumentException("only undirected graphs are supported");
+		int n = g.vertices();
+		int[] stack = new int[n];
+		int[] edges = new int[n];
+
+		int[] label = new int[n];
+		Arrays.fill(label, -1);
+		int labelCount = 0;
+
+		List<Integer> componentsSizes = new ArrayList<>();
+
+		for (int r = 0; r < n; r++) {
+			if (label[r] != -1)
+				continue;
+
+			int componentsSize = 0;
+			int stackSize = 1;
+			stack[0] = r;
+
+			while (stackSize-- > 0) {
+				int u = stack[stackSize];
+				int edgesCount = g.getEdgesArrVs(u, edges, 0);
 
 				for (int i = 0; i < edgesCount; i++) {
 					int v = edges[i];
-					if (!g.isDirected() && v == parent[u])
+					if (label[v] != -1)
 						continue;
-					if (visited[v])
-						return false;
-					visited[v] = true;
-					nextLayer[lextLayerSize++] = v;
-					parent[v] = u;
+					label[v] = labelCount;
+					stack[stackSize++] = v;
 				}
 			}
-
-			layerSize = lextLayerSize;
-			lextLayerSize = 0;
-			int temp[] = layer;
-			layer = nextLayer;
-			nextLayer = temp;
+			componentsSizes.add(componentsSize);
+			labelCount++;
 		}
 
-		for (int v = 0; v < n; v++)
-			if (!visited[v])
-				return false;
-		return true;
+		int[] componentsSizesArr = new int[labelCount];
+		for (int i = 0; i < labelCount; i++)
+			componentsSizesArr[i] = componentsSizes.get(i);
+		return new Pair<>(label, componentsSizesArr);
 	}
 
 	public static <E> int getFullyBranchingTreeDepth(Graph<E> t, int root) {
@@ -141,8 +167,8 @@ public class Graphs {
 
 	public static <E> String formatAdjacencyMatrixWeighted(Graph<E> g, WeightFunction<E> w) {
 		double minWeight = Double.MAX_VALUE;
-		for (Iterator<Edge<E>> it = g.edges(); it.hasNext();) {
-			double ew = w.weight(it.next());
+		for (Edge<E> e : g.edges()) {
+			double ew = w.weight(e);
 			if (ew < minWeight)
 				minWeight = ew;
 		}
@@ -240,6 +266,50 @@ public class Graphs {
 		@Override
 		public int compare(Edge<E> e1, Edge<E> e2) {
 			return Integer.compare(w.weightInt(e1), w.weightInt(e2));
+		}
+
+	}
+
+	static <E> Graph<Ref<E>> referenceGraph(Graph<E> g, WeightFunction<E> w) {
+		Graph<Ref<E>> g0 = new GraphArray<>(DirectedType.Undirected, g.vertices());
+		for (Edge<E> e : g.edges()) {
+			Ref<E> v = new Ref<>(e, w.weight(e));
+			g0.addEdge(e.u(), e.v()).val(v);
+		}
+		return g0;
+	}
+
+	static final WeightFunction<Ref<?>> REFERENCE_EDGE_WEIGHT_FUNCTION = e -> e.val().w;
+
+	static class Ref<E> {
+
+		final Edge<E> orig;
+		final double w;
+
+		Ref(Edge<E> e, double w) {
+			orig = e;
+			this.w = w;
+		}
+
+		@Override
+		public int hashCode() {
+			return orig.hashCode();
+		}
+
+		@Override
+		public boolean equals(Object other) {
+			if (other == this)
+				return true;
+			if (!(other instanceof Ref))
+				return false;
+
+			Ref<?> o = (Ref<?>) other;
+			return orig.equals(o.orig);
+		}
+
+		@Override
+		public String toString() {
+			return "R(" + orig + ")";
 		}
 
 	}

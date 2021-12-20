@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 
 import com.ugav.algo.Graph.Edge;
 import com.ugav.algo.Graphs.EdgeWeightComparator;
@@ -30,10 +29,7 @@ public class MSTKruskal1956 implements MST {
 
 		/* sort edges */
 		@SuppressWarnings("unchecked")
-		Edge<E>[] edges = new Edge[g.edgesNum()];
-		int i = 0;
-		for (Iterator<Edge<E>> it = g.edges(); it.hasNext();)
-			edges[i++] = it.next();
+		Edge<E>[] edges = g.edges().toArray(new Edge[g.edges().size()]);
 		Arrays.sort(edges, new EdgeWeightComparator<>(w));
 
 		/* create union find data structure for each vertex */

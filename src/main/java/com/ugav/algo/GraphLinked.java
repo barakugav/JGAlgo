@@ -1,15 +1,18 @@
 package com.ugav.algo;
 
+import java.util.AbstractCollection;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
-public abstract class GraphLinked<E> implements Graph.Modifiable<E> {
+public abstract class GraphLinked<E> extends GraphAbstract<E> {
 
 	int n;
 	int m;
 	Node<E>[] edges;
+	private final Collection<Edge<E>> edgesView;
 
 	@SuppressWarnings("unchecked")
 	protected GraphLinked(int n) {
@@ -18,6 +21,61 @@ public abstract class GraphLinked<E> implements Graph.Modifiable<E> {
 		this.n = n;
 		m = 0;
 		edges = new Node[n != 0 ? n : 1];
+		edgesView = new EdgesView();
+	}
+
+	private class EdgesView extends AbstractCollection<Edge<E>> {
+
+		@Override
+		public int size() {
+			return m;
+		}
+
+		@Override
+		public boolean contains(Object o) {
+			if (!(o instanceof Edge<?>))
+				return false;
+			Edge<?> e = (Edge<?>) o;
+			int u = e.u();
+			if (u >= n)
+				return false;
+			for (Node<E> n = edges[u]; n != null; n = n.next)
+				if (n == e)
+					return true;
+			return false;
+		}
+
+		@Override
+		public Iterator<Edge<E>> iterator() {
+			return new EdgesItr();
+		}
+
+		@Override
+		public boolean add(Edge<E> e) {
+			addEdge(e);
+			return true;
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public boolean remove(Object o) {
+			removeEdge((Edge<E>) o);
+			return true;
+		}
+
+		@Override
+		public void clear() {
+			Node<E>[] es = edges;
+			for (int i = 0; i < es.length; i++) {
+				for (Node<E> p = es[i], next; p != null; p = next) {
+					next = p.next;
+					p.next = null;
+				}
+				es[i] = null;
+			}
+			m = 0;
+		}
+
 	}
 
 	@Override
@@ -26,13 +84,8 @@ public abstract class GraphLinked<E> implements Graph.Modifiable<E> {
 	}
 
 	@Override
-	public int edgesNum() {
-		return m;
-	}
-
-	@Override
-	public Iterator<Edge<E>> edges() {
-		return new EdgesItr();
+	public Collection<Edge<E>> edges() {
+		return edgesView;
 	}
 
 	@Override
@@ -40,6 +93,16 @@ public abstract class GraphLinked<E> implements Graph.Modifiable<E> {
 		if (u >= n)
 			throw new IllegalArgumentException();
 		return new EdgeVertexItr<>(edges[u]);
+	}
+
+	@Override
+	public Edge<E> getEdge(int u, int v) {
+		if (u >= n)
+			throw new IllegalArgumentException();
+		for (Node<E> n = this.edges[u]; n != null; n = n.next)
+			if (n.v == v)
+				return n;
+		return null;
 	}
 
 	@Override
@@ -68,17 +131,9 @@ public abstract class GraphLinked<E> implements Graph.Modifiable<E> {
 		return v;
 	}
 
-	void removeEdge0(Edge<E> e) {
-		for (Node<E> prev = null, p = edges[e.u()]; p != null; p = (prev = p).next) {
-			if (p == e) {
-				if (prev == null)
-					edges[e.u()] = p.next;
-				else
-					prev.next = p.next;
-				p.next = null;
-				break;
-			}
-		}
+	@Override
+	public void addEdge(Edge<E> e) {
+		throw new UnsupportedOperationException();
 	}
 
 	Node<E> addNode(int u, int v) {
@@ -88,16 +143,23 @@ public abstract class GraphLinked<E> implements Graph.Modifiable<E> {
 		return e;
 	}
 
+	void removeEdge0(Edge<E> e) {
+		for (Node<E> prev = null, p = edges[e.u()]; p != null; p = (prev = p).next) {
+			if (p == e) {
+				if (prev == null)
+					edges[e.u()] = p.next;
+				else
+					prev.next = p.next;
+				p.next = null;
+				return;
+			}
+		}
+		throw new IllegalArgumentException("edge not in graph: " + e);
+	}
+
 	@Override
 	public void clear() {
-		for (int i = 0; i < edges.length; i++) {
-			for (Node<E> p = edges[i], next; p != null; p = next) {
-				next = p.next;
-				p.next = null;
-			}
-			edges[i] = null;
-		}
-		n = 0;
+		edges().clear();
 		m = 0;
 	}
 
@@ -115,12 +177,6 @@ public abstract class GraphLinked<E> implements Graph.Modifiable<E> {
 		}
 
 		@Override
-		public void removeEdge(Edge<E> e) {
-			removeEdge0(e);
-			m--;
-		}
-
-		@Override
 		public Edge<E> addEdge(int u, int v) {
 			if (u >= n || v >= n)
 				throw new IllegalArgumentException();
@@ -134,6 +190,12 @@ public abstract class GraphLinked<E> implements Graph.Modifiable<E> {
 			return new NodeDirected<>(u, v);
 		}
 
+		@Override
+		public void removeEdge(Edge<E> e) {
+			removeEdge0(e);
+			m--;
+		}
+
 	}
 
 	public static class Undirected<E> extends GraphLinked<E> {
@@ -145,15 +207,6 @@ public abstract class GraphLinked<E> implements Graph.Modifiable<E> {
 		@Override
 		public boolean isDirected() {
 			return false;
-		}
-
-		@Override
-		public void removeEdge(Edge<E> e0) {
-			NodeUndirected<E> e = (NodeUndirected<E>) e0;
-			removeEdge0(e);
-			if (e.twin != null)
-				removeEdge0(e.twin);
-			m--;
 		}
 
 		@Override
@@ -173,6 +226,15 @@ public abstract class GraphLinked<E> implements Graph.Modifiable<E> {
 		@Override
 		protected Node<E> newNode(int u, int v) {
 			return new NodeUndirected<>(u, v);
+		}
+
+		@Override
+		public void removeEdge(Edge<E> e0) {
+			NodeUndirected<E> e = (NodeUndirected<E>) e0;
+			removeEdge0(e);
+			if (e.twin != null)
+				removeEdge0(e.twin);
+			m--;
 		}
 
 	}

@@ -1,7 +1,6 @@
 package com.ugav.algo.test;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Random;
 import java.util.Set;
 
@@ -9,7 +8,7 @@ import com.ugav.algo.Graph;
 import com.ugav.algo.Graph.DirectedType;
 import com.ugav.algo.Graph.Edge;
 import com.ugav.algo.GraphArray;
-import com.ugav.algo.Tuple;
+import com.ugav.algo.Pair;
 import com.ugav.algo.UnionFind;
 import com.ugav.algo.UnionFindImpl;
 
@@ -102,13 +101,13 @@ class GraphsTestUtils {
 		<E> Graph<E> build() {
 			if (n < 0 || m < 0)
 				throw new IllegalStateException();
-			if ((!cycles && connected) && m != n - 1)
+			if (!cycles && m >= n)
 				throw new IllegalStateException();
 			if (!doubleEdges && m >= n * n / 3)
 				throw new IllegalArgumentException("too much edges for random sampling");
 
-			Graph.Modifiable<E> g = new GraphArray<>(directed ? DirectedType.Directed : DirectedType.Undirected, n);
-			Set<Tuple<Integer, Integer>> existingEdges = new HashSet<>();
+			Graph<E> g = new GraphArray<>(directed ? DirectedType.Directed : DirectedType.Undirected, n);
+			Set<Pair<Integer, Integer>> existingEdges = new HashSet<>();
 			UnionFind uf = UnionFindImpl.getInstance();
 			@SuppressWarnings("unchecked")
 			UnionFind.Element<Void>[] ufs = new UnionFind.Element[n];
@@ -118,7 +117,7 @@ class GraphsTestUtils {
 			for (int i = 0; i < n; i++)
 				ufs[i] = uf.make(null);
 
-			while ((connected && componentsNum > 1) || g.edgesNum() < m) {
+			while ((connected && componentsNum > 1) || g.edges().size() < m) {
 				int u = rand.nextInt(n);
 				int v = rand.nextInt(n);
 
@@ -134,7 +133,7 @@ class GraphsTestUtils {
 						ut = vt;
 						vt = temp;
 					}
-					Tuple<Integer, Integer> et = new Tuple<>(ut, vt);
+					Pair<Integer, Integer> et = new Pair<>(ut, vt);
 					if (!existingEdges.add(et))
 						continue;
 				}
@@ -166,6 +165,11 @@ class GraphsTestUtils {
 				.connected(true).build();
 	}
 
+	static <E> Graph<E> randForest(int n, int m) {
+		return new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(false).selfEdges(false).cycles(false)
+				.connected(false).build();
+	}
+
 	static void assignRandWeights(Graph<Double> g) {
 		assignRandWeights(g, 1.0, 100.0);
 	}
@@ -175,12 +179,12 @@ class GraphsTestUtils {
 			throw new IllegalArgumentException();
 
 		Random rand = new Random();
-		for (Iterator<Edge<Double>> it = g.edges(); it.hasNext();)
-			it.next().val(rand.nextDouble(minWeight, maxWeight));
+		for (Edge<Double> e : g.edges())
+			e.val(rand.nextDouble(minWeight, maxWeight));
 	}
 
 	static void assignRandWeightsInt(Graph<Integer> g) {
-		int m = g.edgesNum();
+		int m = g.edges().size();
 		int minWeight = 1;
 		int maxWeight = m < 50 ? 100 : m * 2 + 2;
 		assignRandWeightsInt(g, minWeight, maxWeight);
@@ -189,12 +193,12 @@ class GraphsTestUtils {
 	static void assignRandWeightsInt(Graph<Integer> g, int minWeight, int maxWeight) {
 		if (minWeight >= maxWeight)
 			throw new IllegalArgumentException();
-		if (maxWeight - minWeight < g.edgesNum() / 2)
+		if (maxWeight - minWeight < g.edges().size() / 2)
 			throw new IllegalArgumentException("weight range is too small for unique weights");
 
 		RandomUnique rand = new RandomUnique(minWeight, maxWeight);
-		for (Iterator<Edge<Integer>> it = g.edges(); it.hasNext();)
-			it.next().val(rand.next());
+		for (Edge<Integer> e : g.edges())
+			e.val(rand.next());
 	}
 
 	static <E> Graph<E> randGraph(int n, int m) {
@@ -208,7 +212,7 @@ class GraphsTestUtils {
 
 	static Graph<Integer> createGraphFromAdjacencyMatrixWeightedInt(int[][] m, DirectedType directed) {
 		int n = m.length;
-		Graph.Modifiable<Integer> g = new GraphArray<>(directed, n);
+		Graph<Integer> g = new GraphArray<>(directed, n);
 		for (int u = 0; u < n; u++) {
 			for (int v = directed == DirectedType.Directed ? 0 : u + 1; v < n; v++) {
 				if (m[u][v] == 0)
@@ -234,7 +238,7 @@ class GraphsTestUtils {
 	static Graph<Void> parseGraphFromAdjacencyMatrix01(String s) {
 		String[] lines = s.split("\r\n");
 		int n = lines.length;
-		Graph.Modifiable<Void> g = new GraphArray<>(DirectedType.Undirected, n);
+		Graph<Void> g = new GraphArray<>(DirectedType.Undirected, n);
 		for (int u = 0; u < n; u++) {
 			String[] chars = lines[u].split(" ");
 			for (int v = u + 1; v < n; v++)
@@ -247,7 +251,7 @@ class GraphsTestUtils {
 	static Graph<Void> parseGraphWeighted(String s) {
 		String[] lines = s.split("\r\n");
 		int n = lines.length;
-		Graph.Modifiable<Void> g = new GraphArray<>(DirectedType.Undirected, n);
+		Graph<Void> g = new GraphArray<>(DirectedType.Undirected, n);
 		for (int u = 0; u < n; u++) {
 			String[] chars = lines[u].split(" ");
 			for (int v = u + 1; v < n; v++)

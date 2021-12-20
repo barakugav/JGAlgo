@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import com.ugav.algo.Graph.Edge;
@@ -37,8 +36,7 @@ public class SSSPBellmanFord implements SSSP {
 		distances[s] = 0;
 
 		for (int i = 0; i < n - 1; i++) {
-			for (Iterator<Edge<E>> it = g.edges(); it.hasNext();) {
-				Edge<E> e = it.next();
+			for (Edge<E> e : g.edges()) {
 				int u = e.u(), v = e.v();
 				double d = distances[u] + w.weight(e);
 				if (d < distances[v]) {
@@ -48,8 +46,7 @@ public class SSSPBellmanFord implements SSSP {
 			}
 		}
 
-		for (Iterator<Edge<E>> it = g.edges(); it.hasNext();) {
-			Edge<E> e = it.next();
+		for (Edge<E> e : g.edges()) {
 			int u = e.u(), v = e.v();
 			double d = distances[u] + w.weight(e);
 			if (d < distances[v])

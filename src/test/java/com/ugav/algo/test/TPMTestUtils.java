@@ -1,7 +1,6 @@
 package com.ugav.algo.test;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -12,6 +11,7 @@ import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.Graph.WeightFunctionInt;
 import com.ugav.algo.GraphArray;
 import com.ugav.algo.Graphs;
+import com.ugav.algo.MST;
 import com.ugav.algo.MSTKruskal1956;
 import com.ugav.algo.TPM;
 import com.ugav.algo.test.GraphsTestUtils.RandomGraphBuilder;
@@ -118,7 +118,7 @@ class TPMTestUtils {
 
 	static <E> boolean testTPM0(Graph<E> t, WeightFunction<E> w, TPM algo) {
 		int[] queries = generateAllPossibleQueries(t.vertices());
-		Edge<E>[] actual = algo.calcTPM(t, w, queries);
+		Edge<E>[] actual = algo.calcTPM(t, w, queries, queries.length / 2);
 		Edge<E>[] expected = calcExpectedTPM(t, w, queries);
 		return compareActualToExpectedResults(queries, actual, expected, w);
 	}
@@ -145,9 +145,8 @@ class TPMTestUtils {
 
 	static <E> boolean verifyMSTPositive(TPM algo, Graph<E> g, WeightFunction<E> w) {
 		Collection<Edge<E>> mstEdges = MSTKruskal1956.getInstance().calcMST(g, w);
-		Graph<E> mst = GraphArray.valueOf(g.vertices(), mstEdges, DirectedType.Undirected);
 
-		return TPM.verifyMST(algo, g, w, mst);
+		return MST.verifyMST(g, w, mstEdges, algo);
 	}
 
 	static boolean verifyMSTNegative(TPM algo) {
@@ -172,13 +171,10 @@ class TPMTestUtils {
 
 	static <E> boolean verifyMSTNegative(TPM algo, Graph<E> g, WeightFunction<E> w) {
 		Collection<Edge<E>> mstEdges = MSTKruskal1956.getInstance().calcMST(g, w);
-		Graph.Flexible<E> mst = GraphArray.valueOf(g.vertices(), mstEdges, DirectedType.Undirected);
+		Graph<E> mst = GraphArray.valueOf(g.vertices(), mstEdges, DirectedType.Undirected);
 
 		@SuppressWarnings("unchecked")
-		Edge<E>[] edges = new Edge[g.edgesNum()];
-		int i = 0;
-		for (Iterator<Edge<E>> it = g.edges(); it.hasNext();)
-			edges[i++] = it.next();
+		Edge<E>[] edges = g.edges().toArray(new Edge[g.edges().size()]);
 
 		Random rand = new Random();
 		Edge<E> e;
@@ -190,7 +186,7 @@ class TPMTestUtils {
 		mst.removeEdge(mstPath.get(rand.nextInt(mstPath.size())));
 		mst.addEdge(e);
 
-		return !TPM.verifyMST(algo, g, w, mst);
+		return !MST.verifyMST(g, w, mst, algo);
 	}
 
 }

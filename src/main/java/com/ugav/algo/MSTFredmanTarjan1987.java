@@ -23,7 +23,7 @@ public class MSTFredmanTarjan1987 implements MST {
 
 	@Override
 	public <E> Collection<Edge<E>> calcMST(Graph<E> g, WeightFunction<E> w) {
-		int n = g.vertices(), m = g.edgesNum();
+		int n = g.vertices(), m = g.edges().size();
 
 		// following variables are used to maintain the super vertices
 

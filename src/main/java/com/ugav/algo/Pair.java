@@ -2,15 +2,15 @@ package com.ugav.algo;
 
 import java.util.Objects;
 
-public class Tuple<E1, E2> implements Comparable<Tuple<E1, E2>> {
+public class Pair<E1, E2> implements Comparable<Pair<E1, E2>> {
 
 	public E1 e1;
 	public E2 e2;
 
-	public Tuple() {
+	public Pair() {
 	}
 
-	public Tuple(E1 e1, E2 e2) {
+	public Pair(E1 e1, E2 e2) {
 		this.e1 = e1;
 		this.e2 = e2;
 	}
@@ -29,16 +29,16 @@ public class Tuple<E1, E2> implements Comparable<Tuple<E1, E2>> {
 	public boolean equals(Object other) {
 		if (other == this)
 			return true;
-		if (!(other instanceof Tuple))
+		if (!(other instanceof Pair))
 			return false;
 
-		Tuple<?, ?> o = (Tuple<?, ?>) other;
+		Pair<?, ?> o = (Pair<?, ?>) other;
 		return Objects.equals(e1, o.e1) && Objects.equals(e2, o.e2);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public int compareTo(Tuple<E1, E2> o) {
+	public int compareTo(Pair<E1, E2> o) {
 		int c;
 		return (c = ((Comparable) e1).compareTo(o.e1)) != 0 ? c : ((Comparable) e2).compareTo(o.e2);
 	}

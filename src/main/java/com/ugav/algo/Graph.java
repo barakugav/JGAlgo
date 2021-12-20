@@ -1,16 +1,19 @@
 package com.ugav.algo;
 
+import java.util.Collection;
 import java.util.Iterator;
 
 public interface Graph<E> {
 
 	public int vertices();
 
-	public int edgesNum();
-
-	public Iterator<Edge<E>> edges();
+	public Collection<Edge<E>> edges();
 
 	public Iterator<Edge<E>> edges(int u);
+
+	public Edge<E> getEdge(int u, int v);
+
+	public boolean hasEdge(int u, int v);
 
 	public int getEdgesArr(int u, Edge<E>[] edges, int begin);
 
@@ -18,23 +21,15 @@ public interface Graph<E> {
 
 	public boolean isDirected();
 
-	public interface Modifiable<E> extends Graph<E> {
+	public int newVertex();
 
-		public int newVertex();
+	public Edge<E> addEdge(int u, int v);
 
-		public Edge<E> addEdge(int u, int v);
+	public void addEdge(Edge<E> e);
 
-		public void removeEdge(Edge<E> e);
+	public void removeEdge(Edge<E> e);
 
-		public void clear();
-
-	}
-
-	public static interface Flexible<E> extends Modifiable<E> {
-
-		public void addEdge(Edge<E> e);
-
-	}
+	public void clear();
 
 	public static enum DirectedType {
 		Directed, Undirected
