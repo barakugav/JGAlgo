@@ -1,5 +1,7 @@
 package com.ugav.algo;
 
+import java.util.Comparator;
+
 class Utils {
 
 	private Utils() {
@@ -32,6 +34,14 @@ class Utils {
 	static int log2ceil(int x) {
 		int r = log2(x);
 		return (1 << r) == x ? r : r + 1;
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private static final Comparator DEFAULT_COMPARATOR = (a, b) -> ((Comparable) a).compareTo(b);
+
+	@SuppressWarnings("unchecked")
+	static <E> Comparator<E> getDefaultComparator() {
+		return DEFAULT_COMPARATOR;
 	}
 
 }

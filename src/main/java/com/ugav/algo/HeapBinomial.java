@@ -19,7 +19,7 @@ public class HeapBinomial<E> extends HeapAbstract<E> {
 	}
 
 	public HeapBinomial(Comparator<? super E> c) {
-		this.c = c != null ? c : getDefaultComparator();
+		this.c = c != null ? c : Utils.getDefaultComparator();
 		roots = newArr(4);
 		rootsLen = 0;
 		size = 0;

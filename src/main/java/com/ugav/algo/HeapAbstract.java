@@ -59,12 +59,4 @@ public abstract class HeapAbstract<E> extends AbstractCollection<E> implements H
 		throw new UnsupportedOperationException();
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private static final Comparator DEFAULT_COMPARATOR = (a, b) -> ((Comparable) a).compareTo(b);
-
-	@SuppressWarnings("unchecked")
-	static <E> Comparator<E> getDefaultComparator() {
-		return DEFAULT_COMPARATOR;
-	}
-
 }

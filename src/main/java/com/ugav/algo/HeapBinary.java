@@ -16,7 +16,7 @@ public class HeapBinary<E> extends HeapAbstract<E> {
 	}
 
 	public HeapBinary(Comparator<? super E> c) {
-		this.c = c != null ? c : getDefaultComparator();
+		this.c = c != null ? c : Utils.getDefaultComparator();
 		arr = newArr(16);
 		size = 0;
 	}

@@ -20,8 +20,10 @@ public class TestRunner {
 		Collection<TestObj> tests = getTests();
 
 		boolean totalPassed = true;
+		long t0Total = System.currentTimeMillis();
 
 		for (TestObj test : tests) {
+			long t0Test = System.currentTimeMillis();
 			boolean passed;
 			try {
 				passed = test.invoke();
@@ -29,12 +31,21 @@ public class TestRunner {
 				e.printStackTrace();
 				passed = false;
 			}
-			System.out.println(test.getTestPrefix() + " " + (passed ? "passed" : "failure!"));
+			long runTime = System.currentTimeMillis() - t0Test;
+			int runTimeSec = (int) (runTime / 1000);
+			int runTimeCentisec = (int) (runTime / 10) % 100;
+			System.out.println(String.format("[%02d:%02d]", runTimeSec, runTimeCentisec) + test.getTestPrefix() + " "
+					+ (passed ? "passed" : "failure!"));
 
 			totalPassed &= passed;
 		}
 
-		System.out.println("\nTotal: " + (totalPassed ? "passed." : "failure!"));
+		long runTime = System.currentTimeMillis() - t0Total;
+		int runTimeMin = (int) (runTime / 60000);
+		int runTimeSec = (int) (runTime / 1000) % 60;
+		int runTimeCentisec = (int) (runTime / 10) % 100;
+		System.out.println("\n" + String.format("[%02d:%02d:%02d]", runTimeMin, runTimeSec, runTimeCentisec)
+				+ " Total: " + (totalPassed ? "passed." : "failure!"));
 
 		return totalPassed;
 	}
