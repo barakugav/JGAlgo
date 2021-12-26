@@ -10,10 +10,6 @@ import com.ugav.algo.SplitFindMinArray;
 
 public class SplitFindMinArrayTest {
 
-	private static long getRandSeed() {
-		return new Random().nextLong();
-	}
-
 	private static boolean testSplitFind(SplitFind algo) {
 		int[][] phases = { { 128, 16, 16 }, { 64, 64, 64 }, { 8, 512, 512 }, { 1, 4096, 4096 } };
 		for (int phase = 0; phase < phases.length; phase++) {
@@ -28,7 +24,7 @@ public class SplitFindMinArrayTest {
 	}
 
 	private static boolean testSplitFind(SplitFind algo, int n, int m) {
-		long seed = getRandSeed();
+		long seed = Utils.randSeed();
 
 		RuntimeException e = null;
 		try {
@@ -101,7 +97,7 @@ public class SplitFindMinArrayTest {
 	}
 
 	private static boolean testSplitFindMin(SplitFindMin algo, int n, int m) {
-		long seed = getRandSeed();
+		long seed = Utils.randSeed();
 
 		RuntimeException e = null;
 		try {
@@ -110,7 +106,7 @@ public class SplitFindMinArrayTest {
 		} catch (RuntimeException e1) {
 			e = e1;
 		}
-		TestUtils.printTestStr("Failed on seed " + seed + " n=" + n + "\n");
+		TestUtils.printTestStr("Failed on seed " + seed + "\n");
 		if (e != null)
 			throw e;
 		return false;

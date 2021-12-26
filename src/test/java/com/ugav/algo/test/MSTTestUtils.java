@@ -37,7 +37,7 @@ class MSTTestUtils {
 	}
 
 	static boolean testRandGraph(MST algo, int n, int m) {
-		Graph<Integer> g = GraphsTestUtils.randGraph(n, m);
+		Graph<Integer> g = GraphsTestUtils.randGraph(n, m, Utils.randSeed());
 		GraphsTestUtils.assignRandWeightsInt(g);
 
 //		int[][] matrix = { { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 50, 15, 0, 73, 20, 70 }, { 0, 50, 0, 0, 30, 43, 96, 0 },

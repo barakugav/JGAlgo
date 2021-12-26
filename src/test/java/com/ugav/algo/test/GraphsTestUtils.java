@@ -98,7 +98,7 @@ class GraphsTestUtils {
 			return this;
 		}
 
-		<E> Graph<E> build() {
+		<E> Graph<E> build(long seed) {
 			if (n < 0 || m < 0)
 				throw new IllegalStateException();
 			if (!cycles && m >= n)
@@ -112,7 +112,7 @@ class GraphsTestUtils {
 			@SuppressWarnings("unchecked")
 			UnionFind.Element<Void>[] ufs = new UnionFind.Element[n];
 			int componentsNum = n;
-			Random rand = new Random();
+			Random rand = new Random(seed);
 
 			for (int i = 0; i < n; i++)
 				ufs[i] = uf.make(null);
@@ -160,14 +160,14 @@ class GraphsTestUtils {
 
 	}
 
-	static <E> Graph<E> randTree(int n) {
+	static <E> Graph<E> randTree(int n, long seed) {
 		return new RandomGraphBuilder().n(n).m(n - 1).directed(false).doubleEdges(false).selfEdges(false).cycles(false)
-				.connected(true).build();
+				.connected(true).build(seed);
 	}
 
-	static <E> Graph<E> randForest(int n, int m) {
+	static <E> Graph<E> randForest(int n, int m, long seed) {
 		return new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(false).selfEdges(false).cycles(false)
-				.connected(false).build();
+				.connected(false).build(seed);
 	}
 
 	static void assignRandWeights(Graph<Double> g) {
@@ -201,13 +201,13 @@ class GraphsTestUtils {
 			e.val(rand.next());
 	}
 
-	static <E> Graph<E> randGraph(int n, int m) {
-		return randGraph(n, m, false);
+	static <E> Graph<E> randGraph(int n, int m, long seed) {
+		return randGraph(n, m, seed, false);
 	}
 
-	static <E> Graph<E> randGraph(int n, int m, boolean selfEdges) {
+	static <E> Graph<E> randGraph(int n, int m, long seed, boolean selfEdges) {
 		return new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(false).selfEdges(selfEdges).cycles(true)
-				.connected(false).build();
+				.connected(false).build(seed);
 	}
 
 	static Graph<Integer> createGraphFromAdjacencyMatrixWeightedInt(int[][] m, DirectedType directed) {

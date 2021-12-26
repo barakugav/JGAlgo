@@ -20,42 +20,120 @@ public class Graphs {
 		throw new InternalError();
 	}
 
+	@FunctionalInterface
+	public static interface BFSOperator<E> {
+
+		public boolean handleVertex(int v, Edge<E> e);
+
+	}
+
+	public static <E> void runBFS(Graph<E> g, int source, BFSOperator<E> op) {
+		runBFS(g, new int[] { source }, op);
+	}
+
+	public static <E> void runBFS(Graph<E> g, int[] sources, BFSOperator<E> op) {
+		int n = g.vertices();
+		boolean[] visited = new boolean[n];
+
+		int[] queue = new int[n];
+		int queueBegin = 0, queueEnd = 0;
+
+		for (int source : sources) {
+			visited[source] = true;
+			queue[queueEnd++] = source;
+			if (!op.handleVertex(source, null))
+				return;
+		}
+
+		while (queueBegin != queueEnd) {
+			int u = queue[queueBegin++];
+
+			for (Iterator<Edge<E>> it = g.edges(u); it.hasNext();) {
+				Edge<E> e = it.next();
+				int v = e.v();
+				if (visited[v])
+					continue;
+				visited[v] = true;
+				queue[queueEnd++] = v;
+
+				if (!op.handleVertex(v, e))
+					return;
+			}
+		}
+	}
+
+	@FunctionalInterface
+	public static interface DFSOperator<E> {
+
+		public boolean handleVertex(int v, List<Edge<E>> pathFromSource);
+
+	}
+
+	public static <E> void runDFS(Graph<E> g, int source, DFSOperator<E> op) {
+		int n = g.vertices();
+		boolean[] visited = new boolean[n];
+		@SuppressWarnings("unchecked")
+		Iterator<Edge<E>>[] edges = new Iterator[n];
+		List<Edge<E>> edgesFromSource = new ArrayList<>();
+
+		int depth = 0;
+
+		edges[depth] = g.edges(source);
+		visited[source] = true;
+		if (!op.handleVertex(source, edgesFromSource))
+			return;
+
+		while (true) {
+			Edge<E> edgeToChild = null;
+			while (edges[depth].hasNext()) {
+				Edge<E> e = edges[depth].next();
+				int v = e.v();
+				if (!visited[v]) {
+					edgeToChild = e;
+					break;
+				}
+			}
+			if (edgeToChild != null) {
+				int v = edgeToChild.v();
+				visited[v] = true;
+				edgesFromSource.add(edgeToChild);
+				edges[++depth] = g.edges(v);
+
+				if (!op.handleVertex(v, edgesFromSource))
+					return;
+			} else {
+				edges[depth] = null;
+				if (depth-- == 0)
+					break;
+				edgesFromSource.remove(edgesFromSource.size() - 1);
+			}
+		}
+	}
+
 	public static <E> List<Edge<E>> findPath(Graph<E> g, int u, int v) {
+		if (u == v)
+			return Collections.emptyList();
 		int n = g.vertices();
 
 		@SuppressWarnings("unchecked")
 		Edge<E>[] backtrack = new Edge[n];
 
-		int[] stack = new int[n];
-		stack[0] = u;
-		int stackSize = 1;
+		runBFS(g, u, (p, e) -> {
+			backtrack[p] = e;
+			return p != v;
+		});
 
-		while (stackSize-- > 0) {
-			int p = stack[stackSize];
+		if (backtrack[v] == null)
+			return null;
 
-			if (p == v) {
-				List<Edge<E>> path = new ArrayList<>();
-				for (; p != u;) {
-					Edge<E> e = backtrack[p];
-					path.add(e);
-					p = e.u();
-				}
-				Collections.reverse(path);
-				return path;
-			}
-
-			for (Iterator<Edge<E>> it = g.edges(p); it.hasNext();) {
-				Edge<E> e = it.next();
-				int w = e.v();
-				if (w == u || backtrack[w] != null)
-					continue;
-				backtrack[w] = e;
-				stack[stackSize++] = w;
-			}
+		List<Edge<E>> path = new ArrayList<>();
+		for (int p = v; p != u;) {
+			Edge<E> e = backtrack[p];
+			path.add(e);
+			p = e.u();
 		}
-
-		/* no path */
-		return null;
+		Collections.reverse(path);
+		return path;
 	}
 
 	public static <E> boolean isTree(Graph<E> g) {

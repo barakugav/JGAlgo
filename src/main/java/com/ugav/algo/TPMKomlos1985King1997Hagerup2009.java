@@ -2,6 +2,7 @@ package com.ugav.algo;
 
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 
 import com.ugav.algo.Graph.DirectedType;
 import com.ugav.algo.Graph.Edge;
@@ -92,67 +93,30 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 		@SuppressWarnings("unchecked")
 		Edge<Ref<E>>[][] res = new Edge[leavesNum][];
 
-		@SuppressWarnings("unchecked")
-		Edge<Ref<E>>[] edges = new Edge[n * 2];
-		@SuppressWarnings("unchecked")
-		Edge<Ref<E>>[] edgesToRoot = new Edge[leavesDepth];
+		Graphs.runDFS(t, root, (v, edgesFromRoot) -> {
+			if (edgesFromRoot.isEmpty())
+				return true;
+			int depth = edgesFromRoot.size();
+			Edge<Ref<E>> edgeToChild = edgesFromRoot.get(depth - 1);
+			int u = edgeToChild.u(); // parent
 
-		int[] edgesOffset = new int[n];
-		int[] edgesCount = new int[n];
-		int[] edgesIdx = new int[n];
+			a[v] = subseq(a[u], q[u], q[v]);
+			int j = binarySearch(a[v], edgeToChild.val().w, edgesFromRoot);
+			a[v] = repSuf(a[v], depth, j);
 
-		edgesOffset[0] = 0;
-		edgesCount[0] = t.getEdgesArr(root, edges, 0);
-		edgesIdx[0] = 0;
-
-		for (int depth = 0; depth >= 0;) {
-			// find next child from end of DFS path
-			Edge<Ref<E>> edgeToChild = null;
-			for (int i = edgesIdx[depth]; i < edgesCount[depth]; i++) {
-				Edge<Ref<E>> e = edges[edgesOffset[depth] + i];
-				if (e != edgeToParent[e.u()]) {
-					edgeToChild = edges[edgesOffset[depth] + i];
-					edgesIdx[depth] = i + 1;
-					break;
+			if (depth == leavesDepth) {
+				int qvsize = Integer.bitCount(q[v]);
+				@SuppressWarnings("unchecked")
+				Edge<Ref<E>>[] resv = new Edge[qvsize];
+				for (int i = 0; i < qvsize; i++) {
+					int b = getIthOneBit(q[v], i);
+					int s = Integer.numberOfTrailingZeros(successor(a[v], 1 << b));
+					resv[i] = edgesFromRoot.get(s - 1);
 				}
+				res[v] = resv;
 			}
-
-			if (edgeToChild != null) {
-				int u = edgeToChild.u(); // parent
-				int v = edgeToChild.v(); // child
-
-				a[v] = subseq(a[u], q[u], q[v]);
-				int j = binarySearch(a[v], edgeToChild.val().w, edgesToRoot);
-				a[v] = repSuf(a[v], depth + 1, j);
-
-				edgesToRoot[depth] = edgeToChild;
-				if (depth + 1 != leavesDepth) {
-					// add vertex to end of DFS path
-					depth++;
-					edgesOffset[depth] = edgesOffset[depth - 1] + edgesCount[depth - 1];
-					edgesCount[depth] = t.getEdgesArr(v, edges, edgesOffset[depth]);
-					edgesIdx[depth] = 0;
-				} else {
-					// TODO
-					int qvsize = Integer.bitCount(q[v]);
-					@SuppressWarnings("unchecked")
-					Edge<Ref<E>>[] resv = new Edge[qvsize];
-					for (int i = 0; i < qvsize; i++) {
-						int b = getIthOneBit(q[v], i);
-						int s = Integer.numberOfTrailingZeros(successor(a[v], 1 << b));
-						resv[i] = edgesToRoot[s - 1];
-					}
-					res[v] = resv;
-
-					edgesToRoot[depth] = null;
-				}
-			} else {
-				// return to previous vertex in DFS path
-				if (edgeToParent[depth] == null)
-					break;
-				depth--;
-			}
-		}
+			return true;
+		});
 		return res;
 	}
 
@@ -189,12 +153,12 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 		return successor(au, qv);
 	}
 
-	private static <E> int binarySearch(int av, double w, Edge<Ref<E>>[] edgesToRoot) {
+	private static <E> int binarySearch(int av, double w, List<Edge<Ref<E>>> edgesToRoot) {
 		// TODO
 		int avsize = Integer.bitCount(av);
 		for (int i = avsize - 1; i >= 0; i--) {
 			int avi = getIthOneBit(av, i);
-			if (edgesToRoot[avi - 1].val().w >= w)
+			if (edgesToRoot.get(avi - 1).val().w >= w)
 				return avi + 1;
 		}
 		return 0;
@@ -314,37 +278,14 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 		Edge<Ref<E>>[] edgeToParent = new Edge[n];
 		int[] depths = new int[n];
 
-		int[] layer = new int[n];
-		int[] layerNext = new int[n];
-		int layerSize = 0;
-
-		layer[layerSize++] = root;
-
-		for (int depth = 0; layerSize > 0; depth++) {
-			int layerSizeNext = 0;
-
-			for (int u; layerSize > 0;) {
-				u = layer[--layerSize];
-				depths[u] = depth;
-
-				Edge<Ref<E>> ep = edgeToParent[u];
-				int parent = ep != null ? ep.v() : -1;
-
-				for (Iterator<Edge<Ref<E>>> it = t.edges(u); it.hasNext();) {
-					Edge<Ref<E>> e = it.next();
-					int v = e.v();
-					if (v == parent)
-						continue;
-					edgeToParent[v] = e.twin();
-					layerNext[layerSizeNext++] = v;
-				}
+		Graphs.runBFS(t, root, (v, e) -> {
+			if (e != null) {
+				edgeToParent[v] = e.twin();
+				depths[v] = depths[e.u()] + 1;
 			}
+			return true;
+		});
 
-			int[] temp = layer;
-			layer = layerNext;
-			layerNext = temp;
-			layerSize = layerSizeNext;
-		}
 		return new Pair<>(edgeToParent, depths);
 	}
 

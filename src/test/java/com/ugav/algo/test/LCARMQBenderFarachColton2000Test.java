@@ -14,38 +14,20 @@ public class LCARMQBenderFarachColton2000Test {
 		int[][] queries = new int[queriesNum][3];
 
 		int n = g.vertices();
-
-		int[] layer = new int[n];
-		int[] layerNext = new int[n];
-		int layerLen = 0, layerNextLen;
 		int[] parent = new int[n];
-		int[] edges = new int[n];
 		int[] depth = new int[n];
 
-		/* perform BFS to explore the tree and calculate depth of every vertex */
-		layer[layerLen++] = r;
-		parent[r] = -1;
-		for (int d = 0; layerLen > 0; d++) {
-			layerNextLen = 0;
-
-			for (int i = 0; i < layerLen; i++) {
-				int p = layer[i];
-				depth[p] = d;
-
-				int edgesCount = g.getEdgesArrVs(p, edges, 0);
-				for (int e = 0; e < edgesCount; e++) {
-					int q = edges[e];
-					if (q == parent[p])
-						continue;
-					layerNext[layerNextLen++] = q;
-					parent[q] = p;
-				}
+		Graphs.runBFS(g, r, (v, e) -> {
+			if (e == null) {
+				parent[v] = -1;
+				depth[v] = 0;
+			} else {
+				int p = e.u();
+				parent[v] = p;
+				depth[v] = depth[p] + 1;
 			}
-			int[] temp = layer;
-			layer = layerNext;
-			layerNext = temp;
-			layerLen = layerNextLen;
-		}
+			return true;
+		});
 
 		for (int query = 0; query < queriesNum; query++) {
 			int u = rand.nextInt(n);
@@ -117,7 +99,7 @@ public class LCARMQBenderFarachColton2000Test {
 			int m = phases[phase][2];
 
 			for (int i = 0; i < repeat; i++) {
-				Graph<Void> g = GraphsTestUtils.randTree(n);
+				Graph<Void> g = GraphsTestUtils.randTree(n, Utils.randSeed());
 				int[][] queries = randLCAQueries(g, 0, m);
 
 				if (!testLCA(g, LCARMQBenderFarachColton2000.getInstace(), queries))
