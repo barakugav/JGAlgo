@@ -25,8 +25,8 @@ class GraphsTestUtils {
 		private final int maxWeight;
 		private final Set<Integer> usedWeights;
 
-		RandomUnique(int minWeight, int maxWeight) {
-			rand = new Random();
+		RandomUnique(int minWeight, int maxWeight, long seed) {
+			rand = new Random(seed ^ 0x158cfc5e6f981214L);
 			this.minWeight = minWeight;
 			this.maxWeight = maxWeight;
 			usedWeights = new HashSet<>();
@@ -103,7 +103,7 @@ class GraphsTestUtils {
 				throw new IllegalStateException();
 			if (!cycles && m >= n)
 				throw new IllegalStateException();
-			if (!doubleEdges && m >= n * n / 3)
+			if (!doubleEdges && m >= ((long) n) * n / 3)
 				throw new IllegalArgumentException("too much edges for random sampling");
 
 			Graph<E> g = new GraphArray<>(directed ? DirectedType.Directed : DirectedType.Undirected, n);
@@ -112,7 +112,7 @@ class GraphsTestUtils {
 			@SuppressWarnings("unchecked")
 			UnionFind.Element<Void>[] ufs = new UnionFind.Element[n];
 			int componentsNum = n;
-			Random rand = new Random(seed);
+			Random rand = new Random(seed ^ 0x2ec2160c6a83d501L);
 
 			for (int i = 0; i < n; i++)
 				ufs[i] = uf.make(null);
@@ -170,33 +170,33 @@ class GraphsTestUtils {
 				.connected(false).build(seed);
 	}
 
-	static void assignRandWeights(Graph<Double> g) {
-		assignRandWeights(g, 1.0, 100.0);
+	static void assignRandWeights(Graph<Double> g, long seed) {
+		assignRandWeights(g, 1.0, 100.0, seed);
 	}
 
-	static void assignRandWeights(Graph<Double> g, double minWeight, double maxWeight) {
+	static void assignRandWeights(Graph<Double> g, double minWeight, double maxWeight, long seed) {
 		if (minWeight >= maxWeight)
 			throw new IllegalArgumentException();
 
-		Random rand = new Random();
+		Random rand = new Random(seed ^ 0xdac24eb67dbf6abfL);
 		for (Edge<Double> e : g.edges())
 			e.val(rand.nextDouble(minWeight, maxWeight));
 	}
 
-	static void assignRandWeightsInt(Graph<Integer> g) {
+	static void assignRandWeightsInt(Graph<Integer> g, long seed) {
 		int m = g.edges().size();
 		int minWeight = 1;
 		int maxWeight = m < 50 ? 100 : m * 2 + 2;
-		assignRandWeightsInt(g, minWeight, maxWeight);
+		assignRandWeightsInt(g, minWeight, maxWeight, seed);
 	}
 
-	static void assignRandWeightsInt(Graph<Integer> g, int minWeight, int maxWeight) {
+	static void assignRandWeightsInt(Graph<Integer> g, int minWeight, int maxWeight, long seed) {
 		if (minWeight >= maxWeight)
 			throw new IllegalArgumentException();
 		if (maxWeight - minWeight < g.edges().size() / 2)
 			throw new IllegalArgumentException("weight range is too small for unique weights");
 
-		RandomUnique rand = new RandomUnique(minWeight, maxWeight);
+		RandomUnique rand = new RandomUnique(minWeight, maxWeight, seed);
 		for (Edge<Integer> e : g.edges())
 			e.val(rand.next());
 	}

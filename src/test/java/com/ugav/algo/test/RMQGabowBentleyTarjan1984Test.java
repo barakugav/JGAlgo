@@ -19,9 +19,10 @@ public class RMQGabowBentleyTarjan1984Test {
 
 	@Test
 	public static boolean onlyInterBlock65536() {
-		int a[] = Utils.randArray(65536, 0, 64);
+		long seed = Utils.randSeed();
+		int a[] = Utils.randArray(65536, 0, 64, seed);
 		int queries[][] = new int[4096][];
-		RMQTestUtils.randRMQQueries(a, queries, 4);
+		RMQTestUtils.randRMQQueries(a, queries, 4, seed);
 
 		return RMQTestUtils.testRMQ(RMQGabowBentleyTarjan1984.getInstace(), a, queries);
 	}

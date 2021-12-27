@@ -37,13 +37,9 @@ class MSTTestUtils {
 	}
 
 	static boolean testRandGraph(MST algo, int n, int m) {
-		Graph<Integer> g = GraphsTestUtils.randGraph(n, m, Utils.randSeed());
-		GraphsTestUtils.assignRandWeightsInt(g);
-
-//		int[][] matrix = { { 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 50, 15, 0, 73, 20, 70 }, { 0, 50, 0, 0, 30, 43, 96, 0 },
-//				{ 0, 15, 0, 0, 78, 35, 0, 65 }, { 0, 0, 30, 78, 0, 21, 5, 77 }, { 0, 73, 43, 35, 21, 0, 62, 0 },
-//				{ 0, 20, 96, 0, 5, 62, 0, 68 }, { 0, 70, 0, 65, 77, 0, 68, 0 } };
-//		g = GraphsTestUtils.createGraphFromAdjacencyMatrixWeightedInt(matrix);
+		long seed = Utils.randSeed();
+		Graph<Integer> g = GraphsTestUtils.randGraph(n, m, seed);
+		GraphsTestUtils.assignRandWeightsInt(g, seed);
 
 		WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
 		return testMST(g, w, algo);

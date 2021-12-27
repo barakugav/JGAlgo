@@ -6,10 +6,11 @@ public class RMQPlusMinusOneBenderFarachColton2000Test {
 
 	@Test
 	public static boolean regular() {
+		long seed = Utils.randSeed();
 		int a[] = new int[128];
 		int queries[][] = new int[64][];
-		RMQTestUtils.randRMQDataPlusMinusOne(a);
-		RMQTestUtils.randRMQQueries(a, queries, a.length);
+		RMQTestUtils.randRMQDataPlusMinusOne(a, seed);
+		RMQTestUtils.randRMQQueries(a, queries, a.length, seed);
 
 		return RMQTestUtils.testRMQ(RMQPlusMinusOneBenderFarachColton2000.getInstace(), a, queries);
 	}
@@ -17,10 +18,11 @@ public class RMQPlusMinusOneBenderFarachColton2000Test {
 	@Test
 	public static boolean regularNRange64to256() {
 		for (int n = 64; n <= 256; n++) {
+			long seed = Utils.randSeed();
 			int a[] = new int[n];
 			int queries[][] = new int[64][];
-			RMQTestUtils.randRMQDataPlusMinusOne(a);
-			RMQTestUtils.randRMQQueries(a, queries, a.length);
+			RMQTestUtils.randRMQDataPlusMinusOne(a, seed);
+			RMQTestUtils.randRMQQueries(a, queries, a.length, seed);
 
 			if (RMQTestUtils.testRMQ(RMQPlusMinusOneBenderFarachColton2000.getInstace(), a, queries) != true)
 				return false;
@@ -30,10 +32,11 @@ public class RMQPlusMinusOneBenderFarachColton2000Test {
 
 	@Test
 	public static boolean onlyInterBlock() {
+		long seed = Utils.randSeed();
 		int a[] = new int[128];
 		int queries[][] = new int[64][];
-		RMQTestUtils.randRMQDataPlusMinusOne(a);
-		RMQTestUtils.randRMQQueries(a, queries, 4);
+		RMQTestUtils.randRMQDataPlusMinusOne(a, seed);
+		RMQTestUtils.randRMQQueries(a, queries, 4, seed);
 
 		return RMQTestUtils.testRMQ(RMQPlusMinusOneBenderFarachColton2000.getInstace(), a, queries);
 	}

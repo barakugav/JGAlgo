@@ -109,12 +109,12 @@ class HeapTestUtils {
 		}
 	};
 
-	static HeapOp[] randHeapOps(Heap<Integer> heap, int[] a, int m) {
+	static HeapOp[] randHeapOps(Heap<Integer> heap, int[] a, int m, long seed) {
 		RandHeapOpsArgs args = new RandHeapOpsArgs();
 		args.heap = heap;
 		args.a = a;
 		args.m = m;
-		return randHeapOps(args);
+		return randHeapOps(args, seed);
 	}
 
 	private static class RandHeapOpsArgs {
@@ -133,17 +133,17 @@ class HeapTestUtils {
 		}
 	}
 
-	static HeapOp[] randHeapOps(RandHeapOpsArgs args) {
+	static HeapOp[] randHeapOps(RandHeapOpsArgs args, long seed) {
 		Heap<Integer> heap = args.heap;
 		int[] a = args.a;
 		int m = args.m;
 		int insertFirst = args.insertFirst;
 		boolean decreaseKey = args.decreaseKey;
 
-		Random rand = new Random();
+		Random rand = new Random(seed ^ 0x6f74cef773cb5633L);
 		HeapOp[] ops = new HeapOp[m];
 
-		int[] elmsToInsertIds = Utils.randPermutation(a.length);
+		int[] elmsToInsertIds = Utils.randPermutation(a.length, seed);
 		int elmsToInsertCursor = 0;
 
 		/* init inserted elms with current heap elements */
@@ -215,30 +215,24 @@ class HeapTestUtils {
 	}
 
 	static boolean testRandOps(Supplier<? extends Heap<Integer>> heapBuilder) {
-//		Heap<Integer> heap = heapBuilder.get();
-//		int[] a = { 8550, 12335, 7429, 59755, 26173, 18733, 54000, 47724, 25220, 5457, 16011, 61501, 9803, 47463, 27927,
-//				28759 };
-//		HeapOp[] ops = parseOpsStr(
-//				"{I(59755), EM()=59755, I(27927), I(61501), FM()=27927, FM()=27927, FM()=27927, I(8550), R(27927), R(8550), R(61501), I(47724), I(16011), R(47724), EM()=16011, I(47463)}");
-//		if (!testHeap(heap, a, ops, true))
-//			return false;
-
 		int[][] phases = { { 128, 16, 16 }, { 64, 64, 64 }, { 8, 512, 512 }, { 1, 4096, 4096 } };
 		for (int phase = 0; phase < phases.length; phase++) {
 			int repeat = phases[phase][0];
 			int n = phases[phase][1];
 			int m = phases[phase][2];
-			for (int i = 0; i < repeat; i++)
-				if (!testRandOps(heapBuilder, n, m))
+			for (int i = 0; i < repeat; i++) {
+				long seed = Utils.randSeed();
+				if (!testRandOps(heapBuilder, n, m, seed))
 					return false;
+			}
 		}
 		return true;
 	}
 
-	static boolean testRandOps(Supplier<? extends Heap<Integer>> heapBuilder, int n, int m) {
+	static boolean testRandOps(Supplier<? extends Heap<Integer>> heapBuilder, int n, int m, long seed) {
 		Heap<Integer> heap = heapBuilder.get();
-		int[] a = Utils.randArray(n, 0, 65536);
-		HeapOp[] ops = randHeapOps(heap, a, m);
+		int[] a = Utils.randArray(n, 0, 65536, seed);
+		HeapOp[] ops = randHeapOps(heap, a, m, seed);
 
 		return testHeap(heap, a, ops, true);
 	}
@@ -252,15 +246,16 @@ class HeapTestUtils {
 			int m = n;
 
 			for (int i = 0; i < repeat; i++) {
+				long seed = Utils.randSeed();
 				Heap<Integer> heap = heapBuilder.get();
-				int[] a = Utils.randArray(n, 0, 65536);
+				int[] a = Utils.randArray(n, 0, 65536, seed);
 
 				RandHeapOpsArgs args = new RandHeapOpsArgs();
 				args.heap = heap;
 				args.a = a;
 				args.m = m;
 				args.insertFirst = m / 2;
-				HeapOp[] ops = randHeapOps(args);
+				HeapOp[] ops = randHeapOps(args, seed);
 
 				if (!testHeap(heap, a, ops, true))
 					return false;
@@ -270,6 +265,9 @@ class HeapTestUtils {
 	}
 
 	static boolean testMeld(Supplier<? extends Heap<Integer>> heapBuilder) {
+		long seed = Utils.randSeed();
+		Random seedGenerator = new Random(seed);
+
 		int hCount = 256;
 		@SuppressWarnings("unchecked")
 		Heap<Integer>[] hs = new Heap[hCount];
@@ -279,20 +277,20 @@ class HeapTestUtils {
 		for (int i = 0; i < hCount; i++) {
 			Heap<Integer> h = hs[i] = heapBuilder.get();
 
-			int[] a = Utils.randArray(16, 0, 65536);
+			int[] a = Utils.randArray(16, 0, 65536, seedGenerator.nextLong());
 			RandHeapOpsArgs args = new RandHeapOpsArgs();
 			args.heap = h;
 			args.a = a;
 			args.m = 16;
 			args.insertFirst = 8;
-			HeapOp[] ops = randHeapOps(args);
+			HeapOp[] ops = randHeapOps(args, seedGenerator.nextLong());
 			if (!testHeap(h, a, ops, false))
 				return false;
 		}
 
 		while (hCount > 1) {
 			/* meld half of the heaps */
-			int[] meldOrder = Utils.randPermutation(hCount & ~1);
+			int[] meldOrder = Utils.randPermutation(hCount & ~1, seedGenerator.nextLong());
 			for (int i = 0; i < meldOrder.length / 2; i++) {
 				int h1Idx = meldOrder[i * 2], h2Idx = meldOrder[i * 2 + 1];
 				Heap<Integer> h1 = hs[h1Idx], h2 = hs[h2Idx];
@@ -302,13 +300,13 @@ class HeapTestUtils {
 
 				/* make some OPs on the unioned heap */
 				int opsNum = 4096 / hCount;
-				int[] a = Utils.randArray(opsNum, 0, 65536);
+				int[] a = Utils.randArray(opsNum, 0, 65536, seedGenerator.nextLong());
 				RandHeapOpsArgs args = new RandHeapOpsArgs();
 				args.heap = h1;
 				args.a = a;
 				args.m = opsNum;
 				args.insertFirst = opsNum / 2;
-				HeapOp[] ops = randHeapOps(args);
+				HeapOp[] ops = randHeapOps(args, seedGenerator.nextLong());
 				if (!testHeap(h1, a, ops, false))
 					return false;
 			}
@@ -336,15 +334,16 @@ class HeapTestUtils {
 			int m = n;
 
 			for (int i = 0; i < repeat; i++) {
+				long seed = Utils.randSeed();
 				Heap<Integer> heap = heapBuilder.get();
-				int[] a = Utils.randArray(n, 0, 65536);
+				int[] a = Utils.randArray(n, 0, 65536, seed);
 
 				RandHeapOpsArgs args = new RandHeapOpsArgs();
 				args.heap = heap;
 				args.a = a;
 				args.m = m;
 				args.decreaseKey = true;
-				HeapOp[] ops = randHeapOps(args);
+				HeapOp[] ops = randHeapOps(args, seed);
 
 				if (!testHeap(heap, a, ops, true))
 					return false;

@@ -9,8 +9,8 @@ import com.ugav.algo.LCARMQBenderFarachColton2000;
 
 public class LCARMQBenderFarachColton2000Test {
 
-	private static int[][] randLCAQueries(Graph<Void> g, int r, int queriesNum) {
-		Random rand = new Random();
+	private static int[][] randLCAQueries(Graph<Void> g, int r, int queriesNum, long seed) {
+		Random rand = new Random(seed ^ 0x10b21fa76db8e044L);
 		int[][] queries = new int[queriesNum][3];
 
 		int n = g.vertices();
@@ -99,8 +99,9 @@ public class LCARMQBenderFarachColton2000Test {
 			int m = phases[phase][2];
 
 			for (int i = 0; i < repeat; i++) {
-				Graph<Void> g = GraphsTestUtils.randTree(n, Utils.randSeed());
-				int[][] queries = randLCAQueries(g, 0, m);
+				long seed = Utils.randSeed();
+				Graph<Void> g = GraphsTestUtils.randTree(n, seed);
+				int[][] queries = randLCAQueries(g, 0, m, seed);
 
 				if (!testLCA(g, LCARMQBenderFarachColton2000.getInstace(), queries))
 					return false;

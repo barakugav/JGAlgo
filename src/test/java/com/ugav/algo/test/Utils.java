@@ -24,23 +24,23 @@ public class Utils {
 		}
 	}
 
-	static int[] randArray(int n) {
-		return randArray(n, 0, Integer.MAX_VALUE);
+	static int[] randArray(int n, long seed) {
+		return randArray(n, 0, Integer.MAX_VALUE, seed);
 	}
 
-	static int[] randArray(int n, int from, int to) {
-		return randArray(new int[n], from, to);
+	static int[] randArray(int n, int from, int to, long seed) {
+		return randArray(new int[n], from, to, seed);
 	}
 
-	static int[] randArray(int[] a, int from, int to) {
-		Random rand = new Random();
+	static int[] randArray(int[] a, int from, int to, long seed) {
+		Random rand = new Random(seed ^ 0x64bf2cc6dd4c257eL);
 		for (int i = 0; i < a.length; i++)
 			a[i] = rand.nextInt(to - from) + from;
 		return a;
 	}
 
-	static int[] randPermutation(int n) {
-		Random rand = new Random();
+	static int[] randPermutation(int n, long seed) {
+		Random rand = new Random(seed ^ 0xb281dc30ae96a316L);
 
 		boolean[] possibleValuesBitmap = new boolean[n];
 		Arrays.fill(possibleValuesBitmap, true);

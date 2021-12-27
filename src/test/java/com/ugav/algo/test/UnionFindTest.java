@@ -30,8 +30,8 @@ public class UnionFindTest {
 		}
 	}
 
-	private static void randUnionFindOps(int n, UnionFindOp[] ops) {
-		Random rand = new Random();
+	private static void randUnionFindOps(int n, UnionFindOp[] ops, long seed) {
+		Random rand = new Random(seed ^ 0x5ccbdb0409c5d81eL);
 
 		for (int m = 0; m < ops.length; m++) {
 			switch (rand.nextInt(2)) {
@@ -52,8 +52,9 @@ public class UnionFindTest {
 	}
 
 	private static boolean testUnionFind(UnionFind uf, int n, int m) {
+		long seed = Utils.randSeed();
 		UnionFindOp[] ops = new UnionFindOp[m];
-		randUnionFindOps(n, ops);
+		randUnionFindOps(n, ops, seed);
 
 		return unionFindOpsValidate(uf, n, ops);
 	}
