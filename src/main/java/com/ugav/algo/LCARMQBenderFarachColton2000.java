@@ -6,6 +6,17 @@ import com.ugav.algo.RMQ.IntArrayComparator;
 
 public class LCARMQBenderFarachColton2000 implements LCA {
 
+	/*
+	 * This implementation of static LCA (Lowest common ancestor) perform a
+	 * preprocessing of O(E+V) and later answer queries of LCA queries in O(1).
+	 *
+	 * This is done by traversing the tree with the Euler tour, and using RMQ on the
+	 * depths of the tour. This RMQ is a special case of the general RMQ, as the
+	 * difference between two consecutive elements is always +1/-1, and therefore
+	 * allow more efficient implementation using
+	 * RMQPlusMinusOneBenderFarachColton2000.
+	 */
+
 	private LCARMQBenderFarachColton2000() {
 	}
 
@@ -16,8 +27,11 @@ public class LCARMQBenderFarachColton2000 implements LCA {
 	}
 
 	@Override
-	public <E> Result preprocessLCA(Graph<E> g, int r) {
-		int n = g.vertices();
+	public <E> Result preprocessLCA(Graph<E> t, int r) {
+		if (!Graphs.isTree(t, r))
+			throw new IllegalArgumentException();
+
+		int n = t.vertices();
 		int[] depths = new int[n * 2];
 		int[] vs = new int[n * 2];
 		int[] edges = new int[n * 2];
@@ -30,7 +44,7 @@ public class LCARMQBenderFarachColton2000 implements LCA {
 
 		parent[0] = -1;
 		edgesOffset[0] = 0;
-		edgesCount[0] = g.getEdgesArrVs(r, edges, 0);
+		edgesCount[0] = t.getEdgesArrVs(r, edges, 0);
 		edgesIdx[0] = 0;
 
 		int aLen = 0;
@@ -51,7 +65,7 @@ public class LCARMQBenderFarachColton2000 implements LCA {
 				s++;
 				parent[s] = v;
 				edgesOffset[s] = edgesOffset[s - 1] + edgesCount[s - 1];
-				edgesCount[s] = g.getEdgesArrVs(child, edges, edgesOffset[s]);
+				edgesCount[s] = t.getEdgesArrVs(child, edges, edgesOffset[s]);
 				edgesIdx[s] = 0;
 				v = child;
 			} else {
@@ -71,7 +85,8 @@ public class LCARMQBenderFarachColton2000 implements LCA {
 				vToDepthsIdx[v] = i;
 		}
 
-		RMQ.Result rmq = RMQPlusMinusOneBenderFarachColton2000.getInstace().preprocessRMQ(new IntArrayComparator(depths), depths.length);
+		RMQ.Result rmq = RMQPlusMinusOneBenderFarachColton2000.getInstace()
+				.preprocessRMQ(new IntArrayComparator(depths), depths.length);
 		return new DataStructure(vs, vToDepthsIdx, rmq);
 	}
 
