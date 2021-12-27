@@ -3,7 +3,7 @@ package com.ugav.algo;
 public interface LCA {
 
 	/**
-	 * Perform a static preprocessing of a tree to future LCA (Lowest common
+	 * Perform a static preprocessing of a tree for future LCA (Lowest common
 	 * ancestor) queries
 	 *
 	 * @param t a tree

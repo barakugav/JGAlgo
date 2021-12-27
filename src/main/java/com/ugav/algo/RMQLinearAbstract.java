@@ -4,6 +4,22 @@ import com.ugav.algo.RMQPowerOf2Table.PowerOf2Table;
 
 abstract class RMQLinearAbstract implements RMQ {
 
+	/*
+	 * This implementation divides the elements sequence into blocks, for each block
+	 * calculate the minimum in the block and the minimum within the block from each
+	 * index to the borders of the block. In addition, we use the O(xlogx)
+	 * implementation on the minimum values from each block (which we have less than
+	 * n).
+	 *
+	 * To answer a query, if the two indices are not in the same block, we check the
+	 * minimum from i to the end of the block, from j to the end of the block, and
+	 * the minimum along all the blocks between them. If the two elements are not in
+	 * the same block we have no implementation, and the implementations that
+	 * extends this class will implement it in different methods.
+	 *
+	 * O(n) preprocessing time, O(n) space, O(1) query.
+	 */
+
 	void preprocessRMQ(DataStructure ds) {
 		RMQ.Comparator c = ds.c;
 

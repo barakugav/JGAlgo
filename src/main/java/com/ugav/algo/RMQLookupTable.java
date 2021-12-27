@@ -4,6 +4,12 @@ import java.util.Objects;
 
 public class RMQLookupTable implements RMQ {
 
+	/*
+	 * Naive implementation of RMQ, lookup table for each two indices.
+	 *
+	 * O(n^2) preprocessing time, O(n^2) space, O(1) query.
+	 */
+
 	private RMQLookupTable() {
 	}
 

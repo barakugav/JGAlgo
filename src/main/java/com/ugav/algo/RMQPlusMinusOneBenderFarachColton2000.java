@@ -6,6 +6,18 @@ import java.util.Objects;
 
 public class RMQPlusMinusOneBenderFarachColton2000 extends RMQLinearAbstract {
 
+	/*
+	 * Extends the abstract linear implementation of RMQ and solves the inner block
+	 * query by calculating in advance all the possible blocks, and creating a naive
+	 * lookup table for each one of them. This is only possible because the
+	 * difference between each consecutive elements is +1/-1.
+	 *
+	 * We define the block size to be logn/2 and therefore there are 2^blockSize
+	 * possible different blocks, and the preprocessing time is still O(n).
+	 *
+	 * O(n) preprocessing time, O(n) space, O(1) query.
+	 */
+
 	private RMQPlusMinusOneBenderFarachColton2000() {
 	}
 
@@ -21,7 +33,8 @@ public class RMQPlusMinusOneBenderFarachColton2000 extends RMQLinearAbstract {
 			throw new IllegalArgumentException();
 		Objects.requireNonNull(c);
 
-		RMQPlusMinusOneBenderFarachColton2000.DataStructure ds = new RMQPlusMinusOneBenderFarachColton2000.DataStructure(n, c);
+		RMQPlusMinusOneBenderFarachColton2000.DataStructure ds = new RMQPlusMinusOneBenderFarachColton2000.DataStructure(
+				n, c);
 
 		preprocessRMQ(ds);
 

@@ -6,6 +6,21 @@ import java.util.Objects;
 
 public class RMQGabowBentleyTarjan1984 extends RMQLinearAbstract {
 
+	/*
+	 * Extends the abstract linear implementation of RMQ and solves the inner block
+	 * query by calculating in advance all the possible blocks, and creating a naive
+	 * lookup table for each one of them.
+	 *
+	 * Each block is essentially equivalent to another if the Cartesian tree of it
+	 * is the same. The number of Cartesian trees of size n the Catalan number n,
+	 * which is bounded by 4^n.
+	 *
+	 * We define the block size to be logn/4, and the preprocessing time is still
+	 * O(n).
+	 *
+	 * O(n) preprocessing time, O(n) space, O(1) query.
+	 */
+
 	private RMQGabowBentleyTarjan1984() {
 	}
 

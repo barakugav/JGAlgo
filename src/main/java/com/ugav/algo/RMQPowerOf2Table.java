@@ -4,6 +4,14 @@ import java.util.Objects;
 
 public class RMQPowerOf2Table implements RMQ {
 
+	/*
+	 * During preprocessing create a table with log(n) rows and n columns, in each
+	 * cell [i][j] store the value min_in_range[j, j + 2^i]. This allows a query in
+	 * O(1) by looking at the correct indices.
+	 *
+	 * O(nlogn) preprocessing time, O(nlogn) space, O(1) query.
+	 */
+
 	private RMQPowerOf2Table() {
 	}
 
