@@ -23,10 +23,25 @@ public class Graphs {
 	@FunctionalInterface
 	public static interface BFSOperator<E> {
 
+		/**
+		 * Perform some operation on a vertex during a BFS traversy
+		 *
+		 * @param v a vertex
+		 * @param e the edge on which the BFS algorithm reached the vertex. might be
+		 *          null for the source vertices
+		 * @return true if the BFS should continue
+		 */
 		public boolean handleVertex(int v, Edge<E> e);
 
 	}
 
+	/**
+	 * Perform a BFS traversy on a graph
+	 *
+	 * @param g      a graph
+	 * @param source s source vertex
+	 * @param op     user operation to operate on the reachable vertices
+	 */
 	public static <E> void runBFS(Graph<E> g, int source, BFSOperator<E> op) {
 		runBFS(g, new int[] { source }, op);
 	}
@@ -65,10 +80,25 @@ public class Graphs {
 	@FunctionalInterface
 	public static interface DFSOperator<E> {
 
+		/**
+		 * Perform some operation on a vertex during a DFS traversy
+		 *
+		 * @param v              a vertex
+		 * @param pathFromSource a list of the edges from the source to the current
+		 *                       vertex
+		 * @return true if the DFS should continue
+		 */
 		public boolean handleVertex(int v, List<Edge<E>> pathFromSource);
 
 	}
 
+	/**
+	 * Perform a DFS traversy on a graph
+	 *
+	 * @param g      a graph
+	 * @param source s source vertex
+	 * @param op     user operation to operate on the reachable vertices
+	 */
 	public static <E> void runDFS(Graph<E> g, int source, DFSOperator<E> op) {
 		int n = g.vertices();
 		boolean[] visited = new boolean[n];
@@ -110,6 +140,18 @@ public class Graphs {
 		}
 	}
 
+	/**
+	 * Find a valid path from u to v
+	 *
+	 * This function uses BFS, which will result in the shortest path in the number
+	 * of edges
+	 *
+	 * @param g a graph
+	 * @param u source vertex
+	 * @param v target vertex
+	 * @return list of edges that represent a valid path from u to v, null if path
+	 *         not found
+	 */
 	public static <E> List<Edge<E>> findPath(Graph<E> g, int u, int v) {
 		if (u == v)
 			return Collections.emptyList();
@@ -181,6 +223,16 @@ public class Graphs {
 		return visitedCount == n;
 	}
 
+	/**
+	 * Find all connectivity components in the graph
+	 *
+	 * The connectivity components (CC) are groups of vertices where it's possible
+	 * to reach each one from one another.
+	 *
+	 * @param g a graph
+	 * @return ([vertex]->[CC], [CC]->[size])
+	 * @throws IllegalArgumentException if the graph is directed
+	 */
 	static <E> Pair<int[], int[]> findConnectivityComponents(Graph<E> g) {
 		if (g.isDirected())
 			throw new IllegalArgumentException("only undirected graphs are supported");
