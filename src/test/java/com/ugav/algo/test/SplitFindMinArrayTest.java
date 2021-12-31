@@ -24,23 +24,7 @@ public class SplitFindMinArrayTest {
 	}
 
 	private static boolean testSplitFind(SplitFind algo, int n, int m) {
-		long seed = Utils.randSeed();
-
-		RuntimeException e = null;
-		try {
-			if (testSplitFind(algo, n, m, seed))
-				return true;
-		} catch (RuntimeException e1) {
-			e = e1;
-		}
-		TestUtils.printTestStr("Failed on seed " + seed + "\n");
-		if (e != null)
-			throw e;
-		return false;
-	}
-
-	private static boolean testSplitFind(SplitFind algo, int n, int m, long seed) {
-		Random rand = new Random(seed);
+		Random rand = new Random(TestUtils.nextRandSeed());
 
 		List<Integer> values = new ArrayList<>(n);
 		for (int i = 0; i < n; i++)
@@ -97,23 +81,7 @@ public class SplitFindMinArrayTest {
 	}
 
 	private static boolean testSplitFindMin(SplitFindMin algo, int n, int m) {
-		long seed = Utils.randSeed();
-
-		RuntimeException e = null;
-		try {
-			if (testSplitFindMin(algo, n, m, seed))
-				return true;
-		} catch (RuntimeException e1) {
-			e = e1;
-		}
-		TestUtils.printTestStr("Failed on seed " + seed + "\n");
-		if (e != null)
-			throw e;
-		return false;
-	}
-
-	private static boolean testSplitFindMin(SplitFindMin algo, int n, int m, long seed) {
-		Random rand = new Random(seed);
+		Random rand = new Random(TestUtils.nextRandSeed());
 
 		List<Integer> values = new ArrayList<>(n);
 		List<Double> keys = new ArrayList<>(n);

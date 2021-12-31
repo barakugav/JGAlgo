@@ -9,8 +9,8 @@ import com.ugav.algo.LCARMQBenderFarachColton2000;
 
 public class LCARMQBenderFarachColton2000Test {
 
-	private static int[][] randLCAQueries(Graph<Void> g, int r, int queriesNum, long seed) {
-		Random rand = new Random(seed ^ 0x10b21fa76db8e044L);
+	private static int[][] randLCAQueries(Graph<Void> g, int r, int queriesNum) {
+		Random rand = new Random(TestUtils.nextRandSeed());
 		int[][] queries = new int[queriesNum][3];
 
 		int n = g.vertices();
@@ -59,7 +59,7 @@ public class LCARMQBenderFarachColton2000Test {
 		return queries;
 	}
 
-	private static boolean testLCA0(Graph<Void> g, LCA lca, int[][] queries) {
+	private static boolean testLCA(Graph<Void> g, LCA lca, int[][] queries) {
 		LCA.Result result = lca.preprocessLCA(g, 0);
 
 		for (int[] query : queries) {
@@ -75,20 +75,6 @@ public class LCARMQBenderFarachColton2000Test {
 		return true;
 	}
 
-	private static boolean testLCA(Graph<Void> g, LCA lca, int[][] queries) {
-		RuntimeException e = null;
-		try {
-			if (testLCA0(g, lca, queries))
-				return true;
-		} catch (RuntimeException e1) {
-			e = e1;
-		}
-		TestUtils.printTestStr(Graphs.formatAdjacencyMatrix(g));
-		if (e != null)
-			throw e;
-		return false;
-	}
-
 	@Test
 	public static boolean randTrees() {
 		int[][] phases = { { 128, 16, 16 }, { 64, 64, 64 }, { 8, 512, 512 }, { 1, 4096, 4096 } };
@@ -99,9 +85,8 @@ public class LCARMQBenderFarachColton2000Test {
 			int m = phases[phase][2];
 
 			for (int i = 0; i < repeat; i++) {
-				long seed = Utils.randSeed();
-				Graph<Void> g = GraphsTestUtils.randTree(n, seed);
-				int[][] queries = randLCAQueries(g, 0, m, seed);
+				Graph<Void> g = GraphsTestUtils.randTree(n);
+				int[][] queries = randLCAQueries(g, 0, m);
 
 				if (!testLCA(g, LCARMQBenderFarachColton2000.getInstace(), queries))
 					return false;

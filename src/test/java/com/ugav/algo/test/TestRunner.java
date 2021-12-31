@@ -16,29 +16,37 @@ public class TestRunner {
 		runTests();
 	}
 
+	private static boolean runTest(TestObj test) {
+		String testName = test.getTestName();
+		TestUtils.initTestRand(testName);
+		long t0Test = System.currentTimeMillis();
+		boolean passed;
+		try {
+			passed = test.invoke();
+		} catch (Throwable e) {
+			e.printStackTrace();
+			if (TestUtils.isTestRandUsed(testName))
+				System.out.println(test.getTestPrefix() + " seed used: " + TestUtils.getTestRandBaseSeed(testName));
+			passed = false;
+		}
+		TestUtils.finalizeTestRand(testName);
+
+		long runTime = System.currentTimeMillis() - t0Test;
+		int runTimeSec = (int) (runTime / 1000);
+		int runTimeCentisec = (int) (runTime / 10) % 100;
+		System.out.println(String.format("[%02d:%02d]", runTimeSec, runTimeCentisec) + test.getTestPrefix() + " "
+				+ (passed ? "passed" : "failure!"));
+		return passed;
+	}
+
 	public static boolean runTests() {
 		Collection<TestObj> tests = getTests();
 
 		boolean totalPassed = true;
 		long t0Total = System.currentTimeMillis();
 
-		for (TestObj test : tests) {
-			long t0Test = System.currentTimeMillis();
-			boolean passed;
-			try {
-				passed = test.invoke();
-			} catch (Throwable e) {
-				e.printStackTrace();
-				passed = false;
-			}
-			long runTime = System.currentTimeMillis() - t0Test;
-			int runTimeSec = (int) (runTime / 1000);
-			int runTimeCentisec = (int) (runTime / 10) % 100;
-			System.out.println(String.format("[%02d:%02d]", runTimeSec, runTimeCentisec) + test.getTestPrefix() + " "
-					+ (passed ? "passed" : "failure!"));
-
-			totalPassed &= passed;
-		}
+		for (TestObj test : tests)
+			totalPassed &= runTest(test);
 
 		long runTime = System.currentTimeMillis() - t0Total;
 		int runTimeMin = (int) (runTime / 60000);
@@ -97,13 +105,11 @@ public class TestRunner {
 	private static class TestObj {
 
 		private final Method testMethod;
-		private String testPrefix;
 
 		TestObj(Method testMethod) {
 			if (!Modifier.isStatic(testMethod.getModifiers()))
-				throw new IllegalArgumentException("Test method must be static " + getTestPrefix(testMethod));
+				throw new IllegalArgumentException("Test method must be static " + getTestName(testMethod));
 			this.testMethod = testMethod;
-			testPrefix = null;
 		}
 
 		boolean invoke() throws Throwable {
@@ -118,16 +124,18 @@ public class TestRunner {
 			}
 		}
 
-		String getTestPrefix() {
-			if (testPrefix != null)
-				return testPrefix;
-			return testPrefix = getTestPrefix(testMethod);
+		String getTestName() {
+			return getTestName(testMethod);
 		}
 
-		private static String getTestPrefix(Method method) {
-			String methodName = method.getName();
-			String classname = method.getDeclaringClass().getName();
-			return "[" + classname + "." + methodName + "]";
+		String getTestPrefix() {
+			return "[" + getTestName() + "]";
+		}
+
+		private static String getTestName(Method testMethod) {
+			String methodName = testMethod.getName();
+			String classname = testMethod.getDeclaringClass().getName();
+			return classname + "." + methodName;
 		}
 
 	}

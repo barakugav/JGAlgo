@@ -1,8 +1,13 @@
 package com.ugav.algo.test;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 
-public class TestUtils {
+import com.ugav.algo.Pair;
+
+class TestUtils {
 
 	private TestUtils() {
 		throw new InternalError();
@@ -34,22 +39,26 @@ public class TestUtils {
 		return false;
 	}
 
-	public static String getTestName() {
+	static String getTestName() {
 		return getTestStackElement().getMethodName();
 	}
 
-	public static String getTestClassName() {
+	static String getTestClassName() {
 		return getTestStackElement().getClassName();
 	}
 
-	public static String getTestPrefix() {
+	static String getTestFullname() {
 		StackTraceElement e = getTestStackElement();
 		String methodName = e.getMethodName();
 		String classname = e.getClassName();
-		return "[" + classname + "." + methodName + "]";
+		return classname + "." + methodName;
 	}
 
-	public static void printTestStr(CharSequence s) {
+	static String getTestPrefix() {
+		return "[" + getTestFullname() + "]";
+	}
+
+	static void printTestStr(CharSequence s) {
 		String str = s.toString();
 		String prefix = getTestPrefix() + " ";
 
@@ -61,12 +70,41 @@ public class TestUtils {
 		System.out.print(str);
 	}
 
-	public static void printTestFailure() {
+	static void printTestFailure() {
 		printTestStr("failure!\n");
 	}
 
-	public static void printTestPassed() {
+	static void printTestPassed() {
 		printTestStr("passed\n");
+	}
+
+	private static final Map<String, Pair<Long, Random>> seedGenerators = new HashMap<>();
+
+	static void initTestRand(String testName) {
+		seedGenerators.put(testName, new Pair<>(new Random().nextLong() ^ 0x555bfc5796f83a2dL, null));
+	}
+
+	static void initTestRand(String testName, long seed) {
+	}
+
+	static void finalizeTestRand(String testName) {
+		seedGenerators.remove(testName);
+	}
+
+	static boolean isTestRandUsed(String testName) {
+		return seedGenerators.get(testName).e2 != null;
+	}
+
+	static long getTestRandBaseSeed(String testName) {
+		return seedGenerators.get(testName).e1;
+
+	}
+
+	static long nextRandSeed() {
+		Pair<Long, Random> generator = seedGenerators.get(getTestFullname());
+		if (generator.e2 == null)
+			generator.e2 = new Random(generator.e1);
+		return generator.e2.nextLong() ^ 0x3d61be24f3910c88L;
 	}
 
 }

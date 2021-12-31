@@ -16,52 +16,45 @@ class RMQTestUtils {
 	}
 
 	static boolean testRMQ(RMQ rmq, int n, int queriesNum) {
-		long seed = Utils.randSeed();
 		int a[] = new int[n];
 		int queries[][] = new int[queriesNum][];
-		randRMQDataAndQueries(a, queries, seed);
+		randRMQDataAndQueries(a, queries);
 
 		return testRMQ(rmq, a, queries);
 	}
 
 	static boolean testRMQ(RMQ rmq, int a[], int queries[][]) {
-		try {
-			RMQ.Result res = rmq.preprocessRMQ(new IntArrayComparator(a), a.length);
+		RMQ.Result res = rmq.preprocessRMQ(new IntArrayComparator(a), a.length);
 
-			for (int idx = 0; idx < queries.length; idx++) {
-				int i = queries[idx][0];
-				int j = queries[idx][1];
-				int expectedIdx = queries[idx][2];
-				int expected = a[expectedIdx];
-				int actualIdx = res.query(i, j);
-				int actual = a[actualIdx];
+		for (int idx = 0; idx < queries.length; idx++) {
+			int i = queries[idx][0];
+			int j = queries[idx][1];
+			int expectedIdx = queries[idx][2];
+			int expected = a[expectedIdx];
+			int actualIdx = res.query(i, j);
+			int actual = a[actualIdx];
 
-				if (actual != expected) {
-					TestUtils.printTestStr(" [" + i + "," + j + "] -> expected[" + expectedIdx + "]=" + expected
-							+ " actual[" + actualIdx + "]=" + actual + "\n");
-					TestUtils.printTestStr("data size: " + a.length + "\n");
-					TestUtils.printTestStr("queries num: " + queries.length + "\n");
-					TestUtils.printTestStr(formatRMQDataAndQueries(a, queries));
-					return false;
-				}
+			if (actual != expected) {
+				TestUtils.printTestStr(" [" + i + "," + j + "] -> expected[" + expectedIdx + "]=" + expected
+						+ " actual[" + actualIdx + "]=" + actual + "\n");
+				TestUtils.printTestStr("data size: " + a.length + "\n");
+				TestUtils.printTestStr("queries num: " + queries.length + "\n");
+				TestUtils.printTestStr(formatRMQDataAndQueries(a, queries));
+				return false;
 			}
-		} catch (RuntimeException e) {
-			TestUtils.printTestStr(formatRMQDataAndQueries(a, queries));
-			throw e;
 		}
-
 		return true;
 	}
 
-	static void randRMQDataPlusMinusOne(int a[], long seed) {
-		Random rand = new Random(seed ^ 0x147d9f4baebea2f5L);
+	static void randRMQDataPlusMinusOne(int a[]) {
+		Random rand = new Random(TestUtils.nextRandSeed());
 		a[0] = 0;
 		for (int i = 1; i < a.length; i++)
 			a[i] = a[i - 1] + rand.nextInt(2) * 2 - 1;
 	}
 
-	static void randRMQQueries(int a[], int queries[][], int blockSize, long seed) {
-		Random rand = new Random(seed ^ 0x75af25429edde823L);
+	static void randRMQQueries(int a[], int queries[][], int blockSize) {
+		Random rand = new Random(TestUtils.nextRandSeed());
 		for (int q = 0; q < queries.length;) {
 			int i = rand.nextInt(a.length);
 			if (i % blockSize == blockSize - 1)
@@ -79,13 +72,13 @@ class RMQTestUtils {
 
 	}
 
-	static void randRMQDataAndQueries(int a[], int queries[][], long seed) {
-		randRMQDataAndQueries(a, queries, a.length, seed);
+	static void randRMQDataAndQueries(int a[], int queries[][]) {
+		randRMQDataAndQueries(a, queries, a.length);
 	}
 
-	static void randRMQDataAndQueries(int a[], int queries[][], int blockSize, long seed) {
-		Utils.randArray(a, 0, 64, seed);
-		randRMQQueries(a, queries, blockSize, seed);
+	static void randRMQDataAndQueries(int a[], int queries[][], int blockSize) {
+		Utils.randArray(a, 0, 64, TestUtils.nextRandSeed());
+		randRMQQueries(a, queries, blockSize);
 	}
 
 	static CharSequence formatRMQDataAndQueries(int a[], int queries[][]) {

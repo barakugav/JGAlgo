@@ -5,10 +5,6 @@ import java.util.Random;
 
 public class Utils {
 
-	static long randSeed() {
-		return new Random().nextLong();
-	}
-
 	static void printArr(int a[]) {
 		printArr(a, true);
 	}

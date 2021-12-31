@@ -55,8 +55,8 @@ class TPMTestUtils {
 		return queries;
 	}
 
-	static int[] generateRandQueries(int n, int m, long seed) {
-		Random rand = new Random(seed ^ 0x9fed87f310f4d8f0L);
+	static int[] generateRandQueries(int n, int m) {
+		Random rand = new Random(TestUtils.nextRandSeed());
 		int[] queries = new int[m * 2];
 		for (int q = 0; q < m; q++) {
 			queries[q * 2] = rand.nextInt(n);
@@ -99,28 +99,12 @@ class TPMTestUtils {
 		return true;
 	}
 
-	static <E> boolean testTPM(TPM algo, int n) {
-		long seed = Utils.randSeed();
-
-		RuntimeException e = null;
-		try {
-			if (testTPM0(algo, n, seed))
-				return true;
-		} catch (RuntimeException e1) {
-			e = e1;
-		}
-		TestUtils.printTestStr("Failed on seed " + seed + "\n");
-		if (e != null)
-			throw e;
-		return false;
-	}
-
-	static boolean testTPM0(TPM algo, int n, long seed) {
-		Graph<Integer> t = GraphsTestUtils.randTree(n, seed);
-		GraphsTestUtils.assignRandWeightsInt(t, seed);
+	static boolean testTPM(TPM algo, int n) {
+		Graph<Integer> t = GraphsTestUtils.randTree(n);
+		GraphsTestUtils.assignRandWeightsInt(t);
 		WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
 
-		int[] queries = n <= 64 ? generateAllPossibleQueries(n) : generateRandQueries(n, Math.min(n * 64, 8192), seed);
+		int[] queries = n <= 64 ? generateAllPossibleQueries(n) : generateRandQueries(n, Math.min(n * 64, 8192));
 		Edge<Integer>[] actual = algo.calcTPM(t, w, queries, queries.length / 2);
 		Edge<Integer>[] expected = calcExpectedTPM(t, w, queries);
 		return compareActualToExpectedResults(queries, actual, expected, w);
@@ -134,18 +118,17 @@ class TPMTestUtils {
 			int m = phases[phase][2];
 
 			for (int r = 0; r < repeat; r++) {
-				long seed = Utils.randSeed();
-				if (!verifyMSTPositive(algo, n, m, seed))
+				if (!verifyMSTPositive(algo, n, m))
 					return false;
 			}
 		}
 		return true;
 	}
 
-	static boolean verifyMSTPositive(TPM algo, int n, int m, long seed) {
+	static boolean verifyMSTPositive(TPM algo, int n, int m) {
 		Graph<Integer> g = new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(false).selfEdges(false)
-				.cycles(true).connected(true).build(seed);
-		GraphsTestUtils.assignRandWeightsInt(g, seed);
+				.cycles(true).connected(true).build();
+		GraphsTestUtils.assignRandWeightsInt(g);
 		WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
 		Collection<Edge<Integer>> mstEdges = MSTKruskal1956.getInstance().calcMST(g, w);
 
@@ -160,18 +143,17 @@ class TPMTestUtils {
 			int m = phases[phase][2];
 
 			for (int r = 0; r < repeat; r++) {
-				long seed = Utils.randSeed();
-				if (!verifyMSTNegative(algo, n, m, seed))
+				if (!verifyMSTNegative(algo, n, m))
 					return false;
 			}
 		}
 		return true;
 	}
 
-	static boolean verifyMSTNegative(TPM algo, int n, int m, long seed) {
+	static boolean verifyMSTNegative(TPM algo, int n, int m) {
 		Graph<Integer> g = new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(false).selfEdges(false)
-				.cycles(true).connected(true).build(seed);
-		GraphsTestUtils.assignRandWeightsInt(g, seed);
+				.cycles(true).connected(true).build();
+		GraphsTestUtils.assignRandWeightsInt(g);
 		WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
 
 		Collection<Edge<Integer>> mstEdges = MSTKruskal1956.getInstance().calcMST(g, w);
@@ -180,7 +162,7 @@ class TPMTestUtils {
 		@SuppressWarnings("unchecked")
 		Edge<Integer>[] edges = g.edges().toArray(new Edge[g.edges().size()]);
 
-		Random rand = new Random(seed ^ 0x97ddb19fe1529306L);
+		Random rand = new Random(TestUtils.nextRandSeed());
 		Edge<Integer> e;
 		do {
 			e = edges[rand.nextInt(edges.length)];

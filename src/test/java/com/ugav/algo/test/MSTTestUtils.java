@@ -37,29 +37,14 @@ class MSTTestUtils {
 	}
 
 	static boolean testRandGraph(MST algo, int n, int m) {
-		long seed = Utils.randSeed();
-		Graph<Integer> g = GraphsTestUtils.randGraph(n, m, seed);
-		GraphsTestUtils.assignRandWeightsInt(g, seed);
+		Graph<Integer> g = GraphsTestUtils.randGraph(n, m);
+		GraphsTestUtils.assignRandWeightsInt(g);
 
 		WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
 		return testMST(g, w, algo);
 	}
 
 	static <E> boolean testMST(Graph<E> g, WeightFunction<E> w, MST algo) {
-		RuntimeException e = null;
-		try {
-			if (testMST0(g, w, algo))
-				return true;
-		} catch (RuntimeException e1) {
-			e = e1;
-		}
-		TestUtils.printTestStr(Graphs.formatAdjacencyMatrixWeighted(g, w) + "\n");
-		if (e != null)
-			throw e;
-		return false;
-	}
-
-	static <E> boolean testMST0(Graph<E> g, WeightFunction<E> w, MST algo) {
 		Collection<Edge<E>> mst = algo.calcMST(g, w);
 		return verifyMST(g, w, mst);
 	}

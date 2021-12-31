@@ -26,7 +26,7 @@ class GraphsTestUtils {
 		private final Set<Integer> usedWeights;
 
 		RandomUnique(int minWeight, int maxWeight, long seed) {
-			rand = new Random(seed ^ 0x158cfc5e6f981214L);
+			rand = new Random(seed);
 			this.minWeight = minWeight;
 			this.maxWeight = maxWeight;
 			usedWeights = new HashSet<>();
@@ -98,7 +98,7 @@ class GraphsTestUtils {
 			return this;
 		}
 
-		<E> Graph<E> build(long seed) {
+		<E> Graph<E> build() {
 			if (n < 0 || m < 0)
 				throw new IllegalStateException();
 			if (!cycles && m >= n)
@@ -112,7 +112,7 @@ class GraphsTestUtils {
 			@SuppressWarnings("unchecked")
 			UnionFind.Element<Void>[] ufs = new UnionFind.Element[n];
 			int componentsNum = n;
-			Random rand = new Random(seed ^ 0x2ec2160c6a83d501L);
+			Random rand = new Random(TestUtils.nextRandSeed());
 
 			for (int i = 0; i < n; i++)
 				ufs[i] = uf.make(null);
@@ -160,54 +160,54 @@ class GraphsTestUtils {
 
 	}
 
-	static <E> Graph<E> randTree(int n, long seed) {
+	static <E> Graph<E> randTree(int n) {
 		return new RandomGraphBuilder().n(n).m(n - 1).directed(false).doubleEdges(false).selfEdges(false).cycles(false)
-				.connected(true).build(seed);
+				.connected(true).build();
 	}
 
-	static <E> Graph<E> randForest(int n, int m, long seed) {
+	static <E> Graph<E> randForest(int n, int m) {
 		return new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(false).selfEdges(false).cycles(false)
-				.connected(false).build(seed);
+				.connected(false).build();
 	}
 
-	static void assignRandWeights(Graph<Double> g, long seed) {
-		assignRandWeights(g, 1.0, 100.0, seed);
+	static void assignRandWeights(Graph<Double> g) {
+		assignRandWeights(g, 1.0, 100.0);
 	}
 
-	static void assignRandWeights(Graph<Double> g, double minWeight, double maxWeight, long seed) {
+	static void assignRandWeights(Graph<Double> g, double minWeight, double maxWeight) {
 		if (minWeight >= maxWeight)
 			throw new IllegalArgumentException();
 
-		Random rand = new Random(seed ^ 0xdac24eb67dbf6abfL);
+		Random rand = new Random(TestUtils.nextRandSeed());
 		for (Edge<Double> e : g.edges())
 			e.val(rand.nextDouble(minWeight, maxWeight));
 	}
 
-	static void assignRandWeightsInt(Graph<Integer> g, long seed) {
+	static void assignRandWeightsInt(Graph<Integer> g) {
 		int m = g.edges().size();
 		int minWeight = 1;
 		int maxWeight = m < 50 ? 100 : m * 2 + 2;
-		assignRandWeightsInt(g, minWeight, maxWeight, seed);
+		assignRandWeightsInt(g, minWeight, maxWeight);
 	}
 
-	static void assignRandWeightsInt(Graph<Integer> g, int minWeight, int maxWeight, long seed) {
+	static void assignRandWeightsInt(Graph<Integer> g, int minWeight, int maxWeight) {
 		if (minWeight >= maxWeight)
 			throw new IllegalArgumentException();
 		if (maxWeight - minWeight < g.edges().size() / 2)
 			throw new IllegalArgumentException("weight range is too small for unique weights");
 
-		RandomUnique rand = new RandomUnique(minWeight, maxWeight, seed);
+		RandomUnique rand = new RandomUnique(minWeight, maxWeight, TestUtils.nextRandSeed());
 		for (Edge<Integer> e : g.edges())
 			e.val(rand.next());
 	}
 
-	static <E> Graph<E> randGraph(int n, int m, long seed) {
-		return randGraph(n, m, seed, false);
+	static <E> Graph<E> randGraph(int n, int m) {
+		return randGraph(n, m, false);
 	}
 
-	static <E> Graph<E> randGraph(int n, int m, long seed, boolean selfEdges) {
+	static <E> Graph<E> randGraph(int n, int m, boolean selfEdges) {
 		return new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(false).selfEdges(selfEdges).cycles(true)
-				.connected(false).build(seed);
+				.connected(false).build();
 	}
 
 	static Graph<Integer> createGraphFromAdjacencyMatrixWeightedInt(int[][] m, DirectedType directed) {
