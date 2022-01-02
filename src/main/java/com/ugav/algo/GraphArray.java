@@ -18,6 +18,8 @@ public class GraphArray<E> extends GraphAbstract<E> {
 
 	@SuppressWarnings("rawtypes")
 	private static final Edge[][] EDGES_EMPTY = new Edge[0][];
+	@SuppressWarnings("rawtypes")
+	private static final Edge[] EDGES_LIST_EMPTY = new Edge[0];
 	private static final int[] EDGES_LEN_EMPTY = new int[0];
 
 	public GraphArray(DirectedType directed) {
@@ -31,6 +33,7 @@ public class GraphArray<E> extends GraphAbstract<E> {
 		this.n = n;
 		m = 0;
 		edges = n == 0 ? EDGES_EMPTY : new Edge[n][];
+		Arrays.fill(edges, EDGES_LIST_EMPTY);
 		edgesLen = n == 0 ? EDGES_LEN_EMPTY : new int[n];
 		this.directed = directed == DirectedType.Directed ? true : false;
 		edgesView = new EdgesView();
@@ -87,6 +90,7 @@ public class GraphArray<E> extends GraphAbstract<E> {
 		return directed;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public int newVertex() {
 		int v = n++;
@@ -95,6 +99,7 @@ public class GraphArray<E> extends GraphAbstract<E> {
 			edges = Arrays.copyOf(edges, aLen);
 			edgesLen = Arrays.copyOf(edgesLen, aLen);
 		}
+		edges[v] = EDGES_LIST_EMPTY;
 		return v;
 	}
 
@@ -128,15 +133,12 @@ public class GraphArray<E> extends GraphAbstract<E> {
 		m++;
 	}
 
-	@SuppressWarnings("unchecked")
 	private void addEdge0(Edge<E> e) {
 		int u = e.u(), len = edgesLen[u];
 		Edge<E>[] es = edges[u];
 
-		if (es == null)
-			edges[u] = es = new Edge[1];
-		else if (es.length == len)
-			edges[u] = es = Arrays.copyOf(es, len * 2);
+		if (es.length <= len)
+			edges[u] = es = Arrays.copyOf(es, Math.max(len * 2, 2));
 		es[edgesLen[u]++] = e;
 	}
 
@@ -269,7 +271,8 @@ public class GraphArray<E> extends GraphAbstract<E> {
 
 		@Override
 		public String toString() {
-			return "(" + u + ", " + v + ")[" + val() + "]";
+			E val = val();
+			return "(" + u + ", " + v + ")" + (val != null ? "[" + val() + "]" : "");
 		}
 
 	}

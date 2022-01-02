@@ -8,6 +8,7 @@ import com.ugav.algo.Graph;
 import com.ugav.algo.Graph.DirectedType;
 import com.ugav.algo.Graph.Edge;
 import com.ugav.algo.GraphArray;
+import com.ugav.algo.GraphBipartiteArray;
 import com.ugav.algo.Pair;
 import com.ugav.algo.UnionFind;
 import com.ugav.algo.UnionFindImpl;
@@ -47,7 +48,10 @@ class GraphsTestUtils {
 	static class RandomGraphBuilder {
 
 		private int n;
+		private int sn;
+		private int tn;
 		private int m;
+		private boolean bipartite;
 		private boolean directed;
 		private boolean doubleEdges;
 		private boolean selfEdges;
@@ -55,8 +59,8 @@ class GraphsTestUtils {
 		private boolean connected;
 
 		RandomGraphBuilder() {
-			n = 0;
-			m = 0;
+			n = sn = tn = m = 0;
+			bipartite = false;
 			doubleEdges = false;
 			selfEdges = false;
 			cycles = false;
@@ -68,8 +72,23 @@ class GraphsTestUtils {
 			return this;
 		}
 
+		RandomGraphBuilder sn(int sn) {
+			this.sn = sn;
+			return this;
+		}
+
+		RandomGraphBuilder tn(int tn) {
+			this.tn = tn;
+			return this;
+		}
+
 		RandomGraphBuilder m(int m) {
 			this.m = m;
+			return this;
+		}
+
+		RandomGraphBuilder bipartite(boolean bipartite) {
+			this.bipartite = bipartite;
 			return this;
 		}
 
@@ -99,14 +118,25 @@ class GraphsTestUtils {
 		}
 
 		<E> Graph<E> build() {
-			if (n < 0 || m < 0)
-				throw new IllegalStateException();
+			Graph<E> g;
+			DirectedType directedType = directed ? DirectedType.Directed : DirectedType.Undirected;
+			if (!bipartite) {
+				if (n < 0 || m < 0)
+					throw new IllegalStateException();
+				g = new GraphArray<>(directedType, n);
+			} else {
+				if (sn < 0 || tn < 0)
+					throw new IllegalStateException();
+				if ((sn == 0 || tn == 0) && m != 0)
+					throw new IllegalStateException();
+				n = sn + tn;
+				g = new GraphBipartiteArray<>(directedType, sn, tn);
+			}
 			if (!cycles && m >= n)
 				throw new IllegalStateException();
 			if (!doubleEdges && m >= ((long) n) * n / 3)
 				throw new IllegalArgumentException("too much edges for random sampling");
 
-			Graph<E> g = new GraphArray<>(directed ? DirectedType.Directed : DirectedType.Undirected, n);
 			Set<Pair<Integer, Integer>> existingEdges = new HashSet<>();
 			UnionFind uf = UnionFindImpl.getInstance();
 			@SuppressWarnings("unchecked")
@@ -118,8 +148,15 @@ class GraphsTestUtils {
 				ufs[i] = uf.make(null);
 
 			while ((connected && componentsNum > 1) || g.edges().size() < m) {
-				int u = rand.nextInt(n);
-				int v = rand.nextInt(n);
+				int u, v;
+
+				if (!bipartite) {
+					u = rand.nextInt(n);
+					v = rand.nextInt(n);
+				} else {
+					u = rand.nextInt(sn);
+					v = sn + rand.nextInt(tn);
+				}
 
 				// avoid self edges
 				if (!selfEdges && u == v)

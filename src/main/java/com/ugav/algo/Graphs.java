@@ -340,7 +340,7 @@ public class Graphs {
 			}
 		}
 		int cellSize = maxStr + 1;
-		int cellSizeFirstColumn = String.valueOf(n - 1).length();
+		int cellSizeFirstColumn = String.valueOf(n - 1).length() + 1;
 
 		/* format header row */
 		StringBuilder s = new StringBuilder();

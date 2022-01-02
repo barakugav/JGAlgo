@@ -34,6 +34,9 @@ public class TestList {
 			MSTPrim1957Test.class,
 			MSTFredmanTarjan1987Test.class);
 
+	private static final Collection<Class<?>> MATCHING_TESTS = List.of(
+			MatchingBipartiteHopcroftKarp1973Test.class);
+
 	static final Collection<Class<?>> TEST_CLASSES;
 	static {
 		Collection<Class<?>> l = new ArrayList<>();
@@ -42,6 +45,7 @@ public class TestList {
 		l.addAll(MISC_TESTS);
 		l.addAll(GRAPHS_TESTS);
 		l.addAll(MST_TESTS);
+		l.addAll(MATCHING_TESTS);
 		TEST_CLASSES = Collections.unmodifiableCollection(l);
 	}
 

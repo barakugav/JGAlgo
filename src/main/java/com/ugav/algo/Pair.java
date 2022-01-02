@@ -43,4 +43,8 @@ public class Pair<E1, E2> implements Comparable<Pair<E1, E2>> {
 		return (c = ((Comparable) e1).compareTo(o.e1)) != 0 ? c : ((Comparable) e2).compareTo(o.e2);
 	}
 
+	public static <E1, E2> Pair<E1, E2> valueOf(E1 e1, E2 e2) {
+		return new Pair<>(e1, e2);
+	}
+
 }

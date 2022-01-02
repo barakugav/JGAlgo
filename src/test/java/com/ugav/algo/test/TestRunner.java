@@ -25,10 +25,10 @@ public class TestRunner {
 			passed = test.invoke();
 		} catch (Throwable e) {
 			e.printStackTrace();
-			if (TestUtils.isTestRandUsed(testName))
-				System.out.println(test.getTestPrefix() + " seed used: " + TestUtils.getTestRandBaseSeed(testName));
 			passed = false;
 		}
+		if (!passed && TestUtils.isTestRandUsed(testName))
+			System.out.println(test.getTestPrefix() + " seed used: " + TestUtils.getTestRandBaseSeed(testName));
 		TestUtils.finalizeTestRand(testName);
 
 		long runTime = System.currentTimeMillis() - t0Test;

@@ -81,10 +81,11 @@ class TestUtils {
 	private static final Map<String, Pair<Long, Random>> seedGenerators = new HashMap<>();
 
 	static void initTestRand(String testName) {
-		seedGenerators.put(testName, new Pair<>(new Random().nextLong() ^ 0x555bfc5796f83a2dL, null));
+		initTestRand(testName, new Random().nextLong());
 	}
 
 	static void initTestRand(String testName, long seed) {
+		seedGenerators.put(testName, new Pair<>(seed, null));
 	}
 
 	static void finalizeTestRand(String testName) {
@@ -103,7 +104,7 @@ class TestUtils {
 	static long nextRandSeed() {
 		Pair<Long, Random> generator = seedGenerators.get(getTestFullname());
 		if (generator.e2 == null)
-			generator.e2 = new Random(generator.e1);
+			generator.e2 = new Random(generator.e1 ^ 0x555bfc5796f83a2dL);
 		return generator.e2.nextLong() ^ 0x3d61be24f3910c88L;
 	}
 
