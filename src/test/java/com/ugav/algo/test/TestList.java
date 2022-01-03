@@ -32,7 +32,8 @@ public class TestList {
 			MSTBoruvka1926Test.class,
 			MSTKruskal1956Test.class,
 			MSTPrim1957Test.class,
-			MSTFredmanTarjan1987Test.class);
+			MSTFredmanTarjan1987Test.class,
+			MSTKargerKleinTarjan1995Test.class);
 
 	private static final Collection<Class<?>> MATCHING_TESTS = List.of(
 			MatchingBipartiteHopcroftKarp1973Test.class);

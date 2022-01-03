@@ -20,28 +20,28 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 		return INSTANCE;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <E> Edge<E>[] calcTPM(Graph<E> t, WeightFunction<E> w, int[] queries, int queriesNum) {
 		if (t.isDirected())
 			throw new IllegalArgumentException("directed graphs are not supported");
-		if (queries.length % 2 != 0 || queries.length / 2 != queriesNum)
+		if (queries.length / 2 < queriesNum)
 			throw new IllegalArgumentException("queries should be in format [u0, v0, u1, v1, ...]");
 		if (!Graphs.isTree(t))
 			throw new IllegalArgumentException("only trees are supported");
-		@SuppressWarnings("unchecked")
-		Edge<E>[] res = new Edge[queriesNum];
-		if (t.vertices() == 0)
-			return res;
 
 		Pair<Graph<Ref<E>>, Integer> r = buildBoruvkaFullyBranchingTree(t, w);
 		Graph<Ref<E>> t0 = r.e1;
 		int root = r.e2;
 
 		int leavesDepth = Graphs.getFullyBranchingTreeDepth(t0, root);
+		if (t.vertices() == 0 || leavesDepth == 0)
+			return new Edge[queriesNum];
+
 		BitsLookupTable bitsTable = new BitsLookupTable(leavesDepth);
 		bitsTable.init();
 
-		int[] lcaQueries = splitQueriesIntoLCAQueries(t0, root, queries);
+		int[] lcaQueries = splitQueriesIntoLCAQueries(t0, root, queries, queriesNum);
 
 		Pair<Edge<Ref<E>>[], int[]> r2 = getEdgeToParentsAndDepth(t0, root);
 		Edge<Ref<E>>[] edgeToParent = r2.e1;
@@ -251,11 +251,10 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 			G.clear();
 			G = gNext;
 		}
-		return new Pair<>(t, vTv[0]);
+		return Pair.valueOf(t, vTv[0]);
 	}
 
-	private static <E> int[] splitQueriesIntoLCAQueries(Graph<Ref<E>> t, int root, int[] queries) {
-		int queriesNum = queries.length / 2;
+	private static <E> int[] splitQueriesIntoLCAQueries(Graph<Ref<E>> t, int root, int[] queries, int queriesNum) {
 		int[] lcaQueries = new int[queriesNum * 4];
 
 		LCA lcaAlgo = LCARMQBenderFarachColton2000.getInstace();
