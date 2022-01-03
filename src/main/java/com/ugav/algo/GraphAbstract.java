@@ -56,22 +56,28 @@ public abstract class GraphAbstract<E> implements Graph<E> {
 	@Override
 	public String toString() {
 		StringBuilder s = new StringBuilder();
-		s.append('{');
+		s.append('[');
 		int n = vertices();
+
+		boolean firstVertex = true;
 		for (int u = 0; u < n; u++) {
+			if (firstVertex)
+				firstVertex = false;
+			else
+				s.append(", ");
 			s.append("[" + u + "]->{");
 
-			boolean first = true;
+			boolean firstEdge = true;
 			for (Iterator<Edge<E>> it = edges(u); it.hasNext();) {
-				if (first)
-					first = false;
+				if (firstEdge)
+					firstEdge = false;
 				else
 					s.append(", ");
 				s.append(it.next());
 			}
-			s.append("}, ");
+			s.append("}");
 		}
-		s.append('}');
+		s.append(']');
 		return s.toString();
 	}
 

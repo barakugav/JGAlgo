@@ -11,6 +11,10 @@ import com.ugav.algo.Graph.Edge;
 
 public class MatchingBipartiteHopcroftKarp1973 implements MatchingBipartite {
 
+	/*
+	 * Maximum matching in unweighted undirected bipartite graph in O(m * n^0.5)
+	 */
+
 	private MatchingBipartiteHopcroftKarp1973() {
 	}
 

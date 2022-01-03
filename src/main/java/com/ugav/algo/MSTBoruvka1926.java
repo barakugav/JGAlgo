@@ -3,29 +3,52 @@ package com.ugav.algo;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 
+import com.ugav.algo.Graph.DirectedType;
 import com.ugav.algo.Graph.Edge;
 
-public class MSTBoruvska1926 implements MST {
+public class MSTBoruvka1926 implements MST {
 
-	private MSTBoruvska1926() {
+	private MSTBoruvka1926() {
 	}
 
-	private static final MSTBoruvska1926 INSTANCE = new MSTBoruvska1926();
+	private static final MSTBoruvka1926 INSTANCE = new MSTBoruvka1926();
 
-	public static MSTBoruvska1926 getInstance() {
+	public static MSTBoruvka1926 getInstance() {
 		return INSTANCE;
 	}
 
 	@Override
 	public <E> Collection<Edge<E>> calcMST(Graph<E> g, Graph.WeightFunction<E> w) {
+		return calcMST0(g, w, Integer.MAX_VALUE).e3;
+	}
+
+	static <E> Pair<Graph<Edge<E>>, Collection<Edge<E>>> runBoruvka(Graph<E> g, Graph.WeightFunction<E> w,
+			int numberOfRounds) {
+		if (numberOfRounds <= 0)
+			throw new IllegalArgumentException();
+		Triple<int[], Integer, Collection<Edge<E>>> r = calcMST0(g, w, numberOfRounds);
+		int[] tree = r.e1;
+		int treeNum = r.e2;
+		Collection<Edge<E>> mstEdges = r.e3;
+
+		Graph<Edge<E>> g0 = new GraphArray<>(DirectedType.Undirected, treeNum);
+		for (Edge<E> e : g.edges()) {
+			int u = tree[e.u()];
+			int v = tree[e.v()];
+			if (u == v)
+				continue;
+			g0.addEdge(u, v).val(e);
+		}
+		return Pair.valueOf(g0, mstEdges);
+	}
+
+	private static <E> Triple<int[], Integer, Collection<Edge<E>>> calcMST0(Graph<E> g, Graph.WeightFunction<E> w,
+			int numberOfRounds) {
 		if (g.isDirected())
 			throw new IllegalArgumentException("directed graphs are not supported");
 		int n = g.vertices();
-		if (n == 0)
-			return Collections.emptyList();
 
 		int treeNum = n;
 		int[] vTree = new int[n];
@@ -39,7 +62,7 @@ public class MSTBoruvska1926 implements MST {
 		int[] path = new int[n];
 
 		Collection<Edge<E>> mst = new ArrayList<>();
-		while (true) {
+		for (int i = 0; i < numberOfRounds; i++) {
 			Arrays.fill(minEdges, 0, treeNum, null);
 			Arrays.fill(minEdgesWeight, 0, treeNum, Double.MAX_VALUE);
 
@@ -61,9 +84,14 @@ public class MSTBoruvska1926 implements MST {
 			}
 
 			/* add min edges to MST */
-			for (int tree = 0; tree < treeNum; tree++)
-				if (minEdges[tree] != null)
-					mst.add(minEdges[tree]);
+			for (int tree = 0; tree < treeNum; tree++) {
+				if (minEdges[tree] != null) {
+					Edge<E> e = minEdges[tree];
+					int ut = vTree[e.u()], vt = vTree[e.v()];
+					if (minEdges[vt] != e.twin() || ut < vt)
+						mst.add(minEdges[tree]);
+				}
+			}
 
 			/*
 			 * the graph of the trees (vertex per tree, minimum out edges of the trees) is a
@@ -108,7 +136,7 @@ public class MSTBoruvska1926 implements MST {
 				vTree[v] = vTreeNext[vTree[v]];
 		}
 
-		return mst;
+		return Triple.valueOf(vTree, treeNum, mst);
 	}
 
 }

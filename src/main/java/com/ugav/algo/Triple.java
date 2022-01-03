@@ -49,4 +49,8 @@ public class Triple<E1, E2, E3> implements Comparable<Triple<E1, E2, E3>> {
 		return ((Comparable) e2).compareTo(o.e2);
 	}
 
+	public static <E1, E2, E3> Triple<E1, E2, E3> valueOf(E1 e1, E2 e2, E3 e3) {
+		return new Triple<>(e1, e2, e3);
+	}
+
 }

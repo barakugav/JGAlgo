@@ -27,7 +27,7 @@ public class MSTPrim1957 implements MST {
 			throw new IllegalArgumentException("directed graphs are not supported");
 		int n = g.vertices();
 		if (n == 0)
-			Collections.emptyList();
+			return Collections.emptyList();
 
 		Comparator<Edge<E>> c = new EdgeWeightComparator<>(w);
 		Heap<Edge<E>> heap = new HeapFibonacci<>(c);

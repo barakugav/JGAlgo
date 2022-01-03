@@ -85,7 +85,7 @@ class TestUtils {
 	}
 
 	static void initTestRand(String testName, long seed) {
-		seedGenerators.put(testName, new Pair<>(seed, null));
+		seedGenerators.put(testName, Pair.valueOf(seed, null));
 	}
 
 	static void finalizeTestRand(String testName) {

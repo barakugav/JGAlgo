@@ -74,7 +74,7 @@ public class SplitFindMinArray implements SplitFindMin {
 		if (elmIdx >= blk.to)
 			throw new InternalError();
 		if (blk == seq.head && elmIdx == 0)
-			return new Pair<>(null, elms[seq.head.from]);
+			return Pair.valueOf(null, elms[seq.head.from]);
 
 		Block<K, V> head = seq.head, tail = blk.prev;
 		if (tail != null)
@@ -114,7 +114,7 @@ public class SplitFindMinArray implements SplitFindMin {
 		blk.clear();
 		seq.clear();
 
-		return new Pair<>(elms[seq1.head.from], elms[seq2.head.from]);
+		return Pair.valueOf(elms[seq1.head.from], elms[seq2.head.from]);
 	}
 
 	@Override

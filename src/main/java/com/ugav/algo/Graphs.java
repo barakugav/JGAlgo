@@ -179,44 +179,66 @@ public class Graphs {
 	}
 
 	public static <E> boolean isTree(Graph<E> g) {
-		if (g.isDirected())
-			throw new IllegalArgumentException("directed graphs are not supported");
 		return isTree(g, 0);
 	}
 
 	public static <E> boolean isTree(Graph<E> g, int root) {
+		return isForst(g, new int[] { root });
+	}
+
+	public static <E> boolean isForst(Graph<E> g) {
+		int n = g.vertices();
+		int[] roots = new int[n];
+		for (int u = 0; u < n; u++)
+			roots[u] = u;
+		return isForst(g, roots, true);
+	}
+
+	public static <E> boolean isForst(Graph<E> g, int[] roots) {
+		return isForst(g, roots, false);
+	}
+
+	private static <E> boolean isForst(Graph<E> g, int[] roots, boolean allowVisitedRoot) {
 		int n = g.vertices();
 		if (n == 0)
 			return true;
 		boolean directed = g.isDirected();
 
 		boolean visited[] = new boolean[n];
-		Arrays.fill(visited, false);
 		int[] parent = new int[n];
 		Arrays.fill(parent, -1);
 
 		int[] stack = new int[n];
-		stack[0] = 0;
-		int stackSize = 1, visitedCount = 1;
-		visited[0] = true;
-
 		int[] edges = new int[n];
-		int edgesCount;
+		int visitedCount = 0;
 
-		while (stackSize-- > 0) {
-			int u = stack[stackSize];
-			edgesCount = g.getEdgesArrVs(u, edges, 0);
-
-			for (int i = 0; i < edgesCount; i++) {
-				int v = edges[i];
-				if (!directed && v == parent[u])
+		for (int i = 0; i < roots.length; i++) {
+			int root = roots[i];
+			if (visited[root]) {
+				if (allowVisitedRoot)
 					continue;
-				if (visited[v])
-					return false;
-				visited[v] = true;
+				return false;
+			}
+
+			stack[0] = root;
+			int stackSize = 1;
+			visited[root] = true;
+
+			while (stackSize-- > 0) {
+				int u = stack[stackSize];
 				visitedCount++;
-				stack[stackSize++] = v;
-				parent[v] = u;
+				int edgesCount = g.getEdgesArrVs(u, edges, 0);
+
+				for (int j = 0; j < edgesCount; j++) {
+					int v = edges[j];
+					if (!directed && v == parent[u])
+						continue;
+					if (visited[v])
+						return false;
+					visited[v] = true;
+					stack[stackSize++] = v;
+					parent[v] = u;
+				}
 			}
 		}
 
@@ -256,13 +278,14 @@ public class Graphs {
 
 			while (stackSize-- > 0) {
 				int u = stack[stackSize];
+				label[u] = labelCount;
+				componentsSize++;
 				int edgesCount = g.getEdgesArrVs(u, edges, 0);
 
 				for (int i = 0; i < edgesCount; i++) {
 					int v = edges[i];
 					if (label[v] != -1)
 						continue;
-					label[v] = labelCount;
 					stack[stackSize++] = v;
 				}
 			}
@@ -273,7 +296,7 @@ public class Graphs {
 		int[] componentsSizesArr = new int[labelCount];
 		for (int i = 0; i < labelCount; i++)
 			componentsSizesArr[i] = componentsSizes.get(i);
-		return new Pair<>(label, componentsSizesArr);
+		return Pair.valueOf(label, componentsSizesArr);
 	}
 
 	public static <E> int getFullyBranchingTreeDepth(Graph<E> t, int root) {
@@ -339,19 +362,19 @@ public class Graphs {
 					maxStr = strs[u][v].length();
 			}
 		}
-		int cellSize = maxStr + 1;
-		int cellSizeFirstColumn = String.valueOf(n - 1).length() + 1;
+		int vertexLabelCellSize = String.valueOf(n - 1).length() + 1;
+		int cellSize = Math.max(maxStr + 1, vertexLabelCellSize);
 
 		/* format header row */
 		StringBuilder s = new StringBuilder();
-		s.append(strMult(" ", cellSizeFirstColumn));
+		s.append(strMult(" ", vertexLabelCellSize));
 		for (int v = 0; v < n; v++)
 			s.append(String.format("% " + cellSize + "d", v));
 		s.append('\n');
 
 		/* format adjacency matrix */
 		for (int u = 0; u < n; u++) {
-			s.append(String.format("% " + cellSizeFirstColumn + "d", u));
+			s.append(String.format("% " + vertexLabelCellSize + "d", u));
 			for (int v = 0; v < n; v++) {
 				if (strs[u][v].length() < cellSize)
 					s.append(strMult(" ", cellSize - strs[u][v].length()));
@@ -409,7 +432,12 @@ public class Graphs {
 		return g0;
 	}
 
-	static final WeightFunction<Ref<?>> REFERENCE_EDGE_WEIGHT_FUNCTION = e -> e.val().w;
+	private static final WeightFunction<Ref<?>> REFERENCE_EDGE_WEIGHT_FUNCTION = e -> e.val().w;
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	static <E> WeightFunction<Ref<E>> referenceEdgeWeightFunction() {
+		return (WeightFunction<Ref<E>>) (WeightFunction) REFERENCE_EDGE_WEIGHT_FUNCTION;
+	}
 
 	static class Ref<E> {
 

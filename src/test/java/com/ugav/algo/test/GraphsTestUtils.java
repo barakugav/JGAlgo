@@ -132,6 +132,8 @@ class GraphsTestUtils {
 				n = sn + tn;
 				g = new GraphBipartiteArray<>(directedType, sn, tn);
 			}
+			if (n == 0)
+				return g;
 			if (!cycles && m >= n)
 				throw new IllegalStateException();
 			if (!doubleEdges && m >= ((long) n) * n / 3)
@@ -170,7 +172,7 @@ class GraphsTestUtils {
 						ut = vt;
 						vt = temp;
 					}
-					Pair<Integer, Integer> et = new Pair<>(ut, vt);
+					Pair<Integer, Integer> et = Pair.valueOf(ut, vt);
 					if (!existingEdges.add(et))
 						continue;
 				}

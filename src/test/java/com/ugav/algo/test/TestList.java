@@ -29,7 +29,7 @@ public class TestList {
 			SSSPBellmanFordTest.class);
 
 	private static final Collection<Class<?>> MST_TESTS = List.of(
-			MSTBoruvska1926Test.class,
+			MSTBoruvka1926Test.class,
 			MSTKruskal1956Test.class,
 			MSTPrim1957Test.class,
 			MSTFredmanTarjan1987Test.class);

@@ -3,6 +3,7 @@ package com.ugav.algo;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 
@@ -24,6 +25,8 @@ public class MSTFredmanTarjan1987 implements MST {
 	@Override
 	public <E> Collection<Edge<E>> calcMST(Graph<E> g, WeightFunction<E> w) {
 		int n = g.vertices(), m = g.edges().size();
+		if (n == 0)
+			return Collections.emptyList();
 
 		// following variables are used to maintain the super vertices
 

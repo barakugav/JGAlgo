@@ -9,7 +9,7 @@ public interface MatchingBipartite {
 	/**
 	 * Calculate the maximum matching of unweighted undirected bipartite graph
 	 *
-	 * @param g bipartite graph
+	 * @param g a bipartite graph
 	 * @return collection of edges representing a maximum matching
 	 */
 	public <E> Collection<Edge<E>> calcMaxMatching(GraphBipartite<E> g);

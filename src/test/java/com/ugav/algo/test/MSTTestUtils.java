@@ -22,8 +22,8 @@ class MSTTestUtils {
 	}
 
 	static boolean testRandGraph(MST algo) {
-		int[][] phases = new int[][] { { 64, 8, 16 }, { 32, 16, 32 }, { 16, 32, 64 }, { 8, 64, 128 }, { 4, 128, 256 },
-				{ 1, 1024, 4096 } };
+		int[][] phases = new int[][] { { 1, 0, 0 }, { 64, 8, 16 }, { 32, 16, 32 }, { 16, 32, 64 }, { 8, 64, 128 },
+				{ 4, 128, 256 }, { 1, 1024, 4096 } };
 		for (int phase = 0; phase < phases.length; phase++) {
 			int repeat = phases[phase][0];
 			int n = phases[phase][1];
@@ -89,6 +89,11 @@ class MSTTestUtils {
 		Comparator<Edge<E>> c = new MSTEdgeComparator<>(w);
 		Set<Edge<E>> actualSet = new TreeSet<>(c);
 		actualSet.addAll(mst);
+
+		if (actualSet.size() != mst.size()) {
+			TestUtils.printTestStr("MST contains duplications\n");
+			return false;
+		}
 
 		boolean equal = true;
 		if (expected.size() != actualSet.size()) {

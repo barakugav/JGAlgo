@@ -285,7 +285,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 			return true;
 		});
 
-		return new Pair<>(edgeToParent, depths);
+		return Pair.valueOf(edgeToParent, depths);
 	}
 
 	private static <E> int[] calcQueriesPerVertex(int[] lcaQueries, int[] depths, Edge<Ref<E>>[] edgeToParent) {
@@ -341,7 +341,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 
 		BitsLookupTable(int wordsize) {
 			if (!(0 < wordsize && wordsize < Integer.SIZE - 1))
-				throw new IllegalArgumentException();
+				throw new IllegalArgumentException("unsupported word size: " + wordsize);
 			this.wordsize = wordsize;
 			int halfwordsize = ((wordsize - 1) / 2 + 1);
 			bitCountTable = new byte[1 << wordsize];
