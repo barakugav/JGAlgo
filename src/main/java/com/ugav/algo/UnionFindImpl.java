@@ -17,7 +17,7 @@ public class UnionFindImpl implements UnionFind {
 	}
 
 	@Override
-	public <V> Element<V> find(UnionFind.Element<V> e0) {
+	public <V> Element<V> find(UnionFind.Elm<V> e0) {
 		Element<V> e = (Element<V>) e0;
 
 		/* Find root */
@@ -36,7 +36,7 @@ public class UnionFindImpl implements UnionFind {
 	}
 
 	@Override
-	public <V> Element<V> union(UnionFind.Element<V> a0, UnionFind.Element<V> b0) {
+	public <V> Element<V> union(UnionFind.Elm<V> a0, UnionFind.Elm<V> b0) {
 		Element<V> a = find(a0);
 		Element<V> b = find(b0);
 		if (a == b)
@@ -53,7 +53,7 @@ public class UnionFindImpl implements UnionFind {
 		return a;
 	}
 
-	static class Element<V> implements UnionFind.Element<V> {
+	static class Element<V> implements UnionFind.Elm<V> {
 
 		V v;
 		Element<V> parent;

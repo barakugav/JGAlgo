@@ -29,7 +29,7 @@ public class SplitFindMinArrayTest {
 		List<Integer> values = new ArrayList<>(n);
 		for (int i = 0; i < n; i++)
 			values.add(i);
-		SplitFind.Element<Integer>[] elms = algo.make(values);
+		SplitFind.Elm<Integer>[] elms = algo.make(values);
 
 		int[] sequence = new int[n];
 		for (int x = 0; x < n; x++)
@@ -89,7 +89,7 @@ public class SplitFindMinArrayTest {
 			values.add(i);
 			keys.add(rand.nextDouble() * 100);
 		}
-		SplitFindMin.Element<Double, Integer>[] elms = algo.make(keys, values, null);
+		SplitFindMin.Elm<Double, Integer>[] elms = algo.make(keys, values, null);
 
 		int[] sequence = new int[n];
 		for (int x = 0; x < n; x++)

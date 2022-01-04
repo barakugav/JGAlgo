@@ -35,7 +35,7 @@ public class MSTKruskal1956 implements MST {
 		/* create union find data structure for each vertex */
 		UnionFind uf = UnionFindImpl.getInstance();
 		@SuppressWarnings("unchecked")
-		UnionFind.Element<Integer>[] verticesUfElms = new UnionFind.Element[n];
+		UnionFind.Elm<Integer>[] verticesUfElms = new UnionFind.Elm[n];
 		for (int v = 0; v < n; v++)
 			verticesUfElms[v] = uf.make(v);
 
@@ -43,7 +43,7 @@ public class MSTKruskal1956 implements MST {
 		Collection<Edge<E>> mst = new ArrayList<>(n - 1);
 		for (Edge<E> e : edges) {
 			int u = e.u(), v = e.v();
-			UnionFind.Element<Integer> ufElm = verticesUfElms[u], vfElm = verticesUfElms[v];
+			UnionFind.Elm<Integer> ufElm = verticesUfElms[u], vfElm = verticesUfElms[v];
 
 			if (uf.find(ufElm) != uf.find(vfElm)) {
 				uf.union(ufElm, vfElm);

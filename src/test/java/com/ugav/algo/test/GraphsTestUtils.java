@@ -142,7 +142,7 @@ class GraphsTestUtils {
 			Set<Pair<Integer, Integer>> existingEdges = new HashSet<>();
 			UnionFind uf = UnionFindImpl.getInstance();
 			@SuppressWarnings("unchecked")
-			UnionFind.Element<Void>[] ufs = new UnionFind.Element[n];
+			UnionFind.Elm<Void>[] ufs = new UnionFind.Elm[n];
 			int componentsNum = n;
 			Random rand = new Random(TestUtils.nextRandSeed());
 
@@ -179,8 +179,8 @@ class GraphsTestUtils {
 
 				// keep track of number of connectivity components
 				if (!cycles || connected) {
-					UnionFind.Element<Void> uElm = uf.find(ufs[u]);
-					UnionFind.Element<Void> vElm = uf.find(ufs[v]);
+					UnionFind.Elm<Void> uElm = uf.find(ufs[u]);
+					UnionFind.Elm<Void> vElm = uf.find(ufs[v]);
 
 					// avoid cycles
 					if (!cycles && uElm == vElm)

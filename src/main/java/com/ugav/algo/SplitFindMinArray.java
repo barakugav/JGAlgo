@@ -16,16 +16,16 @@ public class SplitFindMinArray implements SplitFindMin {
 	}
 
 	@Override
-	public <K, V> Element<K, V>[] make(Collection<K> keys, Collection<V> values, Comparator<? super K> c) {
+	public <K, V> Elm<K, V>[] make(Collection<K> keys, Collection<V> values, Comparator<? super K> c) {
 		if (keys.size() != values.size())
 			throw new IllegalArgumentException();
 
 		@SuppressWarnings("unchecked")
-		Elm<K, V>[] elms = new Elm[keys.size()];
+		ElmImpl<K, V>[] elms = new ElmImpl[keys.size()];
 		int i = 0;
 		Iterator<V> e = values.iterator();
 		for (Iterator<K> k = keys.iterator(); k.hasNext();)
-			elms[i++] = new Elm<>(k.next(), e.next());
+			elms[i++] = new ElmImpl<>(k.next(), e.next());
 		c = c != null ? c : Utils.getDefaultComparator();
 
 		Block<K, V> head = null, prev = null;
@@ -47,25 +47,25 @@ public class SplitFindMinArray implements SplitFindMin {
 		Sequence<K, V> seq = new Sequence<>(elms, head, c);
 
 		@SuppressWarnings("unchecked")
-		Element<K, V>[] res = new Element[elms.length];
+		Elm<K, V>[] res = new Elm[elms.length];
 		for (i = 0; i < elms.length; i++)
 			res[i] = elms[i];
 		return res;
 	}
 
 	@Override
-	public <K, V> Element<K, V> find(Element<K, V> e) {
-		Elm<K, V> elm = (Elm<K, V>) e;
+	public <K, V> Elm<K, V> find(Elm<K, V> e) {
+		ElmImpl<K, V> elm = (ElmImpl<K, V>) e;
 		Sequence<K, V> seq = elm.block.seq;
 		return seq.elms[seq.head.from];
 	}
 
 	@Override
-	public <K, V> Pair<? extends Element<K, V>, ? extends Element<K, V>> split(Element<K, V> e) {
-		Elm<K, V> elm = (Elm<K, V>) e;
+	public <K, V> Pair<? extends Elm<K, V>, ? extends Elm<K, V>> split(Elm<K, V> e) {
+		ElmImpl<K, V> elm = (ElmImpl<K, V>) e;
 		Block<K, V> blk = elm.block;
 		Sequence<K, V> seq = blk.seq;
-		Elm<K, V>[] elms = seq.elms;
+		ElmImpl<K, V>[] elms = seq.elms;
 
 		int elmIdx;
 		for (elmIdx = blk.from; elmIdx < blk.to; elmIdx++)
@@ -118,14 +118,14 @@ public class SplitFindMinArray implements SplitFindMin {
 	}
 
 	@Override
-	public <K, V> Element<K, V> findMin(Element<K, V> e) {
-		Elm<K, V> elm = (Elm<K, V>) e;
+	public <K, V> Elm<K, V> findMin(Elm<K, V> e) {
+		ElmImpl<K, V> elm = (ElmImpl<K, V>) e;
 		return elm.block.seq.min;
 	}
 
 	@Override
-	public <K, V> void decreaseKey(Element<K, V> e, K newKey) {
-		Elm<K, V> elm = (Elm<K, V>) e;
+	public <K, V> void decreaseKey(Elm<K, V> e, K newKey) {
+		ElmImpl<K, V> elm = (ElmImpl<K, V>) e;
 		Block<K, V> blk = elm.block;
 		Sequence<K, V> seq = blk.seq;
 		elm.key = newKey;
@@ -139,17 +139,17 @@ public class SplitFindMinArray implements SplitFindMin {
 
 	private static class Sequence<K, V> {
 
-		Elm<K, V>[] elms;
+		ElmImpl<K, V>[] elms;
 		Block<K, V> head;
-		Elm<K, V> min;
+		ElmImpl<K, V> min;
 		final Comparator<? super K> c;
 
-		Sequence(Elm<K, V>[] elms, Block<K, V> head, Comparator<? super K> c) {
+		Sequence(ElmImpl<K, V>[] elms, Block<K, V> head, Comparator<? super K> c) {
 			this.elms = elms;
 			this.head = head;
 			this.c = c;
 
-			Elm<K, V> min = null;
+			ElmImpl<K, V> min = null;
 			for (Block<K, V> blk = head; blk != null; blk = blk.next) {
 				blk.seq = this;
 				if (min == null || c.compare(min.key, blk.min.key) > 0)
@@ -186,15 +186,15 @@ public class SplitFindMinArray implements SplitFindMin {
 		final int to;
 		Block<K, V> next;
 		Block<K, V> prev;
-		Elm<K, V> min;
+		ElmImpl<K, V> min;
 
-		Block(Elm<K, V>[] elms, int from, int to, Comparator<? super K> c) {
+		Block(ElmImpl<K, V>[] elms, int from, int to, Comparator<? super K> c) {
 			this.from = from;
 			this.to = to;
 
-			Elm<K, V> min = null;
+			ElmImpl<K, V> min = null;
 			for (int i = from; i < to; i++) {
-				Elm<K, V> elm = elms[i];
+				ElmImpl<K, V> elm = elms[i];
 				elm.block = this;
 				if (min == null || c.compare(min.key, elm.key) > 0)
 					min = elm;
@@ -215,14 +215,14 @@ public class SplitFindMinArray implements SplitFindMin {
 
 	}
 
-	private static class Elm<K, V> implements SplitFindMin.Element<K, V> {
+	private static class ElmImpl<K, V> implements SplitFindMin.Elm<K, V> {
 
 		K key;
 		V val;
 
 		Block<K, V> block;
 
-		Elm(K k, V v) {
+		ElmImpl(K k, V v) {
 			key = k;
 			val = v;
 		}

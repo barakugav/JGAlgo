@@ -66,7 +66,7 @@ public class UnionFindTest {
 		int[] xs = new int[n];
 		int group[] = new int[n];
 		@SuppressWarnings("unchecked")
-		UnionFind.Element<Integer>[] es = new UnionFind.Element[n];
+		UnionFind.Elm<Integer>[] es = new UnionFind.Elm[n];
 
 		for (int i = 0; i < n; i++) {
 			xs[i] = i;
@@ -77,7 +77,7 @@ public class UnionFindTest {
 		for (UnionFindOp op0 : ops) {
 			if (op0 instanceof UnionFindOpFind) {
 				UnionFindOpFind op = (UnionFindOpFind) op0;
-				UnionFind.Element<Integer> actual = uf.find(es[op.x]);
+				UnionFind.Elm<Integer> actual = uf.find(es[op.x]);
 				int actualGroup = group[actual.get()];
 				int expectedGroup = group[op.x];
 				if (actualGroup != expectedGroup) {
