@@ -21,7 +21,8 @@ public class TestList {
 	private static final Collection<Class<?>> MISC_TESTS = List.of(
 			UnionFindTest.class,
 			SplitFindMinArrayTest.class,
-			TPMKomlos1985King1997Hagerup2009Test.class);
+			TPMKomlos1985King1997Hagerup2009Test.class,
+			MaxFlowEdmondsKarpTest.class);
 
 	private static final Collection<Class<?>> GRAPHS_TESTS = List.of(
 			LCARMQBenderFarachColton2000Test.class,
