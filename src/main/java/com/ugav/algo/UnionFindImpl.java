@@ -75,6 +75,11 @@ public class UnionFindImpl implements UnionFind {
 			this.v = v;
 		}
 
+		@Override
+		public String toString() {
+			return "<" + v + ">";
+		}
+
 	}
 
 }

@@ -38,11 +38,12 @@ public class MatchingBipartiteHopcroftKarp1973 implements MatchingBipartite {
 		boolean[] visited = new boolean[n];
 		@SuppressWarnings("unchecked")
 		Iterator<Edge<E>>[] edgeItr = new Iterator[n];
-		List<Edge<E>> dfsPath = new ArrayList<>();
+		@SuppressWarnings("unchecked")
+		Edge<E>[] dfsPath = new Edge[n];
 
 		@SuppressWarnings("unchecked")
 		Edge<E>[] matched = new Edge[n];
-		List<List<Edge<E>>> augPaths = new ArrayList<>();
+		List<Edge<E>[]> augPaths = new ArrayList<>();
 		Graph<E> f = new GraphArray<>(DirectedType.Undirected, n);
 
 		while (true) {
@@ -113,37 +114,32 @@ public class MatchingBipartiteHopcroftKarp1973 implements MatchingBipartite {
 					if (edgeToChild != null) {
 						int v = edgeToChild.v();
 						visited[v] = true;
-						dfsPath.add(edgeToChild);
+						dfsPath[depth++] = edgeToChild;
 
 						Edge<E> matchedEdge = matched[v];
 						if (matchedEdge == null) {
-							augPaths.add(new ArrayList<>(dfsPath));
-							dfsPath.clear();
+							@SuppressWarnings("unchecked")
+							Edge<E>[] augPath = new Edge[depth];
+							System.arraycopy(dfsPath, 0, augPath, 0, depth);
+							augPaths.add(augPath);
 							break dfs;
 						}
-						dfsPath.add(matchedEdge);
+						dfsPath[depth] = matchedEdge;
 						v = matchedEdge.v();
 
-						edgeItr[depth += 2] = f.edges(v);
-					} else {
-						if ((depth -= 2) < 0)
-							break;
-						dfsPath.remove(dfsPath.size() - 1);
-						dfsPath.remove(dfsPath.size() - 1);
-					}
+						edgeItr[++depth] = f.edges(v);
+					} else if ((depth -= 2) < 0)
+						break;
 				}
 			}
 			Arrays.fill(visited, false);
 			f.edges().clear();
 
-			for (List<Edge<E>> augPath : augPaths) {
-				boolean m = true;
-				for (Edge<E> e : augPath) {
-					if (m) {
-						matched[e.u()] = e;
-						matched[e.v()] = e.twin();
-					}
-					m = !m;
+			for (Edge<E>[] augPath : augPaths) {
+				for (int i = 0; i < augPath.length; i += 2) {
+					Edge<E> e = augPath[i];
+					matched[e.u()] = e;
+					matched[e.v()] = e.twin();
 				}
 			}
 			augPaths.clear();
