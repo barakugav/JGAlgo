@@ -238,11 +238,10 @@ public class GraphArray<E> extends GraphAbstract<E> {
 
 	}
 
-	private abstract static class EdgeImpl<E> implements Graph.Edge<E> {
+	private abstract static class EdgeImpl<E> extends EdgeAbstract<E> {
 
 		final int u;
 		final int v;
-		E value;
 
 		private EdgeImpl(int u, int v) {
 			this.u = u;
@@ -257,22 +256,6 @@ public class GraphArray<E> extends GraphAbstract<E> {
 		@Override
 		public int v() {
 			return v;
-		}
-
-		@Override
-		public E val() {
-			return value;
-		}
-
-		@Override
-		public void val(E v) {
-			value = v;
-		}
-
-		@Override
-		public String toString() {
-			E val = val();
-			return "(" + u + ", " + v + ")" + (val != null ? "[" + val() + "]" : "");
 		}
 
 	}
@@ -291,12 +274,12 @@ public class GraphArray<E> extends GraphAbstract<E> {
 
 		@Override
 		public E val() {
-			return getApiEdge().value;
+			return getApiEdge().val;
 		}
 
 		@Override
 		public void val(E v) {
-			getApiEdge().value = v;
+			getApiEdge().val = v;
 		}
 
 		@Override

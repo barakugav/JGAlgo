@@ -19,32 +19,6 @@ class GraphsTestUtils {
 		throw new InternalError();
 	}
 
-	private static class RandomUnique {
-
-		private final Random rand;
-		private final int minWeight;
-		private final int maxWeight;
-		private final Set<Integer> usedWeights;
-
-		RandomUnique(int minWeight, int maxWeight, long seed) {
-			rand = new Random(seed);
-			this.minWeight = minWeight;
-			this.maxWeight = maxWeight;
-			usedWeights = new HashSet<>();
-		}
-
-		int next() {
-			int w;
-			do {
-				w = rand.nextInt(minWeight, maxWeight);
-			} while (usedWeights.contains(w));
-
-			usedWeights.add(w);
-
-			return w;
-		}
-	}
-
 	static class RandomGraphBuilder {
 
 		private int n;
@@ -235,17 +209,13 @@ class GraphsTestUtils {
 		if (maxWeight - minWeight < g.edges().size() / 2)
 			throw new IllegalArgumentException("weight range is too small for unique weights");
 
-		RandomUnique rand = new RandomUnique(minWeight, maxWeight, TestUtils.nextRandSeed());
+		RandomIntUnique rand = new RandomIntUnique(minWeight, maxWeight, TestUtils.nextRandSeed());
 		for (Edge<Integer> e : g.edges())
 			e.val(rand.next());
 	}
 
 	static <E> Graph<E> randGraph(int n, int m) {
-		return randGraph(n, m, false);
-	}
-
-	static <E> Graph<E> randGraph(int n, int m, boolean selfEdges) {
-		return new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(false).selfEdges(selfEdges).cycles(true)
+		return new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(false).selfEdges(false).cycles(true)
 				.connected(false).build();
 	}
 

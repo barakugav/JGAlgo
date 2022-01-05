@@ -239,12 +239,11 @@ public abstract class GraphLinked<E> extends GraphAbstract<E> {
 
 	}
 
-	protected abstract static class Node<E> implements Graph.Edge<E> {
+	protected abstract static class Node<E> extends EdgeAbstract<E> {
 
 		protected final int u;
 		protected final int v;
 		protected Node<E> next;
-		E value;
 
 		protected Node(int u, int v) {
 			this.u = u;
@@ -259,21 +258,6 @@ public abstract class GraphLinked<E> extends GraphAbstract<E> {
 		@Override
 		public int v() {
 			return v;
-		}
-
-		@Override
-		public E val() {
-			return value;
-		}
-
-		@Override
-		public void val(E v) {
-			value = v;
-		}
-
-		@Override
-		public String toString() {
-			return "(" + u + ", " + v + ")[" + val() + "]";
 		}
 
 	}
@@ -296,12 +280,12 @@ public abstract class GraphLinked<E> extends GraphAbstract<E> {
 
 		@Override
 		public E val() {
-			return getApiEdge().value;
+			return getApiEdge().val;
 		}
 
 		@Override
 		public void val(E v) {
-			getApiEdge().value = v;
+			getApiEdge().val = v;
 		}
 
 		@Override
