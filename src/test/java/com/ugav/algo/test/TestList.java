@@ -19,7 +19,7 @@ public class TestList {
 			HeapFibonacciTest.class);
 
 	private static final Collection<Class<?>> MISC_TESTS = List.of(
-			UnionFindTest.class,
+			UnionFindPtrTest.class,
 			SplitFindMinArrayTest.class,
 			TPMKomlos1985King1997Hagerup2009Test.class,
 			MaxFlowEdmondsKarpTest.class);

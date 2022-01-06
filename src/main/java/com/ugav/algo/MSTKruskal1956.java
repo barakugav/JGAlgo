@@ -33,20 +33,15 @@ public class MSTKruskal1956 implements MST {
 		Arrays.sort(edges, new EdgeWeightComparator<>(w));
 
 		/* create union find data structure for each vertex */
-		UnionFind uf = UnionFindImpl.getInstance();
-		@SuppressWarnings("unchecked")
-		UnionFind.Elm<Integer>[] verticesUfElms = new UnionFind.Elm[n];
-		for (int v = 0; v < n; v++)
-			verticesUfElms[v] = uf.make(v);
+		UnionFind uf = new UnionFindPtr(n);
 
 		/* iterate over the edges and build the MST */
 		Collection<Edge<E>> mst = new ArrayList<>(n - 1);
 		for (Edge<E> e : edges) {
 			int u = e.u(), v = e.v();
-			UnionFind.Elm<Integer> ufElm = verticesUfElms[u], vfElm = verticesUfElms[v];
 
-			if (uf.find(ufElm) != uf.find(vfElm)) {
-				uf.union(ufElm, vfElm);
+			if (uf.find(u) != uf.find(v)) {
+				uf.union(u, v);
 				mst.add(e);
 			}
 		}

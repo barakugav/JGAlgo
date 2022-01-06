@@ -11,7 +11,7 @@ import com.ugav.algo.GraphArray;
 import com.ugav.algo.GraphBipartiteArray;
 import com.ugav.algo.Pair;
 import com.ugav.algo.UnionFind;
-import com.ugav.algo.UnionFindImpl;
+import com.ugav.algo.UnionFindPtr;
 
 class GraphsTestUtils {
 
@@ -114,14 +114,9 @@ class GraphsTestUtils {
 				throw new IllegalArgumentException("too much edges for random sampling");
 
 			Set<Pair<Integer, Integer>> existingEdges = new HashSet<>();
-			UnionFind uf = UnionFindImpl.getInstance();
-			@SuppressWarnings("unchecked")
-			UnionFind.Elm<Void>[] ufs = new UnionFind.Elm[n];
+			UnionFind uf = new UnionFindPtr(n);
 			int componentsNum = n;
 			Random rand = new Random(TestUtils.nextRandSeed());
-
-			for (int i = 0; i < n; i++)
-				ufs[i] = uf.make(null);
 
 			while ((connected && componentsNum > 1) || g.edges().size() < m) {
 				int u, v;
@@ -153,16 +148,16 @@ class GraphsTestUtils {
 
 				// keep track of number of connectivity components
 				if (!cycles || connected) {
-					UnionFind.Elm<Void> uElm = uf.find(ufs[u]);
-					UnionFind.Elm<Void> vElm = uf.find(ufs[v]);
+					int uComp = uf.find(u);
+					int vComp = uf.find(v);
 
 					// avoid cycles
-					if (!cycles && uElm == vElm)
+					if (!cycles && uComp == vComp)
 						continue;
 
-					if (uElm != vElm)
+					if (uComp != vComp)
 						componentsNum--;
-					uf.union(uElm, vElm);
+					uf.union(uComp, vComp);
 				}
 
 				g.addEdge(u, v);

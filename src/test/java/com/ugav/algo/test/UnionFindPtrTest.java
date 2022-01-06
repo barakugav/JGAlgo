@@ -1,11 +1,12 @@
 package com.ugav.algo.test;
 
 import java.util.Random;
+import java.util.function.Supplier;
 
 import com.ugav.algo.UnionFind;
-import com.ugav.algo.UnionFindImpl;
+import com.ugav.algo.UnionFindPtr;
 
-public class UnionFindTest {
+public class UnionFindPtrTest {
 
 	private static class UnionFindOp {
 
@@ -51,41 +52,40 @@ public class UnionFindTest {
 		}
 	}
 
-	private static boolean testUnionFind(UnionFind uf) {
-		return testUnionFind(uf, 4096, 4096);
+	private static boolean testUnionFind(Supplier<? extends UnionFind> builder) {
+		return testUnionFind(builder, 4096, 4096);
 	}
 
-	private static boolean testUnionFind(UnionFind uf, int n, int m) {
+	private static boolean testUnionFind(Supplier<? extends UnionFind> builder, int n, int m) {
 		UnionFindOp[] ops = new UnionFindOp[m];
 		randUnionFindOps(n, ops);
 
-		return unionFindOpsValidate(uf, n, ops);
+		return unionFindOpsValidate(builder, n, ops);
 	}
 
-	private static boolean unionFindOpsValidate(UnionFind uf, int n, UnionFindOp[] ops) {
+	private static boolean unionFindOpsValidate(Supplier<? extends UnionFind> builder, int n, UnionFindOp[] ops) {
+		UnionFind uf = builder.get();
 		int[] xs = new int[n];
 		int group[] = new int[n];
-		@SuppressWarnings("unchecked")
-		UnionFind.Elm<Integer>[] es = new UnionFind.Elm[n];
 
 		for (int i = 0; i < n; i++) {
 			xs[i] = i;
 			group[i] = i;
-			es[i] = uf.make(i);
+			uf.make();
 		}
 
 		for (UnionFindOp op0 : ops) {
 			if (op0 instanceof UnionFindOpFind) {
 				UnionFindOpFind op = (UnionFindOpFind) op0;
-				UnionFind.Elm<Integer> actual = uf.find(es[op.x]);
-				int actualGroup = group[actual.get()];
+				int actual = uf.find(op.x);
+				int actualGroup = group[actual];
 				int expectedGroup = group[op.x];
 				if (actualGroup != expectedGroup) {
 					return false;
 				}
 			} else if (op0 instanceof UnionFindOpUnion) {
 				UnionFindOpUnion op = (UnionFindOpUnion) op0;
-				uf.union(es[op.a], es[op.b]);
+				uf.union(op.a, op.b);
 				int agroup = group[op.a];
 				int bgroup = group[op.b];
 				for (int i = 0; i < n; i++)
@@ -99,7 +99,7 @@ public class UnionFindTest {
 
 	@Test
 	public static boolean regular() {
-		return testUnionFind(UnionFindImpl.getInstance());
+		return testUnionFind(UnionFindPtr::new);
 	}
 
 }

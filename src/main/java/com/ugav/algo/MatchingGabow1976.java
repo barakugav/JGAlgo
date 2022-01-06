@@ -45,17 +45,17 @@ public class MatchingGabow1976 implements Matching {
 		int blossomBaseSearchNotesIndex = 0;
 		int[] blossomVertices = new int[n];
 
-		UnionFind uf = UnionFindImpl.getInstance();
-		@SuppressWarnings("unchecked")
-		UnionFind.Elm<Integer>[] ufElms = new UnionFind.Elm[n];
+		UnionFind uf = new UnionFindPtr();
+		int[] bases = new int[n];
 
 		while (true) {
 			int treeNum = 0;
 			Arrays.fill(tree, -1);
-			Arrays.fill(isEven, false);
 
-			for (int u = 0; u < n; u++)
-				ufElms[u] = uf.make(u);
+			for (int u = 0; u < n; u++) {
+				uf.make();
+				bases[u] = u;
+			}
 
 			int augPathSize = 0;
 
@@ -91,14 +91,14 @@ public class MatchingGabow1976 implements Matching {
 						continue;
 					}
 
-					int vBase = uf.find(ufElms[v]).get();
+					int vBase = bases[uf.find(v)];
 					if (!isEven[vBase])
 						// edge to an odd vertex in some tree, ignore
 						continue;
 
 					if (vTree == uTree) {
 						// Blossom
-						int uBase = uf.find(ufElms[u]).get();
+						int uBase = bases[uf.find(u)];
 						if (uBase == vBase)
 							// edge within existing blossom, ignore
 							continue;
@@ -117,7 +117,7 @@ public class MatchingGabow1976 implements Matching {
 								blossomBaseSearchNotes[p] = searchIdx;
 								if (p != uRoot) {
 									p = parent[matched[p].v()].v(); // move 2 up
-									ps[i] = uf.find(ufElms[p]).get();
+									ps[i] = bases[uf.find(p)];
 								} else
 									ps[i] = -1;
 							}
@@ -138,15 +138,14 @@ public class MatchingGabow1976 implements Matching {
 								queue[queueEnd++] = p; // add the odd vertex that became even to the queue
 								bridge[p] = brigeEdge;
 
-								p = uf.find(ufElms[parent[p].v()]).get();
+								p = bases[uf.find(parent[p].v())];
 							}
 						}
 
 						// Union all UF elements in the new blossom
-						UnionFind.Elm<Integer> baseElm = ufElms[base];
 						for (int i = 0; i < blossomVerticesSize; i++)
-							uf.union(baseElm, ufElms[blossomVertices[i]]);
-						uf.find(baseElm).set(base); // make sure the UF value is the base
+							uf.union(base, blossomVertices[i]);
+						bases[uf.find(base)] = base; // make sure the UF value is the base
 
 					} else {
 						// augmenting path
@@ -171,6 +170,9 @@ public class MatchingGabow1976 implements Matching {
 					matched[e.v()] = e.twin();
 				}
 			}
+
+			Arrays.fill(isEven, false);
+			uf.clear();
 		}
 
 		List<Edge<E>> res = new ArrayList<>();
