@@ -11,7 +11,7 @@ import com.ugav.algo.GraphArray;
 import com.ugav.algo.GraphBipartiteArray;
 import com.ugav.algo.Pair;
 import com.ugav.algo.UnionFind;
-import com.ugav.algo.UnionFindPtr;
+import com.ugav.algo.UnionFindArray;
 
 class GraphsTestUtils {
 
@@ -114,7 +114,7 @@ class GraphsTestUtils {
 				throw new IllegalArgumentException("too much edges for random sampling");
 
 			Set<Pair<Integer, Integer>> existingEdges = new HashSet<>();
-			UnionFind uf = new UnionFindPtr(n);
+			UnionFind uf = new UnionFindArray(n);
 			int componentsNum = n;
 			Random rand = new Random(TestUtils.nextRandSeed());
 

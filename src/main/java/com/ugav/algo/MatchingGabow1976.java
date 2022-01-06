@@ -45,7 +45,7 @@ public class MatchingGabow1976 implements Matching {
 		int blossomBaseSearchNotesIndex = 0;
 		int[] blossomVertices = new int[n];
 
-		UnionFind uf = new UnionFindPtr();
+		UnionFind uf = new UnionFindArray();
 		int[] bases = new int[n];
 
 		while (true) {

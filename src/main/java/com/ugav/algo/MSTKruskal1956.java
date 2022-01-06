@@ -33,7 +33,7 @@ public class MSTKruskal1956 implements MST {
 		Arrays.sort(edges, new EdgeWeightComparator<>(w));
 
 		/* create union find data structure for each vertex */
-		UnionFind uf = new UnionFindPtr(n);
+		UnionFind uf = new UnionFindArray(n);
 
 		/* iterate over the edges and build the MST */
 		Collection<Edge<E>> mst = new ArrayList<>(n - 1);
