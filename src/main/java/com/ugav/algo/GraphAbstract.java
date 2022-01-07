@@ -9,22 +9,6 @@ public abstract class GraphAbstract<E> implements Graph<E> {
 	}
 
 	@Override
-	public int getEdgesArr(int u, Edge<E>[] edges, int begin) {
-		int count = 0;
-		for (Iterator<Edge<E>> it = edges(u); it.hasNext();)
-			edges[begin + count++] = it.next();
-		return count;
-	}
-
-	@Override
-	public int getEdgesArrVs(int u, int[] edges, int begin) {
-		int count = 0;
-		for (Iterator<Edge<E>> it = edges(u); it.hasNext();)
-			edges[begin + count++] = it.next().v();
-		return count;
-	}
-
-	@Override
 	public void addEdge(Edge<E> e) {
 		edges().add(e);
 	}

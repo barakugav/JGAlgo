@@ -48,10 +48,6 @@ public interface Graph<E> {
 	 */
 	public boolean hasEdge(int u, int v);
 
-	public int getEdgesArr(int u, Edge<E>[] edges, int begin);
-
-	public int getEdgesArrVs(int u, int[] edges, int begin);
-
 	/**
 	 * Checks if the graph is directed
 	 *

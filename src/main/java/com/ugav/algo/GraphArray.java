@@ -67,25 +67,6 @@ public class GraphArray<E> extends GraphAbstract<E> {
 	}
 
 	@Override
-	public int getEdgesArr(int u, Edge<E>[] edges, int begin) {
-		int len = edgesLen[u];
-		if (len == 0)
-			return 0;
-		Edge<E>[] es = this.edges[u];
-		System.arraycopy(es, 0, edges, begin, len);
-		return len;
-	}
-
-	@Override
-	public int getEdgesArrVs(int u, int[] edges, int begin) {
-		Edge<E>[] es = this.edges[u];
-		int len = edgesLen[u];
-		for (int i = 0; i < len; i++)
-			edges[begin + i] = es[i].v();
-		return len;
-	}
-
-	@Override
 	public boolean isDirected() {
 		return directed;
 	}

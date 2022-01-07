@@ -106,24 +106,6 @@ public abstract class GraphLinked<E> extends GraphAbstract<E> {
 	}
 
 	@Override
-	public int getEdgesArr(int u, Edge<E>[] edges, int begin) {
-		int i = 0;
-		for (Node<E> n = this.edges[u]; n != null; n = n.next)
-			edges[begin + i++] = n;
-		return i;
-	}
-
-	@Override
-	public int getEdgesArrVs(int u, int[] edges, int begin) {
-		if (u >= n)
-			throw new IllegalArgumentException();
-		int i = 0;
-		for (Node<E> n = this.edges[u]; n != null; n = n.next)
-			edges[begin + i++] = n.v;
-		return i;
-	}
-
-	@Override
 	public int newVertex() {
 		int v = n++;
 		if (edges.length < n)
