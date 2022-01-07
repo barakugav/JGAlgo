@@ -252,50 +252,175 @@ public class Graphs {
 	 *
 	 * This function support undirected graphs only
 	 *
-	 * @param g a graph
-	 * @return ([vertex]->[CC], [CC]->[size])
+	 * @param g an undirected graph
+	 * @return (CC number, [vertex]->[CC])
 	 * @throws IllegalArgumentException if the graph is directed
 	 */
-	static <E> Pair<int[], int[]> findConnectivityComponents(Graph<E> g) {
+	public static <E> Pair<Integer, int[]> findConnectivityComponents(Graph<E> g) {
 		if (g.isDirected())
 			throw new IllegalArgumentException("only undirected graphs are supported");
 		int n = g.vertices();
 		int[] stack = new int[n];
 
-		int[] label = new int[n];
-		Arrays.fill(label, -1);
-		int labelCount = 0;
-
-		List<Integer> componentsSizes = new ArrayList<>();
+		int[] comp = new int[n];
+		Arrays.fill(comp, -1);
+		int compNum = 0;
 
 		for (int r = 0; r < n; r++) {
-			if (label[r] != -1)
+			if (comp[r] != -1)
 				continue;
 
-			int componentsSize = 0;
 			int stackSize = 1;
 			stack[0] = r;
 
 			while (stackSize-- > 0) {
 				int u = stack[stackSize];
-				label[u] = labelCount;
-				componentsSize++;
+				comp[u] = compNum;
 
 				for (Iterator<Edge<E>> it = g.edges(u); it.hasNext();) {
 					int v = it.next().v();
-					if (label[v] != -1)
+					if (comp[v] != -1)
 						continue;
 					stack[stackSize++] = v;
 				}
 			}
-			componentsSizes.add(componentsSize);
-			labelCount++;
+			compNum++;
+		}
+		return Pair.valueOf(compNum, comp);
+	}
+
+	/**
+	 * Find all strong connectivity components
+	 *
+	 * The connectivity components (CC) are groups of vertices where it's possible
+	 * to reach each one from one another.
+	 *
+	 * This function is specifically for directed graphs.
+	 *
+	 * @param g a directed graph
+	 * @return (CC number, [vertex]->[CC])
+	 */
+	public static <E> Pair<Integer, int[]> findStrongConnectivityComponents(Graph<E> g) {
+		if (!g.isDirected())
+			return findConnectivityComponents(g);
+
+		int n = g.vertices();
+
+		int[] comp = new int[n];
+		Arrays.fill(comp, -1);
+		int compNum = 0;
+
+		int[] dfsPath = new int[n];
+		@SuppressWarnings("unchecked")
+		Iterator<Edge<E>>[] edges = new Iterator[n];
+
+		int[] c = new int[n];
+		int[] s = new int[n];
+		int[] p = new int[n];
+		int cNext = 1, sSize = 0, pSize = 0;
+
+		for (int r = 0; r < n; r++) {
+			if (comp[r] != -1)
+				continue;
+			dfsPath[0] = r;
+			edges[0] = g.edges(r);
+			c[r] = cNext++;
+			s[sSize++] = p[pSize++] = r;
+
+			dfs: for (int depth = 0;;) {
+				while (edges[depth].hasNext()) {
+					Edge<E> e = edges[depth].next();
+					int v = e.v();
+					if (c[v] == 0) {
+						c[v] = cNext++;
+						s[sSize++] = p[pSize++] = v;
+
+						dfsPath[++depth] = v;
+						edges[depth] = g.edges(v);
+						continue dfs;
+					} else if (comp[v] == -1)
+						while (c[p[pSize - 1]] > c[v])
+							pSize--;
+				}
+				int u = dfsPath[depth];
+				if (p[pSize - 1] == u) {
+					int v;
+					do {
+						v = s[--sSize];
+						comp[v] = compNum;
+					} while (v != u);
+					compNum++;
+					pSize--;
+				}
+
+				edges[depth] = null;
+				if (depth-- == 0)
+					break;
+			}
+		}
+		return Pair.valueOf(compNum, comp);
+	}
+
+	public static <E> int[] calcTopologicalSortingDAG(Graph<E> g) {
+		if (!g.isDirected())
+			throw new IllegalArgumentException();
+		int n = g.vertices();
+		int[] inDegree = new int[n];
+		int[] queue = new int[n];
+		int[] topolSort = new int[n];
+		int queueBegin = 0, queueEnd = 0, topolSortSize = 0;
+
+		// Calc in degree of all vertices
+		for (Edge<E> e : g.edges())
+			if (e.u() != e.v())
+				inDegree[e.v()]++;
+
+		// Find vertices with zero in degree and insert them to the queue
+		for (int v = 0; v < n; v++)
+			if (inDegree[v] == 0)
+				queue[queueEnd++] = v;
+
+		// Poll vertices from the queue and "remove" each one from the tree and add new
+		// zero in degree vertices to the queue
+		while (queueBegin != queueEnd) {
+			int u = queue[queueBegin++];
+			topolSort[topolSortSize++] = u;
+			for (Iterator<Edge<E>> it = g.edges(u); it.hasNext();) {
+				int v = it.next().v();
+				if (--inDegree[v] == 0)
+					queue[queueEnd++] = v;
+			}
 		}
 
-		int[] componentsSizesArr = new int[labelCount];
-		for (int i = 0; i < labelCount; i++)
-			componentsSizesArr[i] = componentsSizes.get(i);
-		return Pair.valueOf(label, componentsSizesArr);
+		if (topolSortSize != n)
+			throw new IllegalArgumentException("G is not a directed acyclic graph (DAG)");
+
+		return topolSort;
+	}
+
+	public static <E> double[] calcDistancesDAG(Graph<E> g, WeightFunction<E> w, int source) {
+		int n = g.vertices();
+		double[] distance = new double[n];
+		Arrays.fill(distance, Double.MAX_VALUE);
+		distance[source] = 0;
+
+		int[] topolSort = calcTopologicalSortingDAG(g);
+		boolean sourceSeen = false;
+		for (int i = 0; i < n; i++) {
+			int u = topolSort[i];
+			if (!sourceSeen) {
+				if (u != source)
+					continue;
+				sourceSeen = true;
+			}
+			for (Iterator<Edge<E>> it = g.edges(u); it.hasNext();) {
+				Edge<E> e = it.next();
+				int v = e.v();
+				distance[v] = Math.min(distance[v], distance[u] + w.weight(e));
+			}
+		}
+
+		return distance;
 	}
 
 	public static <E> int getFullyBranchingTreeDepth(Graph<E> t, int root) {

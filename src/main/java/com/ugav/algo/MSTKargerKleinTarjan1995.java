@@ -84,17 +84,20 @@ public class MSTKargerKleinTarjan1995 implements MST {
 	}
 
 	private static <E> Collection<Edge<E>> lightEdges(Graph<E> g, Graph<E> f, WeightFunction<E> w) {
+		int n = f.vertices();
 		/* find connectivity components in the forest, each one of them is a tree */
-		Pair<int[], int[]> r = Graphs.findConnectivityComponents(f);
-		int[] vToTree = r.e1;
-		int[] treeSizes = r.e2;
+		Pair<Integer, int[]> r = Graphs.findConnectivityComponents(f);
+		int treeCount = r.e1;
+		int[] vToTree = r.e2;
+		int[] treeSizes = new int[treeCount];
+		for (int u = 0; u < n; u++)
+			treeSizes[vToTree[u]]++;
 
 		@SuppressWarnings("unchecked")
 		Graph<Double>[] trees = new Graph[treeSizes.length];
 		for (int t = 0; t < trees.length; t++)
 			trees[t] = new GraphArray<>(DirectedType.Undirected, treeSizes[t]);
 
-		int n = f.vertices();
 		int[] vToVnew = new int[n];
 		int[] treeToNextv = new int[trees.length];
 		for (int u = 0; u < n; u++)
@@ -104,10 +107,6 @@ public class MSTKargerKleinTarjan1995 implements MST {
 			int un = vToVnew[e.u()], vn = vToVnew[e.v()];
 			trees[vToTree[e.u()]].addEdge(un, vn).val(w.weight(e));
 		}
-
-		for (int t = 0; t < trees.length; t++)
-			if (!Graphs.isTree(trees[t]))
-				System.out.print("");
 
 		/*
 		 * use the tree path maxima to find the heaviest edge in the path connecting u v

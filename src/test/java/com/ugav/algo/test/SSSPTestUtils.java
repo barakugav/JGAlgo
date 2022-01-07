@@ -11,6 +11,8 @@ class SSSPTestUtils {
 		throw new InternalError();
 	}
 
+	// TODO SSSP positive and SSSP negative from the Internet
+
 	static boolean testSSSPPositive(SSSP algo) {
 		int[][][] adjacencyMatrices = new int[][][] {
 				{ { 0, 0, 35, 91, 0, 0, 0, 0, 76, 19, 49, 0, 9, 62, 77, 43 },
@@ -308,7 +310,8 @@ class SSSPTestUtils {
 			int[] distancesExpected = expectedDistances[i];
 			int n = adjacencyMatrix.length;
 
-			Graph<Integer> g = GraphsTestUtils.createGraphFromAdjacencyMatrixWeightedInt(adjacencyMatrix, DirectedType.Directed);
+			Graph<Integer> g = GraphsTestUtils.createGraphFromAdjacencyMatrixWeightedInt(adjacencyMatrix,
+					DirectedType.Directed);
 			SSSP.Result<Integer> results = algo.calcDistances(g, Graphs.WEIGHT_INT_FUNC_DEFAULT, source);
 
 			for (int v = 0; v < n; v++) {
