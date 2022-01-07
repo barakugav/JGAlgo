@@ -1,7 +1,9 @@
 package com.ugav.algo;
 
 import java.util.Arrays;
+import java.util.Iterator;
 
+import com.ugav.algo.Graph.Edge;
 import com.ugav.algo.RMQ.IntArrayComparator;
 
 public class LCARMQBenderFarachColton2000 implements LCA {
@@ -34,44 +36,34 @@ public class LCARMQBenderFarachColton2000 implements LCA {
 		int n = t.vertices();
 		int[] depths = new int[n * 2];
 		int[] vs = new int[n * 2];
-		int[] edges = new int[n * 2];
-
-		int s = 0;
 		int[] parent = new int[n];
-		int[] edgesOffset = new int[n];
-		int[] edgesCount = new int[n];
-		int[] edgesIdx = new int[n];
+
+		@SuppressWarnings("unchecked")
+		Iterator<Edge<E>>[] edges = new Iterator[n];
 
 		parent[0] = -1;
-		edgesOffset[0] = 0;
-		edgesCount[0] = t.getEdgesArrVs(r, edges, 0);
-		edgesIdx[0] = 0;
+		edges[0] = t.edges(r);
 
 		int aLen = 0;
-		for (int v = r; v != -1;) {
-			depths[aLen] = s;
-			vs[aLen] = v;
+		dfs: for (int u = r, depth = 0;;) {
+			depths[aLen] = depth;
+			vs[aLen] = u;
 			aLen++;
 
-			int child = -1;
-			for (int i = edgesIdx[s]; i < edgesCount[s]; i++) {
-				if (edges[edgesOffset[s] + i] != parent[s]) {
-					child = edges[edgesOffset[s] + i];
-					edgesIdx[s] = i + 1;
-					break;
-				}
+			while (edges[depth].hasNext()) {
+				Edge<E> e = edges[depth].next();
+				int v = e.v();
+				if (v == parent[depth])
+					continue;
+				depth++;
+				parent[depth] = u;
+				edges[depth] = t.edges(v);
+				u = v;
+				continue dfs;
 			}
-			if (child != -1) {
-				s++;
-				parent[s] = v;
-				edgesOffset[s] = edgesOffset[s - 1] + edgesCount[s - 1];
-				edgesCount[s] = t.getEdgesArrVs(child, edges, edgesOffset[s]);
-				edgesIdx[s] = 0;
-				v = child;
-			} else {
-				v = parent[s];
-				s--;
-			}
+			u = parent[depth];
+			if (--depth < 0)
+				break;
 		}
 
 		depths = Arrays.copyOf(depths, aLen);

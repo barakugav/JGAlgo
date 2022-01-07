@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.function.Function;
 
 import com.ugav.algo.Graph.DirectedType;
 import com.ugav.algo.Graph.Edge;
@@ -24,8 +25,8 @@ public class MSTBoruvka1926 implements MST {
 		return calcMST0(g, w, Integer.MAX_VALUE).e3;
 	}
 
-	static <E> Pair<Graph<Edge<E>>, Collection<Edge<E>>> runBoruvka(Graph<E> g, Graph.WeightFunction<E> w,
-			int numberOfRounds) {
+	static <E, R> Pair<Graph<R>, Collection<Edge<E>>> runBoruvka(Graph<E> g, Graph.WeightFunction<E> w,
+			int numberOfRounds, Function<Edge<E>, R> edgeValAssigner) {
 		if (numberOfRounds <= 0)
 			throw new IllegalArgumentException();
 		Triple<int[], Integer, Collection<Edge<E>>> r = calcMST0(g, w, numberOfRounds);
@@ -33,15 +34,15 @@ public class MSTBoruvka1926 implements MST {
 		int treeNum = r.e2;
 		Collection<Edge<E>> mstEdges = r.e3;
 
-		Graph<Edge<E>> g0 = new GraphArray<>(DirectedType.Undirected, treeNum);
+		Graph<R> contractedG = new GraphArray<>(DirectedType.Undirected, treeNum);
 		for (Edge<E> e : g.edges()) {
 			int u = tree[e.u()];
 			int v = tree[e.v()];
 			if (u == v)
 				continue;
-			g0.addEdge(u, v).val(e);
+			contractedG.addEdge(u, v).val(edgeValAssigner.apply(e));
 		}
-		return Pair.valueOf(g0, mstEdges);
+		return Pair.valueOf(contractedG, mstEdges);
 	}
 
 	private static <E> Triple<int[], Integer, Collection<Edge<E>>> calcMST0(Graph<E> g, Graph.WeightFunction<E> w,

@@ -35,6 +35,16 @@ public class MSTKargerKleinTarjan1995 implements MST {
 		return calcMST0(g, w);
 	}
 
+	private static class Ref<E> {
+		final Edge<E> e;
+		final double w;
+
+		Ref(Edge<E> e, double w) {
+			this.e = e;
+			this.w = w;
+		}
+	}
+
 	private <E> Collection<Edge<E>> calcMST0(Graph<E> g, WeightFunction<E> w) {
 		if (g.vertices() == 0 || g.edges().isEmpty())
 			return Collections.emptyList();
@@ -44,19 +54,19 @@ public class MSTKargerKleinTarjan1995 implements MST {
 		 * the value stored in each edge is a reference to the old edge. This is a
 		 * little bit clumsy, but didn't find another way.
 		 */
-		WeightFunction<Edge<E>> w0 = e -> w.weight(e.val());
-		Pair<Graph<Edge<E>>, Collection<Edge<E>>> r = MSTBoruvka1926.runBoruvka(g, w, 2);
-		Graph<Edge<E>> g0 = r.e1;
+		WeightFunction<Ref<E>> w0 = e -> e.val().w;
+		Pair<Graph<Ref<E>>, Collection<Edge<E>>> r = MSTBoruvka1926.runBoruvka(g, w, 2, e -> new Ref<>(e, w.weight(e)));
+		Graph<Ref<E>> g0 = r.e1;
 		Collection<Edge<E>> f0 = r.e2;
-		Graph<Edge<E>> g1 = randSubgraph(g0);
-		Collection<Edge<Edge<E>>> f1Edges = calcMST0(g1, w0);
-		Graph<Edge<E>> f1 = GraphArray.valueOf(g1.vertices(), f1Edges, DirectedType.Undirected);
-		Collection<Edge<Edge<E>>> e2 = lightEdges(g0, f1, w0);
-		Graph<Edge<E>> g2 = GraphArray.valueOf(g0.vertices(), e2, DirectedType.Undirected);
-		Collection<Edge<Edge<E>>> f2 = calcMST0(g2, w0);
+		Graph<Ref<E>> g1 = randSubgraph(g0);
+		Collection<Edge<Ref<E>>> f1Edges = calcMST0(g1, w0);
+		Graph<Ref<E>> f1 = GraphArray.valueOf(g1.vertices(), f1Edges, DirectedType.Undirected);
+		Collection<Edge<Ref<E>>> e2 = lightEdges(g0, f1, w0);
+		Graph<Ref<E>> g2 = GraphArray.valueOf(g0.vertices(), e2, DirectedType.Undirected);
+		Collection<Edge<Ref<E>>> f2 = calcMST0(g2, w0);
 
-		for (Edge<Edge<E>> e : f2)
-			f0.add(e.val());
+		for (Edge<Ref<E>> e : f2)
+			f0.add(e.val().e);
 		return f0;
 	}
 

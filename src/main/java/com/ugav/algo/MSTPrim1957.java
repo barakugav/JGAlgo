@@ -1,7 +1,6 @@
 package com.ugav.algo;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -34,7 +33,6 @@ public class MSTPrim1957 implements MST {
 		@SuppressWarnings("unchecked")
 		Heap.Handle<Edge<E>>[] verticesPtrs = new Heap.Handle[n];
 		boolean[] visited = new boolean[n];
-		Arrays.fill(visited, false);
 
 		Collection<Edge<E>> mst = new ArrayList<>(n - 1);
 		for (int r = 0; r < n; r++) {

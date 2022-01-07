@@ -106,27 +106,19 @@ public class Graphs {
 		Iterator<Edge<E>>[] edges = new Iterator[n];
 		List<Edge<E>> edgesFromSource = new ArrayList<>();
 
-		int depth = 0;
-
-		edges[depth] = g.edges(source);
+		edges[0] = g.edges(source);
 		visited[source] = true;
 		if (!op.handleVertex(source, edgesFromSource))
 			return;
 
-		while (true) {
-			Edge<E> edgeToChild = null;
-			while (edges[depth].hasNext()) {
+		for (int depth = 0;;) {
+			if (edges[depth].hasNext()) {
 				Edge<E> e = edges[depth].next();
 				int v = e.v();
-				if (!visited[v]) {
-					edgeToChild = e;
-					break;
-				}
-			}
-			if (edgeToChild != null) {
-				int v = edgeToChild.v();
+				if (visited[v])
+					continue;
 				visited[v] = true;
-				edgesFromSource.add(edgeToChild);
+				edgesFromSource.add(e);
 				edges[++depth] = g.edges(v);
 
 				if (!op.handleVertex(v, edgesFromSource))
@@ -155,14 +147,22 @@ public class Graphs {
 	public static <E> List<Edge<E>> findPath(Graph<E> g, int u, int v) {
 		if (u == v)
 			return Collections.emptyList();
+		boolean reverse = true;
+		if (!g.isDirected()) {
+			int t = u;
+			u = v;
+			v = t;
+			reverse = false;
+		}
 		int n = g.vertices();
 
 		@SuppressWarnings("unchecked")
 		Edge<E>[] backtrack = new Edge[n];
 
+		int target = v;
 		runBFS(g, u, (p, e) -> {
 			backtrack[p] = e;
-			return p != v;
+			return p != target;
 		});
 
 		if (backtrack[v] == null)
@@ -174,7 +174,8 @@ public class Graphs {
 			path.add(e);
 			p = e.u();
 		}
-		Collections.reverse(path);
+		if (reverse)
+			Collections.reverse(path);
 		return path;
 	}
 
@@ -209,7 +210,6 @@ public class Graphs {
 		Arrays.fill(parent, -1);
 
 		int[] stack = new int[n];
-		int[] edges = new int[n];
 		int visitedCount = 0;
 
 		for (int i = 0; i < roots.length; i++) {
@@ -227,10 +227,9 @@ public class Graphs {
 			while (stackSize-- > 0) {
 				int u = stack[stackSize];
 				visitedCount++;
-				int edgesCount = g.getEdgesArrVs(u, edges, 0);
 
-				for (int j = 0; j < edgesCount; j++) {
-					int v = edges[j];
+				for (Iterator<Edge<E>> it = g.edges(u); it.hasNext();) {
+					int v = it.next().v();
 					if (!directed && v == parent[u])
 						continue;
 					if (visited[v])
@@ -251,6 +250,8 @@ public class Graphs {
 	 * The connectivity components (CC) are groups of vertices where it's possible
 	 * to reach each one from one another.
 	 *
+	 * This function support undirected graphs only
+	 *
 	 * @param g a graph
 	 * @return ([vertex]->[CC], [CC]->[size])
 	 * @throws IllegalArgumentException if the graph is directed
@@ -260,7 +261,6 @@ public class Graphs {
 			throw new IllegalArgumentException("only undirected graphs are supported");
 		int n = g.vertices();
 		int[] stack = new int[n];
-		int[] edges = new int[n];
 
 		int[] label = new int[n];
 		Arrays.fill(label, -1);
@@ -280,10 +280,9 @@ public class Graphs {
 				int u = stack[stackSize];
 				label[u] = labelCount;
 				componentsSize++;
-				int edgesCount = g.getEdgesArrVs(u, edges, 0);
 
-				for (int i = 0; i < edgesCount; i++) {
-					int v = edges[i];
+				for (Iterator<Edge<E>> it = g.edges(u); it.hasNext();) {
+					int v = it.next().v();
 					if (label[v] != -1)
 						continue;
 					stack[stackSize++] = v;

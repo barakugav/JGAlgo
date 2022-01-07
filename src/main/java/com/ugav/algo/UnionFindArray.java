@@ -39,16 +39,17 @@ public class UnionFindArray implements UnionFind {
 	public int find(int x) {
 		if (x < 0 || x >= size)
 			throw new IllegalArgumentException();
+		int[] p = parent;
 
 		/* Find root */
 		int r;
-		for (r = x; parent[r] != NO_PARENT; r = parent[r])
+		for (r = x; p[r] != NO_PARENT; r = p[r])
 			;
 
 		/* path compression */
 		for (; x != r;) {
-			int next = parent[x];
-			parent[x] = r;
+			int next = p[x];
+			p[x] = r;
 			x = next;
 		}
 
@@ -61,13 +62,14 @@ public class UnionFindArray implements UnionFind {
 		b = find(b);
 		if (a == b)
 			return a;
+		byte[] r = rank;
 
-		if (rank[a] < rank[b]) {
+		if (r[a] < r[b]) {
 			int temp = a;
 			a = b;
 			b = temp;
-		} else if (rank[a] == rank[b])
-			rank[a]++;
+		} else if (r[a] == r[b])
+			r[a]++;
 
 		parent[b] = a;
 		return a;

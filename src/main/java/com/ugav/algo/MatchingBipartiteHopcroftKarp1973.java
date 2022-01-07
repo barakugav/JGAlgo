@@ -37,13 +37,12 @@ public class MatchingBipartiteHopcroftKarp1973 implements MatchingBipartite {
 		/* DFS */
 		boolean[] visited = new boolean[n];
 		@SuppressWarnings("unchecked")
-		Iterator<Edge<E>>[] edgeItr = new Iterator[n];
+		Iterator<Edge<E>>[] edges = new Iterator[n];
 		@SuppressWarnings("unchecked")
 		Edge<E>[] dfsPath = new Edge[n];
 
 		@SuppressWarnings("unchecked")
 		Edge<E>[] matched = new Edge[n];
-		List<Edge<E>[]> augPaths = new ArrayList<>();
 		Graph<E> f = new GraphArray<>(DirectedType.Undirected, n);
 
 		while (true) {
@@ -54,7 +53,6 @@ public class MatchingBipartiteHopcroftKarp1973 implements MatchingBipartite {
 				if (!g.isVertexInS(u) || matched[u] != null)
 					continue;
 				depths[u] = 0;
-				visited[u] = true;
 				bfsQueue[queueEnd++] = u;
 			}
 			int unmatchedTDepth = Integer.MAX_VALUE;
@@ -70,17 +68,15 @@ public class MatchingBipartiteHopcroftKarp1973 implements MatchingBipartite {
 					if (depths[v] < depth)
 						continue;
 					f.addEdge(e);
-					if (visited[v])
+					if (depths[v] != Integer.MAX_VALUE)
 						continue;
 					depths[v] = depth + 1;
-					visited[v] = true;
 
 					Edge<E> matchedEdge = matched[v];
 					if (matchedEdge != null) {
 						f.addEdge(matchedEdge);
 						v = matchedEdge.v();
 						depths[v] = depth + 2;
-						visited[v] = true;
 						bfsQueue[queueEnd++] = v;
 					} else
 						unmatchedTDepth = depth + 1;
@@ -88,7 +84,6 @@ public class MatchingBipartiteHopcroftKarp1973 implements MatchingBipartite {
 			}
 			if (unmatchedTDepth == Integer.MAX_VALUE)
 				break;
-			Arrays.fill(visited, false);
 
 			/*
 			 * Run DFS to find the maximal number of paths from unmatched S vertices to
@@ -98,52 +93,41 @@ public class MatchingBipartiteHopcroftKarp1973 implements MatchingBipartite {
 				if (!g.isVertexInS(u) || matched[u] != null)
 					continue;
 
-				edgeItr[0] = f.edges(u);
+				edges[0] = f.edges(u);
 				visited[u] = true;
 
-				dfs: for (int depth = 0;;) {
-					Edge<E> edgeToChild = null;
-					while (edgeItr[depth].hasNext()) {
-						Edge<E> e = edgeItr[depth].next();
+				for (int depth = 0;;) {
+					if (edges[depth].hasNext()) {
+						Edge<E> e = edges[depth].next();
 						int v = e.v();
-						if (!visited[v] & depth < depths[v]) {
-							edgeToChild = e;
-							break;
-						}
-					}
-					if (edgeToChild != null) {
-						int v = edgeToChild.v();
+						if (visited[v] || depth >= depths[v])
+							continue;
 						visited[v] = true;
-						dfsPath[depth++] = edgeToChild;
+						dfsPath[depth++] = e;
 
 						Edge<E> matchedEdge = matched[v];
 						if (matchedEdge == null) {
-							@SuppressWarnings("unchecked")
-							Edge<E>[] augPath = new Edge[depth];
-							System.arraycopy(dfsPath, 0, augPath, 0, depth);
-							augPaths.add(augPath);
-							break dfs;
+							// Augmented path found
+							for (int i = 0; i < depth; i += 2) {
+								Edge<E> e1 = dfsPath[i];
+								matched[e1.u()] = e1;
+								matched[e1.v()] = e1.twin();
+							}
+							break;
 						}
 						dfsPath[depth] = matchedEdge;
 						v = matchedEdge.v();
 
-						edgeItr[++depth] = f.edges(v);
+						edges[++depth] = g.edges(v);
 					} else if ((depth -= 2) < 0)
 						break;
 				}
 			}
 			Arrays.fill(visited, false);
 			f.edges().clear();
-
-			for (Edge<E>[] augPath : augPaths) {
-				for (int i = 0; i < augPath.length; i += 2) {
-					Edge<E> e = augPath[i];
-					matched[e.u()] = e;
-					matched[e.v()] = e.twin();
-				}
-			}
-			augPaths.clear();
 		}
+		Arrays.fill(edges, null);
+		Arrays.fill(dfsPath, null);
 
 		List<Edge<E>> res = new ArrayList<>();
 		for (int u = 0; u < n; u++)
