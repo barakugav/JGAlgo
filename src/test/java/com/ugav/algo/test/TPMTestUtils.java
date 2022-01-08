@@ -106,56 +106,51 @@ class TPMTestUtils {
 	}
 
 	static boolean verifyMSTPositive(TPM algo) {
-		int[][] phases = new int[][] { { 64, 8, 16 }, { 32, 16, 32 }, { 16, 32, 64 }, { 8, 64, 128 }, { 4, 128, 256 } };
+		int[][] phases = new int[][] { { 256, 8, 16 }, { 128, 16, 32 }, { 64, 64, 128 }, { 32, 128, 256 },
+				{ 8, 2048, 4096 }, { 2, 8192, 16384 } };
 		return TestUtils.runTestMultiple(phases, args -> {
 			int n = args[1];
 			int m = args[2];
-			return verifyMSTPositive(algo, n, m);
+			Graph<Integer> g = new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(true).selfEdges(false)
+					.cycles(true).connected(true).build();
+			GraphsTestUtils.assignRandWeightsInt(g);
+			WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
+			Collection<Edge<Integer>> mstEdges = MSTKruskal1956.getInstance().calcMST(g, w);
+
+			return MST.verifyMST(g, w, mstEdges, algo);
 		});
-	}
-
-	static boolean verifyMSTPositive(TPM algo, int n, int m) {
-		Graph<Integer> g = new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(false).selfEdges(false)
-				.cycles(true).connected(true).build();
-		GraphsTestUtils.assignRandWeightsInt(g);
-		WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
-		Collection<Edge<Integer>> mstEdges = MSTKruskal1956.getInstance().calcMST(g, w);
-
-		return MST.verifyMST(g, w, mstEdges, algo);
 	}
 
 	static boolean verifyMSTNegative(TPM algo) {
-		int[][] phases = new int[][] { { 64, 8, 16 }, { 32, 16, 32 }, { 16, 32, 64 }, { 8, 64, 128 }, { 4, 128, 256 } };
+		int[][] phases = new int[][] { { 256, 8, 16 }, { 128, 16, 32 }, { 64, 64, 128 }, { 32, 128, 256 },
+				{ 8, 2048, 4096 }, { 2, 8192, 16384 } };
 		return TestUtils.runTestMultiple(phases, args -> {
 			int n = args[1];
 			int m = args[2];
-			return verifyMSTNegative(algo, n, m);
+
+			Graph<Integer> g = new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(true).selfEdges(false)
+					.cycles(true).connected(true).build();
+			GraphsTestUtils.assignRandWeightsInt(g);
+			WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
+
+			Collection<Edge<Integer>> mstEdges = MSTKruskal1956.getInstance().calcMST(g, w);
+			Graph<Integer> mst = GraphArray.valueOf(g.vertices(), mstEdges, DirectedType.Undirected);
+
+			@SuppressWarnings("unchecked")
+			Edge<Integer>[] edges = g.edges().toArray(new Edge[g.edges().size()]);
+
+			Random rand = new Random(TestUtils.nextRandSeed());
+			Edge<Integer> e;
+			do {
+				e = edges[rand.nextInt(edges.length)];
+			} while (mstEdges.contains(e));
+
+			List<Edge<Integer>> mstPath = Graphs.findPath(mst, e.u(), e.v());
+			mst.removeEdge(mstPath.get(rand.nextInt(mstPath.size())));
+			mst.addEdge(e);
+
+			return !MST.verifyMST(g, w, mst, algo);
 		});
-	}
-
-	static boolean verifyMSTNegative(TPM algo, int n, int m) {
-		Graph<Integer> g = new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(false).selfEdges(false)
-				.cycles(true).connected(true).build();
-		GraphsTestUtils.assignRandWeightsInt(g);
-		WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
-
-		Collection<Edge<Integer>> mstEdges = MSTKruskal1956.getInstance().calcMST(g, w);
-		Graph<Integer> mst = GraphArray.valueOf(g.vertices(), mstEdges, DirectedType.Undirected);
-
-		@SuppressWarnings("unchecked")
-		Edge<Integer>[] edges = g.edges().toArray(new Edge[g.edges().size()]);
-
-		Random rand = new Random(TestUtils.nextRandSeed());
-		Edge<Integer> e;
-		do {
-			e = edges[rand.nextInt(edges.length)];
-		} while (mstEdges.contains(e));
-
-		List<Edge<Integer>> mstPath = Graphs.findPath(mst, e.u(), e.v());
-		mst.removeEdge(mstPath.get(rand.nextInt(mstPath.size())));
-		mst.addEdge(e);
-
-		return !MST.verifyMST(g, w, mst, algo);
 	}
 
 }

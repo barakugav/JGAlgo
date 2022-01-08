@@ -11,7 +11,7 @@ import com.ugav.algo.SplitFindMinArray;
 public class SplitFindMinArrayTest {
 
 	private static boolean testSplitFind(SplitFind algo) {
-		int[][] phases = { { 128, 16, 16 }, { 64, 64, 64 }, { 8, 512, 512 }, { 1, 4096, 4096 } };
+		int[][] phases = { { 128, 16, 16 }, { 64, 64, 64 }, { 32, 512, 512 }, { 8, 4096, 4096 }, { 2, 16384, 16384 } };
 		return TestUtils.runTestMultiple(phases, args -> {
 			int n = args[1];
 			int m = args[2];

@@ -22,8 +22,8 @@ class MSTTestUtils {
 	}
 
 	static boolean testRandGraph(MST algo) {
-		int[][] phases = new int[][] { { 1, 0, 0 }, { 64, 8, 16 }, { 32, 16, 32 }, { 16, 32, 64 }, { 8, 64, 128 },
-				{ 4, 128, 256 }, { 1, 1024, 4096 } };
+		int[][] phases = new int[][] { { 1, 0, 0 }, { 128, 16, 32 }, { 64, 64, 128 }, { 32, 128, 256 },
+				{ 8, 1024, 4096 }, { 2, 4096, 16384 } };
 		return TestUtils.runTestMultiple(phases, args -> {
 			int n = args[1];
 			int m = args[2];

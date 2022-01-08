@@ -77,7 +77,7 @@ public class LCARMQBenderFarachColton2000Test {
 
 	@Test
 	public static boolean randTrees() {
-		int[][] phases = { { 128, 16, 16 }, { 64, 64, 64 }, { 8, 512, 512 }, { 1, 4096, 4096 } };
+		int[][] phases = { { 128, 16, 16 }, { 64, 64, 64 }, { 16, 512, 512 }, { 4, 4096, 4096 }, { 1, 16384, 16384 } };
 		return TestUtils.runTestMultiple(phases, args -> {
 			int n = args[1];
 			int m = args[2];

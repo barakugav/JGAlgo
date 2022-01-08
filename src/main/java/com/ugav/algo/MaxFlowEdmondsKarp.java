@@ -69,8 +69,8 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 			// update flow of all edges on path
 			for (int p = target; p != source;) {
 				Edge<Ref<E>> e = backtrack[p];
-				e.val().flow += f;
-				e.val().rev.flow -= f;
+				e.val().flow = Math.min(net.getCapacity(e.val().orig), e.val().flow + f);
+				e.val().rev.flow = Math.max(0, e.val().rev.flow - f);
 				p = e.u();
 			}
 

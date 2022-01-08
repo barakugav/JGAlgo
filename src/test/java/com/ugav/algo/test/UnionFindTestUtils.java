@@ -52,14 +52,15 @@ class UnionFindTestUtils {
 	}
 
 	static boolean randOps(Supplier<? extends UnionFind> builder) {
-		return randOps(builder, 4096, 4096);
-	}
+		int[][] phases = { { 256, 8, 16 }, { 64, 64, 256 }, { 16, 1024, 2048 }, { 2, 8096, 16384 } };
+		return TestUtils.runTestMultiple(phases, args -> {
+			int n = args[1];
+			int m = args[2];
+			UnionFindOp[] ops = new UnionFindOp[m];
+			randUnionFindOps(n, ops);
 
-	private static boolean randOps(Supplier<? extends UnionFind> builder, int n, int m) {
-		UnionFindOp[] ops = new UnionFindOp[m];
-		randUnionFindOps(n, ops);
-
-		return unionFindOpsValidate(builder, n, ops);
+			return unionFindOpsValidate(builder, n, ops);
+		});
 	}
 
 	private static boolean unionFindOpsValidate(Supplier<? extends UnionFind> builder, int n, UnionFindOp[] ops) {

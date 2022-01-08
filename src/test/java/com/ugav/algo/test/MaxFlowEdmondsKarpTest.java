@@ -17,11 +17,13 @@ public class MaxFlowEdmondsKarpTest {
 		Graph<Pair<Double, Double>> g = new RandomGraphBuilder().n(n).m(m).directed(true).doubleEdges(false)
 				.selfEdges(false).cycles(true).connected(false).build();
 
-		RandomIntUnique rand = new RandomIntUnique(m, m * 2, TestUtils.nextRandSeed());
-//		Random rand = new Random(TestUtils.nextRandSeed());
+		Random rand = new Random(TestUtils.nextRandSeed());
 		for (Edge<Pair<Double, Double>> e : g.edges()) {
-//			e.val(Pair.valueOf(rand.nextDouble() * 100, 0.0));
-			e.val(Pair.valueOf((double) rand.next(), 0.0));
+			double w;
+			do {
+				w = rand.nextDouble() * 100;
+			} while (Math.abs(w) < 1E-10);
+			e.val(Pair.valueOf(w, 0.0));
 		}
 
 		return Pair.valueOf(g, new FlowNetwork<>() {
@@ -39,7 +41,7 @@ public class MaxFlowEdmondsKarpTest {
 			@Override
 			public void setFlow(Edge<Pair<Double, Double>> e, double flow) {
 				if (flow < 0 || flow > e.val().e1)
-					throw new IllegalArgumentException();
+					throw new IllegalArgumentException("Illegal flow " + flow + " on edge " + e.val().e1);
 				e.val().e2 = flow;
 			}
 		});
@@ -47,7 +49,6 @@ public class MaxFlowEdmondsKarpTest {
 
 	@Test
 	public static boolean randGraphs() {
-		TestUtils.initTestRand(TestUtils.getTestFullname(), 6609301001716443851L);
 		return randGraphs(MaxFlowEdmondsKarp.getInstance());
 	}
 
@@ -55,7 +56,6 @@ public class MaxFlowEdmondsKarpTest {
 		Random rand = new Random(TestUtils.nextRandSeed());
 		int[][] phases = { { 128, 16, 16 }, { 128, 16, 32 }, { 64, 64, 64 }, { 64, 64, 128 }, { 8, 512, 512 },
 				{ 8, 512, 2048 }, { 1, 4096, 4096 }, { 1, 4096, 16384 } };
-
 		return TestUtils.runTestMultiple(phases, args -> {
 			int n = args[1];
 			int m = args[2];
@@ -83,14 +83,14 @@ public class MaxFlowEdmondsKarpTest {
 		}
 		for (int v = 0; v < n; v++) {
 			double expected = v == source ? actualMaxFlow : v == target ? -actualMaxFlow : 0;
-			if (vertexFlowOut[v] != expected) {
+			if (!TestUtils.doubleEql(vertexFlowOut[v], expected, 1E-10)) {
 				TestUtils.printTestStr("Invalid vertex(" + v + ") flow: " + vertexFlowOut[v] + "\n");
 				return false;
 			}
 		}
 
 		double expectedMaxFlow = calcExpectedFlow(g, net, source, target);
-		if (expectedMaxFlow != actualMaxFlow) {
+		if (!TestUtils.doubleEql(expectedMaxFlow, actualMaxFlow, 1E-10)) {
 			TestUtils.printTestStr("Unexpected max flow: " + expectedMaxFlow + " != " + actualMaxFlow + "\n");
 			return false;
 		}
@@ -137,7 +137,7 @@ public class MaxFlowEdmondsKarpTest {
 			for (v = 0; v < n; v++)
 				rGraph[u][v] = graph[u][v];
 		int parent[] = new int[n];
-		int max_flow = 0;
+		double max_flow = 0;
 		while (bfs(rGraph, s, t, parent)) {
 			double pathFlow = Double.MAX_VALUE;
 			for (v = t; v != s; v = parent[v]) {

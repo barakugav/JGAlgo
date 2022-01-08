@@ -1,6 +1,7 @@
 package com.ugav.algo.test;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Random;
 import java.util.Set;
 
@@ -108,8 +109,10 @@ class GraphsTestUtils {
 			}
 			if (n == 0)
 				return g;
-			if (!cycles && m >= n)
-				throw new IllegalStateException();
+			if (!directed && !cycles && m >= n)
+				throw new IllegalArgumentException();
+			if (!cycles && selfEdges)
+				throw new IllegalArgumentException();
 			if (!doubleEdges && m >= ((long) n) * n / 3)
 				throw new IllegalArgumentException("too much edges for random sampling");
 
@@ -117,13 +120,34 @@ class GraphsTestUtils {
 			UnionFind uf = new UnionFindArray(n);
 			int componentsNum = n;
 			Random rand = new Random(TestUtils.nextRandSeed());
+			boolean[] reachableFromRoot = new boolean[n];
+			reachableFromRoot[0] = true;
+			int reachableFromRootCount = 1;
+			int[] queue = new int[n];
 
-			while ((connected && componentsNum > 1) || g.edges().size() < m) {
+			while (true) {
+				boolean done = true;
+				if (g.edges().size() < m)
+					done = false;
+				if (connected) {
+					if (!directed && componentsNum > 1)
+						done = false;
+					else if (directed && reachableFromRootCount < n)
+						done = false;
+				}
+				if (done)
+					break;
+
 				int u, v;
 
 				if (!bipartite) {
 					u = rand.nextInt(n);
 					v = rand.nextInt(n);
+					if (directed && !cycles && u > v) {
+						int temp = u;
+						u = v;
+						v = temp;
+					}
 				} else {
 					u = rand.nextInt(sn);
 					v = sn + rand.nextInt(tn);
@@ -141,23 +165,46 @@ class GraphsTestUtils {
 						ut = vt;
 						vt = temp;
 					}
-					Pair<Integer, Integer> et = Pair.valueOf(ut, vt);
-					if (!existingEdges.add(et))
+					if (!existingEdges.add(Pair.valueOf(ut, vt)))
 						continue;
 				}
 
 				// keep track of number of connectivity components
 				if (!cycles || connected) {
-					int uComp = uf.find(u);
-					int vComp = uf.find(v);
+					if (!directed) {
+						int uComp = uf.find(u);
+						int vComp = uf.find(v);
 
-					// avoid cycles
-					if (!cycles && uComp == vComp)
-						continue;
+						// avoid cycles
+						if (!cycles && uComp == vComp)
+							continue;
 
-					if (uComp != vComp)
-						componentsNum--;
-					uf.union(uComp, vComp);
+						if (uComp != vComp)
+							componentsNum--;
+						uf.union(uComp, vComp);
+					} else if (connected) {
+						if (reachableFromRoot[u] && !reachableFromRoot[v]) {
+							reachableFromRoot[v] = true;
+							reachableFromRootCount++;
+
+							int queueBegin = 0, queueEnd = 0;
+							queue[queueEnd++] = v;
+							while (queueBegin != queueEnd) {
+								int p = queue[queueBegin++];
+
+								for (Iterator<Edge<E>> it = g.edges(p); it.hasNext();) {
+									Edge<E> e = it.next();
+									int pv = e.v();
+									if (reachableFromRoot[pv])
+										continue;
+									reachableFromRoot[pv] = true;
+									reachableFromRootCount++;
+									queue[queueEnd++] = pv;
+								}
+							}
+
+						}
+					}
 				}
 
 				g.addEdge(u, v);

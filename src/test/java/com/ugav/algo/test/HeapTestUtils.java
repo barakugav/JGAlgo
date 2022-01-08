@@ -1,8 +1,8 @@
 package com.ugav.algo.test;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.NavigableMap;
 import java.util.Random;
+import java.util.TreeMap;
 import java.util.function.Supplier;
 
 import com.ugav.algo.Heap;
@@ -146,9 +146,11 @@ class HeapTestUtils {
 		int elmsToInsertCursor = 0;
 
 		/* init inserted elms with current heap elements */
-		ArrayList<Integer> insertedElms = new ArrayList<>(heap);
+		NavigableMap<Integer, Integer> insertedElms = new TreeMap<>();
+		for (Integer x : heap)
+			insertedElms.compute(x, (x0, c) -> c == null ? 1 : c + 1);
 
-		int x, idx, expected;
+		int x, expected;
 
 		final int INSERT = 0;
 		final int REMOVE = 1;
@@ -165,7 +167,7 @@ class HeapTestUtils {
 					continue;
 
 				x = a[elmsToInsertIds[elmsToInsertCursor++]];
-				insertedElms.add(x);
+				insertedElms.compute(x, (x0, c) -> c == null ? 1 : c + 1);
 				ops[op++] = new HeapOpInsert(x);
 				break;
 
@@ -173,8 +175,16 @@ class HeapTestUtils {
 				if (insertedElms.isEmpty())
 					continue;
 
-				idx = rand.nextInt(insertedElms.size());
-				x = insertedElms.remove(idx);
+				x = rand.nextInt(a.length);
+				if (rand.nextBoolean()) {
+					Integer X = insertedElms.floorKey(x);
+					x = X != null ? X : insertedElms.ceilingKey(x);
+				} else {
+					Integer X = insertedElms.ceilingKey(x);
+					x = X != null ? X : insertedElms.floorKey(x);
+				}
+
+				insertedElms.compute(x, (x0, c) -> c == 1 ? null : c - 1);
 				ops[op++] = new HeapOpRemove(x);
 				break;
 
@@ -182,7 +192,7 @@ class HeapTestUtils {
 				if (insertedElms.isEmpty())
 					continue;
 
-				expected = Collections.min(insertedElms);
+				expected = insertedElms.firstKey();
 				ops[op++] = new HeapOpFindMin(expected);
 				break;
 
@@ -190,20 +200,30 @@ class HeapTestUtils {
 				if (insertedElms.isEmpty())
 					continue;
 
-				expected = Collections.min(insertedElms);
-				insertedElms.remove(Integer.valueOf(expected));
+				expected = insertedElms.firstKey();
+				insertedElms.compute(expected, (x0, c) -> c == 1 ? null : c - 1);
 				ops[op++] = new HeapOpExtractMin(expected);
 				break;
 
 			case DECREASEKEY:
 				if (insertedElms.isEmpty())
 					continue;
-				idx = rand.nextInt(insertedElms.size());
-				x = insertedElms.get(idx);
+
+				x = rand.nextInt(a.length);
+				if (rand.nextBoolean()) {
+					Integer X = insertedElms.floorKey(x);
+					x = X != null ? X : insertedElms.ceilingKey(x);
+				} else {
+					Integer X = insertedElms.ceilingKey(x);
+					x = X != null ? X : insertedElms.floorKey(x);
+				}
 				if (x == 0)
 					continue;
+
 				int newVal = rand.nextInt(x);
-				insertedElms.set(idx, newVal);
+
+				insertedElms.compute(x, (x0, c) -> c == 1 ? null : c - 1);
+				insertedElms.compute(newVal, (x0, c) -> c == null ? 1 : c + 1);
 				ops[op++] = new HeapOpDecreaseKey(x, newVal);
 				break;
 			default:
@@ -214,7 +234,8 @@ class HeapTestUtils {
 	}
 
 	static boolean testRandOps(Supplier<? extends Heap<Integer>> heapBuilder) {
-		int[][] phases = { { 128, 16, 16 }, { 64, 64, 64 }, { 8, 512, 512 }, { 1, 4096, 4096 } };
+		int[][] phases = { { 256, 16, 16 }, { 128, 64, 128 }, { 64, 512, 1024 }, { 16, 4096, 8096 },
+				{ 8, 16384, 32768 } };
 		return TestUtils.runTestMultiple(phases, args -> {
 			int n = args[1];
 			int m = args[2];
@@ -231,7 +252,8 @@ class HeapTestUtils {
 	}
 
 	static boolean testRandOpsAfterManyInserts(Supplier<? extends Heap<Integer>> heapBuilder) {
-		int[][] phases = { { 128, 16 }, { 64, 64 }, { 8, 512 }, { 1, 4096 } };
+		int[][] phases = { { 256, 16, 16 }, { 128, 64, 128 }, { 64, 512, 1024 }, { 16, 4096, 8096 },
+				{ 8, 16384, 32768 } };
 		return TestUtils.runTestMultiple(phases, args -> {
 			int n = args[1];
 			int m = n;
@@ -250,65 +272,68 @@ class HeapTestUtils {
 	}
 
 	static boolean testMeld(Supplier<? extends Heap<Integer>> heapBuilder) {
-		int hCount = 256;
-		@SuppressWarnings("unchecked")
-		Heap<Integer>[] hs = new Heap[hCount];
-		@SuppressWarnings("unchecked")
-		Heap<Integer>[] hsNext = new Heap[hCount / 2];
+		int[][] phases = { { 64, 16 }, { 64, 32 }, { 8, 256 }, { 1, 2048 } };
+		return TestUtils.runTestMultiple(phases, args -> {
+			int hCount = args[1];
+			@SuppressWarnings("unchecked")
+			Heap<Integer>[] hs = new Heap[hCount];
+			@SuppressWarnings("unchecked")
+			Heap<Integer>[] hsNext = new Heap[hCount / 2];
 
-		for (int i = 0; i < hCount; i++) {
-			Heap<Integer> h = hs[i] = heapBuilder.get();
+			for (int i = 0; i < hCount; i++) {
+				Heap<Integer> h = hs[i] = heapBuilder.get();
 
-			int[] a = Utils.randArray(16, 0, 65536, TestUtils.nextRandSeed());
-			RandHeapOpsArgs args = new RandHeapOpsArgs();
-			args.heap = h;
-			args.a = a;
-			args.m = 16;
-			args.insertFirst = 8;
-			HeapOp[] ops = randHeapOps(args);
-			if (!testHeap(h, a, ops, false))
-				return false;
-		}
-
-		while (hCount > 1) {
-			/* meld half of the heaps */
-			int[] meldOrder = Utils.randPermutation(hCount & ~1, TestUtils.nextRandSeed());
-			for (int i = 0; i < meldOrder.length / 2; i++) {
-				int h1Idx = meldOrder[i * 2], h2Idx = meldOrder[i * 2 + 1];
-				Heap<Integer> h1 = hs[h1Idx], h2 = hs[h2Idx];
-
-				h1.meld(h2);
-				hs[h2Idx] = null;
-
-				/* make some OPs on the unioned heap */
-				int opsNum = 4096 / hCount;
-				int[] a = Utils.randArray(opsNum, 0, 65536, TestUtils.nextRandSeed());
-				RandHeapOpsArgs args = new RandHeapOpsArgs();
-				args.heap = h1;
-				args.a = a;
-				args.m = opsNum;
-				args.insertFirst = opsNum / 2;
-				HeapOp[] ops = randHeapOps(args);
-				if (!testHeap(h1, a, ops, false))
+				int[] a = Utils.randArray(16, 0, 65536, TestUtils.nextRandSeed());
+				RandHeapOpsArgs heapArgs = new RandHeapOpsArgs();
+				heapArgs.heap = h;
+				heapArgs.a = a;
+				heapArgs.m = 16;
+				heapArgs.insertFirst = 8;
+				HeapOp[] ops = randHeapOps(heapArgs);
+				if (!testHeap(h, a, ops, false))
 					return false;
 			}
 
-			/* contract heap array */
-			int hCountNext = 0;
-			for (int i = 0; i < hCount; i++)
-				if (hs[i] != null)
-					hsNext[hCountNext++] = hs[i];
-			Heap<Integer>[] temp = hs;
-			hs = hsNext;
-			hsNext = temp;
-			hCount = hCountNext;
-		}
+			while (hCount > 1) {
+				/* meld half of the heaps */
+				int[] meldOrder = Utils.randPermutation(hCount & ~1, TestUtils.nextRandSeed());
+				for (int i = 0; i < meldOrder.length / 2; i++) {
+					int h1Idx = meldOrder[i * 2], h2Idx = meldOrder[i * 2 + 1];
+					Heap<Integer> h1 = hs[h1Idx], h2 = hs[h2Idx];
 
-		return true;
+					h1.meld(h2);
+					hs[h2Idx] = null;
+
+					/* make some OPs on the united heap */
+					int opsNum = 4096 / hCount;
+					int[] a = Utils.randArray(opsNum, 0, 65536, TestUtils.nextRandSeed());
+					RandHeapOpsArgs heapArgs = new RandHeapOpsArgs();
+					heapArgs.heap = h1;
+					heapArgs.a = a;
+					heapArgs.m = opsNum;
+					heapArgs.insertFirst = opsNum / 2;
+					HeapOp[] ops = randHeapOps(heapArgs);
+					if (!testHeap(h1, a, ops, false))
+						return false;
+				}
+
+				/* contract heap array */
+				int hCountNext = 0;
+				for (int i = 0; i < hCount; i++)
+					if (hs[i] != null)
+						hsNext[hCountNext++] = hs[i];
+				Heap<Integer>[] temp = hs;
+				hs = hsNext;
+				hsNext = temp;
+				hCount = hCountNext;
+			}
+
+			return true;
+		});
 	}
 
 	static boolean testDecreaseKey(Supplier<? extends Heap<Integer>> heapBuilder) {
-		int[][] phases = { { 128, 16 }, { 64, 64 }, { 8, 512 }, { 1, 4096 } };
+		int[][] phases = { { 256, 16 }, { 128, 64 }, { 64, 512 }, { 16, 4096 }, { 2, 16384 } };
 		return TestUtils.runTestMultiple(phases, args -> {
 			int n = args[1];
 			int m = n;

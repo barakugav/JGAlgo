@@ -81,6 +81,10 @@ class TestUtils {
 
 	private static final Map<String, Pair<Long, Random>> seedGenerators = new HashMap<>();
 
+	static void initTestRand(long seed) {
+		initTestRand(getTestFullname(), seed);
+	}
+
 	static void initTestRand(String testName) {
 		initTestRand(testName, new Random().nextLong());
 	}
@@ -107,6 +111,14 @@ class TestUtils {
 		if (generator.e2 == null)
 			generator.e2 = new Random(generator.e1 ^ 0x555bfc5796f83a2dL);
 		return generator.e2.nextLong() ^ 0x3d61be24f3910c88L;
+	}
+
+	static boolean doubleEql(double a, double b, double precise) {
+		if (a < b)
+			return b - a < precise;
+		if (a > b)
+			return a - b < precise;
+		return true;
 	}
 
 	static boolean runTestMultiple(int[][] phases, Predicate<int[]> test) {

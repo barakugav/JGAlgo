@@ -3,6 +3,8 @@ package com.ugav.algo.test;
 import java.util.Random;
 
 import com.ugav.algo.Graph;
+import com.ugav.algo.Graph.WeightFunction;
+import com.ugav.algo.Graph.WeightFunctionInt;
 import com.ugav.algo.Graphs;
 import com.ugav.algo.SSSP;
 import com.ugav.algo.SSSPDial1969;
@@ -32,24 +34,30 @@ class SSSPTestUtils {
 			Graph<Integer> g = new RandomGraphBuilder().n(n).m(m).directed(directed).doubleEdges(true).selfEdges(true)
 					.cycles(true).connected(false).build();
 			GraphsTestUtils.assignRandWeightsInt(g);
+			WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
 			int source = rand.nextInt(g.vertices());
 
+			SSSP.Result<Integer> actualRes = algo.calcDistances(g, w, source);
+
 			SSSP validationAlgo = algo instanceof SSSPDijkstra ? SSSPDial1969.getInstace() : SSSPDijkstra.getInstace();
-			SSSP.Result<Integer> expectedRes = validationAlgo.calcDistances(g, Graphs.WEIGHT_INT_FUNC_DEFAULT, source);
-
-			SSSP.Result<Integer> actualRes = algo.calcDistances(g, Graphs.WEIGHT_INT_FUNC_DEFAULT, source);
-
-			for (int v = 0; v < n; v++) {
-				double expeced = expectedRes.distance(v);
-				double actual = actualRes.distance(v);
-				if (expeced != actual) {
-					TestUtils
-							.printTestStr("Distance to vertex " + v + " is wrong: " + expeced + " != " + actual + "\n");
-					return false;
-				}
-			}
-			return true;
+			return validateResult(g, w, source, actualRes, validationAlgo);
 		});
+	}
+
+	static <E> boolean validateResult(Graph<E> g, WeightFunction<E> w, int source, SSSP.Result<E> result,
+			SSSP validationAlgo) {
+		SSSP.Result<E> expectedRes = validationAlgo.calcDistances(g, w, source);
+
+		int n = g.vertices();
+		for (int v = 0; v < n; v++) {
+			double expeced = expectedRes.distance(v);
+			double actual = result.distance(v);
+			if (expeced != actual) {
+				TestUtils.printTestStr("Distance to vertex " + v + " is wrong: " + expeced + " != " + actual + "\n");
+				return false;
+			}
+		}
+		return true;
 	}
 
 }

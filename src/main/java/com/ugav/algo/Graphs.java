@@ -2,6 +2,7 @@ package com.ugav.algo;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -398,11 +399,13 @@ public class Graphs {
 		return topolSort;
 	}
 
-	public static <E> double[] calcDistancesDAG(Graph<E> g, WeightFunction<E> w, int source) {
+	public static <E> SSSP.Result<E> calcDistancesDAG(Graph<E> g, WeightFunction<E> w, int source) {
 		int n = g.vertices();
-		double[] distance = new double[n];
-		Arrays.fill(distance, Double.MAX_VALUE);
-		distance[source] = 0;
+		@SuppressWarnings("unchecked")
+		Edge<E>[] backtrack = new Edge[n];
+		double[] distances = new double[n];
+		Arrays.fill(distances, Double.POSITIVE_INFINITY);
+		distances[source] = 0;
 
 		int[] topolSort = calcTopologicalSortingDAG(g);
 		boolean sourceSeen = false;
@@ -416,11 +419,56 @@ public class Graphs {
 			for (Iterator<Edge<E>> it = g.edges(u); it.hasNext();) {
 				Edge<E> e = it.next();
 				int v = e.v();
-				distance[v] = Math.min(distance[v], distance[u] + w.weight(e));
+				double d = distances[u] + w.weight(e);
+				if (d < distances[v]) {
+					distances[v] = d;
+					backtrack[v] = e;
+				}
 			}
 		}
 
-		return distance;
+		return new SSSPDAGResults<>(distances, backtrack);
+	}
+
+	private static class SSSPDAGResults<E> implements SSSP.Result<E> {
+
+		private final double[] distances;
+		private final Edge<E>[] backtrack;
+
+		SSSPDAGResults(double[] distances, Edge<E>[] backtrack) {
+			this.distances = distances;
+			this.backtrack = backtrack;
+		}
+
+		@Override
+		public double distance(int t) {
+			return distances[t];
+		}
+
+		@Override
+		public Collection<Edge<E>> getPathTo(int t) {
+			List<Edge<E>> path = new ArrayList<>();
+			for (int v = t;;) {
+				Edge<E> e = backtrack[v];
+				if (e == null)
+					break;
+				path.add(e);
+				v = e.u();
+			}
+			Collections.reverse(path);
+			return path;
+		}
+
+		@Override
+		public boolean foundNegativeCircle() {
+			return false;
+		}
+
+		@Override
+		public Collection<Edge<E>> getNegativeCircle() {
+			throw new IllegalStateException("no negative circle found");
+		}
+
 	}
 
 	public static <E> int getFullyBranchingTreeDepth(Graph<E> t, int root) {

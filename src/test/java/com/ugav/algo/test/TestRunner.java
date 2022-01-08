@@ -79,11 +79,11 @@ public class TestRunner {
 			Class<?> c1 = m1.getDeclaringClass();
 			Class<?> c2 = m2.getDeclaringClass();
 
-			int c = c1.getName().compareTo(c2.getName());
+			int c = c1.getName().compareToIgnoreCase(c2.getName());
 			if (c != 0)
 				return c;
 
-			return m1.getName().compareTo(m2.getName());
+			return m1.getName().compareToIgnoreCase(m2.getName());
 		});
 
 		return testMethodsSorted;
