@@ -24,16 +24,11 @@ class MSTTestUtils {
 	static boolean testRandGraph(MST algo) {
 		int[][] phases = new int[][] { { 1, 0, 0 }, { 64, 8, 16 }, { 32, 16, 32 }, { 16, 32, 64 }, { 8, 64, 128 },
 				{ 4, 128, 256 }, { 1, 1024, 4096 } };
-		for (int phase = 0; phase < phases.length; phase++) {
-			int repeat = phases[phase][0];
-			int n = phases[phase][1];
-			int m = phases[phase][2];
-
-			for (int r = 0; r < repeat; r++)
-				if (!testRandGraph(algo, n, m))
-					return false;
-		}
-		return true;
+		return TestUtils.runTestMultiple(phases, args -> {
+			int n = args[1];
+			int m = args[2];
+			return testRandGraph(algo, n, m);
+		});
 	}
 
 	static boolean testRandGraph(MST algo, int n, int m) {

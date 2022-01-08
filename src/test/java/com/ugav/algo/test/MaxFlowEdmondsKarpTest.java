@@ -55,26 +55,21 @@ public class MaxFlowEdmondsKarpTest {
 		Random rand = new Random(TestUtils.nextRandSeed());
 		int[][] phases = { { 128, 16, 16 }, { 128, 16, 32 }, { 64, 64, 64 }, { 64, 64, 128 }, { 8, 512, 512 },
 				{ 8, 512, 2048 }, { 1, 4096, 4096 }, { 1, 4096, 16384 } };
-		for (int phase = 0; phase < phases.length; phase++) {
-			int repeat = phases[phase][0];
-			int n = phases[phase][1];
-			int m = phases[phase][2];
-			for (int i = 0; i < repeat; i++) {
 
-				Pair<Graph<Pair<Double, Double>>, FlowNetwork<Pair<Double, Double>>> p = randNetword(n, m);
-				Graph<Pair<Double, Double>> g = p.e1;
-				FlowNetwork<Pair<Double, Double>> net = p.e2;
-				int source, target;
-				do {
-					source = rand.nextInt(g.vertices());
-					target = rand.nextInt(g.vertices());
-				} while (source == target);
+		return TestUtils.runTestMultiple(phases, args -> {
+			int n = args[1];
+			int m = args[2];
+			Pair<Graph<Pair<Double, Double>>, FlowNetwork<Pair<Double, Double>>> p = randNetword(n, m);
+			Graph<Pair<Double, Double>> g = p.e1;
+			FlowNetwork<Pair<Double, Double>> net = p.e2;
+			int source, target;
+			do {
+				source = rand.nextInt(g.vertices());
+				target = rand.nextInt(g.vertices());
+			} while (source == target);
 
-				if (!testNetwork(g, net, source, target, algo))
-					return false;
-			}
-		}
-		return true;
+			return testNetwork(g, net, source, target, algo);
+		});
 	}
 
 	private static <E> boolean testNetwork(Graph<E> g, FlowNetwork<E> net, int source, int target, MaxFlow algo) {

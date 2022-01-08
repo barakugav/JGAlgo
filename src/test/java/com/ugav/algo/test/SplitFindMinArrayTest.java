@@ -12,15 +12,11 @@ public class SplitFindMinArrayTest {
 
 	private static boolean testSplitFind(SplitFind algo) {
 		int[][] phases = { { 128, 16, 16 }, { 64, 64, 64 }, { 8, 512, 512 }, { 1, 4096, 4096 } };
-		for (int phase = 0; phase < phases.length; phase++) {
-			int repeat = phases[phase][0];
-			int n = phases[phase][1];
-			int m = phases[phase][2];
-			for (int i = 0; i < repeat; i++)
-				if (!testSplitFind(algo, n, m))
-					return false;
-		}
-		return true;
+		return TestUtils.runTestMultiple(phases, args -> {
+			int n = args[1];
+			int m = args[2];
+			return testSplitFind(algo, n, m);
+		});
 	}
 
 	private static boolean testSplitFind(SplitFind algo, int n, int m) {
@@ -69,15 +65,11 @@ public class SplitFindMinArrayTest {
 
 	private static boolean testSplitFindMin(SplitFindMin algo) {
 		int[][] phases = { { 128, 16, 16 }, { 64, 64, 64 }, { 8, 512, 512 }, { 1, 4096, 4096 } };
-		for (int phase = 0; phase < phases.length; phase++) {
-			int repeat = phases[phase][0];
-			int n = phases[phase][1];
-			int m = phases[phase][2];
-			for (int i = 0; i < repeat; i++)
-				if (!testSplitFindMin(algo, n, m))
-					return false;
-		}
-		return true;
+		return TestUtils.runTestMultiple(phases, args -> {
+			int n = args[1];
+			int m = args[2];
+			return testSplitFindMin(algo, n, m);
+		});
 	}
 
 	private static boolean testSplitFindMin(SplitFindMin algo, int n, int m) {

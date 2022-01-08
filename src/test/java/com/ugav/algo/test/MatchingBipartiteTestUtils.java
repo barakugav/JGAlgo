@@ -38,19 +38,14 @@ class MatchingBipartiteTestUtils {
 		int[][] phases = { { 256, 8, 8, 8 }, { 256, 8, 8, 16 }, { 128, 16, 16, 16 }, { 128, 16, 16, 64 },
 				{ 64, 32, 32, 32 }, { 64, 32, 32, 128 }, { 16, 128, 128, 512 }, { 16, 128, 128, 128 },
 				{ 4, 1024, 1024, 1024 }, { 4, 1024, 1024, 8192 } };
-		for (int phase = 0; phase < phases.length; phase++) {
-			int repeat = phases[phase][0];
-			int sn = phases[phase][1];
-			int tn = phases[phase][2];
-			int m = phases[phase][3];
-			for (int i = 0; i < repeat; i++) {
-				GraphBipartite<Void> g = randGraphBipartite(sn, tn, m);
-				int expeced = calcExpectedMaxMatching(g);
-				if (!testBipartiteAlgo(algo, g, expeced))
-					return false;
-			}
-		}
-		return true;
+		return TestUtils.runTestMultiple(phases, args -> {
+			int sn = args[1];
+			int tn = args[2];
+			int m = args[3];
+			GraphBipartite<Void> g = randGraphBipartite(sn, tn, m);
+			int expeced = calcExpectedMaxMatching(g);
+			return testBipartiteAlgo(algo, g, expeced);
+		});
 	}
 
 	private static <E> boolean testBipartiteAlgo(MatchingBipartite algo, GraphBipartite<E> g, int expectedMatchSize) {

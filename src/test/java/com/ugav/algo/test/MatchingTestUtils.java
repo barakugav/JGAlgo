@@ -19,19 +19,14 @@ class MatchingTestUtils {
 	static boolean randGraphs(Matching algo) {
 		int[][] phases = { { 256, 16, 8 }, { 256, 16, 16 }, { 128, 32, 32 }, { 128, 32, 64 }, { 64, 64, 64 },
 				{ 64, 64, 128 }, { 16, 256, 256 }, { 16, 256, 512 }, { 4, 2048, 2048 }, { 4, 2048, 8192 } };
-		for (int phase = 0; phase < phases.length; phase++) {
-			int repeat = phases[phase][0];
-			int n = phases[phase][1];
-			int m = phases[phase][2];
-			for (int i = 0; i < repeat; i++) {
-				Graph<Void> g = GraphsTestUtils.randGraph(n, m);
+		return TestUtils.runTestMultiple(phases, args -> {
+			int n = args[1];
+			int m = args[2];
+			Graph<Void> g = GraphsTestUtils.randGraph(n, m);
 
-				int expeced = calcExpectedMaxMatching(g);
-				if (!testAlgo(algo, g, expeced))
-					return false;
-			}
-		}
-		return true;
+			int expeced = calcExpectedMaxMatching(g);
+			return testAlgo(algo, g, expeced);
+		});
 	}
 
 	private static <E> boolean testAlgo(Matching algo, Graph<E> g, int expectedMatchSize) {

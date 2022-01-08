@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.function.Predicate;
 
 import com.ugav.algo.Pair;
 
@@ -106,6 +107,16 @@ class TestUtils {
 		if (generator.e2 == null)
 			generator.e2 = new Random(generator.e1 ^ 0x555bfc5796f83a2dL);
 		return generator.e2.nextLong() ^ 0x3d61be24f3910c88L;
+	}
+
+	static boolean runTestMultiple(int[][] phases, Predicate<int[]> test) {
+		for (int phase = 0; phase < phases.length; phase++) {
+			int repeat = phases[phase][0];
+			for (int i = 0; i < repeat; i++)
+				if (!test.test(phases[phase]))
+					return false;
+		}
+		return true;
 	}
 
 }

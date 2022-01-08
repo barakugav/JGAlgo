@@ -88,15 +88,10 @@ class TPMTestUtils {
 	static boolean testTPM(TPM algo) {
 		int[][] phases = new int[][] { { 64, 16 }, { 32, 32 }, { 16, 64 }, { 8, 128 }, { 4, 256 }, { 2, 512 },
 				{ 1, 1024 }, { 1, 4096 }, { 1, 16384 } };
-		for (int phase = 0; phase < phases.length; phase++) {
-			int repeat = phases[phase][0];
-			int n = phases[phase][1];
-
-			for (int r = 0; r < repeat; r++)
-				if (!testTPM(algo, n))
-					return false;
-		}
-		return true;
+		return TestUtils.runTestMultiple(phases, args -> {
+			int n = args[1];
+			return testTPM(algo, n);
+		});
 	}
 
 	static boolean testTPM(TPM algo, int n) {
@@ -112,17 +107,11 @@ class TPMTestUtils {
 
 	static boolean verifyMSTPositive(TPM algo) {
 		int[][] phases = new int[][] { { 64, 8, 16 }, { 32, 16, 32 }, { 16, 32, 64 }, { 8, 64, 128 }, { 4, 128, 256 } };
-		for (int phase = 0; phase < phases.length; phase++) {
-			int repeat = phases[phase][0];
-			int n = phases[phase][1];
-			int m = phases[phase][2];
-
-			for (int r = 0; r < repeat; r++) {
-				if (!verifyMSTPositive(algo, n, m))
-					return false;
-			}
-		}
-		return true;
+		return TestUtils.runTestMultiple(phases, args -> {
+			int n = args[1];
+			int m = args[2];
+			return verifyMSTPositive(algo, n, m);
+		});
 	}
 
 	static boolean verifyMSTPositive(TPM algo, int n, int m) {
@@ -137,17 +126,11 @@ class TPMTestUtils {
 
 	static boolean verifyMSTNegative(TPM algo) {
 		int[][] phases = new int[][] { { 64, 8, 16 }, { 32, 16, 32 }, { 16, 32, 64 }, { 8, 64, 128 }, { 4, 128, 256 } };
-		for (int phase = 0; phase < phases.length; phase++) {
-			int repeat = phases[phase][0];
-			int n = phases[phase][1];
-			int m = phases[phase][2];
-
-			for (int r = 0; r < repeat; r++) {
-				if (!verifyMSTNegative(algo, n, m))
-					return false;
-			}
-		}
-		return true;
+		return TestUtils.runTestMultiple(phases, args -> {
+			int n = args[1];
+			int m = args[2];
+			return verifyMSTNegative(algo, n, m);
+		});
 	}
 
 	static boolean verifyMSTNegative(TPM algo, int n, int m) {

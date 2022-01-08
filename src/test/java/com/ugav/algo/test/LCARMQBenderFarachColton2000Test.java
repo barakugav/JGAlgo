@@ -78,21 +78,14 @@ public class LCARMQBenderFarachColton2000Test {
 	@Test
 	public static boolean randTrees() {
 		int[][] phases = { { 128, 16, 16 }, { 64, 64, 64 }, { 8, 512, 512 }, { 1, 4096, 4096 } };
+		return TestUtils.runTestMultiple(phases, args -> {
+			int n = args[1];
+			int m = args[2];
+			Graph<Void> g = GraphsTestUtils.randTree(n);
+			int[][] queries = randLCAQueries(g, 0, m);
 
-		for (int phase = 0; phase < phases.length; phase++) {
-			int repeat = phases[phase][0];
-			int n = phases[phase][1];
-			int m = phases[phase][2];
-
-			for (int i = 0; i < repeat; i++) {
-				Graph<Void> g = GraphsTestUtils.randTree(n);
-				int[][] queries = randLCAQueries(g, 0, m);
-
-				if (!testLCA(g, LCARMQBenderFarachColton2000.getInstace(), queries))
-					return false;
-			}
-		}
-		return true;
+			return testLCA(g, LCARMQBenderFarachColton2000.getInstace(), queries);
+		});
 	}
 
 }

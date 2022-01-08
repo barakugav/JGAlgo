@@ -215,16 +215,11 @@ class HeapTestUtils {
 
 	static boolean testRandOps(Supplier<? extends Heap<Integer>> heapBuilder) {
 		int[][] phases = { { 128, 16, 16 }, { 64, 64, 64 }, { 8, 512, 512 }, { 1, 4096, 4096 } };
-		for (int phase = 0; phase < phases.length; phase++) {
-			int repeat = phases[phase][0];
-			int n = phases[phase][1];
-			int m = phases[phase][2];
-			for (int i = 0; i < repeat; i++) {
-				if (!testRandOps(heapBuilder, n, m))
-					return false;
-			}
-		}
-		return true;
+		return TestUtils.runTestMultiple(phases, args -> {
+			int n = args[1];
+			int m = args[2];
+			return testRandOps(heapBuilder, n, m);
+		});
 	}
 
 	static boolean testRandOps(Supplier<? extends Heap<Integer>> heapBuilder, int n, int m) {
@@ -237,28 +232,21 @@ class HeapTestUtils {
 
 	static boolean testRandOpsAfterManyInserts(Supplier<? extends Heap<Integer>> heapBuilder) {
 		int[][] phases = { { 128, 16 }, { 64, 64 }, { 8, 512 }, { 1, 4096 } };
-
-		for (int phase = 0; phase < phases.length; phase++) {
-			int repeat = phases[phase][0];
-			int n = phases[phase][1];
+		return TestUtils.runTestMultiple(phases, args -> {
+			int n = args[1];
 			int m = n;
+			Heap<Integer> heap = heapBuilder.get();
+			int[] a = Utils.randArray(n, 0, 65536, TestUtils.nextRandSeed());
 
-			for (int i = 0; i < repeat; i++) {
-				Heap<Integer> heap = heapBuilder.get();
-				int[] a = Utils.randArray(n, 0, 65536, TestUtils.nextRandSeed());
+			RandHeapOpsArgs heapArgs = new RandHeapOpsArgs();
+			heapArgs.heap = heap;
+			heapArgs.a = a;
+			heapArgs.m = m;
+			heapArgs.insertFirst = m / 2;
+			HeapOp[] ops = randHeapOps(heapArgs);
 
-				RandHeapOpsArgs args = new RandHeapOpsArgs();
-				args.heap = heap;
-				args.a = a;
-				args.m = m;
-				args.insertFirst = m / 2;
-				HeapOp[] ops = randHeapOps(args);
-
-				if (!testHeap(heap, a, ops, true))
-					return false;
-			}
-		}
-		return true;
+			return testHeap(heap, a, ops, true);
+		});
 	}
 
 	static boolean testMeld(Supplier<? extends Heap<Integer>> heapBuilder) {
@@ -321,29 +309,21 @@ class HeapTestUtils {
 
 	static boolean testDecreaseKey(Supplier<? extends Heap<Integer>> heapBuilder) {
 		int[][] phases = { { 128, 16 }, { 64, 64 }, { 8, 512 }, { 1, 4096 } };
-
-		for (int phase = 0; phase < phases.length; phase++) {
-			int repeat = phases[phase][0];
-			int n = phases[phase][1];
+		return TestUtils.runTestMultiple(phases, args -> {
+			int n = args[1];
 			int m = n;
+			Heap<Integer> heap = heapBuilder.get();
+			int[] a = Utils.randArray(n, 0, 65536, TestUtils.nextRandSeed());
 
-			for (int i = 0; i < repeat; i++) {
-				Heap<Integer> heap = heapBuilder.get();
-				int[] a = Utils.randArray(n, 0, 65536, TestUtils.nextRandSeed());
+			RandHeapOpsArgs heapArgs = new RandHeapOpsArgs();
+			heapArgs.heap = heap;
+			heapArgs.a = a;
+			heapArgs.m = m;
+			heapArgs.decreaseKey = true;
+			HeapOp[] ops = randHeapOps(heapArgs);
 
-				RandHeapOpsArgs args = new RandHeapOpsArgs();
-				args.heap = heap;
-				args.a = a;
-				args.m = m;
-				args.decreaseKey = true;
-				HeapOp[] ops = randHeapOps(args);
-
-				if (!testHeap(heap, a, ops, true))
-					return false;
-			}
-		}
-		return true;
-
+			return testHeap(heap, a, ops, true);
+		});
 	}
 
 	static boolean testHeap(Heap<Integer> heap, int[] a, HeapOp[] ops, boolean clear) {
