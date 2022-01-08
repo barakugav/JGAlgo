@@ -10,6 +10,10 @@ import com.ugav.algo.Graph.Edge;
 
 public class MatchingGabow1976 implements Matching {
 
+	/*
+	 * Maximum matching in unweighted undirected graph in O(m * n * alpha(m,n)) (alpha is inverse Ackermann's function)
+	 */
+
 	private MatchingGabow1976() {
 	}
 

@@ -8,6 +8,10 @@ import com.ugav.algo.Graph.Edge;
 
 public class MaxFlowEdmondsKarp implements MaxFlow {
 
+	/*
+	 * O(m * n^2)
+	 */
+
 	private MaxFlowEdmondsKarp() {
 	}
 

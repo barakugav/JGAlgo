@@ -11,6 +11,10 @@ import com.ugav.algo.Graphs.EdgeWeightComparator;
 
 public class MSTPrim1957 implements MST {
 
+	/*
+	 * O(m + nlogn)
+	 */
+
 	private MSTPrim1957() {
 	}
 

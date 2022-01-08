@@ -1,6 +1,40 @@
 This repository contains implementation for various algorithms.
 
-Most of the more complicated algorithms were presented by Uri Zwick in “analysis of algorithms” course.
+Implemented algorithms:
+ - Heaps
+   - Binary heap
+   - Binomial heap
+   - Fibonacci heap
+ - UnionFind
+ - SplitFindMin
+ - SSSP (Single source shortest path)
+   - Dijkstra positive weights, O(m + nlogn)
+   - Dial1969 positive integer weights, O(m + D) where D is the sum of all edges (can be improved to sum of max n-1 edges)
+   - BellmanFord general weights, O(m * n)
+ - RMQ (range query minimum)
+   - PlusMinusOneBenderFarachColton2000, only for +/-1 arrays, O(n) preprocessing, O(1) query
+   - GabowBentleyTarjan1984, O(n) preprocessing, O(1) query
+ - LCA BenderFarachColton2000 (lowest common ancestor) static, using RMQ, O(n)
+ - Max flow EdmondsKarp O(m * n^2)
+ - MST (minimum spanning tree)
+   - Boruvka1926 O(mlogn)
+   - Kruskal1956 O(mlogn)
+   - Prim1957 O(m + nlogn)
+   - FredmanTarjan1987 O(mlog*n)
+   - KargerKleinTarjan1995 randomized algorithm, expected time O(m + n)
+ - TMP (tree path maxima)
+   - Komlos1985King1997Hagerup2009 O(m + n) where m is the number of queries
+ - Maximum matching
+   - HopcroftKarp1973 for bipartite unweighted graphs, O(m * n^0.5)
+   - Gabow1976 for general unweighted graphs, O(m * n * alpha(m,n)) (alpha is inverse Ackermann's function)
+
+Additional utils:
+ - BFS / DFS
+ - Connectivity components calculation (undirected) O(m + n)
+ - Strong connectivity components calculation (directed) O(m + n)
+ - Topological sort calculation (DAG) O(m + n)
+ - DAG (directed acyclic graph) SSSP O(m + n)
+
+Most of the more complicated algorithms were presented by Uri Zwick in "analysis of algorithms" course.
 The slides for the course can be found in docs/analysis_of_algorithms_Uri_Zwick
 https://www.cs.tau.ac.il/~zwick/ALG-ANALYSIS-2021.html
-

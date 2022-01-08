@@ -11,6 +11,10 @@ import com.ugav.algo.Graph.Edge;
 
 public class MSTBoruvka1926 implements MST {
 
+	/*
+	 * O(mlogn)
+	 */
+
 	private MSTBoruvka1926() {
 	}
 

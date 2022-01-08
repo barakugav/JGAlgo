@@ -13,6 +13,10 @@ import com.ugav.algo.Graph.WeightFunctionInt;
 
 public class SSSPDial1969 implements SSSP {
 
+	/*
+	 * O(m + D) where D is the sum of all edges (can be improved to sum of max n edges)
+	 */
+
 	private SSSPDial1969() {
 	}
 

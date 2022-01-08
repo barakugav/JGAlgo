@@ -11,6 +11,10 @@ import com.ugav.algo.Graphs.Ref;
 
 public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 
+	/*
+	 * O(m + n) where m is the number of queries
+	 */
+
 	private TPMKomlos1985King1997Hagerup2009() {
 	}
 

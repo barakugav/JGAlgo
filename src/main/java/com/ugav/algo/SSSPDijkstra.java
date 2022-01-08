@@ -12,6 +12,10 @@ import com.ugav.algo.Graph.WeightFunction;
 
 public class SSSPDijkstra implements SSSP {
 
+	/*
+	 * O(m + nlogn)
+	 */
+
 	private SSSPDijkstra() {
 	}
 

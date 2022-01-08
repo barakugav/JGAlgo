@@ -11,6 +11,10 @@ import com.ugav.algo.Graph.WeightFunction;
 
 public class SSSPBellmanFord implements SSSP {
 
+	/*
+	 * O(mn)
+	 */
+
 	private SSSPBellmanFord() {
 	}
 
