@@ -9,8 +9,8 @@ import com.ugav.algo.SSSPBellmanFord;
 public class SSSPBellmanFordTest {
 
 	@Test
-	public static boolean basic() {
-		return SSSPTestUtils.testSSSPPositive(SSSPBellmanFord.getInstace());
+	public static boolean randGraphPositiveInt() {
+		return SSSPTestUtils.testSSSPDirectedPositiveInt(SSSPBellmanFord.getInstace());
 	}
 
 	@Test

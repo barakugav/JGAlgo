@@ -22,12 +22,13 @@ public class TestList {
 			UnionFindPtrTest.class,
 			UnionFindArrayTest.class,
 			SplitFindMinArrayTest.class,
+			LCARMQBenderFarachColton2000Test.class,
 			TPMKomlos1985King1997Hagerup2009Test.class,
 			MaxFlowEdmondsKarpTest.class);
 
-	private static final Collection<Class<?>> GRAPHS_TESTS = List.of(
-			LCARMQBenderFarachColton2000Test.class,
+	private static final Collection<Class<?>> GRAPHS_DISTANCE_TESTS = List.of(
 			SSSPDijkstraTest.class,
+			SSSPDial1969Test.class,
 			SSSPBellmanFordTest.class);
 
 	private static final Collection<Class<?>> MST_TESTS = List.of(
@@ -47,7 +48,7 @@ public class TestList {
 		l.addAll(RMQ_TESTS);
 		l.addAll(HEAP_TESTS);
 		l.addAll(MISC_TESTS);
-		l.addAll(GRAPHS_TESTS);
+		l.addAll(GRAPHS_DISTANCE_TESTS);
 		l.addAll(MST_TESTS);
 		l.addAll(MATCHING_TESTS);
 		TEST_CLASSES = Collections.unmodifiableCollection(l);

@@ -5,8 +5,13 @@ import com.ugav.algo.SSSPDijkstra;
 public class SSSPDijkstraTest {
 
 	@Test
-	public static boolean basic() {
-		return SSSPTestUtils.testSSSPPositive(SSSPDijkstra.getInstace());
+	public static boolean randGraphDirectedPositiveInt() {
+		return SSSPTestUtils.testSSSPDirectedPositiveInt(SSSPDijkstra.getInstace());
+	}
+
+	@Test
+	public static boolean testSSSPUndirectedPositiveInt() {
+		return SSSPTestUtils.testSSSPUndirectedPositiveInt(SSSPDijkstra.getInstace());
 	}
 
 }
