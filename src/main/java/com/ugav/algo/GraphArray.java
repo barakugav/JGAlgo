@@ -132,18 +132,34 @@ public class GraphArray<E> extends GraphAbstract<E> {
 		m--;
 	}
 
+	@Override
+	public void removeEdgesOut(int u) {
+		Edge<E>[] es = edges[u];
+		int len = edgesLen[u];
+		if (!directed) {
+			for (int i = 0; i < len; i++) {
+				Edge<E> twin = es[i].twin();
+				if (twin != null)
+					removeEdge0(twin);
+			}
+		}
+		Arrays.fill(es, 0, len, null);
+		m -= len;
+		edgesLen[u] = 0;
+	}
+
 	private void removeEdge0(Edge<E> e) {
 		int u = e.u();
 		Edge<E>[] es = edges[u];
 		for (int i = 0, len = edgesLen[u]; i < len; i++) {
-			if (es[i] != e)
-				continue;
-			if (--edgesLen[u] > 0) {
-				es[i] = es[len - 1];
-				es[len - 1] = null;
-			} else
-				es[i] = null;
-			return;
+			if (es[i] == e) {
+				if (--edgesLen[u] > 0) {
+					es[i] = es[len - 1];
+					es[len - 1] = null;
+				} else
+					es[i] = null;
+				return;
+			}
 		}
 		throw new IllegalArgumentException("edge not in graph: " + e);
 	}

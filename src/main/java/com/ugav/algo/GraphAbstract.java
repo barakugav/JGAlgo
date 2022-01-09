@@ -40,7 +40,7 @@ public abstract class GraphAbstract<E> implements Graph<E> {
 	@Override
 	public String toString() {
 		StringBuilder s = new StringBuilder();
-		s.append('[');
+		s.append('{');
 		int n = vertices();
 
 		boolean firstVertex = true;
@@ -49,7 +49,7 @@ public abstract class GraphAbstract<E> implements Graph<E> {
 				firstVertex = false;
 			else
 				s.append(", ");
-			s.append("[" + u + "]->{");
+			s.append("<v" + u + ">->[");
 
 			boolean firstEdge = true;
 			for (Iterator<Edge<E>> it = edges(u); it.hasNext();) {
@@ -59,9 +59,9 @@ public abstract class GraphAbstract<E> implements Graph<E> {
 					s.append(", ");
 				s.append(it.next());
 			}
-			s.append("}");
+			s.append("]");
 		}
-		s.append(']');
+		s.append('}');
 		return s.toString();
 	}
 

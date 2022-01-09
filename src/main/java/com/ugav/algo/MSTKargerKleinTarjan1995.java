@@ -72,7 +72,7 @@ public class MSTKargerKleinTarjan1995 implements MST {
 
 	private <E> Graph<E> randSubgraph(Graph<E> g) {
 		Random rand = new Random(seedGenerator.nextLong());
-		Graph<E> g1 = GraphLinked.builder().setDirected(false).setVertexNum(g.vertices()).build();
+		Graph<E> g1 = new GraphArray<>(DirectedType.Undirected, g.vertices());
 
 		for (Edge<E> e : g.edges()) {
 			if (rand.nextBoolean())

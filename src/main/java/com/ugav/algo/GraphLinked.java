@@ -7,17 +7,23 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
-public abstract class GraphLinked<E> extends GraphAbstract<E> {
+public class GraphLinked<E> extends GraphAbstract<E> {
 
-	int n;
-	int m;
-	Node<E>[] edges;
+	private int n;
+	private int m;
+	private final boolean directed;
+	private Node<E>[] edges;
 	private final Collection<Edge<E>> edgesView;
 
+	public GraphLinked(DirectedType directed) {
+		this(directed, 0);
+	}
+
 	@SuppressWarnings("unchecked")
-	protected GraphLinked(int n) {
+	public GraphLinked(DirectedType directed, int n) {
 		if (n < 0)
 			throw new IllegalArgumentException();
+		this.directed = directed == DirectedType.Directed;
 		this.n = n;
 		m = 0;
 		edges = new Node[n != 0 ? n : 1];
@@ -106,6 +112,11 @@ public abstract class GraphLinked<E> extends GraphAbstract<E> {
 	}
 
 	@Override
+	public boolean isDirected() {
+		return directed;
+	}
+
+	@Override
 	public int newVertex() {
 		int v = n++;
 		if (edges.length < n)
@@ -114,15 +125,62 @@ public abstract class GraphLinked<E> extends GraphAbstract<E> {
 	}
 
 	@Override
+	public Edge<E> addEdge(int u, int v) {
+		if (u >= n || v >= n)
+			throw new IllegalArgumentException();
+		Node<E> e;
+		if (directed) {
+			addNode(e = new NodeDirected<>(u, v));
+		} else {
+			NodeUndirected<E> e1 = new NodeUndirected<>(u, v);
+			addNode(e = e1);
+			if (u != v) {
+				NodeUndirected<E> e2 = new NodeUndirected<>(v, u);
+				e1.twin = e2;
+				e2.twin = e1;
+				addNode(e2);
+			}
+		}
+		m++;
+		return e;
+	}
+
+	private void addNode(Node<E> e) {
+		e.next = edges[e.u()];
+		edges[e.u()] = e;
+	}
+
+	@Override
 	public void addEdge(Edge<E> e) {
 		throw new UnsupportedOperationException();
 	}
 
-	Node<E> addNode(int u, int v) {
-		Node<E> e = newNode(u, v);
-		e.next = edges[u];
-		edges[u] = e;
-		return e;
+	@Override
+	public void removeEdge(Edge<E> e) {
+		Edge<E> twin = e.twin();
+		removeEdge0(e);
+		if (twin != null)
+			removeEdge0(twin);
+		m--;
+	}
+
+	@Override
+	public void removeEdgesOut(int u) {
+		if (!isDirected()) {
+			for (Node<E> p = edges[u]; p != null; p = p.next) {
+				Edge<E> twin = p.twin();
+				if (twin != null)
+					removeEdge0(twin);
+			}
+		}
+		int count = 0;
+		for (Node<E> p = edges[u], next; p != null; p = next) {
+			next = p.next;
+			p.next = null;
+			count++;
+		}
+		edges[u] = null;
+		m -= count;
 	}
 
 	void removeEdge0(Edge<E> e) {
@@ -142,92 +200,16 @@ public abstract class GraphLinked<E> extends GraphAbstract<E> {
 	@Override
 	public void clear() {
 		edges().clear();
-		m = 0;
+		n = 0;
 	}
 
-	protected abstract Node<E> newNode(int u, int v);
+	private abstract static class Node<E> extends EdgeAbstract<E> {
 
-	public static class Directed<E> extends GraphLinked<E> {
+		final int u;
+		final int v;
+		private Node<E> next;
 
-		protected Directed(int n) {
-			super(n);
-		}
-
-		@Override
-		public boolean isDirected() {
-			return true;
-		}
-
-		@Override
-		public Edge<E> addEdge(int u, int v) {
-			if (u >= n || v >= n)
-				throw new IllegalArgumentException();
-			Edge<E> e = addNode(u, v);
-			m++;
-			return e;
-		}
-
-		@Override
-		protected Node<E> newNode(int u, int v) {
-			return new NodeDirected<>(u, v);
-		}
-
-		@Override
-		public void removeEdge(Edge<E> e) {
-			removeEdge0(e);
-			m--;
-		}
-
-	}
-
-	public static class Undirected<E> extends GraphLinked<E> {
-
-		protected Undirected(int n) {
-			super(n);
-		}
-
-		@Override
-		public boolean isDirected() {
-			return false;
-		}
-
-		@Override
-		public Edge<E> addEdge(int u, int v) {
-			if (u >= n || v >= n)
-				throw new IllegalArgumentException();
-			NodeUndirected<E> e1 = (NodeUndirected<E>) addNode(u, v);
-			if (u != v) {
-				NodeUndirected<E> e2 = (NodeUndirected<E>) addNode(v, u);
-				e1.twin = e2;
-				e2.twin = e1;
-			}
-			m++;
-			return e1;
-		}
-
-		@Override
-		protected Node<E> newNode(int u, int v) {
-			return new NodeUndirected<>(u, v);
-		}
-
-		@Override
-		public void removeEdge(Edge<E> e0) {
-			NodeUndirected<E> e = (NodeUndirected<E>) e0;
-			removeEdge0(e);
-			if (e.twin != null)
-				removeEdge0(e.twin);
-			m--;
-		}
-
-	}
-
-	protected abstract static class Node<E> extends EdgeAbstract<E> {
-
-		protected final int u;
-		protected final int v;
-		protected Node<E> next;
-
-		protected Node(int u, int v) {
+		private Node(int u, int v) {
 			this.u = u;
 			this.v = v;
 		}
@@ -244,11 +226,11 @@ public abstract class GraphLinked<E> extends GraphAbstract<E> {
 
 	}
 
-	protected static class NodeUndirected<E> extends Node<E> {
+	private static class NodeUndirected<E> extends Node<E> {
 
-		NodeUndirected<E> twin;
+		private NodeUndirected<E> twin;
 
-		protected NodeUndirected(int u, int v) {
+		private NodeUndirected(int u, int v) {
 			super(u, v);
 		}
 
@@ -293,9 +275,9 @@ public abstract class GraphLinked<E> extends GraphAbstract<E> {
 
 	}
 
-	protected static class NodeDirected<E> extends Node<E> {
+	private static class NodeDirected<E> extends Node<E> {
 
-		protected NodeDirected(int u, int v) {
+		private NodeDirected(int u, int v) {
 			super(u, v);
 		}
 
@@ -378,36 +360,6 @@ public abstract class GraphLinked<E> extends GraphAbstract<E> {
 			Node<E> q = p;
 			p = q.next;
 			return q;
-		}
-
-	}
-
-	public static Builder builder() {
-		return new Builder();
-	}
-
-	public static class Builder {
-
-		private int n;
-		private boolean directed;
-
-		public Builder() {
-			n = 0;
-			directed = false;
-		}
-
-		public Builder setVertexNum(int n) {
-			this.n = n;
-			return this;
-		}
-
-		public Builder setDirected(boolean directed) {
-			this.directed = directed;
-			return this;
-		}
-
-		public <E> GraphLinked<E> build() {
-			return directed ? new Directed<>(n) : new Undirected<>(n);
 		}
 
 	}

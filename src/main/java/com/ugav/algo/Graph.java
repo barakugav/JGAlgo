@@ -90,6 +90,13 @@ public interface Graph<E> {
 	public void removeEdge(Edge<E> e);
 
 	/**
+	 * Remove all the edges going out of a given vertex
+	 *
+	 * @param u a vertex index
+	 */
+	public void removeEdgesOut(int u);
+
+	/**
 	 * Clears the whole graph
 	 *
 	 * removes all vertices and edges
