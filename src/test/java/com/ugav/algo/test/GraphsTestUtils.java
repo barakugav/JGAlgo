@@ -238,11 +238,17 @@ class GraphsTestUtils {
 			e.val(rand.nextDouble(minWeight, maxWeight));
 	}
 
-	static void assignRandWeightsInt(Graph<Integer> g) {
+	static void assignRandWeightsIntPos(Graph<Integer> g) {
 		int m = g.edges().size();
 		int minWeight = 1;
 		int maxWeight = m < 50 ? 100 : m * 2 + 2;
 		assignRandWeightsInt(g, minWeight, maxWeight);
+	}
+
+	static void assignRandWeightsIntNeg(Graph<Integer> g) {
+		int m = g.edges().size();
+		int maxWeight = m < 50 ? 100 : m * 2 + 2;
+		assignRandWeightsInt(g, -maxWeight / 8, maxWeight);
 	}
 
 	static void assignRandWeightsInt(Graph<Integer> g, int minWeight, int maxWeight) {

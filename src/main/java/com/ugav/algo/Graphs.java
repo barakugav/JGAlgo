@@ -2,7 +2,6 @@ package com.ugav.algo;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -446,7 +445,7 @@ public class Graphs {
 		}
 
 		@Override
-		public Collection<Edge<E>> getPathTo(int t) {
+		public List<Edge<E>> getPathTo(int t) {
 			List<Edge<E>> path = new ArrayList<>();
 			for (int v = t;;) {
 				Edge<E> e = backtrack[v];
@@ -465,8 +464,13 @@ public class Graphs {
 		}
 
 		@Override
-		public Collection<Edge<E>> getNegativeCircle() {
+		public List<Edge<E>> getNegativeCircle() {
 			throw new IllegalStateException("no negative circle found");
+		}
+
+		@Override
+		public String toString() {
+			return Arrays.toString(distances);
 		}
 
 	}

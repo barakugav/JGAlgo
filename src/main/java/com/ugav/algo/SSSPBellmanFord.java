@@ -2,7 +2,6 @@ package com.ugav.algo;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -34,7 +33,7 @@ public class SSSPBellmanFord implements SSSP {
 		Edge<E>[] backtrack = new Edge[n];
 
 		if (n == 0)
-			return new Result<>(distances, backtrack);
+			return Result.success(distances, backtrack);
 
 		Arrays.fill(distances, Double.POSITIVE_INFINITY);
 		distances[s] = 0;
@@ -54,20 +53,22 @@ public class SSSPBellmanFord implements SSSP {
 			int u = e.u(), v = e.v();
 			double d = distances[u] + w.weight(e);
 			if (d < distances[v])
-				return new ResultNegative<>();
+				return Result.negCycle();
 		}
 
-		return new Result<>(distances, backtrack);
+		return Result.success(distances, backtrack);
 	}
 
 	private static class Result<E> implements SSSP.Result<E> {
 
 		private final double[] distances;
 		private final Edge<E>[] backtrack;
+		private final boolean negCycle;
 
-		Result(double[] distances, Edge<E>[] backtrack) {
+		private Result(double[] distances, Edge<E>[] backtrack, boolean negCycle) {
 			this.distances = distances;
 			this.backtrack = backtrack;
+			this.negCycle = negCycle;
 		}
 
 		@Override
@@ -76,7 +77,7 @@ public class SSSPBellmanFord implements SSSP {
 		}
 
 		@Override
-		public Collection<Edge<E>> getPathTo(int t) {
+		public List<Edge<E>> getPathTo(int t) {
 			List<Edge<E>> path = new ArrayList<>();
 			for (int v = t;;) {
 				Edge<E> e = backtrack[v];
@@ -91,39 +92,28 @@ public class SSSPBellmanFord implements SSSP {
 
 		@Override
 		public boolean foundNegativeCircle() {
-			return false;
+			return negCycle;
 		}
 
 		@Override
-		public Collection<Edge<E>> getNegativeCircle() {
-			throw new IllegalArgumentException("no negative circle found");
-		}
-
-	}
-
-	private static class ResultNegative<E> implements SSSP.Result<E> {
-
-		ResultNegative() {
+		public List<Edge<E>> getNegativeCircle() {
+			if (negCycle)
+				throw new UnsupportedOperationException();
+			else
+				throw new IllegalStateException("no negative circle found");
 		}
 
 		@Override
-		public double distance(int t) {
-			throw new IllegalStateException();
+		public String toString() {
+			return negCycle ? "[NegCycle]" : Arrays.toString(distances);
 		}
 
-		@Override
-		public Collection<Edge<E>> getPathTo(int t) {
-			throw new IllegalStateException();
+		static <E> Result<E> success(double[] distances, Edge<E>[] backtrack) {
+			return new Result<>(distances, backtrack, false);
 		}
 
-		@Override
-		public boolean foundNegativeCircle() {
-			return true;
-		}
-
-		@Override
-		public Collection<Edge<E>> getNegativeCircle() {
-			throw new UnsupportedOperationException();
+		static <E> Result<E> negCycle() {
+			return new Result<>(null, null, true);
 		}
 
 	}

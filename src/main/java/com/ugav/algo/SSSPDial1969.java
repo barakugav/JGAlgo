@@ -2,7 +2,6 @@ package com.ugav.algo;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -14,7 +13,8 @@ import com.ugav.algo.Graph.WeightFunctionInt;
 public class SSSPDial1969 implements SSSP {
 
 	/*
-	 * O(m + D) where D is the sum of all edges (can be improved to sum of max n edges)
+	 * O(m + D) where D is the sum of all edges (can be improved to sum of max n
+	 * edges)
 	 */
 
 	private SSSPDial1969() {
@@ -182,7 +182,7 @@ public class SSSPDial1969 implements SSSP {
 		}
 
 		@Override
-		public Collection<Edge<E>> getPathTo(int t) {
+		public List<Edge<E>> getPathTo(int t) {
 			List<Edge<E>> path = new ArrayList<>();
 			for (int v = t;;) {
 				Edge<E> e = backtrack[v];
@@ -201,7 +201,7 @@ public class SSSPDial1969 implements SSSP {
 		}
 
 		@Override
-		public Collection<Edge<E>> getNegativeCircle() {
+		public List<Edge<E>> getNegativeCircle() {
 			throw new IllegalStateException("no negative circle found");
 		}
 

@@ -11,6 +11,7 @@ Implemented algorithms:
    - Dijkstra positive weights, O(m + nlogn)
    - Dial1969 positive integer weights, O(m + D) where D is the sum of all edges (can be improved to sum of max n-1 edges)
    - BellmanFord general weights, O(m * n)
+   - Goldberg1995 positive and negative integer weights, O(m * n^0.5 * logN) where N is the minimum negative weight
  - RMQ (range query minimum)
    - PlusMinusOneBenderFarachColton2000, only for +/-1 arrays, O(n) preprocessing, O(1) query
    - GabowBentleyTarjan1984, O(n) preprocessing, O(1) query

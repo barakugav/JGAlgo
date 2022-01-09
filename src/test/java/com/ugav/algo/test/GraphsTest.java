@@ -220,7 +220,7 @@ public class GraphsTest {
 			int m = args[2];
 			Graph<Integer> g = new RandomGraphBuilder().n(n).m(m).directed(true).doubleEdges(true).selfEdges(false)
 					.cycles(false).connected(connected).build();
-			GraphsTestUtils.assignRandWeightsInt(g);
+			GraphsTestUtils.assignRandWeightsIntPos(g);
 			WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
 			int source = 0;
 

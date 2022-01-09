@@ -96,7 +96,7 @@ class TPMTestUtils {
 
 	static boolean testTPM(TPM algo, int n) {
 		Graph<Integer> t = GraphsTestUtils.randTree(n);
-		GraphsTestUtils.assignRandWeightsInt(t);
+		GraphsTestUtils.assignRandWeightsIntPos(t);
 		WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
 
 		int[] queries = n <= 64 ? generateAllPossibleQueries(n) : generateRandQueries(n, Math.min(n * 64, 8192));
@@ -113,7 +113,7 @@ class TPMTestUtils {
 			int m = args[2];
 			Graph<Integer> g = new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(true).selfEdges(false)
 					.cycles(true).connected(true).build();
-			GraphsTestUtils.assignRandWeightsInt(g);
+			GraphsTestUtils.assignRandWeightsIntPos(g);
 			WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
 			Collection<Edge<Integer>> mstEdges = MSTKruskal1956.getInstance().calcMST(g, w);
 
@@ -130,7 +130,7 @@ class TPMTestUtils {
 
 			Graph<Integer> g = new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(true).selfEdges(false)
 					.cycles(true).connected(true).build();
-			GraphsTestUtils.assignRandWeightsInt(g);
+			GraphsTestUtils.assignRandWeightsIntPos(g);
 			WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
 
 			Collection<Edge<Integer>> mstEdges = MSTKruskal1956.getInstance().calcMST(g, w);

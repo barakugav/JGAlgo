@@ -33,7 +33,7 @@ class MSTTestUtils {
 
 	static boolean testRandGraph(MST algo, int n, int m) {
 		Graph<Integer> g = GraphsTestUtils.randGraph(n, m);
-		GraphsTestUtils.assignRandWeightsInt(g);
+		GraphsTestUtils.assignRandWeightsIntPos(g);
 
 		WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
 		return testMST(g, w, algo);

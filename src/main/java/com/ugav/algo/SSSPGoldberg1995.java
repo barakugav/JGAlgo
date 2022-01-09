@@ -1,7 +1,7 @@
 package com.ugav.algo;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -13,8 +13,21 @@ import com.ugav.algo.Graph.WeightFunctionInt;
 
 public class SSSPGoldberg1995 implements SSSP {
 
+	/*
+	 * O(m * n^0.5 * logN) where N is the minimum negative weight
+	 */
+
+	private SSSPGoldberg1995() {
+	}
+
+	private static final SSSPGoldberg1995 INSTANCE = new SSSPGoldberg1995();
+
+	public static SSSPGoldberg1995 getInstace() {
+		return INSTANCE;
+	}
+
 	@Override
-	public <E> Result<E> calcDistances(Graph<E> g, WeightFunction<E> w0, int s) {
+	public <E> SSSP.Result<E> calcDistances(Graph<E> g, WeightFunction<E> w0, int s) {
 		if (!g.isDirected())
 			throw new IllegalArgumentException("Undirected graphs are not supported");
 		if (!(w0 instanceof WeightFunctionInt))
@@ -28,139 +41,218 @@ public class SSSPGoldberg1995 implements SSSP {
 			// All weights are positive, use Dijkstra
 			return SSSPDijkstra.getInstace().calcDistances(g, w, s);
 
+		Pair<int[], List<Edge<E>>> p = calcPotential(g, w, minWeight);
+		if (p.e2 != null)
+			return new Result<>(s, null, null, true, p.e2);
+		int[] potential = p.e1;
+		PotentialWeightFunction<E> pw = new PotentialWeightFunction<>(w, potential);
+		SSSP.Result<E> dijkstra = SSSPDijkstra.getInstace().calcDistances(g, pw, s);
+		return new Result<>(s, potential, dijkstra, false, null);
+	}
+
+	private static <E> Pair<int[], List<Edge<E>>> calcPotential(Graph<E> g, WeightFunctionInt<E> w, int minWeight) {
 		int n = g.vertices();
 		int[] potential = new int[n];
 
+		boolean[] connected = new boolean[n];
+		int[] layerSize = new int[n];
+
+		Graph<E> gNeg = new GraphArray<>(DirectedType.Directed, n);
+		Graph<Integer> G = new GraphArray<>(DirectedType.Directed, n);
+		int fakeS = G.newVertex();
+
 		int minWeightWordsize = Utils.log2(-minWeight);
-		for (int i = 0; i < minWeightWordsize; i++) {
-			int weightShift = minWeightWordsize - i;
+		for (int weightMask = minWeightWordsize; weightMask >= 0; weightMask--) {
+			if (weightMask != minWeightWordsize)
+				for (int v = 0; v < n; v++)
+					potential[v] *= 2;
 
-			// Create a graph with edges with weight <= 0
-			Graph<E> gNeg = new GraphArray<>(DirectedType.Directed, n);
-			for (Edge<E> e : g.edges())
-				if (weight(e, w, potential, weightShift) <= 0)
-					gNeg.addEdge(e);
+			// updated potential function until there are no more negative vertices with
+			// current weight function
+			do {
+				// Create a graph with edges with weight <= 0
+				gNeg.edges().clear();
+				for (Edge<E> e : g.edges())
+					if (weight(e, w, potential, weightMask) <= 0)
+						gNeg.addEdge(e);
 
-			Pair<Integer, int[]> pair = Graphs.findStrongConnectivityComponents(gNeg);
-			int compNum = pair.e1;
-			int[] vToComp = pair.e2;
+				// Find all strong connectivity components in the graph
+				Pair<Integer, int[]> pair = Graphs.findStrongConnectivityComponents(gNeg);
+				int N = pair.e1;
+				int[] v2V = pair.e2;
 
-			for (int u = 0; u < n; u++) {
-				int U = vToComp[u];
-				for (Iterator<Edge<E>> it = gNeg.edges(u); it.hasNext();) {
-					Edge<E> e = it.next();
-					if (U == vToComp[e.v()] && weight(e, w, potential, weightShift) < 0) {
-						// negative cycle
-						gNeg.removeEdge(e);
-						List<Edge<E>> negCycle = Graphs.findPath(gNeg, e.v(), u);
-						negCycle.add(e);
-						return new ResultNegative<>(negCycle);
-					}
-				}
-			}
-
-			int[] vListBegin = new int[n]; // (super vertex -> first vertex in the list) of the current iteration
-//			int[] vListEnd = new int[n]; // (super vertex -> last vertex in the list) of the current iteration
-			int[] vListNext = new int[n]; // (vertex -> next vertex in the list)
-
-			Arrays.fill(vListBegin, -1);
-
-			for (int v = 0; v < n; v++) {
-				int V = vToComp[v];
-				vListNext[v] = vListBegin[V];
-				vListBegin[V] = v;
-			}
-
-			int[] inDegree = new int[compNum];
-			int[] queue = new int[compNum];
-			int[] topolSort = new int[compNum];
-			int queueBegin = 0, queueEnd = 0, topolSortSize = 0;
-			for (Edge<E> e : gNeg.edges()) {
-				int V = vToComp[e.v()];
-				if (vToComp[e.u()] != V)
-					inDegree[V]++;
-			}
-
-			// Find vertices with zero in degree and insert them to the queue
-			for (int V = 0; V < compNum; V++)
-				if (inDegree[V] == 0)
-					queue[queueEnd++] = V;
-
-			// Poll vertices from the queue and "remove" each one from the tree and add new
-			// zero in degree vertices to the queue
-			while (queueBegin != queueEnd) {
-				int U = queue[queueBegin++];
-				topolSort[topolSortSize++] = U;
-				for (int u = vListBegin[U]; u != -1; u = vListNext[u]) {
-					for (Iterator<Edge<E>> it = g.edges(u); it.hasNext();) {
-						int V = vToComp[it.next().v()];
-						if (U != V && --inDegree[V] == 0)
-							queue[queueEnd++] = V;
-					}
-				}
-			}
-			if (topolSortSize != compNum)
-				throw new InternalError(); // TODO remove
-
-			int[] distance = new int[n];
-			for (int j = 0; j < compNum; j++) {
-				int U = topolSort[j];
-				int UDis = distance[U];
-				for (int u = vListBegin[U]; u != -1; u = vListNext[u]) {
-					for (Iterator<Edge<E>> it = g.edges(u); it.hasNext();) {
+				// Contract each strong connectivity component and search for a negative edge
+				// within it, if found - negative cycle found
+				G.edges().clear();
+				for (int u = 0; u < n; u++) {
+					int U = v2V[u];
+					for (Iterator<Edge<E>> it = gNeg.edges(u); it.hasNext();) {
 						Edge<E> e = it.next();
-						int V = vToComp[e.v()];
+						int V = v2V[e.v()];
+						int weight = weight(e, w, potential, weightMask);
 						if (U != V)
-							distance[V] = Math.min(distance[V], UDis + weight(e, w, potential, weightShift));
+							G.addEdge(U, V).val(weight);
+						else if (weight < 0) {
+							// negative cycle
+							gNeg.removeEdge(e);
+							List<Edge<E>> negCycle = new ArrayList<>(Graphs.findPath(gNeg, e.v(), u));
+							negCycle.add(e);
+							return Pair.valueOf(null, negCycle);
+						}
 					}
 				}
-			}
-			
-			
+
+				// Create a face vertex S, connect with 0 edges to all and calc distances
+				for (int U = 0; U < N; U++)
+					G.addEdge(fakeS, U).val(0);
+				SSSP.Result<Integer> ssspRes = Graphs.calcDistancesDAG(G, Graphs.WEIGHT_INT_FUNC_DEFAULT, fakeS);
+
+				// Divide super vertices into layers by distance
+				int layerNum = 0;
+				int vertexInMaxLayer = -1;
+				Arrays.fill(layerSize, 0);
+				for (int V = 0; V < N; V++) {
+					int l = -(int) ssspRes.distance(V);
+					if (l + 1 > layerNum) {
+						layerNum = l + 1;
+						vertexInMaxLayer = V;
+					}
+					layerSize[l]++;
+				}
+				if (layerNum == 1)
+					break; // no negative vertices, done
+
+				// Find biggest layer
+				int biggestLayer = -1;
+				for (int l = layerNum - 1; l > 0; l--)
+					if (biggestLayer == -1 || layerSize[l] > layerSize[biggestLayer])
+						biggestLayer = l;
+				if (layerSize[biggestLayer] >= Math.sqrt(N)) {
+					// A layer with sqrt(|V|) was found, decrease potential of layers l,l+1,l+2,...
+					for (int v = 0; v < n; v++) {
+						int V = v2V[v], l = -(int) ssspRes.distance(V);
+						if (l >= biggestLayer)
+							potential[v]--;
+					}
+				} else {
+					// No big layer is found, use path which has at least sqrt(|V|) vetices.
+					// Connected a face vertex to all vertices, with edge r-i to negative vertex vi
+					// on the path and with edge r to all other vertices
+					Arrays.fill(connected, 0, N, false);
+					G.removeEdgesOut(fakeS);
+					int assignedWeight = layerNum - 2;
+					for (Edge<Integer> e : ssspRes.getPathTo(vertexInMaxLayer)) {
+						if (e.val() < 0) {
+							int V = e.v();
+							G.addEdge(fakeS, V).val(assignedWeight--);
+							connected[V] = true;
+						}
+					}
+					for (int V = 0; V < N; V++)
+						if (!connected[V])
+							G.addEdge(fakeS, V).val(layerNum - 1);
+
+					// Add the remaining edges to the graph, not only 0,-1 edges
+					for (Edge<E> e : g.edges()) {
+						int weight = weight(e, w, potential, weightMask);
+						if (weight > 0)
+							G.addEdge(v2V[e.u()], v2V[e.v()]).val(weight);
+					}
+
+					// Calc distance with abs weight function to update potential function
+					ssspRes = SSSPDial1969.getInstace().calcDistances(G, e -> Math.abs(e.val()), fakeS, layerNum);
+					for (int v = 0; v < n; v++)
+						potential[v] += ssspRes.distance(v2V[v]);
+				}
+			} while (true);
 		}
 
-		// TODO Auto-generated method stub
-		return null;
+		return Pair.valueOf(potential, null);
 	}
 
-	private static <E> int weight(Edge<E> e, WeightFunctionInt<E> w, int[] potential, int weightShift) {
+	private static <E> int weight(Edge<E> e, WeightFunctionInt<E> w, int[] potential, int weightMask) {
 		int weight = w.weightInt(e);
-		boolean neg = weight < 0;
-		if (neg)
-			weight = -weight;
-		// weight = ceil(weight / 2^weightShift)
-		weight = (weight + (1 << (weightShift - 1))) >> weightShift;
-		if (neg)
-			weight = -weight;
+		// weight = ceil(weight / 2^weightMask)
+		if (weightMask != 0) {
+			boolean neg = weight < 0;
+			if (neg)
+				weight = -weight;
+			else
+				weight += 1 << (weightMask - 1);
+			weight = weight >> weightMask;
+			if (neg)
+				weight = -weight;
+		}
 		return weight + potential[e.u()] - potential[e.v()];
 	}
 
-	private static class ResultNegative<E> implements SSSP.Result<E> {
+	private static class Result<E> implements SSSP.Result<E> {
 
+		private final int sourcePotential;
+		private final int[] potential;
+		private final SSSP.Result<E> dijkstraRes;
+		private final boolean negCycle;
 		private final List<Edge<E>> cycle;
 
-		ResultNegative(List<Edge<E>> cycle) {
-			this.cycle = Collections.unmodifiableList(cycle);
+		Result(int source, int[] potential, SSSP.Result<E> dijkstraRes, boolean negCycle, List<Edge<E>> cycle) {
+			this.sourcePotential = potential != null ? potential[source] : 0;
+			this.potential = potential;
+			this.dijkstraRes = dijkstraRes;
+			this.negCycle = negCycle;
+			this.cycle = negCycle ? Collections.unmodifiableList(cycle) : null;
 		}
 
 		@Override
 		public double distance(int t) {
-			throw new IllegalStateException();
+			if (negCycle)
+				throw new IllegalStateException();
+			return dijkstraRes.distance(t) - sourcePotential + potential[t];
 		}
 
 		@Override
-		public Collection<Edge<E>> getPathTo(int t) {
-			throw new IllegalStateException();
+		public List<Edge<E>> getPathTo(int t) {
+			if (negCycle)
+				throw new IllegalStateException();
+			return dijkstraRes.getPathTo(t);
 		}
 
 		@Override
 		public boolean foundNegativeCircle() {
-			return true;
+			return negCycle;
 		}
 
 		@Override
-		public Collection<Edge<E>> getNegativeCircle() {
+		public List<Edge<E>> getNegativeCircle() {
+			if (!negCycle)
+				throw new IllegalStateException();
 			return cycle;
+		}
+
+		@Override
+		public String toString() {
+			if (negCycle)
+				return "[NegCycle=" + cycle + "]";
+			double[] distances = new double[potential.length];
+			for (int u = 0; u < distances.length; u++)
+				distances[u] = distance(u);
+			return negCycle ? "[NegCycle]" : Arrays.toString(distances);
+		}
+
+	}
+
+	private static class PotentialWeightFunction<E> implements WeightFunctionInt<E> {
+
+		private final WeightFunctionInt<E> w;
+		private final int[] potential;
+
+		PotentialWeightFunction(WeightFunctionInt<E> w, int[] potential) {
+			this.w = w;
+			this.potential = potential;
+		}
+
+		@Override
+		public int weightInt(Edge<E> e) {
+			return w.weightInt(e) + potential[e.u()] - potential[e.v()];
 		}
 
 	}
