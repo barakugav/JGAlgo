@@ -9,7 +9,7 @@ import java.util.List;
 import com.ugav.algo.Graph.DirectedType;
 import com.ugav.algo.Graph.Edge;
 
-public class MatchingBipartiteHopcroftKarp1973 implements MatchingBipartite {
+public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 
 	/*
 	 * Maximum matching in unweighted undirected bipartite graph in O(m * n^0.5)
@@ -25,7 +25,10 @@ public class MatchingBipartiteHopcroftKarp1973 implements MatchingBipartite {
 	}
 
 	@Override
-	public <E> Collection<Edge<E>> calcMaxMatching(GraphBipartite<E> g) {
+	public <E> Collection<Edge<E>> calcMaxMatching(Graph<E> g0) {
+		if (!(g0 instanceof GraphBipartite))
+			throw new IllegalArgumentException("only bipartite graphs are supported");
+		GraphBipartite<E> g = (GraphBipartite<E>) g0;
 		if (g.isDirected())
 			throw new IllegalArgumentException("directed graphs are not supported");
 		int n = g.vertices();

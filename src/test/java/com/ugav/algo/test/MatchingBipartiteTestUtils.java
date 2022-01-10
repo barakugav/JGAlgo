@@ -7,7 +7,7 @@ import com.ugav.algo.Graph.DirectedType;
 import com.ugav.algo.Graph.Edge;
 import com.ugav.algo.GraphBipartite;
 import com.ugav.algo.GraphBipartiteArray;
-import com.ugav.algo.MatchingBipartite;
+import com.ugav.algo.Matching;
 import com.ugav.algo.test.GraphsTestUtils.RandomGraphBuilder;
 
 class MatchingBipartiteTestUtils {
@@ -34,7 +34,7 @@ class MatchingBipartiteTestUtils {
 		return g;
 	}
 
-	static boolean randBipartiteGraphs(MatchingBipartite algo) {
+	static boolean randBipartiteGraphs(Matching algo) {
 		int[][] phases = { { 256, 8, 8, 8 }, { 256, 8, 8, 16 }, { 128, 16, 16, 16 }, { 128, 16, 16, 64 },
 				{ 64, 32, 32, 32 }, { 64, 32, 32, 128 }, { 16, 128, 128, 512 }, { 16, 128, 128, 128 },
 				{ 4, 1024, 1024, 1024 }, { 4, 1024, 1024, 8192 } };
@@ -48,7 +48,7 @@ class MatchingBipartiteTestUtils {
 		});
 	}
 
-	private static <E> boolean testBipartiteAlgo(MatchingBipartite algo, GraphBipartite<E> g, int expectedMatchSize) {
+	private static <E> boolean testBipartiteAlgo(Matching algo, GraphBipartite<E> g, int expectedMatchSize) {
 		Collection<Edge<E>> match = algo.calcMaxMatching(g);
 
 		int n = g.vertices();
