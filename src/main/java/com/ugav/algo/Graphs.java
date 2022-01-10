@@ -13,6 +13,7 @@ import com.ugav.algo.Graph.DirectedType;
 import com.ugav.algo.Graph.Edge;
 import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.Graph.WeightFunctionInt;
+import com.ugav.algo.SSSP.SSSPResultsImpl;
 
 public class Graphs {
 
@@ -426,53 +427,7 @@ public class Graphs {
 			}
 		}
 
-		return new SSSPDAGResults<>(distances, backtrack);
-	}
-
-	private static class SSSPDAGResults<E> implements SSSP.Result<E> {
-
-		private final double[] distances;
-		private final Edge<E>[] backtrack;
-
-		SSSPDAGResults(double[] distances, Edge<E>[] backtrack) {
-			this.distances = distances;
-			this.backtrack = backtrack;
-		}
-
-		@Override
-		public double distance(int t) {
-			return distances[t];
-		}
-
-		@Override
-		public List<Edge<E>> getPathTo(int t) {
-			List<Edge<E>> path = new ArrayList<>();
-			for (int v = t;;) {
-				Edge<E> e = backtrack[v];
-				if (e == null)
-					break;
-				path.add(e);
-				v = e.u();
-			}
-			Collections.reverse(path);
-			return path;
-		}
-
-		@Override
-		public boolean foundNegativeCircle() {
-			return false;
-		}
-
-		@Override
-		public List<Edge<E>> getNegativeCircle() {
-			throw new IllegalStateException("no negative circle found");
-		}
-
-		@Override
-		public String toString() {
-			return Arrays.toString(distances);
-		}
-
+		return new SSSPResultsImpl<>(distances, backtrack);
 	}
 
 	public static <E> int getFullyBranchingTreeDepth(Graph<E> t, int root) {

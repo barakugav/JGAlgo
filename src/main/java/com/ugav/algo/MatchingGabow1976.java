@@ -138,7 +138,6 @@ public class MatchingGabow1976 implements Matching {
 								// handle odd vertex
 								p = matched[p].v();
 								blossomVertices[blossomVerticesSize++] = p;
-
 								queue[queueEnd++] = p; // add the odd vertex that became even to the queue
 								bridge[p] = brigeEdge;
 

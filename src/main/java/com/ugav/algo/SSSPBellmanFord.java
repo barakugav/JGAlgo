@@ -1,8 +1,6 @@
 package com.ugav.algo;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import com.ugav.algo.Graph.Edge;
@@ -24,7 +22,7 @@ public class SSSPBellmanFord implements SSSP {
 	}
 
 	@Override
-	public <E> SSSP.Result<E> calcDistances(Graph<E> g, WeightFunction<E> w, int s) {
+	public <E> SSSP.Result<E> calcDistances(Graph<E> g, WeightFunction<E> w, int source) {
 		if (!g.isDirected())
 			throw new IllegalArgumentException("only directed graphs are supported");
 		int n = g.vertices();
@@ -36,7 +34,7 @@ public class SSSPBellmanFord implements SSSP {
 			return Result.success(distances, backtrack);
 
 		Arrays.fill(distances, Double.POSITIVE_INFINITY);
-		distances[s] = 0;
+		distances[source] = 0;
 
 		for (int i = 0; i < n - 1; i++) {
 			for (Edge<E> e : g.edges()) {
@@ -59,53 +57,45 @@ public class SSSPBellmanFord implements SSSP {
 		return Result.success(distances, backtrack);
 	}
 
-	private static class Result<E> implements SSSP.Result<E> {
+	private static class Result<E> extends SSSPResultsImpl<E> {
 
-		private final double[] distances;
-		private final Edge<E>[] backtrack;
 		private final boolean negCycle;
 
 		private Result(double[] distances, Edge<E>[] backtrack, boolean negCycle) {
-			this.distances = distances;
-			this.backtrack = backtrack;
+			super(distances, backtrack);
 			this.negCycle = negCycle;
 		}
 
 		@Override
-		public double distance(int t) {
-			return distances[t];
+		public double distance(int v) {
+			if (negCycle)
+				throw new IllegalStateException();
+			return super.distance(v);
 		}
 
 		@Override
-		public List<Edge<E>> getPathTo(int t) {
-			List<Edge<E>> path = new ArrayList<>();
-			for (int v = t;;) {
-				Edge<E> e = backtrack[v];
-				if (e == null)
-					break;
-				path.add(e);
-				v = e.u();
-			}
-			Collections.reverse(path);
-			return path;
+		public List<Edge<E>> getPathTo(int v) {
+			if (negCycle)
+				throw new IllegalStateException();
+			return super.getPathTo(v);
 		}
 
 		@Override
-		public boolean foundNegativeCircle() {
+		public boolean foundNegativeCycle() {
 			return negCycle;
 		}
 
 		@Override
-		public List<Edge<E>> getNegativeCircle() {
+		public List<Edge<E>> getNegativeCycle() {
 			if (negCycle)
 				throw new UnsupportedOperationException();
 			else
-				throw new IllegalStateException("no negative circle found");
+				throw new IllegalStateException("no negative cycle found");
 		}
 
 		@Override
 		public String toString() {
-			return negCycle ? "[NegCycle]" : Arrays.toString(distances);
+			return negCycle ? "[NegCycle]" : super.toString();
 		}
 
 		static <E> Result<E> success(double[] distances, Edge<E>[] backtrack) {

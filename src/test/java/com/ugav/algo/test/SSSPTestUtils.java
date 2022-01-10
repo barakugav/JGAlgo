@@ -71,25 +71,15 @@ class SSSPTestUtils {
 			SSSP validationAlgo) {
 		SSSP.Result<E> expectedRes = validationAlgo.calcDistances(g, w, source);
 
-		if (result.foundNegativeCircle()) {
+		if (result.foundNegativeCycle()) {
 			List<Edge<E>> cycle = null;
 			try {
-				cycle = result.getNegativeCircle();
+				cycle = result.getNegativeCycle();
 			} catch (UnsupportedOperationException e) {
 			}
 			if (cycle != null) {
-				double cycleWeight = 0;
-				int begin = cycle.get(0).u();
-				int p = begin;
-				for (Edge<E> e : cycle) {
-					if (e.u() != p) {
-						TestUtils.printTestStr("Invalid cycle: " + cycle + "\n");
-						return false;
-					}
-					cycleWeight += w.weight(e);
-					p = e.v();
-				}
-				if (p != begin) {
+				double cycleWeight = getPathWeight(cycle, w);
+				if (cycleWeight == Double.NaN || cycle.get(0).u() != cycle.get(cycle.size() - 1).v()) {
 					TestUtils.printTestStr("Invalid cycle: " + cycle + "\n");
 					return false;
 				}
@@ -97,28 +87,54 @@ class SSSPTestUtils {
 					TestUtils.printTestStr("Cycle is not negative: " + cycle + "\n");
 					return false;
 				}
-				if (!expectedRes.foundNegativeCircle())
+				if (!expectedRes.foundNegativeCycle())
 					throw new InternalError("validation algorithm didn't find negative cycle: " + cycle);
-			} else if (!expectedRes.foundNegativeCircle()) {
+			} else if (!expectedRes.foundNegativeCycle()) {
 				TestUtils.printTestStr("found non existing negative cycle\n");
 				return false;
 			}
 			return true;
-		} else if (expectedRes.foundNegativeCircle()) {
+		} else if (expectedRes.foundNegativeCycle()) {
 			TestUtils.printTestStr("failed to found negative cycle\n");
 			return false;
 		}
 
 		int n = g.vertices();
 		for (int v = 0; v < n; v++) {
-			double expeced = expectedRes.distance(v);
-			double actual = result.distance(v);
-			if (expeced != actual) {
-				TestUtils.printTestStr("Distance to vertex " + v + " is wrong: " + expeced + " != " + actual + "\n");
+			double expectedDistance = expectedRes.distance(v);
+			double actualDistance = result.distance(v);
+			if (expectedDistance != actualDistance) {
+				TestUtils.printTestStr(
+						"Distance to vertex " + v + " is wrong: " + expectedDistance + " != " + actualDistance + "\n");
 				return false;
+			}
+			List<Edge<E>> path = result.getPathTo(v);
+			if (path != null) {
+				double pathWeight = getPathWeight(path, w);
+				if (pathWeight != actualDistance) {
+					TestUtils.printTestStr("Path to vertex " + v + " doesn't match distance (" + actualDistance + " != "
+							+ pathWeight + "): " + path + "\n");
+					return false;
+				}
+			} else if (actualDistance != Double.POSITIVE_INFINITY) {
+				TestUtils.printTestStr("Distance to vertex " + v + " is not infinity but path is null\n");
+				return false;
+
 			}
 		}
 		return true;
+	}
+
+	private static <E> double getPathWeight(List<Edge<E>> path, WeightFunction<E> w) {
+		double totalWeight = 0;
+		int prev = -1;
+		for (Edge<E> e : path) {
+			if (prev != -1 && prev != e.u())
+				return Double.NaN;
+			totalWeight += w.weight(e);
+			prev = e.v();
+		}
+		return totalWeight;
 	}
 
 }

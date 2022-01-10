@@ -26,7 +26,7 @@ public class SSSPDial1969 implements SSSP {
 		return INSTANCE;
 	}
 
-	public <E> SSSP.Result<E> calcDistances(Graph<E> g, WeightFunction<E> w0, int s) {
+	public <E> SSSP.Result<E> calcDistances(Graph<E> g, WeightFunction<E> w0, int source) {
 		if (!(w0 instanceof WeightFunctionInt<?>))
 			throw new IllegalArgumentException("only int weights are supported");
 		WeightFunctionInt<E> w = (WeightFunctionInt<E>) w0;
@@ -38,10 +38,10 @@ public class SSSPDial1969 implements SSSP {
 				throw new IllegalArgumentException("overflow");
 			maxDistance += weight;
 		}
-		return calcDistances(g, w, s, maxDistance);
+		return calcDistances(g, w, source, maxDistance);
 	}
 
-	public <E> SSSP.Result<E> calcDistances(Graph<E> g, WeightFunctionInt<E> w, int s, int maxDistance) {
+	public <E> SSSP.Result<E> calcDistances(Graph<E> g, WeightFunctionInt<E> w, int source, int maxDistance) {
 		int n = g.vertices();
 		int[] distances = new int[n];
 		@SuppressWarnings("unchecked")
@@ -55,9 +55,9 @@ public class SSSPDial1969 implements SSSP {
 		DialHeap.Node<E>[] verticesPtrs = new DialHeap.Node[n];
 
 		Arrays.fill(distances, Integer.MAX_VALUE);
-		distances[s] = 0;
+		distances[source] = 0;
 
-		for (int u = s;;) {
+		for (int u = source;;) {
 			for (Iterator<Edge<E>> it = g.edges(u); it.hasNext();) {
 				Edge<E> e = it.next();
 				int v = e.v();
@@ -176,15 +176,17 @@ public class SSSPDial1969 implements SSSP {
 		}
 
 		@Override
-		public double distance(int t) {
-			int d = distances[t];
+		public double distance(int v) {
+			int d = distances[v];
 			return d != Integer.MAX_VALUE ? d : Double.POSITIVE_INFINITY;
 		}
 
 		@Override
-		public List<Edge<E>> getPathTo(int t) {
+		public List<Edge<E>> getPathTo(int v) {
+			if (distances[v] == Integer.MAX_VALUE)
+				return null;
 			List<Edge<E>> path = new ArrayList<>();
-			for (int v = t;;) {
+			for (;;) {
 				Edge<E> e = backtrack[v];
 				if (e == null)
 					break;
@@ -196,13 +198,13 @@ public class SSSPDial1969 implements SSSP {
 		}
 
 		@Override
-		public boolean foundNegativeCircle() {
+		public boolean foundNegativeCycle() {
 			return false;
 		}
 
 		@Override
-		public List<Edge<E>> getNegativeCircle() {
-			throw new IllegalStateException("no negative circle found");
+		public List<Edge<E>> getNegativeCycle() {
+			throw new IllegalStateException("no negative cycle found");
 		}
 
 	}

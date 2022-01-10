@@ -27,7 +27,7 @@ public class SSSPGoldberg1995 implements SSSP {
 	}
 
 	@Override
-	public <E> SSSP.Result<E> calcDistances(Graph<E> g, WeightFunction<E> w0, int s) {
+	public <E> SSSP.Result<E> calcDistances(Graph<E> g, WeightFunction<E> w0, int source) {
 		if (!g.isDirected())
 			throw new IllegalArgumentException("Undirected graphs are not supported");
 		if (!(w0 instanceof WeightFunctionInt))
@@ -39,15 +39,15 @@ public class SSSPGoldberg1995 implements SSSP {
 			minWeight = Math.min(minWeight, w.weightInt(e));
 		if (minWeight >= 0)
 			// All weights are positive, use Dijkstra
-			return SSSPDijkstra.getInstace().calcDistances(g, w, s);
+			return SSSPDijkstra.getInstace().calcDistances(g, w, source);
 
 		Pair<int[], List<Edge<E>>> p = calcPotential(g, w, minWeight);
 		if (p.e2 != null)
-			return new Result<>(s, null, null, true, p.e2);
+			return new Result<>(source, null, null, true, p.e2);
 		int[] potential = p.e1;
 		PotentialWeightFunction<E> pw = new PotentialWeightFunction<>(w, potential);
-		SSSP.Result<E> dijkstra = SSSPDijkstra.getInstace().calcDistances(g, pw, s);
-		return new Result<>(s, potential, dijkstra, false, null);
+		SSSP.Result<E> dijkstra = SSSPDijkstra.getInstace().calcDistances(g, pw, source);
+		return new Result<>(source, potential, dijkstra, false, null);
 	}
 
 	private static <E> Pair<int[], List<Edge<E>>> calcPotential(Graph<E> g, WeightFunctionInt<E> w, int minWeight) {
@@ -102,7 +102,7 @@ public class SSSPGoldberg1995 implements SSSP {
 					}
 				}
 
-				// Create a face vertex S, connect with 0 edges to all and calc distances
+				// Create a fake vertex S, connect with 0 edges to all and calc distances
 				for (int U = 0; U < N; U++)
 					G.addEdge(fakeS, U).val(0);
 				SSSP.Result<Integer> ssspRes = Graphs.calcDistancesDAG(G, Graphs.WEIGHT_INT_FUNC_DEFAULT, fakeS);
@@ -136,7 +136,7 @@ public class SSSPGoldberg1995 implements SSSP {
 					}
 				} else {
 					// No big layer is found, use path which has at least sqrt(|V|) vetices.
-					// Connected a face vertex to all vertices, with edge r-i to negative vertex vi
+					// Connected a fake vertex to all vertices, with edge r-i to negative vertex vi
 					// on the path and with edge r to all other vertices
 					Arrays.fill(connected, 0, N, false);
 					G.removeEdgesOut(fakeS);
@@ -203,26 +203,26 @@ public class SSSPGoldberg1995 implements SSSP {
 		}
 
 		@Override
-		public double distance(int t) {
+		public double distance(int v) {
 			if (negCycle)
 				throw new IllegalStateException();
-			return dijkstraRes.distance(t) - sourcePotential + potential[t];
+			return dijkstraRes.distance(v) - sourcePotential + potential[v];
 		}
 
 		@Override
-		public List<Edge<E>> getPathTo(int t) {
+		public List<Edge<E>> getPathTo(int v) {
 			if (negCycle)
 				throw new IllegalStateException();
-			return dijkstraRes.getPathTo(t);
+			return dijkstraRes.getPathTo(v);
 		}
 
 		@Override
-		public boolean foundNegativeCircle() {
+		public boolean foundNegativeCycle() {
 			return negCycle;
 		}
 
 		@Override
-		public List<Edge<E>> getNegativeCircle() {
+		public List<Edge<E>> getNegativeCycle() {
 			if (!negCycle)
 				throw new IllegalStateException();
 			return cycle;
@@ -230,12 +230,7 @@ public class SSSPGoldberg1995 implements SSSP {
 
 		@Override
 		public String toString() {
-			if (negCycle)
-				return "[NegCycle=" + cycle + "]";
-			double[] distances = new double[potential.length];
-			for (int u = 0; u < distances.length; u++)
-				distances[u] = distance(u);
-			return negCycle ? "[NegCycle]" : Arrays.toString(distances);
+			return negCycle ? "[NegCycle=" + cycle + "]" : dijkstraRes.toString();
 		}
 
 	}
