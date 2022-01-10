@@ -1,7 +1,5 @@
 package com.ugav.algo;
 
-import java.util.Iterator;
-
 public abstract class GraphAbstract<E> implements Graph<E> {
 
 	public boolean hasEdge(int u, int v) {
@@ -52,12 +50,12 @@ public abstract class GraphAbstract<E> implements Graph<E> {
 			s.append("<v" + u + ">->[");
 
 			boolean firstEdge = true;
-			for (Iterator<Edge<E>> it = edges(u); it.hasNext();) {
+			for (Edge<E> e : Utils.iterable(edges(u))) {
 				if (firstEdge)
 					firstEdge = false;
 				else
 					s.append(", ");
-				s.append(it.next());
+				s.append(e);
 			}
 			s.append("]");
 		}

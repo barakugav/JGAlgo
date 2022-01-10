@@ -3,7 +3,6 @@ package com.ugav.algo;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.function.Function;
 
 import com.ugav.algo.Graph.DirectedType;
@@ -75,8 +74,7 @@ public class MSTBoruvka1926 implements MST {
 			for (int u = 0; u < n; u++) {
 				int tree = vTree[u];
 
-				for (Iterator<Edge<E>> it = g.edges(u); it.hasNext();) {
-					Edge<E> e = it.next();
+				for (Edge<E> e : Utils.iterable(g.edges(u))) {
 					if (tree == vTree[e.v()])
 						continue;
 

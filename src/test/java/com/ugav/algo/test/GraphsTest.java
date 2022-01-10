@@ -2,7 +2,6 @@ package com.ugav.algo.test;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -194,8 +193,8 @@ public class GraphsTest {
 			Set<Integer> seenVertices = new HashSet<>(n);
 			for (int i = 0; i < n; i++) {
 				int u = topolSort[i];
-				for (Iterator<Edge<Void>> it = g.edges(u); it.hasNext();)
-					if (seenVertices.contains(it.next().v()))
+				for (Edge<Void> e : Utils.iterable(g.edges(u)))
+					if (seenVertices.contains(e.v()))
 						return false;
 				seenVertices.add(u);
 			}

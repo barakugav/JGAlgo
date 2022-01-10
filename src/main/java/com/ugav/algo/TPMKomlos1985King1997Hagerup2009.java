@@ -1,7 +1,6 @@
 package com.ugav.algo;
 
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 import com.ugav.algo.Graph.DirectedType;
@@ -193,9 +192,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 			Arrays.fill(minEdges, 0, n, null);
 			Arrays.fill(minEdgesWeight, 0, n, Double.MAX_VALUE);
 			for (int u = 0; u < n; u++) {
-				for (Iterator<Edge<Ref<E>>> it = G.edges(u); it.hasNext();) {
-					Edge<Ref<E>> e = it.next();
-
+				for (Edge<Ref<E>> e : Utils.iterable(G.edges(u))) {
 					double eWeight = e.val().w;
 					if (eWeight < minEdgesWeight[u]) {
 						minEdges[u] = e;
@@ -244,8 +241,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 			Graph<Ref<E>> gNext = new GraphArray<>(DirectedType.Undirected, nNext);
 			for (int u = 0; u < n; u++) {
 				int U = vNext[u];
-				for (Iterator<Edge<Ref<E>>> it = G.edges(u); it.hasNext();) {
-					Edge<Ref<E>> e = it.next();
+				for (Edge<Ref<E>> e : Utils.iterable(G.edges(u))) {
 					int V = vNext[e.v()];
 					if (U != V)
 						gNext.addEdge(U, V).val(e.val());

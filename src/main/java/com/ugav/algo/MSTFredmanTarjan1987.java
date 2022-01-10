@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 
 import com.ugav.algo.Graph.Edge;
 import com.ugav.algo.Graph.WeightFunction;
@@ -86,8 +85,7 @@ public class MSTFredmanTarjan1987 implements MST {
 					// decrease edges keys if a better one is found
 					for (int u = vListBegin[U]; u != -1; u = vListNext[u]) {
 						// for each vertex in the super vertex, iterate over all edges
-						for (Iterator<Edge<E>> it = g.edges(u); it.hasNext();) {
-							Edge<E> e = it.next();
+						for (Edge<E> e : Utils.iterable(g.edges(u))) {
 							int v = V[e.v()];
 
 							// edge from current tree to itself

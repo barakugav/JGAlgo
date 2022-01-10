@@ -1,7 +1,6 @@
 package com.ugav.algo;
 
 import java.util.Arrays;
-import java.util.Iterator;
 
 import com.ugav.algo.Graph.DirectedType;
 import com.ugav.algo.Graph.Edge;
@@ -45,8 +44,7 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 			// perform BFS and find a path of non saturated edges from source to target
 			bfs: while (queueBegin != queueEnd) {
 				int u = queue[queueBegin++];
-				for (Iterator<Edge<Ref<E>>> it = g.edges(u); it.hasNext();) {
-					Edge<Ref<E>> e = it.next();
+				for (Edge<Ref<E>> e : Utils.iterable(g.edges(u))) {
 					int v = e.v();
 					if (e.val().flow >= net.getCapacity(e.val().orig) || visited[v])
 						continue;
@@ -86,11 +84,9 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 			if (e.u() == e.val().orig.u())
 				net.setFlow(e.val().orig, e.val().flow);
 		double totalFlow = 0;
-		for (Iterator<Edge<Ref<E>>> it = g.edges(source); it.hasNext();) {
-			Edge<Ref<E>> e = it.next();
+		for (Edge<Ref<E>> e : Utils.iterable(g.edges(source)))
 			if (e.u() == e.val().orig.u())
 				totalFlow += e.val().flow;
-		}
 		return totalFlow;
 	}
 

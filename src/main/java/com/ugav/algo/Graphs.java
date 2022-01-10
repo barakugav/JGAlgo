@@ -64,8 +64,7 @@ public class Graphs {
 		while (queueBegin != queueEnd) {
 			int u = queue[queueBegin++];
 
-			for (Iterator<Edge<E>> it = g.edges(u); it.hasNext();) {
-				Edge<E> e = it.next();
+			for (Edge<E> e : Utils.iterable(g.edges(u))) {
 				int v = e.v();
 				if (visited[v])
 					continue;
@@ -229,8 +228,8 @@ public class Graphs {
 				int u = stack[stackSize];
 				visitedCount++;
 
-				for (Iterator<Edge<E>> it = g.edges(u); it.hasNext();) {
-					int v = it.next().v();
+				for (Edge<E> e : Utils.iterable(g.edges(u))) {
+					int v = e.v();
 					if (!directed && v == parent[u])
 						continue;
 					if (visited[v])
@@ -278,8 +277,8 @@ public class Graphs {
 				int u = stack[stackSize];
 				comp[u] = compNum;
 
-				for (Iterator<Edge<E>> it = g.edges(u); it.hasNext();) {
-					int v = it.next().v();
+				for (Edge<E> e : Utils.iterable(g.edges(u))) {
+					int v = e.v();
 					if (comp[v] != -1)
 						continue;
 					stack[stackSize++] = v;
@@ -386,8 +385,8 @@ public class Graphs {
 		while (queueBegin != queueEnd) {
 			int u = queue[queueBegin++];
 			topolSort[topolSortSize++] = u;
-			for (Iterator<Edge<E>> it = g.edges(u); it.hasNext();) {
-				int v = it.next().v();
+			for (Edge<E> e : Utils.iterable(g.edges(u))) {
+				int v = e.v();
 				if (--inDegree[v] == 0)
 					queue[queueEnd++] = v;
 			}
@@ -416,8 +415,7 @@ public class Graphs {
 					continue;
 				sourceSeen = true;
 			}
-			for (Iterator<Edge<E>> it = g.edges(u); it.hasNext();) {
-				Edge<E> e = it.next();
+			for (Edge<E> e : Utils.iterable(g.edges(u))) {
 				int v = e.v();
 				double d = distances[u] + w.weight(e);
 				if (d < distances[v]) {
@@ -433,8 +431,8 @@ public class Graphs {
 	public static <E> int getFullyBranchingTreeDepth(Graph<E> t, int root) {
 		for (int parent = -1, u = root, depth = 0;; depth++) {
 			int v = parent;
-			for (Iterator<Edge<E>> it = t.edges(u); it.hasNext();) {
-				v = it.next().v();
+			for (Edge<E> e : Utils.iterable(t.edges(u))) {
+				v = e.v();
 				if (v != parent)
 					break;
 			}
@@ -476,12 +474,9 @@ public class Graphs {
 
 		/* format all edges */
 		String[][] strs = new String[n][n];
-		for (int u = 0; u < n; u++) {
-			for (Iterator<Edge<E>> it = g.edges(u); it.hasNext();) {
-				Edge<E> e = it.next();
+		for (int u = 0; u < n; u++)
+			for (Edge<E> e : Utils.iterable(g.edges(u)))
 				strs[u][e.v()] = formatter.apply(e);
-			}
-		}
 
 		/* calculate cell size */
 		int maxStr = 0;

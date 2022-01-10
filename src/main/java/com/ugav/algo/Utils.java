@@ -49,6 +49,20 @@ class Utils {
 		return DEFAULT_COMPARATOR;
 	}
 
+	static <E> Iterable<E> iterable(Iterator<E> it) {
+		/*
+		 * java lack nice for loop syntax using iterators, hopefully this code will be
+		 * inlined by the compiler and no object will be created here
+		 */
+		return new Iterable<>() {
+
+			@Override
+			public Iterator<E> iterator() {
+				return it;
+			}
+		};
+	}
+
 	static class ArrayView<E> extends AbstractList<E> implements RandomAccess {
 
 		private final E[] a;

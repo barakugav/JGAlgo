@@ -3,7 +3,6 @@ package com.ugav.algo;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import com.ugav.algo.Graph.Edge;
@@ -11,7 +10,8 @@ import com.ugav.algo.Graph.Edge;
 public class MatchingGabow1976 implements Matching {
 
 	/*
-	 * Maximum matching in unweighted undirected graph in O(m * n * alpha(m,n)) (alpha is inverse Ackermann's function)
+	 * Maximum matching in unweighted undirected graph in O(m * n * alpha(m,n))
+	 * (alpha is inverse Ackermann's function)
 	 */
 
 	private MatchingGabow1976() {
@@ -77,8 +77,7 @@ public class MatchingGabow1976 implements Matching {
 				int uTree = tree[u];
 				int uRoot = root[uTree];
 
-				for (Iterator<Edge<E>> it = g.edges(u); it.hasNext();) {
-					Edge<E> e = it.next();
+				for (Edge<E> e : Utils.iterable(g.edges(u))) {
 					int v = e.v();
 					int vTree = tree[v];
 

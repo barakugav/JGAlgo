@@ -1,6 +1,7 @@
 package com.ugav.algo.test;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.Random;
 
 public class Utils {
@@ -76,6 +77,16 @@ public class Utils {
 		}
 
 		return a;
+	}
+
+	static <E> Iterable<E> iterable(Iterator<E> it) {
+		return new Iterable<>() {
+
+			@Override
+			public Iterator<E> iterator() {
+				return it;
+			}
+		};
 	}
 
 }

@@ -51,7 +51,7 @@ public class GraphArray<E> extends GraphAbstract<E> {
 
 	@Override
 	public Iterator<Edge<E>> edges(int u) {
-		return new EdgeVertexItr<>(edges[u], edgesLen[u]);
+		return new VertexEdgeItr(u);
 	}
 
 	@Override
@@ -153,15 +153,20 @@ public class GraphArray<E> extends GraphAbstract<E> {
 		Edge<E>[] es = edges[u];
 		for (int i = 0, len = edgesLen[u]; i < len; i++) {
 			if (es[i] == e) {
-				if (--edgesLen[u] > 0) {
-					es[i] = es[len - 1];
-					es[len - 1] = null;
-				} else
-					es[i] = null;
+				removeEdge0(u, i);
 				return;
 			}
 		}
-		throw new IllegalArgumentException("edge not in graph: " + e);
+		throw new IllegalArgumentException("edge is not in graph: " + e);
+	}
+
+	private void removeEdge0(int u, int edgeIdx) {
+		Edge<E>[] es = edges[u];
+		int len = edgesLen[u];
+
+		es[edgeIdx] = es[len - 1];
+		es[len - 1] = null;
+		edgesLen[u]--;
 	}
 
 	@Override
@@ -182,41 +187,69 @@ public class GraphArray<E> extends GraphAbstract<E> {
 		return twin == null || System.identityHashCode(e) < System.identityHashCode(twin);
 	}
 
-	private static class EdgeVertexItr<E> implements Iterator<Edge<E>> {
+	private abstract class EdgeItrBase implements Iterator<Edge<E>> {
 
-		private final Edge<E>[] edges;
-		private int idx;
+		int u;
+		int idx;
+		Edge<E> toRemoveEdge;
+		int toRemoveIdx;
 
-		EdgeVertexItr(Edge<E>[] edges, int len) {
-			this.edges = edges;
-			idx = len;
-		}
-
-		@Override
-		public boolean hasNext() {
-			return idx > 0;
+		EdgeItrBase(int u) {
+			this.u = u;
+			idx = 0;
+			toRemoveEdge = null;
 		}
 
 		@Override
 		public Edge<E> next() {
 			if (!hasNext())
 				throw new NoSuchElementException();
-			return edges[--idx];
+			return toRemoveEdge = edges[u][toRemoveIdx = idx++];
+		}
+
+		@Override
+		public void remove() {
+			if (toRemoveEdge == null)
+				throw new IllegalStateException();
+			removeEdge0(u, toRemoveIdx);
+			Edge<E> twin = toRemoveEdge.twin();
+			if (twin != null)
+				removeEdge0(twin);
+			m--;
+			toRemoveEdge = null;
+			idx--;
 		}
 
 	}
 
-	private class EdgesItr implements Iterator<Edge<E>> {
+	private class VertexEdgeItr extends EdgeItrBase {
 
-		private int u;
-		private int idx;
-
-		EdgesItr() {
-			u = 0;
-			idx = 0;
+		VertexEdgeItr(int u) {
+			super(u);
 		}
 
+		@Override
 		public boolean hasNext() {
+			return idx < edgesLen[u];
+		}
+
+	}
+
+	private class GraphEdgesItr extends EdgeItrBase {
+
+		GraphEdgesItr() {
+			super(0);
+		}
+
+		@Override
+		public boolean hasNext() {
+			int n = GraphArray.this.n;
+			Edge<E>[][] edges = GraphArray.this.edges;
+			int[] edgesLen = GraphArray.this.edgesLen;
+
+			// don't support remove in case idx is moved
+			toRemoveEdge = null;
+
 			for (; u < n; u++) {
 				for (; idx < edgesLen[u]; idx++)
 					if (isDirected() || isApiEdge(edges[u][idx]))
@@ -224,13 +257,6 @@ public class GraphArray<E> extends GraphAbstract<E> {
 				idx = 0;
 			}
 			return false;
-		}
-
-		@Override
-		public Edge<E> next() {
-			if (!hasNext())
-				throw new NoSuchElementException();
-			return edges[u][idx++];
 		}
 
 	}
@@ -356,7 +382,7 @@ public class GraphArray<E> extends GraphAbstract<E> {
 
 		@Override
 		public Iterator<Edge<E>> iterator() {
-			return new EdgesItr();
+			return new GraphEdgesItr();
 		}
 
 		@Override

@@ -3,7 +3,6 @@ package com.ugav.algo;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import com.ugav.algo.Graph.Edge;
@@ -58,8 +57,7 @@ public class SSSPDial1969 implements SSSP {
 		distances[source] = 0;
 
 		for (int u = source;;) {
-			for (Iterator<Edge<E>> it = g.edges(u); it.hasNext();) {
-				Edge<E> e = it.next();
+			for (Edge<E> e : Utils.iterable(g.edges(u))) {
 				int v = e.v();
 				if (distances[v] != Integer.MAX_VALUE)
 					continue;

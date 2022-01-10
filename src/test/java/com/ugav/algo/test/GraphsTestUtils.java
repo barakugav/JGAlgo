@@ -1,7 +1,6 @@
 package com.ugav.algo.test;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Random;
 import java.util.Set;
 
@@ -192,8 +191,7 @@ class GraphsTestUtils {
 							while (queueBegin != queueEnd) {
 								int p = queue[queueBegin++];
 
-								for (Iterator<Edge<E>> it = g.edges(p); it.hasNext();) {
-									Edge<E> e = it.next();
+								for (Edge<E> e : Utils.iterable(g.edges(p))) {
 									int pv = e.v();
 									if (reachableFromRoot[pv])
 										continue;

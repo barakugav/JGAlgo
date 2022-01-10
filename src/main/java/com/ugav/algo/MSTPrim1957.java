@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 
 import com.ugav.algo.Graph.Edge;
 import com.ugav.algo.Graphs.EdgeWeightComparator;
@@ -48,8 +47,7 @@ public class MSTPrim1957 implements MST {
 				verticesPtrs[u] = null;
 
 				/* decrease edges keys if a better one is found */
-				for (Iterator<Edge<E>> it = g.edges(u); it.hasNext();) {
-					Edge<E> e = it.next();
+				for (Edge<E> e : Utils.iterable(g.edges(u))) {
 					int v = e.v();
 					if (visited[v])
 						continue;

@@ -1,7 +1,6 @@
 package com.ugav.algo.test;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 import com.ugav.algo.Graph.DirectedType;
 import com.ugav.algo.Graph.Edge;
@@ -74,8 +73,8 @@ class MatchingBipartiteTestUtils {
 		int sn = g.svertices(), tn = g.tvertices();
 		boolean m[][] = new boolean[sn][tn];
 		for (int u = 0; u < sn; u++)
-			for (Iterator<Edge<E>> it = g.edges(u); it.hasNext();)
-				m[u][it.next().v() - sn] = true;
+			for (Edge<E> e : Utils.iterable(g.edges(u)))
+				m[u][e.v() - sn] = true;
 
 		return maxBPM(m);
 	}

@@ -65,8 +65,7 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 				if (depth >= unmatchedTDepth)
 					continue;
 
-				for (Iterator<Edge<E>> it = g.edges(u); it.hasNext();) {
-					Edge<E> e = it.next();
+				for (Edge<E> e : Utils.iterable(g.edges(u))) {
 					int v = e.v();
 					if (depths[v] < depth)
 						continue;

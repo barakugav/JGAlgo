@@ -1,7 +1,6 @@
 package com.ugav.algo;
 
 import java.util.Arrays;
-import java.util.Iterator;
 
 import com.ugav.algo.Graph.Edge;
 import com.ugav.algo.Graph.WeightFunction;
@@ -38,8 +37,7 @@ public class SSSPDijkstra implements SSSP {
 		distances[source] = 0;
 
 		for (int u = source;;) {
-			for (Iterator<Edge<E>> it = g.edges(u); it.hasNext();) {
-				Edge<E> e = it.next();
+			for (Edge<E> e : Utils.iterable(g.edges(u))) {
 				int v = e.v();
 				if (distances[v] != Double.POSITIVE_INFINITY)
 					continue;

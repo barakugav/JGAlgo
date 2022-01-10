@@ -3,7 +3,6 @@ package com.ugav.algo.test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import com.ugav.algo.Graph;
@@ -57,8 +56,8 @@ class MatchingTestUtils {
 		List<Integer>[] graph = new List[n];
 		for (int u = 0; u < n; u++) {
 			graph[u] = new ArrayList<>();
-			for (Iterator<Edge<E>> it = g.edges(u); it.hasNext();)
-				graph[u].add(it.next().v());
+			for (Edge<E> e : Utils.iterable(g.edges(u)))
+				graph[u].add(e.v());
 		}
 		return EdmondsMaximumCardinalityMatching.maxMatching(graph);
 	}

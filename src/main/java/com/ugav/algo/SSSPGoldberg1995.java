@@ -3,7 +3,6 @@ package com.ugav.algo;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import com.ugav.algo.Graph.DirectedType;
@@ -86,8 +85,7 @@ public class SSSPGoldberg1995 implements SSSP {
 				G.edges().clear();
 				for (int u = 0; u < n; u++) {
 					int U = v2V[u];
-					for (Iterator<Edge<E>> it = gNeg.edges(u); it.hasNext();) {
-						Edge<E> e = it.next();
+					for (Edge<E> e : Utils.iterable(gNeg.edges(u))) {
 						int V = v2V[e.v()];
 						int weight = weight(e, w, potential, weightMask);
 						if (U != V)
