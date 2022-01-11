@@ -1,8 +1,11 @@
 package com.ugav.algo;
 
 import java.util.AbstractList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.RandomAccess;
@@ -143,6 +146,215 @@ class Utils {
 				return a[i];
 			}
 		}
+	}
+
+	static class NullIterator<E> implements Iterator<E> {
+
+		private int size;
+
+		NullIterator(int size) {
+			if (size < 0)
+				throw new IllegalArgumentException();
+			this.size = size;
+		}
+
+		@Override
+		public boolean hasNext() {
+			return size > 0;
+		}
+
+		@Override
+		public E next() {
+			if (!hasNext())
+				throw new NoSuchElementException();
+			size--;
+			return null;
+		}
+
+	}
+
+	static class NullListIterator<E> implements ListIterator<E> {
+
+		private final int size;
+		private int idx;
+
+		NullListIterator(int size) {
+			this(size, 0);
+		}
+
+		NullListIterator(int size, int idx) {
+			if (size < 0)
+				throw new IllegalArgumentException();
+			if (idx < 0 || idx > size)
+				throw new IllegalArgumentException();
+			this.size = size;
+			this.idx = idx;
+		}
+
+		@Override
+		public boolean hasNext() {
+			return idx < size;
+		}
+
+		@Override
+		public E next() {
+			if (!hasNext())
+				throw new NoSuchElementException();
+			idx++;
+			return null;
+		}
+
+		@Override
+		public boolean hasPrevious() {
+			return idx > 0;
+		}
+
+		@Override
+		public E previous() {
+			if (!hasPrevious())
+				throw new NoSuchElementException();
+			idx--;
+			return null;
+		}
+
+		@Override
+		public int nextIndex() {
+			return idx;
+		}
+
+		@Override
+		public int previousIndex() {
+			return idx - 1;
+		}
+
+		@Override
+		public void remove() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void set(E e) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void add(E e) {
+			throw new UnsupportedOperationException();
+		}
+
+	}
+
+	static class NullList<E> extends AbstractList<E> {
+
+		private final int size;
+
+		NullList(int size) {
+			if (size < 0)
+				throw new IllegalArgumentException();
+			this.size = size;
+		}
+
+		@Override
+		public int size() {
+			return size;
+		}
+
+		@Override
+		public boolean contains(Object o) {
+			return o == null && size > 0;
+		}
+
+		@Override
+		public Iterator<E> iterator() {
+			return new NullIterator<>(size);
+		}
+
+		@Override
+		public boolean add(E e) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean remove(Object o) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean addAll(Collection<? extends E> c) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean addAll(int index, Collection<? extends E> c) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean removeAll(Collection<?> c) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public boolean retainAll(Collection<?> c) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void clear() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public E get(int index) {
+			if (index < 0 || index >= size)
+				throw new IndexOutOfBoundsException();
+			return null;
+		}
+
+		@Override
+		public E set(int index, E element) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void add(int index, E element) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public E remove(int index) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public int indexOf(Object o) {
+			return o == null && size > 0 ? 0 : -1;
+		}
+
+		@Override
+		public int lastIndexOf(Object o) {
+			return o == null && size > 0 ? size - 1 : -1;
+		}
+
+		@Override
+		public ListIterator<E> listIterator() {
+			return new NullListIterator<>(size);
+		}
+
+		@Override
+		public ListIterator<E> listIterator(int index) {
+			return new NullListIterator<>(size, index);
+		}
+
+		@Override
+		public List<E> subList(int fromIndex, int toIndex) {
+			if (fromIndex < 0 || fromIndex >= toIndex || toIndex > size)
+				throw new IllegalArgumentException();
+			if (fromIndex == 0 && toIndex == size)
+				return this;
+			return new NullList<>(toIndex - fromIndex);
+		}
+
 	}
 
 }

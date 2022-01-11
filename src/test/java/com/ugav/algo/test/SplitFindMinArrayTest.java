@@ -3,6 +3,7 @@ package com.ugav.algo.test;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Supplier;
 
 import com.ugav.algo.SplitFind;
 import com.ugav.algo.SplitFindMin;
@@ -10,22 +11,20 @@ import com.ugav.algo.SplitFindMinArray;
 
 public class SplitFindMinArrayTest {
 
-	private static boolean testSplitFind(SplitFind algo) {
+	private static boolean testSplitFind(Supplier<? extends SplitFind> builder) {
 		int[][] phases = { { 128, 16, 16 }, { 64, 64, 64 }, { 32, 512, 512 }, { 8, 4096, 4096 }, { 2, 16384, 16384 } };
 		return TestUtils.runTestMultiple(phases, args -> {
 			int n = args[1];
 			int m = args[2];
-			return testSplitFind(algo, n, m);
+			return testSplitFind(builder, n, m);
 		});
 	}
 
-	private static boolean testSplitFind(SplitFind algo, int n, int m) {
+	private static boolean testSplitFind(Supplier<? extends SplitFind> builder, int n, int m) {
 		Random rand = new Random(TestUtils.nextRandSeed());
+		SplitFind sf = builder.get();
 
-		List<Integer> values = new ArrayList<>(n);
-		for (int i = 0; i < n; i++)
-			values.add(i);
-		SplitFind.Elm<Integer>[] elms = algo.make(values);
+		sf.init(n);
 
 		int[] sequence = new int[n];
 		for (int x = 0; x < n; x++)
@@ -42,7 +41,7 @@ public class SplitFindMinArrayTest {
 			case OP_FIND:
 				x = rand.nextInt(n);
 				int expected = sequence[x];
-				int actual = sequence[algo.find(elms[x]).val()];
+				int actual = sequence[sf.find(x)];
 				if (actual != expected) {
 					TestUtils.printTestStr("find failed! " + actual + " != " + expected + "\n");
 					return false;
@@ -50,7 +49,7 @@ public class SplitFindMinArrayTest {
 				break;
 			case OP_SPLIT:
 				x = rand.nextInt(n);
-				algo.split(elms[x]);
+				sf.split(x);
 				int seqOld = sequence[x];
 				int seqNew = sequencesNum++;
 				for (int i = x; i < n && sequence[i] == seqOld; i++)
@@ -63,25 +62,23 @@ public class SplitFindMinArrayTest {
 		return true;
 	}
 
-	private static boolean testSplitFindMin(SplitFindMin algo) {
+	private static boolean testSplitFindMin(Supplier<? extends SplitFindMin<Double>> builder) {
 		int[][] phases = { { 128, 16, 16 }, { 64, 64, 64 }, { 8, 512, 512 }, { 1, 4096, 4096 } };
 		return TestUtils.runTestMultiple(phases, args -> {
 			int n = args[1];
 			int m = args[2];
-			return testSplitFindMin(algo, n, m);
+			return testSplitFindMin(builder, n, m);
 		});
 	}
 
-	private static boolean testSplitFindMin(SplitFindMin algo, int n, int m) {
+	private static boolean testSplitFindMin(Supplier<? extends SplitFindMin<Double>> builder, int n, int m) {
 		Random rand = new Random(TestUtils.nextRandSeed());
+		SplitFindMin<Double> sf = builder.get();
 
-		List<Integer> values = new ArrayList<>(n);
 		List<Double> keys = new ArrayList<>(n);
-		for (int i = 0; i < n; i++) {
-			values.add(i);
+		for (int i = 0; i < n; i++)
 			keys.add(rand.nextDouble() * 100);
-		}
-		SplitFindMin.Elm<Double, Integer>[] elms = algo.make(keys, values, null);
+		sf.init(keys, null);
 
 		int[] sequence = new int[n];
 		for (int x = 0; x < n; x++)
@@ -100,7 +97,7 @@ public class SplitFindMinArrayTest {
 			case OP_FIND:
 				x = rand.nextInt(n);
 				int expected = sequence[x];
-				int actual = sequence[algo.find(elms[x]).val()];
+				int actual = sequence[sf.find(x)];
 				if (actual != expected) {
 					TestUtils.printTestStr("find failed! " + actual + " != " + expected + "\n");
 					return false;
@@ -108,7 +105,7 @@ public class SplitFindMinArrayTest {
 				break;
 			case OP_SPLIT:
 				x = rand.nextInt(n);
-				algo.split(elms[x]);
+				sf.split(x);
 				int seqOld = sequence[x];
 				int seqNew = sequencesNum++;
 				for (int i = x; i < n && sequence[i] == seqOld; i++)
@@ -118,12 +115,12 @@ public class SplitFindMinArrayTest {
 				x = rand.nextInt(n);
 				double expectedKey = Double.MAX_VALUE;
 				for (int i = x - 1; i >= 0 && sequence[i] == sequence[x]; i--)
-					if (elms[i].key() < expectedKey)
-						expectedKey = elms[i].key();
+					if (sf.getKey(i) < expectedKey)
+						expectedKey = sf.getKey(i);
 				for (int i = x; i < n && sequence[i] == sequence[x]; i++)
-					if (elms[i].key() < expectedKey)
-						expectedKey = elms[i].key();
-				double actualKey = algo.findMin(elms[x]).key();
+					if (sf.getKey(i) < expectedKey)
+						expectedKey = sf.getKey(i);
+				double actualKey = sf.getKey(sf.findMin(x));
 				if (actualKey != expectedKey) {
 					TestUtils.printTestStr("findmin failed! " + actualKey + " != " + expectedKey + "\n");
 					return false;
@@ -131,7 +128,7 @@ public class SplitFindMinArrayTest {
 				break;
 			case OP_DECREASEKEY:
 				x = rand.nextInt(n);
-				algo.decreaseKey(elms[x], elms[x].key() * rand.nextDouble());
+				sf.decreaseKey(x, sf.getKey(x) * rand.nextDouble());
 				break;
 			default:
 				throw new InternalError();
@@ -142,12 +139,12 @@ public class SplitFindMinArrayTest {
 
 	@Test
 	public static boolean splitFind() {
-		return testSplitFind(SplitFindMinArray.getInstace());
+		return testSplitFind(SplitFindMinArray::new);
 	}
 
 	@Test
 	public static boolean splitFindMin() {
-		return testSplitFindMin(SplitFindMinArray.getInstace());
+		return testSplitFindMin(SplitFindMinArray::new);
 	}
 
 }

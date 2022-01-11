@@ -3,39 +3,46 @@ package com.ugav.algo;
 import java.util.Collection;
 import java.util.Comparator;
 
-public interface SplitFindMin extends SplitFind {
+import com.ugav.algo.Utils.NullList;
 
-	public <K, V> Elm<K, V>[] make(Collection<K> keys, Collection<V> values, Comparator<? super K> c);
+public interface SplitFindMin<K> extends SplitFind {
 
-	public <K, V> Elm<K, V> find(Elm<K, V> e);
-
-	public <K, V> Pair<? extends Elm<K, V>, ? extends Elm<K, V>> split(Elm<K, V> e);
-
-	public <K, V> Elm<K, V> findMin(Elm<K, V> e);
-
-	public <K, V> void decreaseKey(Elm<K, V> e, K newKey);
-
-	public static interface Elm<K, V> extends SplitFind.Elm<V> {
-
-		public K key();
-
-	}
+	/**
+	 * Init the data structure with a sequence [0, keys.size()) with the given keys
+	 *
+	 * @param keys collection of keys
+	 * @param c    comparator, if null the default comparator will be used
+	 *             (Comparable interface)
+	 */
+	public void init(Collection<K> keys, Comparator<? super K> c);
 
 	@Override
-	default <V> SplitFind.Elm<V>[] make(Collection<V> elms) {
-		return make(elms, elms, null);
+	default void init(int size) {
+		init(new NullList<>(size), (k1, k2) -> 0);
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	default <V> SplitFind.Elm<V> find(SplitFind.Elm<V> e) {
-		return find((Elm<?, V>) e);
-	}
+	/**
+	 * Get the key associated with an element
+	 *
+	 * @param x index of an element in the data structure
+	 * @return the key associated with the element
+	 */
+	public K getKey(int x);
 
-	@SuppressWarnings("unchecked")
-	@Override
-	default <V> Pair<? extends SplitFind.Elm<V>, ? extends SplitFind.Elm<V>> split(SplitFind.Elm<V> e) {
-		return split((Elm<?, V>) e);
-	}
+	/**
+	 * Find the element with the minimum key in the sequence of x
+	 *
+	 * @param x index of an element in the data structure
+	 * @return index of the element with the minimum key in the sequence of x
+	 */
+	public int findMin(int x);
+
+	/**
+	 * Decrease the key of an element
+	 *
+	 * @param x      index of an element in the data structure
+	 * @param newKey new key for the element
+	 */
+	public void decreaseKey(int x, K newKey);
 
 }
