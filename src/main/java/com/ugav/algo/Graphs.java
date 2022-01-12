@@ -272,15 +272,16 @@ public class Graphs {
 
 			int stackSize = 1;
 			stack[0] = r;
+			comp[r] = compNum;
 
 			while (stackSize-- > 0) {
 				int u = stack[stackSize];
-				comp[u] = compNum;
 
 				for (Edge<E> e : Utils.iterable(g.edges(u))) {
 					int v = e.v();
 					if (comp[v] != -1)
 						continue;
+					comp[v] = compNum;
 					stack[stackSize++] = v;
 				}
 			}
@@ -519,7 +520,7 @@ public class Graphs {
 	public static final WeightFunction<Double> WEIGHT_FUNC_DEFAULT = Edge::val;
 	public static final WeightFunctionInt<Integer> WEIGHT_INT_FUNC_DEFAULT = Edge::val;
 
-	static class EdgeWeightComparator<E> implements Comparator<Edge<E>> {
+	public static class EdgeWeightComparator<E> implements Comparator<Edge<E>> {
 
 		private final Graph.WeightFunction<E> w;
 
@@ -534,7 +535,7 @@ public class Graphs {
 
 	}
 
-	static class EdgeWeightIntComparator<E> implements Comparator<Edge<E>> {
+	public static class EdgeWeightIntComparator<E> implements Comparator<Edge<E>> {
 
 		private final Graph.WeightFunctionInt<E> w;
 
@@ -549,8 +550,9 @@ public class Graphs {
 
 	}
 
-	static <E> Graph<Ref<E>> referenceGraph(Graph<E> g, WeightFunction<E> w) {
-		Graph<Ref<E>> g0 = new GraphArray<>(DirectedType.Undirected, g.vertices());
+	public static <E> Graph<Ref<E>> referenceGraph(Graph<E> g, WeightFunction<E> w) {
+		Graph<Ref<E>> g0 = new GraphArray<>(g.isDirected() ? DirectedType.Directed : DirectedType.Undirected,
+				g.vertices());
 		for (Edge<E> e : g.edges()) {
 			Ref<E> v = new Ref<>(e, w.weight(e));
 			g0.addEdge(e.u(), e.v()).val(v);
@@ -561,16 +563,16 @@ public class Graphs {
 	private static final WeightFunction<Ref<?>> REFERENCE_EDGE_WEIGHT_FUNCTION = e -> e.val().w;
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	static <E> WeightFunction<Ref<E>> referenceEdgeWeightFunction() {
+	public static <E> WeightFunction<Ref<E>> referenceEdgeWeightFunction() {
 		return (WeightFunction<Ref<E>>) (WeightFunction) REFERENCE_EDGE_WEIGHT_FUNCTION;
 	}
 
-	static class Ref<E> {
+	public static class Ref<E> {
 
-		final Edge<E> orig;
-		final double w;
+		public final Edge<E> orig;
+		public final double w;
 
-		Ref(Edge<E> e, double w) {
+		public Ref(Edge<E> e, double w) {
 			orig = e;
 			this.w = w;
 		}
@@ -593,7 +595,7 @@ public class Graphs {
 
 		@Override
 		public String toString() {
-			return "R(" + orig + ")";
+			return orig != null ? String.valueOf(orig.val()) : Double.toString(w);
 		}
 
 	}

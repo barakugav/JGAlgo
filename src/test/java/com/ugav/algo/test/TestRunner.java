@@ -28,7 +28,7 @@ public class TestRunner {
 			passed = false;
 		}
 		if (!passed && TestUtils.isTestRandUsed(testName))
-			System.out.println(test.getTestPrefix() + " seed used: " + TestUtils.getTestRandBaseSeed(testName));
+			System.out.println(test.getTestPrefix() + " Seed used: " + TestUtils.getTestRandBaseSeed(testName));
 		TestUtils.finalizeTestRand(testName);
 
 		long runTime = System.currentTimeMillis() - t0Test;
@@ -129,12 +129,14 @@ public class TestRunner {
 		}
 
 		String getTestPrefix() {
-			return "[" + getTestName() + "]";
+			String className = testMethod.getDeclaringClass().getSimpleName();
+			String methodName = testMethod.getName();
+			return "[" + className + "." + methodName + "]";
 		}
 
 		private static String getTestName(Method testMethod) {
-			String methodName = testMethod.getName();
 			String classname = testMethod.getDeclaringClass().getName();
+			String methodName = testMethod.getName();
 			return classname + "." + methodName;
 		}
 

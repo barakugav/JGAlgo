@@ -112,7 +112,7 @@ public class HeapFibonacci<E> extends HeapAbstract<E> {
 
 	@Override
 	public void meld(Heap<? extends E> h0) {
-		if (h0.isEmpty())
+		if (h0 == this || h0.isEmpty())
 			return;
 		if (!(h0 instanceof HeapFibonacci)) {
 			super.meld(h0);

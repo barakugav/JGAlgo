@@ -36,11 +36,7 @@ class MSTTestUtils {
 		GraphsTestUtils.assignRandWeightsIntPos(g);
 
 		WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
-		return testMST(g, w, algo);
-	}
-
-	static <E> boolean testMST(Graph<E> g, WeightFunction<E> w, MST algo) {
-		Collection<Edge<E>> mst = algo.calcMST(g, w);
+		Collection<Edge<Integer>> mst = algo.calcMST(g, w);
 		return verifyMST(g, w, mst);
 	}
 

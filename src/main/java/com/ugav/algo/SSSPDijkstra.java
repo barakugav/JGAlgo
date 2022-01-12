@@ -48,7 +48,7 @@ public class SSSPDijkstra implements SSSP {
 
 				Heap.Handle<HeapElm<E>> vPtr = verticesPtrs[v];
 				if (vPtr == null) {
-					vPtr = verticesPtrs[v] = heap.insert(new HeapElm<>(v, distance, e));
+					vPtr = verticesPtrs[v] = heap.insert(new HeapElm<>(distance, e));
 				} else {
 					HeapElm<E> ptr = vPtr.get();
 					if (distance < ptr.distance) {
@@ -62,7 +62,7 @@ public class SSSPDijkstra implements SSSP {
 			if (heap.isEmpty())
 				break;
 			HeapElm<E> next = heap.extractMin();
-			distances[u = next.v] = next.distance;
+			distances[u = next.backtrack.v()] = next.distance;
 			backtrack[u] = next.backtrack;
 		}
 
@@ -71,12 +71,10 @@ public class SSSPDijkstra implements SSSP {
 
 	private static class HeapElm<E> {
 
-		final int v;
 		double distance;
 		Edge<E> backtrack;
 
-		HeapElm(int v, double distance, Edge<E> backtrack) {
-			this.v = v;
+		HeapElm(double distance, Edge<E> backtrack) {
 			this.distance = distance;
 			this.backtrack = backtrack;
 		}

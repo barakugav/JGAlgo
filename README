@@ -23,6 +23,7 @@ Implemented algorithms:
    - Prim1957 O(m + nlogn)
    - FredmanTarjan1987 O(mlog*n)
    - KargerKleinTarjan1995 randomized algorithm, expected time O(m + n)
+   - MDST Tarjan1977 directed graphs, O(mlogn)
  - TMP (tree path maxima)
    - Komlos1985King1997Hagerup2009 O(m + n) where m is the number of queries
  - Maximum matching

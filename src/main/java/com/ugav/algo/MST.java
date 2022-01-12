@@ -8,6 +8,14 @@ import com.ugav.algo.Graph.WeightFunction;
 
 public interface MST {
 
+	/**
+	 * Calculate the minimum spanning tree (MST) of a given graph
+	 *
+	 * @param g a graph
+	 * @param w weight function
+	 * @return all edges that compose the MST, n-1 if the graph is connected (or
+	 *         some forest if not)
+	 */
 	public <E> Collection<Edge<E>> calcMST(Graph<E> g, Graph.WeightFunction<E> w);
 
 	public static <E> boolean verifyMST(Graph<E> g, WeightFunction<E> w, Collection<Edge<E>> mstEdges, TPM tpmAlgo) {

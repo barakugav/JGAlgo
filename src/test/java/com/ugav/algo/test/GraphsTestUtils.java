@@ -112,7 +112,7 @@ class GraphsTestUtils {
 				throw new IllegalArgumentException();
 			if (!cycles && selfEdges)
 				throw new IllegalArgumentException();
-			if (!doubleEdges && m >= ((long) n) * n / 3)
+			if (!doubleEdges && ((n <= 16 && m > n * (n + 1) / 2) || (n > 16 && m >= ((long) n) * n / 3)))
 				throw new IllegalArgumentException("too much edges for random sampling");
 
 			Set<Pair<Integer, Integer>> existingEdges = new HashSet<>();

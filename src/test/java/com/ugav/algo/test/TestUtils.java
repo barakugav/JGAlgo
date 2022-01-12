@@ -44,10 +44,6 @@ class TestUtils {
 		return getTestStackElement().getMethodName();
 	}
 
-	static String getTestClassName() {
-		return getTestStackElement().getClassName();
-	}
-
 	static String getTestFullname() {
 		StackTraceElement e = getTestStackElement();
 		String methodName = e.getMethodName();
@@ -56,7 +52,14 @@ class TestUtils {
 	}
 
 	static String getTestPrefix() {
-		return "[" + getTestFullname() + "]";
+		String className;
+		try {
+			className = Class.forName(getTestStackElement().getClassName()).getSimpleName();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+			className = "INVALIDCLASS";
+		}
+		return "[" + className + "." + getTestName() + "]";
 	}
 
 	static void printTestStr(CharSequence s) {
@@ -124,9 +127,12 @@ class TestUtils {
 	static boolean runTestMultiple(int[][] phases, Predicate<int[]> test) {
 		for (int phase = 0; phase < phases.length; phase++) {
 			int repeat = phases[phase][0];
-			for (int i = 0; i < repeat; i++)
-				if (!test.test(phases[phase]))
+			for (int i = 0; i < repeat; i++) {
+				if (!test.test(phases[phase])) {
+					TestUtils.printTestStr("Failed at phase " + phase + " iter " + i + "\n");
 					return false;
+				}
+			}
 		}
 		return true;
 	}

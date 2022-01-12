@@ -29,6 +29,8 @@ public abstract class HeapAbstract<E> extends AbstractCollection<E> implements H
 
 	@Override
 	public void meld(Heap<? extends E> h) {
+		if (h == this)
+			return;
 		addAll(h);
 		h.clear();
 	}
