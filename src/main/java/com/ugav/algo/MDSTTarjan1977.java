@@ -37,9 +37,9 @@ public class MDSTTarjan1977 implements MDST {
 
 		// Connect new root to all vertices
 		int n = g.vertices(), r = g.newVertex();
-		double dummyEdgeWeight = calcHighWeight(g);
+		Ref<E> dummyEdgeVal = new Ref<>(null, calcHighWeight(g));
 		for (int v = 0; v < n; v++)
-			g.addEdge(r, v).val(new Ref<>(null, dummyEdgeWeight));
+			g.addEdge(r, v).val(dummyEdgeVal);
 
 		// Calc MST on new graph
 		ContractedGraph<E> contractedGraph = contract(g);
@@ -109,10 +109,10 @@ public class MDSTTarjan1977 implements MDST {
 					V2v[V] = v;
 			}
 
-			double dummtEdgeWeight = calcHighWeight(g);
+			Ref<E> dummyEdgeVal = new Ref<>(null, calcHighWeight(g));
 			for (int V = 1; V < N; V++) {
-				g.addEdge(V2v[0], V2v[V]).val(new Ref<>(null, dummtEdgeWeight));
-				g.addEdge(V2v[V], V2v[0]).val(new Ref<>(null, dummtEdgeWeight));
+				g.addEdge(V2v[0], V2v[V]).val(dummyEdgeVal);
+				g.addEdge(V2v[V], V2v[0]).val(dummyEdgeVal);
 			}
 		}
 	}

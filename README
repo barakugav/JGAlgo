@@ -29,6 +29,7 @@ Implemented algorithms:
  - Maximum matching
    - HopcroftKarp1973 for bipartite unweighted graphs, O(m * n^0.5)
    - Gabow1976 for general unweighted graphs, O(m * n * alpha(m,n)) (alpha is inverse Ackermann's function)
+   - SSSP bipartite weighted matching, O(mn + n^2logn)
 
 Additional utils:
  - BFS / DFS

@@ -1,6 +1,8 @@
 package com.ugav.algo.test;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.ugav.algo.Graph.DirectedType;
 import com.ugav.algo.Graph.Edge;
@@ -34,8 +36,7 @@ class MatchingBipartiteTestUtils {
 	}
 
 	static boolean randBipartiteGraphs(Matching algo) {
-		int[][] phases = { { 256, 8, 8, 8 }, { 256, 8, 8, 16 }, { 128, 16, 16, 16 }, { 128, 16, 16, 64 },
-				{ 64, 32, 32, 32 }, { 64, 32, 32, 128 }, { 16, 128, 128, 512 }, { 16, 128, 128, 128 },
+		int[][] phases = { { 256, 4, 4, 4 }, { 128, 16, 16, 64 }, { 16, 128, 128, 128 }, { 16, 128, 128, 512 },
 				{ 4, 1024, 1024, 1024 }, { 4, 1024, 1024, 8192 } };
 		return TestUtils.runTestMultiple(phases, args -> {
 			int sn = args[1];
@@ -50,21 +51,32 @@ class MatchingBipartiteTestUtils {
 	private static <E> boolean testBipartiteAlgo(Matching algo, GraphBipartite<E> g, int expectedMatchSize) {
 		Collection<Edge<E>> match = algo.calcMaxMatching(g);
 
-		int n = g.vertices();
-		@SuppressWarnings("unchecked")
-		Edge<E>[] matched = new Edge[n];
-		for (Edge<E> e : match) {
-			for (int v : new int[] { e.u(), e.v() }) {
-				if (matched[v] != null) {
-					TestUtils.printTestStr("Vertex " + v + " is matched twice: " + matched[v] + ", " + e + "\n");
-					return false;
-				}
-			}
-		}
+		if (!validateMatching(match))
+			return false;
 
-		if (match.size() != expectedMatchSize) {
+		if (match.size() < expectedMatchSize) {
 			TestUtils.printTestStr("unexpected match size: " + match.size() + " != " + expectedMatchSize + "\n");
 			return false;
+		} else if (match.size() > expectedMatchSize) {
+			TestUtils.printTestStr("matching is bigger than validation algo found: " + match.size() + " > "
+					+ expectedMatchSize + "\n");
+			throw new InternalError();
+		}
+
+		return true;
+	}
+
+	private static <E> boolean validateMatching(Collection<Edge<E>> matching) {
+		Map<Integer, Edge<E>> matched = new HashMap<>();
+		for (Edge<E> e : matching) {
+			for (int v : new int[] { e.u(), e.v() }) {
+				Edge<E> dup = matched.get(v);
+				if (dup != null) {
+					TestUtils.printTestStr("Invalid matching, clash: " + dup + " " + e + " \n");
+					return false;
+				}
+				matched.put(v, e);
+			}
 		}
 		return true;
 	}
