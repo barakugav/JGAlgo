@@ -112,8 +112,15 @@ class GraphsTestUtils {
 				throw new IllegalArgumentException();
 			if (!cycles && selfEdges)
 				throw new IllegalArgumentException();
-			if (!doubleEdges && ((n <= 16 && m > n * (n + 1) / 2) || (n > 16 && m >= ((long) n) * n / 3)))
-				throw new IllegalArgumentException("too much edges for random sampling");
+			if (!doubleEdges) {
+				long limit;
+				if (bipartite)
+					limit = n <= 16 ? sn * tn : ((long) sn) * tn * 2 / 3;
+				else
+					limit = n <= 16 ? n * (n + 1) / 2 : ((long) n) * n / 3;
+				if (m > limit)
+					throw new IllegalArgumentException("too much edges for random sampling");
+			}
 
 			Set<Pair<Integer, Integer>> existingEdges = new HashSet<>();
 			UnionFind uf = new UnionFindArray(n);

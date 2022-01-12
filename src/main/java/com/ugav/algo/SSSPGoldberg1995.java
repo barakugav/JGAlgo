@@ -54,7 +54,7 @@ public class SSSPGoldberg1995 implements SSSP {
 		int[] potential = new int[n];
 
 		boolean[] connected = new boolean[n];
-		int[] layerSize = new int[n];
+		int[] layerSize = new int[n + 1];
 
 		Graph<E> gNeg = new GraphArray<>(DirectedType.Directed, n);
 		Graph<Integer> G = new GraphArray<>(DirectedType.Directed, n);
@@ -172,14 +172,14 @@ public class SSSPGoldberg1995 implements SSSP {
 		int weight = w.weightInt(e);
 		// weight = ceil(weight / 2^weightMask)
 		if (weightMask != 0) {
-			boolean neg = weight < 0;
-			if (neg)
-				weight = -weight;
-			else
+			if (weight <= 0) {
+				weight = -((-weight) >> weightMask);
+			} else {
 				weight += 1 << (weightMask - 1);
-			weight = weight >> weightMask;
-			if (neg)
-				weight = -weight;
+				weight = weight >> weightMask;
+				if (weight == 0)
+					weight = 1;
+			}
 		}
 		return weight + potential[e.u()] - potential[e.v()];
 	}

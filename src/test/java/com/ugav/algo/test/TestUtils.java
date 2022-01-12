@@ -128,7 +128,15 @@ class TestUtils {
 		for (int phase = 0; phase < phases.length; phase++) {
 			int repeat = phases[phase][0];
 			for (int i = 0; i < repeat; i++) {
-				if (!test.test(phases[phase])) {
+
+				boolean passed;
+				try {
+					passed = test.test(phases[phase]);
+				} catch (Throwable e) {
+					e.printStackTrace();
+					passed = false;
+				}
+				if (!passed) {
 					TestUtils.printTestStr("Failed at phase " + phase + " iter " + i + "\n");
 					return false;
 				}

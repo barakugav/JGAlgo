@@ -45,7 +45,8 @@ public class TestList {
 	private static final Collection<Class<?>> MATCHING_TESTS = List.of(
 			MatchingBipartiteHopcroftKarp1973Test.class,
 			MatchingGabow1976Test.class,
-			MatchingWeightedBipartiteSSSPTest.class);
+			MatchingWeightedBipartiteSSSPTest.class,
+			MatchingWeightedBipartiteHungarianMethodTest.class);
 
 	static final Collection<Class<?>> TEST_CLASSES;
 	static {

@@ -26,10 +26,8 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 
 	@Override
 	public <E> Collection<Edge<E>> calcMaxMatching(Graph<E> g0, WeightFunction<E> w) {
-		if (!(g0 instanceof GraphBipartite))
-			throw new IllegalArgumentException("Only bipartite graphs are supported");
-		if (g0.isDirected())
-			throw new IllegalArgumentException("Only undirected graphs are supported");
+		if (!(g0 instanceof GraphBipartite) || g0.isDirected())
+			throw new IllegalArgumentException("Only undirected bipartite graphs are supported");
 		GraphBipartite<Ref<E>> g = referenceGraph((GraphBipartite<E>) g0, w);
 
 		int n = g.vertices(), sn = g.svertices(), tn = g.tvertices();
@@ -54,14 +52,13 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 		// Init state may include negative distances, use Bellman Ford to calculate
 		// first potential values
 		SSSP.Result<Ref<E>> sp = SSSPBellmanFord.getInstace().calcDistances(g, e -> e.val().w, s);
-		for (int v = 0; v < n; v++)
+		for (int v = 0; v < n + 2; v++)
 			potential[v] = sp.distance(v);
-		potential[t] = sp.distance(t);
 
 		do {
 			sp = SSSPDijkstra.getInstace().calcDistances(g, spWeightFunc, s);
 			List<Edge<Ref<E>>> augPath = sp.getPathTo(t);
-			double augPathWeight = -(sp.distance(t) - potential[s] + potential[t]);
+			double augPathWeight = -(sp.distance(t) + potential[t]);
 			if (augPath == null || augPathWeight < 0)
 				break;
 

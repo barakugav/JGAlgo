@@ -3,7 +3,9 @@ package com.ugav.algo.test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.ugav.algo.Graph;
 import com.ugav.algo.Graph.Edge;
@@ -31,21 +33,27 @@ class MatchingTestUtils {
 	private static <E> boolean testAlgo(Matching algo, Graph<E> g, int expectedMatchSize) {
 		Collection<Edge<E>> match = algo.calcMaxMatching(g);
 
-		int n = g.vertices();
-		@SuppressWarnings("unchecked")
-		Edge<E>[] matched = new Edge[n];
-		for (Edge<E> e : match) {
-			for (int v : new int[] { e.u(), e.v() }) {
-				if (matched[v] != null) {
-					TestUtils.printTestStr("Vertex " + v + " is matched twice: " + matched[v] + ", " + e + "\n");
-					return false;
-				}
-			}
-		}
+		if (!validateMatching(match))
+			return false;
 
 		if (match.size() != expectedMatchSize) {
 			TestUtils.printTestStr("unexpected match size: " + match.size() + " != " + expectedMatchSize + "\n");
 			return false;
+		}
+		return true;
+	}
+
+	static <E> boolean validateMatching(Collection<Edge<E>> matching) {
+		Map<Integer, Edge<E>> matched = new HashMap<>();
+		for (Edge<E> e : matching) {
+			for (int v : new int[] { e.u(), e.v() }) {
+				Edge<E> dup = matched.get(v);
+				if (dup != null) {
+					TestUtils.printTestStr("Invalid matching, clash: " + dup + " " + e + " \n");
+					return false;
+				}
+				matched.put(v, e);
+			}
 		}
 		return true;
 	}

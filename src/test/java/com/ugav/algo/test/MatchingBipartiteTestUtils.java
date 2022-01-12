@@ -1,8 +1,6 @@
 package com.ugav.algo.test;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 import com.ugav.algo.Graph.DirectedType;
 import com.ugav.algo.Graph.Edge;
@@ -51,7 +49,7 @@ class MatchingBipartiteTestUtils {
 	private static <E> boolean testBipartiteAlgo(Matching algo, GraphBipartite<E> g, int expectedMatchSize) {
 		Collection<Edge<E>> match = algo.calcMaxMatching(g);
 
-		if (!validateMatching(match))
+		if (!MatchingTestUtils.validateMatching(match))
 			return false;
 
 		if (match.size() < expectedMatchSize) {
@@ -63,21 +61,6 @@ class MatchingBipartiteTestUtils {
 			throw new InternalError();
 		}
 
-		return true;
-	}
-
-	private static <E> boolean validateMatching(Collection<Edge<E>> matching) {
-		Map<Integer, Edge<E>> matched = new HashMap<>();
-		for (Edge<E> e : matching) {
-			for (int v : new int[] { e.u(), e.v() }) {
-				Edge<E> dup = matched.get(v);
-				if (dup != null) {
-					TestUtils.printTestStr("Invalid matching, clash: " + dup + " " + e + " \n");
-					return false;
-				}
-				matched.put(v, e);
-			}
-		}
 		return true;
 	}
 
