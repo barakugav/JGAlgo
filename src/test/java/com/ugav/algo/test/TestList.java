@@ -22,6 +22,7 @@ public class TestList {
 			GraphsTest.class,
 			UnionFindPtrTest.class,
 			UnionFindArrayTest.class,
+			UnionFindValueArrayTest.class,
 			SplitFindMinArrayTest.class,
 			LCARMQBenderFarachColton2000Test.class,
 			TPMKomlos1985King1997Hagerup2009Test.class,

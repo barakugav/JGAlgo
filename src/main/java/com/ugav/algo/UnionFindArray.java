@@ -4,11 +4,11 @@ import java.util.Arrays;
 
 public class UnionFindArray implements UnionFind {
 
-	private int[] parent;
-	private byte[] rank;
-	private int size;
+	int[] parent;
+	byte[] rank;
+	int size;
 
-	private static final int NO_PARENT = -1;
+	static final int NO_PARENT = -1;
 
 	public UnionFindArray() {
 		this(0);
@@ -39,6 +39,10 @@ public class UnionFindArray implements UnionFind {
 	public int find(int x) {
 		if (x < 0 || x >= size)
 			throw new IllegalArgumentException();
+		return find0(x);
+	}
+
+	int find0(int x) {
 		int[] p = parent;
 
 		/* Find root */
@@ -71,8 +75,12 @@ public class UnionFindArray implements UnionFind {
 		} else if (r[a] == r[b])
 			r[a]++;
 
-		parent[b] = a;
+		unionSetParent(b, a);
 		return a;
+	}
+
+	void unionSetParent(int c, int p) {
+		parent[c] = p;
 	}
 
 	@Override
