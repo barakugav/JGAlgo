@@ -30,7 +30,6 @@ public class MatchingGabow1976 implements Matching {
 		int n = g.vertices();
 
 		int[] queue = new int[n];
-		int[] tree = new int[n];
 		int[] root = new int[n];
 		boolean[] isEven = new boolean[n];
 
@@ -53,8 +52,7 @@ public class MatchingGabow1976 implements Matching {
 		int[] bases = new int[n];
 
 		while (true) {
-			int treeNum = 0;
-			Arrays.fill(tree, -1);
+			Arrays.fill(root, -1);
 
 			for (int u = 0; u < n; u++) {
 				uf.make();
@@ -67,28 +65,27 @@ public class MatchingGabow1976 implements Matching {
 			for (int u = 0; u < n; u++) {
 				if (matched[u] != null)
 					continue;
-				root[tree[u] = treeNum++] = u;
+				root[u] = u;
 				isEven[u] = true;
 				queue[queueEnd++] = u;
 
 			}
 			bfs: while (queueBegin != queueEnd) {
 				int u = queue[queueBegin++];
-				int uTree = tree[u];
-				int uRoot = root[uTree];
+				int uRoot = root[u];
 
 				for (Edge<E> e : Utils.iterable(g.edges(u))) {
 					int v = e.v();
-					int vTree = tree[v];
+					int vRoot = root[v];
 
-					if (vTree == -1) {
+					if (vRoot == -1) {
 						// unexplored vertex, add to tree
 						Edge<E> matchedEdge = matched[v];
-						tree[v] = uTree;
+						root[v] = uRoot;
 						parent[v] = e.twin();
 
 						v = matchedEdge.v();
-						tree[v] = uTree;
+						root[v] = uRoot;
 						isEven[v] = true;
 						queue[queueEnd++] = v;
 						continue;
@@ -99,7 +96,7 @@ public class MatchingGabow1976 implements Matching {
 						// edge to an odd vertex in some tree, ignore
 						continue;
 
-					if (vTree == uTree) {
+					if (vRoot == uRoot) {
 						// Blossom
 						int uBase = bases[uf.find(u)];
 						if (uBase == vBase)
@@ -153,7 +150,7 @@ public class MatchingGabow1976 implements Matching {
 						// augmenting path
 						augPathSize = findPath(u, uRoot, isEven, matched, parent, bridge, augPath, 0);
 						augPath[augPathSize++] = e;
-						augPathSize = findPath(v, root[vTree], isEven, matched, parent, bridge, augPath, augPathSize);
+						augPathSize = findPath(v, vRoot, isEven, matched, parent, bridge, augPath, augPathSize);
 						break bfs;
 					}
 				}

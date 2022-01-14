@@ -109,7 +109,6 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 		};
 
 		mainLoop: for (;;) {
-
 			// Start growing tree from all unmatched vertices in S
 			for (int u = 0; u < n; u++) {
 				if (!g.isVertexInS(u) || matched[u] != null)

@@ -42,11 +42,11 @@ public class SSSPGoldberg1995 implements SSSP {
 
 		Pair<int[], List<Edge<E>>> p = calcPotential(g, w, minWeight);
 		if (p.e2 != null)
-			return new Result<>(source, null, null, true, p.e2);
+			return new Result<>(source, null, null, p.e2);
 		int[] potential = p.e1;
 		PotentialWeightFunction<E> pw = new PotentialWeightFunction<>(w, potential);
 		SSSP.Result<E> dijkstra = SSSPDijkstra.getInstace().calcDistances(g, pw, source);
-		return new Result<>(source, potential, dijkstra, false, null);
+		return new Result<>(source, potential, dijkstra, null);
 	}
 
 	private static <E> Pair<int[], List<Edge<E>>> calcPotential(Graph<E> g, WeightFunctionInt<E> w, int minWeight) {
@@ -189,46 +189,44 @@ public class SSSPGoldberg1995 implements SSSP {
 		private final int sourcePotential;
 		private final int[] potential;
 		private final SSSP.Result<E> dijkstraRes;
-		private final boolean negCycle;
 		private final List<Edge<E>> cycle;
 
-		Result(int source, int[] potential, SSSP.Result<E> dijkstraRes, boolean negCycle, List<Edge<E>> cycle) {
+		Result(int source, int[] potential, SSSP.Result<E> dijkstraRes, List<Edge<E>> cycle) {
 			this.sourcePotential = potential != null ? potential[source] : 0;
 			this.potential = potential;
 			this.dijkstraRes = dijkstraRes;
-			this.negCycle = negCycle;
-			this.cycle = negCycle ? Collections.unmodifiableList(cycle) : null;
+			this.cycle = cycle != null ? Collections.unmodifiableList(cycle) : null;
 		}
 
 		@Override
 		public double distance(int v) {
-			if (negCycle)
+			if (foundNegativeCycle())
 				throw new IllegalStateException();
 			return dijkstraRes.distance(v) - sourcePotential + potential[v];
 		}
 
 		@Override
 		public List<Edge<E>> getPathTo(int v) {
-			if (negCycle)
+			if (foundNegativeCycle())
 				throw new IllegalStateException();
 			return dijkstraRes.getPathTo(v);
 		}
 
 		@Override
 		public boolean foundNegativeCycle() {
-			return negCycle;
+			return cycle != null;
 		}
 
 		@Override
 		public List<Edge<E>> getNegativeCycle() {
-			if (!negCycle)
+			if (!foundNegativeCycle())
 				throw new IllegalStateException();
 			return cycle;
 		}
 
 		@Override
 		public String toString() {
-			return negCycle ? "[NegCycle=" + cycle + "]" : dijkstraRes.toString();
+			return foundNegativeCycle() ? "[NegCycle=" + cycle + "]" : dijkstraRes.toString();
 		}
 
 	}
