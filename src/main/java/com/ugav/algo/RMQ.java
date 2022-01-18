@@ -63,11 +63,11 @@ public interface RMQ {
 
 	}
 
-	public static class IntArrayComparator implements Comparator {
+	public static class ArrayIntComparator implements Comparator {
 
 		private final int[] arr;
 
-		public IntArrayComparator(int[] arr) {
+		public ArrayIntComparator(int[] arr) {
 			this.arr = Objects.requireNonNull(arr);
 		}
 

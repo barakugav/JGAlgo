@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 import com.ugav.algo.Graph.Edge;
-import com.ugav.algo.RMQ.IntArrayComparator;
+import com.ugav.algo.RMQ.ArrayIntComparator;
 
 public class LCARMQBenderFarachColton2000 implements LCA {
 
@@ -78,7 +78,7 @@ public class LCARMQBenderFarachColton2000 implements LCA {
 		}
 
 		RMQ.Result rmq = RMQPlusMinusOneBenderFarachColton2000.getInstace()
-				.preprocessRMQ(new IntArrayComparator(depths), depths.length);
+				.preprocessRMQ(new ArrayIntComparator(depths), depths.length);
 		return new DataStructure(vs, vToDepthsIdx, rmq);
 	}
 
