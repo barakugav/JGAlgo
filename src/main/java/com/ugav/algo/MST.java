@@ -18,11 +18,43 @@ public interface MST {
 	 */
 	public <E> Collection<Edge<E>> calcMST(Graph<E> g, Graph.WeightFunction<E> w);
 
+	/**
+	 * Verify that the given edges are actually form a MST of g
+	 *
+	 * The verification is done by calculating for each original edge in g the
+	 * maximum edge in the given MST. If all of the edges which are not in the MST
+	 * have a bigger weight than the maximum one in the path of the MST, the MST is
+	 * valid.
+	 *
+	 * @param g        a undirected graph
+	 * @param w        weight function
+	 * @param mstEdges collection of edges that form a MST
+	 * @param tpmAlgo  tree path maximum algorithm, used for verification. The
+	 *                 efficiency of the verification highly depends on this
+	 *                 algorithm.
+	 * @return true if the collection of edges form a MST of g
+	 */
 	public static <E> boolean verifyMST(Graph<E> g, WeightFunction<E> w, Collection<Edge<E>> mstEdges, TPM tpmAlgo) {
 		Graph<E> mst = GraphArray.valueOf(g.vertices(), mstEdges, DirectedType.Undirected);
 		return verifyMST(g, w, mst, tpmAlgo);
 	}
 
+	/**
+	 * Verify that the given MST is actually a MST of g
+	 *
+	 * The verification is done by calculating for each original edge in g the
+	 * maximum edge in the given MST. If all of the edges which are not in the MST
+	 * have a bigger weight than the maximum one in the path of the MST, the MST is
+	 * valid.
+	 *
+	 * @param g       a undirected graph
+	 * @param w       weight function
+	 * @param mst     spanning tree of g
+	 * @param tpmAlgo tree path maximum algorithm, used for verification. The
+	 *                efficiency of the verification highly depends on this
+	 *                algorithm.
+	 * @return true if the given spanning tree is a MST of g
+	 */
 	public static <E> boolean verifyMST(Graph<E> g, WeightFunction<E> w, Graph<E> mst, TPM tpmAlgo) {
 		if (g.isDirected())
 			throw new IllegalArgumentException("Directed graphs are not supported");
