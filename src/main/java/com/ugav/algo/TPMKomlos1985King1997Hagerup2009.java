@@ -289,9 +289,6 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 
 	private static <E> int[] calcQueriesPerVertex(int[] lcaQueries, int[] depths, Edge<Ref<E>>[] edgeToParent) {
 		int n = edgeToParent.length;
-		int[] layer = new int[n];
-		int[] layerNext = new int[n];
-		int layerSize = 0;
 
 		int[] q = new int[n];
 		Arrays.fill(q, 0);
@@ -305,28 +302,24 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 			q[u] |= 1 << depths[ancestor];
 		}
 
+		int[] queue = new int[n];
+		int queueBegin = 0, queueEnd = 0;
+		boolean[] queued = new boolean[n];
 		for (int u = 0; u < n; u++)
-			layer[layerSize++] = u;
+			queued[queue[queueEnd++] = u] = true;
 
-		while (layerSize > 0) {
-			int layerSizeNext = 0;
+		while (queueBegin != queueEnd) {
+			int u = queue[queueBegin++];
 
-			for (int u; layerSize > 0;) {
-				u = layer[--layerSize];
+			Edge<Ref<E>> ep = edgeToParent[u];
+			if (ep == null)
+				continue;
+			int parent = ep.v();
+			q[parent] |= q[u] & ~(1 << depths[parent]);
 
-				Edge<Ref<E>> ep = edgeToParent[u];
-				if (ep == null)
-					continue;
-				int parent = ep.v();
-				q[parent] |= q[u] & ~(1 << depths[parent]);
-
-				layerNext[layerSizeNext++] = parent;
-			}
-
-			int[] temp = layer;
-			layer = layerNext;
-			layerNext = temp;
-			layerSize = layerSizeNext;
+			if (queued[parent])
+				continue;
+			queued[queue[queueEnd++] = parent] = true;
 		}
 
 		return q;
