@@ -156,19 +156,15 @@ public class HeapBinomial<E> extends HeapAbstract<E> {
 
 	@Override
 	public E findMin() {
-		if (isEmpty())
-			throw new IllegalStateException();
-		E e = findMinHandle().value;
-		return e;
+		return findMinHandle0().value;
 	}
 
 	@Override
 	public E extractMin() {
-		if (isEmpty())
-			throw new IllegalStateException();
-		Node<E> min = findMinHandle();
+		Node<E> min = findMinHandle0();
+		E val = min.value;
 		removeHandle(min);
-		return min.value;
+		return val;
 	}
 
 	@Override
@@ -305,7 +301,13 @@ public class HeapBinomial<E> extends HeapAbstract<E> {
 	}
 
 	@Override
-	public Node<E> findMinHandle() {
+	public Handle<E> findMinHandle() {
+		return findMinHandle0();
+	}
+
+	private Node<E> findMinHandle0() {
+		if (isEmpty())
+			throw new IllegalStateException();
 		Node<E>[] rs = roots;
 		int rsLen = rootsLen;
 		Node<E> min = null;
