@@ -1,6 +1,7 @@
 package com.ugav.algo;
 
 import java.util.AbstractList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -64,6 +65,39 @@ class Utils {
 				return it;
 			}
 		};
+	}
+
+	static class QueueIntFixSize {
+
+		private final int[] q;
+		private int begin, end;
+
+		QueueIntFixSize(int maxSize) {
+			q = new int[maxSize];
+			begin = end = 0;
+		}
+
+		boolean isEmpty() {
+			return begin >= end;
+		}
+
+		void push(int x) {
+			q[end++] = x;
+		}
+
+		int pop() {
+			return q[begin++];
+		}
+
+		void clear() {
+			begin = end = 0;
+		}
+
+		@Override
+		public String toString() {
+			return Arrays.toString(Arrays.copyOfRange(q, begin, end));
+		}
+
 	}
 
 	static class ArrayView<E> extends AbstractList<E> implements RandomAccess {

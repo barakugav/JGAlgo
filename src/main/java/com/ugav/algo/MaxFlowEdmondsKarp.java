@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import com.ugav.algo.Graph.DirectedType;
 import com.ugav.algo.Graph.Edge;
+import com.ugav.algo.Utils.QueueIntFixSize;
 
 public class MaxFlowEdmondsKarp implements MaxFlow {
 
@@ -33,17 +34,16 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 		Edge<Ref<E>>[] backtrack = new Edge[n];
 
 		boolean[] visited = new boolean[n];
-		int[] queue = new int[n];
-		int queueBegin, queueEnd;
+		QueueIntFixSize queue = new QueueIntFixSize(n);
 
 		do {
-			queueBegin = queueEnd = 0;
+			queue.clear();
 			visited[source] = true;
-			queue[queueEnd++] = source;
+			queue.push(source);
 
 			// perform BFS and find a path of non saturated edges from source to target
-			bfs: while (queueBegin != queueEnd) {
-				int u = queue[queueBegin++];
+			bfs: while (!queue.isEmpty()) {
+				int u = queue.pop();
 				for (Edge<Ref<E>> e : Utils.iterable(g.edges(u))) {
 					int v = e.v();
 					if (e.val().flow >= net.getCapacity(e.val().orig) || visited[v])
@@ -52,7 +52,7 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 					if (v == target)
 						break bfs;
 					visited[v] = true;
-					queue[queueEnd++] = v;
+					queue.push(v);
 				}
 			}
 

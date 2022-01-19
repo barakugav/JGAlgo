@@ -136,7 +136,7 @@ public class Arrays {
 	 * Partition an array to buckets where each element in bucket i is smaller than
 	 * all elements in bucket i+1
 	 *
-	 * O(nlogk) where k is the bucket size.
+	 * O(nlogk) where k is the number of buckets of the output.
 	 *
 	 * @param a          an array
 	 * @param from       first index (inclusive)

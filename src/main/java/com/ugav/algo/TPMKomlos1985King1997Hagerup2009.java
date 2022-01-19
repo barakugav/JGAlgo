@@ -7,6 +7,7 @@ import com.ugav.algo.Graph.DirectedType;
 import com.ugav.algo.Graph.Edge;
 import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.Graphs.Ref;
+import com.ugav.algo.Utils.QueueIntFixSize;
 
 public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 
@@ -302,14 +303,15 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 			q[u] |= 1 << depths[ancestor];
 		}
 
-		int[] queue = new int[n];
-		int queueBegin = 0, queueEnd = 0;
+		QueueIntFixSize queue = new QueueIntFixSize(n);
 		boolean[] queued = new boolean[n];
-		for (int u = 0; u < n; u++)
-			queued[queue[queueEnd++] = u] = true;
+		for (int u = 0; u < n; u++) {
+			queue.push(u);
+			queued[u] = true;
+		}
 
-		while (queueBegin != queueEnd) {
-			int u = queue[queueBegin++];
+		while (!queue.isEmpty()) {
+			int u = queue.pop();
 
 			Edge<Ref<E>> ep = edgeToParent[u];
 			if (ep == null)
@@ -319,7 +321,8 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 
 			if (queued[parent])
 				continue;
-			queued[queue[queueEnd++] = parent] = true;
+			queue.push(parent);
+			queued[parent] = true;
 		}
 
 		return q;

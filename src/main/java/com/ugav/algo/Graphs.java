@@ -14,6 +14,7 @@ import com.ugav.algo.Graph.Edge;
 import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.Graph.WeightFunctionInt;
 import com.ugav.algo.SSSP.SSSPResultsImpl;
+import com.ugav.algo.Utils.QueueIntFixSize;
 
 public class Graphs {
 
@@ -51,25 +52,24 @@ public class Graphs {
 		int n = g.vertices();
 		boolean[] visited = new boolean[n];
 
-		int[] queue = new int[n];
-		int queueBegin = 0, queueEnd = 0;
+		QueueIntFixSize queue = new QueueIntFixSize(n);
 
 		for (int source : sources) {
 			visited[source] = true;
-			queue[queueEnd++] = source;
+			queue.push(source);
 			if (!op.handleVertex(source, null))
 				return;
 		}
 
-		while (queueBegin != queueEnd) {
-			int u = queue[queueBegin++];
+		while (!queue.isEmpty()) {
+			int u = queue.pop();
 
 			for (Edge<E> e : Utils.iterable(g.edges(u))) {
 				int v = e.v();
 				if (visited[v])
 					continue;
 				visited[v] = true;
-				queue[queueEnd++] = v;
+				queue.push(v);
 
 				if (!op.handleVertex(v, e))
 					return;
@@ -367,9 +367,9 @@ public class Graphs {
 			throw new IllegalArgumentException();
 		int n = g.vertices();
 		int[] inDegree = new int[n];
-		int[] queue = new int[n];
+		QueueIntFixSize queue = new QueueIntFixSize(n);
 		int[] topolSort = new int[n];
-		int queueBegin = 0, queueEnd = 0, topolSortSize = 0;
+		int topolSortSize = 0;
 
 		// Calc in degree of all vertices
 		for (Edge<E> e : g.edges())
@@ -379,17 +379,17 @@ public class Graphs {
 		// Find vertices with zero in degree and insert them to the queue
 		for (int v = 0; v < n; v++)
 			if (inDegree[v] == 0)
-				queue[queueEnd++] = v;
+				queue.push(v);
 
 		// Poll vertices from the queue and "remove" each one from the tree and add new
 		// zero in degree vertices to the queue
-		while (queueBegin != queueEnd) {
-			int u = queue[queueBegin++];
+		while (!queue.isEmpty()) {
+			int u = queue.pop();
 			topolSort[topolSortSize++] = u;
 			for (Edge<E> e : Utils.iterable(g.edges(u))) {
 				int v = e.v();
 				if (--inDegree[v] == 0)
-					queue[queueEnd++] = v;
+					queue.push(v);
 			}
 		}
 

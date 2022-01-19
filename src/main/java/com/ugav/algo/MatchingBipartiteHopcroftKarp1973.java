@@ -8,6 +8,7 @@ import java.util.List;
 
 import com.ugav.algo.Graph.DirectedType;
 import com.ugav.algo.Graph.Edge;
+import com.ugav.algo.Utils.QueueIntFixSize;
 
 public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 
@@ -35,7 +36,7 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 
 		/* BFS */
 		int[] depths = new int[n];
-		int[] bfsQueue = new int[n];
+		QueueIntFixSize bfsQueue = new QueueIntFixSize(n);
 
 		/* DFS */
 		boolean[] visited = new boolean[n];
@@ -50,17 +51,17 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 
 		while (true) {
 			/* Perform BFS to build the alternating forest */
-			int queueBegin = 0, queueEnd = 0;
+			bfsQueue.clear();
 			Arrays.fill(depths, Integer.MAX_VALUE);
 			for (int u = 0; u < n; u++) {
 				if (!g.isVertexInS(u) || matched[u] != null)
 					continue;
 				depths[u] = 0;
-				bfsQueue[queueEnd++] = u;
+				bfsQueue.push(u);
 			}
 			int unmatchedTDepth = Integer.MAX_VALUE;
-			while (queueBegin != queueEnd) {
-				int u = bfsQueue[queueBegin++];
+			while (!bfsQueue.isEmpty()) {
+				int u = bfsQueue.pop();
 				int depth = depths[u];
 				if (depth >= unmatchedTDepth)
 					continue;
@@ -79,7 +80,7 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 						f.addEdge(matchedEdge);
 						v = matchedEdge.v();
 						depths[v] = depth + 2;
-						bfsQueue[queueEnd++] = v;
+						bfsQueue.push(v);
 					} else
 						unmatchedTDepth = depth + 1;
 				}

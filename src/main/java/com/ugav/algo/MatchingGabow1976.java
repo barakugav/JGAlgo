@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.List;
 
 import com.ugav.algo.Graph.Edge;
+import com.ugav.algo.Utils.QueueIntFixSize;
 
 public class MatchingGabow1976 implements Matching {
 
@@ -29,7 +30,7 @@ public class MatchingGabow1976 implements Matching {
 			throw new IllegalArgumentException("directed graphs are not supported");
 		int n = g.vertices();
 
-		int[] queue = new int[n];
+		QueueIntFixSize queue = new QueueIntFixSize(n);
 		int[] root = new int[n];
 		boolean[] isEven = new boolean[n];
 
@@ -61,17 +62,17 @@ public class MatchingGabow1976 implements Matching {
 
 			int augPathSize = 0;
 
-			int queueBegin = 0, queueEnd = 0;
+			queue.clear();
 			for (int u = 0; u < n; u++) {
 				if (matched[u] != null)
 					continue;
 				root[u] = u;
 				isEven[u] = true;
-				queue[queueEnd++] = u;
+				queue.push(u);
 
 			}
-			bfs: while (queueBegin != queueEnd) {
-				int u = queue[queueBegin++];
+			bfs: while (!queue.isEmpty()) {
+				int u = queue.pop();
 				int uRoot = root[u];
 
 				for (Edge<E> e : Utils.iterable(g.edges(u))) {
@@ -87,7 +88,7 @@ public class MatchingGabow1976 implements Matching {
 						v = matchedEdge.v();
 						root[v] = uRoot;
 						isEven[v] = true;
-						queue[queueEnd++] = v;
+						queue.push(v);
 						continue;
 					}
 
@@ -134,7 +135,7 @@ public class MatchingGabow1976 implements Matching {
 								// handle odd vertex
 								p = matched[p].v();
 								blossomVertices[blossomVerticesSize++] = p;
-								queue[queueEnd++] = p; // add the odd vertex that became even to the queue
+								queue.push(p); // add the odd vertex that became even to the queue
 								bridge[p] = brigeEdge;
 
 								p = bases[uf.find(parent[p].v())];
