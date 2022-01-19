@@ -1,6 +1,7 @@
 package com.ugav.algo;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -97,6 +98,40 @@ public class HeapBinary<E> extends HeapAbstract<E> {
 	}
 
 	@Override
+	public boolean addAll(Collection<? extends E> other) {
+		if (other.isEmpty())
+			return false;
+		int combinedSize = size + other.size();
+		if (arr.length <= combinedSize) {
+			E[] old = arr;
+			arr = newArr(Math.max(arr.length * 2, combinedSize * 3 / 2));
+			System.arraycopy(old, 0, arr, 0, size);
+		}
+
+		int reconstructionCost = combinedSize;
+		int addAllCost = other.size() + Utils.log2ceil(combinedSize);
+		if (reconstructionCost >= addAllCost) {
+			for (E e : other)
+				add(e);
+		} else {
+			E[] a = arr;
+			int s = size;
+			for (E e : other)
+				a[s++] = e;
+			size = s;
+
+			if (s > 1) {
+				int lastLayer = Utils.log2ceil(s + 1) - 1;
+				int lastParent = (1 << lastLayer) - 2;
+				for (int parent = lastParent; parent >= 0; parent--)
+					moveDown(parent, a[parent]);
+			}
+		}
+
+		return true;
+	}
+
+	@Override
 	public Iterator<E> iterator() {
 		return new It();
 	}
@@ -121,12 +156,6 @@ public class HeapBinary<E> extends HeapAbstract<E> {
 			return arr[i++];
 		}
 
-	}
-
-	@Override
-	public void meld(Heap<? extends E> h) {
-		super.meld(h);
-		/* TODO */
 	}
 
 	private void moveUp(int i, E e) {

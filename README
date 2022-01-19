@@ -9,7 +9,7 @@ Implemented algorithms:
  - SplitFindMin
  - SSSP (Single source shortest path)
    - Dijkstra positive weights, O(m + nlogn)
-   - Dial1969 positive integer weights, O(m + D) where D is the sum of all edges (can be improved to sum of max n-1 edges)
+   - Dial1969 positive integer weights, O(m + D) where D is the maximum distance
    - BellmanFord general weights, O(m * n)
    - Goldberg1995 positive and negative integer weights, O(m * n^0.5 * logN) where N is the minimum negative weight
  - RMQ (range query minimum)
@@ -34,10 +34,9 @@ Implemented algorithms:
 
 Additional utils:
  - BFS / DFS
- - Connectivity components calculation (undirected) O(m + n)
- - Strong connectivity components calculation (directed) O(m + n)
+ - Connectivity components calculation, undirected O(m + n), strongly connected, directed O(m + n)
  - Topological sort calculation (DAG) O(m + n)
- - DAG (directed acyclic graph) SSSP O(m + n)
+ - SSSP DAG (directed acyclic graph) O(m + n)
 
 Most of the more complicated algorithms were presented by Uri Zwick in "analysis of algorithms" course.
 The slides for the course can be found in docs/analysis_of_algorithms_Uri_Zwick

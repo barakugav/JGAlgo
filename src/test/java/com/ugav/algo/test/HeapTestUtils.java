@@ -1,236 +1,20 @@
 package com.ugav.algo.test;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.NavigableMap;
 import java.util.Random;
 import java.util.TreeMap;
 import java.util.function.Supplier;
 
 import com.ugav.algo.Heap;
+import com.ugav.algo.Pair;
 
 class HeapTestUtils {
 
 	private HeapTestUtils() {
 		throw new InternalError();
-	}
-
-	@SuppressWarnings("unused")
-	private static HeapOp[] parseOpsStr(String s) {
-		s = s.substring(1, s.length() - 1);
-		String[] opsStr = s.split(", ");
-		HeapOp[] ops = new HeapOp[opsStr.length];
-
-		for (int i = 0; i < ops.length; i++)
-			ops[i] = HeapOp.valueOf(opsStr[i]);
-		return ops;
-	}
-
-	private static interface HeapOp {
-		static HeapOp valueOf(String s) {
-			if (s.startsWith("I"))
-				return new HeapOpInsert(Integer.valueOf(s.substring(2, s.length() - 1)));
-			if (s.startsWith("R"))
-				return new HeapOpRemove(Integer.valueOf(s.substring(2, s.length() - 1)));
-			if (s.startsWith("FM"))
-				return new HeapOpFindMin(Integer.valueOf(s.substring(5, s.length())));
-			if (s.startsWith("EM"))
-				return new HeapOpExtractMin(Integer.valueOf(s.substring(5, s.length())));
-			if (s.startsWith("DK"))
-				return new HeapOpDecreaseKey(Integer.valueOf(s.substring(5, s.indexOf("->"))),
-						Integer.valueOf(s.substring(s.indexOf("->") + 2, s.length())));
-			throw new IllegalArgumentException(s);
-		}
-	};
-
-	private static class HeapOpInsert implements HeapOp {
-		final int x;
-
-		HeapOpInsert(int x) {
-			this.x = x;
-		}
-
-		@Override
-		public String toString() {
-			return "I(" + x + ")";
-		}
-	};
-
-	private static class HeapOpRemove implements HeapOp {
-		final int x;
-
-		HeapOpRemove(int x) {
-			this.x = x;
-		}
-
-		@Override
-		public String toString() {
-			return "R(" + x + ")";
-		}
-	};
-
-	private static class HeapOpFindMin implements HeapOp {
-		final int expected;
-
-		HeapOpFindMin(int expected) {
-			this.expected = expected;
-		}
-
-		@Override
-		public String toString() {
-			return "FM()=" + expected;
-		}
-	};
-
-	private static class HeapOpExtractMin implements HeapOp {
-		final int expected;
-
-		HeapOpExtractMin(int expected) {
-			this.expected = expected;
-		}
-
-		@Override
-		public String toString() {
-			return "EM()=" + expected;
-		}
-	};
-
-	private static class HeapOpDecreaseKey implements HeapOp {
-		final int key;
-		final int newKey;
-
-		HeapOpDecreaseKey(int key, int newKey) {
-			this.key = key;
-			this.newKey = newKey;
-		}
-
-		@Override
-		public String toString() {
-			return "DK()=" + key + "->" + newKey;
-		}
-	};
-
-	static HeapOp[] randHeapOps(Heap<Integer> heap, int[] a, int m) {
-		RandHeapOpsArgs args = new RandHeapOpsArgs();
-		args.heap = heap;
-		args.a = a;
-		args.m = m;
-		return randHeapOps(args);
-	}
-
-	private static class RandHeapOpsArgs {
-		Heap<Integer> heap;
-		int[] a;
-		int m;
-		int insertFirst;
-		boolean decreaseKey;
-
-		RandHeapOpsArgs() {
-			heap = null;
-			a = null;
-			m = 0;
-			insertFirst = 0;
-			decreaseKey = false;
-		}
-	}
-
-	static HeapOp[] randHeapOps(RandHeapOpsArgs args) {
-		Heap<Integer> heap = args.heap;
-		int[] a = args.a;
-		int m = args.m;
-		int insertFirst = args.insertFirst;
-		boolean decreaseKey = args.decreaseKey;
-
-		Random rand = new Random(TestUtils.nextRandSeed());
-		HeapOp[] ops = new HeapOp[m];
-
-		int[] elmsToInsertIds = Utils.randPermutation(a.length, TestUtils.nextRandSeed());
-		int elmsToInsertCursor = 0;
-
-		/* init inserted elms with current heap elements */
-		NavigableMap<Integer, Integer> insertedElms = new TreeMap<>();
-		for (Integer x : heap)
-			insertedElms.compute(x, (x0, c) -> c == null ? 1 : c + 1);
-
-		int x, expected;
-
-		final int INSERT = 0;
-		final int REMOVE = 1;
-		final int FINDMIN = 2;
-		final int EXTRACTMIN = 3;
-		final int DECREASEKEY = 4;
-		final int OP_COUT = decreaseKey ? 5 : 4;
-
-		for (int op = 0; op < ops.length;) {
-			int opIdx = op < insertFirst ? INSERT : rand.nextInt(OP_COUT);
-			switch (opIdx) {
-			case INSERT:
-				if (elmsToInsertCursor >= elmsToInsertIds.length)
-					continue;
-
-				x = a[elmsToInsertIds[elmsToInsertCursor++]];
-				insertedElms.compute(x, (x0, c) -> c == null ? 1 : c + 1);
-				ops[op++] = new HeapOpInsert(x);
-				break;
-
-			case REMOVE:
-				if (insertedElms.isEmpty())
-					continue;
-
-				x = rand.nextInt(a.length);
-				if (rand.nextBoolean()) {
-					Integer X = insertedElms.floorKey(x);
-					x = X != null ? X : insertedElms.ceilingKey(x);
-				} else {
-					Integer X = insertedElms.ceilingKey(x);
-					x = X != null ? X : insertedElms.floorKey(x);
-				}
-
-				insertedElms.compute(x, (x0, c) -> c == 1 ? null : c - 1);
-				ops[op++] = new HeapOpRemove(x);
-				break;
-
-			case FINDMIN:
-				if (insertedElms.isEmpty())
-					continue;
-
-				expected = insertedElms.firstKey();
-				ops[op++] = new HeapOpFindMin(expected);
-				break;
-
-			case EXTRACTMIN:
-				if (insertedElms.isEmpty())
-					continue;
-
-				expected = insertedElms.firstKey();
-				insertedElms.compute(expected, (x0, c) -> c == 1 ? null : c - 1);
-				ops[op++] = new HeapOpExtractMin(expected);
-				break;
-
-			case DECREASEKEY:
-				if (insertedElms.isEmpty())
-					continue;
-
-				x = rand.nextInt(a.length);
-				if (rand.nextBoolean()) {
-					Integer X = insertedElms.floorKey(x);
-					x = X != null ? X : insertedElms.ceilingKey(x);
-				} else {
-					Integer X = insertedElms.ceilingKey(x);
-					x = X != null ? X : insertedElms.floorKey(x);
-				}
-				if (x == 0)
-					continue;
-
-				int newVal = rand.nextInt(x);
-
-				insertedElms.compute(x, (x0, c) -> c == 1 ? null : c - 1);
-				insertedElms.compute(newVal, (x0, c) -> c == null ? 1 : c + 1);
-				ops[op++] = new HeapOpDecreaseKey(x, newVal);
-				break;
-			default:
-				break;
-			}
-		}
-		return ops;
 	}
 
 	static boolean testRandOps(Supplier<? extends Heap<Integer>> heapBuilder) {
@@ -239,16 +23,10 @@ class HeapTestUtils {
 		return TestUtils.runTestMultiple(phases, args -> {
 			int n = args[1];
 			int m = args[2];
-			return testRandOps(heapBuilder, n, m);
+			Heap<Integer> heap = heapBuilder.get();
+
+			return testHeap(heap, n, m, TestMode.Normal);
 		});
-	}
-
-	static boolean testRandOps(Supplier<? extends Heap<Integer>> heapBuilder, int n, int m) {
-		Heap<Integer> heap = heapBuilder.get();
-		int[] a = Utils.randArray(n, 0, 65536, TestUtils.nextRandSeed());
-		HeapOp[] ops = randHeapOps(heap, a, m);
-
-		return testHeap(heap, a, ops, true);
 	}
 
 	static boolean testRandOpsAfterManyInserts(Supplier<? extends Heap<Integer>> heapBuilder) {
@@ -258,16 +36,8 @@ class HeapTestUtils {
 			int n = args[1];
 			int m = n;
 			Heap<Integer> heap = heapBuilder.get();
-			int[] a = Utils.randArray(n, 0, 65536, TestUtils.nextRandSeed());
 
-			RandHeapOpsArgs heapArgs = new RandHeapOpsArgs();
-			heapArgs.heap = heap;
-			heapArgs.a = a;
-			heapArgs.m = m;
-			heapArgs.insertFirst = m / 2;
-			HeapOp[] ops = randHeapOps(heapArgs);
-
-			return testHeap(heap, a, ops, true);
+			return testHeap(heap, n, m, TestMode.InsertFirst);
 		});
 	}
 
@@ -276,21 +46,15 @@ class HeapTestUtils {
 		return TestUtils.runTestMultiple(phases, args -> {
 			int hCount = args[1];
 			@SuppressWarnings("unchecked")
-			Heap<Integer>[] hs = new Heap[hCount];
+			Pair<Heap<Integer>, HeapTracker>[] hs = new Pair[hCount];
 			@SuppressWarnings("unchecked")
-			Heap<Integer>[] hsNext = new Heap[hCount / 2];
+			Pair<Heap<Integer>, HeapTracker>[] hsNext = new Pair[hCount / 2];
 
 			for (int i = 0; i < hCount; i++) {
-				Heap<Integer> h = hs[i] = heapBuilder.get();
-
-				int[] a = Utils.randArray(16, 0, 65536, TestUtils.nextRandSeed());
-				RandHeapOpsArgs heapArgs = new RandHeapOpsArgs();
-				heapArgs.heap = h;
-				heapArgs.a = a;
-				heapArgs.m = 16;
-				heapArgs.insertFirst = 8;
-				HeapOp[] ops = randHeapOps(heapArgs);
-				if (!testHeap(h, a, ops, false))
+				Heap<Integer> h = heapBuilder.get();
+				HeapTracker tracker = new HeapTracker();
+				hs[i] = Pair.valueOf(h, tracker);
+				if (!testHeap(h, tracker, 16, 16, TestMode.InsertFirst))
 					return false;
 			}
 
@@ -299,21 +63,16 @@ class HeapTestUtils {
 				int[] meldOrder = Utils.randPermutation(hCount & ~1, TestUtils.nextRandSeed());
 				for (int i = 0; i < meldOrder.length / 2; i++) {
 					int h1Idx = meldOrder[i * 2], h2Idx = meldOrder[i * 2 + 1];
-					Heap<Integer> h1 = hs[h1Idx], h2 = hs[h2Idx];
+					Heap<Integer> h1 = hs[h1Idx].e1, h2 = hs[h2Idx].e1;
+					HeapTracker t1 = hs[h1Idx].e2, t2 = hs[h2Idx].e2;
 
 					h1.meld(h2);
+					t1.meld(t2);
 					hs[h2Idx] = null;
 
 					/* make some OPs on the united heap */
 					int opsNum = 4096 / hCount;
-					int[] a = Utils.randArray(opsNum, 0, 65536, TestUtils.nextRandSeed());
-					RandHeapOpsArgs heapArgs = new RandHeapOpsArgs();
-					heapArgs.heap = h1;
-					heapArgs.a = a;
-					heapArgs.m = opsNum;
-					heapArgs.insertFirst = opsNum / 2;
-					HeapOp[] ops = randHeapOps(heapArgs);
-					if (!testHeap(h1, a, ops, false))
+					if (!testHeap(h1, t1, opsNum, opsNum, TestMode.InsertFirst))
 						return false;
 				}
 
@@ -322,7 +81,7 @@ class HeapTestUtils {
 				for (int i = 0; i < hCount; i++)
 					if (hs[i] != null)
 						hsNext[hCountNext++] = hs[i];
-				Heap<Integer>[] temp = hs;
+				Pair<Heap<Integer>, HeapTracker>[] temp = hs;
 				hs = hsNext;
 				hsNext = temp;
 				hCount = hCountNext;
@@ -338,65 +97,174 @@ class HeapTestUtils {
 			int n = args[1];
 			int m = n;
 			Heap<Integer> heap = heapBuilder.get();
-			int[] a = Utils.randArray(n, 0, 65536, TestUtils.nextRandSeed());
 
-			RandHeapOpsArgs heapArgs = new RandHeapOpsArgs();
-			heapArgs.heap = heap;
-			heapArgs.a = a;
-			heapArgs.m = m;
-			heapArgs.decreaseKey = true;
-			HeapOp[] ops = randHeapOps(heapArgs);
-
-			return testHeap(heap, a, ops, true);
+			return testHeap(heap, n, m, TestMode.DecreaseKey);
 		});
 	}
 
-	static boolean testHeap(Heap<Integer> heap, int[] a, HeapOp[] ops, boolean clear) {
-		if (clear) {
-			heap.clear();
-			if (heap.size() != 0 || !heap.isEmpty()) {
-				TestUtils.printTestStr("failed clear\n");
-				return false;
-			}
+	private static enum TestMode {
+		Normal, InsertFirst, DecreaseKey,
+	}
+
+	private static enum HeapOp {
+		Insert, Remove, FindMin, ExtractMin, DecreaseKey
+	}
+
+	private static class HeapTracker {
+
+		private final NavigableMap<Integer, Integer> insertedElms;
+		private final Random rand;
+
+		HeapTracker() {
+			insertedElms = new TreeMap<>();
+			rand = new Random(TestUtils.nextRandSeed());
 		}
 
-		for (HeapOp op0 : ops) {
-			if (op0 instanceof HeapOpInsert) {
-				HeapOpInsert op = (HeapOpInsert) op0;
-				heap.insert(op.x);
-			} else if (op0 instanceof HeapOpRemove) {
-				HeapOpRemove op = (HeapOpRemove) op0;
-				if (!heap.remove(Integer.valueOf(op.x))) {
-					TestUtils.printTestStr("failed to remove: " + op.x + "\n");
-					return false;
-				}
-			} else if (op0 instanceof HeapOpFindMin) {
-				HeapOpFindMin op = (HeapOpFindMin) op0;
-				int actual = heap.findMin();
-				if (actual != op.expected) {
-					TestUtils.printTestStr("failed findmin: " + op.expected + " != " + actual + "\n");
-					return false;
-				}
-			} else if (op0 instanceof HeapOpExtractMin) {
-				HeapOpExtractMin op = (HeapOpExtractMin) op0;
-				int actual = heap.extractMin();
-				if (actual != op.expected) {
-					TestUtils.printTestStr("failed extractmin: " + op.expected + " != " + actual + "\n");
-					return false;
-				}
-			} else if (op0 instanceof HeapOpDecreaseKey) {
-				HeapOpDecreaseKey op = (HeapOpDecreaseKey) op0;
-				heap.decreaseKey(heap.findHanlde(op.key), op.newKey);
-			} else
-				throw new IllegalArgumentException("Unknown OP: " + op0);
+		boolean isEmpty() {
+			return insertedElms.isEmpty();
 		}
 
-		if (clear) {
-			heap.clear();
-			if (heap.size() != 0 || !heap.isEmpty()) {
-				TestUtils.printTestStr("failed clear\n");
-				return false;
+		void insert(int x) {
+			insertedElms.compute(x, (x0, c) -> c == null ? 1 : c + 1);
+		}
+
+		void remove(int x) {
+			insertedElms.compute(x, (x0, c) -> c == 1 ? null : c - 1);
+		}
+
+		int findMin() {
+			return insertedElms.firstKey();
+		}
+
+		int extractMin() {
+			Integer x = insertedElms.firstKey();
+			remove(x);
+			return x;
+		}
+
+		void decreaseKey(int x, int newx) {
+			remove(x);
+			insert(newx);
+		}
+
+		void meld(HeapTracker other) {
+			for (Map.Entry<Integer, Integer> e : other.insertedElms.entrySet())
+				insertedElms.merge(e.getKey(), e.getValue(), (c1, c2) -> c1 != null ? c1 + c2 : c2);
+			other.insertedElms.clear();
+		}
+
+		int randElement() {
+			int x = rand.nextInt(insertedElms.firstKey(), insertedElms.lastKey() + 1);
+			if (rand.nextBoolean()) {
+				Integer X = insertedElms.floorKey(x);
+				x = X != null ? X : insertedElms.ceilingKey(x);
+			} else {
+				Integer X = insertedElms.ceilingKey(x);
+				x = X != null ? X : insertedElms.floorKey(x);
 			}
+			return x;
+		}
+
+	}
+
+	private static boolean testHeap(Heap<Integer> heap, int n, int m, TestMode mode) {
+		heap.clear();
+		if (heap.size() != 0 || !heap.isEmpty()) {
+			TestUtils.printTestStr("failed clear\n");
+			return false;
+		}
+
+		HeapTracker tracker = new HeapTracker();
+		if (!testHeap(heap, tracker, n, m, mode))
+			return false;
+
+		heap.clear();
+		if (heap.size() != 0 || !heap.isEmpty()) {
+			TestUtils.printTestStr("failed clear\n");
+			return false;
+		}
+
+		return true;
+	}
+
+	private static boolean testHeap(Heap<Integer> heap, HeapTracker tracker, int n, int m, TestMode mode) {
+		Random rand = new Random(TestUtils.nextRandSeed());
+		int[] a = Utils.randArray(n, 0, 65536, TestUtils.nextRandSeed());
+		int insertFirst = mode == TestMode.InsertFirst ? m / 2 : 0;
+
+		List<HeapOp> ops = new ArrayList<>(List.of(HeapOp.Insert, HeapOp.Remove, HeapOp.FindMin, HeapOp.ExtractMin));
+		if (mode == TestMode.DecreaseKey)
+			ops.add(HeapOp.DecreaseKey);
+
+		int[] elmsToInsertIds = Utils.randPermutation(a.length, TestUtils.nextRandSeed());
+		int elmsToInsertCursor = 0;
+
+		for (int opIdx = 0; opIdx < m;) {
+			HeapOp op = opIdx < insertFirst ? HeapOp.Insert : ops.get(rand.nextInt(ops.size()));
+
+			int x, expected, actual;
+			switch (op) {
+			case Insert:
+				if (elmsToInsertCursor >= elmsToInsertIds.length)
+					continue;
+				x = a[elmsToInsertIds[elmsToInsertCursor++]];
+
+				tracker.insert(x);
+				heap.insert(x);
+				break;
+
+			case Remove:
+				if (tracker.isEmpty())
+					continue;
+				x = tracker.randElement();
+
+				tracker.remove(x);
+				if (!heap.remove(x)) {
+					TestUtils.printTestStr("failed to remove: " + x + "\n");
+					return false;
+				}
+				break;
+
+			case FindMin:
+				if (tracker.isEmpty())
+					continue;
+
+				expected = tracker.findMin();
+				actual = heap.findMin();
+				if (actual != expected) {
+					TestUtils.printTestStr("failed findmin: " + expected + " != " + actual + "\n");
+					return false;
+				}
+				break;
+
+			case ExtractMin:
+				if (tracker.isEmpty())
+					continue;
+
+				expected = tracker.extractMin();
+				actual = heap.extractMin();
+				if (actual != expected) {
+					TestUtils.printTestStr("failed extractmin: " + expected + " != " + actual + "\n");
+					return false;
+				}
+				break;
+
+			case DecreaseKey:
+				if (tracker.isEmpty())
+					continue;
+				x = tracker.randElement();
+				if (x == 0)
+					continue;
+				int newVal = rand.nextInt(x);
+
+				tracker.decreaseKey(x, newVal);
+				heap.decreaseKey(heap.findHanlde(x), newVal);
+				break;
+
+			default:
+				throw new InternalError();
+			}
+			opIdx++;
 		}
 		return true;
 	}
