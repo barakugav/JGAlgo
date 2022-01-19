@@ -77,7 +77,16 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 	}
 
 	@Override
-	public <E> Collection<Edge<E>> calcMaxMatching(Graph<E> g0, WeightFunction<E> w) {
+	public <E> Collection<Edge<E>> calcMaxMatching(Graph<E> g, WeightFunction<E> w) {
+		return calcMaxMatching0(g, w, false);
+	}
+
+	@Override
+	public <E> Collection<Edge<E>> calcPerfectMaxMatching(Graph<E> g, WeightFunction<E> w) {
+		return calcMaxMatching0(g, w, true);
+	}
+
+	private static <E> Collection<Edge<E>> calcMaxMatching0(Graph<E> g0, WeightFunction<E> w, boolean perfect) {
 		if (!(g0 instanceof GraphBipartite) || g0.isDirected())
 			throw new IllegalArgumentException("Only undirected bipartite graphs are supported");
 		GraphBipartite<E> g = (GraphBipartite<E>) g0;
@@ -167,7 +176,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 				// Adjust dual values
 				double delta1 = maxWeight - dual.deltaTotal;
 				double delta2 = nextTightEdge.isEmpty() ? -1 : dual.edgeSlack(nextTightEdge.findMin());
-				if (delta1 <= delta2 || delta2 == -1)
+				if ((!perfect && delta1 <= delta2) || delta2 == -1)
 					break mainLoop;
 				dual.deltaTotal += delta2;
 			}
@@ -188,12 +197,6 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 			if (g.isVertexInS(u) && matched[u] != null)
 				res.add(matched[u]);
 		return res;
-	}
-
-	@Override
-	public <E> Collection<Edge<E>> calcPerfectMaxMatching(Graph<E> g, WeightFunction<E> w) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }

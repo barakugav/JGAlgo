@@ -15,4 +15,10 @@ public class MatchingWeightedBipartiteHungarianMethodTest {
 				.randBipartiteGraphsWeighted(MatchingWeightedBipartiteHungarianMethod.getInstance());
 	}
 
+	@Test
+	public static boolean randBipartiteGraphsWeightedPerfect() {
+		return MatchingWeightedTestUtils
+				.randBipartiteGraphsWeightedPerfect(MatchingWeightedBipartiteHungarianMethod.getInstance());
+	}
+
 }
