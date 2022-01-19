@@ -76,7 +76,7 @@ public interface MST {
 		i = 0;
 		for (Edge<E> e : g.edges()) {
 			Edge<E> mstEdge = tpmResults[i];
-			if (w.weight(e) < w.weight(mstEdge))
+			if (mstEdge == null || w.weight(e) < w.weight(mstEdge))
 				return false;
 			i++;
 		}

@@ -9,6 +9,7 @@ import java.util.Random;
 import com.ugav.algo.Graph.DirectedType;
 import com.ugav.algo.Graph.Edge;
 import com.ugav.algo.Graph.WeightFunction;
+import com.ugav.algo.Graphs.Ref;
 
 public class MSTKargerKleinTarjan1995 implements MST {
 
@@ -35,16 +36,6 @@ public class MSTKargerKleinTarjan1995 implements MST {
 		return calcMST0(g, w);
 	}
 
-	private static class Ref<E> {
-		final Edge<E> e;
-		final double w;
-
-		Ref(Edge<E> e, double w) {
-			this.e = e;
-			this.w = w;
-		}
-	}
-
 	private <E> Collection<Edge<E>> calcMST0(Graph<E> g, WeightFunction<E> w) {
 		if (g.vertices() == 0 || g.edges().isEmpty())
 			return Collections.emptyList();
@@ -66,12 +57,12 @@ public class MSTKargerKleinTarjan1995 implements MST {
 		Collection<Edge<Ref<E>>> f2 = calcMST0(g2, w0);
 
 		for (Edge<Ref<E>> e : f2)
-			f0.add(e.val().e);
+			f0.add(e.val().orig);
 		return f0;
 	}
 
 	private <E> Graph<E> randSubgraph(Graph<E> g) {
-		Random rand = new Random(seedGenerator.nextLong());
+		Random rand = new Random(seedGenerator.nextLong() ^ 0x043a4a7a193827bcL);
 		Graph<E> g1 = new GraphArray<>(DirectedType.Undirected, g.vertices());
 
 		for (Edge<E> e : g.edges()) {

@@ -3,6 +3,8 @@ package com.ugav.algo;
 import java.util.Comparator;
 import java.util.Iterator;
 
+import com.ugav.algo.Trees.TreeNode;
+
 public class HeapFibonacci<E> extends HeapAbstract<E> {
 
 	private Node<E> minRoot;

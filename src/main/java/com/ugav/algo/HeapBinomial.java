@@ -7,6 +7,8 @@ import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.Objects;
 
+import com.ugav.algo.Trees.TreeNode;
+
 public class HeapBinomial<E> extends HeapAbstract<E> {
 
 	private Node<E>[] roots;

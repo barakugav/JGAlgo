@@ -11,6 +11,26 @@ class Trees {
 		throw new InternalError();
 	}
 
+	interface TreeNode {
+
+		TreeNode parent();
+
+		TreeNode next();
+
+		TreeNode prev();
+
+		TreeNode child();
+
+		void setParent(TreeNode x);
+
+		void setNext(TreeNode x);
+
+		void setPrev(TreeNode x);
+
+		void setChild(TreeNode x);
+
+	}
+
 	static void clear(TreeNode root, Consumer<? super TreeNode> finalizer) {
 		List<TreeNode> stack = new ArrayList<>();
 
