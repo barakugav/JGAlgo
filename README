@@ -21,6 +21,7 @@ Implemented algorithms:
    - Boruvka1926 O(mlogn)
    - Kruskal1956 O(mlogn)
    - Prim1957 O(m + nlogn)
+   - Yao1976 O(mloglogn + nlogn)
    - FredmanTarjan1987 O(mlog*n)
    - KargerKleinTarjan1995 randomized algorithm, expected time O(m + n)
    - MDST Tarjan1977 directed graphs, O(mlogn)

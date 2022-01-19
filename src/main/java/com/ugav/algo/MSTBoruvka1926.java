@@ -67,7 +67,6 @@ public class MSTBoruvka1926 implements MST {
 
 		Collection<Edge<E>> mst = new ArrayList<>();
 		for (int i = 0; i < numberOfRounds; i++) {
-			Arrays.fill(minEdges, 0, treeNum, null);
 			Arrays.fill(minEdgesWeight, 0, treeNum, Double.MAX_VALUE);
 
 			/* find minimum edge going out of each tree */
@@ -133,6 +132,7 @@ public class MSTBoruvka1926 implements MST {
 			if (treeNum == treeNumNext)
 				break;
 			treeNum = treeNumNext;
+			Arrays.fill(minEdges, 0, treeNum, null);
 
 			/* assign new tree indices to G's vertices */
 			for (int v = 0; v < n; v++)

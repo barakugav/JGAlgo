@@ -39,6 +39,7 @@ public class TestList {
 			MSTBoruvka1926Test.class,
 			MSTKruskal1956Test.class,
 			MSTPrim1957Test.class,
+			MSTYao1976Test.class,
 			MSTFredmanTarjan1987Test.class,
 			MSTKargerKleinTarjan1995Test.class,
 			MDSTTarjan1977Test.class);
