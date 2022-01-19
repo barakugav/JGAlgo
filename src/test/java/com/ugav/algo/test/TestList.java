@@ -20,6 +20,7 @@ public class TestList {
 
 	private static final Collection<Class<?>> MISC_TESTS = List.of(
 			GraphsTest.class,
+			ArraysTest.class,
 			UnionFindPtrTest.class,
 			UnionFindArrayTest.class,
 			UnionFindValueArrayTest.class,
