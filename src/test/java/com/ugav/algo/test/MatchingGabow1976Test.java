@@ -11,7 +11,7 @@ public class MatchingGabow1976Test {
 
 	@Test
 	public static boolean randGraphs() {
-		return MatchingTestUtils.randGraphs(MatchingGabow1976.getInstance());
+		return MatchingUnweightedTestUtils.randGraphs(MatchingGabow1976.getInstance());
 	}
 
 }

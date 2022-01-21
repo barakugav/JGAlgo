@@ -49,7 +49,7 @@ class MatchingBipartiteTestUtils {
 	private static <E> boolean testBipartiteAlgo(Matching algo, GraphBipartite<E> g, int expectedMatchSize) {
 		Collection<Edge<E>> match = algo.calcMaxMatching(g);
 
-		if (!MatchingTestUtils.validateMatching(match))
+		if (!MatchingUnweightedTestUtils.validateMatching(match))
 			return false;
 
 		if (match.size() < expectedMatchSize) {

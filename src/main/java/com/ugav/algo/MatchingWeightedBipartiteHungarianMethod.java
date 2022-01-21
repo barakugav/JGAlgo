@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
-import java.util.function.Consumer;
 
 import com.ugav.algo.Graph.Edge;
 import com.ugav.algo.Graph.WeightFunction;
@@ -25,178 +24,174 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 		return INSTANCE;
 	}
 
-	private static class DualValues<E> {
+	@Override
+	public <E> Collection<Edge<E>> calcMaxMatching(Graph<E> g0, WeightFunction<E> w) {
+		if (!(g0 instanceof GraphBipartite) || g0.isDirected())
+			throw new IllegalArgumentException("Only undirected bipartite graphs are supported");
+		GraphBipartite<E> g = (GraphBipartite<E>) g0;
+		return new Worker<>(g, w).calcMaxMatching(false);
+	}
 
-		final GraphBipartite<E> g;
-		final WeightFunction<E> w;
+	@Override
+	public <E> Collection<Edge<E>> calcPerfectMaxMatching(Graph<E> g0, WeightFunction<E> w) {
+		if (!(g0 instanceof GraphBipartite) || g0.isDirected())
+			throw new IllegalArgumentException("Only undirected bipartite graphs are supported");
+		GraphBipartite<E> g = (GraphBipartite<E>) g0;
+		return new Worker<>(g, w).calcMaxMatching(true);
+	}
 
-		double deltaTotal;
-		final double[] dualValBase;
-		final double[] dualVal0;
-		final boolean[] inTree;
+	private static class Worker<E> {
 
-		DualValues(GraphBipartite<E> g, WeightFunction<E> w) {
+		private final GraphBipartite<E> g;
+		private final WeightFunction<E> w;
+
+		private final boolean[] inTree;
+
+		private final Comparator<Edge<E>> edgeSlackComparator;
+		private final Heap<Edge<E>> nextTightEdge;
+		private final Heap.Handle<Edge<E>>[] nextTightEdgePerOutV;
+
+		private double deltaTotal;
+		private final double[] dualValBase;
+		private final double[] dualVal0;
+
+		@SuppressWarnings("unchecked")
+		Worker(GraphBipartite<E> g, WeightFunction<E> w) {
 			this.g = g;
 			this.w = w;
-
 			int n = g.vertices();
+
+			inTree = new boolean[n];
+
+			edgeSlackComparator = (e1, e2) -> Double.compare(edgeSlack(e1), edgeSlack(e2));
+			nextTightEdge = new HeapFibonacci<>(edgeSlackComparator);
+			nextTightEdgePerOutV = new Heap.Handle[n];
+
 			dualValBase = new double[n];
 			dualVal0 = new double[n];
-			inTree = new boolean[n];
+		}
+
+		Collection<Edge<E>> calcMaxMatching(boolean perfect) {
+			int n = g.vertices();
+
+			@SuppressWarnings("unchecked")
+			Edge<E>[] parent = new Edge[n];
+			@SuppressWarnings("unchecked")
+			Edge<E>[] matched = new Edge[n];
 
 			double maxWeight = Double.MIN_VALUE;
 			for (Edge<E> e : g.edges())
 				maxWeight = Math.max(maxWeight, w.weight(e));
+			final double delta1Threshold = maxWeight;
 			for (int u = 0; u < n; u++)
 				if (g.isVertexInS(u))
-					dualValBase[u] = maxWeight;
-		}
+					dualValBase[u] = delta1Threshold;
 
-		double dualVal(int v) {
-			return inTree[v] ? dualVal0[v] + (g.isVertexInS(v) ? -deltaTotal : deltaTotal) : dualValBase[v];
-		}
+			mainLoop: for (;;) {
+				// Start growing tree from all unmatched vertices in S
+				for (int u = 0; u < n; u++) {
+					if (!g.isVertexInS(u) || matched[u] != null)
+						continue;
+					vertexAddedToTree(u);
+					for (Edge<E> e : Utils.iterable(g.edges(u)))
+						nextTightEdgeAdd(e);
+				}
 
-		double edgeSlack(Edge<E> e) {
-			return dualVal(e.u()) + dualVal(e.v()) - w.weight(e);
-		}
+				currentTree: for (;;) {
+					while (!nextTightEdge.isEmpty()) {
+						Edge<E> e = nextTightEdge.findMin();
 
-		void vertexAddedToTree(int v) {
-			dualVal0[v] = dualValBase[v] + (g.isVertexInS(v) ? deltaTotal : -deltaTotal);
-			inTree[v] = true;
-		}
+						if (inTree[e.v()]) {
+							// Vertex already in tree, edge is irrelevant
+							nextTightEdge.extractMin();
+							continue;
+						}
 
-		void updateDualValsBases() {
-			int n = g.vertices();
+						// No more tight edges from the tree, go out and adjust dual values
+						if (edgeSlack(e) > 0)
+							break;
+
+						// Edge is tight, add it to the tree
+						nextTightEdge.extractMin();
+						int v = e.v();
+						parent[v] = e;
+						vertexAddedToTree(v);
+
+						Edge<E> matchedEdge = matched[v];
+						if (matchedEdge == null) {
+							for (;;) {
+								// Augmenting path
+								e = parent[v];
+								matched[v] = e.twin();
+								matched[v = e.u()] = e; // TODO don't set parent[odd vertex]
+								e = parent[v];
+								if (e == null)
+									break currentTree;
+								v = e.u();
+							}
+						}
+
+						// Added odd vertex, immediately add it's matched edge and even vertex
+						v = matchedEdge.v();
+						parent[v] = matchedEdge;
+						vertexAddedToTree(v);
+
+						for (Edge<E> e1 : Utils.iterable(g.edges(v)))
+							nextTightEdgeAdd(e1);
+					}
+
+					// Adjust dual values
+					double delta1 = delta1Threshold - deltaTotal;
+					double delta2 = nextTightEdge.isEmpty() ? -1 : edgeSlack(nextTightEdge.findMin());
+					if ((!perfect && delta1 <= delta2) || delta2 == -1)
+						break mainLoop;
+					deltaTotal += delta2;
+				}
+
+				// Update dual values base
+				for (int u = 0; u < n; u++)
+					if (inTree[u])
+						dualValBase[u] = dualVal(u);
+				Arrays.fill(dualVal0, 0);
+
+				// Reset tree
+				Arrays.fill(inTree, false);
+				Arrays.fill(parent, null);
+
+				// Reset heap
+				nextTightEdge.clear();
+				Arrays.fill(nextTightEdgePerOutV, null);
+			}
+
+			List<Edge<E>> res = new ArrayList<>();
 			for (int u = 0; u < n; u++)
-				if (inTree[u])
-					dualValBase[u] = dualVal(u);
-			Arrays.fill(dualVal0, 0);
-			Arrays.fill(inTree, false);
+				if (g.isVertexInS(u) && matched[u] != null)
+					res.add(matched[u]);
+			return res;
 		}
 
-	}
-
-	@Override
-	public <E> Collection<Edge<E>> calcMaxMatching(Graph<E> g, WeightFunction<E> w) {
-		return calcMaxMatching0(g, w, false);
-	}
-
-	@Override
-	public <E> Collection<Edge<E>> calcPerfectMaxMatching(Graph<E> g, WeightFunction<E> w) {
-		return calcMaxMatching0(g, w, true);
-	}
-
-	private static <E> Collection<Edge<E>> calcMaxMatching0(Graph<E> g0, WeightFunction<E> w, boolean perfect) {
-		if (!(g0 instanceof GraphBipartite) || g0.isDirected())
-			throw new IllegalArgumentException("Only undirected bipartite graphs are supported");
-		GraphBipartite<E> g = (GraphBipartite<E>) g0;
-
-		int n = g.vertices();
-
-		boolean[] inTree = new boolean[n];
-		@SuppressWarnings("unchecked")
-		Edge<E>[] parent = new Edge[n];
-		@SuppressWarnings("unchecked")
-		Edge<E>[] matched = new Edge[n];
-
-		double maxWeight = Double.MIN_VALUE;
-		for (Edge<E> e : g.edges())
-			maxWeight = Math.max(maxWeight, w.weight(e));
-		DualValues<E> dual = new DualValues<>(g, w);
-
-		Comparator<Edge<E>> comparator = (e1, e2) -> Double.compare(dual.edgeSlack(e1), dual.edgeSlack(e2));
-		Heap<Edge<E>> nextTightEdge = new HeapFibonacci<>(comparator);
-		@SuppressWarnings("unchecked")
-		Heap.Handle<Edge<E>>[] nextTightEdgePerOutV = new Heap.Handle[n];
-		Consumer<Edge<E>> nextTightEdgeAdd = e -> {
+		private void nextTightEdgeAdd(Edge<E> e) {
 			int v = e.v();
 			Heap.Handle<Edge<E>> handle = nextTightEdgePerOutV[v];
 			if (handle == null)
 				nextTightEdgePerOutV[v] = nextTightEdge.insert(e);
-			else if (comparator.compare(e, handle.get()) < 0)
+			else if (edgeSlackComparator.compare(e, handle.get()) < 0)
 				nextTightEdge.decreaseKey(handle, e);
-		};
-
-		mainLoop: for (;;) {
-			// Start growing tree from all unmatched vertices in S
-			for (int u = 0; u < n; u++) {
-				if (!g.isVertexInS(u) || matched[u] != null)
-					continue;
-				inTree[u] = true;
-				dual.vertexAddedToTree(u);
-				for (Edge<E> e : Utils.iterable(g.edges(u)))
-					nextTightEdgeAdd.accept(e);
-			}
-
-			currentTree: for (;;) {
-				while (!nextTightEdge.isEmpty()) {
-					Edge<E> e = nextTightEdge.findMin();
-
-					if (inTree[e.v()]) {
-						// Vertex already in tree, edge is irrelevant
-						nextTightEdge.extractMin();
-						continue;
-					}
-
-					// No more tight edges from the tree, go out and adjust dual values
-					if (dual.edgeSlack(e) > 0)
-						break;
-
-					// Edge is tight, add it to the tree
-					nextTightEdge.extractMin();
-					int v = e.v();
-					inTree[v] = true;
-					parent[v] = e;
-					dual.vertexAddedToTree(v);
-
-					Edge<E> matchedEdge = matched[v];
-					if (matchedEdge == null) {
-						for (;;) {
-							// Augmenting path
-							e = parent[v];
-							matched[v] = e.twin();
-							matched[v = e.u()] = e;
-							e = parent[v];
-							if (e == null)
-								break currentTree;
-							v = e.u();
-						}
-					}
-
-					// Added odd vertex, immediately add it's matched edge and even vertex
-					v = matchedEdge.v();
-					parent[v] = matchedEdge;
-					inTree[v] = true;
-					dual.vertexAddedToTree(v);
-
-					for (Edge<E> e1 : Utils.iterable(g.edges(v)))
-						nextTightEdgeAdd.accept(e1);
-				}
-
-				// Adjust dual values
-				double delta1 = maxWeight - dual.deltaTotal;
-				double delta2 = nextTightEdge.isEmpty() ? -1 : dual.edgeSlack(nextTightEdge.findMin());
-				if ((!perfect && delta1 <= delta2) || delta2 == -1)
-					break mainLoop;
-				dual.deltaTotal += delta2;
-			}
-
-			dual.updateDualValsBases();
-
-			// reset tree
-			Arrays.fill(inTree, false);
-			Arrays.fill(parent, null);
-
-			// reset heap
-			nextTightEdge.clear();
-			Arrays.fill(nextTightEdgePerOutV, null);
 		}
 
-		List<Edge<E>> res = new ArrayList<>();
-		for (int u = 0; u < n; u++)
-			if (g.isVertexInS(u) && matched[u] != null)
-				res.add(matched[u]);
-		return res;
+		private double dualVal(int v) {
+			return inTree[v] ? dualVal0[v] + (g.isVertexInS(v) ? -deltaTotal : deltaTotal) : dualValBase[v];
+		}
+
+		private double edgeSlack(Edge<E> e) {
+			return dualVal(e.u()) + dualVal(e.v()) - w.weight(e);
+		}
+
+		private void vertexAddedToTree(int v) {
+			dualVal0[v] = dualValBase[v] + (g.isVertexInS(v) ? deltaTotal : -deltaTotal);
+			inTree[v] = true;
+		}
+
 	}
 
 }

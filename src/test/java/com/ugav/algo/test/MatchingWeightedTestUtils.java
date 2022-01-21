@@ -40,7 +40,7 @@ class MatchingWeightedTestUtils {
 				: MatchingWeightedBipartiteSSSP.getInstance();
 
 		Collection<Edge<Integer>> actual = algo.calcMaxMatching(g, w);
-		if (!MatchingTestUtils.validateMatching(actual))
+		if (!MatchingUnweightedTestUtils.validateMatching(actual))
 			return false;
 		double actualWeight = calcMatchingWeight(actual, w);
 
@@ -80,7 +80,7 @@ class MatchingWeightedTestUtils {
 		WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
 
 		Collection<Edge<Integer>> actual = algo.calcPerfectMaxMatching(g, w);
-		if (!MatchingTestUtils.validateMatching(actual))
+		if (!MatchingUnweightedTestUtils.validateMatching(actual))
 			return false;
 
 		Collection<Edge<Integer>> expected = MatchingBipartiteHopcroftKarp1973.getInstance().calcMaxMatching(g);
