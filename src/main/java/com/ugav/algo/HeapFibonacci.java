@@ -34,7 +34,7 @@ public class HeapFibonacci<E> extends HeapAbstract<E> {
 			});
 		}
 
-		minRoot = null;
+		begin = end = minRoot = null;
 		size = 0;
 	}
 
