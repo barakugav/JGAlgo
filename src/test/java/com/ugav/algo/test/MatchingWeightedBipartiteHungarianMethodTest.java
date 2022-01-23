@@ -12,7 +12,7 @@ public class MatchingWeightedBipartiteHungarianMethodTest {
 	@Test
 	public static boolean randBipartiteGraphsWeighted() {
 		return MatchingWeightedTestUtils
-				.randBipartiteGraphsWeighted(MatchingWeightedBipartiteHungarianMethod.getInstance());
+				.randGraphsBipartiteWeighted(MatchingWeightedBipartiteHungarianMethod.getInstance());
 	}
 
 	@Test

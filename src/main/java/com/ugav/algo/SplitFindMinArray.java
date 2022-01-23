@@ -22,13 +22,13 @@ public class SplitFindMinArray<K> implements SplitFindMin<K> {
 		int elmNum = keys.size();
 		this.keys = (K[]) new Object[elmNum];
 		blocks = new Block[elmNum];
+		this.c = c = c != null ? c : Utils.getDefaultComparator();
 		if (elmNum == 0)
 			return;
 
 		int i = 0;
 		for (K key : keys)
 			this.keys[i++] = key;
-		this.c = c = c != null ? c : Utils.getDefaultComparator();
 
 		Block head = null, tail = null;
 		for (int size = elmNum; size > 0;) {

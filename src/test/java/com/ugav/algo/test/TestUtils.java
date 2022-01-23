@@ -131,6 +131,9 @@ class TestUtils {
 
 				boolean passed;
 				try {
+//					if (phase == 0 && i == 542)
+//					if (phase == 0 && i == 26161)
+//						MatchingWeightedGabow2018.debug_print = true;
 					passed = test.test(phases[phase]);
 				} catch (Throwable e) {
 					e.printStackTrace();

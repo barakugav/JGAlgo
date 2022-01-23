@@ -11,7 +11,7 @@ public class MatchingWeightedBipartiteSSSPTest {
 
 	@Test
 	public static boolean randBipartiteGraphsWeighted() {
-		return MatchingWeightedTestUtils.randBipartiteGraphsWeighted(MatchingWeightedBipartiteSSSP.getInstance());
+		return MatchingWeightedTestUtils.randGraphsBipartiteWeighted(MatchingWeightedBipartiteSSSP.getInstance());
 	}
 
 }

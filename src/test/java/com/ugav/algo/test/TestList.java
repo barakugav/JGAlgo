@@ -48,7 +48,8 @@ public class TestList {
 			MatchingBipartiteHopcroftKarp1973Test.class,
 			MatchingGabow1976Test.class,
 			MatchingWeightedBipartiteSSSPTest.class,
-			MatchingWeightedBipartiteHungarianMethodTest.class);
+			MatchingWeightedBipartiteHungarianMethodTest.class,
+			MatchingWeightedGabow2018Test.class);
 
 	static final Collection<Class<?>> TEST_CLASSES;
 	static {
