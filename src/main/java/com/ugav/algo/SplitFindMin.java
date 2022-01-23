@@ -42,7 +42,8 @@ public interface SplitFindMin<K> extends SplitFind {
 	 *
 	 * @param x      index of an element in the data structure
 	 * @param newKey new key for the element
+	 * @return true if the decreased key is the minimum key
 	 */
-	public void decreaseKey(int x, K newKey);
+	public boolean decreaseKey(int x, K newKey);
 
 }

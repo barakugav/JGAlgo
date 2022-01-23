@@ -52,6 +52,8 @@ public class SplitFindMinArray<K> implements SplitFindMin<K> {
 
 	@Override
 	public void split(int x) {
+		if (x == blocks.length)
+			return;
 		Block blk = blocks[x];
 		Sequence seq = blk.seq;
 
@@ -111,7 +113,7 @@ public class SplitFindMinArray<K> implements SplitFindMin<K> {
 	}
 
 	@Override
-	public void decreaseKey(int x, K newKey) {
+	public boolean decreaseKey(int x, K newKey) {
 		K[] keys = this.keys;
 		Comparator<? super K> c = this.c;
 
@@ -119,11 +121,32 @@ public class SplitFindMinArray<K> implements SplitFindMin<K> {
 		Sequence seq = blk.seq;
 		keys[x] = newKey;
 
-		if (x == blk.min || c.compare(newKey, keys[blk.min]) < 0) {
+		if (blk.min == x || c.compare(newKey, keys[blk.min]) < 0) {
 			blk.min = x;
-			if (c.compare(newKey, keys[seq.min]) < 0)
+			if (seq.min == x || c.compare(newKey, keys[seq.min]) < 0) {
 				seq.min = x;
+				return true;
+			}
 		}
+		return false;
+	}
+
+	@Override
+	public String toString() {
+		if (blocks == null || blocks.length == 0)
+			return "[]";
+		StringBuilder s = new StringBuilder();
+		s.append('[');
+		for (int i = 0;;) {
+			Sequence seq = blocks[i].seq;
+			s.append(seq);
+			i = seq.tail.to;
+			if (i >= blocks.length)
+				break;
+			s.append(", ");
+		}
+		s.append(']');
+		return s.toString();
 	}
 
 	private Sequence newSequence(Block head, Block tail) {
