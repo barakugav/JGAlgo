@@ -29,7 +29,7 @@ public class SSSPDijkstra implements SSSP {
 		if (n == 0)
 			return new SSSPResultsImpl<>(distances, backtrack);
 
-		Heap<HeapElm<E>> heap = new HeapFibonacci<>((a, b) -> Double.compare(a.distance, b.distance));
+		Heap<HeapElm<E>> heap = new HeapFibonacci<>((a, b) -> Utils.compare(a.distance, b.distance));
 		@SuppressWarnings("unchecked")
 		Heap.Handle<HeapElm<E>>[] verticesPtrs = new Heap.Handle[n];
 

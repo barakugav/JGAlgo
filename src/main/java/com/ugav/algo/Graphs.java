@@ -530,7 +530,7 @@ public class Graphs {
 
 		@Override
 		public int compare(Edge<E> e1, Edge<E> e2) {
-			return Double.compare(w.weight(e1), w.weight(e2));
+			return Utils.compare(w.weight(e1), w.weight(e2));
 		}
 
 	}

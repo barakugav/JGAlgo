@@ -133,7 +133,7 @@ public class MDSTTarjan1977 implements MDST {
 		Comparator<Edge<Ref<E>>> edgeComparator = (e1, e2) -> {
 			double w1 = e1.val().w + uf.getValue(e1.v());
 			double w2 = e2.val().w + uf.getValue(e2.v());
-			return Double.compare(w1, w2);
+			return Utils.compare(w1, w2);
 		};
 		for (int v = 0; v < n; v++)
 			heap[v] = new HeapFibonacci<>(edgeComparator);

@@ -63,7 +63,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 
 			inTree = new boolean[n];
 
-			edgeSlackComparator = (e1, e2) -> Double.compare(edgeSlack(e1), edgeSlack(e2));
+			edgeSlackComparator = (e1, e2) -> Utils.compare(edgeSlack(e1), edgeSlack(e2));
 			nextTightEdge = new HeapFibonacci<>(edgeSlackComparator);
 			nextTightEdgePerOutV = new Heap.Handle[n];
 
