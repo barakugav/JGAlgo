@@ -1,7 +1,8 @@
 package com.ugav.algo.test;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.stream.Collectors;
+import java.util.List;
 
 import com.ugav.algo.Graph;
 import com.ugav.algo.Graph.DirectedType;
@@ -10,6 +11,7 @@ import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.Graph.WeightFunctionInt;
 import com.ugav.algo.GraphArray;
 import com.ugav.algo.GraphBipartite;
+import com.ugav.algo.GraphBipartiteArray;
 import com.ugav.algo.Graphs;
 import com.ugav.algo.Matching;
 import com.ugav.algo.MatchingBipartiteHopcroftKarp1973;
@@ -44,6 +46,27 @@ class MatchingWeightedTestUtils {
 		});
 	}
 
+	static boolean randBipartiteGraphsWeightedPerfect(MatchingWeighted algo) {
+		int[][] phases = { { 256, 8, 8, 8 }, { 128, 16, 16, 64 }, { 12, 128, 128, 128 }, { 8, 128, 128, 512 },
+				{ 4, 1024, 1024, 1024 } };
+		return TestUtils.runTestMultiple(phases, args -> {
+			int sn = args[1];
+			int tn = args[2];
+			int m = args[3];
+
+			GraphBipartite<Integer> g = MatchingBipartiteTestUtils.randGraphBipartite(sn, tn, m);
+			int maxWeight = m < 50 ? 100 : m * 2 + 2;
+			GraphsTestUtils.assignRandWeightsInt(g, -maxWeight, maxWeight / 4);
+			WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
+
+			Matching validationUnweightedAlgo = MatchingBipartiteHopcroftKarp1973.getInstance();
+			MatchingWeighted validationWeightedAlgo = algo instanceof MatchingWeightedBipartiteHungarianMethodTest
+					? MatchingWeightedGabow2018.getInstance()
+					: MatchingWeightedBipartiteHungarianMethod.getInstance();
+			return testGraphWeightedPerfect(algo, g, w, validationUnweightedAlgo, validationWeightedAlgo);
+		});
+	}
+
 	static boolean randGraphsWeighted(MatchingWeighted algo) {
 		int[][] phases = { { 256, 8, 8, 8 }, { 128, 16, 16, 64 }, { 12, 128, 128, 128 }, { 8, 128, 128, 512 },
 				{ 4, 1024, 1024, 1024 }, { 2, 1024, 1024, 8192 } };
@@ -55,32 +78,8 @@ class MatchingWeightedTestUtils {
 			GraphsTestUtils.assignRandWeightsIntNeg(g);
 			WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
 
-			MatchingWeighted validationAlgo = new MatchingWeighted() {
-
-				@Override
-				public <E> Collection<Edge<E>> calcMaxMatching(Graph<E> g, WeightFunction<E> w) {
-					return calcMaxMatchingSuffled(g, w, false);
-				}
-
-				@Override
-				public <E> Collection<Edge<E>> calcPerfectMaxMatching(Graph<E> g, WeightFunction<E> w) {
-					return calcMaxMatchingSuffled(g, w, true);
-				}
-
-				private static <E> Collection<Edge<E>> calcMaxMatchingSuffled(Graph<E> g, WeightFunction<E> w,
-						boolean perfect) {
-					int n = g.vertices();
-					int[] suffle = Utils.randPermutation(n, TestUtils.nextRandSeed());
-					Graph<Edge<E>> suffledG = new GraphArray<>(DirectedType.Undirected, n);
-					g.edges().forEach(e -> suffledG.addEdge(suffle[e.u()], suffle[e.v()]).val(e));
-					WeightFunction<Edge<E>> suffledW = e -> w.weight(e.val());
-					Collection<Edge<Edge<E>>> res = perfect // have nothing else other than MatchingWeightedGabow2018
-							? MatchingWeightedGabow2018.getInstance().calcPerfectMaxMatching(suffledG, suffledW)
-							: MatchingWeightedGabow2018.getInstance().calcMaxMatching(suffledG, suffledW);
-					return res.stream().map(e -> e.val()).collect(Collectors.toList());
-				}
-
-			};
+			// have nothing other than MatchingWeightedGabow2018, at least shuffle graph
+			MatchingWeighted validationAlgo = new MatchingWeightedShuffled(MatchingWeightedGabow2018.getInstance());
 
 			return testGraphWeighted(algo, g, w, validationAlgo);
 		});
@@ -112,24 +111,6 @@ class MatchingWeightedTestUtils {
 		return true;
 	}
 
-	static boolean randBipartiteGraphsWeightedPerfect(MatchingWeighted algo) {
-		int[][] phases = { { 256, 8, 8, 8 }, { 128, 16, 16, 64 }, { 12, 128, 128, 128 }, { 8, 128, 128, 512 },
-				{ 4, 1024, 1024, 1024 } };
-		return TestUtils.runTestMultiple(phases, args -> {
-			int sn = args[1];
-			int tn = args[2];
-			int m = args[3];
-
-			GraphBipartite<Integer> g = MatchingBipartiteTestUtils.randGraphBipartite(sn, tn, m);
-			int maxWeight = m < 50 ? 100 : m * 2 + 2;
-			GraphsTestUtils.assignRandWeightsInt(g, -maxWeight, maxWeight / 4);
-			WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
-
-			Matching validationAlgo = MatchingBipartiteHopcroftKarp1973.getInstance();
-			return testGraphWeightedPerfect(algo, g, w, validationAlgo);
-		});
-	}
-
 	static boolean randGraphsWeightedPerfect(MatchingWeighted algo) {
 		int[][] phases = { { 256, 8, 8, 8 }, { 128, 16, 16, 64 }, { 12, 128, 128, 128 }, { 8, 128, 128, 512 },
 				{ 4, 1024, 1024, 1024 } };
@@ -142,27 +123,42 @@ class MatchingWeightedTestUtils {
 			GraphsTestUtils.assignRandWeightsInt(g, -maxWeight, maxWeight / 4);
 			WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
 
-			Matching validationAlgo = MatchingGabow1976.getInstance();
-			return testGraphWeightedPerfect(algo, g, w, validationAlgo);
+			Matching validationUnweightedAlgo = MatchingGabow1976.getInstance();
+			MatchingWeighted validationWeightedAlgo = new MatchingWeightedShuffled(
+					MatchingWeightedGabow2018.getInstance());
+			return testGraphWeightedPerfect(algo, g, w, validationUnweightedAlgo, validationWeightedAlgo);
 		});
 	}
 
 	private static <E> boolean testGraphWeightedPerfect(MatchingWeighted algo, Graph<E> g, WeightFunctionInt<E> w,
-			Matching validationAlgo) {
+			Matching validationUnweightedAlgo, MatchingWeighted validationWeightedAlgo) {
 		Collection<Edge<E>> actual = algo.calcPerfectMaxMatching(g, w);
 		if (!MatchingUnweightedTestUtils.validateMatching(actual))
 			return false;
+		int actualSize = actual.size();
+		double actualWeight = calcMatchingWeight(actual, w);
 
-		Collection<Edge<E>> expected = validationAlgo.calcMaxMatching(g);
-
-		if (actual.size() < expected.size()) {
-			TestUtils.printTestStr("unexpected match size: " + actual.size() + " < " + expected.size() + "\n");
-			System.out.println("expected " + expected);
+		int expectedSize = validationUnweightedAlgo.calcMaxMatching(g).size();
+		if (actualSize < expectedSize) {
+			TestUtils.printTestStr("unexpected match size: " + actualSize + " < " + expectedSize + "\n");
+			System.out.println("expected " + expectedSize);
 			System.out.println("actual " + actual);
 			return false;
-		} else if (actual.size() > expected.size()) {
+		} else if (actualSize > expectedSize) {
 			TestUtils.printTestStr(
-					"matching is better than validation algo found: " + actual.size() + " > " + expected.size() + "\n");
+					"matching size is better than validation algo found: " + actualSize + " > " + expectedSize + "\n");
+			throw new InternalError();
+		}
+
+		double expectedWeight = calcMatchingWeight(validationWeightedAlgo.calcPerfectMaxMatching(g, w), w);
+		if (actualWeight < expectedWeight) {
+			TestUtils.printTestStr("unexpected match weight: " + actualWeight + " < " + expectedWeight + "\n");
+			System.out.println("expected " + expectedWeight);
+			System.out.println("actual " + actual);
+			return false;
+		} else if (actualWeight > expectedWeight) {
+			TestUtils.printTestStr("matching weight is better than validation algo found: " + actualWeight + " > "
+					+ expectedWeight + "\n");
 			throw new InternalError();
 		}
 
@@ -174,6 +170,67 @@ class MatchingWeightedTestUtils {
 		for (Edge<E> e : matching)
 			sum += w.weight(e);
 		return sum;
+	}
+
+	private static class MatchingWeightedShuffled implements MatchingWeighted {
+
+		private final MatchingWeighted algo;
+
+		MatchingWeightedShuffled(MatchingWeighted algo) {
+			this.algo = algo;
+		}
+
+		@Override
+		public <E> Collection<Edge<E>> calcMaxMatching(Graph<E> g, WeightFunction<E> w) {
+			return calcMaxMatchingshuffled(g, w, false);
+		}
+
+		@Override
+		public <E> Collection<Edge<E>> calcPerfectMaxMatching(Graph<E> g, WeightFunction<E> w) {
+			return calcMaxMatchingshuffled(g, w, true);
+		}
+
+		private <E> Collection<Edge<E>> calcMaxMatchingshuffled(Graph<E> g, WeightFunction<E> w, boolean perfect) {
+			if (g.isDirected())
+				throw new IllegalArgumentException("only undirected graphs are supported");
+			int n = g.vertices();
+			int[] shuffle = Utils.randPermutation(n, TestUtils.nextRandSeed());
+
+			Graph<Edge<E>> shuffledG;
+			if (g instanceof GraphBipartite) {
+				GraphBipartite<E> gb = (GraphBipartite<E>) g;
+				GraphBipartite<Edge<E>> shuffledGb = new GraphBipartiteArray<>(DirectedType.Undirected);
+
+				int[] shuffleInv = new int[n];
+				for (int v = 0; v < n; v++)
+					shuffleInv[shuffle[v]] = v;
+
+				for (int v = 0; v < n; v++) {
+					int newv;
+					if (gb.isVertexInS(shuffleInv[v]))
+						newv = gb.newVertexS();
+					else
+						newv = gb.newVertexT();
+					if (newv != v)
+						throw new InternalError();
+				}
+				shuffledG = shuffledGb;
+			} else {
+				shuffledG = new GraphArray<>(DirectedType.Undirected, n);
+			}
+
+			g.edges().forEach(e -> shuffledG.addEdge(shuffle[e.u()], shuffle[e.v()]).val(e));
+			WeightFunction<Edge<E>> shuffledW = e -> w.weight(e.val());
+
+			Collection<Edge<Edge<E>>> shuffledEdges = perfect ? algo.calcPerfectMaxMatching(shuffledG, shuffledW)
+					: algo.calcMaxMatching(shuffledG, shuffledW);
+
+			List<Edge<E>> unshuffledEdges = new ArrayList<>(shuffledEdges.size());
+			for (Edge<Edge<E>> e : shuffledEdges)
+				unshuffledEdges.add(e.val());
+			return unshuffledEdges;
+		}
+
 	}
 
 }
