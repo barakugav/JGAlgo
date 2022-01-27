@@ -45,8 +45,6 @@ class MatchingWeightedTestUtils {
 	}
 
 	static boolean randGraphsWeighted(MatchingWeighted algo) {
-//		int[][] phases = { /* { 256000, 4, 6 }, { 256000, 5, 10 }, */ { 100000, 6, 15 }, { 100000, 7, 21 },
-//				{ 100000, 8, 28 }, { 12800, 16, 64 }, { 12800, 16, 120 }, { 12, 128, 128 }, { 8, 128, 512 } };
 		int[][] phases = { { 256, 8, 8, 8 }, { 128, 16, 16, 64 }, { 12, 128, 128, 128 }, { 8, 128, 128, 512 },
 				{ 4, 1024, 1024, 1024 }, { 2, 1024, 1024, 8192 } };
 		return TestUtils.runTestMultiple(phases, args -> {

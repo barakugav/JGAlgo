@@ -128,12 +128,8 @@ class TestUtils {
 		for (int phase = 0; phase < phases.length; phase++) {
 			int repeat = phases[phase][0];
 			for (int i = 0; i < repeat; i++) {
-
 				boolean passed;
 				try {
-//					if (phase == 0 && i == 542)
-//					if (phase == 0 && i == 26161)
-//						MatchingWeightedGabow2018.debug_print = true;
 					passed = test.test(phases[phase]);
 				} catch (Throwable e) {
 					e.printStackTrace();
