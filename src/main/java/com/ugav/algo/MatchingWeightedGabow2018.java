@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.IntConsumer;
 
 import com.ugav.algo.Graph.Edge;
@@ -440,48 +441,48 @@ public class MatchingWeightedGabow2018 implements MatchingWeighted {
 			scanQueue.clear();
 			@SuppressWarnings("unchecked")
 			Blossom<E>[] bs = new Blossom[] { U, V };
-			for (Blossom<E> p : bs) {
-				boolean prevIsRight = p == U;
-				Blossom<E> prev = p == U ? V : U;
-				Edge<E> toPrevEdge = p == U ? e : e.twin();
+			for (Blossom<E> b : bs) {
+				boolean prevIsRight = b == U;
+				Blossom<E> prev = b == U ? V : U;
+				Edge<E> toPrevEdge = b == U ? e : e.twin();
 
 				while (true) {
 					// handle even sub blossom
-					assert0(p.isEven);
-					if (!p.isSingleton())
-						p.z0 = dualVal(p);
-					p.parent = newb;
-					connectSubBlossoms(p, prev, toPrevEdge, !prevIsRight);
-					unionQueue.push(p.base);
+					assert0(b.isEven);
+					if (!b.isSingleton())
+						b.z0 = dualVal(b);
+					b.parent = newb;
+					connectSubBlossoms(b, prev, toPrevEdge, !prevIsRight);
+					unionQueue.push(b.base);
 
-					if (p == base)
+					if (b == base)
 						break;
-					prev = p;
-					toPrevEdge = matched[p.base].twin();
-					assert0(matched[p.base] == p.treeParentEdge);
-					p = topBlossom(toPrevEdge.u());
+					prev = b;
+					toPrevEdge = matched[b.base].twin();
+					assert0(matched[b.base] == b.treeParentEdge);
+					b = topBlossom(toPrevEdge.u());
 
 					// handle odd vertex
-					assert0(!p.isEven);
-					p.deltaOdd += delta - p.delta1;
-					if (!p.isSingleton())
-						p.z0 = dualVal(p);
-					p.parent = newb;
-					connectSubBlossoms(p, prev, toPrevEdge, !prevIsRight);
-					forEachVertexInBlossom(p, v -> {
+					assert0(!b.isEven);
+					b.deltaOdd += delta - b.delta1;
+					if (!b.isSingleton())
+						b.z0 = dualVal(b);
+					b.parent = newb;
+					connectSubBlossoms(b, prev, toPrevEdge, !prevIsRight);
+					forEachVertexInBlossom(b, v -> {
 						blossoms[v].isEven = true;
 						unionQueue.push(v);
 						scanQueue.push(v);
 					});
-					p.delta0 = delta;
-					if (!p.isSingleton()) {
-						expandEvents.removeHandle(p.expandHandle);
-						p.expandHandle = null;
+					b.delta0 = delta;
+					if (!b.isSingleton()) {
+						expandEvents.removeHandle(b.expandHandle);
+						b.expandHandle = null;
 					}
 
-					prev = p;
-					toPrevEdge = p.treeParentEdge.twin();
-					p = topBlossom(toPrevEdge.u());
+					prev = b;
+					toPrevEdge = b.treeParentEdge.twin();
+					b = topBlossom(toPrevEdge.u());
 				}
 			}
 
@@ -513,89 +514,90 @@ public class MatchingWeightedGabow2018 implements MatchingWeighted {
 		}
 
 		private void expandStep() {
-			// TODO this function can be implemented MUCH faster.
-
 			assert0(delta == expandEvents.findMin().expandDelta);
-			Blossom<E> topBlossom = expandEvents.extractMin();
+			final Blossom<E> B = expandEvents.extractMin();
 
-			assert0(topBlossom.root != -1 && !topBlossom.isEven && !topBlossom.isSingleton()
-					&& dualVal(topBlossom) <= 0);
+			assert0(B.root != -1 && !B.isEven && !B.isSingleton() && dualVal(B) <= 0);
 
-			// Remove parent pointer from all children
-			for (Blossom<E> p = topBlossom.child;;) {
-				p.parent = null;
-				p = p.right;
-				if (p == topBlossom.child)
+			int baseFind1Idx = vToFind1Idx[B.base];
+			int topFind1Idx = vToFind1Idx[B.treeParentEdge.u()];
+			Blossom<E> base = null;
+			Blossom<E> top = null;
+			// Remove parent pointer from all children, and find the sub blossom containing
+			// the base ('base') and the sub blossom containing the vertex of the edge from
+			// parent in search tree ('top')
+			for (Blossom<E> b = B.child;;) {
+				if (b.find1SeqBegin <= baseFind1Idx && baseFind1Idx < b.find1SeqEnd) {
+					assert0(base == null);
+					base = b;
+				}
+				if (b.find1SeqBegin <= topFind1Idx && topFind1Idx < b.find1SeqEnd) {
+					assert0(top == null);
+					top = b;
+				}
+				b.parent = null;
+				b = b.right;
+				if (b == B.child)
 					break;
 			}
-			final Blossom<E> b = subBlossom(topBlossom.treeParentEdge.u(), null);
-			final Blossom<E> subBase = subBlossom(topBlossom.base, null);
-			topBlossom.deltaOdd += delta - topBlossom.delta1;
-			topBlossom.delta0 = delta;
+			B.deltaOdd += delta - B.delta1;
+			B.delta0 = delta;
 
 			// Iterate over sub blossom that should stay in the tree
-			boolean left = matched[b.toLeftEdge.u()] == b.toLeftEdge;
-			for (Blossom<E> p = b;;) {
+			boolean left = matched[top.toLeftEdge.u()] == top.toLeftEdge;
+			Consumer<Blossom<E>> inBlossom = b -> {
+				b.root = B.root;
+				b.treeParentEdge = left ? b.toRightEdge : b.toLeftEdge;
+				b.deltaOdd = B.deltaOdd;
+			};
+			Function<Blossom<E>, Blossom<E>> next = b -> left ? b.left : b.right;
+			for (Blossom<E> b = top;;) {
 				// sub blossom odd
-				p.root = topBlossom.root;
-				p.treeParentEdge = left ? p.toRightEdge : p.toLeftEdge;
-				p.isEven = false;
-				p.delta1 = delta;
-				p.deltaOdd = topBlossom.deltaOdd;
-				find1Split(p);
-				assert0(p.expandHandle == null);
-				if (!p.isSingleton()) {
-					p.expandDelta = p.z0 / 2 + p.delta1;
-					p.expandHandle = expandEvents.insert(p);
+				inBlossom.accept(b);
+				b.isEven = false;
+				b.delta1 = delta;
+				find1Split(b);
+				assert0(b.expandHandle == null);
+				if (!b.isSingleton()) {
+					b.expandDelta = b.z0 / 2 + b.delta1;
+					b.expandHandle = expandEvents.insert(b);
 				}
-				if (p == subBase)
+				if (b == base)
 					break;
-				p = left ? p.left : p.right;
+				b = next.apply(b);
 
 				// sub blossom even
-				p.root = topBlossom.root;
-				p.treeParentEdge = left ? p.toRightEdge : p.toLeftEdge;
-				p.deltaOdd = topBlossom.deltaOdd;
-				makeEven(p);
-				p = left ? p.left : p.right;
+				inBlossom.accept(b);
+				makeEven(b);
+				b = next.apply(b);
 			}
-			b.treeParentEdge = topBlossom.treeParentEdge;
-			topBlossom.root = -1;
+			top.treeParentEdge = B.treeParentEdge;
+			B.root = -1;
 
-			// Iterate over sub blossom that should not stay in the tree
-			for (Blossom<E> p = subBase;;) {
-				p = left ? p.left : p.right;
-				if (p == b)
+			// Iterate over sub blossoms that should not stay in the tree
+			for (Blossom<E> b = base;;) {
+				b = next.apply(b);
+				if (b == top)
 					break;
-				p.root = -1;
-				p.treeParentEdge = null;
-				p.isEven = false;
-				find1Split(p);
-				p.deltaOdd = topBlossom.deltaOdd;
-				assert0(p.growHandle == null);
-				EdgeEvent<E> inEdgeEvent = find1.getKey(find1.findMin(vToFind1Idx[p.base]));
+				b.root = -1;
+				b.treeParentEdge = null;
+				b.isEven = false;
+				find1Split(b);
+				b.deltaOdd = B.deltaOdd;
+				assert0(b.growHandle == null);
+				EdgeEvent<E> inEdgeEvent = find1.getKey(find1.findMin(vToFind1Idx[b.base]));
 				if (inEdgeEvent != null)
-					p.growHandle = growEvents.insert(inEdgeEvent);
-
-				p = left ? p.left : p.right;
-				assert0(p != b);
-				p.root = -1;
-				p.treeParentEdge = null;
-				p.isEven = false;
-				find1Split(p);
-				p.deltaOdd = topBlossom.deltaOdd;
-				assert0(p.growHandle == null);
-				inEdgeEvent = find1.getKey(find1.findMin(vToFind1Idx[p.base]));
-				if (inEdgeEvent != null)
-					p.growHandle = growEvents.insert(inEdgeEvent);
+					b.growHandle = growEvents.insert(inEdgeEvent);
 			}
-			for (Blossom<E> p = b;;) {
-				Blossom<E> next = p.left;
-				p.right = p.left = null;
-				p.toRightEdge = p.toLeftEdge = null;
-				if (next == b)
+
+			// Disassemble right and left pointers of sub blossoms
+			for (Blossom<E> b = top;;) {
+				Blossom<E> nextB = b.left;
+				b.right = b.left = null;
+				b.toRightEdge = b.toLeftEdge = null;
+				if (nextB == top)
 					break;
-				p = next;
+				b = nextB;
 			}
 		}
 
@@ -695,11 +697,8 @@ public class MatchingWeightedGabow2018 implements MatchingWeighted {
 
 		private Blossom<E> subBlossom(int v, Blossom<E> parent) {
 			// TODO remove
-			assert0(blossoms[v] != null);
-			return subBlossom(blossoms[v], parent);
-		}
-
-		private static <E> Blossom<E> subBlossom(Blossom<E> b, Blossom<E> parent) {
+			Blossom<E> b = blossoms[v];
+			assert0(b != null);
 			while (b.parent != parent)
 				b = b.parent;
 			return b;
