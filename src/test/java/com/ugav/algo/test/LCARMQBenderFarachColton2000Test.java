@@ -7,10 +7,10 @@ import com.ugav.algo.Graphs;
 import com.ugav.algo.LCA;
 import com.ugav.algo.LCARMQBenderFarachColton2000;
 
-public class LCARMQBenderFarachColton2000Test {
+public class LCARMQBenderFarachColton2000Test extends TestUtils {
 
 	private static int[][] randLCAQueries(Graph<Void> g, int r, int queriesNum) {
-		Random rand = new Random(TestUtils.nextRandSeed());
+		Random rand = new Random(nextRandSeed());
 		int[][] queries = new int[queriesNum][3];
 
 		int n = g.vertices();
@@ -68,7 +68,7 @@ public class LCARMQBenderFarachColton2000Test {
 			int expected = query[2];
 			int actual = result.query(u, v);
 			if (expected != actual) {
-				TestUtils.printTestStr(" [" + u + "," + v + "] -> " + expected + "" + actual + "\n");
+				printTestStr(" [" + u + "," + v + "] -> " + expected + "" + actual + "\n");
 				return false;
 			}
 		}
@@ -78,7 +78,7 @@ public class LCARMQBenderFarachColton2000Test {
 	@Test
 	public static boolean randTrees() {
 		int[][] phases = { { 128, 16, 16 }, { 64, 64, 64 }, { 16, 512, 512 }, { 4, 4096, 4096 }, { 1, 16384, 16384 } };
-		return TestUtils.runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, args -> {
 			int n = args[1];
 			int m = args[2];
 			Graph<Void> g = GraphsTestUtils.randTree(n);

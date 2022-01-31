@@ -11,7 +11,7 @@ import java.util.function.Supplier;
 import com.ugav.algo.Heap;
 import com.ugav.algo.Pair;
 
-class HeapTestUtils {
+class HeapTestUtils extends TestUtils {
 
 	private HeapTestUtils() {
 		throw new InternalError();
@@ -20,7 +20,7 @@ class HeapTestUtils {
 	static boolean testRandOps(Supplier<? extends Heap<Integer>> heapBuilder) {
 		int[][] phases = { { 256, 16, 16 }, { 128, 64, 128 }, { 64, 512, 1024 }, { 16, 4096, 8096 },
 				{ 8, 16384, 32768 } };
-		return TestUtils.runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, args -> {
 			int n = args[1];
 			int m = args[2];
 			Heap<Integer> heap = heapBuilder.get();
@@ -32,7 +32,7 @@ class HeapTestUtils {
 	static boolean testRandOpsAfterManyInserts(Supplier<? extends Heap<Integer>> heapBuilder) {
 		int[][] phases = { { 256, 16, 16 }, { 128, 64, 128 }, { 64, 512, 1024 }, { 16, 4096, 8096 },
 				{ 8, 16384, 32768 } };
-		return TestUtils.runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, args -> {
 			int n = args[1];
 			int m = n;
 			Heap<Integer> heap = heapBuilder.get();
@@ -43,7 +43,7 @@ class HeapTestUtils {
 
 	static boolean testMeld(Supplier<? extends Heap<Integer>> heapBuilder) {
 		int[][] phases = { { 64, 16 }, { 64, 32 }, { 8, 256 }, { 1, 2048 } };
-		return TestUtils.runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, args -> {
 			int hCount = args[1];
 			@SuppressWarnings("unchecked")
 			Pair<Heap<Integer>, HeapTracker>[] hs = new Pair[hCount];
@@ -60,7 +60,7 @@ class HeapTestUtils {
 
 			while (hCount > 1) {
 				/* meld half of the heaps */
-				int[] meldOrder = Utils.randPermutation(hCount & ~1, TestUtils.nextRandSeed());
+				int[] meldOrder = Utils.randPermutation(hCount & ~1, nextRandSeed());
 				for (int i = 0; i < meldOrder.length / 2; i++) {
 					int h1Idx = meldOrder[i * 2], h2Idx = meldOrder[i * 2 + 1];
 					Heap<Integer> h1 = hs[h1Idx].e1, h2 = hs[h2Idx].e1;
@@ -93,7 +93,7 @@ class HeapTestUtils {
 
 	static boolean testDecreaseKey(Supplier<? extends Heap<Integer>> heapBuilder) {
 		int[][] phases = { { 256, 16 }, { 128, 64 }, { 64, 512 }, { 16, 4096 }, { 2, 16384 } };
-		return TestUtils.runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, args -> {
 			int n = args[1];
 			int m = n;
 			Heap<Integer> heap = heapBuilder.get();
@@ -117,7 +117,7 @@ class HeapTestUtils {
 
 		HeapTracker() {
 			insertedElms = new TreeMap<>();
-			rand = new Random(TestUtils.nextRandSeed());
+			rand = new Random(nextRandSeed());
 		}
 
 		boolean isEmpty() {
@@ -170,7 +170,7 @@ class HeapTestUtils {
 	private static boolean testHeap(Heap<Integer> heap, int n, int m, TestMode mode) {
 		heap.clear();
 		if (heap.size() != 0 || !heap.isEmpty()) {
-			TestUtils.printTestStr("failed clear\n");
+			printTestStr("failed clear\n");
 			return false;
 		}
 
@@ -180,7 +180,7 @@ class HeapTestUtils {
 
 		heap.clear();
 		if (heap.size() != 0 || !heap.isEmpty()) {
-			TestUtils.printTestStr("failed clear\n");
+			printTestStr("failed clear\n");
 			return false;
 		}
 
@@ -188,15 +188,15 @@ class HeapTestUtils {
 	}
 
 	private static boolean testHeap(Heap<Integer> heap, HeapTracker tracker, int n, int m, TestMode mode) {
-		Random rand = new Random(TestUtils.nextRandSeed());
-		int[] a = Utils.randArray(n, 0, 65536, TestUtils.nextRandSeed());
+		Random rand = new Random(nextRandSeed());
+		int[] a = Utils.randArray(n, 0, 65536, nextRandSeed());
 		int insertFirst = mode == TestMode.InsertFirst ? m / 2 : 0;
 
 		List<HeapOp> ops = new ArrayList<>(List.of(HeapOp.Insert, HeapOp.Remove, HeapOp.FindMin, HeapOp.ExtractMin));
 		if (mode == TestMode.DecreaseKey)
 			ops.add(HeapOp.DecreaseKey);
 
-		int[] elmsToInsertIds = Utils.randPermutation(a.length, TestUtils.nextRandSeed());
+		int[] elmsToInsertIds = Utils.randPermutation(a.length, nextRandSeed());
 		int elmsToInsertCursor = 0;
 
 		for (int opIdx = 0; opIdx < m;) {
@@ -220,7 +220,7 @@ class HeapTestUtils {
 
 				tracker.remove(x);
 				if (!heap.remove(x)) {
-					TestUtils.printTestStr("failed to remove: " + x + "\n");
+					printTestStr("failed to remove: " + x + "\n");
 					return false;
 				}
 				break;
@@ -232,7 +232,7 @@ class HeapTestUtils {
 				expected = tracker.findMin();
 				actual = heap.findMin();
 				if (actual != expected) {
-					TestUtils.printTestStr("failed findmin: " + expected + " != " + actual + "\n");
+					printTestStr("failed findmin: " + expected + " != " + actual + "\n");
 					return false;
 				}
 				break;
@@ -244,7 +244,7 @@ class HeapTestUtils {
 				expected = tracker.extractMin();
 				actual = heap.extractMin();
 				if (actual != expected) {
-					TestUtils.printTestStr("failed extractmin: " + expected + " != " + actual + "\n");
+					printTestStr("failed extractmin: " + expected + " != " + actual + "\n");
 					return false;
 				}
 				break;

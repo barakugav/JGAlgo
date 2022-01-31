@@ -9,7 +9,7 @@ import com.ugav.algo.GraphBipartiteArray;
 import com.ugav.algo.Matching;
 import com.ugav.algo.test.GraphsTestUtils.RandomGraphBuilder;
 
-class MatchingBipartiteTestUtils {
+class MatchingBipartiteTestUtils extends TestUtils {
 
 	private MatchingBipartiteTestUtils() {
 		throw new InternalError();
@@ -36,7 +36,7 @@ class MatchingBipartiteTestUtils {
 	static boolean randBipartiteGraphs(Matching algo) {
 		int[][] phases = { { 256, 4, 4, 4 }, { 128, 16, 16, 64 }, { 16, 128, 128, 128 }, { 16, 128, 128, 512 },
 				{ 4, 1024, 1024, 1024 }, { 4, 1024, 1024, 8192 } };
-		return TestUtils.runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, args -> {
 			int sn = args[1];
 			int tn = args[2];
 			int m = args[3];
@@ -53,10 +53,10 @@ class MatchingBipartiteTestUtils {
 			return false;
 
 		if (match.size() < expectedMatchSize) {
-			TestUtils.printTestStr("unexpected match size: " + match.size() + " != " + expectedMatchSize + "\n");
+			printTestStr("unexpected match size: " + match.size() + " != " + expectedMatchSize + "\n");
 			return false;
 		} else if (match.size() > expectedMatchSize) {
-			TestUtils.printTestStr("matching is bigger than validation algo found: " + match.size() + " > "
+			printTestStr("matching is bigger than validation algo found: " + match.size() + " > "
 					+ expectedMatchSize + "\n");
 			throw new InternalError();
 		}

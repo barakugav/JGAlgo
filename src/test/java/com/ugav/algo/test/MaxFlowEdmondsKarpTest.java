@@ -11,13 +11,13 @@ import com.ugav.algo.MaxFlowEdmondsKarp;
 import com.ugav.algo.Pair;
 import com.ugav.algo.test.GraphsTestUtils.RandomGraphBuilder;
 
-public class MaxFlowEdmondsKarpTest {
+public class MaxFlowEdmondsKarpTest extends TestUtils {
 
 	private static Pair<Graph<Pair<Double, Double>>, FlowNetwork<Pair<Double, Double>>> randNetword(int n, int m) {
 		Graph<Pair<Double, Double>> g = new RandomGraphBuilder().n(n).m(m).directed(true).doubleEdges(false)
 				.selfEdges(false).cycles(true).connected(false).build();
 
-		Random rand = new Random(TestUtils.nextRandSeed());
+		Random rand = new Random(nextRandSeed());
 		for (Edge<Pair<Double, Double>> e : g.edges()) {
 			double w;
 			do {
@@ -53,10 +53,10 @@ public class MaxFlowEdmondsKarpTest {
 	}
 
 	private static boolean randGraphs(MaxFlow algo) {
-		Random rand = new Random(TestUtils.nextRandSeed());
+		Random rand = new Random(nextRandSeed());
 		int[][] phases = { { 128, 16, 16 }, { 128, 16, 32 }, { 64, 64, 64 }, { 64, 64, 128 }, { 8, 512, 512 },
 				{ 8, 512, 2048 }, { 1, 4096, 4096 }, { 1, 4096, 16384 } };
-		return TestUtils.runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, args -> {
 			int n = args[1];
 			int m = args[2];
 			Pair<Graph<Pair<Double, Double>>, FlowNetwork<Pair<Double, Double>>> p = randNetword(n, m);
@@ -83,15 +83,15 @@ public class MaxFlowEdmondsKarpTest {
 		}
 		for (int v = 0; v < n; v++) {
 			double expected = v == source ? actualMaxFlow : v == target ? -actualMaxFlow : 0;
-			if (!TestUtils.doubleEql(vertexFlowOut[v], expected, 1E-10)) {
-				TestUtils.printTestStr("Invalid vertex(" + v + ") flow: " + vertexFlowOut[v] + "\n");
+			if (!doubleEql(vertexFlowOut[v], expected, 1E-10)) {
+				printTestStr("Invalid vertex(" + v + ") flow: " + vertexFlowOut[v] + "\n");
 				return false;
 			}
 		}
 
 		double expectedMaxFlow = calcExpectedFlow(g, net, source, target);
-		if (!TestUtils.doubleEql(expectedMaxFlow, actualMaxFlow, 1E-10)) {
-			TestUtils.printTestStr("Unexpected max flow: " + expectedMaxFlow + " != " + actualMaxFlow + "\n");
+		if (!doubleEql(expectedMaxFlow, actualMaxFlow, 1E-10)) {
+			printTestStr("Unexpected max flow: " + expectedMaxFlow + " != " + actualMaxFlow + "\n");
 			return false;
 		}
 

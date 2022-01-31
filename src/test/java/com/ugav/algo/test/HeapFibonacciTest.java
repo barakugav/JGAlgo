@@ -2,7 +2,7 @@ package com.ugav.algo.test;
 
 import com.ugav.algo.HeapFibonacci;
 
-public class HeapFibonacciTest {
+public class HeapFibonacciTest extends TestUtils {
 
 	@Test
 	public static boolean randOps() {

@@ -15,9 +15,9 @@ import com.ugav.algo.SSSPDijkstra;
 import com.ugav.algo.SSSPGoldberg1995;
 import com.ugav.algo.test.GraphsTestUtils.RandomGraphBuilder;
 
-class SSSPTestUtils {
+class SSSPAbstractTest extends TestUtils {
 
-	private SSSPTestUtils() {
+	private SSSPAbstractTest() {
 		throw new InternalError();
 	}
 
@@ -30,9 +30,9 @@ class SSSPTestUtils {
 	}
 
 	private static boolean testSSSPPositiveInt(SSSP algo, boolean directed) {
-		Random rand = new Random(TestUtils.nextRandSeed());
+		Random rand = new Random(nextRandSeed());
 		int[][] phases = { { 128, 16, 32 }, { 64, 64, 256 }, { 8, 512, 4096 }, { 1, 4096, 16384 } };
-		return TestUtils.runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, args -> {
 			int n = args[1];
 			int m = args[2];
 			Graph<Integer> g = new RandomGraphBuilder().n(n).m(m).directed(directed).doubleEdges(true).selfEdges(true)
@@ -50,7 +50,7 @@ class SSSPTestUtils {
 
 	static boolean testSSSPDirectedNegativeInt(SSSP algo) {
 		int[][] phases = { { 512, 4, 4 }, { 128, 16, 32 }, { 64, 64, 256 }, { 8, 512, 4096 }, { 2, 1024, 4096 } };
-		return TestUtils.runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, args -> {
 			int n = args[1];
 			int m = args[2];
 			Graph<Integer> g = new RandomGraphBuilder().n(n).m(m).directed(true).doubleEdges(true).selfEdges(true)
@@ -80,22 +80,22 @@ class SSSPTestUtils {
 			if (cycle != null) {
 				double cycleWeight = getPathWeight(cycle, w);
 				if (cycleWeight == Double.NaN || cycle.get(0).u() != cycle.get(cycle.size() - 1).v()) {
-					TestUtils.printTestStr("Invalid cycle: " + cycle + "\n");
+					printTestStr("Invalid cycle: " + cycle + "\n");
 					return false;
 				}
 				if (cycleWeight >= 0) {
-					TestUtils.printTestStr("Cycle is not negative: " + cycle + "\n");
+					printTestStr("Cycle is not negative: " + cycle + "\n");
 					return false;
 				}
 				if (!expectedRes.foundNegativeCycle())
 					throw new InternalError("validation algorithm didn't find negative cycle: " + cycle);
 			} else if (!expectedRes.foundNegativeCycle()) {
-				TestUtils.printTestStr("found non existing negative cycle\n");
+				printTestStr("found non existing negative cycle\n");
 				return false;
 			}
 			return true;
 		} else if (expectedRes.foundNegativeCycle()) {
-			TestUtils.printTestStr("failed to found negative cycle\n");
+			printTestStr("failed to found negative cycle\n");
 			return false;
 		}
 
@@ -104,7 +104,7 @@ class SSSPTestUtils {
 			double expectedDistance = expectedRes.distance(v);
 			double actualDistance = result.distance(v);
 			if (expectedDistance != actualDistance) {
-				TestUtils.printTestStr(
+				printTestStr(
 						"Distance to vertex " + v + " is wrong: " + expectedDistance + " != " + actualDistance + "\n");
 				return false;
 			}
@@ -112,12 +112,12 @@ class SSSPTestUtils {
 			if (path != null) {
 				double pathWeight = getPathWeight(path, w);
 				if (pathWeight != actualDistance) {
-					TestUtils.printTestStr("Path to vertex " + v + " doesn't match distance (" + actualDistance + " != "
+					printTestStr("Path to vertex " + v + " doesn't match distance (" + actualDistance + " != "
 							+ pathWeight + "): " + path + "\n");
 					return false;
 				}
 			} else if (actualDistance != Double.POSITIVE_INFINITY) {
-				TestUtils.printTestStr("Distance to vertex " + v + " is not infinity but path is null\n");
+				printTestStr("Distance to vertex " + v + " is not infinity but path is null\n");
 				return false;
 
 			}

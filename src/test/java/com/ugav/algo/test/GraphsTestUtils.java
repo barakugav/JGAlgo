@@ -13,7 +13,7 @@ import com.ugav.algo.Pair;
 import com.ugav.algo.UnionFind;
 import com.ugav.algo.UnionFindArray;
 
-class GraphsTestUtils {
+class GraphsTestUtils extends TestUtils {
 
 	private GraphsTestUtils() {
 		throw new InternalError();
@@ -125,7 +125,7 @@ class GraphsTestUtils {
 			Set<Pair<Integer, Integer>> existingEdges = new HashSet<>();
 			UnionFind uf = new UnionFindArray(n);
 			int componentsNum = n;
-			Random rand = new Random(TestUtils.nextRandSeed());
+			Random rand = new Random(nextRandSeed());
 			boolean[] reachableFromRoot = new boolean[n];
 			reachableFromRoot[0] = true;
 			int reachableFromRootCount = 1;
@@ -238,7 +238,7 @@ class GraphsTestUtils {
 		if (minWeight >= maxWeight)
 			throw new IllegalArgumentException();
 
-		Random rand = new Random(TestUtils.nextRandSeed());
+		Random rand = new Random(nextRandSeed());
 		for (Edge<Double> e : g.edges())
 			e.val(rand.nextDouble(minWeight, maxWeight));
 	}
@@ -262,7 +262,7 @@ class GraphsTestUtils {
 		if (maxWeight - minWeight < g.edges().size() / 2)
 			throw new IllegalArgumentException("weight range is too small for unique weights");
 
-		RandomIntUnique rand = new RandomIntUnique(minWeight, maxWeight, TestUtils.nextRandSeed());
+		RandomIntUnique rand = new RandomIntUnique(minWeight, maxWeight, nextRandSeed());
 		for (Edge<Integer> e : g.edges())
 			e.val(rand.next());
 	}

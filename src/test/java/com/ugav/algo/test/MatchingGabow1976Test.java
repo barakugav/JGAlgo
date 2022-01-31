@@ -2,7 +2,7 @@ package com.ugav.algo.test;
 
 import com.ugav.algo.MatchingGabow1976;
 
-public class MatchingGabow1976Test {
+public class MatchingGabow1976Test extends TestUtils {
 
 	@Test
 	public static boolean randBipartiteGraphs() {

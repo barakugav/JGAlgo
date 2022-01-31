@@ -5,11 +5,11 @@ import java.util.function.Supplier;
 
 import com.ugav.algo.UnionFind;
 
-class UnionFindTestUtils {
+class UnionFindTestUtils extends TestUtils {
 
 	static boolean randOps(Supplier<? extends UnionFind> builder) {
 		int[][] phases = { { 256, 8, 16 }, { 64, 64, 256 }, { 16, 1024, 2048 }, { 2, 8096, 16384 } };
-		return TestUtils.runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, args -> {
 			int n = args[1];
 			int m = args[2];
 
@@ -18,7 +18,7 @@ class UnionFindTestUtils {
 	}
 
 	private static boolean randOps(Supplier<? extends UnionFind> builder, int n, int m) {
-		Random rand = new Random(TestUtils.nextRandSeed());
+		Random rand = new Random(nextRandSeed());
 
 		UnionFind uf = builder.get();
 		int set[] = new int[n];

@@ -16,7 +16,7 @@ import com.ugav.algo.MSTKruskal1956;
 import com.ugav.algo.TPM;
 import com.ugav.algo.test.GraphsTestUtils.RandomGraphBuilder;
 
-class TPMTestUtils {
+class TPMTestUtils extends TestUtils {
 
 	private TPMTestUtils() {
 		throw new InternalError();
@@ -56,7 +56,7 @@ class TPMTestUtils {
 	}
 
 	static int[] generateRandQueries(int n, int m) {
-		Random rand = new Random(TestUtils.nextRandSeed());
+		Random rand = new Random(nextRandSeed());
 		int[] queries = new int[m * 2];
 		for (int q = 0; q < m; q++) {
 			queries[q * 2] = rand.nextInt(n);
@@ -68,7 +68,7 @@ class TPMTestUtils {
 	static <E> boolean compareActualToExpectedResults(int[] queries, Edge<E>[] actual, Edge<E>[] expected,
 			WeightFunction<E> w) {
 		if (actual.length != expected.length) {
-			TestUtils.printTestStr("Unexpected result size: " + actual.length + " != " + expected.length + "\n");
+			printTestStr("Unexpected result size: " + actual.length + " != " + expected.length + "\n");
 			return false;
 		}
 		for (int i = 0; i < actual.length; i++) {
@@ -77,7 +77,7 @@ class TPMTestUtils {
 			if (aw != ew) {
 				int u = queries[i * 2];
 				int v = queries[i * 2 + 1];
-				TestUtils.printTestStr("Unexpected result for query (" + u + ", " + v + "): " + actual[i] + " != "
+				printTestStr("Unexpected result for query (" + u + ", " + v + "): " + actual[i] + " != "
 						+ expected[i] + "\n");
 				return false;
 			}
@@ -88,7 +88,7 @@ class TPMTestUtils {
 	static boolean testTPM(TPM algo) {
 		int[][] phases = new int[][] { { 64, 16 }, { 32, 32 }, { 16, 64 }, { 8, 128 }, { 4, 256 }, { 2, 512 },
 				{ 1, 1024 }, { 1, 4096 }, { 1, 16384 } };
-		return TestUtils.runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, args -> {
 			int n = args[1];
 			return testTPM(algo, n);
 		});
@@ -108,7 +108,7 @@ class TPMTestUtils {
 	static boolean verifyMSTPositive(TPM algo) {
 		int[][] phases = new int[][] { { 256, 8, 16 }, { 128, 16, 32 }, { 64, 64, 128 }, { 32, 128, 256 },
 				{ 8, 2048, 4096 }, { 2, 8192, 16384 } };
-		return TestUtils.runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, args -> {
 			int n = args[1];
 			int m = args[2];
 			Graph<Integer> g = new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(true).selfEdges(false)
@@ -124,7 +124,7 @@ class TPMTestUtils {
 	static boolean verifyMSTNegative(TPM algo) {
 		int[][] phases = new int[][] { { 256, 8, 16 }, { 128, 16, 32 }, { 64, 64, 128 }, { 32, 128, 256 },
 				{ 8, 2048, 4096 }, { 2, 8192, 16384 } };
-		return TestUtils.runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, args -> {
 			int n = args[1];
 			int m = args[2];
 
@@ -139,7 +139,7 @@ class TPMTestUtils {
 			@SuppressWarnings("unchecked")
 			Edge<Integer>[] edges = g.edges().toArray(new Edge[g.edges().size()]);
 
-			Random rand = new Random(TestUtils.nextRandSeed());
+			Random rand = new Random(nextRandSeed());
 			Edge<Integer> e;
 			do {
 				e = edges[rand.nextInt(edges.length)];

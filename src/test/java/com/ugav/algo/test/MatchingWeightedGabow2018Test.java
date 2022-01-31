@@ -2,7 +2,7 @@ package com.ugav.algo.test;
 
 import com.ugav.algo.MatchingWeightedGabow2018;
 
-public class MatchingWeightedGabow2018Test {
+public class MatchingWeightedGabow2018Test extends TestUtils {
 
 	@Test
 	public static boolean randBipartiteGraphsWeight1() {

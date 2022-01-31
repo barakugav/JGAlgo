@@ -2,7 +2,7 @@ package com.ugav.algo.test;
 
 import com.ugav.algo.TPMKomlos1985King1997Hagerup2009;
 
-public class TPMKomlos1985King1997Hagerup2009Test {
+public class TPMKomlos1985King1997Hagerup2009Test extends TestUtils {
 
 	@Test
 	public static boolean testTPM() {

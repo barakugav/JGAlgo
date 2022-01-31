@@ -5,7 +5,7 @@ import java.util.Random;
 import com.ugav.algo.RMQ;
 import com.ugav.algo.RMQ.ArrayIntComparator;
 
-class RMQTestUtils {
+class RMQTestUtils extends TestUtils {
 
 	private RMQTestUtils() {
 		throw new InternalError();
@@ -35,11 +35,11 @@ class RMQTestUtils {
 			int actual = a[actualIdx];
 
 			if (actual != expected) {
-				TestUtils.printTestStr(" [" + i + "," + j + "] -> expected[" + expectedIdx + "]=" + expected
+				printTestStr(" [" + i + "," + j + "] -> expected[" + expectedIdx + "]=" + expected
 						+ " actual[" + actualIdx + "]=" + actual + "\n");
-				TestUtils.printTestStr("data size: " + a.length + "\n");
-				TestUtils.printTestStr("queries num: " + queries.length + "\n");
-				TestUtils.printTestStr(formatRMQDataAndQueries(a, queries));
+				printTestStr("data size: " + a.length + "\n");
+				printTestStr("queries num: " + queries.length + "\n");
+				printTestStr(formatRMQDataAndQueries(a, queries));
 				return false;
 			}
 		}
@@ -47,14 +47,14 @@ class RMQTestUtils {
 	}
 
 	static void randRMQDataPlusMinusOne(int a[]) {
-		Random rand = new Random(TestUtils.nextRandSeed());
+		Random rand = new Random(nextRandSeed());
 		a[0] = 0;
 		for (int i = 1; i < a.length; i++)
 			a[i] = a[i - 1] + rand.nextInt(2) * 2 - 1;
 	}
 
 	static void randRMQQueries(int a[], int queries[][], int blockSize) {
-		Random rand = new Random(TestUtils.nextRandSeed());
+		Random rand = new Random(nextRandSeed());
 		for (int q = 0; q < queries.length;) {
 			int i = rand.nextInt(a.length);
 			if (i % blockSize == blockSize - 1)
@@ -77,7 +77,7 @@ class RMQTestUtils {
 	}
 
 	static void randRMQDataAndQueries(int a[], int queries[][], int blockSize) {
-		Utils.randArray(a, 0, 64, TestUtils.nextRandSeed());
+		Utils.randArray(a, 0, 64, nextRandSeed());
 		randRMQQueries(a, queries, blockSize);
 	}
 

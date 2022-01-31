@@ -2,7 +2,7 @@ package com.ugav.algo.test;
 
 import com.ugav.algo.MatchingWeightedBipartiteHungarianMethod;
 
-public class MatchingWeightedBipartiteHungarianMethodTest {
+public class MatchingWeightedBipartiteHungarianMethodTest extends TestUtils {
 
 	@Test
 	public static boolean randBipartiteGraphsWeight1() {

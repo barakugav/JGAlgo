@@ -21,7 +21,7 @@ import com.ugav.algo.MatchingWeightedBipartiteHungarianMethod;
 import com.ugav.algo.MatchingWeightedBipartiteSSSP;
 import com.ugav.algo.MatchingWeightedGabow2018;
 
-class MatchingWeightedTestUtils {
+class MatchingWeightedTestUtils extends TestUtils {
 
 	private MatchingWeightedTestUtils() {
 		throw new InternalError();
@@ -30,7 +30,7 @@ class MatchingWeightedTestUtils {
 	static boolean randGraphsBipartiteWeighted(MatchingWeighted algo) {
 		int[][] phases = { { 256, 8, 8, 8 }, { 128, 16, 16, 64 }, { 12, 128, 128, 128 }, { 8, 128, 128, 512 },
 				{ 4, 1024, 1024, 1024 }, { 2, 1024, 1024, 8192 } };
-		return TestUtils.runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, args -> {
 			int sn = args[1];
 			int tn = args[2];
 			int m = args[3];
@@ -49,7 +49,7 @@ class MatchingWeightedTestUtils {
 	static boolean randBipartiteGraphsWeightedPerfect(MatchingWeighted algo) {
 		int[][] phases = { { 256, 8, 8, 8 }, { 128, 16, 16, 64 }, { 12, 128, 128, 128 }, { 8, 128, 128, 512 },
 				{ 4, 1024, 1024, 1024 } };
-		return TestUtils.runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, args -> {
 			int sn = args[1];
 			int tn = args[2];
 			int m = args[3];
@@ -70,7 +70,7 @@ class MatchingWeightedTestUtils {
 	static boolean randGraphsWeighted(MatchingWeighted algo) {
 		int[][] phases = { { 256, 8, 8, 8 }, { 128, 16, 16, 64 }, { 12, 128, 128, 128 }, { 8, 128, 128, 512 },
 				{ 4, 1024, 1024, 1024 }, { 2, 1024, 1024, 8192 } };
-		return TestUtils.runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, args -> {
 			int n = args[1];
 			int m = args[2];
 
@@ -96,12 +96,12 @@ class MatchingWeightedTestUtils {
 		double expectedWeight = calcMatchingWeight(expected, w);
 
 		if (actualWeight < expectedWeight) {
-			TestUtils.printTestStr("unexpected match weight: " + actualWeight + " < " + expectedWeight + "\n");
+			printTestStr("unexpected match weight: " + actualWeight + " < " + expectedWeight + "\n");
 			System.out.println("expected " + expected);
 			System.out.println("actual " + actual);
 			return false;
 		} else if (actualWeight > expectedWeight) {
-			TestUtils.printTestStr(
+			printTestStr(
 					"matching is better than validation algo found: " + actualWeight + " > " + expectedWeight + "\n");
 			System.out.println("expected " + expected);
 			System.out.println("actual " + actual);
@@ -114,7 +114,7 @@ class MatchingWeightedTestUtils {
 	static boolean randGraphsWeightedPerfect(MatchingWeighted algo) {
 		int[][] phases = { { 256, 8, 8, 8 }, { 128, 16, 16, 64 }, { 12, 128, 128, 128 }, { 8, 128, 128, 512 },
 				{ 4, 1024, 1024, 1024 } };
-		return TestUtils.runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, args -> {
 			int n = args[1];
 			int m = args[2];
 
@@ -140,24 +140,24 @@ class MatchingWeightedTestUtils {
 
 		int expectedSize = validationUnweightedAlgo.calcMaxMatching(g).size();
 		if (actualSize < expectedSize) {
-			TestUtils.printTestStr("unexpected match size: " + actualSize + " < " + expectedSize + "\n");
+			printTestStr("unexpected match size: " + actualSize + " < " + expectedSize + "\n");
 			System.out.println("expected " + expectedSize);
 			System.out.println("actual " + actual);
 			return false;
 		} else if (actualSize > expectedSize) {
-			TestUtils.printTestStr(
+			printTestStr(
 					"matching size is better than validation algo found: " + actualSize + " > " + expectedSize + "\n");
 			throw new InternalError();
 		}
 
 		double expectedWeight = calcMatchingWeight(validationWeightedAlgo.calcPerfectMaxMatching(g, w), w);
 		if (actualWeight < expectedWeight) {
-			TestUtils.printTestStr("unexpected match weight: " + actualWeight + " < " + expectedWeight + "\n");
+			printTestStr("unexpected match weight: " + actualWeight + " < " + expectedWeight + "\n");
 			System.out.println("expected " + expectedWeight);
 			System.out.println("actual " + actual);
 			return false;
 		} else if (actualWeight > expectedWeight) {
-			TestUtils.printTestStr("matching weight is better than validation algo found: " + actualWeight + " > "
+			printTestStr("matching weight is better than validation algo found: " + actualWeight + " > "
 					+ expectedWeight + "\n");
 			throw new InternalError();
 		}
@@ -194,7 +194,7 @@ class MatchingWeightedTestUtils {
 			if (g.isDirected())
 				throw new IllegalArgumentException("only undirected graphs are supported");
 			int n = g.vertices();
-			int[] shuffle = Utils.randPermutation(n, TestUtils.nextRandSeed());
+			int[] shuffle = Utils.randPermutation(n, nextRandSeed());
 
 			Graph<Edge<E>> shuffledG;
 			if (g instanceof GraphBipartite) {

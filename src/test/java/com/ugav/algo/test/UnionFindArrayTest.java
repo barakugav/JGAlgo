@@ -2,7 +2,7 @@ package com.ugav.algo.test;
 
 import com.ugav.algo.UnionFindArray;
 
-public class UnionFindArrayTest {
+public class UnionFindArrayTest extends TestUtils {
 
 	@Test
 	public static boolean randOps() {

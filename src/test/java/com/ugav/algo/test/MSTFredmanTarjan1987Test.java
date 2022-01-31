@@ -2,7 +2,7 @@ package com.ugav.algo.test;
 
 import com.ugav.algo.MSTFredmanTarjan1987;
 
-public class MSTFredmanTarjan1987Test {
+public class MSTFredmanTarjan1987Test extends TestUtils {
 
 	@Test
 	public static boolean randGraph() {

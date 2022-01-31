@@ -2,7 +2,7 @@ package com.ugav.algo.test;
 
 import com.ugav.algo.RMQPlusMinusOneBenderFarachColton2000;
 
-public class RMQPlusMinusOneBenderFarachColton2000Test {
+public class RMQPlusMinusOneBenderFarachColton2000Test extends TestUtils {
 
 	@Test
 	public static boolean regular() {

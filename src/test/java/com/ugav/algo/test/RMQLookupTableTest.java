@@ -2,7 +2,7 @@ package com.ugav.algo.test;
 
 import com.ugav.algo.RMQLookupTable;
 
-public class RMQLookupTableTest {
+public class RMQLookupTableTest extends TestUtils {
 
 	@Test
 	public static boolean regularNRange64to256() {

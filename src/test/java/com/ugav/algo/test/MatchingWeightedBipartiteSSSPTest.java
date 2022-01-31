@@ -2,7 +2,7 @@ package com.ugav.algo.test;
 
 import com.ugav.algo.MatchingWeightedBipartiteSSSP;
 
-public class MatchingWeightedBipartiteSSSPTest {
+public class MatchingWeightedBipartiteSSSPTest extends TestUtils {
 
 	@Test
 	public static boolean randBipartiteGraphsWeight1() {

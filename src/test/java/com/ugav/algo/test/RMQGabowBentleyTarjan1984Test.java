@@ -2,7 +2,7 @@ package com.ugav.algo.test;
 
 import com.ugav.algo.RMQGabowBentleyTarjan1984;
 
-public class RMQGabowBentleyTarjan1984Test {
+public class RMQGabowBentleyTarjan1984Test extends TestUtils {
 
 	@Test
 	public static boolean regular65536() {
@@ -19,7 +19,7 @@ public class RMQGabowBentleyTarjan1984Test {
 
 	@Test
 	public static boolean onlyInterBlock65536() {
-		int a[] = Utils.randArray(65536, 0, 64, TestUtils.nextRandSeed());
+		int a[] = Utils.randArray(65536, 0, 64, nextRandSeed());
 		int queries[][] = new int[4096][];
 		RMQTestUtils.randRMQQueries(a, queries, 4);
 

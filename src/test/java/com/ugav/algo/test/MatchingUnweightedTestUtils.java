@@ -11,7 +11,7 @@ import com.ugav.algo.Graph;
 import com.ugav.algo.Graph.Edge;
 import com.ugav.algo.Matching;
 
-class MatchingUnweightedTestUtils {
+class MatchingUnweightedTestUtils extends TestUtils {
 
 	private MatchingUnweightedTestUtils() {
 		throw new InternalError();
@@ -20,7 +20,7 @@ class MatchingUnweightedTestUtils {
 	static boolean randGraphs(Matching algo) {
 		int[][] phases = { { 256, 16, 8 }, { 256, 16, 16 }, { 128, 32, 32 }, { 128, 32, 64 }, { 64, 64, 64 },
 				{ 64, 64, 128 }, { 16, 256, 256 }, { 16, 256, 512 }, { 4, 2048, 2048 }, { 4, 2048, 8192 } };
-		return TestUtils.runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, args -> {
 			int n = args[1];
 			int m = args[2];
 			Graph<Void> g = GraphsTestUtils.randGraph(n, m);
@@ -37,7 +37,7 @@ class MatchingUnweightedTestUtils {
 			return false;
 
 		if (match.size() != expectedMatchSize) {
-			TestUtils.printTestStr("unexpected match size: " + match.size() + " != " + expectedMatchSize + "\n");
+			printTestStr("unexpected match size: " + match.size() + " != " + expectedMatchSize + "\n");
 			return false;
 		}
 		return true;
@@ -49,7 +49,7 @@ class MatchingUnweightedTestUtils {
 			for (int v : new int[] { e.u(), e.v() }) {
 				Edge<E> dup = matched.get(v);
 				if (dup != null) {
-					TestUtils.printTestStr("Invalid matching, clash: " + dup + " " + e + " \n");
+					printTestStr("Invalid matching, clash: " + dup + " " + e + " \n");
 					return false;
 				}
 				matched.put(v, e);

@@ -15,7 +15,7 @@ import com.ugav.algo.Graphs;
 import com.ugav.algo.MST;
 import com.ugav.algo.MSTKruskal1956;
 
-class MSTTestUtils {
+class MSTTestUtils extends TestUtils {
 
 	private MSTTestUtils() {
 		throw new InternalError();
@@ -24,7 +24,7 @@ class MSTTestUtils {
 	static boolean testRandGraph(MST algo) {
 		int[][] phases = new int[][] { { 1, 0, 0 }, { 128, 16, 32 }, { 64, 64, 128 }, { 32, 128, 256 },
 				{ 8, 1024, 4096 }, { 2, 4096, 16384 } };
-		return TestUtils.runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, args -> {
 			int n = args[1];
 			int m = args[2];
 			return testRandGraph(algo, n, m);
@@ -82,26 +82,26 @@ class MSTTestUtils {
 		actualSet.addAll(mst);
 
 		if (actualSet.size() != mst.size()) {
-			TestUtils.printTestStr("MST contains duplications\n");
+			printTestStr("MST contains duplications\n");
 			return false;
 		}
 
 		boolean equal = true;
 		if (expected.size() != actualSet.size()) {
-			TestUtils.printTestStr(
+			printTestStr(
 					"Expected MST with " + expected.size() + " edges, actual has " + actualSet.size() + "\n");
 			equal = false;
 		} else {
 			for (Edge<E> e : expected) {
 				if (!actualSet.contains(e)) {
-					TestUtils.printTestStr("MST doesn't contains edge: " + e + "\n");
+					printTestStr("MST doesn't contains edge: " + e + "\n");
 					equal = false;
 				}
 			}
 		}
 		if (!equal) {
-			TestUtils.printTestStr("Expected: " + formatEdges(expected, w) + "\n");
-			TestUtils.printTestStr("Actual: " + formatEdges(actualSet, w) + "\n");
+			printTestStr("Expected: " + formatEdges(expected, w) + "\n");
+			printTestStr("Actual: " + formatEdges(actualSet, w) + "\n");
 		}
 		return equal;
 	}

@@ -14,13 +14,13 @@ import com.ugav.algo.SSSP;
 import com.ugav.algo.SSSPDijkstra;
 import com.ugav.algo.test.GraphsTestUtils.RandomGraphBuilder;
 
-public class GraphsTest {
+public class GraphsTest extends TestUtils {
 
 	@Test
 	public static boolean bfsConnected() {
-		Random rand = new Random(TestUtils.nextRandSeed());
+		Random rand = new Random(nextRandSeed());
 		int[][] phases = { { 256, 16, 8 }, { 128, 32, 64 }, { 4, 2048, 8192 } };
-		return TestUtils.runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, args -> {
 			int n = args[1];
 			int m = args[2];
 			Graph<Void> g = new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(true).selfEdges(true)
@@ -41,9 +41,9 @@ public class GraphsTest {
 
 	@Test
 	public static boolean dfsConnected() {
-		Random rand = new Random(TestUtils.nextRandSeed());
+		Random rand = new Random(nextRandSeed());
 		int[][] phases = { { 256, 16, 8 }, { 128, 32, 64 }, { 4, 2048, 8192 } };
-		return TestUtils.runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, args -> {
 			int n = args[1];
 			int m = args[2];
 			Graph<Void> g = new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(true).selfEdges(true)
@@ -65,7 +65,7 @@ public class GraphsTest {
 	@Test
 	public static boolean isTreeUnrootedPositive() {
 		int[][] phases = { { 256, 16 }, { 128, 32 }, { 4, 2048 } };
-		return TestUtils.runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, args -> {
 			int n = args[1];
 			int m = n - 1;
 			Graph<Void> g = new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(false).selfEdges(false)
@@ -77,9 +77,9 @@ public class GraphsTest {
 
 	@Test
 	public static boolean isTreeUnrootedNegativeUnconnected() {
-		Random rand = new Random(TestUtils.nextRandSeed());
+		Random rand = new Random(nextRandSeed());
 		int[][] phases = { { 256, 16 }, { 128, 32 }, { 4, 2048 } };
-		return TestUtils.runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, args -> {
 			int n = args[1];
 			int m = n - 1;
 			Graph<Void> g = new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(false).selfEdges(false)
@@ -94,9 +94,9 @@ public class GraphsTest {
 
 	@Test
 	public static boolean isTreeUnrootedNegativeCycle() {
-		Random rand = new Random(TestUtils.nextRandSeed());
+		Random rand = new Random(nextRandSeed());
 		int[][] phases = { { 256, 16 }, { 128, 32 }, { 4, 2048 } };
-		return TestUtils.runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, args -> {
 			int n = args[1];
 			int m = n - 1;
 			Graph<Void> g = new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(false).selfEdges(false)
@@ -114,9 +114,9 @@ public class GraphsTest {
 
 	@Test
 	public static boolean isTreeRootedPositive() {
-		Random rand = new Random(TestUtils.nextRandSeed());
+		Random rand = new Random(nextRandSeed());
 		int[][] phases = { { 256, 16 }, { 128, 32 }, { 4, 2048 } };
-		return TestUtils.runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, args -> {
 			int n = args[1];
 			int m = n - 1;
 			Graph<Void> g = new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(false).selfEdges(false)
@@ -129,9 +129,9 @@ public class GraphsTest {
 
 	@Test
 	public static boolean isTreeRootedNegativeUnconnected() {
-		Random rand = new Random(TestUtils.nextRandSeed());
+		Random rand = new Random(nextRandSeed());
 		int[][] phases = { { 256, 16 }, { 128, 32 }, { 4, 2048 } };
-		return TestUtils.runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, args -> {
 			int n = args[1];
 			int m = n - 1;
 			Graph<Void> g = new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(false).selfEdges(false)
@@ -147,9 +147,9 @@ public class GraphsTest {
 
 	@Test
 	public static boolean isTreeRootedNegativeCycle() {
-		Random rand = new Random(TestUtils.nextRandSeed());
+		Random rand = new Random(nextRandSeed());
 		int[][] phases = { { 256, 16 }, { 128, 32 }, { 4, 2048 } };
-		return TestUtils.runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, args -> {
 			int n = args[1];
 			int m = n - 1;
 			Graph<Void> g = new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(false).selfEdges(false)
@@ -166,9 +166,9 @@ public class GraphsTest {
 		});
 	}
 
-//		public static <E> Pair<Integer, int[]> findConnectivityComponents(Graph<E> g) {;
+//		public <E> Pair<Integer, int[]> findConnectivityComponents(Graph<E> g) {;
 
-//		public static <E> Pair<Integer, int[]> findStrongConnectivityComponents(Graph<E> g) {;
+//		public <E> Pair<Integer, int[]> findStrongConnectivityComponents(Graph<E> g) {;
 
 	@Test
 	public static boolean topologicalSortUnconnected() {
@@ -182,7 +182,7 @@ public class GraphsTest {
 
 	private static boolean topologicalSort(boolean connected) {
 		int[][] phases = { { 256, 16, 16 }, { 128, 32, 64 }, { 16, 1024, 2048 } };
-		return TestUtils.runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, args -> {
 			int n = args[1];
 			int m = args[2];
 			Graph<Void> g = new RandomGraphBuilder().n(n).m(m).directed(true).doubleEdges(true).selfEdges(false)
@@ -214,7 +214,7 @@ public class GraphsTest {
 
 	private static boolean distancesDAG(boolean connected) {
 		int[][] phases = { { 256, 16, 16 }, { 128, 32, 64 }, { 16, 512, 1024 } };
-		return TestUtils.runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, args -> {
 			int n = args[1];
 			int m = args[2];
 			Graph<Integer> g = new RandomGraphBuilder().n(n).m(m).directed(true).doubleEdges(true).selfEdges(false)
@@ -225,7 +225,7 @@ public class GraphsTest {
 
 			SSSP.Result<Integer> result = Graphs.calcDistancesDAG(g, w, source);
 
-			return SSSPTestUtils.validateResult(g, w, source, result, SSSPDijkstra.getInstace());
+			return SSSPAbstractTest.validateResult(g, w, source, result, SSSPDijkstra.getInstace());
 		});
 	}
 

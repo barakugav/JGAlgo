@@ -15,7 +15,7 @@ import com.ugav.algo.MDSTTarjan1977;
 import com.ugav.algo.MST;
 import com.ugav.algo.test.GraphsTestUtils.RandomGraphBuilder;
 
-public class MDSTTarjan1977Test {
+public class MDSTTarjan1977Test extends TestUtils {
 
 	private static class MDSTUndirectedWrapper implements MST {
 
@@ -60,7 +60,7 @@ public class MDSTTarjan1977Test {
 	private static boolean testRandGraph(MDST algo) {
 		int[][] phases = new int[][] { { 1, 0, 0 }, { 256, 6, 5 }, { 128, 16, 32 }, { 64, 64, 128 }, { 32, 128, 256 },
 				{ 8, 1024, 4096 }, { 2, 4096, 16384 } };
-		return TestUtils.runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, args -> {
 			int n = args[1];
 			int m = args[2];
 			return testRandGraph(algo, n, m);

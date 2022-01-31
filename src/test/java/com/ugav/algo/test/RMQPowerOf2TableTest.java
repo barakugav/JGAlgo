@@ -2,7 +2,7 @@ package com.ugav.algo.test;
 
 import com.ugav.algo.RMQPowerOf2Table;
 
-public class RMQPowerOf2TableTest {
+public class RMQPowerOf2TableTest extends TestUtils {
 
 	@Test
 	public static boolean regularNRange64to256() {

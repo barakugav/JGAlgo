@@ -9,11 +9,11 @@ import com.ugav.algo.SplitFind;
 import com.ugav.algo.SplitFindMin;
 import com.ugav.algo.SplitFindMinArray;
 
-public class SplitFindMinArrayTest {
+public class SplitFindMinArrayTest extends TestUtils {
 
 	private static boolean testSplitFind(Supplier<? extends SplitFind> builder) {
 		int[][] phases = { { 128, 16, 16 }, { 64, 64, 64 }, { 32, 512, 512 }, { 8, 4096, 4096 }, { 2, 16384, 16384 } };
-		return TestUtils.runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, args -> {
 			int n = args[1];
 			int m = args[2];
 			return testSplitFind(builder, n, m);
@@ -21,7 +21,7 @@ public class SplitFindMinArrayTest {
 	}
 
 	private static boolean testSplitFind(Supplier<? extends SplitFind> builder, int n, int m) {
-		Random rand = new Random(TestUtils.nextRandSeed());
+		Random rand = new Random(nextRandSeed());
 		SplitFind sf = builder.get();
 
 		sf.init(n);
@@ -43,7 +43,7 @@ public class SplitFindMinArrayTest {
 				int expected = sequence[x];
 				int actual = sequence[sf.find(x)];
 				if (actual != expected) {
-					TestUtils.printTestStr("find failed! " + actual + " != " + expected + "\n");
+					printTestStr("find failed! " + actual + " != " + expected + "\n");
 					return false;
 				}
 				break;
@@ -64,7 +64,7 @@ public class SplitFindMinArrayTest {
 
 	private static boolean testSplitFindMin(Supplier<? extends SplitFindMin<Double>> builder) {
 		int[][] phases = { { 128, 16, 16 }, { 64, 64, 64 }, { 8, 512, 512 }, { 1, 4096, 4096 } };
-		return TestUtils.runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, args -> {
 			int n = args[1];
 			int m = args[2];
 			return testSplitFindMin(builder, n, m);
@@ -72,7 +72,7 @@ public class SplitFindMinArrayTest {
 	}
 
 	private static boolean testSplitFindMin(Supplier<? extends SplitFindMin<Double>> builder, int n, int m) {
-		Random rand = new Random(TestUtils.nextRandSeed());
+		Random rand = new Random(nextRandSeed());
 		SplitFindMin<Double> sf = builder.get();
 
 		List<Double> keys = new ArrayList<>(n);
@@ -99,7 +99,7 @@ public class SplitFindMinArrayTest {
 				int expected = sequence[x];
 				int actual = sequence[sf.find(x)];
 				if (actual != expected) {
-					TestUtils.printTestStr("find failed! " + actual + " != " + expected + "\n");
+					printTestStr("find failed! " + actual + " != " + expected + "\n");
 					return false;
 				}
 				break;
@@ -122,7 +122,7 @@ public class SplitFindMinArrayTest {
 						expectedKey = sf.getKey(i);
 				double actualKey = sf.getKey(sf.findMin(x));
 				if (actualKey != expectedKey) {
-					TestUtils.printTestStr("findmin failed! " + actualKey + " != " + expectedKey + "\n");
+					printTestStr("findmin failed! " + actualKey + " != " + expectedKey + "\n");
 					return false;
 				}
 				break;

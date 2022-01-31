@@ -2,7 +2,7 @@ package com.ugav.algo.test;
 
 import com.ugav.algo.HeapBinomial;
 
-public class HeapBinomialTest {
+public class HeapBinomialTest extends TestUtils {
 
 	@Test
 	public static boolean randOps() {
