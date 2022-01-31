@@ -91,7 +91,7 @@ public class RMQPlusMinusOneBenderFarachColton2000 extends RMQLinearAbstract {
 
 		@Override
 		int getBlockSize(int n) {
-			return (int) Math.ceil(Utils.log2((double) n) / 2);
+			return n  <= 1 ? 1 : (int) Math.ceil(Utils.log2((double) n) / 2);
 		}
 
 		@Override
