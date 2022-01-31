@@ -10,7 +10,6 @@ import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.Graph.WeightFunctionInt;
 import com.ugav.algo.GraphArray;
 import com.ugav.algo.Graphs;
-import com.ugav.algo.Graphs.Ref;
 import com.ugav.algo.MDST;
 import com.ugav.algo.MDSTTarjan1977;
 import com.ugav.algo.MST;
@@ -31,17 +30,17 @@ public class MDSTTarjan1977Test {
 			if (g.isDirected())
 				return algo.calcMST(g, w);
 			int n = g.vertices();
-			Graph<Ref<E>> dg = new GraphArray<>(DirectedType.Directed, n);
+			Graph<Edge<E>> dg = new GraphArray<>(DirectedType.Directed, n);
 			for (int u = 0; u < n; u++) {
 				for (Edge<E> e : Utils.iterable(g.edges(u))) {
-					dg.addEdge(e.u(), e.v()).val(new Ref<>(e, w.weight(e)));
-					dg.addEdge(e.v(), e.u()).val(new Ref<>(e, w.weight(e)));
+					dg.addEdge(e.u(), e.v()).val(e);
+					dg.addEdge(e.v(), e.u()).val(e);
 				}
 			}
-			Collection<Edge<Ref<E>>> mst0 = algo.calcMST(dg, Graphs.referenceEdgeWeightFunction());
+			Collection<Edge<Edge<E>>> mst0 = algo.calcMST(dg, e -> w.weight(e.val()));
 			Collection<Edge<E>> mst = new ArrayList<>(mst0.size());
-			for (Edge<Ref<E>> e : mst0)
-				mst.add(e.val().orig);
+			for (Edge<Edge<E>> e : mst0)
+				mst.add(e.val());
 			return mst;
 		}
 

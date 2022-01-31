@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import com.ugav.algo.Graph.Edge;
-import com.ugav.algo.Graphs.Ref;
+import com.ugav.algo.Graph.WeightFunction;
 
 public class MDSTTarjan1977 implements MDST {
 
@@ -24,6 +24,42 @@ public class MDSTTarjan1977 implements MDST {
 		return INSTANCE;
 	}
 
+	@SuppressWarnings("rawtypes")
+	private static final Edge HeavyEdge = new Edge() {
+
+		@Override
+		public int u() {
+			return Integer.MAX_VALUE;
+		}
+
+		@Override
+		public int v() {
+			return Integer.MAX_VALUE;
+		}
+
+		@Override
+		public Object val() {
+			return null;
+		}
+
+		@Override
+		public void val(Object v) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public Edge twin() {
+			return null;
+		}
+	};
+
+	@SuppressWarnings("unchecked")
+	private static <E> Edge<E> heavyEdge() {
+		return (Edge<E>) HeavyEdge;
+	}
+
+	private static final double HeavyEdgeWeight = Double.MAX_VALUE;
+
 	/**
 	 * finds the MST rooted from any root
 	 */
@@ -33,16 +69,15 @@ public class MDSTTarjan1977 implements MDST {
 			throw new IllegalArgumentException("Only directed MSTs are supported");
 		if (g0.vertices() == 0 || g0.edges().isEmpty())
 			return Collections.emptyList();
-		Graph<Ref<E>> g = Graphs.referenceGraph(g0, w);
+		Graph<Edge<E>> g = Graphs.referenceGraph(g0);
 
 		// Connect new root to all vertices
 		int n = g.vertices(), r = g.newVertex();
-		Ref<E> dummyEdgeVal = new Ref<>(null, calcHighWeight(g));
 		for (int v = 0; v < n; v++)
-			g.addEdge(r, v).val(dummyEdgeVal);
+			g.addEdge(r, v).val(heavyEdge());
 
 		// Calc MST on new graph
-		ContractedGraph<E> contractedGraph = contract(g);
+		ContractedGraph<E> contractedGraph = contract(g, w);
 		return expand(contractedGraph, r);
 	}
 
@@ -53,13 +88,13 @@ public class MDSTTarjan1977 implements MDST {
 		if (g.vertices() == 0 || g.edges().isEmpty())
 			return Collections.emptyList();
 
-		ContractedGraph<E> contractedGraph = contract(Graphs.referenceGraph(g, w));
+		ContractedGraph<E> contractedGraph = contract(Graphs.referenceGraph(g), w);
 		return expand(contractedGraph, root);
 	}
 
 	private static <E> Collection<Edge<E>> expand(ContractedGraph<E> g, int root) {
 		@SuppressWarnings("unchecked")
-		Edge<Ref<E>>[] inEdge = new Edge[g.n];
+		Edge<Edge<E>>[] inEdge = new Edge[g.n];
 
 		int[] roots = new int[g.n * 2];
 		int rootsSize = 0;
@@ -67,7 +102,7 @@ public class MDSTTarjan1977 implements MDST {
 
 		while (rootsSize > 0) {
 			int r = roots[--rootsSize];
-			Edge<Ref<E>> e = g.inEdge[r];
+			Edge<Edge<E>> e = g.inEdge[r];
 			int v = e.v();
 			inEdge[v] = e;
 
@@ -88,12 +123,12 @@ public class MDSTTarjan1977 implements MDST {
 
 		Collection<Edge<E>> mst = new ArrayList<>(g.n - 1);
 		for (int v = 0; v < g.n; v++)
-			if (v != root && inEdge[v].val().orig != null)
-				mst.add(inEdge[v].val().orig);
+			if (v != root && inEdge[v].val() != HeavyEdge)
+				mst.add(inEdge[v].val());
 		return mst;
 	}
 
-	private static <E> void addEdgesUntilStronglyConnected(Graph<Ref<E>> g) {
+	private static <E> void addEdgesUntilStronglyConnected(Graph<Edge<E>> g) {
 		int n = g.vertices();
 
 		Pair<Integer, int[]> pair = Graphs.findStrongConnectivityComponents(g);
@@ -109,15 +144,14 @@ public class MDSTTarjan1977 implements MDST {
 					V2v[V] = v;
 			}
 
-			Ref<E> dummyEdgeVal = new Ref<>(null, calcHighWeight(g));
 			for (int V = 1; V < N; V++) {
-				g.addEdge(V2v[0], V2v[V]).val(dummyEdgeVal);
-				g.addEdge(V2v[V], V2v[0]).val(dummyEdgeVal);
+				g.addEdge(V2v[0], V2v[V]).val(heavyEdge());
+				g.addEdge(V2v[V], V2v[0]).val(heavyEdge());
 			}
 		}
 	}
 
-	private static <E> ContractedGraph<E> contract(Graph<Ref<E>> g) {
+	private static <E> ContractedGraph<E> contract(Graph<Edge<E>> g, WeightFunction<E> w) {
 		addEdgesUntilStronglyConnected(g);
 
 		int n = g.vertices();
@@ -129,16 +163,16 @@ public class MDSTTarjan1977 implements MDST {
 			ufIdxToV[v] = v;
 
 		@SuppressWarnings("unchecked")
-		Heap<Edge<Ref<E>>>[] heap = new Heap[VMaxNum];
-		Comparator<Edge<Ref<E>>> edgeComparator = (e1, e2) -> {
-			double w1 = e1.val().w + uf.getValue(e1.v());
-			double w2 = e2.val().w + uf.getValue(e2.v());
+		Heap<Edge<Edge<E>>>[] heap = new Heap[VMaxNum];
+		Comparator<Edge<Edge<E>>> edgeComparator = (e1, e2) -> {
+			double w1 = (e1.val() != HeavyEdge ? w.weight(e1.val()) : HeavyEdgeWeight) + uf.getValue(e1.v());
+			double w2 = (e2.val() != HeavyEdge ? w.weight(e2.val()) : HeavyEdgeWeight) + uf.getValue(e2.v());
 			return Utils.compare(w1, w2);
 		};
 		for (int v = 0; v < n; v++)
 			heap[v] = new HeapFibonacci<>(edgeComparator);
 		for (int u = 0; u < n; u++)
-			for (Edge<Ref<E>> e : Utils.iterable(g.edges(u)))
+			for (Edge<Edge<E>> e : Utils.iterable(g.edges(u)))
 				heap[e.v()].add(e);
 
 		int[] parent = new int[VMaxNum];
@@ -148,7 +182,7 @@ public class MDSTTarjan1977 implements MDST {
 		Arrays.fill(child, -1);
 		Arrays.fill(brother, -1);
 		@SuppressWarnings("unchecked")
-		Edge<Ref<E>>[] inEdge = new Edge[VMaxNum];
+		Edge<Edge<E>>[] inEdge = new Edge[VMaxNum];
 
 		boolean[] onPath = new boolean[VMaxNum];
 		final int startVertex = 0;
@@ -157,7 +191,7 @@ public class MDSTTarjan1977 implements MDST {
 		for (int a = startVertex;;) {
 			// Find minimum edge that enters a
 			int u;
-			Edge<Ref<E>> e;
+			Edge<Edge<E>> e;
 			do {
 				// Assuming the graph is strongly connected, if heap is empty we are done
 				if (heap[a].isEmpty())
@@ -170,7 +204,7 @@ public class MDSTTarjan1977 implements MDST {
 			inEdge[a] = e;
 
 			// Subtract w(e) from the weights of all edges entering a
-			double ew = e.val().w + uf.getValue(e.v());
+			double ew = (e.val() != HeavyEdge ? w.weight(e.val()) : HeavyEdgeWeight) + uf.getValue(e.v());
 			uf.addValue(a, -ew);
 
 			if (!onPath[u]) {
@@ -210,9 +244,9 @@ public class MDSTTarjan1977 implements MDST {
 		final int[] parent;
 		final int[] child;
 		final int[] brother;
-		final Edge<Ref<E>>[] inEdge;
+		final Edge<Edge<E>>[] inEdge;
 
-		ContractedGraph(int n, int[] parent, int[] child, int[] brother, Edge<Ref<E>>[] inEdge) {
+		ContractedGraph(int n, int[] parent, int[] child, int[] brother, Edge<Edge<E>>[] inEdge) {
 			this.n = n;
 			this.parent = parent;
 			this.child = child;
@@ -220,13 +254,6 @@ public class MDSTTarjan1977 implements MDST {
 			this.inEdge = inEdge;
 		}
 
-	}
-
-	private static <E> double calcHighWeight(Graph<Ref<E>> g) {
-		double maxW = Double.MIN_VALUE;
-		for (Edge<Ref<E>> e : g.edges())
-			maxW = Math.max(maxW, e.val().w);
-		return Math.abs(maxW) * g.vertices();
 	}
 
 }

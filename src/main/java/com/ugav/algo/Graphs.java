@@ -550,54 +550,12 @@ public class Graphs {
 
 	}
 
-	public static <E> Graph<Ref<E>> referenceGraph(Graph<E> g, WeightFunction<E> w) {
-		Graph<Ref<E>> g0 = new GraphArray<>(g.isDirected() ? DirectedType.Directed : DirectedType.Undirected,
+	public static <E> Graph<Edge<E>> referenceGraph(Graph<E> g) {
+		Graph<Edge<E>> g0 = new GraphArray<>(g.isDirected() ? DirectedType.Directed : DirectedType.Undirected,
 				g.vertices());
-		for (Edge<E> e : g.edges()) {
-			Ref<E> v = new Ref<>(e, w.weight(e));
-			g0.addEdge(e.u(), e.v()).val(v);
-		}
+		for (Edge<E> e : g.edges())
+			g0.addEdge(e.u(), e.v()).val(e);
 		return g0;
-	}
-
-	private static final WeightFunction<Ref<?>> REFERENCE_EDGE_WEIGHT_FUNCTION = e -> e.val().w;
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static <E> WeightFunction<Ref<E>> referenceEdgeWeightFunction() {
-		return (WeightFunction<Ref<E>>) (WeightFunction) REFERENCE_EDGE_WEIGHT_FUNCTION;
-	}
-
-	public static class Ref<E> {
-
-		public final Edge<E> orig;
-		public final double w;
-
-		public Ref(Edge<E> e, double w) {
-			orig = e;
-			this.w = w;
-		}
-
-		@Override
-		public int hashCode() {
-			return orig.hashCode();
-		}
-
-		@Override
-		public boolean equals(Object other) {
-			if (other == this)
-				return true;
-			if (!(other instanceof Ref))
-				return false;
-
-			Ref<?> o = (Ref<?>) other;
-			return orig.equals(o.orig);
-		}
-
-		@Override
-		public String toString() {
-			return orig != null ? String.valueOf(orig.val()) : Double.toString(w);
-		}
-
 	}
 
 }

@@ -9,7 +9,6 @@ import java.util.Random;
 import com.ugav.algo.Graph.DirectedType;
 import com.ugav.algo.Graph.Edge;
 import com.ugav.algo.Graph.WeightFunction;
-import com.ugav.algo.Graphs.Ref;
 
 public class MSTKargerKleinTarjan1995 implements MST {
 
@@ -57,7 +56,7 @@ public class MSTKargerKleinTarjan1995 implements MST {
 		Collection<Edge<Ref<E>>> f2 = calcMST0(g2, w0);
 
 		for (Edge<Ref<E>> e : f2)
-			f0.add(e.val().orig);
+			f0.add(e.val().e);
 		return f0;
 	}
 
@@ -138,6 +137,39 @@ public class MSTKargerKleinTarjan1995 implements MST {
 		}
 
 		return lightEdges;
+	}
+
+	public static class Ref<E> {
+
+		public final Edge<E> e;
+		public final double w;
+
+		public Ref(Edge<E> e, double w) {
+			this.e = e;
+			this.w = w;
+		}
+
+		@Override
+		public int hashCode() {
+			return e.hashCode();
+		}
+
+		@Override
+		public boolean equals(Object other) {
+			if (other == this)
+				return true;
+			if (!(other instanceof Ref))
+				return false;
+
+			Ref<?> o = (Ref<?>) other;
+			return e.equals(o.e);
+		}
+
+		@Override
+		public String toString() {
+			return e != null ? String.valueOf(e.val()) : Double.toString(w);
+		}
+
 	}
 
 }
