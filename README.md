@@ -1,7 +1,10 @@
-This repository contains implementation for various algorithms.
+# Algo
 
-Implemented algorithms:
- - Heaps
+Algo is a collection of algorithms implemented in Java. It contains mostly algorithms for various graphs problems and some utilities data structures and array algorithms.
+
+## Supported algorithms
+
+- Heaps
    - Binary heap
    - Binomial heap
    - Fibonacci heap
@@ -39,7 +42,3 @@ Additional utils:
  - Topological sort calculation (DAG) O(m + n)
  - SSSP DAG (directed acyclic graph) O(m + n)
  - Arrays utils, K'th element O(n), bucket partition O(nlogk) where k is the bucket size
-
-Most of the more complicated algorithms were presented by Uri Zwick in "analysis of algorithms" course.
-The slides for the course can be found in docs/analysis_of_algorithms_Uri_Zwick
-https://www.cs.tau.ac.il/~zwick/ALG-ANALYSIS-2021.html
