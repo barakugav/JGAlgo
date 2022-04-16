@@ -3,13 +3,13 @@ package com.ugav.algo;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.IntConsumer;
 
+import com.ugav.algo.Graph.DirectedType;
 import com.ugav.algo.Graph.Edge;
 import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.Utils.NullList;
@@ -50,13 +50,13 @@ public class MatchingWeightedGabow2018 implements MatchingWeighted {
 	private static class Worker<E> {
 
 		/* the graph */
-		final Graph<E> g;
+		final Graph<EdgeVal<E>> g;
 
 		/* the weight function */
 		final WeightFunction<E> w;
 
 		/* vertex -> matched edge */
-		final Edge<E>[] matched;
+		final Edge<EdgeVal<E>>[] matched;
 
 		/* vertex -> trivial blossom */
 		final Blossom<E>[] blossoms;
@@ -142,13 +142,13 @@ public class MatchingWeightedGabow2018 implements MatchingWeighted {
 			 * the edge that connected this blossom and it's left brother, null if left is
 			 * null
 			 */
-			Edge<E> toLeftEdge;
+			Edge<EdgeVal<E>> toLeftEdge;
 
 			/*
 			 * the edge that connected this blossom and it's right brother, null if right is
 			 * null
 			 */
-			Edge<E> toRightEdge;
+			Edge<EdgeVal<E>> toRightEdge;
 
 			/*
 			 * index of root vertex in the search tree, -1 if this blossom is out. relevant
@@ -157,7 +157,7 @@ public class MatchingWeightedGabow2018 implements MatchingWeighted {
 			int root;
 
 			/* edge that connect this blossom to the parent blossom in the search tree */
-			Edge<E> treeParentEdge;
+			Edge<EdgeVal<E>> treeParentEdge;
 
 			/*
 			 * true if this blossom is even, maintained only for trivial blossoms and top
@@ -221,11 +221,27 @@ public class MatchingWeightedGabow2018 implements MatchingWeighted {
 
 		}
 
-		private static class EdgeEvent<E> {
+		static class EdgeVal<E> {
 			final Edge<E> e;
+			Edge<EdgeVal<E>> twin;
+			Blossom<E> b0;
+			Blossom<E> b1;
+
+			EdgeVal(Edge<E> e) {
+				this.e = e;
+			}
+
+			@Override
+			public String toString() {
+				return e.toString();
+			}
+		}
+
+		private static class EdgeEvent<E> {
+			final Edge<EdgeVal<E>> e;
 			final double slack;
 
-			EdgeEvent(Edge<E> e, double slack) {
+			EdgeEvent(Edge<EdgeVal<E>> e, double slack) {
 				this.e = e;
 				this.slack = slack;
 			}
@@ -238,10 +254,18 @@ public class MatchingWeightedGabow2018 implements MatchingWeighted {
 
 		@SuppressWarnings("unchecked")
 		Worker(Graph<E> g, WeightFunction<E> w) {
-			this.g = g;
+			int n = g.vertices();
+			this.g = new GraphArray<>(DirectedType.Directed, n);
 			this.w = w;
 
-			int n = g.vertices();
+			for (Edge<E> e : g.edges()) {
+				Edge<EdgeVal<E>> e1, e2;
+				(e1 = this.g.addEdge(e.u(), e.v())).val(new EdgeVal<>(e));
+				(e2 = this.g.addEdge(e.v(), e.u())).val(new EdgeVal<>(e.twin()));
+				e1.val().twin = e2;
+				e2.val().twin = e1;
+			}
+
 			matched = new Edge[n];
 
 			blossoms = new Blossom[n];
@@ -269,8 +293,8 @@ public class MatchingWeightedGabow2018 implements MatchingWeighted {
 
 			// init dual value of all vertices as maxWeight / 2
 			double maxWeight = Double.MIN_VALUE;
-			for (Edge<E> e : g.edges())
-				maxWeight = Math.max(maxWeight, w.weight(e));
+			for (Edge<EdgeVal<E>> e : g.edges())
+				maxWeight = Math.max(maxWeight, w.weight(e.val().e));
 			double delta1Threshold = maxWeight / 2;
 			for (int u = 0; u < n; u++)
 				vertexDualValBase[u] = delta1Threshold;
@@ -338,7 +362,7 @@ public class MatchingWeightedGabow2018 implements MatchingWeighted {
 						growStep();
 					else if (deltaNext == delta3) {
 						assert0(delta == blossomEvents.findMin().slack / 2);
-						Edge<E> e = blossomEvents.extractMin().e;
+						Edge<EdgeVal<E>> e = blossomEvents.extractMin().e;
 						assert0(isEven(e.u()) && isEven(e.v()));
 
 						if (find0(e.u()).root == find0(e.v()).root)
@@ -385,21 +409,21 @@ public class MatchingWeightedGabow2018 implements MatchingWeighted {
 			List<Edge<E>> res = new ArrayList<>();
 			for (int u = 0; u < n; u++)
 				if (matched[u] != null && u < matched[u].v())
-					res.add(matched[u]);
+					res.add(matched[u].val().e);
 			return res;
 		}
 
 		private void growStep() {
 			// Grow step
 			assert0(delta == growEventsKey(growEvents.findMin()));
-			Edge<E> e = growEvents.extractMin().e;
+			Edge<EdgeVal<E>> e = growEvents.extractMin().e;
 
 			Blossom<E> U = find0(e.u()), V = find1(e.v());
 			assert0(!V.isEven && !isInTree(V));
 
 			// Add odd vertex
 			V.root = U.root;
-			V.treeParentEdge = e.twin();
+			V.treeParentEdge = e.val().twin;
 			V.isEven = false;
 			V.delta1 = delta;
 			assert0(V.growHandle.get().e == e);
@@ -410,10 +434,10 @@ public class MatchingWeightedGabow2018 implements MatchingWeighted {
 			}
 
 			// Immediately add it's matched edge and vertex as even vertex
-			Edge<E> matchedEdge = matched[V.base];
+			Edge<EdgeVal<E>> matchedEdge = matched[V.base];
 			V = topBlossom(matchedEdge.v());
 			V.root = U.root;
-			V.treeParentEdge = matchedEdge.twin();
+			V.treeParentEdge = matchedEdge.val().twin;
 			if (V.growHandle != null) {
 				growEvents.removeHandle(V.growHandle);
 				V.growHandle = null;
@@ -421,7 +445,7 @@ public class MatchingWeightedGabow2018 implements MatchingWeighted {
 			makeEven(V);
 		}
 
-		private void blossomStep(Edge<E> e) {
+		private void blossomStep(Edge<EdgeVal<E>> e) {
 			assert0(isEven(e.u()) && isEven(e.v()));
 			Blossom<E> U = find0(e.u()), V = find0(e.v());
 			if (U == V)
@@ -444,7 +468,7 @@ public class MatchingWeightedGabow2018 implements MatchingWeighted {
 			for (Blossom<E> b : bs) {
 				boolean prevIsRight = b == U;
 				Blossom<E> prev = b == U ? V : U;
-				Edge<E> toPrevEdge = b == U ? e : e.twin();
+				Edge<EdgeVal<E>> toPrevEdge = b == U ? e : e.val().twin;
 
 				while (true) {
 					// handle even sub blossom
@@ -458,7 +482,7 @@ public class MatchingWeightedGabow2018 implements MatchingWeighted {
 					if (b == base)
 						break;
 					prev = b;
-					toPrevEdge = matched[b.base].twin();
+					toPrevEdge = matched[b.base].val().twin;
 					assert0(matched[b.base] == b.treeParentEdge);
 					b = topBlossom(toPrevEdge.u());
 
@@ -481,7 +505,7 @@ public class MatchingWeightedGabow2018 implements MatchingWeighted {
 					}
 
 					prev = b;
-					toPrevEdge = b.treeParentEdge.twin();
+					toPrevEdge = b.treeParentEdge.val().twin;
 					b = topBlossom(toPrevEdge.u());
 				}
 			}
@@ -594,6 +618,10 @@ public class MatchingWeightedGabow2018 implements MatchingWeighted {
 			for (Blossom<E> b = top;;) {
 				Blossom<E> nextB = b.left;
 				b.right = b.left = null;
+				b.toRightEdge.val().b0 = b.toRightEdge.val().b1 = null;
+				b.toRightEdge.val().twin.val().b0 = b.toRightEdge.val().twin.val().b1 = null;
+				b.toLeftEdge.val().b0 = b.toLeftEdge.val().b1 = null;
+				b.toLeftEdge.val().twin.val().b0 = b.toLeftEdge.val().twin.val().b1 = null;
 				b.toRightEdge = b.toLeftEdge = null;
 				if (nextB == top)
 					break;
@@ -601,22 +629,22 @@ public class MatchingWeightedGabow2018 implements MatchingWeighted {
 			}
 		}
 
-		private void augmentStep(Edge<E> bridge) {
-			// TODO this function can be implemented MUCH faster.
-
+		private void augmentStep(Edge<EdgeVal<E>> bridge) {
 			Blossom<E> U = topBlossom(bridge.u()), V = topBlossom(bridge.v());
 			@SuppressWarnings("unchecked")
 			Blossom<E>[] bs = new Blossom[] { U, V };
 			for (Blossom<E> b : bs) {
 
 				assert0(b.isEven);
-				Edge<E> e = null;
+				Edge<EdgeVal<E>> e = null;
 				for (int u = b == U ? bridge.u() : bridge.v();;) {
 					assert0(b.isEven);
 					augmentPath(b, u);
 					if (e != null) {
 						matched[e.u()] = e;
-						matched[e.v()] = e.twin();
+						matched[e.v()] = e.val().twin;
+						assert0(matched[e.u()] != null);
+						assert0(matched[e.v()] != null);
 					}
 					if (b.treeParentEdge == null)
 						break;
@@ -633,7 +661,62 @@ public class MatchingWeightedGabow2018 implements MatchingWeighted {
 				}
 			}
 			matched[bridge.u()] = bridge;
-			matched[bridge.v()] = bridge.twin();
+			matched[bridge.v()] = bridge.val().twin;
+		}
+
+		private void augmentPath(Blossom<E> B, int u) {
+			if (B.base == u)
+				return;
+
+			Edge<EdgeVal<E>> m = matched[u];
+			matched[m.u()] = matched[m.v()] = null;
+			int v;
+			Blossom<E> b0, b1, b2;
+			if (m.u() == u) {
+//				u = m.u();
+				v = m.v();
+				b0 = m.val().b0;
+				b1 = m.val().b1;
+			} else {
+//				u = m.v();
+				v = m.u();
+				b0 = m.val().b1;
+				b1 = m.val().b0;
+			}
+
+			Edge<EdgeVal<E>> xy;
+			if (b0.right == b1) {
+				b2 = b1.right;
+				xy = b1.toRightEdge;
+			} else {
+				assert0(b0.left == b1);
+				b2 = b1.left;
+				xy = b1.toLeftEdge;
+			}
+
+			assert0(b0 != b1);
+			assert0(b1 != b2);
+			assert0(b2 != b0);
+			assert0(b1.base == v);
+
+			augmentPath(b1, xy.u());
+			augmentPath(B, xy.v());
+			matched[xy.u()] = xy;
+			matched[xy.v()] = xy.val().twin;
+
+			assert0(matched[xy.u()].u() == xy.u());
+			assert0(matched[xy.u()].v() == xy.v());
+			assert0(matched[xy.v()].u() == xy.v());
+			assert0(matched[xy.v()].u() == xy.v());
+
+			assert0(matched[b1.base] != null);
+			assert0(matched[b2.base] != null);
+
+			for (Blossom<E> p = b0.parent;; p = p.parent) {
+				if (p == B.parent)
+					break;
+				p.base = u;
+			}
 		}
 
 		private boolean isEven(int v) {
@@ -693,15 +776,6 @@ public class MatchingWeightedGabow2018 implements MatchingWeighted {
 
 		private Blossom<E> topBlossom(int v) {
 			return isEven(v) ? find0(v) : find1(v);
-		}
-
-		private Blossom<E> subBlossom(int v, Blossom<E> parent) {
-			// TODO remove
-			Blossom<E> b = blossoms[v];
-			assert0(b != null);
-			while (b.parent != parent)
-				b = b.parent;
-			return b;
 		}
 
 		private void forEachBlossom(Consumer<Blossom<E>> f) {
@@ -784,11 +858,11 @@ public class MatchingWeightedGabow2018 implements MatchingWeighted {
 
 		private void insertGrowEventsFromVertex(int u) {
 			double Yu = delta + dualVal(u);
-			for (Edge<E> e : Utils.iterable(g.edges(u))) {
+			for (Edge<EdgeVal<E>> e : Utils.iterable(g.edges(u))) {
 				int v = e.v();
 				if (isEven(v))
 					continue;
-				double slackBar = Yu + vertexDualValBase[v] - w.weight(e);
+				double slackBar = Yu + vertexDualValBase[v] - w.weight(e.val().e);
 				if (vToGrowEvent[v] == null || slackBar < vToGrowEvent[v].slack) {
 					EdgeEvent<E> event = vToGrowEvent[v] = new EdgeEvent<>(e, slackBar);
 					if (!find1.decreaseKey(vToFind1Idx[v], event))
@@ -810,7 +884,7 @@ public class MatchingWeightedGabow2018 implements MatchingWeighted {
 			assert0(isEven(u));
 			Blossom<E> U = find0(u);
 			double Yu = delta + dualVal(u);
-			for (Edge<E> e : Utils.iterable(g.edges(u))) {
+			for (Edge<EdgeVal<E>> e : Utils.iterable(g.edges(u))) {
 				int v = e.v();
 				if (!isEven(v))
 					continue;
@@ -818,108 +892,29 @@ public class MatchingWeightedGabow2018 implements MatchingWeighted {
 				if (U == V)
 					continue;
 				double Yv = delta + dualVal(v);
-				double slackBar = Yu + Yv - w.weight(e);
+				double slackBar = Yu + Yv - w.weight(e.val().e);
 
 				assert0(slackBar >= 0);
 				blossomEvents.insert(new EdgeEvent<>(e, slackBar));
 			}
 		};
 
-		private void augmentPath(Blossom<E> b, int u) {
-			if (b.base == u)
-				return;
-
-			final Blossom<E> b0 = subBlossom(u, b);
-			final Blossom<E> bk = subBlossom(b.base, b);
-			boolean left = matched[b0.toLeftEdge.u()] == b0.toLeftEdge;
-
-			int newBase = u;
-			Edge<E> e = null;
-			for (Blossom<E> p = b0;;) {
-				augmentPath(p, u);
-				if (e != null) {
-					matched[e.u()] = e;
-					matched[e.v()] = e.twin();
-				}
-				if (p == bk) {
-					b.base = newBase;
-					return;
-				}
-				if (left) {
-					p = p.left;
-					u = p.toLeftEdge.u();
-				} else {
-					p = p.right;
-					u = p.toRightEdge.u();
-				}
-				assert0(p != bk);
-				augmentPath(p, u);
-
-				if (left) {
-					e = p.toLeftEdge;
-					u = p.toLeftEdge.v();
-					p = p.left;
-				} else {
-					e = p.toRightEdge;
-					u = p.toRightEdge.v();
-					p = p.right;
-				}
-			}
-		}
-
-		// TODO check if needed
-		@SuppressWarnings("unused")
-		private List<Edge<E>> findAugPath(Blossom<E> b, int u) {
-			if (b.base == u)
-				return new ArrayList<>(0);
-			final Blossom<E> b0 = subBlossom(u, b);
-			final Blossom<E> bk = subBlossom(b.base, b);
-			boolean left = matched[b0.toLeftEdge.u()] == b0.toLeftEdge;
-			List<Edge<E>> path = new ArrayList<>();
-			for (Blossom<E> p = b0;;) {
-				path.addAll(findAugPath(p, u));
-				if (p == bk)
-					return path;
-				if (left) {
-					path.add(p.toLeftEdge);
-					p = p.left;
-					u = p.toLeftEdge.u();
-				} else {
-					path.add(p.toRightEdge);
-					p = p.right;
-					u = p.toRightEdge.u();
-				}
-				assert0(p != bk);
-				path.addAll(reverse(findAugPath(p, u)));
-				if (left) {
-					path.add(p.toLeftEdge);
-					u = p.toLeftEdge.v();
-					p = p.left;
-				} else {
-					path.add(p.toRightEdge);
-					u = p.toRightEdge.v();
-					p = p.right;
-				}
-			}
-		}
-
-		private static <E> List<E> reverse(List<E> l) {
-			Collections.reverse(l);
-			return l;
-		}
-
-		private static <E> void connectSubBlossoms(Blossom<E> left, Blossom<E> right, Edge<E> leftToRightEdge,
+		private static <E> void connectSubBlossoms(Blossom<E> left, Blossom<E> right, Edge<EdgeVal<E>> leftToRightEdge,
 				boolean reverse) {
 			if (reverse) {
 				Blossom<E> temp = left;
 				left = right;
 				right = temp;
-				leftToRightEdge = leftToRightEdge.twin();
+				leftToRightEdge = leftToRightEdge.val().twin;
 			}
 			left.right = right;
 			left.toRightEdge = leftToRightEdge;
 			right.left = left;
-			right.toLeftEdge = leftToRightEdge.twin();
+			right.toLeftEdge = leftToRightEdge.val().twin;
+			leftToRightEdge.val().b0 = left;
+			leftToRightEdge.val().b1 = right;
+			leftToRightEdge.val().twin.val().b0 = right;
+			leftToRightEdge.val().twin.val().b1 = left;
 		}
 
 		private Blossom<E> lcaInSearchTree(Blossom<E> b1, Blossom<E> b2) {

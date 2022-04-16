@@ -35,6 +35,7 @@ Algo is a collection of algorithms implemented in Java. It contains mostly algor
    - Gabow1976 for general unweighted graphs, O(m * n * alpha(m,n)) (alpha is inverse Ackermann's function)
    - SSSP bipartite weighted matching, O(mn + n^2logn)
    - Hungarian method for bipartite weighted matching, O(mn + n^2logn)
+   - MatchingWeightedGabow2018 for general weighted graphs, O(m * n * logn), (WIP for O(m*n + n^2 logn))
 
 Additional utils:
  - BFS / DFS
