@@ -31,7 +31,7 @@ public class GraphsTest extends TestUtils {
 			List<Integer> invalidVertices = new ArrayList<>();
 			Graphs.runBFS(g, source, (v, e) -> {
 				if (visited[v] || (v != source && e.v() != v))
-					invalidVertices.add(v);
+					invalidVertices.add(Integer.valueOf(v));
 				visited[v] = true;
 				return true;
 			});
@@ -54,7 +54,7 @@ public class GraphsTest extends TestUtils {
 			List<Integer> invalidVertices = new ArrayList<>();
 			Graphs.runDFS(g, source, (v, pathFromSource) -> {
 				if (visited[v] || (v != source && pathFromSource.get(pathFromSource.size() - 1).v() != v))
-					invalidVertices.add(v);
+					invalidVertices.add(Integer.valueOf(v));
 				visited[v] = true;
 				return true;
 			});
@@ -194,9 +194,9 @@ public class GraphsTest extends TestUtils {
 			for (int i = 0; i < n; i++) {
 				int u = topolSort[i];
 				for (Edge<Void> e : Utils.iterable(g.edges(u)))
-					if (seenVertices.contains(e.v()))
+					if (seenVertices.contains(Integer.valueOf(e.v())))
 						return false;
-				seenVertices.add(u);
+				seenVertices.add(Integer.valueOf(u));
 			}
 			return true;
 		});

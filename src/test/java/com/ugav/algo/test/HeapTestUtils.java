@@ -110,6 +110,7 @@ class HeapTestUtils extends TestUtils {
 		Insert, Remove, FindMin, ExtractMin, DecreaseKey
 	}
 
+	@SuppressWarnings("boxing")
 	private static class HeapTracker {
 
 		private final NavigableMap<Integer, Integer> insertedElms;
@@ -187,6 +188,7 @@ class HeapTestUtils extends TestUtils {
 		return true;
 	}
 
+	@SuppressWarnings("boxing")
 	private static boolean testHeap(Heap<Integer> heap, HeapTracker tracker, int n, int m, TestMode mode) {
 		Random rand = new Random(nextRandSeed());
 		int[] a = Utils.randArray(n, 0, 65536, nextRandSeed());

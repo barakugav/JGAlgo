@@ -2,6 +2,7 @@ package com.ugav.algo;
 
 public abstract class GraphAbstract<E> implements Graph<E> {
 
+	@Override
 	public boolean hasEdge(int u, int v) {
 		return getEdge(u, v) != null;
 	}

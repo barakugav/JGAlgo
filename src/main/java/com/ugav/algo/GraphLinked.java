@@ -338,6 +338,7 @@ public class GraphLinked<E> extends GraphAbstract<E> {
 			p = edges[0];
 		}
 
+		@Override
 		public boolean hasNext() {
 			do {
 				while (p != null) {

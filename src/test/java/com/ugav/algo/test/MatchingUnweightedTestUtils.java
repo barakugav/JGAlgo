@@ -47,12 +47,12 @@ class MatchingUnweightedTestUtils extends TestUtils {
 		Map<Integer, Edge<E>> matched = new HashMap<>();
 		for (Edge<E> e : matching) {
 			for (int v : new int[] { e.u(), e.v() }) {
-				Edge<E> dup = matched.get(v);
+				Edge<E> dup = matched.get(Integer.valueOf(v));
 				if (dup != null) {
 					printTestStr("Invalid matching, clash: " + dup + " " + e + " \n");
 					return false;
 				}
-				matched.put(v, e);
+				matched.put(Integer.valueOf(v), e);
 			}
 		}
 		return true;
@@ -65,7 +65,7 @@ class MatchingUnweightedTestUtils extends TestUtils {
 		for (int u = 0; u < n; u++) {
 			graph[u] = new ArrayList<>();
 			for (Edge<E> e : Utils.iterable(g.edges(u)))
-				graph[u].add(e.v());
+				graph[u].add(Integer.valueOf(e.v()));
 		}
 		return EdmondsMaximumCardinalityMatching.maxMatching(graph);
 	}

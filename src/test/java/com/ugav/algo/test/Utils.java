@@ -10,6 +10,7 @@ public class Utils {
 		printArr(a, true);
 	}
 
+	@SuppressWarnings("boxing")
 	static void printArr(int a[], boolean printIndicies) {
 		for (int i = 0; i < a.length; i++)
 			System.out.print("" + String.format("%03d", a[i]) + ", ");

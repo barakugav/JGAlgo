@@ -34,7 +34,7 @@ public class MSTBoruvka1926 implements MST {
 			throw new IllegalArgumentException();
 		Triple<int[], Integer, Collection<Edge<E>>> r = calcMST0(g, w, numberOfRounds);
 		int[] tree = r.e1;
-		int treeNum = r.e2;
+		int treeNum = r.e2.intValue();
 		Collection<Edge<E>> mstEdges = r.e3;
 
 		Graph<R> contractedG = new GraphArray<>(DirectedType.Undirected, treeNum);
@@ -139,7 +139,7 @@ public class MSTBoruvka1926 implements MST {
 				vTree[v] = vTreeNext[vTree[v]];
 		}
 
-		return Triple.valueOf(vTree, treeNum, mst);
+		return Triple.valueOf(vTree, Integer.valueOf(treeNum), mst);
 	}
 
 }

@@ -31,7 +31,7 @@ public class ArraysTest extends TestUtils {
 
 		Integer[] A = toIntegerArr(a);
 		int k = rand.nextInt(A.length);
-		int actual = Arrays.getKthElement(A, k, null);
+		int actual = Arrays.getKthElement(A, k, null).intValue();
 
 		java.util.Arrays.sort(a);
 		int expected = a[k];
@@ -60,7 +60,7 @@ public class ArraysTest extends TestUtils {
 				int bucketBegin = b * bucketSize;
 				int bucketEnd = Math.min(bucketBegin + bucketSize, n);
 				for (int i = bucketBegin; i < bucketEnd; i++) {
-					if (!(a[bucketBegin] <= A[i] && A[i] <= a[bucketEnd - 1])) {
+					if (!(a[bucketBegin] <= A[i].intValue() && A[i].intValue() <= a[bucketEnd - 1])) {
 						printTestStr("Bucket element " + A[i] + " is not in range [" + a[bucketBegin] + ", "
 								+ a[bucketEnd - 1] + "]\n");
 						return false;
@@ -75,7 +75,7 @@ public class ArraysTest extends TestUtils {
 	private static Integer[] toIntegerArr(int[] a) {
 		Integer[] A = new Integer[a.length];
 		for (int i = 0; i < a.length; i++)
-			A[i] = a[i];
+			A[i] = Integer.valueOf(a[i]);
 		return A;
 	}
 

@@ -34,7 +34,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 			throw new IllegalArgumentException("only trees are supported");
 		if (t.vertices() == 0)
 			return new Edge[queriesNum];
-		return new Worker<E>(t, w).calcTPM(queries, queriesNum);
+		return new Worker<>(t, w).calcTPM(queries, queriesNum);
 	}
 
 	private static class Worker<E> {
@@ -59,7 +59,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 		Edge<E>[] calcTPM(int[] queries, int queriesNum) {
 			Pair<Graph<Edge<E>>, Integer> r = buildBoruvkaFullyBranchingTree();
 			Graph<Edge<E>> t = r.e1;
-			int root = r.e2;
+			int root = r.e2.intValue();
 
 			int[] lcaQueries = splitQueriesIntoLCAQueries(t, root, queries, queriesNum);
 
@@ -268,7 +268,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 				G.clear();
 				G = gNext;
 			}
-			return Pair.valueOf(t, vTv[0]);
+			return Pair.valueOf(t, Integer.valueOf(vTv[0]));
 		}
 
 		private static <E> int[] splitQueriesIntoLCAQueries(Graph<E> t, int root, int[] queries, int queriesNum) {

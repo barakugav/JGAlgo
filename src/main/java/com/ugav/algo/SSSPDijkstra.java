@@ -20,6 +20,7 @@ public class SSSPDijkstra implements SSSP {
 		return INSTANCE;
 	}
 
+	@Override
 	public <E> SSSP.Result<E> calcDistances(Graph<E> g, WeightFunction<E> w, int source) {
 		int n = g.vertices();
 		double[] distances = new double[n];

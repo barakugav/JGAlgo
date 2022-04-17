@@ -287,7 +287,7 @@ public class Graphs {
 			}
 			compNum++;
 		}
-		return Pair.valueOf(compNum, comp);
+		return Pair.valueOf(Integer.valueOf(compNum), comp);
 	}
 
 	/**
@@ -359,7 +359,7 @@ public class Graphs {
 					break;
 			}
 		}
-		return Pair.valueOf(compNum, comp);
+		return Pair.valueOf(Integer.valueOf(compNum), comp);
 	}
 
 	public static <E> int[] calcTopologicalSortingDAG(Graph<E> g) {
@@ -461,7 +461,8 @@ public class Graphs {
 
 		return precision == unlimitedPrecision
 				? formatAdjacencyMatrix(g, e -> e == null ? "-" : Double.toString(w.weight(e)))
-				: formatAdjacencyMatrix(g, e -> e == null ? "-" : String.format("%." + precision + "f", w.weight(e)));
+				: formatAdjacencyMatrix(g,
+						e -> e == null ? "-" : String.format("%." + precision + "f", Double.valueOf(w.weight(e))));
 	}
 
 	public static <E> String formatAdjacencyMatrixWeightedInt(Graph<E> g, WeightFunctionInt<E> w) {
@@ -496,12 +497,12 @@ public class Graphs {
 		StringBuilder s = new StringBuilder();
 		s.append(strMult(" ", vertexLabelCellSize));
 		for (int v = 0; v < n; v++)
-			s.append(String.format("% " + cellSize + "d", v));
+			s.append(String.format("% " + cellSize + "d", Integer.valueOf(v)));
 		s.append('\n');
 
 		/* format adjacency matrix */
 		for (int u = 0; u < n; u++) {
-			s.append(String.format("% " + vertexLabelCellSize + "d", u));
+			s.append(String.format("% " + vertexLabelCellSize + "d", Integer.valueOf(u)));
 			for (int v = 0; v < n; v++) {
 				if (strs[u][v].length() < cellSize)
 					s.append(strMult(" ", cellSize - strs[u][v].length()));

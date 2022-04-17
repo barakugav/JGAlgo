@@ -55,7 +55,7 @@ public class MDSTTarjan1977 implements MDST {
 
 	@SuppressWarnings("unchecked")
 	private static <E> Edge<E> heavyEdge() {
-		return (Edge<E>) HeavyEdge;
+		return HeavyEdge;
 	}
 
 	private static final double HeavyEdgeWeight = Double.MAX_VALUE;
@@ -132,7 +132,7 @@ public class MDSTTarjan1977 implements MDST {
 		int n = g.vertices();
 
 		Pair<Integer, int[]> pair = Graphs.findStrongConnectivityComponents(g);
-		int N = pair.e1;
+		int N = pair.e1.intValue();
 		int[] v2V = pair.e2;
 
 		if (N > 1) {

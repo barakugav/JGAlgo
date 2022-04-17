@@ -71,6 +71,7 @@ public class SplitFindMinArrayTest extends TestUtils {
 		});
 	}
 
+	@SuppressWarnings("boxing")
 	private static boolean testSplitFindMin(Supplier<? extends SplitFindMin<Double>> builder, int n, int m) {
 		Random rand = new Random(nextRandSeed());
 		SplitFindMin<Double> sf = builder.get();

@@ -13,6 +13,7 @@ import com.ugav.algo.test.GraphsTestUtils.RandomGraphBuilder;
 
 public class MaxFlowEdmondsKarpTest extends TestUtils {
 
+	@SuppressWarnings("boxing")
 	private static Pair<Graph<Pair<Double, Double>>, FlowNetwork<Pair<Double, Double>>> randNetword(int n, int m) {
 		Graph<Pair<Double, Double>> g = new RandomGraphBuilder().n(n).m(m).directed(true).doubleEdges(false)
 				.selfEdges(false).cycles(true).connected(false).build();
@@ -109,6 +110,7 @@ public class MaxFlowEdmondsKarpTest extends TestUtils {
 		return fordFulkerson(capacities, source, target);
 	}
 
+	@SuppressWarnings("boxing")
 	private static boolean bfs(double rGraph[][], int s, int t, int parent[]) {
 		int n = rGraph.length;
 		boolean visited[] = new boolean[n];

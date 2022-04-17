@@ -3,5 +3,4 @@ Travelling Salesperson Problem (TSP) (2-appx using MST, 1.5-appx using weighted 
 Chinese Postman Problem (CPP)
 spanning tree whose maximal weight is minimal
 min cut
-change weight function to accept E instead of Edge<E>
 change algos to reuseable objects instead of singletons to avoid memory allocations

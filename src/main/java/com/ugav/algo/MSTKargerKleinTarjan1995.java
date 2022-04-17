@@ -77,7 +77,7 @@ public class MSTKargerKleinTarjan1995 implements MST {
 		int n = f.vertices();
 		/* find connectivity components in the forest, each one of them is a tree */
 		Pair<Integer, int[]> r = Graphs.findConnectivityComponents(f);
-		int treeCount = r.e1;
+		int treeCount = r.e1.intValue();
 		int[] vToTree = r.e2;
 		int[] treeSizes = new int[treeCount];
 		for (int u = 0; u < n; u++)
@@ -95,7 +95,7 @@ public class MSTKargerKleinTarjan1995 implements MST {
 
 		for (Edge<E> e : f.edges()) {
 			int un = vToVnew[e.u()], vn = vToVnew[e.v()];
-			trees[vToTree[e.u()]].addEdge(un, vn).val(w.weight(e));
+			trees[vToTree[e.u()]].addEdge(un, vn).val(Double.valueOf(w.weight(e)));
 		}
 
 		/*
@@ -132,7 +132,7 @@ public class MSTKargerKleinTarjan1995 implements MST {
 		int[] tpmIdx = new int[trees.length];
 		for (Edge<E> e : g.edges()) {
 			int u = e.u(), v = e.v(), ut = vToTree[u];
-			if (ut != vToTree[v] || w.weight(e) <= tpmResults[ut][tpmIdx[ut]++].val())
+			if (ut != vToTree[v] || w.weight(e) <= tpmResults[ut][tpmIdx[ut]++].val().doubleValue())
 				lightEdges.add(e);
 		}
 

@@ -96,8 +96,8 @@ public class RMQGabowBentleyTarjan1984 extends RMQLinearAbstract {
 		for (int b = 0; b < ds.blockNum; b++) {
 			int key = calcBlockKey(ds, b);
 
-			ds.interBlocksDs[b] = tables.computeIfAbsent(key, k -> {
-				int demoBlock[] = calcDemoBlock(k, ds.blockSize);
+			ds.interBlocksDs[b] = tables.computeIfAbsent(Integer.valueOf(key), k -> {
+				int demoBlock[] = calcDemoBlock(k.intValue(), ds.blockSize);
 				return RMQLookupTable.getInstace().preprocessRMQ(new ArrayIntComparator(demoBlock), demoBlock.length);
 			});
 		}

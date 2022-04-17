@@ -93,7 +93,7 @@ class TestUtils {
 	}
 
 	static void initTestRand(String testName, long seed) {
-		seedGenerators.put(testName, Pair.valueOf(seed, null));
+		seedGenerators.put(testName, Pair.valueOf(Long.valueOf(seed), null));
 	}
 
 	static void finalizeTestRand(String testName) {
@@ -105,7 +105,7 @@ class TestUtils {
 	}
 
 	static long getTestRandBaseSeed(String testName) {
-		return seedGenerators.get(testName).e1;
+		return seedGenerators.get(testName).e1.longValue();
 	}
 
 	static boolean runTestMultiple(int[][] phases, Predicate<int[]> test) {
@@ -131,7 +131,7 @@ class TestUtils {
 	static long nextRandSeed() {
 		Pair<Long, Random> generator = seedGenerators.get(getTestFullname());
 		if (generator.e2 == null)
-			generator.e2 = new Random(generator.e1 ^ 0x555bfc5796f83a2dL);
+			generator.e2 = new Random(generator.e1.longValue() ^ 0x555bfc5796f83a2dL);
 		return generator.e2.nextLong() ^ 0x3d61be24f3910c88L;
 	}
 

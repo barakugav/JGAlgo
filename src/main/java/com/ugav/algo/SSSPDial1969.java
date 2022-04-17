@@ -25,6 +25,7 @@ public class SSSPDial1969 implements SSSP {
 		return INSTANCE;
 	}
 
+	@Override
 	public <E> SSSP.Result<E> calcDistances(Graph<E> g, WeightFunction<E> w0, int source) {
 		if (!(w0 instanceof WeightFunctionInt<?>))
 			throw new IllegalArgumentException("only int weights are supported");

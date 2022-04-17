@@ -22,9 +22,9 @@ class RandomIntUnique {
 		int w;
 		do {
 			w = rand.nextInt(minWeight, maxWeight);
-		} while (usedWeights.contains(w));
+		} while (usedWeights.contains(Integer.valueOf(w)));
 
-		usedWeights.add(w);
+		usedWeights.add(Integer.valueOf(w));
 
 		return w;
 	}

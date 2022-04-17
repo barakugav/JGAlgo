@@ -160,6 +160,7 @@ public interface Graph<E> {
 	@FunctionalInterface
 	public static interface WeightFunctionInt<E> extends WeightFunction<E> {
 
+		@Override
 		default double weight(Edge<E> e) {
 			return weightInt(e);
 		}
