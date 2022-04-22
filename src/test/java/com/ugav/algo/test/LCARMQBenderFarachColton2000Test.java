@@ -8,6 +8,7 @@ import com.ugav.algo.Graphs;
 import com.ugav.algo.LCA;
 import com.ugav.algo.LCARMQBenderFarachColton2000;
 
+@SuppressWarnings("boxing")
 public class LCARMQBenderFarachColton2000Test extends TestUtils {
 
 	private static int[][] randLCAQueries(Graph<Void> g, int r, int queriesNum) {
@@ -69,7 +70,7 @@ public class LCARMQBenderFarachColton2000Test extends TestUtils {
 			int expected = query[2];
 			int actual = result.query(u, v);
 			if (expected != actual) {
-				printTestStr(" [" + u + "," + v + "] -> " + expected + "" + actual + "\n");
+				printTestStr(" [", u, ",", v, "] -> ", expected, " ", actual, "\n");
 				return false;
 			}
 		}

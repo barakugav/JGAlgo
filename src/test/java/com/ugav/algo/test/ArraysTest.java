@@ -5,6 +5,7 @@ import java.util.Random;
 
 import com.ugav.algo.Arrays;
 
+@SuppressWarnings("boxing")
 public class ArraysTest extends TestUtils {
 
 	@Test
@@ -40,7 +41,7 @@ public class ArraysTest extends TestUtils {
 		int expected = a[k];
 
 		if (actual != expected) {
-			printTestStr("Unexpected K'th elemet: " + actual + " != " + expected + "\n");
+			printTestStr("Unexpected K'th elemet: ", actual, " != ", expected, "\n");
 			return false;
 		}
 		return true;
@@ -65,8 +66,8 @@ public class ArraysTest extends TestUtils {
 				int bucketEnd = Math.min(bucketBegin + bucketSize, n);
 				for (int i = bucketBegin; i < bucketEnd; i++) {
 					if (!(a[bucketBegin] <= A[i].intValue() && A[i].intValue() <= a[bucketEnd - 1])) {
-						printTestStr("Bucket element " + A[i] + " is not in range [" + a[bucketBegin] + ", "
-								+ a[bucketEnd - 1] + "]\n");
+						printTestStr("Bucket element ", A[i], " is not in range [", a[bucketBegin], ", ",
+								a[bucketEnd - 1], "]\n");
 						return false;
 					}
 				}

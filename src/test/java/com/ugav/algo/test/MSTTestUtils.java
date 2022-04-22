@@ -15,6 +15,7 @@ import com.ugav.algo.Graphs;
 import com.ugav.algo.MST;
 import com.ugav.algo.MSTKruskal1956;
 
+@SuppressWarnings("boxing")
 class MSTTestUtils extends TestUtils {
 
 	private MSTTestUtils() {
@@ -88,19 +89,19 @@ class MSTTestUtils extends TestUtils {
 
 		boolean equal = true;
 		if (expected.size() != actualSet.size()) {
-			printTestStr("Expected MST with " + expected.size() + " edges, actual has " + actualSet.size() + "\n");
+			printTestStr("Expected MST with ", expected.size(), " edges, actual has ", actualSet.size(), "\n");
 			equal = false;
 		} else {
 			for (Edge<E> e : expected) {
 				if (!actualSet.contains(e)) {
-					printTestStr("MST doesn't contains edge: " + e + "\n");
+					printTestStr("MST doesn't contains edge: ", e, "\n");
 					equal = false;
 				}
 			}
 		}
 		if (!equal) {
-			printTestStr("Expected: " + formatEdges(expected, w) + "\n");
-			printTestStr("Actual: " + formatEdges(actualSet, w) + "\n");
+			printTestStr("Expected: ", formatEdges(expected, w), "\n");
+			printTestStr("Actual: ", formatEdges(actualSet, w), "\n");
 		}
 		return equal;
 	}

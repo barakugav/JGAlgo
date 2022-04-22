@@ -16,6 +16,7 @@ import com.ugav.algo.MSTKruskal1956;
 import com.ugav.algo.TPM;
 import com.ugav.algo.test.GraphsTestUtils.RandomGraphBuilder;
 
+@SuppressWarnings("boxing")
 class TPMTestUtils extends TestUtils {
 
 	private TPMTestUtils() {
@@ -68,7 +69,7 @@ class TPMTestUtils extends TestUtils {
 	static <E> boolean compareActualToExpectedResults(int[] queries, Edge<E>[] actual, Edge<E>[] expected,
 			WeightFunction<E> w) {
 		if (actual.length != expected.length) {
-			printTestStr("Unexpected result size: " + actual.length + " != " + expected.length + "\n");
+			printTestStr("Unexpected result size: ", actual.length, " != ", expected.length, "\n");
 			return false;
 		}
 		for (int i = 0; i < actual.length; i++) {
@@ -77,8 +78,7 @@ class TPMTestUtils extends TestUtils {
 			if (aw != ew) {
 				int u = queries[i * 2];
 				int v = queries[i * 2 + 1];
-				printTestStr("Unexpected result for query (" + u + ", " + v + "): " + actual[i] + " != " + expected[i]
-						+ "\n");
+				printTestStr("Unexpected result for query (", u, ", ", v, "): ", actual[i], " != ", expected[i], "\n");
 				return false;
 			}
 		}

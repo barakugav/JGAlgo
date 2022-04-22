@@ -9,14 +9,18 @@ import java.util.function.Predicate;
 
 import com.ugav.algo.Pair;
 
+@SuppressWarnings("boxing")
 class TestUtils {
 
 	TestUtils() {
 		throw new InternalError();
 	}
 
-	static void printTestStr(CharSequence s) {
-		String str = s.toString();
+	static void printTestStr(Object... args) {
+		StringBuilder builder = new StringBuilder();
+		for (Object arg : args)
+			builder.append(arg);
+		String str = builder.toString();
 		String prefix = getTestPrefix() + " ";
 
 		boolean checkRemove = !str.endsWith(prefix);
@@ -141,7 +145,7 @@ class TestUtils {
 					passed = false;
 				}
 				if (!passed) {
-					printTestStr("Failed at phase " + phaseIdx + " iter " + iter + "\n");
+					printTestStr("Failed at phase ", phaseIdx, " iter ", iter, "\n");
 					return false;
 				}
 			}

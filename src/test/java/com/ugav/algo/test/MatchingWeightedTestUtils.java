@@ -21,6 +21,7 @@ import com.ugav.algo.MatchingWeightedBipartiteHungarianMethod;
 import com.ugav.algo.MatchingWeightedBipartiteSSSP;
 import com.ugav.algo.MatchingWeightedGabow2018;
 
+@SuppressWarnings("boxing")
 class MatchingWeightedTestUtils extends TestUtils {
 
 	private MatchingWeightedTestUtils() {
@@ -96,15 +97,10 @@ class MatchingWeightedTestUtils extends TestUtils {
 		double expectedWeight = calcMatchingWeight(expected, w);
 
 		if (actualWeight < expectedWeight) {
-			printTestStr("unexpected match weight: " + actualWeight + " < " + expectedWeight + "\n");
-			System.out.println("expected " + expected);
-			System.out.println("actual " + actual);
+			printTestStr("unexpected match weight: ", actualWeight, " < ", expectedWeight, "\n");
 			return false;
 		} else if (actualWeight > expectedWeight) {
-			printTestStr(
-					"matching is better than validation algo found: " + actualWeight + " > " + expectedWeight + "\n");
-			System.out.println("expected " + expected);
-			System.out.println("actual " + actual);
+			printTestStr("matching is better than validation algo found: ", actualWeight, " > ", expectedWeight, "\n");
 			throw new InternalError();
 		}
 
@@ -140,25 +136,20 @@ class MatchingWeightedTestUtils extends TestUtils {
 
 		int expectedSize = validationUnweightedAlgo.calcMaxMatching(g).size();
 		if (actualSize < expectedSize) {
-			printTestStr("unexpected match size: " + actualSize + " < " + expectedSize + "\n");
-			System.out.println("expected " + expectedSize);
-			System.out.println("actual " + actual);
+			printTestStr("unexpected match size: ", actualSize, " < ", expectedSize, "\n");
 			return false;
 		} else if (actualSize > expectedSize) {
-			printTestStr(
-					"matching size is better than validation algo found: " + actualSize + " > " + expectedSize + "\n");
+			printTestStr("matching size is better than validation algo found: ", actualSize, " > ", expectedSize, "\n");
 			throw new InternalError();
 		}
 
 		double expectedWeight = calcMatchingWeight(validationWeightedAlgo.calcPerfectMaxMatching(g, w), w);
 		if (actualWeight < expectedWeight) {
-			printTestStr("unexpected match weight: " + actualWeight + " < " + expectedWeight + "\n");
-			System.out.println("expected " + expectedWeight);
-			System.out.println("actual " + actual);
+			printTestStr("unexpected match weight: ", actualWeight, " < ", expectedWeight, "\n");
 			return false;
 		} else if (actualWeight > expectedWeight) {
-			printTestStr("matching weight is better than validation algo found: " + actualWeight + " > "
-					+ expectedWeight + "\n");
+			printTestStr("matching weight is better than validation algo found: ", actualWeight, " > ", expectedWeight,
+					"\n");
 			throw new InternalError();
 		}
 

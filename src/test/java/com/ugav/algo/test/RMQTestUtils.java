@@ -5,6 +5,7 @@ import java.util.Random;
 import com.ugav.algo.RMQ;
 import com.ugav.algo.RMQ.ArrayIntComparator;
 
+@SuppressWarnings("boxing")
 class RMQTestUtils extends TestUtils {
 
 	private RMQTestUtils() {
@@ -35,10 +36,10 @@ class RMQTestUtils extends TestUtils {
 			int actual = a[actualIdx];
 
 			if (actual != expected) {
-				printTestStr(" [" + i + "," + j + "] -> expected[" + expectedIdx + "]=" + expected
-						+ " actual[" + actualIdx + "]=" + actual + "\n");
-				printTestStr("data size: " + a.length + "\n");
-				printTestStr("queries num: " + queries.length + "\n");
+				printTestStr(" [", i, ",", j, "] -> expected[", expectedIdx, "]=", expected, " actual[", actualIdx,
+						"]=", actual, "\n");
+				printTestStr("data size: ", a.length, "\n");
+				printTestStr("queries num: ", queries.length, "\n");
 				printTestStr(formatRMQDataAndQueries(a, queries));
 				return false;
 			}

@@ -6,6 +6,7 @@ import java.util.Random;
 import com.ugav.algo.UnionFindValue;
 import com.ugav.algo.UnionFindValueArray;
 
+@SuppressWarnings("boxing")
 public class UnionFindValueArrayTest extends TestUtils {
 
 	@Test
@@ -77,7 +78,7 @@ public class UnionFindValueArrayTest extends TestUtils {
 				double actualDelta = uf.getValue(x);
 				double expectedDelta = deltas[x];
 				if (!doubleEql(actualDelta, expectedDelta, 1E-5)) {
-					printTestStr("Unexpected value: " + actualDelta + " != " + expectedDelta + "\n");
+					printTestStr("Unexpected value: ", actualDelta, " != ", expectedDelta, "\n");
 					return false;
 				}
 				break;

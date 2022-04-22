@@ -11,6 +11,7 @@ import com.ugav.algo.Graph;
 import com.ugav.algo.Graph.Edge;
 import com.ugav.algo.Matching;
 
+@SuppressWarnings("boxing")
 class MatchingUnweightedTestUtils extends TestUtils {
 
 	private MatchingUnweightedTestUtils() {
@@ -38,7 +39,7 @@ class MatchingUnweightedTestUtils extends TestUtils {
 			return false;
 
 		if (match.size() != expectedMatchSize) {
-			printTestStr("unexpected match size: " + match.size() + " != " + expectedMatchSize + "\n");
+			printTestStr("unexpected match size: ", match.size(), " != ", expectedMatchSize, "\n");
 			return false;
 		}
 		return true;
@@ -50,7 +51,7 @@ class MatchingUnweightedTestUtils extends TestUtils {
 			for (int v : new int[] { e.u(), e.v() }) {
 				Edge<E> dup = matched.get(Integer.valueOf(v));
 				if (dup != null) {
-					printTestStr("Invalid matching, clash: " + dup + " " + e + " \n");
+					printTestStr("Invalid matching, clash: ", dup, " ", e, " \n");
 					return false;
 				}
 				matched.put(Integer.valueOf(v), e);

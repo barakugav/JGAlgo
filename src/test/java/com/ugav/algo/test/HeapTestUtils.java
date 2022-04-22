@@ -222,7 +222,7 @@ class HeapTestUtils extends TestUtils {
 
 				tracker.remove(x);
 				if (!heap.remove(x)) {
-					printTestStr("failed to remove: " + x + "\n");
+					printTestStr("failed to remove: ", x, "\n");
 					return false;
 				}
 				break;
@@ -234,7 +234,7 @@ class HeapTestUtils extends TestUtils {
 				expected = tracker.findMin();
 				actual = heap.findMin();
 				if (actual != expected) {
-					printTestStr("failed findmin: " + expected + " != " + actual + "\n");
+					printTestStr("failed findmin: ", expected, " != ", actual, "\n");
 					return false;
 				}
 				break;
@@ -246,7 +246,7 @@ class HeapTestUtils extends TestUtils {
 				expected = tracker.extractMin();
 				actual = heap.extractMin();
 				if (actual != expected) {
-					printTestStr("failed extractmin: " + expected + " != " + actual + "\n");
+					printTestStr("failed extractmin: ", expected, " != ", actual, "\n");
 					return false;
 				}
 				break;

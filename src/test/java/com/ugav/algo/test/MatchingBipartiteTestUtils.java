@@ -10,6 +10,7 @@ import com.ugav.algo.GraphBipartiteArray;
 import com.ugav.algo.Matching;
 import com.ugav.algo.test.GraphsTestUtils.RandomGraphBuilder;
 
+@SuppressWarnings("boxing")
 class MatchingBipartiteTestUtils extends TestUtils {
 
 	private MatchingBipartiteTestUtils() {
@@ -54,11 +55,11 @@ class MatchingBipartiteTestUtils extends TestUtils {
 			return false;
 
 		if (match.size() < expectedMatchSize) {
-			printTestStr("unexpected match size: " + match.size() + " != " + expectedMatchSize + "\n");
+			printTestStr("unexpected match size: ", match.size(), " != ", expectedMatchSize, "\n");
 			return false;
 		} else if (match.size() > expectedMatchSize) {
-			printTestStr("matching is bigger than validation algo found: " + match.size() + " > " + expectedMatchSize
-					+ "\n");
+			printTestStr("matching is bigger than validation algo found: ", match.size(), " > ", expectedMatchSize,
+					"\n");
 			throw new InternalError();
 		}
 

@@ -12,9 +12,9 @@ import com.ugav.algo.MaxFlowEdmondsKarp;
 import com.ugav.algo.Pair;
 import com.ugav.algo.test.GraphsTestUtils.RandomGraphBuilder;
 
+@SuppressWarnings("boxing")
 public class MaxFlowEdmondsKarpTest extends TestUtils {
 
-	@SuppressWarnings("boxing")
 	private static Pair<Graph<Pair<Double, Double>>, FlowNetwork<Pair<Double, Double>>> randNetword(int n, int m) {
 		Graph<Pair<Double, Double>> g = new RandomGraphBuilder().n(n).m(m).directed(true).doubleEdges(false)
 				.selfEdges(false).cycles(true).connected(false).build();
@@ -86,14 +86,14 @@ public class MaxFlowEdmondsKarpTest extends TestUtils {
 		for (int v = 0; v < n; v++) {
 			double expected = v == source ? actualMaxFlow : v == target ? -actualMaxFlow : 0;
 			if (!doubleEql(vertexFlowOut[v], expected, 1E-10)) {
-				printTestStr("Invalid vertex(" + v + ") flow: " + vertexFlowOut[v] + "\n");
+				printTestStr("Invalid vertex(", v, ") flow: ", vertexFlowOut[v], "\n");
 				return false;
 			}
 		}
 
 		double expectedMaxFlow = calcExpectedFlow(g, net, source, target);
 		if (!doubleEql(expectedMaxFlow, actualMaxFlow, 1E-10)) {
-			printTestStr("Unexpected max flow: " + expectedMaxFlow + " != " + actualMaxFlow + "\n");
+			printTestStr("Unexpected max flow: ", expectedMaxFlow, " != ", actualMaxFlow, "\n");
 			return false;
 		}
 
@@ -111,7 +111,6 @@ public class MaxFlowEdmondsKarpTest extends TestUtils {
 		return fordFulkerson(capacities, source, target);
 	}
 
-	@SuppressWarnings("boxing")
 	private static boolean bfs(double rGraph[][], int s, int t, int parent[]) {
 		int n = rGraph.length;
 		boolean visited[] = new boolean[n];

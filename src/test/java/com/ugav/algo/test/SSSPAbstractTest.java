@@ -15,6 +15,7 @@ import com.ugav.algo.SSSPDijkstra;
 import com.ugav.algo.SSSPGoldberg1995;
 import com.ugav.algo.test.GraphsTestUtils.RandomGraphBuilder;
 
+@SuppressWarnings("boxing")
 class SSSPAbstractTest extends TestUtils {
 
 	private SSSPAbstractTest() {
@@ -31,7 +32,8 @@ class SSSPAbstractTest extends TestUtils {
 
 	private static boolean testSSSPPositiveInt(SSSP algo, boolean directed) {
 		Random rand = new Random(nextRandSeed());
-		List<Phase> phases = List.of( phase( 128, 16, 32 ), phase(64, 64, 256 ), phase( 8, 512, 4096 ), phase( 1, 4096, 16384 ));
+		List<Phase> phases = List.of(phase(128, 16, 32), phase(64, 64, 256), phase(8, 512, 4096),
+				phase(1, 4096, 16384));
 		return runTestMultiple(phases, args -> {
 			int n = args[0];
 			int m = args[1];
@@ -49,7 +51,8 @@ class SSSPAbstractTest extends TestUtils {
 	}
 
 	static boolean testSSSPDirectedNegativeInt(SSSP algo) {
-		List<Phase> phases = List.of( phase( 512, 4, 4 ), phase( 128, 16, 32 ), phase(64, 64, 256 ), phase( 8, 512, 4096 ), phase( 2, 1024, 4096 ));
+		List<Phase> phases = List.of(phase(512, 4, 4), phase(128, 16, 32), phase(64, 64, 256), phase(8, 512, 4096),
+				phase(2, 1024, 4096));
 		return runTestMultiple(phases, args -> {
 			int n = args[0];
 			int m = args[1];
@@ -80,11 +83,11 @@ class SSSPAbstractTest extends TestUtils {
 			if (cycle != null) {
 				double cycleWeight = getPathWeight(cycle, w);
 				if (cycleWeight == Double.NaN || cycle.get(0).u() != cycle.get(cycle.size() - 1).v()) {
-					printTestStr("Invalid cycle: " + cycle + "\n");
+					printTestStr("Invalid cycle: ", cycle, "\n");
 					return false;
 				}
 				if (cycleWeight >= 0) {
-					printTestStr("Cycle is not negative: " + cycle + "\n");
+					printTestStr("Cycle is not negative: ", cycle, "\n");
 					return false;
 				}
 				if (!expectedRes.foundNegativeCycle())
@@ -104,20 +107,19 @@ class SSSPAbstractTest extends TestUtils {
 			double expectedDistance = expectedRes.distance(v);
 			double actualDistance = result.distance(v);
 			if (expectedDistance != actualDistance) {
-				printTestStr(
-						"Distance to vertex " + v + " is wrong: " + expectedDistance + " != " + actualDistance + "\n");
+				printTestStr("Distance to vertex ", v, " is wrong: ", expectedDistance, " != ", actualDistance, "\n");
 				return false;
 			}
 			List<Edge<E>> path = result.getPathTo(v);
 			if (path != null) {
 				double pathWeight = getPathWeight(path, w);
 				if (pathWeight != actualDistance) {
-					printTestStr("Path to vertex " + v + " doesn't match distance (" + actualDistance + " != "
-							+ pathWeight + "): " + path + "\n");
+					printTestStr("Path to vertex ", v, " doesn't match distance (", actualDistance, " != ", pathWeight,
+							"): ", path, "\n");
 					return false;
 				}
 			} else if (actualDistance != Double.POSITIVE_INFINITY) {
-				printTestStr("Distance to vertex " + v + " is not infinity but path is null\n");
+				printTestStr("Distance to vertex ", v, " is not infinity but path is null\n");
 				return false;
 
 			}
