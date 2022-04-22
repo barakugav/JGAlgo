@@ -8,6 +8,7 @@ Algo is a collection of algorithms implemented in Java. It contains mostly algor
    - Binary heap
    - Binomial heap
    - Fibonacci heap
+   - Red-Black binary search tree
  - UnionFind
  - SplitFindMin
  - SSSP (Single source shortest path)

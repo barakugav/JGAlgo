@@ -16,7 +16,8 @@ public class TestList {
 	private static final Collection<Class<?>> HEAP_TESTS = List.of(
 			HeapBinaryTest.class,
 			HeapBinomialTest.class,
-			HeapFibonacciTest.class);
+			HeapFibonacciTest.class,
+			RedBlackTreeTest.class);
 
 	private static final Collection<Class<?>> MISC_TESTS = List.of(
 			GraphsTest.class,

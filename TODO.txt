@@ -1,4 +1,3 @@
-Red Black trees
 dynamic LCA
 Subtree Merge Findmin
 Weighted matching general graphs (+perfect matching)
