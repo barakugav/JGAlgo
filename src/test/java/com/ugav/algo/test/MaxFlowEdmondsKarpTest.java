@@ -1,6 +1,7 @@
 package com.ugav.algo.test;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 
 import com.ugav.algo.Graph;
@@ -55,11 +56,11 @@ public class MaxFlowEdmondsKarpTest extends TestUtils {
 
 	private static boolean randGraphs(MaxFlow algo) {
 		Random rand = new Random(nextRandSeed());
-		int[][] phases = { { 128, 16, 16 }, { 128, 16, 32 }, { 64, 64, 64 }, { 64, 64, 128 }, { 8, 512, 512 },
-				{ 8, 512, 2048 }, { 1, 4096, 4096 }, { 1, 4096, 16384 } };
+		List<Phase> phases = List.of(phase(128, 16, 16), phase(128, 16, 32), phase(64, 64, 64), phase(64, 64, 128),
+				phase(8, 512, 512), phase(8, 512, 2048), phase(1, 4096, 4096), phase(1, 4096, 16384));
 		return runTestMultiple(phases, args -> {
-			int n = args[1];
-			int m = args[2];
+			int n = args[0];
+			int m = args[1];
 			Pair<Graph<Pair<Double, Double>>, FlowNetwork<Pair<Double, Double>>> p = randNetword(n, m);
 			Graph<Pair<Double, Double>> g = p.e1;
 			FlowNetwork<Pair<Double, Double>> net = p.e2;

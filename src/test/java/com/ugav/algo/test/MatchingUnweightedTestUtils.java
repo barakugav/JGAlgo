@@ -18,11 +18,12 @@ class MatchingUnweightedTestUtils extends TestUtils {
 	}
 
 	static boolean randGraphs(Matching algo) {
-		int[][] phases = { { 256, 16, 8 }, { 256, 16, 16 }, { 128, 32, 32 }, { 128, 32, 64 }, { 64, 64, 64 },
-				{ 64, 64, 128 }, { 16, 256, 256 }, { 16, 256, 512 }, { 4, 2048, 2048 }, { 4, 2048, 8192 } };
+		List<Phase> phases = List.of(phase(256, 16, 8), phase(256, 16, 16), phase(128, 32, 32), phase(128, 32, 64),
+				phase(64, 64, 64), phase(64, 64, 128), phase(16, 256, 256), phase(16, 256, 512), phase(4, 2048, 2048),
+				phase(4, 2048, 8192));
 		return runTestMultiple(phases, args -> {
-			int n = args[1];
-			int m = args[2];
+			int n = args[0];
+			int m = args[1];
 			Graph<Void> g = GraphsTestUtils.randGraph(n, m);
 
 			int expeced = calcExpectedMaxMatching(g);

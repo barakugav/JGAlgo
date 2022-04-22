@@ -1,5 +1,6 @@
 package com.ugav.algo.test;
 
+import java.util.List;
 import java.util.Random;
 
 import com.ugav.algo.Graph;
@@ -77,10 +78,11 @@ public class LCARMQBenderFarachColton2000Test extends TestUtils {
 
 	@Test
 	public static boolean randTrees() {
-		int[][] phases = { { 128, 16, 16 }, { 64, 64, 64 }, { 16, 512, 512 }, { 4, 4096, 4096 }, { 1, 16384, 16384 } };
+		List<Phase> phases = List.of(phase(128, 16, 16), phase(64, 64, 64), phase(16, 512, 512), phase(4, 4096, 4096),
+				phase(1, 16384, 16384));
 		return runTestMultiple(phases, args -> {
-			int n = args[1];
-			int m = args[2];
+			int n = args[0];
+			int m = args[1];
 			Graph<Void> g = GraphsTestUtils.randTree(n);
 			int[][] queries = randLCAQueries(g, 0, m);
 

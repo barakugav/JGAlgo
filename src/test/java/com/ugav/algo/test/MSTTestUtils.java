@@ -22,11 +22,11 @@ class MSTTestUtils extends TestUtils {
 	}
 
 	static boolean testRandGraph(MST algo) {
-		int[][] phases = new int[][] { { 1, 0, 0 }, { 128, 16, 32 }, { 64, 64, 128 }, { 32, 128, 256 },
-				{ 8, 1024, 4096 }, { 2, 4096, 16384 } };
+		List<Phase> phases = List.of(phase(1, 0, 0), phase(128, 16, 32), phase(64, 64, 128), phase(32, 128, 256),
+				phase(8, 1024, 4096), phase(2, 4096, 16384));
 		return runTestMultiple(phases, args -> {
-			int n = args[1];
-			int m = args[2];
+			int n = args[0];
+			int m = args[1];
 			return testRandGraph(algo, n, m);
 		});
 	}
@@ -88,8 +88,7 @@ class MSTTestUtils extends TestUtils {
 
 		boolean equal = true;
 		if (expected.size() != actualSet.size()) {
-			printTestStr(
-					"Expected MST with " + expected.size() + " edges, actual has " + actualSet.size() + "\n");
+			printTestStr("Expected MST with " + expected.size() + " edges, actual has " + actualSet.size() + "\n");
 			equal = false;
 		} else {
 			for (Edge<E> e : expected) {

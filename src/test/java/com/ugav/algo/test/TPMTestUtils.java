@@ -77,8 +77,8 @@ class TPMTestUtils extends TestUtils {
 			if (aw != ew) {
 				int u = queries[i * 2];
 				int v = queries[i * 2 + 1];
-				printTestStr("Unexpected result for query (" + u + ", " + v + "): " + actual[i] + " != "
-						+ expected[i] + "\n");
+				printTestStr("Unexpected result for query (" + u + ", " + v + "): " + actual[i] + " != " + expected[i]
+						+ "\n");
 				return false;
 			}
 		}
@@ -86,10 +86,10 @@ class TPMTestUtils extends TestUtils {
 	}
 
 	static boolean testTPM(TPM algo) {
-		int[][] phases = new int[][] { { 64, 16 }, { 32, 32 }, { 16, 64 }, { 8, 128 }, { 4, 256 }, { 2, 512 },
-				{ 1, 1024 }, { 1, 4096 }, { 1, 16384 } };
+		List<Phase> phases = List.of(phase(64, 16), phase(32, 32), phase(16, 64), phase(8, 128), phase(4, 256),
+				phase(2, 512), phase(1, 1024), phase(1, 4096), phase(1, 16384));
 		return runTestMultiple(phases, args -> {
-			int n = args[1];
+			int n = args[0];
 			return testTPM(algo, n);
 		});
 	}
@@ -106,11 +106,11 @@ class TPMTestUtils extends TestUtils {
 	}
 
 	static boolean verifyMSTPositive(TPM algo) {
-		int[][] phases = new int[][] { { 256, 8, 16 }, { 128, 16, 32 }, { 64, 64, 128 }, { 32, 128, 256 },
-				{ 8, 2048, 4096 }, { 2, 8192, 16384 } };
+		List<Phase> phases = List.of(phase(256, 8, 16), phase(128, 16, 32), phase(64, 64, 128), phase(32, 128, 256),
+				phase(8, 2048, 4096), phase(2, 8192, 16384));
 		return runTestMultiple(phases, args -> {
-			int n = args[1];
-			int m = args[2];
+			int n = args[0];
+			int m = args[1];
 			Graph<Integer> g = new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(true).selfEdges(false)
 					.cycles(true).connected(true).build();
 			GraphsTestUtils.assignRandWeightsIntPos(g);
@@ -122,11 +122,11 @@ class TPMTestUtils extends TestUtils {
 	}
 
 	static boolean verifyMSTNegative(TPM algo) {
-		int[][] phases = new int[][] { { 256, 8, 16 }, { 128, 16, 32 }, { 64, 64, 128 }, { 32, 128, 256 },
-				{ 8, 2048, 4096 }, { 2, 8192, 16384 } };
+		List<Phase> phases = List.of(phase(256, 8, 16), phase(128, 16, 32), phase(64, 64, 128), phase(32, 128, 256),
+				phase(8, 2048, 4096), phase(2, 8192, 16384));
 		return runTestMultiple(phases, args -> {
-			int n = args[1];
-			int m = args[2];
+			int n = args[0];
+			int m = args[1];
 
 			Graph<Integer> g = new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(true).selfEdges(false)
 					.cycles(true).connected(true).build();

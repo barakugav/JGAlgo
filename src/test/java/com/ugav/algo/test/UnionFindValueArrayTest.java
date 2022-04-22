@@ -1,5 +1,6 @@
 package com.ugav.algo.test;
 
+import java.util.List;
 import java.util.Random;
 
 import com.ugav.algo.UnionFindValue;
@@ -14,10 +15,11 @@ public class UnionFindValueArrayTest extends TestUtils {
 
 	@Test
 	public static boolean randOps() {
-		int[][] phases = { { 256, 8, 16 }, { 64, 64, 256 }, { 16, 1024, 2048 }, { 2, 8096, 16384 } };
+		List<Phase> phases = List.of(phase(256, 8, 16), phase(64, 64, 256), phase(16, 1024, 2048),
+				phase(2, 8096, 16384));
 		return runTestMultiple(phases, args -> {
-			int n = args[1];
-			int m = args[2];
+			int n = args[0];
+			int m = args[1];
 			return randOps(n, m);
 		});
 	}

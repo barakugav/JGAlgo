@@ -28,12 +28,12 @@ class MatchingWeightedTestUtils extends TestUtils {
 	}
 
 	static boolean randGraphsBipartiteWeighted(MatchingWeighted algo) {
-		int[][] phases = { { 256, 8, 8, 8 }, { 128, 16, 16, 64 }, { 12, 128, 128, 128 }, { 8, 128, 128, 512 },
-				{ 4, 1024, 1024, 1024 }, { 2, 1024, 1024, 8192 } };
+		List<Phase> phases = List.of(phase(256, 8, 8, 8), phase(128, 16, 16, 64), phase(12, 128, 128, 128),
+				phase(8, 128, 128, 512), phase(4, 1024, 1024, 1024), phase(2, 1024, 1024, 8192));
 		return runTestMultiple(phases, args -> {
-			int sn = args[1];
-			int tn = args[2];
-			int m = args[3];
+			int sn = args[0];
+			int tn = args[1];
+			int m = args[2];
 
 			GraphBipartite<Integer> g = MatchingBipartiteTestUtils.randGraphBipartite(sn, tn, m);
 			GraphsTestUtils.assignRandWeightsIntNeg(g);
@@ -47,12 +47,12 @@ class MatchingWeightedTestUtils extends TestUtils {
 	}
 
 	static boolean randBipartiteGraphsWeightedPerfect(MatchingWeighted algo) {
-		int[][] phases = { { 256, 8, 8, 8 }, { 128, 16, 16, 64 }, { 12, 128, 128, 128 }, { 8, 128, 128, 512 },
-				{ 4, 1024, 1024, 1024 } };
+		List<Phase> phases = List.of(phase(256, 8, 8, 8), phase(128, 16, 16, 64), phase(12, 128, 128, 128),
+				phase(8, 128, 128, 512), phase(4, 1024, 1024, 1024));
 		return runTestMultiple(phases, args -> {
-			int sn = args[1];
-			int tn = args[2];
-			int m = args[3];
+			int sn = args[0];
+			int tn = args[1];
+			int m = args[2];
 
 			GraphBipartite<Integer> g = MatchingBipartiteTestUtils.randGraphBipartite(sn, tn, m);
 			int maxWeight = m < 50 ? 100 : m * 2 + 2;
@@ -68,11 +68,11 @@ class MatchingWeightedTestUtils extends TestUtils {
 	}
 
 	static boolean randGraphsWeighted(MatchingWeighted algo) {
-		int[][] phases = { { 256, 8, 8, 8 }, { 128, 16, 16, 64 }, { 12, 128, 128, 128 }, { 8, 128, 128, 512 },
-				{ 4, 1024, 1024, 1024 }, { 2, 1024, 1024, 8192 } };
+		List<Phase> phases = List.of(phase(256, 8, 8, 8), phase(128, 16, 16, 64), phase(12, 128, 128, 128),
+				phase(8, 128, 128, 512), phase(4, 1024, 1024, 1024), phase(2, 1024, 1024, 8192));
 		return runTestMultiple(phases, args -> {
-			int n = args[1];
-			int m = args[2];
+			int n = args[0];
+			int m = args[1];
 
 			Graph<Integer> g = GraphsTestUtils.randGraph(n, m);
 			GraphsTestUtils.assignRandWeightsIntNeg(g);
@@ -112,11 +112,11 @@ class MatchingWeightedTestUtils extends TestUtils {
 	}
 
 	static boolean randGraphsWeightedPerfect(MatchingWeighted algo) {
-		int[][] phases = { { 256, 8, 8, 8 }, { 128, 16, 16, 64 }, { 12, 128, 128, 128 }, { 8, 128, 128, 512 },
-				{ 4, 1024, 1024, 1024 } };
+		List<Phase> phases = List.of(phase(256, 8, 8, 8), phase(128, 16, 16, 64), phase(12, 128, 128, 128),
+				phase(8, 128, 128, 512), phase(4, 1024, 1024, 1024));
 		return runTestMultiple(phases, args -> {
-			int n = args[1];
-			int m = args[2];
+			int n = args[0];
+			int m = args[1];
 
 			Graph<Integer> g = GraphsTestUtils.randGraph(n, m);
 			int maxWeight = m < 50 ? 100 : m * 2 + 2;

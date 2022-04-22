@@ -1,5 +1,6 @@
 package com.ugav.algo.test;
 
+import java.util.List;
 import java.util.Random;
 
 import com.ugav.algo.Arrays;
@@ -8,9 +9,10 @@ public class ArraysTest extends TestUtils {
 
 	@Test
 	public static boolean getKthElementRandArrayUnique() {
-		int[][] phases = new int[][] { { 256, 8 }, { 128, 32 }, { 32, 128 }, { 16, 256 }, { 8, 1024 }, { 2, 4096 } };
+		List<Phase> phases = List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 1024),
+				phase(2, 4096));
 		return runTestMultiple(phases, args -> {
-			int n = args[1];
+			int n = args[0];
 			int[] a = Utils.randPermutation(n, nextRandSeed());
 			return testGetKthElement(a);
 		});
@@ -18,9 +20,10 @@ public class ArraysTest extends TestUtils {
 
 	@Test
 	public static boolean getKthElementRandArrayNonunique() {
-		int[][] phases = new int[][] { { 256, 8 }, { 128, 32 }, { 32, 128 }, { 16, 256 }, { 8, 1024 }, { 2, 4096 } };
+		List<Phase> phases = List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 1024),
+				phase(2, 4096));
 		return runTestMultiple(phases, args -> {
-			int n = args[1];
+			int n = args[0];
 			int[] a = Utils.randArray(n, 0, n / 4, nextRandSeed());
 			return testGetKthElement(a);
 		});
@@ -46,9 +49,10 @@ public class ArraysTest extends TestUtils {
 	@Test
 	public static boolean bucketPartition() {
 		Random rand = new Random(nextRandSeed());
-		int[][] phases = new int[][] { { 256, 8 }, { 128, 32 }, { 32, 128 }, { 16, 256 }, { 8, 1024 }, { 2, 4096 } };
+		List<Phase> phases = List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 1024),
+				phase(2, 4096));
 		return runTestMultiple(phases, args -> {
-			int n = args[1];
+			int n = args[0];
 			int[] a = Utils.randArray(n, 0, n / 4, nextRandSeed());
 			Integer[] A = toIntegerArr(a);
 			int bucketSize = rand.nextInt(n / 2) + 1;

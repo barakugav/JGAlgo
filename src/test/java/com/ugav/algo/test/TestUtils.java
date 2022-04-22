@@ -1,6 +1,7 @@
 package com.ugav.algo.test;
 
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -108,19 +109,39 @@ class TestUtils {
 		return seedGenerators.get(testName).e1.longValue();
 	}
 
-	static boolean runTestMultiple(int[][] phases, Predicate<int[]> test) {
-		for (int phase = 0; phase < phases.length; phase++) {
-			int repeat = phases[phase][0];
-			for (int i = 0; i < repeat; i++) {
+	static class Phase {
+		private final int repeat;
+		private final int[] args;
+
+		private Phase(int repeat, int[] args) {
+			if (repeat < 0)
+				throw new IllegalArgumentException();
+			this.repeat = repeat;
+			this.args = args;
+		}
+
+		static Phase of(int repeat, int... args) {
+			return new Phase(repeat, args);
+		}
+	}
+
+	static Phase phase(int repeat, int... args) {
+		return Phase.of(repeat, args);
+	}
+
+	static boolean runTestMultiple(Collection<Phase> phases, Predicate<int[]> test) {
+		int phaseIdx = 0;
+		for (Phase phase : phases) {
+			for (int iter = 0; iter < phase.repeat; iter++) {
 				boolean passed;
 				try {
-					passed = test.test(phases[phase]);
+					passed = test.test(phase.args);
 				} catch (Throwable e) {
 					e.printStackTrace();
 					passed = false;
 				}
 				if (!passed) {
-					printTestStr("Failed at phase " + phase + " iter " + i + "\n");
+					printTestStr("Failed at phase " + phaseIdx + " iter " + iter + "\n");
 					return false;
 				}
 			}
