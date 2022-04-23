@@ -55,8 +55,10 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 		for (int v = 0; v < n + 2; v++)
 			potential[v] = sp.distance(v);
 
+		SSSP ssspAlgo = new SSSPDijkstra();
+
 		do {
-			sp = SSSPDijkstra.getInstace().calcDistances(g, spWeightFunc, s);
+			sp = ssspAlgo.calcDistances(g, spWeightFunc, s);
 			List<Edge<Ref<E>>> augPath = sp.getPathTo(t);
 			double augPathWeight = -(sp.distance(t) + potential[t]);
 			if (augPath == null || augPathWeight < 0)

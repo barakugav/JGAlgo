@@ -11,28 +11,51 @@ public class SSSPDijkstra implements SSSP {
 	 * O(m + nlogn)
 	 */
 
-	private SSSPDijkstra() {
+	private int allocSize;
+	private double[] distances;
+	@SuppressWarnings("rawtypes")
+	private Edge[] backtrack;
+	@SuppressWarnings("rawtypes")
+	private final Heap<HeapElm> heap;
+	@SuppressWarnings("rawtypes")
+	private Heap.Handle<HeapElm>[] verticesPtrs;
+
+	public SSSPDijkstra() {
+		allocSize = 0;
+		heap = new HeapFibonacci<>((a, b) -> Utils.compare(a.distance, b.distance));
 	}
 
-	private static final SSSPDijkstra INSTANCE = new SSSPDijkstra();
+	@SuppressWarnings("unchecked")
+	private void memAlloc(int n) {
+		if (allocSize < n) {
+			distances = new double[n];
+			backtrack = new Edge[n];
+			verticesPtrs = new Heap.Handle[n];
+			allocSize = n;
+		}
+	}
 
-	public static SSSPDijkstra getInstace() {
-		return INSTANCE;
+	private void memClear(int n) {
+		Arrays.fill(distances, 0, n, 0);
+		Arrays.fill(backtrack, 0, n, null);
+		heap.clear();
+		Arrays.fill(verticesPtrs, 0, n, null);
 	}
 
 	@Override
 	public <E> SSSP.Result<E> calcDistances(Graph<E> g, WeightFunction<E> w, int source) {
 		int n = g.vertices();
-		double[] distances = new double[n];
-		@SuppressWarnings("unchecked")
-		Edge<E>[] backtrack = new Edge[n];
+		if (n <= 0)
+			throw new IllegalArgumentException();
 
-		if (n == 0)
-			return new SSSPResultsImpl<>(distances, backtrack);
-
-		Heap<HeapElm<E>> heap = new HeapFibonacci<>((a, b) -> Utils.compare(a.distance, b.distance));
+		memAlloc(n);
+		double[] distances = this.distances;
 		@SuppressWarnings("unchecked")
-		Heap.Handle<HeapElm<E>>[] verticesPtrs = new Heap.Handle[n];
+		Edge<E>[] backtrack = this.backtrack;
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+		Heap<HeapElm<E>> heap = (Heap) this.heap;
+		@SuppressWarnings("unchecked")
+		Heap.Handle<HeapElm<E>>[] verticesPtrs = (Heap.Handle[]) this.verticesPtrs;
 
 		Arrays.fill(distances, Double.POSITIVE_INFINITY);
 		distances[source] = 0;
@@ -67,7 +90,9 @@ public class SSSPDijkstra implements SSSP {
 			backtrack[u] = next.backtrack;
 		}
 
-		return new SSSPResultsImpl<>(distances, backtrack);
+		SSSP.Result<E> res = new SSSPResultsImpl<>(Arrays.copyOf(distances, n), Arrays.copyOf(backtrack, n));
+		memClear(n);
+		return res;
 	}
 
 	private static class HeapElm<E> {

@@ -45,7 +45,7 @@ class SSSPAbstractTest extends TestUtils {
 
 			SSSP.Result<Integer> actualRes = algo.calcDistances(g, w, source);
 
-			SSSP validationAlgo = algo instanceof SSSPDijkstra ? SSSPDial1969.getInstace() : SSSPDijkstra.getInstace();
+			SSSP validationAlgo = algo instanceof SSSPDijkstra ? new SSSPDial1969() : new SSSPDijkstra();
 			return validateResult(g, w, source, actualRes, validationAlgo);
 		});
 	}

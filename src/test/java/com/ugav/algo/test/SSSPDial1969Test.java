@@ -6,12 +6,12 @@ public class SSSPDial1969Test extends TestUtils {
 
 	@Test
 	public static boolean randGraphDirectedPositiveInt() {
-		return SSSPAbstractTest.testSSSPDirectedPositiveInt(SSSPDial1969.getInstace());
+		return SSSPAbstractTest.testSSSPDirectedPositiveInt(new SSSPDial1969());
 	}
 
 	@Test
 	public static boolean randGraphUndirectedPositiveInt() {
-		return SSSPAbstractTest.testSSSPUndirectedPositiveInt(SSSPDial1969.getInstace());
+		return SSSPAbstractTest.testSSSPUndirectedPositiveInt(new SSSPDial1969());
 	}
 
 }

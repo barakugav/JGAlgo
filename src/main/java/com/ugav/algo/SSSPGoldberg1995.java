@@ -38,14 +38,14 @@ public class SSSPGoldberg1995 implements SSSP {
 			minWeight = Math.min(minWeight, w.weightInt(e));
 		if (minWeight >= 0)
 			// All weights are positive, use Dijkstra
-			return SSSPDijkstra.getInstace().calcDistances(g, w, source);
+			return new SSSPDijkstra().calcDistances(g, w, source);
 
 		Pair<int[], List<Edge<E>>> p = calcPotential(g, w, minWeight);
 		if (p.e2 != null)
 			return new Result<>(source, null, null, p.e2);
 		int[] potential = p.e1;
 		PotentialWeightFunction<E> pw = new PotentialWeightFunction<>(w, potential);
-		SSSP.Result<E> dijkstra = SSSPDijkstra.getInstace().calcDistances(g, pw, source);
+		SSSP.Result<E> dijkstra = new SSSPDijkstra().calcDistances(g, pw, source);
 		return new Result<>(source, potential, dijkstra, null);
 	}
 
@@ -55,6 +55,8 @@ public class SSSPGoldberg1995 implements SSSP {
 
 		boolean[] connected = new boolean[n];
 		int[] layerSize = new int[n + 1];
+
+		SSSPDial1969 ssspDial = new SSSPDial1969();
 
 		Graph<E> gNeg = new GraphArray<>(DirectedType.Directed, n);
 		Graph<Integer> G = new GraphArray<>(DirectedType.Directed, n);
@@ -158,8 +160,7 @@ public class SSSPGoldberg1995 implements SSSP {
 					}
 
 					// Calc distance with abs weight function to update potential function
-					ssspRes = SSSPDial1969.getInstace().calcDistances(G, e -> Math.abs(e.val().intValue()), fakeS,
-							layerNum);
+					ssspRes = ssspDial.calcDistances(G, e -> Math.abs(e.val().intValue()), fakeS, layerNum);
 					for (int v = 0; v < n; v++)
 						potential[v] += ssspRes.distance(v2V[v]);
 				}

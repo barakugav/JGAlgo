@@ -15,13 +15,39 @@ public class SSSPDial1969 implements SSSP {
 	 * edges if the maximum distance is not known
 	 */
 
-	private SSSPDial1969() {
+	public SSSPDial1969() {
+		allocSizeN = allocSizeM = 0;
+		heap = new DialHeap<>();
 	}
 
-	private static final SSSPDial1969 INSTANCE = new SSSPDial1969();
+	private int allocSizeN;
+	private int allocSizeM;
+	@SuppressWarnings("rawtypes")
+	private Edge[] edges;
+	private int[] distances;
+	@SuppressWarnings("rawtypes")
+	private final DialHeap heap;
+	@SuppressWarnings("rawtypes")
+	private DialHeap.Node[] verticesPtrs;
 
-	public static SSSPDial1969 getInstace() {
-		return INSTANCE;
+	private void memAlloc(int n, int m) {
+		if (allocSizeN < n) {
+			distances = new int[n];
+			verticesPtrs = new DialHeap.Node[n];
+			allocSizeN = n;
+		}
+		m = Math.max(n, m);
+		if (allocSizeM < m) {
+			edges = new Edge[m];
+			allocSizeM = m;
+		}
+	}
+
+	private void memClear(int n, int m) {
+		java.util.Arrays.fill(edges, 0, Math.max(n, m), null);
+		java.util.Arrays.fill(distances, 0, n, 0);
+		heap.clear();
+		java.util.Arrays.fill(verticesPtrs, 0, n, null);
 	}
 
 	@Override
@@ -30,7 +56,11 @@ public class SSSPDial1969 implements SSSP {
 			throw new IllegalArgumentException("only int weights are supported");
 		WeightFunctionInt<E> w = (WeightFunctionInt<E>) w0;
 
-		int n = g.vertices();
+		int n = g.vertices(), m = g.edges().size();
+		if (n <= 0)
+			throw new IllegalArgumentException();
+
+		memAlloc(n, m);
 
 		int maxDistance = 0;
 		if (g.edges().size() <= n - 1) {
@@ -39,7 +69,7 @@ public class SSSPDial1969 implements SSSP {
 
 		} else {
 			@SuppressWarnings("unchecked")
-			Edge<E>[] edges = g.edges().toArray(Edge[]::new);
+			Edge<E>[] edges = g.edges().toArray(this.edges);
 			Edge<E> pivot = Arrays.getKthElement(edges, n - 1,
 					(e1, e2) -> -Integer.compare(w.weightInt(e1), w.weightInt(e2)));
 			int weightThreshold = w.weightInt(pivot);
@@ -51,24 +81,31 @@ public class SSSPDial1969 implements SSSP {
 			}
 		}
 
-		return calcDistances(g, w, source, maxDistance);
+		SSSP.Result<E> res = calcDistances(g, w, source, maxDistance);
+		memClear(n, m);
+		return res;
 	}
 
 	public <E> SSSP.Result<E> calcDistances(Graph<E> g, WeightFunctionInt<E> w, int source, int maxDistance) {
-		int n = g.vertices();
-		int[] distances = new int[n];
+		int n = g.vertices(), m = g.edges().size();
+		if (n <= 0)
+			throw new IllegalArgumentException();
+
+		memAlloc(n, m);
+
+		int[] distances = this.distances;
 		@SuppressWarnings("unchecked")
-		Edge<E>[] backtrack = new Edge[n];
-
-		if (n == 0)
-			return new Result<>(distances, backtrack);
-
-		DialHeap<E> heap = new DialHeap<>(maxDistance);
+		Edge<E>[] backtrack = this.edges;
 		@SuppressWarnings("unchecked")
-		DialHeap.Node<E>[] verticesPtrs = new DialHeap.Node[n];
+		DialHeap<E> heap = this.heap;
+		@SuppressWarnings("unchecked")
+		DialHeap.Node<E>[] verticesPtrs = this.verticesPtrs;
 
-		java.util.Arrays.fill(distances, Integer.MAX_VALUE);
+		java.util.Arrays.fill(distances, 0, n, Integer.MAX_VALUE);
+		java.util.Arrays.fill(backtrack, 0, n, null);
 		distances[source] = 0;
+
+		heap.init(maxDistance);
 
 		for (int u = source;;) {
 			for (Edge<E> e : Utils.iterable(g.edges(u))) {
@@ -98,18 +135,46 @@ public class SSSPDial1969 implements SSSP {
 			backtrack[u] = next.backtrack;
 		}
 
-		return new Result<>(distances, backtrack);
+		SSSP.Result<E> res = new Result<>(java.util.Arrays.copyOf(distances, n), java.util.Arrays.copyOf(backtrack, n));
+		memClear(n, m);
+		return res;
 	}
 
 	private static class DialHeap<E> {
 
-		private final Node<E>[] a;
+		private Node<E>[] a;
+		private int maxKey;
 		private int scanIdx;
 
+		DialHeap() {
+			maxKey = -1;
+		}
+
 		@SuppressWarnings("unchecked")
-		DialHeap(int maxKey) {
-			a = new Node[maxKey];
+		void init(int maxKey) {
+			if (a == null || this.maxKey < maxKey) {
+				a = new Node[maxKey];
+				this.maxKey = maxKey;
+			}
 			scanIdx = 0;
+		}
+
+		void clear() {
+			Node<E>[] a = this.a;
+			int maxKey = this.maxKey;
+			for (int i = 0; i < maxKey; i++) {
+				if (a[i] == null)
+					continue;
+				for (Node<E> p = a[i];;) {
+					p.backtrack = null;
+					Node<E> n = p.next;
+					if (n == null)
+						break;
+					p.next = n.prev = null;
+					n = p;
+				}
+				a[i] = null;
+			}
 		}
 
 		Node<E> insert(int distance, Edge<E> backtrack) {
@@ -119,6 +184,7 @@ public class SSSPDial1969 implements SSSP {
 		}
 
 		private void insertNode(Node<E> n) {
+			Node<E>[] a = this.a;
 			Node<E> head = a[n.distance];
 			if (head != null) {
 				n.next = head;
@@ -143,6 +209,7 @@ public class SSSPDial1969 implements SSSP {
 		}
 
 		Node<E> extractMin() {
+			Node<E>[] a = this.a;
 			Node<E> min = null;
 			int i;
 			for (i = scanIdx; i < a.length; i++) {
@@ -216,6 +283,11 @@ public class SSSPDial1969 implements SSSP {
 		@Override
 		public List<Edge<E>> getNegativeCycle() {
 			throw new IllegalStateException("no negative cycle found");
+		}
+
+		@Override
+		public String toString() {
+			return java.util.Arrays.toString(distances);
 		}
 
 	}
