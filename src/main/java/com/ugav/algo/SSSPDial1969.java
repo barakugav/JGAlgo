@@ -1,7 +1,6 @@
 package com.ugav.algo;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -12,8 +11,8 @@ import com.ugav.algo.Graph.WeightFunctionInt;
 public class SSSPDial1969 implements SSSP {
 
 	/*
-	 * O(m + D) where D is the sum of all edges (can be improved to sum of max n
-	 * edges)
+	 * edges) O(m + D) where D is the maximum distance, or the sum of heaviest n-1
+	 * edges if the maximum distance is not known
 	 */
 
 	private SSSPDial1969() {
@@ -30,14 +29,28 @@ public class SSSPDial1969 implements SSSP {
 		if (!(w0 instanceof WeightFunctionInt<?>))
 			throw new IllegalArgumentException("only int weights are supported");
 		WeightFunctionInt<E> w = (WeightFunctionInt<E>) w0;
+
+		int n = g.vertices();
+
 		int maxDistance = 0;
-		// TODO possible to take only heaviest n-1 edges
-		for (Edge<E> e : g.edges()) {
-			int weight = w.weightInt(e);
-			if (maxDistance + weight < maxDistance)
-				throw new IllegalArgumentException("overflow");
-			maxDistance += weight;
+		if (g.edges().size() <= n - 1) {
+			for (Edge<E> edge : g.edges())
+				maxDistance += w.weightInt(edge);
+
+		} else {
+			@SuppressWarnings("unchecked")
+			Edge<E>[] edges = g.edges().toArray(Edge[]::new);
+			Edge<E> pivot = Arrays.getKthElement(edges, n - 1,
+					(e1, e2) -> -Integer.compare(w.weightInt(e1), w.weightInt(e2)));
+			int weightThreshold = w.weightInt(pivot);
+
+			for (Edge<E> edge : edges) {
+				int ew = w.weightInt(edge);
+				if (ew >= weightThreshold)
+					maxDistance += ew;
+			}
 		}
+
 		return calcDistances(g, w, source, maxDistance);
 	}
 
@@ -54,7 +67,7 @@ public class SSSPDial1969 implements SSSP {
 		@SuppressWarnings("unchecked")
 		DialHeap.Node<E>[] verticesPtrs = new DialHeap.Node[n];
 
-		Arrays.fill(distances, Integer.MAX_VALUE);
+		java.util.Arrays.fill(distances, Integer.MAX_VALUE);
 		distances[source] = 0;
 
 		for (int u = source;;) {
