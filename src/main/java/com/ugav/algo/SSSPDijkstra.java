@@ -18,7 +18,7 @@ public class SSSPDijkstra implements SSSP {
 	@SuppressWarnings("rawtypes")
 	private final Heap<HeapElm> heap;
 	@SuppressWarnings("rawtypes")
-	private Heap.Handle<HeapElm>[] verticesPtrs;
+	private HeapDirectAccessed.Handle<HeapElm>[] verticesPtrs;
 
 	public SSSPDijkstra() {
 		allocSize = 0;
@@ -30,7 +30,7 @@ public class SSSPDijkstra implements SSSP {
 		if (allocSize < n) {
 			distances = new double[n];
 			backtrack = new Edge[n];
-			verticesPtrs = new Heap.Handle[n];
+			verticesPtrs = new HeapDirectAccessed.Handle[n];
 			allocSize = n;
 		}
 	}
@@ -53,9 +53,9 @@ public class SSSPDijkstra implements SSSP {
 		@SuppressWarnings("unchecked")
 		Edge<E>[] backtrack = this.backtrack;
 		@SuppressWarnings({ "unchecked", "rawtypes" })
-		Heap<HeapElm<E>> heap = (Heap) this.heap;
+		HeapDirectAccessed<HeapElm<E>> heap = (HeapDirectAccessed) this.heap;
 		@SuppressWarnings("unchecked")
-		Heap.Handle<HeapElm<E>>[] verticesPtrs = (Heap.Handle[]) this.verticesPtrs;
+		HeapDirectAccessed.Handle<HeapElm<E>>[] verticesPtrs = (HeapDirectAccessed.Handle[]) this.verticesPtrs;
 
 		Arrays.fill(distances, Double.POSITIVE_INFINITY);
 		distances[source] = 0;
@@ -70,7 +70,7 @@ public class SSSPDijkstra implements SSSP {
 					throw new IllegalArgumentException("negative weights are not supported");
 				double distance = distances[u] + ws;
 
-				Heap.Handle<HeapElm<E>> vPtr = verticesPtrs[v];
+				HeapDirectAccessed.Handle<HeapElm<E>> vPtr = verticesPtrs[v];
 				if (vPtr == null) {
 					vPtr = verticesPtrs[v] = heap.insert(new HeapElm<>(distance, e));
 				} else {

@@ -9,7 +9,7 @@ import java.util.Objects;
 
 import com.ugav.algo.Trees.TreeNode;
 
-public class HeapBinomial<E> extends HeapAbstract<E> {
+public class HeapBinomial<E> extends HeapAbstractDirectAccessed<E> {
 
 	private Node<E>[] roots;
 	private int rootsLen;
@@ -146,30 +146,6 @@ public class HeapBinomial<E> extends HeapAbstract<E> {
 	}
 
 	@Override
-	public boolean remove(Object o) {
-		@SuppressWarnings("unchecked")
-		E e = (E) o;
-		Handle<E> handle = findHanlde(e);
-		if (handle == null)
-			return false;
-		removeHandle(handle);
-		return true;
-	}
-
-	@Override
-	public E findMin() {
-		return findMinHandle0().value;
-	}
-
-	@Override
-	public E extractMin() {
-		Node<E> min = findMinHandle0();
-		E val = min.value;
-		removeHandle(min);
-		return val;
-	}
-
-	@Override
 	public Iterator<E> iterator() {
 		return new Itr();
 	}
@@ -298,16 +274,7 @@ public class HeapBinomial<E> extends HeapAbstract<E> {
 	}
 
 	@Override
-	public boolean isHandlesSupported() {
-		return true;
-	}
-
-	@Override
 	public Handle<E> findMinHandle() {
-		return findMinHandle0();
-	}
-
-	private Node<E> findMinHandle0() {
 		if (isEmpty())
 			throw new IllegalStateException();
 		Node<E>[] rs = roots;
@@ -402,7 +369,7 @@ public class HeapBinomial<E> extends HeapAbstract<E> {
 		}
 	}
 
-	private static class Node<E> implements Heap.Handle<E>, TreeNode {
+	private static class Node<E> implements Handle<E>, TreeNode {
 
 		Node<E> parent;
 		Node<E> next;

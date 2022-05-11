@@ -32,9 +32,9 @@ public class MSTPrim1957 implements MST {
 			return Collections.emptyList();
 
 		Comparator<Edge<E>> c = new EdgeWeightComparator<>(w);
-		Heap<Edge<E>> heap = new HeapFibonacci<>(c);
+		HeapDirectAccessed<Edge<E>> heap = new HeapFibonacci<>(c);
 		@SuppressWarnings("unchecked")
-		Heap.Handle<Edge<E>>[] verticesPtrs = new Heap.Handle[n];
+		HeapDirectAccessed.Handle<Edge<E>>[] verticesPtrs = new HeapDirectAccessed.Handle[n];
 		boolean[] visited = new boolean[n];
 
 		Collection<Edge<E>> mst = new ArrayList<>(n - 1);
@@ -52,7 +52,7 @@ public class MSTPrim1957 implements MST {
 					if (visited[v])
 						continue;
 
-					Heap.Handle<Edge<E>> vPtr = verticesPtrs[v];
+					HeapDirectAccessed.Handle<Edge<E>> vPtr = verticesPtrs[v];
 					if (vPtr == null)
 						vPtr = verticesPtrs[v] = heap.insert(e);
 					else if (c.compare(e, vPtr.get()) < 0)

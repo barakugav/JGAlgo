@@ -3,7 +3,7 @@ package com.ugav.algo;
 import java.util.Comparator;
 import java.util.Iterator;
 
-public class RedBlackTree<E> extends HeapAbstract<E> {
+public class RedBlackTree<E> extends HeapAbstractDirectAccessed<E> {
 
 	private int size;
 	private Node<E> root;
@@ -27,40 +27,11 @@ public class RedBlackTree<E> extends HeapAbstract<E> {
 		return size;
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public boolean contains(Object o) {
-		return findHanlde((E) o) != null;
-	}
-
-	@Override
-	public E findMin() {
-		return findMinHandle().get();
-	}
-
-	@Override
-	public E extractMin() {
-		Handle<E> h = findMinHandle();
-		E e = h.get();
-		removeHandle(h);
-		return e;
-	}
-
 	@Override
 	public Handle<E> insert(E e) {
 		Node<E> n = new Node<>(e);
 		insertNode(n);
 		return n;
-	}
-
-	@Override
-	public boolean remove(Object o) {
-		@SuppressWarnings("unchecked")
-		Handle<E> h = findHanlde((E) o);
-		if (h == null)
-			return false;
-		removeHandle(h);
-		return true;
 	}
 
 	@Override
@@ -81,11 +52,6 @@ public class RedBlackTree<E> extends HeapAbstract<E> {
 	public void meld(Heap<? extends E> h) {
 		// TODO
 		super.meld(h);
-	}
-
-	@Override
-	public boolean isHandlesSupported() {
-		return true;
 	}
 
 	@Override

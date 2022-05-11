@@ -34,7 +34,7 @@ public class HeapBinary<E> extends HeapAbstract<E> {
 	}
 
 	@Override
-	public Handle<E> insert(E e) {
+	public HeapDirectAccessed.Handle<E> insert(E e) {
 		if (arr.length == size)
 			grow();
 

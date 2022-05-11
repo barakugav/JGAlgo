@@ -48,8 +48,8 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 		private final boolean[] inTree;
 
 		private final Comparator<Edge<E>> edgeSlackComparator;
-		private final Heap<Edge<E>> nextTightEdge;
-		private final Heap.Handle<Edge<E>>[] nextTightEdgePerOutV;
+		private final HeapDirectAccessed<Edge<E>> nextTightEdge;
+		private final HeapDirectAccessed.Handle<Edge<E>>[] nextTightEdgePerOutV;
 
 		private double deltaTotal;
 		private final double[] dualValBase;
@@ -65,7 +65,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 
 			edgeSlackComparator = (e1, e2) -> Utils.compare(edgeSlack(e1), edgeSlack(e2));
 			nextTightEdge = new HeapFibonacci<>(edgeSlackComparator);
-			nextTightEdgePerOutV = new Heap.Handle[n];
+			nextTightEdgePerOutV = new HeapDirectAccessed.Handle[n];
 
 			dualValBase = new double[n];
 			dualVal0 = new double[n];
@@ -172,7 +172,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 
 		private void nextTightEdgeAdd(Edge<E> e) {
 			int v = e.v();
-			Heap.Handle<Edge<E>> handle = nextTightEdgePerOutV[v];
+			HeapDirectAccessed.Handle<Edge<E>> handle = nextTightEdgePerOutV[v];
 			if (handle == null)
 				nextTightEdgePerOutV[v] = nextTightEdge.insert(e);
 			else if (edgeSlackComparator.compare(e, handle.get()) < 0)

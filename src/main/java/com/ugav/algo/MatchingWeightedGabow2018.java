@@ -101,13 +101,13 @@ public class MatchingWeightedGabow2018 implements MatchingWeighted {
 		final EdgeEvent<E>[] vToGrowEvent;
 
 		/* Heap storing all the grow events */
-		final Heap<EdgeEvent<E>> growEvents;
+		final HeapDirectAccessed<EdgeEvent<E>> growEvents;
 
 		/* Heap storing all the blossom and augmenting events */
 		final Heap<EdgeEvent<E>> blossomEvents;
 
 		/* Heap storing all expand events for odd vertices */
-		final Heap<Blossom<E>> expandEvents;
+		final HeapDirectAccessed<Blossom<E>> expandEvents;
 
 		/* queue used during blossom creation to union all vertices */
 		final QueueIntFixSize unionQueue;
@@ -192,7 +192,7 @@ public class MatchingWeightedGabow2018 implements MatchingWeighted {
 			 * pointer to the grow event for this blossom, relevant only if this blossom is
 			 * out
 			 */
-			Heap.Handle<EdgeEvent<E>> growHandle;
+			HeapDirectAccessed.Handle<EdgeEvent<E>> growHandle;
 
 			/* delta threshold for this blossom to be expanded */
 			double expandDelta;
@@ -201,7 +201,7 @@ public class MatchingWeightedGabow2018 implements MatchingWeighted {
 			 * pointer to the expand event for this blossom, relevant only if this blossom
 			 * is top odd
 			 */
-			Heap.Handle<Blossom<E>> expandHandle;
+			HeapDirectAccessed.Handle<Blossom<E>> expandHandle;
 
 			/* field used to keep track which blossoms were visited during traversy */
 			int lastVisitIdx;

@@ -59,9 +59,10 @@ public class MSTFredmanTarjan1987 implements MST {
 
 		Comparator<Edge<E>> c = new EdgeWeightComparator<>(w);
 		// heap of edges going out of the current tree, one edge in per super vertex
-		Heap<Edge<E>> heap = new HeapFibonacci<>(c);
+		HeapDirectAccessed<Edge<E>> heap = new HeapFibonacci<>(c);
+		// (super vertex -> heap element) for fast decreaseKey
 		@SuppressWarnings("unchecked")
-		Heap.Handle<Edge<E>>[] vHeapElm = new Heap.Handle[n]; // (super vertex -> heap element) for fast decreaseKey
+		HeapDirectAccessed.Handle<Edge<E>>[] vHeapElm = new HeapDirectAccessed.Handle[n];
 
 		Collection<Edge<E>> mst = new ArrayList<>(n - 1);
 		while (true) {
@@ -92,7 +93,7 @@ public class MSTFredmanTarjan1987 implements MST {
 							if (vTree[v] == r)
 								continue;
 
-							Heap.Handle<Edge<E>> heapElm = vHeapElm[v];
+							HeapDirectAccessed.Handle<Edge<E>> heapElm = vHeapElm[v];
 							if (heapElm == null) {
 								heapElm = vHeapElm[v] = heap.insert(e);
 								if (heap.size() > k)

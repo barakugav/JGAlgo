@@ -5,7 +5,7 @@ import java.util.Iterator;
 
 import com.ugav.algo.Trees.TreeNode;
 
-public class HeapFibonacci<E> extends HeapAbstract<E> {
+public class HeapFibonacci<E> extends HeapAbstractDirectAccessed<E> {
 
 	private Node<E> minRoot;
 	private Node<E> begin;
@@ -62,33 +62,6 @@ public class HeapFibonacci<E> extends HeapAbstract<E> {
 	}
 
 	@Override
-	public boolean remove(Object o) {
-		@SuppressWarnings("unchecked")
-		E e = (E) o;
-		Handle<E> handle = findHanlde(e);
-		if (handle == null)
-			return false;
-		removeHandle(handle);
-		return true;
-	}
-
-	@Override
-	public E findMin() {
-		if (isEmpty())
-			throw new IllegalStateException();
-		return minRoot.value;
-	}
-
-	@Override
-	public E extractMin() {
-		if (isEmpty())
-			throw new IllegalStateException();
-		Node<E> min = minRoot;
-		removeHandle(min);
-		return min.value;
-	}
-
-	@Override
 	public Iterator<E> iterator() {
 		return new Itr<>(begin);
 	}
@@ -137,11 +110,6 @@ public class HeapFibonacci<E> extends HeapAbstract<E> {
 
 		h.begin = h.end = h.minRoot = null;
 		h.size = 0;
-	}
-
-	@Override
-	public boolean isHandlesSupported() {
-		return true;
 	}
 
 	@Override
@@ -332,7 +300,7 @@ public class HeapFibonacci<E> extends HeapAbstract<E> {
 		return u;
 	}
 
-	private static class Node<E> implements Heap.Handle<E>, TreeNode {
+	private static class Node<E> implements Handle<E>, TreeNode {
 
 		Node<E> parent;
 		Node<E> next;

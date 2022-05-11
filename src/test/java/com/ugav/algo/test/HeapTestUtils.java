@@ -9,6 +9,7 @@ import java.util.TreeMap;
 import java.util.function.Supplier;
 
 import com.ugav.algo.Heap;
+import com.ugav.algo.HeapDirectAccessed;
 import com.ugav.algo.Pair;
 
 class HeapTestUtils extends TestUtils {
@@ -258,9 +259,10 @@ class HeapTestUtils extends TestUtils {
 				if (x == 0)
 					continue;
 				int newVal = rand.nextInt(x);
+				HeapDirectAccessed<Integer> heap0 = (HeapDirectAccessed<Integer>) heap;
 
 				tracker.decreaseKey(x, newVal);
-				heap.decreaseKey(heap.findHanlde(x), newVal);
+				heap0.decreaseKey(heap0.findHanlde(x), newVal);
 				break;
 
 			default:

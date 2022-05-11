@@ -35,29 +35,4 @@ public abstract class HeapAbstract<E> extends AbstractCollection<E> implements H
 		h.clear();
 	}
 
-	@Override
-	public boolean isHandlesSupported() {
-		return false;
-	}
-
-	@Override
-	public Handle<E> findHanlde(E e) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public Handle<E> findMinHandle() {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void removeHandle(Handle<E> handle) {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void decreaseKey(Handle<E> handle, E e) {
-		throw new UnsupportedOperationException();
-	}
-
 }

@@ -6,7 +6,7 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.TreeSet;
 
-import com.ugav.algo.Heap.Handle;
+import com.ugav.algo.HeapDirectAccessed.Handle;
 import com.ugav.algo.RedBlackTree;
 
 @SuppressWarnings("boxing")
