@@ -1,7 +1,0 @@
-dynamic LCA
-Subtree Merge Findmin
-Weighted matching general graphs (+perfect matching)
-Travelling Salesperson Problem (TSP) (2-appx using MST, 1.5-appx using weighted matching
-Chinese Postman Problem (CPP)
-spanning tree whose maximal weight is minimal
-min cut
