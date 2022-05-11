@@ -2,45 +2,46 @@
 
 Algo is a collection of algorithms implemented in Java. It contains mostly algorithms for various graphs problems and some utilities data structures and array algorithms.
 
-## Supported algorithms
+## Algorithms
 
-- Heaps
-   - Binary heap
-   - Binomial heap
-   - Fibonacci heap
-   - Red-Black binary search tree
- - UnionFind
- - SplitFindMin
- - SSSP (Single source shortest path)
-   - Dijkstra positive weights, O(m + nlogn)
-   - Dial1969 positive integer weights, O(m + D) where D is the maximum distance
-   - BellmanFord general weights, O(m * n)
-   - Goldberg1995 positive and negative integer weights, O(m * n^0.5 * logN) where N is the minimum negative weight
- - RMQ (range query minimum)
-   - PlusMinusOneBenderFarachColton2000, only for +/-1 arrays, O(n) preprocessing, O(1) query
-   - GabowBentleyTarjan1984, O(n) preprocessing, O(1) query
- - LCA BenderFarachColton2000 (lowest common ancestor) static, using RMQ, O(n)
- - Max flow EdmondsKarp O(m * n^2)
- - MST (minimum spanning tree)
-   - Boruvka1926 O(mlogn)
-   - Kruskal1956 O(mlogn)
-   - Prim1957 O(m + nlogn)
-   - Yao1976 O(mloglogn + nlogn)
-   - FredmanTarjan1987 O(mlog*n)
-   - KargerKleinTarjan1995 randomized algorithm, expected time O(m + n)
-   - MDST Tarjan1977 directed graphs, O(mlogn)
- - TMP (tree path maxima)
-   - Komlos1985King1997Hagerup2009 O(m + n) where m is the number of queries
- - Maximum matching
-   - HopcroftKarp1973 for bipartite unweighted graphs, O(m * n^0.5)
-   - Gabow1976 for general unweighted graphs, O(m * n * alpha(m,n)) (alpha is inverse Ackermann's function)
-   - SSSP bipartite weighted matching, O(mn + n^2logn)
-   - Hungarian method for bipartite weighted matching, O(mn + n^2logn)
-   - MatchingWeightedGabow2018 for general weighted graphs, O(m * n * logn), (WIP for O(m*n + n^2 logn))
 
-Additional utils:
- - BFS / DFS
- - Connectivity components calculation, undirected O(m + n), strongly connected, directed O(m + n)
- - Topological sort calculation (DAG) O(m + n)
- - SSSP DAG (directed acyclic graph) O(m + n)
- - Arrays utils, K'th element O(n), bucket partition O(nlogk) where k is the bucket size
+| Algorithm | Running time |
+| - | - |
+| Binary heap | O(m log n) for m operations |
+| Binomial heap | O(m log n) for m operations |
+| Fibonacci heap | O(m log n) for m operations, decrease key in O(1) |
+| Red-Black tree | O(m log n) for m operations |
+| Splay Tree | O(m log n) for m operations, efficient splits and joins |
+| Union Find | O(m alpha(m,n)) where alpha is inverse Ackermann func |
+| Split Find Min | O(m log n) for m operations |
+| SSSP Dijkstra positive weights | O(m + n log n) |
+| SSSP Dial1969 positive integer weights | O(m + D) where D is the maximum distance |
+| SSSP BellmanFord general weights | O(m n) |
+| SSSP Goldberg1995 positive and negative integer weights | O(m n^0.5 logN) where N is the minimum negative weight |
+| RMQ +-1 BenderFarachColton2000 | O(n) preprocessing, O(1) query |
+| RMQ GabowBentleyTarjan1984 | O(n) preprocessing, O(1) query |
+| LCA static BenderFarachColton2000, using RMQ | O(n) |
+| Max flow EdmondsKarp | O(m n^2) |
+| MST Boruvka1926 | O(m log n) |
+| MST Kruskal1956 | O(m log n) |
+| MST Prim1957 | O(m + n log n) |
+| MST Yao1976 | O(m log log n + n log n) |
+| MST FredmanTarjan1987 | O(m log* n) |
+| MST KargerKleinTarjan1995 randomized | O(m + n) expected |
+| MDST Tarjan1977 directed graphs | O(m log n) |
+| TMP (tree path maxima) Komlos1985King1997Hagerup2009 | O(m + n) where m is the number of queries |
+| Maximum matching bipartite unweighted HopcroftKarp1973 | O(m n^0.5) |
+| Maximum matching general unweighted Gabow1976 | O(m n alpha(m,n)) |
+| Maximum matching bipartite weighted SSSP | O(m n + n^2 log n) |
+| Maximum matching bipartite weighted Hungarian method | O(m n + n^2 log n) |
+| Maximum matching general weighted Gabow1990 | O(m n logn), WIP for O(m n + n^2 log n) |
+
+### Additional Utils
+
+| Utility | Running time |
+| - | - |
+| Connectivity components calculation (undirected), strongly connected (directed) | O(m + n) |
+| Topological sort calculation (DAG) | O(m + n) |
+| SSSP DAG | O(m + n) |
+| Array k'th element | O(n) |
+| Array bucket partition | O(n log k) where k is the bucket size |

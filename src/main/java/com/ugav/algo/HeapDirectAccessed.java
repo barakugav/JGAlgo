@@ -7,7 +7,6 @@ public interface HeapDirectAccessed<E> extends Heap<E> {
 	 *
 	 * @param e an element in the heap
 	 * @return the handle of the element or null if the element is not in the heap
-	 * @throws UnsupportedOperationException if isHandlesSupported is false
 	 */
 	public Handle<E> findHanlde(E e);
 
@@ -16,7 +15,6 @@ public interface HeapDirectAccessed<E> extends Heap<E> {
 	 *
 	 * @return handle of the minimal element
 	 * @throws IllegalStateException         if the heap is empty
-	 * @throws UnsupportedOperationException if isHandlesSupported is false
 	 */
 	public Handle<E> findMinHandle();
 
@@ -25,7 +23,6 @@ public interface HeapDirectAccessed<E> extends Heap<E> {
 	 *
 	 * @param handle handle of an inserted element
 	 * @param e      new key
-	 * @throws UnsupportedOperationException if isHandlesSupported is false
 	 */
 	public void decreaseKey(Handle<E> handle, E e);
 
@@ -33,7 +30,6 @@ public interface HeapDirectAccessed<E> extends Heap<E> {
 	 * Remove an element from the heap by its handle
 	 *
 	 * @param handle handle of an inserted element
-	 * @throws UnsupportedOperationException if isHandlesSupported is false
 	 */
 	public void removeHandle(Handle<E> handle);
 

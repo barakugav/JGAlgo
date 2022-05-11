@@ -5,7 +5,7 @@ import java.util.Iterator;
 
 import com.ugav.algo.BSTUtils.NeighborType;
 
-public class RedBlackTree<E> extends HeapAbstractDirectAccessed<E> implements BST<E> {
+public class RedBlackTree<E> extends BSTAbstract<E> {
 
 	private int size;
 	private Node<E> root;
@@ -66,6 +66,13 @@ public class RedBlackTree<E> extends HeapAbstractDirectAccessed<E> implements BS
 		if (root == null)
 			throw new IllegalStateException();
 		return BSTUtils.findMin(root);
+	}
+
+	@Override
+	public Handle<E> findMaxHandle() {
+		if (root == null)
+			throw new IllegalStateException();
+		return BSTUtils.findMax(root);
 	}
 
 	@Override

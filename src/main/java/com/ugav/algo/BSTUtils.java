@@ -25,6 +25,11 @@ class BSTUtils {
 			parent = left = right = null;
 			val = null;
 		}
+
+		@Override
+		public String toString() {
+			return "<" + val + ">";
+		}
 	}
 
 	static <E, N extends Node<E, N>> N find(N root, Comparator<? super E> c, E e) {

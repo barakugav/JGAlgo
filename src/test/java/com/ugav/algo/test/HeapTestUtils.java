@@ -1,6 +1,7 @@
 package com.ugav.algo.test;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
@@ -270,6 +271,19 @@ class HeapTestUtils extends TestUtils {
 			}
 			opIdx++;
 		}
+
+		int expectedSize = heap.size();
+		int actualSize = 0;
+		for (Iterator<Integer> it = heap.iterator(); it.hasNext();) {
+			it.next();
+			actualSize++;
+		}
+		if (expectedSize != actualSize) {
+			printTestStr("size() is different than counted size using iterator: ", expectedSize, " != ", actualSize,
+					"\n");
+			return false;
+		}
+
 		return true;
 	}
 

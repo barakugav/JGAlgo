@@ -3,6 +3,30 @@ package com.ugav.algo;
 public interface BST<E> extends HeapDirectAccessed<E> {
 
 	/**
+	 * Find the maximum element in the heap
+	 *
+	 * @return the maximum element in the heap
+	 * @throws IllegalStateException if the heap is empty
+	 */
+	public E findMax();
+
+	/**
+	 * Extract the maximum element in the heap
+	 *
+	 * @return the maximum element in the heap
+	 * @throws IllegalStateException if the heap is empty
+	 */
+	public E extractMax();
+
+	/**
+	 * Find the handle of the maximum element in the heap
+	 *
+	 * @return handle of the maximum element
+	 * @throws IllegalStateException if the heap is empty
+	 */
+	public Handle<E> findMaxHandle();
+
+	/**
 	 * Search for element in the tree or it's predecessor if the element is not
 	 * found
 	 * 
