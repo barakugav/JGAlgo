@@ -2,7 +2,6 @@ package com.ugav.algo;
 
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 
 public class RedBlackTree<E> extends HeapAbstract<E> {
 
@@ -50,7 +49,7 @@ public class RedBlackTree<E> extends HeapAbstract<E> {
 	@Override
 	public Handle<E> insert(E e) {
 		Node<E> n = new Node<>(e);
-		insert(n);
+		insertNode(n);
 		return n;
 	}
 
@@ -66,27 +65,14 @@ public class RedBlackTree<E> extends HeapAbstract<E> {
 
 	@Override
 	public Iterator<E> iterator() {
-		return new Iter<>(root);
+		return new BSTUtils.BSTIterator<>(root);
 	}
 
 	@Override
 	public void clear() {
-		for (Node<E> p = root; p != null;) {
-			for (;;) {
-				if (p.left != null) {
-					p = p.left;
-					continue;
-				}
-				if (p.right != null) {
-					p = p.right;
-					continue;
-				}
-				break;
-			}
-			Node<E> parent = p.parent;
-			p.clear();
-			p = parent;
-		}
+		if (root == null)
+			return;
+		BSTUtils.clear(root);
 		root = null;
 		size = 0;
 	}
@@ -104,65 +90,37 @@ public class RedBlackTree<E> extends HeapAbstract<E> {
 
 	@Override
 	public Handle<E> findHanlde(E e) {
-		for (Node<E> p = root; p != null;) {
-			int cmp = c.compare(e, p.e);
-			if (cmp == 0)
-				return p;
-			if (cmp < 0)
-				p = p.left;
-			else
-				p = p.right;
-		}
-		return null;
+		return BSTUtils.find(root, c, e);
 	}
 
 	@Override
 	public Handle<E> findMinHandle() {
 		if (root == null)
 			throw new IllegalStateException();
-		Node<E> p;
-		for (p = root; p.left != null; p = p.left)
-			;
-		return p;
+		return BSTUtils.findMin(root);
 	}
 
 	@Override
 	public void decreaseKey(Handle<E> handle, E e) {
 		Node<E> n = (Node<E>) handle;
 		removeHandle(n);
-		n.e = e;
-		insert(n);
+		n.val = e;
+		insertNode(n);
 	}
 
-	private void insert(Node<E> n) {
+	private void insertNode(Node<E> n) {
 		if (root == null) {
 			n.color = Black;
 			root = n;
 		} else {
-			Node<E> parent;
-			for (parent = root;;) {
-				int cmp = c.compare(n.e, parent.e);
-				if (cmp <= 0) {
-					if (parent.left == null) {
-						parent.left = n;
-						break;
-					}
-					parent = parent.left;
-				} else {
-					if (parent.right == null) {
-						parent.right = n;
-						break;
-					}
-					parent = parent.right;
-				}
-			}
-			n.parent = parent;
-			fixAfterInsert(parent, n);
+			BSTUtils.insert(root, c, n);
+			fixAfterInsert(n);
 		}
 		size++;
 	}
 
-	private void fixAfterInsert(Node<E> parent, Node<E> n) {
+	private void fixAfterInsert(Node<E> n) {
+		Node<E> parent = n.parent;
 		n.color = Red;
 
 		do {
@@ -291,13 +249,10 @@ public class RedBlackTree<E> extends HeapAbstract<E> {
 
 		/* 2 children, switch place with a single child node */
 		if (n.left != null && n.right != null) {
-			Node<E> swap = (Node<E>) findPredecessorHandle(n);
-			if (swap == null)
-				swap = (Node<E>) findSuccessorHandle(n);
-
-			E old = swap.e;
-			swap.e = n.e;
-			n.e = old;
+			Node<E> swap = BSTUtils.findSuccessor(n);
+			E old = swap.val;
+			swap.val = n.val;
+			n.val = old;
 			n = swap;
 		}
 		assert n.left == null || n.right == null;
@@ -425,100 +380,29 @@ public class RedBlackTree<E> extends HeapAbstract<E> {
 	}
 
 	public Handle<E> findPredecessorHandle(Handle<E> handle) {
-		Node<E> n = (Node<E>) handle;
-		/* predecessor in left sub tree */
-		if (n.left != null)
-			for (Node<E> p = n.left;; p = p.right)
-				if (p.right == null)
-					return p;
-
-		/* predecessor is some ancestor */
-		for (Node<E> p = n, parent; (parent = p.parent) != null; p = parent)
-			if (p == parent.right)
-				return parent;
-		return null;
+		return BSTUtils.findPredecessor((Node<E>) handle);
 	}
 
 	public Handle<E> findSuccessorHandle(Handle<E> handle) {
-		Node<E> n = (Node<E>) handle;
-		/* successor in right sub tree */
-		if (n.right != null)
-			for (Node<E> p = n.right;; p = p.left)
-				if (p.left == null)
-					return p;
-
-		/* successor is some ancestor */
-		for (Node<E> p = n, parent; (parent = p.parent) != null; p = parent)
-			if (p == parent.left)
-				return parent;
-		return null;
+		return BSTUtils.findSuccessor((Node<E>) handle);
 	}
 
-	private static class Node<E> implements Handle<E> {
+	private static class Node<E> extends BSTUtils.Node<E, Node<E>> implements Handle<E> {
 
-		private E e;
 		private boolean color;
-		private Node<E> parent;
-		private Node<E> right;
-		private Node<E> left;
 
 		Node(E e) {
-			this.e = e;
-			parent = right = left = null;
+			super(e);
 		}
 
 		@Override
 		public E get() {
-			return e;
+			return val;
 		}
 
 		@Override
 		public String toString() {
-			return "{" + (color == Red ? 'R' : 'B') + ":" + e + "}";
-		}
-
-		void clear() {
-			parent = left = right = null;
-			e = null;
-		}
-
-	}
-
-	private static class Iter<E> implements Iterator<E> {
-
-		Node<E> n;
-
-		Iter(Node<E> root) {
-			if (root == null)
-				n = null;
-			else
-				for (n = root; n.left != null; n = n.left)
-					;
-		}
-
-		@Override
-		public boolean hasNext() {
-			return n != null;
-		}
-
-		@Override
-		public E next() {
-			if (!hasNext())
-				throw new NoSuchElementException();
-			E ret = n.get();
-
-			if (n.right != null) {
-				for (n = n.right; n.left != null; n = n.left)
-					;
-			} else {
-				for (Node<E> prev;;) {
-					n = (prev = n).parent;
-					if (n == null || n.left == prev)
-						break;
-				}
-			}
-
-			return ret;
+			return "{" + (color == Red ? 'R' : 'B') + ":" + val + "}";
 		}
 
 	}
