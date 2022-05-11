@@ -3,7 +3,9 @@ package com.ugav.algo;
 import java.util.Comparator;
 import java.util.Iterator;
 
-public class RedBlackTree<E> extends HeapAbstractDirectAccessed<E> {
+import com.ugav.algo.BSTUtils.NeighborType;
+
+public class RedBlackTree<E> extends HeapAbstractDirectAccessed<E> implements BST<E> {
 
 	private int size;
 	private Node<E> root;
@@ -345,11 +347,23 @@ public class RedBlackTree<E> extends HeapAbstractDirectAccessed<E> {
 		}
 	}
 
-	public Handle<E> findPredecessorHandle(Handle<E> handle) {
+	@Override
+	public Handle<E> findOrPredecessor(E e) {
+		return BSTUtils.findOrNeighbor(root, c, e, NeighborType.Predecessor);
+	}
+
+	@Override
+	public Handle<E> findOrSuccessor(E e) {
+		return BSTUtils.findOrNeighbor(root, c, e, NeighborType.Successor);
+	}
+
+	@Override
+	public Handle<E> findPredecessor(Handle<E> handle) {
 		return BSTUtils.findPredecessor((Node<E>) handle);
 	}
 
-	public Handle<E> findSuccessorHandle(Handle<E> handle) {
+	@Override
+	public Handle<E> findSuccessor(Handle<E> handle) {
 		return BSTUtils.findSuccessor((Node<E>) handle);
 	}
 

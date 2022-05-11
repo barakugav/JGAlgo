@@ -28,26 +28,53 @@ class BSTUtils {
 	}
 
 	static <E, N extends Node<E, N>> N find(N root, Comparator<? super E> c, E e) {
-		for (N p = root; p != null;) {
+		return findOrNeighbor(root, c, e, NeighborType.None);
+	}
+
+	static enum NeighborType {
+		None, Predecessor, Successor,
+	}
+
+	static <E, N extends Node<E, N>> N findOrNeighbor(N root, Comparator<? super E> c, E e, NeighborType neighborType) {
+		if (root == null)
+			return null;
+		for (N p = root;;) {
 			int cmp = c.compare(e, p.val);
 			if (cmp == 0)
 				return p;
-			if (cmp < 0)
+			if (cmp < 0) {
+				if (p.left == null)
+					return findNeighbor(p, neighborType);
 				p = p.left;
-			else
+			} else {
+				if (p.right == null)
+					return findNeighbor(p, neighborType);
 				p = p.right;
+			}
 		}
-		return null;
+	}
+
+	private static <E, N extends Node<E, N>> N findNeighbor(N n, NeighborType neighborType) {
+		switch (neighborType) {
+		case None:
+			return null;
+		case Predecessor:
+			return findPredecessor(n);
+		case Successor:
+			return findSuccessor(n);
+		default:
+			throw new IllegalArgumentException("Unexpected value: " + neighborType);
+		}
 	}
 
 	static <E, N extends Node<E, N>> N findMin(N root) {
-		for (N p = root; ; p = p.left)
+		for (N p = root;; p = p.left)
 			if (p.left == null)
 				return p;
 	}
 
 	static <E, N extends Node<E, N>> N findMax(N root) {
-		for (N p = root; ; p = p.right)
+		for (N p = root;; p = p.right)
 			if (p.right == null)
 				return p;
 	}
