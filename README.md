@@ -45,3 +45,4 @@ Algo is a collection of algorithms implemented in Java. It contains mostly algor
 | SSSP DAG | O(m + n) |
 | Array k'th element | O(n) |
 | Array bucket partition | O(n log k) where k is the bucket size |
+| Bits Lookup tables (bit count, ith bit, ctz) | O(n) preprocessing, O(1) query |

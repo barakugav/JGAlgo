@@ -37,6 +37,21 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 		return new Worker<>(t, w).calcTPM(queries, queriesNum);
 	}
 
+	private static class BitsTable {
+		private final BitsLookupTable.Count count;
+		private final BitsLookupTable.Ith ith;
+
+		BitsTable(int wordsize) {
+			count = new BitsLookupTable.Count(wordsize);
+			ith = new BitsLookupTable.Ith(wordsize, count);
+		}
+
+		void init() {
+			count.init();
+			ith.init();
+		}
+	}
+
 	private static class Worker<E> {
 
 		/*
@@ -45,14 +60,14 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 		 */
 		final Graph<E> tOrig;
 		final WeightFunction<E> w;
-		final BitsLookupTable bitsTable;
+		final BitsTable bitsTable;
 
 		Worker(Graph<E> t, WeightFunction<E> w) {
 			this.tOrig = t;
 			this.w = w;
 
 			int n = t.vertices();
-			bitsTable = new BitsLookupTable(n > 1 ? Utils.log2ceil(n) : 1);
+			bitsTable = new BitsTable(n > 1 ? Utils.log2ceil(n) : 1);
 			bitsTable.init();
 		}
 
@@ -85,16 +100,16 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 
 				Edge<Edge<E>> ua = null, va = null;
 
-				int qusize = bitsTable.bitCount(q[u]);
+				int qusize = bitsTable.count.bitCount(q[u]);
 				for (int j = 0; j < qusize; j++) {
-					if (bitsTable.ithBit(q[u], j) == lcaDepth) {
+					if (bitsTable.ith.ithBit(q[u], j) == lcaDepth) {
 						ua = a[u][j];
 						break;
 					}
 				}
-				int qvsize = bitsTable.bitCount(q[v]);
+				int qvsize = bitsTable.count.bitCount(q[v]);
 				for (int j = 0; j < qvsize; j++) {
-					if (bitsTable.ithBit(q[v], j) == lcaDepth) {
+					if (bitsTable.ith.ithBit(q[v], j) == lcaDepth) {
 						va = a[v][j];
 						break;
 					}
@@ -130,12 +145,12 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 				a[v] = repSuf(a[v], depth, j);
 
 				if (depth == leavesDepth) {
-					int qvsize = bitsTable.bitCount(q[v]);
+					int qvsize = bitsTable.count.bitCount(q[v]);
 					@SuppressWarnings("unchecked")
 					Edge<Edge<E>>[] resv = new Edge[qvsize];
 					for (int i = 0; i < qvsize; i++) {
-						int b = bitsTable.ithBit(q[v], i);
-						int s = bitsTable.numberOfTrailingZeros(successor(a[v], 1 << b) >> 1);
+						int b = bitsTable.ith.ithBit(q[v], i);
+						int s = bitsTable.ith.numberOfTrailingZeros(successor(a[v], 1 << b) >> 1);
 						resv[i] = edgesFromRoot.get(s);
 					}
 					res[v] = resv;
@@ -167,15 +182,15 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 		}
 
 		private int binarySearch(int av, double weight, List<Edge<Edge<E>>> edgesToRoot) {
-			int avsize = bitsTable.bitCount(av);
-			if (avsize == 0 || w.weight(edgesToRoot.get(bitsTable.ithBit(av, 0) - 1).val()) < weight)
+			int avsize = bitsTable.count.bitCount(av);
+			if (avsize == 0 || w.weight(edgesToRoot.get(bitsTable.ith.ithBit(av, 0) - 1).val()) < weight)
 				return 0;
 
 			for (int from = 0, to = avsize;;) {
 				if (from == to - 1)
-					return bitsTable.ithBit(av, from) + 1;
+					return bitsTable.ith.ithBit(av, from) + 1;
 				int mid = (from + to) / 2;
-				int avi = bitsTable.ithBit(av, mid);
+				int avi = bitsTable.ith.ithBit(av, mid);
 				if (w.weight(edgesToRoot.get(avi - 1).val()) >= weight)
 					from = mid;
 				else
@@ -342,74 +357,6 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 			}
 
 			return q;
-		}
-
-	}
-
-	private static class BitsLookupTable {
-
-		private final int wordsize;
-		private final byte[] bitCountTable;
-		private final byte[][] ithBitTable;
-
-		BitsLookupTable(int wordsize) {
-			if (!(0 < wordsize && wordsize < Integer.SIZE - 1))
-				throw new IllegalArgumentException("unsupported word size: " + wordsize);
-			this.wordsize = wordsize;
-			int halfwordsize = ((wordsize - 1) / 2 + 1);
-			bitCountTable = new byte[1 << wordsize];
-			ithBitTable = new byte[1 << halfwordsize][halfwordsize];
-		}
-
-		void init() {
-			for (int highBit = 0; highBit < wordsize; highBit++) {
-				for (int prevx = 0; prevx < 1 << highBit; prevx++) {
-					int x = prevx | (1 << highBit);
-					bitCountTable[x] = (byte) (bitCountTable[prevx] + 1);
-				}
-			}
-
-			int halfwordsize = ((wordsize - 1) / 2 + 1);
-			for (int highBit = 0; highBit < halfwordsize; highBit++) {
-				for (int prevx = 0; prevx < 1 << highBit; prevx++) {
-					int x = prevx | (1 << highBit);
-					int xBitCount = bitCountTable[x];
-					ithBitTable[x][xBitCount - 1] = (byte) (highBit);
-					for (int i = xBitCount - 2; i >= 0; i--)
-						ithBitTable[x][i] = ithBitTable[prevx][i];
-				}
-			}
-		}
-
-		int bitCount(int x) {
-			return bitCountTable[x];
-		}
-
-		int ithBit(int x, int i) {
-
-			/*
-			 * the ithBitTable is of size [2^halfwordsize][halfwordsize] and we answer a
-			 * query by 2 lookup tables. Using the easy [2^wordsize][wordsize] will results
-			 * in O(nlogn) time and size.
-			 */
-
-			if (i < 0 || i >= bitCount(x))
-				throw new IndexOutOfBoundsException(Integer.toBinaryString(x) + "[" + i + "]");
-			int halfwordsize = ((wordsize - 1) / 2 + 1);
-			if (x < 1 << halfwordsize)
-				return ithBitTable[x][i];
-
-			int xlow = x & ((1 << halfwordsize) - 1);
-			int xlowcount = bitCount(xlow);
-			if (i < xlowcount)
-				return ithBitTable[xlow][i];
-
-			int xhigh = x >> halfwordsize;
-			return halfwordsize + ithBitTable[xhigh][i - xlowcount];
-		}
-
-		int numberOfTrailingZeros(int x) {
-			return x == 0 ? Integer.SIZE : ithBit(x, 0);
 		}
 
 	}
