@@ -2,6 +2,7 @@ package com.ugav.algo;
 
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.function.Consumer;
 
 import com.ugav.algo.BSTUtils.NeighborType;
 
@@ -11,8 +12,8 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 	private Node<E> root;
 	private final Comparator<? super E> c;
 
-	private static final boolean Red = true;
-	private static final boolean Black = false;
+	static final boolean Red = true;
+	static final boolean Black = false;
 
 	public RedBlackTree() {
 		this(null);
@@ -31,9 +32,7 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 
 	@Override
 	public Handle<E> insert(E e) {
-		Node<E> n = new Node<>(e);
-		insertNode(n);
-		return n;
+		return insertNode(newNode(e));
 	}
 
 	@Override
@@ -83,15 +82,18 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 		insertNode(n);
 	}
 
-	private void insertNode(Node<E> n) {
+	private Node<E> insertNode(Node<E> n) {
 		if (root == null) {
 			n.color = Black;
 			root = n;
+			afterInsert(n);
 		} else {
 			BSTUtils.insert(root, c, n);
+			afterInsert(n);
 			fixAfterInsert(n);
 		}
 		size++;
+		return n;
 	}
 
 	private void fixAfterInsert(Node<E> n) {
@@ -155,57 +157,23 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 		/* Case 3: we exited the loop through the main condition, n is now a Red root */
 	}
 
-	private void rotateLeft(Node<E> n) {
-		Node<E> parent = n.parent, child = n.right, grandchild = child.left;
-
-		n.right = grandchild;
-		if (grandchild != null)
-			grandchild.parent = n;
-
-		child.left = n;
-		n.parent = child;
-		child.parent = parent;
-
+	private void removeNode(Node<E> n, Node<E> replace) {
+		beforeRemove(n);
+		Node<E> parent = n.parent;
 		if (parent != null) {
 			if (n == parent.left) {
-				parent.left = child;
+				parent.left = replace;
 			} else {
 				assert n == parent.right;
-				parent.right = child;
+				parent.right = replace;
 			}
 		} else {
-			root = child;
+			root = replace;
 		}
-	}
-
-	private void rotateRight(Node<E> n) {
-		Node<E> parent = n.parent, child = n.left, grandchild = child.right;
-
-		n.left = grandchild;
-		if (grandchild != null)
-			grandchild.parent = n;
-
-		child.right = n;
-		n.parent = child;
-		child.parent = parent;
-
-		if (parent != null) {
-			if (n == parent.left) {
-				parent.left = child;
-			} else {
-				assert n == parent.right;
-				parent.right = child;
-			}
-		} else {
-			root = child;
-		}
-	}
-
-	private void rotate(Node<E> n, boolean left) {
-		if (left)
-			rotateLeft(n);
-		else
-			rotateRight(n);
+		if (replace != null)
+			replace.parent = parent;
+		n.clear();
+		size--;
 	}
 
 	@Override
@@ -216,15 +184,14 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 
 		/* root with no children, just remove */
 		if (n == root && n.left == null && n.right == null) {
-			n.clear();
-			root = null;
-			size--;
+			removeNode(n, null);
 			return;
 		}
 
 		/* 2 children, switch place with a single child node */
 		if (n.left != null && n.right != null) {
 			Node<E> swap = BSTUtils.findSuccessor(n);
+			beforeNodeValSwap(n, swap);
 			E old = swap.val;
 			swap.val = n.val;
 			n.val = old;
@@ -236,14 +203,7 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 		/* Red node, just remove */
 		if (n.color == Red) {
 			assert n.left == null && n.right == null;
-			if (n == parent.left) {
-				parent.left = null;
-			} else {
-				assert n == parent.right;
-				parent.right = null;
-			}
-			n.clear();
-			size--;
+			removeNode(n, null);
 			return;
 		}
 
@@ -254,32 +214,13 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 			assert child.color = Red;
 			assert child.left == null && child.right == null;
 			child.color = Black;
-			child.parent = parent;
-			if (parent != null) {
-				if (n == parent.left) {
-					parent.left = child;
-				} else {
-					assert n == parent.right;
-					parent.right = child;
-				}
-			} else {
-				root = child;
-			}
-			n.clear();
-			size--;
+			removeNode(n, child);
 			return;
 		}
 
 		/* black node, no children. Remove node and fix short parent subtree in loop */
-		boolean leftIsShortSide;
-		if (leftIsShortSide = (n == parent.left)) {
-			parent.left = null;
-		} else {
-			assert n == parent.right;
-			parent.right = null;
-		}
-		n.clear();
-		size--;
+		boolean leftIsShortSide = n == parent.left;
+		removeNode(n, null);
 		fixAfterRemove(parent, leftIsShortSide);
 	}
 
@@ -354,6 +295,61 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 		}
 	}
 
+	private void rotate(Node<E> n, boolean left) {
+		if (left)
+			rotateLeft(n);
+		else
+			rotateRight(n);
+	}
+
+	private void rotateLeft(Node<E> n) {
+		beforeRotateLeft(n);
+		Node<E> parent = n.parent, child = n.right, grandchild = child.left;
+
+		n.right = grandchild;
+		if (grandchild != null)
+			grandchild.parent = n;
+
+		child.left = n;
+		n.parent = child;
+		child.parent = parent;
+
+		if (parent != null) {
+			if (n == parent.left) {
+				parent.left = child;
+			} else {
+				assert n == parent.right;
+				parent.right = child;
+			}
+		} else {
+			root = child;
+		}
+	}
+
+	private void rotateRight(Node<E> n) {
+		beforeRotateRight(n);
+		Node<E> parent = n.parent, child = n.left, grandchild = child.right;
+
+		n.left = grandchild;
+		if (grandchild != null)
+			grandchild.parent = n;
+
+		child.right = n;
+		n.parent = child;
+		child.parent = parent;
+
+		if (parent != null) {
+			if (n == parent.left) {
+				parent.left = child;
+			} else {
+				assert n == parent.right;
+				parent.right = child;
+			}
+		} else {
+			root = child;
+		}
+	}
+
 	@Override
 	public Handle<E> findOrPredecessor(E e) {
 		return BSTUtils.findOrNeighbor(root, c, e, NeighborType.Predecessor);
@@ -374,7 +370,12 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 		return BSTUtils.findSuccessor((Node<E>) handle);
 	}
 
-	private static class Node<E> extends BSTUtils.Node<E, Node<E>> implements Handle<E> {
+	public void forEachNodeInSubTree(Handle<E> handle, Consumer<? super Handle<E>> op) {
+		for (Node<E> n : Utils.iterable(new BSTUtils.BSTIterator<>((Node<E>) handle)))
+			op.accept(n);
+	}
+
+	static class Node<E> extends BSTUtils.Node<E, Node<E>> implements Handle<E> {
 
 		private boolean color;
 
@@ -392,6 +393,27 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 			return "{" + (color == Red ? 'R' : 'B') + ":" + val + "}";
 		}
 
+	}
+
+	/* Hooks for extended red black tree sub class */
+
+	Node<E> newNode(E e) {
+		return new Node<>(e);
+	}
+
+	void afterInsert(Node<E> n) {
+	}
+
+	void beforeRemove(Node<E> n) {
+	}
+
+	void beforeNodeValSwap(Node<E> a, Node<E> b) {
+	}
+
+	void beforeRotateLeft(Node<E> n) {
+	}
+
+	void beforeRotateRight(Node<E> n) {
 	}
 
 }

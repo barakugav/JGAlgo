@@ -105,7 +105,7 @@ class HeapTestUtils extends TestUtils {
 		});
 	}
 
-	private static enum TestMode {
+	static enum TestMode {
 		Normal, InsertFirst, DecreaseKey,
 	}
 
@@ -171,21 +171,29 @@ class HeapTestUtils extends TestUtils {
 
 	}
 
-	private static boolean testHeap(Heap<Integer> heap, int n, int m, TestMode mode) {
-		heap.clear();
-		if (heap.size() != 0 || !heap.isEmpty()) {
-			printTestStr("failed clear\n");
-			return false;
+	static boolean testHeap(Heap<Integer> heap, int n, int m, TestMode mode) {
+		return testHeap(heap, n, m, mode, true);
+	}
+
+	static boolean testHeap(Heap<Integer> heap, int n, int m, TestMode mode, boolean clear) {
+		if (clear) {
+			heap.clear();
+			if (heap.size() != 0 || !heap.isEmpty()) {
+				printTestStr("failed clear\n");
+				return false;
+			}
 		}
 
 		HeapTracker tracker = new HeapTracker();
 		if (!testHeap(heap, tracker, n, m, mode, Math.max(16, (int) Math.sqrt(n))))
 			return false;
 
-		heap.clear();
-		if (heap.size() != 0 || !heap.isEmpty()) {
-			printTestStr("failed clear\n");
-			return false;
+		if (clear) {
+			heap.clear();
+			if (heap.size() != 0 || !heap.isEmpty()) {
+				printTestStr("failed clear\n");
+				return false;
+			}
 		}
 
 		return true;
@@ -207,6 +215,9 @@ class HeapTestUtils extends TestUtils {
 
 		for (int opIdx = 0; opIdx < m;) {
 			HeapOp op = opIdx < insertFirst ? HeapOp.Insert : ops.get(rand.nextInt(ops.size()));
+//			System.out.println(opIdx);
+//			if  (opIdx == 5)
+//				System.out.print("");
 
 			int x, expected, actual;
 			switch (op) {
