@@ -149,6 +149,7 @@ class TestUtils {
 					return false;
 				}
 			}
+			phaseIdx++;
 		}
 		return true;
 	}
