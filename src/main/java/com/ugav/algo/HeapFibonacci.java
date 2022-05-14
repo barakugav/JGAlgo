@@ -283,11 +283,12 @@ public class HeapFibonacci<E> extends HeapAbstractDirectAccessed<E> {
 	}
 
 	private Node<E> union(Node<E> u, Node<E> v) {
-		if (c.compare(u.value, v.value) > 0) {
+		if (v == minRoot || c.compare(u.value, v.value) > 0) {
 			Node<E> temp = u;
 			u = v;
 			v = temp;
 		}
+		assert c.compare(u.value, v.value) <= 0;
 
 		v.parent = u;
 		v.prev = null;

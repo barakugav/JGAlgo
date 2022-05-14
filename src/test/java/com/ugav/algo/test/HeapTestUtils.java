@@ -56,7 +56,7 @@ class HeapTestUtils extends TestUtils {
 				Heap<Integer> h = heapBuilder.get();
 				HeapTracker tracker = new HeapTracker();
 				hs[i] = Pair.valueOf(h, tracker);
-				if (!testHeap(h, tracker, 16, 16, TestMode.InsertFirst))
+				if (!testHeap(h, tracker, 16, 16, TestMode.InsertFirst, Math.max(16, (int) Math.sqrt(hCount * 32))))
 					return false;
 			}
 
@@ -74,7 +74,8 @@ class HeapTestUtils extends TestUtils {
 
 					/* make some OPs on the united heap */
 					int opsNum = 4096 / hCount;
-					if (!testHeap(h1, t1, opsNum, opsNum, TestMode.InsertFirst))
+					if (!testHeap(h1, t1, opsNum, opsNum, TestMode.InsertFirst,
+							Math.max(16, (int) Math.sqrt(hCount * 32))))
 						return false;
 				}
 
@@ -178,7 +179,7 @@ class HeapTestUtils extends TestUtils {
 		}
 
 		HeapTracker tracker = new HeapTracker();
-		if (!testHeap(heap, tracker, n, m, mode))
+		if (!testHeap(heap, tracker, n, m, mode, Math.max(16, (int) Math.sqrt(n))))
 			return false;
 
 		heap.clear();
@@ -191,9 +192,10 @@ class HeapTestUtils extends TestUtils {
 	}
 
 	@SuppressWarnings("boxing")
-	private static boolean testHeap(Heap<Integer> heap, HeapTracker tracker, int n, int m, TestMode mode) {
+	private static boolean testHeap(Heap<Integer> heap, HeapTracker tracker, int n, int m, TestMode mode,
+			int elementsBound) {
 		Random rand = new Random(nextRandSeed());
-		int[] a = Utils.randArray(n, 0, 65536, nextRandSeed());
+		int[] a = Utils.randArray(n, 0, elementsBound, nextRandSeed());
 		int insertFirst = mode == TestMode.InsertFirst ? m / 2 : 0;
 
 		List<HeapOp> ops = new ArrayList<>(List.of(HeapOp.Insert, HeapOp.Remove, HeapOp.FindMin, HeapOp.ExtractMin));
