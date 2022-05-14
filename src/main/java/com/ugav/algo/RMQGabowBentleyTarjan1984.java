@@ -44,9 +44,9 @@ public class RMQGabowBentleyTarjan1984 extends RMQLinearAbstract {
 	}
 
 	int[] calcDemoBlock(int key, int blockSize) {
-		int demoBlock[] = new int[blockSize];
+		int[] demoBlock = new int[blockSize];
 
-		int nodes[] = new int[blockSize];
+		int[] nodes = new int[blockSize];
 		int nodesCount = 0;
 
 		int keyIdx = 0;
@@ -67,7 +67,7 @@ public class RMQGabowBentleyTarjan1984 extends RMQLinearAbstract {
 	}
 
 	int calcBlockKey(RMQGabowBentleyTarjan1984.DataStructure ds, int b) {
-		int nodes[] = new int[ds.blockSize];
+		int[] nodes = new int[ds.blockSize];
 		int nodesCount = 0;
 
 		int key = 0;
@@ -97,7 +97,7 @@ public class RMQGabowBentleyTarjan1984 extends RMQLinearAbstract {
 			int key = calcBlockKey(ds, b);
 
 			ds.interBlocksDs[b] = tables.computeIfAbsent(Integer.valueOf(key), k -> {
-				int demoBlock[] = calcDemoBlock(k.intValue(), ds.blockSize);
+				int[] demoBlock = calcDemoBlock(k.intValue(), ds.blockSize);
 				return RMQLookupTable.getInstace().preprocessRMQ(new ArrayIntComparator(demoBlock), demoBlock.length);
 			});
 		}
@@ -105,7 +105,7 @@ public class RMQGabowBentleyTarjan1984 extends RMQLinearAbstract {
 
 	static class DataStructure extends RMQLinearAbstract.DataStructure {
 
-		final RMQ.Result interBlocksDs[];
+		final RMQ.Result[] interBlocksDs;
 
 		DataStructure(int n, Comparator c) {
 			super(n, c);

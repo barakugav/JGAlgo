@@ -55,7 +55,7 @@ public class RMQPowerOf2Table implements RMQ {
 	static class PowerOf2Table implements RMQ.Result {
 
 		final int n;
-		final int arr[][];
+		final int[][] arr;
 		final RMQ.Comparator c;
 
 		PowerOf2Table(int n, RMQ.Comparator c) {

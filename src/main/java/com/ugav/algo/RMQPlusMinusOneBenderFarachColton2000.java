@@ -42,7 +42,7 @@ public class RMQPlusMinusOneBenderFarachColton2000 extends RMQLinearAbstract {
 	}
 
 	int[] calcDemoBlock(int key, int blockSize) {
-		int demoBlock[] = new int[blockSize];
+		int[] demoBlock = new int[blockSize];
 
 		demoBlock[0] = 0;
 		for (int i = 1; i < demoBlock.length; i++)
@@ -74,7 +74,7 @@ public class RMQPlusMinusOneBenderFarachColton2000 extends RMQLinearAbstract {
 			int key = calcBlockKey(ds, b);
 
 			ds.interBlocksDs[b] = tables.computeIfAbsent(Integer.valueOf(key), k -> {
-				int demoBlock[] = calcDemoBlock(k.intValue(), ds.blockSize);
+				int[] demoBlock = calcDemoBlock(k.intValue(), ds.blockSize);
 				return RMQLookupTable.getInstace().preprocessRMQ(new ArrayIntComparator(demoBlock), demoBlock.length);
 			});
 		}
@@ -82,7 +82,7 @@ public class RMQPlusMinusOneBenderFarachColton2000 extends RMQLinearAbstract {
 
 	static class DataStructure extends RMQLinearAbstract.DataStructure {
 
-		final RMQ.Result interBlocksDs[];
+		final RMQ.Result[] interBlocksDs;
 
 		DataStructure(int n, Comparator c) {
 			super(n, c);

@@ -17,14 +17,14 @@ class RMQTestUtils extends TestUtils {
 	}
 
 	static boolean testRMQ(RMQ rmq, int n, int queriesNum) {
-		int a[] = new int[n];
-		int queries[][] = new int[queriesNum][];
+		int[] a = new int[n];
+		int[][] queries = new int[queriesNum][];
 		randRMQDataAndQueries(a, queries);
 
 		return testRMQ(rmq, a, queries);
 	}
 
-	static boolean testRMQ(RMQ rmq, int a[], int queries[][]) {
+	static boolean testRMQ(RMQ rmq, int a[], int[][] queries) {
 		RMQ.Result res = rmq.preprocessRMQ(new ArrayIntComparator(a), a.length);
 
 		for (int idx = 0; idx < queries.length; idx++) {
@@ -54,7 +54,7 @@ class RMQTestUtils extends TestUtils {
 			a[i] = a[i - 1] + rand.nextInt(2) * 2 - 1;
 	}
 
-	static void randRMQQueries(int a[], int queries[][], int blockSize) {
+	static void randRMQQueries(int a[], int[][] queries, int blockSize) {
 		Random rand = new Random(nextRandSeed());
 		for (int q = 0; q < queries.length;) {
 			int i = rand.nextInt(a.length);
@@ -73,16 +73,16 @@ class RMQTestUtils extends TestUtils {
 
 	}
 
-	static void randRMQDataAndQueries(int a[], int queries[][]) {
+	static void randRMQDataAndQueries(int a[], int[][] queries) {
 		randRMQDataAndQueries(a, queries, a.length);
 	}
 
-	static void randRMQDataAndQueries(int a[], int queries[][], int blockSize) {
+	static void randRMQDataAndQueries(int a[], int[][] queries, int blockSize) {
 		Utils.randArray(a, 0, 64, nextRandSeed());
 		randRMQQueries(a, queries, blockSize);
 	}
 
-	static CharSequence formatRMQDataAndQueries(int a[], int queries[][]) {
+	static CharSequence formatRMQDataAndQueries(int a[], int[][] queries) {
 		StringBuilder s = new StringBuilder();
 
 		final int dataPerLine = 32;
@@ -105,11 +105,11 @@ class RMQTestUtils extends TestUtils {
 		else {
 			s.append("{");
 			for (int i = 0; i < queries.length - 1; i++) {
-				int q[] = queries[i];
+				int[] q = queries[i];
 				s.append("{" + q[0] + "," + q[1] + "," + q[2] + "},");
 				s.append(((i + 1) % queriesPerLine) == 0 ? "\n" : " ");
 			}
-			int q[] = queries[queries.length - 1];
+			int[] q = queries[queries.length - 1];
 			s.append("{" + q[0] + "," + q[1] + "," + q[2] + "}");
 			s.append("}\n");
 		}

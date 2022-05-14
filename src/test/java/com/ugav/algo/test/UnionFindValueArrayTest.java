@@ -29,7 +29,7 @@ public class UnionFindValueArrayTest extends TestUtils {
 		Random rand = new Random(nextRandSeed());
 
 		UnionFindValue uf = new UnionFindValueArray();
-		int set[] = new int[n];
+		int[] set = new int[n];
 		double[] deltas = new double[n];
 
 		for (int x = 0; x < n; x++) {

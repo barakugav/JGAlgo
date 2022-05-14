@@ -19,8 +19,8 @@ public class RMQGabowBentleyTarjan1984Test extends TestUtils {
 
 	@Test
 	public static boolean onlyInterBlock65536() {
-		int a[] = Utils.randArray(65536, 0, 64, nextRandSeed());
-		int queries[][] = new int[4096][];
+		int[] a = Utils.randArray(65536, 0, 64, nextRandSeed());
+		int[][] queries = new int[4096][];
 		RMQTestUtils.randRMQQueries(a, queries, 4);
 
 		return RMQTestUtils.testRMQ(RMQGabowBentleyTarjan1984.getInstace(), a, queries);

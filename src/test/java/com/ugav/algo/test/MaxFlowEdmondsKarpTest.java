@@ -113,7 +113,7 @@ public class MaxFlowEdmondsKarpTest extends TestUtils {
 
 	private static boolean bfs(double rGraph[][], int s, int t, int parent[]) {
 		int n = rGraph.length;
-		boolean visited[] = new boolean[n];
+		boolean[] visited = new boolean[n];
 		LinkedList<Integer> queue = new LinkedList<>();
 		queue.add(s);
 		visited[s] = true;
@@ -134,11 +134,11 @@ public class MaxFlowEdmondsKarpTest extends TestUtils {
 	private static double fordFulkerson(double graph[][], int s, int t) {
 		int n = graph.length;
 		int u, v;
-		double rGraph[][] = new double[n][n];
+		double[][] rGraph = new double[n][n];
 		for (u = 0; u < n; u++)
 			for (v = 0; v < n; v++)
 				rGraph[u][v] = graph[u][v];
-		int parent[] = new int[n];
+		int[] parent = new int[n];
 		double max_flow = 0;
 		while (bfs(rGraph, s, t, parent)) {
 			double pathFlow = Double.MAX_VALUE;

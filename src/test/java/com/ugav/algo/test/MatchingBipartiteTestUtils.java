@@ -68,7 +68,7 @@ class MatchingBipartiteTestUtils extends TestUtils {
 
 	private static <E> int calcExpectedMaxMatching(GraphBipartite<E> g) {
 		int sn = g.svertices(), tn = g.tvertices();
-		boolean m[][] = new boolean[sn][tn];
+		boolean[][] m = new boolean[sn][tn];
 		for (int u = 0; u < sn; u++)
 			for (Edge<E> e : Utils.iterable(g.edges(u)))
 				m[u][e.v() - sn] = true;
@@ -82,14 +82,14 @@ class MatchingBipartiteTestUtils extends TestUtils {
 	 */
 	private static int maxBPM(boolean g[][]) {
 		int sn = g.length, tn = g[0].length;
-		int matchR[] = new int[tn];
+		int[] matchR = new int[tn];
 
 		for (int i = 0; i < tn; ++i)
 			matchR[i] = -1;
 
 		int result = 0;
 		for (int u = 0; u < sn; u++) {
-			boolean visited[] = new boolean[tn];
+			boolean[] visited = new boolean[tn];
 			for (int i = 0; i < tn; ++i)
 				visited[i] = false;
 

@@ -205,7 +205,7 @@ public class Graphs {
 			return true;
 		boolean directed = g.isDirected();
 
-		boolean visited[] = new boolean[n];
+		boolean[] visited = new boolean[n];
 		int[] parent = new int[n];
 		Arrays.fill(parent, -1);
 

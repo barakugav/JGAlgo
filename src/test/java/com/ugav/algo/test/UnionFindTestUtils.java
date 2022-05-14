@@ -23,7 +23,7 @@ class UnionFindTestUtils extends TestUtils {
 		Random rand = new Random(nextRandSeed());
 
 		UnionFind uf = builder.get();
-		int set[] = new int[n];
+		int[] set = new int[n];
 
 		for (int i = 0; i < n; i++)
 			set[i] = uf.make();

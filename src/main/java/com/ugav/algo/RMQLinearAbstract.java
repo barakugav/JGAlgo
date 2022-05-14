@@ -72,8 +72,8 @@ abstract class RMQLinearAbstract implements RMQ {
 		final int blockNum;
 		final RMQ.Comparator c;
 
-		final int blocksRightMinimum[][];
-		final int blocksLeftMinimum[][];
+		final int[][] blocksRightMinimum;
+		final int[][] blocksLeftMinimum;
 		final PowerOf2Table xlogxTable;
 
 		DataStructure(int n, RMQ.Comparator c) {

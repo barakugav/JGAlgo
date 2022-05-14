@@ -85,7 +85,7 @@ public class RMQLookupTable implements RMQ {
 
 	private static class LookupTable8 extends LookupTable {
 
-		final byte arr[];
+		final byte[] arr;
 
 		private static final int LIMIT = 1 << ((Byte.SIZE - 1) / 2);
 
@@ -118,7 +118,7 @@ public class RMQLookupTable implements RMQ {
 
 	private static class LookupTable128 extends LookupTable {
 
-		final short arr[];
+		final short[] arr;
 
 		private static final int LIMIT = 1 << ((Short.SIZE - 1) / 2);
 
@@ -151,7 +151,7 @@ public class RMQLookupTable implements RMQ {
 
 	private static class LookupTable32768 extends LookupTable {
 
-		final int arr[];
+		final int[] arr;
 
 		private static final int LIMIT = 1 << ((Integer.SIZE - 1) / 2);
 
