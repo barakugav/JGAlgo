@@ -289,8 +289,8 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 		private static <E> int[] splitQueriesIntoLCAQueries(Graph<E> t, int root, int[] queries, int queriesNum) {
 			int[] lcaQueries = new int[queriesNum * 4];
 
-			LCA lcaAlgo = LCARMQBenderFarachColton2000.getInstace();
-			LCA.Result lcaRes = lcaAlgo.preprocessLCA(t, root);
+			LCAStatic lcaAlgo = LCARMQBenderFarachColton2000.getInstace();
+			LCAStatic.Result lcaRes = lcaAlgo.preprocessLCA(t, root);
 			for (int q = 0; q < queriesNum; q++) {
 				int u = queries[q * 2], v = queries[q * 2 + 1];
 				int lca = lcaRes.query(u, v);

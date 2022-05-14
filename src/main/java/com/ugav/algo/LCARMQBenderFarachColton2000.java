@@ -6,7 +6,7 @@ import java.util.Iterator;
 import com.ugav.algo.Graph.Edge;
 import com.ugav.algo.RMQ.ArrayIntComparator;
 
-public class LCARMQBenderFarachColton2000 implements LCA {
+public class LCARMQBenderFarachColton2000 implements LCAStatic {
 
 	/*
 	 * This implementation of static LCA (Lowest common ancestor) perform a
@@ -82,7 +82,7 @@ public class LCARMQBenderFarachColton2000 implements LCA {
 		return new DataStructure(vs, vToDepthsIdx, rmq);
 	}
 
-	private static class DataStructure implements LCA.Result {
+	private static class DataStructure implements LCAStatic.Result {
 
 		private final int[] vs;
 		private final int[] vToDepthsIdx;

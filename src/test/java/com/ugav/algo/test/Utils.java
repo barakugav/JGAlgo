@@ -80,6 +80,14 @@ public class Utils {
 		return a;
 	}
 
+	static int[] suffle(int[] a, long seed) {
+		int[] p = randPermutation(a.length, seed);
+		int[] r = new int[a.length];
+		for (int i = 0; i < a.length; i++)
+			r[i] = a[p[i]];
+		return r;
+	}
+
 	static <E> Iterable<E> iterable(Iterator<E> it) {
 		return new Iterable<>() {
 

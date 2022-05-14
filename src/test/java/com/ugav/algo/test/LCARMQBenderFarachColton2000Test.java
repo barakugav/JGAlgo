@@ -5,7 +5,7 @@ import java.util.Random;
 
 import com.ugav.algo.Graph;
 import com.ugav.algo.Graphs;
-import com.ugav.algo.LCA;
+import com.ugav.algo.LCAStatic;
 import com.ugav.algo.LCARMQBenderFarachColton2000;
 
 @SuppressWarnings("boxing")
@@ -61,8 +61,8 @@ public class LCARMQBenderFarachColton2000Test extends TestUtils {
 		return queries;
 	}
 
-	private static boolean testLCA(Graph<Void> g, LCA lca, int[][] queries) {
-		LCA.Result result = lca.preprocessLCA(g, 0);
+	private static boolean testLCA(Graph<Void> g, LCAStatic lca, int[][] queries) {
+		LCAStatic.Result result = lca.preprocessLCA(g, 0);
 
 		for (int[] query : queries) {
 			int u = query[0];

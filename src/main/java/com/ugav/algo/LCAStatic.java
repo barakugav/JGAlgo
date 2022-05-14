@@ -1,6 +1,6 @@
 package com.ugav.algo;
 
-public interface LCA {
+public interface LCAStatic {
 
 	/**
 	 * Perform a static preprocessing of a tree for future LCA (Lowest common
