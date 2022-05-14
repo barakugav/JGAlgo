@@ -118,11 +118,7 @@ public class HeapBinomial<E> extends HeapAbstractDirectAccessed<E> {
 
 		for (int i = 0; i < rslen; i++) {
 			if (rs[i] != null) {
-				Trees.clear(rs[i], n0 -> {
-					@SuppressWarnings("unchecked")
-					Node<E> n = (Node<E>) n0;
-					n.value = null;
-				});
+				Trees.clear(rs[i], n -> n.value = null);
 				rs[i] = null;
 			}
 		}
@@ -146,13 +142,13 @@ public class HeapBinomial<E> extends HeapAbstractDirectAccessed<E> {
 	}
 
 	@Override
-	public Iterator<E> iterator() {
+	public Iterator<? extends Handle<E>> handleIterator() {
 		return new Itr();
 	}
 
-	private class Itr extends Trees.Iterator implements Iterator<E> {
+	private class Itr extends Trees.Iter<Node<E>> {
 
-		int nextRootIdx;
+		private int nextRootIdx;
 
 		Itr() {
 			super(null);
@@ -174,17 +170,6 @@ public class HeapBinomial<E> extends HeapAbstractDirectAccessed<E> {
 				nextRootIdx = i + 1;
 			}
 			return true;
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		HeapBinomial.Node<E> nextNode() {
-			return (HeapBinomial.Node<E>) super.nextNode();
-		}
-
-		@Override
-		public E next() {
-			return nextNode().value;
 		}
 
 	}
@@ -265,11 +250,9 @@ public class HeapBinomial<E> extends HeapAbstractDirectAccessed<E> {
 
 	@Override
 	public Handle<E> findHanlde(E e) {
-		for (Itr it = new Itr(); it.hasNext();) {
-			Node<E> p = it.nextNode();
+		for (Node<E> p : Utils.iterable(new Itr()))
 			if (c.compare(e, p.value) == 0)
 				return p;
-		}
 		return null;
 	}
 
@@ -369,7 +352,7 @@ public class HeapBinomial<E> extends HeapAbstractDirectAccessed<E> {
 		}
 	}
 
-	private static class Node<E> implements Handle<E>, TreeNode {
+	private static class Node<E> implements Handle<E>, TreeNode<Node<E>> {
 
 		Node<E> parent;
 		Node<E> next;
@@ -410,28 +393,24 @@ public class HeapBinomial<E> extends HeapAbstractDirectAccessed<E> {
 			return child;
 		}
 
-		@SuppressWarnings("unchecked")
 		@Override
-		public void setParent(TreeNode x) {
-			parent = (Node<E>) x;
+		public void setParent(Node<E> x) {
+			parent = x;
 		}
 
-		@SuppressWarnings("unchecked")
 		@Override
-		public void setNext(TreeNode x) {
-			next = (Node<E>) x;
+		public void setNext(Node<E> x) {
+			next = x;
 		}
 
-		@SuppressWarnings("unchecked")
 		@Override
-		public void setPrev(TreeNode x) {
-			prev = (Node<E>) x;
+		public void setPrev(Node<E> x) {
+			prev = x;
 		}
 
-		@SuppressWarnings("unchecked")
 		@Override
-		public void setChild(TreeNode x) {
-			child = (Node<E>) x;
+		public void setChild(Node<E> x) {
+			child = x;
 		}
 
 		@Override

@@ -27,11 +27,7 @@ public class HeapFibonacci<E> extends HeapAbstractDirectAccessed<E> {
 	public void clear() {
 		for (Node<E> p = begin, next; p != null; p = next) {
 			next = p.next;
-			Trees.clear(p, n0 -> {
-				@SuppressWarnings("unchecked")
-				Node<E> n = (Node<E>) n0;
-				n.value = null;
-			});
+			Trees.clear(p, n -> n.value = null);
 		}
 
 		begin = end = minRoot = null;
@@ -62,27 +58,8 @@ public class HeapFibonacci<E> extends HeapAbstractDirectAccessed<E> {
 	}
 
 	@Override
-	public Iterator<E> iterator() {
-		return new Itr<>(begin);
-	}
-
-	private static class Itr<E> extends Trees.Iterator implements Iterator<E> {
-
-		Itr(Node<E> p) {
-			super(p);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		Node<E> nextNode() {
-			return (Node<E>) super.nextNode();
-		}
-
-		@Override
-		public E next() {
-			return nextNode().value;
-		}
-
+	public Iterator<? extends Handle<E>> handleIterator() {
+		return new Trees.Iter<>(begin);
 	}
 
 	@Override
@@ -114,8 +91,7 @@ public class HeapFibonacci<E> extends HeapAbstractDirectAccessed<E> {
 
 	@Override
 	public Handle<E> findHanlde(E e) {
-		for (Itr<E> it = new Itr<>(begin); it.hasNext();) {
-			Node<E> p = it.nextNode();
+		for (Node<E> p : Utils.iterable(new Trees.Iter<>(begin))) {
 			if (c.compare(e, p.value) == 0)
 				return p;
 		}
@@ -301,7 +277,7 @@ public class HeapFibonacci<E> extends HeapAbstractDirectAccessed<E> {
 		return u;
 	}
 
-	private static class Node<E> implements Handle<E>, TreeNode {
+	private static class Node<E> implements Handle<E>, TreeNode<Node<E>> {
 
 		Node<E> parent;
 		Node<E> next;
@@ -346,28 +322,24 @@ public class HeapFibonacci<E> extends HeapAbstractDirectAccessed<E> {
 			return child;
 		}
 
-		@SuppressWarnings("unchecked")
 		@Override
-		public void setParent(TreeNode x) {
-			parent = (Node<E>) x;
+		public void setParent(Node<E> x) {
+			parent = x;
 		}
 
-		@SuppressWarnings("unchecked")
 		@Override
-		public void setNext(TreeNode x) {
-			next = (Node<E>) x;
+		public void setNext(Node<E> x) {
+			next = x;
 		}
 
-		@SuppressWarnings("unchecked")
 		@Override
-		public void setPrev(TreeNode x) {
-			prev = (Node<E>) x;
+		public void setPrev(Node<E> x) {
+			prev = x;
 		}
 
-		@SuppressWarnings("unchecked")
 		@Override
-		public void setChild(TreeNode x) {
-			child = (Node<E>) x;
+		public void setChild(Node<E> x) {
+			child = x;
 		}
 
 		@Override

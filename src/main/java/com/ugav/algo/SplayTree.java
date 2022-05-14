@@ -27,7 +27,7 @@ public class SplayTree<E> extends BSTAbstract<E> {
 	}
 
 	@Override
-	public Iterator<E> iterator() {
+	public Iterator<? extends Handle<E>> handleIterator() {
 		return new BSTUtils.BSTIterator<>(root);
 	}
 

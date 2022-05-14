@@ -1,6 +1,7 @@
 package com.ugav.algo;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
@@ -11,37 +12,37 @@ class Trees {
 		throw new InternalError();
 	}
 
-	interface TreeNode {
+	interface TreeNode<N extends TreeNode<N>> {
 
-		TreeNode parent();
+		N parent();
 
-		TreeNode next();
+		N next();
 
-		TreeNode prev();
+		N prev();
 
-		TreeNode child();
+		N child();
 
-		void setParent(TreeNode x);
+		void setParent(N x);
 
-		void setNext(TreeNode x);
+		void setNext(N x);
 
-		void setPrev(TreeNode x);
+		void setPrev(N x);
 
-		void setChild(TreeNode x);
+		void setChild(N x);
 
 	}
 
-	static void clear(TreeNode root, Consumer<? super TreeNode> finalizer) {
-		List<TreeNode> stack = new ArrayList<>();
+	static <N extends TreeNode<N>> void clear(N root, Consumer<? super N> finalizer) {
+		List<N> stack = new ArrayList<>();
 
 		stack.add(root);
 
 		do {
 			int idx = stack.size() - 1;
-			TreeNode n = stack.get(idx);
+			N n = stack.get(idx);
 			stack.remove(idx);
 
-			for (TreeNode p = n.child(); p != null; p = p.next())
+			for (N p = n.child(); p != null; p = p.next())
 				stack.add(p);
 
 			n.setParent(null);
@@ -52,28 +53,28 @@ class Trees {
 		} while (!stack.isEmpty());
 	}
 
-	static class Iterator {
+	static class Iter<N extends TreeNode<N>> implements Iterator<N> {
 
-		TreeNode p;
+		N p;
 		boolean valid;
 
-		Iterator(TreeNode p) {
+		Iter(N p) {
 			reset0(p);
 		}
 
-		private void reset0(TreeNode p) {
+		private void reset0(N p) {
 			this.p = p;
 			valid = p != null;
 		}
 
-		public void reset(TreeNode p) {
+		public void reset(N p) {
 			reset0(p);
 		}
 
 		public boolean hasNext0() {
 			if (p == null)
 				return false;
-			TreeNode q;
+			N q;
 
 			if ((q = p.child()) != null) {
 				p = q;
@@ -89,13 +90,15 @@ class Trees {
 			return p != null;
 		}
 
+		@Override
 		public boolean hasNext() {
 			if (valid)
 				return true;
 			return valid = hasNext0();
 		}
 
-		TreeNode nextNode() {
+		@Override
+		public N next() {
 			if (!hasNext())
 				throw new NoSuchElementException();
 			valid = false;

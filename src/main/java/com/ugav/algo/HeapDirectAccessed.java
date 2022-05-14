@@ -1,5 +1,8 @@
 package com.ugav.algo;
 
+import java.util.Iterator;
+import java.util.Objects;
+
 public interface HeapDirectAccessed<E> extends Heap<E> {
 
 	/**
@@ -14,7 +17,7 @@ public interface HeapDirectAccessed<E> extends Heap<E> {
 	 * Find the handle of the minimal element in the heap
 	 *
 	 * @return handle of the minimal element
-	 * @throws IllegalStateException         if the heap is empty
+	 * @throws IllegalStateException if the heap is empty
 	 */
 	public Handle<E> findMinHandle();
 
@@ -34,6 +37,18 @@ public interface HeapDirectAccessed<E> extends Heap<E> {
 	public void removeHandle(Handle<E> handle);
 
 	/**
+	 * Get an iterator that iterate over the handles of the heap
+	 *
+	 * @return handle iterator
+	 */
+	public Iterator<? extends Handle<E>> handleIterator();
+
+	@Override
+	default Iterator<E> iterator() {
+		return iteratorFromHandleIter(handleIterator());
+	}
+
+	/**
 	 * Object associated with an element in a heap. Allow specific operations to
 	 * perform directly on the element without searching. Not supported by all
 	 * implementations.
@@ -47,6 +62,23 @@ public interface HeapDirectAccessed<E> extends Heap<E> {
 		 */
 		public E get();
 
+	}
+
+	public static <E> Iterator<E> iteratorFromHandleIter(Iterator<? extends Handle<E>> iter) {
+		return new Iterator<>() {
+
+			final Iterator<? extends Handle<E>> it = Objects.requireNonNull(iter);
+
+			@Override
+			public boolean hasNext() {
+				return it.hasNext();
+			}
+
+			@Override
+			public E next() {
+				return it.next().get();
+			}
+		};
 	}
 
 }

@@ -99,6 +99,12 @@ class BSTUtils {
 	}
 
 	static <E, N extends Node<E, N>> N findSuccessor(N n) {
+		return findSuccessorInSubtree(n, null);
+	}
+
+	static <E, N extends Node<E, N>> N findSuccessorInSubtree(N n, N subtreeRoot) {
+		N subtreeParent = subtreeRoot != null ? subtreeRoot.parent : null;
+
 		/* successor in right sub tree */
 		if (n.right != null)
 			for (N p = n.right;; p = p.left)
@@ -106,7 +112,7 @@ class BSTUtils {
 					return p;
 
 		/* successor is some ancestor */
-		for (N p = n, parent; (parent = p.parent) != null; p = parent)
+		for (N p = n, parent; (parent = p.parent) != subtreeParent; p = parent)
 			if (p == parent.left)
 				return parent;
 		return null;
@@ -152,12 +158,14 @@ class BSTUtils {
 		}
 	}
 
-	static class BSTIterator<E, N extends Node<E, N>> implements Iterator<E> {
+	static class BSTIterator<E, N extends Node<E, N>> implements Iterator<N> {
 
-		N n;
+		private final N subtreeRoot;
+		private N n;
 
-		BSTIterator(N root) {
-			n = root == null ? null : findMin(root);
+		BSTIterator(N subtreeRoot) {
+			this.subtreeRoot = subtreeRoot;
+			n = subtreeRoot == null ? null : findMin(subtreeRoot);
 		}
 
 		@Override
@@ -166,11 +174,11 @@ class BSTUtils {
 		}
 
 		@Override
-		public E next() {
+		public N next() {
 			if (!hasNext())
 				throw new NoSuchElementException();
-			E ret = n.val;
-			n = findSuccessor(n);
+			N ret = n;
+			n = findSuccessorInSubtree(n, subtreeRoot);
 			return ret;
 		}
 

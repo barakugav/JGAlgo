@@ -1,6 +1,13 @@
 package com.ugav.algo;
 
+import java.util.Iterator;
+
 public abstract class HeapAbstractDirectAccessed<E> extends HeapAbstract<E> implements HeapDirectAccessed<E> {
+
+	@Override
+	public Iterator<E> iterator() {
+		return HeapDirectAccessed.iteratorFromHandleIter(handleIterator());
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
