@@ -10,9 +10,12 @@ import com.ugav.algo.Heap;
 import com.ugav.algo.HeapDirectAccessed.Handle;
 import com.ugav.algo.RedBlackTree;
 import com.ugav.algo.RedBlackTreeExtended;
+import com.ugav.algo.RedBlackTreeExtended.ExtensionMax;
+import com.ugav.algo.RedBlackTreeExtended.ExtensionMin;
 import com.ugav.algo.RedBlackTreeExtended.ExtensionSize;
 import com.ugav.algo.test.HeapTestUtils.TestMode;
 
+@SuppressWarnings("boxing")
 public class RedBlackTreeExtendedTest extends TestUtils {
 
 	private static class HeapWrapper<E> implements Heap<E> {
@@ -127,9 +130,8 @@ public class RedBlackTreeExtendedTest extends TestUtils {
 
 	}
 
-	@SuppressWarnings("boxing")
 	@Test
-	public static boolean randOps() {
+	public static boolean extensionSizeRandOps() {
 		List<Phase> phases = List.of(phase(256, 16, 16), phase(128, 64, 128), phase(64, 512, 1024),
 				phase(16, 4096, 8096), phase(8, 16384, 32768));
 		return runTestMultiple(phases, args -> {
@@ -145,14 +147,80 @@ public class RedBlackTreeExtendedTest extends TestUtils {
 				return false;
 
 			for (Handle<Integer> node : Utils.iterable(tree.handleIterator())) {
-				final var expectedSizeWrapper = new Object() {
+				final var expectedSize = new Object() {
 					int val = 0;
 				};
-				tree.forEachNodeInSubTree(node, descendant -> expectedSizeWrapper.val++);
-				int expectedSize = expectedSizeWrapper.val;
+				tree.forEachNodeInSubTree(node, descendant -> expectedSize.val++);
+
 				int actualSize = sizeExt.getSubTreeSize(node);
-				if (expectedSize != actualSize) {
-					printTestStr("Sixe extension repored wrong value: ", expectedSize, " != ", actualSize, "\n");
+				if (expectedSize.val != actualSize) {
+					printTestStr("Size extension repored wrong value: ", expectedSize.val, " != ", actualSize, "\n");
+					return false;
+				}
+			}
+			return true;
+		});
+	}
+
+	@Test
+	public static boolean extensionMinRandOps() {
+		List<Phase> phases = List.of(phase(256, 16, 16), phase(128, 64, 128), phase(64, 512, 1024),
+				phase(16, 4096, 8096), phase(8, 16384, 32768));
+		return runTestMultiple(phases, args -> {
+			int n = args[0];
+			int m = args[1];
+
+			RedBlackTreeExtended.Builder<Integer> builder = new RedBlackTreeExtended.Builder<>();
+			builder.comparator(null);
+			ExtensionMin<Integer> minExt = builder.addMinExtension();
+			RedBlackTree<Integer> tree = builder.build();
+
+			if (!HeapTestUtils.testHeap(tree, n, m, TestMode.Normal, false))
+				return false;
+
+			for (Handle<Integer> node : Utils.iterable(tree.handleIterator())) {
+				final var expectedMin = new Object() {
+					int val = Integer.MAX_VALUE;
+				};
+				tree.forEachNodeInSubTree(node,
+						descendant -> expectedMin.val = Math.min(expectedMin.val, descendant.get()));
+
+				int actualMin = minExt.getSubTreeMin(node).get();
+				if (expectedMin.val != actualMin) {
+					printTestStr("Min extension repored wrong value: ", expectedMin.val, " != ", actualMin, "\n");
+					return false;
+				}
+			}
+			return true;
+		});
+	}
+
+	@Test
+	public static boolean extensionMaxRandOps() {
+		List<Phase> phases = List.of(phase(256, 16, 16), phase(128, 64, 128), phase(64, 512, 1024),
+				phase(16, 4096, 8096), phase(8, 16384, 32768));
+		return runTestMultiple(phases, args -> {
+			int n = args[0];
+			int m = args[1];
+
+			RedBlackTreeExtended.Builder<Integer> builder = new RedBlackTreeExtended.Builder<>();
+			builder.comparator(null);
+			ExtensionMax<Integer> maxExt = builder.addMaxExtension();
+			RedBlackTree<Integer> tree = builder.build();
+
+			if (!HeapTestUtils.testHeap(tree, n, m, TestMode.Normal, false))
+				return false;
+
+			for (Handle<Integer> node : Utils.iterable(tree.handleIterator())) {
+				final var expectedMax = new Object() {
+					int val = Integer.MIN_VALUE;
+				};
+				tree.forEachNodeInSubTree(node,
+						descendant -> expectedMax.val = Math.max(expectedMax.val, descendant.get()));
+
+				int actualMax = maxExt.getSubTreeMax(node).get();
+				if (expectedMax.val != actualMax) {
+					printTestStr("Max extension repored wrong value: ", expectedMax.val, " != ", actualMax, "\n");
 					return false;
 				}
 			}

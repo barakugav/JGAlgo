@@ -10,14 +10,13 @@ public class HeapBinary<E> extends HeapAbstract<E> {
 
 	private E[] arr;
 	private int size;
-	private final Comparator<? super E> c;
 
 	public HeapBinary() {
 		this(null);
 	}
 
 	public HeapBinary(Comparator<? super E> c) {
-		this.c = c != null ? c : Utils.getDefaultComparator();
+		super(c);
 		arr = newArr(16);
 		size = 0;
 	}

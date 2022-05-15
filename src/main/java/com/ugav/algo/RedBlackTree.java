@@ -10,7 +10,6 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 
 	private int size;
 	private Node<E> root;
-	private final Comparator<? super E> c;
 
 	static final boolean Red = true;
 	static final boolean Black = false;
@@ -20,9 +19,9 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 	}
 
 	public RedBlackTree(Comparator<? super E> c) {
+		super(c);
 		root = null;
 		size = 0;
-		this.c = c != null ? c : Utils.getDefaultComparator();
 	}
 
 	@Override

@@ -2,8 +2,15 @@ package com.ugav.algo;
 
 import java.util.AbstractCollection;
 import java.util.Collection;
+import java.util.Comparator;
 
 public abstract class HeapAbstract<E> extends AbstractCollection<E> implements Heap<E> {
+
+	protected final Comparator<? super E> c;
+
+	public HeapAbstract(Comparator<? super E> c) {
+		this.c = c != null ? c : Utils.getDefaultComparator();
+	}
 
 	@Override
 	public boolean add(E e) {

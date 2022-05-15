@@ -14,14 +14,13 @@ public class HeapBinomial<E> extends HeapAbstractDirectAccessed<E> {
 	private Node<E>[] roots;
 	private int rootsLen;
 	private int size;
-	private final Comparator<? super E> c;
 
 	public HeapBinomial() {
 		this(null);
 	}
 
 	public HeapBinomial(Comparator<? super E> c) {
-		this.c = c != null ? c : Utils.getDefaultComparator();
+		super(c);
 		roots = newArr(4);
 		rootsLen = 0;
 		size = 0;

@@ -11,14 +11,13 @@ public class HeapFibonacci<E> extends HeapAbstractDirectAccessed<E> {
 	private Node<E> begin;
 	private Node<E> end;
 	private int size;
-	private final Comparator<? super E> c;
 
 	public HeapFibonacci() {
 		this(null);
 	}
 
 	public HeapFibonacci(Comparator<? super E> c) {
-		this.c = c != null ? c : Utils.getDefaultComparator();
+		super(c);
 		begin = end = minRoot = null;
 		size = 0;
 	}

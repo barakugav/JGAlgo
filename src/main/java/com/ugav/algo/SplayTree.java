@@ -9,14 +9,13 @@ public class SplayTree<E> extends BSTAbstract<E> {
 
 	private Node<E> root;
 	private int size;
-	private final Comparator<? super E> c;
 
 	public SplayTree() {
 		this(null);
 	}
 
 	public SplayTree(Comparator<? super E> c) {
-		this.c = c != null ? c : Utils.getDefaultComparator();
+		super(c);
 		root = null;
 		size = 0;
 	}

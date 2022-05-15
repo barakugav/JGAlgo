@@ -94,9 +94,18 @@ public class RedBlackTreeExtended<E> extends RedBlackTree<E> {
 
 	public static abstract class Extension<E> {
 
+		private RedBlackTreeExtended<E> tree;
 		private int extIdx = -1;
 
 		private Extension() {
+		}
+
+		RedBlackTreeExtended<E> getTree() {
+			return tree;
+		}
+
+		void setTree(RedBlackTreeExtended<E> tree) {
+			this.tree = tree;
 		}
 
 		int getExtIdx() {
@@ -110,22 +119,22 @@ public class RedBlackTreeExtended<E> extends RedBlackTree<E> {
 		}
 
 		protected void initNode(Node<E> n) {
-		};
+		}
 
 		protected void afterInsert(Node<E> n) {
-		};
+		}
 
 		protected void beforeRemove(Node<E> n) {
-		};
+		}
 
 		protected void beforeNodeValSwap(Node<E> a, Node<E> b) {
-		};
+		}
 
 		protected void beforeRotateLeft(Node<E> n) {
-		};
+		}
 
 		protected void beforeRotateRight(Node<E> n) {
-		};
+		}
 
 	}
 
@@ -194,7 +203,7 @@ public class RedBlackTreeExtended<E> extends RedBlackTree<E> {
 
 			setNodeData(n, getNodeData(n) - childSize + grandchildSize);
 			setNodeData(child, childSize - grandchildSize + getNodeData(n));
-		};
+		}
 
 		@Override
 		protected void beforeRotateRight(Node<E> n) {
@@ -203,7 +212,105 @@ public class RedBlackTreeExtended<E> extends RedBlackTree<E> {
 
 			setNodeData(n, getNodeData(n) - childSize + grandchildSize);
 			setNodeData(child, childSize - grandchildSize + getNodeData(n));
-		};
+		}
+
+	}
+
+	public static class ExtensionMin<E> extends ExtensionObj<E, Node<E>> {
+
+		ExtensionMin() {
+		}
+
+		public Handle<E> getSubTreeMin(Handle<E> handle) {
+			return getNodeData((Node<E>) handle);
+		}
+
+		@Override
+		protected void initNode(Node<E> n) {
+			/* minimum node of subtree of the single node is the node itself */
+			setNodeData(n, n);
+		}
+
+		@Override
+		protected void afterInsert(Node<E> n) {
+			for (Node<E> p = n; p.parent() != null && p == p.parent().left(); p = p.parent())
+				setNodeData(p.parent(), n);
+		}
+
+		@Override
+		protected void beforeRemove(Node<E> n) {
+			Node<E> min;
+			if (n.left() != null)
+				min = getNodeData(n.left());
+			else if (n.right() != null)
+				min = getNodeData(n.right());
+			else
+				min = n.parent();
+
+			for (Node<E> p = n; p.parent() != null && p == p.parent().left(); p = p.parent())
+				setNodeData(p.parent(), min);
+		}
+
+		@Override
+		protected void beforeRotateLeft(Node<E> n) {
+			Node<E> child = n.right();
+			setNodeData(child, getNodeData(n));
+		}
+
+		@Override
+		protected void beforeRotateRight(Node<E> n) {
+			Node<E> grandchild = n.left().right();
+			setNodeData(n, grandchild != null ? getNodeData(grandchild) : n);
+		}
+
+	}
+
+	public static class ExtensionMax<E> extends ExtensionObj<E, Node<E>> {
+
+		ExtensionMax() {
+		}
+
+		public Handle<E> getSubTreeMax(Handle<E> handle) {
+			return getNodeData((Node<E>) handle);
+		}
+
+		@Override
+		protected void initNode(Node<E> n) {
+			/* maximum node of subtree of the single node is the node itself */
+			setNodeData(n, n);
+		}
+
+		@Override
+		protected void afterInsert(Node<E> n) {
+			for (Node<E> p = n; p.parent() != null && p == p.parent().right(); p = p.parent())
+				setNodeData(p.parent(), n);
+		}
+
+		@Override
+		protected void beforeRemove(Node<E> n) {
+			Node<E> max;
+			if (n.right() != null)
+				max = getNodeData(n.right());
+			else if (n.left() != null)
+				max = getNodeData(n.left());
+			else
+				max = n.parent();
+
+			for (Node<E> p = n; p.parent() != null && p == p.parent().right(); p = p.parent())
+				setNodeData(p.parent(), max);
+		}
+
+		@Override
+		protected void beforeRotateLeft(Node<E> n) {
+			Node<E> grandchild = n.right().left();
+			setNodeData(n, grandchild != null ? getNodeData(grandchild) : n);
+		}
+
+		@Override
+		protected void beforeRotateRight(Node<E> n) {
+			Node<E> child = n.left();
+			setNodeData(child, getNodeData(n));
+		}
 
 	}
 
@@ -225,6 +332,14 @@ public class RedBlackTreeExtended<E> extends RedBlackTree<E> {
 
 		public ExtensionSize<E> addSizeExtension() {
 			return addExtension(new ExtensionSize<>());
+		}
+
+		public ExtensionMin<E> addMinExtension() {
+			return addExtension(new ExtensionMin<>());
+		}
+
+		public ExtensionMax<E> addMaxExtension() {
+			return addExtension(new ExtensionMax<>());
 		}
 
 		@SuppressWarnings("unchecked")
@@ -250,7 +365,13 @@ public class RedBlackTreeExtended<E> extends RedBlackTree<E> {
 			List<Extension<E>> extensions = new ArrayList<>();
 			extensions.addAll(extsObj);
 			extensions.addAll(extsInt);
-			return extensions.isEmpty() ? new RedBlackTree<>(c) : new RedBlackTreeExtended<>(c, extensions);
+			if (extensions.isEmpty())
+				return new RedBlackTree<>(c);
+
+			RedBlackTreeExtended<E> tree = new RedBlackTreeExtended<>(c, extensions);
+			for (Extension<E> ext : extensions)
+				ext.setTree(tree);
+			return tree;
 		}
 
 	}

@@ -215,9 +215,6 @@ class HeapTestUtils extends TestUtils {
 
 		for (int opIdx = 0; opIdx < m;) {
 			HeapOp op = opIdx < insertFirst ? HeapOp.Insert : ops.get(rand.nextInt(ops.size()));
-//			System.out.println(opIdx);
-//			if  (opIdx == 5)
-//				System.out.print("");
 
 			int x, expected, actual;
 			switch (op) {

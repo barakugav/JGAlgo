@@ -1,8 +1,13 @@
 package com.ugav.algo;
 
+import java.util.Comparator;
 import java.util.Iterator;
 
 public abstract class HeapAbstractDirectAccessed<E> extends HeapAbstract<E> implements HeapDirectAccessed<E> {
+
+	public HeapAbstractDirectAccessed(Comparator<? super E> c) {
+		super(c);
+	}
 
 	@Override
 	public Iterator<E> iterator() {
