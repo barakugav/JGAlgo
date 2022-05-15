@@ -228,7 +228,7 @@ class HeapTestUtils extends TestUtils {
 				break;
 
 			case Remove:
-				if (tracker.isEmpty())
+				if (tracker.isEmpty() || rand.nextInt(3) != 0)
 					continue;
 				x = tracker.randElement();
 
@@ -252,7 +252,7 @@ class HeapTestUtils extends TestUtils {
 				break;
 
 			case ExtractMin:
-				if (tracker.isEmpty())
+				if (tracker.isEmpty() || rand.nextInt(3) != 0)
 					continue;
 
 				expected = tracker.extractMin();
