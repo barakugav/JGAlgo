@@ -20,7 +20,8 @@ Algo is a collection of algorithms implemented in Java. It contains mostly algor
 | SSSP Goldberg1995 positive and negative integer weights | O(m n^0.5 logN) where N is the minimum negative weight |
 | RMQ +-1 BenderFarachColton2000 | O(n) preprocessing, O(1) query |
 | RMQ GabowBentleyTarjan1984 | O(n) preprocessing, O(1) query |
-| LCA static BenderFarachColton2000, using RMQ | O(n) |
+| LCA static BenderFarachColton2000, using RMQ | O(n + m) |
+| LCA dynamic Gabow simple | O(n log^2 n + m) |
 | Max flow EdmondsKarp | O(m n^2) |
 | MST Boruvka1926 | O(m log n) |
 | MST Kruskal1956 | O(m log n) |

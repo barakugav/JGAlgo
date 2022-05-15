@@ -29,6 +29,7 @@ public class TestList {
 			UnionFindValueArrayTest.class,
 			SplitFindMinArrayTest.class,
 			LCARMQBenderFarachColton2000Test.class,
+			LCAGabowSimpleTest.class,
 			TPMKomlos1985King1997Hagerup2009Test.class,
 			MaxFlowEdmondsKarpTest.class);
 
