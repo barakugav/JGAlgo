@@ -11,7 +11,7 @@ public class LCAGabowSimple implements LCADynamic {
 	 */
 
 	/* The number of nodes in the tree */
-	private int n;
+	private int nodesNum;
 	/* Array of the tree nodes, indexed by id */
 	private Node[] nodes;
 
@@ -23,93 +23,14 @@ public class LCAGabowSimple implements LCADynamic {
 
 	private static final Node[] EMPTY_NODE_ARR = new Node[0];
 
-	private static class Node {
-		/* ID of the node */
-		final int id;
-
-		/* --- user tree data --- */
-		/* tree parent */
-		Node parent;
-		/* children nodes of this node */
-		Node[] children;
-		int childrenNum;
-		/* number of nodes in subtree */
-		int size;
-
-		/* --- compressed tree data --- */
-		/* parent in the compressed tree */
-		Node cParent;
-		/* If the node is apex, contains all the nodes in it's path, else null */
-		Node[] path;
-		int pathSize;
-		/* Index of the node within it's path */
-		int pathIdx;
-		/* p */
-		double /* integer */ idxLower;
-		/* q */
-		double /* integer */ idxUpper;
-		/* p bar */
-		double /* integer */ idxLowerFat;
-		/* q bar */
-		double /* integer */ idxUpperFat;
-		/* Q bar */
-		double /* integer */ idxUpperFatMaxChild;
-		/* sigma */
-		int sigma;
-		/* flag for head (shallower) of path node */
-		boolean isApex;
-		/* ancestor table */
-		Node[] ancestorTable;
-
-		Node(int id) {
-			this.id = id;
-			children = EMPTY_NODE_ARR;
-		}
-
-		boolean isRoot() {
-			assert !(parent == null ^ cParent == null);
-			return parent == null;
-		}
-
-		void addChild(Node c) {
-			if (childrenNum >= children.length)
-				children = Arrays.copyOf(children, Math.max(children.length * 2, 2));
-			children[childrenNum++] = c;
-		}
-
-		Node getPathApex() {
-			return isApex ? this : cParent;
-		}
-
-		void addToPath(Node c) {
-			if (pathSize >= path.length)
-				path = Arrays.copyOf(path, Math.max(path.length * 2, 2));
-			path[pathSize++] = c;
-		}
-
-		boolean isRequireRecompress() {
-			return size >= alpha * sigma;
-		}
-
-		void ancestorTableInit(int size) {
-			ancestorTable = new Node[size];
-		}
-
-		@Override
-		public String toString() {
-			return "V" + (isApex ? "*" : "") + id;
-		}
-
-	}
-
 	public LCAGabowSimple() {
-		n = 0;
+		nodesNum = 0;
 		nodes = EMPTY_NODE_ARR;
 	}
 
 	@Override
 	public int initTree() {
-		if (n != 0)
+		if (nodesNum != 0)
 			throw new IllegalStateException();
 		return newNode(null).id;
 	}
@@ -120,7 +41,7 @@ public class LCAGabowSimple implements LCADynamic {
 	}
 
 	private Node newNode(Node parent) {
-		Node node = new Node(n++);
+		Node node = new Node(nodesNum++);
 		if (node.id >= nodes.length)
 			nodes = Arrays.copyOf(nodes, Math.max(nodes.length * 2, 2));
 		nodes[node.id] = node;
@@ -190,7 +111,7 @@ public class LCAGabowSimple implements LCADynamic {
 	}
 
 	private void computeAcestorTables(Node node) {
-		int ancestorTableSize = logBetaFloor(c * pow(n, e));
+		int ancestorTableSize = logBetaFloor(c * pow(nodesNum, e));
 		node.ancestorTableInit(ancestorTableSize);
 
 		int tableIdx = 0;
@@ -225,8 +146,7 @@ public class LCAGabowSimple implements LCADynamic {
 	}
 
 	private static int assertOverflowInt(double x) {
-		assert x >= Integer.MIN_VALUE;
-		assert x <= Integer.MAX_VALUE;
+		assert Integer.MIN_VALUE <= x && x <= Integer.MAX_VALUE;
 		return (int) x;
 	}
 
@@ -300,9 +220,91 @@ public class LCAGabowSimple implements LCADynamic {
 		return calcCA0(nodes[x], nodes[y]).a.id;
 	}
 
-	public CharacteristicAncestors calcLC(int x, int y) {
+	public CharacteristicAncestors calcCA(int x, int y) {
 		CharacteristicAncestors0 ca = calcCA0(nodes[x], nodes[y]);
 		return new CharacteristicAncestors(ca.a.id, ca.ax.id, ca.ay.id);
+	}
+
+	private static class Node {
+		/* ID of the node */
+		final int id;
+
+		/* --- user tree data --- */
+		/* tree parent */
+		Node parent;
+		/* children nodes of this node */
+		Node[] children;
+		int childrenNum;
+		/* number of nodes in subtree */
+		int size;
+
+		/* --- compressed tree data --- */
+		/* parent in the compressed tree */
+		Node cParent;
+		/* If the node is apex, contains all the nodes in it's path, else null */
+		Node[] path;
+		int pathSize;
+		/* Index of the node within it's path */
+		int pathIdx;
+		/* p */
+		double /* integer */ idxLower;
+		/* q */
+		double /* integer */ idxUpper;
+		/* p bar */
+		double /* integer */ idxLowerFat;
+		/* q bar */
+		double /* integer */ idxUpperFat;
+		/* Q bar */
+		double /* integer */ idxUpperFatMaxChild;
+		/* sigma */
+		int sigma;
+		/* flag for head (shallower) of path node */
+		boolean isApex;
+		/* ancestor table */
+		Node[] ancestorTable;
+
+		Node(int id) {
+			this.id = id;
+			children = EMPTY_NODE_ARR;
+		}
+
+		boolean isRoot() {
+			assert !(parent == null ^ cParent == null);
+			return parent == null;
+		}
+
+		void addChild(Node c) {
+			if (childrenNum >= children.length)
+				children = Arrays.copyOf(children, Math.max(children.length * 2, 2));
+			children[childrenNum++] = c;
+		}
+
+		Node getPathApex() {
+			return isApex ? this : cParent;
+		}
+
+		void addToPath(Node c) {
+			if (pathSize >= path.length)
+				path = Arrays.copyOf(path, Math.max(path.length * 2, 2));
+			path[pathSize++] = c;
+		}
+
+		boolean isRequireRecompress() {
+			return size >= alpha * sigma;
+		}
+
+		void ancestorTableInit(int size) {
+			if (ancestorTable != null && ancestorTable.length >= size)
+				Arrays.fill(ancestorTable, null);
+			else
+				ancestorTable = new Node[size];
+		}
+
+		@Override
+		public String toString() {
+			return "V" + (isApex ? "*" : "") + id;
+		}
+
 	}
 
 	private static class CharacteristicAncestors0 {

@@ -30,6 +30,7 @@ public class TestList {
 			SplitFindMinArrayTest.class,
 			LCARMQBenderFarachColton2000Test.class,
 			LCAGabowSimpleTest.class,
+			LCAGabow2017Test.class,
 			TPMKomlos1985King1997Hagerup2009Test.class,
 			MaxFlowEdmondsKarpTest.class);
 
