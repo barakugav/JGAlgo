@@ -22,7 +22,7 @@ Algo is a collection of algorithms implemented in Java. It contains mostly algor
 | RMQ GabowBentleyTarjan1984 | O(n) preprocessing, O(1) query |
 | LCA static BenderFarachColton2000, using RMQ | O(n + m) |
 | LCA dynamic Gabow simple | O(n log^2 n + m) |
-| LCA dynamic Gabow17 | O(n + m) |
+| LCA dynamic Gabow2017 | O(n + m) |
 | Max flow EdmondsKarp | O(m n^2) |
 | MST Boruvka1926 | O(m log n) |
 | MST Kruskal1956 | O(m log n) |
@@ -31,7 +31,8 @@ Algo is a collection of algorithms implemented in Java. It contains mostly algor
 | MST FredmanTarjan1987 | O(m log* n) |
 | MST KargerKleinTarjan1995 randomized | O(m + n) expected |
 | MDST Tarjan1977 directed graphs | O(m log n) |
-| TMP (tree path maxima) Komlos1985King1997Hagerup2009 | O(m + n) where m is the number of queries |
+| Tree path maxima (TMP) Komlos1985King1997Hagerup2009 | O(m + n) where m is the number of queries |
+| Subtree Merge Findmin (used in general weighted matching) | O(m + n log n) |
 | Maximum matching bipartite unweighted HopcroftKarp1973 | O(m n^0.5) |
 | Maximum matching general unweighted Gabow1976 | O(m n alpha(m,n)) |
 | Maximum matching bipartite weighted SSSP | O(m n + n^2 log n) |

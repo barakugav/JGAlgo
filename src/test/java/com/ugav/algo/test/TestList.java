@@ -32,6 +32,7 @@ public class TestList {
 			LCAGabowSimpleTest.class,
 			LCAGabow2017Test.class,
 			TPMKomlos1985King1997Hagerup2009Test.class,
+			SubtreeMergeFindminTest.class,
 			MaxFlowEdmondsKarpTest.class);
 
 	private static final Collection<Class<?>> SHORTEST_PATH_TESTS = List.of(

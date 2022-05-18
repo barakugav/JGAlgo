@@ -88,6 +88,14 @@ public class Utils {
 		return r;
 	}
 
+	static <T> T[] suffle(T[] a, long seed) {
+		int[] p = randPermutation(a.length, seed);
+		T[] r = Arrays.copyOf(a, a.length);
+		for (int i = 0; i < a.length; i++)
+			r[i] = a[p[i]];
+		return r;
+	}
+
 	static <E> Iterable<E> iterable(Iterator<E> it) {
 		return new Iterable<>() {
 
