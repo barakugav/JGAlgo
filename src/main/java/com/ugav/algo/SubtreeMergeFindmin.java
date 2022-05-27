@@ -52,6 +52,7 @@ public class SubtreeMergeFindmin<W> {
 		lca = new LCAGabow2017();
 
 		this.weightCmp = weightCmp != null ? weightCmp : Utils.getDefaultComparator();
+		timestamp = 0;
 
 		heap = new HeapFibonacci<>((t1, t2) -> {
 			return this.weightCmp.compare(t1.minEdge.data.weight, t2.minEdge.data.weight);
@@ -64,14 +65,13 @@ public class SubtreeMergeFindmin<W> {
 
 	public int initTree() {
 		if (size() != 0)
-			throw new IllegalStateException();
+			throw new IllegalStateException("Tree is not empty");
 		int root = lca.initTree();
 		return newNode(-1, root);
 	}
 
 	public int addLeaf(int parent) {
-		if (size() == 0)
-			throw new IllegalStateException();
+		checkNodeId(parent);
 		int u = lca.addLeaf(parent);
 		return newNode(parent, u);
 	}
@@ -96,6 +96,8 @@ public class SubtreeMergeFindmin<W> {
 
 	@SuppressWarnings("unchecked")
 	public void mergeSubTrees(int u, int v) {
+		checkNodeId(u);
+		checkNodeId(v);
 		u = uf.find(u);
 		v = uf.find(v);
 		SubTree<W> U = subtrees[u], V = subtrees[v];
@@ -204,8 +206,8 @@ public class SubtreeMergeFindmin<W> {
 	}
 
 	public void addNonTreeEdge(int u, int v, W weight) {
-		if (u >= size() || v >= size())
-			throw new IllegalArgumentException();
+		checkNodeId(u);
+		checkNodeId(v);
 		if (u == v)
 			return;
 		/* assume u is above v */
@@ -284,8 +286,42 @@ public class SubtreeMergeFindmin<W> {
 		}
 	}
 
+	public int getParent(int v) {
+		checkNodeId(v);
+		return parent[v];
+	}
+
+	public boolean hasNonTreeEdge() {
+		return !heap.isEmpty();
+	}
+
 	public Edge<W> findMinNonTreeEdge() {
 		return heap.isEmpty() ? null : heap.findMin().minEdge.data;
+	}
+
+	public boolean isSameSubTree(int u, int v) {
+		checkNodeId(u);
+		checkNodeId(v);
+		return uf.find(u) == uf.find(v);
+	}
+
+	public void clear() {
+		int size = size();
+		uf.clear();
+		for (int i = 0; i < size; i++) {
+			if (subtrees[i] == null)
+				continue;
+			subtrees[i].clear();
+			subtrees[i] = null;
+		}
+		heap.clear();
+		lca.clear();
+		timestamp = 0;
+	}
+
+	private void checkNodeId(int node) {
+		if (!(0 <= node && node < size()))
+			throw new IllegalStateException("Illegal node identifier " + node);
 	}
 
 	public static class Edge<W> {
@@ -333,6 +369,19 @@ public class SubtreeMergeFindmin<W> {
 
 		int rank() {
 			return Utils.log2(size);
+		}
+
+		void clear() {
+			for (int i = 0; i < edges.length; i++) {
+				if (edges[i] == null)
+					continue;
+				edges[i].clear();
+				edges[i] = null;
+			}
+			if (minEdge != null)
+				minEdge.clear();
+			minEdge = null;
+			heapHandle = null;
 		}
 
 	}

@@ -55,13 +55,15 @@ public class LCAGabow2017 implements LCADynamic {
 
 	@Override
 	public int initTree() {
-		if (nodes2Num != 0)
+		if (size() != 0)
 			throw new IllegalStateException();
 		return newNode2(null).id2;
 	}
 
 	@Override
 	public int addLeaf(int parent) {
+		if (!(0 <= parent && parent < nodes2Num))
+			throw new IllegalArgumentException("invalid parent id " + parent);
 		return newNode2(nodes2[parent]).id2;
 	}
 
@@ -203,6 +205,31 @@ public class LCAGabow2017 implements LCADynamic {
 		return calcLCA(nodes2[x], nodes2[y]).id2;
 	}
 
+	@Override
+	public int size() {
+		return nodes2Num;
+	}
+
+	@Override
+	public void clear() {
+		lca0.clear();
+
+		for (int i = 0; i < nodes0Num; i++)
+			nodes0[i].clear();
+		Arrays.fill(nodes0, 0, nodes0Num, null);
+		nodes0Num = 0;
+
+		for (int i = 0; i < nodes1Num; i++)
+			nodes1[i].clear();
+		Arrays.fill(nodes1, 0, nodes1Num, null);
+		nodes1Num = 0;
+
+		for (int i = 0; i < nodes2Num; i++)
+			nodes2[i].clear();
+		Arrays.fill(nodes2, 0, nodes2Num, null);
+		nodes2Num = 0;
+	}
+
 	private static class Node2 {
 		/* level 2 info */
 		final int id2;
@@ -214,6 +241,10 @@ public class LCAGabow2017 implements LCADynamic {
 		Node2(int id, Node2 parent) {
 			this.id2 = id;
 			this.parent = parent;
+		}
+
+		void clear() {
+			subTree = null;
 		}
 	}
 
@@ -250,6 +281,11 @@ public class LCAGabow2017 implements LCADynamic {
 		boolean isFull() {
 			return size == SUB_TREE_MAX_SIZE;
 		}
+
+		void clear() {
+			nodes = null;
+			subTree = null;
+		}
 	}
 
 	private static class Node0 {
@@ -279,6 +315,9 @@ public class LCAGabow2017 implements LCADynamic {
 			return size == SUB_TREE_MAX_SIZE;
 		}
 
+		void clear() {
+			nodes = null;
+		}
 	}
 
 	private static int ithBit(int b) {

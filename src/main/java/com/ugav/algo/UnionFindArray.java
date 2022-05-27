@@ -38,7 +38,7 @@ public class UnionFindArray implements UnionFind {
 	@Override
 	public int find(int x) {
 		if (x < 0 || x >= size)
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Illegal identifier " + x);
 		return find0(x);
 	}
 

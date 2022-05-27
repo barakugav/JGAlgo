@@ -6,6 +6,7 @@ public interface LCADynamic {
 	 * Initialize the tree the LCA will operate on
 	 *
 	 * @return identifier of the root node
+	 * @throws IllegalStateException if the tree is not empty
 	 */
 	public int initTree();
 
@@ -14,6 +15,7 @@ public interface LCADynamic {
 	 *
 	 * @param parent identifier of the parent node
 	 * @return identifier of the new node
+	 * @throws IllegalArgumentException if the parent identifier is not valid
 	 */
 	public int addLeaf(int parent);
 
@@ -25,5 +27,17 @@ public interface LCADynamic {
 	 * @return identifier of the lowest common ancestor of the two nodes
 	 */
 	public int calcLCA(int u, int v);
+
+	/**
+	 * Get the number of nodes in the tree
+	 *
+	 * @return nodes count in the tree
+	 */
+	public int size();
+
+	/**
+	 * Clear the data structure
+	 */
+	public void clear();
 
 }

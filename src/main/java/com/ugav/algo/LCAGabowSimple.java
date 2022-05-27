@@ -37,6 +37,8 @@ public class LCAGabowSimple implements LCADynamic {
 
 	@Override
 	public int addLeaf(int parent) {
+		if (!(0 <= parent && parent < nodesNum))
+			throw new IllegalArgumentException("invalid parent identifier " + parent);
 		return newNode(nodes[parent]).id;
 	}
 
@@ -225,6 +227,19 @@ public class LCAGabowSimple implements LCADynamic {
 		return new CharacteristicAncestors(ca.a.id, ca.ax.id, ca.ay.id);
 	}
 
+	@Override
+	public int size() {
+		return nodesNum;
+	}
+
+	@Override
+	public void clear() {
+		for (int i = 0; i < nodesNum; i++)
+			nodes[i].clear();
+		Arrays.fill(nodes, 0, nodesNum, null);
+		nodesNum = 0;
+	}
+
 	private static class Node {
 		/* ID of the node */
 		final int id;
@@ -303,6 +318,14 @@ public class LCAGabowSimple implements LCADynamic {
 		@Override
 		public String toString() {
 			return "V" + (isApex ? "*" : "") + id;
+		}
+
+		void clear() {
+			parent = cParent = null;
+			Arrays.fill(children, 0, childrenNum, null);
+			Arrays.fill(path, 0, pathSize, null);
+			Arrays.fill(ancestorTable, null);
+			children = path = ancestorTable = null;
 		}
 
 	}
