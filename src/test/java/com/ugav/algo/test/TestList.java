@@ -55,7 +55,7 @@ public class TestList {
 			MatchingGabow1976Test.class,
 			MatchingWeightedBipartiteSSSPTest.class,
 			MatchingWeightedBipartiteHungarianMethodTest.class,
-			MatchingWeightedGabow2018Test.class);
+			MatchingWeightedGabow2017Test.class);
 
 	static final Collection<Class<?>> TEST_CLASSES;
 	static {

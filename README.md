@@ -37,7 +37,7 @@ Algo is a collection of algorithms implemented in Java. It contains mostly algor
 | Maximum matching general unweighted Gabow1976 | O(m n alpha(m,n)) |
 | Maximum matching bipartite weighted SSSP | O(m n + n^2 log n) |
 | Maximum matching bipartite weighted Hungarian method | O(m n + n^2 log n) |
-| Maximum matching general weighted Gabow1990 | O(m n logn), WIP for O(m n + n^2 log n) |
+| Maximum matching general weighted Gabow2017 | O(m n + n^2 log n) |
 
 ### Additional Utils
 

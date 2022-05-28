@@ -19,7 +19,7 @@ import com.ugav.algo.MatchingGabow1976;
 import com.ugav.algo.MatchingWeighted;
 import com.ugav.algo.MatchingWeightedBipartiteHungarianMethod;
 import com.ugav.algo.MatchingWeightedBipartiteSSSP;
-import com.ugav.algo.MatchingWeightedGabow2018;
+import com.ugav.algo.MatchingWeightedGabow2017;
 
 @SuppressWarnings("boxing")
 class MatchingWeightedTestUtils extends TestUtils {
@@ -62,7 +62,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 
 			Matching validationUnweightedAlgo = MatchingBipartiteHopcroftKarp1973.getInstance();
 			MatchingWeighted validationWeightedAlgo = algo instanceof MatchingWeightedBipartiteHungarianMethodTest
-					? MatchingWeightedGabow2018.getInstance()
+					? MatchingWeightedGabow2017.getInstance()
 					: MatchingWeightedBipartiteHungarianMethod.getInstance();
 			return testGraphWeightedPerfect(algo, g, w, validationUnweightedAlgo, validationWeightedAlgo);
 		});
@@ -79,8 +79,8 @@ class MatchingWeightedTestUtils extends TestUtils {
 			GraphsTestUtils.assignRandWeightsIntNeg(g);
 			WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
 
-			// have nothing other than MatchingWeightedGabow2018, at least shuffle graph
-			MatchingWeighted validationAlgo = new MatchingWeightedShuffled(MatchingWeightedGabow2018.getInstance());
+			// have nothing other than MatchingWeightedGabow2017, at least shuffle graph
+			MatchingWeighted validationAlgo = new MatchingWeightedShuffled(MatchingWeightedGabow2017.getInstance());
 
 			return testGraphWeighted(algo, g, w, validationAlgo);
 		});
@@ -121,7 +121,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 
 			Matching validationUnweightedAlgo = MatchingGabow1976.getInstance();
 			MatchingWeighted validationWeightedAlgo = new MatchingWeightedShuffled(
-					MatchingWeightedGabow2018.getInstance());
+					MatchingWeightedGabow2017.getInstance());
 			return testGraphWeightedPerfect(algo, g, w, validationUnweightedAlgo, validationWeightedAlgo);
 		});
 	}

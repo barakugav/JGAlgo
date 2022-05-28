@@ -15,20 +15,19 @@ import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.Utils.NullList;
 import com.ugav.algo.Utils.QueueIntFixSize;
 
-public class MatchingWeightedGabow2018 implements MatchingWeighted {
+public class MatchingWeightedGabow2017 implements MatchingWeighted {
 
 	/*
-	 * O(mn + n^2logn)
-	 *
-	 * This implementation is WIP, current O(mnlogn) TODO
+	 * This class implement Edmonds' "Blossom algorithm" for weighted matching on
+	 * general graphs. The algorithm runs in O(mn + n^2logn).
 	 */
 
-	private MatchingWeightedGabow2018() {
+	private MatchingWeightedGabow2017() {
 	}
 
-	private static final MatchingWeightedGabow2018 INSTANCE = new MatchingWeightedGabow2018();
+	private static final MatchingWeightedGabow2017 INSTANCE = new MatchingWeightedGabow2017();
 
-	public static MatchingWeightedGabow2018 getInstance() {
+	public static MatchingWeightedGabow2017 getInstance() {
 		return INSTANCE;
 	}
 
@@ -104,7 +103,22 @@ public class MatchingWeightedGabow2018 implements MatchingWeighted {
 		final HeapDirectAccessed<EdgeEvent<E>> growEvents;
 
 		/* Heap storing all the blossom and augmenting events */
-		final Heap<EdgeEvent<E>> blossomEvents;
+		final SubtreeMergeFindmin<EdgeEvent<E>> smf;
+
+		/* Dummy SMF node, use as root of roots (SMF support only one tree) */
+		int smfRootOfRoots;
+
+		/* SMF index of each vertex: vertex -> SMF identifier */
+		final int[] vToSMFId;
+
+		/* Actual vertex of each SMF node: smfID -> vertex */
+		final int[] smfIdToV;
+
+		/*
+		 * array used to calculate the path from a vertex to blossom base, used to
+		 * calculate SMF skeleton from odd blossoms
+		 */
+		final int[] oddBlossomPath;
 
 		/* Heap storing all expand events for odd vertices */
 		final HeapDirectAccessed<Blossom<E>> expandEvents;
@@ -280,8 +294,11 @@ public class MatchingWeightedGabow2018 implements MatchingWeighted {
 			vertexDualValBase = new double[n];
 
 			vToGrowEvent = new EdgeEvent[n];
+			vToSMFId = new int[n];
+			smfIdToV = new int[n];
+			oddBlossomPath = new int[n];
 			growEvents = new HeapFibonacci<>((e1, e2) -> Utils.compare(growEventsKey(e1), growEventsKey(e2)));
-			blossomEvents = new HeapFibonacci<>((e1, e2) -> Utils.compare(e1.slack, e2.slack));
+			smf = new SubtreeMergeFindmin<>((e1, e2) -> Utils.compare(e1.slack, e2.slack));
 			expandEvents = new HeapFibonacci<>((b1, b2) -> Utils.compare(b1.expandDelta, b2.expandDelta));
 
 			unionQueue = new QueueIntFixSize(n + 1);
@@ -316,6 +333,9 @@ public class MatchingWeightedGabow2018 implements MatchingWeighted {
 				Arrays.fill(vToFind1Idx, -1);
 				find1.init(new NullList<>(n), edgeSlackBarComparator);
 				find1IdxNext = 0;
+				Arrays.fill(vToSMFId, -1);
+				Arrays.fill(smfIdToV, -1);
+				smfRootOfRoots = smf.initTree();
 
 				// Init unmatched blossoms as even and all other as out
 				forEachTopBlossom(b -> {
@@ -331,16 +351,24 @@ public class MatchingWeightedGabow2018 implements MatchingWeighted {
 						b.isEven = true;
 						b.delta0 = delta;
 						int base = b.base;
+
+						/* Update SMF data structure */
+						int baseSMFId = smfAddLeaf(base, smfRootOfRoots);
 						forEachVertexInBlossom(b, u -> {
 							blossoms[u].isEven = true;
 							find0.union(base, u);
+
+							if (u != base) {
+								int smfId = smfAddLeaf(u, baseSMFId);
+								smf.mergeSubTrees(baseSMFId, smfId);
+							}
 						});
 						find0Blossoms[find0.find(base)] = b;
 					}
 				});
 				// Insert grow and blossom events into heaps
 				forEachTopBlossom(U -> {
-					if (matched[U.base] == null) {
+					if (matched[U.base] == null) { /* only root blossoms */
 						forEachVertexInBlossom(U, this::insertGrowEventsFromVertex);
 						forEachVertexInBlossom(U, this::insertBlossomEventsFromVertex);
 					}
@@ -349,7 +377,8 @@ public class MatchingWeightedGabow2018 implements MatchingWeighted {
 				currentSearch: for (;;) {
 					double delta1 = delta1Threshold;
 					double delta2 = growEvents.isEmpty() ? Double.MAX_VALUE : growEventsKey(growEvents.findMin());
-					double delta3 = blossomEvents.isEmpty() ? Double.MAX_VALUE : blossomEvents.findMin().slack / 2;
+					double delta3 = !smf.hasNonTreeEdge() ? Double.MAX_VALUE
+							: smf.findMinNonTreeEdge().weight.slack / 2;
 					double delta4 = expandEvents.isEmpty() ? Double.MAX_VALUE : expandEvents.findMin().expandDelta;
 
 					double deltaNext = Math.min(delta2, Math.min(delta3, delta4));
@@ -358,11 +387,11 @@ public class MatchingWeightedGabow2018 implements MatchingWeighted {
 					assert0(deltaNext >= delta);
 					delta = deltaNext;
 
-					if (deltaNext == delta2)
+					if (deltaNext == delta2) {
 						growStep();
-					else if (deltaNext == delta3) {
-						assert0(delta == blossomEvents.findMin().slack / 2);
-						Edge<EdgeVal<E>> e = blossomEvents.extractMin().e;
+					} else if (deltaNext == delta3) {
+						assert0(delta == smf.findMinNonTreeEdge().weight.slack / 2);
+						Edge<EdgeVal<E>> e = smf.findMinNonTreeEdge().weight.e;
 						assert0(isEven(e.u()) && isEven(e.v()));
 
 						if (find0(e.u()).root == find0(e.v()).root)
@@ -371,9 +400,9 @@ public class MatchingWeightedGabow2018 implements MatchingWeighted {
 							augmentStep(e);
 							break currentSearch;
 						}
-					} else if (deltaNext == delta4)
+					} else if (deltaNext == delta4) {
 						expandStep();
-					else
+					} else
 						throw new InternalError();
 				}
 
@@ -402,7 +431,7 @@ public class MatchingWeightedGabow2018 implements MatchingWeighted {
 				// Reset heaps
 				Arrays.fill(vToGrowEvent, null);
 				growEvents.clear();
-				blossomEvents.clear();
+				smf.clear();
 				expandEvents.clear();
 			}
 
@@ -433,6 +462,18 @@ public class MatchingWeightedGabow2018 implements MatchingWeighted {
 				V.expandHandle = expandEvents.insert(V);
 			}
 
+			int pathLen = computePath(V, e.v(), oddBlossomPath);
+			assert0(pathLen > 0);
+			assert0(oddBlossomPath[0] == e.v());
+			assert0(vToSMFId[e.u()] != -1);
+			assert0(vToSMFId[e.v()] == -1);
+			int smfParent = smfAddLeaf(e.v(), vToSMFId[e.u()]);
+			for (int i = 1; i < pathLen; i++) {
+				assert0(vToSMFId[oddBlossomPath[i]] == -1);
+				smfParent = smfAddLeaf(oddBlossomPath[i], smfParent);
+			}
+			assert0(oddBlossomPath[pathLen - 1] == V.base);
+
 			// Immediately add it's matched edge and vertex as even vertex
 			Edge<EdgeVal<E>> matchedEdge = matched[V.base];
 			V = topBlossom(matchedEdge.v());
@@ -442,6 +483,8 @@ public class MatchingWeightedGabow2018 implements MatchingWeighted {
 				growEvents.removeHandle(V.growHandle);
 				V.growHandle = null;
 			}
+			assert0(vToSMFId[V.base] == -1);
+			smfAddLeaf(V.base, smfParent);
 			makeEven(V);
 		}
 
@@ -476,6 +519,8 @@ public class MatchingWeightedGabow2018 implements MatchingWeighted {
 					if (!b.isSingleton())
 						b.z0 = dualVal(b);
 					b.parent = newb;
+					if (b != base)
+						smf.mergeSubTrees(vToSMFId[b.treeParentEdge.v()], vToSMFId[b.base]);
 					connectSubBlossoms(b, prev, toPrevEdge, !prevIsRight);
 					unionQueue.push(b.base);
 
@@ -493,8 +538,22 @@ public class MatchingWeightedGabow2018 implements MatchingWeighted {
 						b.z0 = dualVal(b);
 					b.parent = newb;
 					connectSubBlossoms(b, prev, toPrevEdge, !prevIsRight);
+					int smfTopId = vToSMFId[b.treeParentEdge.u()];
+					smf.mergeSubTrees(vToSMFId[b.treeParentEdge.v()], smfTopId);
 					forEachVertexInBlossom(b, v -> {
 						blossoms[v].isEven = true;
+
+						int smfId = vToSMFId[v];
+						if (smfId == -1) {
+							smfId = smfAddLeaf(v, smfTopId);
+							smf.mergeSubTrees(smfId, smfTopId);
+						} else {
+							while (!smf.isSameSubTree(smfId, smfTopId)) {
+								int p = smfParent(smfId);
+								smf.mergeSubTrees(smfId, p);
+								smfId = p;
+							}
+						}
 						unionQueue.push(v);
 						scanQueue.push(v);
 					});
@@ -526,13 +585,43 @@ public class MatchingWeightedGabow2018 implements MatchingWeighted {
 		private void makeEven(Blossom<E> V) {
 			V.isEven = true;
 			V.delta0 = delta;
-
 			int base = V.base;
 			forEachVertexInBlossom(V, v -> {
 				blossoms[v].isEven = true;
 				find0.union(base, v);
 			});
 			find0Blossoms[find0.find(base)] = V;
+
+			/*
+			 * If a SMF structure already exists in the blossom, we can't just merge all the
+			 * vertices with the base, as not all of them will be adjacent sub trees.
+			 * Therefore, we first merge the base to all it's SMF ancestors in the blossom,
+			 * and than merging all vertices up to the base sub tree.
+			 */
+			final int smfBaseId = vToSMFId[base];
+			assert0(smfBaseId != -1);
+			for (int smfId = smfBaseId;;) {
+				int parentSmf = smfParent(smfId);
+				if (parentSmf == -1 || topBlossom(smfToVertex(parentSmf)) != V)
+					break;
+				smf.mergeSubTrees(smfBaseId, parentSmf);
+				smfId = parentSmf;
+			}
+
+			forEachVertexInBlossom(V, v -> {
+				int smfId = vToSMFId[v];
+				if (smfId == -1) {
+					smfId = smfAddLeaf(v, smfBaseId);
+					smf.mergeSubTrees(smfBaseId, smfId);
+				} else {
+					while (!smf.isSameSubTree(smfId, smfBaseId)) {
+						int p = smfParent(smfId);
+						smf.mergeSubTrees(smfId, p);
+						smfId = p;
+					}
+				}
+			});
+
 			forEachVertexInBlossom(V, this::insertGrowEventsFromVertex);
 			forEachVertexInBlossom(V, this::insertBlossomEventsFromVertex);
 		}
@@ -603,6 +692,7 @@ public class MatchingWeightedGabow2018 implements MatchingWeighted {
 				b = next.apply(b);
 				if (b == top)
 					break;
+				assert0(vToSMFId[b.base] == -1);
 				b.root = -1;
 				b.treeParentEdge = null;
 				b.isEven = false;
@@ -719,6 +809,47 @@ public class MatchingWeightedGabow2018 implements MatchingWeighted {
 			}
 		}
 
+		/* compute the path from vertex to base */
+		private int computePath(Blossom<E> B, int u, int[] path) {
+			return computePath(B, u, path, 0, false);
+		}
+
+		private int computePath(Blossom<E> B, int u, int[] path, int pathSize, boolean reverse) {
+			if (!reverse)
+				path[pathSize++] = u;
+
+			if (B.base != u) {
+				Edge<EdgeVal<E>> m = matched[u];
+//				int v;
+				Blossom<E> b0, b1 /* , b2 */;
+				if (m.u() == u) {
+//					v = m.v();
+					b0 = m.val().b0;
+					b1 = m.val().b1;
+				} else {
+//					v = m.u();
+					b0 = m.val().b1;
+					b1 = m.val().b0;
+				}
+
+				Edge<EdgeVal<E>> xy;
+				if (b0.right == b1) {
+//					b2 = b1.right;
+					xy = b1.toRightEdge;
+				} else {
+//					b2 = b1.left;
+					xy = b1.toLeftEdge;
+				}
+
+				pathSize = computePath(b1, xy.u(), path, pathSize, !reverse);
+				pathSize = computePath(B, xy.v(), path, pathSize, reverse);
+			}
+
+			if (reverse)
+				path[pathSize++] = u;
+			return pathSize;
+		}
+
 		private boolean isEven(int v) {
 			return blossoms[v].isEven;
 		}
@@ -814,13 +945,14 @@ public class MatchingWeightedGabow2018 implements MatchingWeighted {
 			}
 		}
 
-		private static <E> void forEachVertexInBlossom(Blossom<E> b, IntConsumer f) {
+		private static <E> void forEachVertexInBlossom(Blossom<E> b, IntConsumer op) {
 			if (b.child == null) {
-				f.accept(b.base);
+				op.accept(b.base);
 				return;
 			}
+
 			for (Blossom<E> sub = b.child;;) {
-				forEachVertexInBlossom(sub, f);
+				forEachVertexInBlossom(sub, op);
 				sub = sub.right;
 				if (sub == b.child)
 					break;
@@ -895,7 +1027,7 @@ public class MatchingWeightedGabow2018 implements MatchingWeighted {
 				double slackBar = Yu + Yv - w.weight(e.val().e);
 
 				assert0(slackBar >= 0);
-				blossomEvents.insert(new EdgeEvent<>(e, slackBar));
+				smf.addNonTreeEdge(vToSMFId[e.u()], vToSMFId[e.v()], new EdgeEvent<>(e, slackBar));
 			}
 		};
 
@@ -917,6 +1049,29 @@ public class MatchingWeightedGabow2018 implements MatchingWeighted {
 			leftToRightEdge.val().twin.val().b1 = left;
 		}
 
+		private int smfAddLeaf(int v, int parentSmfId) {
+			int smfId = smf.addLeaf(parentSmfId);
+
+			assert0(vToSMFId[v] == -1);
+			vToSMFId[v] = smfId;
+
+			/* offset by -1 due to dummy root of roots */
+			assert0(smfIdToV[smfId - 1] == -1);
+			smfIdToV[smfId - 1] = v;
+
+			return smfId;
+		}
+
+		private int smfToVertex(int smfId) {
+			/* offset by -1 due to dummy root of roots */
+			return smfIdToV[smfId - 1];
+		}
+
+		private int smfParent(int smfId) {
+			int p = smf.getParent(smfId);
+			return p != smfRootOfRoots ? p : -1;
+		}
+
 		private Blossom<E> lcaInSearchTree(Blossom<E> b1, Blossom<E> b2) {
 			int visitIdx = ++blossomVisitIdx;
 			for (@SuppressWarnings("unchecked")
@@ -935,27 +1090,7 @@ public class MatchingWeightedGabow2018 implements MatchingWeighted {
 			}
 		}
 
-		// TODO check if needed
-		@SuppressWarnings("unused")
-		private Blossom<E> lcaInBlossomTree(Blossom<E> b1, Blossom<E> b2) {
-			int visitIdx = ++blossomVisitIdx;
-			for (@SuppressWarnings("unchecked")
-			Blossom<E>[] bs = new Blossom[] { b1, b2 };;) {
-				if (bs[0] == null && bs[1] == null)
-					return null;
-				for (int i = 0; i < bs.length; i++) {
-					Blossom<E> b = bs[i];
-					if (b == null)
-						continue;
-					if (b.lastVisitIdx == visitIdx)
-						return b;
-					b.lastVisitIdx = visitIdx;
-					bs[i] = b.parent;
-				}
-			}
-		}
-
-		// TODO remove
+		/* TODO replace with regular assert */
 		private static void assert0(boolean condition) {
 			if (!condition)
 				throw new InternalError();
