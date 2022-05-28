@@ -1,5 +1,6 @@
 package com.ugav.algo;
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -8,6 +9,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.IntConsumer;
+import java.util.stream.Collectors;
 
 import com.ugav.algo.Graph.DirectedType;
 import com.ugav.algo.Graph.Edge;
@@ -15,27 +17,24 @@ import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.Utils.NullList;
 import com.ugav.algo.Utils.QueueIntFixSize;
 
-public class MatchingWeightedGabow2017 implements MatchingWeighted {
+public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintable {
 
 	/*
 	 * This class implement Edmonds' "Blossom algorithm" for weighted matching on
 	 * general graphs. The algorithm runs in O(mn + n^2logn).
 	 */
 
-	private MatchingWeightedGabow2017() {
-	}
+	private final DebugPrintsManager debugPrintManager;
 
-	private static final MatchingWeightedGabow2017 INSTANCE = new MatchingWeightedGabow2017();
-
-	public static MatchingWeightedGabow2017 getInstance() {
-		return INSTANCE;
+	public MatchingWeightedGabow2017() {
+		debugPrintManager = new DebugPrintsManager();
 	}
 
 	@Override
 	public <E> Collection<Edge<E>> calcMaxMatching(Graph<E> g, WeightFunction<E> w) {
 		if (g.isDirected())
 			throw new IllegalArgumentException("Only undirected bipartite graphs are supported");
-		return new Worker<>(g, w).calcMaxMatching(false);
+		return new Worker<>(g, w, debugPrintManager).calcMaxMatching(false);
 
 	}
 
@@ -43,7 +42,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 	public <E> Collection<Edge<E>> calcPerfectMaxMatching(Graph<E> g, WeightFunction<E> w) {
 		if (g.isDirected())
 			throw new IllegalArgumentException("Only undirected bipartite graphs are supported");
-		return new Worker<>(g, w).calcMaxMatching(true);
+		return new Worker<>(g, w, debugPrintManager).calcMaxMatching(true);
 	}
 
 	private static class Worker<E> {
@@ -128,6 +127,9 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 
 		/* queue used during blossom creation to remember all new vertex to scan from */
 		final QueueIntFixSize scanQueue;
+
+		/* Manage debug prints */
+		final DebugPrintsManager debug;
 
 		static class Blossom<E> {
 
@@ -267,7 +269,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 		}
 
 		@SuppressWarnings("unchecked")
-		Worker(Graph<E> g, WeightFunction<E> w) {
+		Worker(Graph<E> g, WeightFunction<E> w, DebugPrintsManager debugPrint) {
 			int n = g.vertices();
 			this.g = new GraphArray<>(DirectedType.Directed, n);
 			this.w = w;
@@ -303,6 +305,8 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 
 			unionQueue = new QueueIntFixSize(n + 1);
 			scanQueue = new QueueIntFixSize(n);
+
+			this.debug = debugPrint;
 		}
 
 		private Collection<Edge<E>> calcMaxMatching(boolean perfect) {
@@ -374,6 +378,16 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 					}
 				});
 
+				/* [debug] print current roots */
+				debug.printExec(() -> {
+					debug.print("roots:");
+					forEachTopBlossom(b -> {
+						if (matched[b.base] == null)
+							debug.print(" " + b);
+					});
+					debug.println();
+				});
+
 				currentSearch: for (;;) {
 					double delta1 = delta1Threshold;
 					double delta2 = growEvents.isEmpty() ? Double.MAX_VALUE : growEventsKey(growEvents.findMin());
@@ -384,8 +398,25 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 					double deltaNext = Math.min(delta2, Math.min(delta3, delta4));
 					if (deltaNext == Double.MAX_VALUE || (!perfect && delta1 < deltaNext))
 						break mainLoop;
+
+					debug.print("delta " + deltaNext + " (+" + (deltaNext - delta) + ")");
 					assert deltaNext >= delta;
 					delta = deltaNext;
+
+					debug.printExec(() -> {
+						debug.print(" " + Arrays.asList(blossoms).stream().map(b -> "" + dualVal(b.base))
+								.collect(Collectors.joining(", ", "[", "]")));
+						debug.print(" " + Arrays.asList(blossoms).stream()
+								.mapMulti((Blossom<E> b, Consumer<Blossom<E>> next) -> {
+									for (; b.parent != null; b = b.parent)
+										;
+									next.accept(b);
+								}).distinct().filter(b -> !b.isSingleton()).map(b -> "" + b + " " + dualVal(b))
+								.collect(Collectors.joining(", ", "[", "]")));
+
+						debug.print("\nMatched: ");
+						debug.println(Arrays.toString(matched));
+					});
 
 					if (deltaNext == delta2) {
 						growStep();
@@ -443,6 +474,8 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 		}
 
 		private void growStep() {
+			debug.print("growStep (root=" + find0(growEvents.findMin().e.u()).root + "): " + growEvents.findMin().e);
+
 			// Grow step
 			assert delta == growEventsKey(growEvents.findMin());
 			Edge<EdgeVal<E>> e = growEvents.extractMin().e;
@@ -461,6 +494,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 				V.expandDelta = V.z0 / 2 + V.delta1;
 				V.expandHandle = expandEvents.insert(V);
 			}
+			debug.print(" " + V);
 
 			int pathLen = computePath(V, e.v(), oddBlossomPath);
 			assert pathLen > 0;
@@ -486,9 +520,11 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 			assert vToSMFId[V.base] == -1;
 			smfAddLeaf(V.base, smfParent);
 			makeEven(V);
+			debug.println(" " + V);
 		}
 
 		private void blossomStep(Edge<EdgeVal<E>> e) {
+			debug.println("blossomStep");
 			assert isEven(e.u()) && isEven(e.v());
 			Blossom<E> U = find0(e.u()), V = find0(e.v());
 			if (U == V)
@@ -627,6 +663,8 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 		}
 
 		private void expandStep() {
+			debug.println("expandStep");
+
 			assert delta == expandEvents.findMin().expandDelta;
 			final Blossom<E> B = expandEvents.extractMin();
 
@@ -720,6 +758,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 		}
 
 		private void augmentStep(Edge<EdgeVal<E>> bridge) {
+			debug.print("augStep:");
 			Blossom<E> U = topBlossom(bridge.u()), V = topBlossom(bridge.v());
 			@SuppressWarnings("unchecked")
 			Blossom<E>[] bs = new Blossom[] { U, V };
@@ -733,6 +772,8 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 					if (e != null) {
 						matched[e.u()] = e;
 						matched[e.v()] = e.val().twin;
+
+						debug.print(" " + e);
 						assert matched[e.u()] != null;
 						assert matched[e.v()] != null;
 					}
@@ -752,6 +793,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 			}
 			matched[bridge.u()] = bridge;
 			matched[bridge.v()] = bridge.val().twin;
+			debug.println(" " + bridge);
 		}
 
 		private void augmentPath(Blossom<E> B, int u) {
@@ -802,6 +844,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 			assert matched[b1.base] != null;
 			assert matched[b2.base] != null;
 
+			debug.print(" " + xy);
 			for (Blossom<E> p = b0.parent;; p = p.parent) {
 				if (p == B.parent)
 					break;
@@ -1090,6 +1133,21 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 			}
 		}
 
+	}
+
+	@Override
+	public boolean isDebugPrintEnable() {
+		return debugPrintManager.isEnable();
+	}
+
+	@Override
+	public void setDebugPrintEnable(boolean enable) {
+		debugPrintManager.setEnable(enable);
+	}
+
+	@Override
+	public void setDebugPrintStream(PrintStream printStream) {
+		debugPrintManager.setPrintStream(printStream);
 	}
 
 }
