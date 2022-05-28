@@ -384,15 +384,15 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 					double deltaNext = Math.min(delta2, Math.min(delta3, delta4));
 					if (deltaNext == Double.MAX_VALUE || (!perfect && delta1 < deltaNext))
 						break mainLoop;
-					assert0(deltaNext >= delta);
+					assert deltaNext >= delta;
 					delta = deltaNext;
 
 					if (deltaNext == delta2) {
 						growStep();
 					} else if (deltaNext == delta3) {
-						assert0(delta == smf.findMinNonTreeEdge().weight.slack / 2);
+						assert delta == smf.findMinNonTreeEdge().weight.slack / 2;
 						Edge<EdgeVal<E>> e = smf.findMinNonTreeEdge().weight.e;
-						assert0(isEven(e.u()) && isEven(e.v()));
+						assert isEven(e.u()) && isEven(e.v());
 
 						if (find0(e.u()).root == find0(e.v()).root)
 							blossomStep(e);
@@ -444,18 +444,18 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 
 		private void growStep() {
 			// Grow step
-			assert0(delta == growEventsKey(growEvents.findMin()));
+			assert delta == growEventsKey(growEvents.findMin());
 			Edge<EdgeVal<E>> e = growEvents.extractMin().e;
 
 			Blossom<E> U = find0(e.u()), V = find1(e.v());
-			assert0(!V.isEven && !isInTree(V));
+			assert !V.isEven && !isInTree(V);
 
 			// Add odd vertex
 			V.root = U.root;
 			V.treeParentEdge = e.val().twin;
 			V.isEven = false;
 			V.delta1 = delta;
-			assert0(V.growHandle.get().e == e);
+			assert V.growHandle.get().e == e;
 			V.growHandle = null;
 			if (!V.isSingleton()) {
 				V.expandDelta = V.z0 / 2 + V.delta1;
@@ -463,16 +463,16 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 			}
 
 			int pathLen = computePath(V, e.v(), oddBlossomPath);
-			assert0(pathLen > 0);
-			assert0(oddBlossomPath[0] == e.v());
-			assert0(vToSMFId[e.u()] != -1);
-			assert0(vToSMFId[e.v()] == -1);
+			assert pathLen > 0;
+			assert oddBlossomPath[0] == e.v();
+			assert vToSMFId[e.u()] != -1;
+			assert vToSMFId[e.v()] == -1;
 			int smfParent = smfAddLeaf(e.v(), vToSMFId[e.u()]);
 			for (int i = 1; i < pathLen; i++) {
-				assert0(vToSMFId[oddBlossomPath[i]] == -1);
+				assert vToSMFId[oddBlossomPath[i]] == -1;
 				smfParent = smfAddLeaf(oddBlossomPath[i], smfParent);
 			}
-			assert0(oddBlossomPath[pathLen - 1] == V.base);
+			assert oddBlossomPath[pathLen - 1] == V.base;
 
 			// Immediately add it's matched edge and vertex as even vertex
 			Edge<EdgeVal<E>> matchedEdge = matched[V.base];
@@ -483,13 +483,13 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 				growEvents.removeHandle(V.growHandle);
 				V.growHandle = null;
 			}
-			assert0(vToSMFId[V.base] == -1);
+			assert vToSMFId[V.base] == -1;
 			smfAddLeaf(V.base, smfParent);
 			makeEven(V);
 		}
 
 		private void blossomStep(Edge<EdgeVal<E>> e) {
-			assert0(isEven(e.u()) && isEven(e.v()));
+			assert isEven(e.u()) && isEven(e.v());
 			Blossom<E> U = find0(e.u()), V = find0(e.v());
 			if (U == V)
 				return; // Edge in same blossom, ignore
@@ -515,7 +515,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 
 				while (true) {
 					// handle even sub blossom
-					assert0(b.isEven);
+					assert b.isEven;
 					if (!b.isSingleton())
 						b.z0 = dualVal(b);
 					b.parent = newb;
@@ -528,11 +528,11 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 						break;
 					prev = b;
 					toPrevEdge = matched[b.base].val().twin;
-					assert0(matched[b.base] == b.treeParentEdge);
+					assert matched[b.base] == b.treeParentEdge;
 					b = topBlossom(toPrevEdge.u());
 
 					// handle odd vertex
-					assert0(!b.isEven);
+					assert !b.isEven;
 					b.deltaOdd += delta - b.delta1;
 					if (!b.isSingleton())
 						b.z0 = dualVal(b);
@@ -599,7 +599,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 			 * and than merging all vertices up to the base sub tree.
 			 */
 			final int smfBaseId = vToSMFId[base];
-			assert0(smfBaseId != -1);
+			assert smfBaseId != -1;
 			for (int smfId = smfBaseId;;) {
 				int parentSmf = smfParent(smfId);
 				if (parentSmf == -1 || topBlossom(smfToVertex(parentSmf)) != V)
@@ -627,10 +627,10 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 		}
 
 		private void expandStep() {
-			assert0(delta == expandEvents.findMin().expandDelta);
+			assert delta == expandEvents.findMin().expandDelta;
 			final Blossom<E> B = expandEvents.extractMin();
 
-			assert0(B.root != -1 && !B.isEven && !B.isSingleton() && dualVal(B) <= 0);
+			assert B.root != -1 && !B.isEven && !B.isSingleton() && dualVal(B) <= 0;
 
 			int baseFind1Idx = vToFind1Idx[B.base];
 			int topFind1Idx = vToFind1Idx[B.treeParentEdge.u()];
@@ -641,11 +641,11 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 			// parent in search tree ('top')
 			for (Blossom<E> b = B.child;;) {
 				if (b.find1SeqBegin <= baseFind1Idx && baseFind1Idx < b.find1SeqEnd) {
-					assert0(base == null);
+					assert base == null;
 					base = b;
 				}
 				if (b.find1SeqBegin <= topFind1Idx && topFind1Idx < b.find1SeqEnd) {
-					assert0(top == null);
+					assert top == null;
 					top = b;
 				}
 				b.parent = null;
@@ -670,7 +670,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 				b.isEven = false;
 				b.delta1 = delta;
 				find1Split(b);
-				assert0(b.expandHandle == null);
+				assert b.expandHandle == null;
 				if (!b.isSingleton()) {
 					b.expandDelta = b.z0 / 2 + b.delta1;
 					b.expandHandle = expandEvents.insert(b);
@@ -692,13 +692,13 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 				b = next.apply(b);
 				if (b == top)
 					break;
-				assert0(vToSMFId[b.base] == -1);
+				assert vToSMFId[b.base] == -1;
 				b.root = -1;
 				b.treeParentEdge = null;
 				b.isEven = false;
 				find1Split(b);
 				b.deltaOdd = B.deltaOdd;
-				assert0(b.growHandle == null);
+				assert b.growHandle == null;
 				EdgeEvent<E> inEdgeEvent = find1.getKey(find1.findMin(vToFind1Idx[b.base]));
 				if (inEdgeEvent != null)
 					b.growHandle = growEvents.insert(inEdgeEvent);
@@ -725,22 +725,22 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 			Blossom<E>[] bs = new Blossom[] { U, V };
 			for (Blossom<E> b : bs) {
 
-				assert0(b.isEven);
+				assert b.isEven;
 				Edge<EdgeVal<E>> e = null;
 				for (int u = b == U ? bridge.u() : bridge.v();;) {
-					assert0(b.isEven);
+					assert b.isEven;
 					augmentPath(b, u);
 					if (e != null) {
 						matched[e.u()] = e;
 						matched[e.v()] = e.val().twin;
-						assert0(matched[e.u()] != null);
-						assert0(matched[e.v()] != null);
+						assert matched[e.u()] != null;
+						assert matched[e.v()] != null;
 					}
 					if (b.treeParentEdge == null)
 						break;
 					// Odd
 					b = topBlossom(b.treeParentEdge.v());
-					assert0(!b.isEven);
+					assert !b.isEven;
 					u = b.treeParentEdge.u();
 					augmentPath(b, u);
 
@@ -779,28 +779,28 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 				b2 = b1.right;
 				xy = b1.toRightEdge;
 			} else {
-				assert0(b0.left == b1);
+				assert b0.left == b1;
 				b2 = b1.left;
 				xy = b1.toLeftEdge;
 			}
 
-			assert0(b0 != b1);
-			assert0(b1 != b2);
-			assert0(b2 != b0);
-			assert0(b1.base == v);
+			assert b0 != b1;
+			assert b1 != b2;
+			assert b2 != b0;
+			assert b1.base == v;
 
 			augmentPath(b1, xy.u());
 			augmentPath(B, xy.v());
 			matched[xy.u()] = xy;
 			matched[xy.v()] = xy.val().twin;
 
-			assert0(matched[xy.u()].u() == xy.u());
-			assert0(matched[xy.u()].v() == xy.v());
-			assert0(matched[xy.v()].u() == xy.v());
-			assert0(matched[xy.v()].u() == xy.v());
+			assert matched[xy.u()].u() == xy.u();
+			assert matched[xy.u()].v() == xy.v();
+			assert matched[xy.v()].u() == xy.v();
+			assert matched[xy.v()].u() == xy.v();
 
-			assert0(matched[b1.base] != null);
-			assert0(matched[b2.base] != null);
+			assert matched[b1.base] != null;
+			assert matched[b2.base] != null;
 
 			for (Blossom<E> p = b0.parent;; p = p.parent) {
 				if (p == B.parent)
@@ -975,7 +975,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 		}
 
 		private double dualVal(Blossom<E> b) {
-			assert0(!b.isSingleton());
+			assert !b.isSingleton();
 			double zb = b.z0;
 			if (b.parent == null && b.root != -1)
 				zb += 2 * (b.isEven ? +(delta - b.delta0) : -(delta - b.delta1));
@@ -984,7 +984,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 
 		private double growEventsKey(EdgeEvent<E> event) {
 			int v = event.e.v();
-			assert0(!isEven(v));
+			assert !isEven(v);
 			return find1(v).deltaOdd + event.slack;
 		}
 
@@ -999,7 +999,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 					EdgeEvent<E> event = vToGrowEvent[v] = new EdgeEvent<>(e, slackBar);
 					if (!find1.decreaseKey(vToFind1Idx[v], event))
 						continue;
-					assert0(find1.getKey(find1.findMin(vToFind1Idx[v])) == event);
+					assert find1.getKey(find1.findMin(vToFind1Idx[v])) == event;
 
 					Blossom<E> V = find1(v);
 					if (!isInTree(V)) {
@@ -1013,7 +1013,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 		}
 
 		private void insertBlossomEventsFromVertex(int u) {
-			assert0(isEven(u));
+			assert isEven(u);
 			Blossom<E> U = find0(u);
 			double Yu = delta + dualVal(u);
 			for (Edge<EdgeVal<E>> e : Utils.iterable(g.edges(u))) {
@@ -1026,7 +1026,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 				double Yv = delta + dualVal(v);
 				double slackBar = Yu + Yv - w.weight(e.val().e);
 
-				assert0(slackBar >= 0);
+				assert slackBar >= 0;
 				smf.addNonTreeEdge(vToSMFId[e.u()], vToSMFId[e.v()], new EdgeEvent<>(e, slackBar));
 			}
 		};
@@ -1052,11 +1052,11 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 		private int smfAddLeaf(int v, int parentSmfId) {
 			int smfId = smf.addLeaf(parentSmfId);
 
-			assert0(vToSMFId[v] == -1);
+			assert vToSMFId[v] == -1;
 			vToSMFId[v] = smfId;
 
 			/* offset by -1 due to dummy root of roots */
-			assert0(smfIdToV[smfId - 1] == -1);
+			assert smfIdToV[smfId - 1] == -1;
 			smfIdToV[smfId - 1] = v;
 
 			return smfId;
@@ -1088,12 +1088,6 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 					bs[i] = b.treeParentEdge == null ? null : topBlossom(b.treeParentEdge.v());
 				}
 			}
-		}
-
-		/* TODO replace with regular assert */
-		private static void assert0(boolean condition) {
-			if (!condition)
-				throw new InternalError();
 		}
 
 	}
