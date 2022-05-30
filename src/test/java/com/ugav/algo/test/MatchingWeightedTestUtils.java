@@ -3,6 +3,7 @@ package com.ugav.algo.test;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Supplier;
 
 import com.ugav.algo.Graph;
 import com.ugav.algo.Graph.DirectedType;
@@ -28,7 +29,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 		throw new InternalError();
 	}
 
-	static boolean randGraphsBipartiteWeighted(MatchingWeighted algo) {
+	static boolean randGraphsBipartiteWeighted(Supplier<? extends MatchingWeighted> builder) {
 		List<Phase> phases = List.of(phase(256, 8, 8, 8), phase(128, 16, 16, 64), phase(12, 128, 128, 128),
 				phase(8, 128, 128, 512), phase(4, 1024, 1024, 1024), phase(2, 1024, 1024, 8192));
 		return runTestMultiple(phases, args -> {
@@ -40,6 +41,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 			GraphsTestUtils.assignRandWeightsIntNeg(g);
 			WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
 
+			MatchingWeighted algo = builder.get();
 			MatchingWeighted validationAlgo = algo instanceof MatchingWeightedBipartiteSSSP
 					? MatchingWeightedBipartiteHungarianMethod.getInstance()
 					: MatchingWeightedBipartiteSSSP.getInstance();
@@ -47,7 +49,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 		});
 	}
 
-	static boolean randBipartiteGraphsWeightedPerfect(MatchingWeighted algo) {
+	static boolean randBipartiteGraphsWeightedPerfect(Supplier<? extends MatchingWeighted> builder) {
 		List<Phase> phases = List.of(phase(256, 8, 8, 8), phase(128, 16, 16, 64), phase(12, 128, 128, 128),
 				phase(8, 128, 128, 512), phase(4, 1024, 1024, 1024));
 		return runTestMultiple(phases, args -> {
@@ -60,6 +62,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 			GraphsTestUtils.assignRandWeightsInt(g, -maxWeight, maxWeight / 4);
 			WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
 
+			MatchingWeighted algo = builder.get();
 			Matching validationUnweightedAlgo = MatchingBipartiteHopcroftKarp1973.getInstance();
 			MatchingWeighted validationWeightedAlgo = algo instanceof MatchingWeightedBipartiteHungarianMethodTest
 					? MatchingWeightedGabow2017.getInstance()
@@ -68,7 +71,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 		});
 	}
 
-	static boolean randGraphsWeighted(MatchingWeighted algo) {
+	static boolean randGraphsWeighted(Supplier<? extends MatchingWeighted> builder) {
 		List<Phase> phases = List.of(phase(256, 8, 8, 8), phase(128, 16, 16, 64), phase(12, 128, 128, 128),
 				phase(8, 128, 128, 512), phase(4, 1024, 1024, 1024), phase(2, 1024, 1024, 8192));
 		return runTestMultiple(phases, args -> {
@@ -79,6 +82,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 			GraphsTestUtils.assignRandWeightsIntNeg(g);
 			WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
 
+			MatchingWeighted algo = builder.get();
 			// have nothing other than MatchingWeightedGabow2017, at least shuffle graph
 			MatchingWeighted validationAlgo = new MatchingWeightedShuffled(MatchingWeightedGabow2017.getInstance());
 
@@ -107,7 +111,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 		return true;
 	}
 
-	static boolean randGraphsWeightedPerfect(MatchingWeighted algo) {
+	static boolean randGraphsWeightedPerfect(Supplier<? extends MatchingWeighted> builder) {
 		List<Phase> phases = List.of(phase(256, 8, 8, 8), phase(128, 16, 16, 64), phase(12, 128, 128, 128),
 				phase(8, 128, 128, 512), phase(4, 1024, 1024, 1024));
 		return runTestMultiple(phases, args -> {
@@ -119,6 +123,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 			GraphsTestUtils.assignRandWeightsInt(g, -maxWeight, maxWeight / 4);
 			WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
 
+			MatchingWeighted algo = builder.get();
 			Matching validationUnweightedAlgo = MatchingGabow1976.getInstance();
 			MatchingWeighted validationWeightedAlgo = new MatchingWeightedShuffled(
 					MatchingWeightedGabow2017.getInstance());

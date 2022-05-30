@@ -2,6 +2,7 @@ package com.ugav.algo.test;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Supplier;
 
 import com.ugav.algo.Graph.DirectedType;
 import com.ugav.algo.Graph.Edge;
@@ -35,7 +36,7 @@ class MatchingBipartiteTestUtils extends TestUtils {
 		return g;
 	}
 
-	static boolean randBipartiteGraphs(Matching algo) {
+	static boolean randBipartiteGraphs(Supplier<? extends Matching> builder) {
 		List<Phase> phases = List.of(phase(256, 4, 4, 4), phase(128, 16, 16, 64), phase(16, 128, 128, 128),
 				phase(16, 128, 128, 512), phase(4, 1024, 1024, 1024), phase(4, 1024, 1024, 8192));
 		return runTestMultiple(phases, args -> {
@@ -43,6 +44,8 @@ class MatchingBipartiteTestUtils extends TestUtils {
 			int tn = args[1];
 			int m = args[2];
 			GraphBipartite<Void> g = randGraphBipartite(sn, tn, m);
+
+			Matching algo = builder.get();
 			int expeced = calcExpectedMaxMatching(g);
 			return testBipartiteAlgo(algo, g, expeced);
 		});

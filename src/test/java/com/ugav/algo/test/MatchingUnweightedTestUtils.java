@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import com.ugav.algo.Graph;
 import com.ugav.algo.Graph.Edge;
@@ -18,7 +19,7 @@ class MatchingUnweightedTestUtils extends TestUtils {
 		throw new InternalError();
 	}
 
-	static boolean randGraphs(Matching algo) {
+	static boolean randGraphs(Supplier<? extends Matching> builder) {
 		List<Phase> phases = List.of(phase(256, 16, 8), phase(256, 16, 16), phase(128, 32, 32), phase(128, 32, 64),
 				phase(64, 64, 64), phase(64, 64, 128), phase(16, 256, 256), phase(16, 256, 512), phase(4, 2048, 2048),
 				phase(4, 2048, 8192));
@@ -27,6 +28,7 @@ class MatchingUnweightedTestUtils extends TestUtils {
 			int m = args[1];
 			Graph<Void> g = GraphsTestUtils.randGraph(n, m);
 
+			Matching algo = builder.get();
 			int expeced = calcExpectedMaxMatching(g);
 			return testAlgo(algo, g, expeced);
 		});
