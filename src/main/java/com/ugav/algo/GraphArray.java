@@ -104,6 +104,8 @@ public class GraphArray<E> extends GraphAbstract<E> {
 
 	@Override
 	public void addEdge(Edge<E> e) {
+		if (e.u() >= vertices() || e.v() >= vertices())
+			throw new IllegalArgumentException("Invalid edge: " + e);
 		Edge<E> twin = e.twin();
 		if (isDirected() && twin != null)
 			throw new IllegalArgumentException("twin edges are only supported in undirected graphs");
