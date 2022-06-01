@@ -38,6 +38,8 @@ Algo is a collection of algorithms implemented in Java. It contains mostly algor
 | Maximum matching bipartite weighted SSSP | O(m n + n^2 log n) |
 | Maximum matching bipartite weighted Hungarian method | O(m n + n^2 log n) |
 | Maximum matching general weighted Gabow2017 | O(m n + n^2 log n) |
+| Travelling Salesman Problem (TSP) 2-appx using MST | O(n^2) |
+| Travelling Salesman Problem (TSP) 3/2-appx using maximum matching | O(n^3) |
 
 ### Additional Utils
 

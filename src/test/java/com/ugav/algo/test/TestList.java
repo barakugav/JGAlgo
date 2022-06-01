@@ -33,7 +33,8 @@ class TestList {
 			LCAGabow2017Test.class,
 			TPMKomlos1985King1997Hagerup2009Test.class,
 			SubtreeMergeFindminTest.class,
-			MaxFlowEdmondsKarpTest.class);
+			MaxFlowEdmondsKarpTest.class,
+			TSPMetricTest.class);
 
 	private static final Collection<Class<?>> SHORTEST_PATH_TESTS = List.of(
 			SSSPDijkstraTest.class,
