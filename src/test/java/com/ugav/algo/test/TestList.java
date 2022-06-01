@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class TestList {
+class TestList {
 
 	private static final Collection<Class<?>> RMQ_TESTS = List.of(
 			RMQLookupTableTest.class,

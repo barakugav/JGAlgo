@@ -6,24 +6,56 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @SuppressWarnings("boxing")
 public class TestRunner {
 
-	public static void main(String[] args) {
-		runTests();
+	private TestContext currentTest;
+
+	private TestRunner() {
 	}
 
-	private static boolean runTest(TestObj test) {
+	private static final TestRunner INSTANCE = new TestRunner();
+
+	static TestRunner getInstance() {
+		return INSTANCE;
+	}
+
+	boolean runTests() {
+		Collection<TestContext> tests = getTests();
+
+		boolean totalPassed = true;
+		long t0Total = System.currentTimeMillis();
+
+		for (TestContext test : tests) {
+			currentTest = test;
+			totalPassed &= runTest();
+			currentTest = null;
+		}
+
+		long runTime = System.currentTimeMillis() - t0Total;
+		int runTimeMin = (int) (runTime / 60000);
+		int runTimeSec = (int) (runTime / 1000) % 60;
+		int runTimeCentisec = (int) (runTime / 10) % 100;
+		System.out.println("\n" + String.format("[%02d:%02d:%02d]", runTimeMin, runTimeSec, runTimeCentisec)
+				+ " Total: " + (totalPassed ? "passed." : "failure!"));
+
+		return totalPassed;
+	}
+
+	private boolean runTest() {
+		TestContext test = currentTest;
 		String testName = test.getTestName();
 		TestUtils.initTestRand(testName);
 		long t0Test = System.currentTimeMillis();
 		boolean passed;
 		try {
-			passed = test.invoke();
+			passed = test.run();
 		} catch (Throwable e) {
 			e.printStackTrace();
 			passed = false;
@@ -40,43 +72,20 @@ public class TestRunner {
 		return passed;
 	}
 
-	public static boolean runTests() {
-		Collection<TestObj> tests = getTests();
-
-		boolean totalPassed = true;
-		long t0Total = System.currentTimeMillis();
-
-		for (TestObj test : tests)
-			totalPassed &= runTest(test);
-
-		long runTime = System.currentTimeMillis() - t0Total;
-		int runTimeMin = (int) (runTime / 60000);
-		int runTimeSec = (int) (runTime / 1000) % 60;
-		int runTimeCentisec = (int) (runTime / 10) % 100;
-		System.out.println("\n" + String.format("[%02d:%02d:%02d]", runTimeMin, runTimeSec, runTimeCentisec)
-				+ " Total: " + (totalPassed ? "passed." : "failure!"));
-
-		return totalPassed;
+	TestContext getCurrentTest() {
+		if (currentTest == null)
+			throw new IllegalStateException();
+		return currentTest;
 	}
 
-	private static Collection<TestObj> getTests() {
-		List<TestObj> tests = new ArrayList<>();
-		for (Method testMethod : getTestMethods())
-			tests.add(new TestObj(testMethod));
-		return tests;
-	}
+	private static Collection<TestContext> getTests() {
+		Set<Method> testMethodsSet = new HashSet<>();
+		for (Class<?> testClass : TestList.TEST_CLASSES)
+			for (Method classTest : getAnnotatedMethods(testClass, Test.class))
+				testMethodsSet.add(classTest);
 
-	private static Collection<Method> getTestMethods() {
-		Set<Method> testMethods = new HashSet<>();
-
-		for (Class<?> testClass : TestList.TEST_CLASSES) {
-			Collection<Method> classTests = getAnnotatedMethods(testClass, Test.class);
-			for (Method classTest : classTests)
-				testMethods.add(classTest);
-		}
-
-		List<Method> testMethodsSorted = new ArrayList<>(testMethods);
-		testMethodsSorted.sort((m1, m2) -> {
+		List<Method> testMethods = new ArrayList<>(testMethodsSet);
+		testMethods.sort((m1, m2) -> {
 			Class<?> c1 = m1.getDeclaringClass();
 			Class<?> c2 = m2.getDeclaringClass();
 
@@ -87,33 +96,33 @@ public class TestRunner {
 			return m1.getName().compareToIgnoreCase(m2.getName());
 		});
 
-		return testMethodsSorted;
+		List<TestContext> tests = new ArrayList<>();
+		for (Method testMethod : testMethods)
+			tests.add(new TestContext(testMethod));
+		return tests;
 	}
 
 	private static Collection<Method> getAnnotatedMethods(Class<?> testClass, Class<? extends Annotation> annotation) {
 		Collection<Method> methods = new ArrayList<>();
-
-		for (Method method : testClass.getDeclaredMethods()) {
-			if (method.isAnnotationPresent(annotation)) {
-				// Annotation annotInstance = method.getAnnotation(annotation);
+		for (Method method : testClass.getDeclaredMethods())
+			if (method.isAnnotationPresent(annotation))
 				methods.add(method);
-			}
-		}
-
 		return methods;
 	}
 
-	private static class TestObj {
+	static class TestContext {
 
 		private final Method testMethod;
+		private final Map<String, Object> userAttributes;
 
-		TestObj(Method testMethod) {
+		TestContext(Method testMethod) {
 			if (!Modifier.isStatic(testMethod.getModifiers()))
 				throw new IllegalArgumentException("Test method must be static " + getTestName(testMethod));
 			this.testMethod = testMethod;
+			userAttributes = new HashMap<>();
 		}
 
-		boolean invoke() throws Throwable {
+		private boolean run() throws Throwable {
 			try {
 				return (Boolean) testMethod.invoke(null);
 			} catch (InvocationTargetException e) {
@@ -135,12 +144,25 @@ public class TestRunner {
 			return "[" + className + "." + methodName + "]";
 		}
 
+		void setAttribute(String key, Object value) {
+			userAttributes.put(key, value);
+		}
+
+		@SuppressWarnings("unchecked")
+		<V> V getAttribute(String key) {
+			return (V) userAttributes.get(key);
+		}
+
 		private static String getTestName(Method testMethod) {
 			String classname = testMethod.getDeclaringClass().getName();
 			String methodName = testMethod.getName();
 			return classname + "." + methodName;
 		}
 
+	}
+
+	public static void main(String[] args) {
+		getInstance().runTests();
 	}
 
 }

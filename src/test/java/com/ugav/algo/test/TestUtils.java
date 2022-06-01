@@ -137,6 +137,7 @@ class TestUtils {
 		int phaseIdx = 0;
 		for (Phase phase : phases) {
 			for (int iter = 0; iter < phase.repeat; iter++) {
+				setTestMultipleIdxAttr(phaseIdx, iter);
 				boolean passed;
 				try {
 					passed = test.test(phase.args);
@@ -152,6 +153,23 @@ class TestUtils {
 			phaseIdx++;
 		}
 		return true;
+	}
+
+	private static void setTestMultipleIdxAttr(int phase, int iter) {
+		TestRunner.getInstance().getCurrentTest().setAttribute("testMultipleIdx", new TestMultipleIdx(phase, iter));
+	}
+
+	static TestMultipleIdx getTestMultipleIdx() {
+		return TestRunner.getInstance().getCurrentTest().getAttribute("testMultipleIdx");
+	}
+
+	static class TestMultipleIdx {
+		final int phase, iter;
+
+		private TestMultipleIdx(int phase, int iter) {
+			this.phase = phase;
+			this.iter = iter;
+		}
 	}
 
 	static long nextRandSeed() {

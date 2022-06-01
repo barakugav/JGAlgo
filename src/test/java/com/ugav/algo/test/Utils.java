@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Random;
 
-public class Utils {
+class Utils {
 
 	static void printArr(int a[]) {
 		printArr(a, true);
