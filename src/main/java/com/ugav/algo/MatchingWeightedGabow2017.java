@@ -26,6 +26,8 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 
 	private final DebugPrintsManager debugPrintManager;
 
+	private static final double EPS = 0.00001;
+
 	public MatchingWeightedGabow2017() {
 		debugPrintManager = new DebugPrintsManager();
 	}
@@ -400,7 +402,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 						break mainLoop;
 
 					debug.print("delta " + deltaNext + " (+" + (deltaNext - delta) + ")");
-					assert deltaNext >= delta;
+					assert deltaNext + EPS >= delta;
 					delta = deltaNext;
 
 					debug.printExec(() -> {
@@ -668,7 +670,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 			assert delta == expandEvents.findMin().expandDelta;
 			final Blossom<E> B = expandEvents.extractMin();
 
-			assert B.root != -1 && !B.isEven && !B.isSingleton() && dualVal(B) <= 0;
+			assert B.root != -1 && !B.isEven && !B.isSingleton() && dualVal(B) <= EPS;
 
 			int baseFind1Idx = vToFind1Idx[B.base];
 			int topFind1Idx = vToFind1Idx[B.treeParentEdge.u()];
