@@ -46,6 +46,7 @@ Algo is a collection of algorithms implemented in Java. It contains mostly algor
 | Connectivity components calculation (undirected), strongly connected (directed) | O(m + n) |
 | Topological sort calculation (DAG) | O(m + n) |
 | SSSP DAG | O(m + n) |
+| Euler Tour calculation | O(m + n) |
 | Array k'th element | O(n) |
 | Array bucket partition | O(n log k) where k is the bucket size |
 | Bits Lookup tables (bit count, ith bit, ctz) | O(n) preprocessing, O(1) query |

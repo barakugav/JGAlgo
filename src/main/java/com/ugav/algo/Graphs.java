@@ -2,12 +2,16 @@ package com.ugav.algo;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
+import java.util.function.IntConsumer;
 
 import com.ugav.algo.Graph.DirectedType;
 import com.ugav.algo.Graph.Edge;
@@ -442,6 +446,82 @@ public class Graphs {
 			parent = u;
 			u = v;
 		}
+	}
+
+	public static int[] calcDegree(Graph<?> g) {
+		return calcDegree(g.edges(), g.vertices());
+	}
+
+	public static int[] calcDegree(Collection<? extends Edge<?>> edges, int n) {
+		int[] degree = new int[n];
+		for (Edge<?> e : edges) {
+			degree[e.u()]++;
+			degree[e.v()]++;
+		}
+		return degree;
+	}
+
+	public static <E> List<Edge<E>> calcEulerianTour(Graph<E> g) {
+		int n = g.vertices();
+
+		int[] degree = calcDegree(g);
+		int start = -1, end = -1;
+		for (int u = 0; u < n; u++) {
+			if (degree[u] % 2 == 0)
+				continue;
+			if (start == -1)
+				start = u;
+			else if (end == -1)
+				end = u;
+			else
+				throw new IllegalArgumentException(
+						"More than two vertices have an odd degree (" + start + ", " + end + ", " + u + ")");
+		}
+		if (start != -1 && end == -1)
+			throw new IllegalArgumentException(
+					"Eulerian tour exists only if all vertices have even degree or only two vertices have odd degree");
+		if (start == -1)
+			start = 0;
+
+		Function<Edge<E>, Edge<E>> edgeID = g.isDirected() ? Function.identity() : e -> {
+			return System.identityHashCode(e) < System.identityHashCode(e.twin()) ? e : e.twin();
+		};
+
+		List<Edge<E>> tour = new ArrayList<>(g.edges().size());
+		Set<Edge<E>> usedEdges = Collections.newSetFromMap(new IdentityHashMap<>());
+		@SuppressWarnings("unchecked")
+		Iterator<Edge<E>>[] iters = new Iterator[n];
+		for (int u = 0; u < n; u++)
+			iters[u] = g.edges(u);
+
+		List<Edge<E>> queue = new ArrayList<>();
+		IntConsumer findCycle = u -> {
+			for (;;) {
+				Edge<E> e;
+				for (Iterator<Edge<E>> iter = iters[u];;) {
+					if (!iter.hasNext())
+						return;
+					e = iter.next();
+					if (!usedEdges.contains(edgeID.apply(e)))
+						break;
+				}
+				usedEdges.add(edgeID.apply(e));
+				queue.add(e);
+				u = e.v();
+			}
+		};
+
+		findCycle.accept(start);
+		while (!queue.isEmpty()) {
+			Edge<E> e = queue.get(queue.size() - 1);
+			assert !iters[e.v()].hasNext();
+			tour.add(e);
+			queue.remove(queue.size() - 1);
+
+			findCycle.accept(e.u());
+		}
+		Collections.reverse(tour);
+		return tour;
 	}
 
 	public static <E> String formatAdjacencyMatrix(Graph<E> g) {
