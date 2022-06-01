@@ -45,7 +45,7 @@ public class MSTBoruvka1926 implements MST {
 				continue;
 			contractedG.addEdge(u, v).val(edgeValAssigner.apply(e));
 		}
-		return Pair.valueOf(contractedG, mstEdges);
+		return Pair.of(contractedG, mstEdges);
 	}
 
 	private static <E> Triple<int[], Integer, Collection<Edge<E>>> calcMST0(Graph<E> g, Graph.WeightFunction<E> w,

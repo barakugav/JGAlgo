@@ -287,7 +287,7 @@ public class Graphs {
 			}
 			compNum++;
 		}
-		return Pair.valueOf(Integer.valueOf(compNum), comp);
+		return Pair.of(Integer.valueOf(compNum), comp);
 	}
 
 	/**
@@ -359,7 +359,7 @@ public class Graphs {
 					break;
 			}
 		}
-		return Pair.valueOf(Integer.valueOf(compNum), comp);
+		return Pair.of(Integer.valueOf(compNum), comp);
 	}
 
 	public static <E> int[] calcTopologicalSortingDAG(Graph<E> g) {

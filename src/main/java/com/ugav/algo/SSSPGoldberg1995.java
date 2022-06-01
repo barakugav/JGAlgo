@@ -97,7 +97,7 @@ public class SSSPGoldberg1995 implements SSSP {
 							gNeg.removeEdge(e);
 							List<Edge<E>> negCycle = new ArrayList<>(Graphs.findPath(gNeg, e.v(), u));
 							negCycle.add(e);
-							return Pair.valueOf(null, negCycle);
+							return Pair.of(null, negCycle);
 						}
 					}
 				}
@@ -167,7 +167,7 @@ public class SSSPGoldberg1995 implements SSSP {
 			} while (true);
 		}
 
-		return Pair.valueOf(potential, null);
+		return Pair.of(potential, null);
 	}
 
 	private static <E> int weight(Edge<E> e, WeightFunctionInt<E> w, int[] potential, int weightMask) {

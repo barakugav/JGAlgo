@@ -25,10 +25,10 @@ public class MaxFlowEdmondsKarpTest extends TestUtils {
 			do {
 				w = rand.nextDouble() * 100;
 			} while (Math.abs(w) < 1E-10);
-			e.val(Pair.valueOf(w, 0.0));
+			e.val(Pair.of(w, 0.0));
 		}
 
-		return Pair.valueOf(g, new FlowNetwork<>() {
+		return Pair.of(g, new FlowNetwork<>() {
 
 			@Override
 			public double getCapacity(Edge<Pair<Double, Double>> e) {

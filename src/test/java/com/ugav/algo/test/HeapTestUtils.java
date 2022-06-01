@@ -55,7 +55,7 @@ class HeapTestUtils extends TestUtils {
 			for (int i = 0; i < hCount; i++) {
 				Heap<Integer> h = heapBuilder.get();
 				HeapTracker tracker = new HeapTracker();
-				hs[i] = Pair.valueOf(h, tracker);
+				hs[i] = Pair.of(h, tracker);
 				if (!testHeap(h, tracker, 16, 16, TestMode.InsertFirst, Math.max(16, (int) Math.sqrt(hCount * 32))))
 					return false;
 			}

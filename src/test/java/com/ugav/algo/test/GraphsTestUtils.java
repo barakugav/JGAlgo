@@ -171,7 +171,7 @@ class GraphsTestUtils extends TestUtils {
 						ut = vt;
 						vt = temp;
 					}
-					if (!existingEdges.add(Pair.valueOf(Integer.valueOf(ut), Integer.valueOf(vt))))
+					if (!existingEdges.add(Pair.of(Integer.valueOf(ut), Integer.valueOf(vt))))
 						continue;
 				}
 

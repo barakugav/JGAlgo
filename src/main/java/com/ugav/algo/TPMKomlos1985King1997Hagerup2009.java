@@ -283,7 +283,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 				G.clear();
 				G = gNext;
 			}
-			return Pair.valueOf(t, Integer.valueOf(vTv[0]));
+			return Pair.of(t, Integer.valueOf(vTv[0]));
 		}
 
 		private static <E> int[] splitQueriesIntoLCAQueries(Graph<E> t, int root, int[] queries, int queriesNum) {
@@ -316,7 +316,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 				return true;
 			});
 
-			return Pair.valueOf(edgeToParent, depths);
+			return Pair.of(edgeToParent, depths);
 		}
 
 		private static <E> int[] calcQueriesPerVertex(int[] lcaQueries, int[] depths, Edge<E>[] edgeToParent) {
