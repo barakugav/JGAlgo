@@ -1,8 +1,7 @@
 package com.ugav.algo.test;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.IdentityHashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +13,6 @@ import java.util.function.Supplier;
 
 import com.ugav.algo.Heap;
 import com.ugav.algo.HeapDirectAccessed;
-import com.ugav.algo.Pair;
 
 class HeapTestUtils extends TestUtils {
 
@@ -63,42 +61,41 @@ class HeapTestUtils extends TestUtils {
 	}
 
 	private static boolean testMeld(Supplier<? extends Heap<Integer>> heapBuilder, boolean orderedValues, int hCount) {
-		Set<Pair<Heap<Integer>, HeapTracker>> heaps = Collections.newSetFromMap(new IdentityHashMap<>());
+		Set<HeapTracker> heaps = new HashSet<>();
+		HeapTrackerIdGenerator heapTrackerIdGen = new HeapTrackerIdGenerator(nextRandSeed());
 
 		int elm = 0;
 		for (int i = 0; i < hCount; i++) {
-			Heap<Integer> h = heapBuilder.get();
-			HeapTracker tracker = new HeapTracker();
-			heaps.add(Pair.of(h, tracker));
+			HeapTracker h = new HeapTracker(heapBuilder.get(), heapTrackerIdGen.nextId());
+			heaps.add(h);
 			if (!orderedValues) {
-				if (!testHeap(h, tracker, 16, 16, TestMode.InsertFirst, Math.max(16, (int) Math.sqrt(hCount * 32))))
+				if (!testHeap(h, 16, 16, TestMode.InsertFirst, Math.max(16, (int) Math.sqrt(hCount * 32))))
 					return false;
 			} else {
 				int[] vals = new int[16];
 				for (int j = 0; j < 16; j++)
 					vals[j] = elm++;
-				if (!testHeap(h, tracker, 16, TestMode.InsertFirst, vals))
+				if (!testHeap(h, 16, TestMode.InsertFirst, vals))
 					return false;
 			}
 		}
 
 		while (heaps.size() > 1) {
 			/* meld half of the heaps */
-			Set<Pair<Heap<Integer>, HeapTracker>> heapsNext = Collections.newSetFromMap(new IdentityHashMap<>());
-			List<Pair<Heap<Integer>, HeapTracker>> heapsSuffled = new ArrayList<>(heaps);
+			Set<HeapTracker> heapsNext = new HashSet<>();
+			List<HeapTracker> heapsSuffled = new ArrayList<>(heaps);
 
 			for (int i = 0; i < heapsSuffled.size() / 2; i++) {
-				Pair<Heap<Integer>, HeapTracker> h1 = heapsSuffled.get(i * 2);
-				Pair<Heap<Integer>, HeapTracker> h2 = heapsSuffled.get(i * 2 + 1);
+				HeapTracker h1 = heapsSuffled.get(i * 2);
+				HeapTracker h2 = heapsSuffled.get(i * 2 + 1);
 
-				h1.e1.meld(h2.e1);
-				h1.e2.meld(h2.e2);
-				heapsNext.add(Pair.of(h1.e1, h1.e2));
+				h1.heap.meld(h2.heap);
+				h1.meld(h2);
+				heapsNext.add(h1);
 
 				/* make some OPs on the united heap */
 				int opsNum = 4096 / heaps.size();
-				if (!testHeap(h1.e1, h1.e2, opsNum, opsNum, TestMode.InsertFirst,
-						Math.max(16, (int) Math.sqrt(hCount * 32))))
+				if (!testHeap(h1, opsNum, opsNum, TestMode.InsertFirst, Math.max(16, (int) Math.sqrt(hCount * 32))))
 					return false;
 			}
 			heaps.clear();
@@ -127,13 +124,29 @@ class HeapTestUtils extends TestUtils {
 		Insert, Remove, FindMin, ExtractMin, DecreaseKey
 	}
 
-	@SuppressWarnings("boxing")
-	static class HeapTracker {
+	static class HeapTrackerIdGenerator {
+		private final RandomIntUnique rand;
 
+		HeapTrackerIdGenerator(long seed) {
+			rand = new RandomIntUnique(0, Integer.MAX_VALUE, seed);
+		}
+
+		int nextId() {
+			return rand.next();
+		}
+	}
+
+	@SuppressWarnings("boxing")
+	static class HeapTracker implements Comparable<HeapTracker> {
+
+		private final int id;
+		final Heap<Integer> heap;
 		private final NavigableMap<Integer, Integer> insertedElms;
 		private final Random rand;
 
-		HeapTracker() {
+		HeapTracker(Heap<Integer> heap, int id) {
+			this.id = id;
+			this.heap = heap;
 			insertedElms = new TreeMap<>();
 			rand = new Random(nextRandSeed());
 		}
@@ -171,12 +184,10 @@ class HeapTestUtils extends TestUtils {
 			other.insertedElms.clear();
 		}
 
-		HeapTracker split(int x) {
-			HeapTracker newTracker = new HeapTracker();
+		void split(int x, HeapTracker newTracker) {
 			NavigableMap<Integer, Integer> newElems = insertedElms.tailMap(x, false);
 			newTracker.insertedElms.putAll(newElems);
 			newElems.clear();
-			return newTracker;
 		}
 
 		int randElement() {
@@ -189,6 +200,21 @@ class HeapTestUtils extends TestUtils {
 				x = X != null ? X : insertedElms.floorKey(x);
 			}
 			return x;
+		}
+
+		@Override
+		public int hashCode() {
+			return id;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			return o == this;
+		}
+
+		@Override
+		public int compareTo(HeapTracker o) {
+			return Integer.compare(id, o.id);
 		}
 
 	}
@@ -206,8 +232,8 @@ class HeapTestUtils extends TestUtils {
 			}
 		}
 
-		HeapTracker tracker = new HeapTracker();
-		if (!testHeap(heap, tracker, n, m, mode, Math.max(16, (int) Math.sqrt(n))))
+		HeapTracker tracker = new HeapTracker(heap, 0);
+		if (!testHeap(tracker, n, m, mode, Math.max(16, (int) Math.sqrt(n))))
 			return false;
 
 		if (clear) {
@@ -221,14 +247,13 @@ class HeapTestUtils extends TestUtils {
 		return true;
 	}
 
-	private static boolean testHeap(Heap<Integer> heap, HeapTracker tracker, int n, int m, TestMode mode,
-			int elementsBound) {
+	private static boolean testHeap(HeapTracker tracker, int n, int m, TestMode mode, int elementsBound) {
 		int[] elements = Utils.randArray(n, 0, elementsBound, nextRandSeed());
-		return testHeap(heap, tracker, m, mode, elements);
+		return testHeap(tracker, m, mode, elements);
 	}
 
 	@SuppressWarnings("boxing")
-	static boolean testHeap(Heap<Integer> heap, HeapTracker tracker, int m, TestMode mode, int[] values) {
+	static boolean testHeap(HeapTracker tracker, int m, TestMode mode, int[] values) {
 		Random rand = new Random(nextRandSeed());
 		int insertFirst = mode == TestMode.InsertFirst ? m / 2 : 0;
 
@@ -250,7 +275,7 @@ class HeapTestUtils extends TestUtils {
 				x = values[elmsToInsertIds[elmsToInsertCursor++]];
 
 				tracker.insert(x);
-				heap.insert(x);
+				tracker.heap.insert(x);
 				break;
 
 			case Remove:
@@ -259,7 +284,7 @@ class HeapTestUtils extends TestUtils {
 				x = tracker.randElement();
 
 				tracker.remove(x);
-				if (!heap.remove(x)) {
+				if (!tracker.heap.remove(x)) {
 					printTestStr("failed to remove: ", x, "\n");
 					return false;
 				}
@@ -270,7 +295,7 @@ class HeapTestUtils extends TestUtils {
 					continue;
 
 				expected = tracker.findMin();
-				actual = heap.findMin();
+				actual = tracker.heap.findMin();
 				if (actual != expected) {
 					printTestStr("failed findmin: ", expected, " != ", actual, "\n");
 					return false;
@@ -282,7 +307,7 @@ class HeapTestUtils extends TestUtils {
 					continue;
 
 				expected = tracker.extractMin();
-				actual = heap.extractMin();
+				actual = tracker.heap.extractMin();
 				if (actual != expected) {
 					printTestStr("failed extractmin: ", expected, " != ", actual, "\n");
 					return false;
@@ -296,7 +321,7 @@ class HeapTestUtils extends TestUtils {
 				if (x == 0)
 					continue;
 				int newVal = rand.nextInt(x);
-				HeapDirectAccessed<Integer> heap0 = (HeapDirectAccessed<Integer>) heap;
+				HeapDirectAccessed<Integer> heap0 = (HeapDirectAccessed<Integer>) tracker.heap;
 
 				tracker.decreaseKey(x, newVal);
 				heap0.decreaseKey(heap0.findHanlde(x), newVal);
@@ -308,9 +333,9 @@ class HeapTestUtils extends TestUtils {
 			opIdx++;
 		}
 
-		int expectedSize = heap.size();
+		int expectedSize = tracker.heap.size();
 		int actualSize = 0;
-		for (Iterator<Integer> it = heap.iterator(); it.hasNext();) {
+		for (Iterator<Integer> it = tracker.heap.iterator(); it.hasNext();) {
 			it.next();
 			actualSize++;
 		}

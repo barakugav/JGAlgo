@@ -486,7 +486,8 @@ public class Graphs {
 			start = 0;
 
 		Function<Edge<E>, Edge<E>> edgeID = g.isDirected() ? Function.identity() : e -> {
-			return System.identityHashCode(e) < System.identityHashCode(e.twin()) ? e : e.twin();
+			return (e.u() != e.v() ? e.u() < e.v() : System.identityHashCode(e) < System.identityHashCode(e.twin())) ? e
+					: e.twin();
 		};
 
 		List<Edge<E>> tour = new ArrayList<>(g.edges().size());

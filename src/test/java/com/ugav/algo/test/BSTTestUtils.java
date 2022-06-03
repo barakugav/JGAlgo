@@ -3,7 +3,7 @@ package com.ugav.algo.test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.IdentityHashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.NavigableSet;
 import java.util.Objects;
@@ -15,8 +15,8 @@ import java.util.function.Supplier;
 
 import com.ugav.algo.BST;
 import com.ugav.algo.HeapDirectAccessed.Handle;
-import com.ugav.algo.Pair;
 import com.ugav.algo.test.HeapTestUtils.HeapTracker;
+import com.ugav.algo.test.HeapTestUtils.HeapTrackerIdGenerator;
 import com.ugav.algo.test.HeapTestUtils.TestMode;
 
 class BSTTestUtils extends TestUtils {
@@ -98,6 +98,17 @@ class BSTTestUtils extends TestUtils {
 		return true;
 	}
 
+	static class BSTTracker extends HeapTracker {
+
+		final BST<Integer> tree;
+
+		BSTTracker(BST<Integer> tree, int id) {
+			super(tree, id);
+			this.tree = tree;
+		}
+
+	}
+
 	static boolean testSplit(Supplier<? extends BST<Integer>> treeBuilder) {
 		List<Phase> phases = List.of(phase(128, 8), phase(64, 32), phase(16, 128), phase(8, 256), phase(4, 4096));
 		return runTestMultiple(phases, args -> {
@@ -109,18 +120,18 @@ class BSTTestUtils extends TestUtils {
 	@SuppressWarnings("boxing")
 	private static boolean testSplit(Supplier<? extends BST<Integer>> treeBuilder, int tCount) {
 		Random rand = new Random(nextRandSeed());
-		Set<Pair<BST<Integer>, HeapTracker>> trees = Collections.newSetFromMap(new IdentityHashMap<>());
+		HeapTrackerIdGenerator heapTrackerIdGen = new HeapTrackerIdGenerator(nextRandSeed());
+		Set<BSTTracker> trees = new HashSet<>();
 
 		int elm = 0;
 		for (int i = 0; i < tCount; i++) {
 			BST<Integer> t = treeBuilder.get();
-			HeapTracker tracker = new HeapTracker();
-			trees.add(Pair.of(t, tracker));
+			BSTTracker tracker = new BSTTracker(t, heapTrackerIdGen.nextId());
 
 			int[] elms = new int[16];
 			for (int j = 0; j < 16; j++)
 				elms[j] = elm++;
-			if (!HeapTestUtils.testHeap(t, tracker, 16, TestMode.InsertFirst, elms))
+			if (!HeapTestUtils.testHeap(tracker, 16, TestMode.InsertFirst, elms))
 				return false;
 		}
 
@@ -129,16 +140,16 @@ class BSTTestUtils extends TestUtils {
 		Runnable meld = () -> {
 			if (trees.size() < 2)
 				return;
-			Set<Pair<BST<Integer>, HeapTracker>> treesNext = Collections.newSetFromMap(new IdentityHashMap<>());
-			List<Pair<BST<Integer>, HeapTracker>> heapsSuffled = new ArrayList<>(trees);
+			Set<BSTTracker> treesNext = new HashSet<>();
+			List<BSTTracker> heapsSuffled = new ArrayList<>(trees);
 			Collections.shuffle(heapsSuffled);
 
 			for (int i = 0; i < heapsSuffled.size() / 2; i++) {
-				Pair<BST<Integer>, HeapTracker> h1 = heapsSuffled.get(i * 2);
-				Pair<BST<Integer>, HeapTracker> h2 = heapsSuffled.get(i * 2 + 1);
-				h1.e1.meld(h2.e1);
-				h1.e2.meld(h2.e2);
-				treesNext.add(Pair.of(h1.e1, h1.e2));
+				BSTTracker h1 = heapsSuffled.get(i * 2);
+				BSTTracker h2 = heapsSuffled.get(i * 2 + 1);
+				h1.tree.meld(h2.tree);
+				h1.meld(h2);
+				treesNext.add(h1);
 			}
 			trees.clear();
 			trees.addAll(treesNext);
@@ -146,36 +157,37 @@ class BSTTestUtils extends TestUtils {
 		};
 
 		Runnable split = () -> {
-			Set<Pair<BST<Integer>, HeapTracker>> treesNext = Collections.newSetFromMap(new IdentityHashMap<>());
-			for (Pair<BST<Integer>, HeapTracker> h : trees) {
-				if (h.e1.isEmpty())
+			Set<BSTTracker> treesNext = new HashSet<>();
+			for (BSTTracker h : trees) {
+				if (h.tree.isEmpty())
 					continue;
 
-				Integer[] elms = h.e1.toArray(s -> new Integer[s]);
+				Integer[] elms = h.tree.toArray(s -> new Integer[s]);
 				Arrays.sort(elms, null);
 
 				double idx0 = 0.5 + rand.nextGaussian() / 10;
 				idx0 = idx0 < 0 ? 0 : idx0 > 1 ? 1 : idx0;
 				int idx = (int) ((elms.length - 1) * idx0);
 				Integer val = elms[idx];
-				Handle<Integer> handle = h.e1.findHanlde(val);
+				Handle<Integer> handle = h.tree.findHanlde(val);
 
-				BST<Integer> s = h.e1.split(handle);
-				HeapTracker t = h.e2.split(val);
+				BST<Integer> s = h.tree.split(handle);
+				BSTTracker t = new BSTTracker(s, heapTrackerIdGen.nextId());
+				h.split(val, t);
 				treesNext.add(h);
-				treesNext.add(Pair.of(s, t));
+				treesNext.add(t);
 			}
 		};
 
 		BooleanSupplier doRandOps = () -> {
-			for (Pair<BST<Integer>, HeapTracker> h : trees) {
+			for (BSTTracker h : trees) {
 				int opsNum = 4096 / trees.size();
 
 				int[] elms = new int[opsNum];
 				for (int i = 0; i < elms.length; i++)
 					elms[i] = elmGen.next();
 
-				if (!HeapTestUtils.testHeap(h.e1, h.e2, opsNum, TestMode.Normal, elms))
+				if (!HeapTestUtils.testHeap(h, opsNum, TestMode.Normal, elms))
 					return false;
 			}
 			return true;

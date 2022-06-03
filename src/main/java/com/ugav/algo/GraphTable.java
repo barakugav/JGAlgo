@@ -137,7 +137,11 @@ public class GraphTable<E> extends GraphAbstract<E> {
 
 	private static <E> boolean isApiEdge(Edge<E> e) {
 		Edge<E> twin = e.twin();
-		return twin == null || System.identityHashCode(e) < System.identityHashCode(twin);
+		if (twin == null)
+			return true;
+		if (e.u() != e.v())
+			return e.u() < e.v();
+		return System.identityHashCode(e) <= System.identityHashCode(twin);
 	}
 
 	private static class EdgeUndirectedImpl<E> extends EdgeImpl<E> {
