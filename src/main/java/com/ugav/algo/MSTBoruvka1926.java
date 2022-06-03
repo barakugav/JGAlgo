@@ -14,13 +14,7 @@ public class MSTBoruvka1926 implements MST {
 	 * O(mlogn)
 	 */
 
-	private MSTBoruvka1926() {
-	}
-
-	private static final MSTBoruvka1926 INSTANCE = new MSTBoruvka1926();
-
-	public static MSTBoruvka1926 getInstance() {
-		return INSTANCE;
+	public MSTBoruvka1926() {
 	}
 
 	@Override

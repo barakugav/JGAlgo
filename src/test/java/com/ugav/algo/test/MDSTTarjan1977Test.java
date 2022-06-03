@@ -49,13 +49,12 @@ public class MDSTTarjan1977Test extends TestUtils {
 
 	@Test
 	public static boolean randGraphUndirected() {
-		MDSTUndirectedWrapper algo = new MDSTUndirectedWrapper(MDSTTarjan1977.getInstance());
-		return MSTTestUtils.testRandGraph(algo);
+		return MSTTestUtils.testRandGraph(() -> new MDSTUndirectedWrapper(new MDSTTarjan1977()));
 	}
 
 	@Test
 	public static boolean randGraphDirected() {
-		return testRandGraph(MDSTTarjan1977.getInstance());
+		return testRandGraph(new MDSTTarjan1977());
 	}
 
 	private static boolean testRandGraph(MDST algo) {

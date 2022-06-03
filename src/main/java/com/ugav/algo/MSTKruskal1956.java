@@ -14,13 +14,7 @@ public class MSTKruskal1956 implements MST {
 	 * O(mlogn)
 	 */
 
-	private MSTKruskal1956() {
-	}
-
-	private static final MSTKruskal1956 INSTANCE = new MSTKruskal1956();
-
-	public static MSTKruskal1956 getInstance() {
-		return INSTANCE;
+	public MSTKruskal1956() {
 	}
 
 	@Override

@@ -13,13 +13,7 @@ public class MSTYao1976 implements MST {
 	 * O(mloglogn + nlogn)
 	 */
 
-	private MSTYao1976() {
-	}
-
-	private static final MSTYao1976 INSTANCE = new MSTYao1976();
-
-	public static MSTYao1976 getInstance() {
-		return INSTANCE;
+	public MSTYao1976() {
 	}
 
 	@Override

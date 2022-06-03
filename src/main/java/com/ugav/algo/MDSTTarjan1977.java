@@ -15,13 +15,7 @@ public class MDSTTarjan1977 implements MDST {
 	 * O(mlogn)
 	 */
 
-	private MDSTTarjan1977() {
-	}
-
-	private static final MDSTTarjan1977 INSTANCE = new MDSTTarjan1977();
-
-	public static MDSTTarjan1977 getInstance() {
-		return INSTANCE;
+	public MDSTTarjan1977() {
 	}
 
 	@SuppressWarnings("rawtypes")

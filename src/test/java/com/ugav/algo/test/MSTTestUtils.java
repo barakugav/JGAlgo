@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Supplier;
 
 import com.ugav.algo.Graph;
 import com.ugav.algo.Graph.Edge;
@@ -22,17 +23,18 @@ class MSTTestUtils extends TestUtils {
 		throw new InternalError();
 	}
 
-	static boolean testRandGraph(MST algo) {
+	static boolean testRandGraph(Supplier<? extends MST> builder) {
 		List<Phase> phases = List.of(phase(1, 0, 0), phase(128, 16, 32), phase(64, 64, 128), phase(32, 128, 256),
 				phase(8, 1024, 4096), phase(2, 4096, 16384));
 		return runTestMultiple(phases, args -> {
 			int n = args[0];
 			int m = args[1];
+			MST algo = builder.get();
 			return testRandGraph(algo, n, m);
 		});
 	}
 
-	static boolean testRandGraph(MST algo, int n, int m) {
+	private static boolean testRandGraph(MST algo, int n, int m) {
 		Graph<Integer> g = GraphsTestUtils.randGraph(n, m);
 		GraphsTestUtils.assignRandWeightsIntPos(g);
 
@@ -76,7 +78,7 @@ class MSTTestUtils extends TestUtils {
 		 * It's hard to verify MST, we use Kruskal algorithm to verify the others, and
 		 * assume its implementation is correct
 		 */
-		Collection<Edge<E>> expected = MSTKruskal1956.getInstance().calcMST(g, w);
+		Collection<Edge<E>> expected = new MSTKruskal1956().calcMST(g, w);
 
 		Comparator<Edge<E>> c = new MSTEdgeComparator<>(w);
 		Set<Edge<E>> actualSet = new TreeSet<>(c);

@@ -115,7 +115,7 @@ class TPMTestUtils extends TestUtils {
 					.cycles(true).connected(true).build();
 			GraphsTestUtils.assignRandWeightsIntPos(g);
 			WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
-			Collection<Edge<Integer>> mstEdges = MSTKruskal1956.getInstance().calcMST(g, w);
+			Collection<Edge<Integer>> mstEdges = new MSTKruskal1956().calcMST(g, w);
 
 			return MST.verifyMST(g, w, mstEdges, algo);
 		});
@@ -133,7 +133,7 @@ class TPMTestUtils extends TestUtils {
 			GraphsTestUtils.assignRandWeightsIntPos(g);
 			WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
 
-			Collection<Edge<Integer>> mstEdges = MSTKruskal1956.getInstance().calcMST(g, w);
+			Collection<Edge<Integer>> mstEdges = new MSTKruskal1956().calcMST(g, w);
 			Graph<Integer> mst = GraphArray.valueOf(g.vertices(), mstEdges, DirectedType.Undirected);
 
 			@SuppressWarnings("unchecked")

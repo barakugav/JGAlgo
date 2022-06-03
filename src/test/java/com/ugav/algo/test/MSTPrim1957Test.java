@@ -6,7 +6,7 @@ public class MSTPrim1957Test extends TestUtils {
 
 	@Test
 	public static boolean randGraph() {
-		return MSTTestUtils.testRandGraph(MSTPrim1957.getInstance());
+		return MSTTestUtils.testRandGraph(MSTPrim1957::new);
 	}
 
 }

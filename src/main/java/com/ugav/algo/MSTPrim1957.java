@@ -14,13 +14,7 @@ public class MSTPrim1957 implements MST {
 	 * O(m + nlogn)
 	 */
 
-	private MSTPrim1957() {
-	}
-
-	private static final MSTPrim1957 INSTANCE = new MSTPrim1957();
-
-	public static MSTPrim1957 getInstance() {
-		return INSTANCE;
+	public MSTPrim1957() {
 	}
 
 	@Override

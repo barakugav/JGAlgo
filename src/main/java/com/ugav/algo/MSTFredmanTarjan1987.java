@@ -16,13 +16,7 @@ public class MSTFredmanTarjan1987 implements MST {
 	 * O(mlog*n)
 	 */
 
-	private MSTFredmanTarjan1987() {
-	}
-
-	private static final MSTFredmanTarjan1987 INSTANCE = new MSTFredmanTarjan1987();
-
-	public static MSTFredmanTarjan1987 getInstance() {
-		return INSTANCE;
+	public MSTFredmanTarjan1987() {
 	}
 
 	@Override

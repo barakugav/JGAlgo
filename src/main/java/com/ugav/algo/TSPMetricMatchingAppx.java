@@ -30,7 +30,7 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 				g.addEdge(u, v).val(Double.valueOf(distances[u][v]));
 
 		/* Calculate MST */
-		Collection<Edge<Double>> mst = MSTPrim1957.getInstance().calcMST(g, Graphs.WEIGHT_FUNC_DEFAULT);
+		Collection<Edge<Double>> mst = new MSTPrim1957().calcMST(g, Graphs.WEIGHT_FUNC_DEFAULT);
 
 		/*
 		 * Build graph for the matching calculation, containing only vertices with odd

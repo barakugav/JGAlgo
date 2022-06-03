@@ -6,7 +6,7 @@ public class MSTFredmanTarjan1987Test extends TestUtils {
 
 	@Test
 	public static boolean randGraph() {
-		return MSTTestUtils.testRandGraph(MSTFredmanTarjan1987.getInstance());
+		return MSTTestUtils.testRandGraph(MSTFredmanTarjan1987::new);
 	}
 
 }

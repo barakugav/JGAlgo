@@ -23,11 +23,11 @@ public class MSTPrefTest extends TestUtils {
 	@Test
 	public static boolean randGraph() {
 		perfCompare(List.of(
-				Pair.of("MSTBoruvka1926", MSTBoruvka1926::getInstance),
-				Pair.of("MSTFredmanTarjan1987", MSTFredmanTarjan1987::getInstance),
-				Pair.of("MSTKruskal1956", MSTKruskal1956::getInstance),
-				Pair.of("MSTPrim1957", MSTPrim1957::getInstance),
-				Pair.of("MSTYao1976", MSTYao1976::getInstance),
+				Pair.of("MSTBoruvka1926", MSTBoruvka1926::new),
+				Pair.of("MSTFredmanTarjan1987", MSTFredmanTarjan1987::new),
+				Pair.of("MSTKruskal1956", MSTKruskal1956::new),
+				Pair.of("MSTPrim1957", MSTPrim1957::new),
+				Pair.of("MSTYao1976", MSTYao1976::new),
 				Pair.of("MSTKargerKleinTarjan1995", () -> new MSTKargerKleinTarjan1995(nextRandSeed()))),
 				(Supplier<? extends MST> builder) -> {
 					List<Phase> phases = List.of(phase(1, 0, 0), phase(1280, 16, 32), phase(640, 64, 128), phase(320, 128, 256),
