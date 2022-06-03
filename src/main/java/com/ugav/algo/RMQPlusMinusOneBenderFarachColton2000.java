@@ -30,17 +30,23 @@ public class RMQPlusMinusOneBenderFarachColton2000 extends RMQLinearAbstract {
 		Objects.requireNonNull(c);
 
 		interBlocksDs = new RMQ[calcBlockNum(n, getBlockSize(n))];
-		super.preprocessRMQ(c, n);
+		preprocessRMQOuterBlocks(c, n);
+		preprocessRMQInnerBlocks();
 	}
 
-	private static int[] calcDemoBlock(int key, int blockSize) {
-		int[] demoBlock = new int[blockSize];
+	private void preprocessRMQInnerBlocks() {
+		Map<Integer, RMQ> tables = new HashMap<>();
 
-		demoBlock[0] = 0;
-		for (int i = 1; i < demoBlock.length; i++)
-			demoBlock[i] = demoBlock[i - 1] + ((key & (1 << (i - 1))) != 0 ? -1 : 1);
+		for (int b = 0; b < blockNum; b++) {
+			int key = calcBlockKey(b);
 
-		return demoBlock;
+			interBlocksDs[b] = tables.computeIfAbsent(Integer.valueOf(key), k -> {
+				int[] demoBlock = calcDemoBlock(k.intValue(), blockSize);
+				RMQ innerRMQ = new RMQLookupTable();
+				innerRMQ.preprocessRMQ(new ArrayIntComparator(demoBlock), demoBlock.length);
+				return innerRMQ;
+			});
+		}
 	}
 
 	private int calcBlockKey(int b) {
@@ -56,20 +62,14 @@ public class RMQPlusMinusOneBenderFarachColton2000 extends RMQLinearAbstract {
 		return key;
 	}
 
-	@Override
-	void preprocessRMQInnerBlock() {
-		Map<Integer, RMQ> tables = new HashMap<>();
+	private static int[] calcDemoBlock(int key, int blockSize) {
+		int[] demoBlock = new int[blockSize];
 
-		for (int b = 0; b < blockNum; b++) {
-			int key = calcBlockKey(b);
+		demoBlock[0] = 0;
+		for (int i = 1; i < demoBlock.length; i++)
+			demoBlock[i] = demoBlock[i - 1] + ((key & (1 << (i - 1))) != 0 ? -1 : 1);
 
-			interBlocksDs[b] = tables.computeIfAbsent(Integer.valueOf(key), k -> {
-				int[] demoBlock = calcDemoBlock(k.intValue(), blockSize);
-				RMQ innerRMQ = new RMQLookupTable();
-				innerRMQ.preprocessRMQ(new ArrayIntComparator(demoBlock), demoBlock.length);
-				return innerRMQ;
-			});
-		}
+		return demoBlock;
 	}
 
 	@Override

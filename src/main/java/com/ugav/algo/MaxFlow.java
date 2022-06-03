@@ -4,16 +4,6 @@ import com.ugav.algo.Graph.Edge;
 
 public interface MaxFlow {
 
-	public static interface FlowNetwork<E> {
-
-		public double getCapacity(Edge<E> e);
-
-		public double getFlow(Edge<E> e);
-
-		public void setFlow(Edge<E> e, double flow);
-
-	}
-
 	/**
 	 * Calculate the maximum flow in a flow network
 	 *
@@ -26,5 +16,53 @@ public interface MaxFlow {
 	 * @return the maximum flow in the network from the source to the target
 	 */
 	public <E> double calcMaxFlow(Graph<E> g, FlowNetwork<E> net, int source, int target);
+
+	public static interface FlowNetwork<E> {
+
+		public double getCapacity(Edge<? extends E> e);
+
+		public double getFlow(Edge<? extends E> e);
+
+		public void setFlow(Edge<? extends E> e, double flow);
+
+	}
+
+	public static class FlowEdgeValueDefault {
+		public double capacity;
+		public double flow;
+
+		public FlowEdgeValueDefault(double capacity) {
+			this.capacity = capacity;
+		}
+
+		@Override
+		public String toString() {
+			return "(" + flow + " / " + capacity + ")";
+		}
+	}
+
+	public static class FlowNetworkDefault implements FlowNetwork<FlowEdgeValueDefault> {
+
+		public FlowNetworkDefault() {
+		}
+
+		@Override
+		public double getCapacity(Edge<? extends FlowEdgeValueDefault> e) {
+			return e.val().capacity;
+		}
+
+		@Override
+		public double getFlow(Edge<? extends FlowEdgeValueDefault> e) {
+			return e.val().flow;
+		}
+
+		@Override
+		public void setFlow(Edge<? extends FlowEdgeValueDefault> e, double flow) {
+			if (flow > e.val().capacity)
+				throw new IllegalArgumentException("Illegal flow " + flow + " on edge " + e);
+			e.val().flow = flow;
+		}
+
+	}
 
 }

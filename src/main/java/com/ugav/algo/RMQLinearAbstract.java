@@ -34,8 +34,7 @@ abstract class RMQLinearAbstract implements RMQ {
 		preprocessed = false;
 	}
 
-	@Override
-	public void preprocessRMQ(RMQ.Comparator c, int n) {
+	void preprocessRMQOuterBlocks(RMQ.Comparator c, int n) {
 		blockSize = getBlockSize(n);
 		blockNum = calcBlockNum(n, blockSize);
 
@@ -66,11 +65,8 @@ abstract class RMQLinearAbstract implements RMQ {
 		xlogxTable.preprocessRMQ((i, j) -> this.c.compare(blocksRightMinimum[i][0], blocksRightMinimum[j][0]),
 				blockNum);
 
-		preprocessRMQInnerBlock();
 		preprocessed = true;
 	}
-
-	abstract void preprocessRMQInnerBlock();
 
 	abstract int getBlockSize(int n);
 

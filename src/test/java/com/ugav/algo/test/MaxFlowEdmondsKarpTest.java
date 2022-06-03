@@ -7,7 +7,9 @@ import java.util.Random;
 import com.ugav.algo.Graph;
 import com.ugav.algo.Graph.Edge;
 import com.ugav.algo.MaxFlow;
+import com.ugav.algo.MaxFlow.FlowEdgeValueDefault;
 import com.ugav.algo.MaxFlow.FlowNetwork;
+import com.ugav.algo.MaxFlow.FlowNetworkDefault;
 import com.ugav.algo.MaxFlowEdmondsKarp;
 import com.ugav.algo.Pair;
 import com.ugav.algo.test.GraphsTestUtils.RandomGraphBuilder;
@@ -15,38 +17,20 @@ import com.ugav.algo.test.GraphsTestUtils.RandomGraphBuilder;
 @SuppressWarnings("boxing")
 public class MaxFlowEdmondsKarpTest extends TestUtils {
 
-	private static Pair<Graph<Pair<Double, Double>>, FlowNetwork<Pair<Double, Double>>> randNetword(int n, int m) {
-		Graph<Pair<Double, Double>> g = new RandomGraphBuilder().n(n).m(m).directed(true).doubleEdges(false)
+	private static Pair<Graph<FlowEdgeValueDefault>, FlowNetwork<FlowEdgeValueDefault>> randNetword(int n, int m) {
+		Graph<FlowEdgeValueDefault> g = new RandomGraphBuilder().n(n).m(m).directed(true).doubleEdges(false)
 				.selfEdges(false).cycles(true).connected(false).build();
 
 		Random rand = new Random(nextRandSeed());
-		for (Edge<Pair<Double, Double>> e : g.edges()) {
-			double w;
+		for (Edge<FlowEdgeValueDefault> e : g.edges()) {
+			double cap;
 			do {
-				w = rand.nextDouble() * 100;
-			} while (Math.abs(w) < 1E-10);
-			e.val(Pair.of(w, 0.0));
+				cap = rand.nextDouble() * 100;
+			} while (Math.abs(cap) < 1E-10);
+			e.val(new FlowEdgeValueDefault(cap));
 		}
 
-		return Pair.of(g, new FlowNetwork<>() {
-
-			@Override
-			public double getCapacity(Edge<Pair<Double, Double>> e) {
-				return e.val().e1;
-			}
-
-			@Override
-			public double getFlow(Edge<Pair<Double, Double>> e) {
-				return e.val().e2;
-			}
-
-			@Override
-			public void setFlow(Edge<Pair<Double, Double>> e, double flow) {
-				if (flow < 0 || flow > e.val().e1)
-					throw new IllegalArgumentException("Illegal flow " + flow + " on edge " + e.val().e1);
-				e.val().e2 = flow;
-			}
-		});
+		return Pair.of(g, new FlowNetworkDefault());
 	}
 
 	@Test
@@ -61,9 +45,9 @@ public class MaxFlowEdmondsKarpTest extends TestUtils {
 		return runTestMultiple(phases, args -> {
 			int n = args[0];
 			int m = args[1];
-			Pair<Graph<Pair<Double, Double>>, FlowNetwork<Pair<Double, Double>>> p = randNetword(n, m);
-			Graph<Pair<Double, Double>> g = p.e1;
-			FlowNetwork<Pair<Double, Double>> net = p.e2;
+			Pair<Graph<FlowEdgeValueDefault>, FlowNetwork<FlowEdgeValueDefault>> p = randNetword(n, m);
+			Graph<FlowEdgeValueDefault> g = p.e1;
+			FlowNetwork<FlowEdgeValueDefault> net = p.e2;
 			int source, target;
 			do {
 				source = rand.nextInt(g.vertices());

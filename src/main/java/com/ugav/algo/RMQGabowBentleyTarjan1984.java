@@ -33,30 +33,23 @@ public class RMQGabowBentleyTarjan1984 extends RMQLinearAbstract {
 		Objects.requireNonNull(c);
 
 		interBlocksDs = new RMQ[calcBlockNum(n, getBlockSize(n))];
-		super.preprocessRMQ(c, n);
+		preprocessRMQOuterBlocks(c, n);
+		preprocessRMQInnerBlocks();
 	}
 
-	private static int[] calcDemoBlock(int key, int blockSize) {
-		int[] demoBlock = new int[blockSize];
+	private void preprocessRMQInnerBlocks() {
+		Map<Integer, RMQ> tables = new HashMap<>();
 
-		int[] nodes = new int[blockSize];
-		int nodesCount = 0;
+		for (int b = 0; b < blockNum; b++) {
+			int key = calcBlockKey(b);
 
-		int keyIdx = 0;
-
-		for (int i = 0; i < demoBlock.length; i++) {
-			int x = nodesCount > 0 ? nodes[nodesCount - 1] + blockSize : 0;
-			while ((key & (1 << keyIdx)) != 0) {
-				x = nodes[nodesCount-- - 1] - 1;
-				keyIdx++;
-			}
-			nodes[nodesCount++] = x;
-			keyIdx++;
-
-			demoBlock[i] = x;
+			interBlocksDs[b] = tables.computeIfAbsent(Integer.valueOf(key), k -> {
+				int[] demoBlock = calcDemoBlock(k.intValue(), blockSize);
+				RMQ innerRMQ = new RMQLookupTable();
+				innerRMQ.preprocessRMQ(new ArrayIntComparator(demoBlock), demoBlock.length);
+				return innerRMQ;
+			});
 		}
-
-		return demoBlock;
 	}
 
 	private int calcBlockKey(int b) {
@@ -80,20 +73,27 @@ public class RMQGabowBentleyTarjan1984 extends RMQLinearAbstract {
 		return key;
 	}
 
-	@Override
-	void preprocessRMQInnerBlock() {
-		Map<Integer, RMQ> tables = new HashMap<>();
+	private static int[] calcDemoBlock(int key, int blockSize) {
+		int[] demoBlock = new int[blockSize];
 
-		for (int b = 0; b < blockNum; b++) {
-			int key = calcBlockKey(b);
+		int[] nodes = new int[blockSize];
+		int nodesCount = 0;
 
-			interBlocksDs[b] = tables.computeIfAbsent(Integer.valueOf(key), k -> {
-				int[] demoBlock = calcDemoBlock(k.intValue(), blockSize);
-				RMQ innerRMQ = new RMQLookupTable();
-				innerRMQ.preprocessRMQ(new ArrayIntComparator(demoBlock), demoBlock.length);
-				return innerRMQ;
-			});
+		int keyIdx = 0;
+
+		for (int i = 0; i < demoBlock.length; i++) {
+			int x = nodesCount > 0 ? nodes[nodesCount - 1] + blockSize : 0;
+			while ((key & (1 << keyIdx)) != 0) {
+				x = nodes[nodesCount-- - 1] - 1;
+				keyIdx++;
+			}
+			nodes[nodesCount++] = x;
+			keyIdx++;
+
+			demoBlock[i] = x;
 		}
+
+		return demoBlock;
 	}
 
 	@Override
