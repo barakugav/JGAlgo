@@ -1,11 +1,14 @@
 package com.ugav.algo.test;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.Random;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Supplier;
 
@@ -44,54 +47,65 @@ class HeapTestUtils extends TestUtils {
 	}
 
 	static boolean testMeld(Supplier<? extends Heap<Integer>> heapBuilder) {
+		return testMeld(heapBuilder, false);
+	}
+
+	static boolean testMeldWithOrderedValues(Supplier<? extends Heap<Integer>> heapBuilder) {
+		return testMeld(heapBuilder, true);
+	}
+
+	private static boolean testMeld(Supplier<? extends Heap<Integer>> heapBuilder, boolean orderedValues) {
 		List<Phase> phases = List.of(phase(64, 16), phase(64, 32), phase(8, 256), phase(1, 2048));
 		return runTestMultiple(phases, args -> {
 			int hCount = args[0];
-			@SuppressWarnings("unchecked")
-			Pair<Heap<Integer>, HeapTracker>[] hs = new Pair[hCount];
-			@SuppressWarnings("unchecked")
-			Pair<Heap<Integer>, HeapTracker>[] hsNext = new Pair[hCount / 2];
+			return testMeld(heapBuilder, orderedValues, hCount);
+		});
+	}
 
-			for (int i = 0; i < hCount; i++) {
-				Heap<Integer> h = heapBuilder.get();
-				HeapTracker tracker = new HeapTracker();
-				hs[i] = Pair.of(h, tracker);
+	private static boolean testMeld(Supplier<? extends Heap<Integer>> heapBuilder, boolean orderedValues, int hCount) {
+		Set<Pair<Heap<Integer>, HeapTracker>> heaps = Collections.newSetFromMap(new IdentityHashMap<>());
+
+		int elm = 0;
+		for (int i = 0; i < hCount; i++) {
+			Heap<Integer> h = heapBuilder.get();
+			HeapTracker tracker = new HeapTracker();
+			heaps.add(Pair.of(h, tracker));
+			if (!orderedValues) {
 				if (!testHeap(h, tracker, 16, 16, TestMode.InsertFirst, Math.max(16, (int) Math.sqrt(hCount * 32))))
 					return false;
+			} else {
+				int[] vals = new int[16];
+				for (int j = 0; j < 16; j++)
+					vals[j] = elm++;
+				if (!testHeap(h, tracker, 16, TestMode.InsertFirst, vals))
+					return false;
 			}
+		}
 
-			while (hCount > 1) {
-				/* meld half of the heaps */
-				int[] meldOrder = Utils.randPermutation(hCount & ~1, nextRandSeed());
-				for (int i = 0; i < meldOrder.length / 2; i++) {
-					int h1Idx = meldOrder[i * 2], h2Idx = meldOrder[i * 2 + 1];
-					Heap<Integer> h1 = hs[h1Idx].e1, h2 = hs[h2Idx].e1;
-					HeapTracker t1 = hs[h1Idx].e2, t2 = hs[h2Idx].e2;
+		while (heaps.size() > 1) {
+			/* meld half of the heaps */
+			Set<Pair<Heap<Integer>, HeapTracker>> heapsNext = Collections.newSetFromMap(new IdentityHashMap<>());
+			List<Pair<Heap<Integer>, HeapTracker>> heapsSuffled = new ArrayList<>(heaps);
 
-					h1.meld(h2);
-					t1.meld(t2);
-					hs[h2Idx] = null;
+			for (int i = 0; i < heapsSuffled.size() / 2; i++) {
+				Pair<Heap<Integer>, HeapTracker> h1 = heapsSuffled.get(i * 2);
+				Pair<Heap<Integer>, HeapTracker> h2 = heapsSuffled.get(i * 2 + 1);
 
-					/* make some OPs on the united heap */
-					int opsNum = 4096 / hCount;
-					if (!testHeap(h1, t1, opsNum, opsNum, TestMode.InsertFirst,
-							Math.max(16, (int) Math.sqrt(hCount * 32))))
-						return false;
-				}
+				h1.e1.meld(h2.e1);
+				h1.e2.meld(h2.e2);
+				heapsNext.add(Pair.of(h1.e1, h1.e2));
 
-				/* contract heap array */
-				int hCountNext = 0;
-				for (int i = 0; i < hCount; i++)
-					if (hs[i] != null)
-						hsNext[hCountNext++] = hs[i];
-				Pair<Heap<Integer>, HeapTracker>[] temp = hs;
-				hs = hsNext;
-				hsNext = temp;
-				hCount = hCountNext;
+				/* make some OPs on the united heap */
+				int opsNum = 4096 / heaps.size();
+				if (!testHeap(h1.e1, h1.e2, opsNum, opsNum, TestMode.InsertFirst,
+						Math.max(16, (int) Math.sqrt(hCount * 32))))
+					return false;
 			}
+			heaps.clear();
+			heaps.addAll(heapsNext);
+		}
 
-			return true;
-		});
+		return true;
 	}
 
 	static boolean testDecreaseKey(Supplier<? extends Heap<Integer>> heapBuilder) {
@@ -114,7 +128,7 @@ class HeapTestUtils extends TestUtils {
 	}
 
 	@SuppressWarnings("boxing")
-	private static class HeapTracker {
+	static class HeapTracker {
 
 		private final NavigableMap<Integer, Integer> insertedElms;
 		private final Random rand;
@@ -155,6 +169,14 @@ class HeapTestUtils extends TestUtils {
 			for (Map.Entry<Integer, Integer> e : other.insertedElms.entrySet())
 				insertedElms.merge(e.getKey(), e.getValue(), (c1, c2) -> c1 != null ? c1 + c2 : c2);
 			other.insertedElms.clear();
+		}
+
+		HeapTracker split(int x) {
+			HeapTracker newTracker = new HeapTracker();
+			NavigableMap<Integer, Integer> newElems = insertedElms.tailMap(x, false);
+			newTracker.insertedElms.putAll(newElems);
+			newElems.clear();
+			return newTracker;
 		}
 
 		int randElement() {
@@ -199,18 +221,22 @@ class HeapTestUtils extends TestUtils {
 		return true;
 	}
 
-	@SuppressWarnings("boxing")
 	private static boolean testHeap(Heap<Integer> heap, HeapTracker tracker, int n, int m, TestMode mode,
 			int elementsBound) {
+		int[] elements = Utils.randArray(n, 0, elementsBound, nextRandSeed());
+		return testHeap(heap, tracker, m, mode, elements);
+	}
+
+	@SuppressWarnings("boxing")
+	static boolean testHeap(Heap<Integer> heap, HeapTracker tracker, int m, TestMode mode, int[] values) {
 		Random rand = new Random(nextRandSeed());
-		int[] a = Utils.randArray(n, 0, elementsBound, nextRandSeed());
 		int insertFirst = mode == TestMode.InsertFirst ? m / 2 : 0;
 
 		List<HeapOp> ops = new ArrayList<>(List.of(HeapOp.Insert, HeapOp.Remove, HeapOp.FindMin, HeapOp.ExtractMin));
 		if (mode == TestMode.DecreaseKey)
 			ops.add(HeapOp.DecreaseKey);
 
-		int[] elmsToInsertIds = Utils.randPermutation(a.length, nextRandSeed());
+		int[] elmsToInsertIds = Utils.randPermutation(values.length, nextRandSeed());
 		int elmsToInsertCursor = 0;
 
 		for (int opIdx = 0; opIdx < m;) {
@@ -221,7 +247,7 @@ class HeapTestUtils extends TestUtils {
 			case Insert:
 				if (elmsToInsertCursor >= elmsToInsertIds.length)
 					continue;
-				x = a[elmsToInsertIds[elmsToInsertCursor++]];
+				x = values[elmsToInsertIds[elmsToInsertCursor++]];
 
 				tracker.insert(x);
 				heap.insert(x);

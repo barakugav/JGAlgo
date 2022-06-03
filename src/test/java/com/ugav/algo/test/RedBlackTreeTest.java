@@ -21,12 +21,12 @@ public class RedBlackTreeTest extends TestUtils {
 
 	@Test
 	public static boolean findPredecessor() {
-		return BSTTestUtils.findPredecessors(RedBlackTree::new);
+		return BSTTestUtils.testFindPredecessors(RedBlackTree::new);
 	}
 
 	@Test
 	public static boolean findSuccessor() {
-		return BSTTestUtils.findSuccessors(RedBlackTree::new);
+		return BSTTestUtils.testFindSuccessors(RedBlackTree::new);
 	}
 
 }

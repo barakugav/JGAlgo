@@ -2,6 +2,7 @@ package com.ugav.algo;
 
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.Objects;
 
 import com.ugav.algo.BSTUtils.NeighborType;
 
@@ -119,6 +120,24 @@ public class SplayTree<E> extends BSTAbstract<E> {
 
 		/* there is nothing smarter to do than regular meld */
 		super.meld(h);
+	}
+
+	@Override
+	public SplayTree<E> split(Handle<E> handle) {
+		Objects.requireNonNull(handle);
+		Node<E> n = (Node<E>) handle;
+		splay(n);
+		assert n == root;
+
+		SplayTree<E> newTree = new SplayTree<>(c);
+		Node<E> newRoot = n.right;
+		if (newRoot != null) {
+			n.right = null;
+			n.size -= newRoot.size;
+			newTree.root = newRoot;
+		}
+
+		return newTree;
 	}
 
 	@Override

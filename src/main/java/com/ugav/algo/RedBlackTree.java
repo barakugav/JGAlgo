@@ -55,6 +55,11 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 	}
 
 	@Override
+	public RedBlackTree<E> split(Handle<E> handle) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public Handle<E> findHanlde(E e) {
 		return BSTUtils.find(root, c, e);
 	}

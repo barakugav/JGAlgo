@@ -7,25 +7,31 @@ import java.util.Set;
 class RandomIntUnique {
 
 	private final Random rand;
-	private final int minWeight;
-	private final int maxWeight;
-	private final Set<Integer> usedWeights;
+	private final int min;
+	private final int max;
+	private final Set<Integer> usedVals;
 
-	RandomIntUnique(int minWeight, int maxWeight, long seed) {
+	RandomIntUnique(int min, int max, long seed) {
+		if (min >= max)
+			throw new IllegalArgumentException();
+
 		rand = new Random(seed);
-		this.minWeight = minWeight;
-		this.maxWeight = maxWeight;
-		usedWeights = new HashSet<>();
+		this.min = min;
+		this.max = max;
+		usedVals = new HashSet<>();
 	}
 
 	int next() {
-		int w;
+		if (usedVals.size() > 0.9 * (max - min))
+			throw new IllegalStateException();
+
+		Integer x;
 		do {
-			w = rand.nextInt(minWeight, maxWeight);
-		} while (usedWeights.contains(Integer.valueOf(w)));
+			x = Integer.valueOf(rand.nextInt(min, max));
+		} while (usedVals.contains(x));
 
-		usedWeights.add(Integer.valueOf(w));
+		usedVals.add(x);
 
-		return w;
+		return x.intValue();
 	}
 }

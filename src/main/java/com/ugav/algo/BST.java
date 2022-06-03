@@ -63,4 +63,19 @@ public interface BST<E> extends HeapDirectAccessed<E> {
 	 */
 	public Handle<E> findSuccessor(Handle<E> handle);
 
+	/**
+	 * Split the current BST into two different BSTs with elements smaller and
+	 * bigger than an element
+	 *
+	 * After this operations, all elements in this tree will be smaller or equal to
+	 * the given element, and the returned new tree will contain elements greater
+	 * than the given element. If the tree contains multiple element with the given
+	 * element, the new tree may contain with the same value.
+	 *
+	 * @param handle given element in the tree
+	 * @return new tree with elements greater (greater or equal if duplicate
+	 *         elements of the given elements exists) than the given element
+	 */
+	public BST<E> split(Handle<E> handle);
+
 }
