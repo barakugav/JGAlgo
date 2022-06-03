@@ -15,13 +15,7 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 	 * O(mn + n^2logn)
 	 */
 
-	private MatchingWeightedBipartiteSSSP() {
-	}
-
-	private static final MatchingWeightedBipartiteSSSP INSTANCE = new MatchingWeightedBipartiteSSSP();
-
-	public static MatchingWeightedBipartiteSSSP getInstance() {
-		return INSTANCE;
+	public MatchingWeightedBipartiteSSSP() {
 	}
 
 	@Override

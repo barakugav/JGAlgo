@@ -15,13 +15,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 	 * O(mn + n^2logn)
 	 */
 
-	private MatchingWeightedBipartiteHungarianMethod() {
-	}
-
-	private static final MatchingWeightedBipartiteHungarianMethod INSTANCE = new MatchingWeightedBipartiteHungarianMethod();
-
-	public static MatchingWeightedBipartiteHungarianMethod getInstance() {
-		return INSTANCE;
+	public MatchingWeightedBipartiteHungarianMethod() {
 	}
 
 	@Override

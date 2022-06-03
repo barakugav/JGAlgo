@@ -6,12 +6,12 @@ public class MatchingGabow1976Test extends TestUtils {
 
 	@Test
 	public static boolean randBipartiteGraphs() {
-		return MatchingBipartiteTestUtils.randBipartiteGraphs(MatchingGabow1976::getInstance);
+		return MatchingBipartiteTestUtils.randBipartiteGraphs(MatchingGabow1976::new);
 	}
 
 	@Test
 	public static boolean randGraphs() {
-		return MatchingUnweightedTestUtils.randGraphs(MatchingGabow1976::getInstance);
+		return MatchingUnweightedTestUtils.randGraphs(MatchingGabow1976::new);
 	}
 
 }

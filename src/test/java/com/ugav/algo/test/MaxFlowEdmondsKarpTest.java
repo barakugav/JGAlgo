@@ -51,7 +51,7 @@ public class MaxFlowEdmondsKarpTest extends TestUtils {
 
 	@Test
 	public static boolean randGraphs() {
-		return randGraphs(MaxFlowEdmondsKarp.getInstance());
+		return randGraphs(new MaxFlowEdmondsKarp());
 	}
 
 	private static boolean randGraphs(MaxFlow algo) {

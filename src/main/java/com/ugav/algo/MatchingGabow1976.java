@@ -15,13 +15,7 @@ public class MatchingGabow1976 implements Matching {
 	 * (alpha is inverse Ackermann's function)
 	 */
 
-	private MatchingGabow1976() {
-	}
-
-	private static final MatchingGabow1976 INSTANCE = new MatchingGabow1976();
-
-	public static MatchingGabow1976 getInstance() {
-		return INSTANCE;
+	public MatchingGabow1976() {
 	}
 
 	@Override

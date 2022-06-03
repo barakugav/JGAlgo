@@ -6,7 +6,7 @@ public class MatchingBipartiteHopcroftKarp1973Test extends TestUtils {
 
 	@Test
 	public static boolean randBipartiteGraphs() {
-		return MatchingBipartiteTestUtils.randBipartiteGraphs(MatchingBipartiteHopcroftKarp1973::getInstance);
+		return MatchingBipartiteTestUtils.randBipartiteGraphs(MatchingBipartiteHopcroftKarp1973::new);
 	}
 
 }

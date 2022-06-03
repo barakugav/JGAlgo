@@ -6,19 +6,18 @@ public class MatchingWeightedBipartiteHungarianMethodTest extends TestUtils {
 
 	@Test
 	public static boolean randBipartiteGraphsWeight1() {
-		return MatchingBipartiteTestUtils.randBipartiteGraphs(MatchingWeightedBipartiteHungarianMethod::getInstance);
+		return MatchingBipartiteTestUtils.randBipartiteGraphs(MatchingWeightedBipartiteHungarianMethod::new);
 	}
 
 	@Test
 	public static boolean randBipartiteGraphsWeighted() {
-		return MatchingWeightedTestUtils
-				.randGraphsBipartiteWeighted(MatchingWeightedBipartiteHungarianMethod::getInstance);
+		return MatchingWeightedTestUtils.randGraphsBipartiteWeighted(MatchingWeightedBipartiteHungarianMethod::new);
 	}
 
 	@Test
 	public static boolean randBipartiteGraphsWeightedPerfect() {
 		return MatchingWeightedTestUtils
-				.randBipartiteGraphsWeightedPerfect(MatchingWeightedBipartiteHungarianMethod::getInstance);
+				.randBipartiteGraphsWeightedPerfect(MatchingWeightedBipartiteHungarianMethod::new);
 	}
 
 }

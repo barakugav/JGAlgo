@@ -16,13 +16,7 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 	 * Maximum matching in unweighted undirected bipartite graph in O(m * n^0.5)
 	 */
 
-	private MatchingBipartiteHopcroftKarp1973() {
-	}
-
-	private static final MatchingBipartiteHopcroftKarp1973 INSTANCE = new MatchingBipartiteHopcroftKarp1973();
-
-	public static MatchingBipartiteHopcroftKarp1973 getInstance() {
-		return INSTANCE;
+	public MatchingBipartiteHopcroftKarp1973() {
 	}
 
 	@Override

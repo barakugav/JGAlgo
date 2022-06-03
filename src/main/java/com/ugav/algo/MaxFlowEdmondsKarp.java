@@ -12,13 +12,7 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 	 * O(m * n^2)
 	 */
 
-	private MaxFlowEdmondsKarp() {
-	}
-
-	private static final MaxFlowEdmondsKarp INSTANCE = new MaxFlowEdmondsKarp();
-
-	public static MaxFlowEdmondsKarp getInstance() {
-		return INSTANCE;
+	public MaxFlowEdmondsKarp() {
 	}
 
 	@Override

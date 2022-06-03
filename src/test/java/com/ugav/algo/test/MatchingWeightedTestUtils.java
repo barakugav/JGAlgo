@@ -43,8 +43,8 @@ class MatchingWeightedTestUtils extends TestUtils {
 
 			MatchingWeighted algo = builder.get();
 			MatchingWeighted validationAlgo = algo instanceof MatchingWeightedBipartiteSSSP
-					? MatchingWeightedBipartiteHungarianMethod.getInstance()
-					: MatchingWeightedBipartiteSSSP.getInstance();
+					? new MatchingWeightedBipartiteHungarianMethod()
+					: new MatchingWeightedBipartiteSSSP();
 			return testGraphWeighted(algo, g, w, validationAlgo);
 		});
 	}
@@ -63,10 +63,10 @@ class MatchingWeightedTestUtils extends TestUtils {
 			WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
 
 			MatchingWeighted algo = builder.get();
-			Matching validationUnweightedAlgo = MatchingBipartiteHopcroftKarp1973.getInstance();
+			Matching validationUnweightedAlgo = new MatchingBipartiteHopcroftKarp1973();
 			MatchingWeighted validationWeightedAlgo = algo instanceof MatchingWeightedBipartiteHungarianMethodTest
 					? new MatchingWeightedGabow2017()
-					: MatchingWeightedBipartiteHungarianMethod.getInstance();
+					: new MatchingWeightedBipartiteHungarianMethod();
 			return testGraphWeightedPerfect(algo, g, w, validationUnweightedAlgo, validationWeightedAlgo);
 		});
 	}
@@ -124,7 +124,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 			WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
 
 			MatchingWeighted algo = builder.get();
-			Matching validationUnweightedAlgo = MatchingGabow1976.getInstance();
+			Matching validationUnweightedAlgo = new MatchingGabow1976();
 			MatchingWeighted validationWeightedAlgo = new MatchingWeightedShuffled(new MatchingWeightedGabow2017());
 			return testGraphWeightedPerfect(algo, g, w, validationUnweightedAlgo, validationWeightedAlgo);
 		});
