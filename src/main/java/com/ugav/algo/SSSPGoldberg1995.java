@@ -16,13 +16,7 @@ public class SSSPGoldberg1995 implements SSSP {
 	 * O(m * n^0.5 * logN) where N is the minimum negative weight
 	 */
 
-	private SSSPGoldberg1995() {
-	}
-
-	private static final SSSPGoldberg1995 INSTANCE = new SSSPGoldberg1995();
-
-	public static SSSPGoldberg1995 getInstace() {
-		return INSTANCE;
+	public SSSPGoldberg1995() {
 	}
 
 	@Override

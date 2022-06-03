@@ -14,13 +14,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 	 * O(m + n) where m is the number of queries
 	 */
 
-	private TPMKomlos1985King1997Hagerup2009() {
-	}
-
-	private static final TPMKomlos1985King1997Hagerup2009 INSTANCE = new TPMKomlos1985King1997Hagerup2009();
-
-	public static TPMKomlos1985King1997Hagerup2009 getInstace() {
-		return INSTANCE;
+	public TPMKomlos1985King1997Hagerup2009() {
 	}
 
 	@SuppressWarnings("unchecked")

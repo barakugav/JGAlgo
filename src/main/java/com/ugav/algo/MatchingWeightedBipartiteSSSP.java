@@ -45,7 +45,7 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 
 		// Init state may include negative distances, use Bellman Ford to calculate
 		// first potential values
-		SSSP.Result<Ref<E>> sp = SSSPBellmanFord.getInstace().calcDistances(g, e -> e.val().w, s);
+		SSSP.Result<Ref<E>> sp = new SSSPBellmanFord().calcDistances(g, e -> e.val().w, s);
 		for (int v = 0; v < n + 2; v++)
 			potential[v] = sp.distance(v);
 

@@ -6,12 +6,12 @@ public class SSSPBellmanFordTest extends TestUtils {
 
 	@Test
 	public static boolean randGraphPositiveInt() {
-		return SSSPAbstractTest.testSSSPDirectedPositiveInt(SSSPBellmanFord.getInstace());
+		return SSSPAbstractTest.testSSSPDirectedPositiveInt(SSSPBellmanFord::new);
 	}
 
 	@Test
 	public static boolean randGraphNegativeInt() {
-		return SSSPAbstractTest.testSSSPDirectedNegativeInt(SSSPBellmanFord.getInstace());
+		return SSSPAbstractTest.testSSSPDirectedNegativeInt(SSSPBellmanFord::new);
 	}
 
 }

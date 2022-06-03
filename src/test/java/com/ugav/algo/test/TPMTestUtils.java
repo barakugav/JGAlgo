@@ -3,6 +3,7 @@ package com.ugav.algo.test;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Supplier;
 
 import com.ugav.algo.Graph;
 import com.ugav.algo.Graph.DirectedType;
@@ -85,16 +86,17 @@ class TPMTestUtils extends TestUtils {
 		return true;
 	}
 
-	static boolean testTPM(TPM algo) {
+	static boolean testTPM(Supplier<? extends TPM> builder) {
 		List<Phase> phases = List.of(phase(64, 16), phase(32, 32), phase(16, 64), phase(8, 128), phase(4, 256),
 				phase(2, 512), phase(1, 1024), phase(1, 4096), phase(1, 16384));
 		return runTestMultiple(phases, args -> {
 			int n = args[0];
+			TPM algo = builder.get();
 			return testTPM(algo, n);
 		});
 	}
 
-	static boolean testTPM(TPM algo, int n) {
+	private static boolean testTPM(TPM algo, int n) {
 		Graph<Integer> t = GraphsTestUtils.randTree(n);
 		GraphsTestUtils.assignRandWeightsIntPos(t);
 		WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
@@ -105,7 +107,7 @@ class TPMTestUtils extends TestUtils {
 		return compareActualToExpectedResults(queries, actual, expected, w);
 	}
 
-	static boolean verifyMSTPositive(TPM algo) {
+	static boolean verifyMSTPositive(Supplier<? extends TPM> builder) {
 		List<Phase> phases = List.of(phase(256, 8, 16), phase(128, 16, 32), phase(64, 64, 128), phase(32, 128, 256),
 				phase(8, 2048, 4096), phase(2, 8192, 16384));
 		return runTestMultiple(phases, args -> {
@@ -117,11 +119,12 @@ class TPMTestUtils extends TestUtils {
 			WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
 			Collection<Edge<Integer>> mstEdges = new MSTKruskal1956().calcMST(g, w);
 
+			TPM algo = builder.get();
 			return MST.verifyMST(g, w, mstEdges, algo);
 		});
 	}
 
-	static boolean verifyMSTNegative(TPM algo) {
+	static boolean verifyMSTNegative(Supplier<? extends TPM> builder) {
 		List<Phase> phases = List.of(phase(256, 8, 16), phase(128, 16, 32), phase(64, 64, 128), phase(32, 128, 256),
 				phase(8, 2048, 4096), phase(2, 8192, 16384));
 		return runTestMultiple(phases, args -> {
@@ -149,6 +152,7 @@ class TPMTestUtils extends TestUtils {
 			mst.removeEdge(mstPath.get(rand.nextInt(mstPath.size())));
 			mst.addEdge(e);
 
+			TPM algo = builder.get();
 			return !MST.verifyMST(g, w, mst, algo);
 		});
 	}

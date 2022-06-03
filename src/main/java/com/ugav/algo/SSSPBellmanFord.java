@@ -12,13 +12,7 @@ public class SSSPBellmanFord implements SSSP {
 	 * O(mn)
 	 */
 
-	private SSSPBellmanFord() {
-	}
-
-	private static final SSSPBellmanFord INSTANCE = new SSSPBellmanFord();
-
-	public static SSSPBellmanFord getInstace() {
-		return INSTANCE;
+	public SSSPBellmanFord() {
 	}
 
 	@Override

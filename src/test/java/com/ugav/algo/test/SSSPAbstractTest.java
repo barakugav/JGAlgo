@@ -2,6 +2,7 @@ package com.ugav.algo.test;
 
 import java.util.List;
 import java.util.Random;
+import java.util.function.Supplier;
 
 import com.ugav.algo.Graph;
 import com.ugav.algo.Graph.Edge;
@@ -22,15 +23,15 @@ class SSSPAbstractTest extends TestUtils {
 		throw new InternalError();
 	}
 
-	static boolean testSSSPDirectedPositiveInt(SSSP algo) {
-		return testSSSPPositiveInt(algo, true);
+	static boolean testSSSPDirectedPositiveInt(Supplier<? extends SSSP> builder) {
+		return testSSSPPositiveInt(builder, true);
 	}
 
-	static boolean testSSSPUndirectedPositiveInt(SSSP algo) {
-		return testSSSPPositiveInt(algo, false);
+	static boolean testSSSPUndirectedPositiveInt(Supplier<? extends SSSP> builder) {
+		return testSSSPPositiveInt(builder, false);
 	}
 
-	private static boolean testSSSPPositiveInt(SSSP algo, boolean directed) {
+	private static boolean testSSSPPositiveInt(Supplier<? extends SSSP> builder, boolean directed) {
 		Random rand = new Random(nextRandSeed());
 		List<Phase> phases = List.of(phase(128, 16, 32), phase(64, 64, 256), phase(8, 512, 4096),
 				phase(1, 4096, 16384));
@@ -43,6 +44,7 @@ class SSSPAbstractTest extends TestUtils {
 			WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
 			int source = rand.nextInt(g.vertices());
 
+			SSSP algo = builder.get();
 			SSSP.Result<Integer> actualRes = algo.calcDistances(g, w, source);
 
 			SSSP validationAlgo = algo instanceof SSSPDijkstra ? new SSSPDial1969() : new SSSPDijkstra();
@@ -50,7 +52,7 @@ class SSSPAbstractTest extends TestUtils {
 		});
 	}
 
-	static boolean testSSSPDirectedNegativeInt(SSSP algo) {
+	static boolean testSSSPDirectedNegativeInt(Supplier<? extends SSSP> builder) {
 		List<Phase> phases = List.of(phase(512, 4, 4), phase(128, 16, 32), phase(64, 64, 256), phase(8, 512, 4096),
 				phase(2, 1024, 4096));
 		return runTestMultiple(phases, args -> {
@@ -62,10 +64,10 @@ class SSSPAbstractTest extends TestUtils {
 			WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
 			int source = 0;
 
+			SSSP algo = builder.get();
 			SSSP.Result<Integer> actualRes = algo.calcDistances(g, w, source);
 
-			SSSP validationAlgo = algo instanceof SSSPBellmanFord ? SSSPGoldberg1995.getInstace()
-					: SSSPBellmanFord.getInstace();
+			SSSP validationAlgo = algo instanceof SSSPBellmanFord ? new SSSPGoldberg1995() : new SSSPBellmanFord();
 			return validateResult(g, w, source, actualRes, validationAlgo);
 		});
 	}

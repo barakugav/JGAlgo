@@ -102,7 +102,7 @@ public class MSTKargerKleinTarjan1995 implements MST {
 		 * use the tree path maxima to find the heaviest edge in the path connecting u v
 		 * for each edge in g
 		 */
-		TPM tpm = TPMKomlos1985King1997Hagerup2009.getInstace();
+		TPM tpm = new TPMKomlos1985King1997Hagerup2009();
 		int[][] tpmQueries = new int[trees.length][];
 		for (int t = 0; t < trees.length; t++)
 			tpmQueries[t] = new int[2];
