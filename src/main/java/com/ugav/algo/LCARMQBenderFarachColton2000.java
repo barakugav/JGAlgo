@@ -12,24 +12,25 @@ public class LCARMQBenderFarachColton2000 implements LCAStatic {
 	 * This implementation of static LCA (Lowest common ancestor) perform a
 	 * preprocessing of O(E+V) and later answer queries of LCA queries in O(1).
 	 *
-	 * This is done by traversing the tree with the Euler tour, and using RMQ on the
-	 * depths of the tour. This RMQ is a special case of the general RMQ, as the
+	 * This is done by traversing the tree with the Eulerian tour, and using RMQ on
+	 * the depths of the tour. This RMQ is a special case of the general RMQ, as the
 	 * difference between two consecutive elements is always +1/-1, and therefore
 	 * allow more efficient implementation using
 	 * RMQPlusMinusOneBenderFarachColton2000.
 	 */
 
-	private LCARMQBenderFarachColton2000() {
-	}
+	private int[] vs;
+	private int[] vToDepthsIdx;
+	private final RMQ rmq;
+	private boolean preprocessed;
 
-	private static final LCARMQBenderFarachColton2000 INSTANCE = new LCARMQBenderFarachColton2000();
-
-	public static LCARMQBenderFarachColton2000 getInstace() {
-		return INSTANCE;
+	public LCARMQBenderFarachColton2000() {
+		rmq = new RMQPlusMinusOneBenderFarachColton2000();
+		preprocessed = false;
 	}
 
 	@Override
-	public <E> Result preprocessLCA(Graph<E> t, int r) {
+	public void preprocessLCA(Graph<?> t, int r) {
 		if (!Graphs.isTree(t, r))
 			throw new IllegalArgumentException();
 
@@ -39,7 +40,7 @@ public class LCARMQBenderFarachColton2000 implements LCAStatic {
 		int[] parent = new int[n];
 
 		@SuppressWarnings("unchecked")
-		Iterator<Edge<E>>[] edges = new Iterator[n];
+		Iterator<? extends Edge<?>>[] edges = new Iterator[n];
 
 		parent[0] = -1;
 		edges[0] = t.edges(r);
@@ -51,7 +52,7 @@ public class LCARMQBenderFarachColton2000 implements LCAStatic {
 			aLen++;
 
 			while (edges[depth].hasNext()) {
-				Edge<E> e = edges[depth].next();
+				Edge<?> e = edges[depth].next();
 				int v = e.v();
 				if (v == parent[depth])
 					continue;
@@ -77,36 +78,25 @@ public class LCARMQBenderFarachColton2000 implements LCAStatic {
 				vToDepthsIdx[v] = i;
 		}
 
-		RMQ.Result rmq = RMQPlusMinusOneBenderFarachColton2000.getInstace()
-				.preprocessRMQ(new ArrayIntComparator(depths), depths.length);
-		return new DataStructure(vs, vToDepthsIdx, rmq);
+		rmq.preprocessRMQ(new ArrayIntComparator(depths), depths.length);
+		this.vs = vs;
+		this.vToDepthsIdx = vToDepthsIdx;
+		preprocessed = true;
 	}
 
-	private static class DataStructure implements LCAStatic.Result {
-
-		private final int[] vs;
-		private final int[] vToDepthsIdx;
-		private final RMQ.Result rmq;
-
-		DataStructure(int[] vs, int[] vToDepthsIdx, RMQ.Result rmq) {
-			this.vs = vs;
-			this.vToDepthsIdx = vToDepthsIdx;
-			this.rmq = rmq;
+	@Override
+	public int calcLCA(int u, int v) {
+		if (!preprocessed)
+			throw new IllegalStateException("Preprocessing is required before query");
+		int uIdx = vToDepthsIdx[u];
+		int vIdx = vToDepthsIdx[v];
+		if (uIdx > vIdx) {
+			int temp = uIdx;
+			uIdx = vIdx;
+			vIdx = temp;
 		}
-
-		@Override
-		public int query(int u, int v) {
-			int uIdx = vToDepthsIdx[u];
-			int vIdx = vToDepthsIdx[v];
-			if (uIdx > vIdx) {
-				int temp = uIdx;
-				uIdx = vIdx;
-				vIdx = temp;
-			}
-			int lcaIdx = rmq.query(uIdx, vIdx + 1);
-			return vs[lcaIdx];
-		}
-
+		int lcaIdx = rmq.calcRMQ(uIdx, vIdx + 1);
+		return vs[lcaIdx];
 	}
 
 }

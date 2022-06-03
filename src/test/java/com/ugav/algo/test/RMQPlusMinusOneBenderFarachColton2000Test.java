@@ -11,7 +11,7 @@ public class RMQPlusMinusOneBenderFarachColton2000Test extends TestUtils {
 		RMQTestUtils.randRMQDataPlusMinusOne(a);
 		RMQTestUtils.randRMQQueries(a, queries, a.length);
 
-		return RMQTestUtils.testRMQ(RMQPlusMinusOneBenderFarachColton2000.getInstace(), a, queries);
+		return RMQTestUtils.testRMQ(RMQPlusMinusOneBenderFarachColton2000::new, a, queries);
 	}
 
 	@Test
@@ -22,7 +22,7 @@ public class RMQPlusMinusOneBenderFarachColton2000Test extends TestUtils {
 			RMQTestUtils.randRMQDataPlusMinusOne(a);
 			RMQTestUtils.randRMQQueries(a, queries, a.length);
 
-			if (RMQTestUtils.testRMQ(RMQPlusMinusOneBenderFarachColton2000.getInstace(), a, queries) != true)
+			if (RMQTestUtils.testRMQ(RMQPlusMinusOneBenderFarachColton2000::new, a, queries) != true)
 				return false;
 		}
 		return true;
@@ -35,7 +35,7 @@ public class RMQPlusMinusOneBenderFarachColton2000Test extends TestUtils {
 		RMQTestUtils.randRMQDataPlusMinusOne(a);
 		RMQTestUtils.randRMQQueries(a, queries, 4);
 
-		return RMQTestUtils.testRMQ(RMQPlusMinusOneBenderFarachColton2000.getInstace(), a, queries);
+		return RMQTestUtils.testRMQ(RMQPlusMinusOneBenderFarachColton2000::new, a, queries);
 	}
 
 }

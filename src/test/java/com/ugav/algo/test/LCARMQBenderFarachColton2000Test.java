@@ -2,11 +2,12 @@ package com.ugav.algo.test;
 
 import java.util.List;
 import java.util.Random;
+import java.util.function.Supplier;
 
 import com.ugav.algo.Graph;
 import com.ugav.algo.Graphs;
-import com.ugav.algo.LCAStatic;
 import com.ugav.algo.LCARMQBenderFarachColton2000;
+import com.ugav.algo.LCAStatic;
 
 @SuppressWarnings("boxing")
 public class LCARMQBenderFarachColton2000Test extends TestUtils {
@@ -61,14 +62,15 @@ public class LCARMQBenderFarachColton2000Test extends TestUtils {
 		return queries;
 	}
 
-	private static boolean testLCA(Graph<Void> g, LCAStatic lca, int[][] queries) {
-		LCAStatic.Result result = lca.preprocessLCA(g, 0);
+	private static boolean testLCA(Graph<Void> g, Supplier<? extends LCAStatic> builder, int[][] queries) {
+		LCAStatic lca = builder.get();
+		lca.preprocessLCA(g, 0);
 
 		for (int[] query : queries) {
 			int u = query[0];
 			int v = query[1];
 			int expected = query[2];
-			int actual = result.query(u, v);
+			int actual = lca.calcLCA(u, v);
 			if (expected != actual) {
 				printTestStr(" [", u, ",", v, "] -> ", expected, " ", actual, "\n");
 				return false;
@@ -87,7 +89,7 @@ public class LCARMQBenderFarachColton2000Test extends TestUtils {
 			Graph<Void> g = GraphsTestUtils.randTree(n);
 			int[][] queries = randLCAQueries(g, 0, m);
 
-			return testLCA(g, LCARMQBenderFarachColton2000.getInstace(), queries);
+			return testLCA(g, LCARMQBenderFarachColton2000::new, queries);
 		});
 	}
 

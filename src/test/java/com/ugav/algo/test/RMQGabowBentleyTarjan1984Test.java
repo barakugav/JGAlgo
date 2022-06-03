@@ -6,13 +6,13 @@ public class RMQGabowBentleyTarjan1984Test extends TestUtils {
 
 	@Test
 	public static boolean regular65536() {
-		return RMQTestUtils.testRMQ(RMQGabowBentleyTarjan1984.getInstace(), 65536, 4096);
+		return RMQTestUtils.testRMQ(RMQGabowBentleyTarjan1984::new, 65536, 4096);
 	}
 
 	@Test
 	public static boolean regularNRange64to256() {
 		for (int n = 64; n <= 256; n++)
-			if (RMQTestUtils.testRMQ(RMQGabowBentleyTarjan1984.getInstace(), n, 1024) != true)
+			if (RMQTestUtils.testRMQ(RMQGabowBentleyTarjan1984::new, n, 1024) != true)
 				return false;
 		return true;
 	}
@@ -23,7 +23,7 @@ public class RMQGabowBentleyTarjan1984Test extends TestUtils {
 		int[][] queries = new int[4096][];
 		RMQTestUtils.randRMQQueries(a, queries, 4);
 
-		return RMQTestUtils.testRMQ(RMQGabowBentleyTarjan1984.getInstace(), a, queries);
+		return RMQTestUtils.testRMQ(RMQGabowBentleyTarjan1984::new, a, queries);
 	}
 
 }

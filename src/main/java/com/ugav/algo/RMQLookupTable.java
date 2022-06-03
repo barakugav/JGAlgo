@@ -10,24 +10,19 @@ public class RMQLookupTable implements RMQ {
 	 * O(n^2) preprocessing time, O(n^2) space, O(1) query.
 	 */
 
-	private RMQLookupTable() {
-	}
+	private LookupTable table;
 
-	private static final RMQLookupTable INSTANCE = new RMQLookupTable();
-
-	public static RMQLookupTable getInstace() {
-		return INSTANCE;
+	public RMQLookupTable() {
+		table = null;
 	}
 
 	@Override
-	public RMQ.Result preprocessRMQ(RMQ.Comparator c, int n) {
+	public void preprocessRMQ(RMQ.Comparator c, int n) {
 		if (n <= 0)
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Invalid legnth: " + n);
 		Objects.requireNonNull(c);
 
 		LookupTable table;
-		if (n == 1)
-			return SingleElementResult.INSTANCE;
 		if (n <= LookupTable8.LIMIT)
 			table = new LookupTable8(n);
 		else if (n <= LookupTable128.LIMIT)
@@ -45,28 +40,25 @@ public class RMQLookupTable implements RMQ {
 				table.set(indexOf(n, i, j), c.compare(m, j) < 0 ? m : j);
 			}
 		}
-
-		return table;
+		this.table = table;
 	}
 
 	private static int indexOf(int n, int i, int j) {
 		return (2 * n - i - 1) * i / 2 + j - i - 1;
 	}
 
-	private static class SingleElementResult implements RMQ.Result {
-
-		static SingleElementResult INSTANCE = new SingleElementResult();
-
-		@Override
-		public int query(int i, int j) {
-			if (i != 0 || j != 1)
-				throw new IllegalArgumentException();
-			return 0;
-		}
-
+	@Override
+	public int calcRMQ(int i, int j) {
+		if (table == null)
+			throw new IllegalStateException("Preprocessing is required before query");
+		if (i < 0 || j <= i || j > table.n)
+			throw new IllegalArgumentException("Illegal indices [" + i + "," + j + "]");
+		if (i + 1 == j)
+			return i;
+		return table.calcRMQ(i, j);
 	}
 
-	private static abstract class LookupTable implements RMQ.Result {
+	private static abstract class LookupTable {
 
 		final int n;
 
@@ -81,6 +73,8 @@ public class RMQLookupTable implements RMQ {
 		abstract int get(int idx);
 
 		abstract void set(int idx, int x);
+
+		abstract int calcRMQ(int i, int j);
 	}
 
 	private static class LookupTable8 extends LookupTable {
@@ -95,12 +89,7 @@ public class RMQLookupTable implements RMQ {
 		}
 
 		@Override
-		public int query(int i, int j) {
-			if (i < 0 || j <= i || j > n)
-				throw new IllegalArgumentException();
-			if (i + 1 == j)
-				return i;
-
+		int calcRMQ(int i, int j) {
 			return arr[indexOf(n, i, j - 1)];
 		}
 
@@ -128,12 +117,7 @@ public class RMQLookupTable implements RMQ {
 		}
 
 		@Override
-		public int query(int i, int j) {
-			if (i < 0 || j <= i || j > n)
-				throw new IllegalArgumentException();
-			if (i + 1 == j)
-				return i;
-
+		int calcRMQ(int i, int j) {
 			return arr[indexOf(n, i, j - 1)];
 		}
 
@@ -161,12 +145,7 @@ public class RMQLookupTable implements RMQ {
 		}
 
 		@Override
-		public int query(int i, int j) {
-			if (i < 0 || j <= i || j > n)
-				throw new IllegalArgumentException();
-			if (i + 1 == j)
-				return i;
-
+		int calcRMQ(int i, int j) {
 			return arr[indexOf(n, i, j - 1)];
 		}
 

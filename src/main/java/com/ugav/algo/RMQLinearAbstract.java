@@ -1,7 +1,5 @@
 package com.ugav.algo;
 
-import com.ugav.algo.RMQPowerOf2Table.PowerOf2Table;
-
 abstract class RMQLinearAbstract implements RMQ {
 
 	/*
@@ -20,33 +18,100 @@ abstract class RMQLinearAbstract implements RMQ {
 	 * O(n) preprocessing time, O(n) space, O(1) query.
 	 */
 
-	void preprocessRMQ(DataStructure ds) {
-		RMQ.Comparator c = ds.c;
+	int n;
+	int blockSize;
+	int blockNum;
+	RMQ.Comparator c;
 
-		for (int b = 0; b < ds.blockNum; b++) {
-			int base = b * ds.blockSize;
+	private int[][] blocksRightMinimum;
+	private int[][] blocksLeftMinimum;
+	private final RMQPowerOf2Table xlogxTable;
+
+	boolean preprocessed;
+
+	RMQLinearAbstract() {
+		xlogxTable = new RMQPowerOf2Table();
+		preprocessed = false;
+	}
+
+	@Override
+	public void preprocessRMQ(RMQ.Comparator c, int n) {
+		blockSize = getBlockSize(n);
+		blockNum = calcBlockNum(n, blockSize);
+
+		this.n = n;
+		this.c = c = n < blockNum * blockSize ? new PadderComparator(n, c) : c;
+
+		blocksRightMinimum = new int[blockNum][blockSize - 1];
+		blocksLeftMinimum = new int[blockNum][blockSize - 1];
+
+		for (int b = 0; b < blockNum; b++) {
+			int base = b * blockSize;
 
 			int min = 0;
-			for (int i = 0; i < ds.blockSize - 1; i++) {
+			for (int i = 0; i < blockSize - 1; i++) {
 				if (c.compare(base + i + 1, base + min) < 0)
 					min = i + 1;
-				ds.blocksLeftMinimum[b][i] = base + min;
+				blocksLeftMinimum[b][i] = base + min;
 			}
 
-			min = ds.blockSize - 1;
-			for (int i = ds.blockSize - 2; i >= 0; i--) {
+			min = blockSize - 1;
+			for (int i = blockSize - 2; i >= 0; i--) {
 				if (c.compare(base + i, base + min) < 0)
 					min = i;
-				ds.blocksRightMinimum[b][i] = base + min;
+				blocksRightMinimum[b][i] = base + min;
 			}
 		}
 
-		RMQPowerOf2Table.preprocessRMQ(ds.xlogxTable);
+		xlogxTable.preprocessRMQ((i, j) -> this.c.compare(blocksRightMinimum[i][0], blocksRightMinimum[j][0]),
+				blockNum);
 
-		initInterBlock(ds);
+		preprocessRMQInnerBlock();
+		preprocessed = true;
 	}
 
-	abstract void initInterBlock(DataStructure ds);
+	abstract void preprocessRMQInnerBlock();
+
+	abstract int getBlockSize(int n);
+
+	static int calcBlockNum(int n, int blockSize) {
+		return (int) Math.ceil((double) n / blockSize);
+	}
+
+	@Override
+	public int calcRMQ(int i, int j) {
+		if (!preprocessed)
+			throw new IllegalStateException("Preprocessing is required before query");
+		if (i < 0 || j <= i || j > n)
+			throw new IllegalArgumentException("Illegal indices [" + i + "," + j + "]");
+		if (i + 1 == j)
+			return i;
+		j--;
+
+		int blk0 = i / blockSize;
+		int blk1 = j / blockSize;
+		int innerI = i % blockSize;
+		int innerJ = j % blockSize;
+
+		if (blk0 != blk1) {
+			int blk0min = innerI == blockSize - 1 ? blk0 * blockSize + innerI : blocksRightMinimum[blk0][innerI];
+			int blk1min = innerJ == 0 ? blk1 * blockSize + innerJ : blocksLeftMinimum[blk1][innerJ - 1];
+			int min = c.compare(blk0min, blk1min) < 0 ? blk0min : blk1min;
+
+			if (blk0 + 1 != blk1) {
+				int middleBlk = xlogxTable.calcRMQ(blk0 + 1, blk1);
+				int middleMin = blocksRightMinimum[middleBlk][0];
+				min = c.compare(min, middleMin) < 0 ? min : middleMin;
+			}
+
+			return min;
+		} else {
+			return calcRMQInnerBlock(blk0, innerI, innerJ);
+		}
+
+	}
+
+	abstract int calcRMQInnerBlock(int block, int i, int j);
 
 	private static class PadderComparator implements RMQ.Comparator {
 
@@ -62,68 +127,6 @@ abstract class RMQLinearAbstract implements RMQ {
 		public int compare(int i, int j) {
 			return i >= n ? i : c.compare(i, Math.min(j, n - 1));
 		}
-
-	}
-
-	static abstract class DataStructure implements RMQ.Result {
-
-		final int n;
-		final int blockSize;
-		final int blockNum;
-		final RMQ.Comparator c;
-
-		final int[][] blocksRightMinimum;
-		final int[][] blocksLeftMinimum;
-		final PowerOf2Table xlogxTable;
-
-		DataStructure(int n, RMQ.Comparator c) {
-			blockSize = getBlockSize(n);
-			blockNum = (int) Math.ceil((double) n / blockSize);
-
-			this.n = n;
-			this.c = n < blockNum * blockSize ? new PadderComparator(n, c) : c;
-
-			blocksRightMinimum = new int[blockNum][blockSize - 1];
-			blocksLeftMinimum = new int[blockNum][blockSize - 1];
-
-			xlogxTable = new PowerOf2Table(blockNum,
-					(i, j) -> this.c.compare(blocksRightMinimum[i][0], blocksRightMinimum[j][0]));
-		}
-
-		abstract int getBlockSize(int n);
-
-		@Override
-		public int query(int i, int j) {
-			if (i < 0 || j <= i || j > n)
-				throw new IllegalArgumentException("Illegal indices [" + i + "," + j + "]");
-			if (i + 1 == j)
-				return i;
-			j--;
-
-			int blk0 = i / blockSize;
-			int blk1 = j / blockSize;
-			int innerI = i % blockSize;
-			int innerJ = j % blockSize;
-
-			if (blk0 != blk1) {
-				int blk0min = innerI == blockSize - 1 ? blk0 * blockSize + innerI : blocksRightMinimum[blk0][innerI];
-				int blk1min = innerJ == 0 ? blk1 * blockSize + innerJ : blocksLeftMinimum[blk1][innerJ - 1];
-				int min = c.compare(blk0min, blk1min) < 0 ? blk0min : blk1min;
-
-				if (blk0 + 1 != blk1) {
-					int middleBlk = xlogxTable.query(blk0 + 1, blk1);
-					int middleMin = blocksRightMinimum[middleBlk][0];
-					min = c.compare(min, middleMin) < 0 ? min : middleMin;
-				}
-
-				return min;
-			} else {
-				return queryInterBlock(blk0, innerI, innerJ);
-			}
-
-		}
-
-		abstract int queryInterBlock(int block, int i, int j);
 
 	}
 

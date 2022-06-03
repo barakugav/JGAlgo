@@ -11,19 +11,18 @@ public interface LCAStatic {
 	 * @return a result data structure that can calculate efficiently the LCA of any
 	 *         given query
 	 */
-	public <E> Result preprocessLCA(Graph<E> t, int r);
+	public void preprocessLCA(Graph<?> t, int r);
 
-	public static interface Result {
 
-		/**
-		 * Calculate the LCA (Lowest common ancestor) of two vertices
-		 *
-		 * @param u first vertex
-		 * @param v second vertex
-		 * @return the index of the LCA index of the two vertices
-		 */
-		public int query(int u, int v);
-
-	}
+	/**
+	 * Calculate the LCA (Lowest common ancestor) of two vertices
+	 *
+	 * Can be called only after preprocessing of a tree
+	 *
+	 * @param u first vertex
+	 * @param v second vertex
+	 * @return the index of the LCA index of the two vertices
+	 */
+	public int calcLCA(int u, int v);
 
 }

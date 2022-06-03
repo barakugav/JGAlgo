@@ -7,13 +7,13 @@ public class RMQLookupTableTest extends TestUtils {
 	@Test
 	public static boolean regularNRange64to256() {
 		for (int n = 64; n <= 256; n++)
-			if (RMQTestUtils.testRMQ(RMQLookupTable.getInstace(), n, 1024) != true)
+			if (RMQTestUtils.testRMQ(RMQLookupTable::new, n, 1024) != true)
 				return false;
 		return true;
 	}
 
 	@Test
 	public static boolean regular16384() {
-		return RMQTestUtils.testRMQ(RMQLookupTable.getInstace(), 16384, 4096);
+		return RMQTestUtils.testRMQ(RMQLookupTable::new, 16384, 4096);
 	}
 }

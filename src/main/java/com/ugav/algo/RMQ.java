@@ -5,7 +5,6 @@ import java.util.Objects;
 public interface RMQ {
 
 	/**
-	 *
 	 * Perform a static preprocessing of a sequence of elements for future RMQ
 	 * (Range minimum query) queries
 	 *
@@ -15,7 +14,18 @@ public interface RMQ {
 	 * @return a result data structure that can answer efficiently any future RMQ
 	 *         queries
 	 */
-	public Result preprocessRMQ(Comparator c, int n);
+	public void preprocessRMQ(Comparator c, int n);
+
+	/**
+	 * Calculate the minimum element in range [i, j)
+	 *
+	 * Can be called only after preprocessing of an array
+	 *
+	 * @param i index of range start (including)
+	 * @param j index of the range end (excluding)
+	 * @return index of the minimum element in the range
+	 */
+	public int calcRMQ(int i, int j);
 
 	@FunctionalInterface
 	public static interface Comparator {
@@ -30,19 +40,6 @@ public interface RMQ {
 		 *         and zero if they are equal
 		 */
 		public int compare(int i, int j);
-
-	}
-
-	public static interface Result {
-
-		/**
-		 * Calculate the minimum element in range [i, j)
-		 *
-		 * @param i index of range start (including)
-		 * @param j index of the range end (excluding)
-		 * @return index of the minimum element in the range
-		 */
-		public int query(int i, int j);
 
 	}
 

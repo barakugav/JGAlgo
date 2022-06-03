@@ -1,6 +1,7 @@
 package com.ugav.algo.test;
 
 import java.util.Random;
+import java.util.function.Supplier;
 
 import com.ugav.algo.RMQ;
 import com.ugav.algo.RMQ.ArrayIntComparator;
@@ -12,27 +13,28 @@ class RMQTestUtils extends TestUtils {
 		throw new InternalError();
 	}
 
-	static boolean testRMQ65536(RMQ rmq) {
-		return testRMQ(rmq, 65536, 4096);
+	static boolean testRMQ65536(Supplier<? extends RMQ> builder) {
+		return testRMQ(builder, 65536, 4096);
 	}
 
-	static boolean testRMQ(RMQ rmq, int n, int queriesNum) {
+	static boolean testRMQ(Supplier<? extends RMQ> builder, int n, int queriesNum) {
 		int[] a = new int[n];
 		int[][] queries = new int[queriesNum][];
 		randRMQDataAndQueries(a, queries);
 
-		return testRMQ(rmq, a, queries);
+		return testRMQ(builder, a, queries);
 	}
 
-	static boolean testRMQ(RMQ rmq, int a[], int[][] queries) {
-		RMQ.Result res = rmq.preprocessRMQ(new ArrayIntComparator(a), a.length);
+	static boolean testRMQ(Supplier<? extends RMQ> builder, int a[], int[][] queries) {
+		RMQ rmq = builder.get();
+		rmq.preprocessRMQ(new ArrayIntComparator(a), a.length);
 
 		for (int idx = 0; idx < queries.length; idx++) {
 			int i = queries[idx][0];
 			int j = queries[idx][1];
 			int expectedIdx = queries[idx][2];
 			int expected = a[expectedIdx];
-			int actualIdx = res.query(i, j);
+			int actualIdx = rmq.calcRMQ(i, j);
 			int actual = a[actualIdx];
 
 			if (actual != expected) {

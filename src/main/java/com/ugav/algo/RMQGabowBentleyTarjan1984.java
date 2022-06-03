@@ -21,29 +21,22 @@ public class RMQGabowBentleyTarjan1984 extends RMQLinearAbstract {
 	 * O(n) preprocessing time, O(n) space, O(1) query.
 	 */
 
-	private RMQGabowBentleyTarjan1984() {
-	}
+	private RMQ[] interBlocksDs;
 
-	private static final RMQGabowBentleyTarjan1984 INSTANCE = new RMQGabowBentleyTarjan1984();
-
-	public static RMQGabowBentleyTarjan1984 getInstace() {
-		return INSTANCE;
+	public RMQGabowBentleyTarjan1984() {
 	}
 
 	@Override
-	public RMQ.Result preprocessRMQ(RMQ.Comparator c, int n) {
+	public void preprocessRMQ(RMQ.Comparator c, int n) {
 		if (n <= 0)
 			throw new IllegalArgumentException();
 		Objects.requireNonNull(c);
 
-		RMQGabowBentleyTarjan1984.DataStructure ds = new RMQGabowBentleyTarjan1984.DataStructure(n, c);
-
-		preprocessRMQ(ds);
-
-		return ds;
+		interBlocksDs = new RMQ[calcBlockNum(n, getBlockSize(n))];
+		super.preprocessRMQ(c, n);
 	}
 
-	int[] calcDemoBlock(int key, int blockSize) {
+	private static int[] calcDemoBlock(int key, int blockSize) {
 		int[] demoBlock = new int[blockSize];
 
 		int[] nodes = new int[blockSize];
@@ -66,17 +59,17 @@ public class RMQGabowBentleyTarjan1984 extends RMQLinearAbstract {
 		return demoBlock;
 	}
 
-	int calcBlockKey(RMQGabowBentleyTarjan1984.DataStructure ds, int b) {
-		int[] nodes = new int[ds.blockSize];
+	private int calcBlockKey(int b) {
+		int[] nodes = new int[blockSize];
 		int nodesCount = 0;
 
 		int key = 0;
 		int keyIdx = 0;
 
-		int base = b * ds.blockSize;
-		for (int i = 0; i < ds.blockSize; i++) {
+		int base = b * blockSize;
+		for (int i = 0; i < blockSize; i++) {
 			int x = base + i;
-			while (nodesCount > 0 && ds.c.compare(x, nodes[nodesCount - 1]) < 0) {
+			while (nodesCount > 0 && c.compare(x, nodes[nodesCount - 1]) < 0) {
 				nodesCount--;
 				key |= 1 << (keyIdx++);
 			}
@@ -88,40 +81,29 @@ public class RMQGabowBentleyTarjan1984 extends RMQLinearAbstract {
 	}
 
 	@Override
-	void initInterBlock(RMQLinearAbstract.DataStructure ds0) {
-		RMQGabowBentleyTarjan1984.DataStructure ds = (RMQGabowBentleyTarjan1984.DataStructure) ds0;
+	void preprocessRMQInnerBlock() {
+		Map<Integer, RMQ> tables = new HashMap<>();
 
-		Map<Integer, RMQ.Result> tables = new HashMap<>();
+		for (int b = 0; b < blockNum; b++) {
+			int key = calcBlockKey(b);
 
-		for (int b = 0; b < ds.blockNum; b++) {
-			int key = calcBlockKey(ds, b);
-
-			ds.interBlocksDs[b] = tables.computeIfAbsent(Integer.valueOf(key), k -> {
-				int[] demoBlock = calcDemoBlock(k.intValue(), ds.blockSize);
-				return RMQLookupTable.getInstace().preprocessRMQ(new ArrayIntComparator(demoBlock), demoBlock.length);
+			interBlocksDs[b] = tables.computeIfAbsent(Integer.valueOf(key), k -> {
+				int[] demoBlock = calcDemoBlock(k.intValue(), blockSize);
+				RMQ innerRMQ = new RMQLookupTable();
+				innerRMQ.preprocessRMQ(new ArrayIntComparator(demoBlock), demoBlock.length);
+				return innerRMQ;
 			});
 		}
 	}
 
-	static class DataStructure extends RMQLinearAbstract.DataStructure {
+	@Override
+	int getBlockSize(int n) {
+		return (int) Math.ceil(Utils.log2((double) n) / 4);
+	}
 
-		final RMQ.Result[] interBlocksDs;
-
-		DataStructure(int n, Comparator c) {
-			super(n, c);
-			interBlocksDs = new RMQ.Result[blockNum];
-		}
-
-		@Override
-		int getBlockSize(int n) {
-			return (int) Math.ceil(Utils.log2((double) n) / 4);
-		}
-
-		@Override
-		int queryInterBlock(int block, int i, int j) {
-			return block * blockSize + interBlocksDs[block].query(i, j + 1);
-		}
-
+	@Override
+	int calcRMQInnerBlock(int block, int i, int j) {
+		return block * blockSize + interBlocksDs[block].calcRMQ(i, j + 1);
 	}
 
 }
