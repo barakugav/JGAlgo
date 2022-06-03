@@ -462,6 +462,8 @@ public class Graphs {
 	}
 
 	public static <E> List<Edge<E>> calcEulerianTour(Graph<E> g) {
+		if (g.isDirected())
+			throw new IllegalArgumentException("not supported for directed graphs yet");
 		int n = g.vertices();
 
 		int[] degree = calcDegree(g);

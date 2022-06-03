@@ -62,7 +62,7 @@ public class MSTPrefTest extends TestUtils {
 		times.sort((p1, p2) -> Long.compare(p1.e2, p2.e2));
 		printTestStr("Performance result:\n");
 		for (Pair<String, Long> time : times)
-			printTestStr("\t\"" + time.e1 + "\": " + time.e2 + "\n");
+			printTestStr("\t" + time.e1 + ": " + time.e2 + "\n");
 	}
 
 }

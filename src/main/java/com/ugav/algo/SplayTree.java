@@ -8,7 +8,6 @@ import com.ugav.algo.BSTUtils.NeighborType;
 public class SplayTree<E> extends BSTAbstract<E> {
 
 	private Node<E> root;
-	private int size;
 
 	public SplayTree() {
 		this(null);
@@ -17,12 +16,11 @@ public class SplayTree<E> extends BSTAbstract<E> {
 	public SplayTree(Comparator<? super E> c) {
 		super(c);
 		root = null;
-		size = 0;
 	}
 
 	@Override
 	public int size() {
-		return size;
+		return root != null ? root.size : 0;
 	}
 
 	@Override
@@ -36,14 +34,12 @@ public class SplayTree<E> extends BSTAbstract<E> {
 			return;
 		BSTUtils.clear(root);
 		root = null;
-		size = 0;
 	}
 
 	@Override
 	public Handle<E> insert(E e) {
 		Node<E> n = new Node<>(e);
 		insertNode(n);
-		size++;
 		return n;
 	}
 
@@ -52,14 +48,15 @@ public class SplayTree<E> extends BSTAbstract<E> {
 			root = n;
 		} else {
 			BSTUtils.insert(root, c, n);
+			for (Node<E> p = n.parent; p != null; p = p.parent)
+				p.size++;
 			splay(n);
 		}
 	}
 
 	@Override
 	public E extractMin() {
-		if (root == null)
-			throw new IllegalStateException();
+		checkTreeNotEmpty();
 		Node<E> n = BSTUtils.findMin(root);
 		E ret = n.val;
 		removeHandle(n);
@@ -68,8 +65,7 @@ public class SplayTree<E> extends BSTAbstract<E> {
 
 	@Override
 	public E extractMax() {
-		if (root == null)
-			throw new IllegalStateException();
+		checkTreeNotEmpty();
 		Node<E> n = BSTUtils.findMax(root);
 		E ret = n.val;
 		removeHandle(n);
@@ -79,24 +75,17 @@ public class SplayTree<E> extends BSTAbstract<E> {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void meld(Heap<? extends E> h0) {
-		if (h0.isEmpty())
+		if (h0 == this || h0.isEmpty())
 			return;
-		if (!(h0 instanceof SplayTree)) {
+		SplayTree<? extends E> h;
+		if (!(h0 instanceof SplayTree) || (h = (SplayTree<? extends E>) h0).c != c) {
 			super.meld(h0);
-			return;
-		}
-
-		SplayTree<? extends E> h = (SplayTree<? extends E>) h0;
-		if (c != h.c) {
-			super.meld(h);
 			return;
 		}
 
 		if (root == null) {
 			root = (Node<E>) h.root;
-			size = h.size;
 			h.root = null;
-			h.size = 0;
 			return;
 		}
 
@@ -109,9 +98,8 @@ public class SplayTree<E> extends BSTAbstract<E> {
 			assert root.right == null;
 			root.right = (Node<E>) h.root;
 			root.right.parent = root;
-			size += h.size;
+			root.size += root.right.size;
 			h.root = null;
-			h.size = 0;
 			return;
 		}
 
@@ -124,9 +112,8 @@ public class SplayTree<E> extends BSTAbstract<E> {
 			assert root.left == null;
 			root.left = (Node<E>) h.root;
 			root.left.parent = root;
-			size += h.size;
+			root.size += root.left.size;
 			h.root = null;
-			h.size = 0;
 			return;
 		}
 
@@ -141,15 +128,13 @@ public class SplayTree<E> extends BSTAbstract<E> {
 
 	@Override
 	public Handle<E> findMinHandle() {
-		if (root == null)
-			throw new IllegalStateException();
+		checkTreeNotEmpty();
 		return splay(BSTUtils.findMin(root));
 	}
 
 	@Override
 	public Handle<E> findMaxHandle() {
-		if (root == null)
-			throw new IllegalStateException();
+		checkTreeNotEmpty();
 		return splay(BSTUtils.findMax(root));
 	}
 
@@ -179,19 +164,25 @@ public class SplayTree<E> extends BSTAbstract<E> {
 			assert n.right == null;
 			replace(n, n.left);
 		}
+
+		/* Decrease ancestors size by 1 */
+		for (Node<E> p = n.parent; p != null; p = p.parent)
+			p.size--;
+
 		n.clear();
-		size--;
 	}
 
 	private void replace(Node<E> u, Node<E> v) {
 		/* replaces u with v */
 		Node<E> p = u.parent;
-		if (p == null)
+		if (p == null) {
 			root = v;
-		else if (p.left == u)
+		} else if (u == p.left) {
 			p.left = v;
-		else
+		} else {
+			assert u == p.right;
 			p.right = v;
+		}
 		if (v != null)
 			v.parent = p;
 	}
@@ -247,13 +238,20 @@ public class SplayTree<E> extends BSTAbstract<E> {
 
 	private void rotate(Node<E> n) {
 		Node<E> parent = n.parent, grandparent = parent.parent;
-		if (parent.left == n) {
+		int parentOldSize = parent.size;
+
+		if (n == parent.left) {
+			parent.size = parentOldSize - n.size + (n.right != null ? n.right.size : 0);
+
 			parent.left = n.right;
 			if (parent.left != null)
 				parent.left.parent = parent;
 			n.right = parent;
 
 		} else {
+			assert n == parent.right;
+			parent.size = parentOldSize - n.size + (n.left != null ? n.left.size : 0);
+
 			parent.right = n.left;
 			if (parent.right != null)
 				parent.right.parent = parent;
@@ -261,6 +259,7 @@ public class SplayTree<E> extends BSTAbstract<E> {
 		}
 
 		n.parent = grandparent;
+		n.size = parentOldSize;
 		parent.parent = n;
 		if (grandparent != null) {
 			if (grandparent.left == parent)
@@ -270,15 +269,29 @@ public class SplayTree<E> extends BSTAbstract<E> {
 		}
 	}
 
+	private void checkTreeNotEmpty() {
+		if (root == null)
+			throw new IllegalStateException("Tree is empty");
+	}
+
 	private static class Node<E> extends BSTUtils.Node<E, Node<E>> implements Handle<E> {
+
+		private int size;
 
 		Node(E e) {
 			super(e);
+			size = 1;
 		}
 
 		@Override
 		public E get() {
 			return val;
+		}
+
+		@Override
+		void clear() {
+			super.clear();
+			size = 1;
 		}
 	}
 

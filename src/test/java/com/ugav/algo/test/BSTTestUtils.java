@@ -1,5 +1,6 @@
 package com.ugav.algo.test;
 
+import java.util.List;
 import java.util.NavigableSet;
 import java.util.Objects;
 import java.util.Random;
@@ -13,6 +14,22 @@ class BSTTestUtils extends TestUtils {
 
 	private BSTTestUtils() {
 		throw new InternalError();
+	}
+
+	static boolean findPredecessors(Supplier<? extends BST<Integer>> treeBuilder) {
+		List<Phase> phases = List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 4096));
+		return runTestMultiple(phases, args -> {
+			int n = args[0];
+			return BSTTestUtils.findPredecessor(treeBuilder, n);
+		});
+	}
+
+	static boolean findSuccessors(Supplier<? extends BST<Integer>> treeBuilder) {
+		List<Phase> phases = List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 4096));
+		return runTestMultiple(phases, args -> {
+			int n = args[0];
+			return BSTTestUtils.findSuccessor(treeBuilder, n);
+		});
 	}
 
 	static boolean findPredecessor(Supplier<? extends BST<Integer>> treeBuilder, int n) {
