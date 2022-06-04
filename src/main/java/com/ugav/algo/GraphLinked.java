@@ -7,8 +7,6 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
-import com.ugav.algo.Graph.Edge;
-
 public class GraphLinked<E> extends GraphAbstract<E> {
 
 	private int n;

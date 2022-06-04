@@ -8,7 +8,11 @@ public class DebugPrintsManager {
 	private PrintStream printStream;
 
 	public DebugPrintsManager() {
-		enable = false;
+		this(false);
+	}
+
+	public DebugPrintsManager(boolean enable) {
+		this.enable = enable;
 		printStream = System.out;
 	}
 

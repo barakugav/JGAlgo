@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Supplier;
 
+import com.ugav.algo.DebugPrintsManager;
 import com.ugav.algo.Heap;
 import com.ugav.algo.HeapDirectAccessed;
 
@@ -254,6 +255,7 @@ class HeapTestUtils extends TestUtils {
 
 	@SuppressWarnings("boxing")
 	static boolean testHeap(HeapTracker tracker, int m, TestMode mode, int[] values) {
+		DebugPrintsManager debug = new DebugPrintsManager(false);
 		Random rand = new Random(nextRandSeed());
 		int insertFirst = mode == TestMode.InsertFirst ? m / 2 : 0;
 
@@ -264,6 +266,8 @@ class HeapTestUtils extends TestUtils {
 		int[] elmsToInsertIds = Utils.randPermutation(values.length, nextRandSeed());
 		int elmsToInsertCursor = 0;
 
+		debug.println("  testHeap begin");
+
 		for (int opIdx = 0; opIdx < m;) {
 			HeapOp op = opIdx < insertFirst ? HeapOp.Insert : ops.get(rand.nextInt(ops.size()));
 
@@ -273,6 +277,7 @@ class HeapTestUtils extends TestUtils {
 				if (elmsToInsertCursor >= elmsToInsertIds.length)
 					continue;
 				x = values[elmsToInsertIds[elmsToInsertCursor++]];
+				debug.println("Insert(" + x + ")");
 
 				tracker.insert(x);
 				tracker.heap.insert(x);
@@ -282,6 +287,7 @@ class HeapTestUtils extends TestUtils {
 				if (tracker.isEmpty() || rand.nextInt(3) != 0)
 					continue;
 				x = tracker.randElement();
+				debug.println("Remove(" + x + ")");
 
 				tracker.remove(x);
 				if (!tracker.heap.remove(x)) {
@@ -293,6 +299,7 @@ class HeapTestUtils extends TestUtils {
 			case FindMin:
 				if (tracker.isEmpty())
 					continue;
+				debug.println("FindMin");
 
 				expected = tracker.findMin();
 				actual = tracker.heap.findMin();
@@ -305,6 +312,7 @@ class HeapTestUtils extends TestUtils {
 			case ExtractMin:
 				if (tracker.isEmpty() || rand.nextInt(3) != 0)
 					continue;
+				debug.println("ExtractMin");
 
 				expected = tracker.extractMin();
 				actual = tracker.heap.extractMin();

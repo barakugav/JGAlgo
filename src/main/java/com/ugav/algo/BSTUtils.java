@@ -10,28 +10,6 @@ class BSTUtils {
 		throw new InternalError();
 	}
 
-	static class Node<E, N extends Node<E, N>> {
-		E val;
-		N parent;
-		N right;
-		N left;
-
-		Node(E e) {
-			this.val = e;
-			parent = right = left = null;
-		}
-
-		void clear() {
-			parent = left = right = null;
-			val = null;
-		}
-
-		@Override
-		public String toString() {
-			return "<" + val + ">";
-		}
-	}
-
 	static <E, N extends Node<E, N>> N find(N root, Comparator<? super E> c, E e) {
 		return findOrNeighbor(root, c, e, NeighborType.None);
 	}
@@ -48,11 +26,11 @@ class BSTUtils {
 			if (cmp == 0)
 				return p;
 			if (cmp < 0) {
-				if (p.left == null)
+				if (!p.hasLeftChild())
 					return findNeighbor(p, neighborType);
 				p = p.left;
 			} else {
-				if (p.right == null)
+				if (!p.hasRightChild())
 					return findNeighbor(p, neighborType);
 				p = p.right;
 			}
@@ -74,27 +52,32 @@ class BSTUtils {
 
 	static <E, N extends Node<E, N>> N findMin(N root) {
 		for (N p = root;; p = p.left)
-			if (p.left == null)
+			if (!p.hasLeftChild())
 				return p;
 	}
 
 	static <E, N extends Node<E, N>> N findMax(N root) {
 		for (N p = root;; p = p.right)
-			if (p.right == null)
+			if (!p.hasRightChild())
 				return p;
 	}
 
 	static <E, N extends Node<E, N>> N findPredecessor(N n) {
+		return findPredecessorInSubtree(n, null);
+	}
+
+	static <E, N extends Node<E, N>> N findPredecessorInSubtree(N n, N subtreeRoot) {
 		/* predecessor in left sub tree */
-		if (n.left != null)
+		if (n.hasLeftChild())
 			for (N p = n.left;; p = p.right)
-				if (p.right == null)
+				if (!p.hasRightChild())
 					return p;
 
 		/* predecessor is some ancestor */
-		for (N p = n, parent; (parent = p.parent) != null; p = parent)
-			if (p == parent.right)
-				return parent;
+		N subtreeParent = subtreeRoot != null ? subtreeRoot.parent : null;
+		for (N p = n; p.parent != subtreeParent; p = p.parent)
+			if (p.isRightChild())
+				return p.parent;
 		return null;
 	}
 
@@ -103,18 +86,17 @@ class BSTUtils {
 	}
 
 	static <E, N extends Node<E, N>> N findSuccessorInSubtree(N n, N subtreeRoot) {
-		N subtreeParent = subtreeRoot != null ? subtreeRoot.parent : null;
-
 		/* successor in right sub tree */
-		if (n.right != null)
+		if (n.hasRightChild())
 			for (N p = n.right;; p = p.left)
-				if (p.left == null)
+				if (!p.hasLeftChild())
 					return p;
 
 		/* successor is some ancestor */
-		for (N p = n, parent; (parent = p.parent) != subtreeParent; p = parent)
-			if (p == parent.left)
-				return parent;
+		N subtreeParent = subtreeRoot != null ? subtreeRoot.parent : null;
+		for (N p = n; p.parent != subtreeParent; p = p.parent)
+			if (p.isLeftChild())
+				return p.parent;
 		return null;
 	}
 
@@ -122,14 +104,14 @@ class BSTUtils {
 		for (N parent = root;;) {
 			int cmp = c.compare(n.val, parent.val);
 			if (cmp <= 0) {
-				if (parent.left == null) {
+				if (!parent.hasLeftChild()) {
 					parent.left = n;
 					n.parent = parent;
 					return;
 				}
 				parent = parent.left;
 			} else {
-				if (parent.right == null) {
+				if (!parent.hasRightChild()) {
 					parent.right = n;
 					n.parent = parent;
 					return;
@@ -142,11 +124,11 @@ class BSTUtils {
 	static <E, N extends Node<E, N>> void clear(N root) {
 		for (N p = root; p != null;) {
 			for (;;) {
-				if (p.left != null) {
+				if (p.hasLeftChild()) {
 					p = p.left;
 					continue;
 				}
-				if (p.right != null) {
+				if (p.hasRightChild()) {
 					p = p.right;
 					continue;
 				}
@@ -155,6 +137,48 @@ class BSTUtils {
 			N parent = p.parent;
 			p.clear();
 			p = parent;
+		}
+	}
+
+	static class Node<E, N extends Node<E, N>> {
+		E val;
+		N parent;
+		N right;
+		N left;
+
+		Node(E e) {
+			this.val = e;
+			parent = right = left = null;
+		}
+
+		void clear() {
+			parent = left = right = null;
+			val = null;
+		}
+
+		@Override
+		public String toString() {
+			return "<" + val + ">";
+		}
+
+		boolean isRoot() {
+			return parent == null;
+		}
+
+		boolean isLeftChild() {
+			return !isRoot() && this == parent.left;
+		}
+
+		boolean isRightChild() {
+			return !isRoot() && this == parent.right;
+		}
+
+		boolean hasLeftChild() {
+			return left != null;
+		}
+
+		boolean hasRightChild() {
+			return right != null;
 		}
 	}
 
