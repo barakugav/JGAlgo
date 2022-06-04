@@ -22,8 +22,13 @@ class TestList {
 			SplayTreeTest.class,
 			DynamicTreeSplayTest.class);
 
-	private static final Collection<Class<?>> MISC_TESTS = List.of(
+	private static final Collection<Class<?>> GRAPHS_TESTS = List.of(
 			GraphsTest.class,
+			GraphArrayTest.class,
+			GraphLinkedTest.class,
+			GraphTableTest.class);
+
+	private static final Collection<Class<?>> MISC_TESTS = List.of(
 			ArraysTest.class,
 			UnionFindPtrTest.class,
 			UnionFindArrayTest.class,
@@ -63,6 +68,7 @@ class TestList {
 	static final Collection<Class<?>> TEST_CLASSES;
 	static {
 		Collection<Class<?>> l = new ArrayList<>();
+		l.addAll(GRAPHS_TESTS);
 		l.addAll(RMQ_TESTS);
 		l.addAll(HEAP_TESTS);
 		l.addAll(MISC_TESTS);

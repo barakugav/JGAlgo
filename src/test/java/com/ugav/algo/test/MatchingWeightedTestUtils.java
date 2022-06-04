@@ -21,6 +21,7 @@ import com.ugav.algo.MatchingWeighted;
 import com.ugav.algo.MatchingWeightedBipartiteHungarianMethod;
 import com.ugav.algo.MatchingWeightedBipartiteSSSP;
 import com.ugav.algo.MatchingWeightedGabow2017;
+import com.ugav.algo.test.GraphImplTestUtils.GraphImpl;
 
 @SuppressWarnings("boxing")
 class MatchingWeightedTestUtils extends TestUtils {
@@ -30,6 +31,10 @@ class MatchingWeightedTestUtils extends TestUtils {
 	}
 
 	static boolean randGraphsBipartiteWeighted(Supplier<? extends MatchingWeighted> builder) {
+		return randGraphsBipartiteWeighted(builder, GraphImplTestUtils.GRAPH_IMPL_DEFAULT);
+	}
+
+	static boolean randGraphsBipartiteWeighted(Supplier<? extends MatchingWeighted> builder, GraphImpl graphImpl) {
 		List<Phase> phases = List.of(phase(256, 8, 8, 8), phase(128, 16, 16, 64), phase(12, 128, 128, 128),
 				phase(8, 128, 128, 512), phase(4, 1024, 1024, 1024), phase(2, 1024, 1024, 8192));
 		return runTestMultiple(phases, (testIter, args) -> {
@@ -37,7 +42,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 			int tn = args[1];
 			int m = args[2];
 
-			GraphBipartite<Integer> g = MatchingBipartiteTestUtils.randGraphBipartite(sn, tn, m);
+			GraphBipartite<Integer> g = MatchingBipartiteTestUtils.randGraphBipartite(sn, tn, m, graphImpl);
 			GraphsTestUtils.assignRandWeightsIntNeg(g);
 			WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
 
@@ -57,7 +62,8 @@ class MatchingWeightedTestUtils extends TestUtils {
 			int tn = args[1];
 			int m = args[2];
 
-			GraphBipartite<Integer> g = MatchingBipartiteTestUtils.randGraphBipartite(sn, tn, m);
+			GraphBipartite<Integer> g = MatchingBipartiteTestUtils.randGraphBipartite(sn, tn, m,
+					GraphImplTestUtils.GRAPH_IMPL_DEFAULT);
 			int maxWeight = m < 50 ? 100 : m * 2 + 2;
 			GraphsTestUtils.assignRandWeightsInt(g, -maxWeight, maxWeight / 4);
 			WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;

@@ -8,10 +8,10 @@ import com.ugav.algo.Graph;
 import com.ugav.algo.Graph.DirectedType;
 import com.ugav.algo.Graph.Edge;
 import com.ugav.algo.GraphArray;
-import com.ugav.algo.GraphBipartiteArray;
 import com.ugav.algo.Pair;
 import com.ugav.algo.UnionFind;
 import com.ugav.algo.UnionFindArray;
+import com.ugav.algo.test.GraphImplTestUtils.GraphImpl;
 
 class GraphsTestUtils extends TestUtils {
 
@@ -31,6 +31,7 @@ class GraphsTestUtils extends TestUtils {
 		private boolean selfEdges;
 		private boolean cycles;
 		private boolean connected;
+		private GraphImpl impl = GraphImplTestUtils.GRAPH_IMPL_DEFAULT;
 
 		RandomGraphBuilder() {
 			n = sn = tn = m = 0;
@@ -91,20 +92,25 @@ class GraphsTestUtils extends TestUtils {
 			return this;
 		}
 
+		RandomGraphBuilder graphImpl(GraphImpl impl) {
+			this.impl = impl;
+			return this;
+		}
+
 		<E> Graph<E> build() {
-			Graph<E> g;
+			final Graph<E> g;
 			DirectedType directedType = directed ? DirectedType.Directed : DirectedType.Undirected;
 			if (!bipartite) {
 				if (n < 0 || m < 0)
 					throw new IllegalStateException();
-				g = new GraphArray<>(directedType, n);
+				g = impl.newGraph(directedType, n);
 			} else {
 				if (sn < 0 || tn < 0)
 					throw new IllegalStateException();
 				if ((sn == 0 || tn == 0) && m != 0)
 					throw new IllegalStateException();
 				n = sn + tn;
-				g = new GraphBipartiteArray<>(directedType, sn, tn);
+				g = impl.newGraph(directedType, sn, tn);
 			}
 			if (n == 0)
 				return g;
@@ -268,6 +274,10 @@ class GraphsTestUtils extends TestUtils {
 	}
 
 	static <E> Graph<E> randGraph(int n, int m) {
+		return randGraph(n, m, GraphImplTestUtils.GRAPH_IMPL_DEFAULT);
+	}
+
+	static <E> Graph<E> randGraph(int n, int m, GraphImpl graphImpl) {
 		return new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(false).selfEdges(false).cycles(true)
 				.connected(false).build();
 	}

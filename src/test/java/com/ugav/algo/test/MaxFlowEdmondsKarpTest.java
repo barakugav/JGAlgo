@@ -3,6 +3,7 @@ package com.ugav.algo.test;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Supplier;
 
 import com.ugav.algo.Graph;
 import com.ugav.algo.Graph.Edge;
@@ -12,14 +13,16 @@ import com.ugav.algo.MaxFlow.FlowNetwork;
 import com.ugav.algo.MaxFlow.FlowNetworkDefault;
 import com.ugav.algo.MaxFlowEdmondsKarp;
 import com.ugav.algo.Pair;
+import com.ugav.algo.test.GraphImplTestUtils.GraphImpl;
 import com.ugav.algo.test.GraphsTestUtils.RandomGraphBuilder;
 
 @SuppressWarnings("boxing")
 public class MaxFlowEdmondsKarpTest extends TestUtils {
 
-	private static Pair<Graph<FlowEdgeValueDefault>, FlowNetwork<FlowEdgeValueDefault>> randNetword(int n, int m) {
+	private static Pair<Graph<FlowEdgeValueDefault>, FlowNetwork<FlowEdgeValueDefault>> randNetword(int n, int m,
+			GraphImpl graphImpl) {
 		Graph<FlowEdgeValueDefault> g = new RandomGraphBuilder().n(n).m(m).directed(true).doubleEdges(false)
-				.selfEdges(false).cycles(true).connected(false).build();
+				.selfEdges(false).cycles(true).connected(false).graphImpl(graphImpl).build();
 
 		Random rand = new Random(nextRandSeed());
 		for (Edge<FlowEdgeValueDefault> e : g.edges()) {
@@ -35,17 +38,21 @@ public class MaxFlowEdmondsKarpTest extends TestUtils {
 
 	@Test
 	public static boolean randGraphs() {
-		return randGraphs(new MaxFlowEdmondsKarp());
+		return testRandGraphs(MaxFlowEdmondsKarp::new);
 	}
 
-	private static boolean randGraphs(MaxFlow algo) {
+	private static boolean testRandGraphs(Supplier<? extends MaxFlow> builder) {
+		return testRandGraphs(builder, GraphImplTestUtils.GRAPH_IMPL_DEFAULT);
+	}
+
+	static boolean testRandGraphs(Supplier<? extends MaxFlow> builder, GraphImpl graphImpl) {
 		Random rand = new Random(nextRandSeed());
 		List<Phase> phases = List.of(phase(128, 16, 16), phase(128, 16, 32), phase(64, 64, 64), phase(64, 64, 128),
 				phase(8, 512, 512), phase(8, 512, 2048), phase(1, 4096, 4096), phase(1, 4096, 16384));
 		return runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
-			Pair<Graph<FlowEdgeValueDefault>, FlowNetwork<FlowEdgeValueDefault>> p = randNetword(n, m);
+			Pair<Graph<FlowEdgeValueDefault>, FlowNetwork<FlowEdgeValueDefault>> p = randNetword(n, m, graphImpl);
 			Graph<FlowEdgeValueDefault> g = p.e1;
 			FlowNetwork<FlowEdgeValueDefault> net = p.e2;
 			int source, target;
@@ -54,6 +61,7 @@ public class MaxFlowEdmondsKarpTest extends TestUtils {
 				target = rand.nextInt(g.vertices());
 			} while (source == target);
 
+			MaxFlow algo = builder.get();
 			return testNetwork(g, net, source, target, algo);
 		});
 	}

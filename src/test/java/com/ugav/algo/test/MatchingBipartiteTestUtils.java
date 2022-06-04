@@ -9,6 +9,7 @@ import com.ugav.algo.Graph.Edge;
 import com.ugav.algo.GraphBipartite;
 import com.ugav.algo.GraphBipartiteArray;
 import com.ugav.algo.Matching;
+import com.ugav.algo.test.GraphImplTestUtils.GraphImpl;
 import com.ugav.algo.test.GraphsTestUtils.RandomGraphBuilder;
 
 @SuppressWarnings("boxing")
@@ -18,9 +19,9 @@ class MatchingBipartiteTestUtils extends TestUtils {
 		throw new InternalError();
 	}
 
-	static <E> GraphBipartite<E> randGraphBipartite(int sn, int tn, int m) {
+	static <E> GraphBipartite<E> randGraphBipartite(int sn, int tn, int m, GraphImpl graphImpl) {
 		return (GraphBipartite<E>) new RandomGraphBuilder().sn(sn).tn(tn).m(m).bipartite(true).directed(false)
-				.doubleEdges(false).selfEdges(false).cycles(true).connected(false).<E>build();
+				.doubleEdges(false).selfEdges(false).cycles(true).connected(false).graphImpl(graphImpl).<E>build();
 	}
 
 	static GraphBipartite<Void> createGraphBipartiteFromAdjacencyMatrix(int sSize, int[][] m) {
@@ -37,13 +38,17 @@ class MatchingBipartiteTestUtils extends TestUtils {
 	}
 
 	static boolean randBipartiteGraphs(Supplier<? extends Matching> builder) {
+		return randBipartiteGraphs(builder, GraphImplTestUtils.GRAPH_IMPL_DEFAULT);
+	}
+
+	static boolean randBipartiteGraphs(Supplier<? extends Matching> builder, GraphImpl graphImpl) {
 		List<Phase> phases = List.of(phase(256, 4, 4, 4), phase(128, 16, 16, 64), phase(16, 128, 128, 128),
 				phase(16, 128, 128, 512), phase(4, 1024, 1024, 1024), phase(4, 1024, 1024, 8192));
 		return runTestMultiple(phases, (testIter, args) -> {
 			int sn = args[0];
 			int tn = args[1];
 			int m = args[2];
-			GraphBipartite<Void> g = randGraphBipartite(sn, tn, m);
+			GraphBipartite<Void> g = randGraphBipartite(sn, tn, m, graphImpl);
 
 			Matching algo = builder.get();
 			int expeced = calcExpectedMaxMatching(g);

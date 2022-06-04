@@ -3,6 +3,7 @@ package com.ugav.algo.test;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Supplier;
 
 import com.ugav.algo.Graph;
 import com.ugav.algo.Graph.DirectedType;
@@ -14,6 +15,7 @@ import com.ugav.algo.Graphs;
 import com.ugav.algo.MDST;
 import com.ugav.algo.MDSTTarjan1977;
 import com.ugav.algo.MST;
+import com.ugav.algo.test.GraphImplTestUtils.GraphImpl;
 import com.ugav.algo.test.GraphsTestUtils.RandomGraphBuilder;
 
 public class MDSTTarjan1977Test extends TestUtils {
@@ -54,24 +56,30 @@ public class MDSTTarjan1977Test extends TestUtils {
 
 	@Test
 	public static boolean randGraphDirected() {
-		return testRandGraph(new MDSTTarjan1977());
+		return testRandGraph(MDSTTarjan1977::new);
 	}
 
-	private static boolean testRandGraph(MDST algo) {
+	private static boolean testRandGraph(Supplier<? extends MDST> builder) {
+		return testRandGraph(builder, GraphImplTestUtils.GRAPH_IMPL_DEFAULT);
+	}
+
+	static boolean testRandGraph(Supplier<? extends MDST> builder, GraphImpl graphImpl) {
 		List<Phase> phases = List.of(phase(1, 0, 0), phase(256, 6, 5), phase(128, 16, 32), phase(64, 64, 128),
 				phase(32, 128, 256), phase(8, 1024, 4096), phase(2, 4096, 16384));
 		return runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
-			return testRandGraph(algo, n, m);
+
+			Graph<Integer> g = new RandomGraphBuilder().n(n).m(m).directed(true).doubleEdges(false).selfEdges(false)
+					.cycles(true).connected(false).graphImpl(graphImpl).build();
+			GraphsTestUtils.assignRandWeightsIntPos(g);
+
+			MDST algo = builder.get();
+			return testRandGraph(algo, g);
 		});
 	}
 
-	private static boolean testRandGraph(MDST algo, int n, int m) {
-		Graph<Integer> g = new RandomGraphBuilder().n(n).m(m).directed(true).doubleEdges(false).selfEdges(false)
-				.cycles(true).connected(false).build();
-		GraphsTestUtils.assignRandWeightsIntPos(g);
-
+	private static boolean testRandGraph(MDST algo, Graph<Integer> g) {
 		WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
 		@SuppressWarnings("unused")
 		Collection<Edge<Integer>> mst = algo.calcMST(g, w, 0);

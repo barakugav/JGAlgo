@@ -15,6 +15,7 @@ import com.ugav.algo.Graph.WeightFunctionInt;
 import com.ugav.algo.Graphs;
 import com.ugav.algo.MST;
 import com.ugav.algo.MSTKruskal1956;
+import com.ugav.algo.test.GraphImplTestUtils.GraphImpl;
 
 @SuppressWarnings("boxing")
 class MSTTestUtils extends TestUtils {
@@ -24,23 +25,24 @@ class MSTTestUtils extends TestUtils {
 	}
 
 	static boolean testRandGraph(Supplier<? extends MST> builder) {
+		return testRandGraph(builder, GraphImplTestUtils.GRAPH_IMPL_DEFAULT);
+	}
+
+	static boolean testRandGraph(Supplier<? extends MST> builder, GraphImpl graphImpl) {
 		List<Phase> phases = List.of(phase(1, 0, 0), phase(128, 16, 32), phase(64, 64, 128), phase(32, 128, 256),
 				phase(8, 1024, 4096), phase(2, 4096, 16384));
 		return runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
 			MST algo = builder.get();
-			return testRandGraph(algo, n, m);
+
+			Graph<Integer> g = GraphsTestUtils.randGraph(n, m, graphImpl);
+			GraphsTestUtils.assignRandWeightsIntPos(g);
+
+			WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
+			Collection<Edge<Integer>> mst = algo.calcMST(g, w);
+			return verifyMST(g, w, mst);
 		});
-	}
-
-	private static boolean testRandGraph(MST algo, int n, int m) {
-		Graph<Integer> g = GraphsTestUtils.randGraph(n, m);
-		GraphsTestUtils.assignRandWeightsIntPos(g);
-
-		WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
-		Collection<Edge<Integer>> mst = algo.calcMST(g, w);
-		return verifyMST(g, w, mst);
 	}
 
 	private static class MSTEdgeComparator<E> implements Comparator<Edge<E>> {

@@ -225,7 +225,7 @@ public class GraphsTest extends TestUtils {
 
 			SSSP.Result<Integer> result = Graphs.calcDistancesDAG(g, w, source);
 
-			return SSSPAbstractTest.validateResult(g, w, source, result, new SSSPDijkstra());
+			return SSSPTestUtils.validateResult(g, w, source, result, new SSSPDijkstra());
 		});
 	}
 

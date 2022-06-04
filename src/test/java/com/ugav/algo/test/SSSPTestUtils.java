@@ -17,9 +17,9 @@ import com.ugav.algo.SSSPGoldberg1995;
 import com.ugav.algo.test.GraphsTestUtils.RandomGraphBuilder;
 
 @SuppressWarnings("boxing")
-class SSSPAbstractTest extends TestUtils {
+class SSSPTestUtils extends TestUtils {
 
-	private SSSPAbstractTest() {
+	private SSSPTestUtils() {
 		throw new InternalError();
 	}
 
