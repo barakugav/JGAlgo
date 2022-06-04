@@ -19,7 +19,8 @@ class TestList {
 			HeapFibonacciTest.class,
 			RedBlackTreeTest.class,
 			RedBlackTreeExtendedTest.class,
-			SplayTreeTest.class);
+			SplayTreeTest.class,
+			DynamicTreeSplayTest.class);
 
 	private static final Collection<Class<?>> MISC_TESTS = List.of(
 			GraphsTest.class,

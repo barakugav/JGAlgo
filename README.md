@@ -12,6 +12,7 @@ Algo is a collection of algorithms implemented in Java. It contains mostly algor
 | Fibonacci heap | O(m log n) for m operations, decrease key in O(1) |
 | Red-Black tree (sub tree size/max/min extensions supported) | O(m log n) for m operations |
 | Splay Tree | O(m log n) for m operations, efficient splits and joins |
+| Dynamic Tree using Splay trees | O(m log n) for m operations |
 | Union Find | O(m alpha(m,n)) where alpha is inverse Ackermann func |
 | Split Find Min | O(m log n) for m operations |
 | SSSP Dijkstra positive weights | O(m + n log n) |

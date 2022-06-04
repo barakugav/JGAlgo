@@ -174,6 +174,11 @@ class TestUtils {
 			this.phase = phase;
 			this.iter = iter;
 		}
+
+		@Override
+		public String toString() {
+			return "P" + phase + " I" + iter;
+		}
 	}
 
 	static long nextRandSeed() {
