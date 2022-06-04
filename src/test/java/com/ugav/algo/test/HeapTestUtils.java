@@ -24,7 +24,7 @@ class HeapTestUtils extends TestUtils {
 	static boolean testRandOps(Supplier<? extends Heap<Integer>> heapBuilder) {
 		List<Phase> phases = List.of(phase(256, 16, 16), phase(128, 64, 128), phase(64, 512, 1024),
 				phase(16, 4096, 8096), phase(8, 16384, 32768));
-		return runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
 			Heap<Integer> heap = heapBuilder.get();
@@ -36,7 +36,7 @@ class HeapTestUtils extends TestUtils {
 	static boolean testRandOpsAfterManyInserts(Supplier<? extends Heap<Integer>> heapBuilder) {
 		List<Phase> phases = List.of(phase(256, 16, 16), phase(128, 64, 128), phase(64, 512, 1024),
 				phase(16, 4096, 8096), phase(8, 16384, 32768));
-		return runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = n;
 			Heap<Integer> heap = heapBuilder.get();
@@ -55,7 +55,7 @@ class HeapTestUtils extends TestUtils {
 
 	private static boolean testMeld(Supplier<? extends Heap<Integer>> heapBuilder, boolean orderedValues) {
 		List<Phase> phases = List.of(phase(64, 16), phase(64, 32), phase(8, 256), phase(1, 2048));
-		return runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, (testIter, args) -> {
 			int hCount = args[0];
 			return testMeld(heapBuilder, orderedValues, hCount);
 		});
@@ -108,7 +108,7 @@ class HeapTestUtils extends TestUtils {
 
 	static boolean testDecreaseKey(Supplier<? extends Heap<Integer>> heapBuilder) {
 		List<Phase> phases = List.of(phase(256, 16), phase(128, 64), phase(64, 512), phase(16, 4096), phase(2, 16384));
-		return runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = n;
 			Heap<Integer> heap = heapBuilder.get();

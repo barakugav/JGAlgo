@@ -11,7 +11,6 @@ public class LCAGabow2017Test extends TestUtils {
 
 	@Test
 	public static boolean randTrees() {
-		initTestRand(0);
 		return LCADynamicTestUtils.randTrees(LCAGabow2017::new);
 	}
 

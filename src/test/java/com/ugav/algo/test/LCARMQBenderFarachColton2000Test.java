@@ -83,7 +83,7 @@ public class LCARMQBenderFarachColton2000Test extends TestUtils {
 	public static boolean randTrees() {
 		List<Phase> phases = List.of(phase(128, 16, 16), phase(64, 64, 64), phase(16, 512, 512), phase(4, 4096, 4096),
 				phase(1, 16384, 16384));
-		return runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
 			Graph<Void> g = GraphsTestUtils.randTree(n);

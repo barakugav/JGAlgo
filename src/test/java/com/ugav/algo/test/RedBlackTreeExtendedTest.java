@@ -134,7 +134,7 @@ public class RedBlackTreeExtendedTest extends TestUtils {
 	public static boolean extensionSizeRandOps() {
 		List<Phase> phases = List.of(phase(256, 16, 16), phase(128, 64, 128), phase(64, 512, 1024),
 				phase(16, 4096, 8096), phase(8, 16384, 32768));
-		return runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
 
@@ -166,7 +166,7 @@ public class RedBlackTreeExtendedTest extends TestUtils {
 	public static boolean extensionMinRandOps() {
 		List<Phase> phases = List.of(phase(256, 16, 16), phase(128, 64, 128), phase(64, 512, 1024),
 				phase(16, 4096, 8096), phase(8, 16384, 32768));
-		return runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
 
@@ -199,7 +199,7 @@ public class RedBlackTreeExtendedTest extends TestUtils {
 	public static boolean extensionMaxRandOps() {
 		List<Phase> phases = List.of(phase(256, 16, 16), phase(128, 64, 128), phase(64, 512, 1024),
 				phase(16, 4096, 8096), phase(8, 16384, 32768));
-		return runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
 

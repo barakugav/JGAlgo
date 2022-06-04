@@ -42,7 +42,7 @@ public class MaxFlowEdmondsKarpTest extends TestUtils {
 		Random rand = new Random(nextRandSeed());
 		List<Phase> phases = List.of(phase(128, 16, 16), phase(128, 16, 32), phase(64, 64, 64), phase(64, 64, 128),
 				phase(8, 512, 512), phase(8, 512, 2048), phase(1, 4096, 4096), phase(1, 4096, 16384));
-		return runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
 			Pair<Graph<FlowEdgeValueDefault>, FlowNetwork<FlowEdgeValueDefault>> p = randNetword(n, m);

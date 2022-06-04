@@ -89,7 +89,7 @@ class TPMTestUtils extends TestUtils {
 	static boolean testTPM(Supplier<? extends TPM> builder) {
 		List<Phase> phases = List.of(phase(64, 16), phase(32, 32), phase(16, 64), phase(8, 128), phase(4, 256),
 				phase(2, 512), phase(1, 1024), phase(1, 4096), phase(1, 16384));
-		return runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			TPM algo = builder.get();
 			return testTPM(algo, n);
@@ -110,7 +110,7 @@ class TPMTestUtils extends TestUtils {
 	static boolean verifyMSTPositive(Supplier<? extends TPM> builder) {
 		List<Phase> phases = List.of(phase(256, 8, 16), phase(128, 16, 32), phase(64, 64, 128), phase(32, 128, 256),
 				phase(8, 2048, 4096), phase(2, 8192, 16384));
-		return runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
 			Graph<Integer> g = new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(true).selfEdges(false)
@@ -127,7 +127,7 @@ class TPMTestUtils extends TestUtils {
 	static boolean verifyMSTNegative(Supplier<? extends TPM> builder) {
 		List<Phase> phases = List.of(phase(256, 8, 16), phase(128, 16, 32), phase(64, 64, 128), phase(32, 128, 256),
 				phase(8, 2048, 4096), phase(2, 8192, 16384));
-		return runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
 

@@ -12,10 +12,9 @@ public class TSPMetricTest extends TestUtils {
 
 	@Test
 	public static boolean mstAppxAndMatchingAppxRandGraphs() {
-		initTestRand(0L);
 		List<Phase> phases = List.of(phase(512, 4), phase(64, 16), phase(32, 32), phase(16, 64), phase(8, 128),
 				phase(4, 256), phase(2, 512), phase(1, 1024));
-		return runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			return testMstAppxAndMatchingAppxRandGraph(n);
 		});

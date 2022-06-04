@@ -15,7 +15,7 @@ public class SplitFindMinArrayTest extends TestUtils {
 	private static boolean testSplitFind(Supplier<? extends SplitFind> builder) {
 		List<Phase> phases = List.of(phase(128, 16, 16), phase(64, 64, 64), phase(32, 512, 512), phase(8, 4096, 4096),
 				phase(2, 16384, 16384));
-		return runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
 			return testSplitFind(builder, n, m);
@@ -66,7 +66,7 @@ public class SplitFindMinArrayTest extends TestUtils {
 
 	private static boolean testSplitFindMin(Supplier<? extends SplitFindMin<Double>> builder) {
 		List<Phase> phases = List.of(phase(128, 16, 16), phase(64, 64, 64), phase(8, 512, 512), phase(1, 4096, 4096));
-		return runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
 			return testSplitFindMin(builder, n, m);

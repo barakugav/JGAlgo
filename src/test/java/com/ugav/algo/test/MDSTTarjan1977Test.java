@@ -60,7 +60,7 @@ public class MDSTTarjan1977Test extends TestUtils {
 	private static boolean testRandGraph(MDST algo) {
 		List<Phase> phases = List.of(phase(1, 0, 0), phase(256, 6, 5), phase(128, 16, 32), phase(64, 64, 128),
 				phase(32, 128, 256), phase(8, 1024, 4096), phase(2, 4096, 16384));
-		return runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
 			return testRandGraph(algo, n, m);

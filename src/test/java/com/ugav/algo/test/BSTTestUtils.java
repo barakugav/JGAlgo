@@ -27,7 +27,7 @@ class BSTTestUtils extends TestUtils {
 
 	static boolean testFindPredecessors(Supplier<? extends BST<Integer>> treeBuilder) {
 		List<Phase> phases = List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 4096));
-		return runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			return testFindPredecessor(treeBuilder, n);
 		});
@@ -35,7 +35,7 @@ class BSTTestUtils extends TestUtils {
 
 	static boolean testFindSuccessors(Supplier<? extends BST<Integer>> treeBuilder) {
 		List<Phase> phases = List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 4096));
-		return runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			return testFindSuccessor(treeBuilder, n);
 		});
@@ -111,7 +111,7 @@ class BSTTestUtils extends TestUtils {
 
 	static boolean testSplit(Supplier<? extends BST<Integer>> treeBuilder) {
 		List<Phase> phases = List.of(phase(128, 8), phase(64, 32), phase(16, 128), phase(8, 256), phase(4, 4096));
-		return runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			return BSTTestUtils.testSplit(treeBuilder, n);
 		});

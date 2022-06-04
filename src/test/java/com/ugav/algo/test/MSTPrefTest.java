@@ -32,7 +32,7 @@ public class MSTPrefTest extends TestUtils {
 				(Supplier<? extends MST> builder) -> {
 					List<Phase> phases = List.of(phase(1, 0, 0), phase(1280, 16, 32), phase(640, 64, 128), phase(320, 128, 256),
 							phase(80, 1024, 4096), phase(20, 4096, 16384));
-					runTestMultiple(phases, args -> {
+					runTestMultiple(phases, (testIter, args) -> {
 						int n = args[0], m = args[1];
 						Graph<Integer> g = GraphsTestUtils.randGraph(n, m);
 						GraphsTestUtils.assignRandWeightsIntPos(g);

@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-import java.util.function.Predicate;
 
 import com.ugav.algo.Pair;
 
@@ -133,14 +132,19 @@ class TestUtils {
 		return Phase.of(repeat, args);
 	}
 
-	static boolean runTestMultiple(Collection<Phase> phases, Predicate<int[]> test) {
+	@FunctionalInterface
+	static interface TestRunnable {
+		public boolean run(TestIterIdx testIter, int[] args);
+	}
+
+	static boolean runTestMultiple(Collection<Phase> phases, TestRunnable test) {
 		int phaseIdx = 0;
 		for (Phase phase : phases) {
 			for (int iter = 0; iter < phase.repeat; iter++) {
 				setTestMultipleIdxAttr(phaseIdx, iter);
 				boolean passed;
 				try {
-					passed = test.test(phase.args);
+					passed = test.run(getTestMultipleIdx(), phase.args);
 				} catch (Throwable e) {
 					e.printStackTrace();
 					passed = false;
@@ -156,17 +160,17 @@ class TestUtils {
 	}
 
 	private static void setTestMultipleIdxAttr(int phase, int iter) {
-		TestRunner.getInstance().getCurrentTest().setAttribute("testMultipleIdx", new TestMultipleIdx(phase, iter));
+		TestRunner.getInstance().getCurrentTest().setAttribute("testIterIdx", new TestIterIdx(phase, iter));
 	}
 
-	static TestMultipleIdx getTestMultipleIdx() {
-		return TestRunner.getInstance().getCurrentTest().getAttribute("testMultipleIdx");
+	static TestIterIdx getTestMultipleIdx() {
+		return TestRunner.getInstance().getCurrentTest().getAttribute("testIterIdx");
 	}
 
-	static class TestMultipleIdx {
+	static class TestIterIdx {
 		final int phase, iter;
 
-		private TestMultipleIdx(int phase, int iter) {
+		private TestIterIdx(int phase, int iter) {
 			this.phase = phase;
 			this.iter = iter;
 		}

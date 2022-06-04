@@ -35,7 +35,7 @@ class SSSPAbstractTest extends TestUtils {
 		Random rand = new Random(nextRandSeed());
 		List<Phase> phases = List.of(phase(128, 16, 32), phase(64, 64, 256), phase(8, 512, 4096),
 				phase(1, 4096, 16384));
-		return runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
 			Graph<Integer> g = new RandomGraphBuilder().n(n).m(m).directed(directed).doubleEdges(true).selfEdges(true)
@@ -55,7 +55,7 @@ class SSSPAbstractTest extends TestUtils {
 	static boolean testSSSPDirectedNegativeInt(Supplier<? extends SSSP> builder) {
 		List<Phase> phases = List.of(phase(512, 4, 4), phase(128, 16, 32), phase(64, 64, 256), phase(8, 512, 4096),
 				phase(2, 1024, 4096));
-		return runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
 			Graph<Integer> g = new RandomGraphBuilder().n(n).m(m).directed(true).doubleEdges(true).selfEdges(true)

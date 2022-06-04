@@ -32,7 +32,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 	static boolean randGraphsBipartiteWeighted(Supplier<? extends MatchingWeighted> builder) {
 		List<Phase> phases = List.of(phase(256, 8, 8, 8), phase(128, 16, 16, 64), phase(12, 128, 128, 128),
 				phase(8, 128, 128, 512), phase(4, 1024, 1024, 1024), phase(2, 1024, 1024, 8192));
-		return runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, (testIter, args) -> {
 			int sn = args[0];
 			int tn = args[1];
 			int m = args[2];
@@ -52,7 +52,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 	static boolean randBipartiteGraphsWeightedPerfect(Supplier<? extends MatchingWeighted> builder) {
 		List<Phase> phases = List.of(phase(256, 8, 8, 8), phase(128, 16, 16, 64), phase(12, 128, 128, 128),
 				phase(8, 128, 128, 512), phase(4, 1024, 1024, 1024));
-		return runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, (testIter, args) -> {
 			int sn = args[0];
 			int tn = args[1];
 			int m = args[2];
@@ -74,7 +74,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 	static boolean randGraphsWeighted(Supplier<? extends MatchingWeighted> builder) {
 		List<Phase> phases = List.of(phase(256, 8, 8, 8), phase(128, 16, 16, 64), phase(12, 128, 128, 128),
 				phase(8, 128, 128, 512), phase(4, 1024, 1024, 1024), phase(2, 1024, 1024, 8192));
-		return runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
 
@@ -114,7 +114,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 	static boolean randGraphsWeightedPerfect(Supplier<? extends MatchingWeighted> builder) {
 		List<Phase> phases = List.of(phase(256, 8, 8, 8), phase(128, 16, 16, 64), phase(12, 128, 128, 128),
 				phase(8, 128, 128, 512), phase(4, 1024, 1024, 1024));
-		return runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
 

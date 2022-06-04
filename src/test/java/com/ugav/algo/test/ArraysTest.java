@@ -12,7 +12,7 @@ public class ArraysTest extends TestUtils {
 	public static boolean getKthElementRandArrayUnique() {
 		List<Phase> phases = List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 1024),
 				phase(2, 4096));
-		return runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int[] a = Utils.randPermutation(n, nextRandSeed());
 			return testGetKthElement(a);
@@ -23,7 +23,7 @@ public class ArraysTest extends TestUtils {
 	public static boolean getKthElementRandArrayNonunique() {
 		List<Phase> phases = List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 1024),
 				phase(2, 4096));
-		return runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int[] a = Utils.randArray(n, 0, n / 4, nextRandSeed());
 			return testGetKthElement(a);
@@ -52,7 +52,7 @@ public class ArraysTest extends TestUtils {
 		Random rand = new Random(nextRandSeed());
 		List<Phase> phases = List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 1024),
 				phase(2, 4096));
-		return runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int[] a = Utils.randArray(n, 0, n / 4, nextRandSeed());
 			Integer[] A = toIntegerArr(a);

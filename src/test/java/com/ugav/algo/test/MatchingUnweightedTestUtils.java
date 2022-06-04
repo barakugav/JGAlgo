@@ -23,7 +23,7 @@ class MatchingUnweightedTestUtils extends TestUtils {
 		List<Phase> phases = List.of(phase(256, 16, 8), phase(256, 16, 16), phase(128, 32, 32), phase(128, 32, 64),
 				phase(64, 64, 64), phase(64, 64, 128), phase(16, 256, 256), phase(16, 256, 512), phase(4, 2048, 2048),
 				phase(4, 2048, 8192));
-		return runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
 			Graph<Void> g = GraphsTestUtils.randGraph(n, m);

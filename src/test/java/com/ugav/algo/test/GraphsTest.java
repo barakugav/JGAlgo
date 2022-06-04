@@ -20,7 +20,7 @@ public class GraphsTest extends TestUtils {
 	public static boolean bfsConnected() {
 		Random rand = new Random(nextRandSeed());
 		List<Phase> phases = List.of(phase(256, 16, 8), phase(128, 32, 64), phase(4, 2048, 8192));
-		return runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
 			Graph<Void> g = new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(true).selfEdges(true)
@@ -43,7 +43,7 @@ public class GraphsTest extends TestUtils {
 	public static boolean dfsConnected() {
 		Random rand = new Random(nextRandSeed());
 		List<Phase> phases = List.of(phase(256, 16, 8), phase(128, 32, 64), phase(4, 2048, 8192));
-		return runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
 			Graph<Void> g = new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(true).selfEdges(true)
@@ -65,7 +65,7 @@ public class GraphsTest extends TestUtils {
 	@Test
 	public static boolean isTreeUnrootedPositive() {
 		List<Phase> phases = List.of(phase(256, 16), phase(128, 32), phase(4, 2048));
-		return runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = n - 1;
 			Graph<Void> g = new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(false).selfEdges(false)
@@ -79,7 +79,7 @@ public class GraphsTest extends TestUtils {
 	public static boolean isTreeUnrootedNegativeUnconnected() {
 		Random rand = new Random(nextRandSeed());
 		List<Phase> phases = List.of(phase(256, 16), phase(128, 32), phase(4, 2048));
-		return runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = n - 1;
 			Graph<Void> g = new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(false).selfEdges(false)
@@ -96,7 +96,7 @@ public class GraphsTest extends TestUtils {
 	public static boolean isTreeUnrootedNegativeCycle() {
 		Random rand = new Random(nextRandSeed());
 		List<Phase> phases = List.of(phase(256, 16), phase(128, 32), phase(4, 2048));
-		return runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = n - 1;
 			Graph<Void> g = new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(false).selfEdges(false)
@@ -116,7 +116,7 @@ public class GraphsTest extends TestUtils {
 	public static boolean isTreeRootedPositive() {
 		Random rand = new Random(nextRandSeed());
 		List<Phase> phases = List.of(phase(256, 16), phase(128, 32), phase(4, 2048));
-		return runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = n - 1;
 			Graph<Void> g = new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(false).selfEdges(false)
@@ -131,7 +131,7 @@ public class GraphsTest extends TestUtils {
 	public static boolean isTreeRootedNegativeUnconnected() {
 		Random rand = new Random(nextRandSeed());
 		List<Phase> phases = List.of(phase(256, 16), phase(128, 32), phase(4, 2048));
-		return runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = n - 1;
 			Graph<Void> g = new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(false).selfEdges(false)
@@ -149,7 +149,7 @@ public class GraphsTest extends TestUtils {
 	public static boolean isTreeRootedNegativeCycle() {
 		Random rand = new Random(nextRandSeed());
 		List<Phase> phases = List.of(phase(256, 16), phase(128, 32), phase(4, 2048));
-		return runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = n - 1;
 			Graph<Void> g = new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(false).selfEdges(false)
@@ -182,7 +182,7 @@ public class GraphsTest extends TestUtils {
 
 	private static boolean topologicalSort(boolean connected) {
 		List<Phase> phases = List.of(phase(256, 16, 16), phase(128, 32, 64), phase(16, 1024, 2048));
-		return runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
 			Graph<Void> g = new RandomGraphBuilder().n(n).m(m).directed(true).doubleEdges(true).selfEdges(false)
@@ -214,7 +214,7 @@ public class GraphsTest extends TestUtils {
 
 	private static boolean distancesDAG(boolean connected) {
 		List<Phase> phases = List.of(phase(256, 16, 16), phase(128, 32, 64), phase(16, 512, 1024));
-		return runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
 			Graph<Integer> g = new RandomGraphBuilder().n(n).m(m).directed(true).doubleEdges(true).selfEdges(false)

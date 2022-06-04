@@ -26,7 +26,7 @@ class MSTTestUtils extends TestUtils {
 	static boolean testRandGraph(Supplier<? extends MST> builder) {
 		List<Phase> phases = List.of(phase(1, 0, 0), phase(128, 16, 32), phase(64, 64, 128), phase(32, 128, 256),
 				phase(8, 1024, 4096), phase(2, 4096, 16384));
-		return runTestMultiple(phases, args -> {
+		return runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
 			MST algo = builder.get();
