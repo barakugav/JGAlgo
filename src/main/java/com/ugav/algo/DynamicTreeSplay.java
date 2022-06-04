@@ -1,35 +1,53 @@
 package com.ugav.algo;
 
+import java.util.Arrays;
 import java.util.Comparator;
 
 public class DynamicTreeSplay implements DynamicTree {
 
+	private SplayNode[] nodes;
+	private int nodesCount;
 	private final double rootWeight;
 	private final SplayImpl impl = new SplayImpl();
 
 	public DynamicTreeSplay(double weightLimit) {
+		nodes = new SplayNode[2];
+		nodesCount = 0;
 		this.rootWeight = weightLimit;
 	}
 
 	@Override
-	public DynamicTree.Node makeTree() {
-		SplayNode node = impl.newNode();
+	public int makeTree() {
+		if (nodesCount >= nodes.length)
+			nodes = Arrays.copyOf(nodes, Math.max(nodes.length * 2, 2));
+		int id = nodesCount++;
+		SplayNode node = impl.newNode(Integer.valueOf(id));
+		nodes[id] = node;
+
 		node.weightDiff = rootWeight;
-		return node;
+
+		return id;
+	}
+
+	private void checkIdentifier(int v) {
+		if (!(0 <= v && v < nodesCount))
+			throw new IllegalArgumentException("Illegal node identifier");
 	}
 
 	@Override
-	public DynamicTree.Node findRoot(DynamicTree.Node v) {
-		SplayNode n = splay((SplayNode) v);
-		return impl.findMaxNode(n);
+	public int findRoot(int v) {
+		checkIdentifier(v);
+		SplayNode n = splay(nodes[v]);
+		return impl.findMaxNode(n).id().intValue();
 	}
 
 	@Override
-	public Pair<Node, Double> findMinEdge(DynamicTree.Node v) {
-		SplayNode n = splay((SplayNode) v);
+	public Pair<Integer, Double> findMinEdge(int v) {
+		checkIdentifier(v);
+		SplayNode n = splay(nodes[v]);
 		double w = n.getWeight();
 		if (!n.hasRightChild() || w < n.right.getMinWeight(w))
-			return Pair.of(n, w <= rootWeight / 2 ? Double.valueOf(w) : null);
+			return Pair.of(n.id(), w <= rootWeight / 2 ? Double.valueOf(w) : null);
 
 		for (SplayNode p = n.right;;) {
 			double w1 = p.getWeight(w);
@@ -38,7 +56,7 @@ public class DynamicTreeSplay implements DynamicTree {
 				w = w1;
 			} else if (w1 == p.getMinWeight(w)) {
 				impl.splay(p); /* perform splay to pay */
-				return Pair.of(p, w1 <= rootWeight / 2 ? Double.valueOf(w1) : null);
+				return Pair.of(p.id(), w1 <= rootWeight / 2 ? Double.valueOf(w1) : null);
 			} else {
 				assert p.hasLeftChild();
 				p = p.left;
@@ -48,8 +66,9 @@ public class DynamicTreeSplay implements DynamicTree {
 	}
 
 	@Override
-	public void addWeight(DynamicTree.Node v, double w) {
-		SplayNode n = splay((SplayNode) v);
+	public void addWeight(int v, double w) {
+		checkIdentifier(v);
+		SplayNode n = splay(nodes[v]);
 		assert n.isRoot();
 		if (!n.hasRightChild())
 			return;
@@ -67,15 +86,17 @@ public class DynamicTreeSplay implements DynamicTree {
 	}
 
 	@Override
-	public void link(DynamicTree.Node u, DynamicTree.Node v, double w) {
+	public void link(int u, int v, double w) {
+		checkIdentifier(u);
+		checkIdentifier(v);
 		if (u != findRoot(u))
 			throw new IllegalArgumentException("u must be a root");
 		if (u == findRoot(v))
 			throw new IllegalArgumentException("Both nodes are in the same tree");
 		if (w >= rootWeight / 2)
 			throw new IllegalArgumentException("Weight is over the limit");
-		SplayNode t1 = splay((SplayNode) u);
-		SplayNode t2 = splay((SplayNode) v);
+		SplayNode t1 = splay(nodes[u]);
+		SplayNode t2 = splay(nodes[v]);
 
 		assert !t1.hasRightChild() && t1.getWeight() >= rootWeight / 2;
 
@@ -91,8 +112,9 @@ public class DynamicTreeSplay implements DynamicTree {
 	}
 
 	@Override
-	public void cut(DynamicTree.Node v) {
-		SplayNode n = splay((SplayNode) v);
+	public void cut(int v) {
+		checkIdentifier(v);
+		SplayNode n = splay(nodes[v]);
 		if (!n.hasRightChild())
 			return;
 
@@ -110,7 +132,7 @@ public class DynamicTreeSplay implements DynamicTree {
 	}
 
 	@Override
-	public void evert(DynamicTree.Node v) {
+	public void evert(int v) {
 		// TODO
 		throw new UnsupportedOperationException();
 	}
@@ -154,10 +176,10 @@ public class DynamicTreeSplay implements DynamicTree {
 		return parent;
 	}
 
-	private static class SplayImpl extends SplayTree.Impl<Void, SplayNode> {
+	private static class SplayImpl extends SplayTree.Impl<Integer, SplayNode> {
 
 		@Override
-		SplayNode insert(SplayNode root, Comparator<? super Void> c, SplayNode n) {
+		SplayNode insert(SplayNode root, Comparator<? super Integer> c, SplayNode n) {
 			throw new UnsupportedOperationException();
 		}
 
@@ -219,18 +241,14 @@ public class DynamicTreeSplay implements DynamicTree {
 			parent.tparent = null;
 		}
 
-		SplayNode newNode() {
-			return newNode(null);
-		}
-
 		@Override
-		SplayNode newNode(Void v) {
+		SplayNode newNode(Integer v) {
 			return new SplayNode(v);
 		}
 
 	}
 
-	private static class SplayNode extends SplayTree.Impl.Node<Void, SplayNode> implements DynamicTree.Node {
+	private static class SplayNode extends SplayTree.Impl.Node<Integer, SplayNode> {
 
 		/* TODO use Node elements field as tparent */
 
@@ -240,8 +258,12 @@ public class DynamicTreeSplay implements DynamicTree {
 		/* weight - min_{x in subtree} {x.weight} */
 		double minWeightDiff;
 
-		SplayNode(Void v) {
-			super(v);
+		SplayNode(Integer id) {
+			super(id);
+		}
+
+		Integer id() {
+			return get();
 		}
 
 		double getWeight() {
@@ -260,11 +282,6 @@ public class DynamicTreeSplay implements DynamicTree {
 
 		double getMinWeight(double parentWeight) {
 			return getWeight(parentWeight) - minWeightDiff;
-		}
-
-		@Override
-		public String toString() {
-			return "Node(" + System.identityHashCode(this) + ")";
 		}
 
 	}

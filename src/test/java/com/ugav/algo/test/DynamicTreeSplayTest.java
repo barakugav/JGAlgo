@@ -27,17 +27,17 @@ public class DynamicTreeSplayTest extends TestUtils {
 	}
 
 	private static class Node {
-		final DynamicTree.Node tnode;
+		final int tnode;
 		Node parent;
 		int edgeWeight;
 
-		Node(DynamicTree.Node tnode) {
+		Node(int tnode) {
 			this.tnode = tnode;
 		}
 
 		@Override
 		public String toString() {
-			return tnode.toString();
+			return "<" + tnode + ">";
 		}
 	}
 
@@ -66,7 +66,7 @@ public class DynamicTreeSplayTest extends TestUtils {
 			Op op = ops.get(rand.nextInt(ops.size()));
 			switch (op) {
 			case MakeTree: {
-				DynamicTree.Node tnode = tree.makeTree();
+				int tnode = tree.makeTree();
 				debug.println("" + op + "() -> " + tnode);
 				Node node = new Node(tnode);
 				nodes.add(node);
@@ -80,9 +80,9 @@ public class DynamicTreeSplayTest extends TestUtils {
 				debug.println("" + op + "(" + node + ")");
 
 				Node root = findRoot.apply(node);
-				DynamicTree.Node expected = root.tnode;
+				int expected = root.tnode;
 
-				DynamicTree.Node actual = tree.findRoot(node.tnode);
+				int actual = tree.findRoot(node.tnode);
 
 				if (expected != actual) {
 					printTestStr("FindRoot failure: " + expected + " != " + actual + "\n");
@@ -100,11 +100,10 @@ public class DynamicTreeSplayTest extends TestUtils {
 				for (Node p = node; p.parent != null; p = p.parent)
 					if (p.edgeWeight <= min.edgeWeight)
 						min = p;
-				Pair<DynamicTree.Node, Integer> expected = Pair.of(min.tnode,
-						min.parent != null ? min.edgeWeight : null);
+				Pair<Integer, Integer> expected = Pair.of(min.tnode, min.parent != null ? min.edgeWeight : null);
 
-				Pair<DynamicTree.Node, Double> actual0 = tree.findMinEdge(node.tnode);
-				Pair<DynamicTree.Node, Integer> actual = Pair.of(actual0.e1,
+				Pair<Integer, Double> actual0 = tree.findMinEdge(node.tnode);
+				Pair<Integer, Integer> actual = Pair.of(actual0.e1,
 						actual0.e2 != null ? (int) Math.round(actual0.e2) : null);
 
 				if (!expected.equals(actual)) {
