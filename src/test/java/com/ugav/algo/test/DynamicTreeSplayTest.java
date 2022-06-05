@@ -1,6 +1,7 @@
 package com.ugav.algo.test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
@@ -8,7 +9,6 @@ import java.util.function.Function;
 import com.ugav.algo.DebugPrintsManager;
 import com.ugav.algo.DynamicTree;
 import com.ugav.algo.DynamicTreeSplay;
-import com.ugav.algo.Pair;
 
 public class DynamicTreeSplayTest extends TestUtils {
 
@@ -41,7 +41,6 @@ public class DynamicTreeSplayTest extends TestUtils {
 		}
 	}
 
-	@SuppressWarnings("boxing")
 	private static boolean randOps(final int m) {
 		DebugPrintsManager debug = new DebugPrintsManager(false);
 		debug.println("\tnew iteration");
@@ -53,7 +52,7 @@ public class DynamicTreeSplayTest extends TestUtils {
 		final int MAX_WEIGHT_ADD = 100;
 		List<Node> nodes = new ArrayList<>();
 		List<Node> roots = new ArrayList<>();
-		DynamicTree tree = new DynamicTreeSplay(MAX_WEIGHT);
+		DynamicTree<Void> tree = new DynamicTreeSplay<>(MAX_WEIGHT);
 
 		Function<Node, Node> findRoot = node -> {
 			Node root;
@@ -96,18 +95,20 @@ public class DynamicTreeSplayTest extends TestUtils {
 				Node node = nodes.get(rand.nextInt(nodes.size()));
 				debug.println("" + op + "(" + node + ")");
 
-				Node min = node;
+				Node min = null;
 				for (Node p = node; p.parent != null; p = p.parent)
-					if (p.edgeWeight <= min.edgeWeight)
+					if (min == null || p.edgeWeight <= min.edgeWeight)
 						min = p;
-				Pair<Integer, Integer> expected = Pair.of(min.tnode, min.parent != null ? min.edgeWeight : null);
+				int[] expected = min != null ? new int[] { min.tnode, min.parent.tnode, min.edgeWeight } : null;
 
-				Pair<Integer, Double> actual0 = tree.findMinEdge(node.tnode);
-				Pair<Integer, Integer> actual = Pair.of(actual0.e1,
-						actual0.e2 != null ? (int) Math.round(actual0.e2) : null);
+				DynamicTree.MinEdge<Void> actual0 = tree.findMinEdge(node.tnode);
+				int[] actual = actual0 != null
+						? new int[] { actual0.u(), actual0.v(), (int) Math.round(actual0.weight()) }
+						: null;
 
-				if (!expected.equals(actual)) {
-					printTestStr("FindMinEdge failure: " + expected + " != " + actual + "\n");
+				if (!Arrays.equals(expected, actual)) {
+					printTestStr("FindMinEdge failure: " + Arrays.toString(expected) + " != " + Arrays.toString(actual)
+							+ "\n");
 					return false;
 				}
 				break;
@@ -146,7 +147,7 @@ public class DynamicTreeSplayTest extends TestUtils {
 				int weight = rand.nextInt(MAX_WEIGHT_LINK);
 				debug.println("" + op + "(" + a + ", " + b + ", " + weight + ")");
 
-				tree.link(a.tnode, b.tnode, weight);
+				tree.link(a.tnode, b.tnode, weight, null);
 
 				a.parent = b;
 				a.edgeWeight = weight;
