@@ -2,6 +2,7 @@ package com.ugav.algo;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 public interface Graph<E> {
 
@@ -27,7 +28,7 @@ public interface Graph<E> {
 	 * @param u a source vertex
 	 * @return iterator that iterate over the edges whose source is u
 	 */
-	public Iterator<Edge<E>> edges(int u);
+	public EdgeIterator<E> edges(int u);
 
 	/**
 	 * Get an edge from u to v
@@ -147,6 +148,18 @@ public interface Graph<E> {
 		 * @return the twin edge
 		 */
 		public Edge<E> twin();
+
+	}
+
+	public static interface EdgeIterator<E> extends Iterator<Edge<E>> {
+
+		/**
+		 * Pick at the next edge without advancing the iterator
+		 *
+		 * @return the next edge in the iterations
+		 * @throws NoSuchElementException if hasNext() returned false
+		 */
+		public Edge<E> pickNext();
 
 	}
 

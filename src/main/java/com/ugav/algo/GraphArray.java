@@ -50,7 +50,7 @@ public class GraphArray<E> extends GraphAbstract<E> {
 	}
 
 	@Override
-	public Iterator<Edge<E>> edges(int u) {
+	public EdgeIterator<E> edges(int u) {
 		return new VertexEdgeItr(u);
 	}
 
@@ -193,7 +193,7 @@ public class GraphArray<E> extends GraphAbstract<E> {
 		return System.identityHashCode(e) <= System.identityHashCode(twin);
 	}
 
-	private abstract class EdgeItrBase implements Iterator<Edge<E>> {
+	private abstract class EdgeItrBase implements EdgeIterator<E> {
 
 		int u;
 		int idx;
@@ -211,6 +211,13 @@ public class GraphArray<E> extends GraphAbstract<E> {
 			if (!hasNext())
 				throw new NoSuchElementException();
 			return toRemoveEdge = edges[u][toRemoveIdx = idx++];
+		}
+
+		@Override
+		public Edge<E> pickNext() {
+			if (!hasNext())
+				throw new NoSuchElementException();
+			return edges[u][idx];
 		}
 
 		@Override
