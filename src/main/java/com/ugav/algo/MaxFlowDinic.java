@@ -24,7 +24,7 @@ public class MaxFlowDinic implements MaxFlow {
 			throw new IllegalArgumentException("only directed graphs are supported");
 		if (source == target)
 			throw new IllegalArgumentException("Source and target can't be the same vertices");
-		debug.println("\tnew iteration");
+		debug.println("\t" + getClass().getSimpleName());
 
 		double maxCapacity = 100;
 		for (Edge<E> e : g0.edges())
@@ -94,7 +94,6 @@ public class MaxFlowDinic implements MaxFlow {
 					debug.println("Augment");
 					MinEdge<Edge<Ref<E>>> min = dt.findMinEdge(vToDt[source]);
 					dt.addWeight(vToDt[source], -min.weight());
-					min = dt.findMinEdge(vToDt[source]);
 
 					/* Delete all saturated edges */
 					debug.println("Delete");
@@ -103,11 +102,11 @@ public class MaxFlowDinic implements MaxFlow {
 						assert vToDt[e.u()] == min.u();
 						L.removeEdge(e);
 
-						updateFlow.accept(e, min.weight());
+						updateFlow.accept(e, 0);
 						dt.cut(min.u());
 
 						min = dt.findMinEdge(vToDt[source]);
-					} while (min != null && min.weight() == 0);
+					} while (min != null && Math.abs(min.weight()) < EPS);
 
 				} else if (!L.edgesOut(v).hasNext()) {
 

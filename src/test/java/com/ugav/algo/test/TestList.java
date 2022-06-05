@@ -40,6 +40,7 @@ class TestList {
 			TPMKomlos1985King1997Hagerup2009Test.class,
 			SubtreeMergeFindminTest.class,
 			MaxFlowEdmondsKarpTest.class,
+			MaxFlowPushRelabelTest.class,
 			MaxFlowDinicTest.class,
 			TSPMetricTest.class);
 

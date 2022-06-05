@@ -36,14 +36,20 @@ public class DynamicTreeSplay<E> implements DynamicTree<E> {
 	@Override
 	public int findRoot(int v) {
 		checkIdentifier(v);
-		SplayNode n = splay(nodes[v]);
+		SplayNode n = nodes[v];
+		if (!n.isLinked())
+			return n.id;
+		splay(n);
 		return impl.findMaxNode(n).id;
 	}
 
 	@Override
 	public MinEdge<E> findMinEdge(int v) {
 		checkIdentifier(v);
-		SplayNode n = splay(nodes[v]);
+		SplayNode n = nodes[v];
+		if (!n.isLinked())
+			return null;
+		splay(n);
 		double w = n.getWeight();
 		if (!n.hasRightChild() || w < n.right.getMinWeight(w))
 			return n.isLinked() ? new MinEdgeRes<>(n.id, n.userParent, w, n.get()) : null;
@@ -67,7 +73,10 @@ public class DynamicTreeSplay<E> implements DynamicTree<E> {
 	@Override
 	public void addWeight(int v, double w) {
 		checkIdentifier(v);
-		SplayNode n = splay(nodes[v]);
+		SplayNode n = nodes[v];
+		if (!n.isLinked())
+			return;
+		splay(n);
 		assert n.isRoot();
 		if (!n.hasRightChild())
 			return;

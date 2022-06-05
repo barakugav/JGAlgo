@@ -1,7 +1,6 @@
 package com.ugav.algo;
 
 import java.util.AbstractList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -73,24 +72,39 @@ class Utils {
 
 	static class QueueIntFixSize {
 
+		private final int idxMask;
 		private final int[] q;
 		private int begin, end;
 
 		QueueIntFixSize(int maxSize) {
+			/* round size of next power of 2 */
+			maxSize = 1 << (32 - Integer.numberOfLeadingZeros(maxSize));
+			idxMask = maxSize - 1;
 			q = new int[maxSize];
 			begin = end = 0;
 		}
 
+		int size() {
+			return begin <= end ? end - begin : q.length - begin + end;
+		}
+
 		boolean isEmpty() {
-			return begin >= end;
+			return begin == end;
 		}
 
 		void push(int x) {
-			q[end++] = x;
+			if (((end + 1) & idxMask) == begin)
+				throw new IndexOutOfBoundsException();
+			q[end] = x;
+			end = (end + 1) & idxMask;
 		}
 
 		int pop() {
-			return q[begin++];
+			if (isEmpty())
+				throw new NoSuchElementException();
+			int x = q[begin];
+			begin = (begin + 1) & idxMask;
+			return x;
 		}
 
 		void clear() {
@@ -99,7 +113,32 @@ class Utils {
 
 		@Override
 		public String toString() {
-			return Arrays.toString(Arrays.copyOfRange(q, begin, end));
+			StringBuilder b = new StringBuilder();
+			b.append('[');
+
+			int lastIdx = Math.min(end, q.length) - 1;
+			if (begin <= lastIdx) {
+				for (int i = begin;; i++) {
+					b.append(q[i]);
+					if (i == lastIdx) {
+						if (end < begin && end != 0)
+							b.append(", ");
+						break;
+					}
+					b.append(", ");
+				}
+			}
+
+			if (end < begin && end != 0) {
+				for (int i = 0;; i++) {
+					b.append(q[i]);
+					if (i == end - 1)
+						break;
+					b.append(", ");
+				}
+			}
+
+			return b.append(']').toString();
 		}
 
 	}
@@ -112,6 +151,10 @@ class Utils {
 		StackIntFixSize(int maxSize) {
 			s = new int[maxSize];
 			size = 0;
+		}
+
+		int size() {
+			return size;
 		}
 
 		boolean isEmpty() {
@@ -132,7 +175,17 @@ class Utils {
 
 		@Override
 		public String toString() {
-			return Arrays.toString(Arrays.copyOfRange(s, 0, size));
+			if (isEmpty())
+				return "[]";
+
+			StringBuilder b = new StringBuilder();
+			b.append('[');
+			for (int i = 0;; i++) {
+				b.append(s[i]);
+				if (i == size - 1)
+					return b.append(']').toString();
+				b.append(", ");
+			}
 		}
 
 	}

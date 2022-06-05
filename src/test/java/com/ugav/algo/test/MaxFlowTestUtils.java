@@ -76,7 +76,7 @@ class MaxFlowTestUtils extends TestUtils {
 		}
 		for (int v = 0; v < n; v++) {
 			double expected = v == source ? actualMaxFlow : v == target ? -actualMaxFlow : 0;
-			if (!doubleEql(vertexFlowOut[v], expected, 1E-10)) {
+			if (!doubleEql(vertexFlowOut[v], expected, 1E-3)) {
 				printTestStr("Invalid vertex(", v, ") flow: ", vertexFlowOut[v], "\n");
 				return false;
 			}
