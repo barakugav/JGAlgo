@@ -43,6 +43,8 @@ public interface MaxFlow {
 
 	public static class FlowNetworkDefault implements FlowNetwork<FlowEdgeValueDefault> {
 
+		private static final double EPS = 0.0001;
+
 		public FlowNetworkDefault() {
 		}
 
@@ -58,9 +60,9 @@ public interface MaxFlow {
 
 		@Override
 		public void setFlow(Edge<? extends FlowEdgeValueDefault> e, double flow) {
-			if (flow > e.val().capacity)
+			if (flow > e.val().capacity + EPS)
 				throw new IllegalArgumentException("Illegal flow " + flow + " on edge " + e);
-			e.val().flow = flow;
+			e.val().flow = Math.min(flow, e.val().capacity);
 		}
 
 	}

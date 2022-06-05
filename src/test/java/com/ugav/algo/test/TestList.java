@@ -40,6 +40,7 @@ class TestList {
 			TPMKomlos1985King1997Hagerup2009Test.class,
 			SubtreeMergeFindminTest.class,
 			MaxFlowEdmondsKarpTest.class,
+			MaxFlowDinicTest.class,
 			TSPMetricTest.class);
 
 	private static final Collection<Class<?>> SHORTEST_PATH_TESTS = List.of(

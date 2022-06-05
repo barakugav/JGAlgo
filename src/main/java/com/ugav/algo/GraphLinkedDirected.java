@@ -71,7 +71,7 @@ public class GraphLinkedDirected<E> extends GraphLinkedAbstract<E> {
 		edgesOut[u] = e;
 		next = edgesIn[v];
 		if (next != null) {
-			next.prevOut = e;
+			next.prevIn = e;
 			e.nextIn = next;
 		}
 		edgesIn[v] = e;
@@ -134,7 +134,7 @@ public class GraphLinkedDirected<E> extends GraphLinkedAbstract<E> {
 	private void removeEdgeIn(Node<E> e) {
 		Node<E> next = e.nextIn, prev = e.prevIn;
 		if (prev == null) {
-			edgesIn[e.u] = next;
+			edgesIn[e.v] = next;
 		} else {
 			prev.nextIn = next;
 			e.prevIn = null;

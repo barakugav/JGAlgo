@@ -130,7 +130,6 @@ public class DynamicTreeSplay<E> implements DynamicTree<E> {
 		n.right.parent = null;
 		n.right = null;
 		n.unlink();
-
 	}
 
 	@Override
@@ -143,6 +142,17 @@ public class DynamicTreeSplay<E> implements DynamicTree<E> {
 	public int getParent(int v) {
 		checkIdentifier(v);
 		return nodes[v].userParent;
+	}
+
+	@Override
+	public void clear() {
+		SplayNode[] ns = nodes;
+		int len = nodesCount;
+		for (int i = 0; i < len; i++) {
+			ns[i].clear();
+			ns[i] = null;
+		}
+		nodesCount = 0;
 	}
 
 	private SplayNode splay(SplayNode n) {
@@ -306,6 +316,14 @@ public class DynamicTreeSplay<E> implements DynamicTree<E> {
 
 		double getMinWeight(double parentWeight) {
 			return getWeight(parentWeight) - minWeightDiff;
+		}
+
+		@Override
+		void clear() {
+			super.clear();
+			userParent = NO_USER_PARENT;
+			tparent = null;
+			weightDiff = minWeightDiff = 0;
 		}
 
 	}

@@ -66,6 +66,11 @@ public interface DynamicTree<E> {
 	 */
 	public int getParent(int v);
 
+	/**
+	 * Clear the whole data structure
+	 */
+	public void clear();
+
 	public static interface MinEdge<E> {
 
 		public int u();

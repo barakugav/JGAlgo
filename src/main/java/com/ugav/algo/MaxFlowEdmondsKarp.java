@@ -20,7 +20,7 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 		if (!g0.isDirected())
 			throw new IllegalArgumentException("only directed graphs are supported");
 		if (source == target)
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Source and target can't be the same vertices");
 
 		Graph<Ref<E>> g = referenceGraph(g0, net);
 		int n = g.vertices();
@@ -30,7 +30,7 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 		boolean[] visited = new boolean[n];
 		QueueIntFixSize queue = new QueueIntFixSize(n);
 
-		do {
+		for (;;) {
 			queue.clear();
 			visited[source] = true;
 			queue.push(source);
@@ -72,7 +72,7 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 
 			backtrack[target] = null;
 			Arrays.fill(visited, false);
-		} while (true);
+		}
 
 		for (Edge<Ref<E>> e : g.edges())
 			if (e.u() == e.val().orig.u())

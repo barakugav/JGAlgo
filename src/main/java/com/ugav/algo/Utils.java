@@ -104,6 +104,39 @@ class Utils {
 
 	}
 
+	static class StackIntFixSize {
+
+		private final int[] s;
+		private int size;
+
+		StackIntFixSize(int maxSize) {
+			s = new int[maxSize];
+			size = 0;
+		}
+
+		boolean isEmpty() {
+			return size == 0;
+		}
+
+		void push(int x) {
+			s[size++] = x;
+		}
+
+		int pop() {
+			return s[--size];
+		}
+
+		void clear() {
+			size = 0;
+		}
+
+		@Override
+		public String toString() {
+			return Arrays.toString(Arrays.copyOfRange(s, 0, size));
+		}
+
+	}
+
 	static class ArrayView<E> extends AbstractList<E> implements RandomAccess {
 
 		private final E[] a;

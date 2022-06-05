@@ -25,6 +25,7 @@ Algo is a collection of algorithms implemented in Java. It contains mostly algor
 | LCA dynamic Gabow simple | O(n log^2 n + m) |
 | LCA dynamic Gabow2017 | O(n + m) |
 | Max flow EdmondsKarp | O(m n^2) |
+| Max flow Dinic using Dynamic Trees | O(m n log n) |
 | MST Boruvka1926 | O(m log n) |
 | MST Kruskal1956 | O(m log n) |
 | MST Prim1957 | O(m + n log n) |

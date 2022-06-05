@@ -38,7 +38,7 @@ class GraphImplTestUtils extends TestUtils {
 	}
 
 	static boolean testDirectedMaxFlow(GraphImpl graphImpl) {
-		return MaxFlowEdmondsKarpTest.testRandGraphs(MaxFlowEdmondsKarp::new, graphImpl);
+		return MaxFlowTestUtils.testRandGraphs(MaxFlowEdmondsKarp::new, graphImpl);
 	}
 
 	static boolean testUndirectedBipartiteMatching(GraphImpl graphImpl) {
