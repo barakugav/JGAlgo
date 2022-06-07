@@ -33,7 +33,7 @@ public class UnionFindValueArrayTest extends TestUtils {
 		double[] deltas = new double[n];
 
 		for (int x = 0; x < n; x++) {
-			double delta = rand.nextDouble() * 100 - 50;
+			double delta = rand.nextDouble(-50, 50);
 			set[x] = uf.make(delta);
 			deltas[x] = delta;
 		}
@@ -67,7 +67,7 @@ public class UnionFindValueArrayTest extends TestUtils {
 				break;
 			case OP_ADD_DELTA:
 				x = rand.nextInt(n);
-				double delta = rand.nextDouble() * 100 - 50;
+				double delta = rand.nextDouble(-50, 50);
 				uf.addValue(x, delta);
 				for (int i = 0; i < n; i++)
 					if (set[i] == set[x])

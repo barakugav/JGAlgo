@@ -2,7 +2,9 @@ package com.ugav.algo.test;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NavigableSet;
 import java.util.Random;
+import java.util.TreeSet;
 import java.util.function.Supplier;
 
 import com.ugav.algo.Graph;
@@ -27,12 +29,24 @@ class MaxFlowTestUtils extends TestUtils {
 		Graph<FlowEdgeValueDefault> g = new RandomGraphBuilder().n(n).m(m).directed(true).doubleEdges(false)
 				.selfEdges(false).cycles(true).connected(false).graphImpl(graphImpl).build();
 
+		final double minGap = 0.001;
+		NavigableSet<Double> usedCaps = new TreeSet<>();
+
 		Random rand = new Random(nextRandSeed());
 		for (Edge<FlowEdgeValueDefault> e : g.edges()) {
 			double cap;
-			do {
-				cap = rand.nextDouble() * 100;
-			} while (Math.abs(cap) < 1E-10);
+			for (;;) {
+				cap = rand.nextDouble(1, 100);
+				Double lower = usedCaps.lower(cap);
+				Double higher = usedCaps.higher(cap);
+				if (lower != null && cap - lower < minGap)
+					continue;
+				if (higher != null && higher - cap < minGap)
+					continue;
+				break;
+			}
+			usedCaps.add(cap);
+
 			e.val(new FlowEdgeValueDefault(cap));
 		}
 

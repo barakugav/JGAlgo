@@ -41,6 +41,7 @@ public class DynamicTreeSplayTest extends TestUtils {
 		}
 	}
 
+	@SuppressWarnings("boxing")
 	private static boolean randOps(final int m) {
 		DebugPrintsManager debug = new DebugPrintsManager(false);
 		debug.println("\tnew iteration");
@@ -66,7 +67,7 @@ public class DynamicTreeSplayTest extends TestUtils {
 			switch (op) {
 			case MakeTree: {
 				int tnode = tree.makeTree();
-				debug.println("" + op + "() -> " + tnode);
+				debug.println(op, "() -> ", tnode);
 				Node node = new Node(tnode);
 				nodes.add(node);
 				roots.add(node);
@@ -76,7 +77,7 @@ public class DynamicTreeSplayTest extends TestUtils {
 				if (nodes.isEmpty())
 					continue;
 				Node node = nodes.get(rand.nextInt(nodes.size()));
-				debug.println("" + op + "(" + node + ")");
+				debug.println(op, "(", node, ")");
 
 				Node root = findRoot.apply(node);
 				int expected = root.tnode;
@@ -93,7 +94,7 @@ public class DynamicTreeSplayTest extends TestUtils {
 				if (nodes.isEmpty())
 					continue;
 				Node node = nodes.get(rand.nextInt(nodes.size()));
-				debug.println("" + op + "(" + node + ")");
+				debug.println(op, "(", node, ")");
 
 				Node min = null;
 				for (Node p = node; p.parent != null; p = p.parent)
@@ -118,7 +119,7 @@ public class DynamicTreeSplayTest extends TestUtils {
 					continue;
 				Node node = nodes.get(rand.nextInt(nodes.size()));
 				int weight = rand.nextInt(MAX_WEIGHT_ADD * 2 + 1) - MAX_WEIGHT_ADD;
-				debug.println("" + op + "(" + node + ", " + weight + ")");
+				debug.println(op, "(", node, ", ", weight, ")");
 
 				tree.addWeight(node.tnode, weight);
 
@@ -145,7 +146,7 @@ public class DynamicTreeSplayTest extends TestUtils {
 					continue;
 				assert a.parent == null;
 				int weight = rand.nextInt(MAX_WEIGHT_LINK);
-				debug.println("" + op + "(" + a + ", " + b + ", " + weight + ")");
+				debug.println(op, "(", a, ", ", b, ", ", weight, ")");
 
 				tree.link(a.tnode, b.tnode, weight, null);
 
@@ -170,7 +171,7 @@ public class DynamicTreeSplayTest extends TestUtils {
 				}
 				if (!found)
 					continue;
-				debug.println("" + op + "(" + node + ")");
+				debug.println(op, "(", node, ")");
 
 				node.parent = null;
 				node.edgeWeight = 0;

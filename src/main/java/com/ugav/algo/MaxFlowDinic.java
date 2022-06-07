@@ -24,7 +24,7 @@ public class MaxFlowDinic implements MaxFlow {
 			throw new IllegalArgumentException("only directed graphs are supported");
 		if (source == target)
 			throw new IllegalArgumentException("Source and target can't be the same vertices");
-		debug.println("\t" + getClass().getSimpleName());
+		debug.println("\t", getClass().getSimpleName());
 
 		double maxCapacity = 100;
 		for (Edge<E> e : g0.edges())
@@ -69,7 +69,7 @@ public class MaxFlowDinic implements MaxFlow {
 			}
 			if (level[target] == unvisited)
 				break; /* All paths to target are saturated */
-			debug.println("taget level: " + level[target]);
+			debug.println("taget level: ", Integer.valueOf(level[target]));
 
 			dt.clear();
 			for (int u = 0; u < n; u++)
@@ -79,7 +79,7 @@ public class MaxFlowDinic implements MaxFlow {
 				Ref<E> e = e0.val();
 				double f = net.getCapacity(e.orig) - e.flow - weight;
 				if (e0.u() == e.orig.u())
-					debug.println("F(" + e.orig + ") += " + f);
+					debug.println("F(", e.orig, ") += ", Double.valueOf(f));
 				e.flow += f;
 				e.rev.flow -= f;
 				assert e.flow <= net.getCapacity(e.orig) + EPS;

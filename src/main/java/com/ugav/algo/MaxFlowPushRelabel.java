@@ -22,7 +22,7 @@ public class MaxFlowPushRelabel implements MaxFlow {
 			throw new IllegalArgumentException("only directed graphs are supported");
 		if (source == target)
 			throw new IllegalArgumentException("Source and target can't be the same vertices");
-		debug.println("\t" + getClass().getSimpleName());
+		debug.println("\t", getClass().getSimpleName());
 
 		Graph<Ref<E>> g = referenceGraph(g0, net);
 		int n = g.vertices();
@@ -38,7 +38,7 @@ public class MaxFlowPushRelabel implements MaxFlow {
 			Ref<E> e = e0.val();
 			int u = e0.u(), v = e0.v();
 			if (e0.u() == e.orig.u())
-				debug.println("F(" + e.orig + ") += " + f);
+				debug.println("F(", e.orig, ") += ", Double.valueOf(f));
 
 			e.flow += f;
 			e.rev.flow -= f;
@@ -96,6 +96,7 @@ public class MaxFlowPushRelabel implements MaxFlow {
 			/* Finished iterating over all vertex edges, relabel and reset iterator */
 			if (!it.hasNext()) {
 				d[u]++;
+				debug.println("R(", Integer.valueOf(u), ") <- ", Integer.valueOf(d[u]));
 				edges[u] = g.edges(u);
 			}
 

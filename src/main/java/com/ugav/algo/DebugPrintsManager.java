@@ -28,91 +28,221 @@ public class DebugPrintsManager {
 		this.printStream = printStream;
 	}
 
-	public void print(String s) {
-		if (enable)
-			printStream.print(s);
-	}
-
-	public void println(String s) {
-		if (enable)
-			printStream.println(s);
-	}
-
 	public void println() {
 		if (enable)
 			printStream.println();
 	}
 
 	public void print(byte s) {
-		print(String.valueOf(s));
+		if (enable)
+			printStream.print(s);
 	}
 
 	public void println(byte s) {
-		println(String.valueOf(s));
+		if (enable)
+			printStream.println(s);
 	}
 
 	public void print(char s) {
-		print(String.valueOf(s));
+		if (enable)
+			printStream.print(s);
 	}
 
 	public void println(char s) {
-		println(String.valueOf(s));
+		if (enable)
+			printStream.println(s);
 	}
 
 	public void print(short s) {
-		print(String.valueOf(s));
+		if (enable)
+			printStream.print(s);
 	}
 
 	public void println(short s) {
-		println(String.valueOf(s));
+		if (enable)
+			printStream.println(s);
 	}
 
 	public void print(int s) {
-		print(String.valueOf(s));
+		if (enable)
+			printStream.print(s);
 	}
 
 	public void println(int s) {
-		println(String.valueOf(s));
+		if (enable)
+			printStream.println(s);
 	}
 
 	public void print(long s) {
-		print(String.valueOf(s));
+		if (enable)
+			printStream.print(s);
 	}
 
 	public void println(long s) {
-		println(String.valueOf(s));
+		if (enable)
+			printStream.println(s);
 	}
 
 	public void print(float s) {
-		print(String.valueOf(s));
+		if (enable)
+			printStream.print(s);
 	}
 
 	public void println(float s) {
-		println(String.valueOf(s));
+		if (enable)
+			printStream.println(s);
 	}
 
 	public void print(double s) {
-		print(String.valueOf(s));
+		if (enable)
+			printStream.print(s);
 	}
 
 	public void println(double s) {
-		println(String.valueOf(s));
+		if (enable)
+			printStream.println(s);
 	}
 
 	public void print(boolean s) {
-		print(String.valueOf(s));
+		if (enable)
+			printStream.print(s);
 	}
 
 	public void println(boolean s) {
-		println(String.valueOf(s));
+		if (enable)
+			printStream.println(s);
 	}
 
 	public void print(Object s) {
-		print(String.valueOf(s));
+		if (enable)
+			printStream.print(s);
 	}
 
 	public void println(Object s) {
-		println(String.valueOf(s));
+		if (enable)
+			printStream.println(s);
+	}
+
+	public void print(Object arg1, Object arg2) {
+		if (enable)
+			printStream.print(String.valueOf(arg1) + arg2);
+	}
+
+	public void print(Object arg1, Object arg2, Object arg3) {
+		if (enable)
+			printStream.print(String.valueOf(arg1) + arg2 + arg3);
+	}
+
+	public void print(Object arg1, Object arg2, Object arg3, Object arg4) {
+		if (enable)
+			printStream.print(String.valueOf(arg1) + arg2 + arg3 + arg4);
+	}
+
+	public void print(Object arg1, Object arg2, Object arg3, Object arg4, Object arg5) {
+		if (enable)
+			printStream.print(String.valueOf(arg1) + arg2 + arg3 + arg4 + arg5);
+	}
+
+	public void print(Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6) {
+		if (enable)
+			printStream.print(String.valueOf(arg1) + arg2 + arg3 + arg4 + arg5 + arg6);
+	}
+
+	public void print(Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6, Object arg7) {
+		if (enable)
+			printStream.print(String.valueOf(arg1) + arg2 + arg3 + arg4 + arg5 + arg6 + arg7);
+	}
+
+	public void print(Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6, Object arg7,
+			Object arg8) {
+		if (enable)
+			printStream.print(String.valueOf(arg1) + arg2 + arg3 + arg4 + arg5 + arg6 + arg7 + arg8);
+	}
+
+	public void print(Object arg1, Object... args) {
+		if (enable) {
+			StringBuilder builder = new StringBuilder();
+			builder.append(arg1);
+			for (Object arg : args)
+				builder.append(arg);
+			printStream.print(builder.toString());
+		}
+	}
+
+	public void println(Object arg1, Object arg2) {
+		if (enable)
+			printStream.println(String.valueOf(arg1) + arg2);
+	}
+
+	public void println(Object arg1, Object arg2, Object arg3) {
+		if (enable)
+			printStream.println(String.valueOf(arg1) + arg2 + arg3);
+	}
+
+	public void println(Object arg1, Object arg2, Object arg3, Object arg4) {
+		if (enable)
+			printStream.println(String.valueOf(arg1) + arg2 + arg3 + arg4);
+	}
+
+	public void println(Object arg1, Object arg2, Object arg3, Object arg4, Object arg5) {
+		if (enable)
+			printStream.println(String.valueOf(arg1) + arg2 + arg3 + arg4 + arg5);
+	}
+
+	public void println(Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6) {
+		if (enable)
+			printStream.println(String.valueOf(arg1) + arg2 + arg3 + arg4 + arg5 + arg6);
+	}
+
+	public void println(Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6, Object arg7) {
+		if (enable)
+			printStream.println(String.valueOf(arg1) + arg2 + arg3 + arg4 + arg5 + arg6 + arg7);
+	}
+
+	public void println(Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6, Object arg7,
+			Object arg8) {
+		if (enable)
+			printStream.println(String.valueOf(arg1) + arg2 + arg3 + arg4 + arg5 + arg6 + arg7 + arg8);
+	}
+
+	public void println(Object arg1, Object... args) {
+		if (enable) {
+			StringBuilder builder = new StringBuilder();
+			builder.append(arg1);
+			for (Object arg : args)
+				builder.append(arg);
+			printStream.println(builder.toString());
+		}
+	}
+
+	public void format(String s, Object arg1) {
+		if (enable)
+			printStream.format(s, arg1);
+	}
+
+	public void format(String s, Object arg1, Object arg2) {
+		if (enable)
+			printStream.format(s, arg1, arg2);
+	}
+
+	public void format(String s, Object arg1, Object arg2, Object arg3) {
+		if (enable)
+			printStream.format(s, arg1, arg2, arg3);
+	}
+
+	public void format(String s, Object arg1, Object arg2, Object arg3, Object arg4) {
+		if (enable)
+			printStream.format(s, arg1, arg2, arg3, arg4);
+	}
+
+	public void format(String s, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5) {
+		if (enable)
+			printStream.format(s, arg1, arg2, arg3, arg4, arg5);
+	}
+
+	public void format(String s, Object... args) {
+		if (enable)
+			printStream.format(s, args);
 	}
 
 	public void printExec(Runnable exec) {

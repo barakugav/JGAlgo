@@ -27,8 +27,8 @@ public class TSPMetricTest extends TestUtils {
 		final int x = 0, y = 1;
 		double[][] locations = new double[n][2];
 		for (int u = 0; u < n; u++) {
-			locations[u][x] = 1 + rand.nextDouble() * 99;
-			locations[u][y] = 1 + rand.nextDouble() * 99;
+			locations[u][x] = rand.nextDouble(1, 100);
+			locations[u][y] = rand.nextDouble(1, 100);
 		}
 
 		double[][] distances = new double[n][n];

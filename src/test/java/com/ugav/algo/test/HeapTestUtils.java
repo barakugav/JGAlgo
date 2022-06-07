@@ -266,7 +266,7 @@ class HeapTestUtils extends TestUtils {
 		int[] elmsToInsertIds = Utils.randPermutation(values.length, nextRandSeed());
 		int elmsToInsertCursor = 0;
 
-		debug.println("  testHeap begin");
+		debug.println("\t testHeap begin");
 
 		for (int opIdx = 0; opIdx < m;) {
 			HeapOp op = opIdx < insertFirst ? HeapOp.Insert : ops.get(rand.nextInt(ops.size()));
@@ -277,7 +277,7 @@ class HeapTestUtils extends TestUtils {
 				if (elmsToInsertCursor >= elmsToInsertIds.length)
 					continue;
 				x = values[elmsToInsertIds[elmsToInsertCursor++]];
-				debug.println("Insert(" + x + ")");
+				debug.println("Insert(", x, ")");
 
 				tracker.insert(x);
 				tracker.heap.insert(x);
@@ -287,7 +287,7 @@ class HeapTestUtils extends TestUtils {
 				if (tracker.isEmpty() || rand.nextInt(3) != 0)
 					continue;
 				x = tracker.randElement();
-				debug.println("Remove(" + x + ")");
+				debug.println("Remove(", x, ")");
 
 				tracker.remove(x);
 				if (!tracker.heap.remove(x)) {

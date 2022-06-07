@@ -79,7 +79,7 @@ public class SplitFindMinArrayTest extends TestUtils {
 
 		List<Double> keys = new ArrayList<>(n);
 		for (int i = 0; i < n; i++)
-			keys.add(rand.nextDouble() * 100);
+			keys.add(rand.nextDouble(0, 100));
 		sf.init(keys, null);
 
 		int[] sequence = new int[n];

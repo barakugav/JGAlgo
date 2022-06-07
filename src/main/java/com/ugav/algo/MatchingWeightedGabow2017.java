@@ -385,7 +385,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 					debug.print("roots:");
 					forEachTopBlossom(b -> {
 						if (matched[b.base] == null)
-							debug.print(" " + b);
+							debug.print(" ", b);
 					});
 					debug.println();
 				});
@@ -401,20 +401,20 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 					if (deltaNext == Double.MAX_VALUE || (!perfect && delta1 < deltaNext))
 						break mainLoop;
 
-					debug.print("delta " + deltaNext + " (+" + (deltaNext - delta) + ")");
+					debug.print("delta ", Double.valueOf(deltaNext), " (+", Double.valueOf(deltaNext - delta), ")");
 					assert deltaNext + EPS >= delta;
 					delta = deltaNext;
 
 					debug.printExec(() -> {
-						debug.print(" " + Arrays.asList(blossoms).stream().map(b -> "" + dualVal(b.base))
+						debug.print(" ", Arrays.asList(blossoms).stream().map(b -> String.valueOf(dualVal(b.base)))
 								.collect(Collectors.joining(", ", "[", "]")));
-						debug.print(" " + Arrays.asList(blossoms).stream()
-								.mapMulti((Blossom<E> b, Consumer<Blossom<E>> next) -> {
+						debug.print(" ",
+								Arrays.asList(blossoms).stream().mapMulti((Blossom<E> b, Consumer<Blossom<E>> next) -> {
 									for (; b.parent != null; b = b.parent)
 										;
 									next.accept(b);
 								}).distinct().filter(b -> !b.isSingleton()).map(b -> "" + b + " " + dualVal(b))
-								.collect(Collectors.joining(", ", "[", "]")));
+										.collect(Collectors.joining(", ", "[", "]")));
 
 						debug.print("\nMatched: ");
 						debug.println(Arrays.toString(matched));
@@ -476,7 +476,8 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 		}
 
 		private void growStep() {
-			debug.print("growStep (root=" + find0(growEvents.findMin().e.u()).root + "): " + growEvents.findMin().e);
+			debug.print("growStep (root=", Integer.valueOf(find0(growEvents.findMin().e.u()).root), "): ",
+					growEvents.findMin().e);
 
 			// Grow step
 			assert delta == growEventsKey(growEvents.findMin());
@@ -496,7 +497,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 				V.expandDelta = V.z0 / 2 + V.delta1;
 				V.expandHandle = expandEvents.insert(V);
 			}
-			debug.print(" " + V);
+			debug.print(" ", V);
 
 			int pathLen = computePath(V, e.v(), oddBlossomPath);
 			assert pathLen > 0;
@@ -522,7 +523,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 			assert vToSMFId[V.base] == -1;
 			smfAddLeaf(V.base, smfParent);
 			makeEven(V);
-			debug.println(" " + V);
+			debug.println(" ", V);
 		}
 
 		private void blossomStep(Edge<EdgeVal<E>> e) {
@@ -775,7 +776,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 						matched[e.u()] = e;
 						matched[e.v()] = e.val().twin;
 
-						debug.print(" " + e);
+						debug.print(" ", e);
 						assert matched[e.u()] != null;
 						assert matched[e.v()] != null;
 					}
@@ -795,7 +796,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 			}
 			matched[bridge.u()] = bridge;
 			matched[bridge.v()] = bridge.val().twin;
-			debug.println(" " + bridge);
+			debug.println(" ", bridge);
 		}
 
 		private void augmentPath(Blossom<E> B, int u) {
@@ -846,7 +847,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 			assert matched[b1.base] != null;
 			assert matched[b2.base] != null;
 
-			debug.print(" " + xy);
+			debug.print(" ", xy);
 			for (Blossom<E> p = b0.parent;; p = p.parent) {
 				if (p == B.parent)
 					break;
