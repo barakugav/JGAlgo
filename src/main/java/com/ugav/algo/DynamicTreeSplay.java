@@ -3,16 +3,21 @@ package com.ugav.algo;
 public class DynamicTreeSplay<V, E> implements DynamicTree<V, E> {
 
 	private final double rootWeight;
-	private final SplayImplWithRelativeWeights<V, E> impl = new SplayImplWithRelativeWeights<>();
+	private final SplayTree.SplayImpl<V, SplayNode<V, E>> impl;
 	private static final double EPS = 0.00001;
 
 	public DynamicTreeSplay(double weightLimit) {
+		this(new SplayImplWithRelativeWeights<>(), weightLimit);
+	}
+
+	DynamicTreeSplay(SplayTree.SplayImpl<V, SplayNode<V, E>> impl, double weightLimit) {
 		this.rootWeight = weightLimit;
+		this.impl = impl;
 	}
 
 	@Override
 	public SplayNode<V, E> makeTree(V val) {
-		SplayNode<V, E> node = new SplayNode<>(val);
+		SplayNode<V, E> node = newNode(val);
 		node.weightDiff = rootWeight;
 		return node;
 	}
@@ -99,6 +104,7 @@ public class DynamicTreeSplay<V, E> implements DynamicTree<V, E> {
 
 		t1.tparent = t2;
 		t1.link(t2, val);
+		afterLink(t1);
 	}
 
 	@Override
@@ -106,6 +112,7 @@ public class DynamicTreeSplay<V, E> implements DynamicTree<V, E> {
 		SplayNode<V, E> n = splay((SplayNode<V, E>) v);
 		if (!n.hasRightChild())
 			return;
+		beforeCut(n);
 
 		double origW = n.getWeight();
 		n.right.weightDiff += origW;
@@ -128,10 +135,15 @@ public class DynamicTreeSplay<V, E> implements DynamicTree<V, E> {
 	}
 
 	@Override
+	public int size(Node<V, E> v) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public void clear() {
 	}
 
-	private SplayNode<V, E> splay(SplayNode<V, E> n) {
+	SplayNode<V, E> splay(SplayNode<V, E> n) {
 		/* Splice all ancestors of in */
 		for (SplayNode<V, E> p = n; p != null;)
 			p = splice(p);
@@ -142,7 +154,7 @@ public class DynamicTreeSplay<V, E> implements DynamicTree<V, E> {
 		return n;
 	}
 
-	private SplayNode<V, E> splice(SplayNode<V, E> n) {
+	SplayNode<V, E> splice(SplayNode<V, E> n) {
 		impl.splay(n);
 		assert n.isRoot();
 
@@ -170,7 +182,17 @@ public class DynamicTreeSplay<V, E> implements DynamicTree<V, E> {
 		return parent;
 	}
 
-	private static class SplayImplWithRelativeWeights<V, E> extends SplayTree.SplayImpl<V, SplayNode<V, E>> {
+	SplayNode<V, E> newNode(V val) {
+		return new SplayNode<>(val);
+	}
+
+	void beforeCut(SplayNode<V, E> n) {
+	}
+
+	void afterLink(SplayNode<V, E> n) {
+	}
+
+	static class SplayImplWithRelativeWeights<V, E> extends SplayTree.SplayImpl<V, SplayNode<V, E>> {
 
 		@Override
 		void beforeRotate(SplayNode<V, E> n) {
@@ -219,7 +241,7 @@ public class DynamicTreeSplay<V, E> implements DynamicTree<V, E> {
 
 	}
 
-	private static class SplayNode<V, E> extends SplayTree.Node<V, SplayNode<V, E>> implements Node<V, E> {
+	static class SplayNode<V, E> extends SplayTree.Node<V, SplayNode<V, E>> implements Node<V, E> {
 
 		SplayNode<V, E> userParent;
 		E edgeVal;

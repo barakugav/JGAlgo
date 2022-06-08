@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.function.DoubleFunction;
 import java.util.function.Function;
 
 import com.ugav.algo.DebugPrintsManager;
@@ -14,42 +15,56 @@ public class DynamicTreeSplayTest extends TestUtils {
 
 	@Test
 	public static boolean randOps() {
+		return testRandOps(DynamicTreeSplay::new);
+	}
+
+	static boolean testRandOps(DoubleFunction<? extends DynamicTree<TrackerNode, Void>> builder) {
+		return testRandOps(builder, List.of(Op.MakeTree, Op.FindRoot, Op.FindMinEdge, Op.AddWeight, Op.Link, Op.Cut));
+	}
+
+	static boolean testRandOps(DoubleFunction<? extends DynamicTree<TrackerNode, Void>> builder, List<Op> ops) {
 		List<Phase> phases = List.of(phase(1024, 16), phase(256, 32), phase(256, 64), phase(128, 128), phase(64, 512),
 				phase(64, 2048), phase(64, 4096), phase(32, 16384));
 		return runTestMultiple(phases, (testIter, args) -> {
 			int m = args[0];
-			return randOps(m);
+			return testRandOps(builder, m, ops);
 		});
 	}
 
-	private static enum Op {
-		MakeTree, FindRoot, FindMinEdge, AddWeight, Link, Cut, Evert
+	static enum Op {
+		MakeTree, FindRoot, FindMinEdge, AddWeight, Link, Cut, Evert, Size
 	}
 
-	private static class TrackerNode {
+	static class TrackerNode {
+		final int id;
 		DynamicTree.Node<TrackerNode, Void> dtNode;
 		TrackerNode parent;
+		final List<TrackerNode> children = new ArrayList<>();
 		int edgeWeight;
+
+		TrackerNode(int id) {
+			this.id = id;
+		}
 
 		@Override
 		public String toString() {
-			return "<" + dtNode + ">";
+			return "<" + id + ">";
 		}
 	}
 
 	@SuppressWarnings("boxing")
-	private static boolean randOps(final int m) {
+	private static boolean testRandOps(DoubleFunction<? extends DynamicTree<TrackerNode, Void>> builder, final int m,
+			List<Op> ops) {
 		DebugPrintsManager debug = new DebugPrintsManager(false);
 		debug.println("\tnew iteration");
 		Random rand = new Random(nextRandSeed());
 
-		List<Op> ops = List.of(Op.MakeTree, Op.FindRoot, Op.FindMinEdge, Op.AddWeight, Op.Link, Op.Cut);
 		final int MAX_WEIGHT = 10000000;
 		final int MAX_WEIGHT_LINK = 1000;
 		final int MAX_WEIGHT_ADD = 100;
 		List<TrackerNode> nodes = new ArrayList<>();
 		List<TrackerNode> roots = new ArrayList<>();
-		DynamicTree<TrackerNode, Void> tree = new DynamicTreeSplay<>(MAX_WEIGHT);
+		DynamicTree<TrackerNode, Void> tree = builder.apply(MAX_WEIGHT);
 
 		Function<TrackerNode, TrackerNode> findRoot = node -> {
 			TrackerNode root;
@@ -62,7 +77,7 @@ public class DynamicTreeSplayTest extends TestUtils {
 			Op op = ops.get(rand.nextInt(ops.size()));
 			switch (op) {
 			case MakeTree: {
-				TrackerNode node = new TrackerNode();
+				TrackerNode node = new TrackerNode(nodes.size());
 				DynamicTree.Node<TrackerNode, Void> dtNode = tree.makeTree(node);
 				node.dtNode = dtNode;
 				debug.println(op, "() -> ", dtNode);
@@ -148,6 +163,7 @@ public class DynamicTreeSplayTest extends TestUtils {
 
 				a.parent = b;
 				a.edgeWeight = weight;
+				b.children.add(a);
 				roots.remove(a);
 
 				break;
@@ -169,6 +185,7 @@ public class DynamicTreeSplayTest extends TestUtils {
 					continue;
 				debug.println(op, "(", node, ")");
 
+				node.parent.children.remove(node);
 				node.parent = null;
 				node.edgeWeight = 0;
 				roots.add(node);
@@ -178,6 +195,29 @@ public class DynamicTreeSplayTest extends TestUtils {
 			}
 			case Evert: {
 				throw new UnsupportedOperationException();
+			}
+			case Size: {
+				if (nodes.isEmpty())
+					continue;
+				TrackerNode node = nodes.get(rand.nextInt(nodes.size()));
+
+				int expected = 0;
+				List<TrackerNode> stack = new ArrayList<>();
+				stack.add(findRoot.apply(node));
+				while (!stack.isEmpty()) {
+					expected++;
+					TrackerNode n = stack.get(stack.size() - 1);
+					stack.remove(stack.size() - 1);
+					for (TrackerNode c : n.children)
+						stack.add(c);
+				}
+
+				int actual = tree.size(node.dtNode);
+				if (expected != actual) {
+					printTestStr("Wrong size: " + expected + " != " + actual + "\n");
+					return false;
+				}
+				break;
 			}
 			default:
 				throw new InternalError();

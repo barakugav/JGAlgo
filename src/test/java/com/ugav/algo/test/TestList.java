@@ -20,7 +20,8 @@ class TestList {
 			RedBlackTreeTest.class,
 			RedBlackTreeExtendedTest.class,
 			SplayTreeTest.class,
-			DynamicTreeSplayTest.class);
+			DynamicTreeSplayTest.class,
+			DynamicTreeSplaySizedTest.class);
 
 	private static final Collection<Class<?>> GRAPHS_TESTS = List.of(
 			GraphsTest.class,

@@ -60,6 +60,14 @@ public interface DynamicTree<V, E> {
 	public void evert(Node<V, E> v);
 
 	/**
+	 * Get the number of nodes in the node tree
+	 *
+	 * @param v a node
+	 * @return size of the node's tree
+	 */
+	public int size(Node<V, E> v);
+
+	/**
 	 * Clear the whole data structure
 	 */
 	public void clear();
