@@ -41,6 +41,7 @@ class TestList {
 			SubtreeMergeFindminTest.class,
 			MaxFlowEdmondsKarpTest.class,
 			MaxFlowPushRelabelTest.class,
+			MaxFlowPushRelabelWithDynamicTreesTest.class,
 			MaxFlowDinicTest.class,
 			TSPMetricTest.class);
 

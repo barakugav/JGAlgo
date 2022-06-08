@@ -11,6 +11,12 @@ import com.ugav.algo.Utils.Stack;
 
 public class MaxFlowDinic implements MaxFlow {
 
+	/**
+	 * Dinic's max flow algorithm using dynamic trees.
+	 *
+	 * O(m n log n)
+	 */
+
 	private final DebugPrintsManager debug;
 	private static final double EPS = 0.0001;
 

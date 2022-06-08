@@ -6,6 +6,7 @@ public class DynamicTreeSplay<V, E> implements DynamicTree<V, E> {
 
 	private final double rootWeight;
 	private final SplayImpl<V, E> impl = new SplayImpl<>();
+	private static final double EPS = 0.00001;
 
 	public DynamicTreeSplay(double weightLimit) {
 		this.rootWeight = weightLimit;
@@ -39,12 +40,13 @@ public class DynamicTreeSplay<V, E> implements DynamicTree<V, E> {
 
 		for (SplayNode<V, E> p = n.right;;) {
 			double w1 = p.getWeight(w);
-			if (p.hasRightChild() && p.getMinWeight(w) >= p.right.getMinWeight(w1)) {
+			if (p.hasRightChild() && p.getMinWeight(w) >= p.right.getMinWeight(w1) - EPS) {
 				p = p.right;
 				w = w1;
-			} else if (w1 == p.getMinWeight(w)) {
+			} else if (Math.abs(w1 - p.getMinWeight(w)) <= EPS) {
 				impl.splay(p); /* perform splay to pay */
-				return p.isLinked() ? new MinEdgeRes<>(p, w1, p.getEdgeData()) : null;
+				assert p.isLinked(); /* If fails, maxWeight was too small */
+				return new MinEdgeRes<>(p, w1, p.getEdgeData());
 			} else {
 				assert p.hasLeftChild();
 				p = p.left;

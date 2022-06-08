@@ -10,6 +10,12 @@ import com.ugav.algo.Utils.QueueIntFixSize;
 
 public class MaxFlowPushRelabel implements MaxFlow {
 
+	/**
+	 * Naive push/relabel implementation.
+	 *
+	 * O(n^3)
+	 */
+
 	private final DebugPrintsManager debug;
 	private static final double EPS = 0.0001;
 
@@ -30,7 +36,7 @@ public class MaxFlowPushRelabel implements MaxFlow {
 
 		@SuppressWarnings("unchecked")
 		EdgeIterator<Ref<E>>[] edges = new EdgeIterator[n];
-		double[] access = new double[n];
+		double[] excess = new double[n];
 		boolean[] isActive = new boolean[n];
 		QueueIntFixSize active = new QueueIntFixSize(n);
 		int[] d = new int[n];
@@ -48,9 +54,9 @@ public class MaxFlowPushRelabel implements MaxFlow {
 			assert e.flow <= e.cap + EPS;
 			assert e.rev.flow <= e.rev.cap + EPS;
 
-			access[u] -= f;
-			access[v] += f;
-			if (access[v] > EPS && !isActive[v]) {
+			excess[u] -= f;
+			excess[v] += f;
+			if (!isActive[v]) {
 				isActive[v] = true;
 				active.push(v);
 			}
@@ -77,11 +83,11 @@ public class MaxFlowPushRelabel implements MaxFlow {
 				continue;
 			EdgeIterator<Ref<E>> it = edges[u];
 
-			while (access[u] > EPS && it.hasNext()) {
+			while (excess[u] > EPS && it.hasNext()) {
 				Edge<Ref<E>> e = it.pickNext();
 				double eAccess = e.val().cap - e.val().flow;
 				if (eAccess > EPS && d[u] == d[e.v()] + 1) {
-					double f = Math.min(access[u], eAccess);
+					double f = Math.min(excess[u], eAccess);
 					pushFlow.accept(e, f);
 				} else {
 					it.next();
@@ -96,7 +102,7 @@ public class MaxFlowPushRelabel implements MaxFlow {
 			}
 
 			/* Update isActive and add to queue if active */
-			if (isActive[u] = access[u] > EPS)
+			if (isActive[u] = excess[u] > EPS)
 				active.push(u);
 		}
 

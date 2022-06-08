@@ -97,7 +97,7 @@ class MaxFlowTestUtils extends TestUtils {
 		}
 
 		double expectedMaxFlow = calcExpectedFlow(g, net, source, target);
-		if (!doubleEql(expectedMaxFlow, actualMaxFlow, 1E-10)) {
+		if (!doubleEql(expectedMaxFlow, actualMaxFlow, 1E-3)) {
 			printTestStr("Unexpected max flow: ", expectedMaxFlow, " != ", actualMaxFlow, "\n");
 			return false;
 		}
