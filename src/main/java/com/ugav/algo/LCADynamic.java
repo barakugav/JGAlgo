@@ -1,32 +1,34 @@
 package com.ugav.algo;
 
-public interface LCADynamic {
+public interface LCADynamic<V> {
 
 	/**
-	 * Initialize the tree the LCA will operate on
+	 * Initialize the tree the LCA will operate on and create a root node
 	 *
-	 * @return identifier of the root node
+	 * @param val user value for the new node
+	 * @return the new root node
 	 * @throws IllegalStateException if the tree is not empty
 	 */
-	public int initTree();
+	public Node<V> initTree(V val);
 
 	/**
 	 * Add a new leaf in the tree
 	 *
-	 * @param parent identifier of the parent node
-	 * @return identifier of the new node
+	 * @param parent parent of the new node
+	 * @param val    user value for the new node
+	 * @return the new node
 	 * @throws IllegalArgumentException if the parent identifier is not valid
 	 */
-	public int addLeaf(int parent);
+	public Node<V> addLeaf(Node<V> parent, V val);
 
 	/**
 	 * Calculate the lowest common ancestor of two nodes in the tree
 	 *
-	 * @param u identifier of the first node
-	 * @param v identifier of the second node
-	 * @return identifier of the lowest common ancestor of the two nodes
+	 * @param u the first node
+	 * @param v the second node
+	 * @return the lowest common ancestor of the two nodes
 	 */
-	public int calcLCA(int u, int v);
+	public Node<V> calcLCA(Node<V> u, Node<V> v);
 
 	/**
 	 * Get the number of nodes in the tree
@@ -39,5 +41,15 @@ public interface LCADynamic {
 	 * Clear the data structure
 	 */
 	public void clear();
+
+	public static interface Node<V> {
+
+		public V getNodeData();
+
+		public void setNodeData(V val);
+
+		public Node<V> getParent();
+
+	}
 
 }

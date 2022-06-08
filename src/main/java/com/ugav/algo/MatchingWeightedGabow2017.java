@@ -104,16 +104,13 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 		final HeapDirectAccessed<EdgeEvent<E>> growEvents;
 
 		/* Heap storing all the blossom and augmenting events */
-		final SubtreeMergeFindmin<EdgeEvent<E>> smf;
+		final SubtreeMergeFindmin<Blossom<E>, EdgeEvent<E>> smf;
 
 		/* Dummy SMF node, use as root of roots (SMF support only one tree) */
-		int smfRootOfRoots;
+		SubtreeMergeFindmin.Node<Blossom<E>> smfRootOfRoots;
 
 		/* SMF index of each vertex: vertex -> SMF identifier */
-		final int[] vToSMFId;
-
-		/* Actual vertex of each SMF node: smfID -> vertex */
-		final int[] smfIdToV;
+		final SubtreeMergeFindmin.Node<Blossom<E>>[] vToSMFId;
 
 		/*
 		 * array used to calculate the path from a vertex to blossom base, used to
@@ -298,11 +295,10 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 			vertexDualValBase = new double[n];
 
 			vToGrowEvent = new EdgeEvent[n];
-			vToSMFId = new int[n];
-			smfIdToV = new int[n];
+			vToSMFId = new SubtreeMergeFindmin.Node[n];
 			oddBlossomPath = new int[n];
 			growEvents = new HeapFibonacci<>((e1, e2) -> Utils.compare(growEventsKey(e1), growEventsKey(e2)));
-			smf = new SubtreeMergeFindmin<>((e1, e2) -> Utils.compare(e1.slack, e2.slack));
+			smf = new SubtreeMergeFindminImpl<>((e1, e2) -> Utils.compare(e1.slack, e2.slack));
 			expandEvents = new HeapFibonacci<>((b1, b2) -> Utils.compare(b1.expandDelta, b2.expandDelta));
 
 			unionQueue = new QueueIntFixSize(n + 1);
@@ -339,9 +335,8 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 				Arrays.fill(vToFind1Idx, -1);
 				find1.init(new NullList<>(n), edgeSlackBarComparator);
 				find1IdxNext = 0;
-				Arrays.fill(vToSMFId, -1);
-				Arrays.fill(smfIdToV, -1);
-				smfRootOfRoots = smf.initTree();
+				Arrays.fill(vToSMFId, null);
+				smfRootOfRoots = smf.initTree(null);
 
 				// Init unmatched blossoms as even and all other as out
 				forEachTopBlossom(b -> {
@@ -359,14 +354,14 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 						int base = b.base;
 
 						/* Update SMF data structure */
-						int baseSMFId = smfAddLeaf(base, smfRootOfRoots);
+						SubtreeMergeFindmin.Node<Blossom<E>> baseSMFNode = smfAddLeaf(base, smfRootOfRoots);
 						forEachVertexInBlossom(b, u -> {
 							blossoms[u].isEven = true;
 							find0.union(base, u);
 
 							if (u != base) {
-								int smfId = smfAddLeaf(u, baseSMFId);
-								smf.mergeSubTrees(baseSMFId, smfId);
+								SubtreeMergeFindmin.Node<Blossom<E>> smfNode = smfAddLeaf(u, baseSMFNode);
+								smf.mergeSubTrees(baseSMFNode, smfNode);
 							}
 						});
 						find0Blossoms[find0.find(base)] = b;
@@ -394,7 +389,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 					double delta1 = delta1Threshold;
 					double delta2 = growEvents.isEmpty() ? Double.MAX_VALUE : growEventsKey(growEvents.findMin());
 					double delta3 = !smf.hasNonTreeEdge() ? Double.MAX_VALUE
-							: smf.findMinNonTreeEdge().weight.slack / 2;
+							: smf.findMinNonTreeEdge().edgeVal().slack / 2;
 					double delta4 = expandEvents.isEmpty() ? Double.MAX_VALUE : expandEvents.findMin().expandDelta;
 
 					double deltaNext = Math.min(delta2, Math.min(delta3, delta4));
@@ -423,8 +418,8 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 					if (deltaNext == delta2) {
 						growStep();
 					} else if (deltaNext == delta3) {
-						assert delta == smf.findMinNonTreeEdge().weight.slack / 2;
-						Edge<EdgeVal<E>> e = smf.findMinNonTreeEdge().weight.e;
+						assert delta == smf.findMinNonTreeEdge().edgeVal().slack / 2;
+						Edge<EdgeVal<E>> e = smf.findMinNonTreeEdge().edgeVal().e;
 						assert isEven(e.u()) && isEven(e.v());
 
 						if (find0(e.u()).root == find0(e.v()).root)
@@ -502,11 +497,11 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 			int pathLen = computePath(V, e.v(), oddBlossomPath);
 			assert pathLen > 0;
 			assert oddBlossomPath[0] == e.v();
-			assert vToSMFId[e.u()] != -1;
-			assert vToSMFId[e.v()] == -1;
-			int smfParent = smfAddLeaf(e.v(), vToSMFId[e.u()]);
+			assert vToSMFId[e.u()] != null;
+			assert vToSMFId[e.v()] == null;
+			SubtreeMergeFindmin.Node<Blossom<E>> smfParent = smfAddLeaf(e.v(), vToSMFId[e.u()]);
 			for (int i = 1; i < pathLen; i++) {
-				assert vToSMFId[oddBlossomPath[i]] == -1;
+				assert vToSMFId[oddBlossomPath[i]] == null;
 				smfParent = smfAddLeaf(oddBlossomPath[i], smfParent);
 			}
 			assert oddBlossomPath[pathLen - 1] == V.base;
@@ -520,7 +515,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 				growEvents.removeHandle(V.growHandle);
 				V.growHandle = null;
 			}
-			assert vToSMFId[V.base] == -1;
+			assert vToSMFId[V.base] == null;
 			smfAddLeaf(V.base, smfParent);
 			makeEven(V);
 			debug.println(" ", V);
@@ -577,18 +572,18 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 						b.z0 = dualVal(b);
 					b.parent = newb;
 					connectSubBlossoms(b, prev, toPrevEdge, !prevIsRight);
-					int smfTopId = vToSMFId[b.treeParentEdge.u()];
-					smf.mergeSubTrees(vToSMFId[b.treeParentEdge.v()], smfTopId);
+					SubtreeMergeFindmin.Node<Blossom<E>> smfTopNode = vToSMFId[b.treeParentEdge.u()];
+					smf.mergeSubTrees(vToSMFId[b.treeParentEdge.v()], smfTopNode);
 					forEachVertexInBlossom(b, v -> {
 						blossoms[v].isEven = true;
 
-						int smfId = vToSMFId[v];
-						if (smfId == -1) {
-							smfId = smfAddLeaf(v, smfTopId);
-							smf.mergeSubTrees(smfId, smfTopId);
+						SubtreeMergeFindmin.Node<Blossom<E>> smfId = vToSMFId[v];
+						if (smfId == null) {
+							smfId = smfAddLeaf(v, smfTopNode);
+							smf.mergeSubTrees(smfId, smfTopNode);
 						} else {
-							while (!smf.isSameSubTree(smfId, smfTopId)) {
-								int p = smfParent(smfId);
+							while (!smf.isSameSubTree(smfId, smfTopNode)) {
+								SubtreeMergeFindmin.Node<Blossom<E>> p = smfParent(smfId);
 								smf.mergeSubTrees(smfId, p);
 								smfId = p;
 							}
@@ -637,26 +632,26 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 			 * Therefore, we first merge the base to all it's SMF ancestors in the blossom,
 			 * and than merging all vertices up to the base sub tree.
 			 */
-			final int smfBaseId = vToSMFId[base];
-			assert smfBaseId != -1;
-			for (int smfId = smfBaseId;;) {
-				int parentSmf = smfParent(smfId);
-				if (parentSmf == -1 || topBlossom(smfToVertex(parentSmf)) != V)
+			final SubtreeMergeFindmin.Node<Blossom<E>> smfBaseNode = vToSMFId[base];
+			assert smfBaseNode != null;
+			for (SubtreeMergeFindmin.Node<Blossom<E>> smfId = smfBaseNode;;) {
+				SubtreeMergeFindmin.Node<Blossom<E>> parentSmf = smfParent(smfId);
+				if (parentSmf == null || topBlossom(parentSmf.getNodeData()) != V)
 					break;
-				smf.mergeSubTrees(smfBaseId, parentSmf);
+				smf.mergeSubTrees(smfBaseNode, parentSmf);
 				smfId = parentSmf;
 			}
 
 			forEachVertexInBlossom(V, v -> {
-				int smfId = vToSMFId[v];
-				if (smfId == -1) {
-					smfId = smfAddLeaf(v, smfBaseId);
-					smf.mergeSubTrees(smfBaseId, smfId);
+				SubtreeMergeFindmin.Node<Blossom<E>> smfNode = vToSMFId[v];
+				if (smfNode == null) {
+					smfNode = smfAddLeaf(v, smfBaseNode);
+					smf.mergeSubTrees(smfBaseNode, smfNode);
 				} else {
-					while (!smf.isSameSubTree(smfId, smfBaseId)) {
-						int p = smfParent(smfId);
-						smf.mergeSubTrees(smfId, p);
-						smfId = p;
+					while (!smf.isSameSubTree(smfNode, smfBaseNode)) {
+						SubtreeMergeFindmin.Node<Blossom<E>> p = smfParent(smfNode);
+						smf.mergeSubTrees(smfNode, p);
+						smfNode = p;
 					}
 				}
 			});
@@ -733,7 +728,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 				b = next.apply(b);
 				if (b == top)
 					break;
-				assert vToSMFId[b.base] == -1;
+				assert vToSMFId[b.base] == null;
 				b.root = -1;
 				b.treeParentEdge = null;
 				b.isEven = false;
@@ -955,6 +950,11 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 			return isEven(v) ? find0(v) : find1(v);
 		}
 
+		private Blossom<E> topBlossom(Blossom<E> v) {
+			assert v.isSingleton();
+			return v.isEven ? find0(v.base) : find1(v.base);
+		}
+
 		private void forEachBlossom(Consumer<Blossom<E>> f) {
 			int n = g.vertices();
 			int visitIdx = ++blossomVisitIdx;
@@ -1095,27 +1095,16 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 			leftToRightEdge.val().twin.val().b1 = left;
 		}
 
-		private int smfAddLeaf(int v, int parentSmfId) {
-			int smfId = smf.addLeaf(parentSmfId);
-
-			assert vToSMFId[v] == -1;
-			vToSMFId[v] = smfId;
-
-			/* offset by -1 due to dummy root of roots */
-			assert smfIdToV[smfId - 1] == -1;
-			smfIdToV[smfId - 1] = v;
-
-			return smfId;
+		private SubtreeMergeFindmin.Node<Blossom<E>> smfAddLeaf(int v,
+				SubtreeMergeFindmin.Node<Blossom<E>> parentSmfNode) {
+			SubtreeMergeFindmin.Node<Blossom<E>> smfNode = smf.addLeaf(parentSmfNode, blossoms[v]);
+			assert vToSMFId[v] == null;
+			return vToSMFId[v] = smfNode;
 		}
 
-		private int smfToVertex(int smfId) {
-			/* offset by -1 due to dummy root of roots */
-			return smfIdToV[smfId - 1];
-		}
-
-		private int smfParent(int smfId) {
-			int p = smf.getParent(smfId);
-			return p != smfRootOfRoots ? p : -1;
+		private SubtreeMergeFindmin.Node<Blossom<E>> smfParent(SubtreeMergeFindmin.Node<Blossom<E>> smfNode) {
+			SubtreeMergeFindmin.Node<Blossom<E>> p = smfNode.getParent();
+			return p != smfRootOfRoots ? p : null;
 		}
 
 		private Blossom<E> lcaInSearchTree(Blossom<E> b1, Blossom<E> b2) {

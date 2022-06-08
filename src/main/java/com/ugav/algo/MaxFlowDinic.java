@@ -86,7 +86,7 @@ public class MaxFlowDinic implements MaxFlow {
 			};
 
 			calcBlockFlow: for (;;) {
-				int v = dt.findRoot(vToDt[source]).getNodeVal().intValue();
+				int v = dt.findRoot(vToDt[source]).getNodeData().intValue();
 				if (v == target) {
 
 					/* Augment */
