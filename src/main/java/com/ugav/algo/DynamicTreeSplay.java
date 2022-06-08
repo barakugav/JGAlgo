@@ -1,11 +1,9 @@
 package com.ugav.algo;
 
-import java.util.Comparator;
-
 public class DynamicTreeSplay<V, E> implements DynamicTree<V, E> {
 
 	private final double rootWeight;
-	private final SplayImpl<V, E> impl = new SplayImpl<>();
+	private final SplayImplWithRelativeWeights<V, E> impl = new SplayImplWithRelativeWeights<>();
 	private static final double EPS = 0.00001;
 
 	public DynamicTreeSplay(double weightLimit) {
@@ -25,7 +23,8 @@ public class DynamicTreeSplay<V, E> implements DynamicTree<V, E> {
 		if (!n.isLinked())
 			return n;
 		splay(n);
-		return impl.findMaxNode(n);
+		return splay(BSTUtils.findMax(n));
+
 	}
 
 	@Override
@@ -171,30 +170,12 @@ public class DynamicTreeSplay<V, E> implements DynamicTree<V, E> {
 		return parent;
 	}
 
-	private static class SplayImpl<V, E> extends SplayTree.Impl<V, SplayNode<V, E>> {
-
-		@Override
-		SplayNode<V, E> insert(SplayNode<V, E> root, Comparator<? super V> c, SplayNode<V, E> n) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		SplayNode<V, E> remove(SplayNode<V, E> n) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		SplayNode<V, E> meld(SplayNode<V, E> t1, SplayNode<V, E> t2) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		Pair<SplayNode<V, E>, SplayNode<V, E>> split(SplayNode<V, E> n) {
-			throw new UnsupportedOperationException();
-		}
+	private static class SplayImplWithRelativeWeights<V, E> extends SplayTree.SplayImpl<V, SplayNode<V, E>> {
 
 		@Override
 		void beforeRotate(SplayNode<V, E> n) {
+			super.beforeRotate(n);
+
 			SplayNode<V, E> parent = n.parent;
 
 			double origN = n.weightDiff, origP = parent.weightDiff;
@@ -236,14 +217,9 @@ public class DynamicTreeSplay<V, E> implements DynamicTree<V, E> {
 			parent.tparent = null;
 		}
 
-		@Override
-		SplayNode<V, E> newNode(Object v) {
-			throw new UnsupportedOperationException();
-		}
-
 	}
 
-	private static class SplayNode<V, E> extends SplayTree.Impl.Node<V, SplayNode<V, E>> implements Node<V, E> {
+	private static class SplayNode<V, E> extends SplayTree.Node<V, SplayNode<V, E>> implements Node<V, E> {
 
 		SplayNode<V, E> userParent;
 		E edgeVal;

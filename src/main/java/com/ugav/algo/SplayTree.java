@@ -2,15 +2,13 @@ package com.ugav.algo;
 
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.Objects;
 
 import com.ugav.algo.BSTUtils.NeighborType;
-import com.ugav.algo.SplayTree.Impl.Node;
 
 public class SplayTree<E> extends BSTAbstract<E> {
 
-	private NodeBasic<E> root;
-	private final ImplBasic<E> impl = new ImplBasic<>();
+	private NodeSized<E> root;
+	private final SplayImplWithSize<E> impl = new SplayImplWithSize<>();
 
 	public SplayTree() {
 		this(null);
@@ -33,21 +31,67 @@ public class SplayTree<E> extends BSTAbstract<E> {
 
 	@Override
 	public Handle<E> insert(E e) {
-		return insertNode(impl.newNode(e));
+		return insertNode(new NodeSized<>(e));
 	}
 
-	private NodeBasic<E> insertNode(NodeBasic<E> n) {
-		return root = (root == null ? n : impl.insert(root, c, n));
+	private NodeSized<E> insertNode(NodeSized<E> n) {
+		if (root == null)
+			return root = n;
+
+		BSTUtils.insert(root, c, n);
+		for (NodeSized<E> p = n.parent; p != null; p = p.parent)
+			p.size++;
+		return root = impl.splay(n);
 	}
 
 	@Override
 	public void removeHandle(Handle<E> handle) {
-		root = impl.remove((NodeBasic<E>) handle);
+		NodeSized<E> n = (NodeSized<E>) handle;
+
+		if (n.hasLeftChild() && n.hasRightChild()) {
+			/* Node has two children, swap node with successor */
+			NodeSized<E> swap = BSTUtils.findSuccessor(n);
+			E old = swap.val;
+			swap.val = n.val;
+			n.val = old;
+			n = swap;
+		}
+
+		NodeSized<E> child;
+		if (!n.hasLeftChild()) {
+			replace(n, child = n.right);
+		} else {
+			assert !n.hasRightChild();
+			replace(n, child = n.left);
+		}
+
+		/* Decrease ancestors size by 1 */
+		for (NodeSized<E> p = n.parent; p != null; p = p.parent)
+			p.size--;
+
+		NodeSized<E> parent = n.parent;
+		n.clear();
+		root = impl.splay(child != null ? child : parent);
+
+	}
+
+	private void replace(NodeSized<E> u, NodeSized<E> v) {
+		/* replaces u with v */
+		if (u.parent != null) {
+			if (u.isLeftChild()) {
+				u.parent.left = v;
+			} else {
+				assert u.isRightChild();
+				u.parent.right = v;
+			}
+		}
+		if (v != null)
+			v.parent = u.parent;
 	}
 
 	@Override
 	public void decreaseKey(Handle<E> handle, E e) {
-		NodeBasic<E> n = (NodeBasic<E>) handle;
+		NodeSized<E> n = (NodeSized<E>) handle;
 		removeHandle(n);
 		n.val = e;
 		insertNode(n);
@@ -55,49 +99,50 @@ public class SplayTree<E> extends BSTAbstract<E> {
 
 	@Override
 	public Handle<E> findHanlde(E e) {
-		return root = impl.findNode(root, c, e);
+		NodeSized<E> n = BSTUtils.find(root, c, e);
+		return n == null ? null : (root = impl.splay(n));
 	}
 
 	@Override
 	public Handle<E> findMinHandle() {
 		checkTreeNotEmpty();
-		return root = impl.findMinNode(root);
+		return root = impl.splay(BSTUtils.findMin(root));
 	}
 
 	@Override
 	public Handle<E> findMaxHandle() {
 		checkTreeNotEmpty();
-		return root = impl.findMaxNode(root);
+		return root = impl.splay(BSTUtils.findMax(root));
 	}
 
 	@Override
 	public Handle<E> findOrPredecessor(E e) {
-		NodeBasic<E> n = impl.findOrPredecessor(root, c, e);
-		return n == null ? null : (root = n);
+		NodeSized<E> n = BSTUtils.findOrNeighbor(root, c, e, NeighborType.Predecessor);
+		return n == null ? null : (root = impl.splay(n));
 	}
 
 	@Override
 	public Handle<E> findOrSuccessor(E e) {
-		NodeBasic<E> n = impl.findOrSuccessor(root, c, e);
-		return n == null ? null : (root = n);
+		NodeSized<E> n = BSTUtils.findOrNeighbor(root, c, e, NeighborType.Successor);
+		return n == null ? null : (root = impl.splay(n));
 	}
 
 	@Override
 	public Handle<E> findPredecessor(Handle<E> handle) {
-		NodeBasic<E> n = impl.findPredecessor((NodeBasic<E>) handle);
-		return n == null ? null : (root = n);
+		NodeSized<E> n = BSTUtils.findPredecessor((NodeSized<E>) handle);
+		return n == null ? null : (root = impl.splay(n));
 	}
 
 	@Override
 	public Handle<E> findSuccessor(Handle<E> handle) {
-		NodeBasic<E> n = impl.findSuccessor((NodeBasic<E>) handle);
-		return n == null ? null : (root = n);
+		NodeSized<E> n = BSTUtils.findSuccessor((NodeSized<E>) handle);
+		return n == null ? null : (root = impl.splay(n));
 	}
 
 	@Override
 	public E extractMin() {
 		checkTreeNotEmpty();
-		NodeBasic<E> n = BSTUtils.findMin(root);
+		NodeSized<E> n = BSTUtils.findMin(root);
 		E ret = n.val;
 		removeHandle(n);
 		return ret;
@@ -106,7 +151,7 @@ public class SplayTree<E> extends BSTAbstract<E> {
 	@Override
 	public E extractMax() {
 		checkTreeNotEmpty();
-		NodeBasic<E> n = BSTUtils.findMax(root);
+		NodeSized<E> n = BSTUtils.findMax(root);
 		E ret = n.val;
 		removeHandle(n);
 		return ret;
@@ -130,11 +175,11 @@ public class SplayTree<E> extends BSTAbstract<E> {
 
 		if (c.compare(findMaxHandle().get(), h.findMinHandle().get()) <= 0) {
 			/* all elements in this tree are <= than all elements in other tree */
-			root = impl.meld(root, h.root);
+			root = meld(root, h.root);
 			h.root = null;
 		} else if (c.compare(findMinHandle().get(), h.findMaxHandle().get()) >= 0) {
 			/* all elements in this tree are >= than all elements in other tree */
-			root = impl.meld(h.root, root);
+			root = meld(h.root, root);
 			h.root = null;
 		} else {
 			/* there is nothing smarter to do than regular meld */
@@ -142,14 +187,35 @@ public class SplayTree<E> extends BSTAbstract<E> {
 		}
 	}
 
+	private NodeSized<E> meld(NodeSized<E> t1, NodeSized<E> t2) {
+		/* Assume all nodes in t1 are smaller than all nodes in t2 */
+
+		/* Splay t1 max and t2 min */
+		t1 = impl.splay(BSTUtils.findMax(t1));
+		t2 = impl.splay(BSTUtils.findMax(t2));
+		assert t1.isRoot() && t2.isRoot();
+		assert !t1.hasRightChild();
+
+		t1.right = t2;
+		t2.parent = t1;
+		t1.size += t2.size;
+		return t1;
+	}
+
 	@Override
 	public SplayTree<E> split(Handle<E> handle) {
-		Pair<NodeBasic<E>, NodeBasic<E>> p = impl.split((NodeBasic<E>) handle);
-		root = p.e1;
-
 		SplayTree<E> newTree = new SplayTree<>(c);
-		newTree.root = p.e2;
 
+		NodeSized<E> n = root = impl.splay((NodeSized<E>) handle);
+		assert n.isRoot();
+		if (!n.hasRightChild())
+			return newTree;
+
+		NodeSized<E> newRoot = n.right;
+		n.right = null;
+		n.size -= newRoot.size;
+
+		newTree.root = newRoot;
 		return newTree;
 	}
 
@@ -161,122 +227,22 @@ public class SplayTree<E> extends BSTAbstract<E> {
 		root = null;
 	}
 
-	static abstract class Impl<E, N extends Node<E, N>> {
+	static class Node<E, N extends Node<E, N>> extends BSTUtils.Node<E, N> implements Handle<E> {
 
-		Impl() {
+		Node(E e) {
+			super(e);
 		}
 
-		N insert(N root, Comparator<? super E> c, N n) {
-			BSTUtils.insert(root, c, n);
-			for (N p = n.parent; p != null; p = p.parent)
-				p.size++;
-			afterInsert(n);
-			return splay(n);
+		@Override
+		public E get() {
+			return val;
 		}
 
-		N remove(N n) {
-			if (n.hasLeftChild() && n.hasRightChild()) {
-				/* Node has two children, swap node with successor */
-				N swap = BSTUtils.findSuccessor(n);
-				beforeValSwap(n, swap);
-				E old = swap.val;
-				swap.val = n.val;
-				n.val = old;
-				n = swap;
-			}
+	}
 
-			beforeRemove(n);
+	static abstract class SplayImpl<E, N extends Node<E, N>> {
 
-			N child;
-			if (!n.hasLeftChild()) {
-				replace(n, child = n.right);
-			} else {
-				assert !n.hasRightChild();
-				replace(n, child = n.left);
-			}
-
-			/* Decrease ancestors size by 1 */
-			for (N p = n.parent; p != null; p = p.parent)
-				p.size--;
-
-			N parent = n.parent;
-			n.clear();
-			return splay(child != null ? child : parent);
-		}
-
-		private void replace(N u, N v) {
-			/* replaces u with v */
-			if (u.parent != null) {
-				if (u.isLeftChild()) {
-					u.parent.left = v;
-				} else {
-					assert u.isRightChild();
-					u.parent.right = v;
-				}
-			}
-			if (v != null)
-				v.parent = u.parent;
-		}
-
-		N findNode(N root, Comparator<? super E> c, E e) {
-			return splay(BSTUtils.find(root, c, e));
-		}
-
-		N findMinNode(N root) {
-			return splay(BSTUtils.findMin(root));
-		}
-
-		N findMaxNode(N root) {
-			return splay(BSTUtils.findMax(root));
-		}
-
-		N findOrPredecessor(N root, Comparator<? super E> c, E e) {
-			return splay(BSTUtils.findOrNeighbor(root, c, e, NeighborType.Predecessor));
-		}
-
-		N findOrSuccessor(N root, Comparator<? super E> c, E e) {
-			return splay(BSTUtils.findOrNeighbor(root, c, e, NeighborType.Successor));
-		}
-
-		N findPredecessor(N node) {
-			return splay(BSTUtils.findPredecessor(node));
-		}
-
-		N findSuccessor(N node) {
-			return splay(BSTUtils.findSuccessor(node));
-		}
-
-		N meld(N t1, N t2) {
-			/* Assume all nodes in t1 are smaller than all nodes in t2 */
-			if (t1 == t2 || t1 == null || t2 == null)
-				return t1 != null ? t1 : t2;
-
-			/* Splay t1 max and t2 min */
-			t1 = findMaxNode(t1);
-			t2 = findMinNode(t2);
-			assert t1.isRoot() && t2.isRoot();
-			assert !t1.hasRightChild();
-			beforeMeld(t1, t2);
-			t1.right = t2;
-			t2.parent = t1;
-			t1.size += t2.size;
-			return t1;
-		}
-
-		Pair<N, N> split(N n) {
-			Objects.requireNonNull(n);
-			splay(n);
-			assert n.isRoot();
-
-			beforeSplit(n);
-
-			N newRoot = n.right;
-			if (newRoot != null) {
-				n.right = null;
-				n.size -= newRoot.size;
-			}
-
-			return Pair.of(n, newRoot);
+		SplayImpl() {
 		}
 
 		N splay(N n) {
@@ -308,12 +274,10 @@ public class SplayTree<E> extends BSTAbstract<E> {
 
 		private void rotate(N n) {
 			N parent = n.parent, grandparent = parent.parent;
-			int parentOldSize = parent.size;
 
 			beforeRotate(n);
 
 			if (n.isLeftChild()) {
-				parent.size = parentOldSize - n.size + (n.right != null ? n.right.size : 0);
 
 				parent.left = n.right;
 				if (parent.hasLeftChild())
@@ -322,7 +286,6 @@ public class SplayTree<E> extends BSTAbstract<E> {
 
 			} else {
 				assert n.isRightChild();
-				parent.size = parentOldSize - n.size + (n.left != null ? n.left.size : 0);
 
 				parent.right = n.left;
 				if (parent.hasRightChild())
@@ -331,7 +294,6 @@ public class SplayTree<E> extends BSTAbstract<E> {
 			}
 
 			n.parent = grandparent;
-			n.size = parentOldSize;
 			parent.parent = n;
 			if (grandparent != null) {
 				if (grandparent.left == parent)
@@ -341,63 +303,47 @@ public class SplayTree<E> extends BSTAbstract<E> {
 			}
 		}
 
-		void afterInsert(N n) {
-		}
-
-		void beforeValSwap(N a, N b) {
-		}
-
-		void beforeRemove(N n) {
-		}
-
-		void beforeMeld(N t1, N t2) {
-		}
-
-		void beforeSplit(N t1) {
-		}
-
 		void beforeRotate(N n) {
 		}
 
-		abstract N newNode(E e);
-
-		static class Node<E, N extends Node<E, N>> extends BSTUtils.Node<E, N> implements Handle<E> {
-
-			int size;
-
-			Node(E e) {
-				super(e);
-				size = 1;
-			}
-
-			@Override
-			public E get() {
-				return val;
-			}
-
-			@Override
-			void clear() {
-				super.clear();
-				size = 1;
-			}
-		}
-
 	}
 
-	private static class NodeBasic<E> extends Impl.Node<E, NodeBasic<E>> {
+	private static class NodeSized<E> extends Node<E, NodeSized<E>> {
 
-		NodeBasic(E e) {
+		int size;
+
+		NodeSized(E e) {
 			super(e);
+			size = 1;
 		}
-
-	}
-
-	private static class ImplBasic<E> extends Impl<E, NodeBasic<E>> {
 
 		@Override
-		NodeBasic<E> newNode(E e) {
-			return new NodeBasic<>(e);
+		void clear() {
+			super.clear();
+			size = 1;
 		}
+
+	}
+
+	private static class SplayImplWithSize<E> extends SplayImpl<E, NodeSized<E>> {
+
+		@Override
+		void beforeRotate(NodeSized<E> n) {
+			super.beforeRotate(n);
+
+			NodeSized<E> parent = n.parent;
+			int parentOldSize = parent.size;
+
+			if (n.isLeftChild()) {
+				parent.size = parentOldSize - n.size + (n.hasRightChild() ? n.right.size : 0);
+			} else {
+				assert n.isRightChild();
+				parent.size = parentOldSize - n.size + (n.hasLeftChild() ? n.left.size : 0);
+			}
+
+			n.size = parentOldSize;
+		}
+
 	}
 
 	private void checkTreeNotEmpty() {
