@@ -71,6 +71,80 @@ class Utils {
 		};
 	}
 
+	static class QueueFixSize<E> {
+
+		private final int idxMask;
+		private final Object[] q;
+		private int begin, end;
+
+		QueueFixSize(int maxSize) {
+			/* round size of next power of 2 */
+			maxSize = 1 << (32 - Integer.numberOfLeadingZeros(maxSize));
+			idxMask = maxSize - 1;
+			q = new Object[maxSize];
+			begin = end = 0;
+		}
+
+		int size() {
+			return begin <= end ? end - begin : q.length - begin + end;
+		}
+
+		boolean isEmpty() {
+			return begin == end;
+		}
+
+		void push(E x) {
+			if (((end + 1) & idxMask) == begin)
+				throw new IndexOutOfBoundsException();
+			q[end] = x;
+			end = (end + 1) & idxMask;
+		}
+
+		E pop() {
+			if (isEmpty())
+				throw new NoSuchElementException();
+			@SuppressWarnings("unchecked")
+			E x = (E) q[begin];
+			begin = (begin + 1) & idxMask;
+			return x;
+		}
+
+		void clear() {
+			begin = end = 0;
+		}
+
+		@Override
+		public String toString() {
+			StringBuilder b = new StringBuilder();
+			b.append('[');
+
+			int lastIdx = Math.min(end, q.length) - 1;
+			if (begin <= lastIdx) {
+				for (int i = begin;; i++) {
+					b.append(q[i]);
+					if (i == lastIdx) {
+						if (end < begin && end != 0)
+							b.append(", ");
+						break;
+					}
+					b.append(", ");
+				}
+			}
+
+			if (end < begin && end != 0) {
+				for (int i = 0;; i++) {
+					b.append(q[i]);
+					if (i == end - 1)
+						break;
+					b.append(", ");
+				}
+			}
+
+			return b.append(']').toString();
+		}
+
+	}
+
 	static class QueueIntFixSize {
 
 		private final int idxMask;
