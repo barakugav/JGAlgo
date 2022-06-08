@@ -1,5 +1,6 @@
 package com.ugav.algo;
 
+import java.util.Arrays;
 import java.util.function.ObjDoubleConsumer;
 
 import com.ugav.algo.Graph.DirectedType;
@@ -35,6 +36,8 @@ public class MaxFlowPushRelabel implements MaxFlow {
 		int[] d = new int[n];
 
 		ObjDoubleConsumer<Edge<Ref<E>>> pushFlow = (e0, f) -> {
+			assert f > 0;
+
 			Ref<E> e = e0.val();
 			int u = e0.u(), v = e0.v();
 			if (e0.u() == e.orig.u())
@@ -45,33 +48,23 @@ public class MaxFlowPushRelabel implements MaxFlow {
 			assert e.flow <= e.cap + EPS;
 			assert e.rev.flow <= e.rev.cap + EPS;
 
-			if (u != source && u != target) {
-				access[u] -= f;
-				if (access[u] > EPS && !isActive[u]) {
-					isActive[u] = true;
-					active.push(u);
-				}
-			}
-			if (v != source && v != target) {
-				access[v] += f;
-				if (access[v] > EPS && !isActive[v]) {
-					isActive[v] = true;
-					active.push(v);
-				}
+			access[u] -= f;
+			access[v] += f;
+			if (access[v] > EPS && !isActive[v]) {
+				isActive[v] = true;
+				active.push(v);
 			}
 		};
 
 		/* Push as much as possible from the source vertex */
 		for (Edge<Ref<E>> e : Utils.iterable(g.edges(source))) {
 			double f = e.val().cap - e.val().flow;
-			if (Math.abs(f) < EPS)
-				continue;
-			pushFlow.accept(e, f);
+			if (f != 0)
+				pushFlow.accept(e, f);
 		}
 
 		/* Init all vertices distances */
-		for (int u = 0; u < n; u++)
-			d[u] = 0;
+		Arrays.fill(d, 0);
 		d[source] = n;
 
 		/* Init all vertices iterators */
@@ -80,6 +73,8 @@ public class MaxFlowPushRelabel implements MaxFlow {
 
 		while (!active.isEmpty()) {
 			int u = active.pop();
+			if (u == source || u == target)
+				continue;
 			EdgeIterator<Ref<E>> it = edges[u];
 
 			while (access[u] > EPS && it.hasNext()) {

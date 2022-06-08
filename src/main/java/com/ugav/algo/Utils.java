@@ -1,6 +1,7 @@
 package com.ugav.algo;
 
 import java.util.AbstractList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -139,6 +140,56 @@ class Utils {
 			}
 
 			return b.append(']').toString();
+		}
+
+	}
+
+	static class Stack<E> {
+
+		private Object[] s;
+		private int size;
+
+		Stack() {
+			s = new Object[2];
+			size = 0;
+		}
+
+		int size() {
+			return size;
+		}
+
+		boolean isEmpty() {
+			return size == 0;
+		}
+
+		void push(E x) {
+			if (size >= s.length)
+				s = Arrays.copyOf(s, Math.max(s.length * 2, 2));
+			s[size++] = x;
+		}
+
+		@SuppressWarnings("unchecked")
+		E pop() {
+			return (E) s[--size];
+		}
+
+		void clear() {
+			size = 0;
+		}
+
+		@Override
+		public String toString() {
+			if (isEmpty())
+				return "[]";
+
+			StringBuilder b = new StringBuilder();
+			b.append('[');
+			for (int i = 0;; i++) {
+				b.append(s[i]);
+				if (i == size - 1)
+					return b.append(']').toString();
+				b.append(", ");
+			}
 		}
 
 	}

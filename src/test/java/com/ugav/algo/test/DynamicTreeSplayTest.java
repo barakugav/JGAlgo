@@ -26,18 +26,14 @@ public class DynamicTreeSplayTest extends TestUtils {
 		MakeTree, FindRoot, FindMinEdge, AddWeight, Link, Cut, Evert
 	}
 
-	private static class Node {
-		final int tnode;
-		Node parent;
+	private static class TrackerNode {
+		DynamicTree.Node<TrackerNode, Void> dtNode;
+		TrackerNode parent;
 		int edgeWeight;
-
-		Node(int tnode) {
-			this.tnode = tnode;
-		}
 
 		@Override
 		public String toString() {
-			return "<" + tnode + ">";
+			return "<" + dtNode + ">";
 		}
 	}
 
@@ -51,12 +47,12 @@ public class DynamicTreeSplayTest extends TestUtils {
 		final int MAX_WEIGHT = 10000000;
 		final int MAX_WEIGHT_LINK = 1000;
 		final int MAX_WEIGHT_ADD = 100;
-		List<Node> nodes = new ArrayList<>();
-		List<Node> roots = new ArrayList<>();
-		DynamicTree<Void> tree = new DynamicTreeSplay<>(MAX_WEIGHT);
+		List<TrackerNode> nodes = new ArrayList<>();
+		List<TrackerNode> roots = new ArrayList<>();
+		DynamicTree<TrackerNode, Void> tree = new DynamicTreeSplay<>(MAX_WEIGHT);
 
-		Function<Node, Node> findRoot = node -> {
-			Node root;
+		Function<TrackerNode, TrackerNode> findRoot = node -> {
+			TrackerNode root;
 			for (root = node; root.parent != null;)
 				root = root.parent;
 			return root;
@@ -66,9 +62,10 @@ public class DynamicTreeSplayTest extends TestUtils {
 			Op op = ops.get(rand.nextInt(ops.size()));
 			switch (op) {
 			case MakeTree: {
-				int tnode = tree.makeTree();
-				debug.println(op, "() -> ", tnode);
-				Node node = new Node(tnode);
+				TrackerNode node = new TrackerNode();
+				DynamicTree.Node<TrackerNode, Void> dtNode = tree.makeTree(node);
+				node.dtNode = dtNode;
+				debug.println(op, "() -> ", dtNode);
 				nodes.add(node);
 				roots.add(node);
 				break;
@@ -76,13 +73,13 @@ public class DynamicTreeSplayTest extends TestUtils {
 			case FindRoot: {
 				if (nodes.isEmpty())
 					continue;
-				Node node = nodes.get(rand.nextInt(nodes.size()));
+				TrackerNode node = nodes.get(rand.nextInt(nodes.size()));
 				debug.println(op, "(", node, ")");
 
-				Node root = findRoot.apply(node);
-				int expected = root.tnode;
+				TrackerNode root = findRoot.apply(node);
+				DynamicTree.Node<TrackerNode, Void> expected = root.dtNode;
 
-				int actual = tree.findRoot(node.tnode);
+				DynamicTree.Node<TrackerNode, Void> actual = tree.findRoot(node.dtNode);
 
 				if (expected != actual) {
 					printTestStr("FindRoot failure: " + expected + " != " + actual + "\n");
@@ -93,18 +90,17 @@ public class DynamicTreeSplayTest extends TestUtils {
 			case FindMinEdge: {
 				if (nodes.isEmpty())
 					continue;
-				Node node = nodes.get(rand.nextInt(nodes.size()));
+				TrackerNode node = nodes.get(rand.nextInt(nodes.size()));
 				debug.println(op, "(", node, ")");
 
-				Node min = null;
-				for (Node p = node; p.parent != null; p = p.parent)
+				TrackerNode min = null;
+				for (TrackerNode p = node; p.parent != null; p = p.parent)
 					if (min == null || p.edgeWeight <= min.edgeWeight)
 						min = p;
-				int[] expected = min != null ? new int[] { min.tnode, min.parent.tnode, min.edgeWeight } : null;
+				Object[] expected = min != null ? new Object[] { min.dtNode, min.edgeWeight } : null;
 
-				DynamicTree.MinEdge<Void> actual0 = tree.findMinEdge(node.tnode);
-				int[] actual = actual0 != null
-						? new int[] { actual0.u(), actual0.v(), (int) Math.round(actual0.weight()) }
+				DynamicTree.MinEdge<TrackerNode, Void> actual0 = tree.findMinEdge(node.dtNode);
+				Object[] actual = actual0 != null ? new Object[] { actual0.u(), (int) Math.round(actual0.weight()) }
 						: null;
 
 				if (!Arrays.equals(expected, actual)) {
@@ -117,13 +113,13 @@ public class DynamicTreeSplayTest extends TestUtils {
 			case AddWeight: {
 				if (nodes.isEmpty())
 					continue;
-				Node node = nodes.get(rand.nextInt(nodes.size()));
+				TrackerNode node = nodes.get(rand.nextInt(nodes.size()));
 				int weight = rand.nextInt(MAX_WEIGHT_ADD * 2 + 1) - MAX_WEIGHT_ADD;
 				debug.println(op, "(", node, ", ", weight, ")");
 
-				tree.addWeight(node.tnode, weight);
+				tree.addWeight(node.dtNode, weight);
 
-				for (Node p = node; p.parent != null; p = p.parent)
+				for (TrackerNode p = node; p.parent != null; p = p.parent)
 					p.edgeWeight += weight;
 
 				break;
@@ -132,7 +128,7 @@ public class DynamicTreeSplayTest extends TestUtils {
 				if (roots.size() < 2)
 					continue;
 				final int RETRY_MAX = 100;
-				Node a = null, b = null;
+				TrackerNode a = null, b = null;
 				boolean found = false;
 				for (int r = 0; r < RETRY_MAX; r++) {
 					a = roots.get(rand.nextInt(roots.size()));
@@ -148,7 +144,7 @@ public class DynamicTreeSplayTest extends TestUtils {
 				int weight = rand.nextInt(MAX_WEIGHT_LINK);
 				debug.println(op, "(", a, ", ", b, ", ", weight, ")");
 
-				tree.link(a.tnode, b.tnode, weight, null);
+				tree.link(a.dtNode, b.dtNode, weight, null);
 
 				a.parent = b;
 				a.edgeWeight = weight;
@@ -160,7 +156,7 @@ public class DynamicTreeSplayTest extends TestUtils {
 				if (nodes.size() <= roots.size() || rand.nextInt(3) != 0)
 					continue;
 				final int RETRY_MAX = 100;
-				Node node = null;
+				TrackerNode node = null;
 				boolean found = false;
 				for (int r = 0; r < RETRY_MAX; r++) {
 					node = nodes.get(rand.nextInt(nodes.size()));
@@ -177,7 +173,7 @@ public class DynamicTreeSplayTest extends TestUtils {
 				node.edgeWeight = 0;
 				roots.add(node);
 
-				tree.cut(node.tnode);
+				tree.cut(node.dtNode);
 				break;
 			}
 			case Evert: {
