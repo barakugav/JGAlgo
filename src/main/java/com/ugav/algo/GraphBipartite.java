@@ -17,10 +17,6 @@ public interface GraphBipartite<E> extends Graph<E> {
 
 	public int tvertices();
 
-	public int[] getSVertices();
-
-	public int[] getTVertices();
-
 	/**
 	 * Check if a vertex is in S side
 	 *

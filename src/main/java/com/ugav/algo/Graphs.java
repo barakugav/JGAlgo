@@ -601,8 +601,8 @@ public class Graphs {
 		return String.join("", Collections.nCopies(n, s));
 	}
 
-	public static final WeightFunction<Double> WEIGHT_FUNC_DEFAULT = Edge::val;
-	public static final WeightFunctionInt<Integer> WEIGHT_INT_FUNC_DEFAULT = Edge::val;
+	public static final WeightFunction<Double> WEIGHT_FUNC_DEFAULT = Edge::data;
+	public static final WeightFunctionInt<Integer> WEIGHT_INT_FUNC_DEFAULT = Edge::data;
 
 	public static class EdgeWeightComparator<E> implements Comparator<Edge<E>> {
 
@@ -638,7 +638,7 @@ public class Graphs {
 		Graph<Edge<E>> g0 = new GraphArray<>(g.isDirected() ? DirectedType.Directed : DirectedType.Undirected,
 				g.vertices());
 		for (Edge<E> e : g.edges())
-			g0.addEdge(e.u(), e.v()).val(e);
+			g0.addEdge(e.u(), e.v()).setData(e);
 		return g0;
 	}
 

@@ -10,7 +10,7 @@ import com.ugav.algo.Graphs.EdgeWeightComparator;
 public class MSTYao1976 implements MST {
 
 	/*
-	 * O(mloglogn + nlogn)
+	 * O(m log log n + n log n)
 	 */
 
 	public MSTYao1976() {

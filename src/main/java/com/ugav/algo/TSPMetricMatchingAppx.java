@@ -27,7 +27,7 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 		Graph<Double> g = new GraphTable<>(DirectedType.Undirected, n);
 		for (int u = 0; u < n; u++)
 			for (int v = u + 1; v < n; v++)
-				g.addEdge(u, v).val(Double.valueOf(distances[u][v]));
+				g.addEdge(u, v).setData(Double.valueOf(distances[u][v]));
 
 		/* Calculate MST */
 		Collection<Edge<Double>> mst = new MSTPrim1957().calcMST(g, Graphs.WEIGHT_FUNC_DEFAULT);
@@ -45,11 +45,11 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 		int mGn = mG.vertices();
 		for (int u = 0; u < mGn; u++)
 			for (int v = u + 1; v < mGn; v++)
-				mG.addEdge(u, v).val(Double.valueOf(distances[mVtoV[u]][mVtoV[v]]));
+				mG.addEdge(u, v).setData(Double.valueOf(distances[mVtoV[u]][mVtoV[v]]));
 
 		/* Calculate maximum matching between the odd vertices */
 		Collection<Edge<Double>> matching = new MatchingWeightedGabow2017().calcPerfectMaxMatching(mG,
-				e -> -e.val().doubleValue());
+				e -> -e.data().doubleValue());
 		mG.clear(); /* not needed anymore */
 
 		/* Build a graph of the union of the MST and the matching result */
@@ -58,7 +58,7 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 			g1.addEdge(e);
 		for (Edge<Double> e : matching) {
 			int u = mVtoV[e.u()], v = mVtoV[e.v()];
-			g1.addEdge(u, v).val(Double.valueOf(distances[u][v]));
+			g1.addEdge(u, v).setData(Double.valueOf(distances[u][v]));
 		}
 
 		List<Edge<Double>> cycle = TSPMetricUtils.calcEulerianAndConvertToHamiltonianCycle(g, g1);

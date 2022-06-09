@@ -86,7 +86,7 @@ public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 			vertexData[u].edges = g.edges(u);
 
 		ObjDoubleConsumer<Edge<Ref<E>>> pushFlow = (e0, f) -> {
-			Ref<E> e = e0.val();
+			Ref<E> e = e0.data();
 			if (e0.u() == e.orig.u())
 				debug.println("F(", e.orig, ") += ", Double.valueOf(f));
 			e.flow += f;
@@ -95,7 +95,7 @@ public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 			assert e.rev.flow <= e.rev.cap + EPS;
 		};
 		ObjDoubleConsumer<Edge<Ref<E>>> updateFlow = (e, weight) -> {
-			pushFlow.accept(e, e.val().cap - e.val().flow - weight);
+			pushFlow.accept(e, e.data().cap - e.data().flow - weight);
 		};
 
 		Consumer<Vertex<E>> cut = U -> {
@@ -111,19 +111,19 @@ public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 
 		/* Push as much as possible from the source vertex */
 		for (Edge<Ref<E>> e : Utils.iterable(g.edges(source))) {
-			double f = e.val().cap - e.val().flow;
+			double f = e.data().cap - e.data().flow;
 			if (f == 0)
 				continue;
 			assert f > 0;
 
 			int u = e.u(), v = e.v();
-			if (e.u() == e.val().orig.u())
-				debug.println("F(", e.val().orig, ") += ", Double.valueOf(f));
+			if (e.u() == e.data().orig.u())
+				debug.println("F(", e.data().orig, ") += ", Double.valueOf(f));
 
-			e.val().flow += f;
-			e.val().rev.flow -= f;
-			assert e.val().flow <= e.val().cap + EPS;
-			assert e.val().rev.flow <= e.val().rev.cap + EPS;
+			e.data().flow += f;
+			e.data().rev.flow -= f;
+			assert e.data().flow <= e.data().cap + EPS;
+			assert e.data().rev.flow <= e.data().rev.cap + EPS;
 
 			Vertex<E> U = vertexData[u], V = vertexData[v];
 			U.excess -= f;
@@ -145,7 +145,7 @@ public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 			while (U.excess > EPS && it.hasNext()) {
 				Edge<Ref<E>> e = it.pickNext();
 				Vertex<E> V = vertexData[e.v()];
-				double eAccess = e.val().cap - e.val().flow;
+				double eAccess = e.data().cap - e.data().flow;
 
 				if (!(eAccess > EPS && U.d == V.d + 1)) {
 					/* edge is not admissible, just advance */
@@ -200,7 +200,7 @@ public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 						minEdge = dt.findMinEdge(W.dtNode);
 						if (minEdge.weight() > EPS)
 							break;
-						updateFlow.accept(minEdge.val(), minEdge.weight());
+						updateFlow.accept(minEdge.getData(), minEdge.weight());
 						cut.accept(minEdge.u().getNodeData());
 					}
 				}
@@ -227,7 +227,7 @@ public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 
 						/* update flow */
 						MinEdge<Vertex<E>, Edge<Ref<E>>> m = dt.findMinEdge(childData.dtNode);
-						updateFlow.accept(m.val(), m.weight());
+						updateFlow.accept(m.getData(), m.weight());
 
 						/* cut child */
 						toCut.push(child);
@@ -252,18 +252,18 @@ public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 				DynamicTree.Node<Vertex<E>, Edge<Ref<E>>> uDt = cleanupStack.pop();
 				assert uDt.getParent().getParent() == null;
 				MinEdge<Vertex<E>, Edge<Ref<E>>> m = dt.findMinEdge(uDt);
-				updateFlow.accept(m.val(), m.weight());
+				updateFlow.accept(m.getData(), m.weight());
 				dt.cut(m.u());
 			}
 		}
 
 		/* Construct result */
 		for (Edge<Ref<E>> e : g.edges())
-			if (e.u() == e.val().orig.u())
-				net.setFlow(e.val().orig, e.val().flow);
+			if (e.u() == e.data().orig.u())
+				net.setFlow(e.data().orig, e.data().flow);
 		double totalFlow = 0;
 		for (Edge<Ref<E>> e : Utils.iterable(g.edges(source)))
-			totalFlow += e.val().flow;
+			totalFlow += e.data().flow;
 		return totalFlow;
 	}
 
@@ -271,8 +271,8 @@ public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 		Graph<Ref<E>> g = new GraphArray<>(DirectedType.Directed, g0.vertices());
 		for (Edge<E> e : g0.edges()) {
 			Ref<E> ref = new Ref<>(e, net.getCapacity(e), 0), refRev = new Ref<>(e, 0, 0);
-			g.addEdge(e.u(), e.v()).val(ref);
-			g.addEdge(e.v(), e.u()).val(refRev);
+			g.addEdge(e.u(), e.v()).setData(ref);
+			g.addEdge(e.v(), e.u()).setData(refRev);
 			refRev.rev = ref;
 			ref.rev = refRev;
 		}

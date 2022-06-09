@@ -246,7 +246,7 @@ class GraphsTestUtils extends TestUtils {
 
 		Random rand = new Random(nextRandSeed());
 		for (Edge<Double> e : g.edges())
-			e.val(Double.valueOf(rand.nextDouble(minWeight, maxWeight)));
+			e.setData(Double.valueOf(rand.nextDouble(minWeight, maxWeight)));
 	}
 
 	static void assignRandWeightsIntPos(Graph<Integer> g) {
@@ -270,7 +270,7 @@ class GraphsTestUtils extends TestUtils {
 
 		RandomIntUnique rand = new RandomIntUnique(minWeight, maxWeight, nextRandSeed());
 		for (Edge<Integer> e : g.edges())
-			e.val(Integer.valueOf(rand.next()));
+			e.setData(Integer.valueOf(rand.next()));
 	}
 
 	static <E> Graph<E> randGraph(int n, int m) {
@@ -289,7 +289,7 @@ class GraphsTestUtils extends TestUtils {
 			for (int v = directed == DirectedType.Directed ? 0 : u + 1; v < n; v++) {
 				if (m[u][v] == 0)
 					continue;
-				g.addEdge(u, v).val(Integer.valueOf(m[u][v]));
+				g.addEdge(u, v).setData(Integer.valueOf(m[u][v]));
 			}
 		}
 		return g;

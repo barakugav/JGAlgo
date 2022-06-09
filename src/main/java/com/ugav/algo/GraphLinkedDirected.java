@@ -174,12 +174,12 @@ public class GraphLinkedDirected<E> extends GraphLinkedAbstract<E> {
 				return false;
 
 			Edge<?> e = (Edge<?>) o;
-			return u == e.u() && v == e.v() && Objects.equals(val(), e.val());
+			return u == e.u() && v == e.v() && Objects.equals(data(), e.data());
 		}
 
 		@Override
 		public int hashCode() {
-			return u ^ ~v ^ Objects.hashCode(val());
+			return u ^ ~v ^ Objects.hashCode(data());
 		}
 
 	}

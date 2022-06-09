@@ -27,11 +27,11 @@ public interface MaxFlow {
 
 	}
 
-	public static class FlowEdgeValueDefault {
-		public double capacity;
+	public static class FlowEdgeDataDefault {
+		public final double capacity;
 		public double flow;
 
-		public FlowEdgeValueDefault(double capacity) {
+		public FlowEdgeDataDefault(double capacity) {
 			this.capacity = capacity;
 		}
 
@@ -41,7 +41,7 @@ public interface MaxFlow {
 		}
 	}
 
-	public static class FlowNetworkDefault implements FlowNetwork<FlowEdgeValueDefault> {
+	public static class FlowNetworkDefault implements FlowNetwork<FlowEdgeDataDefault> {
 
 		private static final double EPS = 0.0001;
 
@@ -49,20 +49,20 @@ public interface MaxFlow {
 		}
 
 		@Override
-		public double getCapacity(Edge<? extends FlowEdgeValueDefault> e) {
-			return e.val().capacity;
+		public double getCapacity(Edge<? extends FlowEdgeDataDefault> e) {
+			return e.data().capacity;
 		}
 
 		@Override
-		public double getFlow(Edge<? extends FlowEdgeValueDefault> e) {
-			return e.val().flow;
+		public double getFlow(Edge<? extends FlowEdgeDataDefault> e) {
+			return e.data().flow;
 		}
 
 		@Override
-		public void setFlow(Edge<? extends FlowEdgeValueDefault> e, double flow) {
-			if (flow > e.val().capacity + EPS)
+		public void setFlow(Edge<? extends FlowEdgeDataDefault> e, double flow) {
+			if (flow > e.data().capacity + EPS)
 				throw new IllegalArgumentException("Illegal flow " + flow + " on edge " + e);
-			e.val().flow = Math.min(flow, e.val().capacity);
+			e.data().flow = Math.min(flow, e.data().capacity);
 		}
 
 	}

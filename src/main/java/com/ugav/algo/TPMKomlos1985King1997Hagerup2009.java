@@ -109,9 +109,9 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 					}
 				}
 
-				res[i] = (va == null || (ua != null && w.weight(ua.val()) >= w.weight(va.val())))
-						? (ua != null ? ua.val() : null)
-						: (va != null ? va.val() : null);
+				res[i] = (va == null || (ua != null && w.weight(ua.data()) >= w.weight(va.data())))
+						? (ua != null ? ua.data() : null)
+						: (va != null ? va.data() : null);
 			}
 
 			return res;
@@ -135,7 +135,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 				int u = edgeToChild.u(); // parent
 
 				a[v] = subseq(a[u], q[u], q[v]);
-				int j = binarySearch(a[v], w.weight(edgeToChild.val()), edgesFromRoot);
+				int j = binarySearch(a[v], w.weight(edgeToChild.data()), edgesFromRoot);
 				a[v] = repSuf(a[v], depth, j);
 
 				if (depth == leavesDepth) {
@@ -177,7 +177,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 
 		private int binarySearch(int av, double weight, List<Edge<Edge<E>>> edgesToRoot) {
 			int avsize = bitsTable.count.bitCount(av);
-			if (avsize == 0 || w.weight(edgesToRoot.get(bitsTable.ith.ithBit(av, 0) - 1).val()) < weight)
+			if (avsize == 0 || w.weight(edgesToRoot.get(bitsTable.ith.ithBit(av, 0) - 1).data()) < weight)
 				return 0;
 
 			for (int from = 0, to = avsize;;) {
@@ -185,7 +185,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 					return bitsTable.ith.ithBit(av, from) + 1;
 				int mid = (from + to) / 2;
 				int avi = bitsTable.ith.ithBit(av, mid);
-				if (w.weight(edgesToRoot.get(avi - 1).val()) >= weight)
+				if (w.weight(edgesToRoot.get(avi - 1).data()) >= weight)
 					from = mid;
 				else
 					to = mid;
@@ -219,7 +219,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 				Arrays.fill(minEdgesWeight, 0, n, Double.MAX_VALUE);
 				for (int u = 0; u < n; u++) {
 					for (Edge<Edge<E>> e : Utils.iterable(G.edges(u))) {
-						double eWeight = w.weight(e.val());
+						double eWeight = w.weight(e.data());
 						if (eWeight < minEdgesWeight[u]) {
 							minEdges[u] = e;
 							minEdgesWeight[u] = eWeight;
@@ -258,7 +258,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 				for (int V = 0; V < nNext; V++)
 					vTvNext[V] = t.newVertex();
 				for (int u = 0; u < n; u++)
-					t.addEdge(vTv[u], vTvNext[vNext[u]]).val(minEdges[u].val());
+					t.addEdge(vTv[u], vTvNext[vNext[u]]).setData(minEdges[u].data());
 				int[] temp = vTv;
 				vTv = vTvNext;
 				vTvNext = temp;
@@ -270,7 +270,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 					for (Edge<Edge<E>> e : Utils.iterable(G.edges(u))) {
 						int V = vNext[e.v()];
 						if (U != V)
-							gNext.addEdge(U, V).val(e.val());
+							gNext.addEdge(U, V).setData(e.data());
 					}
 				}
 

@@ -32,19 +32,19 @@ public class LCAGabow2017<V> implements LCADynamic<V> {
 	}
 
 	@Override
-	public Node<V> initTree(V val) {
+	public Node<V> initTree(V nodeData) {
 		if (size() != 0)
 			throw new IllegalStateException();
-		return newNode2(null, val);
+		return newNode2(null, nodeData);
 	}
 
 	@Override
-	public Node<V> addLeaf(Node<V> parent, V val) {
-		return newNode2((Node2<V>) parent, val);
+	public Node<V> addLeaf(Node<V> parent, V nodeData) {
+		return newNode2((Node2<V>) parent, nodeData);
 	}
 
-	private Node2<V> newNode2(Node2<V> parent, V val) {
-		Node2<V> node = new Node2<>(parent, val);
+	private Node2<V> newNode2(Node2<V> parent, V nodeData) {
+		Node2<V> node = new Node2<>(parent, nodeData);
 
 		if (parent == null || parent.subTree.isFull()) {
 			/* make the new node a root of a new sub tree */
@@ -177,7 +177,7 @@ public class LCAGabow2017<V> implements LCADynamic<V> {
 	}
 
 	private static class Node2<V> implements LCADynamic.Node<V> {
-		V nodeVal;
+		V nodeData;
 
 		/* level 2 info */
 		final Node2<V> parent;
@@ -185,19 +185,19 @@ public class LCAGabow2017<V> implements LCADynamic<V> {
 		int idWithinSubTree;
 		int ancestorsBitmap;
 
-		Node2(Node2<V> parent, V val) {
+		Node2(Node2<V> parent, V nodeData) {
 			this.parent = parent;
-			nodeVal = val;
+			this.nodeData = nodeData;
 		}
 
 		@Override
 		public V getNodeData() {
-			return nodeVal;
+			return nodeData;
 		}
 
 		@Override
-		public void setNodeData(V val) {
-			nodeVal = val;
+		public void setNodeData(V data) {
+			nodeData = data;
 		}
 
 		@Override

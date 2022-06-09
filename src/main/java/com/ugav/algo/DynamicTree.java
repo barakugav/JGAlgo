@@ -5,10 +5,10 @@ public interface DynamicTree<V, E> {
 	/**
 	 * Create a new tree in the forest with a single node
 	 *
-	 * @param val user parameter for the node
+	 * @param nodeData user data for the node
 	 * @return the new node
 	 */
-	public Node<V, E> makeTree(V val);
+	public Node<V, E> makeTree(V nodeData);
 
 	/**
 	 * Find the root of the tree containing v
@@ -38,12 +38,12 @@ public interface DynamicTree<V, E> {
 	/**
 	 * Link a root to be a child of some other node of another tree
 	 *
-	 * @param u   a root of some tree
-	 * @param v   a node in another tree
-	 * @param w   the new edge weight
-	 * @param val user param of the edge
+	 * @param u        a root of some tree
+	 * @param v        a node in another tree
+	 * @param w        the new edge weight
+	 * @param edgeData user data for the edge
 	 */
-	public void link(Node<V, E> u, Node<V, E> v, double w, E val);
+	public void link(Node<V, E> u, Node<V, E> v, double w, E edgeData);
 
 	/**
 	 * Remove the edge from a node to it's parent
@@ -76,11 +76,11 @@ public interface DynamicTree<V, E> {
 
 		public V getNodeData();
 
-		public void setNodeData(V val);
+		public void setNodeData(V data);
 
 		public E getEdgeData();
 
-		public void setEdgeData(E val);
+		public void setEdgeData(E data);
 
 		public Node<V, E> getParent();
 
@@ -92,7 +92,7 @@ public interface DynamicTree<V, E> {
 
 		public double weight();
 
-		public E val();
+		public E getData();
 
 	}
 

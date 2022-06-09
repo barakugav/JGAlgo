@@ -5,7 +5,7 @@ abstract class RMQLinearAbstract implements RMQ {
 	/*
 	 * This implementation divides the elements sequence into blocks, for each block
 	 * calculate the minimum in the block and the minimum within the block from each
-	 * index to the borders of the block. In addition, we use the O(xlogx)
+	 * index to the borders of the block. In addition, we use the O(x log x)
 	 * implementation on the minimum values from each block (which we have less than
 	 * n).
 	 *

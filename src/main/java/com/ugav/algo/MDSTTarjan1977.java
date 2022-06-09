@@ -12,7 +12,7 @@ import com.ugav.algo.Graph.WeightFunction;
 public class MDSTTarjan1977 implements MDST {
 
 	/*
-	 * O(mlogn)
+	 * O(m log n)
 	 */
 
 	public MDSTTarjan1977() {
@@ -32,12 +32,12 @@ public class MDSTTarjan1977 implements MDST {
 		}
 
 		@Override
-		public Object val() {
+		public Object data() {
 			return null;
 		}
 
 		@Override
-		public void val(Object v) {
+		public void setData(Object data) {
 			throw new UnsupportedOperationException();
 		}
 
@@ -68,7 +68,7 @@ public class MDSTTarjan1977 implements MDST {
 		// Connect new root to all vertices
 		int n = g.vertices(), r = g.newVertex();
 		for (int v = 0; v < n; v++)
-			g.addEdge(r, v).val(heavyEdge());
+			g.addEdge(r, v).setData(heavyEdge());
 
 		// Calc MST on new graph
 		ContractedGraph<E> contractedGraph = contract(g, w);
@@ -117,8 +117,8 @@ public class MDSTTarjan1977 implements MDST {
 
 		Collection<Edge<E>> mst = new ArrayList<>(g.n - 1);
 		for (int v = 0; v < g.n; v++)
-			if (v != root && inEdge[v].val() != HeavyEdge)
-				mst.add(inEdge[v].val());
+			if (v != root && inEdge[v].data() != HeavyEdge)
+				mst.add(inEdge[v].data());
 		return mst;
 	}
 
@@ -139,8 +139,8 @@ public class MDSTTarjan1977 implements MDST {
 			}
 
 			for (int V = 1; V < N; V++) {
-				g.addEdge(V2v[0], V2v[V]).val(heavyEdge());
-				g.addEdge(V2v[V], V2v[0]).val(heavyEdge());
+				g.addEdge(V2v[0], V2v[V]).setData(heavyEdge());
+				g.addEdge(V2v[V], V2v[0]).setData(heavyEdge());
 			}
 		}
 	}
@@ -159,8 +159,8 @@ public class MDSTTarjan1977 implements MDST {
 		@SuppressWarnings("unchecked")
 		Heap<Edge<Edge<E>>>[] heap = new Heap[VMaxNum];
 		Comparator<Edge<Edge<E>>> edgeComparator = (e1, e2) -> {
-			double w1 = (e1.val() != HeavyEdge ? w.weight(e1.val()) : HeavyEdgeWeight) + uf.getValue(e1.v());
-			double w2 = (e2.val() != HeavyEdge ? w.weight(e2.val()) : HeavyEdgeWeight) + uf.getValue(e2.v());
+			double w1 = (e1.data() != HeavyEdge ? w.weight(e1.data()) : HeavyEdgeWeight) + uf.getValue(e1.v());
+			double w2 = (e2.data() != HeavyEdge ? w.weight(e2.data()) : HeavyEdgeWeight) + uf.getValue(e2.v());
 			return Utils.compare(w1, w2);
 		};
 		for (int v = 0; v < n; v++)
@@ -198,7 +198,7 @@ public class MDSTTarjan1977 implements MDST {
 			inEdge[a] = e;
 
 			// Subtract w(e) from the weights of all edges entering a
-			double ew = (e.val() != HeavyEdge ? w.weight(e.val()) : HeavyEdgeWeight) + uf.getValue(e.v());
+			double ew = (e.data() != HeavyEdge ? w.weight(e.data()) : HeavyEdgeWeight) + uf.getValue(e.v());
 			uf.addValue(a, -ew);
 
 			if (!onPath[u]) {

@@ -9,7 +9,7 @@ import com.ugav.algo.Utils.QueueIntFixSize;
 public class MaxFlowEdmondsKarp implements MaxFlow {
 
 	/*
-	 * O(m * n^2)
+	 * O(m n^2)
 	 */
 
 	public MaxFlowEdmondsKarp() {
@@ -40,7 +40,7 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 				int u = queue.pop();
 				for (Edge<Ref<E>> e : Utils.iterable(g.edges(u))) {
 					int v = e.v();
-					if (e.val().flow >= net.getCapacity(e.val().orig) || visited[v])
+					if (e.data().flow >= net.getCapacity(e.data().orig) || visited[v])
 						continue;
 					backtrack[v] = e;
 					if (v == target)
@@ -58,15 +58,15 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 			double f = Double.MAX_VALUE;
 			for (int p = target; p != source;) {
 				Edge<Ref<E>> e = backtrack[p];
-				f = Math.min(f, net.getCapacity(e.val().orig) - e.val().flow);
+				f = Math.min(f, net.getCapacity(e.data().orig) - e.data().flow);
 				p = e.u();
 			}
 
 			// update flow of all edges on path
 			for (int p = target; p != source;) {
 				Edge<Ref<E>> e = backtrack[p];
-				e.val().flow = Math.min(net.getCapacity(e.val().orig), e.val().flow + f);
-				e.val().rev.flow = Math.max(0, e.val().rev.flow - f);
+				e.data().flow = Math.min(net.getCapacity(e.data().orig), e.data().flow + f);
+				e.data().rev.flow = Math.max(0, e.data().rev.flow - f);
 				p = e.u();
 			}
 
@@ -75,12 +75,12 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 		}
 
 		for (Edge<Ref<E>> e : g.edges())
-			if (e.u() == e.val().orig.u())
-				net.setFlow(e.val().orig, e.val().flow);
+			if (e.u() == e.data().orig.u())
+				net.setFlow(e.data().orig, e.data().flow);
 		double totalFlow = 0;
 		for (Edge<Ref<E>> e : Utils.iterable(g.edges(source)))
-			if (e.u() == e.val().orig.u())
-				totalFlow += e.val().flow;
+			if (e.u() == e.data().orig.u())
+				totalFlow += e.data().flow;
 		return totalFlow;
 	}
 
@@ -88,8 +88,8 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 		Graph<Ref<E>> g = new GraphArray<>(DirectedType.Directed, g0.vertices());
 		for (Edge<E> e : g0.edges()) {
 			Ref<E> ref = new Ref<>(e, 0), refRev = new Ref<>(e, net.getCapacity(e));
-			g.addEdge(e.u(), e.v()).val(ref);
-			g.addEdge(e.v(), e.u()).val(refRev);
+			g.addEdge(e.u(), e.v()).setData(ref);
+			g.addEdge(e.v(), e.u()).setData(refRev);
 			refRev.rev = ref;
 			ref.rev = refRev;
 		}

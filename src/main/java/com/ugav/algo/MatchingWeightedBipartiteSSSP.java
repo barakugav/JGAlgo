@@ -12,7 +12,7 @@ import com.ugav.algo.Graph.WeightFunction;
 public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 
 	/*
-	 * O(mn + n^2logn)
+	 * O(m n + n^2 log n)
 	 */
 
 	public MatchingWeightedBipartiteSSSP() {
@@ -32,20 +32,20 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 
 		// Negate unmatched edges
 		for (Edge<Ref<E>> e : g.edges())
-			e.val().w = -e.val().w;
+			e.data().w = -e.data().w;
 		// Connected unmatched vertices to fake vertices s,t
-		final Ref<E> zeroEdgeVal = new Ref<>(null, 0);
+		final Ref<E> zeroEdgeData = new Ref<>(null, 0);
 		for (int u = 0; u < sn; u++)
-			g.addEdge(s, u).val(zeroEdgeVal);
+			g.addEdge(s, u).setData(zeroEdgeData);
 		for (int v = sn; v < sn + tn; v++)
-			g.addEdge(v, t).val(zeroEdgeVal);
+			g.addEdge(v, t).setData(zeroEdgeData);
 
 		double[] potential = new double[n + 2];
-		WeightFunction<Ref<E>> spWeightFunc = e -> e.val().w + potential[e.u()] - potential[e.v()];
+		WeightFunction<Ref<E>> spWeightFunc = e -> e.data().w + potential[e.u()] - potential[e.v()];
 
 		// Init state may include negative distances, use Bellman Ford to calculate
 		// first potential values
-		SSSP.Result<Ref<E>> sp = new SSSPBellmanFord().calcDistances(g, e -> e.val().w, s);
+		SSSP.Result<Ref<E>> sp = new SSSPBellmanFord().calcDistances(g, e -> e.data().w, s);
 		for (int v = 0; v < n + 2; v++)
 			potential[v] = sp.distance(v);
 
@@ -66,10 +66,10 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 
 				// Reverse newly matched edge
 				g.removeEdge(matchedEdge);
-				Ref<E> r = matchedEdge.val();
+				Ref<E> r = matchedEdge.data();
 				match[matchedEdge.u()] = match[matchedEdge.v()] = r.orig;
 				r.w = -r.w;
-				g.addEdge(matchedEdge.v(), matchedEdge.u()).val(r);
+				g.addEdge(matchedEdge.v(), matchedEdge.u()).setData(r);
 
 				Edge<Ref<E>> unmatchedEdge = it.next();
 
@@ -81,9 +81,9 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 
 				// Reverse newly unmatched edge
 				g.removeEdge(unmatchedEdge);
-				r = unmatchedEdge.val();
+				r = unmatchedEdge.data();
 				r.w = -r.w;
-				g.addEdge(unmatchedEdge.v(), unmatchedEdge.u()).val(r);
+				g.addEdge(unmatchedEdge.v(), unmatchedEdge.u()).setData(r);
 			}
 
 			// Update potential based on the distances
@@ -118,7 +118,7 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 				if (weight < 0)
 					continue; // no reason to match negative edges
 				Ref<E> v = new Ref<>(e, weight);
-				g0.addEdge(e.u(), e.v()).val(v);
+				g0.addEdge(e.u(), e.v()).setData(v);
 			}
 		}
 		return g0;
@@ -152,7 +152,7 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 
 		@Override
 		public String toString() {
-			return orig != null ? String.valueOf(orig.val()) : Double.toString(w);
+			return orig != null ? String.valueOf(orig.data()) : Double.toString(w);
 		}
 
 	}

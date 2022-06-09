@@ -12,7 +12,7 @@ import com.ugav.algo.Graph.WeightFunction;
 public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighted {
 
 	/*
-	 * O(mn + n^2logn)
+	 * O(m n + n^2 log n)
 	 */
 
 	public MatchingWeightedBipartiteHungarianMethod() {

@@ -13,7 +13,7 @@ import com.ugav.algo.Graphs.EdgeWeightComparator;
 public class MSTFredmanTarjan1987 implements MST {
 
 	/*
-	 * O(mlog*n)
+	 * O(m log* n)
 	 */
 
 	public MSTFredmanTarjan1987() {

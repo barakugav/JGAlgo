@@ -44,7 +44,7 @@ public class MaxFlowPushRelabel implements MaxFlow {
 		ObjDoubleConsumer<Edge<Ref<E>>> pushFlow = (e0, f) -> {
 			assert f > 0;
 
-			Ref<E> e = e0.val();
+			Ref<E> e = e0.data();
 			int u = e0.u(), v = e0.v();
 			if (e0.u() == e.orig.u())
 				debug.println("F(", e.orig, ") += ", Double.valueOf(f));
@@ -64,7 +64,7 @@ public class MaxFlowPushRelabel implements MaxFlow {
 
 		/* Push as much as possible from the source vertex */
 		for (Edge<Ref<E>> e : Utils.iterable(g.edges(source))) {
-			double f = e.val().cap - e.val().flow;
+			double f = e.data().cap - e.data().flow;
 			if (f != 0)
 				pushFlow.accept(e, f);
 		}
@@ -85,7 +85,7 @@ public class MaxFlowPushRelabel implements MaxFlow {
 
 			while (excess[u] > EPS && it.hasNext()) {
 				Edge<Ref<E>> e = it.pickNext();
-				double eAccess = e.val().cap - e.val().flow;
+				double eAccess = e.data().cap - e.data().flow;
 				if (eAccess > EPS && d[u] == d[e.v()] + 1) {
 					double f = Math.min(excess[u], eAccess);
 					pushFlow.accept(e, f);
@@ -108,11 +108,11 @@ public class MaxFlowPushRelabel implements MaxFlow {
 
 		/* Construct result */
 		for (Edge<Ref<E>> e : g.edges())
-			if (e.u() == e.val().orig.u())
-				net.setFlow(e.val().orig, e.val().flow);
+			if (e.u() == e.data().orig.u())
+				net.setFlow(e.data().orig, e.data().flow);
 		double totalFlow = 0;
 		for (Edge<Ref<E>> e : Utils.iterable(g.edges(source)))
-			totalFlow += e.val().flow;
+			totalFlow += e.data().flow;
 		return totalFlow;
 	}
 
@@ -120,8 +120,8 @@ public class MaxFlowPushRelabel implements MaxFlow {
 		Graph<Ref<E>> g = new GraphArray<>(DirectedType.Directed, g0.vertices());
 		for (Edge<E> e : g0.edges()) {
 			Ref<E> ref = new Ref<>(e, net.getCapacity(e), 0), refRev = new Ref<>(e, 0, 0);
-			g.addEdge(e.u(), e.v()).val(ref);
-			g.addEdge(e.v(), e.u()).val(refRev);
+			g.addEdge(e.u(), e.v()).setData(ref);
+			g.addEdge(e.v(), e.u()).setData(refRev);
 			refRev.rev = ref;
 			ref.rev = refRev;
 		}

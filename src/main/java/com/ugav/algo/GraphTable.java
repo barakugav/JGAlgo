@@ -157,13 +157,13 @@ public class GraphTable<E> extends GraphAbstract<E> {
 		}
 
 		@Override
-		public E val() {
-			return getApiEdge().val;
+		public E data() {
+			return getApiEdge().data;
 		}
 
 		@Override
-		public void val(E v) {
-			getApiEdge().val = v;
+		public void setData(E data) {
+			getApiEdge().data = data;
 		}
 
 		@Override
@@ -179,12 +179,12 @@ public class GraphTable<E> extends GraphAbstract<E> {
 				return false;
 
 			Edge<?> e = (Edge<?>) o;
-			return ((u == e.u() && v == e.v()) || (u == e.v() && v == e.u())) && Objects.equals(val(), e.val());
+			return ((u == e.u() && v == e.v()) || (u == e.v() && v == e.u())) && Objects.equals(data(), e.data());
 		}
 
 		@Override
 		public int hashCode() {
-			return u ^ v ^ Objects.hashCode(val());
+			return u ^ v ^ Objects.hashCode(data());
 		}
 
 	}
@@ -208,12 +208,12 @@ public class GraphTable<E> extends GraphAbstract<E> {
 				return false;
 
 			Edge<?> e = (Edge<?>) o;
-			return u == e.u() && v == e.v() && Objects.equals(val(), e.val());
+			return u == e.u() && v == e.v() && Objects.equals(data(), e.data());
 		}
 
 		@Override
 		public int hashCode() {
-			return u ^ ~v ^ Objects.hashCode(val());
+			return u ^ ~v ^ Objects.hashCode(data());
 		}
 
 	}

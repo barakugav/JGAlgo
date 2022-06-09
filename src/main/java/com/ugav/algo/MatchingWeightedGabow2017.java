@@ -21,7 +21,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 
 	/*
 	 * This class implement Edmonds' "Blossom algorithm" for weighted matching on
-	 * general graphs. The algorithm runs in O(mn + n^2logn).
+	 * general graphs. The algorithm runs in O(m n + n^2 log n).
 	 */
 
 	private final DebugPrintsManager debugPrintManager;
@@ -275,10 +275,10 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 
 			for (Edge<E> e : g.edges()) {
 				Edge<EdgeVal<E>> e1, e2;
-				(e1 = this.g.addEdge(e.u(), e.v())).val(new EdgeVal<>(e));
-				(e2 = this.g.addEdge(e.v(), e.u())).val(new EdgeVal<>(e.twin()));
-				e1.val().twin = e2;
-				e2.val().twin = e1;
+				(e1 = this.g.addEdge(e.u(), e.v())).setData(new EdgeVal<>(e));
+				(e2 = this.g.addEdge(e.v(), e.u())).setData(new EdgeVal<>(e.twin()));
+				e1.data().twin = e2;
+				e2.data().twin = e1;
 			}
 
 			matched = new Edge[n];
@@ -313,7 +313,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 			// init dual value of all vertices as maxWeight / 2
 			double maxWeight = Double.MIN_VALUE;
 			for (Edge<EdgeVal<E>> e : g.edges())
-				maxWeight = Math.max(maxWeight, w.weight(e.val().e));
+				maxWeight = Math.max(maxWeight, w.weight(e.data().e));
 			double delta1Threshold = maxWeight / 2;
 			for (int u = 0; u < n; u++)
 				vertexDualValBase[u] = delta1Threshold;
@@ -389,7 +389,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 					double delta1 = delta1Threshold;
 					double delta2 = growEvents.isEmpty() ? Double.MAX_VALUE : growEventsKey(growEvents.findMin());
 					double delta3 = !smf.hasNonTreeEdge() ? Double.MAX_VALUE
-							: smf.findMinNonTreeEdge().edgeVal().slack / 2;
+							: smf.findMinNonTreeEdge().edgeData().slack / 2;
 					double delta4 = expandEvents.isEmpty() ? Double.MAX_VALUE : expandEvents.findMin().expandDelta;
 
 					double deltaNext = Math.min(delta2, Math.min(delta3, delta4));
@@ -418,8 +418,8 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 					if (deltaNext == delta2) {
 						growStep();
 					} else if (deltaNext == delta3) {
-						assert delta == smf.findMinNonTreeEdge().edgeVal().slack / 2;
-						Edge<EdgeVal<E>> e = smf.findMinNonTreeEdge().edgeVal().e;
+						assert delta == smf.findMinNonTreeEdge().edgeData().slack / 2;
+						Edge<EdgeVal<E>> e = smf.findMinNonTreeEdge().edgeData().e;
 						assert isEven(e.u()) && isEven(e.v());
 
 						if (find0(e.u()).root == find0(e.v()).root)
@@ -466,7 +466,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 			List<Edge<E>> res = new ArrayList<>();
 			for (int u = 0; u < n; u++)
 				if (matched[u] != null && u < matched[u].v())
-					res.add(matched[u].val().e);
+					res.add(matched[u].data().e);
 			return res;
 		}
 
@@ -483,7 +483,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 
 			// Add odd vertex
 			V.root = U.root;
-			V.treeParentEdge = e.val().twin;
+			V.treeParentEdge = e.data().twin;
 			V.isEven = false;
 			V.delta1 = delta;
 			assert V.growHandle.get().e == e;
@@ -510,7 +510,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 			Edge<EdgeVal<E>> matchedEdge = matched[V.base];
 			V = topBlossom(matchedEdge.v());
 			V.root = U.root;
-			V.treeParentEdge = matchedEdge.val().twin;
+			V.treeParentEdge = matchedEdge.data().twin;
 			if (V.growHandle != null) {
 				growEvents.removeHandle(V.growHandle);
 				V.growHandle = null;
@@ -545,7 +545,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 			for (Blossom<E> b : bs) {
 				boolean prevIsRight = b == U;
 				Blossom<E> prev = b == U ? V : U;
-				Edge<EdgeVal<E>> toPrevEdge = b == U ? e : e.val().twin;
+				Edge<EdgeVal<E>> toPrevEdge = b == U ? e : e.data().twin;
 
 				while (true) {
 					// handle even sub blossom
@@ -561,7 +561,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 					if (b == base)
 						break;
 					prev = b;
-					toPrevEdge = matched[b.base].val().twin;
+					toPrevEdge = matched[b.base].data().twin;
 					assert matched[b.base] == b.treeParentEdge;
 					b = topBlossom(toPrevEdge.u());
 
@@ -598,7 +598,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 					}
 
 					prev = b;
-					toPrevEdge = b.treeParentEdge.val().twin;
+					toPrevEdge = b.treeParentEdge.data().twin;
 					b = topBlossom(toPrevEdge.u());
 				}
 			}
@@ -744,10 +744,10 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 			for (Blossom<E> b = top;;) {
 				Blossom<E> nextB = b.left;
 				b.right = b.left = null;
-				b.toRightEdge.val().b0 = b.toRightEdge.val().b1 = null;
-				b.toRightEdge.val().twin.val().b0 = b.toRightEdge.val().twin.val().b1 = null;
-				b.toLeftEdge.val().b0 = b.toLeftEdge.val().b1 = null;
-				b.toLeftEdge.val().twin.val().b0 = b.toLeftEdge.val().twin.val().b1 = null;
+				b.toRightEdge.data().b0 = b.toRightEdge.data().b1 = null;
+				b.toRightEdge.data().twin.data().b0 = b.toRightEdge.data().twin.data().b1 = null;
+				b.toLeftEdge.data().b0 = b.toLeftEdge.data().b1 = null;
+				b.toLeftEdge.data().twin.data().b0 = b.toLeftEdge.data().twin.data().b1 = null;
 				b.toRightEdge = b.toLeftEdge = null;
 				if (nextB == top)
 					break;
@@ -769,7 +769,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 					augmentPath(b, u);
 					if (e != null) {
 						matched[e.u()] = e;
-						matched[e.v()] = e.val().twin;
+						matched[e.v()] = e.data().twin;
 
 						debug.print(" ", e);
 						assert matched[e.u()] != null;
@@ -790,7 +790,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 				}
 			}
 			matched[bridge.u()] = bridge;
-			matched[bridge.v()] = bridge.val().twin;
+			matched[bridge.v()] = bridge.data().twin;
 			debug.println(" ", bridge);
 		}
 
@@ -805,13 +805,13 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 			if (m.u() == u) {
 //				u = m.u();
 				v = m.v();
-				b0 = m.val().b0;
-				b1 = m.val().b1;
+				b0 = m.data().b0;
+				b1 = m.data().b1;
 			} else {
 //				u = m.v();
 				v = m.u();
-				b0 = m.val().b1;
-				b1 = m.val().b0;
+				b0 = m.data().b1;
+				b1 = m.data().b0;
 			}
 
 			Edge<EdgeVal<E>> xy;
@@ -832,7 +832,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 			augmentPath(b1, xy.u());
 			augmentPath(B, xy.v());
 			matched[xy.u()] = xy;
-			matched[xy.v()] = xy.val().twin;
+			matched[xy.v()] = xy.data().twin;
 
 			assert matched[xy.u()].u() == xy.u();
 			assert matched[xy.u()].v() == xy.v();
@@ -865,12 +865,12 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 				Blossom<E> b0, b1 /* , b2 */;
 				if (m.u() == u) {
 //					v = m.v();
-					b0 = m.val().b0;
-					b1 = m.val().b1;
+					b0 = m.data().b0;
+					b1 = m.data().b1;
 				} else {
 //					v = m.u();
-					b0 = m.val().b1;
-					b1 = m.val().b0;
+					b0 = m.data().b1;
+					b1 = m.data().b0;
 				}
 
 				Edge<EdgeVal<E>> xy;
@@ -1040,7 +1040,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 				int v = e.v();
 				if (isEven(v))
 					continue;
-				double slackBar = Yu + vertexDualValBase[v] - w.weight(e.val().e);
+				double slackBar = Yu + vertexDualValBase[v] - w.weight(e.data().e);
 				if (vToGrowEvent[v] == null || slackBar < vToGrowEvent[v].slack) {
 					EdgeEvent<E> event = vToGrowEvent[v] = new EdgeEvent<>(e, slackBar);
 					if (!find1.decreaseKey(vToFind1Idx[v], event))
@@ -1070,7 +1070,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 				if (U == V)
 					continue;
 				double Yv = delta + dualVal(v);
-				double slackBar = Yu + Yv - w.weight(e.val().e);
+				double slackBar = Yu + Yv - w.weight(e.data().e);
 
 				assert slackBar >= 0;
 				smf.addNonTreeEdge(vToSMFId[e.u()], vToSMFId[e.v()], new EdgeEvent<>(e, slackBar));
@@ -1083,16 +1083,16 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 				Blossom<E> temp = left;
 				left = right;
 				right = temp;
-				leftToRightEdge = leftToRightEdge.val().twin;
+				leftToRightEdge = leftToRightEdge.data().twin;
 			}
 			left.right = right;
 			left.toRightEdge = leftToRightEdge;
 			right.left = left;
-			right.toLeftEdge = leftToRightEdge.val().twin;
-			leftToRightEdge.val().b0 = left;
-			leftToRightEdge.val().b1 = right;
-			leftToRightEdge.val().twin.val().b0 = right;
-			leftToRightEdge.val().twin.val().b1 = left;
+			right.toLeftEdge = leftToRightEdge.data().twin;
+			leftToRightEdge.data().b0 = left;
+			leftToRightEdge.data().b1 = right;
+			leftToRightEdge.data().twin.data().b0 = right;
+			leftToRightEdge.data().twin.data().b1 = left;
 		}
 
 		private SubtreeMergeFindmin.Node<Blossom<E>> smfAddLeaf(int v,

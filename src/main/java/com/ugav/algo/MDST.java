@@ -8,14 +8,14 @@ import com.ugav.algo.Graph.Edge;
 public interface MDST extends MST {
 
 	/**
-	 * Calculate MST from some vertex in the graph.
+	 * Calculate MDST from some vertex in the graph.
 	 */
 	@Override
 	public <E> Collection<Edge<E>> calcMST(Graph<E> g, Graph.WeightFunction<E> w);
 
 	/**
-	 * Calculate minimum spanning tree (MST) in directed graph root at the given
-	 * vertex
+	 * Calculate minimum directed spanning tree (MDST) in a directed graph, rooted
+	 * at the given vertex
 	 *
 	 * @param g    a directed graph
 	 * @param w    weight function

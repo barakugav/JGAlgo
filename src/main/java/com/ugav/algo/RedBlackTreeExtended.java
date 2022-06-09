@@ -50,9 +50,9 @@ public class RedBlackTreeExtended<E> extends RedBlackTree<E> {
 	}
 
 	@Override
-	void beforeNodeValSwap(RedBlackTree.Node<E> a, RedBlackTree.Node<E> b) {
+	void beforeNodeDataSwap(RedBlackTree.Node<E> a, RedBlackTree.Node<E> b) {
 		for (Extension<E> extension : extensions)
-			extension.beforeNodeValSwap((Node<E>) a, (Node<E>) b);
+			extension.beforeNodeDataSwap((Node<E>) a, (Node<E>) b);
 	}
 
 	@Override
@@ -127,7 +127,7 @@ public class RedBlackTreeExtended<E> extends RedBlackTree<E> {
 		protected void beforeRemove(Node<E> n) {
 		}
 
-		protected void beforeNodeValSwap(Node<E> a, Node<E> b) {
+		protected void beforeNodeDataSwap(Node<E> a, Node<E> b) {
 		}
 
 		protected void beforeRotateLeft(Node<E> n) {

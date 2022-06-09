@@ -13,7 +13,7 @@ import com.ugav.algo.Utils.QueueIntFixSize;
 public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 
 	/*
-	 * Maximum matching in unweighted undirected bipartite graph in O(m * n^0.5)
+	 * Maximum matching in unweighted undirected bipartite graph in O(m n^0.5)
 	 */
 
 	public MatchingBipartiteHopcroftKarp1973() {

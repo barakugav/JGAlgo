@@ -151,7 +151,7 @@ public class SubtreeMergeFindminTest extends TestUtils {
 				SubtreeMergeFindmin.MinEdge<TrackerNode, Integer> actual0 = algo.findMinNonTreeEdge();
 				int[] expected = min;
 				int[] actual = actual0 == null ? null
-						: new int[] { actual0.u().getNodeData().id, actual0.v().getNodeData().id, actual0.edgeVal() };
+						: new int[] { actual0.u().getNodeData().id, actual0.v().getNodeData().id, actual0.edgeData() };
 				if (expected != null && actual != null && expected[0] != actual[0]) {
 					int temp = expected[0];
 					expected[0] = expected[1];

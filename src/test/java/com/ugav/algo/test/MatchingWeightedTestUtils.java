@@ -220,15 +220,15 @@ class MatchingWeightedTestUtils extends TestUtils {
 				shuffledG = new GraphArray<>(DirectedType.Undirected, n);
 			}
 
-			g.edges().forEach(e -> shuffledG.addEdge(shuffle[e.u()], shuffle[e.v()]).val(e));
-			WeightFunction<Edge<E>> shuffledW = e -> w.weight(e.val());
+			g.edges().forEach(e -> shuffledG.addEdge(shuffle[e.u()], shuffle[e.v()]).setData(e));
+			WeightFunction<Edge<E>> shuffledW = e -> w.weight(e.data());
 
 			Collection<Edge<Edge<E>>> shuffledEdges = perfect ? algo.calcPerfectMaxMatching(shuffledG, shuffledW)
 					: algo.calcMaxMatching(shuffledG, shuffledW);
 
 			List<Edge<E>> unshuffledEdges = new ArrayList<>(shuffledEdges.size());
 			for (Edge<Edge<E>> e : shuffledEdges)
-				unshuffledEdges.add(e.val());
+				unshuffledEdges.add(e.data());
 			return unshuffledEdges;
 		}
 

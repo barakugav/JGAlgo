@@ -13,7 +13,7 @@ import com.ugav.algo.Graph.WeightFunctionInt;
 public class SSSPGoldberg1995 implements SSSP {
 
 	/*
-	 * O(m * n^0.5 * logN) where N is the minimum negative weight
+	 * O(m n^0.5 log N) where N is the minimum negative weight
 	 */
 
 	public SSSPGoldberg1995() {
@@ -85,7 +85,7 @@ public class SSSPGoldberg1995 implements SSSP {
 						int V = v2V[e.v()];
 						int weight = weight(e, w, potential, weightMask);
 						if (U != V)
-							G.addEdge(U, V).val(Integer.valueOf(weight));
+							G.addEdge(U, V).setData(Integer.valueOf(weight));
 						else if (weight < 0) {
 							// negative cycle
 							gNeg.removeEdge(e);
@@ -98,7 +98,7 @@ public class SSSPGoldberg1995 implements SSSP {
 
 				// Create a fake vertex S, connect with 0 edges to all and calc distances
 				for (int U = 0; U < N; U++)
-					G.addEdge(fakeS, U).val(Integer.valueOf(0));
+					G.addEdge(fakeS, U).setData(Integer.valueOf(0));
 				SSSP.Result<Integer> ssspRes = Graphs.calcDistancesDAG(G, Graphs.WEIGHT_INT_FUNC_DEFAULT, fakeS);
 
 				// Divide super vertices into layers by distance
@@ -136,25 +136,25 @@ public class SSSPGoldberg1995 implements SSSP {
 					G.removeEdgesOut(fakeS);
 					int assignedWeight = layerNum - 2;
 					for (Edge<Integer> e : ssspRes.getPathTo(vertexInMaxLayer)) {
-						if (e.val().intValue() < 0) {
+						if (e.data().intValue() < 0) {
 							int V = e.v();
-							G.addEdge(fakeS, V).val(Integer.valueOf(assignedWeight--));
+							G.addEdge(fakeS, V).setData(Integer.valueOf(assignedWeight--));
 							connected[V] = true;
 						}
 					}
 					for (int V = 0; V < N; V++)
 						if (!connected[V])
-							G.addEdge(fakeS, V).val(Integer.valueOf(layerNum - 1));
+							G.addEdge(fakeS, V).setData(Integer.valueOf(layerNum - 1));
 
 					// Add the remaining edges to the graph, not only 0,-1 edges
 					for (Edge<E> e : g.edges()) {
 						int weight = weight(e, w, potential, weightMask);
 						if (weight > 0)
-							G.addEdge(v2V[e.u()], v2V[e.v()]).val(Integer.valueOf(weight));
+							G.addEdge(v2V[e.u()], v2V[e.v()]).setData(Integer.valueOf(weight));
 					}
 
 					// Calc distance with abs weight function to update potential function
-					ssspRes = ssspDial.calcDistances(G, e -> Math.abs(e.val().intValue()), fakeS, layerNum);
+					ssspRes = ssspDial.calcDistances(G, e -> Math.abs(e.data().intValue()), fakeS, layerNum);
 					for (int v = 0; v < n; v++)
 						potential[v] += ssspRes.distance(v2V[v]);
 				}

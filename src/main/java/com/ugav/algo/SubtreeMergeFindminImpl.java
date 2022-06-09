@@ -44,25 +44,25 @@ public class SubtreeMergeFindminImpl<V, E> implements SubtreeMergeFindmin<V, E> 
 		timestamp = 0;
 
 		heap = new HeapFibonacci<>((t1, t2) -> {
-			return this.weightCmp.compare(t1.minEdge.data.weight, t2.minEdge.data.weight);
+			return this.weightCmp.compare(t1.minEdge.data.data, t2.minEdge.data.data);
 		});
 	}
 
 	@Override
-	public Node<V> initTree(V val) {
+	public Node<V> initTree(V nodeData) {
 		if (size() != 0)
 			throw new IllegalStateException("Tree is not empty");
-		return newNode(null, val);
+		return newNode(null, nodeData);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Node<V> addLeaf(Node<V> parent, V val) {
-		return newNode((NodeImpl<V, E>) parent, val);
+	public Node<V> addLeaf(Node<V> parent, V nodeData) {
+		return newNode((NodeImpl<V, E>) parent, nodeData);
 	}
 
-	private Node<V> newNode(NodeImpl<V, E> parent, V val) {
-		NodeImpl<V, E> node = new NodeImpl<>(parent, val);
+	private Node<V> newNode(NodeImpl<V, E> parent, V nodeData) {
+		NodeImpl<V, E> node = new NodeImpl<>(parent, nodeData);
 
 		/* Add to LCA data structure */
 		node.lcaNode = parent == null ? lca.initTree(node) : lca.addLeaf(parent.lcaNode, node);
@@ -155,7 +155,7 @@ public class SubtreeMergeFindminImpl<V, E> implements SubtreeMergeFindmin<V, E> 
 					}
 					assert eU == U;
 
-					if (eV.inEdgeTimestamp == t && weightCmp.compare(eV.inEdge.data.weight, edge.data.weight) <= 0) {
+					if (eV.inEdgeTimestamp == t && weightCmp.compare(eV.inEdge.data.data, edge.data.data) <= 0) {
 						/* edge is redundant */
 						edge.clear();
 						continue;
@@ -183,7 +183,7 @@ public class SubtreeMergeFindminImpl<V, E> implements SubtreeMergeFindmin<V, E> 
 
 		el1.tail.next = el2.head;
 		el1.tail = el2.tail;
-		if (weightCmp.compare(el2.min.data.weight, el1.min.data.weight) < 0)
+		if (weightCmp.compare(el2.min.data.data, el1.min.data.data) < 0)
 			el1.min = el2.min;
 
 		/* clear el2 */
@@ -192,7 +192,7 @@ public class SubtreeMergeFindminImpl<V, E> implements SubtreeMergeFindmin<V, E> 
 	}
 
 	@Override
-	public void addNonTreeEdge(Node<V> u0, Node<V> v0, E edgeVal) {
+	public void addNonTreeEdge(Node<V> u0, Node<V> v0, E edgedata) {
 		if (u0 == v0)
 			return;
 		@SuppressWarnings("unchecked")
@@ -204,7 +204,7 @@ public class SubtreeMergeFindminImpl<V, E> implements SubtreeMergeFindmin<V, E> 
 			u = v;
 			v = temp;
 		}
-		Edge<V, E> edge = new Edge<>(u, v, edgeVal);
+		Edge<V, E> edge = new Edge<>(u, v, edgedata);
 
 		/* split edge into two edges (u, lca(u,v)), (v, lca(u,v)) */
 		LCADynamic.Node<NodeImpl<V, E>> l = lca.calcLCA(u.lcaNode, v.lcaNode);
@@ -256,7 +256,7 @@ public class SubtreeMergeFindminImpl<V, E> implements SubtreeMergeFindmin<V, E> 
 		} else {
 			edgeList.tail.next = edge;
 			edgeList.tail = edge;
-			if (weightCmp.compare(edge.data.weight, edgeList.min.data.weight) < 0) {
+			if (weightCmp.compare(edge.data.data, edgeList.min.data.data) < 0) {
 				edgeList.min = edge;
 				compareAgaintSubTreeMin(v, edge);
 			}
@@ -268,7 +268,7 @@ public class SubtreeMergeFindminImpl<V, E> implements SubtreeMergeFindmin<V, E> 
 			v.minEdge = edge;
 			v.heapHandle = heap.insert(v);
 
-		} else if (weightCmp.compare(edge.data.weight, v.minEdge.data.weight) < 0) {
+		} else if (weightCmp.compare(edge.data.data, v.minEdge.data.data) < 0) {
 			v.minEdge = edge;
 			heap.decreaseKey(v.heapHandle, v);
 		}
@@ -308,28 +308,28 @@ public class SubtreeMergeFindminImpl<V, E> implements SubtreeMergeFindmin<V, E> 
 
 	private static class NodeImpl<V, E> implements Node<V> {
 
-		private V nodeVal;
+		private V nodeData;
 		private final NodeImpl<V, E> parent;
 		private final int depth;
 		private int ufIdx;
 		private LCADynamic.Node<NodeImpl<V, E>> lcaNode;
 		private SubTree<V, E> subtree;
 
-		NodeImpl(NodeImpl<V, E> parent, V val) {
+		NodeImpl(NodeImpl<V, E> parent, V nodeData) {
 			this.parent = parent;
-			nodeVal = val;
+			this.nodeData = nodeData;
 			depth = parent != null ? parent.depth + 1 : 0;
 			subtree = new SubTree<>(this);
 		}
 
 		@Override
 		public V getNodeData() {
-			return nodeVal;
+			return nodeData;
 		}
 
 		@Override
-		public void setNodeVal(V val) {
-			nodeVal = val;
+		public void setNodeData(V data) {
+			nodeData = data;
 		}
 
 		@Override
@@ -338,7 +338,7 @@ public class SubtreeMergeFindminImpl<V, E> implements SubtreeMergeFindmin<V, E> 
 		}
 
 		void clear() {
-			nodeVal = null;
+			nodeData = null;
 			lcaNode = null;
 			if (subtree != null)
 				subtree.clear();
@@ -420,17 +420,17 @@ public class SubtreeMergeFindminImpl<V, E> implements SubtreeMergeFindmin<V, E> 
 
 	private static class Edge<V, E> implements MinEdge<V, E> {
 		public final Node<V> u, v;
-		public final E weight;
+		public final E data;
 
-		Edge(Node<V> u, Node<V> v, E weight) {
+		Edge(Node<V> u, Node<V> v, E data) {
 			this.u = u;
 			this.v = v;
-			this.weight = weight;
+			this.data = data;
 		}
 
 		@Override
 		public String toString() {
-			return "(" + u + ", " + v + ", " + weight + ")";
+			return "(" + u + ", " + v + ", " + data + ")";
 		}
 
 		@Override
@@ -444,8 +444,8 @@ public class SubtreeMergeFindminImpl<V, E> implements SubtreeMergeFindmin<V, E> 
 		}
 
 		@Override
-		public E edgeVal() {
-			return weight;// TODO rename
+		public E edgeData() {
+			return data;
 		}
 
 	}

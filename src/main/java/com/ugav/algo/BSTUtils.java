@@ -22,7 +22,7 @@ class BSTUtils {
 		if (root == null)
 			return null;
 		for (N p = root;;) {
-			int cmp = c.compare(e, p.val);
+			int cmp = c.compare(e, p.data);
 			if (cmp == 0)
 				return p;
 			if (cmp < 0) {
@@ -102,7 +102,7 @@ class BSTUtils {
 
 	static <E, N extends Node<E, N>> void insert(N root, Comparator<? super E> c, N n) {
 		for (N parent = root;;) {
-			int cmp = c.compare(n.val, parent.val);
+			int cmp = c.compare(n.data, parent.data);
 			if (cmp <= 0) {
 				if (!parent.hasLeftChild()) {
 					parent.left = n;
@@ -141,24 +141,24 @@ class BSTUtils {
 	}
 
 	static class Node<E, N extends Node<E, N>> {
-		E val;
+		E data;
 		N parent;
 		N right;
 		N left;
 
 		Node(E e) {
-			this.val = e;
+			this.data = e;
 			parent = right = left = null;
 		}
 
 		void clear() {
 			parent = left = right = null;
-			val = null;
+			data = null;
 		}
 
 		@Override
 		public String toString() {
-			return "<" + val + ">";
+			return "<" + data + ">";
 		}
 
 		boolean isRoot() {

@@ -82,7 +82,7 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 	public void decreaseKey(Handle<E> handle, E e) {
 		Node<E> n = (Node<E>) handle;
 		removeHandle(n);
-		n.val = e;
+		n.data = e;
 		insertNode(n);
 	}
 
@@ -195,10 +195,10 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 		/* 2 children, switch place with a single child node */
 		if (n.left != null && n.right != null) {
 			Node<E> swap = BSTUtils.findSuccessor(n);
-			beforeNodeValSwap(n, swap);
-			E old = swap.val;
-			swap.val = n.val;
-			n.val = old;
+			beforeNodeDataSwap(n, swap);
+			E old = swap.data;
+			swap.data = n.data;
+			n.data = old;
 			n = swap;
 		}
 		assert n.left == null || n.right == null;
@@ -389,12 +389,12 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 
 		@Override
 		public E get() {
-			return val;
+			return data;
 		}
 
 		@Override
 		public String toString() {
-			return "{" + (color == Red ? 'R' : 'B') + ":" + val + "}";
+			return "{" + (color == Red ? 'R' : 'B') + ":" + data + "}";
 		}
 
 	}
@@ -411,7 +411,7 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 	void beforeRemove(Node<E> n) {
 	}
 
-	void beforeNodeValSwap(Node<E> a, Node<E> b) {
+	void beforeNodeDataSwap(Node<E> a, Node<E> b) {
 	}
 
 	void beforeRotateLeft(Node<E> n) {

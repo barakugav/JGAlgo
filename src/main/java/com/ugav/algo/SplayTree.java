@@ -51,9 +51,9 @@ public class SplayTree<E> extends BSTAbstract<E> {
 		if (n.hasLeftChild() && n.hasRightChild()) {
 			/* Node has two children, swap node with successor */
 			NodeSized<E> swap = BSTUtils.findSuccessor(n);
-			E old = swap.val;
-			swap.val = n.val;
-			n.val = old;
+			E old = swap.data;
+			swap.data = n.data;
+			n.data = old;
 			n = swap;
 		}
 
@@ -93,7 +93,7 @@ public class SplayTree<E> extends BSTAbstract<E> {
 	public void decreaseKey(Handle<E> handle, E e) {
 		NodeSized<E> n = (NodeSized<E>) handle;
 		removeHandle(n);
-		n.val = e;
+		n.data = e;
 		insertNode(n);
 	}
 
@@ -143,7 +143,7 @@ public class SplayTree<E> extends BSTAbstract<E> {
 	public E extractMin() {
 		checkTreeNotEmpty();
 		NodeSized<E> n = BSTUtils.findMin(root);
-		E ret = n.val;
+		E ret = n.data;
 		removeHandle(n);
 		return ret;
 	}
@@ -152,7 +152,7 @@ public class SplayTree<E> extends BSTAbstract<E> {
 	public E extractMax() {
 		checkTreeNotEmpty();
 		NodeSized<E> n = BSTUtils.findMax(root);
-		E ret = n.val;
+		E ret = n.data;
 		removeHandle(n);
 		return ret;
 	}
@@ -235,7 +235,7 @@ public class SplayTree<E> extends BSTAbstract<E> {
 
 		@Override
 		public E get() {
-			return val;
+			return data;
 		}
 
 	}

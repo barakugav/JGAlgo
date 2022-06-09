@@ -10,7 +10,7 @@ public class LCARMQBenderFarachColton2000 implements LCAStatic {
 
 	/*
 	 * This implementation of static LCA (Lowest common ancestor) perform a
-	 * preprocessing of O(E+V) and later answer queries of LCA queries in O(1).
+	 * preprocessing of O(n + m) and later answer queries of LCA queries in O(1).
 	 *
 	 * This is done by traversing the tree with the Eulerian tour, and using RMQ on
 	 * the depths of the tour. This RMQ is a special case of the general RMQ, as the

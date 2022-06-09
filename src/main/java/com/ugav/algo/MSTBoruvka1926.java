@@ -11,7 +11,7 @@ import com.ugav.algo.Graph.Edge;
 public class MSTBoruvka1926 implements MST {
 
 	/*
-	 * O(mlogn)
+	 * O(m log n)
 	 */
 
 	public MSTBoruvka1926() {
@@ -37,7 +37,7 @@ public class MSTBoruvka1926 implements MST {
 			int v = tree[e.v()];
 			if (u == v)
 				continue;
-			contractedG.addEdge(u, v).val(edgeValAssigner.apply(e));
+			contractedG.addEdge(u, v).setData(edgeValAssigner.apply(e));
 		}
 		return Pair.of(contractedG, mstEdges);
 	}

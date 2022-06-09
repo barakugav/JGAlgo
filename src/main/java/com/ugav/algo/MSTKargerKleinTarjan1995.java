@@ -13,7 +13,7 @@ import com.ugav.algo.Graph.WeightFunction;
 public class MSTKargerKleinTarjan1995 implements MST {
 
 	/*
-	 * Randomize algorithm for MST. O(m+n)
+	 * Randomize algorithm for MST. O(m + n)
 	 */
 
 	private final Random seedGenerator;
@@ -41,10 +41,10 @@ public class MSTKargerKleinTarjan1995 implements MST {
 		/*
 		 * we run Boruvka to reduce the number of vertices by a factor of 4, and the
 		 * constructed graph contains now edges with different edge indices. Therefore,
-		 * the value stored in each edge is a reference to the old edge. This is a
-		 * little bit clumsy, but didn't find another way.
+		 * the data stored in each edge is a reference to the old edge. This is a little
+		 * bit clumsy, but didn't find another way.
 		 */
-		WeightFunction<Ref<E>> w0 = e -> e.val().w;
+		WeightFunction<Ref<E>> w0 = e -> e.data().w;
 		Pair<Graph<Ref<E>>, Collection<Edge<E>>> r = MSTBoruvka1926.runBoruvka(g, w, 2, e -> new Ref<>(e, w.weight(e)));
 		Graph<Ref<E>> g0 = r.e1;
 		Collection<Edge<E>> f0 = r.e2;
@@ -56,7 +56,7 @@ public class MSTKargerKleinTarjan1995 implements MST {
 		Collection<Edge<Ref<E>>> f2 = calcMST0(g2, w0);
 
 		for (Edge<Ref<E>> e : f2)
-			f0.add(e.val().e);
+			f0.add(e.data().e);
 		return f0;
 	}
 
@@ -67,7 +67,7 @@ public class MSTKargerKleinTarjan1995 implements MST {
 		for (Edge<E> e : g.edges()) {
 			if (rand.nextBoolean())
 				continue;
-			g1.addEdge(e.u(), e.v()).val(e.val());
+			g1.addEdge(e.u(), e.v()).setData(e.data());
 		}
 
 		return g1;
@@ -95,7 +95,7 @@ public class MSTKargerKleinTarjan1995 implements MST {
 
 		for (Edge<E> e : f.edges()) {
 			int un = vToVnew[e.u()], vn = vToVnew[e.v()];
-			trees[vToTree[e.u()]].addEdge(un, vn).val(Double.valueOf(w.weight(e)));
+			trees[vToTree[e.u()]].addEdge(un, vn).setData(Double.valueOf(w.weight(e)));
 		}
 
 		/*
@@ -132,7 +132,7 @@ public class MSTKargerKleinTarjan1995 implements MST {
 		int[] tpmIdx = new int[trees.length];
 		for (Edge<E> e : g.edges()) {
 			int u = e.u(), v = e.v(), ut = vToTree[u];
-			if (ut != vToTree[v] || w.weight(e) <= tpmResults[ut][tpmIdx[ut]++].val().doubleValue())
+			if (ut != vToTree[v] || w.weight(e) <= tpmResults[ut][tpmIdx[ut]++].data().doubleValue())
 				lightEdges.add(e);
 		}
 
@@ -167,7 +167,7 @@ public class MSTKargerKleinTarjan1995 implements MST {
 
 		@Override
 		public String toString() {
-			return e != null ? String.valueOf(e.val()) : Double.toString(w);
+			return e != null ? String.valueOf(e.data()) : Double.toString(w);
 		}
 
 	}

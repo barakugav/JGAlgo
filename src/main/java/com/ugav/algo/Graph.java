@@ -125,18 +125,18 @@ public interface Graph<E> {
 		public int v();
 
 		/**
-		 * Get the value of the edge
+		 * Get the data of the edge
 		 *
-		 * @return the value of the edge
+		 * @return the data of the edge
 		 */
-		public E val();
+		public E data();
 
 		/**
-		 * Set the value of the edge
+		 * Set the data of the edge
 		 *
-		 * @param v new value
+		 * @param data new data value
 		 */
-		public void val(E v);
+		public void setData(E data);
 
 		/**
 		 * Get the twin edge of this edge

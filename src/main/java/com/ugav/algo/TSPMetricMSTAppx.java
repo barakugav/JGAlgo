@@ -34,7 +34,7 @@ public class TSPMetricMSTAppx implements TSPMetric {
 		Graph<Double> g = new GraphTable<>(DirectedType.Undirected, n);
 		for (int u = 0; u < n; u++)
 			for (int v = u + 1; v < n; v++)
-				g.addEdge(u, v).val(Double.valueOf(distances[u][v]));
+				g.addEdge(u, v).setData(Double.valueOf(distances[u][v]));
 
 		/* Calculate MST */
 		Collection<Edge<Double>> mst = new MSTPrim1957().calcMST(g, Graphs.WEIGHT_FUNC_DEFAULT);
@@ -43,7 +43,7 @@ public class TSPMetricMSTAppx implements TSPMetric {
 		Graph<Double> g1 = new GraphArray<>(DirectedType.Undirected, n);
 		for (Edge<Double> e : mst) {
 			g1.addEdge(e);
-			g1.addEdge(e.u(), e.v()).val(e.val());
+			g1.addEdge(e.u(), e.v()).setData(e.data());
 		}
 
 		List<Edge<Double>> cycle = TSPMetricUtils.calcEulerianAndConvertToHamiltonianCycle(g, g1);

@@ -8,7 +8,7 @@ import com.ugav.algo.Graph.WeightFunction;
 public class SSSPDijkstra implements SSSP {
 
 	/*
-	 * O(m + nlogn)
+	 * O(m + n log n)
 	 */
 
 	private int allocSize;

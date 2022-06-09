@@ -14,8 +14,8 @@ public class DynamicTreeSplaySized<V, E> extends DynamicTreeSplay<V, E> {
 	}
 
 	@Override
-	SplayNodeSized<V, E> newNode(V val) {
-		return new SplayNodeSized<>(val);
+	SplayNodeSized<V, E> newNode(V nodeData) {
+		return new SplayNodeSized<>(nodeData);
 	}
 
 	@Override
@@ -36,8 +36,8 @@ public class DynamicTreeSplaySized<V, E> extends DynamicTreeSplay<V, E> {
 
 		int size;
 
-		SplayNodeSized(V e) {
-			super(e);
+		SplayNodeSized(V nodeData) {
+			super(nodeData);
 			size = 1;
 		}
 

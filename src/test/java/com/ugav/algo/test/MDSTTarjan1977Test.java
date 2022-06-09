@@ -36,14 +36,14 @@ public class MDSTTarjan1977Test extends TestUtils {
 			Graph<Edge<E>> dg = new GraphArray<>(DirectedType.Directed, n);
 			for (int u = 0; u < n; u++) {
 				for (Edge<E> e : Utils.iterable(g.edges(u))) {
-					dg.addEdge(e.u(), e.v()).val(e);
-					dg.addEdge(e.v(), e.u()).val(e);
+					dg.addEdge(e.u(), e.v()).setData(e);
+					dg.addEdge(e.v(), e.u()).setData(e);
 				}
 			}
-			Collection<Edge<Edge<E>>> mst0 = algo.calcMST(dg, e -> w.weight(e.val()));
+			Collection<Edge<Edge<E>>> mst0 = algo.calcMST(dg, e -> w.weight(e.data()));
 			Collection<Edge<E>> mst = new ArrayList<>(mst0.size());
 			for (Edge<Edge<E>> e : mst0)
-				mst.add(e.val());
+				mst.add(e.data());
 			return mst;
 		}
 

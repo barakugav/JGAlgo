@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 import com.ugav.algo.Graph;
 import com.ugav.algo.Graph.Edge;
 import com.ugav.algo.MaxFlow;
-import com.ugav.algo.MaxFlow.FlowEdgeValueDefault;
+import com.ugav.algo.MaxFlow.FlowEdgeDataDefault;
 import com.ugav.algo.MaxFlow.FlowNetwork;
 import com.ugav.algo.MaxFlow.FlowNetworkDefault;
 import com.ugav.algo.Pair;
@@ -24,16 +24,16 @@ class MaxFlowTestUtils extends TestUtils {
 		throw new InternalError();
 	}
 
-	private static Pair<Graph<FlowEdgeValueDefault>, FlowNetwork<FlowEdgeValueDefault>> randNetword(int n, int m,
+	private static Pair<Graph<FlowEdgeDataDefault>, FlowNetwork<FlowEdgeDataDefault>> randNetword(int n, int m,
 			GraphImpl graphImpl) {
-		Graph<FlowEdgeValueDefault> g = new RandomGraphBuilder().n(n).m(m).directed(true).doubleEdges(false)
+		Graph<FlowEdgeDataDefault> g = new RandomGraphBuilder().n(n).m(m).directed(true).doubleEdges(false)
 				.selfEdges(false).cycles(true).connected(false).graphImpl(graphImpl).build();
 
 		final double minGap = 0.001;
 		NavigableSet<Double> usedCaps = new TreeSet<>();
 
 		Random rand = new Random(nextRandSeed());
-		for (Edge<FlowEdgeValueDefault> e : g.edges()) {
+		for (Edge<FlowEdgeDataDefault> e : g.edges()) {
 			double cap;
 			for (;;) {
 				cap = rand.nextDouble(1, 100);
@@ -47,7 +47,7 @@ class MaxFlowTestUtils extends TestUtils {
 			}
 			usedCaps.add(cap);
 
-			e.val(new FlowEdgeValueDefault(cap));
+			e.setData(new FlowEdgeDataDefault(cap));
 		}
 
 		return Pair.of(g, new FlowNetworkDefault());
@@ -65,9 +65,9 @@ class MaxFlowTestUtils extends TestUtils {
 		return runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
-			Pair<Graph<FlowEdgeValueDefault>, FlowNetwork<FlowEdgeValueDefault>> p = randNetword(n, m, graphImpl);
-			Graph<FlowEdgeValueDefault> g = p.e1;
-			FlowNetwork<FlowEdgeValueDefault> net = p.e2;
+			Pair<Graph<FlowEdgeDataDefault>, FlowNetwork<FlowEdgeDataDefault>> p = randNetword(n, m, graphImpl);
+			Graph<FlowEdgeDataDefault> g = p.e1;
+			FlowNetwork<FlowEdgeDataDefault> net = p.e2;
 			int source, target;
 			do {
 				source = rand.nextInt(g.vertices());

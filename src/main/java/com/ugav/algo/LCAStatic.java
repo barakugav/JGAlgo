@@ -13,7 +13,6 @@ public interface LCAStatic {
 	 */
 	public void preprocessLCA(Graph<?> t, int r);
 
-
 	/**
 	 * Calculate the LCA (Lowest common ancestor) of two vertices
 	 *

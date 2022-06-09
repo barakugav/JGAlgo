@@ -17,20 +17,20 @@ public interface SubtreeMergeFindmin<V, E> {
 	/**
 	 * Init the tree and create the root node
 	 *
-	 * @param val node value of the root node
+	 * @param nodeData node data of the root node
 	 * @return the root node
 	 * @throws IllegalStateException if the tree is not empty
 	 */
-	public Node<V> initTree(V val);
+	public Node<V> initTree(V nodeData);
 
 	/**
 	 * Add a new node to the tree as leaf
 	 *
-	 * @param parent the parent node
-	 * @param val    node value of the new node
+	 * @param parent   the parent node
+	 * @param nodeData node data of the new node
 	 * @return the new node
 	 */
-	public Node<V> addLeaf(Node<V> parent, V val);
+	public Node<V> addLeaf(Node<V> parent, V nodeData);
 
 	/**
 	 * Check if two nodes are in the same sub tree
@@ -57,11 +57,11 @@ public interface SubtreeMergeFindmin<V, E> {
 	/**
 	 * Add a non tree edge to the data structure
 	 *
-	 * @param u       source node
-	 * @param v       target node
-	 * @param edgeVal value of the new edge
+	 * @param u        source node
+	 * @param v        target node
+	 * @param edgeData data of the new edge
 	 */
-	public void addNonTreeEdge(Node<V> u, Node<V> v, E edgeVal);
+	public void addNonTreeEdge(Node<V> u, Node<V> v, E edgeData);
 
 	/**
 	 * Check if the data structure contains any edge between two different sub trees
@@ -96,7 +96,7 @@ public interface SubtreeMergeFindmin<V, E> {
 
 		public Node<V> v();
 
-		public E edgeVal();
+		public E edgeData();
 
 	}
 
@@ -104,7 +104,7 @@ public interface SubtreeMergeFindmin<V, E> {
 
 		public V getNodeData();
 
-		public void setNodeVal(V val);
+		public void setNodeData(V data);
 
 		public Node<V> getParent();
 

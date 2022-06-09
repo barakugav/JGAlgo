@@ -66,29 +66,29 @@ public abstract class GraphAbstract<E> implements Graph<E> {
 
 	public static abstract class EdgeAbstract<E> implements Edge<E> {
 
-		E val;
+		E data;
 
 		EdgeAbstract() {
 		}
 
-		EdgeAbstract(E val) {
-			this.val = val;
+		EdgeAbstract(E data) {
+			this.data = data;
 		}
 
 		@Override
-		public E val() {
-			return val;
+		public E data() {
+			return data;
 		}
 
 		@Override
-		public void val(E v) {
-			val = v;
+		public void setData(E data) {
+			this.data = data;
 		}
 
 		@Override
 		public String toString() {
-			E val = val();
-			return "(" + u() + ", " + v() + ")" + (val != null ? "[" + val + "]" : "");
+			E data = data();
+			return "(" + u() + ", " + v() + ")" + (data != null ? "[" + data + "]" : "");
 		}
 
 	}

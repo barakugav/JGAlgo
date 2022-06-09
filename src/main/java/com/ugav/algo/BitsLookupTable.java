@@ -68,7 +68,7 @@ public class BitsLookupTable {
 			/*
 			 * the ithBitTable is of size [2^halfwordsize][halfwordsize] and we answer a
 			 * query by 2 lookup tables. Using the easy [2^wordsize][wordsize] will results
-			 * in O(nlogn) time and size.
+			 * in O(n log n) time and size.
 			 */
 
 			if (i < 0 || i >= count.bitCount(x))

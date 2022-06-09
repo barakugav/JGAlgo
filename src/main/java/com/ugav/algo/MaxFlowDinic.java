@@ -63,9 +63,9 @@ public class MaxFlowDinic implements MaxFlow {
 				int lvl = level[u];
 				for (Edge<Ref<E>> e : Utils.iterable(g.edges(u))) {
 					int v = e.v();
-					if (e.val().flow >= net.getCapacity(e.val().orig) || level[v] <= lvl)
+					if (e.data().flow >= net.getCapacity(e.data().orig) || level[v] <= lvl)
 						continue;
-					L.addEdge(u, v).val(e.val());
+					L.addEdge(u, v).setData(e.data());
 					if (level[v] != unvisited)
 						continue;
 					level[v] = lvl + 1;
@@ -81,7 +81,7 @@ public class MaxFlowDinic implements MaxFlow {
 				vToDt[u] = dt.makeTree(Integer.valueOf(u));
 
 			ObjDoubleConsumer<Edge<Ref<E>>> updateFlow = (e0, weight) -> {
-				Ref<E> e = e0.val();
+				Ref<E> e = e0.data();
 				double f = net.getCapacity(e.orig) - e.flow - weight;
 				if (e0.u() == e.orig.u())
 					debug.println("F(", e.orig, ") += ", Double.valueOf(f));
@@ -103,7 +103,7 @@ public class MaxFlowDinic implements MaxFlow {
 					/* Delete all saturated edges */
 					debug.println("Delete");
 					do {
-						Edge<Ref<E>> e = min.val();
+						Edge<Ref<E>> e = min.getData();
 						assert vToDt[e.u()] == min.u();
 						L.removeEdge(e);
 
@@ -124,7 +124,7 @@ public class MaxFlowDinic implements MaxFlow {
 							continue; /* If the edge is not in the DT, ignore */
 
 						MinEdge<Integer, Edge<Ref<E>>> m = dt.findMinEdge(vToDt[e.u()]);
-						assert e == m.val();
+						assert e == m.getData();
 						updateFlow.accept(e, m.weight());
 
 						dt.cut(m.u());
@@ -135,7 +135,7 @@ public class MaxFlowDinic implements MaxFlow {
 					/* Advance */
 					debug.println("Advance");
 					Edge<Ref<E>> e = L.edgesOut(v).next();
-					dt.link(vToDt[e.u()], vToDt[e.v()], net.getCapacity(e.val().orig) - e.val().flow, e);
+					dt.link(vToDt[e.u()], vToDt[e.v()], net.getCapacity(e.data().orig) - e.data().flow, e);
 				}
 			}
 
@@ -148,7 +148,7 @@ public class MaxFlowDinic implements MaxFlow {
 					DynamicTree.Node<Integer, Edge<Ref<E>>> uDt = cleanupStack.pop();
 					assert uDt.getParent() == dt.findRoot(uDt);
 					MinEdge<Integer, Edge<Ref<E>>> m = dt.findMinEdge(uDt);
-					updateFlow.accept(m.val(), m.weight());
+					updateFlow.accept(m.getData(), m.weight());
 					dt.cut(m.u());
 				}
 			}
@@ -156,12 +156,12 @@ public class MaxFlowDinic implements MaxFlow {
 
 		/* Construct result */
 		for (Edge<Ref<E>> e : g.edges())
-			if (e.u() == e.val().orig.u())
-				net.setFlow(e.val().orig, e.val().flow);
+			if (e.u() == e.data().orig.u())
+				net.setFlow(e.data().orig, e.data().flow);
 		double totalFlow = 0;
 		for (Edge<Ref<E>> e : Utils.iterable(g.edges(source)))
-			if (e.u() == e.val().orig.u())
-				totalFlow += e.val().flow;
+			if (e.u() == e.data().orig.u())
+				totalFlow += e.data().flow;
 		return totalFlow;
 	}
 
@@ -169,8 +169,8 @@ public class MaxFlowDinic implements MaxFlow {
 		Graph<Ref<E>> g = new GraphArray<>(DirectedType.Directed, g0.vertices());
 		for (Edge<E> e : g0.edges()) {
 			Ref<E> ref = new Ref<>(e, 0), refRev = new Ref<>(e, net.getCapacity(e));
-			g.addEdge(e.u(), e.v()).val(ref);
-			g.addEdge(e.v(), e.u()).val(refRev);
+			g.addEdge(e.u(), e.v()).setData(ref);
+			g.addEdge(e.v(), e.u()).setData(refRev);
 			refRev.rev = ref;
 			ref.rev = refRev;
 		}

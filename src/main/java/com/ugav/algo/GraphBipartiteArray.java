@@ -37,29 +37,8 @@ public class GraphBipartiteArray<E> extends GraphArray<E> implements GraphBipart
 	}
 
 	@Override
-	public int[] getSVertices() {
-		return getVertices(S_SIDE);
-	}
-
-	@Override
-	public int[] getTVertices() {
-		return getVertices(T_SIDE);
-	}
-
-	@Override
 	public boolean isVertexInS(int v) {
 		return side[v] == S_SIDE;
-	}
-
-	private int[] getVertices(boolean side) {
-		int n = vertices();
-		int[] res = new int[side == S_SIDE ? sSize : n - sSize];
-		int resIndex = 0;
-
-		for (int u = 0; u < n; u++)
-			if (this.side[u] == side)
-				res[resIndex++] = u;
-		return res;
 	}
 
 	@Override

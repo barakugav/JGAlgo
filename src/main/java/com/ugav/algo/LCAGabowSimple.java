@@ -26,20 +26,20 @@ public class LCAGabowSimple<V> implements LCADynamic<V> {
 	}
 
 	@Override
-	public Node<V> initTree(V val) {
+	public Node<V> initTree(V nodeData) {
 		if (size() != 0)
 			throw new IllegalStateException();
-		return newNode(null, val);
+		return newNode(null, nodeData);
 	}
 
 	@Override
-	public Node<V> addLeaf(Node<V> parent, V val) {
-		return newNode((NodeImpl<V>) parent, val);
+	public Node<V> addLeaf(Node<V> parent, V nodeData) {
+		return newNode((NodeImpl<V>) parent, nodeData);
 	}
 
-	private Node<V> newNode(NodeImpl<V> parent, V val) {
+	private Node<V> newNode(NodeImpl<V> parent, V nodeData) {
 		nodesNum++;
-		NodeImpl<V> node = new NodeImpl<>(parent, val);
+		NodeImpl<V> node = new NodeImpl<>(parent, nodeData);
 
 		node.isApex = true;
 		if (parent != null) {
@@ -233,7 +233,7 @@ public class LCAGabowSimple<V> implements LCADynamic<V> {
 
 	private static class NodeImpl<V> implements Node<V> {
 		/* --- user tree data --- */
-		V nodeVal;
+		V nodeData;
 		/* tree parent */
 		final NodeImpl<V> parent;
 		/* children nodes of this node */
@@ -268,20 +268,20 @@ public class LCAGabowSimple<V> implements LCADynamic<V> {
 		NodeImpl<V>[] ancestorTable;
 
 		@SuppressWarnings("unchecked")
-		NodeImpl(NodeImpl<V> parent, V val) {
+		NodeImpl(NodeImpl<V> parent, V nodeData) {
 			this.parent = parent;
-			nodeVal = val;
+			this.nodeData = nodeData;
 			children = EMPTY_NODE_ARR;
 		}
 
 		@Override
 		public V getNodeData() {
-			return nodeVal;
+			return nodeData;
 		}
 
 		@Override
-		public void setNodeData(V val) {
-			nodeVal = val;
+		public void setNodeData(V data) {
+			nodeData = data;
 		}
 
 		@Override

@@ -11,7 +11,7 @@ import com.ugav.algo.Graphs.EdgeWeightComparator;
 public class MSTKruskal1956 implements MST {
 
 	/*
-	 * O(mlogn)
+	 * O(m log n)
 	 */
 
 	public MSTKruskal1956() {

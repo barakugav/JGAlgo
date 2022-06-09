@@ -6,7 +6,7 @@ import java.util.Comparator;
 public class SplitFindMinArray<K> implements SplitFindMin<K> {
 
 	/*
-	 * make O(n), find findMin decreaseKey O(1), split O(logn) amortized.
+	 * make O(n), find findMin decreaseKey O(1), split O(log n) amortized.
 	 */
 
 	private K[] keys;
