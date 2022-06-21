@@ -10,22 +10,22 @@ import com.ugav.algo.UnionFindValueArray;
 public class UnionFindValueArrayTest extends TestUtils {
 
 	@Test
-	public static boolean randRegularUFOps() {
-		return UnionFindTestUtils.randOps(UnionFindValueArray::new);
+	public static void randRegularUFOps() {
+		UnionFindTestUtils.randOps(UnionFindValueArray::new);
 	}
 
 	@Test
-	public static boolean randOps() {
+	public static void randOps() {
 		List<Phase> phases = List.of(phase(256, 8, 16), phase(64, 64, 256), phase(16, 1024, 2048),
 				phase(2, 8096, 16384));
-		return runTestMultiple(phases, (testIter, args) -> {
+		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
-			return randOps(n, m);
+			randOps(n, m);
 		});
 	}
 
-	private static boolean randOps(int n, int m) {
+	private static void randOps(int n, int m) {
 		Random rand = new Random(nextRandSeed());
 
 		UnionFindValue uf = new UnionFindValueArray();
@@ -51,10 +51,7 @@ public class UnionFindValueArrayTest extends TestUtils {
 				x = rand.nextInt(n);
 				int actualSet = set[uf.find(x)];
 				int expectedSet = set[x];
-				if (actualSet != expectedSet) {
-					printTestStr("Unexpected find result\n");
-					return false;
-				}
+				assertEq(expectedSet, actualSet, "Unexpected find result\n");
 				break;
 			case OP_UNION:
 				int a = rand.nextInt(n), b = rand.nextInt(n);
@@ -77,17 +74,12 @@ public class UnionFindValueArrayTest extends TestUtils {
 				x = rand.nextInt(n);
 				double actualDelta = uf.getValue(x);
 				double expectedDelta = deltas[x];
-				if (!doubleEql(actualDelta, expectedDelta, 1E-5)) {
-					printTestStr("Unexpected value: ", actualDelta, " != ", expectedDelta, "\n");
-					return false;
-				}
+				assertEqFp(expectedDelta, actualDelta, 1E-5, "Unexpected value");
 				break;
 			default:
 				throw new InternalError();
 			}
 		}
-
-		return true;
 	}
 
 }

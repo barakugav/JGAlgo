@@ -5,23 +5,23 @@ import com.ugav.algo.HeapBinomial;
 public class HeapBinomialTest extends TestUtils {
 
 	@Test
-	public static boolean randOps() {
-		return HeapTestUtils.testRandOps(HeapBinomial::new);
+	public static void randOps() {
+		HeapTestUtils.testRandOps(HeapBinomial::new);
 	}
 
 	@Test
-	public static boolean randOpsAfterManyInserts() {
-		return HeapTestUtils.testRandOpsAfterManyInserts(HeapBinomial::new);
+	public static void randOpsAfterManyInserts() {
+		HeapTestUtils.testRandOpsAfterManyInserts(HeapBinomial::new);
 	}
 
 	@Test
-	public static boolean meld() {
-		return HeapTestUtils.testMeld(HeapBinomial::new);
+	public static void meld() {
+		HeapTestUtils.testMeld(HeapBinomial::new);
 	}
 
 	@Test
-	public static boolean decreaseKey() {
-		return HeapTestUtils.testDecreaseKey(HeapBinomial::new);
+	public static void decreaseKey() {
+		HeapTestUtils.testDecreaseKey(HeapBinomial::new);
 	}
 
 }

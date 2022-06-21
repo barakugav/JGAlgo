@@ -5,33 +5,33 @@ import com.ugav.algo.MatchingWeightedGabow2017;
 public class MatchingWeightedGabow2017Test extends TestUtils {
 
 	@Test
-	public static boolean randBipartiteGraphsWeight1() {
-		return MatchingBipartiteTestUtils.randBipartiteGraphs(MatchingWeightedGabow2017::new);
+	public static void randBipartiteGraphsWeight1() {
+		MatchingBipartiteTestUtils.randBipartiteGraphs(MatchingWeightedGabow2017::new);
 	}
 
 	@Test
-	public static boolean randBipartiteGraphsWeighted() {
-		return MatchingWeightedTestUtils.randGraphsBipartiteWeighted(MatchingWeightedGabow2017::new);
+	public static void randBipartiteGraphsWeighted() {
+		MatchingWeightedTestUtils.randGraphsBipartiteWeighted(MatchingWeightedGabow2017::new);
 	}
 
 	@Test
-	public static boolean randBipartiteGraphsWeightedPerfect() {
-		return MatchingWeightedTestUtils.randBipartiteGraphsWeightedPerfect(MatchingWeightedGabow2017::new);
+	public static void randBipartiteGraphsWeightedPerfect() {
+		MatchingWeightedTestUtils.randBipartiteGraphsWeightedPerfect(MatchingWeightedGabow2017::new);
 	}
 
 	@Test
-	public static boolean randGraphsWeight1() {
-		return MatchingUnweightedTestUtils.randGraphs(MatchingWeightedGabow2017::new);
+	public static void randGraphsWeight1() {
+		MatchingUnweightedTestUtils.randGraphs(MatchingWeightedGabow2017::new);
 	}
 
 	@Test
-	public static boolean randGraphsWeighted() {
-		return MatchingWeightedTestUtils.randGraphsWeighted(MatchingWeightedGabow2017::new);
+	public static void randGraphsWeighted() {
+		MatchingWeightedTestUtils.randGraphsWeighted(MatchingWeightedGabow2017::new);
 	}
 
 	@Test
-	public static boolean randGraphsWeightedPerfect() {
-		return MatchingWeightedTestUtils.randGraphsWeightedPerfect(MatchingWeightedGabow2017::new);
+	public static void randGraphsWeightedPerfect() {
+		MatchingWeightedTestUtils.randGraphsWeightedPerfect(MatchingWeightedGabow2017::new);
 	}
 
 }

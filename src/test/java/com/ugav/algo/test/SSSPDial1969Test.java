@@ -5,13 +5,13 @@ import com.ugav.algo.SSSPDial1969;
 public class SSSPDial1969Test extends TestUtils {
 
 	@Test
-	public static boolean randGraphDirectedPositiveInt() {
-		return SSSPTestUtils.testSSSPDirectedPositiveInt(SSSPDial1969::new);
+	public static void randGraphDirectedPositiveInt() {
+		SSSPTestUtils.testSSSPDirectedPositiveInt(SSSPDial1969::new);
 	}
 
 	@Test
-	public static boolean randGraphUndirectedPositiveInt() {
-		return SSSPTestUtils.testSSSPUndirectedPositiveInt(SSSPDial1969::new);
+	public static void randGraphUndirectedPositiveInt() {
+		SSSPTestUtils.testSSSPUndirectedPositiveInt(SSSPDial1969::new);
 	}
 
 }

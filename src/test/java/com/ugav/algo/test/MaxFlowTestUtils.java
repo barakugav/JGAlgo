@@ -53,16 +53,16 @@ class MaxFlowTestUtils extends TestUtils {
 		return Pair.of(g, new FlowNetworkDefault());
 	}
 
-	static boolean testRandGraphs(Supplier<? extends MaxFlow> builder) {
-		return testRandGraphs(builder, GraphImplTestUtils.GRAPH_IMPL_DEFAULT);
+	static void testRandGraphs(Supplier<? extends MaxFlow> builder) {
+		testRandGraphs(builder, GraphImplTestUtils.GRAPH_IMPL_DEFAULT);
 	}
 
-	static boolean testRandGraphs(Supplier<? extends MaxFlow> builder, GraphImpl graphImpl) {
+	static void testRandGraphs(Supplier<? extends MaxFlow> builder, GraphImpl graphImpl) {
 		Random rand = new Random(nextRandSeed());
 		List<Phase> phases = List.of(phase(1024, 6, 6), phase(128, 16, 16), phase(128, 16, 32), phase(64, 64, 64),
 				phase(64, 64, 128), phase(8, 512, 512), phase(4, 512, 1324), phase(1, 1025, 2016),
 				phase(1, 3246, 5612));
-		return runTestMultiple(phases, (testIter, args) -> {
+		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
 			Pair<Graph<FlowEdgeDataDefault>, FlowNetwork<FlowEdgeDataDefault>> p = randNetword(n, m, graphImpl);
@@ -75,11 +75,11 @@ class MaxFlowTestUtils extends TestUtils {
 			} while (source == target);
 
 			MaxFlow algo = builder.get();
-			return testNetwork(g, net, source, target, algo);
+			testNetwork(g, net, source, target, algo);
 		});
 	}
 
-	private static <E> boolean testNetwork(Graph<E> g, FlowNetwork<E> net, int source, int target, MaxFlow algo) {
+	private static <E> void testNetwork(Graph<E> g, FlowNetwork<E> net, int source, int target, MaxFlow algo) {
 		double actualMaxFlow = algo.calcMaxFlow(g, net, source, target);
 
 		int n = g.vertices();
@@ -90,19 +90,11 @@ class MaxFlowTestUtils extends TestUtils {
 		}
 		for (int v = 0; v < n; v++) {
 			double expected = v == source ? actualMaxFlow : v == target ? -actualMaxFlow : 0;
-			if (!doubleEql(vertexFlowOut[v], expected, 1E-3)) {
-				printTestStr("Invalid vertex(", v, ") flow: ", vertexFlowOut[v], "\n");
-				return false;
-			}
+			assertEqFp(expected, vertexFlowOut[v], 1E-3, "Invalid vertex(", v, ") flow");
 		}
 
 		double expectedMaxFlow = calcExpectedFlow(g, net, source, target);
-		if (!doubleEql(expectedMaxFlow, actualMaxFlow, 1E-3)) {
-			printTestStr("Unexpected max flow: ", expectedMaxFlow, " != ", actualMaxFlow, "\n");
-			return false;
-		}
-
-		return true;
+		assertEqFp(expectedMaxFlow, actualMaxFlow, 1E-3, "Unexpected max flow");
 	}
 
 	/* implementation taken from the Internet */

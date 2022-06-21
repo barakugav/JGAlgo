@@ -19,47 +19,35 @@ class MatchingUnweightedTestUtils extends TestUtils {
 		throw new InternalError();
 	}
 
-	static boolean randGraphs(Supplier<? extends Matching> builder) {
+	static void randGraphs(Supplier<? extends Matching> builder) {
 		List<Phase> phases = List.of(phase(256, 16, 8), phase(256, 16, 16), phase(128, 32, 32), phase(128, 32, 64),
 				phase(64, 64, 64), phase(64, 64, 128), phase(16, 256, 256), phase(16, 256, 512), phase(1, 2048, 2048),
 				phase(1, 2048, 3249));
-		return runTestMultiple(phases, (testIter, args) -> {
+		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
 			Graph<Void> g = GraphsTestUtils.randGraph(n, m);
-
 			Matching algo = builder.get();
 			int expeced = calcExpectedMaxMatching(g);
-			return testAlgo(algo, g, expeced);
+			testAlgo(algo, g, expeced);
 		});
 	}
 
-	private static <E> boolean testAlgo(Matching algo, Graph<E> g, int expectedMatchSize) {
+	private static <E> void testAlgo(Matching algo, Graph<E> g, int expectedMatchSize) {
 		Collection<Edge<E>> match = algo.calcMaxMatching(g);
-
-		if (!validateMatching(match))
-			return false;
-
-		if (match.size() != expectedMatchSize) {
-			printTestStr("unexpected match size: ", match.size(), " != ", expectedMatchSize, "\n");
-			return false;
-		}
-		return true;
+		validateMatching(match);
+		assertEq(expectedMatchSize, match.size(), "unexpected match size");
 	}
 
-	static <E> boolean validateMatching(Collection<Edge<E>> matching) {
+	static <E> void validateMatching(Collection<Edge<E>> matching) {
 		Map<Integer, Edge<E>> matched = new HashMap<>();
 		for (Edge<E> e : matching) {
 			for (int v : new int[] { e.u(), e.v() }) {
 				Edge<E> dup = matched.get(Integer.valueOf(v));
-				if (dup != null) {
-					printTestStr("Invalid matching, clash: ", dup, " ", e, " \n");
-					return false;
-				}
+				assertNull(dup, "Invalid matching, clash: ", dup, " ", e, " \n");
 				matched.put(Integer.valueOf(v), e);
 			}
 		}
-		return true;
 	}
 
 	private static <E> int calcExpectedMaxMatching(Graph<E> g) {

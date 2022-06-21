@@ -5,10 +5,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
-import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import com.ugav.algo.BST;
@@ -25,25 +23,24 @@ class BSTTestUtils extends TestUtils {
 		throw new InternalError();
 	}
 
-	static boolean testFindSmallers(Supplier<? extends BST<Integer>> treeBuilder) {
+	static void testFindSmallers(Supplier<? extends BST<Integer>> treeBuilder) {
 		List<Phase> phases = List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 4096));
-		return runTestMultiple(phases, (testIter, args) -> {
+		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
-			return testFindSmallerGreater(treeBuilder, n, true);
+			testFindSmallerGreater(treeBuilder, n, true);
 		});
 	}
 
-	static boolean testFindGreaters(Supplier<? extends BST<Integer>> treeBuilder) {
+	static void testFindGreaters(Supplier<? extends BST<Integer>> treeBuilder) {
 		List<Phase> phases = List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 4096));
-		return runTestMultiple(phases, (testIter, args) -> {
+		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
-			return testFindSmallerGreater(treeBuilder, n, false);
+			testFindSmallerGreater(treeBuilder, n, false);
 		});
 	}
 
 	@SuppressWarnings("boxing")
-	private static boolean testFindSmallerGreater(Supplier<? extends BST<Integer>> treeBuilder, int n,
-			boolean smaller) {
+	private static void testFindSmallerGreater(Supplier<? extends BST<Integer>> treeBuilder, int n, boolean smaller) {
 		DebugPrintsManager debug = new DebugPrintsManager(false);
 		Random rand = new Random(nextRandSeed());
 
@@ -78,32 +75,28 @@ class BSTTestUtils extends TestUtils {
 			}
 			actual = actualH == null ? null : actualH.get();
 
-			if (!Objects.equals(actual, expected)) {
-				printTestStr("Failed to find smaller/greater of ", searchedElm, " : ", actual, " != ", expected, "\n");
-				return false;
-			}
+			assertEq(expected, actual, "Failed to find smaller/greater of ", searchedElm);
 		}
-		return true;
 	}
 
-	static boolean testGetPredecessors(Supplier<? extends BST<Integer>> treeBuilder) {
+	static void testGetPredecessors(Supplier<? extends BST<Integer>> treeBuilder) {
 		List<Phase> phases = List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 4096));
-		return runTestMultiple(phases, (testIter, args) -> {
+		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
-			return testGetPredecessorSuccessor(treeBuilder, n, true);
+			testGetPredecessorSuccessor(treeBuilder, n, true);
 		});
 	}
 
-	static boolean testGetSuccessors(Supplier<? extends BST<Integer>> treeBuilder) {
+	static void testGetSuccessors(Supplier<? extends BST<Integer>> treeBuilder) {
 		List<Phase> phases = List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 4096));
-		return runTestMultiple(phases, (testIter, args) -> {
+		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
-			return testGetPredecessorSuccessor(treeBuilder, n, false);
+			testGetPredecessorSuccessor(treeBuilder, n, false);
 		});
 	}
 
 	@SuppressWarnings("boxing")
-	private static boolean testGetPredecessorSuccessor(Supplier<? extends BST<Integer>> treeBuilder, int n,
+	private static void testGetPredecessorSuccessor(Supplier<? extends BST<Integer>> treeBuilder, int n,
 			boolean predecessor) {
 		DebugPrintsManager debug = new DebugPrintsManager(false);
 		Random rand = new Random(nextRandSeed());
@@ -126,10 +119,7 @@ class BSTTestUtils extends TestUtils {
 			} while (searchedElm == null);
 
 			Handle<Integer> h = tracker.tree().findHanlde(searchedElm);
-			if (h == null) {
-				printTestStr("Failed to find handle for ", searchedElm, "\n");
-				return false;
-			}
+			assertNonNull(h, "Failed to find handle for ", searchedElm);
 
 			Integer actual, expected;
 			if (predecessor) {
@@ -142,25 +132,20 @@ class BSTTestUtils extends TestUtils {
 				expected = tracker.higher(searchedElm);
 			}
 
-			if (!Objects.equals(actual, expected)) {
-				printTestStr("Failed to find predecessor/successor of ", searchedElm, " : ", actual, " != ", expected,
-						"\n");
-				return false;
-			}
+			assertEq(expected, actual, "Failed to find predecessor/successor of ", searchedElm);
 		}
-		return true;
 	}
 
-	static boolean testSplit(Supplier<? extends BST<Integer>> treeBuilder) {
+	static void testSplit(Supplier<? extends BST<Integer>> treeBuilder) {
 		List<Phase> phases = List.of(phase(128, 8), phase(64, 32), phase(16, 128), phase(8, 256), phase(4, 1024));
-		return runTestMultiple(phases, (testIter, args) -> {
+		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
-			return BSTTestUtils.testSplit(treeBuilder, n);
+			BSTTestUtils.testSplit(treeBuilder, n);
 		});
 	}
 
 	@SuppressWarnings("boxing")
-	private static boolean testSplit(Supplier<? extends BST<Integer>> treeBuilder, int tCount) {
+	private static void testSplit(Supplier<? extends BST<Integer>> treeBuilder, int tCount) {
 		Random rand = new Random(nextRandSeed());
 		HeapTrackerIdGenerator heapTrackerIdGen = new HeapTrackerIdGenerator(nextRandSeed());
 		Set<BSTTracker> trees = new HashSet<>();
@@ -169,8 +154,7 @@ class BSTTestUtils extends TestUtils {
 		for (int i = 0; i < tCount; i++) {
 			BSTTracker tracker = new BSTTracker(treeBuilder.get(), heapTrackerIdGen.nextId());
 			int[] elms = Utils.randArray(16, 0, maxVal, nextRandSeed());
-			if (!HeapTestUtils.testHeap(tracker, 16, TestMode.InsertFirst, elms))
-				return false;
+			HeapTestUtils.testHeap(tracker, 16, TestMode.InsertFirst, elms);
 			trees.add(tracker);
 		}
 
@@ -215,14 +199,12 @@ class BSTTestUtils extends TestUtils {
 			}
 		};
 
-		BooleanSupplier doRandOps = () -> {
+		Runnable doRandOps = () -> {
 			for (BSTTracker h : trees) {
 				int opsNum = 512 / trees.size();
 				int[] elms = Utils.randArray(opsNum, 0, maxVal, nextRandSeed());
-				if (!HeapTestUtils.testHeap(h, opsNum, TestMode.Normal, elms))
-					return false;
+				HeapTestUtils.testHeap(h, opsNum, TestMode.Normal, elms);
 			}
-			return true;
 		};
 
 		while (trees.size() > 1) {
@@ -231,18 +213,12 @@ class BSTTestUtils extends TestUtils {
 			 * Reducing the number of tree by a factor of 2 in total
 			 */
 			meld.run();
-			if (!doRandOps.getAsBoolean())
-				return false;
+			doRandOps.run();
 			split.run();
-			if (!doRandOps.getAsBoolean())
-				return false;
+			doRandOps.run();
 			meld.run();
-			if (!doRandOps.getAsBoolean())
-				return false;
+			doRandOps.run();
 		}
-
-		return true;
-
 	}
 
 	@SuppressWarnings("boxing")

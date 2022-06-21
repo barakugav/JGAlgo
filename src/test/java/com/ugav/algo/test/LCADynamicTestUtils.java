@@ -15,27 +15,25 @@ class LCADynamicTestUtils extends TestUtils {
 		throw new InternalError();
 	}
 
-	static boolean fullBinaryTreesRandOps(Supplier<? extends LCADynamic<Integer>> builder) {
+	static void fullBinaryTreesRandOps(Supplier<? extends LCADynamic<Integer>> builder) {
 		List<Phase> phases = List.of(phase(128, 16, 16), phase(128, 16, 32), phase(64, 64, 64), phase(64, 64, 128),
 				phase(8, 512, 512), phase(8, 512, 2048), phase(1, 4096, 4096), phase(1, 4096, 16384));
-		return runTestMultiple(phases, (testIter, args) -> {
+		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
-
 			Collection<Op> ops = generateRandOpsOnFullBinaryTree(n, m);
-			return testLCA(builder, n, ops);
+			testLCA(builder, n, ops);
 		});
 	}
 
-	static boolean randTrees(Supplier<? extends LCADynamic<Integer>> builder) {
+	static void randTrees(Supplier<? extends LCADynamic<Integer>> builder) {
 		List<Phase> phases = List.of(phase(128, 16, 16), phase(128, 16, 32), phase(64, 64, 64), phase(64, 64, 128),
 				phase(8, 512, 512), phase(8, 512, 2048), phase(1, 4096, 4096), phase(1, 4096, 16384));
-		return runTestMultiple(phases, (testIter, args) -> {
+		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
-
 			Collection<Op> ops = generateRandOps(n, m);
-			return testLCA(builder, n, ops);
+			testLCA(builder, n, ops);
 		});
 	}
 
@@ -124,7 +122,7 @@ class LCADynamicTestUtils extends TestUtils {
 	}
 
 	@SuppressWarnings("boxing")
-	static boolean testLCA(Supplier<? extends LCADynamic<Integer>> builder, int n, Collection<Op> ops) {
+	static void testLCA(Supplier<? extends LCADynamic<Integer>> builder, int n, Collection<Op> ops) {
 		List<LCADynamic.Node<Integer>> nodes = new ArrayList<>();
 		LCADynamic<Integer> lca = builder.get();
 
@@ -155,15 +153,11 @@ class LCADynamicTestUtils extends TestUtils {
 
 				LCADynamic.Node<Integer> lcaExpected = x;
 				LCADynamic.Node<Integer> lcaActual = lca.calcLCA(nodes.get(op.x), nodes.get(op.y));
-				if (lcaExpected != lcaActual) {
-					printTestStr("LCA has an expected value: ", lcaExpected, " != ", lcaActual, "\n");
-					return false;
-				}
+				assertEq(lcaExpected, lcaActual, "LCA has an expected value");
 
 			} else
 				throw new InternalError();
 		}
-		return true;
 	}
 
 	static class Op {

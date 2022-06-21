@@ -5,13 +5,13 @@ import com.ugav.algo.SSSPDijkstra;
 public class SSSPDijkstraTest extends TestUtils {
 
 	@Test
-	public static boolean randGraphDirectedPositiveInt() {
-		return SSSPTestUtils.testSSSPDirectedPositiveInt(SSSPDijkstra::new);
+	public static void randGraphDirectedPositiveInt() {
+		SSSPTestUtils.testSSSPDirectedPositiveInt(SSSPDijkstra::new);
 	}
 
 	@Test
-	public static boolean testSSSPUndirectedPositiveInt() {
-		return SSSPTestUtils.testSSSPUndirectedPositiveInt(SSSPDijkstra::new);
+	public static void testSSSPUndirectedPositiveInt() {
+		SSSPTestUtils.testSSSPUndirectedPositiveInt(SSSPDijkstra::new);
 	}
 
 }

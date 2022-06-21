@@ -5,13 +5,13 @@ import com.ugav.algo.LCAGabowSimple;
 public class LCAGabowSimpleTest extends TestUtils {
 
 	@Test
-	public static boolean fullBinaryTreesRandOps() {
-		return LCADynamicTestUtils.fullBinaryTreesRandOps(LCAGabowSimple::new);
+	public static void fullBinaryTreesRandOps() {
+		LCADynamicTestUtils.fullBinaryTreesRandOps(LCAGabowSimple::new);
 	}
 
 	@Test
-	public static boolean randTrees() {
-		return LCADynamicTestUtils.randTrees(LCAGabowSimple::new);
+	public static void randTrees() {
+		LCADynamicTestUtils.randTrees(LCAGabowSimple::new);
 	}
 
 }

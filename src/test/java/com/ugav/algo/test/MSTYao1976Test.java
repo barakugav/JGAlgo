@@ -5,8 +5,8 @@ import com.ugav.algo.MSTYao1976;
 public class MSTYao1976Test extends TestUtils {
 
 	@Test
-	public static boolean randGraph() {
-		return MSTTestUtils.testRandGraph(MSTYao1976::new);
+	public static void randGraph() {
+		MSTTestUtils.testRandGraph(MSTYao1976::new);
 	}
 
 }

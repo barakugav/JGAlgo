@@ -67,36 +67,28 @@ class TPMTestUtils extends TestUtils {
 		return queries;
 	}
 
-	static <E> boolean compareActualToExpectedResults(int[] queries, Edge<E>[] actual, Edge<E>[] expected,
+	static <E> void compareActualToExpectedResults(int[] queries, Edge<E>[] actual, Edge<E>[] expected,
 			WeightFunction<E> w) {
-		if (actual.length != expected.length) {
-			printTestStr("Unexpected result size: ", actual.length, " != ", expected.length, "\n");
-			return false;
-		}
+		assertEq(expected.length, actual.length, "Unexpected result size");
 		for (int i = 0; i < actual.length; i++) {
 			double aw = actual[i] != null ? w.weight(actual[i]) : Double.MIN_VALUE;
 			double ew = expected[i] != null ? w.weight(expected[i]) : Double.MIN_VALUE;
-			if (aw != ew) {
-				int u = queries[i * 2];
-				int v = queries[i * 2 + 1];
-				printTestStr("Unexpected result for query (", u, ", ", v, "): ", actual[i], " != ", expected[i], "\n");
-				return false;
-			}
+			assertEq(ew, aw, "Unexpected result for query (", queries[i * 2], ", ", queries[i * 2 + 1], "): ",
+					actual[i], " != ", expected[i], "\n");
 		}
-		return true;
 	}
 
-	static boolean testTPM(Supplier<? extends TPM> builder) {
+	static void testTPM(Supplier<? extends TPM> builder) {
 		List<Phase> phases = List.of(phase(64, 16), phase(32, 32), phase(16, 64), phase(8, 128), phase(4, 256),
 				phase(2, 512), phase(1, 2485), phase(1, 3254));
-		return runTestMultiple(phases, (testIter, args) -> {
+		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			TPM algo = builder.get();
-			return testTPM(algo, n);
+			testTPM(algo, n);
 		});
 	}
 
-	private static boolean testTPM(TPM algo, int n) {
+	private static void testTPM(TPM algo, int n) {
 		Graph<Integer> t = GraphsTestUtils.randTree(n);
 		GraphsTestUtils.assignRandWeightsIntPos(t);
 		WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
@@ -104,13 +96,13 @@ class TPMTestUtils extends TestUtils {
 		int[] queries = n <= 64 ? generateAllPossibleQueries(n) : generateRandQueries(n, Math.min(n * 64, 8192));
 		Edge<Integer>[] actual = algo.calcTPM(t, w, queries, queries.length / 2);
 		Edge<Integer>[] expected = calcExpectedTPM(t, w, queries);
-		return compareActualToExpectedResults(queries, actual, expected, w);
+		compareActualToExpectedResults(queries, actual, expected, w);
 	}
 
-	static boolean verifyMSTPositive(Supplier<? extends TPM> builder) {
+	static void verifyMSTPositive(Supplier<? extends TPM> builder) {
 		List<Phase> phases = List.of(phase(256, 8, 16), phase(128, 16, 32), phase(64, 64, 128), phase(32, 128, 256),
 				phase(8, 2048, 4096), phase(2, 8192, 16384));
-		return runTestMultiple(phases, (testIter, args) -> {
+		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
 			Graph<Integer> g = new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(true).selfEdges(false)
@@ -120,14 +112,14 @@ class TPMTestUtils extends TestUtils {
 			Collection<Edge<Integer>> mstEdges = new MSTKruskal1956().calcMST(g, w);
 
 			TPM algo = builder.get();
-			return MST.verifyMST(g, w, mstEdges, algo);
+			assertTrue(MST.verifyMST(g, w, mstEdges, algo));
 		});
 	}
 
-	static boolean verifyMSTNegative(Supplier<? extends TPM> builder) {
+	static void verifyMSTNegative(Supplier<? extends TPM> builder) {
 		List<Phase> phases = List.of(phase(256, 8, 16), phase(128, 16, 32), phase(64, 64, 128), phase(32, 128, 256),
 				phase(8, 2048, 4096), phase(2, 8192, 16384));
-		return runTestMultiple(phases, (testIter, args) -> {
+		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
 
@@ -153,7 +145,8 @@ class TPMTestUtils extends TestUtils {
 			mst.addEdge(e);
 
 			TPM algo = builder.get();
-			return !MST.verifyMST(g, w, mst, algo);
+
+			assertFalse(MST.verifyMST(g, w, mst, algo), "MST validation failed");
 		});
 	}
 

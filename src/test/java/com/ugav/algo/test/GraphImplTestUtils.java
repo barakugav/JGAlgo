@@ -29,25 +29,24 @@ class GraphImplTestUtils extends TestUtils {
 		}
 	};
 
-	static boolean testUndirectedMST(GraphImpl graphImpl) {
-		return MSTTestUtils.testRandGraph(MSTKruskal1956::new, graphImpl);
+	static void testUndirectedMST(GraphImpl graphImpl) {
+		MSTTestUtils.testRandGraph(MSTKruskal1956::new, graphImpl);
 	}
 
-	static boolean testDirectedMDST(GraphImpl graphImpl) {
-		return MDSTTarjan1977Test.testRandGraph(MDSTTarjan1977::new, graphImpl);
+	static void testDirectedMDST(GraphImpl graphImpl) {
+		MDSTTarjan1977Test.testRandGraph(MDSTTarjan1977::new, graphImpl);
 	}
 
-	static boolean testDirectedMaxFlow(GraphImpl graphImpl) {
-		return MaxFlowTestUtils.testRandGraphs(MaxFlowEdmondsKarp::new, graphImpl);
+	static void testDirectedMaxFlow(GraphImpl graphImpl) {
+		MaxFlowTestUtils.testRandGraphs(MaxFlowEdmondsKarp::new, graphImpl);
 	}
 
-	static boolean testUndirectedBipartiteMatching(GraphImpl graphImpl) {
-		return MatchingBipartiteTestUtils.randBipartiteGraphs(MatchingGabow1976::new, graphImpl);
+	static void testUndirectedBipartiteMatching(GraphImpl graphImpl) {
+		MatchingBipartiteTestUtils.randBipartiteGraphs(MatchingGabow1976::new, graphImpl);
 	}
 
-	static boolean testUndirectedBipartiteMatchingWeighted(GraphImpl graphImpl) {
-		return MatchingWeightedTestUtils.randGraphsBipartiteWeighted(MatchingWeightedBipartiteHungarianMethod::new,
-				graphImpl);
+	static void testUndirectedBipartiteMatchingWeighted(GraphImpl graphImpl) {
+		MatchingWeightedTestUtils.randGraphsBipartiteWeighted(MatchingWeightedBipartiteHungarianMethod::new, graphImpl);
 	}
 
 }

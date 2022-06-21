@@ -1,6 +1,5 @@
 package com.ugav.algo.test;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
@@ -24,14 +23,14 @@ class MSTTestUtils extends TestUtils {
 		throw new InternalError();
 	}
 
-	static boolean testRandGraph(Supplier<? extends MST> builder) {
-		return testRandGraph(builder, GraphImplTestUtils.GRAPH_IMPL_DEFAULT);
+	static void testRandGraph(Supplier<? extends MST> builder) {
+		testRandGraph(builder, GraphImplTestUtils.GRAPH_IMPL_DEFAULT);
 	}
 
-	static boolean testRandGraph(Supplier<? extends MST> builder, GraphImpl graphImpl) {
+	static void testRandGraph(Supplier<? extends MST> builder, GraphImpl graphImpl) {
 		List<Phase> phases = List.of(phase(1, 0, 0), phase(128, 16, 32), phase(64, 64, 128), phase(32, 128, 256),
 				phase(8, 1024, 4096), phase(2, 4096, 16384));
-		return runTestMultiple(phases, (testIter, args) -> {
+		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
 			MST algo = builder.get();
@@ -41,7 +40,7 @@ class MSTTestUtils extends TestUtils {
 
 			WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
 			Collection<Edge<Integer>> mst = algo.calcMST(g, w);
-			return verifyMST(g, w, mst);
+			verifyMST(g, w, mst);
 		});
 	}
 
@@ -75,7 +74,7 @@ class MSTTestUtils extends TestUtils {
 
 	}
 
-	private static <E> boolean verifyMST(Graph<E> g, WeightFunction<E> w, Collection<Edge<E>> mst) {
+	private static <E> void verifyMST(Graph<E> g, WeightFunction<E> w, Collection<Edge<E>> mst) {
 		/*
 		 * It's hard to verify MST, we use Kruskal algorithm to verify the others, and
 		 * assume its implementation is correct
@@ -86,35 +85,10 @@ class MSTTestUtils extends TestUtils {
 		Set<Edge<E>> actualSet = new TreeSet<>(c);
 		actualSet.addAll(mst);
 
-		if (actualSet.size() != mst.size()) {
-			printTestStr("MST contains duplications\n");
-			return false;
-		}
-
-		boolean equal = true;
-		if (expected.size() != actualSet.size()) {
-			printTestStr("Expected MST with ", expected.size(), " edges, actual has ", actualSet.size(), "\n");
-			equal = false;
-		} else {
-			for (Edge<E> e : expected) {
-				if (!actualSet.contains(e)) {
-					printTestStr("MST doesn't contains edge: ", e, "\n");
-					equal = false;
-				}
-			}
-		}
-		if (!equal) {
-			printTestStr("Expected: ", formatEdges(expected, w), "\n");
-			printTestStr("Actual: ", formatEdges(actualSet, w), "\n");
-		}
-		return equal;
-	}
-
-	private static <E> String formatEdges(Collection<Edge<E>> edges, WeightFunction<E> w) {
-		Comparator<Edge<E>> c = new MSTEdgeComparator<>(w);
-		List<Edge<E>> l = new ArrayList<>(edges);
-		l.sort(c);
-		return l.toString();
+		assertEq(mst.size(), actualSet.size(), "MST contains duplications\n");
+		assertEq(expected.size(), actualSet.size(), "unexpected MST size");
+		for (Edge<E> e : expected)
+			assertTrue(actualSet.contains(e), "MST doesn't contains edge: ", e, "\n");
 	}
 
 }

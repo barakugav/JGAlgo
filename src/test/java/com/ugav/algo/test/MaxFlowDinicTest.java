@@ -5,8 +5,8 @@ import com.ugav.algo.MaxFlowDinic;
 public class MaxFlowDinicTest extends TestUtils {
 
 	@Test
-	public static boolean randGraphs() {
-		return MaxFlowTestUtils.testRandGraphs(MaxFlowDinic::new);
+	public static void randGraphs() {
+		MaxFlowTestUtils.testRandGraphs(MaxFlowDinic::new);
 	}
 
 }

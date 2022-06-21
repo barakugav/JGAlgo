@@ -37,14 +37,14 @@ class MatchingBipartiteTestUtils extends TestUtils {
 		return g;
 	}
 
-	static boolean randBipartiteGraphs(Supplier<? extends Matching> builder) {
-		return randBipartiteGraphs(builder, GraphImplTestUtils.GRAPH_IMPL_DEFAULT);
+	static void randBipartiteGraphs(Supplier<? extends Matching> builder) {
+		randBipartiteGraphs(builder, GraphImplTestUtils.GRAPH_IMPL_DEFAULT);
 	}
 
-	static boolean randBipartiteGraphs(Supplier<? extends Matching> builder, GraphImpl graphImpl) {
+	static void randBipartiteGraphs(Supplier<? extends Matching> builder, GraphImpl graphImpl) {
 		List<Phase> phases = List.of(phase(256, 4, 4, 4), phase(128, 16, 16, 64), phase(16, 128, 128, 128),
 				phase(16, 128, 128, 512), phase(2, 1024, 1024, 1024), phase(1, 1024, 1024, 5467));
-		return runTestMultiple(phases, (testIter, args) -> {
+		runTestMultiple(phases, (testIter, args) -> {
 			int sn = args[0];
 			int tn = args[1];
 			int m = args[2];
@@ -52,26 +52,21 @@ class MatchingBipartiteTestUtils extends TestUtils {
 
 			Matching algo = builder.get();
 			int expeced = calcExpectedMaxMatching(g);
-			return testBipartiteAlgo(algo, g, expeced);
+			testBipartiteAlgo(algo, g, expeced);
 		});
 	}
 
-	private static <E> boolean testBipartiteAlgo(Matching algo, GraphBipartite<E> g, int expectedMatchSize) {
+	private static <E> void testBipartiteAlgo(Matching algo, GraphBipartite<E> g, int expectedMatchSize) {
 		Collection<Edge<E>> match = algo.calcMaxMatching(g);
 
-		if (!MatchingUnweightedTestUtils.validateMatching(match))
-			return false;
+		MatchingUnweightedTestUtils.validateMatching(match);
 
-		if (match.size() < expectedMatchSize) {
-			printTestStr("unexpected match size: ", match.size(), " != ", expectedMatchSize, "\n");
-			return false;
-		} else if (match.size() > expectedMatchSize) {
+		if (match.size() > expectedMatchSize) {
 			printTestStr("matching is bigger than validation algo found: ", match.size(), " > ", expectedMatchSize,
 					"\n");
 			throw new InternalError();
 		}
-
-		return true;
+		assertTrue(match.size() == expectedMatchSize, "unexpected match size");
 	}
 
 	private static <E> int calcExpectedMaxMatching(GraphBipartite<E> g) {

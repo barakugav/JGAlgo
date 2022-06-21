@@ -22,18 +22,18 @@ public class GraphTableTest extends TestUtils {
 	}
 
 	@Test
-	public static boolean testUndirectedMST() {
-		return GraphImplTestUtils.testUndirectedMST(tableImpl());
+	public static void testUndirectedMST() {
+		GraphImplTestUtils.testUndirectedMST(tableImpl());
 	}
 
 	@Test
-	public static boolean testDirectedMDST() {
-		return GraphImplTestUtils.testDirectedMDST(tableImpl());
+	public static void testDirectedMDST() {
+		GraphImplTestUtils.testDirectedMDST(tableImpl());
 	}
 
 	@Test
-	public static boolean testDirectedMaxFlow() {
-		return GraphImplTestUtils.testDirectedMaxFlow(tableImpl());
+	public static void testDirectedMaxFlow() {
+		GraphImplTestUtils.testDirectedMaxFlow(tableImpl());
 	}
 
 }
