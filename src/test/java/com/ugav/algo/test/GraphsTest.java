@@ -181,7 +181,7 @@ public class GraphsTest extends TestUtils {
 	}
 
 	private static boolean topologicalSort(boolean connected) {
-		List<Phase> phases = List.of(phase(256, 16, 16), phase(128, 32, 64), phase(16, 1024, 2048));
+		List<Phase> phases = List.of(phase(256, 16, 16), phase(128, 32, 64), phase(4, 1024, 2048));
 		return runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];

@@ -88,7 +88,7 @@ class TPMTestUtils extends TestUtils {
 
 	static boolean testTPM(Supplier<? extends TPM> builder) {
 		List<Phase> phases = List.of(phase(64, 16), phase(32, 32), phase(16, 64), phase(8, 128), phase(4, 256),
-				phase(2, 512), phase(1, 1024), phase(1, 4096), phase(1, 16384));
+				phase(2, 512), phase(1, 2485), phase(1, 3254));
 		return runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			TPM algo = builder.get();
