@@ -14,11 +14,20 @@ class BSTUtils {
 		return findOrNeighbor(root, c, e, NeighborType.None);
 	}
 
-	static enum NeighborType {
+	static <E, N extends Node<E, N>> N findOrSmaller(N root, Comparator<? super E> c, E e) {
+		return findOrNeighbor(root, c, e, NeighborType.Predecessor);
+	}
+
+	static <E, N extends Node<E, N>> N findOrGreater(N root, Comparator<? super E> c, E e) {
+		return findOrNeighbor(root, c, e, NeighborType.Successor);
+	}
+
+	private static enum NeighborType {
 		None, Predecessor, Successor,
 	}
 
-	static <E, N extends Node<E, N>> N findOrNeighbor(N root, Comparator<? super E> c, E e, NeighborType neighborType) {
+	private static <E, N extends Node<E, N>> N findOrNeighbor(N root, Comparator<? super E> c, E e,
+			NeighborType neighborType) {
 		if (root == null)
 			return null;
 		for (N p = root;;) {
@@ -26,27 +35,68 @@ class BSTUtils {
 			if (cmp == 0)
 				return p;
 			if (cmp < 0) {
-				if (!p.hasLeftChild())
-					return findNeighbor(p, neighborType);
+				if (!p.hasLeftChild()) {
+					switch (neighborType) {
+					case None:
+						return null;
+					case Predecessor:
+						return getPredecessor(p);
+					case Successor:
+						return p;
+					default:
+						throw new IllegalArgumentException("Unexpected value: " + neighborType);
+					}
+				}
 				p = p.left;
 			} else {
-				if (!p.hasRightChild())
-					return findNeighbor(p, neighborType);
+				if (!p.hasRightChild()) {
+					switch (neighborType) {
+					case None:
+						return null;
+					case Predecessor:
+						return p;
+					case Successor:
+						return getSuccessor(p);
+					default:
+						throw new IllegalArgumentException("Unexpected value: " + neighborType);
+					}
+				}
 				p = p.right;
 			}
 		}
 	}
 
-	private static <E, N extends Node<E, N>> N findNeighbor(N n, NeighborType neighborType) {
-		switch (neighborType) {
-		case None:
+	static <E, N extends Node<E, N>> N findSmaller(N root, Comparator<? super E> c, E e) {
+		if (root == null)
 			return null;
-		case Predecessor:
-			return findPredecessor(n);
-		case Successor:
-			return findSuccessor(n);
-		default:
-			throw new IllegalArgumentException("Unexpected value: " + neighborType);
+		for (N p = root;;) {
+			int cmp = c.compare(e, p.data);
+			if (cmp <= 0) {
+				if (!p.hasLeftChild())
+					return getPredecessor(p);
+				p = p.left;
+			} else {
+				if (!p.hasRightChild())
+					return p;
+				p = p.right;
+			}
+		}
+	}
+
+	static <E, N extends Node<E, N>> N findGreater(N root, Comparator<? super E> c, E e) {
+		if (root == null)
+			return null;
+		for (N p = root;;) {
+			int cmp = c.compare(e, p.data);
+			if (cmp >= 0) {
+				if (!p.hasRightChild())
+					return getSuccessor(p);
+				p = p.right;
+			} else {
+				if (!p.hasLeftChild())
+					return p;
+				p = p.left;
+			}
 		}
 	}
 
@@ -62,11 +112,11 @@ class BSTUtils {
 				return p;
 	}
 
-	static <E, N extends Node<E, N>> N findPredecessor(N n) {
-		return findPredecessorInSubtree(n, null);
+	static <E, N extends Node<E, N>> N getPredecessor(N n) {
+		return getPredecessorInSubtree(n, null);
 	}
 
-	static <E, N extends Node<E, N>> N findPredecessorInSubtree(N n, N subtreeRoot) {
+	private static <E, N extends Node<E, N>> N getPredecessorInSubtree(N n, N subtreeRoot) {
 		/* predecessor in left sub tree */
 		if (n.hasLeftChild())
 			for (N p = n.left;; p = p.right)
@@ -81,11 +131,11 @@ class BSTUtils {
 		return null;
 	}
 
-	static <E, N extends Node<E, N>> N findSuccessor(N n) {
-		return findSuccessorInSubtree(n, null);
+	static <E, N extends Node<E, N>> N getSuccessor(N n) {
+		return getSuccessorInSubtree(n, null);
 	}
 
-	static <E, N extends Node<E, N>> N findSuccessorInSubtree(N n, N subtreeRoot) {
+	private static <E, N extends Node<E, N>> N getSuccessorInSubtree(N n, N subtreeRoot) {
 		/* successor in right sub tree */
 		if (n.hasRightChild())
 			for (N p = n.right;; p = p.left)
@@ -202,7 +252,7 @@ class BSTUtils {
 			if (!hasNext())
 				throw new NoSuchElementException();
 			N ret = n;
-			n = findSuccessorInSubtree(n, subtreeRoot);
+			n = getSuccessorInSubtree(n, subtreeRoot);
 			return ret;
 		}
 

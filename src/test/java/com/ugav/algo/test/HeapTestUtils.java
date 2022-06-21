@@ -95,7 +95,7 @@ class HeapTestUtils extends TestUtils {
 				heapsNext.add(h1);
 
 				/* make some OPs on the united heap */
-				int opsNum = 4096 / heaps.size();
+				int opsNum = 1024 / heaps.size();
 				if (!testHeap(h1, opsNum, opsNum, TestMode.InsertFirst, Math.max(16, (int) Math.sqrt(hCount * 32))))
 					return false;
 			}
@@ -142,34 +142,34 @@ class HeapTestUtils extends TestUtils {
 
 		private final int id;
 		final Heap<Integer> heap;
-		private final NavigableMap<Integer, Integer> insertedElms;
-		private final Random rand;
+		final NavigableMap<Integer, Integer> elms;
+		final Random rand;
 
 		HeapTracker(Heap<Integer> heap, int id) {
 			this.id = id;
 			this.heap = heap;
-			insertedElms = new TreeMap<>();
+			elms = new TreeMap<>();
 			rand = new Random(nextRandSeed());
 		}
 
 		boolean isEmpty() {
-			return insertedElms.isEmpty();
+			return elms.isEmpty();
 		}
 
 		void insert(int x) {
-			insertedElms.compute(x, (x0, c) -> c == null ? 1 : c + 1);
+			elms.compute(x, (x0, c) -> c == null ? 1 : c + 1);
 		}
 
 		void remove(int x) {
-			insertedElms.compute(x, (x0, c) -> c == 1 ? null : c - 1);
+			elms.compute(x, (x0, c) -> c == 1 ? null : c - 1);
 		}
 
 		int findMin() {
-			return insertedElms.firstKey();
+			return elms.firstKey();
 		}
 
 		int extractMin() {
-			Integer x = insertedElms.firstKey();
+			Integer x = elms.firstKey();
 			remove(x);
 			return x;
 		}
@@ -180,25 +180,25 @@ class HeapTestUtils extends TestUtils {
 		}
 
 		void meld(HeapTracker other) {
-			for (Map.Entry<Integer, Integer> e : other.insertedElms.entrySet())
-				insertedElms.merge(e.getKey(), e.getValue(), (c1, c2) -> c1 != null ? c1 + c2 : c2);
-			other.insertedElms.clear();
+			for (Map.Entry<Integer, Integer> e : other.elms.entrySet())
+				elms.merge(e.getKey(), e.getValue(), (c1, c2) -> c1 != null ? c1 + c2 : c2);
+			other.elms.clear();
 		}
 
 		void split(int x, HeapTracker newTracker) {
-			NavigableMap<Integer, Integer> newElems = insertedElms.tailMap(x, false);
-			newTracker.insertedElms.putAll(newElems);
+			NavigableMap<Integer, Integer> newElems = elms.tailMap(x, false);
+			newTracker.elms.putAll(newElems);
 			newElems.clear();
 		}
 
 		int randElement() {
-			int x = rand.nextInt(insertedElms.firstKey(), insertedElms.lastKey() + 1);
+			int x = rand.nextInt(elms.firstKey(), elms.lastKey() + 1);
 			if (rand.nextBoolean()) {
-				Integer X = insertedElms.floorKey(x);
-				x = X != null ? X : insertedElms.ceilingKey(x);
+				Integer X = elms.floorKey(x);
+				x = X != null ? X : elms.ceilingKey(x);
 			} else {
-				Integer X = insertedElms.ceilingKey(x);
-				x = X != null ? X : insertedElms.floorKey(x);
+				Integer X = elms.ceilingKey(x);
+				x = X != null ? X : elms.floorKey(x);
 			}
 			return x;
 		}

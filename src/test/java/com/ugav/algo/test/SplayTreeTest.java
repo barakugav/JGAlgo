@@ -30,13 +30,23 @@ public class SplayTreeTest extends TestUtils {
 	}
 
 	@Test
-	public static boolean findPredecessor() {
-		return BSTTestUtils.testFindPredecessors(SplayTree::new);
+	public static boolean findSmaller() {
+		return BSTTestUtils.testFindSmallers(SplayTree::new);
 	}
 
 	@Test
-	public static boolean findSuccessor() {
-		return BSTTestUtils.testFindSuccessors(SplayTree::new);
+	public static boolean findGreater() {
+		return BSTTestUtils.testFindGreaters(SplayTree::new);
+	}
+
+	@Test
+	public static boolean getPredecessor() {
+		return BSTTestUtils.testGetPredecessors(SplayTree::new);
+	}
+
+	@Test
+	public static boolean getSuccessor() {
+		return BSTTestUtils.testGetSuccessors(SplayTree::new);
 	}
 
 }

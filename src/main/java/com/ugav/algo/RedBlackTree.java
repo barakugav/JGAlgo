@@ -4,8 +4,6 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.function.Consumer;
 
-import com.ugav.algo.BSTUtils.NeighborType;
-
 public class RedBlackTree<E> extends BSTAbstract<E> {
 
 	private int size;
@@ -52,6 +50,16 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 	public void meld(Heap<? extends E> h) {
 		// TODO
 		super.meld(h);
+	}
+
+	@Override
+	public BST<E> splitSmaller(E e) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public BST<E> splitGreater(E e) {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -194,7 +202,7 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 
 		/* 2 children, switch place with a single child node */
 		if (n.left != null && n.right != null) {
-			Node<E> swap = BSTUtils.findSuccessor(n);
+			Node<E> swap = BSTUtils.getSuccessor(n);
 			beforeNodeDataSwap(n, swap);
 			E old = swap.data;
 			swap.data = n.data;
@@ -355,23 +363,33 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 	}
 
 	@Override
-	public Handle<E> findOrPredecessor(E e) {
-		return BSTUtils.findOrNeighbor(root, c, e, NeighborType.Predecessor);
+	public Handle<E> findOrSmaller(E e) {
+		return BSTUtils.findOrSmaller(root, c, e);
 	}
 
 	@Override
-	public Handle<E> findOrSuccessor(E e) {
-		return BSTUtils.findOrNeighbor(root, c, e, NeighborType.Successor);
+	public Handle<E> findOrGreater(E e) {
+		return BSTUtils.findOrGreater(root, c, e);
 	}
 
 	@Override
-	public Handle<E> findPredecessor(Handle<E> handle) {
-		return BSTUtils.findPredecessor((Node<E>) handle);
+	public Handle<E> findSmaller(E e) {
+		return BSTUtils.findSmaller(root, c, e);
 	}
 
 	@Override
-	public Handle<E> findSuccessor(Handle<E> handle) {
-		return BSTUtils.findSuccessor((Node<E>) handle);
+	public Handle<E> findGreater(E e) {
+		return BSTUtils.findGreater(root, c, e);
+	}
+
+	@Override
+	public Handle<E> getPredecessor(Handle<E> handle) {
+		return BSTUtils.getPredecessor((Node<E>) handle);
+	}
+
+	@Override
+	public Handle<E> getSuccessor(Handle<E> handle) {
+		return BSTUtils.getSuccessor((Node<E>) handle);
 	}
 
 	public void forEachNodeInSubTree(Handle<E> handle, Consumer<? super Handle<E>> op) {

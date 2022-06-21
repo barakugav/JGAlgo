@@ -20,13 +20,23 @@ public class RedBlackTreeTest extends TestUtils {
 	}
 
 	@Test
-	public static boolean findPredecessor() {
-		return BSTTestUtils.testFindPredecessors(RedBlackTree::new);
+	public static boolean findSmallers() {
+		return BSTTestUtils.testFindSmallers(RedBlackTree::new);
 	}
 
 	@Test
-	public static boolean findSuccessor() {
-		return BSTTestUtils.testFindSuccessors(RedBlackTree::new);
+	public static boolean findGreaters() {
+		return BSTTestUtils.testFindGreaters(RedBlackTree::new);
+	}
+
+	@Test
+	public static boolean getPredecessor() {
+		return BSTTestUtils.testGetPredecessors(RedBlackTree::new);
+	}
+
+	@Test
+	public static boolean getSuccessor() {
+		return BSTTestUtils.testGetSuccessors(RedBlackTree::new);
 	}
 
 }
