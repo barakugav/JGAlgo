@@ -5,19 +5,18 @@ import com.ugav.algo.MatchingWeightedBipartiteHungarianMethod;
 public class MatchingWeightedBipartiteHungarianMethodTest extends TestUtils {
 
 	@Test
-	public static boolean randBipartiteGraphsWeight1() {
-		return MatchingBipartiteTestUtils.randBipartiteGraphs(MatchingWeightedBipartiteHungarianMethod::new);
+	public static void randBipartiteGraphsWeight1() {
+		MatchingBipartiteTestUtils.randBipartiteGraphs(MatchingWeightedBipartiteHungarianMethod::new);
 	}
 
 	@Test
-	public static boolean randBipartiteGraphsWeighted() {
-		return MatchingWeightedTestUtils.randGraphsBipartiteWeighted(MatchingWeightedBipartiteHungarianMethod::new);
+	public static void randBipartiteGraphsWeighted() {
+		MatchingWeightedTestUtils.randGraphsBipartiteWeighted(MatchingWeightedBipartiteHungarianMethod::new);
 	}
 
 	@Test
-	public static boolean randBipartiteGraphsWeightedPerfect() {
-		return MatchingWeightedTestUtils
-				.randBipartiteGraphsWeightedPerfect(MatchingWeightedBipartiteHungarianMethod::new);
+	public static void randBipartiteGraphsWeightedPerfect() {
+		MatchingWeightedTestUtils.randBipartiteGraphsWeightedPerfect(MatchingWeightedBipartiteHungarianMethod::new);
 	}
 
 }

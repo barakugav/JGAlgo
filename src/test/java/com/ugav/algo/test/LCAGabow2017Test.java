@@ -5,13 +5,13 @@ import com.ugav.algo.LCAGabow2017;
 public class LCAGabow2017Test extends TestUtils {
 
 	@Test
-	public static boolean fullBinaryTreesRandOps() {
-		return LCADynamicTestUtils.fullBinaryTreesRandOps(LCAGabow2017::new);
+	public static void fullBinaryTreesRandOps() {
+		LCADynamicTestUtils.fullBinaryTreesRandOps(LCAGabow2017::new);
 	}
 
 	@Test
-	public static boolean randTrees() {
-		return LCADynamicTestUtils.randTrees(LCAGabow2017::new);
+	public static void randTrees() {
+		LCADynamicTestUtils.randTrees(LCAGabow2017::new);
 	}
 
 }

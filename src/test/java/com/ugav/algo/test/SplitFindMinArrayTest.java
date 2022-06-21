@@ -12,17 +12,17 @@ import com.ugav.algo.SplitFindMinArray;
 @SuppressWarnings("boxing")
 public class SplitFindMinArrayTest extends TestUtils {
 
-	private static boolean testSplitFind(Supplier<? extends SplitFind> builder) {
+	private static void testSplitFind(Supplier<? extends SplitFind> builder) {
 		List<Phase> phases = List.of(phase(128, 16, 16), phase(64, 64, 64), phase(32, 512, 512), phase(8, 4096, 4096),
 				phase(2, 16384, 16384));
-		return runTestMultiple(phases, (testIter, args) -> {
+		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
-			return testSplitFind(builder, n, m);
+			testSplitFind(builder, n, m);
 		});
 	}
 
-	private static boolean testSplitFind(Supplier<? extends SplitFind> builder, int n, int m) {
+	private static void testSplitFind(Supplier<? extends SplitFind> builder, int n, int m) {
 		Random rand = new Random(nextRandSeed());
 		SplitFind sf = builder.get();
 
@@ -44,10 +44,7 @@ public class SplitFindMinArrayTest extends TestUtils {
 				x = rand.nextInt(n);
 				int expected = sequence[x];
 				int actual = sequence[sf.find(x)];
-				if (actual != expected) {
-					printTestStr("find failed! ", actual, " != ", expected, "\n");
-					return false;
-				}
+				assertEq(expected, actual, "find failed!");
 				break;
 			case OP_SPLIT:
 				x = rand.nextInt(n);
@@ -61,19 +58,18 @@ public class SplitFindMinArrayTest extends TestUtils {
 				throw new InternalError();
 			}
 		}
-		return true;
 	}
 
-	private static boolean testSplitFindMin(Supplier<? extends SplitFindMin<Double>> builder) {
+	private static void testSplitFindMin(Supplier<? extends SplitFindMin<Double>> builder) {
 		List<Phase> phases = List.of(phase(128, 16, 16), phase(64, 64, 64), phase(8, 512, 512), phase(1, 4096, 4096));
-		return runTestMultiple(phases, (testIter, args) -> {
+		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
-			return testSplitFindMin(builder, n, m);
+			testSplitFindMin(builder, n, m);
 		});
 	}
 
-	private static boolean testSplitFindMin(Supplier<? extends SplitFindMin<Double>> builder, int n, int m) {
+	private static void testSplitFindMin(Supplier<? extends SplitFindMin<Double>> builder, int n, int m) {
 		Random rand = new Random(nextRandSeed());
 		SplitFindMin<Double> sf = builder.get();
 
@@ -100,10 +96,7 @@ public class SplitFindMinArrayTest extends TestUtils {
 				x = rand.nextInt(n);
 				int expected = sequence[x];
 				int actual = sequence[sf.find(x)];
-				if (actual != expected) {
-					printTestStr("find failed! ", actual, " != ", expected, "\n");
-					return false;
-				}
+				assertEq(expected, actual, "find failed!");
 				break;
 			case OP_SPLIT:
 				x = rand.nextInt(n);
@@ -123,10 +116,7 @@ public class SplitFindMinArrayTest extends TestUtils {
 					if (sf.getKey(i) < expectedKey)
 						expectedKey = sf.getKey(i);
 				double actualKey = sf.getKey(sf.findMin(x));
-				if (actualKey != expectedKey) {
-					printTestStr("findmin failed! ", actualKey, " != ", expectedKey, "\n");
-					return false;
-				}
+				assertEq(expectedKey, actualKey, "findmin failed!");
 				break;
 			case OP_DECREASEKEY:
 				x = rand.nextInt(n);
@@ -136,17 +126,16 @@ public class SplitFindMinArrayTest extends TestUtils {
 				throw new InternalError();
 			}
 		}
-		return true;
 	}
 
 	@Test
-	public static boolean splitFind() {
-		return testSplitFind(SplitFindMinArray::new);
+	public static void splitFind() {
+		testSplitFind(SplitFindMinArray::new);
 	}
 
 	@Test
-	public static boolean splitFindMin() {
-		return testSplitFindMin(SplitFindMinArray::new);
+	public static void splitFindMin() {
+		testSplitFindMin(SplitFindMinArray::new);
 	}
 
 }

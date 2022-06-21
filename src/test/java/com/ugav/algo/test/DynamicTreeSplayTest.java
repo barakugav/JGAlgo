@@ -14,20 +14,20 @@ import com.ugav.algo.DynamicTreeSplay;
 public class DynamicTreeSplayTest extends TestUtils {
 
 	@Test
-	public static boolean randOps() {
-		return testRandOps(DynamicTreeSplay::new);
+	public static void randOps() {
+		testRandOps(DynamicTreeSplay::new);
 	}
 
-	static boolean testRandOps(DoubleFunction<? extends DynamicTree<TrackerNode, Void>> builder) {
-		return testRandOps(builder, List.of(Op.MakeTree, Op.FindRoot, Op.FindMinEdge, Op.AddWeight, Op.Link, Op.Cut));
+	static void testRandOps(DoubleFunction<? extends DynamicTree<TrackerNode, Void>> builder) {
+		testRandOps(builder, List.of(Op.MakeTree, Op.FindRoot, Op.FindMinEdge, Op.AddWeight, Op.Link, Op.Cut));
 	}
 
-	static boolean testRandOps(DoubleFunction<? extends DynamicTree<TrackerNode, Void>> builder, List<Op> ops) {
+	static void testRandOps(DoubleFunction<? extends DynamicTree<TrackerNode, Void>> builder, List<Op> ops) {
 		List<Phase> phases = List.of(phase(1024, 16), phase(256, 32), phase(256, 64), phase(128, 128), phase(64, 512),
 				phase(64, 2048), phase(64, 4096), phase(32, 16384));
-		return runTestMultiple(phases, (testIter, args) -> {
+		runTestMultiple(phases, (testIter, args) -> {
 			int m = args[0];
-			return testRandOps(builder, m, ops);
+			testRandOps(builder, m, ops);
 		});
 	}
 
@@ -53,7 +53,7 @@ public class DynamicTreeSplayTest extends TestUtils {
 	}
 
 	@SuppressWarnings("boxing")
-	private static boolean testRandOps(DoubleFunction<? extends DynamicTree<TrackerNode, Void>> builder, final int m,
+	private static void testRandOps(DoubleFunction<? extends DynamicTree<TrackerNode, Void>> builder, final int m,
 			List<Op> ops) {
 		DebugPrintsManager debug = new DebugPrintsManager(false);
 		debug.println("\tnew iteration");
@@ -93,13 +93,8 @@ public class DynamicTreeSplayTest extends TestUtils {
 
 				TrackerNode root = findRoot.apply(node);
 				DynamicTree.Node<TrackerNode, Void> expected = root.dtNode;
-
 				DynamicTree.Node<TrackerNode, Void> actual = tree.findRoot(node.dtNode);
-
-				if (expected != actual) {
-					printTestStr("FindRoot failure: " + expected + " != " + actual + "\n");
-					return false;
-				}
+				assertEq(expected, actual, "FindRoot failure");
 				break;
 			}
 			case FindMinEdge: {
@@ -118,11 +113,8 @@ public class DynamicTreeSplayTest extends TestUtils {
 				Object[] actual = actual0 != null ? new Object[] { actual0.u(), (int) Math.round(actual0.weight()) }
 						: null;
 
-				if (!Arrays.equals(expected, actual)) {
-					printTestStr("FindMinEdge failure: " + Arrays.toString(expected) + " != " + Arrays.toString(actual)
-							+ "\n");
-					return false;
-				}
+				assertTrue(Arrays.equals(expected, actual),
+						"FindMinEdge failure: " + Arrays.toString(expected) + " != " + Arrays.toString(actual) + "\n");
 				break;
 			}
 			case AddWeight: {
@@ -213,10 +205,7 @@ public class DynamicTreeSplayTest extends TestUtils {
 				}
 
 				int actual = tree.size(node.dtNode);
-				if (expected != actual) {
-					printTestStr("Wrong size: " + expected + " != " + actual + "\n");
-					return false;
-				}
+				assertEq(expected, actual, "Wrong size");
 				break;
 			}
 			default:
@@ -224,7 +213,6 @@ public class DynamicTreeSplayTest extends TestUtils {
 			}
 			i++;
 		}
-		return true;
 	}
 
 }

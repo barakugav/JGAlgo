@@ -50,23 +50,23 @@ public class MDSTTarjan1977Test extends TestUtils {
 	}
 
 	@Test
-	public static boolean randGraphUndirected() {
-		return MSTTestUtils.testRandGraph(() -> new MDSTUndirectedWrapper(new MDSTTarjan1977()));
+	public static void randGraphUndirected() {
+		MSTTestUtils.testRandGraph(() -> new MDSTUndirectedWrapper(new MDSTTarjan1977()));
 	}
 
 	@Test
-	public static boolean randGraphDirected() {
-		return testRandGraph(MDSTTarjan1977::new);
+	public static void randGraphDirected() {
+		testRandGraph(MDSTTarjan1977::new);
 	}
 
-	private static boolean testRandGraph(Supplier<? extends MDST> builder) {
-		return testRandGraph(builder, GraphImplTestUtils.GRAPH_IMPL_DEFAULT);
+	private static void testRandGraph(Supplier<? extends MDST> builder) {
+		testRandGraph(builder, GraphImplTestUtils.GRAPH_IMPL_DEFAULT);
 	}
 
-	static boolean testRandGraph(Supplier<? extends MDST> builder, GraphImpl graphImpl) {
+	static void testRandGraph(Supplier<? extends MDST> builder, GraphImpl graphImpl) {
 		List<Phase> phases = List.of(phase(1, 0, 0), phase(256, 6, 5), phase(128, 16, 32), phase(64, 64, 128),
 				phase(32, 128, 256), phase(8, 1024, 4096), phase(2, 4096, 16384));
-		return runTestMultiple(phases, (testIter, args) -> {
+		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
 
@@ -75,16 +75,15 @@ public class MDSTTarjan1977Test extends TestUtils {
 			GraphsTestUtils.assignRandWeightsIntPos(g);
 
 			MDST algo = builder.get();
-			return testRandGraph(algo, g);
+			testRandGraph(algo, g);
 		});
 	}
 
-	private static boolean testRandGraph(MDST algo, Graph<Integer> g) {
+	private static void testRandGraph(MDST algo, Graph<Integer> g) {
 		WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
 		@SuppressWarnings("unused")
 		Collection<Edge<Integer>> mst = algo.calcMST(g, w, 0);
 		// TODO verify the result
-		return true;
 	}
 
 }

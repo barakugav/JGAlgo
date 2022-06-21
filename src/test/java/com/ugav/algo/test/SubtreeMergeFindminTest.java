@@ -16,13 +16,13 @@ import com.ugav.algo.UnionFindArray;
 public class SubtreeMergeFindminTest extends TestUtils {
 
 	@Test
-	public static boolean randOps() {
+	public static void randOps() {
 		List<Phase> phases = List.of(phase(128, 16, 16), phase(128, 16, 32), phase(64, 64, 64), phase(64, 64, 128),
 				phase(8, 512, 512), phase(8, 512, 2048), phase(1, 4096, 4096), phase(1, 4096, 16384));
-		return runTestMultiple(phases, (testIter, args) -> {
+		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
-			return testRandOps(SubtreeMergeFindminImpl::new, n, m);
+			testRandOps(SubtreeMergeFindminImpl::new, n, m);
 		});
 	}
 
@@ -41,7 +41,7 @@ public class SubtreeMergeFindminTest extends TestUtils {
 	}
 
 	@SuppressWarnings({ "boxing", "unchecked" })
-	private static boolean testRandOps(Supplier<? extends SubtreeMergeFindmin<TrackerNode, Integer>> builder, int n,
+	private static void testRandOps(Supplier<? extends SubtreeMergeFindmin<TrackerNode, Integer>> builder, int n,
 			int m) {
 		if (n < 2)
 			throw new IllegalArgumentException();
@@ -157,20 +157,14 @@ public class SubtreeMergeFindminTest extends TestUtils {
 					expected[0] = expected[1];
 					expected[1] = temp;
 				}
-				if (!Arrays.equals(expected, actual)) {
-					printTestStr("Algo found unexpected edge: ", Arrays.toString(expected), " != ",
-							Arrays.toString(actual), "\n");
-					return false;
-				}
-
+				assertTrue(Arrays.equals(expected, actual), "Algo found unexpected edge: ", Arrays.toString(expected),
+						" != ", Arrays.toString(actual), "\n");
 				break;
 			}
 			default:
 				throw new InternalError();
 			}
 		}
-
-		return true;
 	}
 
 }

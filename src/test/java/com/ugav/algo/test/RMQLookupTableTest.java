@@ -5,15 +5,13 @@ import com.ugav.algo.RMQLookupTable;
 public class RMQLookupTableTest extends TestUtils {
 
 	@Test
-	public static boolean regularNRange64to256() {
+	public static void regularNRange64to256() {
 		for (int n = 64; n <= 256; n++)
-			if (RMQTestUtils.testRMQ(RMQLookupTable::new, n, 1024) != true)
-				return false;
-		return true;
+			RMQTestUtils.testRMQ(RMQLookupTable::new, n, 1024);
 	}
 
 	@Test
-	public static boolean regular16384() {
-		return RMQTestUtils.testRMQ(RMQLookupTable::new, 16384, 4096);
+	public static void regular16384() {
+		RMQTestUtils.testRMQ(RMQLookupTable::new, 16384, 4096);
 	}
 }

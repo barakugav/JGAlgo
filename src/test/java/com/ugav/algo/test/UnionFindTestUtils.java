@@ -8,18 +8,18 @@ import com.ugav.algo.UnionFind;
 
 class UnionFindTestUtils extends TestUtils {
 
-	static boolean randOps(Supplier<? extends UnionFind> builder) {
+	static void randOps(Supplier<? extends UnionFind> builder) {
 		List<Phase> phases = List.of(phase(256, 8, 16), phase(64, 64, 256), phase(16, 1024, 2048),
 				phase(2, 8096, 16384));
-		return runTestMultiple(phases, (testIter, args) -> {
+		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
-
-			return randOps(builder, n, m);
+			randOps(builder, n, m);
 		});
 	}
 
-	private static boolean randOps(Supplier<? extends UnionFind> builder, int n, int m) {
+	@SuppressWarnings("boxing")
+	private static void randOps(Supplier<? extends UnionFind> builder, int n, int m) {
 		Random rand = new Random(nextRandSeed());
 
 		UnionFind uf = builder.get();
@@ -38,8 +38,7 @@ class UnionFindTestUtils extends TestUtils {
 				int x = rand.nextInt(n);
 				int actualSet = set[uf.find(x)];
 				int expectedSet = set[x];
-				if (actualSet != expectedSet)
-					return false;
+				assertEq(expectedSet, actualSet, "unexpected set");
 				break;
 			case OP_UNION:
 				int a = rand.nextInt(n), b = rand.nextInt(n);
@@ -54,7 +53,6 @@ class UnionFindTestUtils extends TestUtils {
 				throw new InternalError();
 			}
 		}
-		return true;
 	}
 
 }

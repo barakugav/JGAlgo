@@ -5,13 +5,13 @@ import com.ugav.algo.MatchingGabow1976;
 public class MatchingGabow1976Test extends TestUtils {
 
 	@Test
-	public static boolean randBipartiteGraphs() {
-		return MatchingBipartiteTestUtils.randBipartiteGraphs(MatchingGabow1976::new);
+	public static void randBipartiteGraphs() {
+		MatchingBipartiteTestUtils.randBipartiteGraphs(MatchingGabow1976::new);
 	}
 
 	@Test
-	public static boolean randGraphs() {
-		return MatchingUnweightedTestUtils.randGraphs(MatchingGabow1976::new);
+	public static void randGraphs() {
+		MatchingUnweightedTestUtils.randGraphs(MatchingGabow1976::new);
 	}
 
 }

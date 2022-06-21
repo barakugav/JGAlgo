@@ -11,17 +11,17 @@ import com.ugav.algo.TSPMetricMatchingAppx;
 public class TSPMetricTest extends TestUtils {
 
 	@Test
-	public static boolean mstAppxAndMatchingAppxRandGraphs() {
+	public static void mstAppxAndMatchingAppxRandGraphs() {
 		List<Phase> phases = List.of(phase(512, 4), phase(64, 16), phase(32, 32), phase(16, 64), phase(8, 128),
 				phase(4, 256), phase(2, 512));
-		return runTestMultiple(phases, (testIter, args) -> {
+		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
-			return testMstAppxAndMatchingAppxRandGraph(n);
+			testMstAppxAndMatchingAppxRandGraph(n);
 		});
 	}
 
 	@SuppressWarnings("boxing")
-	private static boolean testMstAppxAndMatchingAppxRandGraph(int n) {
+	private static void testMstAppxAndMatchingAppxRandGraph(int n) {
 		Random rand = new Random(nextRandSeed());
 
 		final int x = 0, y = 1;
@@ -52,14 +52,9 @@ public class TSPMetricTest extends TestUtils {
 					return false;
 			return true;
 		};
-		if (!isPathVisitAllVertices.apply(appxMst)) {
-			printTestStr("MST approximation result doesn't visit every vertex\n");
-			return false;
-		}
-		if (!isPathVisitAllVertices.apply(appxMatch)) {
-			printTestStr("Matching approximation result doesn't visit every vertex\n");
-			return false;
-		}
+		assertTrue(isPathVisitAllVertices.apply(appxMst), "MST approximation result doesn't visit every vertex\n");
+		assertTrue(isPathVisitAllVertices.apply(appxMatch),
+				"Matching approximation result doesn't visit every vertex\n");
 
 		ToDoubleFunction<int[]> pathLength = path -> {
 			double d = 0;
@@ -72,11 +67,9 @@ public class TSPMetricTest extends TestUtils {
 		double mstAppxLen = pathLength.applyAsDouble(appxMst);
 		double matchAppxLen = pathLength.applyAsDouble(appxMatch);
 
-		if (mstAppxLen * 3 / 2 < matchAppxLen || matchAppxLen * 2 < mstAppxLen) {
-			printTestStr("Approximations factor doesn't match\n");
-			return false;
-		}
-		return true;
+		assertTrue(mstAppxLen * 3 / 2 >= matchAppxLen && matchAppxLen * 2 > mstAppxLen,
+				"Approximations factor doesn't match\n");
+
 	}
 
 }

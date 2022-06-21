@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 
 import com.ugav.algo.Pair;
@@ -13,6 +14,65 @@ class TestUtils {
 
 	TestUtils() {
 		throw new InternalError();
+	}
+
+	private static String formatString(Object... msgArgs) {
+		StringBuilder s = new StringBuilder();
+		for (Object msgArg : msgArgs)
+			s.append(msgArg);
+		return s.toString();
+	}
+
+	private static class TestFail extends RuntimeException {
+		private static final long serialVersionUID = 1L;
+	}
+
+	static void assertEqFp(double expected, double actual, double precise, Object... msgArgs) {
+		if (!doubleEql(expected, actual, precise)) {
+			printTestStr("Unexpected value: ", expected, " != ", actual, "\n");
+			testFail(msgArgs);
+		}
+	}
+
+	static void assertEq(Object expected, Object actual, Object... msgArgs) {
+		if (!Objects.equals(expected, actual)) {
+			printTestStr("Unexpected value: ", expected, " != ", actual, "\n");
+			testFail(msgArgs);
+		}
+	}
+
+	static void assertTrue(boolean exp, Object... msgArgs) {
+		if (!exp)
+			testFail(msgArgs);
+	}
+
+	static void assertFalse(boolean exp, Object... msgArgs) {
+		if (exp)
+			testFail(msgArgs);
+	}
+
+	static void assertNull(Object obj, Object... msgArgs) {
+		if (obj != null)
+			testFail(msgArgs);
+	}
+
+	static void assertNonNull(Object obj, Object... msgArgs) {
+		if (obj == null)
+			testFail(msgArgs);
+	}
+
+	static void testFail() {
+		testFail("");
+	}
+
+	static void testFail(Object... msgArgs) {
+		testFail(formatString(msgArgs));
+	}
+
+	static void testFail(String msg) {
+		printTestStr("Test failed:");
+		printTestStr(msg);
+		throw new TestFail();
 	}
 
 	static void printTestStr(Object... args) {
@@ -134,29 +194,25 @@ class TestUtils {
 
 	@FunctionalInterface
 	static interface TestRunnable {
-		public boolean run(TestIterIdx testIter, int[] args);
+		public void run(TestIterIdx testIter, int[] args);
 	}
 
-	static boolean runTestMultiple(Collection<Phase> phases, TestRunnable test) {
+	static void runTestMultiple(Collection<Phase> phases, TestRunnable test) {
 		int phaseIdx = 0;
 		for (Phase phase : phases) {
 			for (int iter = 0; iter < phase.repeat; iter++) {
 				setTestMultipleIdxAttr(phaseIdx, iter);
-				boolean passed;
 				try {
-					passed = test.run(getTestMultipleIdx(), phase.args);
+					test.run(getTestMultipleIdx(), phase.args);
+				} catch (TestFail e) {
+					throw e;
 				} catch (Throwable e) {
 					e.printStackTrace();
-					passed = false;
-				}
-				if (!passed) {
-					printTestStr("Failed at phase ", phaseIdx, " iter ", iter, "\n");
-					return false;
+					testFail("Failed at phase ", phaseIdx, " iter ", iter, "\n");
 				}
 			}
 			phaseIdx++;
 		}
-		return true;
 	}
 
 	private static void setTestMultipleIdxAttr(int phase, int iter) {

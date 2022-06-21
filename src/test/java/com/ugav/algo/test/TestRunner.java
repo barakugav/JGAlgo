@@ -124,14 +124,15 @@ public class TestRunner {
 
 		private boolean run() throws Throwable {
 			try {
-				return (Boolean) testMethod.invoke(null);
+				testMethod.invoke(null);
+				return true;
 			} catch (InvocationTargetException e) {
 				throw e.getCause();
 			} catch (RuntimeException e) {
-				System.out.println("Failed to execute test: " + testMethod.getName() + "." + testMethod.getName());
+				System.out.println("Test failed: " + testMethod.getName() + "." + testMethod.getName());
 				e.printStackTrace();
-				return false;
 			}
+			return false;
 		}
 
 		String getTestName() {

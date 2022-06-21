@@ -23,28 +23,28 @@ public class GraphArrayTest extends TestUtils {
 	}
 
 	@Test
-	public static boolean testUndirectedMST() {
-		return GraphImplTestUtils.testUndirectedMST(arrayImpl());
+	public static void testUndirectedMST() {
+		GraphImplTestUtils.testUndirectedMST(arrayImpl());
 	}
 
 	@Test
-	public static boolean testDirectedMDST() {
-		return GraphImplTestUtils.testDirectedMDST(arrayImpl());
+	public static void testDirectedMDST() {
+		GraphImplTestUtils.testDirectedMDST(arrayImpl());
 	}
 
 	@Test
-	public static boolean testDirectedMaxFlow() {
-		return GraphImplTestUtils.testDirectedMaxFlow(arrayImpl());
+	public static void testDirectedMaxFlow() {
+		GraphImplTestUtils.testDirectedMaxFlow(arrayImpl());
 	}
 
 	@Test
-	public static boolean testUndirectedBipartiteMatching() {
-		return GraphImplTestUtils.testUndirectedBipartiteMatching(arrayImpl());
+	public static void testUndirectedBipartiteMatching() {
+		GraphImplTestUtils.testUndirectedBipartiteMatching(arrayImpl());
 	}
 
 	@Test
-	public static boolean testUndirectedBipartiteMatchingWeighted() {
-		return GraphImplTestUtils.testUndirectedBipartiteMatchingWeighted(arrayImpl());
+	public static void testUndirectedBipartiteMatchingWeighted() {
+		GraphImplTestUtils.testUndirectedBipartiteMatchingWeighted(arrayImpl());
 	}
 
 }

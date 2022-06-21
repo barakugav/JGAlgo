@@ -13,19 +13,19 @@ class RMQTestUtils extends TestUtils {
 		throw new InternalError();
 	}
 
-	static boolean testRMQ65536(Supplier<? extends RMQ> builder) {
-		return testRMQ(builder, 65536, 4096);
+	static void testRMQ65536(Supplier<? extends RMQ> builder) {
+		testRMQ(builder, 65536, 4096);
 	}
 
-	static boolean testRMQ(Supplier<? extends RMQ> builder, int n, int queriesNum) {
+	static void testRMQ(Supplier<? extends RMQ> builder, int n, int queriesNum) {
 		int[] a = new int[n];
 		int[][] queries = new int[queriesNum][];
 		randRMQDataAndQueries(a, queries);
 
-		return testRMQ(builder, a, queries);
+		testRMQ(builder, a, queries);
 	}
 
-	static boolean testRMQ(Supplier<? extends RMQ> builder, int a[], int[][] queries) {
+	static void testRMQ(Supplier<? extends RMQ> builder, int a[], int[][] queries) {
 		RMQ rmq = builder.get();
 		rmq.preprocessRMQ(new ArrayIntComparator(a), a.length);
 
@@ -43,10 +43,9 @@ class RMQTestUtils extends TestUtils {
 				printTestStr("data size: ", a.length, "\n");
 				printTestStr("queries num: ", queries.length, "\n");
 				printTestStr(formatRMQDataAndQueries(a, queries));
-				return false;
+				testFail();
 			}
 		}
-		return true;
 	}
 
 	static void randRMQDataPlusMinusOne(int a[]) {

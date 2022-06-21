@@ -23,19 +23,19 @@ class SSSPTestUtils extends TestUtils {
 		throw new InternalError();
 	}
 
-	static boolean testSSSPDirectedPositiveInt(Supplier<? extends SSSP> builder) {
-		return testSSSPPositiveInt(builder, true);
+	static void testSSSPDirectedPositiveInt(Supplier<? extends SSSP> builder) {
+		testSSSPPositiveInt(builder, true);
 	}
 
-	static boolean testSSSPUndirectedPositiveInt(Supplier<? extends SSSP> builder) {
-		return testSSSPPositiveInt(builder, false);
+	static void testSSSPUndirectedPositiveInt(Supplier<? extends SSSP> builder) {
+		testSSSPPositiveInt(builder, false);
 	}
 
-	private static boolean testSSSPPositiveInt(Supplier<? extends SSSP> builder, boolean directed) {
+	private static void testSSSPPositiveInt(Supplier<? extends SSSP> builder, boolean directed) {
 		Random rand = new Random(nextRandSeed());
 		List<Phase> phases = List.of(phase(128, 16, 32), phase(64, 64, 256), phase(8, 512, 4096),
 				phase(1, 4096, 16384));
-		return runTestMultiple(phases, (testIter, args) -> {
+		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
 			Graph<Integer> g = new RandomGraphBuilder().n(n).m(m).directed(directed).doubleEdges(true).selfEdges(true)
@@ -48,14 +48,14 @@ class SSSPTestUtils extends TestUtils {
 			SSSP.Result<Integer> actualRes = algo.calcDistances(g, w, source);
 
 			SSSP validationAlgo = algo instanceof SSSPDijkstra ? new SSSPDial1969() : new SSSPDijkstra();
-			return validateResult(g, w, source, actualRes, validationAlgo);
+			validateResult(g, w, source, actualRes, validationAlgo);
 		});
 	}
 
-	static boolean testSSSPDirectedNegativeInt(Supplier<? extends SSSP> builder) {
+	static void testSSSPDirectedNegativeInt(Supplier<? extends SSSP> builder) {
 		List<Phase> phases = List.of(phase(512, 4, 4), phase(128, 16, 32), phase(64, 64, 256), phase(8, 512, 4096),
 				phase(2, 1024, 4096));
-		return runTestMultiple(phases, (testIter, args) -> {
+		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
 			Graph<Integer> g = new RandomGraphBuilder().n(n).m(m).directed(true).doubleEdges(true).selfEdges(true)
@@ -68,11 +68,11 @@ class SSSPTestUtils extends TestUtils {
 			SSSP.Result<Integer> actualRes = algo.calcDistances(g, w, source);
 
 			SSSP validationAlgo = algo instanceof SSSPBellmanFord ? new SSSPGoldberg1995() : new SSSPBellmanFord();
-			return validateResult(g, w, source, actualRes, validationAlgo);
+			validateResult(g, w, source, actualRes, validationAlgo);
 		});
 	}
 
-	static <E> boolean validateResult(Graph<E> g, WeightFunction<E> w, int source, SSSP.Result<E> result,
+	static <E> void validateResult(Graph<E> g, WeightFunction<E> w, int source, SSSP.Result<E> result,
 			SSSP validationAlgo) {
 		SSSP.Result<E> expectedRes = validationAlgo.calcDistances(g, w, source);
 
@@ -84,49 +84,33 @@ class SSSPTestUtils extends TestUtils {
 			}
 			if (cycle != null) {
 				double cycleWeight = getPathWeight(cycle, w);
-				if (cycleWeight == Double.NaN || cycle.get(0).u() != cycle.get(cycle.size() - 1).v()) {
-					printTestStr("Invalid cycle: ", cycle, "\n");
-					return false;
-				}
-				if (cycleWeight >= 0) {
-					printTestStr("Cycle is not negative: ", cycle, "\n");
-					return false;
-				}
+				assertTrue(cycleWeight != Double.NaN && cycle.get(0).u() == cycle.get(cycle.size() - 1).v(),
+						"Invalid cycle: ", cycle, "\n");
+				assertTrue(cycleWeight < 0, "Cycle is not negative: ", cycle, "\n");
 				if (!expectedRes.foundNegativeCycle())
 					throw new InternalError("validation algorithm didn't find negative cycle: " + cycle);
-			} else if (!expectedRes.foundNegativeCycle()) {
-				printTestStr("found non existing negative cycle\n");
-				return false;
+			} else {
+				assertTrue(expectedRes.foundNegativeCycle(), "found non existing negative cycle\n");
 			}
-			return true;
-		} else if (expectedRes.foundNegativeCycle()) {
-			printTestStr("failed to found negative cycle\n");
-			return false;
+			return;
 		}
+		assertFalse(expectedRes.foundNegativeCycle(), "failed to found negative cycle\n");
 
 		int n = g.vertices();
 		for (int v = 0; v < n; v++) {
 			double expectedDistance = expectedRes.distance(v);
 			double actualDistance = result.distance(v);
-			if (expectedDistance != actualDistance) {
-				printTestStr("Distance to vertex ", v, " is wrong: ", expectedDistance, " != ", actualDistance, "\n");
-				return false;
-			}
+			assertEq(expectedDistance, actualDistance, "Distance to vertex ", v, " is wrong");
 			List<Edge<E>> path = result.getPathTo(v);
 			if (path != null) {
 				double pathWeight = getPathWeight(path, w);
-				if (pathWeight != actualDistance) {
-					printTestStr("Path to vertex ", v, " doesn't match distance (", actualDistance, " != ", pathWeight,
-							"): ", path, "\n");
-					return false;
-				}
-			} else if (actualDistance != Double.POSITIVE_INFINITY) {
-				printTestStr("Distance to vertex ", v, " is not infinity but path is null\n");
-				return false;
-
+				assertEq(pathWeight, actualDistance, "Path to vertex ", v, " doesn't match distance (", actualDistance,
+						" != ", pathWeight, "): ", path, "\n");
+			} else {
+				assertEq(Double.POSITIVE_INFINITY, actualDistance, "Distance to vertex ", v,
+						" is not infinity but path is null\n");
 			}
 		}
-		return true;
 	}
 
 	private static <E> double getPathWeight(List<Edge<E>> path, WeightFunction<E> w) {

@@ -62,7 +62,7 @@ public class LCARMQBenderFarachColton2000Test extends TestUtils {
 		return queries;
 	}
 
-	private static boolean testLCA(Graph<Void> g, Supplier<? extends LCAStatic> builder, int[][] queries) {
+	private static void testLCA(Graph<Void> g, Supplier<? extends LCAStatic> builder, int[][] queries) {
 		LCAStatic lca = builder.get();
 		lca.preprocessLCA(g, 0);
 
@@ -71,25 +71,20 @@ public class LCARMQBenderFarachColton2000Test extends TestUtils {
 			int v = query[1];
 			int expected = query[2];
 			int actual = lca.calcLCA(u, v);
-			if (expected != actual) {
-				printTestStr(" [", u, ",", v, "] -> ", expected, " ", actual, "\n");
-				return false;
-			}
+			assertEq(expected, actual, "<- [", u, ",", v, "]");
 		}
-		return true;
 	}
 
 	@Test
-	public static boolean randTrees() {
+	public static void randTrees() {
 		List<Phase> phases = List.of(phase(128, 16, 16), phase(64, 64, 64), phase(16, 512, 512), phase(4, 4096, 4096),
 				phase(1, 16384, 16384));
-		return runTestMultiple(phases, (testIter, args) -> {
+		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
 			Graph<Void> g = GraphsTestUtils.randTree(n);
 			int[][] queries = randLCAQueries(g, 0, m);
-
-			return testLCA(g, LCARMQBenderFarachColton2000::new, queries);
+			testLCA(g, LCARMQBenderFarachColton2000::new, queries);
 		});
 	}
 

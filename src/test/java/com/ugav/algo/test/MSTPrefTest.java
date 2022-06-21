@@ -21,7 +21,7 @@ import com.ugav.algo.Pair;
 public class MSTPrefTest extends TestUtils {
 
 	@Test
-	public static boolean randGraph() {
+	public static void randGraph() {
 		perfCompare(List.of(
 				Pair.of("MSTBoruvka1926", MSTBoruvka1926::new),
 				Pair.of("MSTFredmanTarjan1987", MSTFredmanTarjan1987::new),
@@ -40,10 +40,8 @@ public class MSTPrefTest extends TestUtils {
 						MST algo = builder.get();
 						WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
 						algo .calcMST(g, w);
-						return true;
 					});
 				});
-		return true;
 	}
 
 	@SuppressWarnings("boxing")

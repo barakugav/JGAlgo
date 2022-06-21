@@ -131,10 +131,10 @@ public class RedBlackTreeExtendedTest extends TestUtils {
 	}
 
 	@Test
-	public static boolean extensionSizeRandOps() {
+	public static void extensionSizeRandOps() {
 		List<Phase> phases = List.of(phase(256, 16, 16), phase(128, 64, 128), phase(64, 512, 1024),
 				phase(16, 4096, 8096), phase(8, 16384, 32768));
-		return runTestMultiple(phases, (testIter, args) -> {
+		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
 
@@ -143,8 +143,7 @@ public class RedBlackTreeExtendedTest extends TestUtils {
 			ExtensionSize<Integer> sizeExt = builder.addSizeExtension();
 			RedBlackTree<Integer> tree = builder.build();
 
-			if (!HeapTestUtils.testHeap(tree, n, m, TestMode.Normal, false))
-				return false;
+			HeapTestUtils.testHeap(tree, n, m, TestMode.Normal, false);
 
 			for (Handle<Integer> node : Utils.iterable(tree.handleIterator())) {
 				final var expectedSize = new Object() {
@@ -153,20 +152,16 @@ public class RedBlackTreeExtendedTest extends TestUtils {
 				tree.forEachNodeInSubTree(node, descendant -> expectedSize.val++);
 
 				int actualSize = sizeExt.getSubTreeSize(node);
-				if (expectedSize.val != actualSize) {
-					printTestStr("Size extension repored wrong value: ", expectedSize.val, " != ", actualSize, "\n");
-					return false;
-				}
+				assertEq(expectedSize.val, actualSize, "Size extension repored wrong value");
 			}
-			return true;
 		});
 	}
 
 	@Test
-	public static boolean extensionMinRandOps() {
+	public static void extensionMinRandOps() {
 		List<Phase> phases = List.of(phase(256, 16, 16), phase(128, 64, 128), phase(64, 512, 1024),
 				phase(16, 4096, 8096), phase(8, 16384, 32768));
-		return runTestMultiple(phases, (testIter, args) -> {
+		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
 
@@ -175,8 +170,7 @@ public class RedBlackTreeExtendedTest extends TestUtils {
 			ExtensionMin<Integer> minExt = builder.addMinExtension();
 			RedBlackTree<Integer> tree = builder.build();
 
-			if (!HeapTestUtils.testHeap(tree, n, m, TestMode.Normal, false))
-				return false;
+			HeapTestUtils.testHeap(tree, n, m, TestMode.Normal, false);
 
 			for (Handle<Integer> node : Utils.iterable(tree.handleIterator())) {
 				final var expectedMin = new Object() {
@@ -186,20 +180,16 @@ public class RedBlackTreeExtendedTest extends TestUtils {
 						descendant -> expectedMin.val = Math.min(expectedMin.val, descendant.get()));
 
 				int actualMin = minExt.getSubTreeMin(node).get();
-				if (expectedMin.val != actualMin) {
-					printTestStr("Min extension repored wrong value: ", expectedMin.val, " != ", actualMin, "\n");
-					return false;
-				}
+				assertEq(expectedMin.val, actualMin, "Min extension repored wrong value");
 			}
-			return true;
 		});
 	}
 
 	@Test
-	public static boolean extensionMaxRandOps() {
+	public static void extensionMaxRandOps() {
 		List<Phase> phases = List.of(phase(256, 16, 16), phase(128, 64, 128), phase(64, 512, 1024),
 				phase(16, 4096, 8096), phase(8, 16384, 32768));
-		return runTestMultiple(phases, (testIter, args) -> {
+		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
 
@@ -208,9 +198,7 @@ public class RedBlackTreeExtendedTest extends TestUtils {
 			ExtensionMax<Integer> maxExt = builder.addMaxExtension();
 			RedBlackTree<Integer> tree = builder.build();
 
-			if (!HeapTestUtils.testHeap(tree, n, m, TestMode.Normal, false))
-				return false;
-
+			HeapTestUtils.testHeap(tree, n, m, TestMode.Normal, false);
 			for (Handle<Integer> node : Utils.iterable(tree.handleIterator())) {
 				final var expectedMax = new Object() {
 					int val = Integer.MIN_VALUE;
@@ -219,12 +207,8 @@ public class RedBlackTreeExtendedTest extends TestUtils {
 						descendant -> expectedMax.val = Math.max(expectedMax.val, descendant.get()));
 
 				int actualMax = maxExt.getSubTreeMax(node).get();
-				if (expectedMax.val != actualMax) {
-					printTestStr("Max extension repored wrong value: ", expectedMax.val, " != ", actualMax, "\n");
-					return false;
-				}
+				assertEq(expectedMax.val, actualMax, "Max extension repored wrong value");
 			}
-			return true;
 		});
 	}
 

@@ -30,14 +30,14 @@ class MatchingWeightedTestUtils extends TestUtils {
 		throw new InternalError();
 	}
 
-	static boolean randGraphsBipartiteWeighted(Supplier<? extends MatchingWeighted> builder) {
-		return randGraphsBipartiteWeighted(builder, GraphImplTestUtils.GRAPH_IMPL_DEFAULT);
+	static void randGraphsBipartiteWeighted(Supplier<? extends MatchingWeighted> builder) {
+		randGraphsBipartiteWeighted(builder, GraphImplTestUtils.GRAPH_IMPL_DEFAULT);
 	}
 
-	static boolean randGraphsBipartiteWeighted(Supplier<? extends MatchingWeighted> builder, GraphImpl graphImpl) {
+	static void randGraphsBipartiteWeighted(Supplier<? extends MatchingWeighted> builder, GraphImpl graphImpl) {
 		List<Phase> phases = List.of(phase(256, 8, 8, 8), phase(128, 16, 16, 64), phase(12, 128, 128, 128),
 				phase(8, 128, 128, 512), phase(2, 1024, 1024, 1024), phase(1, 1024, 1024, 5461));
-		return runTestMultiple(phases, (testIter, args) -> {
+		runTestMultiple(phases, (testIter, args) -> {
 			int sn = args[0];
 			int tn = args[1];
 			int m = args[2];
@@ -50,14 +50,14 @@ class MatchingWeightedTestUtils extends TestUtils {
 			MatchingWeighted validationAlgo = algo instanceof MatchingWeightedBipartiteSSSP
 					? new MatchingWeightedBipartiteHungarianMethod()
 					: new MatchingWeightedBipartiteSSSP();
-			return testGraphWeighted(algo, g, w, validationAlgo);
+			testGraphWeighted(algo, g, w, validationAlgo);
 		});
 	}
 
-	static boolean randBipartiteGraphsWeightedPerfect(Supplier<? extends MatchingWeighted> builder) {
+	static void randBipartiteGraphsWeightedPerfect(Supplier<? extends MatchingWeighted> builder) {
 		List<Phase> phases = List.of(phase(256, 8, 8, 8), phase(128, 16, 16, 64), phase(12, 128, 128, 128),
 				phase(8, 128, 128, 512), phase(4, 1024, 1024, 1024));
-		return runTestMultiple(phases, (testIter, args) -> {
+		runTestMultiple(phases, (testIter, args) -> {
 			int sn = args[0];
 			int tn = args[1];
 			int m = args[2];
@@ -73,14 +73,14 @@ class MatchingWeightedTestUtils extends TestUtils {
 			MatchingWeighted validationWeightedAlgo = algo instanceof MatchingWeightedBipartiteHungarianMethodTest
 					? new MatchingWeightedGabow2017()
 					: new MatchingWeightedBipartiteHungarianMethod();
-			return testGraphWeightedPerfect(algo, g, w, validationUnweightedAlgo, validationWeightedAlgo);
+			testGraphWeightedPerfect(algo, g, w, validationUnweightedAlgo, validationWeightedAlgo);
 		});
 	}
 
-	static boolean randGraphsWeighted(Supplier<? extends MatchingWeighted> builder) {
+	static void randGraphsWeighted(Supplier<? extends MatchingWeighted> builder) {
 		List<Phase> phases = List.of(phase(256, 8, 8, 8), phase(128, 16, 16, 64), phase(12, 128, 128, 128),
 				phase(8, 128, 128, 512), phase(4, 1024, 1024, 1024), phase(2, 1024, 1024, 8192));
-		return runTestMultiple(phases, (testIter, args) -> {
+		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
 
@@ -92,35 +92,30 @@ class MatchingWeightedTestUtils extends TestUtils {
 			// have nothing other than MatchingWeightedGabow2017, at least shuffle graph
 			MatchingWeighted validationAlgo = new MatchingWeightedShuffled(new MatchingWeightedGabow2017());
 
-			return testGraphWeighted(algo, g, w, validationAlgo);
+			testGraphWeighted(algo, g, w, validationAlgo);
 		});
 	}
 
-	private static <E> boolean testGraphWeighted(MatchingWeighted algo, Graph<E> g, WeightFunctionInt<E> w,
+	private static <E> void testGraphWeighted(MatchingWeighted algo, Graph<E> g, WeightFunctionInt<E> w,
 			MatchingWeighted validationAlgo) {
 		Collection<Edge<E>> actual = algo.calcMaxMatching(g, w);
-		if (!MatchingUnweightedTestUtils.validateMatching(actual))
-			return false;
+		MatchingUnweightedTestUtils.validateMatching(actual);
 		double actualWeight = calcMatchingWeight(actual, w);
 
 		Collection<Edge<E>> expected = validationAlgo.calcMaxMatching(g, w);
 		double expectedWeight = calcMatchingWeight(expected, w);
 
-		if (actualWeight < expectedWeight) {
-			printTestStr("unexpected match weight: ", actualWeight, " < ", expectedWeight, "\n");
-			return false;
-		} else if (actualWeight > expectedWeight) {
+		if (actualWeight > expectedWeight) {
 			printTestStr("matching is better than validation algo found: ", actualWeight, " > ", expectedWeight, "\n");
 			throw new InternalError();
 		}
-
-		return true;
+		assertEq(expectedWeight, actualWeight, "unexpected match weight");
 	}
 
-	static boolean randGraphsWeightedPerfect(Supplier<? extends MatchingWeighted> builder) {
+	static void randGraphsWeightedPerfect(Supplier<? extends MatchingWeighted> builder) {
 		List<Phase> phases = List.of(phase(256, 8, 8, 8), phase(128, 16, 16, 64), phase(12, 128, 128, 128),
 				phase(8, 128, 128, 512), phase(4, 1024, 1024, 1024));
-		return runTestMultiple(phases, (testIter, args) -> {
+		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
 
@@ -132,38 +127,31 @@ class MatchingWeightedTestUtils extends TestUtils {
 			MatchingWeighted algo = builder.get();
 			Matching validationUnweightedAlgo = new MatchingGabow1976();
 			MatchingWeighted validationWeightedAlgo = new MatchingWeightedShuffled(new MatchingWeightedGabow2017());
-			return testGraphWeightedPerfect(algo, g, w, validationUnweightedAlgo, validationWeightedAlgo);
+			testGraphWeightedPerfect(algo, g, w, validationUnweightedAlgo, validationWeightedAlgo);
 		});
 	}
 
-	private static <E> boolean testGraphWeightedPerfect(MatchingWeighted algo, Graph<E> g, WeightFunctionInt<E> w,
+	private static <E> void testGraphWeightedPerfect(MatchingWeighted algo, Graph<E> g, WeightFunctionInt<E> w,
 			Matching validationUnweightedAlgo, MatchingWeighted validationWeightedAlgo) {
 		Collection<Edge<E>> actual = algo.calcPerfectMaxMatching(g, w);
-		if (!MatchingUnweightedTestUtils.validateMatching(actual))
-			return false;
+		MatchingUnweightedTestUtils.validateMatching(actual);
 		int actualSize = actual.size();
 		double actualWeight = calcMatchingWeight(actual, w);
 
 		int expectedSize = validationUnweightedAlgo.calcMaxMatching(g).size();
-		if (actualSize < expectedSize) {
-			printTestStr("unexpected match size: ", actualSize, " < ", expectedSize, "\n");
-			return false;
-		} else if (actualSize > expectedSize) {
+		if (actualSize > expectedSize) {
 			printTestStr("matching size is better than validation algo found: ", actualSize, " > ", expectedSize, "\n");
 			throw new InternalError();
 		}
+		assertEq(expectedSize, actualSize, "unexpected match size");
 
 		double expectedWeight = calcMatchingWeight(validationWeightedAlgo.calcPerfectMaxMatching(g, w), w);
-		if (actualWeight < expectedWeight) {
-			printTestStr("unexpected match weight: ", actualWeight, " < ", expectedWeight, "\n");
-			return false;
-		} else if (actualWeight > expectedWeight) {
+		if (actualWeight > expectedWeight) {
 			printTestStr("matching weight is better than validation algo found: ", actualWeight, " > ", expectedWeight,
 					"\n");
 			throw new InternalError();
 		}
-
-		return true;
+		assertEq(expectedWeight, actualWeight, "unexpected match weight");
 	}
 
 	private static <E> double calcMatchingWeight(Collection<Edge<E>> matching, WeightFunction<E> w) {

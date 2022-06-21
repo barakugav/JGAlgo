@@ -5,8 +5,8 @@ import com.ugav.algo.UnionFindArray;
 public class UnionFindArrayTest extends TestUtils {
 
 	@Test
-	public static boolean randOps() {
-		return UnionFindTestUtils.randOps(UnionFindArray::new);
+	public static void randOps() {
+		UnionFindTestUtils.randOps(UnionFindArray::new);
 	}
 
 }

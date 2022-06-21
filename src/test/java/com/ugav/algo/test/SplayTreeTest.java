@@ -5,48 +5,48 @@ import com.ugav.algo.SplayTree;
 public class SplayTreeTest extends TestUtils {
 
 	@Test
-	public static boolean randOps() {
-		return HeapTestUtils.testRandOps(SplayTree::new);
+	public static void randOps() {
+		HeapTestUtils.testRandOps(SplayTree::new);
 	}
 
 	@Test
-	public static boolean randOpsAfterManyInserts() {
-		return HeapTestUtils.testRandOpsAfterManyInserts(SplayTree::new);
+	public static void randOpsAfterManyInserts() {
+		HeapTestUtils.testRandOpsAfterManyInserts(SplayTree::new);
 	}
 
 	@Test
-	public static boolean meld() {
-		return HeapTestUtils.testMeld(SplayTree::new);
+	public static void meld() {
+		HeapTestUtils.testMeld(SplayTree::new);
 	}
 
 	@Test
-	public static boolean meldWithOrder() {
-		return HeapTestUtils.testMeldWithOrderedValues(SplayTree::new);
+	public static void meldWithOrder() {
+		HeapTestUtils.testMeldWithOrderedValues(SplayTree::new);
 	}
 
 	@Test
-	public static boolean split() {
-		return BSTTestUtils.testSplit(SplayTree::new);
+	public static void split() {
+		BSTTestUtils.testSplit(SplayTree::new);
 	}
 
 	@Test
-	public static boolean findSmaller() {
-		return BSTTestUtils.testFindSmallers(SplayTree::new);
+	public static void findSmaller() {
+		BSTTestUtils.testFindSmallers(SplayTree::new);
 	}
 
 	@Test
-	public static boolean findGreater() {
-		return BSTTestUtils.testFindGreaters(SplayTree::new);
+	public static void findGreater() {
+		BSTTestUtils.testFindGreaters(SplayTree::new);
 	}
 
 	@Test
-	public static boolean getPredecessor() {
-		return BSTTestUtils.testGetPredecessors(SplayTree::new);
+	public static void getPredecessor() {
+		BSTTestUtils.testGetPredecessors(SplayTree::new);
 	}
 
 	@Test
-	public static boolean getSuccessor() {
-		return BSTTestUtils.testGetSuccessors(SplayTree::new);
+	public static void getSuccessor() {
+		BSTTestUtils.testGetSuccessors(SplayTree::new);
 	}
 
 }

@@ -25,18 +25,18 @@ public class GraphLinkedTest extends TestUtils {
 	}
 
 	@Test
-	public static boolean testUndirectedMST() {
-		return GraphImplTestUtils.testUndirectedMST(linkedImpl());
+	public static void testUndirectedMST() {
+		GraphImplTestUtils.testUndirectedMST(linkedImpl());
 	}
 
 	@Test
-	public static boolean testDirectedMDST() {
-		return GraphImplTestUtils.testDirectedMDST(linkedImpl());
+	public static void testDirectedMDST() {
+		GraphImplTestUtils.testDirectedMDST(linkedImpl());
 	}
 
 	@Test
-	public static boolean testDirectedMaxFlow() {
-		return GraphImplTestUtils.testDirectedMaxFlow(linkedImpl());
+	public static void testDirectedMaxFlow() {
+		GraphImplTestUtils.testDirectedMaxFlow(linkedImpl());
 	}
 
 }

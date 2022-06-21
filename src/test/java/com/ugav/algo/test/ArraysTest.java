@@ -9,28 +9,28 @@ import com.ugav.algo.Arrays;
 public class ArraysTest extends TestUtils {
 
 	@Test
-	public static boolean getKthElementRandArrayUnique() {
+	public static void getKthElementRandArrayUnique() {
 		List<Phase> phases = List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 1024),
 				phase(2, 4096));
-		return runTestMultiple(phases, (testIter, args) -> {
+		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int[] a = Utils.randPermutation(n, nextRandSeed());
-			return testGetKthElement(a);
+			testGetKthElement(a);
 		});
 	}
 
 	@Test
-	public static boolean getKthElementRandArrayNonunique() {
+	public static void getKthElementRandArrayNonunique() {
 		List<Phase> phases = List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 1024),
 				phase(2, 4096));
-		return runTestMultiple(phases, (testIter, args) -> {
+		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int[] a = Utils.randArray(n, 0, n / 4, nextRandSeed());
-			return testGetKthElement(a);
+			testGetKthElement(a);
 		});
 	}
 
-	private static boolean testGetKthElement(int[] a) {
+	private static void testGetKthElement(int[] a) {
 		Random rand = new Random(nextRandSeed());
 
 		Integer[] A = toIntegerArr(a);
@@ -40,19 +40,15 @@ public class ArraysTest extends TestUtils {
 		java.util.Arrays.sort(a);
 		int expected = a[k];
 
-		if (actual != expected) {
-			printTestStr("Unexpected K'th elemet: ", actual, " != ", expected, "\n");
-			return false;
-		}
-		return true;
+		assertEq(expected, actual, "Unexpected K'th elemet");
 	}
 
 	@Test
-	public static boolean bucketPartition() {
+	public static void bucketPartition() {
 		Random rand = new Random(nextRandSeed());
 		List<Phase> phases = List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 1024),
 				phase(2, 4096));
-		return runTestMultiple(phases, (testIter, args) -> {
+		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int[] a = Utils.randArray(n, 0, n / 4, nextRandSeed());
 			Integer[] A = toIntegerArr(a);
@@ -65,15 +61,11 @@ public class ArraysTest extends TestUtils {
 				int bucketBegin = b * bucketSize;
 				int bucketEnd = Math.min(bucketBegin + bucketSize, n);
 				for (int i = bucketBegin; i < bucketEnd; i++) {
-					if (!(a[bucketBegin] <= A[i].intValue() && A[i].intValue() <= a[bucketEnd - 1])) {
-						printTestStr("Bucket element ", A[i], " is not in range [", a[bucketBegin], ", ",
-								a[bucketEnd - 1], "]\n");
-						return false;
-					}
+					assertTrue(a[bucketBegin] <= A[i].intValue() && A[i].intValue() <= a[bucketEnd - 1],
+							"Bucket element ", A[i], " is not in range [", a[bucketBegin], ", ", a[bucketEnd - 1],
+							"]\n");
 				}
 			}
-
-			return true;
 		});
 	}
 

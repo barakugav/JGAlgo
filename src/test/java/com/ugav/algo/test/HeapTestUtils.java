@@ -21,47 +21,47 @@ class HeapTestUtils extends TestUtils {
 		throw new InternalError();
 	}
 
-	static boolean testRandOps(Supplier<? extends Heap<Integer>> heapBuilder) {
+	static void testRandOps(Supplier<? extends Heap<Integer>> heapBuilder) {
 		List<Phase> phases = List.of(phase(256, 16, 16), phase(128, 64, 128), phase(64, 512, 1024),
 				phase(16, 4096, 8096), phase(8, 16384, 32768));
-		return runTestMultiple(phases, (testIter, args) -> {
+		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
 			Heap<Integer> heap = heapBuilder.get();
 
-			return testHeap(heap, n, m, TestMode.Normal);
+			testHeap(heap, n, m, TestMode.Normal);
 		});
 	}
 
-	static boolean testRandOpsAfterManyInserts(Supplier<? extends Heap<Integer>> heapBuilder) {
+	static void testRandOpsAfterManyInserts(Supplier<? extends Heap<Integer>> heapBuilder) {
 		List<Phase> phases = List.of(phase(256, 16, 16), phase(128, 64, 128), phase(64, 512, 1024),
 				phase(16, 4096, 8096), phase(8, 16384, 32768));
-		return runTestMultiple(phases, (testIter, args) -> {
+		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = n;
 			Heap<Integer> heap = heapBuilder.get();
 
-			return testHeap(heap, n, m, TestMode.InsertFirst);
+			testHeap(heap, n, m, TestMode.InsertFirst);
 		});
 	}
 
-	static boolean testMeld(Supplier<? extends Heap<Integer>> heapBuilder) {
-		return testMeld(heapBuilder, false);
+	static void testMeld(Supplier<? extends Heap<Integer>> heapBuilder) {
+		testMeld(heapBuilder, false);
 	}
 
-	static boolean testMeldWithOrderedValues(Supplier<? extends Heap<Integer>> heapBuilder) {
-		return testMeld(heapBuilder, true);
+	static void testMeldWithOrderedValues(Supplier<? extends Heap<Integer>> heapBuilder) {
+		testMeld(heapBuilder, true);
 	}
 
-	private static boolean testMeld(Supplier<? extends Heap<Integer>> heapBuilder, boolean orderedValues) {
+	private static void testMeld(Supplier<? extends Heap<Integer>> heapBuilder, boolean orderedValues) {
 		List<Phase> phases = List.of(phase(64, 16), phase(64, 32), phase(8, 256), phase(1, 2048));
-		return runTestMultiple(phases, (testIter, args) -> {
+		runTestMultiple(phases, (testIter, args) -> {
 			int hCount = args[0];
-			return testMeld(heapBuilder, orderedValues, hCount);
+			testMeld(heapBuilder, orderedValues, hCount);
 		});
 	}
 
-	private static boolean testMeld(Supplier<? extends Heap<Integer>> heapBuilder, boolean orderedValues, int hCount) {
+	private static void testMeld(Supplier<? extends Heap<Integer>> heapBuilder, boolean orderedValues, int hCount) {
 		Set<HeapTracker> heaps = new HashSet<>();
 		HeapTrackerIdGenerator heapTrackerIdGen = new HeapTrackerIdGenerator(nextRandSeed());
 
@@ -70,14 +70,12 @@ class HeapTestUtils extends TestUtils {
 			HeapTracker h = new HeapTracker(heapBuilder.get(), heapTrackerIdGen.nextId());
 			heaps.add(h);
 			if (!orderedValues) {
-				if (!testHeap(h, 16, 16, TestMode.InsertFirst, Math.max(16, (int) Math.sqrt(hCount * 32))))
-					return false;
+				testHeap(h, 16, 16, TestMode.InsertFirst, Math.max(16, (int) Math.sqrt(hCount * 32)));
 			} else {
 				int[] vals = new int[16];
 				for (int j = 0; j < 16; j++)
 					vals[j] = elm++;
-				if (!testHeap(h, 16, TestMode.InsertFirst, vals))
-					return false;
+				testHeap(h, 16, TestMode.InsertFirst, vals);
 			}
 		}
 
@@ -96,24 +94,20 @@ class HeapTestUtils extends TestUtils {
 
 				/* make some OPs on the united heap */
 				int opsNum = 1024 / heaps.size();
-				if (!testHeap(h1, opsNum, opsNum, TestMode.InsertFirst, Math.max(16, (int) Math.sqrt(hCount * 32))))
-					return false;
+				testHeap(h1, opsNum, opsNum, TestMode.InsertFirst, Math.max(16, (int) Math.sqrt(hCount * 32)));
 			}
 			heaps.clear();
 			heaps.addAll(heapsNext);
 		}
-
-		return true;
 	}
 
-	static boolean testDecreaseKey(Supplier<? extends Heap<Integer>> heapBuilder) {
+	static void testDecreaseKey(Supplier<? extends Heap<Integer>> heapBuilder) {
 		List<Phase> phases = List.of(phase(256, 16), phase(128, 64), phase(64, 512), phase(16, 4096), phase(2, 16384));
-		return runTestMultiple(phases, (testIter, args) -> {
+		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = n;
 			Heap<Integer> heap = heapBuilder.get();
-
-			return testHeap(heap, n, m, TestMode.DecreaseKey);
+			testHeap(heap, n, m, TestMode.DecreaseKey);
 		});
 	}
 
@@ -220,41 +214,32 @@ class HeapTestUtils extends TestUtils {
 
 	}
 
-	static boolean testHeap(Heap<Integer> heap, int n, int m, TestMode mode) {
-		return testHeap(heap, n, m, mode, true);
+	static void testHeap(Heap<Integer> heap, int n, int m, TestMode mode) {
+		testHeap(heap, n, m, mode, true);
 	}
 
-	static boolean testHeap(Heap<Integer> heap, int n, int m, TestMode mode, boolean clear) {
+	static void testHeap(Heap<Integer> heap, int n, int m, TestMode mode, boolean clear) {
 		if (clear) {
 			heap.clear();
-			if (heap.size() != 0 || !heap.isEmpty()) {
-				printTestStr("failed clear\n");
-				return false;
-			}
+			assertTrue(heap.size() == 0 && heap.isEmpty(), "failed clear\n");
 		}
 
 		HeapTracker tracker = new HeapTracker(heap, 0);
-		if (!testHeap(tracker, n, m, mode, Math.max(16, (int) Math.sqrt(n))))
-			return false;
+		testHeap(tracker, n, m, mode, Math.max(16, (int) Math.sqrt(n)));
 
 		if (clear) {
 			heap.clear();
-			if (heap.size() != 0 || !heap.isEmpty()) {
-				printTestStr("failed clear\n");
-				return false;
-			}
+			assertTrue(heap.size() == 0 && heap.isEmpty(), "failed clear\n");
 		}
-
-		return true;
 	}
 
-	private static boolean testHeap(HeapTracker tracker, int n, int m, TestMode mode, int elementsBound) {
+	private static void testHeap(HeapTracker tracker, int n, int m, TestMode mode, int elementsBound) {
 		int[] elements = Utils.randArray(n, 0, elementsBound, nextRandSeed());
-		return testHeap(tracker, m, mode, elements);
+		testHeap(tracker, m, mode, elements);
 	}
 
 	@SuppressWarnings("boxing")
-	static boolean testHeap(HeapTracker tracker, int m, TestMode mode, int[] values) {
+	static void testHeap(HeapTracker tracker, int m, TestMode mode, int[] values) {
 		DebugPrintsManager debug = new DebugPrintsManager(false);
 		Random rand = new Random(nextRandSeed());
 		int insertFirst = mode == TestMode.InsertFirst ? m / 2 : 0;
@@ -290,10 +275,7 @@ class HeapTestUtils extends TestUtils {
 				debug.println("Remove(", x, ")");
 
 				tracker.remove(x);
-				if (!tracker.heap.remove(x)) {
-					printTestStr("failed to remove: ", x, "\n");
-					return false;
-				}
+				assertTrue(tracker.heap.remove(x), "failed to remove: ", x, "\n");
 				break;
 
 			case FindMin:
@@ -303,10 +285,7 @@ class HeapTestUtils extends TestUtils {
 
 				expected = tracker.findMin();
 				actual = tracker.heap.findMin();
-				if (actual != expected) {
-					printTestStr("failed findmin: ", expected, " != ", actual, "\n");
-					return false;
-				}
+				assertEq(expected, actual, "failed findmin");
 				break;
 
 			case ExtractMin:
@@ -316,10 +295,7 @@ class HeapTestUtils extends TestUtils {
 
 				expected = tracker.extractMin();
 				actual = tracker.heap.extractMin();
-				if (actual != expected) {
-					printTestStr("failed extractmin: ", expected, " != ", actual, "\n");
-					return false;
-				}
+				assertEq(expected, actual, "failed extractmin");
 				break;
 
 			case DecreaseKey:
@@ -347,22 +323,16 @@ class HeapTestUtils extends TestUtils {
 			it.next();
 			actualSize++;
 		}
-		if (expectedSize != actualSize) {
-			printTestStr("size() is different than counted size using iterator: ", expectedSize, " != ", actualSize,
-					"\n");
-			return false;
-		}
-
-		return true;
+		assertEq(expectedSize, actualSize, "size() is different than counted size using iterator");
 	}
 
-	@SuppressWarnings("unused")
-	private static <E> boolean testHeapSize(Heap<E> h) {
+	@SuppressWarnings({ "unused", "boxing" })
+	private static <E> void testHeapSize(Heap<E> h) {
 		int expected = h.size();
 		int actual = 0;
 		for (E e : h)
 			actual++;
-		return expected == actual;
+		assertEq(expected, actual, "unexpected size");
 
 	}
 
