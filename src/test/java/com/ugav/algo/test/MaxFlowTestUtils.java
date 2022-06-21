@@ -60,8 +60,8 @@ class MaxFlowTestUtils extends TestUtils {
 	static boolean testRandGraphs(Supplier<? extends MaxFlow> builder, GraphImpl graphImpl) {
 		Random rand = new Random(nextRandSeed());
 		List<Phase> phases = List.of(phase(1024, 6, 6), phase(128, 16, 16), phase(128, 16, 32), phase(64, 64, 64),
-				phase(64, 64, 128), phase(8, 512, 512), phase(8, 512, 2048), phase(1, 4096, 4096),
-				phase(1, 4096, 16384));
+				phase(64, 64, 128), phase(8, 512, 512), phase(4, 512, 1324), phase(1, 1025, 2016),
+				phase(1, 3246, 5612));
 		return runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
