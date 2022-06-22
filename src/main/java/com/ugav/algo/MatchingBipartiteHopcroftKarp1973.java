@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import com.ugav.algo.Graph.DirectedType;
 import com.ugav.algo.Graph.Edge;
 import com.ugav.algo.Utils.QueueIntFixSize;
 
@@ -24,7 +23,7 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 		if (!(g0 instanceof GraphBipartite))
 			throw new IllegalArgumentException("only bipartite graphs are supported");
 		GraphBipartite<E> g = (GraphBipartite<E>) g0;
-		if (g.isDirected())
+		if (g instanceof GraphDirected<?>)
 			throw new IllegalArgumentException("directed graphs are not supported");
 		int n = g.vertices();
 
@@ -41,7 +40,7 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 
 		@SuppressWarnings("unchecked")
 		Edge<E>[] matched = new Edge[n];
-		Graph<E> f = new GraphArray<>(DirectedType.Undirected, n);
+		Graph<E> f = new GraphArrayUndirected<>(n);
 
 		while (true) {
 			/* Perform BFS to build the alternating forest */

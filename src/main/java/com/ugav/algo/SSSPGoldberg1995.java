@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import com.ugav.algo.Graph.DirectedType;
 import com.ugav.algo.Graph.Edge;
 import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.Graph.WeightFunctionInt;
@@ -21,7 +20,7 @@ public class SSSPGoldberg1995 implements SSSP {
 
 	@Override
 	public <E> SSSP.Result<E> calcDistances(Graph<E> g, WeightFunction<E> w0, int source) {
-		if (!g.isDirected())
+		if (!(g instanceof GraphDirected<?>))
 			throw new IllegalArgumentException("Undirected graphs are not supported");
 		if (!(w0 instanceof WeightFunctionInt))
 			throw new IllegalArgumentException("Only integer weights are supported");
@@ -52,8 +51,8 @@ public class SSSPGoldberg1995 implements SSSP {
 
 		SSSPDial1969 ssspDial = new SSSPDial1969();
 
-		Graph<E> gNeg = new GraphArray<>(DirectedType.Directed, n);
-		Graph<Integer> G = new GraphArray<>(DirectedType.Directed, n);
+		GraphDirected<E> gNeg = new GraphArrayDirected<>(n);
+		GraphDirected<Integer> G = new GraphArrayDirected<>(n);
 		int fakeS = G.newVertex();
 
 		int minWeightWordsize = Utils.log2(-minWeight);

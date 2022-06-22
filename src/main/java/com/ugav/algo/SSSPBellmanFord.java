@@ -17,7 +17,7 @@ public class SSSPBellmanFord implements SSSP {
 
 	@Override
 	public <E> SSSP.Result<E> calcDistances(Graph<E> g, WeightFunction<E> w, int source) {
-		if (!g.isDirected())
+		if (!(g instanceof GraphDirected<?>))
 			throw new IllegalArgumentException("only directed graphs are supported");
 		int n = g.vertices();
 		double[] distances = new double[n];

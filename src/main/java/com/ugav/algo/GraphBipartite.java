@@ -45,4 +45,10 @@ public interface GraphBipartite<E> extends Graph<E> {
 	 */
 	public int newVertexT();
 
+	static interface Directed<E> extends GraphBipartite<E>, GraphDirected<E> {
+	}
+
+	static interface Undirected<E> extends GraphBipartite<E>, GraphUndirected<E> {
+	}
+
 }

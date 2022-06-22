@@ -6,13 +6,13 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import com.ugav.algo.Graph;
-import com.ugav.algo.Graph.DirectedType;
 import com.ugav.algo.Graph.Edge;
 import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.Graph.WeightFunctionInt;
-import com.ugav.algo.GraphArray;
+import com.ugav.algo.GraphArrayUndirected;
 import com.ugav.algo.GraphBipartite;
-import com.ugav.algo.GraphBipartiteArray;
+import com.ugav.algo.GraphBipartiteArrayUndirected;
+import com.ugav.algo.GraphDirected;
 import com.ugav.algo.Graphs;
 import com.ugav.algo.Matching;
 import com.ugav.algo.MatchingBipartiteHopcroftKarp1973;
@@ -180,7 +180,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 		}
 
 		private <E> Collection<Edge<E>> calcMaxMatchingshuffled(Graph<E> g, WeightFunction<E> w, boolean perfect) {
-			if (g.isDirected())
+			if (g instanceof GraphDirected<?>)
 				throw new IllegalArgumentException("only undirected graphs are supported");
 			int n = g.vertices();
 			int[] shuffle = Utils.randPermutation(n, nextRandSeed());
@@ -188,7 +188,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 			Graph<Edge<E>> shuffledG;
 			if (g instanceof GraphBipartite) {
 				GraphBipartite<E> gb = (GraphBipartite<E>) g;
-				GraphBipartite<Edge<E>> shuffledGb = new GraphBipartiteArray<>(DirectedType.Undirected);
+				GraphBipartite<Edge<E>> shuffledGb = new GraphBipartiteArrayUndirected<>();
 
 				int[] shuffleInv = new int[n];
 				for (int v = 0; v < n; v++)
@@ -205,7 +205,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 				}
 				shuffledG = shuffledGb;
 			} else {
-				shuffledG = new GraphArray<>(DirectedType.Undirected, n);
+				shuffledG = new GraphArrayUndirected<>(n);
 			}
 
 			g.edges().forEach(e -> shuffledG.addEdge(shuffle[e.u()], shuffle[e.v()]).setData(e));

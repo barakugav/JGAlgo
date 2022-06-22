@@ -13,7 +13,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.IntConsumer;
 
-import com.ugav.algo.Graph.DirectedType;
 import com.ugav.algo.Graph.Edge;
 import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.Graph.WeightFunctionInt;
@@ -152,7 +151,7 @@ public class Graphs {
 		if (u == v)
 			return Collections.emptyList();
 		boolean reverse = true;
-		if (!g.isDirected()) {
+		if (g instanceof GraphUndirected<?>) {
 			int t = u;
 			u = v;
 			v = t;
@@ -207,7 +206,7 @@ public class Graphs {
 		int n = g.vertices();
 		if (n == 0)
 			return true;
-		boolean directed = g.isDirected();
+		boolean directed = g instanceof GraphDirected<?>;
 
 		boolean[] visited = new boolean[n];
 		int[] parent = new int[n];
@@ -260,9 +259,7 @@ public class Graphs {
 	 * @return (CC number, [vertex]->[CC])
 	 * @throws IllegalArgumentException if the graph is directed
 	 */
-	public static <E> Pair<Integer, int[]> findConnectivityComponents(Graph<E> g) {
-		if (g.isDirected())
-			throw new IllegalArgumentException("only undirected graphs are supported");
+	public static <E> Pair<Integer, int[]> findConnectivityComponents(GraphUndirected<E> g) {
 		int n = g.vertices();
 		int[] stack = new int[n];
 
@@ -305,10 +302,7 @@ public class Graphs {
 	 * @param g a directed graph
 	 * @return (CC number, [vertex]->[CC])
 	 */
-	public static <E> Pair<Integer, int[]> findStrongConnectivityComponents(Graph<E> g) {
-		if (!g.isDirected())
-			return findConnectivityComponents(g);
-
+	public static <E> Pair<Integer, int[]> findStrongConnectivityComponents(GraphDirected<E> g) {
 		int n = g.vertices();
 
 		int[] comp = new int[n];
@@ -366,9 +360,7 @@ public class Graphs {
 		return Pair.of(Integer.valueOf(compNum), comp);
 	}
 
-	public static <E> int[] calcTopologicalSortingDAG(Graph<E> g) {
-		if (!g.isDirected())
-			throw new IllegalArgumentException();
+	public static <E> int[] calcTopologicalSortingDAG(GraphDirected<E> g) {
 		int n = g.vertices();
 		int[] inDegree = new int[n];
 		QueueIntFixSize queue = new QueueIntFixSize(n);
@@ -403,7 +395,7 @@ public class Graphs {
 		return topolSort;
 	}
 
-	public static <E> SSSP.Result<E> calcDistancesDAG(Graph<E> g, WeightFunction<E> w, int source) {
+	public static <E> SSSP.Result<E> calcDistancesDAG(GraphDirected<E> g, WeightFunction<E> w, int source) {
 		int n = g.vertices();
 		@SuppressWarnings("unchecked")
 		Edge<E>[] backtrack = new Edge[n];
@@ -462,7 +454,7 @@ public class Graphs {
 	}
 
 	public static <E> List<Edge<E>> calcEulerianTour(Graph<E> g) {
-		if (g.isDirected())
+		if (g instanceof GraphDirected<?>)
 			throw new IllegalArgumentException("not supported for directed graphs yet");
 		int n = g.vertices();
 
@@ -485,7 +477,7 @@ public class Graphs {
 		if (start == -1)
 			start = 0;
 
-		Function<Edge<E>, Edge<E>> edgeID = g.isDirected() ? Function.identity() : e -> {
+		Function<Edge<E>, Edge<E>> edgeID = g instanceof GraphDirected<?> ? Function.identity() : e -> {
 			return (e.u() != e.v() ? e.u() < e.v() : System.identityHashCode(e) < System.identityHashCode(e.twin())) ? e
 					: e.twin();
 		};
@@ -634,9 +626,15 @@ public class Graphs {
 
 	}
 
-	public static <E> Graph<Edge<E>> referenceGraph(Graph<E> g) {
-		Graph<Edge<E>> g0 = new GraphArray<>(g.isDirected() ? DirectedType.Directed : DirectedType.Undirected,
-				g.vertices());
+	public static <E> GraphDirected<Edge<E>> referenceGraph(GraphDirected<E> g) {
+		GraphDirected<Edge<E>> g0 = new GraphArrayDirected<>(g.vertices());
+		for (Edge<E> e : g.edges())
+			g0.addEdge(e.u(), e.v()).setData(e);
+		return g0;
+	}
+
+	public static <E> GraphUndirected<Edge<E>> referenceGraph(GraphUndirected<E> g) {
+		GraphUndirected<Edge<E>> g0 = new GraphArrayUndirected<>(g.vertices());
 		for (Edge<E> e : g.edges())
 			g0.addEdge(e.u(), e.v()).setData(e);
 		return g0;

@@ -4,10 +4,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
 
-import com.ugav.algo.Graph.DirectedType;
 import com.ugav.algo.Graph.Edge;
 import com.ugav.algo.GraphBipartite;
-import com.ugav.algo.GraphBipartiteArray;
+import com.ugav.algo.GraphBipartiteArrayUndirected;
 import com.ugav.algo.Matching;
 import com.ugav.algo.test.GraphImplTestUtils.GraphImpl;
 import com.ugav.algo.test.GraphsTestUtils.RandomGraphBuilder;
@@ -20,13 +19,14 @@ class MatchingBipartiteTestUtils extends TestUtils {
 	}
 
 	static <E> GraphBipartite<E> randGraphBipartite(int sn, int tn, int m, GraphImpl graphImpl) {
-		return (GraphBipartite<E>) new RandomGraphBuilder().sn(sn).tn(tn).m(m).bipartite(true).directed(false)
-				.doubleEdges(false).selfEdges(false).cycles(true).connected(false).graphImpl(graphImpl).<E>build();
+		return (GraphBipartite.Undirected<E>) new RandomGraphBuilder().sn(sn).tn(tn).m(m).directed(false)
+				.bipartite(true).doubleEdges(false).selfEdges(false).cycles(true).connected(false).graphImpl(graphImpl)
+				.<E>build();
 	}
 
 	static GraphBipartite<Void> createGraphBipartiteFromAdjacencyMatrix(int sSize, int[][] m) {
 		int n = m.length;
-		GraphBipartite<Void> g = new GraphBipartiteArray<>(DirectedType.Undirected, sSize, n - sSize);
+		GraphBipartite<Void> g = new GraphBipartiteArrayUndirected<>(sSize, n - sSize);
 		for (int u = 0; u < n; u++) {
 			for (int v = u + 1; v < n; v++) {
 				if (m[u][v] == 0)

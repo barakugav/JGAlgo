@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
-public class GraphLinkedDirected<E> extends GraphLinkedAbstract<E> {
+public class GraphLinkedDirected<E> extends GraphLinkedAbstract<E> implements GraphDirected<E> {
 
 	private Node<E>[] edgesIn;
 	private Node<E>[] edgesOut;
@@ -37,11 +37,13 @@ public class GraphLinkedDirected<E> extends GraphLinkedAbstract<E> {
 		return edgesOut(u);
 	}
 
+	@Override
 	public EdgeIterator<E> edgesOut(int u) {
 		checkVertexIdentifier(u);
 		return new EdgeVertexItrOut<>(edgesOut[u]);
 	}
 
+	@Override
 	public EdgeIterator<E> edgesIn(int v) {
 		checkVertexIdentifier(v);
 		return new EdgeVertexItrIn<>(edgesIn[v]);
@@ -105,6 +107,7 @@ public class GraphLinkedDirected<E> extends GraphLinkedAbstract<E> {
 		m -= count;
 	}
 
+	@Override
 	public void removeEdgesIn(int v) {
 		int count = 0;
 		for (Node<E> p = edgesIn[v], next; p != null; p = next) {
@@ -145,12 +148,7 @@ public class GraphLinkedDirected<E> extends GraphLinkedAbstract<E> {
 		}
 	}
 
-	@Override
-	public boolean isDirected() {
-		return true;
-	}
-
-	private static class Node<E> extends NodeAbstact<E> {
+	private static class Node<E> extends EdgeAbstract<E> {
 
 		private Node<E> nextOut;
 		private Node<E> nextIn;

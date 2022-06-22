@@ -41,22 +41,6 @@ public interface Graph<E> {
 	public Edge<E> getEdge(int u, int v);
 
 	/**
-	 * Check if an edge exists from u to v
-	 *
-	 * @param u source vertex
-	 * @param v target vertex
-	 * @return true if an edge exists from u to v
-	 */
-	public boolean hasEdge(int u, int v);
-
-	/**
-	 * Checks if the graph is directed
-	 *
-	 * @return true if the graph is directed
-	 */
-	public boolean isDirected();
-
-	/**
 	 * Create a new vertex
 	 *
 	 * @return the new vertex index
@@ -80,6 +64,7 @@ public interface Graph<E> {
 	 * implementations
 	 *
 	 * @param e the edge to add
+	 * @throws UnsupportedOperationException if the operation is not supported
 	 */
 	public void addEdge(Edge<E> e);
 
@@ -91,22 +76,11 @@ public interface Graph<E> {
 	public void removeEdge(Edge<E> e);
 
 	/**
-	 * Remove all the edges going out of a given vertex
-	 *
-	 * @param u a vertex index
-	 */
-	public void removeEdgesOut(int u);
-
-	/**
 	 * Clears the whole graph
 	 *
 	 * removes all vertices and edges
 	 */
 	public void clear();
-
-	public static enum DirectedType {
-		Directed, Undirected
-	}
 
 	public static interface Edge<E> {
 

@@ -5,9 +5,9 @@ import java.util.Random;
 import java.util.Set;
 
 import com.ugav.algo.Graph;
-import com.ugav.algo.Graph.DirectedType;
 import com.ugav.algo.Graph.Edge;
-import com.ugav.algo.GraphArray;
+import com.ugav.algo.GraphArrayUndirected;
+import com.ugav.algo.GraphUndirected;
 import com.ugav.algo.Pair;
 import com.ugav.algo.UnionFind;
 import com.ugav.algo.UnionFindArray;
@@ -99,18 +99,17 @@ class GraphsTestUtils extends TestUtils {
 
 		<E> Graph<E> build() {
 			final Graph<E> g;
-			DirectedType directedType = directed ? DirectedType.Directed : DirectedType.Undirected;
 			if (!bipartite) {
 				if (n < 0 || m < 0)
 					throw new IllegalStateException();
-				g = impl.newGraph(directedType, n);
+				g = impl.newGraph(directed, n);
 			} else {
 				if (sn < 0 || tn < 0)
 					throw new IllegalStateException();
 				if ((sn == 0 || tn == 0) && m != 0)
 					throw new IllegalStateException();
 				n = sn + tn;
-				g = impl.newGraph(directedType, sn, tn);
+				g = impl.newGraph(directed, sn, tn);
 			}
 			if (n == 0)
 				return g;
@@ -226,14 +225,14 @@ class GraphsTestUtils extends TestUtils {
 
 	}
 
-	static <E> Graph<E> randTree(int n) {
-		return new RandomGraphBuilder().n(n).m(n - 1).directed(false).doubleEdges(false).selfEdges(false).cycles(false)
-				.connected(true).build();
+	static <E> GraphUndirected<E> randTree(int n) {
+		return (GraphUndirected<E>) new RandomGraphBuilder().n(n).m(n - 1).directed(false).selfEdges(false)
+				.cycles(false).connected(true).<E>build();
 	}
 
-	static <E> Graph<E> randForest(int n, int m) {
-		return new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(false).selfEdges(false).cycles(false)
-				.connected(false).build();
+	static <E> GraphUndirected<E> randForest(int n, int m) {
+		return (GraphUndirected<E>) new RandomGraphBuilder().n(n).m(m).directed(false).selfEdges(false).cycles(false)
+				.connected(false).<E>build();
 	}
 
 	static void assignRandWeights(Graph<Double> g) {
@@ -277,40 +276,40 @@ class GraphsTestUtils extends TestUtils {
 		return randGraph(n, m, GraphImplTestUtils.GRAPH_IMPL_DEFAULT);
 	}
 
-	static <E> Graph<E> randGraph(int n, int m, GraphImpl graphImpl) {
-		return new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(false).selfEdges(false).cycles(true)
-				.connected(false).build();
+	static <E> GraphUndirected<E> randGraph(int n, int m, GraphImpl graphImpl) {
+		return (GraphUndirected<E>) new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(false)
+				.selfEdges(false).cycles(true).connected(false).<E>build();
 	}
 
-	static Graph<Integer> createGraphFromAdjacencyMatrixWeightedInt(int[][] m, DirectedType directed) {
-		int n = m.length;
-		Graph<Integer> g = new GraphArray<>(directed, n);
-		for (int u = 0; u < n; u++) {
-			for (int v = directed == DirectedType.Directed ? 0 : u + 1; v < n; v++) {
-				if (m[u][v] == 0)
-					continue;
-				g.addEdge(u, v).setData(Integer.valueOf(m[u][v]));
-			}
-		}
-		return g;
-	}
-
-	static Graph<Integer> parseGraphFromAdjacencyMatrixWeightedInt(String s) {
-		String[] lines = s.split("\r\n");
-		int n = lines.length;
-		int[][] m = new int[n][n];
-		for (int u = 0; u < n; u++) {
-			String[] esStr = lines[u].split(",");
-			for (int v = u + 1; v < n; v++)
-				Integer.parseInt(esStr[v].trim());
-		}
-		return createGraphFromAdjacencyMatrixWeightedInt(m, DirectedType.Undirected);
-	}
+//	static Graph<Integer> createGraphFromAdjacencyMatrixWeightedInt(int[][] m, DirectedType directed) {
+//		int n = m.length;
+//		Graph<Integer> g = new GraphArray<>(directed, n);
+//		for (int u = 0; u < n; u++) {
+//			for (int v = directed == DirectedType.Directed ? 0 : u + 1; v < n; v++) {
+//				if (m[u][v] == 0)
+//					continue;
+//				g.addEdge(u, v).setData(Integer.valueOf(m[u][v]));
+//			}
+//		}
+//		return g;
+//	}
+//
+//	static Graph<Integer> parseGraphFromAdjacencyMatrixWeightedInt(String s) {
+//		String[] lines = s.split("\r\n");
+//		int n = lines.length;
+//		int[][] m = new int[n][n];
+//		for (int u = 0; u < n; u++) {
+//			String[] esStr = lines[u].split(",");
+//			for (int v = u + 1; v < n; v++)
+//				Integer.parseInt(esStr[v].trim());
+//		}
+//		return createGraphFromAdjacencyMatrixWeightedInt(m, DirectedType.Undirected);
+//	}
 
 	static Graph<Void> parseGraphFromAdjacencyMatrix01(String s) {
 		String[] lines = s.split("\r\n");
 		int n = lines.length;
-		Graph<Void> g = new GraphArray<>(DirectedType.Undirected, n);
+		Graph<Void> g = new GraphArrayUndirected<>(n);
 		for (int u = 0; u < n; u++) {
 			String[] chars = lines[u].split(" ");
 			for (int v = u + 1; v < n; v++)
@@ -323,7 +322,7 @@ class GraphsTestUtils extends TestUtils {
 	static Graph<Void> parseGraphWeighted(String s) {
 		String[] lines = s.split("\r\n");
 		int n = lines.length;
-		Graph<Void> g = new GraphArray<>(DirectedType.Undirected, n);
+		Graph<Void> g = new GraphArrayUndirected<>(n);
 		for (int u = 0; u < n; u++) {
 			String[] chars = lines[u].split(" ");
 			for (int v = u + 1; v < n; v++)

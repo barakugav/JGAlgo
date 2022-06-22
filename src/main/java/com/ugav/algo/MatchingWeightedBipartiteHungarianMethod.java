@@ -20,7 +20,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 
 	@Override
 	public <E> Collection<Edge<E>> calcMaxMatching(Graph<E> g0, WeightFunction<E> w) {
-		if (!(g0 instanceof GraphBipartite) || g0.isDirected())
+		if (!(g0 instanceof GraphBipartite.Undirected<?>))
 			throw new IllegalArgumentException("Only undirected bipartite graphs are supported");
 		GraphBipartite<E> g = (GraphBipartite<E>) g0;
 		return new Worker<>(g, w).calcMaxMatching(false);
@@ -28,7 +28,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 
 	@Override
 	public <E> Collection<Edge<E>> calcPerfectMaxMatching(Graph<E> g0, WeightFunction<E> w) {
-		if (!(g0 instanceof GraphBipartite) || g0.isDirected())
+		if (!(g0 instanceof GraphBipartite.Undirected<?>))
 			throw new IllegalArgumentException("Only undirected bipartite graphs are supported");
 		GraphBipartite<E> g = (GraphBipartite<E>) g0;
 		return new Worker<>(g, w).calcMaxMatching(true);

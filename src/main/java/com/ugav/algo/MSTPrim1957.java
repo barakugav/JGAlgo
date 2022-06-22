@@ -19,7 +19,7 @@ public class MSTPrim1957 implements MST {
 
 	@Override
 	public <E> Collection<Edge<E>> calcMST(Graph<E> g, Graph.WeightFunction<E> w) {
-		if (g.isDirected())
+		if (g instanceof GraphDirected<?>)
 			throw new IllegalArgumentException("directed graphs are not supported");
 		int n = g.vertices();
 		if (n == 0)

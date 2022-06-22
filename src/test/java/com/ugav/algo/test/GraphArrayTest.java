@@ -1,9 +1,10 @@
 package com.ugav.algo.test;
 
 import com.ugav.algo.Graph;
-import com.ugav.algo.Graph.DirectedType;
-import com.ugav.algo.GraphArray;
-import com.ugav.algo.GraphBipartiteArray;
+import com.ugav.algo.GraphArrayDirected;
+import com.ugav.algo.GraphArrayUndirected;
+import com.ugav.algo.GraphBipartiteArrayDirected;
+import com.ugav.algo.GraphBipartiteArrayUndirected;
 import com.ugav.algo.test.GraphImplTestUtils.GraphImpl;
 
 public class GraphArrayTest extends TestUtils {
@@ -12,14 +13,23 @@ public class GraphArrayTest extends TestUtils {
 		return new GraphImpl() {
 
 			@Override
-			public <E> Graph<E> newGraph(DirectedType directedType, int... vertices) {
-				if (vertices.length == 1) {
-					return new GraphArray<>(directedType, vertices[0]);
+			public <E> Graph<E> newGraph(boolean directed, int... vertices) {
+				if (directed) {
+					if (vertices.length == 1) {
+						return new GraphArrayDirected<>(vertices[0]);
+					} else {
+						return new GraphBipartiteArrayDirected<>(vertices[0], vertices[1]);
+					}
 				} else {
-					return new GraphBipartiteArray<>(directedType, vertices[0], vertices[1]);
+					if (vertices.length == 1) {
+						return new GraphArrayUndirected<>(vertices[0]);
+					} else {
+						return new GraphBipartiteArrayUndirected<>(vertices[0], vertices[1]);
+					}
 				}
 			}
 		};
+
 	}
 
 	@Test
