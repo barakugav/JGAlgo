@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import com.ugav.algo.Graph;
-import com.ugav.algo.Graph.DirectedType;
 import com.ugav.algo.Graph.Edge;
 import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.Graph.WeightFunctionInt;
-import com.ugav.algo.GraphArray;
+import com.ugav.algo.GraphArrayDirected;
+import com.ugav.algo.GraphDirected;
 import com.ugav.algo.Graphs;
 import com.ugav.algo.MDST;
 import com.ugav.algo.MDSTTarjan1977;
@@ -30,10 +30,10 @@ public class MDSTTarjan1977Test extends TestUtils {
 
 		@Override
 		public <E> Collection<Edge<E>> calcMST(Graph<E> g, WeightFunction<E> w) {
-			if (g.isDirected())
+			if (g instanceof GraphDirected<?>)
 				return algo.calcMST(g, w);
 			int n = g.vertices();
-			Graph<Edge<E>> dg = new GraphArray<>(DirectedType.Directed, n);
+			Graph<Edge<E>> dg = new GraphArrayDirected<>(n);
 			for (int u = 0; u < n; u++) {
 				for (Edge<E> e : Utils.iterable(g.edges(u))) {
 					dg.addEdge(e.u(), e.v()).setData(e);

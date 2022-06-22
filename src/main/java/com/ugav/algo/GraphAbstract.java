@@ -3,11 +3,6 @@ package com.ugav.algo;
 public abstract class GraphAbstract<E> implements Graph<E> {
 
 	@Override
-	public boolean hasEdge(int u, int v) {
-		return getEdge(u, v) != null;
-	}
-
-	@Override
 	public void addEdge(Edge<E> e) {
 		edges().add(e);
 	}
@@ -25,7 +20,8 @@ public abstract class GraphAbstract<E> implements Graph<E> {
 			return false;
 		Graph<?> o = (Graph<?>) other;
 
-		return isDirected() == o.isDirected() && vertices() == o.vertices() && edges().equals(o.edges());
+		return (this instanceof GraphDirected<?>) == (o instanceof GraphDirected<?>) && vertices() == o.vertices()
+				&& edges().equals(o.edges());
 	}
 
 	@Override
@@ -66,13 +62,28 @@ public abstract class GraphAbstract<E> implements Graph<E> {
 
 	public static abstract class EdgeAbstract<E> implements Edge<E> {
 
+		final int u;
+		final int v;
 		E data;
 
-		EdgeAbstract() {
+		EdgeAbstract(int u, int v) {
+			this(u, v, null);
 		}
 
-		EdgeAbstract(E data) {
+		EdgeAbstract(int u, int v, E data) {
+			this.u = u;
+			this.v = v;
 			this.data = data;
+		}
+
+		@Override
+		public int u() {
+			return u;
+		}
+
+		@Override
+		public int v() {
+			return v;
 		}
 
 		@Override

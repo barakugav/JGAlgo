@@ -3,7 +3,6 @@ package com.ugav.algo;
 import java.util.Arrays;
 import java.util.function.ObjDoubleConsumer;
 
-import com.ugav.algo.Graph.DirectedType;
 import com.ugav.algo.Graph.Edge;
 import com.ugav.algo.Graph.EdgeIterator;
 import com.ugav.algo.Utils.QueueIntFixSize;
@@ -25,7 +24,7 @@ public class MaxFlowPushRelabel implements MaxFlow {
 
 	@Override
 	public <E> double calcMaxFlow(Graph<E> g0, FlowNetwork<E> net, int source, int target) {
-		if (!g0.isDirected())
+		if (!(g0 instanceof GraphDirected<?>))
 			throw new IllegalArgumentException("only directed graphs are supported");
 		if (source == target)
 			throw new IllegalArgumentException("Source and target can't be the same vertices");
@@ -117,7 +116,7 @@ public class MaxFlowPushRelabel implements MaxFlow {
 	}
 
 	private static <E> Graph<Ref<E>> referenceGraph(Graph<E> g0, FlowNetwork<E> net) {
-		Graph<Ref<E>> g = new GraphArray<>(DirectedType.Directed, g0.vertices());
+		Graph<Ref<E>> g = new GraphArrayDirected<>(g0.vertices());
 		for (Edge<E> e : g0.edges()) {
 			Ref<E> ref = new Ref<>(e, net.getCapacity(e), 0), refRev = new Ref<>(e, 0, 0);
 			g.addEdge(e.u(), e.v()).setData(ref);

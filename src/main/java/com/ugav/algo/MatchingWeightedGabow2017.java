@@ -11,7 +11,6 @@ import java.util.function.Function;
 import java.util.function.IntConsumer;
 import java.util.stream.Collectors;
 
-import com.ugav.algo.Graph.DirectedType;
 import com.ugav.algo.Graph.Edge;
 import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.Utils.NullList;
@@ -34,7 +33,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 
 	@Override
 	public <E> Collection<Edge<E>> calcMaxMatching(Graph<E> g, WeightFunction<E> w) {
-		if (g.isDirected())
+		if (g instanceof GraphDirected<?>)
 			throw new IllegalArgumentException("Only undirected bipartite graphs are supported");
 		return new Worker<>(g, w, debugPrintManager).calcMaxMatching(false);
 
@@ -42,7 +41,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 
 	@Override
 	public <E> Collection<Edge<E>> calcPerfectMaxMatching(Graph<E> g, WeightFunction<E> w) {
-		if (g.isDirected())
+		if (g instanceof GraphDirected<?>)
 			throw new IllegalArgumentException("Only undirected bipartite graphs are supported");
 		return new Worker<>(g, w, debugPrintManager).calcMaxMatching(true);
 	}
@@ -270,7 +269,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 		@SuppressWarnings("unchecked")
 		Worker(Graph<E> g, WeightFunction<E> w, DebugPrintsManager debugPrint) {
 			int n = g.vertices();
-			this.g = new GraphArray<>(DirectedType.Directed, n);
+			this.g = new GraphArrayDirected<>(n);
 			this.w = w;
 
 			for (Edge<E> e : g.edges()) {

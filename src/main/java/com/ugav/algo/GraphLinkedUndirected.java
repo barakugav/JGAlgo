@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
-public class GraphLinkedUndirected<E> extends GraphLinkedAbstract<E> {
+public class GraphLinkedUndirected<E> extends GraphLinkedAbstract<E> implements GraphUndirected<E> {
 
 	private Node<E>[] edges;
 
@@ -76,24 +76,6 @@ public class GraphLinkedUndirected<E> extends GraphLinkedAbstract<E> {
 		m--;
 	}
 
-	@Override
-	public void removeEdgesOut(int u) {
-		for (Node<E> p = edges[u]; p != null; p = p.next) {
-			Edge<E> twin = p.twin();
-			if (twin != null)
-				removeEdge0(twin);
-		}
-
-		int count = 0;
-		for (Node<E> p = edges[u], next; p != null; p = next) {
-			next = p.next;
-			p.next = null;
-			count++;
-		}
-		edges[u] = null;
-		m -= count;
-	}
-
 	void removeEdge0(Edge<E> e) {
 		for (Node<E> prev = null, p = edges[e.u()]; p != null; p = (prev = p).next) {
 			if (p == e) {
@@ -108,12 +90,7 @@ public class GraphLinkedUndirected<E> extends GraphLinkedAbstract<E> {
 		throw new IllegalArgumentException("edge not in graph: " + e);
 	}
 
-	@Override
-	public boolean isDirected() {
-		return false;
-	}
-
-	private static class Node<E> extends NodeAbstact<E> {
+	private static class Node<E> extends EdgeAbstract<E> {
 
 		private Node<E> twin;
 		private Node<E> next;

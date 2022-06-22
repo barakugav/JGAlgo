@@ -47,28 +47,6 @@ abstract class GraphLinkedAbstract<E> extends GraphAbstract<E> {
 			throw new IllegalArgumentException("Illegal vertex identifier");
 	}
 
-	abstract static class NodeAbstact<E> extends EdgeAbstract<E> {
-
-		final int u;
-		final int v;
-
-		NodeAbstact(int u, int v) {
-			this.u = u;
-			this.v = v;
-		}
-
-		@Override
-		public int u() {
-			return u;
-		}
-
-		@Override
-		public int v() {
-			return v;
-		}
-
-	}
-
 	abstract class EdgesViewAbstract extends AbstractCollection<Edge<E>> {
 
 		@Override

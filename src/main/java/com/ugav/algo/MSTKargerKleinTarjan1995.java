@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Random;
 
-import com.ugav.algo.Graph.DirectedType;
 import com.ugav.algo.Graph.Edge;
 import com.ugav.algo.Graph.WeightFunction;
 
@@ -28,7 +27,7 @@ public class MSTKargerKleinTarjan1995 implements MST {
 
 	@Override
 	public <E> Collection<Edge<E>> calcMST(Graph<E> g, WeightFunction<E> w) {
-		if (g.isDirected())
+		if (g instanceof GraphDirected<?>)
 			throw new IllegalArgumentException("directed graphs are not supported");
 		if (g.edges().size() == 0)
 			return Collections.emptyList();
@@ -45,14 +44,15 @@ public class MSTKargerKleinTarjan1995 implements MST {
 		 * bit clumsy, but didn't find another way.
 		 */
 		WeightFunction<Ref<E>> w0 = e -> e.data().w;
-		Pair<Graph<Ref<E>>, Collection<Edge<E>>> r = MSTBoruvka1926.runBoruvka(g, w, 2, e -> new Ref<>(e, w.weight(e)));
-		Graph<Ref<E>> g0 = r.e1;
+		Pair<GraphUndirected<Ref<E>>, Collection<Edge<E>>> r = MSTBoruvka1926.runBoruvka(g, w, 2,
+				e -> new Ref<>(e, w.weight(e)));
+		GraphUndirected<Ref<E>> g0 = r.e1;
 		Collection<Edge<E>> f0 = r.e2;
 		Graph<Ref<E>> g1 = randSubgraph(g0);
 		Collection<Edge<Ref<E>>> f1Edges = calcMST0(g1, w0);
-		Graph<Ref<E>> f1 = GraphArray.valueOf(g1.vertices(), f1Edges, DirectedType.Undirected);
+		GraphUndirected<Ref<E>> f1 = GraphArrayUndirected.valueOf(g1.vertices(), f1Edges);
 		Collection<Edge<Ref<E>>> e2 = lightEdges(g0, f1, w0);
-		Graph<Ref<E>> g2 = GraphArray.valueOf(g0.vertices(), e2, DirectedType.Undirected);
+		Graph<Ref<E>> g2 = GraphArrayUndirected.valueOf(g0.vertices(), e2);
 		Collection<Edge<Ref<E>>> f2 = calcMST0(g2, w0);
 
 		for (Edge<Ref<E>> e : f2)
@@ -62,7 +62,7 @@ public class MSTKargerKleinTarjan1995 implements MST {
 
 	private <E> Graph<E> randSubgraph(Graph<E> g) {
 		Random rand = new Random(seedGenerator.nextLong() ^ 0x043a4a7a193827bcL);
-		Graph<E> g1 = new GraphArray<>(DirectedType.Undirected, g.vertices());
+		Graph<E> g1 = new GraphArrayUndirected<>(g.vertices());
 
 		for (Edge<E> e : g.edges()) {
 			if (rand.nextBoolean())
@@ -73,7 +73,7 @@ public class MSTKargerKleinTarjan1995 implements MST {
 		return g1;
 	}
 
-	private static <E> Collection<Edge<E>> lightEdges(Graph<E> g, Graph<E> f, WeightFunction<E> w) {
+	private static <E> Collection<Edge<E>> lightEdges(Graph<E> g, GraphUndirected<E> f, WeightFunction<E> w) {
 		int n = f.vertices();
 		/* find connectivity components in the forest, each one of them is a tree */
 		Pair<Integer, int[]> r = Graphs.findConnectivityComponents(f);
@@ -86,7 +86,7 @@ public class MSTKargerKleinTarjan1995 implements MST {
 		@SuppressWarnings("unchecked")
 		Graph<Double>[] trees = new Graph[treeSizes.length];
 		for (int t = 0; t < trees.length; t++)
-			trees[t] = new GraphArray<>(DirectedType.Undirected, treeSizes[t]);
+			trees[t] = new GraphArrayUndirected<>(treeSizes[t]);
 
 		int[] vToVnew = new int[n];
 		int[] treeToNextv = new int[trees.length];

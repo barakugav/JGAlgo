@@ -1,7 +1,6 @@
 package com.ugav.algo.test;
 
 import com.ugav.algo.Graph;
-import com.ugav.algo.Graph.DirectedType;
 import com.ugav.algo.GraphLinkedDirected;
 import com.ugav.algo.GraphLinkedUndirected;
 import com.ugav.algo.test.GraphImplTestUtils.GraphImpl;
@@ -12,13 +11,14 @@ public class GraphLinkedTest extends TestUtils {
 		return new GraphImpl() {
 
 			@Override
-			public <E> Graph<E> newGraph(DirectedType directedType, int... vertices) {
-				if (vertices.length == 1) {
-					int n = vertices[0];
-					return directedType == DirectedType.Directed ? new GraphLinkedDirected<>(n)
-							: new GraphLinkedUndirected<>(n);
-				} else {
+			public <E> Graph<E> newGraph(boolean directed, int... vertices) {
+				if (vertices.length != 1)
 					throw new UnsupportedOperationException();
+				int n = vertices[0];
+				if (directed) {
+					return new GraphLinkedDirected<>(n);
+				} else {
+					return new GraphLinkedUndirected<>(n);
 				}
 			}
 		};

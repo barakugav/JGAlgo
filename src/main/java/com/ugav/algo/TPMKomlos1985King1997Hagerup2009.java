@@ -3,7 +3,6 @@ package com.ugav.algo;
 import java.util.Arrays;
 import java.util.List;
 
-import com.ugav.algo.Graph.DirectedType;
 import com.ugav.algo.Graph.Edge;
 import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.Utils.QueueIntFixSize;
@@ -20,7 +19,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 	@SuppressWarnings("unchecked")
 	@Override
 	public <E> Edge<E>[] calcTPM(Graph<E> t, WeightFunction<E> w, int[] queries, int queriesNum) {
-		if (t.isDirected())
+		if (t instanceof GraphDirected<?>)
 			throw new IllegalArgumentException("directed graphs are not supported");
 		if (queries.length / 2 < queriesNum)
 			throw new IllegalArgumentException("queries should be in format [u0, v0, u1, v1, ...]");
@@ -28,7 +27,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 			throw new IllegalArgumentException("only trees are supported");
 		if (t.vertices() == 0)
 			return new Edge[queriesNum];
-		return new Worker<>(t, w).calcTPM(queries, queriesNum);
+		return new Worker<>((GraphUndirected<E>) t, w).calcTPM(queries, queriesNum);
 	}
 
 	private static class BitsTable {
@@ -52,11 +51,11 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 		 * Original tree, in other functions 't' refers to the Boruvka fully branching
 		 * tree
 		 */
-		final Graph<E> tOrig;
+		final GraphUndirected<E> tOrig;
 		final WeightFunction<E> w;
 		final BitsTable bitsTable;
 
-		Worker(Graph<E> t, WeightFunction<E> w) {
+		Worker(GraphUndirected<E> t, WeightFunction<E> w) {
 			this.tOrig = t;
 			this.w = w;
 
@@ -211,7 +210,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 			for (int v = 0; v < n; v++)
 				vTv[v] = v;
 
-			Graph<Edge<E>> t = new GraphArray<>(DirectedType.Undirected, n);
+			Graph<Edge<E>> t = new GraphArrayUndirected<>(n);
 			for (Graph<Edge<E>> G = Graphs.referenceGraph(tOrig); (n = G.vertices()) > 1;) {
 
 				// Find minimum edge of each vertex
@@ -264,7 +263,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 				vTvNext = temp;
 
 				// contract G to new graph with the super vertices
-				Graph<Edge<E>> gNext = new GraphArray<>(DirectedType.Undirected, nNext);
+				Graph<Edge<E>> gNext = new GraphArrayUndirected<>(nNext);
 				for (int u = 0; u < n; u++) {
 					int U = vNext[u];
 					for (Edge<Edge<E>> e : Utils.iterable(G.edges(u))) {

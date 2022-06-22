@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import com.ugav.algo.Graph.DirectedType;
 import com.ugav.algo.Graph.Edge;
 import com.ugav.algo.Graph.WeightFunction;
 
@@ -20,7 +19,7 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 
 	@Override
 	public <E> Collection<Edge<E>> calcMaxMatching(Graph<E> g0, WeightFunction<E> w) {
-		if (!(g0 instanceof GraphBipartite) || g0.isDirected())
+		if (!(g0 instanceof GraphBipartite.Undirected<?>))
 			throw new IllegalArgumentException("Only undirected bipartite graphs are supported");
 		GraphBipartite<Ref<E>> g = referenceGraph((GraphBipartite<E>) g0, w);
 
@@ -108,7 +107,7 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 
 	private static <E> GraphBipartite<Ref<E>> referenceGraph(GraphBipartite<E> g, WeightFunction<E> w) {
 		int n = g.vertices();
-		GraphBipartite<Ref<E>> g0 = new GraphBipartiteArray<>(DirectedType.Directed, g.svertices(), g.tvertices());
+		GraphBipartite<Ref<E>> g0 = new GraphBipartiteArrayDirected<>(g.svertices(), g.tvertices());
 
 		for (int u = 0; u < n; u++) {
 			if (!g.isVertexInS(u))

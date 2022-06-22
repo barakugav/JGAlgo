@@ -9,6 +9,7 @@ import java.util.Set;
 import com.ugav.algo.Graph;
 import com.ugav.algo.Graph.Edge;
 import com.ugav.algo.Graph.WeightFunctionInt;
+import com.ugav.algo.GraphDirected;
 import com.ugav.algo.Graphs;
 import com.ugav.algo.SSSP;
 import com.ugav.algo.SSSPDijkstra;
@@ -23,7 +24,7 @@ public class GraphsTest extends TestUtils {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
-			Graph<Void> g = new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(true).selfEdges(true)
+			Graph<Void> g = new RandomGraphBuilder().n(n).m(m).doubleEdges(false).doubleEdges(true).selfEdges(true)
 					.cycles(true).connected(true).build();
 			int source = rand.nextInt(n);
 
@@ -185,8 +186,8 @@ public class GraphsTest extends TestUtils {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
-			Graph<Void> g = new RandomGraphBuilder().n(n).m(m).directed(true).doubleEdges(true).selfEdges(false)
-					.cycles(false).connected(connected).build();
+			GraphDirected<Void> g = (GraphDirected<Void>) new RandomGraphBuilder().n(n).m(m).directed(true)
+					.doubleEdges(true).selfEdges(false).cycles(false).connected(connected).<Void>build();
 
 			int[] topolSort = Graphs.calcTopologicalSortingDAG(g);
 
@@ -215,8 +216,8 @@ public class GraphsTest extends TestUtils {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
-			Graph<Integer> g = new RandomGraphBuilder().n(n).m(m).directed(true).doubleEdges(true).selfEdges(false)
-					.cycles(false).connected(connected).build();
+			GraphDirected<Integer> g = (GraphDirected<Integer>) new RandomGraphBuilder().n(n).m(m).directed(true)
+					.doubleEdges(true).selfEdges(false).cycles(false).connected(connected).<Integer>build();
 			GraphsTestUtils.assignRandWeightsIntPos(g);
 			WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
 			int source = 0;

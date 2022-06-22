@@ -1,9 +1,10 @@
 package com.ugav.algo.test;
 
 import com.ugav.algo.Graph;
-import com.ugav.algo.Graph.DirectedType;
-import com.ugav.algo.GraphArray;
-import com.ugav.algo.GraphBipartiteArray;
+import com.ugav.algo.GraphArrayDirected;
+import com.ugav.algo.GraphArrayUndirected;
+import com.ugav.algo.GraphBipartiteArrayDirected;
+import com.ugav.algo.GraphBipartiteArrayUndirected;
 import com.ugav.algo.MDSTTarjan1977;
 import com.ugav.algo.MSTKruskal1956;
 import com.ugav.algo.MatchingGabow1976;
@@ -14,17 +15,25 @@ class GraphImplTestUtils extends TestUtils {
 
 	@FunctionalInterface
 	static interface GraphImpl {
-		<E> Graph<E> newGraph(DirectedType directedType, int... vertices);
+		<E> Graph<E> newGraph(boolean directed, int... vertices);
 	}
 
 	static final GraphImpl GRAPH_IMPL_DEFAULT = new GraphImpl() {
 
 		@Override
-		public <E> Graph<E> newGraph(DirectedType directedType, int... vertices) {
-			if (vertices.length == 1) {
-				return new GraphArray<>(directedType, vertices[0]);
+		public <E> Graph<E> newGraph(boolean directed, int... vertices) {
+			if (directed) {
+				if (vertices.length == 1) {
+					return new GraphArrayDirected<>(vertices[0]);
+				} else {
+					return new GraphBipartiteArrayDirected<>(vertices[0], vertices[1]);
+				}
 			} else {
-				return new GraphBipartiteArray<>(directedType, vertices[0], vertices[1]);
+				if (vertices.length == 1) {
+					return new GraphArrayUndirected<>(vertices[0]);
+				} else {
+					return new GraphBipartiteArrayUndirected<>(vertices[0], vertices[1]);
+				}
 			}
 		}
 	};
