@@ -2,5 +2,6 @@ build/
 bin/
 .classpath
 .project
+.settings
 *.bak
-
+/target/
