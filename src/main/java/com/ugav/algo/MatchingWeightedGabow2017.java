@@ -402,13 +402,14 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 					debug.printExec(() -> {
 						debug.print(" ", Arrays.asList(blossoms).stream().map(b -> String.valueOf(dualVal(b.base)))
 								.collect(Collectors.joining(", ", "[", "]")));
-						debug.print(" ",
-								Arrays.asList(blossoms).stream().mapMulti((Blossom<E> b, Consumer<Blossom<E>> next) -> {
-									for (; b.parent != null; b = b.parent)
-										;
-									next.accept(b);
-								}).distinct().filter(b -> !b.isSingleton()).map(b -> "" + b + " " + dualVal(b))
-										.collect(Collectors.joining(", ", "[", "]")));
+						List<Blossom<E>> topLevelBlossoms = new ArrayList<>();
+						for (Blossom<E> b : blossoms) {
+							for (; b.parent != null; b = b.parent)
+								;
+							topLevelBlossoms.add(b);
+						}
+						debug.print(" ", topLevelBlossoms.stream().distinct().filter(b -> !b.isSingleton())
+								.map(b -> "" + b + " " + dualVal(b)).collect(Collectors.joining(", ", "[", "]")));
 
 						debug.print("\nMatched: ");
 						debug.println(Arrays.toString(matched));
