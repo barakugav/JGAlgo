@@ -2,7 +2,6 @@ package com.ugav.algo;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 
 public interface Graph<E> {
 
@@ -28,7 +27,7 @@ public interface Graph<E> {
 	 * @param u a source vertex
 	 * @return iterator that iterate over the edges whose source is u
 	 */
-	public EdgeIterator<E> edges(int u);
+	public Iterator<Edge<E>> edges(int u);
 
 	/**
 	 * Get an edge from u to v
@@ -125,18 +124,6 @@ public interface Graph<E> {
 
 	}
 
-	public static interface EdgeIterator<E> extends Iterator<Edge<E>> {
-
-		/**
-		 * Pick at the next edge without advancing the iterator
-		 *
-		 * @return the next edge in the iterations
-		 * @throws NoSuchElementException if hasNext() returned false
-		 */
-		public Edge<E> pickNext();
-
-	}
-
 	public static interface Undirected<E> extends Graph<E> {
 
 	}
@@ -147,7 +134,7 @@ public interface Graph<E> {
 		 * Get the edges whose source is u
 		 */
 		@Override
-		default EdgeIterator<E> edges(int u) {
+		default Iterator<Edge<E>> edges(int u) {
 			return edgesOut(u);
 		}
 
@@ -157,7 +144,7 @@ public interface Graph<E> {
 		 * @param u a source vertex
 		 * @return iterator that iterate over the edges whose source is u
 		 */
-		public EdgeIterator<E> edgesOut(int u);
+		public Iterator<Edge<E>> edgesOut(int u);
 
 		/**
 		 * Get the edges whose target is v
@@ -165,7 +152,7 @@ public interface Graph<E> {
 		 * @param v a target vertex
 		 * @return iterator that iterate over the edges whose target is v
 		 */
-		public EdgeIterator<E> edgesIn(int v);
+		public Iterator<Edge<E>> edgesIn(int v);
 
 		/**
 		 * Remove all the edges going out of a given vertex

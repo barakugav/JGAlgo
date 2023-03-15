@@ -32,12 +32,12 @@ public class GraphArrayDirected<E> extends GraphArrayAbstract<E> implements Grap
 	}
 
 	@Override
-	public EdgeIterator<E> edgesOut(int u) {
+	public Iterator<Edge<E>> edgesOut(int u) {
 		return new VertexEdgeOutItr(u);
 	}
 
 	@Override
-	public EdgeIterator<E> edgesIn(int v) {
+	public Iterator<Edge<E>> edgesIn(int v) {
 		return new VertexEdgeInItr(v);
 	}
 

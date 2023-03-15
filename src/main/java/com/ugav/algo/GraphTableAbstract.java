@@ -25,7 +25,7 @@ abstract class GraphTableAbstract<E> extends GraphAbstract<E> {
 	}
 
 	@Override
-	public EdgeIterator<E> edges(int u) {
+	public Iterator<Edge<E>> edges(int u) {
 		return new EdgesOutItrVertex(u);
 	}
 
@@ -44,7 +44,7 @@ abstract class GraphTableAbstract<E> extends GraphAbstract<E> {
 		throw new UnsupportedOperationException();
 	}
 
-	class EdgesOutItrVertex implements EdgeIterator<E> {
+	class EdgesOutItrVertex implements Iterator<Edge<E>> {
 
 		final int u;
 		int v;
@@ -73,13 +73,6 @@ abstract class GraphTableAbstract<E> extends GraphAbstract<E> {
 			return ret;
 		}
 
-		@Override
-		public Edge<E> pickNext() {
-			if (!hasNext())
-				throw new NoSuchElementException();
-			return edges[u][v];
-		}
-
 		void advanceUntilNext() {
 			for (int next = v; next < n; next++) {
 				if (edges[u][next] != null) {
@@ -92,7 +85,7 @@ abstract class GraphTableAbstract<E> extends GraphAbstract<E> {
 
 	}
 
-	class EdgesInItrVertex implements EdgeIterator<E> {
+	class EdgesInItrVertex implements Iterator<Edge<E>> {
 
 		private int u;
 		private final int v;
@@ -121,13 +114,6 @@ abstract class GraphTableAbstract<E> extends GraphAbstract<E> {
 			return ret;
 		}
 
-		@Override
-		public Edge<E> pickNext() {
-			if (!hasNext())
-				throw new NoSuchElementException();
-			return edges[u][v];
-		}
-
 		private void advanceUntilNext() {
 			for (int next = u; next < n; next++) {
 				if (edges[next][v] != null) {
@@ -143,7 +129,7 @@ abstract class GraphTableAbstract<E> extends GraphAbstract<E> {
 	class EdgesAllItr implements Iterator<Edge<E>> {
 
 		private int u;
-		private EdgeIterator<E> uIter;
+		private Iterator<Edge<E>> uIter;
 
 		EdgesAllItr() {
 			u = 0;
@@ -179,7 +165,7 @@ abstract class GraphTableAbstract<E> extends GraphAbstract<E> {
 			uIter = null;
 		}
 
-		EdgeIterator<E> vertexEdgeIter(int u) {
+		Iterator<Edge<E>> vertexEdgeIter(int u) {
 			return new EdgesOutItrVertex(u);
 		}
 

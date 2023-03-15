@@ -1,5 +1,6 @@
 package com.ugav.algo;
 
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 abstract class GraphArrayAbstract<E> extends GraphAbstract<E> {
@@ -31,7 +32,7 @@ abstract class GraphArrayAbstract<E> extends GraphAbstract<E> {
 		n = 0;
 	}
 
-	abstract class EdgeItrBase implements EdgeIterator<E> {
+	abstract class EdgeItrBase implements Iterator<Edge<E>> {
 
 		int u;
 		int idx;
@@ -51,13 +52,6 @@ abstract class GraphArrayAbstract<E> extends GraphAbstract<E> {
 			if (!hasNext())
 				throw new NoSuchElementException();
 			return toRemoveEdge = edgesArr[u][toRemoveIdx = idx++];
-		}
-
-		@Override
-		public Edge<E> pickNext() {
-			if (!hasNext())
-				throw new NoSuchElementException();
-			return edgesArr[u][idx];
 		}
 
 		@Override

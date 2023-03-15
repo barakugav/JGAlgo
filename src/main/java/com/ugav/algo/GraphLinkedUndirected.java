@@ -29,7 +29,7 @@ public class GraphLinkedUndirected<E> extends GraphLinkedAbstract<E> implements 
 	}
 
 	@Override
-	public EdgeIterator<E> edges(int u) {
+	public Iterator<Edge<E>> edges(int u) {
 		checkVertexIdentifier(u);
 		return new EdgeVertexItr<>(edges[u]);
 	}
@@ -144,7 +144,7 @@ public class GraphLinkedUndirected<E> extends GraphLinkedAbstract<E> implements 
 
 	}
 
-	private static class EdgeVertexItr<E> implements EdgeIterator<E> {
+	private static class EdgeVertexItr<E> implements Iterator<Edge<E>> {
 
 		Node<E> p;
 
@@ -164,13 +164,6 @@ public class GraphLinkedUndirected<E> extends GraphLinkedAbstract<E> implements 
 			Node<E> q = p;
 			p = q.next;
 			return q;
-		}
-
-		@Override
-		public Edge<E> pickNext() {
-			if (!hasNext())
-				throw new NoSuchElementException();
-			return p;
 		}
 
 	}

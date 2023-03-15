@@ -62,7 +62,7 @@ public class GraphTableUndirected<E> extends GraphTableAbstract<E> implements Gr
 	private class EdgesAllItrApiOnly extends GraphTableAbstract<E>.EdgesAllItr {
 
 		@Override
-		EdgeIterator<E> vertexEdgeIter(int u) {
+		Iterator<Edge<E>> vertexEdgeIter(int u) {
 			return new EdgesIterVertexApiOnly(u);
 		}
 	}

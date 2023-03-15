@@ -5,7 +5,7 @@ import java.util.function.ObjDoubleConsumer;
 
 import com.ugav.algo.DynamicTree.MinEdge;
 import com.ugav.algo.Graph.Edge;
-import com.ugav.algo.Graph.EdgeIterator;
+import com.ugav.algo.Utils.IterPickable;
 import com.ugav.algo.Utils.QueueFixSize;
 import com.ugav.algo.Utils.QueueIntFixSize;
 import com.ugav.algo.Utils.Stack;
@@ -30,7 +30,7 @@ public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 		double excess;
 		boolean isActive;
 		int d;
-		EdgeIterator<Ref<E>> edges;
+		IterPickable<Edge<Ref<E>>> edges;
 
 		final DynamicTree.Node<Vertex<E>, Edge<Ref<E>>> dtNode;
 		int firstDtChild;
@@ -82,7 +82,7 @@ public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 
 		/* Init all vertices iterators */
 		for (int u = 0; u < n; u++)
-			vertexData[u].edges = g.edges(u);
+			vertexData[u].edges = new IterPickable<>(g.edges(u));
 
 		ObjDoubleConsumer<Edge<Ref<E>>> pushFlow = (e0, f) -> {
 			Ref<E> e = e0.data();
@@ -138,7 +138,7 @@ public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 			if (U.v == source || U.v == target)
 				continue;
 			assert U.dtNode.getParent() == null;
-			EdgeIterator<Ref<E>> it = U.edges;
+			IterPickable<Edge<Ref<E>>> it = U.edges;
 			int uSize = dt.size(U.dtNode);
 
 			while (U.excess > EPS && it.hasNext()) {
@@ -214,7 +214,7 @@ public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 			if (!it.hasNext()) {
 				U.d++;
 				debug.println("R(", Integer.valueOf(U.v), ") <- ", Integer.valueOf(U.d));
-				U.edges = g.edges(U.v);
+				U.edges = new IterPickable<>(g.edges(U.v));
 
 				/* cut all vertices pointing into u */
 				assert U.dtNode.getParent() == null;

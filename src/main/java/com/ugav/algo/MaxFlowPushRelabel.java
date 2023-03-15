@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.function.ObjDoubleConsumer;
 
 import com.ugav.algo.Graph.Edge;
-import com.ugav.algo.Graph.EdgeIterator;
+import com.ugav.algo.Utils.IterPickable;
 import com.ugav.algo.Utils.QueueIntFixSize;
 
 public class MaxFlowPushRelabel implements MaxFlow {
@@ -34,7 +34,7 @@ public class MaxFlowPushRelabel implements MaxFlow {
 		int n = g.vertices();
 
 		@SuppressWarnings("unchecked")
-		EdgeIterator<Ref<E>>[] edges = new EdgeIterator[n];
+		IterPickable<Edge<Ref<E>>>[] edges = new IterPickable[n];
 		double[] excess = new double[n];
 		boolean[] isActive = new boolean[n];
 		QueueIntFixSize active = new QueueIntFixSize(n);
@@ -74,13 +74,13 @@ public class MaxFlowPushRelabel implements MaxFlow {
 
 		/* Init all vertices iterators */
 		for (int u = 0; u < n; u++)
-			edges[u] = g.edges(u);
+			edges[u] = new IterPickable<>(g.edges(u));
 
 		while (!active.isEmpty()) {
 			int u = active.pop();
 			if (u == source || u == target)
 				continue;
-			EdgeIterator<Ref<E>> it = edges[u];
+			IterPickable<Edge<Ref<E>>> it = edges[u];
 
 			while (excess[u] > EPS && it.hasNext()) {
 				Edge<Ref<E>> e = it.pickNext();
@@ -97,7 +97,7 @@ public class MaxFlowPushRelabel implements MaxFlow {
 			if (!it.hasNext()) {
 				d[u]++;
 				debug.println("R(", Integer.valueOf(u), ") <- ", Integer.valueOf(d[u]));
-				edges[u] = g.edges(u);
+				edges[u] = new IterPickable<>(g.edges(u));
 			}
 
 			/* Update isActive and add to queue if active */

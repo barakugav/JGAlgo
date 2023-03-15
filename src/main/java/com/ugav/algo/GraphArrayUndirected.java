@@ -43,7 +43,7 @@ public class GraphArrayUndirected<E> extends GraphArrayAbstract<E> implements Gr
 	}
 
 	@Override
-	public EdgeIterator<E> edges(int u) {
+	public Iterator<Edge<E>> edges(int u) {
 		return new VertexEdgeItr(u);
 	}
 

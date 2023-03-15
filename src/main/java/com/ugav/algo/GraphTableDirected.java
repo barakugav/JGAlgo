@@ -19,12 +19,12 @@ public class GraphTableDirected<E> extends GraphTableAbstract<E> implements Grap
 	}
 
 	@Override
-	public EdgeIterator<E> edgesOut(int u) {
+	public Iterator<Edge<E>> edgesOut(int u) {
 		return new EdgesOutItrVertex(u);
 	}
 
 	@Override
-	public EdgeIterator<E> edgesIn(int v) {
+	public Iterator<Edge<E>> edgesIn(int v) {
 		return new EdgesInItrVertex(v);
 	}
 

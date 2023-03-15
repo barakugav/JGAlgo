@@ -71,6 +71,46 @@ class Utils {
 		};
 	}
 
+	static class IterPickable<E> implements Iterator<E> {
+
+		private final Iterator<? super E> it;
+		private Object pick;
+		private static final Object PickNone = new Object();
+
+		IterPickable(Iterator<? super E> it) {
+			this.it = Objects.requireNonNull(it);
+			pick = PickNone;
+		}
+
+		@Override
+		public boolean hasNext() {
+			if (pick != PickNone)
+				return true;
+			if (!it.hasNext())
+				return false;
+			pick = it.next();
+			return true;
+		}
+
+		@Override
+		public E next() {
+			if (!hasNext())
+				throw new NoSuchElementException();
+			@SuppressWarnings("unchecked")
+			E n = (E) pick;
+			pick = PickNone;
+			return n;
+		}
+
+		@SuppressWarnings("unchecked")
+		E pickNext() {
+			if (!hasNext())
+				throw new NoSuchElementException();
+			return (E) pick;
+		}
+
+	}
+
 	static class QueueFixSize<E> {
 
 		private final int idxMask;
