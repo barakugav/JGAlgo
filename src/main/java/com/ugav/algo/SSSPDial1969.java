@@ -70,15 +70,11 @@ public class SSSPDial1969 implements SSSP {
 		} else {
 			@SuppressWarnings("unchecked")
 			Edge<E>[] edges = g.edges().toArray(this.edges);
-			Edge<E> pivot = Arrays.getKthElement(edges, n - 1,
-					(e1, e2) -> -Integer.compare(w.weightInt(e1), w.weightInt(e2)));
-			int weightThreshold = w.weightInt(pivot);
+			Arrays.getKthElement(edges, 0, g.edges().size(), n - 1,
+					(e1, e2) -> -Integer.compare(w.weightInt(e1), w.weightInt(e2)), true);
 
-			for (Edge<E> edge : edges) {
-				int ew = w.weightInt(edge);
-				if (ew >= weightThreshold)
-					maxDistance += ew;
-			}
+			for (int i = 0; i <= n - 1; i++)
+				maxDistance += w.weightInt(edges[i]);
 		}
 
 		SSSP.Result<E> res = calcDistances(g, w, source, maxDistance);
