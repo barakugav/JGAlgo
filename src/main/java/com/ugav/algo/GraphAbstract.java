@@ -20,7 +20,7 @@ public abstract class GraphAbstract<E> implements Graph<E> {
 			return false;
 		Graph<?> o = (Graph<?>) other;
 
-		return (this instanceof GraphDirected<?>) == (o instanceof GraphDirected<?>) && vertices() == o.vertices()
+		return (this instanceof Graph.Directed<?>) == (o instanceof Graph.Directed<?>) && vertices() == o.vertices()
 				&& edges().equals(o.edges());
 	}
 

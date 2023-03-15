@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Objects;
 
-public class GraphTableDirected<E> extends GraphTableAbstract<E> implements GraphDirected<E> {
+public class GraphTableDirected<E> extends GraphTableAbstract<E> implements Graph.Directed<E> {
 
 	private final Collection<Edge<E>> edgesView;
 

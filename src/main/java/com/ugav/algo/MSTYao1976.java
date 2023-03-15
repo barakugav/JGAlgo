@@ -18,7 +18,7 @@ public class MSTYao1976 implements MST {
 
 	@Override
 	public <E> Collection<Edge<E>> calcMST(Graph<E> g, WeightFunction<E> w) {
-		if (g instanceof GraphDirected<?>)
+		if (g instanceof Graph.Directed<?>)
 			throw new IllegalArgumentException("directed graphs are not supported");
 		int n = g.vertices();
 

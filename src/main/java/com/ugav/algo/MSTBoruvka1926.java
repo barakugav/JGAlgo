@@ -21,7 +21,7 @@ public class MSTBoruvka1926 implements MST {
 		return calcMST0(g, w, Integer.MAX_VALUE).e3;
 	}
 
-	static <E, R> Pair<GraphUndirected<R>, Collection<Edge<E>>> runBoruvka(Graph<E> g, Graph.WeightFunction<E> w,
+	static <E, R> Pair<Graph.Undirected<R>, Collection<Edge<E>>> runBoruvka(Graph<E> g, Graph.WeightFunction<E> w,
 			int numberOfRounds, Function<Edge<E>, R> edgeValAssigner) {
 		if (numberOfRounds <= 0)
 			throw new IllegalArgumentException();
@@ -30,7 +30,7 @@ public class MSTBoruvka1926 implements MST {
 		int treeNum = r.e2.intValue();
 		Collection<Edge<E>> mstEdges = r.e3;
 
-		GraphUndirected<R> contractedG = new GraphArrayUndirected<>(treeNum);
+		Graph.Undirected<R> contractedG = new GraphArrayUndirected<>(treeNum);
 		for (Edge<E> e : g.edges()) {
 			int u = tree[e.u()];
 			int v = tree[e.v()];
@@ -43,7 +43,7 @@ public class MSTBoruvka1926 implements MST {
 
 	private static <E> Triple<int[], Integer, Collection<Edge<E>>> calcMST0(Graph<E> g, Graph.WeightFunction<E> w,
 			int numberOfRounds) {
-		if (g instanceof GraphDirected<?>)
+		if (g instanceof Graph.Directed<?>)
 			throw new IllegalArgumentException("directed graphs are not supported");
 		int n = g.vertices();
 

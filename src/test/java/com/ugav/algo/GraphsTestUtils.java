@@ -219,13 +219,13 @@ class GraphsTestUtils extends TestUtils {
 
 	}
 
-	static <E> GraphUndirected<E> randTree(int n) {
-		return (GraphUndirected<E>) new RandomGraphBuilder().n(n).m(n - 1).directed(false).selfEdges(false)
+	static <E> Graph.Undirected<E> randTree(int n) {
+		return (Graph.Undirected<E>) new RandomGraphBuilder().n(n).m(n - 1).directed(false).selfEdges(false)
 				.cycles(false).connected(true).<E>build();
 	}
 
-	static <E> GraphUndirected<E> randForest(int n, int m) {
-		return (GraphUndirected<E>) new RandomGraphBuilder().n(n).m(m).directed(false).selfEdges(false).cycles(false)
+	static <E> Graph.Undirected<E> randForest(int n, int m) {
+		return (Graph.Undirected<E>) new RandomGraphBuilder().n(n).m(m).directed(false).selfEdges(false).cycles(false)
 				.connected(false).<E>build();
 	}
 
@@ -270,8 +270,8 @@ class GraphsTestUtils extends TestUtils {
 		return randGraph(n, m, GraphImplTestUtils.GRAPH_IMPL_DEFAULT);
 	}
 
-	static <E> GraphUndirected<E> randGraph(int n, int m, GraphImpl graphImpl) {
-		return (GraphUndirected<E>) new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(false)
+	static <E> Graph.Undirected<E> randGraph(int n, int m, GraphImpl graphImpl) {
+		return (Graph.Undirected<E>) new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(false)
 				.selfEdges(false).cycles(true).connected(false).<E>build();
 	}
 

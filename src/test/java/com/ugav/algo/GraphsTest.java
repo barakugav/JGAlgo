@@ -181,7 +181,7 @@ public class GraphsTest extends TestUtils {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
-			GraphDirected<Void> g = (GraphDirected<Void>) new RandomGraphBuilder().n(n).m(m).directed(true)
+			Graph.Directed<Void> g = (Graph.Directed<Void>) new RandomGraphBuilder().n(n).m(m).directed(true)
 					.doubleEdges(true).selfEdges(false).cycles(false).connected(connected).<Void>build();
 
 			int[] topolSort = Graphs.calcTopologicalSortingDAG(g);
@@ -211,7 +211,7 @@ public class GraphsTest extends TestUtils {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
-			GraphDirected<Integer> g = (GraphDirected<Integer>) new RandomGraphBuilder().n(n).m(m).directed(true)
+			Graph.Directed<Integer> g = (Graph.Directed<Integer>) new RandomGraphBuilder().n(n).m(m).directed(true)
 					.doubleEdges(true).selfEdges(false).cycles(false).connected(connected).<Integer>build();
 			GraphsTestUtils.assignRandWeightsIntPos(g);
 			WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;

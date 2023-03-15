@@ -55,7 +55,7 @@ public interface MST {
 	 * @return true if the given spanning tree is a MST of g
 	 */
 	public static <E> boolean verifyMST(Graph<E> g, WeightFunction<E> w, Graph<E> mst, TPM tpmAlgo) {
-		if (g instanceof GraphDirected<?>)
+		if (g instanceof Graph.Directed<?>)
 			throw new IllegalArgumentException("Directed graphs are not supported");
 		if (!Graphs.isTree(mst))
 			return false;

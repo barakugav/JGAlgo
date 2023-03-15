@@ -27,7 +27,7 @@ public class MSTKargerKleinTarjan1995 implements MST {
 
 	@Override
 	public <E> Collection<Edge<E>> calcMST(Graph<E> g, WeightFunction<E> w) {
-		if (g instanceof GraphDirected<?>)
+		if (g instanceof Graph.Directed<?>)
 			throw new IllegalArgumentException("directed graphs are not supported");
 		if (g.edges().size() == 0)
 			return Collections.emptyList();
@@ -44,13 +44,13 @@ public class MSTKargerKleinTarjan1995 implements MST {
 		 * bit clumsy, but didn't find another way.
 		 */
 		WeightFunction<Ref<E>> w0 = e -> e.data().w;
-		Pair<GraphUndirected<Ref<E>>, Collection<Edge<E>>> r = MSTBoruvka1926.runBoruvka(g, w, 2,
+		Pair<Graph.Undirected<Ref<E>>, Collection<Edge<E>>> r = MSTBoruvka1926.runBoruvka(g, w, 2,
 				e -> new Ref<>(e, w.weight(e)));
-		GraphUndirected<Ref<E>> g0 = r.e1;
+		Graph.Undirected<Ref<E>> g0 = r.e1;
 		Collection<Edge<E>> f0 = r.e2;
 		Graph<Ref<E>> g1 = randSubgraph(g0);
 		Collection<Edge<Ref<E>>> f1Edges = calcMST0(g1, w0);
-		GraphUndirected<Ref<E>> f1 = GraphArrayUndirected.valueOf(g1.vertices(), f1Edges);
+		Graph.Undirected<Ref<E>> f1 = GraphArrayUndirected.valueOf(g1.vertices(), f1Edges);
 		Collection<Edge<Ref<E>>> e2 = lightEdges(g0, f1, w0);
 		Graph<Ref<E>> g2 = GraphArrayUndirected.valueOf(g0.vertices(), e2);
 		Collection<Edge<Ref<E>>> f2 = calcMST0(g2, w0);
@@ -73,7 +73,7 @@ public class MSTKargerKleinTarjan1995 implements MST {
 		return g1;
 	}
 
-	private static <E> Collection<Edge<E>> lightEdges(Graph<E> g, GraphUndirected<E> f, WeightFunction<E> w) {
+	private static <E> Collection<Edge<E>> lightEdges(Graph<E> g, Graph.Undirected<E> f, WeightFunction<E> w) {
 		int n = f.vertices();
 		/* find connectivity components in the forest, each one of them is a tree */
 		Pair<Integer, int[]> r = Graphs.findConnectivityComponents(f);

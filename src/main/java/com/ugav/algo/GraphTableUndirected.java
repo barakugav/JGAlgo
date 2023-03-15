@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Objects;
 
-public class GraphTableUndirected<E> extends GraphTableAbstract<E> implements GraphUndirected<E> {
+public class GraphTableUndirected<E> extends GraphTableAbstract<E> implements Graph.Undirected<E> {
 
 	private final Collection<Edge<E>> edgesView;
 

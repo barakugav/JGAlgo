@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
-public class GraphLinkedUndirected<E> extends GraphLinkedAbstract<E> implements GraphUndirected<E> {
+public class GraphLinkedUndirected<E> extends GraphLinkedAbstract<E> implements Graph.Undirected<E> {
 
 	private Node<E>[] edges;
 

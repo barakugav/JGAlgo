@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Objects;
 
-public class GraphArrayDirected<E> extends GraphArrayAbstract<E> implements GraphDirected<E> {
+public class GraphArrayDirected<E> extends GraphArrayAbstract<E> implements Graph.Directed<E> {
 
 	private Edge<E>[][] edgesOut;
 	private Edge<E>[][] edgesIn;

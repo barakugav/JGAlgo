@@ -23,7 +23,7 @@ public class MDSTTarjan1977Test extends TestUtils {
 
 		@Override
 		public <E> Collection<Edge<E>> calcMST(Graph<E> g, WeightFunction<E> w) {
-			if (g instanceof GraphDirected<?>)
+			if (g instanceof Graph.Directed<?>)
 				return algo.calcMST(g, w);
 			int n = g.vertices();
 			Graph<Edge<E>> dg = new GraphArrayDirected<>(n);

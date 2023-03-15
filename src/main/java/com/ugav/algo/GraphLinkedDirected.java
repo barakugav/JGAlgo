@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
-public class GraphLinkedDirected<E> extends GraphLinkedAbstract<E> implements GraphDirected<E> {
+public class GraphLinkedDirected<E> extends GraphLinkedAbstract<E> implements Graph.Directed<E> {
 
 	private Node<E>[] edgesIn;
 	private Node<E>[] edgesOut;

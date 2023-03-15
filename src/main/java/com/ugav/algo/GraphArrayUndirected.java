@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Objects;
 
-public class GraphArrayUndirected<E> extends GraphArrayAbstract<E> implements GraphUndirected<E> {
+public class GraphArrayUndirected<E> extends GraphArrayAbstract<E> implements Graph.Undirected<E> {
 
 	private Edge<E>[][] edges;
 	private int[] edgesLen;
@@ -123,7 +123,7 @@ public class GraphArrayUndirected<E> extends GraphArrayAbstract<E> implements Gr
 		edgesLen[u]--;
 	}
 
-	public static <E> GraphUndirected<E> valueOf(int n, Collection<Edge<E>> edges) {
+	public static <E> Graph.Undirected<E> valueOf(int n, Collection<Edge<E>> edges) {
 		GraphArrayUndirected<E> g = new GraphArrayUndirected<>(n);
 		for (Edge<E> e : edges)
 			g.addEdge(e);

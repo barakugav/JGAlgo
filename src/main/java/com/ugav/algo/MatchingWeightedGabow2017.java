@@ -33,7 +33,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 
 	@Override
 	public <E> Collection<Edge<E>> calcMaxMatching(Graph<E> g, WeightFunction<E> w) {
-		if (g instanceof GraphDirected<?>)
+		if (g instanceof Graph.Directed<?>)
 			throw new IllegalArgumentException("Only undirected bipartite graphs are supported");
 		return new Worker<>(g, w, debugPrintManager).calcMaxMatching(false);
 
@@ -41,7 +41,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 
 	@Override
 	public <E> Collection<Edge<E>> calcPerfectMaxMatching(Graph<E> g, WeightFunction<E> w) {
-		if (g instanceof GraphDirected<?>)
+		if (g instanceof Graph.Directed<?>)
 			throw new IllegalArgumentException("Only undirected bipartite graphs are supported");
 		return new Worker<>(g, w, debugPrintManager).calcMaxMatching(true);
 	}

@@ -167,7 +167,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 		}
 
 		private <E> Collection<Edge<E>> calcMaxMatchingshuffled(Graph<E> g, WeightFunction<E> w, boolean perfect) {
-			if (g instanceof GraphDirected<?>)
+			if (g instanceof Graph.Directed<?>)
 				throw new IllegalArgumentException("only undirected graphs are supported");
 			int n = g.vertices();
 			int[] shuffle = randPermutation(n, nextRandSeed());

@@ -59,11 +59,11 @@ public class MDSTTarjan1977 implements MDST {
 	 */
 	@Override
 	public <E> Collection<Edge<E>> calcMST(Graph<E> g0, Graph.WeightFunction<E> w) {
-		if (!(g0 instanceof GraphDirected<?>))
+		if (!(g0 instanceof Graph.Directed<?>))
 			throw new IllegalArgumentException("Only directed MSTs are supported");
 		if (g0.vertices() == 0 || g0.edges().isEmpty())
 			return Collections.emptyList();
-		GraphDirected<Edge<E>> g = Graphs.referenceGraph((GraphDirected<E>) g0);
+		Graph.Directed<Edge<E>> g = Graphs.referenceGraph((Graph.Directed<E>) g0);
 
 		// Connect new root to all vertices
 		int n = g.vertices(), r = g.newVertex();
@@ -77,12 +77,12 @@ public class MDSTTarjan1977 implements MDST {
 
 	@Override
 	public <E> Collection<Edge<E>> calcMST(Graph<E> g, Graph.WeightFunction<E> w, int root) {
-		if (!(g instanceof GraphDirected<?>))
+		if (!(g instanceof Graph.Directed<?>))
 			throw new IllegalArgumentException("Only directed MSTs are supported");
 		if (g.vertices() == 0 || g.edges().isEmpty())
 			return Collections.emptyList();
 
-		ContractedGraph<E> contractedGraph = contract(Graphs.referenceGraph((GraphDirected<E>) g), w);
+		ContractedGraph<E> contractedGraph = contract(Graphs.referenceGraph((Graph.Directed<E>) g), w);
 		return expand(contractedGraph, root);
 	}
 
@@ -122,7 +122,7 @@ public class MDSTTarjan1977 implements MDST {
 		return mst;
 	}
 
-	private static <E> void addEdgesUntilStronglyConnected(GraphDirected<Edge<E>> g) {
+	private static <E> void addEdgesUntilStronglyConnected(Graph.Directed<Edge<E>> g) {
 		int n = g.vertices();
 
 		Pair<Integer, int[]> pair = Graphs.findStrongConnectivityComponents(g);
@@ -145,7 +145,7 @@ public class MDSTTarjan1977 implements MDST {
 		}
 	}
 
-	private static <E> ContractedGraph<E> contract(GraphDirected<Edge<E>> g, WeightFunction<E> w) {
+	private static <E> ContractedGraph<E> contract(Graph.Directed<Edge<E>> g, WeightFunction<E> w) {
 		addEdgesUntilStronglyConnected(g);
 
 		int n = g.vertices();

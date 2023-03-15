@@ -20,7 +20,7 @@ public class MatchingGabow1976 implements Matching {
 
 	@Override
 	public <E> Collection<Edge<E>> calcMaxMatching(Graph<E> g) {
-		if (g instanceof GraphDirected<?>)
+		if (g instanceof Graph.Directed<?>)
 			throw new IllegalArgumentException("directed graphs are not supported");
 		int n = g.vertices();
 

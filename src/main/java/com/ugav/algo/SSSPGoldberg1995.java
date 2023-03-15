@@ -20,7 +20,7 @@ public class SSSPGoldberg1995 implements SSSP {
 
 	@Override
 	public <E> SSSP.Result<E> calcDistances(Graph<E> g, WeightFunction<E> w0, int source) {
-		if (!(g instanceof GraphDirected<?>))
+		if (!(g instanceof Graph.Directed<?>))
 			throw new IllegalArgumentException("Undirected graphs are not supported");
 		if (!(w0 instanceof WeightFunctionInt))
 			throw new IllegalArgumentException("Only integer weights are supported");
@@ -51,8 +51,8 @@ public class SSSPGoldberg1995 implements SSSP {
 
 		SSSPDial1969 ssspDial = new SSSPDial1969();
 
-		GraphDirected<E> gNeg = new GraphArrayDirected<>(n);
-		GraphDirected<Integer> G = new GraphArrayDirected<>(n);
+		Graph.Directed<E> gNeg = new GraphArrayDirected<>(n);
+		Graph.Directed<Integer> G = new GraphArrayDirected<>(n);
 		int fakeS = G.newVertex();
 
 		int minWeightWordsize = Utils.log2(-minWeight);

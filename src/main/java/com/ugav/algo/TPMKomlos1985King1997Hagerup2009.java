@@ -19,7 +19,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 	@SuppressWarnings("unchecked")
 	@Override
 	public <E> Edge<E>[] calcTPM(Graph<E> t, WeightFunction<E> w, int[] queries, int queriesNum) {
-		if (t instanceof GraphDirected<?>)
+		if (t instanceof Graph.Directed<?>)
 			throw new IllegalArgumentException("directed graphs are not supported");
 		if (queries.length / 2 < queriesNum)
 			throw new IllegalArgumentException("queries should be in format [u0, v0, u1, v1, ...]");
@@ -27,7 +27,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 			throw new IllegalArgumentException("only trees are supported");
 		if (t.vertices() == 0)
 			return new Edge[queriesNum];
-		return new Worker<>((GraphUndirected<E>) t, w).calcTPM(queries, queriesNum);
+		return new Worker<>((Graph.Undirected<E>) t, w).calcTPM(queries, queriesNum);
 	}
 
 	private static class BitsTable {
@@ -51,11 +51,11 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 		 * Original tree, in other functions 't' refers to the Boruvka fully branching
 		 * tree
 		 */
-		final GraphUndirected<E> tOrig;
+		final Graph.Undirected<E> tOrig;
 		final WeightFunction<E> w;
 		final BitsTable bitsTable;
 
-		Worker(GraphUndirected<E> t, WeightFunction<E> w) {
+		Worker(Graph.Undirected<E> t, WeightFunction<E> w) {
 			this.tOrig = t;
 			this.w = w;
 

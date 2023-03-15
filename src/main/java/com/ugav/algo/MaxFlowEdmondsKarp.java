@@ -16,7 +16,7 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 
 	@Override
 	public <E> double calcMaxFlow(Graph<E> g0, FlowNetwork<E> net, int source, int target) {
-		if (!(g0 instanceof GraphDirected<?>))
+		if (!(g0 instanceof Graph.Directed<?>))
 			throw new IllegalArgumentException("only directed graphs are supported");
 		if (source == target)
 			throw new IllegalArgumentException("Source and target can't be the same vertices");

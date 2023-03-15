@@ -23,7 +23,7 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 		if (!(g0 instanceof GraphBipartite))
 			throw new IllegalArgumentException("only bipartite graphs are supported");
 		GraphBipartite<E> g = (GraphBipartite<E>) g0;
-		if (g instanceof GraphDirected<?>)
+		if (g instanceof Graph.Directed<?>)
 			throw new IllegalArgumentException("directed graphs are not supported");
 		int n = g.vertices();
 
