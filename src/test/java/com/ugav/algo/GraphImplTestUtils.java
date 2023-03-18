@@ -13,15 +13,15 @@ class GraphImplTestUtils extends TestUtils {
 		public <E> Graph<E> newGraph(boolean directed, int... vertices) {
 			if (directed) {
 				if (vertices.length == 1) {
-					return new GraphArrayDirected<>(vertices[0]);
+					return new GraphArrayDirectedOld<>(vertices[0]);
 				} else {
-					return new GraphBipartiteArrayDirected<>(vertices[0], vertices[1]);
+					return new GraphBipartiteArrayDirectedOld<>(vertices[0], vertices[1]);
 				}
 			} else {
 				if (vertices.length == 1) {
-					return new GraphArrayUndirected<>(vertices[0]);
+					return new GraphArrayUndirectedOld<>(vertices[0]);
 				} else {
-					return new GraphBipartiteArrayUndirected<>(vertices[0], vertices[1]);
+					return new GraphBipartiteArrayUndirectedOld<>(vertices[0], vertices[1]);
 				}
 			}
 		}

@@ -11,7 +11,7 @@ import java.util.function.Function;
 import java.util.function.IntConsumer;
 import java.util.stream.Collectors;
 
-import com.ugav.algo.Graph.Edge;
+
 import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.Utils.NullList;
 import com.ugav.algo.Utils.QueueIntFixSize;
@@ -269,7 +269,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 		@SuppressWarnings("unchecked")
 		Worker(Graph<E> g, WeightFunction<E> w, DebugPrintsManager debugPrint) {
 			int n = g.vertices();
-			this.g = new GraphArrayDirected<>(n);
+			this.g = new GraphArrayDirectedOld<>(n);
 			this.w = w;
 
 			for (Edge<E> e : g.edges()) {

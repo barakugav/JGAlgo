@@ -6,18 +6,18 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Objects;
 
-public class GraphArrayUndirected<E> extends GraphArrayAbstract<E> implements Graph.Undirected<E> {
+public class GraphArrayUndirectedOld<E> extends GraphArrayAbstractOld<E> implements Graph.Undirected<E> {
 
 	private Edge<E>[][] edges;
 	private int[] edgesLen;
 	private final Collection<Edge<E>> edgesView;
 
-	public GraphArrayUndirected() {
+	public GraphArrayUndirectedOld() {
 		this(0);
 	}
 
 	@SuppressWarnings("unchecked")
-	public GraphArrayUndirected(int n) {
+	public GraphArrayUndirectedOld(int n) {
 		super(n);
 		edges = n == 0 ? EDGES_EMPTY : new Edge[n][];
 		Arrays.fill(edges, EDGES_LIST_EMPTY);
@@ -124,7 +124,7 @@ public class GraphArrayUndirected<E> extends GraphArrayAbstract<E> implements Gr
 	}
 
 	public static <E> Graph.Undirected<E> valueOf(int n, Collection<Edge<E>> edges) {
-		GraphArrayUndirected<E> g = new GraphArrayUndirected<>(n);
+		GraphArrayUndirectedOld<E> g = new GraphArrayUndirectedOld<>(n);
 		for (Edge<E> e : edges)
 			g.addEdge(e);
 		return g;
@@ -139,7 +139,7 @@ public class GraphArrayUndirected<E> extends GraphArrayAbstract<E> implements Gr
 		return System.identityHashCode(e) <= System.identityHashCode(twin);
 	}
 
-	private abstract class EdgeItrBase extends GraphArrayAbstract<E>.EdgeItrBase {
+	private abstract class EdgeItrBase extends GraphArrayAbstractOld<E>.EdgeItrBase {
 
 		EdgeItrBase(int u) {
 			super(edges, u);
@@ -176,9 +176,9 @@ public class GraphArrayUndirected<E> extends GraphArrayAbstract<E> implements Gr
 
 		@Override
 		public boolean hasNext() {
-			int n = GraphArrayUndirected.this.n;
-			Edge<E>[][] edges = GraphArrayUndirected.this.edges;
-			int[] edgesLen = GraphArrayUndirected.this.edgesLen;
+			int n = GraphArrayUndirectedOld.this.n;
+			Edge<E>[][] edges = GraphArrayUndirectedOld.this.edges;
+			int[] edgesLen = GraphArrayUndirectedOld.this.edgesLen;
 
 			// don't support remove in case idx is moved
 			toRemoveEdge = null;

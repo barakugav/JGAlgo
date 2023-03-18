@@ -5,14 +5,14 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-abstract class GraphTableAbstract<E> extends GraphAbstract<E> {
+abstract class GraphTableAbstractOld<E> extends GraphAbstractOld<E> {
 
 	final int n;
 	int m;
 	final Edge<E>[][] edges;
 
 	@SuppressWarnings("unchecked")
-	GraphTableAbstract(int n) {
+	GraphTableAbstractOld(int n) {
 		if (n < 0)
 			throw new IllegalArgumentException();
 		this.n = n;

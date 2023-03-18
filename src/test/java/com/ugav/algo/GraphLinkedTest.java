@@ -13,9 +13,9 @@ public class GraphLinkedTest extends TestUtils {
 					throw new UnsupportedOperationException();
 				int n = vertices[0];
 				if (directed) {
-					return new GraphLinkedDirected<>(n);
+					return new GraphLinkedDirectedOld<>(n);
 				} else {
-					return new GraphLinkedUndirected<>(n);
+					return new GraphLinkedUndirectedOld<>(n);
 				}
 			}
 		};

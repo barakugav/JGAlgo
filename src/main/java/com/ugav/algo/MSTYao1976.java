@@ -1,11 +1,15 @@
 package com.ugav.algo;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Arrays;
 
-import com.ugav.algo.Graph.Edge;
+import com.ugav.algo.Graph.EdgeIter;
 import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.Graphs.EdgeWeightComparator;
+
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntComparator;
 
 public class MSTYao1976 implements MST {
 
@@ -17,12 +21,13 @@ public class MSTYao1976 implements MST {
 	}
 
 	@Override
-	public <E> Collection<Edge<E>> calcMST(Graph<E> g, WeightFunction<E> w) {
-		if (g instanceof Graph.Directed<?>)
-			throw new IllegalArgumentException("directed graphs are not supported");
+	public IntCollection calcMST(Graph<?> g0, WeightFunction w) {
+		if (!(g0 instanceof Graph.Undirected<?>))
+			throw new IllegalArgumentException("only undirected graphs are supported");
+		Graph.Undirected<?> g = (Graph.Undirected<?>) g0;
 		int n = g.vertices();
 
-		Edge<E>[][][] edges = partitionEdgesToBuckets(g, w);
+		int[][][] edges = partitionEdgesToBuckets(g, w);
 		int[] firstValidBucketIdxs = new int[n];
 
 		int treeNum = n;
@@ -31,26 +36,26 @@ public class MSTYao1976 implements MST {
 		for (int v = 0; v < n; v++)
 			vTree[v] = v;
 
-		@SuppressWarnings("unchecked")
-		Edge<E>[] minEdges = new Edge[n];
+		int[] minEdges = new int[n];
+		Arrays.fill(minEdges, -1);
 		double[] minEdgesWeight = new double[n];
 		int[] path = new int[n];
 
-		Collection<Edge<E>> mst = new ArrayList<>();
+		IntCollection mst = new IntArrayList();
 		for (;;) {
-			java.util.Arrays.fill(minEdgesWeight, 0, treeNum, Double.MAX_VALUE);
+			Arrays.fill(minEdgesWeight, 0, treeNum, Double.MAX_VALUE);
 
 			/* find minimum edge going out of each tree */
 			for (int u = 0; u < n; u++) {
 				int tree = vTree[u];
 
-				Edge<E>[][] vertexBuckets = edges[u];
+				int[][] vertexBuckets = edges[u];
 				int b;
 				for (b = firstValidBucketIdxs[u]; b < vertexBuckets.length; b++) {
 					boolean foundEdge = false;
 					for (int i = 0; i < vertexBuckets[b].length; i++) {
-						Edge<E> e = vertexBuckets[b][i];
-						if (tree == vTree[e.v()])
+						int e = vertexBuckets[b][i];
+						if (tree == vTree[g.getEdgeSource(e)] && tree == vTree[g.getEdgeTarget(e)])
 							continue;
 						foundEdge = true;
 
@@ -68,10 +73,10 @@ public class MSTYao1976 implements MST {
 
 			/* add min edges to MST */
 			for (int tree = 0; tree < treeNum; tree++) {
-				if (minEdges[tree] != null) {
-					Edge<E> e = minEdges[tree];
-					int ut = vTree[e.u()], vt = vTree[e.v()];
-					if (minEdges[vt] != e.twin() || ut < vt)
+				if (minEdges[tree] != -1) {
+					int e = minEdges[tree];
+					int ut = vTree[g.getEdgeSource(e)], vt = vTree[g.getEdgeTarget(e)];
+					if (minEdges[vt] != e || ut < vt)
 						mst.add(minEdges[tree]);
 				}
 			}
@@ -84,7 +89,7 @@ public class MSTYao1976 implements MST {
 			 */
 			final int UNVISITED = -1;
 			final int IN_PATH = -2;
-			java.util.Arrays.fill(vTreeNext, 0, treeNum, UNVISITED);
+			Arrays.fill(vTreeNext, 0, treeNum, UNVISITED);
 			int treeNumNext = 0;
 			for (int t = 0; t < treeNum; t++) {
 				int pathLength = 0;
@@ -95,8 +100,12 @@ public class MSTYao1976 implements MST {
 						path[pathLength++] = tPtr;
 						vTreeNext[tPtr] = IN_PATH;
 
-						if (minEdges[tPtr] != null) {
-							tPtr = vTree[minEdges[tPtr].v()];
+						if (minEdges[tPtr] != -1) {
+							int nextTPtr;
+							if ((nextTPtr = vTree[g.getEdgeSource(minEdges[tPtr])]) == tPtr)
+								nextTPtr = vTree[g.getEdgeTarget(minEdges[tPtr])];
+							assert nextTPtr != tPtr;
+							tPtr = nextTPtr;
 							continue;
 						}
 					}
@@ -113,7 +122,7 @@ public class MSTYao1976 implements MST {
 			if (treeNum == treeNumNext)
 				break;
 			treeNum = treeNumNext;
-			java.util.Arrays.fill(minEdges, 0, treeNum, null);
+			Arrays.fill(minEdges, 0, treeNum, -1);
 
 			/* assign new tree indices to G's vertices */
 			for (int v = 0; v < n; v++)
@@ -123,35 +132,34 @@ public class MSTYao1976 implements MST {
 		return mst;
 	}
 
-	@SuppressWarnings("unchecked")
-	private static <E> Edge<E>[][][] partitionEdgesToBuckets(Graph<E> g, WeightFunction<E> w) {
+	private static int[][][] partitionEdgesToBuckets(Graph<?> g, WeightFunction w) {
 		int n = g.vertices(), k = Utils.log2ceil(n);
 
-		Edge<E>[][][] edges = new Edge[n][][];
-		Edge<E>[] edgesTemp = new Edge[n];
-		EdgeWeightComparator<E> edgeComparator = new EdgeWeightComparator<>(w);
+		int[][][] edges = new int[n][][];
+		int[] edgesTemp = new int[n];
+		IntComparator edgeComparator = new EdgeWeightComparator(w);
 
 		for (int u = 0; u < n; u++) {
 			int edgesCount = 0;
-			for (Edge<E> e : Utils.iterable(g.edges(u)))
-				edgesTemp[edgesCount++] = e;
+			for (EdgeIter<?> eit = g.edges(u); eit.hasNext();)
+				edgesTemp[edgesCount++] = eit.nextInt();
 
 			if (edgesCount <= k) {
-				java.util.Arrays.sort(edgesTemp, 0, edgesCount, edgeComparator);
-				edges[u] = new Edge[edgesCount][];
+				IntArrays.parallelQuickSort(edgesTemp, 0, edgesCount, edgeComparator);
+				edges[u] = new int[edgesCount][];
 				for (int i = 0; i < edgesCount; i++)
-					edges[u][i] = new Edge[] { edgesTemp[i] };
+					edges[u][i] = new int[] { edgesTemp[i] };
 
 			} else {
 				int bucketSize = (edgesCount - 1) / k + 1;
 				int bucketNum = (edgesCount - 1) / bucketSize + 1;
-				Arrays.bucketPartition(edgesTemp, 0, edgesCount, edgeComparator, bucketSize);
-				edges[u] = new Edge[bucketNum][];
+				Array.Int.bucketPartition(edgesTemp, 0, edgesCount, edgeComparator, bucketSize);
+				edges[u] = new int[bucketNum][];
 
 				for (int b = 0; b < bucketNum; b++) {
 					int bucketBegin = b * bucketSize;
 					int bucketEnd = Math.min(bucketBegin + bucketSize, edgesCount);
-					Edge<E>[] bucket = new Edge[bucketEnd - bucketBegin];
+					int[] bucket = new int[bucketEnd - bucketBegin];
 					System.arraycopy(edgesTemp, bucketBegin, bucket, 0, bucketEnd - bucketBegin);
 					edges[u][b] = bucket;
 				}

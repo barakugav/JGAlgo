@@ -5,17 +5,17 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
-public class GraphLinkedDirected<E> extends GraphLinkedAbstract<E> implements Graph.Directed<E> {
+public class GraphLinkedDirectedOld<E> extends GraphLinkedAbstractOld<E> implements Graph.Directed<E> {
 
 	private Node<E>[] edgesIn;
 	private Node<E>[] edgesOut;
 
-	public GraphLinkedDirected() {
+	public GraphLinkedDirectedOld() {
 		this(0);
 	}
 
 	@SuppressWarnings("unchecked")
-	public GraphLinkedDirected(int n) {
+	public GraphLinkedDirectedOld(int n) {
 		super(n);
 		edgesIn = new Node[n != 0 ? n : 1];
 		edgesOut = new Node[n != 0 ? n : 1];

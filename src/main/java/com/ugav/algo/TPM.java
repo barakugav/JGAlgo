@@ -1,6 +1,5 @@
 package com.ugav.algo;
 
-import com.ugav.algo.Graph.Edge;
 import com.ugav.algo.Graph.WeightFunction;
 
 /* Tree-Path Maxima */
@@ -20,6 +19,6 @@ public interface TPM {
 	 * @return array of edges in the same size as queriesNum, where each edge is the
 	 *         edge with maximum weight in the path from u to v in the tree.
 	 */
-	public <E> Edge<E>[] calcTPM(Graph<E> t, WeightFunction<E> w, int[] queries, int queriesNum);
+	public int[] calcTPM(Graph<?> t, WeightFunction w, int[] queries, int queriesNum);
 
 }

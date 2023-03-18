@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import com.ugav.algo.Graph.Edge;
+
 
 @SuppressWarnings("boxing")
 class MatchingUnweightedTestUtils extends TestUtils {

@@ -2,7 +2,7 @@ package com.ugav.algo;
 
 import java.util.Arrays;
 
-import com.ugav.algo.Graph.Edge;
+import com.ugav.algo.Graph.EdgeIter;
 import com.ugav.algo.Graph.WeightFunction;
 
 public class SSSPDijkstra implements SSSP {
@@ -13,11 +13,8 @@ public class SSSPDijkstra implements SSSP {
 
 	private int allocSize;
 	private double[] distances;
-	@SuppressWarnings("rawtypes")
-	private Edge[] backtrack;
-	@SuppressWarnings("rawtypes")
+	private int[] backtrack;
 	private final Heap<HeapElm> heap;
-	@SuppressWarnings("rawtypes")
 	private HeapDirectAccessed.Handle<HeapElm>[] verticesPtrs;
 
 	public SSSPDijkstra() {
@@ -29,7 +26,7 @@ public class SSSPDijkstra implements SSSP {
 	private void memAlloc(int n) {
 		if (allocSize < n) {
 			distances = new double[n];
-			backtrack = new Edge[n];
+			backtrack = new int[n];
 			verticesPtrs = new HeapDirectAccessed.Handle[n];
 			allocSize = n;
 		}
@@ -37,32 +34,31 @@ public class SSSPDijkstra implements SSSP {
 
 	private void memClear(int n) {
 		Arrays.fill(distances, 0, n, 0);
-		Arrays.fill(backtrack, 0, n, null);
+		Arrays.fill(backtrack, 0, n, -1);
 		heap.clear();
 		Arrays.fill(verticesPtrs, 0, n, null);
 	}
 
 	@Override
-	public <E> SSSP.Result<E> calcDistances(Graph<E> g, WeightFunction<E> w, int source) {
+	public SSSP.Result calcDistances(Graph<?> g, WeightFunction w, int source) {
 		int n = g.vertices();
 		if (n <= 0)
 			throw new IllegalArgumentException();
 
 		memAlloc(n);
 		double[] distances = this.distances;
-		@SuppressWarnings("unchecked")
-		Edge<E>[] backtrack = this.backtrack;
+		int[] backtrack = this.backtrack;
 		@SuppressWarnings({ "unchecked", "rawtypes" })
-		HeapDirectAccessed<HeapElm<E>> heap = (HeapDirectAccessed) this.heap;
-		@SuppressWarnings("unchecked")
-		HeapDirectAccessed.Handle<HeapElm<E>>[] verticesPtrs = (HeapDirectAccessed.Handle[]) this.verticesPtrs;
+		HeapDirectAccessed<HeapElm> heap = (HeapDirectAccessed) this.heap;
+		HeapDirectAccessed.Handle<HeapElm>[] verticesPtrs = this.verticesPtrs;
 
 		Arrays.fill(distances, Double.POSITIVE_INFINITY);
 		distances[source] = 0;
 
 		for (int u = source;;) {
-			for (Edge<E> e : Utils.iterable(g.edges(u))) {
-				int v = e.v();
+			for (EdgeIter<?> eit = g.edges(u); eit.hasNext();) {
+				int e = eit.nextInt();
+				int v = eit.v();
 				if (distances[v] != Double.POSITIVE_INFINITY)
 					continue;
 				double ws = w.weight(e);
@@ -70,11 +66,11 @@ public class SSSPDijkstra implements SSSP {
 					throw new IllegalArgumentException("negative weights are not supported");
 				double distance = distances[u] + ws;
 
-				HeapDirectAccessed.Handle<HeapElm<E>> vPtr = verticesPtrs[v];
+				HeapDirectAccessed.Handle<HeapElm> vPtr = verticesPtrs[v];
 				if (vPtr == null) {
-					vPtr = verticesPtrs[v] = heap.insert(new HeapElm<>(distance, e));
+					vPtr = verticesPtrs[v] = heap.insert(new HeapElm(distance, e, v));
 				} else {
-					HeapElm<E> ptr = vPtr.get();
+					HeapElm ptr = vPtr.get();
 					if (distance < ptr.distance) {
 						ptr.distance = distance;
 						ptr.backtrack = e;
@@ -85,24 +81,26 @@ public class SSSPDijkstra implements SSSP {
 
 			if (heap.isEmpty())
 				break;
-			HeapElm<E> next = heap.extractMin();
-			distances[u = next.backtrack.v()] = next.distance;
+			HeapElm next = heap.extractMin();
+			distances[u = next.v] = next.distance;
 			backtrack[u] = next.backtrack;
 		}
 
-		SSSP.Result<E> res = new SSSPResultsImpl<>(Arrays.copyOf(distances, n), Arrays.copyOf(backtrack, n));
+		SSSP.Result res = new SSSPResultsImpl(g, Arrays.copyOf(distances, n), Arrays.copyOf(backtrack, n));
 		memClear(n);
 		return res;
 	}
 
-	private static class HeapElm<E> {
+	private static class HeapElm {
 
 		double distance;
-		Edge<E> backtrack;
+		int backtrack;
+		final int v;
 
-		HeapElm(double distance, Edge<E> backtrack) {
+		HeapElm(double distance, int backtrack, int v) {
 			this.distance = distance;
 			this.backtrack = backtrack;
+			this.v = v;
 		}
 
 	}

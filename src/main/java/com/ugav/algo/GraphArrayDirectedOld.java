@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Objects;
 
-public class GraphArrayDirected<E> extends GraphArrayAbstract<E> implements Graph.Directed<E> {
+public class GraphArrayDirectedOld<E> extends GraphArrayAbstractOld<E> implements Graph.Directed<E> {
 
 	private Edge<E>[][] edgesOut;
 	private Edge<E>[][] edgesIn;
@@ -15,7 +15,7 @@ public class GraphArrayDirected<E> extends GraphArrayAbstract<E> implements Grap
 	private final Collection<Edge<E>> edgesView;
 
 	@SuppressWarnings("unchecked")
-	public GraphArrayDirected(int n) {
+	public GraphArrayDirectedOld(int n) {
 		super(n);
 		edgesOut = n == 0 ? EDGES_EMPTY : new Edge[n][];
 		edgesIn = n == 0 ? EDGES_EMPTY : new Edge[n][];
@@ -128,7 +128,7 @@ public class GraphArrayDirected<E> extends GraphArrayAbstract<E> implements Grap
 		edgesLen[u]--;
 	}
 
-	private abstract class EdgeOutItrBase extends GraphArrayAbstract<E>.EdgeItrBase {
+	private abstract class EdgeOutItrBase extends GraphArrayAbstractOld<E>.EdgeItrBase {
 
 		EdgeOutItrBase(int u) {
 			super(edgesOut, u);
@@ -154,7 +154,7 @@ public class GraphArrayDirected<E> extends GraphArrayAbstract<E> implements Grap
 
 	}
 
-	private class VertexEdgeInItr extends GraphArrayAbstract<E>.EdgeItrBase {
+	private class VertexEdgeInItr extends GraphArrayAbstractOld<E>.EdgeItrBase {
 
 		VertexEdgeInItr(int v) {
 			super(edgesIn, v);
@@ -167,7 +167,7 @@ public class GraphArrayDirected<E> extends GraphArrayAbstract<E> implements Grap
 
 		@Override
 		void removeEdge(Edge<E> e, int edgeIdx) {
-			GraphArrayDirected.this.removeEdge(e); // TODO efficient
+			GraphArrayDirectedOld.this.removeEdge(e); // TODO efficient
 		}
 
 	}
@@ -180,8 +180,8 @@ public class GraphArrayDirected<E> extends GraphArrayAbstract<E> implements Grap
 
 		@Override
 		public boolean hasNext() {
-			int n = GraphArrayDirected.this.n;
-			int[] edgesLen = GraphArrayDirected.this.edgesOutLen;
+			int n = GraphArrayDirectedOld.this.n;
+			int[] edgesLen = GraphArrayDirectedOld.this.edgesOutLen;
 
 			// don't support remove in case idx is moved
 			toRemoveEdge = null;

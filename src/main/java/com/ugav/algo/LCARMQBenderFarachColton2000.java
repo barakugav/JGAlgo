@@ -1,9 +1,8 @@
 package com.ugav.algo;
 
 import java.util.Arrays;
-import java.util.Iterator;
 
-import com.ugav.algo.Graph.Edge;
+import com.ugav.algo.Graph.EdgeIter;
 import com.ugav.algo.RMQ.ArrayIntComparator;
 
 public class LCARMQBenderFarachColton2000 implements LCAStatic {
@@ -39,8 +38,7 @@ public class LCARMQBenderFarachColton2000 implements LCAStatic {
 		int[] vs = new int[n * 2];
 		int[] parent = new int[n];
 
-		@SuppressWarnings("unchecked")
-		Iterator<? extends Edge<?>>[] edges = new Iterator[n];
+		EdgeIter<?>[] edges = new EdgeIter[n];
 
 		parent[0] = -1;
 		edges[0] = t.edges(r);
@@ -51,9 +49,9 @@ public class LCARMQBenderFarachColton2000 implements LCAStatic {
 			vs[aLen] = u;
 			aLen++;
 
-			while (edges[depth].hasNext()) {
-				Edge<?> e = edges[depth].next();
-				int v = e.v();
+			for (EdgeIter<?> eit = edges[depth]; eit.hasNext();) {
+				eit.nextInt();
+				int v = eit.v();
 				if (v == parent[depth])
 					continue;
 				depth++;

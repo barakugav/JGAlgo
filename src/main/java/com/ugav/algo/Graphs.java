@@ -1,23 +1,22 @@
 package com.ugav.algo;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.IdentityHashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Objects;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.function.IntConsumer;
 
-import com.ugav.algo.Graph.Edge;
+import com.ugav.algo.Graph.EdgeIter;
 import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.Graph.WeightFunctionInt;
 import com.ugav.algo.SSSP.SSSPResultsImpl;
 import com.ugav.algo.Utils.QueueIntFixSize;
+
+import it.unimi.dsi.fastutil.ints.Int2ObjectFunction;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntComparator;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntLists;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 public class Graphs {
 
@@ -26,7 +25,7 @@ public class Graphs {
 	}
 
 	@FunctionalInterface
-	public static interface BFSOperator<E> {
+	public static interface BFSOperator {
 
 		/**
 		 * Perform some operation on a vertex during a BFS traversy
@@ -36,7 +35,7 @@ public class Graphs {
 		 *          null for the source vertices
 		 * @return true if the BFS should continue
 		 */
-		public boolean handleVertex(int v, Edge<E> e);
+		public boolean handleVertex(int v, int e);
 
 	}
 
@@ -47,11 +46,11 @@ public class Graphs {
 	 * @param source s source vertex
 	 * @param op     user operation to operate on the reachable vertices
 	 */
-	public static <E> void runBFS(Graph<E> g, int source, BFSOperator<E> op) {
+	public static void runBFS(Graph<?> g, int source, BFSOperator op) {
 		runBFS(g, new int[] { source }, op);
 	}
 
-	public static <E> void runBFS(Graph<E> g, int[] sources, BFSOperator<E> op) {
+	public static void runBFS(Graph<?> g, int[] sources, BFSOperator op) {
 		int n = g.vertices();
 		boolean[] visited = new boolean[n];
 
@@ -60,15 +59,16 @@ public class Graphs {
 		for (int source : sources) {
 			visited[source] = true;
 			queue.push(source);
-			if (!op.handleVertex(source, null))
+			if (!op.handleVertex(source, -1))
 				return;
 		}
 
 		while (!queue.isEmpty()) {
 			int u = queue.pop();
 
-			for (Edge<E> e : Utils.iterable(g.edges(u))) {
-				int v = e.v();
+			for (EdgeIter<?> eit = g.edges(u); eit.hasNext();) {
+				int e = eit.nextInt();
+				int v = eit.v();
 				if (visited[v])
 					continue;
 				visited[v] = true;
@@ -81,7 +81,7 @@ public class Graphs {
 	}
 
 	@FunctionalInterface
-	public static interface DFSOperator<E> {
+	public static interface DFSOperator {
 
 		/**
 		 * Perform some operation on a vertex during a DFS traversy
@@ -91,7 +91,7 @@ public class Graphs {
 		 *                       vertex
 		 * @return true if the DFS should continue
 		 */
-		public boolean handleVertex(int v, List<Edge<E>> pathFromSource);
+		public boolean handleVertex(int v, IntList pathFromSource);
 
 	}
 
@@ -102,12 +102,11 @@ public class Graphs {
 	 * @param source s source vertex
 	 * @param op     user operation to operate on the reachable vertices
 	 */
-	public static <E> void runDFS(Graph<E> g, int source, DFSOperator<E> op) {
+	public static void runDFS(Graph<?> g, int source, DFSOperator op) {
 		int n = g.vertices();
 		boolean[] visited = new boolean[n];
-		@SuppressWarnings("unchecked")
-		Iterator<Edge<E>>[] edges = new Iterator[n];
-		List<Edge<E>> edgesFromSource = new ArrayList<>();
+		EdgeIter<?>[] edges = new EdgeIter[n];
+		IntList edgesFromSource = new IntArrayList();
 
 		edges[0] = g.edges(source);
 		visited[source] = true;
@@ -115,9 +114,10 @@ public class Graphs {
 			return;
 
 		for (int depth = 0;;) {
-			if (edges[depth].hasNext()) {
-				Edge<E> e = edges[depth].next();
-				int v = e.v();
+			EdgeIter<?> eit = edges[depth];
+			if (eit.hasNext()) {
+				int e = eit.nextInt();
+				int v = eit.v();
 				if (visited[v])
 					continue;
 				visited[v] = true;
@@ -130,7 +130,7 @@ public class Graphs {
 				edges[depth] = null;
 				if (depth-- == 0)
 					break;
-				edgesFromSource.remove(edgesFromSource.size() - 1);
+				edgesFromSource.removeInt(edgesFromSource.size() - 1);
 			}
 		}
 	}
@@ -147,20 +147,19 @@ public class Graphs {
 	 * @return list of edges that represent a valid path from u to v, null if path
 	 *         not found
 	 */
-	public static <E> List<Edge<E>> findPath(Graph<E> g, int u, int v) {
+	public static IntList findPath(Graph<?> g, int u, int v) {
 		if (u == v)
-			return Collections.emptyList();
+			return IntLists.emptyList();
 		boolean reverse = true;
-		if (g instanceof Graph.Undirected<?>) {
+		if (g instanceof Graph.Undirected) {
 			int t = u;
 			u = v;
 			v = t;
 			reverse = false;
 		}
 		int n = g.vertices();
-
-		@SuppressWarnings("unchecked")
-		Edge<E>[] backtrack = new Edge[n];
+		int[] backtrack = new int[n];
+		Arrays.fill(backtrack, -1);
 
 		int target = v;
 		runBFS(g, u, (p, e) -> {
@@ -168,29 +167,29 @@ public class Graphs {
 			return p != target;
 		});
 
-		if (backtrack[v] == null)
+		if (backtrack[v] == -1)
 			return null;
 
-		List<Edge<E>> path = new ArrayList<>();
+		IntList path = new IntArrayList();
 		for (int p = v; p != u;) {
-			Edge<E> e = backtrack[p];
+			int e = backtrack[p];
 			path.add(e);
-			p = e.u();
+			p = g.getEdgeEndpoint(e, p);
 		}
 		if (reverse)
-			Collections.reverse(path);
+			Collections.reverse(path); // TODO
 		return path;
 	}
 
-	public static <E> boolean isTree(Graph<E> g) {
+	public static boolean isTree(Graph<?> g) {
 		return isTree(g, 0);
 	}
 
-	public static <E> boolean isTree(Graph<E> g, int root) {
+	public static boolean isTree(Graph<?> g, int root) {
 		return isForst(g, new int[] { root });
 	}
 
-	public static <E> boolean isForst(Graph<E> g) {
+	public static boolean isForst(Graph<?> g) {
 		int n = g.vertices();
 		int[] roots = new int[n];
 		for (int u = 0; u < n; u++)
@@ -198,15 +197,15 @@ public class Graphs {
 		return isForst(g, roots, true);
 	}
 
-	public static <E> boolean isForst(Graph<E> g, int[] roots) {
+	public static boolean isForst(Graph<?> g, int[] roots) {
 		return isForst(g, roots, false);
 	}
 
-	private static <E> boolean isForst(Graph<E> g, int[] roots, boolean allowVisitedRoot) {
+	private static boolean isForst(Graph<?> g, int[] roots, boolean allowVisitedRoot) {
 		int n = g.vertices();
 		if (n == 0)
 			return true;
-		boolean directed = g instanceof Graph.Directed<?>;
+		boolean directed = g instanceof Graph.Directed;
 
 		boolean[] visited = new boolean[n];
 		int[] parent = new int[n];
@@ -227,12 +226,13 @@ public class Graphs {
 			int stackSize = 1;
 			visited[root] = true;
 
-			while (stackSize-- > 0) {
-				int u = stack[stackSize];
+			while (stackSize > 0) {
+				int u = stack[stackSize--];
 				visitedCount++;
 
-				for (Edge<E> e : Utils.iterable(g.edges(u))) {
-					int v = e.v();
+				for (EdgeIter<?> eit = g.edges(u); eit.hasNext();) {
+					eit.nextInt();
+					int v = eit.v();
 					if (!directed && v == parent[u])
 						continue;
 					if (visited[v])
@@ -259,7 +259,7 @@ public class Graphs {
 	 * @return (CC number, [vertex]->[CC])
 	 * @throws IllegalArgumentException if the graph is directed
 	 */
-	public static <E> Pair<Integer, int[]> findConnectivityComponents(Graph.Undirected<E> g) {
+	public static Pair<Integer, int[]> findConnectivityComponents(Graph.Undirected<?> g) {
 		int n = g.vertices();
 		int[] stack = new int[n];
 
@@ -278,8 +278,9 @@ public class Graphs {
 			while (stackSize-- > 0) {
 				int u = stack[stackSize];
 
-				for (Edge<E> e : Utils.iterable(g.edges(u))) {
-					int v = e.v();
+				for (EdgeIter<?> eit = g.edges(u); eit.hasNext();) {
+					eit.nextInt();
+					int v = eit.v();
 					if (comp[v] != -1)
 						continue;
 					comp[v] = compNum;
@@ -302,7 +303,7 @@ public class Graphs {
 	 * @param g a directed graph
 	 * @return (CC number, [vertex]->[CC])
 	 */
-	public static <E> Pair<Integer, int[]> findStrongConnectivityComponents(Graph.Directed<E> g) {
+	public static Pair<Integer, int[]> findStrongConnectivityComponents(Graph.Directed<?> g) {
 		int n = g.vertices();
 
 		int[] comp = new int[n];
@@ -310,8 +311,7 @@ public class Graphs {
 		int compNum = 0;
 
 		int[] dfsPath = new int[n];
-		@SuppressWarnings("unchecked")
-		Iterator<Edge<E>>[] edges = new Iterator[n];
+		EdgeIter<?>[] edges = new EdgeIter[n];
 
 		int[] c = new int[n];
 		int[] s = new int[n];
@@ -322,20 +322,20 @@ public class Graphs {
 			if (comp[r] != -1)
 				continue;
 			dfsPath[0] = r;
-			edges[0] = g.edges(r);
+			edges[0] = g.edgesOut(r);
 			c[r] = cNext++;
 			s[sSize++] = p[pSize++] = r;
 
 			dfs: for (int depth = 0;;) {
-				while (edges[depth].hasNext()) {
-					Edge<E> e = edges[depth].next();
-					int v = e.v();
+				for (EdgeIter<?> eit = edges[depth]; eit.hasNext();) {
+					eit.nextInt();
+					int v = eit.v();
 					if (c[v] == 0) {
 						c[v] = cNext++;
 						s[sSize++] = p[pSize++] = v;
 
 						dfsPath[++depth] = v;
-						edges[depth] = g.edges(v);
+						edges[depth] = g.edgesOut(v);
 						continue dfs;
 					} else if (comp[v] == -1)
 						while (c[p[pSize - 1]] > c[v])
@@ -360,17 +360,16 @@ public class Graphs {
 		return Pair.of(Integer.valueOf(compNum), comp);
 	}
 
-	public static <E> int[] calcTopologicalSortingDAG(Graph.Directed<E> g) {
+	public static int[] calcTopologicalSortingDAG(Graph.Directed<?> g) {
 		int n = g.vertices();
 		int[] inDegree = new int[n];
 		QueueIntFixSize queue = new QueueIntFixSize(n);
 		int[] topolSort = new int[n];
 		int topolSortSize = 0;
 
-		// Calc in degree of all vertices
-		for (Edge<E> e : g.edges())
-			if (e.u() != e.v())
-				inDegree[e.v()]++;
+		// Cache in degree of all vertices
+		for (int v = 0; v < n; v++)
+			inDegree[v] = g.degreeIn(v);
 
 		// Find vertices with zero in degree and insert them to the queue
 		for (int v = 0; v < n; v++)
@@ -382,8 +381,9 @@ public class Graphs {
 		while (!queue.isEmpty()) {
 			int u = queue.pop();
 			topolSort[topolSortSize++] = u;
-			for (Edge<E> e : Utils.iterable(g.edges(u))) {
-				int v = e.v();
+			for (EdgeIter<?> eit = g.edgesOut(u); eit.hasNext();) {
+				eit.nextInt();
+				int v = eit.v();
 				if (--inDegree[v] == 0)
 					queue.push(v);
 			}
@@ -395,10 +395,9 @@ public class Graphs {
 		return topolSort;
 	}
 
-	public static <E> SSSP.Result<E> calcDistancesDAG(Graph.Directed<E> g, WeightFunction<E> w, int source) {
+	public static SSSP.Result calcDistancesDAG(Graph.Directed<?> g, WeightFunction w, int source) {
 		int n = g.vertices();
-		@SuppressWarnings("unchecked")
-		Edge<E>[] backtrack = new Edge[n];
+		int[] backtrack = new int[n];
 		double[] distances = new double[n];
 		Arrays.fill(distances, Double.POSITIVE_INFINITY);
 		distances[source] = 0;
@@ -412,8 +411,9 @@ public class Graphs {
 					continue;
 				sourceSeen = true;
 			}
-			for (Edge<E> e : Utils.iterable(g.edges(u))) {
-				int v = e.v();
+			for (EdgeIter<?> eit = g.edgesOut(u); eit.hasNext();) {
+				int e = eit.nextInt();
+				int v = eit.v();
 				double d = distances[u] + w.weight(e);
 				if (d < distances[v]) {
 					distances[v] = d;
@@ -422,14 +422,15 @@ public class Graphs {
 			}
 		}
 
-		return new SSSPResultsImpl<>(distances, backtrack);
+		return new SSSPResultsImpl(g, distances, backtrack);
 	}
 
-	public static <E> int getFullyBranchingTreeDepth(Graph<E> t, int root) {
+	public static int getFullyBranchingTreeDepth(Graph<?> t, int root) {
 		for (int parent = -1, u = root, depth = 0;; depth++) {
 			int v = parent;
-			for (Edge<E> e : Utils.iterable(t.edges(u))) {
-				v = e.v();
+			for (EdgeIter<?> eit = t.edges(u); eit.hasNext();) {
+				eit.nextInt();
+				v = eit.v();
 				if (v != parent)
 					break;
 			}
@@ -440,28 +441,28 @@ public class Graphs {
 		}
 	}
 
-	public static int[] calcDegree(Graph<?> g) {
-		return calcDegree(g.edges(), g.vertices());
-	}
+//	public static int[] calcDegree(Graph2 g) {
+//		return calcDegree(g.edges(), g.vertices());
+//	}
+//
+//	public static int[] calcDegree(Graph2 g, IntCollection edges, int n) {
+//		int[] degree = new int[n];
+//		for (IntIterator eit = edges.iterator(); eit.hasNext();) {
+//			int e = eit.nextInt();
+//			degree[e.u()]++;
+//			degree[e.v()]++;
+//		}
+//		return degree;
+//	}
 
-	public static int[] calcDegree(Collection<? extends Edge<?>> edges, int n) {
-		int[] degree = new int[n];
-		for (Edge<?> e : edges) {
-			degree[e.u()]++;
-			degree[e.v()]++;
-		}
-		return degree;
-	}
-
-	public static <E> List<Edge<E>> calcEulerianTour(Graph<E> g) {
-		if (g instanceof Graph.Directed<?>)
+	public static IntList calcEulerianTour(Graph<?> g) {
+		if (g instanceof Graph.Directed)
 			throw new IllegalArgumentException("not supported for directed graphs yet");
 		int n = g.vertices();
 
-		int[] degree = calcDegree(g);
 		int start = -1, end = -1;
 		for (int u = 0; u < n; u++) {
-			if (degree[u] % 2 == 0)
+			if (g.degree(u) % 2 == 0)
 				continue;
 			if (start == -1)
 				start = u;
@@ -477,55 +478,52 @@ public class Graphs {
 		if (start == -1)
 			start = 0;
 
-		Function<Edge<E>, Edge<E>> edgeID = g instanceof Graph.Directed<?> ? Function.identity() : e -> {
-			return (e.u() != e.v() ? e.u() < e.v() : System.identityHashCode(e) < System.identityHashCode(e.twin())) ? e
-					: e.twin();
-		};
-
-		List<Edge<E>> tour = new ArrayList<>(g.edges().size());
-		Set<Edge<E>> usedEdges = Collections.newSetFromMap(new IdentityHashMap<>());
-		@SuppressWarnings("unchecked")
-		Iterator<Edge<E>>[] iters = new Iterator[n];
+		IntList tour = new IntArrayList(g.edges());
+		IntSet usedEdges = new IntOpenHashSet();
+		EdgeIter<?>[] iters = new EdgeIter[n];
 		for (int u = 0; u < n; u++)
 			iters[u] = g.edges(u);
 
-		List<Edge<E>> queue = new ArrayList<>();
-		IntConsumer findCycle = u -> {
-			for (;;) {
-				Edge<E> e;
-				for (Iterator<Edge<E>> iter = iters[u];;) {
+		IntList queue = new IntArrayList(); // TODO fixed size queue
+
+		for (int u = start;;) {
+			findCycle: for (;;) {
+				int e, v;
+				for (EdgeIter<?> iter = iters[u];;) {
 					if (!iter.hasNext())
-						return;
-					e = iter.next();
-					if (!usedEdges.contains(edgeID.apply(e)))
+						break findCycle;
+					e = iter.nextInt();
+					if (!usedEdges.contains(e)) {
+						v = iter.v();
 						break;
+					}
 				}
-				usedEdges.add(edgeID.apply(e));
+				usedEdges.add(e);
 				queue.add(e);
-				u = e.v();
+				u = v;
 			}
-		};
 
-		findCycle.accept(start);
-		while (!queue.isEmpty()) {
-			Edge<E> e = queue.get(queue.size() - 1);
-			assert !iters[e.v()].hasNext();
+			if (queue.isEmpty())
+				break;
+
+			int e = queue.getInt(queue.size() - 1);
 			tour.add(e);
-			queue.remove(queue.size() - 1);
-
-			findCycle.accept(e.u());
+			queue.removeInt(queue.size() - 1);
+			u = g.getEdgeEndpoint(e, u);
 		}
-		Collections.reverse(tour);
+
+		Collections.reverse(tour); // TODO
 		return tour;
 	}
 
-	public static <E> String formatAdjacencyMatrix(Graph<E> g) {
-		return formatAdjacencyMatrix(g, e -> e == null ? "0" : "1");
+	public static String formatAdjacencyMatrix(Graph<?> g) {
+		return formatAdjacencyMatrix(g, e -> e == -1 ? "0" : "1");
 	}
 
-	public static <E> String formatAdjacencyMatrixWeighted(Graph<E> g, WeightFunction<E> w) {
+	public static String formatAdjacencyMatrixWeighted(Graph<?> g, WeightFunction w) {
+		int m = g.edges();
 		double minWeight = Double.MAX_VALUE;
-		for (Edge<E> e : g.edges()) {
+		for (int e = 0; e < m; e++) {
 			double ew = w.weight(e);
 			if (ew < minWeight)
 				minWeight = ew;
@@ -535,25 +533,28 @@ public class Graphs {
 		int precision = minWeight >= 1 ? 2 : Math.min(unlimitedPrecision, (int) -Math.log10(minWeight));
 
 		return precision == unlimitedPrecision
-				? formatAdjacencyMatrix(g, e -> e == null ? "-" : Double.toString(w.weight(e)))
+				? formatAdjacencyMatrix(g, e -> e == -1 ? "-" : Double.toString(w.weight(e)))
 				: formatAdjacencyMatrix(g,
-						e -> e == null ? "-" : String.format("%." + precision + "f", Double.valueOf(w.weight(e))));
+						e -> e == -1 ? "-" : String.format("%." + precision + "f", Double.valueOf(w.weight(e))));
 	}
 
-	public static <E> String formatAdjacencyMatrixWeightedInt(Graph<E> g, WeightFunctionInt<E> w) {
-		return formatAdjacencyMatrix(g, e -> e == null ? "-" : Integer.toString(w.weightInt(e)));
+	public static String formatAdjacencyMatrixWeightedInt(Graph<?> g, WeightFunctionInt w) {
+		return formatAdjacencyMatrix(g, e -> e == -1 ? "-" : Integer.toString(w.weightInt(e)));
 	}
 
-	public static <E> String formatAdjacencyMatrix(Graph<E> g, Function<Graph.Edge<E>, String> formatter) {
+	public static String formatAdjacencyMatrix(Graph<?> g, Int2ObjectFunction<String> formatter) {
 		int n = g.vertices();
 		if (n == 0)
 			return "[]";
 
 		/* format all edges */
 		String[][] strs = new String[n][n];
-		for (int u = 0; u < n; u++)
-			for (Edge<E> e : Utils.iterable(g.edges(u)))
-				strs[u][e.v()] = formatter.apply(e);
+		for (int u = 0; u < n; u++) {
+			for (EdgeIter<?> eit = g.edges(u); eit.hasNext();) {
+				int e = eit.nextInt();
+				strs[u][eit.v()] = formatter.apply(e);
+			}
+		}
 
 		/* calculate cell size */
 		int maxStr = 0;
@@ -593,50 +594,60 @@ public class Graphs {
 		return String.join("", Collections.nCopies(n, s));
 	}
 
-	public static final WeightFunction<Double> WEIGHT_FUNC_DEFAULT = Edge::data;
-	public static final WeightFunctionInt<Integer> WEIGHT_INT_FUNC_DEFAULT = Edge::data;
+//	public static final WeightFunction WEIGHT_FUNC_DEFAULT = Edge::data;
+//	public static final WeightFunctionInt WEIGHT_INT_FUNC_DEFAULT = Edge::data;
 
-	public static class EdgeWeightComparator<E> implements Comparator<Edge<E>> {
+	public static class EdgeWeightComparator implements IntComparator {
 
-		private final Graph.WeightFunction<E> w;
+		private final Graph.WeightFunction w;
 
-		EdgeWeightComparator(Graph.WeightFunction<E> w) {
+		EdgeWeightComparator(Graph.WeightFunction w) {
 			this.w = Objects.requireNonNull(w);
 		}
 
 		@Override
-		public int compare(Edge<E> e1, Edge<E> e2) {
+		public int compare(int e1, int e2) {
 			return Utils.compare(w.weight(e1), w.weight(e2));
 		}
 
 	}
 
-	public static class EdgeWeightIntComparator<E> implements Comparator<Edge<E>> {
+	public static class EdgeWeightIntComparator implements IntComparator {
 
-		private final Graph.WeightFunctionInt<E> w;
+		private final Graph.WeightFunctionInt w;
 
-		EdgeWeightIntComparator(Graph.WeightFunctionInt<E> w) {
+		EdgeWeightIntComparator(Graph.WeightFunctionInt w) {
 			this.w = Objects.requireNonNull(w);
 		}
 
 		@Override
-		public int compare(Edge<E> e1, Edge<E> e2) {
+		public int compare(int e1, int e2) {
 			return Integer.compare(w.weightInt(e1), w.weightInt(e2));
 		}
 
 	}
 
-	public static <E> Graph.Directed<Edge<E>> referenceGraph(Graph.Directed<E> g) {
-		Graph.Directed<Edge<E>> g0 = new GraphArrayDirected<>(g.vertices());
-		for (Edge<E> e : g.edges())
-			g0.addEdge(e.u(), e.v()).setData(e);
+	public static Graph.Directed<Integer> referenceGraph(Graph.Directed<?> g) {
+		int m = g.edges();
+		Graph.EdgeData.Int data = new Graph.EdgeData.Int(m);
+		Graph.Directed<Integer> g0 = new GraphArrayDirectedOld<>(g.vertices());
+		for (int e = 0; e < m; e++) {
+			int e0 = g0.addEdge(g.getEdgeSource(e), g.getEdgeTarget(e));
+			data.set(e0, e);
+		}
+		g0.setEdgesData(data);
 		return g0;
 	}
 
-	public static <E> Graph.Undirected<Edge<E>> referenceGraph(Graph.Undirected<E> g) {
-		Graph.Undirected<Edge<E>> g0 = new GraphArrayUndirected<>(g.vertices());
-		for (Edge<E> e : g.edges())
-			g0.addEdge(e.u(), e.v()).setData(e);
+	public static Graph.Undirected<Integer> referenceGraph(Graph.Undirected<?> g) {
+		int m = g.edges();
+		Graph.EdgeData.Int data = new Graph.EdgeData.Int(m);
+		Graph.Undirected<Integer> g0 = new GraphArrayUndirectedOld<>(g.vertices());
+		for (int e = 0; e < m; e++) {
+			int e0 = g0.addEdge(g.getEdgeSource(e), g.getEdgeTarget(e));
+			data.set(e0, e);
+		}
+		g0.setEdgesData(data);
 		return g0;
 	}
 

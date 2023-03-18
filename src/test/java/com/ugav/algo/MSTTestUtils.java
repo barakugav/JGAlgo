@@ -7,7 +7,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Supplier;
 
-import com.ugav.algo.Graph.Edge;
+
 import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.Graph.WeightFunctionInt;
 import com.ugav.algo.GraphImplTestUtils.GraphImpl;

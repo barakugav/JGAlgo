@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Random;
 
-import com.ugav.algo.Graph.Edge;
+
 import com.ugav.algo.Graph.WeightFunction;
 
 public class MSTKargerKleinTarjan1995 implements MST {
@@ -29,7 +29,7 @@ public class MSTKargerKleinTarjan1995 implements MST {
 	public <E> Collection<Edge<E>> calcMST(Graph<E> g, WeightFunction<E> w) {
 		if (g instanceof Graph.Directed<?>)
 			throw new IllegalArgumentException("directed graphs are not supported");
-		if (g.edges().size() == 0)
+		if (g.edges() == 0)
 			return Collections.emptyList();
 		return calcMST0(g, w);
 	}
@@ -50,9 +50,9 @@ public class MSTKargerKleinTarjan1995 implements MST {
 		Collection<Edge<E>> f0 = r.e2;
 		Graph<Ref<E>> g1 = randSubgraph(g0);
 		Collection<Edge<Ref<E>>> f1Edges = calcMST0(g1, w0);
-		Graph.Undirected<Ref<E>> f1 = GraphArrayUndirected.valueOf(g1.vertices(), f1Edges);
+		Graph.Undirected<Ref<E>> f1 = GraphArrayUndirectedOld.valueOf(g1.vertices(), f1Edges);
 		Collection<Edge<Ref<E>>> e2 = lightEdges(g0, f1, w0);
-		Graph<Ref<E>> g2 = GraphArrayUndirected.valueOf(g0.vertices(), e2);
+		Graph<Ref<E>> g2 = GraphArrayUndirectedOld.valueOf(g0.vertices(), e2);
 		Collection<Edge<Ref<E>>> f2 = calcMST0(g2, w0);
 
 		for (Edge<Ref<E>> e : f2)
@@ -62,7 +62,7 @@ public class MSTKargerKleinTarjan1995 implements MST {
 
 	private <E> Graph<E> randSubgraph(Graph<E> g) {
 		Random rand = new Random(seedGenerator.nextLong() ^ 0x043a4a7a193827bcL);
-		Graph<E> g1 = new GraphArrayUndirected<>(g.vertices());
+		Graph<E> g1 = new GraphArrayUndirectedOld<>(g.vertices());
 
 		for (Edge<E> e : g.edges()) {
 			if (rand.nextBoolean())
@@ -86,7 +86,7 @@ public class MSTKargerKleinTarjan1995 implements MST {
 		@SuppressWarnings("unchecked")
 		Graph<Double>[] trees = new Graph[treeSizes.length];
 		for (int t = 0; t < trees.length; t++)
-			trees[t] = new GraphArrayUndirected<>(treeSizes[t]);
+			trees[t] = new GraphArrayUndirectedOld<>(treeSizes[t]);
 
 		int[] vToVnew = new int[n];
 		int[] treeToNextv = new int[trees.length];

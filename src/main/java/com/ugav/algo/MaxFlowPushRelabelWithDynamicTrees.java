@@ -4,7 +4,7 @@ import java.util.function.Consumer;
 import java.util.function.ObjDoubleConsumer;
 
 import com.ugav.algo.DynamicTree.MinEdge;
-import com.ugav.algo.Graph.Edge;
+
 import com.ugav.algo.Utils.IterPickable;
 import com.ugav.algo.Utils.QueueFixSize;
 import com.ugav.algo.Utils.QueueIntFixSize;
@@ -62,7 +62,7 @@ public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 		Graph<Ref<E>> g = referenceGraph(g0, net);
 		int n = g.vertices();
 
-		final int maxTreeSize = Math.max(1, n * n / g.edges().size());
+		final int maxTreeSize = Math.max(1, n * n / g.edges());
 
 		QueueFixSize<Vertex<E>> active = new QueueFixSize<>(n);
 		DynamicTree<Vertex<E>, Edge<Ref<E>>> dt = new DynamicTreeSplaySized<>(maxCapacity * 10);
@@ -267,7 +267,7 @@ public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 	}
 
 	private static <E> Graph<Ref<E>> referenceGraph(Graph<E> g0, FlowNetwork<E> net) {
-		Graph<Ref<E>> g = new GraphArrayDirected<>(g0.vertices());
+		Graph<Ref<E>> g = new GraphArrayDirectedOld<>(g0.vertices());
 		for (Edge<E> e : g0.edges()) {
 			Ref<E> ref = new Ref<>(e, net.getCapacity(e), 0), refRev = new Ref<>(e, 0, 0);
 			g.addEdge(e.u(), e.v()).setData(ref);

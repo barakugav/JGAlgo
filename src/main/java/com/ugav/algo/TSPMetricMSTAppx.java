@@ -3,7 +3,7 @@ package com.ugav.algo;
 import java.util.Collection;
 import java.util.List;
 
-import com.ugav.algo.Graph.Edge;
+
 
 public class TSPMetricMSTAppx implements TSPMetric {
 
@@ -30,7 +30,7 @@ public class TSPMetricMSTAppx implements TSPMetric {
 			TSPMetric.checkArgDistanceTableIsMetric(distances);
 
 		/* Build graph from the distances table */
-		Graph<Double> g = new GraphTableUndirected<>(n);
+		Graph<Double> g = new GraphTableUndirectedOld<>(n);
 		for (int u = 0; u < n; u++)
 			for (int v = u + 1; v < n; v++)
 				g.addEdge(u, v).setData(Double.valueOf(distances[u][v]));
@@ -39,7 +39,7 @@ public class TSPMetricMSTAppx implements TSPMetric {
 		Collection<Edge<Double>> mst = new MSTPrim1957().calcMST(g, Graphs.WEIGHT_FUNC_DEFAULT);
 
 		/* Build a graph with each MST edge duplicated */
-		Graph<Double> g1 = new GraphArrayUndirected<>(n);
+		Graph<Double> g1 = new GraphArrayUndirectedOld<>(n);
 		for (Edge<Double> e : mst) {
 			g1.addEdge(e);
 			g1.addEdge(e.u(), e.v()).setData(e.data());
