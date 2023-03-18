@@ -7,7 +7,7 @@ import java.util.Random;
 import java.util.TreeSet;
 import java.util.function.Supplier;
 
-import com.ugav.algo.Graph.Edge;
+
 import com.ugav.algo.GraphImplTestUtils.GraphImpl;
 import com.ugav.algo.GraphsTestUtils.RandomGraphBuilder;
 import com.ugav.algo.MaxFlow.FlowEdgeDataDefault;

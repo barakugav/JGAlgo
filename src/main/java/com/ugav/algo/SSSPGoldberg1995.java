@@ -1,13 +1,14 @@
 package com.ugav.algo;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
-import com.ugav.algo.Graph.Edge;
+import com.ugav.algo.Graph.Directed;
+import com.ugav.algo.Graph.EdgeIter;
 import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.Graph.WeightFunctionInt;
+
+import it.unimi.dsi.fastutil.ints.IntList;
 
 public class SSSPGoldberg1995 implements SSSP {
 
@@ -19,31 +20,33 @@ public class SSSPGoldberg1995 implements SSSP {
 	}
 
 	@Override
-	public <E> SSSP.Result<E> calcDistances(Graph<E> g, WeightFunction<E> w0, int source) {
-		if (!(g instanceof Graph.Directed<?>))
+	public SSSP.Result calcDistances(Graph g0, WeightFunction w0, int source) {
+		if (!(g0 instanceof Graph.Directed))
 			throw new IllegalArgumentException("Undirected graphs are not supported");
+		Graph.Directed g = (Directed) g0;
 		if (!(w0 instanceof WeightFunctionInt))
 			throw new IllegalArgumentException("Only integer weights are supported");
-		WeightFunctionInt<E> w = (WeightFunctionInt<E>) w0;
+		WeightFunctionInt w = (WeightFunctionInt) w0;
 
+		final int m = g.edges();
 		int minWeight = Integer.MAX_VALUE;
-		for (Edge<E> e : g.edges())
+		for (int e = 0; e < m; e++)
 			minWeight = Math.min(minWeight, w.weightInt(e));
 		if (minWeight >= 0)
 			// All weights are positive, use Dijkstra
 			return new SSSPDijkstra().calcDistances(g, w, source);
 
-		Pair<int[], List<Edge<E>>> p = calcPotential(g, w, minWeight);
+		Pair<int[], IntList> p = calcPotential(g, w, minWeight);
 		if (p.e2 != null)
-			return new Result<>(source, null, null, p.e2);
+			return new Result(source, null, null, p.e2);
 		int[] potential = p.e1;
-		PotentialWeightFunction<E> pw = new PotentialWeightFunction<>(w, potential);
-		SSSP.Result<E> dijkstra = new SSSPDijkstra().calcDistances(g, pw, source);
-		return new Result<>(source, potential, dijkstra, null);
+		PotentialWeightFunction pw = new PotentialWeightFunction(g, w, potential);
+		SSSP.Result dijkstra = new SSSPDijkstra().calcDistances(g, pw, source);
+		return new Result(source, potential, dijkstra, null);
 	}
 
-	private static <E> Pair<int[], List<Edge<E>>> calcPotential(Graph<E> g, WeightFunctionInt<E> w, int minWeight) {
-		int n = g.vertices();
+	private static Pair<int[], IntList> calcPotential(Graph.Directed g, WeightFunctionInt w, int minWeight) {
+		int n = g.vertices(), m = g.edges();
 		int[] potential = new int[n];
 
 		boolean[] connected = new boolean[n];
@@ -51,8 +54,8 @@ public class SSSPGoldberg1995 implements SSSP {
 
 		SSSPDial1969 ssspDial = new SSSPDial1969();
 
-		Graph.Directed<E> gNeg = new GraphArrayDirected<>(n);
-		Graph.Directed<Integer> G = new GraphArrayDirected<>(n);
+		Graph.Directed gNeg = new GraphArrayDirectedOld<>(n);
+		Graph.Directed G = new GraphArrayDirectedOld<>(n);
 		int fakeS = G.newVertex();
 
 		int minWeightWordsize = Utils.log2(-minWeight);
@@ -65,10 +68,14 @@ public class SSSPGoldberg1995 implements SSSP {
 			// current weight function
 			do {
 				// Create a graph with edges with weight <= 0
-				gNeg.edges().clear();
-				for (Edge<E> e : g.edges())
-					if (weight(e, w, potential, weightMask) <= 0)
-						gNeg.addEdge(e);
+				gNeg.clearEdges();
+				Graph.EdgeData.Int gNeg2gEdge = new Graph.EdgeData.Int();
+				for (int e = 0; e < m; e++) {
+					if (weight(g, e, w, potential, weightMask) <= 0) {
+						int e1 = gNeg.addEdge(g.getEdgeSource(e), g.getEdgeTarget(e));
+						gNeg2gEdge.set(e1, e);
+					}
+				}
 
 				// Find all strong connectivity components in the graph
 				Pair<Integer, int[]> pair = Graphs.findStrongConnectivityComponents(gNeg);
@@ -77,18 +84,23 @@ public class SSSPGoldberg1995 implements SSSP {
 
 				// Contract each strong connectivity component and search for a negative edge
 				// within it, if found - negative cycle found
-				G.edges().clear();
+				G.clearEdges();
+				Graph.EdgeData.Int GWeight = new Graph.EdgeData.Int();
 				for (int u = 0; u < n; u++) {
 					int U = v2V[u];
-					for (Edge<E> e : Utils.iterable(gNeg.edges(u))) {
-						int V = v2V[e.v()];
-						int weight = weight(e, w, potential, weightMask);
-						if (U != V)
-							G.addEdge(U, V).setData(Integer.valueOf(weight));
-						else if (weight < 0) {
+					for (EdgeIter eit = gNeg.edgesOut(u); eit.hasNext();) {
+						int e = eit.nextInt();
+						int v = eit.v();
+						int V = v2V[v];
+						int weight = weight(g, gNeg2gEdge.get(e), w, potential, weightMask);
+						if (U != V) {
+							int e1 = G.addEdge(U, V);
+							GWeight.set(e1, weight);
+
+						} else if (weight < 0) {
 							// negative cycle
-							gNeg.removeEdge(e);
-							List<Edge<E>> negCycle = new ArrayList<>(Graphs.findPath(gNeg, e.v(), u));
+//							gNeg.removeEdge(e);
+							IntList negCycle = Graphs.findPath(gNeg, v, u);
 							negCycle.add(e);
 							return Pair.of(null, negCycle);
 						}
@@ -96,9 +108,11 @@ public class SSSPGoldberg1995 implements SSSP {
 				}
 
 				// Create a fake vertex S, connect with 0 edges to all and calc distances
-				for (int U = 0; U < N; U++)
-					G.addEdge(fakeS, U).setData(Integer.valueOf(0));
-				SSSP.Result<Integer> ssspRes = Graphs.calcDistancesDAG(G, Graphs.WEIGHT_INT_FUNC_DEFAULT, fakeS);
+				for (int U = 0; U < N; U++) {
+					int e = G.addEdge(fakeS, U);
+					GWeight.set(e, 0);
+				}
+				SSSP.Result ssspRes = Graphs.calcDistancesDAG(G, GWeight, fakeS);
 
 				// Divide super vertices into layers by distance
 				int layerNum = 0;
@@ -128,7 +142,7 @@ public class SSSPGoldberg1995 implements SSSP {
 							potential[v]--;
 					}
 				} else {
-					// No big layer is found, use path which has at least sqrt(|V|) vetices.
+					// No big layer is found, use path which has at least sqrt(|V|) vertices.
 					// Connected a fake vertex to all vertices, with edge r-i to negative vertex vi
 					// on the path and with edge r to all other vertices
 					Arrays.fill(connected, 0, N, false);
@@ -146,7 +160,7 @@ public class SSSPGoldberg1995 implements SSSP {
 							G.addEdge(fakeS, V).setData(Integer.valueOf(layerNum - 1));
 
 					// Add the remaining edges to the graph, not only 0,-1 edges
-					for (Edge<E> e : g.edges()) {
+					for (Edge e : g.edges()) {
 						int weight = weight(e, w, potential, weightMask);
 						if (weight > 0)
 							G.addEdge(v2V[e.u()], v2V[e.v()]).setData(Integer.valueOf(weight));
@@ -163,7 +177,7 @@ public class SSSPGoldberg1995 implements SSSP {
 		return Pair.of(potential, null);
 	}
 
-	private static <E> int weight(Edge<E> e, WeightFunctionInt<E> w, int[] potential, int weightMask) {
+	private static int weight(Graph.Directed g, int e, WeightFunctionInt w, int[] potential, int weightMask) {
 		int weight = w.weightInt(e);
 		// weight = ceil(weight / 2^weightMask)
 		if (weightMask != 0) {
@@ -176,17 +190,17 @@ public class SSSPGoldberg1995 implements SSSP {
 					weight = 1;
 			}
 		}
-		return weight + potential[e.u()] - potential[e.v()];
+		return weight + potential[g.getEdgeSource(e)] - potential[g.getEdgeTarget(e)];
 	}
 
-	private static class Result<E> implements SSSP.Result<E> {
+	private static class Result implements SSSP.Result {
 
 		private final int sourcePotential;
 		private final int[] potential;
-		private final SSSP.Result<E> dijkstraRes;
-		private final List<Edge<E>> cycle;
+		private final SSSP.Result dijkstraRes;
+		private final IntList cycle;
 
-		Result(int source, int[] potential, SSSP.Result<E> dijkstraRes, List<Edge<E>> cycle) {
+		Result(int source, int[] potential, SSSP.Result dijkstraRes, IntList cycle) {
 			this.sourcePotential = potential != null ? potential[source] : 0;
 			this.potential = potential;
 			this.dijkstraRes = dijkstraRes;
@@ -201,7 +215,7 @@ public class SSSPGoldberg1995 implements SSSP {
 		}
 
 		@Override
-		public List<Edge<E>> getPathTo(int v) {
+		public IntList getPathTo(int v) {
 			if (foundNegativeCycle())
 				throw new IllegalStateException();
 			return dijkstraRes.getPathTo(v);
@@ -213,7 +227,7 @@ public class SSSPGoldberg1995 implements SSSP {
 		}
 
 		@Override
-		public List<Edge<E>> getNegativeCycle() {
+		public IntList getNegativeCycle() {
 			if (!foundNegativeCycle())
 				throw new IllegalStateException();
 			return cycle;
@@ -226,19 +240,21 @@ public class SSSPGoldberg1995 implements SSSP {
 
 	}
 
-	private static class PotentialWeightFunction<E> implements WeightFunctionInt<E> {
+	private static class PotentialWeightFunction implements WeightFunctionInt {
 
-		private final WeightFunctionInt<E> w;
+		private final Graph.Directed g;
+		private final WeightFunctionInt w;
 		private final int[] potential;
 
-		PotentialWeightFunction(WeightFunctionInt<E> w, int[] potential) {
+		PotentialWeightFunction(Graph.Directed g, WeightFunctionInt w, int[] potential) {
+			this.g = g;
 			this.w = w;
 			this.potential = potential;
 		}
 
 		@Override
-		public int weightInt(Edge<E> e) {
-			return w.weightInt(e) + potential[e.u()] - potential[e.v()];
+		public int weightInt(int e) {
+			return w.weightInt(e) + potential[g.getEdgeSource(e)] - potential[g.getEdgeTarget(e)];
 		}
 
 	}

@@ -5,16 +5,16 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
-public class GraphLinkedUndirected<E> extends GraphLinkedAbstract<E> implements Graph.Undirected<E> {
+public class GraphLinkedUndirectedOld<E> extends GraphLinkedAbstractOld<E> implements Graph.Undirected<E> {
 
 	private Node<E>[] edges;
 
-	public GraphLinkedUndirected() {
+	public GraphLinkedUndirectedOld() {
 		this(0);
 	}
 
 	@SuppressWarnings("unchecked")
-	public GraphLinkedUndirected(int n) {
+	public GraphLinkedUndirectedOld(int n) {
 		super(n);
 		edges = new Node[n != 0 ? n : 1];
 		this.edgesView = new EdgesView();

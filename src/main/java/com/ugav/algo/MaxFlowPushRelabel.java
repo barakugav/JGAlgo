@@ -3,7 +3,7 @@ package com.ugav.algo;
 import java.util.Arrays;
 import java.util.function.ObjDoubleConsumer;
 
-import com.ugav.algo.Graph.Edge;
+
 import com.ugav.algo.Utils.IterPickable;
 import com.ugav.algo.Utils.QueueIntFixSize;
 
@@ -116,7 +116,7 @@ public class MaxFlowPushRelabel implements MaxFlow {
 	}
 
 	private static <E> Graph<Ref<E>> referenceGraph(Graph<E> g0, FlowNetwork<E> net) {
-		Graph<Ref<E>> g = new GraphArrayDirected<>(g0.vertices());
+		Graph<Ref<E>> g = new GraphArrayDirectedOld<>(g0.vertices());
 		for (Edge<E> e : g0.edges()) {
 			Ref<E> ref = new Ref<>(e, net.getCapacity(e), 0), refRev = new Ref<>(e, 0, 0);
 			g.addEdge(e.u(), e.v()).setData(ref);

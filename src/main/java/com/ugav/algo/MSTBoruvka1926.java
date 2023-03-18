@@ -1,11 +1,13 @@
 package com.ugav.algo;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.function.Function;
 
-import com.ugav.algo.Graph.Edge;
+import com.ugav.algo.Graph.EdgeIter;
+import com.ugav.algo.Graph.WeightFunction;
+
+import it.unimi.dsi.fastutil.ints.Int2ObjectFunction;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntCollection;
 
 public class MSTBoruvka1926 implements MST {
 
@@ -17,34 +19,38 @@ public class MSTBoruvka1926 implements MST {
 	}
 
 	@Override
-	public <E> Collection<Edge<E>> calcMST(Graph<E> g, Graph.WeightFunction<E> w) {
+	public IntCollection calcMST(Graph<?> g, WeightFunction w) {
 		return calcMST0(g, w, Integer.MAX_VALUE).e3;
 	}
 
-	static <E, R> Pair<Graph.Undirected<R>, Collection<Edge<E>>> runBoruvka(Graph<E> g, Graph.WeightFunction<E> w,
-			int numberOfRounds, Function<Edge<E>, R> edgeValAssigner) {
+	static <E, R> Pair<Graph.Undirected<R>, IntCollection> runBoruvka(Graph<E> g, WeightFunction w, int numberOfRounds,
+			Int2ObjectFunction<R> edgeValAssigner) {
 		if (numberOfRounds <= 0)
 			throw new IllegalArgumentException();
-		Triple<int[], Integer, Collection<Edge<E>>> r = calcMST0(g, w, numberOfRounds);
+		Triple<int[], Integer, IntCollection> r = calcMST0(g, w, numberOfRounds);
 		int[] tree = r.e1;
 		int treeNum = r.e2.intValue();
-		Collection<Edge<E>> mstEdges = r.e3;
+		IntCollection mstEdges = r.e3;
 
-		Graph.Undirected<R> contractedG = new GraphArrayUndirected<>(treeNum);
-		for (Edge<E> e : g.edges()) {
-			int u = tree[e.u()];
-			int v = tree[e.v()];
+		Graph.Undirected<R> contractedG = new GraphArrayUndirectedOld<>(treeNum);
+		Graph.EdgeData<R> contractedGData = new Graph.EdgeData.Obj<>(contractedG.edges());
+		int m = g.edges();
+		for (int e = 0; e < m; e++) {
+			int u = tree[g.getEdgeSource(e)];
+			int v = tree[g.getEdgeTarget(e)];
 			if (u == v)
 				continue;
-			contractedG.addEdge(u, v).setData(edgeValAssigner.apply(e));
+			int ne = contractedG.addEdge(u, v);
+			contractedGData.set(ne, edgeValAssigner.apply(e));
 		}
+		contractedG.setEdgesData(contractedGData);
 		return Pair.of(contractedG, mstEdges);
 	}
 
-	private static <E> Triple<int[], Integer, Collection<Edge<E>>> calcMST0(Graph<E> g, Graph.WeightFunction<E> w,
-			int numberOfRounds) {
-		if (g instanceof Graph.Directed<?>)
-			throw new IllegalArgumentException("directed graphs are not supported");
+	private static Triple<int[], Integer, IntCollection> calcMST0(Graph<?> g0, WeightFunction w, int numberOfRounds) {
+		if (!(g0 instanceof Graph.Undirected<?>))
+			throw new IllegalArgumentException("only undirected graphs are supported");
+		Graph.Undirected<?> g = (Graph.Undirected<?>) g0;
 		int n = g.vertices();
 
 		int treeNum = n;
@@ -53,12 +59,12 @@ public class MSTBoruvka1926 implements MST {
 		for (int v = 0; v < n; v++)
 			vTree[v] = v;
 
-		@SuppressWarnings("unchecked")
-		Edge<E>[] minEdges = new Edge[n];
+		int[] minEdges = new int[n];
+		Arrays.fill(minEdges, -1);
 		double[] minEdgesWeight = new double[n];
 		int[] path = new int[n];
 
-		Collection<Edge<E>> mst = new ArrayList<>();
+		IntCollection mst = new IntArrayList();
 		for (int i = 0; i < numberOfRounds; i++) {
 			Arrays.fill(minEdgesWeight, 0, treeNum, Double.MAX_VALUE);
 
@@ -66,8 +72,10 @@ public class MSTBoruvka1926 implements MST {
 			for (int u = 0; u < n; u++) {
 				int tree = vTree[u];
 
-				for (Edge<E> e : Utils.iterable(g.edges(u))) {
-					if (tree == vTree[e.v()])
+				for (EdgeIter<?> eit = g.edges(u); eit.hasNext();) {
+					int e = eit.nextInt();
+					int v = eit.v();
+					if (tree == vTree[v])
 						continue;
 
 					double eWeight = w.weight(e);
@@ -80,17 +88,17 @@ public class MSTBoruvka1926 implements MST {
 
 			/* add min edges to MST */
 			for (int tree = 0; tree < treeNum; tree++) {
-				if (minEdges[tree] != null) {
-					Edge<E> e = minEdges[tree];
-					int ut = vTree[e.u()], vt = vTree[e.v()];
-					if (minEdges[vt] != e.twin() || ut < vt)
+				if (minEdges[tree] != -1) {
+					int e = minEdges[tree];
+					int ut = vTree[g.getEdgeSource(e)], vt = vTree[g.getEdgeTarget(e)];
+					if (minEdges[vt] != e || ut < vt)
 						mst.add(minEdges[tree]);
 				}
 			}
 
 			/*
 			 * the graph of the trees (vertex per tree, minimum out edges of the trees) is a
-			 * graph where each vertex has one out edge at most we want to find all the
+			 * graph where each vertex has one out edge at most, and we want to find all the
 			 * connectivity components between the trees and label the vertices of G with
 			 * new trees indices
 			 */
@@ -107,8 +115,12 @@ public class MSTBoruvka1926 implements MST {
 						path[pathLength++] = tPtr;
 						vTreeNext[tPtr] = IN_PATH;
 
-						if (minEdges[tPtr] != null) {
-							tPtr = vTree[minEdges[tPtr].v()];
+						if (minEdges[tPtr] != -1) {
+							int nextTPtr;
+							if ((nextTPtr = vTree[g.getEdgeSource(minEdges[tPtr])]) == tPtr)
+								nextTPtr = vTree[g.getEdgeTarget(minEdges[tPtr])];
+							assert nextTPtr != tPtr;
+							tPtr = nextTPtr;
 							continue;
 						}
 					}
@@ -125,7 +137,7 @@ public class MSTBoruvka1926 implements MST {
 			if (treeNum == treeNumNext)
 				break;
 			treeNum = treeNumNext;
-			Arrays.fill(minEdges, 0, treeNum, null);
+			Arrays.fill(minEdges, 0, treeNum, -1);
 
 			/* assign new tree indices to G's vertices */
 			for (int v = 0; v < n; v++)

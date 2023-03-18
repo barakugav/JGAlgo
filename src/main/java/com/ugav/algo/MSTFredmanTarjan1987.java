@@ -1,14 +1,15 @@
 package com.ugav.algo;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 
-import com.ugav.algo.Graph.Edge;
+import com.ugav.algo.Graph.EdgeIter;
 import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.Graphs.EdgeWeightComparator;
+
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntComparator;
+import it.unimi.dsi.fastutil.ints.IntLists;
 
 public class MSTFredmanTarjan1987 implements MST {
 
@@ -20,10 +21,13 @@ public class MSTFredmanTarjan1987 implements MST {
 	}
 
 	@Override
-	public <E> Collection<Edge<E>> calcMST(Graph<E> g, WeightFunction<E> w) {
-		int n = g.vertices(), m = g.edges().size();
+	public IntCollection calcMST(Graph<?> g0, WeightFunction w) {
+		if (!(g0 instanceof Graph.Undirected<?>))
+			throw new IllegalArgumentException("only undirected graphs are supported");
+		Graph.Undirected<?> g = (Graph.Undirected<?>) g0;
+		int n = g.vertices(), m = g.edges();
 		if (n == 0)
-			return Collections.emptyList();
+			return IntLists.emptyList();
 
 		// following variables are used to maintain the super vertices
 
@@ -51,14 +55,14 @@ public class MSTFredmanTarjan1987 implements MST {
 		int[] vTree = new int[n]; // (super vertex -> tree index)
 		int[] treeVertices = new int[n]; // stack of super vertices in current built tree
 
-		Comparator<Edge<E>> c = new EdgeWeightComparator<>(w);
+		IntComparator c = new EdgeWeightComparator(w);
 		// heap of edges going out of the current tree, one edge in per super vertex
-		HeapDirectAccessed<Edge<E>> heap = new HeapFibonacci<>(c);
+		HeapDirectAccessed<Integer> heap = new HeapFibonacci<>(c);
 		// (super vertex -> heap element) for fast decreaseKey
 		@SuppressWarnings("unchecked")
-		HeapDirectAccessed.Handle<Edge<E>>[] vHeapElm = new HeapDirectAccessed.Handle[n];
+		HeapDirectAccessed.Handle<Integer>[] vHeapElm = new HeapDirectAccessed.Handle[n];
 
-		Collection<Edge<E>> mst = new ArrayList<>(n - 1);
+		IntCollection mst = new IntArrayList(n - 1);
 		while (true) {
 			int kExp = 2 * m / ni;
 			int k = kExp < Integer.SIZE ? 1 << kExp : Integer.MAX_VALUE;
@@ -80,32 +84,36 @@ public class MSTFredmanTarjan1987 implements MST {
 					// decrease edges keys if a better one is found
 					for (int u = vListBegin[U]; u != -1; u = vListNext[u]) {
 						// for each vertex in the super vertex, iterate over all edges
-						for (Edge<E> e : Utils.iterable(g.edges(u))) {
-							int v = V[e.v()];
+						for (EdgeIter<?> eit = g.edges(u); eit.hasNext();) {
+							int e = eit.nextInt();
+							int v = V[eit.v()];
 
 							// edge from current tree to itself
 							if (vTree[v] == r)
 								continue;
 
-							HeapDirectAccessed.Handle<Edge<E>> heapElm = vHeapElm[v];
+							HeapDirectAccessed.Handle<Integer> heapElm = vHeapElm[v];
 							if (heapElm == null) {
-								heapElm = vHeapElm[v] = heap.insert(e);
+								heapElm = vHeapElm[v] = heap.insert(Integer.valueOf(e));
 								if (heap.size() > k)
 									break treeLoop;
-							} else if (c.compare(e, heapElm.get()) < 0)
-								heap.decreaseKey(heapElm, e);
+							} else if (c.compare(e, heapElm.get().intValue()) < 0)
+								heap.decreaseKey(heapElm, Integer.valueOf(e));
 						}
 					}
 
 					// find next lightest edge
-					Edge<E> e = null;
-					int v, vt;
+					int e, v, vt;
 					while (true) {
 						if (heap.isEmpty())
 							// reached all vertices from current root, continue to next tree
 							break treeLoop;
-						e = heap.extractMin();
-						v = V[e.v()];
+						e = heap.extractMin().intValue();
+
+						v = V[g.getEdgeSource(e)];
+						if ((vt = vTree[v]) != r)
+							break;
+						v = V[g.getEdgeTarget(e)];
 						if ((vt = vTree[v]) != r)
 							break;
 					}

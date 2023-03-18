@@ -1,9 +1,8 @@
 package com.ugav.algo;
 
-import java.util.Collection;
-
-import com.ugav.algo.Graph.Edge;
 import com.ugav.algo.Graph.WeightFunction;
+
+import it.unimi.dsi.fastutil.ints.IntCollection;
 
 public interface MST {
 
@@ -15,7 +14,7 @@ public interface MST {
 	 * @return all edges that compose the MST, n-1 if the graph is connected (or
 	 *         some forest if not)
 	 */
-	public <E> Collection<Edge<E>> calcMST(Graph<E> g, Graph.WeightFunction<E> w);
+	public IntCollection calcMST(Graph<?> g, WeightFunction w);
 
 	/**
 	 * Verify that the given edges are actually form a MST of g
@@ -33,8 +32,8 @@ public interface MST {
 	 *                 algorithm.
 	 * @return true if the collection of edges form a MST of g
 	 */
-	public static <E> boolean verifyMST(Graph<E> g, WeightFunction<E> w, Collection<Edge<E>> mstEdges, TPM tpmAlgo) {
-		Graph<E> mst = GraphArrayUndirected.valueOf(g.vertices(), mstEdges);
+	public static boolean verifyMST(Graph<?> g, WeightFunction w, IntCollection mstEdges, TPM tpmAlgo) {
+		Graph<?> mst = GraphArrayUndirectedOld.valueOf(g.vertices(), mstEdges);
 		return verifyMST(g, w, mst, tpmAlgo);
 	}
 
@@ -54,30 +53,28 @@ public interface MST {
 	 *                algorithm.
 	 * @return true if the given spanning tree is a MST of g
 	 */
-	public static <E> boolean verifyMST(Graph<E> g, WeightFunction<E> w, Graph<E> mst, TPM tpmAlgo) {
-		if (g instanceof Graph.Directed<?>)
+	public static boolean verifyMST(Graph<?> g0, WeightFunction w, Graph<?> mst, TPM tpmAlgo) {
+		if (!(g0 instanceof Graph.Undirected<?>))
 			throw new IllegalArgumentException("Directed graphs are not supported");
+		Graph.Undirected<?> g = (Graph.Undirected<?>) g0;
 		if (!Graphs.isTree(mst))
 			return false;
 
-		int m = g.edges().size();
+		int m = g.edges();
 		int[] queries = new int[m * 2];
 
-		int i = 0;
-		for (Edge<E> e : g.edges()) {
-			queries[i * 2] = e.u();
-			queries[i * 2 + 1] = e.v();
-			i++;
+		for (int e = 0; e < m; e++) {
+			queries[e * 2] = g.getEdgeSource(e);
+			queries[e * 2 + 1] = g.getEdgeTarget(e);
 		}
 
-		Edge<E>[] tpmResults = tpmAlgo.calcTPM(mst, w, queries, m);
+		int[] tpmResults = tpmAlgo.calcTPM(mst, w, queries, m);
 
-		i = 0;
-		for (Edge<E> e : g.edges()) {
-			Edge<E> mstEdge = tpmResults[i];
-			if (mstEdge == null || w.weight(e) < w.weight(mstEdge))
+		int i = 0;
+		for (int e = 0; e < m; e++) {
+			int mstEdge = tpmResults[i];
+			if (mstEdge == -1 || w.weight(e) < w.weight(mstEdge))
 				return false;
-			i++;
 		}
 		return true;
 	}

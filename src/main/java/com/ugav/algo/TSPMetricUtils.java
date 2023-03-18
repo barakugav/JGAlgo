@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import com.ugav.algo.Graph.Edge;
+
 
 class TSPMetricUtils {
 

@@ -1,11 +1,12 @@
 package com.ugav.algo;
 
 import java.util.Arrays;
-import java.util.List;
 
-import com.ugav.algo.Graph.Edge;
+import com.ugav.algo.Graph.EdgeIter;
 import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.Utils.QueueIntFixSize;
+
+import it.unimi.dsi.fastutil.ints.IntList;
 
 public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 
@@ -16,18 +17,17 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 	public TPMKomlos1985King1997Hagerup2009() {
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public <E> Edge<E>[] calcTPM(Graph<E> t, WeightFunction<E> w, int[] queries, int queriesNum) {
-		if (t instanceof Graph.Directed<?>)
-			throw new IllegalArgumentException("directed graphs are not supported");
+	public int[] calcTPM(Graph<?> t, WeightFunction w, int[] queries, int queriesNum) {
+		if (!(t instanceof Graph.Undirected))
+			throw new IllegalArgumentException("only undirected graphs are supported");
 		if (queries.length / 2 < queriesNum)
 			throw new IllegalArgumentException("queries should be in format [u0, v0, u1, v1, ...]");
 		if (!Graphs.isTree(t))
 			throw new IllegalArgumentException("only trees are supported");
 		if (t.vertices() == 0)
-			return new Edge[queriesNum];
-		return new Worker<>((Graph.Undirected<E>) t, w).calcTPM(queries, queriesNum);
+			return new int[queriesNum];
+		return new Worker((Graph.Undirected<?>) t, w).calcTPM(queries, queriesNum);
 	}
 
 	private static class BitsTable {
@@ -45,17 +45,17 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 		}
 	}
 
-	private static class Worker<E> {
+	private static class Worker {
 
 		/*
 		 * Original tree, in other functions 't' refers to the Boruvka fully branching
 		 * tree
 		 */
-		final Graph.Undirected<E> tOrig;
-		final WeightFunction<E> w;
+		final Graph.Undirected<?> tOrig;
+		final WeightFunction w;
 		final BitsTable bitsTable;
 
-		Worker(Graph.Undirected<E> t, WeightFunction<E> w) {
+		Worker(Graph.Undirected<?> t, WeightFunction w) {
 			this.tOrig = t;
 			this.w = w;
 
@@ -64,26 +64,26 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 			bitsTable.init();
 		}
 
-		Edge<E>[] calcTPM(int[] queries, int queriesNum) {
-			Pair<Graph<Edge<E>>, Integer> r = buildBoruvkaFullyBranchingTree();
-			Graph<Edge<E>> t = r.e1;
+		int[] calcTPM(int[] queries, int queriesNum) {
+			Pair<Graph.Undirected<Integer>, Integer> r = buildBoruvkaFullyBranchingTree();
+			Graph.Undirected<Integer> t = r.e1;
 			int root = r.e2.intValue();
 
 			int[] lcaQueries = splitQueriesIntoLCAQueries(t, root, queries, queriesNum);
 
-			Pair<Edge<Edge<E>>[], int[]> r2 = getEdgeToParentsAndDepth(t, root);
-			Edge<Edge<E>>[] edgeToParent = r2.e1;
+			Pair<int[], int[]> r2 = getEdgeToParentsAndDepth(t, root);
+			int[] edgeToParent = r2.e1;
 			int[] depths = r2.e2;
 
-			int[] q = calcQueriesPerVertex(lcaQueries, depths, edgeToParent);
-			Edge<Edge<E>>[][] a = calcAnswersPerVertex(t, root, q, edgeToParent);
-			return extractEdgesFromAnswers(a, q, lcaQueries, depths);
+			int[] q = calcQueriesPerVertex(t, lcaQueries, depths, edgeToParent);
+			int[][] a = calcAnswersPerVertex(t, root, q, edgeToParent);
+			return extractEdgesFromAnswers(a, q, lcaQueries, depths, (Graph.EdgeData.Int) t.edgeData());
 		}
 
-		private Edge<E>[] extractEdgesFromAnswers(Edge<Edge<E>>[][] a, int[] q, int[] lcaQueries, int[] depths) {
+		private int[] extractEdgesFromAnswers(int[][] a, int[] q, int[] lcaQueries, int[] depths,
+				Graph.EdgeData.Int edgeData) {
 			int queriesNum = lcaQueries.length / 4;
-			@SuppressWarnings("unchecked")
-			Edge<E>[] res = new Edge[queriesNum];
+			int[] res = new int[queriesNum];
 
 			for (int i = 0; i < queriesNum; i++) {
 				int u = lcaQueries[i * 4];
@@ -91,7 +91,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 				int lca = lcaQueries[i * 4 + 1];
 				int lcaDepth = depths[lca];
 
-				Edge<Edge<E>> ua = null, va = null;
+				int ua = -1, va = -1;
 
 				int qusize = bitsTable.count.bitCount(q[u]);
 				for (int j = 0; j < qusize; j++) {
@@ -108,43 +108,41 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 					}
 				}
 
-				res[i] = (va == null || (ua != null && w.weight(ua.data()) >= w.weight(va.data())))
-						? (ua != null ? ua.data() : null)
-						: (va != null ? va.data() : null);
+				res[i] = (va == -1 || (ua != -1 && w.weight(edgeData.getInt(ua)) >= w.weight(edgeData.getInt(va))))
+						? (ua != -1 ? edgeData.getInt(ua) : -1)
+						: (va != -1 ? edgeData.getInt(va) : -1);
 			}
 
 			return res;
 		}
 
-		private Edge<Edge<E>>[][] calcAnswersPerVertex(Graph<Edge<E>> t, int root, int[] q,
-				Edge<Edge<E>>[] edgeToParent) {
+		private int[][] calcAnswersPerVertex(Graph.Undirected<Integer> t, int root, int[] q, int[] edgeToParent) {
 			int n = t.vertices();
 			int[] a = new int[n];
 
 			int leavesDepth = Graphs.getFullyBranchingTreeDepth(t, root);
 
-			@SuppressWarnings("unchecked")
-			Edge<Edge<E>>[][] res = new Edge[tOrig.vertices()][];
+			Graph.EdgeData.Int tData = (Graph.EdgeData.Int) t.edgeData();
+			int[][] res = new int[tOrig.vertices()][];
 
 			Graphs.runDFS(t, root, (v, edgesFromRoot) -> {
 				if (edgesFromRoot.isEmpty())
 					return true;
 				int depth = edgesFromRoot.size();
-				Edge<Edge<E>> edgeToChild = edgesFromRoot.get(depth - 1);
-				int u = edgeToChild.u(); // parent
+				int edgeToChild = edgesFromRoot.getInt(depth - 1);
+				int u = t.getEdgeEndpoint(edgeToChild, v);
 
 				a[v] = subseq(a[u], q[u], q[v]);
-				int j = binarySearch(a[v], w.weight(edgeToChild.data()), edgesFromRoot);
+				int j = binarySearch(a[v], w.weight(tData.getInt(edgeToChild)), edgesFromRoot, tData);
 				a[v] = repSuf(a[v], depth, j);
 
 				if (depth == leavesDepth) {
 					int qvsize = bitsTable.count.bitCount(q[v]);
-					@SuppressWarnings("unchecked")
-					Edge<Edge<E>>[] resv = new Edge[qvsize];
+					int[] resv = new int[qvsize];
 					for (int i = 0; i < qvsize; i++) {
 						int b = bitsTable.ith.ithBit(q[v], i);
 						int s = bitsTable.ith.numberOfTrailingZeros(successor(a[v], 1 << b) >> 1);
-						resv[i] = edgesFromRoot.get(s);
+						resv[i] = edgesFromRoot.getInt(s);
 					}
 					res[v] = resv;
 				}
@@ -174,9 +172,9 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 			return successor(au, qv);
 		}
 
-		private int binarySearch(int av, double weight, List<Edge<Edge<E>>> edgesToRoot) {
+		private int binarySearch(int av, double weight, IntList edgesToRoot, Graph.EdgeData.Int edgeData) {
 			int avsize = bitsTable.count.bitCount(av);
-			if (avsize == 0 || w.weight(edgesToRoot.get(bitsTable.ith.ithBit(av, 0) - 1).data()) < weight)
+			if (avsize == 0 || w.weight(edgeData.getInt(edgesToRoot.getInt(bitsTable.ith.ithBit(av, 0) - 1))) < weight)
 				return 0;
 
 			for (int from = 0, to = avsize;;) {
@@ -184,7 +182,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 					return bitsTable.ith.ithBit(av, from) + 1;
 				int mid = (from + to) / 2;
 				int avi = bitsTable.ith.ithBit(av, mid);
-				if (w.weight(edgesToRoot.get(avi - 1).data()) >= weight)
+				if (w.weight(edgeData.getInt(edgesToRoot.getInt(avi - 1))) >= weight)
 					from = mid;
 				else
 					to = mid;
@@ -197,10 +195,9 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 			return av;
 		}
 
-		private Pair<Graph<Edge<E>>, Integer> buildBoruvkaFullyBranchingTree() {
+		private Pair<Graph.Undirected<Integer>, Integer> buildBoruvkaFullyBranchingTree() {
 			int n = tOrig.vertices();
-			@SuppressWarnings("unchecked")
-			Edge<Edge<E>>[] minEdges = new Edge[n];
+			int[] minEdges = new int[n];
 			double[] minEdgesWeight = new double[n];
 			int[] vNext = new int[n];
 			int[] path = new int[n];
@@ -210,15 +207,19 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 			for (int v = 0; v < n; v++)
 				vTv[v] = v;
 
-			Graph<Edge<E>> t = new GraphArrayUndirected<>(n);
-			for (Graph<Edge<E>> G = Graphs.referenceGraph(tOrig); (n = G.vertices()) > 1;) {
+			Graph.Undirected<Integer> t = new GraphArrayUndirectedOld<>(n);
+			Graph.EdgeData.Int tData = new Graph.EdgeData.Int();
+			t.setEdgesData(tData);
+			for (Graph.Undirected<Integer> G = Graphs.referenceGraph(tOrig); (n = G.vertices()) > 1;) {
+				Graph.EdgeData.Int GData = (Graph.EdgeData.Int) G.edgeData();
 
 				// Find minimum edge of each vertex
-				Arrays.fill(minEdges, 0, n, null);
+				Arrays.fill(minEdges, 0, n, -1);
 				Arrays.fill(minEdgesWeight, 0, n, Double.MAX_VALUE);
 				for (int u = 0; u < n; u++) {
-					for (Edge<Edge<E>> e : Utils.iterable(G.edges(u))) {
-						double eWeight = w.weight(e.data());
+					for (EdgeIter<?> eit = G.edges(u); eit.hasNext();) {
+						int e = eit.nextInt();
+						double eWeight = w.weight(e);
 						if (eWeight < minEdgesWeight[u]) {
 							minEdges[u] = e;
 							minEdgesWeight[u] = eWeight;
@@ -240,7 +241,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 							path[pathLength++] = p;
 							vNext[p] = IN_PATH;
 
-							p = minEdges[p].v();
+							p = G.getEdgeEndpoint(minEdges[p], p);
 							continue;
 						}
 
@@ -256,20 +257,27 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 				// construct new layer in the output tree graph
 				for (int V = 0; V < nNext; V++)
 					vTvNext[V] = t.newVertex();
-				for (int u = 0; u < n; u++)
-					t.addEdge(vTv[u], vTvNext[vNext[u]]).setData(minEdges[u].data());
+				for (int u = 0; u < n; u++) {
+					int e = t.addEdge(vTv[u], vTvNext[vNext[u]]);
+					tData.set(e, GData.getInt(minEdges[u]));
+				}
 				int[] temp = vTv;
 				vTv = vTvNext;
 				vTvNext = temp;
 
 				// contract G to new graph with the super vertices
-				Graph<Edge<E>> gNext = new GraphArrayUndirected<>(nNext);
+				Graph.Undirected<Integer> gNext = new GraphArrayUndirectedOld<>(nNext);
+				Graph.EdgeData.Int gNextData = new Graph.EdgeData.Int();
+				gNext.setEdgesData(gNextData);
 				for (int u = 0; u < n; u++) {
 					int U = vNext[u];
-					for (Edge<Edge<E>> e : Utils.iterable(G.edges(u))) {
-						int V = vNext[e.v()];
-						if (U != V)
-							gNext.addEdge(U, V).setData(e.data());
+					for (EdgeIter<?> eit = G.edges(u); eit.hasNext();) {
+						int e = eit.nextInt();
+						int V = vNext[eit.v()];
+						if (U != V) {
+							int E = gNext.addEdge(U, V);
+							gNextData.set(E, GData.get(e));
+						}
 					}
 				}
 
@@ -279,7 +287,8 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 			return Pair.of(t, Integer.valueOf(vTv[0]));
 		}
 
-		private static <E> int[] splitQueriesIntoLCAQueries(Graph<E> t, int root, int[] queries, int queriesNum) {
+		private static int[] splitQueriesIntoLCAQueries(Graph.Undirected<?> t, int root, int[] queries,
+				int queriesNum) {
 			int[] lcaQueries = new int[queriesNum * 4];
 
 			LCAStatic lcaAlgo = new LCARMQBenderFarachColton2000();
@@ -295,16 +304,16 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 			return lcaQueries;
 		}
 
-		private static <E> Pair<Edge<E>[], int[]> getEdgeToParentsAndDepth(Graph<E> t, int root) {
+		private static Pair<int[], int[]> getEdgeToParentsAndDepth(Graph.Undirected<?> t, int root) {
 			int n = t.vertices();
-			@SuppressWarnings("unchecked")
-			Edge<E>[] edgeToParent = new Edge[n];
+			int[] edgeToParent = new int[n];
+			Arrays.fill(edgeToParent, -1);
 			int[] depths = new int[n];
 
 			Graphs.runBFS(t, root, (v, e) -> {
-				if (e != null) {
-					edgeToParent[v] = e.twin();
-					depths[v] = depths[e.u()] + 1;
+				if (e != -1) {
+					edgeToParent[v] = e;
+					depths[v] = depths[t.getEdgeEndpoint(e, v)] + 1;
 				}
 				return true;
 			});
@@ -312,7 +321,8 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 			return Pair.of(edgeToParent, depths);
 		}
 
-		private static <E> int[] calcQueriesPerVertex(int[] lcaQueries, int[] depths, Edge<E>[] edgeToParent) {
+		private static int[] calcQueriesPerVertex(Graph.Undirected<?> g, int[] lcaQueries, int[] depths,
+				int[] edgeToParent) {
 			int n = edgeToParent.length;
 
 			int[] q = new int[n];
@@ -337,10 +347,10 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 			while (!queue.isEmpty()) {
 				int u = queue.pop();
 
-				Edge<E> ep = edgeToParent[u];
-				if (ep == null)
+				int ep = edgeToParent[u];
+				if (ep == -1)
 					continue;
-				int parent = ep.v();
+				int parent = g.getEdgeEndpoint(ep, u);
 				q[parent] |= q[u] & ~(1 << depths[parent]);
 
 				if (queued[parent])

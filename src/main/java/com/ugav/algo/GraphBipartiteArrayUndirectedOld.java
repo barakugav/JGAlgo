@@ -2,7 +2,7 @@ package com.ugav.algo;
 
 import java.util.Arrays;
 
-public class GraphBipartiteArrayUndirected<E> extends GraphArrayUndirected<E> implements GraphBipartite.Undirected<E> {
+public class GraphBipartiteArrayUndirectedOld<E> extends GraphArrayUndirectedOld<E> implements GraphBipartite.Undirected<E> {
 
 	private boolean[] side;
 	private int sSize;
@@ -11,11 +11,11 @@ public class GraphBipartiteArrayUndirected<E> extends GraphArrayUndirected<E> im
 	private static final boolean T_SIDE = !S_SIDE;
 	private static final boolean[] EMPTY_ARR = new boolean[0];
 
-	public GraphBipartiteArrayUndirected() {
+	public GraphBipartiteArrayUndirectedOld() {
 		this(0, 0);
 	}
 
-	public GraphBipartiteArrayUndirected(int sn, int tn) {
+	public GraphBipartiteArrayUndirectedOld(int sn, int tn) {
 		super(sn + tn);
 		if (sn < 0 || tn < 0)
 			throw new IllegalArgumentException();

@@ -3,13 +3,13 @@ package com.ugav.algo;
 import java.util.AbstractCollection;
 import java.util.Collection;
 
-abstract class GraphLinkedAbstract<E> extends GraphAbstract<E> {
+abstract class GraphLinkedAbstractOld<E> extends GraphAbstractOld<E> {
 
 	int n;
 	int m;
 	Collection<Edge<E>> edgesView;
 
-	GraphLinkedAbstract(int n) {
+	GraphLinkedAbstractOld(int n) {
 		if (n < 0)
 			throw new IllegalArgumentException();
 		this.n = n;
@@ -38,7 +38,7 @@ abstract class GraphLinkedAbstract<E> extends GraphAbstract<E> {
 
 	@Override
 	public void clear() {
-		edges().clear();
+		clearEdges();
 		n = 0;
 	}
 

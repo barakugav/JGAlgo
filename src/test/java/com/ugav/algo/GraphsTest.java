@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-import com.ugav.algo.Graph.Edge;
+
 import com.ugav.algo.Graph.WeightFunctionInt;
 import com.ugav.algo.GraphsTestUtils.RandomGraphBuilder;
 

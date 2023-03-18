@@ -1,6 +1,6 @@
 package com.ugav.algo;
 
-import com.ugav.algo.Graph.Edge;
+
 
 public interface MaxFlow {
 

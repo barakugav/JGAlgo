@@ -2,7 +2,7 @@ package com.ugav.algo;
 
 import java.util.Collection;
 
-import com.ugav.algo.Graph.Edge;
+
 import com.ugav.algo.Graph.WeightFunction;
 
 public interface MatchingWeighted extends Matching {

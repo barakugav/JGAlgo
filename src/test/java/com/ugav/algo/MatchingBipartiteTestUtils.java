@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
 
-import com.ugav.algo.Graph.Edge;
+
 import com.ugav.algo.GraphImplTestUtils.GraphImpl;
 import com.ugav.algo.GraphsTestUtils.RandomGraphBuilder;
 
@@ -23,7 +23,7 @@ class MatchingBipartiteTestUtils extends TestUtils {
 
 	static GraphBipartite<Void> createGraphBipartiteFromAdjacencyMatrix(int sSize, int[][] m) {
 		int n = m.length;
-		GraphBipartite<Void> g = new GraphBipartiteArrayUndirected<>(sSize, n - sSize);
+		GraphBipartite<Void> g = new GraphBipartiteArrayUndirectedOld<>(sSize, n - sSize);
 		for (int u = 0; u < n; u++) {
 			for (int v = u + 1; v < n; v++) {
 				if (m[u][v] == 0)

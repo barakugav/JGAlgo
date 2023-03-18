@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
 
-import com.ugav.algo.Graph.Edge;
+
 import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.Graph.WeightFunctionInt;
 import com.ugav.algo.GraphImplTestUtils.GraphImpl;
@@ -26,7 +26,7 @@ public class MDSTTarjan1977Test extends TestUtils {
 			if (g instanceof Graph.Directed<?>)
 				return algo.calcMST(g, w);
 			int n = g.vertices();
-			Graph<Edge<E>> dg = new GraphArrayDirected<>(n);
+			Graph<Edge<E>> dg = new GraphArrayDirectedOld<>(n);
 			for (int u = 0; u < n; u++) {
 				for (Edge<E> e : Utils.iterable(g.edges(u))) {
 					dg.addEdge(e.u(), e.v()).setData(e);

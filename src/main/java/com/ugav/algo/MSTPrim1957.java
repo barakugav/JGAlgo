@@ -1,12 +1,12 @@
 package com.ugav.algo;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-
-import com.ugav.algo.Graph.Edge;
+import com.ugav.algo.Graph.EdgeIter;
 import com.ugav.algo.Graphs.EdgeWeightComparator;
+
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntComparator;
+import it.unimi.dsi.fastutil.ints.IntLists;
 
 public class MSTPrim1957 implements MST {
 
@@ -18,20 +18,21 @@ public class MSTPrim1957 implements MST {
 	}
 
 	@Override
-	public <E> Collection<Edge<E>> calcMST(Graph<E> g, Graph.WeightFunction<E> w) {
-		if (g instanceof Graph.Directed<?>)
-			throw new IllegalArgumentException("directed graphs are not supported");
+	public IntCollection calcMST(Graph<?> g0, Graph.WeightFunction w) {
+		if (!(g0 instanceof Graph.Undirected<?>))
+			throw new IllegalArgumentException("only undirected graphs are supported");
+		Graph.Undirected<?> g = (Graph.Undirected<?>) g0;
 		int n = g.vertices();
 		if (n == 0)
-			return Collections.emptyList();
+			return IntLists.emptyList();
 
-		Comparator<Edge<E>> c = new EdgeWeightComparator<>(w);
-		HeapDirectAccessed<Edge<E>> heap = new HeapFibonacci<>(c);
+		IntComparator c = new EdgeWeightComparator(w);
+		HeapDirectAccessed<Integer> heap = new HeapFibonacci<>(c);
 		@SuppressWarnings("unchecked")
-		HeapDirectAccessed.Handle<Edge<E>>[] verticesPtrs = new HeapDirectAccessed.Handle[n];
+		HeapDirectAccessed.Handle<Integer>[] verticesPtrs = new HeapDirectAccessed.Handle[n];
 		boolean[] visited = new boolean[n];
 
-		Collection<Edge<E>> mst = new ArrayList<>(n - 1);
+		IntCollection mst = new IntArrayList(n - 1);
 		for (int r = 0; r < n; r++) {
 			if (visited[r])
 				continue;
@@ -41,32 +42,35 @@ public class MSTPrim1957 implements MST {
 				verticesPtrs[u] = null;
 
 				/* decrease edges keys if a better one is found */
-				for (Edge<E> e : Utils.iterable(g.edges(u))) {
-					int v = e.v();
+				for (EdgeIter<?> eit = g.edges(u); eit.hasNext();) {
+					int e = eit.nextInt();
+					int v = eit.v();
 					if (visited[v])
 						continue;
 
-					HeapDirectAccessed.Handle<Edge<E>> vPtr = verticesPtrs[v];
+					HeapDirectAccessed.Handle<Integer> vPtr = verticesPtrs[v];
 					if (vPtr == null)
-						vPtr = verticesPtrs[v] = heap.insert(e);
-					else if (c.compare(e, vPtr.get()) < 0)
-						heap.decreaseKey(vPtr, e);
+						vPtr = verticesPtrs[v] = heap.insert(Integer.valueOf(e));
+					else if (c.compare(e, vPtr.get().intValue()) < 0)
+						heap.decreaseKey(vPtr, Integer.valueOf(e));
 				}
 
 				/* find next lightest edge */
-				Edge<E> e = null;
+				int e, v;
 				while (true) {
 					if (heap.isEmpty())
 						/* reached all vertices from current root, continue to next tree */
 						break treeLoop;
-					e = heap.extractMin();
-					if (!visited[e.v()])
+					e = heap.extractMin().intValue();
+					if (!visited[v = g.getEdgeSource(e)])
+						break;
+					if (!visited[v = g.getEdgeTarget(e)])
 						break;
 				}
 
 				/* add lightest edge to MST */
 				mst.add(e);
-				u = e.v();
+				u = v;
 			}
 		}
 

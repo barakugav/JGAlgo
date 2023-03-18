@@ -1,24 +1,26 @@
 package com.ugav.algo;
 
-import java.util.Iterator;
+import java.util.Arrays;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
-abstract class GraphArrayAbstract<E> extends GraphAbstract<E> {
+abstract class GraphArrayAbstract<E> implements Graph<E> {
 
-	int n;
-	int m;
+	private int n, m;
+	private int[] edgeEndpoints;
+	private EdgeData<E> edgeData;
 
-	@SuppressWarnings("rawtypes")
-	static final Edge[][] EDGES_EMPTY = new Edge[0][];
-	@SuppressWarnings("rawtypes")
-	static final Edge[] EDGES_LIST_EMPTY = new Edge[0];
-	static final int[] EDGES_LEN_EMPTY = new int[0];
+	private static final int SizeofEdgeEndpoints = 2;
+	static final int[][] EDGES_EMPTY = new int[0][];
+	static final int[] EDGES_LIST_EMPTY = new int[0];
+	static final int[] EDGES_LEN_EMPTY = EDGES_LIST_EMPTY;
 
 	public GraphArrayAbstract(int n) {
 		if (n < 0)
 			throw new IllegalArgumentException();
 		this.n = n;
 		m = 0;
+		edgeData = new EdgeData.Obj<>(n);
 	}
 
 	@Override
@@ -27,44 +29,116 @@ abstract class GraphArrayAbstract<E> extends GraphAbstract<E> {
 	}
 
 	@Override
+	public int edges() {
+		return m;
+	}
+
+	@Override
+	public int newVertex() {
+		return n++;
+	}
+
+	@Override
+	public int addEdge(int u, int v) {
+		checkVertexIdx(u);
+		checkVertexIdx(v);
+		int e = m++;
+		if (e >= edgeEndpoints.length / SizeofEdgeEndpoints)
+			edgeEndpoints = Arrays.copyOf(edgeEndpoints, Math.max(edgeEndpoints.length * 2, 2));
+		edgeEndpoints[edgeSourceIdx(e)] = u;
+		edgeEndpoints[edgeTargetIdx(e)] = v;
+		return e;
+	}
+
+	@Override
 	public void clear() {
-		edges().clear();
+		clearEdges();
 		n = 0;
 	}
 
-	abstract class EdgeItrBase implements Iterator<Edge<E>> {
+	@Override
+	public void clearEdges() {
+		edgeData.clear();
+		m = 0;
+	}
 
-		int u;
-		int idx;
-		Edge<E> toRemoveEdge;
-		int toRemoveIdx;
-		private final Edge<E>[][] edgesArr;
+	@Override
+	public int getEdgeSource(int edge) {
+		checkEdgeIdx(edge);
+		return edgeEndpoints[edgeSourceIdx(edge)];
+	}
 
-		EdgeItrBase(Edge<E>[][] edgesArr, int u) {
-			this.edgesArr = edgesArr;
-			this.u = u;
-			idx = 0;
-			toRemoveEdge = null;
+	@Override
+	public int getEdgeTarget(int edge) {
+		checkEdgeIdx(edge);
+		return edgeEndpoints[edgeTargetIdx(edge)];
+	}
+
+	private static int edgeSourceIdx(int e) {
+		return edgeEndpoint(e, 0);
+	}
+
+	private static int edgeTargetIdx(int e) {
+		return edgeEndpoint(e, 1);
+	}
+
+	private static int edgeEndpoint(int e, int offset) {
+		return e * SizeofEdgeEndpoints + offset;
+	}
+
+	void checkVertexIdx(int u) {
+		if (u >= n)
+			throw new IndexOutOfBoundsException(u);
+	}
+
+	void checkEdgeIdx(int e) {
+		if (e >= m)
+			throw new IndexOutOfBoundsException(e);
+	}
+
+	@Override
+	public EdgeData<E> edgeData() {
+		return edgeData;
+	}
+
+	@Override
+	public void setEdgesData(EdgeData<E> data) {
+		edgeData = Objects.requireNonNull(data);
+	}
+
+	abstract class EdgeIt implements EdgeIter<E> {
+
+		private final int[] edges;
+		private final int count;
+		private int idx;
+		int lastEdge = -1;
+
+		EdgeIt(int[] edges, int count) {
+			this.edges = edges;
+			this.count = count;
 		}
 
 		@Override
-		public Edge<E> next() {
+		public boolean hasNext() {
+			return idx < count;
+		}
+
+		@Override
+		public int nextInt() {
 			if (!hasNext())
 				throw new NoSuchElementException();
-			return toRemoveEdge = edgesArr[u][toRemoveIdx = idx++];
+			return lastEdge = edges[idx++];
 		}
 
 		@Override
-		public void remove() {
-			if (toRemoveEdge == null)
-				throw new IllegalStateException();
-			removeEdge(toRemoveEdge, toRemoveIdx);
-			m--;
-			toRemoveEdge = null;
-			idx--;
+		public E data() {
+			return edgeData.get(lastEdge);
 		}
 
-		abstract void removeEdge(Edge<E> e, int edgeIdx);
+		@Override
+		public void setData(E val) {
+			edgeData.set(lastEdge, val);
+		}
 
 	}
 

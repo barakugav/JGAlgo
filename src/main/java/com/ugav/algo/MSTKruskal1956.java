@@ -1,12 +1,12 @@
 package com.ugav.algo;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-
-import com.ugav.algo.Graph.Edge;
+import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.Graphs.EdgeWeightComparator;
+
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntLists;
 
 public class MSTKruskal1956 implements MST {
 
@@ -18,25 +18,29 @@ public class MSTKruskal1956 implements MST {
 	}
 
 	@Override
-	public <E> Collection<Edge<E>> calcMST(Graph<E> g, Graph.WeightFunction<E> w) {
-		if (g instanceof Graph.Directed<?>)
-			throw new IllegalArgumentException("directed graphs are not supported");
+	public IntCollection calcMST(Graph<?> g0, WeightFunction w) {
+		if (!(g0 instanceof Graph.Undirected<?>))
+			throw new IllegalArgumentException("only undirected graphs are supported");
+		Graph.Undirected<?> g = (Graph.Undirected<?>) g0;
 		int n = g.vertices();
 		if (n == 0)
-			return Collections.emptyList();
+			return IntLists.emptyList();
 
 		/* sort edges */
-		@SuppressWarnings("unchecked")
-		Edge<E>[] edges = g.edges().toArray(new Edge[g.edges().size()]);
-		Arrays.sort(edges, new EdgeWeightComparator<>(w));
+		int m = g.edges();
+		int[] edges = new int[m];
+		for (int e = 0; e < m; e++)
+			edges[e] = e;
+		IntArrays.parallelQuickSort(edges, new EdgeWeightComparator(w));
 
 		/* create union find data structure for each vertex */
 		UnionFind uf = new UnionFindArray(n);
 
 		/* iterate over the edges and build the MST */
-		Collection<Edge<E>> mst = new ArrayList<>(n - 1);
-		for (Edge<E> e : edges) {
-			int u = e.u(), v = e.v();
+		IntCollection mst = new IntArrayList(n - 1);
+		for (int e = 0; e < m; e++) {
+			int u = g.getEdgeSource(e);
+			int v = g.getEdgeTarget(e);
 
 			if (uf.find(u) != uf.find(v)) {
 				uf.union(u, v);

@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import com.ugav.algo.Graph.Edge;
+
 import com.ugav.algo.Utils.QueueIntFixSize;
 
 public class MatchingGabow1976 implements Matching {

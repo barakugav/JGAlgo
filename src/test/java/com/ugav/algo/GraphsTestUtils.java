@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
-import com.ugav.algo.Graph.Edge;
+
 import com.ugav.algo.GraphImplTestUtils.GraphImpl;
 
 class GraphsTestUtils extends TestUtils {
@@ -132,7 +132,7 @@ class GraphsTestUtils extends TestUtils {
 
 			while (true) {
 				boolean done = true;
-				if (g.edges().size() < m)
+				if (g.edges() < m)
 					done = false;
 				if (connected) {
 					if (!directed && componentsNum > 1)
@@ -243,14 +243,14 @@ class GraphsTestUtils extends TestUtils {
 	}
 
 	static void assignRandWeightsIntPos(Graph<Integer> g) {
-		int m = g.edges().size();
+		int m = g.edges();
 		int minWeight = 1;
 		int maxWeight = m < 50 ? 100 : m * 2 + 2;
 		assignRandWeightsInt(g, minWeight, maxWeight);
 	}
 
 	static void assignRandWeightsIntNeg(Graph<Integer> g) {
-		int m = g.edges().size();
+		int m = g.edges();
 		int maxWeight = m < 50 ? 100 : m * 2 + 2;
 		assignRandWeightsInt(g, -maxWeight / 8, maxWeight);
 	}
@@ -258,7 +258,7 @@ class GraphsTestUtils extends TestUtils {
 	static void assignRandWeightsInt(Graph<Integer> g, int minWeight, int maxWeight) {
 		if (minWeight >= maxWeight)
 			throw new IllegalArgumentException();
-		if (maxWeight - minWeight < g.edges().size() / 2)
+		if (maxWeight - minWeight < g.edges() / 2)
 			throw new IllegalArgumentException("weight range is too small for unique weights");
 
 		RandomIntUnique rand = new RandomIntUnique(minWeight, maxWeight, nextRandSeed());
@@ -303,7 +303,7 @@ class GraphsTestUtils extends TestUtils {
 	static Graph<Void> parseGraphFromAdjacencyMatrix01(String s) {
 		String[] lines = s.split("\r\n");
 		int n = lines.length;
-		Graph<Void> g = new GraphArrayUndirected<>(n);
+		Graph<Void> g = new GraphArrayUndirectedOld<>(n);
 		for (int u = 0; u < n; u++) {
 			String[] chars = lines[u].split(" ");
 			for (int v = u + 1; v < n; v++)
@@ -316,7 +316,7 @@ class GraphsTestUtils extends TestUtils {
 	static Graph<Void> parseGraphWeighted(String s) {
 		String[] lines = s.split("\r\n");
 		int n = lines.length;
-		Graph<Void> g = new GraphArrayUndirected<>(n);
+		Graph<Void> g = new GraphArrayUndirectedOld<>(n);
 		for (int u = 0; u < n; u++) {
 			String[] chars = lines[u].split(" ");
 			for (int v = u + 1; v < n; v++)

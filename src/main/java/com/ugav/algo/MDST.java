@@ -1,8 +1,8 @@
 package com.ugav.algo;
 
-import java.util.Collection;
+import com.ugav.algo.Graph.WeightFunction;
 
-import com.ugav.algo.Graph.Edge;
+import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /* Directed version of MST */
 public interface MDST extends MST {
@@ -11,7 +11,7 @@ public interface MDST extends MST {
 	 * Calculate MDST from some vertex in the graph.
 	 */
 	@Override
-	public <E> Collection<Edge<E>> calcMST(Graph<E> g, Graph.WeightFunction<E> w);
+	public IntCollection calcMST(Graph<?> g, WeightFunction w);
 
 	/**
 	 * Calculate minimum directed spanning tree (MDST) in a directed graph, rooted
@@ -22,6 +22,6 @@ public interface MDST extends MST {
 	 * @param root vertex in the graph the spanning tree will be rooted from
 	 * @return all edges composing the spanning tree
 	 */
-	public <E> Collection<Edge<E>> calcMST(Graph<E> g, Graph.WeightFunction<E> w, int root);
+	public IntCollection calcMST(Graph<?> g, WeightFunction w, int root);
 
 }

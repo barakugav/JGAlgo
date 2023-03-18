@@ -4,11 +4,11 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Objects;
 
-public class GraphTableUndirected<E> extends GraphTableAbstract<E> implements Graph.Undirected<E> {
+public class GraphTableUndirectedOld<E> extends GraphTableAbstractOld<E> implements Graph.Undirected<E> {
 
 	private final Collection<Edge<E>> edgesView;
 
-	public GraphTableUndirected(int n) {
+	public GraphTableUndirectedOld(int n) {
 		super(n);
 		edgesView = new EdgesView();
 	}
@@ -50,7 +50,7 @@ public class GraphTableUndirected<E> extends GraphTableAbstract<E> implements Gr
 		return System.identityHashCode(e) <= System.identityHashCode(twin);
 	}
 
-	private class EdgesView extends GraphTableAbstract<E>.EdgesView {
+	private class EdgesView extends GraphTableAbstractOld<E>.EdgesView {
 
 		@Override
 		public Iterator<Edge<E>> iterator() {
@@ -59,7 +59,7 @@ public class GraphTableUndirected<E> extends GraphTableAbstract<E> implements Gr
 
 	}
 
-	private class EdgesAllItrApiOnly extends GraphTableAbstract<E>.EdgesAllItr {
+	private class EdgesAllItrApiOnly extends GraphTableAbstractOld<E>.EdgesAllItr {
 
 		@Override
 		Iterator<Edge<E>> vertexEdgeIter(int u) {

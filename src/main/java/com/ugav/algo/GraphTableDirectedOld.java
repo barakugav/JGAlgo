@@ -4,11 +4,11 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Objects;
 
-public class GraphTableDirected<E> extends GraphTableAbstract<E> implements Graph.Directed<E> {
+public class GraphTableDirectedOld<E> extends GraphTableAbstractOld<E> implements Graph.Directed<E> {
 
 	private final Collection<Edge<E>> edgesView;
 
-	public GraphTableDirected(int n) {
+	public GraphTableDirectedOld(int n) {
 		super(n);
 		edgesView = new EdgesView();
 	}
@@ -45,7 +45,7 @@ public class GraphTableDirected<E> extends GraphTableAbstract<E> implements Grap
 		m++;
 	}
 
-	private class EdgesView extends GraphTableAbstract<E>.EdgesView {
+	private class EdgesView extends GraphTableAbstractOld<E>.EdgesView {
 
 		@Override
 		public Iterator<Edge<E>> iterator() {

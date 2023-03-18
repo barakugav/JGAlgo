@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.function.ObjDoubleConsumer;
 
 import com.ugav.algo.DynamicTree.MinEdge;
-import com.ugav.algo.Graph.Edge;
+
 import com.ugav.algo.Utils.QueueIntFixSize;
 import com.ugav.algo.Utils.Stack;
 
@@ -37,7 +37,7 @@ public class MaxFlowDinic implements MaxFlow {
 
 		Graph<Ref<E>> g = referenceGraph(g0, net);
 		final int n = g.vertices();
-		GraphLinkedDirected<Ref<E>> L = new GraphLinkedDirected<>(n);
+		GraphLinkedDirectedOld<Ref<E>> L = new GraphLinkedDirectedOld<>(n);
 		QueueIntFixSize bfsQueue = new QueueIntFixSize(n);
 		int[] level = new int[n];
 		DynamicTree<Integer, Edge<Ref<E>>> dt = new DynamicTreeSplay<>(maxCapacity * 3);
@@ -47,7 +47,7 @@ public class MaxFlowDinic implements MaxFlow {
 
 		for (;;) {
 			debug.println("calculating residual network");
-			L.edges().clear();
+			L.clearEdges();
 
 			/* Calc the sub graph non saturated edges from source to target using BFS */
 			final int unvisited = Integer.MAX_VALUE;
@@ -165,7 +165,7 @@ public class MaxFlowDinic implements MaxFlow {
 	}
 
 	private static <E> Graph<Ref<E>> referenceGraph(Graph<E> g0, FlowNetwork<E> net) {
-		Graph<Ref<E>> g = new GraphArrayDirected<>(g0.vertices());
+		Graph<Ref<E>> g = new GraphArrayDirectedOld<>(g0.vertices());
 		for (Edge<E> e : g0.edges()) {
 			Ref<E> ref = new Ref<>(e, 0), refRev = new Ref<>(e, net.getCapacity(e));
 			g.addEdge(e.u(), e.v()).setData(ref);

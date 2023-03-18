@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
 
-import com.ugav.algo.Graph.Edge;
+
 import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.Graph.WeightFunctionInt;
 import com.ugav.algo.GraphsTestUtils.RandomGraphBuilder;
@@ -122,10 +122,10 @@ class TPMTestUtils extends TestUtils {
 			WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
 
 			Collection<Edge<Integer>> mstEdges = new MSTKruskal1956().calcMST(g, w);
-			Graph<Integer> mst = GraphArrayUndirected.valueOf(g.vertices(), mstEdges);
+			Graph<Integer> mst = GraphArrayUndirectedOld.valueOf(g.vertices(), mstEdges);
 
 			@SuppressWarnings("unchecked")
-			Edge<Integer>[] edges = g.edges().toArray(new Edge[g.edges().size()]);
+			Edge<Integer>[] edges = g.edges().toArray(new Edge[g.edges()]);
 
 			Random rand = new Random(nextRandSeed());
 			Edge<Integer> e;

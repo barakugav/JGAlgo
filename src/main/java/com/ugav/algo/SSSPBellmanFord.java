@@ -1,10 +1,10 @@
 package com.ugav.algo;
 
 import java.util.Arrays;
-import java.util.List;
 
-import com.ugav.algo.Graph.Edge;
 import com.ugav.algo.Graph.WeightFunction;
+
+import it.unimi.dsi.fastutil.ints.IntList;
 
 public class SSSPBellmanFord implements SSSP {
 
@@ -16,23 +16,23 @@ public class SSSPBellmanFord implements SSSP {
 	}
 
 	@Override
-	public <E> SSSP.Result<E> calcDistances(Graph<E> g, WeightFunction<E> w, int source) {
-		if (!(g instanceof Graph.Directed<?>))
+	public SSSP.Result calcDistances(Graph<?> g0, WeightFunction w, int source) {
+		if (!(g0 instanceof Graph.Directed))
 			throw new IllegalArgumentException("only directed graphs are supported");
-		int n = g.vertices();
+		Graph.Directed<?> g = (Graph.Directed<?>) g0;
+		int n = g.vertices(), m = g.edges();
 		double[] distances = new double[n];
-		@SuppressWarnings("unchecked")
-		Edge<E>[] backtrack = new Edge[n];
+		int[] backtrack = new int[n];
 
 		if (n == 0)
-			return Result.success(distances, backtrack);
+			return Result.success(g, distances, backtrack);
 
 		Arrays.fill(distances, Double.POSITIVE_INFINITY);
 		distances[source] = 0;
 
 		for (int i = 0; i < n - 1; i++) {
-			for (Edge<E> e : g.edges()) {
-				int u = e.u(), v = e.v();
+			for (int e = 0; e < m; e++) {
+				int u = g.getEdgeSource(e), v = g.getEdgeTarget(e);
 				double d = distances[u] + w.weight(e);
 				if (d < distances[v]) {
 					distances[v] = d;
@@ -41,22 +41,22 @@ public class SSSPBellmanFord implements SSSP {
 			}
 		}
 
-		for (Edge<E> e : g.edges()) {
-			int u = e.u(), v = e.v();
+		for (int e = 0; e < m; e++) {
+			int u = g.getEdgeSource(e), v = g.getEdgeTarget(e);
 			double d = distances[u] + w.weight(e);
 			if (d < distances[v])
-				return Result.negCycle();
+				return Result.negCycle(g);
 		}
 
-		return Result.success(distances, backtrack);
+		return Result.success(g, distances, backtrack);
 	}
 
-	private static class Result<E> extends SSSPResultsImpl<E> {
+	private static class Result extends SSSPResultsImpl {
 
 		private final boolean negCycle;
 
-		private Result(double[] distances, Edge<E>[] backtrack, boolean negCycle) {
-			super(distances, backtrack);
+		private Result(Graph<?> g, double[] distances, int[] backtrack, boolean negCycle) {
+			super(g, distances, backtrack);
 			this.negCycle = negCycle;
 		}
 
@@ -68,7 +68,7 @@ public class SSSPBellmanFord implements SSSP {
 		}
 
 		@Override
-		public List<Edge<E>> getPathTo(int v) {
+		public IntList getPathTo(int v) {
 			if (negCycle)
 				throw new IllegalStateException();
 			return super.getPathTo(v);
@@ -80,7 +80,7 @@ public class SSSPBellmanFord implements SSSP {
 		}
 
 		@Override
-		public List<Edge<E>> getNegativeCycle() {
+		public IntList getNegativeCycle() {
 			if (negCycle)
 				throw new UnsupportedOperationException();
 			else
@@ -92,12 +92,12 @@ public class SSSPBellmanFord implements SSSP {
 			return negCycle ? "[NegCycle]" : super.toString();
 		}
 
-		static <E> Result<E> success(double[] distances, Edge<E>[] backtrack) {
-			return new Result<>(distances, backtrack, false);
+		static Result success(Graph<?> g, double[] distances, int[] backtrack) {
+			return new Result(g, distances, backtrack, false);
 		}
 
-		static <E> Result<E> negCycle() {
-			return new Result<>(null, null, true);
+		static Result negCycle(Graph<?> g) {
+			return new Result(g, null, null, true);
 		}
 
 	}

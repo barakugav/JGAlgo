@@ -1,8 +1,6 @@
 package com.ugav.algo;
 
-import java.util.Collection;
-
-import com.ugav.algo.Graph.Edge;
+import it.unimi.dsi.fastutil.ints.IntCollection;
 
 public interface Matching {
 
@@ -12,6 +10,6 @@ public interface Matching {
 	 * @param g a graph
 	 * @return collection of edges representing a maximum matching
 	 */
-	public <E> Collection<Edge<E>> calcMaxMatching(Graph<E> g);
+	public IntCollection calcMaxMatching(Graph g);
 
 }

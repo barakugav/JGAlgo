@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
 
-import com.ugav.algo.Graph.Edge;
+
 import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.Graph.WeightFunctionInt;
 import com.ugav.algo.GraphImplTestUtils.GraphImpl;
@@ -175,7 +175,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 			Graph<Edge<E>> shuffledG;
 			if (g instanceof GraphBipartite) {
 				GraphBipartite<E> gb = (GraphBipartite<E>) g;
-				GraphBipartite<Edge<E>> shuffledGb = new GraphBipartiteArrayUndirected<>();
+				GraphBipartite<Edge<E>> shuffledGb = new GraphBipartiteArrayUndirectedOld<>();
 
 				int[] shuffleInv = new int[n];
 				for (int v = 0; v < n; v++)
@@ -192,7 +192,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 				}
 				shuffledG = shuffledGb;
 			} else {
-				shuffledG = new GraphArrayUndirected<>(n);
+				shuffledG = new GraphArrayUndirectedOld<>(n);
 			}
 
 			g.edges().forEach(e -> shuffledG.addEdge(shuffle[e.u()], shuffle[e.v()]).setData(e));
