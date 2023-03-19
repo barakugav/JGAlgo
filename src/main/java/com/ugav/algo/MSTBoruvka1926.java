@@ -33,7 +33,7 @@ public class MSTBoruvka1926 implements MST {
 		IntCollection mstEdges = r.e3;
 
 		Graph.Undirected<R> contractedG = new GraphArrayUndirectedOld<>(treeNum);
-		Graph.EdgeData<R> contractedGData = new Graph.EdgeData.Obj<>(contractedG.edges());
+		EdgeData<R> contractedGData = new EdgeDataArray.Obj<>(contractedG.edges());
 		int m = g.edges();
 		for (int e = 0; e < m; e++) {
 			int u = tree[g.getEdgeSource(e)];

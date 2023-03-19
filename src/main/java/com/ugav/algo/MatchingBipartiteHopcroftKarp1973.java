@@ -38,7 +38,7 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 
 		int[] matched = new int[n];
 		Arrays.fill(matched, -1);
-		Graph f = new Graph2ArrayUndirected(n);
+		Graph f = new GraphArrayUndirected(n);
 		int[] edgeF2G = new int[g.edges()];
 
 		while (true) {

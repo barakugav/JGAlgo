@@ -1,9 +1,6 @@
 package com.ugav.algo;
 
-import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public interface Graph<E> {
 
@@ -22,7 +19,14 @@ public interface Graph<E> {
 		return -1;
 	}
 
-	public int degree(int u);
+	default int degree(int u) {
+		int count = 0;
+		for (EdgeIter<E> it = edges(u); it.hasNext();) {
+			it.nextInt();
+			count++;
+		}
+		return count;
+	}
 
 	public int newVertex();
 
@@ -85,28 +89,69 @@ public interface Graph<E> {
 			return degreeOut(u);
 		}
 
-		public int degreeOut(int u);
+		default int degreeOut(int u) {
+			int count = 0;
+			for (EdgeIter<E> it = edgesOut(u); it.hasNext();) {
+				it.nextInt();
+				count++;
+			}
+			return count;
+		}
 
-		public int degreeIn(int v);
-
-//		default void removeEdgesOut(int u) {
-//			for (EdgeIter it = edgesOut(u); it.hasNext();) {
-//				it.nextInt();
-//				it.remove();
-//			}
-//		}
-//
-//		default void removeEdgesIn(int v) {
-//			for (EdgeIter it = edgesIn(v); it.hasNext();) {
-//				it.nextInt();
-//				it.remove();
-//			}
-//		}
+		default int degreeIn(int v) {
+			int count = 0;
+			for (EdgeIter<E> it = edgesIn(v); it.hasNext();) {
+				it.nextInt();
+				count++;
+			}
+			return count;
+		}
 
 		@Override
 		@Deprecated
 		default int getEdgeEndpoint(int edge, int endpoint) {
 			return Graph.super.getEdgeEndpoint(edge, endpoint);
+		}
+
+	}
+
+	public static interface Removeable<E> extends Graph<E> {
+
+		/*
+		 * Graph that support edges removal. These graphs do not guaranteer that the
+		 * edges identifiers will be in range [0, edges()), and expose the edges
+		 * identifiers by the edgesIDs().
+		 */
+
+		public void removeEdge(int e);
+
+		public IntIterator edgesIDs();
+
+		public static interface Undirected<E> extends Removeable<E>, Graph.Directed<E> {
+
+			default void removeEdges(int u) {
+				for (EdgeIter<E> it = edgesOut(u); it.hasNext();) {
+					it.nextInt();
+					it.remove();
+				}
+			}
+		}
+
+		public static interface Directed<E> extends Removeable<E>, Graph.Directed<E> {
+
+			default void removeEdgesOut(int u) {
+				for (EdgeIter<E> it = edgesOut(u); it.hasNext();) {
+					it.nextInt();
+					it.remove();
+				}
+			}
+
+			default void removeEdgesIn(int v) {
+				for (EdgeIter<E> it = edgesIn(v); it.hasNext();) {
+					it.nextInt();
+					it.remove();
+				}
+			}
 		}
 
 	}
@@ -127,141 +172,6 @@ public interface Graph<E> {
 		}
 
 		public int weightInt(int e);
-
-	}
-
-	public static interface EdgeData<E> {
-
-		public E get(int e);
-
-		public void set(int e, E data);
-
-		public void clear();
-
-		public static class Obj<E> implements EdgeData<E> {
-
-			private final ObjectArrayList<E> data;
-
-			public Obj() {
-				this(0);
-			}
-
-			public Obj(int expectedSize) {
-				data = new ObjectArrayList<>(expectedSize);
-			}
-
-			private E defVal() {
-				return null;
-			}
-
-			@Override
-			public E get(int e) {
-				return data.size() < e ? data.get(e) : defVal();
-			}
-
-			@Override
-			public void set(int e, E data) {
-				this.data.ensureCapacity(e + 1);
-				while (this.data.size() <= e)
-					this.data.add(defVal());
-				this.data.set(e, data);
-			}
-
-			@Override
-			public void clear() {
-				data.clear();
-			}
-		}
-
-		public static class Int implements EdgeData<Integer>, WeightFunctionInt {
-
-			private final IntArrayList data;
-			private static final int DefVal = -1;
-
-			public Int() {
-				this(0);
-			}
-
-			public Int(int expectedSize) {
-				data = new IntArrayList(expectedSize);
-			}
-
-			public int getInt(int e) {
-				return data.size() < e ? data.getInt(e) : DefVal;
-			}
-
-			@Override
-			public Integer get(int e) {
-				return Integer.valueOf(getInt(e));
-			}
-
-			public void set(int e, int data) {
-				this.data.ensureCapacity(e + 1);
-				while (this.data.size() <= e)
-					this.data.add(DefVal);
-				this.data.set(e, data);
-			}
-
-			@Override
-			public void set(int e, Integer data) {
-				set(e, data.intValue());
-			}
-
-			@Override
-			public void clear() {
-				data.clear();
-			}
-
-			@Override
-			public int weightInt(int e) {
-				return getInt(e);
-			}
-		}
-
-		public static class Double implements EdgeData<java.lang.Double>, WeightFunction {
-
-			private final DoubleArrayList data;
-			private static final double DefVal = -1;
-
-			public Double() {
-				this(0);
-			}
-
-			public Double(int expectedSize) {
-				data = new DoubleArrayList(expectedSize);
-			}
-
-			public double getDouble(int e) {
-				return data.size() < e ? data.getDouble(e) : DefVal;
-			}
-
-			@Override
-			public java.lang.Double get(int e) {
-				return java.lang.Double.valueOf(getDouble(e));
-			}
-
-			public void set(int e, double data) {
-				this.data.ensureCapacity(e + 1);
-				while (this.data.size() <= e)
-					this.data.add(DefVal);
-				this.data.set(e, data);
-			}
-
-			@Override
-			public void set(int e, java.lang.Double data) {
-				set(e, data.doubleValue());
-			}
-
-			@Override
-			public void clear() {
-				data.clear();
-			}
-
-			@Override
-			public double weight(int e) {
-				return getDouble(e);
-			}
-		}
 
 	}
 

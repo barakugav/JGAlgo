@@ -33,7 +33,7 @@ public class MDSTTarjan1977 implements MDST {
 		if (g0.vertices() == 0 || g0.edges() == 0)
 			return IntLists.emptyList();
 		Graph.Directed<Integer> g = Graphs.referenceGraph((Graph.Directed<?>) g0);
-		Graph.EdgeData.Int edgeRefs = (Graph.EdgeData.Int) g.edgeData();
+		EdgeData.Int edgeRefs = (EdgeData.Int) g.edgeData();
 
 		// Connect new root to all vertices
 		int n = g.vertices(), r = g.newVertex();
@@ -85,7 +85,7 @@ public class MDSTTarjan1977 implements MDST {
 			}
 		}
 
-		Graph.EdgeData.Int edgeRefs = (Graph.EdgeData.Int) g.edgeData();
+		EdgeData.Int edgeRefs = (EdgeData.Int) g.edgeData();
 		IntCollection mst = new IntArrayList(cg.n - 1);
 		for (int v = 0; v < cg.n; v++) {
 			int e = edgeRefs.getInt(inEdge[v]);
@@ -111,7 +111,7 @@ public class MDSTTarjan1977 implements MDST {
 					V2v[V] = v;
 			}
 
-			Graph.EdgeData.Int edgeRefs = (Graph.EdgeData.Int) g.edgeData();
+			EdgeData.Int edgeRefs = (EdgeData.Int) g.edgeData();
 			for (int V = 1; V < N; V++) {
 				edgeRefs.set(g.addEdge(V2v[0], V2v[V]), HeavyEdge);
 				edgeRefs.set(g.addEdge(V2v[V], V2v[0]), HeavyEdge);

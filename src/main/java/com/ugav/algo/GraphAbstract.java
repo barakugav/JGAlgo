@@ -29,7 +29,7 @@ abstract class GraphAbstract<E> implements Graph<E> {
 		final boolean directed = this instanceof Graph.Directed<?>;
 		BiFunction<Graph<?>, Graph<?>, IntComparator> cmpFactory = (g1, g2) -> {
 
-			Graph.EdgeData<?> eData1 = g1.edgeData(), eData2 = g2.edgeData();
+			EdgeData<?> eData1 = g1.edgeData(), eData2 = g2.edgeData();
 			IntComparator dataCmp = (e1, e2) -> {
 				Object d1 = eData1.get(e1);
 				Object d2 = eData2.get(e2);

@@ -1,13 +1,14 @@
 package com.ugav.algo;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Random;
 
-
 import com.ugav.algo.Graph.WeightFunction;
+
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntLists;
 
 public class MSTKargerKleinTarjan1995 implements MST {
 
@@ -26,54 +27,70 @@ public class MSTKargerKleinTarjan1995 implements MST {
 	}
 
 	@Override
-	public <E> Collection<Edge<E>> calcMST(Graph<E> g, WeightFunction<E> w) {
-		if (g instanceof Graph.Directed<?>)
-			throw new IllegalArgumentException("directed graphs are not supported");
+	public IntCollection calcMST(Graph<?> g0, WeightFunction w) {
+		if (!(g0 instanceof Graph.Undirected<?>))
+			throw new IllegalArgumentException("only undirected graphs are supported");
+		Graph.Undirected<?> g = (Graph.Undirected<?>) g0;
 		if (g.edges() == 0)
-			return Collections.emptyList();
+			return IntLists.emptyList();
 		return calcMST0(g, w);
 	}
 
-	private <E> Collection<Edge<E>> calcMST0(Graph<E> g, WeightFunction<E> w) {
-		if (g.vertices() == 0 || g.edges().isEmpty())
-			return Collections.emptyList();
+	private IntCollection calcMST0(Graph<?> g, WeightFunction w) {
+		if (g.vertices() == 0 || g.edges() == 0)
+			return IntLists.emptyList();
 		/*
 		 * we run Boruvka to reduce the number of vertices by a factor of 4, and the
 		 * constructed graph contains now edges with different edge indices. Therefore,
 		 * the data stored in each edge is a reference to the old edge. This is a little
 		 * bit clumsy, but didn't find another way.
 		 */
-		WeightFunction<Ref<E>> w0 = e -> e.data().w;
-		Pair<Graph.Undirected<Ref<E>>, Collection<Edge<E>>> r = MSTBoruvka1926.runBoruvka(g, w, 2,
-				e -> new Ref<>(e, w.weight(e)));
-		Graph.Undirected<Ref<E>> g0 = r.e1;
-		Collection<Edge<E>> f0 = r.e2;
-		Graph<Ref<E>> g1 = randSubgraph(g0);
-		Collection<Edge<Ref<E>>> f1Edges = calcMST0(g1, w0);
-		Graph.Undirected<Ref<E>> f1 = GraphArrayUndirectedOld.valueOf(g1.vertices(), f1Edges);
-		Collection<Edge<Ref<E>>> e2 = lightEdges(g0, f1, w0);
-		Graph<Ref<E>> g2 = GraphArrayUndirectedOld.valueOf(g0.vertices(), e2);
-		Collection<Edge<Ref<E>>> f2 = calcMST0(g2, w0);
+		Pair<Graph.Undirected<Ref>, IntCollection> r = MSTBoruvka1926.runBoruvka(g, w, 2, e -> new Ref(e, w.weight(e)));
+		Graph.Undirected<Ref> g0 = r.e1;
+		IntCollection f0 = r.e2;
+		WeightFunction w0 = e -> g0.edgeData().get(e).w;
+		Graph.Undirected<Ref> g1 = randSubgraph(g0);
+		IntCollection f1Edges = calcMST0(g1, w0);
+		Graph.Undirected<Ref> f1 = subGraph(g1, f1Edges);
+		IntCollection e2 = lightEdges(g0, f1, w0);
+		Graph<Ref> g2 = subGraph(g0, e2);
+		IntCollection f2 = calcMST0(g2, w0);
 
-		for (Edge<Ref<E>> e : f2)
-			f0.add(e.data().e);
+		for (IntIterator it = f2.iterator(); it.hasNext();) {
+			int eRef = it.nextInt();
+			int e = g0.edgeData().get(eRef).e;
+			f0.add(e);
+		}
 		return f0;
 	}
 
-	private <E> Graph<E> randSubgraph(Graph<E> g) {
-		Random rand = new Random(seedGenerator.nextLong() ^ 0x043a4a7a193827bcL);
-		Graph<E> g1 = new GraphArrayUndirectedOld<>(g.vertices());
+	private static <E> Graph.Undirected<E> subGraph(Graph.Undirected<E> g, IntCollection edgeSet) {
+		// TODO move to graph array class
+		Graph.Undirected<E> g1 = new GraphArrayUndirected<>(g.vertices());
 
-		for (Edge<E> e : g.edges()) {
-			if (rand.nextBoolean())
-				continue;
-			g1.addEdge(e.u(), e.v()).setData(e.data());
+		EdgeData<E> gData = g.edgeData();
+		EdgeData<E> g1Data = new EdgeDataArray.Obj<>(g.edges());
+		for (IntIterator it = edgeSet.iterator(); it.hasNext();) {
+			int e = it.nextInt();
+			int u = g.getEdgeSource(e), v = g.getEdgeTarget(e);
+			g1.addEdge(u, v);
+			g1Data.set(e, gData.get(e));
 		}
+		g1.setEdgesData(g1Data);
 
 		return g1;
 	}
 
-	private static <E> Collection<Edge<E>> lightEdges(Graph<E> g, Graph.Undirected<E> f, WeightFunction<E> w) {
+	private <E> Graph.Undirected<E> randSubgraph(Graph.Undirected<E> g) {
+		Random rand = new Random(seedGenerator.nextLong() ^ 0x043a4a7a193827bcL);
+		IntCollection edgeSet = new IntArrayList(g.edges());
+		for (int e = 0; e < g.edges(); e++)
+			if (rand.nextBoolean())
+				edgeSet.add(e);
+		return subGraph(g, edgeSet);
+	}
+
+	private static IntCollection lightEdges(Graph.Undirected<?> g, Graph.Undirected<?> f, WeightFunction w) {
 		int n = f.vertices();
 		/* find connectivity components in the forest, each one of them is a tree */
 		Pair<Integer, int[]> r = Graphs.findConnectivityComponents(f);
@@ -85,17 +102,22 @@ public class MSTKargerKleinTarjan1995 implements MST {
 
 		@SuppressWarnings("unchecked")
 		Graph<Double>[] trees = new Graph[treeSizes.length];
-		for (int t = 0; t < trees.length; t++)
+		for (int t = 0; t < trees.length; t++) {
 			trees[t] = new GraphArrayUndirectedOld<>(treeSizes[t]);
+			trees[t].setEdgesData(new EdgeDataArray.Double());
+		}
 
 		int[] vToVnew = new int[n];
 		int[] treeToNextv = new int[trees.length];
 		for (int u = 0; u < n; u++)
 			vToVnew[u] = treeToNextv[vToTree[u]]++;
 
-		for (Edge<E> e : f.edges()) {
-			int un = vToVnew[e.u()], vn = vToVnew[e.v()];
-			trees[vToTree[e.u()]].addEdge(un, vn).setData(Double.valueOf(w.weight(e)));
+		for (int e = 0; e < f.edges(); e++) {
+			int u = g.getEdgeSource(e), v = g.getEdgeTarget(e);
+			int un = vToVnew[u], vn = vToVnew[v];
+			Graph<Double> tree = trees[vToTree[u]];
+			int en = tree.addEdge(un, vn);
+			((EdgeData.Double) tree.edgeData()).set(en, w.weight(e));
 		}
 
 		/*
@@ -108,8 +130,9 @@ public class MSTKargerKleinTarjan1995 implements MST {
 			tpmQueries[t] = new int[2];
 		int[] tpmQueriesNum = new int[trees.length];
 
-		for (Edge<E> e : g.edges()) {
-			int u = e.u(), v = e.v(), ut = vToTree[u];
+		for (int e = 0; e < g.edges(); e++) {
+			int u = g.getEdgeSource(e), v = g.getEdgeTarget(e);
+			int ut = vToTree[u];
 			if (ut != vToTree[v])
 				continue;
 			if (tpmQueries[ut].length <= (tpmQueriesNum[ut] + 1) * 2)
@@ -119,39 +142,42 @@ public class MSTKargerKleinTarjan1995 implements MST {
 			tpmQueriesNum[ut]++;
 		}
 
-		@SuppressWarnings("unchecked")
-		Edge<Double>[][] tpmResults = new Edge[trees.length][];
-		for (int t = 0; t < trees.length; t++)
-			tpmResults[t] = tpm.calcTPM(trees[t], Graphs.WEIGHT_FUNC_DEFAULT, tpmQueries[t], tpmQueriesNum[t]);
+		int[][] tpmResults = new int[trees.length][];
+		for (int t = 0; t < trees.length; t++) {
+			WeightFunction treeW = (EdgeData.Double) trees[t].edgeData();
+			tpmResults[t] = tpm.calcTPM(trees[t], treeW, tpmQueries[t], tpmQueriesNum[t]);
+		}
 
 		/*
 		 * Find all light edge by comparing each edge in g to the heaviest edge on the
 		 * path from u to v in f
 		 */
-		Collection<Edge<E>> lightEdges = new ArrayList<>();
+		IntCollection lightEdges = new IntArrayList();
 		int[] tpmIdx = new int[trees.length];
-		for (Edge<E> e : g.edges()) {
-			int u = e.u(), v = e.v(), ut = vToTree[u];
-			if (ut != vToTree[v] || w.weight(e) <= tpmResults[ut][tpmIdx[ut]++].data().doubleValue())
+		for (int e = 0; e < g.edges(); e++) {
+			int u = g.getEdgeSource(e), v = g.getEdgeTarget(e);
+			int ut = vToTree[u];
+			WeightFunction treeW = (EdgeData.Double) trees[ut].edgeData();
+			if (ut != vToTree[v] || w.weight(e) <= treeW.weight(tpmResults[ut][tpmIdx[ut]++]))
 				lightEdges.add(e);
 		}
 
 		return lightEdges;
 	}
 
-	public static class Ref<E> {
+	public static class Ref {
 
-		public final Edge<E> e;
+		public final int e;
 		public final double w;
 
-		public Ref(Edge<E> e, double w) {
+		public Ref(int e, double w) {
 			this.e = e;
 			this.w = w;
 		}
 
 		@Override
 		public int hashCode() {
-			return e.hashCode();
+			return e;
 		}
 
 		@Override
@@ -161,13 +187,13 @@ public class MSTKargerKleinTarjan1995 implements MST {
 			if (!(other instanceof Ref))
 				return false;
 
-			Ref<?> o = (Ref<?>) other;
-			return e.equals(o.e);
+			Ref o = (Ref) other;
+			return e == o.e;
 		}
 
 		@Override
 		public String toString() {
-			return e != null ? String.valueOf(e.data()) : Double.toString(w);
+			return e != -1 ? String.valueOf(e) : Double.toString(w);
 		}
 
 	}

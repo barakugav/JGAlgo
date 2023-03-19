@@ -20,7 +20,7 @@ abstract class GraphArrayAbstract<E> implements Graph<E> {
 			throw new IllegalArgumentException();
 		this.n = n;
 		m = 0;
-		edgeData = new EdgeData.Obj<>(n);
+		edgeData = new EdgeDataArray.Obj<>(n);
 	}
 
 	@Override
