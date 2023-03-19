@@ -13,13 +13,13 @@ public class GraphArrayTest extends TestUtils {
 					if (vertices.length == 1) {
 						return new GraphArrayDirectedOld<>(vertices[0]);
 					} else {
-						return new GraphBipartiteArrayDirectedOld<>(vertices[0], vertices[1]);
+						return new GraphBipartiteArrayDirected<>(vertices[0], vertices[1]);
 					}
 				} else {
 					if (vertices.length == 1) {
 						return new GraphArrayUndirectedOld<>(vertices[0]);
 					} else {
-						return new GraphBipartiteArrayUndirectedOld<>(vertices[0], vertices[1]);
+						return new GraphBipartiteArrayUndirected<>(vertices[0], vertices[1]);
 					}
 				}
 			}

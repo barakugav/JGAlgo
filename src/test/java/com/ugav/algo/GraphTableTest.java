@@ -12,7 +12,7 @@ public class GraphTableTest extends TestUtils {
 				if (vertices.length != 1)
 					throw new UnsupportedOperationException();
 				int n = vertices[0];
-				return directed ? new GraphTableDirectedOld<>(n) : new GraphTableUndirectedOld<>(n);
+				return directed ? new GraphTableDirected<>(n) : new GraphTableUndirected<>(n);
 			}
 		};
 	}

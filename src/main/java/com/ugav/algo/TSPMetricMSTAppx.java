@@ -30,7 +30,7 @@ public class TSPMetricMSTAppx implements TSPMetric {
 			TSPMetric.checkArgDistanceTableIsMetric(distances);
 
 		/* Build graph from the distances table */
-		Graph<Double> g = new GraphTableUndirectedOld<>(n);
+		Graph<Double> g = new GraphTableUndirected<>(n);
 		for (int u = 0; u < n; u++)
 			for (int v = u + 1; v < n; v++)
 				g.addEdge(u, v).setData(Double.valueOf(distances[u][v]));

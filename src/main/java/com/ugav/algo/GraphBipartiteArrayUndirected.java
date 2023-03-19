@@ -2,7 +2,7 @@ package com.ugav.algo;
 
 import java.util.Arrays;
 
-public class GraphBipartiteArrayDirectedOld<E> extends GraphArrayDirectedOld<E> implements GraphBipartite.Directed<E> {
+public class GraphBipartiteArrayUndirected<E> extends GraphArrayUndirected<E> implements GraphBipartite.Undirected<E> {
 
 	private boolean[] side;
 	private int sSize;
@@ -11,7 +11,11 @@ public class GraphBipartiteArrayDirectedOld<E> extends GraphArrayDirectedOld<E> 
 	private static final boolean T_SIDE = !S_SIDE;
 	private static final boolean[] EMPTY_ARR = new boolean[0];
 
-	public GraphBipartiteArrayDirectedOld(int sn, int tn) {
+	public GraphBipartiteArrayUndirected() {
+		this(0, 0);
+	}
+
+	public GraphBipartiteArrayUndirected(int sn, int tn) {
 		super(sn + tn);
 		if (sn < 0 || tn < 0)
 			throw new IllegalArgumentException();
@@ -68,17 +72,11 @@ public class GraphBipartiteArrayDirectedOld<E> extends GraphArrayDirectedOld<E> 
 	}
 
 	@Override
-	public Edge<E> addEdge(int u, int v) {
+	public int addEdge(int u, int v) {
 		if (side[u] == side[v])
 			throw new IllegalArgumentException("The vertices (" + u + ", " + v + ") are from the same side");
 		return super.addEdge(u, v);
 	}
 
-	@Override
-	public void addEdge(Edge<E> e) {
-		if (side[e.u()] == side[e.v()])
-			throw new IllegalArgumentException("The vertices (" + e.u() + ", " + e.v() + ") are from the same side");
-		super.addEdge(e);
-	}
 
 }

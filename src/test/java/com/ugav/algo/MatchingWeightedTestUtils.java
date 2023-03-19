@@ -175,7 +175,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 			Graph<Edge<E>> shuffledG;
 			if (g instanceof GraphBipartite) {
 				GraphBipartite<E> gb = (GraphBipartite<E>) g;
-				GraphBipartite<Edge<E>> shuffledGb = new GraphBipartiteArrayUndirectedOld<>();
+				GraphBipartite<Edge<E>> shuffledGb = new GraphBipartiteArrayUndirected<>();
 
 				int[] shuffleInv = new int[n];
 				for (int v = 0; v < n; v++)

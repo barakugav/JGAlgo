@@ -630,7 +630,7 @@ public class Graphs {
 	public static Graph.Directed<Integer> referenceGraph(Graph.Directed<?> g) {
 		int m = g.edges();
 		EdgeData.Int data = new EdgeDataArray.Int(m);
-		Graph.Directed<Integer> g0 = new GraphArrayDirectedOld<>(g.vertices());
+		Graph.Directed<Integer> g0 = new GraphArrayDirected<>(g.vertices());
 		for (int e = 0; e < m; e++) {
 			int e0 = g0.addEdge(g.getEdgeSource(e), g.getEdgeTarget(e));
 			data.set(e0, e);
@@ -642,7 +642,7 @@ public class Graphs {
 	public static Graph.Undirected<Integer> referenceGraph(Graph.Undirected<?> g) {
 		int m = g.edges();
 		EdgeData.Int data = new EdgeDataArray.Int(m);
-		Graph.Undirected<Integer> g0 = new GraphArrayUndirectedOld<>(g.vertices());
+		Graph.Undirected<Integer> g0 = new GraphArrayUndirected<>(g.vertices());
 		for (int e = 0; e < m; e++) {
 			int e0 = g0.addEdge(g.getEdgeSource(e), g.getEdgeTarget(e));
 			data.set(e0, e);
