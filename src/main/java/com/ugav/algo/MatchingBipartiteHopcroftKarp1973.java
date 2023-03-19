@@ -103,7 +103,7 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 
 						Edge<E> matchedEdge = matched[v];
 						if (matchedEdge == null) {
-							// Augmented path found
+							// Augmenting path found
 							for (int i = 0; i < depth; i += 2) {
 								Edge<E> e1 = dfsPath[i];
 								matched[e1.u()] = e1;
@@ -114,7 +114,7 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 						dfsPath[depth] = matchedEdge;
 						v = matchedEdge.v();
 
-						edges[++depth] = g.edges(v);
+						edges[++depth] = f.edges(v);
 					} else if ((depth -= 2) < 0)
 						break;
 				}
