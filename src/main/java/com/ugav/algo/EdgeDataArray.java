@@ -15,6 +15,8 @@ public class EdgeDataArray {
 	public static class Obj<E> implements EdgeData<E> {
 
 		private final ObjectArrayList<E> data;
+		// TODO replace with primitive array
+		// TODO default value get set
 
 		public Obj() {
 			this(0);
@@ -50,6 +52,8 @@ public class EdgeDataArray {
 	public static class Int implements EdgeData.Int, WeightFunctionInt {
 
 		private final IntArrayList data;
+		// TODO replace with primitive array
+		// TODO default value get set
 		private static final int DefVal = -1;
 
 		public Int() {
@@ -83,6 +87,8 @@ public class EdgeDataArray {
 	public static class Double implements EdgeData.Double, WeightFunction {
 
 		private final DoubleArrayList data;
+		// TODO replace with primitive array
+		// TODO default value get set
 		private static final double DefVal = -1;
 
 		public Double() {

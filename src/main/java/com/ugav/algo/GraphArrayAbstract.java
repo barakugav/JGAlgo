@@ -14,12 +14,14 @@ abstract class GraphArrayAbstract<E> implements Graph<E> {
 	static final int[][] EDGES_EMPTY = new int[0][];
 	static final int[] EDGES_LIST_EMPTY = new int[0];
 	static final int[] EDGES_LEN_EMPTY = EDGES_LIST_EMPTY;
+	private static final int[] EdgeEndpointsEmpty = EDGES_LIST_EMPTY;
 
 	public GraphArrayAbstract(int n) {
 		if (n < 0)
 			throw new IllegalArgumentException();
 		this.n = n;
 		m = 0;
+		edgeEndpoints = n > 0 ? new int[m * SizeofEdgeEndpoints] : EdgeEndpointsEmpty;
 		edgeData = new EdgeDataArray.Obj<>(n);
 	}
 

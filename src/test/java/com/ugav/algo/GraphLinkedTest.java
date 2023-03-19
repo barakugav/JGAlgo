@@ -15,7 +15,7 @@ public class GraphLinkedTest extends TestUtils {
 				if (directed) {
 					return new GraphLinkedDirected<>(n);
 				} else {
-					return new GraphLinkedUndirectedOld<>(n);
+					return new GraphLinkedUndirected<>(n);
 				}
 			}
 		};

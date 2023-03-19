@@ -4,9 +4,11 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 
 public interface Graph<E> {
 
-	public int vertices();
+	public int vertices(); // TODO rename to verticesNum
 
-	public int edges();
+	public int edges(); // TODO rename to edgesNUm
+
+	// TODO add edges iterator over all edges
 
 	public EdgeIter<E> edges(int u);
 
@@ -127,10 +129,10 @@ public interface Graph<E> {
 
 		public IntIterator edgesIDs();
 
-		public static interface Undirected<E> extends Removeable<E>, Graph.Directed<E> {
+		public static interface Undirected<E> extends Removeable<E>, Graph.Undirected<E> {
 
 			default void removeEdges(int u) {
-				for (EdgeIter<E> it = edgesOut(u); it.hasNext();) {
+				for (EdgeIter<E> it = edges(u); it.hasNext();) {
 					it.nextInt();
 					it.remove();
 				}

@@ -30,6 +30,7 @@ abstract class GraphAbstract<E> implements Graph<E> {
 		BiFunction<Graph<?>, Graph<?>, IntComparator> cmpFactory = (g1, g2) -> {
 
 			EdgeData<?> eData1 = g1.edgeData(), eData2 = g2.edgeData();
+			// TODO bug, not a full order
 			IntComparator dataCmp = (e1, e2) -> {
 				Object d1 = eData1.get(e1);
 				Object d2 = eData2.get(e2);
@@ -37,7 +38,8 @@ abstract class GraphAbstract<E> implements Graph<E> {
 					return 0;
 				int i1 = System.identityHashCode(d1);
 				int i2 = System.identityHashCode(d2);
-				return Integer.compare(i1, i2);
+				int c = Integer.compare(i1, i2);
+				return c != 0 ? c : -1; // TODO bug, identityHashCode is not unique
 			};
 
 			if (directed) {
