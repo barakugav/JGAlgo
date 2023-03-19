@@ -1,5 +1,7 @@
 package com.ugav.algo;
 
+import java.util.NoSuchElementException;
+
 import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.Graph.WeightFunctionInt;
 
@@ -47,6 +49,28 @@ public class EdgeDataArray {
 		public void clear() {
 			data.clear();
 		}
+
+		@Override
+		public DataIter<E> iterator() {
+			return new DataItr();
+		}
+
+		private class DataItr extends DataIterAbstract implements DataIter<E> {
+
+			DataItr() {
+				super(data.size());
+			}
+
+			@Override
+			public E getData() {
+				return data.get(idx);
+			}
+
+			@Override
+			public void setData(E val) {
+				data.set(idx, val);
+			}
+		}
 	}
 
 	public static class Int implements EdgeData.Int, WeightFunctionInt {
@@ -82,6 +106,27 @@ public class EdgeDataArray {
 			data.clear();
 		}
 
+		@Override
+		public DataIter.Int iterator() {
+			return new DataItr();
+		}
+
+		private class DataItr extends DataIterAbstract implements DataIter.Int {
+
+			DataItr() {
+				super(data.size());
+			}
+
+			@Override
+			public int getDataInt() {
+				return data.getInt(idx);
+			}
+
+			@Override
+			public void setData(int val) {
+				data.set(idx, val);
+			}
+		}
 	}
 
 	public static class Double implements EdgeData.Double, WeightFunction {
@@ -116,6 +161,72 @@ public class EdgeDataArray {
 		public void clear() {
 			data.clear();
 		}
+
+		@Override
+		public DataIter.Double iterator() {
+			return new DataItr();
+		}
+
+		private class DataItr extends DataIterAbstract implements DataIter.Double {
+
+			DataItr() {
+				super(data.size());
+			}
+
+			@Override
+			public double getDataDouble() {
+				return data.getDouble(idx);
+			}
+
+			@Override
+			public void setData(double val) {
+				data.set(idx, val);
+			}
+		}
 	}
+
+	private static class DataIterAbstract {
+
+		private final int maxIdx;
+		int idx;
+
+		DataIterAbstract(int size) {
+			this.maxIdx = size - 1;
+			idx = -1;
+		}
+
+		public boolean hasNext() {
+			return idx < maxIdx;
+		}
+
+		public int nextEdge() {
+			if (!hasNext())
+				throw new NoSuchElementException();
+			return ++idx;
+		}
+
+	}
+
+//	private static class IdxIterator implements IntIterator {
+//		private final int maxIdx;
+//		int idx;
+//
+//		IdxIterator(int size) {
+//			this.maxIdx = size - 1;
+//			idx = -1;
+//		}
+//
+//		@Override
+//		public boolean hasNext() {
+//			return idx < maxIdx;
+//		}
+//
+//		@Override
+//		public int nextInt() {
+//			if (!hasNext())
+//				throw new NoSuchElementException();
+//			return ++idx;
+//		}
+//	}
 
 }

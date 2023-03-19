@@ -1,12 +1,13 @@
 package com.ugav.algo;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
 
-
+import com.ugav.algo.Graph.EdgeIter;
 import com.ugav.algo.Utils.QueueIntFixSize;
+
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntList;
 
 public class MatchingGabow1976 implements Matching {
 
@@ -19,24 +20,24 @@ public class MatchingGabow1976 implements Matching {
 	}
 
 	@Override
-	public <E> Collection<Edge<E>> calcMaxMatching(Graph<E> g) {
-		if (g instanceof Graph.Directed<?>)
-			throw new IllegalArgumentException("directed graphs are not supported");
+	public IntCollection calcMaxMatching(Graph<?> g0) {
+		if (!(g0 instanceof Graph.Undirected<?>))
+			throw new IllegalArgumentException("only undirected graphs are supported");
+		Graph.Undirected<?> g = (Graph.Undirected<?>) g0;
 		int n = g.vertices();
 
 		QueueIntFixSize queue = new QueueIntFixSize(n);
 		int[] root = new int[n];
 		boolean[] isEven = new boolean[n];
 
-		@SuppressWarnings("unchecked")
-		Edge<E>[] matched = new Edge[n];
-		@SuppressWarnings("unchecked")
-		Edge<E>[] bridge = new Edge[n];
-		@SuppressWarnings("unchecked")
-		Edge<E>[] parent = new Edge[n]; // vertex -> edge
+		final int EdgeNone = -1;
+		int[] matched = new int[n];
+		Arrays.fill(matched, EdgeNone);
+		int[] bridgeE = new int[n]; // TODO use a single array twice the size
+		int[] bridgeU = new int[n];
+		int[] parent = new int[n]; // vertex -> edge
 
-		@SuppressWarnings("unchecked")
-		Edge<E>[] augPath = new Edge[n];
+		int[] augPath = new int[n];
 		boolean[] setmatch = new boolean[n];
 
 		int[] blossomBaseSearchNotes = new int[n];
@@ -58,28 +59,29 @@ public class MatchingGabow1976 implements Matching {
 
 			queue.clear();
 			for (int u = 0; u < n; u++) {
-				if (matched[u] != null)
+				if (matched[u] != EdgeNone)
 					continue;
 				root[u] = u;
 				isEven[u] = true;
 				queue.push(u);
-
 			}
+
 			bfs: while (!queue.isEmpty()) {
-				int u = queue.pop();
+				final int u = queue.pop();
 				int uRoot = root[u];
 
-				for (Edge<E> e : Utils.iterable(g.edges(u))) {
-					int v = e.v();
+				for (EdgeIter<?> eit = g.edges(u); eit.hasNext();) {
+					final int e = eit.nextInt();
+					int v = eit.v();
 					int vRoot = root[v];
 
 					if (vRoot == -1) {
 						// unexplored vertex, add to tree
-						Edge<E> matchedEdge = matched[v];
+						int matchedEdge = matched[v];
 						root[v] = uRoot;
-						parent[v] = e.twin();
+						parent[v] = e;
 
-						v = matchedEdge.v();
+						v = g.getEdgeEndpoint(matchedEdge, v);
 						root[v] = uRoot;
 						isEven[v] = true;
 						queue.push(v);
@@ -111,7 +113,8 @@ public class MatchingGabow1976 implements Matching {
 								}
 								blossomBaseSearchNotes[p] = searchIdx;
 								if (p != uRoot) {
-									p = parent[matched[p].v()].v(); // move 2 up
+									p = g.getEdgeEndpoint(matched[p], p);
+									p = g.getEdgeEndpoint(parent[p], p); // move 2 up
 									ps[i] = bases[uf.find(p)];
 								} else
 									ps[i] = -1;
@@ -121,18 +124,19 @@ public class MatchingGabow1976 implements Matching {
 						// Find all vertices of the blossom
 						int blossomVerticesSize = 0;
 						for (int p : new int[] { uBase, vBase }) {
-							Edge<E> brigeEdge = p == uBase ? e : e.twin();
+							final int brigeEdge = e;
 							while (p != base) {
 								// handle even vertex
 								blossomVertices[blossomVerticesSize++] = p;
 
 								// handle odd vertex
-								p = matched[p].v();
+								p = g.getEdgeEndpoint(matched[p], p);
 								blossomVertices[blossomVerticesSize++] = p;
 								queue.push(p); // add the odd vertex that became even to the queue
-								bridge[p] = brigeEdge;
+								bridgeE[p] = brigeEdge;
+								bridgeU[p] = u;
 
-								p = bases[uf.find(parent[p].v())];
+								p = bases[uf.find(g.getEdgeEndpoint(parent[p], p))];
 							}
 						}
 
@@ -143,9 +147,10 @@ public class MatchingGabow1976 implements Matching {
 
 					} else {
 						// augmenting path
-						augPathSize = findPath(u, uRoot, isEven, matched, parent, bridge, augPath, 0);
+						augPathSize = findPath(g, u, uRoot, isEven, matched, parent, bridgeE, bridgeU, augPath, 0);
 						augPath[augPathSize++] = e;
-						augPathSize = findPath(v, vRoot, isEven, matched, parent, bridge, augPath, augPathSize);
+						augPathSize = findPath(g, v, vRoot, isEven, matched, parent, bridgeE, bridgeU, augPath,
+								augPathSize);
 						break bfs;
 					}
 				}
@@ -154,43 +159,45 @@ public class MatchingGabow1976 implements Matching {
 				break;
 
 			for (int i = 0; i < augPathSize; i++) {
-				Edge<E> e = augPath[i];
-				setmatch[i] = matched[e.u()] == null || matched[e.u()].v() != e.v();
+				int e = augPath[i];
+				int u = g.getEdgeSource(e), v = g.getEdgeTarget(e);
+				setmatch[i] = matched[u] == EdgeNone || g.getEdgeTarget(matched[u]) != v;
 			}
 			for (int i = 0; i < augPathSize; i++) {
-				Edge<E> e = augPath[i];
-				if (setmatch[i]) {
-					matched[e.u()] = e;
-					matched[e.v()] = e.twin();
-				}
+				int e = augPath[i];
+				if (setmatch[i])
+					matched[g.getEdgeSource(e)] = matched[g.getEdgeTarget(e)] = e;
 			}
 
 			Arrays.fill(isEven, false);
 			uf.clear();
 		}
 
-		List<Edge<E>> res = new ArrayList<>();
+		IntList res = new IntArrayList();
 		for (int u = 0; u < n; u++)
-			if (matched[u] != null && u < matched[u].v())
+			if (matched[u] != EdgeNone && u == g.getEdgeSource(matched[u]))
 				res.add(matched[u]);
 		return res;
 	}
 
-	private static <E> int findPath(int s, int t, boolean[] isEven, Edge<E>[] match, Edge<E>[] parent, Edge<E>[] bridge,
-			Edge<E>[] path, int pathSize) {
+	private static int findPath(Graph.Undirected<?> g, int s, int t, boolean[] isEven, int[] match, int[] parent,
+			int[] bridgeE, int[] bridgeU, int[] path, int pathSize) {
 		if (s == t)
 			return pathSize;
 		if (isEven[s]) {
+			int v = g.getEdgeEndpoint(match[s], s);
 			path[pathSize++] = match[s];
-			path[pathSize++] = parent[match[s].v()];
-			return findPath(parent[match[s].v()].v(), t, isEven, match, parent, bridge, path, pathSize);
+			path[pathSize++] = parent[v];
+			return findPath(g, g.getEdgeEndpoint(parent[v], v), t, isEven, match, parent, bridgeE, bridgeU, path,
+					pathSize);
 		} else {
-			Edge<E> vw = bridge[s];
-			int v = vw.u(), w = vw.v();
+			int vw = bridgeE[s];
+			int v = bridgeU[s], w = g.getEdgeEndpoint(vw, v);
 			path[pathSize++] = match[s];
-			pathSize = findPath(v, match[s].v(), isEven, match, parent, bridge, path, pathSize);
+			pathSize = findPath(g, v, g.getEdgeEndpoint(match[s], s), isEven, match, parent, bridgeE, bridgeU, path,
+					pathSize);
 			path[pathSize++] = vw;
-			return findPath(w, t, isEven, match, parent, bridge, path, pathSize);
+			return findPath(g, w, t, isEven, match, parent, bridgeE, bridgeU, path, pathSize);
 		}
 	}
 

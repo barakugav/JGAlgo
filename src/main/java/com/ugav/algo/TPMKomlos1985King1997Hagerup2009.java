@@ -207,7 +207,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 			for (int v = 0; v < n; v++)
 				vTv[v] = v;
 
-			Graph.Undirected<Integer> t = new GraphArrayUndirectedOld<>(n);
+			Graph.Undirected<Integer> t = new GraphArrayUndirected<>(n);
 			EdgeData.Int tData = new EdgeDataArray.Int();
 			t.setEdgesData(tData);
 			for (Graph.Undirected<Integer> G = Graphs.referenceGraph(tOrig); (n = G.vertices()) > 1;) {
@@ -266,7 +266,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 				vTvNext = temp;
 
 				// contract G to new graph with the super vertices
-				Graph.Undirected<Integer> gNext = new GraphArrayUndirectedOld<>(nNext);
+				Graph.Undirected<Integer> gNext = new GraphArrayUndirected<>(nNext);
 				EdgeData.Int gNextData = new EdgeDataArray.Int();
 				gNext.setEdgesData(gNextData);
 				for (int u = 0; u < n; u++) {

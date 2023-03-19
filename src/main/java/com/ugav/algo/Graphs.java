@@ -12,7 +12,9 @@ import com.ugav.algo.Utils.QueueIntFixSize;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectFunction;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntComparator;
+import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntLists;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
@@ -441,23 +443,27 @@ public class Graphs {
 		}
 	}
 
-//	public static int[] calcDegree(Graph2 g) {
-//		return calcDegree(g.edges(), g.vertices());
-//	}
-//
-//	public static int[] calcDegree(Graph2 g, IntCollection edges, int n) {
-//		int[] degree = new int[n];
-//		for (IntIterator eit = edges.iterator(); eit.hasNext();) {
-//			int e = eit.nextInt();
-//			degree[e.u()]++;
-//			degree[e.v()]++;
-//		}
-//		return degree;
-//	}
+	public static int[] calcDegree(Graph.Undirected<?> g) {
+		int[] degree = new int[g.vertices()];
+		int m = g.edges();
+		for (int e = 0; e < m; e++) {
+			degree[g.getEdgeSource(e)]++;
+			degree[g.getEdgeTarget(e)]++;
+		}
+		return degree;
+	}
 
-	public static IntList calcEulerianTour(Graph<?> g) {
-		if (g instanceof Graph.Directed)
-			throw new IllegalArgumentException("not supported for directed graphs yet");
+	public static int[] calcDegree(Graph.Undirected<?> g, IntCollection edges) {
+		int[] degree = new int[g.vertices()];
+		for (IntIterator eit = edges.iterator(); eit.hasNext();) {
+			int e = eit.nextInt();
+			degree[g.getEdgeSource(e)]++;
+			degree[g.getEdgeTarget(e)]++;
+		}
+		return degree;
+	}
+
+	public static IntList calcEulerianTour(Graph.Undirected<?> g) {
 		int n = g.vertices();
 
 		int start = -1, end = -1;

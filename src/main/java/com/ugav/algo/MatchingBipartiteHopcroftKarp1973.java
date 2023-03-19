@@ -19,12 +19,10 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 	}
 
 	@Override
-	public IntCollection calcMaxMatching(Graph g0) {
-		if (!(g0 instanceof GraphBipartite))
-			throw new IllegalArgumentException("only bipartite graphs are supported");
-		if (g0 instanceof Graph.Directed)
-			throw new IllegalArgumentException("directed graphs are not supported");
-		GraphBipartite.Undirected g = (GraphBipartite.Undirected) g0;
+	public IntCollection calcMaxMatching(Graph<?> g0) {
+		if (!(g0 instanceof GraphBipartite.Undirected<?>))
+			throw new IllegalArgumentException("only undirected bipartite graphs are supported");
+		GraphBipartite.Undirected<?> g = (GraphBipartite.Undirected<?>) g0;
 		int n = g.vertices();
 
 		/* BFS */
@@ -33,20 +31,22 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 
 		/* DFS */
 		boolean[] visited = new boolean[n];
-		EdgeIter[] edges = new EdgeIter[n];
+		EdgeIter<?>[] edges = new EdgeIter[n];
 		int[] dfsPath = new int[n];
 
 		int[] matched = new int[n];
-		Arrays.fill(matched, -1);
-		Graph f = new GraphArrayUndirected(n);
-		int[] edgeF2G = new int[g.edges()];
+		final int MatchedNone = -1;
+		Arrays.fill(matched, MatchedNone);
+		Graph.Undirected<Integer> f = new GraphArrayUndirected<>(n);
+		EdgeData.Int edgeRef = new EdgeDataArray.Int();
+		f.setEdgesData(edgeRef);
 
 		while (true) {
 			/* Perform BFS to build the alternating forest */
 			bfsQueue.clear();
 			Arrays.fill(depths, Integer.MAX_VALUE);
 			for (int u = 0; u < n; u++) {
-				if (!g.isVertexInS(u) || matched[u] != -1)
+				if (!g.isVertexInS(u) || matched[u] != MatchedNone)
 					continue;
 				depths[u] = 0;
 				bfsQueue.push(u);
@@ -58,25 +58,26 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 				if (depth >= unmatchedTDepth)
 					continue;
 
-				for (EdgeIter eit = g.edges(u); eit.hasNext();) {
+				for (EdgeIter<?> eit = g.edges(u); eit.hasNext();) {
 					int e = eit.nextInt();
 					int v = eit.v();
 					if (depths[v] < depth)
 						continue;
-					edgeF2G[f.addEdge(u, v)] = e;
+					edgeRef.set(f.addEdge(u, v), e);
 					if (depths[v] != Integer.MAX_VALUE)
 						continue;
 					depths[v] = depth + 1;
 
 					int matchedEdge = matched[v];
-					if (matchedEdge != -1) {
+					if (matchedEdge != MatchedNone) {
 						int w = g.getEdgeEndpoint(matchedEdge, v);
-						edgeF2G[f.addEdge(v, w)] = matchedEdge;
+						edgeRef.set(f.addEdge(v, w), matchedEdge);
 						v = w;
 						depths[v] = depth + 2;
 						bfsQueue.push(v);
-					} else
+					} else {
 						unmatchedTDepth = depth + 1;
+					}
 				}
 			}
 			if (unmatchedTDepth == Integer.MAX_VALUE)
@@ -87,48 +88,24 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 			 * unmatched T vertices
 			 */
 			for (int u = 0; u < n; u++) {
-				if (!g.isVertexInS(u) || matched[u] != -1)
+				if (!g.isVertexInS(u) || matched[u] != MatchedNone)
 					continue;
 
-				final int u0 = u;
-				edges[0] = new EdgeIter() {
-
-					private final EdgeIter fit = f.edges(u0);
-
-					@Override
-					public boolean hasNext() {
-						return fit.hasNext();
-					}
-
-					@Override
-					public int nextInt() {
-						return edgeF2G[fit.nextInt()];
-					}
-
-					@Override
-					public int u() {
-						return fit.u();
-					}
-
-					@Override
-					public int v() {
-						return fit.v();
-					}
-				};
+				edges[0] = f.edges(u);
 				visited[u] = true;
 
-				for (int depth = 0;;) {
-					EdgeIter eit = edges[depth];
+				for (int depth = 0; depth >= 0;) {
+					EdgeIter<?> eit = edges[depth];
 					if (eit.hasNext()) {
 						int e = eit.nextInt();
 						int v = eit.v();
 						if (visited[v] || depth >= depths[v])
 							continue;
 						visited[v] = true;
-						dfsPath[depth++] = e;
+						dfsPath[depth++] = edgeRef.getInt(e);
 
 						int matchedEdge = matched[v];
-						if (matchedEdge == -1) {
+						if (matchedEdge == MatchedNone) {
 							// Augmenting path found
 							for (int i = 0; i < depth; i += 2) {
 								int e1 = dfsPath[i];
@@ -140,8 +117,13 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 						v = g.getEdgeEndpoint(matchedEdge, v);
 
 						edges[++depth] = f.edges(v);
-					} else if ((depth -= 2) < 0)
-						break;
+					} else {
+						/*
+						 * Pop two edges (one from the matching and the other not in the matching) from
+						 * the DFS path
+						 */
+						depth -= 2;
+					}
 				}
 			}
 			Arrays.fill(visited, false);
@@ -151,7 +133,7 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 
 		IntList res = new IntArrayList();
 		for (int u = 0; u < n; u++)
-			if (g.isVertexInS(u) && matched[u] != -1)
+			if (g.isVertexInS(u) && matched[u] != MatchedNone)
 				res.add(matched[u]);
 		return res;
 	}

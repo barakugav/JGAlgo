@@ -1,9 +1,8 @@
 package com.ugav.algo;
 
-import java.util.Collection;
-import java.util.List;
-
-
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntList;
 
 public class TSPMetricMatchingAppx implements TSPMetric {
 
@@ -23,50 +22,63 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 		TSPMetric.checkArgDistanceTableIsMetric(distances);
 
 		/* Build graph from the distances table */
-		Graph<Double> g = new GraphTableUndirected<>(n);
+		Graph.Undirected<Double> g = new GraphTableUndirected<>(n);
+		EdgeData.Double weights = new EdgeDataArray.Double(n * (n + 1) / 2);
 		for (int u = 0; u < n; u++)
 			for (int v = u + 1; v < n; v++)
-				g.addEdge(u, v).setData(Double.valueOf(distances[u][v]));
+				weights.set(g.addEdge(u, v), distances[u][v]);
+		g.setEdgesData(weights);
 
 		/* Calculate MST */
-		Collection<Edge<Double>> mst = new MSTPrim1957().calcMST(g, Graphs.WEIGHT_FUNC_DEFAULT);
+		IntCollection mst = new MSTPrim1957().calcMST(g, weights);
 
 		/*
 		 * Build graph for the matching calculation, containing only vertices with odd
 		 * degree from the MST
 		 */
-		int[] degree = Graphs.calcDegree(mst, n);
-		Graph<Double> mG = new GraphArrayUndirectedOld<>();
+		int[] degree = Graphs.calcDegree(g, mst);
+		Graph.Undirected<Double> mG = new GraphArrayUndirected<>();
 		int[] mVtoV = new int[n];
 		for (int u = 0; u < n; u++)
 			if (degree[u] % 2 == 1)
 				mVtoV[mG.newVertex()] = u;
 		int mGn = mG.vertices();
-		for (int u = 0; u < mGn; u++)
-			for (int v = u + 1; v < mGn; v++)
-				mG.addEdge(u, v).setData(Double.valueOf(distances[mVtoV[u]][mVtoV[v]]));
+		EdgeData.Double mGWeightsNeg = new EdgeDataArray.Double(mGn * (mGn + 1) / 2);
+		EdgeData.Int mGEdgeRef = new EdgeDataArray.Int(mGn * (mGn + 1) / 2);
+		for (int u = 0; u < mGn; u++) {
+			for (int v = u + 1; v < mGn; v++) {
+				int e = g.getEdge(u, v);
+				int en = mG.addEdge(mVtoV[u], mVtoV[v]);
+				mGWeightsNeg.set(en, -distances[mVtoV[u]][mVtoV[v]]);
+				mGEdgeRef.set(en, e);
+			}
+		}
+		mG.setEdgesData(mGWeightsNeg);
 
 		/* Calculate maximum matching between the odd vertices */
-		Collection<Edge<Double>> matching = new MatchingWeightedGabow2017().calcPerfectMaxMatching(mG,
-				e -> -e.data().doubleValue());
+		IntCollection matching = new MatchingWeightedGabow2017().calcPerfectMaxMatching(mG, mGWeightsNeg);
 		mG.clear(); /* not needed anymore */
 
 		/* Build a graph of the union of the MST and the matching result */
-		Graph<Double> g1 = new GraphArrayUndirectedOld<>(n);
-		for (Edge<Double> e : mst)
-			g1.addEdge(e);
-		for (Edge<Double> e : matching) {
-			int u = mVtoV[e.u()], v = mVtoV[e.v()];
-			g1.addEdge(u, v).setData(Double.valueOf(distances[u][v]));
+		Graph.Undirected<Integer> g1 = new GraphArrayUndirected<>(n);
+		EdgeData.Int g1EdgeRef = new EdgeDataArray.Int(mst.size() + matching.size());
+		for (IntIterator it = mst.iterator(); it.hasNext();) {
+			int e = it.nextInt();
+			int g1Edge = g1.addEdge(g.getEdgeSource(e), g.getEdgeTarget(e));
+			g1EdgeRef.set(g1Edge, e);
+		}
+		for (IntIterator it = matching.iterator(); it.hasNext();) {
+			int mGedge = it.nextInt();
+			int u = mVtoV[g.getEdgeSource(mGedge)];
+			int v = mVtoV[g.getEdgeTarget(mGedge)];
+			int g1Edge = g1.addEdge(u, v);
+			g1EdgeRef.set(g1Edge, mGEdgeRef.get(mGedge));
 		}
 
-		List<Edge<Double>> cycle = TSPMetricUtils.calcEulerianAndConvertToHamiltonianCycle(g, g1);
+		IntList cycle = TSPMetricUtils.calcEulerianTourAndConvertToHamiltonianCycle(g, g1, g1EdgeRef);
 
 		/* Convert cycle of edges to list of vertices */
-		int[] res = new int[n];
-		for (int i = 0; i < cycle.size(); i++)
-			res[i] = cycle.get(i).u();
-		return res;
+		return TSPMetricUtils.edgeListToVerticesList(g, cycle).toIntArray();
 	}
 
 }

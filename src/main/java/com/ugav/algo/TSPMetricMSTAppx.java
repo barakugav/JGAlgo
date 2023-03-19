@@ -1,9 +1,8 @@
 package com.ugav.algo;
 
-import java.util.Collection;
-import java.util.List;
-
-
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntList;
 
 public class TSPMetricMSTAppx implements TSPMetric {
 
@@ -30,29 +29,32 @@ public class TSPMetricMSTAppx implements TSPMetric {
 			TSPMetric.checkArgDistanceTableIsMetric(distances);
 
 		/* Build graph from the distances table */
-		Graph<Double> g = new GraphTableUndirected<>(n);
+		Graph.Undirected<Double> g = new GraphTableUndirected<>(n);
+		EdgeData.Double weights = new EdgeDataArray.Double(n * (n + 1) / 2);
 		for (int u = 0; u < n; u++)
 			for (int v = u + 1; v < n; v++)
-				g.addEdge(u, v).setData(Double.valueOf(distances[u][v]));
+				weights.set(g.addEdge(u, v), distances[u][v]);
+		g.setEdgesData(weights);
 
 		/* Calculate MST */
-		Collection<Edge<Double>> mst = new MSTPrim1957().calcMST(g, Graphs.WEIGHT_FUNC_DEFAULT);
+		IntCollection mst = new MSTPrim1957().calcMST(g, weights);
 
 		/* Build a graph with each MST edge duplicated */
-		Graph<Double> g1 = new GraphArrayUndirectedOld<>(n);
-		for (Edge<Double> e : mst) {
-			g1.addEdge(e);
-			g1.addEdge(e.u(), e.v()).setData(e.data());
+		Graph.Undirected<Integer> g1 = new GraphArrayUndirected<>(n);
+		EdgeData.Int edgeRef = new EdgeDataArray.Int(n - 1);
+		for (IntIterator it = mst.iterator(); it.hasNext();) {
+			int e = it.nextInt();
+			int u = g.getEdgeSource(e), v = g.getEdgeTarget(e);
+			edgeRef.set(g1.addEdge(u, v), e);
+			edgeRef.set(g1.addEdge(u, v), e);
 		}
+		g1.setEdgesData(edgeRef);
 
-		List<Edge<Double>> cycle = TSPMetricUtils.calcEulerianAndConvertToHamiltonianCycle(g, g1);
+		IntList cycle = TSPMetricUtils.calcEulerianTourAndConvertToHamiltonianCycle(g, g1, edgeRef);
 		assert cycle.size() == n;
 
 		/* Convert cycle of edges to list of vertices */
-		int[] res = new int[n];
-		for (int i = 0; i < cycle.size(); i++)
-			res[i] = cycle.get(i).u();
-		return res;
+		return TSPMetricUtils.edgeListToVerticesList(g, cycle).toIntArray();
 	}
 
 }

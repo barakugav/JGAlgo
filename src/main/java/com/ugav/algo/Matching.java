@@ -10,6 +10,6 @@ public interface Matching {
 	 * @param g a graph
 	 * @return collection of edges representing a maximum matching
 	 */
-	public IntCollection calcMaxMatching(Graph g);
+	public IntCollection calcMaxMatching(Graph<?> g);
 
 }
