@@ -2,18 +2,18 @@ package com.ugav.algo;
 
 import java.util.Arrays;
 
-public class Graph2ArrayDirected<E> extends GraphArrayAbstract<E> implements Graph.Directed<E> {
+public class GraphArrayDirected<E> extends GraphArrayAbstract<E> implements Graph.Directed<E> {
 
 	private int[][] edgesOut;
 	private int[] edgesOutNum;
 	private int[][] edgesIn;
 	private int[] edgesInNum;
 
-	public Graph2ArrayDirected() {
+	public GraphArrayDirected() {
 		this(0);
 	}
 
-	public Graph2ArrayDirected(int n) {
+	public GraphArrayDirected(int n) {
 		super(n);
 		edgesOut = n == 0 ? EDGES_EMPTY : new int[n][];
 		edgesIn = n == 0 ? EDGES_EMPTY : new int[n][];

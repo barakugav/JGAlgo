@@ -11,6 +11,8 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.RandomAccess;
 
+import it.unimi.dsi.fastutil.ints.IntIterator;
+
 class Utils {
 
 	private Utils() {
@@ -107,6 +109,44 @@ class Utils {
 			if (!hasNext())
 				throw new NoSuchElementException();
 			return (E) pick;
+		}
+
+		static class Int implements IntIterator {
+
+			private final IntIterator it;
+			private int pick;
+			private boolean isPickValid;
+
+			Int(IntIterator it) {
+				this.it = Objects.requireNonNull(it);
+				isPickValid = false;
+			}
+
+			@Override
+			public boolean hasNext() {
+				if (isPickValid)
+					return true;
+				if (!it.hasNext())
+					return false;
+				pick = it.nextInt();
+				isPickValid = true;
+				return true;
+			}
+
+			@Override
+			public int nextInt() {
+				if (!hasNext())
+					throw new NoSuchElementException();
+				isPickValid = false;
+				return pick;
+			}
+
+			int pickNext() {
+				if (!hasNext())
+					throw new NoSuchElementException();
+				return pick;
+			}
+
 		}
 
 	}
@@ -644,6 +684,11 @@ class Utils {
 			return new NullList<>(toIndex - fromIndex);
 		}
 
+	}
+
+	@FunctionalInterface
+	static interface IntDoubleConsumer {
+		void accept(int a1, double a2);
 	}
 
 }

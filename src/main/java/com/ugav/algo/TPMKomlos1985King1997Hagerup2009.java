@@ -77,11 +77,11 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 
 			int[] q = calcQueriesPerVertex(t, lcaQueries, depths, edgeToParent);
 			int[][] a = calcAnswersPerVertex(t, root, q, edgeToParent);
-			return extractEdgesFromAnswers(a, q, lcaQueries, depths, (Graph.EdgeData.Int) t.edgeData());
+			return extractEdgesFromAnswers(a, q, lcaQueries, depths, (EdgeData.Int) t.edgeData());
 		}
 
 		private int[] extractEdgesFromAnswers(int[][] a, int[] q, int[] lcaQueries, int[] depths,
-				Graph.EdgeData.Int edgeData) {
+				EdgeData.Int edgeData) {
 			int queriesNum = lcaQueries.length / 4;
 			int[] res = new int[queriesNum];
 
@@ -122,7 +122,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 
 			int leavesDepth = Graphs.getFullyBranchingTreeDepth(t, root);
 
-			Graph.EdgeData.Int tData = (Graph.EdgeData.Int) t.edgeData();
+			EdgeData.Int tData = (EdgeData.Int) t.edgeData();
 			int[][] res = new int[tOrig.vertices()][];
 
 			Graphs.runDFS(t, root, (v, edgesFromRoot) -> {
@@ -172,7 +172,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 			return successor(au, qv);
 		}
 
-		private int binarySearch(int av, double weight, IntList edgesToRoot, Graph.EdgeData.Int edgeData) {
+		private int binarySearch(int av, double weight, IntList edgesToRoot, EdgeData.Int edgeData) {
 			int avsize = bitsTable.count.bitCount(av);
 			if (avsize == 0 || w.weight(edgeData.getInt(edgesToRoot.getInt(bitsTable.ith.ithBit(av, 0) - 1))) < weight)
 				return 0;
@@ -208,10 +208,10 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 				vTv[v] = v;
 
 			Graph.Undirected<Integer> t = new GraphArrayUndirectedOld<>(n);
-			Graph.EdgeData.Int tData = new Graph.EdgeData.Int();
+			EdgeData.Int tData = new EdgeDataArray.Int();
 			t.setEdgesData(tData);
 			for (Graph.Undirected<Integer> G = Graphs.referenceGraph(tOrig); (n = G.vertices()) > 1;) {
-				Graph.EdgeData.Int GData = (Graph.EdgeData.Int) G.edgeData();
+				EdgeData.Int GData = (EdgeData.Int) G.edgeData();
 
 				// Find minimum edge of each vertex
 				Arrays.fill(minEdges, 0, n, -1);
@@ -267,7 +267,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 
 				// contract G to new graph with the super vertices
 				Graph.Undirected<Integer> gNext = new GraphArrayUndirectedOld<>(nNext);
-				Graph.EdgeData.Int gNextData = new Graph.EdgeData.Int();
+				EdgeData.Int gNextData = new EdgeDataArray.Int();
 				gNext.setEdgesData(gNextData);
 				for (int u = 0; u < n; u++) {
 					int U = vNext[u];

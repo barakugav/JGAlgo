@@ -69,7 +69,7 @@ public class SSSPGoldberg1995 implements SSSP {
 			do {
 				// Create a graph with edges with weight <= 0
 				gNeg.clearEdges();
-				Graph.EdgeData.Int gNeg2gEdge = new Graph.EdgeData.Int();
+				EdgeData.Int gNeg2gEdge = new EdgeDataArray.Int();
 				for (int e = 0; e < m; e++) {
 					if (weight(g, e, w, potential, weightMask) <= 0) {
 						int e1 = gNeg.addEdge(g.getEdgeSource(e), g.getEdgeTarget(e));
@@ -85,7 +85,7 @@ public class SSSPGoldberg1995 implements SSSP {
 				// Contract each strong connectivity component and search for a negative edge
 				// within it, if found - negative cycle found
 				G.clearEdges();
-				Graph.EdgeData.Int GWeight = new Graph.EdgeData.Int();
+				EdgeData.Int GWeight = new EdgeDataArray.Int();
 				for (int u = 0; u < n; u++) {
 					int U = v2V[u];
 					for (EdgeIter eit = gNeg.edgesOut(u); eit.hasNext();) {

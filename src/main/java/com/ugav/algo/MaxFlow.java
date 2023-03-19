@@ -1,7 +1,5 @@
 package com.ugav.algo;
 
-
-
 public interface MaxFlow {
 
 	/**
@@ -15,15 +13,15 @@ public interface MaxFlow {
 	 * @param target a target (sink) vertex
 	 * @return the maximum flow in the network from the source to the target
 	 */
-	public <E> double calcMaxFlow(Graph<E> g, FlowNetwork<E> net, int source, int target);
+	public double calcMaxFlow(Graph<?> g, FlowNetwork net, int source, int target);
 
-	public static interface FlowNetwork<E> {
+	public static interface FlowNetwork {
 
-		public double getCapacity(Edge<? extends E> e);
+		public double getCapacity(int e);
 
-		public double getFlow(Edge<? extends E> e);
+		public double getFlow(int e);
 
-		public void setFlow(Edge<? extends E> e, double flow);
+		public void setFlow(int e, double flow);
 
 	}
 
@@ -41,30 +39,30 @@ public interface MaxFlow {
 		}
 	}
 
-	public static class FlowNetworkDefault implements FlowNetwork<FlowEdgeDataDefault> {
-
-		private static final double EPS = 0.0001;
-
-		public FlowNetworkDefault() {
-		}
-
-		@Override
-		public double getCapacity(Edge<? extends FlowEdgeDataDefault> e) {
-			return e.data().capacity;
-		}
-
-		@Override
-		public double getFlow(Edge<? extends FlowEdgeDataDefault> e) {
-			return e.data().flow;
-		}
-
-		@Override
-		public void setFlow(Edge<? extends FlowEdgeDataDefault> e, double flow) {
-			if (flow > e.data().capacity + EPS)
-				throw new IllegalArgumentException("Illegal flow " + flow + " on edge " + e);
-			e.data().flow = Math.min(flow, e.data().capacity);
-		}
-
-	}
+//	public static class FlowNetworkDefault implements FlowNetwork<FlowEdgeDataDefault> {
+//
+//		private static final double EPS = 0.0001;
+//
+//		public FlowNetworkDefault() {
+//		}
+//
+//		@Override
+//		public double getCapacity(Edge<? extends FlowEdgeDataDefault> e) {
+//			return e.data().capacity;
+//		}
+//
+//		@Override
+//		public double getFlow(Edge<? extends FlowEdgeDataDefault> e) {
+//			return e.data().flow;
+//		}
+//
+//		@Override
+//		public void setFlow(Edge<? extends FlowEdgeDataDefault> e, double flow) {
+//			if (flow > e.data().capacity + EPS)
+//				throw new IllegalArgumentException("Illegal flow " + flow + " on edge " + e);
+//			e.data().flow = Math.min(flow, e.data().capacity);
+//		}
+//
+//	}
 
 }

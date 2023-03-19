@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
-public class Graph2ArrayUndirected<E> extends GraphArrayAbstract<E> implements Graph.Undirected<E> {
+public class GraphArrayUndirected<E> extends GraphArrayAbstract<E> implements Graph.Undirected<E> {
 
 	private int[][] edges;
 	private int[] edgesNum;
@@ -13,11 +13,11 @@ public class Graph2ArrayUndirected<E> extends GraphArrayAbstract<E> implements G
 	private static final int[] EDGES_LIST_EMPTY = new int[0];
 	private static final int[] EDGES_LEN_EMPTY = EDGES_LIST_EMPTY;
 
-	public Graph2ArrayUndirected() {
+	public GraphArrayUndirected() {
 		this(0);
 	}
 
-	public Graph2ArrayUndirected(int n) {
+	public GraphArrayUndirected(int n) {
 		super(n);
 		edges = n == 0 ? EDGES_EMPTY : new int[n][];
 		Arrays.fill(edges, EDGES_LIST_EMPTY);

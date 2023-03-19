@@ -1,9 +1,9 @@
 package com.ugav.algo;
 
 import java.util.Arrays;
-import java.util.function.ObjDoubleConsumer;
 
-
+import com.ugav.algo.Graph.EdgeIter;
+import com.ugav.algo.Utils.IntDoubleConsumer;
 import com.ugav.algo.Utils.IterPickable;
 import com.ugav.algo.Utils.QueueIntFixSize;
 
@@ -23,35 +23,55 @@ public class MaxFlowPushRelabel implements MaxFlow {
 	}
 
 	@Override
-	public <E> double calcMaxFlow(Graph<E> g0, FlowNetwork<E> net, int source, int target) {
+	public double calcMaxFlow(Graph<?> g0, FlowNetwork net, int source, int target) {
 		if (!(g0 instanceof Graph.Directed<?>))
 			throw new IllegalArgumentException("only directed graphs are supported");
 		if (source == target)
 			throw new IllegalArgumentException("Source and target can't be the same vertices");
 		debug.println("\t", getClass().getSimpleName());
 
-		Graph<Ref<E>> g = referenceGraph(g0, net);
+		EdgeData.Int edgeRef = new EdgeDataArray.Int(g0.edges() * 2);
+		EdgeData.Int edgeRev = new EdgeDataArray.Int(g0.edges() * 2);
+		EdgeData.Double flow = new EdgeDataArray.Double(g0.edges() * 2);
+		EdgeData.Double capacity = new EdgeDataArray.Double(g0.edges() * 2);
+
+		Graph.Directed<Integer> g = new GraphArrayDirected<>(g0.vertices());
+		g.setEdgesData(edgeRef);
+		for (int e = 0; e < g0.edges(); e++) {
+			int u = g.getEdgeSource(e), v = g.getEdgeTarget(e);
+			int e1 = g.addEdge(u, v);
+			int e2 = g.addEdge(v, u);
+			edgeRef.set(e1, e);
+			edgeRef.set(e2, e);
+			edgeRev.set(e1, e2);
+			edgeRev.set(e2, e1);
+			flow.set(e1, 0);
+			flow.set(e2, 0);
+			capacity.set(e1, net.getCapacity(e));
+			capacity.set(e2, 0);
+		}
+
 		int n = g.vertices();
 
-		@SuppressWarnings("unchecked")
-		IterPickable<Edge<Ref<E>>>[] edges = new IterPickable[n];
+		IterPickable.Int[] edges = new IterPickable.Int[n];
 		double[] excess = new double[n];
 		boolean[] isActive = new boolean[n];
 		QueueIntFixSize active = new QueueIntFixSize(n);
 		int[] d = new int[n];
 
-		ObjDoubleConsumer<Edge<Ref<E>>> pushFlow = (e0, f) -> {
+		IntDoubleConsumer pushFlow = (e0, f) -> {
 			assert f > 0;
 
-			Ref<E> e = e0.data();
-			int u = e0.u(), v = e0.v();
-			if (e0.u() == e.orig.u())
-				debug.println("F(", e.orig, ") += ", Double.valueOf(f));
+			int e = edgeRef.getInt(e0);
+			int u = g.getEdgeSource(e0), v = g.getEdgeTarget(e0);
+			if (u == g0.getEdgeSource(e))
+				; // debug.println("F(", e.orig, ") += ", Double.valueOf(f));
 
-			e.flow += f;
-			e.rev.flow -= f;
-			assert e.flow <= e.cap + EPS;
-			assert e.rev.flow <= e.rev.cap + EPS;
+			int rev = edgeRev.getInt(e);
+			flow.set(e, flow.getDouble(e) + f);
+			flow.set(rev, flow.getDouble(rev) - f);
+			assert flow.getDouble(e) <= capacity.getDouble(e) + EPS;
+			assert flow.getDouble(rev) <= capacity.getDouble(rev) + EPS;
 
 			excess[u] -= f;
 			excess[v] += f;
@@ -62,8 +82,9 @@ public class MaxFlowPushRelabel implements MaxFlow {
 		};
 
 		/* Push as much as possible from the source vertex */
-		for (Edge<Ref<E>> e : Utils.iterable(g.edges(source))) {
-			double f = e.data().cap - e.data().flow;
+		for (EdgeIter<?> eit = g.edgesOut(source); eit.hasNext();) {
+			int e = eit.nextInt();
+			double f = capacity.getDouble(e) - flow.getDouble(e);
 			if (f != 0)
 				pushFlow.accept(e, f);
 		}
@@ -74,22 +95,22 @@ public class MaxFlowPushRelabel implements MaxFlow {
 
 		/* Init all vertices iterators */
 		for (int u = 0; u < n; u++)
-			edges[u] = new IterPickable<>(g.edges(u));
+			edges[u] = new IterPickable.Int(g.edgesOut(u));
 
 		while (!active.isEmpty()) {
 			int u = active.pop();
 			if (u == source || u == target)
 				continue;
-			IterPickable<Edge<Ref<E>>> it = edges[u];
+			IterPickable.Int it = edges[u];
 
 			while (excess[u] > EPS && it.hasNext()) {
-				Edge<Ref<E>> e = it.pickNext();
-				double eAccess = e.data().cap - e.data().flow;
-				if (eAccess > EPS && d[u] == d[e.v()] + 1) {
+				int e = it.pickNext();
+				double eAccess = capacity.getDouble(e) - flow.getDouble(e);
+				if (eAccess > EPS && d[u] == d[g.getEdgeTarget(e)] + 1) {
 					double f = Math.min(excess[u], eAccess);
 					pushFlow.accept(e, f);
 				} else {
-					it.next();
+					it.nextInt();
 				}
 			}
 
@@ -97,7 +118,7 @@ public class MaxFlowPushRelabel implements MaxFlow {
 			if (!it.hasNext()) {
 				d[u]++;
 				debug.println("R(", Integer.valueOf(u), ") <- ", Integer.valueOf(d[u]));
-				edges[u] = new IterPickable<>(g.edges(u));
+				edges[u] = new IterPickable.Int(g.edgesOut(u));
 			}
 
 			/* Update isActive and add to queue if active */
@@ -106,62 +127,18 @@ public class MaxFlowPushRelabel implements MaxFlow {
 		}
 
 		/* Construct result */
-		for (Edge<Ref<E>> e : g.edges())
-			if (e.u() == e.data().orig.u())
-				net.setFlow(e.data().orig, e.data().flow);
+		for (int e = 0; e < g.edges(); e++) {
+			int u = g.getEdgeSource(e);
+			int orig = edgeRef.getInt(e);
+			if (u == g0.getEdgeSource(orig))
+				net.setFlow(orig, flow.getDouble(e));
+		}
 		double totalFlow = 0;
-		for (Edge<Ref<E>> e : Utils.iterable(g.edges(source)))
-			totalFlow += e.data().flow;
+		for (EdgeIter<?> eit = g.edgesOut(source); eit.hasNext();) {
+			int e = eit.nextInt();
+			totalFlow += flow.getDouble(e);
+		}
 		return totalFlow;
-	}
-
-	private static <E> Graph<Ref<E>> referenceGraph(Graph<E> g0, FlowNetwork<E> net) {
-		Graph<Ref<E>> g = new GraphArrayDirectedOld<>(g0.vertices());
-		for (Edge<E> e : g0.edges()) {
-			Ref<E> ref = new Ref<>(e, net.getCapacity(e), 0), refRev = new Ref<>(e, 0, 0);
-			g.addEdge(e.u(), e.v()).setData(ref);
-			g.addEdge(e.v(), e.u()).setData(refRev);
-			refRev.rev = ref;
-			ref.rev = refRev;
-		}
-		return g;
-	}
-
-	private static class Ref<E> {
-
-		final Edge<E> orig;
-		Ref<E> rev;
-		final double cap;
-		double flow;
-
-		Ref(Edge<E> e, double cap, double flow) {
-			orig = e;
-			rev = null;
-			this.cap = cap;
-			this.flow = flow;
-		}
-
-		@Override
-		public int hashCode() {
-			return orig.hashCode();
-		}
-
-		@Override
-		public boolean equals(Object other) {
-			if (other == this)
-				return true;
-			if (!(other instanceof Ref))
-				return false;
-
-			Ref<?> o = (Ref<?>) other;
-			return orig.equals(o.orig);
-		}
-
-		@Override
-		public String toString() {
-			return "R(" + orig + ")";
-		}
-
 	}
 
 }

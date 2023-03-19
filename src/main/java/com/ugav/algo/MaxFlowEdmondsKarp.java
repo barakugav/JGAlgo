@@ -2,8 +2,10 @@ package com.ugav.algo;
 
 import java.util.Arrays;
 
-
+import com.ugav.algo.Graph.EdgeIter;
 import com.ugav.algo.Utils.QueueIntFixSize;
+
+import it.unimi.dsi.fastutil.ints.Int2DoubleFunction;
 
 public class MaxFlowEdmondsKarp implements MaxFlow {
 
@@ -15,16 +17,33 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 	}
 
 	@Override
-	public <E> double calcMaxFlow(Graph<E> g0, FlowNetwork<E> net, int source, int target) {
+	public double calcMaxFlow(Graph<?> g0, FlowNetwork net, int source, int target) {
 		if (!(g0 instanceof Graph.Directed<?>))
 			throw new IllegalArgumentException("only directed graphs are supported");
 		if (source == target)
 			throw new IllegalArgumentException("Source and target can't be the same vertices");
 
-		Graph<Ref<E>> g = referenceGraph(g0, net);
+		EdgeData.Int edgeRef = new EdgeDataArray.Int(g0.edges() * 2);
+		EdgeData.Int edgeRev = new EdgeDataArray.Int(g0.edges() * 2);
+		EdgeData.Double flow = new EdgeDataArray.Double(g0.edges() * 2);
+
+		Graph.Directed<Integer> g = new GraphArrayDirected<>(g0.vertices());
+		g.setEdgesData(edgeRef);
+		for (int e = 0; e < g0.edges(); e++) {
+			int u = g.getEdgeSource(e), v = g.getEdgeTarget(e);
+			int e1 = g.addEdge(u, v);
+			int e2 = g.addEdge(v, u);
+			edgeRef.set(e1, e);
+			edgeRef.set(e2, e);
+			edgeRev.set(e1, e2);
+			edgeRev.set(e2, e1);
+			flow.set(e1, 0);
+			flow.set(e2, net.getCapacity(e));
+		}
+		Int2DoubleFunction capacity = e -> net.getCapacity(edgeRef.getInt(e));
+
 		int n = g.vertices();
-		@SuppressWarnings("unchecked")
-		Edge<Ref<E>>[] backtrack = new Edge[n];
+		int[] backtrack = new int[n]; // TODO
 
 		boolean[] visited = new boolean[n];
 		QueueIntFixSize queue = new QueueIntFixSize(n);
@@ -32,14 +51,17 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 		for (;;) {
 			queue.clear();
 			visited[source] = true;
+			backtrack[target] = -1;
 			queue.push(source);
 
 			// perform BFS and find a path of non saturated edges from source to target
 			bfs: while (!queue.isEmpty()) {
 				int u = queue.pop();
-				for (Edge<Ref<E>> e : Utils.iterable(g.edges(u))) {
-					int v = e.v();
-					if (e.data().flow >= net.getCapacity(e.data().orig) || visited[v])
+				for (EdgeIter<?> eit = g.edgesOut(u); eit.hasNext();) {
+					int e = eit.nextInt();
+					int v = eit.v();
+
+					if (flow.getDouble(e) >= net.getCapacity(edgeRef.getInt(e)) || visited[v])
 						continue;
 					backtrack[v] = e;
 					if (v == target)
@@ -50,84 +72,40 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 			}
 
 			// no path to target
-			if (backtrack[target] == null)
+			if (backtrack[target] == -1)
 				break;
 
 			// find out what is the maximum flow we can pass
 			double f = Double.MAX_VALUE;
 			for (int p = target; p != source;) {
-				Edge<Ref<E>> e = backtrack[p];
-				f = Math.min(f, net.getCapacity(e.data().orig) - e.data().flow);
-				p = e.u();
+				int e = backtrack[p];
+				f = Math.min(f, capacity.applyAsDouble(e) - flow.getDouble(e));
+				p = g.getEdgeSource(e);
 			}
 
 			// update flow of all edges on path
 			for (int p = target; p != source;) {
-				Edge<Ref<E>> e = backtrack[p];
-				e.data().flow = Math.min(net.getCapacity(e.data().orig), e.data().flow + f);
-				e.data().rev.flow = Math.max(0, e.data().rev.flow - f);
-				p = e.u();
+				int e = backtrack[p], rev = edgeRev.getInt(e);
+				flow.set(e, Math.min(capacity.applyAsDouble(e), flow.getDouble(e) + f));
+				flow.set(rev, Math.max(0, flow.getDouble(rev) - f));
+				p = g.getEdgeSource(e);
 			}
 
-			backtrack[target] = null;
 			Arrays.fill(visited, false);
 		}
 
-		for (Edge<Ref<E>> e : g.edges())
-			if (e.u() == e.data().orig.u())
-				net.setFlow(e.data().orig, e.data().flow);
+		for (int e = 0; e < g.edges(); e++) {
+			int u = g.getEdgeSource(e);
+			int orig = edgeRef.getInt(e);
+			if (u == g0.getEdgeSource(orig))
+				net.setFlow(orig, flow.getDouble(e));
+		}
 		double totalFlow = 0;
-		for (Edge<Ref<E>> e : Utils.iterable(g.edges(source)))
-			if (e.u() == e.data().orig.u())
-				totalFlow += e.data().flow;
+		for (EdgeIter<?> eit = g.edgesOut(source); eit.hasNext();) {
+			int e = eit.nextInt();
+			totalFlow += flow.getDouble(e);
+		}
 		return totalFlow;
-	}
-
-	private static <E> Graph<Ref<E>> referenceGraph(Graph<E> g0, FlowNetwork<E> net) {
-		Graph<Ref<E>> g = new GraphArrayDirectedOld<>(g0.vertices());
-		for (Edge<E> e : g0.edges()) {
-			Ref<E> ref = new Ref<>(e, 0), refRev = new Ref<>(e, net.getCapacity(e));
-			g.addEdge(e.u(), e.v()).setData(ref);
-			g.addEdge(e.v(), e.u()).setData(refRev);
-			refRev.rev = ref;
-			ref.rev = refRev;
-		}
-		return g;
-	}
-
-	private static class Ref<E> {
-
-		final Edge<E> orig;
-		Ref<E> rev;
-		double flow;
-
-		Ref(Edge<E> e, double flow) {
-			orig = e;
-			rev = null;
-			this.flow = flow;
-		}
-
-		@Override
-		public int hashCode() {
-			return orig.hashCode();
-		}
-
-		@Override
-		public boolean equals(Object other) {
-			if (other == this)
-				return true;
-			if (!(other instanceof Ref))
-				return false;
-
-			Ref<?> o = (Ref<?>) other;
-			return orig.equals(o.orig);
-		}
-
-		@Override
-		public String toString() {
-			return "R(" + orig + ")";
-		}
-
 	}
 
 }

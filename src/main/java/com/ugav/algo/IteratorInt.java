@@ -2,7 +2,7 @@ package com.ugav.algo;
 
 import java.util.Iterator;
 
-interface IteratorInt {
+interface IteratorInt { // TODO remove, use fastutil
 
 	boolean hasNext();
 
