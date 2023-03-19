@@ -1,13 +1,14 @@
 package com.ugav.algo;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
 
-
+import com.ugav.algo.Graph.EdgeIter;
 import com.ugav.algo.Graph.WeightFunction;
+
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntComparator;
+import it.unimi.dsi.fastutil.ints.IntList;
 
 public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighted {
 
@@ -19,38 +20,38 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 	}
 
 	@Override
-	public <E> Collection<Edge<E>> calcMaxMatching(Graph<E> g0, WeightFunction<E> w) {
+	public IntCollection calcMaxMatching(Graph<?> g0, WeightFunction w) {
 		if (!(g0 instanceof GraphBipartite.Undirected<?>))
 			throw new IllegalArgumentException("Only undirected bipartite graphs are supported");
-		GraphBipartite<E> g = (GraphBipartite<E>) g0;
-		return new Worker<>(g, w).calcMaxMatching(false);
+		GraphBipartite.Undirected<?> g = (GraphBipartite.Undirected<?>) g0;
+		return new Worker(g, w).calcMaxMatching(false);
 	}
 
 	@Override
-	public <E> Collection<Edge<E>> calcPerfectMaxMatching(Graph<E> g0, WeightFunction<E> w) {
+	public IntCollection calcPerfectMaxMatching(Graph<?> g0, WeightFunction w) {
 		if (!(g0 instanceof GraphBipartite.Undirected<?>))
 			throw new IllegalArgumentException("Only undirected bipartite graphs are supported");
-		GraphBipartite<E> g = (GraphBipartite<E>) g0;
-		return new Worker<>(g, w).calcMaxMatching(true);
+		GraphBipartite.Undirected<?> g = (GraphBipartite.Undirected<?>) g0;
+		return new Worker(g, w).calcMaxMatching(true);
 	}
 
-	private static class Worker<E> {
+	private static class Worker {
 
-		private final GraphBipartite<E> g;
-		private final WeightFunction<E> w;
+		private final GraphBipartite.Undirected<?> g;
+		private final WeightFunction w;
 
 		private final boolean[] inTree;
 
-		private final Comparator<Edge<E>> edgeSlackComparator;
-		private final HeapDirectAccessed<Edge<E>> nextTightEdge;
-		private final HeapDirectAccessed.Handle<Edge<E>>[] nextTightEdgePerOutV;
+		private final IntComparator edgeSlackComparator;
+		private final HeapDirectAccessed<Integer> nextTightEdge;
+		private final HeapDirectAccessed.Handle<Integer>[] nextTightEdgePerOutV;
 
 		private double deltaTotal;
 		private final double[] dualValBase;
 		private final double[] dualVal0;
 
 		@SuppressWarnings("unchecked")
-		Worker(GraphBipartite<E> g, WeightFunction<E> w) {
+		Worker(GraphBipartite.Undirected<?> g, WeightFunction w) {
 			this.g = g;
 			this.w = w;
 			int n = g.vertices();
@@ -65,16 +66,16 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 			dualVal0 = new double[n];
 		}
 
-		Collection<Edge<E>> calcMaxMatching(boolean perfect) {
-			int n = g.vertices();
+		IntCollection calcMaxMatching(boolean perfect) {
+			final int n = g.vertices(), m = g.edges();
+			final int EdgeNone = -1;
 
-			@SuppressWarnings("unchecked")
-			Edge<E>[] parent = new Edge[n];
-			@SuppressWarnings("unchecked")
-			Edge<E>[] matched = new Edge[n];
+			int[] parent = new int[n];
+			int[] matched = new int[n];
+			Arrays.fill(matched, EdgeNone);
 
 			double maxWeight = Double.MIN_VALUE;
-			for (Edge<E> e : g.edges())
+			for (int e = 0; e < m; e++)
 				maxWeight = Math.max(maxWeight, w.weight(e));
 			final double delta1Threshold = maxWeight;
 			for (int u = 0; u < n; u++)
@@ -82,24 +83,30 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 					dualValBase[u] = delta1Threshold;
 
 			mainLoop: for (;;) {
+				Arrays.fill(parent, EdgeNone);
+
 				// Start growing tree from all unmatched vertices in S
 				for (int u = 0; u < n; u++) {
-					if (!g.isVertexInS(u) || matched[u] != null)
+					if (!g.isVertexInS(u) || matched[u] != EdgeNone)
 						continue;
 					vertexAddedToTree(u);
-					for (Edge<E> e : Utils.iterable(g.edges(u)))
-						nextTightEdgeAdd(e);
+					for (EdgeIter<?> eit = g.edges(u); eit.hasNext();) {
+						int e = eit.nextInt();
+						nextTightEdgeAdd(u, e);
+					}
 				}
 
 				currentTree: for (;;) {
 					while (!nextTightEdge.isEmpty()) {
-						Edge<E> e = nextTightEdge.findMin();
+						int e = nextTightEdge.findMin();
+						int u0 = g.getEdgeSource(e), v0 = g.getEdgeTarget(e);
 
-						if (inTree[e.v()]) {
+						if (inTree[u0] && inTree[v0]) {
 							// Vertex already in tree, edge is irrelevant
 							nextTightEdge.extractMin();
 							continue;
 						}
+						int v = inTree[u0] ? v0 : u0;
 
 						// No more tight edges from the tree, go out and adjust dual values
 						if (edgeSlack(e) > 0)
@@ -107,31 +114,32 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 
 						// Edge is tight, add it to the tree
 						nextTightEdge.extractMin();
-						int v = e.v();
 						parent[v] = e;
 						vertexAddedToTree(v);
 
-						Edge<E> matchedEdge = matched[v];
-						if (matchedEdge == null) {
+						int matchedEdge = matched[v];
+						if (matchedEdge == EdgeNone) {
 							for (;;) {
 								// Augmenting path
 								e = parent[v];
-								matched[v] = e.twin();
-								matched[v = e.u()] = e; // TODO don't set parent[odd vertex]
+								matched[v] = matched[v = g.getEdgeEndpoint(e, v)] = e;
+								// TODO don't set parent[odd vertex]
 								e = parent[v];
-								if (e == null)
+								if (e == EdgeNone)
 									break currentTree;
-								v = e.u();
+								v = g.getEdgeEndpoint(e, v);
 							}
 						}
 
 						// Added odd vertex, immediately add it's matched edge and even vertex
-						v = matchedEdge.v();
+						v = g.getEdgeEndpoint(matchedEdge, v);
 						parent[v] = matchedEdge;
 						vertexAddedToTree(v);
 
-						for (Edge<E> e1 : Utils.iterable(g.edges(v)))
-							nextTightEdgeAdd(e1);
+						for (EdgeIter<?> eit = g.edges(v); eit.hasNext();) {
+							int e1 = eit.nextInt();
+							nextTightEdgeAdd(v, e1);
+						}
 					}
 
 					// Adjust dual values
@@ -150,26 +158,25 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 
 				// Reset tree
 				Arrays.fill(inTree, false);
-				Arrays.fill(parent, null);
 
 				// Reset heap
 				nextTightEdge.clear();
 				Arrays.fill(nextTightEdgePerOutV, null);
 			}
 
-			List<Edge<E>> res = new ArrayList<>();
+			IntList res = new IntArrayList();
 			for (int u = 0; u < n; u++)
-				if (g.isVertexInS(u) && matched[u] != null)
+				if (g.isVertexInS(u) && matched[u] != EdgeNone)
 					res.add(matched[u]);
 			return res;
 		}
 
-		private void nextTightEdgeAdd(Edge<E> e) {
-			int v = e.v();
-			HeapDirectAccessed.Handle<Edge<E>> handle = nextTightEdgePerOutV[v];
+		private void nextTightEdgeAdd(int u, int e) {
+			int v = g.getEdgeEndpoint(e, u);
+			HeapDirectAccessed.Handle<Integer> handle = nextTightEdgePerOutV[v];
 			if (handle == null)
 				nextTightEdgePerOutV[v] = nextTightEdge.insert(e);
-			else if (edgeSlackComparator.compare(e, handle.get()) < 0)
+			else if (edgeSlackComparator.compare(e, handle.get().intValue()) < 0)
 				nextTightEdge.decreaseKey(handle, e);
 		}
 
@@ -177,8 +184,8 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 			return inTree[v] ? dualVal0[v] + (g.isVertexInS(v) ? -deltaTotal : deltaTotal) : dualValBase[v];
 		}
 
-		private double edgeSlack(Edge<E> e) {
-			return dualVal(e.u()) + dualVal(e.v()) - w.weight(e);
+		private double edgeSlack(int e) {
+			return dualVal(g.getEdgeSource(e)) + dualVal(g.getEdgeTarget(e)) - w.weight(e);
 		}
 
 		private void vertexAddedToTree(int v) {

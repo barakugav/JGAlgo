@@ -1,12 +1,13 @@
 package com.ugav.algo;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
-
+import com.ugav.algo.EdgeData.DataIter;
+import com.ugav.algo.Graph.EdgeIter;
 import com.ugav.algo.Graph.WeightFunction;
+
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntList;
 
 public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 
@@ -18,33 +19,37 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 	}
 
 	@Override
-	public <E> Collection<Edge<E>> calcMaxMatching(Graph<E> g0, WeightFunction<E> w) {
+	public IntCollection calcMaxMatching(Graph<?> g0, WeightFunction w) {
 		if (!(g0 instanceof GraphBipartite.Undirected<?>))
 			throw new IllegalArgumentException("Only undirected bipartite graphs are supported");
-		GraphBipartite<Ref<E>> g = referenceGraph((GraphBipartite<E>) g0, w);
+		GraphBipartite.Directed<Ref> g = referenceGraph((GraphBipartite.Undirected<?>) g0, w);
 
 		int n = g.vertices(), sn = g.svertices(), tn = g.tvertices();
 		int s = g.newVertexT(), t = g.newVertexS();
 
 		@SuppressWarnings("unchecked")
-		Edge<E>[] match = new Edge[n];
+		int[] match = new int[n];
 
 		// Negate unmatched edges
-		for (Edge<Ref<E>> e : g.edges())
-			e.data().w = -e.data().w;
+		for (DataIter<Ref> it = g.edgeData().iterator(); it.hasNext();) {
+			it.nextEdge();
+			Ref r = it.getData();
+			r.w = -r.w;
+		}
 		// Connected unmatched vertices to fake vertices s,t
-		final Ref<E> zeroEdgeData = new Ref<>(null, 0);
+		final Ref zeroEdgeData = new Ref(-1, 0);
 		for (int u = 0; u < sn; u++)
-			g.addEdge(s, u).setData(zeroEdgeData);
+			g.edgeData().set(g.addEdge(s, u), zeroEdgeData);
 		for (int v = sn; v < sn + tn; v++)
-			g.addEdge(v, t).setData(zeroEdgeData);
+			g.edgeData().set(g.addEdge(v, t), zeroEdgeData);
 
 		double[] potential = new double[n + 2];
-		WeightFunction<Ref<E>> spWeightFunc = e -> e.data().w + potential[e.u()] - potential[e.v()];
+		WeightFunction spWeightFunc = e -> g.edgeData().get(e).w + potential[g.getEdgeSource(e)]
+				- potential[g.getEdgeTarget(e)];
 
 		// Init state may include negative distances, use Bellman Ford to calculate
 		// first potential values
-		SSSP.Result<Ref<E>> sp = new SSSPBellmanFord().calcDistances(g, e -> e.data().w, s);
+		SSSP.Result sp = new SSSPBellmanFord().calcDistances(g, e -> g.edgeData().get(e).w, s);
 		for (int v = 0; v < n + 2; v++)
 			potential[v] = sp.distance(v);
 
@@ -52,25 +57,25 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 
 		do {
 			sp = ssspAlgo.calcDistances(g, spWeightFunc, s);
-			List<Edge<Ref<E>>> augPath = sp.getPathTo(t);
+			IntList augPath = sp.getPathTo(t);
 			double augPathWeight = -(sp.distance(t) + potential[t]);
 			if (augPath == null || augPathWeight < 0)
 				break;
 
-			Iterator<Edge<Ref<E>>> it = augPath.iterator();
+			IntIterator it = augPath.iterator();
 			// remove edge from S to new matched vertex
-			g.removeEdge(it.next());
+			g.removeEdge(it.nextInt());
 			for (;;) {
-				Edge<Ref<E>> matchedEdge = it.next();
+				int matchedEdge = it.nextInt();
 
 				// Reverse newly matched edge
 				g.removeEdge(matchedEdge);
-				Ref<E> r = matchedEdge.data();
-				match[matchedEdge.u()] = match[matchedEdge.v()] = r.orig;
+				Ref r = matchedEdge.data();
+				match[g.getEdgeSource(matchedEdge)] = match[g.getEdgeTarget(matchedEdge)] = r.orig;
 				r.w = -r.w;
 				g.addEdge(matchedEdge.v(), matchedEdge.u()).setData(r);
 
-				Edge<Ref<E>> unmatchedEdge = it.next();
+				int unmatchedEdge = it.nextInt();
 
 				if (!it.hasNext()) {
 					// remove edge from new matched vertex to T
@@ -90,7 +95,7 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 				potential[u] += sp.distance(u);
 		} while (true);
 
-		List<Edge<E>> res = new ArrayList<>();
+		IntList res = new IntArrayList();
 		for (int i = 0; i < n; i++) {
 			Edge<E> e = match[i];
 			if (e != null && e.u() == i)
@@ -101,41 +106,42 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 	}
 
 	@Override
-	public <E> Collection<Edge<E>> calcPerfectMaxMatching(Graph<E> g, WeightFunction<E> w) {
+	public IntCollection calcPerfectMaxMatching(Graph<?> g, WeightFunction w) {
 		throw new UnsupportedOperationException();
 	}
 
-	private static <E> GraphBipartite<Ref<E>> referenceGraph(GraphBipartite<E> g, WeightFunction<E> w) {
+	private static <E> GraphBipartite.Directed<Ref> referenceGraph(GraphBipartite.Undirected<E> g, WeightFunction w) {
 		int n = g.vertices();
-		GraphBipartite<Ref<E>> g0 = new GraphBipartiteArrayDirected<>(g.svertices(), g.tvertices());
+		GraphBipartite.Directed<Ref> g0 = new GraphBipartiteArrayDirected<>(g.svertices(), g.tvertices());
 
 		for (int u = 0; u < n; u++) {
 			if (!g.isVertexInS(u))
 				continue;
-			for (Edge<E> e : Utils.iterable(g.edges(u))) {
+			for (EdgeIter<?> eit = g.edges(u); eit.hasNext();) {
+				int e = eit.nextInt();
 				double weight = w.weight(e);
 				if (weight < 0)
 					continue; // no reason to match negative edges
-				Ref<E> v = new Ref<>(e, weight);
-				g0.addEdge(e.u(), e.v()).setData(v);
+				int e0 = g0.addEdge(u, eit.v());
+				g0.edgeData().set(e0, new Ref(e, weight));
 			}
 		}
 		return g0;
 	}
 
-	private static class Ref<E> {
+	private static class Ref {
 
-		public final Edge<E> orig;
+		public final int orig;
 		public double w;
 
-		public Ref(Edge<E> e, double w) {
+		public Ref(int e, double w) {
 			orig = e;
 			this.w = w;
 		}
 
 		@Override
 		public int hashCode() {
-			return orig.hashCode();
+			return orig;
 		}
 
 		@Override
@@ -145,13 +151,13 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 			if (!(other instanceof Ref))
 				return false;
 
-			Ref<?> o = (Ref<?>) other;
-			return orig.equals(o.orig);
+			Ref o = (Ref) other;
+			return orig == o.orig;
 		}
 
 		@Override
 		public String toString() {
-			return orig != null ? String.valueOf(orig.data()) : Double.toString(w);
+			return orig != -1 ? String.valueOf(orig) : Double.toString(w);
 		}
 
 	}

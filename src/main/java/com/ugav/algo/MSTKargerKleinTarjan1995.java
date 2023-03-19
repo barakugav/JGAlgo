@@ -101,9 +101,9 @@ public class MSTKargerKleinTarjan1995 implements MST {
 			treeSizes[vToTree[u]]++;
 
 		@SuppressWarnings("unchecked")
-		Graph<Double>[] trees = new Graph[treeSizes.length];
+		Graph.Undirected<Double>[] trees = new Graph.Undirected[treeSizes.length];
 		for (int t = 0; t < trees.length; t++) {
-			trees[t] = new GraphArrayUndirectedOld<>(treeSizes[t]);
+			trees[t] = new GraphArrayUndirected<>(treeSizes[t]);
 			trees[t].setEdgesData(new EdgeDataArray.Double());
 		}
 

@@ -1,9 +1,8 @@
 package com.ugav.algo;
 
-import java.util.Collection;
-
-
 import com.ugav.algo.Graph.WeightFunction;
+
+import it.unimi.dsi.fastutil.ints.IntCollection;
 
 public interface MatchingWeighted extends Matching {
 
@@ -14,7 +13,7 @@ public interface MatchingWeighted extends Matching {
 	 * @param w weight function
 	 * @return collection of edges representing the matching found
 	 */
-	public <E> Collection<Edge<E>> calcMaxMatching(Graph<E> g, WeightFunction<E> w);
+	public IntCollection calcMaxMatching(Graph<?> g, WeightFunction w);
 
 	/**
 	 * Calculate the maximum perfect matching of a weighted undirected graph
@@ -24,10 +23,10 @@ public interface MatchingWeighted extends Matching {
 	 * @return collection of edges representing perfect matching, or the maximal one
 	 *         if no perfect one found
 	 */
-	public <E> Collection<Edge<E>> calcPerfectMaxMatching(Graph<E> g, WeightFunction<E> w);
+	public IntCollection calcPerfectMaxMatching(Graph<?> g, WeightFunction w);
 
 	@Override
-	default <E> Collection<Edge<E>> calcMaxMatching(Graph<E> g) {
+	default IntCollection calcMaxMatching(Graph<?> g) {
 		return calcMaxMatching(g, e -> 1);
 	}
 
