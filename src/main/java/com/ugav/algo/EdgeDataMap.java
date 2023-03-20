@@ -196,4 +196,32 @@ public class EdgeDataMap {
 		}
 	}
 
+	public static class Builder implements EdgeData.Builder {
+
+		private Builder() {
+		}
+
+		private static final Builder Instace = new Builder();
+
+		public static EdgeData.Builder getInstance() {
+			return Instace;
+		}
+
+		@Override
+		public <E> EdgeData<E> ofObjs() {
+			return new EdgeDataArray.Obj<>();
+		}
+
+		@Override
+		public EdgeData.Int ofInts() {
+			return new EdgeDataArray.Int();
+		}
+
+		@Override
+		public EdgeData.Double ofDoubles() {
+			return new EdgeDataArray.Double();
+		}
+
+	}
+
 }

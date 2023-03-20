@@ -19,10 +19,11 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 	}
 
 	@Override
-	public IntCollection calcMaxMatching(Graph<?> g0, WeightFunction w) {
-		if (!(g0 instanceof GraphBipartite.Undirected<?>))
+	public IntCollection calcMaxMatching(Graph g0, WeightFunction w) {
+		if (!(g0 instanceof GraphBipartite.Undirected))
 			throw new IllegalArgumentException("Only undirected bipartite graphs are supported");
-		GraphBipartite.Directed<Ref> g = referenceGraph((GraphBipartite.Undirected<?>) g0, w);
+		GraphBipartite.Directed g = referenceGraph((GraphBipartite.Undirected) g0, w);
+		EdgeData<Ref> edgeRef = g.getEdgeData("edgeRef");
 
 		int n = g.vertices(), sn = g.svertices(), tn = g.tvertices();
 		int s = g.newVertexT(), t = g.newVertexS();
@@ -31,7 +32,7 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 		int[] match = new int[n];
 
 		// Negate unmatched edges
-		for (DataIter<Ref> it = g.edgeData().iterator(); it.hasNext();) {
+		for (DataIter<Ref> it = edgeRef.iterator(); it.hasNext();) {
 			it.nextEdge();
 			Ref r = it.getData();
 			r.w = -r.w;
@@ -39,17 +40,17 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 		// Connected unmatched vertices to fake vertices s,t
 		final Ref zeroEdgeData = new Ref(-1, 0);
 		for (int u = 0; u < sn; u++)
-			g.edgeData().set(g.addEdge(s, u), zeroEdgeData);
+			edgeRef.set(g.addEdge(s, u), zeroEdgeData);
 		for (int v = sn; v < sn + tn; v++)
-			g.edgeData().set(g.addEdge(v, t), zeroEdgeData);
+			edgeRef.set(g.addEdge(v, t), zeroEdgeData);
 
 		double[] potential = new double[n + 2];
-		WeightFunction spWeightFunc = e -> g.edgeData().get(e).w + potential[g.getEdgeSource(e)]
+		WeightFunction spWeightFunc = e -> edgeRef.get(e).w + potential[g.getEdgeSource(e)]
 				- potential[g.getEdgeTarget(e)];
 
 		// Init state may include negative distances, use Bellman Ford to calculate
 		// first potential values
-		SSSP.Result sp = new SSSPBellmanFord().calcDistances(g, e -> g.edgeData().get(e).w, s);
+		SSSP.Result sp = new SSSPBellmanFord().calcDistances(g, e -> edgeRef.get(e).w, s);
 		for (int v = 0; v < n + 2; v++)
 			potential[v] = sp.distance(v);
 
@@ -106,24 +107,25 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 	}
 
 	@Override
-	public IntCollection calcPerfectMaxMatching(Graph<?> g, WeightFunction w) {
+	public IntCollection calcPerfectMaxMatching(Graph g, WeightFunction w) {
 		throw new UnsupportedOperationException();
 	}
 
-	private static <E> GraphBipartite.Directed<Ref> referenceGraph(GraphBipartite.Undirected<E> g, WeightFunction w) {
+	private static GraphBipartite.Directed referenceGraph(GraphBipartite.Undirected g, WeightFunction w) {
 		int n = g.vertices();
-		GraphBipartite.Directed<Ref> g0 = new GraphBipartiteArrayDirected<>(g.svertices(), g.tvertices());
+		GraphBipartite.Directed g0 = new GraphBipartiteArrayDirected(g.svertices(), g.tvertices());
+		EdgeData<Ref> edgeRef = g0.newEdgeData("edgeRef");
 
 		for (int u = 0; u < n; u++) {
 			if (!g.isVertexInS(u))
 				continue;
-			for (EdgeIter<?> eit = g.edges(u); eit.hasNext();) {
+			for (EdgeIter eit = g.edges(u); eit.hasNext();) {
 				int e = eit.nextInt();
 				double weight = w.weight(e);
 				if (weight < 0)
 					continue; // no reason to match negative edges
 				int e0 = g0.addEdge(u, eit.v());
-				g0.edgeData().set(e0, new Ref(e, weight));
+				edgeRef.set(e0, new Ref(e, weight));
 			}
 		}
 		return g0;

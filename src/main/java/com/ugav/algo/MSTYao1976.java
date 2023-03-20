@@ -21,10 +21,10 @@ public class MSTYao1976 implements MST {
 	}
 
 	@Override
-	public IntCollection calcMST(Graph<?> g0, WeightFunction w) {
-		if (!(g0 instanceof Graph.Undirected<?>))
+	public IntCollection calcMST(Graph g0, WeightFunction w) {
+		if (!(g0 instanceof Graph.Undirected))
 			throw new IllegalArgumentException("only undirected graphs are supported");
-		Graph.Undirected<?> g = (Graph.Undirected<?>) g0;
+		Graph.Undirected g = (Graph.Undirected) g0;
 		int n = g.vertices();
 
 		int[][][] edges = partitionEdgesToBuckets(g, w);
@@ -132,7 +132,7 @@ public class MSTYao1976 implements MST {
 		return mst;
 	}
 
-	private static int[][][] partitionEdgesToBuckets(Graph<?> g, WeightFunction w) {
+	private static int[][][] partitionEdgesToBuckets(Graph g, WeightFunction w) {
 		int n = g.vertices(), k = Utils.log2ceil(n);
 
 		int[][][] edges = new int[n][][];
@@ -141,7 +141,7 @@ public class MSTYao1976 implements MST {
 
 		for (int u = 0; u < n; u++) {
 			int edgesCount = 0;
-			for (EdgeIter<?> eit = g.edges(u); eit.hasNext();)
+			for (EdgeIter eit = g.edges(u); eit.hasNext();)
 				edgesTemp[edgesCount++] = eit.nextInt();
 
 			if (edgesCount <= k) {

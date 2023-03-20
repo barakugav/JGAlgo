@@ -1,6 +1,6 @@
 package com.ugav.algo;
 
-public class GraphTableUndirected<E> extends GraphTableAbstract<E> implements Graph.Undirected<E> {
+public class GraphTableUndirected extends GraphTableAbstract implements Graph.Undirected {
 
 	public GraphTableUndirected(int n) {
 		super(n);

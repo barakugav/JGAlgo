@@ -22,12 +22,12 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 		TSPMetric.checkArgDistanceTableIsMetric(distances);
 
 		/* Build graph from the distances table */
-		Graph.Undirected<Double> g = new GraphTableUndirected<>(n);
-		EdgeData.Double weights = new EdgeDataArray.Double(n * (n + 1) / 2);
+		Graph.Undirected g = new GraphTableUndirected(n);
+		EdgeData.Double weights = g.newEdgeDataDouble("weight");
+//		EdgeData.Double weights = new EdgeDataArray.Double(n * (n + 1) / 2);
 		for (int u = 0; u < n; u++)
 			for (int v = u + 1; v < n; v++)
 				weights.set(g.addEdge(u, v), distances[u][v]);
-		g.setEdgesData(weights);
 
 		/* Calculate MST */
 		IntCollection mst = new MSTPrim1957().calcMST(g, weights);
@@ -37,14 +37,16 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 		 * degree from the MST
 		 */
 		int[] degree = Graphs.calcDegree(g, mst);
-		Graph.Undirected<Double> mG = new GraphArrayUndirected<>();
+		Graph.Undirected mG = new GraphArrayUndirected();
 		int[] mVtoV = new int[n];
 		for (int u = 0; u < n; u++)
 			if (degree[u] % 2 == 1)
 				mVtoV[mG.newVertex()] = u;
 		int mGn = mG.vertices();
-		EdgeData.Double mGWeightsNeg = new EdgeDataArray.Double(mGn * (mGn + 1) / 2);
-		EdgeData.Int mGEdgeRef = new EdgeDataArray.Int(mGn * (mGn + 1) / 2);
+//		EdgeData.Double mGWeightsNeg = new EdgeDataArray.Double(mGn * (mGn + 1) / 2);
+//		EdgeData.Int mGEdgeRef = new EdgeDataArray.Int(mGn * (mGn + 1) / 2);
+		EdgeData.Double mGWeightsNeg = mG.newEdgeDataDouble("weight");
+		EdgeData.Int mGEdgeRef = mG.newEdgeDataInt("edgeRef");
 		for (int u = 0; u < mGn; u++) {
 			for (int v = u + 1; v < mGn; v++) {
 				int e = g.getEdge(u, v);
@@ -53,14 +55,13 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 				mGEdgeRef.set(en, e);
 			}
 		}
-		mG.setEdgesData(mGWeightsNeg);
 
 		/* Calculate maximum matching between the odd vertices */
 		IntCollection matching = new MatchingWeightedGabow2017().calcPerfectMaxMatching(mG, mGWeightsNeg);
 		mG.clear(); /* not needed anymore */
 
 		/* Build a graph of the union of the MST and the matching result */
-		Graph.Undirected<Integer> g1 = new GraphArrayUndirected<>(n);
+		Graph.Undirected g1 = new GraphArrayUndirected(n);
 		EdgeData.Int g1EdgeRef = new EdgeDataArray.Int(mst.size() + matching.size());
 		for (IntIterator it = mst.iterator(); it.hasNext();) {
 			int e = it.nextInt();

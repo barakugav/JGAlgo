@@ -16,10 +16,10 @@ public class SSSPBellmanFord implements SSSP {
 	}
 
 	@Override
-	public SSSP.Result calcDistances(Graph<?> g0, WeightFunction w, int source) {
+	public SSSP.Result calcDistances(Graph g0, WeightFunction w, int source) {
 		if (!(g0 instanceof Graph.Directed))
 			throw new IllegalArgumentException("only directed graphs are supported");
-		Graph.Directed<?> g = (Graph.Directed<?>) g0;
+		Graph.Directed g = (Graph.Directed) g0;
 		int n = g.vertices(), m = g.edges();
 		double[] distances = new double[n];
 		int[] backtrack = new int[n];
@@ -55,7 +55,7 @@ public class SSSPBellmanFord implements SSSP {
 
 		private final boolean negCycle;
 
-		private Result(Graph<?> g, double[] distances, int[] backtrack, boolean negCycle) {
+		private Result(Graph g, double[] distances, int[] backtrack, boolean negCycle) {
 			super(g, distances, backtrack);
 			this.negCycle = negCycle;
 		}
@@ -92,11 +92,11 @@ public class SSSPBellmanFord implements SSSP {
 			return negCycle ? "[NegCycle]" : super.toString();
 		}
 
-		static Result success(Graph<?> g, double[] distances, int[] backtrack) {
+		static Result success(Graph g, double[] distances, int[] backtrack) {
 			return new Result(g, distances, backtrack, false);
 		}
 
-		static Result negCycle(Graph<?> g) {
+		static Result negCycle(Graph g) {
 			return new Result(g, null, null, true);
 		}
 

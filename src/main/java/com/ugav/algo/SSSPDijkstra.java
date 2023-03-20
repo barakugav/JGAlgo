@@ -40,7 +40,7 @@ public class SSSPDijkstra implements SSSP {
 	}
 
 	@Override
-	public SSSP.Result calcDistances(Graph<?> g, WeightFunction w, int source) {
+	public SSSP.Result calcDistances(Graph g, WeightFunction w, int source) {
 		int n = g.vertices();
 		if (n <= 0)
 			throw new IllegalArgumentException();
@@ -56,7 +56,7 @@ public class SSSPDijkstra implements SSSP {
 		distances[source] = 0;
 
 		for (int u = source;;) {
-			for (EdgeIter<?> eit = g.edges(u); eit.hasNext();) {
+			for (EdgeIter eit = g.edges(u); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = eit.v();
 				if (distances[v] != Double.POSITIVE_INFINITY)

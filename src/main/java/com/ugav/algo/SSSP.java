@@ -11,7 +11,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 /* Single Source Shortest Path */
 public interface SSSP {
 
-	public Result calcDistances(Graph<?> g, WeightFunction w, int source);
+	public Result calcDistances(Graph g, WeightFunction w, int source);
 
 	public static interface Result {
 
@@ -27,11 +27,11 @@ public interface SSSP {
 
 	static class SSSPResultsImpl implements Result {
 
-		private final Graph<?> g;
+		private final Graph g;
 		private final double[] distances;
 		private final int[] backtrack;
 
-		SSSPResultsImpl(Graph<?> g, double[] distances, int[] backtrack) {
+		SSSPResultsImpl(Graph g, double[] distances, int[] backtrack) {
 			this.g = g;
 			this.distances = distances;
 			this.backtrack = backtrack;
@@ -56,7 +56,7 @@ public interface SSSP {
 					v = g.getEdgeSource(e);
 				}
 			} else {
-				Graph.Undirected<?> g = (Graph.Undirected<?>) this.g;
+				Graph.Undirected g = (Graph.Undirected) this.g;
 				for (;;) {
 					int e = backtrack[v];
 					if (e == -1)

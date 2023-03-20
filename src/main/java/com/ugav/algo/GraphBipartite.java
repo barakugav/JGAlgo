@@ -1,6 +1,7 @@
 package com.ugav.algo;
 
-public interface GraphBipartite<E> extends Graph<E> {
+// TODO remove this class, represent the bipartitness as boolean vertices weights
+public interface GraphBipartite extends Graph {
 
 	/**
 	 * Get the number of vertices in S side
@@ -45,10 +46,10 @@ public interface GraphBipartite<E> extends Graph<E> {
 	 */
 	public int newVertexT();
 
-	static interface Directed<E> extends GraphBipartite<E>, Graph.Directed<E> {
+	static interface Directed extends GraphBipartite, Graph.Directed {
 	}
 
-	static interface Undirected<E> extends GraphBipartite<E>, Graph.Undirected<E> {
+	static interface Undirected extends GraphBipartite, Graph.Undirected {
 	}
 
 }

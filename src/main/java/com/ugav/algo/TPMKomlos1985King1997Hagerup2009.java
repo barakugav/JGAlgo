@@ -18,7 +18,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 	}
 
 	@Override
-	public int[] calcTPM(Graph<?> t, WeightFunction w, int[] queries, int queriesNum) {
+	public int[] calcTPM(Graph t, WeightFunction w, int[] queries, int queriesNum) {
 		if (!(t instanceof Graph.Undirected))
 			throw new IllegalArgumentException("only undirected graphs are supported");
 		if (queries.length / 2 < queriesNum)
@@ -27,7 +27,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 			throw new IllegalArgumentException("only trees are supported");
 		if (t.vertices() == 0)
 			return new int[queriesNum];
-		return new Worker((Graph.Undirected<?>) t, w).calcTPM(queries, queriesNum);
+		return new Worker((Graph.Undirected) t, w).calcTPM(queries, queriesNum);
 	}
 
 	private static class BitsTable {
@@ -51,11 +51,11 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 		 * Original tree, in other functions 't' refers to the Boruvka fully branching
 		 * tree
 		 */
-		final Graph.Undirected<?> tOrig;
+		final Graph.Undirected tOrig;
 		final WeightFunction w;
 		final BitsTable bitsTable;
 
-		Worker(Graph.Undirected<?> t, WeightFunction w) {
+		Worker(Graph.Undirected t, WeightFunction w) {
 			this.tOrig = t;
 			this.w = w;
 
@@ -65,8 +65,8 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 		}
 
 		int[] calcTPM(int[] queries, int queriesNum) {
-			Pair<Graph.Undirected<Integer>, Integer> r = buildBoruvkaFullyBranchingTree();
-			Graph.Undirected<Integer> t = r.e1;
+			Pair<Graph.Undirected, Integer> r = buildBoruvkaFullyBranchingTree();
+			Graph.Undirected t = r.e1;
 			int root = r.e2.intValue();
 
 			int[] lcaQueries = splitQueriesIntoLCAQueries(t, root, queries, queriesNum);
@@ -77,7 +77,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 
 			int[] q = calcQueriesPerVertex(t, lcaQueries, depths, edgeToParent);
 			int[][] a = calcAnswersPerVertex(t, root, q, edgeToParent);
-			return extractEdgesFromAnswers(a, q, lcaQueries, depths, (EdgeData.Int) t.edgeData());
+			return extractEdgesFromAnswers(a, q, lcaQueries, depths, t.getEdgeData("edgeData"));
 		}
 
 		private int[] extractEdgesFromAnswers(int[][] a, int[] q, int[] lcaQueries, int[] depths,
@@ -116,13 +116,13 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 			return res;
 		}
 
-		private int[][] calcAnswersPerVertex(Graph.Undirected<Integer> t, int root, int[] q, int[] edgeToParent) {
+		private int[][] calcAnswersPerVertex(Graph.Undirected t, int root, int[] q, int[] edgeToParent) {
 			int n = t.vertices();
 			int[] a = new int[n];
 
 			int leavesDepth = Graphs.getFullyBranchingTreeDepth(t, root);
 
-			EdgeData.Int tData = (EdgeData.Int) t.edgeData();
+			EdgeData.Int tData = t.getEdgeData("edgeData");
 			int[][] res = new int[tOrig.vertices()][];
 
 			Graphs.runDFS(t, root, (v, edgesFromRoot) -> {
@@ -195,7 +195,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 			return av;
 		}
 
-		private Pair<Graph.Undirected<Integer>, Integer> buildBoruvkaFullyBranchingTree() {
+		private Pair<Graph.Undirected, Integer> buildBoruvkaFullyBranchingTree() {
 			int n = tOrig.vertices();
 			int[] minEdges = new int[n];
 			double[] minEdgesWeight = new double[n];
@@ -207,17 +207,16 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 			for (int v = 0; v < n; v++)
 				vTv[v] = v;
 
-			Graph.Undirected<Integer> t = new GraphArrayUndirected<>(n);
-			EdgeData.Int tData = new EdgeDataArray.Int();
-			t.setEdgesData(tData);
-			for (Graph.Undirected<Integer> G = Graphs.referenceGraph(tOrig); (n = G.vertices()) > 1;) {
-				EdgeData.Int GData = (EdgeData.Int) G.edgeData();
+			Graph.Undirected t = new GraphArrayUndirected(n);
+			EdgeData.Int tData = t.newEdgeDataInt("edgeData");
+			for (Graph.Undirected G = Graphs.referenceGraph(tOrig, "edgeRef"); (n = G.vertices()) > 1;) {
+				EdgeData.Int GData = G.getEdgeData("edgeRef");
 
 				// Find minimum edge of each vertex
 				Arrays.fill(minEdges, 0, n, -1);
 				Arrays.fill(minEdgesWeight, 0, n, Double.MAX_VALUE);
 				for (int u = 0; u < n; u++) {
-					for (EdgeIter<?> eit = G.edges(u); eit.hasNext();) {
+					for (EdgeIter eit = G.edges(u); eit.hasNext();) {
 						int e = eit.nextInt();
 						double eWeight = w.weight(e);
 						if (eWeight < minEdgesWeight[u]) {
@@ -266,12 +265,11 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 				vTvNext = temp;
 
 				// contract G to new graph with the super vertices
-				Graph.Undirected<Integer> gNext = new GraphArrayUndirected<>(nNext);
-				EdgeData.Int gNextData = new EdgeDataArray.Int();
-				gNext.setEdgesData(gNextData);
+				Graph.Undirected gNext = new GraphArrayUndirected(nNext);
+				EdgeData.Int gNextData = G.newEdgeDataInt("edgeRef");
 				for (int u = 0; u < n; u++) {
 					int U = vNext[u];
-					for (EdgeIter<?> eit = G.edges(u); eit.hasNext();) {
+					for (EdgeIter eit = G.edges(u); eit.hasNext();) {
 						int e = eit.nextInt();
 						int V = vNext[eit.v()];
 						if (U != V) {
@@ -287,8 +285,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 			return Pair.of(t, Integer.valueOf(vTv[0]));
 		}
 
-		private static int[] splitQueriesIntoLCAQueries(Graph.Undirected<?> t, int root, int[] queries,
-				int queriesNum) {
+		private static int[] splitQueriesIntoLCAQueries(Graph.Undirected t, int root, int[] queries, int queriesNum) {
 			int[] lcaQueries = new int[queriesNum * 4];
 
 			LCAStatic lcaAlgo = new LCARMQBenderFarachColton2000();
@@ -304,7 +301,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 			return lcaQueries;
 		}
 
-		private static Pair<int[], int[]> getEdgeToParentsAndDepth(Graph.Undirected<?> t, int root) {
+		private static Pair<int[], int[]> getEdgeToParentsAndDepth(Graph.Undirected t, int root) {
 			int n = t.vertices();
 			int[] edgeToParent = new int[n];
 			Arrays.fill(edgeToParent, -1);
@@ -321,7 +318,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 			return Pair.of(edgeToParent, depths);
 		}
 
-		private static int[] calcQueriesPerVertex(Graph.Undirected<?> g, int[] lcaQueries, int[] depths,
+		private static int[] calcQueriesPerVertex(Graph.Undirected g, int[] lcaQueries, int[] depths,
 				int[] edgeToParent) {
 			int n = edgeToParent.length;
 

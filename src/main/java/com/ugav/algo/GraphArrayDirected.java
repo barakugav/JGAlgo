@@ -2,7 +2,7 @@ package com.ugav.algo;
 
 import java.util.Arrays;
 
-public class GraphArrayDirected<E> extends GraphArrayAbstract<E> implements Graph.Directed<E> {
+public class GraphArrayDirected extends GraphArrayAbstract implements Graph.Directed {
 
 	private int[][] edgesOut;
 	private int[] edgesOutNum;
@@ -24,13 +24,13 @@ public class GraphArrayDirected<E> extends GraphArrayAbstract<E> implements Grap
 	}
 
 	@Override
-	public EdgeIter<E> edgesOut(int u) {
+	public EdgeIter edgesOut(int u) {
 		checkVertexIdx(u);
 		return new EdgeOutIt(u, edgesOut[u], edgesOutNum[u]);
 	}
 
 	@Override
-	public EdgeIter<E> edgesIn(int v) {
+	public EdgeIter edgesIn(int v) {
 		checkVertexIdx(v);
 		return new EdgeInIt(v, edgesIn[v], edgesInNum[v]);
 	}

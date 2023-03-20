@@ -14,7 +14,7 @@ public interface EdgeData<E> {
 	void clear();
 
 	public static interface Removable<E> extends EdgeData<E> {
-		void removeEdge(int e); //TODO
+		void removeEdge(int e); // TODO
 	}
 
 	public static interface DataIter<E> {
@@ -117,6 +117,14 @@ public interface EdgeData<E> {
 		default double weight(int e) {
 			return getDouble(e);
 		}
+	}
+
+	public static interface Builder {
+		<E> EdgeData<E> ofObjs();
+
+		EdgeData.Int ofInts();
+
+		EdgeData.Double ofDoubles();
 	}
 
 }

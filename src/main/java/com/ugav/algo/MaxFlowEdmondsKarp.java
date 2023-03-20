@@ -17,18 +17,16 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 	}
 
 	@Override
-	public double calcMaxFlow(Graph<?> g0, FlowNetwork net, int source, int target) {
-		if (!(g0 instanceof Graph.Directed<?>))
+	public double calcMaxFlow(Graph g0, FlowNetwork net, int source, int target) {
+		if (!(g0 instanceof Graph.Directed))
 			throw new IllegalArgumentException("only directed graphs are supported");
 		if (source == target)
 			throw new IllegalArgumentException("Source and target can't be the same vertices");
 
-		EdgeData.Int edgeRef = new EdgeDataArray.Int(g0.edges() * 2);
-		EdgeData.Int edgeRev = new EdgeDataArray.Int(g0.edges() * 2);
-		EdgeData.Double flow = new EdgeDataArray.Double(g0.edges() * 2);
-
-		Graph.Directed<Integer> g = new GraphArrayDirected<>(g0.vertices());
-		g.setEdgesData(edgeRef);
+		Graph.Directed g = new GraphArrayDirected(g0.vertices());
+		EdgeData.Int edgeRef = g.newEdgeDataInt("edgeRef");
+		EdgeData.Int edgeRev = g.newEdgeDataInt("edgeRev");
+		EdgeData.Double flow = g.newEdgeDataDouble("flow");
 		for (int e = 0; e < g0.edges(); e++) {
 			int u = g.getEdgeSource(e), v = g.getEdgeTarget(e);
 			int e1 = g.addEdge(u, v);
@@ -57,7 +55,7 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 			// perform BFS and find a path of non saturated edges from source to target
 			bfs: while (!queue.isEmpty()) {
 				int u = queue.pop();
-				for (EdgeIter<?> eit = g.edgesOut(u); eit.hasNext();) {
+				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 					int e = eit.nextInt();
 					int v = eit.v();
 
@@ -101,7 +99,7 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 				net.setFlow(orig, flow.getDouble(e));
 		}
 		double totalFlow = 0;
-		for (EdgeIter<?> eit = g.edgesOut(source); eit.hasNext();) {
+		for (EdgeIter eit = g.edgesOut(source); eit.hasNext();) {
 			int e = eit.nextInt();
 			totalFlow += flow.getDouble(e);
 		}

@@ -2,10 +2,10 @@ package com.ugav.algo;
 
 import java.util.Arrays;
 
-public class GraphBipartiteArrayUndirected<E> extends GraphArrayUndirected<E> implements GraphBipartite.Undirected<E> {
+public class GraphBipartiteArrayUndirected extends GraphArrayUndirected implements GraphBipartite.Undirected {
 
 	private boolean[] side;
-	private int sSize;
+	private final int sSize;
 
 	private static final boolean S_SIDE = true;
 	private static final boolean T_SIDE = !S_SIDE;
@@ -77,6 +77,5 @@ public class GraphBipartiteArrayUndirected<E> extends GraphArrayUndirected<E> im
 			throw new IllegalArgumentException("The vertices (" + u + ", " + v + ") are from the same side");
 		return super.addEdge(u, v);
 	}
-
 
 }

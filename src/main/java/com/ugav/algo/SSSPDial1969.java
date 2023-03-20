@@ -51,7 +51,7 @@ public class SSSPDial1969 implements SSSP {
 	}
 
 	@Override
-	public SSSP.Result calcDistances(Graph<?> g, WeightFunction w0, int source) {
+	public SSSP.Result calcDistances(Graph g, WeightFunction w0, int source) {
 		if (!(w0 instanceof WeightFunctionInt))
 			throw new IllegalArgumentException("only int weights are supported");
 		WeightFunctionInt w = (WeightFunctionInt) w0;
@@ -86,7 +86,7 @@ public class SSSPDial1969 implements SSSP {
 		return res;
 	}
 
-	public SSSP.Result calcDistances(Graph<?> g, WeightFunctionInt w, int source, int maxDistance) {
+	public SSSP.Result calcDistances(Graph g, WeightFunctionInt w, int source, int maxDistance) {
 		int n = g.vertices(), m = g.edges();
 		if (n <= 0)
 			throw new IllegalArgumentException();
@@ -105,7 +105,7 @@ public class SSSPDial1969 implements SSSP {
 		heap.init(maxDistance);
 
 		for (int u = source;;) {
-			for (EdgeIter<?> eit = g.edges(u); eit.hasNext();) {
+			for (EdgeIter eit = g.edges(u); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = eit.v();
 				if (distances[v] != Integer.MAX_VALUE)
@@ -243,11 +243,11 @@ public class SSSPDial1969 implements SSSP {
 
 	private static class Result implements SSSP.Result {
 
-		private final Graph<?> g;
+		private final Graph g;
 		private final int[] distances;
 		private final int[] backtrack;
 
-		Result(Graph<?> g, int[] distances, int[] backtrack) {
+		Result(Graph g, int[] distances, int[] backtrack) {
 			this.g = g;
 			this.distances = distances;
 			this.backtrack = backtrack;

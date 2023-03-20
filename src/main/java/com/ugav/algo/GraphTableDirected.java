@@ -1,18 +1,18 @@
 package com.ugav.algo;
 
-public class GraphTableDirected<E> extends GraphTableAbstract<E> implements Graph.Directed<E> {
+public class GraphTableDirected extends GraphTableAbstract implements Graph.Directed {
 
 	public GraphTableDirected(int n) {
 		super(n);
 	}
 
 	@Override
-	public EdgeIter<E> edgesOut(int u) {
+	public EdgeIter edgesOut(int u) {
 		return new EdgesOutItrVertex(u);
 	}
 
 	@Override
-	public EdgeIter<E> edgesIn(int v) {
+	public EdgeIter edgesIn(int v) {
 		return new EdgesInItrVertex(v);
 	}
 

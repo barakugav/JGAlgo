@@ -18,10 +18,10 @@ public class MSTPrim1957 implements MST {
 	}
 
 	@Override
-	public IntCollection calcMST(Graph<?> g0, Graph.WeightFunction w) {
-		if (!(g0 instanceof Graph.Undirected<?>))
+	public IntCollection calcMST(Graph g0, Graph.WeightFunction w) {
+		if (!(g0 instanceof Graph.Undirected))
 			throw new IllegalArgumentException("only undirected graphs are supported");
-		Graph.Undirected<?> g = (Graph.Undirected<?>) g0;
+		Graph.Undirected g = (Graph.Undirected) g0;
 		int n = g.vertices();
 		if (n == 0)
 			return IntLists.emptyList();
@@ -42,7 +42,7 @@ public class MSTPrim1957 implements MST {
 				verticesPtrs[u] = null;
 
 				/* decrease edges keys if a better one is found */
-				for (EdgeIter<?> eit = g.edges(u); eit.hasNext();) {
+				for (EdgeIter eit = g.edges(u); eit.hasNext();) {
 					int e = eit.nextInt();
 					int v = eit.v();
 					if (visited[v])
