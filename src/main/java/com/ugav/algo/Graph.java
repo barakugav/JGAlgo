@@ -14,14 +14,8 @@ public interface Graph {
 
 	public EdgeIter edges(int u);
 
-	default int getEdge(int u, int v) {
-		for (IntIterator it = edges(u); it.hasNext();) {
-			int e = it.nextInt();
-			if (getEdgeTarget(e) == v)
-				return e;
-		}
-		return -1;
-	}
+	// TODO specific for table
+	public int getEdge(int u, int v);
 
 	default int degree(int u) {
 		int count = 0;
@@ -81,6 +75,16 @@ public interface Graph {
 
 	public static interface Undirected extends Graph {
 
+		@Override
+		default int getEdge(int u, int v) {
+			for (IntIterator it = edges(u); it.hasNext();) {
+				int e = it.nextInt();
+				if (getEdgeEndpoint(e, u) == v)
+					return e;
+			}
+			return -1;
+		}
+
 	}
 
 	public static interface Directed extends Graph {
@@ -94,6 +98,16 @@ public interface Graph {
 		public EdgeIter edgesOut(int u);
 
 		public EdgeIter edgesIn(int v);
+
+		@Override
+		default int getEdge(int u, int v) {
+			for (IntIterator it = edgesOut(u); it.hasNext();) {
+				int e = it.nextInt();
+				if (getEdgeTarget(e) == v)
+					return e;
+			}
+			return -1;
+		}
 
 		@Override
 		@Deprecated

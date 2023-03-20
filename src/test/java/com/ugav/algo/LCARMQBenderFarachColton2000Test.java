@@ -7,7 +7,7 @@ import java.util.function.Supplier;
 @SuppressWarnings("boxing")
 public class LCARMQBenderFarachColton2000Test extends TestUtils {
 
-	private static int[][] randLCAQueries(Graph<Void> g, int r, int queriesNum) {
+	private static int[][] randLCAQueries(Graph g, int r, int queriesNum) {
 		Random rand = new Random(nextRandSeed());
 		int[][] queries = new int[queriesNum][3];
 
@@ -16,11 +16,11 @@ public class LCARMQBenderFarachColton2000Test extends TestUtils {
 		int[] depth = new int[n];
 
 		Graphs.runBFS(g, r, (v, e) -> {
-			if (e == null) {
+			if (e == -1) {
 				parent[v] = -1;
 				depth[v] = 0;
 			} else {
-				int p = e.u();
+				int p = g.getEdgeEndpoint(e, v);
 				parent[v] = p;
 				depth[v] = depth[p] + 1;
 			}
@@ -57,7 +57,7 @@ public class LCARMQBenderFarachColton2000Test extends TestUtils {
 		return queries;
 	}
 
-	private static void testLCA(Graph<Void> g, Supplier<? extends LCAStatic> builder, int[][] queries) {
+	private static void testLCA(Graph g, Supplier<? extends LCAStatic> builder, int[][] queries) {
 		LCAStatic lca = builder.get();
 		lca.preprocessLCA(g, 0);
 
@@ -77,7 +77,7 @@ public class LCARMQBenderFarachColton2000Test extends TestUtils {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
-			Graph<Void> g = GraphsTestUtils.randTree(n);
+			Graph g = GraphsTestUtils.randTree(n);
 			int[][] queries = randLCAQueries(g, 0, m);
 			testLCA(g, LCARMQBenderFarachColton2000::new, queries);
 		});

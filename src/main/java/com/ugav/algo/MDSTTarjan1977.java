@@ -130,7 +130,11 @@ public class MDSTTarjan1977 implements MDST {
 		for (int v = 0; v < n; v++)
 			ufIdxToV[v] = v;
 
-		WeightFunction w = e -> (e != HeavyEdge ? w0.weight(e) : HeavyEdgeWeight) + uf.getValue(g.getEdgeTarget(e));
+		EdgeData.Int edgeRefs = g.getEdgeData("edgeRef");
+		WeightFunction w = e -> {
+			int e0 = edgeRefs.getInt(e);
+			return (e0 != HeavyEdge ? w0.weight(e0) : HeavyEdgeWeight) + uf.getValue(g.getEdgeTarget(e));
+		};
 		IntComparator edgeComparator = new Graphs.EdgeWeightComparator(w);
 		@SuppressWarnings("unchecked")
 		Heap<Integer>[] heap = new Heap[VMaxNum];
@@ -157,8 +161,7 @@ public class MDSTTarjan1977 implements MDST {
 
 		for (int a = startVertex;;) {
 			// Find minimum edge that enters a
-			int u;
-			int e;
+			int u, e;
 			do {
 				// Assuming the graph is strongly connected, if heap is empty we are done
 				if (heap[a].isEmpty())

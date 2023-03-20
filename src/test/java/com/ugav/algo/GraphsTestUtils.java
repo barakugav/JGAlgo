@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
-
+import com.ugav.algo.Graph.EdgeIter;
 import com.ugav.algo.GraphImplTestUtils.GraphImpl;
 
 class GraphsTestUtils extends TestUtils {
@@ -91,8 +91,8 @@ class GraphsTestUtils extends TestUtils {
 			return this;
 		}
 
-		<E> Graph<E> build() {
-			final Graph<E> g;
+		Graph build() {
+			final Graph g;
 			if (!bipartite) {
 				if (n < 0 || m < 0)
 					throw new IllegalStateException();
@@ -197,8 +197,9 @@ class GraphsTestUtils extends TestUtils {
 							while (queueBegin != queueEnd) {
 								int p = queue[queueBegin++];
 
-								for (Edge<E> e : Utils.iterable(g.edges(p))) {
-									int pv = e.v();
+								for (EdgeIter eit = g.edges(p); eit.hasNext();) {
+									eit.nextInt();
+									int pv = eit.v();
 									if (reachableFromRoot[pv])
 										continue;
 									reachableFromRoot[pv] = true;
@@ -219,60 +220,62 @@ class GraphsTestUtils extends TestUtils {
 
 	}
 
-	static <E> Graph.Undirected<E> randTree(int n) {
-		return (Graph.Undirected<E>) new RandomGraphBuilder().n(n).m(n - 1).directed(false).selfEdges(false)
-				.cycles(false).connected(true).<E>build();
+	static Graph.Undirected randTree(int n) {
+		return (Graph.Undirected) new RandomGraphBuilder().n(n).m(n - 1).directed(false).selfEdges(false).cycles(false)
+				.connected(true).build();
 	}
 
-	static <E> Graph.Undirected<E> randForest(int n, int m) {
-		return (Graph.Undirected<E>) new RandomGraphBuilder().n(n).m(m).directed(false).selfEdges(false).cycles(false)
-				.connected(false).<E>build();
+	static Graph.Undirected randForest(int n, int m) {
+		return (Graph.Undirected) new RandomGraphBuilder().n(n).m(m).directed(false).selfEdges(false).cycles(false)
+				.connected(false).build();
 	}
 
-	static void assignRandWeights(Graph<Double> g) {
+	static void assignRandWeights(Graph g) {
 		assignRandWeights(g, 1.0, 100.0);
 	}
 
-	static void assignRandWeights(Graph<Double> g, double minWeight, double maxWeight) {
+	static void assignRandWeights(Graph g, double minWeight, double maxWeight) {
 		if (minWeight >= maxWeight)
 			throw new IllegalArgumentException();
 
 		Random rand = new Random(nextRandSeed());
-		for (Edge<Double> e : g.edges())
-			e.setData(Double.valueOf(nextDouble(rand, minWeight, maxWeight)));
+		EdgeData.Double weight = g.newEdgeDataDouble("weight");
+		for (int e = 0; e < g.edges(); e++)
+			weight.set(e, nextDouble(rand, minWeight, maxWeight));
 	}
 
-	static void assignRandWeightsIntPos(Graph<Integer> g) {
+	static void assignRandWeightsIntPos(Graph g) {
 		int m = g.edges();
 		int minWeight = 1;
 		int maxWeight = m < 50 ? 100 : m * 2 + 2;
 		assignRandWeightsInt(g, minWeight, maxWeight);
 	}
 
-	static void assignRandWeightsIntNeg(Graph<Integer> g) {
+	static void assignRandWeightsIntNeg(Graph g) {
 		int m = g.edges();
 		int maxWeight = m < 50 ? 100 : m * 2 + 2;
 		assignRandWeightsInt(g, -maxWeight / 8, maxWeight);
 	}
 
-	static void assignRandWeightsInt(Graph<Integer> g, int minWeight, int maxWeight) {
+	static void assignRandWeightsInt(Graph g, int minWeight, int maxWeight) {
 		if (minWeight >= maxWeight)
 			throw new IllegalArgumentException();
 		if (maxWeight - minWeight < g.edges() / 2)
 			throw new IllegalArgumentException("weight range is too small for unique weights");
 
 		RandomIntUnique rand = new RandomIntUnique(minWeight, maxWeight, nextRandSeed());
-		for (Edge<Integer> e : g.edges())
-			e.setData(Integer.valueOf(rand.next()));
+		EdgeData.Int weight = g.newEdgeDataInt("weight");
+		for (int e = 0; e < g.edges(); e++)
+			weight.set(e, rand.next());
 	}
 
-	static <E> Graph<E> randGraph(int n, int m) {
+	static Graph randGraph(int n, int m) {
 		return randGraph(n, m, GraphImplTestUtils.GRAPH_IMPL_DEFAULT);
 	}
 
-	static <E> Graph.Undirected<E> randGraph(int n, int m, GraphImpl graphImpl) {
-		return (Graph.Undirected<E>) new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(false)
-				.selfEdges(false).cycles(true).connected(false).<E>build();
+	static Graph.Undirected randGraph(int n, int m, GraphImpl graphImpl) {
+		return (Graph.Undirected) new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(false).selfEdges(false)
+				.cycles(true).connected(false).build();
 	}
 
 //	static Graph<Integer> createGraphFromAdjacencyMatrixWeightedInt(int[][] m, DirectedType directed) {
@@ -300,10 +303,10 @@ class GraphsTestUtils extends TestUtils {
 //		return createGraphFromAdjacencyMatrixWeightedInt(m, DirectedType.Undirected);
 //	}
 
-	static Graph<Void> parseGraphFromAdjacencyMatrix01(String s) {
+	static Graph parseGraphFromAdjacencyMatrix01(String s) {
 		String[] lines = s.split("\r\n");
 		int n = lines.length;
-		Graph<Void> g = new GraphArrayUndirectedOld<>(n);
+		Graph g = new GraphArrayUndirected(n);
 		for (int u = 0; u < n; u++) {
 			String[] chars = lines[u].split(" ");
 			for (int v = u + 1; v < n; v++)
@@ -313,10 +316,10 @@ class GraphsTestUtils extends TestUtils {
 		return g;
 	}
 
-	static Graph<Void> parseGraphWeighted(String s) {
+	static Graph parseGraphWeighted(String s) {
 		String[] lines = s.split("\r\n");
 		int n = lines.length;
-		Graph<Void> g = new GraphArrayUndirectedOld<>(n);
+		Graph g = new GraphArrayUndirected(n);
 		for (int u = 0; u < n; u++) {
 			String[] chars = lines[u].split(" ");
 			for (int v = u + 1; v < n; v++)

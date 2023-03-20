@@ -30,13 +30,10 @@ public class MSTKargerKleinTarjan1995 implements MST {
 	public IntCollection calcMST(Graph g0, WeightFunction w) {
 		if (!(g0 instanceof Graph.Undirected))
 			throw new IllegalArgumentException("only undirected graphs are supported");
-		Graph.Undirected g = (Graph.Undirected) g0;
-		if (g.edges() == 0)
-			return IntLists.emptyList();
-		return calcMST0(g, w);
+		return calcMST0((Graph.Undirected) g0, w);
 	}
 
-	private IntCollection calcMST0(Graph g, WeightFunction w) {
+	private IntCollection calcMST0(Graph.Undirected g, WeightFunction w) {
 		if (g.vertices() == 0 || g.edges() == 0)
 			return IntLists.emptyList();
 		/*
@@ -45,21 +42,22 @@ public class MSTKargerKleinTarjan1995 implements MST {
 		 * the data stored in each edge is a reference to the old edge. This is a little
 		 * bit clumsy, but didn't find another way.
 		 */
-		Pair<Graph.Undirected, IntCollection> r = MSTBoruvka1926.runBoruvka(g, w, 2, e -> new Ref(e, w.weight(e)), "ref");
+		Pair<Graph.Undirected, IntCollection> r = MSTBoruvka1926.runBoruvka(g, w, 2, e -> new Ref(e, w.weight(e)),
+				"ref");
 		Graph.Undirected g0 = r.e1;
 		IntCollection f0 = r.e2;
-		EdgeData<Ref> g0Ref = g0.getEdgeData("ref");
-		WeightFunction w0 = e -> g0Ref.get(e).w;
 		Graph.Undirected g1 = randSubgraph(g0);
-		IntCollection f1Edges = calcMST0(g1, w0);
+		EdgeData<Ref> g1Ref = g1.getEdgeData("ref");
+		IntCollection f1Edges = calcMST0(g1, e -> g1Ref.get(e).w);
 		Graph.Undirected f1 = subGraph(g1, f1Edges);
-		IntCollection e2 = lightEdges(g0, f1, w0);
-		Graph g2 = subGraph(g0, e2);
-		IntCollection f2 = calcMST0(g2, w0);
+		IntCollection e2 = lightEdges(g0, f1);
+		Graph.Undirected g2 = subGraph(g0, e2);
+		EdgeData<Ref> g2Ref = g2.getEdgeData("ref");
+		IntCollection f2 = calcMST0(g2, e -> g2Ref.get(e).w);
 
 		for (IntIterator it = f2.iterator(); it.hasNext();) {
 			int eRef = it.nextInt();
-			int e = g0Ref.get(eRef).e;
+			int e = g2Ref.get(eRef).e;
 			f0.add(e);
 		}
 		return f0;
@@ -107,7 +105,7 @@ public class MSTKargerKleinTarjan1995 implements MST {
 		return subGraph(g, edgeSet);
 	}
 
-	private static IntCollection lightEdges(Graph.Undirected g, Graph.Undirected f, WeightFunction w) {
+	private static IntCollection lightEdges(Graph.Undirected g, Graph.Undirected f) {
 		int n = f.vertices();
 		/* find connectivity components in the forest, each one of them is a tree */
 		Pair<Integer, int[]> r = Graphs.findConnectivityComponents(f);
@@ -117,7 +115,6 @@ public class MSTKargerKleinTarjan1995 implements MST {
 		for (int u = 0; u < n; u++)
 			treeSizes[vToTree[u]]++;
 
-		@SuppressWarnings("unchecked")
 		Graph.Undirected[] trees = new Graph.Undirected[treeSizes.length];
 		EdgeData.Double[] treeData = new EdgeData.Double[treeSizes.length];
 		for (int t = 0; t < trees.length; t++) {
@@ -130,12 +127,13 @@ public class MSTKargerKleinTarjan1995 implements MST {
 		for (int u = 0; u < n; u++)
 			vToVnew[u] = treeToNextv[vToTree[u]]++;
 
+		EdgeData<Ref> fRef = f.getEdgeData("ref");
 		for (int e = 0; e < f.edges(); e++) {
-			int u = g.getEdgeSource(e), v = g.getEdgeTarget(e);
+			int u = f.getEdgeSource(e), v = f.getEdgeTarget(e);
 			int un = vToVnew[u], vn = vToVnew[v];
 			int treeIdx = vToTree[u];
 			int en = trees[treeIdx].addEdge(un, vn);
-			treeData[treeIdx].set(en, w.weight(e));
+			treeData[treeIdx].set(en, fRef.get(e).w);
 		}
 
 		/*
@@ -161,23 +159,22 @@ public class MSTKargerKleinTarjan1995 implements MST {
 		}
 
 		int[][] tpmResults = new int[trees.length][];
-		for (int t = 0; t < trees.length; t++) {
+		for (int t = 0; t < trees.length; t++)
 			tpmResults[t] = tpm.calcTPM(trees[t], treeData[t], tpmQueries[t], tpmQueriesNum[t]);
-		}
 
 		/*
 		 * Find all light edge by comparing each edge in g to the heaviest edge on the
 		 * path from u to v in f
 		 */
+		EdgeData<Ref> gRef = g.getEdgeData("ref");
 		IntCollection lightEdges = new IntArrayList();
 		int[] tpmIdx = new int[trees.length];
 		for (int e = 0; e < g.edges(); e++) {
 			int u = g.getEdgeSource(e), v = g.getEdgeTarget(e);
 			int ut = vToTree[u];
-			if (ut != vToTree[v] || w.weight(e) <= treeData[ut].weight(tpmResults[ut][tpmIdx[ut]++]))
+			if (ut != vToTree[v] || gRef.get(e).w <= treeData[ut].weight(tpmResults[ut][tpmIdx[ut]++]))
 				lightEdges.add(e);
 		}
-
 		return lightEdges;
 	}
 

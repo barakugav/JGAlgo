@@ -3,6 +3,7 @@ package com.ugav.algo;
 import com.ugav.algo.Graph.WeightFunction;
 
 import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntIterator;
 
 public interface MST {
 
@@ -35,8 +36,9 @@ public interface MST {
 	public static boolean verifyMST(Graph.Undirected g, WeightFunction w, IntCollection mstEdges, TPM tpmAlgo) {
 		int n = g.vertices(), m = g.edges();
 		Graph.Undirected mst = new GraphArrayUndirected(n);
-		EdgeData.Double mstEdgesWeights = new EdgeDataArray.Double(mstEdges.size());
-		for (int e = 0; e < m; e++) {
+		EdgeData.Double mstEdgesWeights = mst.newEdgeDataDouble("weight");
+		for (IntIterator it = mstEdges.iterator(); it.hasNext(); ) {
+			int e = it.nextInt();
 			int u = g.getEdgeSource(e), v = g.getEdgeTarget(e);
 			int ne = mst.addEdge(u, v);
 			mstEdgesWeights.set(ne, w.weight(e));
@@ -54,9 +56,8 @@ public interface MST {
 
 		int[] tpmResults = tpmAlgo.calcTPM(mst, mstEdgesWeights, queries, m);
 
-		int i = 0;
 		for (int e = 0; e < m; e++) {
-			int mstEdge = tpmResults[i];
+			int mstEdge = tpmResults[e];
 			if (mstEdge == -1 || w.weight(e) < mstEdgesWeights.weight(mstEdge))
 				return false;
 		}

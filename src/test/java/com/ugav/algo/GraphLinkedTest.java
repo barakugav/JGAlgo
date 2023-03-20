@@ -8,14 +8,14 @@ public class GraphLinkedTest extends TestUtils {
 		return new GraphImpl() {
 
 			@Override
-			public <E> Graph<E> newGraph(boolean directed, int... vertices) {
+			public Graph newGraph(boolean directed, int... vertices) {
 				if (vertices.length != 1)
 					throw new UnsupportedOperationException();
 				int n = vertices[0];
 				if (directed) {
-					return new GraphLinkedDirected<>(n);
+					return new GraphLinkedDirected(n);
 				} else {
-					return new GraphLinkedUndirected<>(n);
+					return new GraphLinkedUndirected(n);
 				}
 			}
 		};

@@ -38,7 +38,7 @@ public class MSTKruskal1956 implements MST {
 
 		/* iterate over the edges and build the MST */
 		IntCollection mst = new IntArrayList(n - 1);
-		for (int e = 0; e < m; e++) {
+		for (int e : edges) {
 			int u = g.getEdgeSource(e);
 			int v = g.getEdgeTarget(e);
 

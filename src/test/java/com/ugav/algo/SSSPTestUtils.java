@@ -4,10 +4,12 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
 
-
 import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.Graph.WeightFunctionInt;
+import com.ugav.algo.Graphs.PathIter;
 import com.ugav.algo.GraphsTestUtils.RandomGraphBuilder;
+
+import it.unimi.dsi.fastutil.ints.IntList;
 
 @SuppressWarnings("boxing")
 class SSSPTestUtils extends TestUtils {
@@ -31,14 +33,14 @@ class SSSPTestUtils extends TestUtils {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
-			Graph<Integer> g = new RandomGraphBuilder().n(n).m(m).directed(directed).doubleEdges(true).selfEdges(true)
+			Graph g = new RandomGraphBuilder().n(n).m(m).directed(directed).doubleEdges(true).selfEdges(true)
 					.cycles(true).connected(false).build();
 			GraphsTestUtils.assignRandWeightsIntPos(g);
-			WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
+			WeightFunctionInt w = g.getEdgeData("weight");
 			int source = rand.nextInt(g.vertices());
 
 			SSSP algo = builder.get();
-			SSSP.Result<Integer> actualRes = algo.calcDistances(g, w, source);
+			SSSP.Result actualRes = algo.calcDistances(g, w, source);
 
 			SSSP validationAlgo = algo instanceof SSSPDijkstra ? new SSSPDial1969() : new SSSPDijkstra();
 			validateResult(g, w, source, actualRes, validationAlgo);
@@ -51,34 +53,32 @@ class SSSPTestUtils extends TestUtils {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
-			Graph<Integer> g = new RandomGraphBuilder().n(n).m(m).directed(true).doubleEdges(true).selfEdges(true)
-					.cycles(true).connected(true).build();
+			Graph g = new RandomGraphBuilder().n(n).m(m).directed(true).doubleEdges(true).selfEdges(true).cycles(true)
+					.connected(true).build();
 			GraphsTestUtils.assignRandWeightsIntNeg(g);
-			WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
+			WeightFunctionInt w = g.getEdgeData("weight");
 			int source = 0;
 
 			SSSP algo = builder.get();
-			SSSP.Result<Integer> actualRes = algo.calcDistances(g, w, source);
+			SSSP.Result actualRes = algo.calcDistances(g, w, source);
 
 			SSSP validationAlgo = algo instanceof SSSPBellmanFord ? new SSSPGoldberg1995() : new SSSPBellmanFord();
 			validateResult(g, w, source, actualRes, validationAlgo);
 		});
 	}
 
-	static <E> void validateResult(Graph<E> g, WeightFunction<E> w, int source, SSSP.Result<E> result,
-			SSSP validationAlgo) {
-		SSSP.Result<E> expectedRes = validationAlgo.calcDistances(g, w, source);
+	static void validateResult(Graph g, WeightFunction w, int source, SSSP.Result result, SSSP validationAlgo) {
+		SSSP.Result expectedRes = validationAlgo.calcDistances(g, w, source);
 
 		if (result.foundNegativeCycle()) {
-			List<Edge<E>> cycle = null;
+			IntList cycle = null;
 			try {
 				cycle = result.getNegativeCycle();
 			} catch (UnsupportedOperationException e) {
 			}
 			if (cycle != null) {
-				double cycleWeight = getPathWeight(cycle, w);
-				assertTrue(cycleWeight != Double.NaN && cycle.get(0).u() == cycle.get(cycle.size() - 1).v(),
-						"Invalid cycle: ", cycle, "\n");
+				double cycleWeight = getPathWeight(g, cycle, w);
+				assertTrue(cycleWeight != Double.NaN, "Invalid cycle: ", cycle, "\n");
 				assertTrue(cycleWeight < 0, "Cycle is not negative: ", cycle, "\n");
 				if (!expectedRes.foundNegativeCycle())
 					throw new InternalError("validation algorithm didn't find negative cycle: " + cycle);
@@ -94,9 +94,9 @@ class SSSPTestUtils extends TestUtils {
 			double expectedDistance = expectedRes.distance(v);
 			double actualDistance = result.distance(v);
 			assertEq(expectedDistance, actualDistance, "Distance to vertex ", v, " is wrong");
-			List<Edge<E>> path = result.getPathTo(v);
+			IntList path = result.getPathTo(v);
 			if (path != null) {
-				double pathWeight = getPathWeight(path, w);
+				double pathWeight = getPathWeight(g, path, w);
 				assertEq(pathWeight, actualDistance, "Path to vertex ", v, " doesn't match distance (", actualDistance,
 						" != ", pathWeight, "): ", path, "\n");
 			} else {
@@ -106,15 +106,10 @@ class SSSPTestUtils extends TestUtils {
 		}
 	}
 
-	private static <E> double getPathWeight(List<Edge<E>> path, WeightFunction<E> w) {
+	private static double getPathWeight(Graph g, IntList path, WeightFunction w) {
 		double totalWeight = 0;
-		int prev = -1;
-		for (Edge<E> e : path) {
-			if (prev != -1 && prev != e.u())
-				return Double.NaN;
-			totalWeight += w.weight(e);
-			prev = e.v();
-		}
+		for (PathIter it = PathIter.of(g, path); it.hasNext();)
+			totalWeight += w.weight(it.nextEdge());
 		return totalWeight;
 	}
 

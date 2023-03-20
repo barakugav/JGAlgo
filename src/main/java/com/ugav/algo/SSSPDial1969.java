@@ -8,7 +8,6 @@ import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.Graph.WeightFunctionInt;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 public class SSSPDial1969 implements SSSP {
@@ -72,10 +71,8 @@ public class SSSPDial1969 implements SSSP {
 			for (int e = 0; e < m; e++)
 				edges[e] = e;
 
-			/* TODO no k-th element impl for int */
-//			Arrays.getKthElement(edges, 0, m, n - 1, (e1, e2) -> -Integer.compare(w.weightInt(e1), w.weightInt(e2)),
-//					true);
-			IntArrays.parallelQuickSort(edges, 0, m, (e1, e2) -> -Integer.compare(w.weightInt(e1), w.weightInt(e2)));
+			Array.Int.getKthElement(edges, 0, g.edges(), n - 1,
+					(e1, e2) -> -Integer.compare(w.weightInt(e1), w.weightInt(e2)), true);
 
 			for (int i = 0; i <= n - 1; i++)
 				maxDistance += w.weightInt(edges[i]);
@@ -271,7 +268,7 @@ public class SSSPDial1969 implements SSSP {
 				path.add(e);
 				v = g.getEdgeEndpoint(e, v);
 			}
-			Collections.reverse(path);
+			Collections.reverse(path); // TODO
 			return path;
 		}
 

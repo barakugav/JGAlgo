@@ -16,7 +16,6 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.ints.IntLists;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -150,8 +149,9 @@ public class Graphs {
 	 *         not found
 	 */
 	public static IntList findPath(Graph g, int u, int v) {
+		IntList path = new IntArrayList();
 		if (u == v)
-			return IntLists.emptyList();
+			return path;
 		boolean reverse = true;
 		if (g instanceof Graph.Undirected) {
 			int t = u;
@@ -172,7 +172,6 @@ public class Graphs {
 		if (backtrack[v] == -1)
 			return null;
 
-		IntList path = new IntArrayList();
 		for (int p = v; p != u;) {
 			int e = backtrack[p];
 			path.add(e);
@@ -229,7 +228,7 @@ public class Graphs {
 			visited[root] = true;
 
 			while (stackSize > 0) {
-				int u = stack[stackSize--];
+				int u = stack[--stackSize];
 				visitedCount++;
 
 				for (EdgeIter eit = g.edges(u); eit.hasNext();) {
@@ -400,6 +399,7 @@ public class Graphs {
 	public static SSSP.Result calcDistancesDAG(Graph.Directed g, WeightFunction w, int source) {
 		int n = g.vertices();
 		int[] backtrack = new int[n];
+		Arrays.fill(backtrack, -1);
 		double[] distances = new double[n];
 		Arrays.fill(distances, Double.POSITIVE_INFINITY);
 		distances[source] = 0;
@@ -653,6 +653,111 @@ public class Graphs {
 			data.set(e0, e);
 		}
 		return g0;
+	}
+
+	public static interface PathIter {
+
+		public boolean hasNext();
+
+		public int nextEdge();
+
+		public int u();
+
+		public int v();
+
+		static PathIter of(Graph g0, IntList edgeList) {
+			if (g0 instanceof Graph.Undirected g) {
+				return new PathIterUndirected(g, edgeList);
+			} else if (g0 instanceof Graph.Directed g) {
+				return new PathIterDirected(g, edgeList);
+			} else {
+				throw new IllegalArgumentException();
+			}
+		}
+
+	}
+
+	private static class PathIterUndirected implements PathIter {
+
+		private final Graph.Undirected g;
+		private final IntIterator it;
+		private int e = -1, v = -1;
+
+		PathIterUndirected(Graph.Undirected g, IntList path) {
+			this.g = g;
+			if (path.size() == 1) {
+				v = g.getEdgeTarget(path.getInt(0));
+			} else if (path.size() >= 2) {
+				int e0 = path.getInt(0), e1 = path.getInt(1);
+				int u0 = g.getEdgeSource(e0), v0 = g.getEdgeTarget(e0);
+				int u1 = g.getEdgeSource(e1), v1 = g.getEdgeTarget(e1);
+				if (v0 == u1 || v0 == v1) {
+					v = u0;
+				} else {
+					v = v0;
+					assert (u0 == u1 || u0 == v1) : "not a path";
+				}
+			}
+			it = path.iterator();
+		}
+
+		@Override
+		public boolean hasNext() {
+			return it.hasNext();
+		}
+
+		@Override
+		public int nextEdge() {
+			e = it.nextInt();
+			assert v == g.getEdgeSource(e) || v == g.getEdgeTarget(e);
+			v = g.getEdgeEndpoint(e, v);
+			return e;
+		}
+
+		@Override
+		public int u() {
+			return g.getEdgeEndpoint(e, v);
+		}
+
+		@Override
+		public int v() {
+			return v;
+		}
+
+	}
+
+	private static class PathIterDirected implements PathIter {
+
+		private final Graph.Directed g;
+		private final IntIterator it;
+		private int e = -1;
+
+		PathIterDirected(Graph.Directed g, IntList path) {
+			this.g = g;
+			it = path.iterator();
+		}
+
+		@Override
+		public boolean hasNext() {
+			return it.hasNext();
+		}
+
+		@Override
+		public int nextEdge() {
+			e = it.nextInt();
+			return e;
+		}
+
+		@Override
+		public int u() {
+			return g.getEdgeSource(e);
+		}
+
+		@Override
+		public int v() {
+			return g.getEdgeTarget(e);
+		}
+
 	}
 
 }
