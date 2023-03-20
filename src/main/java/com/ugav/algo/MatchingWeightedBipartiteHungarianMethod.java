@@ -20,24 +20,24 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 	}
 
 	@Override
-	public IntCollection calcMaxMatching(Graph<?> g0, WeightFunction w) {
-		if (!(g0 instanceof GraphBipartite.Undirected<?>))
+	public IntCollection calcMaxMatching(Graph g0, WeightFunction w) {
+		if (!(g0 instanceof GraphBipartite.Undirected))
 			throw new IllegalArgumentException("Only undirected bipartite graphs are supported");
-		GraphBipartite.Undirected<?> g = (GraphBipartite.Undirected<?>) g0;
+		GraphBipartite.Undirected g = (GraphBipartite.Undirected) g0;
 		return new Worker(g, w).calcMaxMatching(false);
 	}
 
 	@Override
-	public IntCollection calcPerfectMaxMatching(Graph<?> g0, WeightFunction w) {
-		if (!(g0 instanceof GraphBipartite.Undirected<?>))
+	public IntCollection calcPerfectMaxMatching(Graph g0, WeightFunction w) {
+		if (!(g0 instanceof GraphBipartite.Undirected))
 			throw new IllegalArgumentException("Only undirected bipartite graphs are supported");
-		GraphBipartite.Undirected<?> g = (GraphBipartite.Undirected<?>) g0;
+		GraphBipartite.Undirected g = (GraphBipartite.Undirected) g0;
 		return new Worker(g, w).calcMaxMatching(true);
 	}
 
 	private static class Worker {
 
-		private final GraphBipartite.Undirected<?> g;
+		private final GraphBipartite.Undirected g;
 		private final WeightFunction w;
 
 		private final boolean[] inTree;
@@ -51,7 +51,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 		private final double[] dualVal0;
 
 		@SuppressWarnings("unchecked")
-		Worker(GraphBipartite.Undirected<?> g, WeightFunction w) {
+		Worker(GraphBipartite.Undirected g, WeightFunction w) {
 			this.g = g;
 			this.w = w;
 			int n = g.vertices();
@@ -90,7 +90,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 					if (!g.isVertexInS(u) || matched[u] != EdgeNone)
 						continue;
 					vertexAddedToTree(u);
-					for (EdgeIter<?> eit = g.edges(u); eit.hasNext();) {
+					for (EdgeIter eit = g.edges(u); eit.hasNext();) {
 						int e = eit.nextInt();
 						nextTightEdgeAdd(u, e);
 					}
@@ -136,7 +136,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 						parent[v] = matchedEdge;
 						vertexAddedToTree(v);
 
-						for (EdgeIter<?> eit = g.edges(v); eit.hasNext();) {
+						for (EdgeIter eit = g.edges(v); eit.hasNext();) {
 							int e1 = eit.nextInt();
 							nextTightEdgeAdd(v, e1);
 						}

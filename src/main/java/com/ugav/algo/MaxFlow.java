@@ -13,7 +13,7 @@ public interface MaxFlow {
 	 * @param target a target (sink) vertex
 	 * @return the maximum flow in the network from the source to the target
 	 */
-	public double calcMaxFlow(Graph<?> g, FlowNetwork net, int source, int target);
+	public double calcMaxFlow(Graph g, FlowNetwork net, int source, int target);
 
 	public static interface FlowNetwork {
 

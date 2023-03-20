@@ -2,15 +2,13 @@ package com.ugav.algo;
 
 import java.util.Arrays;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 
-abstract class GraphTableAbstract<E> extends GraphAbstract<E> {
+abstract class GraphTableAbstract extends GraphAbstract {
 
 	private final int n;
 	private int m;
 	final int[][] edges;
 	private int[] edgeEndpoints;
-	private EdgeData<E> edgeData;
 
 	private static final int SizeofEdgeEndpoints = 2;
 	private static final int[][] EDGES_EMPTY = new int[0][];
@@ -25,7 +23,6 @@ abstract class GraphTableAbstract<E> extends GraphAbstract<E> {
 		for (int u = 0; u < n; u++)
 			Arrays.fill(edges[u], EdgeNone);
 		edgeEndpoints = n > 0 ? new int[m * SizeofEdgeEndpoints] : EdgeEndpointsEmpty;
-		edgeData = new EdgeDataArray.Obj<>(n);
 	}
 
 	@Override
@@ -57,7 +54,7 @@ abstract class GraphTableAbstract<E> extends GraphAbstract<E> {
 	}
 
 	@Override
-	public EdgeIter<E> edges(int u) {
+	public EdgeIter edges(int u) {
 		return new EdgesOutItrVertex(u);
 	}
 
@@ -68,10 +65,10 @@ abstract class GraphTableAbstract<E> extends GraphAbstract<E> {
 
 	@Override
 	public void clearEdges() {
-		edgeData.clear();
 		for (int u = 0; u < n; u++)
 			Arrays.fill(edges[u], EdgeNone);
 		m = 0;
+		super.clearEdges();
 	}
 
 	@Override
@@ -108,17 +105,7 @@ abstract class GraphTableAbstract<E> extends GraphAbstract<E> {
 			throw new IndexOutOfBoundsException(e);
 	}
 
-	@Override
-	public EdgeData<E> edgeData() {
-		return edgeData;
-	}
-
-	@Override
-	public void setEdgesData(EdgeData<E> data) {
-		edgeData = Objects.requireNonNull(data);
-	}
-
-	class EdgesOutItrVertex implements EdgeIter<E> {
+	class EdgesOutItrVertex implements EdgeIter {
 
 		private final int u;
 		private int v;
@@ -168,20 +155,9 @@ abstract class GraphTableAbstract<E> extends GraphAbstract<E> {
 		public int v() {
 			return lastV;
 		}
-
-		@Override
-		public E data() {
-			return edgeData().get(lastE);
-		}
-
-		@Override
-		public void setData(E val) {
-			edgeData().set(lastE, val);
-		}
-
 	}
 
-	class EdgesInItrVertex implements EdgeIter<E> {
+	class EdgesInItrVertex implements EdgeIter {
 
 		private int u;
 		private final int v;
@@ -231,17 +207,6 @@ abstract class GraphTableAbstract<E> extends GraphAbstract<E> {
 		public int v() {
 			return v;
 		}
-
-		@Override
-		public E data() {
-			return edgeData().get(lastE);
-		}
-
-		@Override
-		public void setData(E val) {
-			edgeData().set(lastE, val);
-		}
-
 	}
 
 }

@@ -21,10 +21,10 @@ public class MSTFredmanTarjan1987 implements MST {
 	}
 
 	@Override
-	public IntCollection calcMST(Graph<?> g0, WeightFunction w) {
-		if (!(g0 instanceof Graph.Undirected<?>))
+	public IntCollection calcMST(Graph g0, WeightFunction w) {
+		if (!(g0 instanceof Graph.Undirected))
 			throw new IllegalArgumentException("only undirected graphs are supported");
-		Graph.Undirected<?> g = (Graph.Undirected<?>) g0;
+		Graph.Undirected g = (Graph.Undirected) g0;
 		int n = g.vertices(), m = g.edges();
 		if (n == 0)
 			return IntLists.emptyList();
@@ -84,7 +84,7 @@ public class MSTFredmanTarjan1987 implements MST {
 					// decrease edges keys if a better one is found
 					for (int u = vListBegin[U]; u != -1; u = vListNext[u]) {
 						// for each vertex in the super vertex, iterate over all edges
-						for (EdgeIter<?> eit = g.edges(u); eit.hasNext();) {
+						for (EdgeIter eit = g.edges(u); eit.hasNext();) {
 							int e = eit.nextInt();
 							int v = V[eit.v()];
 

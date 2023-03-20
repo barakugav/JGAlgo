@@ -29,7 +29,7 @@ public class LCARMQBenderFarachColton2000 implements LCAStatic {
 	}
 
 	@Override
-	public void preprocessLCA(Graph<?> t, int r) {
+	public void preprocessLCA(Graph t, int r) {
 		if (!Graphs.isTree(t, r))
 			throw new IllegalArgumentException();
 
@@ -38,7 +38,7 @@ public class LCARMQBenderFarachColton2000 implements LCAStatic {
 		int[] vs = new int[n * 2];
 		int[] parent = new int[n];
 
-		EdgeIter<?>[] edges = new EdgeIter[n];
+		EdgeIter[] edges = new EdgeIter[n];
 
 		parent[0] = -1;
 		edges[0] = t.edges(r);
@@ -49,7 +49,7 @@ public class LCARMQBenderFarachColton2000 implements LCAStatic {
 			vs[aLen] = u;
 			aLen++;
 
-			for (EdgeIter<?> eit = edges[depth]; eit.hasNext();) {
+			for (EdgeIter eit = edges[depth]; eit.hasNext();) {
 				eit.nextInt();
 				int v = eit.v();
 				if (v == parent[depth])

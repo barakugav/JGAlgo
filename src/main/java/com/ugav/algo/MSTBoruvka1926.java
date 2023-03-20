@@ -19,12 +19,12 @@ public class MSTBoruvka1926 implements MST {
 	}
 
 	@Override
-	public IntCollection calcMST(Graph<?> g, WeightFunction w) {
+	public IntCollection calcMST(Graph g, WeightFunction w) {
 		return calcMST0(g, w, Integer.MAX_VALUE).e3;
 	}
 
-	static <E, R> Pair<Graph.Undirected<R>, IntCollection> runBoruvka(Graph<E> g, WeightFunction w, int numberOfRounds,
-			Int2ObjectFunction<R> edgeValAssigner) {
+	static <E, R> Pair<Graph.Undirected, IntCollection> runBoruvka(Graph g, WeightFunction w, int numberOfRounds,
+			Int2ObjectFunction<R> edgeValAssigner, String edgeValKey) {
 		if (numberOfRounds <= 0)
 			throw new IllegalArgumentException();
 		Triple<int[], Integer, IntCollection> r = calcMST0(g, w, numberOfRounds);
@@ -32,8 +32,8 @@ public class MSTBoruvka1926 implements MST {
 		int treeNum = r.e2.intValue();
 		IntCollection mstEdges = r.e3;
 
-		Graph.Undirected<R> contractedG = new GraphArrayUndirected<>(treeNum);
-		EdgeData<R> contractedGData = new EdgeDataArray.Obj<>(contractedG.edges());
+		Graph.Undirected contractedG = new GraphArrayUndirected(treeNum);
+		EdgeData<R> contractedGData = contractedG.newEdgeData(edgeValKey);
 		int m = g.edges();
 		for (int e = 0; e < m; e++) {
 			int u = tree[g.getEdgeSource(e)];
@@ -43,14 +43,13 @@ public class MSTBoruvka1926 implements MST {
 			int ne = contractedG.addEdge(u, v);
 			contractedGData.set(ne, edgeValAssigner.apply(e));
 		}
-		contractedG.setEdgesData(contractedGData);
 		return Pair.of(contractedG, mstEdges);
 	}
 
-	private static Triple<int[], Integer, IntCollection> calcMST0(Graph<?> g0, WeightFunction w, int numberOfRounds) {
-		if (!(g0 instanceof Graph.Undirected<?>))
+	private static Triple<int[], Integer, IntCollection> calcMST0(Graph g0, WeightFunction w, int numberOfRounds) {
+		if (!(g0 instanceof Graph.Undirected))
 			throw new IllegalArgumentException("only undirected graphs are supported");
-		Graph.Undirected<?> g = (Graph.Undirected<?>) g0;
+		Graph.Undirected g = (Graph.Undirected) g0;
 		int n = g.vertices();
 
 		int treeNum = n;
@@ -72,7 +71,7 @@ public class MSTBoruvka1926 implements MST {
 			for (int u = 0; u < n; u++) {
 				int tree = vTree[u];
 
-				for (EdgeIter<?> eit = g.edges(u); eit.hasNext();) {
+				for (EdgeIter eit = g.edges(u); eit.hasNext();) {
 					int e = eit.nextInt();
 					int v = eit.v();
 					if (tree == vTree[v])

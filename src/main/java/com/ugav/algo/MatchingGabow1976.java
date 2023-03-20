@@ -20,10 +20,10 @@ public class MatchingGabow1976 implements Matching {
 	}
 
 	@Override
-	public IntCollection calcMaxMatching(Graph<?> g0) {
-		if (!(g0 instanceof Graph.Undirected<?>))
+	public IntCollection calcMaxMatching(Graph g0) {
+		if (!(g0 instanceof Graph.Undirected))
 			throw new IllegalArgumentException("only undirected graphs are supported");
-		Graph.Undirected<?> g = (Graph.Undirected<?>) g0;
+		Graph.Undirected g = (Graph.Undirected) g0;
 		int n = g.vertices();
 
 		QueueIntFixSize queue = new QueueIntFixSize(n);
@@ -70,7 +70,7 @@ public class MatchingGabow1976 implements Matching {
 				final int u = queue.pop();
 				int uRoot = root[u];
 
-				for (EdgeIter<?> eit = g.edges(u); eit.hasNext();) {
+				for (EdgeIter eit = g.edges(u); eit.hasNext();) {
 					final int e = eit.nextInt();
 					int v = eit.v();
 					int vRoot = root[v];
@@ -180,7 +180,7 @@ public class MatchingGabow1976 implements Matching {
 		return res;
 	}
 
-	private static int findPath(Graph.Undirected<?> g, int s, int t, boolean[] isEven, int[] match, int[] parent,
+	private static int findPath(Graph.Undirected g, int s, int t, boolean[] isEven, int[] match, int[] parent,
 			int[] bridgeE, int[] bridgeU, int[] path, int pathSize) {
 		if (s == t)
 			return pathSize;

@@ -29,26 +29,26 @@ public class TSPMetricMSTAppx implements TSPMetric {
 			TSPMetric.checkArgDistanceTableIsMetric(distances);
 
 		/* Build graph from the distances table */
-		Graph.Undirected<Double> g = new GraphTableUndirected<>(n);
-		EdgeData.Double weights = new EdgeDataArray.Double(n * (n + 1) / 2);
+		Graph.Undirected g = new GraphTableUndirected(n);
+//		EdgeData.Double weights = new EdgeDataArray.Double(n * (n + 1) / 2);
+		EdgeData.Double weights = g.newEdgeDataDouble("weight");
 		for (int u = 0; u < n; u++)
 			for (int v = u + 1; v < n; v++)
 				weights.set(g.addEdge(u, v), distances[u][v]);
-		g.setEdgesData(weights);
 
 		/* Calculate MST */
 		IntCollection mst = new MSTPrim1957().calcMST(g, weights);
 
 		/* Build a graph with each MST edge duplicated */
-		Graph.Undirected<Integer> g1 = new GraphArrayUndirected<>(n);
-		EdgeData.Int edgeRef = new EdgeDataArray.Int(n - 1);
+		Graph.Undirected g1 = new GraphArrayUndirected(n);
+//		EdgeData.Int edgeRef = new EdgeDataArray.Int(n - 1);
+		EdgeData.Int edgeRef = g1.newEdgeDataInt("edgeRef");
 		for (IntIterator it = mst.iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			int u = g.getEdgeSource(e), v = g.getEdgeTarget(e);
 			edgeRef.set(g1.addEdge(u, v), e);
 			edgeRef.set(g1.addEdge(u, v), e);
 		}
-		g1.setEdgesData(edgeRef);
 
 		IntList cycle = TSPMetricUtils.calcEulerianTourAndConvertToHamiltonianCycle(g, g1, edgeRef);
 		assert cycle.size() == n;

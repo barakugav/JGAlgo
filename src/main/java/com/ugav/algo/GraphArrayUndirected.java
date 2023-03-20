@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
-public class GraphArrayUndirected<E> extends GraphArrayAbstract<E> implements Graph.Undirected<E> {
+public class GraphArrayUndirected extends GraphArrayAbstract implements Graph.Undirected {
 
 	private int[][] edges;
 	private int[] edgesNum;
@@ -25,7 +25,7 @@ public class GraphArrayUndirected<E> extends GraphArrayAbstract<E> implements Gr
 	}
 
 	@Override
-	public EdgeIter<E> edges(int u) {
+	public EdgeIter edges(int u) {
 		checkVertexIdx(u);
 		return new EdgeIt(u, edges[u], edgesNum[u]);
 	}
@@ -80,7 +80,7 @@ public class GraphArrayUndirected<E> extends GraphArrayAbstract<E> implements Gr
 		super.clearEdges();
 	}
 
-	private class EdgeIt extends GraphArrayAbstract<E>.EdgeIt {
+	private class EdgeIt extends GraphArrayAbstract.EdgeIt {
 
 		private final int u;
 

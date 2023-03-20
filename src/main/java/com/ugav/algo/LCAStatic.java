@@ -11,7 +11,7 @@ public interface LCAStatic {
 	 * @return a result data structure that can calculate efficiently the LCA of any
 	 *         given query
 	 */
-	public void preprocessLCA(Graph<?> t, int r);
+	public void preprocessLCA(Graph t, int r);
 
 	/**
 	 * Calculate the LCA (Lowest common ancestor) of two vertices

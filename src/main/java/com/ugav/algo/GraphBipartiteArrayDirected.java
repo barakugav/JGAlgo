@@ -2,7 +2,7 @@ package com.ugav.algo;
 
 import java.util.Arrays;
 
-public class GraphBipartiteArrayDirected<E> extends GraphArrayDirected<E> implements GraphBipartite.Directed<E> {
+public class GraphBipartiteArrayDirected extends GraphArrayDirected implements GraphBipartite.Directed {
 
 	private boolean[] side;
 	private final int sSize;

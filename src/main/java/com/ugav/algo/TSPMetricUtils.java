@@ -10,7 +10,7 @@ class TSPMetricUtils {
 		throw new InternalError();
 	}
 
-	static IntList calcEulerianTourAndConvertToHamiltonianCycle(Graph.Undirected<?> g, Graph.Undirected<?> g1,
+	static IntList calcEulerianTourAndConvertToHamiltonianCycle(Graph.Undirected g, Graph.Undirected g1,
 			EdgeData.Int edgeRef) {
 		int n = g.vertices();
 
@@ -47,7 +47,7 @@ class TSPMetricUtils {
 		return cycle;
 	}
 
-	static IntList edgeListToVerticesList(Graph.Undirected<?> g, IntList edges) {
+	static IntList edgeListToVerticesList(Graph.Undirected g, IntList edges) {
 		IntList res = new IntArrayList();
 		for (PathIter it = new PathIter(g, edges); it.hasNext();) {
 			it.nextEdge();
@@ -56,7 +56,7 @@ class TSPMetricUtils {
 		return res;
 	}
 
-	private static void assertValidCycle(Graph.Undirected<?> g, IntList path) {
+	private static void assertValidCycle(Graph.Undirected g, IntList path) {
 		PathIter it = new PathIter(g, path);
 		assert it.hasNext();
 		final int begin = it.u();
@@ -71,7 +71,7 @@ class TSPMetricUtils {
 		}
 	}
 
-	private static void assertPathVisitEvery(Graph.Undirected<?> g, IntList path) {
+	private static void assertPathVisitEvery(Graph.Undirected g, IntList path) {
 		final int n = g.vertices();
 		boolean[] visited = new boolean[n];
 		for (IntIterator it = path.iterator(); it.hasNext();) {
@@ -85,11 +85,11 @@ class TSPMetricUtils {
 
 	private static class PathIter {
 
-		private final Graph.Undirected<?> g;
+		private final Graph.Undirected g;
 		private final IntIterator it;
 		private int e = -1, v = -1;
 
-		PathIter(Graph.Undirected<?> g, IntList path) {
+		PathIter(Graph.Undirected g, IntList path) {
 			this.g = g;
 			if (path.size() == 1) {
 				v = g.getEdgeTarget(path.getInt(0));

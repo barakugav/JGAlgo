@@ -2,13 +2,11 @@ package com.ugav.algo;
 
 import java.util.Arrays;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 
-abstract class GraphArrayAbstract<E> implements Graph<E> {
+abstract class GraphArrayAbstract extends GraphAbstract {
 
 	private int n, m;
 	private int[] edgeEndpoints;
-	private EdgeData<E> edgeData;
 
 	private static final int SizeofEdgeEndpoints = 2;
 	static final int[][] EDGES_EMPTY = new int[0][];
@@ -22,7 +20,6 @@ abstract class GraphArrayAbstract<E> implements Graph<E> {
 		this.n = n;
 		m = 0;
 		edgeEndpoints = n > 0 ? new int[m * SizeofEdgeEndpoints] : EdgeEndpointsEmpty;
-		edgeData = new EdgeDataArray.Obj<>(n);
 	}
 
 	@Override
@@ -56,12 +53,13 @@ abstract class GraphArrayAbstract<E> implements Graph<E> {
 	public void clear() {
 		clearEdges();
 		n = 0;
+		super.clear();
 	}
 
 	@Override
 	public void clearEdges() {
-		edgeData.clear();
 		m = 0;
+		super.clearEdges();
 	}
 
 	@Override
@@ -98,17 +96,7 @@ abstract class GraphArrayAbstract<E> implements Graph<E> {
 			throw new IndexOutOfBoundsException(e);
 	}
 
-	@Override
-	public EdgeData<E> edgeData() {
-		return edgeData;
-	}
-
-	@Override
-	public void setEdgesData(EdgeData<E> data) {
-		edgeData = Objects.requireNonNull(data);
-	}
-
-	abstract class EdgeIt implements EdgeIter<E> {
+	abstract class EdgeIt implements EdgeIter {
 
 		private final int[] edges;
 		private final int count;
@@ -130,16 +118,6 @@ abstract class GraphArrayAbstract<E> implements Graph<E> {
 			if (!hasNext())
 				throw new NoSuchElementException();
 			return lastEdge = edges[idx++];
-		}
-
-		@Override
-		public E data() {
-			return edgeData.get(lastEdge);
-		}
-
-		@Override
-		public void setData(E val) {
-			edgeData.set(lastEdge, val);
 		}
 
 	}

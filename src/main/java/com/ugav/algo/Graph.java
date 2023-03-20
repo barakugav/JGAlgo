@@ -1,8 +1,10 @@
 package com.ugav.algo;
 
+import java.util.Collection;
+
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
-public interface Graph<E> {
+public interface Graph {
 
 	public int vertices(); // TODO rename to verticesNum
 
@@ -10,7 +12,7 @@ public interface Graph<E> {
 
 	// TODO add edges iterator over all edges
 
-	public EdgeIter<E> edges(int u);
+	public EdgeIter edges(int u);
 
 	default int getEdge(int u, int v) {
 		for (IntIterator it = edges(u); it.hasNext();) {
@@ -23,7 +25,7 @@ public interface Graph<E> {
 
 	default int degree(int u) {
 		int count = 0;
-		for (EdgeIter<E> it = edges(u); it.hasNext();) {
+		for (EdgeIter it = edges(u); it.hasNext();) {
 			it.nextInt();
 			count++;
 		}
@@ -53,37 +55,45 @@ public interface Graph<E> {
 			throw new IllegalArgumentException();
 	}
 
-	public EdgeData<E> edgeData();
+	// TODO change 'edgeData' to edgeWeight
+	// TODO add weights for vertices
+	// TODO implement bipartite graphs with boolean weights on vertices
 
-	public void setEdgesData(EdgeData<E> data);
+	public <E, T extends EdgeData<E>> T getEdgeData(String key);
 
-	public static interface EdgeIter<E> extends IntIterator {
+	public <E> EdgeData<E> newEdgeData(String key);
+
+	public EdgeData.Int newEdgeDataInt(String key);
+
+	public EdgeData.Double newEdgeDataDouble(String key);
+
+	public Collection<String> getEdgeDataKeys();
+
+	public void setEdgeDataBuilder(EdgeData.Builder builder);
+
+	public static interface EdgeIter extends IntIterator {
 
 		int u();
 
 		int v();
 
-		E data();
+	}
 
-		void setData(E val);
+	public static interface Undirected extends Graph {
 
 	}
 
-	public static interface Undirected<E> extends Graph<E> {
-
-	}
-
-	public static interface Directed<E> extends Graph<E> {
+	public static interface Directed extends Graph {
 
 		@Deprecated
 		@Override
-		default EdgeIter<E> edges(int u) {
+		default EdgeIter edges(int u) {
 			return edgesOut(u);
 		}
 
-		public EdgeIter<E> edgesOut(int u);
+		public EdgeIter edgesOut(int u);
 
-		public EdgeIter<E> edgesIn(int v);
+		public EdgeIter edgesIn(int v);
 
 		@Override
 		@Deprecated
@@ -93,7 +103,7 @@ public interface Graph<E> {
 
 		default int degreeOut(int u) {
 			int count = 0;
-			for (EdgeIter<E> it = edgesOut(u); it.hasNext();) {
+			for (EdgeIter it = edgesOut(u); it.hasNext();) {
 				it.nextInt();
 				count++;
 			}
@@ -102,7 +112,7 @@ public interface Graph<E> {
 
 		default int degreeIn(int v) {
 			int count = 0;
-			for (EdgeIter<E> it = edgesIn(v); it.hasNext();) {
+			for (EdgeIter it = edgesIn(v); it.hasNext();) {
 				it.nextInt();
 				count++;
 			}
@@ -117,7 +127,7 @@ public interface Graph<E> {
 
 	}
 
-	public static interface Removeable<E> extends Graph<E> {
+	public static interface Removeable extends Graph {
 
 		/*
 		 * Graph that support edges removal. These graphs do not guaranteer that the
@@ -129,27 +139,27 @@ public interface Graph<E> {
 
 		public IntIterator edgesIDs();
 
-		public static interface Undirected<E> extends Removeable<E>, Graph.Undirected<E> {
+		public static interface Undirected extends Removeable, Graph.Undirected {
 
 			default void removeEdges(int u) {
-				for (EdgeIter<E> it = edges(u); it.hasNext();) {
+				for (EdgeIter it = edges(u); it.hasNext();) {
 					it.nextInt();
 					it.remove();
 				}
 			}
 		}
 
-		public static interface Directed<E> extends Removeable<E>, Graph.Directed<E> {
+		public static interface Directed extends Removeable, Graph.Directed {
 
 			default void removeEdgesOut(int u) {
-				for (EdgeIter<E> it = edgesOut(u); it.hasNext();) {
+				for (EdgeIter it = edgesOut(u); it.hasNext();) {
 					it.nextInt();
 					it.remove();
 				}
 			}
 
 			default void removeEdgesIn(int v) {
-				for (EdgeIter<E> it = edgesIn(v); it.hasNext();) {
+				for (EdgeIter it = edgesIn(v); it.hasNext();) {
 					it.nextInt();
 					it.remove();
 				}

@@ -14,7 +14,7 @@ public interface MST {
 	 * @return all edges that compose the MST, n-1 if the graph is connected (or
 	 *         some forest if not)
 	 */
-	public IntCollection calcMST(Graph<?> g, WeightFunction w);
+	public IntCollection calcMST(Graph g, WeightFunction w);
 
 	/**
 	 * Verify that the given edges are actually form a MST of g
@@ -32,9 +32,9 @@ public interface MST {
 	 *                 algorithm.
 	 * @return true if the collection of edges form a MST of g
 	 */
-	public static boolean verifyMST(Graph.Undirected<?> g, WeightFunction w, IntCollection mstEdges, TPM tpmAlgo) {
+	public static boolean verifyMST(Graph.Undirected g, WeightFunction w, IntCollection mstEdges, TPM tpmAlgo) {
 		int n = g.vertices(), m = g.edges();
-		Graph.Undirected<?> mst = new GraphArrayUndirected<>(n);
+		Graph.Undirected mst = new GraphArrayUndirected(n);
 		EdgeData.Double mstEdgesWeights = new EdgeDataArray.Double(mstEdges.size());
 		for (int e = 0; e < m; e++) {
 			int u = g.getEdgeSource(e), v = g.getEdgeTarget(e);

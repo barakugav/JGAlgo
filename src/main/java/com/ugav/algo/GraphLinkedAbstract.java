@@ -2,19 +2,17 @@ package com.ugav.algo;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
-abstract class GraphLinkedAbstract<E> extends GraphAbstract<E> implements Graph.Removeable<E> {
+abstract class GraphLinkedAbstract extends GraphAbstract implements Graph.Removeable {
 
 	private int n;
 	private int m;
-	private final Int2ObjectMap<Node<E>> edges;
+	private final Int2ObjectMap<Node> edges;
 	private int nextEdgeID = 1;
-	private EdgeData<E> edgeData;
 
 	GraphLinkedAbstract(int n) {
 		if (n < 0)
@@ -22,7 +20,6 @@ abstract class GraphLinkedAbstract<E> extends GraphAbstract<E> implements Graph.
 		this.n = n;
 		m = 0;
 		edges = new Int2ObjectOpenHashMap<>(n);
-		edgeData = new EdgeDataMap.Obj<>(n);
 	}
 
 	@Override
@@ -42,7 +39,7 @@ abstract class GraphLinkedAbstract<E> extends GraphAbstract<E> implements Graph.
 
 	@Override
 	public int getEdgeSource(int edge) {
-		Node<E> node = edges.get(edge);
+		Node node = edges.get(edge);
 		if (node == null)
 			throw new IndexOutOfBoundsException(edge);
 		return node.u;
@@ -50,7 +47,7 @@ abstract class GraphLinkedAbstract<E> extends GraphAbstract<E> implements Graph.
 
 	@Override
 	public int getEdgeTarget(int edge) {
-		Node<E> node = edges.get(edge);
+		Node node = edges.get(edge);
 		if (node == null)
 			throw new IndexOutOfBoundsException(edge);
 		return node.v;
@@ -61,26 +58,26 @@ abstract class GraphLinkedAbstract<E> extends GraphAbstract<E> implements Graph.
 		return n++;
 	}
 
-	Node<E> newEdgeNode(int u, int v) {
+	Node newEdgeNode(int u, int v) {
 		checkVertexIdx(u);
 		checkVertexIdx(v);
 
 		int id = nextEdgeID++;
-		Node<E> n = allocNode(id, u, v);
+		Node n = allocNode(id, u, v);
 		edges.put(id, n);
 		return n;
 	}
 
-	Node<E> allocNode(int id, int u, int v) {
-		return new Node<>(id, u, v);
+	Node allocNode(int id, int u, int v) {
+		return new Node(id, u, v);
 	}
 
-	Iterator<Node<E>> nodes() {
+	Iterator<Node> nodes() {
 		return edges.values().iterator();
 	}
 
-	public Node<E> removeEdgeNode(int id) {
-		Node<E> e = edges.remove(id);
+	public Node removeEdgeNode(int id) {
+		Node e = edges.remove(id);
 		if (e == null)
 			throw new IndexOutOfBoundsException(id);
 		m--;
@@ -96,23 +93,14 @@ abstract class GraphLinkedAbstract<E> extends GraphAbstract<E> implements Graph.
 	public void clear() {
 		clearEdges();
 		n = 0;
+		super.clear();
 	}
 
 	@Override
 	public void clearEdges() {
 		edges.clear();
-		edgeData.clear();
 		m = 0;
-	}
-
-	@Override
-	public EdgeData<E> edgeData() {
-		return edgeData;
-	}
-
-	@Override
-	public void setEdgesData(EdgeData<E> data) {
-		edgeData = Objects.requireNonNull(data);
+		super.clearEdges();
 	}
 
 	void checkVertexIdentifier(int v) {
@@ -120,16 +108,16 @@ abstract class GraphLinkedAbstract<E> extends GraphAbstract<E> implements Graph.
 			throw new IllegalArgumentException("Illegal vertex identifier");
 	}
 
-	abstract class EdgeItr implements Graph.EdgeIter<E> {
+	abstract class EdgeItr implements Graph.EdgeIter {
 
-		private Node<E> next;
-		Node<E> last;
+		private Node next;
+		Node last;
 
-		EdgeItr(Node<E> p) {
+		EdgeItr(Node p) {
 			this.next = p;
 		}
 
-		abstract Node<E> nextNode(Node<E> n);
+		abstract Node nextNode(Node n);
 
 		@Override
 		public boolean hasNext() {
@@ -144,19 +132,9 @@ abstract class GraphLinkedAbstract<E> extends GraphAbstract<E> implements Graph.
 			return last.id;
 		}
 
-		@Override
-		public E data() {
-			return edgeData().get(last.id);
-		}
-
-		@Override
-		public void setData(E val) {
-			edgeData().set(last.id, val);
-		}
-
 	}
 
-	static class Node<E> {
+	static class Node {
 
 		final int id;
 		final int u, v;

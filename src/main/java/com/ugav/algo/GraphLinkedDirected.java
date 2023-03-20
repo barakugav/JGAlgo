@@ -2,19 +2,17 @@ package com.ugav.algo;
 
 import java.util.Arrays;
 
-public class GraphLinkedDirected<E> extends GraphLinkedAbstract<E> implements Graph.Removeable.Directed<E> {
+public class GraphLinkedDirected extends GraphLinkedAbstract implements Graph.Removeable.Directed {
 
-	private Node<E>[] edgesIn;
-	private Node<E>[] edgesOut;
+	private Node[] edgesIn;
+	private Node[] edgesOut;
 
-	@SuppressWarnings("rawtypes")
 	private static final Node[] EmptyNodeArr = new Node[0];
 
 	public GraphLinkedDirected() {
 		this(0);
 	}
 
-	@SuppressWarnings("unchecked")
 	public GraphLinkedDirected(int n) {
 		super(n);
 		edgesIn = n != 0 ? new Node[n] : EmptyNodeArr;
@@ -32,20 +30,20 @@ public class GraphLinkedDirected<E> extends GraphLinkedAbstract<E> implements Gr
 	}
 
 	@Override
-	public EdgeIter<E> edgesOut(int u) {
+	public EdgeIter edgesOut(int u) {
 		checkVertexIdx(u);
 		return new EdgeVertexItrOut(edgesOut[u]);
 	}
 
 	@Override
-	public EdgeIter<E> edgesIn(int v) {
+	public EdgeIter edgesIn(int v) {
 		checkVertexIdx(v);
 		return new EdgeVertexItrIn(edgesIn[v]);
 	}
 
 	@Override
 	public int addEdge(int u, int v) {
-		Node<E> e = (Node<E>) newEdgeNode(u, v), next;
+		Node e = (Node) newEdgeNode(u, v), next;
 		next = edgesOut[u];
 		if (next != null) {
 			next.prevOut = e;
@@ -63,20 +61,20 @@ public class GraphLinkedDirected<E> extends GraphLinkedAbstract<E> implements Gr
 	}
 
 	@Override
-	Node<E> allocNode(int id, int u, int v) {
-		return new Node<>(id, u, v);
+	Node allocNode(int id, int u, int v) {
+		return new Node(id, u, v);
 	}
 
 	@Override
 	public void removeEdge(int id) {
-		Node<E> e = (Node<E>) removeEdgeNode(id);
+		Node e = (Node) removeEdgeNode(id);
 		removeEdgeOut(e);
 		removeEdgeIn(e);
 	}
 
 	@Override
 	public void removeEdgesOut(int u) {
-		for (Node<E> p = edgesOut[u], next; p != null; p = next) {
+		for (Node p = edgesOut[u], next; p != null; p = next) {
 			next = p.nextOut;
 			p.nextOut = p.prevOut = null;
 			removeEdgeIn(p);
@@ -87,7 +85,7 @@ public class GraphLinkedDirected<E> extends GraphLinkedAbstract<E> implements Gr
 
 	@Override
 	public void removeEdgesIn(int v) {
-		for (Node<E> p = edgesIn[v], next; p != null; p = next) {
+		for (Node p = edgesIn[v], next; p != null; p = next) {
 			next = p.nextIn;
 			p.nextIn = p.prevIn = null;
 			removeEdgeOut(p);
@@ -96,8 +94,8 @@ public class GraphLinkedDirected<E> extends GraphLinkedAbstract<E> implements Gr
 		edgesIn[v] = null;
 	}
 
-	private void removeEdgeOut(Node<E> e) {
-		Node<E> next = e.nextOut, prev = e.prevOut;
+	private void removeEdgeOut(Node e) {
+		Node next = e.nextOut, prev = e.prevOut;
 		if (prev == null) {
 			edgesOut[e.u] = next;
 		} else {
@@ -110,8 +108,8 @@ public class GraphLinkedDirected<E> extends GraphLinkedAbstract<E> implements Gr
 		}
 	}
 
-	private void removeEdgeIn(Node<E> e) {
-		Node<E> next = e.nextIn, prev = e.prevIn;
+	private void removeEdgeIn(Node e) {
+		Node next = e.nextIn, prev = e.prevIn;
 		if (prev == null) {
 			edgesIn[e.v] = next;
 		} else {
@@ -126,8 +124,8 @@ public class GraphLinkedDirected<E> extends GraphLinkedAbstract<E> implements Gr
 
 	@Override
 	public void clearEdges() {
-		for (GraphLinkedAbstract.Node<E> p0 : Utils.iterable(nodes())) {
-			Node<E> p = (Node<E>) p0;
+		for (GraphLinkedAbstract.Node p0 : Utils.iterable(nodes())) {
+			Node p = (Node) p0;
 			p.nextOut = p.prevOut = p.nextIn = p.prevIn = null;
 		}
 		Arrays.fill(edgesOut, null);
@@ -135,9 +133,9 @@ public class GraphLinkedDirected<E> extends GraphLinkedAbstract<E> implements Gr
 		super.clearEdges();
 	}
 
-	private abstract class EdgeVertexItr extends GraphLinkedAbstract<E>.EdgeItr {
+	private abstract class EdgeVertexItr extends GraphLinkedAbstract.EdgeItr {
 
-		EdgeVertexItr(Node<E> p) {
+		EdgeVertexItr(Node p) {
 			super(p);
 		}
 
@@ -155,36 +153,36 @@ public class GraphLinkedDirected<E> extends GraphLinkedAbstract<E> implements Gr
 
 	private class EdgeVertexItrOut extends EdgeVertexItr {
 
-		EdgeVertexItrOut(Node<E> p) {
+		EdgeVertexItrOut(Node p) {
 			super(p);
 		}
 
 		@Override
-		Node<E> nextNode(GraphLinkedAbstract.Node<E> n) {
-			return ((Node<E>) n).nextOut;
+		Node nextNode(GraphLinkedAbstract.Node n) {
+			return ((Node) n).nextOut;
 		}
 
 	}
 
 	private class EdgeVertexItrIn extends EdgeVertexItr {
 
-		EdgeVertexItrIn(Node<E> p) {
+		EdgeVertexItrIn(Node p) {
 			super(p);
 		}
 
 		@Override
-		Node<E> nextNode(GraphLinkedAbstract.Node<E> n) {
-			return ((Node<E>) n).nextIn;
+		Node nextNode(GraphLinkedAbstract.Node n) {
+			return ((Node) n).nextIn;
 		}
 
 	}
 
-	private static class Node<E> extends GraphLinkedAbstract.Node<E> {
+	private static class Node extends GraphLinkedAbstract.Node {
 
-		private Node<E> nextOut;
-		private Node<E> nextIn;
-		private Node<E> prevOut;
-		private Node<E> prevIn;
+		private Node nextOut;
+		private Node nextIn;
+		private Node prevOut;
+		private Node prevIn;
 
 		Node(int id, int u, int v) {
 			super(id, u, v);

@@ -48,8 +48,8 @@ public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 	}
 
 	@Override
-	public double calcMaxFlow(Graph<?> g0, FlowNetwork net, int source, int target) {
-		if (!(g0 instanceof Graph.Directed<?>))
+	public double calcMaxFlow(Graph g0, FlowNetwork net, int source, int target) {
+		if (!(g0 instanceof Graph.Directed))
 			throw new IllegalArgumentException("only directed graphs are supported");
 		if (source == target)
 			throw new IllegalArgumentException("Source and target can't be the same vertices");
@@ -59,7 +59,8 @@ public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 		for (int e = 0; e < g0.edges(); e++)
 			maxCapacity = Math.max(maxCapacity, net.getCapacity(e));
 
-		Graph.Directed<Ref> g = referenceGraph((Graph.Directed<?>) g0, net);
+		Graph.Directed g = referenceGraph((Graph.Directed) g0, net);
+		EdgeData<Ref> edgeRef = g.getEdgeData("edgeRef");
 		int n = g.vertices();
 
 		final int maxTreeSize = Math.max(1, n * n / g.edges());
@@ -109,10 +110,10 @@ public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 		};
 
 		/* Push as much as possible from the source vertex */
-		for (EdgeIter<Ref> eit = g.edgesOut(source); eit.hasNext();) {
+		for (EdgeIter eit = g.edgesOut(source); eit.hasNext();) {
 			int e = eit.nextInt();
 			int v = eit.v();
-			Ref data = eit.data();
+			Ref data = edgeRef.get(e);
 			double f = data.cap - data.flow;
 			if (f == 0)
 				continue;
@@ -147,7 +148,7 @@ public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 
 			while (U.excess > EPS && it.hasNext()) {
 				int e = it.pickNext();
-				Ref data = g.edgeData().get(e);
+				Ref data = edgeRef.get(e);
 				Vertex V = vertexData[g.getEdgeTarget(e)];
 				double eAccess = data.cap - data.flow;
 
@@ -204,7 +205,7 @@ public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 						minEdge = dt.findMinEdge(W.dtNode);
 						if (minEdge.weight() > EPS)
 							break;
-						Ref edgeData = g.edgeData().get(minEdge.getData());
+						Ref edgeData = edgeRef.get(minEdge.getData());
 						updateFlow.accept(edgeData, minEdge.weight());
 						cut.accept(minEdge.u().getNodeData());
 					}
@@ -233,7 +234,7 @@ public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 
 						/* update flow */
 						MinEdge<Vertex, Integer> m = dt.findMinEdge(childData.dtNode);
-						Ref edgeData = g.edgeData().get(m.getData());
+						Ref edgeData = edgeRef.get(m.getData());
 						updateFlow.accept(edgeData, m.weight());
 
 						/* cut child */
@@ -259,7 +260,7 @@ public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 				DynamicTree.Node<Vertex, Integer> uDt = cleanupStack.pop();
 				assert uDt.getParent().getParent() == null;
 				MinEdge<Vertex, Integer> m = dt.findMinEdge(uDt);
-				Ref edgeData = g.edgeData().get(m.getData());
+				Ref edgeData = edgeRef.get(m.getData());
 				updateFlow.accept(edgeData, m.weight());
 				dt.cut(m.u());
 			}
@@ -267,26 +268,27 @@ public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 
 		/* Construct result */
 		for (int e = 0; e < g.edges(); e++) {
-			Ref data = g.edgeData().get(e);
+			Ref data = edgeRef.get(e);
 			if (g.getEdgeSource(e) == g0.getEdgeSource(data.orig))
 				net.setFlow(data.orig, data.flow);
 		}
 		double totalFlow = 0;
-		for (EdgeIter<Ref> eit = g.edgesOut(source); eit.hasNext();) {
+		for (EdgeIter eit = g.edgesOut(source); eit.hasNext();) {
 			int e = eit.nextInt();
-			Ref data = g.edgeData().get(e);
+			Ref data = edgeRef.get(e);
 			totalFlow += data.flow;
 		}
 		return totalFlow;
 	}
 
-	private static Graph.Directed<Ref> referenceGraph(Graph.Directed<?> g0, FlowNetwork net) {
-		Graph.Directed<Ref> g = new GraphArrayDirected<>(g0.vertices());
+	private static Graph.Directed referenceGraph(Graph.Directed g0, FlowNetwork net) {
+		Graph.Directed g = new GraphArrayDirected(g0.vertices());
+		EdgeData<Ref> edgeRef = g.newEdgeData("edgeRef");
 		for (int e = 0; e < g0.edges(); e++) {
 			int u = g.getEdgeSource(e), v = g.getEdgeTarget(e);
 			Ref ref = new Ref(e, net.getCapacity(e), 0), refRev = new Ref(e, 0, 0);
-			g.edgeData().set(g.addEdge(u, v), ref);
-			g.edgeData().set(g.addEdge(v, u), refRev);
+			edgeRef.set(g.addEdge(u, v), ref);
+			edgeRef.set(g.addEdge(v, u), refRev);
 			refRev.rev = ref;
 			ref.rev = refRev;
 		}

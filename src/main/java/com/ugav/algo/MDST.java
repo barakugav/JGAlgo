@@ -11,7 +11,7 @@ public interface MDST extends MST {
 	 * Calculate MDST from some vertex in the graph.
 	 */
 	@Override
-	public IntCollection calcMST(Graph<?> g, WeightFunction w);
+	public IntCollection calcMST(Graph g, WeightFunction w);
 
 	/**
 	 * Calculate minimum directed spanning tree (MDST) in a directed graph, rooted
@@ -22,6 +22,6 @@ public interface MDST extends MST {
 	 * @param root vertex in the graph the spanning tree will be rooted from
 	 * @return all edges composing the spanning tree
 	 */
-	public IntCollection calcMST(Graph<?> g, WeightFunction w, int root);
+	public IntCollection calcMST(Graph g, WeightFunction w, int root);
 
 }
