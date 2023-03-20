@@ -144,7 +144,7 @@ public class MaxFlowDinic implements MaxFlow {
 					debug.println("Advance");
 					EdgeIter eit = L.edgesOut(v);
 					int e = eit.nextInt();
-					Ref eRef = edgeRef.get(e);
+					Ref eRef = edgeRefL.get(e);
 					dt.link(vToDt[eit.u()], vToDt[eit.v()], net.getCapacity(eRef.orig) - eRef.flow, e);
 				}
 			}
@@ -184,7 +184,7 @@ public class MaxFlowDinic implements MaxFlow {
 		Graph.Directed g = new GraphArrayDirected(g0.vertices());
 		EdgeData<Ref> edgeRef = g.newEdgeData("edgeRef");
 		for (int e = 0; e < g0.edges(); e++) {
-			int u = g.getEdgeSource(e), v = g.getEdgeTarget(e);
+			int u = g0.getEdgeSource(e), v = g0.getEdgeTarget(e);
 			Ref ref = new Ref(e, 0), refRev = new Ref(e, net.getCapacity(e));
 			int e1 = g.addEdge(u, v);
 			int e2 = g.addEdge(v, u);

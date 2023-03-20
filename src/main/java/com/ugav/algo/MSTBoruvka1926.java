@@ -90,6 +90,13 @@ public class MSTBoruvka1926 implements MST {
 				if (minEdges[tree] != -1) {
 					int e = minEdges[tree];
 					int ut = vTree[g.getEdgeSource(e)], vt = vTree[g.getEdgeTarget(e)];
+					if (tree == vt) {
+						int temp = ut;
+						ut = vt;
+						vt = temp;
+					} else {
+						assert tree == ut;
+					}
 					if (minEdges[vt] != e || ut < vt)
 						mst.add(minEdges[tree]);
 				}

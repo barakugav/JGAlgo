@@ -1,15 +1,16 @@
 package com.ugav.algo;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
 
-
+import com.ugav.algo.Graph.EdgeIter;
 import com.ugav.algo.Graph.WeightFunction;
-import com.ugav.algo.Graph.WeightFunctionInt;
 import com.ugav.algo.GraphImplTestUtils.GraphImpl;
 import com.ugav.algo.GraphsTestUtils.RandomGraphBuilder;
+
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntIterator;
 
 public class MDSTTarjan1977Test extends TestUtils {
 
@@ -22,24 +23,26 @@ public class MDSTTarjan1977Test extends TestUtils {
 		}
 
 		@Override
-		public <E> Collection<Edge<E>> calcMST(Graph<E> g, WeightFunction<E> w) {
-			if (g instanceof Graph.Directed<?>)
+		public IntCollection calcMST(Graph g, WeightFunction w) {
+			if (g instanceof Graph.Directed)
 				return algo.calcMST(g, w);
 			int n = g.vertices();
-			Graph<Edge<E>> dg = new GraphArrayDirectedOld<>(n);
+			Graph dg = new GraphArrayDirected(n);
+			EdgeData.Int edgeRef = dg.newEdgeDataInt("edgeRef");
 			for (int u = 0; u < n; u++) {
-				for (Edge<E> e : Utils.iterable(g.edges(u))) {
-					dg.addEdge(e.u(), e.v()).setData(e);
-					dg.addEdge(e.v(), e.u()).setData(e);
+				for (EdgeIter eit = g.edges(u); eit.hasNext();) {
+					int e = eit.nextInt();
+					int v = eit.v();
+					edgeRef.set(dg.addEdge(u, v), e);
+					edgeRef.set(dg.addEdge(v, u), e);
 				}
 			}
-			Collection<Edge<Edge<E>>> mst0 = algo.calcMST(dg, e -> w.weight(e.data()));
-			Collection<Edge<E>> mst = new ArrayList<>(mst0.size());
-			for (Edge<Edge<E>> e : mst0)
-				mst.add(e.data());
+			IntCollection mst0 = algo.calcMST(dg, e -> w.weight(edgeRef.getInt(e)));
+			IntCollection mst = new IntArrayList(mst0.size());
+			for (IntIterator it = mst0.iterator(); it.hasNext();)
+				mst.add(edgeRef.getInt(it.nextInt()));
 			return mst;
 		}
-
 	}
 
 	@Test
@@ -63,19 +66,19 @@ public class MDSTTarjan1977Test extends TestUtils {
 			int n = args[0];
 			int m = args[1];
 
-			Graph<Integer> g = new RandomGraphBuilder().n(n).m(m).directed(true).doubleEdges(false).selfEdges(false)
-					.cycles(true).connected(false).graphImpl(graphImpl).build();
+			Graph g = new RandomGraphBuilder().n(n).m(m).directed(true).doubleEdges(false).selfEdges(false).cycles(true)
+					.connected(false).graphImpl(graphImpl).build();
 			GraphsTestUtils.assignRandWeightsIntPos(g);
+			WeightFunction w = g.getEdgeData("weight");
 
 			MDST algo = builder.get();
-			testRandGraph(algo, g);
+			testRandGraph(algo, g, w);
 		});
 	}
 
-	private static void testRandGraph(MDST algo, Graph<Integer> g) {
-		WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
+	private static void testRandGraph(MDST algo, Graph g, WeightFunction w) {
 		@SuppressWarnings("unused")
-		Collection<Edge<Integer>> mst = algo.calcMST(g, w, 0);
+		IntCollection mst = algo.calcMST(g, w, 0);
 		// TODO verify the result
 	}
 

@@ -1,5 +1,7 @@
 package com.ugav.algo;
 
+import java.util.Objects;
+
 public interface MaxFlow {
 
 	/**
@@ -39,30 +41,33 @@ public interface MaxFlow {
 		}
 	}
 
-//	public static class FlowNetworkDefault implements FlowNetwork<FlowEdgeDataDefault> {
-//
-//		private static final double EPS = 0.0001;
-//
-//		public FlowNetworkDefault() {
-//		}
-//
-//		@Override
-//		public double getCapacity(Edge<? extends FlowEdgeDataDefault> e) {
-//			return e.data().capacity;
-//		}
-//
-//		@Override
-//		public double getFlow(Edge<? extends FlowEdgeDataDefault> e) {
-//			return e.data().flow;
-//		}
-//
-//		@Override
-//		public void setFlow(Edge<? extends FlowEdgeDataDefault> e, double flow) {
-//			if (flow > e.data().capacity + EPS)
-//				throw new IllegalArgumentException("Illegal flow " + flow + " on edge " + e);
-//			e.data().flow = Math.min(flow, e.data().capacity);
-//		}
-//
-//	}
+	public static class FlowNetworkDefault implements FlowNetwork {
+
+		private static final double EPS = 0.0001;
+		private final EdgeData<FlowEdgeDataDefault> data;
+
+		public FlowNetworkDefault(EdgeData<FlowEdgeDataDefault> data) {
+			this.data = Objects.requireNonNull(data);
+		}
+
+		@Override
+		public double getCapacity(int e) {
+			return data.get(e).capacity;
+		}
+
+		@Override
+		public double getFlow(int e) {
+			return data.get(e).flow;
+		}
+
+		@Override
+		public void setFlow(int e, double flow) {
+			FlowEdgeDataDefault d = data.get(e);
+			if (flow > d.capacity + EPS)
+				throw new IllegalArgumentException("Illegal flow " + flow + " on edge " + e);
+			d.flow = Math.min(flow, d.capacity);
+		}
+
+	}
 
 }

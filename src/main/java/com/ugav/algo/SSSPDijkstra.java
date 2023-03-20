@@ -48,6 +48,7 @@ public class SSSPDijkstra implements SSSP {
 		memAlloc(n);
 		double[] distances = this.distances;
 		int[] backtrack = this.backtrack;
+		Arrays.fill(backtrack, 0, n, -1);
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		HeapDirectAccessed<HeapElm> heap = (HeapDirectAccessed) this.heap;
 		HeapDirectAccessed.Handle<HeapElm>[] verticesPtrs = this.verticesPtrs;

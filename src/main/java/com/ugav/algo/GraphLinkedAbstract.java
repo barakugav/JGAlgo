@@ -12,7 +12,7 @@ abstract class GraphLinkedAbstract extends GraphAbstract implements Graph.Remove
 	private int n;
 	private int m;
 	private final Int2ObjectMap<Node> edges;
-	private int nextEdgeID = 1;
+	private int nextEdgeID;
 
 	GraphLinkedAbstract(int n) {
 		if (n < 0)
@@ -65,6 +65,7 @@ abstract class GraphLinkedAbstract extends GraphAbstract implements Graph.Remove
 		int id = nextEdgeID++;
 		Node n = allocNode(id, u, v);
 		edges.put(id, n);
+		m++;
 		return n;
 	}
 

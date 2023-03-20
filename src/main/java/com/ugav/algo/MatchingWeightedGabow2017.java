@@ -269,7 +269,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 		@SuppressWarnings("unchecked")
 		Worker(Graph<E> g, WeightFunction<E> w, DebugPrintsManager debugPrint) {
 			int n = g.vertices();
-			this.g = new GraphArrayDirectedOld<>(n);
+			this.g = new GraphArrayDirected<>(n);
 			this.w = w;
 
 			for (Edge<E> e : g.edges()) {

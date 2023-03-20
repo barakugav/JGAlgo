@@ -1,12 +1,13 @@
 package com.ugav.algo;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
 
-
+import com.ugav.algo.Graph.EdgeIter;
 import com.ugav.algo.GraphImplTestUtils.GraphImpl;
 import com.ugav.algo.GraphsTestUtils.RandomGraphBuilder;
+
+import it.unimi.dsi.fastutil.ints.IntCollection;
 
 @SuppressWarnings("boxing")
 class MatchingBipartiteTestUtils extends TestUtils {
@@ -15,15 +16,14 @@ class MatchingBipartiteTestUtils extends TestUtils {
 		throw new InternalError();
 	}
 
-	static <E> GraphBipartite<E> randGraphBipartite(int sn, int tn, int m, GraphImpl graphImpl) {
-		return (GraphBipartite.Undirected<E>) new RandomGraphBuilder().sn(sn).tn(tn).m(m).directed(false)
-				.bipartite(true).doubleEdges(false).selfEdges(false).cycles(true).connected(false).graphImpl(graphImpl)
-				.<E>build();
+	static GraphBipartite randGraphBipartite(int sn, int tn, int m, GraphImpl graphImpl) {
+		return (GraphBipartite.Undirected) new RandomGraphBuilder().sn(sn).tn(tn).m(m).directed(false).bipartite(true)
+				.doubleEdges(false).selfEdges(false).cycles(true).connected(false).graphImpl(graphImpl).build();
 	}
 
-	static GraphBipartite<Void> createGraphBipartiteFromAdjacencyMatrix(int sSize, int[][] m) {
+	static GraphBipartite createGraphBipartiteFromAdjacencyMatrix(int sSize, int[][] m) {
 		int n = m.length;
-		GraphBipartite<Void> g = new GraphBipartiteArrayUndirected<>(sSize, n - sSize);
+		GraphBipartite g = new GraphBipartiteArrayUndirected(sSize, n - sSize);
 		for (int u = 0; u < n; u++) {
 			for (int v = u + 1; v < n; v++) {
 				if (m[u][v] == 0)
@@ -45,7 +45,7 @@ class MatchingBipartiteTestUtils extends TestUtils {
 			int sn = args[0];
 			int tn = args[1];
 			int m = args[2];
-			GraphBipartite<Void> g = randGraphBipartite(sn, tn, m, graphImpl);
+			GraphBipartite g = randGraphBipartite(sn, tn, m, graphImpl);
 
 			Matching algo = builder.get();
 			int expeced = calcExpectedMaxMatching(g);
@@ -53,10 +53,10 @@ class MatchingBipartiteTestUtils extends TestUtils {
 		});
 	}
 
-	private static <E> void testBipartiteAlgo(Matching algo, GraphBipartite<E> g, int expectedMatchSize) {
-		Collection<Edge<E>> match = algo.calcMaxMatching(g);
+	private static void testBipartiteAlgo(Matching algo, GraphBipartite g, int expectedMatchSize) {
+		IntCollection match = algo.calcMaxMatching(g);
 
-		MatchingUnweightedTestUtils.validateMatching(match);
+		MatchingUnweightedTestUtils.validateMatching(g, match);
 
 		if (match.size() > expectedMatchSize) {
 			printTestStr("matching is bigger than validation algo found: ", match.size(), " > ", expectedMatchSize,
@@ -66,13 +66,16 @@ class MatchingBipartiteTestUtils extends TestUtils {
 		assertTrue(match.size() == expectedMatchSize, "unexpected match size");
 	}
 
-	private static <E> int calcExpectedMaxMatching(GraphBipartite<E> g) {
+	private static int calcExpectedMaxMatching(GraphBipartite g) {
 		int sn = g.svertices(), tn = g.tvertices();
 		boolean[][] m = new boolean[sn][tn];
-		for (int u = 0; u < sn; u++)
-			for (Edge<E> e : Utils.iterable(g.edges(u)))
-				m[u][e.v() - sn] = true;
-
+		for (int u = 0; u < sn; u++) {
+			for (EdgeIter eit = g.edges(u); eit.hasNext();) {
+				eit.nextInt();
+				int v = eit.v();
+				m[u][v - sn] = true;
+			}
+		}
 		return maxBPM(m);
 	}
 

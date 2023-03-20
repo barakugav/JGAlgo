@@ -2,13 +2,15 @@ package com.ugav.algo;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import com.ugav.algo.Graph.EdgeIter;
 
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntIterator;
 
 @SuppressWarnings("boxing")
 class MatchingUnweightedTestUtils extends TestUtils {
@@ -24,38 +26,42 @@ class MatchingUnweightedTestUtils extends TestUtils {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
-			Graph<Void> g = GraphsTestUtils.randGraph(n, m);
+			Graph g = GraphsTestUtils.randGraph(n, m);
 			Matching algo = builder.get();
 			int expeced = calcExpectedMaxMatching(g);
 			testAlgo(algo, g, expeced);
 		});
 	}
 
-	private static <E> void testAlgo(Matching algo, Graph<E> g, int expectedMatchSize) {
-		Collection<Edge<E>> match = algo.calcMaxMatching(g);
-		validateMatching(match);
+	private static void testAlgo(Matching algo, Graph g, int expectedMatchSize) {
+		IntCollection match = algo.calcMaxMatching(g);
+		validateMatching(g, match);
 		assertEq(expectedMatchSize, match.size(), "unexpected match size");
 	}
 
-	static <E> void validateMatching(Collection<Edge<E>> matching) {
-		Map<Integer, Edge<E>> matched = new HashMap<>();
-		for (Edge<E> e : matching) {
-			for (int v : new int[] { e.u(), e.v() }) {
-				Edge<E> dup = matched.get(Integer.valueOf(v));
+	static <E> void validateMatching(Graph g, IntCollection matching) {
+		Map<Integer, Integer> matched = new HashMap<>();
+		for (IntIterator it = matching.iterator(); it.hasNext();) {
+			int e = it.nextInt();
+			for (int v : new int[] { g.getEdgeSource(e), g.getEdgeTarget(e) }) {
+				Integer dup = matched.get(Integer.valueOf(v));
 				assertNull(dup, "Invalid matching, clash: ", dup, " ", e, " \n");
 				matched.put(Integer.valueOf(v), e);
 			}
 		}
 	}
 
-	private static <E> int calcExpectedMaxMatching(Graph<E> g) {
+	private static <E> int calcExpectedMaxMatching(Graph g) {
 		int n = g.vertices();
 		@SuppressWarnings("unchecked")
 		List<Integer>[] graph = new List[n];
 		for (int u = 0; u < n; u++) {
 			graph[u] = new ArrayList<>();
-			for (Edge<E> e : Utils.iterable(g.edges(u)))
-				graph[u].add(Integer.valueOf(e.v()));
+			for (EdgeIter eit = g.edges(u); eit.hasNext();) {
+				eit.nextInt();
+				int v = eit.v();
+				graph[u].add(Integer.valueOf(v));
+			}
 		}
 		return EdmondsMaximumCardinalityMatching.maxMatching(graph);
 	}

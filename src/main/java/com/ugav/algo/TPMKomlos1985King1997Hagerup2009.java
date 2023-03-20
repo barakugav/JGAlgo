@@ -218,7 +218,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 				for (int u = 0; u < n; u++) {
 					for (EdgeIter eit = G.edges(u); eit.hasNext();) {
 						int e = eit.nextInt();
-						double eWeight = w.weight(e);
+						double eWeight = w.weight(GData.getInt(e));
 						if (eWeight < minEdgesWeight[u]) {
 							minEdges[u] = e;
 							minEdgesWeight[u] = eWeight;
@@ -266,7 +266,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 
 				// contract G to new graph with the super vertices
 				Graph.Undirected gNext = new GraphArrayUndirected(nNext);
-				EdgeData.Int gNextData = G.newEdgeDataInt("edgeRef");
+				EdgeData.Int gNextData = gNext.newEdgeDataInt("edgeRef");
 				for (int u = 0; u < n; u++) {
 					int U = vNext[u];
 					for (EdgeIter eit = G.edges(u); eit.hasNext();) {
@@ -320,7 +320,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 
 		private static int[] calcQueriesPerVertex(Graph.Undirected g, int[] lcaQueries, int[] depths,
 				int[] edgeToParent) {
-			int n = edgeToParent.length;
+			final int n = g.vertices();
 
 			int[] q = new int[n];
 			Arrays.fill(q, 0);

@@ -28,7 +28,7 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 		EdgeData.Int edgeRev = g.newEdgeDataInt("edgeRev");
 		EdgeData.Double flow = g.newEdgeDataDouble("flow");
 		for (int e = 0; e < g0.edges(); e++) {
-			int u = g.getEdgeSource(e), v = g.getEdgeTarget(e);
+			int u = g0.getEdgeSource(e), v = g0.getEdgeTarget(e);
 			int e1 = g.addEdge(u, v);
 			int e2 = g.addEdge(v, u);
 			edgeRef.set(e1, e);
@@ -59,7 +59,7 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 					int e = eit.nextInt();
 					int v = eit.v();
 
-					if (flow.getDouble(e) >= net.getCapacity(edgeRef.getInt(e)) || visited[v])
+					if (visited[v] || flow.getDouble(e) >= capacity.applyAsDouble(e))
 						continue;
 					backtrack[v] = e;
 					if (v == target)
@@ -101,7 +101,9 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 		double totalFlow = 0;
 		for (EdgeIter eit = g.edgesOut(source); eit.hasNext();) {
 			int e = eit.nextInt();
-			totalFlow += flow.getDouble(e);
+			int orig = edgeRef.getInt(e);
+			if (source == g0.getEdgeSource(orig))
+				totalFlow += flow.getDouble(e);
 		}
 		return totalFlow;
 	}

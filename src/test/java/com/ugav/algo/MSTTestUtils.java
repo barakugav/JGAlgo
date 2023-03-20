@@ -1,16 +1,17 @@
 package com.ugav.algo;
 
-import java.util.Collection;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.function.Supplier;
-
 
 import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.Graph.WeightFunctionInt;
 import com.ugav.algo.GraphImplTestUtils.GraphImpl;
+
+import it.unimi.dsi.fastutil.ints.IntAVLTreeSet;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntComparator;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 @SuppressWarnings("boxing")
 class MSTTestUtils extends TestUtils {
@@ -31,26 +32,29 @@ class MSTTestUtils extends TestUtils {
 			int m = args[1];
 			MST algo = builder.get();
 
-			Graph<Integer> g = GraphsTestUtils.randGraph(n, m, graphImpl);
+			Graph g = GraphsTestUtils.randGraph(n, m, graphImpl);
 			GraphsTestUtils.assignRandWeightsIntPos(g);
+			WeightFunctionInt w = g.getEdgeData("weight");
 
-			WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
-			Collection<Edge<Integer>> mst = algo.calcMST(g, w);
+			IntCollection mst = algo.calcMST(g, w);
 			verifyMST(g, w, mst);
 		});
 	}
 
-	private static class MSTEdgeComparator<E> implements Comparator<Edge<E>> {
+	private static class MSTEdgeComparator implements IntComparator {
 
-		private final WeightFunction<E> w;
+		private final Graph g;
+		private final WeightFunction w;
 
-		MSTEdgeComparator(WeightFunction<E> w) {
+		MSTEdgeComparator(Graph g, WeightFunction w) {
+			this.g = g;
 			this.w = w;
 		}
 
 		@Override
-		public int compare(Edge<E> e1, Edge<E> e2) {
-			int u1 = e1.u(), v1 = e1.v(), u2 = e2.u(), v2 = e2.v();
+		public int compare(int e1, int e2) {
+			int u1 = g.getEdgeSource(e1), v1 = g.getEdgeTarget(e1);
+			int u2 = g.getEdgeSource(e2), v2 = g.getEdgeTarget(e2);
 			if (v1 > u1) {
 				int temp = u1;
 				u1 = v1;
@@ -70,21 +74,23 @@ class MSTTestUtils extends TestUtils {
 
 	}
 
-	private static <E> void verifyMST(Graph<E> g, WeightFunction<E> w, Collection<Edge<E>> mst) {
+	private static void verifyMST(Graph g, WeightFunction w, IntCollection mst) {
 		/*
 		 * It's hard to verify MST, we use Kruskal algorithm to verify the others, and
 		 * assume its implementation is correct
 		 */
-		Collection<Edge<E>> expected = new MSTKruskal1956().calcMST(g, w);
+		IntCollection expected = new MSTKruskal1956().calcMST(g, w);
 
-		Comparator<Edge<E>> c = new MSTEdgeComparator<>(w);
-		Set<Edge<E>> actualSet = new TreeSet<>(c);
+		IntComparator c = new MSTEdgeComparator(g, w);
+		IntSet actualSet = new IntAVLTreeSet(c);
 		actualSet.addAll(mst);
 
 		assertEq(mst.size(), actualSet.size(), "MST contains duplications\n");
 		assertEq(expected.size(), actualSet.size(), "unexpected MST size");
-		for (Edge<E> e : expected)
+		for (IntIterator it = expected.iterator(); it.hasNext(); ) {
+			int e = it.nextInt();
 			assertTrue(actualSet.contains(e), "MST doesn't contains edge: ", e, "\n");
+		}
 	}
 
 }

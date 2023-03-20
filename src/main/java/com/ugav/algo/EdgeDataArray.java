@@ -1,13 +1,10 @@
 package com.ugav.algo;
 
+import java.util.Arrays;
 import java.util.NoSuchElementException;
 
 import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.Graph.WeightFunctionInt;
-
-import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public class EdgeDataArray {
 
@@ -16,38 +13,39 @@ public class EdgeDataArray {
 
 	public static class Obj<E> implements EdgeData<E> {
 
-		private final ObjectArrayList<E> data;
-		// TODO replace with primitive array
+		private Object[] data;
+		private int size;
 		// TODO default value get set
+		private static final Object DefVal = null;
+		private static final Object[] EmptyData = new Object[0];
 
 		public Obj() {
 			this(0);
 		}
 
 		public Obj(int expectedSize) {
-			data = new ObjectArrayList<>(expectedSize);
+			data = expectedSize > 0 ? new Object[expectedSize] : EmptyData;
+			size = 0;
 		}
 
-		private E defVal() {
-			return null;
-		}
-
+		@SuppressWarnings("unchecked")
 		@Override
 		public E get(int e) {
-			return data.size() < e ? data.get(e) : defVal();
+			return (E) (e < size ? data[e] : DefVal);
 		}
 
 		@Override
-		public void set(int e, E data) {
-			this.data.ensureCapacity(e + 1);
-			while (this.data.size() <= e)
-				this.data.add(defVal());
-			this.data.set(e, data);
+		public void set(int e, E val) {
+			if (e >= data.length)
+				data = Arrays.copyOf(data, Math.max(2, data.length * 2));
+			data[e] = val;
+			size = Math.max(size, e + 1); // TODO
 		}
 
 		@Override
 		public void clear() {
-			data.clear();
+			Arrays.fill(data, 0, size, null);
+			size = 0;
 		}
 
 		@Override
@@ -58,52 +56,55 @@ public class EdgeDataArray {
 		private class DataItr extends DataIterAbstract implements DataIter<E> {
 
 			DataItr() {
-				super(data.size());
+				super(size);
 			}
 
+			@SuppressWarnings("unchecked")
 			@Override
 			public E getData() {
-				return data.get(idx);
+				return (E) data[idx];
 			}
 
 			@Override
 			public void setData(E val) {
-				data.set(idx, val);
+				data[idx] = val;
 			}
 		}
 	}
 
 	public static class Int implements EdgeData.Int, WeightFunctionInt {
 
-		private final IntArrayList data;
-		// TODO replace with primitive array
+		private int[] data;
+		private int size;
 		// TODO default value get set
 		private static final int DefVal = -1;
+		private static final int[] EmptyData = new int[0];
 
 		public Int() {
 			this(0);
 		}
 
 		public Int(int expectedSize) {
-			data = new IntArrayList(expectedSize);
+			data = expectedSize > 0 ? new int[expectedSize] : EmptyData;
+			size = 0;
 		}
 
 		@Override
 		public int getInt(int e) {
-			return data.size() < e ? data.getInt(e) : DefVal;
+			return e < size ? data[e] : DefVal;
 		}
 
 		@Override
-		public void set(int e, int data) {
-			this.data.ensureCapacity(e + 1);
-			while (this.data.size() <= e)
-				this.data.add(DefVal);
-			this.data.set(e, data);
+		public void set(int e, int val) {
+			if (e >= data.length)
+				data = Arrays.copyOf(data, Math.max(2, data.length * 2));
+			data[e] = val;
+			size = Math.max(size, e + 1); // TODO
 		}
 
 		@Override
 		public void clear() {
-			data.clear();
+			size = 0;
 		}
 
 		@Override
@@ -114,52 +115,54 @@ public class EdgeDataArray {
 		private class DataItr extends DataIterAbstract implements DataIter.Int {
 
 			DataItr() {
-				super(data.size());
+				super(size);
 			}
 
 			@Override
 			public int getDataInt() {
-				return data.getInt(idx);
+				return data[idx];
 			}
 
 			@Override
 			public void setData(int val) {
-				data.set(idx, val);
+				data[idx] = val;
 			}
 		}
 	}
 
 	public static class Double implements EdgeData.Double, WeightFunction {
 
-		private final DoubleArrayList data;
-		// TODO replace with primitive array
+		private double[] data;
+		private int size;
 		// TODO default value get set
 		private static final double DefVal = -1;
+		private static final double[] EmptyData = new double[0];
 
 		public Double() {
 			this(0);
 		}
 
 		public Double(int expectedSize) {
-			data = new DoubleArrayList(expectedSize);
+			data = expectedSize > 0 ? new double[expectedSize] : EmptyData;
+			size = 0;
 		}
 
 		@Override
 		public double getDouble(int e) {
-			return data.size() < e ? data.getDouble(e) : DefVal;
+			return e < size ? data[e] : DefVal;
 		}
 
 		@Override
-		public void set(int e, double data) {
-			this.data.ensureCapacity(e + 1);
-			while (this.data.size() <= e)
-				this.data.add(DefVal);
-			this.data.set(e, data);
+		public void set(int e, double val) {
+			if (e >= data.length)
+				data = Arrays.copyOf(data, Math.max(2, data.length * 2));
+			data[e] = val;
+			size = Math.max(size, e + 1); // TODO
 		}
 
 		@Override
 		public void clear() {
-			data.clear();
+			size = 0;
 		}
 
 		@Override
@@ -170,17 +173,17 @@ public class EdgeDataArray {
 		private class DataItr extends DataIterAbstract implements DataIter.Double {
 
 			DataItr() {
-				super(data.size());
+				super(size);
 			}
 
 			@Override
 			public double getDataDouble() {
-				return data.getDouble(idx);
+				return data[idx];
 			}
 
 			@Override
 			public void setData(double val) {
-				data.set(idx, val);
+				data[idx] = val;
 			}
 		}
 	}

@@ -7,7 +7,6 @@ import java.util.Random;
 import java.util.TreeSet;
 import java.util.function.Supplier;
 
-
 import com.ugav.algo.GraphImplTestUtils.GraphImpl;
 import com.ugav.algo.GraphsTestUtils.RandomGraphBuilder;
 import com.ugav.algo.MaxFlow.FlowEdgeDataDefault;
@@ -21,16 +20,17 @@ class MaxFlowTestUtils extends TestUtils {
 		throw new InternalError();
 	}
 
-	private static Pair<Graph<FlowEdgeDataDefault>, FlowNetwork<FlowEdgeDataDefault>> randNetword(int n, int m,
-			GraphImpl graphImpl) {
-		Graph<FlowEdgeDataDefault> g = new RandomGraphBuilder().n(n).m(m).directed(true).doubleEdges(false)
-				.selfEdges(false).cycles(true).connected(false).graphImpl(graphImpl).build();
+	private static Pair<Graph, FlowNetwork> randNetwork(int n, int m, GraphImpl graphImpl) {
+		Graph g = new RandomGraphBuilder().n(n).m(m).directed(true).doubleEdges(false).selfEdges(false).cycles(true)
+				.connected(false).graphImpl(graphImpl).build();
 
 		final double minGap = 0.001;
 		NavigableSet<Double> usedCaps = new TreeSet<>();
 
 		Random rand = new Random(nextRandSeed());
-		for (Edge<FlowEdgeDataDefault> e : g.edges()) {
+		EdgeData<FlowEdgeDataDefault> data = g.newEdgeData("flowData");
+		for (int e = 0; e < m; e++) {
+//			int u = g.getEdgeSource(e), v = g.getEdgeTarget(e);
 			double cap;
 			for (;;) {
 				cap = nextDouble(rand, 1, 100);
@@ -44,10 +44,10 @@ class MaxFlowTestUtils extends TestUtils {
 			}
 			usedCaps.add(cap);
 
-			e.setData(new FlowEdgeDataDefault(cap));
+			data.set(e, new FlowEdgeDataDefault(cap));
 		}
 
-		return Pair.of(g, new FlowNetworkDefault());
+		return Pair.of(g, new FlowNetworkDefault(data));
 	}
 
 	static void testRandGraphs(Supplier<? extends MaxFlow> builder) {
@@ -62,9 +62,9 @@ class MaxFlowTestUtils extends TestUtils {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
-			Pair<Graph<FlowEdgeDataDefault>, FlowNetwork<FlowEdgeDataDefault>> p = randNetword(n, m, graphImpl);
-			Graph<FlowEdgeDataDefault> g = p.e1;
-			FlowNetwork<FlowEdgeDataDefault> net = p.e2;
+			Pair<Graph, FlowNetwork> p = randNetwork(n, m, graphImpl);
+			Graph g = p.e1;
+			FlowNetwork net = p.e2;
 			int source, target;
 			do {
 				source = rand.nextInt(g.vertices());
@@ -76,14 +76,15 @@ class MaxFlowTestUtils extends TestUtils {
 		});
 	}
 
-	private static <E> void testNetwork(Graph<E> g, FlowNetwork<E> net, int source, int target, MaxFlow algo) {
+	private static void testNetwork(Graph g, FlowNetwork net, int source, int target, MaxFlow algo) {
 		double actualMaxFlow = algo.calcMaxFlow(g, net, source, target);
 
 		int n = g.vertices();
 		double[] vertexFlowOut = new double[n];
-		for (Edge<E> e : g.edges()) {
-			vertexFlowOut[e.u()] += net.getFlow(e);
-			vertexFlowOut[e.v()] -= net.getFlow(e);
+		for (int e = 0; e < g.edges(); e++) {
+			int u = g.getEdgeSource(e), v = g.getEdgeTarget(e);
+			vertexFlowOut[u] += net.getFlow(e);
+			vertexFlowOut[v] -= net.getFlow(e);
 		}
 		for (int v = 0; v < n; v++) {
 			double expected = v == source ? actualMaxFlow : v == target ? -actualMaxFlow : 0;
@@ -96,11 +97,13 @@ class MaxFlowTestUtils extends TestUtils {
 
 	/* implementation taken from the Internet */
 
-	private static <E> double calcExpectedFlow(Graph<E> g, FlowNetwork<E> net, int source, int target) {
+	private static double calcExpectedFlow(Graph g, FlowNetwork net, int source, int target) {
 		int n = g.vertices();
 		double[][] capacities = new double[n][n];
-		for (Edge<E> e : g.edges())
-			capacities[e.u()][e.v()] += net.getCapacity(e);
+		for (int e = 0; e < g.edges(); e++) {
+			int u = g.getEdgeSource(e), v = g.getEdgeTarget(e);
+			capacities[u][v] += net.getCapacity(e);
+		}
 
 		return fordFulkerson(capacities, source, target);
 	}

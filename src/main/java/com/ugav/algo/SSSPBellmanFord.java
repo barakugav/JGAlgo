@@ -23,6 +23,7 @@ public class SSSPBellmanFord implements SSSP {
 		int n = g.vertices(), m = g.edges();
 		double[] distances = new double[n];
 		int[] backtrack = new int[n];
+		Arrays.fill(backtrack, -1);
 
 		if (n == 0)
 			return Result.success(g, distances, backtrack);

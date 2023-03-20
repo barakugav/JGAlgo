@@ -24,11 +24,11 @@ public class MSTPrefTest extends TestUtils {
 							phase(80, 1024, 4096), phase(20, 4096, 16384));
 					runTestMultiple(phases, (testIter, args) -> {
 						int n = args[0], m = args[1];
-						Graph<Integer> g = GraphsTestUtils.randGraph(n, m);
+						Graph g = GraphsTestUtils.randGraph(n, m);
 						GraphsTestUtils.assignRandWeightsIntPos(g);
+						WeightFunctionInt w = g.getEdgeData("weight");
 
 						MST algo = builder.get();
-						WeightFunctionInt<Integer> w = Graphs.WEIGHT_INT_FUNC_DEFAULT;
 						algo .calcMST(g, w);
 					});
 				});
