@@ -48,7 +48,7 @@ public class Array {
 		}
 
 		private static <E> void getKthElement0(E[] a, int from, int to, int k, Comparator<? super E> c) {
-			while (true) {
+			for (;;) {
 				if (from == to + 1)
 					return;
 				int pivotIdx = calcPivot(a, from, to, c);
@@ -205,7 +205,7 @@ public class Array {
 		}
 
 		private static void getKthElement0(int[] a, int from, int to, int k, IntComparator c) {
-			while (true) {
+			for (;;) {
 				if (from == to + 1)
 					return;
 				int pivotIdx = calcPivot(a, from, to, c);

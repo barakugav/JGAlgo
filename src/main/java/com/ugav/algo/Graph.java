@@ -119,6 +119,8 @@ public interface Graph {
 
 		public void removeEdgesIn(int v);
 
+		public void reverseEdge(int e);
+
 		@Override
 		@Deprecated
 		default int degree(int u) {

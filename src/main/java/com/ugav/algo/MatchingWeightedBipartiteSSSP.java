@@ -1,5 +1,7 @@
 package com.ugav.algo;
 
+import java.util.Arrays;
+
 import com.ugav.algo.EdgeData.DataIter;
 import com.ugav.algo.Graph.EdgeIter;
 import com.ugav.algo.Graph.WeightFunction;
@@ -28,8 +30,15 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 		int n = g.vertices(), sn = g.svertices(), tn = g.tvertices();
 		int s = g.newVertexT(), t = g.newVertexS();
 
-		@SuppressWarnings("unchecked")
 		int[] match = new int[n];
+		Arrays.fill(match, -1);
+
+		double maxWeight = 1;
+		for (int e = 0; e < g.edges(); e++)
+			maxWeight = Math.max(maxWeight, edgeRef.get(e).w);
+		if (!Double.isFinite(maxWeight))
+			throw new IllegalArgumentException("non finite weights");
+		final double RemovedEdgeWeight = maxWeight * n;
 
 		// Negate unmatched edges
 		for (DataIter<Ref> it = edgeRef.iterator(); it.hasNext();) {
@@ -38,11 +47,10 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 			r.w = -r.w;
 		}
 		// Connected unmatched vertices to fake vertices s,t
-		final Ref zeroEdgeData = new Ref(-1, 0);
 		for (int u = 0; u < sn; u++)
-			edgeRef.set(g.addEdge(s, u), zeroEdgeData);
+			edgeRef.set(g.addEdge(s, u), new Ref(-1, 0));
 		for (int v = sn; v < sn + tn; v++)
-			edgeRef.set(g.addEdge(v, t), zeroEdgeData);
+			edgeRef.set(g.addEdge(v, t), new Ref(-1, 0));
 
 		double[] potential = new double[n + 2];
 		WeightFunction spWeightFunc = e -> edgeRef.get(e).w + potential[g.getEdgeSource(e)]
@@ -56,50 +64,48 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 
 		SSSP ssspAlgo = new SSSPDijkstra();
 
-		do {
+		for (;;) {
 			sp = ssspAlgo.calcDistances(g, spWeightFunc, s);
 			IntList augPath = sp.getPathTo(t);
 			double augPathWeight = -(sp.distance(t) + potential[t]);
-			if (augPath == null || augPathWeight < 0)
+			if (augPath == null || augPathWeight >= RemovedEdgeWeight || augPathWeight < 0)
 				break;
 
 			IntIterator it = augPath.iterator();
-			// remove edge from S to new matched vertex
-			g.removeEdge(it.nextInt());
+			// 'remove' edge from S to new matched vertex
+			edgeRef.get(it.nextInt()).w = RemovedEdgeWeight;
 			for (;;) {
 				int matchedEdge = it.nextInt();
 
 				// Reverse newly matched edge
-				g.removeEdge(matchedEdge);
-				Ref r = matchedEdge.data();
+				g.reverseEdge(matchedEdge);
+				Ref r = edgeRef.get(matchedEdge);
 				match[g.getEdgeSource(matchedEdge)] = match[g.getEdgeTarget(matchedEdge)] = r.orig;
 				r.w = -r.w;
-				g.addEdge(matchedEdge.v(), matchedEdge.u()).setData(r);
 
 				int unmatchedEdge = it.nextInt();
 
 				if (!it.hasNext()) {
-					// remove edge from new matched vertex to T
-					g.removeEdge(unmatchedEdge);
+					// 'remove' edge from new matched vertex to T
+					edgeRef.get(unmatchedEdge).w = RemovedEdgeWeight;
 					break;
 				}
 
 				// Reverse newly unmatched edge
-				g.removeEdge(unmatchedEdge);
-				r = unmatchedEdge.data();
+				g.reverseEdge(unmatchedEdge);
+				r = edgeRef.get(unmatchedEdge);
 				r.w = -r.w;
-				g.addEdge(unmatchedEdge.v(), unmatchedEdge.u()).setData(r);
 			}
 
 			// Update potential based on the distances
 			for (int u = 0; u < n; u++)
 				potential[u] += sp.distance(u);
-		} while (true);
+		}
 
 		IntList res = new IntArrayList();
-		for (int i = 0; i < n; i++) {
-			Edge<E> e = match[i];
-			if (e != null && e.u() == i)
+		for (int u = 0; u < n; u++) {
+			int e = match[u];
+			if (e != -1 && g0.getEdgeSource(e) == u)
 				res.add(e);
 		}
 

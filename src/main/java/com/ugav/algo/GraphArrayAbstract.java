@@ -28,6 +28,26 @@ abstract class GraphArrayAbstract extends GraphAbstract {
 		return e;
 	}
 
+	static void addEdgeToList(int[][] edges, int[] edgesNum, int w, int e) {
+		if (edges[w].length <= edgesNum[w])
+			edges[w] = Arrays.copyOf(edges[w], Math.max(edges[w].length * 2, 2));
+		edges[w][edgesNum[w]++] = e;
+	}
+
+	static int edgeIndexOf(int[][] edges0, int[] edgesNum, int w, int e) {
+		int[] edges = edges0[w];
+		int num = edgesNum[w];
+		for (int i = 0; i < num; i++)
+			if (edges[i] == e)
+				return i;
+		return -1;
+	}
+
+	static void removeEdgeFromList(int[][] edges, int[] edgesNum, int w, int e) {
+		int i = edgeIndexOf(edges, edgesNum, w, e);
+		edges[w][i] = edges[w][--edgesNum[w]];
+	}
+
 	@Override
 	void edgeSwap(int e1, int e2) {
 		int u1 = getEdgeSource(e1), v1 = getEdgeTarget(e1);
@@ -37,6 +57,12 @@ abstract class GraphArrayAbstract extends GraphAbstract {
 		edgeEndpoints[edgeSourceIdx(e2)] = u1;
 		edgeEndpoints[edgeTargetIdx(e2)] = v1;
 		super.edgeSwap(e1, e2);
+	}
+
+	void reverseEdge(int e) {
+		int u = getEdgeSource(e), v = getEdgeTarget(e);
+		edgeEndpoints[edgeSourceIdx(e)] = v;
+		edgeEndpoints[edgeTargetIdx(e)] = u;
 	}
 
 	@Override

@@ -63,7 +63,7 @@ public class MSTFredmanTarjan1987 implements MST {
 		HeapDirectAccessed.Handle<Integer>[] vHeapElm = new HeapDirectAccessed.Handle[n];
 
 		IntCollection mst = new IntArrayList(n - 1);
-		while (true) {
+		for (;;) {
 			int kExp = 2 * m / ni;
 			int k = kExp < Integer.SIZE ? 1 << kExp : Integer.MAX_VALUE;
 			int niNext = 0;
@@ -104,7 +104,7 @@ public class MSTFredmanTarjan1987 implements MST {
 
 					// find next lightest edge
 					int e, v, vt;
-					while (true) {
+					for (;;) {
 						if (heap.isEmpty())
 							// reached all vertices from current root, continue to next tree
 							break treeLoop;
