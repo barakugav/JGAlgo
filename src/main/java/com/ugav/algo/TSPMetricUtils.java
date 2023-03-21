@@ -12,9 +12,8 @@ class TSPMetricUtils {
 		throw new InternalError();
 	}
 
-	static IntList calcEulerianTourAndConvertToHamiltonianCycle(Graph.Undirected g, Graph.Undirected g1,
-			EdgeData.Int edgeRef) {
-		int n = g.vertices();
+	static IntList calcEulerianTourAndConvertToHamiltonianCycle(UGraph g, UGraph g1, EdgesWeight.Int edgeRef) {
+		int n = g.verticesNum();
 
 		/* Assert degree is actually even in the new graph */
 		for (int u = 0; u < n; u++)
@@ -45,7 +44,7 @@ class TSPMetricUtils {
 		return cycle;
 	}
 
-	static IntList edgeListToVerticesList(Graph.Undirected g, IntList edges) {
+	static IntList edgeListToVerticesList(UGraph g, IntList edges) {
 		IntList res = new IntArrayList();
 		for (PathIter it = PathIter.of(g, edges); it.hasNext();) {
 			it.nextEdge();
@@ -54,7 +53,7 @@ class TSPMetricUtils {
 		return res;
 	}
 
-	private static boolean isValidCycle(Graph.Undirected g, IntList path) {
+	private static boolean isValidCycle(UGraph g, IntList path) {
 		PathIter it = PathIter.of(g, path);
 		it.nextEdge();
 		final int begin = it.u();
@@ -68,12 +67,12 @@ class TSPMetricUtils {
 		}
 	}
 
-	private static boolean isPathVisitEvery(Graph.Undirected g, IntList path) {
-		final int n = g.vertices();
+	private static boolean isPathVisitEvery(UGraph g, IntList path) {
+		final int n = g.verticesNum();
 		boolean[] visited = new boolean[n];
 		for (IntIterator it = path.iterator(); it.hasNext();) {
 			int e = it.nextInt();
-			int u = g.getEdgeSource(e), v = g.getEdgeTarget(e);
+			int u = g.edgeSource(e), v = g.edgeTarget(e);
 			visited[u] = visited[v] = true;
 		}
 		for (int u = 0; u < n; u++)

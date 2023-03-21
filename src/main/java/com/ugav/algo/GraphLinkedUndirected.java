@@ -2,7 +2,7 @@ package com.ugav.algo;
 
 import java.util.Arrays;
 
-public class GraphLinkedUndirected extends GraphLinkedAbstract implements Graph.Undirected {
+public class GraphLinkedUndirected extends GraphLinkedAbstract implements UGraph {
 
 	private Node[] edges;
 
@@ -18,8 +18,8 @@ public class GraphLinkedUndirected extends GraphLinkedAbstract implements Graph.
 	}
 
 	@Override
-	public int newVertex() {
-		int v = super.newVertex();
+	public int addVertex() {
+		int v = super.addVertex();
 		if (v >= edges.length)
 			edges = Arrays.copyOf(edges, Math.max(edges.length * 2, 2));
 		return v;
@@ -62,7 +62,7 @@ public class GraphLinkedUndirected extends GraphLinkedAbstract implements Graph.
 	}
 
 	@Override
-	public void removeEdges(int u) {
+	public void removeEdgesAll(int u) {
 		checkVertexIdx(u);
 		for (Node p = edges[u], next; p != null; p = next) {
 			// update u list

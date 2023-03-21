@@ -24,11 +24,11 @@ public class MDSTTarjan1977Test extends TestUtils {
 
 		@Override
 		public IntCollection calcMST(Graph g, WeightFunction w) {
-			if (g instanceof Graph.Directed)
+			if (g instanceof DiGraph)
 				return algo.calcMST(g, w);
-			int n = g.vertices();
+			int n = g.verticesNum();
 			Graph dg = new GraphArrayDirected(n);
-			EdgeData.Int edgeRef = dg.newEdgeDataInt("edgeRef");
+			EdgesWeight.Int edgeRef = dg.newEdgeWeightInt("edgeRef");
 			for (int u = 0; u < n; u++) {
 				for (EdgeIter eit = g.edges(u); eit.hasNext();) {
 					int e = eit.nextInt();
@@ -69,7 +69,7 @@ public class MDSTTarjan1977Test extends TestUtils {
 			Graph g = new RandomGraphBuilder().n(n).m(m).directed(true).doubleEdges(false).selfEdges(false).cycles(true)
 					.connected(false).graphImpl(graphImpl).build();
 			GraphsTestUtils.assignRandWeightsIntPos(g);
-			WeightFunction w = g.getEdgeData("weight");
+			WeightFunction w = g.edgesWeight("weight");
 
 			MDST algo = builder.get();
 			testRandGraph(algo, g, w);

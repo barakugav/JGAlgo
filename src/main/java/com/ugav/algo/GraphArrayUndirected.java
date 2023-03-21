@@ -2,7 +2,7 @@ package com.ugav.algo;
 
 import java.util.Arrays;
 
-public class GraphArrayUndirected extends GraphArrayAbstract implements Graph.Undirected {
+public class GraphArrayUndirected extends GraphArrayAbstract implements UGraph {
 
 	private int[][] edges;
 	private int[] edgesNum;
@@ -29,8 +29,8 @@ public class GraphArrayUndirected extends GraphArrayAbstract implements Graph.Un
 	}
 
 	@Override
-	public int newVertex() {
-		int v = super.newVertex();
+	public int addVertex() {
+		int v = super.addVertex();
 		if (v >= edges.length) {
 			int aLen = Math.max(edges.length * 2, 2);
 			edges = Arrays.copyOf(edges, aLen);
@@ -51,12 +51,12 @@ public class GraphArrayUndirected extends GraphArrayAbstract implements Graph.Un
 	@Override
 	public void removeEdge(int e) {
 		checkEdgeIdx(e);
-		int lastEdge = edges() - 1;
+		int lastEdge = edgesNum() - 1;
 		if (e != lastEdge) {
 			edgeSwap(e, lastEdge);
 			e = lastEdge;
 		}
-		int u = getEdgeSource(e), v = getEdgeTarget(e);
+		int u = edgeSource(e), v = edgeTarget(e);
 		removeEdgeFromList(edges, edgesNum, u, e);
 		removeEdgeFromList(edges, edgesNum, v, e);
 		super.removeEdge(e);
@@ -65,8 +65,8 @@ public class GraphArrayUndirected extends GraphArrayAbstract implements Graph.Un
 	@Override
 	void edgeSwap(int e1, int e2) {
 		assert e1 != e2;
-		int u1 = getEdgeSource(e1), v1 = getEdgeTarget(e1);
-		int u2 = getEdgeSource(e2), v2 = getEdgeTarget(e2);
+		int u1 = edgeSource(e1), v1 = edgeTarget(e1);
+		int u2 = edgeSource(e2), v2 = edgeTarget(e2);
 		int i1 = edgeIndexOf(edges, edgesNum, u1, e1);
 		int j1 = edgeIndexOf(edges, edgesNum, v1, e1);
 		int i2 = edgeIndexOf(edges, edgesNum, u2, e2);
@@ -79,7 +79,7 @@ public class GraphArrayUndirected extends GraphArrayAbstract implements Graph.Un
 	}
 
 	@Override
-	public void removeEdges(int u) {
+	public void removeEdgesAll(int u) {
 		checkVertexIdx(u);
 		while (edgesNum[u] > 0)
 			removeEdge(edges[u][0]);
@@ -93,7 +93,7 @@ public class GraphArrayUndirected extends GraphArrayAbstract implements Graph.Un
 
 	@Override
 	public void clearEdges() {
-		int n = vertices();
+		int n = verticesNum();
 		Arrays.fill(edgesNum, 0, n, 0);
 		super.clearEdges();
 	}
@@ -114,8 +114,8 @@ public class GraphArrayUndirected extends GraphArrayAbstract implements Graph.Un
 
 		@Override
 		public int v() {
-			int u0 = getEdgeSource(lastEdge);
-			int v0 = getEdgeTarget(lastEdge);
+			int u0 = edgeSource(lastEdge);
+			int v0 = edgeTarget(lastEdge);
 			return u == u0 ? v0 : u0;
 		}
 

@@ -33,7 +33,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 
 			GraphBipartite g = MatchingBipartiteTestUtils.randGraphBipartite(sn, tn, m, graphImpl);
 			GraphsTestUtils.assignRandWeightsIntNeg(g);
-			WeightFunctionInt w = g.getEdgeData("weight");
+			WeightFunctionInt w = g.edgesWeight("weight");
 
 			MatchingWeighted algo = builder.get();
 			MatchingWeighted validationAlgo = algo instanceof MatchingWeightedBipartiteSSSP
@@ -55,7 +55,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 					GraphImplTestUtils.GRAPH_IMPL_DEFAULT);
 			int maxWeight = m < 50 ? 100 : m * 2 + 2;
 			GraphsTestUtils.assignRandWeightsInt(g, -maxWeight, maxWeight / 4);
-			WeightFunctionInt w = g.getEdgeData("weight");
+			WeightFunctionInt w = g.edgesWeight("weight");
 
 			MatchingWeighted algo = builder.get();
 			Matching validationUnweightedAlgo = new MatchingBipartiteHopcroftKarp1973();
@@ -75,7 +75,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 
 			Graph g = GraphsTestUtils.randGraph(n, m);
 			GraphsTestUtils.assignRandWeightsIntNeg(g);
-			WeightFunctionInt w = g.getEdgeData("weight");
+			WeightFunctionInt w = g.edgesWeight("weight");
 
 			MatchingWeighted algo = builder.get();
 			// have nothing other than MatchingWeightedGabow2017, at least shuffle graph
@@ -111,7 +111,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 			Graph g = GraphsTestUtils.randGraph(n, m);
 			int maxWeight = m < 50 ? 100 : m * 2 + 2;
 			GraphsTestUtils.assignRandWeightsInt(g, -maxWeight, maxWeight / 4);
-			WeightFunctionInt w = g.getEdgeData("weight");
+			WeightFunctionInt w = g.edgesWeight("weight");
 
 			MatchingWeighted algo = builder.get();
 			Matching validationUnweightedAlgo = new MatchingGabow1976();
@@ -169,9 +169,9 @@ class MatchingWeightedTestUtils extends TestUtils {
 		}
 
 		private IntCollection calcMaxMatchingshuffled(Graph g, WeightFunction w, boolean perfect) {
-			if (g instanceof Graph.Directed)
+			if (g instanceof DiGraph)
 				throw new IllegalArgumentException("only undirected graphs are supported");
-			int n = g.vertices();
+			int n = g.verticesNum();
 			int[] shuffle = randPermutation(n, nextRandSeed());
 
 			Graph shuffledG;
@@ -197,9 +197,9 @@ class MatchingWeightedTestUtils extends TestUtils {
 				shuffledG = new GraphArrayUndirected(n);
 			}
 
-			EdgeData.Int edgeRef = shuffledG.newEdgeDataInt("edgeRef");
-			for (int e = 0; e < g.edges(); e++) {
-				int u = g.getEdgeSource(e), v = g.getEdgeTarget(e);
+			EdgesWeight.Int edgeRef = shuffledG.newEdgeWeightInt("edgeRef");
+			for (int e = 0; e < g.edgesNum(); e++) {
+				int u = g.edgeSource(e), v = g.edgeTarget(e);
 				int e0 = shuffledG.addEdge(shuffle[u], shuffle[v]);
 				edgeRef.set(e0, e);
 			}

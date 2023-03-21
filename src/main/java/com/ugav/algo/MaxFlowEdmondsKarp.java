@@ -18,17 +18,17 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 
 	@Override
 	public double calcMaxFlow(Graph g0, FlowNetwork net, int source, int target) {
-		if (!(g0 instanceof Graph.Directed))
+		if (!(g0 instanceof DiGraph))
 			throw new IllegalArgumentException("only directed graphs are supported");
 		if (source == target)
 			throw new IllegalArgumentException("Source and target can't be the same vertices");
 
-		Graph.Directed g = new GraphArrayDirected(g0.vertices());
-		EdgeData.Int edgeRef = g.newEdgeDataInt("edgeRef");
-		EdgeData.Int edgeRev = g.newEdgeDataInt("edgeRev");
-		EdgeData.Double flow = g.newEdgeDataDouble("flow");
-		for (int e = 0; e < g0.edges(); e++) {
-			int u = g0.getEdgeSource(e), v = g0.getEdgeTarget(e);
+		DiGraph g = new GraphArrayDirected(g0.verticesNum());
+		EdgesWeight.Int edgeRef = g.newEdgeWeightInt("edgeRef");
+		EdgesWeight.Int edgeRev = g.newEdgeWeightInt("edgeRev");
+		EdgesWeight.Double flow = g.newEdgeWeightDouble("flow");
+		for (int e = 0; e < g0.edgesNum(); e++) {
+			int u = g0.edgeSource(e), v = g0.edgeTarget(e);
 			int e1 = g.addEdge(u, v);
 			int e2 = g.addEdge(v, u);
 			edgeRef.set(e1, e);
@@ -40,7 +40,7 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 		}
 		Int2DoubleFunction capacity = e -> net.getCapacity(edgeRef.getInt(e));
 
-		int n = g.vertices();
+		int n = g.verticesNum();
 		int[] backtrack = new int[n]; // TODO
 
 		boolean[] visited = new boolean[n];
@@ -78,7 +78,7 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 			for (int p = target; p != source;) {
 				int e = backtrack[p];
 				f = Math.min(f, capacity.applyAsDouble(e) - flow.getDouble(e));
-				p = g.getEdgeSource(e);
+				p = g.edgeSource(e);
 			}
 
 			// update flow of all edges on path
@@ -86,23 +86,23 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 				int e = backtrack[p], rev = edgeRev.getInt(e);
 				flow.set(e, Math.min(capacity.applyAsDouble(e), flow.getDouble(e) + f));
 				flow.set(rev, Math.max(0, flow.getDouble(rev) - f));
-				p = g.getEdgeSource(e);
+				p = g.edgeSource(e);
 			}
 
 			Arrays.fill(visited, false);
 		}
 
-		for (int e = 0; e < g.edges(); e++) {
-			int u = g.getEdgeSource(e);
+		for (int e = 0; e < g.edgesNum(); e++) {
+			int u = g.edgeSource(e);
 			int orig = edgeRef.getInt(e);
-			if (u == g0.getEdgeSource(orig))
+			if (u == g0.edgeSource(orig))
 				net.setFlow(orig, flow.getDouble(e));
 		}
 		double totalFlow = 0;
 		for (EdgeIter eit = g.edgesOut(source); eit.hasNext();) {
 			int e = eit.nextInt();
 			int orig = edgeRef.getInt(e);
-			if (source == g0.getEdgeSource(orig))
+			if (source == g0.edgeSource(orig))
 				totalFlow += flow.getDouble(e);
 		}
 		return totalFlow;

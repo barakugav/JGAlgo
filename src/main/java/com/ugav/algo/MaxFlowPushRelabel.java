@@ -29,19 +29,19 @@ public class MaxFlowPushRelabel implements MaxFlow {
 
 	@Override
 	public double calcMaxFlow(Graph g0, FlowNetwork net, int source, int target) {
-		if (!(g0 instanceof Graph.Directed))
+		if (!(g0 instanceof DiGraph))
 			throw new IllegalArgumentException("only directed graphs are supported");
 		if (source == target)
 			throw new IllegalArgumentException("Source and target can't be the same vertices");
 		debug.println("\t", getClass().getSimpleName());
 
-		Graph.Directed g = new GraphArrayDirected(g0.vertices());
-		EdgeData.Int edgeRef = g.newEdgeDataInt(EdgeRefKey);
-		EdgeData.Int edgeRev = g.newEdgeDataInt(EdgeRevKey);
-		EdgeData.Double flow = g.newEdgeDataDouble(EdgeFlowKey);
-		EdgeData.Double capacity = g.newEdgeDataDouble(EdgeCapacityKey);
-		for (int e = 0; e < g0.edges(); e++) {
-			int u = g0.getEdgeSource(e), v = g0.getEdgeTarget(e);
+		DiGraph g = new GraphArrayDirected(g0.verticesNum());
+		EdgesWeight.Int edgeRef = g.newEdgeWeightInt(EdgeRefKey);
+		EdgesWeight.Int edgeRev = g.newEdgeWeightInt(EdgeRevKey);
+		EdgesWeight.Double flow = g.newEdgeWeightDouble(EdgeFlowKey);
+		EdgesWeight.Double capacity = g.newEdgeWeightDouble(EdgeCapacityKey);
+		for (int e = 0; e < g0.edgesNum(); e++) {
+			int u = g0.edgeSource(e), v = g0.edgeTarget(e);
 			int e1 = g.addEdge(u, v);
 			int e2 = g.addEdge(v, u);
 			edgeRef.set(e1, e);
@@ -54,7 +54,7 @@ public class MaxFlowPushRelabel implements MaxFlow {
 			capacity.set(e2, 0);
 		}
 
-		int n = g.vertices();
+		int n = g.verticesNum();
 
 		IterPickable.Int[] edges = new IterPickable.Int[n];
 		double[] excess = new double[n];
@@ -65,7 +65,7 @@ public class MaxFlowPushRelabel implements MaxFlow {
 		IntDoubleConsumer pushFlow = (e, f) -> {
 			assert f > 0;
 
-			int u = g.getEdgeSource(e), v = g.getEdgeTarget(e);
+			int u = g.edgeSource(e), v = g.edgeTarget(e);
 //			if (u == g0.getEdgeSource(edgeRef.getInt(e))
 //				debug.println("F(", e.orig, ") += ", Double.valueOf(f));
 
@@ -108,7 +108,7 @@ public class MaxFlowPushRelabel implements MaxFlow {
 			while (excess[u] > EPS && it.hasNext()) {
 				int e = it.pickNext();
 				double eAccess = capacity.getDouble(e) - flow.getDouble(e);
-				if (eAccess > EPS && d[u] == d[g.getEdgeTarget(e)] + 1) {
+				if (eAccess > EPS && d[u] == d[g.edgeTarget(e)] + 1) {
 					double f = Math.min(excess[u], eAccess);
 					pushFlow.accept(e, f);
 				} else {
@@ -129,10 +129,10 @@ public class MaxFlowPushRelabel implements MaxFlow {
 		}
 
 		/* Construct result */
-		for (int e = 0; e < g.edges(); e++) {
-			int u = g.getEdgeSource(e);
+		for (int e = 0; e < g.edgesNum(); e++) {
+			int u = g.edgeSource(e);
 			int orig = edgeRef.getInt(e);
-			if (u == g0.getEdgeSource(orig))
+			if (u == g0.edgeSource(orig))
 				net.setFlow(orig, flow.getDouble(e));
 		}
 		double totalFlow = 0;

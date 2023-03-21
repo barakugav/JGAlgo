@@ -196,8 +196,7 @@ public class DynamicTreeSplayTest extends TestUtils {
 					expected++;
 					TrackerNode n = stack.get(stack.size() - 1);
 					stack.remove(stack.size() - 1);
-					for (TrackerNode c : n.children)
-						stack.add(c);
+					stack.addAll(n.children);
 				}
 
 				int actual = tree.size(node.dtNode);

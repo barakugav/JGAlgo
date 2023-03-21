@@ -25,7 +25,7 @@ public class GraphsTest extends TestUtils {
 			boolean[] visited = new boolean[n];
 			List<Integer> invalidVertices = new ArrayList<>();
 			Graphs.runBFS(g, source, (v, e) -> {
-				if (visited[v] || (v != source && g.getEdgeEndpoint(e, g.getEdgeEndpoint(e, v)) != v))
+				if (visited[v] || (v != source && g.edgeEndpoint(e, g.edgeEndpoint(e, v)) != v))
 					invalidVertices.add(Integer.valueOf(v));
 				visited[v] = true;
 				return true;
@@ -49,7 +49,7 @@ public class GraphsTest extends TestUtils {
 			List<Integer> invalidVertices = new ArrayList<>();
 			Graphs.runDFS(g, source, (v, pathFromSource) -> {
 				int e = v == source ? -1 : pathFromSource.getInt(pathFromSource.size() - 1);
-				if (visited[v] || (v != source && g.getEdgeEndpoint(e, g.getEdgeEndpoint(e, v)) != v))
+				if (visited[v] || (v != source && g.edgeEndpoint(e, g.edgeEndpoint(e, v)) != v))
 					invalidVertices.add(Integer.valueOf(v));
 				visited[v] = true;
 				return true;
@@ -179,8 +179,8 @@ public class GraphsTest extends TestUtils {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
-			Graph.Directed g = (Graph.Directed) new RandomGraphBuilder().n(n).m(m).directed(true).doubleEdges(true)
-					.selfEdges(false).cycles(false).connected(connected).build();
+			DiGraph g = (DiGraph) new RandomGraphBuilder().n(n).m(m).directed(true).doubleEdges(true).selfEdges(false)
+					.cycles(false).connected(connected).build();
 
 			int[] topolSort = Graphs.calcTopologicalSortingDAG(g);
 
@@ -212,12 +212,12 @@ public class GraphsTest extends TestUtils {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
-			Graph.Directed g = (Graph.Directed) new RandomGraphBuilder().n(n).m(m).directed(true).doubleEdges(true)
-					.selfEdges(false).cycles(false).connected(connected).build();
+			DiGraph g = (DiGraph) new RandomGraphBuilder().n(n).m(m).directed(true).doubleEdges(true).selfEdges(false)
+					.cycles(false).connected(connected).build();
 			GraphsTestUtils.assignRandWeightsIntPos(g);
 			int source = 0;
 
-			EdgeData.Int w = g.getEdgeData("weight");
+			EdgesWeight.Int w = g.edgesWeight("weight");
 			SSSP.Result result = Graphs.calcDistancesDAG(g, w, source);
 
 			SSSPTestUtils.validateResult(g, w, source, result, new SSSPDijkstra());

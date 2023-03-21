@@ -81,8 +81,7 @@ public class TestRunner {
 	private static Collection<TestContext> getTests() {
 		Set<Method> testMethodsSet = new HashSet<>();
 		for (Class<?> testClass : TestList.TEST_CLASSES)
-			for (Method classTest : getAnnotatedMethods(testClass, Test.class))
-				testMethodsSet.add(classTest);
+			testMethodsSet.addAll(getAnnotatedMethods(testClass, Test.class));
 
 		List<Method> testMethods = new ArrayList<>(testMethodsSet);
 		testMethods.sort((m1, m2) -> {

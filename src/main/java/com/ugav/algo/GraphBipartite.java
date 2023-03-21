@@ -28,7 +28,7 @@ public interface GraphBipartite extends Graph {
 
 	@Deprecated
 	@Override
-	default int newVertex() {
+	default int addVertex() {
 		throw new UnsupportedOperationException();
 	}
 
@@ -46,10 +46,10 @@ public interface GraphBipartite extends Graph {
 	 */
 	public int newVertexT();
 
-	static interface Directed extends GraphBipartite, Graph.Directed {
+	static interface DiGraph extends GraphBipartite, com.ugav.algo.DiGraph {
 	}
 
-	static interface Undirected extends GraphBipartite, Graph.Undirected {
+	static interface Undirected extends GraphBipartite, com.ugav.algo.UGraph {
 	}
 
 }

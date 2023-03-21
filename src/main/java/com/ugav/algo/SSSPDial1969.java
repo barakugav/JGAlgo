@@ -55,7 +55,7 @@ public class SSSPDial1969 implements SSSP {
 			throw new IllegalArgumentException("only int weights are supported");
 		WeightFunctionInt w = (WeightFunctionInt) w0;
 
-		int n = g.vertices(), m = g.edges();
+		int n = g.verticesNum(), m = g.edgesNum();
 		if (n <= 0)
 			throw new IllegalArgumentException();
 
@@ -71,7 +71,7 @@ public class SSSPDial1969 implements SSSP {
 			for (int e = 0; e < m; e++)
 				edges[e] = e;
 
-			Array.Int.getKthElement(edges, 0, g.edges(), n - 1,
+			Array.Int.getKthElement(edges, 0, g.edgesNum(), n - 1,
 					(e1, e2) -> -Integer.compare(w.weightInt(e1), w.weightInt(e2)), true);
 
 			for (int i = 0; i <= n - 1; i++)
@@ -84,7 +84,7 @@ public class SSSPDial1969 implements SSSP {
 	}
 
 	public SSSP.Result calcDistances(Graph g, WeightFunctionInt w, int source, int maxDistance) {
-		int n = g.vertices(), m = g.edges();
+		int n = g.verticesNum(), m = g.edgesNum();
 		if (n <= 0)
 			throw new IllegalArgumentException();
 
@@ -266,7 +266,7 @@ public class SSSPDial1969 implements SSSP {
 				if (e == -1)
 					break;
 				path.add(e);
-				v = g.getEdgeEndpoint(e, v);
+				v = g.edgeEndpoint(e, v);
 			}
 			Collections.reverse(path); // TODO
 			return path;

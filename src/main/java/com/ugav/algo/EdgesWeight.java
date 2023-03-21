@@ -6,7 +6,7 @@ import java.util.NoSuchElementException;
 import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.Graph.WeightFunctionInt;
 
-public abstract class EdgeData<E> {
+public abstract class EdgesWeight<E> {
 
 	public abstract E get(int e);
 
@@ -74,7 +74,7 @@ public abstract class EdgeData<E> {
 
 	}
 
-	public static class Obj<E> extends EdgeData<E> {
+	public static class Obj<E> extends EdgesWeight<E> {
 
 		private Object[] data;
 		private int size;
@@ -164,7 +164,7 @@ public abstract class EdgeData<E> {
 		}
 	}
 
-	public static class Int extends EdgeData<Integer> implements WeightFunctionInt {
+	public static class Int extends EdgesWeight<Integer> implements WeightFunctionInt {
 
 		private int[] data;
 		private int size;
@@ -263,7 +263,7 @@ public abstract class EdgeData<E> {
 		}
 	}
 
-	public static class Double extends EdgeData<java.lang.Double> implements WeightFunction {
+	public static class Double extends EdgesWeight<java.lang.Double> implements WeightFunction {
 
 		private double[] data;
 		private int size;

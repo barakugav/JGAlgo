@@ -2,7 +2,7 @@ package com.ugav.algo;
 
 import java.util.Arrays;
 
-public class GraphArrayDirected extends GraphArrayAbstract implements Graph.Directed {
+public class GraphArrayDirected extends GraphArrayAbstract implements DiGraph {
 
 	private int[][] edgesOut;
 	private int[] edgesOutNum;
@@ -36,8 +36,8 @@ public class GraphArrayDirected extends GraphArrayAbstract implements Graph.Dire
 	}
 
 	@Override
-	public int newVertex() {
-		int v = super.newVertex();
+	public int addVertex() {
+		int v = super.addVertex();
 		if (v >= edgesOut.length) {
 			int aLen = Math.max(edgesOut.length * 2, 2);
 			edgesOut = Arrays.copyOf(edgesOut, aLen);
@@ -60,12 +60,12 @@ public class GraphArrayDirected extends GraphArrayAbstract implements Graph.Dire
 	@Override
 	public void removeEdge(int e) {
 		checkEdgeIdx(e);
-		int lastEdge = edges() - 1;
+		int lastEdge = edgesNum() - 1;
 		if (e != lastEdge) {
 			edgeSwap(e, lastEdge);
 			e = lastEdge;
 		}
-		int u = getEdgeSource(e), v = getEdgeTarget(e);
+		int u = edgeSource(e), v = edgeTarget(e);
 		removeEdgeFromList(edgesOut, edgesOutNum, u, e);
 		removeEdgeFromList(edgesIn, edgesInNum, v, e);
 		super.removeEdge(e);
@@ -74,8 +74,8 @@ public class GraphArrayDirected extends GraphArrayAbstract implements Graph.Dire
 	@Override
 	void edgeSwap(int e1, int e2) {
 		assert e1 != e2;
-		int u1 = getEdgeSource(e1), v1 = getEdgeTarget(e1);
-		int u2 = getEdgeSource(e2), v2 = getEdgeTarget(e2);
+		int u1 = edgeSource(e1), v1 = edgeTarget(e1);
+		int u2 = edgeSource(e2), v2 = edgeTarget(e2);
 		int i1 = edgeIndexOf(edgesOut, edgesOutNum, u1, e1);
 		int j1 = edgeIndexOf(edgesIn, edgesInNum, v1, e1);
 		int i2 = edgeIndexOf(edgesOut, edgesOutNum, u2, e2);
@@ -88,14 +88,14 @@ public class GraphArrayDirected extends GraphArrayAbstract implements Graph.Dire
 	}
 
 	@Override
-	public void removeEdgesOut(int u) {
+	public void removeEdgesAllOut(int u) {
 		checkVertexIdx(u);
 		while (edgesOutNum[u] > 0)
 			removeEdge(edgesOut[u][0]);
 	}
 
 	@Override
-	public void removeEdgesIn(int v) {
+	public void removeEdgesAllIn(int v) {
 		checkVertexIdx(v);
 		while (edgesInNum[v] > 0)
 			removeEdge(edgesIn[v][0]);
@@ -103,7 +103,7 @@ public class GraphArrayDirected extends GraphArrayAbstract implements Graph.Dire
 
 	@Override
 	public void reverseEdge(int e) {
-		int u = getEdgeSource(e), v = getEdgeTarget(e);
+		int u = edgeSource(e), v = edgeTarget(e);
 		removeEdgeFromList(edgesOut, edgesOutNum, u, e);
 		removeEdgeFromList(edgesIn, edgesInNum, v, e);
 		addEdgeToList(edgesOut, edgesOutNum, v, e);
@@ -125,7 +125,7 @@ public class GraphArrayDirected extends GraphArrayAbstract implements Graph.Dire
 
 	@Override
 	public void clearEdges() {
-		int n = vertices();
+		int n = verticesNum();
 		Arrays.fill(edgesOutNum, 0, n, 0);
 		Arrays.fill(edgesInNum, 0, n, 0);
 		super.clearEdges();
@@ -147,7 +147,7 @@ public class GraphArrayDirected extends GraphArrayAbstract implements Graph.Dire
 
 		@Override
 		public int v() {
-			return getEdgeTarget(lastEdge);
+			return edgeTarget(lastEdge);
 		}
 
 	}
@@ -163,7 +163,7 @@ public class GraphArrayDirected extends GraphArrayAbstract implements Graph.Dire
 
 		@Override
 		public int u() {
-			return getEdgeSource(lastEdge);
+			return edgeSource(lastEdge);
 		}
 
 		@Override

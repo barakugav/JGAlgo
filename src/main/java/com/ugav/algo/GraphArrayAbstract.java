@@ -50,8 +50,8 @@ abstract class GraphArrayAbstract extends GraphAbstract {
 
 	@Override
 	void edgeSwap(int e1, int e2) {
-		int u1 = getEdgeSource(e1), v1 = getEdgeTarget(e1);
-		int u2 = getEdgeSource(e2), v2 = getEdgeTarget(e2);
+		int u1 = edgeSource(e1), v1 = edgeTarget(e1);
+		int u2 = edgeSource(e2), v2 = edgeTarget(e2);
 		edgeEndpoints[edgeSourceIdx(e1)] = u2;
 		edgeEndpoints[edgeTargetIdx(e1)] = v2;
 		edgeEndpoints[edgeSourceIdx(e2)] = u1;
@@ -60,32 +60,32 @@ abstract class GraphArrayAbstract extends GraphAbstract {
 	}
 
 	void reverseEdge(int e) {
-		int u = getEdgeSource(e), v = getEdgeTarget(e);
+		int u = edgeSource(e), v = edgeTarget(e);
 		edgeEndpoints[edgeSourceIdx(e)] = v;
 		edgeEndpoints[edgeTargetIdx(e)] = u;
 	}
 
 	@Override
-	public int getEdgeSource(int edge) {
+	public int edgeSource(int edge) {
 		checkEdgeIdx(edge);
 		return edgeEndpoints[edgeSourceIdx(edge)];
 	}
 
 	@Override
-	public int getEdgeTarget(int edge) {
+	public int edgeTarget(int edge) {
 		checkEdgeIdx(edge);
 		return edgeEndpoints[edgeTargetIdx(edge)];
 	}
 
 	private static int edgeSourceIdx(int e) {
-		return edgeEndpoint(e, 0);
+		return edgeEndpointIdx(e, 0);
 	}
 
 	private static int edgeTargetIdx(int e) {
-		return edgeEndpoint(e, 1);
+		return edgeEndpointIdx(e, 1);
 	}
 
-	private static int edgeEndpoint(int e, int offset) {
+	private static int edgeEndpointIdx(int e, int offset) {
 		return e * SizeofEdgeEndpoints + offset;
 	}
 

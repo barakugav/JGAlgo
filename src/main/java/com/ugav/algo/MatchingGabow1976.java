@@ -21,10 +21,10 @@ public class MatchingGabow1976 implements Matching {
 
 	@Override
 	public IntCollection calcMaxMatching(Graph g0) {
-		if (!(g0 instanceof Graph.Undirected))
+		if (!(g0 instanceof UGraph))
 			throw new IllegalArgumentException("only undirected graphs are supported");
-		Graph.Undirected g = (Graph.Undirected) g0;
-		int n = g.vertices();
+		UGraph g = (UGraph) g0;
+		int n = g.verticesNum();
 
 		QueueIntFixSize queue = new QueueIntFixSize(n);
 		int[] root = new int[n];
@@ -81,7 +81,7 @@ public class MatchingGabow1976 implements Matching {
 						root[v] = uRoot;
 						parent[v] = e;
 
-						int w = g.getEdgeEndpoint(matchedEdge, v);
+						int w = g.edgeEndpoint(matchedEdge, v);
 						root[w] = uRoot;
 						isEven[w] = true;
 						queue.push(w);
@@ -113,8 +113,8 @@ public class MatchingGabow1976 implements Matching {
 								}
 								blossomBaseSearchNotes[p] = searchIdx;
 								if (p != uRoot) {
-									p = g.getEdgeEndpoint(matched[p], p);
-									p = g.getEdgeEndpoint(parent[p], p); // move 2 up
+									p = g.edgeEndpoint(matched[p], p);
+									p = g.edgeEndpoint(parent[p], p); // move 2 up
 									ps[i] = bases[uf.find(p)];
 								} else
 									ps[i] = -1;
@@ -130,13 +130,13 @@ public class MatchingGabow1976 implements Matching {
 								blossomVertices[blossomVerticesSize++] = p;
 
 								// handle odd vertex
-								p = g.getEdgeEndpoint(matched[p], p);
+								p = g.edgeEndpoint(matched[p], p);
 								blossomVertices[blossomVerticesSize++] = p;
 								queue.push(p); // add the odd vertex that became even to the queue
 								bridgeE[p] = brigeEdge;
 								bridgeU[p] = brigeVertex;
 
-								p = bases[uf.find(g.getEdgeEndpoint(parent[p], p))];
+								p = bases[uf.find(g.edgeEndpoint(parent[p], p))];
 							}
 						}
 
@@ -160,13 +160,13 @@ public class MatchingGabow1976 implements Matching {
 
 			for (int i = 0; i < augPathSize; i++) {
 				int e = augPath[i];
-				int u = g.getEdgeSource(e), v = g.getEdgeTarget(e);
-				setmatch[i] = matched[u] == EdgeNone || g.getEdgeTarget(matched[u]) != v;
+				int u = g.edgeSource(e), v = g.edgeTarget(e);
+				setmatch[i] = matched[u] == EdgeNone || g.edgeTarget(matched[u]) != v;
 			}
 			for (int i = 0; i < augPathSize; i++) {
 				int e = augPath[i];
 				if (setmatch[i])
-					matched[g.getEdgeSource(e)] = matched[g.getEdgeTarget(e)] = e;
+					matched[g.edgeSource(e)] = matched[g.edgeTarget(e)] = e;
 			}
 
 			Arrays.fill(isEven, false);
@@ -175,26 +175,26 @@ public class MatchingGabow1976 implements Matching {
 
 		IntList res = new IntArrayList();
 		for (int u = 0; u < n; u++)
-			if (matched[u] != EdgeNone && u == g.getEdgeSource(matched[u]))
+			if (matched[u] != EdgeNone && u == g.edgeSource(matched[u]))
 				res.add(matched[u]);
 		return res;
 	}
 
-	private static int findPath(Graph.Undirected g, int s, int t, boolean[] isEven, int[] match, int[] parent,
-			int[] bridgeE, int[] bridgeU, int[] path, int pathSize) {
+	private static int findPath(UGraph g, int s, int t, boolean[] isEven, int[] match, int[] parent, int[] bridgeE,
+			int[] bridgeU, int[] path, int pathSize) {
 		if (s == t)
 			return pathSize;
 		if (isEven[s]) {
-			int v = g.getEdgeEndpoint(match[s], s);
+			int v = g.edgeEndpoint(match[s], s);
 			path[pathSize++] = match[s];
 			path[pathSize++] = parent[v];
-			return findPath(g, g.getEdgeEndpoint(parent[v], v), t, isEven, match, parent, bridgeE, bridgeU, path,
+			return findPath(g, g.edgeEndpoint(parent[v], v), t, isEven, match, parent, bridgeE, bridgeU, path,
 					pathSize);
 		} else {
 			int vw = bridgeE[s];
-			int v = bridgeU[s], w = g.getEdgeEndpoint(vw, v);
+			int v = bridgeU[s], w = g.edgeEndpoint(vw, v);
 			path[pathSize++] = match[s];
-			pathSize = findPath(g, v, g.getEdgeEndpoint(match[s], s), isEven, match, parent, bridgeE, bridgeU, path,
+			pathSize = findPath(g, v, g.edgeEndpoint(match[s], s), isEven, match, parent, bridgeE, bridgeU, path,
 					pathSize);
 			path[pathSize++] = vw;
 			return findPath(g, w, t, isEven, match, parent, bridgeE, bridgeU, path, pathSize);

@@ -85,7 +85,7 @@ class TPMTestUtils extends TestUtils {
 	private static void testTPM(TPM algo, int n) {
 		Graph t = GraphsTestUtils.randTree(n);
 		GraphsTestUtils.assignRandWeightsIntPos(t);
-		WeightFunctionInt w = t.getEdgeData("weight");
+		WeightFunctionInt w = t.edgesWeight("weight");
 
 		int[] queries = n <= 64 ? generateAllPossibleQueries(n) : generateRandQueries(n, Math.min(n * 64, 8192));
 		int[] actual = algo.calcTPM(t, w, queries, queries.length / 2);
@@ -99,10 +99,10 @@ class TPMTestUtils extends TestUtils {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = args[1];
-			Graph.Undirected g = (Graph.Undirected) new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(true)
-					.selfEdges(false).cycles(true).connected(true).build();
+			UGraph g = (UGraph) new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(true).selfEdges(false)
+					.cycles(true).connected(true).build();
 			GraphsTestUtils.assignRandWeightsIntPos(g);
-			WeightFunctionInt w = g.getEdgeData("weight");
+			WeightFunctionInt w = g.edgesWeight("weight");
 			IntCollection mstEdges = new MSTKruskal1956().calcMST(g, w);
 
 			TPM algo = builder.get();
@@ -117,39 +117,36 @@ class TPMTestUtils extends TestUtils {
 			int n = args[0];
 			int m = args[1];
 
-			Graph.Undirected g = (Graph.Undirected) new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(true)
-					.selfEdges(false).cycles(true).connected(true).build();
+			UGraph g = (UGraph) new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(true).selfEdges(false)
+					.cycles(true).connected(true).build();
 			GraphsTestUtils.assignRandWeightsIntPos(g);
-			WeightFunctionInt w = g.getEdgeData("weight");
+			WeightFunctionInt w = g.edgesWeight("weight");
 
 			IntCollection mstEdges = new MSTKruskal1956().calcMST(g, w);
-			Graph mst = new GraphArrayUndirected(g.vertices());
-			EdgeData.Int edgeRef = mst.newEdgeDataInt("edgeRef");
-			for (IntIterator it = mstEdges.iterator(); it.hasNext(); ) {
+			Graph mst = new GraphArrayUndirected(g.verticesNum());
+			EdgesWeight.Int edgeRef = mst.newEdgeWeightInt("edgeRef");
+			for (IntIterator it = mstEdges.iterator(); it.hasNext();) {
 				int e = it.nextInt();
-				int u = g.getEdgeSource(e), v = g.getEdgeTarget(e);
+				int u = g.edgeSource(e), v = g.edgeTarget(e);
 				int e0 = mst.addEdge(u, v);
 				edgeRef.set(e0, e);
 			}
 
-			int[] edges = new int[m];
-			for (int e = 0; e < m; e++)
-				edges[e] = e;
-
 			Random rand = new Random(nextRandSeed());
 			int e;
 			do {
-				e = edges[rand.nextInt(edges.length)];
+				e = rand.nextInt(m);
 			} while (mstEdges.contains(e));
 
-			IntList mstPath = Graphs.findPath(mst, g.getEdgeSource(e), g.getEdgeTarget(e));
+			IntList mstPath = Graphs.findPath(mst, g.edgeSource(e), g.edgeTarget(e));
 			int edgeToRemove = mstPath.getInt(rand.nextInt(mstPath.size()));
-//			mst.removeEdge(edgeToRemove);
-//			mst.addEdge(e);
+			mst.removeEdge(edgeToRemove);
+			int en = mst.addEdge(g.edgeSource(e), g.edgeTarget(e));
+			edgeRef.set(en, e);
 
 			TPM algo = builder.get();
 
-//			assertFalse(MST.verifyMST(g, w, mst, algo), "MST validation failed");
+			assertFalse(MST.verifyMST(g, w, mst, algo, edgeRef), "MST validation failed");
 		});
 	}
 

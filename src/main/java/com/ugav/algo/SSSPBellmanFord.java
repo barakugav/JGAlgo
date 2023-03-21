@@ -17,10 +17,10 @@ public class SSSPBellmanFord implements SSSP {
 
 	@Override
 	public SSSP.Result calcDistances(Graph g0, WeightFunction w, int source) {
-		if (!(g0 instanceof Graph.Directed))
+		if (!(g0 instanceof DiGraph))
 			throw new IllegalArgumentException("only directed graphs are supported");
-		Graph.Directed g = (Graph.Directed) g0;
-		int n = g.vertices(), m = g.edges();
+		DiGraph g = (DiGraph) g0;
+		int n = g.verticesNum(), m = g.edgesNum();
 		double[] distances = new double[n];
 		int[] backtrack = new int[n];
 		Arrays.fill(backtrack, -1);
@@ -33,7 +33,7 @@ public class SSSPBellmanFord implements SSSP {
 
 		for (int i = 0; i < n - 1; i++) {
 			for (int e = 0; e < m; e++) {
-				int u = g.getEdgeSource(e), v = g.getEdgeTarget(e);
+				int u = g.edgeSource(e), v = g.edgeTarget(e);
 				double d = distances[u] + w.weight(e);
 				if (d < distances[v]) {
 					distances[v] = d;
@@ -43,7 +43,7 @@ public class SSSPBellmanFord implements SSSP {
 		}
 
 		for (int e = 0; e < m; e++) {
-			int u = g.getEdgeSource(e), v = g.getEdgeTarget(e);
+			int u = g.edgeSource(e), v = g.edgeTarget(e);
 			double d = distances[u] + w.weight(e);
 			if (d < distances[v])
 				return Result.negCycle(g);

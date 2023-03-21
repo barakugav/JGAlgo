@@ -159,11 +159,11 @@ class GraphImplTestUtils extends TestUtils {
 		}
 
 		boolean checkEdgesEqual(Graph g) {
-			if (g.edges() != edgesNum())
+			if (g.edgesNum() != edgesNum())
 				return false;
-			EdgeData<Object> edgeData = g.getEdgeData(dataKey);
-			for (int e = 0; e < g.edges(); e++) {
-				int u = g.getEdgeSource(e), v = g.getEdgeTarget(e);
+			EdgesWeight<Object> edgeData = g.edgesWeight(dataKey);
+			for (int e = 0; e < g.edgesNum(); e++) {
+				int u = g.edgeSource(e), v = g.edgeTarget(e);
 				int index = indexOfEdge(u, v);
 				if (index < 0)
 					return false;
@@ -201,11 +201,11 @@ class GraphImplTestUtils extends TestUtils {
 		opRand.add(GraphOp.AddVertex, 4);
 
 		final Object dataKey = new Object();
-		EdgeData<Object> edgeData = g.newEdgeData(dataKey);
+		EdgesWeight<Object> edgeData = g.newEdgeWeight(dataKey);
 
-		GraphTracker tracker = new GraphTracker(g.vertices(), g instanceof Graph.Directed, dataKey);
-		for (int e = 0; e < g.edges(); e++) {
-			int u = g.getEdgeSource(e), v = g.getEdgeTarget(e);
+		GraphTracker tracker = new GraphTracker(g.verticesNum(), g instanceof DiGraph, dataKey);
+		for (int e = 0; e < g.edgesNum(); e++) {
+			int u = g.edgeSource(e), v = g.edgeTarget(e);
 			Object data = new Object();
 			edgeData.set(e, data);
 			tracker.addEdge(u, v, data);
@@ -247,7 +247,7 @@ class GraphImplTestUtils extends TestUtils {
 				break;
 			}
 			case ClearEdges:
-				if (g.edges() == 0)
+				if (g.edgesNum() == 0)
 					continue;
 				g.clearEdges();
 				tracker.clearEdges();
@@ -263,8 +263,8 @@ class GraphImplTestUtils extends TestUtils {
 				throw new IllegalArgumentException("Unexpected value: " + op);
 			}
 
-			assertTrue(g.vertices() == tracker.verticesNum());
-			assertTrue(g.edges() == tracker.edgesNum());
+			assertTrue(g.verticesNum() == tracker.verticesNum());
+			assertTrue(g.edgesNum() == tracker.edgesNum());
 			assertTrue(tracker.checkEdgesEqual(g));
 
 			opsNum--;

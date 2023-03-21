@@ -22,7 +22,7 @@ abstract class GraphTableAbstract extends GraphAbstract {
 	}
 
 	@Override
-	public int newVertex() {
+	public int addVertex() {
 		throw new UnsupportedOperationException();
 	}
 
@@ -40,8 +40,8 @@ abstract class GraphTableAbstract extends GraphAbstract {
 
 	@Override
 	void edgeSwap(int e1, int e2) {
-		int u1 = getEdgeSource(e1), v1 = getEdgeTarget(e1);
-		int u2 = getEdgeSource(e2), v2 = getEdgeTarget(e2);
+		int u1 = edgeSource(e1), v1 = edgeTarget(e1);
+		int u2 = edgeSource(e2), v2 = edgeTarget(e2);
 		edgeEndpoints[edgeSourceIdx(e1)] = u2;
 		edgeEndpoints[edgeTargetIdx(e1)] = v2;
 		edgeEndpoints[edgeSourceIdx(e2)] = u1;
@@ -50,7 +50,7 @@ abstract class GraphTableAbstract extends GraphAbstract {
 	}
 
 	void reverseEdge(int e) {
-		int u = getEdgeSource(e), v = getEdgeTarget(e);
+		int u = edgeSource(e), v = edgeTarget(e);
 		edgeEndpoints[edgeSourceIdx(e)] = v;
 		edgeEndpoints[edgeTargetIdx(e)] = u;
 	}
@@ -67,33 +67,33 @@ abstract class GraphTableAbstract extends GraphAbstract {
 
 	@Override
 	public void clearEdges() {
-		int n = vertices();
+		int n = verticesNum();
 		for (int u = 0; u < n; u++)
 			Arrays.fill(edges[u], EdgeNone);
 		super.clearEdges();
 	}
 
 	@Override
-	public int getEdgeSource(int edge) {
+	public int edgeSource(int edge) {
 		checkEdgeIdx(edge);
 		return edgeEndpoints[edgeSourceIdx(edge)];
 	}
 
 	@Override
-	public int getEdgeTarget(int edge) {
+	public int edgeTarget(int edge) {
 		checkEdgeIdx(edge);
 		return edgeEndpoints[edgeTargetIdx(edge)];
 	}
 
 	private static int edgeSourceIdx(int e) {
-		return edgeEndpoint(e, 0);
+		return edgeEndpointIdx(e, 0);
 	}
 
 	private static int edgeTargetIdx(int e) {
-		return edgeEndpoint(e, 1);
+		return edgeEndpointIdx(e, 1);
 	}
 
-	private static int edgeEndpoint(int e, int offset) {
+	private static int edgeEndpointIdx(int e, int offset) {
 		return e * SizeofEdgeEndpoints + offset;
 	}
 
@@ -105,7 +105,7 @@ abstract class GraphTableAbstract extends GraphAbstract {
 		private int lastV = -1;
 
 		EdgesOutItrVertex(int u) {
-			if (!(0 <= u && u < vertices()))
+			if (!(0 <= u && u < verticesNum()))
 				throw new IllegalArgumentException("Illegal vertex: " + u);
 			this.u = u;
 
@@ -129,7 +129,7 @@ abstract class GraphTableAbstract extends GraphAbstract {
 		}
 
 		void advanceUntilNext() {
-			int n = vertices();
+			int n = verticesNum();
 			for (int next = v; next < n; next++) {
 				if (edges[u][next] != EdgeNone) {
 					v = next;
@@ -158,7 +158,7 @@ abstract class GraphTableAbstract extends GraphAbstract {
 		private int lastU = -1;
 
 		EdgesInItrVertex(int v) {
-			if (!(0 <= v && v < vertices()))
+			if (!(0 <= v && v < verticesNum()))
 				throw new IllegalArgumentException("Illegal vertex: " + v);
 			this.v = v;
 
@@ -182,7 +182,7 @@ abstract class GraphTableAbstract extends GraphAbstract {
 		}
 
 		private void advanceUntilNext() {
-			int n = vertices();
+			int n = verticesNum();
 			for (int next = u; next < n; next++) {
 				if (edges[next][v] != EdgeNone) {
 					u = next;

@@ -4,14 +4,11 @@ import java.util.Collection;
 
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
-// TODO rename to IGraph
 public interface Graph {
 
-	public int vertices(); // TODO rename to verticesNum
+	public int verticesNum();
 
-	public int edges(); // TODO rename to edgesNUm
-
-	// TODO add edges iterator over all edges
+	public int edgesNum();
 
 	public EdgeIter edges(int u);
 
@@ -34,13 +31,13 @@ public interface Graph {
 		return count;
 	}
 
-	public int newVertex();
+	public int addVertex();
 
 	public int addEdge(int u, int v);
 
-	public void removeEdge(int e);
+	public void removeEdge(int edge);
 
-	public void removeEdges(int u);
+	public void removeEdgesAll(int u);
 
 	public void addEdgeRenameListener(EdgeRenameListener listener);
 
@@ -55,101 +52,42 @@ public interface Graph {
 
 	public void clearEdges();
 
-	public int getEdgeSource(int edge);
+	public int edgeSource(int edge);
 
-	public int getEdgeTarget(int edge);
+	public int edgeTarget(int edge);
 
-	default int getEdgeEndpoint(int edge, int endpoint) {
-		int u = getEdgeSource(edge);
-		int v = getEdgeTarget(edge);
-		if (endpoint == u)
+	default int edgeEndpoint(int edge, int endpoint) {
+		int u = edgeSource(edge);
+		int v = edgeTarget(edge);
+		if (endpoint == u) {
 			return v;
-		else if (endpoint == v)
+		} else if (endpoint == v) {
 			return u;
-		else
+		} else {
 			throw new IllegalArgumentException();
+		}
 	}
 
-	// TODO change 'edgeData' to edgeWeight
 	// TODO add weights for vertices
+	// TODO remove vertex
+	// TODO documentation
 	// TODO implement bipartite graphs with boolean weights on vertices
 
-	public <E, T extends EdgeData<E>> T getEdgeData(Object key);
+	public <E, T extends EdgesWeight<E>> T edgesWeight(Object key);
 
-	public <E> EdgeData<E> newEdgeData(Object key);
+	public <E> EdgesWeight<E> newEdgeWeight(Object key);
 
-	public EdgeData.Int newEdgeDataInt(Object key);
+	public EdgesWeight.Int newEdgeWeightInt(Object key);
 
-	public EdgeData.Double newEdgeDataDouble(Object key);
+	public EdgesWeight.Double newEdgeWeightDouble(Object key);
 
-	public Collection<Object> getEdgeDataKeys();
+	public Collection<Object> getEdgeWeightKeys();
 
 	public static interface EdgeIter extends IntIterator {
 
 		int u();
 
 		int v();
-
-	}
-
-	// TODO rename to Graph
-	public static interface Undirected extends Graph {
-
-	}
-
-	// TODO rename to DiGraph
-	public static interface Directed extends Graph {
-
-		@Deprecated
-		@Override
-		default EdgeIter edges(int u) {
-			return edgesOut(u);
-		}
-
-		public EdgeIter edgesOut(int u);
-
-		public EdgeIter edgesIn(int v);
-
-		@Override
-		default void removeEdges(int u) {
-			removeEdgesOut(u);
-		}
-
-		public void removeEdgesOut(int u);
-
-		public void removeEdgesIn(int v);
-
-		public void reverseEdge(int e);
-
-		@Override
-		@Deprecated
-		default int degree(int u) {
-			return degreeOut(u);
-		}
-
-		default int degreeOut(int u) {
-			int count = 0;
-			for (EdgeIter it = edgesOut(u); it.hasNext();) {
-				it.nextInt();
-				count++;
-			}
-			return count;
-		}
-
-		default int degreeIn(int v) {
-			int count = 0;
-			for (EdgeIter it = edgesIn(v); it.hasNext();) {
-				it.nextInt();
-				count++;
-			}
-			return count;
-		}
-
-		@Override
-		@Deprecated
-		default int getEdgeEndpoint(int edge, int endpoint) {
-			return Graph.super.getEdgeEndpoint(edge, endpoint);
-		}
 
 	}
 

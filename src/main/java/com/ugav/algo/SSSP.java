@@ -47,22 +47,22 @@ public interface SSSP {
 			if (distances[v] == Double.POSITIVE_INFINITY)
 				return null;
 			IntList path = new IntArrayList();
-			if (g instanceof Graph.Directed) {
+			if (g instanceof DiGraph) {
 				for (;;) {
 					int e = backtrack[v];
 					if (e == -1)
 						break;
 					path.add(e);
-					v = g.getEdgeSource(e);
+					v = g.edgeSource(e);
 				}
 			} else {
-				Graph.Undirected g = (Graph.Undirected) this.g;
+				UGraph g = (UGraph) this.g;
 				for (;;) {
 					int e = backtrack[v];
 					if (e == -1)
 						break;
 					path.add(e);
-					v = g.getEdgeEndpoint(e, v);
+					v = g.edgeEndpoint(e, v);
 				}
 			}
 			Collections.reverse(path);

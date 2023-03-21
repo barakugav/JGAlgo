@@ -33,7 +33,7 @@ public class LCARMQBenderFarachColton2000 implements LCAStatic {
 		if (!Graphs.isTree(t, r))
 			throw new IllegalArgumentException();
 
-		int n = t.vertices();
+		int n = t.verticesNum();
 		int[] depths = new int[n * 2];
 		int[] vs = new int[n * 2];
 		int[] parent = new int[n];

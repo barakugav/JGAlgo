@@ -49,21 +49,21 @@ public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 
 	@Override
 	public double calcMaxFlow(Graph g0, FlowNetwork net, int source, int target) {
-		if (!(g0 instanceof Graph.Directed))
+		if (!(g0 instanceof DiGraph))
 			throw new IllegalArgumentException("only directed graphs are supported");
 		if (source == target)
 			throw new IllegalArgumentException("Source and target can't be the same vertices");
 		debug.println("\t", getClass().getSimpleName());
 
 		double maxCapacity = 100;
-		for (int e = 0; e < g0.edges(); e++)
+		for (int e = 0; e < g0.edgesNum(); e++)
 			maxCapacity = Math.max(maxCapacity, net.getCapacity(e));
 
-		Graph.Directed g = referenceGraph((Graph.Directed) g0, net);
-		EdgeData<Ref> edgeRef = g.getEdgeData("edgeRef");
-		int n = g.vertices();
+		DiGraph g = referenceGraph((DiGraph) g0, net);
+		EdgesWeight<Ref> edgeRef = g.edgesWeight("edgeRef");
+		int n = g.verticesNum();
 
-		final int maxTreeSize = Math.max(1, n * n / g.edges());
+		final int maxTreeSize = Math.max(1, n * n / g.edgesNum());
 
 		QueueFixSize<Vertex> active = new QueueFixSize<>(n);
 		DynamicTree<Vertex, Integer> dt = new DynamicTreeSplaySized<>(maxCapacity * 10);
@@ -148,7 +148,7 @@ public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 			while (U.excess > EPS && it.hasNext()) {
 				int e = it.pickNext();
 				Ref data = edgeRef.get(e);
-				Vertex V = vertexData[g.getEdgeTarget(e)];
+				Vertex V = vertexData[g.edgeTarget(e)];
 				double eAccess = data.cap - data.flow;
 
 				if (!(eAccess > EPS && U.d == V.d + 1)) {
@@ -266,9 +266,9 @@ public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 		}
 
 		/* Construct result */
-		for (int e = 0; e < g.edges(); e++) {
+		for (int e = 0; e < g.edgesNum(); e++) {
 			Ref data = edgeRef.get(e);
-			if (g.getEdgeSource(e) == g0.getEdgeSource(data.orig))
+			if (g.edgeSource(e) == g0.edgeSource(data.orig))
 				net.setFlow(data.orig, data.flow);
 		}
 		double totalFlow = 0;
@@ -280,11 +280,11 @@ public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 		return totalFlow;
 	}
 
-	private static Graph.Directed referenceGraph(Graph.Directed g0, FlowNetwork net) {
-		Graph.Directed g = new GraphArrayDirected(g0.vertices());
-		EdgeData<Ref> edgeRef = g.newEdgeData("edgeRef");
-		for (int e = 0; e < g0.edges(); e++) {
-			int u = g0.getEdgeSource(e), v = g0.getEdgeTarget(e);
+	private static DiGraph referenceGraph(DiGraph g0, FlowNetwork net) {
+		DiGraph g = new GraphArrayDirected(g0.verticesNum());
+		EdgesWeight<Ref> edgeRef = g.newEdgeWeight("edgeRef");
+		for (int e = 0; e < g0.edgesNum(); e++) {
+			int u = g0.edgeSource(e), v = g0.edgeTarget(e);
 			Ref ref = new Ref(e, net.getCapacity(e), 0), refRev = new Ref(e, 0, 0);
 			edgeRef.set(g.addEdge(u, v), ref);
 			edgeRef.set(g.addEdge(v, u), refRev);

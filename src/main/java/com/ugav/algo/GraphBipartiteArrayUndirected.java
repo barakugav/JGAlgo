@@ -33,7 +33,7 @@ public class GraphBipartiteArrayUndirected extends GraphArrayUndirected implemen
 
 	@Override
 	public int tvertices() {
-		return vertices() - sSize;
+		return verticesNum() - sSize;
 	}
 
 	@Override
@@ -52,8 +52,8 @@ public class GraphBipartiteArrayUndirected extends GraphArrayUndirected implemen
 	}
 
 	private int newVertex(boolean side) {
-		ensureSize(vertices() + 1);
-		int u = super.newVertex();
+		ensureSize(verticesNum() + 1);
+		int u = super.addVertex();
 		this.side[u] = side;
 		return u;
 
@@ -67,7 +67,7 @@ public class GraphBipartiteArrayUndirected extends GraphArrayUndirected implemen
 	}
 
 	@Override
-	public int newVertex() {
+	public int addVertex() {
 		throw new UnsupportedOperationException();
 	}
 
