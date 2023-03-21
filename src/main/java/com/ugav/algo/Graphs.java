@@ -443,16 +443,6 @@ public class Graphs {
 		}
 	}
 
-	public static int[] calcDegree(Graph.Undirected g) {
-		int[] degree = new int[g.vertices()];
-		int m = g.edges();
-		for (int e = 0; e < m; e++) {
-			degree[g.getEdgeSource(e)]++;
-			degree[g.getEdgeTarget(e)]++;
-		}
-		return degree;
-	}
-
 	public static int[] calcDegree(Graph.Undirected g, IntCollection edges) {
 		int[] degree = new int[g.vertices()];
 		for (IntIterator eit = edges.iterator(); eit.hasNext();) {

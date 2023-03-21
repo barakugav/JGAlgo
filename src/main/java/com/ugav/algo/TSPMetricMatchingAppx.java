@@ -49,8 +49,8 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 		EdgeData.Int mGEdgeRef = mG.newEdgeDataInt("edgeRef");
 		for (int u = 0; u < mGn; u++) {
 			for (int v = u + 1; v < mGn; v++) {
-				int e = g.getEdge(u, v);
-				int en = mG.addEdge(mVtoV[u], mVtoV[v]);
+				int e = g.getEdge(mVtoV[u], mVtoV[v]);
+				int en = mG.addEdge(u, v);
 				mGWeightsNeg.set(en, -distances[mVtoV[u]][mVtoV[v]]);
 				mGEdgeRef.set(en, e);
 			}
@@ -58,7 +58,6 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 
 		/* Calculate maximum matching between the odd vertices */
 		IntCollection matching = new MatchingWeightedGabow2017().calcPerfectMaxMatching(mG, mGWeightsNeg);
-		mG.clear(); /* not needed anymore */
 
 		/* Build a graph of the union of the MST and the matching result */
 		Graph.Undirected g1 = new GraphArrayUndirected(n);
@@ -71,8 +70,8 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 		}
 		for (IntIterator it = matching.iterator(); it.hasNext();) {
 			int mGedge = it.nextInt();
-			int u = mVtoV[g.getEdgeSource(mGedge)];
-			int v = mVtoV[g.getEdgeTarget(mGedge)];
+			int u = mVtoV[mG.getEdgeSource(mGedge)];
+			int v = mVtoV[mG.getEdgeTarget(mGedge)];
 			int g1Edge = g1.addEdge(u, v);
 			g1EdgeRef.set(g1Edge, mGEdgeRef.get(mGedge));
 		}
@@ -80,7 +79,11 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 		IntList cycle = TSPMetricUtils.calcEulerianTourAndConvertToHamiltonianCycle(g, g1, g1EdgeRef);
 
 		/* Convert cycle of edges to list of vertices */
-		return TSPMetricUtils.edgeListToVerticesList(g, cycle).toIntArray();
+		int[] res = TSPMetricUtils.edgeListToVerticesList(g, cycle).toIntArray();
+
+		mG.clear();
+
+		return res;
 	}
 
 }
