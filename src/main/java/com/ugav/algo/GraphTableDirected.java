@@ -64,4 +64,14 @@ public class GraphTableDirected extends GraphTableAbstract implements Graph.Dire
 		}
 	}
 
+	@Override
+	public void reverseEdge(int e) {
+		int u = getEdgeSource(e), v = getEdgeTarget(e);
+		if (edges[v][u] != EdgeNone)
+			throw new IllegalArgumentException("parallel edges are not supported");
+		edges[v][u] = e;
+		edges[u][v] = EdgeNone;
+		super.reverseEdge(e);
+	}
+
 }

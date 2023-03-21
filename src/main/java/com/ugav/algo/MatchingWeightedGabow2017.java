@@ -11,7 +11,6 @@ import java.util.function.Function;
 import java.util.function.IntConsumer;
 import java.util.stream.Collectors;
 
-
 import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.Utils.NullList;
 import com.ugav.algo.Utils.QueueIntFixSize;
@@ -321,9 +320,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 			for (int u = 0; u < n; u++)
 				blossoms[u] = new Blossom<>(u);
 
-			Comparator<EdgeEvent<E>> edgeSlackBarComparator = (e1, e2) -> {
-				return e2 == null ? -1 : e1 == null ? 1 : Utils.compare(e1.slack, e2.slack);
-			};
+			Comparator<EdgeEvent<E>> edgeSlackBarComparator = (e1, e2) -> (e2 == null ? -1 : e1 == null ? 1 : Utils.compare(e1.slack, e2.slack));
 
 			mainLoop: for (;;) {
 
@@ -547,7 +544,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 				Blossom<E> prev = b == U ? V : U;
 				Edge<EdgeVal<E>> toPrevEdge = b == U ? e : e.data().twin;
 
-				while (true) {
+				for (;;) {
 					// handle even sub blossom
 					assert b.isEven;
 					if (!b.isSingleton())

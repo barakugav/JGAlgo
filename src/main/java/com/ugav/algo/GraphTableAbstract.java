@@ -49,6 +49,12 @@ abstract class GraphTableAbstract extends GraphAbstract {
 		super.edgeSwap(e1, e2);
 	}
 
+	void reverseEdge(int e) {
+		int u = getEdgeSource(e), v = getEdgeTarget(e);
+		edgeEndpoints[edgeSourceIdx(e)] = v;
+		edgeEndpoints[edgeTargetIdx(e)] = u;
+	}
+
 	@Override
 	public EdgeIter edges(int u) {
 		return new EdgesOutItrVertex(u);

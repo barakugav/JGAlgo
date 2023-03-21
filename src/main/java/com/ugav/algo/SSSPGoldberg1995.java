@@ -68,7 +68,7 @@ public class SSSPGoldberg1995 implements SSSP {
 
 			// updated potential function until there are no more negative vertices with
 			// current weight function
-			do {
+			for (;;) {
 				// Create a graph with edges with weight <= 0
 				gNeg.clearEdges();
 				for (int e = 0; e < g.edges(); e++) {
@@ -171,7 +171,7 @@ public class SSSPGoldberg1995 implements SSSP {
 					for (int v = 0; v < n; v++)
 						potential[v] += ssspRes.distance(v2V[v]);
 				}
-			} while (true);
+			}
 		}
 
 		return Pair.of(potential, null);

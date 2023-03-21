@@ -43,7 +43,14 @@ public class GraphLinkedDirected extends GraphLinkedAbstract implements Graph.Di
 
 	@Override
 	public int addEdge(int u, int v) {
-		Node e = (Node) addEdgeNode(u, v), next;
+		Node e = (Node) addEdgeNode(u, v);
+		addEdgeToLists(e);
+		return e.id;
+	}
+
+	private void addEdgeToLists(Node e) {
+		int u = e.u, v = e.v;
+		Node next;
 		next = edgesOut[u];
 		if (next != null) {
 			next.prevOut = e;
@@ -56,8 +63,6 @@ public class GraphLinkedDirected extends GraphLinkedAbstract implements Graph.Di
 			e.nextIn = next;
 		}
 		edgesIn[v] = e;
-
-		return e.id;
 	}
 
 	@Override
@@ -122,6 +127,18 @@ public class GraphLinkedDirected extends GraphLinkedAbstract implements Graph.Di
 			next.prevIn = prev;
 			e.nextIn = null;
 		}
+	}
+
+	@Override
+	public void reverseEdge(int e) {
+		checkEdgeIdx(e);
+		Node n = (Node) getNode(e);
+		removeEdgeOutNode(n);
+		removeEdgeInNode(n);
+		int w = n.u;
+		n.u = n.v;
+		n.v = w;
+		addEdgeToLists(n);
 	}
 
 	@Override

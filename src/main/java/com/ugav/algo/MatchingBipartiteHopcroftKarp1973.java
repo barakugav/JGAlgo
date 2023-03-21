@@ -40,7 +40,7 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 		Graph.Undirected f = new GraphArrayUndirected(n);
 		EdgeData.Int edgeRef = f.newEdgeDataInt("edgeRef"); // TODO use object
 
-		while (true) {
+		for (;;) {
 			/* Perform BFS to build the alternating forest */
 			bfsQueue.clear();
 			Arrays.fill(depths, Integer.MAX_VALUE);

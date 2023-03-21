@@ -36,10 +36,9 @@ class MatchingWeightedTestUtils extends TestUtils {
 			WeightFunctionInt w = g.getEdgeData("weight");
 
 			MatchingWeighted algo = builder.get();
-//			MatchingWeighted validationAlgo = algo instanceof MatchingWeightedBipartiteSSSP
-//					? new MatchingWeightedBipartiteHungarianMethod()
-//					: new MatchingWeightedBipartiteSSSP();
-			MatchingWeighted validationAlgo = new MatchingWeightedBipartiteHungarianMethod();
+			MatchingWeighted validationAlgo = algo instanceof MatchingWeightedBipartiteSSSP
+					? new MatchingWeightedBipartiteHungarianMethod()
+					: new MatchingWeightedBipartiteSSSP();
 			testGraphWeighted(algo, g, w, validationAlgo);
 		});
 	}

@@ -47,7 +47,7 @@ public class MatchingGabow1976 implements Matching {
 		UnionFind uf = new UnionFindArray();
 		int[] bases = new int[n];
 
-		while (true) {
+		for (;;) {
 			Arrays.fill(root, -1);
 
 			for (int u = 0; u < n; u++) {
@@ -72,7 +72,7 @@ public class MatchingGabow1976 implements Matching {
 
 				for (EdgeIter eit = g.edges(u); eit.hasNext();) {
 					final int e = eit.nextInt();
-					int v = eit.v();
+					final int v = eit.v();
 					int vRoot = root[v];
 
 					if (vRoot == -1) {
@@ -81,10 +81,10 @@ public class MatchingGabow1976 implements Matching {
 						root[v] = uRoot;
 						parent[v] = e;
 
-						v = g.getEdgeEndpoint(matchedEdge, v);
-						root[v] = uRoot;
-						isEven[v] = true;
-						queue.push(v);
+						int w = g.getEdgeEndpoint(matchedEdge, v);
+						root[w] = uRoot;
+						isEven[w] = true;
+						queue.push(w);
 						continue;
 					}
 
@@ -124,7 +124,7 @@ public class MatchingGabow1976 implements Matching {
 						// Find all vertices of the blossom
 						int blossomVerticesSize = 0;
 						for (int p : new int[] { uBase, vBase }) {
-							final int brigeEdge = e;
+							final int brigeEdge = e, brigeVertex = p == uBase ? u : v;
 							while (p != base) {
 								// handle even vertex
 								blossomVertices[blossomVerticesSize++] = p;
@@ -134,7 +134,7 @@ public class MatchingGabow1976 implements Matching {
 								blossomVertices[blossomVerticesSize++] = p;
 								queue.push(p); // add the odd vertex that became even to the queue
 								bridgeE[p] = brigeEdge;
-								bridgeU[p] = u;
+								bridgeU[p] = brigeVertex;
 
 								p = bases[uf.find(g.getEdgeEndpoint(parent[p], p))];
 							}

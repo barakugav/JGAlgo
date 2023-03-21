@@ -57,7 +57,7 @@ public class MSTPrim1957 implements MST {
 
 				/* find next lightest edge */
 				int e, v;
-				while (true) {
+				for (;;) {
 					if (heap.isEmpty())
 						/* reached all vertices from current root, continue to next tree */
 						break treeLoop;

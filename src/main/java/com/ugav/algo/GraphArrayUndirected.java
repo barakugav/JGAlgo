@@ -43,13 +43,8 @@ public class GraphArrayUndirected extends GraphArrayAbstract implements Graph.Un
 	@Override
 	public int addEdge(int u, int v) {
 		int e = super.addEdge(u, v);
-
-		for (int w : new int[] { u, v }) {
-			if (edges[w].length <= edgesNum[w])
-				edges[w] = Arrays.copyOf(edges[w], Math.max(edges[w].length * 2, 2));
-			edges[w][edgesNum[w]++] = e;
-		}
-
+		addEdgeToList(edges, edgesNum, u, e);
+		addEdgeToList(edges, edgesNum, v, e);
 		return e;
 	}
 
@@ -62,33 +57,24 @@ public class GraphArrayUndirected extends GraphArrayAbstract implements Graph.Un
 			e = lastEdge;
 		}
 		int u = getEdgeSource(e), v = getEdgeTarget(e);
-		for (int w : new int[] { u, v }) {
-			for (int i = 0; i < edgesNum[w]; i++) {
-				if (edges[w][i] == e) {
-					edges[w][i] = edges[w][--edgesNum[w]];
-					break;
-				}
-			}
-		}
+		removeEdgeFromList(edges, edgesNum, u, e);
+		removeEdgeFromList(edges, edgesNum, v, e);
 		super.removeEdge(e);
 	}
 
 	@Override
 	void edgeSwap(int e1, int e2) {
-		int[] es = new int[] { e1, e2 };
-		for (int eIdx = 0; eIdx < 2; eIdx++) {
-			int e = es[eIdx], eSwap = es[(eIdx + 1) % 2];
-
-			for (int w : new int[] { getEdgeSource(e), getEdgeTarget(e) }) {
-				for (int i = 0; i < edgesNum[w]; i++) {
-					if (edges[w][i] == e) {
-						edges[w][i] = eSwap;
-						break;
-					}
-				}
-			}
-		}
-
+		assert e1 != e2;
+		int u1 = getEdgeSource(e1), v1 = getEdgeTarget(e1);
+		int u2 = getEdgeSource(e2), v2 = getEdgeTarget(e2);
+		int i1 = edgeIndexOf(edges, edgesNum, u1, e1);
+		int j1 = edgeIndexOf(edges, edgesNum, v1, e1);
+		int i2 = edgeIndexOf(edges, edgesNum, u2, e2);
+		int j2 = edgeIndexOf(edges, edgesNum, v2, e2);
+		edges[u1][i1] = e2;
+		edges[v1][j1] = e2;
+		edges[u2][i2] = e1;
+		edges[v2][j2] = e1;
 		super.edgeSwap(e1, e2);
 	}
 

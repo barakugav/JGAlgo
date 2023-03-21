@@ -52,15 +52,8 @@ public class GraphArrayDirected extends GraphArrayAbstract implements Graph.Dire
 	@Override
 	public int addEdge(int u, int v) {
 		int e = super.addEdge(u, v);
-
-		if (edgesOut[u].length <= edgesOutNum[u])
-			edgesOut[u] = Arrays.copyOf(edgesOut[u], Math.max(edgesOut[u].length * 2, 2));
-		edgesOut[u][edgesOutNum[u]++] = e;
-
-		if (edgesIn[v].length <= edgesInNum[v])
-			edgesIn[v] = Arrays.copyOf(edgesIn[v], Math.max(edgesIn[v].length * 2, 2));
-		edgesIn[v][edgesInNum[v]++] = e;
-
+		addEdgeToList(edgesOut, edgesOutNum, u, e);
+		addEdgeToList(edgesIn, edgesInNum, v, e);
 		return e;
 	}
 
@@ -73,41 +66,24 @@ public class GraphArrayDirected extends GraphArrayAbstract implements Graph.Dire
 			e = lastEdge;
 		}
 		int u = getEdgeSource(e), v = getEdgeTarget(e);
-		for (int i = 0; i < edgesOutNum[u]; i++) {
-			if (edgesOut[u][i] == e) {
-				edgesOut[u][i] = edgesOut[u][--edgesOutNum[u]];
-				break;
-			}
-		}
-		for (int i = 0; i < edgesInNum[v]; i++) {
-			if (edgesIn[v][i] == e) {
-				edgesIn[v][i] = edgesIn[v][--edgesInNum[v]];
-				break;
-			}
-		}
+		removeEdgeFromList(edgesOut, edgesOutNum, u, e);
+		removeEdgeFromList(edgesIn, edgesInNum, v, e);
 		super.removeEdge(e);
 	}
 
 	@Override
 	void edgeSwap(int e1, int e2) {
-		int[] es = new int[] { e1, e2 };
-		for (int eIdx = 0; eIdx < 2; eIdx++) {
-			int e = es[eIdx], eSwap = es[(eIdx + 1) % 2];
-
-			int u = getEdgeSource(e), v = getEdgeTarget(e);
-			for (int i = 0; i < edgesOutNum[u]; i++) {
-				if (edgesOut[u][i] == e) {
-					edgesOut[u][i] = eSwap;
-					break;
-				}
-			}
-			for (int i = 0; i < edgesInNum[v]; i++) {
-				if (edgesIn[v][i] == e) {
-					edgesIn[v][i] = eSwap;
-					break;
-				}
-			}
-		}
+		assert e1 != e2;
+		int u1 = getEdgeSource(e1), v1 = getEdgeTarget(e1);
+		int u2 = getEdgeSource(e2), v2 = getEdgeTarget(e2);
+		int i1 = edgeIndexOf(edgesOut, edgesOutNum, u1, e1);
+		int j1 = edgeIndexOf(edgesIn, edgesInNum, v1, e1);
+		int i2 = edgeIndexOf(edgesOut, edgesOutNum, u2, e2);
+		int j2 = edgeIndexOf(edgesIn, edgesInNum, v2, e2);
+		edgesOut[u1][i1] = e2;
+		edgesIn[v1][j1] = e2;
+		edgesOut[u2][i2] = e1;
+		edgesIn[v2][j2] = e1;
 		super.edgeSwap(e1, e2);
 	}
 
@@ -123,6 +99,16 @@ public class GraphArrayDirected extends GraphArrayAbstract implements Graph.Dire
 		checkVertexIdx(v);
 		while (edgesInNum[v] > 0)
 			removeEdge(edgesIn[v][0]);
+	}
+
+	@Override
+	public void reverseEdge(int e) {
+		int u = getEdgeSource(e), v = getEdgeTarget(e);
+		removeEdgeFromList(edgesOut, edgesOutNum, u, e);
+		removeEdgeFromList(edgesIn, edgesInNum, v, e);
+		addEdgeToList(edgesOut, edgesOutNum, v, e);
+		addEdgeToList(edgesIn, edgesInNum, u, e);
+		super.reverseEdge(e);
 	}
 
 	@Override

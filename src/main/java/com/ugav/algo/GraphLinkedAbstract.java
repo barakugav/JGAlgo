@@ -26,6 +26,10 @@ abstract class GraphLinkedAbstract extends GraphAbstract {
 		return edges[e].v;
 	}
 
+	Node getNode(int e) {
+		return edges[e];
+	}
+
 	Node addEdgeNode(int u, int v) {
 		int e = super.addEdge(u, v);
 		Node n = allocNode(e, u, v);
@@ -111,7 +115,7 @@ abstract class GraphLinkedAbstract extends GraphAbstract {
 	static class Node {
 
 		int id;
-		final int u, v;
+		int u, v;
 
 		Node(int id, int u, int v) {
 			this.id = id;

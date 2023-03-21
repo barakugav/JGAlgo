@@ -2,9 +2,9 @@ package com.ugav.algo;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import java.util.function.Supplier;
 
 import com.ugav.algo.Graph.EdgeIter;
@@ -40,13 +40,13 @@ class MatchingUnweightedTestUtils extends TestUtils {
 	}
 
 	static <E> void validateMatching(Graph g, IntCollection matching) {
-		Map<Integer, Integer> matched = new HashMap<>();
+		Set<Integer> matched = new HashSet<>();
 		for (IntIterator it = matching.iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			for (int v : new int[] { g.getEdgeSource(e), g.getEdgeTarget(e) }) {
-				Integer dup = matched.get(Integer.valueOf(v));
-				assertNull(dup, "Invalid matching, clash: ", dup, " ", e, " \n");
-				matched.put(Integer.valueOf(v), e);
+				boolean dup = matched.contains(Integer.valueOf(v));
+				assertFalse(dup, "Invalid matching, clash: ", v, " ", e, " \n");
+				matched.add(Integer.valueOf(v));
 			}
 		}
 	}
