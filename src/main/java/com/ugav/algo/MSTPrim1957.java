@@ -19,10 +19,10 @@ public class MSTPrim1957 implements MST {
 
 	@Override
 	public IntCollection calcMST(Graph g0, Graph.WeightFunction w) {
-		if (!(g0 instanceof Graph.Undirected))
+		if (!(g0 instanceof UGraph))
 			throw new IllegalArgumentException("only undirected graphs are supported");
-		Graph.Undirected g = (Graph.Undirected) g0;
-		int n = g.vertices();
+		UGraph g = (UGraph) g0;
+		int n = g.verticesNum();
 		if (n == 0)
 			return IntLists.emptyList();
 
@@ -62,9 +62,9 @@ public class MSTPrim1957 implements MST {
 						/* reached all vertices from current root, continue to next tree */
 						break treeLoop;
 					e = heap.extractMin().intValue();
-					if (!visited[v = g.getEdgeSource(e)])
+					if (!visited[v = g.edgeSource(e)])
 						break;
-					if (!visited[v = g.getEdgeTarget(e)])
+					if (!visited[v = g.edgeTarget(e)])
 						break;
 				}
 

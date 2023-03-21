@@ -23,7 +23,7 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 		if (!(g0 instanceof GraphBipartite.Undirected))
 			throw new IllegalArgumentException("only undirected bipartite graphs are supported");
 		GraphBipartite.Undirected g = (GraphBipartite.Undirected) g0;
-		int n = g.vertices();
+		int n = g.verticesNum();
 
 		/* BFS */
 		int[] depths = new int[n];
@@ -37,8 +37,8 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 		int[] matched = new int[n];
 		final int MatchedNone = -1;
 		Arrays.fill(matched, MatchedNone);
-		Graph.Undirected f = new GraphArrayUndirected(n);
-		EdgeData.Int edgeRef = f.newEdgeDataInt("edgeRef"); // TODO use object
+		UGraph f = new GraphArrayUndirected(n);
+		EdgesWeight.Int edgeRef = f.newEdgeWeightInt("edgeRef"); // TODO use object
 
 		for (;;) {
 			/* Perform BFS to build the alternating forest */
@@ -69,7 +69,7 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 
 					int matchedEdge = matched[v];
 					if (matchedEdge != MatchedNone) {
-						int w = g.getEdgeEndpoint(matchedEdge, v);
+						int w = g.edgeEndpoint(matchedEdge, v);
 						edgeRef.set(f.addEdge(v, w), matchedEdge);
 						v = w;
 						depths[v] = depth + 2;
@@ -108,12 +108,12 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 							// Augmenting path found
 							for (int i = 0; i < depth; i += 2) {
 								int e1 = dfsPath[i];
-								matched[g.getEdgeSource(e1)] = matched[g.getEdgeTarget(e1)] = e1;
+								matched[g.edgeSource(e1)] = matched[g.edgeTarget(e1)] = e1;
 							}
 							break;
 						}
 						dfsPath[depth] = matchedEdge;
-						v = g.getEdgeEndpoint(matchedEdge, v);
+						v = g.edgeEndpoint(matchedEdge, v);
 
 						edges[++depth] = f.edges(v);
 					} else {

@@ -54,7 +54,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 		Worker(GraphBipartite.Undirected g, WeightFunction w) {
 			this.g = g;
 			this.w = w;
-			int n = g.vertices();
+			int n = g.verticesNum();
 
 			inTree = new boolean[n];
 
@@ -67,7 +67,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 		}
 
 		IntCollection calcMaxMatching(boolean perfect) {
-			final int n = g.vertices(), m = g.edges();
+			final int n = g.verticesNum(), m = g.edgesNum();
 			final int EdgeNone = -1;
 
 			int[] parent = new int[n];
@@ -99,7 +99,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 				currentTree: for (;;) {
 					while (!nextTightEdge.isEmpty()) {
 						int e = nextTightEdge.findMin();
-						int u0 = g.getEdgeSource(e), v0 = g.getEdgeTarget(e);
+						int u0 = g.edgeSource(e), v0 = g.edgeTarget(e);
 
 						if (inTree[u0] && inTree[v0]) {
 							// Vertex already in tree, edge is irrelevant
@@ -122,17 +122,17 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 							for (;;) {
 								// Augmenting path
 								e = parent[v];
-								matched[v] = matched[v = g.getEdgeEndpoint(e, v)] = e;
+								matched[v] = matched[v = g.edgeEndpoint(e, v)] = e;
 								// TODO don't set parent[odd vertex]
 								e = parent[v];
 								if (e == EdgeNone)
 									break currentTree;
-								v = g.getEdgeEndpoint(e, v);
+								v = g.edgeEndpoint(e, v);
 							}
 						}
 
 						// Added odd vertex, immediately add it's matched edge and even vertex
-						v = g.getEdgeEndpoint(matchedEdge, v);
+						v = g.edgeEndpoint(matchedEdge, v);
 						parent[v] = matchedEdge;
 						vertexAddedToTree(v);
 
@@ -172,7 +172,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 		}
 
 		private void nextTightEdgeAdd(int u, int e) {
-			int v = g.getEdgeEndpoint(e, u);
+			int v = g.edgeEndpoint(e, u);
 			HeapDirectAccessed.Handle<Integer> handle = nextTightEdgePerOutV[v];
 			if (handle == null)
 				nextTightEdgePerOutV[v] = nextTightEdge.insert(e);
@@ -185,7 +185,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 		}
 
 		private double edgeSlack(int e) {
-			return dualVal(g.getEdgeSource(e)) + dualVal(g.getEdgeTarget(e)) - w.weight(e);
+			return dualVal(g.edgeSource(e)) + dualVal(g.edgeTarget(e)) - w.weight(e);
 		}
 
 		private void vertexAddedToTree(int v) {

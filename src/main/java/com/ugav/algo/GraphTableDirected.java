@@ -1,6 +1,6 @@
 package com.ugav.algo;
 
-public class GraphTableDirected extends GraphTableAbstract implements Graph.Directed {
+public class GraphTableDirected extends GraphTableAbstract implements DiGraph {
 
 	public GraphTableDirected(int n) {
 		super(n);
@@ -26,20 +26,20 @@ public class GraphTableDirected extends GraphTableAbstract implements Graph.Dire
 	@Override
 	public void removeEdge(int e) {
 		checkEdgeIdx(e);
-		int lastEdge = edges() - 1;
+		int lastEdge = edgesNum() - 1;
 		if (e != lastEdge) {
 			edgeSwap(e, lastEdge);
 			e = lastEdge;
 		}
-		int u = getEdgeSource(e), v = getEdgeTarget(e);
+		int u = edgeSource(e), v = edgeTarget(e);
 		edges[u][v] = EdgeNone;
 		super.removeEdge(e);
 	}
 
 	@Override
 	void edgeSwap(int e1, int e2) {
-		int u1 = getEdgeSource(e1), v1 = getEdgeTarget(e1);
-		int u2 = getEdgeSource(e2), v2 = getEdgeTarget(e2);
+		int u1 = edgeSource(e1), v1 = edgeTarget(e1);
+		int u2 = edgeSource(e2), v2 = edgeTarget(e2);
 		edges[u1][v1] = e2;
 		edges[u2][v2] = e1;
 		super.edgeSwap(e1, e2);
@@ -49,7 +49,7 @@ public class GraphTableDirected extends GraphTableAbstract implements Graph.Dire
 	// TODO implement eit.remove
 	// TODO add tests
 	@Override
-	public void removeEdgesOut(int u) {
+	public void removeEdgesAllOut(int u) {
 		for (EdgeIter eit = edgesOut(u); eit.hasNext();) {
 			eit.nextInt();
 			eit.remove();
@@ -57,7 +57,7 @@ public class GraphTableDirected extends GraphTableAbstract implements Graph.Dire
 	}
 
 	@Override
-	public void removeEdgesIn(int v) {
+	public void removeEdgesAllIn(int v) {
 		for (EdgeIter eit = edgesIn(v); eit.hasNext();) {
 			eit.nextInt();
 			eit.remove();
@@ -66,7 +66,7 @@ public class GraphTableDirected extends GraphTableAbstract implements Graph.Dire
 
 	@Override
 	public void reverseEdge(int e) {
-		int u = getEdgeSource(e), v = getEdgeTarget(e);
+		int u = edgeSource(e), v = edgeTarget(e);
 		if (edges[v][u] != EdgeNone)
 			throw new IllegalArgumentException("parallel edges are not supported");
 		edges[v][u] = e;

@@ -36,8 +36,8 @@ class SSSPTestUtils extends TestUtils {
 			Graph g = new RandomGraphBuilder().n(n).m(m).directed(directed).doubleEdges(true).selfEdges(true)
 					.cycles(true).connected(false).build();
 			GraphsTestUtils.assignRandWeightsIntPos(g);
-			WeightFunctionInt w = g.getEdgeData("weight");
-			int source = rand.nextInt(g.vertices());
+			WeightFunctionInt w = g.edgesWeight("weight");
+			int source = rand.nextInt(g.verticesNum());
 
 			SSSP algo = builder.get();
 			SSSP.Result actualRes = algo.calcDistances(g, w, source);
@@ -56,7 +56,7 @@ class SSSPTestUtils extends TestUtils {
 			Graph g = new RandomGraphBuilder().n(n).m(m).directed(true).doubleEdges(true).selfEdges(true).cycles(true)
 					.connected(true).build();
 			GraphsTestUtils.assignRandWeightsIntNeg(g);
-			WeightFunctionInt w = g.getEdgeData("weight");
+			WeightFunctionInt w = g.edgesWeight("weight");
 			int source = 0;
 
 			SSSP algo = builder.get();
@@ -89,7 +89,7 @@ class SSSPTestUtils extends TestUtils {
 		}
 		assertFalse(expectedRes.foundNegativeCycle(), "failed to found negative cycle\n");
 
-		int n = g.vertices();
+		int n = g.verticesNum();
 		for (int v = 0; v < n; v++) {
 			double expectedDistance = expectedRes.distance(v);
 			double actualDistance = result.distance(v);

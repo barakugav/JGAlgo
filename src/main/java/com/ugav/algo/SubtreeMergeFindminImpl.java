@@ -43,9 +43,7 @@ public class SubtreeMergeFindminImpl<V, E> implements SubtreeMergeFindmin<V, E> 
 		this.weightCmp = weightCmp != null ? weightCmp : Utils.getDefaultComparator();
 		timestamp = 0;
 
-		heap = new HeapFibonacci<>((t1, t2) -> {
-			return this.weightCmp.compare(t1.minEdge.data.data, t2.minEdge.data.data);
-		});
+		heap = new HeapFibonacci<>((t1, t2) -> this.weightCmp.compare(t1.minEdge.data.data, t2.minEdge.data.data));
 	}
 
 	@Override

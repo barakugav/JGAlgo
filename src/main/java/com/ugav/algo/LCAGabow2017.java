@@ -10,12 +10,12 @@ public class LCAGabow2017<V> implements LCADynamic<V> {
 	 * This implementation is a dynamic LCA implementation from Gabow17, which
 	 * allows addLeaf and LCA queries, with addLeaf O(1) amortized and LCA query
 	 * O(1).
-	 * 
+	 *
 	 * This is an extension to the simple LCA algorithm of Gabow. It uses the simple
 	 * implementation as a black box, and adds two layers of trees, where each
 	 * layers have less nodes by a factor of O(log n), decreasing the total time
 	 * from O(m + log^2 n) to O(m + n).
-	 * 
+	 *
 	 * implementation note: in the original paper, Gabow stated to use look tables
 	 * for the bit tricks (lsb, msb). It's possible to do so, using BitsLookupTable,
 	 * but the standard Java implementation already perform these operations in

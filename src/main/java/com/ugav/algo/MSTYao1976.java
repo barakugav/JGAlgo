@@ -22,10 +22,10 @@ public class MSTYao1976 implements MST {
 
 	@Override
 	public IntCollection calcMST(Graph g0, WeightFunction w) {
-		if (!(g0 instanceof Graph.Undirected))
+		if (!(g0 instanceof UGraph))
 			throw new IllegalArgumentException("only undirected graphs are supported");
-		Graph.Undirected g = (Graph.Undirected) g0;
-		int n = g.vertices();
+		UGraph g = (UGraph) g0;
+		int n = g.verticesNum();
 
 		int[][][] edges = partitionEdgesToBuckets(g, w);
 		int[] firstValidBucketIdxs = new int[n];
@@ -55,7 +55,7 @@ public class MSTYao1976 implements MST {
 					boolean foundEdge = false;
 					for (int i = 0; i < vertexBuckets[b].length; i++) {
 						int e = vertexBuckets[b][i];
-						if (tree == vTree[g.getEdgeSource(e)] && tree == vTree[g.getEdgeTarget(e)])
+						if (tree == vTree[g.edgeSource(e)] && tree == vTree[g.edgeTarget(e)])
 							continue;
 						foundEdge = true;
 
@@ -75,7 +75,7 @@ public class MSTYao1976 implements MST {
 			for (int tree = 0; tree < treeNum; tree++) {
 				if (minEdges[tree] != -1) {
 					int e = minEdges[tree];
-					int ut = vTree[g.getEdgeSource(e)], vt = vTree[g.getEdgeTarget(e)];
+					int ut = vTree[g.edgeSource(e)], vt = vTree[g.edgeTarget(e)];
 					if (tree == vt) {
 						int temp = ut;
 						ut = vt;
@@ -109,8 +109,8 @@ public class MSTYao1976 implements MST {
 
 						if (minEdges[tPtr] != -1) {
 							int nextTPtr;
-							if ((nextTPtr = vTree[g.getEdgeSource(minEdges[tPtr])]) == tPtr)
-								nextTPtr = vTree[g.getEdgeTarget(minEdges[tPtr])];
+							if ((nextTPtr = vTree[g.edgeSource(minEdges[tPtr])]) == tPtr)
+								nextTPtr = vTree[g.edgeTarget(minEdges[tPtr])];
 							assert nextTPtr != tPtr;
 							tPtr = nextTPtr;
 							continue;
@@ -140,7 +140,7 @@ public class MSTYao1976 implements MST {
 	}
 
 	private static int[][][] partitionEdgesToBuckets(Graph g, WeightFunction w) {
-		int n = g.vertices(), k = Utils.log2ceil(n);
+		int n = g.verticesNum(), k = Utils.log2ceil(n);
 
 		int[][][] edges = new int[n][][];
 		int[] edgesTemp = new int[n];

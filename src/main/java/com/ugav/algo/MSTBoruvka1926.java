@@ -23,7 +23,7 @@ public class MSTBoruvka1926 implements MST {
 		return calcMST0(g, w, Integer.MAX_VALUE).e3;
 	}
 
-	static <E, R> Pair<Graph.Undirected, IntCollection> runBoruvka(Graph g, WeightFunction w, int numberOfRounds,
+	static <E, R> Pair<UGraph, IntCollection> runBoruvka(Graph g, WeightFunction w, int numberOfRounds,
 			Int2ObjectFunction<R> edgeValAssigner, String edgeValKey) {
 		if (numberOfRounds <= 0)
 			throw new IllegalArgumentException();
@@ -32,12 +32,12 @@ public class MSTBoruvka1926 implements MST {
 		int treeNum = r.e2.intValue();
 		IntCollection mstEdges = r.e3;
 
-		Graph.Undirected contractedG = new GraphArrayUndirected(treeNum);
-		EdgeData<R> contractedGData = contractedG.newEdgeData(edgeValKey);
-		int m = g.edges();
+		UGraph contractedG = new GraphArrayUndirected(treeNum);
+		EdgesWeight<R> contractedGData = contractedG.newEdgeWeight(edgeValKey);
+		int m = g.edgesNum();
 		for (int e = 0; e < m; e++) {
-			int u = tree[g.getEdgeSource(e)];
-			int v = tree[g.getEdgeTarget(e)];
+			int u = tree[g.edgeSource(e)];
+			int v = tree[g.edgeTarget(e)];
 			if (u == v)
 				continue;
 			int ne = contractedG.addEdge(u, v);
@@ -47,10 +47,10 @@ public class MSTBoruvka1926 implements MST {
 	}
 
 	private static Triple<int[], Integer, IntCollection> calcMST0(Graph g0, WeightFunction w, int numberOfRounds) {
-		if (!(g0 instanceof Graph.Undirected))
+		if (!(g0 instanceof UGraph))
 			throw new IllegalArgumentException("only undirected graphs are supported");
-		Graph.Undirected g = (Graph.Undirected) g0;
-		int n = g.vertices();
+		UGraph g = (UGraph) g0;
+		int n = g.verticesNum();
 
 		int treeNum = n;
 		int[] vTree = new int[n];
@@ -89,7 +89,7 @@ public class MSTBoruvka1926 implements MST {
 			for (int tree = 0; tree < treeNum; tree++) {
 				if (minEdges[tree] != -1) {
 					int e = minEdges[tree];
-					int ut = vTree[g.getEdgeSource(e)], vt = vTree[g.getEdgeTarget(e)];
+					int ut = vTree[g.edgeSource(e)], vt = vTree[g.edgeTarget(e)];
 					if (tree == vt) {
 						int temp = ut;
 						ut = vt;
@@ -123,8 +123,8 @@ public class MSTBoruvka1926 implements MST {
 
 						if (minEdges[tPtr] != -1) {
 							int nextTPtr;
-							if ((nextTPtr = vTree[g.getEdgeSource(minEdges[tPtr])]) == tPtr)
-								nextTPtr = vTree[g.getEdgeTarget(minEdges[tPtr])];
+							if ((nextTPtr = vTree[g.edgeSource(minEdges[tPtr])]) == tPtr)
+								nextTPtr = vTree[g.edgeTarget(minEdges[tPtr])];
 							assert nextTPtr != tPtr;
 							tPtr = nextTPtr;
 							continue;

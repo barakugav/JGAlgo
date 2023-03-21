@@ -34,7 +34,7 @@ class MSTTestUtils extends TestUtils {
 
 			Graph g = GraphsTestUtils.randGraph(n, m, graphImpl);
 			GraphsTestUtils.assignRandWeightsIntPos(g);
-			WeightFunctionInt w = g.getEdgeData("weight");
+			WeightFunctionInt w = g.edgesWeight("weight");
 
 			IntCollection mst = algo.calcMST(g, w);
 			verifyMST(g, w, mst);
@@ -53,8 +53,8 @@ class MSTTestUtils extends TestUtils {
 
 		@Override
 		public int compare(int e1, int e2) {
-			int u1 = g.getEdgeSource(e1), v1 = g.getEdgeTarget(e1);
-			int u2 = g.getEdgeSource(e2), v2 = g.getEdgeTarget(e2);
+			int u1 = g.edgeSource(e1), v1 = g.edgeTarget(e1);
+			int u2 = g.edgeSource(e2), v2 = g.edgeTarget(e2);
 			if (v1 > u1) {
 				int temp = u1;
 				u1 = v1;
@@ -87,7 +87,7 @@ class MSTTestUtils extends TestUtils {
 
 		assertEq(mst.size(), actualSet.size(), "MST contains duplications\n");
 		assertEq(expected.size(), actualSet.size(), "unexpected MST size");
-		for (IntIterator it = expected.iterator(); it.hasNext(); ) {
+		for (IntIterator it = expected.iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			assertTrue(actualSet.contains(e), "MST doesn't contains edge: ", e, "\n");
 		}

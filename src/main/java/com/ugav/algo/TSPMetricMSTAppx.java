@@ -29,9 +29,9 @@ public class TSPMetricMSTAppx implements TSPMetric {
 			TSPMetric.checkArgDistanceTableIsMetric(distances);
 
 		/* Build graph from the distances table */
-		Graph.Undirected g = new GraphTableUndirected(n);
+		UGraph g = new GraphTableUndirected(n);
 //		EdgeData.Double weights = new EdgeDataArray.Double(n * (n + 1) / 2);
-		EdgeData.Double weights = g.newEdgeDataDouble("weight");
+		EdgesWeight.Double weights = g.newEdgeWeightDouble("weight");
 		for (int u = 0; u < n; u++)
 			for (int v = u + 1; v < n; v++)
 				weights.set(g.addEdge(u, v), distances[u][v]);
@@ -40,12 +40,12 @@ public class TSPMetricMSTAppx implements TSPMetric {
 		IntCollection mst = new MSTPrim1957().calcMST(g, weights);
 
 		/* Build a graph with each MST edge duplicated */
-		Graph.Undirected g1 = new GraphArrayUndirected(n);
+		UGraph g1 = new GraphArrayUndirected(n);
 //		EdgeData.Int edgeRef = new EdgeDataArray.Int(n - 1);
-		EdgeData.Int edgeRef = g1.newEdgeDataInt("edgeRef");
+		EdgesWeight.Int edgeRef = g1.newEdgeWeightInt("edgeRef");
 		for (IntIterator it = mst.iterator(); it.hasNext();) {
 			int e = it.nextInt();
-			int u = g.getEdgeSource(e), v = g.getEdgeTarget(e);
+			int u = g.edgeSource(e), v = g.edgeTarget(e);
 			edgeRef.set(g1.addEdge(u, v), e);
 			edgeRef.set(g1.addEdge(u, v), e);
 		}

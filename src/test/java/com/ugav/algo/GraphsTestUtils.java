@@ -132,7 +132,7 @@ class GraphsTestUtils extends TestUtils {
 
 			while (true) {
 				boolean done = true;
-				if (g.edges() < m)
+				if (g.edgesNum() < m)
 					done = false;
 				if (connected) {
 					if (!directed && componentsNum > 1)
@@ -220,13 +220,13 @@ class GraphsTestUtils extends TestUtils {
 
 	}
 
-	static Graph.Undirected randTree(int n) {
-		return (Graph.Undirected) new RandomGraphBuilder().n(n).m(n - 1).directed(false).selfEdges(false).cycles(false)
+	static UGraph randTree(int n) {
+		return (UGraph) new RandomGraphBuilder().n(n).m(n - 1).directed(false).selfEdges(false).cycles(false)
 				.connected(true).build();
 	}
 
-	static Graph.Undirected randForest(int n, int m) {
-		return (Graph.Undirected) new RandomGraphBuilder().n(n).m(m).directed(false).selfEdges(false).cycles(false)
+	static UGraph randForest(int n, int m) {
+		return (UGraph) new RandomGraphBuilder().n(n).m(m).directed(false).selfEdges(false).cycles(false)
 				.connected(false).build();
 	}
 
@@ -239,20 +239,20 @@ class GraphsTestUtils extends TestUtils {
 			throw new IllegalArgumentException();
 
 		Random rand = new Random(nextRandSeed());
-		EdgeData.Double weight = g.newEdgeDataDouble("weight");
-		for (int e = 0; e < g.edges(); e++)
+		EdgesWeight.Double weight = g.newEdgeWeightDouble("weight");
+		for (int e = 0; e < g.edgesNum(); e++)
 			weight.set(e, nextDouble(rand, minWeight, maxWeight));
 	}
 
 	static void assignRandWeightsIntPos(Graph g) {
-		int m = g.edges();
+		int m = g.edgesNum();
 		int minWeight = 1;
 		int maxWeight = m < 50 ? 100 : m * 2 + 2;
 		assignRandWeightsInt(g, minWeight, maxWeight);
 	}
 
 	static void assignRandWeightsIntNeg(Graph g) {
-		int m = g.edges();
+		int m = g.edgesNum();
 		int maxWeight = m < 50 ? 100 : m * 2 + 2;
 		assignRandWeightsInt(g, -maxWeight / 8, maxWeight);
 	}
@@ -260,12 +260,12 @@ class GraphsTestUtils extends TestUtils {
 	static void assignRandWeightsInt(Graph g, int minWeight, int maxWeight) {
 		if (minWeight >= maxWeight)
 			throw new IllegalArgumentException();
-		if (maxWeight - minWeight < g.edges() / 2)
+		if (maxWeight - minWeight < g.edgesNum() / 2)
 			throw new IllegalArgumentException("weight range is too small for unique weights");
 
 		RandomIntUnique rand = new RandomIntUnique(minWeight, maxWeight, nextRandSeed());
-		EdgeData.Int weight = g.newEdgeDataInt("weight");
-		for (int e = 0; e < g.edges(); e++)
+		EdgesWeight.Int weight = g.newEdgeWeightInt("weight");
+		for (int e = 0; e < g.edgesNum(); e++)
 			weight.set(e, rand.next());
 	}
 
@@ -273,8 +273,8 @@ class GraphsTestUtils extends TestUtils {
 		return randGraph(n, m, GraphImplTestUtils.GRAPH_IMPL_DEFAULT);
 	}
 
-	static Graph.Undirected randGraph(int n, int m, GraphImpl graphImpl) {
-		return (Graph.Undirected) new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(false).selfEdges(false)
+	static UGraph randGraph(int n, int m, GraphImpl graphImpl) {
+		return (UGraph) new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(false).selfEdges(false)
 				.cycles(true).connected(false).build();
 	}
 

@@ -19,15 +19,15 @@ public class MSTKruskal1956 implements MST {
 
 	@Override
 	public IntCollection calcMST(Graph g0, WeightFunction w) {
-		if (!(g0 instanceof Graph.Undirected))
+		if (!(g0 instanceof UGraph))
 			throw new IllegalArgumentException("only undirected graphs are supported");
-		Graph.Undirected g = (Graph.Undirected) g0;
-		int n = g.vertices();
+		UGraph g = (UGraph) g0;
+		int n = g.verticesNum();
 		if (n == 0)
 			return IntLists.emptyList();
 
 		/* sort edges */
-		int m = g.edges();
+		int m = g.edgesNum();
 		int[] edges = new int[m];
 		for (int e = 0; e < m; e++)
 			edges[e] = e;
@@ -39,8 +39,8 @@ public class MSTKruskal1956 implements MST {
 		/* iterate over the edges and build the MST */
 		IntCollection mst = new IntArrayList(n - 1);
 		for (int e : edges) {
-			int u = g.getEdgeSource(e);
-			int v = g.getEdgeTarget(e);
+			int u = g.edgeSource(e);
+			int v = g.edgeTarget(e);
 
 			if (uf.find(u) != uf.find(v)) {
 				uf.union(u, v);

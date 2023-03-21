@@ -28,7 +28,7 @@ class MaxFlowTestUtils extends TestUtils {
 		NavigableSet<Double> usedCaps = new TreeSet<>();
 
 		Random rand = new Random(nextRandSeed());
-		EdgeData<FlowEdgeDataDefault> data = g.newEdgeData("flowData");
+		EdgesWeight<FlowEdgeDataDefault> data = g.newEdgeWeight("flowData");
 		for (int e = 0; e < m; e++) {
 //			int u = g.getEdgeSource(e), v = g.getEdgeTarget(e);
 			double cap;
@@ -67,8 +67,8 @@ class MaxFlowTestUtils extends TestUtils {
 			FlowNetwork net = p.e2;
 			int source, target;
 			do {
-				source = rand.nextInt(g.vertices());
-				target = rand.nextInt(g.vertices());
+				source = rand.nextInt(g.verticesNum());
+				target = rand.nextInt(g.verticesNum());
 			} while (source == target);
 
 			MaxFlow algo = builder.get();
@@ -79,10 +79,10 @@ class MaxFlowTestUtils extends TestUtils {
 	private static void testNetwork(Graph g, FlowNetwork net, int source, int target, MaxFlow algo) {
 		double actualMaxFlow = algo.calcMaxFlow(g, net, source, target);
 
-		int n = g.vertices();
+		int n = g.verticesNum();
 		double[] vertexFlowOut = new double[n];
-		for (int e = 0; e < g.edges(); e++) {
-			int u = g.getEdgeSource(e), v = g.getEdgeTarget(e);
+		for (int e = 0; e < g.edgesNum(); e++) {
+			int u = g.edgeSource(e), v = g.edgeTarget(e);
 			vertexFlowOut[u] += net.getFlow(e);
 			vertexFlowOut[v] -= net.getFlow(e);
 		}
@@ -98,10 +98,10 @@ class MaxFlowTestUtils extends TestUtils {
 	/* implementation taken from the Internet */
 
 	private static double calcExpectedFlow(Graph g, FlowNetwork net, int source, int target) {
-		int n = g.vertices();
+		int n = g.verticesNum();
 		double[][] capacities = new double[n][n];
-		for (int e = 0; e < g.edges(); e++) {
-			int u = g.getEdgeSource(e), v = g.getEdgeTarget(e);
+		for (int e = 0; e < g.edgesNum(); e++) {
+			int u = g.edgeSource(e), v = g.edgeTarget(e);
 			capacities[u][v] += net.getCapacity(e);
 		}
 

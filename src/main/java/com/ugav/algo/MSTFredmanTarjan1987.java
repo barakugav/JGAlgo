@@ -22,10 +22,10 @@ public class MSTFredmanTarjan1987 implements MST {
 
 	@Override
 	public IntCollection calcMST(Graph g0, WeightFunction w) {
-		if (!(g0 instanceof Graph.Undirected))
+		if (!(g0 instanceof UGraph))
 			throw new IllegalArgumentException("only undirected graphs are supported");
-		Graph.Undirected g = (Graph.Undirected) g0;
-		int n = g.vertices(), m = g.edges();
+		UGraph g = (UGraph) g0;
+		int n = g.verticesNum(), m = g.edgesNum();
 		if (n == 0)
 			return IntLists.emptyList();
 
@@ -110,10 +110,10 @@ public class MSTFredmanTarjan1987 implements MST {
 							break treeLoop;
 						e = heap.extractMin().intValue();
 
-						v = V[g.getEdgeSource(e)];
+						v = V[g.edgeSource(e)];
 						if ((vt = vTree[v]) != r)
 							break;
-						v = V[g.getEdgeTarget(e)];
+						v = V[g.edgeTarget(e)];
 						if ((vt = vTree[v]) != r)
 							break;
 					}

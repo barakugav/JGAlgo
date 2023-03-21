@@ -2,7 +2,7 @@ package com.ugav.algo;
 
 import java.util.Arrays;
 
-public class GraphBipartiteArrayDirected extends GraphArrayDirected implements GraphBipartite.Directed {
+public class GraphBipartiteArrayDirected extends GraphArrayDirected implements GraphBipartite.DiGraph {
 
 	private boolean[] side;
 	private final int sSize;
@@ -29,7 +29,7 @@ public class GraphBipartiteArrayDirected extends GraphArrayDirected implements G
 
 	@Override
 	public int tvertices() {
-		return vertices() - sSize;
+		return verticesNum() - sSize;
 	}
 
 	@Override
@@ -48,8 +48,8 @@ public class GraphBipartiteArrayDirected extends GraphArrayDirected implements G
 	}
 
 	private int newVertex(boolean side) {
-		ensureSize(vertices() + 1);
-		int u = super.newVertex();
+		ensureSize(verticesNum() + 1);
+		int u = super.addVertex();
 		this.side[u] = side;
 		return u;
 
@@ -63,7 +63,7 @@ public class GraphBipartiteArrayDirected extends GraphArrayDirected implements G
 	}
 
 	@Override
-	public int newVertex() {
+	public int addVertex() {
 		throw new UnsupportedOperationException();
 	}
 

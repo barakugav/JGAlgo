@@ -41,7 +41,7 @@ public class SSSPDijkstra implements SSSP {
 
 	@Override
 	public SSSP.Result calcDistances(Graph g, WeightFunction w, int source) {
-		int n = g.vertices();
+		int n = g.verticesNum();
 		if (n <= 0)
 			throw new IllegalArgumentException();
 

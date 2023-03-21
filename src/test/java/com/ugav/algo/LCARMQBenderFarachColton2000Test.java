@@ -11,7 +11,7 @@ public class LCARMQBenderFarachColton2000Test extends TestUtils {
 		Random rand = new Random(nextRandSeed());
 		int[][] queries = new int[queriesNum][3];
 
-		int n = g.vertices();
+		int n = g.verticesNum();
 		int[] parent = new int[n];
 		int[] depth = new int[n];
 
@@ -20,7 +20,7 @@ public class LCARMQBenderFarachColton2000Test extends TestUtils {
 				parent[v] = -1;
 				depth[v] = 0;
 			} else {
-				int p = g.getEdgeEndpoint(e, v);
+				int p = g.edgeEndpoint(e, v);
 				parent[v] = p;
 				depth[v] = depth[p] + 1;
 			}

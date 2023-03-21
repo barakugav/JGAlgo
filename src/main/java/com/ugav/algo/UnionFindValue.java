@@ -25,7 +25,7 @@ public interface UnionFindValue extends UnionFind {
 
 	/**
 	 * Add value to ALL elements in the set of x
-	 * 
+	 *
 	 * @param x     arbitrary element in a set
 	 * @param value additional value to add to all elements of the set
 	 */

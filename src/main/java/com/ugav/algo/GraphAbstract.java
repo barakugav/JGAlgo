@@ -15,7 +15,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 abstract class GraphAbstract implements Graph {
 
 	private int n, m;
-	private final Map<Object, EdgeData<?>> edgeData = new Object2ObjectArrayMap<>();
+	private final Map<Object, EdgesWeight<?>> edgeData = new Object2ObjectArrayMap<>();
 	private final List<EdgeRenameListener> edgeRenameListeners = new CopyOnWriteArrayList<>();
 
 	public GraphAbstract(int n) {
@@ -26,17 +26,17 @@ abstract class GraphAbstract implements Graph {
 	}
 
 	@Override
-	public int vertices() {
+	public int verticesNum() {
 		return n;
 	}
 
 	@Override
-	public int edges() {
+	public int edgesNum() {
 		return m;
 	}
 
 	@Override
-	public int newVertex() {
+	public int addVertex() {
 		return n++;
 	}
 
@@ -45,7 +45,7 @@ abstract class GraphAbstract implements Graph {
 		checkVertexIdx(u);
 		checkVertexIdx(v);
 		int e = m++;
-		for (EdgeData<?> data : edgeData.values())
+		for (EdgesWeight<?> data : edgeData.values())
 			data.edgeAdd(e);
 		return e;
 	}
@@ -53,18 +53,18 @@ abstract class GraphAbstract implements Graph {
 	@Override
 	public void removeEdge(int e) {
 		checkEdgeIdx(e);
-		int lastEdge = edges() - 1;
+		int lastEdge = edgesNum() - 1;
 		if (e != lastEdge) {
 			edgeSwap(e, lastEdge);
 			e = lastEdge;
 		}
-		for (EdgeData<?> data : edgeData.values())
+		for (EdgesWeight<?> data : edgeData.values())
 			data.edgeRemove(e);
 		m--;
 	}
 
 	void edgeSwap(int e1, int e2) {
-		for (EdgeData<?> data : edgeData.values())
+		for (EdgesWeight<?> data : edgeData.values())
 			data.edgeSwap(e1, e2);
 		for (EdgeRenameListener listener : edgeRenameListeners)
 			listener.edgeRename(e1, e2);
@@ -82,29 +82,29 @@ abstract class GraphAbstract implements Graph {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <E, T extends EdgeData<E>> T getEdgeData(Object key) {
-		return (T) edgeData.get(key);
+	public <E, EdgeDataT extends EdgesWeight<E>> EdgeDataT edgesWeight(Object key) {
+		return (EdgeDataT) edgeData.get(key);
 	}
 
 	@Override
-	public <E> EdgeData<E> newEdgeData(Object key) {
-		return addEdgeData(key, new EdgeData.Obj<>(edges()));
+	public <E> EdgesWeight<E> newEdgeWeight(Object key) {
+		return addEdgeData(key, new EdgesWeight.Obj<>(edgesNum()));
 	}
 
 	@Override
-	public EdgeData.Int newEdgeDataInt(Object key) {
-		return addEdgeData(key, new EdgeData.Int(edges()));
+	public EdgesWeight.Int newEdgeWeightInt(Object key) {
+		return addEdgeData(key, new EdgesWeight.Int(edgesNum()));
 	}
 
 	@Override
-	public EdgeData.Double newEdgeDataDouble(Object key) {
-		return addEdgeData(key, new EdgeData.Double(edges()));
+	public EdgesWeight.Double newEdgeWeightDouble(Object key) {
+		return addEdgeData(key, new EdgesWeight.Double(edgesNum()));
 	}
 
-	private <E, T extends EdgeData<E>> T addEdgeData(Object key, T data) {
+	private <E, T extends EdgesWeight<E>> T addEdgeData(Object key, T data) {
 		if (edgeData.containsKey(key))
 			throw new IllegalArgumentException();
-		int m = edges();
+		int m = edgesNum();
 		for (int e = 0; e < m; e++)
 			data.edgeAdd(e);
 		edgeData.put(key, data);
@@ -112,7 +112,7 @@ abstract class GraphAbstract implements Graph {
 	}
 
 	@Override
-	public Collection<Object> getEdgeDataKeys() {
+	public Collection<Object> getEdgeWeightKeys() {
 		return Collections.unmodifiableCollection(edgeData.keySet());
 	}
 
@@ -124,7 +124,7 @@ abstract class GraphAbstract implements Graph {
 
 	@Override
 	public void clearEdges() {
-		for (EdgeData<?> data : edgeData.values())
+		for (EdgesWeight<?> data : edgeData.values())
 			data.clear();
 		m = 0;
 	}
@@ -137,17 +137,17 @@ abstract class GraphAbstract implements Graph {
 			return false;
 		Graph o = (Graph) other;
 
-		if ((this instanceof Graph.Directed) != (o instanceof Graph.Directed))
+		if ((this instanceof DiGraph) != (o instanceof DiGraph))
 			return false;
-		if (vertices() != o.vertices() || edges() != o.edges())
+		if (verticesNum() != o.verticesNum() || edgesNum() != o.edgesNum())
 			return false;
-		int m = edges();
+		int m = edgesNum();
 		int[] es1 = new int[m];
 		int[] es2 = new int[m];
 		for (int e = 0; e < m; e++)
 			es1[e] = es2[e] = e;
 
-		final boolean directed = this instanceof Graph.Directed;
+		final boolean directed = this instanceof DiGraph;
 		BiFunction<Graph, Graph, IntComparator> cmpFactory = (g1, g2) -> {
 			System.out.println();
 			return null; // TODO
@@ -211,7 +211,7 @@ abstract class GraphAbstract implements Graph {
 
 	@Override
 	public int hashCode() {
-		int h = 1, n = vertices();
+		int h = 1, n = verticesNum();
 //		EdgeData<E> edgeData = edgeData();
 //		if (this instanceof Graph.Directed<?> g) {
 //			for (int u = 0; u < n; u++) {
@@ -246,7 +246,7 @@ abstract class GraphAbstract implements Graph {
 	public String toString() {
 		StringBuilder s = new StringBuilder();
 		s.append('{');
-		int n = vertices();
+		int n = verticesNum();
 //		EdgeData<E> edgeData = edgeData(); TODO
 
 		boolean firstVertex = true;

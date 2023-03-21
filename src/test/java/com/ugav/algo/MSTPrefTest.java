@@ -26,10 +26,10 @@ public class MSTPrefTest extends TestUtils {
 						int n = args[0], m = args[1];
 						Graph g = GraphsTestUtils.randGraph(n, m);
 						GraphsTestUtils.assignRandWeightsIntPos(g);
-						WeightFunctionInt w = g.getEdgeData("weight");
+						WeightFunctionInt w = g.edgesWeight("weight");
 
 						MST algo = builder.get();
-						algo .calcMST(g, w);
+						algo.calcMST(g, w);
 					});
 				});
 	}

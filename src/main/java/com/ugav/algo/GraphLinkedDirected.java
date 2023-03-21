@@ -2,7 +2,7 @@ package com.ugav.algo;
 
 import java.util.Arrays;
 
-public class GraphLinkedDirected extends GraphLinkedAbstract implements Graph.Directed {
+public class GraphLinkedDirected extends GraphLinkedAbstract implements DiGraph {
 
 	private Node[] edgesIn;
 	private Node[] edgesOut;
@@ -20,8 +20,8 @@ public class GraphLinkedDirected extends GraphLinkedAbstract implements Graph.Di
 	}
 
 	@Override
-	public int newVertex() {
-		int v = super.newVertex();
+	public int addVertex() {
+		int v = super.addVertex();
 		if (v >= edgesIn.length) {
 			edgesIn = Arrays.copyOf(edgesIn, Math.max(edgesIn.length * 2, 2));
 			edgesOut = Arrays.copyOf(edgesOut, Math.max(edgesOut.length * 2, 2));
@@ -78,7 +78,7 @@ public class GraphLinkedDirected extends GraphLinkedAbstract implements Graph.Di
 	}
 
 	@Override
-	public void removeEdgesOut(int u) {
+	public void removeEdgesAllOut(int u) {
 		checkVertexIdx(u);
 		for (Node p = edgesOut[u], next; p != null; p = next) {
 			next = p.nextOut;
@@ -90,7 +90,7 @@ public class GraphLinkedDirected extends GraphLinkedAbstract implements Graph.Di
 	}
 
 	@Override
-	public void removeEdgesIn(int v) {
+	public void removeEdgesAllIn(int v) {
 		checkVertexIdx(v);
 		for (Node p = edgesIn[v], next; p != null; p = next) {
 			next = p.nextIn;

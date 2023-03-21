@@ -52,7 +52,7 @@ public class Graphs {
 	}
 
 	public static void runBFS(Graph g, int[] sources, BFSOperator op) {
-		int n = g.vertices();
+		int n = g.verticesNum();
 		boolean[] visited = new boolean[n];
 
 		QueueIntFixSize queue = new QueueIntFixSize(n);
@@ -104,7 +104,7 @@ public class Graphs {
 	 * @param op     user operation to operate on the reachable vertices
 	 */
 	public static void runDFS(Graph g, int source, DFSOperator op) {
-		int n = g.vertices();
+		int n = g.verticesNum();
 		boolean[] visited = new boolean[n];
 		EdgeIter[] edges = new EdgeIter[n];
 		IntList edgesFromSource = new IntArrayList();
@@ -153,13 +153,13 @@ public class Graphs {
 		if (u == v)
 			return path;
 		boolean reverse = true;
-		if (g instanceof Graph.Undirected) {
+		if (g instanceof UGraph) {
 			int t = u;
 			u = v;
 			v = t;
 			reverse = false;
 		}
-		int n = g.vertices();
+		int n = g.verticesNum();
 		int[] backtrack = new int[n];
 		Arrays.fill(backtrack, -1);
 
@@ -175,7 +175,7 @@ public class Graphs {
 		for (int p = v; p != u;) {
 			int e = backtrack[p];
 			path.add(e);
-			p = g.getEdgeEndpoint(e, p);
+			p = g.edgeEndpoint(e, p);
 		}
 		if (reverse)
 			Collections.reverse(path); // TODO
@@ -191,7 +191,7 @@ public class Graphs {
 	}
 
 	public static boolean isForst(Graph g) {
-		int n = g.vertices();
+		int n = g.verticesNum();
 		int[] roots = new int[n];
 		for (int u = 0; u < n; u++)
 			roots[u] = u;
@@ -203,10 +203,10 @@ public class Graphs {
 	}
 
 	private static boolean isForst(Graph g, int[] roots, boolean allowVisitedRoot) {
-		int n = g.vertices();
+		int n = g.verticesNum();
 		if (n == 0)
 			return true;
-		boolean directed = g instanceof Graph.Directed;
+		boolean directed = g instanceof DiGraph;
 
 		boolean[] visited = new boolean[n];
 		int[] parent = new int[n];
@@ -260,8 +260,8 @@ public class Graphs {
 	 * @return (CC number, [vertex]->[CC])
 	 * @throws IllegalArgumentException if the graph is directed
 	 */
-	public static Pair<Integer, int[]> findConnectivityComponents(Graph.Undirected g) {
-		int n = g.vertices();
+	public static Pair<Integer, int[]> findConnectivityComponents(UGraph g) {
+		int n = g.verticesNum();
 		int[] stack = new int[n];
 
 		int[] comp = new int[n];
@@ -304,8 +304,8 @@ public class Graphs {
 	 * @param g a directed graph
 	 * @return (CC number, [vertex]->[CC])
 	 */
-	public static Pair<Integer, int[]> findStrongConnectivityComponents(Graph.Directed g) {
-		int n = g.vertices();
+	public static Pair<Integer, int[]> findStrongConnectivityComponents(DiGraph g) {
+		int n = g.verticesNum();
 
 		int[] comp = new int[n];
 		Arrays.fill(comp, -1);
@@ -361,8 +361,8 @@ public class Graphs {
 		return Pair.of(Integer.valueOf(compNum), comp);
 	}
 
-	public static int[] calcTopologicalSortingDAG(Graph.Directed g) {
-		int n = g.vertices();
+	public static int[] calcTopologicalSortingDAG(DiGraph g) {
+		int n = g.verticesNum();
 		int[] inDegree = new int[n];
 		QueueIntFixSize queue = new QueueIntFixSize(n);
 		int[] topolSort = new int[n];
@@ -396,8 +396,8 @@ public class Graphs {
 		return topolSort;
 	}
 
-	public static SSSP.Result calcDistancesDAG(Graph.Directed g, WeightFunction w, int source) {
-		int n = g.vertices();
+	public static SSSP.Result calcDistancesDAG(DiGraph g, WeightFunction w, int source) {
+		int n = g.verticesNum();
 		int[] backtrack = new int[n];
 		Arrays.fill(backtrack, -1);
 		double[] distances = new double[n];
@@ -443,18 +443,18 @@ public class Graphs {
 		}
 	}
 
-	public static int[] calcDegree(Graph.Undirected g, IntCollection edges) {
-		int[] degree = new int[g.vertices()];
+	public static int[] calcDegree(UGraph g, IntCollection edges) {
+		int[] degree = new int[g.verticesNum()];
 		for (IntIterator eit = edges.iterator(); eit.hasNext();) {
 			int e = eit.nextInt();
-			degree[g.getEdgeSource(e)]++;
-			degree[g.getEdgeTarget(e)]++;
+			degree[g.edgeSource(e)]++;
+			degree[g.edgeTarget(e)]++;
 		}
 		return degree;
 	}
 
-	public static IntList calcEulerianTour(Graph.Undirected g) {
-		int n = g.vertices();
+	public static IntList calcEulerianTour(UGraph g) {
+		int n = g.verticesNum();
 
 		int start = -1, end = -1;
 		for (int u = 0; u < n; u++) {
@@ -474,7 +474,7 @@ public class Graphs {
 		if (start == -1)
 			start = 0;
 
-		IntList tour = new IntArrayList(g.edges());
+		IntList tour = new IntArrayList(g.edgesNum());
 		IntSet usedEdges = new IntOpenHashSet();
 		EdgeIter[] iters = new EdgeIter[n];
 		for (int u = 0; u < n; u++)
@@ -505,7 +505,7 @@ public class Graphs {
 			int e = queue.getInt(queue.size() - 1);
 			tour.add(e);
 			queue.removeInt(queue.size() - 1);
-			u = g.getEdgeEndpoint(e, u);
+			u = g.edgeEndpoint(e, u);
 		}
 
 		Collections.reverse(tour); // TODO
@@ -517,7 +517,7 @@ public class Graphs {
 	}
 
 	public static String formatAdjacencyMatrixWeighted(Graph g, WeightFunction w) {
-		int m = g.edges();
+		int m = g.edgesNum();
 		double minWeight = Double.MAX_VALUE;
 		for (int e = 0; e < m; e++) {
 			double ew = w.weight(e);
@@ -539,7 +539,7 @@ public class Graphs {
 	}
 
 	public static String formatAdjacencyMatrix(Graph g, Int2ObjectFunction<String> formatter) {
-		int n = g.vertices();
+		int n = g.verticesNum();
 		if (n == 0)
 			return "[]";
 
@@ -623,23 +623,23 @@ public class Graphs {
 
 	}
 
-	public static Graph.Directed referenceGraph(Graph.Directed g, String refEdgeWeightKey) {
-		int m = g.edges();
-		Graph.Directed g0 = new GraphArrayDirected(g.vertices());
-		EdgeData.Int data = g0.newEdgeDataInt(refEdgeWeightKey);
+	public static DiGraph referenceGraph(DiGraph g, String refEdgeWeightKey) {
+		int m = g.edgesNum();
+		DiGraph g0 = new GraphArrayDirected(g.verticesNum());
+		EdgesWeight.Int data = g0.newEdgeWeightInt(refEdgeWeightKey);
 		for (int e = 0; e < m; e++) {
-			int e0 = g0.addEdge(g.getEdgeSource(e), g.getEdgeTarget(e));
+			int e0 = g0.addEdge(g.edgeSource(e), g.edgeTarget(e));
 			data.set(e0, e);
 		}
 		return g0;
 	}
 
-	public static Graph.Undirected referenceGraph(Graph.Undirected g, String refEdgeWeightKey) {
-		int m = g.edges();
-		Graph.Undirected g0 = new GraphArrayUndirected(g.vertices());
-		EdgeData.Int data = g0.newEdgeDataInt(refEdgeWeightKey);
+	public static UGraph referenceGraph(UGraph g, String refEdgeWeightKey) {
+		int m = g.edgesNum();
+		UGraph g0 = new GraphArrayUndirected(g.verticesNum());
+		EdgesWeight.Int data = g0.newEdgeWeightInt(refEdgeWeightKey);
 		for (int e = 0; e < m; e++) {
-			int e0 = g0.addEdge(g.getEdgeSource(e), g.getEdgeTarget(e));
+			int e0 = g0.addEdge(g.edgeSource(e), g.edgeTarget(e));
 			data.set(e0, e);
 		}
 		return g0;
@@ -656,9 +656,9 @@ public class Graphs {
 		public int v();
 
 		static PathIter of(Graph g0, IntList edgeList) {
-			if (g0 instanceof Graph.Undirected g) {
+			if (g0 instanceof UGraph g) {
 				return new PathIterUndirected(g, edgeList);
-			} else if (g0 instanceof Graph.Directed g) {
+			} else if (g0 instanceof DiGraph g) {
 				return new PathIterDirected(g, edgeList);
 			} else {
 				throw new IllegalArgumentException();
@@ -669,18 +669,18 @@ public class Graphs {
 
 	private static class PathIterUndirected implements PathIter {
 
-		private final Graph.Undirected g;
+		private final UGraph g;
 		private final IntIterator it;
 		private int e = -1, v = -1;
 
-		PathIterUndirected(Graph.Undirected g, IntList path) {
+		PathIterUndirected(UGraph g, IntList path) {
 			this.g = g;
 			if (path.size() == 1) {
-				v = g.getEdgeTarget(path.getInt(0));
+				v = g.edgeTarget(path.getInt(0));
 			} else if (path.size() >= 2) {
 				int e0 = path.getInt(0), e1 = path.getInt(1);
-				int u0 = g.getEdgeSource(e0), v0 = g.getEdgeTarget(e0);
-				int u1 = g.getEdgeSource(e1), v1 = g.getEdgeTarget(e1);
+				int u0 = g.edgeSource(e0), v0 = g.edgeTarget(e0);
+				int u1 = g.edgeSource(e1), v1 = g.edgeTarget(e1);
 				if (v0 == u1 || v0 == v1) {
 					v = u0;
 				} else {
@@ -699,14 +699,14 @@ public class Graphs {
 		@Override
 		public int nextEdge() {
 			e = it.nextInt();
-			assert v == g.getEdgeSource(e) || v == g.getEdgeTarget(e);
-			v = g.getEdgeEndpoint(e, v);
+			assert v == g.edgeSource(e) || v == g.edgeTarget(e);
+			v = g.edgeEndpoint(e, v);
 			return e;
 		}
 
 		@Override
 		public int u() {
-			return g.getEdgeEndpoint(e, v);
+			return g.edgeEndpoint(e, v);
 		}
 
 		@Override
@@ -718,11 +718,11 @@ public class Graphs {
 
 	private static class PathIterDirected implements PathIter {
 
-		private final Graph.Directed g;
+		private final DiGraph g;
 		private final IntIterator it;
 		private int e = -1;
 
-		PathIterDirected(Graph.Directed g, IntList path) {
+		PathIterDirected(DiGraph g, IntList path) {
 			this.g = g;
 			it = path.iterator();
 		}
@@ -740,12 +740,12 @@ public class Graphs {
 
 		@Override
 		public int u() {
-			return g.getEdgeSource(e);
+			return g.edgeSource(e);
 		}
 
 		@Override
 		public int v() {
-			return g.getEdgeTarget(e);
+			return g.edgeTarget(e);
 		}
 
 	}

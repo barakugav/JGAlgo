@@ -43,7 +43,7 @@ class MatchingUnweightedTestUtils extends TestUtils {
 		Set<Integer> matched = new HashSet<>();
 		for (IntIterator it = matching.iterator(); it.hasNext();) {
 			int e = it.nextInt();
-			for (int v : new int[] { g.getEdgeSource(e), g.getEdgeTarget(e) }) {
+			for (int v : new int[] { g.edgeSource(e), g.edgeTarget(e) }) {
 				boolean dup = matched.contains(Integer.valueOf(v));
 				assertFalse(dup, "Invalid matching, clash: ", v, " ", e, " \n");
 				matched.add(Integer.valueOf(v));
@@ -52,7 +52,7 @@ class MatchingUnweightedTestUtils extends TestUtils {
 	}
 
 	private static <E> int calcExpectedMaxMatching(Graph g) {
-		int n = g.vertices();
+		int n = g.verticesNum();
 		@SuppressWarnings("unchecked")
 		List<Integer>[] graph = new List[n];
 		for (int u = 0; u < n; u++) {

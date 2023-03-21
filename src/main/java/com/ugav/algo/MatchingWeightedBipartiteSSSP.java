@@ -2,7 +2,7 @@ package com.ugav.algo;
 
 import java.util.Arrays;
 
-import com.ugav.algo.EdgeData.DataIter;
+import com.ugav.algo.EdgesWeight.DataIter;
 import com.ugav.algo.Graph.EdgeIter;
 import com.ugav.algo.Graph.WeightFunction;
 
@@ -24,17 +24,17 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 	public IntCollection calcMaxMatching(Graph g0, WeightFunction w) {
 		if (!(g0 instanceof GraphBipartite.Undirected))
 			throw new IllegalArgumentException("Only undirected bipartite graphs are supported");
-		GraphBipartite.Directed g = referenceGraph((GraphBipartite.Undirected) g0, w);
-		EdgeData<Ref> edgeRef = g.getEdgeData("edgeRef");
+		GraphBipartite.DiGraph g = referenceGraph((GraphBipartite.Undirected) g0, w);
+		EdgesWeight<Ref> edgeRef = g.edgesWeight("edgeRef");
 
-		int n = g.vertices(), sn = g.svertices(), tn = g.tvertices();
+		int n = g.verticesNum(), sn = g.svertices(), tn = g.tvertices();
 		int s = g.newVertexT(), t = g.newVertexS();
 
 		int[] match = new int[n];
 		Arrays.fill(match, -1);
 
 		double maxWeight = 1;
-		for (int e = 0; e < g.edges(); e++)
+		for (int e = 0; e < g.edgesNum(); e++)
 			maxWeight = Math.max(maxWeight, edgeRef.get(e).w);
 		if (!Double.isFinite(maxWeight))
 			throw new IllegalArgumentException("non finite weights");
@@ -53,8 +53,7 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 			edgeRef.set(g.addEdge(v, t), new Ref(-1, 0));
 
 		double[] potential = new double[n + 2];
-		WeightFunction spWeightFunc = e -> edgeRef.get(e).w + potential[g.getEdgeSource(e)]
-				- potential[g.getEdgeTarget(e)];
+		WeightFunction spWeightFunc = e -> edgeRef.get(e).w + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];
 
 		// Init state may include negative distances, use Bellman Ford to calculate
 		// first potential values
@@ -80,7 +79,7 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 				// Reverse newly matched edge
 				g.reverseEdge(matchedEdge);
 				Ref r = edgeRef.get(matchedEdge);
-				match[g.getEdgeSource(matchedEdge)] = match[g.getEdgeTarget(matchedEdge)] = r.orig;
+				match[g.edgeSource(matchedEdge)] = match[g.edgeTarget(matchedEdge)] = r.orig;
 				r.w = -r.w;
 
 				int unmatchedEdge = it.nextInt();
@@ -105,7 +104,7 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 		IntList res = new IntArrayList();
 		for (int u = 0; u < n; u++) {
 			int e = match[u];
-			if (e != -1 && g0.getEdgeSource(e) == u)
+			if (e != -1 && g0.edgeSource(e) == u)
 				res.add(e);
 		}
 
@@ -117,10 +116,10 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 		throw new UnsupportedOperationException();
 	}
 
-	private static GraphBipartite.Directed referenceGraph(GraphBipartite.Undirected g, WeightFunction w) {
-		int n = g.vertices();
-		GraphBipartite.Directed g0 = new GraphBipartiteArrayDirected(g.svertices(), g.tvertices());
-		EdgeData<Ref> edgeRef = g0.newEdgeData("edgeRef");
+	private static GraphBipartite.DiGraph referenceGraph(GraphBipartite.Undirected g, WeightFunction w) {
+		int n = g.verticesNum();
+		GraphBipartite.DiGraph g0 = new GraphBipartiteArrayDirected(g.svertices(), g.tvertices());
+		EdgesWeight<Ref> edgeRef = g0.newEdgeWeight("edgeRef");
 
 		for (int u = 0; u < n; u++) {
 			if (!g.isVertexInS(u))
