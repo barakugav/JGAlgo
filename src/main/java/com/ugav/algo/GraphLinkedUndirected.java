@@ -2,7 +2,7 @@ package com.ugav.algo;
 
 import java.util.Arrays;
 
-public class GraphLinkedUndirected extends GraphLinkedAbstract implements Graph.Removeable.Undirected {
+public class GraphLinkedUndirected extends GraphLinkedAbstract implements Graph.Undirected {
 
 	private Node[] edges;
 
@@ -33,10 +33,18 @@ public class GraphLinkedUndirected extends GraphLinkedAbstract implements Graph.
 
 	@Override
 	public int addEdge(int u, int v) {
-		Node e = (Node) newEdgeNode(u, v);
-		e.nextSet(u, edges[u]);
+		if (u == v)
+			throw new IllegalArgumentException("self edges are not supported");
+		Node e = (Node) addEdgeNode(u, v), next;
+		if ((next = edges[u]) != null) {
+			e.nextSet(u, next);
+			next.prevSet(u, e);
+		}
 		edges[u] = e;
-		e.nextSet(v, edges[v]);
+		if ((next = edges[v]) != null) {
+			e.nextSet(v, next);
+			next.prevSet(v, e);
+		}
 		edges[v] = e;
 		return e.id;
 	}
@@ -53,26 +61,43 @@ public class GraphLinkedUndirected extends GraphLinkedAbstract implements Graph.
 		removeEdge0(e, e.v);
 	}
 
-	void removeEdge0(Node e, int w) {
-		// TODO add prev pointers
-		for (Node prev = null, p = edges[w]; p != null; p = (prev = p).next(w)) {
-			if (p == e) {
-				if (prev == null)
-					edges[w] = p.next(w);
-				else
-					prev.nextSet(w, p.next(w));
-				p.nextSet(w, null);
-				return;
-			}
+	@Override
+	public void removeEdges(int u) {
+		checkVertexIdx(u);
+		for (Node p = edges[u], next; p != null; p = next) {
+			// update u list
+			next = p.next(u);
+			p.nextSet(u, null);
+			p.prevSet(u, null);
+
+			// update v list
+			int v = p.getEndpoint(u);
+			removeEdge0(p, v);
+
+			removeEdgeNode(p.id);
 		}
-		throw new IllegalArgumentException("edge not in graph: " + e);
+		edges[u] = null;
+	}
+
+	void removeEdge0(Node e, int w) {
+		Node next = e.next(w), prev = e.prev(w);
+		if (prev == null) {
+			edges[w] = next;
+		} else {
+			prev.nextSet(w, next);
+			e.prevSet(w, null);
+		}
+		if (next != null) {
+			next.prevSet(w, prev);
+			e.nextSet(w, null);
+		}
 	}
 
 	@Override
 	public void clearEdges() {
 		for (GraphLinkedAbstract.Node p0 : Utils.iterable(nodes())) {
 			Node p = (Node) p0;
-			p.nextu = p.nextv = null;
+			p.nextu = p.nextv = p.prevu = p.prevv = null;
 		}
 		Arrays.fill(edges, null);
 		super.clearEdges();
@@ -82,20 +107,42 @@ public class GraphLinkedUndirected extends GraphLinkedAbstract implements Graph.
 	private static class Node extends GraphLinkedAbstract.Node {
 
 		private Node nextu, nextv;
+		private Node prevu, prevv;
 
 		Node(int id, int u, int v) {
 			super(id, u, v);
 		}
 
 		Node next(int w) {
+			assert w == u || w == v;
 			return w == u ? nextu : nextv;
 		}
 
 		void nextSet(int w, Node n) {
+			assert w == u || w == v;
 			if (w == u)
 				nextu = n;
 			else
 				nextv = n;
+		}
+
+		Node prev(int w) {
+			assert w == u || w == v;
+			return w == u ? prevu : prevv;
+		}
+
+		void prevSet(int w, Node n) {
+			assert w == u || w == v;
+			if (w == u)
+				prevu = n;
+			else
+				prevv = n;
+		}
+
+		int getEndpoint(int w) {
+			// TODO use in graph api
+			assert w == u || w == v;
+			return w == u ? v : u;
 		}
 
 	}

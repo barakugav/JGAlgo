@@ -15,7 +15,14 @@ public interface Graph {
 	public EdgeIter edges(int u);
 
 	// TODO specific for table
-	public int getEdge(int u, int v);
+	default int getEdge(int u, int v) {
+		for (EdgeIter it = edges(u); it.hasNext();) {
+			int e = it.nextInt();
+			if (it.v() == v)
+				return e;
+		}
+		return -1;
+	}
 
 	default int degree(int u) {
 		int count = 0;
@@ -29,6 +36,19 @@ public interface Graph {
 	public int newVertex();
 
 	public int addEdge(int u, int v);
+
+	public void removeEdge(int e);
+
+	public void removeEdges(int u);
+
+	public void addEdgeRenameListener(EdgeRenameListener listener);
+
+	public void removeEdgeRenameListener(EdgeRenameListener listener);
+
+	@FunctionalInterface
+	public static interface EdgeRenameListener {
+		public void edgeRename(int e1, int e2);
+	}
 
 	public void clear();
 
@@ -53,17 +73,15 @@ public interface Graph {
 	// TODO add weights for vertices
 	// TODO implement bipartite graphs with boolean weights on vertices
 
-	public <E, T extends EdgeData<E>> T getEdgeData(String key);
+	public <E, T extends EdgeData<E>> T getEdgeData(Object key);
 
-	public <E> EdgeData<E> newEdgeData(String key);
+	public <E> EdgeData<E> newEdgeData(Object key);
 
-	public EdgeData.Int newEdgeDataInt(String key);
+	public EdgeData.Int newEdgeDataInt(Object key);
 
-	public EdgeData.Double newEdgeDataDouble(String key);
+	public EdgeData.Double newEdgeDataDouble(Object key);
 
-	public Collection<String> getEdgeDataKeys();
-
-	public void setEdgeDataBuilder(EdgeData.Builder builder);
+	public Collection<Object> getEdgeDataKeys();
 
 	public static interface EdgeIter extends IntIterator {
 
@@ -74,16 +92,6 @@ public interface Graph {
 	}
 
 	public static interface Undirected extends Graph {
-
-		@Override
-		default int getEdge(int u, int v) {
-			for (IntIterator it = edges(u); it.hasNext();) {
-				int e = it.nextInt();
-				if (getEdgeEndpoint(e, u) == v)
-					return e;
-			}
-			return -1;
-		}
 
 	}
 
@@ -100,14 +108,13 @@ public interface Graph {
 		public EdgeIter edgesIn(int v);
 
 		@Override
-		default int getEdge(int u, int v) {
-			for (IntIterator it = edgesOut(u); it.hasNext();) {
-				int e = it.nextInt();
-				if (getEdgeTarget(e) == v)
-					return e;
-			}
-			return -1;
+		default void removeEdges(int u) {
+			removeEdgesOut(u);
 		}
+
+		public void removeEdgesOut(int u);
+
+		public void removeEdgesIn(int v);
 
 		@Override
 		@Deprecated
@@ -137,47 +144,6 @@ public interface Graph {
 		@Deprecated
 		default int getEdgeEndpoint(int edge, int endpoint) {
 			return Graph.super.getEdgeEndpoint(edge, endpoint);
-		}
-
-	}
-
-	public static interface Removeable extends Graph {
-
-		/*
-		 * Graph that support edges removal. These graphs do not guaranteer that the
-		 * edges identifiers will be in range [0, edges()), and expose the edges
-		 * identifiers by the edgesIDs().
-		 */
-
-		public void removeEdge(int e);
-
-		public IntIterator edgesIDs();
-
-		public static interface Undirected extends Removeable, Graph.Undirected {
-
-			default void removeEdges(int u) {
-				for (EdgeIter it = edges(u); it.hasNext();) {
-					it.nextInt();
-					it.remove();
-				}
-			}
-		}
-
-		public static interface Directed extends Removeable, Graph.Directed {
-
-			default void removeEdgesOut(int u) {
-				for (EdgeIter it = edgesOut(u); it.hasNext();) {
-					it.nextInt();
-					it.remove();
-				}
-			}
-
-			default void removeEdgesIn(int v) {
-				for (EdgeIter it = edgesIn(v); it.hasNext();) {
-					it.nextInt();
-					it.remove();
-				}
-			}
 		}
 
 	}

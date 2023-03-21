@@ -2,8 +2,6 @@ package com.ugav.algo;
 
 import java.util.Arrays;
 
-import it.unimi.dsi.fastutil.ints.IntIterator;
-
 public class GraphArrayUndirected extends GraphArrayAbstract implements Graph.Undirected {
 
 	private int[][] edges;
@@ -31,18 +29,6 @@ public class GraphArrayUndirected extends GraphArrayAbstract implements Graph.Un
 	}
 
 	@Override
-	public int getEdge(int u, int v) {
-		checkVertexIdx(u);
-		checkVertexIdx(v);
-		for (IntIterator it = edges(u); it.hasNext();) {
-			int e = it.nextInt();
-			if (getEdgeTarget(e) == v)
-				return e;
-		}
-		return -1;
-	}
-
-	@Override
 	public int newVertex() {
 		int v = super.newVertex();
 		if (v >= edges.length) {
@@ -65,6 +51,52 @@ public class GraphArrayUndirected extends GraphArrayAbstract implements Graph.Un
 		}
 
 		return e;
+	}
+
+	@Override
+	public void removeEdge(int e) {
+		checkEdgeIdx(e);
+		int lastEdge = edges() - 1;
+		if (e != lastEdge) {
+			edgeSwap(e, lastEdge);
+			e = lastEdge;
+		}
+		int u = getEdgeSource(e), v = getEdgeTarget(e);
+		for (int w : new int[] { u, v }) {
+			for (int i = 0; i < edgesNum[w]; i++) {
+				if (edges[w][i] == e) {
+					edges[w][i] = edges[w][--edgesNum[w]];
+					break;
+				}
+			}
+		}
+		super.removeEdge(e);
+	}
+
+	@Override
+	void edgeSwap(int e1, int e2) {
+		int[] es = new int[] { e1, e2 };
+		for (int eIdx = 0; eIdx < 2; eIdx++) {
+			int e = es[eIdx], eSwap = es[(eIdx + 1) % 2];
+
+			for (int w : new int[] { getEdgeSource(e), getEdgeTarget(e) }) {
+				for (int i = 0; i < edgesNum[w]; i++) {
+					if (edges[w][i] == e) {
+						edges[w][i] = eSwap;
+						break;
+					}
+				}
+			}
+		}
+
+		super.edgeSwap(e1, e2);
+	}
+
+	@Override
+	public void removeEdges(int u) {
+		checkVertexIdx(u);
+		while (edgesNum[u] > 0)
+			removeEdge(edges[u][0]);
 	}
 
 	@Override

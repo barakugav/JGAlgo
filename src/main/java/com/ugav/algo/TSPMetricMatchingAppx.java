@@ -62,7 +62,8 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 
 		/* Build a graph of the union of the MST and the matching result */
 		Graph.Undirected g1 = new GraphArrayUndirected(n);
-		EdgeData.Int g1EdgeRef = new EdgeDataArray.Int(mst.size() + matching.size());
+		EdgeData.Int g1EdgeRef = g1.newEdgeDataInt("edgeRef");
+//		EdgeData.Int g1EdgeRef = new EdgeDataArray.Int(mst.size() + matching.size());
 		for (IntIterator it = mst.iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			int g1Edge = g1.addEdge(g.getEdgeSource(e), g.getEdgeTarget(e));

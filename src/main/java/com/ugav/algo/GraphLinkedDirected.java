@@ -2,7 +2,7 @@ package com.ugav.algo;
 
 import java.util.Arrays;
 
-public class GraphLinkedDirected extends GraphLinkedAbstract implements Graph.Removeable.Directed {
+public class GraphLinkedDirected extends GraphLinkedAbstract implements Graph.Directed {
 
 	private Node[] edgesIn;
 	private Node[] edgesOut;
@@ -43,7 +43,7 @@ public class GraphLinkedDirected extends GraphLinkedAbstract implements Graph.Re
 
 	@Override
 	public int addEdge(int u, int v) {
-		Node e = (Node) newEdgeNode(u, v), next;
+		Node e = (Node) addEdgeNode(u, v), next;
 		next = edgesOut[u];
 		if (next != null) {
 			next.prevOut = e;
@@ -66,18 +66,19 @@ public class GraphLinkedDirected extends GraphLinkedAbstract implements Graph.Re
 	}
 
 	@Override
-	public void removeEdge(int id) {
-		Node e = (Node) removeEdgeNode(id);
-		removeEdgeOut(e);
-		removeEdgeIn(e);
+	public void removeEdge(int e) {
+		Node n = (Node) removeEdgeNode(e);
+		removeEdgeOutNode(n);
+		removeEdgeInNode(n);
 	}
 
 	@Override
 	public void removeEdgesOut(int u) {
+		checkVertexIdx(u);
 		for (Node p = edgesOut[u], next; p != null; p = next) {
 			next = p.nextOut;
 			p.nextOut = p.prevOut = null;
-			removeEdgeIn(p);
+			removeEdgeInNode(p);
 			removeEdgeNode(p.id);
 		}
 		edgesOut[u] = null;
@@ -85,16 +86,17 @@ public class GraphLinkedDirected extends GraphLinkedAbstract implements Graph.Re
 
 	@Override
 	public void removeEdgesIn(int v) {
+		checkVertexIdx(v);
 		for (Node p = edgesIn[v], next; p != null; p = next) {
 			next = p.nextIn;
 			p.nextIn = p.prevIn = null;
-			removeEdgeOut(p);
+			removeEdgeOutNode(p);
 			removeEdgeNode(p.id);
 		}
 		edgesIn[v] = null;
 	}
 
-	private void removeEdgeOut(Node e) {
+	private void removeEdgeOutNode(Node e) {
 		Node next = e.nextOut, prev = e.prevOut;
 		if (prev == null) {
 			edgesOut[e.u] = next;
@@ -108,7 +110,7 @@ public class GraphLinkedDirected extends GraphLinkedAbstract implements Graph.Re
 		}
 	}
 
-	private void removeEdgeIn(Node e) {
+	private void removeEdgeInNode(Node e) {
 		Node next = e.nextIn, prev = e.prevIn;
 		if (prev == null) {
 			edgesIn[e.v] = next;

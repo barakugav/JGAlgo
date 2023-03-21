@@ -52,4 +52,9 @@ public class GraphArrayTest extends TestUtils {
 		GraphImplTestUtils.testUndirectedBipartiteMatchingWeighted(arrayImpl());
 	}
 
+	@Test
+	public static void testUndirectedRandOps() {
+		GraphImplTestUtils.testUndirectedRandOps(arrayImpl());
+	}
+
 }

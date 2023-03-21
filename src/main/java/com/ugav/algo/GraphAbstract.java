@@ -2,11 +2,11 @@ package com.ugav.algo;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiFunction;
-
-import com.ugav.algo.EdgeData.Builder;
 
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntComparator;
@@ -14,61 +14,119 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 
 abstract class GraphAbstract implements Graph {
 
-	private final Map<String, EdgeData<?>> edgeData = new Object2ObjectArrayMap<>();
-	private EdgeData.Builder edgeDataBuilder = EdgeDataArray.Builder.getInstance();
+	private int n, m;
+	private final Map<Object, EdgeData<?>> edgeData = new Object2ObjectArrayMap<>();
+	private final List<EdgeRenameListener> edgeRenameListeners = new CopyOnWriteArrayList<>();
+
+	public GraphAbstract(int n) {
+		if (n < 0)
+			throw new IllegalArgumentException();
+		this.n = n;
+		m = 0;
+	}
+
+	@Override
+	public int vertices() {
+		return n;
+	}
+
+	@Override
+	public int edges() {
+		return m;
+	}
+
+	@Override
+	public int newVertex() {
+		return n++;
+	}
+
+	@Override
+	public int addEdge(int u, int v) {
+		checkVertexIdx(u);
+		checkVertexIdx(v);
+		int e = m++;
+		for (EdgeData<?> data : edgeData.values())
+			data.edgeAdd(e);
+		return e;
+	}
+
+	@Override
+	public void removeEdge(int e) {
+		checkEdgeIdx(e);
+		int lastEdge = edges() - 1;
+		if (e != lastEdge) {
+			edgeSwap(e, lastEdge);
+			e = lastEdge;
+		}
+		for (EdgeData<?> data : edgeData.values())
+			data.edgeRemove(e);
+		m--;
+	}
+
+	void edgeSwap(int e1, int e2) {
+		for (EdgeData<?> data : edgeData.values())
+			data.edgeSwap(e1, e2);
+		for (EdgeRenameListener listener : edgeRenameListeners)
+			listener.edgeRename(e1, e2);
+	}
+
+	@Override
+	public void addEdgeRenameListener(EdgeRenameListener listener) {
+		edgeRenameListeners.add(Objects.requireNonNull(listener));
+	}
+
+	@Override
+	public void removeEdgeRenameListener(EdgeRenameListener listener) {
+		edgeRenameListeners.remove(listener);
+	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <E, T extends EdgeData<E>> T getEdgeData(String key) {
+	public <E, T extends EdgeData<E>> T getEdgeData(Object key) {
 		return (T) edgeData.get(key);
 	}
 
 	@Override
-	public <E> EdgeData<E> newEdgeData(String key) {
+	public <E> EdgeData<E> newEdgeData(Object key) {
+		return addEdgeData(key, new EdgeData.Obj<>(edges()));
+	}
+
+	@Override
+	public EdgeData.Int newEdgeDataInt(Object key) {
+		return addEdgeData(key, new EdgeData.Int(edges()));
+	}
+
+	@Override
+	public EdgeData.Double newEdgeDataDouble(Object key) {
+		return addEdgeData(key, new EdgeData.Double(edges()));
+	}
+
+	private <E, T extends EdgeData<E>> T addEdgeData(Object key, T data) {
 		if (edgeData.containsKey(key))
 			throw new IllegalArgumentException();
-		EdgeData<E> data = edgeDataBuilder.ofObjs();
+		int m = edges();
+		for (int e = 0; e < m; e++)
+			data.edgeAdd(e);
 		edgeData.put(key, data);
 		return data;
 	}
 
 	@Override
-	public EdgeData.Int newEdgeDataInt(String key) {
-		if (edgeData.containsKey(key))
-			throw new IllegalArgumentException();
-		EdgeData.Int data = edgeDataBuilder.ofInts();
-		edgeData.put(key, data);
-		return data;
-	}
-
-	@Override
-	public EdgeData.Double newEdgeDataDouble(String key) {
-		if (edgeData.containsKey(key))
-			throw new IllegalArgumentException();
-		EdgeData.Double data = edgeDataBuilder.ofDoubles();
-		edgeData.put(key, data);
-		return data;
-	}
-
-	@Override
-	public Collection<String> getEdgeDataKeys() {
+	public Collection<Object> getEdgeDataKeys() {
 		return Collections.unmodifiableCollection(edgeData.keySet());
-	}
-
-	@Override
-	public void setEdgeDataBuilder(Builder builder) {
-		edgeDataBuilder = Objects.requireNonNull(builder);
 	}
 
 	@Override
 	public void clear() {
 		clearEdges();
+		n = 0;
 	}
 
 	@Override
 	public void clearEdges() {
 		for (EdgeData<?> data : edgeData.values())
 			data.clear();
+		m = 0;
 	}
 
 	@Override
@@ -215,6 +273,16 @@ abstract class GraphAbstract implements Graph {
 		}
 		s.append('}');
 		return s.toString();
+	}
+
+	void checkVertexIdx(int u) {
+		if (u >= n)
+			throw new IndexOutOfBoundsException(u);
+	}
+
+	void checkEdgeIdx(int e) {
+		if (e >= m)
+			throw new IndexOutOfBoundsException(e);
 	}
 
 }

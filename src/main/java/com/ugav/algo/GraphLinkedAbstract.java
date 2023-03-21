@@ -1,71 +1,37 @@
 package com.ugav.algo;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntIterator;
+abstract class GraphLinkedAbstract extends GraphAbstract {
 
-abstract class GraphLinkedAbstract extends GraphAbstract implements Graph.Removeable {
-
-	private int n;
-	private int m;
-	private final Int2ObjectMap<Node> edges;
-	private int nextEdgeID;
+	private Node[] edges;
+	private static final Node[] EmptyNodeArr = new Node[0];
 
 	GraphLinkedAbstract(int n) {
-		if (n < 0)
-			throw new IllegalArgumentException();
-		this.n = n;
-		m = 0;
-		edges = new Int2ObjectOpenHashMap<>(n);
+		super(n);
+		edges = EmptyNodeArr;
 	}
 
 	@Override
-	public int vertices() {
-		return n;
+	public int getEdgeSource(int e) {
+		checkEdgeIdx(e);
+		return edges[e].u;
 	}
 
 	@Override
-	public int edges() {
-		return m;
+	public int getEdgeTarget(int e) {
+		checkEdgeIdx(e);
+		return edges[e].v;
 	}
 
-	@Override
-	public IntIterator edgesIDs() {
-		return edges.keySet().intIterator();
-	}
-
-	@Override
-	public int getEdgeSource(int edge) {
-		Node node = edges.get(edge);
-		if (node == null)
-			throw new IndexOutOfBoundsException(edge);
-		return node.u;
-	}
-
-	@Override
-	public int getEdgeTarget(int edge) {
-		Node node = edges.get(edge);
-		if (node == null)
-			throw new IndexOutOfBoundsException(edge);
-		return node.v;
-	}
-
-	@Override
-	public int newVertex() {
-		return n++;
-	}
-
-	Node newEdgeNode(int u, int v) {
-		checkVertexIdx(u);
-		checkVertexIdx(v);
-
-		int id = nextEdgeID++;
-		Node n = allocNode(id, u, v);
-		edges.put(id, n);
-		m++;
+	Node addEdgeNode(int u, int v) {
+		int e = super.addEdge(u, v);
+		Node n = allocNode(e, u, v);
+		if (e >= edges.length)
+			edges = Arrays.copyOf(edges, Math.max(2, edges.length * 2));
+		edges[e] = n;
 		return n;
 	}
 
@@ -73,40 +39,47 @@ abstract class GraphLinkedAbstract extends GraphAbstract implements Graph.Remove
 		return new Node(id, u, v);
 	}
 
-	Iterator<Node> nodes() {
-		return edges.values().iterator();
-	}
-
-	public Node removeEdgeNode(int id) {
-		Node e = edges.remove(id);
-		if (e == null)
-			throw new IndexOutOfBoundsException(id);
-		m--;
-		return e;
-	}
-
-	void checkVertexIdx(int u) {
-		if (u >= n)
-			throw new IndexOutOfBoundsException(u);
+	@Override
+	public void removeEdge(int e) {
+		checkEdgeIdx(e);
+		int lastEdge = edges() - 1;
+		if (e != lastEdge) {
+			edgeSwap(e, lastEdge);
+			e = lastEdge;
+		}
+		edges[e] = null;
+		super.removeEdge(e);
 	}
 
 	@Override
-	public void clear() {
-		clearEdges();
-		n = 0;
-		super.clear();
+	void edgeSwap(int e1, int e2) {
+		Node n1 = edges[e1], n2 = edges[e2];
+		edges[n1.id = e2] = n1;
+		edges[n2.id = e1] = n2;
+		super.edgeSwap(e1, e2);
+	}
+
+	Iterator<Node> nodes() {
+		return new Utils.ArrayView<>(edges, edges()).iterator();
+	}
+
+	Node removeEdgeNode(int e) {
+		checkEdgeIdx(e);
+		int lastEdge = edges() - 1;
+		if (e != lastEdge) {
+			edgeSwap(e, lastEdge);
+			e = lastEdge;
+		}
+		Node n = edges[e];
+		edges[e] = null;
+		super.removeEdge(e);
+		return n;
 	}
 
 	@Override
 	public void clearEdges() {
-		edges.clear();
-		m = 0;
+		Arrays.fill(edges, 0, edges(), null);
 		super.clearEdges();
-	}
-
-	void checkVertexIdentifier(int v) {
-		if (!(0 <= v && v < n))
-			throw new IllegalArgumentException("Illegal vertex identifier");
 	}
 
 	abstract class EdgeItr implements Graph.EdgeIter {
@@ -137,7 +110,7 @@ abstract class GraphLinkedAbstract extends GraphAbstract implements Graph.Remove
 
 	static class Node {
 
-		final int id;
+		int id;
 		final int u, v;
 
 		Node(int id, int u, int v) {
