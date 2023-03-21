@@ -148,7 +148,7 @@ public class GraphLinkedDirected extends GraphLinkedAbstract implements Graph.Di
 
 		@Override
 		public int v() {
-			return last.u;
+			return last.v;
 		}
 
 	}

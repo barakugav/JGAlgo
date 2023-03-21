@@ -67,7 +67,6 @@ public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 
 		QueueFixSize<Vertex> active = new QueueFixSize<>(n);
 		DynamicTree<Vertex, Integer> dt = new DynamicTreeSplaySized<>(maxCapacity * 10);
-		@SuppressWarnings("unchecked")
 		Vertex[] vertexData = new Vertex[n];
 		for (int u = 0; u < n; u++) {
 			vertexData[u] = new Vertex(u, dt.makeTree(null));
@@ -285,7 +284,7 @@ public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 		Graph.Directed g = new GraphArrayDirected(g0.vertices());
 		EdgeData<Ref> edgeRef = g.newEdgeData("edgeRef");
 		for (int e = 0; e < g0.edges(); e++) {
-			int u = g.getEdgeSource(e), v = g.getEdgeTarget(e);
+			int u = g0.getEdgeSource(e), v = g0.getEdgeTarget(e);
 			Ref ref = new Ref(e, net.getCapacity(e), 0), refRev = new Ref(e, 0, 0);
 			edgeRef.set(g.addEdge(u, v), ref);
 			edgeRef.set(g.addEdge(v, u), refRev);

@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
+// TODO rename to IGraph
 public interface Graph {
 
 	public int vertices(); // TODO rename to verticesNum
@@ -91,10 +92,12 @@ public interface Graph {
 
 	}
 
+	// TODO rename to Graph
 	public static interface Undirected extends Graph {
 
 	}
 
+	// TODO rename to DiGraph
 	public static interface Directed extends Graph {
 
 		@Deprecated
