@@ -65,6 +65,67 @@ public class GraphArrayDirected extends GraphArrayAbstract implements Graph.Dire
 	}
 
 	@Override
+	public void removeEdge(int e) {
+		checkEdgeIdx(e);
+		int lastEdge = edges() - 1;
+		if (e != lastEdge) {
+			edgeSwap(e, lastEdge);
+			e = lastEdge;
+		}
+		int u = getEdgeSource(e), v = getEdgeTarget(e);
+		for (int i = 0; i < edgesOutNum[u]; i++) {
+			if (edgesOut[u][i] == e) {
+				edgesOut[u][i] = edgesOut[u][--edgesOutNum[u]];
+				break;
+			}
+		}
+		for (int i = 0; i < edgesInNum[v]; i++) {
+			if (edgesIn[v][i] == e) {
+				edgesIn[v][i] = edgesIn[v][--edgesInNum[v]];
+				break;
+			}
+		}
+		super.removeEdge(e);
+	}
+
+	@Override
+	void edgeSwap(int e1, int e2) {
+		int[] es = new int[] { e1, e2 };
+		for (int eIdx = 0; eIdx < 2; eIdx++) {
+			int e = es[eIdx], eSwap = es[(eIdx + 1) % 2];
+
+			int u = getEdgeSource(e), v = getEdgeTarget(e);
+			for (int i = 0; i < edgesOutNum[u]; i++) {
+				if (edgesOut[u][i] == e) {
+					edgesOut[u][i] = eSwap;
+					break;
+				}
+			}
+			for (int i = 0; i < edgesInNum[v]; i++) {
+				if (edgesIn[v][i] == e) {
+					edgesIn[v][i] = eSwap;
+					break;
+				}
+			}
+		}
+		super.edgeSwap(e1, e2);
+	}
+
+	@Override
+	public void removeEdgesOut(int u) {
+		checkVertexIdx(u);
+		while (edgesOutNum[u] > 0)
+			removeEdge(edgesOut[u][0]);
+	}
+
+	@Override
+	public void removeEdgesIn(int v) {
+		checkVertexIdx(v);
+		while (edgesInNum[v] > 0)
+			removeEdge(edgesIn[v][0]);
+	}
+
+	@Override
 	public int degreeOut(int u) {
 		checkVertexIdx(u);
 		return edgesOutNum[u];

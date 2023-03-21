@@ -5,7 +5,6 @@ import java.util.NoSuchElementException;
 
 abstract class GraphArrayAbstract extends GraphAbstract {
 
-	private int n, m;
 	private int[] edgeEndpoints;
 
 	private static final int SizeofEdgeEndpoints = 2;
@@ -15,33 +14,13 @@ abstract class GraphArrayAbstract extends GraphAbstract {
 	private static final int[] EdgeEndpointsEmpty = EDGES_LIST_EMPTY;
 
 	public GraphArrayAbstract(int n) {
-		if (n < 0)
-			throw new IllegalArgumentException();
-		this.n = n;
-		m = 0;
-		edgeEndpoints = n > 0 ? new int[m * SizeofEdgeEndpoints] : EdgeEndpointsEmpty;
-	}
-
-	@Override
-	public int vertices() {
-		return n;
-	}
-
-	@Override
-	public int edges() {
-		return m;
-	}
-
-	@Override
-	public int newVertex() {
-		return n++;
+		super(n);
+		edgeEndpoints = n > 0 ? new int[n * SizeofEdgeEndpoints] : EdgeEndpointsEmpty;
 	}
 
 	@Override
 	public int addEdge(int u, int v) {
-		checkVertexIdx(u);
-		checkVertexIdx(v);
-		int e = m++;
+		int e = super.addEdge(u, v);
 		if (e >= edgeEndpoints.length / SizeofEdgeEndpoints)
 			edgeEndpoints = Arrays.copyOf(edgeEndpoints, Math.max(edgeEndpoints.length * 2, 2));
 		edgeEndpoints[edgeSourceIdx(e)] = u;
@@ -50,16 +29,14 @@ abstract class GraphArrayAbstract extends GraphAbstract {
 	}
 
 	@Override
-	public void clear() {
-		clearEdges();
-		n = 0;
-		super.clear();
-	}
-
-	@Override
-	public void clearEdges() {
-		m = 0;
-		super.clearEdges();
+	void edgeSwap(int e1, int e2) {
+		int u1 = getEdgeSource(e1), v1 = getEdgeTarget(e1);
+		int u2 = getEdgeSource(e2), v2 = getEdgeTarget(e2);
+		edgeEndpoints[edgeSourceIdx(e1)] = u2;
+		edgeEndpoints[edgeTargetIdx(e1)] = v2;
+		edgeEndpoints[edgeSourceIdx(e2)] = u1;
+		edgeEndpoints[edgeTargetIdx(e2)] = v1;
+		super.edgeSwap(e1, e2);
 	}
 
 	@Override
@@ -84,16 +61,6 @@ abstract class GraphArrayAbstract extends GraphAbstract {
 
 	private static int edgeEndpoint(int e, int offset) {
 		return e * SizeofEdgeEndpoints + offset;
-	}
-
-	void checkVertexIdx(int u) {
-		if (u >= n)
-			throw new IndexOutOfBoundsException(u);
-	}
-
-	void checkEdgeIdx(int e) {
-		if (e >= m)
-			throw new IndexOutOfBoundsException(e);
 	}
 
 	abstract class EdgeIt implements EdgeIter {

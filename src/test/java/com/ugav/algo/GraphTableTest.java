@@ -32,4 +32,9 @@ public class GraphTableTest extends TestUtils {
 		GraphImplTestUtils.testDirectedMaxFlow(tableImpl());
 	}
 
+	@Test
+	public static void testUndirectedRandOps() {
+		GraphImplTestUtils.testUndirectedRandOps(tableImpl());
+	}
+
 }

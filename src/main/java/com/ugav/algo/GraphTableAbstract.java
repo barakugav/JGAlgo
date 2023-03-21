@@ -5,34 +5,20 @@ import java.util.NoSuchElementException;
 
 abstract class GraphTableAbstract extends GraphAbstract {
 
-	private final int n;
-	private int m;
 	final int[][] edges;
 	private int[] edgeEndpoints;
 
 	private static final int SizeofEdgeEndpoints = 2;
 	private static final int[][] EDGES_EMPTY = new int[0][];
-	private static final int EdgeNone = -1;
+	static final int EdgeNone = -1;
 	private static final int[] EdgeEndpointsEmpty = new int[0];
 
 	GraphTableAbstract(int n) {
-		if (n < 0)
-			throw new IllegalArgumentException();
-		this.n = n;
+		super(n);
 		edges = n > 0 ? new int[n][n] : EDGES_EMPTY;
 		for (int u = 0; u < n; u++)
 			Arrays.fill(edges[u], EdgeNone);
-		edgeEndpoints = n > 0 ? new int[m * SizeofEdgeEndpoints] : EdgeEndpointsEmpty;
-	}
-
-	@Override
-	public int vertices() {
-		return n;
-	}
-
-	@Override
-	public int edges() {
-		return m;
+		edgeEndpoints = EdgeEndpointsEmpty;
 	}
 
 	@Override
@@ -43,14 +29,24 @@ abstract class GraphTableAbstract extends GraphAbstract {
 	@Override
 	public int addEdge(int u, int v) {
 		if (edges[u][v] != EdgeNone)
-			throw new IllegalArgumentException();
-		int e = m++;
+			throw new IllegalArgumentException("parallel edges are not supported");
+		int e = super.addEdge(u, v);
 		if (e >= edgeEndpoints.length / SizeofEdgeEndpoints)
 			edgeEndpoints = Arrays.copyOf(edgeEndpoints, Math.max(edgeEndpoints.length * 2, 2));
 		edgeEndpoints[edgeSourceIdx(e)] = u;
 		edgeEndpoints[edgeTargetIdx(e)] = v;
-//		edges[u][v] = e;
 		return e;
+	}
+
+	@Override
+	void edgeSwap(int e1, int e2) {
+		int u1 = getEdgeSource(e1), v1 = getEdgeTarget(e1);
+		int u2 = getEdgeSource(e2), v2 = getEdgeTarget(e2);
+		edgeEndpoints[edgeSourceIdx(e1)] = u2;
+		edgeEndpoints[edgeTargetIdx(e1)] = v2;
+		edgeEndpoints[edgeSourceIdx(e2)] = u1;
+		edgeEndpoints[edgeTargetIdx(e2)] = v1;
+		super.edgeSwap(e1, e2);
 	}
 
 	@Override
@@ -65,9 +61,9 @@ abstract class GraphTableAbstract extends GraphAbstract {
 
 	@Override
 	public void clearEdges() {
+		int n = vertices();
 		for (int u = 0; u < n; u++)
 			Arrays.fill(edges[u], EdgeNone);
-		m = 0;
 		super.clearEdges();
 	}
 
@@ -95,16 +91,6 @@ abstract class GraphTableAbstract extends GraphAbstract {
 		return e * SizeofEdgeEndpoints + offset;
 	}
 
-	void checkVertexIdx(int u) {
-		if (u >= n)
-			throw new IndexOutOfBoundsException(u);
-	}
-
-	void checkEdgeIdx(int e) {
-		if (e >= m)
-			throw new IndexOutOfBoundsException(e);
-	}
-
 	class EdgesOutItrVertex implements EdgeIter {
 
 		private final int u;
@@ -113,7 +99,7 @@ abstract class GraphTableAbstract extends GraphAbstract {
 		private int lastV = -1;
 
 		EdgesOutItrVertex(int u) {
-			if (!(0 <= u && u < n))
+			if (!(0 <= u && u < vertices()))
 				throw new IllegalArgumentException("Illegal vertex: " + u);
 			this.u = u;
 
@@ -137,6 +123,7 @@ abstract class GraphTableAbstract extends GraphAbstract {
 		}
 
 		void advanceUntilNext() {
+			int n = vertices();
 			for (int next = v; next < n; next++) {
 				if (edges[u][next] != EdgeNone) {
 					v = next;
@@ -165,7 +152,7 @@ abstract class GraphTableAbstract extends GraphAbstract {
 		private int lastU = -1;
 
 		EdgesInItrVertex(int v) {
-			if (!(0 <= v && v < n))
+			if (!(0 <= v && v < vertices()))
 				throw new IllegalArgumentException("Illegal vertex: " + v);
 			this.v = v;
 
@@ -189,6 +176,7 @@ abstract class GraphTableAbstract extends GraphAbstract {
 		}
 
 		private void advanceUntilNext() {
+			int n = vertices();
 			for (int next = u; next < n; next++) {
 				if (edges[next][v] != EdgeNone) {
 					u = next;

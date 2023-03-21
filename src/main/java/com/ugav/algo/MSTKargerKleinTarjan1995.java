@@ -74,7 +74,7 @@ public class MSTKargerKleinTarjan1995 implements MST {
 			int s0 = g1.addEdge(u, v);
 			assert s0 == s;
 		}
-		for (String key : g.getEdgeDataKeys()) {
+		for (Object key : g.getEdgeDataKeys()) {
 			EdgeData<?> data0 = g.getEdgeData(key);
 
 			if (data0 instanceof EdgeData.Int data) {

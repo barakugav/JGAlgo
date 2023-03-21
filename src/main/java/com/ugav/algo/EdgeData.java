@@ -1,35 +1,40 @@
 package com.ugav.algo;
 
+import java.util.Arrays;
+import java.util.NoSuchElementException;
+
 import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.Graph.WeightFunctionInt;
 
-public interface EdgeData<E> {
+public abstract class EdgeData<E> {
 
-	E get(int e);
+	public abstract E get(int e);
 
-	void set(int e, E data);
+	public abstract void set(int e, E data);
 
-	DataIter<E> iterator();
+	public abstract DataIter<E> iterator();
 
-	void clear();
+	public abstract void clear();
 
-	public static interface Removable<E> extends EdgeData<E> {
-		void removeEdge(int e); // TODO
-	}
+	abstract void edgeAdd(int e);
+
+	abstract void edgeRemove(int e);
+
+	abstract void edgeSwap(int e1, int e2);
 
 	public static interface DataIter<E> {
 
-		boolean hasNext();
+		public boolean hasNext();
 
-		int nextEdge();
+		public int nextEdge();
 
-		E getData();
+		public E getData();
 
-		void setData(E val);
+		public void setData(E val);
 
 		public static interface Int extends DataIter<Integer> {
 
-			int getDataInt();
+			public int getDataInt();
 
 			@Deprecated
 			@Override
@@ -37,7 +42,7 @@ public interface EdgeData<E> {
 				return Integer.valueOf(getDataInt());
 			}
 
-			void setData(int val);
+			public void setData(int val);
 
 			@Deprecated
 			@Override
@@ -49,7 +54,7 @@ public interface EdgeData<E> {
 
 		public static interface Double extends DataIter<java.lang.Double> {
 
-			double getDataDouble();
+			public double getDataDouble();
 
 			@Deprecated
 			@Override
@@ -57,7 +62,7 @@ public interface EdgeData<E> {
 				return java.lang.Double.valueOf(getDataDouble());
 			}
 
-			void setData(double val);
+			public void setData(double val);
 
 			@Deprecated
 			@Override
@@ -69,62 +74,312 @@ public interface EdgeData<E> {
 
 	}
 
-	public static interface Int extends EdgeData<Integer>, WeightFunctionInt {
+	public static class Obj<E> extends EdgeData<E> {
 
-		int getInt(int e);
+		private Object[] data;
+		private int size;
+		// TODO default value get set
+		private static final Object DefVal = null;
+		private static final Object[] EmptyData = new Object[0];
+
+		public Obj() {
+			this(0);
+		}
+
+		public Obj(int expectedSize) {
+			data = expectedSize > 0 ? new Object[expectedSize] : EmptyData;
+			size = 0;
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public E get(int e) {
+			checkEdgeIdx(e);
+			return (E) data[e];
+		}
 
 		@Override
-		default Integer get(int e) {
+		public void set(int e, E val) {
+			checkEdgeIdx(e);
+			data[e] = val;
+		}
+
+		@Override
+		public DataIter<E> iterator() {
+			return new DataItr();
+		}
+
+		@Override
+		void edgeAdd(int e) {
+			assert e == size : "only continues edges IDs are supported";
+			if (size >= data.length)
+				data = Arrays.copyOf(data, Math.max(2, data.length * 2));
+			data[e] = DefVal;
+			size++;
+		}
+
+		@Override
+		void edgeRemove(int e) {
+			assert e == size - 1 : "only continues edges IDs are supported";
+			data[e] = null;
+			size--;
+		}
+
+		@Override
+		void edgeSwap(int e1, int e2) {
+			checkEdgeIdx(e1);
+			checkEdgeIdx(e2);
+			Object temp = data[e1];
+			data[e1] = data[e2];
+			data[e2] = temp;
+		}
+
+		@Override
+		public void clear() {
+			Arrays.fill(data, 0, size, null);
+			size = 0;
+		}
+
+		private void checkEdgeIdx(int e) {
+			if (e >= size)
+				throw new IndexOutOfBoundsException(e);
+		}
+
+		private class DataItr extends DataIterAbstract implements DataIter<E> {
+
+			DataItr() {
+				super(size);
+			}
+
+			@SuppressWarnings("unchecked")
+			@Override
+			public E getData() {
+				return (E) data[idx];
+			}
+
+			@Override
+			public void setData(E val) {
+				data[idx] = val;
+			}
+		}
+	}
+
+	public static class Int extends EdgeData<Integer> implements WeightFunctionInt {
+
+		private int[] data;
+		private int size;
+		// TODO default value get set
+		private static final int DefVal = -1;
+		private static final int[] EmptyData = new int[0];
+
+		public Int() {
+			this(0);
+		}
+
+		public Int(int expectedSize) {
+			data = expectedSize > 0 ? new int[expectedSize] : EmptyData;
+			size = 0;
+		}
+
+		public int getInt(int e) {
+			checkEdgeIdx(e);
+			return data[e];
+		}
+
+		@Override
+		public Integer get(int e) {
 			return Integer.valueOf(getInt(e));
 		}
 
-		void set(int e, int data);
+		public void set(int e, int val) {
+			checkEdgeIdx(e);
+			data[e] = val;
+		}
 
 		@Override
-		default void set(int e, Integer data) {
+		public void set(int e, Integer data) {
 			set(e, data.intValue());
 		}
 
 		@Override
-		DataIter.Int iterator();
+		public DataIter.Int iterator() {
+			return new DataItr();
+		}
 
 		@Override
-		default int weightInt(int e) {
+		void edgeAdd(int e) {
+			assert e == size : "only continues edges IDs are supported";
+			if (size >= data.length)
+				data = Arrays.copyOf(data, Math.max(2, data.length * 2));
+			data[e] = DefVal;
+			size++;
+		}
+
+		@Override
+		void edgeRemove(int e) {
+			assert e == size - 1 : "only continues edges IDs are supported";
+			size--;
+		}
+
+		@Override
+		void edgeSwap(int e1, int e2) {
+			checkEdgeIdx(e1);
+			checkEdgeIdx(e2);
+			int temp = data[e1];
+			data[e1] = data[e2];
+			data[e2] = temp;
+		}
+
+		@Override
+		public void clear() {
+			size = 0;
+		}
+
+		private void checkEdgeIdx(int e) {
+			if (e >= size)
+				throw new IndexOutOfBoundsException(e);
+		}
+
+		@Override
+		public int weightInt(int e) {
 			return getInt(e);
+		}
+
+		private class DataItr extends DataIterAbstract implements DataIter.Int {
+
+			DataItr() {
+				super(size);
+			}
+
+			@Override
+			public int getDataInt() {
+				return data[idx];
+			}
+
+			@Override
+			public void setData(int val) {
+				data[idx] = val;
+			}
 		}
 	}
 
-	public static interface Double extends EdgeData<java.lang.Double>, WeightFunction {
+	public static class Double extends EdgeData<java.lang.Double> implements WeightFunction {
 
-		double getDouble(int e);
+		private double[] data;
+		private int size;
+		// TODO default value get set
+		private static final double DefVal = -1;
+		private static final double[] EmptyData = new double[0];
+
+		public Double() {
+			this(0);
+		}
+
+		public Double(int expectedSize) {
+			data = expectedSize > 0 ? new double[expectedSize] : EmptyData;
+			size = 0;
+		}
+
+		public double getDouble(int e) {
+			checkEdgeIdx(e);
+			return data[e];
+		}
 
 		@Override
-		default java.lang.Double get(int e) {
+		public java.lang.Double get(int e) {
 			return java.lang.Double.valueOf(getDouble(e));
 		}
 
-		void set(int e, double data);
+		public void set(int e, double val) {
+			checkEdgeIdx(e);
+			data[e] = val;
+		}
 
 		@Override
-		default void set(int e, java.lang.Double data) {
+		public void set(int e, java.lang.Double data) {
 			set(e, data.doubleValue());
 		}
 
 		@Override
-		DataIter.Double iterator();
+		public DataIter.Double iterator() {
+			return new DataItr();
+		}
 
 		@Override
-		default double weight(int e) {
+		void edgeAdd(int e) {
+			assert e == size : "only continues edges IDs are supported";
+			if (size >= data.length)
+				data = Arrays.copyOf(data, Math.max(2, data.length * 2));
+			data[e] = DefVal;
+			size++;
+		}
+
+		@Override
+		void edgeRemove(int e) {
+			assert e == size - 1 : "only continues edges IDs are supported";
+			size--;
+		}
+
+		@Override
+		void edgeSwap(int e1, int e2) {
+			checkEdgeIdx(e1);
+			checkEdgeIdx(e2);
+			double temp = data[e1];
+			data[e1] = data[e2];
+			data[e2] = temp;
+		}
+
+		@Override
+		public void clear() {
+			size = 0;
+		}
+
+		private void checkEdgeIdx(int e) {
+			if (e >= size)
+				throw new IndexOutOfBoundsException(e);
+		}
+
+		@Override
+		public double weight(int e) {
 			return getDouble(e);
+		}
+
+		private class DataItr extends DataIterAbstract implements DataIter.Double {
+
+			DataItr() {
+				super(size);
+			}
+
+			@Override
+			public double getDataDouble() {
+				return data[idx];
+			}
+
+			@Override
+			public void setData(double val) {
+				data[idx] = val;
+			}
 		}
 	}
 
-	public static interface Builder {
-		<E> EdgeData<E> ofObjs();
+	private static class DataIterAbstract {
 
-		EdgeData.Int ofInts();
+		private final int maxIdx;
+		int idx;
 
-		EdgeData.Double ofDoubles();
+		DataIterAbstract(int size) {
+			this.maxIdx = size - 1;
+			idx = -1;
+		}
+
+		public boolean hasNext() {
+			return idx < maxIdx;
+		}
+
+		public int nextEdge() {
+			if (!hasNext())
+				throw new NoSuchElementException();
+			return ++idx;
+		}
 	}
-
 }

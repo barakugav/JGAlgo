@@ -36,4 +36,9 @@ public class GraphLinkedTest extends TestUtils {
 		GraphImplTestUtils.testDirectedMaxFlow(linkedImpl());
 	}
 
+	@Test
+	public static void testUndirectedRandOps() {
+		GraphImplTestUtils.testUndirectedRandOps(linkedImpl());
+	}
+
 }
