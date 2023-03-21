@@ -17,7 +17,7 @@ public class TSPMetricTest extends TestUtils {
 		});
 	}
 
-	@SuppressWarnings("boxing")
+	@SuppressWarnings("boxing") // TODO remove all boxing, use fastutil
 	private static void testMstAppxAndMatchingAppxRandGraph(int n) {
 		Random rand = new Random(nextRandSeed());
 

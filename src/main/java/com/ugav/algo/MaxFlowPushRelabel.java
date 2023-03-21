@@ -22,6 +22,11 @@ public class MaxFlowPushRelabel implements MaxFlow {
 		debug = new DebugPrintsManager(false);
 	}
 
+	private static final Object EdgeRefKey = new Object();
+	private static final Object EdgeRevKey = new Object();
+	private static final Object EdgeFlowKey = new Object();
+	private static final Object EdgeCapacityKey = new Object();
+
 	@Override
 	public double calcMaxFlow(Graph g0, FlowNetwork net, int source, int target) {
 		if (!(g0 instanceof Graph.Directed))
@@ -31,12 +36,12 @@ public class MaxFlowPushRelabel implements MaxFlow {
 		debug.println("\t", getClass().getSimpleName());
 
 		Graph.Directed g = new GraphArrayDirected(g0.vertices());
-		EdgeData.Int edgeRef = g.newEdgeDataInt("edgeRef");
-		EdgeData.Int edgeRev = g.newEdgeDataInt("edgeRev");
-		EdgeData.Double flow = g.newEdgeDataDouble("flow");
-		EdgeData.Double capacity = g.newEdgeDataDouble("capacity");
+		EdgeData.Int edgeRef = g.newEdgeDataInt(EdgeRefKey);
+		EdgeData.Int edgeRev = g.newEdgeDataInt(EdgeRevKey);
+		EdgeData.Double flow = g.newEdgeDataDouble(EdgeFlowKey);
+		EdgeData.Double capacity = g.newEdgeDataDouble(EdgeCapacityKey);
 		for (int e = 0; e < g0.edges(); e++) {
-			int u = g.getEdgeSource(e), v = g.getEdgeTarget(e);
+			int u = g0.getEdgeSource(e), v = g0.getEdgeTarget(e);
 			int e1 = g.addEdge(u, v);
 			int e2 = g.addEdge(v, u);
 			edgeRef.set(e1, e);
@@ -57,13 +62,12 @@ public class MaxFlowPushRelabel implements MaxFlow {
 		QueueIntFixSize active = new QueueIntFixSize(n);
 		int[] d = new int[n];
 
-		IntDoubleConsumer pushFlow = (e0, f) -> {
+		IntDoubleConsumer pushFlow = (e, f) -> {
 			assert f > 0;
 
-			int e = edgeRef.getInt(e0);
-			int u = g.getEdgeSource(e0), v = g.getEdgeTarget(e0);
-			if (u == g0.getEdgeSource(e))
-				; // debug.println("F(", e.orig, ") += ", Double.valueOf(f));
+			int u = g.getEdgeSource(e), v = g.getEdgeTarget(e);
+//			if (u == g0.getEdgeSource(edgeRef.getInt(e))
+//				debug.println("F(", e.orig, ") += ", Double.valueOf(f));
 
 			int rev = edgeRev.getInt(e);
 			flow.set(e, flow.getDouble(e) + f);
