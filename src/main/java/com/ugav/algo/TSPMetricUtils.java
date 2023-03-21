@@ -17,9 +17,8 @@ class TSPMetricUtils {
 		int n = g.vertices();
 
 		/* Assert degree is actually even in the new graph */
-		int[] degree = Graphs.calcDegree(g1);
 		for (int u = 0; u < n; u++)
-			assert degree[u] % 2 == 0;
+			assert g1.degree(u) % 2 == 0;
 
 		/* Calculate Eulerian tour in the new graph */
 		IntList tour = Graphs.calcEulerianTour(g1);
