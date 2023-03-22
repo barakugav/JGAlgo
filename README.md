@@ -1,8 +1,12 @@
 [![Tests](https://github.com/barakugav/algo/actions/workflows/tests.yaml/badge.svg)](https://github.com/barakugav/algo/actions/workflows/tests.yaml)
+[![Javadoc](https://img.shields.io/badge/JavaDoc-Online-green)](https://barakugav.github.io/algo/javadoc/)
+
 
 # Algo
 
 Algo is a collection of algorithms implemented in Java. It contains mostly algorithms for various graphs problems and some utilities data structures and array algorithms.
+
+[Documentation](https://barakugav.github.io/algo/javadoc/)
 
 ## Algorithms
 
