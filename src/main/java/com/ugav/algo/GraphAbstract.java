@@ -91,18 +91,68 @@ abstract class GraphAbstract implements Graph {
 	}
 
 	@Override
-	public <E> GraphWeights<E> newEdgeWeight(Object key) {
-		return addEdgeData(key, new GraphWeights.Obj<>(edgesNum()));
-	}
+	public WeightsFactory edgesWeightsFactory() {
+		return new WeightsFactory() {
 
-	@Override
-	public GraphWeights.Int newEdgeWeightInt(Object key) {
-		return addEdgeData(key, new GraphWeights.Int(edgesNum()));
-	}
+			@Override
+			public WeightsBuilderObj objs() {
+				return new WeightsBuilderObj() {
+					Object defVal = null;
 
-	@Override
-	public GraphWeights.Double newEdgeWeightDouble(Object key) {
-		return addEdgeData(key, new GraphWeights.Double(edgesNum()));
+					@SuppressWarnings("unchecked")
+					@Override
+					public <E> GraphWeights.Obj<E> build(Object key) {
+						GraphWeights.Obj<E> weights = new GraphWeights.Obj<>(edgesNum());
+						weights.setDefaultVal((E) defVal);
+						return addEdgeData(key, weights);
+					}
+
+					@Override
+					public void setDefaultVal(Object defVal) {
+						this.defVal = defVal;
+					}
+				};
+			}
+
+			@Override
+			public WeightsBuilderInt ints() {
+				return new WeightsBuilderInt() {
+					int defVal = -1;
+
+					@Override
+					public GraphWeights.Int build(Object key) {
+						GraphWeights.Int weights = new GraphWeights.Int(edgesNum());
+						weights.setDefaultVal(defVal);
+						return addEdgeData(key, weights);
+					}
+
+					@Override
+					public void setDefaultVal(int defVal) {
+						this.defVal = defVal;
+					}
+				};
+			}
+
+			@Override
+			public WeightsBuilderDouble doubles() {
+				return new WeightsBuilderDouble() {
+					double defVal = -1;
+
+					@Override
+					public GraphWeights.Double build(Object key) {
+						GraphWeights.Double weights = new GraphWeights.Double(edgesNum());
+						weights.setDefaultVal(defVal);
+						return addEdgeData(key, weights);
+					}
+
+					@Override
+					public void setDefaultVal(double defVal) {
+						this.defVal = defVal;
+					}
+				};
+			}
+
+		};
 	}
 
 	private <E, GraphWeightsT extends GraphWeights<E>> GraphWeightsT addEdgeData(Object key, GraphWeightsT weights) {
@@ -116,12 +166,12 @@ abstract class GraphAbstract implements Graph {
 	}
 
 	@Override
-	public Set<Object> getEdgeWeightKeys() {
+	public Set<Object> getEdgesWeightsKeys() {
 		return Collections.unmodifiableSet(edgeData.keySet());
 	}
 
 	@Override
-	public Collection<GraphWeights<?>> getEdgeWeights() {
+	public Collection<GraphWeights<?>> getEdgesWeights() {
 		return Collections.unmodifiableCollection(edgeData.values());
 	}
 
@@ -148,8 +198,8 @@ abstract class GraphAbstract implements Graph {
 		if (verticesNum() != o.verticesNum() || edgesNum() != o.edgesNum())
 			return false;
 
-		Set<Object> ewKeys = getEdgeWeightKeys();
-		if (!ewKeys.equals(o.getEdgeWeightKeys()))
+		Set<Object> ewKeys = getEdgesWeightsKeys();
+		if (!ewKeys.equals(o.getEdgesWeightsKeys()))
 			return false;
 		List<Object> ewKeysObj = new ArrayList<>(0);
 		for (Object weightKey : ewKeys) {
@@ -207,8 +257,8 @@ abstract class GraphAbstract implements Graph {
 		boolean directed = g1 instanceof DiGraph;
 		assert directed != (g2 instanceof DiGraph);
 
-		Set<Object> ewKeys = g1.getEdgeWeightKeys();
-		assert ewKeys.equals(g2.getEdgeWeightKeys());
+		Set<Object> ewKeys = g1.getEdgesWeightsKeys();
+		assert ewKeys.equals(g2.getEdgesWeightsKeys());
 		List<Object> ewKeysInt = new ArrayList<>(0);
 		List<Object> ewKeysDouble = new ArrayList<>(0);
 		List<Object> ewKeysComparable = new ArrayList<>(0);
@@ -312,7 +362,7 @@ abstract class GraphAbstract implements Graph {
 			es[e] = e;
 		IntArrays.parallelQuickSort(es, createEdgeComparator(this, this));
 
-		Collection<GraphWeights<?>> weights = getEdgeWeights();
+		Collection<GraphWeights<?>> weights = getEdgesWeights();
 
 		int h = 1 + verticesNum();
 		for (int eIdx = 0; eIdx < m; eIdx++) {
@@ -328,7 +378,7 @@ abstract class GraphAbstract implements Graph {
 		StringBuilder s = new StringBuilder();
 		s.append('{');
 		int n = verticesNum();
-		Collection<GraphWeights<?>> weights = getEdgeWeights();
+		Collection<GraphWeights<?>> weights = getEdgesWeights();
 
 		boolean firstVertex = true;
 		for (int u = 0; u < n; u++) {

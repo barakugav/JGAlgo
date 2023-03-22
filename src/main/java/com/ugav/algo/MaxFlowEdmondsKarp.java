@@ -27,9 +27,9 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 			throw new IllegalArgumentException("Source and target can't be the same vertices");
 
 		DiGraph g = new GraphArrayDirected(g0.verticesNum());
-		GraphWeights.Int edgeRef = g.newEdgeWeightInt(EdgeRefWeightKey);
-		GraphWeights.Int edgeRev = g.newEdgeWeightInt(EdgeRevWeightKey);
-		GraphWeights.Double flow = g.newEdgeWeightDouble(FlowWeightKey);
+		GraphWeights.Int edgeRef = g.edgesWeightsFactory().ints().build(EdgeRefWeightKey);
+		GraphWeights.Int edgeRev = g.edgesWeightsFactory().ints().build(EdgeRevWeightKey);
+		GraphWeights.Double flow = g.edgesWeightsFactory().doubles().build(FlowWeightKey);
 		for (int e = 0; e < g0.edgesNum(); e++) {
 			int u = g0.edgeSource(e), v = g0.edgeTarget(e);
 			int e1 = g.addEdge(u, v);

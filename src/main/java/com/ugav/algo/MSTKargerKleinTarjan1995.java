@@ -3,8 +3,6 @@ package com.ugav.algo;
 import java.util.Arrays;
 import java.util.Random;
 
-
-
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -85,7 +83,7 @@ public class MSTKargerKleinTarjan1995 implements MST {
 		GraphWeights.Double[] treeData = new GraphWeights.Double[treeSizes.length];
 		for (int t = 0; t < trees.length; t++) {
 			trees[t] = new GraphArrayUndirected(treeSizes[t]);
-			treeData[t] = trees[t].newEdgeWeightDouble("weight");
+			treeData[t] = trees[t].edgesWeightsFactory().doubles().build("weight");
 		}
 
 		int[] vToVnew = new int[n];

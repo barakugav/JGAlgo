@@ -26,7 +26,7 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 
 		/* Build graph from the distances table */
 		UGraph g = new GraphTableUndirected(n);
-		GraphWeights.Double weights = g.newEdgeWeightDouble("weight");
+		GraphWeights.Double weights = g.edgesWeightsFactory().doubles().build("weight");
 //		EdgeData.Double weights = new EdgeDataArray.Double(n * (n + 1) / 2);
 		for (int u = 0; u < n; u++)
 			for (int v = u + 1; v < n; v++)
@@ -48,8 +48,8 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 		int mGn = mG.verticesNum();
 //		EdgeData.Double mGWeightsNeg = new EdgeDataArray.Double(mGn * (mGn + 1) / 2);
 //		EdgeData.Int mGEdgeRef = new EdgeDataArray.Int(mGn * (mGn + 1) / 2);
-		GraphWeights.Double mGWeightsNeg = mG.newEdgeWeightDouble(EdgeWeightKey);
-		GraphWeights.Int mGEdgeRef = mG.newEdgeWeightInt(EdgeRefWeightKey);
+		GraphWeights.Double mGWeightsNeg = mG.edgesWeightsFactory().doubles().build(EdgeWeightKey);
+		GraphWeights.Int mGEdgeRef = mG.edgesWeightsFactory().ints().build(EdgeRefWeightKey);
 		for (int u = 0; u < mGn; u++) {
 			for (int v = u + 1; v < mGn; v++) {
 				int e = g.getEdge(mVtoV[u], mVtoV[v]);
@@ -64,7 +64,7 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 
 		/* Build a graph of the union of the MST and the matching result */
 		UGraph g1 = new GraphArrayUndirected(n);
-		GraphWeights.Int g1EdgeRef = g1.newEdgeWeightInt(EdgeRefWeightKey);
+		GraphWeights.Int g1EdgeRef = g1.edgesWeightsFactory().ints().build(EdgeRefWeightKey);
 //		EdgeData.Int g1EdgeRef = new EdgeDataArray.Int(mst.size() + matching.size());
 		for (IntIterator it = mst.iterator(); it.hasNext();) {
 			int e = it.nextInt();

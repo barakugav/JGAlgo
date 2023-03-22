@@ -203,7 +203,7 @@ class GraphImplTestUtils extends TestUtils {
 		opRand.add(GraphOp.AddVertex, 4);
 
 		final Object dataKey = new Object();
-		GraphWeights<Object> edgeData = g.newEdgeWeight(dataKey);
+		GraphWeights<Object> edgeData = g.edgesWeightsFactory().objs().build(dataKey);
 
 		GraphTracker tracker = new GraphTracker(g.verticesNum(), g instanceof DiGraph, dataKey);
 		for (int e = 0; e < g.edgesNum(); e++) {

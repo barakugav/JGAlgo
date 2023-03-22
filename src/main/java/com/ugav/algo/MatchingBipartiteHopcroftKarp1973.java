@@ -39,7 +39,7 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 		final int MatchedNone = -1;
 		Arrays.fill(matched, MatchedNone);
 		UGraph f = new GraphArrayUndirected(n);
-		GraphWeights.Int edgeRef = f.newEdgeWeightInt(EdgeRefWeightKey);
+		GraphWeights.Int edgeRef = f.edgesWeightsFactory().ints().build(EdgeRefWeightKey);
 
 		for (;;) {
 			/* Perform BFS to build the alternating forest */

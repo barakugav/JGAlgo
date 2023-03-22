@@ -53,9 +53,9 @@ public class SSSPGoldberg1995 implements SSSP {
 		SSSPDial1969 ssspDial = new SSSPDial1969();
 
 		DiGraph gNeg = new GraphArrayDirected(n);
-		GraphWeights.Int gNegEdgeRefs = gNeg.newEdgeWeightInt(EdgeRefWeightKey);
+		GraphWeights.Int gNegEdgeRefs = gNeg.edgesWeightsFactory().ints().build(EdgeRefWeightKey);
 		DiGraph G = new GraphArrayDirected(n);
-		GraphWeights.Int GWeights = G.newEdgeWeightInt("weight");
+		GraphWeights.Int GWeights = G.edgesWeightsFactory().ints().build("weight");
 		int fakeS1 = G.addVertex(), fakeS2 = G.addVertex();
 
 		int minWeightWordsize = Utils.log2(-minWeight);

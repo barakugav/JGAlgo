@@ -119,7 +119,7 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 	private static GraphBipartite.DiGraph referenceGraph(GraphBipartite.UGraph g, EdgeWeightFunc w) {
 		int n = g.verticesNum();
 		GraphBipartite.DiGraph g0 = new GraphBipartiteArrayDirected(g.svertices(), g.tvertices());
-		GraphWeights<Ref> edgeRef = g0.newEdgeWeight(EdgeRefWeightKey);
+		GraphWeights<Ref> edgeRef = g0.edgesWeightsFactory().objs().build(EdgeRefWeightKey);
 
 		for (int u = 0; u < n; u++) {
 			if (!g.isVertexInS(u))

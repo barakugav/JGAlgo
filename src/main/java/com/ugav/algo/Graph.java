@@ -182,56 +182,78 @@ public interface Graph {
 	// TODO documentation
 	// TODO implement bipartite graphs with boolean weights on vertices
 
-
-
 	/**
 	 * Get the user edges weights of some key
 	 *
-	 * @param <E>            The weight type
+	 * @param <E>             The weight type
 	 * @param <GraphWeightsT> the weights container
-	 * @param key            some key of the weights, could be anything
+	 * @param key             some key of the weights, could be anything
 	 * @return edges weights of the key
 	 */
 	public <E, GraphWeightsT extends GraphWeights<E>> GraphWeightsT edgesWeight(Object key);
 
 	/**
-	 * Add a new weight type associated with the edges of the graph
+	 * Get a factory used to add new weights types associated with the edges of the
+	 * graph
 	 *
-	 * @param <E> The weight type
-	 * @param key the weights key
-	 * @return the new edges weights
+	 * @return weights factory
 	 */
-	public <E> GraphWeights<E> newEdgeWeight(Object key);
-
-	/**
-	 * Add a new int weight type associated with the edges of the graph
-	 *
-	 * @param key the weights key
-	 * @return the new edges weights
-	 */
-	public GraphWeights.Int newEdgeWeightInt(Object key);
-
-	/**
-	 * Add a new double weight type associated with the edges of the graph
-	 *
-	 * @param key the weights key
-	 * @return the new edges weights
-	 */
-	public GraphWeights.Double newEdgeWeightDouble(Object key);
+	public WeightsFactory edgesWeightsFactory();
 
 	/**
 	 * Get the keys of all the associated edges weights
 	 *
 	 * @return the keys of all the associated edges weights
 	 */
-	public Set<Object> getEdgeWeightKeys();
+	public Set<Object> getEdgesWeightsKeys();
 
 	/**
 	 * Get all edges weights
 	 *
 	 * @return all edges weights
 	 */
-	public Collection<GraphWeights<?>> getEdgeWeights();
+	public Collection<GraphWeights<?>> getEdgesWeights();
+
+	public static interface WeightsFactory {
+		/**
+		 * Create a builder used to build weights of Object type.
+		 *
+		 * @return object weights builder
+		 */
+		WeightsBuilderObj objs();
+
+		/**
+		 * Create a builder used to build weights of int type.
+		 *
+		 * @return int weights builder
+		 */
+		WeightsBuilderInt ints();
+
+		/**
+		 * Create a builder used to build weights of double type.
+		 *
+		 * @return object double builder
+		 */
+		WeightsBuilderDouble doubles();
+	}
+
+	public static interface WeightsBuilderObj {
+		<E> GraphWeights.Obj<E> build(Object key);
+
+		void setDefaultVal(Object defVal);
+	}
+
+	public static interface WeightsBuilderInt {
+		GraphWeights.Int build(Object key);
+
+		void setDefaultVal(int defVal);
+	}
+
+	public static interface WeightsBuilderDouble {
+		GraphWeights.Double build(Object key);
+
+		void setDefaultVal(double defVal);
+	}
 
 	/**
 	 * Add a listener that will be notified when an edge rename occur

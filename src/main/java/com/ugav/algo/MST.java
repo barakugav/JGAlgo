@@ -36,7 +36,7 @@ public interface MST {
 	public static boolean verifyMST(UGraph g, EdgeWeightFunc w, IntCollection mstEdges, TPM tpmAlgo) {
 		int n = g.verticesNum();
 		UGraph mst = new GraphArrayUndirected(n);
-		GraphWeights.Int edgeRef = mst.newEdgeWeightInt("edgeRef");
+		GraphWeights.Int edgeRef = mst.edgesWeightsFactory().ints().build("edgeRef");
 		for (IntIterator it = mstEdges.iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			int u = g.edgeSource(e), v = g.edgeTarget(e);

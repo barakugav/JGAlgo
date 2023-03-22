@@ -564,4 +564,5 @@ public abstract class GraphWeights<E> {
 			return ++idx;
 		}
 	}
+
 }
