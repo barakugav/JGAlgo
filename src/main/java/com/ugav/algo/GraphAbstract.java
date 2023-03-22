@@ -16,7 +16,8 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 abstract class GraphAbstract implements Graph {
 
 	private int n, m;
-	private final Map<Object, GraphWeights<?>> edgeData = new Object2ObjectArrayMap<>();
+	private final Map<Object, GraphWeights<?>> eWeights = new Object2ObjectArrayMap<>();
+	private final Map<Object, GraphWeights<?>> vWeights = new Object2ObjectArrayMap<>();
 	private final List<EdgeRenameListener> edgeRenameListeners = new CopyOnWriteArrayList<>();
 
 	public GraphAbstract(int n) {
@@ -33,7 +34,10 @@ abstract class GraphAbstract implements Graph {
 
 	@Override
 	public int addVertex() {
-		return n++;
+		int u = n++;
+		for (GraphWeights<?> data : vWeights.values())
+			data.keyAdd(u);
+		return u;
 	}
 
 	@Override
@@ -46,7 +50,7 @@ abstract class GraphAbstract implements Graph {
 		checkVertexIdx(u);
 		checkVertexIdx(v);
 		int e = m++;
-		for (GraphWeights<?> data : edgeData.values())
+		for (GraphWeights<?> data : eWeights.values())
 			data.keyAdd(e);
 		return e;
 	}
@@ -59,13 +63,13 @@ abstract class GraphAbstract implements Graph {
 			edgeSwap(e, lastEdge);
 			e = lastEdge;
 		}
-		for (GraphWeights<?> data : edgeData.values())
+		for (GraphWeights<?> data : eWeights.values())
 			data.keyRemove(e);
 		m--;
 	}
 
 	void edgeSwap(int e1, int e2) {
-		for (GraphWeights<?> data : edgeData.values())
+		for (GraphWeights<?> data : eWeights.values())
 			data.keySwap(e1, e2);
 		for (EdgeRenameListener listener : edgeRenameListeners)
 			listener.edgeRename(e1, e2);
@@ -74,20 +78,112 @@ abstract class GraphAbstract implements Graph {
 	@Override
 	public void clear() {
 		clearEdges();
+		vWeights.clear();
 		n = 0;
 	}
 
 	@Override
 	public void clearEdges() {
-		for (GraphWeights<?> data : edgeData.values())
+		for (GraphWeights<?> data : eWeights.values())
 			data.clear();
 		m = 0;
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
+	public <V, GraphWeightsT extends GraphWeights<V>> GraphWeightsT verticesWeight(Object key) {
+		return (GraphWeightsT) vWeights.get(key);
+	}
+
+	@Override
+	public WeightsFactory verticesWeightsFactory() {
+		return new WeightsFactory() {
+
+			@Override
+			public WeightsBuilderObj objs() {
+				return new WeightsBuilderObj() {
+					Object defVal = null;
+
+					@SuppressWarnings("unchecked")
+					@Override
+					public <E> GraphWeights.Obj<E> build(Object key) {
+						GraphWeights.Obj<E> weights = new GraphWeights.Obj<>(verticesNum());
+						weights.setDefaultVal((E) defVal);
+						return addVertexData(key, weights);
+					}
+
+					@Override
+					public void setDefaultVal(Object defVal) {
+						this.defVal = defVal;
+					}
+				};
+			}
+
+			@Override
+			public WeightsBuilderInt ints() {
+				return new WeightsBuilderInt() {
+					int defVal = -1;
+
+					@Override
+					public GraphWeights.Int build(Object key) {
+						GraphWeights.Int weights = new GraphWeights.Int(verticesNum());
+						weights.setDefaultVal(defVal);
+						return addVertexData(key, weights);
+					}
+
+					@Override
+					public void setDefaultVal(int defVal) {
+						this.defVal = defVal;
+					}
+				};
+			}
+
+			@Override
+			public WeightsBuilderDouble doubles() {
+				return new WeightsBuilderDouble() {
+					double defVal = -1;
+
+					@Override
+					public GraphWeights.Double build(Object key) {
+						GraphWeights.Double weights = new GraphWeights.Double(verticesNum());
+						weights.setDefaultVal(defVal);
+						return addVertexData(key, weights);
+					}
+
+					@Override
+					public void setDefaultVal(double defVal) {
+						this.defVal = defVal;
+					}
+				};
+			}
+
+		};
+	}
+
+	private <V, GraphWeightsT extends GraphWeights<V>> GraphWeightsT addVertexData(Object key, GraphWeightsT weights) {
+		if (vWeights.containsKey(key))
+			throw new IllegalArgumentException();
+		int n = verticesNum();
+		for (int u = 0; u < n; u++)
+			weights.keyAdd(u);
+		vWeights.put(key, weights);
+		return weights;
+	}
+
+	@Override
+	public Set<Object> getVerticesWeightKeys() {
+		return Collections.unmodifiableSet(vWeights.keySet());
+	}
+
+	@Override
+	public Collection<GraphWeights<?>> getVerticesWeights() {
+		return Collections.unmodifiableCollection(vWeights.values());
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
 	public <E, GraphWeightsT extends GraphWeights<E>> GraphWeightsT edgesWeight(Object key) {
-		return (GraphWeightsT) edgeData.get(key);
+		return (GraphWeightsT) eWeights.get(key);
 	}
 
 	@Override
@@ -156,23 +252,23 @@ abstract class GraphAbstract implements Graph {
 	}
 
 	private <E, GraphWeightsT extends GraphWeights<E>> GraphWeightsT addEdgeData(Object key, GraphWeightsT weights) {
-		if (edgeData.containsKey(key))
+		if (eWeights.containsKey(key))
 			throw new IllegalArgumentException();
 		int m = edgesNum();
 		for (int e = 0; e < m; e++)
 			weights.keyAdd(e);
-		edgeData.put(key, weights);
+		eWeights.put(key, weights);
 		return weights;
 	}
 
 	@Override
 	public Set<Object> getEdgesWeightsKeys() {
-		return Collections.unmodifiableSet(edgeData.keySet());
+		return Collections.unmodifiableSet(eWeights.keySet());
 	}
 
 	@Override
 	public Collection<GraphWeights<?>> getEdgesWeights() {
-		return Collections.unmodifiableCollection(edgeData.values());
+		return Collections.unmodifiableCollection(eWeights.values());
 	}
 
 	@Override
@@ -197,6 +293,13 @@ abstract class GraphAbstract implements Graph {
 			return false;
 		if (verticesNum() != o.verticesNum() || edgesNum() != o.edgesNum())
 			return false;
+
+		Set<Object> vwKeys = getVerticesWeightKeys();
+		if (!vwKeys.equals(o.getVerticesWeightKeys()))
+			return false;
+		for (Object weightKey : vwKeys)
+			if (!verticesWeight(weightKey).equals(o.verticesWeight(weightKey)))
+				return false;
 
 		Set<Object> ewKeys = getEdgesWeightsKeys();
 		if (!ewKeys.equals(o.getEdgesWeightsKeys()))
@@ -356,18 +459,19 @@ abstract class GraphAbstract implements Graph {
 
 	@Override
 	public int hashCode() {
+		int h = 1;
+		for (GraphWeights<?> vWeight : getVerticesWeights())
+			h = h * 31 + vWeight.hashCode();
+
 		int m = edgesNum();
 		int[] es = new int[m];
 		for (int e = 0; e < m; e++)
 			es[e] = e;
 		IntArrays.parallelQuickSort(es, createEdgeComparator(this, this));
-
-		Collection<GraphWeights<?>> weights = getEdgesWeights();
-
-		int h = 1 + verticesNum();
+		Collection<GraphWeights<?>> edgeWeights = getEdgesWeights();
 		for (int eIdx = 0; eIdx < m; eIdx++) {
 			int e = es[eIdx];
-			for (GraphWeights<?> weight : weights)
+			for (GraphWeights<?> weight : edgeWeights)
 				h = h * 31 + Objects.hashCode(weight.get(e));
 		}
 		return h;

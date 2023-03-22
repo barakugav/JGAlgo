@@ -177,10 +177,41 @@ public interface Graph {
 	 */
 	public void clearEdges();
 
-	// TODO add weights for vertices
 	// TODO remove vertex
 	// TODO documentation
 	// TODO implement bipartite graphs with boolean weights on vertices
+
+	/**
+	 * Get the user vertices weights of some key
+	 *
+	 * @param <V>             The weight type
+	 * @param <GraphWeightsT> the weights container
+	 * @param key             some key of the weights, could be anything
+	 * @return vertices weights of the key
+	 */
+	public <V, GraphWeightsT extends GraphWeights<V>> GraphWeightsT verticesWeight(Object key);
+
+	/**
+	 * Get a factory used to add new weights types associated with the vertices of
+	 * the graph
+	 *
+	 * @return weights factory
+	 */
+	public WeightsFactory verticesWeightsFactory();
+
+	/**
+	 * Get the keys of all the associated vertices weights
+	 *
+	 * @return the keys of all the associated vertices weights
+	 */
+	public Set<Object> getVerticesWeightKeys();
+
+	/**
+	 * Get all vertices weights
+	 *
+	 * @return all vertices weights
+	 */
+	public Collection<GraphWeights<?>> getVerticesWeights();
 
 	/**
 	 * Get the user edges weights of some key
