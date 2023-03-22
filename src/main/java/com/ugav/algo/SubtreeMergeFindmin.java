@@ -1,5 +1,7 @@
 package com.ugav.algo;
 
+import java.util.NoSuchElementException;
+
 public interface SubtreeMergeFindmin<V, E> {
 
 	/**
@@ -49,8 +51,8 @@ public interface SubtreeMergeFindmin<V, E> {
 	 *
 	 * @param u a node from the first subtree
 	 * @param v a node from the second subtree
-	 * @throw IllegalArgumentException if the two nodes are from different subtrees
-	 *        which are not adjacent
+	 * @throws IllegalArgumentException if the two nodes are from different subtrees
+	 *                                  which are not adjacent
 	 */
 	public void mergeSubTrees(Node<V> u, Node<V> v);
 
@@ -74,7 +76,7 @@ public interface SubtreeMergeFindmin<V, E> {
 	 * Get the edge between two different sub trees with minimum weight
 	 *
 	 * @return minimum weight edge between two different sub trees
-	 * @throw NoSuchElementException if there is no such edge
+	 * @throws NoSuchElementException if there is no such edge
 	 */
 	public MinEdge<V, E> findMinNonTreeEdge();
 

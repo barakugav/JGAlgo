@@ -8,8 +8,6 @@ public interface LCAStatic {
 	 *
 	 * @param t a tree
 	 * @param r root of the tree
-	 * @return a result data structure that can calculate efficiently the LCA of any
-	 *         given query
 	 */
 	public void preprocessLCA(Graph t, int r);
 

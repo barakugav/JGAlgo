@@ -63,13 +63,13 @@ public interface MST {
 	 *                algorithm.
 	 * @return true if the given spanning tree is a MST of g
 	 */
-	public static boolean verifyMST(Graph g, WeightFunction w0, Graph mst, TPM tpmAlgo, EdgesWeight.Int edgeRef) {
+	public static boolean verifyMST(Graph g, WeightFunction w, Graph mst, TPM tpmAlgo, EdgesWeight.Int edgeRef) {
 		if (g instanceof DiGraph)
 			throw new IllegalArgumentException("Directed graphs are not supported");
 		if (!Graphs.isTree(mst))
 			return false;
 
-		WeightFunction w = e -> w0.weight(edgeRef.getInt(e));
+		WeightFunction w0 = e -> w.weight(edgeRef.getInt(e));
 		int m = g.edgesNum();
 		int[] queries = new int[m * 2];
 
@@ -78,11 +78,11 @@ public interface MST {
 			queries[e * 2 + 1] = g.edgeTarget(e);
 		}
 
-		int[] tpmResults = tpmAlgo.calcTPM(mst, w, queries, m);
+		int[] tpmResults = tpmAlgo.calcTPM(mst, w0, queries, m);
 
 		for (int e = 0; e < m; e++) {
 			int mstEdge = tpmResults[e];
-			if (mstEdge == -1 || w0.weight(e) < w.weight(mstEdge))
+			if (mstEdge == -1 || w.weight(e) < w0.weight(mstEdge))
 				return false;
 		}
 		return true;

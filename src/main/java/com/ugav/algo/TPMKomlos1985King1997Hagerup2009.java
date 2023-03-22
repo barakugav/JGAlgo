@@ -276,7 +276,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 						int V = vNext[eit.v()];
 						if (U != V) {
 							int E = gNext.addEdge(U, V);
-							gNextData.set(E, GData.get(e));
+							gNextData.set(E, GData.getInt(e));
 						}
 					}
 				}
