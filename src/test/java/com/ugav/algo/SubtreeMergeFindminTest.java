@@ -157,7 +157,7 @@ public class SubtreeMergeFindminTest extends TestUtils {
 				break;
 			}
 			default:
-				throw new InternalError();
+				throw new IllegalStateException();
 			}
 		}
 	}

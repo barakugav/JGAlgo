@@ -35,12 +35,4 @@ public class GraphTableUndirected extends GraphTableAbstract implements UGraph {
 		super.edgeSwap(e1, e2);
 	}
 
-	@Override
-	public void removeEdgesAll(int u) {
-		for (EdgeIter eit = edges(u); eit.hasNext();) {
-			eit.nextInt();
-			eit.remove();
-		}
-	}
-
 }

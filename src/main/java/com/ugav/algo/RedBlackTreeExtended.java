@@ -351,7 +351,7 @@ public class RedBlackTreeExtended<E> extends RedBlackTree<E> {
 				extension.setExtIdx(extsObj.size());
 				extsInt.add((ExtensionInt<E>) extension);
 			} else
-				throw new InternalError(extension.toString());
+				throw new IllegalArgumentException(extension.toString());
 			return extension;
 		}
 

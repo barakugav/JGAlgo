@@ -241,8 +241,6 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 		}
 
 		static class EdgeVal {
-//			final Edge e;
-//			Edge<EdgeVal> twin;
 			final int e;
 			final int twin;
 			Blossom b0;
@@ -252,11 +250,6 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 				this.e = e;
 				this.twin = twin;
 			}
-
-//			@Override
-//			public String toString() {
-//				return e.toString();
-//			}
 		}
 
 		private static class EdgeEvent {
@@ -445,7 +438,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 					} else if (deltaNext == delta4) {
 						expandStep();
 					} else
-						throw new InternalError();
+						throw new IllegalStateException();
 				}
 
 				// Update dual values
@@ -486,7 +479,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 
 		private void growStep() {
 			debug.print("growStep (root=", Integer.valueOf(find0(g.edgeSource(growEvents.findMin().e)).root), "): ",
-					growEvents.findMin().e);
+					Integer.valueOf(growEvents.findMin().e));
 
 			// Grow step
 			assert delta == growEventsKey(growEvents.findMin());
@@ -556,7 +549,6 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 			// Add all sub blossoms
 			unionQueue.clear();
 			scanQueue.clear();
-			@SuppressWarnings("unchecked")
 			Blossom[] bs = new Blossom[] { U, V };
 			for (Blossom b : bs) {
 				boolean prevIsRight = b == U;
@@ -779,7 +771,6 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 			debug.print("augStep:");
 			final int bu = g.edgeSource(bridge), bv = g.edgeTarget(bridge);
 			Blossom U = topBlossom(bu), V = topBlossom(bv);
-			@SuppressWarnings("unchecked")
 			Blossom[] bs = new Blossom[] { U, V };
 			for (Blossom b : bs) {
 
@@ -793,7 +784,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 						matched[eu] = e;
 						matched[ev] = edgeVal.get(e).twin;
 
-						debug.print(" ", e);
+						debug.print(" ", Integer.valueOf(e));
 						assert matched[eu] != -1;
 						assert matched[ev] != -1;
 					}
@@ -813,7 +804,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 			}
 			matched[bu] = bridge;
 			matched[bv] = edgeVal.get(bridge).twin;
-			debug.println(" ", bridge);
+			debug.println(" ", Integer.valueOf(bridge));
 		}
 
 		private void augmentPath(Blossom B, int u) {
@@ -867,7 +858,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 			assert matched[b1.base] != -1;
 			assert matched[b2.base] != -1;
 
-			debug.print(" ", xy);
+			debug.print(" ", Integer.valueOf(xy));
 			for (Blossom p = b0.parent;; p = p.parent) {
 				if (p == B.parent)
 					break;

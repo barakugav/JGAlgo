@@ -8,7 +8,6 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
 public class Array {
 
 	private Array() {
-		throw new InternalError(); // TODO
 	}
 
 	public static class Obj {

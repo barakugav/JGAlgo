@@ -51,7 +51,7 @@ public class SplitFindMinArrayTest extends TestUtils {
 					sequence[i] = seqNew;
 				break;
 			default:
-				throw new InternalError();
+				throw new IllegalStateException();
 			}
 		}
 	}
@@ -119,7 +119,7 @@ public class SplitFindMinArrayTest extends TestUtils {
 				sf.decreaseKey(x, sf.getKey(x) * rand.nextDouble());
 				break;
 			default:
-				throw new InternalError();
+				throw new IllegalStateException();
 			}
 		}
 	}

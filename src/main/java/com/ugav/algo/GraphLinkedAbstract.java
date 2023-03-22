@@ -26,6 +26,18 @@ abstract class GraphLinkedAbstract extends GraphAbstract {
 		return edges[e].v;
 	}
 
+	@Override
+	public int edgeEndpoint(int edge, int endpoint) {
+		Node n = edges[edge];
+		if (endpoint == n.u) {
+			return n.v;
+		} else if (endpoint == n.v) {
+			return n.u;
+		} else {
+			throw new IllegalArgumentException();
+		}
+	}
+
 	Node getNode(int e) {
 		return edges[e];
 	}

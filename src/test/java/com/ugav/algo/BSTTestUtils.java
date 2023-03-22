@@ -17,7 +17,6 @@ import com.ugav.algo.HeapTestUtils.TestMode;
 class BSTTestUtils extends TestUtils {
 
 	private BSTTestUtils() {
-		throw new InternalError();
 	}
 
 	static void testFindSmallers(Supplier<? extends BST<Integer>> treeBuilder) {

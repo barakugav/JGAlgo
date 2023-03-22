@@ -56,8 +56,13 @@ abstract class GraphTableAbstract extends GraphAbstract {
 	}
 
 	@Override
+	public int getEdge(int u, int v) {
+		return edges[u][v];
+	}
+
+	@Override
 	public EdgeIter edges(int u) {
-		return new EdgesOutItrVertex(u);
+		return new EdgeIterOut(u);
 	}
 
 	@Override
@@ -97,14 +102,13 @@ abstract class GraphTableAbstract extends GraphAbstract {
 		return e * SizeofEdgeEndpoints + offset;
 	}
 
-	class EdgesOutItrVertex implements EdgeIter {
+	class EdgeIterOut implements EdgeIter {
 
 		private final int u;
 		private int v;
-		private int lastE = EdgeNone;
 		private int lastV = -1;
 
-		EdgesOutItrVertex(int u) {
+		EdgeIterOut(int u) {
 			if (!(0 <= u && u < verticesNum()))
 				throw new IllegalArgumentException("Illegal vertex: " + u);
 			this.u = u;
@@ -122,10 +126,9 @@ abstract class GraphTableAbstract extends GraphAbstract {
 		public int nextInt() {
 			if (!hasNext())
 				throw new NoSuchElementException();
-			lastE = edges[u][lastV = v];
-			v++;
+			int e = edges[u][lastV = v++];
 			advanceUntilNext();
-			return lastE;
+			return e;
 		}
 
 		void advanceUntilNext() {
@@ -148,16 +151,20 @@ abstract class GraphTableAbstract extends GraphAbstract {
 		public int v() {
 			return lastV;
 		}
+
+		@Override
+		public void remove() {
+			removeEdge(edges[u()][v()]);
+		}
 	}
 
-	class EdgesInItrVertex implements EdgeIter {
+	class EdgeIterIn implements EdgeIter {
 
 		private int u;
 		private final int v;
-		private int lastE = EdgeNone;
 		private int lastU = -1;
 
-		EdgesInItrVertex(int v) {
+		EdgeIterIn(int v) {
 			if (!(0 <= v && v < verticesNum()))
 				throw new IllegalArgumentException("Illegal vertex: " + v);
 			this.v = v;
@@ -175,10 +182,9 @@ abstract class GraphTableAbstract extends GraphAbstract {
 		public int nextInt() {
 			if (!hasNext())
 				throw new NoSuchElementException();
-			lastE = edges[lastU = u][v];
-			u++;
+			int e = edges[lastU = u++][v];
 			advanceUntilNext();
-			return lastE;
+			return e;
 		}
 
 		private void advanceUntilNext() {
@@ -200,6 +206,11 @@ abstract class GraphTableAbstract extends GraphAbstract {
 		@Override
 		public int v() {
 			return v;
+		}
+
+		@Override
+		public void remove() {
+			removeEdge(edges[u()][v()]);
 		}
 	}
 

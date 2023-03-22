@@ -1,13 +1,13 @@
 package com.ugav.algo;
 
 import java.util.Arrays;
-import java.util.Collections;
 
 import com.ugav.algo.Graph.EdgeIter;
 import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.Graph.WeightFunctionInt;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 public class SSSPDial1969 implements SSSP {
@@ -260,7 +260,7 @@ public class SSSPDial1969 implements SSSP {
 		public IntList getPathTo(int v) {
 			if (distances[v] == Integer.MAX_VALUE)
 				return null;
-			IntList path = new IntArrayList();
+			IntArrayList path = new IntArrayList();
 			for (;;) {
 				int e = backtrack[v];
 				if (e == -1)
@@ -268,7 +268,7 @@ public class SSSPDial1969 implements SSSP {
 				path.add(e);
 				v = g.edgeEndpoint(e, v);
 			}
-			Collections.reverse(path); // TODO
+			IntArrays.reverse(path.elements(), 0, path.size());
 			return path;
 		}
 

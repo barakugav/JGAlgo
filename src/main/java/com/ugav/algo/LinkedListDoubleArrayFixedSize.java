@@ -2,6 +2,8 @@ package com.ugav.algo;
 
 import java.util.NoSuchElementException;
 
+import it.unimi.dsi.fastutil.ints.IntIterator;
+
 class LinkedListDoubleArrayFixedSize {
 
 	private final Impl impl;
@@ -85,7 +87,7 @@ class LinkedListDoubleArrayFixedSize {
 			impl.set(i, none);
 	}
 
-	IteratorInt iterator(int x) {
+	IntIterator iterator(int x) {
 		checkIdx(x);
 		return new Iter(x);
 	}
@@ -95,7 +97,7 @@ class LinkedListDoubleArrayFixedSize {
 			throw new IllegalArgumentException();
 	}
 
-	private class Iter implements IteratorInt {
+	private class Iter implements IntIterator {
 
 		int p;
 
@@ -109,7 +111,7 @@ class LinkedListDoubleArrayFixedSize {
 		}
 
 		@Override
-		public int next() {
+		public int nextInt() {
 			if (!hasNext())
 				throw new NoSuchElementException();
 			int ret = p;

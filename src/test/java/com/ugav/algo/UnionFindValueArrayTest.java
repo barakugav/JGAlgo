@@ -74,7 +74,7 @@ public class UnionFindValueArrayTest extends TestUtils {
 				assertEqFp(expectedDelta, actualDelta, 1E-5, "Unexpected value");
 				break;
 			default:
-				throw new InternalError();
+				throw new IllegalStateException();
 			}
 		}
 	}

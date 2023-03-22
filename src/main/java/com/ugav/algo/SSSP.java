@@ -1,11 +1,11 @@
 package com.ugav.algo;
 
 import java.util.Arrays;
-import java.util.Collections;
 
 import com.ugav.algo.Graph.WeightFunction;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 /* Single Source Shortest Path */
@@ -46,7 +46,7 @@ public interface SSSP {
 		public IntList getPathTo(int v) {
 			if (distances[v] == Double.POSITIVE_INFINITY)
 				return null;
-			IntList path = new IntArrayList();
+			IntArrayList path = new IntArrayList();
 			if (g instanceof DiGraph) {
 				for (;;) {
 					int e = backtrack[v];
@@ -65,7 +65,7 @@ public interface SSSP {
 					v = g.edgeEndpoint(e, v);
 				}
 			}
-			Collections.reverse(path);
+			IntArrays.reverse(path.elements(), 0, path.size());
 			return path;
 		}
 

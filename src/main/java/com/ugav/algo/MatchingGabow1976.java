@@ -33,8 +33,7 @@ public class MatchingGabow1976 implements Matching {
 		final int EdgeNone = -1;
 		int[] matched = new int[n];
 		Arrays.fill(matched, EdgeNone);
-		int[] bridgeE = new int[n]; // TODO use a single array twice the size
-		int[] bridgeU = new int[n];
+		int[] bridge = new int[n * 2];
 		int[] parent = new int[n]; // vertex -> edge
 
 		int[] augPath = new int[n];
@@ -133,8 +132,8 @@ public class MatchingGabow1976 implements Matching {
 								p = g.edgeEndpoint(matched[p], p);
 								blossomVertices[blossomVerticesSize++] = p;
 								queue.push(p); // add the odd vertex that became even to the queue
-								bridgeE[p] = brigeEdge;
-								bridgeU[p] = brigeVertex;
+								bridge[p * 2 + 0] = brigeEdge;
+								bridge[p * 2 + 1] = brigeVertex;
 
 								p = bases[uf.find(g.edgeEndpoint(parent[p], p))];
 							}
@@ -147,10 +146,9 @@ public class MatchingGabow1976 implements Matching {
 
 					} else {
 						// augmenting path
-						augPathSize = findPath(g, u, uRoot, isEven, matched, parent, bridgeE, bridgeU, augPath, 0);
+						augPathSize = findPath(g, u, uRoot, isEven, matched, parent, bridge, augPath, 0);
 						augPath[augPathSize++] = e;
-						augPathSize = findPath(g, v, vRoot, isEven, matched, parent, bridgeE, bridgeU, augPath,
-								augPathSize);
+						augPathSize = findPath(g, v, vRoot, isEven, matched, parent, bridge, augPath, augPathSize);
 						break bfs;
 					}
 				}
@@ -180,24 +178,22 @@ public class MatchingGabow1976 implements Matching {
 		return res;
 	}
 
-	private static int findPath(UGraph g, int s, int t, boolean[] isEven, int[] match, int[] parent, int[] bridgeE,
-			int[] bridgeU, int[] path, int pathSize) {
+	private static int findPath(UGraph g, int s, int t, boolean[] isEven, int[] match, int[] parent, int[] bridge,
+			int[] path, int pathSize) {
 		if (s == t)
 			return pathSize;
 		if (isEven[s]) {
 			int v = g.edgeEndpoint(match[s], s);
 			path[pathSize++] = match[s];
 			path[pathSize++] = parent[v];
-			return findPath(g, g.edgeEndpoint(parent[v], v), t, isEven, match, parent, bridgeE, bridgeU, path,
-					pathSize);
+			return findPath(g, g.edgeEndpoint(parent[v], v), t, isEven, match, parent, bridge, path, pathSize);
 		} else {
-			int vw = bridgeE[s];
-			int v = bridgeU[s], w = g.edgeEndpoint(vw, v);
+			int vw = bridge[s * 2 + 0];
+			int v = bridge[s * 2 + 1], w = g.edgeEndpoint(vw, v);
 			path[pathSize++] = match[s];
-			pathSize = findPath(g, v, g.edgeEndpoint(match[s], s), isEven, match, parent, bridgeE, bridgeU, path,
-					pathSize);
+			pathSize = findPath(g, v, g.edgeEndpoint(match[s], s), isEven, match, parent, bridge, path, pathSize);
 			path[pathSize++] = vw;
-			return findPath(g, w, t, isEven, match, parent, bridgeE, bridgeU, path, pathSize);
+			return findPath(g, w, t, isEven, match, parent, bridge, path, pathSize);
 		}
 	}
 

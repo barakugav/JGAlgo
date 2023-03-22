@@ -17,6 +17,8 @@ public class SSSPGoldberg1995 implements SSSP {
 	 * O(m n^0.5 log N) where N is the minimum negative weight
 	 */
 
+	private static final Object EdgeRefWeightKey = new Object();
+
 	public SSSPGoldberg1995() {
 	}
 
@@ -55,7 +57,7 @@ public class SSSPGoldberg1995 implements SSSP {
 		SSSPDial1969 ssspDial = new SSSPDial1969();
 
 		DiGraph gNeg = new GraphArrayDirected(n);
-		EdgesWeight.Int gNegEdgeRefs = gNeg.newEdgeWeightInt("edgeRef");
+		EdgesWeight.Int gNegEdgeRefs = gNeg.newEdgeWeightInt(EdgeRefWeightKey);
 		DiGraph G = new GraphArrayDirected(n);
 		EdgesWeight.Int GWeights = G.newEdgeWeightInt("weight");
 		int fakeS1 = G.addVertex(), fakeS2 = G.addVertex();

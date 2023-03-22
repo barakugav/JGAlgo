@@ -16,6 +16,10 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 	public MaxFlowEdmondsKarp() {
 	}
 
+	private static final Object EdgeRefWeightKey = new Object();
+	private static final Object EdgeRevWeightKey = new Object();
+	private static final Object FlowWeightKey = new Object();
+
 	@Override
 	public double calcMaxFlow(Graph g0, FlowNetwork net, int source, int target) {
 		if (!(g0 instanceof DiGraph))
@@ -24,9 +28,9 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 			throw new IllegalArgumentException("Source and target can't be the same vertices");
 
 		DiGraph g = new GraphArrayDirected(g0.verticesNum());
-		EdgesWeight.Int edgeRef = g.newEdgeWeightInt("edgeRef");
-		EdgesWeight.Int edgeRev = g.newEdgeWeightInt("edgeRev");
-		EdgesWeight.Double flow = g.newEdgeWeightDouble("flow");
+		EdgesWeight.Int edgeRef = g.newEdgeWeightInt(EdgeRefWeightKey);
+		EdgesWeight.Int edgeRev = g.newEdgeWeightInt(EdgeRevWeightKey);
+		EdgesWeight.Double flow = g.newEdgeWeightDouble(FlowWeightKey);
 		for (int e = 0; e < g0.edgesNum(); e++) {
 			int u = g0.edgeSource(e), v = g0.edgeTarget(e);
 			int e1 = g.addEdge(u, v);
@@ -41,7 +45,7 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 		Int2DoubleFunction capacity = e -> net.getCapacity(edgeRef.getInt(e));
 
 		int n = g.verticesNum();
-		int[] backtrack = new int[n]; // TODO
+		int[] backtrack = new int[n];
 
 		boolean[] visited = new boolean[n];
 		QueueIntFixSize queue = new QueueIntFixSize(n);

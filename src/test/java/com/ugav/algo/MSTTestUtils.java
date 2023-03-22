@@ -17,7 +17,6 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 class MSTTestUtils extends TestUtils {
 
 	private MSTTestUtils() {
-		throw new InternalError();
 	}
 
 	static void testRandGraph(Supplier<? extends MST> builder) {

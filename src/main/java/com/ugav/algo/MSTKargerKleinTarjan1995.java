@@ -48,9 +48,9 @@ public class MSTKargerKleinTarjan1995 implements MST {
 		UGraph g1 = randSubgraph(g0);
 		EdgesWeight<Ref> g1Ref = g1.edgesWeight("ref");
 		IntCollection f1Edges = calcMST0(g1, e -> g1Ref.get(e).w);
-		UGraph f1 = subGraph(g1, f1Edges);
+		UGraph f1 = Graphs.subGraph(g1, f1Edges);
 		IntCollection e2 = lightEdges(g0, f1);
-		UGraph g2 = subGraph(g0, e2);
+		UGraph g2 = Graphs.subGraph(g0, e2);
 		EdgesWeight<Ref> g2Ref = g2.edgesWeight("ref");
 		IntCollection f2 = calcMST0(g2, e -> g2Ref.get(e).w);
 
@@ -62,46 +62,13 @@ public class MSTKargerKleinTarjan1995 implements MST {
 		return f0;
 	}
 
-	private static UGraph subGraph(UGraph g, IntCollection edgeSet) {
-		// TODO move to graph array class
-		UGraph g1 = new GraphArrayUndirected(g.verticesNum());
-
-		int[] s2e = edgeSet.toIntArray();
-		for (int s = 0; s < s2e.length; s++) {
-			int e = s2e[s];
-			int u = g.edgeSource(e), v = g.edgeTarget(e);
-			int s0 = g1.addEdge(u, v);
-			assert s0 == s;
-		}
-		for (Object key : g.getEdgeWeightKeys()) {
-			EdgesWeight<?> data0 = g.edgesWeight(key);
-
-			if (data0 instanceof EdgesWeight.Int data) {
-				EdgesWeight.Int datas = g1.newEdgeWeightInt(key);
-				for (int s = 0; s < s2e.length; s++)
-					datas.set(s, data.getInt(s2e[s]));
-
-			} else if (data0 instanceof EdgesWeight.Double data) {
-				EdgesWeight.Double datas = g1.newEdgeWeightDouble(key);
-				for (int s = 0; s < s2e.length; s++)
-					datas.set(s, data.getDouble(s2e[s]));
-
-			} else {
-				EdgesWeight datas = g1.newEdgeWeight(key);
-				for (int s = 0; s < s2e.length; s++)
-					datas.set(s, data0.get(s2e[s]));
-			}
-		}
-		return g1;
-	}
-
 	private UGraph randSubgraph(UGraph g) {
 		Random rand = new Random(seedGenerator.nextLong() ^ 0x043a4a7a193827bcL);
 		IntCollection edgeSet = new IntArrayList(g.edgesNum());
 		for (int e = 0; e < g.edgesNum(); e++)
 			if (rand.nextBoolean())
 				edgeSet.add(e);
-		return subGraph(g, edgeSet);
+		return Graphs.subGraph(g, edgeSet);
 	}
 
 	private static IntCollection lightEdges(UGraph g, UGraph f) {

@@ -15,7 +15,6 @@ import it.unimi.dsi.fastutil.ints.IntList;
 class SSSPTestUtils extends TestUtils {
 
 	private SSSPTestUtils() {
-		throw new InternalError();
 	}
 
 	static void testSSSPDirectedPositiveInt(Supplier<? extends SSSP> builder) {
@@ -81,7 +80,7 @@ class SSSPTestUtils extends TestUtils {
 				assertTrue(cycleWeight != Double.NaN, "Invalid cycle: ", cycle, "\n");
 				assertTrue(cycleWeight < 0, "Cycle is not negative: ", cycle, "\n");
 				if (!expectedRes.foundNegativeCycle())
-					throw new InternalError("validation algorithm didn't find negative cycle: " + cycle);
+					throw new IllegalStateException("validation algorithm didn't find negative cycle: " + cycle);
 			} else {
 				assertTrue(expectedRes.foundNegativeCycle(), "found non existing negative cycle\n");
 			}

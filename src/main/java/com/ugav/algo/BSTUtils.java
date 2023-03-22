@@ -7,7 +7,6 @@ import java.util.NoSuchElementException;
 class BSTUtils {
 
 	private BSTUtils() {
-		throw new InternalError();
 	}
 
 	static <E, N extends Node<E, N>> N find(N root, Comparator<? super E> c, E e) {

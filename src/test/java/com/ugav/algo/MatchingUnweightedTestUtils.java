@@ -16,7 +16,6 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 class MatchingUnweightedTestUtils extends TestUtils {
 
 	private MatchingUnweightedTestUtils() {
-		throw new InternalError();
 	}
 
 	static void randGraphs(Supplier<? extends Matching> builder) {

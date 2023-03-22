@@ -10,6 +10,9 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 	 * Calculate a TSP 3/2-approximation in O(n^3) using maximum matching
 	 */
 
+	private static final Object EdgeWeightKey = new Object();
+	private static final Object EdgeRefWeightKey = new Object();
+
 	public TSPMetricMatchingAppx() {
 	}
 
@@ -45,8 +48,8 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 		int mGn = mG.verticesNum();
 //		EdgeData.Double mGWeightsNeg = new EdgeDataArray.Double(mGn * (mGn + 1) / 2);
 //		EdgeData.Int mGEdgeRef = new EdgeDataArray.Int(mGn * (mGn + 1) / 2);
-		EdgesWeight.Double mGWeightsNeg = mG.newEdgeWeightDouble("weight");
-		EdgesWeight.Int mGEdgeRef = mG.newEdgeWeightInt("edgeRef");
+		EdgesWeight.Double mGWeightsNeg = mG.newEdgeWeightDouble(EdgeWeightKey);
+		EdgesWeight.Int mGEdgeRef = mG.newEdgeWeightInt(EdgeRefWeightKey);
 		for (int u = 0; u < mGn; u++) {
 			for (int v = u + 1; v < mGn; v++) {
 				int e = g.getEdge(mVtoV[u], mVtoV[v]);
@@ -61,7 +64,7 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 
 		/* Build a graph of the union of the MST and the matching result */
 		UGraph g1 = new GraphArrayUndirected(n);
-		EdgesWeight.Int g1EdgeRef = g1.newEdgeWeightInt("edgeRef");
+		EdgesWeight.Int g1EdgeRef = g1.newEdgeWeightInt(EdgeRefWeightKey);
 //		EdgeData.Int g1EdgeRef = new EdgeDataArray.Int(mst.size() + matching.size());
 		for (IntIterator it = mst.iterator(); it.hasNext();) {
 			int e = it.nextInt();

@@ -9,9 +9,11 @@ import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.Graph.WeightFunctionInt;
 import com.ugav.algo.SSSP.SSSPResultsImpl;
 import com.ugav.algo.Utils.QueueIntFixSize;
+import com.ugav.algo.Utils.StackIntFixSize;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectFunction;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -22,7 +24,6 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 public class Graphs {
 
 	private Graphs() {
-		throw new InternalError();
 	}
 
 	@FunctionalInterface
@@ -149,7 +150,7 @@ public class Graphs {
 	 *         not found
 	 */
 	public static IntList findPath(Graph g, int u, int v) {
-		IntList path = new IntArrayList();
+		IntArrayList path = new IntArrayList();
 		if (u == v)
 			return path;
 		boolean reverse = true;
@@ -177,8 +178,9 @@ public class Graphs {
 			path.add(e);
 			p = g.edgeEndpoint(e, p);
 		}
+
 		if (reverse)
-			Collections.reverse(path); // TODO
+			IntArrays.reverse(path.elements(), 0, path.size());
 		return path;
 	}
 
@@ -212,7 +214,7 @@ public class Graphs {
 		int[] parent = new int[n];
 		Arrays.fill(parent, -1);
 
-		int[] stack = new int[n];
+		StackIntFixSize stack = new StackIntFixSize(n);
 		int visitedCount = 0;
 
 		for (int i = 0; i < roots.length; i++) {
@@ -223,12 +225,11 @@ public class Graphs {
 				return false;
 			}
 
-			stack[0] = root;
-			int stackSize = 1;
+			stack.push(root);
 			visited[root] = true;
 
-			while (stackSize > 0) {
-				int u = stack[--stackSize];
+			while (!stack.isEmpty()) {
+				int u = stack.pop();
 				visitedCount++;
 
 				for (EdgeIter eit = g.edges(u); eit.hasNext();) {
@@ -239,7 +240,7 @@ public class Graphs {
 					if (visited[v])
 						return false;
 					visited[v] = true;
-					stack[stackSize++] = v;
+					stack.push(v);
 					parent[v] = u;
 				}
 			}
@@ -262,7 +263,7 @@ public class Graphs {
 	 */
 	public static Pair<Integer, int[]> findConnectivityComponents(UGraph g) {
 		int n = g.verticesNum();
-		int[] stack = new int[n];
+		StackIntFixSize stack = new StackIntFixSize(n);
 
 		int[] comp = new int[n];
 		Arrays.fill(comp, -1);
@@ -272,12 +273,11 @@ public class Graphs {
 			if (comp[r] != -1)
 				continue;
 
-			int stackSize = 1;
-			stack[0] = r;
+			stack.push(r);
 			comp[r] = compNum;
 
-			while (stackSize-- > 0) {
-				int u = stack[stackSize];
+			while (!stack.isEmpty()) {
+				int u = stack.pop();
 
 				for (EdgeIter eit = g.edges(u); eit.hasNext();) {
 					eit.nextInt();
@@ -285,7 +285,7 @@ public class Graphs {
 					if (comp[v] != -1)
 						continue;
 					comp[v] = compNum;
-					stack[stackSize++] = v;
+					stack.push(v);
 				}
 			}
 			compNum++;
@@ -474,13 +474,13 @@ public class Graphs {
 		if (start == -1)
 			start = 0;
 
-		IntList tour = new IntArrayList(g.edgesNum());
+		IntArrayList tour = new IntArrayList(g.edgesNum());
 		IntSet usedEdges = new IntOpenHashSet();
 		EdgeIter[] iters = new EdgeIter[n];
 		for (int u = 0; u < n; u++)
 			iters[u] = g.edges(u);
 
-		IntList queue = new IntArrayList(); // TODO fixed size queue
+		StackIntFixSize queue = new StackIntFixSize(g.edgesNum());
 
 		for (int u = start;;) {
 			findCycle: for (;;) {
@@ -495,20 +495,19 @@ public class Graphs {
 					}
 				}
 				usedEdges.add(e);
-				queue.add(e);
+				queue.push(e);
 				u = v;
 			}
 
 			if (queue.isEmpty())
 				break;
 
-			int e = queue.getInt(queue.size() - 1);
+			int e = queue.pop();
 			tour.add(e);
-			queue.removeInt(queue.size() - 1);
 			u = g.edgeEndpoint(e, u);
 		}
 
-		Collections.reverse(tour); // TODO
+		IntArrays.reverse(tour.elements(), 0, tour.size());
 		return tour;
 	}
 
@@ -590,9 +589,6 @@ public class Graphs {
 		return String.join("", Collections.nCopies(n, s));
 	}
 
-//	public static final WeightFunction WEIGHT_FUNC_DEFAULT = Edge::data;
-//	public static final WeightFunctionInt WEIGHT_INT_FUNC_DEFAULT = Edge::data;
-
 	public static class EdgeWeightComparator implements IntComparator {
 
 		private final Graph.WeightFunction w;
@@ -623,7 +619,7 @@ public class Graphs {
 
 	}
 
-	public static DiGraph referenceGraph(DiGraph g, String refEdgeWeightKey) {
+	public static DiGraph referenceGraph(DiGraph g, Object refEdgeWeightKey) {
 		int m = g.edgesNum();
 		DiGraph g0 = new GraphArrayDirected(g.verticesNum());
 		EdgesWeight.Int data = g0.newEdgeWeightInt(refEdgeWeightKey);
@@ -634,7 +630,7 @@ public class Graphs {
 		return g0;
 	}
 
-	public static UGraph referenceGraph(UGraph g, String refEdgeWeightKey) {
+	public static UGraph referenceGraph(UGraph g, Object refEdgeWeightKey) {
 		int m = g.edgesNum();
 		UGraph g0 = new GraphArrayUndirected(g.verticesNum());
 		EdgesWeight.Int data = g0.newEdgeWeightInt(refEdgeWeightKey);
@@ -748,6 +744,40 @@ public class Graphs {
 			return g.edgeTarget(e);
 		}
 
+	}
+
+	@SuppressWarnings("unchecked")
+	static UGraph subGraph(UGraph g, IntCollection edgeSet) {
+		UGraph g1 = new GraphArrayUndirected(g.verticesNum());
+
+		int[] s2e = edgeSet.toIntArray();
+		for (int s = 0; s < s2e.length; s++) {
+			int e = s2e[s];
+			int u = g.edgeSource(e), v = g.edgeTarget(e);
+			int s0 = g1.addEdge(u, v);
+			assert s0 == s;
+		}
+		for (Object key : g.getEdgeWeightKeys()) {
+			EdgesWeight<?> data0 = g.edgesWeight(key);
+
+			if (data0 instanceof EdgesWeight.Int data) {
+				EdgesWeight.Int datas = g1.newEdgeWeightInt(key);
+				for (int s = 0; s < s2e.length; s++)
+					datas.set(s, data.getInt(s2e[s]));
+
+			} else if (data0 instanceof EdgesWeight.Double data) {
+				EdgesWeight.Double datas = g1.newEdgeWeightDouble(key);
+				for (int s = 0; s < s2e.length; s++)
+					datas.set(s, data.getDouble(s2e[s]));
+
+			} else {
+				@SuppressWarnings("rawtypes")
+				EdgesWeight datas = g1.newEdgeWeight(key);
+				for (int s = 0; s < s2e.length; s++)
+					datas.set(s, data0.get(s2e[s]));
+			}
+		}
+		return g1;
 	}
 
 }

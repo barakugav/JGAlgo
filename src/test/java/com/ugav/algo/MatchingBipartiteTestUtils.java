@@ -13,7 +13,6 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 class MatchingBipartiteTestUtils extends TestUtils {
 
 	private MatchingBipartiteTestUtils() {
-		throw new InternalError();
 	}
 
 	static GraphBipartite randGraphBipartite(int sn, int tn, int m, GraphImpl graphImpl) {
@@ -61,7 +60,7 @@ class MatchingBipartiteTestUtils extends TestUtils {
 		if (match.size() > expectedMatchSize) {
 			printTestStr("matching is bigger than validation algo found: ", match.size(), " > ", expectedMatchSize,
 					"\n");
-			throw new InternalError();
+			throw new IllegalStateException();
 		}
 		assertTrue(match.size() == expectedMatchSize, "unexpected match size");
 	}
