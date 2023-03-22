@@ -6,8 +6,6 @@ import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Assertions;
 
-import com.ugav.algo.Graph.WeightFunction;
-import com.ugav.algo.Graph.WeightFunctionInt;
 import com.ugav.algo.GraphsTestUtils.RandomGraphBuilder;
 
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -19,7 +17,7 @@ class TPMTestUtils extends TestUtils {
 	private TPMTestUtils() {
 	}
 
-	private static int[] calcExpectedTPM(Graph t, WeightFunction w, int[] queries) {
+	private static int[] calcExpectedTPM(Graph t, EdgeWeightFunc w, int[] queries) {
 		int queriesNum = queries.length / 2;
 		int[] res = new int[queriesNum];
 		for (int q = 0; q < queriesNum; q++) {
@@ -62,7 +60,7 @@ class TPMTestUtils extends TestUtils {
 		return queries;
 	}
 
-	static void compareActualToExpectedResults(int[] queries, int[] actual, int[] expected, WeightFunction w) {
+	static void compareActualToExpectedResults(int[] queries, int[] actual, int[] expected, EdgeWeightFunc w) {
 		Assertions.assertEquals(expected.length, actual.length, "Unexpected result size");
 		for (int i = 0; i < actual.length; i++) {
 			double aw = actual[i] != -1 ? w.weight(actual[i]) : Double.MIN_VALUE;
@@ -85,7 +83,7 @@ class TPMTestUtils extends TestUtils {
 	private static void testTPM(TPM algo, int n) {
 		Graph t = GraphsTestUtils.randTree(n);
 		GraphsTestUtils.assignRandWeightsIntPos(t);
-		WeightFunctionInt w = t.edgesWeight("weight");
+		EdgeWeightFunc.Int w = t.edgesWeight("weight");
 
 		int[] queries = n <= 64 ? generateAllPossibleQueries(n) : generateRandQueries(n, Math.min(n * 64, 8192));
 		int[] actual = algo.calcTPM(t, w, queries, queries.length / 2);
@@ -102,7 +100,7 @@ class TPMTestUtils extends TestUtils {
 			UGraph g = (UGraph) new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(true).selfEdges(false)
 					.cycles(true).connected(true).build();
 			GraphsTestUtils.assignRandWeightsIntPos(g);
-			WeightFunctionInt w = g.edgesWeight("weight");
+			EdgeWeightFunc.Int w = g.edgesWeight("weight");
 			IntCollection mstEdges = new MSTKruskal1956().calcMST(g, w);
 
 			TPM algo = builder.get();
@@ -120,7 +118,7 @@ class TPMTestUtils extends TestUtils {
 			UGraph g = (UGraph) new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(true).selfEdges(false)
 					.cycles(true).connected(true).build();
 			GraphsTestUtils.assignRandWeightsIntPos(g);
-			WeightFunctionInt w = g.edgesWeight("weight");
+			EdgeWeightFunc.Int w = g.edgesWeight("weight");
 
 			IntCollection mstEdges = new MSTKruskal1956().calcMST(g, w);
 			Graph mst = new GraphArrayUndirected(g.verticesNum());

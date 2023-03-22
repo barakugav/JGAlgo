@@ -5,8 +5,6 @@ import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Test;
 
-import com.ugav.algo.Graph.EdgeIter;
-import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.GraphImplTestUtils.GraphImpl;
 import com.ugav.algo.GraphsTestUtils.RandomGraphBuilder;
 
@@ -25,7 +23,7 @@ public class MDSTTarjan1977Test extends TestUtils {
 		}
 
 		@Override
-		public IntCollection calcMST(Graph g, WeightFunction w) {
+		public IntCollection calcMST(Graph g, EdgeWeightFunc w) {
 			if (g instanceof DiGraph)
 				return algo.calcMST(g, w);
 			int n = g.verticesNum();
@@ -71,14 +69,14 @@ public class MDSTTarjan1977Test extends TestUtils {
 			Graph g = new RandomGraphBuilder().n(n).m(m).directed(true).doubleEdges(false).selfEdges(false).cycles(true)
 					.connected(false).graphImpl(graphImpl).build();
 			GraphsTestUtils.assignRandWeightsIntPos(g);
-			WeightFunction w = g.edgesWeight("weight");
+			EdgeWeightFunc w = g.edgesWeight("weight");
 
 			MDST algo = builder.get();
 			testRandGraph(algo, g, w);
 		});
 	}
 
-	private static void testRandGraph(MDST algo, Graph g, WeightFunction w) {
+	private static void testRandGraph(MDST algo, Graph g, EdgeWeightFunc w) {
 		@SuppressWarnings("unused")
 		IntCollection mst = algo.calcMST(g, w, 0);
 		// TODO verify the result

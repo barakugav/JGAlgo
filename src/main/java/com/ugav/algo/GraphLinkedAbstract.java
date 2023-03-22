@@ -15,18 +15,6 @@ abstract class GraphLinkedAbstract extends GraphAbstract {
 	}
 
 	@Override
-	public int edgeSource(int e) {
-		checkEdgeIdx(e);
-		return edges[e].u;
-	}
-
-	@Override
-	public int edgeTarget(int e) {
-		checkEdgeIdx(e);
-		return edges[e].v;
-	}
-
-	@Override
 	public int edgeEndpoint(int edge, int endpoint) {
 		Node n = edges[edge];
 		if (endpoint == n.u) {
@@ -75,10 +63,6 @@ abstract class GraphLinkedAbstract extends GraphAbstract {
 		super.edgeSwap(e1, e2);
 	}
 
-	Iterator<Node> nodes() {
-		return new Utils.ArrayView<>(edges, edgesNum()).iterator();
-	}
-
 	Node removeEdgeNode(int e) {
 		checkEdgeIdx(e);
 		int lastEdge = edgesNum() - 1;
@@ -93,12 +77,28 @@ abstract class GraphLinkedAbstract extends GraphAbstract {
 	}
 
 	@Override
+	public int edgeSource(int e) {
+		checkEdgeIdx(e);
+		return edges[e].u;
+	}
+
+	@Override
+	public int edgeTarget(int e) {
+		checkEdgeIdx(e);
+		return edges[e].v;
+	}
+
+	@Override
 	public void clearEdges() {
 		Arrays.fill(edges, 0, edgesNum(), null);
 		super.clearEdges();
 	}
 
-	abstract class EdgeItr implements Graph.EdgeIter {
+	Iterator<Node> nodes() {
+		return new Utils.ArrayView<>(edges, edgesNum()).iterator();
+	}
+
+	abstract class EdgeItr implements EdgeIter {
 
 		private Node next;
 		Node last;

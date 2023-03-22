@@ -5,8 +5,6 @@ import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Assertions;
 
-import com.ugav.algo.Graph.WeightFunction;
-import com.ugav.algo.Graph.WeightFunctionInt;
 import com.ugav.algo.GraphImplTestUtils.GraphImpl;
 
 import it.unimi.dsi.fastutil.ints.IntAVLTreeSet;
@@ -34,7 +32,7 @@ class MSTTestUtils extends TestUtils {
 
 			Graph g = GraphsTestUtils.randGraph(n, m, graphImpl);
 			GraphsTestUtils.assignRandWeightsIntPos(g);
-			WeightFunctionInt w = g.edgesWeight("weight");
+			EdgeWeightFunc.Int w = g.edgesWeight("weight");
 
 			IntCollection mst = algo.calcMST(g, w);
 			verifyMST(g, w, mst);
@@ -44,9 +42,9 @@ class MSTTestUtils extends TestUtils {
 	private static class MSTEdgeComparator implements IntComparator {
 
 		private final Graph g;
-		private final WeightFunction w;
+		private final EdgeWeightFunc w;
 
-		MSTEdgeComparator(Graph g, WeightFunction w) {
+		MSTEdgeComparator(Graph g, EdgeWeightFunc w) {
 			this.g = g;
 			this.w = w;
 		}
@@ -74,7 +72,7 @@ class MSTTestUtils extends TestUtils {
 
 	}
 
-	private static void verifyMST(Graph g, WeightFunction w, IntCollection mst) {
+	private static void verifyMST(Graph g, EdgeWeightFunc w, IntCollection mst) {
 		/*
 		 * It's hard to verify MST, we use Kruskal algorithm to verify the others, and
 		 * assume its implementation is correct

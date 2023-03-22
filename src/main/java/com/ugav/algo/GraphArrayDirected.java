@@ -24,18 +24,6 @@ public class GraphArrayDirected extends GraphArrayAbstract implements DiGraph {
 	}
 
 	@Override
-	public EdgeIter edgesOut(int u) {
-		checkVertexIdx(u);
-		return new EdgeOutIt(u, edgesOut[u], edgesOutNum[u]);
-	}
-
-	@Override
-	public EdgeIter edgesIn(int v) {
-		checkVertexIdx(v);
-		return new EdgeInIt(v, edgesIn[v], edgesInNum[v]);
-	}
-
-	@Override
 	public int addVertex() {
 		int v = super.addVertex();
 		if (v >= edgesOut.length) {
@@ -47,6 +35,18 @@ public class GraphArrayDirected extends GraphArrayAbstract implements DiGraph {
 		}
 		edgesOut[v] = edgesIn[v] = EDGES_LIST_EMPTY;
 		return v;
+	}
+
+	@Override
+	public EdgeIter edgesOut(int u) {
+		checkVertexIdx(u);
+		return new EdgeOutIt(u, edgesOut[u], edgesOutNum[u]);
+	}
+
+	@Override
+	public EdgeIter edgesIn(int v) {
+		checkVertexIdx(v);
+		return new EdgeInIt(v, edgesIn[v], edgesInNum[v]);
 	}
 
 	@Override

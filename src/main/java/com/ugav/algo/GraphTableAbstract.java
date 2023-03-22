@@ -27,6 +27,16 @@ abstract class GraphTableAbstract extends GraphAbstract {
 	}
 
 	@Override
+	public EdgeIter edges(int u) {
+		return new EdgeIterOut(u);
+	}
+
+	@Override
+	public int getEdge(int u, int v) {
+		return edges[u][v];
+	}
+
+	@Override
 	public int addEdge(int u, int v) {
 		if (edges[u][v] != EdgeNone)
 			throw new IllegalArgumentException("parallel edges are not supported");
@@ -56,13 +66,15 @@ abstract class GraphTableAbstract extends GraphAbstract {
 	}
 
 	@Override
-	public int getEdge(int u, int v) {
-		return edges[u][v];
+	public int edgeSource(int edge) {
+		checkEdgeIdx(edge);
+		return edgeEndpoints[edgeSourceIdx(edge)];
 	}
 
 	@Override
-	public EdgeIter edges(int u) {
-		return new EdgeIterOut(u);
+	public int edgeTarget(int edge) {
+		checkEdgeIdx(edge);
+		return edgeEndpoints[edgeTargetIdx(edge)];
 	}
 
 	@Override
@@ -76,18 +88,6 @@ abstract class GraphTableAbstract extends GraphAbstract {
 		for (int u = 0; u < n; u++)
 			Arrays.fill(edges[u], EdgeNone);
 		super.clearEdges();
-	}
-
-	@Override
-	public int edgeSource(int edge) {
-		checkEdgeIdx(edge);
-		return edgeEndpoints[edgeSourceIdx(edge)];
-	}
-
-	@Override
-	public int edgeTarget(int edge) {
-		checkEdgeIdx(edge);
-		return edgeEndpoints[edgeTargetIdx(edge)];
 	}
 
 	private static int edgeSourceIdx(int e) {

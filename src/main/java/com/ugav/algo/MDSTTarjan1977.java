@@ -2,8 +2,6 @@ package com.ugav.algo;
 
 import java.util.Arrays;
 
-import com.ugav.algo.Graph.EdgeIter;
-import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.Utils.StackIntFixSize;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -29,7 +27,7 @@ public class MDSTTarjan1977 implements MDST {
 	 * finds the MST rooted from any root
 	 */
 	@Override
-	public IntCollection calcMST(Graph g0, WeightFunction w) {
+	public IntCollection calcMST(Graph g0, EdgeWeightFunc w) {
 		if (!(g0 instanceof DiGraph))
 			throw new IllegalArgumentException("Only directed graphs are supported");
 		if (g0.verticesNum() == 0 || g0.edgesNum() == 0)
@@ -48,7 +46,7 @@ public class MDSTTarjan1977 implements MDST {
 	}
 
 	@Override
-	public IntCollection calcMST(Graph g0, WeightFunction w, int root) {
+	public IntCollection calcMST(Graph g0, EdgeWeightFunc w, int root) {
 		if (!(g0 instanceof DiGraph))
 			throw new IllegalArgumentException("Only directed graphs are supported");
 		if (g0.verticesNum() == 0 || g0.edgesNum() == 0)
@@ -120,7 +118,7 @@ public class MDSTTarjan1977 implements MDST {
 		}
 	}
 
-	private static ContractedGraph contract(DiGraph g, WeightFunction w0) {
+	private static ContractedGraph contract(DiGraph g, EdgeWeightFunc w0) {
 		addEdgesUntilStronglyConnected(g);
 
 		int n = g.verticesNum();
@@ -132,7 +130,7 @@ public class MDSTTarjan1977 implements MDST {
 			ufIdxToV[v] = v;
 
 		EdgesWeight.Int edgeRefs = g.edgesWeight(EdgeRefWeightKey);
-		WeightFunction w = e -> {
+		EdgeWeightFunc w = e -> {
 			int e0 = edgeRefs.getInt(e);
 			return (e0 != HeavyEdge ? w0.weight(e0) : HeavyEdgeWeight) + uf.getValue(g.edgeTarget(e));
 		};

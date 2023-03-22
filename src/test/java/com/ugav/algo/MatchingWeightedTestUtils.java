@@ -5,8 +5,6 @@ import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Assertions;
 
-import com.ugav.algo.Graph.WeightFunction;
-import com.ugav.algo.Graph.WeightFunctionInt;
 import com.ugav.algo.GraphImplTestUtils.GraphImpl;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -33,7 +31,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 
 			GraphBipartite g = MatchingBipartiteTestUtils.randGraphBipartite(sn, tn, m, graphImpl);
 			GraphsTestUtils.assignRandWeightsIntNeg(g);
-			WeightFunctionInt w = g.edgesWeight("weight");
+			EdgeWeightFunc.Int w = g.edgesWeight("weight");
 
 			MatchingWeighted algo = builder.get();
 			MatchingWeighted validationAlgo = algo instanceof MatchingWeightedBipartiteSSSP
@@ -55,7 +53,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 					GraphImplTestUtils.GRAPH_IMPL_DEFAULT);
 			int maxWeight = m < 50 ? 100 : m * 2 + 2;
 			GraphsTestUtils.assignRandWeightsInt(g, -maxWeight, maxWeight / 4);
-			WeightFunctionInt w = g.edgesWeight("weight");
+			EdgeWeightFunc.Int w = g.edgesWeight("weight");
 
 			MatchingWeighted algo = builder.get();
 			Matching validationUnweightedAlgo = new MatchingBipartiteHopcroftKarp1973();
@@ -75,7 +73,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 
 			Graph g = GraphsTestUtils.randGraph(n, m);
 			GraphsTestUtils.assignRandWeightsIntNeg(g);
-			WeightFunctionInt w = g.edgesWeight("weight");
+			EdgeWeightFunc.Int w = g.edgesWeight("weight");
 
 			MatchingWeighted algo = builder.get();
 			// have nothing other than MatchingWeightedGabow2017, at least shuffle graph
@@ -85,7 +83,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 		});
 	}
 
-	private static void testGraphWeighted(MatchingWeighted algo, Graph g, WeightFunctionInt w,
+	private static void testGraphWeighted(MatchingWeighted algo, Graph g, EdgeWeightFunc.Int w,
 			MatchingWeighted validationAlgo) {
 		IntCollection actual = algo.calcMaxMatching(g, w);
 		MatchingUnweightedTestUtils.validateMatching(g, actual);
@@ -112,7 +110,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 			Graph g = GraphsTestUtils.randGraph(n, m);
 			int maxWeight = m < 50 ? 100 : m * 2 + 2;
 			GraphsTestUtils.assignRandWeightsInt(g, -maxWeight, maxWeight / 4);
-			WeightFunctionInt w = g.edgesWeight("weight");
+			EdgeWeightFunc.Int w = g.edgesWeight("weight");
 
 			MatchingWeighted algo = builder.get();
 			Matching validationUnweightedAlgo = new MatchingGabow1976();
@@ -121,7 +119,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 		});
 	}
 
-	private static void testGraphWeightedPerfect(MatchingWeighted algo, Graph g, WeightFunctionInt w,
+	private static void testGraphWeightedPerfect(MatchingWeighted algo, Graph g, EdgeWeightFunc.Int w,
 			Matching validationUnweightedAlgo, MatchingWeighted validationWeightedAlgo) {
 		IntCollection actual = algo.calcPerfectMaxMatching(g, w);
 		MatchingUnweightedTestUtils.validateMatching(g, actual);
@@ -145,7 +143,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 		Assertions.assertEquals(expectedWeight, actualWeight, "unexpected match weight");
 	}
 
-	private static double calcMatchingWeight(IntCollection matching, WeightFunction w) {
+	private static double calcMatchingWeight(IntCollection matching, EdgeWeightFunc w) {
 		double sum = 0;
 		for (IntIterator it = matching.iterator(); it.hasNext();)
 			sum += w.weight(it.nextInt());
@@ -161,16 +159,16 @@ class MatchingWeightedTestUtils extends TestUtils {
 		}
 
 		@Override
-		public IntCollection calcMaxMatching(Graph g, WeightFunction w) {
+		public IntCollection calcMaxMatching(Graph g, EdgeWeightFunc w) {
 			return calcMaxMatchingshuffled(g, w, false);
 		}
 
 		@Override
-		public IntCollection calcPerfectMaxMatching(Graph g, WeightFunction w) {
+		public IntCollection calcPerfectMaxMatching(Graph g, EdgeWeightFunc w) {
 			return calcMaxMatchingshuffled(g, w, true);
 		}
 
-		private IntCollection calcMaxMatchingshuffled(Graph g, WeightFunction w, boolean perfect) {
+		private IntCollection calcMaxMatchingshuffled(Graph g, EdgeWeightFunc w, boolean perfect) {
 			if (g instanceof DiGraph)
 				throw new IllegalArgumentException("only undirected graphs are supported");
 			int n = g.verticesNum();
@@ -206,7 +204,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 				edgeRef.set(e0, e);
 			}
 
-			WeightFunction shuffledW = e -> w.weight(edgeRef.getInt(e));
+			EdgeWeightFunc shuffledW = e -> w.weight(edgeRef.getInt(e));
 
 			IntCollection shuffledEdges = perfect ? algo.calcPerfectMaxMatching(shuffledG, shuffledW)
 					: algo.calcMaxMatching(shuffledG, shuffledW);

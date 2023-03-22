@@ -2,7 +2,7 @@ package com.ugav.algo;
 
 import java.util.Arrays;
 
-import com.ugav.algo.Graph.WeightFunction;
+
 
 import it.unimi.dsi.fastutil.ints.IntList;
 
@@ -16,7 +16,7 @@ public class SSSPBellmanFord implements SSSP {
 	}
 
 	@Override
-	public SSSP.Result calcDistances(Graph g0, WeightFunction w, int source) {
+	public SSSP.Result calcDistances(Graph g0, EdgeWeightFunc w, int source) {
 		if (!(g0 instanceof DiGraph))
 			throw new IllegalArgumentException("only directed graphs are supported");
 		DiGraph g = (DiGraph) g0;

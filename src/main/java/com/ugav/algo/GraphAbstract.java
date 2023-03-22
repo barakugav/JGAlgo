@@ -32,13 +32,13 @@ abstract class GraphAbstract implements Graph {
 	}
 
 	@Override
-	public int edgesNum() {
-		return m;
+	public int addVertex() {
+		return n++;
 	}
 
 	@Override
-	public int addVertex() {
-		return n++;
+	public int edgesNum() {
+		return m;
 	}
 
 	@Override
@@ -72,13 +72,16 @@ abstract class GraphAbstract implements Graph {
 	}
 
 	@Override
-	public void addEdgeRenameListener(EdgeRenameListener listener) {
-		edgeRenameListeners.add(Objects.requireNonNull(listener));
+	public void clear() {
+		clearEdges();
+		n = 0;
 	}
 
 	@Override
-	public void removeEdgeRenameListener(EdgeRenameListener listener) {
-		edgeRenameListeners.remove(listener);
+	public void clearEdges() {
+		for (EdgesWeight<?> data : edgeData.values())
+			data.clear();
+		m = 0;
 	}
 
 	@Override
@@ -123,16 +126,13 @@ abstract class GraphAbstract implements Graph {
 	}
 
 	@Override
-	public void clear() {
-		clearEdges();
-		n = 0;
+	public void addEdgeRenameListener(EdgeRenameListener listener) {
+		edgeRenameListeners.add(Objects.requireNonNull(listener));
 	}
 
 	@Override
-	public void clearEdges() {
-		for (EdgesWeight<?> data : edgeData.values())
-			data.clear();
-		m = 0;
+	public void removeEdgeRenameListener(EdgeRenameListener listener) {
+		edgeRenameListeners.remove(listener);
 	}
 
 	@Override

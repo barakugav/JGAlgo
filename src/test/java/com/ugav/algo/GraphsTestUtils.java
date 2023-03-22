@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
-import com.ugav.algo.Graph.EdgeIter;
 import com.ugav.algo.GraphImplTestUtils.GraphImpl;
 
 class GraphsTestUtils extends TestUtils {

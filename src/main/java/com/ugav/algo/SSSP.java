@@ -2,7 +2,7 @@ package com.ugav.algo;
 
 import java.util.Arrays;
 
-import com.ugav.algo.Graph.WeightFunction;
+
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
@@ -11,7 +11,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 /* Single Source Shortest Path */
 public interface SSSP {
 
-	public Result calcDistances(Graph g, WeightFunction w, int source);
+	public Result calcDistances(Graph g, EdgeWeightFunc w, int source);
 
 	public static interface Result {
 

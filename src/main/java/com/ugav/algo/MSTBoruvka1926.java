@@ -2,9 +2,6 @@ package com.ugav.algo;
 
 import java.util.Arrays;
 
-import com.ugav.algo.Graph.EdgeIter;
-import com.ugav.algo.Graph.WeightFunction;
-
 import it.unimi.dsi.fastutil.ints.Int2ObjectFunction;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -19,11 +16,11 @@ public class MSTBoruvka1926 implements MST {
 	}
 
 	@Override
-	public IntCollection calcMST(Graph g, WeightFunction w) {
+	public IntCollection calcMST(Graph g, EdgeWeightFunc w) {
 		return calcMST0(g, w, Integer.MAX_VALUE).e3;
 	}
 
-	static <E, R> Pair<UGraph, IntCollection> runBoruvka(Graph g, WeightFunction w, int numberOfRounds,
+	static <E, R> Pair<UGraph, IntCollection> runBoruvka(Graph g, EdgeWeightFunc w, int numberOfRounds,
 			Int2ObjectFunction<R> edgeValAssigner, String edgeValKey) {
 		if (numberOfRounds <= 0)
 			throw new IllegalArgumentException();
@@ -46,7 +43,7 @@ public class MSTBoruvka1926 implements MST {
 		return Pair.of(contractedG, mstEdges);
 	}
 
-	private static Triple<int[], Integer, IntCollection> calcMST0(Graph g0, WeightFunction w, int numberOfRounds) {
+	private static Triple<int[], Integer, IntCollection> calcMST0(Graph g0, EdgeWeightFunc w, int numberOfRounds) {
 		if (!(g0 instanceof UGraph))
 			throw new IllegalArgumentException("only undirected graphs are supported");
 		UGraph g = (UGraph) g0;

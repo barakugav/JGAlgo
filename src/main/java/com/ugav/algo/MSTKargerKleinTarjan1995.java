@@ -3,7 +3,7 @@ package com.ugav.algo;
 import java.util.Arrays;
 import java.util.Random;
 
-import com.ugav.algo.Graph.WeightFunction;
+
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -27,13 +27,13 @@ public class MSTKargerKleinTarjan1995 implements MST {
 	}
 
 	@Override
-	public IntCollection calcMST(Graph g0, WeightFunction w) {
+	public IntCollection calcMST(Graph g0, EdgeWeightFunc w) {
 		if (!(g0 instanceof UGraph))
 			throw new IllegalArgumentException("only undirected graphs are supported");
 		return calcMST0((UGraph) g0, w);
 	}
 
-	private IntCollection calcMST0(UGraph g, WeightFunction w) {
+	private IntCollection calcMST0(UGraph g, EdgeWeightFunc w) {
 		if (g.verticesNum() == 0 || g.edgesNum() == 0)
 			return IntLists.emptyList();
 		/*

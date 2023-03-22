@@ -23,12 +23,6 @@ public class GraphArrayUndirected extends GraphArrayAbstract implements UGraph {
 	}
 
 	@Override
-	public EdgeIter edges(int u) {
-		checkVertexIdx(u);
-		return new EdgeIt(u, edges[u], edgesNum[u]);
-	}
-
-	@Override
 	public int addVertex() {
 		int v = super.addVertex();
 		if (v >= edges.length) {
@@ -38,6 +32,12 @@ public class GraphArrayUndirected extends GraphArrayAbstract implements UGraph {
 		}
 		edges[v] = edges[v] = EDGES_LIST_EMPTY;
 		return v;
+	}
+
+	@Override
+	public EdgeIter edges(int u) {
+		checkVertexIdx(u);
+		return new EdgeIt(u, edges[u], edgesNum[u]);
 	}
 
 	@Override

@@ -9,7 +9,6 @@ import java.util.Set;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import com.ugav.algo.Graph.EdgeIter;
 import com.ugav.algo.GraphsTestUtils.RandomGraphBuilder;
 
 public class GraphsTest extends TestUtils {

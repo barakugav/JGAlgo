@@ -2,10 +2,6 @@ package com.ugav.algo;
 
 import java.util.Arrays;
 
-import com.ugav.algo.Graph.EdgeIter;
-import com.ugav.algo.Graph.WeightFunction;
-import com.ugav.algo.Graph.WeightFunctionInt;
-
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -23,13 +19,13 @@ public class SSSPGoldberg1995 implements SSSP {
 	}
 
 	@Override
-	public SSSP.Result calcDistances(Graph g0, WeightFunction w0, int source) {
+	public SSSP.Result calcDistances(Graph g0, EdgeWeightFunc w0, int source) {
 		if (!(g0 instanceof DiGraph))
 			throw new IllegalArgumentException("Undirected graphs are not supported");
 		DiGraph g = (DiGraph) g0;
-		if (!(w0 instanceof WeightFunctionInt))
+		if (!(w0 instanceof EdgeWeightFunc.Int))
 			throw new IllegalArgumentException("Only integer weights are supported");
-		WeightFunctionInt w = (WeightFunctionInt) w0;
+		EdgeWeightFunc.Int w = (EdgeWeightFunc.Int) w0;
 
 		int minWeight = Integer.MAX_VALUE;
 		for (int e = 0; e < g.edgesNum(); e++)
@@ -47,7 +43,7 @@ public class SSSPGoldberg1995 implements SSSP {
 		return new Result(source, potential, dijkstra, null);
 	}
 
-	private static Pair<int[], IntList> calcPotential(DiGraph g, WeightFunctionInt w, int minWeight) {
+	private static Pair<int[], IntList> calcPotential(DiGraph g, EdgeWeightFunc.Int w, int minWeight) {
 		int n = g.verticesNum();
 		int[] potential = new int[n];
 
@@ -179,7 +175,7 @@ public class SSSPGoldberg1995 implements SSSP {
 		return Pair.of(potential, null);
 	}
 
-	private static int weight(DiGraph g, int e, WeightFunctionInt w, int[] potential, int weightMask) {
+	private static int weight(DiGraph g, int e, EdgeWeightFunc.Int w, int[] potential, int weightMask) {
 		int weight = w.weightInt(e);
 		// weight = ceil(weight / 2^weightMask)
 		if (weightMask != 0) {
@@ -242,13 +238,13 @@ public class SSSPGoldberg1995 implements SSSP {
 
 	}
 
-	private static class PotentialWeightFunction implements WeightFunctionInt {
+	private static class PotentialWeightFunction implements EdgeWeightFunc.Int {
 
 		private final DiGraph g;
-		private final WeightFunctionInt w;
+		private final EdgeWeightFunc.Int w;
 		private final int[] potential;
 
-		PotentialWeightFunction(DiGraph g, WeightFunctionInt w, int[] potential) {
+		PotentialWeightFunction(DiGraph g, EdgeWeightFunc.Int w, int[] potential) {
 			this.g = g;
 			this.w = w;
 			this.potential = potential;

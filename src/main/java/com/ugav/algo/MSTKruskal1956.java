@@ -1,6 +1,6 @@
 package com.ugav.algo;
 
-import com.ugav.algo.Graph.WeightFunction;
+
 import com.ugav.algo.Graphs.EdgeWeightComparator;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -18,7 +18,7 @@ public class MSTKruskal1956 implements MST {
 	}
 
 	@Override
-	public IntCollection calcMST(Graph g0, WeightFunction w) {
+	public IntCollection calcMST(Graph g0, EdgeWeightFunc w) {
 		if (!(g0 instanceof UGraph))
 			throw new IllegalArgumentException("only undirected graphs are supported");
 		UGraph g = (UGraph) g0;

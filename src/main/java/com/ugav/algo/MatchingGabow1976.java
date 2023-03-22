@@ -2,7 +2,6 @@ package com.ugav.algo;
 
 import java.util.Arrays;
 
-import com.ugav.algo.Graph.EdgeIter;
 import com.ugav.algo.Utils.QueueIntFixSize;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;

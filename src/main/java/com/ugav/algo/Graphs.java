@@ -4,9 +4,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Objects;
 
-import com.ugav.algo.Graph.EdgeIter;
-import com.ugav.algo.Graph.WeightFunction;
-import com.ugav.algo.Graph.WeightFunctionInt;
 import com.ugav.algo.SSSP.SSSPResultsImpl;
 import com.ugav.algo.Utils.QueueIntFixSize;
 import com.ugav.algo.Utils.StackIntFixSize;
@@ -396,7 +393,7 @@ public class Graphs {
 		return topolSort;
 	}
 
-	public static SSSP.Result calcDistancesDAG(DiGraph g, WeightFunction w, int source) {
+	public static SSSP.Result calcDistancesDAG(DiGraph g, EdgeWeightFunc w, int source) {
 		int n = g.verticesNum();
 		int[] backtrack = new int[n];
 		Arrays.fill(backtrack, -1);
@@ -515,7 +512,7 @@ public class Graphs {
 		return formatAdjacencyMatrix(g, e -> e == -1 ? "0" : "1");
 	}
 
-	public static String formatAdjacencyMatrixWeighted(Graph g, WeightFunction w) {
+	public static String formatAdjacencyMatrixWeighted(Graph g, EdgeWeightFunc w) {
 		int m = g.edgesNum();
 		double minWeight = Double.MAX_VALUE;
 		for (int e = 0; e < m; e++) {
@@ -533,7 +530,7 @@ public class Graphs {
 						e -> e == -1 ? "-" : String.format("%." + precision + "f", Double.valueOf(w.weight(e))));
 	}
 
-	public static String formatAdjacencyMatrixWeightedInt(Graph g, WeightFunctionInt w) {
+	public static String formatAdjacencyMatrixWeightedInt(Graph g, EdgeWeightFunc.Int w) {
 		return formatAdjacencyMatrix(g, e -> e == -1 ? "-" : Integer.toString(w.weightInt(e)));
 	}
 
@@ -591,9 +588,9 @@ public class Graphs {
 
 	public static class EdgeWeightComparator implements IntComparator {
 
-		private final Graph.WeightFunction w;
+		private final EdgeWeightFunc w;
 
-		EdgeWeightComparator(Graph.WeightFunction w) {
+		EdgeWeightComparator(EdgeWeightFunc w) {
 			this.w = Objects.requireNonNull(w);
 		}
 
@@ -606,9 +603,9 @@ public class Graphs {
 
 	public static class EdgeWeightIntComparator implements IntComparator {
 
-		private final Graph.WeightFunctionInt w;
+		private final EdgeWeightFunc.Int w;
 
-		EdgeWeightIntComparator(Graph.WeightFunctionInt w) {
+		EdgeWeightIntComparator(EdgeWeightFunc.Int w) {
 			this.w = Objects.requireNonNull(w);
 		}
 

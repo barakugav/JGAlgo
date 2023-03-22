@@ -2,9 +2,6 @@ package com.ugav.algo;
 
 import java.util.Arrays;
 
-import com.ugav.algo.Graph.EdgeIter;
-import com.ugav.algo.Graph.WeightFunction;
-
 public class SSSPDijkstra implements SSSP {
 
 	/*
@@ -40,7 +37,7 @@ public class SSSPDijkstra implements SSSP {
 	}
 
 	@Override
-	public SSSP.Result calcDistances(Graph g, WeightFunction w, int source) {
+	public SSSP.Result calcDistances(Graph g, EdgeWeightFunc w, int source) {
 		int n = g.verticesNum();
 		if (n <= 0)
 			throw new IllegalArgumentException();

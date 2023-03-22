@@ -9,8 +9,6 @@ import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Assertions;
 
-import com.ugav.algo.Graph.EdgeIter;
-
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 

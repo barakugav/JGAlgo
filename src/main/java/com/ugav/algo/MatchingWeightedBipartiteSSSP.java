@@ -3,8 +3,6 @@ package com.ugav.algo;
 import java.util.Arrays;
 
 import com.ugav.algo.EdgesWeight.DataIter;
-import com.ugav.algo.Graph.EdgeIter;
-import com.ugav.algo.Graph.WeightFunction;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -23,7 +21,7 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 	private static final Object EdgeRefWeightKey = new Object();
 
 	@Override
-	public IntCollection calcMaxMatching(Graph g0, WeightFunction w) {
+	public IntCollection calcMaxMatching(Graph g0, EdgeWeightFunc w) {
 		if (!(g0 instanceof GraphBipartite.UGraph))
 			throw new IllegalArgumentException("Only undirected bipartite graphs are supported");
 		GraphBipartite.DiGraph g = referenceGraph((GraphBipartite.UGraph) g0, w);
@@ -55,7 +53,7 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 			edgeRef.set(g.addEdge(v, t), new Ref(-1, 0));
 
 		double[] potential = new double[n + 2];
-		WeightFunction spWeightFunc = e -> edgeRef.get(e).w + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];
+		EdgeWeightFunc spWeightFunc = e -> edgeRef.get(e).w + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];
 
 		// Init state may include negative distances, use Bellman Ford to calculate
 		// first potential values
@@ -114,11 +112,11 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 	}
 
 	@Override
-	public IntCollection calcPerfectMaxMatching(Graph g, WeightFunction w) {
+	public IntCollection calcPerfectMaxMatching(Graph g, EdgeWeightFunc w) {
 		throw new UnsupportedOperationException();
 	}
 
-	private static GraphBipartite.DiGraph referenceGraph(GraphBipartite.UGraph g, WeightFunction w) {
+	private static GraphBipartite.DiGraph referenceGraph(GraphBipartite.UGraph g, EdgeWeightFunc w) {
 		int n = g.verticesNum();
 		GraphBipartite.DiGraph g0 = new GraphBipartiteArrayDirected(g.svertices(), g.tvertices());
 		EdgesWeight<Ref> edgeRef = g0.newEdgeWeight(EdgeRefWeightKey);

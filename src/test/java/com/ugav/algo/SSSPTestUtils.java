@@ -6,8 +6,6 @@ import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Assertions;
 
-import com.ugav.algo.Graph.WeightFunction;
-import com.ugav.algo.Graph.WeightFunctionInt;
 import com.ugav.algo.Graphs.PathIter;
 import com.ugav.algo.GraphsTestUtils.RandomGraphBuilder;
 
@@ -36,7 +34,7 @@ class SSSPTestUtils extends TestUtils {
 			Graph g = new RandomGraphBuilder().n(n).m(m).directed(directed).doubleEdges(true).selfEdges(true)
 					.cycles(true).connected(false).build();
 			GraphsTestUtils.assignRandWeightsIntPos(g);
-			WeightFunctionInt w = g.edgesWeight("weight");
+			EdgeWeightFunc.Int w = g.edgesWeight("weight");
 			int source = rand.nextInt(g.verticesNum());
 
 			SSSP algo = builder.get();
@@ -56,7 +54,7 @@ class SSSPTestUtils extends TestUtils {
 			Graph g = new RandomGraphBuilder().n(n).m(m).directed(true).doubleEdges(true).selfEdges(true).cycles(true)
 					.connected(true).build();
 			GraphsTestUtils.assignRandWeightsIntNeg(g);
-			WeightFunctionInt w = g.edgesWeight("weight");
+			EdgeWeightFunc.Int w = g.edgesWeight("weight");
 			int source = 0;
 
 			SSSP algo = builder.get();
@@ -67,7 +65,7 @@ class SSSPTestUtils extends TestUtils {
 		});
 	}
 
-	static void validateResult(Graph g, WeightFunction w, int source, SSSP.Result result, SSSP validationAlgo) {
+	static void validateResult(Graph g, EdgeWeightFunc w, int source, SSSP.Result result, SSSP validationAlgo) {
 		SSSP.Result expectedRes = validationAlgo.calcDistances(g, w, source);
 
 		if (result.foundNegativeCycle()) {
@@ -106,7 +104,7 @@ class SSSPTestUtils extends TestUtils {
 		}
 	}
 
-	private static double getPathWeight(Graph g, IntList path, WeightFunction w) {
+	private static double getPathWeight(Graph g, IntList path, EdgeWeightFunc w) {
 		double totalWeight = 0;
 		for (PathIter it = PathIter.of(g, path); it.hasNext();)
 			totalWeight += w.weight(it.nextEdge());

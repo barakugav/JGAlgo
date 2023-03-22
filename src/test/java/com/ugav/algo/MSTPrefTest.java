@@ -8,33 +8,31 @@ import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Test;
 
-import com.ugav.algo.Graph.WeightFunctionInt;
-
 public class MSTPrefTest extends TestUtils {
 
 	// TODO pref test shouldn't be unit test
 	@Test
 	public void testRandGraph() {
-		perfCompare(List.of(
-				Pair.of("MSTBoruvka1926", MSTBoruvka1926::new),
-				Pair.of("MSTFredmanTarjan1987", MSTFredmanTarjan1987::new),
-				Pair.of("MSTKruskal1956", MSTKruskal1956::new),
-				Pair.of("MSTPrim1957", MSTPrim1957::new),
-				Pair.of("MSTYao1976", MSTYao1976::new),
-				Pair.of("MSTKargerKleinTarjan1995", () -> new MSTKargerKleinTarjan1995(nextRandSeed()))),
-				(Supplier<? extends MST> builder) -> {
-					List<Phase> phases = List.of(phase(1, 0, 0), phase(1280, 16, 32), phase(640, 64, 128), phase(320, 128, 256),
-							phase(80, 1024, 4096), phase(20, 4096, 16384));
-					runTestMultiple(phases, (testIter, args) -> {
-						int n = args[0], m = args[1];
-						Graph g = GraphsTestUtils.randGraph(n, m);
-						GraphsTestUtils.assignRandWeightsIntPos(g);
-						WeightFunctionInt w = g.edgesWeight("weight");
+		List<Pair<String, Supplier<? extends MST>>> algs = new ArrayList<>();
+		algs.add(Pair.of("MSTBoruvka1926", MSTBoruvka1926::new));
+		algs.add(Pair.of("MSTFredmanTarjan1987", MSTFredmanTarjan1987::new));
+		algs.add(Pair.of("MSTKruskal1956", MSTKruskal1956::new));
+		algs.add(Pair.of("MSTPrim1957", MSTPrim1957::new));
+		algs.add(Pair.of("MSTYao1976", MSTYao1976::new));
+		algs.add(Pair.of("MSTKargerKleinTarjan1995", () -> new MSTKargerKleinTarjan1995(nextRandSeed())));
+		perfCompare(algs, (Supplier<? extends MST> builder) -> {
+			List<Phase> phases = List.of(phase(1, 0, 0), phase(1280, 16, 32), phase(640, 64, 128), phase(320, 128, 256),
+					phase(80, 1024, 4096), phase(20, 4096, 16384));
+			runTestMultiple(phases, (testIter, args) -> {
+				int n = args[0], m = args[1];
+				Graph g = GraphsTestUtils.randGraph(n, m);
+				GraphsTestUtils.assignRandWeightsIntPos(g);
+				EdgeWeightFunc.Int w = g.edgesWeight("weight");
 
-						MST algo = builder.get();
-						algo.calcMST(g, w);
-					});
-				});
+				MST algo = builder.get();
+				algo.calcMST(g, w);
+			});
+		});
 	}
 
 	@SuppressWarnings("boxing")

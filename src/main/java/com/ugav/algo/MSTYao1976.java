@@ -2,8 +2,6 @@ package com.ugav.algo;
 
 import java.util.Arrays;
 
-import com.ugav.algo.Graph.EdgeIter;
-import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.Graphs.EdgeWeightComparator;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -21,7 +19,7 @@ public class MSTYao1976 implements MST {
 	}
 
 	@Override
-	public IntCollection calcMST(Graph g0, WeightFunction w) {
+	public IntCollection calcMST(Graph g0, EdgeWeightFunc w) {
 		if (!(g0 instanceof UGraph))
 			throw new IllegalArgumentException("only undirected graphs are supported");
 		UGraph g = (UGraph) g0;
@@ -139,7 +137,7 @@ public class MSTYao1976 implements MST {
 		return mst;
 	}
 
-	private static int[][][] partitionEdgesToBuckets(Graph g, WeightFunction w) {
+	private static int[][][] partitionEdgesToBuckets(Graph g, EdgeWeightFunc w) {
 		int n = g.verticesNum(), k = Utils.log2ceil(n);
 
 		int[][][] edges = new int[n][][];

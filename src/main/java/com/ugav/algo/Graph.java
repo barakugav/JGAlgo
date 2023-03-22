@@ -3,8 +3,6 @@ package com.ugav.algo;
 import java.util.Collection;
 import java.util.Set;
 
-import it.unimi.dsi.fastutil.ints.IntIterator;
-
 public interface Graph {
 
 	/**
@@ -17,6 +15,13 @@ public interface Graph {
 	 * @return the number of vertices in the graph
 	 */
 	public int verticesNum();
+
+	/**
+	 * Add a new vertex to the graph
+	 *
+	 * @return the new vertex identifier
+	 */
+	public int addVertex();
 
 	/**
 	 * Get the number of edges in the graph
@@ -60,31 +65,6 @@ public interface Graph {
 	}
 
 	/**
-	 * Get the degree of a vertex, the number of its edges
-	 *
-	 * If the graph is directed, this function return the number of edges whose u is
-	 * either their source or target.
-	 *
-	 * @param u a vertex
-	 * @return the number of edges whose u is their end-point
-	 */
-	default int degree(int u) {
-		int count = 0;
-		for (EdgeIter it = edges(u); it.hasNext();) {
-			it.nextInt();
-			count++;
-		}
-		return count;
-	}
-
-	/**
-	 * Add a new vertex to the graph
-	 *
-	 * @return the new vertex identifier
-	 */
-	public int addVertex();
-
-	/**
 	 * Add a new edge to the graph
 	 *
 	 * @param u a source vertex
@@ -120,41 +100,6 @@ public interface Graph {
 			eit.remove();
 		}
 	}
-
-	/**
-	 * Add a listener that will be notified when an edge rename occur
-	 *
-	 * When an edge is removed, the graph implementation may rename the other edges
-	 * identifier to maintain edges IDs 0, 1, ..., edgesNum() - 1. This method
-	 * allows to subscribe to these renames.
-	 *
-	 * @param listener a rename listener that will be notified each time a edge is
-	 *                 renamed
-	 */
-	public void addEdgeRenameListener(EdgeRenameListener listener);
-
-	public void removeEdgeRenameListener(EdgeRenameListener listener);
-
-	@FunctionalInterface
-	public static interface EdgeRenameListener {
-		/* The two edges e1 e2 swap identifiers */
-		public void edgeRename(int e1, int e2);
-	}
-
-	/**
-	 * Clear the graph completely by removing all vertices and edges
-	 *
-	 * This function might be used to reuse an already allocated graph object
-	 */
-	public void clear();
-
-	/**
-	 * Remove all the edges from the graph
-	 *
-	 * Note that this function also clears any weights associated with removed
-	 * edges.
-	 */
-	public void clearEdges();
 
 	/**
 	 * Get the source vertex of an edge
@@ -198,6 +143,39 @@ public interface Graph {
 			throw new IllegalArgumentException();
 		}
 	}
+
+	/**
+	 * Get the degree of a vertex, the number of its edges
+	 *
+	 * If the graph is directed, this function return the number of edges whose u is
+	 * either their source or target.
+	 *
+	 * @param u a vertex
+	 * @return the number of edges whose u is their end-point
+	 */
+	default int degree(int u) {
+		int count = 0;
+		for (EdgeIter it = edges(u); it.hasNext();) {
+			it.nextInt();
+			count++;
+		}
+		return count;
+	}
+
+	/**
+	 * Clear the graph completely by removing all vertices and edges
+	 *
+	 * This function might be used to reuse an already allocated graph object
+	 */
+	public void clear();
+
+	/**
+	 * Remove all the edges from the graph
+	 *
+	 * Note that this function also clears any weights associated with removed
+	 * edges.
+	 */
+	public void clearEdges();
 
 	// TODO add weights for vertices
 	// TODO remove vertex
@@ -254,36 +232,23 @@ public interface Graph {
 	public Collection<EdgesWeight<?>> getEdgeWeights();
 
 	/**
-	 * Edge iterator. Each int returned by nextInt() is ID of an edge iterated by
-	 * the iterator.
+	 * Add a listener that will be notified when an edge rename occur
+	 *
+	 * When an edge is removed, the graph implementation may rename the other edges
+	 * identifier to maintain edges IDs 0, 1, ..., edgesNum() - 1. This method
+	 * allows to subscribe to these renames.
+	 *
+	 * @param listener a rename listener that will be notified each time a edge is
+	 *                 renamed
 	 */
-	public static interface EdgeIter extends IntIterator {
+	public void addEdgeRenameListener(EdgeRenameListener listener);
 
-		/** Get the source vertex of the last returned edge */
-		int u();
-
-		/** Get the target vertex of the last returned edge */
-		int v();
-
-	}
+	public void removeEdgeRenameListener(EdgeRenameListener listener);
 
 	@FunctionalInterface
-	public static interface WeightFunction {
-
-		public double weight(int e);
-
-	}
-
-	@FunctionalInterface
-	public static interface WeightFunctionInt extends WeightFunction {
-
-		@Override
-		default double weight(int e) {
-			return weightInt(e);
-		}
-
-		public int weightInt(int e);
-
+	public static interface EdgeRenameListener {
+		/* The two edges e1 e2 swap identifiers */
+		public void edgeRename(int e1, int e2);
 	}
 
 }

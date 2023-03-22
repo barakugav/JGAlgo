@@ -2,8 +2,6 @@ package com.ugav.algo;
 
 import java.util.Arrays;
 
-import com.ugav.algo.Graph.EdgeIter;
-import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.Utils.QueueIntFixSize;
 
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -20,7 +18,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 	}
 
 	@Override
-	public int[] calcTPM(Graph t, WeightFunction w, int[] queries, int queriesNum) {
+	public int[] calcTPM(Graph t, EdgeWeightFunc w, int[] queries, int queriesNum) {
 		if (!(t instanceof UGraph))
 			throw new IllegalArgumentException("only undirected graphs are supported");
 		if (queries.length / 2 < queriesNum)
@@ -54,10 +52,10 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 		 * tree
 		 */
 		final UGraph tOrig;
-		final WeightFunction w;
+		final EdgeWeightFunc w;
 		final BitsTable bitsTable;
 
-		Worker(UGraph t, WeightFunction w) {
+		Worker(UGraph t, EdgeWeightFunc w) {
 			this.tOrig = t;
 			this.w = w;
 

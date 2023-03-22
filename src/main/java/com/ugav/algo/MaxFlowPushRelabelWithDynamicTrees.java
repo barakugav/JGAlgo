@@ -4,7 +4,6 @@ import java.util.function.Consumer;
 import java.util.function.ObjDoubleConsumer;
 
 import com.ugav.algo.DynamicTree.MinEdge;
-import com.ugav.algo.Graph.EdgeIter;
 import com.ugav.algo.Utils.IterPickable;
 import com.ugav.algo.Utils.QueueFixSize;
 import com.ugav.algo.Utils.QueueIntFixSize;

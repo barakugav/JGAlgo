@@ -2,7 +2,6 @@ package com.ugav.algo;
 
 import java.util.Arrays;
 
-import com.ugav.algo.Graph.EdgeIter;
 import com.ugav.algo.RMQ.ArrayIntComparator;
 
 public class LCARMQBenderFarachColton2000 implements LCAStatic {

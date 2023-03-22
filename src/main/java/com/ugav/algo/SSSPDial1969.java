@@ -2,10 +2,6 @@ package com.ugav.algo;
 
 import java.util.Arrays;
 
-import com.ugav.algo.Graph.EdgeIter;
-import com.ugav.algo.Graph.WeightFunction;
-import com.ugav.algo.Graph.WeightFunctionInt;
-
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -50,10 +46,10 @@ public class SSSPDial1969 implements SSSP {
 	}
 
 	@Override
-	public SSSP.Result calcDistances(Graph g, WeightFunction w0, int source) {
-		if (!(w0 instanceof WeightFunctionInt))
+	public SSSP.Result calcDistances(Graph g, EdgeWeightFunc w0, int source) {
+		if (!(w0 instanceof EdgeWeightFunc.Int))
 			throw new IllegalArgumentException("only int weights are supported");
-		WeightFunctionInt w = (WeightFunctionInt) w0;
+		EdgeWeightFunc.Int w = (EdgeWeightFunc.Int) w0;
 
 		int n = g.verticesNum(), m = g.edgesNum();
 		if (n <= 0)
@@ -83,7 +79,7 @@ public class SSSPDial1969 implements SSSP {
 		return res;
 	}
 
-	public SSSP.Result calcDistances(Graph g, WeightFunctionInt w, int source, int maxDistance) {
+	public SSSP.Result calcDistances(Graph g, EdgeWeightFunc.Int w, int source, int maxDistance) {
 		int n = g.verticesNum(), m = g.edgesNum();
 		if (n <= 0)
 			throw new IllegalArgumentException();

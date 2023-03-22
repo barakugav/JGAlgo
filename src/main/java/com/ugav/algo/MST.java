@@ -1,6 +1,6 @@
 package com.ugav.algo;
 
-import com.ugav.algo.Graph.WeightFunction;
+
 
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -15,7 +15,7 @@ public interface MST {
 	 * @return all edges that compose the MST, n-1 if the graph is connected (or
 	 *         some forest if not)
 	 */
-	public IntCollection calcMST(Graph g, WeightFunction w);
+	public IntCollection calcMST(Graph g, EdgeWeightFunc w);
 
 	/**
 	 * Verify that the given edges actually form a MST of g
@@ -33,7 +33,7 @@ public interface MST {
 	 *                 algorithm.
 	 * @return true if the collection of edges form a MST of g
 	 */
-	public static boolean verifyMST(UGraph g, WeightFunction w, IntCollection mstEdges, TPM tpmAlgo) {
+	public static boolean verifyMST(UGraph g, EdgeWeightFunc w, IntCollection mstEdges, TPM tpmAlgo) {
 		int n = g.verticesNum();
 		UGraph mst = new GraphArrayUndirected(n);
 		EdgesWeight.Int edgeRef = mst.newEdgeWeightInt("edgeRef");
@@ -63,13 +63,13 @@ public interface MST {
 	 *                algorithm.
 	 * @return true if the given spanning tree is a MST of g
 	 */
-	public static boolean verifyMST(Graph g, WeightFunction w, Graph mst, TPM tpmAlgo, EdgesWeight.Int edgeRef) {
+	public static boolean verifyMST(Graph g, EdgeWeightFunc w, Graph mst, TPM tpmAlgo, EdgesWeight.Int edgeRef) {
 		if (g instanceof DiGraph)
 			throw new IllegalArgumentException("Directed graphs are not supported");
 		if (!Graphs.isTree(mst))
 			return false;
 
-		WeightFunction w0 = e -> w.weight(edgeRef.getInt(e));
+		EdgeWeightFunc w0 = e -> w.weight(edgeRef.getInt(e));
 		int m = g.edgesNum();
 		int[] queries = new int[m * 2];
 

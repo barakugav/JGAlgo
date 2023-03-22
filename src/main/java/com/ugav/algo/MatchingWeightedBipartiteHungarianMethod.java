@@ -2,9 +2,6 @@ package com.ugav.algo;
 
 import java.util.Arrays;
 
-import com.ugav.algo.Graph.EdgeIter;
-import com.ugav.algo.Graph.WeightFunction;
-
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntComparator;
@@ -20,7 +17,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 	}
 
 	@Override
-	public IntCollection calcMaxMatching(Graph g0, WeightFunction w) {
+	public IntCollection calcMaxMatching(Graph g0, EdgeWeightFunc w) {
 		if (!(g0 instanceof GraphBipartite.UGraph))
 			throw new IllegalArgumentException("Only undirected bipartite graphs are supported");
 		GraphBipartite.UGraph g = (GraphBipartite.UGraph) g0;
@@ -28,7 +25,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 	}
 
 	@Override
-	public IntCollection calcPerfectMaxMatching(Graph g0, WeightFunction w) {
+	public IntCollection calcPerfectMaxMatching(Graph g0, EdgeWeightFunc w) {
 		if (!(g0 instanceof GraphBipartite.UGraph))
 			throw new IllegalArgumentException("Only undirected bipartite graphs are supported");
 		GraphBipartite.UGraph g = (GraphBipartite.UGraph) g0;
@@ -38,7 +35,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 	private static class Worker {
 
 		private final GraphBipartite.UGraph g;
-		private final WeightFunction w;
+		private final EdgeWeightFunc w;
 
 		private final boolean[] inTree;
 
@@ -51,7 +48,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 		private final double[] dualVal0;
 
 		@SuppressWarnings("unchecked")
-		Worker(GraphBipartite.UGraph g, WeightFunction w) {
+		Worker(GraphBipartite.UGraph g, EdgeWeightFunc w) {
 			this.g = g;
 			this.w = w;
 			int n = g.verticesNum();

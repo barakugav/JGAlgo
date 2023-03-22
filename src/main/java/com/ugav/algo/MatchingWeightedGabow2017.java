@@ -10,8 +10,6 @@ import java.util.function.Function;
 import java.util.function.IntConsumer;
 import java.util.stream.Collectors;
 
-import com.ugav.algo.Graph.EdgeIter;
-import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.Utils.NullList;
 import com.ugav.algo.Utils.QueueIntFixSize;
 
@@ -35,7 +33,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 	}
 
 	@Override
-	public IntCollection calcMaxMatching(Graph g, WeightFunction w) {
+	public IntCollection calcMaxMatching(Graph g, EdgeWeightFunc w) {
 		if (g instanceof DiGraph)
 			throw new IllegalArgumentException("Only undirected bipartite graphs are supported");
 		return new Worker(g, w, debugPrintManager).calcMaxMatching(false);
@@ -43,7 +41,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 	}
 
 	@Override
-	public IntCollection calcPerfectMaxMatching(Graph g, WeightFunction w) {
+	public IntCollection calcPerfectMaxMatching(Graph g, EdgeWeightFunc w) {
 		if (g instanceof DiGraph)
 			throw new IllegalArgumentException("Only undirected bipartite graphs are supported");
 		return new Worker(g, w, debugPrintManager).calcMaxMatching(true);
@@ -57,7 +55,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 		final EdgesWeight<EdgeVal> edgeVal;
 
 		/* the weight function */
-		final WeightFunction w;
+		final EdgeWeightFunc w;
 
 		/* vertex -> matched edge */
 		final int[] matched;
@@ -270,7 +268,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 		private static final Object EdgeValKey = new Object();
 
 		@SuppressWarnings("unchecked")
-		Worker(Graph g0, WeightFunction w, DebugPrintsManager debugPrint) {
+		Worker(Graph g0, EdgeWeightFunc w, DebugPrintsManager debugPrint) {
 			int n = g0.verticesNum();
 			this.g = new GraphArrayDirected(n);
 			edgeVal = g.newEdgeWeight(EdgeValKey);
