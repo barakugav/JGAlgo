@@ -3,7 +3,6 @@ package com.ugav.algo;
 public class BitsLookupTable {
 
 	private BitsLookupTable() {
-		throw new InternalError();
 	}
 
 	public static class Count {

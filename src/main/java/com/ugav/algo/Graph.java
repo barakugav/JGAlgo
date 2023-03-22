@@ -1,6 +1,7 @@
 package com.ugav.algo;
 
 import java.util.Collection;
+import java.util.Set;
 
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
@@ -12,7 +13,6 @@ public interface Graph {
 
 	public EdgeIter edges(int u);
 
-	// TODO specific for table
 	default int getEdge(int u, int v) {
 		for (EdgeIter it = edges(u); it.hasNext();) {
 			int e = it.nextInt();
@@ -37,7 +37,12 @@ public interface Graph {
 
 	public void removeEdge(int edge);
 
-	public void removeEdgesAll(int u);
+	default void removeEdgesAll(int u) {
+		for (EdgeIter eit = edges(u); eit.hasNext();) {
+			eit.nextInt();
+			eit.remove();
+		}
+	}
 
 	public void addEdgeRenameListener(EdgeRenameListener listener);
 
@@ -81,7 +86,9 @@ public interface Graph {
 
 	public EdgesWeight.Double newEdgeWeightDouble(Object key);
 
-	public Collection<Object> getEdgeWeightKeys();
+	public Set<Object> getEdgeWeightKeys();
+
+	public Collection<EdgesWeight<?>> getEdgeWeights();
 
 	public static interface EdgeIter extends IntIterator {
 

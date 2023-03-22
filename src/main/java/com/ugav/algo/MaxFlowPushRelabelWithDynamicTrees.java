@@ -10,6 +10,8 @@ import com.ugav.algo.Utils.QueueFixSize;
 import com.ugav.algo.Utils.QueueIntFixSize;
 import com.ugav.algo.Utils.Stack;
 
+import it.unimi.dsi.fastutil.ints.IntIterator;
+
 public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 
 	/**
@@ -20,6 +22,7 @@ public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 
 	private final DebugPrintsManager debug;
 	private static final double EPS = 0.0001;
+	private static final Object EdgeRefWeightKey = new Object();
 
 	public MaxFlowPushRelabelWithDynamicTrees() {
 		debug = new DebugPrintsManager(false);
@@ -60,7 +63,7 @@ public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 			maxCapacity = Math.max(maxCapacity, net.getCapacity(e));
 
 		DiGraph g = referenceGraph((DiGraph) g0, net);
-		EdgesWeight<Ref> edgeRef = g.edgesWeight("edgeRef");
+		EdgesWeight<Ref> edgeRef = g.edgesWeight(EdgeRefWeightKey);
 		int n = g.verticesNum();
 
 		final int maxTreeSize = Math.max(1, n * n / g.edgesNum());
@@ -119,7 +122,6 @@ public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 			assert f > 0;
 
 			int u = eit.u();
-//			int u = e.u(), v = e.v();
 //			if (e.u() == data.orig.u())
 //				debug.println("F(", data.orig, ") += ", Double.valueOf(f));
 
@@ -161,7 +163,7 @@ public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 				int vSize = dt.size(V.dtNode);
 				if (uSize + vSize <= maxTreeSize) {
 					/* Link u to a node with admissible edge and start pushing */
-					dt.link(U.dtNode, V.dtNode, eAccess, e);
+					dt.link(U.dtNode, V.dtNode, eAccess, Integer.valueOf(e));
 					assert !children.hasNext(U.v) && !children.hasPrev(U.v);
 					if (V.firstDtChild == -1) {
 						V.firstDtChild = U.v;
@@ -204,7 +206,7 @@ public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 						minEdge = dt.findMinEdge(W.dtNode);
 						if (minEdge.weight() > EPS)
 							break;
-						Ref edgeData = edgeRef.get(minEdge.getData());
+						Ref edgeData = edgeRef.get(minEdge.getData().intValue());
 						updateFlow.accept(edgeData, minEdge.weight());
 						cut.accept(minEdge.u().getNodeData());
 					}
@@ -225,15 +227,14 @@ public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 				/* cut all vertices pointing into u */
 				assert U.dtNode.getParent() == null;
 				if (U.firstDtChild != -1) {
-					for (IteratorInt childIt = children.iterator(U.firstDtChild); childIt.hasNext();) {
-						// TODO use fastutil iter
-						int child = childIt.next();
+					for (IntIterator childIt = children.iterator(U.firstDtChild); childIt.hasNext();) {
+						int child = childIt.nextInt();
 						Vertex childData = vertexData[child];
 						assert childData.dtNode.getParent() == U.dtNode;
 
 						/* update flow */
 						MinEdge<Vertex, Integer> m = dt.findMinEdge(childData.dtNode);
-						Ref edgeData = edgeRef.get(m.getData());
+						Ref edgeData = edgeRef.get(m.getData().intValue());
 						updateFlow.accept(edgeData, m.weight());
 
 						/* cut child */
@@ -259,7 +260,7 @@ public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 				DynamicTree.Node<Vertex, Integer> uDt = cleanupStack.pop();
 				assert uDt.getParent().getParent() == null;
 				MinEdge<Vertex, Integer> m = dt.findMinEdge(uDt);
-				Ref edgeData = edgeRef.get(m.getData());
+				Ref edgeData = edgeRef.get(m.getData().intValue());
 				updateFlow.accept(edgeData, m.weight());
 				dt.cut(m.u());
 			}
@@ -282,7 +283,7 @@ public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 
 	private static DiGraph referenceGraph(DiGraph g0, FlowNetwork net) {
 		DiGraph g = new GraphArrayDirected(g0.verticesNum());
-		EdgesWeight<Ref> edgeRef = g.newEdgeWeight("edgeRef");
+		EdgesWeight<Ref> edgeRef = g.newEdgeWeight(EdgeRefWeightKey);
 		for (int e = 0; e < g0.edgesNum(); e++) {
 			int u = g0.edgeSource(e), v = g0.edgeTarget(e);
 			Ref ref = new Ref(e, net.getCapacity(e), 0), refRev = new Ref(e, 0, 0);

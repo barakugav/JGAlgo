@@ -18,6 +18,8 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 	public MatchingBipartiteHopcroftKarp1973() {
 	}
 
+	private static final Object EdgeRefWeightKey = new Object();
+
 	@Override
 	public IntCollection calcMaxMatching(Graph g0) {
 		if (!(g0 instanceof GraphBipartite.Undirected))
@@ -38,7 +40,7 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 		final int MatchedNone = -1;
 		Arrays.fill(matched, MatchedNone);
 		UGraph f = new GraphArrayUndirected(n);
-		EdgesWeight.Int edgeRef = f.newEdgeWeightInt("edgeRef"); // TODO use object
+		EdgesWeight.Int edgeRef = f.newEdgeWeightInt(EdgeRefWeightKey);
 
 		for (;;) {
 			/* Perform BFS to build the alternating forest */

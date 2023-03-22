@@ -27,6 +27,8 @@ public class MaxFlowDinic implements MaxFlow {
 		debug = new DebugPrintsManager(false);
 	}
 
+	private static final Object EdgeRefWeightKey = new Object();
+
 	@Override
 	public double calcMaxFlow(Graph g0, FlowNetwork net, int source, int target) {
 		if (!(g0 instanceof DiGraph))
@@ -40,10 +42,10 @@ public class MaxFlowDinic implements MaxFlow {
 			maxCapacity = Math.max(maxCapacity, net.getCapacity(e));
 
 		DiGraph g = referenceGraph((DiGraph) g0, net);
-		EdgesWeight<Ref> edgeRef = g.edgesWeight("edgeRef");
+		EdgesWeight<Ref> edgeRef = g.edgesWeight(EdgeRefWeightKey);
 		final int n = g.verticesNum();
 		DiGraph L = new GraphLinkedDirected(n);
-		EdgesWeight<Ref> edgeRefL = L.newEdgeWeight("edgeRef");
+		EdgesWeight<Ref> edgeRefL = L.newEdgeWeight(EdgeRefWeightKey);
 		QueueIntFixSize bfsQueue = new QueueIntFixSize(n);
 		int[] level = new int[n];
 		DynamicTree<Integer, Integer> dt = new DynamicTreeSplay<>(maxCapacity * 3);
@@ -89,11 +91,9 @@ public class MaxFlowDinic implements MaxFlow {
 			EdgeUniqueIDManager idManager = new EdgeUniqueIDManager(L);
 
 			ObjDoubleConsumer<Ref> updateFlow = (e, weight) -> {
-//				Ref e = g.edgeData().get(e0);
 				double f = net.getCapacity(e.orig) - e.flow - weight;
 //				if (e0.u() == e.orig.u())
 //					debug.println("F(", e.orig, ") += ", Double.valueOf(f));
-//				Ref eRev = edgeRef.get(e.rev);
 				e.flow += f;
 				e.rev.flow -= f;
 				assert e.flow <= net.getCapacity(e.orig) + EPS;
@@ -112,7 +112,7 @@ public class MaxFlowDinic implements MaxFlow {
 					/* Delete all saturated edges */
 					debug.println("Delete");
 					do {
-						int e = idManager.idToEdge(min.getData());
+						int e = idManager.idToEdge(min.getData().intValue());
 						assert vToDt[L.edgeSource(e)] == min.u();
 						Ref ref = edgeRefL.get(e);
 						L.removeEdge(e);
@@ -136,7 +136,7 @@ public class MaxFlowDinic implements MaxFlow {
 							continue; /* If the edge is not in the DT, ignore */
 
 						MinEdge<Integer, Integer> m = dt.findMinEdge(vToDt[u]);
-						assert e == idManager.idToEdge(m.getData());
+						assert e == idManager.idToEdge(m.getData().intValue());
 						Ref ref = edgeRefL.get(e);
 						updateFlow.accept(ref, m.weight());
 
@@ -151,7 +151,7 @@ public class MaxFlowDinic implements MaxFlow {
 					int e = eit.nextInt();
 					Ref eRef = edgeRefL.get(e);
 					dt.link(vToDt[eit.u()], vToDt[eit.v()], net.getCapacity(eRef.orig) - eRef.flow,
-							idManager.edgeToId(e));
+							Integer.valueOf(idManager.edgeToId(e)));
 				}
 			}
 
@@ -163,7 +163,7 @@ public class MaxFlowDinic implements MaxFlow {
 					DynamicTree.Node<Integer, Integer> uDt = cleanupStack.pop();
 					assert uDt.getParent() == dt.findRoot(uDt);
 					MinEdge<Integer, Integer> m = dt.findMinEdge(uDt);
-					Ref ref = edgeRefL.get(idManager.idToEdge(m.getData()));
+					Ref ref = edgeRefL.get(idManager.idToEdge(m.getData().intValue()));
 					updateFlow.accept(ref, m.weight());
 					dt.cut(m.u());
 				}
@@ -190,7 +190,7 @@ public class MaxFlowDinic implements MaxFlow {
 
 	private static DiGraph referenceGraph(DiGraph g0, FlowNetwork net) {
 		DiGraph g = new GraphArrayDirected(g0.verticesNum());
-		EdgesWeight<Ref> edgeRef = g.newEdgeWeight("edgeRef");
+		EdgesWeight<Ref> edgeRef = g.newEdgeWeight(EdgeRefWeightKey);
 		for (int e = 0; e < g0.edgesNum(); e++) {
 			int u = g0.edgeSource(e), v = g0.edgeTarget(e);
 			Ref ref = new Ref(e, 0), refRev = new Ref(e, net.getCapacity(e));

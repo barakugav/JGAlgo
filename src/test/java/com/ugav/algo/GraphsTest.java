@@ -81,9 +81,9 @@ public class GraphsTest extends TestUtils {
 			Graph g = new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(false).selfEdges(false)
 					.cycles(false).connected(true).build();
 			int e = rand.nextInt(m);
-//			g.removeEdge(e);
+			g.removeEdge(e);
 //
-//			assertFalse(Graphs.isTree(g));
+			assertFalse(Graphs.isTree(g));
 		});
 	}
 
@@ -133,9 +133,9 @@ public class GraphsTest extends TestUtils {
 					.cycles(false).connected(true).build();
 			int root = rand.nextInt(n);
 			int e = rand.nextInt(m);
-//			g.removeEdge(e);
+			g.removeEdge(e);
 //
-//			assertFalse(Graphs.isTree(g, root));
+			assertFalse(Graphs.isTree(g, root));
 		});
 	}
 
@@ -188,7 +188,7 @@ public class GraphsTest extends TestUtils {
 			for (int i = 0; i < n; i++) {
 				int u = topolSort[i];
 				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
-					int e = eit.nextInt();
+					eit.nextInt();
 					int v = eit.v();
 					assertFalse(seenVertices.contains(Integer.valueOf(v)));
 				}

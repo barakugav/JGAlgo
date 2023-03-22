@@ -16,7 +16,6 @@ import it.unimi.dsi.fastutil.ints.IntList;
 class TPMTestUtils extends TestUtils {
 
 	private TPMTestUtils() {
-		throw new InternalError();
 	}
 
 	private static int[] calcExpectedTPM(Graph t, WeightFunction w, int[] queries) {

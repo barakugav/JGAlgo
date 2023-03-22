@@ -48,7 +48,7 @@ class UnionFindTestUtils extends TestUtils {
 						set[i] = aset;
 				break;
 			default:
-				throw new InternalError();
+				throw new IllegalStateException();
 			}
 		}
 	}

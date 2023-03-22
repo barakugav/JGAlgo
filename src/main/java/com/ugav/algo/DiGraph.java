@@ -17,9 +17,19 @@ public interface DiGraph extends Graph {
 		removeEdgesAllOut(u);
 	}
 
-	public void removeEdgesAllOut(int u);
+	default void removeEdgesAllOut(int u) {
+		for (EdgeIter eit = edgesOut(u); eit.hasNext();) {
+			eit.nextInt();
+			eit.remove();
+		}
+	}
 
-	public void removeEdgesAllIn(int v);
+	default void removeEdgesAllIn(int v) {
+		for (EdgeIter eit = edgesIn(v); eit.hasNext();) {
+			eit.nextInt();
+			eit.remove();
+		}
+	}
 
 	public void reverseEdge(int e);
 

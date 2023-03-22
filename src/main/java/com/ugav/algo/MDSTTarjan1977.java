@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import com.ugav.algo.Graph.EdgeIter;
 import com.ugav.algo.Graph.WeightFunction;
+import com.ugav.algo.Utils.StackIntFixSize;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -22,6 +23,7 @@ public class MDSTTarjan1977 implements MDST {
 	private static final int HeavyEdge = 0xffffffff;
 
 	private static final double HeavyEdgeWeight = Double.MAX_VALUE;
+	private static final Object EdgeRefWeightKey = new Object();
 
 	/**
 	 * finds the MST rooted from any root
@@ -32,8 +34,8 @@ public class MDSTTarjan1977 implements MDST {
 			throw new IllegalArgumentException("Only directed graphs are supported");
 		if (g0.verticesNum() == 0 || g0.edgesNum() == 0)
 			return IntLists.emptyList();
-		DiGraph g = Graphs.referenceGraph((DiGraph) g0, "edgeRef");
-		EdgesWeight.Int edgeRefs = g.edgesWeight("edgeRef");
+		DiGraph g = Graphs.referenceGraph((DiGraph) g0, EdgeRefWeightKey);
+		EdgesWeight.Int edgeRefs = g.edgesWeight(EdgeRefWeightKey);
 
 		// Connect new root to all vertices
 		int n = g.verticesNum(), r = g.addVertex();
@@ -51,7 +53,7 @@ public class MDSTTarjan1977 implements MDST {
 			throw new IllegalArgumentException("Only directed graphs are supported");
 		if (g0.verticesNum() == 0 || g0.edgesNum() == 0)
 			return IntLists.emptyList();
-		DiGraph g = Graphs.referenceGraph((DiGraph) g0, "edgeRef");
+		DiGraph g = Graphs.referenceGraph((DiGraph) g0, EdgeRefWeightKey);
 
 		ContractedGraph contractedGraph = contract(g, w);
 		return expand(g, contractedGraph, root);
@@ -60,12 +62,11 @@ public class MDSTTarjan1977 implements MDST {
 	private static IntCollection expand(DiGraph g, ContractedGraph cg, int root) {
 		int[] inEdge = new int[cg.n];
 
-		int[] roots = new int[cg.n * 2];
-		int rootsSize = 0;
-		roots[rootsSize++] = root;
+		StackIntFixSize roots = new StackIntFixSize(cg.n * 2);
+		roots.push(root);
 
-		while (rootsSize > 0) {
-			int r = roots[--rootsSize];
+		while (!roots.isEmpty()) {
+			int r = roots.pop();
 			int e = cg.inEdge[r];
 			int v = g.edgeTarget(e);
 			inEdge[v] = e;
@@ -77,7 +78,7 @@ public class MDSTTarjan1977 implements MDST {
 					continue;
 				for (int c = child;;) {
 					if (c != prevChild)
-						roots[rootsSize++] = c;
+						roots.push(c);
 					c = cg.brother[c];
 					if (c == -1 || c == child)
 						break;
@@ -85,7 +86,7 @@ public class MDSTTarjan1977 implements MDST {
 			}
 		}
 
-		EdgesWeight.Int edgeRefs = g.edgesWeight("edgeRef");
+		EdgesWeight.Int edgeRefs = g.edgesWeight(EdgeRefWeightKey);
 		IntCollection mst = new IntArrayList(cg.n - 1);
 		for (int v = 0; v < cg.n; v++) {
 			int e = edgeRefs.getInt(inEdge[v]);
@@ -111,7 +112,7 @@ public class MDSTTarjan1977 implements MDST {
 					V2v[V] = v;
 			}
 
-			EdgesWeight.Int edgeRefs = g.edgesWeight("edgeRef");
+			EdgesWeight.Int edgeRefs = g.edgesWeight(EdgeRefWeightKey);
 			for (int V = 1; V < N; V++) {
 				edgeRefs.set(g.addEdge(V2v[0], V2v[V]), HeavyEdge);
 				edgeRefs.set(g.addEdge(V2v[V], V2v[0]), HeavyEdge);
@@ -130,7 +131,7 @@ public class MDSTTarjan1977 implements MDST {
 		for (int v = 0; v < n; v++)
 			ufIdxToV[v] = v;
 
-		EdgesWeight.Int edgeRefs = g.edgesWeight("edgeRef");
+		EdgesWeight.Int edgeRefs = g.edgesWeight(EdgeRefWeightKey);
 		WeightFunction w = e -> {
 			int e0 = edgeRefs.getInt(e);
 			return (e0 != HeavyEdge ? w0.weight(e0) : HeavyEdgeWeight) + uf.getValue(g.edgeTarget(e));
@@ -153,7 +154,7 @@ public class MDSTTarjan1977 implements MDST {
 		Arrays.fill(parent, -1);
 		Arrays.fill(child, -1);
 		Arrays.fill(brother, -1);
-		int[] inEdge = new int[VMaxNum]; // TODO
+		int[] inEdge = new int[VMaxNum];
 
 		boolean[] onPath = new boolean[VMaxNum];
 		final int startVertex = 0;

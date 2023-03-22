@@ -16,7 +16,6 @@ import it.unimi.dsi.fastutil.ints.IntList;
 class MatchingWeightedTestUtils extends TestUtils {
 
 	private MatchingWeightedTestUtils() {
-		throw new InternalError();
 	}
 
 	static void randGraphsBipartiteWeighted(Supplier<? extends MatchingWeighted> builder) {
@@ -96,7 +95,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 
 		if (actualWeight > expectedWeight) {
 			printTestStr("matching is better than validation algo found: ", actualWeight, " > ", expectedWeight, "\n");
-			throw new InternalError();
+			throw new IllegalStateException();
 		}
 		assertEq(expectedWeight, actualWeight, "unexpected match weight");
 	}
@@ -130,7 +129,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 		int expectedSize = validationUnweightedAlgo.calcMaxMatching(g).size();
 		if (actualSize > expectedSize) {
 			printTestStr("matching size is better than validation algo found: ", actualSize, " > ", expectedSize, "\n");
-			throw new InternalError();
+			throw new IllegalStateException();
 		}
 		assertEq(expectedSize, actualSize, "unexpected match size");
 
@@ -138,7 +137,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 		if (actualWeight > expectedWeight) {
 			printTestStr("matching weight is better than validation algo found: ", actualWeight, " > ", expectedWeight,
 					"\n");
-			throw new InternalError();
+			throw new IllegalStateException();
 		}
 		assertEq(expectedWeight, actualWeight, "unexpected match weight");
 	}
@@ -190,7 +189,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 					else
 						newv = gb.newVertexT();
 					if (newv != v)
-						throw new InternalError();
+						throw new IllegalStateException();
 				}
 				shuffledG = shuffledGb;
 			} else {

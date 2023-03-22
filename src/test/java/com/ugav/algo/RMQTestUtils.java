@@ -9,7 +9,6 @@ import com.ugav.algo.RMQ.ArrayIntComparator;
 class RMQTestUtils extends TestUtils {
 
 	private RMQTestUtils() {
-		throw new InternalError();
 	}
 
 	static void testRMQ65536(Supplier<? extends RMQ> builder) {

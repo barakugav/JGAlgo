@@ -2,15 +2,23 @@ package com.ugav.algo;
 
 import java.util.Arrays;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.Graph.WeightFunctionInt;
 
 public abstract class EdgesWeight<E> {
 
+	EdgesWeight() {
+	}
+
 	public abstract E get(int e);
 
 	public abstract void set(int e, E data);
+
+	public abstract E defaultVal();
+
+	public abstract void setDefaultVal(E e);
 
 	public abstract DataIter<E> iterator();
 
@@ -78,9 +86,9 @@ public abstract class EdgesWeight<E> {
 
 		private Object[] data;
 		private int size;
-		// TODO default value get set
-		private static final Object DefVal = null;
+		private E defaultVal = null;
 		private static final Object[] EmptyData = new Object[0];
+		private boolean isComparable;
 
 		public Obj() {
 			this(0);
@@ -105,6 +113,16 @@ public abstract class EdgesWeight<E> {
 		}
 
 		@Override
+		public E defaultVal() {
+			return defaultVal;
+		}
+
+		@Override
+		public void setDefaultVal(E defVal) {
+			defaultVal = defVal;
+		}
+
+		@Override
 		public DataIter<E> iterator() {
 			return new DataItr();
 		}
@@ -114,7 +132,7 @@ public abstract class EdgesWeight<E> {
 			assert e == size : "only continues edges IDs are supported";
 			if (size >= data.length)
 				data = Arrays.copyOf(data, Math.max(2, data.length * 2));
-			data[e] = DefVal;
+			data[e] = defaultVal;
 			size++;
 		}
 
@@ -145,6 +163,18 @@ public abstract class EdgesWeight<E> {
 				throw new IndexOutOfBoundsException(e);
 		}
 
+		/*
+		 * Set this to true if your data implement the Comparable interface to help
+		 * Graph.equals maintain an order in parallel edges
+		 */
+		public void setComparable(boolean comparable) {
+			isComparable = comparable;
+		}
+
+		boolean isComparable() {
+			return isComparable;
+		}
+
 		private class DataItr extends DataIterAbstract implements DataIter<E> {
 
 			DataItr() {
@@ -162,14 +192,49 @@ public abstract class EdgesWeight<E> {
 				data[idx] = val;
 			}
 		}
+
+		@Override
+		public boolean equals(Object other) {
+			if (other == this)
+				return true;
+			if (!(other instanceof EdgesWeight.Obj<?>))
+				return false;
+			EdgesWeight.Obj<?> o = (EdgesWeight.Obj<?>) other;
+
+			return Arrays.equals(data, 0, size, o.data, 0, o.size, (d1, d2) -> Objects.equals(d1, d2) ? 0 : 1);
+		}
+
+		@Override
+		public int hashCode() {
+			int h = 1;
+			for (int i = 0; i < size; i++)
+				h = 31 * h + Objects.hashCode(data[i]);
+			return h;
+		}
+
+		@Override
+		public String toString() {
+			int iMax = size - 1;
+			if (iMax == -1)
+				return "[]";
+
+			StringBuilder b = new StringBuilder();
+			b.append('[');
+			for (int i = 0;; i++) {
+				b.append(String.valueOf(data[i]));
+				if (i == iMax)
+					return b.append(']').toString();
+				b.append(", ");
+			}
+		}
+
 	}
 
 	public static class Int extends EdgesWeight<Integer> implements WeightFunctionInt {
 
 		private int[] data;
 		private int size;
-		// TODO default value get set
-		private static final int DefVal = -1;
+		private int defaultVal = -1;
 		private static final int[] EmptyData = new int[0];
 
 		public Int() {
@@ -201,6 +266,24 @@ public abstract class EdgesWeight<E> {
 			set(e, data.intValue());
 		}
 
+		public int defaultValInt() {
+			return defaultVal;
+		}
+
+		@Override
+		public Integer defaultVal() {
+			return Integer.valueOf(defaultValInt());
+		}
+
+		public void setDefaultVal(int defVal) {
+			defaultVal = defVal;
+		}
+
+		@Override
+		public void setDefaultVal(Integer defVal) {
+			defaultVal = defVal.intValue();
+		}
+
 		@Override
 		public DataIter.Int iterator() {
 			return new DataItr();
@@ -211,7 +294,7 @@ public abstract class EdgesWeight<E> {
 			assert e == size : "only continues edges IDs are supported";
 			if (size >= data.length)
 				data = Arrays.copyOf(data, Math.max(2, data.length * 2));
-			data[e] = DefVal;
+			data[e] = defaultVal;
 			size++;
 		}
 
@@ -261,14 +344,49 @@ public abstract class EdgesWeight<E> {
 				data[idx] = val;
 			}
 		}
+
+		@Override
+		public boolean equals(Object other) {
+			if (other == this)
+				return true;
+			if (!(other instanceof EdgesWeight.Int))
+				return false;
+			EdgesWeight.Int o = (EdgesWeight.Int) other;
+
+			return Arrays.equals(data, 0, size, o.data, 0, o.size);
+		}
+
+		@Override
+		public int hashCode() {
+			int h = 1;
+			for (int i = 0; i < size; i++)
+				h = 31 * h + data[i];
+			return h;
+		}
+
+		@Override
+		public String toString() {
+			int iMax = size - 1;
+			if (iMax == -1)
+				return "[]";
+
+			StringBuilder b = new StringBuilder();
+			b.append('[');
+			for (int i = 0;; i++) {
+				b.append(String.valueOf(data[i]));
+				if (i == iMax)
+					return b.append(']').toString();
+				b.append(", ");
+			}
+		}
+
 	}
 
 	public static class Double extends EdgesWeight<java.lang.Double> implements WeightFunction {
 
 		private double[] data;
 		private int size;
-		// TODO default value get set
-		private static final double DefVal = -1;
+		private double defaultVal = -1;
 		private static final double[] EmptyData = new double[0];
 
 		public Double() {
@@ -300,6 +418,24 @@ public abstract class EdgesWeight<E> {
 			set(e, data.doubleValue());
 		}
 
+		public double defaultValDouble() {
+			return defaultVal;
+		}
+
+		@Override
+		public java.lang.Double defaultVal() {
+			return java.lang.Double.valueOf(defaultValDouble());
+		}
+
+		public void setDefaultVal(double defVal) {
+			defaultVal = defVal;
+		}
+
+		@Override
+		public void setDefaultVal(java.lang.Double defVal) {
+			defaultVal = defVal.doubleValue();
+		}
+
 		@Override
 		public DataIter.Double iterator() {
 			return new DataItr();
@@ -310,7 +446,7 @@ public abstract class EdgesWeight<E> {
 			assert e == size : "only continues edges IDs are supported";
 			if (size >= data.length)
 				data = Arrays.copyOf(data, Math.max(2, data.length * 2));
-			data[e] = DefVal;
+			data[e] = defaultVal;
 			size++;
 		}
 
@@ -360,6 +496,42 @@ public abstract class EdgesWeight<E> {
 				data[idx] = val;
 			}
 		}
+
+		@Override
+		public boolean equals(Object other) {
+			if (other == this)
+				return true;
+			if (!(other instanceof EdgesWeight.Double))
+				return false;
+			EdgesWeight.Double o = (EdgesWeight.Double) other;
+
+			return Arrays.equals(data, 0, size, o.data, 0, o.size);
+		}
+
+		@Override
+		public int hashCode() {
+			int h = 1;
+			for (int i = 0; i < size; i++)
+				h = 31 * h + java.lang.Double.hashCode(data[i]);
+			return h;
+		}
+
+		@Override
+		public String toString() {
+			int iMax = size - 1;
+			if (iMax == -1)
+				return "[]";
+
+			StringBuilder b = new StringBuilder();
+			b.append('[');
+			for (int i = 0;; i++) {
+				b.append(String.valueOf(data[i]));
+				if (i == iMax)
+					return b.append(']').toString();
+				b.append(", ");
+			}
+		}
+
 	}
 
 	private static class DataIterAbstract {

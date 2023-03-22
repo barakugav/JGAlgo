@@ -8,12 +8,12 @@ public class GraphTableDirected extends GraphTableAbstract implements DiGraph {
 
 	@Override
 	public EdgeIter edgesOut(int u) {
-		return new EdgesOutItrVertex(u);
+		return new EdgeIterOut(u);
 	}
 
 	@Override
 	public EdgeIter edgesIn(int v) {
-		return new EdgesInItrVertex(v);
+		return new EdgeIterIn(v);
 	}
 
 	@Override
@@ -43,25 +43,6 @@ public class GraphTableDirected extends GraphTableAbstract implements DiGraph {
 		edges[u1][v1] = e2;
 		edges[u2][v2] = e1;
 		super.edgeSwap(e1, e2);
-	}
-
-	// TODO default in graph
-	// TODO implement eit.remove
-	// TODO add tests
-	@Override
-	public void removeEdgesAllOut(int u) {
-		for (EdgeIter eit = edgesOut(u); eit.hasNext();) {
-			eit.nextInt();
-			eit.remove();
-		}
-	}
-
-	@Override
-	public void removeEdgesAllIn(int v) {
-		for (EdgeIter eit = edgesIn(v); eit.hasNext();) {
-			eit.nextInt();
-			eit.remove();
-		}
 	}
 
 	@Override

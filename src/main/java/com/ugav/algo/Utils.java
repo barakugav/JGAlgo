@@ -16,7 +16,6 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 class Utils {
 
 	private Utils() {
-		throw new InternalError();
 	}
 
 	private static final double LOG2 = Math.log(2);

@@ -10,7 +10,6 @@ import java.util.function.Supplier;
 class LCADynamicTestUtils extends TestUtils {
 
 	private LCADynamicTestUtils() {
-		throw new InternalError();
 	}
 
 	static void fullBinaryTreesRandOps(Supplier<? extends LCADynamic<Integer>> builder) {
@@ -71,7 +70,7 @@ class LCADynamicTestUtils extends TestUtils {
 				break;
 			}
 			default:
-				throw new InternalError();
+				throw new IllegalStateException();
 			}
 		}
 		return ops;
@@ -113,7 +112,7 @@ class LCADynamicTestUtils extends TestUtils {
 				break;
 			}
 			default:
-				throw new InternalError();
+				throw new IllegalStateException();
 			}
 		}
 		return ops;
@@ -153,8 +152,9 @@ class LCADynamicTestUtils extends TestUtils {
 				LCADynamic.Node<Integer> lcaActual = lca.calcLCA(nodes.get(op.x), nodes.get(op.y));
 				assertEq(lcaExpected, lcaActual, "LCA has an expected value");
 
-			} else
-				throw new InternalError();
+			} else {
+				throw new IllegalStateException();
+			}
 		}
 	}
 

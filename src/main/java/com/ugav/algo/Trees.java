@@ -9,7 +9,6 @@ import java.util.function.Consumer;
 class Trees {
 
 	private Trees() {
-		throw new InternalError();
 	}
 
 	interface TreeNode<N extends TreeNode<N>> {

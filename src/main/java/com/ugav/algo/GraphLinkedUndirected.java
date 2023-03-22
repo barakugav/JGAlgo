@@ -140,7 +140,6 @@ public class GraphLinkedUndirected extends GraphLinkedAbstract implements UGraph
 		}
 
 		int getEndpoint(int w) {
-			// TODO use in graph api
 			assert w == u || w == v;
 			return w == u ? v : u;
 		}

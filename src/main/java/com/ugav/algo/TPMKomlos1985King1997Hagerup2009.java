@@ -14,6 +14,8 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 	 * O(m + n) where m is the number of queries
 	 */
 
+	private static final Object EdgeRefWeightKey = new Object();
+
 	public TPMKomlos1985King1997Hagerup2009() {
 	}
 
@@ -209,8 +211,8 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 
 			UGraph t = new GraphArrayUndirected(n);
 			EdgesWeight.Int tData = t.newEdgeWeightInt("edgeData");
-			for (UGraph G = Graphs.referenceGraph(tOrig, "edgeRef"); (n = G.verticesNum()) > 1;) {
-				EdgesWeight.Int GData = G.edgesWeight("edgeRef");
+			for (UGraph G = Graphs.referenceGraph(tOrig, EdgeRefWeightKey); (n = G.verticesNum()) > 1;) {
+				EdgesWeight.Int GData = G.edgesWeight(EdgeRefWeightKey);
 
 				// Find minimum edge of each vertex
 				Arrays.fill(minEdges, 0, n, -1);
@@ -266,7 +268,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 
 				// contract G to new graph with the super vertices
 				UGraph gNext = new GraphArrayUndirected(nNext);
-				EdgesWeight.Int gNextData = gNext.newEdgeWeightInt("edgeRef");
+				EdgesWeight.Int gNextData = gNext.newEdgeWeightInt(EdgeRefWeightKey);
 				for (int u = 0; u < n; u++) {
 					int U = vNext[u];
 					for (EdgeIter eit = G.edges(u); eit.hasNext();) {

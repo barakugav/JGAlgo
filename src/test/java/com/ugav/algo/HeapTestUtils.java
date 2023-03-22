@@ -14,7 +14,6 @@ import java.util.function.Supplier;
 class HeapTestUtils extends TestUtils {
 
 	private HeapTestUtils() {
-		throw new InternalError();
 	}
 
 	static void testRandOps(Supplier<? extends Heap<Integer>> heapBuilder) {
@@ -308,7 +307,7 @@ class HeapTestUtils extends TestUtils {
 				break;
 
 			default:
-				throw new InternalError();
+				throw new IllegalStateException();
 			}
 			opIdx++;
 		}

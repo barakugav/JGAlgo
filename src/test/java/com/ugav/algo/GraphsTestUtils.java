@@ -10,7 +10,6 @@ import com.ugav.algo.GraphImplTestUtils.GraphImpl;
 class GraphsTestUtils extends TestUtils {
 
 	private GraphsTestUtils() {
-		throw new InternalError();
 	}
 
 	static class RandomGraphBuilder {

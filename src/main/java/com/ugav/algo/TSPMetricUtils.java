@@ -9,7 +9,6 @@ import it.unimi.dsi.fastutil.ints.IntList;
 class TSPMetricUtils {
 
 	private TSPMetricUtils() {
-		throw new InternalError();
 	}
 
 	static IntList calcEulerianTourAndConvertToHamiltonianCycle(UGraph g, UGraph g1, EdgesWeight.Int edgeRef) {

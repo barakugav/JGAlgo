@@ -2,7 +2,7 @@ package com.ugav.algo;
 
 import java.util.List;
 import java.util.Random;
-import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.ToDoubleFunction;
 
 public class TSPMetricTest extends TestUtils {
@@ -17,7 +17,6 @@ public class TSPMetricTest extends TestUtils {
 		});
 	}
 
-	@SuppressWarnings("boxing") // TODO remove all boxing, use fastutil
 	private static void testMstAppxAndMatchingAppxRandGraph(int n) {
 		Random rand = new Random(nextRandSeed());
 
@@ -40,7 +39,7 @@ public class TSPMetricTest extends TestUtils {
 		int[] appxMst = new TSPMetricMSTAppx().calcTSP(distances);
 		int[] appxMatch = new TSPMetricMatchingAppx().calcTSP(distances);
 
-		Function<int[], Boolean> isPathVisitAllVertices = path -> {
+		Predicate<int[]> isPathVisitAllVertices = path -> {
 			boolean[] visited = new boolean[n];
 			for (int u : path)
 				visited[u] = true;
@@ -49,8 +48,8 @@ public class TSPMetricTest extends TestUtils {
 					return false;
 			return true;
 		};
-		assertTrue(isPathVisitAllVertices.apply(appxMst), "MST approximation result doesn't visit every vertex\n");
-		assertTrue(isPathVisitAllVertices.apply(appxMatch),
+		assertTrue(isPathVisitAllVertices.test(appxMst), "MST approximation result doesn't visit every vertex\n");
+		assertTrue(isPathVisitAllVertices.test(appxMatch),
 				"Matching approximation result doesn't visit every vertex\n");
 
 		ToDoubleFunction<int[]> pathLength = path -> {

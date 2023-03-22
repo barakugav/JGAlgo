@@ -17,7 +17,6 @@ import com.ugav.algo.MaxFlow.FlowNetworkDefault;
 class MaxFlowTestUtils extends TestUtils {
 
 	private MaxFlowTestUtils() {
-		throw new InternalError();
 	}
 
 	private static Pair<Graph, FlowNetwork> randNetwork(int n, int m, GraphImpl graphImpl) {
@@ -30,7 +29,6 @@ class MaxFlowTestUtils extends TestUtils {
 		Random rand = new Random(nextRandSeed());
 		EdgesWeight<FlowEdgeDataDefault> data = g.newEdgeWeight("flowData");
 		for (int e = 0; e < m; e++) {
-//			int u = g.getEdgeSource(e), v = g.getEdgeTarget(e);
 			double cap;
 			for (;;) {
 				cap = nextDouble(rand, 1, 100);

@@ -98,7 +98,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 
 				currentTree: for (;;) {
 					while (!nextTightEdge.isEmpty()) {
-						int e = nextTightEdge.findMin();
+						int e = nextTightEdge.findMin().intValue();
 						int u0 = g.edgeSource(e), v0 = g.edgeTarget(e);
 
 						if (inTree[u0] && inTree[v0]) {
@@ -144,7 +144,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 
 					// Adjust dual values
 					double delta1 = delta1Threshold - deltaTotal;
-					double delta2 = nextTightEdge.isEmpty() ? -1 : edgeSlack(nextTightEdge.findMin());
+					double delta2 = nextTightEdge.isEmpty() ? -1 : edgeSlack(nextTightEdge.findMin().intValue());
 					if ((!perfect && delta1 <= delta2) || delta2 == -1)
 						break mainLoop;
 					deltaTotal += delta2;
@@ -175,9 +175,9 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 			int v = g.edgeEndpoint(e, u);
 			HeapDirectAccessed.Handle<Integer> handle = nextTightEdgePerOutV[v];
 			if (handle == null)
-				nextTightEdgePerOutV[v] = nextTightEdge.insert(e);
+				nextTightEdgePerOutV[v] = nextTightEdge.insert(Integer.valueOf(e));
 			else if (edgeSlackComparator.compare(e, handle.get().intValue()) < 0)
-				nextTightEdge.decreaseKey(handle, e);
+				nextTightEdge.decreaseKey(handle, Integer.valueOf(e));
 		}
 
 		private double dualVal(int v) {

@@ -12,7 +12,6 @@ import java.util.Random;
 class TestUtils {
 
 	TestUtils() {
-		throw new InternalError();
 	}
 
 	private static String formatString(Object... msgArgs) {
