@@ -7,6 +7,8 @@ import java.util.Random;
 import java.util.TreeSet;
 import java.util.function.Supplier;
 
+import org.junit.jupiter.api.Assertions;
+
 import com.ugav.algo.GraphImplTestUtils.GraphImpl;
 import com.ugav.algo.GraphsTestUtils.RandomGraphBuilder;
 import com.ugav.algo.MaxFlow.FlowEdgeDataDefault;
@@ -86,11 +88,11 @@ class MaxFlowTestUtils extends TestUtils {
 		}
 		for (int v = 0; v < n; v++) {
 			double expected = v == source ? actualMaxFlow : v == target ? -actualMaxFlow : 0;
-			assertEqFp(expected, vertexFlowOut[v], 1E-3, "Invalid vertex(", v, ") flow");
+			Assertions.assertEquals(expected, vertexFlowOut[v], 1E-3, "Invalid vertex(" + v + ") flow");
 		}
 
 		double expectedMaxFlow = calcExpectedFlow(g, net, source, target);
-		assertEqFp(expectedMaxFlow, actualMaxFlow, 1E-3, "Unexpected max flow");
+		Assertions.assertEquals(expectedMaxFlow, actualMaxFlow, 1E-3, "Unexpected max flow");
 	}
 
 	/* implementation taken from the Internet */

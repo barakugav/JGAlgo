@@ -1,9 +1,11 @@
 package com.ugav.algo;
 
+import org.junit.jupiter.api.Test;
+
 public class MatchingBipartiteHopcroftKarp1973Test extends TestUtils {
 
 	@Test
-	public static void randBipartiteGraphs() {
+	public void testRandBipartiteGraphs() {
 		MatchingBipartiteTestUtils.randBipartiteGraphs(MatchingBipartiteHopcroftKarp1973::new);
 	}
 

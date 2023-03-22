@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
+import org.junit.jupiter.api.Assertions;
+
 import com.ugav.algo.GraphsTestUtils.RandomGraphBuilder;
 
 class GraphImplTestUtils extends TestUtils {
@@ -263,9 +265,9 @@ class GraphImplTestUtils extends TestUtils {
 				throw new IllegalArgumentException("Unexpected value: " + op);
 			}
 
-			assertTrue(g.verticesNum() == tracker.verticesNum());
-			assertTrue(g.edgesNum() == tracker.edgesNum());
-			assertTrue(tracker.checkEdgesEqual(g));
+			Assertions.assertTrue(g.verticesNum() == tracker.verticesNum());
+			Assertions.assertTrue(g.edgesNum() == tracker.edgesNum());
+			Assertions.assertTrue(tracker.checkEdgesEqual(g));
 
 			opsNum--;
 		}

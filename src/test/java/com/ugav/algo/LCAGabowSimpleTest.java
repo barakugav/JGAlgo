@@ -1,14 +1,16 @@
 package com.ugav.algo;
 
+import org.junit.jupiter.api.Test;
+
 public class LCAGabowSimpleTest extends TestUtils {
 
 	@Test
-	public static void fullBinaryTreesRandOps() {
+	public void testFullBinaryTreesRandOps() {
 		LCADynamicTestUtils.fullBinaryTreesRandOps(LCAGabowSimple::new);
 	}
 
 	@Test
-	public static void randTrees() {
+	public void testRandTrees() {
 		LCADynamicTestUtils.randTrees(LCAGabowSimple::new);
 	}
 

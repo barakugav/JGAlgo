@@ -3,9 +3,10 @@ package com.ugav.algo;
 import java.util.Random;
 import java.util.function.Supplier;
 
+import org.junit.jupiter.api.Assertions;
+
 import com.ugav.algo.RMQ.ArrayIntComparator;
 
-@SuppressWarnings("boxing")
 class RMQTestUtils extends TestUtils {
 
 	private RMQTestUtils() {
@@ -36,12 +37,12 @@ class RMQTestUtils extends TestUtils {
 			int actual = a[actualIdx];
 
 			if (actual != expected) {
-				printTestStr(" [", i, ",", j, "] -> expected[", expectedIdx, "]=", expected, " actual[", actualIdx,
-						"]=", actual, "\n");
-				printTestStr("data size: ", a.length, "\n");
-				printTestStr("queries num: ", queries.length, "\n");
-				printTestStr(formatRMQDataAndQueries(a, queries));
-				testFail();
+				System.err.println(" [" + i + "," + j + "] -> expected[" + expectedIdx + "]=" + expected + " actual["
+						+ actualIdx + "]=" + actual);
+				System.err.println("data size: " + a.length);
+				System.err.println("queries num: " + queries.length);
+				System.err.println(formatRMQDataAndQueries(a, queries));
+				Assertions.fail();
 			}
 		}
 	}

@@ -1,39 +1,41 @@
 package com.ugav.algo;
 
+import org.junit.jupiter.api.Test;
+
 public class RedBlackTreeTest extends TestUtils {
 
 	@Test
-	public static void randOps() {
+	public void testRandOps() {
 		HeapTestUtils.testRandOps(RedBlackTree::new);
 	}
 
 	@Test
-	public static void randOpsAfterManyInserts() {
+	public void testRandOpsAfterManyInserts() {
 		HeapTestUtils.testRandOpsAfterManyInserts(RedBlackTree::new);
 	}
 
 	@Test
-	public static void meld() {
+	public void testMeld() {
 		HeapTestUtils.testMeld(RedBlackTree::new);
 	}
 
 	@Test
-	public static void findSmallers() {
+	public void testFindSmallers() {
 		BSTTestUtils.testFindSmallers(RedBlackTree::new);
 	}
 
 	@Test
-	public static void findGreaters() {
+	public void testFindGreaters() {
 		BSTTestUtils.testFindGreaters(RedBlackTree::new);
 	}
 
 	@Test
-	public static void getPredecessor() {
+	public void testGetPredecessor() {
 		BSTTestUtils.testGetPredecessors(RedBlackTree::new);
 	}
 
 	@Test
-	public static void getSuccessor() {
+	public void testGetSuccessor() {
 		BSTTestUtils.testGetSuccessors(RedBlackTree::new);
 	}
 

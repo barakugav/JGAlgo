@@ -11,6 +11,8 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Supplier;
 
+import org.junit.jupiter.api.Assertions;
+
 class HeapTestUtils extends TestUtils {
 
 	private HeapTestUtils() {
@@ -216,7 +218,7 @@ class HeapTestUtils extends TestUtils {
 	static void testHeap(Heap<Integer> heap, int n, int m, TestMode mode, boolean clear) {
 		if (clear) {
 			heap.clear();
-			assertTrue(heap.size() == 0 && heap.isEmpty(), "failed clear\n");
+			Assertions.assertTrue(heap.size() == 0 && heap.isEmpty(), "failed clear");
 		}
 
 		HeapTracker tracker = new HeapTracker(heap, 0);
@@ -224,7 +226,7 @@ class HeapTestUtils extends TestUtils {
 
 		if (clear) {
 			heap.clear();
-			assertTrue(heap.size() == 0 && heap.isEmpty(), "failed clear\n");
+			Assertions.assertTrue(heap.size() == 0 && heap.isEmpty(), "failed clear");
 		}
 	}
 
@@ -270,7 +272,7 @@ class HeapTestUtils extends TestUtils {
 				debug.println("Remove(", x, ")");
 
 				tracker.remove(x);
-				assertTrue(tracker.heap.remove(x), "failed to remove: ", x, "\n");
+				Assertions.assertTrue(tracker.heap.remove(x), "failed to remove: " + x);
 				break;
 
 			case FindMin:
@@ -280,7 +282,7 @@ class HeapTestUtils extends TestUtils {
 
 				expected = tracker.findMin();
 				actual = tracker.heap.findMin();
-				assertEq(expected, actual, "failed findmin");
+				Assertions.assertEquals(expected, actual, "failed findmin");
 				break;
 
 			case ExtractMin:
@@ -290,7 +292,7 @@ class HeapTestUtils extends TestUtils {
 
 				expected = tracker.extractMin();
 				actual = tracker.heap.extractMin();
-				assertEq(expected, actual, "failed extractmin");
+				Assertions.assertEquals(expected, actual, "failed extractmin");
 				break;
 
 			case DecreaseKey:
@@ -318,16 +320,16 @@ class HeapTestUtils extends TestUtils {
 			it.next();
 			actualSize++;
 		}
-		assertEq(expectedSize, actualSize, "size() is different than counted size using iterator");
+		Assertions.assertEquals(expectedSize, actualSize, "size() is different than counted size using iterator");
 	}
 
-	@SuppressWarnings({ "unused", "boxing" })
+	@SuppressWarnings({ "unused" })
 	private static <E> void testHeapSize(Heap<E> h) {
 		int expected = h.size();
 		int actual = 0;
 		for (E e : h)
 			actual++;
-		assertEq(expected, actual, "unexpected size");
+		Assertions.assertEquals(expected, actual, "unexpected size");
 
 	}
 

@@ -1,14 +1,16 @@
 package com.ugav.algo;
 
+import org.junit.jupiter.api.Test;
+
 public class MatchingGabow1976Test extends TestUtils {
 
 	@Test
-	public static void randBipartiteGraphs() {
+	public void testRandBipartiteGraphs() {
 		MatchingBipartiteTestUtils.randBipartiteGraphs(MatchingGabow1976::new);
 	}
 
 	@Test
-	public static void randGraphs() {
+	public void testRandGraphs() {
 		MatchingUnweightedTestUtils.randGraphs(MatchingGabow1976::new);
 	}
 

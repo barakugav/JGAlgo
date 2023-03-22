@@ -1,14 +1,16 @@
 package com.ugav.algo;
 
+import org.junit.jupiter.api.Test;
+
 public class SSSPDial1969Test extends TestUtils {
 
 	@Test
-	public static void randGraphDirectedPositiveInt() {
+	public void testRandGraphDirectedPositiveInt() {
 		SSSPTestUtils.testSSSPDirectedPositiveInt(SSSPDial1969::new);
 	}
 
 	@Test
-	public static void randGraphUndirectedPositiveInt() {
+	public void testRandGraphUndirectedPositiveInt() {
 		SSSPTestUtils.testSSSPUndirectedPositiveInt(SSSPDial1969::new);
 	}
 

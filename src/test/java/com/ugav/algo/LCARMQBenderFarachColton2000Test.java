@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
 
-@SuppressWarnings("boxing")
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 public class LCARMQBenderFarachColton2000Test extends TestUtils {
 
 	private static int[][] randLCAQueries(Graph g, int r, int queriesNum) {
@@ -66,12 +68,12 @@ public class LCARMQBenderFarachColton2000Test extends TestUtils {
 			int v = query[1];
 			int expected = query[2];
 			int actual = lca.calcLCA(u, v);
-			assertEq(expected, actual, "<- [", u, ",", v, "]");
+			Assertions.assertEquals(expected, actual, "<- [" + u + "," + v + "]");
 		}
 	}
 
 	@Test
-	public static void randTrees() {
+	public void testRandTrees() {
 		List<Phase> phases = List.of(phase(128, 16, 16), phase(64, 64, 64), phase(16, 512, 512), phase(4, 4096, 4096),
 				phase(1, 16384, 16384));
 		runTestMultiple(phases, (testIter, args) -> {

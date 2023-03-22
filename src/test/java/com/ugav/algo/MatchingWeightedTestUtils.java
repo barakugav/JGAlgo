@@ -3,6 +3,8 @@ package com.ugav.algo;
 import java.util.List;
 import java.util.function.Supplier;
 
+import org.junit.jupiter.api.Assertions;
+
 import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.Graph.WeightFunctionInt;
 import com.ugav.algo.GraphImplTestUtils.GraphImpl;
@@ -12,7 +14,6 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 
-@SuppressWarnings("boxing")
 class MatchingWeightedTestUtils extends TestUtils {
 
 	private MatchingWeightedTestUtils() {
@@ -94,10 +95,11 @@ class MatchingWeightedTestUtils extends TestUtils {
 		double expectedWeight = calcMatchingWeight(expected, w);
 
 		if (actualWeight > expectedWeight) {
-			printTestStr("matching is better than validation algo found: ", actualWeight, " > ", expectedWeight, "\n");
+			System.err
+					.println("matching is better than validation algo found: " + actualWeight + " > " + expectedWeight);
 			throw new IllegalStateException();
 		}
-		assertEq(expectedWeight, actualWeight, "unexpected match weight");
+		Assertions.assertEquals(expectedWeight, actualWeight, "unexpected match weight");
 	}
 
 	static void randGraphsWeightedPerfect(Supplier<? extends MatchingWeighted> builder) {
@@ -128,18 +130,19 @@ class MatchingWeightedTestUtils extends TestUtils {
 
 		int expectedSize = validationUnweightedAlgo.calcMaxMatching(g).size();
 		if (actualSize > expectedSize) {
-			printTestStr("matching size is better than validation algo found: ", actualSize, " > ", expectedSize, "\n");
+			System.err.println(
+					"matching size is better than validation algo found: " + actualSize + " > " + expectedSize);
 			throw new IllegalStateException();
 		}
-		assertEq(expectedSize, actualSize, "unexpected match size");
+		Assertions.assertEquals(expectedSize, actualSize, "unexpected match size");
 
 		double expectedWeight = calcMatchingWeight(validationWeightedAlgo.calcPerfectMaxMatching(g, w), w);
 		if (actualWeight > expectedWeight) {
-			printTestStr("matching weight is better than validation algo found: ", actualWeight, " > ", expectedWeight,
-					"\n");
+			System.err.println(
+					"matching weight is better than validation algo found: " + actualWeight + " > " + expectedWeight);
 			throw new IllegalStateException();
 		}
-		assertEq(expectedWeight, actualWeight, "unexpected match weight");
+		Assertions.assertEquals(expectedWeight, actualWeight, "unexpected match weight");
 	}
 
 	private static double calcMatchingWeight(IntCollection matching, WeightFunction w) {

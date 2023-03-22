@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
 
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 @SuppressWarnings("boxing")
 public class SplitFindMinArrayTest extends TestUtils {
 
@@ -40,7 +43,7 @@ public class SplitFindMinArrayTest extends TestUtils {
 				x = rand.nextInt(n);
 				int expected = sequence[x];
 				int actual = sequence[sf.find(x)];
-				assertEq(expected, actual, "find failed!");
+				Assertions.assertEquals(expected, actual, "find failed!");
 				break;
 			case OP_SPLIT:
 				x = rand.nextInt(n);
@@ -92,7 +95,7 @@ public class SplitFindMinArrayTest extends TestUtils {
 				x = rand.nextInt(n);
 				int expected = sequence[x];
 				int actual = sequence[sf.find(x)];
-				assertEq(expected, actual, "find failed!");
+				Assertions.assertEquals(expected, actual, "find failed!");
 				break;
 			case OP_SPLIT:
 				x = rand.nextInt(n);
@@ -112,7 +115,7 @@ public class SplitFindMinArrayTest extends TestUtils {
 					if (sf.getKey(i) < expectedKey)
 						expectedKey = sf.getKey(i);
 				double actualKey = sf.getKey(sf.findMin(x));
-				assertEq(expectedKey, actualKey, "findmin failed!");
+				Assertions.assertEquals(expectedKey, actualKey, "findmin failed!");
 				break;
 			case OP_DECREASEKEY:
 				x = rand.nextInt(n);
@@ -125,12 +128,12 @@ public class SplitFindMinArrayTest extends TestUtils {
 	}
 
 	@Test
-	public static void splitFind() {
+	public void testSplitFind() {
 		testSplitFind(SplitFindMinArray::new);
 	}
 
 	@Test
-	public static void splitFindMin() {
+	public void testSplitFindMin() {
 		testSplitFindMin(SplitFindMinArray::new);
 	}
 

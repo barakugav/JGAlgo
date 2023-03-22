@@ -7,10 +7,13 @@ import java.util.Random;
 import java.util.function.DoubleFunction;
 import java.util.function.Function;
 
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 public class DynamicTreeSplayTest extends TestUtils {
 
 	@Test
-	public static void randOps() {
+	public void testRandOps() {
 		testRandOps(DynamicTreeSplay::new);
 	}
 
@@ -90,7 +93,7 @@ public class DynamicTreeSplayTest extends TestUtils {
 				TrackerNode root = findRoot.apply(node);
 				DynamicTree.Node<TrackerNode, Void> expected = root.dtNode;
 				DynamicTree.Node<TrackerNode, Void> actual = tree.findRoot(node.dtNode);
-				assertEq(expected, actual, "FindRoot failure");
+				Assertions.assertEquals(expected, actual, "FindRoot failure");
 				break;
 			}
 			case FindMinEdge: {
@@ -109,8 +112,8 @@ public class DynamicTreeSplayTest extends TestUtils {
 				Object[] actual = actual0 != null ? new Object[] { actual0.u(), (int) Math.round(actual0.weight()) }
 						: null;
 
-				assertTrue(Arrays.equals(expected, actual),
-						"FindMinEdge failure: " + Arrays.toString(expected) + " != " + Arrays.toString(actual) + "\n");
+				Assertions.assertTrue(Arrays.equals(expected, actual),
+						"FindMinEdge failure: " + Arrays.toString(expected) + " != " + Arrays.toString(actual));
 				break;
 			}
 			case AddWeight: {
@@ -200,7 +203,7 @@ public class DynamicTreeSplayTest extends TestUtils {
 				}
 
 				int actual = tree.size(node.dtNode);
-				assertEq(expected, actual, "Wrong size");
+				Assertions.assertEquals(expected, actual, "Wrong size");
 				break;
 			}
 			default:

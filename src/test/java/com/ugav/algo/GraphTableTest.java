@@ -1,5 +1,7 @@
 package com.ugav.algo;
 
+import org.junit.jupiter.api.Test;
+
 import com.ugav.algo.GraphImplTestUtils.GraphImpl;
 
 public class GraphTableTest extends TestUtils {
@@ -18,22 +20,22 @@ public class GraphTableTest extends TestUtils {
 	}
 
 	@Test
-	public static void testUndirectedMST() {
+	public void testUndirectedMST() {
 		GraphImplTestUtils.testUndirectedMST(tableImpl());
 	}
 
 	@Test
-	public static void testDirectedMDST() {
+	public void testDirectedMDST() {
 		GraphImplTestUtils.testDirectedMDST(tableImpl());
 	}
 
 	@Test
-	public static void testDirectedMaxFlow() {
+	public void testDirectedMaxFlow() {
 		GraphImplTestUtils.testDirectedMaxFlow(tableImpl());
 	}
 
 	@Test
-	public static void testUndirectedRandOps() {
+	public void testUndirectedRandOps() {
 		GraphImplTestUtils.testUndirectedRandOps(tableImpl());
 	}
 

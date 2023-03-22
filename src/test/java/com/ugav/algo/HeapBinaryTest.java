@@ -1,19 +1,21 @@
 package com.ugav.algo;
 
+import org.junit.jupiter.api.Test;
+
 public class HeapBinaryTest extends TestUtils {
 
 	@Test
-	public static void randOps() {
+	public void testRandOps() {
 		HeapTestUtils.testRandOps(HeapBinary::new);
 	}
 
 	@Test
-	public static void randOpsAfterManyInserts() {
+	public void testRandOpsAfterManyInserts() {
 		HeapTestUtils.testRandOpsAfterManyInserts(HeapBinary::new);
 	}
 
 	@Test
-	public static void meld() {
+	public void testMeld() {
 		HeapTestUtils.testMeld(HeapBinary::new);
 	}
 

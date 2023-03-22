@@ -3,6 +3,8 @@ package com.ugav.algo;
 import java.util.List;
 import java.util.function.Supplier;
 
+import org.junit.jupiter.api.Assertions;
+
 import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.Graph.WeightFunctionInt;
 import com.ugav.algo.GraphImplTestUtils.GraphImpl;
@@ -13,7 +15,6 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
-@SuppressWarnings("boxing")
 class MSTTestUtils extends TestUtils {
 
 	private MSTTestUtils() {
@@ -84,11 +85,11 @@ class MSTTestUtils extends TestUtils {
 		IntSet actualSet = new IntAVLTreeSet(c);
 		actualSet.addAll(mst);
 
-		assertEq(mst.size(), actualSet.size(), "MST contains duplications\n");
-		assertEq(expected.size(), actualSet.size(), "unexpected MST size");
+		Assertions.assertEquals(mst.size(), actualSet.size(), "MST contains duplications");
+		Assertions.assertEquals(expected.size(), actualSet.size(), "unexpected MST size");
 		for (IntIterator it = expected.iterator(); it.hasNext();) {
 			int e = it.nextInt();
-			assertTrue(actualSet.contains(e), "MST doesn't contains edge: ", e, "\n");
+			Assertions.assertTrue(actualSet.contains(e), "MST doesn't contains edge: " + e);
 		}
 	}
 

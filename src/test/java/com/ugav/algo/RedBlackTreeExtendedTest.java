@@ -6,6 +6,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 import com.ugav.algo.HeapDirectAccessed.Handle;
 import com.ugav.algo.HeapTestUtils.TestMode;
 import com.ugav.algo.RedBlackTreeExtended.ExtensionMax;
@@ -128,7 +131,7 @@ public class RedBlackTreeExtendedTest extends TestUtils {
 	}
 
 	@Test
-	public static void extensionSizeRandOps() {
+	public void testExtensionSizeRandOps() {
 		List<Phase> phases = List.of(phase(256, 16, 16), phase(128, 64, 128), phase(64, 512, 1024),
 				phase(16, 4096, 8096), phase(8, 16384, 32768));
 		runTestMultiple(phases, (testIter, args) -> {
@@ -149,13 +152,13 @@ public class RedBlackTreeExtendedTest extends TestUtils {
 				tree.forEachNodeInSubTree(node, descendant -> expectedSize.val++);
 
 				int actualSize = sizeExt.getSubTreeSize(node);
-				assertEq(expectedSize.val, actualSize, "Size extension repored wrong value");
+				Assertions.assertEquals(expectedSize.val, actualSize, "Size extension repored wrong value");
 			}
 		});
 	}
 
 	@Test
-	public static void extensionMinRandOps() {
+	public void testExtensionMinRandOps() {
 		List<Phase> phases = List.of(phase(256, 16, 16), phase(128, 64, 128), phase(64, 512, 1024),
 				phase(16, 4096, 8096), phase(8, 16384, 32768));
 		runTestMultiple(phases, (testIter, args) -> {
@@ -177,13 +180,13 @@ public class RedBlackTreeExtendedTest extends TestUtils {
 						descendant -> expectedMin.val = Math.min(expectedMin.val, descendant.get()));
 
 				int actualMin = minExt.getSubTreeMin(node).get();
-				assertEq(expectedMin.val, actualMin, "Min extension repored wrong value");
+				Assertions.assertEquals(expectedMin.val, actualMin, "Min extension repored wrong value");
 			}
 		});
 	}
 
 	@Test
-	public static void extensionMaxRandOps() {
+	public void testExtensionMaxRandOps() {
 		List<Phase> phases = List.of(phase(256, 16, 16), phase(128, 64, 128), phase(64, 512, 1024),
 				phase(16, 4096, 8096), phase(8, 16384, 32768));
 		runTestMultiple(phases, (testIter, args) -> {
@@ -204,7 +207,7 @@ public class RedBlackTreeExtendedTest extends TestUtils {
 						descendant -> expectedMax.val = Math.max(expectedMax.val, descendant.get()));
 
 				int actualMax = maxExt.getSubTreeMax(node).get();
-				assertEq(expectedMax.val, actualMax, "Max extension repored wrong value");
+				Assertions.assertEquals(expectedMax.val, actualMax, "Max extension repored wrong value");
 			}
 		});
 	}

@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
 
+import org.junit.jupiter.api.Assertions;
+
 import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.Graph.WeightFunctionInt;
 import com.ugav.algo.GraphsTestUtils.RandomGraphBuilder;
@@ -12,7 +14,6 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 
-@SuppressWarnings("boxing")
 class TPMTestUtils extends TestUtils {
 
 	private TPMTestUtils() {
@@ -62,12 +63,12 @@ class TPMTestUtils extends TestUtils {
 	}
 
 	static void compareActualToExpectedResults(int[] queries, int[] actual, int[] expected, WeightFunction w) {
-		assertEq(expected.length, actual.length, "Unexpected result size");
+		Assertions.assertEquals(expected.length, actual.length, "Unexpected result size");
 		for (int i = 0; i < actual.length; i++) {
 			double aw = actual[i] != -1 ? w.weight(actual[i]) : Double.MIN_VALUE;
 			double ew = expected[i] != -1 ? w.weight(expected[i]) : Double.MIN_VALUE;
-			assertEq(ew, aw, "Unexpected result for query (", queries[i * 2], ", ", queries[i * 2 + 1], "): ",
-					actual[i], " != ", expected[i], "\n");
+			Assertions.assertEquals(ew, aw, "Unexpected result for query (" + queries[i * 2] + ", " + queries[i * 2 + 1]
+					+ "): " + actual[i] + " != " + expected[i]);
 		}
 	}
 
@@ -105,7 +106,7 @@ class TPMTestUtils extends TestUtils {
 			IntCollection mstEdges = new MSTKruskal1956().calcMST(g, w);
 
 			TPM algo = builder.get();
-			assertTrue(MST.verifyMST(g, w, mstEdges, algo));
+			Assertions.assertTrue(MST.verifyMST(g, w, mstEdges, algo));
 		});
 	}
 
@@ -145,7 +146,7 @@ class TPMTestUtils extends TestUtils {
 
 			TPM algo = builder.get();
 
-			assertFalse(MST.verifyMST(g, w, mst, algo, edgeRef), "MST validation failed");
+			Assertions.assertFalse(MST.verifyMST(g, w, mst, algo, edgeRef), "MST validation failed");
 		});
 	}
 

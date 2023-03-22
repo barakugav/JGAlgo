@@ -9,6 +9,8 @@ import java.util.Random;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import org.junit.jupiter.api.Assertions;
+
 import com.ugav.algo.HeapDirectAccessed.Handle;
 import com.ugav.algo.HeapTestUtils.HeapTracker;
 import com.ugav.algo.HeapTestUtils.HeapTrackerIdGenerator;
@@ -71,7 +73,7 @@ class BSTTestUtils extends TestUtils {
 			}
 			actual = actualH == null ? null : actualH.get();
 
-			assertEq(expected, actual, "Failed to find smaller/greater of ", searchedElm);
+			Assertions.assertEquals(expected, actual, "Failed to find smaller/greater of " + searchedElm);
 		}
 	}
 
@@ -115,7 +117,7 @@ class BSTTestUtils extends TestUtils {
 			} while (searchedElm == null);
 
 			Handle<Integer> h = tracker.tree().findHanlde(searchedElm);
-			assertNonNull(h, "Failed to find handle for ", searchedElm);
+			Assertions.assertNotNull(h, "Failed to find handle for " + searchedElm);
 
 			Integer actual, expected;
 			if (predecessor) {
@@ -128,7 +130,7 @@ class BSTTestUtils extends TestUtils {
 				expected = tracker.higher(searchedElm);
 			}
 
-			assertEq(expected, actual, "Failed to find predecessor/successor of ", searchedElm);
+			Assertions.assertEquals(expected, actual, "Failed to find predecessor/successor of " + searchedElm);
 		}
 	}
 

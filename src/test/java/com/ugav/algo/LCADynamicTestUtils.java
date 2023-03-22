@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
 
+import org.junit.jupiter.api.Assertions;
+
 class LCADynamicTestUtils extends TestUtils {
 
 	private LCADynamicTestUtils() {
@@ -150,7 +152,7 @@ class LCADynamicTestUtils extends TestUtils {
 
 				LCADynamic.Node<Integer> lcaExpected = x;
 				LCADynamic.Node<Integer> lcaActual = lca.calcLCA(nodes.get(op.x), nodes.get(op.y));
-				assertEq(lcaExpected, lcaActual, "LCA has an expected value");
+				Assertions.assertEquals(lcaExpected, lcaActual, "LCA has an expected value");
 
 			} else {
 				throw new IllegalStateException();

@@ -3,13 +3,14 @@ package com.ugav.algo;
 import java.util.List;
 import java.util.function.Supplier;
 
+import org.junit.jupiter.api.Assertions;
+
 import com.ugav.algo.Graph.EdgeIter;
 import com.ugav.algo.GraphImplTestUtils.GraphImpl;
 import com.ugav.algo.GraphsTestUtils.RandomGraphBuilder;
 
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
-@SuppressWarnings("boxing")
 class MatchingBipartiteTestUtils extends TestUtils {
 
 	private MatchingBipartiteTestUtils() {
@@ -58,11 +59,11 @@ class MatchingBipartiteTestUtils extends TestUtils {
 		MatchingUnweightedTestUtils.validateMatching(g, match);
 
 		if (match.size() > expectedMatchSize) {
-			printTestStr("matching is bigger than validation algo found: ", match.size(), " > ", expectedMatchSize,
-					"\n");
+			System.err.println(
+					"matching is bigger than validation algo found: " + match.size() + " > " + expectedMatchSize);
 			throw new IllegalStateException();
 		}
-		assertTrue(match.size() == expectedMatchSize, "unexpected match size");
+		Assertions.assertTrue(match.size() == expectedMatchSize, "unexpected match size");
 	}
 
 	private static int calcExpectedMaxMatching(GraphBipartite g) {
