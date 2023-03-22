@@ -35,10 +35,10 @@ public class MaxFlowPushRelabel implements MaxFlow {
 		debug.println("\t", getClass().getSimpleName());
 
 		DiGraph g = new GraphArrayDirected(g0.verticesNum());
-		EdgesWeight.Int edgeRef = g.newEdgeWeightInt(EdgeRefKey);
-		EdgesWeight.Int edgeRev = g.newEdgeWeightInt(EdgeRevKey);
-		EdgesWeight.Double flow = g.newEdgeWeightDouble(EdgeFlowKey);
-		EdgesWeight.Double capacity = g.newEdgeWeightDouble(EdgeCapacityKey);
+		GraphWeights.Int edgeRef = g.newEdgeWeightInt(EdgeRefKey);
+		GraphWeights.Int edgeRev = g.newEdgeWeightInt(EdgeRevKey);
+		GraphWeights.Double flow = g.newEdgeWeightDouble(EdgeFlowKey);
+		GraphWeights.Double capacity = g.newEdgeWeightDouble(EdgeCapacityKey);
 		for (int e = 0; e < g0.edgesNum(); e++) {
 			int u = g0.edgeSource(e), v = g0.edgeTarget(e);
 			int e1 = g.addEdge(u, v);

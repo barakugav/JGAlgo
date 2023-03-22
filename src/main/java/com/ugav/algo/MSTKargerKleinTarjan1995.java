@@ -46,12 +46,12 @@ public class MSTKargerKleinTarjan1995 implements MST {
 		UGraph g0 = r.e1;
 		IntCollection f0 = r.e2;
 		UGraph g1 = randSubgraph(g0);
-		EdgesWeight<Ref> g1Ref = g1.edgesWeight("ref");
+		GraphWeights<Ref> g1Ref = g1.edgesWeight("ref");
 		IntCollection f1Edges = calcMST0(g1, e -> g1Ref.get(e).w);
 		UGraph f1 = Graphs.subGraph(g1, f1Edges);
 		IntCollection e2 = lightEdges(g0, f1);
 		UGraph g2 = Graphs.subGraph(g0, e2);
-		EdgesWeight<Ref> g2Ref = g2.edgesWeight("ref");
+		GraphWeights<Ref> g2Ref = g2.edgesWeight("ref");
 		IntCollection f2 = calcMST0(g2, e -> g2Ref.get(e).w);
 
 		for (IntIterator it = f2.iterator(); it.hasNext();) {
@@ -82,7 +82,7 @@ public class MSTKargerKleinTarjan1995 implements MST {
 			treeSizes[vToTree[u]]++;
 
 		UGraph[] trees = new UGraph[treeSizes.length];
-		EdgesWeight.Double[] treeData = new EdgesWeight.Double[treeSizes.length];
+		GraphWeights.Double[] treeData = new GraphWeights.Double[treeSizes.length];
 		for (int t = 0; t < trees.length; t++) {
 			trees[t] = new GraphArrayUndirected(treeSizes[t]);
 			treeData[t] = trees[t].newEdgeWeightDouble("weight");
@@ -93,7 +93,7 @@ public class MSTKargerKleinTarjan1995 implements MST {
 		for (int u = 0; u < n; u++)
 			vToVnew[u] = treeToNextv[vToTree[u]]++;
 
-		EdgesWeight<Ref> fRef = f.edgesWeight("ref");
+		GraphWeights<Ref> fRef = f.edgesWeight("ref");
 		for (int e = 0; e < f.edgesNum(); e++) {
 			int u = f.edgeSource(e), v = f.edgeTarget(e);
 			int un = vToVnew[u], vn = vToVnew[v];
@@ -132,7 +132,7 @@ public class MSTKargerKleinTarjan1995 implements MST {
 		 * Find all light edge by comparing each edge in g to the heaviest edge on the
 		 * path from u to v in f
 		 */
-		EdgesWeight<Ref> gRef = g.edgesWeight("ref");
+		GraphWeights<Ref> gRef = g.edgesWeight("ref");
 		IntCollection lightEdges = new IntArrayList();
 		int[] tpmIdx = new int[trees.length];
 		for (int e = 0; e < g.edgesNum(); e++) {

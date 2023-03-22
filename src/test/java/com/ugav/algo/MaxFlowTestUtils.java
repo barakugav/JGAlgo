@@ -29,7 +29,7 @@ class MaxFlowTestUtils extends TestUtils {
 		NavigableSet<Double> usedCaps = new TreeSet<>();
 
 		Random rand = new Random(nextRandSeed());
-		EdgesWeight<FlowEdgeDataDefault> data = g.newEdgeWeight("flowData");
+		GraphWeights<FlowEdgeDataDefault> data = g.newEdgeWeight("flowData");
 		for (int e = 0; e < m; e++) {
 			double cap;
 			for (;;) {

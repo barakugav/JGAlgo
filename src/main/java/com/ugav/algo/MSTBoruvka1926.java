@@ -30,7 +30,7 @@ public class MSTBoruvka1926 implements MST {
 		IntCollection mstEdges = r.e3;
 
 		UGraph contractedG = new GraphArrayUndirected(treeNum);
-		EdgesWeight<R> contractedGData = contractedG.newEdgeWeight(edgeValKey);
+		GraphWeights<R> contractedGData = contractedG.newEdgeWeight(edgeValKey);
 		int m = g.edgesNum();
 		for (int e = 0; e < m; e++) {
 			int u = tree[g.edgeSource(e)];
@@ -57,12 +57,12 @@ public class MSTBoruvka1926 implements MST {
 
 		int[] minEdges = new int[n];
 		Arrays.fill(minEdges, -1);
-		double[] minEdgesWeight = new double[n];
+		double[] minGraphWeights = new double[n];
 		int[] path = new int[n];
 
 		IntCollection mst = new IntArrayList();
 		for (int i = 0; i < numberOfRounds; i++) {
-			Arrays.fill(minEdgesWeight, 0, treeNum, Double.MAX_VALUE);
+			Arrays.fill(minGraphWeights, 0, treeNum, Double.MAX_VALUE);
 
 			/* find minimum edge going out of each tree */
 			for (int u = 0; u < n; u++) {
@@ -75,9 +75,9 @@ public class MSTBoruvka1926 implements MST {
 						continue;
 
 					double eWeight = w.weight(e);
-					if (eWeight < minEdgesWeight[tree]) {
+					if (eWeight < minGraphWeights[tree]) {
 						minEdges[tree] = e;
-						minEdgesWeight[tree] = eWeight;
+						minGraphWeights[tree] = eWeight;
 					}
 				}
 			}

@@ -44,9 +44,9 @@ public interface MaxFlow {
 	public static class FlowNetworkDefault implements FlowNetwork {
 
 		private static final double EPS = 0.0001;
-		private final EdgesWeight<FlowEdgeDataDefault> data;
+		private final GraphWeights<FlowEdgeDataDefault> data;
 
-		public FlowNetworkDefault(EdgesWeight<FlowEdgeDataDefault> data) {
+		public FlowNetworkDefault(GraphWeights<FlowEdgeDataDefault> data) {
 			this.data = Objects.requireNonNull(data);
 		}
 

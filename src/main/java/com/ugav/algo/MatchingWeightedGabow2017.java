@@ -52,7 +52,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 		/* the graph */
 		final Graph g;
 
-		final EdgesWeight<EdgeVal> edgeVal;
+		final GraphWeights<EdgeVal> edgeVal;
 
 		/* the weight function */
 		final EdgeWeightFunc w;

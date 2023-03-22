@@ -619,7 +619,7 @@ public class Graphs {
 	public static DiGraph referenceGraph(DiGraph g, Object refEdgeWeightKey) {
 		int m = g.edgesNum();
 		DiGraph g0 = new GraphArrayDirected(g.verticesNum());
-		EdgesWeight.Int data = g0.newEdgeWeightInt(refEdgeWeightKey);
+		GraphWeights.Int data = g0.newEdgeWeightInt(refEdgeWeightKey);
 		for (int e = 0; e < m; e++) {
 			int e0 = g0.addEdge(g.edgeSource(e), g.edgeTarget(e));
 			data.set(e0, e);
@@ -630,7 +630,7 @@ public class Graphs {
 	public static UGraph referenceGraph(UGraph g, Object refEdgeWeightKey) {
 		int m = g.edgesNum();
 		UGraph g0 = new GraphArrayUndirected(g.verticesNum());
-		EdgesWeight.Int data = g0.newEdgeWeightInt(refEdgeWeightKey);
+		GraphWeights.Int data = g0.newEdgeWeightInt(refEdgeWeightKey);
 		for (int e = 0; e < m; e++) {
 			int e0 = g0.addEdge(g.edgeSource(e), g.edgeTarget(e));
 			data.set(e0, e);
@@ -755,21 +755,21 @@ public class Graphs {
 			assert s0 == s;
 		}
 		for (Object key : g.getEdgeWeightKeys()) {
-			EdgesWeight<?> data0 = g.edgesWeight(key);
+			GraphWeights<?> data0 = g.edgesWeight(key);
 
-			if (data0 instanceof EdgesWeight.Int data) {
-				EdgesWeight.Int datas = g1.newEdgeWeightInt(key);
+			if (data0 instanceof GraphWeights.Int data) {
+				GraphWeights.Int datas = g1.newEdgeWeightInt(key);
 				for (int s = 0; s < s2e.length; s++)
 					datas.set(s, data.getInt(s2e[s]));
 
-			} else if (data0 instanceof EdgesWeight.Double data) {
-				EdgesWeight.Double datas = g1.newEdgeWeightDouble(key);
+			} else if (data0 instanceof GraphWeights.Double data) {
+				GraphWeights.Double datas = g1.newEdgeWeightDouble(key);
 				for (int s = 0; s < s2e.length; s++)
 					datas.set(s, data.getDouble(s2e[s]));
 
 			} else {
 				@SuppressWarnings("rawtypes")
-				EdgesWeight datas = g1.newEdgeWeight(key);
+				GraphWeights datas = g1.newEdgeWeight(key);
 				for (int s = 0; s < s2e.length; s++)
 					datas.set(s, data0.get(s2e[s]));
 			}

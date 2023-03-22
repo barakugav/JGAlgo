@@ -81,7 +81,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 		}
 
 		private int[] extractEdgesFromAnswers(int[][] a, int[] q, int[] lcaQueries, int[] depths,
-				EdgesWeight.Int edgeData) {
+				GraphWeights.Int edgeData) {
 			int queriesNum = lcaQueries.length / 4;
 			int[] res = new int[queriesNum];
 
@@ -122,7 +122,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 
 			int leavesDepth = Graphs.getFullyBranchingTreeDepth(t, root);
 
-			EdgesWeight.Int tData = t.edgesWeight("edgeData");
+			GraphWeights.Int tData = t.edgesWeight("edgeData");
 			int[][] res = new int[tOrig.verticesNum()][];
 
 			Graphs.runDFS(t, root, (v, edgesFromRoot) -> {
@@ -172,7 +172,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 			return successor(au, qv);
 		}
 
-		private int binarySearch(int av, double weight, IntList edgesToRoot, EdgesWeight.Int edgeData) {
+		private int binarySearch(int av, double weight, IntList edgesToRoot, GraphWeights.Int edgeData) {
 			int avsize = bitsTable.count.bitCount(av);
 			if (avsize == 0 || w.weight(edgeData.getInt(edgesToRoot.getInt(bitsTable.ith.ithBit(av, 0) - 1))) < weight)
 				return 0;
@@ -198,7 +198,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 		private Pair<UGraph, Integer> buildBoruvkaFullyBranchingTree() {
 			int n = tOrig.verticesNum();
 			int[] minEdges = new int[n];
-			double[] minEdgesWeight = new double[n];
+			double[] minGraphWeights = new double[n];
 			int[] vNext = new int[n];
 			int[] path = new int[n];
 			int[] vTv = new int[n];
@@ -208,20 +208,20 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 				vTv[v] = v;
 
 			UGraph t = new GraphArrayUndirected(n);
-			EdgesWeight.Int tData = t.newEdgeWeightInt("edgeData");
+			GraphWeights.Int tData = t.newEdgeWeightInt("edgeData");
 			for (UGraph G = Graphs.referenceGraph(tOrig, EdgeRefWeightKey); (n = G.verticesNum()) > 1;) {
-				EdgesWeight.Int GData = G.edgesWeight(EdgeRefWeightKey);
+				GraphWeights.Int GData = G.edgesWeight(EdgeRefWeightKey);
 
 				// Find minimum edge of each vertex
 				Arrays.fill(minEdges, 0, n, -1);
-				Arrays.fill(minEdgesWeight, 0, n, Double.MAX_VALUE);
+				Arrays.fill(minGraphWeights, 0, n, Double.MAX_VALUE);
 				for (int u = 0; u < n; u++) {
 					for (EdgeIter eit = G.edges(u); eit.hasNext();) {
 						int e = eit.nextInt();
 						double eWeight = w.weight(GData.getInt(e));
-						if (eWeight < minEdgesWeight[u]) {
+						if (eWeight < minGraphWeights[u]) {
 							minEdges[u] = e;
-							minEdgesWeight[u] = eWeight;
+							minGraphWeights[u] = eWeight;
 						}
 					}
 				}
@@ -266,7 +266,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 
 				// contract G to new graph with the super vertices
 				UGraph gNext = new GraphArrayUndirected(nNext);
-				EdgesWeight.Int gNextData = gNext.newEdgeWeightInt(EdgeRefWeightKey);
+				GraphWeights.Int gNextData = gNext.newEdgeWeightInt(EdgeRefWeightKey);
 				for (int u = 0; u < n; u++) {
 					int U = vNext[u];
 					for (EdgeIter eit = G.edges(u); eit.hasNext();) {

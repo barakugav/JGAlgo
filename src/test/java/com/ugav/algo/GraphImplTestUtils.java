@@ -163,7 +163,7 @@ class GraphImplTestUtils extends TestUtils {
 		boolean checkEdgesEqual(Graph g) {
 			if (g.edgesNum() != edgesNum())
 				return false;
-			EdgesWeight<Object> edgeData = g.edgesWeight(dataKey);
+			GraphWeights<Object> edgeData = g.edgesWeight(dataKey);
 			for (int e = 0; e < g.edgesNum(); e++) {
 				int u = g.edgeSource(e), v = g.edgeTarget(e);
 				int index = indexOfEdge(u, v);
@@ -203,7 +203,7 @@ class GraphImplTestUtils extends TestUtils {
 		opRand.add(GraphOp.AddVertex, 4);
 
 		final Object dataKey = new Object();
-		EdgesWeight<Object> edgeData = g.newEdgeWeight(dataKey);
+		GraphWeights<Object> edgeData = g.newEdgeWeight(dataKey);
 
 		GraphTracker tracker = new GraphTracker(g.verticesNum(), g instanceof DiGraph, dataKey);
 		for (int e = 0; e < g.edgesNum(); e++) {

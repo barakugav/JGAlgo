@@ -197,7 +197,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 				shuffledG = new GraphArrayUndirected(n);
 			}
 
-			EdgesWeight.Int edgeRef = shuffledG.newEdgeWeightInt("edgeRef");
+			GraphWeights.Int edgeRef = shuffledG.newEdgeWeightInt("edgeRef");
 			for (int e = 0; e < g.edgesNum(); e++) {
 				int u = g.edgeSource(e), v = g.edgeTarget(e);
 				int e0 = shuffledG.addEdge(shuffle[u], shuffle[v]);

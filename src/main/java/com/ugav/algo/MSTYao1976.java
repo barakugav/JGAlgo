@@ -36,12 +36,12 @@ public class MSTYao1976 implements MST {
 
 		int[] minEdges = new int[n];
 		Arrays.fill(minEdges, -1);
-		double[] minEdgesWeight = new double[n];
+		double[] minGraphWeights = new double[n];
 		int[] path = new int[n];
 
 		IntCollection mst = new IntArrayList();
 		for (;;) {
-			Arrays.fill(minEdgesWeight, 0, treeNum, Double.MAX_VALUE);
+			Arrays.fill(minGraphWeights, 0, treeNum, Double.MAX_VALUE);
 
 			/* find minimum edge going out of each tree */
 			for (int u = 0; u < n; u++) {
@@ -58,9 +58,9 @@ public class MSTYao1976 implements MST {
 						foundEdge = true;
 
 						double eWeight = w.weight(e);
-						if (eWeight < minEdgesWeight[tree]) {
+						if (eWeight < minGraphWeights[tree]) {
 							minEdges[tree] = e;
-							minEdgesWeight[tree] = eWeight;
+							minGraphWeights[tree] = eWeight;
 						}
 					}
 					if (foundEdge)

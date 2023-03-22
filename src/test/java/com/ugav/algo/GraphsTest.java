@@ -219,7 +219,7 @@ public class GraphsTest extends TestUtils {
 			GraphsTestUtils.assignRandWeightsIntPos(g);
 			int source = 0;
 
-			EdgesWeight.Int w = g.edgesWeight("weight");
+			GraphWeights.Int w = g.edgesWeight("weight");
 			SSSP.Result result = Graphs.calcDistancesDAG(g, w, source);
 
 			SSSPTestUtils.validateResult(g, w, source, result, new SSSPDijkstra());

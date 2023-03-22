@@ -237,7 +237,7 @@ class GraphsTestUtils extends TestUtils {
 			throw new IllegalArgumentException();
 
 		Random rand = new Random(nextRandSeed());
-		EdgesWeight.Double weight = g.newEdgeWeightDouble("weight");
+		GraphWeights.Double weight = g.newEdgeWeightDouble("weight");
 		for (int e = 0; e < g.edgesNum(); e++)
 			weight.set(e, nextDouble(rand, minWeight, maxWeight));
 	}
@@ -262,7 +262,7 @@ class GraphsTestUtils extends TestUtils {
 			throw new IllegalArgumentException("weight range is too small for unique weights");
 
 		RandomIntUnique rand = new RandomIntUnique(minWeight, maxWeight, nextRandSeed());
-		EdgesWeight.Int weight = g.newEdgeWeightInt("weight");
+		GraphWeights.Int weight = g.newEdgeWeightInt("weight");
 		for (int e = 0; e < g.edgesNum(); e++)
 			weight.set(e, rand.next());
 	}

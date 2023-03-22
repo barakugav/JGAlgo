@@ -182,15 +182,17 @@ public interface Graph {
 	// TODO documentation
 	// TODO implement bipartite graphs with boolean weights on vertices
 
+
+
 	/**
 	 * Get the user edges weights of some key
 	 *
 	 * @param <E>            The weight type
-	 * @param <EdgesWeightT> the weights container
+	 * @param <GraphWeightsT> the weights container
 	 * @param key            some key of the weights, could be anything
 	 * @return edges weights of the key
 	 */
-	public <E, EdgesWeightT extends EdgesWeight<E>> EdgesWeightT edgesWeight(Object key);
+	public <E, GraphWeightsT extends GraphWeights<E>> GraphWeightsT edgesWeight(Object key);
 
 	/**
 	 * Add a new weight type associated with the edges of the graph
@@ -199,7 +201,7 @@ public interface Graph {
 	 * @param key the weights key
 	 * @return the new edges weights
 	 */
-	public <E> EdgesWeight<E> newEdgeWeight(Object key);
+	public <E> GraphWeights<E> newEdgeWeight(Object key);
 
 	/**
 	 * Add a new int weight type associated with the edges of the graph
@@ -207,7 +209,7 @@ public interface Graph {
 	 * @param key the weights key
 	 * @return the new edges weights
 	 */
-	public EdgesWeight.Int newEdgeWeightInt(Object key);
+	public GraphWeights.Int newEdgeWeightInt(Object key);
 
 	/**
 	 * Add a new double weight type associated with the edges of the graph
@@ -215,7 +217,7 @@ public interface Graph {
 	 * @param key the weights key
 	 * @return the new edges weights
 	 */
-	public EdgesWeight.Double newEdgeWeightDouble(Object key);
+	public GraphWeights.Double newEdgeWeightDouble(Object key);
 
 	/**
 	 * Get the keys of all the associated edges weights
@@ -229,7 +231,7 @@ public interface Graph {
 	 *
 	 * @return all edges weights
 	 */
-	public Collection<EdgesWeight<?>> getEdgeWeights();
+	public Collection<GraphWeights<?>> getEdgeWeights();
 
 	/**
 	 * Add a listener that will be notified when an edge rename occur

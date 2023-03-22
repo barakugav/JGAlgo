@@ -11,7 +11,7 @@ class TSPMetricUtils {
 	private TSPMetricUtils() {
 	}
 
-	static IntList calcEulerianTourAndConvertToHamiltonianCycle(UGraph g, UGraph g1, EdgesWeight.Int edgeRef) {
+	static IntList calcEulerianTourAndConvertToHamiltonianCycle(UGraph g, UGraph g1, GraphWeights.Int edgeRef) {
 		int n = g.verticesNum();
 
 		/* Assert degree is actually even in the new graph */

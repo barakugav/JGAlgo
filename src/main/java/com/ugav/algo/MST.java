@@ -36,7 +36,7 @@ public interface MST {
 	public static boolean verifyMST(UGraph g, EdgeWeightFunc w, IntCollection mstEdges, TPM tpmAlgo) {
 		int n = g.verticesNum();
 		UGraph mst = new GraphArrayUndirected(n);
-		EdgesWeight.Int edgeRef = mst.newEdgeWeightInt("edgeRef");
+		GraphWeights.Int edgeRef = mst.newEdgeWeightInt("edgeRef");
 		for (IntIterator it = mstEdges.iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			int u = g.edgeSource(e), v = g.edgeTarget(e);
@@ -63,7 +63,7 @@ public interface MST {
 	 *                algorithm.
 	 * @return true if the given spanning tree is a MST of g
 	 */
-	public static boolean verifyMST(Graph g, EdgeWeightFunc w, Graph mst, TPM tpmAlgo, EdgesWeight.Int edgeRef) {
+	public static boolean verifyMST(Graph g, EdgeWeightFunc w, Graph mst, TPM tpmAlgo, GraphWeights.Int edgeRef) {
 		if (g instanceof DiGraph)
 			throw new IllegalArgumentException("Directed graphs are not supported");
 		if (!Graphs.isTree(mst))

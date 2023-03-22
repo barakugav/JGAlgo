@@ -2,7 +2,7 @@ package com.ugav.algo;
 
 import java.util.Arrays;
 
-import com.ugav.algo.EdgesWeight.DataIter;
+import com.ugav.algo.GraphWeights.WeightIter;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -25,7 +25,7 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 		if (!(g0 instanceof GraphBipartite.UGraph))
 			throw new IllegalArgumentException("Only undirected bipartite graphs are supported");
 		GraphBipartite.DiGraph g = referenceGraph((GraphBipartite.UGraph) g0, w);
-		EdgesWeight<Ref> edgeRef = g.edgesWeight(EdgeRefWeightKey);
+		GraphWeights<Ref> edgeRef = g.edgesWeight(EdgeRefWeightKey);
 
 		int n = g.verticesNum(), sn = g.svertices(), tn = g.tvertices();
 		int s = g.newVertexT(), t = g.newVertexS();
@@ -41,9 +41,9 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 		final double RemovedEdgeWeight = maxWeight * n;
 
 		// Negate unmatched edges
-		for (DataIter<Ref> it = edgeRef.iterator(); it.hasNext();) {
-			it.nextEdge();
-			Ref r = it.getData();
+		for (WeightIter<Ref> it = edgeRef.iterator(); it.hasNext();) {
+			it.nextInt();
+			Ref r = it.getWeight();
 			r.w = -r.w;
 		}
 		// Connected unmatched vertices to fake vertices s,t
@@ -119,7 +119,7 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 	private static GraphBipartite.DiGraph referenceGraph(GraphBipartite.UGraph g, EdgeWeightFunc w) {
 		int n = g.verticesNum();
 		GraphBipartite.DiGraph g0 = new GraphBipartiteArrayDirected(g.svertices(), g.tvertices());
-		EdgesWeight<Ref> edgeRef = g0.newEdgeWeight(EdgeRefWeightKey);
+		GraphWeights<Ref> edgeRef = g0.newEdgeWeight(EdgeRefWeightKey);
 
 		for (int u = 0; u < n; u++) {
 			if (!g.isVertexInS(u))
