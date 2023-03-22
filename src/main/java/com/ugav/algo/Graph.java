@@ -214,6 +214,21 @@ public interface Graph {
 	public Collection<GraphWeights<?>> getVerticesWeights();
 
 	/**
+	 * A bipartite graph is a graph in which the vertices are partitioned into two
+	 * sets V1,V2 and there are no edges between two vertices u,v if they are both
+	 * in V1 or both in V2. Some algorithm expect a bipartite graph as an input, and
+	 * the partition V1,V2 is expected to be a vertex boolean weight keyed by
+	 * {@link #DefaultBipartiteVerticesWeightKey}. To use a different key, the
+	 * algorithms expose a {@code setBipartiteVerticesWeightKey(Object)} function.
+	 */
+	public static final Object DefaultBipartiteVerticesWeightKey = new Object() {
+		@Override
+		public String toString() {
+			return "DefaultBipartiteVerticesWeightKey";
+		}
+	};
+
+	/**
 	 * Get the user edges weights of some key
 	 *
 	 * @param <E>             The weight type
@@ -263,9 +278,16 @@ public interface Graph {
 		/**
 		 * Create a builder used to build weights of double type.
 		 *
-		 * @return object double builder
+		 * @return double weights builder
 		 */
 		WeightsBuilderDouble doubles();
+
+		/**
+		 * Create a builder used to build weights of boolean type.
+		 *
+		 * @return boolean weights builder
+		 */
+		WeightsBuilderBool bools();
 	}
 
 	public static interface WeightsBuilderObj {
@@ -284,6 +306,12 @@ public interface Graph {
 		GraphWeights.Double build(Object key);
 
 		void setDefaultVal(double defVal);
+	}
+
+	public static interface WeightsBuilderBool {
+		GraphWeights.Bool build(Object key);
+
+		void setDefaultVal(boolean defVal);
 	}
 
 	/**

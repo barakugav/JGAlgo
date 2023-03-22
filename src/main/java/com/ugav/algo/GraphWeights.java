@@ -1,6 +1,7 @@
 package com.ugav.algo;
 
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
@@ -52,7 +53,6 @@ public abstract class GraphWeights<E> {
 			default void setWeight(Integer weight) {
 				setWeight(weight.intValue());
 			}
-
 		}
 
 		public static interface Double extends WeightIter<java.lang.Double> {
@@ -72,7 +72,25 @@ public abstract class GraphWeights<E> {
 			default void setWeight(java.lang.Double weight) {
 				setWeight(weight.doubleValue());
 			}
+		}
 
+		public static interface Bool extends WeightIter<Boolean> {
+
+			public boolean getWeightBool();
+
+			@Deprecated
+			@Override
+			default Boolean getWeight() {
+				return Boolean.valueOf(getWeightBool());
+			}
+
+			public void setWeight(boolean weight);
+
+			@Deprecated
+			@Override
+			default void setWeight(Boolean weight) {
+				setWeight(weight.booleanValue());
+			}
 		}
 
 	}
@@ -285,7 +303,7 @@ public abstract class GraphWeights<E> {
 		@Deprecated
 		@Override
 		public void setDefaultVal(Integer defVal) {
-			defaultVal = defVal.intValue();
+			setDefaultVal(defVal.intValue());
 		}
 
 		@Override
@@ -441,7 +459,7 @@ public abstract class GraphWeights<E> {
 		@Deprecated
 		@Override
 		public void setDefaultVal(java.lang.Double defVal) {
-			defaultVal = defVal.doubleValue();
+			setDefaultVal(defVal.doubleValue());
 		}
 
 		@Override
@@ -534,6 +552,153 @@ public abstract class GraphWeights<E> {
 			b.append('[');
 			for (int i = 0;; i++) {
 				b.append(String.valueOf(weights[i]));
+				if (i == iMax)
+					return b.append(']').toString();
+				b.append(", ");
+			}
+		}
+
+	}
+
+	public static class Bool extends GraphWeights<Boolean> {
+
+		private final BitSet weights;
+		private boolean defaultVal = false;
+		private int size;
+
+		public Bool() {
+			this(0);
+		}
+
+		public Bool(int expectedSize) {
+			// We don't do anything with expectedSize, but we keep it for forward
+			// compatibility
+			weights = new BitSet();
+			size = 0;
+		}
+
+		public boolean getBool(int key) {
+			checkKey(key);
+			return weights.get(key);
+		}
+
+		@Deprecated
+		@Override
+		public Boolean get(int key) {
+			return Boolean.valueOf(getBool(key));
+		}
+
+		public void set(int key, boolean weight) {
+			checkKey(key);
+			weights.set(key, weight);
+		}
+
+		@Deprecated
+		@Override
+		public void set(int key, Boolean data) {
+			set(key, data.booleanValue());
+		}
+
+		public boolean defaultValBool() {
+			return defaultVal;
+		}
+
+		@Deprecated
+		@Override
+		public Boolean defaultVal() {
+			return Boolean.valueOf(defaultValBool());
+		}
+
+		public void setDefaultVal(boolean defVal) {
+			defaultVal = defVal;
+		}
+
+		@Deprecated
+		@Override
+		public void setDefaultVal(Boolean defVal) {
+			setDefaultVal(defVal.booleanValue());
+		}
+
+		@Override
+		public WeightIter.Bool iterator() {
+			return new WeightItr();
+		}
+
+		@Override
+		void keyAdd(int key) {
+			assert key == size : "only continues keys are supported";
+			weights.set(key, defaultVal);
+			size++;
+		}
+
+		@Override
+		void keyRemove(int key) {
+			assert key == size - 1 : "only continues keys are supporte";
+			size--;
+		}
+
+		@Override
+		void keySwap(int k1, int k2) {
+			checkKey(k1);
+			checkKey(k2);
+			boolean temp = weights.get(k1);
+			weights.set(k1, weights.get(k2));
+			weights.set(k2, temp);
+		}
+
+		@Override
+		public void clear() {
+			size = 0;
+		}
+
+		private void checkKey(int key) {
+			if (key >= size)
+				throw new IndexOutOfBoundsException(key);
+		}
+
+		private class WeightItr extends WeightIterAbstract implements WeightIter.Bool {
+
+			WeightItr() {
+				super(size);
+			}
+
+			@Override
+			public boolean getWeightBool() {
+				return weights.get(idx);
+			}
+
+			@Override
+			public void setWeight(boolean weight) {
+				weights.set(idx, weight);
+			}
+		}
+
+		@Override
+		public boolean equals(Object other) {
+			if (other == this)
+				return true;
+			if (!(other instanceof GraphWeights.Bool))
+				return false;
+			GraphWeights.Bool o = (GraphWeights.Bool) other;
+
+			return size == o.size && weights.equals(o.weights);
+		}
+
+		@Override
+		public int hashCode() {
+			return size * 1237 ^ weights.hashCode();
+		}
+
+		@Override
+		public String toString() {
+			int iMax = size - 1;
+			if (iMax == -1)
+				return "[]";
+
+			StringBuilder b = new StringBuilder();
+			b.append('[');
+			for (int i = 0;; i++) {
+				b.append(String.valueOf(weights.get(i)));
 				if (i == iMax)
 					return b.append(']').toString();
 				b.append(", ");

@@ -29,7 +29,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 			int tn = args[1];
 			int m = args[2];
 
-			GraphBipartite g = MatchingBipartiteTestUtils.randGraphBipartite(sn, tn, m, graphImpl);
+			Graph g = MatchingBipartiteTestUtils.randGraphBipartite(sn, tn, m, graphImpl);
 			GraphsTestUtils.assignRandWeightsIntNeg(g);
 			EdgeWeightFunc.Int w = g.edgesWeight("weight");
 
@@ -49,8 +49,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 			int tn = args[1];
 			int m = args[2];
 
-			GraphBipartite g = MatchingBipartiteTestUtils.randGraphBipartite(sn, tn, m,
-					GraphImplTestUtils.GRAPH_IMPL_DEFAULT);
+			Graph g = MatchingBipartiteTestUtils.randGraphBipartite(sn, tn, m, GraphImplTestUtils.GRAPH_IMPL_DEFAULT);
 			int maxWeight = m < 50 ? 100 : m * 2 + 2;
 			GraphsTestUtils.assignRandWeightsInt(g, -maxWeight, maxWeight / 4);
 			EdgeWeightFunc.Int w = g.edgesWeight("weight");
@@ -160,41 +159,34 @@ class MatchingWeightedTestUtils extends TestUtils {
 
 		@Override
 		public IntCollection calcMaxMatching(Graph g, EdgeWeightFunc w) {
-			return calcMaxMatchingshuffled(g, w, false);
+			return calcMaxMatchingShuffled(g, w, false);
 		}
 
 		@Override
 		public IntCollection calcPerfectMaxMatching(Graph g, EdgeWeightFunc w) {
-			return calcMaxMatchingshuffled(g, w, true);
+			return calcMaxMatchingShuffled(g, w, true);
 		}
 
-		private IntCollection calcMaxMatchingshuffled(Graph g, EdgeWeightFunc w, boolean perfect) {
+		private IntCollection calcMaxMatchingShuffled(Graph g, EdgeWeightFunc w, boolean perfect) {
 			if (g instanceof DiGraph)
 				throw new IllegalArgumentException("only undirected graphs are supported");
 			int n = g.verticesNum();
 			int[] shuffle = randPermutation(n, nextRandSeed());
 
-			Graph shuffledG;
-			if (g instanceof GraphBipartite) {
-				GraphBipartite gb = (GraphBipartite) g;
-				GraphBipartite shuffledGb = new GraphBipartiteArrayUndirected();
+			Graph shuffledG = new GraphArrayUndirected(n);
+
+			GraphWeights.Bool partition = g.verticesWeight(Graph.DefaultBipartiteVerticesWeightKey);
+			if (partition != null) {
+				/* bipartite graph */
+				GraphWeights.Bool partitionSuffled = g.verticesWeightsFactory().bools()
+						.build(Graph.DefaultBipartiteVerticesWeightKey);
 
 				int[] shuffleInv = new int[n];
 				for (int v = 0; v < n; v++)
 					shuffleInv[shuffle[v]] = v;
 
-				for (int v = 0; v < n; v++) {
-					int newv;
-					if (gb.isVertexInS(shuffleInv[v]))
-						newv = gb.newVertexS();
-					else
-						newv = gb.newVertexT();
-					if (newv != v)
-						throw new IllegalStateException();
-				}
-				shuffledG = shuffledGb;
-			} else {
-				shuffledG = new GraphArrayUndirected(n);
+				for (int v = 0; v < n; v++)
+					partitionSuffled.set(v, partition.getBool(shuffleInv[v]));
 			}
 
 			GraphWeights.Int edgeRef = shuffledG.edgesWeightsFactory().ints().build("edgeRef");

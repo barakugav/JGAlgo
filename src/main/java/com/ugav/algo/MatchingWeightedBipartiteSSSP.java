@@ -1,6 +1,7 @@
 package com.ugav.algo;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import com.ugav.algo.GraphWeights.WeightIter;
 
@@ -15,20 +16,28 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 	 * O(m n + n^2 log n)
 	 */
 
+	private Object bipartiteVerticesWeightKey = Graph.DefaultBipartiteVerticesWeightKey;
+	private static final Object EdgeRefWeightKey = new Object();
+
 	public MatchingWeightedBipartiteSSSP() {
 	}
 
-	private static final Object EdgeRefWeightKey = new Object();
+	public void setBipartiteVerticesWeightKey(Object key) {
+		bipartiteVerticesWeightKey = key;
+	}
 
 	@Override
 	public IntCollection calcMaxMatching(Graph g0, EdgeWeightFunc w) {
-		if (!(g0 instanceof GraphBipartite.UGraph))
+		if (!(g0 instanceof UGraph))
 			throw new IllegalArgumentException("Only undirected bipartite graphs are supported");
-		GraphBipartite.DiGraph g = referenceGraph((GraphBipartite.UGraph) g0, w);
+		GraphWeights.Bool partition = g0.verticesWeight(bipartiteVerticesWeightKey);
+		Objects.requireNonNull(partition,
+				"Bipartiteness values weren't found with weight" + bipartiteVerticesWeightKey);
+		DiGraph g = referenceGraph((UGraph) g0, partition, w);
 		GraphWeights<Ref> edgeRef = g.edgesWeight(EdgeRefWeightKey);
 
-		int n = g.verticesNum(), sn = g.svertices(), tn = g.tvertices();
-		int s = g.newVertexT(), t = g.newVertexS();
+		int n = g.verticesNum();
+		int s = g.addVertex(), t = g.addVertex();
 
 		int[] match = new int[n];
 		Arrays.fill(match, -1);
@@ -47,10 +56,13 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 			r.w = -r.w;
 		}
 		// Connected unmatched vertices to fake vertices s,t
-		for (int u = 0; u < sn; u++)
-			edgeRef.set(g.addEdge(s, u), new Ref(-1, 0));
-		for (int v = sn; v < sn + tn; v++)
-			edgeRef.set(g.addEdge(v, t), new Ref(-1, 0));
+		for (int u = 0; u < n; u++) {
+			if (partition.getBool(u)) {
+				edgeRef.set(g.addEdge(s, u), new Ref(-1, 0));
+			} else {
+				edgeRef.set(g.addEdge(u, t), new Ref(-1, 0));
+			}
+		}
 
 		double[] potential = new double[n + 2];
 		EdgeWeightFunc spWeightFunc = e -> edgeRef.get(e).w + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];
@@ -116,13 +128,13 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 		throw new UnsupportedOperationException();
 	}
 
-	private static GraphBipartite.DiGraph referenceGraph(GraphBipartite.UGraph g, EdgeWeightFunc w) {
+	private static DiGraph referenceGraph(UGraph g, GraphWeights.Bool partition, EdgeWeightFunc w) {
 		int n = g.verticesNum();
-		GraphBipartite.DiGraph g0 = new GraphBipartiteArrayDirected(g.svertices(), g.tvertices());
+		DiGraph g0 = new GraphArrayDirected(g.verticesNum());
 		GraphWeights<Ref> edgeRef = g0.edgesWeightsFactory().objs().build(EdgeRefWeightKey);
 
 		for (int u = 0; u < n; u++) {
-			if (!g.isVertexInS(u))
+			if (!partition.getBool(u))
 				continue;
 			for (EdgeIter eit = g.edges(u); eit.hasNext();) {
 				int e = eit.nextInt();

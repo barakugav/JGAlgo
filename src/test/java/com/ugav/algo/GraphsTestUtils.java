@@ -101,7 +101,13 @@ class GraphsTestUtils extends TestUtils {
 				if ((sn == 0 || tn == 0) && m != 0)
 					throw new IllegalStateException();
 				n = sn + tn;
-				g = impl.newGraph(directed, sn, tn);
+				g = impl.newGraph(directed, n);
+				GraphWeights.Bool partition = g.verticesWeightsFactory().bools()
+						.build(Graph.DefaultBipartiteVerticesWeightKey);
+				for (int u = 0; u < sn; u++)
+					partition.set(u, true);
+				for (int u = 0; u < tn; u++)
+					partition.set(sn + u, false);
 			}
 			if (n == 0)
 				return g;

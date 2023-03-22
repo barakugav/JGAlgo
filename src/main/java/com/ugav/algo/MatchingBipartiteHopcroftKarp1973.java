@@ -1,6 +1,7 @@
 package com.ugav.algo;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import com.ugav.algo.Utils.QueueIntFixSize;
 
@@ -14,17 +15,25 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 	 * Maximum matching in unweighted undirected bipartite graph in O(m n^0.5)
 	 */
 
+	private Object bipartiteVerticesWeightKey = Graph.DefaultBipartiteVerticesWeightKey;
+	private static final Object EdgeRefWeightKey = new Object();
+
 	public MatchingBipartiteHopcroftKarp1973() {
 	}
 
-	private static final Object EdgeRefWeightKey = new Object();
+	public void setBipartiteVerticesWeightKey(Object key) {
+		bipartiteVerticesWeightKey = key;
+	}
 
 	@Override
 	public IntCollection calcMaxMatching(Graph g0) {
-		if (!(g0 instanceof GraphBipartite.UGraph))
+		if (!(g0 instanceof UGraph))
 			throw new IllegalArgumentException("only undirected bipartite graphs are supported");
-		GraphBipartite.UGraph g = (GraphBipartite.UGraph) g0;
+		UGraph g = (UGraph) g0;
 		int n = g.verticesNum();
+
+		GraphWeights.Bool partition = g.verticesWeight(bipartiteVerticesWeightKey);
+		Objects.requireNonNull(partition, "Bipartiteness values weren't found with weight" + bipartiteVerticesWeightKey);
 
 		/* BFS */
 		int[] depths = new int[n];
@@ -46,7 +55,7 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 			bfsQueue.clear();
 			Arrays.fill(depths, Integer.MAX_VALUE);
 			for (int u = 0; u < n; u++) {
-				if (!g.isVertexInS(u) || matched[u] != MatchedNone)
+				if (!partition.getBool(u) || matched[u] != MatchedNone)
 					continue;
 				depths[u] = 0;
 				bfsQueue.push(u);
@@ -88,7 +97,7 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 			 * unmatched T vertices
 			 */
 			for (int u = 0; u < n; u++) {
-				if (!g.isVertexInS(u) || matched[u] != MatchedNone)
+				if (!partition.getBool(u) || matched[u] != MatchedNone)
 					continue;
 
 				edges[0] = f.edges(u);
@@ -133,7 +142,7 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 
 		IntList res = new IntArrayList();
 		for (int u = 0; u < n; u++)
-			if (g.isVertexInS(u) && matched[u] != MatchedNone)
+			if (partition.getBool(u) && matched[u] != MatchedNone)
 				res.add(matched[u]);
 		return res;
 	}

@@ -1,7 +1,5 @@
 package com.ugav.algo;
 
-
-
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
 public interface MatchingWeighted extends Matching {

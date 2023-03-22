@@ -13,25 +13,17 @@ class GraphImplTestUtils extends TestUtils {
 
 	@FunctionalInterface
 	static interface GraphImpl {
-		Graph newGraph(boolean directed, int... vertices);
+		Graph newGraph(boolean directed, int vertices);
 	}
 
 	static final GraphImpl GRAPH_IMPL_DEFAULT = new GraphImpl() {
 
 		@Override
-		public Graph newGraph(boolean directed, int... vertices) {
+		public Graph newGraph(boolean directed, int vertices) {
 			if (directed) {
-				if (vertices.length == 1) {
-					return new GraphArrayDirected(vertices[0]);
-				} else {
-					return new GraphBipartiteArrayDirected(vertices[0], vertices[1]);
-				}
+				return new GraphArrayDirected(vertices);
 			} else {
-				if (vertices.length == 1) {
-					return new GraphArrayUndirected(vertices[0]);
-				} else {
-					return new GraphBipartiteArrayUndirected(vertices[0], vertices[1]);
-				}
+				return new GraphArrayUndirected(vertices);
 			}
 		}
 	};

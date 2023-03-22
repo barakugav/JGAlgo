@@ -10,11 +10,8 @@ public class GraphTableTest extends TestUtils {
 		return new GraphImpl() {
 
 			@Override
-			public Graph newGraph(boolean directed, int... vertices) {
-				if (vertices.length != 1)
-					throw new UnsupportedOperationException();
-				int n = vertices[0];
-				return directed ? new GraphTableDirected(n) : new GraphTableUndirected(n);
+			public Graph newGraph(boolean directed, int vertices) {
+				return directed ? new GraphTableDirected(vertices) : new GraphTableUndirected(vertices);
 			}
 		};
 	}

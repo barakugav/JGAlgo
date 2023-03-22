@@ -1,6 +1,7 @@
 package com.ugav.algo;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -13,28 +14,39 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 	 * O(m n + n^2 log n)
 	 */
 
+	private Object bipartiteVerticesWeightKey = Graph.DefaultBipartiteVerticesWeightKey;
+
 	public MatchingWeightedBipartiteHungarianMethod() {
+	}
+
+	public void setBipartiteVerticesWeightKey(Object key) {
+		bipartiteVerticesWeightKey = key;
 	}
 
 	@Override
 	public IntCollection calcMaxMatching(Graph g0, EdgeWeightFunc w) {
-		if (!(g0 instanceof GraphBipartite.UGraph))
+		if (!(g0 instanceof UGraph))
 			throw new IllegalArgumentException("Only undirected bipartite graphs are supported");
-		GraphBipartite.UGraph g = (GraphBipartite.UGraph) g0;
-		return new Worker(g, w).calcMaxMatching(false);
+		UGraph g = (UGraph) g0;
+		GraphWeights.Bool partition = g.verticesWeight(bipartiteVerticesWeightKey);
+		Objects.requireNonNull(partition, "Bipartiteness values weren't found with weight" + bipartiteVerticesWeightKey);
+		return new Worker(g, partition, w).calcMaxMatching(false);
 	}
 
 	@Override
 	public IntCollection calcPerfectMaxMatching(Graph g0, EdgeWeightFunc w) {
-		if (!(g0 instanceof GraphBipartite.UGraph))
+		if (!(g0 instanceof UGraph))
 			throw new IllegalArgumentException("Only undirected bipartite graphs are supported");
-		GraphBipartite.UGraph g = (GraphBipartite.UGraph) g0;
-		return new Worker(g, w).calcMaxMatching(true);
+		UGraph g = (UGraph) g0;
+		GraphWeights.Bool partition = g.verticesWeight(bipartiteVerticesWeightKey);
+		Objects.requireNonNull(partition, "Bipartiteness values weren't found with weight" + bipartiteVerticesWeightKey);
+		return new Worker(g, partition, w).calcMaxMatching(true);
 	}
 
 	private static class Worker {
 
-		private final GraphBipartite.UGraph g;
+		private final UGraph g;
+		private final GraphWeights.Bool partition;
 		private final EdgeWeightFunc w;
 
 		private final boolean[] inTree;
@@ -48,8 +60,9 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 		private final double[] dualVal0;
 
 		@SuppressWarnings("unchecked")
-		Worker(GraphBipartite.UGraph g, EdgeWeightFunc w) {
+		Worker(UGraph g, GraphWeights.Bool partition, EdgeWeightFunc w) {
 			this.g = g;
+			this.partition = partition;
 			this.w = w;
 			int n = g.verticesNum();
 
@@ -76,7 +89,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 				maxWeight = Math.max(maxWeight, w.weight(e));
 			final double delta1Threshold = maxWeight;
 			for (int u = 0; u < n; u++)
-				if (g.isVertexInS(u))
+				if (partition.getBool(u))
 					dualValBase[u] = delta1Threshold;
 
 			mainLoop: for (;;) {
@@ -84,7 +97,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 
 				// Start growing tree from all unmatched vertices in S
 				for (int u = 0; u < n; u++) {
-					if (!g.isVertexInS(u) || matched[u] != EdgeNone)
+					if (!partition.getBool(u) || matched[u] != EdgeNone)
 						continue;
 					vertexAddedToTree(u);
 					for (EdgeIter eit = g.edges(u); eit.hasNext();) {
@@ -163,7 +176,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 
 			IntList res = new IntArrayList();
 			for (int u = 0; u < n; u++)
-				if (g.isVertexInS(u) && matched[u] != EdgeNone)
+				if (partition.getBool(u) && matched[u] != EdgeNone)
 					res.add(matched[u]);
 			return res;
 		}
@@ -178,7 +191,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 		}
 
 		private double dualVal(int v) {
-			return inTree[v] ? dualVal0[v] + (g.isVertexInS(v) ? -deltaTotal : deltaTotal) : dualValBase[v];
+			return inTree[v] ? dualVal0[v] + (partition.getBool(v) ? -deltaTotal : deltaTotal) : dualValBase[v];
 		}
 
 		private double edgeSlack(int e) {
@@ -186,7 +199,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 		}
 
 		private void vertexAddedToTree(int v) {
-			dualVal0[v] = dualValBase[v] + (g.isVertexInS(v) ? deltaTotal : -deltaTotal);
+			dualVal0[v] = dualValBase[v] + (partition.getBool(v) ? deltaTotal : -deltaTotal);
 			inTree[v] = true;
 		}
 

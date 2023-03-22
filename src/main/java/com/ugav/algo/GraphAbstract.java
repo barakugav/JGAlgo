@@ -157,6 +157,24 @@ abstract class GraphAbstract implements Graph {
 				};
 			}
 
+			@Override
+			public WeightsBuilderBool bools() {
+				return new WeightsBuilderBool() {
+					boolean defVal = false;
+
+					@Override
+					public GraphWeights.Bool build(Object key) {
+						GraphWeights.Bool weights = new GraphWeights.Bool(verticesNum());
+						weights.setDefaultVal(defVal);
+						return addVertexData(key, weights);
+					}
+
+					@Override
+					public void setDefaultVal(boolean defVal) {
+						this.defVal = defVal;
+					}
+				};
+			}
 		};
 	}
 
@@ -248,6 +266,24 @@ abstract class GraphAbstract implements Graph {
 				};
 			}
 
+			@Override
+			public WeightsBuilderBool bools() {
+				return new WeightsBuilderBool() {
+					boolean defVal = false;
+
+					@Override
+					public GraphWeights.Bool build(Object key) {
+						GraphWeights.Bool weights = new GraphWeights.Bool(edgesNum());
+						weights.setDefaultVal(defVal);
+						return addEdgeData(key, weights);
+					}
+
+					@Override
+					public void setDefaultVal(boolean defVal) {
+						this.defVal = defVal;
+					}
+				};
+			}
 		};
 	}
 
