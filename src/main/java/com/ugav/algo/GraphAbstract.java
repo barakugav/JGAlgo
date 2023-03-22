@@ -83,8 +83,8 @@ abstract class GraphAbstract implements Graph {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <E, EdgeDataT extends EdgesWeight<E>> EdgeDataT edgesWeight(Object key) {
-		return (EdgeDataT) edgeData.get(key);
+	public <E, EdgesWeightT extends EdgesWeight<E>> EdgesWeightT edgesWeight(Object key) {
+		return (EdgesWeightT) edgeData.get(key);
 	}
 
 	@Override
@@ -102,14 +102,14 @@ abstract class GraphAbstract implements Graph {
 		return addEdgeData(key, new EdgesWeight.Double(edgesNum()));
 	}
 
-	private <E, T extends EdgesWeight<E>> T addEdgeData(Object key, T data) {
+	private <E, EdgesWeightT extends EdgesWeight<E>> EdgesWeightT addEdgeData(Object key, EdgesWeightT weights) {
 		if (edgeData.containsKey(key))
 			throw new IllegalArgumentException();
 		int m = edgesNum();
 		for (int e = 0; e < m; e++)
-			data.edgeAdd(e);
-		edgeData.put(key, data);
-		return data;
+			weights.edgeAdd(e);
+		edgeData.put(key, weights);
+		return weights;
 	}
 
 	@Override

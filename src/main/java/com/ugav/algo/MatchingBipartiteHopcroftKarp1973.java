@@ -22,9 +22,9 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 
 	@Override
 	public IntCollection calcMaxMatching(Graph g0) {
-		if (!(g0 instanceof GraphBipartite.Undirected))
+		if (!(g0 instanceof GraphBipartite.UGraph))
 			throw new IllegalArgumentException("only undirected bipartite graphs are supported");
-		GraphBipartite.Undirected g = (GraphBipartite.Undirected) g0;
+		GraphBipartite.UGraph g = (GraphBipartite.UGraph) g0;
 		int n = g.verticesNum();
 
 		/* BFS */
