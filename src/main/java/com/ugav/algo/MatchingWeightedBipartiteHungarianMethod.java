@@ -21,23 +21,23 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 
 	@Override
 	public IntCollection calcMaxMatching(Graph g0, WeightFunction w) {
-		if (!(g0 instanceof GraphBipartite.Undirected))
+		if (!(g0 instanceof GraphBipartite.UGraph))
 			throw new IllegalArgumentException("Only undirected bipartite graphs are supported");
-		GraphBipartite.Undirected g = (GraphBipartite.Undirected) g0;
+		GraphBipartite.UGraph g = (GraphBipartite.UGraph) g0;
 		return new Worker(g, w).calcMaxMatching(false);
 	}
 
 	@Override
 	public IntCollection calcPerfectMaxMatching(Graph g0, WeightFunction w) {
-		if (!(g0 instanceof GraphBipartite.Undirected))
+		if (!(g0 instanceof GraphBipartite.UGraph))
 			throw new IllegalArgumentException("Only undirected bipartite graphs are supported");
-		GraphBipartite.Undirected g = (GraphBipartite.Undirected) g0;
+		GraphBipartite.UGraph g = (GraphBipartite.UGraph) g0;
 		return new Worker(g, w).calcMaxMatching(true);
 	}
 
 	private static class Worker {
 
-		private final GraphBipartite.Undirected g;
+		private final GraphBipartite.UGraph g;
 		private final WeightFunction w;
 
 		private final boolean[] inTree;
@@ -51,7 +51,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 		private final double[] dualVal0;
 
 		@SuppressWarnings("unchecked")
-		Worker(GraphBipartite.Undirected g, WeightFunction w) {
+		Worker(GraphBipartite.UGraph g, WeightFunction w) {
 			this.g = g;
 			this.w = w;
 			int n = g.verticesNum();

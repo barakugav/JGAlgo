@@ -24,9 +24,9 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 
 	@Override
 	public IntCollection calcMaxMatching(Graph g0, WeightFunction w) {
-		if (!(g0 instanceof GraphBipartite.Undirected))
+		if (!(g0 instanceof GraphBipartite.UGraph))
 			throw new IllegalArgumentException("Only undirected bipartite graphs are supported");
-		GraphBipartite.DiGraph g = referenceGraph((GraphBipartite.Undirected) g0, w);
+		GraphBipartite.DiGraph g = referenceGraph((GraphBipartite.UGraph) g0, w);
 		EdgesWeight<Ref> edgeRef = g.edgesWeight(EdgeRefWeightKey);
 
 		int n = g.verticesNum(), sn = g.svertices(), tn = g.tvertices();
@@ -118,7 +118,7 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 		throw new UnsupportedOperationException();
 	}
 
-	private static GraphBipartite.DiGraph referenceGraph(GraphBipartite.Undirected g, WeightFunction w) {
+	private static GraphBipartite.DiGraph referenceGraph(GraphBipartite.UGraph g, WeightFunction w) {
 		int n = g.verticesNum();
 		GraphBipartite.DiGraph g0 = new GraphBipartiteArrayDirected(g.svertices(), g.tvertices());
 		EdgesWeight<Ref> edgeRef = g0.newEdgeWeight(EdgeRefWeightKey);

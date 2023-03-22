@@ -49,7 +49,7 @@ public interface GraphBipartite extends Graph {
 	static interface DiGraph extends GraphBipartite, com.ugav.algo.DiGraph {
 	}
 
-	static interface Undirected extends GraphBipartite, com.ugav.algo.UGraph {
+	static interface UGraph extends GraphBipartite, com.ugav.algo.UGraph {
 	}
 
 }
