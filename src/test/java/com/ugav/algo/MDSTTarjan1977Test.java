@@ -3,6 +3,8 @@ package com.ugav.algo;
 import java.util.List;
 import java.util.function.Supplier;
 
+import org.junit.jupiter.api.Test;
+
 import com.ugav.algo.Graph.EdgeIter;
 import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.GraphImplTestUtils.GraphImpl;
@@ -46,12 +48,12 @@ public class MDSTTarjan1977Test extends TestUtils {
 	}
 
 	@Test
-	public static void randGraphUndirected() {
+	public void testRandGraphUndirected() {
 		MSTTestUtils.testRandGraph(() -> new MDSTUndirectedWrapper(new MDSTTarjan1977()));
 	}
 
 	@Test
-	public static void randGraphDirected() {
+	public void testRandGraphDirected() {
 		testRandGraph(MDSTTarjan1977::new);
 	}
 

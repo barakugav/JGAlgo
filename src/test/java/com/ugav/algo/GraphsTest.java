@@ -6,13 +6,16 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 import com.ugav.algo.Graph.EdgeIter;
 import com.ugav.algo.GraphsTestUtils.RandomGraphBuilder;
 
 public class GraphsTest extends TestUtils {
 
 	@Test
-	public static void bfsConnected() {
+	public void testBfsConnected() {
 		Random rand = new Random(nextRandSeed());
 		List<Phase> phases = List.of(phase(256, 16, 8), phase(128, 32, 64), phase(4, 2048, 8192));
 		runTestMultiple(phases, (testIter, args) -> {
@@ -30,12 +33,12 @@ public class GraphsTest extends TestUtils {
 				visited[v] = true;
 				return true;
 			});
-			assertTrue(invalidVertices.isEmpty());
+			Assertions.assertTrue(invalidVertices.isEmpty());
 		});
 	}
 
 	@Test
-	public static void dfsConnected() {
+	public void testDfsConnected() {
 		Random rand = new Random(nextRandSeed());
 		List<Phase> phases = List.of(phase(256, 16, 8), phase(128, 32, 64), phase(4, 2048, 8192));
 		runTestMultiple(phases, (testIter, args) -> {
@@ -54,12 +57,12 @@ public class GraphsTest extends TestUtils {
 				visited[v] = true;
 				return true;
 			});
-			assertTrue(invalidVertices.isEmpty());
+			Assertions.assertTrue(invalidVertices.isEmpty());
 		});
 	}
 
 	@Test
-	public static void isTreeUnrootedPositive() {
+	public void testIsTreeUnrootedPositive() {
 		List<Phase> phases = List.of(phase(256, 16), phase(128, 32), phase(4, 2048));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
@@ -67,12 +70,12 @@ public class GraphsTest extends TestUtils {
 			Graph g = new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(false).selfEdges(false)
 					.cycles(false).connected(true).build();
 
-			assertTrue(Graphs.isTree(g));
+			Assertions.assertTrue(Graphs.isTree(g));
 		});
 	}
 
 	@Test
-	public static void isTreeUnrootedNegativeUnconnected() {
+	public void testIsTreeUnrootedNegativeUnconnected() {
 		Random rand = new Random(nextRandSeed());
 		List<Phase> phases = List.of(phase(256, 16), phase(128, 32), phase(4, 2048));
 		runTestMultiple(phases, (testIter, args) -> {
@@ -82,13 +85,13 @@ public class GraphsTest extends TestUtils {
 					.cycles(false).connected(true).build();
 			int e = rand.nextInt(m);
 			g.removeEdge(e);
-//
-			assertFalse(Graphs.isTree(g));
+
+			Assertions.assertFalse(Graphs.isTree(g));
 		});
 	}
 
 	@Test
-	public static void isTreeUnrootedNegativeCycle() {
+	public void testIsTreeUnrootedNegativeCycle() {
 		Random rand = new Random(nextRandSeed());
 		List<Phase> phases = List.of(phase(256, 16), phase(128, 32), phase(4, 2048));
 		runTestMultiple(phases, (testIter, args) -> {
@@ -103,12 +106,12 @@ public class GraphsTest extends TestUtils {
 			} while (u == v);
 			g.addEdge(u, v);
 
-			assertFalse(Graphs.isTree(g));
+			Assertions.assertFalse(Graphs.isTree(g));
 		});
 	}
 
 	@Test
-	public static void isTreeRootedPositive() {
+	public void testIsTreeRootedPositive() {
 		Random rand = new Random(nextRandSeed());
 		List<Phase> phases = List.of(phase(256, 16), phase(128, 32), phase(4, 2048));
 		runTestMultiple(phases, (testIter, args) -> {
@@ -118,12 +121,12 @@ public class GraphsTest extends TestUtils {
 					.cycles(false).connected(true).build();
 			int root = rand.nextInt(n);
 
-			assertTrue(Graphs.isTree(g, root));
+			Assertions.assertTrue(Graphs.isTree(g, root));
 		});
 	}
 
 	@Test
-	public static void isTreeRootedNegativeUnconnected() {
+	public void testIsTreeRootedNegativeUnconnected() {
 		Random rand = new Random(nextRandSeed());
 		List<Phase> phases = List.of(phase(256, 16), phase(128, 32), phase(4, 2048));
 		runTestMultiple(phases, (testIter, args) -> {
@@ -134,13 +137,13 @@ public class GraphsTest extends TestUtils {
 			int root = rand.nextInt(n);
 			int e = rand.nextInt(m);
 			g.removeEdge(e);
-//
-			assertFalse(Graphs.isTree(g, root));
+
+			Assertions.assertFalse(Graphs.isTree(g, root));
 		});
 	}
 
 	@Test
-	public static void isTreeRootedNegativeCycle() {
+	public void testIsTreeRootedNegativeCycle() {
 		Random rand = new Random(nextRandSeed());
 		List<Phase> phases = List.of(phase(256, 16), phase(128, 32), phase(4, 2048));
 		runTestMultiple(phases, (testIter, args) -> {
@@ -156,7 +159,7 @@ public class GraphsTest extends TestUtils {
 			} while (u == v);
 			g.addEdge(u, v);
 
-			assertFalse(Graphs.isTree(g, root));
+			Assertions.assertFalse(Graphs.isTree(g, root));
 		});
 	}
 
@@ -165,12 +168,12 @@ public class GraphsTest extends TestUtils {
 //		public <E> Pair<Integer, int[]> findStrongConnectivityComponents(Graph<E> g) {;
 
 	@Test
-	public static void topologicalSortUnconnected() {
+	public void testTopologicalSortUnconnected() {
 		topologicalSort(false);
 	}
 
 	@Test
-	public static void topologicalSortConnected() {
+	public void testTopologicalSortConnected() {
 		topologicalSort(true);
 	}
 
@@ -190,7 +193,7 @@ public class GraphsTest extends TestUtils {
 				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 					eit.nextInt();
 					int v = eit.v();
-					assertFalse(seenVertices.contains(Integer.valueOf(v)));
+					Assertions.assertFalse(seenVertices.contains(Integer.valueOf(v)));
 				}
 				seenVertices.add(Integer.valueOf(u));
 			}
@@ -198,12 +201,12 @@ public class GraphsTest extends TestUtils {
 	}
 
 	@Test
-	public static void distancesDAGUnconnected() {
+	public void testDdistancesDAGUnconnected() {
 		distancesDAG(false);
 	}
 
 	@Test
-	public static void distancesDAGConnected() {
+	public void testDistancesDAGConnected() {
 		distancesDAG(true);
 	}
 

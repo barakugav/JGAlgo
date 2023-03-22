@@ -8,10 +8,13 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
 
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 public class SubtreeMergeFindminTest extends TestUtils {
 
 	@Test
-	public static void randOps() {
+	public void testRandOps() {
 		List<Phase> phases = List.of(phase(128, 16, 16), phase(128, 16, 32), phase(64, 64, 64), phase(64, 64, 128),
 				phase(8, 512, 512), phase(8, 512, 2048), phase(1, 4096, 4096), phase(1, 4096, 16384));
 		runTestMultiple(phases, (testIter, args) -> {
@@ -152,8 +155,8 @@ public class SubtreeMergeFindminTest extends TestUtils {
 					expected[0] = expected[1];
 					expected[1] = temp;
 				}
-				assertTrue(Arrays.equals(expected, actual), "Algo found unexpected edge: ", Arrays.toString(expected),
-						" != ", Arrays.toString(actual), "\n");
+				Assertions.assertTrue(Arrays.equals(expected, actual),
+						"Algo found unexpected edge: " + Arrays.toString(expected) + " != " + Arrays.toString(actual));
 				break;
 			}
 			default:

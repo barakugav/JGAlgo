@@ -1,49 +1,51 @@
 package com.ugav.algo;
 
+import org.junit.jupiter.api.Test;
+
 public class SplayTreeTest extends TestUtils {
 
 	@Test
-	public static void randOps() {
+	public void testRandOps() {
 		HeapTestUtils.testRandOps(SplayTree::new);
 	}
 
 	@Test
-	public static void randOpsAfterManyInserts() {
+	public void testRandOpsAfterManyInserts() {
 		HeapTestUtils.testRandOpsAfterManyInserts(SplayTree::new);
 	}
 
 	@Test
-	public static void meld() {
+	public void testMeld() {
 		HeapTestUtils.testMeld(SplayTree::new);
 	}
 
 	@Test
-	public static void meldWithOrder() {
+	public void testMeldWithOrder() {
 		HeapTestUtils.testMeldWithOrderedValues(SplayTree::new);
 	}
 
 	@Test
-	public static void split() {
+	public void testSplit() {
 		BSTTestUtils.testSplit(SplayTree::new);
 	}
 
 	@Test
-	public static void findSmaller() {
+	public void testFindSmaller() {
 		BSTTestUtils.testFindSmallers(SplayTree::new);
 	}
 
 	@Test
-	public static void findGreater() {
+	public void testFindGreater() {
 		BSTTestUtils.testFindGreaters(SplayTree::new);
 	}
 
 	@Test
-	public static void getPredecessor() {
+	public void testGetPredecessor() {
 		BSTTestUtils.testGetPredecessors(SplayTree::new);
 	}
 
 	@Test
-	public static void getSuccessor() {
+	public void testGetSuccessor() {
 		BSTTestUtils.testGetSuccessors(SplayTree::new);
 	}
 

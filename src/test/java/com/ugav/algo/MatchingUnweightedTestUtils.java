@@ -7,12 +7,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import org.junit.jupiter.api.Assertions;
+
 import com.ugav.algo.Graph.EdgeIter;
 
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
-@SuppressWarnings("boxing")
 class MatchingUnweightedTestUtils extends TestUtils {
 
 	private MatchingUnweightedTestUtils() {
@@ -35,7 +36,7 @@ class MatchingUnweightedTestUtils extends TestUtils {
 	private static void testAlgo(Matching algo, Graph g, int expectedMatchSize) {
 		IntCollection match = algo.calcMaxMatching(g);
 		validateMatching(g, match);
-		assertEq(expectedMatchSize, match.size(), "unexpected match size");
+		Assertions.assertEquals(expectedMatchSize, match.size(), "unexpected match size");
 	}
 
 	static <E> void validateMatching(Graph g, IntCollection matching) {
@@ -44,7 +45,7 @@ class MatchingUnweightedTestUtils extends TestUtils {
 			int e = it.nextInt();
 			for (int v : new int[] { g.edgeSource(e), g.edgeTarget(e) }) {
 				boolean dup = matched.contains(Integer.valueOf(v));
-				assertFalse(dup, "Invalid matching, clash: ", v, " ", e, " \n");
+				Assertions.assertFalse(dup, "Invalid matching, clash: " + v + " " + e);
 				matched.add(Integer.valueOf(v));
 			}
 		}

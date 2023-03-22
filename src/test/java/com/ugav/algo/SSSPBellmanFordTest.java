@@ -1,14 +1,16 @@
 package com.ugav.algo;
 
+import org.junit.jupiter.api.Test;
+
 public class SSSPBellmanFordTest extends TestUtils {
 
 	@Test
-	public static void randGraphPositiveInt() {
+	public void testRandGraphPositiveInt() {
 		SSSPTestUtils.testSSSPDirectedPositiveInt(SSSPBellmanFord::new);
 	}
 
 	@Test
-	public static void randGraphNegativeInt() {
+	public void testRandGraphNegativeInt() {
 		SSSPTestUtils.testSSSPDirectedNegativeInt(SSSPBellmanFord::new);
 	}
 

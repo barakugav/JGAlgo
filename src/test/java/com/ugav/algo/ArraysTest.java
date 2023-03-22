@@ -3,11 +3,13 @@ package com.ugav.algo;
 import java.util.List;
 import java.util.Random;
 
-@SuppressWarnings("boxing")
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 public class ArraysTest extends TestUtils {
 
 	@Test
-	public static void getKthElementRandArrayUnique() {
+	public void testGetKthElementRandArrayUnique() {
 		List<Phase> phases = List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 1024),
 				phase(2, 4096));
 		runTestMultiple(phases, (testIter, args) -> {
@@ -18,7 +20,7 @@ public class ArraysTest extends TestUtils {
 	}
 
 	@Test
-	public static void getKthElementRandArrayNonunique() {
+	public void testGetKthElementRandArrayNonunique() {
 		List<Phase> phases = List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 1024),
 				phase(2, 4096));
 		runTestMultiple(phases, (testIter, args) -> {
@@ -38,11 +40,11 @@ public class ArraysTest extends TestUtils {
 		java.util.Arrays.sort(a);
 		int expected = a[k];
 
-		assertEq(expected, actual, "Unexpected K'th elemet");
+		Assertions.assertEquals(expected, actual, "Unexpected K'th elemet");
 	}
 
 	@Test
-	public static void bucketPartition() {
+	public void testBucketPartition() {
 		Random rand = new Random(nextRandSeed());
 		List<Phase> phases = List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 1024),
 				phase(2, 4096));
@@ -59,9 +61,9 @@ public class ArraysTest extends TestUtils {
 				int bucketBegin = b * bucketSize;
 				int bucketEnd = Math.min(bucketBegin + bucketSize, n);
 				for (int i = bucketBegin; i < bucketEnd; i++) {
-					assertTrue(a[bucketBegin] <= A[i].intValue() && A[i].intValue() <= a[bucketEnd - 1],
-							"Bucket element ", A[i], " is not in range [", a[bucketBegin], ", ", a[bucketEnd - 1],
-							"]\n");
+					Assertions.assertTrue(a[bucketBegin] <= A[i].intValue() && A[i].intValue() <= a[bucketEnd - 1],
+							"Bucket element " + A[i] + " is not in range [" + a[bucketBegin] + ", " + a[bucketEnd - 1]
+									+ "]");
 				}
 			}
 		});

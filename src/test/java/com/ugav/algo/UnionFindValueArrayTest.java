@@ -3,16 +3,18 @@ package com.ugav.algo;
 import java.util.List;
 import java.util.Random;
 
-@SuppressWarnings("boxing")
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 public class UnionFindValueArrayTest extends TestUtils {
 
 	@Test
-	public static void randRegularUFOps() {
+	public void testRandRegularUFOps() {
 		UnionFindTestUtils.randOps(UnionFindValueArray::new);
 	}
 
 	@Test
-	public static void randOps() {
+	public void testRandOps() {
 		List<Phase> phases = List.of(phase(256, 8, 16), phase(64, 64, 256), phase(16, 1024, 2048),
 				phase(2, 8096, 16384));
 		runTestMultiple(phases, (testIter, args) -> {
@@ -48,7 +50,7 @@ public class UnionFindValueArrayTest extends TestUtils {
 				x = rand.nextInt(n);
 				int actualSet = set[uf.find(x)];
 				int expectedSet = set[x];
-				assertEq(expectedSet, actualSet, "Unexpected find result\n");
+				Assertions.assertEquals(expectedSet, actualSet, "Unexpected find result");
 				break;
 			case OP_UNION:
 				int a = rand.nextInt(n), b = rand.nextInt(n);
@@ -71,7 +73,7 @@ public class UnionFindValueArrayTest extends TestUtils {
 				x = rand.nextInt(n);
 				double actualDelta = uf.getValue(x);
 				double expectedDelta = deltas[x];
-				assertEqFp(expectedDelta, actualDelta, 1E-5, "Unexpected value");
+				Assertions.assertEquals(expectedDelta, actualDelta, 1E-5, "Unexpected value");
 				break;
 			default:
 				throw new IllegalStateException();

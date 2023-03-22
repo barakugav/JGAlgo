@@ -1,34 +1,36 @@
 package com.ugav.algo;
 
+import org.junit.jupiter.api.Test;
+
 public class MatchingWeightedGabow2017Test extends TestUtils {
 
 	@Test
-	public static void randBipartiteGraphsWeight1() {
+	public void testRandBipartiteGraphsWeight1() {
 		MatchingBipartiteTestUtils.randBipartiteGraphs(MatchingWeightedGabow2017::new);
 	}
 
 	@Test
-	public static void randBipartiteGraphsWeighted() {
+	public void testRandBipartiteGraphsWeighted() {
 		MatchingWeightedTestUtils.randGraphsBipartiteWeighted(MatchingWeightedGabow2017::new);
 	}
 
 	@Test
-	public static void randBipartiteGraphsWeightedPerfect() {
+	public void testRandBipartiteGraphsWeightedPerfect() {
 		MatchingWeightedTestUtils.randBipartiteGraphsWeightedPerfect(MatchingWeightedGabow2017::new);
 	}
 
 	@Test
-	public static void randGraphsWeight1() {
+	public void testRandGraphsWeight1() {
 		MatchingUnweightedTestUtils.randGraphs(MatchingWeightedGabow2017::new);
 	}
 
 	@Test
-	public static void randGraphsWeighted() {
+	public void testRandGraphsWeighted() {
 		MatchingWeightedTestUtils.randGraphsWeighted(MatchingWeightedGabow2017::new);
 	}
 
 	@Test
-	public static void randGraphsWeightedPerfect() {
+	public void testRandGraphsWeightedPerfect() {
 		MatchingWeightedTestUtils.randGraphsWeightedPerfect(MatchingWeightedGabow2017::new);
 	}
 

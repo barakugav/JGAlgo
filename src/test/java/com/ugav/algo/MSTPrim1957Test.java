@@ -1,9 +1,11 @@
 package com.ugav.algo;
 
+import org.junit.jupiter.api.Test;
+
 public class MSTPrim1957Test extends TestUtils {
 
 	@Test
-	public static void randGraph() {
+	public void testRandGraph() {
 		MSTTestUtils.testRandGraph(MSTPrim1957::new);
 	}
 

@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
 
+import org.junit.jupiter.api.Assertions;
+
 class UnionFindTestUtils extends TestUtils {
 
 	static void randOps(Supplier<? extends UnionFind> builder) {
@@ -16,7 +18,6 @@ class UnionFindTestUtils extends TestUtils {
 		});
 	}
 
-	@SuppressWarnings("boxing")
 	private static void randOps(Supplier<? extends UnionFind> builder, int n, int m) {
 		Random rand = new Random(nextRandSeed());
 
@@ -36,7 +37,7 @@ class UnionFindTestUtils extends TestUtils {
 				int x = rand.nextInt(n);
 				int actualSet = set[uf.find(x)];
 				int expectedSet = set[x];
-				assertEq(expectedSet, actualSet, "unexpected set");
+				Assertions.assertEquals(expectedSet, actualSet, "unexpected set");
 				break;
 			case OP_UNION:
 				int a = rand.nextInt(n), b = rand.nextInt(n);

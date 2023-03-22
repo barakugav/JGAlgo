@@ -6,12 +6,15 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import org.junit.jupiter.api.Test;
+
 import com.ugav.algo.Graph.WeightFunctionInt;
 
 public class MSTPrefTest extends TestUtils {
 
+	// TODO pref test shouldn't be unit test
 	@Test
-	public static void randGraph() {
+	public void testRandGraph() {
 		perfCompare(List.of(
 				Pair.of("MSTBoruvka1926", MSTBoruvka1926::new),
 				Pair.of("MSTFredmanTarjan1987", MSTFredmanTarjan1987::new),
@@ -48,9 +51,9 @@ public class MSTPrefTest extends TestUtils {
 		}
 
 		times.sort((p1, p2) -> Long.compare(p1.e2, p2.e2));
-		printTestStr("Performance result:\n");
+		System.out.println("Performance result:");
 		for (Pair<String, Long> time : times)
-			printTestStr("\t" + time.e1 + ": " + time.e2 + "\n");
+			System.out.println("\t" + time.e1 + ": " + time.e2);
 	}
 
 }

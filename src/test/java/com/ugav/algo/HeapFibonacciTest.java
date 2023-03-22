@@ -1,24 +1,26 @@
 package com.ugav.algo;
 
+import org.junit.jupiter.api.Test;
+
 public class HeapFibonacciTest extends TestUtils {
 
 	@Test
-	public static void randOps() {
+	public void testRandOps() {
 		HeapTestUtils.testRandOps(HeapFibonacci::new);
 	}
 
 	@Test
-	public static void randOpsAfterManyInserts() {
+	public void testRandOpsAfterManyInserts() {
 		HeapTestUtils.testRandOpsAfterManyInserts(HeapFibonacci::new);
 	}
 
 	@Test
-	public static void meld() {
+	public void testMeld() {
 		HeapTestUtils.testMeld(HeapFibonacci::new);
 	}
 
 	@Test
-	public static void decreaseKey() {
+	public void testDecreaseKey() {
 		HeapTestUtils.testDecreaseKey(HeapFibonacci::new);
 	}
 

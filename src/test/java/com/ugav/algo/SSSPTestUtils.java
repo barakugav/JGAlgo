@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
 
+import org.junit.jupiter.api.Assertions;
+
 import com.ugav.algo.Graph.WeightFunction;
 import com.ugav.algo.Graph.WeightFunctionInt;
 import com.ugav.algo.Graphs.PathIter;
@@ -11,7 +13,6 @@ import com.ugav.algo.GraphsTestUtils.RandomGraphBuilder;
 
 import it.unimi.dsi.fastutil.ints.IntList;
 
-@SuppressWarnings("boxing")
 class SSSPTestUtils extends TestUtils {
 
 	private SSSPTestUtils() {
@@ -77,30 +78,30 @@ class SSSPTestUtils extends TestUtils {
 			}
 			if (cycle != null) {
 				double cycleWeight = getPathWeight(g, cycle, w);
-				assertTrue(cycleWeight != Double.NaN, "Invalid cycle: ", cycle, "\n");
-				assertTrue(cycleWeight < 0, "Cycle is not negative: ", cycle, "\n");
+				Assertions.assertTrue(cycleWeight != Double.NaN, "Invalid cycle: " + cycle);
+				Assertions.assertTrue(cycleWeight < 0, "Cycle is not negative: " + cycle);
 				if (!expectedRes.foundNegativeCycle())
 					throw new IllegalStateException("validation algorithm didn't find negative cycle: " + cycle);
 			} else {
-				assertTrue(expectedRes.foundNegativeCycle(), "found non existing negative cycle\n");
+				Assertions.assertTrue(expectedRes.foundNegativeCycle(), "found non existing negative cycle");
 			}
 			return;
 		}
-		assertFalse(expectedRes.foundNegativeCycle(), "failed to found negative cycle\n");
+		Assertions.assertFalse(expectedRes.foundNegativeCycle(), "failed to found negative cycle");
 
 		int n = g.verticesNum();
 		for (int v = 0; v < n; v++) {
 			double expectedDistance = expectedRes.distance(v);
 			double actualDistance = result.distance(v);
-			assertEq(expectedDistance, actualDistance, "Distance to vertex ", v, " is wrong");
+			Assertions.assertEquals(expectedDistance, actualDistance, "Distance to vertex " + v + " is wrong");
 			IntList path = result.getPathTo(v);
 			if (path != null) {
 				double pathWeight = getPathWeight(g, path, w);
-				assertEq(pathWeight, actualDistance, "Path to vertex ", v, " doesn't match distance (", actualDistance,
-						" != ", pathWeight, "): ", path, "\n");
+				Assertions.assertEquals(pathWeight, actualDistance, "Path to vertex " + v + " doesn't match distance ("
+						+ actualDistance + " != " + pathWeight + "): " + path);
 			} else {
-				assertEq(Double.POSITIVE_INFINITY, actualDistance, "Distance to vertex ", v,
-						" is not infinity but path is null\n");
+				Assertions.assertEquals(Double.POSITIVE_INFINITY, actualDistance,
+						"Distance to vertex " + v + " is not infinity but path is null");
 			}
 		}
 	}

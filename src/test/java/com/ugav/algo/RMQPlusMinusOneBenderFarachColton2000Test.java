@@ -1,9 +1,11 @@
 package com.ugav.algo;
 
+import org.junit.jupiter.api.Test;
+
 public class RMQPlusMinusOneBenderFarachColton2000Test extends TestUtils {
 
 	@Test
-	public static void regular() {
+	public void testRegular() {
 		int[] a = new int[128];
 		int[][] queries = new int[64][];
 		RMQTestUtils.randRMQDataPlusMinusOne(a);
@@ -12,7 +14,7 @@ public class RMQPlusMinusOneBenderFarachColton2000Test extends TestUtils {
 	}
 
 	@Test
-	public static void regularNRange64to256() {
+	public void testRegularNRange64to256() {
 		for (int n = 64; n <= 256; n++) {
 			int[] a = new int[n];
 			int[][] queries = new int[64][];
@@ -24,7 +26,7 @@ public class RMQPlusMinusOneBenderFarachColton2000Test extends TestUtils {
 	}
 
 	@Test
-	public static void onlyInterBlock() {
+	public void testOnlyInterBlock() {
 		int[] a = new int[128];
 		int[][] queries = new int[64][];
 		RMQTestUtils.randRMQDataPlusMinusOne(a);

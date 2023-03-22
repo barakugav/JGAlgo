@@ -1,9 +1,11 @@
 package com.ugav.algo;
 
+import org.junit.jupiter.api.Test;
+
 public class UnionFindPtrTest extends TestUtils {
 
 	@Test
-	public static void randOps() {
+	public void testRandOps() {
 		UnionFindTestUtils.randOps(UnionFindPtr::new);
 	}
 

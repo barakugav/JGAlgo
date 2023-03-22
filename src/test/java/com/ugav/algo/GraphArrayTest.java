@@ -1,5 +1,7 @@
 package com.ugav.algo;
 
+import org.junit.jupiter.api.Test;
+
 import com.ugav.algo.GraphImplTestUtils.GraphImpl;
 
 public class GraphArrayTest extends TestUtils {
@@ -28,32 +30,32 @@ public class GraphArrayTest extends TestUtils {
 	}
 
 	@Test
-	public static void testUndirectedMST() {
+	public void testUndirectedMST() {
 		GraphImplTestUtils.testUndirectedMST(arrayImpl());
 	}
 
 	@Test
-	public static void testDirectedMDST() {
+	public void testDirectedMDST() {
 		GraphImplTestUtils.testDirectedMDST(arrayImpl());
 	}
 
 	@Test
-	public static void testDirectedMaxFlow() {
+	public void testDirectedMaxFlow() {
 		GraphImplTestUtils.testDirectedMaxFlow(arrayImpl());
 	}
 
 	@Test
-	public static void testUndirectedBipartiteMatching() {
+	public void testUndirectedBipartiteMatching() {
 		GraphImplTestUtils.testUndirectedBipartiteMatching(arrayImpl());
 	}
 
 	@Test
-	public static void testUndirectedBipartiteMatchingWeighted() {
+	public void testUndirectedBipartiteMatchingWeighted() {
 		GraphImplTestUtils.testUndirectedBipartiteMatchingWeighted(arrayImpl());
 	}
 
 	@Test
-	public static void testUndirectedRandOps() {
+	public void testUndirectedRandOps() {
 		GraphImplTestUtils.testUndirectedRandOps(arrayImpl());
 	}
 

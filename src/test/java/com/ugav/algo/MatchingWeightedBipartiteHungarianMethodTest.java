@@ -1,19 +1,21 @@
 package com.ugav.algo;
 
+import org.junit.jupiter.api.Test;
+
 public class MatchingWeightedBipartiteHungarianMethodTest extends TestUtils {
 
 	@Test
-	public static void randBipartiteGraphsWeight1() {
+	public void testRandBipartiteGraphsWeight1() {
 		MatchingBipartiteTestUtils.randBipartiteGraphs(MatchingWeightedBipartiteHungarianMethod::new);
 	}
 
 	@Test
-	public static void randBipartiteGraphsWeighted() {
+	public void testRandBipartiteGraphsWeighted() {
 		MatchingWeightedTestUtils.randGraphsBipartiteWeighted(MatchingWeightedBipartiteHungarianMethod::new);
 	}
 
 	@Test
-	public static void randBipartiteGraphsWeightedPerfect() {
+	public void testRandBipartiteGraphsWeightedPerfect() {
 		MatchingWeightedTestUtils.randBipartiteGraphsWeightedPerfect(MatchingWeightedBipartiteHungarianMethod::new);
 	}
 

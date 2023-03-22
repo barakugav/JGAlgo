@@ -5,10 +5,13 @@ import java.util.Random;
 import java.util.function.Predicate;
 import java.util.function.ToDoubleFunction;
 
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 public class TSPMetricTest extends TestUtils {
 
 	@Test
-	public static void mstAppxAndMatchingAppxRandGraphs() {
+	public void testMstAppxAndMatchingAppxRandGraphs() {
 		List<Phase> phases = List.of(phase(512, 4), phase(64, 16), phase(32, 32), phase(16, 64), phase(8, 128),
 				phase(4, 256), phase(2, 512));
 		runTestMultiple(phases, (testIter, args) -> {
@@ -48,9 +51,10 @@ public class TSPMetricTest extends TestUtils {
 					return false;
 			return true;
 		};
-		assertTrue(isPathVisitAllVertices.test(appxMst), "MST approximation result doesn't visit every vertex\n");
-		assertTrue(isPathVisitAllVertices.test(appxMatch),
-				"Matching approximation result doesn't visit every vertex\n");
+		Assertions.assertTrue(isPathVisitAllVertices.test(appxMst),
+				"MST approximation result doesn't visit every vertex");
+		Assertions.assertTrue(isPathVisitAllVertices.test(appxMatch),
+				"Matching approximation result doesn't visit every vertex");
 
 		ToDoubleFunction<int[]> pathLength = path -> {
 			double d = 0;
@@ -63,8 +67,8 @@ public class TSPMetricTest extends TestUtils {
 		double mstAppxLen = pathLength.applyAsDouble(appxMst);
 		double matchAppxLen = pathLength.applyAsDouble(appxMatch);
 
-		assertTrue(mstAppxLen * 3 / 2 >= matchAppxLen && matchAppxLen * 2 > mstAppxLen,
-				"Approximations factor doesn't match\n");
+		Assertions.assertTrue(mstAppxLen * 3 / 2 >= matchAppxLen && matchAppxLen * 2 > mstAppxLen,
+				"Approximations factor doesn't match");
 
 	}
 
