@@ -76,7 +76,7 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 			int u = mVtoV[mG.edgeSource(mGedge)];
 			int v = mVtoV[mG.edgeTarget(mGedge)];
 			int g1Edge = g1.addEdge(u, v);
-			g1EdgeRef.set(g1Edge, mGEdgeRef.get(mGedge));
+			g1EdgeRef.set(g1Edge, mGEdgeRef.getInt(mGedge));
 		}
 
 		IntList cycle = TSPMetricUtils.calcEulerianTourAndConvertToHamiltonianCycle(g, g1, g1EdgeRef);

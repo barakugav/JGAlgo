@@ -163,9 +163,13 @@ public abstract class EdgesWeight<E> {
 				throw new IndexOutOfBoundsException(e);
 		}
 
-		/*
+		/**
+		 * TODO
+		 *
 		 * Set this to true if your data implement the Comparable interface to help
 		 * Graph.equals maintain an order in parallel edges
+		 *
+		 * @param comparable
 		 */
 		public void setComparable(boolean comparable) {
 			isComparable = comparable;
@@ -251,6 +255,7 @@ public abstract class EdgesWeight<E> {
 			return data[e];
 		}
 
+		@Deprecated
 		@Override
 		public Integer get(int e) {
 			return Integer.valueOf(getInt(e));
@@ -261,6 +266,7 @@ public abstract class EdgesWeight<E> {
 			data[e] = val;
 		}
 
+		@Deprecated
 		@Override
 		public void set(int e, Integer data) {
 			set(e, data.intValue());
@@ -270,6 +276,7 @@ public abstract class EdgesWeight<E> {
 			return defaultVal;
 		}
 
+		@Deprecated
 		@Override
 		public Integer defaultVal() {
 			return Integer.valueOf(defaultValInt());
@@ -279,6 +286,7 @@ public abstract class EdgesWeight<E> {
 			defaultVal = defVal;
 		}
 
+		@Deprecated
 		@Override
 		public void setDefaultVal(Integer defVal) {
 			defaultVal = defVal.intValue();
@@ -403,6 +411,7 @@ public abstract class EdgesWeight<E> {
 			return data[e];
 		}
 
+		@Deprecated
 		@Override
 		public java.lang.Double get(int e) {
 			return java.lang.Double.valueOf(getDouble(e));
@@ -413,6 +422,7 @@ public abstract class EdgesWeight<E> {
 			data[e] = val;
 		}
 
+		@Deprecated
 		@Override
 		public void set(int e, java.lang.Double data) {
 			set(e, data.doubleValue());
@@ -422,6 +432,7 @@ public abstract class EdgesWeight<E> {
 			return defaultVal;
 		}
 
+		@Deprecated
 		@Override
 		public java.lang.Double defaultVal() {
 			return java.lang.Double.valueOf(defaultValDouble());
@@ -431,6 +442,7 @@ public abstract class EdgesWeight<E> {
 			defaultVal = defVal;
 		}
 
+		@Deprecated
 		@Override
 		public void setDefaultVal(java.lang.Double defVal) {
 			defaultVal = defVal.doubleValue();

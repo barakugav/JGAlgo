@@ -12,6 +12,9 @@ public class Array {
 
 	public static class Obj {
 
+		private Obj() {
+		}
+
 		public static <E> E getKthElement(E[] a, int k, Comparator<? super E> c) {
 			return getKthElement(a, 0, a.length, k, c, false);
 		}
@@ -168,6 +171,9 @@ public class Array {
 	}
 
 	public static class Int {
+
+		private Int() {
+		}
 
 		public static int getKthElement(int[] a, int k, IntComparator c) {
 			return getKthElement(a, 0, a.length, k, c, false);

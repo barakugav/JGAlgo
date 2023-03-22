@@ -7,7 +7,7 @@ public interface TSPMetric {
 	 *
 	 * @param distances n x n table of distances between each two points. In the
 	 *                  metric world every three vertices u,v,w should satisfy
-	 *                  d[u,v]+d[v,w]<=d[u,w]
+	 *                  {@code d[u,v] + d[v,w] <= d[u,w]}
 	 * @return list of the n vertices ordered by the calculated path
 	 */
 	public int[] calcTSP(double[][] distances);

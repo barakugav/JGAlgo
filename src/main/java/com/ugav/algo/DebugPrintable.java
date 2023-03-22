@@ -2,7 +2,8 @@ package com.ugav.algo;
 
 import java.io.PrintStream;
 
-public interface DebugPrintable {
+// TODO remove
+interface DebugPrintable {
 
 	/**
 	 * Check if debug prints are enabled

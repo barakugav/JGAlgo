@@ -11,8 +11,6 @@ public interface RMQ {
 	 * @param c comparator used to compare between two elements, see the Comparator
 	 *          definition below
 	 * @param n the number of elements in the sequence
-	 * @return a result data structure that can answer efficiently any future RMQ
-	 *         queries
 	 */
 	public void preprocessRMQ(Comparator c, int n);
 
