@@ -122,7 +122,7 @@ class TPMTestUtils extends TestUtils {
 
 			IntCollection mstEdges = new MSTKruskal1956().calcMST(g, w);
 			Graph mst = new GraphArrayUndirected(g.verticesNum());
-			GraphWeights.Int edgeRef = mst.edgesWeightsFactory().ints().build("edgeRef");
+			Weights.Int edgeRef = EdgesWeights.ofInts(mst, "edgeRef", -1);
 			for (IntIterator it = mstEdges.iterator(); it.hasNext();) {
 				int e = it.nextInt();
 				int u = g.edgeSource(e), v = g.edgeTarget(e);

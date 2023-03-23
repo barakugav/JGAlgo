@@ -2,14 +2,16 @@ package com.ugav.algo;
 
 import java.util.Arrays;
 import java.util.BitSet;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
-public abstract class GraphWeights<E> {
+public abstract class Weights<E> {
 
-	GraphWeights() {
+	final boolean isEdges;
+
+	Weights(boolean isEdges) {
+		this.isEdges = isEdges;
 	}
 
 	public abstract E get(int key);
@@ -17,10 +19,6 @@ public abstract class GraphWeights<E> {
 	public abstract void set(int key, E data);
 
 	public abstract E defaultVal();
-
-	public abstract void setDefaultVal(E defVal);
-
-	public abstract WeightIter<E> iterator();
 
 	public abstract void clear();
 
@@ -95,28 +93,33 @@ public abstract class GraphWeights<E> {
 
 	}
 
-	public static class Obj<E> extends GraphWeights<E> {
+	public static class Obj<E> extends Weights<E> {
 
 		private Object[] weights;
 		private int size;
-		private E defaultVal = null;
+		private final E defaultVal;
 		private static final Object[] EmptyWeights = new Object[0];
 		private boolean isComparable;
 
-		public Obj() {
-			this(0);
-		}
-
-		public Obj(int expectedSize) {
+		private Obj(boolean isEdges, int expectedSize, E defVal) {
+			super(isEdges);
 			weights = expectedSize > 0 ? new Object[expectedSize] : EmptyWeights;
 			size = 0;
+			defaultVal = defVal;
+		}
+
+		static <E> Weights.Obj<E> ofEdges(int expectedSize, E defVal) {
+			return new Weights.Obj<>(true, expectedSize, defVal);
+		}
+
+		static <E> Weights.Obj<E> ofVertices(int expectedSize, E defVal) {
+			return new Weights.Obj<>(false, expectedSize, defVal);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public E get(int key) {
-			checkKey(key);
-			return (E) weights[key];
+			return key < size ? (E) weights[key] : defaultVal;
 		}
 
 		@Override
@@ -131,18 +134,8 @@ public abstract class GraphWeights<E> {
 		}
 
 		@Override
-		public void setDefaultVal(E defVal) {
-			defaultVal = defVal;
-		}
-
-		@Override
-		public WeightIter<E> iterator() {
-			return new WeightItr();
-		}
-
-		@Override
 		void keyAdd(int key) {
-			assert key == size : "only continues keys are supporte";
+			assert key == size : "only continues keys are supported";
 			if (size >= weights.length)
 				weights = Arrays.copyOf(weights, Math.max(2, weights.length * 2));
 			weights[key] = defaultVal;
@@ -151,7 +144,7 @@ public abstract class GraphWeights<E> {
 
 		@Override
 		void keyRemove(int key) {
-			assert key == size - 1 : "only continues keys are supporte";
+			assert key == size - 1 : "only continues keys are supported";
 			weights[key] = null;
 			size--;
 		}
@@ -193,31 +186,13 @@ public abstract class GraphWeights<E> {
 			return isComparable;
 		}
 
-		private class WeightItr extends WeightIterAbstract implements WeightIter<E> {
-
-			WeightItr() {
-				super(size);
-			}
-
-			@SuppressWarnings("unchecked")
-			@Override
-			public E getWeight() {
-				return (E) weights[idx];
-			}
-
-			@Override
-			public void setWeight(E weight) {
-				weights[idx] = weight;
-			}
-		}
-
 		@Override
 		public boolean equals(Object other) {
 			if (other == this)
 				return true;
-			if (!(other instanceof GraphWeights.Obj<?>))
+			if (!(other instanceof Weights.Obj<?>))
 				return false;
-			GraphWeights.Obj<?> o = (GraphWeights.Obj<?>) other;
+			Weights.Obj<?> o = (Weights.Obj<?>) other;
 
 			return Arrays.equals(weights, 0, size, o.weights, 0, o.size, (d1, d2) -> Objects.equals(d1, d2) ? 0 : 1);
 		}
@@ -245,23 +220,28 @@ public abstract class GraphWeights<E> {
 				b.append(", ");
 			}
 		}
-
 	}
 
-	public static class Int extends GraphWeights<Integer> implements EdgeWeightFunc.Int {
+	public static class Int extends Weights<Integer> implements EdgeWeightFunc.Int {
 
 		private int[] weights;
 		private int size;
-		private int defaultVal = -1;
+		private final int defaultVal;
 		private static final int[] EmptyWeights = new int[0];
 
-		public Int() {
-			this(0);
-		}
-
-		public Int(int expectedSize) {
+		private Int(boolean isEdges, int expectedSize, int defVal) {
+			super(isEdges);
 			weights = expectedSize > 0 ? new int[expectedSize] : EmptyWeights;
 			size = 0;
+			defaultVal = defVal;
+		}
+
+		static Weights.Int ofEdges(int expectedSize, int defVal) {
+			return new Weights.Int(true, expectedSize, defVal);
+		}
+
+		static Weights.Int ofVertices(int expectedSize, int defVal) {
+			return new Weights.Int(false, expectedSize, defVal);
 		}
 
 		public int getInt(int key) {
@@ -296,21 +276,6 @@ public abstract class GraphWeights<E> {
 			return Integer.valueOf(defaultValInt());
 		}
 
-		public void setDefaultVal(int defVal) {
-			defaultVal = defVal;
-		}
-
-		@Deprecated
-		@Override
-		public void setDefaultVal(Integer defVal) {
-			setDefaultVal(defVal.intValue());
-		}
-
-		@Override
-		public WeightIter.Int iterator() {
-			return new WeightItr();
-		}
-
 		@Override
 		void keyAdd(int key) {
 			assert key == size : "only continues keys are supported";
@@ -322,7 +287,7 @@ public abstract class GraphWeights<E> {
 
 		@Override
 		void keyRemove(int key) {
-			assert key == size - 1 : "only continues keys are supporte";
+			assert key == size - 1 : "only continues keys are supported";
 			size--;
 		}
 
@@ -350,30 +315,13 @@ public abstract class GraphWeights<E> {
 			return getInt(key);
 		}
 
-		private class WeightItr extends WeightIterAbstract implements WeightIter.Int {
-
-			WeightItr() {
-				super(size);
-			}
-
-			@Override
-			public int getWeightInt() {
-				return weights[idx];
-			}
-
-			@Override
-			public void setWeight(int weight) {
-				weights[idx] = weight;
-			}
-		}
-
 		@Override
 		public boolean equals(Object other) {
 			if (other == this)
 				return true;
-			if (!(other instanceof GraphWeights.Int))
+			if (!(other instanceof Weights.Int))
 				return false;
-			GraphWeights.Int o = (GraphWeights.Int) other;
+			Weights.Int o = (Weights.Int) other;
 
 			return Arrays.equals(weights, 0, size, o.weights, 0, o.size);
 		}
@@ -401,23 +349,28 @@ public abstract class GraphWeights<E> {
 				b.append(", ");
 			}
 		}
-
 	}
 
-	public static class Double extends GraphWeights<java.lang.Double> implements EdgeWeightFunc {
+	public static class Double extends Weights<java.lang.Double> implements EdgeWeightFunc {
 
 		private double[] weights;
 		private int size;
-		private double defaultVal = -1;
+		private final double defaultVal;
 		private static final double[] EmptyWeights = new double[0];
 
-		public Double() {
-			this(0);
-		}
-
-		public Double(int expectedSize) {
+		private Double(boolean isEdges, int expectedSize, double defVal) {
+			super(isEdges);
 			weights = expectedSize > 0 ? new double[expectedSize] : EmptyWeights;
 			size = 0;
+			defaultVal = defVal;
+		}
+
+		static Weights.Double ofEdges(int expectedSize, double defVal) {
+			return new Weights.Double(true, expectedSize, defVal);
+		}
+
+		static Weights.Double ofVertices(int expectedSize, double defVal) {
+			return new Weights.Double(false, expectedSize, defVal);
 		}
 
 		public double getDouble(int key) {
@@ -452,24 +405,9 @@ public abstract class GraphWeights<E> {
 			return java.lang.Double.valueOf(defaultValDouble());
 		}
 
-		public void setDefaultVal(double defVal) {
-			defaultVal = defVal;
-		}
-
-		@Deprecated
-		@Override
-		public void setDefaultVal(java.lang.Double defVal) {
-			setDefaultVal(defVal.doubleValue());
-		}
-
-		@Override
-		public WeightIter.Double iterator() {
-			return new WeightItr();
-		}
-
 		@Override
 		void keyAdd(int key) {
-			assert key == size : "only continues keys are supporte";
+			assert key == size : "only continues keys are supported";
 			if (size >= weights.length)
 				weights = Arrays.copyOf(weights, Math.max(2, weights.length * 2));
 			weights[key] = defaultVal;
@@ -478,7 +416,7 @@ public abstract class GraphWeights<E> {
 
 		@Override
 		void keyRemove(int key) {
-			assert key == size - 1 : "only continues keys are supporte";
+			assert key == size - 1 : "only continues keys are supported";
 			size--;
 		}
 
@@ -506,30 +444,13 @@ public abstract class GraphWeights<E> {
 			return getDouble(key);
 		}
 
-		private class WeightItr extends WeightIterAbstract implements WeightIter.Double {
-
-			WeightItr() {
-				super(size);
-			}
-
-			@Override
-			public double getWeightDouble() {
-				return weights[idx];
-			}
-
-			@Override
-			public void setWeight(double weight) {
-				weights[idx] = weight;
-			}
-		}
-
 		@Override
 		public boolean equals(Object other) {
 			if (other == this)
 				return true;
-			if (!(other instanceof GraphWeights.Double))
+			if (!(other instanceof Weights.Double))
 				return false;
-			GraphWeights.Double o = (GraphWeights.Double) other;
+			Weights.Double o = (Weights.Double) other;
 
 			return Arrays.equals(weights, 0, size, o.weights, 0, o.size);
 		}
@@ -557,24 +478,29 @@ public abstract class GraphWeights<E> {
 				b.append(", ");
 			}
 		}
-
 	}
 
-	public static class Bool extends GraphWeights<Boolean> {
+	public static class Bool extends Weights<Boolean> {
 
 		private final BitSet weights;
-		private boolean defaultVal = false;
+		private final boolean defaultVal;
 		private int size;
 
-		public Bool() {
-			this(0);
-		}
-
-		public Bool(int expectedSize) {
+		private Bool(boolean isEdges, int expectedSize, boolean defVal) {
 			// We don't do anything with expectedSize, but we keep it for forward
 			// compatibility
+			super(isEdges);
 			weights = new BitSet();
 			size = 0;
+			defaultVal = defVal;
+		}
+
+		static Weights.Bool ofEdges(int expectedSize, boolean defVal) {
+			return new Weights.Bool(true, expectedSize, defVal);
+		}
+
+		static Weights.Bool ofVertices(int expectedSize, boolean defVal) {
+			return new Weights.Bool(false, expectedSize, defVal);
 		}
 
 		public boolean getBool(int key) {
@@ -609,21 +535,6 @@ public abstract class GraphWeights<E> {
 			return Boolean.valueOf(defaultValBool());
 		}
 
-		public void setDefaultVal(boolean defVal) {
-			defaultVal = defVal;
-		}
-
-		@Deprecated
-		@Override
-		public void setDefaultVal(Boolean defVal) {
-			setDefaultVal(defVal.booleanValue());
-		}
-
-		@Override
-		public WeightIter.Bool iterator() {
-			return new WeightItr();
-		}
-
 		@Override
 		void keyAdd(int key) {
 			assert key == size : "only continues keys are supported";
@@ -633,7 +544,7 @@ public abstract class GraphWeights<E> {
 
 		@Override
 		void keyRemove(int key) {
-			assert key == size - 1 : "only continues keys are supporte";
+			assert key == size - 1 : "only continues keys are supported";
 			size--;
 		}
 
@@ -656,30 +567,13 @@ public abstract class GraphWeights<E> {
 				throw new IndexOutOfBoundsException(key);
 		}
 
-		private class WeightItr extends WeightIterAbstract implements WeightIter.Bool {
-
-			WeightItr() {
-				super(size);
-			}
-
-			@Override
-			public boolean getWeightBool() {
-				return weights.get(idx);
-			}
-
-			@Override
-			public void setWeight(boolean weight) {
-				weights.set(idx, weight);
-			}
-		}
-
 		@Override
 		public boolean equals(Object other) {
 			if (other == this)
 				return true;
-			if (!(other instanceof GraphWeights.Bool))
+			if (!(other instanceof Weights.Bool))
 				return false;
-			GraphWeights.Bool o = (GraphWeights.Bool) other;
+			Weights.Bool o = (Weights.Bool) other;
 
 			return size == o.size && weights.equals(o.weights);
 		}
@@ -703,30 +597,6 @@ public abstract class GraphWeights<E> {
 					return b.append(']').toString();
 				b.append(", ");
 			}
-		}
-
-	}
-
-	private static class WeightIterAbstract implements IntIterator {
-
-		private final int maxIdx;
-		int idx;
-
-		WeightIterAbstract(int size) {
-			this.maxIdx = size - 1;
-			idx = -1;
-		}
-
-		@Override
-		public boolean hasNext() {
-			return idx < maxIdx;
-		}
-
-		@Override
-		public int nextInt() {
-			if (!hasNext())
-				throw new NoSuchElementException();
-			return ++idx;
 		}
 	}
 

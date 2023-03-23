@@ -32,8 +32,9 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 		UGraph g = (UGraph) g0;
 		int n = g.verticesNum();
 
-		GraphWeights.Bool partition = g.verticesWeight(bipartiteVerticesWeightKey);
-		Objects.requireNonNull(partition, "Bipartiteness values weren't found with weight" + bipartiteVerticesWeightKey);
+		Weights.Bool partition = g.verticesWeight(bipartiteVerticesWeightKey);
+		Objects.requireNonNull(partition,
+				"Bipartiteness values weren't found with weight " + bipartiteVerticesWeightKey);
 
 		/* BFS */
 		int[] depths = new int[n];
@@ -48,7 +49,7 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 		final int MatchedNone = -1;
 		Arrays.fill(matched, MatchedNone);
 		UGraph f = new GraphArrayUndirected(n);
-		GraphWeights.Int edgeRef = f.edgesWeightsFactory().ints().build(EdgeRefWeightKey);
+		Weights.Int edgeRef = EdgesWeights.ofInts(f, EdgeRefWeightKey, -1);
 
 		for (;;) {
 			/* Perform BFS to build the alternating forest */

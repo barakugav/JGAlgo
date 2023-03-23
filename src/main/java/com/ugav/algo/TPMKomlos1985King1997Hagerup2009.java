@@ -81,7 +81,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 		}
 
 		private int[] extractEdgesFromAnswers(int[][] a, int[] q, int[] lcaQueries, int[] depths,
-				GraphWeights.Int edgeData) {
+				Weights.Int edgeData) {
 			int queriesNum = lcaQueries.length / 4;
 			int[] res = new int[queriesNum];
 
@@ -122,7 +122,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 
 			int leavesDepth = Graphs.getFullyBranchingTreeDepth(t, root);
 
-			GraphWeights.Int tData = t.edgesWeight("edgeData");
+			Weights.Int tData = t.edgesWeight("edgeData");
 			int[][] res = new int[tOrig.verticesNum()][];
 
 			Graphs.runDFS(t, root, (v, edgesFromRoot) -> {
@@ -172,7 +172,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 			return successor(au, qv);
 		}
 
-		private int binarySearch(int av, double weight, IntList edgesToRoot, GraphWeights.Int edgeData) {
+		private int binarySearch(int av, double weight, IntList edgesToRoot, Weights.Int edgeData) {
 			int avsize = bitsTable.count.bitCount(av);
 			if (avsize == 0 || w.weight(edgeData.getInt(edgesToRoot.getInt(bitsTable.ith.ithBit(av, 0) - 1))) < weight)
 				return 0;
@@ -208,9 +208,9 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 				vTv[v] = v;
 
 			UGraph t = new GraphArrayUndirected(n);
-			GraphWeights.Int tData = t.edgesWeightsFactory().ints().build("edgeData");
+			Weights.Int tData = EdgesWeights.ofInts(t, "edgeData", -1);
 			for (UGraph G = Graphs.referenceGraph(tOrig, EdgeRefWeightKey); (n = G.verticesNum()) > 1;) {
-				GraphWeights.Int GData = G.edgesWeight(EdgeRefWeightKey);
+				Weights.Int GData = G.edgesWeight(EdgeRefWeightKey);
 
 				// Find minimum edge of each vertex
 				Arrays.fill(minEdges, 0, n, -1);
@@ -266,7 +266,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 
 				// contract G to new graph with the super vertices
 				UGraph gNext = new GraphArrayUndirected(nNext);
-				GraphWeights.Int gNextData = gNext.edgesWeightsFactory().ints().build(EdgeRefWeightKey);
+				Weights.Int gNextData = EdgesWeights.ofInts(gNext, EdgeRefWeightKey, -1);
 				for (int u = 0; u < n; u++) {
 					int U = vNext[u];
 					for (EdgeIter eit = G.edges(u); eit.hasNext();) {

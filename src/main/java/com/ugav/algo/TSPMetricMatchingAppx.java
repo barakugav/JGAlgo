@@ -26,8 +26,7 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 
 		/* Build graph from the distances table */
 		UGraph g = new GraphTableUndirected(n);
-		GraphWeights.Double weights = g.edgesWeightsFactory().doubles().build("weight");
-//		EdgeData.Double weights = new EdgeDataArray.Double(n * (n + 1) / 2);
+		Weights.Double weights = EdgesWeights.ofDoubles(g, EdgeWeightKey);
 		for (int u = 0; u < n; u++)
 			for (int v = u + 1; v < n; v++)
 				weights.set(g.addEdge(u, v), distances[u][v]);
@@ -46,10 +45,8 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 			if (degree[u] % 2 == 1)
 				mVtoV[mG.addVertex()] = u;
 		int mGn = mG.verticesNum();
-//		EdgeData.Double mGWeightsNeg = new EdgeDataArray.Double(mGn * (mGn + 1) / 2);
-//		EdgeData.Int mGEdgeRef = new EdgeDataArray.Int(mGn * (mGn + 1) / 2);
-		GraphWeights.Double mGWeightsNeg = mG.edgesWeightsFactory().doubles().build(EdgeWeightKey);
-		GraphWeights.Int mGEdgeRef = mG.edgesWeightsFactory().ints().build(EdgeRefWeightKey);
+		Weights.Double mGWeightsNeg = EdgesWeights.ofDoubles(mG, EdgeWeightKey);
+		Weights.Int mGEdgeRef = EdgesWeights.ofInts(mG, EdgeRefWeightKey, -1);
 		for (int u = 0; u < mGn; u++) {
 			for (int v = u + 1; v < mGn; v++) {
 				int e = g.getEdge(mVtoV[u], mVtoV[v]);
@@ -64,8 +61,7 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 
 		/* Build a graph of the union of the MST and the matching result */
 		UGraph g1 = new GraphArrayUndirected(n);
-		GraphWeights.Int g1EdgeRef = g1.edgesWeightsFactory().ints().build(EdgeRefWeightKey);
-//		EdgeData.Int g1EdgeRef = new EdgeDataArray.Int(mst.size() + matching.size());
+		Weights.Int g1EdgeRef = EdgesWeights.ofInts(g1, EdgeRefWeightKey, -1);
 		for (IntIterator it = mst.iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			int g1Edge = g1.addEdge(g.edgeSource(e), g.edgeTarget(e));

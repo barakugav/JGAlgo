@@ -16,8 +16,8 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 abstract class GraphAbstract implements Graph {
 
 	private int n, m;
-	private final Map<Object, GraphWeights<?>> eWeights = new Object2ObjectArrayMap<>();
-	private final Map<Object, GraphWeights<?>> vWeights = new Object2ObjectArrayMap<>();
+	private final Map<Object, Weights<?>> eWeights = new Object2ObjectArrayMap<>();
+	private final Map<Object, Weights<?>> vWeights = new Object2ObjectArrayMap<>();
 	private final List<EdgeRenameListener> edgeRenameListeners = new CopyOnWriteArrayList<>();
 
 	public GraphAbstract(int n) {
@@ -35,7 +35,7 @@ abstract class GraphAbstract implements Graph {
 	@Override
 	public int addVertex() {
 		int u = n++;
-		for (GraphWeights<?> data : vWeights.values())
+		for (Weights<?> data : vWeights.values())
 			data.keyAdd(u);
 		return u;
 	}
@@ -50,7 +50,7 @@ abstract class GraphAbstract implements Graph {
 		checkVertexIdx(u);
 		checkVertexIdx(v);
 		int e = m++;
-		for (GraphWeights<?> data : eWeights.values())
+		for (Weights<?> data : eWeights.values())
 			data.keyAdd(e);
 		return e;
 	}
@@ -63,13 +63,13 @@ abstract class GraphAbstract implements Graph {
 			edgeSwap(e, lastEdge);
 			e = lastEdge;
 		}
-		for (GraphWeights<?> data : eWeights.values())
+		for (Weights<?> data : eWeights.values())
 			data.keyRemove(e);
 		m--;
 	}
 
 	void edgeSwap(int e1, int e2) {
-		for (GraphWeights<?> data : eWeights.values())
+		for (Weights<?> data : eWeights.values())
 			data.keySwap(e1, e2);
 		for (EdgeRenameListener listener : edgeRenameListeners)
 			listener.edgeRename(e1, e2);
@@ -84,107 +84,21 @@ abstract class GraphAbstract implements Graph {
 
 	@Override
 	public void clearEdges() {
-		for (GraphWeights<?> data : eWeights.values())
+		for (Weights<?> data : eWeights.values())
 			data.clear();
 		m = 0;
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <V, GraphWeightsT extends GraphWeights<V>> GraphWeightsT verticesWeight(Object key) {
-		return (GraphWeightsT) vWeights.get(key);
+	public <V, WeightsT extends Weights<V>> WeightsT verticesWeight(Object key) {
+		return (WeightsT) vWeights.get(key);
 	}
 
-	@Override
-	public WeightsFactory verticesWeightsFactory() {
-		return new WeightsFactory() {
-
-			@Override
-			public WeightsBuilderObj objs() {
-				return new WeightsBuilderObj() {
-					Object defVal = null;
-
-					@SuppressWarnings("unchecked")
-					@Override
-					public <E> GraphWeights.Obj<E> build(Object key) {
-						GraphWeights.Obj<E> weights = new GraphWeights.Obj<>(verticesNum());
-						weights.setDefaultVal((E) defVal);
-						return addVertexData(key, weights);
-					}
-
-					@Override
-					public void setDefaultVal(Object defVal) {
-						this.defVal = defVal;
-					}
-				};
-			}
-
-			@Override
-			public WeightsBuilderInt ints() {
-				return new WeightsBuilderInt() {
-					int defVal = -1;
-
-					@Override
-					public GraphWeights.Int build(Object key) {
-						GraphWeights.Int weights = new GraphWeights.Int(verticesNum());
-						weights.setDefaultVal(defVal);
-						return addVertexData(key, weights);
-					}
-
-					@Override
-					public void setDefaultVal(int defVal) {
-						this.defVal = defVal;
-					}
-				};
-			}
-
-			@Override
-			public WeightsBuilderDouble doubles() {
-				return new WeightsBuilderDouble() {
-					double defVal = -1;
-
-					@Override
-					public GraphWeights.Double build(Object key) {
-						GraphWeights.Double weights = new GraphWeights.Double(verticesNum());
-						weights.setDefaultVal(defVal);
-						return addVertexData(key, weights);
-					}
-
-					@Override
-					public void setDefaultVal(double defVal) {
-						this.defVal = defVal;
-					}
-				};
-			}
-
-			@Override
-			public WeightsBuilderBool bools() {
-				return new WeightsBuilderBool() {
-					boolean defVal = false;
-
-					@Override
-					public GraphWeights.Bool build(Object key) {
-						GraphWeights.Bool weights = new GraphWeights.Bool(verticesNum());
-						weights.setDefaultVal(defVal);
-						return addVertexData(key, weights);
-					}
-
-					@Override
-					public void setDefaultVal(boolean defVal) {
-						this.defVal = defVal;
-					}
-				};
-			}
-		};
-	}
-
-	private <V, GraphWeightsT extends GraphWeights<V>> GraphWeightsT addVertexData(Object key, GraphWeightsT weights) {
-		if (vWeights.containsKey(key))
-			throw new IllegalArgumentException();
-		int n = verticesNum();
-		for (int u = 0; u < n; u++)
-			weights.keyAdd(u);
-		vWeights.put(key, weights);
+	<V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, WeightsT weights) {
+		Weights<?> oldWeights = vWeights.put(key, weights);
+		if (oldWeights != null)
+			throw new IllegalArgumentException("Two weights types with the same key: " + key);
 		return weights;
 	}
 
@@ -194,106 +108,20 @@ abstract class GraphAbstract implements Graph {
 	}
 
 	@Override
-	public Collection<GraphWeights<?>> getVerticesWeights() {
+	public Collection<Weights<?>> getVerticesWeights() {
 		return Collections.unmodifiableCollection(vWeights.values());
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <E, GraphWeightsT extends GraphWeights<E>> GraphWeightsT edgesWeight(Object key) {
-		return (GraphWeightsT) eWeights.get(key);
+	public <E, WeightsT extends Weights<E>> WeightsT edgesWeight(Object key) {
+		return (WeightsT) eWeights.get(key);
 	}
 
-	@Override
-	public WeightsFactory edgesWeightsFactory() {
-		return new WeightsFactory() {
-
-			@Override
-			public WeightsBuilderObj objs() {
-				return new WeightsBuilderObj() {
-					Object defVal = null;
-
-					@SuppressWarnings("unchecked")
-					@Override
-					public <E> GraphWeights.Obj<E> build(Object key) {
-						GraphWeights.Obj<E> weights = new GraphWeights.Obj<>(edgesNum());
-						weights.setDefaultVal((E) defVal);
-						return addEdgeData(key, weights);
-					}
-
-					@Override
-					public void setDefaultVal(Object defVal) {
-						this.defVal = defVal;
-					}
-				};
-			}
-
-			@Override
-			public WeightsBuilderInt ints() {
-				return new WeightsBuilderInt() {
-					int defVal = -1;
-
-					@Override
-					public GraphWeights.Int build(Object key) {
-						GraphWeights.Int weights = new GraphWeights.Int(edgesNum());
-						weights.setDefaultVal(defVal);
-						return addEdgeData(key, weights);
-					}
-
-					@Override
-					public void setDefaultVal(int defVal) {
-						this.defVal = defVal;
-					}
-				};
-			}
-
-			@Override
-			public WeightsBuilderDouble doubles() {
-				return new WeightsBuilderDouble() {
-					double defVal = -1;
-
-					@Override
-					public GraphWeights.Double build(Object key) {
-						GraphWeights.Double weights = new GraphWeights.Double(edgesNum());
-						weights.setDefaultVal(defVal);
-						return addEdgeData(key, weights);
-					}
-
-					@Override
-					public void setDefaultVal(double defVal) {
-						this.defVal = defVal;
-					}
-				};
-			}
-
-			@Override
-			public WeightsBuilderBool bools() {
-				return new WeightsBuilderBool() {
-					boolean defVal = false;
-
-					@Override
-					public GraphWeights.Bool build(Object key) {
-						GraphWeights.Bool weights = new GraphWeights.Bool(edgesNum());
-						weights.setDefaultVal(defVal);
-						return addEdgeData(key, weights);
-					}
-
-					@Override
-					public void setDefaultVal(boolean defVal) {
-						this.defVal = defVal;
-					}
-				};
-			}
-		};
-	}
-
-	private <E, GraphWeightsT extends GraphWeights<E>> GraphWeightsT addEdgeData(Object key, GraphWeightsT weights) {
-		if (eWeights.containsKey(key))
-			throw new IllegalArgumentException();
-		int m = edgesNum();
-		for (int e = 0; e < m; e++)
-			weights.keyAdd(e);
-		eWeights.put(key, weights);
+	<E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, WeightsT weights) {
+		Weights<?> oldWeights = eWeights.put(key, weights);
+		if (oldWeights != null)
+			throw new IllegalArgumentException("Two weights types with the same key: " + key);
 		return weights;
 	}
 
@@ -303,7 +131,7 @@ abstract class GraphAbstract implements Graph {
 	}
 
 	@Override
-	public Collection<GraphWeights<?>> getEdgesWeights() {
+	public Collection<Weights<?>> getEdgesWeights() {
 		return Collections.unmodifiableCollection(eWeights.values());
 	}
 
@@ -342,22 +170,22 @@ abstract class GraphAbstract implements Graph {
 			return false;
 		List<Object> ewKeysObj = new ArrayList<>(0);
 		for (Object weightKey : ewKeys) {
-			GraphWeights<?> ew1 = edgesWeight(weightKey);
-			GraphWeights<?> ew2 = o.edgesWeight(weightKey);
-			if (ew1 instanceof GraphWeights.Int) {
-				if (!(ew2 instanceof GraphWeights.Int))
+			Weights<?> ew1 = edgesWeight(weightKey);
+			Weights<?> ew2 = o.edgesWeight(weightKey);
+			if (ew1 instanceof Weights.Int) {
+				if (!(ew2 instanceof Weights.Int))
 					return false;
 				continue;
 			}
-			if (ew1 instanceof GraphWeights.Double) {
-				if (!(ew2 instanceof GraphWeights.Double))
+			if (ew1 instanceof Weights.Double) {
+				if (!(ew2 instanceof Weights.Double))
 					return false;
 				continue;
 			}
-			if (ew1 instanceof GraphWeights.Obj<?> ew1Obj) {
-				if (!(ew2 instanceof GraphWeights.Obj<?>))
+			if (ew1 instanceof Weights.Obj<?> ew1Obj) {
+				if (!(ew2 instanceof Weights.Obj<?>))
 					return false;
-				if (ew1Obj.isComparable() && ((GraphWeights.Obj<?>) ew2).isComparable()) {
+				if (ew1Obj.isComparable() && ((Weights.Obj<?>) ew2).isComparable()) {
 					continue;
 				}
 			}
@@ -374,8 +202,8 @@ abstract class GraphAbstract implements Graph {
 		IntArrays.parallelQuickSort(es1, createEdgeComparator(this, this));
 		IntArrays.parallelQuickSort(es2, createEdgeComparator(o, o));
 
-		List<GraphWeights<?>> ewObj1 = new ArrayList<>(0);
-		List<GraphWeights<?>> ewObj2 = new ArrayList<>(0);
+		List<Weights<?>> ewObj1 = new ArrayList<>(0);
+		List<Weights<?>> ewObj2 = new ArrayList<>(0);
 		for (Object weightKey : ewKeysObj) {
 			ewObj1.add(edgesWeight(weightKey));
 			ewObj2.add(o.edgesWeight(weightKey));
@@ -402,31 +230,31 @@ abstract class GraphAbstract implements Graph {
 		List<Object> ewKeysDouble = new ArrayList<>(0);
 		List<Object> ewKeysComparable = new ArrayList<>(0);
 		for (Object weightKey : ewKeys) {
-			GraphWeights<?> ew1 = g1.edgesWeight(weightKey);
-			GraphWeights<?> ew2 = g2.edgesWeight(weightKey);
-			if (ew1 instanceof GraphWeights.Int) {
-				assert ew2 instanceof GraphWeights.Int;
+			Weights<?> ew1 = g1.edgesWeight(weightKey);
+			Weights<?> ew2 = g2.edgesWeight(weightKey);
+			if (ew1 instanceof Weights.Int) {
+				assert ew2 instanceof Weights.Int;
 				ewKeysInt.add(weightKey);
 
-			} else if (ew1 instanceof GraphWeights.Double) {
-				assert ew2 instanceof GraphWeights.Double;
+			} else if (ew1 instanceof Weights.Double) {
+				assert ew2 instanceof Weights.Double;
 				ewKeysDouble.add(weightKey);
 
-			} else if (ew1 instanceof GraphWeights.Obj<?> ew1Obj) {
-				assert ew2 instanceof GraphWeights.Obj<?>;
+			} else if (ew1 instanceof Weights.Obj<?> ew1Obj) {
+				assert ew2 instanceof Weights.Obj<?>;
 				if (ew1Obj.isComparable()) {
-					assert ((GraphWeights.Obj<?>) ew2).isComparable();
+					assert ((Weights.Obj<?>) ew2).isComparable();
 					ewKeysComparable.add(weightKey);
 				}
 			}
 		}
 
-		List<GraphWeights.Int> ewInt1 = new ArrayList<>(0);
-		List<GraphWeights.Int> ewInt2 = new ArrayList<>(0);
-		List<GraphWeights.Double> ewDouble1 = new ArrayList<>(0);
-		List<GraphWeights.Double> ewDouble2 = new ArrayList<>(0);
-		List<GraphWeights.Obj<Comparable<?>>> ewComparable1 = new ArrayList<>(0);
-		List<GraphWeights.Obj<Comparable<?>>> ewComparable2 = new ArrayList<>(0);
+		List<Weights.Int> ewInt1 = new ArrayList<>(0);
+		List<Weights.Int> ewInt2 = new ArrayList<>(0);
+		List<Weights.Double> ewDouble1 = new ArrayList<>(0);
+		List<Weights.Double> ewDouble2 = new ArrayList<>(0);
+		List<Weights.Obj<Comparable<?>>> ewComparable1 = new ArrayList<>(0);
+		List<Weights.Obj<Comparable<?>>> ewComparable2 = new ArrayList<>(0);
 		for (Object weightKey : ewKeysInt) {
 			ewInt1.add(g1.edgesWeight(weightKey));
 			ewInt2.add(g2.edgesWeight(weightKey));
@@ -496,7 +324,7 @@ abstract class GraphAbstract implements Graph {
 	@Override
 	public int hashCode() {
 		int h = 1;
-		for (GraphWeights<?> vWeight : getVerticesWeights())
+		for (Weights<?> vWeight : getVerticesWeights())
 			h = h * 31 + vWeight.hashCode();
 
 		int m = edgesNum();
@@ -504,10 +332,10 @@ abstract class GraphAbstract implements Graph {
 		for (int e = 0; e < m; e++)
 			es[e] = e;
 		IntArrays.parallelQuickSort(es, createEdgeComparator(this, this));
-		Collection<GraphWeights<?>> edgeWeights = getEdgesWeights();
+		Collection<Weights<?>> edgeWeights = getEdgesWeights();
 		for (int eIdx = 0; eIdx < m; eIdx++) {
 			int e = es[eIdx];
-			for (GraphWeights<?> weight : edgeWeights)
+			for (Weights<?> weight : edgeWeights)
 				h = h * 31 + Objects.hashCode(weight.get(e));
 		}
 		return h;
@@ -518,7 +346,7 @@ abstract class GraphAbstract implements Graph {
 		StringBuilder s = new StringBuilder();
 		s.append('{');
 		int n = verticesNum();
-		Collection<GraphWeights<?>> weights = getEdgesWeights();
+		Collection<Weights<?>> weights = getEdgesWeights();
 
 		boolean firstVertex = true;
 		for (int u = 0; u < n; u++) {
@@ -541,7 +369,7 @@ abstract class GraphAbstract implements Graph {
 				if (!weights.isEmpty()) {
 					s.append('[');
 					boolean firstData = true;
-					for (GraphWeights<?> weight : weights) {
+					for (Weights<?> weight : weights) {
 						if (firstData) {
 							firstData = false;
 						} else {

@@ -15,6 +15,7 @@ public class TSPMetricMSTAppx implements TSPMetric {
 	 * constrain is satisfied. This increases the running time to O(n^3)
 	 */
 	private static final boolean VALIDATE_METRIC = true;
+	private static final Object DoubleWeightKey = new Object();
 	private static final Object EdgeRefWeightKey = new Object();
 
 	public TSPMetricMSTAppx() {
@@ -31,8 +32,7 @@ public class TSPMetricMSTAppx implements TSPMetric {
 
 		/* Build graph from the distances table */
 		UGraph g = new GraphTableUndirected(n);
-//		EdgeData.Double weights = new EdgeDataArray.Double(n * (n + 1) / 2);
-		GraphWeights.Double weights = g.edgesWeightsFactory().doubles().build("weight");
+		Weights.Double weights = EdgesWeights.ofDoubles(g, DoubleWeightKey);
 		for (int u = 0; u < n; u++)
 			for (int v = u + 1; v < n; v++)
 				weights.set(g.addEdge(u, v), distances[u][v]);
@@ -42,8 +42,7 @@ public class TSPMetricMSTAppx implements TSPMetric {
 
 		/* Build a graph with each MST edge duplicated */
 		UGraph g1 = new GraphArrayUndirected(n);
-//		EdgeData.Int edgeRef = new EdgeDataArray.Int(n - 1);
-		GraphWeights.Int edgeRef = g1.edgesWeightsFactory().ints().build(EdgeRefWeightKey);
+		Weights.Int edgeRef = EdgesWeights.ofInts(g1, EdgeRefWeightKey, -1);
 		for (IntIterator it = mst.iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			int u = g.edgeSource(e), v = g.edgeTarget(e);

@@ -3,8 +3,6 @@ package com.ugav.algo;
 import java.util.Arrays;
 import java.util.Objects;
 
-import com.ugav.algo.GraphWeights.WeightIter;
-
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -30,11 +28,11 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 	public IntCollection calcMaxMatching(Graph g0, EdgeWeightFunc w) {
 		if (!(g0 instanceof UGraph))
 			throw new IllegalArgumentException("Only undirected bipartite graphs are supported");
-		GraphWeights.Bool partition = g0.verticesWeight(bipartiteVerticesWeightKey);
+		Weights.Bool partition = g0.verticesWeight(bipartiteVerticesWeightKey);
 		Objects.requireNonNull(partition,
-				"Bipartiteness values weren't found with weight" + bipartiteVerticesWeightKey);
+				"Bipartiteness values weren't found with weight " + bipartiteVerticesWeightKey);
 		DiGraph g = referenceGraph((UGraph) g0, partition, w);
-		GraphWeights<Ref> edgeRef = g.edgesWeight(EdgeRefWeightKey);
+		Weights<Ref> edgeRef = g.edgesWeight(EdgeRefWeightKey);
 
 		int n = g.verticesNum();
 		int s = g.addVertex(), t = g.addVertex();
@@ -50,9 +48,8 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 		final double RemovedEdgeWeight = maxWeight * n;
 
 		// Negate unmatched edges
-		for (WeightIter<Ref> it = edgeRef.iterator(); it.hasNext();) {
-			it.nextInt();
-			Ref r = it.getWeight();
+		for (int e = 0; e < g.edgesNum(); e++) {
+			Ref r = edgeRef.get(e);
 			r.w = -r.w;
 		}
 		// Connected unmatched vertices to fake vertices s,t
@@ -128,10 +125,10 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 		throw new UnsupportedOperationException();
 	}
 
-	private static DiGraph referenceGraph(UGraph g, GraphWeights.Bool partition, EdgeWeightFunc w) {
+	private static DiGraph referenceGraph(UGraph g, Weights.Bool partition, EdgeWeightFunc w) {
 		int n = g.verticesNum();
 		DiGraph g0 = new GraphArrayDirected(g.verticesNum());
-		GraphWeights<Ref> edgeRef = g0.edgesWeightsFactory().objs().build(EdgeRefWeightKey);
+		Weights<Ref> edgeRef = EdgesWeights.ofObjs(g0, EdgeRefWeightKey);
 
 		for (int u = 0; u < n; u++) {
 			if (!partition.getBool(u))

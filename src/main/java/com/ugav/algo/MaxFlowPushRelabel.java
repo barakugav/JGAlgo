@@ -16,15 +16,14 @@ public class MaxFlowPushRelabel implements MaxFlow {
 
 	private final DebugPrintsManager debug;
 	private static final double EPS = 0.0001;
+	private static final Object EdgeRefWeightKey = new Object();
+	private static final Object EdgeRevWeightKey = new Object();
+	private static final Object FlowWeightKey = new Object();
+	private static final Object CapacityWeightKey = new Object();
 
 	public MaxFlowPushRelabel() {
 		debug = new DebugPrintsManager(false);
 	}
-
-	private static final Object EdgeRefKey = new Object();
-	private static final Object EdgeRevKey = new Object();
-	private static final Object EdgeFlowKey = new Object();
-	private static final Object EdgeCapacityKey = new Object();
 
 	@Override
 	public double calcMaxFlow(Graph g0, FlowNetwork net, int source, int target) {
@@ -35,10 +34,10 @@ public class MaxFlowPushRelabel implements MaxFlow {
 		debug.println("\t", getClass().getSimpleName());
 
 		DiGraph g = new GraphArrayDirected(g0.verticesNum());
-		GraphWeights.Int edgeRef = g.edgesWeightsFactory().ints().build(EdgeRefKey);
-		GraphWeights.Int edgeRev = g.edgesWeightsFactory().ints().build(EdgeRevKey);
-		GraphWeights.Double flow = g.edgesWeightsFactory().doubles().build(EdgeFlowKey);
-		GraphWeights.Double capacity = g.edgesWeightsFactory().doubles().build(EdgeCapacityKey);
+		Weights.Int edgeRef = EdgesWeights.ofInts(g, EdgeRefWeightKey, -1);
+		Weights.Int edgeRev = EdgesWeights.ofInts(g, EdgeRevWeightKey, -1);
+		Weights.Double flow = EdgesWeights.ofDoubles(g, FlowWeightKey, 0);
+		Weights.Double capacity = EdgesWeights.ofDoubles(g, CapacityWeightKey, 0);
 		for (int e = 0; e < g0.edgesNum(); e++) {
 			int u = g0.edgeSource(e), v = g0.edgeTarget(e);
 			int e1 = g.addEdge(u, v);

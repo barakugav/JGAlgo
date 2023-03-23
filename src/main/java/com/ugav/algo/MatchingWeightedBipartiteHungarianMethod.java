@@ -28,8 +28,8 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 		if (!(g0 instanceof UGraph))
 			throw new IllegalArgumentException("Only undirected bipartite graphs are supported");
 		UGraph g = (UGraph) g0;
-		GraphWeights.Bool partition = g.verticesWeight(bipartiteVerticesWeightKey);
-		Objects.requireNonNull(partition, "Bipartiteness values weren't found with weight" + bipartiteVerticesWeightKey);
+		Weights.Bool partition = g.verticesWeight(bipartiteVerticesWeightKey);
+		Objects.requireNonNull(partition, "Bipartiteness values weren't found with weight " + bipartiteVerticesWeightKey);
 		return new Worker(g, partition, w).calcMaxMatching(false);
 	}
 
@@ -38,15 +38,15 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 		if (!(g0 instanceof UGraph))
 			throw new IllegalArgumentException("Only undirected bipartite graphs are supported");
 		UGraph g = (UGraph) g0;
-		GraphWeights.Bool partition = g.verticesWeight(bipartiteVerticesWeightKey);
-		Objects.requireNonNull(partition, "Bipartiteness values weren't found with weight" + bipartiteVerticesWeightKey);
+		Weights.Bool partition = g.verticesWeight(bipartiteVerticesWeightKey);
+		Objects.requireNonNull(partition, "Bipartiteness values weren't found with weight " + bipartiteVerticesWeightKey);
 		return new Worker(g, partition, w).calcMaxMatching(true);
 	}
 
 	private static class Worker {
 
 		private final UGraph g;
-		private final GraphWeights.Bool partition;
+		private final Weights.Bool partition;
 		private final EdgeWeightFunc w;
 
 		private final boolean[] inTree;
@@ -60,7 +60,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 		private final double[] dualVal0;
 
 		@SuppressWarnings("unchecked")
-		Worker(UGraph g, GraphWeights.Bool partition, EdgeWeightFunc w) {
+		Worker(UGraph g, Weights.Bool partition, EdgeWeightFunc w) {
 			this.g = g;
 			this.partition = partition;
 			this.w = w;

@@ -6,8 +6,8 @@ import java.util.Set;
 public interface Graph {
 
 	/**
-	 * Get the number of vertices in the graph
-	 *
+	 * Get the number of vertices in the graph.
+	 * <p>
 	 * The vertices ID used in other function are always 0, 1, ..., verticesNum() -
 	 * 1 by the order they were added to the graph. In case of a vertex removal, the
 	 * IDs of the vertices may change
@@ -17,15 +17,15 @@ public interface Graph {
 	public int verticesNum();
 
 	/**
-	 * Add a new vertex to the graph
+	 * Add a new vertex to the graph.
 	 *
 	 * @return the new vertex identifier
 	 */
 	public int addVertex();
 
 	/**
-	 * Get the number of edges in the graph
-	 *
+	 * Get the number of edges in the graph.
+	 * <p>
 	 * The edges ID used in other function are always 0, 1, ..., edgesNum() - 1 by
 	 * the order they were added to the graph. In case of a edge removal, the IDs of
 	 * the edges may change
@@ -35,8 +35,8 @@ public interface Graph {
 	public int edgesNum();
 
 	/**
-	 * Get the edges of a vertex u
-	 *
+	 * Get the edges of a vertex u.
+	 * <p>
 	 * In case the graph is directed, this function returns the edges which u is
 	 * their source vertex.
 	 *
@@ -46,8 +46,8 @@ public interface Graph {
 	public EdgeIter edges(int u);
 
 	/**
-	 * Get the edge whose source is u and target is v
-	 *
+	 * Get the edge whose source is u and target is v.
+	 * <p>
 	 * If the graph is not directed, the return edge is an edge that its end-points
 	 * are u,v
 	 *
@@ -65,7 +65,8 @@ public interface Graph {
 	}
 
 	/**
-	 * Add a new edge to the graph
+	 * Add a new edge to the graph.
+	 * <p>
 	 *
 	 * @param u a source vertex
 	 * @param v a target vertex
@@ -74,8 +75,8 @@ public interface Graph {
 	public int addEdge(int u, int v);
 
 	/**
-	 * Remove an edge from the graph
-	 *
+	 * Remove an edge from the graph.
+	 * <p>
 	 * After removing the edge, the graph implementation may rename the other edges
 	 * identifier to maintain edges IDs 0, 1, ..., edgesNum() - 1. To keep track of
 	 * these renames, one can a listener using
@@ -86,8 +87,8 @@ public interface Graph {
 	public void removeEdge(int edge);
 
 	/**
-	 * Remove all the edges of a vertex u
-	 *
+	 * Remove all the edges of a vertex u.
+	 * <p>
 	 * If the graph is directed, both the in and out edges of the vertex are
 	 * removed. Note that this function may change the identifiers of other edges.
 	 * see {@link #addEdgeRenameListener(EdgeRenameListener)}.
@@ -102,10 +103,10 @@ public interface Graph {
 	}
 
 	/**
-	 * Get the source vertex of an edge
-	 *
+	 * Get the source vertex of an edge.
+	 * <p>
 	 * If the graph is undirected, this function return an arbitrary end-point of
-	 * the end, but always the other end-point that {@link #edgeTarget(int)}
+	 * the edge, but always the other end-point than {@link #edgeTarget(int)}
 	 * returns.
 	 *
 	 * @param edge the edge identifier
@@ -114,10 +115,10 @@ public interface Graph {
 	public int edgeSource(int edge);
 
 	/**
-	 * Get the target vertex of an edge
-	 *
+	 * Get the target vertex of an edge.
+	 * <p>
 	 * If the graph is undirected, this function return an arbitrary end-point of
-	 * the end, but always the other end-point that {@link #edgeSource(int)}
+	 * the edge, but always the other end-point than {@link #edgeSource(int)}
 	 * returns.
 	 *
 	 * @param edge the edge identifier
@@ -126,7 +127,7 @@ public interface Graph {
 	public int edgeTarget(int edge);
 
 	/**
-	 * Get the other end-point of an edge
+	 * Get the other end-point of an edge.
 	 *
 	 * @param edge     the edge identifier
 	 * @param endpoint one of the edge end-point
@@ -145,8 +146,8 @@ public interface Graph {
 	}
 
 	/**
-	 * Get the degree of a vertex, the number of its edges
-	 *
+	 * Get the degree of a vertex, the number of its edges.
+	 * <p>
 	 * If the graph is directed, this function return the number of edges whose u is
 	 * either their source or target.
 	 *
@@ -163,15 +164,15 @@ public interface Graph {
 	}
 
 	/**
-	 * Clear the graph completely by removing all vertices and edges
-	 *
+	 * Clear the graph completely by removing all vertices and edges.
+	 * <p>
 	 * This function might be used to reuse an already allocated graph object
 	 */
 	public void clear();
 
 	/**
-	 * Remove all the edges from the graph
-	 *
+	 * Remove all the edges from the graph.
+	 * <p>
 	 * Note that this function also clears any weights associated with removed
 	 * edges.
 	 */
@@ -179,45 +180,38 @@ public interface Graph {
 
 	// TODO remove vertex
 	// TODO documentation
-	// TODO implement bipartite graphs with boolean weights on vertices
 
 	/**
-	 * Get the user vertices weights of some key
+	 * Get the vertices weights of some key.
 	 *
-	 * @param <V>             The weight type
-	 * @param <GraphWeightsT> the weights container
-	 * @param key             some key of the weights, could be anything
+	 * @param <V>        The weight type
+	 * @param <WeightsT> the weights container
+	 * @param key        some key of the weights, could be anything
 	 * @return vertices weights of the key
 	 */
-	public <V, GraphWeightsT extends GraphWeights<V>> GraphWeightsT verticesWeight(Object key);
+	public <V, WeightsT extends Weights<V>> WeightsT verticesWeight(Object key);
 
 	/**
-	 * Get a factory used to add new weights types associated with the vertices of
-	 * the graph
-	 *
-	 * @return weights factory
-	 */
-	public WeightsFactory verticesWeightsFactory();
-
-	/**
-	 * Get the keys of all the associated vertices weights
+	 * Get the keys of all the associated vertices weights.
 	 *
 	 * @return the keys of all the associated vertices weights
 	 */
 	public Set<Object> getVerticesWeightKeys();
 
 	/**
-	 * Get all vertices weights
+	 * Get all vertices weights.
 	 *
 	 * @return all vertices weights
 	 */
-	public Collection<GraphWeights<?>> getVerticesWeights();
+	public Collection<Weights<?>> getVerticesWeights();
 
 	/**
+	 * The default vertices weight key of the bipartite property.
+	 * <p>
 	 * A bipartite graph is a graph in which the vertices are partitioned into two
 	 * sets V1,V2 and there are no edges between two vertices u,v if they are both
-	 * in V1 or both in V2. Some algorithm expect a bipartite graph as an input, and
-	 * the partition V1,V2 is expected to be a vertex boolean weight keyed by
+	 * in V1 or both in V2. Some algorithms expect a bipartite graph as an input,
+	 * and the partition V1,V2 is expected to be a vertex boolean weight keyed by
 	 * {@link #DefaultBipartiteVerticesWeightKey}. To use a different key, the
 	 * algorithms expose a {@code setBipartiteVerticesWeightKey(Object)} function.
 	 */
@@ -229,94 +223,32 @@ public interface Graph {
 	};
 
 	/**
-	 * Get the user edges weights of some key
+	 * Get the edges weights of some key.
 	 *
-	 * @param <E>             The weight type
-	 * @param <GraphWeightsT> the weights container
-	 * @param key             some key of the weights, could be anything
+	 * @param <E>        The weight type
+	 * @param <WeightsT> the weights container
+	 * @param key        some key of the weights, could be anything
 	 * @return edges weights of the key
 	 */
-	public <E, GraphWeightsT extends GraphWeights<E>> GraphWeightsT edgesWeight(Object key);
+	public <E, WeightsT extends Weights<E>> WeightsT edgesWeight(Object key);
 
 	/**
-	 * Get a factory used to add new weights types associated with the edges of the
-	 * graph
-	 *
-	 * @return weights factory
-	 */
-	public WeightsFactory edgesWeightsFactory();
-
-	/**
-	 * Get the keys of all the associated edges weights
+	 * Get the keys of all the associated edges weights.
 	 *
 	 * @return the keys of all the associated edges weights
 	 */
 	public Set<Object> getEdgesWeightsKeys();
 
 	/**
-	 * Get all edges weights
+	 * Get all edges weights.
 	 *
 	 * @return all edges weights
 	 */
-	public Collection<GraphWeights<?>> getEdgesWeights();
-
-	public static interface WeightsFactory {
-		/**
-		 * Create a builder used to build weights of Object type.
-		 *
-		 * @return object weights builder
-		 */
-		WeightsBuilderObj objs();
-
-		/**
-		 * Create a builder used to build weights of int type.
-		 *
-		 * @return int weights builder
-		 */
-		WeightsBuilderInt ints();
-
-		/**
-		 * Create a builder used to build weights of double type.
-		 *
-		 * @return double weights builder
-		 */
-		WeightsBuilderDouble doubles();
-
-		/**
-		 * Create a builder used to build weights of boolean type.
-		 *
-		 * @return boolean weights builder
-		 */
-		WeightsBuilderBool bools();
-	}
-
-	public static interface WeightsBuilderObj {
-		<E> GraphWeights.Obj<E> build(Object key);
-
-		void setDefaultVal(Object defVal);
-	}
-
-	public static interface WeightsBuilderInt {
-		GraphWeights.Int build(Object key);
-
-		void setDefaultVal(int defVal);
-	}
-
-	public static interface WeightsBuilderDouble {
-		GraphWeights.Double build(Object key);
-
-		void setDefaultVal(double defVal);
-	}
-
-	public static interface WeightsBuilderBool {
-		GraphWeights.Bool build(Object key);
-
-		void setDefaultVal(boolean defVal);
-	}
+	public Collection<Weights<?>> getEdgesWeights();
 
 	/**
-	 * Add a listener that will be notified when an edge rename occur
-	 *
+	 * Add a listener that will be notified when an edge rename occur.
+	 * <p>
 	 * When an edge is removed, the graph implementation may rename the other edges
 	 * identifier to maintain edges IDs 0, 1, ..., edgesNum() - 1. This method
 	 * allows to subscribe to these renames.

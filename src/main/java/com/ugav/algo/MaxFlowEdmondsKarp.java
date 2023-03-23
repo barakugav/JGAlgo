@@ -12,12 +12,12 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 	 * O(m n^2)
 	 */
 
-	public MaxFlowEdmondsKarp() {
-	}
-
 	private static final Object EdgeRefWeightKey = new Object();
 	private static final Object EdgeRevWeightKey = new Object();
 	private static final Object FlowWeightKey = new Object();
+
+	public MaxFlowEdmondsKarp() {
+	}
 
 	@Override
 	public double calcMaxFlow(Graph g0, FlowNetwork net, int source, int target) {
@@ -27,9 +27,9 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 			throw new IllegalArgumentException("Source and target can't be the same vertices");
 
 		DiGraph g = new GraphArrayDirected(g0.verticesNum());
-		GraphWeights.Int edgeRef = g.edgesWeightsFactory().ints().build(EdgeRefWeightKey);
-		GraphWeights.Int edgeRev = g.edgesWeightsFactory().ints().build(EdgeRevWeightKey);
-		GraphWeights.Double flow = g.edgesWeightsFactory().doubles().build(FlowWeightKey);
+		Weights.Int edgeRef = EdgesWeights.ofInts(g, EdgeRefWeightKey, -1);
+		Weights.Int edgeRev = EdgesWeights.ofInts(g, EdgeRevWeightKey, -1);
+		Weights.Double flow = EdgesWeights.ofDoubles(g, FlowWeightKey, 0);
 		for (int e = 0; e < g0.edgesNum(); e++) {
 			int u = g0.edgeSource(e), v = g0.edgeTarget(e);
 			int e1 = g.addEdge(u, v);

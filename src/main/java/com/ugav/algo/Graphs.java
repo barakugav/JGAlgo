@@ -619,10 +619,10 @@ public class Graphs {
 	public static DiGraph referenceGraph(DiGraph g, Object refEdgeWeightKey) {
 		int m = g.edgesNum();
 		DiGraph g0 = new GraphArrayDirected(g.verticesNum());
-		GraphWeights.Int data = g0.edgesWeightsFactory().ints().build(refEdgeWeightKey);
+		Weights.Int edgeRef = EdgesWeights.ofInts(g0, refEdgeWeightKey);
 		for (int e = 0; e < m; e++) {
 			int e0 = g0.addEdge(g.edgeSource(e), g.edgeTarget(e));
-			data.set(e0, e);
+			edgeRef.set(e0, e);
 		}
 		return g0;
 	}
@@ -630,10 +630,10 @@ public class Graphs {
 	public static UGraph referenceGraph(UGraph g, Object refEdgeWeightKey) {
 		int m = g.edgesNum();
 		UGraph g0 = new GraphArrayUndirected(g.verticesNum());
-		GraphWeights.Int data = g0.edgesWeightsFactory().ints().build(refEdgeWeightKey);
+		Weights.Int edgeRef = EdgesWeights.ofInts(g0, refEdgeWeightKey);
 		for (int e = 0; e < m; e++) {
 			int e0 = g0.addEdge(g.edgeSource(e), g.edgeTarget(e));
-			data.set(e0, e);
+			edgeRef.set(e0, e);
 		}
 		return g0;
 	}
@@ -755,23 +755,35 @@ public class Graphs {
 			assert s0 == s;
 		}
 		for (Object key : g.getEdgesWeightsKeys()) {
-			GraphWeights<?> data0 = g.edgesWeight(key);
+			Weights<?> data0 = g.edgesWeight(key);
 
-			if (data0 instanceof GraphWeights.Int data) {
-				GraphWeights.Int datas = g1.edgesWeightsFactory().ints().build(key);
-				for (int s = 0; s < s2e.length; s++)
-					datas.set(s, data.getInt(s2e[s]));
+			if (data0 instanceof Weights.Int data) {
+				int defVal = data.defaultValInt();
+				Weights.Int datas = EdgesWeights.ofInts(g1, key, defVal);
+				for (int s = 0; s < s2e.length; s++) {
+					int w = data.getInt(s2e[s]);
+					if (w != defVal)
+						datas.set(s, w);
+				}
 
-			} else if (data0 instanceof GraphWeights.Double data) {
-				GraphWeights.Double datas = g1.edgesWeightsFactory().doubles().build(key);
-				for (int s = 0; s < s2e.length; s++)
-					datas.set(s, data.getDouble(s2e[s]));
+			} else if (data0 instanceof Weights.Double data) {
+				double defVal = data.defaultValDouble();
+				Weights.Double datas = EdgesWeights.ofDoubles(g1, key, defVal);
+				for (int s = 0; s < s2e.length; s++) {
+					double w = data.getDouble(s2e[s]);
+					if (w != defVal)
+						datas.set(s, w);
+				}
 
 			} else {
+				Object defVal = data0.defaultVal();
 				@SuppressWarnings("rawtypes")
-				GraphWeights datas = g1.edgesWeightsFactory().objs().build(key);
-				for (int s = 0; s < s2e.length; s++)
-					datas.set(s, data0.get(s2e[s]));
+				Weights datas = EdgesWeights.ofObjs(g1, key, defVal);
+				for (int s = 0; s < s2e.length; s++) {
+					Object w = data0.get(s2e[s]);
+					if (w != defVal)
+						datas.set(s, w);
+				}
 			}
 		}
 		return g1;

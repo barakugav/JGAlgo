@@ -175,11 +175,10 @@ class MatchingWeightedTestUtils extends TestUtils {
 
 			Graph shuffledG = new GraphArrayUndirected(n);
 
-			GraphWeights.Bool partition = g.verticesWeight(Graph.DefaultBipartiteVerticesWeightKey);
+			Weights.Bool partition = g.verticesWeight(Graph.DefaultBipartiteVerticesWeightKey);
 			if (partition != null) {
 				/* bipartite graph */
-				GraphWeights.Bool partitionSuffled = g.verticesWeightsFactory().bools()
-						.build(Graph.DefaultBipartiteVerticesWeightKey);
+				Weights.Bool partitionSuffled = VerticesWeights.ofBools(g, Graph.DefaultBipartiteVerticesWeightKey);
 
 				int[] shuffleInv = new int[n];
 				for (int v = 0; v < n; v++)
@@ -189,7 +188,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 					partitionSuffled.set(v, partition.getBool(shuffleInv[v]));
 			}
 
-			GraphWeights.Int edgeRef = shuffledG.edgesWeightsFactory().ints().build("edgeRef");
+			Weights.Int edgeRef = EdgesWeights.ofInts(shuffledG, "edgeRef", -1);
 			for (int e = 0; e < g.edgesNum(); e++) {
 				int u = g.edgeSource(e), v = g.edgeTarget(e);
 				int e0 = shuffledG.addEdge(shuffle[u], shuffle[v]);
