@@ -173,8 +173,7 @@ public abstract class Weights<E> {
 		 * TODO
 		 *
 		 * Set this to true if your weight implement the Comparable interface to help
-		 * {@link com.ugav.algo.Graph#equals(Object)} maintain an order in parallel
-		 * edges.
+		 * {@code Graph.equals(Object)} maintain an order in parallel edges.
 		 *
 		 * @param comparable
 		 */
