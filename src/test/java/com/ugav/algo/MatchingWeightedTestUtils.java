@@ -175,10 +175,10 @@ class MatchingWeightedTestUtils extends TestUtils {
 
 			Graph shuffledG = new GraphArrayUndirected(n);
 
-			Weights.Bool partition = g.verticesWeight(Graph.DefaultBipartiteVerticesWeightKey);
+			Weights.Bool partition = g.verticesWeight(VerticesWeights.DefaultBipartiteWeightKey);
 			if (partition != null) {
 				/* bipartite graph */
-				Weights.Bool partitionSuffled = VerticesWeights.ofBools(g, Graph.DefaultBipartiteVerticesWeightKey);
+				Weights.Bool partitionSuffled = VerticesWeights.ofBools(g, VerticesWeights.DefaultBipartiteWeightKey);
 
 				int[] shuffleInv = new int[n];
 				for (int v = 0; v < n; v++)

@@ -15,7 +15,7 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 	 * Maximum matching in unweighted undirected bipartite graph in O(m n^0.5)
 	 */
 
-	private Object bipartiteVerticesWeightKey = Graph.DefaultBipartiteVerticesWeightKey;
+	private Object bipartiteVerticesWeightKey = VerticesWeights.DefaultBipartiteWeightKey;
 	private static final Object EdgeRefWeightKey = new Object();
 
 	public MatchingBipartiteHopcroftKarp1973() {

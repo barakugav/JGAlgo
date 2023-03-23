@@ -14,7 +14,7 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 	 * O(m n + n^2 log n)
 	 */
 
-	private Object bipartiteVerticesWeightKey = Graph.DefaultBipartiteVerticesWeightKey;
+	private Object bipartiteVerticesWeightKey = VerticesWeights.DefaultBipartiteWeightKey;
 	private static final Object EdgeRefWeightKey = new Object();
 
 	public MatchingWeightedBipartiteSSSP() {

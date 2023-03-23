@@ -102,7 +102,7 @@ class GraphsTestUtils extends TestUtils {
 					throw new IllegalStateException();
 				n = sn + tn;
 				g = impl.newGraph(directed, n);
-				Weights.Bool partition = VerticesWeights.ofBools(g, Graph.DefaultBipartiteVerticesWeightKey);
+				Weights.Bool partition = VerticesWeights.ofBools(g, VerticesWeights.DefaultBipartiteWeightKey);
 				for (int u = 0; u < sn; u++)
 					partition.set(u, true);
 				for (int u = 0; u < tn; u++)
