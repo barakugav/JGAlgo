@@ -1,6 +1,5 @@
 package com.ugav.algo;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -9,8 +8,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import it.unimi.dsi.fastutil.ints.IntArrays;
-import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 
 abstract class GraphAbstract implements Graph {
@@ -36,7 +33,7 @@ abstract class GraphAbstract implements Graph {
 	public int addVertex() {
 		int u = n++;
 		for (Weights<?> data : vWeights.values())
-			data.keyAdd(u);
+			((WeightsAbstract<?>) data).keyAdd(u);
 		return u;
 	}
 
@@ -51,7 +48,7 @@ abstract class GraphAbstract implements Graph {
 		checkVertexIdx(v);
 		int e = m++;
 		for (Weights<?> data : eWeights.values())
-			data.keyAdd(e);
+			((WeightsAbstract<?>) data).keyAdd(e);
 		return e;
 	}
 
@@ -64,13 +61,13 @@ abstract class GraphAbstract implements Graph {
 			e = lastEdge;
 		}
 		for (Weights<?> data : eWeights.values())
-			data.keyRemove(e);
+			((WeightsAbstract<?>) data).keyRemove(e);
 		m--;
 	}
 
 	void edgeSwap(int e1, int e2) {
 		for (Weights<?> data : eWeights.values())
-			data.keySwap(e1, e2);
+			((WeightsAbstract<?>) data).keySwap(e1, e2);
 		for (EdgeRenameListener listener : edgeRenameListeners)
 			listener.edgeRename(e1, e2);
 	}
@@ -158,6 +155,24 @@ abstract class GraphAbstract implements Graph {
 		if (verticesNum() != o.verticesNum() || edgesNum() != o.edgesNum())
 			return false;
 
+		boolean isDirected = (this instanceof DiGraph);
+		int m = edgesNum();
+		if (isDirected) {
+			for (int e = 0; e < m; e++) {
+				int u1 = edgeSource(e), v1 = edgeTarget(e);
+				int u2 = o.edgeSource(e), v2 = o.edgeTarget(e);
+				if (!(u1 == u2 && v1 == v2))
+					return false;
+			}
+		} else {
+			for (int e = 0; e < m; e++) {
+				int u1 = edgeSource(e), v1 = edgeTarget(e);
+				int u2 = o.edgeSource(e), v2 = o.edgeTarget(e);
+				if (!((u1 == u2 && v1 == v2) || (u1 == v2 && v1 == u2)))
+					return false;
+			}
+		}
+
 		Set<Object> vwKeys = getVerticesWeightKeys();
 		if (!vwKeys.equals(o.getVerticesWeightKeys()))
 			return false;
@@ -168,176 +183,46 @@ abstract class GraphAbstract implements Graph {
 		Set<Object> ewKeys = getEdgesWeightsKeys();
 		if (!ewKeys.equals(o.getEdgesWeightsKeys()))
 			return false;
-		List<Object> ewKeysObj = new ArrayList<>(0);
-		for (Object weightKey : ewKeys) {
-			Weights<?> ew1 = edgesWeight(weightKey);
-			Weights<?> ew2 = o.edgesWeight(weightKey);
-			if (ew1 instanceof Weights.Int) {
-				if (!(ew2 instanceof Weights.Int))
-					return false;
-				continue;
-			}
-			if (ew1 instanceof Weights.Double) {
-				if (!(ew2 instanceof Weights.Double))
-					return false;
-				continue;
-			}
-			if (ew1 instanceof Weights.Obj<?> ew1Obj) {
-				if (!(ew2 instanceof Weights.Obj<?>))
-					return false;
-				if (ew1Obj.isComparable() && ((Weights.Obj<?>) ew2).isComparable()) {
-					continue;
-				}
-			}
-			/* else */
-			ewKeysObj.add(weightKey);
-		}
-
-		int m = edgesNum();
-		int[] es1 = new int[m];
-		int[] es2 = new int[m];
-		for (int e = 0; e < m; e++)
-			es1[e] = es2[e] = e;
-
-		IntArrays.parallelQuickSort(es1, createEdgeComparator(this, this));
-		IntArrays.parallelQuickSort(es2, createEdgeComparator(o, o));
-
-		List<Weights<?>> ewObj1 = new ArrayList<>(0);
-		List<Weights<?>> ewObj2 = new ArrayList<>(0);
-		for (Object weightKey : ewKeysObj) {
-			ewObj1.add(edgesWeight(weightKey));
-			ewObj2.add(o.edgesWeight(weightKey));
-		}
-		IntComparator cmp = createEdgeComparator(this, o);
-		for (int e = 0; e < m; e++) {
-			int e1 = es1[e], e2 = es2[e];
-			if (cmp.compare(e1, e2) != 0)
+		for (Object weightKey : ewKeys)
+			if (!edgesWeight(weightKey).equals(o.edgesWeight(weightKey)))
 				return false;
-			for (int i = 0; i < ewObj1.size(); i++)
-				if (!Objects.equals(ewObj1.get(i).get(e1), ewObj2.get(i).get(e2)))
-					return false;
-		}
+
 		return true;
-	}
-
-	private static IntComparator createEdgeComparator(Graph g1, Graph g2) {
-		boolean directed = g1 instanceof DiGraph;
-		assert directed != (g2 instanceof DiGraph);
-
-		Set<Object> ewKeys = g1.getEdgesWeightsKeys();
-		assert ewKeys.equals(g2.getEdgesWeightsKeys());
-		List<Object> ewKeysInt = new ArrayList<>(0);
-		List<Object> ewKeysDouble = new ArrayList<>(0);
-		List<Object> ewKeysComparable = new ArrayList<>(0);
-		for (Object weightKey : ewKeys) {
-			Weights<?> ew1 = g1.edgesWeight(weightKey);
-			Weights<?> ew2 = g2.edgesWeight(weightKey);
-			if (ew1 instanceof Weights.Int) {
-				assert ew2 instanceof Weights.Int;
-				ewKeysInt.add(weightKey);
-
-			} else if (ew1 instanceof Weights.Double) {
-				assert ew2 instanceof Weights.Double;
-				ewKeysDouble.add(weightKey);
-
-			} else if (ew1 instanceof Weights.Obj<?> ew1Obj) {
-				assert ew2 instanceof Weights.Obj<?>;
-				if (ew1Obj.isComparable()) {
-					assert ((Weights.Obj<?>) ew2).isComparable();
-					ewKeysComparable.add(weightKey);
-				}
-			}
-		}
-
-		List<Weights.Int> ewInt1 = new ArrayList<>(0);
-		List<Weights.Int> ewInt2 = new ArrayList<>(0);
-		List<Weights.Double> ewDouble1 = new ArrayList<>(0);
-		List<Weights.Double> ewDouble2 = new ArrayList<>(0);
-		List<Weights.Obj<Comparable<?>>> ewComparable1 = new ArrayList<>(0);
-		List<Weights.Obj<Comparable<?>>> ewComparable2 = new ArrayList<>(0);
-		for (Object weightKey : ewKeysInt) {
-			ewInt1.add(g1.edgesWeight(weightKey));
-			ewInt2.add(g2.edgesWeight(weightKey));
-		}
-		for (Object weightKey : ewKeysDouble) {
-			ewDouble1.add(g1.edgesWeight(weightKey));
-			ewDouble2.add(g2.edgesWeight(weightKey));
-		}
-		for (Object weightKey : ewKeysComparable) {
-			ewComparable1.add(g1.edgesWeight(weightKey));
-			ewComparable2.add(g2.edgesWeight(weightKey));
-		}
-
-		@SuppressWarnings({ "rawtypes", "unchecked" })
-		IntComparator dataCmp = (e1, e2) -> {
-			int c;
-			for (int i = 0; i < ewInt1.size(); i++)
-				if ((c = Integer.compare(ewInt1.get(i).getInt(e1), ewInt2.get(i).getInt(e2))) != 0)
-					return c;
-			for (int i = 0; i < ewDouble1.size(); i++)
-				if ((c = Double.compare(ewDouble1.get(i).getDouble(e1), ewDouble2.get(i).getDouble(e2))) != 0)
-					return c;
-			for (int i = 0; i < ewComparable1.size(); i++) {
-				Comparable o1 = ewComparable1.get(i).get(e1);
-				Comparable o2 = ewComparable2.get(i).get(e2);
-				if ((c = o1.compareTo(o2)) != 0)
-					return c;
-			}
-			return 0;
-		};
-
-		if (directed) {
-			return (e1, e2) -> {
-				int c;
-				int u1 = g1.edgeSource(e1), u2 = g2.edgeSource(e2);
-				if ((c = Integer.compare(u1, u2)) != 0)
-					return c;
-				int v1 = g1.edgeTarget(e1), v2 = g2.edgeTarget(e2);
-				if ((c = Integer.compare(v1, v2)) != 0)
-					return c;
-				return dataCmp.compare(e1, e2);
-			};
-		} else {
-			return (e1, e2) -> {
-				int u1 = g1.edgeSource(e1), u2 = g2.edgeSource(e2);
-				int v1 = g1.edgeTarget(e1), v2 = g2.edgeTarget(e2);
-				if (u1 > v1) {
-					int temp = u1;
-					u1 = v1;
-					v1 = temp;
-				}
-				if (u2 > v2) {
-					int temp = u2;
-					u2 = v2;
-					v2 = temp;
-				}
-				int c;
-				if ((c = Integer.compare(u1, u2)) != 0)
-					return c;
-				if ((c = Integer.compare(v1, v2)) != 0)
-					return c;
-				return dataCmp.compare(e1, e2);
-			};
-		}
 	}
 
 	@Override
 	public int hashCode() {
-		int h = 1;
+		int vWeightsHash = 1 + verticesNum();
 		for (Weights<?> vWeight : getVerticesWeights())
-			h = h * 31 + vWeight.hashCode();
+			vWeightsHash = vWeightsHash * 31 + vWeight.hashCode();
 
-		int m = edgesNum();
-		int[] es = new int[m];
-		for (int e = 0; e < m; e++)
-			es[e] = e;
-		IntArrays.parallelQuickSort(es, createEdgeComparator(this, this));
-		Collection<Weights<?>> edgeWeights = getEdgesWeights();
-		for (int eIdx = 0; eIdx < m; eIdx++) {
-			int e = es[eIdx];
-			for (Weights<?> weight : edgeWeights)
-				h = h * 31 + Objects.hashCode(weight.get(e));
+		int edgesHash = 1;
+		if (this instanceof DiGraph) {
+			for (int e = 0; e < m; e++) {
+				edgesHash = edgesHash * 31 + edgeSource(e);
+				edgesHash = edgesHash * 31 + edgeTarget(e);
+			}
+		} else {
+			for (int e = 0; e < m; e++) {
+				int u = edgeSource(e), v = edgeTarget(e);
+				if (u > v) {
+					int temp = u;
+					u = v;
+					v = temp;
+				}
+				edgesHash = edgesHash * 31 + u;
+				edgesHash = edgesHash * 31 + v;
+			}
 		}
+
+		int eWeightsHash = 1;
+		for (Weights<?> eWeight : getEdgesWeights())
+			eWeightsHash = eWeightsHash * 31 + eWeight.hashCode();
+
+		int h = 1;
+		h = h * 31 + vWeightsHash;
+		h = h * 31 + edgesHash;
+		h = h * 31 + eWeightsHash;
 		return h;
 	}
 
