@@ -62,3 +62,35 @@ Algo is a collection of algorithms implemented in Java. It contains mostly algor
 | Array k'th element | $O(n)$ |
 | Array bucket partition | $O(n \log k)$ where $k$ is the bucket size |
 | Bits Lookup tables (bit count, ith bit, ctz) | $O(n)$ preprocessing, $O(1)$ query |
+
+## Graph API
+
+```java
+/* Create a directed graph with three vertices and edges between them */
+DiGraph g = new GraphArrayDirected();
+int v1 = g.addVertex();
+int v2 = g.addVertex();
+int v3 = g.addVertex();
+int e1 = g.addEdge(v1, v2);
+int e2 = g.addEdge(v2, v3);
+int e3 = g.addEdge(v1, v3);
+
+/* Assign some weights to the edges */
+Weights.Double w = EdgesWeights.ofDoubles(g, "weight");
+w.set(e1, 1.2);
+w.set(e2, 3.1);
+w.set(e3, 15.1);
+
+/* Calculate the shortest paths from v1 to all other vertices */
+SSSP ssspAlgo = new SSSPDijkstra();
+SSSP.Result ssspRes = ssspAlgo.calcDistances(g, w, v1);
+
+/* Display the shortest path from v1 to v3 */
+System.out.println("Distance from v1 to v3 is: " + ssspRes.distance(v3));
+System.out.println("The shortest path from v1 to v3 is:");
+for (IntIterator it = ssspRes.getPathTo(v3).iterator(); it.hasNext();) {
+	int e = it.nextInt();
+	int u = g.edgeSource(e), v = g.edgeTarget(e);
+	System.out.println(" " + e + "(" + u + ", " + v + ")");
+}
+```
