@@ -25,12 +25,7 @@ public class GraphTableDirected extends GraphTableAbstract implements DiGraph {
 
 	@Override
 	public void removeEdge(int e) {
-		checkEdgeIdx(e);
-		int lastEdge = edgesNum() - 1;
-		if (e != lastEdge) {
-			edgeSwap(e, lastEdge);
-			e = lastEdge;
-		}
+		e = swapBeforeRemove(e);
 		int u = edgeSource(e), v = edgeTarget(e);
 		edges[u][v] = EdgeNone;
 		super.removeEdge(e);

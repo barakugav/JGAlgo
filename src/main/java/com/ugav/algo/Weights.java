@@ -42,6 +42,38 @@ public interface Weights<E> {
 		}
 	}
 
+	public static interface Long extends Weights<java.lang.Long>, EdgeWeightFunc {
+
+		public long getLong(int key);
+
+		@Deprecated
+		@Override
+		default java.lang.Long get(int key) {
+			return java.lang.Long.valueOf(getLong(key));
+		}
+
+		public void set(int key, long weight);
+
+		@Deprecated
+		@Override
+		default void set(int key, java.lang.Long data) {
+			set(key, data.longValue());
+		}
+
+		public long defaultValLong();
+
+		@Deprecated
+		@Override
+		default java.lang.Long defaultVal() {
+			return java.lang.Long.valueOf(defaultValLong());
+		}
+
+		@Override
+		default double weight(int key) {
+			return getLong(key);
+		}
+	}
+
 	public static interface Double extends Weights<java.lang.Double>, EdgeWeightFunc {
 
 		public double getDouble(int key);

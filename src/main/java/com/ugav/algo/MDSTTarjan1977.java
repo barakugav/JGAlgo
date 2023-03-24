@@ -30,13 +30,13 @@ public class MDSTTarjan1977 implements MDST {
 	public IntCollection calcMST(Graph g0, EdgeWeightFunc w) {
 		if (!(g0 instanceof DiGraph))
 			throw new IllegalArgumentException("Only directed graphs are supported");
-		if (g0.verticesNum() == 0 || g0.edgesNum() == 0)
+		if (g0.vertices().size() == 0 || g0.edges().size() == 0)
 			return IntLists.emptyList();
 		DiGraph g = Graphs.referenceGraph((DiGraph) g0, EdgeRefWeightKey);
 		Weights.Int edgeRefs = g.edgesWeight(EdgeRefWeightKey);
 
 		// Connect new root to all vertices
-		int n = g.verticesNum(), r = g.addVertex();
+		int n = g.vertices().size(), r = g.addVertex();
 		for (int v = 0; v < n; v++)
 			edgeRefs.set(g.addEdge(r, v), HeavyEdge);
 
@@ -49,7 +49,7 @@ public class MDSTTarjan1977 implements MDST {
 	public IntCollection calcMST(Graph g0, EdgeWeightFunc w, int root) {
 		if (!(g0 instanceof DiGraph))
 			throw new IllegalArgumentException("Only directed graphs are supported");
-		if (g0.verticesNum() == 0 || g0.edgesNum() == 0)
+		if (g0.vertices().size() == 0 || g0.edges().size() == 0)
 			return IntLists.emptyList();
 		DiGraph g = Graphs.referenceGraph((DiGraph) g0, EdgeRefWeightKey);
 
@@ -95,7 +95,7 @@ public class MDSTTarjan1977 implements MDST {
 	}
 
 	private static void addEdgesUntilStronglyConnected(DiGraph g) {
-		int n = g.verticesNum();
+		int n = g.vertices().size();
 
 		Pair<Integer, int[]> pair = Graphs.findStrongConnectivityComponents(g);
 		int N = pair.e1.intValue();
@@ -121,7 +121,7 @@ public class MDSTTarjan1977 implements MDST {
 	private static ContractedGraph contract(DiGraph g, EdgeWeightFunc w0) {
 		addEdgesUntilStronglyConnected(g);
 
-		int n = g.verticesNum();
+		int n = g.vertices().size();
 		int VMaxNum = n * 2; // max super vertex number
 
 		UnionFindValue uf = new UnionFindValueArray(n);

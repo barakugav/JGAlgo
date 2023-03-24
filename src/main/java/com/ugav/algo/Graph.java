@@ -3,18 +3,15 @@ package com.ugav.algo;
 import java.util.Collection;
 import java.util.Set;
 
+import com.ugav.algo.IDStrategy.IDSwapListener;
+
+import it.unimi.dsi.fastutil.ints.IntSet;
+
 public interface Graph {
 
-	/**
-	 * Get the number of vertices in the graph.
-	 * <p>
-	 * The vertices ID used in other function are always 0, 1, ..., verticesNum() -
-	 * 1 by the order they were added to the graph. In case of a vertex removal, the
-	 * IDs of the vertices may change
-	 *
-	 * @return the number of vertices in the graph
-	 */
-	public int verticesNum();
+	public IntSet vertices();
+
+	public IntSet edges();
 
 	/**
 	 * Add a new vertex to the graph.
@@ -22,17 +19,6 @@ public interface Graph {
 	 * @return the new vertex identifier
 	 */
 	public int addVertex();
-
-	/**
-	 * Get the number of edges in the graph.
-	 * <p>
-	 * The edges ID used in other function are always 0, 1, ..., edgesNum() - 1 by
-	 * the order they were added to the graph. In case of a edge removal, the IDs of
-	 * the edges may change
-	 *
-	 * @return the number of edges in the graph
-	 */
-	public int edgesNum();
 
 	/**
 	 * Get the edges of a vertex u.
@@ -78,9 +64,9 @@ public interface Graph {
 	 * Remove an edge from the graph.
 	 * <p>
 	 * After removing the edge, the graph implementation may rename the other edges
-	 * identifier to maintain edges IDs 0, 1, ..., edgesNum() - 1. To keep track of
-	 * these renames, one can a listener using
-	 * {@link #addEdgeRenameListener(EdgeRenameListener)}.
+	 * identifier to maintain edges IDs 0, 1, ..., edges().size() - 1. To keep track
+	 * of these renames, one can a listener using
+	 * {@link #addIDSwapListener(IDSwapListener)}.
 	 *
 	 * @param edge the edge identifier
 	 */
@@ -91,7 +77,7 @@ public interface Graph {
 	 * <p>
 	 * If the graph is directed, both the in and out edges of the vertex are
 	 * removed. Note that this function may change the identifiers of other edges.
-	 * see {@link #addEdgeRenameListener(EdgeRenameListener)}.
+	 * see {@link #addIDSwapListener(IDSwapListener)}.
 	 *
 	 * @param u a vertex in the graph
 	 */
@@ -205,6 +191,8 @@ public interface Graph {
 	 */
 	public Collection<Weights<?>> getVerticesWeights();
 
+	public void removeVerticesWeights(Object key);
+
 	/**
 	 * Get the edges weights of some key.
 	 *
@@ -222,6 +210,8 @@ public interface Graph {
 	 */
 	public Set<Object> getEdgesWeightsKeys();
 
+	public void removeEdgesWeights(Object key);
+
 	/**
 	 * Get all edges weights.
 	 *
@@ -229,24 +219,8 @@ public interface Graph {
 	 */
 	public Collection<Weights<?>> getEdgesWeights();
 
-	/**
-	 * Add a listener that will be notified when an edge rename occur.
-	 * <p>
-	 * When an edge is removed, the graph implementation may rename the other edges
-	 * identifier to maintain edges IDs 0, 1, ..., edgesNum() - 1. This method
-	 * allows to subscribe to these renames.
-	 *
-	 * @param listener a rename listener that will be notified each time a edge is
-	 *                 renamed
-	 */
-	public void addEdgeRenameListener(EdgeRenameListener listener);
+	public IDStrategy getVerticesIDStrategy();
 
-	public void removeEdgeRenameListener(EdgeRenameListener listener);
-
-	@FunctionalInterface
-	public static interface EdgeRenameListener {
-		/* The two edges e1 e2 swap identifiers */
-		public void edgeRename(int e1, int e2);
-	}
+	public IDStrategy getEdgesIDStrategy();
 
 }

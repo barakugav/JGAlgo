@@ -13,7 +13,7 @@ public class LCARMQBenderFarachColton2000Test extends TestUtils {
 		Random rand = new Random(nextRandSeed());
 		int[][] queries = new int[queriesNum][3];
 
-		int n = g.verticesNum();
+		int n = g.vertices().size();
 		int[] parent = new int[n];
 		int[] depth = new int[n];
 

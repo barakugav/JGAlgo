@@ -2,8 +2,7 @@ package com.ugav.algo;
 
 import java.util.Arrays;
 
-
-
+import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 public class SSSPBellmanFord implements SSSP {
@@ -20,7 +19,7 @@ public class SSSPBellmanFord implements SSSP {
 		if (!(g0 instanceof DiGraph))
 			throw new IllegalArgumentException("only directed graphs are supported");
 		DiGraph g = (DiGraph) g0;
-		int n = g.verticesNum(), m = g.edgesNum();
+		int n = g.vertices().size();
 		double[] distances = new double[n];
 		int[] backtrack = new int[n];
 		Arrays.fill(backtrack, -1);
@@ -32,7 +31,8 @@ public class SSSPBellmanFord implements SSSP {
 		distances[source] = 0;
 
 		for (int i = 0; i < n - 1; i++) {
-			for (int e = 0; e < m; e++) {
+			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+				int e = it.nextInt();
 				int u = g.edgeSource(e), v = g.edgeTarget(e);
 				double d = distances[u] + w.weight(e);
 				if (d < distances[v]) {
@@ -42,7 +42,8 @@ public class SSSPBellmanFord implements SSSP {
 			}
 		}
 
-		for (int e = 0; e < m; e++) {
+		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+			int e = it.nextInt();
 			int u = g.edgeSource(e), v = g.edgeTarget(e);
 			double d = distances[u] + w.weight(e);
 			if (d < distances[v])

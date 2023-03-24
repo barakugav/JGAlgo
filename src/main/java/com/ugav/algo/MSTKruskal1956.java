@@ -22,15 +22,12 @@ public class MSTKruskal1956 implements MST {
 		if (!(g0 instanceof UGraph))
 			throw new IllegalArgumentException("only undirected graphs are supported");
 		UGraph g = (UGraph) g0;
-		int n = g.verticesNum();
+		int n = g.vertices().size();
 		if (n == 0)
 			return IntLists.emptyList();
 
 		/* sort edges */
-		int m = g.edgesNum();
-		int[] edges = new int[m];
-		for (int e = 0; e < m; e++)
-			edges[e] = e;
+		int[] edges = g.edges().toIntArray();
 		IntArrays.parallelQuickSort(edges, new EdgeWeightComparator(w));
 
 		/* create union find data structure for each vertex */

@@ -28,8 +28,10 @@ public class SSSPGoldberg1995 implements SSSP {
 		EdgeWeightFunc.Int w = (EdgeWeightFunc.Int) w0;
 
 		int minWeight = Integer.MAX_VALUE;
-		for (int e = 0; e < g.edgesNum(); e++)
+		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+			int e = it.nextInt();
 			minWeight = Math.min(minWeight, w.weightInt(e));
+		}
 		if (minWeight >= 0)
 			// All weights are positive, use Dijkstra
 			return new SSSPDijkstra().calcDistances(g, w, source);
@@ -44,7 +46,7 @@ public class SSSPGoldberg1995 implements SSSP {
 	}
 
 	private static Pair<int[], IntList> calcPotential(DiGraph g, EdgeWeightFunc.Int w, int minWeight) {
-		int n = g.verticesNum();
+		int n = g.vertices().size();
 		int[] potential = new int[n];
 
 		boolean[] connected = new boolean[n];
@@ -69,7 +71,8 @@ public class SSSPGoldberg1995 implements SSSP {
 			for (;;) {
 				// Create a graph with edges with weight <= 0
 				gNeg.clearEdges();
-				for (int e = 0; e < g.edgesNum(); e++) {
+				for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+					int e = it.nextInt();
 					int u = g.edgeSource(e), v = g.edgeTarget(e);
 					if (weight(g, e, w, potential, weightMask) <= 0)
 						gNegEdgeRefs.set(gNeg.addEdge(u, v), e);
@@ -157,7 +160,8 @@ public class SSSPGoldberg1995 implements SSSP {
 							GWeights.set(G.addEdge(fakeS2, V), layerNum - 1);
 
 					// Add the remaining edges to the graph, not only 0,-1 edges
-					for (int e = 0; e < g.edgesNum(); e++) {
+					for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+						int e = it.nextInt();
 						int u = g.edgeSource(e), v = g.edgeTarget(e);
 						int weight = weight(g, e, w, potential, weightMask);
 						if (weight > 0)

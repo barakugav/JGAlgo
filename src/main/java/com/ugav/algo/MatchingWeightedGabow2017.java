@@ -15,6 +15,7 @@ import com.ugav.algo.Utils.QueueIntFixSize;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintable {
@@ -269,12 +270,13 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 
 		@SuppressWarnings("unchecked")
 		Worker(Graph g0, EdgeWeightFunc w, DebugPrintsManager debugPrint) {
-			int n = g0.verticesNum();
+			int n = g0.vertices().size();
 			this.g = new GraphArrayDirected(n);
 			edgeVal = EdgesWeights.ofObjs(g, EdgeValKey);
 			this.w = e -> w.weight(edgeVal.get(e).e);
 
-			for (int e = 0; e < g0.edgesNum(); e++) {
+			for (IntIterator it = g0.edges().iterator(); it.hasNext();) {
+				int e = it.nextInt();
 				int u = g0.edgeSource(e), v = g0.edgeTarget(e);
 				int e1 = g.addEdge(u, v);
 				int e2 = g.addEdge(v, u);
@@ -312,12 +314,14 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 		}
 
 		private IntCollection calcMaxMatching(boolean perfect) {
-			int n = g.verticesNum();
+			int n = g.vertices().size();
 
 			// init dual value of all vertices as maxWeight / 2
 			double maxWeight = Double.MIN_VALUE;
-			for (int e = 0; e < g.edgesNum(); e++)
+			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+				int e = it.nextInt();
 				maxWeight = Math.max(maxWeight, w.weight(e));
+			}
 			double delta1Threshold = maxWeight / 2;
 			for (int u = 0; u < n; u++)
 				vertexDualValBase[u] = delta1Threshold;
@@ -971,7 +975,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 		}
 
 		private void forEachBlossom(Consumer<Blossom> f) {
-			int n = g.verticesNum();
+			int n = g.vertices().size();
 			int visitIdx = ++blossomVisitIdx;
 			for (int v = 0; v < n; v++) {
 				for (Blossom b = blossoms[v]; b.lastVisitIdx != visitIdx; b = b.parent) {
@@ -984,7 +988,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 		}
 
 		private void forEachTopBlossom(Consumer<Blossom> f) {
-			int n = g.verticesNum();
+			int n = g.vertices().size();
 			int visitIdx = ++blossomVisitIdx;
 			for (int v = 0; v < n; v++) {
 				for (Blossom b = blossoms[v]; b.lastVisitIdx != visitIdx; b = b.parent) {

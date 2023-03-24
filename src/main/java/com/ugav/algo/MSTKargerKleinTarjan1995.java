@@ -32,7 +32,7 @@ public class MSTKargerKleinTarjan1995 implements MST {
 	}
 
 	private IntCollection calcMST0(UGraph g, EdgeWeightFunc w) {
-		if (g.verticesNum() == 0 || g.edgesNum() == 0)
+		if (g.vertices().size() == 0 || g.edges().size() == 0)
 			return IntLists.emptyList();
 		/*
 		 * we run Boruvka to reduce the number of vertices by a factor of 4, and the
@@ -62,15 +62,17 @@ public class MSTKargerKleinTarjan1995 implements MST {
 
 	private UGraph randSubgraph(UGraph g) {
 		Random rand = new Random(seedGenerator.nextLong() ^ 0x043a4a7a193827bcL);
-		IntCollection edgeSet = new IntArrayList(g.edgesNum());
-		for (int e = 0; e < g.edgesNum(); e++)
+		IntCollection edgeSet = new IntArrayList(g.edges().size());
+		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+			int e = it.nextInt();
 			if (rand.nextBoolean())
 				edgeSet.add(e);
+		}
 		return Graphs.subGraph(g, edgeSet);
 	}
 
 	private static IntCollection lightEdges(UGraph g, UGraph f) {
-		int n = f.verticesNum();
+		int n = f.vertices().size();
 		/* find connectivity components in the forest, each one of them is a tree */
 		Pair<Integer, int[]> r = Graphs.findConnectivityComponents(f);
 		int treeCount = r.e1.intValue();
@@ -92,7 +94,8 @@ public class MSTKargerKleinTarjan1995 implements MST {
 			vToVnew[u] = treeToNextv[vToTree[u]]++;
 
 		Weights<Ref> fRef = f.edgesWeight("ref");
-		for (int e = 0; e < f.edgesNum(); e++) {
+		for (IntIterator it = f.edges().iterator(); it.hasNext();) {
+			int e = it.nextInt();
 			int u = f.edgeSource(e), v = f.edgeTarget(e);
 			int un = vToVnew[u], vn = vToVnew[v];
 			int treeIdx = vToTree[u];
@@ -110,7 +113,8 @@ public class MSTKargerKleinTarjan1995 implements MST {
 			tpmQueries[t] = new int[2];
 		int[] tpmQueriesNum = new int[trees.length];
 
-		for (int e = 0; e < g.edgesNum(); e++) {
+		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+			int e = it.nextInt();
 			int u = g.edgeSource(e), v = g.edgeTarget(e);
 			int ut = vToTree[u];
 			if (ut != vToTree[v])
@@ -133,7 +137,8 @@ public class MSTKargerKleinTarjan1995 implements MST {
 		Weights<Ref> gRef = g.edgesWeight("ref");
 		IntCollection lightEdges = new IntArrayList();
 		int[] tpmIdx = new int[trees.length];
-		for (int e = 0; e < g.edgesNum(); e++) {
+		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+			int e = it.nextInt();
 			int u = g.edgeSource(e), v = g.edgeTarget(e);
 			int ut = vToTree[u];
 			if (ut != vToTree[v] || gRef.get(e).w <= treeData[ut].weight(tpmResults[ut][tpmIdx[ut]++]))

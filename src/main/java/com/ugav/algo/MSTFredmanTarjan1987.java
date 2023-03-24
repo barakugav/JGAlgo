@@ -23,7 +23,7 @@ public class MSTFredmanTarjan1987 implements MST {
 		if (!(g0 instanceof UGraph))
 			throw new IllegalArgumentException("only undirected graphs are supported");
 		UGraph g = (UGraph) g0;
-		int n = g.verticesNum(), m = g.edgesNum();
+		int n = g.vertices().size(), m = g.edges().size();
 		if (n == 0)
 			return IntLists.emptyList();
 

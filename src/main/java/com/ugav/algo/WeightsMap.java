@@ -1,5 +1,6 @@
 package com.ugav.algo;
 
+import java.util.Collection;
 import java.util.Map;
 
 import it.unimi.dsi.fastutil.ints.Int2BooleanMap;
@@ -8,8 +9,11 @@ import it.unimi.dsi.fastutil.ints.Int2DoubleMap;
 import it.unimi.dsi.fastutil.ints.Int2DoubleOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2LongMap;
+import it.unimi.dsi.fastutil.ints.Int2LongOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 class WeightsMap {
 
@@ -30,7 +34,13 @@ class WeightsMap {
 		}
 
 		@Override
-		void keyAdd(int key) {
+		IntSet keysSet() {
+			return (IntSet) weights.keySet();
+		}
+
+		@Override
+		Collection<E> values() {
+			return weights.values();
 		}
 
 		@Override
@@ -47,6 +57,7 @@ class WeightsMap {
 		public String toString() {
 			return weights.toString();
 		}
+
 	}
 
 	static class Obj<E> extends Abstract<E> implements Weights<E> {
@@ -67,6 +78,12 @@ class WeightsMap {
 		@Override
 		Int2ObjectMap<E> weights() {
 			return (Int2ObjectMap<E>) super.weights();
+		}
+
+		@Override
+		void keyAdd(int key) {
+			if (forceAdd)
+				weights().put(key, defaultVal());
 		}
 
 		@Override
@@ -106,7 +123,7 @@ class WeightsMap {
 		}
 	}
 
-	static class Int extends Abstract<Integer> implements Weights.Int, EdgeWeightFunc.Int {
+	static class Int extends Abstract<Integer> implements Weights.Int {
 
 		private Int(boolean isEdges, int expectedSize, int defVal) {
 			super(isEdges, new Int2IntOpenHashMap(expectedSize));
@@ -124,6 +141,12 @@ class WeightsMap {
 		@Override
 		Int2IntMap weights() {
 			return (Int2IntMap) super.weights();
+		}
+
+		@Override
+		void keyAdd(int key) {
+			if (forceAdd)
+				weights().put(key, defaultValInt());
 		}
 
 		@Override
@@ -163,7 +186,69 @@ class WeightsMap {
 		}
 	}
 
-	static class Double extends Abstract<java.lang.Double> implements Weights.Double, EdgeWeightFunc {
+	static class Long extends Abstract<java.lang.Long> implements Weights.Long {
+
+		private Long(boolean isEdges, int expectedSize, long defVal) {
+			super(isEdges, new Int2LongOpenHashMap(expectedSize));
+			weights().defaultReturnValue(defVal);
+		}
+
+		static Weights.Long ofEdges(int expectedSize, long defVal) {
+			return new WeightsMap.Long(true, expectedSize, defVal);
+		}
+
+		static Weights.Long ofVertices(int expectedSize, long defVal) {
+			return new WeightsMap.Long(false, expectedSize, defVal);
+		}
+
+		@Override
+		Int2LongMap weights() {
+			return (Int2LongMap) super.weights();
+		}
+
+		@Override
+		void keyAdd(int key) {
+			if (forceAdd)
+				weights().put(key, defaultValLong());
+		}
+
+		@Override
+		public long getLong(int key) {
+			return weights().get(key);
+		}
+
+		@Override
+		public void set(int key, long weight) {
+			weights().put(key, weight);
+		}
+
+		@Override
+		public long defaultValLong() {
+			return weights().defaultReturnValue();
+		}
+
+		@Override
+		void keyRemove(int key) {
+			weights().remove(key);
+		}
+
+		@Override
+		void keySwap(int k1, int k2) {
+			long v1 = weights().get(k1);
+			long v2 = weights().get(k2);
+			if (v1 != defaultValLong())
+				weights().put(k2, v1);
+			if (v2 != defaultValLong())
+				weights().put(k1, v2);
+		}
+
+		@Override
+		public boolean equals(Object other) {
+			return this == other || (other instanceof WeightsMap.Long o && weights().equals(o.weights()));
+		}
+	}
+
+	static class Double extends Abstract<java.lang.Double> implements Weights.Double {
 
 		private Double(boolean isEdges, int expectedSize, double defVal) {
 			super(isEdges, new Int2DoubleOpenHashMap(expectedSize));
@@ -181,6 +266,12 @@ class WeightsMap {
 		@Override
 		Int2DoubleMap weights() {
 			return (Int2DoubleMap) super.weights();
+		}
+
+		@Override
+		void keyAdd(int key) {
+			if (forceAdd)
+				weights().put(key, defaultValDouble());
 		}
 
 		@Override
@@ -237,6 +328,12 @@ class WeightsMap {
 		@Override
 		Int2BooleanMap weights() {
 			return (Int2BooleanMap) super.weights();
+		}
+
+		@Override
+		void keyAdd(int key) {
+			if (forceAdd)
+				weights().put(key, defaultValBool());
 		}
 
 		@Override

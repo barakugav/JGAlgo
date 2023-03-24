@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Assertions;
 
 import com.ugav.algo.GraphsTestUtils.RandomGraphBuilder;
 
+import it.unimi.dsi.fastutil.ints.IntIterator;
+
 class GraphImplTestUtils extends TestUtils {
 
 	@FunctionalInterface
@@ -153,10 +155,11 @@ class GraphImplTestUtils extends TestUtils {
 		}
 
 		boolean checkEdgesEqual(Graph g) {
-			if (g.edgesNum() != edgesNum())
+			if (g.edges().size() != edgesNum())
 				return false;
 			Weights<Object> edgeData = g.edgesWeight(dataKey);
-			for (int e = 0; e < g.edgesNum(); e++) {
+			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+				int e = it.nextInt();
 				int u = g.edgeSource(e), v = g.edgeTarget(e);
 				int index = indexOfEdge(u, v);
 				if (index < 0)
@@ -187,6 +190,7 @@ class GraphImplTestUtils extends TestUtils {
 	}
 
 	private static void testRandOps(Graph g, int opsNum) {
+//		System.out.println("\n\n*****");
 		Random rand = new Random(nextRandSeed());
 		RandWeighted<GraphOp> opRand = new RandWeighted<>();
 		opRand.add(GraphOp.AddEdge, 20);
@@ -197,8 +201,9 @@ class GraphImplTestUtils extends TestUtils {
 		final Object dataKey = new Object();
 		Weights<Object> edgeData = EdgesWeights.ofObjs(g, dataKey);
 
-		GraphTracker tracker = new GraphTracker(g.verticesNum(), g instanceof DiGraph, dataKey);
-		for (int e = 0; e < g.edgesNum(); e++) {
+		GraphTracker tracker = new GraphTracker(g.vertices().size(), g instanceof DiGraph, dataKey);
+		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+			int e = it.nextInt();
 			int u = g.edgeSource(e), v = g.edgeTarget(e);
 			Object data = new Object();
 			edgeData.set(e, data);
@@ -241,7 +246,7 @@ class GraphImplTestUtils extends TestUtils {
 				break;
 			}
 			case ClearEdges:
-				if (g.edgesNum() == 0)
+				if (g.edges().size() == 0)
 					continue;
 				g.clearEdges();
 				tracker.clearEdges();
@@ -257,8 +262,8 @@ class GraphImplTestUtils extends TestUtils {
 				throw new IllegalArgumentException("Unexpected value: " + op);
 			}
 
-			Assertions.assertTrue(g.verticesNum() == tracker.verticesNum());
-			Assertions.assertTrue(g.edgesNum() == tracker.edgesNum());
+			Assertions.assertTrue(g.vertices().size() == tracker.verticesNum());
+			Assertions.assertTrue(g.edges().size() == tracker.edgesNum());
 			Assertions.assertTrue(tracker.checkEdgesEqual(g));
 
 			opsNum--;

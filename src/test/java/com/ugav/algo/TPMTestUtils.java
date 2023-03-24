@@ -121,7 +121,7 @@ class TPMTestUtils extends TestUtils {
 			EdgeWeightFunc.Int w = g.edgesWeight("weight");
 
 			IntCollection mstEdges = new MSTKruskal1956().calcMST(g, w);
-			Graph mst = new GraphArrayUndirected(g.verticesNum());
+			Graph mst = new GraphArrayUndirected(g.vertices().size());
 			Weights.Int edgeRef = EdgesWeights.ofInts(mst, "edgeRef", -1);
 			for (IntIterator it = mstEdges.iterator(); it.hasNext();) {
 				int e = it.nextInt();
@@ -131,9 +131,10 @@ class TPMTestUtils extends TestUtils {
 			}
 
 			Random rand = new Random(nextRandSeed());
+			int[] edges = g.edges().toIntArray();
 			int e;
 			do {
-				e = rand.nextInt(m);
+				e = edges[rand.nextInt(edges.length)];
 			} while (mstEdges.contains(e));
 
 			IntList mstPath = Graphs.findPath(mst, g.edgeSource(e), g.edgeTarget(e));

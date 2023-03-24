@@ -3,90 +3,91 @@ package com.ugav.algo;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 
+import it.unimi.dsi.fastutil.ints.IntSet;
+
 abstract class GraphArrayAbstract extends GraphAbstract {
 
-	private int[] edgeEndpoints;
+	private final Weights.Long edgeEndpoints;
 
-	private static final int SizeofEdgeEndpoints = 2;
-	static final int[][] EDGES_EMPTY = new int[0][];
-	static final int[] EDGES_LIST_EMPTY = new int[0];
-	static final int[] EDGES_LEN_EMPTY = EDGES_LIST_EMPTY;
-	private static final int[] EdgeEndpointsEmpty = EDGES_LIST_EMPTY;
+	static final int[] EmptyIntArr = new int[0];
 
-	public GraphArrayAbstract(int n) {
-		super(n);
-		edgeEndpoints = n > 0 ? new int[n * SizeofEdgeEndpoints] : EdgeEndpointsEmpty;
+	public GraphArrayAbstract() {
+		EdgesWeights.Builder wBuilder = new EdgesWeights.Builder(this, null);
+		edgeEndpoints = wBuilder.ofLongs(sourceTarget2Endpoints(-1, -1));
+		addInternalEdgesWeight(edgeEndpoints);
+	}
+
+	@Override
+	public IntSet edges() {
+		return ((WeightsAbstract<?>) edgeEndpoints).keysSet();
 	}
 
 	@Override
 	public int addEdge(int u, int v) {
 		int e = super.addEdge(u, v);
-		if (e >= edgeEndpoints.length / SizeofEdgeEndpoints)
-			edgeEndpoints = Arrays.copyOf(edgeEndpoints, Math.max(edgeEndpoints.length * 2, 2));
-		edgeEndpoints[edgeSourceIdx(e)] = u;
-		edgeEndpoints[edgeTargetIdx(e)] = v;
+		edgeEndpoints.set(e, sourceTarget2Endpoints(u, v));
 		return e;
 	}
 
-	static void addEdgeToList(int[][] edges, int[] edgesNum, int w, int e) {
-		if (edges[w].length <= edgesNum[w])
-			edges[w] = Arrays.copyOf(edges[w], Math.max(edges[w].length * 2, 2));
-		edges[w][edgesNum[w]++] = e;
+	static void addEdgeToList(Weights<int[]> edges, Weights.Int edgesNum, int w, int e) {
+		int[] es = edges.get(w);
+		int num = edgesNum.getInt(w);
+		if (es.length <= num) {
+			es = Arrays.copyOf(es, Math.max(es.length * 2, 2));
+			edges.set(w, es);
+		}
+		es[num] = e;
+		edgesNum.set(w, num + 1);
 	}
 
-	static int edgeIndexOf(int[][] edges0, int[] edgesNum, int w, int e) {
-		int[] edges = edges0[w];
-		int num = edgesNum[w];
+	static int edgeIndexOf(Weights<int[]> edges0, Weights.Int edgesNum, int w, int e) {
+		int[] edges = edges0.get(w);
+		int num = edgesNum.getInt(w);
 		for (int i = 0; i < num; i++)
 			if (edges[i] == e)
 				return i;
 		return -1;
 	}
 
-	static void removeEdgeFromList(int[][] edges, int[] edgesNum, int w, int e) {
+	static void removeEdgeFromList(Weights<int[]> edges, Weights.Int edgesNum, int w, int e) {
 		int i = edgeIndexOf(edges, edgesNum, w, e);
-		edges[w][i] = edges[w][--edgesNum[w]];
+		int[] es = edges.get(w);
+		int num = edgesNum.getInt(w);
+		es[i] = es[num - 1];
+		edgesNum.set(w, num - 1);
 	}
 
-	@Override
-	void edgeSwap(int e1, int e2) {
-		int u1 = edgeSource(e1), v1 = edgeTarget(e1);
-		int u2 = edgeSource(e2), v2 = edgeTarget(e2);
-		edgeEndpoints[edgeSourceIdx(e1)] = u2;
-		edgeEndpoints[edgeTargetIdx(e1)] = v2;
-		edgeEndpoints[edgeSourceIdx(e2)] = u1;
-		edgeEndpoints[edgeTargetIdx(e2)] = v1;
-		super.edgeSwap(e1, e2);
-	}
-
-	void reverseEdge(int e) {
-		int u = edgeSource(e), v = edgeTarget(e);
-		edgeEndpoints[edgeSourceIdx(e)] = v;
-		edgeEndpoints[edgeTargetIdx(e)] = u;
+	void reverseEdge(int edge) {
+		checkEdgeIdx(edge);
+		long endpoints = edgeEndpoints.getLong(edge);
+		int u = endpoints2Source(endpoints);
+		int v = endpoints2Target(endpoints);
+		endpoints = sourceTarget2Endpoints(v, u);
+		edgeEndpoints.set(edge, endpoints);
 	}
 
 	@Override
 	public int edgeSource(int edge) {
 		checkEdgeIdx(edge);
-		return edgeEndpoints[edgeSourceIdx(edge)];
+		return endpoints2Source(edgeEndpoints.getLong(edge));
 	}
 
 	@Override
 	public int edgeTarget(int edge) {
 		checkEdgeIdx(edge);
-		return edgeEndpoints[edgeTargetIdx(edge)];
+		return endpoints2Target(edgeEndpoints.getLong(edge));
 	}
 
-	private static int edgeSourceIdx(int e) {
-		return edgeEndpointIdx(e, 0);
+	private static long sourceTarget2Endpoints(int u, int v) {
+		return (((long) u) << 32) + v;
 	}
 
-	private static int edgeTargetIdx(int e) {
-		return edgeEndpointIdx(e, 1);
+	private static int endpoints2Source(long endpoints) {
+		return (int) ((endpoints >> 32) & 0xffffffff);
 	}
 
-	private static int edgeEndpointIdx(int e, int offset) {
-		return e * SizeofEdgeEndpoints + offset;
+	private static int endpoints2Target(long endpoints) {
+		return (int) ((endpoints >> 0) & 0xffffffff);
 	}
 
 	abstract class EdgeIt implements EdgeIter {

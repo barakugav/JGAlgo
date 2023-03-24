@@ -6,6 +6,7 @@ import java.util.Objects;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntComparator;
+import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighted {
@@ -29,7 +30,8 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 			throw new IllegalArgumentException("Only undirected bipartite graphs are supported");
 		UGraph g = (UGraph) g0;
 		Weights.Bool partition = g.verticesWeight(bipartiteVerticesWeightKey);
-		Objects.requireNonNull(partition, "Bipartiteness values weren't found with weight " + bipartiteVerticesWeightKey);
+		Objects.requireNonNull(partition,
+				"Bipartiteness values weren't found with weight " + bipartiteVerticesWeightKey);
 		return new Worker(g, partition, w).calcMaxMatching(false);
 	}
 
@@ -39,7 +41,8 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 			throw new IllegalArgumentException("Only undirected bipartite graphs are supported");
 		UGraph g = (UGraph) g0;
 		Weights.Bool partition = g.verticesWeight(bipartiteVerticesWeightKey);
-		Objects.requireNonNull(partition, "Bipartiteness values weren't found with weight " + bipartiteVerticesWeightKey);
+		Objects.requireNonNull(partition,
+				"Bipartiteness values weren't found with weight " + bipartiteVerticesWeightKey);
 		return new Worker(g, partition, w).calcMaxMatching(true);
 	}
 
@@ -64,7 +67,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 			this.g = g;
 			this.partition = partition;
 			this.w = w;
-			int n = g.verticesNum();
+			int n = g.vertices().size();
 
 			inTree = new boolean[n];
 
@@ -77,7 +80,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 		}
 
 		IntCollection calcMaxMatching(boolean perfect) {
-			final int n = g.verticesNum(), m = g.edgesNum();
+			final int n = g.vertices().size();
 			final int EdgeNone = -1;
 
 			int[] parent = new int[n];
@@ -85,8 +88,10 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 			Arrays.fill(matched, EdgeNone);
 
 			double maxWeight = Double.MIN_VALUE;
-			for (int e = 0; e < m; e++)
+			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+				int e = it.nextInt();
 				maxWeight = Math.max(maxWeight, w.weight(e));
+			}
 			final double delta1Threshold = maxWeight;
 			for (int u = 0; u < n; u++)
 				if (partition.getBool(u))

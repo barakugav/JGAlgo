@@ -34,7 +34,7 @@ public interface DiGraph extends Graph {
 	 * Remove all edges whose source is u
 	 *
 	 * Note that this function may change the identifiers of other edges. see
-	 * {@link #addEdgeRenameListener(EdgeRenameListener)}.
+	 * {@link #addIDSwapListener(EdgeRenameListener)}.
 	 *
 	 * @param u a source vertex identifier
 	 */
@@ -49,7 +49,7 @@ public interface DiGraph extends Graph {
 	 * Remove all edges whose target is v
 	 *
 	 * Note that this function may change the identifiers of other edges. see
-	 * {@link #addEdgeRenameListener(EdgeRenameListener)}.
+	 * {@link #addIDSwapListener(EdgeRenameListener)}.
 	 *
 	 * @param v a target vertex identifier
 	 */

@@ -3,22 +3,69 @@ package com.ugav.algo;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 
+import it.unimi.dsi.fastutil.ints.AbstractIntSet;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntSet;
+
 abstract class GraphTableAbstract extends GraphAbstract {
 
 	final int[][] edges;
-	private int[] edgeEndpoints;
+	private final Weights.Long edgeEndpoints;
+	private final IntSet verticesSet;
 
-	private static final int SizeofEdgeEndpoints = 2;
 	private static final int[][] EDGES_EMPTY = new int[0][];
 	static final int EdgeNone = -1;
-	private static final int[] EdgeEndpointsEmpty = new int[0];
 
 	GraphTableAbstract(int n) {
-		super(n);
 		edges = n > 0 ? new int[n][n] : EDGES_EMPTY;
 		for (int u = 0; u < n; u++)
 			Arrays.fill(edges[u], EdgeNone);
-		edgeEndpoints = EdgeEndpointsEmpty;
+
+		EdgesWeights.Builder wBuilder = new EdgesWeights.Builder(this, null);
+		edgeEndpoints = wBuilder.ofLongs(sourceTarget2Endpoints(-1, -1));
+		addInternalEdgesWeight(edgeEndpoints);
+
+		verticesSet = new AbstractIntSet() {
+
+			@Override
+			public int size() {
+				return edges.length;
+			}
+
+			@Override
+			public boolean contains(int key) {
+				return key >= 0 && key < size();
+			}
+
+			@Override
+			public IntIterator iterator() {
+				return new IntIterator() {
+					int u = 0;
+
+					@Override
+					public boolean hasNext() {
+						return u < size();
+					}
+
+					@Override
+					public int nextInt() {
+						if (!hasNext())
+							throw new NoSuchElementException();
+						return u++;
+					}
+				};
+			}
+		};
+	}
+
+	@Override
+	public IntSet vertices() {
+		return verticesSet;
+	}
+
+	@Override
+	public IntSet edges() {
+		return ((WeightsAbstract<?>) edgeEndpoints).keysSet();
 	}
 
 	@Override
@@ -41,40 +88,31 @@ abstract class GraphTableAbstract extends GraphAbstract {
 		if (edges[u][v] != EdgeNone)
 			throw new IllegalArgumentException("parallel edges are not supported");
 		int e = super.addEdge(u, v);
-		if (e >= edgeEndpoints.length / SizeofEdgeEndpoints)
-			edgeEndpoints = Arrays.copyOf(edgeEndpoints, Math.max(edgeEndpoints.length * 2, 2));
-		edgeEndpoints[edgeSourceIdx(e)] = u;
-		edgeEndpoints[edgeTargetIdx(e)] = v;
+		edgeEndpoints.set(e, sourceTarget2Endpoints(u, v));
 		return e;
 	}
 
-	@Override
-	void edgeSwap(int e1, int e2) {
-		int u1 = edgeSource(e1), v1 = edgeTarget(e1);
-		int u2 = edgeSource(e2), v2 = edgeTarget(e2);
-		edgeEndpoints[edgeSourceIdx(e1)] = u2;
-		edgeEndpoints[edgeTargetIdx(e1)] = v2;
-		edgeEndpoints[edgeSourceIdx(e2)] = u1;
-		edgeEndpoints[edgeTargetIdx(e2)] = v1;
-		super.edgeSwap(e1, e2);
-	}
 
-	void reverseEdge(int e) {
-		int u = edgeSource(e), v = edgeTarget(e);
-		edgeEndpoints[edgeSourceIdx(e)] = v;
-		edgeEndpoints[edgeTargetIdx(e)] = u;
+
+	void reverseEdge(int edge) {
+		checkEdgeIdx(edge);
+		long endpoints = edgeEndpoints.getLong(edge);
+		int u = endpoints2Source(endpoints);
+		int v = endpoints2Target(endpoints);
+		endpoints = sourceTarget2Endpoints(v, u);
+		edgeEndpoints.set(edge, endpoints);
 	}
 
 	@Override
 	public int edgeSource(int edge) {
 		checkEdgeIdx(edge);
-		return edgeEndpoints[edgeSourceIdx(edge)];
+		return endpoints2Source(edgeEndpoints.getLong(edge));
 	}
 
 	@Override
 	public int edgeTarget(int edge) {
 		checkEdgeIdx(edge);
-		return edgeEndpoints[edgeTargetIdx(edge)];
+		return endpoints2Target(edgeEndpoints.getLong(edge));
 	}
 
 	@Override
@@ -84,23 +122,24 @@ abstract class GraphTableAbstract extends GraphAbstract {
 
 	@Override
 	public void clearEdges() {
-		int n = verticesNum();
+		int n = vertices().size();
 		for (int u = 0; u < n; u++)
 			Arrays.fill(edges[u], EdgeNone);
 		super.clearEdges();
 	}
 
-	private static int edgeSourceIdx(int e) {
-		return edgeEndpointIdx(e, 0);
+	private static long sourceTarget2Endpoints(int u, int v) {
+		return (((long) u) << 32) + v;
 	}
 
-	private static int edgeTargetIdx(int e) {
-		return edgeEndpointIdx(e, 1);
+	private static int endpoints2Source(long endpoints) {
+		return (int) ((endpoints >> 32) & 0xffffffff);
 	}
 
-	private static int edgeEndpointIdx(int e, int offset) {
-		return e * SizeofEdgeEndpoints + offset;
+	private static int endpoints2Target(long endpoints) {
+		return (int) ((endpoints >> 0) & 0xffffffff);
 	}
+
 
 	class EdgeIterOut implements EdgeIter {
 
@@ -109,7 +148,7 @@ abstract class GraphTableAbstract extends GraphAbstract {
 		private int lastV = -1;
 
 		EdgeIterOut(int u) {
-			if (!(0 <= u && u < verticesNum()))
+			if (!(0 <= u && u < vertices().size()))
 				throw new IllegalArgumentException("Illegal vertex: " + u);
 			this.u = u;
 
@@ -132,7 +171,7 @@ abstract class GraphTableAbstract extends GraphAbstract {
 		}
 
 		void advanceUntilNext() {
-			int n = verticesNum();
+			int n = vertices().size();
 			for (int next = v; next < n; next++) {
 				if (edges[u][next] != EdgeNone) {
 					v = next;
@@ -165,7 +204,7 @@ abstract class GraphTableAbstract extends GraphAbstract {
 		private int lastU = -1;
 
 		EdgeIterIn(int v) {
-			if (!(0 <= v && v < verticesNum()))
+			if (!(0 <= v && v < vertices().size()))
 				throw new IllegalArgumentException("Illegal vertex: " + v);
 			this.v = v;
 
@@ -188,7 +227,7 @@ abstract class GraphTableAbstract extends GraphAbstract {
 		}
 
 		private void advanceUntilNext() {
-			int n = verticesNum();
+			int n = vertices().size();
 			for (int next = u; next < n; next++) {
 				if (edges[next][v] != EdgeNone) {
 					u = next;

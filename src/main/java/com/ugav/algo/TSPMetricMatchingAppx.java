@@ -44,7 +44,7 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 		for (int u = 0; u < n; u++)
 			if (degree[u] % 2 == 1)
 				mVtoV[mG.addVertex()] = u;
-		int mGn = mG.verticesNum();
+		int mGn = mG.vertices().size();
 		Weights.Double mGWeightsNeg = EdgesWeights.ofDoubles(mG, EdgeWeightKey);
 		Weights.Int mGEdgeRef = EdgesWeights.ofInts(mG, EdgeRefWeightKey, -1);
 		for (int u = 0; u < mGn; u++) {

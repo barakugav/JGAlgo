@@ -58,14 +58,16 @@ public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 		debug.println("\t", getClass().getSimpleName());
 
 		double maxCapacity = 100;
-		for (int e = 0; e < g0.edgesNum(); e++)
+		for (IntIterator it = g0.edges().iterator(); it.hasNext();) {
+			int e = it.nextInt();
 			maxCapacity = Math.max(maxCapacity, net.getCapacity(e));
+		}
 
 		DiGraph g = referenceGraph((DiGraph) g0, net);
 		Weights<Ref> edgeRef = g.edgesWeight(EdgeRefWeightKey);
-		int n = g.verticesNum();
+		int n = g.vertices().size();
 
-		final int maxTreeSize = Math.max(1, n * n / g.edgesNum());
+		final int maxTreeSize = Math.max(1, n * n / g.edges().size());
 
 		QueueFixSize<Vertex> active = new QueueFixSize<>(n);
 		DynamicTree<Vertex, Integer> dt = new DynamicTreeSplaySized<>(maxCapacity * 10);
@@ -266,7 +268,8 @@ public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 		}
 
 		/* Construct result */
-		for (int e = 0; e < g.edgesNum(); e++) {
+		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+			int e = it.nextInt();
 			Ref data = edgeRef.get(e);
 			if (g.edgeSource(e) == g0.edgeSource(data.orig))
 				net.setFlow(data.orig, data.flow);
@@ -281,9 +284,10 @@ public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 	}
 
 	private static DiGraph referenceGraph(DiGraph g0, FlowNetwork net) {
-		DiGraph g = new GraphArrayDirected(g0.verticesNum());
+		DiGraph g = new GraphArrayDirected(g0.vertices().size());
 		Weights<Ref> edgeRef = EdgesWeights.ofObjs(g, EdgeRefWeightKey);
-		for (int e = 0; e < g0.edgesNum(); e++) {
+		for (IntIterator it = g0.edges().iterator(); it.hasNext();) {
+			int e = it.nextInt();
 			int u = g0.edgeSource(e), v = g0.edgeTarget(e);
 			Ref ref = new Ref(e, net.getCapacity(e), 0), refRev = new Ref(e, 0, 0);
 			edgeRef.set(g.addEdge(u, v), ref);

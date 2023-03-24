@@ -34,21 +34,24 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 		DiGraph g = referenceGraph((UGraph) g0, partition, w);
 		Weights<Ref> edgeRef = g.edgesWeight(EdgeRefWeightKey);
 
-		int n = g.verticesNum();
+		int n = g.vertices().size();
 		int s = g.addVertex(), t = g.addVertex();
 
 		int[] match = new int[n];
 		Arrays.fill(match, -1);
 
 		double maxWeight = 1;
-		for (int e = 0; e < g.edgesNum(); e++)
+		for (IntIterator it = g.edges().iterator(); it.hasNext(); ) {
+			int e = it.nextInt();
 			maxWeight = Math.max(maxWeight, edgeRef.get(e).w);
+		}
 		if (!Double.isFinite(maxWeight))
 			throw new IllegalArgumentException("non finite weights");
 		final double RemovedEdgeWeight = maxWeight * n;
 
 		// Negate unmatched edges
-		for (int e = 0; e < g.edgesNum(); e++) {
+		for (IntIterator it = g.edges().iterator(); it.hasNext(); ) {
+			int e = it.nextInt();
 			Ref r = edgeRef.get(e);
 			r.w = -r.w;
 		}
@@ -126,8 +129,8 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 	}
 
 	private static DiGraph referenceGraph(UGraph g, Weights.Bool partition, EdgeWeightFunc w) {
-		int n = g.verticesNum();
-		DiGraph g0 = new GraphArrayDirected(g.verticesNum());
+		int n = g.vertices().size();
+		DiGraph g0 = new GraphArrayDirected(g.vertices().size());
 		Weights<Ref> edgeRef = EdgesWeights.ofObjs(g0, EdgeRefWeightKey);
 
 		for (int u = 0; u < n; u++) {

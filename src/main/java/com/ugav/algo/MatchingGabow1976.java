@@ -23,7 +23,7 @@ public class MatchingGabow1976 implements Matching {
 		if (!(g0 instanceof UGraph))
 			throw new IllegalArgumentException("only undirected graphs are supported");
 		UGraph g = (UGraph) g0;
-		int n = g.verticesNum();
+		int n = g.vertices().size();
 
 		QueueIntFixSize queue = new QueueIntFixSize(n);
 		int[] root = new int[n];

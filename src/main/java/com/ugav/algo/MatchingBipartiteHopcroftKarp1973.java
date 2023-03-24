@@ -30,7 +30,7 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 		if (!(g0 instanceof UGraph))
 			throw new IllegalArgumentException("only undirected bipartite graphs are supported");
 		UGraph g = (UGraph) g0;
-		int n = g.verticesNum();
+		int n = g.vertices().size();
 
 		Weights.Bool partition = g.verticesWeight(bipartiteVerticesWeightKey);
 		Objects.requireNonNull(partition,

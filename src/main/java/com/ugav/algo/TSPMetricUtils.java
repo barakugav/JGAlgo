@@ -12,7 +12,7 @@ class TSPMetricUtils {
 	}
 
 	static IntList calcEulerianTourAndConvertToHamiltonianCycle(UGraph g, UGraph g1, Weights.Int edgeRef) {
-		int n = g.verticesNum();
+		int n = g.vertices().size();
 
 		/* Assert degree is actually even in the new graph */
 		for (int u = 0; u < n; u++)
@@ -67,7 +67,7 @@ class TSPMetricUtils {
 	}
 
 	private static boolean isPathVisitEvery(UGraph g, IntList path) {
-		final int n = g.verticesNum();
+		final int n = g.vertices().size();
 		boolean[] visited = new boolean[n];
 		for (IntIterator it = path.iterator(); it.hasNext();) {
 			int e = it.nextInt();

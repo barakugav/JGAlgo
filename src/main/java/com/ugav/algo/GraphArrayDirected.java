@@ -1,52 +1,57 @@
 package com.ugav.algo;
 
-import java.util.Arrays;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 public class GraphArrayDirected extends GraphArrayAbstract implements DiGraph {
 
-	private int[][] edgesOut;
-	private int[] edgesOutNum;
-	private int[][] edgesIn;
-	private int[] edgesInNum;
+	private final Weights<int[]> edgesOut;
+	private final Weights.Int edgesOutNum;
+	private final Weights<int[]> edgesIn;
+	private final Weights.Int edgesInNum;
 
 	public GraphArrayDirected() {
 		this(0);
 	}
 
 	public GraphArrayDirected(int n) {
-		super(n);
-		edgesOut = n == 0 ? EDGES_EMPTY : new int[n][];
-		edgesIn = n == 0 ? EDGES_EMPTY : new int[n][];
-		Arrays.fill(edgesOut, EDGES_LIST_EMPTY);
-		Arrays.fill(edgesIn, EDGES_LIST_EMPTY);
-		edgesOutNum = n == 0 ? EDGES_LEN_EMPTY : new int[n];
-		edgesInNum = n == 0 ? EDGES_LEN_EMPTY : new int[n];
+		edgesOutNum = new VerticesWeights.Builder(this, null).ofInts(0);
+		/* We use edgesOutNum to maintain the current vertices in the graph */
+		IDStrategy vIDStrategy = getVerticesIDStrategy();
+		WeightsAbstract<?> verticesSet = (WeightsAbstract<?>) edgesOutNum;
+		verticesSet.forceAdd = true;
+		for (int i = 0; i < n; i++) {
+			int u = vIDStrategy.nextID(i);
+			verticesSet.keyAdd(u);
+		}
+		addInternalVerticesWeight(edgesOutNum, false);
+
+		VerticesWeights.Builder vBuilder = new VerticesWeights.Builder(this, () -> vertices().size());
+
+		edgesOut = vBuilder.ofObjs(EmptyIntArr);
+		edgesIn = vBuilder.ofObjs(EmptyIntArr);
+		edgesInNum = vBuilder.ofInts(0);
+
+		addInternalVerticesWeight(edgesOut);
+		addInternalVerticesWeight(edgesIn);
+		addInternalVerticesWeight(edgesInNum);
 	}
 
 	@Override
-	public int addVertex() {
-		int v = super.addVertex();
-		if (v >= edgesOut.length) {
-			int aLen = Math.max(edgesOut.length * 2, 2);
-			edgesOut = Arrays.copyOf(edgesOut, aLen);
-			edgesIn = Arrays.copyOf(edgesIn, aLen);
-			edgesOutNum = Arrays.copyOf(edgesOutNum, aLen);
-			edgesInNum = Arrays.copyOf(edgesInNum, aLen);
-		}
-		edgesOut[v] = edgesIn[v] = EDGES_LIST_EMPTY;
-		return v;
+	public IntSet vertices() {
+		return ((WeightsAbstract<?>) edgesOutNum).keysSet();
 	}
 
 	@Override
 	public EdgeIter edgesOut(int u) {
 		checkVertexIdx(u);
-		return new EdgeOutIt(u, edgesOut[u], edgesOutNum[u]);
+		return new EdgeOutIt(u, edgesOut.get(u), edgesOutNum.getInt(u));
 	}
 
 	@Override
 	public EdgeIter edgesIn(int v) {
 		checkVertexIdx(v);
-		return new EdgeInIt(v, edgesIn[v], edgesInNum[v]);
+		return new EdgeInIt(v, edgesIn.get(v), edgesInNum.getInt(v));
 	}
 
 	@Override
@@ -59,12 +64,7 @@ public class GraphArrayDirected extends GraphArrayAbstract implements DiGraph {
 
 	@Override
 	public void removeEdge(int e) {
-		checkEdgeIdx(e);
-		int lastEdge = edgesNum() - 1;
-		if (e != lastEdge) {
-			edgeSwap(e, lastEdge);
-			e = lastEdge;
-		}
+		e = swapBeforeRemove(e);
 		int u = edgeSource(e), v = edgeTarget(e);
 		removeEdgeFromList(edgesOut, edgesOutNum, u, e);
 		removeEdgeFromList(edgesIn, edgesInNum, v, e);
@@ -80,25 +80,27 @@ public class GraphArrayDirected extends GraphArrayAbstract implements DiGraph {
 		int j1 = edgeIndexOf(edgesIn, edgesInNum, v1, e1);
 		int i2 = edgeIndexOf(edgesOut, edgesOutNum, u2, e2);
 		int j2 = edgeIndexOf(edgesIn, edgesInNum, v2, e2);
-		edgesOut[u1][i1] = e2;
-		edgesIn[v1][j1] = e2;
-		edgesOut[u2][i2] = e1;
-		edgesIn[v2][j2] = e1;
+		int[] u1es = edgesOut.get(u1), v1es = edgesIn.get(v1);
+		int[] u2es = edgesOut.get(u2), v2es = edgesIn.get(v2);
+		u1es[i1] = e2;
+		v1es[j1] = e2;
+		u2es[i2] = e1;
+		v2es[j2] = e1;
 		super.edgeSwap(e1, e2);
 	}
 
 	@Override
 	public void removeEdgesAllOut(int u) {
 		checkVertexIdx(u);
-		while (edgesOutNum[u] > 0)
-			removeEdge(edgesOut[u][0]);
+		while (edgesOutNum.getInt(u) > 0)
+			removeEdge(edgesOut.get(u)[0]);
 	}
 
 	@Override
 	public void removeEdgesAllIn(int v) {
 		checkVertexIdx(v);
-		while (edgesInNum[v] > 0)
-			removeEdge(edgesIn[v][0]);
+		while (edgesInNum.getInt(v) > 0)
+			removeEdge(edgesIn.get(v)[0]);
 	}
 
 	@Override
@@ -114,20 +116,25 @@ public class GraphArrayDirected extends GraphArrayAbstract implements DiGraph {
 	@Override
 	public int degreeOut(int u) {
 		checkVertexIdx(u);
-		return edgesOutNum[u];
+		return edgesOutNum.getInt(u);
 	}
 
 	@Override
 	public int degreeIn(int v) {
 		checkVertexIdx(v);
-		return edgesInNum[v];
+		return edgesInNum.getInt(v);
 	}
 
 	@Override
 	public void clearEdges() {
-		int n = verticesNum();
-		Arrays.fill(edgesOutNum, 0, n, 0);
-		Arrays.fill(edgesInNum, 0, n, 0);
+		for (IntIterator it = vertices().iterator(); it.hasNext();) {
+			int u = it.nextInt();
+			// TODO do some sort of 'addKey' instead of set, no need
+			edgesOut.set(u, EmptyIntArr);
+			edgesIn.set(u, EmptyIntArr);
+			edgesOutNum.set(u, 0);
+			edgesInNum.set(u, 0);
+		}
 		super.clearEdges();
 	}
 

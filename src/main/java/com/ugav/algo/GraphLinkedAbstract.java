@@ -1,22 +1,28 @@
 package com.ugav.algo;
 
-import java.util.Arrays;
-import java.util.Iterator;
+import java.util.Collection;
 import java.util.NoSuchElementException;
+
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 abstract class GraphLinkedAbstract extends GraphAbstract {
 
-	private Node[] edges;
-	private static final Node[] EmptyNodeArr = new Node[0];
+	private final Weights<Node> edges;
 
-	GraphLinkedAbstract(int n) {
-		super(n);
-		edges = EmptyNodeArr;
+	GraphLinkedAbstract() {
+		EdgesWeights.Builder wBuilder = new EdgesWeights.Builder(this, null);
+		edges = wBuilder.ofObjs(null);
+		addInternalEdgesWeight(edges);
+	}
+
+	@Override
+	public IntSet edges() {
+		return ((WeightsAbstract<Node>) edges).keysSet();
 	}
 
 	@Override
 	public int edgeEndpoint(int edge, int endpoint) {
-		Node n = edges[edge];
+		Node n = getNode(edge);
 		if (endpoint == n.u) {
 			return n.v;
 		} else if (endpoint == n.v) {
@@ -27,15 +33,13 @@ abstract class GraphLinkedAbstract extends GraphAbstract {
 	}
 
 	Node getNode(int e) {
-		return edges[e];
+		return edges.get(e);
 	}
 
 	Node addEdgeNode(int u, int v) {
 		int e = super.addEdge(u, v);
 		Node n = allocNode(e, u, v);
-		if (e >= edges.length)
-			edges = Arrays.copyOf(edges, Math.max(2, edges.length * 2));
-		edges[e] = n;
+		edges.set(e, n);
 		return n;
 	}
 
@@ -44,58 +48,27 @@ abstract class GraphLinkedAbstract extends GraphAbstract {
 	}
 
 	@Override
-	public void removeEdge(int e) {
-		checkEdgeIdx(e);
-		int lastEdge = edgesNum() - 1;
-		if (e != lastEdge) {
-			edgeSwap(e, lastEdge);
-			e = lastEdge;
-		}
-		edges[e] = null;
-		super.removeEdge(e);
-	}
-
-	@Override
 	void edgeSwap(int e1, int e2) {
-		Node n1 = edges[e1], n2 = edges[e2];
-		edges[n1.id = e2] = n1;
-		edges[n2.id = e1] = n2;
+		Node n1 = edges.get(e2), n2 = edges.get(e2);
+		n1.id = e2;
+		n2.id = e1;
 		super.edgeSwap(e1, e2);
-	}
-
-	Node removeEdgeNode(int e) {
-		checkEdgeIdx(e);
-		int lastEdge = edgesNum() - 1;
-		if (e != lastEdge) {
-			edgeSwap(e, lastEdge);
-			e = lastEdge;
-		}
-		Node n = edges[e];
-		edges[e] = null;
-		super.removeEdge(e);
-		return n;
 	}
 
 	@Override
 	public int edgeSource(int e) {
 		checkEdgeIdx(e);
-		return edges[e].u;
+		return getNode(e).u;
 	}
 
 	@Override
 	public int edgeTarget(int e) {
 		checkEdgeIdx(e);
-		return edges[e].v;
+		return getNode(e).v;
 	}
 
-	@Override
-	public void clearEdges() {
-		Arrays.fill(edges, 0, edgesNum(), null);
-		super.clearEdges();
-	}
-
-	Iterator<Node> nodes() {
-		return new Utils.ArrayView<>(edges, edgesNum()).iterator();
+	Collection<Node> nodes() {
+		return ((WeightsAbstract<Node>) edges).values();
 	}
 
 	abstract class EdgeItr implements EdgeIter {

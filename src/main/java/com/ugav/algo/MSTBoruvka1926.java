@@ -5,6 +5,7 @@ import java.util.Arrays;
 import it.unimi.dsi.fastutil.ints.Int2ObjectFunction;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntIterator;
 
 public class MSTBoruvka1926 implements MST {
 
@@ -31,8 +32,8 @@ public class MSTBoruvka1926 implements MST {
 
 		UGraph contractedG = new GraphArrayUndirected(treeNum);
 		Weights<R> contractedGData = EdgesWeights.ofObjs(contractedG, edgeValKey);
-		int m = g.edgesNum();
-		for (int e = 0; e < m; e++) {
+		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+			int e = it.nextInt();
 			int u = tree[g.edgeSource(e)];
 			int v = tree[g.edgeTarget(e)];
 			if (u == v)
@@ -47,7 +48,7 @@ public class MSTBoruvka1926 implements MST {
 		if (!(g0 instanceof UGraph))
 			throw new IllegalArgumentException("only undirected graphs are supported");
 		UGraph g = (UGraph) g0;
-		int n = g.verticesNum();
+		int n = g.vertices().size();
 
 		int treeNum = n;
 		int[] vTree = new int[n];

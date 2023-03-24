@@ -6,6 +6,8 @@ import com.ugav.algo.Utils.IntDoubleConsumer;
 import com.ugav.algo.Utils.IterPickable;
 import com.ugav.algo.Utils.QueueIntFixSize;
 
+import it.unimi.dsi.fastutil.ints.IntIterator;
+
 public class MaxFlowPushRelabel implements MaxFlow {
 
 	/**
@@ -33,12 +35,13 @@ public class MaxFlowPushRelabel implements MaxFlow {
 			throw new IllegalArgumentException("Source and target can't be the same vertices");
 		debug.println("\t", getClass().getSimpleName());
 
-		DiGraph g = new GraphArrayDirected(g0.verticesNum());
+		DiGraph g = new GraphArrayDirected(g0.vertices().size());
 		Weights.Int edgeRef = EdgesWeights.ofInts(g, EdgeRefWeightKey, -1);
 		Weights.Int edgeRev = EdgesWeights.ofInts(g, EdgeRevWeightKey, -1);
 		Weights.Double flow = EdgesWeights.ofDoubles(g, FlowWeightKey, 0);
 		Weights.Double capacity = EdgesWeights.ofDoubles(g, CapacityWeightKey, 0);
-		for (int e = 0; e < g0.edgesNum(); e++) {
+		for (IntIterator it = g0.edges().iterator(); it.hasNext();) {
+			int e = it.nextInt();
 			int u = g0.edgeSource(e), v = g0.edgeTarget(e);
 			int e1 = g.addEdge(u, v);
 			int e2 = g.addEdge(v, u);
@@ -52,7 +55,7 @@ public class MaxFlowPushRelabel implements MaxFlow {
 			capacity.set(e2, 0);
 		}
 
-		int n = g.verticesNum();
+		int n = g.vertices().size();
 
 		IterPickable.Int[] edges = new IterPickable.Int[n];
 		double[] excess = new double[n];
@@ -127,7 +130,8 @@ public class MaxFlowPushRelabel implements MaxFlow {
 		}
 
 		/* Construct result */
-		for (int e = 0; e < g.edgesNum(); e++) {
+		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+			int e = it.nextInt();
 			int u = g.edgeSource(e);
 			int orig = edgeRef.getInt(e);
 			if (u == g0.edgeSource(orig))

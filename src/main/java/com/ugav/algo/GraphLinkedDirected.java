@@ -1,44 +1,49 @@
 package com.ugav.algo;
 
-import java.util.Arrays;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 public class GraphLinkedDirected extends GraphLinkedAbstract implements DiGraph {
 
-	private Node[] edgesIn;
-	private Node[] edgesOut;
-
-	private static final Node[] EmptyNodeArr = new Node[0];
+	private final Weights<Node> edgesIn;
+	private final Weights<Node> edgesOut;
 
 	public GraphLinkedDirected() {
 		this(0);
 	}
 
 	public GraphLinkedDirected(int n) {
-		super(n);
-		edgesIn = n != 0 ? new Node[n] : EmptyNodeArr;
-		edgesOut = n != 0 ? new Node[n] : EmptyNodeArr;
+		edgesIn = new VerticesWeights.Builder(this, null).ofObjs(null);
+		/* We use 'edgesIn' to maintain the current vertices in the graph */
+		IDStrategy vIDStrategy = getVerticesIDStrategy();
+		WeightsAbstract<Node> verticesSet = (WeightsAbstract<Node>) edgesIn;
+		verticesSet.forceAdd = true;
+		for (int i = 0; i < n; i++) {
+			int u = vIDStrategy.nextID(i);
+			verticesSet.keyAdd(u);
+		}
+		addInternalVerticesWeight(edgesIn, false);
+
+		VerticesWeights.Builder vBuilder = new VerticesWeights.Builder(this, () -> vertices().size());
+		edgesOut = vBuilder.ofObjs(null);
+		addInternalVerticesWeight(edgesOut);
 	}
 
 	@Override
-	public int addVertex() {
-		int v = super.addVertex();
-		if (v >= edgesIn.length) {
-			edgesIn = Arrays.copyOf(edgesIn, Math.max(edgesIn.length * 2, 2));
-			edgesOut = Arrays.copyOf(edgesOut, Math.max(edgesOut.length * 2, 2));
-		}
-		return v;
+	public IntSet vertices() {
+		return ((WeightsAbstract<Node>) edgesIn).keysSet();
 	}
 
 	@Override
 	public EdgeIter edgesOut(int u) {
 		checkVertexIdx(u);
-		return new EdgeVertexItrOut(edgesOut[u]);
+		return new EdgeVertexItrOut(edgesOut.get(u));
 	}
 
 	@Override
 	public EdgeIter edgesIn(int v) {
 		checkVertexIdx(v);
-		return new EdgeVertexItrIn(edgesIn[v]);
+		return new EdgeVertexItrIn(edgesIn.get(v));
 	}
 
 	@Override
@@ -51,18 +56,18 @@ public class GraphLinkedDirected extends GraphLinkedAbstract implements DiGraph 
 	private void addEdgeToLists(Node e) {
 		int u = e.u, v = e.v;
 		Node next;
-		next = edgesOut[u];
+		next = edgesOut.get(u);
 		if (next != null) {
 			next.prevOut = e;
 			e.nextOut = next;
 		}
-		edgesOut[u] = e;
-		next = edgesIn[v];
+		edgesOut.set(u, e);
+		next = edgesIn.get(v);
 		if (next != null) {
 			next.prevIn = e;
 			e.nextIn = next;
 		}
-		edgesIn[v] = e;
+		edgesIn.set(v, e);
 	}
 
 	@Override
@@ -71,8 +76,9 @@ public class GraphLinkedDirected extends GraphLinkedAbstract implements DiGraph 
 	}
 
 	@Override
-	public void removeEdge(int e) {
-		Node n = (Node) removeEdgeNode(e);
+	public void removeEdge(int edge) {
+		Node n = (Node) getNode(edge);
+		super.removeEdge(edge);
 		removeEdgeOutNode(n);
 		removeEdgeInNode(n);
 	}
@@ -80,31 +86,31 @@ public class GraphLinkedDirected extends GraphLinkedAbstract implements DiGraph 
 	@Override
 	public void removeEdgesAllOut(int u) {
 		checkVertexIdx(u);
-		for (Node p = edgesOut[u], next; p != null; p = next) {
+		for (Node p = edgesOut.get(u), next; p != null; p = next) {
 			next = p.nextOut;
 			p.nextOut = p.prevOut = null;
 			removeEdgeInNode(p);
-			removeEdgeNode(p.id);
+			super.removeEdge(p.id);
 		}
-		edgesOut[u] = null;
+		edgesOut.set(u, null);
 	}
 
 	@Override
 	public void removeEdgesAllIn(int v) {
 		checkVertexIdx(v);
-		for (Node p = edgesIn[v], next; p != null; p = next) {
+		for (Node p = edgesIn.get(v), next; p != null; p = next) {
 			next = p.nextIn;
 			p.nextIn = p.prevIn = null;
 			removeEdgeOutNode(p);
-			removeEdgeNode(p.id);
+			super.removeEdge(p.id);
 		}
-		edgesIn[v] = null;
+		edgesIn.set(v, null);
 	}
 
 	private void removeEdgeOutNode(Node e) {
 		Node next = e.nextOut, prev = e.prevOut;
 		if (prev == null) {
-			edgesOut[e.u] = next;
+			edgesOut.set(e.u, next);
 		} else {
 			prev.nextOut = next;
 			e.prevOut = null;
@@ -118,7 +124,7 @@ public class GraphLinkedDirected extends GraphLinkedAbstract implements DiGraph 
 	private void removeEdgeInNode(Node e) {
 		Node next = e.nextIn, prev = e.prevIn;
 		if (prev == null) {
-			edgesIn[e.v] = next;
+			edgesIn.set(e.v, next);
 		} else {
 			prev.nextIn = next;
 			e.prevIn = null;
@@ -143,12 +149,16 @@ public class GraphLinkedDirected extends GraphLinkedAbstract implements DiGraph 
 
 	@Override
 	public void clearEdges() {
-		for (GraphLinkedAbstract.Node p0 : Utils.iterable(nodes())) {
+		for (GraphLinkedAbstract.Node p0 : nodes()) {
 			Node p = (Node) p0;
 			p.nextOut = p.prevOut = p.nextIn = p.prevIn = null;
 		}
-		Arrays.fill(edgesOut, null);
-		Arrays.fill(edgesIn, null);
+		for (IntIterator it = vertices().iterator(); it.hasNext();) {
+			int u = it.nextInt();
+			// TODO do some sort of 'addKey' instead of set, no need
+			edgesOut.set(u, null);
+			edgesIn.set(u, null);
+		}
 		super.clearEdges();
 	}
 

@@ -170,7 +170,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 		private IntCollection calcMaxMatchingShuffled(Graph g, EdgeWeightFunc w, boolean perfect) {
 			if (g instanceof DiGraph)
 				throw new IllegalArgumentException("only undirected graphs are supported");
-			int n = g.verticesNum();
+			int n = g.vertices().size();
 			int[] shuffle = randPermutation(n, nextRandSeed());
 
 			Graph shuffledG = new GraphArrayUndirected(n);
@@ -189,7 +189,8 @@ class MatchingWeightedTestUtils extends TestUtils {
 			}
 
 			Weights.Int edgeRef = EdgesWeights.ofInts(shuffledG, "edgeRef", -1);
-			for (int e = 0; e < g.edgesNum(); e++) {
+			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+				int e = it.nextInt();
 				int u = g.edgeSource(e), v = g.edgeTarget(e);
 				int e0 = shuffledG.addEdge(shuffle[u], shuffle[v]);
 				edgeRef.set(e0, e);

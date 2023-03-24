@@ -50,7 +50,7 @@ public class Graphs {
 	}
 
 	public static void runBFS(Graph g, int[] sources, BFSOperator op) {
-		int n = g.verticesNum();
+		int n = g.vertices().size();
 		boolean[] visited = new boolean[n];
 
 		QueueIntFixSize queue = new QueueIntFixSize(n);
@@ -102,7 +102,7 @@ public class Graphs {
 	 * @param op     user operation to operate on the reachable vertices
 	 */
 	public static void runDFS(Graph g, int source, DFSOperator op) {
-		int n = g.verticesNum();
+		int n = g.vertices().size();
 		boolean[] visited = new boolean[n];
 		EdgeIter[] edges = new EdgeIter[n];
 		IntList edgesFromSource = new IntArrayList();
@@ -157,7 +157,7 @@ public class Graphs {
 			v = t;
 			reverse = false;
 		}
-		int n = g.verticesNum();
+		int n = g.vertices().size();
 		int[] backtrack = new int[n];
 		Arrays.fill(backtrack, -1);
 
@@ -190,7 +190,7 @@ public class Graphs {
 	}
 
 	public static boolean isForst(Graph g) {
-		int n = g.verticesNum();
+		int n = g.vertices().size();
 		int[] roots = new int[n];
 		for (int u = 0; u < n; u++)
 			roots[u] = u;
@@ -202,7 +202,7 @@ public class Graphs {
 	}
 
 	private static boolean isForst(Graph g, int[] roots, boolean allowVisitedRoot) {
-		int n = g.verticesNum();
+		int n = g.vertices().size();
 		if (n == 0)
 			return true;
 		boolean directed = g instanceof DiGraph;
@@ -259,7 +259,7 @@ public class Graphs {
 	 * @throws IllegalArgumentException if the graph is directed
 	 */
 	public static Pair<Integer, int[]> findConnectivityComponents(UGraph g) {
-		int n = g.verticesNum();
+		int n = g.vertices().size();
 		StackIntFixSize stack = new StackIntFixSize(n);
 
 		int[] comp = new int[n];
@@ -302,7 +302,7 @@ public class Graphs {
 	 * @return (CC number, [vertex]->[CC])
 	 */
 	public static Pair<Integer, int[]> findStrongConnectivityComponents(DiGraph g) {
-		int n = g.verticesNum();
+		int n = g.vertices().size();
 
 		int[] comp = new int[n];
 		Arrays.fill(comp, -1);
@@ -359,7 +359,7 @@ public class Graphs {
 	}
 
 	public static int[] calcTopologicalSortingDAG(DiGraph g) {
-		int n = g.verticesNum();
+		int n = g.vertices().size();
 		int[] inDegree = new int[n];
 		QueueIntFixSize queue = new QueueIntFixSize(n);
 		int[] topolSort = new int[n];
@@ -394,7 +394,7 @@ public class Graphs {
 	}
 
 	public static SSSP.Result calcDistancesDAG(DiGraph g, EdgeWeightFunc w, int source) {
-		int n = g.verticesNum();
+		int n = g.vertices().size();
 		int[] backtrack = new int[n];
 		Arrays.fill(backtrack, -1);
 		double[] distances = new double[n];
@@ -441,7 +441,7 @@ public class Graphs {
 	}
 
 	public static int[] calcDegree(UGraph g, IntCollection edges) {
-		int[] degree = new int[g.verticesNum()];
+		int[] degree = new int[g.vertices().size()];
 		for (IntIterator eit = edges.iterator(); eit.hasNext();) {
 			int e = eit.nextInt();
 			degree[g.edgeSource(e)]++;
@@ -451,7 +451,7 @@ public class Graphs {
 	}
 
 	public static IntList calcEulerianTour(UGraph g) {
-		int n = g.verticesNum();
+		int n = g.vertices().size();
 
 		int start = -1, end = -1;
 		for (int u = 0; u < n; u++) {
@@ -471,13 +471,13 @@ public class Graphs {
 		if (start == -1)
 			start = 0;
 
-		IntArrayList tour = new IntArrayList(g.edgesNum());
+		IntArrayList tour = new IntArrayList(g.edges().size());
 		IntSet usedEdges = new IntOpenHashSet();
 		EdgeIter[] iters = new EdgeIter[n];
 		for (int u = 0; u < n; u++)
 			iters[u] = g.edges(u);
 
-		StackIntFixSize queue = new StackIntFixSize(g.edgesNum());
+		StackIntFixSize queue = new StackIntFixSize(g.edges().size());
 
 		for (int u = start;;) {
 			findCycle: for (;;) {
@@ -513,9 +513,9 @@ public class Graphs {
 	}
 
 	public static String formatAdjacencyMatrixWeighted(Graph g, EdgeWeightFunc w) {
-		int m = g.edgesNum();
 		double minWeight = Double.MAX_VALUE;
-		for (int e = 0; e < m; e++) {
+		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+			int e = it.nextInt();
 			double ew = w.weight(e);
 			if (ew < minWeight)
 				minWeight = ew;
@@ -535,7 +535,7 @@ public class Graphs {
 	}
 
 	public static String formatAdjacencyMatrix(Graph g, Int2ObjectFunction<String> formatter) {
-		int n = g.verticesNum();
+		int n = g.vertices().size();
 		if (n == 0)
 			return "[]";
 
@@ -617,10 +617,10 @@ public class Graphs {
 	}
 
 	public static DiGraph referenceGraph(DiGraph g, Object refEdgeWeightKey) {
-		int m = g.edgesNum();
-		DiGraph g0 = new GraphArrayDirected(g.verticesNum());
+		DiGraph g0 = new GraphArrayDirected(g.vertices().size());
 		Weights.Int edgeRef = EdgesWeights.ofInts(g0, refEdgeWeightKey);
-		for (int e = 0; e < m; e++) {
+		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+			int e = it.nextInt();
 			int e0 = g0.addEdge(g.edgeSource(e), g.edgeTarget(e));
 			edgeRef.set(e0, e);
 		}
@@ -628,10 +628,10 @@ public class Graphs {
 	}
 
 	public static UGraph referenceGraph(UGraph g, Object refEdgeWeightKey) {
-		int m = g.edgesNum();
-		UGraph g0 = new GraphArrayUndirected(g.verticesNum());
+		UGraph g0 = new GraphArrayUndirected(g.vertices().size());
 		Weights.Int edgeRef = EdgesWeights.ofInts(g0, refEdgeWeightKey);
-		for (int e = 0; e < m; e++) {
+		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+			int e = it.nextInt();
 			int e0 = g0.addEdge(g.edgeSource(e), g.edgeTarget(e));
 			edgeRef.set(e0, e);
 		}
@@ -745,14 +745,15 @@ public class Graphs {
 
 	@SuppressWarnings("unchecked")
 	static UGraph subGraph(UGraph g, IntCollection edgeSet) {
-		UGraph g1 = new GraphArrayUndirected(g.verticesNum());
+		final Object edgeMappingKey = new Object();
+		UGraph g1 = new GraphArrayUndirected(g.vertices().size());
 
-		int[] s2e = edgeSet.toIntArray();
-		for (int s = 0; s < s2e.length; s++) {
-			int e = s2e[s];
+		Weights.Int sub2Edge = EdgesWeights.ofInts(g1, edgeMappingKey);
+		for (IntIterator it = edgeSet.iterator(); it.hasNext();) {
+			int e = it.nextInt();
 			int u = g.edgeSource(e), v = g.edgeTarget(e);
-			int s0 = g1.addEdge(u, v);
-			assert s0 == s;
+			int s = g1.addEdge(u, v);
+			sub2Edge.set(s, e);
 		}
 		for (Object key : g.getEdgesWeightsKeys()) {
 			Weights<?> data0 = g.edgesWeight(key);
@@ -760,8 +761,9 @@ public class Graphs {
 			if (data0 instanceof Weights.Int data) {
 				int defVal = data.defaultValInt();
 				Weights.Int datas = EdgesWeights.ofInts(g1, key, defVal);
-				for (int s = 0; s < s2e.length; s++) {
-					int w = data.getInt(s2e[s]);
+				for (IntIterator it = g1.edges().iterator(); it.hasNext();) {
+					int s = it.nextInt();
+					int w = data.getInt(sub2Edge.getInt(s));
 					if (w != defVal)
 						datas.set(s, w);
 				}
@@ -769,8 +771,9 @@ public class Graphs {
 			} else if (data0 instanceof Weights.Double data) {
 				double defVal = data.defaultValDouble();
 				Weights.Double datas = EdgesWeights.ofDoubles(g1, key, defVal);
-				for (int s = 0; s < s2e.length; s++) {
-					double w = data.getDouble(s2e[s]);
+				for (IntIterator it = g1.edges().iterator(); it.hasNext();) {
+					int s = it.nextInt();
+					double w = data.getDouble(sub2Edge.getInt(s));
 					if (w != defVal)
 						datas.set(s, w);
 				}
@@ -779,13 +782,15 @@ public class Graphs {
 				Object defVal = data0.defaultVal();
 				@SuppressWarnings("rawtypes")
 				Weights datas = EdgesWeights.ofObjs(g1, key, defVal);
-				for (int s = 0; s < s2e.length; s++) {
-					Object w = data0.get(s2e[s]);
+				for (IntIterator it = g1.edges().iterator(); it.hasNext();) {
+					int s = it.nextInt();
+					Object w = data0.get(sub2Edge.getInt(s));
 					if (w != defVal)
 						datas.set(s, w);
 				}
 			}
 		}
+		g1.removeEdgesWeights(edgeMappingKey);
 		return g1;
 	}
 

@@ -34,7 +34,7 @@ public interface MST {
 	 * @return true if the collection of edges form a MST of g
 	 */
 	public static boolean verifyMST(UGraph g, EdgeWeightFunc w, IntCollection mstEdges, TPM tpmAlgo) {
-		int n = g.verticesNum();
+		int n = g.vertices().size();
 		UGraph mst = new GraphArrayUndirected(n);
 		Weights.Int edgeRef = EdgesWeights.ofInts(mst, "edgeRef");
 		for (IntIterator it = mstEdges.iterator(); it.hasNext();) {
@@ -70,18 +70,23 @@ public interface MST {
 			return false;
 
 		EdgeWeightFunc w0 = e -> w.weight(edgeRef.getInt(e));
-		int m = g.edgesNum();
+		int m = g.edges().size();
 		int[] queries = new int[m * 2];
 
-		for (int e = 0; e < m; e++) {
-			queries[e * 2] = g.edgeSource(e);
-			queries[e * 2 + 1] = g.edgeTarget(e);
+		int i = 0;
+		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+			int e = it.nextInt();
+			queries[i * 2] = g.edgeSource(e);
+			queries[i * 2 + 1] = g.edgeTarget(e);
+			i++;
 		}
 
 		int[] tpmResults = tpmAlgo.calcTPM(mst, w0, queries, m);
 
-		for (int e = 0; e < m; e++) {
-			int mstEdge = tpmResults[e];
+		i = 0;
+		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+			int e = it.nextInt();
+			int mstEdge = tpmResults[i++];
 			if (mstEdge == -1 || w.weight(e) < w0.weight(mstEdge))
 				return false;
 		}

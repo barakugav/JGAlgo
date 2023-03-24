@@ -15,6 +15,8 @@ import com.ugav.algo.MaxFlow.FlowEdgeDataDefault;
 import com.ugav.algo.MaxFlow.FlowNetwork;
 import com.ugav.algo.MaxFlow.FlowNetworkDefault;
 
+import it.unimi.dsi.fastutil.ints.IntIterator;
+
 @SuppressWarnings("boxing")
 class MaxFlowTestUtils extends TestUtils {
 
@@ -30,7 +32,8 @@ class MaxFlowTestUtils extends TestUtils {
 
 		Random rand = new Random(nextRandSeed());
 		Weights<FlowEdgeDataDefault> data = EdgesWeights.ofObjs(g, "flowData");
-		for (int e = 0; e < m; e++) {
+		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+			int e = it.nextInt();
 			double cap;
 			for (;;) {
 				cap = nextDouble(rand, 1, 100);
@@ -67,8 +70,8 @@ class MaxFlowTestUtils extends TestUtils {
 			FlowNetwork net = p.e2;
 			int source, target;
 			do {
-				source = rand.nextInt(g.verticesNum());
-				target = rand.nextInt(g.verticesNum());
+				source = rand.nextInt(g.vertices().size());
+				target = rand.nextInt(g.vertices().size());
 			} while (source == target);
 
 			MaxFlow algo = builder.get();
@@ -79,9 +82,10 @@ class MaxFlowTestUtils extends TestUtils {
 	private static void testNetwork(Graph g, FlowNetwork net, int source, int target, MaxFlow algo) {
 		double actualMaxFlow = algo.calcMaxFlow(g, net, source, target);
 
-		int n = g.verticesNum();
+		int n = g.vertices().size();
 		double[] vertexFlowOut = new double[n];
-		for (int e = 0; e < g.edgesNum(); e++) {
+		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+			int e = it.nextInt();
 			int u = g.edgeSource(e), v = g.edgeTarget(e);
 			vertexFlowOut[u] += net.getFlow(e);
 			vertexFlowOut[v] -= net.getFlow(e);
@@ -98,9 +102,10 @@ class MaxFlowTestUtils extends TestUtils {
 	/* implementation taken from the Internet */
 
 	private static double calcExpectedFlow(Graph g, FlowNetwork net, int source, int target) {
-		int n = g.verticesNum();
+		int n = g.vertices().size();
 		double[][] capacities = new double[n][n];
-		for (int e = 0; e < g.edgesNum(); e++) {
+		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+			int e = it.nextInt();
 			int u = g.edgeSource(e), v = g.edgeTarget(e);
 			capacities[u][v] += net.getCapacity(e);
 		}

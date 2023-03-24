@@ -5,6 +5,7 @@ import java.util.Arrays;
 import com.ugav.algo.Utils.QueueIntFixSize;
 
 import it.unimi.dsi.fastutil.ints.Int2DoubleFunction;
+import it.unimi.dsi.fastutil.ints.IntIterator;
 
 public class MaxFlowEdmondsKarp implements MaxFlow {
 
@@ -26,11 +27,12 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 		if (source == target)
 			throw new IllegalArgumentException("Source and target can't be the same vertices");
 
-		DiGraph g = new GraphArrayDirected(g0.verticesNum());
+		DiGraph g = new GraphArrayDirected(g0.vertices().size());
 		Weights.Int edgeRef = EdgesWeights.ofInts(g, EdgeRefWeightKey, -1);
 		Weights.Int edgeRev = EdgesWeights.ofInts(g, EdgeRevWeightKey, -1);
 		Weights.Double flow = EdgesWeights.ofDoubles(g, FlowWeightKey, 0);
-		for (int e = 0; e < g0.edgesNum(); e++) {
+		for (IntIterator it = g0.edges().iterator(); it.hasNext(); ) {
+			int e = it.nextInt();
 			int u = g0.edgeSource(e), v = g0.edgeTarget(e);
 			int e1 = g.addEdge(u, v);
 			int e2 = g.addEdge(v, u);
@@ -43,7 +45,7 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 		}
 		Int2DoubleFunction capacity = e -> net.getCapacity(edgeRef.getInt(e));
 
-		int n = g.verticesNum();
+		int n = g.vertices().size();
 		int[] backtrack = new int[n];
 
 		boolean[] visited = new boolean[n];
@@ -95,7 +97,8 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 			Arrays.fill(visited, false);
 		}
 
-		for (int e = 0; e < g.edgesNum(); e++) {
+		for (IntIterator it = g.edges().iterator(); it.hasNext(); ) {
+			int e = it.nextInt();
 			int u = g.edgeSource(e);
 			int orig = edgeRef.getInt(e);
 			if (u == g0.edgeSource(orig))

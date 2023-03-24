@@ -1,34 +1,38 @@
 package com.ugav.algo;
 
-import java.util.Arrays;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 public class GraphLinkedUndirected extends GraphLinkedAbstract implements UGraph {
 
-	private Node[] edges;
-
-	private static final Node[] EmptyNodeArr = new Node[0];
+	private final Weights<Node> edges;
 
 	public GraphLinkedUndirected() {
 		this(0);
 	}
 
 	public GraphLinkedUndirected(int n) {
-		super(n);
-		edges = n != 0 ? new Node[n] : EmptyNodeArr;
+		/* We use 'edges' to maintain the current vertices in the graph */
+		edges = new VerticesWeights.Builder(this, null).ofObjs(null);
+		IDStrategy vIDStrategy = getVerticesIDStrategy();
+		WeightsAbstract<Node> verticesSet = (WeightsAbstract<Node>) edges;
+		verticesSet.forceAdd = true;
+		for (int i = 0; i < n; i++) {
+			int u = vIDStrategy.nextID(i);
+			verticesSet.keyAdd(u);
+		}
+		addInternalVerticesWeight(edges, false);
 	}
 
 	@Override
-	public int addVertex() {
-		int v = super.addVertex();
-		if (v >= edges.length)
-			edges = Arrays.copyOf(edges, Math.max(edges.length * 2, 2));
-		return v;
+	public IntSet vertices() {
+		return ((WeightsAbstract<Node>) edges).keysSet();
 	}
 
 	@Override
 	public EdgeIter edges(int u) {
 		checkVertexIdx(u);
-		return new EdgeVertexItr(u, edges[u]);
+		return new EdgeVertexItr(u, edges.get(u));
 	}
 
 	@Override
@@ -36,16 +40,16 @@ public class GraphLinkedUndirected extends GraphLinkedAbstract implements UGraph
 		if (u == v)
 			throw new IllegalArgumentException("self edges are not supported");
 		Node e = (Node) addEdgeNode(u, v), next;
-		if ((next = edges[u]) != null) {
+		if ((next = edges.get(u)) != null) {
 			e.nextSet(u, next);
 			next.prevSet(u, e);
 		}
-		edges[u] = e;
-		if ((next = edges[v]) != null) {
+		edges.set(u, e);
+		if ((next = edges.get(v)) != null) {
 			e.nextSet(v, next);
 			next.prevSet(v, e);
 		}
-		edges[v] = e;
+		edges.set(v, e);
 		return e.id;
 	}
 
@@ -55,16 +59,17 @@ public class GraphLinkedUndirected extends GraphLinkedAbstract implements UGraph
 	}
 
 	@Override
-	public void removeEdge(int id) {
-		Node e = (Node) removeEdgeNode(id);
-		removeEdge0(e, e.u);
-		removeEdge0(e, e.v);
+	public void removeEdge(int edge) {
+		Node n = (Node) getNode(edge);
+		super.removeEdge(edge);
+		removeEdge0(n, n.u);
+		removeEdge0(n, n.v);
 	}
 
 	@Override
 	public void removeEdgesAll(int u) {
 		checkVertexIdx(u);
-		for (Node p = edges[u], next; p != null; p = next) {
+		for (Node p = edges.get(u), next; p != null; p = next) {
 			// update u list
 			next = p.next(u);
 			p.nextSet(u, null);
@@ -74,15 +79,15 @@ public class GraphLinkedUndirected extends GraphLinkedAbstract implements UGraph
 			int v = p.getEndpoint(u);
 			removeEdge0(p, v);
 
-			removeEdgeNode(p.id);
+			super.removeEdge(p.id);
 		}
-		edges[u] = null;
+		edges.set(u, null);
 	}
 
 	void removeEdge0(Node e, int w) {
 		Node next = e.next(w), prev = e.prev(w);
 		if (prev == null) {
-			edges[w] = next;
+			edges.set(w, next);
 		} else {
 			prev.nextSet(w, next);
 			e.prevSet(w, null);
@@ -95,11 +100,15 @@ public class GraphLinkedUndirected extends GraphLinkedAbstract implements UGraph
 
 	@Override
 	public void clearEdges() {
-		for (GraphLinkedAbstract.Node p0 : Utils.iterable(nodes())) {
+		for (GraphLinkedAbstract.Node p0 : nodes()) {
 			Node p = (Node) p0;
 			p.nextu = p.nextv = p.prevu = p.prevv = null;
 		}
-		Arrays.fill(edges, null);
+		for (IntIterator it = vertices().iterator(); it.hasNext();) {
+			int u = it.nextInt();
+			// TODO do some sort of 'addKey' instead of set, no need
+			edges.set(u, null);
+		}
 		super.clearEdges();
 
 	}

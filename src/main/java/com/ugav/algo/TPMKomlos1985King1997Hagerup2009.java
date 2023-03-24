@@ -25,7 +25,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 			throw new IllegalArgumentException("queries should be in format [u0, v0, u1, v1, ...]");
 		if (!Graphs.isTree(t))
 			throw new IllegalArgumentException("only trees are supported");
-		if (t.verticesNum() == 0)
+		if (t.vertices().size() == 0)
 			return new int[queriesNum];
 		return new Worker((UGraph) t, w).calcTPM(queries, queriesNum);
 	}
@@ -59,7 +59,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 			this.tOrig = t;
 			this.w = w;
 
-			int n = t.verticesNum();
+			int n = t.vertices().size();
 			bitsTable = new BitsTable(n > 1 ? Utils.log2ceil(n) : 1);
 			bitsTable.init();
 		}
@@ -117,13 +117,13 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 		}
 
 		private int[][] calcAnswersPerVertex(UGraph t, int root, int[] q, int[] edgeToParent) {
-			int n = t.verticesNum();
+			int n = t.vertices().size();
 			int[] a = new int[n];
 
 			int leavesDepth = Graphs.getFullyBranchingTreeDepth(t, root);
 
 			Weights.Int tData = t.edgesWeight("edgeData");
-			int[][] res = new int[tOrig.verticesNum()][];
+			int[][] res = new int[tOrig.vertices().size()][];
 
 			Graphs.runDFS(t, root, (v, edgesFromRoot) -> {
 				if (edgesFromRoot.isEmpty())
@@ -196,7 +196,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 		}
 
 		private Pair<UGraph, Integer> buildBoruvkaFullyBranchingTree() {
-			int n = tOrig.verticesNum();
+			int n = tOrig.vertices().size();
 			int[] minEdges = new int[n];
 			double[] minGraphWeights = new double[n];
 			int[] vNext = new int[n];
@@ -209,7 +209,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 
 			UGraph t = new GraphArrayUndirected(n);
 			Weights.Int tData = EdgesWeights.ofInts(t, "edgeData", -1);
-			for (UGraph G = Graphs.referenceGraph(tOrig, EdgeRefWeightKey); (n = G.verticesNum()) > 1;) {
+			for (UGraph G = Graphs.referenceGraph(tOrig, EdgeRefWeightKey); (n = G.vertices().size()) > 1;) {
 				Weights.Int GData = G.edgesWeight(EdgeRefWeightKey);
 
 				// Find minimum edge of each vertex
@@ -302,7 +302,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 		}
 
 		private static Pair<int[], int[]> getEdgeToParentsAndDepth(UGraph t, int root) {
-			int n = t.verticesNum();
+			int n = t.vertices().size();
 			int[] edgeToParent = new int[n];
 			Arrays.fill(edgeToParent, -1);
 			int[] depths = new int[n];
@@ -319,7 +319,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 		}
 
 		private static int[] calcQueriesPerVertex(UGraph g, int[] lcaQueries, int[] depths, int[] edgeToParent) {
-			final int n = g.verticesNum();
+			final int n = g.vertices().size();
 
 			int[] q = new int[n];
 			Arrays.fill(q, 0);

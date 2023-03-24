@@ -4,12 +4,12 @@ import java.util.Arrays;
 import java.util.function.ObjDoubleConsumer;
 
 import com.ugav.algo.DynamicTree.MinEdge;
-import com.ugav.algo.Graph.EdgeRenameListener;
 import com.ugav.algo.Utils.QueueIntFixSize;
 import com.ugav.algo.Utils.Stack;
 
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntIterator;
 
 public class MaxFlowDinic implements MaxFlow {
 
@@ -37,12 +37,14 @@ public class MaxFlowDinic implements MaxFlow {
 		debug.println("\t", getClass().getSimpleName());
 
 		double maxCapacity = 100;
-		for (int e = 0; e < g0.edgesNum(); e++)
+		for (IntIterator it = g0.edges().iterator(); it.hasNext();) {
+			int e = it.nextInt();
 			maxCapacity = Math.max(maxCapacity, net.getCapacity(e));
+		}
 
 		DiGraph g = referenceGraph((DiGraph) g0, net);
 		Weights<Ref> edgeRef = g.edgesWeight(EdgeRefWeightKey);
-		final int n = g.verticesNum();
+		final int n = g.vertices().size();
 		DiGraph L = new GraphLinkedDirected(n);
 		Weights<Ref> edgeRefL = EdgesWeights.ofObjs(L, EdgeRefWeightKey);
 		QueueIntFixSize bfsQueue = new QueueIntFixSize(n);
@@ -172,7 +174,8 @@ public class MaxFlowDinic implements MaxFlow {
 		}
 
 		/* Construct result */
-		for (int e = 0; e < g.edgesNum(); e++) {
+		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+			int e = it.nextInt();
 			Ref data = edgeRef.get(e);
 			if (g.edgeSource(e) == g0.edgeSource(data.orig))
 				net.setFlow(data.orig, data.flow);
@@ -188,9 +191,10 @@ public class MaxFlowDinic implements MaxFlow {
 	}
 
 	private static DiGraph referenceGraph(DiGraph g0, FlowNetwork net) {
-		DiGraph g = new GraphArrayDirected(g0.verticesNum());
+		DiGraph g = new GraphArrayDirected(g0.vertices().size());
 		Weights<Ref> edgeRef = EdgesWeights.ofObjs(g, EdgeRefWeightKey);
-		for (int e = 0; e < g0.edgesNum(); e++) {
+		for (IntIterator it = g0.edges().iterator(); it.hasNext();) {
+			int e = it.nextInt();
 			int u = g0.edgeSource(e), v = g0.edgeTarget(e);
 			Ref ref = new Ref(e, 0), refRev = new Ref(e, net.getCapacity(e));
 			int e1 = g.addEdge(u, v);
@@ -246,16 +250,17 @@ public class MaxFlowDinic implements MaxFlow {
 		private final Int2IntMap id2e = new Int2IntOpenHashMap();
 		private final Int2IntMap e2id = new Int2IntOpenHashMap();
 		private int idCounter = 1;
-		private final EdgeRenameListener listener;
+		private final IDStrategy.IDSwapListener listener;
 
 		EdgeUniqueIDManager(Graph g) {
 			this.g = g;
-			for (int e = 0; e < g.edgesNum(); e++) {
+			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+				int e = it.nextInt();
 				int id = idCounter++;
 				id2e.put(id, e);
 				e2id.put(e, id);
 			}
-			g.addEdgeRenameListener(listener = (e1, e2) -> {
+			g.getEdgesIDStrategy().addIDSwapListener(listener = (e1, e2) -> {
 				int id1 = e2id.get(e1);
 				int id2 = e2id.get(e2);
 				e2id.put(e1, id2);
@@ -266,7 +271,7 @@ public class MaxFlowDinic implements MaxFlow {
 		}
 
 		void clear() {
-			g.removeEdgeRenameListener(listener);
+			g.getEdgesIDStrategy().addIDSwapListener(listener);
 			id2e.clear();
 			e2id.clear();
 		}

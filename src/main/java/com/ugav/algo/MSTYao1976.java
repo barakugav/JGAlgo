@@ -23,7 +23,7 @@ public class MSTYao1976 implements MST {
 		if (!(g0 instanceof UGraph))
 			throw new IllegalArgumentException("only undirected graphs are supported");
 		UGraph g = (UGraph) g0;
-		int n = g.verticesNum();
+		int n = g.vertices().size();
 
 		int[][][] edges = partitionEdgesToBuckets(g, w);
 		int[] firstValidBucketIdxs = new int[n];
@@ -138,7 +138,7 @@ public class MSTYao1976 implements MST {
 	}
 
 	private static int[][][] partitionEdgesToBuckets(Graph g, EdgeWeightFunc w) {
-		int n = g.verticesNum(), k = Utils.log2ceil(n);
+		int n = g.vertices().size(), k = Utils.log2ceil(n);
 
 		int[][][] edges = new int[n][][];
 		int[] edgesTemp = new int[n];

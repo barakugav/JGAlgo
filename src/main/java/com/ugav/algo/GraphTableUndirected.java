@@ -15,12 +15,7 @@ public class GraphTableUndirected extends GraphTableAbstract implements UGraph {
 
 	@Override
 	public void removeEdge(int e) {
-		checkEdgeIdx(e);
-		int lastEdge = edgesNum() - 1;
-		if (e != lastEdge) {
-			edgeSwap(e, lastEdge);
-			e = lastEdge;
-		}
+		e = swapBeforeRemove(e);
 		int u = edgeSource(e), v = edgeTarget(e);
 		edges[u][v] = edges[v][u] = EdgeNone;
 		super.removeEdge(e);

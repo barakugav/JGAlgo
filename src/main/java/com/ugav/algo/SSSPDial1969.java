@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 public class SSSPDial1969 implements SSSP {
@@ -51,7 +52,7 @@ public class SSSPDial1969 implements SSSP {
 			throw new IllegalArgumentException("only int weights are supported");
 		EdgeWeightFunc.Int w = (EdgeWeightFunc.Int) w0;
 
-		int n = g.verticesNum(), m = g.edgesNum();
+		int n = g.vertices().size(), m = g.edges().size();
 		if (n <= 0)
 			throw new IllegalArgumentException();
 
@@ -59,15 +60,14 @@ public class SSSPDial1969 implements SSSP {
 
 		int maxDistance = 0;
 		if (m <= n - 1) {
-			for (int e = 0; e < m; e++)
+			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+				int e = it.nextInt();
 				maxDistance += w.weightInt(e);
+			}
 
 		} else {
-			int[] edges = this.edges;
-			for (int e = 0; e < m; e++)
-				edges[e] = e;
-
-			Array.Int.getKthElement(edges, 0, g.edgesNum(), n - 1,
+			int[] edges = g.edges().toArray(this.edges);
+			Array.Int.getKthElement(edges, 0, g.edges().size(), n - 1,
 					(e1, e2) -> -Integer.compare(w.weightInt(e1), w.weightInt(e2)), true);
 
 			for (int i = 0; i <= n - 1; i++)
@@ -80,7 +80,7 @@ public class SSSPDial1969 implements SSSP {
 	}
 
 	public SSSP.Result calcDistances(Graph g, EdgeWeightFunc.Int w, int source, int maxDistance) {
-		int n = g.verticesNum(), m = g.edgesNum();
+		int n = g.vertices().size(), m = g.edges().size();
 		if (n <= 0)
 			throw new IllegalArgumentException();
 

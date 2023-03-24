@@ -82,7 +82,8 @@ public class GraphsTest extends TestUtils {
 			int m = n - 1;
 			Graph g = new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(false).selfEdges(false)
 					.cycles(false).connected(true).build();
-			int e = rand.nextInt(m);
+			int[] edges = g.edges().toIntArray();
+			int e = edges[rand.nextInt(edges.length)];
 			g.removeEdge(e);
 
 			Assertions.assertFalse(Graphs.isTree(g));
@@ -134,7 +135,8 @@ public class GraphsTest extends TestUtils {
 			Graph g = new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(false).selfEdges(false)
 					.cycles(false).connected(true).build();
 			int root = rand.nextInt(n);
-			int e = rand.nextInt(m);
+			int[] edges = g.edges().toIntArray();
+			int e = edges[rand.nextInt(edges.length)];
 			g.removeEdge(e);
 
 			Assertions.assertFalse(Graphs.isTree(g, root));

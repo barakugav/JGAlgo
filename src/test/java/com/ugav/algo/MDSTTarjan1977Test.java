@@ -26,7 +26,7 @@ public class MDSTTarjan1977Test extends TestUtils {
 		public IntCollection calcMST(Graph g, EdgeWeightFunc w) {
 			if (g instanceof DiGraph)
 				return algo.calcMST(g, w);
-			int n = g.verticesNum();
+			int n = g.vertices().size();
 			Graph dg = new GraphArrayDirected(n);
 			Weights.Int edgeRef = EdgesWeights.ofInts(dg, "edgeRef", -1);
 			for (int u = 0; u < n; u++) {

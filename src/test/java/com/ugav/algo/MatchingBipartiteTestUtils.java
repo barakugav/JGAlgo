@@ -82,7 +82,7 @@ class MatchingBipartiteTestUtils extends TestUtils {
 
 		Int2IntMap S = new Int2IntOpenHashMap();
 		Int2IntMap T = new Int2IntOpenHashMap();
-		for (int u = 0; u < g.verticesNum(); u++) {
+		for (int u = 0; u < g.vertices().size(); u++) {
 			if (partition.getBool(u)) {
 				S.put(u, S.size());
 			} else {

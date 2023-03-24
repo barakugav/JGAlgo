@@ -50,7 +50,7 @@ class MatchingUnweightedTestUtils extends TestUtils {
 	}
 
 	private static <E> int calcExpectedMaxMatching(Graph g) {
-		int n = g.verticesNum();
+		int n = g.vertices().size();
 		@SuppressWarnings("unchecked")
 		List<Integer>[] graph = new List[n];
 		for (int u = 0; u < n; u++) {

@@ -6,6 +6,8 @@ import java.util.Set;
 
 import com.ugav.algo.GraphImplTestUtils.GraphImpl;
 
+import it.unimi.dsi.fastutil.ints.IntIterator;
+
 class GraphsTestUtils extends TestUtils {
 
 	private GraphsTestUtils() {
@@ -135,7 +137,7 @@ class GraphsTestUtils extends TestUtils {
 
 			while (true) {
 				boolean done = true;
-				if (g.edgesNum() < m)
+				if (g.edges().size() < m)
 					done = false;
 				if (connected) {
 					if (!directed && componentsNum > 1)
@@ -243,19 +245,21 @@ class GraphsTestUtils extends TestUtils {
 
 		Random rand = new Random(nextRandSeed());
 		Weights.Double weight = EdgesWeights.ofDoubles(g, "weight");
-		for (int e = 0; e < g.edgesNum(); e++)
+		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+			int e = it.nextInt();
 			weight.set(e, nextDouble(rand, minWeight, maxWeight));
+		}
 	}
 
 	static void assignRandWeightsIntPos(Graph g) {
-		int m = g.edgesNum();
+		int m = g.edges().size();
 		int minWeight = 1;
 		int maxWeight = m < 50 ? 100 : m * 2 + 2;
 		assignRandWeightsInt(g, minWeight, maxWeight);
 	}
 
 	static void assignRandWeightsIntNeg(Graph g) {
-		int m = g.edgesNum();
+		int m = g.edges().size();
 		int maxWeight = m < 50 ? 100 : m * 2 + 2;
 		assignRandWeightsInt(g, -maxWeight / 8, maxWeight);
 	}
@@ -263,13 +267,15 @@ class GraphsTestUtils extends TestUtils {
 	static void assignRandWeightsInt(Graph g, int minWeight, int maxWeight) {
 		if (minWeight >= maxWeight)
 			throw new IllegalArgumentException();
-		if (maxWeight - minWeight < g.edgesNum() / 2)
+		if (maxWeight - minWeight < g.edges().size() / 2)
 			throw new IllegalArgumentException("weight range is too small for unique weights");
 
 		RandomIntUnique rand = new RandomIntUnique(minWeight, maxWeight, nextRandSeed());
 		Weights.Int weight = EdgesWeights.ofInts(g, "weight");
-		for (int e = 0; e < g.edgesNum(); e++)
+		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+			int e = it.nextInt();
 			weight.set(e, rand.next());
+		}
 	}
 
 	static Graph randGraph(int n, int m) {

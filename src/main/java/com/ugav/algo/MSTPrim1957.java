@@ -21,7 +21,7 @@ public class MSTPrim1957 implements MST {
 		if (!(g0 instanceof UGraph))
 			throw new IllegalArgumentException("only undirected graphs are supported");
 		UGraph g = (UGraph) g0;
-		int n = g.verticesNum();
+		int n = g.vertices().size();
 		if (n == 0)
 			return IntLists.emptyList();
 
