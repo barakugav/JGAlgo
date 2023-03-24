@@ -11,7 +11,8 @@ abstract class GraphArrayAbstract extends GraphAbstract {
 
 	static final int[] EmptyIntArr = new int[0];
 
-	public GraphArrayAbstract() {
+	public GraphArrayAbstract(IDStrategy verticesIDStrategy, IDStrategy edgesIDStrategy) {
+		super(verticesIDStrategy, edgesIDStrategy);
 		EdgesWeights.Builder wBuilder = new EdgesWeights.Builder(this, null);
 		edgeEndpoints = wBuilder.ofLongs(sourceTarget2Endpoints(-1, -1));
 		addInternalEdgesWeight(edgeEndpoints);

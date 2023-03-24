@@ -12,6 +12,12 @@ public class GraphLinkedUndirected extends GraphLinkedAbstract implements UGraph
 	}
 
 	public GraphLinkedUndirected(int n) {
+		this(n, null, null);
+	}
+
+	protected GraphLinkedUndirected(int n, IDStrategy verticesIDStrategy, IDStrategy edgesIDStrategy) {
+		super(verticesIDStrategy, edgesIDStrategy);
+
 		/* We use 'edges' to maintain the current vertices in the graph */
 		edges = new VerticesWeights.Builder(this, null).ofObjs(null);
 		IDStrategy vIDStrategy = getVerticesIDStrategy();

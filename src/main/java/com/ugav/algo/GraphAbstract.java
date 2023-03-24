@@ -20,11 +20,16 @@ abstract class GraphAbstract implements Graph {
 	private final Map<Object, Weights<?>> eWeights = new Object2ObjectArrayMap<>();
 	private final Map<Object, Weights<?>> vWeights = new Object2ObjectArrayMap<>();
 
-	GraphAbstract() {
-//		verticesIDStrategy = new IDStrategy.Fixed(false);
-//		edgesIDStrategy = new IDStrategy.Fixed(true);
-		verticesIDStrategy = new IDStrategy.Continues();
-		edgesIDStrategy = new IDStrategy.Continues();
+	GraphAbstract(IDStrategy verticesIDStrategy, IDStrategy edgesIDStrategy) {
+		if (verticesIDStrategy == null)
+			verticesIDStrategy = new IDStrategy.Continues();
+		if (edgesIDStrategy == null)
+			edgesIDStrategy = new IDStrategy.Continues();
+		if (verticesIDStrategy == edgesIDStrategy)
+			throw new IllegalArgumentException();
+
+		this.verticesIDStrategy = verticesIDStrategy;
+		this.edgesIDStrategy = edgesIDStrategy;
 	}
 
 	@Override

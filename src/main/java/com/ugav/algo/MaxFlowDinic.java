@@ -4,11 +4,10 @@ import java.util.Arrays;
 import java.util.function.ObjDoubleConsumer;
 
 import com.ugav.algo.DynamicTree.MinEdge;
+import com.ugav.algo.IDStrategy.Fixed;
 import com.ugav.algo.Utils.QueueIntFixSize;
 import com.ugav.algo.Utils.Stack;
 
-import it.unimi.dsi.fastutil.ints.Int2IntMap;
-import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 public class MaxFlowDinic implements MaxFlow {
@@ -45,7 +44,7 @@ public class MaxFlowDinic implements MaxFlow {
 		DiGraph g = referenceGraph((DiGraph) g0, net);
 		Weights<Ref> edgeRef = g.edgesWeight(EdgeRefWeightKey);
 		final int n = g.vertices().size();
-		DiGraph L = new GraphLinkedDirected(n);
+		DiGraph L = GraphBuilder.Linked.getInstance().setVerticesNum(n).setEdgesIDStrategy(Fixed::new).buildDirected();
 		Weights<Ref> edgeRefL = EdgesWeights.ofObjs(L, EdgeRefWeightKey);
 		QueueIntFixSize bfsQueue = new QueueIntFixSize(n);
 		int[] level = new int[n];
@@ -89,7 +88,6 @@ public class MaxFlowDinic implements MaxFlow {
 			dt.clear();
 			for (int u = 0; u < n; u++)
 				vToDt[u] = dt.makeTree(Integer.valueOf(u));
-			EdgeUniqueIDManager idManager = new EdgeUniqueIDManager(L);
 
 			ObjDoubleConsumer<Ref> updateFlow = (e, weight) -> {
 				double f = net.getCapacity(e.orig) - e.flow - weight;
@@ -113,7 +111,7 @@ public class MaxFlowDinic implements MaxFlow {
 					/* Delete all saturated edges */
 					debug.println("Delete");
 					do {
-						int e = idManager.idToEdge(min.getData().intValue());
+						int e = min.getData().intValue();
 						assert vToDt[L.edgeSource(e)] == min.u();
 						Ref ref = edgeRefL.get(e);
 						L.removeEdge(e);
@@ -137,7 +135,7 @@ public class MaxFlowDinic implements MaxFlow {
 							continue; /* If the edge is not in the DT, ignore */
 
 						MinEdge<Integer, Integer> m = dt.findMinEdge(vToDt[u]);
-						assert e == idManager.idToEdge(m.getData().intValue());
+						assert e == m.getData().intValue();
 						Ref ref = edgeRefL.get(e);
 						updateFlow.accept(ref, m.weight());
 
@@ -151,8 +149,7 @@ public class MaxFlowDinic implements MaxFlow {
 					EdgeIter eit = L.edgesOut(v);
 					int e = eit.nextInt();
 					Ref eRef = edgeRefL.get(e);
-					dt.link(vToDt[eit.u()], vToDt[eit.v()], net.getCapacity(eRef.orig) - eRef.flow,
-							Integer.valueOf(idManager.edgeToId(e)));
+					dt.link(vToDt[eit.u()], vToDt[eit.v()], net.getCapacity(eRef.orig) - eRef.flow, Integer.valueOf(e));
 				}
 			}
 
@@ -164,13 +161,11 @@ public class MaxFlowDinic implements MaxFlow {
 					DynamicTree.Node<Integer, Integer> uDt = cleanupStack.pop();
 					assert uDt.getParent() == dt.findRoot(uDt);
 					MinEdge<Integer, Integer> m = dt.findMinEdge(uDt);
-					Ref ref = edgeRefL.get(idManager.idToEdge(m.getData().intValue()));
+					Ref ref = edgeRefL.get(m.getData().intValue());
 					updateFlow.accept(ref, m.weight());
 					dt.cut(m.u());
 				}
 			}
-
-			idManager.clear();
 		}
 
 		/* Construct result */
@@ -240,49 +235,6 @@ public class MaxFlowDinic implements MaxFlow {
 			return "R(" + orig + ")";
 		}
 
-	}
-
-	/*
-	 * edges change id when we remove edges from the graph. TODO refactor this class
-	 */
-	private static class EdgeUniqueIDManager {
-		private final Graph g;
-		private final Int2IntMap id2e = new Int2IntOpenHashMap();
-		private final Int2IntMap e2id = new Int2IntOpenHashMap();
-		private int idCounter = 1;
-		private final IDStrategy.IDSwapListener listener;
-
-		EdgeUniqueIDManager(Graph g) {
-			this.g = g;
-			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-				int e = it.nextInt();
-				int id = idCounter++;
-				id2e.put(id, e);
-				e2id.put(e, id);
-			}
-			g.getEdgesIDStrategy().addIDSwapListener(listener = (e1, e2) -> {
-				int id1 = e2id.get(e1);
-				int id2 = e2id.get(e2);
-				e2id.put(e1, id2);
-				e2id.put(e2, id1);
-				id2e.put(id1, e2);
-				id2e.put(id2, e1);
-			});
-		}
-
-		void clear() {
-			g.getEdgesIDStrategy().addIDSwapListener(listener);
-			id2e.clear();
-			e2id.clear();
-		}
-
-		int edgeToId(int e) {
-			return e2id.get(e);
-		}
-
-		int idToEdge(int id) {
-			return id2e.get(id);
-		}
 	}
 
 }

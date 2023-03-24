@@ -12,6 +12,11 @@ public class GraphArrayUndirected extends GraphArrayAbstract implements UGraph {
 	}
 
 	public GraphArrayUndirected(int n) {
+		this(n, null, null);
+	}
+
+	protected GraphArrayUndirected(int n, IDStrategy verticesIDStrategy, IDStrategy edgesIDStrategy) {
+		super(verticesIDStrategy, edgesIDStrategy);
 		edgesNum = new VerticesWeights.Builder(this, null).ofInts(0);
 		/* We use edgesNum to maintain the current vertices in the graph */
 		IDStrategy vIDStrategy = getVerticesIDStrategy();

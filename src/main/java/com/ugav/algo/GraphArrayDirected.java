@@ -15,6 +15,11 @@ public class GraphArrayDirected extends GraphArrayAbstract implements DiGraph {
 	}
 
 	public GraphArrayDirected(int n) {
+		this(n, null, null);
+	}
+
+	protected GraphArrayDirected(int n, IDStrategy verticesIDStrategy, IDStrategy edgesIDStrategy) {
+		super(verticesIDStrategy, edgesIDStrategy);
 		edgesOutNum = new VerticesWeights.Builder(this, null).ofInts(0);
 		/* We use edgesOutNum to maintain the current vertices in the graph */
 		IDStrategy vIDStrategy = getVerticesIDStrategy();

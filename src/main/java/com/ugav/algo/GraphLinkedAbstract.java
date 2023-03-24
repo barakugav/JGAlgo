@@ -9,7 +9,8 @@ abstract class GraphLinkedAbstract extends GraphAbstract {
 
 	private final Weights<Node> edges;
 
-	GraphLinkedAbstract() {
+	GraphLinkedAbstract(IDStrategy verticesIDStrategy, IDStrategy edgesIDStrategy) {
+		super(verticesIDStrategy, edgesIDStrategy);
 		EdgesWeights.Builder wBuilder = new EdgesWeights.Builder(this, null);
 		edges = wBuilder.ofObjs(null);
 		addInternalEdgesWeight(edges);

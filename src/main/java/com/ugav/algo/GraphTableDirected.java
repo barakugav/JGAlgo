@@ -3,7 +3,11 @@ package com.ugav.algo;
 public class GraphTableDirected extends GraphTableAbstract implements DiGraph {
 
 	public GraphTableDirected(int n) {
-		super(n);
+		this(n, null);
+	}
+
+	protected GraphTableDirected(int n, IDStrategy edgesIDStrategy) {
+		super(n, edgesIDStrategy);
 	}
 
 	@Override

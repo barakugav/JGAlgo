@@ -16,7 +16,8 @@ abstract class GraphTableAbstract extends GraphAbstract {
 	private static final int[][] EDGES_EMPTY = new int[0][];
 	static final int EdgeNone = -1;
 
-	GraphTableAbstract(int n) {
+	GraphTableAbstract(int n, IDStrategy edgesIDStrategy) {
+		super(null, edgesIDStrategy);
 		edges = n > 0 ? new int[n][n] : EDGES_EMPTY;
 		for (int u = 0; u < n; u++)
 			Arrays.fill(edges[u], EdgeNone);

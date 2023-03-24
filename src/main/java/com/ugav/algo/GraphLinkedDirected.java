@@ -13,6 +13,11 @@ public class GraphLinkedDirected extends GraphLinkedAbstract implements DiGraph 
 	}
 
 	public GraphLinkedDirected(int n) {
+		this(n, null, null);
+	}
+
+	protected GraphLinkedDirected(int n, IDStrategy verticesIDStrategy, IDStrategy edgesIDStrategy) {
+		super(verticesIDStrategy, edgesIDStrategy);
 		edgesIn = new VerticesWeights.Builder(this, null).ofObjs(null);
 		/* We use 'edgesIn' to maintain the current vertices in the graph */
 		IDStrategy vIDStrategy = getVerticesIDStrategy();

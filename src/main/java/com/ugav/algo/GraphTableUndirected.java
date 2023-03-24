@@ -3,7 +3,11 @@ package com.ugav.algo;
 public class GraphTableUndirected extends GraphTableAbstract implements UGraph {
 
 	public GraphTableUndirected(int n) {
-		super(n);
+		this(n, null);
+	}
+
+	protected GraphTableUndirected(int n, IDStrategy edgesIDStrategy) {
+		super(n, edgesIDStrategy);
 	}
 
 	@Override
