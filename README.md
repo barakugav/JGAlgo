@@ -1,12 +1,12 @@
-[![Tests](https://github.com/barakugav/jgalgo/actions/workflows/tests.yaml/badge.svg)](https://github.com/barakugav/jgalgo/actions/workflows/tests.yaml)
-[![Javadoc](https://img.shields.io/badge/JavaDoc-Online-green)](https://barakugav.github.io/jgalgo/javadoc/)
+[![Tests](https://github.com/barakugav/JGAlgo/actions/workflows/tests.yaml/badge.svg)](https://github.com/barakugav/JGAlgo/actions/workflows/tests.yaml)
+[![Javadoc](https://img.shields.io/badge/JavaDoc-Online-green)](https://barakugav.github.io/JGAlgo/javadoc/)
 
 
 # JGAlgo
 
 JGAlgo is a collection of algorithms implemented in Java. It contains mostly algorithms for various graphs problems and some utilities data structures and array algorithms.
 
-[Documentation](https://barakugav.github.io/jgalgo/javadoc/)
+[Documentation](https://barakugav.github.io/JGAlgo/javadoc/)
 
 ## Algorithms
 
