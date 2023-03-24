@@ -13,7 +13,6 @@ import it.unimi.dsi.fastutil.ints.Int2LongMap;
 import it.unimi.dsi.fastutil.ints.Int2LongOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntSet;
 
 class WeightsMap {
 
@@ -29,13 +28,12 @@ class WeightsMap {
 			this.weights = weights;
 		}
 
-		Map<Integer, E> weights() {
-			return weights;
+		@Override
+		void keyAdd(int key) {
 		}
 
-		@Override
-		IntSet keysSet() {
-			return (IntSet) weights.keySet();
+		Map<Integer, E> weights() {
+			return weights;
 		}
 
 		@Override
@@ -78,12 +76,6 @@ class WeightsMap {
 		@Override
 		Int2ObjectMap<E> weights() {
 			return (Int2ObjectMap<E>) super.weights();
-		}
-
-		@Override
-		void keyAdd(int key) {
-			if (forceAdd)
-				weights().put(key, defaultVal());
 		}
 
 		@Override
@@ -144,12 +136,6 @@ class WeightsMap {
 		}
 
 		@Override
-		void keyAdd(int key) {
-			if (forceAdd)
-				weights().put(key, defaultValInt());
-		}
-
-		@Override
 		public int getInt(int key) {
 			return weights().get(key);
 		}
@@ -204,12 +190,6 @@ class WeightsMap {
 		@Override
 		Int2LongMap weights() {
 			return (Int2LongMap) super.weights();
-		}
-
-		@Override
-		void keyAdd(int key) {
-			if (forceAdd)
-				weights().put(key, defaultValLong());
 		}
 
 		@Override
@@ -269,12 +249,6 @@ class WeightsMap {
 		}
 
 		@Override
-		void keyAdd(int key) {
-			if (forceAdd)
-				weights().put(key, defaultValDouble());
-		}
-
-		@Override
 		public double getDouble(int key) {
 			return weights().get(key);
 		}
@@ -328,12 +302,6 @@ class WeightsMap {
 		@Override
 		Int2BooleanMap weights() {
 			return (Int2BooleanMap) super.weights();
-		}
-
-		@Override
-		void keyAdd(int key) {
-			if (forceAdd)
-				weights().put(key, defaultValBool());
 		}
 
 		@Override

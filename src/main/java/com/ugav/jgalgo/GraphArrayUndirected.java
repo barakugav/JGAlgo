@@ -1,7 +1,5 @@
 package com.ugav.jgalgo;
 
-import it.unimi.dsi.fastutil.ints.IntSet;
-
 public class GraphArrayUndirected extends GraphArrayAbstract implements UGraph {
 
 	private final Weights<int[]> edges;
@@ -16,26 +14,14 @@ public class GraphArrayUndirected extends GraphArrayAbstract implements UGraph {
 	}
 
 	protected GraphArrayUndirected(int n, IDStrategy verticesIDStrategy, IDStrategy edgesIDStrategy) {
-		super(verticesIDStrategy, edgesIDStrategy);
-		edgesNum = new VerticesWeights.Builder(this, null).ofInts(0);
-		/* We use edgesNum to maintain the current vertices in the graph */
-		IDStrategy vIDStrategy = getVerticesIDStrategy();
-		WeightsAbstract<?> verticesSet = (WeightsAbstract<?>) edgesNum;
-		verticesSet.forceAdd = true;
-		for (int i = 0; i < n; i++) {
-			int u = vIDStrategy.nextID(i);
-			verticesSet.keyAdd(u);
-		}
-		addInternalVerticesWeight(edgesNum, false);
+		super(n, verticesIDStrategy, edgesIDStrategy);
+		VerticesWeights.Builder vBuilder = new VerticesWeights.Builder(this);
 
-		VerticesWeights.Builder vBuilder = new VerticesWeights.Builder(this, () -> vertices().size());
+		edgesNum = vBuilder.ofInts(0);
 		edges = vBuilder.ofObjs(EmptyIntArr);
-		addInternalVerticesWeight(edges);
-	}
 
-	@Override
-	public IntSet vertices() {
-		return ((WeightsAbstract<?>) edgesNum).keysSet();
+		addInternalVerticesWeight(edgesNum);
+		addInternalVerticesWeight(edges);
 	}
 
 	@Override

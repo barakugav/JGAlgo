@@ -3,22 +3,15 @@ package com.ugav.jgalgo;
 import java.util.Collection;
 import java.util.NoSuchElementException;
 
-import it.unimi.dsi.fastutil.ints.IntSet;
-
 abstract class GraphLinkedAbstract extends GraphAbstract {
 
 	private final Weights<Node> edges;
 
-	GraphLinkedAbstract(IDStrategy verticesIDStrategy, IDStrategy edgesIDStrategy) {
-		super(verticesIDStrategy, edgesIDStrategy);
-		EdgesWeights.Builder wBuilder = new EdgesWeights.Builder(this, null);
+	GraphLinkedAbstract(int n, IDStrategy verticesIDStrategy, IDStrategy edgesIDStrategy) {
+		super(n, verticesIDStrategy, edgesIDStrategy);
+		EdgesWeights.Builder wBuilder = new EdgesWeights.Builder(this);
 		edges = wBuilder.ofObjs(null);
 		addInternalEdgesWeight(edges);
-	}
-
-	@Override
-	public IntSet edges() {
-		return ((WeightsAbstract<Node>) edges).keysSet();
 	}
 
 	@Override

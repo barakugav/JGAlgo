@@ -1,7 +1,6 @@
 package com.ugav.jgalgo;
 
 import it.unimi.dsi.fastutil.ints.IntIterator;
-import it.unimi.dsi.fastutil.ints.IntSet;
 
 public class GraphArrayDirected extends GraphArrayAbstract implements DiGraph {
 
@@ -19,32 +18,18 @@ public class GraphArrayDirected extends GraphArrayAbstract implements DiGraph {
 	}
 
 	protected GraphArrayDirected(int n, IDStrategy verticesIDStrategy, IDStrategy edgesIDStrategy) {
-		super(verticesIDStrategy, edgesIDStrategy);
-		edgesOutNum = new VerticesWeights.Builder(this, null).ofInts(0);
-		/* We use edgesOutNum to maintain the current vertices in the graph */
-		IDStrategy vIDStrategy = getVerticesIDStrategy();
-		WeightsAbstract<?> verticesSet = (WeightsAbstract<?>) edgesOutNum;
-		verticesSet.forceAdd = true;
-		for (int i = 0; i < n; i++) {
-			int u = vIDStrategy.nextID(i);
-			verticesSet.keyAdd(u);
-		}
-		addInternalVerticesWeight(edgesOutNum, false);
-
-		VerticesWeights.Builder vBuilder = new VerticesWeights.Builder(this, () -> vertices().size());
+		super(n, verticesIDStrategy, edgesIDStrategy);
+		VerticesWeights.Builder vBuilder = new VerticesWeights.Builder(this);
 
 		edgesOut = vBuilder.ofObjs(EmptyIntArr);
+		edgesOutNum = vBuilder.ofInts(0);
 		edgesIn = vBuilder.ofObjs(EmptyIntArr);
 		edgesInNum = vBuilder.ofInts(0);
 
 		addInternalVerticesWeight(edgesOut);
+		addInternalVerticesWeight(edgesOutNum);
 		addInternalVerticesWeight(edgesIn);
 		addInternalVerticesWeight(edgesInNum);
-	}
-
-	@Override
-	public IntSet vertices() {
-		return ((WeightsAbstract<?>) edgesOutNum).keysSet();
 	}
 
 	@Override

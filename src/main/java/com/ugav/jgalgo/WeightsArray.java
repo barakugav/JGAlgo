@@ -13,10 +13,8 @@ import it.unimi.dsi.fastutil.doubles.AbstractDoubleCollection;
 import it.unimi.dsi.fastutil.doubles.DoubleCollection;
 import it.unimi.dsi.fastutil.doubles.DoubleIterator;
 import it.unimi.dsi.fastutil.ints.AbstractIntCollection;
-import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
-import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.longs.AbstractLongCollection;
 import it.unimi.dsi.fastutil.longs.LongCollection;
 import it.unimi.dsi.fastutil.longs.LongIterator;
@@ -31,46 +29,9 @@ class WeightsArray {
 
 	private static abstract class Abstract<E> extends WeightsAbstract<E> {
 		int size;
-		private final IntSet keysSet;
 
 		Abstract(boolean isEdges) {
 			super(isEdges);
-			keysSet = new AbstractIntSet() {
-
-				@Override
-				public int size() {
-					return size;
-				}
-
-				@Override
-				public boolean contains(int key) {
-					return key >= 0 && key < size();
-				}
-
-				@Override
-				public IntIterator iterator() {
-					return new IntIterator() {
-						int u = 0;
-
-						@Override
-						public boolean hasNext() {
-							return u < size();
-						}
-
-						@Override
-						public int nextInt() {
-							if (!hasNext())
-								throw new NoSuchElementException();
-							return u++;
-						}
-					};
-				}
-			};
-		}
-
-		@Override
-		IntSet keysSet() {
-			return keysSet;
 		}
 
 		@Override

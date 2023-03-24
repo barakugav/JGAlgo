@@ -1,7 +1,5 @@
 package com.ugav.jgalgo;
 
-import java.util.function.IntSupplier;
-
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 public class VerticesWeights {
@@ -14,7 +12,7 @@ public class VerticesWeights {
 	}
 
 	public static <E> Weights<E> ofObjs(Graph g, Object key, E defVal) {
-		return addWeights(g, key, new Builder(g, () -> g.vertices().size()).ofObjs(defVal));
+		return addWeights(g, key, new Builder(g).ofObjs(defVal));
 	}
 
 	public static Weights.Int ofInts(Graph g, Object key) {
@@ -22,7 +20,7 @@ public class VerticesWeights {
 	}
 
 	public static Weights.Int ofInts(Graph g, Object key, int defVal) {
-		return addWeights(g, key, new Builder(g, () -> g.vertices().size()).ofInts(defVal));
+		return addWeights(g, key, new Builder(g).ofInts(defVal));
 	}
 
 	public static Weights.Long ofLongs(Graph g, Object key) {
@@ -30,7 +28,7 @@ public class VerticesWeights {
 	}
 
 	public static Weights.Long ofLongs(Graph g, Object key, long defVal) {
-		return addWeights(g, key, new Builder(g, () -> g.vertices().size()).ofLongs(defVal));
+		return addWeights(g, key, new Builder(g).ofLongs(defVal));
 	}
 
 	public static Weights.Double ofDoubles(Graph g, Object key) {
@@ -38,7 +36,7 @@ public class VerticesWeights {
 	}
 
 	public static Weights.Double ofDoubles(Graph g, Object key, double defVal) {
-		return addWeights(g, key, new Builder(g, () -> g.vertices().size()).ofDoubles(defVal));
+		return addWeights(g, key, new Builder(g).ofDoubles(defVal));
 	}
 
 	public static Weights.Bool ofBools(Graph g, Object key) {
@@ -46,12 +44,12 @@ public class VerticesWeights {
 	}
 
 	public static Weights.Bool ofBools(Graph g, Object key, boolean defVal) {
-		return addWeights(g, key, new Builder(g, () -> g.vertices().size()).ofBools(defVal));
+		return addWeights(g, key, new Builder(g).ofBools(defVal));
 	}
 
 	@SuppressWarnings("unchecked")
 	private static <E, WeightsT extends Weights<E>> WeightsT addWeights(Graph g, Object key, WeightsT weights) {
-		for (IntIterator it = g.vertices().iterator(); it.hasNext(); ) {
+		for (IntIterator it = g.vertices().iterator(); it.hasNext();) {
 			int v = it.nextInt();
 			((WeightsAbstract<E>) weights).keyAdd(v);
 		}
@@ -77,51 +75,51 @@ public class VerticesWeights {
 	};
 
 	static class Builder {
-		private final IntSupplier getExpectedSize;
-		final boolean isFixed;
+		private final Graph g;
+		private final boolean isFixed;
 
-		Builder(Graph g, IntSupplier getExpectedSize) {
-			this.getExpectedSize = getExpectedSize != null ? getExpectedSize : () -> 0;
+		Builder(Graph g) {
+			this.g = g;
 			isFixed = g.getEdgesIDStrategy() instanceof IDStrategy.Fixed;
 		}
 
 		<E> Weights<E> ofObjs(E defVal) {
 			if (isFixed) {
-				return WeightsMap.Obj.ofVertices(getExpectedSize.getAsInt(), defVal);
+				return WeightsMap.Obj.ofVertices(g.vertices().size(), defVal);
 			} else {
-				return WeightsArray.Obj.ofVertices(getExpectedSize.getAsInt(), defVal);
+				return WeightsArray.Obj.ofVertices(g.vertices().size(), defVal);
 			}
 		}
 
 		Weights.Int ofInts(int defVal) {
 			if (isFixed) {
-				return WeightsMap.Int.ofVertices(getExpectedSize.getAsInt(), defVal);
+				return WeightsMap.Int.ofVertices(g.vertices().size(), defVal);
 			} else {
-				return WeightsArray.Int.ofVertices(getExpectedSize.getAsInt(), defVal);
+				return WeightsArray.Int.ofVertices(g.vertices().size(), defVal);
 			}
 		}
 
 		Weights.Long ofLongs(long defVal) {
 			if (isFixed) {
-				return WeightsMap.Long.ofVertices(getExpectedSize.getAsInt(), defVal);
+				return WeightsMap.Long.ofVertices(g.vertices().size(), defVal);
 			} else {
-				return WeightsArray.Long.ofVertices(getExpectedSize.getAsInt(), defVal);
+				return WeightsArray.Long.ofVertices(g.vertices().size(), defVal);
 			}
 		}
 
 		Weights.Double ofDoubles(double defVal) {
 			if (isFixed) {
-				return WeightsMap.Double.ofVertices(getExpectedSize.getAsInt(), defVal);
+				return WeightsMap.Double.ofVertices(g.vertices().size(), defVal);
 			} else {
-				return WeightsArray.Double.ofVertices(getExpectedSize.getAsInt(), defVal);
+				return WeightsArray.Double.ofVertices(g.vertices().size(), defVal);
 			}
 		}
 
 		Weights.Bool ofBools(boolean defVal) {
 			if (isFixed) {
-				return WeightsMap.Bool.ofVertices(getExpectedSize.getAsInt(), defVal);
+				return WeightsMap.Bool.ofVertices(g.vertices().size(), defVal);
 			} else {
-				return WeightsArray.Bool.ofVertices(getExpectedSize.getAsInt(), defVal);
+				return WeightsArray.Bool.ofVertices(g.vertices().size(), defVal);
 			}
 		}
 	}

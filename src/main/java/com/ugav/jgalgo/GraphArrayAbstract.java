@@ -3,24 +3,17 @@ package com.ugav.jgalgo;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 
-import it.unimi.dsi.fastutil.ints.IntSet;
-
 abstract class GraphArrayAbstract extends GraphAbstract {
 
 	private final Weights.Long edgeEndpoints;
 
 	static final int[] EmptyIntArr = new int[0];
 
-	public GraphArrayAbstract(IDStrategy verticesIDStrategy, IDStrategy edgesIDStrategy) {
-		super(verticesIDStrategy, edgesIDStrategy);
-		EdgesWeights.Builder wBuilder = new EdgesWeights.Builder(this, null);
+	public GraphArrayAbstract(int n, IDStrategy verticesIDStrategy, IDStrategy edgesIDStrategy) {
+		super(n, verticesIDStrategy, edgesIDStrategy);
+		EdgesWeights.Builder wBuilder = new EdgesWeights.Builder(this);
 		edgeEndpoints = wBuilder.ofLongs(sourceTarget2Endpoints(-1, -1));
 		addInternalEdgesWeight(edgeEndpoints);
-	}
-
-	@Override
-	public IntSet edges() {
-		return ((WeightsAbstract<?>) edgeEndpoints).keysSet();
 	}
 
 	@Override

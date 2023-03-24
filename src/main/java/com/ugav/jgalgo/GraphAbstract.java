@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 
 abstract class GraphAbstract implements Graph {
@@ -20,7 +21,7 @@ abstract class GraphAbstract implements Graph {
 	private final Map<Object, Weights<?>> eWeights = new Object2ObjectArrayMap<>();
 	private final Map<Object, Weights<?>> vWeights = new Object2ObjectArrayMap<>();
 
-	GraphAbstract(IDStrategy verticesIDStrategy, IDStrategy edgesIDStrategy) {
+	GraphAbstract(int n, IDStrategy verticesIDStrategy, IDStrategy edgesIDStrategy) {
 		if (verticesIDStrategy == null)
 			verticesIDStrategy = new IDStrategy.Continues();
 		if (edgesIDStrategy == null)
@@ -30,11 +31,27 @@ abstract class GraphAbstract implements Graph {
 
 		this.verticesIDStrategy = verticesIDStrategy;
 		this.edgesIDStrategy = edgesIDStrategy;
+
+		if (n < 0)
+			throw new IllegalArgumentException();
+		verticesIDStrategy.ensureSize(n);
+		for (int i = 0; i < n; i++)
+			verticesIDStrategy.newID();
+	}
+
+	@Override
+	public final IntSet vertices() {
+		return verticesIDStrategy.idSet();
+	}
+
+	@Override
+	public final IntSet edges() {
+		return edgesIDStrategy.idSet();
 	}
 
 	@Override
 	public int addVertex() {
-		int u = verticesIDStrategy.nextID(vertices().size());
+		int u = verticesIDStrategy.newID();
 		for (Weights<?> data : vWeightsInternal)
 			((WeightsAbstract<?>) data).keyAdd(u);
 		for (Weights<?> data : vWeights.values())
@@ -46,7 +63,7 @@ abstract class GraphAbstract implements Graph {
 	public int addEdge(int u, int v) {
 		checkVertexIdx(u);
 		checkVertexIdx(v);
-		int e = edgesIDStrategy.nextID(edges().size());
+		int e = edgesIDStrategy.newID();
 		for (Weights<?> data : eWeightsInternal)
 			((WeightsAbstract<?>) data).keyAdd(e);
 		for (Weights<?> data : eWeights.values())
@@ -57,6 +74,7 @@ abstract class GraphAbstract implements Graph {
 	@Override
 	public void removeEdge(int e) {
 		e = swapBeforeRemove(e);
+		edgesIDStrategy.removeID(e);
 		for (Weights<?> data : eWeightsInternal)
 			((WeightsAbstract<?>) data).keyRemove(e);
 		for (Weights<?> data : eWeights.values())
@@ -65,7 +83,7 @@ abstract class GraphAbstract implements Graph {
 
 	int swapBeforeRemove(int e) {
 		checkEdgeIdx(e);
-		int en = edgesIDStrategy.swapBeforeRemove(edges().size(), e);
+		int en = edgesIDStrategy.swapBeforeRemove(e);
 		boolean rename = e != en;
 		if (rename) {
 			edgeSwap(e, en);
@@ -92,6 +110,7 @@ abstract class GraphAbstract implements Graph {
 
 	@Override
 	public void clearEdges() {
+		edgesIDStrategy.clear();
 		for (Weights<?> data : eWeightsInternal)
 			((WeightsAbstract<?>) data).clear();
 		for (Weights<?> data : eWeights.values())
@@ -155,16 +174,10 @@ abstract class GraphAbstract implements Graph {
 	}
 
 	void addInternalVerticesWeight(Weights<?> weight) {
-		addInternalVerticesWeight(weight, true);
-	}
-
-	void addInternalVerticesWeight(Weights<?> weight, boolean addKeys) {
 		vWeightsInternal.add(weight);
-		if (addKeys) {
-			for (IntIterator it = vertices().iterator(); it.hasNext();) {
-				int v = it.nextInt();
-				((WeightsAbstract<?>) weight).keyAdd(v);
-			}
+		for (IntIterator it = vertices().iterator(); it.hasNext();) {
+			int v = it.nextInt();
+			((WeightsAbstract<?>) weight).keyAdd(v);
 		}
 	}
 

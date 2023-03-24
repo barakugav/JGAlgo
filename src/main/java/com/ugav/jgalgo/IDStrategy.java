@@ -1,12 +1,16 @@
 package com.ugav.jgalgo;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import it.unimi.dsi.fastutil.ints.AbstractIntSet;
+import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.ints.IntSets;
 
 /**
  * A strategy that determine for each new graph vertex/edge its unique
@@ -40,8 +44,9 @@ public abstract class IDStrategy {
 	 * <p>
 	 * When a graph is using this strategy, the graph implementation is allowed to
 	 * store information of vertices/edges in a simple continues array, which is
-	 * best for performance. In case no vertices/edges removal are required, the is
-	 * no disadvantage of using this strategy, therefore its the default one.
+	 * best for performance. In case no vertices/edges removal are required, the the
+	 * IDs do not change and its equivalent to {@link Fixed}, therefore its the
+	 * default one.
 	 *
 	 * <p>
 	 * To ensure the invariants of this class, the implementation might rename some
@@ -52,14 +57,116 @@ public abstract class IDStrategy {
 	 */
 	public static class Continues extends IDStrategy {
 
-		@Override
-		int nextID(int numOfExisting) {
-			return numOfExisting;
+		private int size;
+		private final IntSet idSet;
+
+		public Continues() {
+			idSet = new AbstractIntSet() {
+
+				@Override
+				public int size() {
+					return size;
+				}
+
+				@Override
+				public boolean contains(int key) {
+					return key >= 0 && key < size();
+				}
+
+				@Override
+				public IntIterator iterator() {
+					return new IntIterator() {
+						int u = 0;
+
+						@Override
+						public boolean hasNext() {
+							return u < size();
+						}
+
+						@Override
+						public int nextInt() {
+							if (!hasNext())
+								throw new NoSuchElementException();
+							return u++;
+						}
+					};
+				}
+			};
 		}
 
 		@Override
-		int swapBeforeRemove(int numOfExisting, int id) {
-			return numOfExisting - 1;
+		int newID() {
+			return size++;
+		}
+
+		@Override
+		void removeID(int id) {
+			assert id == size - 1;
+			size--;
+		}
+
+		@Override
+		void clear() {
+			size = 0;
+		}
+
+		@Override
+		IntSet idSet() {
+			return idSet;
+		}
+
+		@Override
+		void ensureSize(int n) {
+		}
+
+		@Override
+		int swapBeforeRemove(int id) {
+			return size - 1;
+		}
+	}
+
+	private abstract static class FixedAbstract extends IDStrategy {
+
+		private final IntOpenHashSet ids;
+		private final IntSet idsView;
+
+		FixedAbstract() {
+			ids = new IntOpenHashSet();
+			idsView = IntSets.unmodifiable(ids);
+		}
+
+		@Override
+		int newID() {
+			int id = nextID();
+			ids.add(id);
+			return id;
+		}
+
+		abstract int nextID();
+
+		@Override
+		void removeID(int id) {
+			ids.remove(id);
+		}
+
+		@Override
+		void clear() {
+			ids.clear();
+		}
+
+		@Override
+		IntSet idSet() {
+			return idsView;
+		}
+
+		@Override
+		void ensureSize(int n) {
+			ids.ensureCapacity(n);
+		}
+
+		@Override
+		int swapBeforeRemove(int id) {
+			return id;
 		}
 	}
 
@@ -75,7 +182,7 @@ public abstract class IDStrategy {
 	 *
 	 * @author ugav
 	 */
-	public static class Fixed extends IDStrategy {
+	public static class Fixed extends FixedAbstract {
 
 		private int counter;
 
@@ -84,43 +191,40 @@ public abstract class IDStrategy {
 		}
 
 		@Override
-		int nextID(int numOfExisting) {
+		int nextID() {
 			return counter++;
 		}
 
-		@Override
-		int swapBeforeRemove(int numOfExisting, int id) {
-			return id;
-		}
 	}
 
-	static class Rnad extends IDStrategy {
+	static class Rnad extends FixedAbstract {
 
-		private final IntSet usedIDs = new IntOpenHashSet();
 		private final Random rand = new Random();
 
 		Rnad() {
 		}
 
 		@Override
-		int nextID(int numOfExisting) {
+		int nextID() {
 			int id;
 			do {
 				id = rand.nextInt();
-			} while (usedIDs.contains(id));
-			usedIDs.add(id);
-			return id;
-		}
-
-		@Override
-		int swapBeforeRemove(int numOfExisting, int id) {
+			} while (idSet().contains(id));
 			return id;
 		}
 	}
 
-	abstract int nextID(int numOfExisting);
+	abstract int newID();
 
-	abstract int swapBeforeRemove(int numOfExisting, int id);
+	abstract void removeID(int id);
+
+	abstract void clear();
+
+	abstract IntSet idSet();
+
+	abstract void ensureSize(int n);
+
+	abstract int swapBeforeRemove(int id);
 
 	void afterSwap(int id1, int id2) {
 		for (IDSwapListener listener : idSwapListeners)

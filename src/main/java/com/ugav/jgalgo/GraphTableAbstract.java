@@ -3,74 +3,27 @@ package com.ugav.jgalgo;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 
-import it.unimi.dsi.fastutil.ints.AbstractIntSet;
-import it.unimi.dsi.fastutil.ints.IntIterator;
-import it.unimi.dsi.fastutil.ints.IntSet;
-
 abstract class GraphTableAbstract extends GraphAbstract {
 
 	final int[][] edges;
 	private final Weights.Long edgeEndpoints;
-	private final IntSet verticesSet;
 
 	private static final int[][] EDGES_EMPTY = new int[0][];
 	static final int EdgeNone = -1;
 
 	GraphTableAbstract(int n, IDStrategy edgesIDStrategy) {
-		super(null, edgesIDStrategy);
+		super(n, null, edgesIDStrategy);
 		edges = n > 0 ? new int[n][n] : EDGES_EMPTY;
 		for (int u = 0; u < n; u++)
 			Arrays.fill(edges[u], EdgeNone);
 
-		EdgesWeights.Builder wBuilder = new EdgesWeights.Builder(this, null);
+		EdgesWeights.Builder wBuilder = new EdgesWeights.Builder(this);
 		edgeEndpoints = wBuilder.ofLongs(sourceTarget2Endpoints(-1, -1));
 		addInternalEdgesWeight(edgeEndpoints);
-
-		verticesSet = new AbstractIntSet() {
-
-			@Override
-			public int size() {
-				return edges.length;
-			}
-
-			@Override
-			public boolean contains(int key) {
-				return key >= 0 && key < size();
-			}
-
-			@Override
-			public IntIterator iterator() {
-				return new IntIterator() {
-					int u = 0;
-
-					@Override
-					public boolean hasNext() {
-						return u < size();
-					}
-
-					@Override
-					public int nextInt() {
-						if (!hasNext())
-							throw new NoSuchElementException();
-						return u++;
-					}
-				};
-			}
-		};
 	}
 
 	@Override
-	public IntSet vertices() {
-		return verticesSet;
-	}
-
-	@Override
-	public IntSet edges() {
-		return ((WeightsAbstract<?>) edgeEndpoints).keysSet();
-	}
-
-	@Override
-	public int addVertex() {
+	public final int addVertex() {
 		throw new UnsupportedOperationException();
 	}
 

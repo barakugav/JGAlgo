@@ -1,7 +1,6 @@
 package com.ugav.jgalgo;
 
 import it.unimi.dsi.fastutil.ints.IntIterator;
-import it.unimi.dsi.fastutil.ints.IntSet;
 
 public class GraphLinkedUndirected extends GraphLinkedAbstract implements UGraph {
 
@@ -16,23 +15,10 @@ public class GraphLinkedUndirected extends GraphLinkedAbstract implements UGraph
 	}
 
 	protected GraphLinkedUndirected(int n, IDStrategy verticesIDStrategy, IDStrategy edgesIDStrategy) {
-		super(verticesIDStrategy, edgesIDStrategy);
-
-		/* We use 'edges' to maintain the current vertices in the graph */
-		edges = new VerticesWeights.Builder(this, null).ofObjs(null);
-		IDStrategy vIDStrategy = getVerticesIDStrategy();
-		WeightsAbstract<Node> verticesSet = (WeightsAbstract<Node>) edges;
-		verticesSet.forceAdd = true;
-		for (int i = 0; i < n; i++) {
-			int u = vIDStrategy.nextID(i);
-			verticesSet.keyAdd(u);
-		}
-		addInternalVerticesWeight(edges, false);
-	}
-
-	@Override
-	public IntSet vertices() {
-		return ((WeightsAbstract<Node>) edges).keysSet();
+		super(n, verticesIDStrategy, edgesIDStrategy);
+		VerticesWeights.Builder vBuilder = new VerticesWeights.Builder(this);
+		edges = vBuilder.ofObjs(null);
+		addInternalVerticesWeight(edges);
 	}
 
 	@Override

@@ -1,7 +1,6 @@
 package com.ugav.jgalgo;
 
 import it.unimi.dsi.fastutil.ints.IntIterator;
-import it.unimi.dsi.fastutil.ints.IntSet;
 
 public class GraphLinkedDirected extends GraphLinkedAbstract implements DiGraph {
 
@@ -17,26 +16,14 @@ public class GraphLinkedDirected extends GraphLinkedAbstract implements DiGraph 
 	}
 
 	protected GraphLinkedDirected(int n, IDStrategy verticesIDStrategy, IDStrategy edgesIDStrategy) {
-		super(verticesIDStrategy, edgesIDStrategy);
-		edgesIn = new VerticesWeights.Builder(this, null).ofObjs(null);
-		/* We use 'edgesIn' to maintain the current vertices in the graph */
-		IDStrategy vIDStrategy = getVerticesIDStrategy();
-		WeightsAbstract<Node> verticesSet = (WeightsAbstract<Node>) edgesIn;
-		verticesSet.forceAdd = true;
-		for (int i = 0; i < n; i++) {
-			int u = vIDStrategy.nextID(i);
-			verticesSet.keyAdd(u);
-		}
-		addInternalVerticesWeight(edgesIn, false);
+		super(n, verticesIDStrategy, edgesIDStrategy);
+		VerticesWeights.Builder vBuilder = new VerticesWeights.Builder(this);
 
-		VerticesWeights.Builder vBuilder = new VerticesWeights.Builder(this, () -> vertices().size());
+		edgesIn = vBuilder.ofObjs(null);
 		edgesOut = vBuilder.ofObjs(null);
-		addInternalVerticesWeight(edgesOut);
-	}
 
-	@Override
-	public IntSet vertices() {
-		return ((WeightsAbstract<Node>) edgesIn).keysSet();
+		addInternalVerticesWeight(edgesIn);
+		addInternalVerticesWeight(edgesOut);
 	}
 
 	@Override
