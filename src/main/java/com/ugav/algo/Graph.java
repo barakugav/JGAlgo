@@ -3,18 +3,74 @@ package com.ugav.algo;
 import java.util.Collection;
 import java.util.Set;
 
-import com.ugav.algo.IDStrategy.IDSwapListener;
-
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 public interface Graph {
 
+	/**
+	 * Get the set of all vertices of the graph.
+	 *
+	 * <p>
+	 * Each vertex in the graph is identified by a unique int ID. The returned set
+	 * is a set of all these identifiers, and its size is equivalent to the number
+	 * of vertices in the graph.
+	 *
+	 * <p>
+	 * The vertices IDs values are determined by {@link #getVerticesIDStrategy()}.
+	 * For example, {@link com.ugav.algo.IDStrategy.Continues} ensure that at all
+	 * times the vertices IDs are {@code 0,1,..., verticesNum-1}, and it might
+	 * rename some vertices when a vertex is removed to maintain this invariant.
+	 * This rename can be subscribed using
+	 * {@link com.ugav.algo.IDStrategy#addIDSwapListener}. Another option for an ID
+	 * strategy is {@link com.ugav.algo.IDStrategy.Fixed} which ensure once a vertex
+	 * is assigned an ID, it will not change. There might be some performance
+	 * differences between different ID strategies.
+	 *
+	 * @see com.ugav.algo.IDStrategy
+	 *
+	 * @return a set containing all IDs of the graph vertices
+	 */
 	public IntSet vertices();
 
+	/**
+	 * Get the set of all edges of the graph.
+	 *
+	 * <p>
+	 * Each edge in the graph is identified by a unique int ID. The returned set is
+	 * a set of all these identifiers, and its size is equivalent to the number of
+	 * edges in the graph.
+	 *
+	 * <p>
+	 * The edges IDs values are determined by {@link #getEdgesIDStrategy()}. For
+	 * example, {@link com.ugav.algo.IDStrategy.Continues} ensure that at all times
+	 * the edges IDs are {@code 0,1,..., edgesNum-1}, and it might rename some edges
+	 * when an edge is removed to maintain this invariant. This rename can be
+	 * subscribed using {@link com.ugav.algo.IDStrategy#addIDSwapListener}. Another
+	 * option for an ID strategy is {@link com.ugav.algo.IDStrategy.Fixed} which
+	 * ensure once an edge is assigned an ID, it will not change. There might be
+	 * some performance differences between different ID strategies.
+	 *
+	 * @see com.ugav.algo.IDStrategy
+	 *
+	 * @return a set containing all IDs of the graph edges
+	 */
 	public IntSet edges();
 
 	/**
 	 * Add a new vertex to the graph.
+	 *
+	 * <p>
+	 * A unique int ID is assigned for the new vertex. The vertices IDs values are
+	 * determined by {@link #getVerticesIDStrategy()}. For example,
+	 * {@link com.ugav.algo.IDStrategy.Continues} ensure that at all times the
+	 * vertices IDs are {@code 0,1,..., verticesNum-1}, and it might rename some
+	 * vertices when a vertex is removed to maintain this invariant. This rename can
+	 * be subscribed using {@link com.ugav.algo.IDStrategy#addIDSwapListener}.
+	 * Another option for an ID strategy is {@link com.ugav.algo.IDStrategy.Fixed}
+	 * which ensure once a vertex is assigned an ID, it will not change. There might
+	 * be some performance differences between different ID strategies.
+	 *
+	 * @see com.ugav.algo.IDStrategy
 	 *
 	 * @return the new vertex identifier
 	 */
@@ -22,6 +78,7 @@ public interface Graph {
 
 	/**
 	 * Get the edges of a vertex u.
+	 *
 	 * <p>
 	 * In case the graph is directed, this function returns the edges which u is
 	 * their source vertex.
@@ -33,9 +90,22 @@ public interface Graph {
 
 	/**
 	 * Get the edge whose source is u and target is v.
+	 *
 	 * <p>
 	 * If the graph is not directed, the return edge is an edge that its end-points
-	 * are u,v
+	 * are u,v.
+	 *
+	 * <p>
+	 * The edges IDs values are determined by {@link #getEdgesIDStrategy()}. For
+	 * example, {@link com.ugav.algo.IDStrategy.Continues} ensure that at all times
+	 * the edges IDs are {@code 0,1,..., edgesNum-1}, and it might rename some edges
+	 * when an edge is removed to maintain this invariant. This rename can be
+	 * subscribed using {@link com.ugav.algo.IDStrategy#addIDSwapListener}. Another
+	 * option for an ID strategy is {@link com.ugav.algo.IDStrategy.Fixed} which
+	 * ensure once an edge is assigned an ID, it will not change. There might be
+	 * some performance differences between different ID strategies.
+	 *
+	 * @see com.ugav.algo.IDStrategy
 	 *
 	 * @param u a source vertex
 	 * @param v a target vertex
@@ -52,7 +122,10 @@ public interface Graph {
 
 	/**
 	 * Add a new edge to the graph.
+	 *
 	 * <p>
+	 * In case there are multiple (parallel) edges between u and v, a single
+	 * arbitrary one is returned. (TODO return all?)
 	 *
 	 * @param u a source vertex
 	 * @param v a target vertex
@@ -62,11 +135,13 @@ public interface Graph {
 
 	/**
 	 * Remove an edge from the graph.
+	 *
 	 * <p>
-	 * After removing the edge, the graph implementation may rename the other edges
-	 * identifier to maintain edges IDs 0, 1, ..., edges().size() - 1. To keep track
-	 * of these renames, one can a listener using
-	 * {@link #addIDSwapListener(IDSwapListener)}.
+	 * After removing the edge, the edges ID strategy may rename other edges
+	 * identifiers to maintain its invariants. Theses renames can be subscribed
+	 * using {@link com.ugav.algo.IDStrategy#addIDSwapListener}.
+	 *
+	 * @see com.ugav.algo.IDStrategy
 	 *
 	 * @param edge the edge identifier
 	 */
@@ -74,10 +149,17 @@ public interface Graph {
 
 	/**
 	 * Remove all the edges of a vertex u.
+	 *
 	 * <p>
 	 * If the graph is directed, both the in and out edges of the vertex are
-	 * removed. Note that this function may change the identifiers of other edges.
-	 * see {@link #addIDSwapListener(IDSwapListener)}.
+	 * removed.
+	 *
+	 * <p>
+	 * After removing the edge, the edges ID strategy may rename other edges
+	 * identifiers to maintain its invariants. Theses renames can be subscribed
+	 * using {@link com.ugav.algo.IDStrategy#addIDSwapListener}.
+	 *
+	 * @see com.ugav.algo.IDStrategy
 	 *
 	 * @param u a vertex in the graph
 	 */
@@ -90,6 +172,7 @@ public interface Graph {
 
 	/**
 	 * Get the source vertex of an edge.
+	 *
 	 * <p>
 	 * If the graph is undirected, this function return an arbitrary end-point of
 	 * the edge, but always the other end-point than {@link #edgeTarget(int)}
@@ -102,6 +185,7 @@ public interface Graph {
 
 	/**
 	 * Get the target vertex of an edge.
+	 *
 	 * <p>
 	 * If the graph is undirected, this function return an arbitrary end-point of
 	 * the edge, but always the other end-point than {@link #edgeSource(int)}
@@ -133,6 +217,7 @@ public interface Graph {
 
 	/**
 	 * Get the degree of a vertex, the number of its edges.
+	 *
 	 * <p>
 	 * If the graph is directed, this function return the number of edges whose u is
 	 * either their source or target.
@@ -151,6 +236,7 @@ public interface Graph {
 
 	/**
 	 * Clear the graph completely by removing all vertices and edges.
+	 *
 	 * <p>
 	 * This function might be used to reuse an already allocated graph object
 	 */
@@ -158,6 +244,7 @@ public interface Graph {
 
 	/**
 	 * Remove all the edges from the graph.
+	 *
 	 * <p>
 	 * Note that this function also clears any weights associated with removed
 	 * edges.
@@ -191,6 +278,11 @@ public interface Graph {
 	 */
 	public Collection<Weights<?>> getVerticesWeights();
 
+	/**
+	 * Remove a weight type from the vertices of the graph.
+	 *
+	 * @param key the key of the weights
+	 */
 	public void removeVerticesWeights(Object key);
 
 	/**
@@ -210,6 +302,11 @@ public interface Graph {
 	 */
 	public Set<Object> getEdgesWeightsKeys();
 
+	/**
+	 * Remove a weight type from the edges of the graph.
+	 *
+	 * @param key the key of the weights
+	 */
 	public void removeEdgesWeights(Object key);
 
 	/**
@@ -219,8 +316,44 @@ public interface Graph {
 	 */
 	public Collection<Weights<?>> getEdgesWeights();
 
+	/**
+	 * Get ID strategy of the vertices of the graph.
+	 *
+	 * <p>
+	 * Each vertex in the graph is identified by a unique int ID, which is
+	 * determined by some strategy. For example,
+	 * {@link com.ugav.algo.IDStrategy.Continues} ensure that at all times the
+	 * vertices IDs are {@code 0,1,..., verticesNum-1}, and it might rename some
+	 * vertices when a vertex is removed to maintain this invariant. This rename can
+	 * be subscribed using {@link com.ugav.algo.IDStrategy#addIDSwapListener}.
+	 * Another option for an ID strategy is {@link com.ugav.algo.IDStrategy.Fixed}
+	 * which ensure once a vertex is assigned an ID, it will not change. There might
+	 * be some performance differences between different ID strategies.
+	 *
+	 * @see com.ugav.algo.IDStrategy
+	 *
+	 * @return the vertices IDs strategy
+	 */
 	public IDStrategy getVerticesIDStrategy();
 
+	/**
+	 * Get the set of all edges of the graph.
+	 *
+	 * <p>
+	 * Each edge in the graph is identified by a unique int ID, which is determined
+	 * by some strategy. For example, {@link com.ugav.algo.IDStrategy.Continues}
+	 * ensure that at all times the edges IDs are {@code 0,1,..., edgesNum-1}, and
+	 * it might rename some edges when an edge is removed to maintain this
+	 * invariant. This rename can be subscribed using
+	 * {@link com.ugav.algo.IDStrategy#addIDSwapListener}. Another option for an ID
+	 * strategy is {@link com.ugav.algo.IDStrategy.Fixed} which ensure once an edge
+	 * is assigned an ID, it will not change. There might be some performance
+	 * differences between different ID strategies.
+	 *
+	 * @see com.ugav.algo.IDStrategy
+	 *
+	 * @return the edges IDs strategy
+	 */
 	public IDStrategy getEdgesIDStrategy();
 
 }

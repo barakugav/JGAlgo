@@ -31,12 +31,12 @@ public interface DiGraph extends Graph {
 	}
 
 	/**
-	 * Remove all edges whose source is u
+	 * Remove all edges whose source is u.
 	 *
-	 * Note that this function may change the identifiers of other edges. see
-	 * {@link #addIDSwapListener(EdgeRenameListener)}.
+	 * <p>
+	 * This operation might have side effects, see {@link #removeEdgesAll(int)}.
 	 *
-	 * @param u a source vertex identifier
+	 * @param u a source vertex identifier.
 	 */
 	default void removeEdgesAllOut(int u) {
 		for (EdgeIter eit = edgesOut(u); eit.hasNext();) {
@@ -46,12 +46,12 @@ public interface DiGraph extends Graph {
 	}
 
 	/**
-	 * Remove all edges whose target is v
+	 * Remove all edges whose target is v.
 	 *
-	 * Note that this function may change the identifiers of other edges. see
-	 * {@link #addIDSwapListener(EdgeRenameListener)}.
+	 * <p>
+	 * This operation might have side effects, see {@link #removeEdgesAll(int)}.
 	 *
-	 * @param v a target vertex identifier
+	 * @param v a target vertex identifier.
 	 */
 	default void removeEdgesAllIn(int v) {
 		for (EdgeIter eit = edgesIn(v); eit.hasNext();) {

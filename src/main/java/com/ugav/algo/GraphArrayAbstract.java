@@ -68,6 +68,20 @@ abstract class GraphArrayAbstract extends GraphAbstract {
 	}
 
 	@Override
+	public int edgeEndpoint(int edge, int endpoint) {
+		long endpoints = edgeEndpoints.getLong(edge);
+		int u = endpoints2Source(endpoints);
+		int v = endpoints2Target(endpoints);
+		if (endpoint == u) {
+			return v;
+		} else if (endpoint == v) {
+			return u;
+		} else {
+			throw new IllegalArgumentException();
+		}
+	}
+
+	@Override
 	public int edgeSource(int edge) {
 		checkEdgeIdx(edge);
 		return endpoints2Source(edgeEndpoints.getLong(edge));

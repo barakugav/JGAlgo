@@ -93,8 +93,6 @@ abstract class GraphTableAbstract extends GraphAbstract {
 		return e;
 	}
 
-
-
 	void reverseEdge(int edge) {
 		checkEdgeIdx(edge);
 		long endpoints = edgeEndpoints.getLong(edge);
@@ -102,6 +100,20 @@ abstract class GraphTableAbstract extends GraphAbstract {
 		int v = endpoints2Target(endpoints);
 		endpoints = sourceTarget2Endpoints(v, u);
 		edgeEndpoints.set(edge, endpoints);
+	}
+
+	@Override
+	public int edgeEndpoint(int edge, int endpoint) {
+		long endpoints = edgeEndpoints.getLong(edge);
+		int u = endpoints2Source(endpoints);
+		int v = endpoints2Target(endpoints);
+		if (endpoint == u) {
+			return v;
+		} else if (endpoint == v) {
+			return u;
+		} else {
+			throw new IllegalArgumentException();
+		}
 	}
 
 	@Override
@@ -140,7 +152,6 @@ abstract class GraphTableAbstract extends GraphAbstract {
 	private static int endpoints2Target(long endpoints) {
 		return (int) ((endpoints >> 0) & 0xffffffff);
 	}
-
 
 	class EdgeIterOut implements EdgeIter {
 
