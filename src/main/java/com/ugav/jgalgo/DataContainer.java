@@ -22,38 +22,37 @@ import it.unimi.dsi.fastutil.objects.AbstractObjectCollection;
 import it.unimi.dsi.fastutil.objects.ObjectCollection;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 
-class WeightsArray {
+abstract class DataContainer<E> {
+	int size;
 
-	private WeightsArray() {
+	void clear() {
+		size = 0;
 	}
 
-	private static abstract class Abstract<E> extends WeightsAbstract<E> {
-		int size;
+	abstract void add(int idx);
 
-		Abstract(boolean isEdges) {
-			super(isEdges);
-		}
+	abstract void remove(int idx);
 
-		@Override
-		public void clear() {
-			size = 0;
-		}
+	abstract void ensureCapacity(int size);
 
-		void checkKey(int key) {
-			if (key >= size)
-				throw new IndexOutOfBoundsException(key);
-		}
+	abstract void swap(int i1, int i2);
+
+	abstract Collection<E> values();
+
+	void checkIdx(int idx) {
+		// TODO add some messege of ID strategy choice
+		if (idx >= size)
+			throw new IndexOutOfBoundsException(idx);
 	}
 
-	static class Obj<E> extends Abstract<E> implements Weights<E> {
+	static class Obj<E> extends DataContainer<E> {
 
 		private Object[] weights;
 		private final E defaultVal;
 		private final ObjectCollection<E> values;
 		private static final Object[] EmptyWeights = new Object[0];
 
-		private Obj(boolean isEdges, int expectedSize, E defVal) {
-			super(isEdges);
+		Obj(int expectedSize, E defVal) {
 			weights = expectedSize > 0 ? new Object[expectedSize] : EmptyWeights;
 			defaultVal = defVal;
 			values = new AbstractObjectCollection<>() {
@@ -85,52 +84,49 @@ class WeightsArray {
 			};
 		}
 
-		static <E> Weights<E> ofEdges(int expectedSize, E defVal) {
-			return new WeightsArray.Obj<>(true, expectedSize, defVal);
-		}
-
-		static <E> Weights<E> ofVertices(int expectedSize, E defVal) {
-			return new WeightsArray.Obj<>(false, expectedSize, defVal);
-		}
-
 		@SuppressWarnings("unchecked")
-		@Override
-		public E get(int key) {
-			checkKey(key);
-			return (E) weights[key];
+		public E get(int idx) {
+			checkIdx(idx);
+			return (E) weights[idx];
 		}
 
-		@Override
-		public void set(int key, E weight) {
-			checkKey(key);
-			weights[key] = weight;
+		public void set(int idx, E weight) {
+			checkIdx(idx);
+			weights[idx] = weight;
 		}
 
-		@Override
 		public E defaultVal() {
 			return defaultVal;
 		}
 
 		@Override
-		void keyAdd(int key) {
-			assert key == size : "only continues keys are supported";
-			if (size >= weights.length)
-				weights = Arrays.copyOf(weights, Math.max(2, weights.length * 2));
-			weights[key] = defaultVal;
+		void add(int idx) {
+			assert idx == size : "only continues idxs are supported";
+			ensureCapacity(size + 1);
+			weights[idx] = defaultVal;
 			size++;
 		}
 
 		@Override
-		void keyRemove(int key) {
-			assert key == size - 1 : "only continues keys are supported";
-			weights[key] = null;
+		void remove(int idx) {
+			assert idx == size - 1 : "only continues idxs are supported";
+			weights[idx] = null;
 			size--;
 		}
 
 		@Override
-		void keySwap(int k1, int k2) {
-			checkKey(k1);
-			checkKey(k2);
+		void ensureCapacity(int capacity) {
+			if (capacity < weights.length)
+				return;
+			int newLen = Math.max(2, weights.length * 2);
+			newLen = Math.max(newLen, capacity);
+			weights = Arrays.copyOf(weights, newLen);
+		}
+
+		@Override
+		void swap(int k1, int k2) {
+			checkIdx(k1);
+			checkIdx(k2);
 			Object temp = weights[k1];
 			weights[k1] = weights[k2];
 			weights[k2] = temp;
@@ -149,7 +145,7 @@ class WeightsArray {
 
 		@Override
 		public boolean equals(Object other) {
-			return other == this || (other instanceof WeightsArray.Obj<?> o
+			return other == this || (other instanceof DataContainer.Obj<?> o
 					&& Arrays.equals(weights, 0, size, o.weights, 0, o.size));
 		}
 
@@ -178,15 +174,14 @@ class WeightsArray {
 		}
 	}
 
-	static class Int extends Abstract<Integer> implements Weights.Int {
+	static class Int extends DataContainer<Integer> {
 
 		private int[] weights;
 		private final int defaultVal;
 		private final IntCollection values;
 		private static final int[] EmptyWeights = new int[0];
 
-		private Int(boolean isEdges, int expectedSize, int defVal) {
-			super(isEdges);
+		Int(int expectedSize, int defVal) {
 			weights = expectedSize > 0 ? new int[expectedSize] : EmptyWeights;
 			defaultVal = defVal;
 			values = new AbstractIntCollection() {
@@ -217,53 +212,50 @@ class WeightsArray {
 			};
 		}
 
-		static Weights.Int ofEdges(int expectedSize, int defVal) {
-			return new WeightsArray.Int(true, expectedSize, defVal);
+		public int getInt(int idx) {
+			checkIdx(idx);
+			return weights[idx];
 		}
 
-		static Weights.Int ofVertices(int expectedSize, int defVal) {
-			return new WeightsArray.Int(false, expectedSize, defVal);
+		public void set(int idx, int weight) {
+			checkIdx(idx);
+			weights[idx] = weight;
 		}
 
-		@Override
-		public int getInt(int key) {
-			checkKey(key);
-			return weights[key];
-		}
-
-		@Override
-		public void set(int key, int weight) {
-			checkKey(key);
-			weights[key] = weight;
-		}
-
-		@Override
 		public int defaultValInt() {
 			return defaultVal;
 		}
 
 		@Override
-		void keyAdd(int key) {
-			assert key == size : "only continues keys are supported";
-			if (size >= weights.length)
-				weights = Arrays.copyOf(weights, Math.max(2, weights.length * 2));
-			weights[key] = defaultVal;
+		void add(int idx) {
+			assert idx == size : "only continues idxs are supported";
+			ensureCapacity(size + 1);
+			weights[idx] = defaultVal;
 			size++;
 		}
 
 		@Override
-		void keyRemove(int key) {
-			assert key == size - 1 : "only continues keys are supported";
+		void remove(int idx) {
+			assert idx == size - 1 : "only continues idxs are supported";
 			size--;
 		}
 
 		@Override
-		void keySwap(int k1, int k2) {
-			checkKey(k1);
-			checkKey(k2);
-			int temp = weights[k1];
-			weights[k1] = weights[k2];
-			weights[k2] = temp;
+		void ensureCapacity(int capacity) {
+			if (capacity < weights.length)
+				return;
+			int newLen = Math.max(2, weights.length * 2);
+			newLen = Math.max(newLen, capacity);
+			weights = Arrays.copyOf(weights, newLen);
+		}
+
+		@Override
+		void swap(int i1, int i2) {
+			checkIdx(i1);
+			checkIdx(i2);
+			int temp = weights[i1];
+			weights[i1] = weights[i2];
+			weights[i2] = temp;
 		}
 
 		@Override
@@ -273,9 +265,9 @@ class WeightsArray {
 
 		@Override
 		public boolean equals(Object other) {
-			// TODO equals with keys collection input
+			// TODO equals with idxs collection input
 			return other == this
-					|| (other instanceof WeightsArray.Int o && Arrays.equals(weights, 0, size, o.weights, 0, o.size));
+					|| (other instanceof DataContainer.Int o && Arrays.equals(weights, 0, size, o.weights, 0, o.size));
 		}
 
 		@Override
@@ -303,15 +295,14 @@ class WeightsArray {
 		}
 	}
 
-	static class Long extends Abstract<java.lang.Long> implements Weights.Long {
+	static class Long extends DataContainer<java.lang.Long> {
 
 		private long[] weights;
 		private final long defaultVal;
 		private final LongCollection values;
 		private static final long[] EmptyWeights = new long[0];
 
-		private Long(boolean isEdges, int expectedSize, long defVal) {
-			super(isEdges);
+		Long(int expectedSize, long defVal) {
 			weights = expectedSize > 0 ? new long[expectedSize] : EmptyWeights;
 			defaultVal = defVal;
 			values = new AbstractLongCollection() {
@@ -342,50 +333,47 @@ class WeightsArray {
 			};
 		}
 
-		static Weights.Long ofEdges(int expectedSize, long defVal) {
-			return new WeightsArray.Long(true, expectedSize, defVal);
+		public long getLong(int idx) {
+			checkIdx(idx);
+			return weights[idx];
 		}
 
-		static Weights.Long ofVertices(int expectedSize, long defVal) {
-			return new WeightsArray.Long(false, expectedSize, defVal);
+		public void set(int idx, long weight) {
+			checkIdx(idx);
+			weights[idx] = weight;
 		}
 
-		@Override
-		public long getLong(int key) {
-			checkKey(key);
-			return weights[key];
-		}
-
-		@Override
-		public void set(int key, long weight) {
-			checkKey(key);
-			weights[key] = weight;
-		}
-
-		@Override
 		public long defaultValLong() {
 			return defaultVal;
 		}
 
 		@Override
-		void keyAdd(int key) {
-			assert key == size : "only continues keys are supported";
-			if (size >= weights.length)
-				weights = Arrays.copyOf(weights, Math.max(2, weights.length * 2));
-			weights[key] = defaultVal;
+		public void add(int idx) {
+			assert idx == size : "only continues idxs are supported";
+			ensureCapacity(size + 1);
+			weights[idx] = defaultVal;
 			size++;
 		}
 
 		@Override
-		void keyRemove(int key) {
-			assert key == size - 1 : "only continues keys are supported";
+		void remove(int idx) {
+			assert idx == size - 1 : "only continues idxs are supported";
 			size--;
 		}
 
 		@Override
-		void keySwap(int k1, int k2) {
-			checkKey(k1);
-			checkKey(k2);
+		void ensureCapacity(int capacity) {
+			if (capacity < weights.length)
+				return;
+			int newLen = Math.max(2, weights.length * 2);
+			newLen = Math.max(newLen, capacity);
+			weights = Arrays.copyOf(weights, newLen);
+		}
+
+		@Override
+		void swap(int k1, int k2) {
+			checkIdx(k1);
+			checkIdx(k2);
 			long temp = weights[k1];
 			weights[k1] = weights[k2];
 			weights[k2] = temp;
@@ -399,7 +387,7 @@ class WeightsArray {
 		@Override
 		public boolean equals(Object other) {
 			return other == this
-					|| (other instanceof WeightsArray.Long o && Arrays.equals(weights, 0, size, o.weights, 0, o.size));
+					|| (other instanceof DataContainer.Long o && Arrays.equals(weights, 0, size, o.weights, 0, o.size));
 		}
 
 		@Override
@@ -427,15 +415,14 @@ class WeightsArray {
 		}
 	}
 
-	static class Double extends Abstract<java.lang.Double> implements Weights.Double {
+	static class Double extends DataContainer<java.lang.Double> {
 
 		private double[] weights;
 		private final double defaultVal;
 		private final DoubleCollection values;
 		private static final double[] EmptyWeights = new double[0];
 
-		private Double(boolean isEdges, int expectedSize, double defVal) {
-			super(isEdges);
+		Double(int expectedSize, double defVal) {
 			weights = expectedSize > 0 ? new double[expectedSize] : EmptyWeights;
 			defaultVal = defVal;
 			values = new AbstractDoubleCollection() {
@@ -466,50 +453,47 @@ class WeightsArray {
 			};
 		}
 
-		static Weights.Double ofEdges(int expectedSize, double defVal) {
-			return new WeightsArray.Double(true, expectedSize, defVal);
+		public double getDouble(int idx) {
+			checkIdx(idx);
+			return weights[idx];
 		}
 
-		static Weights.Double ofVertices(int expectedSize, double defVal) {
-			return new WeightsArray.Double(false, expectedSize, defVal);
+		public void set(int idx, double weight) {
+			checkIdx(idx);
+			weights[idx] = weight;
 		}
 
-		@Override
-		public double getDouble(int key) {
-			checkKey(key);
-			return weights[key];
-		}
-
-		@Override
-		public void set(int key, double weight) {
-			checkKey(key);
-			weights[key] = weight;
-		}
-
-		@Override
 		public double defaultValDouble() {
 			return defaultVal;
 		}
 
 		@Override
-		void keyAdd(int key) {
-			assert key == size : "only continues keys are supported";
-			if (size >= weights.length)
-				weights = Arrays.copyOf(weights, Math.max(2, weights.length * 2));
-			weights[key] = defaultVal;
+		void add(int idx) {
+			assert idx == size : "only continues idxs are supported";
+			ensureCapacity(size + 1);
+			weights[idx] = defaultVal;
 			size++;
 		}
 
 		@Override
-		void keyRemove(int key) {
-			assert key == size - 1 : "only continues keys are supported";
+		void remove(int idx) {
+			assert idx == size - 1 : "only continues idxs are supported";
 			size--;
 		}
 
 		@Override
-		void keySwap(int k1, int k2) {
-			checkKey(k1);
-			checkKey(k2);
+		void ensureCapacity(int capacity) {
+			if (capacity < weights.length)
+				return;
+			int newLen = Math.max(2, weights.length * 2);
+			newLen = Math.max(newLen, capacity);
+			weights = Arrays.copyOf(weights, newLen);
+		}
+
+		@Override
+		void swap(int k1, int k2) {
+			checkIdx(k1);
+			checkIdx(k2);
 			double temp = weights[k1];
 			weights[k1] = weights[k2];
 			weights[k2] = temp;
@@ -522,7 +506,7 @@ class WeightsArray {
 
 		@Override
 		public boolean equals(Object other) {
-			return other == this || (other instanceof WeightsArray.Double o
+			return other == this || (other instanceof DataContainer.Double o
 					&& Arrays.equals(weights, 0, size, o.weights, 0, o.size));
 		}
 
@@ -551,16 +535,15 @@ class WeightsArray {
 		}
 	}
 
-	static class Bool extends Abstract<Boolean> implements Weights.Bool {
+	static class Bool extends DataContainer<Boolean> {
 
 		private final BitSet weights;
 		private final boolean defaultVal;
 		private final BooleanCollection values;
 
-		private Bool(boolean isEdges, int expectedSize, boolean defVal) {
+		Bool(int expectedSize, boolean defVal) {
 			// We don't do anything with expectedSize, but we keep it for forward
 			// compatibility
-			super(isEdges);
 			weights = new BitSet();
 			defaultVal = defVal;
 			values = new AbstractBooleanCollection() {
@@ -591,48 +574,41 @@ class WeightsArray {
 			};
 		}
 
-		static Weights.Bool ofEdges(int expectedSize, boolean defVal) {
-			return new WeightsArray.Bool(true, expectedSize, defVal);
+		public boolean getBool(int idx) {
+			checkIdx(idx);
+			return weights.get(idx);
 		}
 
-		static Weights.Bool ofVertices(int expectedSize, boolean defVal) {
-			return new WeightsArray.Bool(false, expectedSize, defVal);
+		public void set(int idx, boolean weight) {
+			checkIdx(idx);
+			weights.set(idx, weight);
 		}
 
-		@Override
-		public boolean getBool(int key) {
-			checkKey(key);
-			return weights.get(key);
-		}
-
-		@Override
-		public void set(int key, boolean weight) {
-			checkKey(key);
-			weights.set(key, weight);
-		}
-
-		@Override
 		public boolean defaultValBool() {
 			return defaultVal;
 		}
 
 		@Override
-		void keyAdd(int key) {
-			assert key == size : "only continues keys are supported";
-			weights.set(key, defaultVal);
+		void add(int idx) {
+			assert idx == size : "only continues idxs are supported";
+			weights.set(idx, defaultVal);
 			size++;
 		}
 
 		@Override
-		void keyRemove(int key) {
-			assert key == size - 1 : "only continues keys are supported";
+		void remove(int idx) {
+			assert idx == size - 1 : "only continues idxs are supported";
 			size--;
 		}
 
 		@Override
-		void keySwap(int k1, int k2) {
-			checkKey(k1);
-			checkKey(k2);
+		void ensureCapacity(int capacity) {
+		}
+
+		@Override
+		void swap(int k1, int k2) {
+			checkIdx(k1);
+			checkIdx(k2);
 			boolean temp = weights.get(k1);
 			weights.set(k1, weights.get(k2));
 			weights.set(k2, temp);
@@ -646,7 +622,7 @@ class WeightsArray {
 		@Override
 		public boolean equals(Object other) {
 			return other == this
-					|| (other instanceof WeightsArray.Bool o && size == o.size && weights.equals(o.weights));
+					|| (other instanceof DataContainer.Bool o && size == o.size && weights.equals(o.weights));
 		}
 
 		@Override

@@ -3,11 +3,7 @@ package com.ugav.jgalgo;
 public class GraphTableUndirected extends GraphTableAbstract implements UGraph {
 
 	public GraphTableUndirected(int n) {
-		this(n, null);
-	}
-
-	protected GraphTableUndirected(int n, IDStrategy edgesIDStrategy) {
-		super(n, edgesIDStrategy);
+		super(n);
 	}
 
 	@Override
@@ -19,7 +15,7 @@ public class GraphTableUndirected extends GraphTableAbstract implements UGraph {
 
 	@Override
 	public void removeEdge(int e) {
-		e = swapBeforeRemove(e);
+		e = edgeSwapBeforeRemove(e);
 		int u = edgeSource(e), v = edgeTarget(e);
 		edges[u][v] = edges[v][u] = EdgeNone;
 		super.removeEdge(e);

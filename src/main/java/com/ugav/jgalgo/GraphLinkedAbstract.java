@@ -3,15 +3,14 @@ package com.ugav.jgalgo;
 import java.util.Collection;
 import java.util.NoSuchElementException;
 
-abstract class GraphLinkedAbstract extends GraphAbstract {
+abstract class GraphLinkedAbstract extends GraphAbstractContinues {
 
-	private final Weights<Node> edges;
+	private final DataContainer.Obj<Node> edges;
 
-	GraphLinkedAbstract(int n, IDStrategy verticesIDStrategy, IDStrategy edgesIDStrategy) {
-		super(n, verticesIDStrategy, edgesIDStrategy);
-		EdgesWeights.Builder wBuilder = new EdgesWeights.Builder(this);
-		edges = wBuilder.ofObjs(null);
-		addInternalEdgesWeight(edges);
+	GraphLinkedAbstract(int n) {
+		super(n);
+		edges = new DataContainer.Obj<>(n, null);
+		addInternalEdgesDataContainer(edges);
 	}
 
 	@Override
@@ -62,7 +61,7 @@ abstract class GraphLinkedAbstract extends GraphAbstract {
 	}
 
 	Collection<Node> nodes() {
-		return ((WeightsAbstract<Node>) edges).values();
+		return edges.values();
 	}
 
 	abstract class EdgeItr implements EdgeIter {

@@ -3,17 +3,16 @@ package com.ugav.jgalgo;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 
-abstract class GraphArrayAbstract extends GraphAbstract {
+abstract class GraphArrayAbstract extends GraphAbstractContinues {
 
-	private final Weights.Long edgeEndpoints;
+	private final DataContainer.Long edgeEndpoints;
 
 	static final int[] EmptyIntArr = new int[0];
 
-	public GraphArrayAbstract(int n, IDStrategy verticesIDStrategy, IDStrategy edgesIDStrategy) {
-		super(n, verticesIDStrategy, edgesIDStrategy);
-		EdgesWeights.Builder wBuilder = new EdgesWeights.Builder(this);
-		edgeEndpoints = wBuilder.ofLongs(sourceTarget2Endpoints(-1, -1));
-		addInternalEdgesWeight(edgeEndpoints);
+	public GraphArrayAbstract(int n) {
+		super(n);
+		edgeEndpoints = new DataContainer.Long(0, sourceTarget2Endpoints(-1, -1));
+		addInternalEdgesDataContainer(edgeEndpoints);
 	}
 
 	@Override
@@ -23,7 +22,7 @@ abstract class GraphArrayAbstract extends GraphAbstract {
 		return e;
 	}
 
-	static void addEdgeToList(Weights<int[]> edges, Weights.Int edgesNum, int w, int e) {
+	static void addEdgeToList(DataContainer.Obj<int[]> edges, DataContainer.Int edgesNum, int w, int e) {
 		int[] es = edges.get(w);
 		int num = edgesNum.getInt(w);
 		if (es.length <= num) {
@@ -34,7 +33,7 @@ abstract class GraphArrayAbstract extends GraphAbstract {
 		edgesNum.set(w, num + 1);
 	}
 
-	static int edgeIndexOf(Weights<int[]> edges0, Weights.Int edgesNum, int w, int e) {
+	static int edgeIndexOf(DataContainer.Obj<int[]> edges0, DataContainer.Int edgesNum, int w, int e) {
 		int[] edges = edges0.get(w);
 		int num = edgesNum.getInt(w);
 		for (int i = 0; i < num; i++)
@@ -43,7 +42,7 @@ abstract class GraphArrayAbstract extends GraphAbstract {
 		return -1;
 	}
 
-	static void removeEdgeFromList(Weights<int[]> edges, Weights.Int edgesNum, int w, int e) {
+	static void removeEdgeFromList(DataContainer.Obj<int[]> edges, DataContainer.Int edgesNum, int w, int e) {
 		int i = edgeIndexOf(edges, edgesNum, w, e);
 		int[] es = edges.get(w);
 		int num = edgesNum.getInt(w);

@@ -1,42 +1,20 @@
 package com.ugav.jgalgo;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntSet;
-import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 
 abstract class GraphAbstract implements Graph {
 
-	private final IDStrategy verticesIDStrategy;
-	private final IDStrategy edgesIDStrategy;
+	final IDStrategy verticesIDStrategy;
+	final IDStrategy edgesIDStrategy;
 
-	private final List<Weights<?>> eWeightsInternal = new ArrayList<>();
-	private final List<Weights<?>> vWeightsInternal = new ArrayList<>();
-	private final Map<Object, Weights<?>> eWeights = new Object2ObjectArrayMap<>();
-	private final Map<Object, Weights<?>> vWeights = new Object2ObjectArrayMap<>();
-
-	GraphAbstract(int n, IDStrategy verticesIDStrategy, IDStrategy edgesIDStrategy) {
-		if (verticesIDStrategy == null)
-			verticesIDStrategy = new IDStrategy.Continues();
-		if (edgesIDStrategy == null)
-			edgesIDStrategy = new IDStrategy.Continues();
-		if (verticesIDStrategy == edgesIDStrategy)
-			throw new IllegalArgumentException();
-
-		this.verticesIDStrategy = verticesIDStrategy;
-		this.edgesIDStrategy = edgesIDStrategy;
-
-		if (n < 0)
-			throw new IllegalArgumentException();
-		verticesIDStrategy.ensureSize(n);
-		for (int i = 0; i < n; i++)
-			verticesIDStrategy.newID();
+	GraphAbstract(IDStrategy verticesIDStrategy, IDStrategy edgesIDStrategy) {
+		this.verticesIDStrategy = Objects.requireNonNull(verticesIDStrategy);
+		this.edgesIDStrategy = Objects.requireNonNull(edgesIDStrategy);
 	}
 
 	@Override
@@ -50,144 +28,14 @@ abstract class GraphAbstract implements Graph {
 	}
 
 	@Override
-	public int addVertex() {
-		int u = verticesIDStrategy.newID();
-		for (Weights<?> data : vWeightsInternal)
-			((WeightsAbstract<?>) data).keyAdd(u);
-		for (Weights<?> data : vWeights.values())
-			((WeightsAbstract<?>) data).keyAdd(u);
-		return u;
-	}
-
-	@Override
-	public int addEdge(int u, int v) {
-		checkVertexIdx(u);
-		checkVertexIdx(v);
-		int e = edgesIDStrategy.newID();
-		for (Weights<?> data : eWeightsInternal)
-			((WeightsAbstract<?>) data).keyAdd(e);
-		for (Weights<?> data : eWeights.values())
-			((WeightsAbstract<?>) data).keyAdd(e);
-		return e;
-	}
-
-	@Override
-	public void removeEdge(int e) {
-		e = swapBeforeRemove(e);
-		edgesIDStrategy.removeID(e);
-		for (Weights<?> data : eWeightsInternal)
-			((WeightsAbstract<?>) data).keyRemove(e);
-		for (Weights<?> data : eWeights.values())
-			((WeightsAbstract<?>) data).keyRemove(e);
-	}
-
-	int swapBeforeRemove(int e) {
-		checkEdgeIdx(e);
-		int en = edgesIDStrategy.swapBeforeRemove(e);
-		boolean rename = e != en;
-		if (rename) {
-			edgeSwap(e, en);
-			edgesIDStrategy.afterSwap(e, en);
-		}
-		return en;
-	}
-
-	void edgeSwap(int e1, int e2) {
-		for (Weights<?> data : eWeightsInternal)
-			((WeightsAbstract<?>) data).keySwap(e1, e2);
-		for (Weights<?> data : eWeights.values())
-			((WeightsAbstract<?>) data).keySwap(e1, e2);
-	}
-
-	@Override
 	public void clear() {
 		clearEdges();
-		for (Weights<?> data : vWeightsInternal)
-			((WeightsAbstract<?>) data).clear();
-		for (Weights<?> data : vWeights.values())
-			((WeightsAbstract<?>) data).clear();
+		verticesIDStrategy.clear();
 	}
 
 	@Override
 	public void clearEdges() {
 		edgesIDStrategy.clear();
-		for (Weights<?> data : eWeightsInternal)
-			((WeightsAbstract<?>) data).clear();
-		for (Weights<?> data : eWeights.values())
-			data.clear();
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public <V, WeightsT extends Weights<V>> WeightsT verticesWeight(Object key) {
-		return (WeightsT) vWeights.get(key);
-	}
-
-	<V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, WeightsT weights) {
-		Weights<?> oldWeights = vWeights.put(key, weights);
-		if (oldWeights != null)
-			throw new IllegalArgumentException("Two weights types with the same key: " + key);
-		return weights;
-	}
-
-	@Override
-	public Set<Object> getVerticesWeightKeys() {
-		return Collections.unmodifiableSet(vWeights.keySet());
-	}
-
-	@Override
-	public Collection<Weights<?>> getVerticesWeights() {
-		return Collections.unmodifiableCollection(vWeights.values());
-	}
-
-	@Override
-	public void removeVerticesWeights(Object key) {
-		vWeights.remove(key);
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public <E, WeightsT extends Weights<E>> WeightsT edgesWeight(Object key) {
-		return (WeightsT) eWeights.get(key);
-	}
-
-	<E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, WeightsT weights) {
-		Weights<?> oldWeights = eWeights.put(key, weights);
-		if (oldWeights != null)
-			throw new IllegalArgumentException("Two weights types with the same key: " + key);
-		return weights;
-	}
-
-	@Override
-	public Set<Object> getEdgesWeightsKeys() {
-		return Collections.unmodifiableSet(eWeights.keySet());
-	}
-
-	@Override
-	public Collection<Weights<?>> getEdgesWeights() {
-		return Collections.unmodifiableCollection(eWeights.values());
-	}
-
-	@Override
-	public void removeEdgesWeights(Object key) {
-		eWeights.remove(key);
-	}
-
-	void addInternalVerticesWeight(Weights<?> weight) {
-		vWeightsInternal.add(weight);
-		for (IntIterator it = vertices().iterator(); it.hasNext();) {
-			int v = it.nextInt();
-			((WeightsAbstract<?>) weight).keyAdd(v);
-		}
-	}
-
-	void addInternalEdgesWeight(Weights<?> weight) {
-		// TODO boolean addKeys
-		eWeightsInternal.add(weight);
-		for (IntIterator it = edges().iterator(); it.hasNext();) {
-			int e = it.nextInt();
-			((WeightsAbstract<?>) weight).keyAdd(e);
-		}
 	}
 
 	@Override
@@ -199,6 +47,10 @@ abstract class GraphAbstract implements Graph {
 	public IDStrategy getEdgesIDStrategy() {
 		return edgesIDStrategy;
 	}
+
+	abstract <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, WeightsT weights);
+
+	abstract <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, WeightsT weights);
 
 	@Override
 	public boolean equals(Object other) {
@@ -330,16 +182,6 @@ abstract class GraphAbstract implements Graph {
 		}
 		s.append('}');
 		return s.toString();
-	}
-
-	void checkVertexIdx(int u) {
-		if (!vertices().contains(u))
-			throw new IndexOutOfBoundsException(u);
-	}
-
-	void checkEdgeIdx(int e) {
-		if (!edges().contains(e))
-			throw new IndexOutOfBoundsException(e);
 	}
 
 }

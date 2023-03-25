@@ -182,6 +182,11 @@ class GraphImplTestUtils extends TestUtils {
 				this.v = v;
 				this.data = Objects.requireNonNull(data);
 			}
+
+			@Override
+			public String toString() {
+				return "(" + u + ", " + v + ")";
+			}
 		}
 	}
 

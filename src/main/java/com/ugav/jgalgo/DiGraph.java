@@ -63,9 +63,9 @@ public interface DiGraph extends Graph {
 	/**
 	 * Reverse an edge by switching its source and target
 	 *
-	 * @param e an existing edge in the graph
+	 * @param edge an existing edge in the graph
 	 */
-	public void reverseEdge(int e);
+	public void reverseEdge(int edge);
 
 	@Override
 	@Deprecated

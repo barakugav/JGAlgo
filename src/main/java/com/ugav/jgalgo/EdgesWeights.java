@@ -1,7 +1,5 @@
 package com.ugav.jgalgo;
 
-import it.unimi.dsi.fastutil.ints.IntIterator;
-
 public class EdgesWeights {
 
 	private EdgesWeights() {
@@ -49,60 +47,60 @@ public class EdgesWeights {
 
 	@SuppressWarnings("unchecked")
 	private static <E, WeightsT extends Weights<E>> WeightsT addWeights(Graph g, Object key, WeightsT weights) {
-		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-			int e = it.nextInt();
-			((WeightsAbstract<E>) weights).keyAdd(e);
-		}
-		((GraphAbstract) g).addEdgesWeights(key, weights);
-		return weights;
+		DataContainer<E> container = ((WeightsImpl<E>) weights).container;
+		int m = g.edges().size();
+		container.ensureCapacity(m);
+		for (int eIdx = 0; eIdx < m; eIdx++)
+			container.add(eIdx);
+		return ((GraphAbstract) g).addEdgesWeights(key, weights);
 	}
 
-	static class Builder {
+	private static class Builder {
 		private final Graph g;
-		private final boolean isFixed;
+		private final boolean isContinues;
 
 		Builder(Graph g) {
 			this.g = g;
-			isFixed = g.getEdgesIDStrategy() instanceof IDStrategy.Fixed;
+			isContinues = g.getEdgesIDStrategy() instanceof IDStrategy.Continues;
 		}
 
 		<E> Weights<E> ofObjs(E defVal) {
-			if (isFixed) {
-				return WeightsMap.Obj.ofEdges(g.edges().size(), defVal);
+			if (isContinues) {
+				return new WeightsImpl.Direct.Obj<>(g.edges().size(), defVal);
 			} else {
-				return WeightsArray.Obj.ofEdges(g.edges().size(), defVal);
+				return new WeightsImpl.Mapped.Obj<>(g.edges().size(), defVal, g.getEdgesIDStrategy());
 			}
 		}
 
 		Weights.Int ofInts(int defVal) {
-			if (isFixed) {
-				return WeightsMap.Int.ofEdges(g.edges().size(), defVal);
+			if (isContinues) {
+				return new WeightsImpl.Direct.Int(g.edges().size(), defVal);
 			} else {
-				return WeightsArray.Int.ofEdges(g.edges().size(), defVal);
+				return new WeightsImpl.Mapped.Int(g.edges().size(), defVal, g.getEdgesIDStrategy());
 			}
 		}
 
 		Weights.Long ofLongs(long defVal) {
-			if (isFixed) {
-				return WeightsMap.Long.ofEdges(g.edges().size(), defVal);
+			if (isContinues) {
+				return new WeightsImpl.Direct.Long(g.edges().size(), defVal);
 			} else {
-				return WeightsArray.Long.ofEdges(g.edges().size(), defVal);
+				return new WeightsImpl.Mapped.Long(g.edges().size(), defVal, g.getEdgesIDStrategy());
 			}
 		}
 
 		Weights.Double ofDoubles(double defVal) {
-			if (isFixed) {
-				return WeightsMap.Double.ofEdges(g.edges().size(), defVal);
+			if (isContinues) {
+				return new WeightsImpl.Direct.Double(g.edges().size(), defVal);
 			} else {
-				return WeightsArray.Double.ofEdges(g.edges().size(), defVal);
+				return new WeightsImpl.Mapped.Double(g.edges().size(), defVal, g.getEdgesIDStrategy());
 			}
 		}
 
 		Weights.Bool ofBools(boolean defVal) {
-			if (isFixed) {
-				return WeightsMap.Bool.ofEdges(g.edges().size(), defVal);
+			if (isContinues) {
+				return new WeightsImpl.Direct.Bool(g.edges().size(), defVal);
 			} else {
-				return WeightsArray.Bool.ofEdges(g.edges().size(), defVal);
+				return new WeightsImpl.Mapped.Bool(g.edges().size(), defVal, g.getEdgesIDStrategy());
 			}
 		}
 	}

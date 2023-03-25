@@ -7,8 +7,8 @@ import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntIterator;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
 
@@ -60,7 +60,10 @@ public abstract class IDStrategy {
 		private int size;
 		private final IntSet idSet;
 
-		public Continues() {
+		Continues(int initSize) {
+			if (initSize < 0)
+				throw new IllegalArgumentException();
+			size = initSize;
 			idSet = new AbstractIntSet() {
 
 				@Override
@@ -95,19 +98,33 @@ public abstract class IDStrategy {
 		}
 
 		@Override
-		int newID() {
+		int newIdx() {
 			return size++;
 		}
 
 		@Override
-		void removeID(int id) {
-			assert id == size - 1;
+		void removeIdx(int idx) {
+			assert idx == size - 1;
+			assert size > 0;
 			size--;
 		}
 
 		@Override
 		void clear() {
 			size = 0;
+		}
+
+		@Override
+		int idToIdx(int id) {
+			if (!(0 <= id && id < size))
+				throw new IndexOutOfBoundsException(id);
+			return id;
+		}
+
+		@Override
+		int idxToId(int idx) {
+			checkIdx(idx);
+			return idx;
 		}
 
 		@Override
@@ -120,38 +137,66 @@ public abstract class IDStrategy {
 		}
 
 		@Override
-		int swapBeforeRemove(int id) {
-			return size - 1;
+		void idxSwap(int idx1, int idx2) {
+			int id1 = idxToId(idx1), id2 = idxToId(idx2);
+			notifyIDSwap(id1, id2);
+		}
+
+		private void checkIdx(int idx) {
+			if (!(0 <= idx && idx < size))
+				throw new IndexOutOfBoundsException(idx);
 		}
 	}
 
 	private abstract static class FixedAbstract extends IDStrategy {
 
-		private final IntOpenHashSet ids;
-		private final IntSet idsView;
+		private final Int2IntOpenHashMap idToIdx;
+		private final DataContainer.Int idxToId;
+		private final IntSet idsView; // move to graph abstract implementation
 
 		FixedAbstract() {
-			ids = new IntOpenHashSet();
-			idsView = IntSets.unmodifiable(ids);
+			idToIdx = new Int2IntOpenHashMap();
+			idsView = IntSets.unmodifiable(idToIdx.keySet());
+			idxToId = new DataContainer.Int(0, 0);
 		}
 
 		@Override
-		int newID() {
+		int newIdx() {
+			int idx = idToIdx.size();
 			int id = nextID();
-			ids.add(id);
-			return id;
+			idToIdx.put(id, idx);
+			idxToId.add(idx);
+			idxToId.set(idx, id);
+			return idx;
 		}
 
 		abstract int nextID();
 
 		@Override
-		void removeID(int id) {
-			ids.remove(id);
+		void removeIdx(int idx) {
+			assert idx == idxToId.size - 1;
+			assert idxToId.size > 0;
+			final int id = idxToId.getInt(idx);
+			idxToId.remove(idx);
+			idToIdx.remove(id);
 		}
 
 		@Override
 		void clear() {
-			ids.clear();
+			idToIdx.clear();
+			idxToId.clear();
+		}
+
+		@Override
+		int idToIdx(int id) {
+			if (!idToIdx.containsKey(id))
+				throw new IndexOutOfBoundsException(id);
+			return idToIdx.get(id);
+		}
+
+		@Override
+		int idxToId(int idx) {
+			return idxToId.getInt(idx);
 		}
 
 		@Override
@@ -161,12 +206,21 @@ public abstract class IDStrategy {
 
 		@Override
 		void ensureSize(int n) {
-			ids.ensureCapacity(n);
+			idToIdx.ensureCapacity(n);
 		}
 
 		@Override
-		int swapBeforeRemove(int id) {
-			return id;
+		void idxSwap(int idx1, int idx2) {
+			int id1 = idxToId.getInt(idx1);
+			int id2 = idxToId.getInt(idx2);
+			idxToId.set(idx1, id2);
+			idxToId.set(idx2, id1);
+			int oldIdx1 = idToIdx.put(id1, idx2);
+			int oldIdx2 = idToIdx.put(id2, idx1);
+			assert idx1 == oldIdx1;
+			assert idx2 == oldIdx2;
+
+			// The user IDs were not changed, no need to call notifyIDSwap
 		}
 	}
 
@@ -197,11 +251,11 @@ public abstract class IDStrategy {
 
 	}
 
-	static class Rnad extends FixedAbstract {
+	static class Rand extends FixedAbstract {
 
 		private final Random rand = new Random();
 
-		Rnad() {
+		Rand() {
 		}
 
 		@Override
@@ -214,22 +268,33 @@ public abstract class IDStrategy {
 		}
 	}
 
-	abstract int newID();
+	abstract int newIdx();
 
-	abstract void removeID(int id);
+	abstract void removeIdx(int idx);
 
 	abstract void clear();
 
+	abstract int idToIdx(int id);
+
+	abstract int idxToId(int idx);
+
 	abstract IntSet idSet();
 
-	abstract void ensureSize(int n);
+	int isSwapNeededBeforeRemove(int idx) {
+		int size = idSet().size();
+		if (!(0 <= idx && idx < size))
+			throw new IndexOutOfBoundsException(idx);
+		return size - 1;
+	}
 
-	abstract int swapBeforeRemove(int id);
+	abstract void idxSwap(int idx1, int idx2);
 
-	void afterSwap(int id1, int id2) {
+	void notifyIDSwap(int id1, int id2) {
 		for (IDSwapListener listener : idSwapListeners)
 			listener.idSwap(id1, id2);
 	}
+
+	abstract void ensureSize(int n);
 
 	/**
 	 * Add a listener that will be notified each time the strategy chooses to swap

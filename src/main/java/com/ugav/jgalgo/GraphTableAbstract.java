@@ -3,23 +3,22 @@ package com.ugav.jgalgo;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 
-abstract class GraphTableAbstract extends GraphAbstract {
+abstract class GraphTableAbstract extends GraphAbstractContinues {
 
 	final int[][] edges;
-	private final Weights.Long edgeEndpoints;
+	private final DataContainer.Long edgeEndpoints;
 
 	private static final int[][] EDGES_EMPTY = new int[0][];
 	static final int EdgeNone = -1;
 
-	GraphTableAbstract(int n, IDStrategy edgesIDStrategy) {
-		super(n, null, edgesIDStrategy);
+	GraphTableAbstract(int n) {
+		super(n);
 		edges = n > 0 ? new int[n][n] : EDGES_EMPTY;
 		for (int u = 0; u < n; u++)
 			Arrays.fill(edges[u], EdgeNone);
 
-		EdgesWeights.Builder wBuilder = new EdgesWeights.Builder(this);
-		edgeEndpoints = wBuilder.ofLongs(sourceTarget2Endpoints(-1, -1));
-		addInternalEdgesWeight(edgeEndpoints);
+		edgeEndpoints = new DataContainer.Long(n, sourceTarget2Endpoints(-1, -1));
+		addInternalEdgesDataContainer(edgeEndpoints);
 	}
 
 	@Override

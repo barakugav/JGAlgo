@@ -4,32 +4,26 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 
 public class GraphArrayDirected extends GraphArrayAbstract implements DiGraph {
 
-	private final Weights<int[]> edgesOut;
-	private final Weights.Int edgesOutNum;
-	private final Weights<int[]> edgesIn;
-	private final Weights.Int edgesInNum;
+	private final DataContainer.Obj<int[]> edgesOut;
+	private final DataContainer.Int edgesOutNum;
+	private final DataContainer.Obj<int[]> edgesIn;
+	private final DataContainer.Int edgesInNum;
 
 	public GraphArrayDirected() {
 		this(0);
 	}
 
 	public GraphArrayDirected(int n) {
-		this(n, null, null);
-	}
+		super(n);
+		edgesOut = new DataContainer.Obj<>(n, EmptyIntArr);
+		edgesOutNum = new DataContainer.Int(n, 0);
+		edgesIn = new DataContainer.Obj<>(n, EmptyIntArr);
+		edgesInNum = new DataContainer.Int(n, 0);
 
-	protected GraphArrayDirected(int n, IDStrategy verticesIDStrategy, IDStrategy edgesIDStrategy) {
-		super(n, verticesIDStrategy, edgesIDStrategy);
-		VerticesWeights.Builder vBuilder = new VerticesWeights.Builder(this);
-
-		edgesOut = vBuilder.ofObjs(EmptyIntArr);
-		edgesOutNum = vBuilder.ofInts(0);
-		edgesIn = vBuilder.ofObjs(EmptyIntArr);
-		edgesInNum = vBuilder.ofInts(0);
-
-		addInternalVerticesWeight(edgesOut);
-		addInternalVerticesWeight(edgesOutNum);
-		addInternalVerticesWeight(edgesIn);
-		addInternalVerticesWeight(edgesInNum);
+		addInternalVerticesDataContainer(edgesOut);
+		addInternalVerticesDataContainer(edgesOutNum);
+		addInternalVerticesDataContainer(edgesIn);
+		addInternalVerticesDataContainer(edgesInNum);
 	}
 
 	@Override
@@ -54,7 +48,7 @@ public class GraphArrayDirected extends GraphArrayAbstract implements DiGraph {
 
 	@Override
 	public void removeEdge(int e) {
-		e = swapBeforeRemove(e);
+		e = edgeSwapBeforeRemove(e);
 		int u = edgeSource(e), v = edgeTarget(e);
 		removeEdgeFromList(edgesOut, edgesOutNum, u, e);
 		removeEdgeFromList(edgesIn, edgesInNum, v, e);

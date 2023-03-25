@@ -3,11 +3,7 @@ package com.ugav.jgalgo;
 public class GraphTableDirected extends GraphTableAbstract implements DiGraph {
 
 	public GraphTableDirected(int n) {
-		this(n, null);
-	}
-
-	protected GraphTableDirected(int n, IDStrategy edgesIDStrategy) {
-		super(n, edgesIDStrategy);
+		super(n);
 	}
 
 	@Override
@@ -29,7 +25,7 @@ public class GraphTableDirected extends GraphTableAbstract implements DiGraph {
 
 	@Override
 	public void removeEdge(int e) {
-		e = swapBeforeRemove(e);
+		e = edgeSwapBeforeRemove(e);
 		int u = edgeSource(e), v = edgeTarget(e);
 		edges[u][v] = EdgeNone;
 		super.removeEdge(e);

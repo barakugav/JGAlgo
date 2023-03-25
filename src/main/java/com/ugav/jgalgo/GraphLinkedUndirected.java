@@ -1,24 +1,17 @@
 package com.ugav.jgalgo;
 
-import it.unimi.dsi.fastutil.ints.IntIterator;
-
 public class GraphLinkedUndirected extends GraphLinkedAbstract implements UGraph {
 
-	private final Weights<Node> edges;
+	private final DataContainer.Obj<Node> edges;
 
 	public GraphLinkedUndirected() {
 		this(0);
 	}
 
 	public GraphLinkedUndirected(int n) {
-		this(n, null, null);
-	}
-
-	protected GraphLinkedUndirected(int n, IDStrategy verticesIDStrategy, IDStrategy edgesIDStrategy) {
-		super(n, verticesIDStrategy, edgesIDStrategy);
-		VerticesWeights.Builder vBuilder = new VerticesWeights.Builder(this);
-		edges = vBuilder.ofObjs(null);
-		addInternalVerticesWeight(edges);
+		super(n);
+		edges = new DataContainer.Obj<>(n, null);
+		addInternalVerticesDataContainer(edges);
 	}
 
 	@Override
@@ -96,10 +89,10 @@ public class GraphLinkedUndirected extends GraphLinkedAbstract implements UGraph
 			Node p = (Node) p0;
 			p.nextu = p.nextv = p.prevu = p.prevv = null;
 		}
-		for (IntIterator it = vertices().iterator(); it.hasNext();) {
-			int u = it.nextInt();
+		int n = vertices().size();
+		for (int uIdx = 0; uIdx < n; uIdx++) {
 			// TODO do some sort of 'addKey' instead of set, no need
-			edges.set(u, null);
+			edges.set(uIdx, null);
 		}
 		super.clearEdges();
 

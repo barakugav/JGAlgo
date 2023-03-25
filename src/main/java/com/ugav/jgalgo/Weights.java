@@ -2,9 +2,9 @@ package com.ugav.jgalgo;
 
 public interface Weights<E> {
 
-	public E get(int key);
+	public E get(int id);
 
-	public void set(int key, E data);
+	public void set(int id, E data);
 
 	public E defaultVal();
 

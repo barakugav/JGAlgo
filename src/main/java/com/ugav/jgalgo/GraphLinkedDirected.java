@@ -1,29 +1,22 @@
 package com.ugav.jgalgo;
 
-import it.unimi.dsi.fastutil.ints.IntIterator;
-
 public class GraphLinkedDirected extends GraphLinkedAbstract implements DiGraph {
 
-	private final Weights<Node> edgesIn;
-	private final Weights<Node> edgesOut;
+	private final DataContainer.Obj<Node> edgesIn;
+	private final DataContainer.Obj<Node> edgesOut;
 
 	public GraphLinkedDirected() {
 		this(0);
 	}
 
 	public GraphLinkedDirected(int n) {
-		this(n, null, null);
-	}
+		super(n);
 
-	protected GraphLinkedDirected(int n, IDStrategy verticesIDStrategy, IDStrategy edgesIDStrategy) {
-		super(n, verticesIDStrategy, edgesIDStrategy);
-		VerticesWeights.Builder vBuilder = new VerticesWeights.Builder(this);
+		edgesIn = new DataContainer.Obj<>(n, null);
+		edgesOut = new DataContainer.Obj<>(n, null);
 
-		edgesIn = vBuilder.ofObjs(null);
-		edgesOut = vBuilder.ofObjs(null);
-
-		addInternalVerticesWeight(edgesIn);
-		addInternalVerticesWeight(edgesOut);
+		addInternalVerticesDataContainer(edgesIn);
+		addInternalVerticesDataContainer(edgesOut);
 	}
 
 	@Override
@@ -145,11 +138,11 @@ public class GraphLinkedDirected extends GraphLinkedAbstract implements DiGraph 
 			Node p = (Node) p0;
 			p.nextOut = p.prevOut = p.nextIn = p.prevIn = null;
 		}
-		for (IntIterator it = vertices().iterator(); it.hasNext();) {
-			int u = it.nextInt();
+		int n = vertices().size();
+		for (int uIdx = 0; uIdx < n; uIdx++) {
 			// TODO do some sort of 'addKey' instead of set, no need
-			edgesOut.set(u, null);
-			edgesIn.set(u, null);
+			edgesOut.set(uIdx, null);
+			edgesIn.set(uIdx, null);
 		}
 		super.clearEdges();
 	}

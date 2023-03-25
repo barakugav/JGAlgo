@@ -2,26 +2,20 @@ package com.ugav.jgalgo;
 
 public class GraphArrayUndirected extends GraphArrayAbstract implements UGraph {
 
-	private final Weights<int[]> edges;
-	private final Weights.Int edgesNum;
+	private final DataContainer.Obj<int[]> edges;
+	private final DataContainer.Int edgesNum;
 
 	public GraphArrayUndirected() {
 		this(0);
 	}
 
 	public GraphArrayUndirected(int n) {
-		this(n, null, null);
-	}
+		super(n);
+		edgesNum = new DataContainer.Int(n, 0);
+		edges = new DataContainer.Obj<>(n, EmptyIntArr);
 
-	protected GraphArrayUndirected(int n, IDStrategy verticesIDStrategy, IDStrategy edgesIDStrategy) {
-		super(n, verticesIDStrategy, edgesIDStrategy);
-		VerticesWeights.Builder vBuilder = new VerticesWeights.Builder(this);
-
-		edgesNum = vBuilder.ofInts(0);
-		edges = vBuilder.ofObjs(EmptyIntArr);
-
-		addInternalVerticesWeight(edgesNum);
-		addInternalVerticesWeight(edges);
+		addInternalVerticesDataContainer(edgesNum);
+		addInternalVerticesDataContainer(edges);
 	}
 
 	@Override
@@ -40,7 +34,7 @@ public class GraphArrayUndirected extends GraphArrayAbstract implements UGraph {
 
 	@Override
 	public void removeEdge(int e) {
-		e = swapBeforeRemove(e);
+		e = edgeSwapBeforeRemove(e);
 		int u = edgeSource(e), v = edgeTarget(e);
 		removeEdgeFromList(edges, edgesNum, u, e);
 		removeEdgeFromList(edges, edgesNum, v, e);
