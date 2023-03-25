@@ -251,7 +251,6 @@ public abstract class GraphBuilder {
 		@Override
 		public void removeVerticesWeights(Object key) {
 			g.removeVerticesWeights(key);
-
 		}
 
 		@Override

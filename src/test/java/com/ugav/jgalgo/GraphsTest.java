@@ -26,12 +26,13 @@ public class GraphsTest extends TestUtils {
 
 			boolean[] visited = new boolean[n];
 			List<Integer> invalidVertices = new ArrayList<>();
-			Graphs.runBFS(g, source, (v, e) -> {
+			for (Graphs.BFSIter it = new Graphs.BFSIter(g, source); it.hasNext();) {
+				int v = it.nextInt();
+				int e = it.inEdge();
 				if (visited[v] || (v != source && g.edgeEndpoint(e, g.edgeEndpoint(e, v)) != v))
 					invalidVertices.add(Integer.valueOf(v));
 				visited[v] = true;
-				return true;
-			});
+			}
 			Assertions.assertTrue(invalidVertices.isEmpty());
 		});
 	}

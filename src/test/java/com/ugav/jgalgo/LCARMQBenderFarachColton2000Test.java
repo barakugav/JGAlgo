@@ -17,7 +17,9 @@ public class LCARMQBenderFarachColton2000Test extends TestUtils {
 		int[] parent = new int[n];
 		int[] depth = new int[n];
 
-		Graphs.runBFS(g, r, (v, e) -> {
+		for (Graphs.BFSIter it = new Graphs.BFSIter(g, r); it.hasNext();) {
+			int v = it.nextInt();
+			int e = it.inEdge();
 			if (e == -1) {
 				parent[v] = -1;
 				depth[v] = 0;
@@ -26,8 +28,7 @@ public class LCARMQBenderFarachColton2000Test extends TestUtils {
 				parent[v] = p;
 				depth[v] = depth[p] + 1;
 			}
-			return true;
-		});
+		}
 
 		for (int query = 0; query < queriesNum; query++) {
 			int u = rand.nextInt(n);

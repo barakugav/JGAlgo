@@ -2,6 +2,7 @@ package com.ugav.jgalgo;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 import com.ugav.jgalgo.SSSP.SSSPResultsImpl;
@@ -23,47 +24,42 @@ public class Graphs {
 	private Graphs() {
 	}
 
-	@FunctionalInterface
-	public static interface BFSOperator {
+	public static class BFSIter implements IntIterator {
 
-		/**
-		 * Perform some operation on a vertex during a BFS traversy
-		 *
-		 * @param v a vertex
-		 * @param e the edge on which the BFS algorithm reached the vertex. might be
-		 *          null for the source vertices
-		 * @return true if the BFS should continue
-		 */
-		public boolean handleVertex(int v, int e);
+		private final Graph g;
+		private final boolean[] visited;
+		private final QueueIntFixSize queue;
+		private int inEdge;
 
-	}
-
-	/**
-	 * Perform a BFS traversy on a graph
-	 *
-	 * @param g      a graph
-	 * @param source s source vertex
-	 * @param op     user operation to operate on the reachable vertices
-	 */
-	public static void runBFS(Graph g, int source, BFSOperator op) {
-		runBFS(g, new int[] { source }, op);
-	}
-
-	public static void runBFS(Graph g, int[] sources, BFSOperator op) {
-		int n = g.vertices().size();
-		boolean[] visited = new boolean[n];
-
-		QueueIntFixSize queue = new QueueIntFixSize(n);
-
-		for (int source : sources) {
-			visited[source] = true;
-			queue.push(source);
-			if (!op.handleVertex(source, -1))
-				return;
+		public BFSIter(Graph g, int source) {
+			this(g, new int[] { source });
 		}
 
-		while (!queue.isEmpty()) {
-			int u = queue.pop();
+		public BFSIter(Graph g, int[] sources) {
+			this.g = g;
+			int n = g.vertices().size();
+			visited = new boolean[n];
+			queue = new QueueIntFixSize(n * 2);
+			inEdge = -1;
+
+			for (int source : sources) {
+				visited[source] = true;
+				queue.push(source); /* push vertex */
+				queue.push(-1); /* push in edge */
+			}
+		}
+
+		@Override
+		public boolean hasNext() {
+			return !queue.isEmpty();
+		}
+
+		@Override
+		public int nextInt() {
+			if (!hasNext())
+				throw new NoSuchElementException();
+			final int u = queue.pop(); /* pop vertex */
+			inEdge = queue.pop(); /* pop in edge */
 
 			for (EdgeIter eit = g.edges(u); eit.hasNext();) {
 				int e = eit.nextInt();
@@ -71,11 +67,14 @@ public class Graphs {
 				if (visited[v])
 					continue;
 				visited[v] = true;
-				queue.push(v);
-
-				if (!op.handleVertex(v, e))
-					return;
+				queue.push(v); /* push vertex */
+				queue.push(e); /* push in edge */
 			}
+			return u;
+		}
+
+		public int inEdge() {
+			return inEdge;
 		}
 	}
 
@@ -161,11 +160,12 @@ public class Graphs {
 		int[] backtrack = new int[n];
 		Arrays.fill(backtrack, -1);
 
-		int target = v;
-		runBFS(g, u, (p, e) -> {
-			backtrack[p] = e;
-			return p != target;
-		});
+		for (BFSIter it = new BFSIter(g, u); it.hasNext();) {
+			int p = it.nextInt();
+			backtrack[p] = it.inEdge();
+			if (p == v)
+				break;
+		}
 
 		if (backtrack[v] == -1)
 			return null;
@@ -403,8 +403,7 @@ public class Graphs {
 
 		int[] topolSort = calcTopologicalSortingDAG(g);
 		boolean sourceSeen = false;
-		for (int i = 0; i < n; i++) {
-			int u = topolSort[i];
+		for (int u : topolSort) {
 			if (!sourceSeen) {
 				if (u != source)
 					continue;

@@ -307,13 +307,14 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 			Arrays.fill(edgeToParent, -1);
 			int[] depths = new int[n];
 
-			Graphs.runBFS(t, root, (v, e) -> {
+			for (Graphs.BFSIter it = new Graphs.BFSIter(t, root); it.hasNext();) {
+				int v = it.nextInt();
+				int e = it.inEdge();
 				if (e != -1) {
 					edgeToParent[v] = e;
 					depths[v] = depths[t.edgeEndpoint(e, v)] + 1;
 				}
-				return true;
-			});
+			}
 
 			return Pair.of(edgeToParent, depths);
 		}
