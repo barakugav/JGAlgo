@@ -1,7 +1,9 @@
 package com.ugav.jgalgo;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
@@ -78,58 +80,62 @@ public class Graphs {
 		}
 	}
 
-	@FunctionalInterface
-	public static interface DFSOperator {
+	public static class DFSIter implements IntIterator {
 
-		/**
-		 * Perform some operation on a vertex during a DFS traversy
-		 *
-		 * @param v              a vertex
-		 * @param pathFromSource a list of the edges from the source to the current
-		 *                       vertex
-		 * @return true if the DFS should continue
-		 */
-		public boolean handleVertex(int v, IntList pathFromSource);
+		private final Graph g;
+		private final boolean[] visited;
+		private final List<EdgeIter> edgeIters;
+		private final IntList edgePath;
+		private boolean isValid;
 
-	}
+		public DFSIter(Graph g, int source) {
+			int n = g.vertices().size();
+			this.g = g;
+			visited = new boolean[n];
+			edgeIters = new ArrayList<>();
+			edgePath = new IntArrayList();
 
-	/**
-	 * Perform a DFS traversy on a graph
-	 *
-	 * @param g      a graph
-	 * @param source s source vertex
-	 * @param op     user operation to operate on the reachable vertices
-	 */
-	public static void runDFS(Graph g, int source, DFSOperator op) {
-		int n = g.vertices().size();
-		boolean[] visited = new boolean[n];
-		EdgeIter[] edges = new EdgeIter[n];
-		IntList edgesFromSource = new IntArrayList();
+			visited[source] = true;
+			edgeIters.add(g.edges(source));
+			isValid = true;
+		}
 
-		edges[0] = g.edges(source);
-		visited[source] = true;
-		if (!op.handleVertex(source, edgesFromSource))
-			return;
-
-		for (int depth = 0;;) {
-			EdgeIter eit = edges[depth];
-			if (eit.hasNext()) {
-				int e = eit.nextInt();
-				int v = eit.v();
-				if (visited[v])
-					continue;
-				visited[v] = true;
-				edgesFromSource.add(e);
-				edges[++depth] = g.edges(v);
-
-				if (!op.handleVertex(v, edgesFromSource))
-					return;
-			} else {
-				edges[depth] = null;
-				if (depth-- == 0)
-					break;
-				edgesFromSource.removeInt(edgesFromSource.size() - 1);
+		@Override
+		public boolean hasNext() {
+			if (isValid)
+				return true;
+			if (edgeIters.isEmpty())
+				return false;
+			for (;;) {
+				for (EdgeIter eit = edgeIters.get(edgeIters.size() - 1); eit.hasNext();) {
+					int e = eit.nextInt();
+					int v = eit.v();
+					if (visited[v])
+						continue;
+					visited[v] = true;
+					edgeIters.add(g.edges(v));
+					edgePath.add(e);
+					return isValid = true;
+				}
+				edgeIters.remove(edgeIters.size() - 1);
+				if (edgeIters.isEmpty()) {
+					assert edgePath.isEmpty();
+					return false;
+				}
+				edgePath.removeInt(edgePath.size() - 1);
 			}
+		}
+
+		@Override
+		public int nextInt() {
+			if (!hasNext())
+				throw new NoSuchElementException();
+			isValid = false;
+			return edgeIters.get(edgeIters.size() - 1).u();
+		}
+
+		public IntList edgePath() {
+			return edgePath;
 		}
 	}
 

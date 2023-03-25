@@ -11,6 +11,8 @@ import org.junit.jupiter.api.Test;
 
 import com.ugav.jgalgo.GraphsTestUtils.RandomGraphBuilder;
 
+import it.unimi.dsi.fastutil.ints.IntList;
+
 public class GraphsTest extends TestUtils {
 
 	@Test
@@ -50,13 +52,14 @@ public class GraphsTest extends TestUtils {
 
 			boolean[] visited = new boolean[n];
 			List<Integer> invalidVertices = new ArrayList<>();
-			Graphs.runDFS(g, source, (v, pathFromSource) -> {
+			for (Graphs.DFSIter it = new Graphs.DFSIter(g, source); it.hasNext();) {
+				int v = it.nextInt();
+				IntList pathFromSource = it.edgePath();
 				int e = v == source ? -1 : pathFromSource.getInt(pathFromSource.size() - 1);
 				if (visited[v] || (v != source && g.edgeEndpoint(e, g.edgeEndpoint(e, v)) != v))
 					invalidVertices.add(Integer.valueOf(v));
 				visited[v] = true;
-				return true;
-			});
+			}
 			Assertions.assertTrue(invalidVertices.isEmpty());
 		});
 	}

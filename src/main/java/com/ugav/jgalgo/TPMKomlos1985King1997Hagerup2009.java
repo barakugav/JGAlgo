@@ -125,9 +125,11 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 			Weights.Int tData = t.edgesWeight("edgeData");
 			int[][] res = new int[tOrig.vertices().size()][];
 
-			Graphs.runDFS(t, root, (v, edgesFromRoot) -> {
+			for (Graphs.DFSIter it = new Graphs.DFSIter(t, root); it.hasNext();) {
+				int v = it.nextInt();
+				IntList edgesFromRoot = it.edgePath();
 				if (edgesFromRoot.isEmpty())
-					return true;
+					continue;
 				int depth = edgesFromRoot.size();
 				int edgeToChild = edgesFromRoot.getInt(depth - 1);
 				int u = t.edgeEndpoint(edgeToChild, v);
@@ -146,8 +148,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 					}
 					res[v] = resv;
 				}
-				return true;
-			});
+			}
 			return res;
 		}
 
