@@ -15,9 +15,14 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 	 */
 
 	private Object bipartiteVerticesWeightKey = VerticesWeights.DefaultBipartiteWeightKey;
+	private SSSP ssspAlgo = new SSSPDijkstra();
 	private static final Object EdgeRefWeightKey = new Object();
 
 	public MatchingWeightedBipartiteSSSP() {
+	}
+
+	public void setSsspAlgo(SSSP algo) {
+		ssspAlgo = Objects.requireNonNull(algo);
 	}
 
 	public void setBipartiteVerticesWeightKey(Object key) {
@@ -72,8 +77,6 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 		SSSP.Result sp = new SSSPBellmanFord().calcDistances(g, e -> edgeRef.get(e).w, s);
 		for (int v = 0; v < n + 2; v++)
 			potential[v] = sp.distance(v);
-
-		SSSP ssspAlgo = new SSSPDijkstra();
 
 		for (;;) {
 			sp = ssspAlgo.calcDistances(g, spWeightFunc, s);

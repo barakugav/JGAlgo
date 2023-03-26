@@ -3,7 +3,7 @@ package com.ugav.jgalgo;
 public class GraphTableUndirected extends GraphTableAbstract implements UGraph {
 
 	public GraphTableUndirected(int n) {
-		super(n);
+		super(n, Capabilities);
 	}
 
 	@Override
@@ -29,5 +29,44 @@ public class GraphTableUndirected extends GraphTableAbstract implements UGraph {
 		edges[u2][v2] = edges[v2][u2] = e1;
 		super.edgeSwap(e1, e2);
 	}
+
+
+
+	private static final GraphCapabilities Capabilities = new GraphCapabilities() {
+		@Override
+		public boolean vertexAdd() {
+			return false;
+		}
+
+		@Override
+		public boolean vertexRemove() {
+			return false;
+		}
+
+		@Override
+		public boolean edgeAdd() {
+			return true;
+		}
+
+		@Override
+		public boolean edgeRemove() {
+			return true;
+		}
+
+		@Override
+		public boolean parallelEdges() {
+			return false;
+		}
+
+		@Override
+		public boolean selfEdges() {
+			return true;
+		}
+
+		@Override
+		public boolean directed() {
+			return false;
+		}
+	};
 
 }

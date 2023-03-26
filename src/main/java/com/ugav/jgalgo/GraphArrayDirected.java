@@ -14,7 +14,7 @@ public class GraphArrayDirected extends GraphArrayAbstract implements DiGraph {
 	}
 
 	public GraphArrayDirected(int n) {
-		super(n);
+		super(n, Capabilities);
 		edgesOut = new DataContainer.Obj<>(n, EmptyIntArr);
 		edgesOutNum = new DataContainer.Int(n, 0);
 		edgesIn = new DataContainer.Obj<>(n, EmptyIntArr);
@@ -163,5 +163,42 @@ public class GraphArrayDirected extends GraphArrayAbstract implements DiGraph {
 		}
 
 	}
+
+	private static final GraphCapabilities Capabilities = new GraphCapabilities() {
+		@Override
+		public boolean vertexAdd() {
+			return true;
+		}
+
+		@Override
+		public boolean vertexRemove() {
+			return true;
+		}
+
+		@Override
+		public boolean edgeAdd() {
+			return true;
+		}
+
+		@Override
+		public boolean edgeRemove() {
+			return true;
+		}
+
+		@Override
+		public boolean parallelEdges() {
+			return true;
+		}
+
+		@Override
+		public boolean selfEdges() {
+			return true;
+		}
+
+		@Override
+		public boolean directed() {
+			return true;
+		}
+	};
 
 }

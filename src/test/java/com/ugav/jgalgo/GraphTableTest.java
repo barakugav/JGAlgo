@@ -6,7 +6,7 @@ import com.ugav.jgalgo.GraphImplTestUtils.GraphImpl;
 
 public class GraphTableTest extends TestUtils {
 
-	private static GraphImpl tableImpl() {
+	private static GraphImpl graphImpl() {
 		return new GraphImpl() {
 
 			@Override
@@ -17,23 +17,53 @@ public class GraphTableTest extends TestUtils {
 	}
 
 	@Test
+	public void testCreateWithNVertices() {
+		GraphImplTestUtils.testCreateWithNVertices(graphImpl());
+	}
+
+	@Test
+	public void testAddEdge() {
+		GraphImplTestUtils.testAddEdge(graphImpl());
+	}
+
+	@Test
+	public void testGetEdge() {
+		GraphImplTestUtils.testGetEdge(graphImpl());
+	}
+
+	@Test
+	public void testGetEdges() {
+		GraphImplTestUtils.testGetEdges(graphImpl());
+	}
+
+	@Test
+	public void testEdgeIter() {
+		GraphImplTestUtils.testEdgeIter(graphImpl());
+	}
+
+	@Test
+	public void testDgree() {
+		GraphImplTestUtils.testDgree(graphImpl());
+	}
+
+	@Test
 	public void testUndirectedMST() {
-		GraphImplTestUtils.testUndirectedMST(tableImpl());
+		GraphImplTestUtils.testUndirectedMST(graphImpl());
 	}
 
 	@Test
 	public void testDirectedMDST() {
-		GraphImplTestUtils.testDirectedMDST(tableImpl());
+		GraphImplTestUtils.testDirectedMDST(graphImpl());
 	}
 
 	@Test
 	public void testDirectedMaxFlow() {
-		GraphImplTestUtils.testDirectedMaxFlow(tableImpl());
+		GraphImplTestUtils.testDirectedMaxFlow(graphImpl());
 	}
 
 	@Test
 	public void testUndirectedRandOps() {
-		GraphImplTestUtils.testUndirectedRandOps(tableImpl());
+		GraphImplTestUtils.testUndirectedRandOps(graphImpl());
 	}
 
 }

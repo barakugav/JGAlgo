@@ -11,10 +11,12 @@ abstract class GraphBase implements Graph {
 
 	final IDStrategy verticesIDStrategy;
 	final IDStrategy edgesIDStrategy;
+	private final GraphCapabilities capabilities;
 
-	GraphBase(IDStrategy verticesIDStrategy, IDStrategy edgesIDStrategy) {
+	GraphBase(IDStrategy verticesIDStrategy, IDStrategy edgesIDStrategy, GraphCapabilities capabilities) {
 		this.verticesIDStrategy = Objects.requireNonNull(verticesIDStrategy);
 		this.edgesIDStrategy = Objects.requireNonNull(edgesIDStrategy);
+		this.capabilities = Objects.requireNonNull(capabilities);
 	}
 
 	@Override
@@ -46,6 +48,11 @@ abstract class GraphBase implements Graph {
 	@Override
 	public IDStrategy getEdgesIDStrategy() {
 		return edgesIDStrategy;
+	}
+
+	@Override
+	public GraphCapabilities getCapabilities() {
+		return capabilities;
 	}
 
 	abstract <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, WeightsT weights);

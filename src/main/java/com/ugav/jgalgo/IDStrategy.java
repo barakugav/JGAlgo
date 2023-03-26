@@ -28,7 +28,7 @@ import it.unimi.dsi.fastutil.ints.IntSets;
  * stated above about vertices hold for edges as well. There might be some
  * performance differences between different ID strategies.
  *
- * @author ugav
+ * @author Barak Ugav
  */
 public abstract class IDStrategy {
 
@@ -53,7 +53,7 @@ public abstract class IDStrategy {
 	 * vertices/edges. These renames can be subscribed using
 	 * {@link com.ugav.jgalgo.IDStrategy#addIDSwapListener}.
 	 *
-	 * @author ugav
+	 * @author Barak Ugav
 	 */
 	public static class Continues extends IDStrategy {
 
@@ -164,6 +164,7 @@ public abstract class IDStrategy {
 		int newIdx() {
 			int idx = idToIdx.size();
 			int id = nextID();
+			assert id >= 0;
 			idToIdx.put(id, idx);
 			idxToId.add(idx);
 			idxToId.set(idx, id);
@@ -234,7 +235,7 @@ public abstract class IDStrategy {
 	 * {@link IDStrategy.Continues} but may be more convenient when vertices/edges
 	 * removal are required.
 	 *
-	 * @author ugav
+	 * @author Barak Ugav
 	 */
 	public static class Fixed extends FixedAbstract {
 
@@ -260,11 +261,11 @@ public abstract class IDStrategy {
 
 		@Override
 		int nextID() {
-			int id;
-			do {
-				id = rand.nextInt();
-			} while (idSet().contains(id));
-			return id;
+			for (;;) {
+				int id = rand.nextInt();
+				if (id >= 0 && !idSet().contains(id))
+					return id;
+			}
 		}
 	}
 

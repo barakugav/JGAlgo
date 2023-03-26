@@ -11,8 +11,8 @@ abstract class GraphTableAbstract extends GraphBaseContinues {
 	private static final int[][] EDGES_EMPTY = new int[0][];
 	static final int EdgeNone = -1;
 
-	GraphTableAbstract(int n) {
-		super(n);
+	GraphTableAbstract(int n, GraphCapabilities capabilities) {
+		super(n, capabilities);
 		edges = n > 0 ? new int[n][n] : EDGES_EMPTY;
 		for (int u = 0; u < n; u++)
 			Arrays.fill(edges[u], EdgeNone);

@@ -7,8 +7,8 @@ abstract class GraphLinkedAbstract extends GraphBaseContinues {
 
 	private final DataContainer.Obj<Node> edges;
 
-	GraphLinkedAbstract(int n) {
-		super(n);
+	GraphLinkedAbstract(int n, GraphCapabilities capabilities) {
+		super(n, capabilities);
 		edges = new DataContainer.Obj<>(n, null);
 		addInternalEdgesDataContainer(edges);
 	}

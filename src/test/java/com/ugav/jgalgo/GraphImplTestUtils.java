@@ -9,7 +9,18 @@ import org.junit.jupiter.api.Assertions;
 
 import com.ugav.jgalgo.GraphsTestUtils.RandomGraphBuilder;
 
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.ints.IntSets;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 class GraphImplTestUtils extends TestUtils {
 
@@ -29,6 +40,222 @@ class GraphImplTestUtils extends TestUtils {
 			}
 		}
 	};
+
+	static IntSet intSetOf(int... elms) {
+		IntSet set = new IntOpenHashSet();
+		for (int e : elms)
+			set.add(e);
+		return IntSets.unmodifiable(set);
+	}
+
+	static void testVertexAdd(GraphImpl graphImpl) {
+		for (boolean directed : new boolean[] { true, false }) {
+			Graph g = graphImpl.newGraph(directed, 0);
+			final int n = 100;
+			IntSet verticesSet = new IntOpenHashSet();
+			for (int i = 0; i < n; i++) {
+				int v = g.addVertex();
+				verticesSet.add(v);
+			}
+			Assertions.assertEquals(verticesSet, g.vertices());
+			Assertions.assertEquals(IntSets.emptySet(), g.edges());
+		}
+	}
+
+	static void testCreateWithNVertices(GraphImpl graphImpl) {
+		for (boolean directed : new boolean[] { true, false }) {
+			final int n = 100;
+			Graph g = graphImpl.newGraph(directed, n);
+			IntSet verticesSet = new IntOpenHashSet();
+			for (int v = 0; v < n; v++)
+				verticesSet.add(v);
+			Assertions.assertEquals(verticesSet, g.vertices());
+			Assertions.assertEquals(IntSets.emptySet(), g.edges());
+		}
+	}
+
+	static void testAddEdge(GraphImpl graphImpl) {
+		for (boolean directed : new boolean[] { true, false }) {
+			final int n = 100;
+			Graph g = graphImpl.newGraph(directed, n);
+
+			Int2ObjectMap<int[]> edges = new Int2ObjectOpenHashMap<>();
+			for (int u = 0; u < n; u++) {
+				for (int v = u + 1; v < n; v++) {
+					int e = g.addEdge(u, v);
+					assertEndpoints(g, e, u, v);
+					edges.put(e, new int[] { e, u, v });
+				}
+			}
+			Assertions.assertEquals(edges.keySet(), g.edges());
+			for (int[] edge : edges.values()) {
+				int e = edge[0], u = edge[1], v = edge[2];
+				assertEndpoints(g, e, u, v);
+			}
+		}
+	}
+
+	private static void assertEndpoints(Graph g, int e, int u, int v) {
+		if (g.getCapabilities().directed()) {
+			Assertions.assertEquals(u, g.edgeSource(e));
+			Assertions.assertEquals(v, g.edgeTarget(e));
+		} else {
+			Assertions.assertEquals(intSetOf(u, v), intSetOf(g.edgeSource(e), g.edgeTarget(e)));
+		}
+		Assertions.assertEquals(u, g.edgeEndpoint(e, v));
+		Assertions.assertEquals(v, g.edgeEndpoint(e, u));
+	}
+
+	static void testGetEdge(GraphImpl graphImpl) {
+		for (boolean directed : new boolean[] { true, false }) {
+			final int n = 100;
+			Graph g = graphImpl.newGraph(directed, n);
+
+			Object2IntMap<IntCollection> edges = new Object2IntOpenHashMap<>();
+			for (int u = 0; u < n; u++) {
+				for (int v = directed ? 0 : u; v < n; v++) {
+					if (u == v && !g.getCapabilities().selfEdges())
+						continue;
+					int e = g.addEdge(u, v);
+					assertEndpoints(g, e, u, v);
+					if (directed) {
+						edges.put(IntList.of(u, v), e);
+					} else {
+						edges.put(intSetOf(u, v), e);
+					}
+				}
+			}
+			for (Object2IntMap.Entry<IntCollection> edge : edges.object2IntEntrySet()) {
+				IntCollection endpoints = edge.getKey();
+				IntIterator endpointsIt = endpoints.intIterator();
+				int u = endpointsIt.nextInt(), v = endpointsIt.hasNext() ? endpointsIt.nextInt() : u;
+				int e = edge.getIntValue();
+				Assertions.assertEquals(e, g.getEdge(u, v));
+			}
+		}
+	}
+
+	static void testGetEdges(GraphImpl graphImpl) {
+		for (boolean directed : new boolean[] { true, false }) {
+			final int n = 100;
+			Graph g = graphImpl.newGraph(directed, n);
+
+			Int2ObjectMap<IntSet> edgesOut = new Int2ObjectOpenHashMap<>();
+			Int2ObjectMap<IntSet> edgesIn = new Int2ObjectOpenHashMap<>();
+			for (int u = 0; u < n; u++) {
+				for (int v = directed ? 0 : u; v < n; v++) {
+					if (u == v && !g.getCapabilities().selfEdges())
+						continue;
+					int e = g.addEdge(u, v);
+					if (directed) {
+						edgesOut.computeIfAbsent(u, w -> new IntOpenHashSet()).add(e);
+						edgesIn.computeIfAbsent(v, w -> new IntOpenHashSet()).add(e);
+					} else {
+						edgesOut.computeIfAbsent(u, w -> new IntOpenHashSet()).add(e);
+						edgesOut.computeIfAbsent(v, w -> new IntOpenHashSet()).add(e);
+					}
+				}
+			}
+			for (IntIterator it = g.vertices().iterator(); it.hasNext();) {
+				int u = it.nextInt();
+				IntSet uEdges = new IntOpenHashSet();
+				for (EdgeIter eit = g.edges(u); eit.hasNext();) {
+					int e = eit.nextInt();
+					uEdges.add(e);
+				}
+				Assertions.assertEquals(edgesOut.get(u), uEdges);
+			}
+			if (directed) {
+				for (IntIterator it = g.vertices().iterator(); it.hasNext();) {
+					int u = it.nextInt();
+					IntSet uEdges = new IntOpenHashSet();
+					for (EdgeIter eit = ((DiGraph) g).edgesOut(u); eit.hasNext();) {
+						int e = eit.nextInt();
+						uEdges.add(e);
+					}
+					Assertions.assertEquals(edgesOut.get(u), uEdges);
+				}
+				for (IntIterator it = g.vertices().iterator(); it.hasNext();) {
+					int v = it.nextInt();
+					IntSet vEdges = new IntOpenHashSet();
+					for (EdgeIter eit = ((DiGraph) g).edgesIn(v); eit.hasNext();) {
+						int e = eit.nextInt();
+						vEdges.add(e);
+					}
+					Assertions.assertEquals(edgesIn.get(v), vEdges);
+				}
+			}
+		}
+	}
+
+	static void testEdgeIter(GraphImpl graphImpl) {
+		for (boolean directed : new boolean[] { true, false }) {
+			final int n = 100;
+			Graph g = graphImpl.newGraph(directed, n);
+
+			Int2ObjectMap<IntCollection> edges = new Int2ObjectOpenHashMap<>();
+			for (int u = 0; u < n; u++) {
+				for (int v = directed ? 0 : u; v < n; v++) {
+					if (u == v && !g.getCapabilities().selfEdges())
+						continue;
+					int e = g.addEdge(u, v);
+					assertEndpoints(g, e, u, v);
+					if (directed) {
+						edges.put(e, IntList.of(u, v));
+					} else {
+						edges.put(e, intSetOf(u, v));
+					}
+				}
+			}
+			for (IntIterator it = g.vertices().iterator(); it.hasNext();) {
+				int u = it.nextInt();
+				for (EdgeIter eit = g.edges(u); eit.hasNext();) {
+					int e = eit.nextInt();
+					int v = eit.v();
+					if (directed) {
+						Assertions.assertEquals(edges.get(e), IntList.of(eit.u(), eit.v()));
+					} else {
+						Assertions.assertEquals(edges.get(e), intSetOf(eit.u(), eit.v()));
+					}
+					Assertions.assertEquals(u, eit.u());
+					Assertions.assertEquals(v, g.edgeEndpoint(e, u));
+				}
+			}
+		}
+	}
+
+	static void testDgree(GraphImpl graphImpl) {
+		for (boolean directed : new boolean[] { true, false }) {
+			final int n = 100;
+			Graph g = graphImpl.newGraph(directed, n);
+
+			Int2IntMap degree = new Int2IntOpenHashMap();
+			Int2IntMap degreeOut = new Int2IntOpenHashMap();
+			Int2IntMap degreeIn = new Int2IntOpenHashMap();
+			for (int u = 0; u < n; u++) {
+				for (int v = directed ? 0 : u; v < n; v++) {
+					if (u == v && !g.getCapabilities().selfEdges())
+						continue;
+					g.addEdge(u, v);
+
+					degree.put(u, degree.get(u) + 1);
+					if (u != v)
+						degree.put(v, degree.get(v) + 1);
+
+					degreeOut.put(u, degreeOut.get(u) + 1);
+					degreeIn.put(v, degreeIn.get(v) + 1);
+				}
+			}
+			for (IntIterator it = g.vertices().iterator(); it.hasNext();) {
+				int u = it.nextInt();
+				Assertions.assertEquals(degree.get(u), g.degree(u));
+				if (directed) {
+					Assertions.assertEquals(degreeOut.get(u), ((DiGraph) g).degreeOut(u));
+					Assertions.assertEquals(degreeIn.get(u), ((DiGraph) g).degreeIn(u));
+				}
+			}
+		}
+	}
 
 	static void testUndirectedMST(GraphImpl graphImpl) {
 		MSTTestUtils.testRandGraph(MSTKruskal1956::new, graphImpl);
@@ -108,7 +335,7 @@ class GraphImplTestUtils extends TestUtils {
 		}
 
 		@SuppressWarnings("unused")
-		void newVertex() {
+		void addVertex() {
 			if (debugPrints)
 				System.out.println("newVertex()");
 			n++;
@@ -129,6 +356,22 @@ class GraphImplTestUtils extends TestUtils {
 			if (index < 0)
 				throw new IllegalArgumentException("no edge (" + u + ", " + v + ")");
 			edges.remove(index);
+		}
+
+		void removeEdgesAll(int u) {
+			edges.removeIf(edge -> edge.u == u || edge.v == u);
+		}
+
+		void removeEdgesAllOut(int u) {
+			edges.removeIf(edge -> edge.u == u);
+		}
+
+		void removeEdgesAllIn(int v) {
+			edges.removeIf(edge -> edge.v == v);
+		}
+
+		Edge getRandEdge(Random rand) {
+			return edges.get(rand.nextInt(edges.size()));
 		}
 
 		private int indexOfEdge(int u, int v) {
@@ -174,13 +417,19 @@ class GraphImplTestUtils extends TestUtils {
 		}
 
 		private static class Edge {
-			final int u, v;
+			int u, v;
 			final Object data;
 
 			Edge(int u, int v, Object data) {
 				this.u = u;
 				this.v = v;
 				this.data = Objects.requireNonNull(data);
+			}
+
+			void reverse() {
+				int temp = u;
+				u = v;
+				v = temp;
 			}
 
 			@Override
@@ -191,17 +440,44 @@ class GraphImplTestUtils extends TestUtils {
 	}
 
 	private static enum GraphOp {
-		AddEdge, RemoveEdge, ClearEdges, AddVertex
+		GetEdge, GetVertexEdges, GetVertexEdgesOut, GetVertexEdgesIn,
+
+		EdgeSource, EdgeTarget,
+
+		Degree, DegreeIn, DegreeOut,
+
+		AddEdge, RemoveEdge, RemoveEdgeAll, RemoveEdgeAllIn, RemoveEdgeAllOut, ReverseEdge,
+
+		ClearEdges,
+
+		AddVertex, RemoveVertex,
 	}
 
 	private static void testRandOps(Graph g, int opsNum) {
 //		System.out.println("\n\n*****");
+		GraphCapabilities capabilities = g.getCapabilities();
 		Random rand = new Random(nextRandSeed());
 		RandWeighted<GraphOp> opRand = new RandWeighted<>();
-		opRand.add(GraphOp.AddEdge, 20);
-		opRand.add(GraphOp.RemoveEdge, 10);
-		opRand.add(GraphOp.ClearEdges, 1);
-		opRand.add(GraphOp.AddVertex, 4);
+		if (capabilities.edgeAdd())
+			opRand.add(GraphOp.AddEdge, 20);
+		if (capabilities.edgeRemove()) {
+			opRand.add(GraphOp.RemoveEdge, 10);
+			opRand.add(GraphOp.RemoveEdgeAll, 1);
+			opRand.add(GraphOp.ClearEdges, 1);
+		}
+		if (capabilities.edgeRemove() && capabilities.directed()) {
+			opRand.add(GraphOp.RemoveEdgeAllIn, 1);
+			opRand.add(GraphOp.RemoveEdgeAllOut, 1);
+		}
+		if (capabilities.directed())
+			opRand.add(GraphOp.ReverseEdge, 3);
+		if (capabilities.vertexAdd())
+			opRand.add(GraphOp.AddVertex, 4);
+		if (capabilities.vertexRemove()) {
+			if (!capabilities.edgeRemove())
+				throw new IllegalArgumentException("vertex removal can't be supported while edge removal is not");
+//			opRand.add(GraphOp.RemoveVertex, 4);
+		}
 
 		final Object dataKey = new Object();
 		Weights<Object> edgeData = EdgesWeights.ofObjs(g, dataKey);
@@ -237,17 +513,51 @@ class GraphImplTestUtils extends TestUtils {
 				break;
 			}
 			case RemoveEdge: {
-				int u, v, e, retry = 20;
-				do {
-					u = rand.nextInt(tracker.verticesNum());
-					v = rand.nextInt(tracker.verticesNum());
-					e = g.getEdge(u, v);
-				} while (e == -1 && retry-- > 0);
-				if (retry <= 0)
+				if (tracker.edgesNum() == 0)
 					continue;
+				GraphTracker.Edge edge = tracker.getRandEdge(rand);
+				int e = g.getEdge(edge.u, edge.v);
 
 				g.removeEdge(e);
-				tracker.removeEdge(u, v);
+				tracker.removeEdge(edge.u, edge.v);
+				break;
+			}
+			case RemoveEdgeAll: {
+				if (tracker.verticesNum() == 0)
+					continue;
+				int u = rand.nextInt(tracker.verticesNum());
+				g.removeEdgesAll(u);
+				tracker.removeEdgesAll(u);
+				break;
+			}
+			case RemoveEdgeAllIn: {
+				if (tracker.verticesNum() == 0)
+					continue;
+				int u = rand.nextInt(tracker.verticesNum());
+				if (!(g instanceof DiGraph))
+					System.out.println();
+				((DiGraph) g).removeEdgesAllIn(u);
+				tracker.removeEdgesAllIn(u);
+				break;
+			}
+			case RemoveEdgeAllOut: {
+				if (tracker.verticesNum() == 0)
+					continue;
+				int u = rand.nextInt(tracker.verticesNum());
+				((DiGraph) g).removeEdgesAllOut(u);
+				tracker.removeEdgesAllOut(u);
+				break;
+			}
+			case ReverseEdge: {
+				if (tracker.edgesNum() == 0)
+					continue;
+				GraphTracker.Edge edge = tracker.getRandEdge(rand);
+				int e = g.getEdge(edge.u, edge.v);
+				if (edge.u != edge.v && g.getEdge(edge.v, edge.u) != -1 && !capabilities.parallelEdges())
+					continue;
+
+				((DiGraph) g).reverseEdge(e);
+				edge.reverse();
 				break;
 			}
 			case ClearEdges:
@@ -258,10 +568,9 @@ class GraphImplTestUtils extends TestUtils {
 				break;
 
 			case AddVertex:
-//				g.newVertex();
-//				tracker.newVertex();
-//				break;
-				continue; // not supported by all graph implementations
+				g.addVertex();
+				tracker.addVertex();
+				break;
 
 			default:
 				throw new IllegalArgumentException("Unexpected value: " + op);

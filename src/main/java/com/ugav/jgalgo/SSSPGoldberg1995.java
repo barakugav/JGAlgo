@@ -1,6 +1,7 @@
 package com.ugav.jgalgo;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -14,8 +15,13 @@ public class SSSPGoldberg1995 implements SSSP {
 	 */
 
 	private static final Object EdgeRefWeightKey = new Object();
+	private SSSP positiveSsspAlgo = new SSSPDijkstra();
 
 	public SSSPGoldberg1995() {
+	}
+
+	public void setPositiveSsspAlgo(SSSP algo) {
+		positiveSsspAlgo = Objects.requireNonNull(algo);
 	}
 
 	@Override
@@ -34,15 +40,15 @@ public class SSSPGoldberg1995 implements SSSP {
 		}
 		if (minWeight >= 0)
 			// All weights are positive, use Dijkstra
-			return new SSSPDijkstra().calcDistances(g, w, source);
+			return positiveSsspAlgo.calcDistances(g, w, source);
 
 		Pair<int[], IntList> p = calcPotential(g, w, minWeight);
 		if (p.e2 != null)
 			return new Result(source, null, null, p.e2);
 		int[] potential = p.e1;
 		PotentialWeightFunction pw = new PotentialWeightFunction(g, w, potential);
-		SSSP.Result dijkstra = new SSSPDijkstra().calcDistances(g, pw, source);
-		return new Result(source, potential, dijkstra, null);
+		SSSP.Result res = positiveSsspAlgo.calcDistances(g, pw, source);
+		return new Result(source, potential, res, null);
 	}
 
 	private static Pair<int[], IntList> calcPotential(DiGraph g, EdgeWeightFunc.Int w, int minWeight) {

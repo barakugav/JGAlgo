@@ -136,7 +136,7 @@ public abstract class GraphBuilder {
 		final GraphBaseContinues g;
 
 		GraphCustomIDStrategies(GraphBaseContinues g, IDStrategy verticesIDStrategy, IDStrategy edgesIDStrategy) {
-			super(verticesIDStrategy, edgesIDStrategy);
+			super(verticesIDStrategy, edgesIDStrategy, g.getCapabilities());
 			this.g = Objects.requireNonNull(g);
 
 			g.getVerticesIDStrategy().addIDSwapListener((vIdx1, vIdx2) -> verticesIDStrategy.idxSwap(vIdx1, vIdx2));

@@ -18,13 +18,14 @@ abstract class GraphBaseContinues extends GraphBase {
 	private final Map<Object, Weights<?>> eWeights = new Object2ObjectArrayMap<>();
 	private final Map<Object, Weights<?>> vWeights = new Object2ObjectArrayMap<>();
 
-	GraphBaseContinues(int n) {
-		super(new IDStrategy.Continues(n), new IDStrategy.Continues(0));
+	GraphBaseContinues(int n, GraphCapabilities capabilities) {
+		super(new IDStrategy.Continues(n), new IDStrategy.Continues(0), capabilities);
 	}
 
 	@Override
 	public int addVertex() {
 		int u = verticesIDStrategy.newIdx();
+		assert u >= 0;
 		for (DataContainer<?> container : vWeightsInternal)
 			container.add(u);
 		for (Weights<?> weight : vWeights.values())
@@ -37,6 +38,7 @@ abstract class GraphBaseContinues extends GraphBase {
 		checkVertexIdx(u);
 		checkVertexIdx(v);
 		int e = edgesIDStrategy.newIdx();
+		assert e >= 0;
 		for (DataContainer<?> container : eWeightsInternal)
 			container.add(e);
 		for (Weights<?> weight : eWeights.values())

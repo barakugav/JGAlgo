@@ -3,7 +3,7 @@ package com.ugav.jgalgo;
 public class GraphTableDirected extends GraphTableAbstract implements DiGraph {
 
 	public GraphTableDirected(int n) {
-		super(n);
+		super(n, Capabilities);
 	}
 
 	@Override
@@ -49,5 +49,42 @@ public class GraphTableDirected extends GraphTableAbstract implements DiGraph {
 		edges[u][v] = EdgeNone;
 		super.reverseEdge(e);
 	}
+
+	private static final GraphCapabilities Capabilities = new GraphCapabilities() {
+		@Override
+		public boolean vertexAdd() {
+			return false;
+		}
+
+		@Override
+		public boolean vertexRemove() {
+			return false;
+		}
+
+		@Override
+		public boolean edgeAdd() {
+			return true;
+		}
+
+		@Override
+		public boolean edgeRemove() {
+			return true;
+		}
+
+		@Override
+		public boolean parallelEdges() {
+			return false;
+		}
+
+		@Override
+		public boolean selfEdges() {
+			return true;
+		}
+
+		@Override
+		public boolean directed() {
+			return true;
+		}
+	};
 
 }

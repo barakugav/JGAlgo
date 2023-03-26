@@ -10,7 +10,7 @@ public class GraphArrayUndirected extends GraphArrayAbstract implements UGraph {
 	}
 
 	public GraphArrayUndirected(int n) {
-		super(n);
+		super(n, Capabilities);
 		edgesNum = new DataContainer.Int(n, 0);
 		edges = new DataContainer.Obj<>(n, EmptyIntArr);
 
@@ -28,7 +28,8 @@ public class GraphArrayUndirected extends GraphArrayAbstract implements UGraph {
 	public int addEdge(int u, int v) {
 		int e = super.addEdge(u, v);
 		addEdgeToList(edges, edgesNum, u, e);
-		addEdgeToList(edges, edgesNum, v, e);
+		if (u != v)
+			addEdgeToList(edges, edgesNum, v, e);
 		return e;
 	}
 
@@ -104,5 +105,42 @@ public class GraphArrayUndirected extends GraphArrayAbstract implements UGraph {
 		}
 
 	}
+
+	private static final GraphCapabilities Capabilities = new GraphCapabilities() {
+		@Override
+		public boolean vertexAdd() {
+			return true;
+		}
+
+		@Override
+		public boolean vertexRemove() {
+			return true;
+		}
+
+		@Override
+		public boolean edgeAdd() {
+			return true;
+		}
+
+		@Override
+		public boolean edgeRemove() {
+			return true;
+		}
+
+		@Override
+		public boolean parallelEdges() {
+			return true;
+		}
+
+		@Override
+		public boolean selfEdges() {
+			return true;
+		}
+
+		@Override
+		public boolean directed() {
+			return false;
+		}
+	};
 
 }

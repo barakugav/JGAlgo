@@ -11,12 +11,17 @@ public class SSSPDijkstra implements SSSP {
 	private int allocSize;
 	private double[] distances;
 	private int[] backtrack;
-	private final Heap<HeapElm> heap;
+	private final HeapDirectAccessed<HeapElm> heap;
 	private HeapDirectAccessed.Handle<HeapElm>[] verticesPtrs;
 
 	public SSSPDijkstra() {
+		this(HeapFibonacci::new);
+		// TODO use pairing heap once implemented
+	}
+
+	public SSSPDijkstra(HeapDirectAccessed.Builder heapBuilder) {
 		allocSize = 0;
-		heap = new HeapFibonacci<>((a, b) -> Utils.compare(a.distance, b.distance));
+		heap = heapBuilder.build((a, b) -> Utils.compare(a.distance, b.distance));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -46,8 +51,7 @@ public class SSSPDijkstra implements SSSP {
 		double[] distances = this.distances;
 		int[] backtrack = this.backtrack;
 		Arrays.fill(backtrack, 0, n, -1);
-		@SuppressWarnings({ "unchecked", "rawtypes" })
-		HeapDirectAccessed<HeapElm> heap = (HeapDirectAccessed) this.heap;
+		HeapDirectAccessed<HeapElm> heap = this.heap;
 		HeapDirectAccessed.Handle<HeapElm>[] verticesPtrs = this.verticesPtrs;
 
 		Arrays.fill(distances, Double.POSITIVE_INFINITY);
@@ -66,7 +70,7 @@ public class SSSPDijkstra implements SSSP {
 
 				HeapDirectAccessed.Handle<HeapElm> vPtr = verticesPtrs[v];
 				if (vPtr == null) {
-					vPtr = verticesPtrs[v] = heap.insert(new HeapElm(distance, e, v));
+					verticesPtrs[v] = heap.insert(new HeapElm(distance, e, v));
 				} else {
 					HeapElm ptr = vPtr.get();
 					if (distance < ptr.distance) {

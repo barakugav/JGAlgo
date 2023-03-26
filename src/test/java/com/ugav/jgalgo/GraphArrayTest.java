@@ -6,7 +6,7 @@ import com.ugav.jgalgo.GraphImplTestUtils.GraphImpl;
 
 public class GraphArrayTest extends TestUtils {
 
-	private static GraphImpl arrayImpl() {
+	private static GraphImpl graphImpl() {
 		return new GraphImpl() {
 
 			@Override
@@ -18,37 +18,71 @@ public class GraphArrayTest extends TestUtils {
 				}
 			}
 		};
+	}
 
+	@Test
+	public void testVertexAdd() {
+		GraphImplTestUtils.testVertexAdd(graphImpl());
+	}
+
+	@Test
+	public void testCreateWithNVertices() {
+		GraphImplTestUtils.testCreateWithNVertices(graphImpl());
+	}
+
+	@Test
+	public void testAddEdge() {
+		GraphImplTestUtils.testAddEdge(graphImpl());
+	}
+
+	@Test
+	public void testGetEdge() {
+		GraphImplTestUtils.testGetEdge(graphImpl());
+	}
+
+	@Test
+	public void testGetEdges() {
+		GraphImplTestUtils.testGetEdges(graphImpl());
+	}
+
+	@Test
+	public void testEdgeIter() {
+		GraphImplTestUtils.testEdgeIter(graphImpl());
+	}
+
+	@Test
+	public void testDgree() {
+		GraphImplTestUtils.testDgree(graphImpl());
 	}
 
 	@Test
 	public void testUndirectedMST() {
-		GraphImplTestUtils.testUndirectedMST(arrayImpl());
+		GraphImplTestUtils.testUndirectedMST(graphImpl());
 	}
 
 	@Test
 	public void testDirectedMDST() {
-		GraphImplTestUtils.testDirectedMDST(arrayImpl());
+		GraphImplTestUtils.testDirectedMDST(graphImpl());
 	}
 
 	@Test
 	public void testDirectedMaxFlow() {
-		GraphImplTestUtils.testDirectedMaxFlow(arrayImpl());
+		GraphImplTestUtils.testDirectedMaxFlow(graphImpl());
 	}
 
 	@Test
 	public void testUndirectedBipartiteMatching() {
-		GraphImplTestUtils.testUndirectedBipartiteMatching(arrayImpl());
+		GraphImplTestUtils.testUndirectedBipartiteMatching(graphImpl());
 	}
 
 	@Test
 	public void testUndirectedBipartiteMatchingWeighted() {
-		GraphImplTestUtils.testUndirectedBipartiteMatchingWeighted(arrayImpl());
+		GraphImplTestUtils.testUndirectedBipartiteMatchingWeighted(graphImpl());
 	}
 
 	@Test
 	public void testUndirectedRandOps() {
-		GraphImplTestUtils.testUndirectedRandOps(arrayImpl());
+		GraphImplTestUtils.testUndirectedRandOps(graphImpl());
 	}
 
 }

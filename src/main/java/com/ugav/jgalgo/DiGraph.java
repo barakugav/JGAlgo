@@ -68,9 +68,19 @@ public interface DiGraph extends Graph {
 	public void reverseEdge(int edge);
 
 	@Override
-	@Deprecated
 	default int degree(int u) {
-		return degreeOut(u) + degreeIn(u);
+		int count = 0;
+		for (EdgeIter it = edgesOut(u); it.hasNext();) {
+			it.nextInt();
+			if (it.v() != u) /* Count self edges only once, in the in-edges loop */
+				count++;
+		}
+		for (EdgeIter it = edgesIn(u); it.hasNext();) {
+			it.nextInt();
+			count++;
+		}
+		return count;
+
 	}
 
 	/**

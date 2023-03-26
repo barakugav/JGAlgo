@@ -9,7 +9,7 @@ public class GraphLinkedUndirected extends GraphLinkedAbstract implements UGraph
 	}
 
 	public GraphLinkedUndirected(int n) {
-		super(n);
+		super(n, Capabilities);
 		edges = new DataContainer.Obj<>(n, null);
 		addInternalVerticesDataContainer(edges);
 	}
@@ -166,5 +166,42 @@ public class GraphLinkedUndirected extends GraphLinkedAbstract implements UGraph
 		}
 
 	}
+
+	private static final GraphCapabilities Capabilities = new GraphCapabilities() {
+		@Override
+		public boolean vertexAdd() {
+			return true;
+		}
+
+		@Override
+		public boolean vertexRemove() {
+			return true;
+		}
+
+		@Override
+		public boolean edgeAdd() {
+			return true;
+		}
+
+		@Override
+		public boolean edgeRemove() {
+			return true;
+		}
+
+		@Override
+		public boolean parallelEdges() {
+			return true;
+		}
+
+		@Override
+		public boolean selfEdges() {
+			return false;
+		}
+
+		@Override
+		public boolean directed() {
+			return false;
+		}
+	};
 
 }

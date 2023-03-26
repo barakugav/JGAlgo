@@ -9,8 +9,8 @@ abstract class GraphArrayAbstract extends GraphBaseContinues {
 
 	static final int[] EmptyIntArr = new int[0];
 
-	public GraphArrayAbstract(int n) {
-		super(n);
+	public GraphArrayAbstract(int n, GraphCapabilities capabilities) {
+		super(n, capabilities);
 		edgeEndpoints = new DataContainer.Long(0, sourceTarget2Endpoints(-1, -1));
 		addInternalEdgesDataContainer(edgeEndpoints);
 	}

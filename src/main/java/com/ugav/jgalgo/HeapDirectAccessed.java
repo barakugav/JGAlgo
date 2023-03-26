@@ -1,5 +1,6 @@
 package com.ugav.jgalgo;
 
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Objects;
 
@@ -62,6 +63,11 @@ public interface HeapDirectAccessed<E> extends Heap<E> {
 		 */
 		public E get();
 
+	}
+
+	@FunctionalInterface
+	public static interface Builder {
+		<E> HeapDirectAccessed<E> build(Comparator<? super E> cmp);
 	}
 
 	public static <E> Iterator<E> iteratorFromHandleIter(Iterator<? extends Handle<E>> iter) {

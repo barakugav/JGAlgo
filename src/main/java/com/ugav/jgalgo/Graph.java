@@ -21,9 +21,9 @@ public interface Graph {
 	 * times the vertices IDs are {@code 0,1,..., verticesNum-1}, and it might
 	 * rename some vertices when a vertex is removed to maintain this invariant.
 	 * This rename can be subscribed using
-	 * {@link com.ugav.jgalgo.IDStrategy#addIDSwapListener}. Another option for an ID
-	 * strategy is {@link com.ugav.jgalgo.IDStrategy.Fixed} which ensure once a vertex
-	 * is assigned an ID, it will not change. There might be some performance
+	 * {@link com.ugav.jgalgo.IDStrategy#addIDSwapListener}. Another option for an
+	 * ID strategy is {@link com.ugav.jgalgo.IDStrategy.Fixed} which ensure once a
+	 * vertex is assigned an ID, it will not change. There might be some performance
 	 * differences between different ID strategies.
 	 *
 	 * @see com.ugav.jgalgo.IDStrategy
@@ -42,13 +42,13 @@ public interface Graph {
 	 *
 	 * <p>
 	 * The edges IDs values are determined by {@link #getEdgesIDStrategy()}. For
-	 * example, {@link com.ugav.jgalgo.IDStrategy.Continues} ensure that at all times
-	 * the edges IDs are {@code 0,1,..., edgesNum-1}, and it might rename some edges
-	 * when an edge is removed to maintain this invariant. This rename can be
-	 * subscribed using {@link com.ugav.jgalgo.IDStrategy#addIDSwapListener}. Another
-	 * option for an ID strategy is {@link com.ugav.jgalgo.IDStrategy.Fixed} which
-	 * ensure once an edge is assigned an ID, it will not change. There might be
-	 * some performance differences between different ID strategies.
+	 * example, {@link com.ugav.jgalgo.IDStrategy.Continues} ensure that at all
+	 * times the edges IDs are {@code 0,1,..., edgesNum-1}, and it might rename some
+	 * edges when an edge is removed to maintain this invariant. This rename can be
+	 * subscribed using {@link com.ugav.jgalgo.IDStrategy#addIDSwapListener}.
+	 * Another option for an ID strategy is {@link com.ugav.jgalgo.IDStrategy.Fixed}
+	 * which ensure once an edge is assigned an ID, it will not change. There might
+	 * be some performance differences between different ID strategies.
 	 *
 	 * @see com.ugav.jgalgo.IDStrategy
 	 *
@@ -97,13 +97,13 @@ public interface Graph {
 	 *
 	 * <p>
 	 * The edges IDs values are determined by {@link #getEdgesIDStrategy()}. For
-	 * example, {@link com.ugav.jgalgo.IDStrategy.Continues} ensure that at all times
-	 * the edges IDs are {@code 0,1,..., edgesNum-1}, and it might rename some edges
-	 * when an edge is removed to maintain this invariant. This rename can be
-	 * subscribed using {@link com.ugav.jgalgo.IDStrategy#addIDSwapListener}. Another
-	 * option for an ID strategy is {@link com.ugav.jgalgo.IDStrategy.Fixed} which
-	 * ensure once an edge is assigned an ID, it will not change. There might be
-	 * some performance differences between different ID strategies.
+	 * example, {@link com.ugav.jgalgo.IDStrategy.Continues} ensure that at all
+	 * times the edges IDs are {@code 0,1,..., edgesNum-1}, and it might rename some
+	 * edges when an edge is removed to maintain this invariant. This rename can be
+	 * subscribed using {@link com.ugav.jgalgo.IDStrategy#addIDSwapListener}.
+	 * Another option for an ID strategy is {@link com.ugav.jgalgo.IDStrategy.Fixed}
+	 * which ensure once an edge is assigned an ID, it will not change. There might
+	 * be some performance differences between different ID strategies.
 	 *
 	 * @see com.ugav.jgalgo.IDStrategy
 	 *
@@ -345,9 +345,9 @@ public interface Graph {
 	 * ensure that at all times the edges IDs are {@code 0,1,..., edgesNum-1}, and
 	 * it might rename some edges when an edge is removed to maintain this
 	 * invariant. This rename can be subscribed using
-	 * {@link com.ugav.jgalgo.IDStrategy#addIDSwapListener}. Another option for an ID
-	 * strategy is {@link com.ugav.jgalgo.IDStrategy.Fixed} which ensure once an edge
-	 * is assigned an ID, it will not change. There might be some performance
+	 * {@link com.ugav.jgalgo.IDStrategy#addIDSwapListener}. Another option for an
+	 * ID strategy is {@link com.ugav.jgalgo.IDStrategy.Fixed} which ensure once an
+	 * edge is assigned an ID, it will not change. There might be some performance
 	 * differences between different ID strategies.
 	 *
 	 * @see com.ugav.jgalgo.IDStrategy
@@ -355,5 +355,7 @@ public interface Graph {
 	 * @return the edges IDs strategy
 	 */
 	public IDStrategy getEdgesIDStrategy();
+
+	public GraphCapabilities getCapabilities();
 
 }
