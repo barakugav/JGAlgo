@@ -52,7 +52,7 @@ public class EdgesWeights {
 		container.ensureCapacity(m);
 		for (int eIdx = 0; eIdx < m; eIdx++)
 			container.add(eIdx);
-		return ((GraphAbstract) g).addEdgesWeights(key, weights);
+		return ((GraphBase) g).addEdgesWeights(key, weights);
 	}
 
 	private static class Builder {

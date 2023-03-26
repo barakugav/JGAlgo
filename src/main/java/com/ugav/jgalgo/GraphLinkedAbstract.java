@@ -3,7 +3,7 @@ package com.ugav.jgalgo;
 import java.util.Collection;
 import java.util.NoSuchElementException;
 
-abstract class GraphLinkedAbstract extends GraphAbstractContinues {
+abstract class GraphLinkedAbstract extends GraphBaseContinues {
 
 	private final DataContainer.Obj<Node> edges;
 

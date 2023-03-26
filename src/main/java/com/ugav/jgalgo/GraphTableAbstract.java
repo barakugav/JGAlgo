@@ -3,7 +3,7 @@ package com.ugav.jgalgo;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 
-abstract class GraphTableAbstract extends GraphAbstractContinues {
+abstract class GraphTableAbstract extends GraphBaseContinues {
 
 	final int[][] edges;
 	private final DataContainer.Long edgeEndpoints;

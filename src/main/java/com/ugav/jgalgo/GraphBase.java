@@ -7,12 +7,12 @@ import java.util.Set;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
-abstract class GraphAbstract implements Graph {
+abstract class GraphBase implements Graph {
 
 	final IDStrategy verticesIDStrategy;
 	final IDStrategy edgesIDStrategy;
 
-	GraphAbstract(IDStrategy verticesIDStrategy, IDStrategy edgesIDStrategy) {
+	GraphBase(IDStrategy verticesIDStrategy, IDStrategy edgesIDStrategy) {
 		this.verticesIDStrategy = Objects.requireNonNull(verticesIDStrategy);
 		this.edgesIDStrategy = Objects.requireNonNull(edgesIDStrategy);
 	}

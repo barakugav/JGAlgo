@@ -52,7 +52,7 @@ public class VerticesWeights {
 		container.ensureCapacity(n);
 		for (int uIdx = 0; uIdx < n; uIdx++)
 			container.add(uIdx);
-		return ((GraphAbstract) g).addVerticesWeights(key, weights);
+		return ((GraphBase) g).addVerticesWeights(key, weights);
 	}
 
 	/**

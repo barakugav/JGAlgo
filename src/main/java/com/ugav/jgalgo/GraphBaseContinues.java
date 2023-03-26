@@ -7,16 +7,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.ugav.jgalgo.IDStrategy.Continues;
+
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 
-abstract class GraphAbstractContinues extends GraphAbstract {
+abstract class GraphBaseContinues extends GraphBase {
 
 	private final List<DataContainer<?>> eWeightsInternal = new ArrayList<>();
 	private final List<DataContainer<?>> vWeightsInternal = new ArrayList<>();
 	private final Map<Object, Weights<?>> eWeights = new Object2ObjectArrayMap<>();
 	private final Map<Object, Weights<?>> vWeights = new Object2ObjectArrayMap<>();
 
-	GraphAbstractContinues(int n) {
+	GraphBaseContinues(int n) {
 		super(new IDStrategy.Continues(n), new IDStrategy.Continues(0));
 	}
 
@@ -112,6 +114,16 @@ abstract class GraphAbstractContinues extends GraphAbstract {
 	@SuppressWarnings("unchecked")
 	public <E, WeightsT extends Weights<E>> WeightsT edgesWeight(Object key) {
 		return (WeightsT) eWeights.get(key);
+	}
+
+	@Override
+	public IDStrategy.Continues getVerticesIDStrategy() {
+		return (Continues) super.getVerticesIDStrategy();
+	}
+
+	@Override
+	public IDStrategy.Continues getEdgesIDStrategy() {
+		return (Continues) super.getEdgesIDStrategy();
 	}
 
 	@Override

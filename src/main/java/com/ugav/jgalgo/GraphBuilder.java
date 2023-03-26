@@ -48,9 +48,9 @@ public abstract class GraphBuilder {
 			if (eIDStrat == null)
 				eIDStrat = new IDStrategy.Continues(g.edges().size());
 			if (directed) {
-				g = new GraphCustomIDStrategiesDirected((GraphAbstractContinues) g, vIDStrat, eIDStrat);
+				g = new GraphCustomIDStrategiesDirected((GraphBaseContinues) g, vIDStrat, eIDStrat);
 			} else {
-				g = new GraphCustomIDStrategiesUndirected((GraphAbstractContinues) g, vIDStrat, eIDStrat);
+				g = new GraphCustomIDStrategiesUndirected((GraphBaseContinues) g, vIDStrat, eIDStrat);
 			}
 		}
 		return g;
@@ -131,11 +131,11 @@ public abstract class GraphBuilder {
 		}
 	}
 
-	private static class GraphCustomIDStrategies extends GraphAbstract {
+	private static class GraphCustomIDStrategies extends GraphBase {
 
-		final GraphAbstractContinues g;
+		final GraphBaseContinues g;
 
-		GraphCustomIDStrategies(GraphAbstractContinues g, IDStrategy verticesIDStrategy, IDStrategy edgesIDStrategy) {
+		GraphCustomIDStrategies(GraphBaseContinues g, IDStrategy verticesIDStrategy, IDStrategy edgesIDStrategy) {
 			super(verticesIDStrategy, edgesIDStrategy);
 			this.g = Objects.requireNonNull(g);
 
@@ -330,7 +330,7 @@ public abstract class GraphBuilder {
 
 	private static class GraphCustomIDStrategiesDirected extends GraphCustomIDStrategies implements DiGraph {
 
-		GraphCustomIDStrategiesDirected(GraphAbstractContinues g, IDStrategy verticesIDStrategy,
+		GraphCustomIDStrategiesDirected(GraphBaseContinues g, IDStrategy verticesIDStrategy,
 				IDStrategy edgesIDStrategy) {
 			super(g, verticesIDStrategy, edgesIDStrategy);
 			if (!(g instanceof DiGraph))
@@ -393,7 +393,7 @@ public abstract class GraphBuilder {
 
 	private static class GraphCustomIDStrategiesUndirected extends GraphCustomIDStrategies implements UGraph {
 
-		GraphCustomIDStrategiesUndirected(GraphAbstractContinues g, IDStrategy verticesIDStrategy,
+		GraphCustomIDStrategiesUndirected(GraphBaseContinues g, IDStrategy verticesIDStrategy,
 				IDStrategy edgesIDStrategy) {
 			super(g, verticesIDStrategy, edgesIDStrategy);
 			if (!(g instanceof UGraph))
