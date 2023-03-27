@@ -23,8 +23,12 @@ abstract class WeightsImpl<E> implements Weights<E> {
 		}
 
 		static class Obj<E> extends Direct<E> {
+			Obj(DataContainer.Obj<E> container) {
+				super(container);
+			}
+
 			Obj(int expectedSize, E defVal) {
-				super(new DataContainer.Obj<>(expectedSize, defVal));
+				this(new DataContainer.Obj<>(expectedSize, defVal));
 			}
 
 			@Override
@@ -49,8 +53,12 @@ abstract class WeightsImpl<E> implements Weights<E> {
 		}
 
 		static class Int extends Direct<Integer> implements Weights.Int {
+			Int(DataContainer.Int container) {
+				super(container);
+			}
+
 			Int(int expectedSize, int defVal) {
-				super(new DataContainer.Int(expectedSize, defVal));
+				this(new DataContainer.Int(expectedSize, defVal));
 			}
 
 			@Override
@@ -75,8 +83,12 @@ abstract class WeightsImpl<E> implements Weights<E> {
 		}
 
 		static class Long extends Direct<java.lang.Long> implements Weights.Long {
+			Long(DataContainer.Long container) {
+				super(container);
+			}
+
 			Long(int expectedSize, long defVal) {
-				super(new DataContainer.Long(expectedSize, defVal));
+				this(new DataContainer.Long(expectedSize, defVal));
 			}
 
 			@Override
@@ -101,8 +113,12 @@ abstract class WeightsImpl<E> implements Weights<E> {
 		}
 
 		static class Double extends Direct<java.lang.Double> implements Weights.Double {
+			Double(DataContainer.Double container) {
+				super(container);
+			}
+
 			Double(int expectedSize, double defVal) {
-				super(new DataContainer.Double(expectedSize, defVal));
+				this(new DataContainer.Double(expectedSize, defVal));
 			}
 
 			@Override
@@ -127,8 +143,12 @@ abstract class WeightsImpl<E> implements Weights<E> {
 		}
 
 		static class Bool extends Direct<Boolean> implements Weights.Bool {
+			Bool(DataContainer.Bool container) {
+				super(container);
+			}
+
 			Bool(int expectedSize, boolean defVal) {
-				super(new DataContainer.Bool(expectedSize, defVal));
+				this(new DataContainer.Bool(expectedSize, defVal));
 			}
 
 			@Override
@@ -163,8 +183,12 @@ abstract class WeightsImpl<E> implements Weights<E> {
 		}
 
 		static class Obj<E> extends Mapped<E> {
+			Obj(DataContainer.Obj<E> container, IDStrategy idStrategy) {
+				super(container, idStrategy);
+			}
+
 			Obj(int expectedSize, E defVal, IDStrategy idStrategy) {
-				super(new DataContainer.Obj<>(expectedSize, defVal), idStrategy);
+				this(new DataContainer.Obj<>(expectedSize, defVal), idStrategy);
 			}
 
 			@Override
@@ -190,8 +214,12 @@ abstract class WeightsImpl<E> implements Weights<E> {
 		}
 
 		static class Int extends Mapped<Integer> implements Weights.Int {
+			Int(DataContainer.Int container, IDStrategy idStrategy) {
+				super(container, idStrategy);
+			}
+
 			Int(int expectedSize, int defVal, IDStrategy idStrategy) {
-				super(new DataContainer.Int(expectedSize, defVal), idStrategy);
+				this(new DataContainer.Int(expectedSize, defVal), idStrategy);
 			}
 
 			@Override
@@ -216,8 +244,12 @@ abstract class WeightsImpl<E> implements Weights<E> {
 		}
 
 		static class Long extends Mapped<java.lang.Long> implements Weights.Long {
+			Long(DataContainer.Long container, IDStrategy idStrategy) {
+				super(container, idStrategy);
+			}
+
 			Long(int expectedSize, long defVal, IDStrategy idStrategy) {
-				super(new DataContainer.Long(expectedSize, defVal), idStrategy);
+				this(new DataContainer.Long(expectedSize, defVal), idStrategy);
 			}
 
 			@Override
@@ -242,8 +274,12 @@ abstract class WeightsImpl<E> implements Weights<E> {
 		}
 
 		static class Double extends Mapped<java.lang.Double> implements Weights.Double {
+			Double(DataContainer.Double container, IDStrategy idStrategy) {
+				super(container, idStrategy);
+			}
+
 			Double(int expectedSize, double defVal, IDStrategy idStrategy) {
-				super(new DataContainer.Double(expectedSize, defVal), idStrategy);
+				this(new DataContainer.Double(expectedSize, defVal), idStrategy);
 			}
 
 			@Override
@@ -268,8 +304,12 @@ abstract class WeightsImpl<E> implements Weights<E> {
 		}
 
 		static class Bool extends Mapped<Boolean> implements Weights.Bool {
+			Bool(DataContainer.Bool container, IDStrategy idStrategy) {
+				super(container, idStrategy);
+			}
+
 			Bool(int expectedSize, boolean defVal, IDStrategy idStrategy) {
-				super(new DataContainer.Bool(expectedSize, defVal), idStrategy);
+				this(new DataContainer.Bool(expectedSize, defVal), idStrategy);
 			}
 
 			@Override

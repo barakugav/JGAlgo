@@ -15,7 +15,7 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 	 * Maximum matching in unweighted undirected bipartite graph in O(m n^0.5)
 	 */
 
-	private Object bipartiteVerticesWeightKey = VerticesWeights.DefaultBipartiteWeightKey;
+	private Object bipartiteVerticesWeightKey = Weights.DefaultBipartiteWeightKey;
 	private static final Object EdgeRefWeightKey = new Object();
 
 	public MatchingBipartiteHopcroftKarp1973() {
@@ -49,7 +49,7 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 		final int MatchedNone = -1;
 		Arrays.fill(matched, MatchedNone);
 		UGraph f = new GraphArrayUndirected(n);
-		Weights.Int edgeRef = EdgesWeights.ofInts(f, EdgeRefWeightKey, -1);
+		Weights.Int edgeRef = f.addEdgesWeight(EdgeRefWeightKey).defVal(-1).ofInts();
 
 		for (;;) {
 			/* Perform BFS to build the alternating forest */

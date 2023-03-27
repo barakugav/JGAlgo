@@ -209,7 +209,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 				vTv[v] = v;
 
 			UGraph t = new GraphArrayUndirected(n);
-			Weights.Int tData = EdgesWeights.ofInts(t, "edgeData", -1);
+			Weights.Int tData = t.addEdgesWeight("edgeData").defVal(-1).ofInts();
 			for (UGraph G = Graphs.referenceGraph(tOrig, EdgeRefWeightKey); (n = G.vertices().size()) > 1;) {
 				Weights.Int GData = G.edgesWeight(EdgeRefWeightKey);
 
@@ -267,7 +267,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 
 				// contract G to new graph with the super vertices
 				UGraph gNext = new GraphArrayUndirected(nNext);
-				Weights.Int gNextData = EdgesWeights.ofInts(gNext, EdgeRefWeightKey, -1);
+				Weights.Int gNextData = gNext.addEdgesWeight(EdgeRefWeightKey).defVal(-1).ofInts();
 				for (int u = 0; u < n; u++) {
 					int U = vNext[u];
 					for (EdgeIter eit = G.edges(u); eit.hasNext();) {

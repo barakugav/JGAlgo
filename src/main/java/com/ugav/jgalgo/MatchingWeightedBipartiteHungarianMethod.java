@@ -15,7 +15,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 	 * O(m n + n^2 log n)
 	 */
 
-	private Object bipartiteVerticesWeightKey = VerticesWeights.DefaultBipartiteWeightKey;
+	private Object bipartiteVerticesWeightKey = Weights.DefaultBipartiteWeightKey;
 
 	public MatchingWeightedBipartiteHungarianMethod() {
 	}

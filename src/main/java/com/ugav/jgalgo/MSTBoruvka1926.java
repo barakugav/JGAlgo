@@ -31,7 +31,7 @@ public class MSTBoruvka1926 implements MST {
 		IntCollection mstEdges = r.e3;
 
 		UGraph contractedG = new GraphArrayUndirected(treeNum);
-		Weights<R> contractedGData = EdgesWeights.ofObjs(contractedG, edgeValKey);
+		Weights<R> contractedGData = contractedG.addEdgesWeight(edgeValKey).ofObjs();
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			int u = tree[g.edgeSource(e)];

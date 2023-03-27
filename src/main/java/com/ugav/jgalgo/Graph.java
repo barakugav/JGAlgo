@@ -264,6 +264,8 @@ public interface Graph {
 	 */
 	public <V, WeightsT extends Weights<V>> WeightsT verticesWeight(Object key);
 
+	public Weights.Factory addVerticesWeight(Object key);
+
 	/**
 	 * Get the keys of all the associated vertices weights.
 	 *
@@ -294,6 +296,8 @@ public interface Graph {
 	 * @return edges weights of the key
 	 */
 	public <E, WeightsT extends Weights<E>> WeightsT edgesWeight(Object key);
+
+	public Weights.Factory addEdgesWeight(Object key);
 
 	/**
 	 * Get the keys of all the associated edges weights.

@@ -272,7 +272,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 		Worker(Graph g0, EdgeWeightFunc w, DebugPrintsManager debugPrint) {
 			int n = g0.vertices().size();
 			this.g = new GraphArrayDirected(n);
-			edgeVal = EdgesWeights.ofObjs(g, EdgeValKey);
+			edgeVal = g.addEdgesWeight(EdgeValKey).ofObjs();
 			this.w = e -> w.weight(edgeVal.get(e).e);
 
 			for (IntIterator it = g0.edges().iterator(); it.hasNext();) {

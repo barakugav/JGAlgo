@@ -623,7 +623,7 @@ public class Graphs {
 
 	public static DiGraph referenceGraph(DiGraph g, Object refEdgeWeightKey) {
 		DiGraph g0 = new GraphArrayDirected(g.vertices().size());
-		Weights.Int edgeRef = EdgesWeights.ofInts(g0, refEdgeWeightKey);
+		Weights.Int edgeRef = g0.addEdgesWeight(refEdgeWeightKey).ofInts();
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			int e0 = g0.addEdge(g.edgeSource(e), g.edgeTarget(e));
@@ -634,7 +634,7 @@ public class Graphs {
 
 	public static UGraph referenceGraph(UGraph g, Object refEdgeWeightKey) {
 		UGraph g0 = new GraphArrayUndirected(g.vertices().size());
-		Weights.Int edgeRef = EdgesWeights.ofInts(g0, refEdgeWeightKey);
+		Weights.Int edgeRef = g0.addEdgesWeight(refEdgeWeightKey).ofInts();
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			int e0 = g0.addEdge(g.edgeSource(e), g.edgeTarget(e));
@@ -753,7 +753,7 @@ public class Graphs {
 		final Object edgeMappingKey = new Object();
 		UGraph g1 = new GraphArrayUndirected(g.vertices().size());
 
-		Weights.Int sub2Edge = EdgesWeights.ofInts(g1, edgeMappingKey);
+		Weights.Int sub2Edge = g1.addEdgesWeight(edgeMappingKey).ofInts();
 		for (IntIterator it = edgeSet.iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			int u = g.edgeSource(e), v = g.edgeTarget(e);
@@ -765,7 +765,7 @@ public class Graphs {
 
 			if (data0 instanceof Weights.Int data) {
 				int defVal = data.defaultValInt();
-				Weights.Int datas = EdgesWeights.ofInts(g1, key, defVal);
+				Weights.Int datas = g1.addEdgesWeight(key).defVal(defVal).ofInts();
 				for (IntIterator it = g1.edges().iterator(); it.hasNext();) {
 					int s = it.nextInt();
 					int w = data.getInt(sub2Edge.getInt(s));
@@ -775,7 +775,7 @@ public class Graphs {
 
 			} else if (data0 instanceof Weights.Double data) {
 				double defVal = data.defaultValDouble();
-				Weights.Double datas = EdgesWeights.ofDoubles(g1, key, defVal);
+				Weights.Double datas = g1.addEdgesWeight(key).defVal(defVal).ofDoubles();
 				for (IntIterator it = g1.edges().iterator(); it.hasNext();) {
 					int s = it.nextInt();
 					double w = data.getDouble(sub2Edge.getInt(s));
@@ -786,7 +786,7 @@ public class Graphs {
 			} else {
 				Object defVal = data0.defaultVal();
 				@SuppressWarnings("rawtypes")
-				Weights datas = EdgesWeights.ofObjs(g1, key, defVal);
+				Weights datas = g1.addEdgesWeight(key).defVal(defVal).ofObjs();
 				for (IntIterator it = g1.edges().iterator(); it.hasNext();) {
 					int s = it.nextInt();
 					Object w = data0.get(sub2Edge.getInt(s));

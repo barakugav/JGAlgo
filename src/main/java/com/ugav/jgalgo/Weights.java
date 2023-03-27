@@ -133,4 +133,53 @@ public interface Weights<E> {
 		}
 	}
 
+	public static interface Factory {
+		<E> Weights<E> ofObjs();
+
+		Weights.Int ofInts();
+
+		Weights.Long ofLongs();
+
+		Weights.Double ofDoubles();
+
+		Weights.Bool ofBools();
+
+		Object getDefVal();
+
+		Factory defVal(Object defVal);
+
+		default Factory defVal(int defVal) {
+			return defVal(Integer.valueOf(defVal));
+		}
+
+		default Factory defVal(long defVal) {
+			return defVal(java.lang.Long.valueOf(defVal));
+		}
+
+		default Factory defVal(double defVal) {
+			return defVal(java.lang.Double.valueOf(defVal));
+		}
+
+		default Factory defVal(boolean defVal) {
+			return defVal(Boolean.valueOf(defVal));
+		}
+	}
+
+	/**
+	 * The default vertices weight key of the bipartite property.
+	 * <p>
+	 * A bipartite graph is a graph in which the vertices are partitioned into two
+	 * sets V1,V2 and there are no edges between two vertices u,v if they are both
+	 * in V1 or both in V2. Some algorithms expect a bipartite graph as an input,
+	 * and the partition V1,V2 is expected to be a vertex boolean weight keyed by
+	 * {@link #DefaultBipartiteWeightKey}. To use a different key, the algorithms
+	 * expose a {@code setBipartiteVerticesWeightKey(Object)} function.
+	 */
+	public static final Object DefaultBipartiteWeightKey = new Object() {
+		@Override
+		public String toString() {
+			return "DefaultBipartiteVerticesWeightKey";
+		}
+	};
+
 }

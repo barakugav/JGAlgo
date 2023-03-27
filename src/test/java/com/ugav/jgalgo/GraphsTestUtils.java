@@ -104,7 +104,7 @@ class GraphsTestUtils extends TestUtils {
 					throw new IllegalStateException();
 				n = sn + tn;
 				g = impl.newGraph(directed, n);
-				Weights.Bool partition = VerticesWeights.ofBools(g, VerticesWeights.DefaultBipartiteWeightKey);
+				Weights.Bool partition = g.addVerticesWeight(Weights.DefaultBipartiteWeightKey).ofBools();
 				for (int u = 0; u < sn; u++)
 					partition.set(u, true);
 				for (int u = 0; u < tn; u++)
@@ -244,7 +244,7 @@ class GraphsTestUtils extends TestUtils {
 			throw new IllegalArgumentException();
 
 		Random rand = new Random(nextRandSeed());
-		Weights.Double weight = EdgesWeights.ofDoubles(g, "weight");
+		Weights.Double weight = g.addEdgesWeight("weight").ofDoubles();
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			weight.set(e, nextDouble(rand, minWeight, maxWeight));
@@ -271,7 +271,7 @@ class GraphsTestUtils extends TestUtils {
 			throw new IllegalArgumentException("weight range is too small for unique weights");
 
 		RandomIntUnique rand = new RandomIntUnique(minWeight, maxWeight, nextRandSeed());
-		Weights.Int weight = EdgesWeights.ofInts(g, "weight");
+		Weights.Int weight = g.addEdgesWeight("weight").ofInts();
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			weight.set(e, rand.next());

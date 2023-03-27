@@ -41,6 +41,20 @@ abstract class GraphBase implements Graph {
 	}
 
 	@Override
+	public Weights.Factory addVerticesWeight(Object key) {
+		return new WeightsFactoryVertices(key);
+	}
+
+	@Override
+	public Weights.Factory addEdgesWeight(Object key) {
+		return new WeightsFactoryEdges(key);
+	}
+
+	abstract <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, WeightsT weights);
+
+	abstract <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, WeightsT weights);
+
+	@Override
 	public IDStrategy getVerticesIDStrategy() {
 		return verticesIDStrategy;
 	}
@@ -54,10 +68,6 @@ abstract class GraphBase implements Graph {
 	public GraphCapabilities getCapabilities() {
 		return capabilities;
 	}
-
-	abstract <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, WeightsT weights);
-
-	abstract <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, WeightsT weights);
 
 	@Override
 	public boolean equals(Object other) {
@@ -189,6 +199,147 @@ abstract class GraphBase implements Graph {
 		}
 		s.append('}');
 		return s.toString();
+	}
+
+	private abstract class WeightsFactoryBase implements Weights.Factory {
+		final Object key;
+		private Object defVal;
+
+		WeightsFactoryBase(Object key) {
+			this.key = key;
+		}
+
+		@Override
+		public Object getDefVal() {
+			return defVal;
+		}
+
+		@Override
+		public Weights.Factory defVal(Object defVal) {
+			this.defVal = defVal;
+			return this;
+		}
+
+		@Override
+		public <E> Weights<E> ofObjs() {
+			@SuppressWarnings("unchecked")
+			E defVal = (E) getDefVal();
+			return addWeights(new DataContainer.Obj<>(expectedSize(), defVal));
+		}
+
+		@Override
+		public Weights.Int ofInts() {
+			Integer defVal0 = (Integer) getDefVal();
+			int defVal = defVal0 != null ? defVal0.intValue() : 0;
+			return addWeights(new DataContainer.Int(expectedSize(), defVal));
+		}
+
+		@Override
+		public Weights.Long ofLongs() {
+			Long defVal0 = (Long) getDefVal();
+			long defVal = defVal0 != null ? defVal0.longValue() : 0;
+			return addWeights(new DataContainer.Long(expectedSize(), defVal));
+		}
+
+		@Override
+		public Weights.Double ofDoubles() {
+			Double defVal0 = (Double) getDefVal();
+			double defVal = defVal0 != null ? defVal0.doubleValue() : 0;
+			return addWeights(new DataContainer.Double(expectedSize(), defVal));
+		}
+
+		@Override
+		public Weights.Bool ofBools() {
+			Boolean defVal0 = (Boolean) getDefVal();
+			boolean defVal = defVal0 != null ? defVal0.booleanValue() : false;
+			return addWeights(new DataContainer.Bool(expectedSize(), defVal));
+		}
+
+		abstract int expectedSize();
+
+		abstract <E, WeightsT extends Weights<E>> WeightsT addWeights(DataContainer<E> container);
+
+		void addAllIndices(DataContainer<?> container) {
+			int n = expectedSize();
+			container.ensureCapacity(n);
+			for (int idx = 0; idx < n; idx++)
+				container.add(idx);
+		}
+
+		@SuppressWarnings("unchecked")
+		static <E, WeightsT extends Weights<E>> WeightsT wrapContainer(DataContainer<E> container0,
+				IDStrategy idStrat) {
+			boolean isContinues = idStrat instanceof IDStrategy.Continues;
+			if (container0 instanceof DataContainer.Obj<E> container) {
+				if (isContinues) {
+					return (WeightsT) new WeightsImpl.Direct.Obj<>(container);
+				} else {
+					return (WeightsT) new WeightsImpl.Mapped.Obj<>(container, idStrat);
+				}
+			} else if (container0 instanceof DataContainer.Int container) {
+				if (isContinues) {
+					return (WeightsT) new WeightsImpl.Direct.Int(container);
+				} else {
+					return (WeightsT) new WeightsImpl.Mapped.Int(container, idStrat);
+				}
+			} else if (container0 instanceof DataContainer.Long container) {
+				if (isContinues) {
+					return (WeightsT) new WeightsImpl.Direct.Long(container);
+				} else {
+					return (WeightsT) new WeightsImpl.Mapped.Long(container, idStrat);
+				}
+			} else if (container0 instanceof DataContainer.Double container) {
+				if (isContinues) {
+					return (WeightsT) new WeightsImpl.Direct.Double(container);
+				} else {
+					return (WeightsT) new WeightsImpl.Mapped.Double(container, idStrat);
+				}
+			} else if (container0 instanceof DataContainer.Bool container) {
+				if (isContinues) {
+					return (WeightsT) new WeightsImpl.Direct.Bool(container);
+				} else {
+					return (WeightsT) new WeightsImpl.Mapped.Bool(container, idStrat);
+				}
+			} else {
+				throw new IllegalArgumentException(container0.getClass().toString());
+			}
+		}
+	}
+
+	private class WeightsFactoryVertices extends WeightsFactoryBase {
+		WeightsFactoryVertices(Object key) {
+			super(key);
+		}
+
+		@Override
+		int expectedSize() {
+			return vertices().size();
+		}
+
+		@Override
+		<E, WeightsT extends Weights<E>> WeightsT addWeights(DataContainer<E> container) {
+			addAllIndices(container);
+			WeightsT weights = wrapContainer(container, getVerticesIDStrategy());
+			return addVerticesWeights(key, weights);
+		}
+	}
+
+	private class WeightsFactoryEdges extends WeightsFactoryBase {
+		WeightsFactoryEdges(Object key) {
+			super(key);
+		}
+
+		@Override
+		int expectedSize() {
+			return edges().size();
+		}
+
+		@Override
+		<E, WeightsT extends Weights<E>> WeightsT addWeights(DataContainer<E> container) {
+			addAllIndices(container);
+			WeightsT weights = wrapContainer(container, getEdgesIDStrategy());
+			return addEdgesWeights(key, weights);
+		}
 	}
 
 }

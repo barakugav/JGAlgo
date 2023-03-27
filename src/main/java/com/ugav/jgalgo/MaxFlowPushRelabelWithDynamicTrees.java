@@ -285,7 +285,7 @@ public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 
 	private static DiGraph referenceGraph(DiGraph g0, FlowNetwork net) {
 		DiGraph g = new GraphArrayDirected(g0.vertices().size());
-		Weights<Ref> edgeRef = EdgesWeights.ofObjs(g, EdgeRefWeightKey);
+		Weights<Ref> edgeRef = g.addEdgesWeight(EdgeRefWeightKey).ofObjs();
 		for (IntIterator it = g0.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			int u = g0.edgeSource(e), v = g0.edgeTarget(e);

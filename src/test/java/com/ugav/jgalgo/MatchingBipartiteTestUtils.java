@@ -27,7 +27,7 @@ class MatchingBipartiteTestUtils extends TestUtils {
 	static Graph createGraphBipartiteFromAdjacencyMatrix(int sSize, int[][] m) {
 		int n = m.length;
 		Graph g = new GraphArrayUndirected(n);
-		Weights.Bool partition = VerticesWeights.ofBools(g, VerticesWeights.DefaultBipartiteWeightKey);
+		Weights.Bool partition = g.addVerticesWeight(Weights.DefaultBipartiteWeightKey).ofBools();
 		for (int u = 0; u < sSize; u++)
 			partition.set(u, true);
 		for (int v = sSize; v < n; v++)
@@ -76,9 +76,9 @@ class MatchingBipartiteTestUtils extends TestUtils {
 	}
 
 	private static int calcExpectedMaxMatching(Graph g) {
-		Weights.Bool partition = g.verticesWeight(VerticesWeights.DefaultBipartiteWeightKey);
+		Weights.Bool partition = g.verticesWeight(Weights.DefaultBipartiteWeightKey);
 		Objects.requireNonNull(partition,
-				"Bipartiteness values weren't found with weight" + VerticesWeights.DefaultBipartiteWeightKey);
+				"Bipartiteness values weren't found with weight" + Weights.DefaultBipartiteWeightKey);
 
 		Int2IntMap S = new Int2IntOpenHashMap();
 		Int2IntMap T = new Int2IntOpenHashMap();

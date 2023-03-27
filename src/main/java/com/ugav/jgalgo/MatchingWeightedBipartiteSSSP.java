@@ -14,7 +14,7 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 	 * O(m n + n^2 log n)
 	 */
 
-	private Object bipartiteVerticesWeightKey = VerticesWeights.DefaultBipartiteWeightKey;
+	private Object bipartiteVerticesWeightKey = Weights.DefaultBipartiteWeightKey;
 	private SSSP ssspAlgo = new SSSPDijkstra();
 	private static final Object EdgeRefWeightKey = new Object();
 
@@ -46,7 +46,7 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 		Arrays.fill(match, -1);
 
 		double maxWeight = 1;
-		for (IntIterator it = g.edges().iterator(); it.hasNext(); ) {
+		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			maxWeight = Math.max(maxWeight, edgeRef.get(e).w);
 		}
@@ -55,7 +55,7 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 		final double RemovedEdgeWeight = maxWeight * n;
 
 		// Negate unmatched edges
-		for (IntIterator it = g.edges().iterator(); it.hasNext(); ) {
+		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			Ref r = edgeRef.get(e);
 			r.w = -r.w;
@@ -134,7 +134,7 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 	private static DiGraph referenceGraph(UGraph g, Weights.Bool partition, EdgeWeightFunc w) {
 		int n = g.vertices().size();
 		DiGraph g0 = new GraphArrayDirected(g.vertices().size());
-		Weights<Ref> edgeRef = EdgesWeights.ofObjs(g0, EdgeRefWeightKey);
+		Weights<Ref> edgeRef = g0.addEdgesWeight(EdgeRefWeightKey).ofObjs();
 
 		for (int u = 0; u < n; u++) {
 			if (!partition.getBool(u))

@@ -1,7 +1,5 @@
 package com.ugav.jgalgo;
 
-
-
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
@@ -36,7 +34,7 @@ public interface MST {
 	public static boolean verifyMST(UGraph g, EdgeWeightFunc w, IntCollection mstEdges, TPM tpmAlgo) {
 		int n = g.vertices().size();
 		UGraph mst = new GraphArrayUndirected(n);
-		Weights.Int edgeRef = EdgesWeights.ofInts(mst, "edgeRef");
+		Weights.Int edgeRef = mst.addEdgesWeight("edgeRef").ofInts();
 		for (IntIterator it = mstEdges.iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			int u = g.edgeSource(e), v = g.edgeTarget(e);

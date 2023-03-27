@@ -219,6 +219,10 @@ class GraphImplTestUtils extends TestUtils {
 					}
 					Assertions.assertEquals(u, eit.u());
 					Assertions.assertEquals(v, g.edgeEndpoint(e, u));
+					if (directed) {
+						Assertions.assertEquals(g.edgeSource(e), eit.u());
+						Assertions.assertEquals(g.edgeTarget(e), eit.v());
+					}
 				}
 			}
 		}
@@ -480,7 +484,7 @@ class GraphImplTestUtils extends TestUtils {
 		}
 
 		final Object dataKey = new Object();
-		Weights<Object> edgeData = EdgesWeights.ofObjs(g, dataKey);
+		Weights<Object> edgeData = g.addEdgesWeight(dataKey).ofObjs();
 
 		GraphTracker tracker = new GraphTracker(g.vertices().size(), g instanceof DiGraph, dataKey);
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {

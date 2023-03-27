@@ -85,7 +85,7 @@ public class MSTKargerKleinTarjan1995 implements MST {
 		Weights.Double[] treeData = new Weights.Double[treeSizes.length];
 		for (int t = 0; t < trees.length; t++) {
 			trees[t] = new GraphArrayUndirected(treeSizes[t]);
-			treeData[t] = EdgesWeights.ofDoubles(trees[t], "weight");
+			treeData[t] = trees[t].addEdgesWeight("weight").ofDoubles();
 		}
 
 		int[] vToVnew = new int[n];

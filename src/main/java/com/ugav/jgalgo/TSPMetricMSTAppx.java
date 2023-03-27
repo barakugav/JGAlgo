@@ -32,7 +32,7 @@ public class TSPMetricMSTAppx implements TSPMetric {
 
 		/* Build graph from the distances table */
 		UGraph g = new GraphTableUndirected(n);
-		Weights.Double weights = EdgesWeights.ofDoubles(g, DoubleWeightKey);
+		Weights.Double weights = g.addEdgesWeight(DoubleWeightKey).ofDoubles();
 		for (int u = 0; u < n; u++)
 			for (int v = u + 1; v < n; v++)
 				weights.set(g.addEdge(u, v), distances[u][v]);
@@ -42,7 +42,7 @@ public class TSPMetricMSTAppx implements TSPMetric {
 
 		/* Build a graph with each MST edge duplicated */
 		UGraph g1 = new GraphArrayUndirected(n);
-		Weights.Int edgeRef = EdgesWeights.ofInts(g1, EdgeRefWeightKey, -1);
+		Weights.Int edgeRef = g1.addEdgesWeight(EdgeRefWeightKey).defVal(-1).ofInts();
 		for (IntIterator it = mst.iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			int u = g.edgeSource(e), v = g.edgeTarget(e);
