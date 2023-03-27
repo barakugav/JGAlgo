@@ -14,7 +14,6 @@ import java.util.RandomAccess;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 class Utils {
-
 	private Utils() {
 	}
 
@@ -58,11 +57,8 @@ class Utils {
 		return DEFAULT_COMPARATOR;
 	}
 
+	/* syntax sugar to iterator for loops */
 	static <E> Iterable<E> iterable(Iterator<E> it) {
-		/*
-		 * java lack nice for loop syntax using iterators, hopefully this code will be
-		 * inlined by the compiler and no object will be created here
-		 */
 		return new Iterable<>() {
 
 			@Override
