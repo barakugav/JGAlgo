@@ -1,5 +1,7 @@
 package com.ugav.jgalgo;
 
+import java.util.NoSuchElementException;
+
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 /**
@@ -13,5 +15,28 @@ public interface EdgeIter extends IntIterator {
 
 	/** Get the target vertex of the last returned edge */
 	int v();
+
+	public static final EdgeIter Empty = new EdgeIter() {
+
+		@Override
+		public int nextInt() {
+			throw new NoSuchElementException();
+		}
+
+		@Override
+		public boolean hasNext() {
+			return false;
+		}
+
+		@Override
+		public int u() {
+			throw new NoSuchElementException();
+		}
+
+		@Override
+		public int v() {
+			throw new NoSuchElementException();
+		}
+	};
 
 }

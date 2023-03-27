@@ -122,8 +122,9 @@ public class GraphLinkedDirected extends GraphLinkedAbstract implements DiGraph 
 
 	@Override
 	public void reverseEdge(int e) {
-		checkEdgeIdx(e);
 		Node n = (Node) getNode(e);
+		if (n.u == n.v)
+			return;
 		removeEdgeOutNode(n);
 		removeEdgeInNode(n);
 		int w = n.u;

@@ -3,6 +3,9 @@ package com.ugav.jgalgo;
 import java.util.Collection;
 import java.util.Set;
 
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 public interface Graph {
@@ -118,6 +121,39 @@ public interface Graph {
 				return e;
 		}
 		return -1;
+	}
+
+	default EdgeIter getEdges(int u, int v) {
+		IntList edges = new IntArrayList();
+		for (EdgeIter it = edges(u); it.hasNext();) {
+			int e = it.nextInt();
+			if (it.v() == v)
+				edges.add(e);
+		}
+		return new EdgeIter() {
+
+			IntIterator it = edges.intIterator();
+
+			@Override
+			public boolean hasNext() {
+				return it.hasNext();
+			}
+
+			@Override
+			public int nextInt() {
+				return it.nextInt();
+			}
+
+			@Override
+			public int u() {
+				return u;
+			}
+
+			@Override
+			public int v() {
+				return v;
+			}
+		};
 	}
 
 	/**

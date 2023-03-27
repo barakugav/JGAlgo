@@ -167,6 +167,14 @@ public abstract class GraphBuilder {
 		}
 
 		@Override
+		public EdgeIter getEdges(int u, int v) {
+			int uIdx = verticesIDStrategy.idToIdx(u);
+			int vIdx = verticesIDStrategy.idToIdx(v);
+			EdgeIter it = g.getEdges(uIdx, vIdx);
+			return new EdgeItr(it);
+		}
+
+		@Override
 		public int addEdge(int u, int v) {
 			int uIdx = verticesIDStrategy.idToIdx(u);
 			int vIdx = verticesIDStrategy.idToIdx(v);

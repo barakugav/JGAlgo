@@ -60,12 +60,12 @@ public class GraphArrayDirected extends GraphArrayAbstract implements DiGraph {
 		assert e1 != e2;
 		int u1 = edgeSource(e1), v1 = edgeTarget(e1);
 		int u2 = edgeSource(e2), v2 = edgeTarget(e2);
-		int i1 = edgeIndexOf(edgesOut, edgesOutNum, u1, e1);
-		int j1 = edgeIndexOf(edgesIn, edgesInNum, v1, e1);
-		int i2 = edgeIndexOf(edgesOut, edgesOutNum, u2, e2);
-		int j2 = edgeIndexOf(edgesIn, edgesInNum, v2, e2);
 		int[] u1es = edgesOut.get(u1), v1es = edgesIn.get(v1);
 		int[] u2es = edgesOut.get(u2), v2es = edgesIn.get(v2);
+		int i1 = edgeIndexOf(u1es, edgesOutNum.getInt(u1), e1);
+		int j1 = edgeIndexOf(v1es, edgesInNum.getInt(v1), e1);
+		int i2 = edgeIndexOf(u2es, edgesOutNum.getInt(u2), e2);
+		int j2 = edgeIndexOf(v2es, edgesInNum.getInt(v2), e2);
 		u1es[i1] = e2;
 		v1es[j1] = e2;
 		u2es[i2] = e1;
@@ -90,6 +90,8 @@ public class GraphArrayDirected extends GraphArrayAbstract implements DiGraph {
 	@Override
 	public void reverseEdge(int e) {
 		int u = edgeSource(e), v = edgeTarget(e);
+		if (u == v)
+			return;
 		removeEdgeFromList(edgesOut, edgesOutNum, u, e);
 		removeEdgeFromList(edgesIn, edgesInNum, v, e);
 		addEdgeToList(edgesOut, edgesOutNum, v, e);

@@ -43,6 +43,8 @@ public class GraphTableDirected extends GraphTableAbstract implements DiGraph {
 	@Override
 	public void reverseEdge(int e) {
 		int u = edgeSource(e), v = edgeTarget(e);
+		if (u == v)
+			return;
 		if (edges[v][u] != EdgeNone)
 			throw new IllegalArgumentException("parallel edges are not supported");
 		edges[v][u] = e;

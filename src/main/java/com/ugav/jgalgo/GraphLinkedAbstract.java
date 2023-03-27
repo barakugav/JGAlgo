@@ -36,9 +36,7 @@ abstract class GraphLinkedAbstract extends GraphBaseContinues {
 		return n;
 	}
 
-	Node allocNode(int id, int u, int v) {
-		return new Node(id, u, v);
-	}
+	abstract Node allocNode(int id, int u, int v);
 
 	@Override
 	void edgeSwap(int e1, int e2) {
@@ -90,7 +88,7 @@ abstract class GraphLinkedAbstract extends GraphBaseContinues {
 
 	}
 
-	static class Node {
+	abstract static class Node {
 
 		int id;
 		int u, v;

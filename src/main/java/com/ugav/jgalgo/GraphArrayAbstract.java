@@ -33,28 +33,27 @@ abstract class GraphArrayAbstract extends GraphBaseContinues {
 		edgesNum.set(w, num + 1);
 	}
 
-	static int edgeIndexOf(DataContainer.Obj<int[]> edges0, DataContainer.Int edgesNum, int w, int e) {
-		int[] edges = edges0.get(w);
-		int num = edgesNum.getInt(w);
-		for (int i = 0; i < num; i++)
+	static int edgeIndexOf(int[] edges, int edgesNum, int e) {
+		for (int i = 0; i < edgesNum; i++)
 			if (edges[i] == e)
 				return i;
 		return -1;
 	}
 
 	static void removeEdgeFromList(DataContainer.Obj<int[]> edges, DataContainer.Int edgesNum, int w, int e) {
-		int i = edgeIndexOf(edges, edgesNum, w, e);
 		int[] es = edges.get(w);
 		int num = edgesNum.getInt(w);
+		int i = edgeIndexOf(es, num, e);
 		es[i] = es[num - 1];
 		edgesNum.set(w, num - 1);
 	}
 
 	void reverseEdge(int edge) {
-		checkEdgeIdx(edge);
 		long endpoints = edgeEndpoints.getLong(edge);
 		int u = endpoints2Source(endpoints);
 		int v = endpoints2Target(endpoints);
+		if (u == v)
+			return;
 		endpoints = sourceTarget2Endpoints(v, u);
 		edgeEndpoints.set(edge, endpoints);
 	}

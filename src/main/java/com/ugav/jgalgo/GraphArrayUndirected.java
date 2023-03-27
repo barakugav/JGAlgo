@@ -38,25 +38,35 @@ public class GraphArrayUndirected extends GraphArrayAbstract implements UGraph {
 		e = edgeSwapBeforeRemove(e);
 		int u = edgeSource(e), v = edgeTarget(e);
 		removeEdgeFromList(edges, edgesNum, u, e);
-		removeEdgeFromList(edges, edgesNum, v, e);
+		if (u != v)
+			removeEdgeFromList(edges, edgesNum, v, e);
 		super.removeEdge(e);
 	}
 
 	@Override
 	void edgeSwap(int e1, int e2) {
 		assert e1 != e2;
+
 		int u1 = edgeSource(e1), v1 = edgeTarget(e1);
-		int u2 = edgeSource(e2), v2 = edgeTarget(e2);
-		int i1 = edgeIndexOf(edges, edgesNum, u1, e1);
-		int j1 = edgeIndexOf(edges, edgesNum, v1, e1);
-		int i2 = edgeIndexOf(edges, edgesNum, u2, e2);
-		int j2 = edgeIndexOf(edges, edgesNum, v2, e2);
-		int[] u1es = edges.get(u1), v1es = edges.get(v1);
-		int[] u2es = edges.get(u2), v2es = edges.get(v2);
+		int[] u1es = edges.get(u1);
+		int i1 = edgeIndexOf(u1es, edgesNum.getInt(u1), e1);
 		u1es[i1] = e2;
-		v1es[j1] = e2;
+		if (u1 != v1) {
+			int[] v1es = edges.get(v1);
+			int j1 = edgeIndexOf(v1es, edgesNum.getInt(v1), e1);
+			v1es[j1] = e2;
+		}
+
+		int u2 = edgeSource(e2), v2 = edgeTarget(e2);
+		int[] u2es = edges.get(u2);
+		int i2 = edgeIndexOf(u2es, edgesNum.getInt(u2), e2);
 		u2es[i2] = e1;
-		v2es[j2] = e1;
+		if (u2 != v2) {
+			int[] v2es = edges.get(v2);
+			int j2 = edgeIndexOf(v2es, edgesNum.getInt(v2), e2);
+			v2es[j2] = e1;
+		}
+
 		super.edgeSwap(e1, e2);
 	}
 

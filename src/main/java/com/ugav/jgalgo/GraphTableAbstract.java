@@ -37,6 +37,42 @@ abstract class GraphTableAbstract extends GraphBaseContinues {
 	}
 
 	@Override
+	public EdgeIter getEdges(int u, int v) {
+		int e = edges[u][v];
+		if (e == EdgeNone) {
+			return EdgeIter.Empty;
+		} else {
+			return new EdgeIter() {
+
+				boolean first = true;
+
+				@Override
+				public boolean hasNext() {
+					return first;
+				}
+
+				@Override
+				public int nextInt() {
+					if (!hasNext())
+						throw new NoSuchElementException();
+					first = false;
+					return e;
+				}
+
+				@Override
+				public int u() {
+					return u;
+				}
+
+				@Override
+				public int v() {
+					return v;
+				}
+			};
+		}
+	}
+
+	@Override
 	public int addEdge(int u, int v) {
 		if (edges[u][v] != EdgeNone)
 			throw new IllegalArgumentException("parallel edges are not supported");
@@ -46,10 +82,11 @@ abstract class GraphTableAbstract extends GraphBaseContinues {
 	}
 
 	void reverseEdge(int edge) {
-		checkEdgeIdx(edge);
 		long endpoints = edgeEndpoints.getLong(edge);
 		int u = endpoints2Source(endpoints);
 		int v = endpoints2Target(endpoints);
+		if (u == v)
+			return;
 		endpoints = sourceTarget2Endpoints(v, u);
 		edgeEndpoints.set(edge, endpoints);
 	}
