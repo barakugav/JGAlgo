@@ -1,12 +1,9 @@
-package com.ugav.jgalgo.test;
+package com.ugav.jgalgo.bench;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import org.junit.jupiter.api.Test;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.infra.Blackhole;
 
 import com.ugav.jgalgo.EdgeWeightFunc;
 import com.ugav.jgalgo.Graph;
@@ -17,52 +14,51 @@ import com.ugav.jgalgo.MSTKargerKleinTarjan1995;
 import com.ugav.jgalgo.MSTKruskal1956;
 import com.ugav.jgalgo.MSTPrim1957;
 import com.ugav.jgalgo.MSTYao1976;
-import com.ugav.jgalgo.Pair;
+import com.ugav.jgalgo.test.GraphsTestUtils;
 
-public class MSTPrefTest extends TestUtils {
+import it.unimi.dsi.fastutil.ints.IntCollection;
 
-	// TODO pref test shouldn't be unit test
-	@Test
-	public void testRandGraph() {
-		List<Pair<String, Supplier<? extends MST>>> algs = new ArrayList<>();
-		algs.add(Pair.of("MSTBoruvka1926", MSTBoruvka1926::new));
-		algs.add(Pair.of("MSTFredmanTarjan1987", MSTFredmanTarjan1987::new));
-		algs.add(Pair.of("MSTKruskal1956", MSTKruskal1956::new));
-		algs.add(Pair.of("MSTPrim1957", MSTPrim1957::new));
-		algs.add(Pair.of("MSTYao1976", MSTYao1976::new));
-		algs.add(Pair.of("MSTKargerKleinTarjan1995", () -> new MSTKargerKleinTarjan1995(nextRandSeed())));
-		perfCompare(algs, (Supplier<? extends MST> builder) -> {
-			List<Phase> phases = List.of(phase(1, 0, 0), phase(1280, 16, 32), phase(640, 64, 128), phase(320, 128, 256),
-					phase(80, 1024, 4096), phase(20, 4096, 16384));
-			runTestMultiple(phases, (testIter, args) -> {
-				int n = args[0], m = args[1];
-				Graph g = GraphsTestUtils.randGraph(n, m);
-				GraphsTestUtils.assignRandWeightsIntPos(g);
-				EdgeWeightFunc.Int w = g.edgesWeight("weight");
+public class MSTBench {
 
-				MST algo = builder.get();
-				algo.calcMST(g, w);
-			});
-		});
+	private static void benchMST(Supplier<? extends MST> builder, Blackhole blackhole) {
+		int n = 128, m = 256;
+		Graph g = GraphsTestUtils.randGraph(n, m);
+		GraphsTestUtils.assignRandWeightsIntPos(g);
+		EdgeWeightFunc.Int w = g.edgesWeight("weight");
+
+		MST algo = builder.get();
+		IntCollection mst = algo.calcMST(g, w);
+		blackhole.consume(mst);
 	}
 
-	@SuppressWarnings("boxing")
-	private static <A> void perfCompare(Collection<Pair<String, A>> algs, Consumer<A> bench) {
-		if (algs.isEmpty())
-			return;
+	@Benchmark
+	public void benchMSTBoruvka1926(Blackhole blackhole) {
+		benchMST(MSTBoruvka1926::new, blackhole);
+	}
 
-		List<Pair<String, Long>> times = new ArrayList<>(algs.size());
-		for (Pair<String, A> alg : algs) {
-			long begin = System.currentTimeMillis();
-			bench.accept(alg.e2);
-			long end = System.currentTimeMillis();
-			times.add(Pair.of(alg.e1, end - begin));
-		}
+	@Benchmark
+	public void benchMSTFredmanTarjan1987(Blackhole blackhole) {
+		benchMST(MSTFredmanTarjan1987::new, blackhole);
+	}
 
-		times.sort((p1, p2) -> Long.compare(p1.e2, p2.e2));
-		System.out.println("Performance result:");
-		for (Pair<String, Long> time : times)
-			System.out.println("\t" + time.e1 + ": " + time.e2);
+	@Benchmark
+	public void benchMSTKruskal1956(Blackhole blackhole) {
+		benchMST(MSTKruskal1956::new, blackhole);
+	}
+
+	@Benchmark
+	public void benchMSTPrim1957(Blackhole blackhole) {
+		benchMST(MSTPrim1957::new, blackhole);
+	}
+
+	@Benchmark
+	public void benchMSTYao1976(Blackhole blackhole) {
+		benchMST(MSTYao1976::new, blackhole);
+	}
+
+	@Benchmark
+	public void benchMSTKargerKleinTarjan1995(Blackhole blackhole) {
+		benchMST(MSTKargerKleinTarjan1995::new, blackhole);
 	}
 
 }

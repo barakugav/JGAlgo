@@ -16,7 +16,7 @@ import com.ugav.jgalgo.test.GraphImplTestUtils.GraphImpl;
 
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
-class GraphsTestUtils extends TestUtils {
+public class GraphsTestUtils extends TestUtils {
 
 	private GraphsTestUtils() {
 	}
@@ -259,7 +259,7 @@ class GraphsTestUtils extends TestUtils {
 		}
 	}
 
-	static void assignRandWeightsIntPos(Graph g) {
+	public static void assignRandWeightsIntPos(Graph g) {
 		int m = g.edges().size();
 		int minWeight = 1;
 		int maxWeight = m < 50 ? 100 : m * 2 + 2;
@@ -286,7 +286,7 @@ class GraphsTestUtils extends TestUtils {
 		}
 	}
 
-	static Graph randGraph(int n, int m) {
+	public static Graph randGraph(int n, int m) {
 		return randGraph(n, m, GraphImplTestUtils.GRAPH_IMPL_DEFAULT);
 	}
 
