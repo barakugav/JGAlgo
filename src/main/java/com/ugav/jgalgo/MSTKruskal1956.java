@@ -1,8 +1,6 @@
 package com.ugav.jgalgo;
 
 
-import com.ugav.jgalgo.Graphs.EdgeWeightComparator;
-
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -28,7 +26,7 @@ public class MSTKruskal1956 implements MST {
 
 		/* sort edges */
 		int[] edges = g.edges().toIntArray();
-		IntArrays.parallelQuickSort(edges, new EdgeWeightComparator(w));
+		IntArrays.parallelQuickSort(edges, w);
 
 		/* create union find data structure for each vertex */
 		UnionFind uf = new UnionFindArray(n);

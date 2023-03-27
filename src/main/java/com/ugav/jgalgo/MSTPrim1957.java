@@ -1,10 +1,7 @@
 package com.ugav.jgalgo;
 
-import com.ugav.jgalgo.Graphs.EdgeWeightComparator;
-
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.ints.IntLists;
 
 public class MSTPrim1957 implements MST {
@@ -25,8 +22,7 @@ public class MSTPrim1957 implements MST {
 		if (n == 0)
 			return IntLists.emptyList();
 
-		IntComparator c = new EdgeWeightComparator(w);
-		HeapDirectAccessed<Integer> heap = new HeapFibonacci<>(c);
+		HeapDirectAccessed<Integer> heap = new HeapFibonacci<>(w);
 		@SuppressWarnings("unchecked")
 		HeapDirectAccessed.Handle<Integer>[] verticesPtrs = new HeapDirectAccessed.Handle[n];
 		boolean[] visited = new boolean[n];
@@ -49,8 +45,8 @@ public class MSTPrim1957 implements MST {
 
 					HeapDirectAccessed.Handle<Integer> vPtr = verticesPtrs[v];
 					if (vPtr == null)
-						vPtr = verticesPtrs[v] = heap.insert(Integer.valueOf(e));
-					else if (c.compare(e, vPtr.get().intValue()) < 0)
+						verticesPtrs[v] = heap.insert(Integer.valueOf(e));
+					else if (w.compare(e, vPtr.get().intValue()) < 0)
 						heap.decreaseKey(vPtr, Integer.valueOf(e));
 				}
 

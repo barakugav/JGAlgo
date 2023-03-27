@@ -6,7 +6,6 @@ import com.ugav.jgalgo.Utils.StackIntFixSize;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.ints.IntLists;
 
 public class MDSTTarjan1977 implements MDST {
@@ -134,11 +133,10 @@ public class MDSTTarjan1977 implements MDST {
 			int e0 = edgeRefs.getInt(e);
 			return (e0 != HeavyEdge ? w0.weight(e0) : HeavyEdgeWeight) + uf.getValue(g.edgeTarget(e));
 		};
-		IntComparator edgeComparator = new Graphs.EdgeWeightComparator(w);
 		@SuppressWarnings("unchecked")
 		Heap<Integer>[] heap = new Heap[VMaxNum];
 		for (int v = 0; v < n; v++)
-			heap[v] = new HeapFibonacci<>(edgeComparator);
+			heap[v] = new HeapFibonacci<>(w);
 		for (int u = 0; u < n; u++) {
 			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 				int e = eit.nextInt();
@@ -184,7 +182,7 @@ public class MDSTTarjan1977 implements MDST {
 			} else {
 				// Create new super vertex
 				int c = uf.make();
-				heap[c] = new HeapFibonacci<>(edgeComparator);
+				heap[c] = new HeapFibonacci<>(w);
 				brother[c] = brother[u];
 				brother[u] = a;
 				child[c] = a;

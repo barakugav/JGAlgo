@@ -2,12 +2,9 @@ package com.ugav.jgalgo;
 
 import java.util.Arrays;
 
-import com.ugav.jgalgo.Graphs.EdgeWeightComparator;
-
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntComparator;
 
 public class MSTYao1976 implements MST {
 
@@ -142,7 +139,6 @@ public class MSTYao1976 implements MST {
 
 		int[][][] edges = new int[n][][];
 		int[] edgesTemp = new int[n];
-		IntComparator edgeComparator = new EdgeWeightComparator(w);
 
 		for (int u = 0; u < n; u++) {
 			int edgesCount = 0;
@@ -150,7 +146,7 @@ public class MSTYao1976 implements MST {
 				edgesTemp[edgesCount++] = eit.nextInt();
 
 			if (edgesCount <= k) {
-				IntArrays.parallelQuickSort(edgesTemp, 0, edgesCount, edgeComparator);
+				IntArrays.parallelQuickSort(edgesTemp, 0, edgesCount, w);
 				edges[u] = new int[edgesCount][];
 				for (int i = 0; i < edgesCount; i++)
 					edges[u][i] = new int[] { edgesTemp[i] };
@@ -158,7 +154,7 @@ public class MSTYao1976 implements MST {
 			} else {
 				int bucketSize = (edgesCount - 1) / k + 1;
 				int bucketNum = (edgesCount - 1) / bucketSize + 1;
-				Array.Int.bucketPartition(edgesTemp, 0, edgesCount, edgeComparator, bucketSize);
+				Array.Int.bucketPartition(edgesTemp, 0, edgesCount, w, bucketSize);
 				edges[u] = new int[bucketNum][];
 
 				for (int b = 0; b < bucketNum; b++) {

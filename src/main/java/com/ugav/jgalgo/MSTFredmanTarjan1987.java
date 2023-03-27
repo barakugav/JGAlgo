@@ -2,11 +2,8 @@ package com.ugav.jgalgo;
 
 import java.util.Arrays;
 
-import com.ugav.jgalgo.Graphs.EdgeWeightComparator;
-
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.ints.IntLists;
 
 public class MSTFredmanTarjan1987 implements MST {
@@ -53,9 +50,8 @@ public class MSTFredmanTarjan1987 implements MST {
 		int[] vTree = new int[n]; // (super vertex -> tree index)
 		int[] treeVertices = new int[n]; // stack of super vertices in current built tree
 
-		IntComparator c = new EdgeWeightComparator(w);
 		// heap of edges going out of the current tree, one edge in per super vertex
-		HeapDirectAccessed<Integer> heap = new HeapFibonacci<>(c);
+		HeapDirectAccessed<Integer> heap = new HeapFibonacci<>(w);
 		// (super vertex -> heap element) for fast decreaseKey
 		@SuppressWarnings("unchecked")
 		HeapDirectAccessed.Handle<Integer>[] vHeapElm = new HeapDirectAccessed.Handle[n];
@@ -95,7 +91,7 @@ public class MSTFredmanTarjan1987 implements MST {
 								heapElm = vHeapElm[v] = heap.insert(Integer.valueOf(e));
 								if (heap.size() > k)
 									break treeLoop;
-							} else if (c.compare(e, heapElm.get().intValue()) < 0)
+							} else if (w.compare(e, heapElm.get().intValue()) < 0)
 								heap.decreaseKey(heapElm, Integer.valueOf(e));
 						}
 					}

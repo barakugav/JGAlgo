@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 
 import com.ugav.jgalgo.SSSP.SSSPResultsImpl;
 import com.ugav.jgalgo.Utils.QueueIntFixSize;
@@ -15,7 +14,6 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectFunction;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
@@ -589,36 +587,6 @@ public class Graphs {
 
 	private static String strMult(String s, int n) {
 		return String.join("", Collections.nCopies(n, s));
-	}
-
-	public static class EdgeWeightComparator implements IntComparator {
-
-		private final EdgeWeightFunc w;
-
-		EdgeWeightComparator(EdgeWeightFunc w) {
-			this.w = Objects.requireNonNull(w);
-		}
-
-		@Override
-		public int compare(int e1, int e2) {
-			return Utils.compare(w.weight(e1), w.weight(e2));
-		}
-
-	}
-
-	public static class EdgeWeightIntComparator implements IntComparator {
-
-		private final EdgeWeightFunc.Int w;
-
-		EdgeWeightIntComparator(EdgeWeightFunc.Int w) {
-			this.w = Objects.requireNonNull(w);
-		}
-
-		@Override
-		public int compare(int e1, int e2) {
-			return Integer.compare(w.weightInt(e1), w.weightInt(e2));
-		}
-
 	}
 
 	public static DiGraph referenceGraph(DiGraph g, Object refEdgeWeightKey) {
