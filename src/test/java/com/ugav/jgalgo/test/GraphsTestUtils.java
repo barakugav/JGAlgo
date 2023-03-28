@@ -21,7 +21,7 @@ public class GraphsTestUtils extends TestUtils {
 	private GraphsTestUtils() {
 	}
 
-	static class RandomGraphBuilder {
+	public static class RandomGraphBuilder {
 
 		private int n;
 		private int sn;
@@ -35,7 +35,7 @@ public class GraphsTestUtils extends TestUtils {
 		private boolean connected;
 		private GraphImpl impl = GraphImplTestUtils.GRAPH_IMPL_DEFAULT;
 
-		RandomGraphBuilder() {
+		public RandomGraphBuilder() {
 			n = sn = tn = m = 0;
 			bipartite = false;
 			doubleEdges = false;
@@ -44,62 +44,62 @@ public class GraphsTestUtils extends TestUtils {
 			connected = false;
 		}
 
-		RandomGraphBuilder n(int n) {
+		public RandomGraphBuilder n(int n) {
 			this.n = n;
 			return this;
 		}
 
-		RandomGraphBuilder sn(int sn) {
+		public RandomGraphBuilder sn(int sn) {
 			this.sn = sn;
 			return this;
 		}
 
-		RandomGraphBuilder tn(int tn) {
+		public RandomGraphBuilder tn(int tn) {
 			this.tn = tn;
 			return this;
 		}
 
-		RandomGraphBuilder m(int m) {
+		public RandomGraphBuilder m(int m) {
 			this.m = m;
 			return this;
 		}
 
-		RandomGraphBuilder bipartite(boolean bipartite) {
+		public RandomGraphBuilder bipartite(boolean bipartite) {
 			this.bipartite = bipartite;
 			return this;
 		}
 
-		RandomGraphBuilder directed(boolean directed) {
+		public RandomGraphBuilder directed(boolean directed) {
 			this.directed = directed;
 			return this;
 		}
 
-		RandomGraphBuilder doubleEdges(boolean doubleEdges) {
+		public RandomGraphBuilder doubleEdges(boolean doubleEdges) {
 			this.doubleEdges = doubleEdges;
 			return this;
 		}
 
-		RandomGraphBuilder selfEdges(boolean selfEdges) {
+		public RandomGraphBuilder selfEdges(boolean selfEdges) {
 			this.selfEdges = selfEdges;
 			return this;
 		}
 
-		RandomGraphBuilder cycles(boolean cycles) {
+		public RandomGraphBuilder cycles(boolean cycles) {
 			this.cycles = cycles;
 			return this;
 		}
 
-		RandomGraphBuilder connected(boolean connected) {
+		public RandomGraphBuilder connected(boolean connected) {
 			this.connected = connected;
 			return this;
 		}
 
-		RandomGraphBuilder graphImpl(GraphImpl impl) {
+		public RandomGraphBuilder graphImpl(GraphImpl impl) {
 			this.impl = impl;
 			return this;
 		}
 
-		Graph build() {
+		public Graph build() {
 			final Graph g;
 			if (!bipartite) {
 				if (n < 0 || m < 0)

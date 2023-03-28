@@ -8,26 +8,26 @@ import org.junit.jupiter.api.Assertions;
 
 import com.ugav.jgalgo.EdgeWeightFunc;
 import com.ugav.jgalgo.Graph;
+import com.ugav.jgalgo.Graphs.PathIter;
 import com.ugav.jgalgo.SSSP;
 import com.ugav.jgalgo.SSSPBellmanFord;
 import com.ugav.jgalgo.SSSPDial1969;
 import com.ugav.jgalgo.SSSPDijkstra;
 import com.ugav.jgalgo.SSSPGoldberg1995;
-import com.ugav.jgalgo.Graphs.PathIter;
 import com.ugav.jgalgo.test.GraphsTestUtils.RandomGraphBuilder;
 
 import it.unimi.dsi.fastutil.ints.IntList;
 
-class SSSPTestUtils extends TestUtils {
+public class SSSPTestUtils extends TestUtils {
 
 	private SSSPTestUtils() {
 	}
 
-	static void testSSSPDirectedPositiveInt(Supplier<? extends SSSP> builder) {
+	public static void testSSSPDirectedPositiveInt(Supplier<? extends SSSP> builder) {
 		testSSSPPositiveInt(builder, true);
 	}
 
-	static void testSSSPUndirectedPositiveInt(Supplier<? extends SSSP> builder) {
+	public static void testSSSPUndirectedPositiveInt(Supplier<? extends SSSP> builder) {
 		testSSSPPositiveInt(builder, false);
 	}
 

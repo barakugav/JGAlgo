@@ -16,12 +16,17 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 	 */
 
 	private Object bipartiteVerticesWeightKey = Weights.DefaultBipartiteWeightKey;
+	private HeapDirectAccessed.Builder heapBuilder = HeapPairing::new;
 
 	public MatchingWeightedBipartiteHungarianMethod() {
 	}
 
 	public void setBipartiteVerticesWeightKey(Object key) {
 		bipartiteVerticesWeightKey = key;
+	}
+
+	public void setHeapBuilder(HeapDirectAccessed.Builder heapBuilder) {
+		this.heapBuilder = Objects.requireNonNull(heapBuilder);
 	}
 
 	@Override
@@ -46,7 +51,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 		return new Worker(g, partition, w).calcMaxMatching(true);
 	}
 
-	private static class Worker {
+	private class Worker {
 
 		private final UGraph g;
 		private final Weights.Bool partition;
@@ -72,7 +77,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 			inTree = new boolean[n];
 
 			edgeSlackComparator = (e1, e2) -> Utils.compare(edgeSlack(e1), edgeSlack(e2));
-			nextTightEdge = new HeapFibonacci<>(edgeSlackComparator);
+			nextTightEdge = heapBuilder.build(edgeSlackComparator);
 			nextTightEdgePerOutV = new HeapDirectAccessed.Handle[n];
 
 			dualValBase = new double[n];

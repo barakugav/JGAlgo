@@ -1,12 +1,13 @@
 package com.ugav.jgalgo;
 
 import java.util.AbstractSet;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
-
-import com.ugav.jgalgo.Trees.TreeNode;
 
 public class HeapPairing<E> extends HeapAbstractDirectAccessed<E> {
 
@@ -60,17 +61,15 @@ public class HeapPairing<E> extends HeapAbstractDirectAccessed<E> {
 	private static <E> void cut(Node<E> n) {
 		Node<E> next = n.next;
 		if (next != null) {
-			next.prev = n.prev;
+			next.prevOrParent = n.prevOrParent;
 			n.next = null;
 		}
-		if (n.prev != null) {
-			n.prev.next = next;
-			n.prev = null;
+		if (n.prevOrParent.child == n) { /* n.parent.child == n */
+			n.prevOrParent.child = next;
 		} else {
-			assert n.parent.child == n;
-			n.parent.child = next;
+			n.prevOrParent.next = next;
 		}
-		n.parent = null;
+		n.prevOrParent = null;
 	}
 
 	@Override
@@ -112,7 +111,7 @@ public class HeapPairing<E> extends HeapAbstractDirectAccessed<E> {
 		int idx = 0;
 		for (Node<E> p = n.child, next; p != null; p = next) {
 			next = p.next;
-			p.next = p.prev = p.parent = null;
+			p.next = p.prevOrParent = null;
 			childrenOut[idx++] = p;
 		}
 		n.child = null;
@@ -141,12 +140,10 @@ public class HeapPairing<E> extends HeapAbstractDirectAccessed<E> {
 	}
 
 	private Node<E> meld0(Node<E> n1, Node<E> n2) {
-		assert n1.prev == null;
+		assert n1.prevOrParent == null;
 		assert n1.next == null;
-		assert n1.parent == null;
-		assert n2.prev == null;
+		assert n2.prevOrParent == null;
 		assert n2.next == null;
-		assert n2.parent == null;
 
 		/* assume n1 has smaller key than n2 */
 		if (c.compare(n1.value, n2.value) > 0) {
@@ -160,15 +157,14 @@ public class HeapPairing<E> extends HeapAbstractDirectAccessed<E> {
 	}
 
 	private void addChild(Node<E> parent, Node<E> newChild) {
-		assert newChild.parent == null;
-		assert newChild.prev == null;
+		assert newChild.prevOrParent == null;
 		assert newChild.next == null;
 		Node<E> oldChild = parent.child;
 		newChild.next = oldChild;
 		if (oldChild != null)
-			oldChild.prev = newChild;
+			oldChild.prevOrParent = newChild;
 		parent.child = newChild;
-		newChild.parent = parent;
+		newChild.prevOrParent = parent;
 	}
 
 	private Node<E> meld0(Node<E>[] heaps) {
@@ -205,7 +201,21 @@ public class HeapPairing<E> extends HeapAbstractDirectAccessed<E> {
 			assert size == 0;
 			return;
 		}
-		Trees.clear(minRoot, n -> n.value = null);
+
+		List<Node<E>> stack = new ArrayList<>();
+		stack.add(minRoot);
+		do {
+			int idx = stack.size() - 1;
+			Node<E> n = stack.get(idx);
+			stack.remove(idx);
+
+			for (Node<E> p = n.child; p != null; p = p.next)
+				stack.add(p);
+
+			n.prevOrParent = n.next = n.child = null;
+			n.value = null;
+		} while (!stack.isEmpty());
+
 		minRoot = null;
 		size = 0;
 	}
@@ -222,7 +232,7 @@ public class HeapPairing<E> extends HeapAbstractDirectAccessed<E> {
 			@SuppressWarnings({ "unchecked", "rawtypes" })
 			@Override
 			public Iterator<Handle<E>> iterator() {
-				return (Iterator) new Trees.PreOrderIter<>(minRoot);
+				return (Iterator) new PreOrderIter<>(minRoot);
 			}
 
 			@SuppressWarnings("unchecked")
@@ -240,19 +250,14 @@ public class HeapPairing<E> extends HeapAbstractDirectAccessed<E> {
 		};
 	}
 
-	private static class Node<E> implements Handle<E>, TreeNode<Node<E>> {
+	private static class Node<E> implements Handle<E> {
 
-		Node<E> parent;
+		Node<E> prevOrParent;
 		Node<E> next;
-		Node<E> prev;
 		Node<E> child;
 		E value;
 
 		Node(E v) {
-			parent = null;
-			next = null;
-			prev = null;
-			child = null;
 			value = v;
 		}
 
@@ -262,48 +267,47 @@ public class HeapPairing<E> extends HeapAbstractDirectAccessed<E> {
 		}
 
 		@Override
-		public Node<E> parent() {
-			return parent;
+		public String toString() {
+			return "{" + value + "}";
+		}
+
+	}
+
+	private static class PreOrderIter<E> implements Iterator<Node<E>> {
+
+		private final List<Node<E>> path = new ArrayList<>();
+
+		PreOrderIter(Node<E> p) {
+			if (p != null)
+				path.add(p);
+		}
+
+		@Override
+		public boolean hasNext() {
+			return !path.isEmpty();
 		}
 
 		@Override
 		public Node<E> next() {
-			return next;
-		}
+			if (!hasNext())
+				throw new NoSuchElementException();
+			final Node<E> ret = path.get(path.size() - 1);
 
-		@Override
-		public Node<E> prev() {
-			return prev;
-		}
+			Node<E> next;
+			if ((next = ret.child) != null) {
+				path.add(next);
+			} else {
+				Node<E> p0;
+				do {
+					p0 = path.remove(path.size() - 1);
+					if ((next = p0.next) != null) {
+						path.add(next);
+						break;
+					}
+				} while (!path.isEmpty());
+			}
 
-		@Override
-		public Node<E> child() {
-			return child;
-		}
-
-		@Override
-		public void setParent(Node<E> x) {
-			parent = x;
-		}
-
-		@Override
-		public void setNext(Node<E> x) {
-			next = x;
-		}
-
-		@Override
-		public void setPrev(Node<E> x) {
-			prev = x;
-		}
-
-		@Override
-		public void setChild(Node<E> x) {
-			child = x;
-		}
-
-		@Override
-		public String toString() {
-			return "{" + value + "}";
+			return ret;
 		}
 
 	}

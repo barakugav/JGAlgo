@@ -85,7 +85,8 @@ public interface HeapDirectAccessed<E> extends Heap<E> {
 	}
 
 	@FunctionalInterface
-	public static interface Builder {
+	public static interface Builder extends Heap.Builder {
+		@Override
 		<E> HeapDirectAccessed<E> build(Comparator<? super E> cmp);
 	}
 

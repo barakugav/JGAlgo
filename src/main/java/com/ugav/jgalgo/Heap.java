@@ -38,4 +38,9 @@ public interface Heap<E> extends Collection<E> {
 
 	public Comparator<? super E> comparator();
 
+	@FunctionalInterface
+	public static interface Builder {
+		<E> Heap<E> build(Comparator<? super E> cmp);
+	}
+
 }

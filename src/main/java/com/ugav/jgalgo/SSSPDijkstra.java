@@ -15,8 +15,7 @@ public class SSSPDijkstra implements SSSP {
 	private HeapDirectAccessed.Handle<HeapElm>[] verticesPtrs;
 
 	public SSSPDijkstra() {
-		this(HeapFibonacci::new);
-		// TODO use pairing heap once implemented
+		this(HeapPairing::new);
 	}
 
 	public SSSPDijkstra(HeapDirectAccessed.Builder heapBuilder) {

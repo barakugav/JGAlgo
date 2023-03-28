@@ -5,12 +5,9 @@ import java.util.Iterator;
 import java.util.Random;
 
 @SuppressWarnings("boxing")
-class TestUtils {
+public class TestUtils {
 
-	TestUtils() {
-	}
-
-	static class Phase {
+	public static class Phase {
 		private final int repeat;
 		private final int[] args;
 
@@ -26,16 +23,16 @@ class TestUtils {
 		}
 	}
 
-	static Phase phase(int repeat, int... args) {
+	public static Phase phase(int repeat, int... args) {
 		return Phase.of(repeat, args);
 	}
 
 	@FunctionalInterface
-	static interface TestRunnable {
+	public static interface TestRunnable {
 		public void run(TestIterIdx testIter, int[] args);
 	}
 
-	static void runTestMultiple(Collection<Phase> phases, TestRunnable test) {
+	public static void runTestMultiple(Collection<Phase> phases, TestRunnable test) {
 		int phaseIdx = 0;
 		for (Phase phase : phases) {
 			for (int iter = 0; iter < phase.repeat; iter++) {
@@ -50,8 +47,8 @@ class TestUtils {
 		}
 	}
 
-	static class TestIterIdx {
-		final int phase, iter;
+	public static class TestIterIdx {
+		public final int phase, iter;
 
 		private TestIterIdx(int phase, int iter) {
 			this.phase = phase;

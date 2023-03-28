@@ -1,6 +1,7 @@
 package com.ugav.jgalgo;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -12,7 +13,13 @@ public class MSTFredmanTarjan1987 implements MST {
 	 * O(m log* n)
 	 */
 
+	private HeapDirectAccessed.Builder heapBuilder = HeapPairing::new;
+
 	public MSTFredmanTarjan1987() {
+	}
+
+	public void setHeapBuilder(HeapDirectAccessed.Builder heapBuilder) {
+		this.heapBuilder = Objects.requireNonNull(heapBuilder);
 	}
 
 	@Override
@@ -51,7 +58,7 @@ public class MSTFredmanTarjan1987 implements MST {
 		int[] treeVertices = new int[n]; // stack of super vertices in current built tree
 
 		// heap of edges going out of the current tree, one edge in per super vertex
-		HeapDirectAccessed<Integer> heap = new HeapFibonacci<>(w);
+		HeapDirectAccessed<Integer> heap = heapBuilder.build(w);
 		// (super vertex -> heap element) for fast decreaseKey
 		@SuppressWarnings("unchecked")
 		HeapDirectAccessed.Handle<Integer>[] vHeapElm = new HeapDirectAccessed.Handle[n];

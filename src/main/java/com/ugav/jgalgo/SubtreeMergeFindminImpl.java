@@ -33,8 +33,12 @@ public class SubtreeMergeFindminImpl<V, E> implements SubtreeMergeFindmin<V, E> 
 		this(null);
 	}
 
-	@SuppressWarnings("unchecked")
 	public SubtreeMergeFindminImpl(Comparator<? super E> weightCmp) {
+		this(weightCmp, HeapPairing::new);
+	}
+
+	@SuppressWarnings("unchecked")
+	public SubtreeMergeFindminImpl(Comparator<? super E> weightCmp, HeapDirectAccessed.Builder heapBuilder) {
 		nodes = new NodeImpl[2];
 
 		uf = new UnionFindArray();
@@ -43,7 +47,7 @@ public class SubtreeMergeFindminImpl<V, E> implements SubtreeMergeFindmin<V, E> 
 		this.weightCmp = weightCmp != null ? weightCmp : Utils.getDefaultComparator();
 		timestamp = 0;
 
-		heap = new HeapFibonacci<>((t1, t2) -> this.weightCmp.compare(t1.minEdge.data.data, t2.minEdge.data.data));
+		heap = heapBuilder.build((t1, t2) -> this.weightCmp.compare(t1.minEdge.data.data, t2.minEdge.data.data));
 	}
 
 	@Override

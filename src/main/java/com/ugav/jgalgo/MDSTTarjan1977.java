@@ -1,6 +1,7 @@
 package com.ugav.jgalgo;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import com.ugav.jgalgo.Utils.StackIntFixSize;
 
@@ -14,13 +15,17 @@ public class MDSTTarjan1977 implements MDST {
 	 * O(m log n)
 	 */
 
+	private Heap.Builder heapBuilder = HeapPairing::new;
+	private static final int HeavyEdge = 0xffffffff;
+	private static final double HeavyEdgeWeight = Double.MAX_VALUE;
+	private static final Object EdgeRefWeightKey = new Object();
+
 	public MDSTTarjan1977() {
 	}
 
-	private static final int HeavyEdge = 0xffffffff;
-
-	private static final double HeavyEdgeWeight = Double.MAX_VALUE;
-	private static final Object EdgeRefWeightKey = new Object();
+	public void setHeapBuilder(Heap.Builder heapBuilder) {
+		this.heapBuilder = Objects.requireNonNull(heapBuilder);
+	}
 
 	/**
 	 * finds the MST rooted from any root
@@ -117,7 +122,7 @@ public class MDSTTarjan1977 implements MDST {
 		}
 	}
 
-	private static ContractedGraph contract(DiGraph g, EdgeWeightFunc w0) {
+	private ContractedGraph contract(DiGraph g, EdgeWeightFunc w0) {
 		addEdgesUntilStronglyConnected(g);
 
 		int n = g.vertices().size();
@@ -136,7 +141,7 @@ public class MDSTTarjan1977 implements MDST {
 		@SuppressWarnings("unchecked")
 		Heap<Integer>[] heap = new Heap[VMaxNum];
 		for (int v = 0; v < n; v++)
-			heap[v] = new HeapFibonacci<>(w);
+			heap[v] = heapBuilder.build(w);
 		for (int u = 0; u < n; u++) {
 			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 				int e = eit.nextInt();
@@ -182,7 +187,7 @@ public class MDSTTarjan1977 implements MDST {
 			} else {
 				// Create new super vertex
 				int c = uf.make();
-				heap[c] = new HeapFibonacci<>(w);
+				heap[c] = heapBuilder.build(w);
 				brother[c] = brother[u];
 				brother[u] = a;
 				child[c] = a;

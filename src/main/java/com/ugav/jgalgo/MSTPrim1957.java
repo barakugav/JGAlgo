@@ -1,5 +1,7 @@
 package com.ugav.jgalgo;
 
+import java.util.Objects;
+
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntLists;
@@ -10,7 +12,13 @@ public class MSTPrim1957 implements MST {
 	 * O(m + nlogn)
 	 */
 
+	private HeapDirectAccessed.Builder heapBuilder = HeapPairing::new;
+
 	public MSTPrim1957() {
+	}
+
+	public void setHeapBuilder(HeapDirectAccessed.Builder heapBuilder) {
+		this.heapBuilder = Objects.requireNonNull(heapBuilder);
 	}
 
 	@Override
@@ -22,7 +30,7 @@ public class MSTPrim1957 implements MST {
 		if (n == 0)
 			return IntLists.emptyList();
 
-		HeapDirectAccessed<Integer> heap = new HeapFibonacci<>(w);
+		HeapDirectAccessed<Integer> heap = heapBuilder.build(w);
 		@SuppressWarnings("unchecked")
 		HeapDirectAccessed.Handle<Integer>[] verticesPtrs = new HeapDirectAccessed.Handle[n];
 		boolean[] visited = new boolean[n];
