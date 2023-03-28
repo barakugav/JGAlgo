@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MaxFlowEdmondsKarp.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jgalgo</a> &gt; <a href="index.source.html" class="el_package">com.ugav.jgalgo</a> &gt; <span class="el_source">MaxFlowEdmondsKarp.java</span></div><h1>MaxFlowEdmondsKarp.java</h1><pre class="source lang-java linenums">package com.ugav.jgalgo;
+
+import java.util.Arrays;
+
+import com.ugav.jgalgo.Utils.QueueIntFixSize;
+
+import it.unimi.dsi.fastutil.ints.Int2DoubleFunction;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+
+public class MaxFlowEdmondsKarp implements MaxFlow {
+
+	/*
+	 * O(m n^2)
+	 */
+
+<span class="fc" id="L16">	private static final Object EdgeRefWeightKey = new Object();</span>
+<span class="fc" id="L17">	private static final Object EdgeRevWeightKey = new Object();</span>
+<span class="fc" id="L18">	private static final Object FlowWeightKey = new Object();</span>
+
+<span class="fc" id="L20">	public MaxFlowEdmondsKarp() {</span>
+<span class="fc" id="L21">	}</span>
+
+	@Override
+	public double calcMaxFlow(Graph g0, FlowNetwork net, int source, int target) {
+<span class="pc bpc" id="L25" title="1 of 2 branches missed.">		if (!(g0 instanceof DiGraph))</span>
+<span class="nc" id="L26">			throw new IllegalArgumentException(&quot;only directed graphs are supported&quot;);</span>
+<span class="pc bpc" id="L27" title="1 of 2 branches missed.">		if (source == target)</span>
+<span class="nc" id="L28">			throw new IllegalArgumentException(&quot;Source and target can't be the same vertices&quot;);</span>
+
+<span class="fc" id="L30">		DiGraph g = new GraphArrayDirected(g0.vertices().size());</span>
+
+<span class="fc" id="L32">		Weights.Int edgeRef = g.addEdgesWeight(EdgeRefWeightKey).defVal(-1).ofInts();</span>
+<span class="fc" id="L33">		Weights.Int edgeRev = g.addEdgesWeight(EdgeRevWeightKey).defVal(-1).ofInts();</span>
+<span class="fc" id="L34">		Weights.Double flow = g.addEdgesWeight(FlowWeightKey).ofDoubles();</span>
+<span class="fc bfc" id="L35" title="All 2 branches covered.">		for (IntIterator it = g0.edges().iterator(); it.hasNext();) {</span>
+<span class="fc" id="L36">			int e = it.nextInt();</span>
+<span class="fc" id="L37">			int u = g0.edgeSource(e), v = g0.edgeTarget(e);</span>
+<span class="fc" id="L38">			int e1 = g.addEdge(u, v);</span>
+<span class="fc" id="L39">			int e2 = g.addEdge(v, u);</span>
+<span class="fc" id="L40">			edgeRef.set(e1, e);</span>
+<span class="fc" id="L41">			edgeRef.set(e2, e);</span>
+<span class="fc" id="L42">			edgeRev.set(e1, e2);</span>
+<span class="fc" id="L43">			edgeRev.set(e2, e1);</span>
+<span class="fc" id="L44">			flow.set(e1, 0);</span>
+<span class="fc" id="L45">			flow.set(e2, net.getCapacity(e));</span>
+<span class="fc" id="L46">		}</span>
+<span class="fc" id="L47">		Int2DoubleFunction capacity = e -&gt; net.getCapacity(edgeRef.getInt(e));</span>
+
+<span class="fc" id="L49">		int n = g.vertices().size();</span>
+<span class="fc" id="L50">		int[] backtrack = new int[n];</span>
+
+<span class="fc" id="L52">		boolean[] visited = new boolean[n];</span>
+<span class="fc" id="L53">		QueueIntFixSize queue = new QueueIntFixSize(n);</span>
+
+		for (;;) {
+<span class="fc" id="L56">			queue.clear();</span>
+<span class="fc" id="L57">			visited[source] = true;</span>
+<span class="fc" id="L58">			backtrack[target] = -1;</span>
+<span class="fc" id="L59">			queue.push(source);</span>
+
+			// perform BFS and find a path of non saturated edges from source to target
+<span class="fc bfc" id="L62" title="All 2 branches covered.">			bfs: while (!queue.isEmpty()) {</span>
+<span class="fc" id="L63">				int u = queue.pop();</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
+<span class="fc" id="L65">					int e = eit.nextInt();</span>
+<span class="fc" id="L66">					int v = eit.v();</span>
+
+<span class="fc bfc" id="L68" title="All 4 branches covered.">					if (visited[v] || flow.getDouble(e) &gt;= capacity.applyAsDouble(e))</span>
+<span class="fc" id="L69">						continue;</span>
+<span class="fc" id="L70">					backtrack[v] = e;</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">					if (v == target)</span>
+<span class="fc" id="L72">						break bfs;</span>
+<span class="fc" id="L73">					visited[v] = true;</span>
+<span class="fc" id="L74">					queue.push(v);</span>
+<span class="fc" id="L75">				}</span>
+<span class="fc" id="L76">			}</span>
+
+			// no path to target
+<span class="fc bfc" id="L79" title="All 2 branches covered.">			if (backtrack[target] == -1)</span>
+<span class="fc" id="L80">				break;</span>
+
+			// find out what is the maximum flow we can pass
+<span class="fc" id="L83">			double f = Double.MAX_VALUE;</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">			for (int p = target; p != source;) {</span>
+<span class="fc" id="L85">				int e = backtrack[p];</span>
+<span class="fc" id="L86">				f = Math.min(f, capacity.applyAsDouble(e) - flow.getDouble(e));</span>
+<span class="fc" id="L87">				p = g.edgeSource(e);</span>
+<span class="fc" id="L88">			}</span>
+
+			// update flow of all edges on path
+<span class="fc bfc" id="L91" title="All 2 branches covered.">			for (int p = target; p != source;) {</span>
+<span class="fc" id="L92">				int e = backtrack[p], rev = edgeRev.getInt(e);</span>
+<span class="fc" id="L93">				flow.set(e, Math.min(capacity.applyAsDouble(e), flow.getDouble(e) + f));</span>
+<span class="fc" id="L94">				flow.set(rev, Math.max(0, flow.getDouble(rev) - f));</span>
+<span class="fc" id="L95">				p = g.edgeSource(e);</span>
+<span class="fc" id="L96">			}</span>
+
+<span class="fc" id="L98">			Arrays.fill(visited, false);</span>
+<span class="fc" id="L99">		}</span>
+
+<span class="fc bfc" id="L101" title="All 2 branches covered.">		for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
+<span class="fc" id="L102">			int e = it.nextInt();</span>
+<span class="fc" id="L103">			int u = g.edgeSource(e);</span>
+<span class="fc" id="L104">			int orig = edgeRef.getInt(e);</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">			if (u == g0.edgeSource(orig))</span>
+<span class="fc" id="L106">				net.setFlow(orig, flow.getDouble(e));</span>
+<span class="fc" id="L107">		}</span>
+<span class="fc" id="L108">		double totalFlow = 0;</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">		for (EdgeIter eit = g.edgesOut(source); eit.hasNext();) {</span>
+<span class="fc" id="L110">			int e = eit.nextInt();</span>
+<span class="fc" id="L111">			int orig = edgeRef.getInt(e);</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">			if (source == g0.edgeSource(orig))</span>
+<span class="fc" id="L113">				totalFlow += flow.getDouble(e);</span>
+<span class="fc" id="L114">		}</span>
+<span class="fc" id="L115">		return totalFlow;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

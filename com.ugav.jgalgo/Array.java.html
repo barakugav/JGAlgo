@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Array.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jgalgo</a> &gt; <a href="index.source.html" class="el_package">com.ugav.jgalgo</a> &gt; <span class="el_source">Array.java</span></div><h1>Array.java</h1><pre class="source lang-java linenums">package com.ugav.jgalgo;
+
+import java.util.Arrays;
+import java.util.Comparator;
+
+import it.unimi.dsi.fastutil.ints.IntComparator;
+
+public class Array {
+
+	private Array() {
+	}
+
+	public static class Obj {
+
+		private Obj() {
+		}
+
+		public static &lt;E&gt; E getKthElement(E[] a, int k, Comparator&lt;? super E&gt; c) {
+<span class="fc" id="L19">			return getKthElement(a, 0, a.length, k, c, false);</span>
+		}
+
+		/**
+		 * Get the K'th element in the array if it was sorted
+		 *
+		 * For example, getKthElement([10, 13, 14, 11, 12], 3) = 13
+		 *
+		 * O(n)
+		 *
+		 * @param a       an array
+		 * @param from    first index (inclusive)
+		 * @param to      last index (exclusive)
+		 * @param k       index of the desire element in the sorted array
+		 * @param c       comparator
+		 * @param inPlace if true, all operations will be done on the given array and at
+		 *                the end it will be partitioned by the Kth element
+		 * @return the Kth element
+		 */
+		public static &lt;E&gt; E getKthElement(E[] a, int from, int to, int k, Comparator&lt;? super E&gt; c, boolean inPlace) {
+<span class="pc bpc" id="L39" title="4 of 8 branches missed.">			if (from &lt; 0 || from &gt;= to || to &gt; a.length || k &gt;= to - from)</span>
+<span class="nc" id="L40">				throw new IndexOutOfBoundsException(&quot;a(&quot; + a.length + &quot;)[&quot; + from + &quot;, &quot; + to + &quot;][&quot; + k + &quot;]&quot;);</span>
+<span class="pc bpc" id="L41" title="1 of 2 branches missed.">			if (!inPlace) {</span>
+<span class="fc" id="L42">				a = Arrays.copyOfRange(a, from, to);</span>
+<span class="fc" id="L43">				from = 0;</span>
+<span class="fc" id="L44">				to = a.length;</span>
+			}
+<span class="pc bpc" id="L46" title="1 of 2 branches missed.">			c = c != null ? c : Utils.getDefaultComparator();</span>
+
+<span class="fc" id="L48">			getKthElement0(a, from, to, k, c);</span>
+<span class="fc" id="L49">			return a[k];</span>
+		}
+
+		private static &lt;E&gt; void getKthElement0(E[] a, int from, int to, int k, Comparator&lt;? super E&gt; c) {
+			for (;;) {
+<span class="pc bpc" id="L54" title="1 of 2 branches missed.">				if (from == to + 1)</span>
+<span class="nc" id="L55">					return;</span>
+<span class="fc" id="L56">				int pivotIdx = calcPivot(a, from, to, c);</span>
+<span class="fc" id="L57">				pivotIdx = pivotPartition0(a, from, to, pivotIdx, c);</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">				if (pivotIdx == k)</span>
+<span class="fc" id="L59">					return;</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">				if (pivotIdx &gt; k)</span>
+<span class="fc" id="L61">					to = pivotIdx;</span>
+				else
+<span class="fc" id="L63">					from = pivotIdx + 1;</span>
+<span class="fc" id="L64">			}</span>
+		}
+
+		/**
+		 * Partition an array by a given pivot
+		 *
+		 * At the end of this function, and array will be in the form:
+		 *
+		 * [smaller than pivot, equal to pivot, greater than pivot]
+		 *
+		 * O(n)
+		 *
+		 * @param a     an array
+		 * @param from  first index (inclusive)
+		 * @param to    last index (exclusive)
+		 * @param pivot an element to partition the array by
+		 * @param c     comparator
+		 * @return the last index of element smaller or equal to the pivot (exclusive)
+		 */
+		public static &lt;E&gt; int pivotPartition(E[] a, int from, int to, E pivot, Comparator&lt;? super E&gt; c) {
+<span class="nc bnc" id="L84" title="All 6 branches missed.">			if (from &lt; 0 || from &gt;= to || to &gt; a.length)</span>
+<span class="nc" id="L85">				throw new IndexOutOfBoundsException(&quot;a(&quot; + a.length + &quot;)[&quot; + from + &quot;, &quot; + to + &quot;]&quot;);</span>
+<span class="nc bnc" id="L86" title="All 2 branches missed.">			c = c != null ? c : Utils.getDefaultComparator();</span>
+
+			// Find greatest element smaller than the pivot
+<span class="nc" id="L89">			int pivotIdx = -1;</span>
+<span class="nc bnc" id="L90" title="All 2 branches missed.">			for (int i = from; i &lt; to; i++)</span>
+<span class="nc bnc" id="L91" title="All 6 branches missed.">				if (c.compare(pivot, a[i]) &gt;= 0 &amp;&amp; (pivotIdx == -1 || c.compare(a[pivotIdx], a[i]) &lt; 0))</span>
+<span class="nc" id="L92">					pivotIdx = i;</span>
+<span class="nc bnc" id="L93" title="All 2 branches missed.">			if (pivotIdx == -1)</span>
+<span class="nc" id="L94">				return 0; // all elements are greater than the pivot</span>
+
+<span class="nc" id="L96">			return pivotPartition0(a, from, to, pivotIdx, c) + 1;</span>
+		}
+
+		private static &lt;E&gt; int pivotPartition0(E[] a, int from, int to, int pivotIdx, Comparator&lt;? super E&gt; c) {
+<span class="fc" id="L100">			E pivot = a[pivotIdx];</span>
+<span class="fc" id="L101">			int insertIdx = from;</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">			for (int i = from; i &lt; to; i++)</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">				if (c.compare(a[i], pivot) &lt; 0)</span>
+<span class="fc" id="L104">					swap(a, i, insertIdx++);</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">			for (int i = insertIdx; i &lt; to; i++)</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">				if (c.compare(a[i], pivot) == 0)</span>
+<span class="fc" id="L107">					swap(a, i, insertIdx++);</span>
+<span class="fc" id="L108">			return insertIdx - 1;</span>
+		}
+
+		private static &lt;E&gt; int calcPivot(E[] a, int from, int to, Comparator&lt;? super E&gt; c) {
+<span class="fc bfc" id="L112" title="All 2 branches covered.">			if (to - from &lt;= 5)</span>
+<span class="fc" id="L113">				return partition5(a, from, to, c);</span>
+<span class="fc" id="L114">			int blockNum = (to - from - 1) / 5 + 1;</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">			for (int i = 0; i &lt; blockNum; i++) {</span>
+<span class="fc" id="L116">				int subFrom = from + i * 5;</span>
+<span class="fc" id="L117">				int subTo = subFrom + 5;</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">				if (subTo &gt; to)</span>
+<span class="fc" id="L119">					subTo = to;</span>
+<span class="fc" id="L120">				int median5 = partition5(a, subFrom, subTo, c);</span>
+<span class="fc" id="L121">				swap(a, median5, from + i);</span>
+			}
+
+<span class="fc" id="L124">			int mid = from + blockNum / 2;</span>
+<span class="fc" id="L125">			getKthElement0(a, from, from + blockNum, mid, c);</span>
+<span class="fc" id="L126">			return mid;</span>
+		}
+
+		private static &lt;E&gt; int partition5(E[] a, int from, int to, Comparator&lt;? super E&gt; c) {
+<span class="fc bfc" id="L130" title="All 2 branches covered.">			for (int i = from + 1; i &lt; to; i++)</span>
+<span class="fc bfc" id="L131" title="All 4 branches covered.">				for (int j = i; j &gt; from &amp;&amp; c.compare(a[j], a[j - 1]) &lt; 0; j--)</span>
+<span class="fc" id="L132">					swap(a, j, j - 1);</span>
+<span class="fc" id="L133">			return from + (to - from) / 2;</span>
+		}
+
+		private static &lt;E&gt; void swap(E a[], int i, int j) {
+<span class="fc" id="L137">			E temp = a[i];</span>
+<span class="fc" id="L138">			a[i] = a[j];</span>
+<span class="fc" id="L139">			a[j] = temp;</span>
+<span class="fc" id="L140">		}</span>
+
+		/**
+		 * Partition an array to buckets where each element in bucket i is smaller than
+		 * all elements in bucket i+1
+		 *
+		 * O(n log k) where k is the number of buckets of the output.
+		 *
+		 * @param a          an array
+		 * @param from       first index (inclusive)
+		 * @param to         last index (exclusive)
+		 * @param c          comparator
+		 * @param bucketSize the size of the bucket. Last bucket may be smaller than the
+		 *                   specified value.
+		 */
+		public static &lt;E&gt; void bucketPartition(E[] a, int from, int to, Comparator&lt;? super E&gt; c, int bucketSize) {
+<span class="pc bpc" id="L156" title="4 of 8 branches missed.">			if (from &lt; 0 || from &gt;= to || to &gt; a.length || bucketSize &lt;= 0)</span>
+<span class="nc" id="L157">				throw new IndexOutOfBoundsException(</span>
+						&quot;a(&quot; + a.length + &quot;)[&quot; + from + &quot;, &quot; + to + &quot;][&quot; + bucketSize + &quot;]&quot;);
+<span class="pc bpc" id="L159" title="1 of 2 branches missed.">			c = c != null ? c : Utils.getDefaultComparator();</span>
+<span class="fc" id="L160">			bucketPartition0(a, from, to, c, bucketSize);</span>
+<span class="fc" id="L161">		}</span>
+
+		private static &lt;E&gt; void bucketPartition0(E[] a, int from, int to, Comparator&lt;? super E&gt; c, int bucketSize) {
+<span class="fc bfc" id="L164" title="All 2 branches covered.">			if (to - from &lt;= bucketSize)</span>
+<span class="fc" id="L165">				return;</span>
+<span class="fc" id="L166">			int idx = from + (((to - from) / 2 - 1) / bucketSize + 1) * bucketSize;</span>
+<span class="fc" id="L167">			getKthElement0(a, from, to, idx, c);</span>
+<span class="fc" id="L168">			bucketPartition0(a, from, idx, c, bucketSize);</span>
+<span class="fc" id="L169">			bucketPartition0(a, idx, to, c, bucketSize);</span>
+<span class="fc" id="L170">		}</span>
+	}
+
+	public static class Int {
+
+		private Int() {
+		}
+
+		public static int getKthElement(int[] a, int k, IntComparator c) {
+<span class="nc" id="L179">			return getKthElement(a, 0, a.length, k, c, false);</span>
+		}
+
+		/**
+		 * Get the K'th element in the array if it was sorted
+		 *
+		 * For example, getKthElement([10, 13, 14, 11, 12], 3) = 13
+		 *
+		 * O(n)
+		 *
+		 * @param a       an array
+		 * @param from    first index (inclusive)
+		 * @param to      last index (exclusive)
+		 * @param k       index of the desire element in the sorted array
+		 * @param c       comparator
+		 * @param inPlace if true, all operations will be done on the given array and at
+		 *                the end it will be partitioned by the Kth element
+		 * @return the Kth element
+		 */
+		public static int getKthElement(int[] a, int from, int to, int k, IntComparator c, boolean inPlace) {
+<span class="pc bpc" id="L199" title="4 of 8 branches missed.">			if (from &lt; 0 || from &gt;= to || to &gt; a.length || k &gt;= to - from)</span>
+<span class="nc" id="L200">				throw new IndexOutOfBoundsException(&quot;a(&quot; + a.length + &quot;)[&quot; + from + &quot;, &quot; + to + &quot;][&quot; + k + &quot;]&quot;);</span>
+<span class="pc bpc" id="L201" title="1 of 2 branches missed.">			if (!inPlace) {</span>
+<span class="nc" id="L202">				a = Arrays.copyOfRange(a, from, to);</span>
+<span class="nc" id="L203">				from = 0;</span>
+<span class="nc" id="L204">				to = a.length;</span>
+			}
+<span class="pc bpc" id="L206" title="1 of 2 branches missed.">			c = c != null ? c : Integer::compare;</span>
+
+<span class="fc" id="L208">			getKthElement0(a, from, to, k, c);</span>
+<span class="fc" id="L209">			return a[k];</span>
+		}
+
+		private static void getKthElement0(int[] a, int from, int to, int k, IntComparator c) {
+			for (;;) {
+<span class="pc bpc" id="L214" title="1 of 2 branches missed.">				if (from == to + 1)</span>
+<span class="nc" id="L215">					return;</span>
+<span class="fc" id="L216">				int pivotIdx = calcPivot(a, from, to, c);</span>
+<span class="fc" id="L217">				pivotIdx = pivotPartition0(a, from, to, pivotIdx, c);</span>
+<span class="fc bfc" id="L218" title="All 2 branches covered.">				if (pivotIdx == k)</span>
+<span class="fc" id="L219">					return;</span>
+<span class="fc bfc" id="L220" title="All 2 branches covered.">				if (pivotIdx &gt; k)</span>
+<span class="fc" id="L221">					to = pivotIdx;</span>
+				else
+<span class="fc" id="L223">					from = pivotIdx + 1;</span>
+<span class="fc" id="L224">			}</span>
+		}
+
+		/**
+		 * Partition an array by a given pivot
+		 *
+		 * At the end of this function, and array will be in the form:
+		 *
+		 * [smaller than pivot, equal to pivot, greater than pivot]
+		 *
+		 * O(n)
+		 *
+		 * @param a     an array
+		 * @param from  first index (inclusive)
+		 * @param to    last index (exclusive)
+		 * @param pivot an element to partition the array by
+		 * @param c     comparator
+		 * @return the last index of element smaller or equal to the pivot (exclusive)
+		 */
+		public static int pivotPartition(int[] a, int from, int to, int pivot, IntComparator c) {
+<span class="nc bnc" id="L244" title="All 6 branches missed.">			if (from &lt; 0 || from &gt;= to || to &gt; a.length)</span>
+<span class="nc" id="L245">				throw new IndexOutOfBoundsException(&quot;a(&quot; + a.length + &quot;)[&quot; + from + &quot;, &quot; + to + &quot;]&quot;);</span>
+<span class="nc bnc" id="L246" title="All 2 branches missed.">			c = c != null ? c : Integer::compare;</span>
+
+			// Find greatest element smaller than the pivot
+<span class="nc" id="L249">			int pivotIdx = -1;</span>
+<span class="nc bnc" id="L250" title="All 2 branches missed.">			for (int i = from; i &lt; to; i++)</span>
+<span class="nc bnc" id="L251" title="All 6 branches missed.">				if (c.compare(pivot, a[i]) &gt;= 0 &amp;&amp; (pivotIdx == -1 || c.compare(a[pivotIdx], a[i]) &lt; 0))</span>
+<span class="nc" id="L252">					pivotIdx = i;</span>
+<span class="nc bnc" id="L253" title="All 2 branches missed.">			if (pivotIdx == -1)</span>
+<span class="nc" id="L254">				return 0; // all elements are greater than the pivot</span>
+
+<span class="nc" id="L256">			return pivotPartition0(a, from, to, pivotIdx, c) + 1;</span>
+		}
+
+		private static int pivotPartition0(int[] a, int from, int to, int pivotIdx, IntComparator c) {
+<span class="fc" id="L260">			int pivot = a[pivotIdx];</span>
+<span class="fc" id="L261">			int insertIdx = from;</span>
+<span class="fc bfc" id="L262" title="All 2 branches covered.">			for (int i = from; i &lt; to; i++)</span>
+<span class="fc bfc" id="L263" title="All 2 branches covered.">				if (c.compare(a[i], pivot) &lt; 0)</span>
+<span class="fc" id="L264">					swap(a, i, insertIdx++);</span>
+<span class="fc bfc" id="L265" title="All 2 branches covered.">			for (int i = insertIdx; i &lt; to; i++)</span>
+<span class="fc bfc" id="L266" title="All 2 branches covered.">				if (c.compare(a[i], pivot) == 0)</span>
+<span class="fc" id="L267">					swap(a, i, insertIdx++);</span>
+<span class="fc" id="L268">			return insertIdx - 1;</span>
+		}
+
+		private static int calcPivot(int[] a, int from, int to, IntComparator c) {
+<span class="fc bfc" id="L272" title="All 2 branches covered.">			if (to - from &lt;= 5)</span>
+<span class="fc" id="L273">				return partition5(a, from, to, c);</span>
+<span class="fc" id="L274">			int blockNum = (to - from - 1) / 5 + 1;</span>
+<span class="fc bfc" id="L275" title="All 2 branches covered.">			for (int i = 0; i &lt; blockNum; i++) {</span>
+<span class="fc" id="L276">				int subFrom = from + i * 5;</span>
+<span class="fc" id="L277">				int subTo = subFrom + 5;</span>
+<span class="fc bfc" id="L278" title="All 2 branches covered.">				if (subTo &gt; to)</span>
+<span class="fc" id="L279">					subTo = to;</span>
+<span class="fc" id="L280">				int median5 = partition5(a, subFrom, subTo, c);</span>
+<span class="fc" id="L281">				swap(a, median5, from + i);</span>
+			}
+
+<span class="fc" id="L284">			int mid = from + blockNum / 2;</span>
+<span class="fc" id="L285">			getKthElement0(a, from, from + blockNum, mid, c);</span>
+<span class="fc" id="L286">			return mid;</span>
+		}
+
+		private static int partition5(int[] a, int from, int to, IntComparator c) {
+<span class="fc bfc" id="L290" title="All 2 branches covered.">			for (int i = from + 1; i &lt; to; i++)</span>
+<span class="fc bfc" id="L291" title="All 4 branches covered.">				for (int j = i; j &gt; from &amp;&amp; c.compare(a[j], a[j - 1]) &lt; 0; j--)</span>
+<span class="fc" id="L292">					swap(a, j, j - 1);</span>
+<span class="fc" id="L293">			return from + (to - from) / 2;</span>
+		}
+
+		private static void swap(int[] a, int i, int j) {
+<span class="fc" id="L297">			int temp = a[i];</span>
+<span class="fc" id="L298">			a[i] = a[j];</span>
+<span class="fc" id="L299">			a[j] = temp;</span>
+<span class="fc" id="L300">		}</span>
+
+		/**
+		 * Partition an array to buckets where each element in bucket i is smaller than
+		 * all elements in bucket i+1
+		 *
+		 * O(n log k) where k is the number of buckets of the output.
+		 *
+		 * @param a          an array
+		 * @param from       first index (inclusive)
+		 * @param to         last index (exclusive)
+		 * @param c          comparator
+		 * @param bucketSize the size of the bucket. Last bucket may be smaller than the
+		 *                   specified value.
+		 */
+		public static void bucketPartition(int[] a, int from, int to, IntComparator c, int bucketSize) {
+<span class="pc bpc" id="L316" title="4 of 8 branches missed.">			if (from &lt; 0 || from &gt;= to || to &gt; a.length || bucketSize &lt;= 0)</span>
+<span class="nc" id="L317">				throw new IndexOutOfBoundsException(</span>
+						&quot;a(&quot; + a.length + &quot;)[&quot; + from + &quot;, &quot; + to + &quot;][&quot; + bucketSize + &quot;]&quot;);
+<span class="pc bpc" id="L319" title="1 of 2 branches missed.">			c = c != null ? c : Integer::compare;</span>
+<span class="fc" id="L320">			bucketPartition0(a, from, to, c, bucketSize);</span>
+<span class="fc" id="L321">		}</span>
+
+		private static void bucketPartition0(int[] a, int from, int to, IntComparator c, int bucketSize) {
+<span class="fc bfc" id="L324" title="All 2 branches covered.">			if (to - from &lt;= bucketSize)</span>
+<span class="fc" id="L325">				return;</span>
+<span class="fc" id="L326">			int idx = from + (((to - from) / 2 - 1) / bucketSize + 1) * bucketSize;</span>
+<span class="fc" id="L327">			getKthElement0(a, from, to, idx, c);</span>
+<span class="fc" id="L328">			bucketPartition0(a, from, idx, c, bucketSize);</span>
+<span class="fc" id="L329">			bucketPartition0(a, idx, to, c, bucketSize);</span>
+<span class="fc" id="L330">		}</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

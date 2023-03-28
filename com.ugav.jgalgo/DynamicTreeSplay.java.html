@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DynamicTreeSplay.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jgalgo</a> &gt; <a href="index.source.html" class="el_package">com.ugav.jgalgo</a> &gt; <span class="el_source">DynamicTreeSplay.java</span></div><h1>DynamicTreeSplay.java</h1><pre class="source lang-java linenums">package com.ugav.jgalgo;
+
+<span class="fc" id="L3">public class DynamicTreeSplay&lt;V, E&gt; implements DynamicTree&lt;V, E&gt; {</span>
+
+	private final double rootWeight;
+	private final SplayTree.SplayImpl&lt;V, SplayNode&lt;V, E&gt;&gt; impl;
+	private static final double EPS = 0.00001;
+
+	public DynamicTreeSplay(double weightLimit) {
+<span class="fc" id="L10">		this(new SplayImplWithRelativeWeights&lt;&gt;(), weightLimit);</span>
+<span class="fc" id="L11">	}</span>
+
+<span class="fc" id="L13">	DynamicTreeSplay(SplayTree.SplayImpl&lt;V, SplayNode&lt;V, E&gt;&gt; impl, double weightLimit) {</span>
+<span class="fc" id="L14">		this.rootWeight = weightLimit;</span>
+<span class="fc" id="L15">		this.impl = impl;</span>
+<span class="fc" id="L16">	}</span>
+
+	@Override
+	public SplayNode&lt;V, E&gt; makeTree(V nodeData) {
+<span class="fc" id="L20">		SplayNode&lt;V, E&gt; node = newNode(nodeData);</span>
+<span class="fc" id="L21">		node.weightDiff = rootWeight;</span>
+<span class="fc" id="L22">		return node;</span>
+	}
+
+	@Override
+	public Node&lt;V, E&gt; findRoot(Node&lt;V, E&gt; v) {
+<span class="fc" id="L27">		SplayNode&lt;V, E&gt; n = (SplayNode&lt;V, E&gt;) v;</span>
+<span class="fc bfc" id="L28" title="All 2 branches covered.">		if (!n.isLinked())</span>
+<span class="fc" id="L29">			return n;</span>
+<span class="fc" id="L30">		splay(n);</span>
+<span class="fc" id="L31">		return splay(BSTUtils.findMax(n));</span>
+
+	}
+
+	@Override
+	public MinEdge&lt;V, E&gt; findMinEdge(Node&lt;V, E&gt; v) {
+<span class="fc" id="L37">		SplayNode&lt;V, E&gt; n = (SplayNode&lt;V, E&gt;) v;</span>
+<span class="fc bfc" id="L38" title="All 2 branches covered.">		if (!n.isLinked())</span>
+<span class="fc" id="L39">			return null;</span>
+<span class="fc" id="L40">		splay(n);</span>
+<span class="fc" id="L41">		double w = n.getWeight();</span>
+<span class="pc bpc" id="L42" title="1 of 4 branches missed.">		if (!n.hasRightChild() || w &lt; n.right.getMinWeight(w))</span>
+<span class="pc bpc" id="L43" title="1 of 2 branches missed.">			return n.isLinked() ? new MinEdgeRes&lt;&gt;(n, w, n.getEdgeData()) : null;</span>
+
+<span class="fc" id="L45">		for (SplayNode&lt;V, E&gt; p = n.right;;) {</span>
+<span class="fc" id="L46">			double w1 = p.getWeight(w);</span>
+<span class="fc bfc" id="L47" title="All 4 branches covered.">			if (p.hasRightChild() &amp;&amp; p.getMinWeight(w) &gt;= p.right.getMinWeight(w1) - EPS) {</span>
+<span class="fc" id="L48">				p = p.right;</span>
+<span class="fc" id="L49">				w = w1;</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">			} else if (Math.abs(w1 - p.getMinWeight(w)) &lt;= EPS) {</span>
+<span class="fc" id="L51">				impl.splay(p); /* perform splay to pay */</span>
+<span class="pc bpc" id="L52" title="1 of 2 branches missed.">				assert p.isLinked(); /* If fails, maxWeight was too small */</span>
+<span class="fc" id="L53">				return new MinEdgeRes&lt;&gt;(p, w1, p.getEdgeData());</span>
+			} else {
+<span class="pc bpc" id="L55" title="1 of 2 branches missed.">				assert p.hasLeftChild();</span>
+<span class="fc" id="L56">				p = p.left;</span>
+<span class="fc" id="L57">				w = w1;</span>
+			}
+<span class="fc" id="L59">		}</span>
+	}
+
+	@Override
+	public void addWeight(Node&lt;V, E&gt; v, double w) {
+<span class="fc" id="L64">		SplayNode&lt;V, E&gt; n = (SplayNode&lt;V, E&gt;) v;</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">		if (!n.isLinked())</span>
+<span class="fc" id="L66">			return;</span>
+<span class="fc" id="L67">		splay(n);</span>
+<span class="pc bpc" id="L68" title="1 of 2 branches missed.">		assert n.isRoot();</span>
+<span class="pc bpc" id="L69" title="1 of 2 branches missed.">		if (!n.hasRightChild())</span>
+<span class="nc" id="L70">			return;</span>
+
+<span class="fc" id="L72">		n.weightDiff += w;</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">		if (n.hasLeftChild()) {</span>
+<span class="fc" id="L74">			n.left.weightDiff -= w;</span>
+
+<span class="fc" id="L76">			double nW = n.getWeight();</span>
+<span class="pc bpc" id="L77" title="1 of 2 branches missed.">			double minW = n.hasRightChild() ? Math.min(nW, n.right.getMinWeight(nW)) : nW;</span>
+<span class="fc" id="L78">			double minWl = n.left.getMinWeight(nW);</span>
+<span class="fc" id="L79">			n.minWeightDiff = nW - Math.min(minW, minWl);</span>
+		}
+
+<span class="fc" id="L82">	}</span>
+
+	@Override
+	public void link(Node&lt;V, E&gt; u, Node&lt;V, E&gt; v, double w, E edgeData) {
+<span class="pc bpc" id="L86" title="1 of 2 branches missed.">		if (u != findRoot(u))</span>
+<span class="nc" id="L87">			throw new IllegalArgumentException(&quot;u must be a root&quot;);</span>
+<span class="pc bpc" id="L88" title="1 of 2 branches missed.">		if (u == findRoot(v))</span>
+<span class="nc" id="L89">			throw new IllegalArgumentException(&quot;Both nodes are in the same tree&quot;);</span>
+<span class="pc bpc" id="L90" title="1 of 2 branches missed.">		if (w &gt;= rootWeight / 2)</span>
+<span class="nc" id="L91">			throw new IllegalArgumentException(&quot;Weight is over the limit&quot;);</span>
+<span class="fc" id="L92">		SplayNode&lt;V, E&gt; t1 = splay((SplayNode&lt;V, E&gt;) u);</span>
+<span class="fc" id="L93">		SplayNode&lt;V, E&gt; t2 = splay((SplayNode&lt;V, E&gt;) v);</span>
+
+<span class="pc bpc" id="L95" title="2 of 4 branches missed.">		assert !t1.isLinked() &amp;&amp; !t1.hasRightChild();</span>
+
+<span class="fc" id="L97">		double oldWeight = t1.getWeight();</span>
+<span class="fc" id="L98">		t1.weightDiff = w;</span>
+<span class="fc" id="L99">		t1.minWeightDiff = 0;</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">		if (t1.hasLeftChild()) {</span>
+<span class="fc" id="L101">			t1.left.weightDiff += oldWeight - t1.getWeight();</span>
+<span class="fc" id="L102">			t1.minWeightDiff = t1.getWeight() - Math.min(t1.getMinWeight(), t1.left.getMinWeight(t1.getWeight()));</span>
+		}
+
+<span class="fc" id="L105">		t1.tparent = t2;</span>
+<span class="fc" id="L106">		t1.link(t2, edgeData);</span>
+<span class="fc" id="L107">		afterLink(t1);</span>
+<span class="fc" id="L108">	}</span>
+
+	@Override
+	public void cut(Node&lt;V, E&gt; v) {
+<span class="fc" id="L112">		SplayNode&lt;V, E&gt; n = splay((SplayNode&lt;V, E&gt;) v);</span>
+<span class="pc bpc" id="L113" title="1 of 2 branches missed.">		if (!n.hasRightChild())</span>
+<span class="nc" id="L114">			return;</span>
+<span class="fc" id="L115">		beforeCut(n);</span>
+
+<span class="fc" id="L117">		double origW = n.getWeight();</span>
+<span class="fc" id="L118">		n.right.weightDiff += origW;</span>
+<span class="fc" id="L119">		n.weightDiff = rootWeight;</span>
+<span class="fc" id="L120">		n.minWeightDiff = 0;</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">		if (n.hasLeftChild()) {</span>
+<span class="fc" id="L122">			n.left.weightDiff += origW - n.getWeight();</span>
+<span class="fc" id="L123">			n.minWeightDiff = n.getWeight() - Math.min(n.getMinWeight(), n.left.getMinWeight(n.getWeight()));</span>
+		}
+
+<span class="fc" id="L126">		n.right.parent = null;</span>
+<span class="fc" id="L127">		n.right = null;</span>
+<span class="fc" id="L128">		n.unlink();</span>
+<span class="fc" id="L129">	}</span>
+
+	@Override
+	public void evert(Node&lt;V, E&gt; v) {
+		// TODO
+<span class="nc" id="L134">		throw new UnsupportedOperationException();</span>
+	}
+
+	@Override
+	public int size(Node&lt;V, E&gt; v) {
+<span class="nc" id="L139">		throw new UnsupportedOperationException();</span>
+	}
+
+	@Override
+	public void clear() {
+<span class="fc" id="L144">	}</span>
+
+	SplayNode&lt;V, E&gt; splay(SplayNode&lt;V, E&gt; n) {
+		/* Splice all ancestors of in */
+<span class="fc bfc" id="L148" title="All 2 branches covered.">		for (SplayNode&lt;V, E&gt; p = n; p != null;)</span>
+<span class="fc" id="L149">			p = splice(p);</span>
+
+<span class="fc" id="L151">		impl.splay(n);</span>
+<span class="pc bpc" id="L152" title="1 of 2 branches missed.">		assert n.isRoot();</span>
+<span class="pc bpc" id="L153" title="1 of 2 branches missed.">		assert n.tparent == null;</span>
+<span class="fc" id="L154">		return n;</span>
+	}
+
+	SplayNode&lt;V, E&gt; splice(SplayNode&lt;V, E&gt; n) {
+<span class="fc" id="L158">		impl.splay(n);</span>
+<span class="pc bpc" id="L159" title="1 of 2 branches missed.">		assert n.isRoot();</span>
+
+<span class="fc bfc" id="L161" title="All 2 branches covered.">		if (n.tparent == null)</span>
+<span class="fc" id="L162">			return null;</span>
+<span class="fc" id="L163">		SplayNode&lt;V, E&gt; parent = n.tparent;</span>
+<span class="fc" id="L164">		impl.splay(parent);</span>
+<span class="pc bpc" id="L165" title="1 of 2 branches missed.">		assert parent.isRoot();</span>
+
+<span class="fc" id="L167">		n.parent = parent;</span>
+<span class="fc" id="L168">		n.tparent = null;</span>
+<span class="fc" id="L169">		n.weightDiff -= parent.getWeight();</span>
+<span class="fc bfc" id="L170" title="All 2 branches covered.">		if (parent.hasLeftChild()) {</span>
+<span class="fc" id="L171">			parent.left.parent = null;</span>
+<span class="fc" id="L172">			parent.left.tparent = parent;</span>
+<span class="fc" id="L173">			parent.left.weightDiff += parent.getWeight();</span>
+		}
+<span class="fc" id="L175">		parent.left = n;</span>
+
+<span class="fc" id="L177">		double minp = Math.max(0, parent.getWeight() - n.getMinWeight(parent.getWeight()));</span>
+<span class="fc bfc" id="L178" title="All 2 branches covered.">		if (parent.hasRightChild())</span>
+<span class="fc" id="L179">			minp = Math.max(minp, parent.getWeight() - parent.right.getMinWeight(parent.getWeight()));</span>
+<span class="fc" id="L180">		parent.minWeightDiff = minp;</span>
+
+<span class="fc" id="L182">		return parent;</span>
+	}
+
+	SplayNode&lt;V, E&gt; newNode(V nodeData) {
+<span class="fc" id="L186">		return new SplayNode&lt;&gt;(nodeData);</span>
+	}
+
+	void beforeCut(SplayNode&lt;V, E&gt; n) {
+<span class="fc" id="L190">	}</span>
+
+	void afterLink(SplayNode&lt;V, E&gt; n) {
+<span class="fc" id="L193">	}</span>
+
+<span class="fc" id="L195">	static class SplayImplWithRelativeWeights&lt;V, E&gt; extends SplayTree.SplayImpl&lt;V, SplayNode&lt;V, E&gt;&gt; {</span>
+
+		@Override
+		void beforeRotate(SplayNode&lt;V, E&gt; n) {
+<span class="fc" id="L199">			super.beforeRotate(n);</span>
+
+<span class="fc" id="L201">			SplayNode&lt;V, E&gt; parent = n.parent;</span>
+
+<span class="fc" id="L203">			double origN = n.weightDiff, origP = parent.weightDiff;</span>
+<span class="fc" id="L204">			n.weightDiff = origN + origP;</span>
+<span class="fc" id="L205">			parent.weightDiff = -origN;</span>
+
+<span class="fc" id="L207">			double minn = 0, minp = 0;</span>
+
+<span class="fc bfc" id="L209" title="All 2 branches covered.">			if (n.isLeftChild()) {</span>
+<span class="fc bfc" id="L210" title="All 2 branches covered.">				if (n.hasRightChild())</span>
+<span class="fc" id="L211">					n.right.weightDiff += origN;</span>
+
+<span class="fc bfc" id="L213" title="All 2 branches covered.">				if (n.hasRightChild())</span>
+<span class="fc" id="L214">					minp = Math.max(minp, n.right.minWeightDiff - n.right.weightDiff);</span>
+<span class="fc bfc" id="L215" title="All 2 branches covered.">				if (parent.hasRightChild())</span>
+<span class="fc" id="L216">					minp = Math.max(minp, parent.right.minWeightDiff - parent.right.weightDiff);</span>
+
+<span class="fc bfc" id="L218" title="All 2 branches covered.">				if (n.hasLeftChild())</span>
+<span class="fc" id="L219">					minn = Math.max(minn, n.left.minWeightDiff - n.left.weightDiff);</span>
+			} else {
+<span class="pc bpc" id="L221" title="1 of 2 branches missed.">				assert n.isRightChild();</span>
+<span class="fc bfc" id="L222" title="All 2 branches covered.">				if (n.hasLeftChild())</span>
+<span class="fc" id="L223">					n.left.weightDiff += origN;</span>
+
+<span class="fc bfc" id="L225" title="All 2 branches covered.">				if (n.hasLeftChild())</span>
+<span class="fc" id="L226">					minp = Math.max(minp, n.left.minWeightDiff - n.left.weightDiff);</span>
+<span class="fc bfc" id="L227" title="All 2 branches covered.">				if (parent.hasLeftChild())</span>
+<span class="fc" id="L228">					minp = Math.max(minp, parent.left.minWeightDiff - parent.left.weightDiff);</span>
+
+<span class="fc bfc" id="L230" title="All 2 branches covered.">				if (n.hasRightChild())</span>
+<span class="fc" id="L231">					minn = Math.max(minn, n.right.minWeightDiff - n.right.weightDiff);</span>
+			}
+
+<span class="fc" id="L234">			parent.minWeightDiff = minp;</span>
+<span class="fc" id="L235">			minn = Math.max(minn, parent.minWeightDiff - parent.weightDiff);</span>
+<span class="fc" id="L236">			n.minWeightDiff = minn;</span>
+
+<span class="fc" id="L238">			n.tparent = parent.tparent;</span>
+<span class="fc" id="L239">			parent.tparent = null;</span>
+<span class="fc" id="L240">		}</span>
+
+	}
+
+<span class="fc" id="L244">	static class SplayNode&lt;V, E&gt; extends SplayTree.Node&lt;V, SplayNode&lt;V, E&gt;&gt; implements Node&lt;V, E&gt; {</span>
+
+		SplayNode&lt;V, E&gt; userParent;
+		E edgeData;
+
+		/* Parent outside of the splay tree */
+		SplayNode&lt;V, E&gt; tparent;
+		/* weight - p.weight */
+		double weightDiff;
+		/* weight - min_{x in subtree} {x.weight} */
+		double minWeightDiff;
+
+		SplayNode(V nodeData) {
+<span class="fc" id="L257">			super(nodeData);</span>
+<span class="fc" id="L258">			userParent = null;</span>
+<span class="fc" id="L259">		}</span>
+
+		@Override
+		public V getNodeData() {
+<span class="fc" id="L263">			return data;</span>
+		}
+
+		@Override
+		public void setNodeData(V data) {
+<span class="fc" id="L268">			this.data = data;</span>
+<span class="fc" id="L269">		}</span>
+
+		@Override
+		public E getEdgeData() {
+<span class="fc" id="L273">			return edgeData;</span>
+		}
+
+		@Override
+		public void setEdgeData(E data) {
+<span class="nc" id="L278">			edgeData = data;</span>
+<span class="nc" id="L279">		}</span>
+
+		@Override
+		public Node&lt;V, E&gt; getParent() {
+<span class="fc" id="L283">			return userParent;</span>
+		}
+
+		boolean isLinked() {
+<span class="fc bfc" id="L287" title="All 2 branches covered.">			return userParent != null;</span>
+		}
+
+		void link(SplayNode&lt;V, E&gt; p, E edgeData) {
+<span class="fc" id="L291">			userParent = p;</span>
+<span class="fc" id="L292">			this.edgeData = edgeData;</span>
+<span class="fc" id="L293">		}</span>
+
+		void unlink() {
+<span class="fc" id="L296">			userParent = null;</span>
+<span class="fc" id="L297">			edgeData = null;</span>
+<span class="fc" id="L298">		}</span>
+
+		double getWeight() {
+<span class="pc bpc" id="L301" title="1 of 2 branches missed.">			assert isRoot();</span>
+<span class="fc" id="L302">			return getWeight(0);</span>
+		}
+
+		double getWeight(double parentWeight) {
+<span class="fc" id="L306">			return parentWeight + weightDiff;</span>
+		}
+
+		double getMinWeight() {
+<span class="pc bpc" id="L310" title="1 of 2 branches missed.">			assert isRoot();</span>
+<span class="fc" id="L311">			return getMinWeight(0);</span>
+		}
+
+		double getMinWeight(double parentWeight) {
+<span class="fc" id="L315">			return getWeight(parentWeight) - minWeightDiff;</span>
+		}
+
+		@Override
+		void clear() {
+<span class="nc" id="L320">			super.clear();</span>
+<span class="nc" id="L321">			userParent = null;</span>
+<span class="nc" id="L322">			tparent = null;</span>
+<span class="nc" id="L323">			weightDiff = minWeightDiff = 0;</span>
+<span class="nc" id="L324">		}</span>
+
+	}
+
+	private static class MinEdgeRes&lt;V, E&gt; implements MinEdge&lt;V, E&gt; {
+
+		final SplayNode&lt;V, E&gt; u;
+		final double w;
+		final E data;
+
+<span class="fc" id="L334">		MinEdgeRes(SplayNode&lt;V, E&gt; u, double w, E data) {</span>
+<span class="fc" id="L335">			this.u = u;</span>
+<span class="fc" id="L336">			this.w = w;</span>
+<span class="fc" id="L337">			this.data = data;</span>
+<span class="fc" id="L338">		}</span>
+
+		@Override
+		public SplayNode&lt;V, E&gt; u() {
+<span class="fc" id="L342">			return u;</span>
+		}
+
+		@Override
+		public double weight() {
+<span class="fc" id="L347">			return w;</span>
+		}
+
+		@Override
+		public E getData() {
+<span class="fc" id="L352">			return data;</span>
+		}
+
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HeapPairing.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jgalgo</a> &gt; <a href="index.source.html" class="el_package">com.ugav.jgalgo</a> &gt; <span class="el_source">HeapPairing.java</span></div><h1>HeapPairing.java</h1><pre class="source lang-java linenums">package com.ugav.jgalgo;
+
+import java.util.AbstractSet;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Set;
+
+<span class="fc" id="L13">public class HeapPairing&lt;E&gt; extends HeapAbstractDirectAccessed&lt;E&gt; {</span>
+
+	private Node&lt;E&gt; minRoot;
+	private int size;
+
+	public HeapPairing() {
+<span class="fc" id="L19">		this(null);</span>
+<span class="fc" id="L20">	}</span>
+
+	public HeapPairing(Comparator&lt;? super E&gt; c) {
+<span class="fc" id="L23">		super(c);</span>
+<span class="fc" id="L24">	}</span>
+
+	@Override
+	public Handle&lt;E&gt; findMinHandle() {
+<span class="pc bpc" id="L28" title="1 of 2 branches missed.">		if (isEmpty())</span>
+<span class="nc" id="L29">			throw new IllegalStateException();</span>
+<span class="fc" id="L30">		return minRoot;</span>
+	}
+
+	@Override
+	public int size() {
+<span class="fc" id="L35">		return size;</span>
+	}
+
+	@Override
+	public Handle&lt;E&gt; insert(E e) {
+<span class="fc" id="L40">		Node&lt;E&gt; n = new Node&lt;&gt;(e);</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">		if (minRoot == null) {</span>
+<span class="fc" id="L42">			minRoot = n;</span>
+<span class="pc bpc" id="L43" title="1 of 2 branches missed.">			assert size == 0;</span>
+		} else {
+<span class="fc" id="L45">			minRoot = meld0(minRoot, n);</span>
+		}
+<span class="fc" id="L47">		size++;</span>
+<span class="fc" id="L48">		return n;</span>
+	}
+
+	@Override
+	public void decreaseKey(Handle&lt;E&gt; handle, E e) {
+<span class="fc" id="L53">		Node&lt;E&gt; n = (Node&lt;E&gt;) handle;</span>
+<span class="pc bpc" id="L54" title="1 of 2 branches missed.">		assert c.compare(n.value, e) &gt;= 0;</span>
+<span class="fc" id="L55">		n.value = e;</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">		if (n == minRoot)</span>
+<span class="fc" id="L57">			return;</span>
+<span class="fc" id="L58">		cut(n);</span>
+<span class="fc" id="L59">		minRoot = meld0(minRoot, n);</span>
+<span class="fc" id="L60">	}</span>
+
+	private static &lt;E&gt; void cut(Node&lt;E&gt; n) {
+<span class="fc" id="L63">		Node&lt;E&gt; next = n.next;</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">		if (next != null) {</span>
+<span class="fc" id="L65">			next.prevOrParent = n.prevOrParent;</span>
+<span class="fc" id="L66">			n.next = null;</span>
+		}
+<span class="fc bfc" id="L68" title="All 2 branches covered.">		if (n.prevOrParent.child == n) { /* n.parent.child == n */</span>
+<span class="fc" id="L69">			n.prevOrParent.child = next;</span>
+		} else {
+<span class="fc" id="L71">			n.prevOrParent.next = next;</span>
+		}
+<span class="fc" id="L73">		n.prevOrParent = null;</span>
+<span class="fc" id="L74">	}</span>
+
+	@Override
+	public void removeHandle(Handle&lt;E&gt; handle) {
+<span class="fc" id="L78">		Node&lt;E&gt; n = (Node&lt;E&gt;) handle;</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">		if (n != minRoot) {</span>
+<span class="fc" id="L80">			cut(n);</span>
+<span class="fc" id="L81">			addChild(n, minRoot);</span>
+<span class="fc" id="L82">			minRoot = n;</span>
+		}
+<span class="fc" id="L84">		removeRoot();</span>
+<span class="fc" id="L85">		size--;</span>
+<span class="fc" id="L86">	}</span>
+
+	private void removeRoot() {
+<span class="fc bfc" id="L89" title="All 2 branches covered.">		if (minRoot.child == null) {</span>
+<span class="fc" id="L90">			minRoot = null;</span>
+<span class="fc" id="L91">			return;</span>
+		}
+
+		/* collect and disassemble children */
+<span class="fc" id="L95">		int heapsNum = childrenNum(minRoot);</span>
+		@SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L97">		Node&lt;E&gt;[] heaps = new Node[heapsNum];</span>
+<span class="fc" id="L98">		disassembleChildren(minRoot, heaps);</span>
+
+		/* meld all sub heaps */
+<span class="fc" id="L101">		minRoot = meld0(heaps);</span>
+<span class="fc" id="L102">	}</span>
+
+	private static int childrenNum(Node&lt;?&gt; n) {
+<span class="fc" id="L105">		int count = 0; // rename</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">		for (Node&lt;?&gt; p = n.child; p != null; p = p.next)</span>
+<span class="fc" id="L107">			count++;</span>
+<span class="fc" id="L108">		return count;</span>
+	}
+
+	private static &lt;E&gt; void disassembleChildren(Node&lt;E&gt; n, Node&lt;E&gt;[] childrenOut) {
+<span class="fc" id="L112">		int idx = 0;</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">		for (Node&lt;E&gt; p = n.child, next; p != null; p = next) {</span>
+<span class="fc" id="L114">			next = p.next;</span>
+<span class="fc" id="L115">			p.next = p.prevOrParent = null;</span>
+<span class="fc" id="L116">			childrenOut[idx++] = p;</span>
+		}
+<span class="fc" id="L118">		n.child = null;</span>
+<span class="fc" id="L119">	}</span>
+
+	@Override
+	public void meld(Heap&lt;? extends E&gt; h0) {
+<span class="pc bpc" id="L123" title="1 of 4 branches missed.">		if (h0 == this || h0.isEmpty())</span>
+<span class="fc" id="L124">			return;</span>
+<span class="pc bpc" id="L125" title="1 of 2 branches missed.">		if (!(h0 instanceof HeapPairing)) {</span>
+<span class="nc" id="L126">			super.meld(h0);</span>
+<span class="nc" id="L127">			return;</span>
+		}
+		@SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L130">		HeapPairing&lt;E&gt; h = (HeapPairing&lt;E&gt;) h0;</span>
+<span class="pc bpc" id="L131" title="1 of 2 branches missed.">		if (!Objects.equals(comparator(), h.comparator()))</span>
+<span class="nc" id="L132">			throw new IllegalArgumentException(&quot;Heaps have different comparators&quot;);</span>
+
+<span class="fc bfc" id="L134" title="All 2 branches covered.">		if (size == 0) {</span>
+<span class="pc bpc" id="L135" title="1 of 2 branches missed.">			assert minRoot == null;</span>
+<span class="fc" id="L136">			minRoot = h.minRoot;</span>
+<span class="pc bpc" id="L137" title="1 of 2 branches missed.">		} else if (h.minRoot != null) {</span>
+<span class="fc" id="L138">			minRoot = meld0(minRoot, h.minRoot);</span>
+		}
+<span class="fc" id="L140">		size += h.size;</span>
+
+<span class="fc" id="L142">		h.minRoot = null;</span>
+<span class="fc" id="L143">		h.size = 0;</span>
+<span class="fc" id="L144">	}</span>
+
+	private Node&lt;E&gt; meld0(Node&lt;E&gt; n1, Node&lt;E&gt; n2) {
+<span class="pc bpc" id="L147" title="1 of 2 branches missed.">		assert n1.prevOrParent == null;</span>
+<span class="pc bpc" id="L148" title="1 of 2 branches missed.">		assert n1.next == null;</span>
+<span class="pc bpc" id="L149" title="1 of 2 branches missed.">		assert n2.prevOrParent == null;</span>
+<span class="pc bpc" id="L150" title="1 of 2 branches missed.">		assert n2.next == null;</span>
+
+		/* assume n1 has smaller key than n2 */
+<span class="fc bfc" id="L153" title="All 2 branches covered.">		if (c.compare(n1.value, n2.value) &gt; 0) {</span>
+<span class="fc" id="L154">			Node&lt;E&gt; temp = n1;</span>
+<span class="fc" id="L155">			n1 = n2;</span>
+<span class="fc" id="L156">			n2 = temp;</span>
+		}
+
+<span class="fc" id="L159">		addChild(n1, n2);</span>
+<span class="fc" id="L160">		return n1;</span>
+	}
+
+	private void addChild(Node&lt;E&gt; parent, Node&lt;E&gt; newChild) {
+<span class="pc bpc" id="L164" title="1 of 2 branches missed.">		assert newChild.prevOrParent == null;</span>
+<span class="pc bpc" id="L165" title="1 of 2 branches missed.">		assert newChild.next == null;</span>
+<span class="fc" id="L166">		Node&lt;E&gt; oldChild = parent.child;</span>
+<span class="fc" id="L167">		newChild.next = oldChild;</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">		if (oldChild != null)</span>
+<span class="fc" id="L169">			oldChild.prevOrParent = newChild;</span>
+<span class="fc" id="L170">		parent.child = newChild;</span>
+<span class="fc" id="L171">		newChild.prevOrParent = parent;</span>
+<span class="fc" id="L172">	}</span>
+
+	private Node&lt;E&gt; meld0(Node&lt;E&gt;[] heaps) {
+<span class="fc" id="L175">		int heapsNum = heaps.length;</span>
+
+		/* meld pairs from left to right */
+<span class="fc bfc" id="L178" title="All 2 branches covered.">		for (int i = 0; i &lt; heapsNum / 2; i++) {</span>
+<span class="fc" id="L179">			Node&lt;E&gt; n1 = heaps[i * 2 + 0];</span>
+<span class="fc" id="L180">			Node&lt;E&gt; n2 = heaps[i * 2 + 1];</span>
+<span class="fc" id="L181">			heaps[i] = meld0(n1, n2);</span>
+		}
+		/* handle last heap in case heapNum is odd */
+<span class="fc bfc" id="L184" title="All 2 branches covered.">		if (heapsNum % 2 != 0)</span>
+<span class="fc" id="L185">			heaps[heapsNum / 2] = heaps[heapsNum - 1];</span>
+		/* div by two ceil */
+<span class="fc" id="L187">		heapsNum = (heapsNum + 1) / 2;</span>
+
+		/* meld all from right to left */
+<span class="fc bfc" id="L190" title="All 2 branches covered.">		while (heapsNum &gt; 1) {</span>
+<span class="fc" id="L191">			Node&lt;E&gt; n1 = heaps[heapsNum - 2];</span>
+<span class="fc" id="L192">			Node&lt;E&gt; n2 = heaps[heapsNum - 1];</span>
+<span class="fc" id="L193">			heaps[heapsNum - 2] = meld0(n1, n2);</span>
+<span class="fc" id="L194">			heapsNum--;</span>
+<span class="fc" id="L195">		}</span>
+
+<span class="fc" id="L197">		Node&lt;E&gt; root = heaps[0];</span>
+<span class="fc" id="L198">		Arrays.fill(heaps, null); // help GC</span>
+<span class="fc" id="L199">		return root;</span>
+	}
+
+	@Override
+	public void clear() {
+<span class="fc bfc" id="L204" title="All 2 branches covered.">		if (minRoot == null) {</span>
+<span class="pc bpc" id="L205" title="1 of 2 branches missed.">			assert size == 0;</span>
+<span class="fc" id="L206">			return;</span>
+		}
+
+<span class="fc" id="L209">		List&lt;Node&lt;E&gt;&gt; stack = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L210">		stack.add(minRoot);</span>
+		do {
+<span class="fc" id="L212">			int idx = stack.size() - 1;</span>
+<span class="fc" id="L213">			Node&lt;E&gt; n = stack.get(idx);</span>
+<span class="fc" id="L214">			stack.remove(idx);</span>
+
+<span class="fc bfc" id="L216" title="All 2 branches covered.">			for (Node&lt;E&gt; p = n.child; p != null; p = p.next)</span>
+<span class="fc" id="L217">				stack.add(p);</span>
+
+<span class="fc" id="L219">			n.prevOrParent = n.next = n.child = null;</span>
+<span class="fc" id="L220">			n.value = null;</span>
+<span class="fc bfc" id="L221" title="All 2 branches covered.">		} while (!stack.isEmpty());</span>
+
+<span class="fc" id="L223">		minRoot = null;</span>
+<span class="fc" id="L224">		size = 0;</span>
+<span class="fc" id="L225">	}</span>
+
+	@Override
+	public Set&lt;Handle&lt;E&gt;&gt; handles() {
+<span class="fc" id="L229">		return new AbstractSet&lt;&gt;() {</span>
+
+			@Override
+			public int size() {
+<span class="nc" id="L233">				return size;</span>
+			}
+
+			@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
+			@Override
+			public Iterator&lt;Handle&lt;E&gt;&gt; iterator() {
+<span class="fc" id="L239">				return (Iterator) new PreOrderIter&lt;&gt;(minRoot);</span>
+			}
+
+			@SuppressWarnings(&quot;unchecked&quot;)
+			@Override
+			public boolean remove(Object o) {
+<span class="nc" id="L245">				removeHandle((Handle&lt;E&gt;) o);</span>
+<span class="nc" id="L246">				return true;</span>
+			}
+
+			@Override
+			public void clear() {
+<span class="nc" id="L251">				HeapPairing.this.clear();</span>
+<span class="nc" id="L252">			}</span>
+
+		};
+	}
+
+	private static class Node&lt;E&gt; implements Handle&lt;E&gt; {
+
+		Node&lt;E&gt; prevOrParent;
+		Node&lt;E&gt; next;
+		Node&lt;E&gt; child;
+		E value;
+
+<span class="fc" id="L264">		Node(E v) {</span>
+<span class="fc" id="L265">			value = v;</span>
+<span class="fc" id="L266">		}</span>
+
+		@Override
+		public E get() {
+<span class="fc" id="L270">			return value;</span>
+		}
+
+		@Override
+		public String toString() {
+<span class="nc" id="L275">			return &quot;{&quot; + value + &quot;}&quot;;</span>
+		}
+
+	}
+
+	private static class PreOrderIter&lt;E&gt; implements Iterator&lt;Node&lt;E&gt;&gt; {
+
+<span class="fc" id="L282">		private final List&lt;Node&lt;E&gt;&gt; path = new ArrayList&lt;&gt;();</span>
+
+<span class="fc" id="L284">		PreOrderIter(Node&lt;E&gt; p) {</span>
+<span class="fc bfc" id="L285" title="All 2 branches covered.">			if (p != null)</span>
+<span class="fc" id="L286">				path.add(p);</span>
+<span class="fc" id="L287">		}</span>
+
+		@Override
+		public boolean hasNext() {
+<span class="fc bfc" id="L291" title="All 2 branches covered.">			return !path.isEmpty();</span>
+		}
+
+		@Override
+		public Node&lt;E&gt; next() {
+<span class="pc bpc" id="L296" title="1 of 2 branches missed.">			if (!hasNext())</span>
+<span class="nc" id="L297">				throw new NoSuchElementException();</span>
+<span class="fc" id="L298">			final Node&lt;E&gt; ret = path.get(path.size() - 1);</span>
+
+			Node&lt;E&gt; next;
+<span class="fc bfc" id="L301" title="All 2 branches covered.">			if ((next = ret.child) != null) {</span>
+<span class="fc" id="L302">				path.add(next);</span>
+			} else {
+				Node&lt;E&gt; p0;
+				do {
+<span class="fc" id="L306">					p0 = path.remove(path.size() - 1);</span>
+<span class="fc bfc" id="L307" title="All 2 branches covered.">					if ((next = p0.next) != null) {</span>
+<span class="fc" id="L308">						path.add(next);</span>
+<span class="fc" id="L309">						break;</span>
+					}
+<span class="fc bfc" id="L311" title="All 2 branches covered.">				} while (!path.isEmpty());</span>
+			}
+
+<span class="fc" id="L314">			return ret;</span>
+		}
+
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

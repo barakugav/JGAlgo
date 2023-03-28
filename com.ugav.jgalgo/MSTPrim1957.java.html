@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MSTPrim1957.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jgalgo</a> &gt; <a href="index.source.html" class="el_package">com.ugav.jgalgo</a> &gt; <span class="el_source">MSTPrim1957.java</span></div><h1>MSTPrim1957.java</h1><pre class="source lang-java linenums">package com.ugav.jgalgo;
+
+import java.util.Objects;
+
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntLists;
+
+public class MSTPrim1957 implements MST {
+
+	/*
+	 * O(m + nlogn)
+	 */
+
+<span class="fc" id="L15">	private HeapDirectAccessed.Builder heapBuilder = HeapPairing::new;</span>
+
+<span class="fc" id="L17">	public MSTPrim1957() {</span>
+<span class="fc" id="L18">	}</span>
+
+	public void setHeapBuilder(HeapDirectAccessed.Builder heapBuilder) {
+<span class="nc" id="L21">		this.heapBuilder = Objects.requireNonNull(heapBuilder);</span>
+<span class="nc" id="L22">	}</span>
+
+	@Override
+	public IntCollection calcMST(Graph g0, EdgeWeightFunc w) {
+<span class="pc bpc" id="L26" title="1 of 2 branches missed.">		if (!(g0 instanceof UGraph))</span>
+<span class="nc" id="L27">			throw new IllegalArgumentException(&quot;only undirected graphs are supported&quot;);</span>
+<span class="fc" id="L28">		UGraph g = (UGraph) g0;</span>
+<span class="fc" id="L29">		int n = g.vertices().size();</span>
+<span class="fc bfc" id="L30" title="All 2 branches covered.">		if (n == 0)</span>
+<span class="fc" id="L31">			return IntLists.emptyList();</span>
+
+<span class="fc" id="L33">		HeapDirectAccessed&lt;Integer&gt; heap = heapBuilder.build(w);</span>
+		@SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L35">		HeapDirectAccessed.Handle&lt;Integer&gt;[] verticesPtrs = new HeapDirectAccessed.Handle[n];</span>
+<span class="fc" id="L36">		boolean[] visited = new boolean[n];</span>
+
+<span class="fc" id="L38">		IntCollection mst = new IntArrayList(n - 1);</span>
+<span class="fc bfc" id="L39" title="All 2 branches covered.">		for (int r = 0; r &lt; n; r++) {</span>
+<span class="fc bfc" id="L40" title="All 2 branches covered.">			if (visited[r])</span>
+<span class="fc" id="L41">				continue;</span>
+
+<span class="fc" id="L43">			treeLoop: for (int u = r;;) {</span>
+<span class="fc" id="L44">				visited[u] = true;</span>
+<span class="fc" id="L45">				verticesPtrs[u] = null;</span>
+
+				/* decrease edges keys if a better one is found */
+<span class="fc bfc" id="L48" title="All 2 branches covered.">				for (EdgeIter eit = g.edges(u); eit.hasNext();) {</span>
+<span class="fc" id="L49">					int e = eit.nextInt();</span>
+<span class="fc" id="L50">					int v = eit.v();</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">					if (visited[v])</span>
+<span class="fc" id="L52">						continue;</span>
+
+<span class="fc" id="L54">					HeapDirectAccessed.Handle&lt;Integer&gt; vPtr = verticesPtrs[v];</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">					if (vPtr == null)</span>
+<span class="fc" id="L56">						verticesPtrs[v] = heap.insert(Integer.valueOf(e));</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">					else if (w.compare(e, vPtr.get().intValue()) &lt; 0)</span>
+<span class="fc" id="L58">						heap.decreaseKey(vPtr, Integer.valueOf(e));</span>
+<span class="fc" id="L59">				}</span>
+
+				/* find next lightest edge */
+				int e, v;
+				for (;;) {
+<span class="fc bfc" id="L64" title="All 2 branches covered.">					if (heap.isEmpty())</span>
+						/* reached all vertices from current root, continue to next tree */
+<span class="fc" id="L66">						break treeLoop;</span>
+<span class="fc" id="L67">					e = heap.extractMin().intValue();</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">					if (!visited[v = g.edgeSource(e)])</span>
+<span class="fc" id="L69">						break;</span>
+<span class="pc bpc" id="L70" title="1 of 2 branches missed.">					if (!visited[v = g.edgeTarget(e)])</span>
+<span class="fc" id="L71">						break;</span>
+				}
+
+				/* add lightest edge to MST */
+<span class="fc" id="L75">				mst.add(e);</span>
+<span class="fc" id="L76">				u = v;</span>
+<span class="fc" id="L77">			}</span>
+		}
+
+<span class="fc" id="L80">		return mst;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

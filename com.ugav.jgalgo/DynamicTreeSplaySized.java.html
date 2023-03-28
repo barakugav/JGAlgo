@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DynamicTreeSplaySized.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jgalgo</a> &gt; <a href="index.source.html" class="el_package">com.ugav.jgalgo</a> &gt; <span class="el_source">DynamicTreeSplaySized.java</span></div><h1>DynamicTreeSplaySized.java</h1><pre class="source lang-java linenums">package com.ugav.jgalgo;
+
+public class DynamicTreeSplaySized&lt;V, E&gt; extends DynamicTreeSplay&lt;V, E&gt; {
+
+	public DynamicTreeSplaySized(double weightLimit) {
+<span class="fc" id="L6">		super(new SplayImplWithSize&lt;&gt;(), weightLimit);</span>
+<span class="fc" id="L7">	}</span>
+
+	@Override
+	public int size(Node&lt;V, E&gt; v) {
+<span class="fc" id="L11">		SplayNodeSized&lt;V, E&gt; n = (SplayNodeSized&lt;V, E&gt;) v;</span>
+<span class="fc" id="L12">		splay(n);</span>
+<span class="fc" id="L13">		return n.size;</span>
+	}
+
+	@Override
+	SplayNodeSized&lt;V, E&gt; newNode(V nodeData) {
+<span class="fc" id="L18">		return new SplayNodeSized&lt;&gt;(nodeData);</span>
+	}
+
+	@Override
+	void beforeCut(SplayNode&lt;V, E&gt; n0) {
+<span class="fc" id="L23">		super.beforeCut(n0);</span>
+<span class="fc" id="L24">		SplayNodeSized&lt;V, E&gt; n = (SplayNodeSized&lt;V, E&gt;) n0;</span>
+<span class="fc" id="L25">		n.size -= ((SplayNodeSized&lt;V, E&gt;) n.right).size;</span>
+<span class="fc" id="L26">	}</span>
+
+	@Override
+	void afterLink(SplayNode&lt;V, E&gt; n0) {
+<span class="fc" id="L30">		super.afterLink(n0);</span>
+<span class="fc" id="L31">		SplayNodeSized&lt;V, E&gt; parent = (SplayNodeSized&lt;V, E&gt;) n0.userParent;</span>
+<span class="fc" id="L32">		parent.size += ((SplayNodeSized&lt;V, E&gt;) n0).size;</span>
+<span class="fc" id="L33">	}</span>
+
+	static class SplayNodeSized&lt;V, E&gt; extends DynamicTreeSplay.SplayNode&lt;V, E&gt; {
+
+		int size;
+
+		SplayNodeSized(V nodeData) {
+<span class="fc" id="L40">			super(nodeData);</span>
+<span class="fc" id="L41">			size = 1;</span>
+<span class="fc" id="L42">		}</span>
+
+	}
+
+<span class="fc" id="L46">	static class SplayImplWithSize&lt;V, E&gt; extends DynamicTreeSplay.SplayImplWithRelativeWeights&lt;V, E&gt; {</span>
+
+		@Override
+		void beforeRotate(SplayNode&lt;V, E&gt; n0) {
+<span class="fc" id="L50">			super.beforeRotate(n0);</span>
+
+<span class="fc" id="L52">			SplayNodeSized&lt;V, E&gt; n = (SplayNodeSized&lt;V, E&gt;) n0;</span>
+<span class="fc" id="L53">			SplayNodeSized&lt;V, E&gt; parent = (SplayNodeSized&lt;V, E&gt;) n.parent;</span>
+<span class="fc" id="L54">			int parentOldSize = parent.size;</span>
+
+<span class="fc bfc" id="L56" title="All 2 branches covered.">			if (n.isLeftChild()) {</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">				parent.size = parentOldSize - n.size + (n.hasRightChild() ? ((SplayNodeSized&lt;V, E&gt;) n.right).size : 0);</span>
+			} else {
+<span class="pc bpc" id="L59" title="1 of 2 branches missed.">				assert n.isRightChild();</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">				parent.size = parentOldSize - n.size + (n.hasLeftChild() ? ((SplayNodeSized&lt;V, E&gt;) n.left).size : 0);</span>
+			}
+
+<span class="fc" id="L63">			n.size = parentOldSize;</span>
+<span class="fc" id="L64">		}</span>
+
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

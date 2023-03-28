@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GraphLinkedUndirected.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jgalgo</a> &gt; <a href="index.source.html" class="el_package">com.ugav.jgalgo</a> &gt; <span class="el_source">GraphLinkedUndirected.java</span></div><h1>GraphLinkedUndirected.java</h1><pre class="source lang-java linenums">package com.ugav.jgalgo;
+
+public class GraphLinkedUndirected extends GraphLinkedAbstract implements UGraph {
+
+	private final DataContainer.Obj&lt;Node&gt; edges;
+
+	public GraphLinkedUndirected() {
+<span class="nc" id="L8">		this(0);</span>
+<span class="nc" id="L9">	}</span>
+
+	public GraphLinkedUndirected(int n) {
+<span class="fc" id="L12">		super(n, Capabilities);</span>
+<span class="fc" id="L13">		edges = new DataContainer.Obj&lt;&gt;(n, null);</span>
+<span class="fc" id="L14">		addInternalVerticesDataContainer(edges);</span>
+<span class="fc" id="L15">	}</span>
+
+	@Override
+	public EdgeIter edges(int u) {
+<span class="fc" id="L19">		checkVertexIdx(u);</span>
+<span class="fc" id="L20">		return new EdgeVertexItr(u, edges.get(u));</span>
+	}
+
+	@Override
+	public int addEdge(int u, int v) {
+<span class="pc bpc" id="L25" title="1 of 2 branches missed.">		if (u == v)</span>
+<span class="nc" id="L26">			throw new IllegalArgumentException(&quot;self edges are not supported&quot;);</span>
+<span class="fc" id="L27">		Node e = (Node) addEdgeNode(u, v), next;</span>
+<span class="fc bfc" id="L28" title="All 2 branches covered.">		if ((next = edges.get(u)) != null) {</span>
+<span class="fc" id="L29">			e.nextSet(u, next);</span>
+<span class="fc" id="L30">			next.prevSet(u, e);</span>
+		}
+<span class="fc" id="L32">		edges.set(u, e);</span>
+<span class="fc bfc" id="L33" title="All 2 branches covered.">		if ((next = edges.get(v)) != null) {</span>
+<span class="fc" id="L34">			e.nextSet(v, next);</span>
+<span class="fc" id="L35">			next.prevSet(v, e);</span>
+		}
+<span class="fc" id="L37">		edges.set(v, e);</span>
+<span class="fc" id="L38">		return e.id;</span>
+	}
+
+	@Override
+	Node allocNode(int id, int u, int v) {
+<span class="fc" id="L43">		return new Node(id, u, v);</span>
+	}
+
+	@Override
+	public void removeEdge(int edge) {
+<span class="fc" id="L48">		Node n = (Node) getNode(edge);</span>
+<span class="fc" id="L49">		super.removeEdge(edge);</span>
+<span class="fc" id="L50">		removeEdge0(n, n.u);</span>
+<span class="fc" id="L51">		removeEdge0(n, n.v);</span>
+<span class="fc" id="L52">	}</span>
+
+	@Override
+	public void removeEdgesAll(int u) {
+<span class="fc" id="L56">		checkVertexIdx(u);</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">		for (Node p = edges.get(u), next; p != null; p = next) {</span>
+			// update u list
+<span class="fc" id="L59">			next = p.next(u);</span>
+<span class="fc" id="L60">			p.nextSet(u, null);</span>
+<span class="fc" id="L61">			p.prevSet(u, null);</span>
+
+			// update v list
+<span class="fc" id="L64">			int v = p.getEndpoint(u);</span>
+<span class="fc" id="L65">			removeEdge0(p, v);</span>
+
+<span class="fc" id="L67">			super.removeEdge(p.id);</span>
+		}
+<span class="fc" id="L69">		edges.set(u, null);</span>
+<span class="fc" id="L70">	}</span>
+
+	void removeEdge0(Node e, int w) {
+<span class="fc" id="L73">		Node next = e.next(w), prev = e.prev(w);</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">		if (prev == null) {</span>
+<span class="fc" id="L75">			edges.set(w, next);</span>
+		} else {
+<span class="fc" id="L77">			prev.nextSet(w, next);</span>
+<span class="fc" id="L78">			e.prevSet(w, null);</span>
+		}
+<span class="fc bfc" id="L80" title="All 2 branches covered.">		if (next != null) {</span>
+<span class="fc" id="L81">			next.prevSet(w, prev);</span>
+<span class="fc" id="L82">			e.nextSet(w, null);</span>
+		}
+<span class="fc" id="L84">	}</span>
+
+	@Override
+	public void clearEdges() {
+<span class="fc bfc" id="L88" title="All 2 branches covered.">		for (GraphLinkedAbstract.Node p0 : nodes()) {</span>
+<span class="fc" id="L89">			Node p = (Node) p0;</span>
+<span class="fc" id="L90">			p.nextu = p.nextv = p.prevu = p.prevv = null;</span>
+<span class="fc" id="L91">		}</span>
+<span class="fc" id="L92">		int n = vertices().size();</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">		for (int uIdx = 0; uIdx &lt; n; uIdx++) {</span>
+			// TODO do some sort of 'addKey' instead of set, no need
+<span class="fc" id="L95">			edges.set(uIdx, null);</span>
+		}
+<span class="fc" id="L97">		super.clearEdges();</span>
+
+<span class="fc" id="L99">	}</span>
+
+<span class="fc" id="L101">	private static class Node extends GraphLinkedAbstract.Node {</span>
+
+		private Node nextu, nextv;
+		private Node prevu, prevv;
+
+		Node(int id, int u, int v) {
+<span class="fc" id="L107">			super(id, u, v);</span>
+<span class="fc" id="L108">		}</span>
+
+		Node next(int w) {
+<span class="pc bpc" id="L111" title="1 of 4 branches missed.">			assert w == u || w == v;</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">			return w == u ? nextu : nextv;</span>
+		}
+
+		void nextSet(int w, Node n) {
+<span class="pc bpc" id="L116" title="1 of 4 branches missed.">			assert w == u || w == v;</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">			if (w == u)</span>
+<span class="fc" id="L118">				nextu = n;</span>
+			else
+<span class="fc" id="L120">				nextv = n;</span>
+<span class="fc" id="L121">		}</span>
+
+		Node prev(int w) {
+<span class="pc bpc" id="L124" title="1 of 4 branches missed.">			assert w == u || w == v;</span>
+<span class="fc bfc" id="L125" title="All 2 branches covered.">			return w == u ? prevu : prevv;</span>
+		}
+
+		void prevSet(int w, Node n) {
+<span class="pc bpc" id="L129" title="1 of 4 branches missed.">			assert w == u || w == v;</span>
+<span class="fc bfc" id="L130" title="All 2 branches covered.">			if (w == u)</span>
+<span class="fc" id="L131">				prevu = n;</span>
+			else
+<span class="fc" id="L133">				prevv = n;</span>
+<span class="fc" id="L134">		}</span>
+
+		int getEndpoint(int w) {
+<span class="pc bpc" id="L137" title="1 of 4 branches missed.">			assert w == u || w == v;</span>
+<span class="fc bfc" id="L138" title="All 2 branches covered.">			return w == u ? v : u;</span>
+		}
+
+	}
+
+	private class EdgeVertexItr extends GraphLinkedAbstract.EdgeItr {
+
+		private final int u;
+
+		EdgeVertexItr(int u, Node p) {
+<span class="fc" id="L148">			super(p);</span>
+<span class="fc" id="L149">			this.u = u;</span>
+<span class="fc" id="L150">		}</span>
+
+		@Override
+		Node nextNode(GraphLinkedAbstract.Node n) {
+<span class="fc" id="L154">			return ((Node) n).next(u);</span>
+		}
+
+		@Override
+		public int u() {
+<span class="fc" id="L159">			return u;</span>
+		}
+
+		@Override
+		public int v() {
+<span class="fc" id="L164">			int u0 = last.u, v0 = last.v;</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">			return u == u0 ? v0 : u0;</span>
+		}
+
+	}
+
+<span class="fc" id="L170">	private static final GraphCapabilities Capabilities = new GraphCapabilities() {</span>
+		@Override
+		public boolean vertexAdd() {
+<span class="fc" id="L173">			return true;</span>
+		}
+
+		@Override
+		public boolean vertexRemove() {
+<span class="fc" id="L178">			return true;</span>
+		}
+
+		@Override
+		public boolean edgeAdd() {
+<span class="fc" id="L183">			return true;</span>
+		}
+
+		@Override
+		public boolean edgeRemove() {
+<span class="fc" id="L188">			return true;</span>
+		}
+
+		@Override
+		public boolean parallelEdges() {
+<span class="fc" id="L193">			return true;</span>
+		}
+
+		@Override
+		public boolean selfEdges() {
+<span class="fc" id="L198">			return false;</span>
+		}
+
+		@Override
+		public boolean directed() {
+<span class="fc" id="L203">			return false;</span>
+		}
+	};
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

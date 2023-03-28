@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Graph.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jgalgo</a> &gt; <a href="index.source.html" class="el_package">com.ugav.jgalgo</a> &gt; <span class="el_source">Graph.java</span></div><h1>Graph.java</h1><pre class="source lang-java linenums">package com.ugav.jgalgo;
+
+import java.util.Collection;
+import java.util.Set;
+
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntSet;
+
+public interface Graph {
+
+	/**
+	 * Get the set of all vertices of the graph.
+	 *
+	 * &lt;p&gt;
+	 * Each vertex in the graph is identified by a unique int ID. The returned set
+	 * is a set of all these identifiers, and its size is equivalent to the number
+	 * of vertices in the graph.
+	 *
+	 * &lt;p&gt;
+	 * The vertices IDs values are determined by {@link #getVerticesIDStrategy()}.
+	 * For example, {@link com.ugav.jgalgo.IDStrategy.Continues} ensure that at all
+	 * times the vertices IDs are {@code 0,1,..., verticesNum-1}, and it might
+	 * rename some vertices when a vertex is removed to maintain this invariant.
+	 * This rename can be subscribed using
+	 * {@link com.ugav.jgalgo.IDStrategy#addIDSwapListener}. Another option for an
+	 * ID strategy is {@link com.ugav.jgalgo.IDStrategy.Fixed} which ensure once a
+	 * vertex is assigned an ID, it will not change. There might be some performance
+	 * differences between different ID strategies.
+	 *
+	 * @see com.ugav.jgalgo.IDStrategy
+	 *
+	 * @return a set containing all IDs of the graph vertices
+	 */
+	public IntSet vertices();
+
+	/**
+	 * Get the set of all edges of the graph.
+	 *
+	 * &lt;p&gt;
+	 * Each edge in the graph is identified by a unique int ID. The returned set is
+	 * a set of all these identifiers, and its size is equivalent to the number of
+	 * edges in the graph.
+	 *
+	 * &lt;p&gt;
+	 * The edges IDs values are determined by {@link #getEdgesIDStrategy()}. For
+	 * example, {@link com.ugav.jgalgo.IDStrategy.Continues} ensure that at all
+	 * times the edges IDs are {@code 0,1,..., edgesNum-1}, and it might rename some
+	 * edges when an edge is removed to maintain this invariant. This rename can be
+	 * subscribed using {@link com.ugav.jgalgo.IDStrategy#addIDSwapListener}.
+	 * Another option for an ID strategy is {@link com.ugav.jgalgo.IDStrategy.Fixed}
+	 * which ensure once an edge is assigned an ID, it will not change. There might
+	 * be some performance differences between different ID strategies.
+	 *
+	 * @see com.ugav.jgalgo.IDStrategy
+	 *
+	 * @return a set containing all IDs of the graph edges
+	 */
+	public IntSet edges();
+
+	/**
+	 * Add a new vertex to the graph.
+	 *
+	 * &lt;p&gt;
+	 * A unique int ID is assigned for the new vertex. The vertices IDs values are
+	 * determined by {@link #getVerticesIDStrategy()}. For example,
+	 * {@link com.ugav.jgalgo.IDStrategy.Continues} ensure that at all times the
+	 * vertices IDs are {@code 0,1,..., verticesNum-1}, and it might rename some
+	 * vertices when a vertex is removed to maintain this invariant. This rename can
+	 * be subscribed using {@link com.ugav.jgalgo.IDStrategy#addIDSwapListener}.
+	 * Another option for an ID strategy is {@link com.ugav.jgalgo.IDStrategy.Fixed}
+	 * which ensure once a vertex is assigned an ID, it will not change. There might
+	 * be some performance differences between different ID strategies.
+	 *
+	 * @see com.ugav.jgalgo.IDStrategy
+	 *
+	 * @return the new vertex identifier
+	 */
+	public int addVertex();
+
+	/**
+	 * Get the edges of a vertex u.
+	 *
+	 * &lt;p&gt;
+	 * In case the graph is directed, this function returns the edges which u is
+	 * their source vertex.
+	 *
+	 * @param u a source vertex
+	 * @return an iterator of all the edges whose source is u
+	 */
+	public EdgeIter edges(int u);
+
+	/**
+	 * Get the edge whose source is u and target is v.
+	 *
+	 * &lt;p&gt;
+	 * If the graph is not directed, the return edge is an edge that its end-points
+	 * are u,v.
+	 *
+	 * &lt;p&gt;
+	 * The edges IDs values are determined by {@link #getEdgesIDStrategy()}. For
+	 * example, {@link com.ugav.jgalgo.IDStrategy.Continues} ensure that at all
+	 * times the edges IDs are {@code 0,1,..., edgesNum-1}, and it might rename some
+	 * edges when an edge is removed to maintain this invariant. This rename can be
+	 * subscribed using {@link com.ugav.jgalgo.IDStrategy#addIDSwapListener}.
+	 * Another option for an ID strategy is {@link com.ugav.jgalgo.IDStrategy.Fixed}
+	 * which ensure once an edge is assigned an ID, it will not change. There might
+	 * be some performance differences between different ID strategies.
+	 *
+	 * @see com.ugav.jgalgo.IDStrategy
+	 *
+	 * @param u a source vertex
+	 * @param v a target vertex
+	 * @return id of the edge or -1 if no such edge exists
+	 */
+	default int getEdge(int u, int v) {
+<span class="fc bfc" id="L118" title="All 2 branches covered.">		for (EdgeIter it = edges(u); it.hasNext();) {</span>
+<span class="fc" id="L119">			int e = it.nextInt();</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">			if (it.v() == v)</span>
+<span class="fc" id="L121">				return e;</span>
+<span class="fc" id="L122">		}</span>
+<span class="fc" id="L123">		return -1;</span>
+	}
+
+	default EdgeIter getEdges(int u, int v) {
+<span class="fc" id="L127">		IntList edges = new IntArrayList();</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">		for (EdgeIter it = edges(u); it.hasNext();) {</span>
+<span class="fc" id="L129">			int e = it.nextInt();</span>
+<span class="fc bfc" id="L130" title="All 2 branches covered.">			if (it.v() == v)</span>
+<span class="fc" id="L131">				edges.add(e);</span>
+<span class="fc" id="L132">		}</span>
+<span class="fc" id="L133">		return new EdgeIter() {</span>
+
+<span class="fc" id="L135">			IntIterator it = edges.intIterator();</span>
+
+			@Override
+			public boolean hasNext() {
+<span class="fc" id="L139">				return it.hasNext();</span>
+			}
+
+			@Override
+			public int nextInt() {
+<span class="fc" id="L144">				return it.nextInt();</span>
+			}
+
+			@Override
+			public int u() {
+<span class="nc" id="L149">				return u;</span>
+			}
+
+			@Override
+			public int v() {
+<span class="nc" id="L154">				return v;</span>
+			}
+		};
+	}
+
+	/**
+	 * Add a new edge to the graph.
+	 *
+	 * &lt;p&gt;
+	 * In case there are multiple (parallel) edges between u and v, a single
+	 * arbitrary one is returned. (TODO return all?)
+	 *
+	 * @param u a source vertex
+	 * @param v a target vertex
+	 * @return the new edge identifier
+	 */
+	public int addEdge(int u, int v);
+
+	/**
+	 * Remove an edge from the graph.
+	 *
+	 * &lt;p&gt;
+	 * After removing the edge, the edges ID strategy may rename other edges
+	 * identifiers to maintain its invariants. Theses renames can be subscribed
+	 * using {@link com.ugav.jgalgo.IDStrategy#addIDSwapListener}.
+	 *
+	 * @see com.ugav.jgalgo.IDStrategy
+	 *
+	 * @param edge the edge identifier
+	 */
+	public void removeEdge(int edge);
+
+	/**
+	 * Remove all the edges of a vertex u.
+	 *
+	 * &lt;p&gt;
+	 * If the graph is directed, both the in and out edges of the vertex are
+	 * removed.
+	 *
+	 * &lt;p&gt;
+	 * After removing the edge, the edges ID strategy may rename other edges
+	 * identifiers to maintain its invariants. Theses renames can be subscribed
+	 * using {@link com.ugav.jgalgo.IDStrategy#addIDSwapListener}.
+	 *
+	 * @see com.ugav.jgalgo.IDStrategy
+	 *
+	 * @param u a vertex in the graph
+	 */
+	default void removeEdgesAll(int u) {
+<span class="fc bfc" id="L203" title="All 2 branches covered.">		for (EdgeIter eit = edges(u); eit.hasNext();) {</span>
+<span class="fc" id="L204">			eit.nextInt();</span>
+<span class="fc" id="L205">			eit.remove();</span>
+		}
+<span class="fc" id="L207">	}</span>
+
+	/**
+	 * Get the source vertex of an edge.
+	 *
+	 * &lt;p&gt;
+	 * If the graph is undirected, this function return an arbitrary end-point of
+	 * the edge, but always the other end-point than {@link #edgeTarget(int)}
+	 * returns.
+	 *
+	 * @param edge the edge identifier
+	 * @return the edge source vertex
+	 */
+	public int edgeSource(int edge);
+
+	/**
+	 * Get the target vertex of an edge.
+	 *
+	 * &lt;p&gt;
+	 * If the graph is undirected, this function return an arbitrary end-point of
+	 * the edge, but always the other end-point than {@link #edgeSource(int)}
+	 * returns.
+	 *
+	 * @param edge the edge identifier
+	 * @return the edge target vertex
+	 */
+	public int edgeTarget(int edge);
+
+	/**
+	 * Get the other end-point of an edge.
+	 *
+	 * @param edge     the edge identifier
+	 * @param endpoint one of the edge end-point
+	 * @return the other end-point of the edge
+	 */
+	default int edgeEndpoint(int edge, int endpoint) {
+<span class="nc" id="L243">		int u = edgeSource(edge);</span>
+<span class="nc" id="L244">		int v = edgeTarget(edge);</span>
+<span class="nc bnc" id="L245" title="All 2 branches missed.">		if (endpoint == u) {</span>
+<span class="nc" id="L246">			return v;</span>
+<span class="nc bnc" id="L247" title="All 2 branches missed.">		} else if (endpoint == v) {</span>
+<span class="nc" id="L248">			return u;</span>
+		} else {
+<span class="nc" id="L250">			throw new IllegalArgumentException();</span>
+		}
+	}
+
+	/**
+	 * Get the degree of a vertex, the number of its edges.
+	 *
+	 * &lt;p&gt;
+	 * If the graph is directed, this function return the number of edges whose u is
+	 * either their source or target.
+	 *
+	 * @param u a vertex
+	 * @return the number of edges whose u is their end-point
+	 */
+	default int degree(int u) {
+<span class="fc" id="L265">		int count = 0;</span>
+<span class="fc bfc" id="L266" title="All 2 branches covered.">		for (EdgeIter it = edges(u); it.hasNext();) {</span>
+<span class="fc" id="L267">			it.nextInt();</span>
+<span class="fc" id="L268">			count++;</span>
+		}
+<span class="fc" id="L270">		return count;</span>
+	}
+
+	/**
+	 * Clear the graph completely by removing all vertices and edges.
+	 *
+	 * &lt;p&gt;
+	 * This function might be used to reuse an already allocated graph object
+	 */
+	public void clear();
+
+	/**
+	 * Remove all the edges from the graph.
+	 *
+	 * &lt;p&gt;
+	 * Note that this function also clears any weights associated with removed
+	 * edges.
+	 */
+	public void clearEdges();
+
+	// TODO remove vertex
+	// TODO documentation
+
+	/**
+	 * Get the vertices weights of some key.
+	 *
+	 * @param &lt;V&gt;        The weight type
+	 * @param &lt;WeightsT&gt; the weights container
+	 * @param key        some key of the weights, could be anything
+	 * @return vertices weights of the key
+	 */
+	public &lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT verticesWeight(Object key);
+
+	public Weights.Factory addVerticesWeight(Object key);
+
+	/**
+	 * Get the keys of all the associated vertices weights.
+	 *
+	 * @return the keys of all the associated vertices weights
+	 */
+	public Set&lt;Object&gt; getVerticesWeightKeys();
+
+	/**
+	 * Get all vertices weights.
+	 *
+	 * @return all vertices weights
+	 */
+	public Collection&lt;Weights&lt;?&gt;&gt; getVerticesWeights();
+
+	/**
+	 * Remove a weight type from the vertices of the graph.
+	 *
+	 * @param key the key of the weights
+	 */
+	public void removeVerticesWeights(Object key);
+
+	/**
+	 * Get the edges weights of some key.
+	 *
+	 * @param &lt;E&gt;        The weight type
+	 * @param &lt;WeightsT&gt; the weights container
+	 * @param key        some key of the weights, could be anything
+	 * @return edges weights of the key
+	 */
+	public &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT edgesWeight(Object key);
+
+	public Weights.Factory addEdgesWeight(Object key);
+
+	/**
+	 * Get the keys of all the associated edges weights.
+	 *
+	 * @return the keys of all the associated edges weights
+	 */
+	public Set&lt;Object&gt; getEdgesWeightsKeys();
+
+	/**
+	 * Remove a weight type from the edges of the graph.
+	 *
+	 * @param key the key of the weights
+	 */
+	public void removeEdgesWeights(Object key);
+
+	/**
+	 * Get all edges weights.
+	 *
+	 * @return all edges weights
+	 */
+	public Collection&lt;Weights&lt;?&gt;&gt; getEdgesWeights();
+
+	/**
+	 * Get ID strategy of the vertices of the graph.
+	 *
+	 * &lt;p&gt;
+	 * Each vertex in the graph is identified by a unique int ID, which is
+	 * determined by some strategy. For example,
+	 * {@link com.ugav.jgalgo.IDStrategy.Continues} ensure that at all times the
+	 * vertices IDs are {@code 0,1,..., verticesNum-1}, and it might rename some
+	 * vertices when a vertex is removed to maintain this invariant. This rename can
+	 * be subscribed using {@link com.ugav.jgalgo.IDStrategy#addIDSwapListener}.
+	 * Another option for an ID strategy is {@link com.ugav.jgalgo.IDStrategy.Fixed}
+	 * which ensure once a vertex is assigned an ID, it will not change. There might
+	 * be some performance differences between different ID strategies.
+	 *
+	 * @see com.ugav.jgalgo.IDStrategy
+	 *
+	 * @return the vertices IDs strategy
+	 */
+	public IDStrategy getVerticesIDStrategy();
+
+	/**
+	 * Get the set of all edges of the graph.
+	 *
+	 * &lt;p&gt;
+	 * Each edge in the graph is identified by a unique int ID, which is determined
+	 * by some strategy. For example, {@link com.ugav.jgalgo.IDStrategy.Continues}
+	 * ensure that at all times the edges IDs are {@code 0,1,..., edgesNum-1}, and
+	 * it might rename some edges when an edge is removed to maintain this
+	 * invariant. This rename can be subscribed using
+	 * {@link com.ugav.jgalgo.IDStrategy#addIDSwapListener}. Another option for an
+	 * ID strategy is {@link com.ugav.jgalgo.IDStrategy.Fixed} which ensure once an
+	 * edge is assigned an ID, it will not change. There might be some performance
+	 * differences between different ID strategies.
+	 *
+	 * @see com.ugav.jgalgo.IDStrategy
+	 *
+	 * @return the edges IDs strategy
+	 */
+	public IDStrategy getEdgesIDStrategy();
+
+	public GraphCapabilities getCapabilities();
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
