@@ -18,6 +18,7 @@ JGAlgo is a collection of algorithms implemented in Java. It contains mostly alg
 | Binary heap | $O(m \log n)$ for $m$ operations |
 | Binomial heap | $O(m \log n)$ for $m$ operations |
 | Fibonacci heap | $O(m \log n)$ for $m$ operations, decrease key in $O(1)$ |
+| Pairing heap | $O(m \log n)$ for $m$ operations, decrease key in $O(\log \log n)$, very good pointer based heap in practice |
 | Red-Black tree (sub tree size/max/min extensions supported) | $O(m \log n)$ for $m$ operations |
 | Splay Tree | $O(m \log n)$ for $m$ operations, efficient splits and joins |
 | Dynamic Tree using Splay trees | $O(m \log n)$ for $m$ operations |
