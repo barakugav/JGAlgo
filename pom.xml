@@ -9,7 +9,7 @@
 
 	<name>jgalgo</name>
 	<!-- FIXME change it to the project's website -->
-	<url>https://barakugav.github.io/JGAlgo/javadoc</url>
+	<url>https://barakugav.github.io/JGAlgo</url>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
