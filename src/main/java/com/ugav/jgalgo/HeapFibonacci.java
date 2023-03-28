@@ -58,7 +58,7 @@ public class HeapFibonacci<E> extends HeapAbstractDirectAccessed<E> {
 
 	@Override
 	public Iterator<? extends Handle<E>> handleIterator() {
-		return new Trees.Iter<>(begin);
+		return new Trees.PreOrderIter<>(begin);
 	}
 
 	@Override
@@ -86,15 +86,6 @@ public class HeapFibonacci<E> extends HeapAbstractDirectAccessed<E> {
 
 		h.begin = h.end = h.minRoot = null;
 		h.size = 0;
-	}
-
-	@Override
-	public Handle<E> findHanlde(E e) {
-		for (Node<E> p : Utils.iterable(new Trees.Iter<>(begin))) {
-			if (c.compare(e, p.value) == 0)
-				return p;
-		}
-		return null;
 	}
 
 	@Override

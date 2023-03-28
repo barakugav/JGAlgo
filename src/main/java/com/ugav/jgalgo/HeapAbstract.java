@@ -42,4 +42,9 @@ public abstract class HeapAbstract<E> extends AbstractCollection<E> implements H
 		h.clear();
 	}
 
+	@Override
+	public Comparator<? super E> comparator() {
+		return c;
+	}
+
 }

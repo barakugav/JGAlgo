@@ -114,6 +114,11 @@ public class RedBlackTreeExtendedTest extends TestUtils {
 			h.meld(other);
 		}
 
+		@Override
+		public Comparator<? super E> comparator() {
+			return h.comparator();
+		}
+
 	}
 
 	private static class SizeValidatorTree<E> extends HeapWrapper<E> {

@@ -52,56 +52,84 @@ class Trees {
 		} while (!stack.isEmpty());
 	}
 
-	static class Iter<N extends TreeNode<N>> implements Iterator<N> {
+	static class PreOrderIter<N extends TreeNode<N>> implements Iterator<N> {
 
-		N p;
-		boolean valid;
+		private N p;
 
-		Iter(N p) {
-			reset0(p);
+		PreOrderIter(N p) {
+			reset(p);
 		}
 
-		private void reset0(N p) {
+		void reset(N p) {
 			this.p = p;
-			valid = p != null;
-		}
-
-		public void reset(N p) {
-			reset0(p);
-		}
-
-		public boolean hasNext0() {
-			if (p == null)
-				return false;
-			N q;
-
-			if ((q = p.child()) != null) {
-				p = q;
-				return true;
-			}
-			do {
-				if ((q = p.next()) != null) {
-					p = q;
-					return true;
-				}
-			} while ((p = p.parent()) != null);
-
-			return p != null;
 		}
 
 		@Override
 		public boolean hasNext() {
-			if (valid)
-				return true;
-			return valid = hasNext0();
+			return p != null;
 		}
 
 		@Override
 		public N next() {
 			if (!hasNext())
 				throw new NoSuchElementException();
-			valid = false;
-			return p;
+			final N ret = p;
+
+			N next;
+			if ((next = ret.child()) != null) {
+				p = next;
+			} else {
+				N p0 = ret;
+				do {
+					if ((next = p0.next()) != null) {
+						p0 = next;
+						break;
+					}
+				} while ((p0 = p0.parent()) != null);
+				p = p0;
+			}
+
+			return ret;
+		}
+
+	}
+
+	static class PostOrderIter<N extends TreeNode<N>> implements Iterator<N> {
+
+		private N p;
+
+		PostOrderIter(N p) {
+			reset(p);
+		}
+
+		void reset(N p) {
+			for (N next; (next = p.child()) != null;)
+				p = next;
+			this.p = p;
+		}
+
+		@Override
+		public boolean hasNext() {
+			return p != null;
+		}
+
+		@Override
+		public N next() {
+			if (!hasNext())
+				throw new NoSuchElementException();
+			final N ret = p;
+
+			N next;
+			if ((next = ret.next()) != null) {
+				/* lower child */
+				for (N child; (child = next.child()) != null;)
+					next = child;
+				p = next;
+			} else {
+				p = ret.parent();
+			}
+
+			return ret;
 		}
 
 	}

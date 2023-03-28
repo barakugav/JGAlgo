@@ -145,7 +145,7 @@ public class HeapBinomial<E> extends HeapAbstractDirectAccessed<E> {
 		return new Itr();
 	}
 
-	private class Itr extends Trees.Iter<Node<E>> {
+	private class Itr extends Trees.PreOrderIter<Node<E>> {
 
 		private int nextRootIdx;
 

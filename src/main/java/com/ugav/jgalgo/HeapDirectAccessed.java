@@ -12,7 +12,14 @@ public interface HeapDirectAccessed<E> extends Heap<E> {
 	 * @param e an element in the heap
 	 * @return the handle of the element or null if the element is not in the heap
 	 */
-	public Handle<E> findHanlde(E e);
+	default Handle<E> findHanlde(E e) {
+		Comparator<? super E> c = comparator();
+		for (Handle<E> p : Utils.iterable(handleIterator())) {
+			if (c.compare(e, p.get()) == 0)
+				return p;
+		}
+		return null;
+	}
 
 	/**
 	 * Find the handle of the minimal element in the heap

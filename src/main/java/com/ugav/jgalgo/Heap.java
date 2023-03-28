@@ -1,6 +1,7 @@
 package com.ugav.jgalgo;
 
 import java.util.Collection;
+import java.util.Comparator;
 
 public interface Heap<E> extends Collection<E> {
 
@@ -34,5 +35,7 @@ public interface Heap<E> extends Collection<E> {
 	 * @param h a heap to meld with. May be invalid at the end of the operation
 	 */
 	public void meld(Heap<? extends E> h);
+
+	public Comparator<? super E> comparator();
 
 }

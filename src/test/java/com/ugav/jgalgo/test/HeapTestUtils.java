@@ -307,6 +307,7 @@ class HeapTestUtils extends TestUtils {
 				int newVal = rand.nextInt(x);
 				HeapDirectAccessed<Integer> heap0 = (HeapDirectAccessed<Integer>) tracker.heap;
 
+				debug.println("DecreaseKey(" + x + ", " + newVal + ")");
 				tracker.decreaseKey(x, newVal);
 				heap0.decreaseKey(heap0.findHanlde(x), newVal);
 				break;
