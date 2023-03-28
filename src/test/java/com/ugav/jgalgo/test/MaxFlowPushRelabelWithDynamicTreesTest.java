@@ -8,6 +8,7 @@ public class MaxFlowPushRelabelWithDynamicTreesTest extends TestUtils {
 
 	@Test
 	public void testRandGraphs() {
-		MaxFlowTestUtils.testRandGraphs(MaxFlowPushRelabelWithDynamicTrees::new);
+		final long seed = 0xdb81d5dd5fe0d5b3L;
+		MaxFlowTestUtils.testRandGraphs(MaxFlowPushRelabelWithDynamicTrees::new, seed);
 	}
 }

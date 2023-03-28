@@ -60,22 +60,26 @@ public class GraphLinkedTest extends TestUtils {
 
 	@Test
 	public void testUndirectedMST() {
-		GraphImplTestUtils.testUndirectedMST(graphImpl());
+		final long seed = 0x757d2f9883276f90L;
+		GraphImplTestUtils.testUndirectedMST(graphImpl(), seed);
 	}
 
 	@Test
 	public void testDirectedMDST() {
-		GraphImplTestUtils.testDirectedMDST(graphImpl());
+		final long seed = 0x96f07cf342fcb057L;
+		GraphImplTestUtils.testDirectedMDST(graphImpl(), seed);
 	}
 
 	@Test
 	public void testDirectedMaxFlow() {
-		GraphImplTestUtils.testDirectedMaxFlow(graphImpl());
+		final long seed = 0xb3775d0c2d4aa98aL;
+		GraphImplTestUtils.testDirectedMaxFlow(graphImpl(), seed);
 	}
 
 	@Test
 	public void testUndirectedRandOps() {
-		GraphImplTestUtils.testUndirectedRandOps(graphImpl());
+		final long seed = 0xbda54e345679e161L;
+		GraphImplTestUtils.testUndirectedRandOps(graphImpl(), seed);
 	}
 
 }

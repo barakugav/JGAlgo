@@ -8,12 +8,14 @@ public class SSSPDial1969Test extends TestUtils {
 
 	@Test
 	public void testRandGraphDirectedPositiveInt() {
-		SSSPTestUtils.testSSSPDirectedPositiveInt(SSSPDial1969::new);
+		final long seed = 0x1ecd0cadb4951d87L;
+		SSSPTestUtils.testSSSPDirectedPositiveInt(SSSPDial1969::new, seed);
 	}
 
 	@Test
 	public void testRandGraphUndirectedPositiveInt() {
-		SSSPTestUtils.testSSSPUndirectedPositiveInt(SSSPDial1969::new);
+		final long seed = 0xadc83d79349e7784L;
+		SSSPTestUtils.testSSSPUndirectedPositiveInt(SSSPDial1969::new, seed);
 	}
 
 }

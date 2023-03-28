@@ -8,12 +8,14 @@ public class MatchingWeightedBipartiteSSSPTest extends TestUtils {
 
 	@Test
 	public void testRandBipartiteGraphsWeight1() {
-		MatchingBipartiteTestUtils.randBipartiteGraphs(MatchingWeightedBipartiteSSSP::new);
+		final long seed = 0x6d2c36b6f7f5d43fL;
+		MatchingBipartiteTestUtils.randBipartiteGraphs(MatchingWeightedBipartiteSSSP::new, seed);
 	}
 
 	@Test
 	public void testRandBipartiteGraphsWeighted() {
-		MatchingWeightedTestUtils.randGraphsBipartiteWeighted(MatchingWeightedBipartiteSSSP::new);
+		final long seed = 0x131359e008ab11acL;
+		MatchingWeightedTestUtils.randGraphsBipartiteWeighted(MatchingWeightedBipartiteSSSP::new, seed);
 	}
 
 }

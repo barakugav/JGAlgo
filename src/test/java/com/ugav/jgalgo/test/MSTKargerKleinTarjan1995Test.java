@@ -8,7 +8,9 @@ public class MSTKargerKleinTarjan1995Test extends TestUtils {
 
 	@Test
 	public void testRandGraph() {
-		MSTTestUtils.testRandGraph(() -> new MSTKargerKleinTarjan1995(nextRandSeed()));
+		final long seed = 0xe76fc4911bdb2da2L;
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		MSTTestUtils.testRandGraph(() -> new MSTKargerKleinTarjan1995(seedGen.nextSeed()), seedGen.nextSeed());
 	}
 
 }

@@ -8,7 +8,8 @@ public class MaxFlowDinicTest extends TestUtils {
 
 	@Test
 	public void testRandGraphs() {
-		MaxFlowTestUtils.testRandGraphs(MaxFlowDinic::new);
+		final long seed = 0x67b60b1ffd6fee78L;
+		MaxFlowTestUtils.testRandGraphs(MaxFlowDinic::new, seed);
 	}
 
 }

@@ -8,37 +8,44 @@ public class RedBlackTreeTest extends TestUtils {
 
 	@Test
 	public void testRandOps() {
-		HeapTestUtils.testRandOps(RedBlackTree::new);
+		final long seed = 0x445a02434b767d0fL;
+		HeapTestUtils.testRandOps(RedBlackTree::new, seed);
 	}
 
 	@Test
 	public void testRandOpsAfterManyInserts() {
-		HeapTestUtils.testRandOpsAfterManyInserts(RedBlackTree::new);
+		final long seed = 0xe00c6e6c7bbdf827L;
+		HeapTestUtils.testRandOpsAfterManyInserts(RedBlackTree::new, seed);
 	}
 
 	@Test
 	public void testMeld() {
-		HeapTestUtils.testMeld(RedBlackTree::new);
+		final long seed = 0x3fbbd70b1c035dedL;
+		HeapTestUtils.testMeld(RedBlackTree::new, seed);
 	}
 
 	@Test
 	public void testFindSmallers() {
-		BSTTestUtils.testFindSmallers(RedBlackTree::new);
+		final long seed = 0x4c57d0d410b7e9d6L;
+		BSTTestUtils.testFindSmallers(RedBlackTree::new, seed);
 	}
 
 	@Test
 	public void testFindGreaters() {
-		BSTTestUtils.testFindGreaters(RedBlackTree::new);
+		final long seed = 0xec49fe38ca3ca19bL;
+		BSTTestUtils.testFindGreaters(RedBlackTree::new, seed);
 	}
 
 	@Test
 	public void testGetPredecessor() {
-		BSTTestUtils.testGetPredecessors(RedBlackTree::new);
+		final long seed = 0x941838c5890fae32L;
+		BSTTestUtils.testGetPredecessors(RedBlackTree::new, seed);
 	}
 
 	@Test
 	public void testGetSuccessor() {
-		BSTTestUtils.testGetSuccessors(RedBlackTree::new);
+		final long seed = 0xc68b22dd9e9afed9L;
+		BSTTestUtils.testGetSuccessors(RedBlackTree::new, seed);
 	}
 
 }

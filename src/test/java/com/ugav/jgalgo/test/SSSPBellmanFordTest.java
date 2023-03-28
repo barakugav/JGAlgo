@@ -8,12 +8,14 @@ public class SSSPBellmanFordTest extends TestUtils {
 
 	@Test
 	public void testRandGraphPositiveInt() {
-		SSSPTestUtils.testSSSPDirectedPositiveInt(SSSPBellmanFord::new);
+		final long seed = 0x89d12d4775fd2b7fL;
+		SSSPTestUtils.testSSSPDirectedPositiveInt(SSSPBellmanFord::new, seed);
 	}
 
 	@Test
 	public void testRandGraphNegativeInt() {
-		SSSPTestUtils.testSSSPDirectedNegativeInt(SSSPBellmanFord::new);
+		final long seed = 0x5a4758f2d75f9448L;
+		SSSPTestUtils.testSSSPDirectedNegativeInt(SSSPBellmanFord::new, seed);
 	}
 
 }

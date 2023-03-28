@@ -29,11 +29,13 @@ class MatchingWeightedTestUtils extends TestUtils {
 	private MatchingWeightedTestUtils() {
 	}
 
-	static void randGraphsBipartiteWeighted(Supplier<? extends MatchingWeighted> builder) {
-		randGraphsBipartiteWeighted(builder, GraphImplTestUtils.GRAPH_IMPL_DEFAULT);
+	static void randGraphsBipartiteWeighted(Supplier<? extends MatchingWeighted> builder, long seed) {
+		randGraphsBipartiteWeighted(builder, GraphImplTestUtils.GRAPH_IMPL_DEFAULT, seed);
 	}
 
-	static void randGraphsBipartiteWeighted(Supplier<? extends MatchingWeighted> builder, GraphImpl graphImpl) {
+	static void randGraphsBipartiteWeighted(Supplier<? extends MatchingWeighted> builder, GraphImpl graphImpl,
+			long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(256, 8, 8, 8), phase(128, 16, 16, 64), phase(12, 128, 128, 128),
 				phase(8, 128, 128, 512), phase(2, 1024, 1024, 1024), phase(1, 1024, 1024, 5461));
 		runTestMultiple(phases, (testIter, args) -> {
@@ -41,8 +43,8 @@ class MatchingWeightedTestUtils extends TestUtils {
 			int tn = args[1];
 			int m = args[2];
 
-			Graph g = MatchingBipartiteTestUtils.randGraphBipartite(sn, tn, m, graphImpl);
-			GraphsTestUtils.assignRandWeightsIntNeg(g);
+			Graph g = MatchingBipartiteTestUtils.randGraphBipartite(sn, tn, m, graphImpl, seedGen.nextSeed());
+			GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
 			EdgeWeightFunc.Int w = g.edgesWeight("weight");
 
 			MatchingWeighted algo = builder.get();
@@ -53,7 +55,8 @@ class MatchingWeightedTestUtils extends TestUtils {
 		});
 	}
 
-	static void randBipartiteGraphsWeightedPerfect(Supplier<? extends MatchingWeighted> builder) {
+	static void randBipartiteGraphsWeightedPerfect(Supplier<? extends MatchingWeighted> builder, long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(256, 8, 8, 8), phase(128, 16, 16, 64), phase(12, 128, 128, 128),
 				phase(8, 128, 128, 512), phase(4, 1024, 1024, 1024));
 		runTestMultiple(phases, (testIter, args) -> {
@@ -61,9 +64,10 @@ class MatchingWeightedTestUtils extends TestUtils {
 			int tn = args[1];
 			int m = args[2];
 
-			Graph g = MatchingBipartiteTestUtils.randGraphBipartite(sn, tn, m, GraphImplTestUtils.GRAPH_IMPL_DEFAULT);
+			Graph g = MatchingBipartiteTestUtils.randGraphBipartite(sn, tn, m, GraphImplTestUtils.GRAPH_IMPL_DEFAULT,
+					seedGen.nextSeed());
 			int maxWeight = m < 50 ? 100 : m * 2 + 2;
-			GraphsTestUtils.assignRandWeightsInt(g, -maxWeight, maxWeight / 4);
+			GraphsTestUtils.assignRandWeightsInt(g, -maxWeight, maxWeight / 4, seedGen.nextSeed());
 			EdgeWeightFunc.Int w = g.edgesWeight("weight");
 
 			MatchingWeighted algo = builder.get();
@@ -75,20 +79,21 @@ class MatchingWeightedTestUtils extends TestUtils {
 		});
 	}
 
-	static void randGraphsWeighted(Supplier<? extends MatchingWeighted> builder) {
+	static void randGraphsWeighted(Supplier<? extends MatchingWeighted> builder, long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(256, 8, 8, 8), phase(128, 16, 16, 64), phase(12, 128, 128, 128),
 				phase(8, 128, 128, 512), phase(4, 1024, 1024, 1024), phase(2, 1024, 1024, 8192));
 		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0];
-			int m = args[1];
+			int n = args[0], m = args[1];
 
-			Graph g = GraphsTestUtils.randGraph(n, m);
-			GraphsTestUtils.assignRandWeightsIntNeg(g);
+			Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
+			GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
 			EdgeWeightFunc.Int w = g.edgesWeight("weight");
 
 			MatchingWeighted algo = builder.get();
 			// have nothing other than MatchingWeightedGabow2017, at least shuffle graph
-			MatchingWeighted validationAlgo = new MatchingWeightedShuffled(new MatchingWeightedGabow2017());
+			MatchingWeighted validationAlgo = new MatchingWeightedShuffled(new MatchingWeightedGabow2017(),
+					seedGen.nextSeed());
 
 			testGraphWeighted(algo, g, w, validationAlgo);
 		});
@@ -111,21 +116,22 @@ class MatchingWeightedTestUtils extends TestUtils {
 		Assertions.assertEquals(expectedWeight, actualWeight, "unexpected match weight");
 	}
 
-	static void randGraphsWeightedPerfect(Supplier<? extends MatchingWeighted> builder) {
+	static void randGraphsWeightedPerfect(Supplier<? extends MatchingWeighted> builder, long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(256, 8, 8, 8), phase(128, 16, 16, 64), phase(12, 128, 128, 128),
 				phase(8, 128, 128, 512), phase(4, 1024, 1024, 1024));
 		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0];
-			int m = args[1];
+			int n = args[0], m = args[1];
 
-			Graph g = GraphsTestUtils.randGraph(n, m);
+			Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
 			int maxWeight = m < 50 ? 100 : m * 2 + 2;
-			GraphsTestUtils.assignRandWeightsInt(g, -maxWeight, maxWeight / 4);
+			GraphsTestUtils.assignRandWeightsInt(g, -maxWeight, maxWeight / 4, seedGen.nextSeed());
 			EdgeWeightFunc.Int w = g.edgesWeight("weight");
 
 			MatchingWeighted algo = builder.get();
 			Matching validationUnweightedAlgo = new MatchingGabow1976();
-			MatchingWeighted validationWeightedAlgo = new MatchingWeightedShuffled(new MatchingWeightedGabow2017());
+			MatchingWeighted validationWeightedAlgo = new MatchingWeightedShuffled(new MatchingWeightedGabow2017(),
+					seedGen.nextSeed());
 			testGraphWeightedPerfect(algo, g, w, validationUnweightedAlgo, validationWeightedAlgo);
 		});
 	}
@@ -164,9 +170,11 @@ class MatchingWeightedTestUtils extends TestUtils {
 	private static class MatchingWeightedShuffled implements MatchingWeighted {
 
 		private final MatchingWeighted algo;
+		private final SeedGenerator seedGen;
 
-		MatchingWeightedShuffled(MatchingWeighted algo) {
+		MatchingWeightedShuffled(MatchingWeighted algo, long seed) {
 			this.algo = algo;
+			seedGen = new SeedGenerator(seed);
 		}
 
 		@Override
@@ -183,7 +191,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 			if (g instanceof DiGraph)
 				throw new IllegalArgumentException("only undirected graphs are supported");
 			int n = g.vertices().size();
-			int[] shuffle = randPermutation(n, nextRandSeed());
+			int[] shuffle = randPermutation(n, seedGen.nextSeed());
 
 			Graph shuffledG = new GraphArrayUndirected(n);
 

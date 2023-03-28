@@ -11,11 +11,11 @@ import org.junit.jupiter.api.Assertions;
 
 import com.ugav.jgalgo.Graph;
 import com.ugav.jgalgo.MaxFlow;
-import com.ugav.jgalgo.Pair;
-import com.ugav.jgalgo.Weights;
 import com.ugav.jgalgo.MaxFlow.FlowEdgeDataDefault;
 import com.ugav.jgalgo.MaxFlow.FlowNetwork;
 import com.ugav.jgalgo.MaxFlow.FlowNetworkDefault;
+import com.ugav.jgalgo.Pair;
+import com.ugav.jgalgo.Weights;
 import com.ugav.jgalgo.test.GraphImplTestUtils.GraphImpl;
 import com.ugav.jgalgo.test.GraphsTestUtils.RandomGraphBuilder;
 
@@ -27,14 +27,15 @@ class MaxFlowTestUtils extends TestUtils {
 	private MaxFlowTestUtils() {
 	}
 
-	private static Pair<Graph, FlowNetwork> randNetwork(int n, int m, GraphImpl graphImpl) {
-		Graph g = new RandomGraphBuilder().n(n).m(m).directed(true).doubleEdges(false).selfEdges(false).cycles(true)
-				.connected(false).graphImpl(graphImpl).build();
+	private static Pair<Graph, FlowNetwork> randNetwork(int n, int m, GraphImpl graphImpl, long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).doubleEdges(false)
+				.selfEdges(false).cycles(true).connected(false).graphImpl(graphImpl).build();
 
 		final double minGap = 0.001;
 		NavigableSet<Double> usedCaps = new TreeSet<>();
 
-		Random rand = new Random(nextRandSeed());
+		Random rand = new Random(seedGen.nextSeed());
 		Weights<FlowEdgeDataDefault> data = g.addEdgesWeight("flowData").ofObjs();
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
@@ -57,19 +58,19 @@ class MaxFlowTestUtils extends TestUtils {
 		return Pair.of(g, new FlowNetworkDefault(data));
 	}
 
-	static void testRandGraphs(Supplier<? extends MaxFlow> builder) {
-		testRandGraphs(builder, GraphImplTestUtils.GRAPH_IMPL_DEFAULT);
+	static void testRandGraphs(Supplier<? extends MaxFlow> builder, long seed) {
+		testRandGraphs(builder, GraphImplTestUtils.GRAPH_IMPL_DEFAULT, seed);
 	}
 
-	static void testRandGraphs(Supplier<? extends MaxFlow> builder, GraphImpl graphImpl) {
-		Random rand = new Random(nextRandSeed());
+	static void testRandGraphs(Supplier<? extends MaxFlow> builder, GraphImpl graphImpl, long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		Random rand = new Random(seedGen.nextSeed());
 		List<Phase> phases = List.of(phase(1024, 6, 6), phase(128, 16, 16), phase(128, 16, 32), phase(64, 64, 64),
 				phase(64, 64, 128), phase(8, 512, 512), phase(4, 512, 1324), phase(1, 1025, 2016),
 				phase(1, 3246, 5612));
 		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0];
-			int m = args[1];
-			Pair<Graph, FlowNetwork> p = randNetwork(n, m, graphImpl);
+			int n = args[0], m = args[1];
+			Pair<Graph, FlowNetwork> p = randNetwork(n, m, graphImpl, seedGen.nextSeed());
 			Graph g = p.e1;
 			FlowNetwork net = p.e2;
 			int source, target;

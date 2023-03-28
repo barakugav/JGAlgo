@@ -8,17 +8,21 @@ public class MatchingWeightedBipartiteHungarianMethodTest extends TestUtils {
 
 	@Test
 	public void testRandBipartiteGraphsWeight1() {
-		MatchingBipartiteTestUtils.randBipartiteGraphs(MatchingWeightedBipartiteHungarianMethod::new);
+		final long seed = 0x10dff70f8efc00f1L;
+		MatchingBipartiteTestUtils.randBipartiteGraphs(MatchingWeightedBipartiteHungarianMethod::new, seed);
 	}
 
 	@Test
 	public void testRandBipartiteGraphsWeighted() {
-		MatchingWeightedTestUtils.randGraphsBipartiteWeighted(MatchingWeightedBipartiteHungarianMethod::new);
+		final long seed = 0x3f731f291383dd24L;
+		MatchingWeightedTestUtils.randGraphsBipartiteWeighted(MatchingWeightedBipartiteHungarianMethod::new, seed);
 	}
 
 	@Test
 	public void testRandBipartiteGraphsWeightedPerfect() {
-		MatchingWeightedTestUtils.randBipartiteGraphsWeightedPerfect(MatchingWeightedBipartiteHungarianMethod::new);
+		final long seed = 0x3b7892e59492d431L;
+		MatchingWeightedTestUtils.randBipartiteGraphsWeightedPerfect(MatchingWeightedBipartiteHungarianMethod::new,
+				seed);
 	}
 
 }

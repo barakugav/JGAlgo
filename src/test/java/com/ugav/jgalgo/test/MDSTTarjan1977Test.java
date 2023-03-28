@@ -56,28 +56,30 @@ public class MDSTTarjan1977Test extends TestUtils {
 
 	@Test
 	public void testRandGraphUndirected() {
-		MSTTestUtils.testRandGraph(() -> new MDSTUndirectedWrapper(new MDSTTarjan1977()));
+		final long seed = 0x9234356819f0ea1dL;
+		MSTTestUtils.testRandGraph(() -> new MDSTUndirectedWrapper(new MDSTTarjan1977()), seed);
 	}
 
 	@Test
 	public void testRandGraphDirected() {
-		testRandGraph(MDSTTarjan1977::new);
+		final long seed = 0xdb81d5dd5fe0d5b3L;
+		testRandGraph(MDSTTarjan1977::new, seed);
 	}
 
-	private static void testRandGraph(Supplier<? extends MDST> builder) {
-		testRandGraph(builder, GraphImplTestUtils.GRAPH_IMPL_DEFAULT);
+	private static void testRandGraph(Supplier<? extends MDST> builder, long seed) {
+		testRandGraph(builder, GraphImplTestUtils.GRAPH_IMPL_DEFAULT, seed);
 	}
 
-	static void testRandGraph(Supplier<? extends MDST> builder, GraphImpl graphImpl) {
+	static void testRandGraph(Supplier<? extends MDST> builder, GraphImpl graphImpl, long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(1, 0, 0), phase(256, 6, 5), phase(128, 16, 32), phase(64, 64, 128),
 				phase(32, 128, 256), phase(8, 1024, 4096), phase(2, 4096, 16384));
 		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0];
-			int m = args[1];
+			int n = args[0], m = args[1];
 
-			Graph g = new RandomGraphBuilder().n(n).m(m).directed(true).doubleEdges(false).selfEdges(false).cycles(true)
-					.connected(false).graphImpl(graphImpl).build();
-			GraphsTestUtils.assignRandWeightsIntPos(g);
+			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).doubleEdges(false)
+					.selfEdges(false).cycles(true).connected(false).graphImpl(graphImpl).build();
+			GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			EdgeWeightFunc w = g.edgesWeight("weight");
 
 			MDST algo = builder.get();

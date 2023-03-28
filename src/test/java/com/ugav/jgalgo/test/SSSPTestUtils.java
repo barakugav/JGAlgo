@@ -23,24 +23,24 @@ public class SSSPTestUtils extends TestUtils {
 	private SSSPTestUtils() {
 	}
 
-	public static void testSSSPDirectedPositiveInt(Supplier<? extends SSSP> builder) {
-		testSSSPPositiveInt(builder, true);
+	public static void testSSSPDirectedPositiveInt(Supplier<? extends SSSP> builder, long seed) {
+		testSSSPPositiveInt(builder, true, seed);
 	}
 
-	public static void testSSSPUndirectedPositiveInt(Supplier<? extends SSSP> builder) {
-		testSSSPPositiveInt(builder, false);
+	public static void testSSSPUndirectedPositiveInt(Supplier<? extends SSSP> builder, long seed) {
+		testSSSPPositiveInt(builder, false, seed);
 	}
 
-	private static void testSSSPPositiveInt(Supplier<? extends SSSP> builder, boolean directed) {
-		Random rand = new Random(nextRandSeed());
+	private static void testSSSPPositiveInt(Supplier<? extends SSSP> builder, boolean directed, long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		Random rand = new Random(seedGen.nextSeed());
 		List<Phase> phases = List.of(phase(128, 16, 32), phase(64, 64, 256), phase(8, 512, 4096),
 				phase(1, 4096, 16384));
 		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0];
-			int m = args[1];
-			Graph g = new RandomGraphBuilder().n(n).m(m).directed(directed).doubleEdges(true).selfEdges(true)
-					.cycles(true).connected(false).build();
-			GraphsTestUtils.assignRandWeightsIntPos(g);
+			int n = args[0], m = args[1];
+			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).doubleEdges(true)
+					.selfEdges(true).cycles(true).connected(false).build();
+			GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			EdgeWeightFunc.Int w = g.edgesWeight("weight");
 			int source = rand.nextInt(g.vertices().size());
 
@@ -52,15 +52,15 @@ public class SSSPTestUtils extends TestUtils {
 		});
 	}
 
-	static void testSSSPDirectedNegativeInt(Supplier<? extends SSSP> builder) {
+	static void testSSSPDirectedNegativeInt(Supplier<? extends SSSP> builder, long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(512, 4, 4), phase(128, 16, 32), phase(64, 64, 256), phase(8, 512, 4096),
 				phase(2, 1024, 4096));
 		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0];
-			int m = args[1];
-			Graph g = new RandomGraphBuilder().n(n).m(m).directed(true).doubleEdges(true).selfEdges(true).cycles(true)
-					.connected(true).build();
-			GraphsTestUtils.assignRandWeightsIntNeg(g);
+			int n = args[0], m = args[1];
+			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).doubleEdges(true)
+					.selfEdges(true).cycles(true).connected(true).build();
+			GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
 			EdgeWeightFunc.Int w = g.edgesWeight("weight");
 			int source = 0;
 

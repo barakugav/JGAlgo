@@ -8,7 +8,8 @@ public class UnionFindArrayTest extends TestUtils {
 
 	@Test
 	public void testRandOps() {
-		UnionFindTestUtils.randOps(UnionFindArray::new);
+		final long seed = 0x5d5d96d3d0365da7L;
+		UnionFindTestUtils.randOps(UnionFindArray::new, seed);
 	}
 
 }

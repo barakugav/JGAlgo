@@ -8,32 +8,38 @@ public class MatchingWeightedGabow2017Test extends TestUtils {
 
 	@Test
 	public void testRandBipartiteGraphsWeight1() {
-		MatchingBipartiteTestUtils.randBipartiteGraphs(MatchingWeightedGabow2017::new);
+		final long seed = 0x2ab1588bd0eb62b2L;
+		MatchingBipartiteTestUtils.randBipartiteGraphs(MatchingWeightedGabow2017::new, seed);
 	}
 
 	@Test
 	public void testRandBipartiteGraphsWeighted() {
-		MatchingWeightedTestUtils.randGraphsBipartiteWeighted(MatchingWeightedGabow2017::new);
+		final long seed = 0xbffb50ae18bf664cL;
+		MatchingWeightedTestUtils.randGraphsBipartiteWeighted(MatchingWeightedGabow2017::new, seed);
 	}
 
 	@Test
 	public void testRandBipartiteGraphsWeightedPerfect() {
-		MatchingWeightedTestUtils.randBipartiteGraphsWeightedPerfect(MatchingWeightedGabow2017::new);
+		final long seed = 0xf5c0a210842d9f5eL;
+		MatchingWeightedTestUtils.randBipartiteGraphsWeightedPerfect(MatchingWeightedGabow2017::new, seed);
 	}
 
 	@Test
 	public void testRandGraphsWeight1() {
-		MatchingUnweightedTestUtils.randGraphs(MatchingWeightedGabow2017::new);
+		final long seed = 0x67ead1b9c6600229L;
+		MatchingUnweightedTestUtils.randGraphs(MatchingWeightedGabow2017::new, seed);
 	}
 
 	@Test
 	public void testRandGraphsWeighted() {
-		MatchingWeightedTestUtils.randGraphsWeighted(MatchingWeightedGabow2017::new);
+		final long seed = 0x33a1793a0388c73bL;
+		MatchingWeightedTestUtils.randGraphsWeighted(MatchingWeightedGabow2017::new, seed);
 	}
 
 	@Test
 	public void testRandGraphsWeightedPerfect() {
-		MatchingWeightedTestUtils.randGraphsWeightedPerfect(MatchingWeightedGabow2017::new);
+		final long seed = 0x625606329a1eb13cL;
+		MatchingWeightedTestUtils.randGraphsWeightedPerfect(MatchingWeightedGabow2017::new, seed);
 	}
 
 }

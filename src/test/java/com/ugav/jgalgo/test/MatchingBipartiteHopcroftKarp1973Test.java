@@ -8,7 +8,8 @@ public class MatchingBipartiteHopcroftKarp1973Test extends TestUtils {
 
 	@Test
 	public void testRandBipartiteGraphs() {
-		MatchingBipartiteTestUtils.randBipartiteGraphs(MatchingBipartiteHopcroftKarp1973::new);
+		final long seed = 0x16f0491558fa62f8L;
+		MatchingBipartiteTestUtils.randBipartiteGraphs(MatchingBipartiteHopcroftKarp1973::new, seed);
 	}
 
 }

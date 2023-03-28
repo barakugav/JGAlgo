@@ -8,7 +8,8 @@ public class UnionFindPtrTest extends TestUtils {
 
 	@Test
 	public void testRandOps() {
-		UnionFindTestUtils.randOps(UnionFindPtr::new);
+		final long seed = 0xbdaf148b7ef9991cL;
+		UnionFindTestUtils.randOps(UnionFindPtr::new, seed);
 	}
 
 }

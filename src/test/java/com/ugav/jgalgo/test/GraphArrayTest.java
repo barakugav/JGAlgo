@@ -60,32 +60,38 @@ public class GraphArrayTest extends TestUtils {
 
 	@Test
 	public void testUndirectedMST() {
-		GraphImplTestUtils.testUndirectedMST(graphImpl());
+		final long seed = 0x6519a3d6cfdcaa15L;
+		GraphImplTestUtils.testUndirectedMST(graphImpl(), seed);
 	}
 
 	@Test
 	public void testDirectedMDST() {
-		GraphImplTestUtils.testDirectedMDST(graphImpl());
+		final long seed = 0x93159a7004fabaabL;
+		GraphImplTestUtils.testDirectedMDST(graphImpl(), seed);
 	}
 
 	@Test
 	public void testDirectedMaxFlow() {
-		GraphImplTestUtils.testDirectedMaxFlow(graphImpl());
+		final long seed = 0xb3bd816cf5395102L;
+		GraphImplTestUtils.testDirectedMaxFlow(graphImpl(), seed);
 	}
 
 	@Test
 	public void testUndirectedBipartiteMatching() {
-		GraphImplTestUtils.testUndirectedBipartiteMatching(graphImpl());
+		final long seed = 0x40f90cfba5f21f7cL;
+		GraphImplTestUtils.testUndirectedBipartiteMatching(graphImpl(), seed);
 	}
 
 	@Test
 	public void testUndirectedBipartiteMatchingWeighted() {
-		GraphImplTestUtils.testUndirectedBipartiteMatchingWeighted(graphImpl());
+		final long seed = 0x6a1920e2c7e46291L;
+		GraphImplTestUtils.testUndirectedBipartiteMatchingWeighted(graphImpl(), seed);
 	}
 
 	@Test
 	public void testUndirectedRandOps() {
-		GraphImplTestUtils.testUndirectedRandOps(graphImpl());
+		final long seed = 0xb49ae602bf9f9896L;
+		GraphImplTestUtils.testUndirectedRandOps(graphImpl(), seed);
 	}
 
 }

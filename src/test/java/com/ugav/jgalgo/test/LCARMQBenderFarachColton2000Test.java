@@ -14,8 +14,8 @@ import com.ugav.jgalgo.LCAStatic;
 
 public class LCARMQBenderFarachColton2000Test extends TestUtils {
 
-	private static int[][] randLCAQueries(Graph g, int r, int queriesNum) {
-		Random rand = new Random(nextRandSeed());
+	private static int[][] randLCAQueries(Graph g, int r, int queriesNum, long seed) {
+		Random rand = new Random(seed);
 		int[][] queries = new int[queriesNum][3];
 
 		int n = g.vertices().size();
@@ -80,13 +80,14 @@ public class LCARMQBenderFarachColton2000Test extends TestUtils {
 
 	@Test
 	public void testRandTrees() {
+		final long seed = 0x16f0491558fa62f8L;
+		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(128, 16, 16), phase(64, 64, 64), phase(16, 512, 512), phase(4, 4096, 4096),
 				phase(1, 16384, 16384));
 		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0];
-			int m = args[1];
-			Graph g = GraphsTestUtils.randTree(n);
-			int[][] queries = randLCAQueries(g, 0, m);
+			int n = args[0], m = args[1];
+			Graph g = GraphsTestUtils.randTree(n, seedGen.nextSeed());
+			int[][] queries = randLCAQueries(g, 0, m, seedGen.nextSeed());
 			testLCA(g, LCARMQBenderFarachColton2000::new, queries);
 		});
 	}

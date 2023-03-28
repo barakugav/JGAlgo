@@ -15,15 +15,18 @@ import com.ugav.jgalgo.MSTKruskal1956;
 import com.ugav.jgalgo.MSTPrim1957;
 import com.ugav.jgalgo.MSTYao1976;
 import com.ugav.jgalgo.test.GraphsTestUtils;
+import com.ugav.jgalgo.test.TestUtils.SeedGenerator;
 
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
 public class MSTBench {
 
 	private static void benchMST(Supplier<? extends MST> builder, Blackhole blackhole) {
+		final long seed = 0xe75b8a2fb16463ecL;
+		final SeedGenerator seedGen = new SeedGenerator(seed);
 		int n = 128, m = 256;
-		Graph g = GraphsTestUtils.randGraph(n, m);
-		GraphsTestUtils.assignRandWeightsIntPos(g);
+		Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
+		GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 		EdgeWeightFunc.Int w = g.edgesWeight("weight");
 
 		MST algo = builder.get();

@@ -8,12 +8,14 @@ public class MatchingGabow1976Test extends TestUtils {
 
 	@Test
 	public void testRandBipartiteGraphs() {
-		MatchingBipartiteTestUtils.randBipartiteGraphs(MatchingGabow1976::new);
+		final long seed = 0x915c26f5de8fd97aL;
+		MatchingBipartiteTestUtils.randBipartiteGraphs(MatchingGabow1976::new, seed);
 	}
 
 	@Test
 	public void testRandGraphs() {
-		MatchingUnweightedTestUtils.randGraphs(MatchingGabow1976::new);
+		final long seed = 0x6809f5efef8504e9L;
+		MatchingUnweightedTestUtils.randGraphs(MatchingGabow1976::new, seed);
 	}
 
 }

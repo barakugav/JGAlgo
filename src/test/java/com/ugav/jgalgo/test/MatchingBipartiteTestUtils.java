@@ -24,8 +24,8 @@ class MatchingBipartiteTestUtils extends TestUtils {
 	private MatchingBipartiteTestUtils() {
 	}
 
-	static Graph randGraphBipartite(int sn, int tn, int m, GraphImpl graphImpl) {
-		return new RandomGraphBuilder().sn(sn).tn(tn).m(m).directed(false).bipartite(true).doubleEdges(false)
+	static Graph randGraphBipartite(int sn, int tn, int m, GraphImpl graphImpl, long seed) {
+		return new RandomGraphBuilder(seed).sn(sn).tn(tn).m(m).directed(false).bipartite(true).doubleEdges(false)
 				.selfEdges(false).cycles(true).connected(false).graphImpl(graphImpl).build();
 	}
 
@@ -48,18 +48,19 @@ class MatchingBipartiteTestUtils extends TestUtils {
 		return g;
 	}
 
-	static void randBipartiteGraphs(Supplier<? extends Matching> builder) {
-		randBipartiteGraphs(builder, GraphImplTestUtils.GRAPH_IMPL_DEFAULT);
+	static void randBipartiteGraphs(Supplier<? extends Matching> builder, long seed) {
+		randBipartiteGraphs(builder, GraphImplTestUtils.GRAPH_IMPL_DEFAULT, seed);
 	}
 
-	static void randBipartiteGraphs(Supplier<? extends Matching> builder, GraphImpl graphImpl) {
+	static void randBipartiteGraphs(Supplier<? extends Matching> builder, GraphImpl graphImpl, long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(256, 4, 4, 4), phase(128, 16, 16, 64), phase(16, 128, 128, 128),
 				phase(16, 128, 128, 512), phase(2, 1024, 1024, 1024), phase(1, 1024, 1024, 5467));
 		runTestMultiple(phases, (testIter, args) -> {
 			int sn = args[0];
 			int tn = args[1];
 			int m = args[2];
-			Graph g = randGraphBipartite(sn, tn, m, graphImpl);
+			Graph g = randGraphBipartite(sn, tn, m, graphImpl, seedGen.nextSeed());
 
 			Matching algo = builder.get();
 			int expeced = calcExpectedMaxMatching(g);

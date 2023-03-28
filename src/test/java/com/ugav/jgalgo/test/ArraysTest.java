@@ -12,28 +12,30 @@ public class ArraysTest extends TestUtils {
 
 	@Test
 	public void testGetKthElementRandArrayUnique() {
+		final SeedGenerator seedGen = new SeedGenerator(0xedf92ed1b59ae1e1L);
 		List<Phase> phases = List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 1024),
 				phase(2, 4096));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
-			int[] a = randPermutation(n, nextRandSeed());
-			testGetKthElement(a);
+			int[] a = randPermutation(n, seedGen.nextSeed());
+			testGetKthElement(a, seedGen.nextSeed());
 		});
 	}
 
 	@Test
 	public void testGetKthElementRandArrayNonunique() {
+		final SeedGenerator seedGen = new SeedGenerator(0x97e45458f8daefd2L);
 		List<Phase> phases = List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 1024),
 				phase(2, 4096));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
-			int[] a = randArray(n, 0, n / 4, nextRandSeed());
-			testGetKthElement(a);
+			int[] a = randArray(n, 0, n / 4, seedGen.nextSeed());
+			testGetKthElement(a, seedGen.nextSeed());
 		});
 	}
 
-	private static void testGetKthElement(int[] a) {
-		Random rand = new Random(nextRandSeed());
+	private static void testGetKthElement(int[] a, long seed) {
+		Random rand = new Random(seed);
 
 		Integer[] A = toIntegerArr(a);
 		int k = rand.nextInt(A.length);
@@ -47,12 +49,13 @@ public class ArraysTest extends TestUtils {
 
 	@Test
 	public void testBucketPartition() {
-		Random rand = new Random(nextRandSeed());
+		final SeedGenerator seedGen = new SeedGenerator(0x90fc97e52265ff44L);
+		Random rand = new Random(seedGen.nextSeed());
 		List<Phase> phases = List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 1024),
 				phase(2, 4096));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
-			int[] a = randArray(n, 0, n / 4, nextRandSeed());
+			int[] a = randArray(n, 0, n / 4, seedGen.nextSeed());
 			Integer[] A = toIntegerArr(a);
 			int bucketSize = rand.nextInt(n / 2) + 1;
 			Array.Obj.bucketPartition(A, 0, n, null, bucketSize);

@@ -23,6 +23,7 @@ public class GraphsTestUtils extends TestUtils {
 
 	public static class RandomGraphBuilder {
 
+		private final SeedGenerator seedGen;
 		private int n;
 		private int sn;
 		private int tn;
@@ -35,7 +36,8 @@ public class GraphsTestUtils extends TestUtils {
 		private boolean connected;
 		private GraphImpl impl = GraphImplTestUtils.GRAPH_IMPL_DEFAULT;
 
-		public RandomGraphBuilder() {
+		public RandomGraphBuilder(long seed) {
+			seedGen = new SeedGenerator(seed);
 			n = sn = tn = m = 0;
 			bipartite = false;
 			doubleEdges = false;
@@ -137,7 +139,7 @@ public class GraphsTestUtils extends TestUtils {
 			Set<Pair<Integer, Integer>> existingEdges = new HashSet<>();
 			UnionFind uf = new UnionFindArray(n);
 			int componentsNum = n;
-			Random rand = new Random(nextRandSeed());
+			Random rand = new Random(seedGen.nextSeed());
 			boolean[] reachableFromRoot = new boolean[n];
 			reachableFromRoot[0] = true;
 			int reachableFromRootCount = 1;
@@ -233,25 +235,25 @@ public class GraphsTestUtils extends TestUtils {
 
 	}
 
-	static UGraph randTree(int n) {
-		return (UGraph) new RandomGraphBuilder().n(n).m(n - 1).directed(false).selfEdges(false).cycles(false)
+	static UGraph randTree(int n, long seed) {
+		return (UGraph) new RandomGraphBuilder(seed).n(n).m(n - 1).directed(false).selfEdges(false).cycles(false)
 				.connected(true).build();
 	}
 
-	static UGraph randForest(int n, int m) {
-		return (UGraph) new RandomGraphBuilder().n(n).m(m).directed(false).selfEdges(false).cycles(false)
+	static UGraph randForest(int n, int m, long seed) {
+		return (UGraph) new RandomGraphBuilder(seed).n(n).m(m).directed(false).selfEdges(false).cycles(false)
 				.connected(false).build();
 	}
 
-	static void assignRandWeights(Graph g) {
-		assignRandWeights(g, 1.0, 100.0);
+	static void assignRandWeights(Graph g, long seed) {
+		assignRandWeights(g, 1.0, 100.0, seed);
 	}
 
-	static void assignRandWeights(Graph g, double minWeight, double maxWeight) {
+	static void assignRandWeights(Graph g, double minWeight, double maxWeight, long seed) {
 		if (minWeight >= maxWeight)
 			throw new IllegalArgumentException();
 
-		Random rand = new Random(nextRandSeed());
+		Random rand = new Random(seed);
 		Weights.Double weight = g.addEdgesWeight("weight").ofDoubles();
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
@@ -259,26 +261,26 @@ public class GraphsTestUtils extends TestUtils {
 		}
 	}
 
-	public static void assignRandWeightsIntPos(Graph g) {
+	public static void assignRandWeightsIntPos(Graph g, long seed) {
 		int m = g.edges().size();
 		int minWeight = 1;
 		int maxWeight = m < 50 ? 100 : m * 2 + 2;
-		assignRandWeightsInt(g, minWeight, maxWeight);
+		assignRandWeightsInt(g, minWeight, maxWeight, seed);
 	}
 
-	static void assignRandWeightsIntNeg(Graph g) {
+	static void assignRandWeightsIntNeg(Graph g, long seed) {
 		int m = g.edges().size();
 		int maxWeight = m < 50 ? 100 : m * 2 + 2;
-		assignRandWeightsInt(g, -maxWeight / 8, maxWeight);
+		assignRandWeightsInt(g, -maxWeight / 8, maxWeight, seed);
 	}
 
-	static void assignRandWeightsInt(Graph g, int minWeight, int maxWeight) {
+	static void assignRandWeightsInt(Graph g, int minWeight, int maxWeight, long seed) {
 		if (minWeight >= maxWeight)
 			throw new IllegalArgumentException();
 		if (maxWeight - minWeight < g.edges().size() / 2)
 			throw new IllegalArgumentException("weight range is too small for unique weights");
 
-		RandomIntUnique rand = new RandomIntUnique(minWeight, maxWeight, nextRandSeed());
+		RandomIntUnique rand = new RandomIntUnique(minWeight, maxWeight, seed);
 		Weights.Int weight = g.addEdgesWeight("weight").ofInts();
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
@@ -286,12 +288,12 @@ public class GraphsTestUtils extends TestUtils {
 		}
 	}
 
-	public static Graph randGraph(int n, int m) {
-		return randGraph(n, m, GraphImplTestUtils.GRAPH_IMPL_DEFAULT);
+	public static Graph randGraph(int n, int m, long seed) {
+		return randGraph(n, m, GraphImplTestUtils.GRAPH_IMPL_DEFAULT, seed);
 	}
 
-	static UGraph randGraph(int n, int m, GraphImpl graphImpl) {
-		return (UGraph) new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(false).selfEdges(false)
+	static UGraph randGraph(int n, int m, GraphImpl graphImpl, long seed) {
+		return (UGraph) new RandomGraphBuilder(seed).n(n).m(m).directed(false).doubleEdges(false).selfEdges(false)
 				.cycles(true).connected(false).build();
 	}
 

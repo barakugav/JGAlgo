@@ -13,22 +13,24 @@ public class UnionFindValueArrayTest extends TestUtils {
 
 	@Test
 	public void testRandRegularUFOps() {
-		UnionFindTestUtils.randOps(UnionFindValueArray::new);
+		final long seed = 0x8b1924e294905671L;
+		UnionFindTestUtils.randOps(UnionFindValueArray::new, seed);
 	}
 
 	@Test
 	public void testRandOps() {
+		final long seed = 0x8c06f8977b257d8cL;
+		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(256, 8, 16), phase(64, 64, 256), phase(16, 1024, 2048),
 				phase(2, 8096, 16384));
 		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0];
-			int m = args[1];
-			randOps(n, m);
+			int n = args[0], m = args[1];
+			randOps(n, m, seedGen.nextSeed());
 		});
 	}
 
-	private static void randOps(int n, int m) {
-		Random rand = new Random(nextRandSeed());
+	private static void randOps(int n, int m, long seed) {
+		Random rand = new Random(seed);
 
 		UnionFindValue uf = new UnionFindValueArray();
 		int[] set = new int[n];

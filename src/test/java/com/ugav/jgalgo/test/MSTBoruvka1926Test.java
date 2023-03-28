@@ -8,7 +8,8 @@ public class MSTBoruvka1926Test extends TestUtils {
 
 	@Test
 	public void testRandGraph() {
-		MSTTestUtils.testRandGraph(MSTBoruvka1926::new);
+		final long seed = 0x9bb8032ff5628f22L;
+		MSTTestUtils.testRandGraph(MSTBoruvka1926::new, seed);
 	}
 
 }

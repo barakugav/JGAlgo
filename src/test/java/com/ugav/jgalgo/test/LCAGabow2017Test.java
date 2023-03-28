@@ -8,12 +8,14 @@ public class LCAGabow2017Test extends TestUtils {
 
 	@Test
 	public void testFullBinaryTreesRandOps() {
-		LCADynamicTestUtils.fullBinaryTreesRandOps(LCAGabow2017::new);
+		final long seed = 0xe7af3a14bd2eb884L;
+		LCADynamicTestUtils.fullBinaryTreesRandOps(LCAGabow2017::new, seed);
 	}
 
 	@Test
 	public void testRandTrees() {
-		LCADynamicTestUtils.randTrees(LCAGabow2017::new);
+		final long seed = 0xae1b6bdbf6cd69dcL;
+		LCADynamicTestUtils.randTrees(LCAGabow2017::new, seed);
 	}
 
 }

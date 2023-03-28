@@ -8,7 +8,8 @@ public class MSTYao1976Test extends TestUtils {
 
 	@Test
 	public void testRandGraph() {
-		MSTTestUtils.testRandGraph(MSTYao1976::new);
+		final long seed = 0x9d78f3343689fe2dL;
+		MSTTestUtils.testRandGraph(MSTYao1976::new, seed);
 	}
 
 }

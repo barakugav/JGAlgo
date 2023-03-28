@@ -16,39 +16,40 @@ class LCADynamicTestUtils extends TestUtils {
 	private LCADynamicTestUtils() {
 	}
 
-	static void fullBinaryTreesRandOps(Supplier<? extends LCADynamic<Integer>> builder) {
+	static void fullBinaryTreesRandOps(Supplier<? extends LCADynamic<Integer>> builder, long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(128, 16, 16), phase(128, 16, 32), phase(64, 64, 64), phase(64, 64, 128),
 				phase(8, 512, 512), phase(8, 512, 2048), phase(1, 4096, 4096), phase(1, 4096, 16384));
 		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0];
-			int m = args[1];
-			Collection<Op> ops = generateRandOpsOnFullBinaryTree(n, m);
+			int n = args[0], m = args[1];
+			Collection<Op> ops = generateRandOpsOnFullBinaryTree(n, m, seedGen.nextSeed());
 			testLCA(builder, n, ops);
 		});
 	}
 
-	static void randTrees(Supplier<? extends LCADynamic<Integer>> builder) {
+	static void randTrees(Supplier<? extends LCADynamic<Integer>> builder, long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(128, 16, 16), phase(128, 16, 32), phase(64, 64, 64), phase(64, 64, 128),
 				phase(8, 512, 512), phase(8, 512, 2048), phase(1, 4096, 4096), phase(1, 4096, 16384));
 		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0];
-			int m = args[1];
-			Collection<Op> ops = generateRandOps(n, m);
+			int n = args[0], m = args[1];
+			Collection<Op> ops = generateRandOps(n, m, seedGen.nextSeed());
 			testLCA(builder, n, ops);
 		});
 	}
 
-	static Collection<Op> generateRandOpsOnFullBinaryTree(int n, int m) {
+	static Collection<Op> generateRandOpsOnFullBinaryTree(int n, int m, long seed) {
 		if (n < 2)
 			throw new IllegalArgumentException();
-		Random rand = new Random(nextRandSeed());
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		Random rand = new Random(seedGen.nextSeed());
 
 		final int addLeafOp = 0;
 		final int lcaOp = 1;
 		int[] opsOrder = new int[n - 2 + m];
 		Arrays.fill(opsOrder, 0, n - 2, addLeafOp);
 		Arrays.fill(opsOrder, n - 2, n - 2 + m, lcaOp);
-		opsOrder = suffle(opsOrder, nextRandSeed());
+		opsOrder = suffle(opsOrder, seedGen.nextSeed());
 
 		List<Op> ops = new ArrayList<>();
 		int nodesCount = 0;
@@ -80,17 +81,18 @@ class LCADynamicTestUtils extends TestUtils {
 		return ops;
 	}
 
-	static Collection<Op> generateRandOps(int n, int m) {
+	static Collection<Op> generateRandOps(int n, int m, long seed) {
 		if (n < 2)
 			throw new IllegalArgumentException();
-		Random rand = new Random(nextRandSeed());
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		Random rand = new Random(seedGen.nextSeed());
 
 		final int addLeafOp = 0;
 		final int lcaOp = 1;
 		int[] opsOrder = new int[n - 2 + m];
 		Arrays.fill(opsOrder, 0, n - 2, addLeafOp);
 		Arrays.fill(opsOrder, n - 2, n - 2 + m, lcaOp);
-		opsOrder = suffle(opsOrder, nextRandSeed());
+		opsOrder = suffle(opsOrder, seedGen.nextSeed());
 
 		List<Op> ops = new ArrayList<>();
 		int nodesCount = 0;

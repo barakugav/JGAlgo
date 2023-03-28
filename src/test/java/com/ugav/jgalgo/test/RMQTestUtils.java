@@ -13,14 +13,14 @@ class RMQTestUtils extends TestUtils {
 	private RMQTestUtils() {
 	}
 
-	static void testRMQ65536(Supplier<? extends RMQ> builder) {
-		testRMQ(builder, 65536, 4096);
+	static void testRMQ65536(Supplier<? extends RMQ> builder, long seed) {
+		testRMQ(builder, 65536, 4096, seed);
 	}
 
-	static void testRMQ(Supplier<? extends RMQ> builder, int n, int queriesNum) {
+	static void testRMQ(Supplier<? extends RMQ> builder, int n, int queriesNum, long seed) {
 		int[] a = new int[n];
 		int[][] queries = new int[queriesNum][];
-		randRMQDataAndQueries(a, queries);
+		randRMQDataAndQueries(a, queries, seed);
 
 		testRMQ(builder, a, queries);
 	}
@@ -48,15 +48,15 @@ class RMQTestUtils extends TestUtils {
 		}
 	}
 
-	static void randRMQDataPlusMinusOne(int a[]) {
-		Random rand = new Random(nextRandSeed());
+	static void randRMQDataPlusMinusOne(int a[], long seed) {
+		Random rand = new Random(seed);
 		a[0] = 0;
 		for (int i = 1; i < a.length; i++)
 			a[i] = a[i - 1] + rand.nextInt(2) * 2 - 1;
 	}
 
-	static void randRMQQueries(int a[], int[][] queries, int blockSize) {
-		Random rand = new Random(nextRandSeed());
+	static void randRMQQueries(int a[], int[][] queries, int blockSize, long seed) {
+		Random rand = new Random(seed);
 		for (int q = 0; q < queries.length;) {
 			int i = rand.nextInt(a.length);
 			if (i % blockSize == blockSize - 1)
@@ -74,13 +74,14 @@ class RMQTestUtils extends TestUtils {
 
 	}
 
-	static void randRMQDataAndQueries(int a[], int[][] queries) {
-		randRMQDataAndQueries(a, queries, a.length);
+	static void randRMQDataAndQueries(int a[], int[][] queries, long seed) {
+		randRMQDataAndQueries(a, queries, a.length, seed);
 	}
 
-	static void randRMQDataAndQueries(int a[], int[][] queries, int blockSize) {
-		randArray(a, 0, 64, nextRandSeed());
-		randRMQQueries(a, queries, blockSize);
+	static void randRMQDataAndQueries(int a[], int[][] queries, int blockSize, long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		randArray(a, 0, 64, seedGen.nextSeed());
+		randRMQQueries(a, queries, blockSize, seedGen.nextSeed());
 	}
 
 	static CharSequence formatRMQDataAndQueries(int a[], int[][] queries) {

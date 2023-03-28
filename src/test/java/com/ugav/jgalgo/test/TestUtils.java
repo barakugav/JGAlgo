@@ -61,14 +61,6 @@ public class TestUtils {
 		}
 	}
 
-	static long nextRandSeed() {
-		return new Random().nextLong();// TODO
-//		Pair<Long, Random> generator = seedGenerators.get(getTestFullname());
-//		if (generator.e2 == null)
-//			generator.e2 = new Random(generator.e1.longValue() ^ 0x555bfc5796f83a2dL);
-//		return generator.e2.nextLong() ^ 0x3d61be24f3910c88L;
-	}
-
 	static boolean doubleEql(double a, double b, double precise) {
 		if (a < b)
 			return b - a < precise;
@@ -182,6 +174,18 @@ public class TestUtils {
 
 	static int nextInt(Random rand, int from, int to) {
 		return from + rand.nextInt(to - from);
+	}
+
+	public static class SeedGenerator {
+		private final Random rand;
+
+		public SeedGenerator(long seed) {
+			rand = new Random(seed ^ 0x9db7d6d04ce666aeL);
+		}
+
+		public long nextSeed() {
+			return rand.nextLong() ^ 0x1df73569991aee99L;
+		}
 	}
 
 }

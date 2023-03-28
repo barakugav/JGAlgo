@@ -8,7 +8,8 @@ public class MaxFlowEdmondsKarpTest extends TestUtils {
 
 	@Test
 	public void testRandGraphs() {
-		MaxFlowTestUtils.testRandGraphs(MaxFlowEdmondsKarp::new);
+		final long seed = 0x398eea4097bc0600L;
+		MaxFlowTestUtils.testRandGraphs(MaxFlowEdmondsKarp::new, seed);
 	}
 
 }

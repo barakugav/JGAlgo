@@ -59,8 +59,8 @@ class TPMTestUtils extends TestUtils {
 		return queries;
 	}
 
-	static int[] generateRandQueries(int n, int m) {
-		Random rand = new Random(nextRandSeed());
+	static int[] generateRandQueries(int n, int m, long seed) {
+		Random rand = new Random(seed);
 		int[] queries = new int[m * 2];
 		for (int q = 0; q < m; q++) {
 			queries[q * 2] = rand.nextInt(n);
@@ -79,36 +79,39 @@ class TPMTestUtils extends TestUtils {
 		}
 	}
 
-	static void testTPM(Supplier<? extends TPM> builder) {
+	static void testTPM(Supplier<? extends TPM> builder, long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(64, 16), phase(32, 32), phase(16, 64), phase(8, 128), phase(4, 256),
 				phase(2, 512), phase(1, 2485), phase(1, 3254));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			TPM algo = builder.get();
-			testTPM(algo, n);
+			testTPM(algo, n, seedGen.nextSeed());
 		});
 	}
 
-	private static void testTPM(TPM algo, int n) {
-		Graph t = GraphsTestUtils.randTree(n);
-		GraphsTestUtils.assignRandWeightsIntPos(t);
+	private static void testTPM(TPM algo, int n, long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		Graph t = GraphsTestUtils.randTree(n, seedGen.nextSeed());
+		GraphsTestUtils.assignRandWeightsIntPos(t, seedGen.nextSeed());
 		EdgeWeightFunc.Int w = t.edgesWeight("weight");
 
-		int[] queries = n <= 64 ? generateAllPossibleQueries(n) : generateRandQueries(n, Math.min(n * 64, 8192));
+		int[] queries = n <= 64 ? generateAllPossibleQueries(n)
+				: generateRandQueries(n, Math.min(n * 64, 8192), seedGen.nextSeed());
 		int[] actual = algo.calcTPM(t, w, queries, queries.length / 2);
 		int[] expected = calcExpectedTPM(t, w, queries);
 		compareActualToExpectedResults(queries, actual, expected, w);
 	}
 
-	static void verifyMSTPositive(Supplier<? extends TPM> builder) {
+	static void verifyMSTPositive(Supplier<? extends TPM> builder, long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(256, 8, 16), phase(128, 16, 32), phase(64, 64, 128), phase(32, 128, 256),
 				phase(8, 2048, 4096), phase(2, 8192, 16384));
 		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0];
-			int m = args[1];
-			UGraph g = (UGraph) new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(true).selfEdges(false)
-					.cycles(true).connected(true).build();
-			GraphsTestUtils.assignRandWeightsIntPos(g);
+			int n = args[0], m = args[1];
+			UGraph g = (UGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).doubleEdges(true)
+					.selfEdges(false).cycles(true).connected(true).build();
+			GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			EdgeWeightFunc.Int w = g.edgesWeight("weight");
 			IntCollection mstEdges = new MSTKruskal1956().calcMST(g, w);
 
@@ -117,16 +120,16 @@ class TPMTestUtils extends TestUtils {
 		});
 	}
 
-	static void verifyMSTNegative(Supplier<? extends TPM> builder) {
+	static void verifyMSTNegative(Supplier<? extends TPM> builder, long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(256, 8, 16), phase(128, 16, 32), phase(64, 64, 128), phase(32, 128, 256),
 				phase(8, 2048, 4096), phase(2, 8192, 16384));
 		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0];
-			int m = args[1];
+			int n = args[0], m = args[1];
 
-			UGraph g = (UGraph) new RandomGraphBuilder().n(n).m(m).directed(false).doubleEdges(true).selfEdges(false)
-					.cycles(true).connected(true).build();
-			GraphsTestUtils.assignRandWeightsIntPos(g);
+			UGraph g = (UGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).doubleEdges(true)
+					.selfEdges(false).cycles(true).connected(true).build();
+			GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			EdgeWeightFunc.Int w = g.edgesWeight("weight");
 
 			IntCollection mstEdges = new MSTKruskal1956().calcMST(g, w);
@@ -139,7 +142,7 @@ class TPMTestUtils extends TestUtils {
 				edgeRef.set(e0, e);
 			}
 
-			Random rand = new Random(nextRandSeed());
+			Random rand = new Random(seedGen.nextSeed());
 			int[] edges = g.edges().toIntArray();
 			int e;
 			do {

@@ -51,22 +51,26 @@ public class GraphTableTest extends TestUtils {
 
 	@Test
 	public void testUndirectedMST() {
-		GraphImplTestUtils.testUndirectedMST(graphImpl());
+		final long seed = 0x63a396934a49021cL;
+		GraphImplTestUtils.testUndirectedMST(graphImpl(), seed);
 	}
 
 	@Test
 	public void testDirectedMDST() {
-		GraphImplTestUtils.testDirectedMDST(graphImpl());
+		final long seed = 0xcebe72e8015778c1L;
+		GraphImplTestUtils.testDirectedMDST(graphImpl(), seed);
 	}
 
 	@Test
 	public void testDirectedMaxFlow() {
-		GraphImplTestUtils.testDirectedMaxFlow(graphImpl());
+		final long seed = 0xe2e6e3d11dfaa9dfL;
+		GraphImplTestUtils.testDirectedMaxFlow(graphImpl(), seed);
 	}
 
 	@Test
 	public void testUndirectedRandOps() {
-		GraphImplTestUtils.testUndirectedRandOps(graphImpl());
+		final long seed = 0x2aee685276834043L;
+		GraphImplTestUtils.testUndirectedRandOps(graphImpl(), seed);
 	}
 
 }

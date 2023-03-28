@@ -21,61 +21,65 @@ class HeapTestUtils extends TestUtils {
 	private HeapTestUtils() {
 	}
 
-	static void testRandOps(Supplier<? extends Heap<Integer>> heapBuilder) {
+	static void testRandOps(Supplier<? extends Heap<Integer>> heapBuilder, long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(256, 16, 16), phase(128, 64, 128), phase(64, 512, 1024),
 				phase(16, 4096, 8096), phase(8, 16384, 32768));
 		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0];
-			int m = args[1];
+			int n = args[0], m = args[1];
 			Heap<Integer> heap = heapBuilder.get();
 
-			testHeap(heap, n, m, TestMode.Normal);
+			testHeap(heap, n, m, TestMode.Normal, seedGen.nextSeed());
 		});
 	}
 
-	static void testRandOpsAfterManyInserts(Supplier<? extends Heap<Integer>> heapBuilder) {
+	static void testRandOpsAfterManyInserts(Supplier<? extends Heap<Integer>> heapBuilder, long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(256, 16, 16), phase(128, 64, 128), phase(64, 512, 1024),
 				phase(16, 4096, 8096), phase(8, 16384, 32768));
 		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0];
-			int m = n;
+			int n = args[0], m = n;
 			Heap<Integer> heap = heapBuilder.get();
 
-			testHeap(heap, n, m, TestMode.InsertFirst);
+			testHeap(heap, n, m, TestMode.InsertFirst, seedGen.nextSeed());
 		});
 	}
 
-	static void testMeld(Supplier<? extends Heap<Integer>> heapBuilder) {
-		testMeld(heapBuilder, false);
+	static void testMeld(Supplier<? extends Heap<Integer>> heapBuilder, long seed) {
+		testMeld(heapBuilder, false, seed);
 	}
 
-	static void testMeldWithOrderedValues(Supplier<? extends Heap<Integer>> heapBuilder) {
-		testMeld(heapBuilder, true);
+	static void testMeldWithOrderedValues(Supplier<? extends Heap<Integer>> heapBuilder, long seed) {
+		testMeld(heapBuilder, true, seed);
 	}
 
-	private static void testMeld(Supplier<? extends Heap<Integer>> heapBuilder, boolean orderedValues) {
+	private static void testMeld(Supplier<? extends Heap<Integer>> heapBuilder, boolean orderedValues, long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(64, 16), phase(64, 32), phase(8, 256), phase(1, 2048));
 		runTestMultiple(phases, (testIter, args) -> {
 			int hCount = args[0];
-			testMeld(heapBuilder, orderedValues, hCount);
+			testMeld(heapBuilder, orderedValues, hCount, seedGen.nextSeed());
 		});
 	}
 
-	private static void testMeld(Supplier<? extends Heap<Integer>> heapBuilder, boolean orderedValues, int hCount) {
+	private static void testMeld(Supplier<? extends Heap<Integer>> heapBuilder, boolean orderedValues, int hCount,
+			long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Set<HeapTracker> heaps = new HashSet<>();
-		HeapTrackerIdGenerator heapTrackerIdGen = new HeapTrackerIdGenerator(nextRandSeed());
+		HeapTrackerIdGenerator heapTrackerIdGen = new HeapTrackerIdGenerator(seedGen.nextSeed());
 
 		int elm = 0;
 		for (int i = 0; i < hCount; i++) {
-			HeapTracker h = new HeapTracker(heapBuilder.get(), heapTrackerIdGen.nextId());
+			HeapTracker h = new HeapTracker(heapBuilder.get(), heapTrackerIdGen.nextId(), seedGen.nextSeed());
 			heaps.add(h);
 			if (!orderedValues) {
-				testHeap(h, 16, 16, TestMode.InsertFirst, Math.max(16, (int) Math.sqrt(hCount * 32)));
+				testHeap(h, 16, 16, TestMode.InsertFirst, Math.max(16, (int) Math.sqrt(hCount * 32)),
+						seedGen.nextSeed());
 			} else {
 				int[] vals = new int[16];
 				for (int j = 0; j < 16; j++)
 					vals[j] = elm++;
-				testHeap(h, 16, TestMode.InsertFirst, vals);
+				testHeap(h, 16, TestMode.InsertFirst, vals, seedGen.nextSeed());
 			}
 		}
 
@@ -94,20 +98,22 @@ class HeapTestUtils extends TestUtils {
 
 				/* make some OPs on the united heap */
 				int opsNum = 1024 / heaps.size();
-				testHeap(h1, opsNum, opsNum, TestMode.InsertFirst, Math.max(16, (int) Math.sqrt(hCount * 32)));
+				testHeap(h1, opsNum, opsNum, TestMode.InsertFirst, Math.max(16, (int) Math.sqrt(hCount * 32)),
+						seedGen.nextSeed());
 			}
 			heaps.clear();
 			heaps.addAll(heapsNext);
 		}
 	}
 
-	static void testDecreaseKey(Supplier<? extends Heap<Integer>> heapBuilder) {
+	static void testDecreaseKey(Supplier<? extends Heap<Integer>> heapBuilder, long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(256, 16), phase(128, 64), phase(64, 512), phase(16, 4096), phase(2, 16384));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = n;
 			Heap<Integer> heap = heapBuilder.get();
-			testHeap(heap, n, m, TestMode.DecreaseKey);
+			testHeap(heap, n, m, TestMode.DecreaseKey, seedGen.nextSeed());
 		});
 	}
 
@@ -139,11 +145,11 @@ class HeapTestUtils extends TestUtils {
 		final NavigableMap<Integer, Integer> elms;
 		final Random rand;
 
-		HeapTracker(Heap<Integer> heap, int id) {
+		HeapTracker(Heap<Integer> heap, int id, long seed) {
 			this.id = id;
 			this.heap = heap;
 			elms = new TreeMap<>();
-			rand = new Random(nextRandSeed());
+			rand = new Random(seed);
 		}
 
 		boolean isEmpty() {
@@ -214,18 +220,19 @@ class HeapTestUtils extends TestUtils {
 
 	}
 
-	static void testHeap(Heap<Integer> heap, int n, int m, TestMode mode) {
-		testHeap(heap, n, m, mode, true);
+	static void testHeap(Heap<Integer> heap, int n, int m, TestMode mode, long seed) {
+		testHeap(heap, n, m, mode, true, seed);
 	}
 
-	static void testHeap(Heap<Integer> heap, int n, int m, TestMode mode, boolean clear) {
+	static void testHeap(Heap<Integer> heap, int n, int m, TestMode mode, boolean clear, long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
 		if (clear) {
 			heap.clear();
 			Assertions.assertTrue(heap.size() == 0 && heap.isEmpty(), "failed clear");
 		}
 
-		HeapTracker tracker = new HeapTracker(heap, 0);
-		testHeap(tracker, n, m, mode, Math.max(16, (int) Math.sqrt(n)));
+		HeapTracker tracker = new HeapTracker(heap, 0, seedGen.nextSeed());
+		testHeap(tracker, n, m, mode, Math.max(16, (int) Math.sqrt(n)), seedGen.nextSeed());
 
 		if (clear) {
 			heap.clear();
@@ -233,22 +240,24 @@ class HeapTestUtils extends TestUtils {
 		}
 	}
 
-	private static void testHeap(HeapTracker tracker, int n, int m, TestMode mode, int elementsBound) {
-		int[] elements = randArray(n, 0, elementsBound, nextRandSeed());
-		testHeap(tracker, m, mode, elements);
+	private static void testHeap(HeapTracker tracker, int n, int m, TestMode mode, int elementsBound, long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		int[] elements = randArray(n, 0, elementsBound, seedGen.nextSeed());
+		testHeap(tracker, m, mode, elements, seedGen.nextSeed());
 	}
 
 	@SuppressWarnings("boxing")
-	static void testHeap(HeapTracker tracker, int m, TestMode mode, int[] values) {
+	static void testHeap(HeapTracker tracker, int m, TestMode mode, int[] values, long seed) {
 		DebugPrintsManager debug = new DebugPrintsManager(false);
-		Random rand = new Random(nextRandSeed());
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		Random rand = new Random(seedGen.nextSeed());
 		int insertFirst = mode == TestMode.InsertFirst ? m / 2 : 0;
 
 		List<HeapOp> ops = new ArrayList<>(List.of(HeapOp.Insert, HeapOp.Remove, HeapOp.FindMin, HeapOp.ExtractMin));
 		if (mode == TestMode.DecreaseKey)
 			ops.add(HeapOp.DecreaseKey);
 
-		int[] elmsToInsertIds = randPermutation(values.length, nextRandSeed());
+		int[] elmsToInsertIds = randPermutation(values.length, seedGen.nextSeed());
 		int elmsToInsertCursor = 0;
 
 		debug.println("\t testHeap begin");

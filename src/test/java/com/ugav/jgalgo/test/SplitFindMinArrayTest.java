@@ -15,18 +15,18 @@ import com.ugav.jgalgo.SplitFindMinArray;
 @SuppressWarnings("boxing")
 public class SplitFindMinArrayTest extends TestUtils {
 
-	private static void testSplitFind(Supplier<? extends SplitFind> builder) {
+	private static void testSplitFind(Supplier<? extends SplitFind> builder, long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(128, 16, 16), phase(64, 64, 64), phase(32, 512, 512), phase(8, 4096, 4096),
 				phase(2, 16384, 16384));
 		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0];
-			int m = args[1];
-			testSplitFind(builder, n, m);
+			int n = args[0], m = args[1];
+			testSplitFind(builder, n, m, seedGen.nextSeed());
 		});
 	}
 
-	private static void testSplitFind(Supplier<? extends SplitFind> builder, int n, int m) {
-		Random rand = new Random(nextRandSeed());
+	private static void testSplitFind(Supplier<? extends SplitFind> builder, int n, int m, long seed) {
+		Random rand = new Random(seed);
 		SplitFind sf = builder.get();
 
 		sf.init(n);
@@ -63,17 +63,17 @@ public class SplitFindMinArrayTest extends TestUtils {
 		}
 	}
 
-	private static void testSplitFindMin(Supplier<? extends SplitFindMin<Double>> builder) {
+	private static void testSplitFindMin(Supplier<? extends SplitFindMin<Double>> builder, long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(128, 16, 16), phase(64, 64, 64), phase(8, 512, 512), phase(1, 4096, 4096));
 		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0];
-			int m = args[1];
-			testSplitFindMin(builder, n, m);
+			int n = args[0], m = args[1];
+			testSplitFindMin(builder, n, m, seedGen.nextSeed());
 		});
 	}
 
-	private static void testSplitFindMin(Supplier<? extends SplitFindMin<Double>> builder, int n, int m) {
-		Random rand = new Random(nextRandSeed());
+	private static void testSplitFindMin(Supplier<? extends SplitFindMin<Double>> builder, int n, int m, long seed) {
+		Random rand = new Random(seed);
 		SplitFindMin<Double> sf = builder.get();
 
 		List<Double> keys = new ArrayList<>(n);
@@ -133,12 +133,14 @@ public class SplitFindMinArrayTest extends TestUtils {
 
 	@Test
 	public void testSplitFind() {
-		testSplitFind(SplitFindMinArray::new);
+		final long seed = 0x30a997000fec9adfL;
+		testSplitFind(SplitFindMinArray::new, seed);
 	}
 
 	@Test
 	public void testSplitFindMin() {
-		testSplitFindMin(SplitFindMinArray::new);
+		final long seed = 0xb3aece699ee91413L;
+		testSplitFindMin(SplitFindMinArray::new, seed);
 	}
 
 }

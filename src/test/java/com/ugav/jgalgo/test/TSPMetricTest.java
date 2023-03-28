@@ -15,16 +15,18 @@ public class TSPMetricTest extends TestUtils {
 
 	@Test
 	public void testMstAppxAndMatchingAppxRandGraphs() {
+		final long seed = 0x6c019c0fba54c10fL;
+		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(512, 4), phase(64, 16), phase(32, 32), phase(16, 64), phase(8, 128),
 				phase(4, 256), phase(2, 512));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
-			testMstAppxAndMatchingAppxRandGraph(n);
+			testMstAppxAndMatchingAppxRandGraph(n, seedGen.nextSeed());
 		});
 	}
 
-	private static void testMstAppxAndMatchingAppxRandGraph(int n) {
-		Random rand = new Random(nextRandSeed());
+	private static void testMstAppxAndMatchingAppxRandGraph(int n, long seed) {
+		Random rand = new Random(seed);
 
 		final int x = 0, y = 1;
 		double[][] locations = new double[n][2];

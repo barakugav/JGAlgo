@@ -140,18 +140,19 @@ public class RedBlackTreeExtendedTest extends TestUtils {
 
 	@Test
 	public void testExtensionSizeRandOps() {
+		final long seed = 0xe5136a0085e719d1L;
+		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(256, 16, 16), phase(128, 64, 128), phase(64, 512, 1024),
 				phase(16, 4096, 8096), phase(8, 16384, 32768));
 		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0];
-			int m = args[1];
+			int n = args[0], m = args[1];
 
 			RedBlackTreeExtended.Builder<Integer> builder = new RedBlackTreeExtended.Builder<>();
 			builder.comparator(null);
 			ExtensionSize<Integer> sizeExt = builder.addSizeExtension();
 			RedBlackTree<Integer> tree = builder.build();
 
-			HeapTestUtils.testHeap(tree, n, m, TestMode.Normal, false);
+			HeapTestUtils.testHeap(tree, n, m, TestMode.Normal, false, seedGen.nextSeed());
 
 			for (Handle<Integer> node : tree.handles()) {
 				final var expectedSize = new Object() {
@@ -167,18 +168,19 @@ public class RedBlackTreeExtendedTest extends TestUtils {
 
 	@Test
 	public void testExtensionMinRandOps() {
+		final long seed = 0xe5136a0085e719d1L;
+		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(256, 16, 16), phase(128, 64, 128), phase(64, 512, 1024),
 				phase(16, 4096, 8096), phase(8, 16384, 32768));
 		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0];
-			int m = args[1];
+			int n = args[0], m = args[1];
 
 			RedBlackTreeExtended.Builder<Integer> builder = new RedBlackTreeExtended.Builder<>();
 			builder.comparator(null);
 			ExtensionMin<Integer> minExt = builder.addMinExtension();
 			RedBlackTree<Integer> tree = builder.build();
 
-			HeapTestUtils.testHeap(tree, n, m, TestMode.Normal, false);
+			HeapTestUtils.testHeap(tree, n, m, TestMode.Normal, false, seedGen.nextSeed());
 
 			for (Handle<Integer> node : tree.handles()) {
 				final var expectedMin = new Object() {
@@ -195,18 +197,19 @@ public class RedBlackTreeExtendedTest extends TestUtils {
 
 	@Test
 	public void testExtensionMaxRandOps() {
+		final long seed = 0x7674bddef0a0863bL;
+		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(256, 16, 16), phase(128, 64, 128), phase(64, 512, 1024),
 				phase(16, 4096, 8096), phase(8, 16384, 32768));
 		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0];
-			int m = args[1];
+			int n = args[0], m = args[1];
 
 			RedBlackTreeExtended.Builder<Integer> builder = new RedBlackTreeExtended.Builder<>();
 			builder.comparator(null);
 			ExtensionMax<Integer> maxExt = builder.addMaxExtension();
 			RedBlackTree<Integer> tree = builder.build();
 
-			HeapTestUtils.testHeap(tree, n, m, TestMode.Normal, false);
+			HeapTestUtils.testHeap(tree, n, m, TestMode.Normal, false, seedGen.nextSeed());
 			for (Handle<Integer> node : tree.handles()) {
 				final var expectedMax = new Object() {
 					int val = Integer.MIN_VALUE;

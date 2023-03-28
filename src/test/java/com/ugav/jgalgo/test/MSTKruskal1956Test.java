@@ -8,7 +8,8 @@ public class MSTKruskal1956Test extends TestUtils {
 
 	@Test
 	public void testRandGraph() {
-		MSTTestUtils.testRandGraph(MSTKruskal1956::new);
+		final long seed = 0x977b0e2a72f4baa1L;
+		MSTTestUtils.testRandGraph(MSTKruskal1956::new, seed);
 	}
 
 }

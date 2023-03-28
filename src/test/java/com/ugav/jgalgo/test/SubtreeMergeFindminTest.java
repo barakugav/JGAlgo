@@ -20,12 +20,13 @@ public class SubtreeMergeFindminTest extends TestUtils {
 
 	@Test
 	public void testRandOps() {
+		final long seed = 0x08f45606b1a84c66L;
+		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(128, 16, 16), phase(128, 16, 32), phase(64, 64, 64), phase(64, 64, 128),
 				phase(8, 512, 512), phase(8, 512, 2048), phase(1, 4096, 4096), phase(1, 4096, 16384));
 		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0];
-			int m = args[1];
-			testRandOps(SubtreeMergeFindminImpl::new, n, m);
+			int n = args[0], m = args[1];
+			testRandOps(SubtreeMergeFindminImpl::new, n, m, seedGen.nextSeed());
 		});
 	}
 
@@ -44,18 +45,19 @@ public class SubtreeMergeFindminTest extends TestUtils {
 	}
 
 	@SuppressWarnings({ "boxing", "unchecked" })
-	private static void testRandOps(Supplier<? extends SubtreeMergeFindmin<TrackerNode, Integer>> builder, int n,
-			int m) {
+	private static void testRandOps(Supplier<? extends SubtreeMergeFindmin<TrackerNode, Integer>> builder, int n, int m,
+			long seed) {
 		if (n < 2)
 			throw new IllegalArgumentException();
-		Random rand = new Random(nextRandSeed());
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		Random rand = new Random(seedGen.nextSeed());
 
 		/* generate random ops without the two initial initTree and addLeaf ops */
 		Op[] notAddLeafOps = { Op.AddNonTreeEdge, Op.Merge, Op.findMinNonTreeEdge };
 		Op[] ops = new Op[n - 2 + m];
 		for (int i = 0; i < n - 2 + m; i++)
 			ops[i] = i < n - 2 ? Op.AddLeaf : notAddLeafOps[rand.nextInt(notAddLeafOps.length)];
-		ops = suffle(ops, nextRandSeed());
+		ops = suffle(ops, seedGen.nextSeed());
 
 		/* append a single add leaf at the start */
 		Op[] ops2 = new Op[n - 1 + m];
@@ -66,7 +68,7 @@ public class SubtreeMergeFindminTest extends TestUtils {
 		List<SubtreeMergeFindmin.Node<TrackerNode>> nodes = new ArrayList<>();
 		UnionFind uf = new UnionFindArray();
 		List<int[]>[] subtreeEdges = new List[n];
-		int[] edgeInsertWeights = randPermutation(ops.length, nextRandSeed());
+		int[] edgeInsertWeights = randPermutation(ops.length, seedGen.nextSeed());
 		int edgeInsertWeightsIdx = 0;
 
 		SubtreeMergeFindmin<TrackerNode, Integer> algo = builder.get();

@@ -8,12 +8,14 @@ public class SSSPGoldberg1995Test extends TestUtils {
 
 	@Test
 	public void testRandGraphPositiveInt() {
-		SSSPTestUtils.testSSSPDirectedPositiveInt(SSSPGoldberg1995::new);
+		final long seed = 0x502218b82d4ab25aL;
+		SSSPTestUtils.testSSSPDirectedPositiveInt(SSSPGoldberg1995::new, seed);
 	}
 
 	@Test
 	public void testRandGraphNegativeInt() {
-		SSSPTestUtils.testSSSPDirectedNegativeInt(SSSPGoldberg1995::new);
+		final long seed = 0x15f829173b4f088bL;
+		SSSPTestUtils.testSSSPDirectedNegativeInt(SSSPGoldberg1995::new, seed);
 	}
 
 }

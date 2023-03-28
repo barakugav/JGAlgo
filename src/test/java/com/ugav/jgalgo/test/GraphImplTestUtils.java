@@ -279,37 +279,39 @@ class GraphImplTestUtils extends TestUtils {
 		}
 	}
 
-	static void testUndirectedMST(GraphImpl graphImpl) {
-		MSTTestUtils.testRandGraph(MSTKruskal1956::new, graphImpl);
+	static void testUndirectedMST(GraphImpl graphImpl, long seed) {
+		MSTTestUtils.testRandGraph(MSTKruskal1956::new, graphImpl, seed);
 	}
 
-	static void testDirectedMDST(GraphImpl graphImpl) {
-		MDSTTarjan1977Test.testRandGraph(MDSTTarjan1977::new, graphImpl);
+	static void testDirectedMDST(GraphImpl graphImpl, long seed) {
+		MDSTTarjan1977Test.testRandGraph(MDSTTarjan1977::new, graphImpl, seed);
 	}
 
-	static void testDirectedMaxFlow(GraphImpl graphImpl) {
-		MaxFlowTestUtils.testRandGraphs(MaxFlowEdmondsKarp::new, graphImpl);
+	static void testDirectedMaxFlow(GraphImpl graphImpl, long seed) {
+		MaxFlowTestUtils.testRandGraphs(MaxFlowEdmondsKarp::new, graphImpl, seed);
 	}
 
-	static void testUndirectedBipartiteMatching(GraphImpl graphImpl) {
-		MatchingBipartiteTestUtils.randBipartiteGraphs(MatchingGabow1976::new, graphImpl);
+	static void testUndirectedBipartiteMatching(GraphImpl graphImpl, long seed) {
+		MatchingBipartiteTestUtils.randBipartiteGraphs(MatchingGabow1976::new, graphImpl, seed);
 	}
 
-	static void testUndirectedBipartiteMatchingWeighted(GraphImpl graphImpl) {
-		MatchingWeightedTestUtils.randGraphsBipartiteWeighted(MatchingWeightedBipartiteHungarianMethod::new, graphImpl);
+	static void testUndirectedBipartiteMatchingWeighted(GraphImpl graphImpl, long seed) {
+		MatchingWeightedTestUtils.randGraphsBipartiteWeighted(MatchingWeightedBipartiteHungarianMethod::new, graphImpl,
+				seed);
 	}
 
-	static void testUndirectedRandOps(GraphImpl graphImpl) {
+	static void testUndirectedRandOps(GraphImpl graphImpl, long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(1024, 6, 6), phase(128, 16, 16), phase(128, 16, 32), phase(64, 64, 64),
 				phase(64, 64, 128), phase(8, 512, 512), phase(4, 512, 1324), phase(1, 1025, 2016),
 				phase(1, 3246, 5612));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 			for (boolean directed : new boolean[] { true, false }) {
-				Graph g = new RandomGraphBuilder().n(n).m(m).directed(directed).doubleEdges(false).selfEdges(false)
-						.cycles(true).connected(false).graphImpl(graphImpl).build();
+				Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).doubleEdges(false)
+						.selfEdges(false).cycles(true).connected(false).graphImpl(graphImpl).build();
 				final int opsNum = 128;
-				testRandOps(g, opsNum);
+				testRandOps(g, opsNum, seedGen.nextSeed());
 			}
 		});
 	}
@@ -525,10 +527,11 @@ class GraphImplTestUtils extends TestUtils {
 		}
 	}
 
-	private static void testRandOps(Graph g, int opsNum) {
+	private static void testRandOps(Graph g, int opsNum, long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
 //		System.out.println("\n\n*****");
 		GraphCapabilities capabilities = g.getCapabilities();
-		Random rand = new Random(nextRandSeed());
+		Random rand = new Random(seedGen.nextSeed());
 		RandWeighted<GraphOp> opRand = new RandWeighted<>();
 		if (capabilities.edgeAdd())
 			opRand.add(GraphOp.AddEdge, 20);
@@ -553,7 +556,7 @@ class GraphImplTestUtils extends TestUtils {
 
 		final Object dataKey = new Object();
 		Weights.Int edgeData = g.addEdgesWeight(dataKey).ofInts();
-		UniqueGenerator dataGen = new UniqueGenerator(nextRandSeed());
+		UniqueGenerator dataGen = new UniqueGenerator(seedGen.nextSeed());
 
 		GraphTracker tracker = new GraphTracker(g.vertices().size(), g instanceof DiGraph, dataKey);
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {

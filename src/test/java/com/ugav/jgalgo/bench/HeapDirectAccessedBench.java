@@ -25,14 +25,17 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 public class HeapDirectAccessedBench extends TestUtils {
 
 	private static void benchHeap(HeapDirectAccessed.Builder heapBuilder, Blackhole blackhole) {
+		final long seed = 0x88da246e71ef3dacL;
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+
 		/* SSSP */
 		Supplier<? extends SSSP> ssspBuilder = () -> new SSSPDijkstra(heapBuilder);
 		List<Phase> phases = List.of(phase(128, 16, 32), phase(64, 64, 256), phase(8, 512, 4096),
 				phase(1, 4096, 16384));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
-			runSSSP(ssspBuilder, n, m, true, blackhole);
-			runSSSP(ssspBuilder, n, m, false, blackhole);
+			runSSSP(ssspBuilder, n, m, true, seedGen.nextSeed(), blackhole);
+			runSSSP(ssspBuilder, n, m, false, seedGen.nextSeed(), blackhole);
 		});
 
 		/* Prim MST */
@@ -47,8 +50,8 @@ public class HeapDirectAccessedBench extends TestUtils {
 			int n = args[0], m = args[1];
 			MST algo = mstBuilder.get();
 
-			Graph g = GraphsTestUtils.randGraph(n, m);
-			GraphsTestUtils.assignRandWeightsIntPos(g);
+			Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
+			GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			EdgeWeightFunc.Int w = g.edgesWeight("weight");
 
 			IntCollection mst = algo.calcMST(g, w);
@@ -56,12 +59,14 @@ public class HeapDirectAccessedBench extends TestUtils {
 		});
 	}
 
-	static void runSSSP(Supplier<? extends SSSP> builder, int n, int m, boolean directed, Blackhole blackhole) {
-		Random rand = new Random(nextRandSeed());
+	static void runSSSP(Supplier<? extends SSSP> builder, int n, int m, boolean directed, long seed,
+			Blackhole blackhole) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		Random rand = new Random(seedGen.nextSeed());
 
-		Graph g = new RandomGraphBuilder().n(n).m(m).directed(directed).doubleEdges(true).selfEdges(true).cycles(true)
-				.connected(false).build();
-		GraphsTestUtils.assignRandWeightsIntPos(g);
+		Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).doubleEdges(true)
+				.selfEdges(true).cycles(true).connected(false).build();
+		GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 		EdgeWeightFunc.Int w = g.edgesWeight("weight");
 		int source = rand.nextInt(g.vertices().size());
 

@@ -17,19 +17,21 @@ public class DynamicTreeSplayTest extends TestUtils {
 
 	@Test
 	public void testRandOps() {
-		testRandOps(DynamicTreeSplay::new);
+		final long seed = 0xc5fb8821e8139b3eL;
+		testRandOps(DynamicTreeSplay::new, seed);
 	}
 
-	static void testRandOps(DoubleFunction<? extends DynamicTree<TrackerNode, Void>> builder) {
-		testRandOps(builder, List.of(Op.MakeTree, Op.FindRoot, Op.FindMinEdge, Op.AddWeight, Op.Link, Op.Cut));
+	static void testRandOps(DoubleFunction<? extends DynamicTree<TrackerNode, Void>> builder, long seed) {
+		testRandOps(builder, List.of(Op.MakeTree, Op.FindRoot, Op.FindMinEdge, Op.AddWeight, Op.Link, Op.Cut), seed);
 	}
 
-	static void testRandOps(DoubleFunction<? extends DynamicTree<TrackerNode, Void>> builder, List<Op> ops) {
+	static void testRandOps(DoubleFunction<? extends DynamicTree<TrackerNode, Void>> builder, List<Op> ops, long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(1024, 16), phase(256, 32), phase(256, 64), phase(128, 128), phase(64, 512),
 				phase(64, 2048), phase(64, 4096), phase(32, 16384));
 		runTestMultiple(phases, (testIter, args) -> {
 			int m = args[0];
-			testRandOps(builder, m, ops);
+			testRandOps(builder, m, ops, seedGen.nextSeed());
 		});
 	}
 
@@ -56,10 +58,10 @@ public class DynamicTreeSplayTest extends TestUtils {
 
 	@SuppressWarnings("boxing")
 	private static void testRandOps(DoubleFunction<? extends DynamicTree<TrackerNode, Void>> builder, final int m,
-			List<Op> ops) {
+			List<Op> ops, long seed) {
 		DebugPrintsManager debug = new DebugPrintsManager(false);
 		debug.println("\tnew iteration");
-		Random rand = new Random(nextRandSeed());
+		Random rand = new Random(seed);
 
 		final int MAX_WEIGHT = 10000000;
 		final int MAX_WEIGHT_LINK = 1000;
