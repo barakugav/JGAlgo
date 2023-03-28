@@ -24,6 +24,12 @@ jobs:
     - name: Run JUnit Tests with Jacoco coverage
       run: mvn --batch-mode clean jacoco:prepare-agent '-Dtest=com.ugav.jgalgo.test.*Test' test jacoco:report
 
+    - name: Generate JaCoCo Badge
+      uses: cicirello/jacoco-badge-generator@v2
+      with:
+        generate-coverage-badge: true
+        badges-directory: target/site/jacoco/badges
+
     - name: Publish Jacoco Coverage Report
       uses: JamesIves/github-pages-deploy-action@v4.4.1
       with:
