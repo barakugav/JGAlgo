@@ -77,7 +77,7 @@ int e2 = g.addEdge(v2, v3);
 int e3 = g.addEdge(v1, v3);
 
 /* Assign some weights to the edges */
-Weights.Double w = EdgesWeights.ofDoubles(g, "weight");
+Weights.Double w = g.addEdgesWeight("weightsKey").ofDoubles();
 w.set(e1, 1.2);
 w.set(e2, 3.1);
 w.set(e3, 15.1);
@@ -87,6 +87,8 @@ SSSP ssspAlgo = new SSSPDijkstra();
 SSSP.Result ssspRes = ssspAlgo.calcDistances(g, w, v1);
 
 /* Display the shortest path from v1 to v3 */
+assert ssspRes.distance(v3) == 4.3;
+assert ssspRes.getPathTo(v3).equals(IntList.of(e1, e2));
 System.out.println("Distance from v1 to v3 is: " + ssspRes.distance(v3));
 System.out.println("The shortest path from v1 to v3 is:");
 for (IntIterator it = ssspRes.getPathTo(v3).iterator(); it.hasNext();) {
