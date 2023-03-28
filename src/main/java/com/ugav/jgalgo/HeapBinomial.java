@@ -2,10 +2,12 @@ package com.ugav.jgalgo;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.util.AbstractSet;
 import java.util.Comparator;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.Set;
 
 import com.ugav.jgalgo.Trees.TreeNode;
 
@@ -14,6 +16,7 @@ public class HeapBinomial<E> extends HeapAbstractDirectAccessed<E> {
 	private Node<E>[] roots;
 	private int rootsLen;
 	private int size;
+	private final Set<Handle<E>> handlesSet;
 
 	public HeapBinomial() {
 		this(null);
@@ -24,6 +27,32 @@ public class HeapBinomial<E> extends HeapAbstractDirectAccessed<E> {
 		roots = newArr(4);
 		rootsLen = 0;
 		size = 0;
+
+		handlesSet = new AbstractSet<>() {
+
+			@Override
+			public int size() {
+				return HeapBinomial.this.size();
+			}
+
+			@SuppressWarnings({ "unchecked", "rawtypes" })
+			@Override
+			public Iterator<Handle<E>> iterator() {
+				return (Iterator) new Itr();
+			}
+
+			@SuppressWarnings("unchecked")
+			@Override
+			public boolean remove(Object o) {
+				HeapBinomial.this.removeHandle((Handle<E>) o);
+				return true;
+			}
+
+			@Override
+			public void clear() {
+				HeapBinomial.this.clear();
+			}
+		};
 	}
 
 	private void swapParentChild(Node<E> parent, Node<E> child) {
@@ -141,36 +170,8 @@ public class HeapBinomial<E> extends HeapAbstractDirectAccessed<E> {
 	}
 
 	@Override
-	public Iterator<? extends Handle<E>> handleIterator() {
-		return new Itr();
-	}
-
-	private class Itr extends Trees.PreOrderIter<Node<E>> {
-
-		private int nextRootIdx;
-
-		Itr() {
-			super(null);
-			nextRootIdx = 0;
-		}
-
-		@Override
-		public boolean hasNext() {
-			while (!super.hasNext()) {
-				if (nextRootIdx >= rootsLen)
-					return false;
-				int i;
-				for (i = nextRootIdx; i < rootsLen; i++) {
-					if (roots[i] != null) {
-						reset(roots[i]);
-						break;
-					}
-				}
-				nextRootIdx = i + 1;
-			}
-			return true;
-		}
-
+	public Set<Handle<E>> handles() {
+		return handlesSet;
 	}
 
 	private Node<E> mergeTrees(Node<E> r1, Node<E> r2) {
@@ -245,14 +246,6 @@ public class HeapBinomial<E> extends HeapAbstractDirectAccessed<E> {
 		@SuppressWarnings("unchecked")
 		HeapBinomial<E> h = (HeapBinomial<E>) h0;
 		size += meld(h.roots, h.rootsLen);
-	}
-
-	@Override
-	public Handle<E> findHanlde(E e) {
-		for (Node<E> p : Utils.iterable(new Itr()))
-			if (c.compare(e, p.value) == 0)
-				return p;
-		return null;
 	}
 
 	@Override
@@ -415,6 +408,34 @@ public class HeapBinomial<E> extends HeapAbstractDirectAccessed<E> {
 		@Override
 		public String toString() {
 			return "{" + value + "}";
+		}
+
+	}
+
+	private class Itr extends Trees.PreOrderIter<Node<E>> {
+
+		private int nextRootIdx;
+
+		Itr() {
+			super(null);
+			nextRootIdx = 0;
+		}
+
+		@Override
+		public boolean hasNext() {
+			while (!super.hasNext()) {
+				if (nextRootIdx >= rootsLen)
+					return false;
+				int i;
+				for (i = nextRootIdx; i < rootsLen; i++) {
+					if (roots[i] != null) {
+						reset(roots[i]);
+						break;
+					}
+				}
+				nextRootIdx = i + 1;
+			}
+			return true;
 		}
 
 	}

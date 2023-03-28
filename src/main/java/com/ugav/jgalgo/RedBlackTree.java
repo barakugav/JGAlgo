@@ -1,13 +1,16 @@
 package com.ugav.jgalgo;
 
+import java.util.AbstractSet;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public class RedBlackTree<E> extends BSTAbstract<E> {
 
 	private int size;
 	private Node<E> root;
+	private final Set<Handle<E>> handlesSet;
 
 	static final boolean Red = true;
 	static final boolean Black = false;
@@ -20,6 +23,32 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 		super(c);
 		root = null;
 		size = 0;
+
+		handlesSet = new AbstractSet<>() {
+
+			@Override
+			public int size() {
+				return RedBlackTree.this.size();
+			}
+
+			@SuppressWarnings({ "unchecked", "rawtypes" })
+			@Override
+			public Iterator<Handle<E>> iterator() {
+				return (Iterator) new BSTUtils.BSTIterator<>(root);
+			}
+
+			@SuppressWarnings("unchecked")
+			@Override
+			public boolean remove(Object o) {
+				RedBlackTree.this.removeHandle((Handle<E>) o);
+				return true;
+			}
+
+			@Override
+			public void clear() {
+				RedBlackTree.this.clear();
+			}
+		};
 	}
 
 	@Override
@@ -33,8 +62,8 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 	}
 
 	@Override
-	public Iterator<? extends Handle<E>> handleIterator() {
-		return new BSTUtils.BSTIterator<>(root);
+	public Set<Handle<E>> handles() {
+		return handlesSet;
 	}
 
 	@Override

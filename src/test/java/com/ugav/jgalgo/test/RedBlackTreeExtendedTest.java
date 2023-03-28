@@ -153,7 +153,7 @@ public class RedBlackTreeExtendedTest extends TestUtils {
 
 			HeapTestUtils.testHeap(tree, n, m, TestMode.Normal, false);
 
-			for (Handle<Integer> node : Utils.iterable(tree.handleIterator())) {
+			for (Handle<Integer> node : tree.handles()) {
 				final var expectedSize = new Object() {
 					int val = 0;
 				};
@@ -180,7 +180,7 @@ public class RedBlackTreeExtendedTest extends TestUtils {
 
 			HeapTestUtils.testHeap(tree, n, m, TestMode.Normal, false);
 
-			for (Handle<Integer> node : Utils.iterable(tree.handleIterator())) {
+			for (Handle<Integer> node : tree.handles()) {
 				final var expectedMin = new Object() {
 					int val = Integer.MAX_VALUE;
 				};
@@ -207,7 +207,7 @@ public class RedBlackTreeExtendedTest extends TestUtils {
 			RedBlackTree<Integer> tree = builder.build();
 
 			HeapTestUtils.testHeap(tree, n, m, TestMode.Normal, false);
-			for (Handle<Integer> node : Utils.iterable(tree.handleIterator())) {
+			for (Handle<Integer> node : tree.handles()) {
 				final var expectedMax = new Object() {
 					int val = Integer.MIN_VALUE;
 				};

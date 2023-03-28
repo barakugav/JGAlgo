@@ -1,7 +1,9 @@
 package com.ugav.jgalgo;
 
+import java.util.AbstractSet;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.Set;
 
 import com.ugav.jgalgo.Trees.TreeNode;
 
@@ -11,6 +13,7 @@ public class HeapFibonacci<E> extends HeapAbstractDirectAccessed<E> {
 	private Node<E> begin;
 	private Node<E> end;
 	private int size;
+	private final Set<Handle<E>> handlesSet;
 
 	public HeapFibonacci() {
 		this(null);
@@ -20,6 +23,32 @@ public class HeapFibonacci<E> extends HeapAbstractDirectAccessed<E> {
 		super(c);
 		begin = end = minRoot = null;
 		size = 0;
+
+		handlesSet = new AbstractSet<>() {
+
+			@Override
+			public int size() {
+				return HeapFibonacci.this.size();
+			}
+
+			@SuppressWarnings({ "unchecked", "rawtypes" })
+			@Override
+			public Iterator<Handle<E>> iterator() {
+				return (Iterator) new Trees.PreOrderIter<>(begin);
+			}
+
+			@SuppressWarnings("unchecked")
+			@Override
+			public boolean remove(Object o) {
+				HeapFibonacci.this.removeHandle((Handle<E>) o);
+				return true;
+			}
+
+			@Override
+			public void clear() {
+				HeapFibonacci.this.clear();
+			}
+		};
 	}
 
 	@Override
@@ -57,8 +86,8 @@ public class HeapFibonacci<E> extends HeapAbstractDirectAccessed<E> {
 	}
 
 	@Override
-	public Iterator<? extends Handle<E>> handleIterator() {
-		return new Trees.PreOrderIter<>(begin);
+	public Set<Handle<E>> handles() {
+		return handlesSet;
 	}
 
 	@Override

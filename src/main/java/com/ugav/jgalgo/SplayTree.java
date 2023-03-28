@@ -1,12 +1,15 @@
 package com.ugav.jgalgo;
 
+import java.util.AbstractSet;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.Set;
 
 public class SplayTree<E> extends BSTAbstract<E> {
 
 	private NodeSized<E> root;
 	private final SplayImplWithSize<E> impl = new SplayImplWithSize<>();
+	private final Set<Handle<E>> handlesSet;
 
 	public SplayTree() {
 		this(null);
@@ -15,6 +18,32 @@ public class SplayTree<E> extends BSTAbstract<E> {
 	public SplayTree(Comparator<? super E> c) {
 		super(c);
 		root = null;
+
+		handlesSet = new AbstractSet<>() {
+
+			@Override
+			public int size() {
+				return SplayTree.this.size();
+			}
+
+			@SuppressWarnings({ "unchecked", "rawtypes" })
+			@Override
+			public Iterator<Handle<E>> iterator() {
+				return (Iterator) new BSTUtils.BSTIterator<>(root);
+			}
+
+			@SuppressWarnings("unchecked")
+			@Override
+			public boolean remove(Object o) {
+				SplayTree.this.removeHandle((Handle<E>) o);
+				return true;
+			}
+
+			@Override
+			public void clear() {
+				SplayTree.this.clear();
+			}
+		};
 	}
 
 	@Override
@@ -23,8 +52,8 @@ public class SplayTree<E> extends BSTAbstract<E> {
 	}
 
 	@Override
-	public Iterator<? extends Handle<E>> handleIterator() {
-		return new BSTUtils.BSTIterator<>(root);
+	public Set<Handle<E>> handles() {
+		return handlesSet;
 	}
 
 	@Override

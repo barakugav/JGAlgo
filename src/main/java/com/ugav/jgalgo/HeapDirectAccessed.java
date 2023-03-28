@@ -2,7 +2,7 @@ package com.ugav.jgalgo;
 
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.Objects;
+import java.util.Set;
 
 public interface HeapDirectAccessed<E> extends Heap<E> {
 
@@ -14,7 +14,7 @@ public interface HeapDirectAccessed<E> extends Heap<E> {
 	 */
 	default Handle<E> findHanlde(E e) {
 		Comparator<? super E> c = comparator();
-		for (Handle<E> p : Utils.iterable(handleIterator())) {
+		for (Handle<E> p : handles()) {
 			if (c.compare(e, p.get()) == 0)
 				return p;
 		}
@@ -45,15 +45,27 @@ public interface HeapDirectAccessed<E> extends Heap<E> {
 	public void removeHandle(Handle<E> handle);
 
 	/**
-	 * Get an iterator that iterate over the handles of the heap
+	 * Get a collection view of the handles of the heap.
 	 *
-	 * @return handle iterator
+	 * @return view of all handles in the heap
 	 */
-	public Iterator<? extends Handle<E>> handleIterator();
+	public Set<Handle<E>> handles();
 
 	@Override
 	default Iterator<E> iterator() {
-		return iteratorFromHandleIter(handleIterator());
+		return new Iterator<>() {
+			final Iterator<Handle<E>> it = handles().iterator();
+
+			@Override
+			public boolean hasNext() {
+				return it.hasNext();
+			}
+
+			@Override
+			public E next() {
+				return it.next().get();
+			}
+		};
 	}
 
 	/**
@@ -75,23 +87,6 @@ public interface HeapDirectAccessed<E> extends Heap<E> {
 	@FunctionalInterface
 	public static interface Builder {
 		<E> HeapDirectAccessed<E> build(Comparator<? super E> cmp);
-	}
-
-	public static <E> Iterator<E> iteratorFromHandleIter(Iterator<? extends Handle<E>> iter) {
-		return new Iterator<>() {
-
-			final Iterator<? extends Handle<E>> it = Objects.requireNonNull(iter);
-
-			@Override
-			public boolean hasNext() {
-				return it.hasNext();
-			}
-
-			@Override
-			public E next() {
-				return it.next().get();
-			}
-		};
 	}
 
 }

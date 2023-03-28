@@ -1,8 +1,10 @@
 package com.ugav.jgalgo;
 
+import java.util.AbstractSet;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.Set;
 
 import com.ugav.jgalgo.Trees.TreeNode;
 
@@ -209,8 +211,33 @@ public class HeapPairing<E> extends HeapAbstractDirectAccessed<E> {
 	}
 
 	@Override
-	public Iterator<? extends Handle<E>> handleIterator() {
-		return new Trees.PreOrderIter<>(minRoot);
+	public Set<Handle<E>> handles() {
+		return new AbstractSet<>() {
+
+			@Override
+			public int size() {
+				return size;
+			}
+
+			@SuppressWarnings({ "unchecked", "rawtypes" })
+			@Override
+			public Iterator<Handle<E>> iterator() {
+				return (Iterator) new Trees.PreOrderIter<>(minRoot);
+			}
+
+			@SuppressWarnings("unchecked")
+			@Override
+			public boolean remove(Object o) {
+				removeHandle((Handle<E>) o);
+				return true;
+			}
+
+			@Override
+			public void clear() {
+				HeapPairing.this.clear();
+			}
+
+		};
 	}
 
 	private static class Node<E> implements Handle<E>, TreeNode<Node<E>> {

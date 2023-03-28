@@ -11,7 +11,7 @@ public abstract class HeapAbstractDirectAccessed<E> extends HeapAbstract<E> impl
 
 	@Override
 	public Iterator<E> iterator() {
-		return HeapDirectAccessed.iteratorFromHandleIter(handleIterator());
+		return HeapDirectAccessed.super.iterator();
 	}
 
 	@SuppressWarnings("unchecked")
