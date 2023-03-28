@@ -3,6 +3,7 @@ package com.ugav.jgalgo;
 import java.util.AbstractSet;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.Set;
 
 public class SplayTree<E> extends BSTAbstract<E> {
@@ -206,6 +207,8 @@ public class SplayTree<E> extends BSTAbstract<E> {
 			super.meld(h0);
 			return;
 		}
+		if (!Objects.equals(comparator(), h.comparator()))
+			throw new IllegalArgumentException("Heaps have different comparators");
 		if (isEmpty()) {
 			root = h.root;
 			h.root = null;

@@ -245,6 +245,8 @@ public class HeapBinomial<E> extends HeapAbstractDirectAccessed<E> {
 		}
 		@SuppressWarnings("unchecked")
 		HeapBinomial<E> h = (HeapBinomial<E>) h0;
+		if (!Objects.equals(comparator(), h.comparator()))
+			throw new IllegalArgumentException("Heaps have different comparators");
 		size += meld(h.roots, h.rootsLen);
 	}
 

@@ -3,6 +3,7 @@ package com.ugav.jgalgo;
 import java.util.AbstractSet;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.Set;
 
 import com.ugav.jgalgo.Trees.TreeNode;
@@ -100,6 +101,8 @@ public class HeapFibonacci<E> extends HeapAbstractDirectAccessed<E> {
 		}
 		@SuppressWarnings("unchecked")
 		HeapFibonacci<E> h = (HeapFibonacci<E>) h0;
+		if (!Objects.equals(comparator(), h.comparator()))
+			throw new IllegalArgumentException("Heaps have different comparators");
 
 		if (size == 0) {
 			minRoot = h.minRoot;

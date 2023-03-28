@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Set;
 
 public class HeapPairing<E> extends HeapAbstractDirectAccessed<E> {
@@ -127,8 +128,11 @@ public class HeapPairing<E> extends HeapAbstractDirectAccessed<E> {
 		}
 		@SuppressWarnings("unchecked")
 		HeapPairing<E> h = (HeapPairing<E>) h0;
+		if (!Objects.equals(comparator(), h.comparator()))
+			throw new IllegalArgumentException("Heaps have different comparators");
 
 		if (size == 0) {
+			assert minRoot == null;
 			minRoot = h.minRoot;
 		} else if (h.minRoot != null) {
 			minRoot = meld0(minRoot, h.minRoot);
