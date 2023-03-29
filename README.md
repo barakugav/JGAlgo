@@ -30,6 +30,7 @@ JGAlgo is a collection of algorithms implemented in Java. It contains mostly alg
 | SSSP Goldberg1995 positive and negative integer weights | $O(m \sqrt{n} \log N)$ where $N$ is the minimum negative weight |
 | APSP FloydWarshall general weights | $O(n^3)$ |
 | APSP Johnson general weights | $O(m n + n^2 \log n)$ |
+| A* | $O(b^d)$ where $b$ is the branching factor and $d$ is the depth, $O(m \log n)$ worst case |
 | RMQ $\pm 1$ BenderFarachColton2000 | $O(n)$ preprocessing, $O(1)$ query |
 | RMQ GabowBentleyTarjan1984 | $O(n)$ preprocessing, $O(1)$ query |
 | LCA static BenderFarachColton2000, using RMQ | $O(n+m)$ |

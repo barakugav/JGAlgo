@@ -32,10 +32,15 @@ public class SSSPTestUtils extends TestUtils {
 	}
 
 	private static void testSSSPPositiveInt(Supplier<? extends SSSP> builder, boolean directed, long seed) {
-		final SeedGenerator seedGen = new SeedGenerator(seed);
-		Random rand = new Random(seedGen.nextSeed());
 		List<Phase> phases = List.of(phase(128, 16, 32), phase(64, 64, 256), phase(8, 512, 4096),
 				phase(1, 4096, 16384));
+		testSSSPPositiveInt(builder, directed, seed, phases);
+	}
+
+	static void testSSSPPositiveInt(Supplier<? extends SSSP> builder, boolean directed, long seed, List<Phase> phases) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		Random rand = new Random(seedGen.nextSeed());
+
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).doubleEdges(true)

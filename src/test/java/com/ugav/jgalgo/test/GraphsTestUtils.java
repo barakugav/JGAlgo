@@ -14,7 +14,9 @@ import com.ugav.jgalgo.UnionFindArray;
 import com.ugav.jgalgo.Weights;
 import com.ugav.jgalgo.test.GraphImplTestUtils.GraphImpl;
 
+import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 public class GraphsTestUtils extends TestUtils {
 
@@ -143,7 +145,7 @@ public class GraphsTestUtils extends TestUtils {
 			boolean[] reachableFromRoot = new boolean[n];
 			reachableFromRoot[0] = true;
 			int reachableFromRootCount = 1;
-			int[] queue = new int[n];
+			IntPriorityQueue queue = new IntArrayFIFOQueue();
 
 			while (true) {
 				boolean done = true;
@@ -207,10 +209,9 @@ public class GraphsTestUtils extends TestUtils {
 							reachableFromRoot[v] = true;
 							reachableFromRootCount++;
 
-							int queueBegin = 0, queueEnd = 0;
-							queue[queueEnd++] = v;
-							while (queueBegin != queueEnd) {
-								int p = queue[queueBegin++];
+							queue.enqueue(v);
+							while (!queue.isEmpty()) {
+								int p = queue.dequeueInt();
 
 								for (EdgeIter eit = g.edges(p); eit.hasNext();) {
 									eit.nextInt();
@@ -219,7 +220,7 @@ public class GraphsTestUtils extends TestUtils {
 										continue;
 									reachableFromRoot[pv] = true;
 									reachableFromRootCount++;
-									queue[queueEnd++] = pv;
+									queue.enqueue(pv);
 								}
 							}
 

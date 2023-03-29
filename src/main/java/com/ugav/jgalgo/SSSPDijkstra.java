@@ -74,8 +74,9 @@ public class SSSPDijkstra implements SSSP {
 			if (heap.isEmpty())
 				break;
 			HeapElm next = heap.extractMin();
-			res.distances[u = next.v] = next.distance;
-			res.backtrack[u] = next.backtrack;
+			res.distances[next.v] = next.distance;
+			res.backtrack[next.v] = next.backtrack;
+			u = next.v;
 		}
 
 		memClear(n);

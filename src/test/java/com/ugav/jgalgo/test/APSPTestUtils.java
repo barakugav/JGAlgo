@@ -84,8 +84,6 @@ class APSPTestUtils extends TestUtils {
 			for (int target = 0; target < n; target++) {
 				double expectedDistance = expectedRes.distance(target);
 				double actualDistance = result.distance(source, target);
-				if (expectedDistance != actualDistance)
-					System.out.println();
 				Assertions.assertEquals(expectedDistance, actualDistance, "Distance to vertex " + target + " is wrong");
 				IntList path = result.getPath(source, target);
 				if (path != null) {
