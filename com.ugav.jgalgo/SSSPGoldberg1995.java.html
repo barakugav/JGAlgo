@@ -44,11 +44,11 @@ public class SSSPGoldberg1995 implements SSSP {
 
 <span class="fc" id="L45">		Pair&lt;int[], IntList&gt; p = calcPotential(g, w, minWeight);</span>
 <span class="fc bfc" id="L46" title="All 2 branches covered.">		if (p.e2 != null)</span>
-<span class="fc" id="L47">			return new Result(source, null, null, p.e2);</span>
+<span class="fc" id="L47">			return Result.ofNegCycle(source, p.e2);</span>
 <span class="fc" id="L48">		int[] potential = p.e1;</span>
 <span class="fc" id="L49">		PotentialWeightFunction pw = new PotentialWeightFunction(g, w, potential);</span>
 <span class="fc" id="L50">		SSSP.Result res = positiveSsspAlgo.calcDistances(g, pw, source);</span>
-<span class="fc" id="L51">		return new Result(source, potential, res, null);</span>
+<span class="fc" id="L51">		return Result.ofSuccess(source, potential, res);</span>
 	}
 
 	private static Pair&lt;int[], IntList&gt; calcPotential(DiGraph g, EdgeWeightFunc.Int w, int minWeight) {
@@ -215,35 +215,43 @@ public class SSSPGoldberg1995 implements SSSP {
 <span class="fc bfc" id="L215" title="All 2 branches covered.">			this.cycle = cycle != null ? IntLists.unmodifiable(cycle) : null;</span>
 <span class="fc" id="L216">		}</span>
 
+		static Result ofSuccess(int source, int[] potential, SSSP.Result dijkstraRes) {
+<span class="fc" id="L219">			return new Result(source, potential, dijkstraRes, null);</span>
+		}
+
+		static Result ofNegCycle(int source, IntList cycle) {
+<span class="fc" id="L223">			return new Result(source, null, null, cycle);</span>
+		}
+
 		@Override
 		public double distance(int v) {
-<span class="pc bpc" id="L220" title="1 of 2 branches missed.">			if (foundNegativeCycle())</span>
-<span class="nc" id="L221">				throw new IllegalStateException();</span>
-<span class="fc" id="L222">			return dijkstraRes.distance(v) - sourcePotential + potential[v];</span>
+<span class="pc bpc" id="L228" title="1 of 2 branches missed.">			if (foundNegativeCycle())</span>
+<span class="nc" id="L229">				throw new IllegalStateException();</span>
+<span class="fc" id="L230">			return dijkstraRes.distance(v) - sourcePotential + potential[v];</span>
 		}
 
 		@Override
 		public IntList getPathTo(int v) {
-<span class="pc bpc" id="L227" title="1 of 2 branches missed.">			if (foundNegativeCycle())</span>
-<span class="nc" id="L228">				throw new IllegalStateException();</span>
-<span class="fc" id="L229">			return dijkstraRes.getPathTo(v);</span>
+<span class="pc bpc" id="L235" title="1 of 2 branches missed.">			if (foundNegativeCycle())</span>
+<span class="nc" id="L236">				throw new IllegalStateException();</span>
+<span class="fc" id="L237">			return dijkstraRes.getPathTo(v);</span>
 		}
 
 		@Override
 		public boolean foundNegativeCycle() {
-<span class="fc bfc" id="L234" title="All 2 branches covered.">			return cycle != null;</span>
+<span class="fc bfc" id="L242" title="All 2 branches covered.">			return cycle != null;</span>
 		}
 
 		@Override
 		public IntList getNegativeCycle() {
-<span class="pc bpc" id="L239" title="1 of 2 branches missed.">			if (!foundNegativeCycle())</span>
-<span class="nc" id="L240">				throw new IllegalStateException();</span>
-<span class="fc" id="L241">			return cycle;</span>
+<span class="pc bpc" id="L247" title="1 of 2 branches missed.">			if (!foundNegativeCycle())</span>
+<span class="nc" id="L248">				throw new IllegalStateException();</span>
+<span class="fc" id="L249">			return cycle;</span>
 		}
 
 		@Override
 		public String toString() {
-<span class="nc bnc" id="L246" title="All 2 branches missed.">			return foundNegativeCycle() ? &quot;[NegCycle=&quot; + cycle + &quot;]&quot; : dijkstraRes.toString();</span>
+<span class="nc bnc" id="L254" title="All 2 branches missed.">			return foundNegativeCycle() ? &quot;[NegCycle=&quot; + cycle + &quot;]&quot; : dijkstraRes.toString();</span>
 		}
 
 	}
@@ -254,15 +262,15 @@ public class SSSPGoldberg1995 implements SSSP {
 		private final EdgeWeightFunc.Int w;
 		private final int[] potential;
 
-<span class="fc" id="L257">		PotentialWeightFunction(DiGraph g, EdgeWeightFunc.Int w, int[] potential) {</span>
-<span class="fc" id="L258">			this.g = g;</span>
-<span class="fc" id="L259">			this.w = w;</span>
-<span class="fc" id="L260">			this.potential = potential;</span>
-<span class="fc" id="L261">		}</span>
+<span class="fc" id="L265">		PotentialWeightFunction(DiGraph g, EdgeWeightFunc.Int w, int[] potential) {</span>
+<span class="fc" id="L266">			this.g = g;</span>
+<span class="fc" id="L267">			this.w = w;</span>
+<span class="fc" id="L268">			this.potential = potential;</span>
+<span class="fc" id="L269">		}</span>
 
 		@Override
 		public int weightInt(int e) {
-<span class="fc" id="L265">			return w.weightInt(e) + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];</span>
+<span class="fc" id="L273">			return w.weightInt(e) + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];</span>
 		}
 
 	}

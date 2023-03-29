@@ -48,7 +48,7 @@ jgalgo,com.ugav.jgalgo,DataContainer.Bool.1.new BooleanIterator() {...},40,0,4,0
 jgalgo,com.ugav.jgalgo,SplayTree.SplayImplWithSize,4,55,1,7,0,10,1,5,0,2
 jgalgo,com.ugav.jgalgo,RedBlackTreeExtended.Extension,12,22,1,1,7,10,7,5,6,5
 jgalgo,com.ugav.jgalgo,BSTUtils,25,303,8,62,7,94,8,43,0,14
-jgalgo,com.ugav.jgalgo,APSPResultImpl.Undirected,8,121,2,10,0,26,2,10,0,6
+jgalgo,com.ugav.jgalgo,APSPResultImpl.Undirected,16,127,4,12,2,28,4,10,0,6
 jgalgo,com.ugav.jgalgo,Graphs.PathIterUndirected,9,126,2,14,0,23,2,12,0,6
 jgalgo,com.ugav.jgalgo,Weights.Int,15,4,0,0,4,1,3,1,3,1
 jgalgo,com.ugav.jgalgo,MSTKargerKleinTarjan1995,12,520,1,35,3,88,2,25,1,8
@@ -62,6 +62,7 @@ jgalgo,com.ugav.jgalgo,MaxFlowPushRelabelWithDynamicTrees,54,877,15,89,2,175,15,
 jgalgo,com.ugav.jgalgo,MatchingWeightedBipartiteSSSP.Ref,37,9,8,0,8,4,7,1,3,1
 jgalgo,com.ugav.jgalgo,TSPMetric,50,109,4,18,4,16,4,9,0,2
 jgalgo,com.ugav.jgalgo,TSPMetricMatchingAppx,3,247,1,17,1,48,1,11,0,3
+jgalgo,com.ugav.jgalgo,APSPJohnson,197,75,19,7,40,19,14,5,3,3
 jgalgo,com.ugav.jgalgo,LinkedList.Node,3,0,0,0,1,0,1,0,1,0
 jgalgo,com.ugav.jgalgo,LCAGabowSimple.CharacteristicAncestors,0,12,0,0,0,5,0,1,0,1
 jgalgo,com.ugav.jgalgo,SSSPDial1969,36,286,7,23,8,67,6,15,0,6
@@ -125,10 +126,11 @@ jgalgo,com.ugav.jgalgo,SplayTree.SplayImpl,4,117,1,21,0,37,1,15,0,5
 jgalgo,com.ugav.jgalgo,MaxFlowPushRelabelWithDynamicTrees.Vertex,0,24,0,0,0,9,0,1,0,1
 jgalgo,com.ugav.jgalgo,Array.Obj,93,320,30,38,13,59,22,22,1,9
 jgalgo,com.ugav.jgalgo,SSSPGoldberg1995.PotentialWeightFunction,0,33,0,0,0,6,0,2,0,2
+jgalgo,com.ugav.jgalgo,APSPJohnson.NegCycleRes,23,0,0,0,8,0,5,0,5,0
 jgalgo,com.ugav.jgalgo,WeightsImpl.Mapped.Obj,13,26,0,0,3,6,2,4,2,4
 jgalgo,com.ugav.jgalgo,Graphs.PathIter,4,24,1,3,1,4,1,2,0,1
 jgalgo,com.ugav.jgalgo,GraphTableUndirected.new GraphCapabilities() {...},0,17,0,0,0,8,0,8,0,8
-jgalgo,com.ugav.jgalgo,SSSPGoldberg1995,16,611,2,68,4,122,3,39,1,6
+jgalgo,com.ugav.jgalgo,SSSPGoldberg1995,16,604,2,68,4,122,3,39,1,6
 jgalgo,com.ugav.jgalgo,MatchingWeightedGabow2017.Worker.Blossom,16,22,4,2,1,7,3,3,1,2
 jgalgo,com.ugav.jgalgo,MaxFlowDinic.Ref,29,12,6,0,8,5,6,1,3,1
 jgalgo,com.ugav.jgalgo,HeapBinary.It,4,37,1,3,1,6,1,4,0,3
@@ -193,12 +195,12 @@ jgalgo,com.ugav.jgalgo,LinkedListDoubleArrayFixedSize.Iter,4,32,1,3,1,8,1,4,0,3
 jgalgo,com.ugav.jgalgo,Weights.Long,20,0,0,0,5,0,4,0,4,0
 jgalgo,com.ugav.jgalgo,GraphLinkedUndirected.Node,20,106,5,25,0,19,5,17,0,7
 jgalgo,com.ugav.jgalgo,BitsLookupTable.Count,6,58,2,6,1,11,2,5,0,3
-jgalgo,com.ugav.jgalgo,SSSPGoldberg1995.Result,23,65,5,9,4,13,5,8,1,5
+jgalgo,com.ugav.jgalgo,SSSPGoldberg1995.Result,23,81,5,9,4,15,5,10,1,7
 jgalgo,com.ugav.jgalgo,EdgeWeightFunc,0,8,0,0,0,1,0,1,0,1
 jgalgo,com.ugav.jgalgo,LinkedListDoubleArrayFixedSize,54,175,11,17,11,38,11,17,2,12
 jgalgo,com.ugav.jgalgo,BSTUtils.Node,0,77,2,12,0,13,2,13,0,8
 jgalgo,com.ugav.jgalgo,MSTKargerKleinTarjan1995.Ref,37,9,8,0,8,4,7,1,3,1
-jgalgo,com.ugav.jgalgo,APSPResultImpl.Directed,8,94,2,8,0,23,2,8,0,5
+jgalgo,com.ugav.jgalgo,APSPResultImpl.Directed,16,100,4,10,2,25,4,8,0,5
 jgalgo,com.ugav.jgalgo,GraphArrayUndirected.new GraphCapabilities() {...},0,17,0,0,0,8,0,8,0,8
 jgalgo,com.ugav.jgalgo,Weights.Factory,15,5,0,0,3,1,3,1,3,1
 jgalgo,com.ugav.jgalgo,SubtreeMergeFindminImpl.Edge,8,21,0,0,1,8,1,4,1,4
@@ -211,6 +213,7 @@ jgalgo,com.ugav.jgalgo,DataContainer.Double.new AbstractDoubleCollection() {...}
 jgalgo,com.ugav.jgalgo,RMQ.ArrayIntComparator,0,18,0,0,0,4,0,2,0,2
 jgalgo,com.ugav.jgalgo,Utils.QueueIntFixSize,117,87,18,4,20,17,12,6,2,5
 jgalgo,com.ugav.jgalgo,DataContainer.Int.new AbstractIntCollection() {...},9,6,0,0,2,1,2,1,2,1
+jgalgo,com.ugav.jgalgo,APSPJohnson.SuccessRes,4,33,0,0,1,6,1,4,1,4
 jgalgo,com.ugav.jgalgo,GraphArrayAbstract,7,207,3,9,3,46,3,16,0,13
 jgalgo,com.ugav.jgalgo,MatchingGabow1976,5,610,1,57,1,122,1,31,0,3
 jgalgo,com.ugav.jgalgo,HeapPairing.Node,4,9,0,0,1,4,1,2,1,2
@@ -254,7 +257,7 @@ jgalgo,com.ugav.jgalgo,GraphBuilder.GraphCustomIDStrategies,197,105,5,1,43,24,23
 jgalgo,com.ugav.jgalgo,DynamicTreeSplay.SplayNode,27,70,2,4,7,22,4,14,2,13
 jgalgo,com.ugav.jgalgo,GraphLinkedDirected.EdgeVertexItr,0,13,0,0,0,4,0,3,0,3
 jgalgo,com.ugav.jgalgo,Array.Int,110,303,30,38,17,55,23,21,2,8
-jgalgo,com.ugav.jgalgo,APSPFloydWarshall,0,271,0,38,0,58,0,23,0,4
+jgalgo,com.ugav.jgalgo,APSPFloydWarshall,22,321,1,49,5,70,1,29,0,5
 jgalgo,com.ugav.jgalgo,SSSPBellmanFord.Result,21,28,5,3,4,9,5,5,1,5
 jgalgo,com.ugav.jgalgo,SplitFindMinArray.Sequence,13,9,2,0,1,4,2,1,1,1
 jgalgo,com.ugav.jgalgo,GraphBuilder,46,73,11,11,10,21,12,6,2,5
@@ -270,6 +273,6 @@ jgalgo,com.ugav.jgalgo,LCARMQBenderFarachColton2000,9,189,2,14,2,52,2,9,0,3
 jgalgo,com.ugav.jgalgo,DebugPrintsManager,531,45,80,8,123,22,81,10,37,10
 jgalgo,com.ugav.jgalgo,GraphBase.WeightsFactoryBase,68,164,11,19,10,37,10,15,1,9
 jgalgo,com.ugav.jgalgo,MSTYao1976,13,454,3,55,1,98,3,30,0,4
-jgalgo,com.ugav.jgalgo,APSPResultImpl.Abstract,0,40,0,2,0,9,0,4,0,3
+jgalgo,com.ugav.jgalgo,APSPResultImpl.Abstract,20,45,3,3,6,10,4,5,2,4
 jgalgo,com.ugav.jgalgo,HeapPairing,53,479,15,51,4,126,15,36,0,18
 jgalgo,com.ugav.jgalgo,WeightsImpl.Mapped.Bool,39,0,0,0,9,0,6,0,6,0

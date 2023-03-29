@@ -79,13 +79,12 @@ public class SSSPBellmanFord implements SSSP {
 		public IntList getNegativeCycle() {
 <span class="pc bpc" id="L80" title="1 of 2 branches missed.">			if (negCycle)</span>
 <span class="fc" id="L81">				throw new UnsupportedOperationException();</span>
-			else
-<span class="nc" id="L83">				throw new IllegalStateException(&quot;no negative cycle found&quot;);</span>
+<span class="nc" id="L82">			throw new IllegalStateException(&quot;no negative cycle found&quot;);</span>
 		}
 
 		@Override
 		public String toString() {
-<span class="nc bnc" id="L88" title="All 2 branches missed.">			return negCycle ? &quot;[NegCycle]&quot; : super.toString();</span>
+<span class="nc bnc" id="L87" title="All 2 branches missed.">			return negCycle ? &quot;[NegCycle]&quot; : super.toString();</span>
 		}
 
 	}
