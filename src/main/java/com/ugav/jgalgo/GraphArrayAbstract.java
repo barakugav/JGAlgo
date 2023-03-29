@@ -85,15 +85,15 @@ abstract class GraphArrayAbstract extends GraphBaseContinues {
 	}
 
 	private static long sourceTarget2Endpoints(int u, int v) {
-		return (((long) u) << 32) + v;
+		return ((u & 0xffffffffL) << 32) | ((v & 0xffffffffL) << 0);
 	}
 
 	private static int endpoints2Source(long endpoints) {
-		return (int) ((endpoints >> 32) & 0xffffffff);
+		return (int) ((endpoints >> 32) & 0xffffffffL);
 	}
 
 	private static int endpoints2Target(long endpoints) {
-		return (int) ((endpoints >> 0) & 0xffffffff);
+		return (int) ((endpoints >> 0) & 0xffffffffL);
 	}
 
 	abstract class EdgeIt implements EdgeIter {
