@@ -87,7 +87,7 @@ public class SSSPDijkstra implements SSSP {
 			backtrack[u] = next.backtrack;
 		}
 
-		SSSP.Result res = new SSSPResultsImpl(g, Arrays.copyOf(distances, n), Arrays.copyOf(backtrack, n));
+		SSSP.Result res = new SSSPResultImpl(g, Arrays.copyOf(distances, n), Arrays.copyOf(backtrack, n));
 		memClear(n);
 		return res;
 	}

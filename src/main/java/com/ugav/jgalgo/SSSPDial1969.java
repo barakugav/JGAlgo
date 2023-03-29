@@ -123,7 +123,7 @@ public class SSSPDial1969 implements SSSP {
 			backtrack[u] = next.backtrack;
 		}
 
-		SSSP.Result res = new ResultImplInt(g, Arrays.copyOf(distances, n), Arrays.copyOf(backtrack, n));
+		SSSP.Result res = new SSSPResultImpl.Int(g, Arrays.copyOf(distances, n), Arrays.copyOf(backtrack, n));
 		memClear(n, m);
 		return res;
 	}

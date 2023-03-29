@@ -53,7 +53,7 @@ public class SSSPBellmanFord implements SSSP {
 		return Result.success(g, distances, backtrack);
 	}
 
-	private static class Result extends SSSPResultsImpl {
+	private static class Result extends SSSPResultImpl {
 
 		private final boolean negCycle;
 

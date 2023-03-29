@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import com.ugav.jgalgo.SSSP.SSSPResultsImpl;
 import com.ugav.jgalgo.Utils.StackIntFixSize;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectFunction;
@@ -455,7 +454,7 @@ public class Graphs {
 			}
 		}
 
-		return new SSSPResultsImpl(g, distances, backtrack);
+		return new SSSPResultImpl(g, distances, backtrack);
 	}
 
 	public static int getFullyBranchingTreeDepth(Graph t, int root) {

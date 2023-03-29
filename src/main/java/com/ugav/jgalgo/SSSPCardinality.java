@@ -17,7 +17,7 @@ public class SSSPCardinality {
 			distances[v] = it.layer();
 			backtrack[v] = it.inEdge();
 		}
-		return new SSSP.ResultImplInt(g, distances, backtrack);
+		return new SSSPResultImpl.Int(g, distances, backtrack);
 	}
 
 }
