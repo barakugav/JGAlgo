@@ -335,11 +335,18 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 				q[u] |= 1 << depths[ancestor];
 			}
 
+			/* Start traversing the full branching tree from the leaves upwards */
+			int maxDepth = -1;
+			for (int u = 0; u < n; u++)
+				if (depths[u] > maxDepth)
+					maxDepth = depths[u];
 			QueueIntFixSize queue = new QueueIntFixSize(n);
 			boolean[] queued = new boolean[n];
 			for (int u = 0; u < n; u++) {
-				queue.push(u);
-				queued[u] = true;
+				if (depths[u] == maxDepth) {
+					queue.push(u);
+					queued[u] = true;
+				}
 			}
 
 			while (!queue.isEmpty()) {
