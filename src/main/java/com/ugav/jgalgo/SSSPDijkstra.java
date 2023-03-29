@@ -37,8 +37,6 @@ public class SSSPDijkstra implements SSSP {
 	@Override
 	public SSSP.Result calcDistances(Graph g, EdgeWeightFunc w, int source) {
 		int n = g.vertices().size();
-		if (n <= 0)
-			throw new IllegalArgumentException();
 
 		memAlloc(n);
 		HeapDirectAccessed<HeapElm> heap = this.heap;
@@ -60,12 +58,13 @@ public class SSSPDijkstra implements SSSP {
 
 				HeapDirectAccessed.Handle<HeapElm> vPtr = verticesPtrs[v];
 				if (vPtr == null) {
-					verticesPtrs[v] = heap.insert(new HeapElm(distance, e, v));
+					verticesPtrs[v] = heap.insert(new HeapElm(distance, v));
+					res.backtrack[v] = e;
 				} else {
 					HeapElm ptr = vPtr.get();
 					if (distance < ptr.distance) {
 						ptr.distance = distance;
-						ptr.backtrack = e;
+						res.backtrack[v] = e;
 						heap.decreaseKey(vPtr, ptr);
 					}
 				}
@@ -75,7 +74,6 @@ public class SSSPDijkstra implements SSSP {
 				break;
 			HeapElm next = heap.extractMin();
 			res.distances[next.v] = next.distance;
-			res.backtrack[next.v] = next.backtrack;
 			u = next.v;
 		}
 
@@ -86,12 +84,10 @@ public class SSSPDijkstra implements SSSP {
 	private static class HeapElm {
 
 		double distance;
-		int backtrack;
 		final int v;
 
-		HeapElm(double distance, int backtrack, int v) {
+		HeapElm(double distance, int v) {
 			this.distance = distance;
-			this.backtrack = backtrack;
 			this.v = v;
 		}
 

@@ -41,17 +41,17 @@ public class AStar {
 				if (distance >= res.distances[v])
 					continue;
 				res.distances[v] = distance;
+				res.backtrack[v] = e;
 				double distanceAstimate = distance + vHeuristic.applyAsDouble(v);
 
 				HeapDirectAccessed.Handle<HeapElm> vPtr = verticesPtrs[v];
 				if (vPtr == null) {
-					verticesPtrs[v] = heap.insert(new HeapElm(distanceAstimate, e, v));
+					verticesPtrs[v] = heap.insert(new HeapElm(distanceAstimate, v));
 				} else {
 					HeapElm ptr = vPtr.get();
 					assert distance < ptr.distanceAstimate;
 					if (distance < ptr.distanceAstimate) {
 						ptr.distanceAstimate = distance;
-						ptr.backtrack = e;
 						heap.decreaseKey(vPtr, ptr);
 					}
 				}
@@ -61,7 +61,6 @@ public class AStar {
 				break;
 			HeapElm next = heap.extractMin();
 			verticesPtrs[next.v] = null;
-			res.backtrack[next.v] = next.backtrack;
 			u = next.v;
 			if (u == target)
 				return res.getPathTo(target);
@@ -72,12 +71,10 @@ public class AStar {
 	private static class HeapElm {
 
 		double distanceAstimate;
-		int backtrack;
 		final int v;
 
-		HeapElm(double distanceAstimate, int backtrack, int v) {
+		HeapElm(double distanceAstimate, int v) {
 			this.distanceAstimate = distanceAstimate;
-			this.backtrack = backtrack;
 			this.v = v;
 		}
 

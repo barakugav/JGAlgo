@@ -105,11 +105,12 @@ public class SSSPDial1969 implements SSSP {
 
 				DialHeap.Node vPtr = verticesPtrs[v];
 				if (vPtr == null) {
-					vPtr = verticesPtrs[v] = heap.insert(distance, e, v);
+					vPtr = verticesPtrs[v] = heap.insert(distance, v);
+					res.backtrack[v] = e;
 				} else {
 					if (distance < vPtr.distance) {
-						vPtr.backtrack = e;
 						heap.decreaseKey(vPtr, distance);
+						res.backtrack[v] = e;
 					}
 				}
 			}
@@ -117,9 +118,8 @@ public class SSSPDial1969 implements SSSP {
 			DialHeap.Node next = heap.extractMin();
 			if (next == null)
 				break;
+			res.distances[next.v] = next.distance;
 			u = next.v;
-			res.distances[u] = next.distance;
-			res.backtrack[u] = next.backtrack;
 		}
 
 		memClear(n, m);
@@ -161,8 +161,8 @@ public class SSSPDial1969 implements SSSP {
 			}
 		}
 
-		Node insert(int distance, int backtrack, int v) {
-			Node n = new Node(distance, backtrack, v);
+		Node insert(int distance, int v) {
+			Node n = new Node(distance, v);
 			insertNode(n);
 			return n;
 		}
@@ -214,15 +214,13 @@ public class SSSPDial1969 implements SSSP {
 		static class Node {
 
 			int distance;
-			int backtrack;
 			final int v;
 
 			Node next;
 			Node prev;
 
-			Node(int distance, int backtrack, int v) {
+			Node(int distance, int v) {
 				this.distance = distance;
-				this.backtrack = backtrack;
 				this.v = v;
 			}
 		}
