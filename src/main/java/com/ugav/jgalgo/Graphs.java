@@ -7,16 +7,17 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import com.ugav.jgalgo.SSSP.SSSPResultsImpl;
-import com.ugav.jgalgo.Utils.QueueIntFixSize;
 import com.ugav.jgalgo.Utils.StackIntFixSize;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectFunction;
+import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.longs.LongArrayFIFOQueue;
 import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
@@ -395,7 +396,7 @@ public class Graphs {
 	public static int[] calcTopologicalSortingDAG(DiGraph g) {
 		int n = g.vertices().size();
 		int[] inDegree = new int[n];
-		QueueIntFixSize queue = new QueueIntFixSize(n);
+		IntPriorityQueue queue = new IntArrayFIFOQueue();
 		int[] topolSort = new int[n];
 		int topolSortSize = 0;
 
@@ -406,18 +407,18 @@ public class Graphs {
 		// Find vertices with zero in degree and insert them to the queue
 		for (int v = 0; v < n; v++)
 			if (inDegree[v] == 0)
-				queue.push(v);
+				queue.enqueue(v);
 
 		// Poll vertices from the queue and "remove" each one from the tree and add new
 		// zero in degree vertices to the queue
 		while (!queue.isEmpty()) {
-			int u = queue.pop();
+			int u = queue.dequeueInt();
 			topolSort[topolSortSize++] = u;
 			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 				eit.nextInt();
 				int v = eit.v();
 				if (--inDegree[v] == 0)
-					queue.push(v);
+					queue.enqueue(v);
 			}
 		}
 
