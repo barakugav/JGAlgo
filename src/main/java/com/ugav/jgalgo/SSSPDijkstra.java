@@ -9,8 +9,6 @@ public class SSSPDijkstra implements SSSP {
 	 */
 
 	private int allocSize;
-	private double[] distances;
-	private int[] backtrack;
 	private final HeapDirectAccessed<HeapElm> heap;
 	private HeapDirectAccessed.Handle<HeapElm>[] verticesPtrs;
 
@@ -26,16 +24,12 @@ public class SSSPDijkstra implements SSSP {
 	@SuppressWarnings("unchecked")
 	private void memAlloc(int n) {
 		if (allocSize < n) {
-			distances = new double[n];
-			backtrack = new int[n];
 			verticesPtrs = new HeapDirectAccessed.Handle[n];
 			allocSize = n;
 		}
 	}
 
 	private void memClear(int n) {
-		Arrays.fill(distances, 0, n, 0);
-		Arrays.fill(backtrack, 0, n, -1);
 		heap.clear();
 		Arrays.fill(verticesPtrs, 0, n, null);
 	}
@@ -47,25 +41,22 @@ public class SSSPDijkstra implements SSSP {
 			throw new IllegalArgumentException();
 
 		memAlloc(n);
-		double[] distances = this.distances;
-		int[] backtrack = this.backtrack;
-		Arrays.fill(backtrack, 0, n, -1);
 		HeapDirectAccessed<HeapElm> heap = this.heap;
 		HeapDirectAccessed.Handle<HeapElm>[] verticesPtrs = this.verticesPtrs;
 
-		Arrays.fill(distances, Double.POSITIVE_INFINITY);
-		distances[source] = 0;
+		SSSPResultImpl res = new SSSPResultImpl(g);
+		res.distances[source] = 0;
 
 		for (int u = source;;) {
 			for (EdgeIter eit = g.edges(u); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = eit.v();
-				if (distances[v] != Double.POSITIVE_INFINITY)
+				if (res.distances[v] != Double.POSITIVE_INFINITY)
 					continue;
 				double ws = w.weight(e);
 				if (ws < 0)
 					throw new IllegalArgumentException("negative weights are not supported");
-				double distance = distances[u] + ws;
+				double distance = res.distances[u] + ws;
 
 				HeapDirectAccessed.Handle<HeapElm> vPtr = verticesPtrs[v];
 				if (vPtr == null) {
@@ -83,11 +74,10 @@ public class SSSPDijkstra implements SSSP {
 			if (heap.isEmpty())
 				break;
 			HeapElm next = heap.extractMin();
-			distances[u = next.v] = next.distance;
-			backtrack[u] = next.backtrack;
+			res.distances[u = next.v] = next.distance;
+			res.backtrack[u] = next.backtrack;
 		}
 
-		SSSP.Result res = new SSSPResultImpl(g, Arrays.copyOf(distances, n), Arrays.copyOf(backtrack, n));
 		memClear(n);
 		return res;
 	}

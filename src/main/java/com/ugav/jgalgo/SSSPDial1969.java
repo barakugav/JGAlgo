@@ -19,13 +19,11 @@ public class SSSPDial1969 implements SSSP {
 	private int allocSizeN;
 	private int allocSizeM;
 	private int[] edges;
-	private int[] distances;
 	private final DialHeap heap;
 	private DialHeap.Node[] verticesPtrs;
 
 	private void memAlloc(int n, int m) {
 		if (allocSizeN < n) {
-			distances = new int[n];
 			verticesPtrs = new DialHeap.Node[n];
 			allocSizeN = n;
 		}
@@ -38,7 +36,6 @@ public class SSSPDial1969 implements SSSP {
 
 	private void memClear(int n, int m) {
 		Arrays.fill(edges, 0, Math.max(n, m), -1);
-		Arrays.fill(distances, 0, n, 0);
 		heap.clear();
 		Arrays.fill(verticesPtrs, 0, n, null);
 	}
@@ -83,14 +80,15 @@ public class SSSPDial1969 implements SSSP {
 
 		memAlloc(n, m);
 
-		int[] distances = this.distances;
-		int[] backtrack = this.edges;
+		SSSPResultImpl.Int res = new SSSPResultImpl.Int(g);
 		DialHeap heap = this.heap;
 		DialHeap.Node[] verticesPtrs = this.verticesPtrs;
 
-		Arrays.fill(distances, 0, n, Integer.MAX_VALUE);
-		Arrays.fill(backtrack, 0, n, -1);
-		distances[source] = 0;
+		for (int v = 0; v < n; v++) {
+			res.distances[v] = Integer.MAX_VALUE;
+			res.backtrack[v] = -1;
+		}
+		res.distances[source] = 0;
 
 		heap.init(maxDistance);
 
@@ -98,12 +96,12 @@ public class SSSPDial1969 implements SSSP {
 			for (EdgeIter eit = g.edges(u); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = eit.v();
-				if (distances[v] != Integer.MAX_VALUE)
+				if (res.distances[v] != Integer.MAX_VALUE)
 					continue;
 				int ws = w.weightInt(e);
 				if (ws < 0)
 					throw new IllegalArgumentException("negative weights are not supported");
-				int distance = distances[u] + ws;
+				int distance = res.distances[u] + ws;
 
 				DialHeap.Node vPtr = verticesPtrs[v];
 				if (vPtr == null) {
@@ -119,11 +117,11 @@ public class SSSPDial1969 implements SSSP {
 			DialHeap.Node next = heap.extractMin();
 			if (next == null)
 				break;
-			distances[u = next.v] = next.distance;
-			backtrack[u] = next.backtrack;
+			u = next.v;
+			res.distances[u] = next.distance;
+			res.backtrack[u] = next.backtrack;
 		}
 
-		SSSP.Result res = new SSSPResultImpl.Int(g, Arrays.copyOf(distances, n), Arrays.copyOf(backtrack, n));
 		memClear(n, m);
 		return res;
 	}

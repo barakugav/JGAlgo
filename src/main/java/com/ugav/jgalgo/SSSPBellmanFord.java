@@ -1,7 +1,5 @@
 package com.ugav.jgalgo;
 
-import java.util.Arrays;
-
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 
@@ -20,24 +18,19 @@ public class SSSPBellmanFord implements SSSP {
 			throw new IllegalArgumentException("only directed graphs are supported");
 		DiGraph g = (DiGraph) g0;
 		int n = g.vertices().size();
-		double[] distances = new double[n];
-		int[] backtrack = new int[n];
-		Arrays.fill(backtrack, -1);
-
+		Result res = new Result(g);
 		if (n == 0)
-			return Result.success(g, distances, backtrack);
-
-		Arrays.fill(distances, Double.POSITIVE_INFINITY);
-		distances[source] = 0;
+			return res;
+		res.distances[source] = 0;
 
 		for (int i = 0; i < n - 1; i++) {
 			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 				int e = it.nextInt();
 				int u = g.edgeSource(e), v = g.edgeTarget(e);
-				double d = distances[u] + w.weight(e);
-				if (d < distances[v]) {
-					distances[v] = d;
-					backtrack[v] = e;
+				double d = res.distances[u] + w.weight(e);
+				if (d < res.distances[v]) {
+					res.distances[v] = d;
+					res.backtrack[v] = e;
 				}
 			}
 		}
@@ -45,21 +38,22 @@ public class SSSPBellmanFord implements SSSP {
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			int u = g.edgeSource(e), v = g.edgeTarget(e);
-			double d = distances[u] + w.weight(e);
-			if (d < distances[v])
-				return Result.negCycle(g);
+			double d = res.distances[u] + w.weight(e);
+			if (d < res.distances[v]) {
+				res.negCycle = true;
+				return res;
+			}
 		}
 
-		return Result.success(g, distances, backtrack);
+		return res;
 	}
 
 	private static class Result extends SSSPResultImpl {
 
-		private final boolean negCycle;
+		private boolean negCycle;
 
-		private Result(Graph g, double[] distances, int[] backtrack, boolean negCycle) {
-			super(g, distances, backtrack);
-			this.negCycle = negCycle;
+		private Result(Graph g) {
+			super(g);
 		}
 
 		@Override
@@ -92,14 +86,6 @@ public class SSSPBellmanFord implements SSSP {
 		@Override
 		public String toString() {
 			return negCycle ? "[NegCycle]" : super.toString();
-		}
-
-		static Result success(Graph g, double[] distances, int[] backtrack) {
-			return new Result(g, distances, backtrack, false);
-		}
-
-		static Result negCycle(Graph g) {
-			return new Result(g, null, null, true);
 		}
 
 	}

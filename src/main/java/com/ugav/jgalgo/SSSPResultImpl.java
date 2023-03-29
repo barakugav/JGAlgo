@@ -11,13 +11,16 @@ import it.unimi.dsi.fastutil.ints.IntList;
 class SSSPResultImpl implements Result {
 
 	private final Graph g;
-	private final double[] distances;
-	private final int[] backtrack;
+	final double[] distances;
+	final int[] backtrack;
 
-	SSSPResultImpl(Graph g, double[] distances, int[] backtrack) {
+	SSSPResultImpl(Graph g) {
 		this.g = g;
-		this.distances = distances;
-		this.backtrack = backtrack;
+		int n = g.vertices().size();
+		distances = new double[n];
+		backtrack = new int[n];
+		Arrays.fill(distances, Double.POSITIVE_INFINITY);
+		Arrays.fill(backtrack, -1);
 	}
 
 	@Override
@@ -70,13 +73,16 @@ class SSSPResultImpl implements Result {
 	static class Int implements SSSP.Result {
 
 		private final Graph g;
-		private final int[] distances;
-		private final int[] backtrack;
+		final int[] distances;
+		final int[] backtrack;
 
-		Int(Graph g, int[] distances, int[] backtrack) {
+		Int(Graph g) {
 			this.g = g;
-			this.distances = distances;
-			this.backtrack = backtrack;
+			int n = g.vertices().size();
+			distances = new int[n];
+			backtrack = new int[n];
+			Arrays.fill(distances, Integer.MAX_VALUE);
+			Arrays.fill(backtrack, -1);
 		}
 
 		@Override
