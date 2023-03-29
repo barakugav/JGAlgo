@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SSSPResultImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jgalgo</a> &gt; <a href="index.source.html" class="el_package">com.ugav.jgalgo</a> &gt; <span class="el_source">SSSPResultImpl.java</span></div><h1>SSSPResultImpl.java</h1><pre class="source lang-java linenums">package com.ugav.jgalgo;
+
+import java.util.Arrays;
+
+import com.ugav.jgalgo.SSSP.Result;
+
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.ints.IntList;
+
+class SSSPResultImpl implements Result {
+
+	private final Graph g;
+	final double[] distances;
+	final int[] backtrack;
+
+<span class="fc" id="L17">	SSSPResultImpl(Graph g) {</span>
+<span class="fc" id="L18">		this.g = g;</span>
+<span class="fc" id="L19">		int n = g.vertices().size();</span>
+<span class="fc" id="L20">		distances = new double[n];</span>
+<span class="fc" id="L21">		backtrack = new int[n];</span>
+<span class="fc" id="L22">		Arrays.fill(distances, Double.POSITIVE_INFINITY);</span>
+<span class="fc" id="L23">		Arrays.fill(backtrack, -1);</span>
+<span class="fc" id="L24">	}</span>
+
+	@Override
+	public double distance(int v) {
+<span class="fc" id="L28">		return distances[v];</span>
+	}
+
+	@Override
+	public IntList getPathTo(int v) {
+<span class="fc bfc" id="L33" title="All 2 branches covered.">		if (distances[v] == Double.POSITIVE_INFINITY)</span>
+<span class="fc" id="L34">			return null;</span>
+<span class="fc" id="L35">		IntArrayList path = new IntArrayList();</span>
+<span class="fc bfc" id="L36" title="All 2 branches covered.">		if (g instanceof DiGraph) {</span>
+			for (;;) {
+<span class="fc" id="L38">				int e = backtrack[v];</span>
+<span class="fc bfc" id="L39" title="All 2 branches covered.">				if (e == -1)</span>
+<span class="fc" id="L40">					break;</span>
+<span class="fc" id="L41">				path.add(e);</span>
+<span class="fc" id="L42">				v = g.edgeSource(e);</span>
+<span class="fc" id="L43">			}</span>
+		} else {
+<span class="fc" id="L45">			UGraph g = (UGraph) this.g;</span>
+			for (;;) {
+<span class="fc" id="L47">				int e = backtrack[v];</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">				if (e == -1)</span>
+<span class="fc" id="L49">					break;</span>
+<span class="fc" id="L50">				path.add(e);</span>
+<span class="fc" id="L51">				v = g.edgeEndpoint(e, v);</span>
+<span class="fc" id="L52">			}</span>
+		}
+<span class="fc" id="L54">		IntArrays.reverse(path.elements(), 0, path.size());</span>
+<span class="fc" id="L55">		return path;</span>
+	}
+
+	@Override
+	public boolean foundNegativeCycle() {
+<span class="fc" id="L60">		return false;</span>
+	}
+
+	@Override
+	public IntList getNegativeCycle() {
+<span class="nc" id="L65">		throw new IllegalStateException(&quot;no negative cycle found&quot;);</span>
+	}
+
+	@Override
+	public String toString() {
+<span class="nc" id="L70">		return Arrays.toString(distances);</span>
+	}
+
+	static class Int implements SSSP.Result {
+
+		private final Graph g;
+		final int[] distances;
+		final int[] backtrack;
+
+<span class="fc" id="L79">		Int(Graph g) {</span>
+<span class="fc" id="L80">			this.g = g;</span>
+<span class="fc" id="L81">			int n = g.vertices().size();</span>
+<span class="fc" id="L82">			distances = new int[n];</span>
+<span class="fc" id="L83">			backtrack = new int[n];</span>
+<span class="fc" id="L84">			Arrays.fill(distances, Integer.MAX_VALUE);</span>
+<span class="fc" id="L85">			Arrays.fill(backtrack, -1);</span>
+<span class="fc" id="L86">		}</span>
+
+		@Override
+		public double distance(int v) {
+<span class="fc" id="L90">			int d = distances[v];</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">			return d != Integer.MAX_VALUE ? d : Double.POSITIVE_INFINITY;</span>
+		}
+
+		@Override
+		public IntList getPathTo(int v) {
+<span class="fc bfc" id="L96" title="All 2 branches covered.">			if (distances[v] == Integer.MAX_VALUE)</span>
+<span class="fc" id="L97">				return null;</span>
+<span class="fc" id="L98">			IntArrayList path = new IntArrayList();</span>
+			for (;;) {
+<span class="fc" id="L100">				int e = backtrack[v];</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">				if (e == -1)</span>
+<span class="fc" id="L102">					break;</span>
+<span class="fc" id="L103">				path.add(e);</span>
+<span class="fc" id="L104">				v = g.edgeEndpoint(e, v);</span>
+<span class="fc" id="L105">			}</span>
+<span class="fc" id="L106">			IntArrays.reverse(path.elements(), 0, path.size());</span>
+<span class="fc" id="L107">			return path;</span>
+		}
+
+		@Override
+		public boolean foundNegativeCycle() {
+<span class="fc" id="L112">			return false;</span>
+		}
+
+		@Override
+		public IntList getNegativeCycle() {
+<span class="nc" id="L117">			throw new IllegalStateException(&quot;no negative cycle found&quot;);</span>
+		}
+
+		@Override
+		public String toString() {
+<span class="nc" id="L122">			return Arrays.toString(distances);</span>
+		}
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
