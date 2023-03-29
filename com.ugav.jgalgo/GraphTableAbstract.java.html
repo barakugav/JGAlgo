@@ -131,15 +131,15 @@ abstract class GraphTableAbstract extends GraphBaseContinues {
 <span class="fc" id="L131">	}</span>
 
 	private static long sourceTarget2Endpoints(int u, int v) {
-<span class="fc" id="L134">		return (((long) u) &lt;&lt; 32) + v;</span>
+<span class="fc" id="L134">		return ((u &amp; 0xffffffffL) &lt;&lt; 32) | ((v &amp; 0xffffffffL) &lt;&lt; 0);</span>
 	}
 
 	private static int endpoints2Source(long endpoints) {
-<span class="fc" id="L138">		return (int) ((endpoints &gt;&gt; 32) &amp; 0xffffffff);</span>
+<span class="fc" id="L138">		return (int) ((endpoints &gt;&gt; 32) &amp; 0xffffffffL);</span>
 	}
 
 	private static int endpoints2Target(long endpoints) {
-<span class="fc" id="L142">		return (int) ((endpoints &gt;&gt; 0) &amp; 0xffffffff);</span>
+<span class="fc" id="L142">		return (int) ((endpoints &gt;&gt; 0) &amp; 0xffffffffL);</span>
 	}
 
 	class EdgeIterOut implements EdgeIter {
