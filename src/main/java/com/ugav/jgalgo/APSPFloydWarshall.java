@@ -1,6 +1,8 @@
 package com.ugav.jgalgo;
 
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntList;
 
 public class APSPFloydWarshall implements APSP {
 
@@ -14,7 +16,7 @@ public class APSPFloydWarshall implements APSP {
 	}
 
 	private static APSP.Result calcDistancesUndirected(UGraph g, EdgeWeightFunc w) {
-		APSPResultImpl res = new APSPResultImpl.Undirected(g);
+		APSPResultImpl.Abstract res = new APSPResultImpl.Undirected(g);
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			int u = g.edgeSource(e);
@@ -50,11 +52,12 @@ public class APSPFloydWarshall implements APSP {
 				}
 			}
 		}
+		detectNegCycle(res, n);
 		return res;
 	}
 
 	private static APSP.Result calcDistancesDirected(DiGraph g, EdgeWeightFunc w) {
-		APSPResultImpl res = new APSPResultImpl.Directed(g);
+		APSPResultImpl.Abstract res = new APSPResultImpl.Directed(g);
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			int u = g.edgeSource(e);
@@ -87,7 +90,28 @@ public class APSPFloydWarshall implements APSP {
 				}
 			}
 		}
+		detectNegCycle(res, n);
 		return res;
+	}
+
+	private static void detectNegCycle(APSPResultImpl.Abstract res, int n) {
+		for (int u = 0; u < n; u++) {
+			for (int v = 0; v < n; v++) {
+				if (u == v)
+					continue;
+				double d1 = res.distance(u, v);
+				double d2 = res.distance(v, u);
+				if (d1 == Double.POSITIVE_INFINITY || d2 == Double.POSITIVE_INFINITY)
+					continue;
+				if (d1 + d2 < 0) {
+					IntList negCycle = new IntArrayList();
+					negCycle.addAll(res.getPath(u, v));
+					negCycle.addAll(res.getPath(v, u));
+					res.setNegCycle(negCycle);
+					return;
+				}
+			}
+		}
 	}
 
 }

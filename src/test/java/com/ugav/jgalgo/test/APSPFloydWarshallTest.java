@@ -18,4 +18,10 @@ class APSPFloydWarshallTest {
 		APSPTestUtils.testAPSPUndirectedPositiveInt(APSPFloydWarshall::new, seed);
 	}
 
+	@Test
+	public void testRandGraphDirectedNegativeInt() {
+		final long seed = 0xd3037473c85e47b3L;
+		APSPTestUtils.testAPSPDirectedNegativeInt(APSPFloydWarshall::new, seed);
+	}
+
 }

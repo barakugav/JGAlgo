@@ -1,9 +1,11 @@
 package com.ugav.jgalgo;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntLists;
 
 abstract class APSPResultImpl implements APSP.Result {
 
@@ -16,9 +18,10 @@ abstract class APSPResultImpl implements APSP.Result {
 
 	abstract void setEdgeTo(int source, int target, int edge);
 
-	private static abstract class Abstract extends APSPResultImpl {
+	static abstract class Abstract extends APSPResultImpl {
 
 		private final int[][] edges;
+		private IntList negCycle;
 
 		Abstract(Graph g) {
 			int n = g.vertices().size();
@@ -36,6 +39,23 @@ abstract class APSPResultImpl implements APSP.Result {
 		@Override
 		void setEdgeTo(int source, int target, int edge) {
 			edges[source][target] = edge;
+		}
+
+		void setNegCycle(IntList cycle) {
+			Objects.requireNonNull(cycle);
+			this.negCycle = IntLists.unmodifiable(cycle);
+		}
+
+		@Override
+		public boolean foundNegativeCycle() {
+			return negCycle != null;
+		}
+
+		@Override
+		public IntList getNegativeCycle() {
+			if (!foundNegativeCycle())
+				throw new IllegalStateException();
+			return negCycle;
 		}
 	}
 
@@ -71,11 +91,15 @@ abstract class APSPResultImpl implements APSP.Result {
 
 		@Override
 		public double distance(int source, int target) {
+			if (foundNegativeCycle())
+				throw new IllegalStateException();
 			return source != target ? distances[index(source, target)] : 0;
 		}
 
 		@Override
 		public IntList getPath(int source, int target) {
+			if (foundNegativeCycle())
+				throw new IllegalStateException();
 			if (distance(source, target) == Double.POSITIVE_INFINITY)
 				return null;
 			IntList path = new IntArrayList();
@@ -87,7 +111,6 @@ abstract class APSPResultImpl implements APSP.Result {
 			}
 			return path;
 		}
-
 	}
 
 	static class Directed extends Abstract {
@@ -112,11 +135,15 @@ abstract class APSPResultImpl implements APSP.Result {
 
 		@Override
 		public double distance(int source, int target) {
+			if (foundNegativeCycle())
+				throw new IllegalStateException();
 			return distances[source][target];
 		}
 
 		@Override
 		public IntList getPath(int source, int target) {
+			if (foundNegativeCycle())
+				throw new IllegalStateException();
 			if (distance(source, target) == Double.POSITIVE_INFINITY)
 				return null;
 			IntList path = new IntArrayList();

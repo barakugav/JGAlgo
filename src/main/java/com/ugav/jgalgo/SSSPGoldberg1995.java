@@ -44,11 +44,11 @@ public class SSSPGoldberg1995 implements SSSP {
 
 		Pair<int[], IntList> p = calcPotential(g, w, minWeight);
 		if (p.e2 != null)
-			return new Result(source, null, null, p.e2);
+			return Result.ofNegCycle(source, p.e2);
 		int[] potential = p.e1;
 		PotentialWeightFunction pw = new PotentialWeightFunction(g, w, potential);
 		SSSP.Result res = positiveSsspAlgo.calcDistances(g, pw, source);
-		return new Result(source, potential, res, null);
+		return Result.ofSuccess(source, potential, res);
 	}
 
 	private static Pair<int[], IntList> calcPotential(DiGraph g, EdgeWeightFunc.Int w, int minWeight) {
@@ -213,6 +213,14 @@ public class SSSPGoldberg1995 implements SSSP {
 			this.potential = potential;
 			this.dijkstraRes = dijkstraRes;
 			this.cycle = cycle != null ? IntLists.unmodifiable(cycle) : null;
+		}
+
+		static Result ofSuccess(int source, int[] potential, SSSP.Result dijkstraRes) {
+			return new Result(source, potential, dijkstraRes, null);
+		}
+
+		static Result ofNegCycle(int source, IntList cycle) {
+			return new Result(source, null, null, cycle);
 		}
 
 		@Override

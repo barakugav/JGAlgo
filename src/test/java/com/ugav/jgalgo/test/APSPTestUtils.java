@@ -9,6 +9,7 @@ import com.ugav.jgalgo.APSP;
 import com.ugav.jgalgo.EdgeWeightFunc;
 import com.ugav.jgalgo.Graph;
 import com.ugav.jgalgo.SSSP;
+import com.ugav.jgalgo.SSSPBellmanFord;
 import com.ugav.jgalgo.SSSPDijkstra;
 import com.ugav.jgalgo.test.GraphsTestUtils.RandomGraphBuilder;
 
@@ -36,18 +37,49 @@ class APSPTestUtils extends TestUtils {
 					.selfEdges(true).cycles(true).connected(false).build();
 			GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			EdgeWeightFunc.Int w = g.edgesWeight("weight");
-			testAPSP(g, w, builder);
+			testAPSP(g, w, builder, new SSSPDijkstra());
 		});
 	}
 
-	static void testAPSP(Graph g, EdgeWeightFunc w, Supplier<? extends APSP> builder) {
+	static void testAPSPDirectedNegativeInt(Supplier<? extends APSP> builder, long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		List<Phase> phases = List.of(phase(128, 6, 20), phase(128, 16, 32), phase(64, 64, 256));
+		runTestMultiple(phases, (testIter, args) -> {
+			int n = args[0], m = args[1];
+			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).doubleEdges(true)
+					.selfEdges(true).cycles(true).connected(false).build();
+			GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+			EdgeWeightFunc.Int w = g.edgesWeight("weight");
+			testAPSP(g, w, builder, new SSSPBellmanFord());
+		});
+	}
+
+	static void testAPSP(Graph g, EdgeWeightFunc w, Supplier<? extends APSP> builder, SSSP validationAlgo) {
 		APSP algo = builder.get();
 		APSP.Result result = algo.calcDistances(g, w);
-		SSSP validationAlgo = new SSSPDijkstra();
 
 		int n = g.vertices().size();
 		for (int source = 0; source < n; source++) {
 			SSSP.Result expectedRes = validationAlgo.calcDistances(g, w, source);
+
+			if (result.foundNegativeCycle()) {
+				IntList cycle = null;
+				try {
+					cycle = result.getNegativeCycle();
+				} catch (UnsupportedOperationException e) {
+				}
+				if (cycle != null) {
+					double cycleWeight = SSSPTestUtils.getPathWeight(g, cycle, w);
+					Assertions.assertTrue(cycleWeight != Double.NaN, "Invalid cycle: " + cycle);
+					Assertions.assertTrue(cycleWeight < 0, "Cycle is not negative: " + cycle);
+					if (!expectedRes.foundNegativeCycle())
+						throw new IllegalStateException("validation algorithm didn't find negative cycle: " + cycle);
+				} else {
+					Assertions.assertTrue(expectedRes.foundNegativeCycle(), "found non existing negative cycle");
+				}
+				return;
+			}
+			Assertions.assertFalse(expectedRes.foundNegativeCycle(), "failed to found negative cycle");
 
 			for (int target = 0; target < n; target++) {
 				double expectedDistance = expectedRes.distance(target);

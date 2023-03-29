@@ -79,8 +79,7 @@ public class SSSPBellmanFord implements SSSP {
 		public IntList getNegativeCycle() {
 			if (negCycle)
 				throw new UnsupportedOperationException();
-			else
-				throw new IllegalStateException("no negative cycle found");
+			throw new IllegalStateException("no negative cycle found");
 		}
 
 		@Override
