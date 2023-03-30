@@ -38,15 +38,14 @@ public class Triple<E1, E2, E3> implements Comparable<Triple<E1, E2, E3>> {
 		return Objects.equals(e1, o.e1) && Objects.equals(e2, o.e2) && Objects.equals(e3, o.e3);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public int compareTo(Triple<E1, E2, E3> o) {
 		int c;
-		if ((c = ((Comparable) e1).compareTo(o.e1)) != 0)
+		if ((c = Utils.cmpDefault(e1, o.e1)) != 0)
 			return c;
-		if ((c = ((Comparable) e2).compareTo(o.e2)) != 0)
+		if ((c = Utils.cmpDefault(e2, o.e2)) != 0)
 			return c;
-		return ((Comparable) e2).compareTo(o.e2);
+		return Utils.cmpDefault(e2, o.e2);
 	}
 
 	public static <E1, E2, E3> Triple<E1, E2, E3> valueOf(E1 e1, E2 e2, E3 e3) {

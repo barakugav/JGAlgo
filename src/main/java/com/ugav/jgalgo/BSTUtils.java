@@ -3,6 +3,7 @@ package com.ugav.jgalgo;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.function.BiFunction;
 
 class BSTUtils {
 
@@ -29,38 +30,59 @@ class BSTUtils {
 			NeighborType neighborType) {
 		if (root == null)
 			return null;
-		for (N p = root;;) {
-			int cmp = c.compare(e, p.data);
-			if (cmp == 0)
+		BiFunction<NeighborType, N, N> onLeftChildMissing = (nType, p) -> {
+			switch (nType) {
+			case None:
+				return null;
+			case Predecessor:
+				return getPredecessor(p);
+			case Successor:
 				return p;
-			if (cmp < 0) {
-				if (!p.hasLeftChild()) {
-					switch (neighborType) {
-					case None:
-						return null;
-					case Predecessor:
-						return getPredecessor(p);
-					case Successor:
-						return p;
-					default:
-						throw new IllegalArgumentException("Unexpected value: " + neighborType);
-					}
+			default:
+				throw new IllegalArgumentException("Unexpected value: " + neighborType);
+			}
+		};
+		BiFunction<NeighborType, N, N> onRightChildMissing = (nType, p) -> {
+			switch (nType) {
+			case None:
+				return null;
+			case Predecessor:
+				return p;
+			case Successor:
+				return getSuccessor(p);
+			default:
+				throw new IllegalArgumentException("Unexpected value: " + neighborType);
+			}
+		};
+		if (c == null) {
+			for (N p = root;;) {
+				int cmp = Utils.cmpDefault(e, p.data);
+				if (cmp == 0)
+					return p;
+				if (cmp < 0) {
+					if (!p.hasLeftChild())
+						return onLeftChildMissing.apply(neighborType, p);
+					p = p.left;
+				} else {
+					if (!p.hasRightChild())
+						return onRightChildMissing.apply(neighborType, p);
+					p = p.right;
 				}
-				p = p.left;
-			} else {
-				if (!p.hasRightChild()) {
-					switch (neighborType) {
-					case None:
-						return null;
-					case Predecessor:
-						return p;
-					case Successor:
-						return getSuccessor(p);
-					default:
-						throw new IllegalArgumentException("Unexpected value: " + neighborType);
-					}
+			}
+		} else {
+			for (N p = root;;) {
+				int cmp = c.compare(e, p.data);
+				if (cmp == 0)
+					return p;
+				if (cmp < 0) {
+					if (!p.hasLeftChild())
+						return onLeftChildMissing.apply(neighborType, p);
+					p = p.left;
+				} else {
+					if (!p.hasRightChild())
+						return onRightChildMissing.apply(neighborType, p);
+					p = p.right;
 				}
-				p = p.right;
 			}
 		}
 	}
@@ -68,16 +90,31 @@ class BSTUtils {
 	static <E, N extends Node<E, N>> N findSmaller(N root, Comparator<? super E> c, E e) {
 		if (root == null)
 			return null;
-		for (N p = root;;) {
-			int cmp = c.compare(e, p.data);
-			if (cmp <= 0) {
-				if (!p.hasLeftChild())
-					return getPredecessor(p);
-				p = p.left;
-			} else {
-				if (!p.hasRightChild())
-					return p;
-				p = p.right;
+		if (c == null) {
+			for (N p = root;;) {
+				int cmp = Utils.cmpDefault(e, p.data);
+				if (cmp <= 0) {
+					if (!p.hasLeftChild())
+						return getPredecessor(p);
+					p = p.left;
+				} else {
+					if (!p.hasRightChild())
+						return p;
+					p = p.right;
+				}
+			}
+		} else {
+			for (N p = root;;) {
+				int cmp = c.compare(e, p.data);
+				if (cmp <= 0) {
+					if (!p.hasLeftChild())
+						return getPredecessor(p);
+					p = p.left;
+				} else {
+					if (!p.hasRightChild())
+						return p;
+					p = p.right;
+				}
 			}
 		}
 	}
@@ -85,16 +122,31 @@ class BSTUtils {
 	static <E, N extends Node<E, N>> N findGreater(N root, Comparator<? super E> c, E e) {
 		if (root == null)
 			return null;
-		for (N p = root;;) {
-			int cmp = c.compare(e, p.data);
-			if (cmp >= 0) {
-				if (!p.hasRightChild())
-					return getSuccessor(p);
-				p = p.right;
-			} else {
-				if (!p.hasLeftChild())
-					return p;
-				p = p.left;
+		if (c == null) {
+			for (N p = root;;) {
+				int cmp = Utils.cmpDefault(e, p.data);
+				if (cmp >= 0) {
+					if (!p.hasRightChild())
+						return getSuccessor(p);
+					p = p.right;
+				} else {
+					if (!p.hasLeftChild())
+						return p;
+					p = p.left;
+				}
+			}
+		} else {
+			for (N p = root;;) {
+				int cmp = c.compare(e, p.data);
+				if (cmp >= 0) {
+					if (!p.hasRightChild())
+						return getSuccessor(p);
+					p = p.right;
+				} else {
+					if (!p.hasLeftChild())
+						return p;
+					p = p.left;
+				}
 			}
 		}
 	}
@@ -150,22 +202,43 @@ class BSTUtils {
 	}
 
 	static <E, N extends Node<E, N>> void insert(N root, Comparator<? super E> c, N n) {
-		for (N parent = root;;) {
-			int cmp = c.compare(n.data, parent.data);
-			if (cmp <= 0) {
-				if (!parent.hasLeftChild()) {
-					parent.left = n;
-					n.parent = parent;
-					return;
+		if (c == null) {
+			for (N parent = root;;) {
+				int cmp = Utils.cmpDefault(n.data, parent.data);
+				if (cmp <= 0) {
+					if (!parent.hasLeftChild()) {
+						parent.left = n;
+						n.parent = parent;
+						return;
+					}
+					parent = parent.left;
+				} else {
+					if (!parent.hasRightChild()) {
+						parent.right = n;
+						n.parent = parent;
+						return;
+					}
+					parent = parent.right;
 				}
-				parent = parent.left;
-			} else {
-				if (!parent.hasRightChild()) {
-					parent.right = n;
-					n.parent = parent;
-					return;
+			}
+		} else {
+			for (N parent = root;;) {
+				int cmp = c.compare(n.data, parent.data);
+				if (cmp <= 0) {
+					if (!parent.hasLeftChild()) {
+						parent.left = n;
+						n.parent = parent;
+						return;
+					}
+					parent = parent.left;
+				} else {
+					if (!parent.hasRightChild()) {
+						parent.right = n;
+						n.parent = parent;
+						return;
+					}
+					parent = parent.right;
 				}
-				parent = parent.right;
 			}
 		}
 	}

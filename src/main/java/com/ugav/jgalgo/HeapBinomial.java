@@ -98,10 +98,18 @@ public class HeapBinomial<E> extends HeapAbstractDirectAccessed<E> {
 		Node<E> node = (Node<E>) handle;
 		node.value = e;
 
-		for (Node<E> p; (p = node.parent) != null;) {
-			if (c.compare(p.value, e) <= 0)
-				break;
-			swapParentChild(p, node);
+		if (c == null) {
+			for (Node<E> p; (p = node.parent) != null;) {
+				if (Utils.cmpDefault(p.value, e) <= 0)
+					break;
+				swapParentChild(p, node);
+			}
+		} else {
+			for (Node<E> p; (p = node.parent) != null;) {
+				if (c.compare(p.value, e) <= 0)
+					break;
+				swapParentChild(p, node);
+			}
 		}
 	}
 
@@ -174,7 +182,26 @@ public class HeapBinomial<E> extends HeapAbstractDirectAccessed<E> {
 		return handlesSet;
 	}
 
-	private Node<E> mergeTrees(Node<E> r1, Node<E> r2) {
+	private Node<E> mergeTreesDefaultCmp(Node<E> r1, Node<E> r2) {
+		assert r1 != r2;
+		if (r1 == r2)
+			throw new IllegalStateException();
+		if (Utils.cmpDefault(r1.value, r2.value) > 0) {
+			Node<E> t = r1;
+			r1 = r2;
+			r2 = t;
+		}
+		r2.next = r1.child;
+		Node<E> next = r1.child;
+		if (next != null)
+			next.prev = r2;
+		r1.child = r2;
+		r2.parent = r1;
+
+		return r1;
+	}
+
+	private Node<E> mergeTreesCustomCmp(Node<E> r1, Node<E> r2) {
 		assert r1 != r2;
 		if (r1 == r2)
 			throw new IllegalStateException();
@@ -201,23 +228,46 @@ public class HeapBinomial<E> extends HeapAbstractDirectAccessed<E> {
 		int h2size = 0;
 
 		Node<E> carry = null;
-		for (int i = 0; i < rslen; i++) {
-			Node<E> r1 = i < rs1len ? rs1[i] : null;
-			Node<E> r2 = i < rs2len ? rs2[i] : null;
+		if (c == null) {
+			for (int i = 0; i < rslen; i++) {
+				Node<E> r1 = i < rs1len ? rs1[i] : null;
+				Node<E> r2 = i < rs2len ? rs2[i] : null;
 
-			if (r2 != null)
-				h2size += 1 << i;
+				if (r2 != null)
+					h2size += 1 << i;
 
-			if ((r1 == null && r2 == null) || (r1 != null && r2 != null)) {
-				rs[i] = carry;
-				carry = (r1 != null && r2 != null) ? mergeTrees(r1, r2) : null;
-			} else {
-				Node<E> r = r1 != null ? r1 : r2;
-				if (carry == null)
-					rs[i] = r;
-				else {
-					rs[i] = null;
-					carry = mergeTrees(carry, r);
+				if ((r1 == null && r2 == null) || (r1 != null && r2 != null)) {
+					rs[i] = carry;
+					carry = (r1 != null && r2 != null) ? mergeTreesDefaultCmp(r1, r2) : null;
+				} else {
+					Node<E> r = r1 != null ? r1 : r2;
+					if (carry == null)
+						rs[i] = r;
+					else {
+						rs[i] = null;
+						carry = mergeTreesDefaultCmp(carry, r);
+					}
+				}
+			}
+		} else {
+			for (int i = 0; i < rslen; i++) {
+				Node<E> r1 = i < rs1len ? rs1[i] : null;
+				Node<E> r2 = i < rs2len ? rs2[i] : null;
+
+				if (r2 != null)
+					h2size += 1 << i;
+
+				if ((r1 == null && r2 == null) || (r1 != null && r2 != null)) {
+					rs[i] = carry;
+					carry = (r1 != null && r2 != null) ? mergeTreesCustomCmp(r1, r2) : null;
+				} else {
+					Node<E> r = r1 != null ? r1 : r2;
+					if (carry == null)
+						rs[i] = r;
+					else {
+						rs[i] = null;
+						carry = mergeTreesCustomCmp(carry, r);
+					}
 				}
 			}
 		}
@@ -258,9 +308,15 @@ public class HeapBinomial<E> extends HeapAbstractDirectAccessed<E> {
 		int rsLen = rootsLen;
 		Node<E> min = null;
 
-		for (int i = 0; i < rsLen; i++)
-			if (rs[i] != null && (min == null || c.compare(min.value, rs[i].value) > 0))
-				min = rs[i];
+		if (c == null) {
+			for (int i = 0; i < rsLen; i++)
+				if (rs[i] != null && (min == null || Utils.cmpDefault(min.value, rs[i].value) > 0))
+					min = rs[i];
+		} else {
+			for (int i = 0; i < rsLen; i++)
+				if (rs[i] != null && (min == null || c.compare(min.value, rs[i].value) > 0))
+					min = rs[i];
+		}
 		return min;
 	}
 

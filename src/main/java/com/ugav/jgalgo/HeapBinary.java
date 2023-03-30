@@ -51,9 +51,15 @@ public class HeapBinary<E> extends HeapAbstract<E> {
 		E[] a = arr;
 
 		int i;
-		for (i = 0; i < s; i++)
-			if (c.compare(e, a[i]) == 0)
-				break;
+		if (c == null) {
+			for (i = 0; i < s; i++)
+				if (Utils.cmpDefault(e, a[i]) == 0)
+					break;
+		} else {
+			for (i = 0; i < s; i++)
+				if (c.compare(e, a[i]) == 0)
+					break;
+		}
 		if (i == s)
 			return false; /* not found */
 
@@ -81,7 +87,7 @@ public class HeapBinary<E> extends HeapAbstract<E> {
 		E e = a[size-- - 1];
 		a[size] = null;
 
-		if (c.compare(e, old) <= 0)
+		if (compare(e, old) <= 0)
 			moveUp(idx, e);
 		else
 			moveDown(idx, e);
@@ -160,16 +166,30 @@ public class HeapBinary<E> extends HeapAbstract<E> {
 	private void moveUp(int i, E e) {
 		E[] a = arr;
 
-		for (;;) {
-			int p;
-			if (i == 0 || c.compare(e, a[p = (i - 1) / 2]) >= 0) { /* reached root or parent is smaller */
-				a[i] = e;
-				return;
-			}
+		if (c == null) {
+			for (;;) {
+				int p;
+				if (i == 0 || Utils.cmpDefault(e, a[p = (i - 1) / 2]) >= 0) { /* reached root or parent is smaller */
+					a[i] = e;
+					return;
+				}
 
-			/* e is smaller than parent, continue up */
-			a[i] = a[p];
-			i = p;
+				/* e is smaller than parent, continue up */
+				a[i] = a[p];
+				i = p;
+			}
+		} else {
+			for (;;) {
+				int p;
+				if (i == 0 || c.compare(e, a[p = (i - 1) / 2]) >= 0) { /* reached root or parent is smaller */
+					a[i] = e;
+					return;
+				}
+
+				/* e is smaller than parent, continue up */
+				a[i] = a[p];
+				i = p;
+			}
 		}
 	}
 
@@ -177,26 +197,50 @@ public class HeapBinary<E> extends HeapAbstract<E> {
 		E[] a = arr;
 		int s = size;
 
-		for (;;) {
-			int c01i, c0i = i * 2 + 1, c1i = i * 2 + 2;
-			if (c0i >= s)
-				break;
+		if (c == null) {
+			for (;;) {
+				int c01i, c0i = i * 2 + 1, c1i = i * 2 + 2;
+				if (c0i >= s)
+					break;
 
-			E c01, c0 = a[c0i], c1;
-			if (c1i < s && c.compare(c1 = a[c1i], c0) < 0) {
-				c01i = c1i;
-				c01 = c1;
-			} else {
-				c01i = c0i;
-				c01 = c0;
+				E c01, c0 = a[c0i], c1;
+				if (c1i < s && Utils.cmpDefault(c1 = a[c1i], c0) < 0) {
+					c01i = c1i;
+					c01 = c1;
+				} else {
+					c01i = c0i;
+					c01 = c0;
+				}
+
+				if (Utils.cmpDefault(e, c01) <= 0)
+					break;
+
+				/* continue down */
+				a[i] = c01;
+				i = c01i;
 			}
+		} else {
+			for (;;) {
+				int c01i, c0i = i * 2 + 1, c1i = i * 2 + 2;
+				if (c0i >= s)
+					break;
 
-			if (c.compare(e, c01) <= 0)
-				break;
+				E c01, c0 = a[c0i], c1;
+				if (c1i < s && c.compare(c1 = a[c1i], c0) < 0) {
+					c01i = c1i;
+					c01 = c1;
+				} else {
+					c01i = c0i;
+					c01 = c0;
+				}
 
-			/* continue down */
-			a[i] = c01;
-			i = c01i;
+				if (c.compare(e, c01) <= 0)
+					break;
+
+				/* continue down */
+				a[i] = c01;
+				i = c01i;
+			}
 		}
 		a[i] = e;
 	}

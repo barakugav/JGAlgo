@@ -75,7 +75,7 @@ public class HeapFibonacci<E> extends HeapAbstractDirectAccessed<E> {
 			Node<E> last = end;
 			last.next = n;
 			n.prev = last;
-			if (c.compare(minRoot.value, e) > 0)
+			if (compare(minRoot.value, e) > 0)
 				minRoot = n;
 		} else {
 			begin = n;
@@ -155,7 +155,7 @@ public class HeapFibonacci<E> extends HeapAbstractDirectAccessed<E> {
 
 	private void compareToMinRoot(Node<E> p) {
 		assert p.parent == null;
-		if (c.compare(minRoot.value, p.value) > 0)
+		if (compare(minRoot.value, p.value) > 0)
 			minRoot = p;
 	}
 
@@ -178,7 +178,7 @@ public class HeapFibonacci<E> extends HeapAbstractDirectAccessed<E> {
 
 		if ((parent = n.parent) == null)
 			compareToMinRoot(n);
-		if (parent != null && c.compare(e, n.parent.value) < 0) {
+		if (parent != null && compare(e, n.parent.value) < 0) {
 			cut(n);
 			addRoot(n);
 			compareToMinRoot(n);
@@ -239,16 +239,30 @@ public class HeapFibonacci<E> extends HeapAbstractDirectAccessed<E> {
 		// union trees
 		@SuppressWarnings("unchecked")
 		Node<E>[] newRoots = new Node[getMaxDegree(size)];
-		for (Node<E> next, p = begin; p != null; p = next) {
-			next = p.next;
+		if (c == null) {
+			for (Node<E> next, p = begin; p != null; p = next) {
+				next = p.next;
 
-			int degree;
-			for (Node<E> q; (q = newRoots[degree = p.degree]) != null;) {
-				newRoots[degree] = null;
-				p = union(p, q);
+				int degree;
+				for (Node<E> q; (q = newRoots[degree = p.degree]) != null;) {
+					newRoots[degree] = null;
+					p = unionDefaultCmp(p, q);
+				}
+
+				newRoots[degree] = p;
 			}
+		} else {
+			for (Node<E> next, p = begin; p != null; p = next) {
+				next = p.next;
 
-			newRoots[degree] = p;
+				int degree;
+				for (Node<E> q; (q = newRoots[degree = p.degree]) != null;) {
+					newRoots[degree] = null;
+					p = unionCustomCmp(p, q);
+				}
+
+				newRoots[degree] = p;
+			}
 		}
 		prev = null;
 		begin = null;
@@ -270,17 +284,45 @@ public class HeapFibonacci<E> extends HeapAbstractDirectAccessed<E> {
 		/* Find new minimum */
 		if (isMinRoot) {
 			Node<E> min = null;
-			for (Node<E> p : newRoots) {
-				if (p == null)
-					continue;
-				if (min == null || c.compare(min.value, p.value) > 0)
-					min = p;
+			if (c == null) {
+				for (Node<E> p : newRoots) {
+					if (p == null)
+						continue;
+					if (min == null || Utils.cmpDefault(min.value, p.value) > 0)
+						min = p;
+				}
+			} else {
+				for (Node<E> p : newRoots) {
+					if (p == null)
+						continue;
+					if (min == null || c.compare(min.value, p.value) > 0)
+						min = p;
+				}
 			}
 			minRoot = min;
 		}
 	}
 
-	private Node<E> union(Node<E> u, Node<E> v) {
+	private Node<E> unionDefaultCmp(Node<E> u, Node<E> v) {
+		if (v == minRoot || Utils.cmpDefault(u.value, v.value) > 0) {
+			Node<E> temp = u;
+			u = v;
+			v = temp;
+		}
+		assert Utils.cmpDefault(u.value, v.value) <= 0;
+
+		v.parent = u;
+		v.prev = null;
+		v.next = u.child;
+		if (u.child != null)
+			v.next.prev = v;
+		u.child = v;
+		u.degree++;
+
+		return u;
+	}
+
+	private Node<E> unionCustomCmp(Node<E> u, Node<E> v) {
 		if (v == minRoot || c.compare(u.value, v.value) > 0) {
 			Node<E> temp = u;
 			u = v;

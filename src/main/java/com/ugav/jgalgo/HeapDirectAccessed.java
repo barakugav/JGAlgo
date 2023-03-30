@@ -14,9 +14,16 @@ public interface HeapDirectAccessed<E> extends Heap<E> {
 	 */
 	default Handle<E> findHanlde(E e) {
 		Comparator<? super E> c = comparator();
-		for (Handle<E> p : handles()) {
-			if (c.compare(e, p.get()) == 0)
-				return p;
+		if (c == null) {
+			for (Handle<E> p : handles()) {
+				if (Utils.cmpDefault(e, p.get()) == 0)
+					return p;
+			}
+		} else {
+			for (Handle<E> p : handles()) {
+				if (c.compare(e, p.get()) == 0)
+					return p;
+			}
 		}
 		return null;
 	}

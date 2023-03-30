@@ -9,7 +9,7 @@ public abstract class HeapAbstract<E> extends AbstractCollection<E> implements H
 	protected final Comparator<? super E> c;
 
 	public HeapAbstract(Comparator<? super E> c) {
-		this.c = c != null ? c : Utils.getDefaultComparator();
+		this.c = c;
 	}
 
 	@Override
@@ -45,6 +45,10 @@ public abstract class HeapAbstract<E> extends AbstractCollection<E> implements H
 	@Override
 	public Comparator<? super E> comparator() {
 		return c;
+	}
+
+	int compare(E e1, E e2) {
+		return c == null ? Utils.cmpDefault(e1, e2) : c.compare(e1, e2);
 	}
 
 }

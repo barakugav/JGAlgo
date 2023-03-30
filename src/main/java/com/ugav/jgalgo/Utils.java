@@ -57,6 +57,11 @@ class Utils {
 		return DEFAULT_COMPARATOR;
 	}
 
+	@SuppressWarnings("unchecked")
+	static <E> int cmpDefault(E e1, E e2) {
+		return ((Comparable<E>)e1).compareTo(e2);
+	}
+
 	/* syntax sugar to iterator for loops */
 	static <E> Iterable<E> iterable(Iterator<E> it) {
 		return new Iterable<>() {

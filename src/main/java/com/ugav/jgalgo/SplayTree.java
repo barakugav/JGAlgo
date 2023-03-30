@@ -216,15 +216,15 @@ public class SplayTree<E> extends BSTAbstract<E> {
 		}
 
 		E min1, max1, min2, max2;
-		if (c.compare(max1 = findMax(), min2 = h.findMin()) <= 0) {
+		if (compare(max1 = findMax(), min2 = h.findMin()) <= 0) {
 			/* all elements in this tree are <= than all elements in other tree */
 			root = meld(this, h);
-		} else if (c.compare(min1 = findMin(), max2 = h.findMax()) >= 0) {
+		} else if (compare(min1 = findMin(), max2 = h.findMax()) >= 0) {
 			/* all elements in this tree are >= than all elements in other tree */
 			root = meld(h, this);
 		} else {
-			int minCmp = c.compare(min1, min2);
-			int maxCmp = c.compare(max1, max2);
+			int minCmp = compare(min1, min2);
+			int maxCmp = compare(max1, max2);
 			SplayTree<E> hLow = null, hHigh = null;
 
 			if (minCmp < 0) {
@@ -242,11 +242,11 @@ public class SplayTree<E> extends BSTAbstract<E> {
 			super.meld(h);
 
 			if (hLow != null) {
-				assert c.compare(hLow.findMax(), findMin()) < 0;
+				assert compare(hLow.findMax(), findMin()) < 0;
 				root = meld(hLow, this);
 			}
 			if (hHigh != null) {
-				assert c.compare(hHigh.findMin(), findMax()) > 0;
+				assert compare(hHigh.findMin(), findMax()) > 0;
 				root = meld(this, hHigh);
 			}
 		}

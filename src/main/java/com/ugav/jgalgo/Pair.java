@@ -36,11 +36,10 @@ public class Pair<E1, E2> implements Comparable<Pair<E1, E2>> {
 		return Objects.equals(e1, o.e1) && Objects.equals(e2, o.e2);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public int compareTo(Pair<E1, E2> o) {
 		int c;
-		return (c = ((Comparable) e1).compareTo(o.e1)) != 0 ? c : ((Comparable) e2).compareTo(o.e2);
+		return (c = Utils.cmpDefault(e1, o.e1)) != 0 ? c : Utils.cmpDefault(e2, o.e2);
 	}
 
 	public static <E1, E2> Pair<E1, E2> of(E1 e1, E2 e2) {
