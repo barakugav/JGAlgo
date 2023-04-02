@@ -2,16 +2,16 @@ package com.ugav.jgalgo;
 
 import java.util.Objects;
 
-public class Triple<E1, E2, E3> implements Comparable<Triple<E1, E2, E3>> {
+class Triple<E1, E2, E3> implements Comparable<Triple<E1, E2, E3>> {
 
-	public E1 e1;
-	public E2 e2;
-	public E3 e3;
+	E1 e1;
+	E2 e2;
+	E3 e3;
 
-	public Triple() {
+	Triple() {
 	}
 
-	public Triple(E1 e1, E2 e2, E3 e3) {
+	Triple(E1 e1, E2 e2, E3 e3) {
 		this.e1 = e1;
 		this.e2 = e2;
 		this.e3 = e3;
@@ -48,7 +48,7 @@ public class Triple<E1, E2, E3> implements Comparable<Triple<E1, E2, E3>> {
 		return Utils.cmpDefault(e2, o.e2);
 	}
 
-	public static <E1, E2, E3> Triple<E1, E2, E3> valueOf(E1 e1, E2 e2, E3 e3) {
+	static <E1, E2, E3> Triple<E1, E2, E3> valueOf(E1 e1, E2 e2, E3 e3) {
 		return new Triple<>(e1, e2, e3);
 	}
 

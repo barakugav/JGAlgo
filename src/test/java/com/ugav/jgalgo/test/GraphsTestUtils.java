@@ -7,7 +7,6 @@ import java.util.Set;
 import com.ugav.jgalgo.EdgeIter;
 import com.ugav.jgalgo.Graph;
 import com.ugav.jgalgo.GraphArrayUndirected;
-import com.ugav.jgalgo.Pair;
 import com.ugav.jgalgo.UGraph;
 import com.ugav.jgalgo.UnionFind;
 import com.ugav.jgalgo.UnionFindArray;
@@ -16,6 +15,7 @@ import com.ugav.jgalgo.test.GraphImplTestUtils.GraphImpl;
 
 import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 public class GraphsTestUtils extends TestUtils {
@@ -138,7 +138,7 @@ public class GraphsTestUtils extends TestUtils {
 					throw new IllegalArgumentException("too much edges for random sampling");
 			}
 
-			Set<Pair<Integer, Integer>> existingEdges = new HashSet<>();
+			Set<IntList> existingEdges = new HashSet<>();
 			UnionFind uf = new UnionFindArray(n);
 			int componentsNum = n;
 			Random rand = new Random(seedGen.nextSeed());
@@ -187,7 +187,7 @@ public class GraphsTestUtils extends TestUtils {
 						ut = vt;
 						vt = temp;
 					}
-					if (!existingEdges.add(Pair.of(Integer.valueOf(ut), Integer.valueOf(vt))))
+					if (!existingEdges.add(IntList.of(ut, vt)))
 						continue;
 				}
 

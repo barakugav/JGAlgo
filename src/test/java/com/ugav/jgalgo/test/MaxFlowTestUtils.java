@@ -9,12 +9,12 @@ import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Assertions;
 
+import com.ugav.jgalgo.DiGraph;
 import com.ugav.jgalgo.Graph;
 import com.ugav.jgalgo.MaxFlow;
 import com.ugav.jgalgo.MaxFlow.FlowEdgeDataDefault;
 import com.ugav.jgalgo.MaxFlow.FlowNetwork;
 import com.ugav.jgalgo.MaxFlow.FlowNetworkDefault;
-import com.ugav.jgalgo.Pair;
 import com.ugav.jgalgo.Weights;
 import com.ugav.jgalgo.test.GraphImplTestUtils.GraphImpl;
 import com.ugav.jgalgo.test.GraphsTestUtils.RandomGraphBuilder;
@@ -27,15 +27,16 @@ class MaxFlowTestUtils extends TestUtils {
 	private MaxFlowTestUtils() {
 	}
 
-	private static Pair<Graph, FlowNetwork> randNetwork(int n, int m, GraphImpl graphImpl, long seed) {
-		final SeedGenerator seedGen = new SeedGenerator(seed);
-		Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).doubleEdges(false)
-				.selfEdges(false).cycles(true).connected(false).graphImpl(graphImpl).build();
+	private static DiGraph randGraph(int n, int m, GraphImpl graphImpl, long seed) {
+		return (DiGraph) new RandomGraphBuilder(seed).n(n).m(m).directed(true).doubleEdges(false).selfEdges(false)
+				.cycles(true).connected(false).graphImpl(graphImpl).build();
+	}
 
+	private static FlowNetwork randNetwork(DiGraph g, long seed) {
 		final double minGap = 0.001;
 		NavigableSet<Double> usedCaps = new TreeSet<>();
 
-		Random rand = new Random(seedGen.nextSeed());
+		Random rand = new Random(seed);
 		Weights<FlowEdgeDataDefault> data = g.addEdgesWeight("flowData").ofObjs();
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
@@ -55,7 +56,7 @@ class MaxFlowTestUtils extends TestUtils {
 			data.set(e, new FlowEdgeDataDefault(cap));
 		}
 
-		return Pair.of(g, new FlowNetworkDefault(data));
+		return new FlowNetworkDefault(data);
 	}
 
 	static void testRandGraphs(Supplier<? extends MaxFlow> builder, long seed) {
@@ -70,9 +71,8 @@ class MaxFlowTestUtils extends TestUtils {
 				phase(1, 3246, 5612));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
-			Pair<Graph, FlowNetwork> p = randNetwork(n, m, graphImpl, seedGen.nextSeed());
-			Graph g = p.e1;
-			FlowNetwork net = p.e2;
+			DiGraph g = randGraph(n, m, graphImpl, seedGen.nextSeed());
+			FlowNetwork net = randNetwork(g, seedGen.nextSeed());
 			int source, target;
 			do {
 				source = rand.nextInt(g.vertices().size());

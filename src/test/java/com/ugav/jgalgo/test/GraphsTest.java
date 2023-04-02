@@ -189,10 +189,6 @@ public class GraphsTest extends TestUtils {
 		});
 	}
 
-//		public <E> Pair<Integer, int[]> findConnectivityComponents(Graph<E> g) {;
-
-//		public <E> Pair<Integer, int[]> findStrongConnectivityComponents(Graph<E> g) {;
-
 	@Test
 	public void testTopologicalSortUnconnected() {
 		final long seed = 0x858cb81cf8e5b5c7L;

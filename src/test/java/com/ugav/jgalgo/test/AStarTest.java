@@ -14,7 +14,6 @@ import com.ugav.jgalgo.DiGraph;
 import com.ugav.jgalgo.EdgeWeightFunc;
 import com.ugav.jgalgo.Graph;
 import com.ugav.jgalgo.GraphArrayDirected;
-import com.ugav.jgalgo.Pair;
 import com.ugav.jgalgo.SSSP;
 import com.ugav.jgalgo.SSSPDijkstra;
 import com.ugav.jgalgo.Weights;
@@ -78,9 +77,9 @@ public class AStarTest extends TestUtils {
 			Graph g = params.g;
 			EdgeWeightFunc w = params.w;
 			if (params.g instanceof DiGraph diG) {
-				Pair<DiGraph, EdgeWeightFunc> rev = reverseGraph(diG, params.w);
-				g = rev.e1;
-				w = rev.e2;
+				GraphReverseResult rev = reverseGraph(diG, params.w);
+				g = rev.g;
+				w = rev.w;
 			}
 
 			SSSP.Result ssspRes = new SSSPDijkstra().calcDistances(g, w, params.target);
@@ -94,9 +93,9 @@ public class AStarTest extends TestUtils {
 			Graph g = params.g;
 			EdgeWeightFunc w = params.w;
 			if (params.g instanceof DiGraph diG) {
-				Pair<DiGraph, EdgeWeightFunc> rev = reverseGraph(diG, params.w);
-				g = rev.e1;
-				w = rev.e2;
+				GraphReverseResult rev = reverseGraph(diG, params.w);
+				g = rev.g;
+				w = rev.w;
 			}
 			Int2DoubleMap w0 = new Int2DoubleOpenHashMap(g.edges().size());
 			for (IntIterator it = g.edges().intIterator(); it.hasNext();) {
@@ -109,7 +108,7 @@ public class AStarTest extends TestUtils {
 		});
 	}
 
-	private static Pair<DiGraph, EdgeWeightFunc> reverseGraph(DiGraph g, EdgeWeightFunc w) {
+	private static GraphReverseResult reverseGraph(DiGraph g, EdgeWeightFunc w) {
 		int n = g.vertices().size();
 		DiGraph revG = new GraphArrayDirected(n);
 		Weights.Double revW = revG.addEdgesWeight("w").ofDoubles();
@@ -119,7 +118,15 @@ public class AStarTest extends TestUtils {
 			int v = g.edgeTarget(e);
 			revW.set(revG.addEdge(v, u), w.weight(e));
 		}
-		return Pair.of(revG, revW);
+		GraphReverseResult res = new GraphReverseResult();
+		res.g = revG;
+		res.w = revW;
+		return res;
+	}
+
+	private static class GraphReverseResult {
+		DiGraph g;
+		EdgeWeightFunc w;
 	}
 
 	private static class HeuristicParams {

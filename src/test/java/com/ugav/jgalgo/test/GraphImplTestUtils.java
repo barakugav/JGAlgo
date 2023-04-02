@@ -19,7 +19,6 @@ import com.ugav.jgalgo.MSTKruskal1956;
 import com.ugav.jgalgo.MatchingGabow1976;
 import com.ugav.jgalgo.MatchingWeightedBipartiteHungarianMethod;
 import com.ugav.jgalgo.MaxFlowEdmondsKarp;
-import com.ugav.jgalgo.Pair;
 import com.ugav.jgalgo.Weights;
 import com.ugav.jgalgo.test.GraphsTestUtils.RandomGraphBuilder;
 
@@ -27,6 +26,7 @@ import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -317,23 +317,25 @@ class GraphImplTestUtils extends TestUtils {
 	}
 
 	private static class RandWeighted<E> {
-		private final List<Pair<E, Integer>> elms = new ArrayList<>();
+		private final List<E> elms = new ArrayList<>();
+		private final IntList weights = new IntArrayList();
 		private int totalWeight;
 
 		void add(E elm, int weight) {
 			if (weight <= 0)
 				throw new IllegalArgumentException();
-			elms.add(Pair.of(elm, Integer.valueOf(weight)));
+			elms.add(elm);
+			weights.add(weight);
 			totalWeight += weight;
 		}
 
 		E get(Random rand) {
 			final int v = rand.nextInt(totalWeight);
 			int s = 0;
-			for (Pair<E, Integer> elm : elms) {
-				s += elm.e2.intValue();
+			for (int i = 0; i < elms.size(); i++) {
+				s += weights.getInt(i);
 				if (v <= s)
-					return elm.e1;
+					return elms.get(i);
 			}
 			throw new IllegalStateException();
 		}
