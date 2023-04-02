@@ -19,7 +19,7 @@ class TSPMetricUtils {
 			assert g1.degree(u) % 2 == 0;
 
 		/* Calculate Eulerian tour in the new graph */
-		IntList tour = Graphs.calcEulerianTour(g1);
+		IntList tour = EulerianTour.calcTour(g1);
 		assert isValidCycle(g1, tour);
 		assert isPathVisitEvery(g1, tour);
 
