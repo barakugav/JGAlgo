@@ -251,7 +251,7 @@ abstract class GraphBase implements Graph {
 		@Override
 		public Weights.Bool ofBools() {
 <span class="fc" id="L253">			Boolean defVal0 = (Boolean) getDefVal();</span>
-<span class="pc bpc" id="L254" title="1 of 2 branches missed.">			boolean defVal = defVal0 != null ? defVal0.booleanValue() : false;</span>
+<span class="fc bfc" id="L254" title="All 2 branches covered.">			boolean defVal = defVal0 != null ? defVal0.booleanValue() : false;</span>
 <span class="fc" id="L255">			return addWeights(new DataContainer.Bool(expectedSize(), defVal));</span>
 		}
 
