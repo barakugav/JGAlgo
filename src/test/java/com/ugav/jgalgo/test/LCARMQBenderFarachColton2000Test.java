@@ -7,8 +7,8 @@ import java.util.function.Supplier;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import com.ugav.jgalgo.BFSIter;
 import com.ugav.jgalgo.Graph;
-import com.ugav.jgalgo.Graphs;
 import com.ugav.jgalgo.LCARMQBenderFarachColton2000;
 import com.ugav.jgalgo.LCAStatic;
 
@@ -22,7 +22,7 @@ public class LCARMQBenderFarachColton2000Test extends TestUtils {
 		int[] parent = new int[n];
 		int[] depth = new int[n];
 
-		for (Graphs.BFSIter it = new Graphs.BFSIter(g, r); it.hasNext();) {
+		for (BFSIter it = new BFSIter(g, r); it.hasNext();) {
 			int v = it.nextInt();
 			int e = it.inEdge();
 			if (e == -1) {

@@ -1,10 +1,7 @@
 package com.ugav.jgalgo;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
-import java.util.NoSuchElementException;
 
 import com.ugav.jgalgo.Utils.StackIntFixSize;
 
@@ -18,153 +15,10 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 import it.unimi.dsi.fastutil.ints.IntSet;
-import it.unimi.dsi.fastutil.longs.LongArrayFIFOQueue;
-import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
 
 public class Graphs {
 
 	private Graphs() {
-	}
-
-	public static class BFSIter implements IntIterator {
-
-		private final Graph g;
-		private final boolean[] visited;
-		private final LongPriorityQueue queue;
-		private int inEdge;
-		private int layer;
-		private int firstVInLayer;
-
-		public BFSIter(Graph g, int source) {
-			this(g, new int[] { source });
-		}
-
-		public BFSIter(Graph g, int[] sources) {
-			if (sources.length == 0)
-				throw new IllegalArgumentException();
-			this.g = g;
-			int n = g.vertices().size();
-			visited = new boolean[n];
-			queue = new LongArrayFIFOQueue(n * 2);
-			inEdge = -1;
-			layer = -1;
-
-			for (int source : sources) {
-				visited[source] = true;
-				queue.enqueue(toQueueEntry(source, -1));
-			}
-			firstVInLayer = sources[0];
-		}
-
-		@Override
-		public boolean hasNext() {
-			return !queue.isEmpty();
-		}
-
-		@Override
-		public int nextInt() {
-			if (!hasNext())
-				throw new NoSuchElementException();
-			long entry = queue.dequeueLong();
-			final int u = queueEntryToV(entry);
-			inEdge = queueEntryToE(entry);
-			if (u == firstVInLayer) {
-				layer++;
-				firstVInLayer = -1;
-			}
-
-			for (EdgeIter eit = g.edges(u); eit.hasNext();) {
-				int e = eit.nextInt();
-				int v = eit.v();
-				if (visited[v])
-					continue;
-				visited[v] = true;
-				queue.enqueue(toQueueEntry(v, e));
-				if (firstVInLayer == -1)
-					firstVInLayer = v;
-			}
-
-			return u;
-		}
-
-		public int inEdge() {
-			return inEdge;
-		}
-
-		public int layer() {
-			return layer;
-		}
-
-		private static long toQueueEntry(int v, int e) {
-			return ((v & 0xffffffffL) << 32) | ((e & 0xffffffffL) << 0);
-		}
-
-		private static int queueEntryToV(long entry) {
-			return (int) ((entry >> 32) & 0xffffffff);
-		}
-
-		private static int queueEntryToE(long entry) {
-			return (int) ((entry >> 0) & 0xffffffff);
-		}
-	}
-
-	public static class DFSIter implements IntIterator {
-
-		private final Graph g;
-		private final boolean[] visited;
-		private final List<EdgeIter> edgeIters;
-		private final IntList edgePath;
-		private boolean isValid;
-
-		public DFSIter(Graph g, int source) {
-			int n = g.vertices().size();
-			this.g = g;
-			visited = new boolean[n];
-			edgeIters = new ArrayList<>();
-			edgePath = new IntArrayList();
-
-			visited[source] = true;
-			edgeIters.add(g.edges(source));
-			isValid = true;
-		}
-
-		@Override
-		public boolean hasNext() {
-			if (isValid)
-				return true;
-			if (edgeIters.isEmpty())
-				return false;
-			for (;;) {
-				for (EdgeIter eit = edgeIters.get(edgeIters.size() - 1); eit.hasNext();) {
-					int e = eit.nextInt();
-					int v = eit.v();
-					if (visited[v])
-						continue;
-					visited[v] = true;
-					edgeIters.add(g.edges(v));
-					edgePath.add(e);
-					return isValid = true;
-				}
-				edgeIters.remove(edgeIters.size() - 1);
-				if (edgeIters.isEmpty()) {
-					assert edgePath.isEmpty();
-					return false;
-				}
-				edgePath.removeInt(edgePath.size() - 1);
-			}
-		}
-
-		@Override
-		public int nextInt() {
-			if (!hasNext())
-				throw new NoSuchElementException();
-			isValid = false;
-			return edgeIters.get(edgeIters.size() - 1).u();
-		}
-
-		public IntList edgePath() {
-			return edgePath;
-		}
 	}
 
 	/**

@@ -1,7 +1,5 @@
 package com.ugav.jgalgo;
 
-import com.ugav.jgalgo.Graphs.BFSIter;
-
 public class SSSPCardinality {
 
 	public SSSP.Result calcDistances(Graph g, int source) {

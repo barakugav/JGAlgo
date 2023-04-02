@@ -9,6 +9,8 @@ import java.util.Set;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import com.ugav.jgalgo.BFSIter;
+import com.ugav.jgalgo.DFSIter;
 import com.ugav.jgalgo.DiGraph;
 import com.ugav.jgalgo.EdgeIter;
 import com.ugav.jgalgo.Graph;
@@ -36,7 +38,7 @@ public class GraphsTest extends TestUtils {
 
 			boolean[] visited = new boolean[n];
 			List<Integer> invalidVertices = new ArrayList<>();
-			for (Graphs.BFSIter it = new Graphs.BFSIter(g, source); it.hasNext();) {
+			for (BFSIter it = new BFSIter(g, source); it.hasNext();) {
 				int v = it.nextInt();
 				int e = it.inEdge();
 				if (visited[v] || (v != source && g.edgeEndpoint(e, g.edgeEndpoint(e, v)) != v))
@@ -61,7 +63,7 @@ public class GraphsTest extends TestUtils {
 
 			boolean[] visited = new boolean[n];
 			List<Integer> invalidVertices = new ArrayList<>();
-			for (Graphs.DFSIter it = new Graphs.DFSIter(g, source); it.hasNext();) {
+			for (DFSIter it = new DFSIter(g, source); it.hasNext();) {
 				int v = it.nextInt();
 				IntList pathFromSource = it.edgePath();
 				int e = v == source ? -1 : pathFromSource.getInt(pathFromSource.size() - 1);
