@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Assertions;
 
 import com.ugav.jgalgo.EdgeWeightFunc;
 import com.ugav.jgalgo.Graph;
-import com.ugav.jgalgo.Graphs.PathIter;
+import com.ugav.jgalgo.PathIter;
 import com.ugav.jgalgo.SSSP;
 import com.ugav.jgalgo.SSSPBellmanFord;
 import com.ugav.jgalgo.SSSPDial1969;

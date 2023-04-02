@@ -4,8 +4,6 @@ import com.ugav.jgalgo.Utils.StackIntFixSize;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
 
 public class EulerianTour {
 
@@ -33,40 +31,45 @@ public class EulerianTour {
 		if (start == -1)
 			start = 0;
 
-		IntArrayList tour = new IntArrayList(g.edges().size());
-		IntSet usedEdges = new IntOpenHashSet();
-		EdgeIter[] iters = new EdgeIter[n];
-		for (int u = 0; u < n; u++)
-			iters[u] = g.edges(u);
+		Object usedEdgesKey = new Object();
+		Weights.Bool usedEdges = g.addEdgesWeight(usedEdgesKey).defVal(false).ofBools();
+		try {
+			EdgeIter[] iters = new EdgeIter[n];
+			for (int u = 0; u < n; u++)
+				iters[u] = g.edges(u);
 
-		StackIntFixSize queue = new StackIntFixSize(g.edges().size());
+			IntArrayList tour = new IntArrayList(g.edges().size());
+			StackIntFixSize queue = new StackIntFixSize(g.edges().size());
 
-		for (int u = start;;) {
-			findCycle: for (;;) {
-				int e, v;
-				for (EdgeIter iter = iters[u];;) {
-					if (!iter.hasNext())
-						break findCycle;
-					e = iter.nextInt();
-					if (!usedEdges.contains(e)) {
-						v = iter.v();
-						break;
+			for (int u = start;;) {
+				findCycle: for (;;) {
+					int e, v;
+					for (EdgeIter iter = iters[u];;) {
+						if (!iter.hasNext())
+							break findCycle;
+						e = iter.nextInt();
+						if (!usedEdges.getBool(e)) {
+							v = iter.v();
+							break;
+						}
 					}
+					usedEdges.set(e, true);
+					queue.push(e);
+					u = v;
 				}
-				usedEdges.add(e);
-				queue.push(e);
-				u = v;
+
+				if (queue.isEmpty())
+					break;
+
+				int e = queue.pop();
+				tour.add(e);
+				u = g.edgeEndpoint(e, u);
 			}
+			return tour;
 
-			if (queue.isEmpty())
-				break;
-
-			int e = queue.pop();
-			tour.add(e);
-			u = g.edgeEndpoint(e, u);
+		} finally {
+			g.removeEdgesWeights(usedEdgesKey);
 		}
-
-		return tour;
 	}
 
 }

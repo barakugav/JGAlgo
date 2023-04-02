@@ -1,7 +1,5 @@
 package com.ugav.jgalgo;
 
-import com.ugav.jgalgo.Graphs.PathIter;
-
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
