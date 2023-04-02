@@ -16,6 +16,7 @@ import com.ugav.jgalgo.EdgeIter;
 import com.ugav.jgalgo.Graph;
 import com.ugav.jgalgo.Graphs;
 import com.ugav.jgalgo.SSSP;
+import com.ugav.jgalgo.SSSPDag;
 import com.ugav.jgalgo.SSSPDijkstra;
 import com.ugav.jgalgo.Weights;
 import com.ugav.jgalgo.test.GraphsTestUtils.RandomGraphBuilder;
@@ -240,6 +241,7 @@ public class GraphsTest extends TestUtils {
 
 	private static void distancesDAG(boolean connected, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
+		SSSP ssspAlgo = new SSSPDag();
 		List<Phase> phases = List.of(phase(256, 16, 16), phase(128, 32, 64), phase(16, 512, 1024));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
@@ -249,7 +251,7 @@ public class GraphsTest extends TestUtils {
 			int source = 0;
 
 			Weights.Int w = g.edgesWeight("weight");
-			SSSP.Result result = Graphs.calcDistancesDAG(g, w, source);
+			SSSP.Result result = ssspAlgo.calcDistances(g, w, source);
 
 			SSSPTestUtils.validateResult(g, w, source, result, new SSSPDijkstra());
 		});

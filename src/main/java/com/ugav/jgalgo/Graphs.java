@@ -169,32 +169,6 @@ public class Graphs {
 		return topolSort;
 	}
 
-	public static SSSP.Result calcDistancesDAG(DiGraph g, EdgeWeightFunc w, int source) {
-		SSSPResultImpl res = new SSSPResultImpl(g);
-		res.distances[source] = 0;
-
-		int[] topolSort = calcTopologicalSortingDAG(g);
-		boolean sourceSeen = false;
-		for (int u : topolSort) {
-			if (!sourceSeen) {
-				if (u != source)
-					continue;
-				sourceSeen = true;
-			}
-			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
-				int e = eit.nextInt();
-				int v = eit.v();
-				double d = res.distances[u] + w.weight(e);
-				if (d < res.distances[v]) {
-					res.distances[v] = d;
-					res.backtrack[v] = e;
-				}
-			}
-		}
-
-		return res;
-	}
-
 	public static int getFullyBranchingTreeDepth(Graph t, int root) {
 		for (int parent = -1, u = root, depth = 0;; depth++) {
 			int v = parent;

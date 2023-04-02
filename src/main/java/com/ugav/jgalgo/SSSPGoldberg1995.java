@@ -59,6 +59,7 @@ public class SSSPGoldberg1995 implements SSSP {
 		int[] layerSize = new int[n + 1];
 
 		SSSPDial1969 ssspDial = new SSSPDial1969();
+		SSSP dagSssp = new SSSPDag();
 
 		DiGraph gNeg = new GraphArrayDirected(n);
 		Weights.Int gNegEdgeRefs = gNeg.addEdgesWeight(EdgeRefWeightKey).defVal(-1).ofInts();
@@ -117,7 +118,7 @@ public class SSSPGoldberg1995 implements SSSP {
 				// Create a fake vertex S, connect with 0 edges to all and calc distances
 				for (int U = 0; U < N; U++)
 					GWeights.set(G.addEdge(fakeS1, U), 0);
-				SSSP.Result ssspRes = Graphs.calcDistancesDAG(G, GWeights, fakeS1);
+				SSSP.Result ssspRes = dagSssp.calcDistances(G, GWeights, fakeS1);
 
 				// Divide super vertices into layers by distance
 				int layerNum = 0;
