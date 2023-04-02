@@ -74,9 +74,9 @@ public class MSTKargerKleinTarjan1995 implements MST {
 	private static IntCollection lightEdges(UGraph g, UGraph f) {
 		int n = f.vertices().size();
 		/* find connectivity components in the forest, each one of them is a tree */
-		Pair<Integer, int[]> r = Graphs.findConnectivityComponents(f);
-		int treeCount = r.e1.intValue();
-		int[] vToTree = r.e2;
+		Connectivity.Result connectivityRes = Connectivity.findConnectivityComponents(f);
+		int treeCount = connectivityRes.ccNum;
+		int[] vToTree = connectivityRes.vertexToCC;
 		int[] treeSizes = new int[treeCount];
 		for (int u = 0; u < n; u++)
 			treeSizes[vToTree[u]]++;

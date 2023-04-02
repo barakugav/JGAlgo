@@ -85,9 +85,9 @@ public class SSSPGoldberg1995 implements SSSP {
 				}
 
 				// Find all strong connectivity components in the graph
-				Pair<Integer, int[]> pair = Graphs.findStrongConnectivityComponents(gNeg);
-				int N = pair.e1.intValue();
-				int[] v2V = pair.e2;
+				Connectivity.Result connectivityRes = Connectivity.findStrongConnectivityComponents(gNeg);
+				int N = connectivityRes.ccNum;
+				int[] v2V = connectivityRes.vertexToCC;
 
 				// Contract each strong connectivity component and search for a negative edge
 				// within it, if found - negative cycle found

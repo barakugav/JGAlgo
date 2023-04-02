@@ -99,15 +99,14 @@ public class MDSTTarjan1977 implements MDST {
 	}
 
 	private static void addEdgesUntilStronglyConnected(DiGraph g) {
-		int n = g.vertices().size();
-
-		Pair<Integer, int[]> pair = Graphs.findStrongConnectivityComponents(g);
-		int N = pair.e1.intValue();
-		int[] v2V = pair.e2;
+		Connectivity.Result connectivityRes = Connectivity.findStrongConnectivityComponents(g);
+		int N = connectivityRes.ccNum;
+		int[] v2V = connectivityRes.vertexToCC;
 
 		if (N > 1) {
 			int[] V2v = new int[N];
 			Arrays.fill(V2v, -1);
+			int n = g.vertices().size();
 			for (int v = 0; v < n; v++) {
 				int V = v2V[v];
 				if (V2v[V] == -1)
