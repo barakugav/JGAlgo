@@ -9,7 +9,7 @@ public abstract class HeapAbstract&lt;E&gt; extends AbstractCollection&lt;E&gt; 
 	protected final Comparator&lt;? super E&gt; c;
 
 <span class="fc" id="L11">	public HeapAbstract(Comparator&lt;? super E&gt; c) {</span>
-<span class="fc bfc" id="L12" title="All 2 branches covered.">		this.c = c != null ? c : Utils.getDefaultComparator();</span>
+<span class="fc" id="L12">		this.c = c;</span>
 <span class="fc" id="L13">	}</span>
 
 	@Override
@@ -45,6 +45,10 @@ public abstract class HeapAbstract&lt;E&gt; extends AbstractCollection&lt;E&gt; 
 	@Override
 	public Comparator&lt;? super E&gt; comparator() {
 <span class="fc" id="L47">		return c;</span>
+	}
+
+	int compare(E e1, E e2) {
+<span class="fc bfc" id="L51" title="All 2 branches covered.">		return c == null ? Utils.cmpDefault(e1, e2) : c.compare(e1, e2);</span>
 	}
 
 }

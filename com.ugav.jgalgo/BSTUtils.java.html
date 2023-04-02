@@ -3,6 +3,7 @@
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.function.BiFunction;
 
 class BSTUtils {
 
@@ -10,184 +11,256 @@ class BSTUtils {
 	}
 
 	static &lt;E, N extends Node&lt;E, N&gt;&gt; N find(N root, Comparator&lt;? super E&gt; c, E e) {
-<span class="fc" id="L13">		return findOrNeighbor(root, c, e, NeighborType.None);</span>
+<span class="fc" id="L14">		return findOrNeighbor(root, c, e, NeighborType.None);</span>
 	}
 
 	static &lt;E, N extends Node&lt;E, N&gt;&gt; N findOrSmaller(N root, Comparator&lt;? super E&gt; c, E e) {
-<span class="fc" id="L17">		return findOrNeighbor(root, c, e, NeighborType.Predecessor);</span>
+<span class="fc" id="L18">		return findOrNeighbor(root, c, e, NeighborType.Predecessor);</span>
 	}
 
 	static &lt;E, N extends Node&lt;E, N&gt;&gt; N findOrGreater(N root, Comparator&lt;? super E&gt; c, E e) {
-<span class="fc" id="L21">		return findOrNeighbor(root, c, e, NeighborType.Successor);</span>
+<span class="fc" id="L22">		return findOrNeighbor(root, c, e, NeighborType.Successor);</span>
 	}
 
-<span class="fc" id="L24">	private static enum NeighborType {</span>
-<span class="fc" id="L25">		None, Predecessor, Successor,</span>
+<span class="fc" id="L25">	private static enum NeighborType {</span>
+<span class="fc" id="L26">		None, Predecessor, Successor,</span>
 	}
 
 	private static &lt;E, N extends Node&lt;E, N&gt;&gt; N findOrNeighbor(N root, Comparator&lt;? super E&gt; c, E e,
 			NeighborType neighborType) {
-<span class="pc bpc" id="L30" title="1 of 2 branches missed.">		if (root == null)</span>
-<span class="nc" id="L31">			return null;</span>
-<span class="fc" id="L32">		for (N p = root;;) {</span>
-<span class="fc" id="L33">			int cmp = c.compare(e, p.data);</span>
-<span class="fc bfc" id="L34" title="All 2 branches covered.">			if (cmp == 0)</span>
-<span class="fc" id="L35">				return p;</span>
-<span class="fc bfc" id="L36" title="All 2 branches covered.">			if (cmp &lt; 0) {</span>
-<span class="fc bfc" id="L37" title="All 2 branches covered.">				if (!p.hasLeftChild()) {</span>
-<span class="pc bpc" id="L38" title="2 of 4 branches missed.">					switch (neighborType) {</span>
-					case None:
-<span class="nc" id="L40">						return null;</span>
-					case Predecessor:
-<span class="fc" id="L42">						return getPredecessor(p);</span>
-					case Successor:
-<span class="fc" id="L44">						return p;</span>
-					default:
-<span class="nc" id="L46">						throw new IllegalArgumentException(&quot;Unexpected value: &quot; + neighborType);</span>
-					}
-				}
-<span class="fc" id="L49">				p = p.left;</span>
-			} else {
-<span class="fc bfc" id="L51" title="All 2 branches covered.">				if (!p.hasRightChild()) {</span>
-<span class="pc bpc" id="L52" title="2 of 4 branches missed.">					switch (neighborType) {</span>
-					case None:
-<span class="nc" id="L54">						return null;</span>
-					case Predecessor:
-<span class="fc" id="L56">						return p;</span>
-					case Successor:
-<span class="fc" id="L58">						return getSuccessor(p);</span>
-					default:
-<span class="nc" id="L60">						throw new IllegalArgumentException(&quot;Unexpected value: &quot; + neighborType);</span>
-					}
-				}
-<span class="fc" id="L63">				p = p.right;</span>
+<span class="pc bpc" id="L31" title="1 of 2 branches missed.">		if (root == null)</span>
+<span class="nc" id="L32">			return null;</span>
+<span class="fc" id="L33">		BiFunction&lt;NeighborType, N, N&gt; onLeftChildMissing = (nType, p) -&gt; {</span>
+<span class="pc bpc" id="L34" title="2 of 4 branches missed.">			switch (nType) {</span>
+			case None:
+<span class="nc" id="L36">				return null;</span>
+			case Predecessor:
+<span class="fc" id="L38">				return getPredecessor(p);</span>
+			case Successor:
+<span class="fc" id="L40">				return p;</span>
+			default:
+<span class="nc" id="L42">				throw new IllegalArgumentException(&quot;Unexpected value: &quot; + neighborType);</span>
 			}
-<span class="fc" id="L65">		}</span>
+		};
+<span class="fc" id="L45">		BiFunction&lt;NeighborType, N, N&gt; onRightChildMissing = (nType, p) -&gt; {</span>
+<span class="pc bpc" id="L46" title="2 of 4 branches missed.">			switch (nType) {</span>
+			case None:
+<span class="nc" id="L48">				return null;</span>
+			case Predecessor:
+<span class="fc" id="L50">				return p;</span>
+			case Successor:
+<span class="fc" id="L52">				return getSuccessor(p);</span>
+			default:
+<span class="nc" id="L54">				throw new IllegalArgumentException(&quot;Unexpected value: &quot; + neighborType);</span>
+			}
+		};
+<span class="pc bpc" id="L57" title="1 of 2 branches missed.">		if (c == null) {</span>
+<span class="fc" id="L58">			for (N p = root;;) {</span>
+<span class="fc" id="L59">				int cmp = Utils.cmpDefault(e, p.data);</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">				if (cmp == 0)</span>
+<span class="fc" id="L61">					return p;</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">				if (cmp &lt; 0) {</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">					if (!p.hasLeftChild())</span>
+<span class="fc" id="L64">						return onLeftChildMissing.apply(neighborType, p);</span>
+<span class="fc" id="L65">					p = p.left;</span>
+				} else {
+<span class="fc bfc" id="L67" title="All 2 branches covered.">					if (!p.hasRightChild())</span>
+<span class="fc" id="L68">						return onRightChildMissing.apply(neighborType, p);</span>
+<span class="fc" id="L69">					p = p.right;</span>
+				}
+<span class="fc" id="L71">			}</span>
+		} else {
+<span class="nc" id="L73">			for (N p = root;;) {</span>
+<span class="nc" id="L74">				int cmp = c.compare(e, p.data);</span>
+<span class="nc bnc" id="L75" title="All 2 branches missed.">				if (cmp == 0)</span>
+<span class="nc" id="L76">					return p;</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">				if (cmp &lt; 0) {</span>
+<span class="nc bnc" id="L78" title="All 2 branches missed.">					if (!p.hasLeftChild())</span>
+<span class="nc" id="L79">						return onLeftChildMissing.apply(neighborType, p);</span>
+<span class="nc" id="L80">					p = p.left;</span>
+				} else {
+<span class="nc bnc" id="L82" title="All 2 branches missed.">					if (!p.hasRightChild())</span>
+<span class="nc" id="L83">						return onRightChildMissing.apply(neighborType, p);</span>
+<span class="nc" id="L84">					p = p.right;</span>
+				}
+<span class="nc" id="L86">			}</span>
+		}
 	}
 
 	static &lt;E, N extends Node&lt;E, N&gt;&gt; N findSmaller(N root, Comparator&lt;? super E&gt; c, E e) {
-<span class="pc bpc" id="L69" title="1 of 2 branches missed.">		if (root == null)</span>
-<span class="nc" id="L70">			return null;</span>
-<span class="fc" id="L71">		for (N p = root;;) {</span>
-<span class="fc" id="L72">			int cmp = c.compare(e, p.data);</span>
-<span class="fc bfc" id="L73" title="All 2 branches covered.">			if (cmp &lt;= 0) {</span>
-<span class="fc bfc" id="L74" title="All 2 branches covered.">				if (!p.hasLeftChild())</span>
-<span class="fc" id="L75">					return getPredecessor(p);</span>
-<span class="fc" id="L76">				p = p.left;</span>
-			} else {
-<span class="fc bfc" id="L78" title="All 2 branches covered.">				if (!p.hasRightChild())</span>
-<span class="fc" id="L79">					return p;</span>
-<span class="fc" id="L80">				p = p.right;</span>
-			}
-<span class="fc" id="L82">		}</span>
+<span class="pc bpc" id="L91" title="1 of 2 branches missed.">		if (root == null)</span>
+<span class="nc" id="L92">			return null;</span>
+<span class="pc bpc" id="L93" title="1 of 2 branches missed.">		if (c == null) {</span>
+<span class="fc" id="L94">			for (N p = root;;) {</span>
+<span class="fc" id="L95">				int cmp = Utils.cmpDefault(e, p.data);</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">				if (cmp &lt;= 0) {</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">					if (!p.hasLeftChild())</span>
+<span class="fc" id="L98">						return getPredecessor(p);</span>
+<span class="fc" id="L99">					p = p.left;</span>
+				} else {
+<span class="fc bfc" id="L101" title="All 2 branches covered.">					if (!p.hasRightChild())</span>
+<span class="fc" id="L102">						return p;</span>
+<span class="fc" id="L103">					p = p.right;</span>
+				}
+<span class="fc" id="L105">			}</span>
+		} else {
+<span class="nc" id="L107">			for (N p = root;;) {</span>
+<span class="nc" id="L108">				int cmp = c.compare(e, p.data);</span>
+<span class="nc bnc" id="L109" title="All 2 branches missed.">				if (cmp &lt;= 0) {</span>
+<span class="nc bnc" id="L110" title="All 2 branches missed.">					if (!p.hasLeftChild())</span>
+<span class="nc" id="L111">						return getPredecessor(p);</span>
+<span class="nc" id="L112">					p = p.left;</span>
+				} else {
+<span class="nc bnc" id="L114" title="All 2 branches missed.">					if (!p.hasRightChild())</span>
+<span class="nc" id="L115">						return p;</span>
+<span class="nc" id="L116">					p = p.right;</span>
+				}
+<span class="nc" id="L118">			}</span>
+		}
 	}
 
 	static &lt;E, N extends Node&lt;E, N&gt;&gt; N findGreater(N root, Comparator&lt;? super E&gt; c, E e) {
-<span class="pc bpc" id="L86" title="1 of 2 branches missed.">		if (root == null)</span>
-<span class="nc" id="L87">			return null;</span>
-<span class="fc" id="L88">		for (N p = root;;) {</span>
-<span class="fc" id="L89">			int cmp = c.compare(e, p.data);</span>
-<span class="fc bfc" id="L90" title="All 2 branches covered.">			if (cmp &gt;= 0) {</span>
-<span class="fc bfc" id="L91" title="All 2 branches covered.">				if (!p.hasRightChild())</span>
-<span class="fc" id="L92">					return getSuccessor(p);</span>
-<span class="fc" id="L93">				p = p.right;</span>
-			} else {
-<span class="fc bfc" id="L95" title="All 2 branches covered.">				if (!p.hasLeftChild())</span>
-<span class="fc" id="L96">					return p;</span>
-<span class="fc" id="L97">				p = p.left;</span>
-			}
-<span class="fc" id="L99">		}</span>
+<span class="pc bpc" id="L123" title="1 of 2 branches missed.">		if (root == null)</span>
+<span class="nc" id="L124">			return null;</span>
+<span class="pc bpc" id="L125" title="1 of 2 branches missed.">		if (c == null) {</span>
+<span class="fc" id="L126">			for (N p = root;;) {</span>
+<span class="fc" id="L127">				int cmp = Utils.cmpDefault(e, p.data);</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">				if (cmp &gt;= 0) {</span>
+<span class="fc bfc" id="L129" title="All 2 branches covered.">					if (!p.hasRightChild())</span>
+<span class="fc" id="L130">						return getSuccessor(p);</span>
+<span class="fc" id="L131">					p = p.right;</span>
+				} else {
+<span class="fc bfc" id="L133" title="All 2 branches covered.">					if (!p.hasLeftChild())</span>
+<span class="fc" id="L134">						return p;</span>
+<span class="fc" id="L135">					p = p.left;</span>
+				}
+<span class="fc" id="L137">			}</span>
+		} else {
+<span class="nc" id="L139">			for (N p = root;;) {</span>
+<span class="nc" id="L140">				int cmp = c.compare(e, p.data);</span>
+<span class="nc bnc" id="L141" title="All 2 branches missed.">				if (cmp &gt;= 0) {</span>
+<span class="nc bnc" id="L142" title="All 2 branches missed.">					if (!p.hasRightChild())</span>
+<span class="nc" id="L143">						return getSuccessor(p);</span>
+<span class="nc" id="L144">					p = p.right;</span>
+				} else {
+<span class="nc bnc" id="L146" title="All 2 branches missed.">					if (!p.hasLeftChild())</span>
+<span class="nc" id="L147">						return p;</span>
+<span class="nc" id="L148">					p = p.left;</span>
+				}
+<span class="nc" id="L150">			}</span>
+		}
 	}
 
 	static &lt;E, N extends Node&lt;E, N&gt;&gt; N findMin(N root) {
-<span class="fc" id="L103">		for (N p = root;; p = p.left)</span>
-<span class="fc bfc" id="L104" title="All 2 branches covered.">			if (!p.hasLeftChild())</span>
-<span class="fc" id="L105">				return p;</span>
+<span class="fc" id="L155">		for (N p = root;; p = p.left)</span>
+<span class="fc bfc" id="L156" title="All 2 branches covered.">			if (!p.hasLeftChild())</span>
+<span class="fc" id="L157">				return p;</span>
 	}
 
 	static &lt;E, N extends Node&lt;E, N&gt;&gt; N findMax(N root) {
-<span class="fc" id="L109">		for (N p = root;; p = p.right)</span>
-<span class="fc bfc" id="L110" title="All 2 branches covered.">			if (!p.hasRightChild())</span>
-<span class="fc" id="L111">				return p;</span>
+<span class="fc" id="L161">		for (N p = root;; p = p.right)</span>
+<span class="fc bfc" id="L162" title="All 2 branches covered.">			if (!p.hasRightChild())</span>
+<span class="fc" id="L163">				return p;</span>
 	}
 
 	static &lt;E, N extends Node&lt;E, N&gt;&gt; N getPredecessor(N n) {
-<span class="fc" id="L115">		return getPredecessorInSubtree(n, null);</span>
+<span class="fc" id="L167">		return getPredecessorInSubtree(n, null);</span>
 	}
 
 	private static &lt;E, N extends Node&lt;E, N&gt;&gt; N getPredecessorInSubtree(N n, N subtreeRoot) {
 		/* predecessor in left sub tree */
-<span class="fc bfc" id="L120" title="All 2 branches covered.">		if (n.hasLeftChild())</span>
-<span class="fc" id="L121">			for (N p = n.left;; p = p.right)</span>
-<span class="fc bfc" id="L122" title="All 2 branches covered.">				if (!p.hasRightChild())</span>
-<span class="fc" id="L123">					return p;</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">		if (n.hasLeftChild())</span>
+<span class="fc" id="L173">			for (N p = n.left;; p = p.right)</span>
+<span class="fc bfc" id="L174" title="All 2 branches covered.">				if (!p.hasRightChild())</span>
+<span class="fc" id="L175">					return p;</span>
 
 		/* predecessor is some ancestor */
-<span class="pc bpc" id="L126" title="1 of 2 branches missed.">		N subtreeParent = subtreeRoot != null ? subtreeRoot.parent : null;</span>
-<span class="fc bfc" id="L127" title="All 2 branches covered.">		for (N p = n; p.parent != subtreeParent; p = p.parent)</span>
-<span class="fc bfc" id="L128" title="All 2 branches covered.">			if (p.isRightChild())</span>
-<span class="fc" id="L129">				return p.parent;</span>
-<span class="fc" id="L130">		return null;</span>
+<span class="pc bpc" id="L178" title="1 of 2 branches missed.">		N subtreeParent = subtreeRoot != null ? subtreeRoot.parent : null;</span>
+<span class="fc bfc" id="L179" title="All 2 branches covered.">		for (N p = n; p.parent != subtreeParent; p = p.parent)</span>
+<span class="fc bfc" id="L180" title="All 2 branches covered.">			if (p.isRightChild())</span>
+<span class="fc" id="L181">				return p.parent;</span>
+<span class="fc" id="L182">		return null;</span>
 	}
 
 	static &lt;E, N extends Node&lt;E, N&gt;&gt; N getSuccessor(N n) {
-<span class="fc" id="L134">		return getSuccessorInSubtree(n, null);</span>
+<span class="fc" id="L186">		return getSuccessorInSubtree(n, null);</span>
 	}
 
 	private static &lt;E, N extends Node&lt;E, N&gt;&gt; N getSuccessorInSubtree(N n, N subtreeRoot) {
 		/* successor in right sub tree */
-<span class="fc bfc" id="L139" title="All 2 branches covered.">		if (n.hasRightChild())</span>
-<span class="fc" id="L140">			for (N p = n.right;; p = p.left)</span>
-<span class="fc bfc" id="L141" title="All 2 branches covered.">				if (!p.hasLeftChild())</span>
-<span class="fc" id="L142">					return p;</span>
+<span class="fc bfc" id="L191" title="All 2 branches covered.">		if (n.hasRightChild())</span>
+<span class="fc" id="L192">			for (N p = n.right;; p = p.left)</span>
+<span class="fc bfc" id="L193" title="All 2 branches covered.">				if (!p.hasLeftChild())</span>
+<span class="fc" id="L194">					return p;</span>
 
 		/* successor is some ancestor */
-<span class="fc bfc" id="L145" title="All 2 branches covered.">		N subtreeParent = subtreeRoot != null ? subtreeRoot.parent : null;</span>
-<span class="fc bfc" id="L146" title="All 2 branches covered.">		for (N p = n; p.parent != subtreeParent; p = p.parent)</span>
-<span class="fc bfc" id="L147" title="All 2 branches covered.">			if (p.isLeftChild())</span>
-<span class="fc" id="L148">				return p.parent;</span>
-<span class="fc" id="L149">		return null;</span>
+<span class="fc bfc" id="L197" title="All 2 branches covered.">		N subtreeParent = subtreeRoot != null ? subtreeRoot.parent : null;</span>
+<span class="fc bfc" id="L198" title="All 2 branches covered.">		for (N p = n; p.parent != subtreeParent; p = p.parent)</span>
+<span class="fc bfc" id="L199" title="All 2 branches covered.">			if (p.isLeftChild())</span>
+<span class="fc" id="L200">				return p.parent;</span>
+<span class="fc" id="L201">		return null;</span>
 	}
 
 	static &lt;E, N extends Node&lt;E, N&gt;&gt; void insert(N root, Comparator&lt;? super E&gt; c, N n) {
-<span class="fc" id="L153">		for (N parent = root;;) {</span>
-<span class="fc" id="L154">			int cmp = c.compare(n.data, parent.data);</span>
-<span class="fc bfc" id="L155" title="All 2 branches covered.">			if (cmp &lt;= 0) {</span>
-<span class="fc bfc" id="L156" title="All 2 branches covered.">				if (!parent.hasLeftChild()) {</span>
-<span class="fc" id="L157">					parent.left = n;</span>
-<span class="fc" id="L158">					n.parent = parent;</span>
-<span class="fc" id="L159">					return;</span>
+<span class="pc bpc" id="L205" title="1 of 2 branches missed.">		if (c == null) {</span>
+<span class="fc" id="L206">			for (N parent = root;;) {</span>
+<span class="fc" id="L207">				int cmp = Utils.cmpDefault(n.data, parent.data);</span>
+<span class="fc bfc" id="L208" title="All 2 branches covered.">				if (cmp &lt;= 0) {</span>
+<span class="fc bfc" id="L209" title="All 2 branches covered.">					if (!parent.hasLeftChild()) {</span>
+<span class="fc" id="L210">						parent.left = n;</span>
+<span class="fc" id="L211">						n.parent = parent;</span>
+<span class="fc" id="L212">						return;</span>
+					}
+<span class="fc" id="L214">					parent = parent.left;</span>
+				} else {
+<span class="fc bfc" id="L216" title="All 2 branches covered.">					if (!parent.hasRightChild()) {</span>
+<span class="fc" id="L217">						parent.right = n;</span>
+<span class="fc" id="L218">						n.parent = parent;</span>
+<span class="fc" id="L219">						return;</span>
+					}
+<span class="fc" id="L221">					parent = parent.right;</span>
 				}
-<span class="fc" id="L161">				parent = parent.left;</span>
-			} else {
-<span class="fc bfc" id="L163" title="All 2 branches covered.">				if (!parent.hasRightChild()) {</span>
-<span class="fc" id="L164">					parent.right = n;</span>
-<span class="fc" id="L165">					n.parent = parent;</span>
-<span class="fc" id="L166">					return;</span>
+<span class="fc" id="L223">			}</span>
+		} else {
+<span class="nc" id="L225">			for (N parent = root;;) {</span>
+<span class="nc" id="L226">				int cmp = c.compare(n.data, parent.data);</span>
+<span class="nc bnc" id="L227" title="All 2 branches missed.">				if (cmp &lt;= 0) {</span>
+<span class="nc bnc" id="L228" title="All 2 branches missed.">					if (!parent.hasLeftChild()) {</span>
+<span class="nc" id="L229">						parent.left = n;</span>
+<span class="nc" id="L230">						n.parent = parent;</span>
+<span class="nc" id="L231">						return;</span>
+					}
+<span class="nc" id="L233">					parent = parent.left;</span>
+				} else {
+<span class="nc bnc" id="L235" title="All 2 branches missed.">					if (!parent.hasRightChild()) {</span>
+<span class="nc" id="L236">						parent.right = n;</span>
+<span class="nc" id="L237">						n.parent = parent;</span>
+<span class="nc" id="L238">						return;</span>
+					}
+<span class="nc" id="L240">					parent = parent.right;</span>
 				}
-<span class="fc" id="L168">				parent = parent.right;</span>
-			}
-<span class="fc" id="L170">		}</span>
+<span class="nc" id="L242">			}</span>
+		}
 	}
 
 	static &lt;E, N extends Node&lt;E, N&gt;&gt; void clear(N root) {
-<span class="fc bfc" id="L174" title="All 2 branches covered.">		for (N p = root; p != null;) {</span>
+<span class="fc bfc" id="L247" title="All 2 branches covered.">		for (N p = root; p != null;) {</span>
 			for (;;) {
-<span class="fc bfc" id="L176" title="All 2 branches covered.">				if (p.hasLeftChild()) {</span>
-<span class="fc" id="L177">					p = p.left;</span>
-<span class="fc" id="L178">					continue;</span>
+<span class="fc bfc" id="L249" title="All 2 branches covered.">				if (p.hasLeftChild()) {</span>
+<span class="fc" id="L250">					p = p.left;</span>
+<span class="fc" id="L251">					continue;</span>
 				}
-<span class="fc bfc" id="L180" title="All 2 branches covered.">				if (p.hasRightChild()) {</span>
-<span class="fc" id="L181">					p = p.right;</span>
-<span class="fc" id="L182">					continue;</span>
+<span class="fc bfc" id="L253" title="All 2 branches covered.">				if (p.hasRightChild()) {</span>
+<span class="fc" id="L254">					p = p.right;</span>
+<span class="fc" id="L255">					continue;</span>
 				}
 				break;
 			}
-<span class="fc" id="L186">			N parent = p.parent;</span>
-<span class="fc" id="L187">			p.clear();</span>
-<span class="fc" id="L188">			p = parent;</span>
-<span class="fc" id="L189">		}</span>
-<span class="fc" id="L190">	}</span>
+<span class="fc" id="L259">			N parent = p.parent;</span>
+<span class="fc" id="L260">			p.clear();</span>
+<span class="fc" id="L261">			p = parent;</span>
+<span class="fc" id="L262">		}</span>
+<span class="fc" id="L263">	}</span>
 
 	static class Node&lt;E, N extends Node&lt;E, N&gt;&gt; {
 		E data;
@@ -195,39 +268,39 @@ class BSTUtils {
 		N right;
 		N left;
 
-<span class="fc" id="L198">		Node(E e) {</span>
-<span class="fc" id="L199">			this.data = e;</span>
-<span class="fc" id="L200">			parent = right = left = null;</span>
-<span class="fc" id="L201">		}</span>
+<span class="fc" id="L271">		Node(E e) {</span>
+<span class="fc" id="L272">			this.data = e;</span>
+<span class="fc" id="L273">			parent = right = left = null;</span>
+<span class="fc" id="L274">		}</span>
 
 		void clear() {
-<span class="fc" id="L204">			parent = left = right = null;</span>
-<span class="fc" id="L205">			data = null;</span>
-<span class="fc" id="L206">		}</span>
+<span class="fc" id="L277">			parent = left = right = null;</span>
+<span class="fc" id="L278">			data = null;</span>
+<span class="fc" id="L279">		}</span>
 
 		@Override
 		public String toString() {
-<span class="fc" id="L210">			return &quot;&lt;&quot; + data + &quot;&gt;&quot;;</span>
+<span class="fc" id="L283">			return &quot;&lt;&quot; + data + &quot;&gt;&quot;;</span>
 		}
 
 		boolean isRoot() {
-<span class="fc bfc" id="L214" title="All 2 branches covered.">			return parent == null;</span>
+<span class="fc bfc" id="L287" title="All 2 branches covered.">			return parent == null;</span>
 		}
 
 		boolean isLeftChild() {
-<span class="pc bpc" id="L218" title="1 of 4 branches missed.">			return !isRoot() &amp;&amp; this == parent.left;</span>
+<span class="pc bpc" id="L291" title="1 of 4 branches missed.">			return !isRoot() &amp;&amp; this == parent.left;</span>
 		}
 
 		boolean isRightChild() {
-<span class="pc bpc" id="L222" title="1 of 4 branches missed.">			return !isRoot() &amp;&amp; this == parent.right;</span>
+<span class="pc bpc" id="L295" title="1 of 4 branches missed.">			return !isRoot() &amp;&amp; this == parent.right;</span>
 		}
 
 		boolean hasLeftChild() {
-<span class="fc bfc" id="L226" title="All 2 branches covered.">			return left != null;</span>
+<span class="fc bfc" id="L299" title="All 2 branches covered.">			return left != null;</span>
 		}
 
 		boolean hasRightChild() {
-<span class="fc bfc" id="L230" title="All 2 branches covered.">			return right != null;</span>
+<span class="fc bfc" id="L303" title="All 2 branches covered.">			return right != null;</span>
 		}
 	}
 
@@ -236,23 +309,23 @@ class BSTUtils {
 		private final N subtreeRoot;
 		private N n;
 
-<span class="fc" id="L239">		BSTIterator(N subtreeRoot) {</span>
-<span class="fc" id="L240">			this.subtreeRoot = subtreeRoot;</span>
-<span class="fc bfc" id="L241" title="All 2 branches covered.">			n = subtreeRoot == null ? null : findMin(subtreeRoot);</span>
-<span class="fc" id="L242">		}</span>
+<span class="fc" id="L312">		BSTIterator(N subtreeRoot) {</span>
+<span class="fc" id="L313">			this.subtreeRoot = subtreeRoot;</span>
+<span class="fc bfc" id="L314" title="All 2 branches covered.">			n = subtreeRoot == null ? null : findMin(subtreeRoot);</span>
+<span class="fc" id="L315">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="fc bfc" id="L246" title="All 2 branches covered.">			return n != null;</span>
+<span class="fc bfc" id="L319" title="All 2 branches covered.">			return n != null;</span>
 		}
 
 		@Override
 		public N next() {
-<span class="pc bpc" id="L251" title="1 of 2 branches missed.">			if (!hasNext())</span>
-<span class="nc" id="L252">				throw new NoSuchElementException();</span>
-<span class="fc" id="L253">			N ret = n;</span>
-<span class="fc" id="L254">			n = getSuccessorInSubtree(n, subtreeRoot);</span>
-<span class="fc" id="L255">			return ret;</span>
+<span class="pc bpc" id="L324" title="1 of 2 branches missed.">			if (!hasNext())</span>
+<span class="nc" id="L325">				throw new NoSuchElementException();</span>
+<span class="fc" id="L326">			N ret = n;</span>
+<span class="fc" id="L327">			n = getSuccessorInSubtree(n, subtreeRoot);</span>
+<span class="fc" id="L328">			return ret;</span>
 		}
 
 	}

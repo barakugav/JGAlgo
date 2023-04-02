@@ -216,15 +216,15 @@ import java.util.Set;
 		}
 
 		E min1, max1, min2, max2;
-<span class="fc bfc" id="L219" title="All 2 branches covered.">		if (c.compare(max1 = findMax(), min2 = h.findMin()) &lt;= 0) {</span>
+<span class="fc bfc" id="L219" title="All 2 branches covered.">		if (compare(max1 = findMax(), min2 = h.findMin()) &lt;= 0) {</span>
 			/* all elements in this tree are &lt;= than all elements in other tree */
 <span class="fc" id="L221">			root = meld(this, h);</span>
-<span class="fc bfc" id="L222" title="All 2 branches covered.">		} else if (c.compare(min1 = findMin(), max2 = h.findMax()) &gt;= 0) {</span>
+<span class="fc bfc" id="L222" title="All 2 branches covered.">		} else if (compare(min1 = findMin(), max2 = h.findMax()) &gt;= 0) {</span>
 			/* all elements in this tree are &gt;= than all elements in other tree */
 <span class="fc" id="L224">			root = meld(h, this);</span>
 		} else {
-<span class="fc" id="L226">			int minCmp = c.compare(min1, min2);</span>
-<span class="fc" id="L227">			int maxCmp = c.compare(max1, max2);</span>
+<span class="fc" id="L226">			int minCmp = compare(min1, min2);</span>
+<span class="fc" id="L227">			int maxCmp = compare(max1, max2);</span>
 <span class="fc" id="L228">			SplayTree&lt;E&gt; hLow = null, hHigh = null;</span>
 
 <span class="fc bfc" id="L230" title="All 2 branches covered.">			if (minCmp &lt; 0) {</span>
@@ -242,11 +242,11 @@ import java.util.Set;
 <span class="fc" id="L242">			super.meld(h);</span>
 
 <span class="fc bfc" id="L244" title="All 2 branches covered.">			if (hLow != null) {</span>
-<span class="pc bpc" id="L245" title="1 of 2 branches missed.">				assert c.compare(hLow.findMax(), findMin()) &lt; 0;</span>
+<span class="pc bpc" id="L245" title="1 of 2 branches missed.">				assert compare(hLow.findMax(), findMin()) &lt; 0;</span>
 <span class="fc" id="L246">				root = meld(hLow, this);</span>
 			}
 <span class="fc bfc" id="L248" title="All 2 branches covered.">			if (hHigh != null) {</span>
-<span class="pc bpc" id="L249" title="1 of 2 branches missed.">				assert c.compare(hHigh.findMin(), findMax()) &gt; 0;</span>
+<span class="pc bpc" id="L249" title="1 of 2 branches missed.">				assert compare(hHigh.findMin(), findMax()) &gt; 0;</span>
 <span class="fc" id="L250">				root = meld(this, hHigh);</span>
 			}
 		}

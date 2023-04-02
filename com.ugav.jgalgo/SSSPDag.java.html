@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SSSPDag.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jgalgo</a> &gt; <a href="index.source.html" class="el_package">com.ugav.jgalgo</a> &gt; <span class="el_source">SSSPDag.java</span></div><h1>SSSPDag.java</h1><pre class="source lang-java linenums">package com.ugav.jgalgo;
+
+<span class="fc" id="L3">public class SSSPDag implements SSSP {</span>
+
+	@Override
+	public Result calcDistances(Graph g0, EdgeWeightFunc w, int source) {
+<span class="pc bpc" id="L7" title="1 of 2 branches missed.">		if (!(g0 instanceof DiGraph))</span>
+<span class="nc" id="L8">			throw new IllegalArgumentException(&quot;Only DAG graphs are supported&quot;);</span>
+<span class="fc" id="L9">		DiGraph g = (DiGraph) g0;</span>
+<span class="fc" id="L10">		SSSPResultImpl res = new SSSPResultImpl(g);</span>
+<span class="fc" id="L11">		res.distances[source] = 0;</span>
+
+<span class="fc" id="L13">		int[] topolSort = Graphs.calcTopologicalSortingDAG(g);</span>
+<span class="fc" id="L14">		boolean sourceSeen = false;</span>
+<span class="fc bfc" id="L15" title="All 2 branches covered.">		for (int u : topolSort) {</span>
+<span class="fc bfc" id="L16" title="All 2 branches covered.">			if (!sourceSeen) {</span>
+<span class="fc bfc" id="L17" title="All 2 branches covered.">				if (u != source)</span>
+<span class="fc" id="L18">					continue;</span>
+<span class="fc" id="L19">				sourceSeen = true;</span>
+			}
+<span class="fc bfc" id="L21" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
+<span class="fc" id="L22">				int e = eit.nextInt();</span>
+<span class="fc" id="L23">				int v = eit.v();</span>
+<span class="fc" id="L24">				double d = res.distances[u] + w.weight(e);</span>
+<span class="fc bfc" id="L25" title="All 2 branches covered.">				if (d &lt; res.distances[v]) {</span>
+<span class="fc" id="L26">					res.distances[v] = d;</span>
+<span class="fc" id="L27">					res.backtrack[v] = e;</span>
+				}
+<span class="fc" id="L29">			}</span>
+		}
+
+<span class="fc" id="L32">		return res;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

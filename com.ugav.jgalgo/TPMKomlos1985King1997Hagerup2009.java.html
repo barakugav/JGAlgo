@@ -23,7 +23,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 <span class="nc" id="L23">			throw new IllegalArgumentException(&quot;only undirected graphs are supported&quot;);</span>
 <span class="pc bpc" id="L24" title="1 of 2 branches missed.">		if (queries.length / 2 &lt; queriesNum)</span>
 <span class="nc" id="L25">			throw new IllegalArgumentException(&quot;queries should be in format [u0, v0, u1, v1, ...]&quot;);</span>
-<span class="pc bpc" id="L26" title="1 of 2 branches missed.">		if (!Graphs.isTree(t))</span>
+<span class="pc bpc" id="L26" title="1 of 2 branches missed.">		if (!Graphs.isTree((UGraph) t))</span>
 <span class="nc" id="L27">			throw new IllegalArgumentException(&quot;only trees are supported&quot;);</span>
 <span class="pc bpc" id="L28" title="1 of 2 branches missed.">		if (t.vertices().size() == 0)</span>
 <span class="nc" id="L29">			return new int[queriesNum];</span>
@@ -125,7 +125,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 <span class="fc" id="L125">			Weights.Int tData = t.edgesWeight(&quot;edgeData&quot;);</span>
 <span class="fc" id="L126">			int[][] res = new int[tOrig.vertices().size()][];</span>
 
-<span class="fc bfc" id="L128" title="All 2 branches covered.">			for (Graphs.DFSIter it = new Graphs.DFSIter(t, root); it.hasNext();) {</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">			for (DFSIter it = new DFSIter(t, root); it.hasNext();) {</span>
 <span class="fc" id="L129">				int v = it.nextInt();</span>
 <span class="fc" id="L130">				IntList edgesFromRoot = it.edgePath();</span>
 <span class="fc bfc" id="L131" title="All 2 branches covered.">				if (edgesFromRoot.isEmpty())</span>
@@ -308,7 +308,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 <span class="fc" id="L308">			Arrays.fill(edgeToParent, -1);</span>
 <span class="fc" id="L309">			int[] depths = new int[n];</span>
 
-<span class="fc bfc" id="L311" title="All 2 branches covered.">			for (Graphs.BFSIter it = new Graphs.BFSIter(t, root); it.hasNext();) {</span>
+<span class="fc bfc" id="L311" title="All 2 branches covered.">			for (BFSIter it = new BFSIter(t, root); it.hasNext();) {</span>
 <span class="fc" id="L312">				int v = it.nextInt();</span>
 <span class="fc" id="L313">				int e = it.inEdge();</span>
 <span class="fc bfc" id="L314" title="All 2 branches covered.">				if (e != -1) {</span>

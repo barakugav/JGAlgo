@@ -2,16 +2,16 @@
 
 import java.util.Objects;
 
-public class Triple&lt;E1, E2, E3&gt; implements Comparable&lt;Triple&lt;E1, E2, E3&gt;&gt; {
+class Triple&lt;E1, E2, E3&gt; implements Comparable&lt;Triple&lt;E1, E2, E3&gt;&gt; {
 
-	public E1 e1;
-	public E2 e2;
-	public E3 e3;
+	E1 e1;
+	E2 e2;
+	E3 e3;
 
-<span class="nc" id="L11">	public Triple() {</span>
+<span class="nc" id="L11">	Triple() {</span>
 <span class="nc" id="L12">	}</span>
 
-<span class="fc" id="L14">	public Triple(E1 e1, E2 e2, E3 e3) {</span>
+<span class="fc" id="L14">	Triple(E1 e1, E2 e2, E3 e3) {</span>
 <span class="fc" id="L15">		this.e1 = e1;</span>
 <span class="fc" id="L16">		this.e2 = e2;</span>
 <span class="fc" id="L17">		this.e3 = e3;</span>
@@ -38,19 +38,18 @@ public class Triple&lt;E1, E2, E3&gt; implements Comparable&lt;Triple&lt;E1, E2,
 <span class="nc bnc" id="L38" title="All 6 branches missed.">		return Objects.equals(e1, o.e1) &amp;&amp; Objects.equals(e2, o.e2) &amp;&amp; Objects.equals(e3, o.e3);</span>
 	}
 
-	@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
 	@Override
 	public int compareTo(Triple&lt;E1, E2, E3&gt; o) {
 		int c;
-<span class="nc bnc" id="L45" title="All 2 branches missed.">		if ((c = ((Comparable) e1).compareTo(o.e1)) != 0)</span>
-<span class="nc" id="L46">			return c;</span>
-<span class="nc bnc" id="L47" title="All 2 branches missed.">		if ((c = ((Comparable) e2).compareTo(o.e2)) != 0)</span>
-<span class="nc" id="L48">			return c;</span>
-<span class="nc" id="L49">		return ((Comparable) e2).compareTo(o.e2);</span>
+<span class="nc bnc" id="L44" title="All 2 branches missed.">		if ((c = Utils.cmpDefault(e1, o.e1)) != 0)</span>
+<span class="nc" id="L45">			return c;</span>
+<span class="nc bnc" id="L46" title="All 2 branches missed.">		if ((c = Utils.cmpDefault(e2, o.e2)) != 0)</span>
+<span class="nc" id="L47">			return c;</span>
+<span class="nc" id="L48">		return Utils.cmpDefault(e2, o.e2);</span>
 	}
 
-	public static &lt;E1, E2, E3&gt; Triple&lt;E1, E2, E3&gt; valueOf(E1 e1, E2 e2, E3 e3) {
-<span class="fc" id="L53">		return new Triple&lt;&gt;(e1, e2, e3);</span>
+	static &lt;E1, E2, E3&gt; Triple&lt;E1, E2, E3&gt; valueOf(E1 e1, E2 e2, E3 e3) {
+<span class="fc" id="L52">		return new Triple&lt;&gt;(e1, e2, e3);</span>
 	}
 
 }

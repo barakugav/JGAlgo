@@ -105,21 +105,21 @@ public class SSSPDial1969 implements SSSP {
 
 <span class="fc" id="L106">				DialHeap.Node vPtr = verticesPtrs[v];</span>
 <span class="fc bfc" id="L107" title="All 2 branches covered.">				if (vPtr == null) {</span>
-<span class="fc" id="L108">					vPtr = verticesPtrs[v] = heap.insert(distance, e, v);</span>
+<span class="fc" id="L108">					vPtr = verticesPtrs[v] = heap.insert(distance, v);</span>
+<span class="fc" id="L109">					res.backtrack[v] = e;</span>
 				} else {
-<span class="fc bfc" id="L110" title="All 2 branches covered.">					if (distance &lt; vPtr.distance) {</span>
-<span class="fc" id="L111">						vPtr.backtrack = e;</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">					if (distance &lt; vPtr.distance) {</span>
 <span class="fc" id="L112">						heap.decreaseKey(vPtr, distance);</span>
+<span class="fc" id="L113">						res.backtrack[v] = e;</span>
 					}
 				}
-<span class="fc" id="L115">			}</span>
+<span class="fc" id="L116">			}</span>
 
-<span class="fc" id="L117">			DialHeap.Node next = heap.extractMin();</span>
-<span class="fc bfc" id="L118" title="All 2 branches covered.">			if (next == null)</span>
-<span class="fc" id="L119">				break;</span>
-<span class="fc" id="L120">			u = next.v;</span>
-<span class="fc" id="L121">			res.distances[u] = next.distance;</span>
-<span class="fc" id="L122">			res.backtrack[u] = next.backtrack;</span>
+<span class="fc" id="L118">			DialHeap.Node next = heap.extractMin();</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">			if (next == null)</span>
+<span class="fc" id="L120">				break;</span>
+<span class="fc" id="L121">			res.distances[next.v] = next.distance;</span>
+<span class="fc" id="L122">			u = next.v;</span>
 <span class="fc" id="L123">		}</span>
 
 <span class="fc" id="L125">		memClear(n, m);</span>
@@ -161,8 +161,8 @@ public class SSSPDial1969 implements SSSP {
 			}
 <span class="fc" id="L162">		}</span>
 
-		Node insert(int distance, int backtrack, int v) {
-<span class="fc" id="L165">			Node n = new Node(distance, backtrack, v);</span>
+		Node insert(int distance, int v) {
+<span class="fc" id="L165">			Node n = new Node(distance, v);</span>
 <span class="fc" id="L166">			insertNode(n);</span>
 <span class="fc" id="L167">			return n;</span>
 		}
@@ -214,17 +214,15 @@ public class SSSPDial1969 implements SSSP {
 		static class Node {
 
 			int distance;
-			int backtrack;
 			final int v;
 
 			Node next;
 			Node prev;
 
-<span class="fc" id="L223">			Node(int distance, int backtrack, int v) {</span>
-<span class="fc" id="L224">				this.distance = distance;</span>
-<span class="fc" id="L225">				this.backtrack = backtrack;</span>
-<span class="fc" id="L226">				this.v = v;</span>
-<span class="fc" id="L227">			}</span>
+<span class="fc" id="L222">			Node(int distance, int v) {</span>
+<span class="fc" id="L223">				this.distance = distance;</span>
+<span class="fc" id="L224">				this.v = v;</span>
+<span class="fc" id="L225">			}</span>
 		}
 
 	}

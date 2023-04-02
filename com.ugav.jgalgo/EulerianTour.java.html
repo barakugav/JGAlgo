@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EulerianTour.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jgalgo</a> &gt; <a href="index.source.html" class="el_package">com.ugav.jgalgo</a> &gt; <span class="el_source">EulerianTour.java</span></div><h1>EulerianTour.java</h1><pre class="source lang-java linenums">package com.ugav.jgalgo;
+
+import com.ugav.jgalgo.Utils.StackIntFixSize;
+
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
+
+public class EulerianTour {
+
+	private EulerianTour() {
+	}
+
+	public static IntList calcTour(UGraph g) {
+<span class="fc" id="L16">		int n = g.vertices().size();</span>
+
+<span class="fc" id="L18">		int start = -1, end = -1;</span>
+<span class="fc bfc" id="L19" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
+<span class="pc bpc" id="L20" title="1 of 2 branches missed.">			if (g.degree(u) % 2 == 0)</span>
+<span class="fc" id="L21">				continue;</span>
+<span class="nc bnc" id="L22" title="All 2 branches missed.">			if (start == -1)</span>
+<span class="nc" id="L23">				start = u;</span>
+<span class="nc bnc" id="L24" title="All 2 branches missed.">			else if (end == -1)</span>
+<span class="nc" id="L25">				end = u;</span>
+			else
+<span class="nc" id="L27">				throw new IllegalArgumentException(</span>
+						&quot;More than two vertices have an odd degree (&quot; + start + &quot;, &quot; + end + &quot;, &quot; + u + &quot;)&quot;);
+		}
+<span class="pc bpc" id="L30" title="3 of 4 branches missed.">		if (start != -1 &amp;&amp; end == -1)</span>
+<span class="nc" id="L31">			throw new IllegalArgumentException(</span>
+					&quot;Eulerian tour exists only if all vertices have even degree or only two vertices have odd degree&quot;);
+<span class="pc bpc" id="L33" title="1 of 2 branches missed.">		if (start == -1)</span>
+<span class="fc" id="L34">			start = 0;</span>
+
+<span class="fc" id="L36">		IntArrayList tour = new IntArrayList(g.edges().size());</span>
+<span class="fc" id="L37">		IntSet usedEdges = new IntOpenHashSet();</span>
+<span class="fc" id="L38">		EdgeIter[] iters = new EdgeIter[n];</span>
+<span class="fc bfc" id="L39" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
+<span class="fc" id="L40">			iters[u] = g.edges(u);</span>
+
+<span class="fc" id="L42">		StackIntFixSize queue = new StackIntFixSize(g.edges().size());</span>
+
+<span class="fc" id="L44">		for (int u = start;;) {</span>
+			findCycle: for (;;) {
+				int e, v;
+<span class="fc" id="L47">				for (EdgeIter iter = iters[u];;) {</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">					if (!iter.hasNext())</span>
+<span class="fc" id="L49">						break findCycle;</span>
+<span class="fc" id="L50">					e = iter.nextInt();</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">					if (!usedEdges.contains(e)) {</span>
+<span class="fc" id="L52">						v = iter.v();</span>
+<span class="fc" id="L53">						break;</span>
+					}
+				}
+<span class="fc" id="L56">				usedEdges.add(e);</span>
+<span class="fc" id="L57">				queue.push(e);</span>
+<span class="fc" id="L58">				u = v;</span>
+<span class="fc" id="L59">			}</span>
+
+<span class="fc bfc" id="L61" title="All 2 branches covered.">			if (queue.isEmpty())</span>
+<span class="fc" id="L62">				break;</span>
+
+<span class="fc" id="L64">			int e = queue.pop();</span>
+<span class="fc" id="L65">			tour.add(e);</span>
+<span class="fc" id="L66">			u = g.edgeEndpoint(e, u);</span>
+<span class="fc" id="L67">		}</span>
+
+<span class="fc" id="L69">		return tour;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AStar.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jgalgo</a> &gt; <a href="index.source.html" class="el_package">com.ugav.jgalgo</a> &gt; <span class="el_source">AStar.java</span></div><h1>AStar.java</h1><pre class="source lang-java linenums">package com.ugav.jgalgo;
+
+import java.util.Objects;
+import java.util.function.IntToDoubleFunction;
+
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntLists;
+
+<span class="fc" id="L9">public class AStar {</span>
+
+	private HeapDirectAccessed.Builder heapBuilder;
+
+<span class="fc" id="L13">	public AStar() {</span>
+<span class="fc" id="L14">		heapBuilder = HeapPairing::new;</span>
+<span class="fc" id="L15">	}</span>
+
+	public void setHeapBuilder(HeapDirectAccessed.Builder heapBuilder) {
+<span class="nc" id="L18">		this.heapBuilder = Objects.requireNonNull(heapBuilder);</span>
+<span class="nc" id="L19">	}</span>
+
+	public IntList calcPath(Graph g, EdgeWeightFunc w, int source, int target, IntToDoubleFunction vHeuristic) {
+<span class="fc bfc" id="L22" title="All 2 branches covered.">		if (source == target)</span>
+<span class="fc" id="L23">			return IntLists.emptyList();</span>
+<span class="fc" id="L24">		int n = g.vertices().size();</span>
+<span class="fc" id="L25">		HeapDirectAccessed&lt;HeapElm&gt; heap = heapBuilder</span>
+<span class="fc" id="L26">				.build((a, b) -&gt; Utils.compare(a.distanceAstimate, b.distanceAstimate));</span>
+		@SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L28">		HeapDirectAccessed.Handle&lt;HeapElm&gt;[] verticesPtrs = new HeapDirectAccessed.Handle[n];</span>
+
+<span class="fc" id="L30">		SSSPResultImpl res = new SSSPResultImpl(g);</span>
+<span class="fc" id="L31">		res.distances[source] = 0;</span>
+
+<span class="fc" id="L33">		for (int u = source;;) {</span>
+<span class="fc bfc" id="L34" title="All 2 branches covered.">			for (EdgeIter eit = g.edges(u); eit.hasNext();) {</span>
+<span class="fc" id="L35">				int e = eit.nextInt();</span>
+<span class="fc" id="L36">				int v = eit.v();</span>
+<span class="fc" id="L37">				double ws = w.weight(e);</span>
+<span class="pc bpc" id="L38" title="1 of 2 branches missed.">				if (ws &lt; 0)</span>
+<span class="nc" id="L39">					throw new IllegalArgumentException(&quot;negative weights are not supported&quot;);</span>
+<span class="fc" id="L40">				double distance = res.distances[u] + ws;</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">				if (distance &gt;= res.distances[v])</span>
+<span class="fc" id="L42">					continue;</span>
+<span class="fc" id="L43">				res.distances[v] = distance;</span>
+<span class="fc" id="L44">				res.backtrack[v] = e;</span>
+<span class="fc" id="L45">				double distanceAstimate = distance + vHeuristic.applyAsDouble(v);</span>
+
+<span class="fc" id="L47">				HeapDirectAccessed.Handle&lt;HeapElm&gt; vPtr = verticesPtrs[v];</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">				if (vPtr == null) {</span>
+<span class="fc" id="L49">					verticesPtrs[v] = heap.insert(new HeapElm(distanceAstimate, v));</span>
+				} else {
+<span class="fc" id="L51">					HeapElm ptr = vPtr.get();</span>
+<span class="pc bpc" id="L52" title="1 of 2 branches missed.">					assert distance &lt; ptr.distanceAstimate;</span>
+<span class="pc bpc" id="L53" title="1 of 2 branches missed.">					if (distance &lt; ptr.distanceAstimate) {</span>
+<span class="fc" id="L54">						ptr.distanceAstimate = distance;</span>
+<span class="fc" id="L55">						heap.decreaseKey(vPtr, ptr);</span>
+					}
+				}
+<span class="fc" id="L58">			}</span>
+
+<span class="fc bfc" id="L60" title="All 2 branches covered.">			if (heap.isEmpty())</span>
+<span class="fc" id="L61">				break;</span>
+<span class="fc" id="L62">			HeapElm next = heap.extractMin();</span>
+<span class="fc" id="L63">			verticesPtrs[next.v] = null;</span>
+<span class="fc" id="L64">			u = next.v;</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">			if (u == target)</span>
+<span class="fc" id="L66">				return res.getPathTo(target);</span>
+<span class="fc" id="L67">		}</span>
+<span class="fc" id="L68">		return null;</span>
+	}
+
+	private static class HeapElm {
+
+		double distanceAstimate;
+		final int v;
+
+<span class="fc" id="L76">		HeapElm(double distanceAstimate, int v) {</span>
+<span class="fc" id="L77">			this.distanceAstimate = distanceAstimate;</span>
+<span class="fc" id="L78">			this.v = v;</span>
+<span class="fc" id="L79">		}</span>
+
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

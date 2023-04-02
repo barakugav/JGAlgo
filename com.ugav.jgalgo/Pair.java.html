@@ -2,15 +2,15 @@
 
 import java.util.Objects;
 
-public class Pair&lt;E1, E2&gt; implements Comparable&lt;Pair&lt;E1, E2&gt;&gt; {
+class Pair&lt;E1, E2&gt; implements Comparable&lt;Pair&lt;E1, E2&gt;&gt; {
 
-	public E1 e1;
-	public E2 e2;
+	E1 e1;
+	E2 e2;
 
-<span class="nc" id="L10">	public Pair() {</span>
+<span class="nc" id="L10">	Pair() {</span>
 <span class="nc" id="L11">	}</span>
 
-<span class="fc" id="L13">	public Pair(E1 e1, E2 e2) {</span>
+<span class="fc" id="L13">	Pair(E1 e1, E2 e2) {</span>
 <span class="fc" id="L14">		this.e1 = e1;</span>
 <span class="fc" id="L15">		this.e2 = e2;</span>
 <span class="fc" id="L16">	}</span>
@@ -22,29 +22,28 @@ public class Pair&lt;E1, E2&gt; implements Comparable&lt;Pair&lt;E1, E2&gt;&gt; 
 
 	@Override
 	public int hashCode() {
-<span class="fc" id="L25">		return Objects.hashCode(e1) ^ ~Objects.hashCode(e2);</span>
+<span class="nc" id="L25">		return Objects.hashCode(e1) ^ ~Objects.hashCode(e2);</span>
 	}
 
 	@Override
 	public boolean equals(Object other) {
-<span class="pc bpc" id="L30" title="1 of 2 branches missed.">		if (other == this)</span>
+<span class="nc bnc" id="L30" title="All 2 branches missed.">		if (other == this)</span>
 <span class="nc" id="L31">			return true;</span>
-<span class="pc bpc" id="L32" title="1 of 2 branches missed.">		if (!(other instanceof Pair))</span>
+<span class="nc bnc" id="L32" title="All 2 branches missed.">		if (!(other instanceof Pair))</span>
 <span class="nc" id="L33">			return false;</span>
 
-<span class="fc" id="L35">		Pair&lt;?, ?&gt; o = (Pair&lt;?, ?&gt;) other;</span>
-<span class="pc bpc" id="L36" title="1 of 4 branches missed.">		return Objects.equals(e1, o.e1) &amp;&amp; Objects.equals(e2, o.e2);</span>
+<span class="nc" id="L35">		Pair&lt;?, ?&gt; o = (Pair&lt;?, ?&gt;) other;</span>
+<span class="nc bnc" id="L36" title="All 4 branches missed.">		return Objects.equals(e1, o.e1) &amp;&amp; Objects.equals(e2, o.e2);</span>
 	}
 
-	@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
 	@Override
 	public int compareTo(Pair&lt;E1, E2&gt; o) {
 		int c;
-<span class="nc bnc" id="L43" title="All 2 branches missed.">		return (c = ((Comparable) e1).compareTo(o.e1)) != 0 ? c : ((Comparable) e2).compareTo(o.e2);</span>
+<span class="nc bnc" id="L42" title="All 2 branches missed.">		return (c = Utils.cmpDefault(e1, o.e1)) != 0 ? c : Utils.cmpDefault(e2, o.e2);</span>
 	}
 
-	public static &lt;E1, E2&gt; Pair&lt;E1, E2&gt; of(E1 e1, E2 e2) {
-<span class="fc" id="L47">		return new Pair&lt;&gt;(e1, e2);</span>
+	static &lt;E1, E2&gt; Pair&lt;E1, E2&gt; of(E1 e1, E2 e2) {
+<span class="fc" id="L46">		return new Pair&lt;&gt;(e1, e2);</span>
 	}
 
 }
