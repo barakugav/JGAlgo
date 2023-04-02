@@ -18,6 +18,7 @@ import com.ugav.jgalgo.Graphs;
 import com.ugav.jgalgo.SSSP;
 import com.ugav.jgalgo.SSSPDag;
 import com.ugav.jgalgo.SSSPDijkstra;
+import com.ugav.jgalgo.UGraph;
 import com.ugav.jgalgo.Weights;
 import com.ugav.jgalgo.test.GraphsTestUtils.RandomGraphBuilder;
 
@@ -84,7 +85,7 @@ public class GraphsTest extends TestUtils {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = n - 1;
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).doubleEdges(false)
+			UGraph g = (UGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).doubleEdges(false)
 					.selfEdges(false).cycles(false).connected(true).build();
 
 			Assertions.assertTrue(Graphs.isTree(g));
@@ -100,7 +101,7 @@ public class GraphsTest extends TestUtils {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = n - 1;
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).doubleEdges(false)
+			UGraph g = (UGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).doubleEdges(false)
 					.selfEdges(false).cycles(false).connected(true).build();
 			int[] edges = g.edges().toIntArray();
 			int e = edges[rand.nextInt(edges.length)];
@@ -119,7 +120,7 @@ public class GraphsTest extends TestUtils {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = n - 1;
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).doubleEdges(false)
+			UGraph g = (UGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).doubleEdges(false)
 					.selfEdges(false).cycles(false).connected(true).build();
 			int u, v;
 			do {

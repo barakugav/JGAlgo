@@ -69,8 +69,9 @@ public class Graphs {
 		return path;
 	}
 
-	public static boolean isTree(Graph g) {
-		return isTree(g, 0);
+	public static boolean isTree(UGraph g) {
+		IntIterator vIter = g.vertices().iterator();
+		return !vIter.hasNext() ? true : isTree(g, vIter.nextInt());
 	}
 
 	public static boolean isTree(Graph g, int root) {
@@ -169,7 +170,7 @@ public class Graphs {
 		return topolSort;
 	}
 
-	public static int getFullyBranchingTreeDepth(Graph t, int root) {
+	static int getFullyBranchingTreeDepth(Graph t, int root) {
 		for (int parent = -1, u = root, depth = 0;; depth++) {
 			int v = parent;
 			for (EdgeIter eit = t.edges(u); eit.hasNext();) {
@@ -185,7 +186,7 @@ public class Graphs {
 		}
 	}
 
-	public static int[] calcDegree(UGraph g, IntCollection edges) {
+	static int[] calcDegree(UGraph g, IntCollection edges) {
 		int[] degree = new int[g.vertices().size()];
 		for (IntIterator eit = edges.iterator(); eit.hasNext();) {
 			int e = eit.nextInt();
@@ -249,15 +250,14 @@ public class Graphs {
 			u = g.edgeEndpoint(e, u);
 		}
 
-		IntArrays.reverse(tour.elements(), 0, tour.size());
 		return tour;
 	}
 
-	public static String formatAdjacencyMatrix(Graph g) {
+	static String formatAdjacencyMatrix(Graph g) {
 		return formatAdjacencyMatrix(g, e -> e == -1 ? "0" : "1");
 	}
 
-	public static String formatAdjacencyMatrixWeighted(Graph g, EdgeWeightFunc w) {
+	static String formatAdjacencyMatrixWeighted(Graph g, EdgeWeightFunc w) {
 		double minWeight = Double.MAX_VALUE;
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
@@ -275,11 +275,11 @@ public class Graphs {
 						e -> e == -1 ? "-" : String.format("%." + precision + "f", Double.valueOf(w.weight(e))));
 	}
 
-	public static String formatAdjacencyMatrixWeightedInt(Graph g, EdgeWeightFunc.Int w) {
+	static String formatAdjacencyMatrixWeightedInt(Graph g, EdgeWeightFunc.Int w) {
 		return formatAdjacencyMatrix(g, e -> e == -1 ? "-" : Integer.toString(w.weightInt(e)));
 	}
 
-	public static String formatAdjacencyMatrix(Graph g, Int2ObjectFunction<String> formatter) {
+	static String formatAdjacencyMatrix(Graph g, Int2ObjectFunction<String> formatter) {
 		int n = g.vertices().size();
 		if (n == 0)
 			return "[]";
@@ -331,7 +331,7 @@ public class Graphs {
 		return String.join("", Collections.nCopies(n, s));
 	}
 
-	public static DiGraph referenceGraph(DiGraph g, Object refEdgeWeightKey) {
+	static DiGraph referenceGraph(DiGraph g, Object refEdgeWeightKey) {
 		DiGraph g0 = new GraphArrayDirected(g.vertices().size());
 		Weights.Int edgeRef = g0.addEdgesWeight(refEdgeWeightKey).ofInts();
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
@@ -342,7 +342,7 @@ public class Graphs {
 		return g0;
 	}
 
-	public static UGraph referenceGraph(UGraph g, Object refEdgeWeightKey) {
+	static UGraph referenceGraph(UGraph g, Object refEdgeWeightKey) {
 		UGraph g0 = new GraphArrayUndirected(g.vertices().size());
 		Weights.Int edgeRef = g0.addEdgesWeight(refEdgeWeightKey).ofInts();
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {

@@ -23,7 +23,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 			throw new IllegalArgumentException("only undirected graphs are supported");
 		if (queries.length / 2 < queriesNum)
 			throw new IllegalArgumentException("queries should be in format [u0, v0, u1, v1, ...]");
-		if (!Graphs.isTree(t))
+		if (!Graphs.isTree((UGraph) t))
 			throw new IllegalArgumentException("only trees are supported");
 		if (t.vertices().size() == 0)
 			return new int[queriesNum];
