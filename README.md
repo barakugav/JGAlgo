@@ -56,6 +56,11 @@ JGAlgo is a collection of algorithms implemented in Java. It contains mostly alg
 | Maximum matching general weighted Gabow2017 | $O(m n + n^2 \log n)$ |
 | Travelling Salesman Problem (TSP) $2$-appx using MST | $O(n^2)$ |
 | Travelling Salesman Problem (TSP) $3/2$-appx using maximum matching | $O(n^3)$ |
+| Vertex Coloring Greedy arbitrary vertices order | $O(m n)$ |
+| Vertex Coloring Greedy random vertices order | $O(m n)$ |
+| Vertex Coloring DSatur | $O(m n)$ |
+| Vertex Coloring DSatur with Heap | $O(m + n \log n)$ |
+| Vertex Coloring Recursive Largest First | $O(m n)$ |
 
 ### Additional Utils
 

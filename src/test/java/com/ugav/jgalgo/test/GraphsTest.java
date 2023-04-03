@@ -34,7 +34,7 @@ public class GraphsTest extends TestUtils {
 		List<Phase> phases = List.of(phase(256, 16, 8), phase(128, 32, 64), phase(4, 2048, 8192));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).doubleEdges(false).doubleEdges(true)
+			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).doubleEdges(true)
 					.selfEdges(true).cycles(true).connected(true).build();
 			int source = rand.nextInt(n);
 

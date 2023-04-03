@@ -345,4 +345,18 @@ public class Graphs {
 		return g1;
 	}
 
+	static boolean containsSelfLoops(Graph g) {
+		if (!g.getCapabilities().selfEdges())
+			return false;
+		int n = g.vertices().size();
+		for (int u = 0; u < n; u++) {
+			for (EdgeIter eit = g.edges(u); eit.hasNext();) {
+				eit.nextInt();
+				if (u == eit.v())
+					return true;
+			}
+		}
+		return false;
+	}
+
 }

@@ -2,6 +2,7 @@ package com.ugav.jgalgo;
 
 import java.util.AbstractList;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -680,6 +681,27 @@ class Utils {
 			return new NullList<>(toIndex - fromIndex);
 		}
 
+	}
+
+	static IntIterator bitSetIterator(BitSet bitSet) {
+		return new IntIterator() {
+
+			int bit = bitSet.nextSetBit(0);
+
+			@Override
+			public boolean hasNext() {
+				return bit != -1;
+			}
+
+			@Override
+			public int nextInt() {
+				if (!hasNext())
+					throw new NoSuchElementException();
+				int ret = bit;
+				bit = bitSet.nextSetBit(bit + 1);
+				return ret;
+			}
+		};
 	}
 
 	@FunctionalInterface
