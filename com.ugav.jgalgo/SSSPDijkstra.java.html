@@ -18,7 +18,7 @@ public class SSSPDijkstra implements SSSP {
 
 <span class="fc" id="L19">	public SSSPDijkstra(HeapDirectAccessed.Builder heapBuilder) {</span>
 <span class="fc" id="L20">		allocSize = 0;</span>
-<span class="fc" id="L21">		heap = heapBuilder.build((a, b) -&gt; Utils.compare(a.distance, b.distance));</span>
+<span class="fc" id="L21">		heap = heapBuilder.build();</span>
 <span class="fc" id="L22">	}</span>
 
 	@SuppressWarnings(&quot;unchecked&quot;)
@@ -81,7 +81,7 @@ public class SSSPDijkstra implements SSSP {
 <span class="fc" id="L81">		return res;</span>
 	}
 
-	private static class HeapElm {
+	private static class HeapElm implements Comparable&lt;HeapElm&gt; {
 
 		double distance;
 		final int v;
@@ -90,6 +90,11 @@ public class SSSPDijkstra implements SSSP {
 <span class="fc" id="L90">			this.distance = distance;</span>
 <span class="fc" id="L91">			this.v = v;</span>
 <span class="fc" id="L92">		}</span>
+
+		@Override
+		public int compareTo(HeapElm o) {
+<span class="fc" id="L96">			return Double.compare(distance, o.distance);</span>
+		}
 
 	}
 

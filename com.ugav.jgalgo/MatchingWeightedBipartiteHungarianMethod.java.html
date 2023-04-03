@@ -76,7 +76,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 
 <span class="fc" id="L77">			inTree = new boolean[n];</span>
 
-<span class="fc" id="L79">			edgeSlackComparator = (e1, e2) -&gt; Utils.compare(edgeSlack(e1), edgeSlack(e2));</span>
+<span class="fc" id="L79">			edgeSlackComparator = (e1, e2) -&gt; Double.compare(edgeSlack(e1), edgeSlack(e2));</span>
 <span class="fc" id="L80">			nextTightEdge = heapBuilder.build(edgeSlackComparator);</span>
 <span class="fc" id="L81">			nextTightEdgePerOutV = new HeapDirectAccessed.Handle[n];</span>
 

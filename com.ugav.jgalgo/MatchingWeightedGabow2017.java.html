@@ -309,9 +309,9 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 <span class="fc" id="L309">			vToGrowEvent = new EdgeEvent[n];</span>
 <span class="fc" id="L310">			vToSMFId = new SubtreeMergeFindmin.Node[n];</span>
 <span class="fc" id="L311">			oddBlossomPath = new int[n];</span>
-<span class="fc" id="L312">			growEvents = heapBuilder.build((e1, e2) -&gt; Utils.compare(growEventsKey(e1), growEventsKey(e2)));</span>
-<span class="fc" id="L313">			smf = new SubtreeMergeFindminImpl&lt;&gt;((e1, e2) -&gt; Utils.compare(e1.slack, e2.slack));</span>
-<span class="fc" id="L314">			expandEvents = heapBuilder.build((b1, b2) -&gt; Utils.compare(b1.expandDelta, b2.expandDelta));</span>
+<span class="fc" id="L312">			growEvents = heapBuilder.build((e1, e2) -&gt; Double.compare(growEventsKey(e1), growEventsKey(e2)));</span>
+<span class="fc" id="L313">			smf = new SubtreeMergeFindminImpl&lt;&gt;((e1, e2) -&gt; Double.compare(e1.slack, e2.slack));</span>
+<span class="fc" id="L314">			expandEvents = heapBuilder.build((b1, b2) -&gt; Double.compare(b1.expandDelta, b2.expandDelta));</span>
 
 <span class="fc" id="L316">			unionQueue = new QueueIntFixSize(n + 1);</span>
 <span class="fc" id="L317">			scanQueue = new QueueIntFixSize(n);</span>
@@ -337,7 +337,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 <span class="fc" id="L337">				blossoms[u] = new Blossom(u);</span>
 
 <span class="fc" id="L339">			Comparator&lt;EdgeEvent&gt; edgeSlackBarComparator = (e1,</span>
-<span class="fc bfc" id="L340" title="All 4 branches covered.">					e2) -&gt; (e2 == null ? -1 : e1 == null ? 1 : Utils.compare(e1.slack, e2.slack));</span>
+<span class="fc bfc" id="L340" title="All 4 branches covered.">					e2) -&gt; (e2 == null ? -1 : e1 == null ? 1 : Double.compare(e1.slack, e2.slack));</span>
 
 			mainLoop: for (;;) {
 

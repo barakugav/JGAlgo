@@ -95,6 +95,11 @@ public interface HeapDirectAccessed&lt;E&gt; extends Heap&lt;E&gt; {
 	public static interface Builder extends Heap.Builder {
 		@Override
 		&lt;E&gt; HeapDirectAccessed&lt;E&gt; build(Comparator&lt;? super E&gt; cmp);
+
+		@Override
+		default &lt;E&gt; HeapDirectAccessed&lt;E&gt; build() {
+<span class="fc" id="L101">			return build(null);</span>
+		}
 	}
 
 }

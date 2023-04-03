@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ColoringDSaturHeap.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jgalgo</a> &gt; <a href="index.source.html" class="el_package">com.ugav.jgalgo</a> &gt; <span class="el_source">ColoringDSaturHeap.java</span></div><h1>ColoringDSaturHeap.java</h1><pre class="source lang-java linenums">package com.ugav.jgalgo;
+
+import java.util.BitSet;
+import java.util.Objects;
+
+<span class="fc" id="L6">public class ColoringDSaturHeap implements Coloring {</span>
+
+	/**
+	 * Compute a coloring approximation in O(m + n \log n)
+	 */
+
+<span class="fc" id="L12">	private HeapDirectAccessed.Builder heapBuilder = HeapPairing::new;</span>
+
+	public void setHeapBuilder(HeapDirectAccessed.Builder heapBuilder) {
+<span class="nc" id="L15">		this.heapBuilder = Objects.requireNonNull(heapBuilder);</span>
+<span class="nc" id="L16">	}</span>
+
+	@Override
+	public Coloring.Result calcColoring(UGraph g) {
+<span class="pc bpc" id="L20" title="1 of 2 branches missed.">		if (Graphs.containsSelfLoops(g))</span>
+<span class="nc" id="L21">			throw new IllegalArgumentException(&quot;no valid coloring in graphs with self loops&quot;);</span>
+
+<span class="fc" id="L23">		ColoringResultImpl res = new ColoringResultImpl(g);</span>
+<span class="fc" id="L24">		int n = g.vertices().size();</span>
+
+<span class="fc" id="L26">		HeapDirectAccessed&lt;HeapElm&gt; heap = heapBuilder.build();</span>
+		@SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L28">		HeapDirectAccessed.Handle&lt;HeapElm&gt;[] vPtrs = new HeapDirectAccessed.Handle[n];</span>
+<span class="fc bfc" id="L29" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
+<span class="fc" id="L30">			vPtrs[u] = heap.insert(new HeapElm(u, g.degree(u)));</span>
+
+<span class="fc bfc" id="L32" title="All 2 branches covered.">		while (!heap.isEmpty()) {</span>
+<span class="fc" id="L33">			HeapElm elm = heap.extractMin();</span>
+<span class="fc" id="L34">			int u = elm.v;</span>
+
+<span class="fc" id="L36">			int color = 0;</span>
+<span class="fc bfc" id="L37" title="All 2 branches covered.">			while (elm.neighborColors.get(color))</span>
+<span class="fc" id="L38">				color++;</span>
+<span class="fc" id="L39">			res.colors[u] = color;</span>
+<span class="fc" id="L40">			res.colorsNum = Math.max(res.colorsNum, color + 1);</span>
+
+<span class="fc bfc" id="L42" title="All 2 branches covered.">			for (EdgeIter eit = g.edges(u); eit.hasNext();) {</span>
+<span class="fc" id="L43">				eit.nextInt();</span>
+<span class="fc" id="L44">				int v = eit.v();</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">				if (res.colorOf(v) == -1) { /* v is uncolored */</span>
+<span class="fc" id="L46">					HeapDirectAccessed.Handle&lt;HeapElm&gt; vPtr = vPtrs[v];</span>
+<span class="fc" id="L47">					HeapElm vElm = vPtr.get();</span>
+<span class="fc" id="L48">					vElm.neighborColors.set(color);</span>
+<span class="fc" id="L49">					heap.decreaseKey(vPtr, vElm);</span>
+				}
+<span class="fc" id="L51">			}</span>
+<span class="fc" id="L52">		}</span>
+<span class="fc" id="L53">		return res;</span>
+	}
+
+	private static class HeapElm implements Comparable&lt;HeapElm&gt; {
+		final int v;
+		final int degree;
+<span class="fc" id="L59">		final BitSet neighborColors = new BitSet();</span>
+
+<span class="fc" id="L61">		HeapElm(int v, int degree) {</span>
+<span class="fc" id="L62">			this.v = v;</span>
+<span class="fc" id="L63">			this.degree = degree;</span>
+<span class="fc" id="L64">		}</span>
+
+		@Override
+		public int compareTo(HeapElm o) {
+			int c;
+<span class="pc bpc" id="L69" title="1 of 2 branches missed.">			if ((c = -Integer.compare(neighborColors.size(), o.neighborColors.size())) != 0)</span>
+<span class="nc" id="L70">				return c;</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">			if ((c = Integer.compare(degree, o.degree)) != 0)</span>
+<span class="fc" id="L72">				return c;</span>
+<span class="fc" id="L73">			return 0;</span>
+		}
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

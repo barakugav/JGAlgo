@@ -345,5 +345,19 @@ public class Graphs {
 <span class="fc" id="L345">		return g1;</span>
 	}
 
+	static boolean containsSelfLoops(Graph g) {
+<span class="pc bpc" id="L349" title="1 of 2 branches missed.">		if (!g.getCapabilities().selfEdges())</span>
+<span class="nc" id="L350">			return false;</span>
+<span class="fc" id="L351">		int n = g.vertices().size();</span>
+<span class="fc bfc" id="L352" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc bfc" id="L353" title="All 2 branches covered.">			for (EdgeIter eit = g.edges(u); eit.hasNext();) {</span>
+<span class="fc" id="L354">				eit.nextInt();</span>
+<span class="pc bpc" id="L355" title="1 of 2 branches missed.">				if (u == eit.v())</span>
+<span class="nc" id="L356">					return true;</span>
+			}
+		}
+<span class="fc" id="L359">		return false;</span>
+	}
+
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

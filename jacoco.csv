@@ -12,7 +12,7 @@ jgalgo,com.ugav.jgalgo,HeapBinomial.new AbstractSet() {...},15,12,0,0,5,2,3,2,3,
 jgalgo,com.ugav.jgalgo,Utils.NullListIterator,95,0,14,0,25,0,18,0,11,0
 jgalgo,com.ugav.jgalgo,Weights.Bool,15,0,0,0,4,0,3,0,3,0
 jgalgo,com.ugav.jgalgo,SubtreeMergeFindminImpl.EdgeList,0,10,0,0,0,2,0,1,0,1
-jgalgo,com.ugav.jgalgo,AStar,15,160,3,15,3,42,4,10,1,4
+jgalgo,com.ugav.jgalgo,AStar,11,146,1,15,3,39,2,9,1,2
 jgalgo,com.ugav.jgalgo,DataContainer.Obj.1.new ObjectIterator() {...},4,36,1,3,1,5,1,4,0,3
 jgalgo,com.ugav.jgalgo,DiGraph,0,103,0,14,0,31,0,14,0,7
 jgalgo,com.ugav.jgalgo,Pair,64,15,10,0,11,5,10,2,5,2
@@ -39,13 +39,16 @@ jgalgo,com.ugav.jgalgo,MatchingWeightedGabow2017,30,39,2,2,9,8,6,3,4,3
 jgalgo,com.ugav.jgalgo,GraphTableAbstract.EdgeIterOut,10,107,3,9,2,23,3,10,0,7
 jgalgo,com.ugav.jgalgo,EdgeIter.new EdgeIter() {...},17,0,0,0,5,0,5,0,5,0
 jgalgo,com.ugav.jgalgo,BFSIter,8,183,2,14,2,39,2,15,0,9
+jgalgo,com.ugav.jgalgo,HeapDirectAccessed.Builder,0,4,0,0,0,1,0,1,0,1
 jgalgo,com.ugav.jgalgo,BSTUtils.NeighborType,0,21,0,0,0,2,0,1,0,1
 jgalgo,com.ugav.jgalgo,RedBlackTreeExtended.Builder,22,113,2,6,6,25,3,9,1,7
 jgalgo,com.ugav.jgalgo,WeightsImpl.Mapped.Long,39,0,0,0,9,0,6,0,6,0
+jgalgo,com.ugav.jgalgo,ColoringDSatur,6,155,3,17,2,35,3,9,0,2
 jgalgo,com.ugav.jgalgo,Utils.NullIterator,8,26,2,4,2,8,2,4,0,3
 jgalgo,com.ugav.jgalgo,GraphBase.WeightsFactoryEdges,0,29,0,0,0,7,0,3,0,3
 jgalgo,com.ugav.jgalgo,DataContainer,5,12,1,1,1,5,1,3,0,3
 jgalgo,com.ugav.jgalgo,RMQLookupTable.LookupTable,0,14,0,0,0,4,0,2,0,2
+jgalgo,com.ugav.jgalgo,ColoringResultImpl,0,21,0,0,0,6,0,3,0,3
 jgalgo,com.ugav.jgalgo,DataContainer.Bool.1.new BooleanIterator() {...},40,0,4,0,6,0,5,0,3,0
 jgalgo,com.ugav.jgalgo,SplayTree.SplayImplWithSize,4,55,1,7,0,10,1,5,0,2
 jgalgo,com.ugav.jgalgo,RedBlackTreeExtended.Extension,12,22,1,1,7,10,7,5,6,5
@@ -86,11 +89,13 @@ jgalgo,com.ugav.jgalgo,Utils.StackIntFixSize,46,40,4,2,12,8,5,5,3,4
 jgalgo,com.ugav.jgalgo,SubtreeMergeFindminImpl.NodeImpl,4,47,1,3,2,14,2,5,1,4
 jgalgo,com.ugav.jgalgo,RMQPowerOf2Table,18,180,5,19,3,26,5,10,0,3
 jgalgo,com.ugav.jgalgo,EdgeWeightFunc.Int,0,13,0,0,0,2,0,2,0,2
+jgalgo,com.ugav.jgalgo,ColoringGreedy,5,74,1,9,1,19,1,6,0,2
 jgalgo,com.ugav.jgalgo,IDStrategy.Continues,23,83,7,7,4,23,8,10,1,10
 jgalgo,com.ugav.jgalgo,GraphArrayUndirected,4,265,1,13,0,54,1,16,0,10
 jgalgo,com.ugav.jgalgo,IDStrategy,11,47,2,4,3,11,3,5,1,4
 jgalgo,com.ugav.jgalgo,Utils.new Iterable() {...},0,9,0,0,0,2,0,2,0,2
-jgalgo,com.ugav.jgalgo,Graphs,425,553,60,62,75,140,45,37,10,11
+jgalgo,com.ugav.jgalgo,Graphs,429,584,62,68,77,147,47,40,10,12
+jgalgo,com.ugav.jgalgo,Utils.new IntIterator() {...},4,37,1,3,1,7,1,4,0,3
 jgalgo,com.ugav.jgalgo,GraphTableAbstract.EdgeIterIn,10,108,3,9,2,23,3,10,0,7
 jgalgo,com.ugav.jgalgo,Utils.ArrayView,121,0,20,0,28,0,18,0,8,0
 jgalgo,com.ugav.jgalgo,SSSPBellmanFord,7,121,2,12,2,26,2,7,0,2
@@ -98,10 +103,12 @@ jgalgo,com.ugav.jgalgo,UnionFindPtr,47,141,7,17,10,35,8,12,2,6
 jgalgo,com.ugav.jgalgo,LCAGabowSimple,59,669,17,89,2,115,17,55,0,19
 jgalgo,com.ugav.jgalgo,GraphBase.WeightsFactoryVertices,0,29,0,0,0,7,0,3,0,3
 jgalgo,com.ugav.jgalgo,GraphLinkedAbstract,4,101,1,3,1,24,1,9,0,8
+jgalgo,com.ugav.jgalgo,ColoringDSaturHeap,11,114,1,11,3,28,2,7,1,2
 jgalgo,com.ugav.jgalgo,Utils.IterPickable,60,0,8,0,19,0,9,0,5,0
 jgalgo,com.ugav.jgalgo,GraphBuilder.Table,16,0,0,0,3,0,3,0,3,0
 jgalgo,com.ugav.jgalgo,DynamicTreeSplay.MinEdgeRes,0,21,0,0,0,8,0,4,0,4
 jgalgo,com.ugav.jgalgo,DataContainer.Obj,99,150,14,6,16,37,11,13,3,11
+jgalgo,com.ugav.jgalgo,Heap.Builder,4,0,0,0,1,0,1,0,1,0
 jgalgo,com.ugav.jgalgo,GraphLinkedDirected,4,351,0,22,2,86,1,25,1,14
 jgalgo,com.ugav.jgalgo,HeapFibonacci,167,626,33,77,32,165,24,50,1,18
 jgalgo,com.ugav.jgalgo,DynamicTreeSplay,59,490,17,45,7,109,19,29,2,15
@@ -150,8 +157,9 @@ jgalgo,com.ugav.jgalgo,RMQLinearAbstract.PadderComparator,0,26,0,2,0,5,0,3,0,2
 jgalgo,com.ugav.jgalgo,Triple,88,19,14,0,15,6,12,2,5,2
 jgalgo,com.ugav.jgalgo,RedBlackTreeExtended.ExtensionSize,0,121,0,8,0,21,0,11,0,7
 jgalgo,com.ugav.jgalgo,WeightsImpl.Direct.Obj,8,23,0,0,2,7,1,5,1,5
+jgalgo,com.ugav.jgalgo,ColoringGreedyRandom,13,103,1,11,4,26,2,7,1,2
 jgalgo,com.ugav.jgalgo,WeightsImpl,0,13,0,0,0,6,0,3,0,3
-jgalgo,com.ugav.jgalgo,SSSPDijkstra.HeapElm,0,9,0,0,0,4,0,1,0,1
+jgalgo,com.ugav.jgalgo,SSSPDijkstra.HeapElm,0,15,0,0,0,5,0,2,0,2
 jgalgo,com.ugav.jgalgo,GraphLinkedAbstract.EdgeItr,4,29,1,3,1,7,1,4,0,3
 jgalgo,com.ugav.jgalgo,RedBlackTree.new AbstractSet() {...},15,13,0,0,5,2,3,2,3,2
 jgalgo,com.ugav.jgalgo,GraphBuilder.GraphCustomIDStrategiesUndirected,13,0,2,0,4,0,2,0,1,0
@@ -159,6 +167,7 @@ jgalgo,com.ugav.jgalgo,HeapPairing.PreOrderIter,4,74,1,11,1,16,1,8,0,3
 jgalgo,com.ugav.jgalgo,MatchingWeightedBipartiteHungarianMethod.Worker,6,485,3,55,2,91,3,33,0,7
 jgalgo,com.ugav.jgalgo,GraphLinkedUndirected.EdgeVertexItr,0,33,0,2,0,7,0,5,0,4
 jgalgo,com.ugav.jgalgo,MatchingWeightedGabow2017.Worker,349,3073,72,290,27,586,74,160,7,46
+jgalgo,com.ugav.jgalgo,ColoringDSaturHeap.HeapElm,2,37,1,3,1,9,1,3,0,2
 jgalgo,com.ugav.jgalgo,LinkedListDouble.IterNodes,10,0,0,0,4,0,3,0,3,0
 jgalgo,com.ugav.jgalgo,WeightsImpl.Direct.Long,31,0,0,0,9,0,6,0,6,0
 jgalgo,com.ugav.jgalgo,HeapPairing.new AbstractSet() {...},15,13,0,0,5,2,3,2,3,2
@@ -234,14 +243,14 @@ jgalgo,com.ugav.jgalgo,DataContainer.Double,147,87,16,4,27,22,16,7,7,6
 jgalgo,com.ugav.jgalgo,HeapAbstractDirectAccessed,10,33,3,1,2,12,3,5,1,5
 jgalgo,com.ugav.jgalgo,SSSPResultImpl.Int,9,82,0,6,2,22,2,7,2,4
 jgalgo,com.ugav.jgalgo,SplayTree.Node,0,7,0,0,0,3,0,2,0,2
-jgalgo,com.ugav.jgalgo,SSSPDijkstra,5,172,1,13,1,46,1,12,0,6
+jgalgo,com.ugav.jgalgo,SSSPDijkstra,5,165,1,13,1,46,1,11,0,5
 jgalgo,com.ugav.jgalgo,LCAGabowSimple.CharacteristicAncestors0,0,12,0,0,0,5,0,1,0,1
 jgalgo,com.ugav.jgalgo,MaxFlowPushRelabel,22,460,5,41,2,93,5,22,0,4
 jgalgo,com.ugav.jgalgo,LinkedListDoubleArrayFixedSize.ImplInt,22,0,0,0,7,0,4,0,4,0
 jgalgo,com.ugav.jgalgo,RMQ.ArrayComparator,25,0,0,0,5,0,2,0,2,0
 jgalgo,com.ugav.jgalgo,PathIter,4,24,1,3,1,4,1,2,0,1
 jgalgo,com.ugav.jgalgo,UnionFindValueArray,4,180,2,12,1,41,2,14,0,9
-jgalgo,com.ugav.jgalgo,Utils,0,128,0,6,0,23,0,12,0,9
+jgalgo,com.ugav.jgalgo,Utils,0,119,0,2,0,23,0,10,0,9
 jgalgo,com.ugav.jgalgo,MDSTTarjan1977.ContractedGraph,0,18,0,0,0,7,0,1,0,1
 jgalgo,com.ugav.jgalgo,TPMKomlos1985King1997Hagerup2009,18,35,4,4,4,8,4,3,0,3
 jgalgo,com.ugav.jgalgo,WeightsImpl.Mapped.Double,39,0,0,0,9,0,6,0,6,0
@@ -256,6 +265,7 @@ jgalgo,com.ugav.jgalgo,Utils.Stack,46,58,4,4,12,10,5,6,3,4
 jgalgo,com.ugav.jgalgo,GraphTableUndirected,0,110,0,0,0,17,0,5,0,5
 jgalgo,com.ugav.jgalgo,GraphArrayDirected.EdgeInIt,0,21,0,0,0,6,0,3,0,3
 jgalgo,com.ugav.jgalgo,GraphLinkedUndirected,9,240,1,15,3,52,2,16,1,9
+jgalgo,com.ugav.jgalgo,ColoringRecursiveLargestFirst,5,219,1,39,1,57,1,21,0,2
 jgalgo,com.ugav.jgalgo,LinkedListDouble.Iter,40,0,6,0,12,0,7,0,4,0
 jgalgo,com.ugav.jgalgo,MaxFlowPushRelabelWithDynamicTrees.Ref,29,15,6,0,8,6,6,1,3,1
 jgalgo,com.ugav.jgalgo,GraphArrayDirected,8,370,1,9,2,70,2,17,1,13
@@ -266,7 +276,7 @@ jgalgo,com.ugav.jgalgo,DynamicTreeSplay.SplayNode,27,70,2,4,7,22,4,14,2,13
 jgalgo,com.ugav.jgalgo,GraphLinkedDirected.EdgeVertexItr,0,13,0,0,0,4,0,3,0,3
 jgalgo,com.ugav.jgalgo,Array.Int,110,303,30,38,17,55,23,21,2,8
 jgalgo,com.ugav.jgalgo,APSPFloydWarshall,22,321,1,49,5,70,1,29,0,5
-jgalgo,com.ugav.jgalgo,AStar.HeapElm,0,9,0,0,0,4,0,1,0,1
+jgalgo,com.ugav.jgalgo,AStar.HeapElm,0,15,0,0,0,5,0,2,0,2
 jgalgo,com.ugav.jgalgo,SSSPBellmanFord.Result,21,28,5,3,4,9,5,5,1,5
 jgalgo,com.ugav.jgalgo,SplitFindMinArray.Sequence,13,9,2,0,1,4,2,1,1,1
 jgalgo,com.ugav.jgalgo,GraphBuilder,46,73,11,11,10,21,12,6,2,5
