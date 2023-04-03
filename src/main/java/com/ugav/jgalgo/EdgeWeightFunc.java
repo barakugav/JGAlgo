@@ -9,7 +9,7 @@ public interface EdgeWeightFunc extends IntComparator {
 
 	@Override
 	default int compare(int e1, int e2) {
-		return Utils.compare(weight(e1), weight(e2));
+		return Double.compare(weight(e1), weight(e2));
 	}
 
 	@FunctionalInterface

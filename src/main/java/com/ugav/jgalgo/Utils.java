@@ -45,10 +45,6 @@ class Utils {
 		return (1 << r) == x ? r : r + 1;
 	}
 
-	static int compare(double a, double b) {
-		return a < b ? -1 : a > b ? 1 : 0;
-	}
-
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static final Comparator DEFAULT_COMPARATOR = (a, b) -> ((Comparable) a).compareTo(b);
 
@@ -59,7 +55,7 @@ class Utils {
 
 	@SuppressWarnings("unchecked")
 	static <E> int cmpDefault(E e1, E e2) {
-		return ((Comparable<E>)e1).compareTo(e2);
+		return ((Comparable<E>) e1).compareTo(e2);
 	}
 
 	/* syntax sugar to iterator for loops */

@@ -22,8 +22,7 @@ public class AStar {
 		if (source == target)
 			return IntLists.emptyList();
 		int n = g.vertices().size();
-		HeapDirectAccessed<HeapElm> heap = heapBuilder
-				.build((a, b) -> Utils.compare(a.distanceAstimate, b.distanceAstimate));
+		HeapDirectAccessed<HeapElm> heap = heapBuilder.build();
 		@SuppressWarnings("unchecked")
 		HeapDirectAccessed.Handle<HeapElm>[] verticesPtrs = new HeapDirectAccessed.Handle[n];
 
@@ -67,7 +66,7 @@ public class AStar {
 		return null;
 	}
 
-	private static class HeapElm {
+	private static class HeapElm implements Comparable<HeapElm> {
 
 		double distanceAstimate;
 		final int v;
@@ -75,6 +74,11 @@ public class AStar {
 		HeapElm(double distanceAstimate, int v) {
 			this.distanceAstimate = distanceAstimate;
 			this.v = v;
+		}
+
+		@Override
+		public int compareTo(HeapElm o) {
+			return Double.compare(distanceAstimate, o.distanceAstimate);
 		}
 
 	}

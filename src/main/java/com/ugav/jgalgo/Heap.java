@@ -41,6 +41,10 @@ public interface Heap<E> extends Collection<E> {
 	@FunctionalInterface
 	public static interface Builder {
 		<E> Heap<E> build(Comparator<? super E> cmp);
+
+		default <E> Heap<E> build() {
+			return build(null);
+		}
 	}
 
 }

@@ -309,9 +309,9 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 			vToGrowEvent = new EdgeEvent[n];
 			vToSMFId = new SubtreeMergeFindmin.Node[n];
 			oddBlossomPath = new int[n];
-			growEvents = heapBuilder.build((e1, e2) -> Utils.compare(growEventsKey(e1), growEventsKey(e2)));
-			smf = new SubtreeMergeFindminImpl<>((e1, e2) -> Utils.compare(e1.slack, e2.slack));
-			expandEvents = heapBuilder.build((b1, b2) -> Utils.compare(b1.expandDelta, b2.expandDelta));
+			growEvents = heapBuilder.build((e1, e2) -> Double.compare(growEventsKey(e1), growEventsKey(e2)));
+			smf = new SubtreeMergeFindminImpl<>((e1, e2) -> Double.compare(e1.slack, e2.slack));
+			expandEvents = heapBuilder.build((b1, b2) -> Double.compare(b1.expandDelta, b2.expandDelta));
 
 			unionQueue = new QueueIntFixSize(n + 1);
 			scanQueue = new QueueIntFixSize(n);
@@ -337,7 +337,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 				blossoms[u] = new Blossom(u);
 
 			Comparator<EdgeEvent> edgeSlackBarComparator = (e1,
-					e2) -> (e2 == null ? -1 : e1 == null ? 1 : Utils.compare(e1.slack, e2.slack));
+					e2) -> (e2 == null ? -1 : e1 == null ? 1 : Double.compare(e1.slack, e2.slack));
 
 			mainLoop: for (;;) {
 
