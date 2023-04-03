@@ -102,22 +102,22 @@ public class MDSTTarjan1977 implements MDST {
 		Connectivity.Result connectivityRes = Connectivity.findStrongConnectivityComponents(g);
 		int N = connectivityRes.ccNum;
 		int[] v2V = connectivityRes.vertexToCC;
+		if (N <= 1)
+			return;
 
-		if (N > 1) {
-			int[] V2v = new int[N];
-			Arrays.fill(V2v, -1);
-			int n = g.vertices().size();
-			for (int v = 0; v < n; v++) {
-				int V = v2V[v];
-				if (V2v[V] == -1)
-					V2v[V] = v;
-			}
+		int[] V2v = new int[N];
+		Arrays.fill(V2v, -1);
+		int n = g.vertices().size();
+		for (int v = 0; v < n; v++) {
+			int V = v2V[v];
+			if (V2v[V] == -1)
+				V2v[V] = v;
+		}
 
-			Weights.Int edgeRefs = g.edgesWeight(EdgeRefWeightKey);
-			for (int V = 1; V < N; V++) {
-				edgeRefs.set(g.addEdge(V2v[0], V2v[V]), HeavyEdge);
-				edgeRefs.set(g.addEdge(V2v[V], V2v[0]), HeavyEdge);
-			}
+		Weights.Int edgeRefs = g.edgesWeight(EdgeRefWeightKey);
+		for (int V = 1; V < N; V++) {
+			edgeRefs.set(g.addEdge(V2v[0], V2v[V]), HeavyEdge);
+			edgeRefs.set(g.addEdge(V2v[V], V2v[0]), HeavyEdge);
 		}
 	}
 
