@@ -140,7 +140,7 @@ public class Graphs {
 		int[] topolSort = new int[n];
 		int topolSortSize = 0;
 
-		// Cache in degree of all vertices
+		// calc in degree of all vertices
 		for (int v = 0; v < n; v++)
 			inDegree[v] = g.degreeIn(v);
 
