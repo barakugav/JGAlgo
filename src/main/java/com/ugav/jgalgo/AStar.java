@@ -49,9 +49,8 @@ public class AStar {
 					verticesPtrs[v] = heap.insert(new HeapElm(distanceAstimate, v));
 				} else {
 					HeapElm ptr = vPtr.get();
-					assert distance < ptr.distanceAstimate;
-					if (distance < ptr.distanceAstimate) {
-						ptr.distanceAstimate = distance;
+					if (distanceAstimate < ptr.distanceAstimate) {
+						ptr.distanceAstimate = distanceAstimate;
 						heap.decreaseKey(vPtr, ptr);
 					}
 				}
