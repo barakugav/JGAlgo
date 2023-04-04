@@ -39,7 +39,7 @@ public class ArraysTest extends TestUtils {
 
 		Integer[] A = toIntegerArr(a);
 		int k = rand.nextInt(A.length);
-		int actual = Array.Obj.getKthElement(A, k, null).intValue();
+		int actual = Array.getKthElement(A, k, null).intValue();
 
 		java.util.Arrays.sort(a);
 		int expected = a[k];
@@ -58,7 +58,7 @@ public class ArraysTest extends TestUtils {
 			int[] a = randArray(n, 0, n / 4, seedGen.nextSeed());
 			Integer[] A = toIntegerArr(a);
 			int bucketSize = rand.nextInt(n / 2) + 1;
-			Array.Obj.bucketPartition(A, 0, n, null, bucketSize);
+			Array.bucketPartition(A, 0, n, null, bucketSize);
 
 			java.util.Arrays.sort(a);
 			int bucketNum = (n - 1) / bucketSize + 1;

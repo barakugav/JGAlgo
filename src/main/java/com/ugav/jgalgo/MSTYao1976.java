@@ -154,7 +154,7 @@ public class MSTYao1976 implements MST {
 			} else {
 				int bucketSize = (edgesCount - 1) / k + 1;
 				int bucketNum = (edgesCount - 1) / bucketSize + 1;
-				Array.Int.bucketPartition(edgesTemp, 0, edgesCount, w, bucketSize);
+				Array.bucketPartition(edgesTemp, 0, edgesCount, w, bucketSize);
 				edges[u] = new int[bucketNum][];
 
 				for (int b = 0; b < bucketNum; b++) {
