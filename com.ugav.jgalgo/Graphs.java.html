@@ -11,7 +11,7 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
-import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntLists;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 public class Graphs {
@@ -31,32 +31,32 @@ public class Graphs {
 	 * @return list of edges that represent a valid path from u to v, null if path
 	 *         not found
 	 */
-	public static IntList findPath(Graph g, int u, int v) {
-<span class="fc" id="L35">		IntArrayList path = new IntArrayList();</span>
-<span class="fc bfc" id="L36" title="All 2 branches covered.">		if (u == v)</span>
-<span class="fc" id="L37">			return path;</span>
-<span class="fc" id="L38">		boolean reverse = true;</span>
+	public static Path findPath(Graph g, final int u, final int v) {
+<span class="fc bfc" id="L35" title="All 2 branches covered.">		if (u == v)</span>
+<span class="fc" id="L36">			return new Path(g, u, v, IntLists.emptyList());</span>
+<span class="fc" id="L37">		boolean reverse = true;</span>
+<span class="fc" id="L38">		int u0 = u, v0 = v;</span>
 <span class="fc bfc" id="L39" title="All 2 branches covered.">		if (g instanceof UGraph) {</span>
-<span class="fc" id="L40">			int t = u;</span>
-<span class="fc" id="L41">			u = v;</span>
-<span class="fc" id="L42">			v = t;</span>
-<span class="fc" id="L43">			reverse = false;</span>
+<span class="fc" id="L40">			u0 = v;</span>
+<span class="fc" id="L41">			v0 = u;</span>
+<span class="fc" id="L42">			reverse = false;</span>
 		}
-<span class="fc" id="L45">		int n = g.vertices().size();</span>
-<span class="fc" id="L46">		int[] backtrack = new int[n];</span>
-<span class="fc" id="L47">		Arrays.fill(backtrack, -1);</span>
+<span class="fc" id="L44">		int n = g.vertices().size();</span>
+<span class="fc" id="L45">		int[] backtrack = new int[n];</span>
+<span class="fc" id="L46">		Arrays.fill(backtrack, -1);</span>
 
-<span class="pc bpc" id="L49" title="1 of 2 branches missed.">		for (BFSIter it = new BFSIter(g, u); it.hasNext();) {</span>
+<span class="fc" id="L48">		IntArrayList path = new IntArrayList();</span>
+<span class="pc bpc" id="L49" title="1 of 2 branches missed.">		for (BFSIter it = new BFSIter(g, u0); it.hasNext();) {</span>
 <span class="fc" id="L50">			int p = it.nextInt();</span>
 <span class="fc" id="L51">			backtrack[p] = it.inEdge();</span>
-<span class="fc bfc" id="L52" title="All 2 branches covered.">			if (p == v)</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">			if (p == v0)</span>
 <span class="fc" id="L53">				break;</span>
 <span class="fc" id="L54">		}</span>
 
-<span class="pc bpc" id="L56" title="1 of 2 branches missed.">		if (backtrack[v] == -1)</span>
+<span class="pc bpc" id="L56" title="1 of 2 branches missed.">		if (backtrack[v0] == -1)</span>
 <span class="nc" id="L57">			return null;</span>
 
-<span class="fc bfc" id="L59" title="All 2 branches covered.">		for (int p = v; p != u;) {</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">		for (int p = v0; p != u0;) {</span>
 <span class="fc" id="L60">			int e = backtrack[p];</span>
 <span class="fc" id="L61">			path.add(e);</span>
 <span class="fc" id="L62">			p = g.edgeEndpoint(e, p);</span>
@@ -64,7 +64,7 @@ public class Graphs {
 
 <span class="fc bfc" id="L65" title="All 2 branches covered.">		if (reverse)</span>
 <span class="fc" id="L66">			IntArrays.reverse(path.elements(), 0, path.size());</span>
-<span class="fc" id="L67">		return path;</span>
+<span class="fc" id="L67">		return new Path(g, u, v, path);</span>
 	}
 
 	public static boolean isTree(UGraph g) {

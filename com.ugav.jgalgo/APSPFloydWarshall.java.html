@@ -105,9 +105,9 @@ import it.unimi.dsi.fastutil.ints.IntList;
 <span class="fc" id="L105">					continue;</span>
 <span class="pc bpc" id="L106" title="1 of 2 branches missed.">				if (d1 + d2 &lt; 0) {</span>
 <span class="nc" id="L107">					IntList negCycle = new IntArrayList();</span>
-<span class="nc" id="L108">					negCycle.addAll(res.getPath(u, v));</span>
-<span class="nc" id="L109">					negCycle.addAll(res.getPath(v, u));</span>
-<span class="nc" id="L110">					res.setNegCycle(negCycle);</span>
+<span class="nc" id="L108">					negCycle.addAll(res.getPath(u, v).edges);</span>
+<span class="nc" id="L109">					negCycle.addAll(res.getPath(v, u).edges);</span>
+<span class="nc" id="L110">					res.setNegCycle(new Path(res.graph(), u, u, negCycle));</span>
 <span class="nc" id="L111">					return;</span>
 				}
 			}

@@ -3,7 +3,7 @@
 <span class="fc" id="L3">public class SSSPCardinality {</span>
 
 	public SSSP.Result calcDistances(Graph g, int source) {
-<span class="fc" id="L6">		SSSPResultImpl.Int res = new SSSPResultImpl.Int(g);</span>
+<span class="fc" id="L6">		SSSPResultImpl.Int res = new SSSPResultImpl.Int(g, source);</span>
 <span class="fc bfc" id="L7" title="All 2 branches covered.">		for (BFSIter it = new BFSIter(g, source); it.hasNext();) {</span>
 <span class="fc" id="L8">			int v = it.nextInt();</span>
 <span class="fc" id="L9">			res.distances[v] = it.layer();</span>

@@ -102,22 +102,22 @@ public class MDSTTarjan1977 implements MDST {
 <span class="fc" id="L102">		Connectivity.Result connectivityRes = Connectivity.findStrongConnectivityComponents(g);</span>
 <span class="fc" id="L103">		int N = connectivityRes.ccNum;</span>
 <span class="fc" id="L104">		int[] v2V = connectivityRes.vertexToCC;</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">		if (N &lt;= 1)</span>
+<span class="fc" id="L106">			return;</span>
 
-<span class="fc bfc" id="L106" title="All 2 branches covered.">		if (N &gt; 1) {</span>
-<span class="fc" id="L107">			int[] V2v = new int[N];</span>
-<span class="fc" id="L108">			Arrays.fill(V2v, -1);</span>
-<span class="fc" id="L109">			int n = g.vertices().size();</span>
-<span class="fc bfc" id="L110" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
-<span class="fc" id="L111">				int V = v2V[v];</span>
-<span class="fc bfc" id="L112" title="All 2 branches covered.">				if (V2v[V] == -1)</span>
-<span class="fc" id="L113">					V2v[V] = v;</span>
-			}
+<span class="fc" id="L108">		int[] V2v = new int[N];</span>
+<span class="fc" id="L109">		Arrays.fill(V2v, -1);</span>
+<span class="fc" id="L110">		int n = g.vertices().size();</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++) {</span>
+<span class="fc" id="L112">			int V = v2V[v];</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">			if (V2v[V] == -1)</span>
+<span class="fc" id="L114">				V2v[V] = v;</span>
+		}
 
-<span class="fc" id="L116">			Weights.Int edgeRefs = g.edgesWeight(EdgeRefWeightKey);</span>
-<span class="fc bfc" id="L117" title="All 2 branches covered.">			for (int V = 1; V &lt; N; V++) {</span>
-<span class="fc" id="L118">				edgeRefs.set(g.addEdge(V2v[0], V2v[V]), HeavyEdge);</span>
-<span class="fc" id="L119">				edgeRefs.set(g.addEdge(V2v[V], V2v[0]), HeavyEdge);</span>
-			}
+<span class="fc" id="L117">		Weights.Int edgeRefs = g.edgesWeight(EdgeRefWeightKey);</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">		for (int V = 1; V &lt; N; V++) {</span>
+<span class="fc" id="L119">			edgeRefs.set(g.addEdge(V2v[0], V2v[V]), HeavyEdge);</span>
+<span class="fc" id="L120">			edgeRefs.set(g.addEdge(V2v[V], V2v[0]), HeavyEdge);</span>
 		}
 <span class="fc" id="L122">	}</span>
 

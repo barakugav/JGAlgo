@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Path.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jgalgo</a> &gt; <a href="index.source.html" class="el_package">com.ugav.jgalgo</a> &gt; <span class="el_source">Path.java</span></div><h1>Path.java</h1><pre class="source lang-java linenums">package com.ugav.jgalgo;
+
+import it.unimi.dsi.fastutil.ints.IntIterable;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntLists;
+
+public class Path implements IntIterable {
+
+	private final Graph g;
+	public final int source;
+	public final int target;
+	public final IntList edges;
+
+<span class="fc" id="L15">	Path(Graph g, int source, int target, IntList edges) {</span>
+<span class="fc" id="L16">		this.g = g;</span>
+<span class="fc" id="L17">		this.source = source;</span>
+<span class="fc" id="L18">		this.target = target;</span>
+<span class="pc bpc" id="L19" title="1 of 2 branches missed.">		this.edges = edges instanceof IntLists.UnmodifiableList ? edges : IntLists.unmodifiable(edges);</span>
+<span class="fc" id="L20">	}</span>
+
+	@Override
+	public EdgeIter iterator() {
+<span class="fc bfc" id="L24" title="All 2 branches covered.">		if (g instanceof UGraph g0) {</span>
+<span class="fc" id="L25">			return new IterUndirected(g0, edges, source);</span>
+<span class="pc bpc" id="L26" title="1 of 2 branches missed.">		} else if (g instanceof DiGraph g0) {</span>
+<span class="fc" id="L27">			return new IterDirected(g0, edges);</span>
+		} else {
+<span class="nc" id="L29">			throw new IllegalArgumentException();</span>
+		}
+	}
+
+<span class="fc" id="L33">	private static class IterUndirected implements EdgeIter {</span>
+
+		private final UGraph g;
+		private final IntIterator it;
+<span class="fc" id="L37">		private int e = -1, v = -1;</span>
+
+<span class="fc" id="L39">		IterUndirected(UGraph g, IntList path, int source) {</span>
+<span class="fc" id="L40">			this.g = g;</span>
+<span class="fc" id="L41">			v = source;</span>
+<span class="fc" id="L42">			it = path.iterator();</span>
+<span class="fc" id="L43">		}</span>
+
+		@Override
+		public boolean hasNext() {
+<span class="fc" id="L47">			return it.hasNext();</span>
+		}
+
+		@Override
+		public int nextInt() {
+<span class="fc" id="L52">			e = it.nextInt();</span>
+<span class="pc bpc" id="L53" title="1 of 4 branches missed.">			assert v == g.edgeSource(e) || v == g.edgeTarget(e);</span>
+<span class="fc" id="L54">			v = g.edgeEndpoint(e, v);</span>
+<span class="fc" id="L55">			return e;</span>
+		}
+
+		@Override
+		public int u() {
+<span class="fc" id="L60">			return g.edgeEndpoint(e, v);</span>
+		}
+
+		@Override
+		public int v() {
+<span class="fc" id="L65">			return v;</span>
+		}
+
+	}
+
+<span class="fc" id="L70">	private static class IterDirected implements EdgeIter {</span>
+
+		private final DiGraph g;
+		private final IntIterator it;
+<span class="fc" id="L74">		private int e = -1;</span>
+
+<span class="fc" id="L76">		IterDirected(DiGraph g, IntList path) {</span>
+<span class="fc" id="L77">			this.g = g;</span>
+<span class="fc" id="L78">			it = path.iterator();</span>
+<span class="fc" id="L79">		}</span>
+
+		@Override
+		public boolean hasNext() {
+<span class="fc" id="L83">			return it.hasNext();</span>
+		}
+
+		@Override
+		public int nextInt() {
+<span class="fc" id="L88">			int eNext = it.nextInt();</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">			if (e != -1)</span>
+<span class="pc bpc" id="L90" title="1 of 2 branches missed.">				assert g.edgeTarget(e) == g.edgeSource(eNext);</span>
+<span class="fc" id="L91">			return e = eNext;</span>
+		}
+
+		@Override
+		public int u() {
+<span class="nc" id="L96">			return g.edgeSource(e);</span>
+		}
+
+		@Override
+		public int v() {
+<span class="nc" id="L101">			return g.edgeTarget(e);</span>
+		}
+
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -9,7 +9,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 	private TSPMetricUtils() {
 	}
 
-	static IntList calcEulerianTourAndConvertToHamiltonianCycle(UGraph g, UGraph g1, Weights.Int edgeRef) {
+	static Path calcEulerianTourAndConvertToHamiltonianCycle(UGraph g, UGraph g1, Weights.Int edgeRef) {
 <span class="fc" id="L13">		int n = g.vertices().size();</span>
 
 		/* Assert degree is actually even in the new graph */
@@ -17,65 +17,71 @@ import it.unimi.dsi.fastutil.ints.IntList;
 <span class="pc bpc" id="L17" title="1 of 2 branches missed.">			assert g1.degree(u) % 2 == 0;</span>
 
 		/* Calculate Eulerian tour in the new graph */
-<span class="fc" id="L20">		IntList tour = EulerianTour.calcTour(g1);</span>
+<span class="fc" id="L20">		Path tour = EulerianTour.calcTour(g1);</span>
 <span class="pc bpc" id="L21" title="1 of 2 branches missed.">		assert isValidCycle(g1, tour);</span>
 <span class="pc bpc" id="L22" title="1 of 2 branches missed.">		assert isPathVisitEvery(g1, tour);</span>
 
 		/* Use shortcuts to convert to a Hamiltonian cycle */
 <span class="fc" id="L25">		IntList cycle = new IntArrayList(n);</span>
-<span class="fc" id="L26">		boolean[] visited = new boolean[n];</span>
-<span class="fc bfc" id="L27" title="All 2 branches covered.">		for (PathIter it = PathIter.of(g1, tour); it.hasNext();) {</span>
-<span class="fc" id="L28">			int e0 = it.nextEdge();</span>
-<span class="fc" id="L29">			int e = edgeRef.getInt(e0);</span>
-<span class="fc" id="L30">			final int u = it.u();</span>
-<span class="fc" id="L31">			visited[u] = true;</span>
-<span class="fc bfc" id="L32" title="All 4 branches covered.">			while (visited[it.v()] &amp;&amp; it.hasNext()) {</span>
-<span class="fc" id="L33">				it.nextEdge();</span>
-<span class="fc" id="L34">				e = g.getEdge(u, it.v());</span>
+<span class="fc" id="L26">		int firstVertex = -1, lastVertex = -1;</span>
+<span class="fc" id="L27">		boolean[] visited = new boolean[n];</span>
+<span class="fc bfc" id="L28" title="All 2 branches covered.">		for (EdgeIter it = tour.iterator(); it.hasNext();) {</span>
+<span class="fc" id="L29">			int e0 = it.nextInt();</span>
+<span class="fc" id="L30">			int e = edgeRef.getInt(e0);</span>
+<span class="fc" id="L31">			final int u = it.u();</span>
+<span class="fc bfc" id="L32" title="All 2 branches covered.">			if (firstVertex == -1)</span>
+<span class="fc" id="L33">				firstVertex = u;</span>
+<span class="fc" id="L34">			visited[u] = true;</span>
+<span class="fc bfc" id="L35" title="All 4 branches covered.">			while (visited[it.v()] &amp;&amp; it.hasNext()) {</span>
+<span class="fc" id="L36">				it.nextInt();</span>
+<span class="fc" id="L37">				e = g.getEdge(u, it.v());</span>
 			}
-<span class="fc" id="L36">			cycle.add(e);</span>
-<span class="fc" id="L37">		}</span>
-<span class="pc bpc" id="L38" title="1 of 2 branches missed.">		assert isValidCycle(g, cycle);</span>
-<span class="pc bpc" id="L39" title="1 of 2 branches missed.">		assert isPathVisitEvery(g, cycle);</span>
+<span class="fc" id="L39">			cycle.add(e);</span>
+<span class="fc" id="L40">			lastVertex = it.v();</span>
+<span class="fc" id="L41">		}</span>
 
-<span class="fc" id="L41">		return cycle;</span>
+<span class="pc bpc" id="L43" title="1 of 2 branches missed.">		assert firstVertex == lastVertex;</span>
+<span class="fc" id="L44">		Path cycle0 = new Path(g, firstVertex, lastVertex, cycle);</span>
+<span class="pc bpc" id="L45" title="1 of 2 branches missed.">		assert isValidCycle(g, cycle0);</span>
+<span class="pc bpc" id="L46" title="1 of 2 branches missed.">		assert isPathVisitEvery(g, cycle0);</span>
+<span class="fc" id="L47">		return cycle0;</span>
 	}
 
-	static IntList edgeListToVerticesList(UGraph g, IntList edges) {
-<span class="fc" id="L45">		IntList res = new IntArrayList();</span>
-<span class="fc bfc" id="L46" title="All 2 branches covered.">		for (PathIter it = PathIter.of(g, edges); it.hasNext();) {</span>
-<span class="fc" id="L47">			it.nextEdge();</span>
-<span class="fc" id="L48">			res.add(it.u());</span>
+	static IntList pathToVerticesList(Path edges) {
+<span class="fc" id="L51">		IntList res = new IntArrayList();</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">		for (EdgeIter it = edges.iterator(); it.hasNext();) {</span>
+<span class="fc" id="L53">			it.nextInt();</span>
+<span class="fc" id="L54">			res.add(it.u());</span>
 		}
-<span class="fc" id="L50">		return res;</span>
+<span class="fc" id="L56">		return res;</span>
 	}
 
-	private static boolean isValidCycle(UGraph g, IntList path) {
-<span class="fc" id="L54">		PathIter it = PathIter.of(g, path);</span>
-<span class="fc" id="L55">		it.nextEdge();</span>
-<span class="fc" id="L56">		final int begin = it.u();</span>
+	private static boolean isValidCycle(UGraph g, Path path) {
+<span class="fc" id="L60">		EdgeIter it = path.iterator();</span>
+<span class="fc" id="L61">		it.nextInt();</span>
+<span class="fc" id="L62">		final int begin = it.u();</span>
 		for (;;) {
-<span class="fc bfc" id="L58" title="All 2 branches covered.">			if (!it.hasNext())</span>
-<span class="pc bpc" id="L59" title="1 of 2 branches missed.">				return it.v() == begin;</span>
-<span class="fc" id="L60">			int lastV = it.v();</span>
-<span class="fc" id="L61">			it.nextEdge();</span>
-<span class="pc bpc" id="L62" title="1 of 2 branches missed.">			if (lastV != it.u())</span>
-<span class="nc" id="L63">				return false;</span>
-<span class="fc" id="L64">		}</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">			if (!it.hasNext())</span>
+<span class="pc bpc" id="L65" title="1 of 2 branches missed.">				return it.v() == begin;</span>
+<span class="fc" id="L66">			int lastV = it.v();</span>
+<span class="fc" id="L67">			it.nextInt();</span>
+<span class="pc bpc" id="L68" title="1 of 2 branches missed.">			if (lastV != it.u())</span>
+<span class="nc" id="L69">				return false;</span>
+<span class="fc" id="L70">		}</span>
 	}
 
-	private static boolean isPathVisitEvery(UGraph g, IntList path) {
-<span class="fc" id="L68">		final int n = g.vertices().size();</span>
-<span class="fc" id="L69">		boolean[] visited = new boolean[n];</span>
-<span class="fc bfc" id="L70" title="All 2 branches covered.">		for (IntIterator it = path.iterator(); it.hasNext();) {</span>
-<span class="fc" id="L71">			int e = it.nextInt();</span>
-<span class="fc" id="L72">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
-<span class="fc" id="L73">			visited[u] = visited[v] = true;</span>
-<span class="fc" id="L74">		}</span>
-<span class="fc bfc" id="L75" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
-<span class="pc bpc" id="L76" title="1 of 2 branches missed.">			if (!visited[u])</span>
-<span class="nc" id="L77">				return false;</span>
-<span class="fc" id="L78">		return true;</span>
+	private static boolean isPathVisitEvery(UGraph g, Path path) {
+<span class="fc" id="L74">		final int n = g.vertices().size();</span>
+<span class="fc" id="L75">		boolean[] visited = new boolean[n];</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">		for (IntIterator it = path.iterator(); it.hasNext();) {</span>
+<span class="fc" id="L77">			int e = it.nextInt();</span>
+<span class="fc" id="L78">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+<span class="fc" id="L79">			visited[u] = visited[v] = true;</span>
+<span class="fc" id="L80">		}</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
+<span class="pc bpc" id="L82" title="1 of 2 branches missed.">			if (!visited[u])</span>
+<span class="nc" id="L83">				return false;</span>
+<span class="fc" id="L84">		return true;</span>
 	}
 
 }

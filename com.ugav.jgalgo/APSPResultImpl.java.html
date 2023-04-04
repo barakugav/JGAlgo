@@ -5,7 +5,6 @@ import java.util.Objects;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.ints.IntLists;
 
 abstract class APSPResultImpl implements APSP.Result {
 
@@ -20,141 +19,153 @@ abstract class APSPResultImpl implements APSP.Result {
 
 	static abstract class Abstract extends APSPResultImpl {
 
+		private final Graph g;
 		private final int[][] edges;
-		private IntList negCycle;
+		private Path negCycle;
 
 <span class="fc" id="L26">		Abstract(Graph g) {</span>
-<span class="fc" id="L27">			int n = g.vertices().size();</span>
-<span class="fc" id="L28">			edges = new int[n][n];</span>
-<span class="fc bfc" id="L29" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
-<span class="fc" id="L30">				Arrays.fill(edges[v], -1);</span>
+<span class="fc" id="L27">			this.g = g;</span>
+<span class="fc" id="L28">			int n = g.vertices().size();</span>
+<span class="fc" id="L29">			edges = new int[n][n];</span>
+<span class="fc bfc" id="L30" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
+<span class="fc" id="L31">				Arrays.fill(edges[v], -1);</span>
 			}
-<span class="fc" id="L32">		}</span>
+<span class="fc" id="L33">		}</span>
 
 		@Override
 		int getEdgeTo(int source, int target) {
-<span class="fc" id="L36">			return edges[source][target];</span>
+<span class="fc" id="L37">			return edges[source][target];</span>
 		}
 
 		@Override
 		void setEdgeTo(int source, int target, int edge) {
-<span class="fc" id="L41">			edges[source][target] = edge;</span>
-<span class="fc" id="L42">		}</span>
+<span class="fc" id="L42">			edges[source][target] = edge;</span>
+<span class="fc" id="L43">		}</span>
 
-		void setNegCycle(IntList cycle) {
-<span class="nc" id="L45">			Objects.requireNonNull(cycle);</span>
-<span class="nc" id="L46">			this.negCycle = IntLists.unmodifiable(cycle);</span>
-<span class="nc" id="L47">		}</span>
+		void setNegCycle(Path cycle) {
+<span class="nc" id="L46">			Objects.requireNonNull(cycle);</span>
+<span class="nc" id="L47">			this.negCycle = cycle;</span>
+<span class="nc" id="L48">		}</span>
 
 		@Override
 		public boolean foundNegativeCycle() {
-<span class="pc bpc" id="L51" title="1 of 2 branches missed.">			return negCycle != null;</span>
+<span class="pc bpc" id="L52" title="1 of 2 branches missed.">			return negCycle != null;</span>
 		}
 
 		@Override
-		public IntList getNegativeCycle() {
-<span class="nc bnc" id="L56" title="All 2 branches missed.">			if (!foundNegativeCycle())</span>
-<span class="nc" id="L57">				throw new IllegalStateException();</span>
-<span class="nc" id="L58">			return negCycle;</span>
+		public Path getNegativeCycle() {
+<span class="nc bnc" id="L57" title="All 2 branches missed.">			if (!foundNegativeCycle())</span>
+<span class="nc" id="L58">				throw new IllegalStateException();</span>
+<span class="nc" id="L59">			return negCycle;</span>
+		}
+
+		Graph graph() {
+<span class="fc" id="L63">			return g;</span>
 		}
 	}
 
-<span class="fc" id="L62">	static class Undirected extends Abstract {</span>
+<span class="fc" id="L67">	static class Undirected extends Abstract {</span>
 
-		private final UGraph g;
 		private final int n;
 		private final double[] distances;
 
 		Undirected(UGraph g) {
-<span class="fc" id="L69">			super(g);</span>
-<span class="fc" id="L70">			this.g = g;</span>
-<span class="fc" id="L71">			n = g.vertices().size();</span>
-<span class="fc" id="L72">			distances = new double[n * (n - 1) / 2];</span>
-<span class="fc" id="L73">			Arrays.fill(distances, Double.POSITIVE_INFINITY);</span>
-<span class="fc" id="L74">		}</span>
+<span class="fc" id="L73">			super(g);</span>
+<span class="fc" id="L74">			n = g.vertices().size();</span>
+<span class="fc" id="L75">			distances = new double[n * (n - 1) / 2];</span>
+<span class="fc" id="L76">			Arrays.fill(distances, Double.POSITIVE_INFINITY);</span>
+<span class="fc" id="L77">		}</span>
 
 		private int index(int u, int v) {
-<span class="pc bpc" id="L77" title="1 of 2 branches missed.">			assert u != v;</span>
-<span class="fc bfc" id="L78" title="All 2 branches covered.">			if (u &gt; v) {</span>
-<span class="fc" id="L79">				int temp = u;</span>
-<span class="fc" id="L80">				u = v;</span>
-<span class="fc" id="L81">				v = temp;</span>
+<span class="pc bpc" id="L80" title="1 of 2 branches missed.">			assert u != v;</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">			if (u &gt; v) {</span>
+<span class="fc" id="L82">				int temp = u;</span>
+<span class="fc" id="L83">				u = v;</span>
+<span class="fc" id="L84">				v = temp;</span>
 			}
 			/* index mapping assume always u &lt; v (strictly!) */
-<span class="fc" id="L84">			return (2 * n - u - 1) * u / 2 + v - u - 1;</span>
+<span class="fc" id="L87">			return (2 * n - u - 1) * u / 2 + v - u - 1;</span>
 		}
 
 		@Override
 		void setDistance(int source, int target, double distance) {
-<span class="fc" id="L89">			distances[index(source, target)] = distance;</span>
-<span class="fc" id="L90">		}</span>
+<span class="fc" id="L92">			distances[index(source, target)] = distance;</span>
+<span class="fc" id="L93">		}</span>
 
 		@Override
 		public double distance(int source, int target) {
-<span class="pc bpc" id="L94" title="1 of 2 branches missed.">			if (foundNegativeCycle())</span>
-<span class="nc" id="L95">				throw new IllegalStateException();</span>
-<span class="fc bfc" id="L96" title="All 2 branches covered.">			return source != target ? distances[index(source, target)] : 0;</span>
+<span class="pc bpc" id="L97" title="1 of 2 branches missed.">			if (foundNegativeCycle())</span>
+<span class="nc" id="L98">				throw new IllegalStateException();</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">			return source != target ? distances[index(source, target)] : 0;</span>
 		}
 
 		@Override
-		public IntList getPath(int source, int target) {
-<span class="pc bpc" id="L101" title="1 of 2 branches missed.">			if (foundNegativeCycle())</span>
-<span class="nc" id="L102">				throw new IllegalStateException();</span>
-<span class="fc bfc" id="L103" title="All 2 branches covered.">			if (distance(source, target) == Double.POSITIVE_INFINITY)</span>
-<span class="fc" id="L104">				return null;</span>
-<span class="fc" id="L105">			IntList path = new IntArrayList();</span>
-<span class="fc bfc" id="L106" title="All 2 branches covered.">			while (source != target) {</span>
-<span class="fc" id="L107">				int e = getEdgeTo(source, target);</span>
-<span class="pc bpc" id="L108" title="1 of 2 branches missed.">				assert e != -1;</span>
-<span class="fc" id="L109">				path.add(e);</span>
-<span class="fc" id="L110">				source = g.edgeEndpoint(e, source);</span>
-<span class="fc" id="L111">			}</span>
-<span class="fc" id="L112">			return path;</span>
+		public Path getPath(int source, int target) {
+<span class="pc bpc" id="L104" title="1 of 2 branches missed.">			if (foundNegativeCycle())</span>
+<span class="nc" id="L105">				throw new IllegalStateException();</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">			if (distance(source, target) == Double.POSITIVE_INFINITY)</span>
+<span class="fc" id="L107">				return null;</span>
+<span class="fc" id="L108">			IntList path = new IntArrayList();</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">			for (int v = source; v != target;) {</span>
+<span class="fc" id="L110">				int e = getEdgeTo(v, target);</span>
+<span class="pc bpc" id="L111" title="1 of 2 branches missed.">				assert e != -1;</span>
+<span class="fc" id="L112">				path.add(e);</span>
+<span class="fc" id="L113">				v = graph().edgeEndpoint(e, v);</span>
+<span class="fc" id="L114">			}</span>
+<span class="fc" id="L115">			return new Path(graph(), source, target, path);</span>
+		}
+
+		@Override
+		UGraph graph() {
+<span class="fc" id="L120">			return (UGraph) super.graph();</span>
 		}
 	}
 
-<span class="fc" id="L116">	static class Directed extends Abstract {</span>
-		private final DiGraph g;
+<span class="fc" id="L124">	static class Directed extends Abstract {</span>
 		private final double[][] distances;
 
 		Directed(DiGraph g) {
-<span class="fc" id="L121">			super(g);</span>
-<span class="fc" id="L122">			this.g = g;</span>
-<span class="fc" id="L123">			int n = g.vertices().size();</span>
-<span class="fc" id="L124">			distances = new double[n][n];</span>
-<span class="fc bfc" id="L125" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
-<span class="fc" id="L126">				Arrays.fill(distances[v], Double.POSITIVE_INFINITY);</span>
-<span class="fc" id="L127">				setDistance(v, v, 0);</span>
+<span class="fc" id="L128">			super(g);</span>
+<span class="fc" id="L129">			int n = g.vertices().size();</span>
+<span class="fc" id="L130">			distances = new double[n][n];</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
+<span class="fc" id="L132">				Arrays.fill(distances[v], Double.POSITIVE_INFINITY);</span>
+<span class="fc" id="L133">				setDistance(v, v, 0);</span>
 			}
-<span class="fc" id="L129">		}</span>
+<span class="fc" id="L135">		}</span>
 
 		@Override
 		void setDistance(int source, int target, double distance) {
-<span class="fc" id="L133">			distances[source][target] = distance;</span>
-<span class="fc" id="L134">		}</span>
+<span class="fc" id="L139">			distances[source][target] = distance;</span>
+<span class="fc" id="L140">		}</span>
 
 		@Override
 		public double distance(int source, int target) {
-<span class="pc bpc" id="L138" title="1 of 2 branches missed.">			if (foundNegativeCycle())</span>
-<span class="nc" id="L139">				throw new IllegalStateException();</span>
-<span class="fc" id="L140">			return distances[source][target];</span>
+<span class="pc bpc" id="L144" title="1 of 2 branches missed.">			if (foundNegativeCycle())</span>
+<span class="nc" id="L145">				throw new IllegalStateException();</span>
+<span class="fc" id="L146">			return distances[source][target];</span>
 		}
 
 		@Override
-		public IntList getPath(int source, int target) {
-<span class="pc bpc" id="L145" title="1 of 2 branches missed.">			if (foundNegativeCycle())</span>
-<span class="nc" id="L146">				throw new IllegalStateException();</span>
-<span class="fc bfc" id="L147" title="All 2 branches covered.">			if (distance(source, target) == Double.POSITIVE_INFINITY)</span>
-<span class="fc" id="L148">				return null;</span>
-<span class="fc" id="L149">			IntList path = new IntArrayList();</span>
-<span class="fc bfc" id="L150" title="All 2 branches covered.">			while (source != target) {</span>
-<span class="fc" id="L151">				int e = getEdgeTo(source, target);</span>
-<span class="pc bpc" id="L152" title="1 of 2 branches missed.">				assert e != -1;</span>
-<span class="pc bpc" id="L153" title="1 of 2 branches missed.">				assert source == g.edgeSource(e);</span>
-<span class="fc" id="L154">				path.add(e);</span>
-<span class="fc" id="L155">				source = g.edgeTarget(e);</span>
-<span class="fc" id="L156">			}</span>
-<span class="fc" id="L157">			return path;</span>
+		public Path getPath(int source, int target) {
+<span class="pc bpc" id="L151" title="1 of 2 branches missed.">			if (foundNegativeCycle())</span>
+<span class="nc" id="L152">				throw new IllegalStateException();</span>
+<span class="fc bfc" id="L153" title="All 2 branches covered.">			if (distance(source, target) == Double.POSITIVE_INFINITY)</span>
+<span class="fc" id="L154">				return null;</span>
+<span class="fc" id="L155">			IntList path = new IntArrayList();</span>
+<span class="fc bfc" id="L156" title="All 2 branches covered.">			for (int v = source; v != target;) {</span>
+<span class="fc" id="L157">				int e = getEdgeTo(v, target);</span>
+<span class="pc bpc" id="L158" title="1 of 2 branches missed.">				assert e != -1;</span>
+<span class="pc bpc" id="L159" title="1 of 2 branches missed.">				assert v == graph().edgeSource(e);</span>
+<span class="fc" id="L160">				path.add(e);</span>
+<span class="fc" id="L161">				v = graph().edgeTarget(e);</span>
+<span class="fc" id="L162">			}</span>
+<span class="fc" id="L163">			return new Path(graph(), source, target, path);</span>
+		}
+
+		@Override
+		DiGraph graph() {
+<span class="fc" id="L168">			return (DiGraph) super.graph();</span>
 		}
 	}
 

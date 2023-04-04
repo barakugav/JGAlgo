@@ -7,7 +7,7 @@
 <span class="pc bpc" id="L7" title="1 of 2 branches missed.">		if (!(g0 instanceof DiGraph))</span>
 <span class="nc" id="L8">			throw new IllegalArgumentException(&quot;Only DAG graphs are supported&quot;);</span>
 <span class="fc" id="L9">		DiGraph g = (DiGraph) g0;</span>
-<span class="fc" id="L10">		SSSPResultImpl res = new SSSPResultImpl(g);</span>
+<span class="fc" id="L10">		SSSPResultImpl res = new SSSPResultImpl(g, source);</span>
 <span class="fc" id="L11">		res.distances[source] = 0;</span>
 
 <span class="fc" id="L13">		int[] topolSort = Graphs.calcTopologicalSortingDAG(g);</span>

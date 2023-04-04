@@ -30,8 +30,8 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 		}
 
 <span class="fc bfc" id="L32" title="All 2 branches covered.">		while (!uncolored.isEmpty()) {</span>
-<span class="fc" id="L33">			int u = uncolored.intIterator().nextInt();</span>
-<span class="fc bfc" id="L34" title="All 2 branches covered.">			for (IntIterator it = uncolored.intIterator(); it.hasNext();) {</span>
+<span class="fc" id="L33">			int u = uncolored.iterator().nextInt();</span>
+<span class="fc bfc" id="L34" title="All 2 branches covered.">			for (IntIterator it = uncolored.iterator(); it.hasNext();) {</span>
 <span class="fc" id="L35">				int u1 = it.nextInt();</span>
 <span class="pc bpc" id="L36" title="1 of 2 branches missed.">				if (usedColors[u].size() &lt; usedColors[u1].size())</span>
 <span class="nc" id="L37">					continue;</span>
