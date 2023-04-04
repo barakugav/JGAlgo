@@ -50,7 +50,7 @@ public class TSPMetricMSTAppx implements TSPMetric {
 <span class="fc" id="L50">		}</span>
 
 <span class="fc" id="L52">		Path cycle = TSPMetricUtils.calcEulerianTourAndConvertToHamiltonianCycle(g, g1, edgeRef);</span>
-<span class="pc bpc" id="L53" title="1 of 2 branches missed.">		assert cycle.edges.size() == n;</span>
+<span class="pc bpc" id="L53" title="1 of 2 branches missed.">		assert cycle.size() == n;</span>
 
 		/* Convert cycle of edges to list of vertices */
 <span class="fc" id="L56">		return TSPMetricUtils.pathToVerticesList(cycle).toIntArray();</span>

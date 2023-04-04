@@ -85,70 +85,71 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 <span class="pc bpc" id="L85" title="1 of 6 branches missed.">			if (augPath == null || augPathWeight &gt;= RemovedEdgeWeight || augPathWeight &lt; 0)</span>
 <span class="fc" id="L86">				break;</span>
 
-<span class="fc" id="L88">			IntIterator it = augPath.edges.iterator();</span>
+			// avoid using augPath.iterator() as we modify the graph during iteration
+<span class="fc" id="L89">			IntIterator it = new IntArrayList(augPath).iterator();</span>
 			// 'remove' edge from S to new matched vertex
-<span class="fc" id="L90">			edgeRef.get(it.nextInt()).w = RemovedEdgeWeight;</span>
+<span class="fc" id="L91">			edgeRef.get(it.nextInt()).w = RemovedEdgeWeight;</span>
 			for (;;) {
-<span class="fc" id="L92">				int matchedEdge = it.nextInt();</span>
+<span class="fc" id="L93">				int matchedEdge = it.nextInt();</span>
 
 				// Reverse newly matched edge
-<span class="fc" id="L95">				g.reverseEdge(matchedEdge);</span>
-<span class="fc" id="L96">				Ref r = edgeRef.get(matchedEdge);</span>
-<span class="fc" id="L97">				match[g.edgeSource(matchedEdge)] = match[g.edgeTarget(matchedEdge)] = r.orig;</span>
-<span class="fc" id="L98">				r.w = -r.w;</span>
+<span class="fc" id="L96">				g.reverseEdge(matchedEdge);</span>
+<span class="fc" id="L97">				Ref r = edgeRef.get(matchedEdge);</span>
+<span class="fc" id="L98">				match[g.edgeSource(matchedEdge)] = match[g.edgeTarget(matchedEdge)] = r.orig;</span>
+<span class="fc" id="L99">				r.w = -r.w;</span>
 
-<span class="fc" id="L100">				int unmatchedEdge = it.nextInt();</span>
+<span class="fc" id="L101">				int unmatchedEdge = it.nextInt();</span>
 
-<span class="fc bfc" id="L102" title="All 2 branches covered.">				if (!it.hasNext()) {</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">				if (!it.hasNext()) {</span>
 					// 'remove' edge from new matched vertex to T
-<span class="fc" id="L104">					edgeRef.get(unmatchedEdge).w = RemovedEdgeWeight;</span>
-<span class="fc" id="L105">					break;</span>
+<span class="fc" id="L105">					edgeRef.get(unmatchedEdge).w = RemovedEdgeWeight;</span>
+<span class="fc" id="L106">					break;</span>
 				}
 
 				// Reverse newly unmatched edge
-<span class="fc" id="L109">				g.reverseEdge(unmatchedEdge);</span>
-<span class="fc" id="L110">				r = edgeRef.get(unmatchedEdge);</span>
-<span class="fc" id="L111">				r.w = -r.w;</span>
-<span class="fc" id="L112">			}</span>
+<span class="fc" id="L110">				g.reverseEdge(unmatchedEdge);</span>
+<span class="fc" id="L111">				r = edgeRef.get(unmatchedEdge);</span>
+<span class="fc" id="L112">				r.w = -r.w;</span>
+<span class="fc" id="L113">			}</span>
 
 			// Update potential based on the distances
-<span class="fc bfc" id="L115" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
-<span class="fc" id="L116">				potential[u] += sp.distance(u);</span>
-<span class="fc" id="L117">		}</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
+<span class="fc" id="L117">				potential[u] += sp.distance(u);</span>
+<span class="fc" id="L118">		}</span>
 
-<span class="fc" id="L119">		IntList res = new IntArrayList();</span>
-<span class="fc bfc" id="L120" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc" id="L121">			int e = match[u];</span>
-<span class="fc bfc" id="L122" title="All 4 branches covered.">			if (e != -1 &amp;&amp; g0.edgeSource(e) == u)</span>
-<span class="fc" id="L123">				res.add(e);</span>
+<span class="fc" id="L120">		IntList res = new IntArrayList();</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc" id="L122">			int e = match[u];</span>
+<span class="fc bfc" id="L123" title="All 4 branches covered.">			if (e != -1 &amp;&amp; g0.edgeSource(e) == u)</span>
+<span class="fc" id="L124">				res.add(e);</span>
 		}
 
-<span class="fc" id="L126">		return res;</span>
+<span class="fc" id="L127">		return res;</span>
 	}
 
 	@Override
 	public IntCollection calcPerfectMaxMatching(Graph g, EdgeWeightFunc w) {
-<span class="nc" id="L131">		throw new UnsupportedOperationException();</span>
+<span class="nc" id="L132">		throw new UnsupportedOperationException();</span>
 	}
 
 	private static DiGraph referenceGraph(UGraph g, Weights.Bool partition, EdgeWeightFunc w) {
-<span class="fc" id="L135">		int n = g.vertices().size();</span>
-<span class="fc" id="L136">		DiGraph g0 = new GraphArrayDirected(g.vertices().size());</span>
-<span class="fc" id="L137">		Weights&lt;Ref&gt; edgeRef = g0.addEdgesWeight(EdgeRefWeightKey).ofObjs();</span>
+<span class="fc" id="L136">		int n = g.vertices().size();</span>
+<span class="fc" id="L137">		DiGraph g0 = new GraphArrayDirected(g.vertices().size());</span>
+<span class="fc" id="L138">		Weights&lt;Ref&gt; edgeRef = g0.addEdgesWeight(EdgeRefWeightKey).ofObjs();</span>
 
-<span class="fc bfc" id="L139" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc bfc" id="L140" title="All 2 branches covered.">			if (!partition.getBool(u))</span>
-<span class="fc" id="L141">				continue;</span>
-<span class="fc bfc" id="L142" title="All 2 branches covered.">			for (EdgeIter eit = g.edges(u); eit.hasNext();) {</span>
-<span class="fc" id="L143">				int e = eit.nextInt();</span>
-<span class="fc" id="L144">				double weight = w.weight(e);</span>
-<span class="fc bfc" id="L145" title="All 2 branches covered.">				if (weight &lt; 0)</span>
-<span class="fc" id="L146">					continue; // no reason to match negative edges</span>
-<span class="fc" id="L147">				int e0 = g0.addEdge(u, eit.v());</span>
-<span class="fc" id="L148">				edgeRef.set(e0, new Ref(e, weight));</span>
-<span class="fc" id="L149">			}</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">			if (!partition.getBool(u))</span>
+<span class="fc" id="L142">				continue;</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">			for (EdgeIter eit = g.edges(u); eit.hasNext();) {</span>
+<span class="fc" id="L144">				int e = eit.nextInt();</span>
+<span class="fc" id="L145">				double weight = w.weight(e);</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">				if (weight &lt; 0)</span>
+<span class="fc" id="L147">					continue; // no reason to match negative edges</span>
+<span class="fc" id="L148">				int e0 = g0.addEdge(u, eit.v());</span>
+<span class="fc" id="L149">				edgeRef.set(e0, new Ref(e, weight));</span>
+<span class="fc" id="L150">			}</span>
 		}
-<span class="fc" id="L151">		return g0;</span>
+<span class="fc" id="L152">		return g0;</span>
 	}
 
 	private static class Ref {
@@ -156,30 +157,30 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 		public final int orig;
 		public double w;
 
-<span class="fc" id="L159">		public Ref(int e, double w) {</span>
-<span class="fc" id="L160">			orig = e;</span>
-<span class="fc" id="L161">			this.w = w;</span>
-<span class="fc" id="L162">		}</span>
+<span class="fc" id="L160">		public Ref(int e, double w) {</span>
+<span class="fc" id="L161">			orig = e;</span>
+<span class="fc" id="L162">			this.w = w;</span>
+<span class="fc" id="L163">		}</span>
 
 		@Override
 		public int hashCode() {
-<span class="nc" id="L166">			return orig;</span>
+<span class="nc" id="L167">			return orig;</span>
 		}
 
 		@Override
 		public boolean equals(Object other) {
-<span class="nc bnc" id="L171" title="All 2 branches missed.">			if (other == this)</span>
-<span class="nc" id="L172">				return true;</span>
-<span class="nc bnc" id="L173" title="All 2 branches missed.">			if (!(other instanceof Ref))</span>
-<span class="nc" id="L174">				return false;</span>
+<span class="nc bnc" id="L172" title="All 2 branches missed.">			if (other == this)</span>
+<span class="nc" id="L173">				return true;</span>
+<span class="nc bnc" id="L174" title="All 2 branches missed.">			if (!(other instanceof Ref))</span>
+<span class="nc" id="L175">				return false;</span>
 
-<span class="nc" id="L176">			Ref o = (Ref) other;</span>
-<span class="nc bnc" id="L177" title="All 2 branches missed.">			return orig == o.orig;</span>
+<span class="nc" id="L177">			Ref o = (Ref) other;</span>
+<span class="nc bnc" id="L178" title="All 2 branches missed.">			return orig == o.orig;</span>
 		}
 
 		@Override
 		public String toString() {
-<span class="nc bnc" id="L182" title="All 2 branches missed.">			return orig != -1 ? String.valueOf(orig) : Double.toString(w);</span>
+<span class="nc bnc" id="L183" title="All 2 branches missed.">			return orig != -1 ? String.valueOf(orig) : Double.toString(w);</span>
 		}
 
 	}

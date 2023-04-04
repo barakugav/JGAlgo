@@ -87,10 +87,10 @@ import it.unimi.dsi.fastutil.ints.IntList;
 <span class="nc" id="L87">			return Pair.of(potential, null);</span>
 		} else {
 <span class="nc" id="L89">			Path negCycleRef = res.getNegativeCycle();</span>
-<span class="nc" id="L90">			IntList negCycle = new IntArrayList(negCycleRef.edges.size());</span>
-<span class="nc bnc" id="L91" title="All 2 branches missed.">			for (int i = 0; i &lt; negCycleRef.edges.size(); i++)</span>
-<span class="nc" id="L92">				negCycle.add(edgeEef.getInt(negCycleRef.edges.getInt(i)));</span>
-<span class="nc" id="L93">			return Pair.of(null, new Path(g, negCycleRef.source, negCycleRef.target, negCycle));</span>
+<span class="nc" id="L90">			IntList negCycle = new IntArrayList(negCycleRef.size());</span>
+<span class="nc bnc" id="L91" title="All 2 branches missed.">			for (IntIterator it = negCycleRef.iterator(); it.hasNext();)</span>
+<span class="nc" id="L92">				negCycle.add(edgeEef.getInt(it.nextInt()));</span>
+<span class="nc" id="L93">			return Pair.of(null, new Path(g, negCycleRef.source(), negCycleRef.target(), negCycle));</span>
 		}
 	}
 

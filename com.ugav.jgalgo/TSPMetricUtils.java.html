@@ -25,7 +25,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 <span class="fc" id="L25">		IntList cycle = new IntArrayList(n);</span>
 <span class="fc" id="L26">		int firstVertex = -1, lastVertex = -1;</span>
 <span class="fc" id="L27">		boolean[] visited = new boolean[n];</span>
-<span class="fc bfc" id="L28" title="All 2 branches covered.">		for (EdgeIter it = tour.iterator(); it.hasNext();) {</span>
+<span class="fc bfc" id="L28" title="All 2 branches covered.">		for (EdgeIter it = tour.edgeIter(); it.hasNext();) {</span>
 <span class="fc" id="L29">			int e0 = it.nextInt();</span>
 <span class="fc" id="L30">			int e = edgeRef.getInt(e0);</span>
 <span class="fc" id="L31">			final int u = it.u();</span>
@@ -49,7 +49,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 	static IntList pathToVerticesList(Path edges) {
 <span class="fc" id="L51">		IntList res = new IntArrayList();</span>
-<span class="fc bfc" id="L52" title="All 2 branches covered.">		for (EdgeIter it = edges.iterator(); it.hasNext();) {</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">		for (EdgeIter it = edges.edgeIter(); it.hasNext();) {</span>
 <span class="fc" id="L53">			it.nextInt();</span>
 <span class="fc" id="L54">			res.add(it.u());</span>
 		}
@@ -57,7 +57,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 	}
 
 	private static boolean isValidCycle(UGraph g, Path path) {
-<span class="fc" id="L60">		EdgeIter it = path.iterator();</span>
+<span class="fc" id="L60">		EdgeIter it = path.edgeIter();</span>
 <span class="fc" id="L61">		it.nextInt();</span>
 <span class="fc" id="L62">		final int begin = it.u();</span>
 		for (;;) {

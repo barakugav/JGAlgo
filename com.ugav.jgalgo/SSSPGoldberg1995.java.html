@@ -105,7 +105,7 @@ public class SSSPGoldberg1995 implements SSSP {
 <span class="fc bfc" id="L105" title="All 2 branches covered.">						} else if (weight &lt; 0) {</span>
 							// negative cycle
 <span class="fc" id="L107">							Path negCycle0 = Graphs.findPath(gNeg, v, u);</span>
-<span class="fc" id="L108">							IntList negCycle = new IntArrayList(negCycle0.edges.size() + 1);</span>
+<span class="fc" id="L108">							IntList negCycle = new IntArrayList(negCycle0.size() + 1);</span>
 <span class="fc bfc" id="L109" title="All 2 branches covered.">							for (IntIterator it = negCycle0.iterator(); it.hasNext();)</span>
 <span class="fc" id="L110">								negCycle.add(gNegEdgeRefs.getInt(it.nextInt()));</span>
 <span class="fc" id="L111">							negCycle.add(gNegEdgeRefs.getInt(e));</span>
@@ -152,7 +152,7 @@ public class SSSPGoldberg1995 implements SSSP {
 					// on the path and with edge r to all other vertices
 <span class="fc" id="L153">					Arrays.fill(connected, 0, N, false);</span>
 <span class="fc" id="L154">					int assignedWeight = layerNum - 2;</span>
-<span class="fc bfc" id="L155" title="All 2 branches covered.">					for (IntIterator it = ssspRes.getPathTo(vertexInMaxLayer).edges.iterator(); it.hasNext();) {</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">					for (IntIterator it = ssspRes.getPathTo(vertexInMaxLayer).iterator(); it.hasNext();) {</span>
 <span class="fc" id="L156">						int e = it.nextInt();</span>
 <span class="fc" id="L157">						int ew = GWeights.getInt(e);</span>
 <span class="fc bfc" id="L158" title="All 2 branches covered.">						if (ew &lt; 0) {</span>

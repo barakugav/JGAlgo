@@ -154,7 +154,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 			} else {
 <span class="fc" id="L155">				int bucketSize = (edgesCount - 1) / k + 1;</span>
 <span class="fc" id="L156">				int bucketNum = (edgesCount - 1) / bucketSize + 1;</span>
-<span class="fc" id="L157">				Array.Int.bucketPartition(edgesTemp, 0, edgesCount, w, bucketSize);</span>
+<span class="fc" id="L157">				Array.bucketPartition(edgesTemp, 0, edgesCount, w, bucketSize);</span>
 <span class="fc" id="L158">				edges[u] = new int[bucketNum][];</span>
 
 <span class="fc bfc" id="L160" title="All 2 branches covered.">				for (int b = 0; b &lt; bucketNum; b++) {</span>
