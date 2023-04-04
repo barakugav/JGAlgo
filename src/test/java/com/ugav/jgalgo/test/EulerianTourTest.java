@@ -72,7 +72,7 @@ public class EulerianTourTest extends TestUtils {
 
 	private static void validateEulerainTour(Graph g, Path tour) {
 		IntSet usedEdges = new IntOpenHashSet(g.edges().size());
-		for (EdgeIter it = tour.iterator(); it.hasNext();) {
+		for (EdgeIter it = tour.edgeIter(); it.hasNext();) {
 			int e = it.nextInt();
 			boolean alreadyUsed = !usedEdges.add(e);
 			Assertions.assertFalse(alreadyUsed, "edge appear twice in tour: " + e);

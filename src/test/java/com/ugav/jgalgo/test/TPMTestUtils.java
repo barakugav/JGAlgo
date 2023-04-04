@@ -150,7 +150,7 @@ class TPMTestUtils extends TestUtils {
 			} while (mstEdges.contains(e));
 
 			Path mstPath = Graphs.findPath(mst, g.edgeSource(e), g.edgeTarget(e));
-			int edgeToRemove = mstPath.edges.getInt(rand.nextInt(mstPath.edges.size()));
+			int edgeToRemove = mstPath.getInt(rand.nextInt(mstPath.size()));
 			mst.removeEdge(edgeToRemove);
 			int en = mst.addEdge(g.edgeSource(e), g.edgeTarget(e));
 			edgeRef.set(en, e);

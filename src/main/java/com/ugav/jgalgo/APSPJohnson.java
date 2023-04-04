@@ -87,10 +87,10 @@ public class APSPJohnson implements APSP {
 			return Pair.of(potential, null);
 		} else {
 			Path negCycleRef = res.getNegativeCycle();
-			IntList negCycle = new IntArrayList(negCycleRef.edges.size());
-			for (int i = 0; i < negCycleRef.edges.size(); i++)
-				negCycle.add(edgeEef.getInt(negCycleRef.edges.getInt(i)));
-			return Pair.of(null, new Path(g, negCycleRef.source, negCycleRef.target, negCycle));
+			IntList negCycle = new IntArrayList(negCycleRef.size());
+			for (IntIterator it = negCycleRef.iterator(); it.hasNext();)
+				negCycle.add(edgeEef.getInt(it.nextInt()));
+			return Pair.of(null, new Path(g, negCycleRef.source(), negCycleRef.target(), negCycle));
 		}
 	}
 

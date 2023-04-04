@@ -25,7 +25,7 @@ class TSPMetricUtils {
 		IntList cycle = new IntArrayList(n);
 		int firstVertex = -1, lastVertex = -1;
 		boolean[] visited = new boolean[n];
-		for (EdgeIter it = tour.iterator(); it.hasNext();) {
+		for (EdgeIter it = tour.edgeIter(); it.hasNext();) {
 			int e0 = it.nextInt();
 			int e = edgeRef.getInt(e0);
 			final int u = it.u();
@@ -49,7 +49,7 @@ class TSPMetricUtils {
 
 	static IntList pathToVerticesList(Path edges) {
 		IntList res = new IntArrayList();
-		for (EdgeIter it = edges.iterator(); it.hasNext();) {
+		for (EdgeIter it = edges.edgeIter(); it.hasNext();) {
 			it.nextInt();
 			res.add(it.u());
 		}
@@ -57,7 +57,7 @@ class TSPMetricUtils {
 	}
 
 	private static boolean isValidCycle(UGraph g, Path path) {
-		EdgeIter it = path.iterator();
+		EdgeIter it = path.edgeIter();
 		it.nextInt();
 		final int begin = it.u();
 		for (;;) {

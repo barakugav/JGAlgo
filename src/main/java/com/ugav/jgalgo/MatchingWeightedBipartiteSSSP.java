@@ -85,7 +85,8 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 			if (augPath == null || augPathWeight >= RemovedEdgeWeight || augPathWeight < 0)
 				break;
 
-			IntIterator it = augPath.edges.iterator();
+			// avoid using augPath.iterator() as we modify the graph during iteration
+			IntIterator it = new IntArrayList(augPath).iterator();
 			// 'remove' edge from S to new matched vertex
 			edgeRef.get(it.nextInt()).w = RemovedEdgeWeight;
 			for (;;) {

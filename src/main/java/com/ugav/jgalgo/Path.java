@@ -1,16 +1,17 @@
 package com.ugav.jgalgo;
 
-import it.unimi.dsi.fastutil.ints.IntIterable;
+import it.unimi.dsi.fastutil.ints.AbstractIntList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntListIterator;
 import it.unimi.dsi.fastutil.ints.IntLists;
 
-public class Path implements IntIterable {
+public class Path extends AbstractIntList {
 
 	private final Graph g;
-	public final int source;
-	public final int target;
-	public final IntList edges;
+	private final int source;
+	private final int target;
+	private final IntList edges;
 
 	Path(Graph g, int source, int target, IntList edges) {
 		this.g = g;
@@ -19,8 +20,20 @@ public class Path implements IntIterable {
 		this.edges = edges instanceof IntLists.UnmodifiableList ? edges : IntLists.unmodifiable(edges);
 	}
 
+	public int source() {
+		return source;
+	}
+
+	public int target() {
+		return target;
+	}
+
 	@Override
-	public EdgeIter iterator() {
+	public IntListIterator iterator() {
+		return edges.iterator();
+	}
+
+	public EdgeIter edgeIter() {
 		if (g instanceof UGraph g0) {
 			return new IterUndirected(g0, edges, source);
 		} else if (g instanceof DiGraph g0) {
@@ -101,6 +114,26 @@ public class Path implements IntIterable {
 			return g.edgeTarget(e);
 		}
 
+	}
+
+	@Override
+	public int size() {
+		return edges.size();
+	}
+
+	@Override
+	public int getInt(int index) {
+		return edges.getInt(index);
+	}
+
+	@Override
+	public int indexOf(int k) {
+		return edges.indexOf(k);
+	}
+
+	@Override
+	public int lastIndexOf(int k) {
+		return edges.lastIndexOf(k);
 	}
 
 }

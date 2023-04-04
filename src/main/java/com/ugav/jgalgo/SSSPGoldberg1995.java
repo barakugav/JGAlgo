@@ -105,7 +105,7 @@ public class SSSPGoldberg1995 implements SSSP {
 						} else if (weight < 0) {
 							// negative cycle
 							Path negCycle0 = Graphs.findPath(gNeg, v, u);
-							IntList negCycle = new IntArrayList(negCycle0.edges.size() + 1);
+							IntList negCycle = new IntArrayList(negCycle0.size() + 1);
 							for (IntIterator it = negCycle0.iterator(); it.hasNext();)
 								negCycle.add(gNegEdgeRefs.getInt(it.nextInt()));
 							negCycle.add(gNegEdgeRefs.getInt(e));
@@ -152,7 +152,7 @@ public class SSSPGoldberg1995 implements SSSP {
 					// on the path and with edge r to all other vertices
 					Arrays.fill(connected, 0, N, false);
 					int assignedWeight = layerNum - 2;
-					for (IntIterator it = ssspRes.getPathTo(vertexInMaxLayer).edges.iterator(); it.hasNext();) {
+					for (IntIterator it = ssspRes.getPathTo(vertexInMaxLayer).iterator(); it.hasNext();) {
 						int e = it.nextInt();
 						int ew = GWeights.getInt(e);
 						if (ew < 0) {

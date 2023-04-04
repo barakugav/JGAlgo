@@ -117,7 +117,7 @@ public class SSSPTestUtils extends TestUtils {
 
 	static double getPathWeight(Path path, EdgeWeightFunc w) {
 		double totalWeight = 0;
-		for (EdgeIter it = path.iterator(); it.hasNext();)
+		for (EdgeIter it = path.edgeIter(); it.hasNext();)
 			totalWeight += w.weight(it.nextInt());
 		return totalWeight;
 	}
