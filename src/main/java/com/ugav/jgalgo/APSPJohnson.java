@@ -5,7 +5,6 @@ import java.util.Objects;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.ints.IntLists;
 
 public class APSPJohnson implements APSP {
 
@@ -21,7 +20,7 @@ public class APSPJohnson implements APSP {
 		int n = g.vertices().size();
 
 		boolean negWeight = false;
-		for (IntIterator it = g.edges().intIterator(); it.hasNext();) {
+		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			if (w.weight(e) < 0) {
 				negWeight = true;
@@ -36,7 +35,7 @@ public class APSPJohnson implements APSP {
 			return res;
 		}
 
-		Pair<double[], IntList> potential0 = calcPotential(g, w);
+		Pair<double[], Path> potential0 = calcPotential(g, w);
 		if (potential0.e2 != null)
 			return new NegCycleRes(potential0.e2);
 		double[] potential = potential0.e1;
@@ -60,7 +59,7 @@ public class APSPJohnson implements APSP {
 		return res;
 	}
 
-	private static Pair<double[], IntList> calcPotential(DiGraph g, EdgeWeightFunc w) {
+	private static Pair<double[], Path> calcPotential(DiGraph g, EdgeWeightFunc w) {
 		int n = g.vertices().size();
 		DiGraph refG = new GraphArrayDirected(n + 1);
 		Weights.Int edgeEef = refG.addEdgesWeight("edgeEef").ofInts();
@@ -87,21 +86,21 @@ public class APSPJohnson implements APSP {
 				potential[v] = res.distance(v);
 			return Pair.of(potential, null);
 		} else {
-			IntList negCycleRef = res.getNegativeCycle();
-			IntList negCycle = new IntArrayList(negCycleRef.size());
-			for (int i = 0; i < negCycleRef.size(); i++)
-				negCycle.add(edgeEef.getInt(negCycleRef.getInt(i)));
-			return Pair.of(null, negCycle);
+			Path negCycleRef = res.getNegativeCycle();
+			IntList negCycle = new IntArrayList(negCycleRef.edges.size());
+			for (int i = 0; i < negCycleRef.edges.size(); i++)
+				negCycle.add(edgeEef.getInt(negCycleRef.edges.getInt(i)));
+			return Pair.of(null, new Path(g, negCycleRef.source, negCycleRef.target, negCycle));
 		}
 	}
 
 	private static class NegCycleRes implements APSP.Result {
 
-		private final IntList negCycle;
+		private final Path negCycle;
 
-		public NegCycleRes(IntList negCycle) {
+		public NegCycleRes(Path negCycle) {
 			Objects.requireNonNull(negCycle);
-			this.negCycle = IntLists.unmodifiable(negCycle);
+			this.negCycle = negCycle;
 		}
 
 		@Override
@@ -110,7 +109,7 @@ public class APSPJohnson implements APSP {
 		}
 
 		@Override
-		public IntList getPath(int source, int target) {
+		public Path getPath(int source, int target) {
 			throw new IllegalStateException();
 		}
 
@@ -120,7 +119,7 @@ public class APSPJohnson implements APSP {
 		}
 
 		@Override
-		public IntList getNegativeCycle() {
+		public Path getNegativeCycle() {
 			return negCycle;
 		}
 
@@ -141,7 +140,7 @@ public class APSPJohnson implements APSP {
 		}
 
 		@Override
-		public IntList getPath(int source, int target) {
+		public Path getPath(int source, int target) {
 			return ssspResults[source].getPathTo(target);
 		}
 
@@ -151,7 +150,7 @@ public class APSPJohnson implements APSP {
 		}
 
 		@Override
-		public IntList getNegativeCycle() {
+		public Path getNegativeCycle() {
 			throw new IllegalStateException();
 		}
 

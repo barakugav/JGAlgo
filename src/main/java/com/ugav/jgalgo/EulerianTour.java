@@ -3,14 +3,13 @@ package com.ugav.jgalgo;
 import com.ugav.jgalgo.Utils.StackIntFixSize;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
 
 public class EulerianTour {
 
 	private EulerianTour() {
 	}
 
-	public static IntList calcTour(UGraph g) {
+	public static Path calcTour(UGraph g) {
 		int n = g.vertices().size();
 
 		int start = -1, end = -1;
@@ -65,7 +64,7 @@ public class EulerianTour {
 				tour.add(e);
 				u = g.edgeEndpoint(e, u);
 			}
-			return tour;
+			return new Path(g, start, start, tour);
 
 		} finally {
 			g.removeEdgesWeights(usedEdgesKey);

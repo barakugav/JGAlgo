@@ -1,34 +1,44 @@
 package com.ugav.jgalgo;
 
+import it.unimi.dsi.fastutil.ints.IntIterable;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntLists;
 
-class PathIterImpl {
+public class Path implements IntIterable {
 
-	private PathIterImpl() {
+	private final Graph g;
+	public final int source;
+	public final int target;
+	public final IntList edges;
+
+	Path(Graph g, int source, int target, IntList edges) {
+		this.g = g;
+		this.source = source;
+		this.target = target;
+		this.edges = edges instanceof IntLists.UnmodifiableList ? edges : IntLists.unmodifiable(edges);
 	}
 
-	static class Undirected implements PathIter {
+	@Override
+	public EdgeIter iterator() {
+		if (g instanceof UGraph g0) {
+			return new IterUndirected(g0, edges, source);
+		} else if (g instanceof DiGraph g0) {
+			return new IterDirected(g0, edges);
+		} else {
+			throw new IllegalArgumentException();
+		}
+	}
+
+	private static class IterUndirected implements EdgeIter {
 
 		private final UGraph g;
 		private final IntIterator it;
 		private int e = -1, v = -1;
 
-		Undirected(UGraph g, IntList path) {
+		IterUndirected(UGraph g, IntList path, int source) {
 			this.g = g;
-			if (path.size() == 1) {
-				v = g.edgeTarget(path.getInt(0));
-			} else if (path.size() >= 2) {
-				int e0 = path.getInt(0), e1 = path.getInt(1);
-				int u0 = g.edgeSource(e0), v0 = g.edgeTarget(e0);
-				int u1 = g.edgeSource(e1), v1 = g.edgeTarget(e1);
-				if (v0 == u1 || v0 == v1) {
-					v = u0;
-				} else {
-					v = v0;
-					assert (u0 == u1 || u0 == v1) : "not a path";
-				}
-			}
+			v = source;
 			it = path.iterator();
 		}
 
@@ -38,7 +48,7 @@ class PathIterImpl {
 		}
 
 		@Override
-		public int nextEdge() {
+		public int nextInt() {
 			e = it.nextInt();
 			assert v == g.edgeSource(e) || v == g.edgeTarget(e);
 			v = g.edgeEndpoint(e, v);
@@ -57,13 +67,13 @@ class PathIterImpl {
 
 	}
 
-	static class Directed implements PathIter {
+	private static class IterDirected implements EdgeIter {
 
 		private final DiGraph g;
 		private final IntIterator it;
 		private int e = -1;
 
-		Directed(DiGraph g, IntList path) {
+		IterDirected(DiGraph g, IntList path) {
 			this.g = g;
 			it = path.iterator();
 		}
@@ -74,7 +84,7 @@ class PathIterImpl {
 		}
 
 		@Override
-		public int nextEdge() {
+		public int nextInt() {
 			int eNext = it.nextInt();
 			if (e != -1)
 				assert g.edgeTarget(e) == g.edgeSource(eNext);

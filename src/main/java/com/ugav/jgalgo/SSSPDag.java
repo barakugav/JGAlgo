@@ -7,7 +7,7 @@ public class SSSPDag implements SSSP {
 		if (!(g0 instanceof DiGraph))
 			throw new IllegalArgumentException("Only DAG graphs are supported");
 		DiGraph g = (DiGraph) g0;
-		SSSPResultImpl res = new SSSPResultImpl(g);
+		SSSPResultImpl res = new SSSPResultImpl(g, source);
 		res.distances[source] = 0;
 
 		int[] topolSort = Graphs.calcTopologicalSortingDAG(g);

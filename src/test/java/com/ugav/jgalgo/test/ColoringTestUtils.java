@@ -46,7 +46,7 @@ class ColoringTestUtils extends TestUtils {
 
 		Assertions.assertEquals(seenColorsArr.length, coloring.colorsNum(), "wrong colors num");
 
-		for (IntIterator it = g.edges().intIterator(); it.hasNext();) {
+		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			int u = g.edgeSource(e);
 			int v = g.edgeTarget(e);

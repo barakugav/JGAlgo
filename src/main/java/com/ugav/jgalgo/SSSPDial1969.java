@@ -80,7 +80,7 @@ public class SSSPDial1969 implements SSSP {
 
 		memAlloc(n, m);
 
-		SSSPResultImpl.Int res = new SSSPResultImpl.Int(g);
+		SSSPResultImpl.Int res = new SSSPResultImpl.Int(g, source);
 		DialHeap heap = this.heap;
 		DialHeap.Node[] verticesPtrs = this.verticesPtrs;
 

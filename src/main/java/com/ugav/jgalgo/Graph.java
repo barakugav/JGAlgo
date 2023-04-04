@@ -132,7 +132,7 @@ public interface Graph {
 		}
 		return new EdgeIter() {
 
-			IntIterator it = edges.intIterator();
+			IntIterator it = edges.iterator();
 
 			@Override
 			public boolean hasNext() {

@@ -42,7 +42,7 @@ public class SSSPDijkstra implements SSSP {
 		HeapDirectAccessed<HeapElm> heap = this.heap;
 		HeapDirectAccessed.Handle<HeapElm>[] verticesPtrs = this.verticesPtrs;
 
-		SSSPResultImpl res = new SSSPResultImpl(g);
+		SSSPResultImpl res = new SSSPResultImpl(g, source);
 		res.distances[source] = 0;
 
 		for (int u = source;;) {

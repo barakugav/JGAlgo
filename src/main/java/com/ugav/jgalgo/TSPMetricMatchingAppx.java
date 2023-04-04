@@ -2,7 +2,6 @@ package com.ugav.jgalgo;
 
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
-import it.unimi.dsi.fastutil.ints.IntList;
 
 public class TSPMetricMatchingAppx implements TSPMetric {
 
@@ -75,10 +74,10 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 			g1EdgeRef.set(g1Edge, mGEdgeRef.getInt(mGedge));
 		}
 
-		IntList cycle = TSPMetricUtils.calcEulerianTourAndConvertToHamiltonianCycle(g, g1, g1EdgeRef);
+		Path cycle = TSPMetricUtils.calcEulerianTourAndConvertToHamiltonianCycle(g, g1, g1EdgeRef);
 
 		/* Convert cycle of edges to list of vertices */
-		int[] res = TSPMetricUtils.edgeListToVerticesList(g, cycle).toIntArray();
+		int[] res = TSPMetricUtils.pathToVerticesList(cycle).toIntArray();
 
 		mG.clear();
 

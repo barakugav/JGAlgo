@@ -12,6 +12,7 @@ import com.ugav.jgalgo.GraphArrayUndirected;
 import com.ugav.jgalgo.Graphs;
 import com.ugav.jgalgo.MST;
 import com.ugav.jgalgo.MSTKruskal1956;
+import com.ugav.jgalgo.Path;
 import com.ugav.jgalgo.TPM;
 import com.ugav.jgalgo.UGraph;
 import com.ugav.jgalgo.Weights;
@@ -19,7 +20,6 @@ import com.ugav.jgalgo.test.GraphsTestUtils.RandomGraphBuilder;
 
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
-import it.unimi.dsi.fastutil.ints.IntList;
 
 class TPMTestUtils extends TestUtils {
 
@@ -32,7 +32,7 @@ class TPMTestUtils extends TestUtils {
 		for (int q = 0; q < queriesNum; q++) {
 			int u = queries[q * 2], v = queries[q * 2 + 1];
 
-			IntList path = Graphs.findPath(t, u, v);
+			Path path = Graphs.findPath(t, u, v);
 
 			int maxEdge = -1;
 			double maxEdgeWeight = 0;
@@ -149,8 +149,8 @@ class TPMTestUtils extends TestUtils {
 				e = edges[rand.nextInt(edges.length)];
 			} while (mstEdges.contains(e));
 
-			IntList mstPath = Graphs.findPath(mst, g.edgeSource(e), g.edgeTarget(e));
-			int edgeToRemove = mstPath.getInt(rand.nextInt(mstPath.size()));
+			Path mstPath = Graphs.findPath(mst, g.edgeSource(e), g.edgeTarget(e));
+			int edgeToRemove = mstPath.edges.getInt(rand.nextInt(mstPath.edges.size()));
 			mst.removeEdge(edgeToRemove);
 			int en = mst.addEdge(g.edgeSource(e), g.edgeTarget(e));
 			edgeRef.set(en, e);

@@ -6,7 +6,6 @@ import java.util.Objects;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.ints.IntLists;
 
 public class SSSPGoldberg1995 implements SSSP {
 
@@ -42,7 +41,7 @@ public class SSSPGoldberg1995 implements SSSP {
 			// All weights are positive, use Dijkstra
 			return positiveSsspAlgo.calcDistances(g, w, source);
 
-		Pair<int[], IntList> p = calcPotential(g, w, minWeight);
+		Pair<int[], Path> p = calcPotential(g, w, minWeight);
 		if (p.e2 != null)
 			return Result.ofNegCycle(source, p.e2);
 		int[] potential = p.e1;
@@ -51,7 +50,7 @@ public class SSSPGoldberg1995 implements SSSP {
 		return Result.ofSuccess(source, potential, res);
 	}
 
-	private static Pair<int[], IntList> calcPotential(DiGraph g, EdgeWeightFunc.Int w, int minWeight) {
+	private static Pair<int[], Path> calcPotential(DiGraph g, EdgeWeightFunc.Int w, int minWeight) {
 		int n = g.vertices().size();
 		int[] potential = new int[n];
 
@@ -105,12 +104,12 @@ public class SSSPGoldberg1995 implements SSSP {
 
 						} else if (weight < 0) {
 							// negative cycle
-							IntList negCycle0 = Graphs.findPath(gNeg, v, u);
-							negCycle0.add(e);
-							IntList negCycle = new IntArrayList(negCycle0.size());
+							Path negCycle0 = Graphs.findPath(gNeg, v, u);
+							IntList negCycle = new IntArrayList(negCycle0.edges.size() + 1);
 							for (IntIterator it = negCycle0.iterator(); it.hasNext();)
 								negCycle.add(gNegEdgeRefs.getInt(it.nextInt()));
-							return Pair.of(null, negCycle);
+							negCycle.add(gNegEdgeRefs.getInt(e));
+							return Pair.of(null, new Path(g, v, v, negCycle));
 						}
 					}
 				}
@@ -153,7 +152,7 @@ public class SSSPGoldberg1995 implements SSSP {
 					// on the path and with edge r to all other vertices
 					Arrays.fill(connected, 0, N, false);
 					int assignedWeight = layerNum - 2;
-					for (IntIterator it = ssspRes.getPathTo(vertexInMaxLayer).iterator(); it.hasNext();) {
+					for (IntIterator it = ssspRes.getPathTo(vertexInMaxLayer).edges.iterator(); it.hasNext();) {
 						int e = it.nextInt();
 						int ew = GWeights.getInt(e);
 						if (ew < 0) {
@@ -207,35 +206,35 @@ public class SSSPGoldberg1995 implements SSSP {
 		private final int sourcePotential;
 		private final int[] potential;
 		private final SSSP.Result dijkstraRes;
-		private final IntList cycle;
+		private final Path cycle;
 
-		Result(int source, int[] potential, SSSP.Result dijkstraRes, IntList cycle) {
+		Result(int source, int[] potential, SSSP.Result dijkstraRes, Path cycle) {
 			this.sourcePotential = potential != null ? potential[source] : 0;
 			this.potential = potential;
 			this.dijkstraRes = dijkstraRes;
-			this.cycle = cycle != null ? IntLists.unmodifiable(cycle) : null;
+			this.cycle = cycle;
 		}
 
 		static Result ofSuccess(int source, int[] potential, SSSP.Result dijkstraRes) {
 			return new Result(source, potential, dijkstraRes, null);
 		}
 
-		static Result ofNegCycle(int source, IntList cycle) {
+		static Result ofNegCycle(int source, Path cycle) {
 			return new Result(source, null, null, cycle);
 		}
 
 		@Override
-		public double distance(int v) {
+		public double distance(int target) {
 			if (foundNegativeCycle())
 				throw new IllegalStateException();
-			return dijkstraRes.distance(v) - sourcePotential + potential[v];
+			return dijkstraRes.distance(target) - sourcePotential + potential[target];
 		}
 
 		@Override
-		public IntList getPathTo(int v) {
+		public Path getPathTo(int target) {
 			if (foundNegativeCycle())
 				throw new IllegalStateException();
-			return dijkstraRes.getPathTo(v);
+			return dijkstraRes.getPathTo(target);
 		}
 
 		@Override
@@ -244,7 +243,7 @@ public class SSSPGoldberg1995 implements SSSP {
 		}
 
 		@Override
-		public IntList getNegativeCycle() {
+		public Path getNegativeCycle() {
 			if (!foundNegativeCycle())
 				throw new IllegalStateException();
 			return cycle;

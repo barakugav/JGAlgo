@@ -141,7 +141,7 @@ class GraphImplTestUtils extends TestUtils {
 			}
 			for (Object2IntMap.Entry<IntCollection> edge : edges.object2IntEntrySet()) {
 				IntCollection endpoints = edge.getKey();
-				IntIterator endpointsIt = endpoints.intIterator();
+				IntIterator endpointsIt = endpoints.iterator();
 				int u = endpointsIt.nextInt(), v = endpointsIt.hasNext() ? endpointsIt.nextInt() : u;
 				int e = edge.getIntValue();
 				Assertions.assertEquals(e, g.getEdge(u, v));

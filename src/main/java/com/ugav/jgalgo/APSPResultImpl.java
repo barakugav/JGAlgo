@@ -5,7 +5,6 @@ import java.util.Objects;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.ints.IntLists;
 
 abstract class APSPResultImpl implements APSP.Result {
 
@@ -20,10 +19,12 @@ abstract class APSPResultImpl implements APSP.Result {
 
 	static abstract class Abstract extends APSPResultImpl {
 
+		private final Graph g;
 		private final int[][] edges;
-		private IntList negCycle;
+		private Path negCycle;
 
 		Abstract(Graph g) {
+			this.g = g;
 			int n = g.vertices().size();
 			edges = new int[n][n];
 			for (int v = 0; v < n; v++) {
@@ -41,9 +42,9 @@ abstract class APSPResultImpl implements APSP.Result {
 			edges[source][target] = edge;
 		}
 
-		void setNegCycle(IntList cycle) {
+		void setNegCycle(Path cycle) {
 			Objects.requireNonNull(cycle);
-			this.negCycle = IntLists.unmodifiable(cycle);
+			this.negCycle = cycle;
 		}
 
 		@Override
@@ -52,22 +53,24 @@ abstract class APSPResultImpl implements APSP.Result {
 		}
 
 		@Override
-		public IntList getNegativeCycle() {
+		public Path getNegativeCycle() {
 			if (!foundNegativeCycle())
 				throw new IllegalStateException();
 			return negCycle;
+		}
+
+		Graph graph() {
+			return g;
 		}
 	}
 
 	static class Undirected extends Abstract {
 
-		private final UGraph g;
 		private final int n;
 		private final double[] distances;
 
 		Undirected(UGraph g) {
 			super(g);
-			this.g = g;
 			n = g.vertices().size();
 			distances = new double[n * (n - 1) / 2];
 			Arrays.fill(distances, Double.POSITIVE_INFINITY);
@@ -97,29 +100,32 @@ abstract class APSPResultImpl implements APSP.Result {
 		}
 
 		@Override
-		public IntList getPath(int source, int target) {
+		public Path getPath(int source, int target) {
 			if (foundNegativeCycle())
 				throw new IllegalStateException();
 			if (distance(source, target) == Double.POSITIVE_INFINITY)
 				return null;
 			IntList path = new IntArrayList();
-			while (source != target) {
-				int e = getEdgeTo(source, target);
+			for (int v = source; v != target;) {
+				int e = getEdgeTo(v, target);
 				assert e != -1;
 				path.add(e);
-				source = g.edgeEndpoint(e, source);
+				v = graph().edgeEndpoint(e, v);
 			}
-			return path;
+			return new Path(graph(), source, target, path);
+		}
+
+		@Override
+		UGraph graph() {
+			return (UGraph) super.graph();
 		}
 	}
 
 	static class Directed extends Abstract {
-		private final DiGraph g;
 		private final double[][] distances;
 
 		Directed(DiGraph g) {
 			super(g);
-			this.g = g;
 			int n = g.vertices().size();
 			distances = new double[n][n];
 			for (int v = 0; v < n; v++) {
@@ -141,20 +147,25 @@ abstract class APSPResultImpl implements APSP.Result {
 		}
 
 		@Override
-		public IntList getPath(int source, int target) {
+		public Path getPath(int source, int target) {
 			if (foundNegativeCycle())
 				throw new IllegalStateException();
 			if (distance(source, target) == Double.POSITIVE_INFINITY)
 				return null;
 			IntList path = new IntArrayList();
-			while (source != target) {
-				int e = getEdgeTo(source, target);
+			for (int v = source; v != target;) {
+				int e = getEdgeTo(v, target);
 				assert e != -1;
-				assert source == g.edgeSource(e);
+				assert v == graph().edgeSource(e);
 				path.add(e);
-				source = g.edgeTarget(e);
+				v = graph().edgeTarget(e);
 			}
-			return path;
+			return new Path(graph(), source, target, path);
+		}
+
+		@Override
+		DiGraph graph() {
+			return (DiGraph) super.graph();
 		}
 	}
 

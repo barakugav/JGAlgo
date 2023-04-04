@@ -8,12 +8,11 @@ import org.junit.jupiter.api.Assertions;
 import com.ugav.jgalgo.APSP;
 import com.ugav.jgalgo.EdgeWeightFunc;
 import com.ugav.jgalgo.Graph;
+import com.ugav.jgalgo.Path;
 import com.ugav.jgalgo.SSSP;
 import com.ugav.jgalgo.SSSPBellmanFord;
 import com.ugav.jgalgo.SSSPDijkstra;
 import com.ugav.jgalgo.test.GraphsTestUtils.RandomGraphBuilder;
-
-import it.unimi.dsi.fastutil.ints.IntList;
 
 class APSPTestUtils extends TestUtils {
 
@@ -63,13 +62,13 @@ class APSPTestUtils extends TestUtils {
 			SSSP.Result expectedRes = validationAlgo.calcDistances(g, w, source);
 
 			if (result.foundNegativeCycle()) {
-				IntList cycle = null;
+				Path cycle = null;
 				try {
 					cycle = result.getNegativeCycle();
 				} catch (UnsupportedOperationException e) {
 				}
 				if (cycle != null) {
-					double cycleWeight = SSSPTestUtils.getPathWeight(g, cycle, w);
+					double cycleWeight = SSSPTestUtils.getPathWeight(cycle, w);
 					Assertions.assertTrue(cycleWeight != Double.NaN, "Invalid cycle: " + cycle);
 					Assertions.assertTrue(cycleWeight < 0, "Cycle is not negative: " + cycle);
 					if (!expectedRes.foundNegativeCycle())
@@ -85,9 +84,9 @@ class APSPTestUtils extends TestUtils {
 				double expectedDistance = expectedRes.distance(target);
 				double actualDistance = result.distance(source, target);
 				Assertions.assertEquals(expectedDistance, actualDistance, "Distance to vertex " + target + " is wrong");
-				IntList path = result.getPath(source, target);
+				Path path = result.getPath(source, target);
 				if (path != null) {
-					double pathWeight = SSSPTestUtils.getPathWeight(g, path, w);
+					double pathWeight = SSSPTestUtils.getPathWeight(path, w);
 					Assertions.assertEquals(pathWeight, actualDistance, "Path to vertex " + target
 							+ " doesn't match distance (" + actualDistance + " != " + pathWeight + "): " + path);
 				} else {

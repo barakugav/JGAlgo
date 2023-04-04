@@ -2,7 +2,6 @@ package com.ugav.jgalgo;
 
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
-import it.unimi.dsi.fastutil.ints.IntList;
 
 public class TSPMetricMSTAppx implements TSPMetric {
 
@@ -50,11 +49,11 @@ public class TSPMetricMSTAppx implements TSPMetric {
 			edgeRef.set(g1.addEdge(u, v), e);
 		}
 
-		IntList cycle = TSPMetricUtils.calcEulerianTourAndConvertToHamiltonianCycle(g, g1, edgeRef);
-		assert cycle.size() == n;
+		Path cycle = TSPMetricUtils.calcEulerianTourAndConvertToHamiltonianCycle(g, g1, edgeRef);
+		assert cycle.edges.size() == n;
 
 		/* Convert cycle of edges to list of vertices */
-		return TSPMetricUtils.edgeListToVerticesList(g, cycle).toIntArray();
+		return TSPMetricUtils.pathToVerticesList(cycle).toIntArray();
 	}
 
 }

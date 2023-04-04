@@ -80,12 +80,12 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 
 		for (;;) {
 			sp = ssspAlgo.calcDistances(g, spWeightFunc, s);
-			IntList augPath = sp.getPathTo(t);
+			Path augPath = sp.getPathTo(t);
 			double augPathWeight = -(sp.distance(t) + potential[t]);
 			if (augPath == null || augPathWeight >= RemovedEdgeWeight || augPathWeight < 0)
 				break;
 
-			IntIterator it = augPath.iterator();
+			IntIterator it = augPath.edges.iterator();
 			// 'remove' edge from S to new matched vertex
 			edgeRef.get(it.nextInt()).w = RemovedEdgeWeight;
 			for (;;) {

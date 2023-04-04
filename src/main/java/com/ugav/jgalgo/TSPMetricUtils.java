@@ -9,7 +9,7 @@ class TSPMetricUtils {
 	private TSPMetricUtils() {
 	}
 
-	static IntList calcEulerianTourAndConvertToHamiltonianCycle(UGraph g, UGraph g1, Weights.Int edgeRef) {
+	static Path calcEulerianTourAndConvertToHamiltonianCycle(UGraph g, UGraph g1, Weights.Int edgeRef) {
 		int n = g.vertices().size();
 
 		/* Assert degree is actually even in the new graph */
@@ -17,54 +17,60 @@ class TSPMetricUtils {
 			assert g1.degree(u) % 2 == 0;
 
 		/* Calculate Eulerian tour in the new graph */
-		IntList tour = EulerianTour.calcTour(g1);
+		Path tour = EulerianTour.calcTour(g1);
 		assert isValidCycle(g1, tour);
 		assert isPathVisitEvery(g1, tour);
 
 		/* Use shortcuts to convert to a Hamiltonian cycle */
 		IntList cycle = new IntArrayList(n);
+		int firstVertex = -1, lastVertex = -1;
 		boolean[] visited = new boolean[n];
-		for (PathIter it = PathIter.of(g1, tour); it.hasNext();) {
-			int e0 = it.nextEdge();
+		for (EdgeIter it = tour.iterator(); it.hasNext();) {
+			int e0 = it.nextInt();
 			int e = edgeRef.getInt(e0);
 			final int u = it.u();
+			if (firstVertex == -1)
+				firstVertex = u;
 			visited[u] = true;
 			while (visited[it.v()] && it.hasNext()) {
-				it.nextEdge();
+				it.nextInt();
 				e = g.getEdge(u, it.v());
 			}
 			cycle.add(e);
+			lastVertex = it.v();
 		}
-		assert isValidCycle(g, cycle);
-		assert isPathVisitEvery(g, cycle);
 
-		return cycle;
+		assert firstVertex == lastVertex;
+		Path cycle0 = new Path(g, firstVertex, lastVertex, cycle);
+		assert isValidCycle(g, cycle0);
+		assert isPathVisitEvery(g, cycle0);
+		return cycle0;
 	}
 
-	static IntList edgeListToVerticesList(UGraph g, IntList edges) {
+	static IntList pathToVerticesList(Path edges) {
 		IntList res = new IntArrayList();
-		for (PathIter it = PathIter.of(g, edges); it.hasNext();) {
-			it.nextEdge();
+		for (EdgeIter it = edges.iterator(); it.hasNext();) {
+			it.nextInt();
 			res.add(it.u());
 		}
 		return res;
 	}
 
-	private static boolean isValidCycle(UGraph g, IntList path) {
-		PathIter it = PathIter.of(g, path);
-		it.nextEdge();
+	private static boolean isValidCycle(UGraph g, Path path) {
+		EdgeIter it = path.iterator();
+		it.nextInt();
 		final int begin = it.u();
 		for (;;) {
 			if (!it.hasNext())
 				return it.v() == begin;
 			int lastV = it.v();
-			it.nextEdge();
+			it.nextInt();
 			if (lastV != it.u())
 				return false;
 		}
 	}
 
-	private static boolean isPathVisitEvery(UGraph g, IntList path) {
+	private static boolean isPathVisitEvery(UGraph g, Path path) {
 		final int n = g.vertices().size();
 		boolean[] visited = new boolean[n];
 		for (IntIterator it = path.iterator(); it.hasNext();) {

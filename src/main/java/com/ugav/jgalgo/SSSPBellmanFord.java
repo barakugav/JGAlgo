@@ -1,7 +1,6 @@
 package com.ugav.jgalgo;
 
 import it.unimi.dsi.fastutil.ints.IntIterator;
-import it.unimi.dsi.fastutil.ints.IntList;
 
 public class SSSPBellmanFord implements SSSP {
 
@@ -18,7 +17,7 @@ public class SSSPBellmanFord implements SSSP {
 			throw new IllegalArgumentException("only directed graphs are supported");
 		DiGraph g = (DiGraph) g0;
 		int n = g.vertices().size();
-		Result res = new Result(g);
+		Result res = new Result(g, source);
 		if (n == 0)
 			return res;
 		res.distances[source] = 0;
@@ -52,22 +51,22 @@ public class SSSPBellmanFord implements SSSP {
 
 		private boolean negCycle;
 
-		private Result(Graph g) {
-			super(g);
+		private Result(Graph g, int source) {
+			super(g, source);
 		}
 
 		@Override
-		public double distance(int v) {
+		public double distance(int target) {
 			if (negCycle)
 				throw new IllegalStateException();
-			return super.distance(v);
+			return super.distance(target);
 		}
 
 		@Override
-		public IntList getPathTo(int v) {
+		public Path getPathTo(int target) {
 			if (negCycle)
 				throw new IllegalStateException();
-			return super.getPathTo(v);
+			return super.getPathTo(target);
 		}
 
 		@Override
@@ -76,7 +75,7 @@ public class SSSPBellmanFord implements SSSP {
 		}
 
 		@Override
-		public IntList getNegativeCycle() {
+		public Path getNegativeCycle() {
 			if (negCycle)
 				throw new UnsupportedOperationException();
 			throw new IllegalStateException("no negative cycle found");

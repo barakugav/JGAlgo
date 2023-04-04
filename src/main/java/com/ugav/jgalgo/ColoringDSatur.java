@@ -30,8 +30,8 @@ public class ColoringDSatur implements Coloring {
 		}
 
 		while (!uncolored.isEmpty()) {
-			int u = uncolored.intIterator().nextInt();
-			for (IntIterator it = uncolored.intIterator(); it.hasNext();) {
+			int u = uncolored.iterator().nextInt();
+			for (IntIterator it = uncolored.iterator(); it.hasNext();) {
 				int u1 = it.nextInt();
 				if (usedColors[u].size() < usedColors[u1].size())
 					continue;

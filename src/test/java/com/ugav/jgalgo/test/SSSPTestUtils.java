@@ -6,17 +6,16 @@ import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Assertions;
 
+import com.ugav.jgalgo.EdgeIter;
 import com.ugav.jgalgo.EdgeWeightFunc;
 import com.ugav.jgalgo.Graph;
-import com.ugav.jgalgo.PathIter;
+import com.ugav.jgalgo.Path;
 import com.ugav.jgalgo.SSSP;
 import com.ugav.jgalgo.SSSPBellmanFord;
 import com.ugav.jgalgo.SSSPDial1969;
 import com.ugav.jgalgo.SSSPDijkstra;
 import com.ugav.jgalgo.SSSPGoldberg1995;
 import com.ugav.jgalgo.test.GraphsTestUtils.RandomGraphBuilder;
-
-import it.unimi.dsi.fastutil.ints.IntList;
 
 public class SSSPTestUtils extends TestUtils {
 
@@ -81,13 +80,13 @@ public class SSSPTestUtils extends TestUtils {
 		SSSP.Result expectedRes = validationAlgo.calcDistances(g, w, source);
 
 		if (result.foundNegativeCycle()) {
-			IntList cycle = null;
+			Path cycle = null;
 			try {
 				cycle = result.getNegativeCycle();
 			} catch (UnsupportedOperationException e) {
 			}
 			if (cycle != null) {
-				double cycleWeight = getPathWeight(g, cycle, w);
+				double cycleWeight = getPathWeight(cycle, w);
 				Assertions.assertTrue(cycleWeight != Double.NaN, "Invalid cycle: " + cycle);
 				Assertions.assertTrue(cycleWeight < 0, "Cycle is not negative: " + cycle);
 				if (!expectedRes.foundNegativeCycle())
@@ -104,9 +103,9 @@ public class SSSPTestUtils extends TestUtils {
 			double expectedDistance = expectedRes.distance(v);
 			double actualDistance = result.distance(v);
 			Assertions.assertEquals(expectedDistance, actualDistance, "Distance to vertex " + v + " is wrong");
-			IntList path = result.getPathTo(v);
+			Path path = result.getPathTo(v);
 			if (path != null) {
-				double pathWeight = getPathWeight(g, path, w);
+				double pathWeight = getPathWeight(path, w);
 				Assertions.assertEquals(pathWeight, actualDistance, "Path to vertex " + v + " doesn't match distance ("
 						+ actualDistance + " != " + pathWeight + "): " + path);
 			} else {
@@ -116,10 +115,10 @@ public class SSSPTestUtils extends TestUtils {
 		}
 	}
 
-	static double getPathWeight(Graph g, IntList path, EdgeWeightFunc w) {
+	static double getPathWeight(Path path, EdgeWeightFunc w) {
 		double totalWeight = 0;
-		for (PathIter it = PathIter.of(g, path); it.hasNext();)
-			totalWeight += w.weight(it.nextEdge());
+		for (EdgeIter it = path.iterator(); it.hasNext();)
+			totalWeight += w.weight(it.nextInt());
 		return totalWeight;
 	}
 

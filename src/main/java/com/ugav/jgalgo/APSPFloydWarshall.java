@@ -105,9 +105,9 @@ public class APSPFloydWarshall implements APSP {
 					continue;
 				if (d1 + d2 < 0) {
 					IntList negCycle = new IntArrayList();
-					negCycle.addAll(res.getPath(u, v));
-					negCycle.addAll(res.getPath(v, u));
-					res.setNegCycle(negCycle);
+					negCycle.addAll(res.getPath(u, v).edges);
+					negCycle.addAll(res.getPath(v, u).edges);
+					res.setNegCycle(new Path(res.graph(), u, u, negCycle));
 					return;
 				}
 			}

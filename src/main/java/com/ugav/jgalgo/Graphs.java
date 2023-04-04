@@ -11,7 +11,7 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
-import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntLists;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 public class Graphs {
@@ -31,32 +31,32 @@ public class Graphs {
 	 * @return list of edges that represent a valid path from u to v, null if path
 	 *         not found
 	 */
-	public static IntList findPath(Graph g, int u, int v) {
-		IntArrayList path = new IntArrayList();
+	public static Path findPath(Graph g, final int u, final int v) {
 		if (u == v)
-			return path;
+			return new Path(g, u, v, IntLists.emptyList());
 		boolean reverse = true;
+		int u0 = u, v0 = v;
 		if (g instanceof UGraph) {
-			int t = u;
-			u = v;
-			v = t;
+			u0 = v;
+			v0 = u;
 			reverse = false;
 		}
 		int n = g.vertices().size();
 		int[] backtrack = new int[n];
 		Arrays.fill(backtrack, -1);
 
-		for (BFSIter it = new BFSIter(g, u); it.hasNext();) {
+		IntArrayList path = new IntArrayList();
+		for (BFSIter it = new BFSIter(g, u0); it.hasNext();) {
 			int p = it.nextInt();
 			backtrack[p] = it.inEdge();
-			if (p == v)
+			if (p == v0)
 				break;
 		}
 
-		if (backtrack[v] == -1)
+		if (backtrack[v0] == -1)
 			return null;
 
-		for (int p = v; p != u;) {
+		for (int p = v0; p != u0;) {
 			int e = backtrack[p];
 			path.add(e);
 			p = g.edgeEndpoint(e, p);
@@ -64,7 +64,7 @@ public class Graphs {
 
 		if (reverse)
 			IntArrays.reverse(path.elements(), 0, path.size());
-		return path;
+		return new Path(g, u, v, path);
 	}
 
 	public static boolean isTree(UGraph g) {

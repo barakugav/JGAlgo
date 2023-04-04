@@ -3,7 +3,6 @@ package com.ugav.jgalgo;
 import java.util.Objects;
 import java.util.function.IntToDoubleFunction;
 
-import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntLists;
 
 public class AStar {
@@ -18,15 +17,15 @@ public class AStar {
 		this.heapBuilder = Objects.requireNonNull(heapBuilder);
 	}
 
-	public IntList calcPath(Graph g, EdgeWeightFunc w, int source, int target, IntToDoubleFunction vHeuristic) {
+	public Path calcPath(Graph g, EdgeWeightFunc w, int source, int target, IntToDoubleFunction vHeuristic) {
 		if (source == target)
-			return IntLists.emptyList();
+			return new Path(g, source, target, IntLists.emptyList());
 		int n = g.vertices().size();
 		HeapDirectAccessed<HeapElm> heap = heapBuilder.build();
 		@SuppressWarnings("unchecked")
 		HeapDirectAccessed.Handle<HeapElm>[] verticesPtrs = new HeapDirectAccessed.Handle[n];
 
-		SSSPResultImpl res = new SSSPResultImpl(g);
+		SSSPResultImpl res = new SSSPResultImpl(g, source);
 		res.distances[source] = 0;
 
 		for (int u = source;;) {

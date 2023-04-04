@@ -1,7 +1,5 @@
 package com.ugav.jgalgo;
 
-import it.unimi.dsi.fastutil.ints.IntList;
-
 /* Single Source Shortest Path */
 public interface SSSP {
 
@@ -9,13 +7,13 @@ public interface SSSP {
 
 	public static interface Result {
 
-		public double distance(int v);
+		public double distance(int target);
 
-		public IntList getPathTo(int v);
+		public Path getPathTo(int target);
 
 		public boolean foundNegativeCycle();
 
-		public IntList getNegativeCycle();
+		public Path getNegativeCycle();
 
 	}
 

@@ -1,7 +1,5 @@
 package com.ugav.jgalgo;
 
-import it.unimi.dsi.fastutil.ints.IntList;
-
 public interface APSP {
 
 	public APSP.Result calcDistances(Graph g, EdgeWeightFunc w);
@@ -10,11 +8,11 @@ public interface APSP {
 
 		public double distance(int source, int target);
 
-		public IntList getPath(int source, int target);
+		public Path getPath(int source, int target);
 
 		public boolean foundNegativeCycle();
 
-		public IntList getNegativeCycle();
+		public Path getNegativeCycle();
 	}
 
 }
