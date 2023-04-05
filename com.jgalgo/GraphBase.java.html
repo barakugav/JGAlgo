@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GraphBase.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jgalgo</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">GraphBase.java</span></div><h1>GraphBase.java</h1><pre class="source lang-java linenums">package com.jgalgo;
+
+import java.util.Collection;
+import java.util.Objects;
+import java.util.Set;
+
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntSet;
+
+abstract class GraphBase implements Graph {
+
+	final IDStrategy verticesIDStrategy;
+	final IDStrategy edgesIDStrategy;
+	private final GraphCapabilities capabilities;
+
+<span class="fc" id="L16">	GraphBase(IDStrategy verticesIDStrategy, IDStrategy edgesIDStrategy, GraphCapabilities capabilities) {</span>
+<span class="fc" id="L17">		this.verticesIDStrategy = Objects.requireNonNull(verticesIDStrategy);</span>
+<span class="fc" id="L18">		this.edgesIDStrategy = Objects.requireNonNull(edgesIDStrategy);</span>
+<span class="fc" id="L19">		this.capabilities = Objects.requireNonNull(capabilities);</span>
+<span class="fc" id="L20">	}</span>
+
+	@Override
+	public final IntSet vertices() {
+<span class="fc" id="L24">		return verticesIDStrategy.idSet();</span>
+	}
+
+	@Override
+	public final IntSet edges() {
+<span class="fc" id="L29">		return edgesIDStrategy.idSet();</span>
+	}
+
+	@Override
+	public void clear() {
+<span class="fc" id="L34">		clearEdges();</span>
+<span class="fc" id="L35">		verticesIDStrategy.clear();</span>
+<span class="fc" id="L36">	}</span>
+
+	@Override
+	public void clearEdges() {
+<span class="fc" id="L40">		edgesIDStrategy.clear();</span>
+<span class="fc" id="L41">	}</span>
+
+	@Override
+	public Weights.Factory addVerticesWeight(Object key) {
+<span class="fc" id="L45">		return new WeightsFactoryVertices(key);</span>
+	}
+
+	@Override
+	public Weights.Factory addEdgesWeight(Object key) {
+<span class="fc" id="L50">		return new WeightsFactoryEdges(key);</span>
+	}
+
+	abstract &lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT addVerticesWeights(Object key, WeightsT weights);
+
+	abstract &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT addEdgesWeights(Object key, WeightsT weights);
+
+	@Override
+	public IDStrategy getVerticesIDStrategy() {
+<span class="fc" id="L59">		return verticesIDStrategy;</span>
+	}
+
+	@Override
+	public IDStrategy getEdgesIDStrategy() {
+<span class="fc" id="L64">		return edgesIDStrategy;</span>
+	}
+
+	@Override
+	public GraphCapabilities getCapabilities() {
+<span class="fc" id="L69">		return capabilities;</span>
+	}
+
+	@Override
+	public boolean equals(Object other) {
+<span class="nc bnc" id="L74" title="All 2 branches missed.">		if (other == this)</span>
+<span class="nc" id="L75">			return true;</span>
+<span class="nc bnc" id="L76" title="All 2 branches missed.">		if (!(other instanceof Graph))</span>
+<span class="nc" id="L77">			return false;</span>
+<span class="nc" id="L78">		Graph o = (Graph) other;</span>
+
+<span class="nc bnc" id="L80" title="All 2 branches missed.">		if ((this instanceof DiGraph) != (o instanceof DiGraph))</span>
+<span class="nc" id="L81">			return false;</span>
+<span class="nc bnc" id="L82" title="All 4 branches missed.">		if (vertices().size() != o.vertices().size() || edges().size() != o.edges().size())</span>
+<span class="nc" id="L83">			return false;</span>
+
+<span class="nc" id="L85">		boolean isDirected = (this instanceof DiGraph);</span>
+<span class="nc bnc" id="L86" title="All 2 branches missed.">		if (isDirected) {</span>
+<span class="nc bnc" id="L87" title="All 2 branches missed.">			for (IntIterator it = edges().iterator(); it.hasNext();) {</span>
+<span class="nc" id="L88">				int e = it.nextInt();</span>
+<span class="nc" id="L89">				int u1 = edgeSource(e), v1 = edgeTarget(e);</span>
+<span class="nc" id="L90">				int u2 = o.edgeSource(e), v2 = o.edgeTarget(e);</span>
+<span class="nc bnc" id="L91" title="All 4 branches missed.">				if (!(u1 == u2 &amp;&amp; v1 == v2))</span>
+<span class="nc" id="L92">					return false;</span>
+<span class="nc" id="L93">			}</span>
+		} else {
+<span class="nc bnc" id="L95" title="All 2 branches missed.">			for (IntIterator it = edges().iterator(); it.hasNext();) {</span>
+<span class="nc" id="L96">				int e = it.nextInt();</span>
+<span class="nc" id="L97">				int u1 = edgeSource(e), v1 = edgeTarget(e);</span>
+<span class="nc" id="L98">				int u2 = o.edgeSource(e), v2 = o.edgeTarget(e);</span>
+<span class="nc bnc" id="L99" title="All 8 branches missed.">				if (!((u1 == u2 &amp;&amp; v1 == v2) || (u1 == v2 &amp;&amp; v1 == u2)))</span>
+<span class="nc" id="L100">					return false;</span>
+<span class="nc" id="L101">			}</span>
+		}
+
+<span class="nc" id="L104">		Set&lt;Object&gt; vwKeys = getVerticesWeightKeys();</span>
+<span class="nc bnc" id="L105" title="All 2 branches missed.">		if (!vwKeys.equals(o.getVerticesWeightKeys()))</span>
+<span class="nc" id="L106">			return false;</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">		for (Object weightKey : vwKeys)</span>
+<span class="nc bnc" id="L108" title="All 2 branches missed.">			if (!verticesWeight(weightKey).equals(o.verticesWeight(weightKey)))</span>
+<span class="nc" id="L109">				return false;</span>
+
+<span class="nc" id="L111">		Set&lt;Object&gt; ewKeys = getEdgesWeightsKeys();</span>
+<span class="nc bnc" id="L112" title="All 2 branches missed.">		if (!ewKeys.equals(o.getEdgesWeightsKeys()))</span>
+<span class="nc" id="L113">			return false;</span>
+<span class="nc bnc" id="L114" title="All 2 branches missed.">		for (Object weightKey : ewKeys)</span>
+<span class="nc bnc" id="L115" title="All 2 branches missed.">			if (!edgesWeight(weightKey).equals(o.edgesWeight(weightKey)))</span>
+<span class="nc" id="L116">				return false;</span>
+
+<span class="nc" id="L118">		return true;</span>
+	}
+
+	@Override
+	public int hashCode() {
+<span class="nc" id="L123">		int vWeightsHash = 1 + vertices().size();</span>
+<span class="nc bnc" id="L124" title="All 2 branches missed.">		for (Weights&lt;?&gt; vWeight : getVerticesWeights())</span>
+<span class="nc" id="L125">			vWeightsHash = vWeightsHash * 31 + vWeight.hashCode();</span>
+
+<span class="nc" id="L127">		int edgesHash = 1;</span>
+<span class="nc bnc" id="L128" title="All 2 branches missed.">		if (this instanceof DiGraph) {</span>
+<span class="nc bnc" id="L129" title="All 2 branches missed.">			for (IntIterator it = edges().iterator(); it.hasNext();) {</span>
+<span class="nc" id="L130">				int e = it.nextInt();</span>
+<span class="nc" id="L131">				edgesHash = edgesHash * 31 + edgeSource(e);</span>
+<span class="nc" id="L132">				edgesHash = edgesHash * 31 + edgeTarget(e);</span>
+<span class="nc" id="L133">			}</span>
+		} else {
+<span class="nc bnc" id="L135" title="All 2 branches missed.">			for (IntIterator it = edges().iterator(); it.hasNext();) {</span>
+<span class="nc" id="L136">				int e = it.nextInt();</span>
+<span class="nc" id="L137">				int u = edgeSource(e), v = edgeTarget(e);</span>
+<span class="nc bnc" id="L138" title="All 2 branches missed.">				if (u &gt; v) {</span>
+<span class="nc" id="L139">					int temp = u;</span>
+<span class="nc" id="L140">					u = v;</span>
+<span class="nc" id="L141">					v = temp;</span>
+				}
+<span class="nc" id="L143">				edgesHash = edgesHash * 31 + u;</span>
+<span class="nc" id="L144">				edgesHash = edgesHash * 31 + v;</span>
+<span class="nc" id="L145">			}</span>
+		}
+
+<span class="nc" id="L148">		int eWeightsHash = 1;</span>
+<span class="nc bnc" id="L149" title="All 2 branches missed.">		for (Weights&lt;?&gt; eWeight : getEdgesWeights())</span>
+<span class="nc" id="L150">			eWeightsHash = eWeightsHash * 31 + eWeight.hashCode();</span>
+
+<span class="nc" id="L152">		int h = 1;</span>
+<span class="nc" id="L153">		h = h * 31 + vWeightsHash;</span>
+<span class="nc" id="L154">		h = h * 31 + edgesHash;</span>
+<span class="nc" id="L155">		h = h * 31 + eWeightsHash;</span>
+<span class="nc" id="L156">		return h;</span>
+	}
+
+	@Override
+	public String toString() {
+<span class="nc" id="L161">		StringBuilder s = new StringBuilder();</span>
+<span class="nc" id="L162">		s.append('{');</span>
+<span class="nc" id="L163">		int n = vertices().size();</span>
+<span class="nc" id="L164">		Collection&lt;Weights&lt;?&gt;&gt; weights = getEdgesWeights();</span>
+
+<span class="nc" id="L166">		boolean firstVertex = true;</span>
+<span class="nc bnc" id="L167" title="All 2 branches missed.">		for (int u = 0; u &lt; n; u++) {</span>
+<span class="nc bnc" id="L168" title="All 2 branches missed.">			if (firstVertex) {</span>
+<span class="nc" id="L169">				firstVertex = false;</span>
+			} else {
+<span class="nc" id="L171">				s.append(&quot;, &quot;);</span>
+			}
+<span class="nc" id="L173">			s.append(&quot;&lt;v&quot; + u + &quot;&gt;-&gt;[&quot;);</span>
+
+<span class="nc" id="L175">			boolean firstEdge = true;</span>
+<span class="nc bnc" id="L176" title="All 2 branches missed.">			for (EdgeIter eit = edges(u); eit.hasNext();) {</span>
+<span class="nc" id="L177">				int e = eit.nextInt();</span>
+<span class="nc" id="L178">				int v = eit.v();</span>
+<span class="nc bnc" id="L179" title="All 2 branches missed.">				if (firstEdge)</span>
+<span class="nc" id="L180">					firstEdge = false;</span>
+				else
+<span class="nc" id="L182">					s.append(&quot;, &quot;);</span>
+<span class="nc" id="L183">				s.append(&quot;(&quot; + u + &quot;, &quot; + v + &quot;)&quot;);</span>
+<span class="nc bnc" id="L184" title="All 2 branches missed.">				if (!weights.isEmpty()) {</span>
+<span class="nc" id="L185">					s.append('[');</span>
+<span class="nc" id="L186">					boolean firstData = true;</span>
+<span class="nc bnc" id="L187" title="All 2 branches missed.">					for (Weights&lt;?&gt; weight : weights) {</span>
+<span class="nc bnc" id="L188" title="All 2 branches missed.">						if (firstData) {</span>
+<span class="nc" id="L189">							firstData = false;</span>
+						} else {
+<span class="nc" id="L191">							s.append(&quot;, &quot;);</span>
+						}
+<span class="nc" id="L193">						s.append(String.valueOf(weight.get(e)));</span>
+<span class="nc" id="L194">					}</span>
+<span class="nc" id="L195">					s.append(']');</span>
+				}
+<span class="nc" id="L197">			}</span>
+<span class="nc" id="L198">			s.append(&quot;]&quot;);</span>
+		}
+<span class="nc" id="L200">		s.append('}');</span>
+<span class="nc" id="L201">		return s.toString();</span>
+	}
+
+	private abstract class WeightsFactoryBase implements Weights.Factory {
+		final Object key;
+		private Object defVal;
+
+<span class="fc" id="L208">		WeightsFactoryBase(Object key) {</span>
+<span class="fc" id="L209">			this.key = key;</span>
+<span class="fc" id="L210">		}</span>
+
+		@Override
+		public Object getDefVal() {
+<span class="fc" id="L214">			return defVal;</span>
+		}
+
+		@Override
+		public Weights.Factory defVal(Object defVal) {
+<span class="fc" id="L219">			this.defVal = defVal;</span>
+<span class="fc" id="L220">			return this;</span>
+		}
+
+		@Override
+		public &lt;E&gt; Weights&lt;E&gt; ofObjs() {
+			@SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L226">			E defVal = (E) getDefVal();</span>
+<span class="fc" id="L227">			return addWeights(new DataContainer.Obj&lt;&gt;(expectedSize(), defVal));</span>
+		}
+
+		@Override
+		public Weights.Int ofInts() {
+<span class="fc" id="L232">			Integer defVal0 = (Integer) getDefVal();</span>
+<span class="fc bfc" id="L233" title="All 2 branches covered.">			int defVal = defVal0 != null ? defVal0.intValue() : 0;</span>
+<span class="fc" id="L234">			return addWeights(new DataContainer.Int(expectedSize(), defVal));</span>
+		}
+
+		@Override
+		public Weights.Long ofLongs() {
+<span class="nc" id="L239">			Long defVal0 = (Long) getDefVal();</span>
+<span class="nc bnc" id="L240" title="All 2 branches missed.">			long defVal = defVal0 != null ? defVal0.longValue() : 0;</span>
+<span class="nc" id="L241">			return addWeights(new DataContainer.Long(expectedSize(), defVal));</span>
+		}
+
+		@Override
+		public Weights.Double ofDoubles() {
+<span class="fc" id="L246">			Double defVal0 = (Double) getDefVal();</span>
+<span class="pc bpc" id="L247" title="1 of 2 branches missed.">			double defVal = defVal0 != null ? defVal0.doubleValue() : 0;</span>
+<span class="fc" id="L248">			return addWeights(new DataContainer.Double(expectedSize(), defVal));</span>
+		}
+
+		@Override
+		public Weights.Bool ofBools() {
+<span class="fc" id="L253">			Boolean defVal0 = (Boolean) getDefVal();</span>
+<span class="fc bfc" id="L254" title="All 2 branches covered.">			boolean defVal = defVal0 != null ? defVal0.booleanValue() : false;</span>
+<span class="fc" id="L255">			return addWeights(new DataContainer.Bool(expectedSize(), defVal));</span>
+		}
+
+		abstract int expectedSize();
+
+		abstract &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT addWeights(DataContainer&lt;E&gt; container);
+
+		void addAllIndices(DataContainer&lt;?&gt; container) {
+<span class="fc" id="L263">			int n = expectedSize();</span>
+<span class="fc" id="L264">			container.ensureCapacity(n);</span>
+<span class="fc bfc" id="L265" title="All 2 branches covered.">			for (int idx = 0; idx &lt; n; idx++)</span>
+<span class="fc" id="L266">				container.add(idx);</span>
+<span class="fc" id="L267">		}</span>
+
+		@SuppressWarnings(&quot;unchecked&quot;)
+		static &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT wrapContainer(DataContainer&lt;E&gt; container0,
+				IDStrategy idStrat) {
+<span class="fc" id="L272">			boolean isContinues = idStrat instanceof IDStrategy.Continues;</span>
+<span class="fc bfc" id="L273" title="All 2 branches covered.">			if (container0 instanceof DataContainer.Obj&lt;E&gt; container) {</span>
+<span class="fc bfc" id="L274" title="All 2 branches covered.">				if (isContinues) {</span>
+<span class="fc" id="L275">					return (WeightsT) new WeightsImpl.Direct.Obj&lt;&gt;(container);</span>
+				} else {
+<span class="fc" id="L277">					return (WeightsT) new WeightsImpl.Mapped.Obj&lt;&gt;(container, idStrat);</span>
+				}
+<span class="fc bfc" id="L279" title="All 2 branches covered.">			} else if (container0 instanceof DataContainer.Int container) {</span>
+<span class="pc bpc" id="L280" title="1 of 2 branches missed.">				if (isContinues) {</span>
+<span class="fc" id="L281">					return (WeightsT) new WeightsImpl.Direct.Int(container);</span>
+				} else {
+<span class="nc" id="L283">					return (WeightsT) new WeightsImpl.Mapped.Int(container, idStrat);</span>
+				}
+<span class="pc bpc" id="L285" title="1 of 2 branches missed.">			} else if (container0 instanceof DataContainer.Long container) {</span>
+<span class="nc bnc" id="L286" title="All 2 branches missed.">				if (isContinues) {</span>
+<span class="nc" id="L287">					return (WeightsT) new WeightsImpl.Direct.Long(container);</span>
+				} else {
+<span class="nc" id="L289">					return (WeightsT) new WeightsImpl.Mapped.Long(container, idStrat);</span>
+				}
+<span class="fc bfc" id="L291" title="All 2 branches covered.">			} else if (container0 instanceof DataContainer.Double container) {</span>
+<span class="pc bpc" id="L292" title="1 of 2 branches missed.">				if (isContinues) {</span>
+<span class="fc" id="L293">					return (WeightsT) new WeightsImpl.Direct.Double(container);</span>
+				} else {
+<span class="nc" id="L295">					return (WeightsT) new WeightsImpl.Mapped.Double(container, idStrat);</span>
+				}
+<span class="pc bpc" id="L297" title="1 of 2 branches missed.">			} else if (container0 instanceof DataContainer.Bool container) {</span>
+<span class="pc bpc" id="L298" title="1 of 2 branches missed.">				if (isContinues) {</span>
+<span class="fc" id="L299">					return (WeightsT) new WeightsImpl.Direct.Bool(container);</span>
+				} else {
+<span class="nc" id="L301">					return (WeightsT) new WeightsImpl.Mapped.Bool(container, idStrat);</span>
+				}
+			} else {
+<span class="nc" id="L304">				throw new IllegalArgumentException(container0.getClass().toString());</span>
+			}
+		}
+	}
+
+	private class WeightsFactoryVertices extends WeightsFactoryBase {
+<span class="fc" id="L310">		WeightsFactoryVertices(Object key) {</span>
+<span class="fc" id="L311">			super(key);</span>
+<span class="fc" id="L312">		}</span>
+
+		@Override
+		int expectedSize() {
+<span class="fc" id="L316">			return vertices().size();</span>
+		}
+
+		@Override
+		&lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT addWeights(DataContainer&lt;E&gt; container) {
+<span class="fc" id="L321">			addAllIndices(container);</span>
+<span class="fc" id="L322">			WeightsT weights = wrapContainer(container, getVerticesIDStrategy());</span>
+<span class="fc" id="L323">			return addVerticesWeights(key, weights);</span>
+		}
+	}
+
+	private class WeightsFactoryEdges extends WeightsFactoryBase {
+<span class="fc" id="L328">		WeightsFactoryEdges(Object key) {</span>
+<span class="fc" id="L329">			super(key);</span>
+<span class="fc" id="L330">		}</span>
+
+		@Override
+		int expectedSize() {
+<span class="fc" id="L334">			return edges().size();</span>
+		}
+
+		@Override
+		&lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT addWeights(DataContainer&lt;E&gt; container) {
+<span class="fc" id="L339">			addAllIndices(container);</span>
+<span class="fc" id="L340">			WeightsT weights = wrapContainer(container, getEdgesIDStrategy());</span>
+<span class="fc" id="L341">			return addEdgesWeights(key, weights);</span>
+		}
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

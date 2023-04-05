@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RMQGabowBentleyTarjan1984.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jgalgo</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">RMQGabowBentleyTarjan1984.java</span></div><h1>RMQGabowBentleyTarjan1984.java</h1><pre class="source lang-java linenums">package com.jgalgo;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
+public class RMQGabowBentleyTarjan1984 extends RMQLinearAbstract {
+
+	/*
+	 * Extends the abstract linear implementation of RMQ and solves the inner block
+	 * query by calculating in advance all the possible blocks, and creating a naive
+	 * lookup table for each one of them.
+	 *
+	 * Each block is essentially equivalent to another if the Cartesian tree of it
+	 * is the same. The number of Cartesian trees of size n the Catalan number n,
+	 * which is bounded by 4^n.
+	 *
+	 * We define the block size to be logn/4, and the preprocessing time is still
+	 * O(n).
+	 *
+	 * O(n) preprocessing time, O(n) space, O(1) query.
+	 */
+
+	private RMQ[] interBlocksDs;
+
+<span class="fc" id="L26">	public RMQGabowBentleyTarjan1984() {</span>
+<span class="fc" id="L27">	}</span>
+
+	@Override
+	public void preprocessRMQ(RMQ.Comparator c, int n) {
+<span class="pc bpc" id="L31" title="1 of 2 branches missed.">		if (n &lt;= 0)</span>
+<span class="nc" id="L32">			throw new IllegalArgumentException();</span>
+<span class="fc" id="L33">		Objects.requireNonNull(c);</span>
+
+<span class="fc" id="L35">		interBlocksDs = new RMQ[calcBlockNum(n, getBlockSize(n))];</span>
+<span class="fc" id="L36">		preprocessRMQOuterBlocks(c, n);</span>
+<span class="fc" id="L37">		preprocessRMQInnerBlocks();</span>
+<span class="fc" id="L38">	}</span>
+
+	private void preprocessRMQInnerBlocks() {
+<span class="fc" id="L41">		Map&lt;Integer, RMQ&gt; tables = new HashMap&lt;&gt;();</span>
+
+<span class="fc bfc" id="L43" title="All 2 branches covered.">		for (int b = 0; b &lt; blockNum; b++) {</span>
+<span class="fc" id="L44">			int key = calcBlockKey(b);</span>
+
+<span class="fc" id="L46">			interBlocksDs[b] = tables.computeIfAbsent(Integer.valueOf(key), k -&gt; {</span>
+<span class="fc" id="L47">				int[] demoBlock = calcDemoBlock(k.intValue(), blockSize);</span>
+<span class="fc" id="L48">				RMQ innerRMQ = new RMQLookupTable();</span>
+<span class="fc" id="L49">				innerRMQ.preprocessRMQ(new ArrayIntComparator(demoBlock), demoBlock.length);</span>
+<span class="fc" id="L50">				return innerRMQ;</span>
+			});
+		}
+<span class="fc" id="L53">	}</span>
+
+	private int calcBlockKey(int b) {
+<span class="fc" id="L56">		int[] nodes = new int[blockSize];</span>
+<span class="fc" id="L57">		int nodesCount = 0;</span>
+
+<span class="fc" id="L59">		int key = 0;</span>
+<span class="fc" id="L60">		int keyIdx = 0;</span>
+
+<span class="fc" id="L62">		int base = b * blockSize;</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">		for (int i = 0; i &lt; blockSize; i++) {</span>
+<span class="fc" id="L64">			int x = base + i;</span>
+<span class="fc bfc" id="L65" title="All 4 branches covered.">			while (nodesCount &gt; 0 &amp;&amp; c.compare(x, nodes[nodesCount - 1]) &lt; 0) {</span>
+<span class="fc" id="L66">				nodesCount--;</span>
+<span class="fc" id="L67">				key |= 1 &lt;&lt; (keyIdx++);</span>
+			}
+<span class="fc" id="L69">			nodes[nodesCount++] = x;</span>
+<span class="fc" id="L70">			keyIdx++;</span>
+		}
+
+<span class="fc" id="L73">		return key;</span>
+	}
+
+	private static int[] calcDemoBlock(int key, int blockSize) {
+<span class="fc" id="L77">		int[] demoBlock = new int[blockSize];</span>
+
+<span class="fc" id="L79">		int[] nodes = new int[blockSize];</span>
+<span class="fc" id="L80">		int nodesCount = 0;</span>
+
+<span class="fc" id="L82">		int keyIdx = 0;</span>
+
+<span class="fc bfc" id="L84" title="All 2 branches covered.">		for (int i = 0; i &lt; demoBlock.length; i++) {</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">			int x = nodesCount &gt; 0 ? nodes[nodesCount - 1] + blockSize : 0;</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">			while ((key &amp; (1 &lt;&lt; keyIdx)) != 0) {</span>
+<span class="fc" id="L87">				x = nodes[nodesCount-- - 1] - 1;</span>
+<span class="fc" id="L88">				keyIdx++;</span>
+			}
+<span class="fc" id="L90">			nodes[nodesCount++] = x;</span>
+<span class="fc" id="L91">			keyIdx++;</span>
+
+<span class="fc" id="L93">			demoBlock[i] = x;</span>
+		}
+
+<span class="fc" id="L96">		return demoBlock;</span>
+	}
+
+	@Override
+	int getBlockSize(int n) {
+<span class="fc" id="L101">		return (int) Math.ceil(Utils.log2((double) n) / 4);</span>
+	}
+
+	@Override
+	int calcRMQInnerBlock(int block, int i, int j) {
+<span class="fc" id="L106">		return block * blockSize + interBlocksDs[block].calcRMQ(i, j + 1);</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

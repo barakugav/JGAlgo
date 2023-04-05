@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SSSPDijkstra.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jgalgo</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">SSSPDijkstra.java</span></div><h1>SSSPDijkstra.java</h1><pre class="source lang-java linenums">package com.jgalgo;
+
+import java.util.Arrays;
+
+public class SSSPDijkstra implements SSSP {
+
+	/*
+	 * O(m + n log n)
+	 */
+
+	private int allocSize;
+	private final HeapDirectAccessed&lt;HeapElm&gt; heap;
+	private HeapDirectAccessed.Handle&lt;HeapElm&gt;[] verticesPtrs;
+
+	public SSSPDijkstra() {
+<span class="fc" id="L16">		this(HeapPairing::new);</span>
+<span class="fc" id="L17">	}</span>
+
+<span class="fc" id="L19">	public SSSPDijkstra(HeapDirectAccessed.Builder heapBuilder) {</span>
+<span class="fc" id="L20">		allocSize = 0;</span>
+<span class="fc" id="L21">		heap = heapBuilder.build();</span>
+<span class="fc" id="L22">	}</span>
+
+	@SuppressWarnings(&quot;unchecked&quot;)
+	private void memAlloc(int n) {
+<span class="fc bfc" id="L26" title="All 2 branches covered.">		if (allocSize &lt; n) {</span>
+<span class="fc" id="L27">			verticesPtrs = new HeapDirectAccessed.Handle[n];</span>
+<span class="fc" id="L28">			allocSize = n;</span>
+		}
+<span class="fc" id="L30">	}</span>
+
+	private void memClear(int n) {
+<span class="fc" id="L33">		heap.clear();</span>
+<span class="fc" id="L34">		Arrays.fill(verticesPtrs, 0, n, null);</span>
+<span class="fc" id="L35">	}</span>
+
+	@Override
+	public SSSP.Result calcDistances(Graph g, EdgeWeightFunc w, int source) {
+<span class="fc" id="L39">		int n = g.vertices().size();</span>
+
+<span class="fc" id="L41">		memAlloc(n);</span>
+<span class="fc" id="L42">		HeapDirectAccessed&lt;HeapElm&gt; heap = this.heap;</span>
+<span class="fc" id="L43">		HeapDirectAccessed.Handle&lt;HeapElm&gt;[] verticesPtrs = this.verticesPtrs;</span>
+
+<span class="fc" id="L45">		SSSPResultImpl res = new SSSPResultImpl(g, source);</span>
+<span class="fc" id="L46">		res.distances[source] = 0;</span>
+
+<span class="fc" id="L48">		for (int u = source;;) {</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">			for (EdgeIter eit = g.edges(u); eit.hasNext();) {</span>
+<span class="fc" id="L50">				int e = eit.nextInt();</span>
+<span class="fc" id="L51">				int v = eit.v();</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">				if (res.distances[v] != Double.POSITIVE_INFINITY)</span>
+<span class="fc" id="L53">					continue;</span>
+<span class="fc" id="L54">				double ws = w.weight(e);</span>
+<span class="pc bpc" id="L55" title="1 of 2 branches missed.">				if (ws &lt; 0)</span>
+<span class="nc" id="L56">					throw new IllegalArgumentException(&quot;negative weights are not supported&quot;);</span>
+<span class="fc" id="L57">				double distance = res.distances[u] + ws;</span>
+
+<span class="fc" id="L59">				HeapDirectAccessed.Handle&lt;HeapElm&gt; vPtr = verticesPtrs[v];</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">				if (vPtr == null) {</span>
+<span class="fc" id="L61">					verticesPtrs[v] = heap.insert(new HeapElm(distance, v));</span>
+<span class="fc" id="L62">					res.backtrack[v] = e;</span>
+				} else {
+<span class="fc" id="L64">					HeapElm ptr = vPtr.get();</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">					if (distance &lt; ptr.distance) {</span>
+<span class="fc" id="L66">						ptr.distance = distance;</span>
+<span class="fc" id="L67">						res.backtrack[v] = e;</span>
+<span class="fc" id="L68">						heap.decreaseKey(vPtr, ptr);</span>
+					}
+				}
+<span class="fc" id="L71">			}</span>
+
+<span class="fc bfc" id="L73" title="All 2 branches covered.">			if (heap.isEmpty())</span>
+<span class="fc" id="L74">				break;</span>
+<span class="fc" id="L75">			HeapElm next = heap.extractMin();</span>
+<span class="fc" id="L76">			res.distances[next.v] = next.distance;</span>
+<span class="fc" id="L77">			u = next.v;</span>
+<span class="fc" id="L78">		}</span>
+
+<span class="fc" id="L80">		memClear(n);</span>
+<span class="fc" id="L81">		return res;</span>
+	}
+
+	private static class HeapElm implements Comparable&lt;HeapElm&gt; {
+
+		double distance;
+		final int v;
+
+<span class="fc" id="L89">		HeapElm(double distance, int v) {</span>
+<span class="fc" id="L90">			this.distance = distance;</span>
+<span class="fc" id="L91">			this.v = v;</span>
+<span class="fc" id="L92">		}</span>
+
+		@Override
+		public int compareTo(HeapElm o) {
+<span class="fc" id="L96">			return Double.compare(distance, o.distance);</span>
+		}
+
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

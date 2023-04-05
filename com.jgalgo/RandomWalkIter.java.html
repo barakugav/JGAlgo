@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RandomWalkIter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jgalgo</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">RandomWalkIter.java</span></div><h1>RandomWalkIter.java</h1><pre class="source lang-java linenums">package com.jgalgo;
+
+import java.util.NoSuchElementException;
+import java.util.Random;
+
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntList;
+
+public abstract class RandomWalkIter implements IntIterator {
+
+	final Graph g;
+	private final int[][] edges;
+	private int v;
+	private final Random rand;
+
+<span class="nc" id="L17">	private RandomWalkIter(Graph g, int source, Random rand) {</span>
+<span class="nc" id="L18">		this.g = g;</span>
+<span class="nc" id="L19">		edges = new int[g.vertices().size()][];</span>
+<span class="nc" id="L20">		v = source;</span>
+<span class="nc" id="L21">		this.rand = rand;</span>
+<span class="nc" id="L22">		edges[v] = getEdges(v);</span>
+<span class="nc" id="L23">	}</span>
+
+	public static RandomWalkIter createWithAllEdges(Graph g, int source) {
+<span class="nc" id="L26">		return new IterWithAllEdges(g, source, new Random());</span>
+	}
+
+	public static RandomWalkIter createWithAllEdges(Graph g, int source, long seed) {
+<span class="nc" id="L30">		return new IterWithAllEdges(g, source, new Random(seed));</span>
+	}
+
+	public static RandomWalkIter createWithoutSelfLoops(Graph g, int source) {
+<span class="nc" id="L34">		return new IterWithoutSelfLoops(g, source, new Random());</span>
+	}
+
+	public static RandomWalkIter createWithoutSelfLoops(Graph g, int source, long seed) {
+<span class="nc" id="L38">		return new IterWithoutSelfLoops(g, source, new Random(seed));</span>
+	}
+
+	public static RandomWalkIter createWithUniformNeighborDist(Graph g, int source) {
+<span class="nc" id="L42">		return new IterUniformNeighborDist(g, source, new Random());</span>
+	}
+
+	public static RandomWalkIter createWithUniformNeighborDist(Graph g, int source, long seed) {
+<span class="nc" id="L46">		return new IterUniformNeighborDist(g, source, new Random(seed));</span>
+	}
+
+	@Override
+	public boolean hasNext() {
+<span class="nc bnc" id="L51" title="All 2 branches missed.">		return edges[v].length == 0;</span>
+	}
+
+	@Override
+	public int nextInt() {
+<span class="nc bnc" id="L56" title="All 2 branches missed.">		if (!hasNext())</span>
+<span class="nc" id="L57">			throw new NoSuchElementException();</span>
+<span class="nc" id="L58">		int[] es = edges[v];</span>
+<span class="nc" id="L59">		int eIdx = rand.nextInt(es.length);</span>
+<span class="nc" id="L60">		int e = es[eIdx];</span>
+<span class="nc" id="L61">		int ret = v;</span>
+<span class="nc" id="L62">		v = g.edgeEndpoint(e, v);</span>
+<span class="nc bnc" id="L63" title="All 2 branches missed.">		if (edges[v] == null)</span>
+<span class="nc" id="L64">			edges[v] = getEdges(v);</span>
+<span class="nc" id="L65">		return ret;</span>
+	}
+
+	abstract int[] getEdges(int u);
+
+	private static class IterWithAllEdges extends RandomWalkIter {
+		IterWithAllEdges(Graph g, int source, Random rand) {
+<span class="nc" id="L72">			super(g, source, rand);</span>
+<span class="nc" id="L73">		}</span>
+
+		@Override
+		int[] getEdges(int u) {
+<span class="nc" id="L77">			IntList es = new IntArrayList();</span>
+<span class="nc bnc" id="L78" title="All 2 branches missed.">			for (EdgeIter eit = g.edges(u); eit.hasNext();)</span>
+<span class="nc" id="L79">				es.add(eit.nextInt());</span>
+<span class="nc" id="L80">			return es.toIntArray();</span>
+		}
+	}
+
+	private static class IterWithoutSelfLoops extends RandomWalkIter {
+		IterWithoutSelfLoops(Graph g, int source, Random rand) {
+<span class="nc" id="L86">			super(g, source, rand);</span>
+<span class="nc" id="L87">		}</span>
+
+		@Override
+		int[] getEdges(int u) {
+<span class="nc" id="L91">			IntList es = new IntArrayList();</span>
+<span class="nc bnc" id="L92" title="All 2 branches missed.">			for (EdgeIter eit = g.edges(u); eit.hasNext();) {</span>
+<span class="nc" id="L93">				int e = eit.nextInt();</span>
+<span class="nc bnc" id="L94" title="All 2 branches missed.">				if (g.edgeEndpoint(e, u) != u)</span>
+<span class="nc" id="L95">					es.add(e);</span>
+<span class="nc" id="L96">			}</span>
+<span class="nc" id="L97">			return es.toIntArray();</span>
+		}
+	}
+
+	private static class IterUniformNeighborDist extends RandomWalkIter {
+		private final int[] visits;
+		private int lastVisitIdx;
+
+		IterUniformNeighborDist(Graph g, int source, Random rand) {
+<span class="nc" id="L106">			super(g, source, rand);</span>
+<span class="nc" id="L107">			visits = new int[g.vertices().size()];</span>
+<span class="nc" id="L108">		}</span>
+
+		@Override
+		int[] getEdges(int u) {
+<span class="nc" id="L112">			int visitIdx = ++lastVisitIdx;</span>
+<span class="nc" id="L113">			IntList es = new IntArrayList();</span>
+<span class="nc bnc" id="L114" title="All 2 branches missed.">			for (EdgeIter eit = g.edges(u); eit.hasNext();) {</span>
+<span class="nc" id="L115">				int e = eit.nextInt();</span>
+<span class="nc" id="L116">				int v = g.edgeEndpoint(e, u);</span>
+<span class="nc bnc" id="L117" title="All 2 branches missed.">				if (visits[v] == visitIdx)</span>
+<span class="nc" id="L118">					continue; /* already added */</span>
+<span class="nc" id="L119">				visits[v] = visitIdx;</span>
+<span class="nc" id="L120">				es.add(e);</span>
+<span class="nc" id="L121">			}</span>
+<span class="nc" id="L122">			return es.toIntArray();</span>
+		}
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

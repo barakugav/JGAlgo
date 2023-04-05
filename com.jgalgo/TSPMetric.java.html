@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TSPMetric.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jgalgo</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">TSPMetric.java</span></div><h1>TSPMetric.java</h1><pre class="source lang-java linenums">package com.jgalgo;
+
+public interface TSPMetric {
+
+	/**
+	 * Calculate the Traveling Salesperson Problem solution for metric world
+	 *
+	 * @param distances n x n table of distances between each two points. In the
+	 *                  metric world every three vertices u,v,w should satisfy
+	 *                  {@code d[u,v] + d[v,w] &lt;= d[u,w]}
+	 * @return list of the n vertices ordered by the calculated path
+	 */
+	public int[] calcTSP(double[][] distances);
+
+	public static void checkArgDistanceTableSymmetric(double[][] distances) {
+<span class="fc" id="L16">		int n = distances.length;</span>
+<span class="fc bfc" id="L17" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
+<span class="pc bpc" id="L18" title="1 of 2 branches missed.">			if (distances[u].length != n)</span>
+<span class="nc" id="L19">				throw new IllegalArgumentException(&quot;Distances table is not full&quot;);</span>
+<span class="fc bfc" id="L20" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
+<span class="fc bfc" id="L21" title="All 2 branches covered.">			for (int v = u + 1; v &lt; n; v++)</span>
+<span class="pc bpc" id="L22" title="1 of 2 branches missed.">				if (distances[u][v] != distances[v][u])</span>
+<span class="nc" id="L23">					throw new IllegalArgumentException(&quot;Distance is not symmetric: (&quot; + u + &quot;, &quot; + v + &quot;) &quot;</span>
+							+ distances[u][v] + &quot; != &quot; + distances[v][u]);
+<span class="fc" id="L25">	}</span>
+
+	public static void checkArgDistanceTableIsMetric(double[][] distances) {
+<span class="fc" id="L28">		final double eps = 0.001;</span>
+<span class="fc" id="L29">		int n = distances.length;</span>
+<span class="fc bfc" id="L30" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
+<span class="pc bpc" id="L31" title="1 of 2 branches missed.">			if (distances[u].length != n)</span>
+<span class="nc" id="L32">				throw new IllegalArgumentException(&quot;Distances table is not full&quot;);</span>
+<span class="fc bfc" id="L33" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
+<span class="fc bfc" id="L34" title="All 2 branches covered.">			for (int v = u + 1; v &lt; n; v++)</span>
+<span class="fc bfc" id="L35" title="All 2 branches covered.">				for (int w = v + 1; w &lt; n; w++)</span>
+<span class="pc bpc" id="L36" title="1 of 2 branches missed.">					if (distances[u][v] + distances[v][w] + eps &lt; distances[u][w])</span>
+<span class="nc" id="L37">						throw new IllegalArgumentException(&quot;Distance table is not metric: (&quot; + u + &quot;, &quot; + v + &quot;, &quot; + w</span>
+								+ &quot;) &quot; + distances[u][v] + &quot; + &quot; + distances[v][w] + &quot; &lt; &quot; + distances[u][w]);
+<span class="fc" id="L39">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
