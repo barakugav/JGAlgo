@@ -43,7 +43,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 	public IntCollection calcMaxMatching(Graph g, EdgeWeightFunc w) {
 		if (g instanceof DiGraph)
 			throw new IllegalArgumentException("Only undirected bipartite graphs are supported");
-		return new Worker(g, w, debugPrintManager).calcMaxMatching(false);
+		return new Worker(g, w, heapBuilder, debugPrintManager).calcMaxMatching(false);
 
 	}
 
@@ -51,10 +51,10 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 	public IntCollection calcPerfectMaxMatching(Graph g, EdgeWeightFunc w) {
 		if (g instanceof DiGraph)
 			throw new IllegalArgumentException("Only undirected bipartite graphs are supported");
-		return new Worker(g, w, debugPrintManager).calcMaxMatching(true);
+		return new Worker(g, w, heapBuilder, debugPrintManager).calcMaxMatching(true);
 	}
 
-	private class Worker {
+	private static class Worker {
 
 		/* the graph */
 		final Graph g;
@@ -275,7 +275,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 		private static final Object EdgeValKey = new Object();
 
 		@SuppressWarnings("unchecked")
-		Worker(Graph g0, EdgeWeightFunc w, DebugPrintsManager debugPrint) {
+		Worker(Graph g0, EdgeWeightFunc w, HeapDirectAccessed.Builder heapBuilder, DebugPrintsManager debugPrint) {
 			int n = g0.vertices().size();
 			this.g = new GraphArrayDirected(n);
 			edgeVal = g.addEdgesWeight(EdgeValKey).ofObjs();

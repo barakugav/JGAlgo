@@ -145,8 +145,12 @@ abstract class DataContainer<E> {
 
 		@Override
 		public boolean equals(Object other) {
-			return other == this || (other instanceof DataContainer.Obj<?> o
-					&& Arrays.equals(weights, 0, size, o.weights, 0, o.size));
+			if (other == this)
+				return true;
+			if (!(other instanceof DataContainer.Obj<?>))
+				return false;
+			DataContainer.Obj<?> o = (DataContainer.Obj<?>) other;
+			return Arrays.equals(weights, 0, size, o.weights, 0, o.size);
 		}
 
 		@Override
@@ -265,9 +269,12 @@ abstract class DataContainer<E> {
 
 		@Override
 		public boolean equals(Object other) {
-			// TODO equals with idxs collection input
-			return other == this
-					|| (other instanceof DataContainer.Int o && Arrays.equals(weights, 0, size, o.weights, 0, o.size));
+			if (this == other)
+				return true;
+			if (!(other instanceof DataContainer.Int))
+				return false;
+			DataContainer.Int o = (DataContainer.Int) other;
+			return Arrays.equals(weights, 0, size, o.weights, 0, o.size);
 		}
 
 		@Override
@@ -386,8 +393,12 @@ abstract class DataContainer<E> {
 
 		@Override
 		public boolean equals(Object other) {
-			return other == this
-					|| (other instanceof DataContainer.Long o && Arrays.equals(weights, 0, size, o.weights, 0, o.size));
+			if (this == other)
+				return true;
+			if (!(other instanceof DataContainer.Long))
+				return false;
+			DataContainer.Long o = (DataContainer.Long) other;
+			return Arrays.equals(weights, 0, size, o.weights, 0, o.size);
 		}
 
 		@Override
@@ -506,8 +517,12 @@ abstract class DataContainer<E> {
 
 		@Override
 		public boolean equals(Object other) {
-			return other == this || (other instanceof DataContainer.Double o
-					&& Arrays.equals(weights, 0, size, o.weights, 0, o.size));
+			if (this == other)
+				return true;
+			if (!(other instanceof DataContainer.Double))
+				return false;
+			DataContainer.Double o = (DataContainer.Double) other;
+			return Arrays.equals(weights, 0, size, o.weights, 0, o.size);
 		}
 
 		@Override
@@ -621,8 +636,12 @@ abstract class DataContainer<E> {
 
 		@Override
 		public boolean equals(Object other) {
-			return other == this
-					|| (other instanceof DataContainer.Bool o && size == o.size && weights.equals(o.weights));
+			if (this == other)
+				return true;
+			if (!(other instanceof DataContainer.Bool))
+				return false;
+			DataContainer.Bool o = (DataContainer.Bool) other;
+			return size == o.size && weights.equals(o.weights);
 		}
 
 		@Override

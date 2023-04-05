@@ -75,8 +75,8 @@ public class AStarTest extends TestUtils {
 		return AStarAsSSSP(params -> {
 			Graph g = params.g;
 			EdgeWeightFunc w = params.w;
-			if (params.g instanceof DiGraph diG) {
-				GraphReverseResult rev = reverseGraph(diG, params.w);
+			if (params.g instanceof DiGraph) {
+				GraphReverseResult rev = reverseGraph((DiGraph) params.g, params.w);
 				g = rev.g;
 				w = rev.w;
 			}
@@ -91,8 +91,8 @@ public class AStarTest extends TestUtils {
 		return AStarAsSSSP(params -> {
 			Graph g = params.g;
 			EdgeWeightFunc w = params.w;
-			if (params.g instanceof DiGraph diG) {
-				GraphReverseResult rev = reverseGraph(diG, params.w);
+			if (params.g instanceof DiGraph) {
+				GraphReverseResult rev = reverseGraph((DiGraph) params.g, params.w);
 				g = rev.g;
 				w = rev.w;
 			}

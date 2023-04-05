@@ -309,7 +309,8 @@ public class Graphs {
 		for (Object key : g.getEdgesWeightsKeys()) {
 			Weights<?> data0 = g.edgesWeight(key);
 
-			if (data0 instanceof Weights.Int data) {
+			if (data0 instanceof Weights.Int) {
+				Weights.Int data = (Weights.Int) data0;
 				int defVal = data.defaultValInt();
 				Weights.Int datas = g1.addEdgesWeight(key).defVal(defVal).ofInts();
 				for (IntIterator it = g1.edges().iterator(); it.hasNext();) {
@@ -319,7 +320,8 @@ public class Graphs {
 						datas.set(s, w);
 				}
 
-			} else if (data0 instanceof Weights.Double data) {
+			} else if (data0 instanceof Weights.Double) {
+				Weights.Double data = (Weights.Double) data0;
 				double defVal = data.defaultValDouble();
 				Weights.Double datas = g1.addEdgesWeight(key).defVal(defVal).ofDoubles();
 				for (IntIterator it = g1.edges().iterator(); it.hasNext();) {

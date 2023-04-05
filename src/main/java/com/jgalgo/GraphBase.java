@@ -267,34 +267,38 @@ abstract class GraphBase implements Graph {
 		}
 
 		@SuppressWarnings("unchecked")
-		static <E, WeightsT extends Weights<E>> WeightsT wrapContainer(DataContainer<E> container0,
-				IDStrategy idStrat) {
+		<E, WeightsT extends Weights<E>> WeightsT wrapContainer(DataContainer<E> container0, IDStrategy idStrat) {
 			boolean isContinues = idStrat instanceof IDStrategy.Continues;
-			if (container0 instanceof DataContainer.Obj<E> container) {
+			if (container0 instanceof DataContainer.Obj<?>) {
+				DataContainer.Obj<E> container = (DataContainer.Obj<E>) container0;
 				if (isContinues) {
 					return (WeightsT) new WeightsImpl.Direct.Obj<>(container);
 				} else {
 					return (WeightsT) new WeightsImpl.Mapped.Obj<>(container, idStrat);
 				}
-			} else if (container0 instanceof DataContainer.Int container) {
+			} else if (container0 instanceof DataContainer.Int) {
+				DataContainer.Int container = (DataContainer.Int) container0;
 				if (isContinues) {
 					return (WeightsT) new WeightsImpl.Direct.Int(container);
 				} else {
 					return (WeightsT) new WeightsImpl.Mapped.Int(container, idStrat);
 				}
-			} else if (container0 instanceof DataContainer.Long container) {
+			} else if (container0 instanceof DataContainer.Long) {
+				DataContainer.Long container = (DataContainer.Long) container0;
 				if (isContinues) {
 					return (WeightsT) new WeightsImpl.Direct.Long(container);
 				} else {
 					return (WeightsT) new WeightsImpl.Mapped.Long(container, idStrat);
 				}
-			} else if (container0 instanceof DataContainer.Double container) {
+			} else if (container0 instanceof DataContainer.Double) {
+				DataContainer.Double container = (DataContainer.Double) container0;
 				if (isContinues) {
 					return (WeightsT) new WeightsImpl.Direct.Double(container);
 				} else {
 					return (WeightsT) new WeightsImpl.Mapped.Double(container, idStrat);
 				}
-			} else if (container0 instanceof DataContainer.Bool container) {
+			} else if (container0 instanceof DataContainer.Bool) {
+				DataContainer.Bool container = (DataContainer.Bool) container0;
 				if (isContinues) {
 					return (WeightsT) new WeightsImpl.Direct.Bool(container);
 				} else {
