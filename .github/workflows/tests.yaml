@@ -20,4 +20,4 @@ jobs:
       run: mvn --batch-mode --update-snapshots package -Dmaven.test.skip
 
     - name: Run JUnit Tests
-      run: mvn --batch-mode '-Dtest=com.ugav.jgalgo.test.*Test' test
+      run: mvn --batch-mode '-Dtest=com.jgalgo.test.*Test' test

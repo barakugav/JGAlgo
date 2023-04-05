@@ -22,7 +22,7 @@ jobs:
       run: mvn --batch-mode --update-snapshots package -Dmaven.test.skip
 
     - name: Run JUnit Tests with Jacoco coverage
-      run: mvn --batch-mode clean jacoco:prepare-agent '-Dtest=com.ugav.jgalgo.test.*Test' test jacoco:report
+      run: mvn --batch-mode clean jacoco:prepare-agent '-Dtest=com.jgalgo.test.*Test' test jacoco:report
 
     - name: Generate JaCoCo Badge
       uses: cicirello/jacoco-badge-generator@v2

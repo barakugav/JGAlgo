@@ -18,4 +18,4 @@ jobs:
     - name: Build with Maven
       run: mvn --batch-mode --update-snapshots package -Dmaven.test.skip
     - name: Run JMH Benchmarks
-      run: mvn --batch-mode '-Dtest=com.ugav.jgalgo.bench.TestBenchmarksSuite' test
+      run: mvn --batch-mode '-Dtest=com.jgalgo.bench.TestBenchmarksSuite' test
