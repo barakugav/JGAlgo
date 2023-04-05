@@ -34,10 +34,10 @@ public class Path extends AbstractIntList {
 	}
 
 	public EdgeIter edgeIter() {
-<span class="fc bfc" id="L37" title="All 2 branches covered.">		if (g instanceof UGraph g0) {</span>
-<span class="fc" id="L38">			return new IterUndirected(g0, edges, source);</span>
-<span class="pc bpc" id="L39" title="1 of 2 branches missed.">		} else if (g instanceof DiGraph g0) {</span>
-<span class="fc" id="L40">			return new IterDirected(g0, edges);</span>
+<span class="fc bfc" id="L37" title="All 2 branches covered.">		if (g instanceof UGraph) {</span>
+<span class="fc" id="L38">			return new IterUndirected((UGraph) g, edges, source);</span>
+<span class="pc bpc" id="L39" title="1 of 2 branches missed.">		} else if (g instanceof DiGraph) {</span>
+<span class="fc" id="L40">			return new IterDirected((DiGraph) g, edges);</span>
 		} else {
 <span class="nc" id="L42">			throw new IllegalArgumentException();</span>
 		}

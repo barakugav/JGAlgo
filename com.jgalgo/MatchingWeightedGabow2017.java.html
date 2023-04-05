@@ -43,7 +43,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 	public IntCollection calcMaxMatching(Graph g, EdgeWeightFunc w) {
 <span class="pc bpc" id="L44" title="1 of 2 branches missed.">		if (g instanceof DiGraph)</span>
 <span class="nc" id="L45">			throw new IllegalArgumentException(&quot;Only undirected bipartite graphs are supported&quot;);</span>
-<span class="fc" id="L46">		return new Worker(g, w, debugPrintManager).calcMaxMatching(false);</span>
+<span class="fc" id="L46">		return new Worker(g, w, heapBuilder, debugPrintManager).calcMaxMatching(false);</span>
 
 	}
 
@@ -51,10 +51,10 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 	public IntCollection calcPerfectMaxMatching(Graph g, EdgeWeightFunc w) {
 <span class="pc bpc" id="L52" title="1 of 2 branches missed.">		if (g instanceof DiGraph)</span>
 <span class="nc" id="L53">			throw new IllegalArgumentException(&quot;Only undirected bipartite graphs are supported&quot;);</span>
-<span class="fc" id="L54">		return new Worker(g, w, debugPrintManager).calcMaxMatching(true);</span>
+<span class="fc" id="L54">		return new Worker(g, w, heapBuilder, debugPrintManager).calcMaxMatching(true);</span>
 	}
 
-	private class Worker {
+	private static class Worker {
 
 		/* the graph */
 		final Graph g;
@@ -275,7 +275,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 <span class="fc" id="L275">		private static final Object EdgeValKey = new Object();</span>
 
 		@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L278">		Worker(Graph g0, EdgeWeightFunc w, DebugPrintsManager debugPrint) {</span>
+<span class="fc" id="L278">		Worker(Graph g0, EdgeWeightFunc w, HeapDirectAccessed.Builder heapBuilder, DebugPrintsManager debugPrint) {</span>
 <span class="fc" id="L279">			int n = g0.vertices().size();</span>
 <span class="fc" id="L280">			this.g = new GraphArrayDirected(n);</span>
 <span class="fc" id="L281">			edgeVal = g.addEdgesWeight(EdgeValKey).ofObjs();</span>

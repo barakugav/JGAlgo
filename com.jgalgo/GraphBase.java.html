@@ -267,78 +267,82 @@ abstract class GraphBase implements Graph {
 <span class="fc" id="L267">		}</span>
 
 		@SuppressWarnings(&quot;unchecked&quot;)
-		static &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT wrapContainer(DataContainer&lt;E&gt; container0,
-				IDStrategy idStrat) {
-<span class="fc" id="L272">			boolean isContinues = idStrat instanceof IDStrategy.Continues;</span>
-<span class="fc bfc" id="L273" title="All 2 branches covered.">			if (container0 instanceof DataContainer.Obj&lt;E&gt; container) {</span>
+		&lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT wrapContainer(DataContainer&lt;E&gt; container0, IDStrategy idStrat) {
+<span class="fc" id="L271">			boolean isContinues = idStrat instanceof IDStrategy.Continues;</span>
+<span class="fc bfc" id="L272" title="All 2 branches covered.">			if (container0 instanceof DataContainer.Obj&lt;?&gt;) {</span>
+<span class="fc" id="L273">				DataContainer.Obj&lt;E&gt; container = (DataContainer.Obj&lt;E&gt;) container0;</span>
 <span class="fc bfc" id="L274" title="All 2 branches covered.">				if (isContinues) {</span>
 <span class="fc" id="L275">					return (WeightsT) new WeightsImpl.Direct.Obj&lt;&gt;(container);</span>
 				} else {
 <span class="fc" id="L277">					return (WeightsT) new WeightsImpl.Mapped.Obj&lt;&gt;(container, idStrat);</span>
 				}
-<span class="fc bfc" id="L279" title="All 2 branches covered.">			} else if (container0 instanceof DataContainer.Int container) {</span>
-<span class="pc bpc" id="L280" title="1 of 2 branches missed.">				if (isContinues) {</span>
-<span class="fc" id="L281">					return (WeightsT) new WeightsImpl.Direct.Int(container);</span>
+<span class="fc bfc" id="L279" title="All 2 branches covered.">			} else if (container0 instanceof DataContainer.Int) {</span>
+<span class="fc" id="L280">				DataContainer.Int container = (DataContainer.Int) container0;</span>
+<span class="pc bpc" id="L281" title="1 of 2 branches missed.">				if (isContinues) {</span>
+<span class="fc" id="L282">					return (WeightsT) new WeightsImpl.Direct.Int(container);</span>
 				} else {
-<span class="nc" id="L283">					return (WeightsT) new WeightsImpl.Mapped.Int(container, idStrat);</span>
+<span class="nc" id="L284">					return (WeightsT) new WeightsImpl.Mapped.Int(container, idStrat);</span>
 				}
-<span class="pc bpc" id="L285" title="1 of 2 branches missed.">			} else if (container0 instanceof DataContainer.Long container) {</span>
-<span class="nc bnc" id="L286" title="All 2 branches missed.">				if (isContinues) {</span>
-<span class="nc" id="L287">					return (WeightsT) new WeightsImpl.Direct.Long(container);</span>
+<span class="pc bpc" id="L286" title="1 of 2 branches missed.">			} else if (container0 instanceof DataContainer.Long) {</span>
+<span class="nc" id="L287">				DataContainer.Long container = (DataContainer.Long) container0;</span>
+<span class="nc bnc" id="L288" title="All 2 branches missed.">				if (isContinues) {</span>
+<span class="nc" id="L289">					return (WeightsT) new WeightsImpl.Direct.Long(container);</span>
 				} else {
-<span class="nc" id="L289">					return (WeightsT) new WeightsImpl.Mapped.Long(container, idStrat);</span>
+<span class="nc" id="L291">					return (WeightsT) new WeightsImpl.Mapped.Long(container, idStrat);</span>
 				}
-<span class="fc bfc" id="L291" title="All 2 branches covered.">			} else if (container0 instanceof DataContainer.Double container) {</span>
-<span class="pc bpc" id="L292" title="1 of 2 branches missed.">				if (isContinues) {</span>
-<span class="fc" id="L293">					return (WeightsT) new WeightsImpl.Direct.Double(container);</span>
+<span class="fc bfc" id="L293" title="All 2 branches covered.">			} else if (container0 instanceof DataContainer.Double) {</span>
+<span class="fc" id="L294">				DataContainer.Double container = (DataContainer.Double) container0;</span>
+<span class="pc bpc" id="L295" title="1 of 2 branches missed.">				if (isContinues) {</span>
+<span class="fc" id="L296">					return (WeightsT) new WeightsImpl.Direct.Double(container);</span>
 				} else {
-<span class="nc" id="L295">					return (WeightsT) new WeightsImpl.Mapped.Double(container, idStrat);</span>
+<span class="nc" id="L298">					return (WeightsT) new WeightsImpl.Mapped.Double(container, idStrat);</span>
 				}
-<span class="pc bpc" id="L297" title="1 of 2 branches missed.">			} else if (container0 instanceof DataContainer.Bool container) {</span>
-<span class="pc bpc" id="L298" title="1 of 2 branches missed.">				if (isContinues) {</span>
-<span class="fc" id="L299">					return (WeightsT) new WeightsImpl.Direct.Bool(container);</span>
+<span class="pc bpc" id="L300" title="1 of 2 branches missed.">			} else if (container0 instanceof DataContainer.Bool) {</span>
+<span class="fc" id="L301">				DataContainer.Bool container = (DataContainer.Bool) container0;</span>
+<span class="pc bpc" id="L302" title="1 of 2 branches missed.">				if (isContinues) {</span>
+<span class="fc" id="L303">					return (WeightsT) new WeightsImpl.Direct.Bool(container);</span>
 				} else {
-<span class="nc" id="L301">					return (WeightsT) new WeightsImpl.Mapped.Bool(container, idStrat);</span>
+<span class="nc" id="L305">					return (WeightsT) new WeightsImpl.Mapped.Bool(container, idStrat);</span>
 				}
 			} else {
-<span class="nc" id="L304">				throw new IllegalArgumentException(container0.getClass().toString());</span>
+<span class="nc" id="L308">				throw new IllegalArgumentException(container0.getClass().toString());</span>
 			}
 		}
 	}
 
 	private class WeightsFactoryVertices extends WeightsFactoryBase {
-<span class="fc" id="L310">		WeightsFactoryVertices(Object key) {</span>
-<span class="fc" id="L311">			super(key);</span>
-<span class="fc" id="L312">		}</span>
+<span class="fc" id="L314">		WeightsFactoryVertices(Object key) {</span>
+<span class="fc" id="L315">			super(key);</span>
+<span class="fc" id="L316">		}</span>
 
 		@Override
 		int expectedSize() {
-<span class="fc" id="L316">			return vertices().size();</span>
+<span class="fc" id="L320">			return vertices().size();</span>
 		}
 
 		@Override
 		&lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT addWeights(DataContainer&lt;E&gt; container) {
-<span class="fc" id="L321">			addAllIndices(container);</span>
-<span class="fc" id="L322">			WeightsT weights = wrapContainer(container, getVerticesIDStrategy());</span>
-<span class="fc" id="L323">			return addVerticesWeights(key, weights);</span>
+<span class="fc" id="L325">			addAllIndices(container);</span>
+<span class="fc" id="L326">			WeightsT weights = wrapContainer(container, getVerticesIDStrategy());</span>
+<span class="fc" id="L327">			return addVerticesWeights(key, weights);</span>
 		}
 	}
 
 	private class WeightsFactoryEdges extends WeightsFactoryBase {
-<span class="fc" id="L328">		WeightsFactoryEdges(Object key) {</span>
-<span class="fc" id="L329">			super(key);</span>
-<span class="fc" id="L330">		}</span>
+<span class="fc" id="L332">		WeightsFactoryEdges(Object key) {</span>
+<span class="fc" id="L333">			super(key);</span>
+<span class="fc" id="L334">		}</span>
 
 		@Override
 		int expectedSize() {
-<span class="fc" id="L334">			return edges().size();</span>
+<span class="fc" id="L338">			return edges().size();</span>
 		}
 
 		@Override
 		&lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT addWeights(DataContainer&lt;E&gt; container) {
-<span class="fc" id="L339">			addAllIndices(container);</span>
-<span class="fc" id="L340">			WeightsT weights = wrapContainer(container, getEdgesIDStrategy());</span>
-<span class="fc" id="L341">			return addEdgesWeights(key, weights);</span>
+<span class="fc" id="L343">			addAllIndices(container);</span>
+<span class="fc" id="L344">			WeightsT weights = wrapContainer(container, getEdgesIDStrategy());</span>
+<span class="fc" id="L345">			return addEdgesWeights(key, weights);</span>
 		}
 	}
 
