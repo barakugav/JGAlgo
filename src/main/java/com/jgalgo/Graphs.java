@@ -361,4 +361,22 @@ public class Graphs {
 		return false;
 	}
 
+	static boolean containsParallelEdges(Graph g) {
+		if (!g.getCapabilities().parallelEdges())
+			return false;
+		int n = g.vertices().size();
+		int[] lastVisit = new int[n];
+		for (int u = 0; u < n; u++) {
+			final int visitIdx = u + 1;
+			for (EdgeIter eit = g.edges(u); eit.hasNext();) {
+				eit.nextInt();
+				int v = eit.v();
+				if (lastVisit[v] == visitIdx)
+					return true;
+				lastVisit[v] = visitIdx;
+			}
+		}
+		return false;
+	}
+
 }

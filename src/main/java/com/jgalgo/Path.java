@@ -13,7 +13,7 @@ public class Path extends AbstractIntList {
 	private final int target;
 	private final IntList edges;
 
-	Path(Graph g, int source, int target, IntList edges) {
+	public Path(Graph g, int source, int target, IntList edges) {
 		this.g = g;
 		this.source = source;
 		this.target = target;

@@ -61,6 +61,7 @@ JGAlgo is a collection of algorithms implemented in Java. It contains mostly alg
 | Vertex Coloring DSatur | $O(m n)$ |
 | Vertex Coloring DSatur with Heap | $O(m + n \log n)$ |
 | Vertex Coloring Recursive Largest First | $O(m n)$ |
+| Johnson all cycles | $O((m + n) (c + 1))$ where $c$ is the number of simple cycles |
 
 ### Additional Utils
 

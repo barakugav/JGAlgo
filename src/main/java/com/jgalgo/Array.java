@@ -25,6 +25,7 @@ public class Array {
 	 *
 	 * O(n)
 	 *
+	 * @param <E>     the array element type
 	 * @param a       an array
 	 * @param from    first index (inclusive)
 	 * @param to      last index (exclusive)
@@ -117,6 +118,7 @@ public class Array {
 	 *
 	 * O(n)
 	 *
+	 * @param <E>   the array element type
 	 * @param a     an array
 	 * @param from  first index (inclusive)
 	 * @param to    last index (exclusive)
@@ -264,6 +266,7 @@ public class Array {
 	 *
 	 * O(n log k) where k is the number of buckets of the output.
 	 *
+	 * @param <E>        the array element type
 	 * @param a          an array
 	 * @param from       first index (inclusive)
 	 * @param to         last index (exclusive)

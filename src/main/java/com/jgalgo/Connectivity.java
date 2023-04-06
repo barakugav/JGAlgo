@@ -15,7 +15,7 @@ public class Connectivity {
 	 * This function support undirected graphs only
 	 *
 	 * @param g an undirected graph
-	 * @return (CC number, [vertex]->[CC])
+	 * @return (CC number, [vertex] to [CC])
 	 * @throws IllegalArgumentException if the graph is directed
 	 */
 	public static Connectivity.Result findConnectivityComponents(UGraph g) {
@@ -59,7 +59,7 @@ public class Connectivity {
 	 * This function is specifically for directed graphs.
 	 *
 	 * @param g a directed graph
-	 * @return (CC number, [vertex]->[CC])
+	 * @return (CC number, [vertex] to [CC])
 	 */
 	public static Connectivity.Result findStrongConnectivityComponents(DiGraph g) {
 		int n = g.vertices().size();
