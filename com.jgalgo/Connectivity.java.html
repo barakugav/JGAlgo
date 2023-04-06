@@ -15,7 +15,7 @@ import com.jgalgo.Utils.StackIntFixSize;
 	 * This function support undirected graphs only
 	 *
 	 * @param g an undirected graph
-	 * @return (CC number, [vertex]-&gt;[CC])
+	 * @return (CC number, [vertex] to [CC])
 	 * @throws IllegalArgumentException if the graph is directed
 	 */
 	public static Connectivity.Result findConnectivityComponents(UGraph g) {
@@ -59,7 +59,7 @@ import com.jgalgo.Utils.StackIntFixSize;
 	 * This function is specifically for directed graphs.
 	 *
 	 * @param g a directed graph
-	 * @return (CC number, [vertex]-&gt;[CC])
+	 * @return (CC number, [vertex] to [CC])
 	 */
 	public static Connectivity.Result findStrongConnectivityComponents(DiGraph g) {
 <span class="fc" id="L65">		int n = g.vertices().size();</span>
@@ -128,7 +128,7 @@ import com.jgalgo.Utils.StackIntFixSize;
 <span class="fc" id="L128">		}</span>
 
 		public int getVertexCcIndex(int v) {
-<span class="nc" id="L131">			return vertexToCC[v];</span>
+<span class="fc" id="L131">			return vertexToCC[v];</span>
 		}
 	}
 

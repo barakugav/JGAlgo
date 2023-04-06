@@ -361,5 +361,23 @@ public class Graphs {
 <span class="fc" id="L361">		return false;</span>
 	}
 
+	static boolean containsParallelEdges(Graph g) {
+<span class="pc bpc" id="L365" title="1 of 2 branches missed.">		if (!g.getCapabilities().parallelEdges())</span>
+<span class="nc" id="L366">			return false;</span>
+<span class="fc" id="L367">		int n = g.vertices().size();</span>
+<span class="fc" id="L368">		int[] lastVisit = new int[n];</span>
+<span class="fc bfc" id="L369" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc" id="L370">			final int visitIdx = u + 1;</span>
+<span class="fc bfc" id="L371" title="All 2 branches covered.">			for (EdgeIter eit = g.edges(u); eit.hasNext();) {</span>
+<span class="fc" id="L372">				eit.nextInt();</span>
+<span class="fc" id="L373">				int v = eit.v();</span>
+<span class="pc bpc" id="L374" title="1 of 2 branches missed.">				if (lastVisit[v] == visitIdx)</span>
+<span class="nc" id="L375">					return true;</span>
+<span class="fc" id="L376">				lastVisit[v] = visitIdx;</span>
+<span class="fc" id="L377">			}</span>
+		}
+<span class="fc" id="L379">		return false;</span>
+	}
+
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
