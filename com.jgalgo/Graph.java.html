@@ -14,19 +14,10 @@ public interface Graph {
 	 * Get the set of all vertices of the graph.
 	 *
 	 * &lt;p&gt;
-	 * Each vertex in the graph is identified by a unique non negative int ID. The
-	 * returned set is a set of all these identifiers, and its size is equivalent to
-	 * the number of vertices in the graph.
-	 *
-	 * &lt;p&gt;
-	 * The vertices IDs values are determined by {@link #getVerticesIDStrategy()}.
-	 * Only {@link com.jgalgo.IDStrategy.Continues} is supported for vertices, which
-	 * ensure that at all times the vertices IDs are {@code 0,1,..., verticesNum-1},
-	 * and it might rename some vertices when a vertex is removed to maintain this
-	 * invariant. This rename can be subscribed using
-	 * {@link com.jgalgo.IDStrategy#addIDSwapListener}.
-	 *
-	 * @see com.jgalgo.IDStrategy
+	 * Each vertex in the graph is identified by a unique non negative int ID,
+	 * determined by {@link #getVerticesIDStrategy()}. The returned set is a set of
+	 * all these identifiers, and its size is equivalent to the number of vertices
+	 * in the graph.
 	 *
 	 * @return a set containing all IDs of the graph vertices
 	 */
@@ -36,21 +27,10 @@ public interface Graph {
 	 * Get the set of all edges of the graph.
 	 *
 	 * &lt;p&gt;
-	 * Each edge in the graph is identified by a unique non negative int ID. The
-	 * returned set is a set of all these identifiers, and its size is equivalent to
-	 * the number of edges in the graph.
-	 *
-	 * &lt;p&gt;
-	 * The edges IDs values are determined by {@link #getEdgesIDStrategy()}. For
-	 * example, {@link com.jgalgo.IDStrategy.Continues} ensure that at all times the
-	 * edges IDs are {@code 0,1,..., edgesNum-1}, and it might rename some edges
-	 * when an edge is removed to maintain this invariant. This rename can be
-	 * subscribed using {@link com.jgalgo.IDStrategy#addIDSwapListener}. Another
-	 * option for an ID strategy is {@link com.jgalgo.IDStrategy.Fixed} which ensure
-	 * once an edge is assigned an ID, it will not change. There might be some
-	 * performance differences between different ID strategies.
-	 *
-	 * @see com.jgalgo.IDStrategy
+	 * Each edge in the graph is identified by a unique non negative int ID,
+	 * determined by {@link #getEdgesIDStrategy()}. The returned set is a set of all
+	 * these identifiers, and its size is equivalent to the number of edges in the
+	 * graph.
 	 *
 	 * @return a set containing all IDs of the graph edges
 	 */
@@ -62,6 +42,23 @@ public interface Graph {
 	 * @return the new vertex identifier
 	 */
 	int addVertex();
+
+	/**
+	 * Remove a vertex and all its edges from the graph.
+	 *
+	 * &lt;p&gt;
+	 * After removing a vertex, the vertices ID strategy may rename other vertices
+	 * identifiers to maintain its invariants, see {@link #getVerticesIDStrategy()}.
+	 * Theses renames can be subscribed using
+	 * {@link com.jgalgo.IDStrategy#addIDSwapListener}. It may be more convenient to
+	 * remove all edges of a vertex and ignore it, instead of actually removing it
+	 * and dealing with IDs renames, but that depends on the specific use case.
+	 *
+	 * @see com.jgalgo.IDStrategy
+	 *
+	 * @param v the vertex identifier to remove
+	 */
+	void removeVertex(int v);
 
 	/**
 	 * Get the edges of a vertex u.
@@ -93,43 +90,43 @@ public interface Graph {
 	 * @return id of the edge or -1 if no such edge exists
 	 */
 	default int getEdge(int u, int v) {
-<span class="fc bfc" id="L96" title="All 2 branches covered.">		for (EdgeIter it = edgesOut(u); it.hasNext();) {</span>
-<span class="fc" id="L97">			int e = it.nextInt();</span>
-<span class="fc bfc" id="L98" title="All 2 branches covered.">			if (it.v() == v)</span>
-<span class="fc" id="L99">				return e;</span>
-<span class="fc" id="L100">		}</span>
-<span class="fc" id="L101">		return -1;</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">		for (EdgeIter it = edgesOut(u); it.hasNext();) {</span>
+<span class="fc" id="L94">			int e = it.nextInt();</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">			if (it.v() == v)</span>
+<span class="fc" id="L96">				return e;</span>
+<span class="fc" id="L97">		}</span>
+<span class="fc" id="L98">		return -1;</span>
 	}
 
 	default EdgeIter getEdges(int u, int v) {
-<span class="fc" id="L105">		IntList edges = new IntArrayList();</span>
-<span class="fc bfc" id="L106" title="All 2 branches covered.">		for (EdgeIter it = edgesOut(u); it.hasNext();) {</span>
-<span class="fc" id="L107">			int e = it.nextInt();</span>
-<span class="fc bfc" id="L108" title="All 2 branches covered.">			if (it.v() == v)</span>
-<span class="fc" id="L109">				edges.add(e);</span>
-<span class="fc" id="L110">		}</span>
-<span class="fc" id="L111">		return new EdgeIter() {</span>
+<span class="fc" id="L102">		IntList edges = new IntArrayList();</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">		for (EdgeIter it = edgesOut(u); it.hasNext();) {</span>
+<span class="fc" id="L104">			int e = it.nextInt();</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">			if (it.v() == v)</span>
+<span class="fc" id="L106">				edges.add(e);</span>
+<span class="fc" id="L107">		}</span>
+<span class="fc" id="L108">		return new EdgeIter() {</span>
 
-<span class="fc" id="L113">			IntIterator it = edges.iterator();</span>
+<span class="fc" id="L110">			IntIterator it = edges.iterator();</span>
 
 			@Override
 			public boolean hasNext() {
-<span class="fc" id="L117">				return it.hasNext();</span>
+<span class="fc" id="L114">				return it.hasNext();</span>
 			}
 
 			@Override
 			public int nextInt() {
-<span class="fc" id="L122">				return it.nextInt();</span>
+<span class="fc" id="L119">				return it.nextInt();</span>
 			}
 
 			@Override
 			public int u() {
-<span class="nc" id="L127">				return u;</span>
+<span class="nc" id="L124">				return u;</span>
 			}
 
 			@Override
 			public int v() {
-<span class="nc" id="L132">				return v;</span>
+<span class="nc" id="L129">				return v;</span>
 			}
 		};
 	}
@@ -147,9 +144,10 @@ public interface Graph {
 	 * Remove an edge from the graph.
 	 *
 	 * &lt;p&gt;
-	 * After removing the edge, the edges ID strategy may rename other edges
-	 * identifiers to maintain its invariants. Theses renames can be subscribed
-	 * using {@link com.jgalgo.IDStrategy#addIDSwapListener}.
+	 * After removing an edge, the edges ID strategy may rename other edges
+	 * identifiers to maintain its invariants, see {@link #getEdgesIDStrategy()}.
+	 * Theses renames can be subscribed using
+	 * {@link com.jgalgo.IDStrategy#addIDSwapListener}.
 	 *
 	 * @see com.jgalgo.IDStrategy
 	 *
@@ -165,32 +163,33 @@ public interface Graph {
 	 * removed.
 	 *
 	 * &lt;p&gt;
-	 * After removing the edge, the edges ID strategy may rename other edges
-	 * identifiers to maintain its invariants. Theses renames can be subscribed
-	 * using {@link com.jgalgo.IDStrategy#addIDSwapListener}.
+	 * After removing an edge, the edges ID strategy may rename other edges
+	 * identifiers to maintain its invariants, see {@link #getEdgesIDStrategy()}.
+	 * Theses renames can be subscribed using
+	 * {@link com.jgalgo.IDStrategy#addIDSwapListener}.
 	 *
 	 * @see com.jgalgo.IDStrategy
 	 *
 	 * @param u a vertex in the graph
 	 */
 	default void removeEdgesAll(int u) {
-<span class="fc" id="L177">		removeEdgesAllOut(u);</span>
-<span class="fc" id="L178">		removeEdgesAllIn(u);</span>
-<span class="fc" id="L179">	}</span>
+<span class="fc" id="L176">		removeEdgesAllOut(u);</span>
+<span class="fc" id="L177">		removeEdgesAllIn(u);</span>
+<span class="fc" id="L178">	}</span>
 
 	default void removeEdgesAllOut(int u) {
-<span class="fc bfc" id="L182" title="All 2 branches covered.">		for (EdgeIter eit = edgesOut(u); eit.hasNext();) {</span>
-<span class="fc" id="L183">			eit.nextInt();</span>
-<span class="fc" id="L184">			eit.remove();</span>
+<span class="fc bfc" id="L181" title="All 2 branches covered.">		for (EdgeIter eit = edgesOut(u); eit.hasNext();) {</span>
+<span class="fc" id="L182">			eit.nextInt();</span>
+<span class="fc" id="L183">			eit.remove();</span>
 		}
-<span class="fc" id="L186">	}</span>
+<span class="fc" id="L185">	}</span>
 
 	default void removeEdgesAllIn(int v) {
-<span class="fc bfc" id="L189" title="All 2 branches covered.">		for (EdgeIter eit = edgesIn(v); eit.hasNext();) {</span>
-<span class="fc" id="L190">			eit.nextInt();</span>
-<span class="fc" id="L191">			eit.remove();</span>
+<span class="fc bfc" id="L188" title="All 2 branches covered.">		for (EdgeIter eit = edgesIn(v); eit.hasNext();) {</span>
+<span class="fc" id="L189">			eit.nextInt();</span>
+<span class="fc" id="L190">			eit.remove();</span>
 		}
-<span class="fc" id="L193">	}</span>
+<span class="fc" id="L192">	}</span>
 
 	/**
 	 * Get the source vertex of an edge.
@@ -226,14 +225,14 @@ public interface Graph {
 	 * @return the other end-point of the edge
 	 */
 	default int edgeEndpoint(int edge, int endpoint) {
-<span class="nc" id="L229">		int u = edgeSource(edge);</span>
-<span class="nc" id="L230">		int v = edgeTarget(edge);</span>
-<span class="nc bnc" id="L231" title="All 2 branches missed.">		if (endpoint == u) {</span>
-<span class="nc" id="L232">			return v;</span>
-<span class="nc bnc" id="L233" title="All 2 branches missed.">		} else if (endpoint == v) {</span>
-<span class="nc" id="L234">			return u;</span>
+<span class="nc" id="L228">		int u = edgeSource(edge);</span>
+<span class="nc" id="L229">		int v = edgeTarget(edge);</span>
+<span class="nc bnc" id="L230" title="All 2 branches missed.">		if (endpoint == u) {</span>
+<span class="nc" id="L231">			return v;</span>
+<span class="nc bnc" id="L232" title="All 2 branches missed.">		} else if (endpoint == v) {</span>
+<span class="nc" id="L233">			return u;</span>
 		} else {
-<span class="nc" id="L236">			throw new IllegalArgumentException();</span>
+<span class="nc" id="L235">			throw new IllegalArgumentException();</span>
 		}
 	}
 
@@ -244,12 +243,12 @@ public interface Graph {
 	 * @return the number of edges whose source is u
 	 */
 	default int degreeOut(int u) {
-<span class="fc" id="L247">		int count = 0;</span>
-<span class="fc bfc" id="L248" title="All 2 branches covered.">		for (EdgeIter it = edgesOut(u); it.hasNext();) {</span>
-<span class="fc" id="L249">			it.nextInt();</span>
-<span class="fc" id="L250">			count++;</span>
+<span class="fc" id="L246">		int count = 0;</span>
+<span class="fc bfc" id="L247" title="All 2 branches covered.">		for (EdgeIter it = edgesOut(u); it.hasNext();) {</span>
+<span class="fc" id="L248">			it.nextInt();</span>
+<span class="fc" id="L249">			count++;</span>
 		}
-<span class="fc" id="L252">		return count;</span>
+<span class="fc" id="L251">		return count;</span>
 	}
 
 	/**
@@ -259,12 +258,12 @@ public interface Graph {
 	 * @return the number of edges whose target is v
 	 */
 	default int degreeIn(int v) {
-<span class="fc" id="L262">		int count = 0;</span>
-<span class="fc bfc" id="L263" title="All 2 branches covered.">		for (EdgeIter it = edgesIn(v); it.hasNext();) {</span>
-<span class="fc" id="L264">			it.nextInt();</span>
-<span class="fc" id="L265">			count++;</span>
+<span class="fc" id="L261">		int count = 0;</span>
+<span class="fc bfc" id="L262" title="All 2 branches covered.">		for (EdgeIter it = edgesIn(v); it.hasNext();) {</span>
+<span class="fc" id="L263">			it.nextInt();</span>
+<span class="fc" id="L264">			count++;</span>
 		}
-<span class="fc" id="L267">		return count;</span>
+<span class="fc" id="L266">		return count;</span>
 	}
 
 	/**

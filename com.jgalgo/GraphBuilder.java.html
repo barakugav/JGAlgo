@@ -142,205 +142,216 @@ public abstract class GraphBuilder {
 		}
 
 		@Override
+		public void removeVertex(int v) {
+<span class="nc" id="L146">			int vIdx = verticesIDStrategy.idToIdx(v);</span>
+<span class="nc" id="L147">			g.removeVertex(vIdx);</span>
+
+			/* index may have changed, fetch it again */
+<span class="nc" id="L150">			vIdx = verticesIDStrategy.idToIdx(vIdx);</span>
+<span class="nc" id="L151">			vIdx = verticesIDStrategy.isSwapNeededBeforeRemove(vIdx);</span>
+<span class="nc" id="L152">			verticesIDStrategy.removeIdx(vIdx);</span>
+<span class="nc" id="L153">		}</span>
+
+		@Override
 		public EdgeIter edgesOut(int u) {
-<span class="fc" id="L146">			EdgeIter it = g.edgesOut(verticesIDStrategy.idToIdx(u));</span>
-<span class="fc" id="L147">			return new EdgeItr(it);</span>
+<span class="fc" id="L157">			EdgeIter it = g.edgesOut(verticesIDStrategy.idToIdx(u));</span>
+<span class="fc" id="L158">			return new EdgeItr(it);</span>
 		}
 
 		@Override
 		public EdgeIter edgesIn(int v) {
-<span class="fc" id="L152">			EdgeIter it = g.edgesIn(verticesIDStrategy.idToIdx(v));</span>
-<span class="fc" id="L153">			return new EdgeItr(it);</span>
+<span class="fc" id="L163">			EdgeIter it = g.edgesIn(verticesIDStrategy.idToIdx(v));</span>
+<span class="fc" id="L164">			return new EdgeItr(it);</span>
 		}
 
 		@Override
 		public int getEdge(int u, int v) {
-<span class="nc" id="L158">			int uIdx = verticesIDStrategy.idToIdx(u);</span>
-<span class="nc" id="L159">			int vIdx = verticesIDStrategy.idToIdx(v);</span>
-<span class="nc" id="L160">			int eIdx = g.getEdge(uIdx, vIdx);</span>
-<span class="nc bnc" id="L161" title="All 2 branches missed.">			return eIdx == -1 ? -1 : edgesIDStrategy.idxToId(eIdx);</span>
+<span class="nc" id="L169">			int uIdx = verticesIDStrategy.idToIdx(u);</span>
+<span class="nc" id="L170">			int vIdx = verticesIDStrategy.idToIdx(v);</span>
+<span class="nc" id="L171">			int eIdx = g.getEdge(uIdx, vIdx);</span>
+<span class="nc bnc" id="L172" title="All 2 branches missed.">			return eIdx == -1 ? -1 : edgesIDStrategy.idxToId(eIdx);</span>
 		}
 
 		@Override
 		public EdgeIter getEdges(int u, int v) {
-<span class="nc" id="L166">			int uIdx = verticesIDStrategy.idToIdx(u);</span>
-<span class="nc" id="L167">			int vIdx = verticesIDStrategy.idToIdx(v);</span>
-<span class="nc" id="L168">			EdgeIter it = g.getEdges(uIdx, vIdx);</span>
-<span class="nc" id="L169">			return new EdgeItr(it);</span>
+<span class="nc" id="L177">			int uIdx = verticesIDStrategy.idToIdx(u);</span>
+<span class="nc" id="L178">			int vIdx = verticesIDStrategy.idToIdx(v);</span>
+<span class="nc" id="L179">			EdgeIter it = g.getEdges(uIdx, vIdx);</span>
+<span class="nc" id="L180">			return new EdgeItr(it);</span>
 		}
 
 		@Override
 		public int addEdge(int u, int v) {
-<span class="fc" id="L174">			int uIdx = verticesIDStrategy.idToIdx(u);</span>
-<span class="fc" id="L175">			int vIdx = verticesIDStrategy.idToIdx(v);</span>
-<span class="fc" id="L176">			int eIdx1 = g.addEdge(uIdx, vIdx);</span>
-<span class="fc" id="L177">			int eIdx2 = edgesIDStrategy.newIdx();</span>
-<span class="pc bpc" id="L178" title="1 of 2 branches missed.">			if (eIdx1 != eIdx2)</span>
-<span class="nc" id="L179">				throw new IllegalStateException();</span>
-<span class="fc" id="L180">			return edgesIDStrategy.idxToId(eIdx1);</span>
+<span class="fc" id="L185">			int uIdx = verticesIDStrategy.idToIdx(u);</span>
+<span class="fc" id="L186">			int vIdx = verticesIDStrategy.idToIdx(v);</span>
+<span class="fc" id="L187">			int eIdx1 = g.addEdge(uIdx, vIdx);</span>
+<span class="fc" id="L188">			int eIdx2 = edgesIDStrategy.newIdx();</span>
+<span class="pc bpc" id="L189" title="1 of 2 branches missed.">			if (eIdx1 != eIdx2)</span>
+<span class="nc" id="L190">				throw new IllegalStateException();</span>
+<span class="fc" id="L191">			return edgesIDStrategy.idxToId(eIdx1);</span>
 		}
 
 		@Override
 		public void removeEdge(int edge) {
-<span class="fc" id="L185">			int eIdx = edgesIDStrategy.idToIdx(edge);</span>
-<span class="fc" id="L186">			g.removeEdge(eIdx);</span>
+<span class="fc" id="L196">			int eIdx = edgesIDStrategy.idToIdx(edge);</span>
+<span class="fc" id="L197">			g.removeEdge(eIdx);</span>
 
 			/* index may have changed, fetch it again */
-<span class="fc" id="L189">			eIdx = edgesIDStrategy.idToIdx(edge);</span>
-<span class="fc" id="L190">			eIdx = edgesIDStrategy.isSwapNeededBeforeRemove(eIdx);</span>
-<span class="fc" id="L191">			edgesIDStrategy.removeIdx(eIdx);</span>
-<span class="fc" id="L192">		}</span>
+<span class="fc" id="L200">			eIdx = edgesIDStrategy.idToIdx(edge);</span>
+<span class="fc" id="L201">			eIdx = edgesIDStrategy.isSwapNeededBeforeRemove(eIdx);</span>
+<span class="fc" id="L202">			edgesIDStrategy.removeIdx(eIdx);</span>
+<span class="fc" id="L203">		}</span>
 
 		@Override
 		public void removeEdgesAll(int u) {
-<span class="nc" id="L196">			int uIdx = verticesIDStrategy.idToIdx(u);</span>
-<span class="nc" id="L197">			g.removeEdgesAll(uIdx);</span>
-<span class="nc" id="L198">		}</span>
+<span class="nc" id="L207">			int uIdx = verticesIDStrategy.idToIdx(u);</span>
+<span class="nc" id="L208">			g.removeEdgesAll(uIdx);</span>
+<span class="nc" id="L209">		}</span>
 
 		@Override
 		public void removeEdgesAllOut(int u) {
-<span class="nc" id="L202">			g.removeEdgesAllOut(verticesIDStrategy.idToIdx(u));</span>
-<span class="nc" id="L203">		}</span>
+<span class="nc" id="L213">			g.removeEdgesAllOut(verticesIDStrategy.idToIdx(u));</span>
+<span class="nc" id="L214">		}</span>
 
 		@Override
 		public void removeEdgesAllIn(int v) {
-<span class="fc" id="L207">			g.removeEdgesAllIn(verticesIDStrategy.idToIdx(v));</span>
-<span class="fc" id="L208">		}</span>
+<span class="fc" id="L218">			g.removeEdgesAllIn(verticesIDStrategy.idToIdx(v));</span>
+<span class="fc" id="L219">		}</span>
 
 		@Override
 		public int edgeSource(int edge) {
-<span class="fc" id="L212">			int eIdx = edgesIDStrategy.idToIdx(edge);</span>
-<span class="fc" id="L213">			return g.edgeSource(eIdx);</span>
+<span class="fc" id="L223">			int eIdx = edgesIDStrategy.idToIdx(edge);</span>
+<span class="fc" id="L224">			return g.edgeSource(eIdx);</span>
 		}
 
 		@Override
 		public int edgeTarget(int edge) {
-<span class="nc" id="L218">			int eIdx = edgesIDStrategy.idToIdx(edge);</span>
-<span class="nc" id="L219">			return g.edgeTarget(eIdx);</span>
+<span class="nc" id="L229">			int eIdx = edgesIDStrategy.idToIdx(edge);</span>
+<span class="nc" id="L230">			return g.edgeTarget(eIdx);</span>
 		}
 
 		@Override
 		public int edgeEndpoint(int edge, int endpoint) {
-<span class="nc" id="L224">			int eIdx = edgesIDStrategy.idToIdx(edge);</span>
-<span class="nc" id="L225">			int endpointIdx = verticesIDStrategy.idToIdx(endpoint);</span>
-<span class="nc" id="L226">			int resIdx = g.edgeEndpoint(eIdx, endpointIdx);</span>
-<span class="nc" id="L227">			return verticesIDStrategy.idxToId(resIdx);</span>
+<span class="nc" id="L235">			int eIdx = edgesIDStrategy.idToIdx(edge);</span>
+<span class="nc" id="L236">			int endpointIdx = verticesIDStrategy.idToIdx(endpoint);</span>
+<span class="nc" id="L237">			int resIdx = g.edgeEndpoint(eIdx, endpointIdx);</span>
+<span class="nc" id="L238">			return verticesIDStrategy.idxToId(resIdx);</span>
 		}
 
 		@Override
 		public int degreeOut(int u) {
-<span class="nc" id="L232">			int uIdx = verticesIDStrategy.idToIdx(u);</span>
-<span class="nc" id="L233">			return g.degreeOut(uIdx);</span>
+<span class="nc" id="L243">			int uIdx = verticesIDStrategy.idToIdx(u);</span>
+<span class="nc" id="L244">			return g.degreeOut(uIdx);</span>
 		}
 
 		@Override
 		public int degreeIn(int u) {
-<span class="nc" id="L238">			int uIdx = verticesIDStrategy.idToIdx(u);</span>
-<span class="nc" id="L239">			return g.degreeIn(uIdx);</span>
+<span class="nc" id="L249">			int uIdx = verticesIDStrategy.idToIdx(u);</span>
+<span class="nc" id="L250">			return g.degreeIn(uIdx);</span>
 		}
 
 		@Override
 		public void clear() {
-<span class="nc" id="L244">			g.clear();</span>
-<span class="nc" id="L245">			verticesIDStrategy.clear();</span>
-<span class="nc" id="L246">			edgesIDStrategy.clear();</span>
-<span class="nc" id="L247">		}</span>
+<span class="nc" id="L255">			g.clear();</span>
+<span class="nc" id="L256">			verticesIDStrategy.clear();</span>
+<span class="nc" id="L257">			edgesIDStrategy.clear();</span>
+<span class="nc" id="L258">		}</span>
 
 		@Override
 		public void clearEdges() {
-<span class="fc" id="L251">			g.clearEdges();</span>
-<span class="fc" id="L252">			edgesIDStrategy.clear();</span>
-<span class="fc" id="L253">		}</span>
+<span class="fc" id="L262">			g.clearEdges();</span>
+<span class="fc" id="L263">			edgesIDStrategy.clear();</span>
+<span class="fc" id="L264">		}</span>
 
 		@Override
 		public &lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT verticesWeight(Object key) {
-<span class="nc" id="L257">			return g.verticesWeight(key);</span>
+<span class="nc" id="L268">			return g.verticesWeight(key);</span>
 		}
 
 		@Override
 		public Set&lt;Object&gt; getVerticesWeightKeys() {
-<span class="nc" id="L262">			return g.getVerticesWeightKeys();</span>
+<span class="nc" id="L273">			return g.getVerticesWeightKeys();</span>
 		}
 
 		@Override
 		public Collection&lt;Weights&lt;?&gt;&gt; getVerticesWeights() {
-<span class="nc" id="L267">			return g.getVerticesWeights();</span>
+<span class="nc" id="L278">			return g.getVerticesWeights();</span>
 		}
 
 		@Override
 		public void removeVerticesWeights(Object key) {
-<span class="nc" id="L272">			g.removeVerticesWeights(key);</span>
-<span class="nc" id="L273">		}</span>
+<span class="nc" id="L283">			g.removeVerticesWeights(key);</span>
+<span class="nc" id="L284">		}</span>
 
 		@Override
 		public &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT edgesWeight(Object key) {
-<span class="nc" id="L277">			return g.edgesWeight(key);</span>
+<span class="nc" id="L288">			return g.edgesWeight(key);</span>
 		}
 
 		@Override
 		public Set&lt;Object&gt; getEdgesWeightsKeys() {
-<span class="nc" id="L282">			return g.getEdgesWeightsKeys();</span>
+<span class="nc" id="L293">			return g.getEdgesWeightsKeys();</span>
 		}
 
 		@Override
 		public void removeEdgesWeights(Object key) {
-<span class="nc" id="L287">			g.removeEdgesWeights(key);</span>
-<span class="nc" id="L288">		}</span>
+<span class="nc" id="L298">			g.removeEdgesWeights(key);</span>
+<span class="nc" id="L299">		}</span>
 
 		@Override
 		public Collection&lt;Weights&lt;?&gt;&gt; getEdgesWeights() {
-<span class="nc" id="L292">			return g.getEdgesWeights();</span>
+<span class="nc" id="L303">			return g.getEdgesWeights();</span>
 		}
 
 		@Override
 		public IDStrategy.Continues getVerticesIDStrategy() {
-<span class="nc" id="L297">			return verticesIDStrategy;</span>
+<span class="nc" id="L308">			return verticesIDStrategy;</span>
 		}
 
 		@Override
 		public IDStrategy getEdgesIDStrategy() {
-<span class="fc" id="L302">			return edgesIDStrategy;</span>
+<span class="fc" id="L313">			return edgesIDStrategy;</span>
 		}
 
 		@Override
 		&lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT addVerticesWeights(Object key, WeightsT weights) {
-<span class="nc" id="L307">			return g.addVerticesWeights(key, weights);</span>
+<span class="nc" id="L318">			return g.addVerticesWeights(key, weights);</span>
 		}
 
 		@Override
 		&lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT addEdgesWeights(Object key, WeightsT weights) {
-<span class="fc" id="L312">			return g.addEdgesWeights(key, weights);</span>
+<span class="fc" id="L323">			return g.addEdgesWeights(key, weights);</span>
 		}
 
 		class EdgeItr implements EdgeIter {
 
 			private final EdgeIter it;
 
-<span class="fc" id="L319">			EdgeItr(EdgeIter it) {</span>
-<span class="fc" id="L320">				this.it = it;</span>
-<span class="fc" id="L321">			}</span>
+<span class="fc" id="L330">			EdgeItr(EdgeIter it) {</span>
+<span class="fc" id="L331">				this.it = it;</span>
+<span class="fc" id="L332">			}</span>
 
 			@Override
 			public boolean hasNext() {
-<span class="fc" id="L325">				return it.hasNext();</span>
+<span class="fc" id="L336">				return it.hasNext();</span>
 			}
 
 			@Override
 			public int nextInt() {
-<span class="fc" id="L330">				int eIdx = it.nextInt();</span>
-<span class="fc" id="L331">				return edgesIDStrategy.idxToId(eIdx);</span>
+<span class="fc" id="L341">				int eIdx = it.nextInt();</span>
+<span class="fc" id="L342">				return edgesIDStrategy.idxToId(eIdx);</span>
 			}
 
 			@Override
 			public int v() {
-<span class="fc" id="L336">				int vIdx = it.v();</span>
-<span class="fc" id="L337">				return verticesIDStrategy.idxToId(vIdx);</span>
+<span class="fc" id="L347">				int vIdx = it.v();</span>
+<span class="fc" id="L348">				return verticesIDStrategy.idxToId(vIdx);</span>
 			}
 
 			@Override
 			public int u() {
-<span class="fc" id="L342">				int uIdx = it.u();</span>
-<span class="fc" id="L343">				return verticesIDStrategy.idxToId(uIdx);</span>
+<span class="fc" id="L353">				int uIdx = it.u();</span>
+<span class="fc" id="L354">				return verticesIDStrategy.idxToId(uIdx);</span>
 			}
 
 		}
@@ -350,32 +361,32 @@ public abstract class GraphBuilder {
 	private static class GraphCustomIDStrategiesDirected extends GraphCustomIDStrategies implements DiGraph {
 
 		GraphCustomIDStrategiesDirected(GraphBaseContinues g, IDStrategy edgesIDStrategy) {
-<span class="fc" id="L353">			super(g, edgesIDStrategy);</span>
-<span class="pc bpc" id="L354" title="1 of 2 branches missed.">			if (!(g instanceof DiGraph))</span>
-<span class="nc" id="L355">				throw new IllegalArgumentException();</span>
+<span class="fc" id="L364">			super(g, edgesIDStrategy);</span>
+<span class="pc bpc" id="L365" title="1 of 2 branches missed.">			if (!(g instanceof DiGraph))</span>
+<span class="nc" id="L366">				throw new IllegalArgumentException();</span>
 
-<span class="fc" id="L357">		}</span>
+<span class="fc" id="L368">		}</span>
 
 		private DiGraph digraph() {
-<span class="nc" id="L360">			return (DiGraph) g;</span>
+<span class="nc" id="L371">			return (DiGraph) g;</span>
 		}
 
 		@Override
 		public void reverseEdge(int edge) {
-<span class="nc" id="L365">			int eIdx = edgesIDStrategy.idToIdx(edge);</span>
-<span class="nc" id="L366">			digraph().reverseEdge(eIdx);</span>
-<span class="nc" id="L367">		}</span>
+<span class="nc" id="L376">			int eIdx = edgesIDStrategy.idToIdx(edge);</span>
+<span class="nc" id="L377">			digraph().reverseEdge(eIdx);</span>
+<span class="nc" id="L378">		}</span>
 
 	}
 
 	private static class GraphCustomIDStrategiesUndirected extends GraphCustomIDStrategies implements UGraph {
 
 		GraphCustomIDStrategiesUndirected(GraphBaseContinues g, IDStrategy edgesIDStrategy) {
-<span class="nc" id="L374">			super(g, edgesIDStrategy);</span>
-<span class="nc bnc" id="L375" title="All 2 branches missed.">			if (!(g instanceof UGraph))</span>
-<span class="nc" id="L376">				throw new IllegalArgumentException();</span>
+<span class="nc" id="L385">			super(g, edgesIDStrategy);</span>
+<span class="nc bnc" id="L386" title="All 2 branches missed.">			if (!(g instanceof UGraph))</span>
+<span class="nc" id="L387">				throw new IllegalArgumentException();</span>
 
-<span class="nc" id="L378">		}</span>
+<span class="nc" id="L389">		}</span>
 
 	}
 
