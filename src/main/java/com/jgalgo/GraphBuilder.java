@@ -153,8 +153,14 @@ public abstract class GraphBuilder {
 		}
 
 		@Override
-		public EdgeIter edges(int u) {
-			EdgeIter it = g.edges(verticesIDStrategy.idToIdx(u));
+		public EdgeIter edgesOut(int u) {
+			EdgeIter it = g.edgesOut(verticesIDStrategy.idToIdx(u));
+			return new EdgeItr(it);
+		}
+
+		@Override
+		public EdgeIter edgesIn(int v) {
+			EdgeIter it = g.edgesIn(verticesIDStrategy.idToIdx(v));
 			return new EdgeItr(it);
 		}
 
@@ -203,6 +209,16 @@ public abstract class GraphBuilder {
 		}
 
 		@Override
+		public void removeEdgesAllOut(int u) {
+			g.removeEdgesAllOut(verticesIDStrategy.idToIdx(u));
+		}
+
+		@Override
+		public void removeEdgesAllIn(int v) {
+			g.removeEdgesAllIn(verticesIDStrategy.idToIdx(v));
+		}
+
+		@Override
 		public int edgeSource(int edge) {
 			int eIdx = edgesIDStrategy.idToIdx(edge);
 			return g.edgeSource(eIdx);
@@ -223,9 +239,15 @@ public abstract class GraphBuilder {
 		}
 
 		@Override
-		public int degree(int u) {
+		public int degreeOut(int u) {
 			int uIdx = verticesIDStrategy.idToIdx(u);
-			return g.degree(uIdx);
+			return g.degreeOut(uIdx);
+		}
+
+		@Override
+		public int degreeIn(int u) {
+			int uIdx = verticesIDStrategy.idToIdx(u);
+			return g.degreeIn(uIdx);
 		}
 
 		@Override
@@ -351,50 +373,9 @@ public abstract class GraphBuilder {
 		}
 
 		@Override
-		public EdgeIter edgesOut(int u) {
-			EdgeIter it = digraph().edgesOut(verticesIDStrategy.idToIdx(u));
-			return new EdgeItr(it);
-		}
-
-		@Override
-		public EdgeIter edgesIn(int v) {
-			EdgeIter it = digraph().edgesIn(verticesIDStrategy.idToIdx(v));
-			return new EdgeItr(it);
-		}
-
-		@Override
-		public void removeEdgesAllOut(int u) {
-			digraph().removeEdgesAllOut(verticesIDStrategy.idToIdx(u));
-		}
-
-		@Override
-		public void removeEdgesAllIn(int v) {
-			digraph().removeEdgesAllIn(verticesIDStrategy.idToIdx(v));
-		}
-
-		@Override
 		public void reverseEdge(int edge) {
 			int eIdx = edgesIDStrategy.idToIdx(edge);
 			digraph().reverseEdge(eIdx);
-		}
-
-		@Deprecated
-		@Override
-		public int degree(int u) {
-			int uIdx = verticesIDStrategy.idToIdx(u);
-			return digraph().degree(uIdx);
-		}
-
-		@Override
-		public int degreeOut(int u) {
-			int uIdx = verticesIDStrategy.idToIdx(u);
-			return digraph().degreeOut(uIdx);
-		}
-
-		@Override
-		public int degreeIn(int v) {
-			int vIdx = verticesIDStrategy.idToIdx(v);
-			return digraph().degreeIn(vIdx);
 		}
 
 	}

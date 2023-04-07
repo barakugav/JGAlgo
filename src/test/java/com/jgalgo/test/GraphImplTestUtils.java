@@ -173,7 +173,7 @@ class GraphImplTestUtils extends TestUtils {
 			for (IntIterator it = g.vertices().iterator(); it.hasNext();) {
 				int u = it.nextInt();
 				IntSet uEdges = new IntOpenHashSet();
-				for (EdgeIter eit = g.edges(u); eit.hasNext();) {
+				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 					int e = eit.nextInt();
 					uEdges.add(e);
 				}
@@ -227,7 +227,7 @@ class GraphImplTestUtils extends TestUtils {
 			}
 			for (IntIterator it = g.vertices().iterator(); it.hasNext();) {
 				int u = it.nextInt();
-				for (EdgeIter eit = g.edges(u); eit.hasNext();) {
+				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 					int e = eit.nextInt();
 					int v = eit.v();
 					if (directed) {
@@ -251,7 +251,6 @@ class GraphImplTestUtils extends TestUtils {
 			final int n = 100;
 			Graph g = graphImpl.newGraph(directed, n);
 
-			Int2IntMap degree = new Int2IntOpenHashMap();
 			Int2IntMap degreeOut = new Int2IntOpenHashMap();
 			Int2IntMap degreeIn = new Int2IntOpenHashMap();
 			for (int u = 0; u < n; u++) {
@@ -260,21 +259,18 @@ class GraphImplTestUtils extends TestUtils {
 						continue;
 					g.addEdge(u, v);
 
-					degree.put(u, degree.get(u) + 1);
-					if (u != v)
-						degree.put(v, degree.get(v) + 1);
-
 					degreeOut.put(u, degreeOut.get(u) + 1);
 					degreeIn.put(v, degreeIn.get(v) + 1);
+					if (!directed && u != v) {
+						degreeOut.put(v, degreeOut.get(v) + 1);
+						degreeIn.put(u, degreeIn.get(u) + 1);
+					}
 				}
 			}
 			for (IntIterator it = g.vertices().iterator(); it.hasNext();) {
 				int u = it.nextInt();
-				Assertions.assertEquals(degree.get(u), g.degree(u));
-				if (directed) {
-					Assertions.assertEquals(degreeOut.get(u), ((DiGraph) g).degreeOut(u));
-					Assertions.assertEquals(degreeIn.get(u), ((DiGraph) g).degreeIn(u));
-				}
+				Assertions.assertEquals(degreeOut.get(u), g.degreeOut(u), "u=" + u);
+				Assertions.assertEquals(degreeIn.get(u), g.degreeIn(u), "u=" + u);
 			}
 		}
 	}

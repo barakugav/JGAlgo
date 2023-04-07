@@ -45,7 +45,7 @@ public class MSTPrim1957 implements MST {
 				verticesPtrs[u] = null;
 
 				/* decrease edges keys if a better one is found */
-				for (EdgeIter eit = g.edges(u); eit.hasNext();) {
+				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 					int e = eit.nextInt();
 					int v = eit.v();
 					if (visited[v])

@@ -36,7 +36,7 @@ public class Connectivity {
 			while (!stack.isEmpty()) {
 				int u = stack.pop();
 
-				for (EdgeIter eit = g.edges(u); eit.hasNext();) {
+				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 					eit.nextInt();
 					int v = eit.v();
 					if (comp[v] != -1)

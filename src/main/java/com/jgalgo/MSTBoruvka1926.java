@@ -69,7 +69,7 @@ public class MSTBoruvka1926 implements MST {
 			for (int u = 0; u < n; u++) {
 				int tree = vTree[u];
 
-				for (EdgeIter eit = g.edges(u); eit.hasNext();) {
+				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 					int e = eit.nextInt();
 					int v = eit.v();
 					if (tree == vTree[v])

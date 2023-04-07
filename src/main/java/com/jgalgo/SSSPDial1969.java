@@ -93,7 +93,7 @@ public class SSSPDial1969 implements SSSP {
 		heap.init(maxDistance);
 
 		for (int u = source;;) {
-			for (EdgeIter eit = g.edges(u); eit.hasNext();) {
+			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = eit.v();
 				if (res.distances[v] != Integer.MAX_VALUE)

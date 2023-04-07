@@ -140,7 +140,7 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 		for (int u = 0; u < n; u++) {
 			if (!partition.getBool(u))
 				continue;
-			for (EdgeIter eit = g.edges(u); eit.hasNext();) {
+			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 				int e = eit.nextInt();
 				double weight = w.weight(e);
 				if (weight < 0)

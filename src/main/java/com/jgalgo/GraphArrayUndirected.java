@@ -19,7 +19,7 @@ public class GraphArrayUndirected extends GraphArrayAbstract implements UGraph {
 	}
 
 	@Override
-	public EdgeIter edges(int u) {
+	public EdgeIter edgesOut(int u) {
 		checkVertexIdx(u);
 		return new EdgeIt(u, edges.get(u), edgesNum.getInt(u));
 	}
@@ -78,7 +78,7 @@ public class GraphArrayUndirected extends GraphArrayAbstract implements UGraph {
 	}
 
 	@Override
-	public int degree(int u) {
+	public int degreeOut(int u) {
 		checkVertexIdx(u);
 		return edgesNum.getInt(u);
 	}

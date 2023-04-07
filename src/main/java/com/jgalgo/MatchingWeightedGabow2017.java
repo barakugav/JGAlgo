@@ -1061,7 +1061,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 
 		private void insertGrowEventsFromVertex(int u) {
 			double Yu = delta + dualVal(u);
-			for (EdgeIter eit = g.edges(u); eit.hasNext();) {
+			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = eit.v();
 				if (isEven(v))
@@ -1088,7 +1088,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 			assert isEven(u);
 			Blossom U = find0(u);
 			double Yu = delta + dualVal(u);
-			for (EdgeIter eit = g.edges(u); eit.hasNext();) {
+			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 				final int e = eit.nextInt();
 				int v = eit.v();
 				if (!isEven(v))

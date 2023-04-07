@@ -224,7 +224,7 @@ public class EulerianTourTest extends TestUtils {
 
 	private static int degreeWithoutSelfLoops(UGraph g, int u) {
 		int d = 0;
-		for (EdgeIter eit = g.edges(u); eit.hasNext();) {
+		for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 			eit.nextInt();
 			if (eit.v() != u)
 				d++;

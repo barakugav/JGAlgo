@@ -26,7 +26,7 @@ public class ColoringDSatur implements Coloring {
 		for (int u = 0; u < n; u++) {
 			uncolored.add(u);
 			usedColors[u] = new BitSet();
-			degree[u] = g.degree(u);
+			degree[u] = g.degreeOut(u);
 		}
 
 		while (!uncolored.isEmpty()) {
@@ -48,7 +48,7 @@ public class ColoringDSatur implements Coloring {
 			usedColors[u].clear();
 			usedColors[u] = null;
 
-			for (EdgeIter eit = g.edges(u); eit.hasNext();) {
+			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 				eit.nextInt();
 				int v = eit.v();
 				if (res.colorOf(v) == -1) /* v is uncolored */

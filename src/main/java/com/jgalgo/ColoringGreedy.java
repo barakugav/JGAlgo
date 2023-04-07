@@ -18,7 +18,7 @@ public class ColoringGreedy implements Coloring {
 		int n = g.vertices().size();
 		for (int u = 0; u < n; u++) {
 			IntSet usedColors = new IntOpenHashSet();
-			for (EdgeIter eit = g.edges(u); eit.hasNext();) {
+			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 				eit.nextInt();
 				int v = eit.v();
 				int c = res.colorOf(v);

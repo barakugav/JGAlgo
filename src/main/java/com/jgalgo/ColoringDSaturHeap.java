@@ -27,7 +27,7 @@ public class ColoringDSaturHeap implements Coloring {
 		@SuppressWarnings("unchecked")
 		HeapDirectAccessed.Handle<HeapElm>[] vPtrs = new HeapDirectAccessed.Handle[n];
 		for (int u = 0; u < n; u++)
-			vPtrs[u] = heap.insert(new HeapElm(u, g.degree(u)));
+			vPtrs[u] = heap.insert(new HeapElm(u, g.degreeOut(u)));
 
 		while (!heap.isEmpty()) {
 			HeapElm elm = heap.extractMin();
@@ -39,7 +39,7 @@ public class ColoringDSaturHeap implements Coloring {
 			res.colors[u] = color;
 			res.colorsNum = Math.max(res.colorsNum, color + 1);
 
-			for (EdgeIter eit = g.edges(u); eit.hasNext();) {
+			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 				eit.nextInt();
 				int v = eit.v();
 				if (res.colorOf(v) == -1) { /* v is uncolored */

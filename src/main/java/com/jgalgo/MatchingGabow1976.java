@@ -68,7 +68,7 @@ public class MatchingGabow1976 implements Matching {
 				final int u = queue.pop();
 				int uRoot = root[u];
 
-				for (EdgeIter eit = g.edges(u); eit.hasNext();) {
+				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 					final int e = eit.nextInt();
 					final int v = eit.v();
 					int vRoot = root[v];

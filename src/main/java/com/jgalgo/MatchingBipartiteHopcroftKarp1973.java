@@ -68,7 +68,7 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 				if (depth >= unmatchedTDepth)
 					continue;
 
-				for (EdgeIter eit = g.edges(u); eit.hasNext();) {
+				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 					int e = eit.nextInt();
 					int v = eit.v();
 					if (depths[v] < depth)
@@ -101,7 +101,7 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 				if (!partition.getBool(u) || matched[u] != MatchedNone)
 					continue;
 
-				edges[0] = f.edges(u);
+				edges[0] = f.edgesOut(u);
 				visited[u] = true;
 
 				for (int depth = 0; depth >= 0;) {
@@ -126,7 +126,7 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 						dfsPath[depth] = matchedEdge;
 						v = g.edgeEndpoint(matchedEdge, v);
 
-						edges[++depth] = f.edges(v);
+						edges[++depth] = f.edgesOut(v);
 					} else {
 						/*
 						 * Pop two edges (one from the matching and the other not in the matching) from

@@ -110,7 +110,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 					if (!partition.getBool(u) || matched[u] != EdgeNone)
 						continue;
 					vertexAddedToTree(u);
-					for (EdgeIter eit = g.edges(u); eit.hasNext();) {
+					for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 						int e = eit.nextInt();
 						nextTightEdgeAdd(u, e);
 					}
@@ -156,7 +156,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 						parent[v] = matchedEdge;
 						vertexAddedToTree(v);
 
-						for (EdgeIter eit = g.edges(v); eit.hasNext();) {
+						for (EdgeIter eit = g.edgesOut(v); eit.hasNext();) {
 							int e1 = eit.nextInt();
 							nextTightEdgeAdd(v, e1);
 						}

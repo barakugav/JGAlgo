@@ -19,7 +19,7 @@ public class ColoringRecursiveLargestFirst implements Coloring {
 		int n = g.vertices().size();
 		int[] degree = new int[n];
 		for (int u = 0; u < n; u++)
-			degree[u] = g.degree(u);
+			degree[u] = g.degreeOut(u);
 
 		BitSet S = new BitSet(n);
 		BitSet isAdjacentToS = new BitSet(n);
@@ -48,7 +48,7 @@ public class ColoringRecursiveLargestFirst implements Coloring {
 				S.set(u);
 
 				// update info
-				for (EdgeIter eit = g.edges(u); eit.hasNext();) {
+				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 					eit.nextInt();
 					int v = eit.v();
 					if (res.colorOf(v) != -1)
@@ -62,7 +62,7 @@ public class ColoringRecursiveLargestFirst implements Coloring {
 					if (res.colorOf(v) != -1 || S.get(v) || isAdjacentToS.get(v))
 						continue;
 					int numOfNeighborsAdjacentToS = 0;
-					for (EdgeIter eit = g.edges(v); eit.hasNext();) {
+					for (EdgeIter eit = g.edgesOut(v); eit.hasNext();) {
 						eit.nextInt();
 						int w = eit.v();
 						if (isAdjacentToS.get(w))
@@ -83,7 +83,7 @@ public class ColoringRecursiveLargestFirst implements Coloring {
 				res.colors[u] = color;
 
 				// update degree to include only vertices without color
-				for (EdgeIter eit = g.edges(u); eit.hasNext();) {
+				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 					eit.nextInt();
 					degree[eit.v()]--;
 				}

@@ -46,7 +46,7 @@ public class SSSPDijkstra implements SSSP {
 		res.distances[source] = 0;
 
 		for (int u = source;;) {
-			for (EdgeIter eit = g.edges(u); eit.hasNext();) {
+			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = eit.v();
 				if (res.distances[v] != Double.POSITIVE_INFINITY)

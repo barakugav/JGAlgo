@@ -39,7 +39,7 @@ public class MDSTTarjan1977Test extends TestUtils {
 			Graph dg = new GraphArrayDirected(n);
 			Weights.Int edgeRef = dg.addEdgesWeight("edgeRef").defVal(-1).ofInts();
 			for (int u = 0; u < n; u++) {
-				for (EdgeIter eit = g.edges(u); eit.hasNext();) {
+				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 					int e = eit.nextInt();
 					int v = eit.v();
 					edgeRef.set(dg.addEdge(u, v), e);

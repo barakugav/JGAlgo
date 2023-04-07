@@ -30,8 +30,6 @@ public class GraphTableUndirected extends GraphTableAbstract implements UGraph {
 		super.edgeSwap(e1, e2);
 	}
 
-
-
 	private static final GraphCapabilities Capabilities = new GraphCapabilities() {
 		@Override
 		public boolean vertexAdd() {

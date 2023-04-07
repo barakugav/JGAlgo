@@ -43,7 +43,7 @@ public class EulerianTour {
 		try {
 			EdgeIter[] iters = new EdgeIter[n];
 			for (int u = 0; u < n; u++)
-				iters[u] = g.edges(u);
+				iters[u] = g.edgesOut(u);
 
 			IntArrayList tour = new IntArrayList(g.edges().size());
 			StackIntFixSize queue = new StackIntFixSize(g.edges().size());
@@ -87,7 +87,7 @@ public class EulerianTour {
 
 	private static int degreeWithoutSelfLoops(UGraph g, int u) {
 		int d = 0;
-		for (EdgeIter eit = g.edges(u); eit.hasNext();) {
+		for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 			eit.nextInt();
 			if (eit.v() != u)
 				d++;

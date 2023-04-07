@@ -173,7 +173,7 @@ abstract class GraphBase implements Graph {
 			s.append("<v" + u + ">->[");
 
 			boolean firstEdge = true;
-			for (EdgeIter eit = edges(u); eit.hasNext();) {
+			for (EdgeIter eit = edgesOut(u); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = eit.v();
 				if (firstEdge)

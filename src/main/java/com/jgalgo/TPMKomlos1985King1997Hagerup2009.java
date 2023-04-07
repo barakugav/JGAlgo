@@ -217,7 +217,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 				Arrays.fill(minEdges, 0, n, -1);
 				Arrays.fill(minGraphWeights, 0, n, Double.MAX_VALUE);
 				for (int u = 0; u < n; u++) {
-					for (EdgeIter eit = G.edges(u); eit.hasNext();) {
+					for (EdgeIter eit = G.edgesOut(u); eit.hasNext();) {
 						int e = eit.nextInt();
 						double eWeight = w.weight(GData.getInt(e));
 						if (eWeight < minGraphWeights[u]) {
@@ -270,7 +270,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 				Weights.Int gNextData = gNext.addEdgesWeight(EdgeRefWeightKey).defVal(-1).ofInts();
 				for (int u = 0; u < n; u++) {
 					int U = vNext[u];
-					for (EdgeIter eit = G.edges(u); eit.hasNext();) {
+					for (EdgeIter eit = G.edgesOut(u); eit.hasNext();) {
 						int e = eit.nextInt();
 						int V = vNext[eit.v()];
 						if (U != V) {

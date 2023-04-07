@@ -53,7 +53,7 @@ public class BFSIter implements IntIterator {
 			firstVInLayer = -1;
 		}
 
-		for (EdgeIter eit = g.edges(u); eit.hasNext();) {
+		for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 			int e = eit.nextInt();
 			int v = eit.v();
 			if (visited[v])

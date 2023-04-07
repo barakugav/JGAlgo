@@ -116,7 +116,7 @@ public class Graphs {
 				int u = stack.pop();
 				visitedCount++;
 
-				for (EdgeIter eit = g.edges(u); eit.hasNext();) {
+				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 					eit.nextInt();
 					int v = eit.v();
 					if (!directed && v == parent[u])
@@ -171,7 +171,7 @@ public class Graphs {
 	static int getFullyBranchingTreeDepth(Graph t, int root) {
 		for (int parent = -1, u = root, depth = 0;; depth++) {
 			int v = parent;
-			for (EdgeIter eit = t.edges(u); eit.hasNext();) {
+			for (EdgeIter eit = t.edgesOut(u); eit.hasNext();) {
 				eit.nextInt();
 				v = eit.v();
 				if (v != parent)
@@ -228,7 +228,7 @@ public class Graphs {
 		/* format all edges */
 		String[][] strs = new String[n][n];
 		for (int u = 0; u < n; u++) {
-			for (EdgeIter eit = g.edges(u); eit.hasNext();) {
+			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 				int e = eit.nextInt();
 				strs[u][eit.v()] = formatter.apply(e);
 			}
@@ -352,7 +352,7 @@ public class Graphs {
 			return false;
 		int n = g.vertices().size();
 		for (int u = 0; u < n; u++) {
-			for (EdgeIter eit = g.edges(u); eit.hasNext();) {
+			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 				eit.nextInt();
 				if (u == eit.v())
 					return true;
@@ -368,7 +368,7 @@ public class Graphs {
 		int[] lastVisit = new int[n];
 		for (int u = 0; u < n; u++) {
 			final int visitIdx = u + 1;
-			for (EdgeIter eit = g.edges(u); eit.hasNext();) {
+			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 				eit.nextInt();
 				int v = eit.v();
 				if (lastVisit[v] == visitIdx)

@@ -75,7 +75,7 @@ public abstract class RandomWalkIter implements IntIterator {
 		@Override
 		int[] getEdges(int u) {
 			IntList es = new IntArrayList();
-			for (EdgeIter eit = g.edges(u); eit.hasNext();)
+			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();)
 				es.add(eit.nextInt());
 			return es.toIntArray();
 		}
@@ -89,7 +89,7 @@ public abstract class RandomWalkIter implements IntIterator {
 		@Override
 		int[] getEdges(int u) {
 			IntList es = new IntArrayList();
-			for (EdgeIter eit = g.edges(u); eit.hasNext();) {
+			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 				int e = eit.nextInt();
 				if (g.edgeEndpoint(e, u) != u)
 					es.add(e);
@@ -111,7 +111,7 @@ public abstract class RandomWalkIter implements IntIterator {
 		int[] getEdges(int u) {
 			int visitIdx = ++lastVisitIdx;
 			IntList es = new IntArrayList();
-			for (EdgeIter eit = g.edges(u); eit.hasNext();) {
+			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = g.edgeEndpoint(e, u);
 				if (visits[v] == visitIdx)

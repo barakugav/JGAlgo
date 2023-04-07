@@ -27,7 +27,7 @@ abstract class GraphTableAbstract extends GraphBaseContinues {
 	}
 
 	@Override
-	public EdgeIter edges(int u) {
+	public EdgeIter edgesOut(int u) {
 		return new EdgeIterOut(u);
 	}
 

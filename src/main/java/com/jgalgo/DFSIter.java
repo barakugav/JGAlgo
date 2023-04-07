@@ -24,7 +24,7 @@ public class DFSIter implements IntIterator {
 		edgePath = new IntArrayList();
 
 		visited[source] = true;
-		edgeIters.add(g.edges(source));
+		edgeIters.add(g.edgesOut(source));
 		isValid = true;
 	}
 
@@ -41,7 +41,7 @@ public class DFSIter implements IntIterator {
 				if (visited[v])
 					continue;
 				visited[v] = true;
-				edgeIters.add(g.edges(v));
+				edgeIters.add(g.edgesOut(v));
 				edgePath.add(e);
 				return isValid = true;
 			}

@@ -59,7 +59,7 @@ class MatchingUnweightedTestUtils extends TestUtils {
 		List<Integer>[] graph = new List[n];
 		for (int u = 0; u < n; u++) {
 			graph[u] = new ArrayList<>();
-			for (EdgeIter eit = g.edges(u); eit.hasNext();) {
+			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 				eit.nextInt();
 				int v = eit.v();
 				graph[u].add(Integer.valueOf(v));
