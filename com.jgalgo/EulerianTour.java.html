@@ -43,7 +43,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 		try {
 <span class="fc" id="L44">			EdgeIter[] iters = new EdgeIter[n];</span>
 <span class="fc bfc" id="L45" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
-<span class="fc" id="L46">				iters[u] = g.edges(u);</span>
+<span class="fc" id="L46">				iters[u] = g.edgesOut(u);</span>
 
 <span class="fc" id="L48">			IntArrayList tour = new IntArrayList(g.edges().size());</span>
 <span class="fc" id="L49">			StackIntFixSize queue = new StackIntFixSize(g.edges().size());</span>
@@ -87,7 +87,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 
 	private static int degreeWithoutSelfLoops(UGraph g, int u) {
 <span class="fc" id="L89">		int d = 0;</span>
-<span class="fc bfc" id="L90" title="All 2 branches covered.">		for (EdgeIter eit = g.edges(u); eit.hasNext();) {</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">		for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
 <span class="fc" id="L91">			eit.nextInt();</span>
 <span class="fc bfc" id="L92" title="All 2 branches covered.">			if (eit.v() != u)</span>
 <span class="fc" id="L93">				d++;</span>

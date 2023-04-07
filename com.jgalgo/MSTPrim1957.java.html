@@ -45,7 +45,7 @@ public class MSTPrim1957 implements MST {
 <span class="fc" id="L45">				verticesPtrs[u] = null;</span>
 
 				/* decrease edges keys if a better one is found */
-<span class="fc bfc" id="L48" title="All 2 branches covered.">				for (EdgeIter eit = g.edges(u); eit.hasNext();) {</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
 <span class="fc" id="L49">					int e = eit.nextInt();</span>
 <span class="fc" id="L50">					int v = eit.v();</span>
 <span class="fc bfc" id="L51" title="All 2 branches covered.">					if (visited[v])</span>

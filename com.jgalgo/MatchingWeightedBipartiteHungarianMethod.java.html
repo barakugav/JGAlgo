@@ -110,7 +110,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 <span class="fc bfc" id="L110" title="All 4 branches covered.">					if (!partition.getBool(u) || matched[u] != EdgeNone)</span>
 <span class="fc" id="L111">						continue;</span>
 <span class="fc" id="L112">					vertexAddedToTree(u);</span>
-<span class="fc bfc" id="L113" title="All 2 branches covered.">					for (EdgeIter eit = g.edges(u); eit.hasNext();) {</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">					for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
 <span class="fc" id="L114">						int e = eit.nextInt();</span>
 <span class="fc" id="L115">						nextTightEdgeAdd(u, e);</span>
 <span class="fc" id="L116">					}</span>
@@ -156,7 +156,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 <span class="fc" id="L156">						parent[v] = matchedEdge;</span>
 <span class="fc" id="L157">						vertexAddedToTree(v);</span>
 
-<span class="fc bfc" id="L159" title="All 2 branches covered.">						for (EdgeIter eit = g.edges(v); eit.hasNext();) {</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">						for (EdgeIter eit = g.edgesOut(v); eit.hasNext();) {</span>
 <span class="fc" id="L160">							int e1 = eit.nextInt();</span>
 <span class="fc" id="L161">							nextTightEdgeAdd(v, e1);</span>
 <span class="fc" id="L162">						}</span>

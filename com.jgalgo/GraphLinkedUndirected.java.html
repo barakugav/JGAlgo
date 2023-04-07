@@ -15,7 +15,7 @@ public class GraphLinkedUndirected extends GraphLinkedAbstract implements UGraph
 <span class="fc" id="L15">	}</span>
 
 	@Override
-	public EdgeIter edges(int u) {
+	public EdgeIter edgesOut(int u) {
 <span class="fc" id="L19">		checkVertexIdx(u);</span>
 <span class="fc" id="L20">		return new EdgeVertexItr(u, edges.get(u));</span>
 	}

@@ -68,7 +68,7 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 <span class="fc bfc" id="L68" title="All 2 branches covered.">				if (depth &gt;= unmatchedTDepth)</span>
 <span class="fc" id="L69">					continue;</span>
 
-<span class="fc bfc" id="L71" title="All 2 branches covered.">				for (EdgeIter eit = g.edges(u); eit.hasNext();) {</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
 <span class="fc" id="L72">					int e = eit.nextInt();</span>
 <span class="fc" id="L73">					int v = eit.v();</span>
 <span class="fc bfc" id="L74" title="All 2 branches covered.">					if (depths[v] &lt; depth)</span>
@@ -101,7 +101,7 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 <span class="fc bfc" id="L101" title="All 4 branches covered.">				if (!partition.getBool(u) || matched[u] != MatchedNone)</span>
 <span class="fc" id="L102">					continue;</span>
 
-<span class="fc" id="L104">				edges[0] = f.edges(u);</span>
+<span class="fc" id="L104">				edges[0] = f.edgesOut(u);</span>
 <span class="fc" id="L105">				visited[u] = true;</span>
 
 <span class="fc bfc" id="L107" title="All 2 branches covered.">				for (int depth = 0; depth &gt;= 0;) {</span>
@@ -126,7 +126,7 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 <span class="fc" id="L126">						dfsPath[depth] = matchedEdge;</span>
 <span class="fc" id="L127">						v = g.edgeEndpoint(matchedEdge, v);</span>
 
-<span class="fc" id="L129">						edges[++depth] = f.edges(v);</span>
+<span class="fc" id="L129">						edges[++depth] = f.edgesOut(v);</span>
 <span class="fc" id="L130">					} else {</span>
 						/*
 						 * Pop two edges (one from the matching and the other not in the matching) from

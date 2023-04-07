@@ -68,7 +68,7 @@ public class MatchingGabow1976 implements Matching {
 <span class="fc" id="L68">				final int u = queue.pop();</span>
 <span class="fc" id="L69">				int uRoot = root[u];</span>
 
-<span class="fc bfc" id="L71" title="All 2 branches covered.">				for (EdgeIter eit = g.edges(u); eit.hasNext();) {</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
 <span class="fc" id="L72">					final int e = eit.nextInt();</span>
 <span class="fc" id="L73">					final int v = eit.v();</span>
 <span class="fc" id="L74">					int vRoot = root[v];</span>

@@ -1061,7 +1061,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 
 		private void insertGrowEventsFromVertex(int u) {
 <span class="fc" id="L1063">			double Yu = delta + dualVal(u);</span>
-<span class="fc bfc" id="L1064" title="All 2 branches covered.">			for (EdgeIter eit = g.edges(u); eit.hasNext();) {</span>
+<span class="fc bfc" id="L1064" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
 <span class="fc" id="L1065">				int e = eit.nextInt();</span>
 <span class="fc" id="L1066">				int v = eit.v();</span>
 <span class="fc bfc" id="L1067" title="All 2 branches covered.">				if (isEven(v))</span>
@@ -1088,7 +1088,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 <span class="pc bpc" id="L1088" title="1 of 2 branches missed.">			assert isEven(u);</span>
 <span class="fc" id="L1089">			Blossom U = find0(u);</span>
 <span class="fc" id="L1090">			double Yu = delta + dualVal(u);</span>
-<span class="fc bfc" id="L1091" title="All 2 branches covered.">			for (EdgeIter eit = g.edges(u); eit.hasNext();) {</span>
+<span class="fc bfc" id="L1091" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
 <span class="fc" id="L1092">				final int e = eit.nextInt();</span>
 <span class="fc" id="L1093">				int v = eit.v();</span>
 <span class="fc bfc" id="L1094" title="All 2 branches covered.">				if (!isEven(v))</span>

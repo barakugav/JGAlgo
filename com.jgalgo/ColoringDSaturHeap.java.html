@@ -27,7 +27,7 @@ import java.util.Objects;
 		@SuppressWarnings(&quot;unchecked&quot;)
 <span class="fc" id="L28">		HeapDirectAccessed.Handle&lt;HeapElm&gt;[] vPtrs = new HeapDirectAccessed.Handle[n];</span>
 <span class="fc bfc" id="L29" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
-<span class="fc" id="L30">			vPtrs[u] = heap.insert(new HeapElm(u, g.degree(u)));</span>
+<span class="fc" id="L30">			vPtrs[u] = heap.insert(new HeapElm(u, g.degreeOut(u)));</span>
 
 <span class="fc bfc" id="L32" title="All 2 branches covered.">		while (!heap.isEmpty()) {</span>
 <span class="fc" id="L33">			HeapElm elm = heap.extractMin();</span>
@@ -39,7 +39,7 @@ import java.util.Objects;
 <span class="fc" id="L39">			res.colors[u] = color;</span>
 <span class="fc" id="L40">			res.colorsNum = Math.max(res.colorsNum, color + 1);</span>
 
-<span class="fc bfc" id="L42" title="All 2 branches covered.">			for (EdgeIter eit = g.edges(u); eit.hasNext();) {</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
 <span class="fc" id="L43">				eit.nextInt();</span>
 <span class="fc" id="L44">				int v = eit.v();</span>
 <span class="fc bfc" id="L45" title="All 2 branches covered.">				if (res.colorOf(v) == -1) { /* v is uncolored */</span>

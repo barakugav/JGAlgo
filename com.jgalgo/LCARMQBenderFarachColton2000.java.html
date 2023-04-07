@@ -40,7 +40,7 @@ public class LCARMQBenderFarachColton2000 implements LCAStatic {
 <span class="fc" id="L40">		EdgeIter[] edges = new EdgeIter[n];</span>
 
 <span class="fc" id="L42">		parent[0] = -1;</span>
-<span class="fc" id="L43">		edges[0] = t.edges(r);</span>
+<span class="fc" id="L43">		edges[0] = t.edgesOut(r);</span>
 
 <span class="fc" id="L45">		int aLen = 0;</span>
 <span class="fc" id="L46">		dfs: for (int u = r, depth = 0;;) {</span>
@@ -55,7 +55,7 @@ public class LCARMQBenderFarachColton2000 implements LCAStatic {
 <span class="fc" id="L55">					continue;</span>
 <span class="fc" id="L56">				depth++;</span>
 <span class="fc" id="L57">				parent[depth] = u;</span>
-<span class="fc" id="L58">				edges[depth] = t.edges(v);</span>
+<span class="fc" id="L58">				edges[depth] = t.edgesOut(v);</span>
 <span class="fc" id="L59">				u = v;</span>
 <span class="fc" id="L60">				continue dfs;</span>
 			}

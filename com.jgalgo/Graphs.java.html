@@ -116,7 +116,7 @@ public class Graphs {
 <span class="fc" id="L116">				int u = stack.pop();</span>
 <span class="fc" id="L117">				visitedCount++;</span>
 
-<span class="fc bfc" id="L119" title="All 2 branches covered.">				for (EdgeIter eit = g.edges(u); eit.hasNext();) {</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
 <span class="fc" id="L120">					eit.nextInt();</span>
 <span class="fc" id="L121">					int v = eit.v();</span>
 <span class="pc bpc" id="L122" title="1 of 4 branches missed.">					if (!directed &amp;&amp; v == parent[u])</span>
@@ -171,7 +171,7 @@ public class Graphs {
 	static int getFullyBranchingTreeDepth(Graph t, int root) {
 <span class="fc" id="L172">		for (int parent = -1, u = root, depth = 0;; depth++) {</span>
 <span class="fc" id="L173">			int v = parent;</span>
-<span class="fc bfc" id="L174" title="All 2 branches covered.">			for (EdgeIter eit = t.edges(u); eit.hasNext();) {</span>
+<span class="fc bfc" id="L174" title="All 2 branches covered.">			for (EdgeIter eit = t.edgesOut(u); eit.hasNext();) {</span>
 <span class="fc" id="L175">				eit.nextInt();</span>
 <span class="fc" id="L176">				v = eit.v();</span>
 <span class="fc bfc" id="L177" title="All 2 branches covered.">				if (v != parent)</span>
@@ -228,7 +228,7 @@ public class Graphs {
 		/* format all edges */
 <span class="nc" id="L229">		String[][] strs = new String[n][n];</span>
 <span class="nc bnc" id="L230" title="All 2 branches missed.">		for (int u = 0; u &lt; n; u++) {</span>
-<span class="nc bnc" id="L231" title="All 2 branches missed.">			for (EdgeIter eit = g.edges(u); eit.hasNext();) {</span>
+<span class="nc bnc" id="L231" title="All 2 branches missed.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
 <span class="nc" id="L232">				int e = eit.nextInt();</span>
 <span class="nc" id="L233">				strs[u][eit.v()] = formatter.apply(e);</span>
 <span class="nc" id="L234">			}</span>
@@ -352,7 +352,7 @@ public class Graphs {
 <span class="nc" id="L352">			return false;</span>
 <span class="fc" id="L353">		int n = g.vertices().size();</span>
 <span class="fc bfc" id="L354" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc bfc" id="L355" title="All 2 branches covered.">			for (EdgeIter eit = g.edges(u); eit.hasNext();) {</span>
+<span class="fc bfc" id="L355" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
 <span class="fc" id="L356">				eit.nextInt();</span>
 <span class="pc bpc" id="L357" title="1 of 2 branches missed.">				if (u == eit.v())</span>
 <span class="nc" id="L358">					return true;</span>
@@ -368,7 +368,7 @@ public class Graphs {
 <span class="fc" id="L368">		int[] lastVisit = new int[n];</span>
 <span class="fc bfc" id="L369" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
 <span class="fc" id="L370">			final int visitIdx = u + 1;</span>
-<span class="fc bfc" id="L371" title="All 2 branches covered.">			for (EdgeIter eit = g.edges(u); eit.hasNext();) {</span>
+<span class="fc bfc" id="L371" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
 <span class="fc" id="L372">				eit.nextInt();</span>
 <span class="fc" id="L373">				int v = eit.v();</span>
 <span class="pc bpc" id="L374" title="1 of 2 branches missed.">				if (lastVisit[v] == visitIdx)</span>

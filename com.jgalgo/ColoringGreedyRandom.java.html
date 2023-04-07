@@ -37,7 +37,7 @@ public class ColoringGreedyRandom implements Coloring {
 <span class="fc bfc" id="L37" title="All 2 branches covered.">		for (int i = 0; i &lt; n; i++) {</span>
 <span class="fc" id="L38">			int u = order[i];</span>
 <span class="fc" id="L39">			IntSet usedColors = new IntOpenHashSet();</span>
-<span class="fc bfc" id="L40" title="All 2 branches covered.">			for (EdgeIter eit = g.edges(u); eit.hasNext();) {</span>
+<span class="fc bfc" id="L40" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
 <span class="fc" id="L41">				eit.nextInt();</span>
 <span class="fc" id="L42">				int v = eit.v();</span>
 <span class="fc" id="L43">				int c = res.colorOf(v);</span>

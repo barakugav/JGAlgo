@@ -142,7 +142,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 
 <span class="fc bfc" id="L143" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
 <span class="fc" id="L144">			int edgesCount = 0;</span>
-<span class="fc bfc" id="L145" title="All 2 branches covered.">			for (EdgeIter eit = g.edges(u); eit.hasNext();)</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();)</span>
 <span class="fc" id="L146">				edgesTemp[edgesCount++] = eit.nextInt();</span>
 
 <span class="fc bfc" id="L148" title="All 2 branches covered.">			if (edgesCount &lt;= k) {</span>

@@ -19,7 +19,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 <span class="fc" id="L19">		int n = g.vertices().size();</span>
 <span class="fc" id="L20">		int[] degree = new int[n];</span>
 <span class="fc bfc" id="L21" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
-<span class="fc" id="L22">			degree[u] = g.degree(u);</span>
+<span class="fc" id="L22">			degree[u] = g.degreeOut(u);</span>
 
 <span class="fc" id="L24">		BitSet S = new BitSet(n);</span>
 <span class="fc" id="L25">		BitSet isAdjacentToS = new BitSet(n);</span>
@@ -48,7 +48,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 <span class="fc" id="L48">				S.set(u);</span>
 
 				// update info
-<span class="fc bfc" id="L51" title="All 2 branches covered.">				for (EdgeIter eit = g.edges(u); eit.hasNext();) {</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
 <span class="fc" id="L52">					eit.nextInt();</span>
 <span class="fc" id="L53">					int v = eit.v();</span>
 <span class="fc bfc" id="L54" title="All 2 branches covered.">					if (res.colorOf(v) != -1)</span>
@@ -62,7 +62,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 <span class="fc bfc" id="L62" title="All 6 branches covered.">					if (res.colorOf(v) != -1 || S.get(v) || isAdjacentToS.get(v))</span>
 <span class="fc" id="L63">						continue;</span>
 <span class="fc" id="L64">					int numOfNeighborsAdjacentToS = 0;</span>
-<span class="fc bfc" id="L65" title="All 2 branches covered.">					for (EdgeIter eit = g.edges(v); eit.hasNext();) {</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">					for (EdgeIter eit = g.edgesOut(v); eit.hasNext();) {</span>
 <span class="fc" id="L66">						eit.nextInt();</span>
 <span class="fc" id="L67">						int w = eit.v();</span>
 <span class="fc bfc" id="L68" title="All 2 branches covered.">						if (isAdjacentToS.get(w))</span>
@@ -83,7 +83,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 <span class="fc" id="L83">				res.colors[u] = color;</span>
 
 				// update degree to include only vertices without color
-<span class="fc bfc" id="L86" title="All 2 branches covered.">				for (EdgeIter eit = g.edges(u); eit.hasNext();) {</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
 <span class="fc" id="L87">					eit.nextInt();</span>
 <span class="fc" id="L88">					degree[eit.v()]--;</span>
 				}

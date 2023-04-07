@@ -85,7 +85,7 @@ public class MSTFredmanTarjan1987 implements MST {
 					// decrease edges keys if a better one is found
 <span class="fc bfc" id="L86" title="All 2 branches covered.">					for (int u = vListBegin[U]; u != -1; u = vListNext[u]) {</span>
 						// for each vertex in the super vertex, iterate over all edges
-<span class="fc bfc" id="L88" title="All 2 branches covered.">						for (EdgeIter eit = g.edges(u); eit.hasNext();) {</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">						for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
 <span class="fc" id="L89">							int e = eit.nextInt();</span>
 <span class="fc" id="L90">							int v = V[eit.v()];</span>
 

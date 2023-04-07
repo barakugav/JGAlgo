@@ -18,7 +18,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L18">		int n = g.vertices().size();</span>
 <span class="fc bfc" id="L19" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
 <span class="fc" id="L20">			IntSet usedColors = new IntOpenHashSet();</span>
-<span class="fc bfc" id="L21" title="All 2 branches covered.">			for (EdgeIter eit = g.edges(u); eit.hasNext();) {</span>
+<span class="fc bfc" id="L21" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
 <span class="fc" id="L22">				eit.nextInt();</span>
 <span class="fc" id="L23">				int v = eit.v();</span>
 <span class="fc" id="L24">				int c = res.colorOf(v);</span>

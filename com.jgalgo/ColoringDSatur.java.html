@@ -26,7 +26,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc bfc" id="L26" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
 <span class="fc" id="L27">			uncolored.add(u);</span>
 <span class="fc" id="L28">			usedColors[u] = new BitSet();</span>
-<span class="fc" id="L29">			degree[u] = g.degree(u);</span>
+<span class="fc" id="L29">			degree[u] = g.degreeOut(u);</span>
 		}
 
 <span class="fc bfc" id="L32" title="All 2 branches covered.">		while (!uncolored.isEmpty()) {</span>
@@ -48,7 +48,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L48">			usedColors[u].clear();</span>
 <span class="fc" id="L49">			usedColors[u] = null;</span>
 
-<span class="fc bfc" id="L51" title="All 2 branches covered.">			for (EdgeIter eit = g.edges(u); eit.hasNext();) {</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
 <span class="fc" id="L52">				eit.nextInt();</span>
 <span class="fc" id="L53">				int v = eit.v();</span>
 <span class="fc bfc" id="L54" title="All 2 branches covered.">				if (res.colorOf(v) == -1) /* v is uncolored */</span>

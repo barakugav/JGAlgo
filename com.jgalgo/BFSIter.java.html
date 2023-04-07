@@ -53,7 +53,7 @@ public class BFSIter implements IntIterator {
 <span class="fc" id="L53">			firstVInLayer = -1;</span>
 		}
 
-<span class="fc bfc" id="L56" title="All 2 branches covered.">		for (EdgeIter eit = g.edges(u); eit.hasNext();) {</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">		for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
 <span class="fc" id="L57">			int e = eit.nextInt();</span>
 <span class="fc" id="L58">			int v = eit.v();</span>
 <span class="fc bfc" id="L59" title="All 2 branches covered.">			if (visited[v])</span>

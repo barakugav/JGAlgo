@@ -9,11 +9,11 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 abstract class GraphBase implements Graph {
 
-	final IDStrategy verticesIDStrategy;
+	final IDStrategy.Continues verticesIDStrategy;
 	final IDStrategy edgesIDStrategy;
 	private final GraphCapabilities capabilities;
 
-<span class="fc" id="L16">	GraphBase(IDStrategy verticesIDStrategy, IDStrategy edgesIDStrategy, GraphCapabilities capabilities) {</span>
+<span class="fc" id="L16">	GraphBase(IDStrategy.Continues verticesIDStrategy, IDStrategy edgesIDStrategy, GraphCapabilities capabilities) {</span>
 <span class="fc" id="L17">		this.verticesIDStrategy = Objects.requireNonNull(verticesIDStrategy);</span>
 <span class="fc" id="L18">		this.edgesIDStrategy = Objects.requireNonNull(edgesIDStrategy);</span>
 <span class="fc" id="L19">		this.capabilities = Objects.requireNonNull(capabilities);</span>
@@ -55,7 +55,7 @@ abstract class GraphBase implements Graph {
 	abstract &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT addEdgesWeights(Object key, WeightsT weights);
 
 	@Override
-	public IDStrategy getVerticesIDStrategy() {
+	public IDStrategy.Continues getVerticesIDStrategy() {
 <span class="fc" id="L59">		return verticesIDStrategy;</span>
 	}
 
@@ -173,7 +173,7 @@ abstract class GraphBase implements Graph {
 <span class="fc" id="L173">			s.append(&quot;&lt;v&quot; + u + &quot;&gt;-&gt;[&quot;);</span>
 
 <span class="fc" id="L175">			boolean firstEdge = true;</span>
-<span class="fc bfc" id="L176" title="All 2 branches covered.">			for (EdgeIter eit = edges(u); eit.hasNext();) {</span>
+<span class="fc bfc" id="L176" title="All 2 branches covered.">			for (EdgeIter eit = edgesOut(u); eit.hasNext();) {</span>
 <span class="fc" id="L177">				int e = eit.nextInt();</span>
 <span class="fc" id="L178">				int v = eit.v();</span>
 <span class="fc bfc" id="L179" title="All 2 branches covered.">				if (firstEdge)</span>

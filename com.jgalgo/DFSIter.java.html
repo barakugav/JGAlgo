@@ -24,7 +24,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 <span class="fc" id="L24">		edgePath = new IntArrayList();</span>
 
 <span class="fc" id="L26">		visited[source] = true;</span>
-<span class="fc" id="L27">		edgeIters.add(g.edges(source));</span>
+<span class="fc" id="L27">		edgeIters.add(g.edgesOut(source));</span>
 <span class="fc" id="L28">		isValid = true;</span>
 <span class="fc" id="L29">	}</span>
 
@@ -41,7 +41,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 <span class="fc bfc" id="L41" title="All 2 branches covered.">				if (visited[v])</span>
 <span class="fc" id="L42">					continue;</span>
 <span class="fc" id="L43">				visited[v] = true;</span>
-<span class="fc" id="L44">				edgeIters.add(g.edges(v));</span>
+<span class="fc" id="L44">				edgeIters.add(g.edgesOut(v));</span>
 <span class="fc" id="L45">				edgePath.add(e);</span>
 <span class="fc" id="L46">				return isValid = true;</span>
 			}

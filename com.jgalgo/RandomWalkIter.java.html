@@ -75,7 +75,7 @@ public abstract class RandomWalkIter implements IntIterator {
 		@Override
 		int[] getEdges(int u) {
 <span class="nc" id="L77">			IntList es = new IntArrayList();</span>
-<span class="nc bnc" id="L78" title="All 2 branches missed.">			for (EdgeIter eit = g.edges(u); eit.hasNext();)</span>
+<span class="nc bnc" id="L78" title="All 2 branches missed.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();)</span>
 <span class="nc" id="L79">				es.add(eit.nextInt());</span>
 <span class="nc" id="L80">			return es.toIntArray();</span>
 		}
@@ -89,7 +89,7 @@ public abstract class RandomWalkIter implements IntIterator {
 		@Override
 		int[] getEdges(int u) {
 <span class="nc" id="L91">			IntList es = new IntArrayList();</span>
-<span class="nc bnc" id="L92" title="All 2 branches missed.">			for (EdgeIter eit = g.edges(u); eit.hasNext();) {</span>
+<span class="nc bnc" id="L92" title="All 2 branches missed.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
 <span class="nc" id="L93">				int e = eit.nextInt();</span>
 <span class="nc bnc" id="L94" title="All 2 branches missed.">				if (g.edgeEndpoint(e, u) != u)</span>
 <span class="nc" id="L95">					es.add(e);</span>
@@ -111,7 +111,7 @@ public abstract class RandomWalkIter implements IntIterator {
 		int[] getEdges(int u) {
 <span class="nc" id="L112">			int visitIdx = ++lastVisitIdx;</span>
 <span class="nc" id="L113">			IntList es = new IntArrayList();</span>
-<span class="nc bnc" id="L114" title="All 2 branches missed.">			for (EdgeIter eit = g.edges(u); eit.hasNext();) {</span>
+<span class="nc bnc" id="L114" title="All 2 branches missed.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
 <span class="nc" id="L115">				int e = eit.nextInt();</span>
 <span class="nc" id="L116">				int v = g.edgeEndpoint(e, u);</span>
 <span class="nc bnc" id="L117" title="All 2 branches missed.">				if (visits[v] == visitIdx)</span>

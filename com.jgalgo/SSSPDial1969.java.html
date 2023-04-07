@@ -93,7 +93,7 @@ public class SSSPDial1969 implements SSSP {
 <span class="fc" id="L93">		heap.init(maxDistance);</span>
 
 <span class="fc" id="L95">		for (int u = source;;) {</span>
-<span class="fc bfc" id="L96" title="All 2 branches covered.">			for (EdgeIter eit = g.edges(u); eit.hasNext();) {</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
 <span class="fc" id="L97">				int e = eit.nextInt();</span>
 <span class="fc" id="L98">				int v = eit.v();</span>
 <span class="fc bfc" id="L99" title="All 2 branches covered.">				if (res.distances[v] != Integer.MAX_VALUE)</span>

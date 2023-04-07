@@ -14,7 +14,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 		/* Assert degree is actually even in the new graph */
 <span class="fc bfc" id="L16" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
-<span class="pc bpc" id="L17" title="1 of 2 branches missed.">			assert g1.degree(u) % 2 == 0;</span>
+<span class="pc bpc" id="L17" title="1 of 2 branches missed.">			assert g1.degreeOut(u) % 2 == 0;</span>
 
 		/* Calculate Eulerian tour in the new graph */
 <span class="fc" id="L20">		Path tour = EulerianTour.calcTour(g1);</span>

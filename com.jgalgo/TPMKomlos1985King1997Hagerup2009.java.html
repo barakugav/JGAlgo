@@ -217,7 +217,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 <span class="fc" id="L217">				Arrays.fill(minEdges, 0, n, -1);</span>
 <span class="fc" id="L218">				Arrays.fill(minGraphWeights, 0, n, Double.MAX_VALUE);</span>
 <span class="fc bfc" id="L219" title="All 2 branches covered.">				for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc bfc" id="L220" title="All 2 branches covered.">					for (EdgeIter eit = G.edges(u); eit.hasNext();) {</span>
+<span class="fc bfc" id="L220" title="All 2 branches covered.">					for (EdgeIter eit = G.edgesOut(u); eit.hasNext();) {</span>
 <span class="fc" id="L221">						int e = eit.nextInt();</span>
 <span class="fc" id="L222">						double eWeight = w.weight(GData.getInt(e));</span>
 <span class="fc bfc" id="L223" title="All 2 branches covered.">						if (eWeight &lt; minGraphWeights[u]) {</span>
@@ -270,7 +270,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 <span class="fc" id="L270">				Weights.Int gNextData = gNext.addEdgesWeight(EdgeRefWeightKey).defVal(-1).ofInts();</span>
 <span class="fc bfc" id="L271" title="All 2 branches covered.">				for (int u = 0; u &lt; n; u++) {</span>
 <span class="fc" id="L272">					int U = vNext[u];</span>
-<span class="fc bfc" id="L273" title="All 2 branches covered.">					for (EdgeIter eit = G.edges(u); eit.hasNext();) {</span>
+<span class="fc bfc" id="L273" title="All 2 branches covered.">					for (EdgeIter eit = G.edgesOut(u); eit.hasNext();) {</span>
 <span class="fc" id="L274">						int e = eit.nextInt();</span>
 <span class="fc" id="L275">						int V = vNext[eit.v()];</span>
 <span class="fc bfc" id="L276" title="All 2 branches covered.">						if (U != V) {</span>

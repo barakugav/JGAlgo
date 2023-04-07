@@ -29,7 +29,7 @@ public class AStar {
 <span class="fc" id="L29">		res.distances[source] = 0;</span>
 
 <span class="fc" id="L31">		for (int u = source;;) {</span>
-<span class="fc bfc" id="L32" title="All 2 branches covered.">			for (EdgeIter eit = g.edges(u); eit.hasNext();) {</span>
+<span class="fc bfc" id="L32" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
 <span class="fc" id="L33">				int e = eit.nextInt();</span>
 <span class="fc" id="L34">				int v = eit.v();</span>
 <span class="fc" id="L35">				double ws = w.weight(e);</span>
