@@ -64,7 +64,7 @@ public class HeapDirectAccessedBench extends TestUtils {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
 
-		Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).doubleEdges(true)
+		Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(true)
 				.selfEdges(true).cycles(true).connected(false).build();
 		GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 		EdgeWeightFunc.Int w = g.edgesWeight("weight");

@@ -308,7 +308,7 @@ class GraphImplTestUtils extends TestUtils {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 			for (boolean directed : new boolean[] { true, false }) {
-				Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).doubleEdges(false)
+				Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
 						.selfEdges(false).cycles(true).connected(false).graphImpl(graphImpl).build();
 				final int opsNum = 128;
 				testRandOps(g, opsNum, seedGen.nextSeed());

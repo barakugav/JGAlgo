@@ -32,7 +32,7 @@ public class GraphsTestUtils extends TestUtils {
 		private int m;
 		private boolean bipartite;
 		private boolean directed;
-		private boolean doubleEdges;
+		private boolean parallelEdges;
 		private boolean selfEdges;
 		private boolean cycles;
 		private boolean connected;
@@ -42,7 +42,7 @@ public class GraphsTestUtils extends TestUtils {
 			seedGen = new SeedGenerator(seed);
 			n = sn = tn = m = 0;
 			bipartite = false;
-			doubleEdges = false;
+			parallelEdges = false;
 			selfEdges = false;
 			cycles = false;
 			connected = false;
@@ -78,8 +78,8 @@ public class GraphsTestUtils extends TestUtils {
 			return this;
 		}
 
-		public RandomGraphBuilder doubleEdges(boolean doubleEdges) {
-			this.doubleEdges = doubleEdges;
+		public RandomGraphBuilder parallelEdges(boolean parallelEdges) {
+			this.parallelEdges = parallelEdges;
 			return this;
 		}
 
@@ -128,7 +128,7 @@ public class GraphsTestUtils extends TestUtils {
 				throw new IllegalArgumentException();
 			if (!cycles && selfEdges)
 				throw new IllegalArgumentException();
-			if (!doubleEdges) {
+			if (!parallelEdges) {
 				long limit;
 				if (bipartite)
 					limit = n <= 16 ? sn * tn : ((long) sn) * tn * 2 / 3;
@@ -180,7 +180,7 @@ public class GraphsTestUtils extends TestUtils {
 					continue;
 
 				// avoid double edges
-				if (!doubleEdges) {
+				if (!parallelEdges) {
 					int ut = u, vt = v;
 					if (!directed && ut > vt) {
 						int temp = ut;
@@ -294,7 +294,7 @@ public class GraphsTestUtils extends TestUtils {
 	}
 
 	static UGraph randGraph(int n, int m, GraphImpl graphImpl, long seed) {
-		return (UGraph) new RandomGraphBuilder(seed).n(n).m(m).directed(false).doubleEdges(false).selfEdges(false)
+		return (UGraph) new RandomGraphBuilder(seed).n(n).m(m).directed(false).parallelEdges(false).selfEdges(false)
 				.cycles(true).connected(false).build();
 	}
 

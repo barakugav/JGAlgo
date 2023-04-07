@@ -21,7 +21,7 @@ class ColoringTestUtils extends TestUtils {
 		List<Phase> phases = List.of(phase(256, 16, 8), phase(128, 32, 64), phase(4, 2048, 8192));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
-			UGraph g = (UGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).doubleEdges(true)
+			UGraph g = (UGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
 					.selfEdges(false).cycles(true).connected(false).build();
 			Coloring coloringAlgo = coloringAlgoBuilder.get();
 			Coloring.Result coloring = coloringAlgo.calcColoring(g);

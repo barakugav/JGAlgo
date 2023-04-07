@@ -11,14 +11,18 @@ import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntStack;
 
-public class CyclesJohnson {
+public class CyclesFinderJohnson implements CyclesFinder {
 
 	/*
 	 * Find all cycles in a directed graph in O((n+m)(c+1)) where c is the number of
 	 * simple cycles in the graph
 	 */
 
-	public List<Path> findAllCycles(DiGraph g) {
+	@Override
+	public List<Path> findAllCycles(Graph g0) {
+		if (!(g0 instanceof DiGraph))
+			throw new IllegalArgumentException();
+		DiGraph g = (DiGraph) g0;
 		if (Graphs.containsParallelEdges(g))
 			throw new IllegalArgumentException("graph with self loops is not supported");
 		int n = g.vertices().size();
@@ -29,8 +33,8 @@ public class CyclesJohnson {
 				break;
 			StronglyConectedComponent scc = p.e1;
 			startIdx = p.e2.intValue();
-			worker.reset();
 			worker.findAllCycles(startIdx, scc);
+			worker.reset();
 		}
 		return worker.cycles;
 	}
@@ -64,9 +68,11 @@ public class CyclesJohnson {
 
 		private boolean findAllCycles(int startV, StronglyConectedComponent scc) {
 			boolean cycleFound = false;
+
 			int u = path.isEmpty() ? startV : g.edgeTarget(path.topInt());
 			assert scc.contains(u);
 			isBlocked.set(u);
+
 			for (EdgeIter it = g.edgesOut(u); it.hasNext();) {
 				int e = it.nextInt();
 				int v = it.v();
@@ -139,13 +145,22 @@ public class CyclesJohnson {
 
 		for (; startIdx < nFull; startIdx++) {
 			int uSub = startIdx - subToFull;
-			if (ccSize[uSub] > 1)
+			if (ccSize[connectivityResult.getVertexCcIndex(uSub)] > 1 || hasSelfEdge(gSub, uSub))
 				break;
 		}
 		if (startIdx >= nFull)
 			return null;
 		int ccIdx = connectivityResult.getVertexCcIndex(startIdx - subToFull);
 		return Pair.of(new StronglyConectedComponent(subToFull, connectivityResult, ccIdx), Integer.valueOf(startIdx));
+	}
+
+	private static boolean hasSelfEdge(DiGraph g, int u) {
+		for (EdgeIter it = g.edgesOut(u); it.hasNext();) {
+			it.nextInt();
+			if (it.v() == u)
+				return true;
+		}
+		return false;
 	}
 
 	private static class StronglyConectedComponent {

@@ -25,7 +25,7 @@ class MatchingBipartiteTestUtils extends TestUtils {
 	}
 
 	static Graph randGraphBipartite(int sn, int tn, int m, GraphImpl graphImpl, long seed) {
-		return new RandomGraphBuilder(seed).sn(sn).tn(tn).m(m).directed(false).bipartite(true).doubleEdges(false)
+		return new RandomGraphBuilder(seed).sn(sn).tn(tn).m(m).directed(false).bipartite(true).parallelEdges(false)
 				.selfEdges(false).cycles(true).connected(false).graphImpl(graphImpl).build();
 	}
 

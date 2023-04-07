@@ -88,7 +88,7 @@ public class EulerianTourTest extends TestUtils {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
 
-		UGraph g = (UGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).doubleEdges(true)
+		UGraph g = (UGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
 				.selfEdges(true).cycles(true).connected(true).build();
 
 		IntList oddVertices = new IntArrayList();
@@ -143,7 +143,7 @@ public class EulerianTourTest extends TestUtils {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
 
-		DiGraph g = (DiGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).doubleEdges(true)
+		DiGraph g = (DiGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
 				.selfEdges(true).cycles(true).connected(true).build();
 		addEdgesUntilStronglyConnected(g);
 

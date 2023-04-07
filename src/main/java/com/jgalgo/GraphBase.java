@@ -180,7 +180,7 @@ abstract class GraphBase implements Graph {
 					firstEdge = false;
 				else
 					s.append(", ");
-				s.append("(" + u + ", " + v + ")");
+				s.append("" + e + "(" + u + ", " + v + ")");
 				if (!weights.isEmpty()) {
 					s.append('[');
 					boolean firstData = true;

@@ -34,7 +34,7 @@ public class GraphsTest extends TestUtils {
 		List<Phase> phases = List.of(phase(256, 16, 8), phase(128, 32, 64), phase(4, 2048, 8192));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).doubleEdges(true)
+			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(true).build();
 			int source = rand.nextInt(n);
 
@@ -59,7 +59,7 @@ public class GraphsTest extends TestUtils {
 		List<Phase> phases = List.of(phase(256, 16, 8), phase(128, 32, 64), phase(4, 2048, 8192));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).doubleEdges(true)
+			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(true).build();
 			int source = rand.nextInt(n);
 
@@ -85,7 +85,7 @@ public class GraphsTest extends TestUtils {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = n - 1;
-			UGraph g = (UGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).doubleEdges(false)
+			UGraph g = (UGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(false)
 					.selfEdges(false).cycles(false).connected(true).build();
 
 			Assertions.assertTrue(Graphs.isTree(g));
@@ -101,7 +101,7 @@ public class GraphsTest extends TestUtils {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = n - 1;
-			UGraph g = (UGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).doubleEdges(false)
+			UGraph g = (UGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(false)
 					.selfEdges(false).cycles(false).connected(true).build();
 			int[] edges = g.edges().toIntArray();
 			int e = edges[rand.nextInt(edges.length)];
@@ -120,7 +120,7 @@ public class GraphsTest extends TestUtils {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = n - 1;
-			UGraph g = (UGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).doubleEdges(false)
+			UGraph g = (UGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(false)
 					.selfEdges(false).cycles(false).connected(true).build();
 			int u, v;
 			do {
@@ -142,7 +142,7 @@ public class GraphsTest extends TestUtils {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = n - 1;
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).doubleEdges(false)
+			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(false)
 					.selfEdges(false).cycles(false).connected(true).build();
 			int root = rand.nextInt(n);
 
@@ -159,7 +159,7 @@ public class GraphsTest extends TestUtils {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = n - 1;
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).doubleEdges(false)
+			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(false)
 					.selfEdges(false).cycles(false).connected(true).build();
 			int root = rand.nextInt(n);
 			int[] edges = g.edges().toIntArray();
@@ -179,7 +179,7 @@ public class GraphsTest extends TestUtils {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int m = n - 1;
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).doubleEdges(false)
+			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(false)
 					.selfEdges(false).cycles(false).connected(true).build();
 			int root = rand.nextInt(n);
 			int u, v;
@@ -210,7 +210,7 @@ public class GraphsTest extends TestUtils {
 		List<Phase> phases = List.of(phase(256, 16, 16), phase(128, 32, 64), phase(4, 1024, 2048));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
-			DiGraph g = (DiGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).doubleEdges(true)
+			DiGraph g = (DiGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
 					.selfEdges(false).cycles(false).connected(connected).build();
 
 			int[] topolSort = Graphs.calcTopologicalSortingDAG(g);
@@ -246,7 +246,7 @@ public class GraphsTest extends TestUtils {
 		List<Phase> phases = List.of(phase(256, 16, 16), phase(128, 32, 64), phase(16, 512, 1024));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
-			DiGraph g = (DiGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).doubleEdges(true)
+			DiGraph g = (DiGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
 					.selfEdges(false).cycles(false).connected(connected).build();
 			GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			int source = 0;
