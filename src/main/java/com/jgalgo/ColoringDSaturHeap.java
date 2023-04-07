@@ -45,8 +45,11 @@ public class ColoringDSaturHeap implements Coloring {
 				if (res.colorOf(v) == -1) { /* v is uncolored */
 					HeapDirectAccessed.Handle<HeapElm> vPtr = vPtrs[v];
 					HeapElm vElm = vPtr.get();
-					vElm.neighborColors.set(color);
-					heap.decreaseKey(vPtr, vElm);
+					if (!vElm.neighborColors.get(color)) {
+						vElm.neighborColors.set(color);
+						vElm.neighborColorsNum++;
+						heap.decreaseKey(vPtr, vElm);
+					}
 				}
 			}
 		}
@@ -57,6 +60,7 @@ public class ColoringDSaturHeap implements Coloring {
 		final int v;
 		final int degree;
 		final BitSet neighborColors = new BitSet();
+		int neighborColorsNum;
 
 		HeapElm(int v, int degree) {
 			this.v = v;
@@ -66,7 +70,8 @@ public class ColoringDSaturHeap implements Coloring {
 		@Override
 		public int compareTo(HeapElm o) {
 			int c;
-			if ((c = -Integer.compare(neighborColors.size(), o.neighborColors.size())) != 0)
+			System.out.println();
+			if ((c = -Integer.compare(neighborColorsNum, o.neighborColorsNum)) != 0)
 				return c;
 			if ((c = Integer.compare(degree, o.degree)) != 0)
 				return c;

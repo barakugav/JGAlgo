@@ -188,15 +188,6 @@ public class SplayTree<E> extends BSTAbstract<E> {
 		return ret;
 	}
 
-	@Override
-	public E extractMax() {
-		checkTreeNotEmpty();
-		NodeSized<E> n = BSTUtils.findMax(root);
-		E ret = n.data;
-		removeHandle(n);
-		return ret;
-	}
-
 	@SuppressWarnings("unchecked")
 	@Override
 	public void meld(Heap<? extends E> h0) {
