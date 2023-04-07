@@ -2,9 +2,9 @@ package com.jgalgo;
 
 import java.util.Arrays;
 
-import com.jgalgo.Utils.QueueIntFixSize;
-
+import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 
@@ -340,17 +340,17 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 			for (int u = 0; u < n; u++)
 				if (depths[u] > maxDepth)
 					maxDepth = depths[u];
-			QueueIntFixSize queue = new QueueIntFixSize(n);
+			IntPriorityQueue queue = new IntArrayFIFOQueue();
 			boolean[] queued = new boolean[n];
 			for (int u = 0; u < n; u++) {
 				if (depths[u] == maxDepth) {
-					queue.push(u);
+					queue.enqueue(u);
 					queued[u] = true;
 				}
 			}
 
 			while (!queue.isEmpty()) {
-				int u = queue.pop();
+				int u = queue.dequeueInt();
 
 				int ep = edgeToParent[u];
 				if (ep == -1)
@@ -360,7 +360,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 
 				if (queued[parent])
 					continue;
-				queue.push(parent);
+				queue.enqueue(parent);
 				queued[parent] = true;
 			}
 

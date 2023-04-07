@@ -4,9 +4,10 @@ import java.util.Arrays;
 
 import com.jgalgo.Utils.IntDoubleConsumer;
 import com.jgalgo.Utils.IterPickable;
-import com.jgalgo.Utils.QueueIntFixSize;
 
+import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 public class MaxFlowPushRelabel implements MaxFlow {
 
@@ -60,7 +61,7 @@ public class MaxFlowPushRelabel implements MaxFlow {
 		IterPickable.Int[] edges = new IterPickable.Int[n];
 		double[] excess = new double[n];
 		boolean[] isActive = new boolean[n];
-		QueueIntFixSize active = new QueueIntFixSize(n);
+		IntPriorityQueue active = new IntArrayFIFOQueue();
 		int[] d = new int[n];
 
 		IntDoubleConsumer pushFlow = (e, f) -> {
@@ -80,7 +81,7 @@ public class MaxFlowPushRelabel implements MaxFlow {
 			excess[v] += f;
 			if (!isActive[v]) {
 				isActive[v] = true;
-				active.push(v);
+				active.enqueue(v);
 			}
 		};
 
@@ -101,7 +102,7 @@ public class MaxFlowPushRelabel implements MaxFlow {
 			edges[u] = new IterPickable.Int(g.edgesOut(u));
 
 		while (!active.isEmpty()) {
-			int u = active.pop();
+			int u = active.dequeueInt();
 			if (u == source || u == target)
 				continue;
 			IterPickable.Int it = edges[u];
@@ -126,7 +127,7 @@ public class MaxFlowPushRelabel implements MaxFlow {
 
 			/* Update isActive and add to queue if active */
 			if (isActive[u] = excess[u] > EPS)
-				active.push(u);
+				active.enqueue(u);
 		}
 
 		/* Construct result */

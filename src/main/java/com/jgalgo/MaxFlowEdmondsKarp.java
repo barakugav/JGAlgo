@@ -2,10 +2,10 @@ package com.jgalgo;
 
 import java.util.Arrays;
 
-import com.jgalgo.Utils.QueueIntFixSize;
-
 import it.unimi.dsi.fastutil.ints.Int2DoubleFunction;
+import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 public class MaxFlowEdmondsKarp implements MaxFlow {
 
@@ -50,17 +50,17 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 		int[] backtrack = new int[n];
 
 		boolean[] visited = new boolean[n];
-		QueueIntFixSize queue = new QueueIntFixSize(n);
+		IntPriorityQueue queue = new IntArrayFIFOQueue();
 
 		for (;;) {
 			queue.clear();
 			visited[source] = true;
 			backtrack[target] = -1;
-			queue.push(source);
+			queue.enqueue(source);
 
 			// perform BFS and find a path of non saturated edges from source to target
 			bfs: while (!queue.isEmpty()) {
-				int u = queue.pop();
+				int u = queue.dequeueInt();
 				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 					int e = eit.nextInt();
 					int v = eit.v();
@@ -71,7 +71,7 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 					if (v == target)
 						break bfs;
 					visited[v] = true;
-					queue.push(v);
+					queue.enqueue(v);
 				}
 			}
 

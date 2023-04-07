@@ -5,10 +5,11 @@ import java.util.function.ObjDoubleConsumer;
 
 import com.jgalgo.DynamicTree.MinEdge;
 import com.jgalgo.IDStrategy.Fixed;
-import com.jgalgo.Utils.QueueIntFixSize;
 import com.jgalgo.Utils.Stack;
 
+import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 public class MaxFlowDinic implements MaxFlow {
 
@@ -46,7 +47,7 @@ public class MaxFlowDinic implements MaxFlow {
 		final int n = g.vertices().size();
 		DiGraph L = GraphBuilder.Linked.getInstance().setVerticesNum(n).setEdgesIDStrategy(Fixed.class).buildDirected();
 		Weights<Ref> edgeRefL = L.addEdgesWeight(EdgeRefWeightKey).ofObjs();
-		QueueIntFixSize bfsQueue = new QueueIntFixSize(n);
+		IntPriorityQueue bfsQueue = new IntArrayFIFOQueue();
 		int[] level = new int[n];
 		DynamicTree<Integer, Integer> dt = new DynamicTreeSplay<>(maxCapacity * 3);
 		@SuppressWarnings("unchecked")
@@ -62,9 +63,9 @@ public class MaxFlowDinic implements MaxFlow {
 			Arrays.fill(level, unvisited);
 			bfsQueue.clear();
 			level[source] = 0;
-			bfsQueue.push(source);
+			bfsQueue.enqueue(source);
 			bfs: while (!bfsQueue.isEmpty()) {
-				int u = bfsQueue.pop();
+				int u = bfsQueue.dequeueInt();
 				if (u == target)
 					break bfs;
 				int lvl = level[u];
@@ -78,7 +79,7 @@ public class MaxFlowDinic implements MaxFlow {
 					if (level[v] != unvisited)
 						continue;
 					level[v] = lvl + 1;
-					bfsQueue.push(v);
+					bfsQueue.enqueue(v);
 				}
 			}
 			if (level[target] == unvisited)

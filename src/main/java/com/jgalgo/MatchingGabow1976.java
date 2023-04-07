@@ -2,11 +2,11 @@ package com.jgalgo;
 
 import java.util.Arrays;
 
-import com.jgalgo.Utils.QueueIntFixSize;
-
+import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 public class MatchingGabow1976 implements Matching {
 
@@ -25,7 +25,7 @@ public class MatchingGabow1976 implements Matching {
 		UGraph g = (UGraph) g0;
 		int n = g.vertices().size();
 
-		QueueIntFixSize queue = new QueueIntFixSize(n);
+		IntPriorityQueue queue = new IntArrayFIFOQueue();
 		int[] root = new int[n];
 		boolean[] isEven = new boolean[n];
 
@@ -61,11 +61,11 @@ public class MatchingGabow1976 implements Matching {
 					continue;
 				root[u] = u;
 				isEven[u] = true;
-				queue.push(u);
+				queue.enqueue(u);
 			}
 
 			bfs: while (!queue.isEmpty()) {
-				final int u = queue.pop();
+				final int u = queue.dequeueInt();
 				int uRoot = root[u];
 
 				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
@@ -82,7 +82,7 @@ public class MatchingGabow1976 implements Matching {
 						int w = g.edgeEndpoint(matchedEdge, v);
 						root[w] = uRoot;
 						isEven[w] = true;
-						queue.push(w);
+						queue.enqueue(w);
 						continue;
 					}
 
@@ -130,7 +130,7 @@ public class MatchingGabow1976 implements Matching {
 								// handle odd vertex
 								p = g.edgeEndpoint(matched[p], p);
 								blossomVertices[blossomVerticesSize++] = p;
-								queue.push(p); // add the odd vertex that became even to the queue
+								queue.enqueue(p); // add the odd vertex that became even to the queue
 								bridge[p * 2 + 0] = brigeEdge;
 								bridge[p * 2 + 1] = brigeVertex;
 

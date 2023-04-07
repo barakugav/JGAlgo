@@ -6,10 +6,11 @@ import java.util.function.ObjDoubleConsumer;
 import com.jgalgo.DynamicTree.MinEdge;
 import com.jgalgo.Utils.IterPickable;
 import com.jgalgo.Utils.QueueFixSize;
-import com.jgalgo.Utils.QueueIntFixSize;
 import com.jgalgo.Utils.Stack;
 
+import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 
@@ -79,7 +80,7 @@ public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 
 		/* Data structure maintaining the children of each node in the DT */
 		LinkedListDoubleArrayFixedSize children = new LinkedListDoubleArrayFixedSize(n);
-		QueueIntFixSize toCut = new QueueIntFixSize(n);
+		IntPriorityQueue toCut = new IntArrayFIFOQueue();
 
 		/* Init all vertices distances */
 		vertexData[source].d = n;
@@ -239,10 +240,10 @@ public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 						updateFlow.accept(edgeData, m.weight());
 
 						/* cut child */
-						toCut.push(child);
+						toCut.enqueue(child);
 					}
 					while (!toCut.isEmpty())
-						cut.accept(vertexData[toCut.pop()]);
+						cut.accept(vertexData[toCut.dequeueInt()]);
 				}
 			}
 

@@ -12,12 +12,13 @@ import java.util.function.IntConsumer;
 import java.util.stream.Collectors;
 
 import com.jgalgo.Utils.NullList;
-import com.jgalgo.Utils.QueueIntFixSize;
 
+import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintable {
 
@@ -131,10 +132,10 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 		final HeapDirectAccessed<Blossom> expandEvents;
 
 		/* queue used during blossom creation to union all vertices */
-		final QueueIntFixSize unionQueue;
+		final IntPriorityQueue unionQueue;
 
 		/* queue used during blossom creation to remember all new vertex to scan from */
-		final QueueIntFixSize scanQueue;
+		final IntPriorityQueue scanQueue;
 
 		/* Manage debug prints */
 		final DebugPrintsManager debug;
@@ -313,8 +314,8 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 			smf = new SubtreeMergeFindminImpl<>((e1, e2) -> Double.compare(e1.slack, e2.slack));
 			expandEvents = heapBuilder.build((b1, b2) -> Double.compare(b1.expandDelta, b2.expandDelta));
 
-			unionQueue = new QueueIntFixSize(n + 1);
-			scanQueue = new QueueIntFixSize(n);
+			unionQueue = new IntArrayFIFOQueue();
+			scanQueue = new IntArrayFIFOQueue();
 
 			this.debug = debugPrint;
 		}
@@ -572,7 +573,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 					if (b != base)
 						smf.mergeSubTrees(vToSMFId[g.edgeTarget(b.treeParentEdge)], vToSMFId[b.base]);
 					connectSubBlossoms(b, prev, toPrevEdge, !prevIsRight);
-					unionQueue.push(b.base);
+					unionQueue.enqueue(b.base);
 
 					if (b == base)
 						break;
@@ -604,8 +605,8 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 								smfId = p;
 							}
 						}
-						unionQueue.push(v);
-						scanQueue.push(v);
+						unionQueue.enqueue(v);
+						scanQueue.enqueue(v);
 					});
 					b.delta0 = delta;
 					if (!b.isSingleton()) {
@@ -621,12 +622,12 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 
 			// Union all sub blossom in find0 data structure
 			while (!unionQueue.isEmpty())
-				find0.union(newb.base, unionQueue.pop());
+				find0.union(newb.base, unionQueue.dequeueInt());
 			find0Blossoms[find0.find(newb.base)] = newb;
 
 			// Scan new edges from all new even vertices
 			while (!scanQueue.isEmpty()) {
-				int u = scanQueue.pop();
+				int u = scanQueue.dequeueInt();
 				insertGrowEventsFromVertex(u);
 				insertBlossomEventsFromVertex(u);
 			}

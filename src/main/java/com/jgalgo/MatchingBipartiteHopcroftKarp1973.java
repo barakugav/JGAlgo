@@ -3,11 +3,11 @@ package com.jgalgo;
 import java.util.Arrays;
 import java.util.Objects;
 
-import com.jgalgo.Utils.QueueIntFixSize;
-
+import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 
@@ -38,7 +38,7 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 
 		/* BFS */
 		int[] depths = new int[n];
-		QueueIntFixSize bfsQueue = new QueueIntFixSize(n);
+		IntPriorityQueue bfsQueue = new IntArrayFIFOQueue();
 
 		/* DFS */
 		boolean[] visited = new boolean[n];
@@ -59,11 +59,11 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 				if (!partition.getBool(u) || matched[u] != MatchedNone)
 					continue;
 				depths[u] = 0;
-				bfsQueue.push(u);
+				bfsQueue.enqueue(u);
 			}
 			int unmatchedTDepth = Integer.MAX_VALUE;
 			while (!bfsQueue.isEmpty()) {
-				int u = bfsQueue.pop();
+				int u = bfsQueue.dequeueInt();
 				int depth = depths[u];
 				if (depth >= unmatchedTDepth)
 					continue;
@@ -84,7 +84,7 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 						edgeRef.set(f.addEdge(v, w), matchedEdge);
 						v = w;
 						depths[v] = depth + 2;
-						bfsQueue.push(v);
+						bfsQueue.enqueue(v);
 					} else {
 						unmatchedTDepth = depth + 1;
 					}
