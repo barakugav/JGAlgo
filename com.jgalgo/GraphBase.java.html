@@ -158,30 +158,30 @@ abstract class GraphBase implements Graph {
 
 	@Override
 	public String toString() {
-<span class="nc" id="L161">		StringBuilder s = new StringBuilder();</span>
-<span class="nc" id="L162">		s.append('{');</span>
-<span class="nc" id="L163">		int n = vertices().size();</span>
-<span class="nc" id="L164">		Collection&lt;Weights&lt;?&gt;&gt; weights = getEdgesWeights();</span>
+<span class="fc" id="L161">		StringBuilder s = new StringBuilder();</span>
+<span class="fc" id="L162">		s.append('{');</span>
+<span class="fc" id="L163">		int n = vertices().size();</span>
+<span class="fc" id="L164">		Collection&lt;Weights&lt;?&gt;&gt; weights = getEdgesWeights();</span>
 
-<span class="nc" id="L166">		boolean firstVertex = true;</span>
-<span class="nc bnc" id="L167" title="All 2 branches missed.">		for (int u = 0; u &lt; n; u++) {</span>
-<span class="nc bnc" id="L168" title="All 2 branches missed.">			if (firstVertex) {</span>
-<span class="nc" id="L169">				firstVertex = false;</span>
+<span class="fc" id="L166">		boolean firstVertex = true;</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">			if (firstVertex) {</span>
+<span class="fc" id="L169">				firstVertex = false;</span>
 			} else {
-<span class="nc" id="L171">				s.append(&quot;, &quot;);</span>
+<span class="fc" id="L171">				s.append(&quot;, &quot;);</span>
 			}
-<span class="nc" id="L173">			s.append(&quot;&lt;v&quot; + u + &quot;&gt;-&gt;[&quot;);</span>
+<span class="fc" id="L173">			s.append(&quot;&lt;v&quot; + u + &quot;&gt;-&gt;[&quot;);</span>
 
-<span class="nc" id="L175">			boolean firstEdge = true;</span>
-<span class="nc bnc" id="L176" title="All 2 branches missed.">			for (EdgeIter eit = edges(u); eit.hasNext();) {</span>
-<span class="nc" id="L177">				int e = eit.nextInt();</span>
-<span class="nc" id="L178">				int v = eit.v();</span>
-<span class="nc bnc" id="L179" title="All 2 branches missed.">				if (firstEdge)</span>
-<span class="nc" id="L180">					firstEdge = false;</span>
+<span class="fc" id="L175">			boolean firstEdge = true;</span>
+<span class="fc bfc" id="L176" title="All 2 branches covered.">			for (EdgeIter eit = edges(u); eit.hasNext();) {</span>
+<span class="fc" id="L177">				int e = eit.nextInt();</span>
+<span class="fc" id="L178">				int v = eit.v();</span>
+<span class="fc bfc" id="L179" title="All 2 branches covered.">				if (firstEdge)</span>
+<span class="fc" id="L180">					firstEdge = false;</span>
 				else
-<span class="nc" id="L182">					s.append(&quot;, &quot;);</span>
-<span class="nc" id="L183">				s.append(&quot;(&quot; + u + &quot;, &quot; + v + &quot;)&quot;);</span>
-<span class="nc bnc" id="L184" title="All 2 branches missed.">				if (!weights.isEmpty()) {</span>
+<span class="fc" id="L182">					s.append(&quot;, &quot;);</span>
+<span class="fc" id="L183">				s.append(&quot;&quot; + e + &quot;(&quot; + u + &quot;, &quot; + v + &quot;)&quot;);</span>
+<span class="pc bpc" id="L184" title="1 of 2 branches missed.">				if (!weights.isEmpty()) {</span>
 <span class="nc" id="L185">					s.append('[');</span>
 <span class="nc" id="L186">					boolean firstData = true;</span>
 <span class="nc bnc" id="L187" title="All 2 branches missed.">					for (Weights&lt;?&gt; weight : weights) {</span>
@@ -194,11 +194,11 @@ abstract class GraphBase implements Graph {
 <span class="nc" id="L194">					}</span>
 <span class="nc" id="L195">					s.append(']');</span>
 				}
-<span class="nc" id="L197">			}</span>
-<span class="nc" id="L198">			s.append(&quot;]&quot;);</span>
+<span class="fc" id="L197">			}</span>
+<span class="fc" id="L198">			s.append(&quot;]&quot;);</span>
 		}
-<span class="nc" id="L200">		s.append('}');</span>
-<span class="nc" id="L201">		return s.toString();</span>
+<span class="fc" id="L200">		s.append('}');</span>
+<span class="fc" id="L201">		return s.toString();</span>
 	}
 
 	private abstract class WeightsFactoryBase implements Weights.Factory {
