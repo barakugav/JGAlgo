@@ -163,22 +163,6 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 		}
 
 		@Override
-		public int hashCode() {
-			return orig;
-		}
-
-		@Override
-		public boolean equals(Object other) {
-			if (other == this)
-				return true;
-			if (!(other instanceof Ref))
-				return false;
-
-			Ref o = (Ref) other;
-			return orig == o.orig;
-		}
-
-		@Override
 		public String toString() {
 			return orig != -1 ? String.valueOf(orig) : Double.toString(w);
 		}

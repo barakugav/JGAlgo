@@ -158,22 +158,6 @@ public class MSTKargerKleinTarjan1995 implements MST {
 		}
 
 		@Override
-		public int hashCode() {
-			return e;
-		}
-
-		@Override
-		public boolean equals(Object other) {
-			if (other == this)
-				return true;
-			if (!(other instanceof Ref))
-				return false;
-
-			Ref o = (Ref) other;
-			return e == o.e;
-		}
-
-		@Override
 		public String toString() {
 			return e != -1 ? String.valueOf(e) : Double.toString(w);
 		}

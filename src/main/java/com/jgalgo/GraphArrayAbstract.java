@@ -7,8 +7,6 @@ abstract class GraphArrayAbstract extends GraphBaseContinues {
 
 	private final DataContainer.Long edgeEndpoints;
 
-	static final int[] EmptyIntArr = new int[0];
-
 	public GraphArrayAbstract(int n, GraphCapabilities capabilities) {
 		super(n, capabilities);
 		edgeEndpoints = new DataContainer.Long(0, sourceTarget2Endpoints(-1, -1));

@@ -1,5 +1,7 @@
 package com.jgalgo;
 
+import it.unimi.dsi.fastutil.ints.IntArrays;
+
 public class GraphArrayUndirected extends GraphArrayAbstract implements UGraph {
 
 	private final DataContainer.Obj<int[]> edges;
@@ -12,7 +14,7 @@ public class GraphArrayUndirected extends GraphArrayAbstract implements UGraph {
 	public GraphArrayUndirected(int n) {
 		super(n, Capabilities);
 		edgesNum = new DataContainer.Int(n, 0);
-		edges = new DataContainer.Obj<>(n, EmptyIntArr);
+		edges = new DataContainer.Obj<>(n, IntArrays.EMPTY_ARRAY);
 
 		addInternalVerticesDataContainer(edgesNum);
 		addInternalVerticesDataContainer(edges);
@@ -105,7 +107,7 @@ public class GraphArrayUndirected extends GraphArrayAbstract implements UGraph {
 	public void clearEdges() {
 		int n = vertices().size();
 		for (int u = 0; u < n; u++) {
-			edges.set(u, EmptyIntArr);
+			edges.set(u, IntArrays.EMPTY_ARRAY);
 			edgesNum.set(u, 0);
 		}
 		super.clearEdges();

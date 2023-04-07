@@ -34,8 +34,7 @@ public class ColoringGreedyRandom implements Coloring {
 			order[u] = u;
 		IntArrays.shuffle(order, rand);
 
-		for (int i = 0; i < n; i++) {
-			int u = order[i];
+		for (int u : order) {
 			IntSet usedColors = new IntOpenHashSet();
 			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 				eit.nextInt();

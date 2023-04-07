@@ -3,17 +3,18 @@ package com.jgalgo;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 
+import it.unimi.dsi.fastutil.ints.IntBigArrays;
+
 abstract class GraphTableAbstract extends GraphBaseContinues {
 
 	final int[][] edges;
 	private final DataContainer.Long edgeEndpoints;
 
-	private static final int[][] EDGES_EMPTY = new int[0][];
 	static final int EdgeNone = -1;
 
 	GraphTableAbstract(int n, GraphCapabilities capabilities) {
 		super(n, capabilities);
-		edges = n > 0 ? new int[n][n] : EDGES_EMPTY;
+		edges = n > 0 ? new int[n][n] : IntBigArrays.EMPTY_BIG_ARRAY;
 		for (int u = 0; u < n; u++)
 			Arrays.fill(edges[u], EdgeNone);
 

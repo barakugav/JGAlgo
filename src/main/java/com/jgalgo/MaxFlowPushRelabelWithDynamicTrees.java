@@ -313,22 +313,6 @@ public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 		}
 
 		@Override
-		public int hashCode() {
-			return orig;
-		}
-
-		@Override
-		public boolean equals(Object other) {
-			if (other == this)
-				return true;
-			if (!(other instanceof Ref))
-				return false;
-
-			Ref o = (Ref) other;
-			return orig == o.orig;
-		}
-
-		@Override
 		public String toString() {
 			return "R(" + orig + ")";
 		}

@@ -1,5 +1,6 @@
 package com.jgalgo;
 
+import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
@@ -19,7 +20,7 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 	public int[] calcTSP(double[][] distances) {
 		int n = distances.length;
 		if (n == 0)
-			return new int[0];
+			return IntArrays.EMPTY_ARRAY;
 		TSPMetric.checkArgDistanceTableSymmetric(distances);
 		TSPMetric.checkArgDistanceTableIsMetric(distances);
 

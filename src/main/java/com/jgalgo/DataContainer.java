@@ -10,15 +10,19 @@ import it.unimi.dsi.fastutil.booleans.AbstractBooleanCollection;
 import it.unimi.dsi.fastutil.booleans.BooleanCollection;
 import it.unimi.dsi.fastutil.booleans.BooleanIterator;
 import it.unimi.dsi.fastutil.doubles.AbstractDoubleCollection;
+import it.unimi.dsi.fastutil.doubles.DoubleArrays;
 import it.unimi.dsi.fastutil.doubles.DoubleCollection;
 import it.unimi.dsi.fastutil.doubles.DoubleIterator;
 import it.unimi.dsi.fastutil.ints.AbstractIntCollection;
+import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.longs.AbstractLongCollection;
+import it.unimi.dsi.fastutil.longs.LongArrays;
 import it.unimi.dsi.fastutil.longs.LongCollection;
 import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.objects.AbstractObjectCollection;
+import it.unimi.dsi.fastutil.objects.ObjectArrays;
 import it.unimi.dsi.fastutil.objects.ObjectCollection;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 
@@ -50,10 +54,9 @@ abstract class DataContainer<E> {
 		private Object[] weights;
 		private final E defaultVal;
 		private final ObjectCollection<E> values;
-		private static final Object[] EmptyWeights = new Object[0];
 
 		Obj(int expectedSize, E defVal) {
-			weights = expectedSize > 0 ? new Object[expectedSize] : EmptyWeights;
+			weights = expectedSize > 0 ? new Object[expectedSize] : ObjectArrays.EMPTY_ARRAY;
 			defaultVal = defVal;
 			values = new AbstractObjectCollection<>() {
 
@@ -183,10 +186,9 @@ abstract class DataContainer<E> {
 		private int[] weights;
 		private final int defaultVal;
 		private final IntCollection values;
-		private static final int[] EmptyWeights = new int[0];
 
 		Int(int expectedSize, int defVal) {
-			weights = expectedSize > 0 ? new int[expectedSize] : EmptyWeights;
+			weights = expectedSize > 0 ? new int[expectedSize] : IntArrays.EMPTY_ARRAY;
 			defaultVal = defVal;
 			values = new AbstractIntCollection() {
 
@@ -307,10 +309,9 @@ abstract class DataContainer<E> {
 		private long[] weights;
 		private final long defaultVal;
 		private final LongCollection values;
-		private static final long[] EmptyWeights = new long[0];
 
 		Long(int expectedSize, long defVal) {
-			weights = expectedSize > 0 ? new long[expectedSize] : EmptyWeights;
+			weights = expectedSize > 0 ? new long[expectedSize] : LongArrays.EMPTY_ARRAY;
 			defaultVal = defVal;
 			values = new AbstractLongCollection() {
 
@@ -431,10 +432,9 @@ abstract class DataContainer<E> {
 		private double[] weights;
 		private final double defaultVal;
 		private final DoubleCollection values;
-		private static final double[] EmptyWeights = new double[0];
 
 		Double(int expectedSize, double defVal) {
-			weights = expectedSize > 0 ? new double[expectedSize] : EmptyWeights;
+			weights = expectedSize > 0 ? new double[expectedSize] : DoubleArrays.EMPTY_ARRAY;
 			defaultVal = defVal;
 			values = new AbstractDoubleCollection() {
 

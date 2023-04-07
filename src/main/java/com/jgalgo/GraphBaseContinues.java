@@ -33,8 +33,8 @@ abstract class GraphBaseContinues extends GraphBase {
 
 	@Override
 	public void removeVertex(int v) {
+		removeEdgesAll(v);
 		v = vertexSwapBeforeRemove(v);
-		removeEdgesAll(v); // TODO move above
 		verticesIDStrategy.removeIdx(v);
 		for (DataContainer<?> container : vWeightsInternal)
 			container.remove(v);

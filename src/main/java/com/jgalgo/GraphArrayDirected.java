@@ -1,5 +1,6 @@
 package com.jgalgo;
 
+import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 public class GraphArrayDirected extends GraphArrayAbstract implements DiGraph {
@@ -15,9 +16,9 @@ public class GraphArrayDirected extends GraphArrayAbstract implements DiGraph {
 
 	public GraphArrayDirected(int n) {
 		super(n, Capabilities);
-		edgesOut = new DataContainer.Obj<>(n, EmptyIntArr);
+		edgesOut = new DataContainer.Obj<>(n, IntArrays.EMPTY_ARRAY);
 		edgesOutNum = new DataContainer.Int(n, 0);
-		edgesIn = new DataContainer.Obj<>(n, EmptyIntArr);
+		edgesIn = new DataContainer.Obj<>(n, IntArrays.EMPTY_ARRAY);
 		edgesInNum = new DataContainer.Int(n, 0);
 
 		addInternalVerticesDataContainer(edgesOut);
@@ -141,8 +142,8 @@ public class GraphArrayDirected extends GraphArrayAbstract implements DiGraph {
 		for (IntIterator it = vertices().iterator(); it.hasNext();) {
 			int u = it.nextInt();
 			// TODO do some sort of 'addKey' instead of set, no need
-			edgesOut.set(u, EmptyIntArr);
-			edgesIn.set(u, EmptyIntArr);
+			edgesOut.set(u, IntArrays.EMPTY_ARRAY);
+			edgesIn.set(u, IntArrays.EMPTY_ARRAY);
 			edgesOutNum.set(u, 0);
 			edgesInNum.set(u, 0);
 		}
