@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.jgalgo.IDStrategy.Continues;
-
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 
 abstract class GraphBaseContinues extends GraphBase {
@@ -120,12 +118,12 @@ abstract class GraphBaseContinues extends GraphBase {
 
 	@Override
 	public IDStrategy.Continues getVerticesIDStrategy() {
-		return (Continues) super.getVerticesIDStrategy();
+		return super.getVerticesIDStrategy();
 	}
 
 	@Override
 	public IDStrategy.Continues getEdgesIDStrategy() {
-		return (Continues) super.getEdgesIDStrategy();
+		return (IDStrategy.Continues) super.getEdgesIDStrategy();
 	}
 
 	@Override

@@ -9,11 +9,11 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 abstract class GraphBase implements Graph {
 
-	final IDStrategy verticesIDStrategy;
+	final IDStrategy.Continues verticesIDStrategy;
 	final IDStrategy edgesIDStrategy;
 	private final GraphCapabilities capabilities;
 
-	GraphBase(IDStrategy verticesIDStrategy, IDStrategy edgesIDStrategy, GraphCapabilities capabilities) {
+	GraphBase(IDStrategy.Continues verticesIDStrategy, IDStrategy edgesIDStrategy, GraphCapabilities capabilities) {
 		this.verticesIDStrategy = Objects.requireNonNull(verticesIDStrategy);
 		this.edgesIDStrategy = Objects.requireNonNull(edgesIDStrategy);
 		this.capabilities = Objects.requireNonNull(capabilities);
@@ -55,7 +55,7 @@ abstract class GraphBase implements Graph {
 	abstract <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, WeightsT weights);
 
 	@Override
-	public IDStrategy getVerticesIDStrategy() {
+	public IDStrategy.Continues getVerticesIDStrategy() {
 		return verticesIDStrategy;
 	}
 

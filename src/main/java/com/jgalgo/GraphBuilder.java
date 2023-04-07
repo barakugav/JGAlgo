@@ -7,7 +7,6 @@ import java.util.Set;
 public abstract class GraphBuilder {
 
 	int verticesNum;
-	Class<? extends IDStrategy> verticesIDStrategy;
 	Class<? extends IDStrategy> edgesIDStrategy;
 
 	private GraphBuilder() {
@@ -17,11 +16,6 @@ public abstract class GraphBuilder {
 		if (n < 0)
 			throw new IllegalArgumentException();
 		verticesNum = n;
-		return this;
-	}
-
-	public GraphBuilder setVerticesIDStrategy(Class<? extends IDStrategy> verticesIDStrategy) {
-		this.verticesIDStrategy = verticesIDStrategy;
 		return this;
 	}
 
@@ -40,17 +34,12 @@ public abstract class GraphBuilder {
 
 	private Graph buildGraph(boolean directed) {
 		Graph g = (directed ? buildDirectedBase() : buildUndirectedBase());
-		IDStrategy vIDStrat = createIDStrategy(verticesIDStrategy);
 		IDStrategy eIDStrat = createIDStrategy(edgesIDStrategy);
-		if (vIDStrat != null || eIDStrat != null) {
-			if (vIDStrat == null)
-				vIDStrat = new IDStrategy.Continues(g.vertices().size());
-			if (eIDStrat == null)
-				eIDStrat = new IDStrategy.Continues(g.edges().size());
+		if (eIDStrat != null) {
 			if (directed) {
-				g = new GraphCustomIDStrategiesDirected((GraphBaseContinues) g, vIDStrat, eIDStrat);
+				g = new GraphCustomIDStrategiesDirected((GraphBaseContinues) g, eIDStrat);
 			} else {
-				g = new GraphCustomIDStrategiesUndirected((GraphBaseContinues) g, vIDStrat, eIDStrat);
+				g = new GraphCustomIDStrategiesUndirected((GraphBaseContinues) g, eIDStrat);
 			}
 		}
 		return g;
@@ -135,8 +124,8 @@ public abstract class GraphBuilder {
 
 		final GraphBaseContinues g;
 
-		GraphCustomIDStrategies(GraphBaseContinues g, IDStrategy verticesIDStrategy, IDStrategy edgesIDStrategy) {
-			super(verticesIDStrategy, edgesIDStrategy, g.getCapabilities());
+		GraphCustomIDStrategies(GraphBaseContinues g, IDStrategy edgesIDStrategy) {
+			super(new IDStrategy.Continues(g.vertices().size()), edgesIDStrategy, g.getCapabilities());
 			this.g = Objects.requireNonNull(g);
 
 			g.getVerticesIDStrategy().addIDSwapListener((vIdx1, vIdx2) -> verticesIDStrategy.idxSwap(vIdx1, vIdx2));
@@ -304,7 +293,7 @@ public abstract class GraphBuilder {
 		}
 
 		@Override
-		public IDStrategy getVerticesIDStrategy() {
+		public IDStrategy.Continues getVerticesIDStrategy() {
 			return verticesIDStrategy;
 		}
 
@@ -360,9 +349,8 @@ public abstract class GraphBuilder {
 
 	private static class GraphCustomIDStrategiesDirected extends GraphCustomIDStrategies implements DiGraph {
 
-		GraphCustomIDStrategiesDirected(GraphBaseContinues g, IDStrategy verticesIDStrategy,
-				IDStrategy edgesIDStrategy) {
-			super(g, verticesIDStrategy, edgesIDStrategy);
+		GraphCustomIDStrategiesDirected(GraphBaseContinues g, IDStrategy edgesIDStrategy) {
+			super(g, edgesIDStrategy);
 			if (!(g instanceof DiGraph))
 				throw new IllegalArgumentException();
 
@@ -382,9 +370,8 @@ public abstract class GraphBuilder {
 
 	private static class GraphCustomIDStrategiesUndirected extends GraphCustomIDStrategies implements UGraph {
 
-		GraphCustomIDStrategiesUndirected(GraphBaseContinues g, IDStrategy verticesIDStrategy,
-				IDStrategy edgesIDStrategy) {
-			super(g, verticesIDStrategy, edgesIDStrategy);
+		GraphCustomIDStrategiesUndirected(GraphBaseContinues g, IDStrategy edgesIDStrategy) {
+			super(g, edgesIDStrategy);
 			if (!(g instanceof UGraph))
 				throw new IllegalArgumentException();
 

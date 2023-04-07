@@ -14,19 +14,17 @@ public interface Graph {
 	 * Get the set of all vertices of the graph.
 	 *
 	 * <p>
-	 * Each vertex in the graph is identified by a unique int ID. The returned set
-	 * is a set of all these identifiers, and its size is equivalent to the number
-	 * of vertices in the graph.
+	 * Each vertex in the graph is identified by a unique non negative int ID. The
+	 * returned set is a set of all these identifiers, and its size is equivalent to
+	 * the number of vertices in the graph.
 	 *
 	 * <p>
 	 * The vertices IDs values are determined by {@link #getVerticesIDStrategy()}.
-	 * For example, {@link com.jgalgo.IDStrategy.Continues} ensure that at all times
-	 * the vertices IDs are {@code 0,1,..., verticesNum-1}, and it might rename some
-	 * vertices when a vertex is removed to maintain this invariant. This rename can
-	 * be subscribed using {@link com.jgalgo.IDStrategy#addIDSwapListener}. Another
-	 * option for an ID strategy is {@link com.jgalgo.IDStrategy.Fixed} which ensure
-	 * once a vertex is assigned an ID, it will not change. There might be some
-	 * performance differences between different ID strategies.
+	 * Only {@link com.jgalgo.IDStrategy.Continues} is supported for vertices, which
+	 * ensure that at all times the vertices IDs are {@code 0,1,..., verticesNum-1},
+	 * and it might rename some vertices when a vertex is removed to maintain this
+	 * invariant. This rename can be subscribed using
+	 * {@link com.jgalgo.IDStrategy#addIDSwapListener}.
 	 *
 	 * @see com.jgalgo.IDStrategy
 	 *
@@ -38,9 +36,9 @@ public interface Graph {
 	 * Get the set of all edges of the graph.
 	 *
 	 * <p>
-	 * Each edge in the graph is identified by a unique int ID. The returned set is
-	 * a set of all these identifiers, and its size is equivalent to the number of
-	 * edges in the graph.
+	 * Each edge in the graph is identified by a unique non negative int ID. The
+	 * returned set is a set of all these identifiers, and its size is equivalent to
+	 * the number of edges in the graph.
 	 *
 	 * <p>
 	 * The edges IDs values are determined by {@link #getEdgesIDStrategy()}. For
@@ -60,19 +58,6 @@ public interface Graph {
 
 	/**
 	 * Add a new vertex to the graph.
-	 *
-	 * <p>
-	 * A unique int ID is assigned for the new vertex. The vertices IDs values are
-	 * determined by {@link #getVerticesIDStrategy()}. For example,
-	 * {@link com.jgalgo.IDStrategy.Continues} ensure that at all times the vertices
-	 * IDs are {@code 0,1,..., verticesNum-1}, and it might rename some vertices
-	 * when a vertex is removed to maintain this invariant. This rename can be
-	 * subscribed using {@link com.jgalgo.IDStrategy#addIDSwapListener}. Another
-	 * option for an ID strategy is {@link com.jgalgo.IDStrategy.Fixed} which ensure
-	 * once a vertex is assigned an ID, it will not change. There might be some
-	 * performance differences between different ID strategies.
-	 *
-	 * @see com.jgalgo.IDStrategy
 	 *
 	 * @return the new vertex identifier
 	 */
@@ -102,18 +87,6 @@ public interface Graph {
 	 * <p>
 	 * In case there are multiple (parallel) edges between u and v, a single
 	 * arbitrary one is returned.
-	 *
-	 * <p>
-	 * The edges IDs values are determined by {@link #getEdgesIDStrategy()}. For
-	 * example, {@link com.jgalgo.IDStrategy.Continues} ensure that at all times the
-	 * edges IDs are {@code 0,1,..., edgesNum-1}, and it might rename some edges
-	 * when an edge is removed to maintain this invariant. This rename can be
-	 * subscribed using {@link com.jgalgo.IDStrategy#addIDSwapListener}. Another
-	 * option for an ID strategy is {@link com.jgalgo.IDStrategy.Fixed} which ensure
-	 * once an edge is assigned an ID, it will not change. There might be some
-	 * performance differences between different ID strategies.
-	 *
-	 * @see com.jgalgo.IDStrategy
 	 *
 	 * @param u a source vertex
 	 * @param v a target vertex
@@ -384,34 +357,31 @@ public interface Graph {
 	 * Get ID strategy of the vertices of the graph.
 	 *
 	 * <p>
-	 * Each vertex in the graph is identified by a unique int ID, which is
-	 * determined by some strategy. For example,
-	 * {@link com.jgalgo.IDStrategy.Continues} ensure that at all times the vertices
-	 * IDs are {@code 0,1,..., verticesNum-1}, and it might rename some vertices
-	 * when a vertex is removed to maintain this invariant. This rename can be
-	 * subscribed using {@link com.jgalgo.IDStrategy#addIDSwapListener}. Another
-	 * option for an ID strategy is {@link com.jgalgo.IDStrategy.Fixed} which ensure
-	 * once a vertex is assigned an ID, it will not change. There might be some
-	 * performance differences between different ID strategies.
+	 * Each vertex in the graph is identified by a unique non negative int ID, which
+	 * is determined by some strategy. Only {@link com.jgalgo.IDStrategy.Continues}
+	 * is supported for vertices, which ensure that at all times the vertices IDs
+	 * are {@code 0,1,..., verticesNum-1}, and it might rename some vertices when a
+	 * vertex is removed to maintain this invariant. This rename can be subscribed
+	 * using {@link com.jgalgo.IDStrategy#addIDSwapListener}.
 	 *
 	 * @see com.jgalgo.IDStrategy
 	 *
 	 * @return the vertices IDs strategy
 	 */
-	public IDStrategy getVerticesIDStrategy();
+	public IDStrategy.Continues getVerticesIDStrategy();
 
 	/**
 	 * Get the set of all edges of the graph.
 	 *
 	 * <p>
-	 * Each edge in the graph is identified by a unique int ID, which is determined
-	 * by some strategy. For example, {@link com.jgalgo.IDStrategy.Continues} ensure
-	 * that at all times the edges IDs are {@code 0,1,..., edgesNum-1}, and it might
-	 * rename some edges when an edge is removed to maintain this invariant. This
-	 * rename can be subscribed using
-	 * {@link com.jgalgo.IDStrategy#addIDSwapListener}. Another option for an ID
-	 * strategy is {@link com.jgalgo.IDStrategy.Fixed} which ensure once an edge is
-	 * assigned an ID, it will not change. There might be some performance
+	 * Each edge in the graph is identified by a unique non negative int ID, which
+	 * is determined by some strategy. For example,
+	 * {@link com.jgalgo.IDStrategy.Continues} ensure that at all times the edges
+	 * IDs are {@code 0,1,..., edgesNum-1}, and it might rename some edges when an
+	 * edge is removed to maintain this invariant. This rename can be subscribed
+	 * using {@link com.jgalgo.IDStrategy#addIDSwapListener}. Another option for an
+	 * ID strategy is {@link com.jgalgo.IDStrategy.Fixed} which ensure once an edge
+	 * is assigned an ID, it will not change. There might be some performance
 	 * differences between different ID strategies.
 	 *
 	 * @see com.jgalgo.IDStrategy
