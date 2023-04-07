@@ -1,5 +1,9 @@
 package com.jgalgo;
 
+import java.util.BitSet;
+
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 public class SSSPBellmanFord implements SSSP {
@@ -34,12 +38,31 @@ public class SSSPBellmanFord implements SSSP {
 			}
 		}
 
-		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-			int e = it.nextInt();
-			int u = g.edgeSource(e), v = g.edgeTarget(e);
+		for (int v = 0; v < n; v++) {
+			int e = res.backtrack[v];
+			if (e == -1)
+				continue;
+			int u = g.edgeSource(e);
 			double d = res.distances[u] + w.weight(e);
 			if (d < res.distances[v]) {
-				res.negCycle = true;
+				BitSet visited = new BitSet(n);
+				visited.set(v);
+				while (!visited.get(u)) {
+					visited.set(u);
+					e = res.backtrack[u];
+					u = g.edgeSource(e);
+				}
+
+				IntArrayList negCycle = new IntArrayList();
+				for (int p = u;;) {
+					e = res.backtrack[p];
+					negCycle.add(e);
+					p = g.edgeSource(e);
+					if (p == u)
+						break;
+				}
+				IntArrays.reverse(negCycle.elements(), 0, negCycle.size());
+				res.negCycle = new Path(g, u, u, negCycle);
 				return res;
 			}
 		}
@@ -49,7 +72,7 @@ public class SSSPBellmanFord implements SSSP {
 
 	private static class Result extends SSSPResultImpl {
 
-		private boolean negCycle;
+		private Path negCycle;
 
 		private Result(Graph g, int source) {
 			super(g, source);
@@ -57,33 +80,33 @@ public class SSSPBellmanFord implements SSSP {
 
 		@Override
 		public double distance(int target) {
-			if (negCycle)
+			if (foundNegativeCycle())
 				throw new IllegalStateException();
 			return super.distance(target);
 		}
 
 		@Override
 		public Path getPathTo(int target) {
-			if (negCycle)
+			if (foundNegativeCycle())
 				throw new IllegalStateException();
 			return super.getPathTo(target);
 		}
 
 		@Override
 		public boolean foundNegativeCycle() {
-			return negCycle;
+			return negCycle != null;
 		}
 
 		@Override
 		public Path getNegativeCycle() {
-			if (negCycle)
-				throw new UnsupportedOperationException();
-			throw new IllegalStateException("no negative cycle found");
+			if (!foundNegativeCycle())
+				throw new IllegalStateException("no negative cycle found");
+			return negCycle;
 		}
 
 		@Override
 		public String toString() {
-			return negCycle ? "[NegCycle]" : super.toString();
+			return foundNegativeCycle() ? "[NegCycle=" + negCycle + "]" : super.toString();
 		}
 
 	}

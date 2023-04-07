@@ -10,8 +10,8 @@ import com.jgalgo.EdgeWeightFunc;
 import com.jgalgo.Graph;
 import com.jgalgo.Path;
 import com.jgalgo.SSSP;
-import com.jgalgo.SSSPBellmanFord;
 import com.jgalgo.SSSPDijkstra;
+import com.jgalgo.SSSPGoldberg1995;
 import com.jgalgo.test.GraphsTestUtils.RandomGraphBuilder;
 
 class APSPTestUtils extends TestUtils {
@@ -19,11 +19,11 @@ class APSPTestUtils extends TestUtils {
 	private APSPTestUtils() {
 	}
 
-	public static void testAPSPDirectedPositiveInt(Supplier<? extends APSP> builder, long seed) {
+	static void testAPSPDirectedPositiveInt(Supplier<? extends APSP> builder, long seed) {
 		testAPSPPositiveInt(builder, true, seed);
 	}
 
-	public static void testAPSPUndirectedPositiveInt(Supplier<? extends APSP> builder, long seed) {
+	static void testAPSPUndirectedPositiveInt(Supplier<? extends APSP> builder, long seed) {
 		testAPSPPositiveInt(builder, false, seed);
 	}
 
@@ -47,9 +47,9 @@ class APSPTestUtils extends TestUtils {
 			int n = args[0], m = args[1];
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
-			GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+			GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
 			EdgeWeightFunc.Int w = g.edgesWeight("weight");
-			testAPSP(g, w, builder, new SSSPBellmanFord());
+			testAPSP(g, w, builder, new SSSPGoldberg1995());
 		});
 	}
 

@@ -21,9 +21,14 @@ public class APSPFloydWarshall implements APSP {
 			int e = it.nextInt();
 			int u = g.edgeSource(e);
 			int v = g.edgeTarget(e);
-			if (u == v)
-				continue;
 			double ew = w.weight(e);
+			if (u == v) {
+				if (ew < 0) {
+					res.setNegCycle(new Path(g, u, u, IntList.of(e)));
+					return res;
+				}
+				continue;
+			}
 			if (ew < res.distance(u, v)) {
 				res.setDistance(u, v, ew);
 				res.setEdgeTo(u, v, e);
@@ -51,8 +56,9 @@ public class APSPFloydWarshall implements APSP {
 					}
 				}
 			}
+			if (detectNegCycle(res, n, k))
+				return res;
 		}
-		detectNegCycle(res, n);
 		return res;
 	}
 
@@ -62,9 +68,14 @@ public class APSPFloydWarshall implements APSP {
 			int e = it.nextInt();
 			int u = g.edgeSource(e);
 			int v = g.edgeTarget(e);
-			if (u == v)
-				continue;
 			double ew = w.weight(e);
+			if (u == v) {
+				if (ew < 0) {
+					res.setNegCycle(new Path(g, u, u, IntList.of(e)));
+					return res;
+				}
+				continue;
+			}
 			if (ew < res.distance(u, v)) {
 				res.setDistance(u, v, ew);
 				res.setEdgeTo(u, v, e);
@@ -89,29 +100,27 @@ public class APSPFloydWarshall implements APSP {
 					}
 				}
 			}
+			if (detectNegCycle(res, n, k))
+				return res;
 		}
-		detectNegCycle(res, n);
 		return res;
 	}
 
-	private static void detectNegCycle(APSPResultImpl.Abstract res, int n) {
+	private static boolean detectNegCycle(APSPResultImpl.Abstract res, int n, int k) {
 		for (int u = 0; u < n; u++) {
-			for (int v = 0; v < n; v++) {
-				if (u == v)
-					continue;
-				double d1 = res.distance(u, v);
-				double d2 = res.distance(v, u);
-				if (d1 == Double.POSITIVE_INFINITY || d2 == Double.POSITIVE_INFINITY)
-					continue;
-				if (d1 + d2 < 0) {
-					IntList negCycle = new IntArrayList();
-					negCycle.addAll(res.getPath(u, v));
-					negCycle.addAll(res.getPath(v, u));
-					res.setNegCycle(new Path(res.graph(), u, u, negCycle));
-					return;
-				}
+			double d1 = res.distance(u, k);
+			double d2 = res.distance(k, u);
+			if (d1 == Double.POSITIVE_INFINITY || d2 == Double.POSITIVE_INFINITY)
+				continue;
+			if (d1 + d2 < 0) {
+				IntList negCycle = new IntArrayList();
+				negCycle.addAll(res.getPath(u, k));
+				negCycle.addAll(res.getPath(k, u));
+				res.setNegCycle(new Path(res.graph(), u, u, negCycle));
+				return true;
 			}
 		}
+		return false;
 	}
 
 }

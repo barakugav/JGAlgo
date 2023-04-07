@@ -70,7 +70,6 @@ public class ColoringDSaturHeap implements Coloring {
 		@Override
 		public int compareTo(HeapElm o) {
 			int c;
-			System.out.println();
 			if ((c = -Integer.compare(neighborColorsNum, o.neighborColorsNum)) != 0)
 				return c;
 			if ((c = Integer.compare(degree, o.degree)) != 0)

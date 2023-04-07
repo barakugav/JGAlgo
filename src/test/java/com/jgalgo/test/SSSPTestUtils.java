@@ -49,10 +49,8 @@ public class SSSPTestUtils extends TestUtils {
 			int source = rand.nextInt(g.vertices().size());
 
 			SSSP algo = builder.get();
-			SSSP.Result actualRes = algo.calcDistances(g, w, source);
-
 			SSSP validationAlgo = algo instanceof SSSPDijkstra ? new SSSPDial1969() : new SSSPDijkstra();
-			validateResult(g, w, source, actualRes, validationAlgo);
+			testAlgo(g, w, source, algo, validationAlgo);
 		});
 	}
 
@@ -69,11 +67,14 @@ public class SSSPTestUtils extends TestUtils {
 			int source = 0;
 
 			SSSP algo = builder.get();
-			SSSP.Result actualRes = algo.calcDistances(g, w, source);
-
 			SSSP validationAlgo = algo instanceof SSSPBellmanFord ? new SSSPGoldberg1995() : new SSSPBellmanFord();
-			validateResult(g, w, source, actualRes, validationAlgo);
+			testAlgo(g, w, source, algo, validationAlgo);
 		});
+	}
+
+	static void testAlgo(Graph g, EdgeWeightFunc w, int source, SSSP algo, SSSP validationAlgo) {
+		SSSP.Result result = algo.calcDistances(g, w, source);
+		validateResult(g, w, source, result, validationAlgo);
 	}
 
 	static void validateResult(Graph g, EdgeWeightFunc w, int source, SSSP.Result result, SSSP validationAlgo) {

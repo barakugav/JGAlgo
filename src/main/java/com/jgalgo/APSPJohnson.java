@@ -78,8 +78,11 @@ public class APSPJohnson implements APSP {
 		for (int v = 0; v < n; v++)
 			edgeEef.set(refG.addEdge(fakeV, v), fakeEdge);
 
-		SSSP.Result res = new SSSPBellmanFord().calcDistances(refG,
-				e -> (e != fakeEdge ? w.weight(edgeEef.getInt(e)) : 0), fakeV);
+		EdgeWeightFunc refW = e -> {
+			int ref = edgeEef.getInt(e);
+			return ref != fakeEdge ? w.weight(ref) : 0;
+		};
+		SSSP.Result res = new SSSPBellmanFord().calcDistances(refG, refW, fakeV);
 		if (!res.foundNegativeCycle()) {
 			double[] potential = new double[n];
 			for (int v = 0; v < n; v++)
@@ -136,7 +139,7 @@ public class APSPJohnson implements APSP {
 
 		@Override
 		public double distance(int source, int target) {
-			return ssspResults[source].distance(target) + potential[source] - potential[target];
+			return ssspResults[source].distance(target) + potential[target] - potential[source];
 		}
 
 		@Override
