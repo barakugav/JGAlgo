@@ -142,6 +142,17 @@ public abstract class GraphBuilder {
 		}
 
 		@Override
+		public void removeVertex(int v) {
+			int vIdx = verticesIDStrategy.idToIdx(v);
+			g.removeVertex(vIdx);
+
+			/* index may have changed, fetch it again */
+			vIdx = verticesIDStrategy.idToIdx(vIdx);
+			vIdx = verticesIDStrategy.isSwapNeededBeforeRemove(vIdx);
+			verticesIDStrategy.removeIdx(vIdx);
+		}
+
+		@Override
 		public EdgeIter edgesOut(int u) {
 			EdgeIter it = g.edgesOut(verticesIDStrategy.idToIdx(u));
 			return new EdgeItr(it);

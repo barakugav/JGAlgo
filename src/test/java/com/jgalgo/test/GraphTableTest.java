@@ -68,9 +68,15 @@ public class GraphTableTest extends TestUtils {
 	}
 
 	@Test
-	public void testUndirectedRandOps() {
+	public void testRandOpsUndirected() {
 		final long seed = 0x2aee685276834043L;
-		GraphImplTestUtils.testUndirectedRandOps(graphImpl(), seed);
+		GraphImplTestUtils.testRandOps(graphImpl(), false, seed);
+	}
+
+	@Test
+	public void testRandOpsDirected() {
+		final long seed = 0x4cd9a3bcb63cf8f8L;
+		GraphImplTestUtils.testRandOps(graphImpl(), true, seed);
 	}
 
 }

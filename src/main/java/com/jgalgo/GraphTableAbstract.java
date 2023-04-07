@@ -27,6 +27,16 @@ abstract class GraphTableAbstract extends GraphBaseContinues {
 	}
 
 	@Override
+	public final void removeVertex(int v) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	final void vertexSwap(int v1, int v2) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public EdgeIter edgesOut(int u) {
 		return new EdgeIterOut(u);
 	}

@@ -20,15 +20,28 @@ public class GraphLinkedDirected extends GraphLinkedAbstract implements DiGraph 
 	}
 
 	@Override
+	void vertexSwap(int v1, int v2) {
+		for (Node p = edgesOut.get(v1); p != null; p = p.nextOut)
+			p.u = v2;
+		for (Node p = edgesIn.get(v1); p != null; p = p.nextIn)
+			p.v = v2;
+		for (Node p = edgesOut.get(v2); p != null; p = p.nextOut)
+			p.u = v1;
+		for (Node p = edgesIn.get(v2); p != null; p = p.nextIn)
+			p.v = v1;
+		super.vertexSwap(v1, v2);
+	}
+
+	@Override
 	public EdgeIter edgesOut(int u) {
 		checkVertexIdx(u);
-		return new EdgeVertexItrOut(edgesOut.get(u));
+		return new EdgeIterOut(edgesOut.get(u));
 	}
 
 	@Override
 	public EdgeIter edgesIn(int v) {
 		checkVertexIdx(v);
-		return new EdgeVertexItrIn(edgesIn.get(v));
+		return new EdgeIterIn(edgesIn.get(v));
 	}
 
 	@Override
@@ -148,9 +161,9 @@ public class GraphLinkedDirected extends GraphLinkedAbstract implements DiGraph 
 		super.clearEdges();
 	}
 
-	private abstract class EdgeVertexItr extends GraphLinkedAbstract.EdgeItr {
+	private abstract class EdgeIterImpl extends GraphLinkedAbstract.EdgeItr {
 
-		EdgeVertexItr(Node p) {
+		EdgeIterImpl(Node p) {
 			super(p);
 		}
 
@@ -166,9 +179,9 @@ public class GraphLinkedDirected extends GraphLinkedAbstract implements DiGraph 
 
 	}
 
-	private class EdgeVertexItrOut extends EdgeVertexItr {
+	private class EdgeIterOut extends EdgeIterImpl {
 
-		EdgeVertexItrOut(Node p) {
+		EdgeIterOut(Node p) {
 			super(p);
 		}
 
@@ -179,9 +192,9 @@ public class GraphLinkedDirected extends GraphLinkedAbstract implements DiGraph 
 
 	}
 
-	private class EdgeVertexItrIn extends EdgeVertexItr {
+	private class EdgeIterIn extends EdgeIterImpl {
 
-		EdgeVertexItrIn(Node p) {
+		EdgeIterIn(Node p) {
 			super(p);
 		}
 

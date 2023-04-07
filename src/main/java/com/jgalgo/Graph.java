@@ -14,19 +14,10 @@ public interface Graph {
 	 * Get the set of all vertices of the graph.
 	 *
 	 * <p>
-	 * Each vertex in the graph is identified by a unique non negative int ID. The
-	 * returned set is a set of all these identifiers, and its size is equivalent to
-	 * the number of vertices in the graph.
-	 *
-	 * <p>
-	 * The vertices IDs values are determined by {@link #getVerticesIDStrategy()}.
-	 * Only {@link com.jgalgo.IDStrategy.Continues} is supported for vertices, which
-	 * ensure that at all times the vertices IDs are {@code 0,1,..., verticesNum-1},
-	 * and it might rename some vertices when a vertex is removed to maintain this
-	 * invariant. This rename can be subscribed using
-	 * {@link com.jgalgo.IDStrategy#addIDSwapListener}.
-	 *
-	 * @see com.jgalgo.IDStrategy
+	 * Each vertex in the graph is identified by a unique non negative int ID,
+	 * determined by {@link #getVerticesIDStrategy()}. The returned set is a set of
+	 * all these identifiers, and its size is equivalent to the number of vertices
+	 * in the graph.
 	 *
 	 * @return a set containing all IDs of the graph vertices
 	 */
@@ -36,21 +27,10 @@ public interface Graph {
 	 * Get the set of all edges of the graph.
 	 *
 	 * <p>
-	 * Each edge in the graph is identified by a unique non negative int ID. The
-	 * returned set is a set of all these identifiers, and its size is equivalent to
-	 * the number of edges in the graph.
-	 *
-	 * <p>
-	 * The edges IDs values are determined by {@link #getEdgesIDStrategy()}. For
-	 * example, {@link com.jgalgo.IDStrategy.Continues} ensure that at all times the
-	 * edges IDs are {@code 0,1,..., edgesNum-1}, and it might rename some edges
-	 * when an edge is removed to maintain this invariant. This rename can be
-	 * subscribed using {@link com.jgalgo.IDStrategy#addIDSwapListener}. Another
-	 * option for an ID strategy is {@link com.jgalgo.IDStrategy.Fixed} which ensure
-	 * once an edge is assigned an ID, it will not change. There might be some
-	 * performance differences between different ID strategies.
-	 *
-	 * @see com.jgalgo.IDStrategy
+	 * Each edge in the graph is identified by a unique non negative int ID,
+	 * determined by {@link #getEdgesIDStrategy()}. The returned set is a set of all
+	 * these identifiers, and its size is equivalent to the number of edges in the
+	 * graph.
 	 *
 	 * @return a set containing all IDs of the graph edges
 	 */
@@ -62,6 +42,23 @@ public interface Graph {
 	 * @return the new vertex identifier
 	 */
 	int addVertex();
+
+	/**
+	 * Remove a vertex and all its edges from the graph.
+	 *
+	 * <p>
+	 * After removing a vertex, the vertices ID strategy may rename other vertices
+	 * identifiers to maintain its invariants, see {@link #getVerticesIDStrategy()}.
+	 * Theses renames can be subscribed using
+	 * {@link com.jgalgo.IDStrategy#addIDSwapListener}. It may be more convenient to
+	 * remove all edges of a vertex and ignore it, instead of actually removing it
+	 * and dealing with IDs renames, but that depends on the specific use case.
+	 *
+	 * @see com.jgalgo.IDStrategy
+	 *
+	 * @param v the vertex identifier to remove
+	 */
+	void removeVertex(int v);
 
 	/**
 	 * Get the edges of a vertex u.
@@ -147,9 +144,10 @@ public interface Graph {
 	 * Remove an edge from the graph.
 	 *
 	 * <p>
-	 * After removing the edge, the edges ID strategy may rename other edges
-	 * identifiers to maintain its invariants. Theses renames can be subscribed
-	 * using {@link com.jgalgo.IDStrategy#addIDSwapListener}.
+	 * After removing an edge, the edges ID strategy may rename other edges
+	 * identifiers to maintain its invariants, see {@link #getEdgesIDStrategy()}.
+	 * Theses renames can be subscribed using
+	 * {@link com.jgalgo.IDStrategy#addIDSwapListener}.
 	 *
 	 * @see com.jgalgo.IDStrategy
 	 *
@@ -165,9 +163,10 @@ public interface Graph {
 	 * removed.
 	 *
 	 * <p>
-	 * After removing the edge, the edges ID strategy may rename other edges
-	 * identifiers to maintain its invariants. Theses renames can be subscribed
-	 * using {@link com.jgalgo.IDStrategy#addIDSwapListener}.
+	 * After removing an edge, the edges ID strategy may rename other edges
+	 * identifiers to maintain its invariants, see {@link #getEdgesIDStrategy()}.
+	 * Theses renames can be subscribed using
+	 * {@link com.jgalgo.IDStrategy#addIDSwapListener}.
 	 *
 	 * @see com.jgalgo.IDStrategy
 	 *

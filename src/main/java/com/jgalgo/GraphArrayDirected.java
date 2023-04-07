@@ -27,6 +27,31 @@ public class GraphArrayDirected extends GraphArrayAbstract implements DiGraph {
 	}
 
 	@Override
+	void vertexSwap(int v1, int v2) {
+		int[] es1Out = edgesOut.get(v1);
+		int es1OutLen = edgesOutNum.getInt(v1);
+		for (int i = 0; i < es1OutLen; i++)
+			replaceEdgeSource(es1Out[i], v2);
+
+		int[] es1In = edgesIn.get(v1);
+		int es1InLen = edgesInNum.getInt(v1);
+		for (int i = 0; i < es1InLen; i++)
+			replaceEdgeTarget(es1In[i], v2);
+
+		int[] es2Out = edgesOut.get(v2);
+		int es2OutLen = edgesOutNum.getInt(v2);
+		for (int i = 0; i < es2OutLen; i++)
+			replaceEdgeSource(es2Out[i], v1);
+
+		int[] es2In = edgesIn.get(v2);
+		int es2InLen = edgesInNum.getInt(v2);
+		for (int i = 0; i < es2InLen; i++)
+			replaceEdgeTarget(es2In[i], v1);
+
+		super.vertexSwap(v1, v2);
+	}
+
+	@Override
 	public EdgeIter edgesOut(int u) {
 		checkVertexIdx(u);
 		return new EdgeOutIt(u, edgesOut.get(u), edgesOutNum.getInt(u));

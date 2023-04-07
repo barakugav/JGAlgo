@@ -89,9 +89,15 @@ public class GraphArrayTest extends TestUtils {
 	}
 
 	@Test
-	public void testUndirectedRandOps() {
+	public void testRandOpsUndirected() {
 		final long seed = 0xb49ae602bf9f9896L;
-		GraphImplTestUtils.testUndirectedRandOps(graphImpl(), seed);
+		GraphImplTestUtils.testRandOps(graphImpl(), false, seed);
+	}
+
+	@Test
+	public void testRandOpsDirected() {
+		final long seed = 0xf1d6fb75a6d8d711L;
+		GraphImplTestUtils.testRandOps(graphImpl(), true, seed);
 	}
 
 }

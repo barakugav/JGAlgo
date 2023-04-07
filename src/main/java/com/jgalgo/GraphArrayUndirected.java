@@ -19,6 +19,24 @@ public class GraphArrayUndirected extends GraphArrayAbstract implements UGraph {
 	}
 
 	@Override
+	void vertexSwap(int v1, int v2) {
+		int[] es1 = edges.get(v1);
+		int es1Len = edgesNum.getInt(v1);
+		int[] es2 = edges.get(v2);
+		int es2Len = edgesNum.getInt(v2);
+
+		final int tempV = -2;
+		for (int i = 0; i < es1Len; i++)
+			replaceEdgeEndpoint(es1[i], v1, tempV);
+		for (int i = 0; i < es2Len; i++)
+			replaceEdgeEndpoint(es2[i], v2, v1);
+		for (int i = 0; i < es1Len; i++)
+			replaceEdgeEndpoint(es1[i], tempV, v2);
+
+		super.vertexSwap(v1, v2);
+	}
+
+	@Override
 	public EdgeIter edgesOut(int u) {
 		checkVertexIdx(u);
 		return new EdgeIt(u, edges.get(u), edgesNum.getInt(u));

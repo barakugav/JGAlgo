@@ -32,6 +32,34 @@ abstract class GraphBaseContinues extends GraphBase {
 	}
 
 	@Override
+	public void removeVertex(int v) {
+		v = vertexSwapBeforeRemove(v);
+		removeEdgesAll(v); // TODO move above
+		verticesIDStrategy.removeIdx(v);
+		for (DataContainer<?> container : vWeightsInternal)
+			container.remove(v);
+		for (Weights<?> weight : vWeights.values())
+			((WeightsImpl<?>) weight).container.remove(v);
+	}
+
+	int vertexSwapBeforeRemove(int v) {
+		int vn = verticesIDStrategy.isSwapNeededBeforeRemove(v);
+		if (v != vn) {
+			vertexSwap(v, vn);
+			v = vn;
+		}
+		return v;
+	}
+
+	void vertexSwap(int v1, int v2) {
+		verticesIDStrategy.idxSwap(v1, v2);
+		for (DataContainer<?> container : vWeightsInternal)
+			container.swap(v1, v2);
+		for (Weights<?> weight : vWeights.values())
+			((WeightsImpl<?>) weight).container.swap(v1, v2);
+	}
+
+	@Override
 	public int addEdge(int u, int v) {
 		checkVertexIdx(u);
 		checkVertexIdx(v);
@@ -114,11 +142,6 @@ abstract class GraphBaseContinues extends GraphBase {
 	@SuppressWarnings("unchecked")
 	public <E, WeightsT extends Weights<E>> WeightsT edgesWeight(Object key) {
 		return (WeightsT) eWeights.get(key);
-	}
-
-	@Override
-	public IDStrategy.Continues getVerticesIDStrategy() {
-		return super.getVerticesIDStrategy();
 	}
 
 	@Override

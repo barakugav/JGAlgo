@@ -84,6 +84,29 @@ abstract class GraphArrayAbstract extends GraphBaseContinues {
 		return endpoints2Target(edgeEndpoints.getLong(edge));
 	}
 
+	void replaceEdgeSource(int edge, int newSource) {
+		long endpoints = edgeEndpoints.getLong(edge);
+		int target = endpoints2Target(endpoints);
+		edgeEndpoints.set(edge, sourceTarget2Endpoints(newSource, target));
+	}
+
+	void replaceEdgeTarget(int edge, int newTarget) {
+		long endpoints = edgeEndpoints.getLong(edge);
+		int source = endpoints2Source(endpoints);
+		edgeEndpoints.set(edge, sourceTarget2Endpoints(source, newTarget));
+	}
+
+	void replaceEdgeEndpoint(int edge, int oldEndpoint, int newEndpoint) {
+		long endpoints = edgeEndpoints.getLong(edge);
+		int source = endpoints2Source(endpoints);
+		int target = endpoints2Target(endpoints);
+		if (source == oldEndpoint)
+			source = newEndpoint;
+		if (target == oldEndpoint)
+			target = newEndpoint;
+		edgeEndpoints.set(edge, sourceTarget2Endpoints(source, target));
+	}
+
 	private static long sourceTarget2Endpoints(int u, int v) {
 		return ((u & 0xffffffffL) << 32) | ((v & 0xffffffffL) << 0);
 	}

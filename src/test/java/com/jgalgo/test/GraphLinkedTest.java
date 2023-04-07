@@ -77,9 +77,15 @@ public class GraphLinkedTest extends TestUtils {
 	}
 
 	@Test
-	public void testUndirectedRandOps() {
+	public void testRandOpsUndirected() {
 		final long seed = 0xbda54e345679e161L;
-		GraphImplTestUtils.testUndirectedRandOps(graphImpl(), seed);
+		GraphImplTestUtils.testRandOps(graphImpl(), false, seed);
+	}
+
+	@Test
+	public void testRandOpsDirected() {
+		final long seed = 0x136a0df5ecaae5a2L;
+		GraphImplTestUtils.testRandOps(graphImpl(), true, seed);
 	}
 
 }
