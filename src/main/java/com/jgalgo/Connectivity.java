@@ -2,7 +2,8 @@ package com.jgalgo;
 
 import java.util.Arrays;
 
-import com.jgalgo.Utils.StackIntFixSize;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntStack;
 
 public class Connectivity {
 
@@ -20,7 +21,7 @@ public class Connectivity {
 	 */
 	public static Connectivity.Result findConnectivityComponents(UGraph g) {
 		int n = g.vertices().size();
-		StackIntFixSize stack = new StackIntFixSize(n);
+		IntStack stack = new IntArrayList();
 
 		int[] comp = new int[n];
 		Arrays.fill(comp, -1);
@@ -34,7 +35,7 @@ public class Connectivity {
 			comp[r] = compNum;
 
 			while (!stack.isEmpty()) {
-				int u = stack.pop();
+				int u = stack.popInt();
 
 				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 					eit.nextInt();

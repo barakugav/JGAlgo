@@ -1,10 +1,9 @@
 package com.jgalgo;
 
-import com.jgalgo.Utils.StackIntFixSize;
-
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntStack;
 
 public class EulerianTour {
 
@@ -46,7 +45,7 @@ public class EulerianTour {
 				iters[u] = g.edgesOut(u);
 
 			IntArrayList tour = new IntArrayList(g.edges().size());
-			StackIntFixSize queue = new StackIntFixSize(g.edges().size());
+			IntStack queue = new IntArrayList();
 
 			for (int u = end;;) {
 				findCycle: for (;;) {
@@ -68,7 +67,7 @@ public class EulerianTour {
 				if (queue.isEmpty())
 					break;
 
-				int e = queue.pop();
+				int e = queue.popInt();
 				tour.add(e);
 				u = g.edgeEndpoint(e, u);
 			}
@@ -139,7 +138,7 @@ public class EulerianTour {
 				iters[u] = g.edgesOut(u);
 
 			IntArrayList tour = new IntArrayList(g.edges().size());
-			StackIntFixSize queue = new StackIntFixSize(g.edges().size());
+			IntStack queue = new IntArrayList();
 
 			for (int u = start;;) {
 				findCycle: for (;;) {
@@ -161,7 +160,7 @@ public class EulerianTour {
 				if (queue.isEmpty())
 					break;
 
-				int e = queue.pop();
+				int e = queue.popInt();
 				tour.add(e);
 				assert g.edgeTarget(e) == u;
 				u = g.edgeSource(e);

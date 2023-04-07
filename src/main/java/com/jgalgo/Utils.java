@@ -345,53 +345,6 @@ class Utils {
 
 	}
 
-	static class StackIntFixSize {
-
-		private final int[] s;
-		private int size;
-
-		StackIntFixSize(int maxSize) {
-			s = new int[maxSize];
-			size = 0;
-		}
-
-		int size() {
-			return size;
-		}
-
-		boolean isEmpty() {
-			return size == 0;
-		}
-
-		void push(int x) {
-			s[size++] = x;
-		}
-
-		int pop() {
-			return s[--size];
-		}
-
-		void clear() {
-			size = 0;
-		}
-
-		@Override
-		public String toString() {
-			if (isEmpty())
-				return "[]";
-
-			StringBuilder b = new StringBuilder();
-			b.append('[');
-			for (int i = 0;; i++) {
-				b.append(s[i]);
-				if (i == size - 1)
-					return b.append(']').toString();
-				b.append(", ");
-			}
-		}
-
-	}
-
 	static class ArrayView<E> extends AbstractList<E> implements RandomAccess {
 
 		private final E[] a;

@@ -3,11 +3,10 @@ package com.jgalgo;
 import java.util.Arrays;
 import java.util.Objects;
 
-import com.jgalgo.Utils.StackIntFixSize;
-
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntLists;
+import it.unimi.dsi.fastutil.ints.IntStack;
 
 public class MDSTTarjan1977 implements MDST {
 
@@ -64,11 +63,11 @@ public class MDSTTarjan1977 implements MDST {
 	private static IntCollection expand(DiGraph g, ContractedGraph cg, int root) {
 		int[] inEdge = new int[cg.n];
 
-		StackIntFixSize roots = new StackIntFixSize(cg.n * 2);
+		IntStack roots = new IntArrayList();
 		roots.push(root);
 
 		while (!roots.isEmpty()) {
-			int r = roots.pop();
+			int r = roots.popInt();
 			int e = cg.inEdge[r];
 			int v = g.edgeTarget(e);
 			inEdge[v] = e;

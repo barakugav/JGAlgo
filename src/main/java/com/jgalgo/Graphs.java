@@ -3,8 +3,6 @@ package com.jgalgo;
 import java.util.Arrays;
 import java.util.Collections;
 
-import com.jgalgo.Utils.StackIntFixSize;
-
 import it.unimi.dsi.fastutil.ints.Int2ObjectFunction;
 import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -13,6 +11,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntLists;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
+import it.unimi.dsi.fastutil.ints.IntStack;
 
 public class Graphs {
 
@@ -98,7 +97,7 @@ public class Graphs {
 		int[] parent = new int[n];
 		Arrays.fill(parent, -1);
 
-		StackIntFixSize stack = new StackIntFixSize(n);
+		IntStack stack = new IntArrayList();
 		int visitedCount = 0;
 
 		for (int i = 0; i < roots.length; i++) {
@@ -113,7 +112,7 @@ public class Graphs {
 			visited[root] = true;
 
 			while (!stack.isEmpty()) {
-				int u = stack.pop();
+				int u = stack.popInt();
 				visitedCount++;
 
 				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
