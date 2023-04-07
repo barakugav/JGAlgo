@@ -98,7 +98,7 @@ w.set(e3, 15.1);
 SSSP ssspAlgo = new SSSPDijkstra();
 SSSP.Result ssspRes = ssspAlgo.calcDistances(g, w, v1);
 
-/* Display the shortest path from v1 to v3 */
+/* Print the shortest path from v1 to v3 */
 assert ssspRes.distance(v3) == 4.3;
 assert ssspRes.getPathTo(v3).equals(IntList.of(e1, e2));
 System.out.println("Distance from v1 to v3 is: " + ssspRes.distance(v3));
