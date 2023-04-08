@@ -15,10 +15,10 @@ public abstract class BSTAbstract&lt;E&gt; extends HeapAbstractDirectAccessed&lt
 
 	@Override
 	public E extractMax() {
-<span class="nc" id="L18">		Handle&lt;E&gt; min = findMaxHandle();</span>
-<span class="nc" id="L19">		E val = min.get();</span>
-<span class="nc" id="L20">		removeHandle(min);</span>
-<span class="nc" id="L21">		return val;</span>
+<span class="fc" id="L18">		Handle&lt;E&gt; max = findMaxHandle();</span>
+<span class="fc" id="L19">		E val = max.get();</span>
+<span class="fc" id="L20">		removeHandle(max);</span>
+<span class="fc" id="L21">		return val;</span>
 	}
 
 }

@@ -69,18 +69,18 @@ public abstract class GraphBuilder {
 		private Array() {
 		}
 
-		public static GraphBuilder.Linked newInstance() {
-<span class="fc" id="L73">			return new GraphBuilder.Linked();</span>
+		public static GraphBuilder.Array newInstance() {
+<span class="fc" id="L73">			return new GraphBuilder.Array();</span>
 		}
 
 		@Override
 		public UGraph buildUndirectedBase() {
-<span class="nc" id="L78">			return new GraphArrayUndirected(verticesNum);</span>
+<span class="fc" id="L78">			return new GraphArrayUndirected(verticesNum);</span>
 		}
 
 		@Override
 		public DiGraph buildDirectedBase() {
-<span class="nc" id="L83">			return new GraphArrayDirected(verticesNum);</span>
+<span class="fc" id="L83">			return new GraphArrayDirected(verticesNum);</span>
 		}
 	}
 
@@ -94,7 +94,7 @@ public abstract class GraphBuilder {
 
 		@Override
 		public UGraph buildUndirectedBase() {
-<span class="fc" id="L97">			return new GraphLinkedUndirected(verticesNum);</span>
+<span class="nc" id="L97">			return new GraphLinkedUndirected(verticesNum);</span>
 		}
 
 		@Override

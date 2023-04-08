@@ -98,11 +98,11 @@ import com.jgalgo.Trees.TreeNode;
 <span class="nc" id="L98">			throw new IllegalArgumentException(&quot;new key is greater than existing one&quot;);</span>
 <span class="fc" id="L99">		node.value = e;</span>
 
-<span class="pc bpc" id="L101" title="1 of 2 branches missed.">		if (c == null) {</span>
-<span class="nc bnc" id="L102" title="All 2 branches missed.">			for (Node&lt;E&gt; p; (p = node.parent) != null;) {</span>
-<span class="nc bnc" id="L103" title="All 2 branches missed.">				if (Utils.cmpDefault(p.value, e) &lt;= 0)</span>
-<span class="nc" id="L104">					break;</span>
-<span class="nc" id="L105">				swapParentChild(p, node);</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">		if (c == null) {</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">			for (Node&lt;E&gt; p; (p = node.parent) != null;) {</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">				if (Utils.cmpDefault(p.value, e) &lt;= 0)</span>
+<span class="fc" id="L104">					break;</span>
+<span class="fc" id="L105">				swapParentChild(p, node);</span>
 			}
 		} else {
 <span class="fc bfc" id="L108" title="All 2 branches covered.">			for (Node&lt;E&gt; p; (p = node.parent) != null;) {</span>

@@ -110,9 +110,9 @@ import java.util.function.Consumer;
 
 	@Override
 	public Handle&lt;E&gt; findMaxHandle() {
-<span class="nc bnc" id="L113" title="All 2 branches missed.">		if (root == null)</span>
+<span class="pc bpc" id="L113" title="1 of 2 branches missed.">		if (root == null)</span>
 <span class="nc" id="L114">			throw new IllegalStateException();</span>
-<span class="nc" id="L115">		return BSTUtils.findMax(root);</span>
+<span class="fc" id="L115">		return BSTUtils.findMax(root);</span>
 	}
 
 	@Override
