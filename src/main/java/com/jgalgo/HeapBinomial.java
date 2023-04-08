@@ -1,7 +1,5 @@
 package com.jgalgo;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.util.AbstractSet;
 import java.util.Comparator;
 import java.util.ConcurrentModificationException;
@@ -327,83 +325,6 @@ public class HeapBinomial<E> extends HeapAbstractDirectAccessed<E> {
 		return new Node[n];
 	}
 
-	@Override
-	public String toString() {
-		return formatHeap();
-	}
-
-	public String formatHeap() {
-		try {
-			return formatHeap(new StringBuilder()).toString();
-		} catch (IOException e) {
-			throw new UncheckedIOException(e);
-		}
-	}
-
-	public Appendable formatHeap(Appendable s) throws IOException {
-		Node<E>[] rs = roots;
-		int rsLen = rootsLen;
-
-		String[][][] elms = new String[rsLen][][];
-
-		/* trees to elms array */
-		for (int i = 0; i < rsLen; i++) {
-			if (rs[i] == null)
-				continue;
-			int width = i == 0 ? 1 : 1 << (i - 1);
-			elms[i] = new String[i + 1][width];
-			formatTree(rs[i], elms[i], 0, 0, i);
-		}
-
-		int longest = 0, deepest = -1, weedest = -1;
-		for (int i = 0; i < rsLen; i++) {
-			if (elms[i] == null)
-				continue;
-			for (int y = 0; y < elms[i].length; y++) {
-				for (int x = 0; x < elms[i][y].length; x++) {
-					String elmStr = elms[i][y][x];
-					if (elmStr != null && elmStr.length() > longest)
-						longest = elmStr.length();
-				}
-			}
-			if (elms[i].length > deepest)
-				deepest = elms[i].length;
-			if (elms[i][0].length > weedest)
-				weedest = elms[i][0].length;
-		}
-
-		CharSequence emptyCell = new CharMultiply(' ', longest + 1);
-		for (int y = 0; y < deepest; y++) {
-			for (int i = 0; i < rsLen; i++) {
-				if (elms[i] == null)
-					continue;
-				for (int x = 0; x < weedest; x++) {
-					String elmStr = y < elms[i].length && x < elms[i][y].length ? elms[i][y][x] : null;
-					if (elmStr == null)
-						s.append(emptyCell);
-					else {
-						s.append(elmStr);
-						s.append(new CharMultiply(' ', longest - elmStr.length() + 1));
-					}
-				}
-
-			}
-			s.append('\n');
-		}
-
-		return s;
-	}
-
-	private void formatTree(Node<E> r, String[][] elms, int x, int y, int rank) {
-		elms[y][x] = Objects.toString(r.value);
-		int xOffset = 0, childRank = rank - 1;
-		for (Node<E> c = r.child; c != null; c = c.next) {
-			formatTree(c, elms, x + xOffset, y + 1, childRank);
-			xOffset += childRank == 0 ? 1 : 1 << (childRank - 1);
-			childRank--;
-		}
-	}
-
 	private static class Node<E> implements Handle<E>, TreeNode<Node<E>> {
 
 		Node<E> parent;
@@ -496,39 +417,6 @@ public class HeapBinomial<E> extends HeapAbstractDirectAccessed<E> {
 				nextRootIdx = i + 1;
 			}
 			return true;
-		}
-
-	}
-
-	private static class CharMultiply implements CharSequence {
-
-		final char c;
-		final int n;
-
-		CharMultiply(char c, int n) {
-			if (n <= 0)
-				throw new IllegalArgumentException();
-			this.c = c;
-			this.n = n;
-		}
-
-		@Override
-		public int length() {
-			return n;
-		}
-
-		@Override
-		public char charAt(int index) {
-			if (index < 0 || index >= n)
-				throw new IndexOutOfBoundsException(index);
-			return c;
-		}
-
-		@Override
-		public CharSequence subSequence(int start, int end) {
-			if (start < 0 || end >= n || start >= end)
-				throw new IndexOutOfBoundsException();
-			return start == 0 && end == n ? this : new CharMultiply(c, end - start);
 		}
 
 	}
