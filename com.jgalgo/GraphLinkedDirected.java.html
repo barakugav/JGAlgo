@@ -21,10 +21,10 @@ public class GraphLinkedDirected extends GraphLinkedAbstract implements DiGraph 
 
 	@Override
 	void vertexSwap(int v1, int v2) {
-<span class="fc bfc" id="L24" title="All 2 branches covered.">		for (Node p = edgesOut.get(v1); p != null; p = p.nextOut)</span>
-<span class="fc" id="L25">			p.u = v2;</span>
-<span class="fc bfc" id="L26" title="All 2 branches covered.">		for (Node p = edgesIn.get(v1); p != null; p = p.nextIn)</span>
-<span class="fc" id="L27">			p.v = v2;</span>
+<span class="pc bpc" id="L24" title="1 of 2 branches missed.">		for (Node p = edgesOut.get(v1); p != null; p = p.nextOut)</span>
+<span class="nc" id="L25">			p.u = v2;</span>
+<span class="pc bpc" id="L26" title="1 of 2 branches missed.">		for (Node p = edgesIn.get(v1); p != null; p = p.nextIn)</span>
+<span class="nc" id="L27">			p.v = v2;</span>
 <span class="fc bfc" id="L28" title="All 2 branches covered.">		for (Node p = edgesOut.get(v2); p != null; p = p.nextOut)</span>
 <span class="fc" id="L29">			p.u = v1;</span>
 <span class="fc bfc" id="L30" title="All 2 branches covered.">		for (Node p = edgesIn.get(v2); p != null; p = p.nextIn)</span>

@@ -2,11 +2,11 @@
 
 import java.util.Arrays;
 
-import com.jgalgo.Utils.QueueIntFixSize;
-
+import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 public class MatchingGabow1976 implements Matching {
 
@@ -25,7 +25,7 @@ public class MatchingGabow1976 implements Matching {
 <span class="fc" id="L25">		UGraph g = (UGraph) g0;</span>
 <span class="fc" id="L26">		int n = g.vertices().size();</span>
 
-<span class="fc" id="L28">		QueueIntFixSize queue = new QueueIntFixSize(n);</span>
+<span class="fc" id="L28">		IntPriorityQueue queue = new IntArrayFIFOQueue();</span>
 <span class="fc" id="L29">		int[] root = new int[n];</span>
 <span class="fc" id="L30">		boolean[] isEven = new boolean[n];</span>
 
@@ -61,11 +61,11 @@ public class MatchingGabow1976 implements Matching {
 <span class="fc" id="L61">					continue;</span>
 <span class="fc" id="L62">				root[u] = u;</span>
 <span class="fc" id="L63">				isEven[u] = true;</span>
-<span class="fc" id="L64">				queue.push(u);</span>
+<span class="fc" id="L64">				queue.enqueue(u);</span>
 			}
 
 <span class="fc bfc" id="L67" title="All 2 branches covered.">			bfs: while (!queue.isEmpty()) {</span>
-<span class="fc" id="L68">				final int u = queue.pop();</span>
+<span class="fc" id="L68">				final int u = queue.dequeueInt();</span>
 <span class="fc" id="L69">				int uRoot = root[u];</span>
 
 <span class="fc bfc" id="L71" title="All 2 branches covered.">				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
@@ -82,7 +82,7 @@ public class MatchingGabow1976 implements Matching {
 <span class="fc" id="L82">						int w = g.edgeEndpoint(matchedEdge, v);</span>
 <span class="fc" id="L83">						root[w] = uRoot;</span>
 <span class="fc" id="L84">						isEven[w] = true;</span>
-<span class="fc" id="L85">						queue.push(w);</span>
+<span class="fc" id="L85">						queue.enqueue(w);</span>
 <span class="fc" id="L86">						continue;</span>
 					}
 
@@ -130,7 +130,7 @@ public class MatchingGabow1976 implements Matching {
 								// handle odd vertex
 <span class="fc" id="L131">								p = g.edgeEndpoint(matched[p], p);</span>
 <span class="fc" id="L132">								blossomVertices[blossomVerticesSize++] = p;</span>
-<span class="fc" id="L133">								queue.push(p); // add the odd vertex that became even to the queue</span>
+<span class="fc" id="L133">								queue.enqueue(p); // add the odd vertex that became even to the queue</span>
 <span class="fc" id="L134">								bridge[p * 2 + 0] = brigeEdge;</span>
 <span class="fc" id="L135">								bridge[p * 2 + 1] = brigeVertex;</span>
 

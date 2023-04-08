@@ -17,12 +17,12 @@ public class GraphLinkedUndirected extends GraphLinkedAbstract implements UGraph
 	@Override
 	void vertexSwap(int v1, int v2) {
 <span class="fc" id="L19">		final int tempV = -2;</span>
-<span class="fc bfc" id="L20" title="All 2 branches covered.">		for (Node p = edges.get(v1), next; p != null; p = next) {</span>
-<span class="fc" id="L21">			next = p.next(v1);</span>
-<span class="fc bfc" id="L22" title="All 2 branches covered.">			if (p.u == v1)</span>
-<span class="fc" id="L23">				p.u = tempV;</span>
-<span class="fc bfc" id="L24" title="All 2 branches covered.">			if (p.v == v1)</span>
-<span class="fc" id="L25">				p.v = tempV;</span>
+<span class="pc bpc" id="L20" title="1 of 2 branches missed.">		for (Node p = edges.get(v1), next; p != null; p = next) {</span>
+<span class="nc" id="L21">			next = p.next(v1);</span>
+<span class="nc bnc" id="L22" title="All 2 branches missed.">			if (p.u == v1)</span>
+<span class="nc" id="L23">				p.u = tempV;</span>
+<span class="nc bnc" id="L24" title="All 2 branches missed.">			if (p.v == v1)</span>
+<span class="nc" id="L25">				p.v = tempV;</span>
 		}
 <span class="fc bfc" id="L27" title="All 2 branches covered.">		for (Node p = edges.get(v2), next; p != null; p = next) {</span>
 <span class="fc" id="L28">			next = p.next(v2);</span>
@@ -31,12 +31,12 @@ public class GraphLinkedUndirected extends GraphLinkedAbstract implements UGraph
 <span class="fc bfc" id="L31" title="All 2 branches covered.">			if (p.v == v2)</span>
 <span class="fc" id="L32">				p.v = v1;</span>
 		}
-<span class="fc bfc" id="L34" title="All 2 branches covered.">		for (Node p = edges.get(v1), next; p != null; p = next) {</span>
-<span class="fc" id="L35">			next = p.next(tempV);</span>
-<span class="fc bfc" id="L36" title="All 2 branches covered.">			if (p.u == tempV)</span>
-<span class="fc" id="L37">				p.u = v2;</span>
-<span class="fc bfc" id="L38" title="All 2 branches covered.">			if (p.v == tempV)</span>
-<span class="fc" id="L39">				p.v = v2;</span>
+<span class="pc bpc" id="L34" title="1 of 2 branches missed.">		for (Node p = edges.get(v1), next; p != null; p = next) {</span>
+<span class="nc" id="L35">			next = p.next(tempV);</span>
+<span class="nc bnc" id="L36" title="All 2 branches missed.">			if (p.u == tempV)</span>
+<span class="nc" id="L37">				p.u = v2;</span>
+<span class="nc bnc" id="L38" title="All 2 branches missed.">			if (p.v == tempV)</span>
+<span class="nc" id="L39">				p.v = v2;</span>
 		}
 
 <span class="fc" id="L42">		super.vertexSwap(v1, v2);</span>

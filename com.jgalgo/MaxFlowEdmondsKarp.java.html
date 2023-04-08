@@ -2,10 +2,10 @@
 
 import java.util.Arrays;
 
-import com.jgalgo.Utils.QueueIntFixSize;
-
 import it.unimi.dsi.fastutil.ints.Int2DoubleFunction;
+import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 public class MaxFlowEdmondsKarp implements MaxFlow {
 
@@ -50,17 +50,17 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 <span class="fc" id="L50">		int[] backtrack = new int[n];</span>
 
 <span class="fc" id="L52">		boolean[] visited = new boolean[n];</span>
-<span class="fc" id="L53">		QueueIntFixSize queue = new QueueIntFixSize(n);</span>
+<span class="fc" id="L53">		IntPriorityQueue queue = new IntArrayFIFOQueue();</span>
 
 		for (;;) {
 <span class="fc" id="L56">			queue.clear();</span>
 <span class="fc" id="L57">			visited[source] = true;</span>
 <span class="fc" id="L58">			backtrack[target] = -1;</span>
-<span class="fc" id="L59">			queue.push(source);</span>
+<span class="fc" id="L59">			queue.enqueue(source);</span>
 
 			// perform BFS and find a path of non saturated edges from source to target
 <span class="fc bfc" id="L62" title="All 2 branches covered.">			bfs: while (!queue.isEmpty()) {</span>
-<span class="fc" id="L63">				int u = queue.pop();</span>
+<span class="fc" id="L63">				int u = queue.dequeueInt();</span>
 <span class="fc bfc" id="L64" title="All 2 branches covered.">				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
 <span class="fc" id="L65">					int e = eit.nextInt();</span>
 <span class="fc" id="L66">					int v = eit.v();</span>
@@ -71,7 +71,7 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 <span class="fc bfc" id="L71" title="All 2 branches covered.">					if (v == target)</span>
 <span class="fc" id="L72">						break bfs;</span>
 <span class="fc" id="L73">					visited[v] = true;</span>
-<span class="fc" id="L74">					queue.push(v);</span>
+<span class="fc" id="L74">					queue.enqueue(v);</span>
 <span class="fc" id="L75">				}</span>
 <span class="fc" id="L76">			}</span>
 

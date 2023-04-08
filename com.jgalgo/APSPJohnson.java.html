@@ -22,32 +22,32 @@ import it.unimi.dsi.fastutil.ints.IntList;
 <span class="fc" id="L22">		boolean negWeight = false;</span>
 <span class="fc bfc" id="L23" title="All 2 branches covered.">		for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
 <span class="fc" id="L24">			int e = it.nextInt();</span>
-<span class="pc bpc" id="L25" title="1 of 2 branches missed.">			if (w.weight(e) &lt; 0) {</span>
-<span class="nc" id="L26">				negWeight = true;</span>
-<span class="nc" id="L27">				break;</span>
+<span class="fc bfc" id="L25" title="All 2 branches covered.">			if (w.weight(e) &lt; 0) {</span>
+<span class="fc" id="L26">				negWeight = true;</span>
+<span class="fc" id="L27">				break;</span>
 			}
 <span class="fc" id="L29">		}</span>
 
-<span class="pc bpc" id="L31" title="1 of 2 branches missed.">		if (!negWeight) {</span>
+<span class="fc bfc" id="L31" title="All 2 branches covered.">		if (!negWeight) {</span>
 			/* No negative weights, no need for potential */
 <span class="fc" id="L33">			SuccessRes res = calcDistancesPositive(g, w);</span>
 <span class="fc" id="L34">			res.potential = new double[n];</span>
 <span class="fc" id="L35">			return res;</span>
 		}
 
-<span class="nc" id="L38">		Pair&lt;double[], Path&gt; potential0 = calcPotential(g, w);</span>
-<span class="nc bnc" id="L39" title="All 2 branches missed.">		if (potential0.e2 != null)</span>
-<span class="nc" id="L40">			return new NegCycleRes(potential0.e2);</span>
-<span class="nc" id="L41">		double[] potential = potential0.e1;</span>
+<span class="fc" id="L38">		Pair&lt;double[], Path&gt; potential0 = calcPotential(g, w);</span>
+<span class="fc bfc" id="L39" title="All 2 branches covered.">		if (potential0.e2 != null)</span>
+<span class="fc" id="L40">			return new NegCycleRes(potential0.e2);</span>
+<span class="fc" id="L41">		double[] potential = potential0.e1;</span>
 
-<span class="nc" id="L43">		EdgeWeightFunc wPotential = e -&gt; {</span>
-<span class="nc" id="L44">			double up = potential[g.edgeSource(e)];</span>
-<span class="nc" id="L45">			double vp = potential[g.edgeTarget(e)];</span>
-<span class="nc" id="L46">			return w.weight(e) + up - vp;</span>
+<span class="fc" id="L43">		EdgeWeightFunc wPotential = e -&gt; {</span>
+<span class="fc" id="L44">			double up = potential[g.edgeSource(e)];</span>
+<span class="fc" id="L45">			double vp = potential[g.edgeTarget(e)];</span>
+<span class="fc" id="L46">			return w.weight(e) + up - vp;</span>
 		};
-<span class="nc" id="L48">		SuccessRes res = calcDistancesPositive(g, wPotential);</span>
-<span class="nc" id="L49">		res.potential = potential;</span>
-<span class="nc" id="L50">		return res;</span>
+<span class="fc" id="L48">		SuccessRes res = calcDistancesPositive(g, wPotential);</span>
+<span class="fc" id="L49">		res.potential = potential;</span>
+<span class="fc" id="L50">		return res;</span>
 	}
 
 	private static SuccessRes calcDistancesPositive(DiGraph g, EdgeWeightFunc w) {
@@ -60,37 +60,40 @@ import it.unimi.dsi.fastutil.ints.IntList;
 	}
 
 	private static Pair&lt;double[], Path&gt; calcPotential(DiGraph g, EdgeWeightFunc w) {
-<span class="nc" id="L63">		int n = g.vertices().size();</span>
-<span class="nc" id="L64">		DiGraph refG = new GraphArrayDirected(n + 1);</span>
-<span class="nc" id="L65">		Weights.Int edgeEef = refG.addEdgesWeight(&quot;edgeEef&quot;).ofInts();</span>
-<span class="nc bnc" id="L66" title="All 2 branches missed.">		for (int u = 0; u &lt; n; u++) {</span>
-<span class="nc bnc" id="L67" title="All 2 branches missed.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
-<span class="nc" id="L68">				int e = eit.nextInt();</span>
-<span class="nc" id="L69">				int v = eit.v();</span>
-<span class="nc" id="L70">				int refE = refG.addEdge(u, v);</span>
-<span class="nc" id="L71">				edgeEef.set(refE, e);</span>
-<span class="nc" id="L72">			}</span>
+<span class="fc" id="L63">		int n = g.vertices().size();</span>
+<span class="fc" id="L64">		DiGraph refG = new GraphArrayDirected(n + 1);</span>
+<span class="fc" id="L65">		Weights.Int edgeEef = refG.addEdgesWeight(&quot;edgeEef&quot;).ofInts();</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
+<span class="fc" id="L68">				int e = eit.nextInt();</span>
+<span class="fc" id="L69">				int v = eit.v();</span>
+<span class="fc" id="L70">				int refE = refG.addEdge(u, v);</span>
+<span class="fc" id="L71">				edgeEef.set(refE, e);</span>
+<span class="fc" id="L72">			}</span>
 		}
 
 		/* Add fake vertex */
-<span class="nc" id="L76">		final int fakeV = n;</span>
-<span class="nc" id="L77">		final int fakeEdge = -1;</span>
-<span class="nc bnc" id="L78" title="All 2 branches missed.">		for (int v = 0; v &lt; n; v++)</span>
-<span class="nc" id="L79">			edgeEef.set(refG.addEdge(fakeV, v), fakeEdge);</span>
+<span class="fc" id="L76">		final int fakeV = n;</span>
+<span class="fc" id="L77">		final int fakeEdge = -1;</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
+<span class="fc" id="L79">			edgeEef.set(refG.addEdge(fakeV, v), fakeEdge);</span>
 
-<span class="nc" id="L81">		SSSP.Result res = new SSSPBellmanFord().calcDistances(refG,</span>
-<span class="nc bnc" id="L82" title="All 2 branches missed.">				e -&gt; (e != fakeEdge ? w.weight(edgeEef.getInt(e)) : 0), fakeV);</span>
-<span class="nc bnc" id="L83" title="All 2 branches missed.">		if (!res.foundNegativeCycle()) {</span>
-<span class="nc" id="L84">			double[] potential = new double[n];</span>
-<span class="nc bnc" id="L85" title="All 2 branches missed.">			for (int v = 0; v &lt; n; v++)</span>
-<span class="nc" id="L86">				potential[v] = res.distance(v);</span>
-<span class="nc" id="L87">			return Pair.of(potential, null);</span>
+<span class="fc" id="L81">		EdgeWeightFunc refW = e -&gt; {</span>
+<span class="fc" id="L82">			int ref = edgeEef.getInt(e);</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">			return ref != fakeEdge ? w.weight(ref) : 0;</span>
+		};
+<span class="fc" id="L85">		SSSP.Result res = new SSSPBellmanFord().calcDistances(refG, refW, fakeV);</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">		if (!res.foundNegativeCycle()) {</span>
+<span class="fc" id="L87">			double[] potential = new double[n];</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++)</span>
+<span class="fc" id="L89">				potential[v] = res.distance(v);</span>
+<span class="fc" id="L90">			return Pair.of(potential, null);</span>
 		} else {
-<span class="nc" id="L89">			Path negCycleRef = res.getNegativeCycle();</span>
-<span class="nc" id="L90">			IntList negCycle = new IntArrayList(negCycleRef.size());</span>
-<span class="nc bnc" id="L91" title="All 2 branches missed.">			for (IntIterator it = negCycleRef.iterator(); it.hasNext();)</span>
-<span class="nc" id="L92">				negCycle.add(edgeEef.getInt(it.nextInt()));</span>
-<span class="nc" id="L93">			return Pair.of(null, new Path(g, negCycleRef.source(), negCycleRef.target(), negCycle));</span>
+<span class="fc" id="L92">			Path negCycleRef = res.getNegativeCycle();</span>
+<span class="fc" id="L93">			IntList negCycle = new IntArrayList(negCycleRef.size());</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">			for (IntIterator it = negCycleRef.iterator(); it.hasNext();)</span>
+<span class="fc" id="L95">				negCycle.add(edgeEef.getInt(it.nextInt()));</span>
+<span class="fc" id="L96">			return Pair.of(null, new Path(g, negCycleRef.source(), negCycleRef.target(), negCycle));</span>
 		}
 	}
 
@@ -98,29 +101,29 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 		private final Path negCycle;
 
-<span class="nc" id="L101">		public NegCycleRes(Path negCycle) {</span>
-<span class="nc" id="L102">			Objects.requireNonNull(negCycle);</span>
-<span class="nc" id="L103">			this.negCycle = negCycle;</span>
-<span class="nc" id="L104">		}</span>
+<span class="fc" id="L104">		public NegCycleRes(Path negCycle) {</span>
+<span class="fc" id="L105">			Objects.requireNonNull(negCycle);</span>
+<span class="fc" id="L106">			this.negCycle = negCycle;</span>
+<span class="fc" id="L107">		}</span>
 
 		@Override
 		public double distance(int source, int target) {
-<span class="nc" id="L108">			throw new IllegalStateException();</span>
+<span class="nc" id="L111">			throw new IllegalStateException();</span>
 		}
 
 		@Override
 		public Path getPath(int source, int target) {
-<span class="nc" id="L113">			throw new IllegalStateException();</span>
+<span class="nc" id="L116">			throw new IllegalStateException();</span>
 		}
 
 		@Override
 		public boolean foundNegativeCycle() {
-<span class="nc" id="L118">			return true;</span>
+<span class="fc" id="L121">			return true;</span>
 		}
 
 		@Override
 		public Path getNegativeCycle() {
-<span class="nc" id="L123">			return negCycle;</span>
+<span class="fc" id="L126">			return negCycle;</span>
 		}
 
 	}
@@ -130,28 +133,28 @@ import it.unimi.dsi.fastutil.ints.IntList;
 		final SSSP.Result[] ssspResults;
 		double[] potential;
 
-<span class="fc" id="L133">		SuccessRes(int n) {</span>
-<span class="fc" id="L134">			ssspResults = new SSSP.Result[n];</span>
-<span class="fc" id="L135">		}</span>
+<span class="fc" id="L136">		SuccessRes(int n) {</span>
+<span class="fc" id="L137">			ssspResults = new SSSP.Result[n];</span>
+<span class="fc" id="L138">		}</span>
 
 		@Override
 		public double distance(int source, int target) {
-<span class="fc" id="L139">			return ssspResults[source].distance(target) + potential[source] - potential[target];</span>
+<span class="fc" id="L142">			return ssspResults[source].distance(target) + potential[target] - potential[source];</span>
 		}
 
 		@Override
 		public Path getPath(int source, int target) {
-<span class="fc" id="L144">			return ssspResults[source].getPathTo(target);</span>
+<span class="fc" id="L147">			return ssspResults[source].getPathTo(target);</span>
 		}
 
 		@Override
 		public boolean foundNegativeCycle() {
-<span class="fc" id="L149">			return false;</span>
+<span class="fc" id="L152">			return false;</span>
 		}
 
 		@Override
 		public Path getNegativeCycle() {
-<span class="nc" id="L154">			throw new IllegalStateException();</span>
+<span class="nc" id="L157">			throw new IllegalStateException();</span>
 		}
 
 	}

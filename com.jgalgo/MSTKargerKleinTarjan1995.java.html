@@ -158,24 +158,8 @@ public class MSTKargerKleinTarjan1995 implements MST {
 <span class="fc" id="L158">		}</span>
 
 		@Override
-		public int hashCode() {
-<span class="nc" id="L162">			return e;</span>
-		}
-
-		@Override
-		public boolean equals(Object other) {
-<span class="nc bnc" id="L167" title="All 2 branches missed.">			if (other == this)</span>
-<span class="nc" id="L168">				return true;</span>
-<span class="nc bnc" id="L169" title="All 2 branches missed.">			if (!(other instanceof Ref))</span>
-<span class="nc" id="L170">				return false;</span>
-
-<span class="nc" id="L172">			Ref o = (Ref) other;</span>
-<span class="nc bnc" id="L173" title="All 2 branches missed.">			return e == o.e;</span>
-		}
-
-		@Override
 		public String toString() {
-<span class="nc bnc" id="L178" title="All 2 branches missed.">			return e != -1 ? String.valueOf(e) : Double.toString(w);</span>
+<span class="nc bnc" id="L162" title="All 2 branches missed.">			return e != -1 ? String.valueOf(e) : Double.toString(w);</span>
 		}
 
 	}

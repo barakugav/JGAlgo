@@ -43,20 +43,20 @@ abstract class APSPResultImpl implements APSP.Result {
 <span class="fc" id="L43">		}</span>
 
 		void setNegCycle(Path cycle) {
-<span class="nc" id="L46">			Objects.requireNonNull(cycle);</span>
-<span class="nc" id="L47">			this.negCycle = cycle;</span>
-<span class="nc" id="L48">		}</span>
+<span class="fc" id="L46">			Objects.requireNonNull(cycle);</span>
+<span class="fc" id="L47">			this.negCycle = cycle;</span>
+<span class="fc" id="L48">		}</span>
 
 		@Override
 		public boolean foundNegativeCycle() {
-<span class="pc bpc" id="L52" title="1 of 2 branches missed.">			return negCycle != null;</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">			return negCycle != null;</span>
 		}
 
 		@Override
 		public Path getNegativeCycle() {
-<span class="nc bnc" id="L57" title="All 2 branches missed.">			if (!foundNegativeCycle())</span>
+<span class="pc bpc" id="L57" title="1 of 2 branches missed.">			if (!foundNegativeCycle())</span>
 <span class="nc" id="L58">				throw new IllegalStateException();</span>
-<span class="nc" id="L59">			return negCycle;</span>
+<span class="fc" id="L59">			return negCycle;</span>
 		}
 
 		Graph graph() {

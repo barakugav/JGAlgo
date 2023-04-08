@@ -45,32 +45,36 @@ import java.util.Objects;
 <span class="fc bfc" id="L45" title="All 2 branches covered.">				if (res.colorOf(v) == -1) { /* v is uncolored */</span>
 <span class="fc" id="L46">					HeapDirectAccessed.Handle&lt;HeapElm&gt; vPtr = vPtrs[v];</span>
 <span class="fc" id="L47">					HeapElm vElm = vPtr.get();</span>
-<span class="fc" id="L48">					vElm.neighborColors.set(color);</span>
-<span class="fc" id="L49">					heap.decreaseKey(vPtr, vElm);</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">					if (!vElm.neighborColors.get(color)) {</span>
+<span class="fc" id="L49">						vElm.neighborColors.set(color);</span>
+<span class="fc" id="L50">						vElm.neighborColorsNum++;</span>
+<span class="fc" id="L51">						heap.decreaseKey(vPtr, vElm);</span>
+					}
 				}
-<span class="fc" id="L51">			}</span>
-<span class="fc" id="L52">		}</span>
-<span class="fc" id="L53">		return res;</span>
+<span class="fc" id="L54">			}</span>
+<span class="fc" id="L55">		}</span>
+<span class="fc" id="L56">		return res;</span>
 	}
 
 	private static class HeapElm implements Comparable&lt;HeapElm&gt; {
 		final int v;
 		final int degree;
-<span class="fc" id="L59">		final BitSet neighborColors = new BitSet();</span>
+<span class="fc" id="L62">		final BitSet neighborColors = new BitSet();</span>
+		int neighborColorsNum;
 
-<span class="fc" id="L61">		HeapElm(int v, int degree) {</span>
-<span class="fc" id="L62">			this.v = v;</span>
-<span class="fc" id="L63">			this.degree = degree;</span>
-<span class="fc" id="L64">		}</span>
+<span class="fc" id="L65">		HeapElm(int v, int degree) {</span>
+<span class="fc" id="L66">			this.v = v;</span>
+<span class="fc" id="L67">			this.degree = degree;</span>
+<span class="fc" id="L68">		}</span>
 
 		@Override
 		public int compareTo(HeapElm o) {
 			int c;
-<span class="pc bpc" id="L69" title="1 of 2 branches missed.">			if ((c = -Integer.compare(neighborColors.size(), o.neighborColors.size())) != 0)</span>
-<span class="nc" id="L70">				return c;</span>
-<span class="fc bfc" id="L71" title="All 2 branches covered.">			if ((c = Integer.compare(degree, o.degree)) != 0)</span>
-<span class="fc" id="L72">				return c;</span>
-<span class="fc" id="L73">			return 0;</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">			if ((c = -Integer.compare(neighborColorsNum, o.neighborColorsNum)) != 0)</span>
+<span class="fc" id="L74">				return c;</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">			if ((c = Integer.compare(degree, o.degree)) != 0)</span>
+<span class="fc" id="L76">				return c;</span>
+<span class="fc" id="L77">			return 0;</span>
 		}
 	}
 

@@ -33,8 +33,8 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 
 	@Override
 	public void removeVertex(int v) {
-<span class="fc" id="L36">		v = vertexSwapBeforeRemove(v);</span>
-<span class="fc" id="L37">		removeEdgesAll(v); // TODO move above</span>
+<span class="fc" id="L36">		removeEdgesAll(v);</span>
+<span class="fc" id="L37">		v = vertexSwapBeforeRemove(v);</span>
 <span class="fc" id="L38">		verticesIDStrategy.removeIdx(v);</span>
 <span class="fc bfc" id="L39" title="All 2 branches covered.">		for (DataContainer&lt;?&gt; container : vWeightsInternal)</span>
 <span class="fc" id="L40">			container.remove(v);</span>

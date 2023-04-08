@@ -22,20 +22,20 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 <span class="fc" id="L23">		IntSet uncolored = new IntOpenHashSet(n);</span>
 <span class="fc" id="L24">		BitSet[] usedColors = new BitSet[n];</span>
-<span class="fc" id="L25">		int[] degree = new int[n];</span>
-<span class="fc bfc" id="L26" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc" id="L27">			uncolored.add(u);</span>
-<span class="fc" id="L28">			usedColors[u] = new BitSet();</span>
-<span class="fc" id="L29">			degree[u] = g.degreeOut(u);</span>
+<span class="fc" id="L25">		int[] usedColorsNum = new int[n];</span>
+<span class="fc" id="L26">		int[] degree = new int[n];</span>
+<span class="fc bfc" id="L27" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc" id="L28">			uncolored.add(u);</span>
+<span class="fc" id="L29">			usedColors[u] = new BitSet();</span>
+<span class="fc" id="L30">			degree[u] = g.degreeOut(u);</span>
 		}
 
-<span class="fc bfc" id="L32" title="All 2 branches covered.">		while (!uncolored.isEmpty()) {</span>
-<span class="fc" id="L33">			int u = uncolored.iterator().nextInt();</span>
-<span class="fc bfc" id="L34" title="All 2 branches covered.">			for (IntIterator it = uncolored.iterator(); it.hasNext();) {</span>
-<span class="fc" id="L35">				int u1 = it.nextInt();</span>
-<span class="pc bpc" id="L36" title="1 of 2 branches missed.">				if (usedColors[u].size() &lt; usedColors[u1].size())</span>
-<span class="nc" id="L37">					continue;</span>
-<span class="pc bpc" id="L38" title="1 of 4 branches missed.">				if (usedColors[u].size() &gt; usedColors[u1].size() || degree[u] &gt; degree[u1])</span>
+<span class="fc bfc" id="L33" title="All 2 branches covered.">		while (!uncolored.isEmpty()) {</span>
+<span class="fc" id="L34">			int u = uncolored.iterator().nextInt();</span>
+<span class="fc bfc" id="L35" title="All 2 branches covered.">			for (IntIterator it = uncolored.iterator(); it.hasNext();) {</span>
+<span class="fc" id="L36">				int u1 = it.nextInt();</span>
+<span class="fc" id="L37">				int s1 = usedColorsNum[u], s2 = usedColorsNum[u1];</span>
+<span class="fc bfc" id="L38" title="All 6 branches covered.">				if (s1 &gt; s2 || (s1 == s2 &amp;&amp; degree[u] &gt; degree[u1]))</span>
 <span class="fc" id="L39">					u = u1;</span>
 <span class="fc" id="L40">			}</span>
 
@@ -46,16 +46,21 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L46">			res.colorsNum = Math.max(res.colorsNum, color + 1);</span>
 <span class="fc" id="L47">			uncolored.remove(u);</span>
 <span class="fc" id="L48">			usedColors[u].clear();</span>
-<span class="fc" id="L49">			usedColors[u] = null;</span>
+<span class="fc" id="L49">			usedColorsNum[u] = 0;</span>
+<span class="fc" id="L50">			usedColors[u] = null;</span>
 
-<span class="fc bfc" id="L51" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
-<span class="fc" id="L52">				eit.nextInt();</span>
-<span class="fc" id="L53">				int v = eit.v();</span>
-<span class="fc bfc" id="L54" title="All 2 branches covered.">				if (res.colorOf(v) == -1) /* v is uncolored */</span>
-<span class="fc" id="L55">					usedColors[v].set(color);</span>
-<span class="fc" id="L56">			}</span>
-<span class="fc" id="L57">		}</span>
-<span class="fc" id="L58">		return res;</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
+<span class="fc" id="L53">				eit.nextInt();</span>
+<span class="fc" id="L54">				int v = eit.v();</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">				if (res.colorOf(v) == -1) {/* v is uncolored */</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">					if (!usedColors[v].get(color)) {</span>
+<span class="fc" id="L57">						usedColorsNum[v]++;</span>
+<span class="fc" id="L58">						usedColors[v].set(color);</span>
+					}
+				}
+<span class="fc" id="L61">			}</span>
+<span class="fc" id="L62">		}</span>
+<span class="fc" id="L63">		return res;</span>
 	}
 
 }

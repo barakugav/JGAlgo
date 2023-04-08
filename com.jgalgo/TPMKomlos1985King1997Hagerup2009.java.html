@@ -2,9 +2,9 @@
 
 import java.util.Arrays;
 
-import com.jgalgo.Utils.QueueIntFixSize;
-
+import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 
@@ -340,17 +340,17 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 <span class="fc bfc" id="L340" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
 <span class="fc bfc" id="L341" title="All 2 branches covered.">				if (depths[u] &gt; maxDepth)</span>
 <span class="fc" id="L342">					maxDepth = depths[u];</span>
-<span class="fc" id="L343">			QueueIntFixSize queue = new QueueIntFixSize(n);</span>
+<span class="fc" id="L343">			IntPriorityQueue queue = new IntArrayFIFOQueue();</span>
 <span class="fc" id="L344">			boolean[] queued = new boolean[n];</span>
 <span class="fc bfc" id="L345" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++) {</span>
 <span class="fc bfc" id="L346" title="All 2 branches covered.">				if (depths[u] == maxDepth) {</span>
-<span class="fc" id="L347">					queue.push(u);</span>
+<span class="fc" id="L347">					queue.enqueue(u);</span>
 <span class="fc" id="L348">					queued[u] = true;</span>
 				}
 			}
 
 <span class="fc bfc" id="L352" title="All 2 branches covered.">			while (!queue.isEmpty()) {</span>
-<span class="fc" id="L353">				int u = queue.pop();</span>
+<span class="fc" id="L353">				int u = queue.dequeueInt();</span>
 
 <span class="fc" id="L355">				int ep = edgeToParent[u];</span>
 <span class="fc bfc" id="L356" title="All 2 branches covered.">				if (ep == -1)</span>
@@ -360,7 +360,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 
 <span class="fc bfc" id="L361" title="All 2 branches covered.">				if (queued[parent])</span>
 <span class="fc" id="L362">					continue;</span>
-<span class="fc" id="L363">				queue.push(parent);</span>
+<span class="fc" id="L363">				queue.enqueue(parent);</span>
 <span class="fc" id="L364">				queued[parent] = true;</span>
 <span class="fc" id="L365">			}</span>
 
