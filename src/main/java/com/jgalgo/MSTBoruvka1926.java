@@ -18,33 +18,30 @@ public class MSTBoruvka1926 implements MST {
 
 	@Override
 	public IntCollection calcMST(Graph g, EdgeWeightFunc w) {
-		return calcMST0(g, w, Integer.MAX_VALUE).e3;
+		return calcMST0(g, w, Integer.MAX_VALUE).mst;
 	}
 
 	static <E, R> Pair<UGraph, IntCollection> runBoruvka(Graph g, EdgeWeightFunc w, int numberOfRounds,
 			Int2ObjectFunction<R> edgeValAssigner, String edgeValKey) {
 		if (numberOfRounds <= 0)
 			throw new IllegalArgumentException();
-		Triple<int[], Integer, IntCollection> r = calcMST0(g, w, numberOfRounds);
-		int[] tree = r.e1;
-		int treeNum = r.e2.intValue();
-		IntCollection mstEdges = r.e3;
+		MSTResult mstRes = calcMST0(g, w, numberOfRounds);
 
-		UGraph contractedG = new GraphArrayUndirected(treeNum);
+		UGraph contractedG = new GraphArrayUndirected(mstRes.treeNum);
 		Weights<R> contractedGData = contractedG.addEdgesWeight(edgeValKey).ofObjs();
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
-			int u = tree[g.edgeSource(e)];
-			int v = tree[g.edgeTarget(e)];
+			int u = mstRes.vToTree[g.edgeSource(e)];
+			int v = mstRes.vToTree[g.edgeTarget(e)];
 			if (u == v)
 				continue;
 			int ne = contractedG.addEdge(u, v);
 			contractedGData.set(ne, edgeValAssigner.apply(e));
 		}
-		return Pair.of(contractedG, mstEdges);
+		return Pair.of(contractedG, mstRes.mst);
 	}
 
-	private static Triple<int[], Integer, IntCollection> calcMST0(Graph g0, EdgeWeightFunc w, int numberOfRounds) {
+	private static MSTResult calcMST0(Graph g0, EdgeWeightFunc w, int numberOfRounds) {
 		if (!(g0 instanceof UGraph))
 			throw new IllegalArgumentException("only undirected graphs are supported");
 		UGraph g = (UGraph) g0;
@@ -148,7 +145,19 @@ public class MSTBoruvka1926 implements MST {
 				vTree[v] = vTreeNext[vTree[v]];
 		}
 
-		return Triple.valueOf(vTree, Integer.valueOf(treeNum), mst);
+		return new MSTResult(vTree, treeNum, mst);
+	}
+
+	private static class MSTResult {
+		final int[] vToTree;
+		final int treeNum;
+		final IntCollection mst;
+
+		MSTResult(int[] vToTree, int treeNum, IntCollection mst) {
+			this.vToTree = vToTree;
+			this.treeNum = treeNum;
+			this.mst = mst;
+		}
 	}
 
 }

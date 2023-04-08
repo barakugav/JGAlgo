@@ -359,7 +359,9 @@ class HeapTestUtils extends TestUtils {
 						continue opLoop;
 					x = tracker.randElement();
 					assert x >= 0;
-					newVal = rand.nextInt(Math.max(x * 2, Integer.MAX_VALUE));
+					if (x == 0)
+						continue;
+					newVal = rand.nextInt(Math.max(x, x * 2));
 					if (compare(compare, newVal, x) <= 0)
 						break;
 				}

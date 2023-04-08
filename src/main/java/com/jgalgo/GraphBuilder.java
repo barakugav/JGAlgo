@@ -69,8 +69,8 @@ public abstract class GraphBuilder {
 		private Array() {
 		}
 
-		public static GraphBuilder.Linked newInstance() {
-			return new GraphBuilder.Linked();
+		public static GraphBuilder.Array newInstance() {
+			return new GraphBuilder.Array();
 		}
 
 		@Override

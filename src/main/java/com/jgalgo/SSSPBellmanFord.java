@@ -22,8 +22,6 @@ public class SSSPBellmanFord implements SSSP {
 		DiGraph g = (DiGraph) g0;
 		int n = g.vertices().size();
 		Result res = new Result(g, source);
-		if (n == 0)
-			return res;
 		res.distances[source] = 0;
 
 		for (int i = 0; i < n - 1; i++) {
