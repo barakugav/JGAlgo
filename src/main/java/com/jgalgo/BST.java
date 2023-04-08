@@ -3,7 +3,7 @@ package com.jgalgo;
 public interface BST<E> extends HeapDirectAccessed<E> {
 
 	/**
-	 * Find the maximum element in the heap
+	 * Find the maximum element in the heap.
 	 *
 	 * @return the maximum element in the heap
 	 * @throws IllegalStateException if the heap is empty
@@ -11,7 +11,7 @@ public interface BST<E> extends HeapDirectAccessed<E> {
 	public E findMax();
 
 	/**
-	 * Extract the maximum element in the heap
+	 * Extract the maximum element in the heap.
 	 *
 	 * @return the maximum element in the heap
 	 * @throws IllegalStateException if the heap is empty
@@ -19,7 +19,7 @@ public interface BST<E> extends HeapDirectAccessed<E> {
 	public E extractMax();
 
 	/**
-	 * Find the handle of the maximum element in the heap
+	 * Find the handle of the maximum element in the heap.
 	 *
 	 * @return handle of the maximum element
 	 * @throws IllegalStateException if the heap is empty
@@ -28,7 +28,7 @@ public interface BST<E> extends HeapDirectAccessed<E> {
 
 	/**
 	 * Search for element in the tree or the greatest element strictly smaller
-	 * (predecessor) than it if it's not found
+	 * (predecessor) than it if it's not found.
 	 *
 	 * @param e the search element
 	 * @return handle of the searched element or it's predecessor if the element is
@@ -38,7 +38,7 @@ public interface BST<E> extends HeapDirectAccessed<E> {
 
 	/**
 	 * Search for element in the tree or the smallest element strictly greater
-	 * (successor) than it if it's not found
+	 * (successor) than it if it's not found.
 	 *
 	 * @param e the search element
 	 * @return handle of the searched element or it's successor if the element is
@@ -47,7 +47,7 @@ public interface BST<E> extends HeapDirectAccessed<E> {
 	public Handle<E> findOrGreater(E e);
 
 	/**
-	 * Find the greatest element strictly smaller than an element
+	 * Find the greatest element strictly smaller than an element.
 	 *
 	 * @param e element
 	 * @return handle to the predecessor element with strictly smaller value or null
@@ -56,7 +56,7 @@ public interface BST<E> extends HeapDirectAccessed<E> {
 	public Handle<E> findSmaller(E e);
 
 	/**
-	 * Find the smallest element strictly greater than an element
+	 * Find the smallest element strictly greater than an element.
 	 *
 	 * @param e element
 	 * @return handle to the successor element with strictly greater value or null
@@ -65,8 +65,9 @@ public interface BST<E> extends HeapDirectAccessed<E> {
 	public Handle<E> findGreater(E e);
 
 	/**
-	 * Get the predecessor of a node in the tree
+	 * Get the predecessor of a node in the tree.
 	 *
+	 * <p>
 	 * The predecessor node depends on the tree structure. If there are no duplicate
 	 * values, the predecessor is the greatest value strictly smaller than the given
 	 * element. If there are duplicate values, it may be smaller or equal.
@@ -79,8 +80,9 @@ public interface BST<E> extends HeapDirectAccessed<E> {
 	public Handle<E> getPredecessor(Handle<E> handle);
 
 	/**
-	 * Finds the successor of an element in the tree
+	 * Finds the successor of an element in the tree.
 	 *
+	 * <p>
 	 * The successor node depends on the tree structure. If there are no duplicate
 	 * values, the successor is the smallest value strictly greater than the given
 	 * element. If there are duplicate values, it may be greater or equal.
@@ -94,8 +96,9 @@ public interface BST<E> extends HeapDirectAccessed<E> {
 
 	/**
 	 * Split the current BST into two different BSTs with elements strictly smaller
-	 * and greater or equal than an element
+	 * and greater or equal than an element.
 	 *
+	 * <p>
 	 * After this operation, all elements in this tree will be greater or equal than
 	 * the given element, and the returned new tree will contain elements strictly
 	 * smaller than the given element.
@@ -107,8 +110,9 @@ public interface BST<E> extends HeapDirectAccessed<E> {
 
 	/**
 	 * Split the current BST into two different BSTs with elements smaller or equal
-	 * and strictly greater than an element
+	 * and strictly greater than an element.
 	 *
+	 * <p>
 	 * After this operation, all elements in this tree will be smaller or equal than
 	 * the given element, and the returned new tree will contain elements strictly
 	 * greater than the given element.
@@ -120,18 +124,19 @@ public interface BST<E> extends HeapDirectAccessed<E> {
 
 	/**
 	 * Split the current BST into two different BSTs with elements smaller and
-	 * bigger than an element
+	 * bigger than an element.
 	 *
+	 * <p>
 	 * After this operation, all elements in this tree will be smaller or equal to
 	 * the given element, and the returned new tree will contain elements greater
-	 * than the given element. If the tree contains multiple element with the given
-	 * element, the new tree may contain with the same value.
-	 *
-	 * To split a tree accurately, use splitSmaller/splitGreater.
+	 * than the given element. If the tree contains duplications of the given
+	 * element, the elements in the returned tree will be to greater or equal
+	 * (rather than strictly greater). To split a tree more precisely, use
+	 * {@link #splitSmaller(Object)} or {@link #splitGreater(Object)}.
 	 *
 	 * @param handle given element in the tree
 	 * @return new tree with elements greater (greater or equal if duplicate
-	 *         elements of the given elements exists) than the given element
+	 *         elements of the given element exists) than the given element
 	 */
 	public BST<E> split(Handle<E> handle);
 

@@ -288,37 +288,26 @@ public class SplayTree<E> extends BSTAbstract<E> {
 
 	@Override
 	public SplayTree<E> splitGreater(E e) {
-		SplayTree<E> newTree = new SplayTree<>(c);
 		NodeSized<E> succ = (NodeSized<E>) findGreater(e);
 		if (succ == null)
-			return newTree;
-		assert succ.isRoot();
-
-		if ((root = succ.left) != null) {
-			succ.size -= succ.left.size;
-			succ.left.parent = null;
-			succ.left = null;
-		}
-
-		newTree.root = succ;
-		return newTree;
+			return new SplayTree<>(c);
+		return split(succ);
 	}
 
 	@Override
 	public SplayTree<E> split(Handle<E> handle) {
 		SplayTree<E> newTree = new SplayTree<>(c);
 
-		NodeSized<E> n = root = impl.splay((NodeSized<E>) handle);
+		NodeSized<E> n = impl.splay((NodeSized<E>) handle);
 		assert n.isRoot();
-		if (!n.hasRightChild())
-			return newTree;
 
-		NodeSized<E> newRoot = n.right;
-		n.right.parent = null;
-		n.right = null;
-		n.size -= newRoot.size;
+		if ((root = n.left) != null) {
+			n.size -= n.left.size;
+			n.left.parent = null;
+			n.left = null;
+		}
 
-		newTree.root = newRoot;
+		newTree.root = n;
 		return newTree;
 	}
 
