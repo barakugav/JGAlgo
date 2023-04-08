@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
 
+import com.jgalgo.IDStrategy.IDAddRemoveListener;
+
 public abstract class GraphBuilder {
 
 	int verticesNum;
@@ -25,7 +27,7 @@ public abstract class GraphBuilder {
 	}
 
 	public UGraph buildUndirected() {
-		return (UGraph) buildGraph(true);
+		return (UGraph) buildGraph(false);
 	}
 
 	public DiGraph buildDirected() {
@@ -67,7 +69,7 @@ public abstract class GraphBuilder {
 		private Array() {
 		}
 
-		public static GraphBuilder.Linked getInstance() {
+		public static GraphBuilder.Linked newInstance() {
 			return new GraphBuilder.Linked();
 		}
 
@@ -86,7 +88,7 @@ public abstract class GraphBuilder {
 		private Linked() {
 		}
 
-		public static GraphBuilder.Linked getInstance() {
+		public static GraphBuilder.Linked newInstance() {
 			return new GraphBuilder.Linked();
 		}
 
@@ -105,7 +107,7 @@ public abstract class GraphBuilder {
 		private Table() {
 		}
 
-		public static GraphBuilder.Table getInstance() {
+		public static GraphBuilder.Table newInstance() {
 			return new GraphBuilder.Table();
 		}
 
@@ -129,27 +131,57 @@ public abstract class GraphBuilder {
 			this.g = Objects.requireNonNull(g);
 
 			g.getVerticesIDStrategy().addIDSwapListener((vIdx1, vIdx2) -> verticesIDStrategy.idxSwap(vIdx1, vIdx2));
+			g.getVerticesIDStrategy().addIDAddRemoveListener(new IDAddRemoveListener() {
+
+				@Override
+				public void idRemove(int id) {
+					verticesIDStrategy.removeIdx(id);
+				}
+
+				@Override
+				public void idAdd(int id) {
+					int idx = verticesIDStrategy.newIdx();
+					if (idx != id)
+						throw new IllegalStateException();
+				}
+
+				@Override
+				public void idsClear() {
+					verticesIDStrategy.clear();
+				}
+			});
 			g.getEdgesIDStrategy().addIDSwapListener((eIdx1, eIdx2) -> edgesIDStrategy.idxSwap(eIdx1, eIdx2));
+			g.getEdgesIDStrategy().addIDAddRemoveListener(new IDAddRemoveListener() {
+
+				@Override
+				public void idRemove(int id) {
+					edgesIDStrategy.removeIdx(id);
+				}
+
+				@Override
+				public void idAdd(int id) {
+					int idx = edgesIDStrategy.newIdx();
+					if (idx != id)
+						throw new IllegalStateException();
+				}
+
+				@Override
+				public void idsClear() {
+					edgesIDStrategy.clear();
+				}
+			});
 		}
 
 		@Override
 		public int addVertex() {
-			int uIdx1 = g.addVertex();
-			int uIdx2 = verticesIDStrategy.newIdx();
-			if (uIdx1 != uIdx2)
-				throw new IllegalStateException();
-			return verticesIDStrategy.idxToId(uIdx1);
+			int uIdx = g.addVertex();
+			return verticesIDStrategy.idxToId(uIdx);
 		}
 
 		@Override
 		public void removeVertex(int v) {
 			int vIdx = verticesIDStrategy.idToIdx(v);
 			g.removeVertex(vIdx);
-
-			/* index may have changed, fetch it again */
-			vIdx = verticesIDStrategy.idToIdx(vIdx);
-			vIdx = verticesIDStrategy.isSwapNeededBeforeRemove(vIdx);
-			verticesIDStrategy.removeIdx(vIdx);
 		}
 
 		@Override
@@ -184,22 +216,14 @@ public abstract class GraphBuilder {
 		public int addEdge(int u, int v) {
 			int uIdx = verticesIDStrategy.idToIdx(u);
 			int vIdx = verticesIDStrategy.idToIdx(v);
-			int eIdx1 = g.addEdge(uIdx, vIdx);
-			int eIdx2 = edgesIDStrategy.newIdx();
-			if (eIdx1 != eIdx2)
-				throw new IllegalStateException();
-			return edgesIDStrategy.idxToId(eIdx1);
+			int eIdx = g.addEdge(uIdx, vIdx);
+			return edgesIDStrategy.idxToId(eIdx);
 		}
 
 		@Override
 		public void removeEdge(int edge) {
 			int eIdx = edgesIDStrategy.idToIdx(edge);
 			g.removeEdge(eIdx);
-
-			/* index may have changed, fetch it again */
-			eIdx = edgesIDStrategy.idToIdx(edge);
-			eIdx = edgesIDStrategy.isSwapNeededBeforeRemove(eIdx);
-			edgesIDStrategy.removeIdx(eIdx);
 		}
 
 		@Override

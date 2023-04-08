@@ -19,20 +19,21 @@ import it.unimi.dsi.fastutil.ints.IntSets;
  * <p>
  * Each vertex/edges in the graph is identified by a unique int ID, which is
  * determined by a strategy. For example,
- * {@link com.jgalgo.IDStrategy.Continues} ensure that at all times the
- * vertices IDs are {@code 0,1,..., verticesNum-1}, and it might rename some
- * vertices when a vertex is removed to maintain this invariant. This rename can
- * be subscribed using {@link com.jgalgo.IDStrategy#addIDSwapListener}.
- * Another option for an ID strategy is {@link com.jgalgo.IDStrategy.Fixed}
- * which ensure once a vertex is assigned an ID, it will not change. All the
- * stated above about vertices hold for edges as well. There might be some
- * performance differences between different ID strategies.
+ * {@link com.jgalgo.IDStrategy.Continues} ensure that at all times the vertices
+ * IDs are {@code 0,1,..., verticesNum-1}, and it might rename some vertices
+ * when a vertex is removed to maintain this invariant. This rename can be
+ * subscribed using {@link com.jgalgo.IDStrategy#addIDSwapListener}. Another
+ * option for an ID strategy is {@link com.jgalgo.IDStrategy.Fixed} which ensure
+ * once a vertex is assigned an ID, it will not change. All the stated above
+ * about vertices hold for edges as well. There might be some performance
+ * differences between different ID strategies.
  *
  * @author Barak Ugav
  */
 public abstract class IDStrategy {
 
 	private final List<IDSwapListener> idSwapListeners = new CopyOnWriteArrayList<>();
+	private final List<IDAddRemoveListener> idAddRemoveListeners = new CopyOnWriteArrayList<>();
 
 	IDStrategy() {
 	}
@@ -99,7 +100,9 @@ public abstract class IDStrategy {
 
 		@Override
 		int newIdx() {
-			return size++;
+			int id = size++;
+			notifyIDAdd(id);
+			return id;
 		}
 
 		@Override
@@ -107,6 +110,7 @@ public abstract class IDStrategy {
 			assert idx == size - 1;
 			assert size > 0;
 			size--;
+			notifyIDRemove(idx);
 		}
 
 		@Override
@@ -168,6 +172,7 @@ public abstract class IDStrategy {
 			idToIdx.put(id, idx);
 			idxToId.add(idx);
 			idxToId.set(idx, id);
+			notifyIDAdd(id);
 			return idx;
 		}
 
@@ -180,6 +185,7 @@ public abstract class IDStrategy {
 			final int id = idxToId.getInt(idx);
 			idxToId.remove(idx);
 			idToIdx.remove(id);
+			notifyIDRemove(id);
 		}
 
 		@Override
@@ -295,6 +301,16 @@ public abstract class IDStrategy {
 			listener.idSwap(id1, id2);
 	}
 
+	void notifyIDAdd(int id) {
+		for (IDAddRemoveListener listener : idAddRemoveListeners)
+			listener.idAdd(id);
+	}
+
+	void notifyIDRemove(int id) {
+		for (IDAddRemoveListener listener : idAddRemoveListeners)
+			listener.idRemove(id);
+	}
+
 	abstract void ensureSize(int n);
 
 	/**
@@ -324,9 +340,25 @@ public abstract class IDStrategy {
 		idSwapListeners.remove(listener);
 	}
 
+	public void addIDAddRemoveListener(IDAddRemoveListener listener) {
+		idAddRemoveListeners.add(Objects.requireNonNull(listener));
+	}
+
+	public void removeIDAddRemoveListener(IDAddRemoveListener listener) {
+		idAddRemoveListeners.remove(listener);
+	}
+
 	@FunctionalInterface
 	public static interface IDSwapListener {
-		public void idSwap(int e1, int e2);
+		void idSwap(int id1, int id2);
+	}
+
+	public static interface IDAddRemoveListener {
+		void idAdd(int id);
+
+		void idRemove(int id);
+
+		void idsClear();
 	}
 
 }

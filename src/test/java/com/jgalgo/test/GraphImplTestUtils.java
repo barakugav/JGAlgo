@@ -418,14 +418,20 @@ class GraphImplTestUtils extends TestUtils {
 		}
 
 		void removeEdgesAll(Vertex u) {
+			if (debugPrints)
+				System.out.println("removeEdgesAll(" + u + ")");
 			edges.removeIf(edge -> edge.u == u || edge.v == u);
 		}
 
 		void removeEdgesAllOut(Vertex u) {
+			if (debugPrints)
+				System.out.println("removeEdgesAllOut(" + u + ")");
 			edges.removeIf(edge -> edge.u == u);
 		}
 
 		void removeEdgesAllIn(Vertex v) {
+			if (debugPrints)
+				System.out.println("removeEdgesAllIn(" + v + ")");
 			edges.removeIf(edge -> edge.v == v);
 		}
 
@@ -713,8 +719,8 @@ class GraphImplTestUtils extends TestUtils {
 				throw new IllegalArgumentException("Unexpected value: " + op);
 			}
 
-			Assertions.assertTrue(g.vertices().size() == tracker.verticesNum());
-			Assertions.assertTrue(g.edges().size() == tracker.edgesNum());
+			Assertions.assertEquals(tracker.verticesNum(), g.vertices().size());
+			Assertions.assertEquals(tracker.edgesNum(), g.edges().size());
 			tracker.checkEdgesEqual(g);
 
 			opsNum--;
