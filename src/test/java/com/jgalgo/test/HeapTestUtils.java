@@ -337,7 +337,7 @@ class HeapTestUtils extends TestUtils {
 
 				expected = tracker.findMin();
 				actual = tracker.heap.findMin();
-				Assertions.assertEquals(expected, actual, "failed findmin");
+				Assertions.assertEquals(expected, actual, "failed findMin");
 				break;
 
 			case ExtractMin:
@@ -347,7 +347,7 @@ class HeapTestUtils extends TestUtils {
 
 				expected = tracker.extractMin();
 				actual = tracker.heap.extractMin();
-				Assertions.assertEquals(expected, actual, "failed extractmin");
+				Assertions.assertEquals(expected, actual, "failed extractMin");
 				break;
 
 			case DecreaseKey: {

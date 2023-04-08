@@ -25,6 +25,12 @@ public class RedBlackTreeTest extends TestUtils {
 	}
 
 	@Test
+	public void testExtractMax() {
+		final long seed = 0x51537cb2cbca4774L;
+		BSTTestUtils.testExtractMax(RedBlackTree::new, seed);
+	}
+
+	@Test
 	public void testMeldDefaultCompare() {
 		final long seed = 0x3fbbd70b1c035dedL;
 		HeapTestUtils.testMeldDefaultCompare(RedBlackTree::new, seed);

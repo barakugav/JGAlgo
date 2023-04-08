@@ -24,6 +24,35 @@ class BSTTestUtils extends TestUtils {
 	private BSTTestUtils() {
 	}
 
+	@SuppressWarnings("boxing")
+	static void testExtractMax(Function<Comparator<? super Integer>, ? extends BST<Integer>> treeBuilder, long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		Random rand = new Random(seedGen.nextSeed());
+		Comparator<? super Integer> compare = null;
+		List<Phase> phases = List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 4096));
+		runTestMultiple(phases, (testIter, args) -> {
+			int n = args[0];
+
+			BSTTracker tracker = new BSTTracker(treeBuilder.apply(compare), 0, compare, seedGen.nextSeed());
+			HeapTestUtils.testHeap(tracker, n, TestMode.InsertFirst,
+					randArray(n / 2, 0, Integer.MAX_VALUE, seedGen.nextSeed()), compare, seedGen.nextSeed());
+
+			for (int repeat = 0; repeat < 4; repeat++) {
+				HeapTestUtils.testHeap(tracker, n, TestMode.Normal,
+						randArray(n / 2, 0, Integer.MAX_VALUE, seedGen.nextSeed()), compare, seedGen.nextSeed());
+
+				for (int i = 0; i < 2; i++) {
+					int x = rand.nextInt();
+					tracker.insert(x);
+					tracker.heap.insert(x);
+				}
+				int expected = tracker.extractMax();
+				int actual = tracker.tree().extractMax();
+				Assertions.assertEquals(expected, actual, "failed extractMax");
+			}
+		});
+	}
+
 	static void testFindSmallersDefaultCompare(
 			Function<Comparator<? super Integer>, ? extends BST<Integer>> treeBuilder, long seed) {
 		testFindSmallers(treeBuilder, null, seed);
@@ -272,6 +301,7 @@ class BSTTestUtils extends TestUtils {
 				int opsNum = 512 / trees.size();
 				int[] elms = randArray(opsNum, 0, maxVal, seedGen.nextSeed());
 				HeapTestUtils.testHeap(h, opsNum, TestMode.Normal, elms, compare, seedGen.nextSeed());
+
 			}
 		};
 
@@ -298,6 +328,12 @@ class BSTTestUtils extends TestUtils {
 
 		BST<Integer> tree() {
 			return (BST<Integer>) heap;
+		}
+
+		int extractMax() {
+			Integer x = elms.lastKey();
+			remove(x);
+			return x;
 		}
 
 		Integer lower(int x) {

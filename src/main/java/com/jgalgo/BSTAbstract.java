@@ -15,9 +15,9 @@ public abstract class BSTAbstract<E> extends HeapAbstractDirectAccessed<E> imple
 
 	@Override
 	public E extractMax() {
-		Handle<E> min = findMaxHandle();
-		E val = min.get();
-		removeHandle(min);
+		Handle<E> max = findMaxHandle();
+		E val = max.get();
+		removeHandle(max);
 		return val;
 	}
 

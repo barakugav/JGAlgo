@@ -25,6 +25,12 @@ public class SplayTreeTest extends TestUtils {
 	}
 
 	@Test
+	public void testExtractMax() {
+		final long seed = 0xb6921b23fa734769L;
+		BSTTestUtils.testExtractMax(SplayTree::new, seed);
+	}
+
+	@Test
 	public void testMeldDefaultCompare() {
 		final long seed = 0xe882a11221a54a22L;
 		HeapTestUtils.testMeldDefaultCompare(SplayTree::new, seed);
