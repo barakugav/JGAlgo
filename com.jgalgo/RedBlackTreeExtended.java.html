@@ -38,34 +38,36 @@ public class RedBlackTreeExtended&lt;E&gt; extends RedBlackTree&lt;E&gt; {
 	}
 
 	@Override
+	void swap(RedBlackTree.Node&lt;E&gt; a, RedBlackTree.Node&lt;E&gt; b) {
+<span class="fc" id="L42">		Node&lt;E&gt; n1 = (Node&lt;E&gt;) a, n2 = (Node&lt;E&gt;) b;</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">		for (Extension&lt;E&gt; extension : extensions)</span>
+<span class="fc" id="L44">			extension.beforeNodeSwap((Node&lt;E&gt;) a, (Node&lt;E&gt;) b);</span>
+<span class="fc" id="L45">		super.swap(n1, n2);</span>
+<span class="fc" id="L46">	}</span>
+
+	@Override
 	void afterInsert(RedBlackTree.Node&lt;E&gt; n) {
-<span class="fc bfc" id="L42" title="All 2 branches covered.">		for (Extension&lt;E&gt; extension : extensions)</span>
-<span class="fc" id="L43">			extension.afterInsert((Node&lt;E&gt;) n);</span>
-<span class="fc" id="L44">	}</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">		for (Extension&lt;E&gt; extension : extensions)</span>
+<span class="fc" id="L51">			extension.afterInsert((Node&lt;E&gt;) n);</span>
+<span class="fc" id="L52">	}</span>
 
 	@Override
 	void beforeRemove(RedBlackTree.Node&lt;E&gt; n) {
-<span class="fc bfc" id="L48" title="All 2 branches covered.">		for (Extension&lt;E&gt; extension : extensions)</span>
-<span class="fc" id="L49">			extension.beforeRemove((Node&lt;E&gt;) n);</span>
-<span class="fc" id="L50">	}</span>
-
-	@Override
-	void beforeNodeDataSwap(RedBlackTree.Node&lt;E&gt; a, RedBlackTree.Node&lt;E&gt; b) {
-<span class="fc bfc" id="L54" title="All 2 branches covered.">		for (Extension&lt;E&gt; extension : extensions)</span>
-<span class="fc" id="L55">			extension.beforeNodeDataSwap((Node&lt;E&gt;) a, (Node&lt;E&gt;) b);</span>
-<span class="fc" id="L56">	}</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">		for (Extension&lt;E&gt; extension : extensions)</span>
+<span class="fc" id="L57">			extension.beforeRemove((Node&lt;E&gt;) n);</span>
+<span class="fc" id="L58">	}</span>
 
 	@Override
 	void beforeRotateLeft(RedBlackTree.Node&lt;E&gt; n) {
-<span class="fc bfc" id="L60" title="All 2 branches covered.">		for (Extension&lt;E&gt; extension : extensions)</span>
-<span class="fc" id="L61">			extension.beforeRotateLeft((Node&lt;E&gt;) n);</span>
-<span class="fc" id="L62">	}</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">		for (Extension&lt;E&gt; extension : extensions)</span>
+<span class="fc" id="L63">			extension.beforeRotateLeft((Node&lt;E&gt;) n);</span>
+<span class="fc" id="L64">	}</span>
 
 	@Override
 	void beforeRotateRight(RedBlackTree.Node&lt;E&gt; n) {
-<span class="fc bfc" id="L66" title="All 2 branches covered.">		for (Extension&lt;E&gt; extension : extensions)</span>
-<span class="fc" id="L67">			extension.beforeRotateRight((Node&lt;E&gt;) n);</span>
-<span class="fc" id="L68">	}</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">		for (Extension&lt;E&gt; extension : extensions)</span>
+<span class="fc" id="L69">			extension.beforeRotateRight((Node&lt;E&gt;) n);</span>
+<span class="fc" id="L70">	}</span>
 
 	private static class Node&lt;E&gt; extends RedBlackTree.Node&lt;E&gt; {
 
@@ -73,244 +75,333 @@ public class RedBlackTreeExtended&lt;E&gt; extends RedBlackTree&lt;E&gt; {
 		private final int[] extensionsDataInt;
 
 		Node(E e, int extensionsNum, int extensionsNumInt) {
-<span class="fc" id="L76">			super(e);</span>
-<span class="fc bfc" id="L77" title="All 2 branches covered.">			extensionsData = extensionsNum &gt; 0 ? new Object[extensionsNum] : null;</span>
-<span class="fc bfc" id="L78" title="All 2 branches covered.">			extensionsDataInt = extensionsNumInt &gt; 0 ? new int[extensionsNumInt] : null;</span>
-<span class="fc" id="L79">		}</span>
+<span class="fc" id="L78">			super(e);</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">			extensionsData = extensionsNum &gt; 0 ? new Object[extensionsNum] : null;</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">			extensionsDataInt = extensionsNumInt &gt; 0 ? new int[extensionsNumInt] : null;</span>
+<span class="fc" id="L81">		}</span>
 
 		Node&lt;E&gt; parent() {
-<span class="fc" id="L82">			return (Node&lt;E&gt;) parent;</span>
+<span class="fc" id="L84">			return (Node&lt;E&gt;) parent;</span>
 		}
 
 		Node&lt;E&gt; left() {
-<span class="fc" id="L86">			return (Node&lt;E&gt;) left;</span>
+<span class="fc" id="L88">			return (Node&lt;E&gt;) left;</span>
 		}
 
 		Node&lt;E&gt; right() {
-<span class="fc" id="L90">			return (Node&lt;E&gt;) right;</span>
+<span class="fc" id="L92">			return (Node&lt;E&gt;) right;</span>
 		}
 
 	}
 
-	public static abstract class Extension&lt;E&gt; {
+	static abstract class Extension&lt;E&gt; {
 
 		private RedBlackTreeExtended&lt;E&gt; tree;
-<span class="fc" id="L98">		private int extIdx = -1;</span>
+<span class="fc" id="L100">		private int extIdx = -1;</span>
 
-<span class="fc" id="L100">		private Extension() {</span>
-<span class="fc" id="L101">		}</span>
+<span class="fc" id="L102">		private Extension() {</span>
+<span class="fc" id="L103">		}</span>
 
 		RedBlackTreeExtended&lt;E&gt; getTree() {
-<span class="nc" id="L104">			return tree;</span>
+<span class="nc" id="L106">			return tree;</span>
 		}
 
 		void setTree(RedBlackTreeExtended&lt;E&gt; tree) {
-<span class="fc" id="L108">			this.tree = tree;</span>
-<span class="fc" id="L109">		}</span>
+<span class="fc" id="L110">			this.tree = tree;</span>
+<span class="fc" id="L111">		}</span>
 
 		int getExtIdx() {
-<span class="fc" id="L112">			return extIdx;</span>
+<span class="fc" id="L114">			return extIdx;</span>
 		}
 
 		void setExtIdx(int extIdx) {
-<span class="pc bpc" id="L116" title="1 of 2 branches missed.">			if (this.extIdx != -1)</span>
-<span class="nc" id="L117">				throw new IllegalStateException();</span>
-<span class="fc" id="L118">			this.extIdx = extIdx;</span>
-<span class="fc" id="L119">		}</span>
+<span class="pc bpc" id="L118" title="1 of 2 branches missed.">			if (this.extIdx != -1)</span>
+<span class="nc" id="L119">				throw new IllegalStateException();</span>
+<span class="fc" id="L120">			this.extIdx = extIdx;</span>
+<span class="fc" id="L121">		}</span>
 
 		protected void initNode(Node&lt;E&gt; n) {
-<span class="nc" id="L122">		}</span>
+<span class="nc" id="L124">		}</span>
 
 		protected void afterInsert(Node&lt;E&gt; n) {
-<span class="nc" id="L125">		}</span>
+<span class="nc" id="L127">		}</span>
 
 		protected void beforeRemove(Node&lt;E&gt; n) {
-<span class="nc" id="L128">		}</span>
+<span class="nc" id="L130">		}</span>
 
-		protected void beforeNodeDataSwap(Node&lt;E&gt; a, Node&lt;E&gt; b) {
-<span class="fc" id="L131">		}</span>
+		protected void beforeNodeSwap(Node&lt;E&gt; a, Node&lt;E&gt; b) {
+<span class="nc" id="L133">		}</span>
 
 		protected void beforeRotateLeft(Node&lt;E&gt; n) {
-<span class="nc" id="L134">		}</span>
+<span class="nc" id="L136">		}</span>
 
 		protected void beforeRotateRight(Node&lt;E&gt; n) {
-<span class="nc" id="L137">		}</span>
+<span class="nc" id="L139">		}</span>
 
 	}
 
-	public static abstract class ExtensionObj&lt;E, D&gt; extends Extension&lt;E&gt; {
+	static abstract class ExtensionObj&lt;E, D&gt; extends Extension&lt;E&gt; {
 
-<span class="fc" id="L143">		public ExtensionObj() {</span>
-<span class="fc" id="L144">		}</span>
+<span class="fc" id="L145">		public ExtensionObj() {</span>
+<span class="fc" id="L146">		}</span>
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		public D getNodeData(Node&lt;E&gt; n) {
-<span class="fc" id="L148">			return (D) n.extensionsData[getExtIdx()];</span>
+<span class="fc" id="L150">			return (D) n.extensionsData[getExtIdx()];</span>
 		}
 
 		public void setNodeData(Node&lt;E&gt; n, D data) {
-<span class="fc" id="L152">			n.extensionsData[getExtIdx()] = data;</span>
-<span class="fc" id="L153">		}</span>
+<span class="fc" id="L154">			n.extensionsData[getExtIdx()] = data;</span>
+<span class="fc" id="L155">		}</span>
 
 	}
 
-	public static abstract class ExtensionInt&lt;E&gt; extends Extension&lt;E&gt; {
+	static abstract class ExtensionInt&lt;E&gt; extends Extension&lt;E&gt; {
 
-<span class="fc" id="L159">		public ExtensionInt() {</span>
-<span class="fc" id="L160">		}</span>
+<span class="fc" id="L161">		public ExtensionInt() {</span>
+<span class="fc" id="L162">		}</span>
 
 		public int getNodeData(Node&lt;E&gt; n) {
-<span class="fc" id="L163">			return n.extensionsDataInt[getExtIdx()];</span>
+<span class="fc" id="L165">			return n.extensionsDataInt[getExtIdx()];</span>
 		}
 
 		public void setNodeData(Node&lt;E&gt; n, int data) {
-<span class="fc" id="L167">			n.extensionsDataInt[getExtIdx()] = data;</span>
-<span class="fc" id="L168">		}</span>
+<span class="fc" id="L169">			n.extensionsDataInt[getExtIdx()] = data;</span>
+<span class="fc" id="L170">		}</span>
 	}
 
 	public static class ExtensionSize&lt;E&gt; extends ExtensionInt&lt;E&gt; {
 
-<span class="fc" id="L173">		ExtensionSize() {</span>
-<span class="fc" id="L174">		}</span>
+<span class="fc" id="L175">		ExtensionSize() {</span>
+<span class="fc" id="L176">		}</span>
 
 		public int getSubTreeSize(Handle&lt;E&gt; handle) {
-<span class="fc" id="L177">			return getNodeData((Node&lt;E&gt;) handle);</span>
+<span class="fc" id="L179">			return getNodeData((Node&lt;E&gt;) handle);</span>
 		}
 
 		@Override
 		protected void initNode(Node&lt;E&gt; n) {
-<span class="fc" id="L182">			setNodeData(n, 1);</span>
-<span class="fc" id="L183">		}</span>
+<span class="fc" id="L184">			setNodeData(n, 1);</span>
+<span class="fc" id="L185">		}</span>
 
 		@Override
 		protected void afterInsert(Node&lt;E&gt; n) {
 			/* for each ancestor, increase sub tree size by 1 */
-<span class="fc bfc" id="L188" title="All 2 branches covered.">			for (; (n = n.parent()) != null;)</span>
-<span class="fc" id="L189">				setNodeData(n, getNodeData(n) + 1);</span>
-<span class="fc" id="L190">		}</span>
+<span class="fc bfc" id="L190" title="All 2 branches covered.">			for (; (n = n.parent()) != null;)</span>
+<span class="fc" id="L191">				setNodeData(n, getNodeData(n) + 1);</span>
+<span class="fc" id="L192">		}</span>
 
 		@Override
 		protected void beforeRemove(Node&lt;E&gt; n) {
 			/* for each ancestor, decrease sub tree size by 1 */
-<span class="fc bfc" id="L195" title="All 2 branches covered.">			for (; (n = n.parent()) != null;)</span>
-<span class="fc" id="L196">				setNodeData(n, getNodeData(n) - 1);</span>
-<span class="fc" id="L197">		}</span>
+<span class="fc bfc" id="L197" title="All 2 branches covered.">			for (; (n = n.parent()) != null;)</span>
+<span class="fc" id="L198">				setNodeData(n, getNodeData(n) - 1);</span>
+<span class="fc" id="L199">		}</span>
 
 		@Override
-		protected void beforeRotateLeft(Node&lt;E&gt; n) {
-<span class="fc" id="L201">			Node&lt;E&gt; child = n.right(), grandchild = child.left();</span>
-<span class="fc bfc" id="L202" title="All 2 branches covered.">			int childSize = getNodeData(child), grandchildSize = grandchild != null ? getNodeData(grandchild) : 0;</span>
-
-<span class="fc" id="L204">			setNodeData(n, getNodeData(n) - childSize + grandchildSize);</span>
-<span class="fc" id="L205">			setNodeData(child, childSize - grandchildSize + getNodeData(n));</span>
+		protected void beforeNodeSwap(Node&lt;E&gt; a, Node&lt;E&gt; b) {
+<span class="fc" id="L203">			int s = getNodeData(a);</span>
+<span class="fc" id="L204">			setNodeData(a, getNodeData(b));</span>
+<span class="fc" id="L205">			setNodeData(b, s);</span>
 <span class="fc" id="L206">		}</span>
 
 		@Override
-		protected void beforeRotateRight(Node&lt;E&gt; n) {
-<span class="fc" id="L210">			Node&lt;E&gt; child = n.left(), grandchild = child.right();</span>
+		protected void beforeRotateLeft(Node&lt;E&gt; n) {
+<span class="fc" id="L210">			Node&lt;E&gt; child = n.right(), grandchild = child.left();</span>
 <span class="fc bfc" id="L211" title="All 2 branches covered.">			int childSize = getNodeData(child), grandchildSize = grandchild != null ? getNodeData(grandchild) : 0;</span>
 
 <span class="fc" id="L213">			setNodeData(n, getNodeData(n) - childSize + grandchildSize);</span>
 <span class="fc" id="L214">			setNodeData(child, childSize - grandchildSize + getNodeData(n));</span>
 <span class="fc" id="L215">		}</span>
 
+		@Override
+		protected void beforeRotateRight(Node&lt;E&gt; n) {
+<span class="fc" id="L219">			Node&lt;E&gt; child = n.left(), grandchild = child.right();</span>
+<span class="fc bfc" id="L220" title="All 2 branches covered.">			int childSize = getNodeData(child), grandchildSize = grandchild != null ? getNodeData(grandchild) : 0;</span>
+
+<span class="fc" id="L222">			setNodeData(n, getNodeData(n) - childSize + grandchildSize);</span>
+<span class="fc" id="L223">			setNodeData(child, childSize - grandchildSize + getNodeData(n));</span>
+<span class="fc" id="L224">		}</span>
+
 	}
 
-	public static class ExtensionMin&lt;E&gt; extends ExtensionObj&lt;E, Node&lt;E&gt;&gt; {
+<span class="fc" id="L228">	public static class ExtensionMin&lt;E&gt; extends ExtensionObj&lt;E, Node&lt;E&gt;&gt; {</span>
 
-<span class="fc" id="L221">		ExtensionMin() {</span>
-<span class="fc" id="L222">		}</span>
+<span class="fc" id="L230">		ExtensionMin() {</span>
+<span class="fc" id="L231">		}</span>
 
 		public Handle&lt;E&gt; getSubTreeMin(Handle&lt;E&gt; handle) {
-<span class="fc" id="L225">			return getNodeData((Node&lt;E&gt;) handle);</span>
+<span class="fc" id="L234">			return getNodeData((Node&lt;E&gt;) handle);</span>
 		}
 
 		@Override
 		protected void initNode(Node&lt;E&gt; n) {
 			/* minimum node of subtree of the single node is the node itself */
-<span class="fc" id="L231">			setNodeData(n, n);</span>
-<span class="fc" id="L232">		}</span>
+<span class="fc" id="L240">			setNodeData(n, n);</span>
+<span class="fc" id="L241">		}</span>
 
 		@Override
 		protected void afterInsert(Node&lt;E&gt; n) {
-<span class="fc bfc" id="L236" title="All 4 branches covered.">			for (Node&lt;E&gt; p = n; p.parent() != null &amp;&amp; p == p.parent().left(); p = p.parent())</span>
-<span class="fc" id="L237">				setNodeData(p.parent(), n);</span>
-<span class="fc" id="L238">		}</span>
+<span class="fc bfc" id="L245" title="All 4 branches covered.">			for (Node&lt;E&gt; p = n; p.parent() != null &amp;&amp; p == p.parent().left(); p = p.parent())</span>
+<span class="fc" id="L246">				setNodeData(p.parent(), n);</span>
+<span class="fc" id="L247">		}</span>
 
 		@Override
 		protected void beforeRemove(Node&lt;E&gt; n) {
 			Node&lt;E&gt; min;
-<span class="fc bfc" id="L243" title="All 2 branches covered.">			if (n.left() != null)</span>
-<span class="fc" id="L244">				min = getNodeData(n.left());</span>
-<span class="fc bfc" id="L245" title="All 2 branches covered.">			else if (n.right() != null)</span>
-<span class="fc" id="L246">				min = getNodeData(n.right());</span>
+<span class="fc bfc" id="L252" title="All 2 branches covered.">			if (n.left() != null)</span>
+<span class="fc" id="L253">				min = getNodeData(n.left());</span>
+<span class="fc bfc" id="L254" title="All 2 branches covered.">			else if (n.right() != null)</span>
+<span class="fc" id="L255">				min = getNodeData(n.right());</span>
 			else
-<span class="fc" id="L248">				min = n.parent();</span>
+<span class="fc" id="L257">				min = n.parent();</span>
 
-<span class="fc bfc" id="L250" title="All 4 branches covered.">			for (Node&lt;E&gt; p = n; p.parent() != null &amp;&amp; p == p.parent().left(); p = p.parent())</span>
-<span class="fc" id="L251">				setNodeData(p.parent(), min);</span>
-<span class="fc" id="L252">		}</span>
+<span class="fc bfc" id="L259" title="All 4 branches covered.">			for (Node&lt;E&gt; p = n; p.parent() != null &amp;&amp; p == p.parent().left(); p = p.parent())</span>
+<span class="fc" id="L260">				setNodeData(p.parent(), min);</span>
+<span class="fc" id="L261">		}</span>
+
+		@Override
+		protected void beforeNodeSwap(Node&lt;E&gt; a, Node&lt;E&gt; b) {
+<span class="pc bpc" id="L265" title="1 of 2 branches missed.">			if (getNodeData(b) == a) {</span>
+<span class="nc" id="L266">				Node&lt;E&gt; temp = a;</span>
+<span class="nc" id="L267">				a = b;</span>
+<span class="nc" id="L268">				a = temp;</span>
+			}
+<span class="pc bpc" id="L270" title="1 of 2 branches missed.">			if (getNodeData(a) == b) {</span>
+<span class="nc bnc" id="L271" title="All 2 branches missed.">				assert getNodeData(b) == b;</span>
+<span class="nc bnc" id="L272" title="All 4 branches missed.">				for (Node&lt;E&gt; p = b; p.parent() != null &amp;&amp; p == p.parent().left(); p = p.parent())</span>
+<span class="nc" id="L273">					setNodeData(p.parent(), a);</span>
+<span class="nc bnc" id="L274" title="All 2 branches missed.">				assert getNodeData(a) == a : &quot;a should be ancestor of b&quot;;</span>
+<span class="nc" id="L275">				setNodeData(b, a);</span>
+<span class="nc" id="L276">				return;</span>
+			}
+
+			Node&lt;E&gt; aData, bData;
+<span class="pc bpc" id="L280" title="1 of 2 branches missed.">			if (a.hasLeftChild()) {</span>
+<span class="pc bpc" id="L281" title="1 of 2 branches missed.">				assert getNodeData(a) == getNodeData(a.left());</span>
+<span class="fc" id="L282">				bData = getNodeData(a);</span>
+			} else {
+<span class="nc bnc" id="L284" title="All 2 branches missed.">				assert getNodeData(a) == a;</span>
+<span class="nc bnc" id="L285" title="All 4 branches missed.">				for (Node&lt;E&gt; p = a; p.parent() != null &amp;&amp; p == p.parent().left(); p = p.parent()) {</span>
+<span class="nc bnc" id="L286" title="All 2 branches missed.">					assert p.parent() != b;</span>
+<span class="nc" id="L287">					setNodeData(p.parent(), b);</span>
+				}
+<span class="nc" id="L289">				bData = b;</span>
+			}
+<span class="pc bpc" id="L291" title="1 of 2 branches missed.">			if (b.hasLeftChild()) {</span>
+<span class="nc bnc" id="L292" title="All 2 branches missed.">				assert getNodeData(b) == getNodeData(b.left());</span>
+<span class="nc" id="L293">				aData = getNodeData(b);</span>
+			} else {
+<span class="pc bpc" id="L295" title="1 of 2 branches missed.">				assert getNodeData(b) == b;</span>
+<span class="pc bpc" id="L296" title="1 of 4 branches missed.">				for (Node&lt;E&gt; p = b; p.parent() != null &amp;&amp; p == p.parent().left(); p = p.parent())</span>
+<span class="fc" id="L297">					setNodeData(p.parent(), a);</span>
+<span class="fc" id="L298">				aData = a;</span>
+			}
+<span class="fc" id="L300">			setNodeData(a, aData);</span>
+<span class="fc" id="L301">			setNodeData(b, bData);</span>
+<span class="fc" id="L302">		}</span>
 
 		@Override
 		protected void beforeRotateLeft(Node&lt;E&gt; n) {
-<span class="fc" id="L256">			Node&lt;E&gt; child = n.right();</span>
-<span class="fc" id="L257">			setNodeData(child, getNodeData(n));</span>
-<span class="fc" id="L258">		}</span>
+<span class="fc" id="L306">			Node&lt;E&gt; child = n.right();</span>
+<span class="fc" id="L307">			setNodeData(child, getNodeData(n));</span>
+<span class="fc" id="L308">		}</span>
 
 		@Override
 		protected void beforeRotateRight(Node&lt;E&gt; n) {
-<span class="fc" id="L262">			Node&lt;E&gt; grandchild = n.left().right();</span>
-<span class="fc bfc" id="L263" title="All 2 branches covered.">			setNodeData(n, grandchild != null ? getNodeData(grandchild) : n);</span>
-<span class="fc" id="L264">		}</span>
+<span class="fc" id="L312">			Node&lt;E&gt; grandchild = n.left().right();</span>
+<span class="fc bfc" id="L313" title="All 2 branches covered.">			setNodeData(n, grandchild != null ? getNodeData(grandchild) : n);</span>
+<span class="fc" id="L314">		}</span>
 
 	}
 
-	public static class ExtensionMax&lt;E&gt; extends ExtensionObj&lt;E, Node&lt;E&gt;&gt; {
+<span class="fc" id="L318">	public static class ExtensionMax&lt;E&gt; extends ExtensionObj&lt;E, Node&lt;E&gt;&gt; {</span>
 
-<span class="fc" id="L270">		ExtensionMax() {</span>
-<span class="fc" id="L271">		}</span>
+<span class="fc" id="L320">		ExtensionMax() {</span>
+<span class="fc" id="L321">		}</span>
 
 		public Handle&lt;E&gt; getSubTreeMax(Handle&lt;E&gt; handle) {
-<span class="fc" id="L274">			return getNodeData((Node&lt;E&gt;) handle);</span>
+<span class="fc" id="L324">			return getNodeData((Node&lt;E&gt;) handle);</span>
 		}
 
 		@Override
 		protected void initNode(Node&lt;E&gt; n) {
 			/* maximum node of subtree of the single node is the node itself */
-<span class="fc" id="L280">			setNodeData(n, n);</span>
-<span class="fc" id="L281">		}</span>
+<span class="fc" id="L330">			setNodeData(n, n);</span>
+<span class="fc" id="L331">		}</span>
 
 		@Override
 		protected void afterInsert(Node&lt;E&gt; n) {
-<span class="fc bfc" id="L285" title="All 4 branches covered.">			for (Node&lt;E&gt; p = n; p.parent() != null &amp;&amp; p == p.parent().right(); p = p.parent())</span>
-<span class="fc" id="L286">				setNodeData(p.parent(), n);</span>
-<span class="fc" id="L287">		}</span>
+<span class="fc bfc" id="L335" title="All 4 branches covered.">			for (Node&lt;E&gt; p = n; p.parent() != null &amp;&amp; p == p.parent().right(); p = p.parent())</span>
+<span class="fc" id="L336">				setNodeData(p.parent(), n);</span>
+<span class="fc" id="L337">		}</span>
 
 		@Override
 		protected void beforeRemove(Node&lt;E&gt; n) {
 			Node&lt;E&gt; max;
-<span class="fc bfc" id="L292" title="All 2 branches covered.">			if (n.right() != null)</span>
-<span class="fc" id="L293">				max = getNodeData(n.right());</span>
-<span class="fc bfc" id="L294" title="All 2 branches covered.">			else if (n.left() != null)</span>
-<span class="fc" id="L295">				max = getNodeData(n.left());</span>
+<span class="fc bfc" id="L342" title="All 2 branches covered.">			if (n.right() != null)</span>
+<span class="fc" id="L343">				max = getNodeData(n.right());</span>
+<span class="fc bfc" id="L344" title="All 2 branches covered.">			else if (n.left() != null)</span>
+<span class="fc" id="L345">				max = getNodeData(n.left());</span>
 			else
-<span class="fc" id="L297">				max = n.parent();</span>
+<span class="fc" id="L347">				max = n.parent();</span>
 
-<span class="fc bfc" id="L299" title="All 4 branches covered.">			for (Node&lt;E&gt; p = n; p.parent() != null &amp;&amp; p == p.parent().right(); p = p.parent())</span>
-<span class="fc" id="L300">				setNodeData(p.parent(), max);</span>
-<span class="fc" id="L301">		}</span>
+<span class="fc bfc" id="L349" title="All 4 branches covered.">			for (Node&lt;E&gt; p = n; p.parent() != null &amp;&amp; p == p.parent().right(); p = p.parent())</span>
+<span class="fc" id="L350">				setNodeData(p.parent(), max);</span>
+<span class="fc" id="L351">		}</span>
+
+		@Override
+		protected void beforeNodeSwap(Node&lt;E&gt; a, Node&lt;E&gt; b) {
+<span class="pc bpc" id="L355" title="1 of 2 branches missed.">			if (getNodeData(b) == a) {</span>
+<span class="nc" id="L356">				Node&lt;E&gt; temp = a;</span>
+<span class="nc" id="L357">				a = b;</span>
+<span class="nc" id="L358">				a = temp;</span>
+			}
+<span class="fc bfc" id="L360" title="All 2 branches covered.">			if (getNodeData(a) == b) {</span>
+<span class="pc bpc" id="L361" title="1 of 2 branches missed.">				assert getNodeData(b) == b;</span>
+<span class="fc bfc" id="L362" title="All 4 branches covered.">				for (Node&lt;E&gt; p = b; p.parent() != null &amp;&amp; p == p.parent().right(); p = p.parent())</span>
+<span class="fc" id="L363">					setNodeData(p.parent(), a);</span>
+<span class="pc bpc" id="L364" title="1 of 2 branches missed.">				assert getNodeData(a) == a : &quot;a should be ancestor of b&quot;;</span>
+<span class="fc" id="L365">				setNodeData(b, a);</span>
+<span class="fc" id="L366">				return;</span>
+			}
+
+			Node&lt;E&gt; aData, bData;
+<span class="pc bpc" id="L370" title="1 of 2 branches missed.">			if (a.hasRightChild()) {</span>
+<span class="pc bpc" id="L371" title="1 of 2 branches missed.">				assert getNodeData(a) == getNodeData(a.right());</span>
+<span class="fc" id="L372">				bData = getNodeData(a);</span>
+			} else {
+<span class="nc bnc" id="L374" title="All 2 branches missed.">				assert getNodeData(a) == a;</span>
+<span class="nc bnc" id="L375" title="All 4 branches missed.">				for (Node&lt;E&gt; p = a; p.parent() != null &amp;&amp; p == p.parent().right(); p = p.parent()) {</span>
+<span class="nc bnc" id="L376" title="All 2 branches missed.">					assert p.parent() != b;</span>
+<span class="nc" id="L377">					setNodeData(p.parent(), b);</span>
+				}
+<span class="nc" id="L379">				bData = b;</span>
+			}
+<span class="fc bfc" id="L381" title="All 2 branches covered.">			if (b.hasRightChild()) {</span>
+<span class="pc bpc" id="L382" title="1 of 2 branches missed.">				assert getNodeData(b) == getNodeData(b.right());</span>
+<span class="fc" id="L383">				aData = getNodeData(b);</span>
+			} else {
+<span class="pc bpc" id="L385" title="1 of 2 branches missed.">				assert getNodeData(b) == b;</span>
+<span class="pc bpc" id="L386" title="2 of 4 branches missed.">				for (Node&lt;E&gt; p = b; p.parent() != null &amp;&amp; p == p.parent().right(); p = p.parent())</span>
+<span class="nc" id="L387">					setNodeData(p.parent(), a);</span>
+<span class="fc" id="L388">				aData = a;</span>
+			}
+<span class="fc" id="L390">			setNodeData(a, aData);</span>
+<span class="fc" id="L391">			setNodeData(b, bData);</span>
+<span class="fc" id="L392">		}</span>
 
 		@Override
 		protected void beforeRotateLeft(Node&lt;E&gt; n) {
-<span class="fc" id="L305">			Node&lt;E&gt; grandchild = n.right().left();</span>
-<span class="fc bfc" id="L306" title="All 2 branches covered.">			setNodeData(n, grandchild != null ? getNodeData(grandchild) : n);</span>
-<span class="fc" id="L307">		}</span>
+<span class="fc" id="L396">			Node&lt;E&gt; grandchild = n.right().left();</span>
+<span class="fc bfc" id="L397" title="All 2 branches covered.">			setNodeData(n, grandchild != null ? getNodeData(grandchild) : n);</span>
+<span class="fc" id="L398">		}</span>
 
 		@Override
 		protected void beforeRotateRight(Node&lt;E&gt; n) {
-<span class="fc" id="L311">			Node&lt;E&gt; child = n.left();</span>
-<span class="fc" id="L312">			setNodeData(child, getNodeData(n));</span>
-<span class="fc" id="L313">		}</span>
+<span class="fc" id="L402">			Node&lt;E&gt; child = n.left();</span>
+<span class="fc" id="L403">			setNodeData(child, getNodeData(n));</span>
+<span class="fc" id="L404">		}</span>
 
 	}
 
@@ -320,58 +411,58 @@ public class RedBlackTreeExtended&lt;E&gt; extends RedBlackTree&lt;E&gt; {
 		private final List&lt;ExtensionObj&lt;E, ?&gt;&gt; extsObj;
 		private final List&lt;ExtensionInt&lt;E&gt;&gt; extsInt;
 
-<span class="fc" id="L323">		public Builder() {</span>
-<span class="fc" id="L324">			c = null;</span>
-<span class="fc" id="L325">			extsObj = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L326">			extsInt = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L327">		}</span>
+<span class="fc" id="L414">		public Builder() {</span>
+<span class="fc" id="L415">			c = null;</span>
+<span class="fc" id="L416">			extsObj = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L417">			extsInt = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L418">		}</span>
 
 		public void comparator(Comparator&lt;? super E&gt; c) {
-<span class="fc" id="L330">			this.c = c;</span>
-<span class="fc" id="L331">		}</span>
+<span class="fc" id="L421">			this.c = c;</span>
+<span class="fc" id="L422">		}</span>
 
 		public ExtensionSize&lt;E&gt; addSizeExtension() {
-<span class="fc" id="L334">			return addExtension(new ExtensionSize&lt;&gt;());</span>
+<span class="fc" id="L425">			return addExtension(new ExtensionSize&lt;&gt;());</span>
 		}
 
 		public ExtensionMin&lt;E&gt; addMinExtension() {
-<span class="fc" id="L338">			return addExtension(new ExtensionMin&lt;&gt;());</span>
+<span class="fc" id="L429">			return addExtension(new ExtensionMin&lt;&gt;());</span>
 		}
 
 		public ExtensionMax&lt;E&gt; addMaxExtension() {
-<span class="fc" id="L342">			return addExtension(new ExtensionMax&lt;&gt;());</span>
+<span class="fc" id="L433">			return addExtension(new ExtensionMax&lt;&gt;());</span>
 		}
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		private &lt;T extends Extension&lt;E&gt;&gt; T addExtension(T extension) {
-<span class="fc bfc" id="L347" title="All 2 branches covered.">			if (extension instanceof ExtensionObj&lt;?, ?&gt;) {</span>
-<span class="fc" id="L348">				extension.setExtIdx(extsObj.size());</span>
-<span class="fc" id="L349">				extsObj.add((ExtensionObj&lt;E, ?&gt;) extension);</span>
-<span class="pc bpc" id="L350" title="1 of 2 branches missed.">			} else if (extension instanceof ExtensionInt&lt;?&gt;) {</span>
-<span class="fc" id="L351">				extension.setExtIdx(extsObj.size());</span>
-<span class="fc" id="L352">				extsInt.add((ExtensionInt&lt;E&gt;) extension);</span>
+<span class="fc bfc" id="L438" title="All 2 branches covered.">			if (extension instanceof ExtensionObj&lt;?, ?&gt;) {</span>
+<span class="fc" id="L439">				extension.setExtIdx(extsObj.size());</span>
+<span class="fc" id="L440">				extsObj.add((ExtensionObj&lt;E, ?&gt;) extension);</span>
+<span class="pc bpc" id="L441" title="1 of 2 branches missed.">			} else if (extension instanceof ExtensionInt&lt;?&gt;) {</span>
+<span class="fc" id="L442">				extension.setExtIdx(extsObj.size());</span>
+<span class="fc" id="L443">				extsInt.add((ExtensionInt&lt;E&gt;) extension);</span>
 			} else
-<span class="nc" id="L354">				throw new IllegalArgumentException(extension.toString());</span>
-<span class="fc" id="L355">			return extension;</span>
+<span class="nc" id="L445">				throw new IllegalArgumentException(extension.toString());</span>
+<span class="fc" id="L446">			return extension;</span>
 		}
 
 		public void clear() {
-<span class="nc" id="L359">			c = null;</span>
-<span class="nc" id="L360">			extsObj.clear();</span>
-<span class="nc" id="L361">			extsInt.clear();</span>
-<span class="nc" id="L362">		}</span>
+<span class="nc" id="L450">			c = null;</span>
+<span class="nc" id="L451">			extsObj.clear();</span>
+<span class="nc" id="L452">			extsInt.clear();</span>
+<span class="nc" id="L453">		}</span>
 
 		public RedBlackTree&lt;E&gt; build() {
-<span class="fc" id="L365">			List&lt;Extension&lt;E&gt;&gt; extensions = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L366">			extensions.addAll(extsObj);</span>
-<span class="fc" id="L367">			extensions.addAll(extsInt);</span>
-<span class="pc bpc" id="L368" title="1 of 2 branches missed.">			if (extensions.isEmpty())</span>
-<span class="nc" id="L369">				return new RedBlackTree&lt;&gt;(c);</span>
+<span class="fc" id="L456">			List&lt;Extension&lt;E&gt;&gt; extensions = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L457">			extensions.addAll(extsObj);</span>
+<span class="fc" id="L458">			extensions.addAll(extsInt);</span>
+<span class="pc bpc" id="L459" title="1 of 2 branches missed.">			if (extensions.isEmpty())</span>
+<span class="nc" id="L460">				return new RedBlackTree&lt;&gt;(c);</span>
 
-<span class="fc" id="L371">			RedBlackTreeExtended&lt;E&gt; tree = new RedBlackTreeExtended&lt;&gt;(c, extensions);</span>
-<span class="fc bfc" id="L372" title="All 2 branches covered.">			for (Extension&lt;E&gt; ext : extensions)</span>
-<span class="fc" id="L373">				ext.setTree(tree);</span>
-<span class="fc" id="L374">			return tree;</span>
+<span class="fc" id="L462">			RedBlackTreeExtended&lt;E&gt; tree = new RedBlackTreeExtended&lt;&gt;(c, extensions);</span>
+<span class="fc bfc" id="L463" title="All 2 branches covered.">			for (Extension&lt;E&gt; ext : extensions)</span>
+<span class="fc" id="L464">				ext.setTree(tree);</span>
+<span class="fc" id="L465">			return tree;</span>
 		}
 
 	}

@@ -14,16 +14,16 @@ public interface HeapDirectAccessed&lt;E&gt; extends Heap&lt;E&gt; {
 	 */
 	default Handle&lt;E&gt; findHanlde(E e) {
 <span class="fc" id="L16">		Comparator&lt;? super E&gt; c = comparator();</span>
-<span class="pc bpc" id="L17" title="1 of 2 branches missed.">		if (c == null) {</span>
+<span class="fc bfc" id="L17" title="All 2 branches covered.">		if (c == null) {</span>
 <span class="pc bpc" id="L18" title="1 of 2 branches missed.">			for (Handle&lt;E&gt; p : handles()) {</span>
 <span class="fc bfc" id="L19" title="All 2 branches covered.">				if (Utils.cmpDefault(e, p.get()) == 0)</span>
 <span class="fc" id="L20">					return p;</span>
 <span class="pc" id="L21">			}</span>
 		} else {
-<span class="nc bnc" id="L23" title="All 2 branches missed.">			for (Handle&lt;E&gt; p : handles()) {</span>
-<span class="nc bnc" id="L24" title="All 2 branches missed.">				if (c.compare(e, p.get()) == 0)</span>
-<span class="nc" id="L25">					return p;</span>
-<span class="nc" id="L26">			}</span>
+<span class="pc bpc" id="L23" title="1 of 2 branches missed.">			for (Handle&lt;E&gt; p : handles()) {</span>
+<span class="fc bfc" id="L24" title="All 2 branches covered.">				if (c.compare(e, p.get()) == 0)</span>
+<span class="fc" id="L25">					return p;</span>
+<span class="fc" id="L26">			}</span>
 		}
 <span class="nc" id="L28">		return null;</span>
 	}
