@@ -45,7 +45,7 @@ public class MaxFlowDinic implements MaxFlow {
 <span class="fc" id="L45">		DiGraph g = referenceGraph((DiGraph) g0, net);</span>
 <span class="fc" id="L46">		Weights&lt;Ref&gt; edgeRef = g.edgesWeight(EdgeRefWeightKey);</span>
 <span class="fc" id="L47">		final int n = g.vertices().size();</span>
-<span class="fc" id="L48">		DiGraph L = GraphBuilder.Linked.getInstance().setVerticesNum(n).setEdgesIDStrategy(Fixed.class).buildDirected();</span>
+<span class="fc" id="L48">		DiGraph L = GraphBuilder.Linked.newInstance().setVerticesNum(n).setEdgesIDStrategy(Fixed.class).buildDirected();</span>
 <span class="fc" id="L49">		Weights&lt;Ref&gt; edgeRefL = L.addEdgesWeight(EdgeRefWeightKey).ofObjs();</span>
 <span class="fc" id="L50">		IntPriorityQueue bfsQueue = new IntArrayFIFOQueue();</span>
 <span class="fc" id="L51">		int[] level = new int[n];</span>

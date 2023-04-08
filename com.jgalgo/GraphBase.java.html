@@ -278,10 +278,10 @@ abstract class GraphBase implements Graph {
 				}
 <span class="fc bfc" id="L279" title="All 2 branches covered.">			} else if (container0 instanceof DataContainer.Int) {</span>
 <span class="fc" id="L280">				DataContainer.Int container = (DataContainer.Int) container0;</span>
-<span class="pc bpc" id="L281" title="1 of 2 branches missed.">				if (isContinues) {</span>
+<span class="fc bfc" id="L281" title="All 2 branches covered.">				if (isContinues) {</span>
 <span class="fc" id="L282">					return (WeightsT) new WeightsImpl.Direct.Int(container);</span>
 				} else {
-<span class="nc" id="L284">					return (WeightsT) new WeightsImpl.Mapped.Int(container, idStrat);</span>
+<span class="fc" id="L284">					return (WeightsT) new WeightsImpl.Mapped.Int(container, idStrat);</span>
 				}
 <span class="pc bpc" id="L286" title="1 of 2 branches missed.">			} else if (container0 instanceof DataContainer.Long) {</span>
 <span class="nc" id="L287">				DataContainer.Long container = (DataContainer.Long) container0;</span>

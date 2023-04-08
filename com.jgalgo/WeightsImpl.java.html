@@ -215,8 +215,8 @@ abstract class WeightsImpl&lt;E&gt; implements Weights&lt;E&gt; {
 
 		static class Int extends Mapped&lt;Integer&gt; implements Weights.Int {
 			Int(DataContainer.Int container, IDStrategy idStrategy) {
-<span class="nc" id="L218">				super(container, idStrategy);</span>
-<span class="nc" id="L219">			}</span>
+<span class="fc" id="L218">				super(container, idStrategy);</span>
+<span class="fc" id="L219">			}</span>
 
 			Int(int expectedSize, int defVal, IDStrategy idStrategy) {
 <span class="nc" id="L222">				this(new DataContainer.Int(expectedSize, defVal), idStrategy);</span>
@@ -224,18 +224,18 @@ abstract class WeightsImpl&lt;E&gt; implements Weights&lt;E&gt; {
 
 			@Override
 			DataContainer.Int container() {
-<span class="nc" id="L227">				return (DataContainer.Int) super.container();</span>
+<span class="fc" id="L227">				return (DataContainer.Int) super.container();</span>
 			}
 
 			@Override
 			public int getInt(int id) {
-<span class="nc" id="L232">				return container().getInt(idStrategy.idToIdx(id));</span>
+<span class="fc" id="L232">				return container().getInt(idStrategy.idToIdx(id));</span>
 			}
 
 			@Override
 			public void set(int id, int weight) {
-<span class="nc" id="L237">				container().set(idStrategy.idToIdx(id), weight);</span>
-<span class="nc" id="L238">			}</span>
+<span class="fc" id="L237">				container().set(idStrategy.idToIdx(id), weight);</span>
+<span class="fc" id="L238">			}</span>
 
 			@Override
 			public int defaultValInt() {
