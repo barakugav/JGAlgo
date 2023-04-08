@@ -2,9 +2,7 @@ package com.jgalgo;
 
 import java.util.Collection;
 import java.util.Objects;
-import java.util.Set;
 
-import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 abstract class GraphBase implements Graph {
@@ -70,93 +68,6 @@ abstract class GraphBase implements Graph {
 	}
 
 	@Override
-	public boolean equals(Object other) {
-		if (other == this)
-			return true;
-		if (!(other instanceof Graph))
-			return false;
-		Graph o = (Graph) other;
-
-		if ((this instanceof DiGraph) != (o instanceof DiGraph))
-			return false;
-		if (vertices().size() != o.vertices().size() || edges().size() != o.edges().size())
-			return false;
-
-		boolean isDirected = (this instanceof DiGraph);
-		if (isDirected) {
-			for (IntIterator it = edges().iterator(); it.hasNext();) {
-				int e = it.nextInt();
-				int u1 = edgeSource(e), v1 = edgeTarget(e);
-				int u2 = o.edgeSource(e), v2 = o.edgeTarget(e);
-				if (!(u1 == u2 && v1 == v2))
-					return false;
-			}
-		} else {
-			for (IntIterator it = edges().iterator(); it.hasNext();) {
-				int e = it.nextInt();
-				int u1 = edgeSource(e), v1 = edgeTarget(e);
-				int u2 = o.edgeSource(e), v2 = o.edgeTarget(e);
-				if (!((u1 == u2 && v1 == v2) || (u1 == v2 && v1 == u2)))
-					return false;
-			}
-		}
-
-		Set<Object> vwKeys = getVerticesWeightKeys();
-		if (!vwKeys.equals(o.getVerticesWeightKeys()))
-			return false;
-		for (Object weightKey : vwKeys)
-			if (!verticesWeight(weightKey).equals(o.verticesWeight(weightKey)))
-				return false;
-
-		Set<Object> ewKeys = getEdgesWeightsKeys();
-		if (!ewKeys.equals(o.getEdgesWeightsKeys()))
-			return false;
-		for (Object weightKey : ewKeys)
-			if (!edgesWeight(weightKey).equals(o.edgesWeight(weightKey)))
-				return false;
-
-		return true;
-	}
-
-	@Override
-	public int hashCode() {
-		int vWeightsHash = 1 + vertices().size();
-		for (Weights<?> vWeight : getVerticesWeights())
-			vWeightsHash = vWeightsHash * 31 + vWeight.hashCode();
-
-		int edgesHash = 1;
-		if (this instanceof DiGraph) {
-			for (IntIterator it = edges().iterator(); it.hasNext();) {
-				int e = it.nextInt();
-				edgesHash = edgesHash * 31 + edgeSource(e);
-				edgesHash = edgesHash * 31 + edgeTarget(e);
-			}
-		} else {
-			for (IntIterator it = edges().iterator(); it.hasNext();) {
-				int e = it.nextInt();
-				int u = edgeSource(e), v = edgeTarget(e);
-				if (u > v) {
-					int temp = u;
-					u = v;
-					v = temp;
-				}
-				edgesHash = edgesHash * 31 + u;
-				edgesHash = edgesHash * 31 + v;
-			}
-		}
-
-		int eWeightsHash = 1;
-		for (Weights<?> eWeight : getEdgesWeights())
-			eWeightsHash = eWeightsHash * 31 + eWeight.hashCode();
-
-		int h = 1;
-		h = h * 31 + vWeightsHash;
-		h = h * 31 + edgesHash;
-		h = h * 31 + eWeightsHash;
-		return h;
-	}
-
-	@Override
 	public String toString() {
 		StringBuilder s = new StringBuilder();
 		s.append('{');
@@ -170,7 +81,7 @@ abstract class GraphBase implements Graph {
 			} else {
 				s.append(", ");
 			}
-			s.append("<v" + u + ">->[");
+			s.append('v').append(u).append(": [");
 
 			boolean firstEdge = true;
 			for (EdgeIter eit = edgesOut(u); eit.hasNext();) {
@@ -180,7 +91,7 @@ abstract class GraphBase implements Graph {
 					firstEdge = false;
 				else
 					s.append(", ");
-				s.append("" + e + "(" + u + ", " + v + ")");
+				s.append(e).append('(').append(u).append(", ").append(v).append(')');
 				if (!weights.isEmpty()) {
 					s.append('[');
 					boolean firstData = true;
@@ -190,12 +101,12 @@ abstract class GraphBase implements Graph {
 						} else {
 							s.append(", ");
 						}
-						s.append(String.valueOf(weight.get(e)));
+						s.append(weight.get(e));
 					}
 					s.append(']');
 				}
 			}
-			s.append("]");
+			s.append(']');
 		}
 		s.append('}');
 		return s.toString();

@@ -124,41 +124,6 @@ class DebugPrintsManager {
 			printStream.println(s);
 	}
 
-	void print(Object arg1, Object arg2) {
-		if (enable)
-			printStream.print(String.valueOf(arg1) + arg2);
-	}
-
-	void print(Object arg1, Object arg2, Object arg3) {
-		if (enable)
-			printStream.print(String.valueOf(arg1) + arg2 + arg3);
-	}
-
-	void print(Object arg1, Object arg2, Object arg3, Object arg4) {
-		if (enable)
-			printStream.print(String.valueOf(arg1) + arg2 + arg3 + arg4);
-	}
-
-	void print(Object arg1, Object arg2, Object arg3, Object arg4, Object arg5) {
-		if (enable)
-			printStream.print(String.valueOf(arg1) + arg2 + arg3 + arg4 + arg5);
-	}
-
-	void print(Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6) {
-		if (enable)
-			printStream.print(String.valueOf(arg1) + arg2 + arg3 + arg4 + arg5 + arg6);
-	}
-
-	void print(Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6, Object arg7) {
-		if (enable)
-			printStream.print(String.valueOf(arg1) + arg2 + arg3 + arg4 + arg5 + arg6 + arg7);
-	}
-
-	void print(Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6, Object arg7, Object arg8) {
-		if (enable)
-			printStream.print(String.valueOf(arg1) + arg2 + arg3 + arg4 + arg5 + arg6 + arg7 + arg8);
-	}
-
 	void print(Object arg1, Object... args) {
 		if (enable) {
 			StringBuilder builder = new StringBuilder();
@@ -169,75 +134,13 @@ class DebugPrintsManager {
 		}
 	}
 
-	void println(Object arg1, Object arg2) {
-		if (enable)
-			printStream.println(String.valueOf(arg1) + arg2);
-	}
-
-	void println(Object arg1, Object arg2, Object arg3) {
-		if (enable)
-			printStream.println(String.valueOf(arg1) + arg2 + arg3);
-	}
-
-	void println(Object arg1, Object arg2, Object arg3, Object arg4) {
-		if (enable)
-			printStream.println(String.valueOf(arg1) + arg2 + arg3 + arg4);
-	}
-
-	void println(Object arg1, Object arg2, Object arg3, Object arg4, Object arg5) {
-		if (enable)
-			printStream.println(String.valueOf(arg1) + arg2 + arg3 + arg4 + arg5);
-	}
-
-	void println(Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6) {
-		if (enable)
-			printStream.println(String.valueOf(arg1) + arg2 + arg3 + arg4 + arg5 + arg6);
-	}
-
-	void println(Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6, Object arg7) {
-		if (enable)
-			printStream.println(String.valueOf(arg1) + arg2 + arg3 + arg4 + arg5 + arg6 + arg7);
-	}
-
-	void println(Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6, Object arg7,
-			Object arg8) {
-		if (enable)
-			printStream.println(String.valueOf(arg1) + arg2 + arg3 + arg4 + arg5 + arg6 + arg7 + arg8);
-	}
-
-	void println(Object arg1, Object... args) {
+	void println(Object... args) {
 		if (enable) {
 			StringBuilder builder = new StringBuilder();
-			builder.append(arg1);
 			for (Object arg : args)
 				builder.append(arg);
 			printStream.println(builder.toString());
 		}
-	}
-
-	void format(String s, Object arg1) {
-		if (enable)
-			printStream.format(s, arg1);
-	}
-
-	void format(String s, Object arg1, Object arg2) {
-		if (enable)
-			printStream.format(s, arg1, arg2);
-	}
-
-	void format(String s, Object arg1, Object arg2, Object arg3) {
-		if (enable)
-			printStream.format(s, arg1, arg2, arg3);
-	}
-
-	void format(String s, Object arg1, Object arg2, Object arg3, Object arg4) {
-		if (enable)
-			printStream.format(s, arg1, arg2, arg3, arg4);
-	}
-
-	void format(String s, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5) {
-		if (enable)
-			printStream.format(s, arg1, arg2, arg3, arg4, arg5);
 	}
 
 	void format(String s, Object... args) {
