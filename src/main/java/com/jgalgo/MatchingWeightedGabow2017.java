@@ -1,6 +1,5 @@
 package com.jgalgo;
 
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -20,7 +19,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
-public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintable {
+public class MatchingWeightedGabow2017 implements MatchingWeighted {
 
 	/*
 	 * This class implement Edmonds' "Blossom algorithm" for weighted matching on
@@ -1152,21 +1151,6 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted, DebugPrintab
 			}
 		}
 
-	}
-
-	@Override
-	public boolean isDebugPrintEnable() {
-		return debugPrintManager.isEnable();
-	}
-
-	@Override
-	public void setDebugPrintEnable(boolean enable) {
-		debugPrintManager.setEnable(enable);
-	}
-
-	@Override
-	public void setDebugPrintStream(PrintStream printStream) {
-		debugPrintManager.setPrintStream(printStream);
 	}
 
 }
