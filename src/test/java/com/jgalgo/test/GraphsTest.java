@@ -15,6 +15,7 @@ import com.jgalgo.DiGraph;
 import com.jgalgo.EdgeIter;
 import com.jgalgo.Graph;
 import com.jgalgo.Graphs;
+import com.jgalgo.Path;
 import com.jgalgo.SSSP;
 import com.jgalgo.SSSPDag;
 import com.jgalgo.SSSPDijkstra;
@@ -25,6 +26,31 @@ import com.jgalgo.test.GraphsTestUtils.RandomGraphBuilder;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 public class GraphsTest extends TestUtils {
+
+	@Test
+	public void testFindPath() {
+		final long seed = 0x03afc698ec4c71ccL;
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		Random rand = new Random(seedGen.nextSeed());
+		SSSP validationAlgo = new SSSPDijkstra();
+		List<Phase> phases = List.of(phase(256, 16, 8), phase(128, 32, 64), phase(4, 2048, 8192));
+		runTestMultiple(phases, (testIter, args) -> {
+			int n = args[0], m = args[1];
+			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
+					.selfEdges(true).cycles(true).connected(true).build();
+			int source = rand.nextInt(n);
+			int target = rand.nextInt(n);
+
+			Path actual = Graphs.findPath(g, source, target);
+			Path expected = validationAlgo.calcDistances(g, w -> 1, source).getPathTo(target);
+			if (expected == null) {
+				Assertions.assertNull(actual, "found non existing path");
+			} else {
+				Assertions.assertNotNull(actual, "failed to found a path");
+				Assertions.assertEquals(expected.size(), actual.size(), "failed to find shortest path");
+			}
+		});
+	}
 
 	@Test
 	public void testBfsConnected() {
@@ -83,8 +109,7 @@ public class GraphsTest extends TestUtils {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(256, 16), phase(128, 32), phase(4, 2048));
 		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0];
-			int m = n - 1;
+			int n = args[0], m = n - 1;
 			UGraph g = (UGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false)
 					.parallelEdges(false).selfEdges(false).cycles(false).connected(true).build();
 
@@ -99,8 +124,7 @@ public class GraphsTest extends TestUtils {
 		Random rand = new Random(seedGen.nextSeed());
 		List<Phase> phases = List.of(phase(256, 16), phase(128, 32), phase(4, 2048));
 		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0];
-			int m = n - 1;
+			int n = args[0], m = n - 1;
 			UGraph g = (UGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false)
 					.parallelEdges(false).selfEdges(false).cycles(false).connected(true).build();
 			int[] edges = g.edges().toIntArray();
@@ -118,8 +142,7 @@ public class GraphsTest extends TestUtils {
 		Random rand = new Random(seedGen.nextSeed());
 		List<Phase> phases = List.of(phase(256, 16), phase(128, 32), phase(4, 2048));
 		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0];
-			int m = n - 1;
+			int n = args[0], m = n - 1;
 			UGraph g = (UGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false)
 					.parallelEdges(false).selfEdges(false).cycles(false).connected(true).build();
 			int u, v;
@@ -140,8 +163,7 @@ public class GraphsTest extends TestUtils {
 		Random rand = new Random(seedGen.nextSeed());
 		List<Phase> phases = List.of(phase(256, 16), phase(128, 32), phase(4, 2048));
 		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0];
-			int m = n - 1;
+			int n = args[0], m = n - 1;
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(false)
 					.selfEdges(false).cycles(false).connected(true).build();
 			int root = rand.nextInt(n);
@@ -157,8 +179,7 @@ public class GraphsTest extends TestUtils {
 		Random rand = new Random(seedGen.nextSeed());
 		List<Phase> phases = List.of(phase(256, 16), phase(128, 32), phase(4, 2048));
 		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0];
-			int m = n - 1;
+			int n = args[0], m = n - 1;
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(false)
 					.selfEdges(false).cycles(false).connected(true).build();
 			int root = rand.nextInt(n);
@@ -177,8 +198,7 @@ public class GraphsTest extends TestUtils {
 		Random rand = new Random(seedGen.nextSeed());
 		List<Phase> phases = List.of(phase(256, 16), phase(128, 32), phase(4, 2048));
 		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0];
-			int m = n - 1;
+			int n = args[0], m = n - 1;
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(false)
 					.selfEdges(false).cycles(false).connected(true).build();
 			int root = rand.nextInt(n);
@@ -190,6 +210,55 @@ public class GraphsTest extends TestUtils {
 			g.addEdge(u, v);
 
 			Assertions.assertFalse(Graphs.isTree(g, root));
+		});
+	}
+
+	@Test
+	public void testIsForestPositive() {
+		final long seed = 0xb63ccfd25f531281L;
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		Random rand = new Random(seedGen.nextSeed());
+		List<Phase> phases = List.of(phase(256, 16), phase(128, 32), phase(4, 2048));
+		runTestMultiple(phases, (testIter, args) -> {
+			int n = args[0], m = n - 1;
+			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(false)
+					.selfEdges(false).cycles(false).connected(true).build();
+			// remove a few edges
+			for (int i = 0; i < m / 10; i++) {
+				int[] edges = g.edges().toIntArray();
+				int e = edges[rand.nextInt(edges.length)];
+				g.removeEdge(e);
+			}
+			Assertions.assertTrue(Graphs.isForest(g));
+		});
+	}
+
+	@Test
+	public void testIsForestNegative() {
+		final long seed = 0xe1a9a20ecb9e816bL;
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		Random rand = new Random(seedGen.nextSeed());
+		List<Phase> phases = List.of(phase(256, 16), phase(128, 32), phase(4, 2048));
+		runTestMultiple(phases, (testIter, args) -> {
+			int n = args[0], m = n - 1;
+			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(false)
+					.selfEdges(false).cycles(false).connected(true).build();
+			// remove a few edges
+			for (int i = 0; i < m / 10; i++) {
+				int[] edges = g.edges().toIntArray();
+				int e = edges[rand.nextInt(edges.length)];
+				g.removeEdge(e);
+			}
+			// close a random cycle
+			for (;;) {
+				int u = rand.nextInt(n);
+				int v = rand.nextInt(n);
+				if (u != v && Graphs.findPath(g, u, v) != null) {
+					g.addEdge(u, v);
+					break;
+				}
+			}
+			Assertions.assertFalse(Graphs.isForest(g));
 		});
 	}
 

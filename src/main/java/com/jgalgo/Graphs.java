@@ -19,10 +19,11 @@ public class Graphs {
 	}
 
 	/**
-	 * Find a valid path from u to v
+	 * Find a valid path from u to v.
 	 *
+	 * <p>
 	 * This function uses BFS, which will result in the shortest path in the number
-	 * of edges
+	 * of edges.
 	 *
 	 * @param g a graph
 	 * @param u source vertex
@@ -72,22 +73,22 @@ public class Graphs {
 	}
 
 	public static boolean isTree(Graph g, int root) {
-		return isForst(g, new int[] { root });
+		return isForest(g, new int[] { root });
 	}
 
-	public static boolean isForst(Graph g) {
+	public static boolean isForest(Graph g) {
 		int n = g.vertices().size();
 		int[] roots = new int[n];
 		for (int u = 0; u < n; u++)
 			roots[u] = u;
-		return isForst(g, roots, true);
+		return isForest(g, roots, true);
 	}
 
-	public static boolean isForst(Graph g, int[] roots) {
-		return isForst(g, roots, false);
+	public static boolean isForest(Graph g, int[] roots) {
+		return isForest(g, roots, false);
 	}
 
-	private static boolean isForst(Graph g, int[] roots, boolean allowVisitedRoot) {
+	private static boolean isForest(Graph g, int[] roots, boolean allowVisitedRoot) {
 		int n = g.vertices().size();
 		if (n == 0)
 			return true;
