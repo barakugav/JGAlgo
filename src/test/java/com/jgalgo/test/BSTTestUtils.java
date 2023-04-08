@@ -3,11 +3,12 @@ package com.jgalgo.test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 import org.junit.jupiter.api.Assertions;
 
@@ -23,31 +24,54 @@ class BSTTestUtils extends TestUtils {
 	private BSTTestUtils() {
 	}
 
-	static void testFindSmallers(Supplier<? extends BST<Integer>> treeBuilder, long seed) {
+	static void testFindSmallersDefaultCompare(
+			Function<Comparator<? super Integer>, ? extends BST<Integer>> treeBuilder, long seed) {
+		testFindSmallers(treeBuilder, null, seed);
+	}
+
+	static void testFindSmallersCustomCompare(Function<Comparator<? super Integer>, ? extends BST<Integer>> treeBuilder,
+			long seed) {
+		testFindSmallers(treeBuilder, (x1, x2) -> -Integer.compare(x1.intValue(), x2.intValue()), seed);
+	}
+
+	private static void testFindSmallers(Function<Comparator<? super Integer>, ? extends BST<Integer>> treeBuilder,
+			Comparator<? super Integer> compare, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 4096));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
-			testFindSmallerGreater(treeBuilder, seedGen.nextSeed(), n, true);
+			testFindSmallerGreater(treeBuilder, compare, seedGen.nextSeed(), n, true);
 		});
 	}
 
-	static void testFindGreaters(Supplier<? extends BST<Integer>> treeBuilder, long seed) {
+	static void testFindGreatersDefaultCompare(
+			Function<Comparator<? super Integer>, ? extends BST<Integer>> treeBuilder, long seed) {
+		testFindGreaters(treeBuilder, null, seed);
+	}
+
+	static void testFindGreatersCustomCompare(Function<Comparator<? super Integer>, ? extends BST<Integer>> treeBuilder,
+			long seed) {
+		testFindGreaters(treeBuilder, (x1, x2) -> -Integer.compare(x1.intValue(), x2.intValue()), seed);
+	}
+
+	private static void testFindGreaters(Function<Comparator<? super Integer>, ? extends BST<Integer>> treeBuilder,
+			Comparator<? super Integer> compare, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 4096));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
-			testFindSmallerGreater(treeBuilder, seedGen.nextSeed(), n, false);
+			testFindSmallerGreater(treeBuilder, compare, seedGen.nextSeed(), n, false);
 		});
 	}
 
 	@SuppressWarnings("boxing")
-	private static void testFindSmallerGreater(Supplier<? extends BST<Integer>> treeBuilder, long seed, int n,
-			boolean smaller) {
+	private static void testFindSmallerGreater(
+			Function<Comparator<? super Integer>, ? extends BST<Integer>> treeBuilder,
+			Comparator<? super Integer> compare, long seed, int n, boolean smaller) {
 		DebugPrintsManager debug = new DebugPrintsManager(false);
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
-		BSTTracker tracker = new BSTTracker(treeBuilder.get(), 0, seedGen.nextSeed());
+		BSTTracker tracker = new BSTTracker(treeBuilder.apply(compare), 0, compare, seedGen.nextSeed());
 
 		for (int i = 0; i < n; i++) {
 			int newElm = rand.nextInt(n);
@@ -82,33 +106,56 @@ class BSTTestUtils extends TestUtils {
 		}
 	}
 
-	static void testGetPredecessors(Supplier<? extends BST<Integer>> treeBuilder, long seed) {
+	static void testGetPredecessorsDefaultCompare(
+			Function<Comparator<? super Integer>, ? extends BST<Integer>> treeBuilder, long seed) {
+		testGetPredecessors(treeBuilder, null, seed);
+	}
+
+	static void testGetPredecessorsCustomCompare(
+			Function<Comparator<? super Integer>, ? extends BST<Integer>> treeBuilder, long seed) {
+		testGetPredecessors(treeBuilder, (x1, x2) -> -Integer.compare(x1.intValue(), x2.intValue()), seed);
+	}
+
+	private static void testGetPredecessors(Function<Comparator<? super Integer>, ? extends BST<Integer>> treeBuilder,
+			Comparator<? super Integer> compare, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 4096));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
-			testGetPredecessorSuccessor(treeBuilder, n, seedGen.nextSeed(), true);
+			testGetPredecessorSuccessor(treeBuilder, n, compare, seedGen.nextSeed(), true);
 		});
 	}
 
-	static void testGetSuccessors(Supplier<? extends BST<Integer>> treeBuilder, long seed) {
+	static void testGetSuccessorsDefaultCompare(
+			Function<Comparator<? super Integer>, ? extends BST<Integer>> treeBuilder, long seed) {
+		testGetSuccessors(treeBuilder, null, seed);
+	}
+
+	static void testGetSuccessorsCustomCompare(
+			Function<Comparator<? super Integer>, ? extends BST<Integer>> treeBuilder, long seed) {
+		testGetSuccessors(treeBuilder, (x1, x2) -> -Integer.compare(x1.intValue(), x2.intValue()), seed);
+	}
+
+	private static void testGetSuccessors(Function<Comparator<? super Integer>, ? extends BST<Integer>> treeBuilder,
+			Comparator<? super Integer> compare, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 4096));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
-			testGetPredecessorSuccessor(treeBuilder, n, seedGen.nextSeed(), false);
+			testGetPredecessorSuccessor(treeBuilder, n, compare, seedGen.nextSeed(), false);
 		});
 	}
 
 	@SuppressWarnings("boxing")
-	private static void testGetPredecessorSuccessor(Supplier<? extends BST<Integer>> treeBuilder, int n, long seed,
-			boolean predecessor) {
+	private static void testGetPredecessorSuccessor(
+			Function<Comparator<? super Integer>, ? extends BST<Integer>> treeBuilder, int n,
+			Comparator<? super Integer> compare, long seed, boolean predecessor) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		DebugPrintsManager debug = new DebugPrintsManager(false);
 		Random rand = new Random(seedGen.nextSeed());
 		int[] a = randPermutation(n, seedGen.nextSeed());
 
-		BSTTracker tracker = new BSTTracker(treeBuilder.get(), 0, seedGen.nextSeed());
+		BSTTracker tracker = new BSTTracker(treeBuilder.apply(compare), 0, compare, seedGen.nextSeed());
 
 		for (int i = 0; i < n; i++) {
 			int newElm = a[i];
@@ -142,17 +189,29 @@ class BSTTestUtils extends TestUtils {
 		}
 	}
 
-	static void testSplit(Supplier<? extends BST<Integer>> treeBuilder, long seed) {
+	static void testSplitDefaultCompare(Function<Comparator<? super Integer>, ? extends BST<Integer>> treeBuilder,
+			long seed) {
+		testSplit(treeBuilder, null, seed);
+	}
+
+	static void testSplitCustomCompare(Function<Comparator<? super Integer>, ? extends BST<Integer>> treeBuilder,
+			long seed) {
+		testSplit(treeBuilder, (x1, x2) -> -Integer.compare(x1.intValue(), x2.intValue()), seed);
+	}
+
+	private static void testSplit(Function<Comparator<? super Integer>, ? extends BST<Integer>> treeBuilder,
+			Comparator<? super Integer> compare, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(128, 8), phase(64, 32), phase(16, 128), phase(8, 256), phase(4, 1024));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
-			BSTTestUtils.testSplit(treeBuilder, n, seedGen.nextSeed());
+			BSTTestUtils.testSplit(treeBuilder, n, compare, seedGen.nextSeed());
 		});
 	}
 
 	@SuppressWarnings("boxing")
-	private static void testSplit(Supplier<? extends BST<Integer>> treeBuilder, int tCount, long seed) {
+	private static void testSplit(Function<Comparator<? super Integer>, ? extends BST<Integer>> treeBuilder, int tCount,
+			Comparator<? super Integer> compare, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
 		HeapTrackerIdGenerator heapTrackerIdGen = new HeapTrackerIdGenerator(seedGen.nextSeed());
@@ -160,9 +219,10 @@ class BSTTestUtils extends TestUtils {
 		final int maxVal = tCount * (1 << 12);
 
 		for (int i = 0; i < tCount; i++) {
-			BSTTracker tracker = new BSTTracker(treeBuilder.get(), heapTrackerIdGen.nextId(), seedGen.nextSeed());
+			BSTTracker tracker = new BSTTracker(treeBuilder.apply(compare), heapTrackerIdGen.nextId(), compare,
+					seedGen.nextSeed());
 			int[] elms = randArray(16, 0, maxVal, seedGen.nextSeed());
-			HeapTestUtils.testHeap(tracker, 16, TestMode.InsertFirst, elms, seedGen.nextSeed());
+			HeapTestUtils.testHeap(tracker, 16, TestMode.InsertFirst, elms, compare, seedGen.nextSeed());
 			trees.add(tracker);
 		}
 
@@ -200,7 +260,7 @@ class BSTTestUtils extends TestUtils {
 				Integer val = elms[idx];
 
 				BST<Integer> s = h.tree().splitGreater(val);
-				BSTTracker t = new BSTTracker(s, heapTrackerIdGen.nextId(), seedGen.nextSeed());
+				BSTTracker t = new BSTTracker(s, heapTrackerIdGen.nextId(), compare, seedGen.nextSeed());
 				h.split(val, t);
 				treesNext.add(h);
 				treesNext.add(t);
@@ -211,7 +271,7 @@ class BSTTestUtils extends TestUtils {
 			for (BSTTracker h : trees) {
 				int opsNum = 512 / trees.size();
 				int[] elms = randArray(opsNum, 0, maxVal, seedGen.nextSeed());
-				HeapTestUtils.testHeap(h, opsNum, TestMode.Normal, elms, seedGen.nextSeed());
+				HeapTestUtils.testHeap(h, opsNum, TestMode.Normal, elms, compare, seedGen.nextSeed());
 			}
 		};
 
@@ -232,8 +292,8 @@ class BSTTestUtils extends TestUtils {
 	@SuppressWarnings("boxing")
 	static class BSTTracker extends HeapTracker {
 
-		BSTTracker(Heap<Integer> heap, int id, long seed) {
-			super(heap, id, seed);
+		BSTTracker(Heap<Integer> heap, int id, Comparator<? super Integer> compare, long seed) {
+			super(heap, id, compare, seed);
 		}
 
 		BST<Integer> tree() {

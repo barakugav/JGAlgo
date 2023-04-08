@@ -7,9 +7,15 @@ import com.jgalgo.HeapFibonacci;
 public class HeapFibonacciTest extends TestUtils {
 
 	@Test
-	public void testRandOps() {
+	public void testRandOpsDefaultCompare() {
 		final long seed = 0xc5b0d9f99444efc5L;
-		HeapTestUtils.testRandOps(HeapFibonacci::new, seed);
+		HeapTestUtils.testRandOpsDefaultCompare(HeapFibonacci::new, seed);
+	}
+
+	@Test
+	public void testRandOpsCustomCompare() {
+		final long seed = 0x73f5ac001997955cL;
+		HeapTestUtils.testRandOpsCustomCompare(HeapFibonacci::new, seed);
 	}
 
 	@Test
@@ -19,15 +25,27 @@ public class HeapFibonacciTest extends TestUtils {
 	}
 
 	@Test
-	public void testMeld() {
+	public void testMeldDefaultCompare() {
 		final long seed = 0xc801a24c2405c42dL;
-		HeapTestUtils.testMeld(HeapFibonacci::new, seed);
+		HeapTestUtils.testMeldDefaultCompare(HeapFibonacci::new, seed);
 	}
 
 	@Test
-	public void testDecreaseKey() {
+	public void testMeldCustomCompare() {
+		final long seed = 0x631ed5c1813636efL;
+		HeapTestUtils.testMeldCustomCompare(HeapFibonacci::new, seed);
+	}
+
+	@Test
+	public void testDecreaseKeyDefaultCompare() {
 		final long seed = 0xcadbabb0e01d6ea5L;
-		HeapTestUtils.testDecreaseKey(HeapFibonacci::new, seed);
+		HeapTestUtils.testDecreaseKeyDefaultCompare(HeapFibonacci::new, seed);
+	}
+
+	@Test
+	public void testDecreaseKeyCustomCompare() {
+		final long seed = 0x0a7f3203577b4cefL;
+		HeapTestUtils.testDecreaseKeyCustomCompare(HeapFibonacci::new, seed);
 	}
 
 }

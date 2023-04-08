@@ -51,7 +51,8 @@ public class HeapPairing<E> extends HeapAbstractDirectAccessed<E> {
 	@Override
 	public void decreaseKey(Handle<E> handle, E e) {
 		Node<E> n = (Node<E>) handle;
-		assert compare(n.value, e) >= 0;
+		if (compare(e, n.value) > 0)
+			throw new IllegalArgumentException("new key is greater than existing one");
 		n.value = e;
 		if (n == minRoot)
 			return;

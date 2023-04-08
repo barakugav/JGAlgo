@@ -7,9 +7,15 @@ import com.jgalgo.HeapPairing;
 public class HeapPairingTest extends TestUtils {
 
 	@Test
-	public void testRandOps() {
+	public void testRandOpsDefaultCompare() {
 		final long seed = 0x7a98aed671bf0c81L;
-		HeapTestUtils.testRandOps(HeapPairing::new, seed);
+		HeapTestUtils.testRandOpsDefaultCompare(HeapPairing::new, seed);
+	}
+
+	@Test
+	public void testRandOpsCustomCompare() {
+		final long seed = 0x3980b84440c200feL;
+		HeapTestUtils.testRandOpsCustomCompare(HeapPairing::new, seed);
 	}
 
 	@Test
@@ -19,15 +25,27 @@ public class HeapPairingTest extends TestUtils {
 	}
 
 	@Test
-	public void testMeld() {
+	public void testMeldDefaultCompare() {
 		final long seed = 0xc3cd155dfa9d97f6L;
-		HeapTestUtils.testMeld(HeapPairing::new, seed);
+		HeapTestUtils.testMeldDefaultCompare(HeapPairing::new, seed);
 	}
 
 	@Test
-	public void testDecreaseKey() {
+	public void testMeldCustomCompare() {
+		final long seed = 0x5d201c45681ae903L;
+		HeapTestUtils.testMeldCustomCompare(HeapPairing::new, seed);
+	}
+
+	@Test
+	public void testDecreaseKeyDefaultCompare() {
 		final long seed = 0x90a80620c3ef1a43L;
-		HeapTestUtils.testDecreaseKey(HeapPairing::new, seed);
+		HeapTestUtils.testDecreaseKeyDefaultCompare(HeapPairing::new, seed);
+	}
+
+	@Test
+	public void testDecreaseKeyCustomCompare() {
+		final long seed = 0x4204a31e91374f21L;
+		HeapTestUtils.testDecreaseKeyCustomCompare(HeapPairing::new, seed);
 	}
 
 }

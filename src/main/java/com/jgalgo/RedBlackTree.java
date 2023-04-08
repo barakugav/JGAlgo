@@ -118,12 +118,17 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 	@Override
 	public void decreaseKey(Handle<E> handle, E e) {
 		Node<E> n = (Node<E>) handle;
+		if (compare(e, n.data) > 0)
+			throw new IllegalArgumentException("new key is greater than existing one");
 		removeHandle(n);
 		n.data = e;
 		insertNode(n);
 	}
 
 	private Node<E> insertNode(Node<E> n) {
+		assert n.parent == null;
+		assert n.left == null;
+		assert n.right == null;
 		if (root == null) {
 			n.color = Black;
 			root = n;
@@ -230,14 +235,8 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 		}
 
 		/* 2 children, switch place with a single child node */
-		if (n.left != null && n.right != null) {
-			Node<E> swap = BSTUtils.getSuccessor(n);
-			beforeNodeDataSwap(n, swap);
-			E old = swap.data;
-			swap.data = n.data;
-			n.data = old;
-			n = swap;
-		}
+		if (n.left != null && n.right != null)
+			swap(n, BSTUtils.getSuccessor(n));
 		assert n.left == null || n.right == null;
 		Node<E> parent = n.parent;
 
@@ -391,6 +390,17 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 		}
 	}
 
+	void swap(Node<E> n1, Node<E> n2) {
+		BSTUtils.swap(n1, n2);
+		if (n1 == root)
+			root = n2;
+		else if (n2 == root)
+			root = n1;
+		boolean color = n1.color;
+		n1.color = n2.color;
+		n2.color = color;
+	}
+
 	@Override
 	public Handle<E> findOrSmaller(E e) {
 		return BSTUtils.findOrSmaller(root, c, e);
@@ -456,9 +466,6 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 	}
 
 	void beforeRemove(Node<E> n) {
-	}
-
-	void beforeNodeDataSwap(Node<E> a, Node<E> b) {
 	}
 
 	void beforeRotateLeft(Node<E> n) {

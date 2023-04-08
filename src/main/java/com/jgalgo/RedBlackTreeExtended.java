@@ -38,6 +38,14 @@ public class RedBlackTreeExtended<E> extends RedBlackTree<E> {
 	}
 
 	@Override
+	void swap(RedBlackTree.Node<E> a, RedBlackTree.Node<E> b) {
+		Node<E> n1 = (Node<E>) a, n2 = (Node<E>) b;
+		for (Extension<E> extension : extensions)
+			extension.beforeNodeSwap((Node<E>) a, (Node<E>) b);
+		super.swap(n1, n2);
+	}
+
+	@Override
 	void afterInsert(RedBlackTree.Node<E> n) {
 		for (Extension<E> extension : extensions)
 			extension.afterInsert((Node<E>) n);
@@ -47,12 +55,6 @@ public class RedBlackTreeExtended<E> extends RedBlackTree<E> {
 	void beforeRemove(RedBlackTree.Node<E> n) {
 		for (Extension<E> extension : extensions)
 			extension.beforeRemove((Node<E>) n);
-	}
-
-	@Override
-	void beforeNodeDataSwap(RedBlackTree.Node<E> a, RedBlackTree.Node<E> b) {
-		for (Extension<E> extension : extensions)
-			extension.beforeNodeDataSwap((Node<E>) a, (Node<E>) b);
 	}
 
 	@Override
@@ -92,7 +94,7 @@ public class RedBlackTreeExtended<E> extends RedBlackTree<E> {
 
 	}
 
-	public static abstract class Extension<E> {
+	static abstract class Extension<E> {
 
 		private RedBlackTreeExtended<E> tree;
 		private int extIdx = -1;
@@ -127,7 +129,7 @@ public class RedBlackTreeExtended<E> extends RedBlackTree<E> {
 		protected void beforeRemove(Node<E> n) {
 		}
 
-		protected void beforeNodeDataSwap(Node<E> a, Node<E> b) {
+		protected void beforeNodeSwap(Node<E> a, Node<E> b) {
 		}
 
 		protected void beforeRotateLeft(Node<E> n) {
@@ -138,7 +140,7 @@ public class RedBlackTreeExtended<E> extends RedBlackTree<E> {
 
 	}
 
-	public static abstract class ExtensionObj<E, D> extends Extension<E> {
+	static abstract class ExtensionObj<E, D> extends Extension<E> {
 
 		public ExtensionObj() {
 		}
@@ -154,7 +156,7 @@ public class RedBlackTreeExtended<E> extends RedBlackTree<E> {
 
 	}
 
-	public static abstract class ExtensionInt<E> extends Extension<E> {
+	static abstract class ExtensionInt<E> extends Extension<E> {
 
 		public ExtensionInt() {
 		}
@@ -194,6 +196,13 @@ public class RedBlackTreeExtended<E> extends RedBlackTree<E> {
 			/* for each ancestor, decrease sub tree size by 1 */
 			for (; (n = n.parent()) != null;)
 				setNodeData(n, getNodeData(n) - 1);
+		}
+
+		@Override
+		protected void beforeNodeSwap(Node<E> a, Node<E> b) {
+			int s = getNodeData(a);
+			setNodeData(a, getNodeData(b));
+			setNodeData(b, s);
 		}
 
 		@Override
@@ -252,6 +261,47 @@ public class RedBlackTreeExtended<E> extends RedBlackTree<E> {
 		}
 
 		@Override
+		protected void beforeNodeSwap(Node<E> a, Node<E> b) {
+			if (getNodeData(b) == a) {
+				Node<E> temp = a;
+				a = b;
+				a = temp;
+			}
+			if (getNodeData(a) == b) {
+				assert getNodeData(b) == b;
+				for (Node<E> p = b; p.parent() != null && p == p.parent().left(); p = p.parent())
+					setNodeData(p.parent(), a);
+				assert getNodeData(a) == a : "a should be ancestor of b";
+				setNodeData(b, a);
+				return;
+			}
+
+			Node<E> aData, bData;
+			if (a.hasLeftChild()) {
+				assert getNodeData(a) == getNodeData(a.left());
+				bData = getNodeData(a);
+			} else {
+				assert getNodeData(a) == a;
+				for (Node<E> p = a; p.parent() != null && p == p.parent().left(); p = p.parent()) {
+					assert p.parent() != b;
+					setNodeData(p.parent(), b);
+				}
+				bData = b;
+			}
+			if (b.hasLeftChild()) {
+				assert getNodeData(b) == getNodeData(b.left());
+				aData = getNodeData(b);
+			} else {
+				assert getNodeData(b) == b;
+				for (Node<E> p = b; p.parent() != null && p == p.parent().left(); p = p.parent())
+					setNodeData(p.parent(), a);
+				aData = a;
+			}
+			setNodeData(a, aData);
+			setNodeData(b, bData);
+		}
+
+		@Override
 		protected void beforeRotateLeft(Node<E> n) {
 			Node<E> child = n.right();
 			setNodeData(child, getNodeData(n));
@@ -298,6 +348,47 @@ public class RedBlackTreeExtended<E> extends RedBlackTree<E> {
 
 			for (Node<E> p = n; p.parent() != null && p == p.parent().right(); p = p.parent())
 				setNodeData(p.parent(), max);
+		}
+
+		@Override
+		protected void beforeNodeSwap(Node<E> a, Node<E> b) {
+			if (getNodeData(b) == a) {
+				Node<E> temp = a;
+				a = b;
+				a = temp;
+			}
+			if (getNodeData(a) == b) {
+				assert getNodeData(b) == b;
+				for (Node<E> p = b; p.parent() != null && p == p.parent().right(); p = p.parent())
+					setNodeData(p.parent(), a);
+				assert getNodeData(a) == a : "a should be ancestor of b";
+				setNodeData(b, a);
+				return;
+			}
+
+			Node<E> aData, bData;
+			if (a.hasRightChild()) {
+				assert getNodeData(a) == getNodeData(a.right());
+				bData = getNodeData(a);
+			} else {
+				assert getNodeData(a) == a;
+				for (Node<E> p = a; p.parent() != null && p == p.parent().right(); p = p.parent()) {
+					assert p.parent() != b;
+					setNodeData(p.parent(), b);
+				}
+				bData = b;
+			}
+			if (b.hasRightChild()) {
+				assert getNodeData(b) == getNodeData(b.right());
+				aData = getNodeData(b);
+			} else {
+				assert getNodeData(b) == b;
+				for (Node<E> p = b; p.parent() != null && p == p.parent().right(); p = p.parent())
+					setNodeData(p.parent(), a);
+				aData = a;
+			}
+			setNodeData(a, aData);
+			setNodeData(b, bData);
 		}
 
 		@Override

@@ -262,6 +262,69 @@ class BSTUtils {
 		}
 	}
 
+	static <E, N extends Node<E, N>> void swap(N n1, N n2) {
+		if (n2 == n1.parent) {
+			N temp = n1;
+			n1 = n2;
+			n2 = temp;
+		}
+		if (n1 == n2.parent) {
+			if (n1.isLeftChild()) {
+				n1.parent.left = n2;
+			} else if (n1.isRightChild()) {
+				n1.parent.right = n2;
+			}
+			if (n1.left == n2) {
+				N right = n1.right;
+				if ((n1.left = n2.left) != null)
+					n1.left.parent = n1;
+				if ((n1.right = n2.right) != null)
+					n1.right.parent = n1;
+				n2.left = n1;
+				if ((n2.right = right) != null)
+					n2.right.parent = n2;
+			} else {
+				assert n1.right == n2;
+				N left = n1.left;
+				if ((n1.left = n2.left) != null)
+					n1.left.parent = n1;
+				if ((n1.right = n2.right) != null)
+					n1.right.parent = n1;
+				if ((n2.left = left) != null)
+					n2.left.parent = n2;
+				n2.right = n1;
+			}
+			n2.parent = n1.parent;
+			n1.parent = n2;
+
+		} else {
+			if (n1.isLeftChild()) {
+				n1.parent.left = n2;
+			} else if (n1.isRightChild()) {
+				n1.parent.right = n2;
+			}
+			if (n2.isLeftChild()) {
+				n2.parent.left = n1;
+			} else if (n2.isRightChild()) {
+				n2.parent.right = n1;
+			}
+
+			N parent = n1.parent;
+			N left = n1.left;
+			N right = n1.right;
+			n1.parent = n2.parent;
+			if ((n1.left = n2.left) != null)
+				n1.left.parent = n1;
+			if ((n1.right = n2.right) != null)
+				n1.right.parent = n1;
+			n2.parent = parent;
+			if ((n2.left = left) != null)
+				n2.left.parent = n2;
+			if ((n2.right = right) != null)
+				n2.right.parent = n2;
+		}
+	}
+
 	static class Node<E, N extends Node<E, N>> {
 		E data;
 		N parent;

@@ -96,6 +96,8 @@ public class HeapBinomial<E> extends HeapAbstractDirectAccessed<E> {
 	@Override
 	public void decreaseKey(Handle<E> handle, E e) {
 		Node<E> node = (Node<E>) handle;
+		if (compare(e, node.value) > 0)
+			throw new IllegalArgumentException("new key is greater than existing one");
 		node.value = e;
 
 		if (c == null) {

@@ -174,6 +174,8 @@ public class HeapFibonacci<E> extends HeapAbstractDirectAccessed<E> {
 	@Override
 	public void decreaseKey(Handle<E> handle, E e) {
 		Node<E> parent, n = (Node<E>) handle;
+		if (compare(e, n.value) > 0)
+			throw new IllegalArgumentException("new key is greater than existing one");
 		n.value = e;
 
 		if ((parent = n.parent) == null)

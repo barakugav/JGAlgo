@@ -7,9 +7,15 @@ import com.jgalgo.HeapBinary;
 public class HeapBinaryTest extends TestUtils {
 
 	@Test
-	public void testRandOps() {
+	public void testRandOpsDefaultCompare() {
+		final long seed = 0xce76e918bde66ee3L;
+		HeapTestUtils.testRandOpsDefaultCompare(HeapBinary::new, seed);
+	}
+
+	@Test
+	public void testRandOpsCustomCompare() {
 		final long seed = 0xc8c79b6e3d880041L;
-		HeapTestUtils.testRandOps(HeapBinary::new, seed);
+		HeapTestUtils.testRandOpsCustomCompare(HeapBinary::new, seed);
 	}
 
 	@Test
@@ -19,9 +25,15 @@ public class HeapBinaryTest extends TestUtils {
 	}
 
 	@Test
-	public void testMeld() {
+	public void testMeldDefaultCompare() {
+		final long seed = 0xa7e09a00be04a88bL;
+		HeapTestUtils.testMeldDefaultCompare(HeapBinary::new, seed);
+	}
+
+	@Test
+	public void testMeldCustomCompare() {
 		final long seed = 0x92cd7f63c8322849L;
-		HeapTestUtils.testMeld(HeapBinary::new, seed);
+		HeapTestUtils.testMeldCustomCompare(HeapBinary::new, seed);
 	}
 
 }

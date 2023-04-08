@@ -7,9 +7,15 @@ import com.jgalgo.HeapBinomial;
 public class HeapBinomialTest extends TestUtils {
 
 	@Test
-	public void testRandOps() {
+	public void testRandOpsDefaultCompare() {
+		final long seed = 0x0600b0c18d6d97d4L;
+		HeapTestUtils.testRandOpsDefaultCompare(HeapBinomial::new, seed);
+	}
+
+	@Test
+	public void testRandOpsCustomCompare() {
 		final long seed = 0xe71c7e9f2765e4eaL;
-		HeapTestUtils.testRandOps(HeapBinomial::new, seed);
+		HeapTestUtils.testRandOpsCustomCompare(HeapBinomial::new, seed);
 	}
 
 	@Test
@@ -19,15 +25,27 @@ public class HeapBinomialTest extends TestUtils {
 	}
 
 	@Test
-	public void testMeld() {
-		final long seed = 0xbc597576efd52ccfL;
-		HeapTestUtils.testMeld(HeapBinomial::new, seed);
+	public void testMeldDefaultCompare() {
+		final long seed = 0x98473460a5541235L;
+		HeapTestUtils.testMeldDefaultCompare(HeapBinomial::new, seed);
 	}
 
 	@Test
-	public void testDecreaseKey() {
+	public void testMeldCustomCompare() {
+		final long seed = 0xbc597576efd52ccfL;
+		HeapTestUtils.testMeldCustomCompare(HeapBinomial::new, seed);
+	}
+
+	@Test
+	public void testDecreaseKeyDefaultCompare() {
+		final long seed = 0x553462f097149dc1L;
+		HeapTestUtils.testDecreaseKeyDefaultCompare(HeapBinomial::new, seed);
+	}
+
+	@Test
+	public void testDecreaseKeyCustomCompare() {
 		final long seed = 0xd7d8cf9389480696L;
-		HeapTestUtils.testDecreaseKey(HeapBinomial::new, seed);
+		HeapTestUtils.testDecreaseKeyCustomCompare(HeapBinomial::new, seed);
 	}
 
 }

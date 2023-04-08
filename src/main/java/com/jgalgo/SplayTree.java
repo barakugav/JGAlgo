@@ -63,6 +63,9 @@ public class SplayTree<E> extends BSTAbstract<E> {
 	}
 
 	private NodeSized<E> insertNode(NodeSized<E> n) {
+		assert n.parent == null;
+		assert n.left == null;
+		assert n.right == null;
 		if (root == null)
 			return root = n;
 
@@ -76,14 +79,9 @@ public class SplayTree<E> extends BSTAbstract<E> {
 	public void removeHandle(Handle<E> handle) {
 		NodeSized<E> n = (NodeSized<E>) handle;
 
-		if (n.hasLeftChild() && n.hasRightChild()) {
-			/* Node has two children, swap node with successor */
-			NodeSized<E> swap = BSTUtils.getSuccessor(n);
-			E old = swap.data;
-			swap.data = n.data;
-			n.data = old;
-			n = swap;
-		}
+		/* If the node has two children, swap with successor */
+		if (n.hasLeftChild() && n.hasRightChild())
+			swap(n, BSTUtils.getSuccessor(n));
 
 		NodeSized<E> child;
 		if (!n.hasLeftChild()) {
@@ -100,7 +98,6 @@ public class SplayTree<E> extends BSTAbstract<E> {
 		NodeSized<E> parent = n.parent;
 		n.clear();
 		root = impl.splay(child != null ? child : parent);
-
 	}
 
 	private void replace(NodeSized<E> u, NodeSized<E> v) {
@@ -117,9 +114,22 @@ public class SplayTree<E> extends BSTAbstract<E> {
 			v.parent = u.parent;
 	}
 
+	private void swap(NodeSized<E> n1, NodeSized<E> n2) {
+		BSTUtils.swap(n1, n2);
+		if (n1 == root)
+			root = n2;
+		else if (n2 == root)
+			root = n1;
+		int size = n1.size;
+		n1.size = n2.size;
+		n2.size = size;
+	}
+
 	@Override
 	public void decreaseKey(Handle<E> handle, E e) {
 		NodeSized<E> n = (NodeSized<E>) handle;
+		if (compare(e, n.data) > 0)
+			throw new IllegalArgumentException("new key is greater than existing one");
 		removeHandle(n);
 		n.data = e;
 		insertNode(n);
