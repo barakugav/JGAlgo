@@ -124,131 +124,34 @@ class DebugPrintsManager {
 <span class="nc" id="L124">			printStream.println(s);</span>
 <span class="fc" id="L125">	}</span>
 
-	void print(Object arg1, Object arg2) {
-<span class="pc bpc" id="L128" title="1 of 2 branches missed.">		if (enable)</span>
-<span class="nc" id="L129">			printStream.print(String.valueOf(arg1) + arg2);</span>
-<span class="fc" id="L130">	}</span>
-
-	void print(Object arg1, Object arg2, Object arg3) {
-<span class="nc bnc" id="L133" title="All 2 branches missed.">		if (enable)</span>
-<span class="nc" id="L134">			printStream.print(String.valueOf(arg1) + arg2 + arg3);</span>
-<span class="nc" id="L135">	}</span>
-
-	void print(Object arg1, Object arg2, Object arg3, Object arg4) {
-<span class="pc bpc" id="L138" title="1 of 2 branches missed.">		if (enable)</span>
-<span class="nc" id="L139">			printStream.print(String.valueOf(arg1) + arg2 + arg3 + arg4);</span>
-<span class="fc" id="L140">	}</span>
-
-	void print(Object arg1, Object arg2, Object arg3, Object arg4, Object arg5) {
-<span class="pc bpc" id="L143" title="1 of 2 branches missed.">		if (enable)</span>
-<span class="nc" id="L144">			printStream.print(String.valueOf(arg1) + arg2 + arg3 + arg4 + arg5);</span>
-<span class="fc" id="L145">	}</span>
-
-	void print(Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6) {
-<span class="nc bnc" id="L148" title="All 2 branches missed.">		if (enable)</span>
-<span class="nc" id="L149">			printStream.print(String.valueOf(arg1) + arg2 + arg3 + arg4 + arg5 + arg6);</span>
-<span class="nc" id="L150">	}</span>
-
-	void print(Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6, Object arg7) {
-<span class="nc bnc" id="L153" title="All 2 branches missed.">		if (enable)</span>
-<span class="nc" id="L154">			printStream.print(String.valueOf(arg1) + arg2 + arg3 + arg4 + arg5 + arg6 + arg7);</span>
-<span class="nc" id="L155">	}</span>
-
-	void print(Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6, Object arg7, Object arg8) {
-<span class="nc bnc" id="L158" title="All 2 branches missed.">		if (enable)</span>
-<span class="nc" id="L159">			printStream.print(String.valueOf(arg1) + arg2 + arg3 + arg4 + arg5 + arg6 + arg7 + arg8);</span>
-<span class="nc" id="L160">	}</span>
-
 	void print(Object arg1, Object... args) {
-<span class="nc bnc" id="L163" title="All 2 branches missed.">		if (enable) {</span>
-<span class="nc" id="L164">			StringBuilder builder = new StringBuilder();</span>
-<span class="nc" id="L165">			builder.append(arg1);</span>
-<span class="nc bnc" id="L166" title="All 2 branches missed.">			for (Object arg : args)</span>
-<span class="nc" id="L167">				builder.append(arg);</span>
-<span class="nc" id="L168">			printStream.print(builder.toString());</span>
+<span class="pc bpc" id="L128" title="1 of 2 branches missed.">		if (enable) {</span>
+<span class="nc" id="L129">			StringBuilder builder = new StringBuilder();</span>
+<span class="nc" id="L130">			builder.append(arg1);</span>
+<span class="nc bnc" id="L131" title="All 2 branches missed.">			for (Object arg : args)</span>
+<span class="nc" id="L132">				builder.append(arg);</span>
+<span class="nc" id="L133">			printStream.print(builder.toString());</span>
 		}
-<span class="nc" id="L170">	}</span>
+<span class="fc" id="L135">	}</span>
 
-	void println(Object arg1, Object arg2) {
-<span class="pc bpc" id="L173" title="1 of 2 branches missed.">		if (enable)</span>
-<span class="nc" id="L174">			printStream.println(String.valueOf(arg1) + arg2);</span>
-<span class="fc" id="L175">	}</span>
-
-	void println(Object arg1, Object arg2, Object arg3) {
-<span class="nc bnc" id="L178" title="All 2 branches missed.">		if (enable)</span>
-<span class="nc" id="L179">			printStream.println(String.valueOf(arg1) + arg2 + arg3);</span>
-<span class="nc" id="L180">	}</span>
-
-	void println(Object arg1, Object arg2, Object arg3, Object arg4) {
-<span class="pc bpc" id="L183" title="1 of 2 branches missed.">		if (enable)</span>
-<span class="nc" id="L184">			printStream.println(String.valueOf(arg1) + arg2 + arg3 + arg4);</span>
-<span class="fc" id="L185">	}</span>
-
-	void println(Object arg1, Object arg2, Object arg3, Object arg4, Object arg5) {
-<span class="nc bnc" id="L188" title="All 2 branches missed.">		if (enable)</span>
-<span class="nc" id="L189">			printStream.println(String.valueOf(arg1) + arg2 + arg3 + arg4 + arg5);</span>
-<span class="nc" id="L190">	}</span>
-
-	void println(Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6) {
-<span class="nc bnc" id="L193" title="All 2 branches missed.">		if (enable)</span>
-<span class="nc" id="L194">			printStream.println(String.valueOf(arg1) + arg2 + arg3 + arg4 + arg5 + arg6);</span>
-<span class="nc" id="L195">	}</span>
-
-	void println(Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6, Object arg7) {
-<span class="nc bnc" id="L198" title="All 2 branches missed.">		if (enable)</span>
-<span class="nc" id="L199">			printStream.println(String.valueOf(arg1) + arg2 + arg3 + arg4 + arg5 + arg6 + arg7);</span>
-<span class="nc" id="L200">	}</span>
-
-	void println(Object arg1, Object arg2, Object arg3, Object arg4, Object arg5, Object arg6, Object arg7,
-			Object arg8) {
-<span class="nc bnc" id="L204" title="All 2 branches missed.">		if (enable)</span>
-<span class="nc" id="L205">			printStream.println(String.valueOf(arg1) + arg2 + arg3 + arg4 + arg5 + arg6 + arg7 + arg8);</span>
-<span class="nc" id="L206">	}</span>
-
-	void println(Object arg1, Object... args) {
-<span class="nc bnc" id="L209" title="All 2 branches missed.">		if (enable) {</span>
-<span class="nc" id="L210">			StringBuilder builder = new StringBuilder();</span>
-<span class="nc" id="L211">			builder.append(arg1);</span>
-<span class="nc bnc" id="L212" title="All 2 branches missed.">			for (Object arg : args)</span>
-<span class="nc" id="L213">				builder.append(arg);</span>
-<span class="nc" id="L214">			printStream.println(builder.toString());</span>
+	void println(Object... args) {
+<span class="pc bpc" id="L138" title="1 of 2 branches missed.">		if (enable) {</span>
+<span class="nc" id="L139">			StringBuilder builder = new StringBuilder();</span>
+<span class="nc bnc" id="L140" title="All 2 branches missed.">			for (Object arg : args)</span>
+<span class="nc" id="L141">				builder.append(arg);</span>
+<span class="nc" id="L142">			printStream.println(builder.toString());</span>
 		}
-<span class="nc" id="L216">	}</span>
-
-	void format(String s, Object arg1) {
-<span class="nc bnc" id="L219" title="All 2 branches missed.">		if (enable)</span>
-<span class="nc" id="L220">			printStream.format(s, arg1);</span>
-<span class="nc" id="L221">	}</span>
-
-	void format(String s, Object arg1, Object arg2) {
-<span class="nc bnc" id="L224" title="All 2 branches missed.">		if (enable)</span>
-<span class="nc" id="L225">			printStream.format(s, arg1, arg2);</span>
-<span class="nc" id="L226">	}</span>
-
-	void format(String s, Object arg1, Object arg2, Object arg3) {
-<span class="nc bnc" id="L229" title="All 2 branches missed.">		if (enable)</span>
-<span class="nc" id="L230">			printStream.format(s, arg1, arg2, arg3);</span>
-<span class="nc" id="L231">	}</span>
-
-	void format(String s, Object arg1, Object arg2, Object arg3, Object arg4) {
-<span class="nc bnc" id="L234" title="All 2 branches missed.">		if (enable)</span>
-<span class="nc" id="L235">			printStream.format(s, arg1, arg2, arg3, arg4);</span>
-<span class="nc" id="L236">	}</span>
-
-	void format(String s, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5) {
-<span class="nc bnc" id="L239" title="All 2 branches missed.">		if (enable)</span>
-<span class="nc" id="L240">			printStream.format(s, arg1, arg2, arg3, arg4, arg5);</span>
-<span class="nc" id="L241">	}</span>
+<span class="fc" id="L144">	}</span>
 
 	void format(String s, Object... args) {
-<span class="nc bnc" id="L244" title="All 2 branches missed.">		if (enable)</span>
-<span class="nc" id="L245">			printStream.format(s, args);</span>
-<span class="nc" id="L246">	}</span>
+<span class="nc bnc" id="L147" title="All 2 branches missed.">		if (enable)</span>
+<span class="nc" id="L148">			printStream.format(s, args);</span>
+<span class="nc" id="L149">	}</span>
 
 	void printExec(Runnable exec) {
-<span class="pc bpc" id="L249" title="1 of 2 branches missed.">		if (enable)</span>
-<span class="nc" id="L250">			exec.run();</span>
-<span class="fc" id="L251">	}</span>
+<span class="pc bpc" id="L152" title="1 of 2 branches missed.">		if (enable)</span>
+<span class="nc" id="L153">			exec.run();</span>
+<span class="fc" id="L154">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

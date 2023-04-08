@@ -288,126 +288,115 @@ import java.util.Set;
 
 	@Override
 	public SplayTree&lt;E&gt; splitGreater(E e) {
-<span class="fc" id="L291">		SplayTree&lt;E&gt; newTree = new SplayTree&lt;&gt;(c);</span>
-<span class="fc" id="L292">		NodeSized&lt;E&gt; succ = (NodeSized&lt;E&gt;) findGreater(e);</span>
-<span class="pc bpc" id="L293" title="1 of 2 branches missed.">		if (succ == null)</span>
-<span class="nc" id="L294">			return newTree;</span>
-<span class="pc bpc" id="L295" title="1 of 2 branches missed.">		assert succ.isRoot();</span>
-
-<span class="fc bfc" id="L297" title="All 2 branches covered.">		if ((root = succ.left) != null) {</span>
-<span class="fc" id="L298">			succ.size -= succ.left.size;</span>
-<span class="fc" id="L299">			succ.left.parent = null;</span>
-<span class="fc" id="L300">			succ.left = null;</span>
-		}
-
-<span class="fc" id="L303">		newTree.root = succ;</span>
-<span class="fc" id="L304">		return newTree;</span>
+<span class="fc" id="L291">		NodeSized&lt;E&gt; succ = (NodeSized&lt;E&gt;) findGreater(e);</span>
+<span class="pc bpc" id="L292" title="1 of 2 branches missed.">		if (succ == null)</span>
+<span class="nc" id="L293">			return new SplayTree&lt;&gt;(c);</span>
+<span class="fc" id="L294">		return split(succ);</span>
 	}
 
 	@Override
 	public SplayTree&lt;E&gt; split(Handle&lt;E&gt; handle) {
-<span class="nc" id="L309">		SplayTree&lt;E&gt; newTree = new SplayTree&lt;&gt;(c);</span>
+<span class="fc" id="L299">		SplayTree&lt;E&gt; newTree = new SplayTree&lt;&gt;(c);</span>
 
-<span class="nc" id="L311">		NodeSized&lt;E&gt; n = root = impl.splay((NodeSized&lt;E&gt;) handle);</span>
-<span class="nc bnc" id="L312" title="All 2 branches missed.">		assert n.isRoot();</span>
-<span class="nc bnc" id="L313" title="All 2 branches missed.">		if (!n.hasRightChild())</span>
-<span class="nc" id="L314">			return newTree;</span>
+<span class="fc" id="L301">		NodeSized&lt;E&gt; n = impl.splay((NodeSized&lt;E&gt;) handle);</span>
+<span class="pc bpc" id="L302" title="1 of 2 branches missed.">		assert n.isRoot();</span>
 
-<span class="nc" id="L316">		NodeSized&lt;E&gt; newRoot = n.right;</span>
-<span class="nc" id="L317">		n.right.parent = null;</span>
-<span class="nc" id="L318">		n.right = null;</span>
-<span class="nc" id="L319">		n.size -= newRoot.size;</span>
+<span class="fc bfc" id="L304" title="All 2 branches covered.">		if ((root = n.left) != null) {</span>
+<span class="fc" id="L305">			n.size -= n.left.size;</span>
+<span class="fc" id="L306">			n.left.parent = null;</span>
+<span class="fc" id="L307">			n.left = null;</span>
+		}
 
-<span class="nc" id="L321">		newTree.root = newRoot;</span>
-<span class="nc" id="L322">		return newTree;</span>
+<span class="fc" id="L310">		newTree.root = n;</span>
+<span class="fc" id="L311">		return newTree;</span>
 	}
 
 	@Override
 	public void clear() {
-<span class="fc bfc" id="L327" title="All 2 branches covered.">		if (root == null)</span>
-<span class="fc" id="L328">			return;</span>
-<span class="fc" id="L329">		BSTUtils.clear(root);</span>
-<span class="fc" id="L330">		root = null;</span>
-<span class="fc" id="L331">	}</span>
+<span class="fc bfc" id="L316" title="All 2 branches covered.">		if (root == null)</span>
+<span class="fc" id="L317">			return;</span>
+<span class="fc" id="L318">		BSTUtils.clear(root);</span>
+<span class="fc" id="L319">		root = null;</span>
+<span class="fc" id="L320">	}</span>
 
 	static class Node&lt;E, N extends Node&lt;E, N&gt;&gt; extends BSTUtils.Node&lt;E, N&gt; implements Handle&lt;E&gt; {
 
 		Node(E e) {
-<span class="fc" id="L336">			super(e);</span>
-<span class="fc" id="L337">		}</span>
+<span class="fc" id="L325">			super(e);</span>
+<span class="fc" id="L326">		}</span>
 
 		@Override
 		public E get() {
-<span class="fc" id="L341">			return data;</span>
+<span class="fc" id="L330">			return data;</span>
 		}
 
 	}
 
-<span class="fc" id="L346">	static abstract class SplayImpl&lt;E, N extends Node&lt;E, N&gt;&gt; {</span>
+<span class="fc" id="L335">	static abstract class SplayImpl&lt;E, N extends Node&lt;E, N&gt;&gt; {</span>
 
-<span class="fc" id="L348">		SplayImpl() {</span>
-<span class="fc" id="L349">		}</span>
+<span class="fc" id="L337">		SplayImpl() {</span>
+<span class="fc" id="L338">		}</span>
 
 		N splay(N n) {
-<span class="fc bfc" id="L352" title="All 4 branches covered.">			if (n == null || n.isRoot())</span>
-<span class="fc" id="L353">				return n;</span>
+<span class="fc bfc" id="L341" title="All 4 branches covered.">			if (n == null || n.isRoot())</span>
+<span class="fc" id="L342">				return n;</span>
 			for (;;) {
-<span class="fc" id="L355">				N parent = n.parent;</span>
+<span class="fc" id="L344">				N parent = n.parent;</span>
 
-<span class="fc bfc" id="L357" title="All 2 branches covered.">				if (parent.isRoot()) {</span>
+<span class="fc bfc" id="L346" title="All 2 branches covered.">				if (parent.isRoot()) {</span>
 					/* zig */
-<span class="fc" id="L359">					rotate(n);</span>
-<span class="fc" id="L360">					return n;</span>
+<span class="fc" id="L348">					rotate(n);</span>
+<span class="fc" id="L349">					return n;</span>
 				}
 
-<span class="fc bfc" id="L363" title="All 2 branches covered.">				if (n.isLeftChild() == parent.isLeftChild()) {</span>
+<span class="fc bfc" id="L352" title="All 2 branches covered.">				if (n.isLeftChild() == parent.isLeftChild()) {</span>
 					/* zig-zig */
-<span class="fc" id="L365">					rotate(parent);</span>
-<span class="fc" id="L366">					rotate(n);</span>
+<span class="fc" id="L354">					rotate(parent);</span>
+<span class="fc" id="L355">					rotate(n);</span>
 				} else {
 					/* zig-zag */
-<span class="fc" id="L369">					rotate(n);</span>
-<span class="fc" id="L370">					rotate(n);</span>
+<span class="fc" id="L358">					rotate(n);</span>
+<span class="fc" id="L359">					rotate(n);</span>
 				}
 
-<span class="fc bfc" id="L373" title="All 2 branches covered.">				if (n.isRoot())</span>
-<span class="fc" id="L374">					return n;</span>
-<span class="fc" id="L375">			}</span>
+<span class="fc bfc" id="L362" title="All 2 branches covered.">				if (n.isRoot())</span>
+<span class="fc" id="L363">					return n;</span>
+<span class="fc" id="L364">			}</span>
 		}
 
 		private void rotate(N n) {
-<span class="fc" id="L379">			N parent = n.parent, grandparent = parent.parent;</span>
+<span class="fc" id="L368">			N parent = n.parent, grandparent = parent.parent;</span>
 
-<span class="fc" id="L381">			beforeRotate(n);</span>
+<span class="fc" id="L370">			beforeRotate(n);</span>
 
-<span class="fc bfc" id="L383" title="All 2 branches covered.">			if (n.isLeftChild()) {</span>
+<span class="fc bfc" id="L372" title="All 2 branches covered.">			if (n.isLeftChild()) {</span>
 
-<span class="fc" id="L385">				parent.left = n.right;</span>
-<span class="fc bfc" id="L386" title="All 2 branches covered.">				if (parent.hasLeftChild())</span>
-<span class="fc" id="L387">					parent.left.parent = parent;</span>
-<span class="fc" id="L388">				n.right = parent;</span>
+<span class="fc" id="L374">				parent.left = n.right;</span>
+<span class="fc bfc" id="L375" title="All 2 branches covered.">				if (parent.hasLeftChild())</span>
+<span class="fc" id="L376">					parent.left.parent = parent;</span>
+<span class="fc" id="L377">				n.right = parent;</span>
 
 			} else {
-<span class="pc bpc" id="L391" title="1 of 2 branches missed.">				assert n.isRightChild();</span>
+<span class="pc bpc" id="L380" title="1 of 2 branches missed.">				assert n.isRightChild();</span>
 
-<span class="fc" id="L393">				parent.right = n.left;</span>
-<span class="fc bfc" id="L394" title="All 2 branches covered.">				if (parent.hasRightChild())</span>
-<span class="fc" id="L395">					parent.right.parent = parent;</span>
-<span class="fc" id="L396">				n.left = parent;</span>
+<span class="fc" id="L382">				parent.right = n.left;</span>
+<span class="fc bfc" id="L383" title="All 2 branches covered.">				if (parent.hasRightChild())</span>
+<span class="fc" id="L384">					parent.right.parent = parent;</span>
+<span class="fc" id="L385">				n.left = parent;</span>
 			}
 
-<span class="fc" id="L399">			n.parent = grandparent;</span>
-<span class="fc" id="L400">			parent.parent = n;</span>
-<span class="fc bfc" id="L401" title="All 2 branches covered.">			if (grandparent != null) {</span>
-<span class="fc bfc" id="L402" title="All 2 branches covered.">				if (grandparent.left == parent)</span>
-<span class="fc" id="L403">					grandparent.left = n;</span>
+<span class="fc" id="L388">			n.parent = grandparent;</span>
+<span class="fc" id="L389">			parent.parent = n;</span>
+<span class="fc bfc" id="L390" title="All 2 branches covered.">			if (grandparent != null) {</span>
+<span class="fc bfc" id="L391" title="All 2 branches covered.">				if (grandparent.left == parent)</span>
+<span class="fc" id="L392">					grandparent.left = n;</span>
 				else
-<span class="fc" id="L405">					grandparent.right = n;</span>
+<span class="fc" id="L394">					grandparent.right = n;</span>
 			}
-<span class="fc" id="L407">		}</span>
+<span class="fc" id="L396">		}</span>
 
 		void beforeRotate(N n) {
-<span class="fc" id="L410">		}</span>
+<span class="fc" id="L399">		}</span>
 
 	}
 
@@ -416,43 +405,43 @@ import java.util.Set;
 		int size;
 
 		NodeSized(E e) {
-<span class="fc" id="L419">			super(e);</span>
-<span class="fc" id="L420">			size = 1;</span>
-<span class="fc" id="L421">		}</span>
+<span class="fc" id="L408">			super(e);</span>
+<span class="fc" id="L409">			size = 1;</span>
+<span class="fc" id="L410">		}</span>
 
 		@Override
 		void clear() {
-<span class="fc" id="L425">			super.clear();</span>
-<span class="fc" id="L426">			size = 1;</span>
-<span class="fc" id="L427">		}</span>
+<span class="fc" id="L414">			super.clear();</span>
+<span class="fc" id="L415">			size = 1;</span>
+<span class="fc" id="L416">		}</span>
 
 	}
 
-<span class="fc" id="L431">	private static class SplayImplWithSize&lt;E&gt; extends SplayImpl&lt;E, NodeSized&lt;E&gt;&gt; {</span>
+<span class="fc" id="L420">	private static class SplayImplWithSize&lt;E&gt; extends SplayImpl&lt;E, NodeSized&lt;E&gt;&gt; {</span>
 
 		@Override
 		void beforeRotate(NodeSized&lt;E&gt; n) {
-<span class="fc" id="L435">			super.beforeRotate(n);</span>
+<span class="fc" id="L424">			super.beforeRotate(n);</span>
 
-<span class="fc" id="L437">			NodeSized&lt;E&gt; parent = n.parent;</span>
-<span class="fc" id="L438">			int parentOldSize = parent.size;</span>
+<span class="fc" id="L426">			NodeSized&lt;E&gt; parent = n.parent;</span>
+<span class="fc" id="L427">			int parentOldSize = parent.size;</span>
 
-<span class="fc bfc" id="L440" title="All 2 branches covered.">			if (n.isLeftChild()) {</span>
-<span class="fc bfc" id="L441" title="All 2 branches covered.">				parent.size = parentOldSize - n.size + (n.hasRightChild() ? n.right.size : 0);</span>
+<span class="fc bfc" id="L429" title="All 2 branches covered.">			if (n.isLeftChild()) {</span>
+<span class="fc bfc" id="L430" title="All 2 branches covered.">				parent.size = parentOldSize - n.size + (n.hasRightChild() ? n.right.size : 0);</span>
 			} else {
-<span class="pc bpc" id="L443" title="1 of 2 branches missed.">				assert n.isRightChild();</span>
-<span class="fc bfc" id="L444" title="All 2 branches covered.">				parent.size = parentOldSize - n.size + (n.hasLeftChild() ? n.left.size : 0);</span>
+<span class="pc bpc" id="L432" title="1 of 2 branches missed.">				assert n.isRightChild();</span>
+<span class="fc bfc" id="L433" title="All 2 branches covered.">				parent.size = parentOldSize - n.size + (n.hasLeftChild() ? n.left.size : 0);</span>
 			}
 
-<span class="fc" id="L447">			n.size = parentOldSize;</span>
-<span class="fc" id="L448">		}</span>
+<span class="fc" id="L436">			n.size = parentOldSize;</span>
+<span class="fc" id="L437">		}</span>
 
 	}
 
 	private void checkTreeNotEmpty() {
-<span class="pc bpc" id="L453" title="1 of 2 branches missed.">		if (root == null)</span>
-<span class="nc" id="L454">			throw new IllegalStateException(&quot;Tree is empty&quot;);</span>
-<span class="fc" id="L455">	}</span>
+<span class="pc bpc" id="L442" title="1 of 2 branches missed.">		if (root == null)</span>
+<span class="nc" id="L443">			throw new IllegalStateException(&quot;Tree is empty&quot;);</span>
+<span class="fc" id="L444">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
