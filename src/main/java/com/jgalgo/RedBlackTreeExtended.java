@@ -1,40 +1,74 @@
 package com.jgalgo;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 
+import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.objects.ObjectArrays;
+
 public class RedBlackTreeExtended<E> extends RedBlackTree<E> {
 
-	private final List<Extension<E>> extensions;
-	private final int extObjNum;
-	private final int extIntNum;
+	private Node<E>[] nodes;
+	private int nodesNextIdx;
+	private final Extension<E>[] extensions;
 
+	@SuppressWarnings("rawtypes")
+	private static final Node[] EmptyNodesArray = new Node[0];
+
+	@SuppressWarnings("unchecked")
 	RedBlackTreeExtended(Comparator<? super E> c, Collection<? extends Extension<E>> extensions) {
 		super(c);
-		this.extensions = new ArrayList<>(extensions);
-
-		int objNum = 0, intNum = 0;
-		for (Extension<E> ext : extensions) {
-			if (ext instanceof ExtensionObj<?, ?>)
-				objNum++;
-			else if (ext instanceof ExtensionInt<?>)
-				intNum++;
-			else
-				throw new IllegalArgumentException("Unknown extension type: " + ext);
-		}
-
-		this.extObjNum = objNum;
-		this.extIntNum = intNum;
+		this.extensions = extensions.toArray(len -> new Extension[len]);
+		nodes = EmptyNodesArray;
 	}
 
 	@Override
 	Node<E> newNode(E e) {
-		Node<E> n = new Node<>(e, extObjNum, extIntNum);
+		int idx = nodesNextIdx++;
+		if (idx >= nodes.length) {
+			int newLen = Math.max(2, nodes.length * 2);
+			nodes = Arrays.copyOf(nodes, newLen);
+			for (Extension<E> extension : extensions)
+				extension.data.expand(newLen);
+		}
+		assert nodes[idx] == null;
+		Node<E> n = nodes[idx] = new Node<>(e, idx);
 		for (Extension<E> extension : extensions)
 			extension.initNode(n);
 		return n;
+	}
+
+	@Override
+	void removeNode(RedBlackTree.Node<E> n0) {
+		super.removeNode(n0);
+		Node<E> n = (Node<E>) n0;
+		assert nodes[n.idx] == n;
+		nodes[n.idx] = null;
+		for (Extension<E> extension : extensions)
+			extension.data.clear(n.idx);
+		if (size() < nodesNextIdx / 2)
+			reassignIndices();
+	}
+
+	private void reassignIndices() {
+		Node<E>[] nodes = this.nodes;
+		int maxNodeIdx = nodesNextIdx;
+		int newNextIdx = 0;
+		for (int idx = 0; idx < maxNodeIdx; idx++) {
+			Node<E> node = nodes[idx];
+			if (node == null)
+				continue;
+			assert node.idx == idx;
+			int newIdx = newNextIdx++;
+			nodes[idx] = null;
+			nodes[node.idx = newIdx] = node;
+			for (Extension<E> extension : extensions)
+				extension.data.swap(idx, newIdx);
+		}
+		nodesNextIdx = newNextIdx;
 	}
 
 	@Override
@@ -71,13 +105,11 @@ public class RedBlackTreeExtended<E> extends RedBlackTree<E> {
 
 	private static class Node<E> extends RedBlackTree.Node<E> {
 
-		private final Object[] extensionsData;
-		private final int[] extensionsDataInt;
+		private int idx;
 
-		Node(E e, int extensionsNum, int extensionsNumInt) {
+		Node(E e, int idx) {
 			super(e);
-			extensionsData = extensionsNum > 0 ? new Object[extensionsNum] : null;
-			extensionsDataInt = extensionsNumInt > 0 ? new int[extensionsNumInt] : null;
+			this.idx = idx;
 		}
 
 		Node<E> parent() {
@@ -94,33 +126,92 @@ public class RedBlackTreeExtended<E> extends RedBlackTree<E> {
 
 	}
 
-	static abstract class Extension<E> {
+	private static abstract class ExtensionData {
+		abstract void swap(int idx1, int idx2);
 
-		private RedBlackTreeExtended<E> tree;
-		private int extIdx = -1;
+		abstract void clear(int idx);
 
-		private Extension() {
+		abstract void expand(int newCapacity);
+
+		static class Obj<D> extends ExtensionData {
+			private Object[] data;
+
+			Obj() {
+				data = ObjectArrays.EMPTY_ARRAY;
+			}
+
+			@SuppressWarnings("unchecked")
+			D get(int idx) {
+				return (D) data[idx];
+			}
+
+			void set(int idx, D d) {
+				data[idx] = d;
+			}
+
+			@Override
+			void swap(int idx1, int idx2) {
+				Object temp = data[idx1];
+				data[idx1] = data[idx2];
+				data[idx2] = temp;
+			}
+
+			@Override
+			void clear(int idx) {
+				data[idx] = null;
+			}
+
+			@Override
+			void expand(int newCapacity) {
+				data = Arrays.copyOf(data, newCapacity);
+			}
 		}
 
-		RedBlackTreeExtended<E> getTree() {
-			return tree;
-		}
+		static class Int extends ExtensionData {
+			private int[] data;
 
-		void setTree(RedBlackTreeExtended<E> tree) {
-			this.tree = tree;
-		}
+			Int() {
+				data = IntArrays.EMPTY_ARRAY;
+			}
 
-		int getExtIdx() {
-			return extIdx;
-		}
+			int get(int idx) {
+				return data[idx];
+			}
 
-		void setExtIdx(int extIdx) {
-			if (this.extIdx != -1)
-				throw new IllegalStateException();
-			this.extIdx = extIdx;
+			void set(int idx, int d) {
+				data[idx] = d;
+			}
+
+			@Override
+			void swap(int idx1, int idx2) {
+				int temp = data[idx1];
+				data[idx1] = data[idx2];
+				data[idx2] = temp;
+			}
+
+			@Override
+			void clear(int idx) {
+				data[idx] = 0;
+			}
+
+			@Override
+			void expand(int newCapacity) {
+				data = Arrays.copyOf(data, newCapacity);
+			}
+		}
+	}
+
+	private static abstract class Extension<E> {
+		final ExtensionData data;
+
+		private Extension(ExtensionData data) {
+			this.data = data;
 		}
 
 		protected void initNode(Node<E> n) {
+		}
+
+		protected void removeNodeData(Node<E> n) {
 		}
 
 		protected void afterInsert(Node<E> n) {
@@ -140,33 +231,43 @@ public class RedBlackTreeExtended<E> extends RedBlackTree<E> {
 
 	}
 
-	static abstract class ExtensionObj<E, D> extends Extension<E> {
+	private static abstract class ExtensionObj<E, D> extends Extension<E> {
 
 		public ExtensionObj() {
+			super(new ExtensionData.Obj<D>());
 		}
 
 		@SuppressWarnings("unchecked")
+		private ExtensionData.Obj<D> data() {
+			return (ExtensionData.Obj<D>) data;
+		}
+
 		public D getNodeData(Node<E> n) {
-			return (D) n.extensionsData[getExtIdx()];
+			return data().get(n.idx);
 		}
 
 		public void setNodeData(Node<E> n, D data) {
-			n.extensionsData[getExtIdx()] = data;
+			data().set(n.idx, data);
 		}
 
 	}
 
-	static abstract class ExtensionInt<E> extends Extension<E> {
+	private static abstract class ExtensionInt<E> extends Extension<E> {
 
 		public ExtensionInt() {
+			super(new ExtensionData.Int());
+		}
+
+		private ExtensionData.Int data() {
+			return (ExtensionData.Int) data;
 		}
 
 		public int getNodeData(Node<E> n) {
-			return n.extensionsDataInt[getExtIdx()];
+			return data().get(n.idx);
 		}
 
 		public void setNodeData(Node<E> n, int data) {
-			n.extensionsDataInt[getExtIdx()] = data;
+			data().set(n.idx, data);
 		}
 	}
 
@@ -408,13 +509,11 @@ public class RedBlackTreeExtended<E> extends RedBlackTree<E> {
 	public static class Builder<E> {
 
 		private Comparator<? super E> c;
-		private final List<ExtensionObj<E, ?>> extsObj;
-		private final List<ExtensionInt<E>> extsInt;
+		private final List<Extension<E>> extensions;
 
 		public Builder() {
 			c = null;
-			extsObj = new ArrayList<>();
-			extsInt = new ArrayList<>();
+			extensions = new ArrayList<>();
 		}
 
 		public void comparator(Comparator<? super E> c) {
@@ -433,36 +532,18 @@ public class RedBlackTreeExtended<E> extends RedBlackTree<E> {
 			return addExtension(new ExtensionMax<>());
 		}
 
-		@SuppressWarnings("unchecked")
 		private <T extends Extension<E>> T addExtension(T extension) {
-			if (extension instanceof ExtensionObj<?, ?>) {
-				extension.setExtIdx(extsObj.size());
-				extsObj.add((ExtensionObj<E, ?>) extension);
-			} else if (extension instanceof ExtensionInt<?>) {
-				extension.setExtIdx(extsObj.size());
-				extsInt.add((ExtensionInt<E>) extension);
-			} else
-				throw new IllegalArgumentException(extension.toString());
+			extensions.add(extension);
 			return extension;
 		}
 
 		public void clear() {
 			c = null;
-			extsObj.clear();
-			extsInt.clear();
+			extensions.clear();
 		}
 
 		public RedBlackTree<E> build() {
-			List<Extension<E>> extensions = new ArrayList<>();
-			extensions.addAll(extsObj);
-			extensions.addAll(extsInt);
-			if (extensions.isEmpty())
-				return new RedBlackTree<>(c);
-
-			RedBlackTreeExtended<E> tree = new RedBlackTreeExtended<>(c, extensions);
-			for (Extension<E> ext : extensions)
-				ext.setTree(tree);
-			return tree;
+			return extensions.isEmpty() ? new RedBlackTree<>(c) : new RedBlackTreeExtended<>(c, extensions);
 		}
 
 	}

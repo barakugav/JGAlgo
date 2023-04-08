@@ -222,12 +222,7 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 		size--;
 	}
 
-	@Override
-	public void removeHandle(Handle<E> handle) {
-		if (root == null)
-			throw new IllegalArgumentException("hanlde is not valid");
-		Node<E> n = (Node<E>) handle;
-
+	void removeNode(Node<E> n) {
 		/* root with no children, just remove */
 		if (n == root && n.left == null && n.right == null) {
 			removeNode(n, null);
@@ -262,6 +257,13 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 		boolean leftIsShortSide = n == parent.left;
 		removeNode(n, null);
 		fixAfterRemove(parent, leftIsShortSide);
+	}
+
+	@Override
+	public void removeHandle(Handle<E> handle) {
+		if (root == null)
+			throw new IllegalArgumentException("hanlde is not valid");
+		removeNode((Node<E>) handle);
 	}
 
 	private void fixAfterRemove(Node<E> parent, boolean leftIsShortSide) {
