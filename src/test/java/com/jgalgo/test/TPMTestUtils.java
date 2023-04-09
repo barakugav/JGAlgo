@@ -93,8 +93,7 @@ class TPMTestUtils extends TestUtils {
 	private static void testTPM(TPM algo, int n, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Graph t = GraphsTestUtils.randTree(n, seedGen.nextSeed());
-		GraphsTestUtils.assignRandWeightsIntPos(t, seedGen.nextSeed());
-		EdgeWeightFunc.Int w = t.edgesWeight("weight");
+		EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(t, seedGen.nextSeed());
 
 		int[] queries = n <= 64 ? generateAllPossibleQueries(n)
 				: generateRandQueries(n, Math.min(n * 64, 8192), seedGen.nextSeed());
@@ -111,8 +110,7 @@ class TPMTestUtils extends TestUtils {
 			int n = args[0], m = args[1];
 			UGraph g = (UGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
 					.selfEdges(false).cycles(true).connected(true).build();
-			GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
-			EdgeWeightFunc.Int w = g.edgesWeight("weight");
+			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			IntCollection mstEdges = new MSTKruskal1956().calcMST(g, w);
 
 			TPM algo = builder.get();
@@ -129,8 +127,7 @@ class TPMTestUtils extends TestUtils {
 
 			UGraph g = (UGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
 					.selfEdges(false).cycles(true).connected(true).build();
-			GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
-			EdgeWeightFunc.Int w = g.edgesWeight("weight");
+			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 
 			IntCollection mstEdges = new MSTKruskal1956().calcMST(g, w);
 			Graph mst = new GraphArrayUndirected(g.vertices().size());

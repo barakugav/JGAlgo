@@ -34,8 +34,7 @@ class APSPTestUtils extends TestUtils {
 			int n = args[0], m = args[1];
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
-			GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
-			EdgeWeightFunc.Int w = g.edgesWeight("weight");
+			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			testAPSP(g, w, builder, new SSSPDijkstra());
 		});
 	}
@@ -47,8 +46,7 @@ class APSPTestUtils extends TestUtils {
 			int n = args[0], m = args[1];
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
-			GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
-			EdgeWeightFunc.Int w = g.edgesWeight("weight");
+			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
 			testAPSP(g, w, builder, new SSSPGoldberg1995());
 		});
 	}

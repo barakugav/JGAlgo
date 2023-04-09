@@ -1,5 +1,7 @@
 package com.jgalgo;
 
+import java.util.Objects;
+import java.util.function.IntFunction;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
@@ -12,7 +14,13 @@ public class MSTKruskal1956 implements MST {
 	 * O(m log n)
 	 */
 
+	private IntFunction<? extends UnionFind> unionFindBuilder = UnionFindArray::new;
+
 	public MSTKruskal1956() {
+	}
+
+	public void setUnionFindBuilder(IntFunction<? extends UnionFind> builder) {
+		unionFindBuilder = Objects.requireNonNull(builder);
 	}
 
 	@Override
@@ -29,7 +37,7 @@ public class MSTKruskal1956 implements MST {
 		IntArrays.parallelQuickSort(edges, w);
 
 		/* create union find data structure for each vertex */
-		UnionFind uf = new UnionFindArray(n);
+		UnionFind uf = unionFindBuilder.apply(n);
 
 		/* iterate over the edges and build the MST */
 		IntCollection mst = new IntArrayList(n - 1);

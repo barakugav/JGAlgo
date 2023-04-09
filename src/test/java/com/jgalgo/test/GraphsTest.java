@@ -13,6 +13,7 @@ import com.jgalgo.BFSIter;
 import com.jgalgo.DFSIter;
 import com.jgalgo.DiGraph;
 import com.jgalgo.EdgeIter;
+import com.jgalgo.EdgeWeightFunc;
 import com.jgalgo.Graph;
 import com.jgalgo.Graphs;
 import com.jgalgo.Path;
@@ -20,7 +21,6 @@ import com.jgalgo.SSSP;
 import com.jgalgo.SSSPDag;
 import com.jgalgo.SSSPDijkstra;
 import com.jgalgo.UGraph;
-import com.jgalgo.Weights;
 import com.jgalgo.test.GraphsTestUtils.RandomGraphBuilder;
 
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -317,10 +317,9 @@ public class GraphsTest extends TestUtils {
 			int n = args[0], m = args[1];
 			DiGraph g = (DiGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true)
 					.parallelEdges(true).selfEdges(false).cycles(false).connected(connected).build();
-			GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+			EdgeWeightFunc w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			int source = 0;
 
-			Weights.Int w = g.edgesWeight("weight");
 			SSSPTestUtils.testAlgo(g, w, source, ssspAlgo, new SSSPDijkstra());
 		});
 	}

@@ -44,8 +44,7 @@ public class SSSPTestUtils extends TestUtils {
 			int n = args[0], m = args[1];
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
-			GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
-			EdgeWeightFunc.Int w = g.edgesWeight("weight");
+			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			int source = rand.nextInt(g.vertices().size());
 
 			SSSP algo = builder.get();
@@ -62,8 +61,7 @@ public class SSSPTestUtils extends TestUtils {
 			int n = args[0], m = args[1];
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(true).build();
-			GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
-			EdgeWeightFunc.Int w = g.edgesWeight("weight");
+			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
 			int source = 0;
 
 			SSSP algo = builder.get();

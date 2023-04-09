@@ -246,11 +246,11 @@ public class GraphsTestUtils extends TestUtils {
 				.connected(false).build();
 	}
 
-	static void assignRandWeights(Graph g, long seed) {
-		assignRandWeights(g, 1.0, 100.0, seed);
+	static Weights.Double assignRandWeights(Graph g, long seed) {
+		return assignRandWeights(g, 1.0, 100.0, seed);
 	}
 
-	static void assignRandWeights(Graph g, double minWeight, double maxWeight, long seed) {
+	static Weights.Double assignRandWeights(Graph g, double minWeight, double maxWeight, long seed) {
 		if (minWeight >= maxWeight)
 			throw new IllegalArgumentException();
 
@@ -260,22 +260,23 @@ public class GraphsTestUtils extends TestUtils {
 			int e = it.nextInt();
 			weight.set(e, nextDouble(rand, minWeight, maxWeight));
 		}
+		return weight;
 	}
 
-	public static void assignRandWeightsIntPos(Graph g, long seed) {
+	public static Weights.Int assignRandWeightsIntPos(Graph g, long seed) {
 		int m = g.edges().size();
 		int minWeight = 1;
 		int maxWeight = m < 50 ? 100 : m * 2 + 2;
-		assignRandWeightsInt(g, minWeight, maxWeight, seed);
+		return assignRandWeightsInt(g, minWeight, maxWeight, seed);
 	}
 
-	static void assignRandWeightsIntNeg(Graph g, long seed) {
+	public static Weights.Int assignRandWeightsIntNeg(Graph g, long seed) {
 		int m = g.edges().size();
 		int maxWeight = m < 50 ? 100 : m * 2 + 2;
-		assignRandWeightsInt(g, -maxWeight / 8, maxWeight, seed);
+		return assignRandWeightsInt(g, -maxWeight / 8, maxWeight, seed);
 	}
 
-	static void assignRandWeightsInt(Graph g, int minWeight, int maxWeight, long seed) {
+	static Weights.Int assignRandWeightsInt(Graph g, int minWeight, int maxWeight, long seed) {
 		if (minWeight >= maxWeight)
 			throw new IllegalArgumentException();
 		if (maxWeight - minWeight < g.edges().size() / 2)
@@ -287,6 +288,7 @@ public class GraphsTestUtils extends TestUtils {
 			int e = it.nextInt();
 			weight.set(e, rand.next());
 		}
+		return weight;
 	}
 
 	public static Graph randGraph(int n, int m, long seed) {

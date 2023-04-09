@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Assertions;
 
 import com.jgalgo.LCADynamic;
 
-class LCADynamicTestUtils extends TestUtils {
+public class LCADynamicTestUtils extends TestUtils {
 
 	private LCADynamicTestUtils() {
 	}
@@ -81,7 +81,7 @@ class LCADynamicTestUtils extends TestUtils {
 		return ops;
 	}
 
-	static Collection<Op> generateRandOps(int n, int m, long seed) {
+	public static Collection<Op> generateRandOps(int n, int m, long seed) {
 		if (n < 2)
 			throw new IllegalArgumentException();
 		final SeedGenerator seedGen = new SeedGenerator(seed);
@@ -164,22 +164,22 @@ class LCADynamicTestUtils extends TestUtils {
 		}
 	}
 
-	static class Op {
+	public static class Op {
 	}
 
-	static class OpInitTree extends Op {
+	public static class OpInitTree extends Op {
 	}
 
-	static class OpAddLeaf extends Op {
-		final int parent;
+	public static class OpAddLeaf extends Op {
+		public final int parent;
 
 		OpAddLeaf(int parent) {
 			this.parent = parent;
 		}
 	}
 
-	static class OpLCAQuery extends Op {
-		final int x, y;
+	public static class OpLCAQuery extends Op {
+		public final int x, y;
 
 		OpLCAQuery(int x, int y) {
 			this.x = x;

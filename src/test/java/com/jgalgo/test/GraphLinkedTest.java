@@ -15,9 +15,9 @@ public class GraphLinkedTest extends TestUtils {
 			@Override
 			public Graph newGraph(boolean directed, int vertices) {
 				if (directed) {
-					return new GraphLinkedDirected(vertices);
+					return vertices == 0 ? new GraphLinkedDirected() : new GraphLinkedDirected(vertices);
 				} else {
-					return new GraphLinkedUndirected(vertices);
+					return vertices == 0 ? new GraphLinkedUndirected() : new GraphLinkedUndirected(vertices);
 				}
 			}
 		};

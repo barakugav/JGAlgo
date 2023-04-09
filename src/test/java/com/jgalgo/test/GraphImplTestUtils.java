@@ -48,9 +48,9 @@ class GraphImplTestUtils extends TestUtils {
 		@Override
 		public Graph newGraph(boolean directed, int vertices) {
 			if (directed) {
-				return new GraphArrayDirected(vertices);
+				return vertices == 0 ? new GraphArrayDirected() : new GraphArrayDirected(vertices);
 			} else {
-				return new GraphArrayUndirected(vertices);
+				return vertices == 0 ? new GraphArrayUndirected() : new GraphArrayUndirected(vertices);
 			}
 		}
 	};

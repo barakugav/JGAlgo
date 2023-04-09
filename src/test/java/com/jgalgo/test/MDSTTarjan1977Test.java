@@ -79,8 +79,7 @@ public class MDSTTarjan1977Test extends TestUtils {
 
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(false)
 					.selfEdges(false).cycles(true).connected(false).graphImpl(graphImpl).build();
-			GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
-			EdgeWeightFunc w = g.edgesWeight("weight");
+			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 
 			MDST algo = builder.get();
 			testRandGraph(algo, g, w);

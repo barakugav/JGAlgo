@@ -44,8 +44,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 			int m = args[2];
 
 			Graph g = MatchingBipartiteTestUtils.randGraphBipartite(sn, tn, m, graphImpl, seedGen.nextSeed());
-			GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
-			EdgeWeightFunc.Int w = g.edgesWeight("weight");
+			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
 
 			MatchingWeighted algo = builder.get();
 			MatchingWeighted validationAlgo = algo instanceof MatchingWeightedBipartiteSSSP
@@ -67,8 +66,8 @@ class MatchingWeightedTestUtils extends TestUtils {
 			Graph g = MatchingBipartiteTestUtils.randGraphBipartite(sn, tn, m, GraphImplTestUtils.GRAPH_IMPL_DEFAULT,
 					seedGen.nextSeed());
 			int maxWeight = m < 50 ? 100 : m * 2 + 2;
-			GraphsTestUtils.assignRandWeightsInt(g, -maxWeight, maxWeight / 4, seedGen.nextSeed());
-			EdgeWeightFunc.Int w = g.edgesWeight("weight");
+			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsInt(g, -maxWeight, maxWeight / 4,
+					seedGen.nextSeed());
 
 			MatchingWeighted algo = builder.get();
 			Matching validationUnweightedAlgo = new MatchingBipartiteHopcroftKarp1973();
@@ -87,8 +86,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 			int n = args[0], m = args[1];
 
 			Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
-			GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
-			EdgeWeightFunc.Int w = g.edgesWeight("weight");
+			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
 
 			MatchingWeighted algo = builder.get();
 			// have nothing other than MatchingWeightedGabow2017, at least shuffle graph
@@ -125,8 +123,8 @@ class MatchingWeightedTestUtils extends TestUtils {
 
 			Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
 			int maxWeight = m < 50 ? 100 : m * 2 + 2;
-			GraphsTestUtils.assignRandWeightsInt(g, -maxWeight, maxWeight / 4, seedGen.nextSeed());
-			EdgeWeightFunc.Int w = g.edgesWeight("weight");
+			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsInt(g, -maxWeight, maxWeight / 4,
+					seedGen.nextSeed());
 
 			MatchingWeighted algo = builder.get();
 			Matching validationUnweightedAlgo = new MatchingGabow1976();

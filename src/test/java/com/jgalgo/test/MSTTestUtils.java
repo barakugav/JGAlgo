@@ -35,8 +35,7 @@ class MSTTestUtils extends TestUtils {
 			MST algo = builder.get();
 
 			Graph g = GraphsTestUtils.randGraph(n, m, graphImpl, seedGen.nextSeed());
-			GraphsTestUtils.assignRandWeightsIntPos(g,seedGen.nextSeed());
-			EdgeWeightFunc.Int w = g.edgesWeight("weight");
+			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 
 			IntCollection mst = algo.calcMST(g, w);
 			verifyMST(g, w, mst);

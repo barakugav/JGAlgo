@@ -6,7 +6,7 @@ import com.jgalgo.LCAGabowSimple.CharacteristicAncestors;
 
 public class LCAGabow2017<V> implements LCADynamic<V> {
 
-	/**
+	/*
 	 * This implementation is a dynamic LCA implementation from Gabow17, which
 	 * allows addLeaf and LCA queries, with addLeaf O(1) amortized and LCA query
 	 * O(1).
