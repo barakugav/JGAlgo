@@ -16,6 +16,8 @@ import com.jgalgo.SubtreeMergeFindminImpl;
 import com.jgalgo.UnionFind;
 import com.jgalgo.UnionFindArray;
 
+import it.unimi.dsi.fastutil.objects.ObjectArrays;
+
 public class SubtreeMergeFindminTest extends TestUtils {
 
 	@Test
@@ -57,7 +59,7 @@ public class SubtreeMergeFindminTest extends TestUtils {
 		Op[] ops = new Op[n - 2 + m];
 		for (int i = 0; i < n - 2 + m; i++)
 			ops[i] = i < n - 2 ? Op.AddLeaf : notAddLeafOps[rand.nextInt(notAddLeafOps.length)];
-		ops = suffle(ops, seedGen.nextSeed());
+		ObjectArrays.shuffle(ops, rand);
 
 		/* append a single add leaf at the start */
 		Op[] ops2 = new Op[n - 1 + m];

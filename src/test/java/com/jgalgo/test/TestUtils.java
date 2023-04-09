@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Random;
 
+import it.unimi.dsi.fastutil.ints.IntArrays;
+
 @SuppressWarnings("boxing")
 public class TestUtils {
 
@@ -100,62 +102,11 @@ public class TestUtils {
 	}
 
 	static int[] randPermutation(int n, long seed) {
-		Random rand = new Random(seed ^ 0xb281dc30ae96a316L);
-
-		boolean[] possibleValuesBitmap = new boolean[n];
-		java.util.Arrays.fill(possibleValuesBitmap, true);
-
-		int[] possibleValues = new int[n];
-		for (int i = 0; i < n; i++)
-			possibleValues[i] = i;
-		int possibleValuesArrLen = n;
-		int possibleValuesSize = n;
-		int nextShrink = possibleValuesSize / 2;
-		int[] possibleValuesNext = new int[nextShrink];
-
 		int[] a = new int[n];
-		for (int i = 0; i < n; i++) {
-			if (possibleValuesSize == nextShrink && nextShrink > 4) {
-				for (int j = 0, k = 0; k < nextShrink; j++) {
-					if (possibleValuesBitmap[j])
-						possibleValuesNext[k++] = possibleValues[j];
-				}
-				int[] temp = possibleValues;
-				possibleValues = possibleValuesNext;
-				possibleValuesNext = temp;
-				possibleValuesArrLen = possibleValuesSize;
-
-				java.util.Arrays.fill(possibleValuesBitmap, true);
-				nextShrink = possibleValuesSize / 2;
-			}
-
-			int idx;
-			do {
-				idx = rand.nextInt(possibleValuesArrLen);
-			} while (!possibleValuesBitmap[idx]);
-
-			a[i] = possibleValues[idx];
-			possibleValuesBitmap[idx] = false;
-			possibleValuesSize--;
-		}
-
+		for (int i = 0; i < n; i++)
+			a[i] = i;
+		IntArrays.shuffle(a, new Random(seed ^ 0xb281dc30ae96a316L));
 		return a;
-	}
-
-	static int[] suffle(int[] a, long seed) {
-		int[] p = randPermutation(a.length, seed);
-		int[] r = new int[a.length];
-		for (int i = 0; i < a.length; i++)
-			r[i] = a[p[i]];
-		return r;
-	}
-
-	static <T> T[] suffle(T[] a, long seed) {
-		int[] p = randPermutation(a.length, seed);
-		T[] r = java.util.Arrays.copyOf(a, a.length);
-		for (int i = 0; i < a.length; i++)
-			r[i] = a[p[i]];
-		return r;
 	}
 
 	static <E> Iterable<E> iterable(Iterator<E> it) {

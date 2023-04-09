@@ -11,6 +11,8 @@ import org.junit.jupiter.api.Assertions;
 
 import com.jgalgo.LCADynamic;
 
+import it.unimi.dsi.fastutil.ints.IntArrays;
+
 public class LCADynamicTestUtils extends TestUtils {
 
 	private LCADynamicTestUtils() {
@@ -49,7 +51,7 @@ public class LCADynamicTestUtils extends TestUtils {
 		int[] opsOrder = new int[n - 2 + m];
 		Arrays.fill(opsOrder, 0, n - 2, addLeafOp);
 		Arrays.fill(opsOrder, n - 2, n - 2 + m, lcaOp);
-		opsOrder = suffle(opsOrder, seedGen.nextSeed());
+		IntArrays.shuffle(opsOrder, rand);
 
 		List<Op> ops = new ArrayList<>();
 		int nodesCount = 0;
@@ -92,7 +94,7 @@ public class LCADynamicTestUtils extends TestUtils {
 		int[] opsOrder = new int[n - 2 + m];
 		Arrays.fill(opsOrder, 0, n - 2, addLeafOp);
 		Arrays.fill(opsOrder, n - 2, n - 2 + m, lcaOp);
-		opsOrder = suffle(opsOrder, seedGen.nextSeed());
+		IntArrays.shuffle(opsOrder, rand);
 
 		List<Op> ops = new ArrayList<>();
 		int nodesCount = 0;
