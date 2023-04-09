@@ -208,25 +208,25 @@ public class RedBlackTreeExtended&lt;E&gt; extends RedBlackTree&lt;E&gt; {
 <span class="fc" id="L208">			this.data = data;</span>
 <span class="fc" id="L209">		}</span>
 
-		protected void initNode(Node&lt;E&gt; n) {
+		void initNode(Node&lt;E&gt; n) {
 <span class="nc" id="L212">		}</span>
 
-		protected void removeNodeData(Node&lt;E&gt; n) {
+		void removeNodeData(Node&lt;E&gt; n) {
 <span class="nc" id="L215">		}</span>
 
-		protected void afterInsert(Node&lt;E&gt; n) {
+		void afterInsert(Node&lt;E&gt; n) {
 <span class="nc" id="L218">		}</span>
 
-		protected void beforeRemove(Node&lt;E&gt; n) {
+		void beforeRemove(Node&lt;E&gt; n) {
 <span class="nc" id="L221">		}</span>
 
-		protected void beforeNodeSwap(Node&lt;E&gt; a, Node&lt;E&gt; b) {
+		void beforeNodeSwap(Node&lt;E&gt; a, Node&lt;E&gt; b) {
 <span class="nc" id="L224">		}</span>
 
-		protected void beforeRotateLeft(Node&lt;E&gt; n) {
+		void beforeRotateLeft(Node&lt;E&gt; n) {
 <span class="nc" id="L227">		}</span>
 
-		protected void beforeRotateRight(Node&lt;E&gt; n) {
+		void beforeRotateRight(Node&lt;E&gt; n) {
 <span class="nc" id="L230">		}</span>
 
 	}
@@ -281,33 +281,33 @@ public class RedBlackTreeExtended&lt;E&gt; extends RedBlackTree&lt;E&gt; {
 		}
 
 		@Override
-		protected void initNode(Node&lt;E&gt; n) {
+		void initNode(Node&lt;E&gt; n) {
 <span class="fc" id="L285">			setNodeData(n, 1);</span>
 <span class="fc" id="L286">		}</span>
 
 		@Override
-		protected void afterInsert(Node&lt;E&gt; n) {
+		void afterInsert(Node&lt;E&gt; n) {
 			/* for each ancestor, increase sub tree size by 1 */
 <span class="fc bfc" id="L291" title="All 2 branches covered.">			for (; (n = n.parent()) != null;)</span>
 <span class="fc" id="L292">				setNodeData(n, getNodeData(n) + 1);</span>
 <span class="fc" id="L293">		}</span>
 
 		@Override
-		protected void beforeRemove(Node&lt;E&gt; n) {
+		void beforeRemove(Node&lt;E&gt; n) {
 			/* for each ancestor, decrease sub tree size by 1 */
 <span class="fc bfc" id="L298" title="All 2 branches covered.">			for (; (n = n.parent()) != null;)</span>
 <span class="fc" id="L299">				setNodeData(n, getNodeData(n) - 1);</span>
 <span class="fc" id="L300">		}</span>
 
 		@Override
-		protected void beforeNodeSwap(Node&lt;E&gt; a, Node&lt;E&gt; b) {
+		void beforeNodeSwap(Node&lt;E&gt; a, Node&lt;E&gt; b) {
 <span class="fc" id="L304">			int s = getNodeData(a);</span>
 <span class="fc" id="L305">			setNodeData(a, getNodeData(b));</span>
 <span class="fc" id="L306">			setNodeData(b, s);</span>
 <span class="fc" id="L307">		}</span>
 
 		@Override
-		protected void beforeRotateLeft(Node&lt;E&gt; n) {
+		void beforeRotateLeft(Node&lt;E&gt; n) {
 <span class="fc" id="L311">			Node&lt;E&gt; child = n.right(), grandchild = child.left();</span>
 <span class="fc bfc" id="L312" title="All 2 branches covered.">			int childSize = getNodeData(child), grandchildSize = grandchild != null ? getNodeData(grandchild) : 0;</span>
 
@@ -316,7 +316,7 @@ public class RedBlackTreeExtended&lt;E&gt; extends RedBlackTree&lt;E&gt; {
 <span class="fc" id="L316">		}</span>
 
 		@Override
-		protected void beforeRotateRight(Node&lt;E&gt; n) {
+		void beforeRotateRight(Node&lt;E&gt; n) {
 <span class="fc" id="L320">			Node&lt;E&gt; child = n.left(), grandchild = child.right();</span>
 <span class="fc bfc" id="L321" title="All 2 branches covered.">			int childSize = getNodeData(child), grandchildSize = grandchild != null ? getNodeData(grandchild) : 0;</span>
 
@@ -336,19 +336,19 @@ public class RedBlackTreeExtended&lt;E&gt; extends RedBlackTree&lt;E&gt; {
 		}
 
 		@Override
-		protected void initNode(Node&lt;E&gt; n) {
+		void initNode(Node&lt;E&gt; n) {
 			/* minimum node of subtree of the single node is the node itself */
 <span class="fc" id="L341">			setNodeData(n, n);</span>
 <span class="fc" id="L342">		}</span>
 
 		@Override
-		protected void afterInsert(Node&lt;E&gt; n) {
+		void afterInsert(Node&lt;E&gt; n) {
 <span class="fc bfc" id="L346" title="All 4 branches covered.">			for (Node&lt;E&gt; p = n; p.parent() != null &amp;&amp; p == p.parent().left(); p = p.parent())</span>
 <span class="fc" id="L347">				setNodeData(p.parent(), n);</span>
 <span class="fc" id="L348">		}</span>
 
 		@Override
-		protected void beforeRemove(Node&lt;E&gt; n) {
+		void beforeRemove(Node&lt;E&gt; n) {
 			Node&lt;E&gt; min;
 <span class="fc bfc" id="L353" title="All 2 branches covered.">			if (n.left() != null)</span>
 <span class="fc" id="L354">				min = getNodeData(n.left());</span>
@@ -362,7 +362,7 @@ public class RedBlackTreeExtended&lt;E&gt; extends RedBlackTree&lt;E&gt; {
 <span class="fc" id="L362">		}</span>
 
 		@Override
-		protected void beforeNodeSwap(Node&lt;E&gt; a, Node&lt;E&gt; b) {
+		void beforeNodeSwap(Node&lt;E&gt; a, Node&lt;E&gt; b) {
 <span class="pc bpc" id="L366" title="1 of 2 branches missed.">			if (getNodeData(b) == a) {</span>
 <span class="nc" id="L367">				Node&lt;E&gt; temp = a;</span>
 <span class="nc" id="L368">				a = b;</span>
@@ -403,13 +403,13 @@ public class RedBlackTreeExtended&lt;E&gt; extends RedBlackTree&lt;E&gt; {
 <span class="fc" id="L403">		}</span>
 
 		@Override
-		protected void beforeRotateLeft(Node&lt;E&gt; n) {
+		void beforeRotateLeft(Node&lt;E&gt; n) {
 <span class="fc" id="L407">			Node&lt;E&gt; child = n.right();</span>
 <span class="fc" id="L408">			setNodeData(child, getNodeData(n));</span>
 <span class="fc" id="L409">		}</span>
 
 		@Override
-		protected void beforeRotateRight(Node&lt;E&gt; n) {
+		void beforeRotateRight(Node&lt;E&gt; n) {
 <span class="fc" id="L413">			Node&lt;E&gt; grandchild = n.left().right();</span>
 <span class="fc bfc" id="L414" title="All 2 branches covered.">			setNodeData(n, grandchild != null ? getNodeData(grandchild) : n);</span>
 <span class="fc" id="L415">		}</span>
@@ -426,19 +426,19 @@ public class RedBlackTreeExtended&lt;E&gt; extends RedBlackTree&lt;E&gt; {
 		}
 
 		@Override
-		protected void initNode(Node&lt;E&gt; n) {
+		void initNode(Node&lt;E&gt; n) {
 			/* maximum node of subtree of the single node is the node itself */
 <span class="fc" id="L431">			setNodeData(n, n);</span>
 <span class="fc" id="L432">		}</span>
 
 		@Override
-		protected void afterInsert(Node&lt;E&gt; n) {
+		void afterInsert(Node&lt;E&gt; n) {
 <span class="fc bfc" id="L436" title="All 4 branches covered.">			for (Node&lt;E&gt; p = n; p.parent() != null &amp;&amp; p == p.parent().right(); p = p.parent())</span>
 <span class="fc" id="L437">				setNodeData(p.parent(), n);</span>
 <span class="fc" id="L438">		}</span>
 
 		@Override
-		protected void beforeRemove(Node&lt;E&gt; n) {
+		void beforeRemove(Node&lt;E&gt; n) {
 			Node&lt;E&gt; max;
 <span class="fc bfc" id="L443" title="All 2 branches covered.">			if (n.right() != null)</span>
 <span class="fc" id="L444">				max = getNodeData(n.right());</span>
@@ -452,7 +452,7 @@ public class RedBlackTreeExtended&lt;E&gt; extends RedBlackTree&lt;E&gt; {
 <span class="fc" id="L452">		}</span>
 
 		@Override
-		protected void beforeNodeSwap(Node&lt;E&gt; a, Node&lt;E&gt; b) {
+		void beforeNodeSwap(Node&lt;E&gt; a, Node&lt;E&gt; b) {
 <span class="pc bpc" id="L456" title="1 of 2 branches missed.">			if (getNodeData(b) == a) {</span>
 <span class="nc" id="L457">				Node&lt;E&gt; temp = a;</span>
 <span class="nc" id="L458">				a = b;</span>
@@ -493,13 +493,13 @@ public class RedBlackTreeExtended&lt;E&gt; extends RedBlackTree&lt;E&gt; {
 <span class="fc" id="L493">		}</span>
 
 		@Override
-		protected void beforeRotateLeft(Node&lt;E&gt; n) {
+		void beforeRotateLeft(Node&lt;E&gt; n) {
 <span class="fc" id="L497">			Node&lt;E&gt; grandchild = n.right().left();</span>
 <span class="fc bfc" id="L498" title="All 2 branches covered.">			setNodeData(n, grandchild != null ? getNodeData(grandchild) : n);</span>
 <span class="fc" id="L499">		}</span>
 
 		@Override
-		protected void beforeRotateRight(Node&lt;E&gt; n) {
+		void beforeRotateRight(Node&lt;E&gt; n) {
 <span class="fc" id="L503">			Node&lt;E&gt; child = n.left();</span>
 <span class="fc" id="L504">			setNodeData(child, getNodeData(n));</span>
 <span class="fc" id="L505">		}</span>

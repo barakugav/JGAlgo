@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MSTKruskal1956.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jgalgo</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">MSTKruskal1956.java</span></div><h1>MSTKruskal1956.java</h1><pre class="source lang-java linenums">package com.jgalgo;
 
+import java.util.Objects;
+import java.util.function.IntFunction;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
@@ -12,37 +14,43 @@ public class MSTKruskal1956 implements MST {
 	 * O(m log n)
 	 */
 
-<span class="fc" id="L15">	public MSTKruskal1956() {</span>
-<span class="fc" id="L16">	}</span>
+<span class="fc" id="L17">	private IntFunction&lt;? extends UnionFind&gt; unionFindBuilder = UnionFindArray::new;</span>
+
+<span class="fc" id="L19">	public MSTKruskal1956() {</span>
+<span class="fc" id="L20">	}</span>
+
+	public void setUnionFindBuilder(IntFunction&lt;? extends UnionFind&gt; builder) {
+<span class="nc" id="L23">		unionFindBuilder = Objects.requireNonNull(builder);</span>
+<span class="nc" id="L24">	}</span>
 
 	@Override
 	public IntCollection calcMST(Graph g0, EdgeWeightFunc w) {
-<span class="pc bpc" id="L20" title="1 of 2 branches missed.">		if (!(g0 instanceof UGraph))</span>
-<span class="nc" id="L21">			throw new IllegalArgumentException(&quot;only undirected graphs are supported&quot;);</span>
-<span class="fc" id="L22">		UGraph g = (UGraph) g0;</span>
-<span class="fc" id="L23">		int n = g.vertices().size();</span>
-<span class="fc bfc" id="L24" title="All 2 branches covered.">		if (n == 0)</span>
-<span class="fc" id="L25">			return IntLists.emptyList();</span>
+<span class="pc bpc" id="L28" title="1 of 2 branches missed.">		if (!(g0 instanceof UGraph))</span>
+<span class="nc" id="L29">			throw new IllegalArgumentException(&quot;only undirected graphs are supported&quot;);</span>
+<span class="fc" id="L30">		UGraph g = (UGraph) g0;</span>
+<span class="fc" id="L31">		int n = g.vertices().size();</span>
+<span class="fc bfc" id="L32" title="All 2 branches covered.">		if (n == 0)</span>
+<span class="fc" id="L33">			return IntLists.emptyList();</span>
 
 		/* sort edges */
-<span class="fc" id="L28">		int[] edges = g.edges().toIntArray();</span>
-<span class="fc" id="L29">		IntArrays.parallelQuickSort(edges, w);</span>
+<span class="fc" id="L36">		int[] edges = g.edges().toIntArray();</span>
+<span class="fc" id="L37">		IntArrays.parallelQuickSort(edges, w);</span>
 
 		/* create union find data structure for each vertex */
-<span class="fc" id="L32">		UnionFind uf = new UnionFindArray(n);</span>
+<span class="fc" id="L40">		UnionFind uf = unionFindBuilder.apply(n);</span>
 
 		/* iterate over the edges and build the MST */
-<span class="fc" id="L35">		IntCollection mst = new IntArrayList(n - 1);</span>
-<span class="fc bfc" id="L36" title="All 2 branches covered.">		for (int e : edges) {</span>
-<span class="fc" id="L37">			int u = g.edgeSource(e);</span>
-<span class="fc" id="L38">			int v = g.edgeTarget(e);</span>
+<span class="fc" id="L43">		IntCollection mst = new IntArrayList(n - 1);</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">		for (int e : edges) {</span>
+<span class="fc" id="L45">			int u = g.edgeSource(e);</span>
+<span class="fc" id="L46">			int v = g.edgeTarget(e);</span>
 
-<span class="fc bfc" id="L40" title="All 2 branches covered.">			if (uf.find(u) != uf.find(v)) {</span>
-<span class="fc" id="L41">				uf.union(u, v);</span>
-<span class="fc" id="L42">				mst.add(e);</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">			if (uf.find(u) != uf.find(v)) {</span>
+<span class="fc" id="L49">				uf.union(u, v);</span>
+<span class="fc" id="L50">				mst.add(e);</span>
 			}
 		}
-<span class="fc" id="L45">		return mst;</span>
+<span class="fc" id="L53">		return mst;</span>
 	}
 
 }
