@@ -208,25 +208,25 @@ public class RedBlackTreeExtended<E> extends RedBlackTree<E> {
 			this.data = data;
 		}
 
-		protected void initNode(Node<E> n) {
+		void initNode(Node<E> n) {
 		}
 
-		protected void removeNodeData(Node<E> n) {
+		void removeNodeData(Node<E> n) {
 		}
 
-		protected void afterInsert(Node<E> n) {
+		void afterInsert(Node<E> n) {
 		}
 
-		protected void beforeRemove(Node<E> n) {
+		void beforeRemove(Node<E> n) {
 		}
 
-		protected void beforeNodeSwap(Node<E> a, Node<E> b) {
+		void beforeNodeSwap(Node<E> a, Node<E> b) {
 		}
 
-		protected void beforeRotateLeft(Node<E> n) {
+		void beforeRotateLeft(Node<E> n) {
 		}
 
-		protected void beforeRotateRight(Node<E> n) {
+		void beforeRotateRight(Node<E> n) {
 		}
 
 	}
@@ -281,33 +281,33 @@ public class RedBlackTreeExtended<E> extends RedBlackTree<E> {
 		}
 
 		@Override
-		protected void initNode(Node<E> n) {
+		void initNode(Node<E> n) {
 			setNodeData(n, 1);
 		}
 
 		@Override
-		protected void afterInsert(Node<E> n) {
+		void afterInsert(Node<E> n) {
 			/* for each ancestor, increase sub tree size by 1 */
 			for (; (n = n.parent()) != null;)
 				setNodeData(n, getNodeData(n) + 1);
 		}
 
 		@Override
-		protected void beforeRemove(Node<E> n) {
+		void beforeRemove(Node<E> n) {
 			/* for each ancestor, decrease sub tree size by 1 */
 			for (; (n = n.parent()) != null;)
 				setNodeData(n, getNodeData(n) - 1);
 		}
 
 		@Override
-		protected void beforeNodeSwap(Node<E> a, Node<E> b) {
+		void beforeNodeSwap(Node<E> a, Node<E> b) {
 			int s = getNodeData(a);
 			setNodeData(a, getNodeData(b));
 			setNodeData(b, s);
 		}
 
 		@Override
-		protected void beforeRotateLeft(Node<E> n) {
+		void beforeRotateLeft(Node<E> n) {
 			Node<E> child = n.right(), grandchild = child.left();
 			int childSize = getNodeData(child), grandchildSize = grandchild != null ? getNodeData(grandchild) : 0;
 
@@ -316,7 +316,7 @@ public class RedBlackTreeExtended<E> extends RedBlackTree<E> {
 		}
 
 		@Override
-		protected void beforeRotateRight(Node<E> n) {
+		void beforeRotateRight(Node<E> n) {
 			Node<E> child = n.left(), grandchild = child.right();
 			int childSize = getNodeData(child), grandchildSize = grandchild != null ? getNodeData(grandchild) : 0;
 
@@ -336,19 +336,19 @@ public class RedBlackTreeExtended<E> extends RedBlackTree<E> {
 		}
 
 		@Override
-		protected void initNode(Node<E> n) {
+		void initNode(Node<E> n) {
 			/* minimum node of subtree of the single node is the node itself */
 			setNodeData(n, n);
 		}
 
 		@Override
-		protected void afterInsert(Node<E> n) {
+		void afterInsert(Node<E> n) {
 			for (Node<E> p = n; p.parent() != null && p == p.parent().left(); p = p.parent())
 				setNodeData(p.parent(), n);
 		}
 
 		@Override
-		protected void beforeRemove(Node<E> n) {
+		void beforeRemove(Node<E> n) {
 			Node<E> min;
 			if (n.left() != null)
 				min = getNodeData(n.left());
@@ -362,7 +362,7 @@ public class RedBlackTreeExtended<E> extends RedBlackTree<E> {
 		}
 
 		@Override
-		protected void beforeNodeSwap(Node<E> a, Node<E> b) {
+		void beforeNodeSwap(Node<E> a, Node<E> b) {
 			if (getNodeData(b) == a) {
 				Node<E> temp = a;
 				a = b;
@@ -403,13 +403,13 @@ public class RedBlackTreeExtended<E> extends RedBlackTree<E> {
 		}
 
 		@Override
-		protected void beforeRotateLeft(Node<E> n) {
+		void beforeRotateLeft(Node<E> n) {
 			Node<E> child = n.right();
 			setNodeData(child, getNodeData(n));
 		}
 
 		@Override
-		protected void beforeRotateRight(Node<E> n) {
+		void beforeRotateRight(Node<E> n) {
 			Node<E> grandchild = n.left().right();
 			setNodeData(n, grandchild != null ? getNodeData(grandchild) : n);
 		}
@@ -426,19 +426,19 @@ public class RedBlackTreeExtended<E> extends RedBlackTree<E> {
 		}
 
 		@Override
-		protected void initNode(Node<E> n) {
+		void initNode(Node<E> n) {
 			/* maximum node of subtree of the single node is the node itself */
 			setNodeData(n, n);
 		}
 
 		@Override
-		protected void afterInsert(Node<E> n) {
+		void afterInsert(Node<E> n) {
 			for (Node<E> p = n; p.parent() != null && p == p.parent().right(); p = p.parent())
 				setNodeData(p.parent(), n);
 		}
 
 		@Override
-		protected void beforeRemove(Node<E> n) {
+		void beforeRemove(Node<E> n) {
 			Node<E> max;
 			if (n.right() != null)
 				max = getNodeData(n.right());
@@ -452,7 +452,7 @@ public class RedBlackTreeExtended<E> extends RedBlackTree<E> {
 		}
 
 		@Override
-		protected void beforeNodeSwap(Node<E> a, Node<E> b) {
+		void beforeNodeSwap(Node<E> a, Node<E> b) {
 			if (getNodeData(b) == a) {
 				Node<E> temp = a;
 				a = b;
@@ -493,13 +493,13 @@ public class RedBlackTreeExtended<E> extends RedBlackTree<E> {
 		}
 
 		@Override
-		protected void beforeRotateLeft(Node<E> n) {
+		void beforeRotateLeft(Node<E> n) {
 			Node<E> grandchild = n.right().left();
 			setNodeData(n, grandchild != null ? getNodeData(grandchild) : n);
 		}
 
 		@Override
-		protected void beforeRotateRight(Node<E> n) {
+		void beforeRotateRight(Node<E> n) {
 			Node<E> child = n.left();
 			setNodeData(child, getNodeData(n));
 		}

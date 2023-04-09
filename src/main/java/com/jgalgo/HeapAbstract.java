@@ -6,7 +6,7 @@ import java.util.Comparator;
 
 public abstract class HeapAbstract<E> extends AbstractCollection<E> implements Heap<E> {
 
-	protected final Comparator<? super E> c;
+	final Comparator<? super E> c;
 
 	public HeapAbstract(Comparator<? super E> c) {
 		this.c = c;
