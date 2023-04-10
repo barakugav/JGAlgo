@@ -506,4 +506,9 @@ class Utils {
 		void accept(int a1, double a2);
 	}
 
+	@FunctionalInterface
+	static interface BiInt2IntFunction {
+		int apply(int a1, int a2);
+	}
+
 }

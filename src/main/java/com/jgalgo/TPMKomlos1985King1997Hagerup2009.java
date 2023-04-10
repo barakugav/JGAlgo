@@ -3,6 +3,9 @@ package com.jgalgo;
 import java.util.Arrays;
 import java.util.BitSet;
 
+import com.jgalgo.Utils.BiInt2IntFunction;
+
+import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
@@ -13,9 +16,15 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 	 * O(m + n) where m is the number of queries
 	 */
 
+	private boolean useBitsLookupTables = false;
+
 	private static final Object EdgeRefWeightKey = new Object();
 
 	public TPMKomlos1985King1997Hagerup2009() {
+	}
+
+	public void useBitsLookupTables(boolean enable) {
+		useBitsLookupTables = enable;
 	}
 
 	@Override
@@ -28,22 +37,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 			throw new IllegalArgumentException("only trees are supported");
 		if (t.vertices().size() == 0)
 			return new int[queriesNum];
-		return new Worker((UGraph) t, w).calcTPM(queries, queriesNum);
-	}
-
-	private static class BitsTable {
-		private final BitsLookupTable.Count count;
-		private final BitsLookupTable.Ith ith;
-
-		BitsTable(int wordsize) {
-			count = new BitsLookupTable.Count(wordsize);
-			ith = new BitsLookupTable.Ith(wordsize, count);
-		}
-
-		void init() {
-			count.init();
-			ith.init();
-		}
+		return new Worker((UGraph) t, w, useBitsLookupTables).calcTPM(queries, queriesNum);
 	}
 
 	private static class Worker {
@@ -54,15 +48,38 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 		 */
 		final UGraph tOrig;
 		final EdgeWeightFunc w;
-		final BitsTable bitsTable;
+		private final Int2IntFunction getBitCount;
+		private final BiInt2IntFunction getIthbit;
+		private final Int2IntFunction getNumberOfTrailingZeros;
 
-		Worker(UGraph t, EdgeWeightFunc w) {
+		Worker(UGraph t, EdgeWeightFunc w, boolean useBitsLookupTables) {
 			this.tOrig = t;
 			this.w = w;
 
-			int n = t.vertices().size();
-			bitsTable = new BitsTable(n > 1 ? Utils.log2ceil(n) : 1);
-			bitsTable.init();
+			if (useBitsLookupTables) {
+				int n = t.vertices().size();
+				int wordsize = n > 1 ? Utils.log2ceil(n) : 1;
+				BitsLookupTable.Count count = new BitsLookupTable.Count(wordsize);
+				BitsLookupTable.Ith ith = new BitsLookupTable.Ith(wordsize, count);
+				count.init();
+				ith.init();
+
+				getBitCount = count::bitCount;
+				getIthbit = ith::ithBit;
+				getNumberOfTrailingZeros = ith::numberOfTrailingZeros;
+			} else {
+				getBitCount = Integer::bitCount;
+				getIthbit = (x, i) -> {
+					if (i < 0 || i >= getBitCount.applyAsInt(x))
+						throw new IndexOutOfBoundsException(Integer.toBinaryString(x) + "[" + i + "]");
+					for (; i > 0; i--) {
+						int z = Integer.numberOfTrailingZeros(x);
+						x &= ~(1 << z);
+					}
+					return Integer.numberOfTrailingZeros(x);
+				};
+				getNumberOfTrailingZeros = Integer::numberOfTrailingZeros;
+			}
 		}
 
 		int[] calcTPM(int[] queries, int queriesNum) {
@@ -94,16 +111,16 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 
 				int ua = -1, va = -1;
 
-				int qusize = bitsTable.count.bitCount(q[u]);
+				int qusize = getBitCount.applyAsInt(q[u]);
 				for (int j = 0; j < qusize; j++) {
-					if (bitsTable.ith.ithBit(q[u], j) == lcaDepth) {
+					if (getIthbit.apply(q[u], j) == lcaDepth) {
 						ua = a[u][j];
 						break;
 					}
 				}
-				int qvsize = bitsTable.count.bitCount(q[v]);
+				int qvsize = getBitCount.applyAsInt(q[v]);
 				for (int j = 0; j < qvsize; j++) {
-					if (bitsTable.ith.ithBit(q[v], j) == lcaDepth) {
+					if (getIthbit.apply(q[v], j) == lcaDepth) {
 						va = a[v][j];
 						break;
 					}
@@ -140,11 +157,11 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 				a[v] = repSuf(a[v], depth, j);
 
 				if (depth == leavesDepth) {
-					int qvsize = bitsTable.count.bitCount(q[v]);
+					int qvsize = getBitCount.applyAsInt(q[v]);
 					int[] resv = new int[qvsize];
 					for (int i = 0; i < qvsize; i++) {
-						int b = bitsTable.ith.ithBit(q[v], i);
-						int s = bitsTable.ith.numberOfTrailingZeros(successor(a[v], 1 << b) >> 1);
+						int b = getIthbit.apply(q[v], i);
+						int s = getNumberOfTrailingZeros.applyAsInt(successor(a[v], 1 << b) >> 1);
 						resv[i] = edgesFromRoot.getInt(s);
 					}
 					res[v] = resv;
@@ -175,15 +192,15 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 		}
 
 		private int binarySearch(int av, double weight, IntList edgesToRoot, Weights.Int edgeData) {
-			int avsize = bitsTable.count.bitCount(av);
-			if (avsize == 0 || w.weight(edgeData.getInt(edgesToRoot.getInt(bitsTable.ith.ithBit(av, 0) - 1))) < weight)
+			int avsize = getBitCount.applyAsInt(av);
+			if (avsize == 0 || w.weight(edgeData.getInt(edgesToRoot.getInt(getIthbit.apply(av, 0) - 1))) < weight)
 				return 0;
 
 			for (int from = 0, to = avsize;;) {
 				if (from == to - 1)
-					return bitsTable.ith.ithBit(av, from) + 1;
+					return getIthbit.apply(av, from) + 1;
 				int mid = (from + to) / 2;
-				int avi = bitsTable.ith.ithBit(av, mid);
+				int avi = getIthbit.apply(av, mid);
 				if (w.weight(edgeData.getInt(edgesToRoot.getInt(avi - 1))) >= weight)
 					from = mid;
 				else

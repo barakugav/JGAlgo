@@ -21,7 +21,7 @@ import com.jgalgo.test.GraphsTestUtils.RandomGraphBuilder;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
-class TPMTestUtils extends TestUtils {
+public class TPMTestUtils extends TestUtils {
 
 	private TPMTestUtils() {
 	}
@@ -48,7 +48,7 @@ class TPMTestUtils extends TestUtils {
 		return res;
 	}
 
-	static int[] generateAllPossibleQueries(int n) {
+	public static int[] generateAllPossibleQueries(int n) {
 		int[] queries = new int[(n + 1) * n];
 		for (int q = 0, i = 0; i < n; i++) {
 			for (int j = i; j < n; j++, q++) {
