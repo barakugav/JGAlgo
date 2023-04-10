@@ -10,7 +10,7 @@ public class SplayTree<E> extends BSTAbstract<E> {
 
 	private NodeSized<E> root;
 	private final SplayImplWithSize<E> impl = new SplayImplWithSize<>();
-	private final Set<Handle<E>> handlesSet;
+	private final Set<HeapReference<E>> refsSet;
 
 	public SplayTree() {
 		this(null);
@@ -20,7 +20,7 @@ public class SplayTree<E> extends BSTAbstract<E> {
 		super(c);
 		root = null;
 
-		handlesSet = new AbstractSet<>() {
+		refsSet = new AbstractSet<>() {
 
 			@Override
 			public int size() {
@@ -29,14 +29,14 @@ public class SplayTree<E> extends BSTAbstract<E> {
 
 			@SuppressWarnings({ "unchecked", "rawtypes" })
 			@Override
-			public Iterator<Handle<E>> iterator() {
+			public Iterator<HeapReference<E>> iterator() {
 				return (Iterator) new BSTUtils.BSTIterator<>(root);
 			}
 
 			@SuppressWarnings("unchecked")
 			@Override
 			public boolean remove(Object o) {
-				SplayTree.this.removeHandle((Handle<E>) o);
+				SplayTree.this.removeRef((HeapReference<E>) o);
 				return true;
 			}
 
@@ -53,12 +53,12 @@ public class SplayTree<E> extends BSTAbstract<E> {
 	}
 
 	@Override
-	public Set<Handle<E>> handles() {
-		return handlesSet;
+	public Set<HeapReference<E>> refsSet() {
+		return refsSet;
 	}
 
 	@Override
-	public Handle<E> insert(E e) {
+	public HeapReference<E> insert(E e) {
 		return insertNode(new NodeSized<>(e));
 	}
 
@@ -76,8 +76,8 @@ public class SplayTree<E> extends BSTAbstract<E> {
 	}
 
 	@Override
-	public void removeHandle(Handle<E> handle) {
-		NodeSized<E> n = (NodeSized<E>) handle;
+	public void removeRef(HeapReference<E> ref) {
+		NodeSized<E> n = (NodeSized<E>) ref;
 
 		/* If the node has two children, swap with successor */
 		if (n.hasLeftChild() && n.hasRightChild())
@@ -126,66 +126,66 @@ public class SplayTree<E> extends BSTAbstract<E> {
 	}
 
 	@Override
-	public void decreaseKey(Handle<E> handle, E e) {
-		NodeSized<E> n = (NodeSized<E>) handle;
+	public void decreaseKey(HeapReference<E> ref, E e) {
+		NodeSized<E> n = (NodeSized<E>) ref;
 		if (compare(e, n.data) > 0)
 			throw new IllegalArgumentException("new key is greater than existing one");
-		removeHandle(n);
+		removeRef(n);
 		n.data = e;
 		insertNode(n);
 	}
 
 	@Override
-	public Handle<E> findHanlde(E e) {
+	public HeapReference<E> findRef(E e) {
 		NodeSized<E> n = BSTUtils.find(root, c, e);
 		return n == null ? null : (root = impl.splay(n));
 	}
 
 	@Override
-	public Handle<E> findMinHandle() {
+	public HeapReference<E> findMinRef() {
 		checkTreeNotEmpty();
 		return root = impl.splay(BSTUtils.findMin(root));
 	}
 
 	@Override
-	public Handle<E> findMaxHandle() {
+	public HeapReference<E> findMaxRef() {
 		checkTreeNotEmpty();
 		return root = impl.splay(BSTUtils.findMax(root));
 	}
 
 	@Override
-	public Handle<E> findOrSmaller(E e) {
+	public HeapReference<E> findOrSmaller(E e) {
 		NodeSized<E> n = BSTUtils.findOrSmaller(root, c, e);
 		return n == null ? null : (root = impl.splay(n));
 	}
 
 	@Override
-	public Handle<E> findOrGreater(E e) {
+	public HeapReference<E> findOrGreater(E e) {
 		NodeSized<E> n = BSTUtils.findOrGreater(root, c, e);
 		return n == null ? null : (root = impl.splay(n));
 	}
 
 	@Override
-	public Handle<E> findSmaller(E e) {
+	public HeapReference<E> findSmaller(E e) {
 		NodeSized<E> n = BSTUtils.findSmaller(root, c, e);
 		return n == null ? null : (root = impl.splay(n));
 	}
 
 	@Override
-	public Handle<E> findGreater(E e) {
+	public HeapReference<E> findGreater(E e) {
 		NodeSized<E> n = BSTUtils.findGreater(root, c, e);
 		return n == null ? null : (root = impl.splay(n));
 	}
 
 	@Override
-	public Handle<E> getPredecessor(Handle<E> handle) {
-		NodeSized<E> n = BSTUtils.getPredecessor((NodeSized<E>) handle);
+	public HeapReference<E> getPredecessor(HeapReference<E> ref) {
+		NodeSized<E> n = BSTUtils.getPredecessor((NodeSized<E>) ref);
 		return n == null ? null : (root = impl.splay(n));
 	}
 
 	@Override
-	public Handle<E> getSuccessor(Handle<E> handle) {
-		NodeSized<E> n = BSTUtils.getSuccessor((NodeSized<E>) handle);
+	public HeapReference<E> getSuccessor(HeapReference<E> ref) {
+		NodeSized<E> n = BSTUtils.getSuccessor((NodeSized<E>) ref);
 		return n == null ? null : (root = impl.splay(n));
 	}
 
@@ -194,7 +194,7 @@ public class SplayTree<E> extends BSTAbstract<E> {
 		checkTreeNotEmpty();
 		NodeSized<E> n = BSTUtils.findMin(root);
 		E ret = n.data;
-		removeHandle(n);
+		removeRef(n);
 		return ret;
 	}
 
@@ -258,7 +258,7 @@ public class SplayTree<E> extends BSTAbstract<E> {
 		/* Assume all nodes in t1 are smaller than all nodes in t2 */
 
 		/* Splay t1 max and t2 min */
-		NodeSized<E> n1 = (NodeSized<E>) t1.findMaxHandle();
+		NodeSized<E> n1 = (NodeSized<E>) t1.findMaxRef();
 		assert n1.isRoot();
 		assert !n1.hasRightChild();
 
@@ -295,10 +295,10 @@ public class SplayTree<E> extends BSTAbstract<E> {
 	}
 
 	@Override
-	public SplayTree<E> split(Handle<E> handle) {
+	public SplayTree<E> split(HeapReference<E> ref) {
 		SplayTree<E> newTree = new SplayTree<>(c);
 
-		NodeSized<E> n = impl.splay((NodeSized<E>) handle);
+		NodeSized<E> n = impl.splay((NodeSized<E>) ref);
 		assert n.isRoot();
 
 		if ((root = n.left) != null) {
@@ -319,7 +319,7 @@ public class SplayTree<E> extends BSTAbstract<E> {
 		root = null;
 	}
 
-	static class Node<E, N extends Node<E, N>> extends BSTUtils.Node<E, N> implements Handle<E> {
+	static class Node<E, N extends Node<E, N>> extends BSTUtils.Node<E, N> implements HeapReference<E> {
 
 		Node(E e) {
 			super(e);

@@ -33,7 +33,7 @@ public class HeapBinary<E> extends HeapAbstract<E> {
 	}
 
 	@Override
-	public HeapDirectAccessed.Handle<E> insert(E e) {
+	public HeapReference<E> insert(E e) {
 		if (arr.length == size)
 			grow();
 

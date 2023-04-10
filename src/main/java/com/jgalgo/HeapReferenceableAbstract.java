@@ -3,43 +3,43 @@ package com.jgalgo;
 import java.util.Comparator;
 import java.util.Iterator;
 
-public abstract class HeapAbstractDirectAccessed<E> extends HeapAbstract<E> implements HeapDirectAccessed<E> {
+abstract class HeapReferenceableAbstract<E> extends HeapAbstract<E> implements HeapReferenceable<E> {
 
-	public HeapAbstractDirectAccessed(Comparator<? super E> c) {
+	HeapReferenceableAbstract(Comparator<? super E> c) {
 		super(c);
 	}
 
 	@Override
 	public Iterator<E> iterator() {
-		return HeapDirectAccessed.super.iterator();
+		return HeapReferenceable.super.iterator();
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean contains(Object o) {
-		return findHanlde((E) o) != null;
+		return findRef((E) o) != null;
 	}
 
 	@Override
 	public E findMin() {
-		return findMinHandle().get();
+		return findMinRef().get();
 	}
 
 	@Override
 	public boolean remove(Object o) {
 		@SuppressWarnings("unchecked")
-		Handle<E> handle = findHanlde((E) o);
-		if (handle == null)
+		HeapReference<E> ref = findRef((E) o);
+		if (ref == null)
 			return false;
-		removeHandle(handle);
+		removeRef(ref);
 		return true;
 	}
 
 	@Override
 	public E extractMin() {
-		Handle<E> min = findMinHandle();
+		HeapReference<E> min = findMinRef();
 		E val = min.get();
-		removeHandle(min);
+		removeRef(min);
 		return val;
 	}
 

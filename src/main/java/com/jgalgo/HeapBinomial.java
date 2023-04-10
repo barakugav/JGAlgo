@@ -9,12 +9,12 @@ import java.util.Set;
 
 import com.jgalgo.Trees.TreeNode;
 
-public class HeapBinomial<E> extends HeapAbstractDirectAccessed<E> {
+public class HeapBinomial<E> extends HeapReferenceableAbstract<E> {
 
 	private Node<E>[] roots;
 	private int rootsLen;
 	private int size;
-	private final Set<Handle<E>> handlesSet;
+	private final Set<HeapReference<E>> refsSet;
 
 	public HeapBinomial() {
 		this(null);
@@ -26,7 +26,7 @@ public class HeapBinomial<E> extends HeapAbstractDirectAccessed<E> {
 		rootsLen = 0;
 		size = 0;
 
-		handlesSet = new AbstractSet<>() {
+		refsSet = new AbstractSet<>() {
 
 			@Override
 			public int size() {
@@ -35,14 +35,14 @@ public class HeapBinomial<E> extends HeapAbstractDirectAccessed<E> {
 
 			@SuppressWarnings({ "unchecked", "rawtypes" })
 			@Override
-			public Iterator<Handle<E>> iterator() {
+			public Iterator<HeapReference<E>> iterator() {
 				return (Iterator) new Itr();
 			}
 
 			@SuppressWarnings("unchecked")
 			@Override
 			public boolean remove(Object o) {
-				HeapBinomial.this.removeHandle((Handle<E>) o);
+				HeapBinomial.this.removeRef((HeapReference<E>) o);
 				return true;
 			}
 
@@ -92,8 +92,8 @@ public class HeapBinomial<E> extends HeapAbstractDirectAccessed<E> {
 	}
 
 	@Override
-	public void decreaseKey(Handle<E> handle, E e) {
-		Node<E> node = (Node<E>) handle;
+	public void decreaseKey(HeapReference<E> ref, E e) {
+		Node<E> node = (Node<E>) ref;
 		if (compare(e, node.value) > 0)
 			throw new IllegalArgumentException("new key is greater than existing one");
 		node.value = e;
@@ -114,8 +114,8 @@ public class HeapBinomial<E> extends HeapAbstractDirectAccessed<E> {
 	}
 
 	@Override
-	public void removeHandle(Handle<E> handle) {
-		Node<E> node = (Node<E>) handle;
+	public void removeRef(HeapReference<E> ref) {
+		Node<E> node = (Node<E>) ref;
 
 		/* propagate to top of the tree */
 		for (Node<E> p; (p = node.parent) != null;)
@@ -169,7 +169,7 @@ public class HeapBinomial<E> extends HeapAbstractDirectAccessed<E> {
 	}
 
 	@Override
-	public Handle<E> insert(E e) {
+	public HeapReference<E> insert(E e) {
 		Node<E> node = new Node<>(e);
 		Node<E>[] h2 = newArr(1);
 		h2[0] = node;
@@ -178,8 +178,8 @@ public class HeapBinomial<E> extends HeapAbstractDirectAccessed<E> {
 	}
 
 	@Override
-	public Set<Handle<E>> handles() {
-		return handlesSet;
+	public Set<HeapReference<E>> refsSet() {
+		return refsSet;
 	}
 
 	private Node<E> mergeTreesDefaultCmp(Node<E> r1, Node<E> r2) {
@@ -301,7 +301,7 @@ public class HeapBinomial<E> extends HeapAbstractDirectAccessed<E> {
 	}
 
 	@Override
-	public Handle<E> findMinHandle() {
+	public HeapReference<E> findMinRef() {
 		if (isEmpty())
 			throw new IllegalStateException();
 		Node<E>[] rs = roots;
@@ -325,7 +325,7 @@ public class HeapBinomial<E> extends HeapAbstractDirectAccessed<E> {
 		return new Node[n];
 	}
 
-	private static class Node<E> implements Handle<E>, TreeNode<Node<E>> {
+	private static class Node<E> implements HeapReference<E>, TreeNode<Node<E>> {
 
 		Node<E> parent;
 		Node<E> next;

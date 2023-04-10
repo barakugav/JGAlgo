@@ -10,7 +10,7 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 
 	private int size;
 	private Node<E> root;
-	private final Set<Handle<E>> handlesSet;
+	private final Set<HeapReference<E>> refsSet;
 
 	static final boolean Red = true;
 	static final boolean Black = false;
@@ -24,7 +24,7 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 		root = null;
 		size = 0;
 
-		handlesSet = new AbstractSet<>() {
+		refsSet = new AbstractSet<>() {
 
 			@Override
 			public int size() {
@@ -33,14 +33,14 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 
 			@SuppressWarnings({ "unchecked", "rawtypes" })
 			@Override
-			public Iterator<Handle<E>> iterator() {
+			public Iterator<HeapReference<E>> iterator() {
 				return (Iterator) new BSTUtils.BSTIterator<>(root);
 			}
 
 			@SuppressWarnings("unchecked")
 			@Override
 			public boolean remove(Object o) {
-				RedBlackTree.this.removeHandle((Handle<E>) o);
+				RedBlackTree.this.removeRef((HeapReference<E>) o);
 				return true;
 			}
 
@@ -57,13 +57,13 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 	}
 
 	@Override
-	public Handle<E> insert(E e) {
+	public HeapReference<E> insert(E e) {
 		return insertNode(newNode(e));
 	}
 
 	@Override
-	public Set<Handle<E>> handles() {
-		return handlesSet;
+	public Set<HeapReference<E>> refsSet() {
+		return refsSet;
 	}
 
 	@Override
@@ -92,35 +92,35 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 	}
 
 	@Override
-	public RedBlackTree<E> split(Handle<E> handle) {
+	public RedBlackTree<E> split(HeapReference<E> ref) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Handle<E> findHanlde(E e) {
+	public HeapReference<E> findRef(E e) {
 		return BSTUtils.find(root, c, e);
 	}
 
 	@Override
-	public Handle<E> findMinHandle() {
+	public HeapReference<E> findMinRef() {
 		if (root == null)
 			throw new IllegalStateException();
 		return BSTUtils.findMin(root);
 	}
 
 	@Override
-	public Handle<E> findMaxHandle() {
+	public HeapReference<E> findMaxRef() {
 		if (root == null)
 			throw new IllegalStateException();
 		return BSTUtils.findMax(root);
 	}
 
 	@Override
-	public void decreaseKey(Handle<E> handle, E e) {
-		Node<E> n = (Node<E>) handle;
+	public void decreaseKey(HeapReference<E> ref, E e) {
+		Node<E> n = (Node<E>) ref;
 		if (compare(e, n.data) > 0)
 			throw new IllegalArgumentException("new key is greater than existing one");
-		removeHandle(n);
+		removeRef(n);
 		n.data = e;
 		insertNode(n);
 	}
@@ -260,10 +260,10 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 	}
 
 	@Override
-	public void removeHandle(Handle<E> handle) {
+	public void removeRef(HeapReference<E> ref) {
 		if (root == null)
-			throw new IllegalArgumentException("hanlde is not valid");
-		removeNode((Node<E>) handle);
+			throw new IllegalArgumentException("ref is not valid");
+		removeNode((Node<E>) ref);
 	}
 
 	private void fixAfterRemove(Node<E> parent, boolean leftIsShortSide) {
@@ -404,41 +404,42 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 	}
 
 	@Override
-	public Handle<E> findOrSmaller(E e) {
+	public HeapReference<E> findOrSmaller(E e) {
 		return BSTUtils.findOrSmaller(root, c, e);
 	}
 
 	@Override
-	public Handle<E> findOrGreater(E e) {
+	public HeapReference<E> findOrGreater(E e) {
 		return BSTUtils.findOrGreater(root, c, e);
 	}
 
 	@Override
-	public Handle<E> findSmaller(E e) {
+	public HeapReference<E> findSmaller(E e) {
 		return BSTUtils.findSmaller(root, c, e);
 	}
 
 	@Override
-	public Handle<E> findGreater(E e) {
+	public HeapReference<E> findGreater(E e) {
 		return BSTUtils.findGreater(root, c, e);
 	}
 
 	@Override
-	public Handle<E> getPredecessor(Handle<E> handle) {
-		return BSTUtils.getPredecessor((Node<E>) handle);
+	public HeapReference<E> getPredecessor(HeapReference<E> ref) {
+		return BSTUtils.getPredecessor((Node<E>) ref);
 	}
 
 	@Override
-	public Handle<E> getSuccessor(Handle<E> handle) {
-		return BSTUtils.getSuccessor((Node<E>) handle);
+	public HeapReference<E> getSuccessor(HeapReference<E> ref) {
+		return BSTUtils.getSuccessor((Node<E>) ref);
 	}
 
-	public void forEachNodeInSubTree(Handle<E> handle, Consumer<? super Handle<E>> op) {
-		for (Node<E> n : Utils.iterable(new BSTUtils.BSTIterator<>((Node<E>) handle)))
+	// TODO change to iterator
+	public void forEachNodeInSubTree(HeapReference<E> ref, Consumer<? super HeapReference<E>> op) {
+		for (Node<E> n : Utils.iterable(new BSTUtils.BSTIterator<>((Node<E>) ref)))
 			op.accept(n);
 	}
 
-	static class Node<E> extends BSTUtils.Node<E, Node<E>> implements Handle<E> {
+	static class Node<E> extends BSTUtils.Node<E, Node<E>> implements HeapReference<E> {
 
 		private boolean color;
 

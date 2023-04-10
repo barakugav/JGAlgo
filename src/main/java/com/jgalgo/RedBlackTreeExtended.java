@@ -276,8 +276,8 @@ public class RedBlackTreeExtended<E> extends RedBlackTree<E> {
 		ExtensionSize() {
 		}
 
-		public int getSubTreeSize(Handle<E> handle) {
-			return getNodeData((Node<E>) handle);
+		public int getSubTreeSize(HeapReference<E> ref) {
+			return getNodeData((Node<E>) ref);
 		}
 
 		@Override
@@ -331,8 +331,8 @@ public class RedBlackTreeExtended<E> extends RedBlackTree<E> {
 		ExtensionMin() {
 		}
 
-		public Handle<E> getSubTreeMin(Handle<E> handle) {
-			return getNodeData((Node<E>) handle);
+		public HeapReference<E> getSubTreeMin(HeapReference<E> ref) {
+			return getNodeData((Node<E>) ref);
 		}
 
 		@Override
@@ -421,8 +421,8 @@ public class RedBlackTreeExtended<E> extends RedBlackTree<E> {
 		ExtensionMax() {
 		}
 
-		public Handle<E> getSubTreeMax(Handle<E> handle) {
-			return getNodeData((Node<E>) handle);
+		public HeapReference<E> getSubTreeMax(HeapReference<E> ref) {
+			return getNodeData((Node<E>) ref);
 		}
 
 		@Override

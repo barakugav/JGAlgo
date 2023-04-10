@@ -13,12 +13,12 @@ public class MSTFredmanTarjan1987 implements MST {
 	 * O(m log* n)
 	 */
 
-	private HeapDirectAccessed.Builder heapBuilder = HeapPairing::new;
+	private HeapReferenceable.Builder heapBuilder = HeapPairing::new;
 
 	public MSTFredmanTarjan1987() {
 	}
 
-	public void setHeapBuilder(HeapDirectAccessed.Builder heapBuilder) {
+	public void setHeapBuilder(HeapReferenceable.Builder heapBuilder) {
 		this.heapBuilder = Objects.requireNonNull(heapBuilder);
 	}
 
@@ -57,10 +57,10 @@ public class MSTFredmanTarjan1987 implements MST {
 		int[] treeVertices = new int[n]; // stack of super vertices in current built tree
 
 		// heap of edges going out of the current tree, one edge in per super vertex
-		HeapDirectAccessed<Integer> heap = heapBuilder.build(w);
+		HeapReferenceable<Integer> heap = heapBuilder.build(w);
 		// (super vertex -> heap element) for fast decreaseKey
 		@SuppressWarnings("unchecked")
-		HeapDirectAccessed.Handle<Integer>[] vHeapElm = new HeapDirectAccessed.Handle[n];
+		HeapReference<Integer>[] vHeapElm = new HeapReference[n];
 
 		IntCollection mst = new IntArrayList(n - 1);
 		for (;;) {
@@ -92,7 +92,7 @@ public class MSTFredmanTarjan1987 implements MST {
 							if (vTree[v] == r)
 								continue;
 
-							HeapDirectAccessed.Handle<Integer> heapElm = vHeapElm[v];
+							HeapReference<Integer> heapElm = vHeapElm[v];
 							if (heapElm == null) {
 								heapElm = vHeapElm[v] = heap.insert(Integer.valueOf(e));
 								if (heap.size() > k)

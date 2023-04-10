@@ -27,7 +27,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 	 */
 
 	private final DebugPrintsManager debugPrintManager;
-	private HeapDirectAccessed.Builder heapBuilder = HeapPairing::new;
+	private HeapReferenceable.Builder heapBuilder = HeapPairing::new;
 
 	private static final double EPS = 0.00001;
 
@@ -35,7 +35,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 		debugPrintManager = new DebugPrintsManager();
 	}
 
-	public void setHeapBuilder(HeapDirectAccessed.Builder heapBuilder) {
+	public void setHeapBuilder(HeapReferenceable.Builder heapBuilder) {
 		this.heapBuilder = Objects.requireNonNull(heapBuilder);
 	}
 
@@ -96,7 +96,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 
 		/*
 		 * index used to check whether a blossom was reached in the current blossom
-		 * traversy
+		 * traverse
 		 */
 		int blossomVisitIdx;
 
@@ -110,7 +110,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 		final EdgeEvent[] vToGrowEvent;
 
 		/* Heap storing all the grow events */
-		final HeapDirectAccessed<EdgeEvent> growEvents;
+		final HeapReferenceable<EdgeEvent> growEvents;
 
 		/* Heap storing all the blossom and augmenting events */
 		final SubtreeMergeFindmin<Blossom, EdgeEvent> smf;
@@ -128,7 +128,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 		final int[] oddBlossomPath;
 
 		/* Heap storing all expand events for odd vertices */
-		final HeapDirectAccessed<Blossom> expandEvents;
+		final HeapReferenceable<Blossom> expandEvents;
 
 		/* queue used during blossom creation to union all vertices */
 		final IntPriorityQueue unionQueue;
@@ -216,7 +216,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 			 * pointer to the grow event for this blossom, relevant only if this blossom is
 			 * out
 			 */
-			HeapDirectAccessed.Handle<EdgeEvent> growHandle;
+			HeapReference<EdgeEvent> growRef;
 
 			/* delta threshold for this blossom to be expanded */
 			double expandDelta;
@@ -225,9 +225,9 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 			 * pointer to the expand event for this blossom, relevant only if this blossom
 			 * is top odd
 			 */
-			HeapDirectAccessed.Handle<Blossom> expandHandle;
+			HeapReference<Blossom> expandRef;
 
-			/* field used to keep track which blossoms were visited during traversy */
+			/* field used to keep track which blossoms were visited during traverse */
 			int lastVisitIdx;
 
 			Blossom(int base) {
@@ -275,7 +275,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 		private static final Object EdgeValKey = new Object();
 
 		@SuppressWarnings("unchecked")
-		Worker(Graph g0, EdgeWeightFunc w, HeapDirectAccessed.Builder heapBuilder, DebugPrintsManager debugPrint) {
+		Worker(Graph g0, EdgeWeightFunc w, HeapReferenceable.Builder heapBuilder, DebugPrintsManager debugPrint) {
 			int n = g0.vertices().size();
 			this.g = new GraphArrayDirected(n);
 			edgeVal = g.addEdgesWeight(EdgeValKey).ofObjs();
@@ -466,9 +466,9 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 					b.treeParentEdge = -1;
 					b.isEven = false;
 					b.find1SeqBegin = b.find1SeqEnd = 0;
-					b.growHandle = null;
+					b.growRef = null;
 					b.expandDelta = 0;
-					b.expandHandle = null;
+					b.expandRef = null;
 				});
 
 				// Reset heaps
@@ -502,11 +502,11 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 			V.treeParentEdge = edgeVal.get(e).twin;
 			V.isEven = false;
 			V.delta1 = delta;
-			assert V.growHandle.get().e == e;
-			V.growHandle = null;
+			assert V.growRef.get().e == e;
+			V.growRef = null;
 			if (!V.isSingleton()) {
 				V.expandDelta = V.z0 / 2 + V.delta1;
-				V.expandHandle = expandEvents.insert(V);
+				V.expandRef = expandEvents.insert(V);
 			}
 			debug.print(" ", V);
 
@@ -527,9 +527,9 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 			V = topBlossom(g.edgeTarget(matchedEdge));
 			V.root = U.root;
 			V.treeParentEdge = edgeVal.get(matchedEdge).twin;
-			if (V.growHandle != null) {
-				growEvents.removeHandle(V.growHandle);
-				V.growHandle = null;
+			if (V.growRef != null) {
+				growEvents.removeRef(V.growRef);
+				V.growRef = null;
 			}
 			assert vToSMFId[V.base] == null;
 			smfAddLeaf(V.base, smfParent);
@@ -609,8 +609,8 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 					});
 					b.delta0 = delta;
 					if (!b.isSingleton()) {
-						expandEvents.removeHandle(b.expandHandle);
-						b.expandHandle = null;
+						expandEvents.removeRef(b.expandRef);
+						b.expandRef = null;
 					}
 
 					prev = b;
@@ -722,10 +722,10 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 				b.isEven = false;
 				b.delta1 = delta;
 				find1Split(b);
-				assert b.expandHandle == null;
+				assert b.expandRef == null;
 				if (!b.isSingleton()) {
 					b.expandDelta = b.z0 / 2 + b.delta1;
-					b.expandHandle = expandEvents.insert(b);
+					b.expandRef = expandEvents.insert(b);
 				}
 				if (b == base)
 					break;
@@ -750,10 +750,10 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 				b.isEven = false;
 				find1Split(b);
 				b.deltaOdd = B.deltaOdd;
-				assert b.growHandle == null;
+				assert b.growRef == null;
 				EdgeEvent inEdgeEvent = find1.getKey(find1.findMin(vToFind1Idx[b.base]));
 				if (inEdgeEvent != null)
-					b.growHandle = growEvents.insert(inEdgeEvent);
+					b.growRef = growEvents.insert(inEdgeEvent);
 			}
 
 			// Disassemble right and left pointers of sub blossoms
@@ -826,12 +826,12 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 			int v;
 			Blossom b0, b1, b2;
 			if (mu == u) {
-//				u = m.u();
+				// u = m.u();
 				v = mv;
 				b0 = mData.b0;
 				b1 = mData.b1;
 			} else {
-//				u = m.v();
+				// u = m.v();
 				v = mu;
 				b0 = mData.b1;
 				b1 = mData.b0;
@@ -886,24 +886,24 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 			if (B.base != u) {
 				int m = matched[u];
 				EdgeVal mData = edgeVal.get(m);
-//				int v;
+				// int v;
 				Blossom b0, b1 /* , b2 */;
 				if (g.edgeSource(m) == u) {
-//					v = m.v();
+					// v = m.v();
 					b0 = mData.b0;
 					b1 = mData.b1;
 				} else {
-//					v = m.u();
+					// v = m.u();
 					b0 = mData.b1;
 					b1 = mData.b0;
 				}
 
 				int xy;
 				if (b0.right == b1) {
-//					b2 = b1.right;
+					// b2 = b1.right;
 					xy = b1.toRightEdge;
 				} else {
-//					b2 = b1.left;
+					// b2 = b1.left;
 					xy = b1.toLeftEdge;
 				}
 
@@ -1075,10 +1075,10 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 
 					Blossom V = find1(v);
 					if (!isInTree(V)) {
-						if (V.growHandle == null)
-							V.growHandle = growEvents.insert(event);
+						if (V.growRef == null)
+							V.growRef = growEvents.insert(event);
 						else
-							growEvents.decreaseKey(V.growHandle, event);
+							growEvents.decreaseKey(V.growRef, event);
 					}
 				}
 			}

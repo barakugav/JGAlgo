@@ -15,7 +15,7 @@ import java.util.function.Function;
 import org.junit.jupiter.api.Assertions;
 
 import com.jgalgo.Heap;
-import com.jgalgo.HeapDirectAccessed;
+import com.jgalgo.HeapReferenceable;
 
 class HeapTestUtils extends TestUtils {
 
@@ -365,11 +365,11 @@ class HeapTestUtils extends TestUtils {
 					if (compare(compare, newVal, x) <= 0)
 						break;
 				}
-				HeapDirectAccessed<Integer> heap0 = (HeapDirectAccessed<Integer>) tracker.heap;
+				HeapReferenceable<Integer> heap0 = (HeapReferenceable<Integer>) tracker.heap;
 
 				debug.println("DecreaseKey(" + x + ", " + newVal + ")");
 				tracker.decreaseKey(x, newVal);
-				heap0.decreaseKey(heap0.findHanlde(x), newVal);
+				heap0.decreaseKey(heap0.findRef(x), newVal);
 				break;
 			}
 			default:

@@ -9,14 +9,14 @@ public class SSSPDijkstra implements SSSP {
 	 */
 
 	private int allocSize;
-	private final HeapDirectAccessed<HeapElm> heap;
-	private HeapDirectAccessed.Handle<HeapElm>[] verticesPtrs;
+	private final HeapReferenceable<HeapElm> heap;
+	private HeapReference<HeapElm>[] verticesPtrs;
 
 	public SSSPDijkstra() {
 		this(HeapPairing::new);
 	}
 
-	public SSSPDijkstra(HeapDirectAccessed.Builder heapBuilder) {
+	public SSSPDijkstra(HeapReferenceable.Builder heapBuilder) {
 		allocSize = 0;
 		heap = heapBuilder.build();
 	}
@@ -24,7 +24,7 @@ public class SSSPDijkstra implements SSSP {
 	@SuppressWarnings("unchecked")
 	private void memAlloc(int n) {
 		if (allocSize < n) {
-			verticesPtrs = new HeapDirectAccessed.Handle[n];
+			verticesPtrs = new HeapReference[n];
 			allocSize = n;
 		}
 	}
@@ -39,8 +39,8 @@ public class SSSPDijkstra implements SSSP {
 		int n = g.vertices().size();
 
 		memAlloc(n);
-		HeapDirectAccessed<HeapElm> heap = this.heap;
-		HeapDirectAccessed.Handle<HeapElm>[] verticesPtrs = this.verticesPtrs;
+		HeapReferenceable<HeapElm> heap = this.heap;
+		HeapReference<HeapElm>[] verticesPtrs = this.verticesPtrs;
 
 		SSSPResultImpl res = new SSSPResultImpl(g, source);
 		res.distances[source] = 0;
@@ -56,7 +56,7 @@ public class SSSPDijkstra implements SSSP {
 					throw new IllegalArgumentException("negative weights are not supported");
 				double distance = res.distances[u] + ws;
 
-				HeapDirectAccessed.Handle<HeapElm> vPtr = verticesPtrs[v];
+				HeapReference<HeapElm> vPtr = verticesPtrs[v];
 				if (vPtr == null) {
 					verticesPtrs[v] = heap.insert(new HeapElm(distance, v));
 					res.backtrack[v] = e;

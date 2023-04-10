@@ -23,7 +23,7 @@ public class SubtreeMergeFindminImpl<V, E> implements SubtreeMergeFindmin<V, E> 
 
 	private NodeImpl<V, E>[] nodes;
 	private final UnionFind uf;
-	private final HeapDirectAccessed<SubTree<V, E>> heap;
+	private final HeapReferenceable<SubTree<V, E>> heap;
 	private final LCADynamic<NodeImpl<V, E>> lca;
 
 	private final Comparator<? super E> weightCmp;
@@ -38,7 +38,7 @@ public class SubtreeMergeFindminImpl<V, E> implements SubtreeMergeFindmin<V, E> 
 	}
 
 	@SuppressWarnings("unchecked")
-	public SubtreeMergeFindminImpl(Comparator<? super E> weightCmp, HeapDirectAccessed.Builder heapBuilder) {
+	public SubtreeMergeFindminImpl(Comparator<? super E> weightCmp, HeapReferenceable.Builder heapBuilder) {
 		nodes = new NodeImpl[2];
 
 		uf = new UnionFindArray();
@@ -111,11 +111,11 @@ public class SubtreeMergeFindminImpl<V, E> implements SubtreeMergeFindmin<V, E> 
 		EdgeList<V, E>[] uEdges = U.edges, vEdges = V.edges;
 		U.edges = Arrays.copyOf(U.edges, maxSet);
 		Arrays.fill(U.edges, null);
-		if (U.heapHandle != null)
-			heap.removeHandle(U.heapHandle);
-		if (V.heapHandle != null)
-			heap.removeHandle(V.heapHandle);
-		U.heapHandle = V.heapHandle = null;
+		if (U.heapRef != null)
+			heap.removeRef(U.heapRef);
+		if (V.heapRef != null)
+			heap.removeRef(V.heapRef);
+		U.heapRef = V.heapRef = null;
 		U.minEdge = V.minEdge = null;
 
 		/* fix current timestamp to identify redundant edges */
@@ -268,11 +268,11 @@ public class SubtreeMergeFindminImpl<V, E> implements SubtreeMergeFindmin<V, E> 
 	private void compareAgaintSubTreeMin(SubTree<V, E> v, EdgeNode<V, E> edge) {
 		if (v.minEdge == null) {
 			v.minEdge = edge;
-			v.heapHandle = heap.insert(v);
+			v.heapRef = heap.insert(v);
 
 		} else if (weightCmp.compare(edge.data.data, v.minEdge.data.data) < 0) {
 			v.minEdge = edge;
-			heap.decreaseKey(v.heapHandle, v);
+			heap.decreaseKey(v.heapRef, v);
 		}
 	}
 
@@ -356,7 +356,7 @@ public class SubtreeMergeFindminImpl<V, E> implements SubtreeMergeFindmin<V, E> 
 
 		EdgeList<V, E>[] edges;
 		EdgeNode<V, E> minEdge;
-		HeapDirectAccessed.Handle<SubTree<V, E>> heapHandle;
+		HeapReference<SubTree<V, E>> heapRef;
 
 		/* field used to detect redundant edges during merge */
 		EdgeNode<V, E> inEdge;
@@ -385,7 +385,7 @@ public class SubtreeMergeFindminImpl<V, E> implements SubtreeMergeFindmin<V, E> 
 			if (minEdge != null)
 				minEdge.clear();
 			minEdge = null;
-			heapHandle = null;
+			heapRef = null;
 		}
 
 	}

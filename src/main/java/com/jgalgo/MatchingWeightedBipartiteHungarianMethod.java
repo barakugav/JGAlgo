@@ -17,7 +17,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 	 */
 
 	private Object bipartiteVerticesWeightKey = Weights.DefaultBipartiteWeightKey;
-	private HeapDirectAccessed.Builder heapBuilder = HeapPairing::new;
+	private HeapReferenceable.Builder heapBuilder = HeapPairing::new;
 
 	public MatchingWeightedBipartiteHungarianMethod() {
 	}
@@ -26,7 +26,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 		bipartiteVerticesWeightKey = key;
 	}
 
-	public void setHeapBuilder(HeapDirectAccessed.Builder heapBuilder) {
+	public void setHeapBuilder(HeapReferenceable.Builder heapBuilder) {
 		this.heapBuilder = Objects.requireNonNull(heapBuilder);
 	}
 
@@ -59,8 +59,8 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 		private final BitSet inTree;
 
 		private final IntComparator edgeSlackComparator;
-		private final HeapDirectAccessed<Integer> nextTightEdge;
-		private final HeapDirectAccessed.Handle<Integer>[] nextTightEdgePerOutV;
+		private final HeapReferenceable<Integer> nextTightEdge;
+		private final HeapReference<Integer>[] nextTightEdgePerOutV;
 
 		private double deltaTotal;
 		private final double[] dualValBase;
@@ -77,7 +77,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 
 			edgeSlackComparator = (e1, e2) -> Double.compare(edgeSlack(e1), edgeSlack(e2));
 			nextTightEdge = heapBuilder.build(edgeSlackComparator);
-			nextTightEdgePerOutV = new HeapDirectAccessed.Handle[n];
+			nextTightEdgePerOutV = new HeapReference[n];
 
 			dualValBase = new double[n];
 			dualVal0 = new double[n];
@@ -192,11 +192,11 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 
 		private void nextTightEdgeAdd(int u, int e) {
 			int v = g.edgeEndpoint(e, u);
-			HeapDirectAccessed.Handle<Integer> handle = nextTightEdgePerOutV[v];
-			if (handle == null)
+			HeapReference<Integer> ref = nextTightEdgePerOutV[v];
+			if (ref == null)
 				nextTightEdgePerOutV[v] = nextTightEdge.insert(Integer.valueOf(e));
-			else if (edgeSlackComparator.compare(e, handle.get().intValue()) < 0)
-				nextTightEdge.decreaseKey(handle, Integer.valueOf(e));
+			else if (edgeSlackComparator.compare(e, ref.get().intValue()) < 0)
+				nextTightEdge.decreaseKey(ref, Integer.valueOf(e));
 		}
 
 		private double dualVal(int v) {

@@ -2,7 +2,7 @@ package com.jgalgo;
 
 import java.util.Comparator;
 
-public abstract class BSTAbstract<E> extends HeapAbstractDirectAccessed<E> implements BST<E> {
+public abstract class BSTAbstract<E> extends HeapReferenceableAbstract<E> implements BST<E> {
 
 	public BSTAbstract(Comparator<? super E> c) {
 		super(c);
@@ -10,14 +10,14 @@ public abstract class BSTAbstract<E> extends HeapAbstractDirectAccessed<E> imple
 
 	@Override
 	public E findMax() {
-		return findMaxHandle().get();
+		return findMaxRef().get();
 	}
 
 	@Override
 	public E extractMax() {
-		Handle<E> max = findMaxHandle();
+		HeapReference<E> max = findMaxRef();
 		E val = max.get();
-		removeHandle(max);
+		removeRef(max);
 		return val;
 	}
 

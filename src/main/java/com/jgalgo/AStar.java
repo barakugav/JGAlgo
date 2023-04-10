@@ -7,13 +7,13 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 
 public class AStar {
 
-	private HeapDirectAccessed.Builder heapBuilder;
+	private HeapReferenceable.Builder heapBuilder;
 
 	public AStar() {
 		heapBuilder = HeapPairing::new;
 	}
 
-	public void setHeapBuilder(HeapDirectAccessed.Builder heapBuilder) {
+	public void setHeapBuilder(HeapReferenceable.Builder heapBuilder) {
 		this.heapBuilder = Objects.requireNonNull(heapBuilder);
 	}
 
@@ -21,9 +21,9 @@ public class AStar {
 		if (source == target)
 			return new Path(g, source, target, IntLists.emptyList());
 		int n = g.vertices().size();
-		HeapDirectAccessed<HeapElm> heap = heapBuilder.build();
+		HeapReferenceable<HeapElm> heap = heapBuilder.build();
 		@SuppressWarnings("unchecked")
-		HeapDirectAccessed.Handle<HeapElm>[] verticesPtrs = new HeapDirectAccessed.Handle[n];
+		HeapReference<HeapElm>[] verticesPtrs = new HeapReference[n];
 
 		SSSPResultImpl res = new SSSPResultImpl(g, source);
 		res.distances[source] = 0;
@@ -42,7 +42,7 @@ public class AStar {
 				res.backtrack[v] = e;
 				double distanceAstimate = distance + vHeuristic.applyAsDouble(v);
 
-				HeapDirectAccessed.Handle<HeapElm> vPtr = verticesPtrs[v];
+				HeapReference<HeapElm> vPtr = verticesPtrs[v];
 				if (vPtr == null) {
 					verticesPtrs[v] = heap.insert(new HeapElm(distanceAstimate, v));
 				} else {

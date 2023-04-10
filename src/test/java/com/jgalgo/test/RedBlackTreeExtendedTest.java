@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.jgalgo.Heap;
-import com.jgalgo.HeapDirectAccessed.Handle;
+import com.jgalgo.HeapReference;
 import com.jgalgo.RedBlackTree;
 import com.jgalgo.RedBlackTreeExtended;
 import com.jgalgo.RedBlackTreeExtended.ExtensionMax;
@@ -95,7 +95,7 @@ public class RedBlackTreeExtendedTest extends TestUtils {
 		}
 
 		@Override
-		public Handle<E> insert(E e) {
+		public HeapReference<E> insert(E e) {
 			return h.insert(e);
 		}
 
@@ -155,7 +155,7 @@ public class RedBlackTreeExtendedTest extends TestUtils {
 
 			HeapTestUtils.testHeap(tree, n, m, TestMode.Normal, false, compare, seedGen.nextSeed());
 
-			for (Handle<Integer> node : tree.handles()) {
+			for (HeapReference<Integer> node : tree.refsSet()) {
 				final var expectedSize = new Object() {
 					int val = 0;
 				};
@@ -184,7 +184,7 @@ public class RedBlackTreeExtendedTest extends TestUtils {
 
 			HeapTestUtils.testHeap(tree, n, m, TestMode.Normal, false, compare, seedGen.nextSeed());
 
-			for (Handle<Integer> node : tree.handles()) {
+			for (HeapReference<Integer> node : tree.refsSet()) {
 				final var expectedMin = new Object() {
 					int val = Integer.MAX_VALUE;
 				};
@@ -213,7 +213,7 @@ public class RedBlackTreeExtendedTest extends TestUtils {
 			RedBlackTree<Integer> tree = builder.build();
 
 			HeapTestUtils.testHeap(tree, n, m, TestMode.Normal, false, compare, seedGen.nextSeed());
-			for (Handle<Integer> node : tree.handles()) {
+			for (HeapReference<Integer> node : tree.refsSet()) {
 				final var expectedMax = new Object() {
 					int val = Integer.MIN_VALUE;
 				};

@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Assertions;
 
 import com.jgalgo.BST;
 import com.jgalgo.Heap;
-import com.jgalgo.HeapDirectAccessed.Handle;
+import com.jgalgo.HeapReference;
 import com.jgalgo.test.HeapTestUtils.HeapTracker;
 import com.jgalgo.test.HeapTestUtils.HeapTrackerIdGenerator;
 import com.jgalgo.test.HeapTestUtils.TestMode;
@@ -110,26 +110,26 @@ class BSTTestUtils extends TestUtils {
 
 			int searchedElm = rand.nextInt(n);
 
-			Handle<Integer> actualH;
+			HeapReference<Integer> actualRef;
 			Integer actual, expected;
 			if (smaller) {
 				if (rand.nextBoolean()) {
-					actualH = tracker.tree().findSmaller(searchedElm);
+					actualRef = tracker.tree().findSmaller(searchedElm);
 					expected = tracker.lower(searchedElm);
 				} else {
-					actualH = tracker.tree().findOrSmaller(searchedElm);
+					actualRef = tracker.tree().findOrSmaller(searchedElm);
 					expected = tracker.floor(searchedElm);
 				}
 			} else {
 				if (rand.nextBoolean()) {
-					actualH = tracker.tree().findGreater(searchedElm);
+					actualRef = tracker.tree().findGreater(searchedElm);
 					expected = tracker.higher(searchedElm);
 				} else {
-					actualH = tracker.tree().findOrGreater(searchedElm);
+					actualRef = tracker.tree().findOrGreater(searchedElm);
 					expected = tracker.ceiling(searchedElm);
 				}
 			}
-			actual = actualH == null ? null : actualH.get();
+			actual = actualRef == null ? null : actualRef.get();
 
 			Assertions.assertEquals(expected, actual, "Failed to find smaller/greater of " + searchedElm);
 		}
@@ -200,16 +200,16 @@ class BSTTestUtils extends TestUtils {
 					searchedElm = tracker.ceiling(rand.nextInt(n));
 			} while (searchedElm == null);
 
-			Handle<Integer> h = tracker.tree().findHanlde(searchedElm);
-			Assertions.assertNotNull(h, "Failed to find handle for " + searchedElm);
+			HeapReference<Integer> h = tracker.tree().findRef(searchedElm);
+			Assertions.assertNotNull(h, "Failed to find ref for " + searchedElm);
 
 			Integer actual, expected;
 			if (predecessor) {
-				Handle<Integer> actualH = tracker.tree().getPredecessor(h);
+				HeapReference<Integer> actualH = tracker.tree().getPredecessor(h);
 				actual = actualH == null ? null : actualH.get();
 				expected = tracker.lower(searchedElm);
 			} else {
-				Handle<Integer> actualH = tracker.tree().getSuccessor(h);
+				HeapReference<Integer> actualH = tracker.tree().getSuccessor(h);
 				actual = actualH == null ? null : actualH.get();
 				expected = tracker.higher(searchedElm);
 			}

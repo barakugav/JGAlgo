@@ -10,7 +10,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
 
-public class HeapPairing<E> extends HeapAbstractDirectAccessed<E> {
+public class HeapPairing<E> extends HeapReferenceableAbstract<E> {
 
 	private Node<E> minRoot;
 	private int size;
@@ -24,7 +24,7 @@ public class HeapPairing<E> extends HeapAbstractDirectAccessed<E> {
 	}
 
 	@Override
-	public Handle<E> findMinHandle() {
+	public HeapReference<E> findMinRef() {
 		if (isEmpty())
 			throw new IllegalStateException();
 		return minRoot;
@@ -36,7 +36,7 @@ public class HeapPairing<E> extends HeapAbstractDirectAccessed<E> {
 	}
 
 	@Override
-	public Handle<E> insert(E e) {
+	public HeapReference<E> insert(E e) {
 		Node<E> n = new Node<>(e);
 		if (minRoot == null) {
 			minRoot = n;
@@ -49,8 +49,8 @@ public class HeapPairing<E> extends HeapAbstractDirectAccessed<E> {
 	}
 
 	@Override
-	public void decreaseKey(Handle<E> handle, E e) {
-		Node<E> n = (Node<E>) handle;
+	public void decreaseKey(HeapReference<E> ref, E e) {
+		Node<E> n = (Node<E>) ref;
 		if (compare(e, n.value) > 0)
 			throw new IllegalArgumentException("new key is greater than existing one");
 		n.value = e;
@@ -75,8 +75,8 @@ public class HeapPairing<E> extends HeapAbstractDirectAccessed<E> {
 	}
 
 	@Override
-	public void removeHandle(Handle<E> handle) {
-		Node<E> n = (Node<E>) handle;
+	public void removeRef(HeapReference<E> ref) {
+		Node<E> n = (Node<E>) ref;
 		assert minRoot != null;
 		if (n != minRoot) {
 			cut(n);
@@ -270,7 +270,7 @@ public class HeapPairing<E> extends HeapAbstractDirectAccessed<E> {
 	}
 
 	@Override
-	public Set<Handle<E>> handles() {
+	public Set<HeapReference<E>> refsSet() {
 		return new AbstractSet<>() {
 
 			@Override
@@ -280,14 +280,14 @@ public class HeapPairing<E> extends HeapAbstractDirectAccessed<E> {
 
 			@SuppressWarnings({ "unchecked", "rawtypes" })
 			@Override
-			public Iterator<Handle<E>> iterator() {
+			public Iterator<HeapReference<E>> iterator() {
 				return (Iterator) new PreOrderIter<>(minRoot);
 			}
 
 			@SuppressWarnings("unchecked")
 			@Override
 			public boolean remove(Object o) {
-				removeHandle((Handle<E>) o);
+				removeRef((HeapReference<E>) o);
 				return true;
 			}
 
@@ -299,7 +299,7 @@ public class HeapPairing<E> extends HeapAbstractDirectAccessed<E> {
 		};
 	}
 
-	private static class Node<E> implements Handle<E> {
+	private static class Node<E> implements HeapReference<E> {
 
 		Node<E> prevOrParent;
 		Node<E> next;

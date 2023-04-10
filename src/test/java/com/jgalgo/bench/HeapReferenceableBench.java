@@ -20,7 +20,7 @@ import org.openjdk.jmh.infra.Blackhole;
 
 import com.jgalgo.EdgeWeightFunc;
 import com.jgalgo.Graph;
-import com.jgalgo.HeapDirectAccessed;
+import com.jgalgo.HeapReferenceable;
 import com.jgalgo.HeapFibonacci;
 import com.jgalgo.HeapPairing;
 import com.jgalgo.MSTPrim1957;
@@ -37,7 +37,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 @Warmup(iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
 @Measurement(iterations = 1, time = 10, timeUnit = TimeUnit.SECONDS)
 @State(Scope.Benchmark)
-public class HeapDirectAccessedBench {
+public class HeapReferenceableBench {
 
 	@Param
 	public GraphSize graphSize;
@@ -85,7 +85,7 @@ public class HeapDirectAccessedBench {
 		}
 	}
 
-	private void benchHeap(HeapDirectAccessed.Builder heapBuilder, Blackhole blackhole) {
+	private void benchHeap(HeapReferenceable.Builder heapBuilder, Blackhole blackhole) {
 		for (GraphArgs args : graphs) {
 			/* SSSP */
 			SSSP algo = new SSSPDijkstra(heapBuilder);

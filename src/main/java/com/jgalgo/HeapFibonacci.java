@@ -8,13 +8,13 @@ import java.util.Set;
 
 import com.jgalgo.Trees.TreeNode;
 
-public class HeapFibonacci<E> extends HeapAbstractDirectAccessed<E> {
+public class HeapFibonacci<E> extends HeapReferenceableAbstract<E> {
 
 	private Node<E> minRoot;
 	private Node<E> begin;
 	private Node<E> end;
 	private int size;
-	private final Set<Handle<E>> handlesSet;
+	private final Set<HeapReference<E>> refsSet;
 
 	public HeapFibonacci() {
 		this(null);
@@ -25,7 +25,7 @@ public class HeapFibonacci<E> extends HeapAbstractDirectAccessed<E> {
 		begin = end = minRoot = null;
 		size = 0;
 
-		handlesSet = new AbstractSet<>() {
+		refsSet = new AbstractSet<>() {
 
 			@Override
 			public int size() {
@@ -34,14 +34,14 @@ public class HeapFibonacci<E> extends HeapAbstractDirectAccessed<E> {
 
 			@SuppressWarnings({ "unchecked", "rawtypes" })
 			@Override
-			public Iterator<Handle<E>> iterator() {
+			public Iterator<HeapReference<E>> iterator() {
 				return (Iterator) new Trees.PreOrderIter<>(begin);
 			}
 
 			@SuppressWarnings("unchecked")
 			@Override
 			public boolean remove(Object o) {
-				HeapFibonacci.this.removeHandle((Handle<E>) o);
+				HeapFibonacci.this.removeRef((HeapReference<E>) o);
 				return true;
 			}
 
@@ -69,7 +69,7 @@ public class HeapFibonacci<E> extends HeapAbstractDirectAccessed<E> {
 	}
 
 	@Override
-	public Handle<E> insert(E e) {
+	public HeapReference<E> insert(E e) {
 		Node<E> n = new Node<>(e);
 		if (minRoot != null) {
 			Node<E> last = end;
@@ -87,8 +87,8 @@ public class HeapFibonacci<E> extends HeapAbstractDirectAccessed<E> {
 	}
 
 	@Override
-	public Set<Handle<E>> handles() {
-		return handlesSet;
+	public Set<HeapReference<E>> refsSet() {
+		return refsSet;
 	}
 
 	@Override
@@ -121,7 +121,7 @@ public class HeapFibonacci<E> extends HeapAbstractDirectAccessed<E> {
 	}
 
 	@Override
-	public Node<E> findMinHandle() {
+	public Node<E> findMinRef() {
 		if (isEmpty())
 			throw new IllegalStateException();
 		return minRoot;
@@ -172,8 +172,8 @@ public class HeapFibonacci<E> extends HeapAbstractDirectAccessed<E> {
 	}
 
 	@Override
-	public void decreaseKey(Handle<E> handle, E e) {
-		Node<E> parent, n = (Node<E>) handle;
+	public void decreaseKey(HeapReference<E> ref, E e) {
+		Node<E> parent, n = (Node<E>) ref;
 		if (compare(e, n.value) > 0)
 			throw new IllegalArgumentException("new key is greater than existing one");
 		n.value = e;
@@ -189,8 +189,8 @@ public class HeapFibonacci<E> extends HeapAbstractDirectAccessed<E> {
 	}
 
 	@Override
-	public void removeHandle(Handle<E> handle) {
-		Node<E> prev, n = (Node<E>) handle;
+	public void removeRef(HeapReference<E> ref) {
+		Node<E> prev, n = (Node<E>) ref;
 
 		boolean isMinRoot = n == minRoot;
 		if (n.parent != null) {
@@ -343,7 +343,7 @@ public class HeapFibonacci<E> extends HeapAbstractDirectAccessed<E> {
 		return u;
 	}
 
-	private static class Node<E> implements Handle<E>, TreeNode<Node<E>> {
+	private static class Node<E> implements HeapReference<E>, TreeNode<Node<E>> {
 
 		Node<E> parent;
 		Node<E> next;

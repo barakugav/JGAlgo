@@ -13,12 +13,12 @@ public class MSTPrim1957 implements MST {
 	 * O(m + nlogn)
 	 */
 
-	private HeapDirectAccessed.Builder heapBuilder = HeapPairing::new;
+	private HeapReferenceable.Builder heapBuilder = HeapPairing::new;
 
 	public MSTPrim1957() {
 	}
 
-	public void setHeapBuilder(HeapDirectAccessed.Builder heapBuilder) {
+	public void setHeapBuilder(HeapReferenceable.Builder heapBuilder) {
 		this.heapBuilder = Objects.requireNonNull(heapBuilder);
 	}
 
@@ -30,9 +30,9 @@ public class MSTPrim1957 implements MST {
 		if (n == 0)
 			return IntLists.emptyList();
 
-		HeapDirectAccessed<Integer> heap = heapBuilder.build(w);
+		HeapReferenceable<Integer> heap = heapBuilder.build(w);
 		@SuppressWarnings("unchecked")
-		HeapDirectAccessed.Handle<Integer>[] verticesPtrs = new HeapDirectAccessed.Handle[n];
+		HeapReference<Integer>[] verticesPtrs = new HeapReference[n];
 		BitSet visited = new BitSet(n);
 
 		IntCollection mst = new IntArrayList(n - 1);
@@ -51,7 +51,7 @@ public class MSTPrim1957 implements MST {
 					if (visited.get(v))
 						continue;
 
-					HeapDirectAccessed.Handle<Integer> vPtr = verticesPtrs[v];
+					HeapReference<Integer> vPtr = verticesPtrs[v];
 					if (vPtr == null)
 						verticesPtrs[v] = heap.insert(Integer.valueOf(e));
 					else if (w.compare(e, vPtr.get().intValue()) < 0)

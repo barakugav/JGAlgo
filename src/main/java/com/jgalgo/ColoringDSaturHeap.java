@@ -9,9 +9,9 @@ public class ColoringDSaturHeap implements Coloring {
 	 * Compute a coloring approximation in O(m + n \log n)
 	 */
 
-	private HeapDirectAccessed.Builder heapBuilder = HeapPairing::new;
+	private HeapReferenceable.Builder heapBuilder = HeapPairing::new;
 
-	public void setHeapBuilder(HeapDirectAccessed.Builder heapBuilder) {
+	public void setHeapBuilder(HeapReferenceable.Builder heapBuilder) {
 		this.heapBuilder = Objects.requireNonNull(heapBuilder);
 	}
 
@@ -23,9 +23,9 @@ public class ColoringDSaturHeap implements Coloring {
 		ColoringResultImpl res = new ColoringResultImpl(g);
 		int n = g.vertices().size();
 
-		HeapDirectAccessed<HeapElm> heap = heapBuilder.build();
+		HeapReferenceable<HeapElm> heap = heapBuilder.build();
 		@SuppressWarnings("unchecked")
-		HeapDirectAccessed.Handle<HeapElm>[] vPtrs = new HeapDirectAccessed.Handle[n];
+		HeapReference<HeapElm>[] vPtrs = new HeapReference[n];
 		for (int u = 0; u < n; u++)
 			vPtrs[u] = heap.insert(new HeapElm(u, g.degreeOut(u)));
 
@@ -43,7 +43,7 @@ public class ColoringDSaturHeap implements Coloring {
 				eit.nextInt();
 				int v = eit.v();
 				if (res.colorOf(v) == -1) { /* v is uncolored */
-					HeapDirectAccessed.Handle<HeapElm> vPtr = vPtrs[v];
+					HeapReference<HeapElm> vPtr = vPtrs[v];
 					HeapElm vElm = vPtr.get();
 					if (!vElm.neighborColors.get(color)) {
 						vElm.neighborColors.set(color);
