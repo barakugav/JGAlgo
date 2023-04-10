@@ -1,16 +1,17 @@
 package com.jgalgo;
 
+import java.util.BitSet;
 import java.util.NoSuchElementException;
 
+import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 import it.unimi.dsi.fastutil.ints.IntIterator;
-import it.unimi.dsi.fastutil.longs.LongArrayFIFOQueue;
-import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
+import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 public class BFSIter implements IntIterator {
 
 	private final Graph g;
-	private final boolean[] visited;
-	private final LongPriorityQueue queue;
+	private final BitSet visited;
+	private final IntPriorityQueue queue;
 	private int inEdge;
 	private int layer;
 	private int firstVInLayer;
@@ -24,14 +25,15 @@ public class BFSIter implements IntIterator {
 			throw new IllegalArgumentException();
 		this.g = g;
 		int n = g.vertices().size();
-		visited = new boolean[n];
-		queue = new LongArrayFIFOQueue(n * 2);
+		visited = new BitSet(n);
+		queue = new IntArrayFIFOQueue();
 		inEdge = -1;
 		layer = -1;
 
 		for (int source : sources) {
-			visited[source] = true;
-			queue.enqueue(toQueueEntry(source, -1));
+			visited.set(source);
+			queue.enqueue(source);
+			queue.enqueue(-1);
 		}
 		firstVInLayer = sources[0];
 	}
@@ -45,9 +47,8 @@ public class BFSIter implements IntIterator {
 	public int nextInt() {
 		if (!hasNext())
 			throw new NoSuchElementException();
-		long entry = queue.dequeueLong();
-		final int u = queueEntryToV(entry);
-		inEdge = queueEntryToE(entry);
+		final int u = queue.dequeueInt();
+		inEdge = queue.dequeueInt();
 		if (u == firstVInLayer) {
 			layer++;
 			firstVInLayer = -1;
@@ -56,10 +57,11 @@ public class BFSIter implements IntIterator {
 		for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 			int e = eit.nextInt();
 			int v = eit.v();
-			if (visited[v])
+			if (visited.get(v))
 				continue;
-			visited[v] = true;
-			queue.enqueue(toQueueEntry(v, e));
+			visited.set(v);
+			queue.enqueue(v);
+			queue.enqueue(e);
 			if (firstVInLayer == -1)
 				firstVInLayer = v;
 		}
@@ -73,17 +75,5 @@ public class BFSIter implements IntIterator {
 
 	public int layer() {
 		return layer;
-	}
-
-	private static long toQueueEntry(int v, int e) {
-		return ((v & 0xffffffffL) << 32) | ((e & 0xffffffffL) << 0);
-	}
-
-	private static int queueEntryToV(long entry) {
-		return (int) ((entry >> 32) & 0xffffffff);
-	}
-
-	private static int queueEntryToE(long entry) {
-		return (int) ((entry >> 0) & 0xffffffff);
 	}
 }

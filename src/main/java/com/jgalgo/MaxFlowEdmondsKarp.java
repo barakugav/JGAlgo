@@ -1,6 +1,6 @@
 package com.jgalgo;
 
-import java.util.Arrays;
+import java.util.BitSet;
 
 import it.unimi.dsi.fastutil.ints.Int2DoubleFunction;
 import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
@@ -53,12 +53,12 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 		int n = g.vertices().size();
 		int[] backtrack = new int[n];
 
-		boolean[] visited = new boolean[n];
+		BitSet visited = new BitSet(n);
 		IntPriorityQueue queue = new IntArrayFIFOQueue();
 
 		for (;;) {
 			queue.clear();
-			visited[source] = true;
+			visited.set(source);
 			backtrack[target] = -1;
 			queue.enqueue(source);
 
@@ -69,12 +69,12 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 					int e = eit.nextInt();
 					int v = eit.v();
 
-					if (visited[v] || flow.getDouble(e) >= capacity.applyAsDouble(e))
+					if (visited.get(v) || flow.getDouble(e) >= capacity.applyAsDouble(e))
 						continue;
 					backtrack[v] = e;
 					if (v == target)
 						break bfs;
-					visited[v] = true;
+					visited.set(v);
 					queue.enqueue(v);
 				}
 			}
@@ -99,7 +99,7 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 				p = g.edgeSource(e);
 			}
 
-			Arrays.fill(visited, false);
+			visited.clear();
 		}
 
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {

@@ -1,6 +1,7 @@
 package com.jgalgo;
 
 import java.util.Arrays;
+import java.util.BitSet;
 
 import com.jgalgo.Utils.IntDoubleConsumer;
 import com.jgalgo.Utils.IterPickable;
@@ -64,7 +65,7 @@ public class MaxFlowPushRelabel implements MaxFlow {
 
 		IterPickable.Int[] edges = new IterPickable.Int[n];
 		double[] excess = new double[n];
-		boolean[] isActive = new boolean[n];
+		BitSet isActive = new BitSet(n);
 		IntPriorityQueue active = new IntArrayFIFOQueue();
 		int[] d = new int[n];
 
@@ -83,8 +84,8 @@ public class MaxFlowPushRelabel implements MaxFlow {
 
 			excess[u] -= f;
 			excess[v] += f;
-			if (!isActive[v]) {
-				isActive[v] = true;
+			if (!isActive.get(v)) {
+				isActive.set(v);
 				active.enqueue(v);
 			}
 		};
@@ -130,7 +131,9 @@ public class MaxFlowPushRelabel implements MaxFlow {
 			}
 
 			/* Update isActive and add to queue if active */
-			if (isActive[u] = excess[u] > EPS)
+			boolean uIsActive = excess[u] > EPS;
+			isActive.set(u, uIsActive);
+			if (uIsActive)
 				active.enqueue(u);
 		}
 

@@ -1,5 +1,6 @@
 package com.jgalgo;
 
+import java.util.BitSet;
 import java.util.Objects;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -32,22 +33,22 @@ public class MSTPrim1957 implements MST {
 		HeapDirectAccessed<Integer> heap = heapBuilder.build(w);
 		@SuppressWarnings("unchecked")
 		HeapDirectAccessed.Handle<Integer>[] verticesPtrs = new HeapDirectAccessed.Handle[n];
-		boolean[] visited = new boolean[n];
+		BitSet visited = new BitSet(n);
 
 		IntCollection mst = new IntArrayList(n - 1);
 		for (int r = 0; r < n; r++) {
-			if (visited[r])
+			if (visited.get(r))
 				continue;
 
 			treeLoop: for (int u = r;;) {
-				visited[u] = true;
+				visited.set(u);
 				verticesPtrs[u] = null;
 
 				/* decrease edges keys if a better one is found */
 				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 					int e = eit.nextInt();
 					int v = eit.v();
-					if (visited[v])
+					if (visited.get(v))
 						continue;
 
 					HeapDirectAccessed.Handle<Integer> vPtr = verticesPtrs[v];
@@ -64,9 +65,9 @@ public class MSTPrim1957 implements MST {
 						/* reached all vertices from current root, continue to next tree */
 						break treeLoop;
 					e = heap.extractMin().intValue();
-					if (!visited[v = g.edgeSource(e)])
+					if (!visited.get(v = g.edgeSource(e)))
 						break;
-					if (!visited[v = g.edgeTarget(e)])
+					if (!visited.get(v = g.edgeTarget(e)))
 						break;
 				}
 

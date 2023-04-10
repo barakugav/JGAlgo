@@ -1,6 +1,7 @@
 package com.jgalgo;
 
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Objects;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -55,7 +56,7 @@ public class SSSPGoldberg1995 implements SSSP {
 		int n = g.vertices().size();
 		int[] potential = new int[n];
 
-		boolean[] connected = new boolean[n];
+		BitSet connected = new BitSet(n);
 		int[] layerSize = new int[n + 1];
 
 		SSSPDial1969 ssspDial = new SSSPDial1969();
@@ -151,7 +152,7 @@ public class SSSPGoldberg1995 implements SSSP {
 					// No big layer is found, use path which has at least sqrt(|V|) vetices.
 					// Connected a fake vertex to all vertices, with edge r-i to negative vertex vi
 					// on the path and with edge r to all other vertices
-					Arrays.fill(connected, 0, N, false);
+					connected.clear();
 					int assignedWeight = layerNum - 2;
 					for (IntIterator it = ssspRes.getPathTo(vertexInMaxLayer).iterator(); it.hasNext();) {
 						int e = it.nextInt();
@@ -159,11 +160,11 @@ public class SSSPGoldberg1995 implements SSSP {
 						if (ew < 0) {
 							int V = G.edgeTarget(e);
 							GWeights.set(G.addEdge(fakeS2, V), assignedWeight--);
-							connected[V] = true;
+							connected.set(V);
 						}
 					}
 					for (int V = 0; V < N; V++)
-						if (!connected[V])
+						if (!connected.get(V))
 							GWeights.set(G.addEdge(fakeS2, V), layerNum - 1);
 
 					// Add the remaining edges to the graph, not only 0,-1 edges

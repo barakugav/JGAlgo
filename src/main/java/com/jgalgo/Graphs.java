@@ -1,6 +1,7 @@
 package com.jgalgo;
 
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Collections;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectFunction;
@@ -94,7 +95,7 @@ public class Graphs {
 			return true;
 		boolean directed = g instanceof DiGraph;
 
-		boolean[] visited = new boolean[n];
+		BitSet visited = new BitSet(n);
 		int[] parent = new int[n];
 		Arrays.fill(parent, -1);
 
@@ -103,14 +104,14 @@ public class Graphs {
 
 		for (int i = 0; i < roots.length; i++) {
 			int root = roots[i];
-			if (visited[root]) {
+			if (visited.get(root)) {
 				if (allowVisitedRoot)
 					continue;
 				return false;
 			}
 
 			stack.push(root);
-			visited[root] = true;
+			visited.set(root);
 
 			while (!stack.isEmpty()) {
 				int u = stack.popInt();
@@ -121,9 +122,9 @@ public class Graphs {
 					int v = eit.v();
 					if (!directed && v == parent[u])
 						continue;
-					if (visited[v])
+					if (visited.get(v))
 						return false;
-					visited[v] = true;
+					visited.set(v);
 					stack.push(v);
 					parent[v] = u;
 				}

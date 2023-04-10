@@ -1,5 +1,6 @@
 package com.jgalgo.test;
 
+import java.util.BitSet;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Predicate;
@@ -48,11 +49,11 @@ public class TSPMetricTest extends TestUtils {
 		int[] appxMatch = new TSPMetricMatchingAppx().calcTSP(distances);
 
 		Predicate<int[]> isPathVisitAllVertices = path -> {
-			boolean[] visited = new boolean[n];
+			BitSet visited = new BitSet(n);
 			for (int u : path)
-				visited[u] = true;
+				visited.set(u);
 			for (int u = 0; u < n; u++)
-				if (!visited[u])
+				if (!visited.get(u))
 					return false;
 			return true;
 		};

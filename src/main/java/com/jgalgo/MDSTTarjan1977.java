@@ -1,6 +1,7 @@
 package com.jgalgo;
 
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Objects;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -155,9 +156,9 @@ public class MDSTTarjan1977 implements MDST {
 		Arrays.fill(brother, -1);
 		int[] inEdge = new int[VMaxNum];
 
-		boolean[] onPath = new boolean[VMaxNum];
+		BitSet onPath = new BitSet(VMaxNum);
 		final int startVertex = 0;
-		onPath[startVertex] = true;
+		onPath.set(startVertex);
 
 		for (int a = startVertex;;) {
 			// Find minimum edge that enters a
@@ -177,10 +178,10 @@ public class MDSTTarjan1977 implements MDST {
 			double ew = w.weight(e);
 			uf.addValue(a, -ew);
 
-			if (!onPath[u]) {
+			if (!onPath.get(u)) {
 				// Extend list
 				brother[u] = a;
-				onPath[u] = true;
+				onPath.set(u);
 				a = u;
 			} else {
 				// Create new super vertex
@@ -194,7 +195,7 @@ public class MDSTTarjan1977 implements MDST {
 				do {
 					parent[a] = c;
 					uf.union(c, a);
-					onPath[a] = false;
+					onPath.clear(a);
 					heap[c].meld(heap[a]);
 					heap[a] = null;
 					a = brother[a];
@@ -202,7 +203,7 @@ public class MDSTTarjan1977 implements MDST {
 
 				ufIdxToV[uf.find(c)] = c;
 
-				onPath[c] = true;
+				onPath.set(c);
 				a = c;
 			}
 		}

@@ -1,6 +1,7 @@
 package com.jgalgo;
 
 import java.util.Arrays;
+import java.util.BitSet;
 
 import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -153,14 +154,14 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 		}
 
 		private static int successor(int a, int b) {
-//		int r = 0, bsize = Integer.bitCount(b);
-//		for (int i = 0; i < bsize; i++)
-//			for (int bit = getIthOneBit(b, i) + 1; bit < Integer.SIZE; bit++)
-//				if ((a & (1 << bit)) != 0) {
-//					r |= 1 << bit;
-//					break;
-//				}
-//		return r;
+			// int r = 0, bsize = Integer.bitCount(b);
+			// for (int i = 0; i < bsize; i++)
+			// for (int bit = getIthOneBit(b, i) + 1; bit < Integer.SIZE; bit++)
+			// if ((a & (1 << bit)) != 0) {
+			// r |= 1 << bit;
+			// break;
+			// }
+			// return r;
 
 			/*
 			 * Don't even ask why the commented code above is equivalent to the bit tricks
@@ -341,11 +342,11 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 				if (depths[u] > maxDepth)
 					maxDepth = depths[u];
 			IntPriorityQueue queue = new IntArrayFIFOQueue();
-			boolean[] queued = new boolean[n];
+			BitSet queued = new BitSet(n);
 			for (int u = 0; u < n; u++) {
 				if (depths[u] == maxDepth) {
 					queue.enqueue(u);
-					queued[u] = true;
+					queued.set(u);
 				}
 			}
 
@@ -358,10 +359,10 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 				int parent = g.edgeEndpoint(ep, u);
 				q[parent] |= q[u] & ~(1 << depths[parent]);
 
-				if (queued[parent])
+				if (queued.get(parent))
 					continue;
 				queue.enqueue(parent);
-				queued[parent] = true;
+				queued.set(parent);
 			}
 
 			return q;

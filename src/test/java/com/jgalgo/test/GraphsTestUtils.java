@@ -1,5 +1,6 @@
 package com.jgalgo.test;
 
+import java.util.BitSet;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
@@ -142,8 +143,8 @@ public class GraphsTestUtils extends TestUtils {
 			UnionFind uf = new UnionFindArray(n);
 			int componentsNum = n;
 			Random rand = new Random(seedGen.nextSeed());
-			boolean[] reachableFromRoot = new boolean[n];
-			reachableFromRoot[0] = true;
+			BitSet reachableFromRoot = new BitSet(n);
+			reachableFromRoot.set(0);
 			int reachableFromRootCount = 1;
 			IntPriorityQueue queue = new IntArrayFIFOQueue();
 
@@ -205,8 +206,8 @@ public class GraphsTestUtils extends TestUtils {
 							componentsNum--;
 						uf.union(uComp, vComp);
 					} else if (connected) {
-						if (reachableFromRoot[u] && !reachableFromRoot[v]) {
-							reachableFromRoot[v] = true;
+						if (reachableFromRoot.get(u) && !reachableFromRoot.get(v)) {
+							reachableFromRoot.set(v);
 							reachableFromRootCount++;
 
 							queue.enqueue(v);
@@ -216,9 +217,9 @@ public class GraphsTestUtils extends TestUtils {
 								for (EdgeIter eit = g.edgesOut(p); eit.hasNext();) {
 									eit.nextInt();
 									int pv = eit.v();
-									if (reachableFromRoot[pv])
+									if (reachableFromRoot.get(pv))
 										continue;
-									reachableFromRoot[pv] = true;
+									reachableFromRoot.set(pv);
 									reachableFromRootCount++;
 									queue.enqueue(pv);
 								}

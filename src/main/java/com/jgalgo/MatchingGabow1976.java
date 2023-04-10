@@ -1,6 +1,7 @@
 package com.jgalgo;
 
 import java.util.Arrays;
+import java.util.BitSet;
 
 import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -30,7 +31,7 @@ public class MatchingGabow1976 implements Matching {
 
 		IntPriorityQueue queue = new IntArrayFIFOQueue();
 		int[] root = new int[n];
-		boolean[] isEven = new boolean[n];
+		BitSet isEven = new BitSet(n);
 
 		final int EdgeNone = -1;
 		int[] matched = new int[n];
@@ -39,7 +40,7 @@ public class MatchingGabow1976 implements Matching {
 		int[] parent = new int[n]; // vertex -> edge
 
 		int[] augPath = new int[n];
-		boolean[] setmatch = new boolean[n];
+		BitSet setmatch = new BitSet(n);
 
 		int[] blossomBaseSearchNotes = new int[n];
 		int blossomBaseSearchNotesIndex = 0;
@@ -63,7 +64,7 @@ public class MatchingGabow1976 implements Matching {
 				if (matched[u] != EdgeNone)
 					continue;
 				root[u] = u;
-				isEven[u] = true;
+				isEven.set(u);
 				queue.enqueue(u);
 			}
 
@@ -84,13 +85,13 @@ public class MatchingGabow1976 implements Matching {
 
 						int w = g.edgeEndpoint(matchedEdge, v);
 						root[w] = uRoot;
-						isEven[w] = true;
+						isEven.set(w);
 						queue.enqueue(w);
 						continue;
 					}
 
 					int vBase = bases[uf.find(v)];
-					if (!isEven[vBase])
+					if (!isEven.get(vBase))
 						// edge to an odd vertex in some tree, ignore
 						continue;
 
@@ -161,15 +162,15 @@ public class MatchingGabow1976 implements Matching {
 			for (int i = 0; i < augPathSize; i++) {
 				int e = augPath[i];
 				int u = g.edgeSource(e), v = g.edgeTarget(e);
-				setmatch[i] = matched[u] == EdgeNone || g.edgeTarget(matched[u]) != v;
+				setmatch.set(i, matched[u] == EdgeNone || g.edgeTarget(matched[u]) != v);
 			}
 			for (int i = 0; i < augPathSize; i++) {
 				int e = augPath[i];
-				if (setmatch[i])
+				if (setmatch.get(i))
 					matched[g.edgeSource(e)] = matched[g.edgeTarget(e)] = e;
 			}
 
-			Arrays.fill(isEven, false);
+			isEven.clear();
 			uf.clear();
 		}
 
@@ -180,11 +181,11 @@ public class MatchingGabow1976 implements Matching {
 		return res;
 	}
 
-	private static int findPath(UGraph g, int s, int t, boolean[] isEven, int[] match, int[] parent, int[] bridge,
+	private static int findPath(UGraph g, int s, int t, BitSet isEven, int[] match, int[] parent, int[] bridge,
 			int[] path, int pathSize) {
 		if (s == t)
 			return pathSize;
-		if (isEven[s]) {
+		if (isEven.get(s)) {
 			int v = g.edgeEndpoint(match[s], s);
 			path[pathSize++] = match[s];
 			path[pathSize++] = parent[v];

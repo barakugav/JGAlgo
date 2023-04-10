@@ -1,6 +1,7 @@
 package com.jgalgo;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -11,7 +12,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 public class DFSIter implements IntIterator {
 
 	private final Graph g;
-	private final boolean[] visited;
+	private final BitSet visited;
 	private final List<EdgeIter> edgeIters;
 	private final IntList edgePath;
 	private boolean isValid;
@@ -19,11 +20,11 @@ public class DFSIter implements IntIterator {
 	public DFSIter(Graph g, int source) {
 		int n = g.vertices().size();
 		this.g = g;
-		visited = new boolean[n];
+		visited = new BitSet(n);
 		edgeIters = new ArrayList<>();
 		edgePath = new IntArrayList();
 
-		visited[source] = true;
+		visited.set(source);
 		edgeIters.add(g.edgesOut(source));
 		isValid = true;
 	}
@@ -38,9 +39,9 @@ public class DFSIter implements IntIterator {
 			for (EdgeIter eit = edgeIters.get(edgeIters.size() - 1); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = eit.v();
-				if (visited[v])
+				if (visited.get(v))
 					continue;
-				visited[v] = true;
+				visited.set(v);
 				edgeIters.add(g.edgesOut(v));
 				edgePath.add(e);
 				return isValid = true;

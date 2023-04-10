@@ -1,6 +1,7 @@
 package com.jgalgo;
 
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Objects;
 
 import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
@@ -40,7 +41,7 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 		IntPriorityQueue bfsQueue = new IntArrayFIFOQueue();
 
 		/* DFS */
-		boolean[] visited = new boolean[n];
+		BitSet visited = new BitSet(n);
 		EdgeIter[] edges = new EdgeIter[n];
 		int[] dfsPath = new int[n];
 
@@ -101,16 +102,16 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 					continue;
 
 				edges[0] = f.edgesOut(u);
-				visited[u] = true;
+				visited.set(u);
 
 				for (int depth = 0; depth >= 0;) {
 					EdgeIter eit = edges[depth];
 					if (eit.hasNext()) {
 						int e = eit.nextInt();
 						int v = eit.v();
-						if (visited[v] || depth >= depths[v])
+						if (visited.get(v) || depth >= depths[v])
 							continue;
-						visited[v] = true;
+						visited.set(v);
 						dfsPath[depth++] = edgeRef.getInt(e);
 
 						int matchedEdge = matched[v];
@@ -135,7 +136,7 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 					}
 				}
 			}
-			Arrays.fill(visited, false);
+			visited.clear();
 			f.clearEdges();
 		}
 		Arrays.fill(edges, null);

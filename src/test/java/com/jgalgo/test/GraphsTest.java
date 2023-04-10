@@ -1,6 +1,6 @@
 package com.jgalgo.test;
 
-import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -64,16 +64,16 @@ public class GraphsTest extends TestUtils {
 					.selfEdges(true).cycles(true).connected(true).build();
 			int source = rand.nextInt(n);
 
-			boolean[] visited = new boolean[n];
-			List<Integer> invalidVertices = new ArrayList<>();
+			BitSet visited = new BitSet(n);
 			for (BFSIter it = new BFSIter(g, source); it.hasNext();) {
 				int v = it.nextInt();
 				int e = it.inEdge();
-				if (visited[v] || (v != source && g.edgeEndpoint(e, g.edgeEndpoint(e, v)) != v))
-					invalidVertices.add(Integer.valueOf(v));
-				visited[v] = true;
+				Assertions.assertFalse(visited.get(v), "already visited vertex " + v);
+				if (v != source)
+					Assertions.assertTrue(g.edgeEndpoint(e, g.edgeEndpoint(e, v)) == v,
+							"v is not an endpoint of inEdge");
+				visited.set(v);
 			}
-			Assertions.assertTrue(invalidVertices.isEmpty());
 		});
 	}
 
@@ -89,17 +89,17 @@ public class GraphsTest extends TestUtils {
 					.selfEdges(true).cycles(true).connected(true).build();
 			int source = rand.nextInt(n);
 
-			boolean[] visited = new boolean[n];
-			List<Integer> invalidVertices = new ArrayList<>();
+			BitSet visited = new BitSet(n);
 			for (DFSIter it = new DFSIter(g, source); it.hasNext();) {
 				int v = it.nextInt();
 				IntList pathFromSource = it.edgePath();
 				int e = v == source ? -1 : pathFromSource.getInt(pathFromSource.size() - 1);
-				if (visited[v] || (v != source && g.edgeEndpoint(e, g.edgeEndpoint(e, v)) != v))
-					invalidVertices.add(Integer.valueOf(v));
-				visited[v] = true;
+				Assertions.assertFalse(visited.get(v), "already visited vertex " + v);
+				if (v != source)
+					Assertions.assertTrue(g.edgeEndpoint(e, g.edgeEndpoint(e, v)) == v,
+							"v is not an endpoint of inEdge");
+				visited.set(v);
 			}
-			Assertions.assertTrue(invalidVertices.isEmpty());
 		});
 	}
 

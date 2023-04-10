@@ -1,6 +1,7 @@
 package com.jgalgo;
 
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Objects;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -55,7 +56,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 		private final Weights.Bool partition;
 		private final EdgeWeightFunc w;
 
-		private final boolean[] inTree;
+		private final BitSet inTree;
 
 		private final IntComparator edgeSlackComparator;
 		private final HeapDirectAccessed<Integer> nextTightEdge;
@@ -72,7 +73,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 			this.w = w;
 			int n = g.vertices().size();
 
-			inTree = new boolean[n];
+			inTree = new BitSet(n);
 
 			edgeSlackComparator = (e1, e2) -> Double.compare(edgeSlack(e1), edgeSlack(e2));
 			nextTightEdge = heapBuilder.build(edgeSlackComparator);
@@ -119,12 +120,12 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 						int e = nextTightEdge.findMin().intValue();
 						int u0 = g.edgeSource(e), v0 = g.edgeTarget(e);
 
-						if (inTree[u0] && inTree[v0]) {
+						if (inTree.get(u0) && inTree.get(v0)) {
 							// Vertex already in tree, edge is irrelevant
 							nextTightEdge.extractMin();
 							continue;
 						}
-						int v = inTree[u0] ? v0 : u0;
+						int v = inTree.get(u0) ? v0 : u0;
 
 						// No more tight edges from the tree, go out and adjust dual values
 						if (edgeSlack(e) > 0)
@@ -170,12 +171,12 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 
 				// Update dual values base
 				for (int u = 0; u < n; u++)
-					if (inTree[u])
+					if (inTree.get(u))
 						dualValBase[u] = dualVal(u);
 				Arrays.fill(dualVal0, 0);
 
 				// Reset tree
-				Arrays.fill(inTree, false);
+				inTree.clear();
 
 				// Reset heap
 				nextTightEdge.clear();
@@ -199,7 +200,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 		}
 
 		private double dualVal(int v) {
-			return inTree[v] ? dualVal0[v] + (partition.getBool(v) ? -deltaTotal : deltaTotal) : dualValBase[v];
+			return inTree.get(v) ? dualVal0[v] + (partition.getBool(v) ? -deltaTotal : deltaTotal) : dualValBase[v];
 		}
 
 		private double edgeSlack(int e) {
@@ -208,7 +209,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 
 		private void vertexAddedToTree(int v) {
 			dualVal0[v] = dualValBase[v] + (partition.getBool(v) ? deltaTotal : -deltaTotal);
-			inTree[v] = true;
+			inTree.set(v);
 		}
 
 	}
