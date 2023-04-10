@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Graphs.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jgalgo</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">Graphs.java</span></div><h1>Graphs.java</h1><pre class="source lang-java linenums">package com.jgalgo;
 
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Collections;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectFunction;
@@ -32,351 +33,351 @@ public class Graphs {
 	 *         not found
 	 */
 	public static Path findPath(Graph g, final int u, final int v) {
-<span class="fc bfc" id="L35" title="All 2 branches covered.">		if (u == v)</span>
-<span class="fc" id="L36">			return new Path(g, u, v, IntLists.emptyList());</span>
-<span class="fc" id="L37">		boolean reverse = true;</span>
-<span class="fc" id="L38">		int u0 = u, v0 = v;</span>
-<span class="fc bfc" id="L39" title="All 2 branches covered.">		if (g instanceof UGraph) {</span>
-<span class="fc" id="L40">			u0 = v;</span>
-<span class="fc" id="L41">			v0 = u;</span>
-<span class="fc" id="L42">			reverse = false;</span>
+<span class="fc bfc" id="L36" title="All 2 branches covered.">		if (u == v)</span>
+<span class="fc" id="L37">			return new Path(g, u, v, IntLists.emptyList());</span>
+<span class="fc" id="L38">		boolean reverse = true;</span>
+<span class="fc" id="L39">		int u0 = u, v0 = v;</span>
+<span class="fc bfc" id="L40" title="All 2 branches covered.">		if (g instanceof UGraph) {</span>
+<span class="fc" id="L41">			u0 = v;</span>
+<span class="fc" id="L42">			v0 = u;</span>
+<span class="fc" id="L43">			reverse = false;</span>
 		}
-<span class="fc" id="L44">		int n = g.vertices().size();</span>
-<span class="fc" id="L45">		int[] backtrack = new int[n];</span>
-<span class="fc" id="L46">		Arrays.fill(backtrack, -1);</span>
+<span class="fc" id="L45">		int n = g.vertices().size();</span>
+<span class="fc" id="L46">		int[] backtrack = new int[n];</span>
+<span class="fc" id="L47">		Arrays.fill(backtrack, -1);</span>
 
-<span class="fc" id="L48">		IntArrayList path = new IntArrayList();</span>
-<span class="fc bfc" id="L49" title="All 2 branches covered.">		for (BFSIter it = new BFSIter(g, u0); it.hasNext();) {</span>
-<span class="fc" id="L50">			int p = it.nextInt();</span>
-<span class="fc" id="L51">			backtrack[p] = it.inEdge();</span>
-<span class="fc bfc" id="L52" title="All 2 branches covered.">			if (p == v0)</span>
-<span class="fc" id="L53">				break;</span>
-<span class="fc" id="L54">		}</span>
+<span class="fc" id="L49">		IntArrayList path = new IntArrayList();</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">		for (BFSIter it = new BFSIter(g, u0); it.hasNext();) {</span>
+<span class="fc" id="L51">			int p = it.nextInt();</span>
+<span class="fc" id="L52">			backtrack[p] = it.inEdge();</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">			if (p == v0)</span>
+<span class="fc" id="L54">				break;</span>
+<span class="fc" id="L55">		}</span>
 
-<span class="fc bfc" id="L56" title="All 2 branches covered.">		if (backtrack[v0] == -1)</span>
-<span class="fc" id="L57">			return null;</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">		if (backtrack[v0] == -1)</span>
+<span class="fc" id="L58">			return null;</span>
 
-<span class="fc bfc" id="L59" title="All 2 branches covered.">		for (int p = v0; p != u0;) {</span>
-<span class="fc" id="L60">			int e = backtrack[p];</span>
-<span class="fc" id="L61">			path.add(e);</span>
-<span class="fc" id="L62">			p = g.edgeEndpoint(e, p);</span>
-<span class="fc" id="L63">		}</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">		for (int p = v0; p != u0;) {</span>
+<span class="fc" id="L61">			int e = backtrack[p];</span>
+<span class="fc" id="L62">			path.add(e);</span>
+<span class="fc" id="L63">			p = g.edgeEndpoint(e, p);</span>
+<span class="fc" id="L64">		}</span>
 
-<span class="fc bfc" id="L65" title="All 2 branches covered.">		if (reverse)</span>
-<span class="fc" id="L66">			IntArrays.reverse(path.elements(), 0, path.size());</span>
-<span class="fc" id="L67">		return new Path(g, u, v, path);</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">		if (reverse)</span>
+<span class="fc" id="L67">			IntArrays.reverse(path.elements(), 0, path.size());</span>
+<span class="fc" id="L68">		return new Path(g, u, v, path);</span>
 	}
 
 	public static boolean isTree(UGraph g) {
-<span class="fc" id="L71">		IntIterator vIter = g.vertices().iterator();</span>
-<span class="pc bpc" id="L72" title="1 of 2 branches missed.">		return !vIter.hasNext() ? true : isTree(g, vIter.nextInt());</span>
+<span class="fc" id="L72">		IntIterator vIter = g.vertices().iterator();</span>
+<span class="pc bpc" id="L73" title="1 of 2 branches missed.">		return !vIter.hasNext() ? true : isTree(g, vIter.nextInt());</span>
 	}
 
 	public static boolean isTree(Graph g, int root) {
-<span class="fc" id="L76">		return isForest(g, new int[] { root });</span>
+<span class="fc" id="L77">		return isForest(g, new int[] { root });</span>
 	}
 
 	public static boolean isForest(Graph g) {
-<span class="fc" id="L80">		int n = g.vertices().size();</span>
-<span class="fc" id="L81">		int[] roots = new int[n];</span>
-<span class="fc bfc" id="L82" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
-<span class="fc" id="L83">			roots[u] = u;</span>
-<span class="fc" id="L84">		return isForest(g, roots, true);</span>
+<span class="fc" id="L81">		int n = g.vertices().size();</span>
+<span class="fc" id="L82">		int[] roots = new int[n];</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
+<span class="fc" id="L84">			roots[u] = u;</span>
+<span class="fc" id="L85">		return isForest(g, roots, true);</span>
 	}
 
 	public static boolean isForest(Graph g, int[] roots) {
-<span class="fc" id="L88">		return isForest(g, roots, false);</span>
+<span class="fc" id="L89">		return isForest(g, roots, false);</span>
 	}
 
 	private static boolean isForest(Graph g, int[] roots, boolean allowVisitedRoot) {
-<span class="fc" id="L92">		int n = g.vertices().size();</span>
-<span class="pc bpc" id="L93" title="1 of 2 branches missed.">		if (n == 0)</span>
-<span class="nc" id="L94">			return true;</span>
-<span class="fc" id="L95">		boolean directed = g instanceof DiGraph;</span>
+<span class="fc" id="L93">		int n = g.vertices().size();</span>
+<span class="pc bpc" id="L94" title="1 of 2 branches missed.">		if (n == 0)</span>
+<span class="nc" id="L95">			return true;</span>
+<span class="fc" id="L96">		boolean directed = g instanceof DiGraph;</span>
 
-<span class="fc" id="L97">		boolean[] visited = new boolean[n];</span>
-<span class="fc" id="L98">		int[] parent = new int[n];</span>
-<span class="fc" id="L99">		Arrays.fill(parent, -1);</span>
+<span class="fc" id="L98">		BitSet visited = new BitSet(n);</span>
+<span class="fc" id="L99">		int[] parent = new int[n];</span>
+<span class="fc" id="L100">		Arrays.fill(parent, -1);</span>
 
-<span class="fc" id="L101">		IntStack stack = new IntArrayList();</span>
-<span class="fc" id="L102">		int visitedCount = 0;</span>
+<span class="fc" id="L102">		IntStack stack = new IntArrayList();</span>
+<span class="fc" id="L103">		int visitedCount = 0;</span>
 
-<span class="fc bfc" id="L104" title="All 2 branches covered.">		for (int i = 0; i &lt; roots.length; i++) {</span>
-<span class="fc" id="L105">			int root = roots[i];</span>
-<span class="fc bfc" id="L106" title="All 2 branches covered.">			if (visited[root]) {</span>
-<span class="pc bpc" id="L107" title="1 of 2 branches missed.">				if (allowVisitedRoot)</span>
-<span class="fc" id="L108">					continue;</span>
-<span class="nc" id="L109">				return false;</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">		for (int i = 0; i &lt; roots.length; i++) {</span>
+<span class="fc" id="L106">			int root = roots[i];</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">			if (visited.get(root)) {</span>
+<span class="pc bpc" id="L108" title="1 of 2 branches missed.">				if (allowVisitedRoot)</span>
+<span class="fc" id="L109">					continue;</span>
+<span class="nc" id="L110">				return false;</span>
 			}
 
-<span class="fc" id="L112">			stack.push(root);</span>
-<span class="fc" id="L113">			visited[root] = true;</span>
+<span class="fc" id="L113">			stack.push(root);</span>
+<span class="fc" id="L114">			visited.set(root);</span>
 
-<span class="fc bfc" id="L115" title="All 2 branches covered.">			while (!stack.isEmpty()) {</span>
-<span class="fc" id="L116">				int u = stack.popInt();</span>
-<span class="fc" id="L117">				visitedCount++;</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">			while (!stack.isEmpty()) {</span>
+<span class="fc" id="L117">				int u = stack.popInt();</span>
+<span class="fc" id="L118">				visitedCount++;</span>
 
-<span class="fc bfc" id="L119" title="All 2 branches covered.">				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
-<span class="fc" id="L120">					eit.nextInt();</span>
-<span class="fc" id="L121">					int v = eit.v();</span>
-<span class="pc bpc" id="L122" title="1 of 4 branches missed.">					if (!directed &amp;&amp; v == parent[u])</span>
-<span class="fc" id="L123">						continue;</span>
-<span class="fc bfc" id="L124" title="All 2 branches covered.">					if (visited[v])</span>
-<span class="fc" id="L125">						return false;</span>
-<span class="fc" id="L126">					visited[v] = true;</span>
-<span class="fc" id="L127">					stack.push(v);</span>
-<span class="fc" id="L128">					parent[v] = u;</span>
-<span class="fc" id="L129">				}</span>
-<span class="fc" id="L130">			}</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
+<span class="fc" id="L121">					eit.nextInt();</span>
+<span class="fc" id="L122">					int v = eit.v();</span>
+<span class="pc bpc" id="L123" title="1 of 4 branches missed.">					if (!directed &amp;&amp; v == parent[u])</span>
+<span class="fc" id="L124">						continue;</span>
+<span class="fc bfc" id="L125" title="All 2 branches covered.">					if (visited.get(v))</span>
+<span class="fc" id="L126">						return false;</span>
+<span class="fc" id="L127">					visited.set(v);</span>
+<span class="fc" id="L128">					stack.push(v);</span>
+<span class="fc" id="L129">					parent[v] = u;</span>
+<span class="fc" id="L130">				}</span>
+<span class="fc" id="L131">			}</span>
 		}
 
-<span class="fc bfc" id="L133" title="All 2 branches covered.">		return visitedCount == n;</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">		return visitedCount == n;</span>
 	}
 
 	public static int[] calcTopologicalSortingDAG(DiGraph g) {
-<span class="fc" id="L137">		int n = g.vertices().size();</span>
-<span class="fc" id="L138">		int[] inDegree = new int[n];</span>
-<span class="fc" id="L139">		IntPriorityQueue queue = new IntArrayFIFOQueue();</span>
-<span class="fc" id="L140">		int[] topolSort = new int[n];</span>
-<span class="fc" id="L141">		int topolSortSize = 0;</span>
+<span class="fc" id="L138">		int n = g.vertices().size();</span>
+<span class="fc" id="L139">		int[] inDegree = new int[n];</span>
+<span class="fc" id="L140">		IntPriorityQueue queue = new IntArrayFIFOQueue();</span>
+<span class="fc" id="L141">		int[] topolSort = new int[n];</span>
+<span class="fc" id="L142">		int topolSortSize = 0;</span>
 
 		// calc in degree of all vertices
-<span class="fc bfc" id="L144" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L145">			inDegree[v] = g.degreeIn(v);</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
+<span class="fc" id="L146">			inDegree[v] = g.degreeIn(v);</span>
 
 		// Find vertices with zero in degree and insert them to the queue
-<span class="fc bfc" id="L148" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
-<span class="fc bfc" id="L149" title="All 2 branches covered.">			if (inDegree[v] == 0)</span>
-<span class="fc" id="L150">				queue.enqueue(v);</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
+<span class="fc bfc" id="L150" title="All 2 branches covered.">			if (inDegree[v] == 0)</span>
+<span class="fc" id="L151">				queue.enqueue(v);</span>
 
 		// Poll vertices from the queue and &quot;remove&quot; each one from the tree and add new
 		// zero in degree vertices to the queue
-<span class="fc bfc" id="L154" title="All 2 branches covered.">		while (!queue.isEmpty()) {</span>
-<span class="fc" id="L155">			int u = queue.dequeueInt();</span>
-<span class="fc" id="L156">			topolSort[topolSortSize++] = u;</span>
-<span class="fc bfc" id="L157" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
-<span class="fc" id="L158">				eit.nextInt();</span>
-<span class="fc" id="L159">				int v = eit.v();</span>
-<span class="fc bfc" id="L160" title="All 2 branches covered.">				if (--inDegree[v] == 0)</span>
-<span class="fc" id="L161">					queue.enqueue(v);</span>
-<span class="fc" id="L162">			}</span>
-<span class="fc" id="L163">		}</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">		while (!queue.isEmpty()) {</span>
+<span class="fc" id="L156">			int u = queue.dequeueInt();</span>
+<span class="fc" id="L157">			topolSort[topolSortSize++] = u;</span>
+<span class="fc bfc" id="L158" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
+<span class="fc" id="L159">				eit.nextInt();</span>
+<span class="fc" id="L160">				int v = eit.v();</span>
+<span class="fc bfc" id="L161" title="All 2 branches covered.">				if (--inDegree[v] == 0)</span>
+<span class="fc" id="L162">					queue.enqueue(v);</span>
+<span class="fc" id="L163">			}</span>
+<span class="fc" id="L164">		}</span>
 
-<span class="pc bpc" id="L165" title="1 of 2 branches missed.">		if (topolSortSize != n)</span>
-<span class="nc" id="L166">			throw new IllegalArgumentException(&quot;G is not a directed acyclic graph (DAG)&quot;);</span>
+<span class="pc bpc" id="L166" title="1 of 2 branches missed.">		if (topolSortSize != n)</span>
+<span class="nc" id="L167">			throw new IllegalArgumentException(&quot;G is not a directed acyclic graph (DAG)&quot;);</span>
 
-<span class="fc" id="L168">		return topolSort;</span>
+<span class="fc" id="L169">		return topolSort;</span>
 	}
 
 	static int getFullyBranchingTreeDepth(Graph t, int root) {
-<span class="fc" id="L172">		for (int parent = -1, u = root, depth = 0;; depth++) {</span>
-<span class="fc" id="L173">			int v = parent;</span>
-<span class="fc bfc" id="L174" title="All 2 branches covered.">			for (EdgeIter eit = t.edgesOut(u); eit.hasNext();) {</span>
-<span class="fc" id="L175">				eit.nextInt();</span>
-<span class="fc" id="L176">				v = eit.v();</span>
-<span class="fc bfc" id="L177" title="All 2 branches covered.">				if (v != parent)</span>
-<span class="fc" id="L178">					break;</span>
+<span class="fc" id="L173">		for (int parent = -1, u = root, depth = 0;; depth++) {</span>
+<span class="fc" id="L174">			int v = parent;</span>
+<span class="fc bfc" id="L175" title="All 2 branches covered.">			for (EdgeIter eit = t.edgesOut(u); eit.hasNext();) {</span>
+<span class="fc" id="L176">				eit.nextInt();</span>
+<span class="fc" id="L177">				v = eit.v();</span>
+<span class="fc bfc" id="L178" title="All 2 branches covered.">				if (v != parent)</span>
+<span class="fc" id="L179">					break;</span>
 			}
-<span class="fc bfc" id="L180" title="All 2 branches covered.">			if (v == parent)</span>
-<span class="fc" id="L181">				return depth;</span>
-<span class="fc" id="L182">			parent = u;</span>
-<span class="fc" id="L183">			u = v;</span>
+<span class="fc bfc" id="L181" title="All 2 branches covered.">			if (v == parent)</span>
+<span class="fc" id="L182">				return depth;</span>
+<span class="fc" id="L183">			parent = u;</span>
+<span class="fc" id="L184">			u = v;</span>
 		}
 	}
 
 	static int[] calcDegree(UGraph g, IntCollection edges) {
-<span class="fc" id="L188">		int[] degree = new int[g.vertices().size()];</span>
-<span class="fc bfc" id="L189" title="All 2 branches covered.">		for (IntIterator eit = edges.iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L190">			int e = eit.nextInt();</span>
-<span class="fc" id="L191">			degree[g.edgeSource(e)]++;</span>
-<span class="fc" id="L192">			degree[g.edgeTarget(e)]++;</span>
-<span class="fc" id="L193">		}</span>
-<span class="fc" id="L194">		return degree;</span>
+<span class="fc" id="L189">		int[] degree = new int[g.vertices().size()];</span>
+<span class="fc bfc" id="L190" title="All 2 branches covered.">		for (IntIterator eit = edges.iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L191">			int e = eit.nextInt();</span>
+<span class="fc" id="L192">			degree[g.edgeSource(e)]++;</span>
+<span class="fc" id="L193">			degree[g.edgeTarget(e)]++;</span>
+<span class="fc" id="L194">		}</span>
+<span class="fc" id="L195">		return degree;</span>
 	}
 
 	static String formatAdjacencyMatrix(Graph g) {
-<span class="nc bnc" id="L198" title="All 2 branches missed.">		return formatAdjacencyMatrix(g, e -&gt; e == -1 ? &quot;0&quot; : &quot;1&quot;);</span>
+<span class="nc bnc" id="L199" title="All 2 branches missed.">		return formatAdjacencyMatrix(g, e -&gt; e == -1 ? &quot;0&quot; : &quot;1&quot;);</span>
 	}
 
 	static String formatAdjacencyMatrixWeighted(Graph g, EdgeWeightFunc w) {
-<span class="nc" id="L202">		double minWeight = Double.MAX_VALUE;</span>
-<span class="nc bnc" id="L203" title="All 2 branches missed.">		for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
-<span class="nc" id="L204">			int e = it.nextInt();</span>
-<span class="nc" id="L205">			double ew = w.weight(e);</span>
-<span class="nc bnc" id="L206" title="All 2 branches missed.">			if (ew &lt; minWeight)</span>
-<span class="nc" id="L207">				minWeight = ew;</span>
-<span class="nc" id="L208">		}</span>
+<span class="nc" id="L203">		double minWeight = Double.MAX_VALUE;</span>
+<span class="nc bnc" id="L204" title="All 2 branches missed.">		for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
+<span class="nc" id="L205">			int e = it.nextInt();</span>
+<span class="nc" id="L206">			double ew = w.weight(e);</span>
+<span class="nc bnc" id="L207" title="All 2 branches missed.">			if (ew &lt; minWeight)</span>
+<span class="nc" id="L208">				minWeight = ew;</span>
+<span class="nc" id="L209">		}</span>
 
-<span class="nc" id="L210">		int unlimitedPrecision = 64;</span>
-<span class="nc bnc" id="L211" title="All 2 branches missed.">		int precision = minWeight &gt;= 1 ? 2 : Math.min(unlimitedPrecision, (int) -Math.log10(minWeight));</span>
+<span class="nc" id="L211">		int unlimitedPrecision = 64;</span>
+<span class="nc bnc" id="L212" title="All 2 branches missed.">		int precision = minWeight &gt;= 1 ? 2 : Math.min(unlimitedPrecision, (int) -Math.log10(minWeight));</span>
 
-<span class="nc bnc" id="L213" title="All 2 branches missed.">		return precision == unlimitedPrecision</span>
-<span class="nc bnc" id="L214" title="All 2 branches missed.">				? formatAdjacencyMatrix(g, e -&gt; e == -1 ? &quot;-&quot; : Double.toString(w.weight(e)))</span>
-<span class="nc" id="L215">				: formatAdjacencyMatrix(g,</span>
-<span class="nc bnc" id="L216" title="All 2 branches missed.">						e -&gt; e == -1 ? &quot;-&quot; : String.format(&quot;%.&quot; + precision + &quot;f&quot;, Double.valueOf(w.weight(e))));</span>
+<span class="nc bnc" id="L214" title="All 2 branches missed.">		return precision == unlimitedPrecision</span>
+<span class="nc bnc" id="L215" title="All 2 branches missed.">				? formatAdjacencyMatrix(g, e -&gt; e == -1 ? &quot;-&quot; : Double.toString(w.weight(e)))</span>
+<span class="nc" id="L216">				: formatAdjacencyMatrix(g,</span>
+<span class="nc bnc" id="L217" title="All 2 branches missed.">						e -&gt; e == -1 ? &quot;-&quot; : String.format(&quot;%.&quot; + precision + &quot;f&quot;, Double.valueOf(w.weight(e))));</span>
 	}
 
 	static String formatAdjacencyMatrixWeightedInt(Graph g, EdgeWeightFunc.Int w) {
-<span class="nc bnc" id="L220" title="All 2 branches missed.">		return formatAdjacencyMatrix(g, e -&gt; e == -1 ? &quot;-&quot; : Integer.toString(w.weightInt(e)));</span>
+<span class="nc bnc" id="L221" title="All 2 branches missed.">		return formatAdjacencyMatrix(g, e -&gt; e == -1 ? &quot;-&quot; : Integer.toString(w.weightInt(e)));</span>
 	}
 
 	static String formatAdjacencyMatrix(Graph g, Int2ObjectFunction&lt;String&gt; formatter) {
-<span class="nc" id="L224">		int n = g.vertices().size();</span>
-<span class="nc bnc" id="L225" title="All 2 branches missed.">		if (n == 0)</span>
-<span class="nc" id="L226">			return &quot;[]&quot;;</span>
+<span class="nc" id="L225">		int n = g.vertices().size();</span>
+<span class="nc bnc" id="L226" title="All 2 branches missed.">		if (n == 0)</span>
+<span class="nc" id="L227">			return &quot;[]&quot;;</span>
 
 		/* format all edges */
-<span class="nc" id="L229">		String[][] strs = new String[n][n];</span>
-<span class="nc bnc" id="L230" title="All 2 branches missed.">		for (int u = 0; u &lt; n; u++) {</span>
-<span class="nc bnc" id="L231" title="All 2 branches missed.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
-<span class="nc" id="L232">				int e = eit.nextInt();</span>
-<span class="nc" id="L233">				strs[u][eit.v()] = formatter.apply(e);</span>
-<span class="nc" id="L234">			}</span>
+<span class="nc" id="L230">		String[][] strs = new String[n][n];</span>
+<span class="nc bnc" id="L231" title="All 2 branches missed.">		for (int u = 0; u &lt; n; u++) {</span>
+<span class="nc bnc" id="L232" title="All 2 branches missed.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
+<span class="nc" id="L233">				int e = eit.nextInt();</span>
+<span class="nc" id="L234">				strs[u][eit.v()] = formatter.apply(e);</span>
+<span class="nc" id="L235">			}</span>
 		}
 
 		/* calculate cell size */
-<span class="nc" id="L238">		int maxStr = 0;</span>
-<span class="nc bnc" id="L239" title="All 2 branches missed.">		for (int u = 0; u &lt; n; u++) {</span>
-<span class="nc bnc" id="L240" title="All 2 branches missed.">			for (int v = 0; v &lt; n; v++) {</span>
-<span class="nc bnc" id="L241" title="All 2 branches missed.">				if (strs[u][v] == null)</span>
-<span class="nc" id="L242">					strs[u][v] = formatter.apply(null);</span>
-<span class="nc bnc" id="L243" title="All 2 branches missed.">				if (strs[u][v].length() &gt; maxStr)</span>
-<span class="nc" id="L244">					maxStr = strs[u][v].length();</span>
+<span class="nc" id="L239">		int maxStr = 0;</span>
+<span class="nc bnc" id="L240" title="All 2 branches missed.">		for (int u = 0; u &lt; n; u++) {</span>
+<span class="nc bnc" id="L241" title="All 2 branches missed.">			for (int v = 0; v &lt; n; v++) {</span>
+<span class="nc bnc" id="L242" title="All 2 branches missed.">				if (strs[u][v] == null)</span>
+<span class="nc" id="L243">					strs[u][v] = formatter.apply(null);</span>
+<span class="nc bnc" id="L244" title="All 2 branches missed.">				if (strs[u][v].length() &gt; maxStr)</span>
+<span class="nc" id="L245">					maxStr = strs[u][v].length();</span>
 			}
 		}
-<span class="nc" id="L247">		int vertexLabelCellSize = String.valueOf(n - 1).length() + 1;</span>
-<span class="nc" id="L248">		int cellSize = Math.max(maxStr + 1, vertexLabelCellSize);</span>
+<span class="nc" id="L248">		int vertexLabelCellSize = String.valueOf(n - 1).length() + 1;</span>
+<span class="nc" id="L249">		int cellSize = Math.max(maxStr + 1, vertexLabelCellSize);</span>
 
 		/* format header row */
-<span class="nc" id="L251">		StringBuilder s = new StringBuilder();</span>
-<span class="nc" id="L252">		s.append(strMult(&quot; &quot;, vertexLabelCellSize));</span>
-<span class="nc bnc" id="L253" title="All 2 branches missed.">		for (int v = 0; v &lt; n; v++)</span>
-<span class="nc" id="L254">			s.append(String.format(&quot;% &quot; + cellSize + &quot;d&quot;, Integer.valueOf(v)));</span>
-<span class="nc" id="L255">		s.append('\n');</span>
+<span class="nc" id="L252">		StringBuilder s = new StringBuilder();</span>
+<span class="nc" id="L253">		s.append(strMult(&quot; &quot;, vertexLabelCellSize));</span>
+<span class="nc bnc" id="L254" title="All 2 branches missed.">		for (int v = 0; v &lt; n; v++)</span>
+<span class="nc" id="L255">			s.append(String.format(&quot;% &quot; + cellSize + &quot;d&quot;, Integer.valueOf(v)));</span>
+<span class="nc" id="L256">		s.append('\n');</span>
 
 		/* format adjacency matrix */
-<span class="nc bnc" id="L258" title="All 2 branches missed.">		for (int u = 0; u &lt; n; u++) {</span>
-<span class="nc" id="L259">			s.append(String.format(&quot;% &quot; + vertexLabelCellSize + &quot;d&quot;, Integer.valueOf(u)));</span>
-<span class="nc bnc" id="L260" title="All 2 branches missed.">			for (int v = 0; v &lt; n; v++) {</span>
-<span class="nc bnc" id="L261" title="All 2 branches missed.">				if (strs[u][v].length() &lt; cellSize)</span>
-<span class="nc" id="L262">					s.append(strMult(&quot; &quot;, cellSize - strs[u][v].length()));</span>
-<span class="nc" id="L263">				s.append(strs[u][v]);</span>
+<span class="nc bnc" id="L259" title="All 2 branches missed.">		for (int u = 0; u &lt; n; u++) {</span>
+<span class="nc" id="L260">			s.append(String.format(&quot;% &quot; + vertexLabelCellSize + &quot;d&quot;, Integer.valueOf(u)));</span>
+<span class="nc bnc" id="L261" title="All 2 branches missed.">			for (int v = 0; v &lt; n; v++) {</span>
+<span class="nc bnc" id="L262" title="All 2 branches missed.">				if (strs[u][v].length() &lt; cellSize)</span>
+<span class="nc" id="L263">					s.append(strMult(&quot; &quot;, cellSize - strs[u][v].length()));</span>
+<span class="nc" id="L264">				s.append(strs[u][v]);</span>
 			}
-<span class="nc" id="L265">			s.append('\n');</span>
+<span class="nc" id="L266">			s.append('\n');</span>
 		}
 
-<span class="nc" id="L268">		return s.toString();</span>
+<span class="nc" id="L269">		return s.toString();</span>
 	}
 
 	private static String strMult(String s, int n) {
-<span class="nc" id="L272">		return String.join(&quot;&quot;, Collections.nCopies(n, s));</span>
+<span class="nc" id="L273">		return String.join(&quot;&quot;, Collections.nCopies(n, s));</span>
 	}
 
 	static DiGraph referenceGraph(DiGraph g, Object refEdgeWeightKey) {
-<span class="fc" id="L276">		DiGraph g0 = new GraphArrayDirected(g.vertices().size());</span>
-<span class="fc" id="L277">		Weights.Int edgeRef = g0.addEdgesWeight(refEdgeWeightKey).ofInts();</span>
-<span class="fc bfc" id="L278" title="All 2 branches covered.">		for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
-<span class="fc" id="L279">			int e = it.nextInt();</span>
-<span class="fc" id="L280">			int e0 = g0.addEdge(g.edgeSource(e), g.edgeTarget(e));</span>
-<span class="fc" id="L281">			edgeRef.set(e0, e);</span>
-<span class="fc" id="L282">		}</span>
-<span class="fc" id="L283">		return g0;</span>
+<span class="fc" id="L277">		DiGraph g0 = new GraphArrayDirected(g.vertices().size());</span>
+<span class="fc" id="L278">		Weights.Int edgeRef = g0.addEdgesWeight(refEdgeWeightKey).ofInts();</span>
+<span class="fc bfc" id="L279" title="All 2 branches covered.">		for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
+<span class="fc" id="L280">			int e = it.nextInt();</span>
+<span class="fc" id="L281">			int e0 = g0.addEdge(g.edgeSource(e), g.edgeTarget(e));</span>
+<span class="fc" id="L282">			edgeRef.set(e0, e);</span>
+<span class="fc" id="L283">		}</span>
+<span class="fc" id="L284">		return g0;</span>
 	}
 
 	static UGraph referenceGraph(UGraph g, Object refEdgeWeightKey) {
-<span class="fc" id="L287">		UGraph g0 = new GraphArrayUndirected(g.vertices().size());</span>
-<span class="fc" id="L288">		Weights.Int edgeRef = g0.addEdgesWeight(refEdgeWeightKey).ofInts();</span>
-<span class="fc bfc" id="L289" title="All 2 branches covered.">		for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
-<span class="fc" id="L290">			int e = it.nextInt();</span>
-<span class="fc" id="L291">			int e0 = g0.addEdge(g.edgeSource(e), g.edgeTarget(e));</span>
-<span class="fc" id="L292">			edgeRef.set(e0, e);</span>
-<span class="fc" id="L293">		}</span>
-<span class="fc" id="L294">		return g0;</span>
+<span class="fc" id="L288">		UGraph g0 = new GraphArrayUndirected(g.vertices().size());</span>
+<span class="fc" id="L289">		Weights.Int edgeRef = g0.addEdgesWeight(refEdgeWeightKey).ofInts();</span>
+<span class="fc bfc" id="L290" title="All 2 branches covered.">		for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
+<span class="fc" id="L291">			int e = it.nextInt();</span>
+<span class="fc" id="L292">			int e0 = g0.addEdge(g.edgeSource(e), g.edgeTarget(e));</span>
+<span class="fc" id="L293">			edgeRef.set(e0, e);</span>
+<span class="fc" id="L294">		}</span>
+<span class="fc" id="L295">		return g0;</span>
 	}
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	static UGraph subGraph(UGraph g, IntCollection edgeSet) {
-<span class="fc" id="L299">		final Object edgeMappingKey = new Object();</span>
-<span class="fc" id="L300">		UGraph g1 = new GraphArrayUndirected(g.vertices().size());</span>
+<span class="fc" id="L300">		final Object edgeMappingKey = new Object();</span>
+<span class="fc" id="L301">		UGraph g1 = new GraphArrayUndirected(g.vertices().size());</span>
 
-<span class="fc" id="L302">		Weights.Int sub2Edge = g1.addEdgesWeight(edgeMappingKey).ofInts();</span>
-<span class="fc bfc" id="L303" title="All 2 branches covered.">		for (IntIterator it = edgeSet.iterator(); it.hasNext();) {</span>
-<span class="fc" id="L304">			int e = it.nextInt();</span>
-<span class="fc" id="L305">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
-<span class="fc" id="L306">			int s = g1.addEdge(u, v);</span>
-<span class="fc" id="L307">			sub2Edge.set(s, e);</span>
-<span class="fc" id="L308">		}</span>
-<span class="fc bfc" id="L309" title="All 2 branches covered.">		for (Object key : g.getEdgesWeightsKeys()) {</span>
-<span class="fc" id="L310">			Weights&lt;?&gt; data0 = g.edgesWeight(key);</span>
+<span class="fc" id="L303">		Weights.Int sub2Edge = g1.addEdgesWeight(edgeMappingKey).ofInts();</span>
+<span class="fc bfc" id="L304" title="All 2 branches covered.">		for (IntIterator it = edgeSet.iterator(); it.hasNext();) {</span>
+<span class="fc" id="L305">			int e = it.nextInt();</span>
+<span class="fc" id="L306">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+<span class="fc" id="L307">			int s = g1.addEdge(u, v);</span>
+<span class="fc" id="L308">			sub2Edge.set(s, e);</span>
+<span class="fc" id="L309">		}</span>
+<span class="fc bfc" id="L310" title="All 2 branches covered.">		for (Object key : g.getEdgesWeightsKeys()) {</span>
+<span class="fc" id="L311">			Weights&lt;?&gt; data0 = g.edgesWeight(key);</span>
 
-<span class="pc bpc" id="L312" title="1 of 2 branches missed.">			if (data0 instanceof Weights.Int) {</span>
-<span class="nc" id="L313">				Weights.Int data = (Weights.Int) data0;</span>
-<span class="nc" id="L314">				int defVal = data.defaultValInt();</span>
-<span class="nc" id="L315">				Weights.Int datas = g1.addEdgesWeight(key).defVal(defVal).ofInts();</span>
-<span class="nc bnc" id="L316" title="All 2 branches missed.">				for (IntIterator it = g1.edges().iterator(); it.hasNext();) {</span>
-<span class="nc" id="L317">					int s = it.nextInt();</span>
-<span class="nc" id="L318">					int w = data.getInt(sub2Edge.getInt(s));</span>
-<span class="nc bnc" id="L319" title="All 2 branches missed.">					if (w != defVal)</span>
-<span class="nc" id="L320">						datas.set(s, w);</span>
-<span class="nc" id="L321">				}</span>
+<span class="pc bpc" id="L313" title="1 of 2 branches missed.">			if (data0 instanceof Weights.Int) {</span>
+<span class="nc" id="L314">				Weights.Int data = (Weights.Int) data0;</span>
+<span class="nc" id="L315">				int defVal = data.defaultValInt();</span>
+<span class="nc" id="L316">				Weights.Int datas = g1.addEdgesWeight(key).defVal(defVal).ofInts();</span>
+<span class="nc bnc" id="L317" title="All 2 branches missed.">				for (IntIterator it = g1.edges().iterator(); it.hasNext();) {</span>
+<span class="nc" id="L318">					int s = it.nextInt();</span>
+<span class="nc" id="L319">					int w = data.getInt(sub2Edge.getInt(s));</span>
+<span class="nc bnc" id="L320" title="All 2 branches missed.">					if (w != defVal)</span>
+<span class="nc" id="L321">						datas.set(s, w);</span>
+<span class="nc" id="L322">				}</span>
 
-<span class="pc bpc" id="L323" title="1 of 2 branches missed.">			} else if (data0 instanceof Weights.Double) {</span>
-<span class="nc" id="L324">				Weights.Double data = (Weights.Double) data0;</span>
-<span class="nc" id="L325">				double defVal = data.defaultValDouble();</span>
-<span class="nc" id="L326">				Weights.Double datas = g1.addEdgesWeight(key).defVal(defVal).ofDoubles();</span>
-<span class="nc bnc" id="L327" title="All 2 branches missed.">				for (IntIterator it = g1.edges().iterator(); it.hasNext();) {</span>
-<span class="nc" id="L328">					int s = it.nextInt();</span>
-<span class="nc" id="L329">					double w = data.getDouble(sub2Edge.getInt(s));</span>
-<span class="nc bnc" id="L330" title="All 2 branches missed.">					if (w != defVal)</span>
-<span class="nc" id="L331">						datas.set(s, w);</span>
-<span class="nc" id="L332">				}</span>
+<span class="pc bpc" id="L324" title="1 of 2 branches missed.">			} else if (data0 instanceof Weights.Double) {</span>
+<span class="nc" id="L325">				Weights.Double data = (Weights.Double) data0;</span>
+<span class="nc" id="L326">				double defVal = data.defaultValDouble();</span>
+<span class="nc" id="L327">				Weights.Double datas = g1.addEdgesWeight(key).defVal(defVal).ofDoubles();</span>
+<span class="nc bnc" id="L328" title="All 2 branches missed.">				for (IntIterator it = g1.edges().iterator(); it.hasNext();) {</span>
+<span class="nc" id="L329">					int s = it.nextInt();</span>
+<span class="nc" id="L330">					double w = data.getDouble(sub2Edge.getInt(s));</span>
+<span class="nc bnc" id="L331" title="All 2 branches missed.">					if (w != defVal)</span>
+<span class="nc" id="L332">						datas.set(s, w);</span>
+<span class="nc" id="L333">				}</span>
 
-<span class="nc" id="L334">			} else {</span>
-<span class="fc" id="L335">				Object defVal = data0.defaultVal();</span>
+<span class="nc" id="L335">			} else {</span>
+<span class="fc" id="L336">				Object defVal = data0.defaultVal();</span>
 				@SuppressWarnings(&quot;rawtypes&quot;)
-<span class="fc" id="L337">				Weights datas = g1.addEdgesWeight(key).defVal(defVal).ofObjs();</span>
-<span class="fc bfc" id="L338" title="All 2 branches covered.">				for (IntIterator it = g1.edges().iterator(); it.hasNext();) {</span>
-<span class="fc" id="L339">					int s = it.nextInt();</span>
-<span class="fc" id="L340">					Object w = data0.get(sub2Edge.getInt(s));</span>
-<span class="pc bpc" id="L341" title="1 of 2 branches missed.">					if (w != defVal)</span>
-<span class="fc" id="L342">						datas.set(s, w);</span>
-<span class="fc" id="L343">				}</span>
+<span class="fc" id="L338">				Weights datas = g1.addEdgesWeight(key).defVal(defVal).ofObjs();</span>
+<span class="fc bfc" id="L339" title="All 2 branches covered.">				for (IntIterator it = g1.edges().iterator(); it.hasNext();) {</span>
+<span class="fc" id="L340">					int s = it.nextInt();</span>
+<span class="fc" id="L341">					Object w = data0.get(sub2Edge.getInt(s));</span>
+<span class="pc bpc" id="L342" title="1 of 2 branches missed.">					if (w != defVal)</span>
+<span class="fc" id="L343">						datas.set(s, w);</span>
+<span class="fc" id="L344">				}</span>
 			}
-<span class="fc" id="L345">		}</span>
-<span class="fc" id="L346">		g1.removeEdgesWeights(edgeMappingKey);</span>
-<span class="fc" id="L347">		return g1;</span>
+<span class="fc" id="L346">		}</span>
+<span class="fc" id="L347">		g1.removeEdgesWeights(edgeMappingKey);</span>
+<span class="fc" id="L348">		return g1;</span>
 	}
 
 	static boolean containsSelfLoops(Graph g) {
-<span class="pc bpc" id="L351" title="1 of 2 branches missed.">		if (!g.getCapabilities().selfEdges())</span>
-<span class="nc" id="L352">			return false;</span>
-<span class="fc" id="L353">		int n = g.vertices().size();</span>
-<span class="fc bfc" id="L354" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc bfc" id="L355" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
-<span class="fc" id="L356">				eit.nextInt();</span>
-<span class="pc bpc" id="L357" title="1 of 2 branches missed.">				if (u == eit.v())</span>
-<span class="nc" id="L358">					return true;</span>
+<span class="pc bpc" id="L352" title="1 of 2 branches missed.">		if (!g.getCapabilities().selfEdges())</span>
+<span class="nc" id="L353">			return false;</span>
+<span class="fc" id="L354">		int n = g.vertices().size();</span>
+<span class="fc bfc" id="L355" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc bfc" id="L356" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
+<span class="fc" id="L357">				eit.nextInt();</span>
+<span class="pc bpc" id="L358" title="1 of 2 branches missed.">				if (u == eit.v())</span>
+<span class="nc" id="L359">					return true;</span>
 			}
 		}
-<span class="fc" id="L361">		return false;</span>
+<span class="fc" id="L362">		return false;</span>
 	}
 
 	static boolean containsParallelEdges(Graph g) {
-<span class="pc bpc" id="L365" title="1 of 2 branches missed.">		if (!g.getCapabilities().parallelEdges())</span>
-<span class="nc" id="L366">			return false;</span>
-<span class="fc" id="L367">		int n = g.vertices().size();</span>
-<span class="fc" id="L368">		int[] lastVisit = new int[n];</span>
-<span class="fc bfc" id="L369" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc" id="L370">			final int visitIdx = u + 1;</span>
-<span class="fc bfc" id="L371" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
-<span class="fc" id="L372">				eit.nextInt();</span>
-<span class="fc" id="L373">				int v = eit.v();</span>
-<span class="pc bpc" id="L374" title="1 of 2 branches missed.">				if (lastVisit[v] == visitIdx)</span>
-<span class="nc" id="L375">					return true;</span>
-<span class="fc" id="L376">				lastVisit[v] = visitIdx;</span>
-<span class="fc" id="L377">			}</span>
+<span class="pc bpc" id="L366" title="1 of 2 branches missed.">		if (!g.getCapabilities().parallelEdges())</span>
+<span class="nc" id="L367">			return false;</span>
+<span class="fc" id="L368">		int n = g.vertices().size();</span>
+<span class="fc" id="L369">		int[] lastVisit = new int[n];</span>
+<span class="fc bfc" id="L370" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc" id="L371">			final int visitIdx = u + 1;</span>
+<span class="fc bfc" id="L372" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
+<span class="fc" id="L373">				eit.nextInt();</span>
+<span class="fc" id="L374">				int v = eit.v();</span>
+<span class="pc bpc" id="L375" title="1 of 2 branches missed.">				if (lastVisit[v] == visitIdx)</span>
+<span class="nc" id="L376">					return true;</span>
+<span class="fc" id="L377">				lastVisit[v] = visitIdx;</span>
+<span class="fc" id="L378">			}</span>
 		}
-<span class="fc" id="L379">		return false;</span>
+<span class="fc" id="L380">		return false;</span>
 	}
 
 }

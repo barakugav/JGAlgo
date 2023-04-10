@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DFSIter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jgalgo</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">DFSIter.java</span></div><h1>DFSIter.java</h1><pre class="source lang-java linenums">package com.jgalgo;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -8,62 +9,108 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 
-<span class="fc" id="L11">public class DFSIter implements IntIterator {</span>
+/**
+ * Depth first search (DFS) iterator.
+ * &lt;p&gt;
+ * The DFS iterator is used to iterate over the vertices of a graph is a depth
+ * first manner, namely it explore as far as possible along each branch before
+ * backtracking. The iterator will visit every vertex {@code v} for which there
+ * is a path from the source(s) to {@code v}. Each such vertex will be visited
+ * exactly once.
+ * &lt;p&gt;
+ *
+ * &lt;pre&gt; {@code
+ * Graph g = ...;
+ * int sourceVertex = ...;
+ * for (DFSIter iter = new DFSIter(g, sourceVertex); iter.hasNext();) {
+ *     int v = iter.nextInt();
+ *     IntList edgePath = iter.edgePath();
+ *     System.out.println(&quot;Reached vertex v using the edges: &quot; + edgePath);
+ * }
+ * }&lt;/pre&gt;
+ *
+ * @see BFSIter
+ * @see &lt;a href=&quot;https://en.wikipedia.org/wiki/Depth-first_search&quot;&gt;Wikipedia&lt;/a&gt;
+ * @author Barak Ugav
+ */
+<span class="fc" id="L36">public class DFSIter implements IntIterator {</span>
 
 	private final Graph g;
-	private final boolean[] visited;
+	private final BitSet visited;
 	private final List&lt;EdgeIter&gt; edgeIters;
 	private final IntList edgePath;
 	private boolean isValid;
 
-<span class="fc" id="L19">	public DFSIter(Graph g, int source) {</span>
-<span class="fc" id="L20">		int n = g.vertices().size();</span>
-<span class="fc" id="L21">		this.g = g;</span>
-<span class="fc" id="L22">		visited = new boolean[n];</span>
-<span class="fc" id="L23">		edgeIters = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L24">		edgePath = new IntArrayList();</span>
+	/**
+	 * Create a DFS iterator rooted at some source vertex.
+	 *
+	 * @param g      a graph
+	 * @param source a vertex in the graph from which the search will start from.
+	 */
+<span class="fc" id="L50">	public DFSIter(Graph g, int source) {</span>
+<span class="fc" id="L51">		int n = g.vertices().size();</span>
+<span class="fc" id="L52">		this.g = g;</span>
+<span class="fc" id="L53">		visited = new BitSet(n);</span>
+<span class="fc" id="L54">		edgeIters = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L55">		edgePath = new IntArrayList();</span>
 
-<span class="fc" id="L26">		visited[source] = true;</span>
-<span class="fc" id="L27">		edgeIters.add(g.edgesOut(source));</span>
-<span class="fc" id="L28">		isValid = true;</span>
-<span class="fc" id="L29">	}</span>
+<span class="fc" id="L57">		visited.set(source);</span>
+<span class="fc" id="L58">		edgeIters.add(g.edgesOut(source));</span>
+<span class="fc" id="L59">		isValid = true;</span>
+<span class="fc" id="L60">	}</span>
 
+	/**
+	 * Check whether there is more vertices to iterate over.
+	 */
 	@Override
 	public boolean hasNext() {
-<span class="fc bfc" id="L33" title="All 2 branches covered.">		if (isValid)</span>
-<span class="fc" id="L34">			return true;</span>
-<span class="pc bpc" id="L35" title="1 of 2 branches missed.">		if (edgeIters.isEmpty())</span>
-<span class="nc" id="L36">			return false;</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">		if (isValid)</span>
+<span class="fc" id="L68">			return true;</span>
+<span class="pc bpc" id="L69" title="1 of 2 branches missed.">		if (edgeIters.isEmpty())</span>
+<span class="nc" id="L70">			return false;</span>
 		for (;;) {
-<span class="fc bfc" id="L38" title="All 2 branches covered.">			for (EdgeIter eit = edgeIters.get(edgeIters.size() - 1); eit.hasNext();) {</span>
-<span class="fc" id="L39">				int e = eit.nextInt();</span>
-<span class="fc" id="L40">				int v = eit.v();</span>
-<span class="fc bfc" id="L41" title="All 2 branches covered.">				if (visited[v])</span>
-<span class="fc" id="L42">					continue;</span>
-<span class="fc" id="L43">				visited[v] = true;</span>
-<span class="fc" id="L44">				edgeIters.add(g.edgesOut(v));</span>
-<span class="fc" id="L45">				edgePath.add(e);</span>
-<span class="fc" id="L46">				return isValid = true;</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">			for (EdgeIter eit = edgeIters.get(edgeIters.size() - 1); eit.hasNext();) {</span>
+<span class="fc" id="L73">				int e = eit.nextInt();</span>
+<span class="fc" id="L74">				int v = eit.v();</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">				if (visited.get(v))</span>
+<span class="fc" id="L76">					continue;</span>
+<span class="fc" id="L77">				visited.set(v);</span>
+<span class="fc" id="L78">				edgeIters.add(g.edgesOut(v));</span>
+<span class="fc" id="L79">				edgePath.add(e);</span>
+<span class="fc" id="L80">				return isValid = true;</span>
 			}
-<span class="fc" id="L48">			edgeIters.remove(edgeIters.size() - 1);</span>
-<span class="fc bfc" id="L49" title="All 2 branches covered.">			if (edgeIters.isEmpty()) {</span>
-<span class="pc bpc" id="L50" title="1 of 2 branches missed.">				assert edgePath.isEmpty();</span>
-<span class="fc" id="L51">				return false;</span>
+<span class="fc" id="L82">			edgeIters.remove(edgeIters.size() - 1);</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">			if (edgeIters.isEmpty()) {</span>
+<span class="pc bpc" id="L84" title="1 of 2 branches missed.">				assert edgePath.isEmpty();</span>
+<span class="fc" id="L85">				return false;</span>
 			}
-<span class="fc" id="L53">			edgePath.removeInt(edgePath.size() - 1);</span>
+<span class="fc" id="L87">			edgePath.removeInt(edgePath.size() - 1);</span>
 		}
 	}
 
+	/**
+	 * Advance the iterator and return a vertex that was not visited by the iterator
+	 * yet.
+	 */
 	@Override
 	public int nextInt() {
-<span class="pc bpc" id="L59" title="1 of 2 branches missed.">		if (!hasNext())</span>
-<span class="nc" id="L60">			throw new NoSuchElementException();</span>
-<span class="fc" id="L61">		isValid = false;</span>
-<span class="fc" id="L62">		return edgeIters.get(edgeIters.size() - 1).u();</span>
+<span class="pc bpc" id="L97" title="1 of 2 branches missed.">		if (!hasNext())</span>
+<span class="nc" id="L98">			throw new NoSuchElementException();</span>
+<span class="fc" id="L99">		isValid = false;</span>
+<span class="fc" id="L100">		return edgeIters.get(edgeIters.size() - 1).u();</span>
 	}
 
+	/**
+	 * Get the path from the source to the last vertex returned by {@link nextInt}.
+	 * &lt;p&gt;
+	 * The behavior is undefined if {@link nextInt} was not called yet.
+	 *
+	 * @return list of edges forming a path from the source to the last vertex
+	 *         returned by {@link nextInt}. The returned list should not be modified
+	 *         by the user.
+	 */
 	public IntList edgePath() {
-<span class="fc" id="L66">		return edgePath;</span>
+<span class="fc" id="L113">		return edgePath;</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

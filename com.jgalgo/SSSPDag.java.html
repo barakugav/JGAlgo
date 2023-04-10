@@ -3,33 +3,32 @@
 <span class="fc" id="L3">public class SSSPDag implements SSSP {</span>
 
 	@Override
-	public Result calcDistances(Graph g0, EdgeWeightFunc w, int source) {
-<span class="pc bpc" id="L7" title="1 of 2 branches missed.">		if (!(g0 instanceof DiGraph))</span>
+	public SSSPDag.Result calcDistances(Graph g, EdgeWeightFunc w, int source) {
+<span class="pc bpc" id="L7" title="1 of 2 branches missed.">		if (!(g instanceof DiGraph))</span>
 <span class="nc" id="L8">			throw new IllegalArgumentException(&quot;Only DAG graphs are supported&quot;);</span>
-<span class="fc" id="L9">		DiGraph g = (DiGraph) g0;</span>
-<span class="fc" id="L10">		SSSPResultImpl res = new SSSPResultImpl(g, source);</span>
-<span class="fc" id="L11">		res.distances[source] = 0;</span>
+<span class="fc" id="L9">		SSSPResultImpl res = new SSSPResultImpl(g, source);</span>
+<span class="fc" id="L10">		res.distances[source] = 0;</span>
 
-<span class="fc" id="L13">		int[] topolSort = Graphs.calcTopologicalSortingDAG(g);</span>
-<span class="fc" id="L14">		boolean sourceSeen = false;</span>
-<span class="fc bfc" id="L15" title="All 2 branches covered.">		for (int u : topolSort) {</span>
-<span class="fc bfc" id="L16" title="All 2 branches covered.">			if (!sourceSeen) {</span>
-<span class="fc bfc" id="L17" title="All 2 branches covered.">				if (u != source)</span>
-<span class="fc" id="L18">					continue;</span>
-<span class="fc" id="L19">				sourceSeen = true;</span>
+<span class="fc" id="L12">		int[] topolSort = Graphs.calcTopologicalSortingDAG((DiGraph) g);</span>
+<span class="fc" id="L13">		boolean sourceSeen = false;</span>
+<span class="fc bfc" id="L14" title="All 2 branches covered.">		for (int u : topolSort) {</span>
+<span class="fc bfc" id="L15" title="All 2 branches covered.">			if (!sourceSeen) {</span>
+<span class="fc bfc" id="L16" title="All 2 branches covered.">				if (u != source)</span>
+<span class="fc" id="L17">					continue;</span>
+<span class="fc" id="L18">				sourceSeen = true;</span>
 			}
-<span class="fc bfc" id="L21" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
-<span class="fc" id="L22">				int e = eit.nextInt();</span>
-<span class="fc" id="L23">				int v = eit.v();</span>
-<span class="fc" id="L24">				double d = res.distances[u] + w.weight(e);</span>
-<span class="fc bfc" id="L25" title="All 2 branches covered.">				if (d &lt; res.distances[v]) {</span>
-<span class="fc" id="L26">					res.distances[v] = d;</span>
-<span class="fc" id="L27">					res.backtrack[v] = e;</span>
+<span class="fc bfc" id="L20" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
+<span class="fc" id="L21">				int e = eit.nextInt();</span>
+<span class="fc" id="L22">				int v = eit.v();</span>
+<span class="fc" id="L23">				double d = res.distances[u] + w.weight(e);</span>
+<span class="fc bfc" id="L24" title="All 2 branches covered.">				if (d &lt; res.distances[v]) {</span>
+<span class="fc" id="L25">					res.distances[v] = d;</span>
+<span class="fc" id="L26">					res.backtrack[v] = e;</span>
 				}
-<span class="fc" id="L29">			}</span>
+<span class="fc" id="L28">			}</span>
 		}
 
-<span class="fc" id="L32">		return res;</span>
+<span class="fc" id="L31">		return res;</span>
 	}
 
 }

@@ -19,148 +19,151 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 	 */
 
 	@Override
-	public List&lt;Path&gt; findAllCycles(Graph g0) {
-<span class="pc bpc" id="L23" title="1 of 2 branches missed.">		if (!(g0 instanceof DiGraph))</span>
+	public List&lt;Path&gt; findAllCycles(Graph g) {
+<span class="pc bpc" id="L23" title="1 of 2 branches missed.">		if (!(g instanceof DiGraph))</span>
 <span class="nc" id="L24">			throw new IllegalArgumentException();</span>
-<span class="fc" id="L25">		DiGraph g = (DiGraph) g0;</span>
-<span class="pc bpc" id="L26" title="1 of 2 branches missed.">		if (Graphs.containsParallelEdges(g))</span>
-<span class="nc" id="L27">			throw new IllegalArgumentException(&quot;graph with self loops is not supported&quot;);</span>
-<span class="fc" id="L28">		int n = g.vertices().size();</span>
-<span class="fc" id="L29">		Worker worker = new Worker(g);</span>
-<span class="fc bfc" id="L30" title="All 2 branches covered.">		for (int startIdx = 0; startIdx &lt; n; startIdx++) {</span>
-<span class="fc" id="L31">			var p = chooseSCCInSubGraph(g, startIdx);</span>
-<span class="fc bfc" id="L32" title="All 2 branches covered.">			if (p == null)</span>
-<span class="fc" id="L33">				break;</span>
-<span class="fc" id="L34">			StronglyConectedComponent scc = p.e1;</span>
-<span class="fc" id="L35">			startIdx = p.e2.intValue();</span>
-<span class="fc" id="L36">			worker.findAllCycles(startIdx, scc);</span>
-<span class="fc" id="L37">			worker.reset();</span>
-		}
-<span class="fc" id="L39">		return worker.cycles;</span>
+<span class="fc" id="L25">		return findAllCycles0((DiGraph) g);</span>
 	}
 
-<span class="fc" id="L42">	private static class Worker {</span>
+	private static List&lt;Path&gt; findAllCycles0(DiGraph g) {
+<span class="pc bpc" id="L29" title="1 of 2 branches missed.">		if (Graphs.containsParallelEdges(g))</span>
+<span class="nc" id="L30">			throw new IllegalArgumentException(&quot;graph with self loops is not supported&quot;);</span>
+<span class="fc" id="L31">		int n = g.vertices().size();</span>
+<span class="fc" id="L32">		Worker worker = new Worker(g);</span>
+<span class="fc bfc" id="L33" title="All 2 branches covered.">		for (int startIdx = 0; startIdx &lt; n; startIdx++) {</span>
+<span class="fc" id="L34">			var p = chooseSCCInSubGraph(g, startIdx);</span>
+<span class="fc bfc" id="L35" title="All 2 branches covered.">			if (p == null)</span>
+<span class="fc" id="L36">				break;</span>
+<span class="fc" id="L37">			StronglyConectedComponent scc = p.e1;</span>
+<span class="fc" id="L38">			startIdx = p.e2.intValue();</span>
+<span class="fc" id="L39">			worker.findAllCycles(startIdx, scc);</span>
+<span class="fc" id="L40">			worker.reset();</span>
+		}
+<span class="fc" id="L42">		return worker.cycles;</span>
+	}
+
+<span class="fc" id="L45">	private static class Worker {</span>
 
 		private final DiGraph g;
 		private final BitSet isBlocked;
 		private final IntSet[] blockingSet;
-<span class="fc" id="L47">		private final IntStack unblockStack = new IntArrayList();</span>
-<span class="fc" id="L48">		private final IntStack path = new IntArrayList();</span>
-<span class="fc" id="L49">		private final List&lt;Path&gt; cycles = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L50">		private final IntStack unblockStack = new IntArrayList();</span>
+<span class="fc" id="L51">		private final IntStack path = new IntArrayList();</span>
+<span class="fc" id="L52">		private final List&lt;Path&gt; cycles = new ArrayList&lt;&gt;();</span>
 
-<span class="fc" id="L51">		Worker(DiGraph g) {</span>
-<span class="fc" id="L52">			this.g = g;</span>
-<span class="fc" id="L53">			int n = g.vertices().size();</span>
-<span class="fc" id="L54">			isBlocked = new BitSet(n);</span>
-<span class="fc" id="L55">			blockingSet = new IntSet[n];</span>
-<span class="fc bfc" id="L56" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
-<span class="fc" id="L57">				blockingSet[u] = new IntOpenHashSet();</span>
-<span class="fc" id="L58">		}</span>
+<span class="fc" id="L54">		Worker(DiGraph g) {</span>
+<span class="fc" id="L55">			this.g = g;</span>
+<span class="fc" id="L56">			int n = g.vertices().size();</span>
+<span class="fc" id="L57">			isBlocked = new BitSet(n);</span>
+<span class="fc" id="L58">			blockingSet = new IntSet[n];</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
+<span class="fc" id="L60">				blockingSet[u] = new IntOpenHashSet();</span>
+<span class="fc" id="L61">		}</span>
 
 		private void reset() {
-<span class="fc" id="L61">			int n = g.vertices().size();</span>
-<span class="fc" id="L62">			isBlocked.clear();</span>
-<span class="pc bpc" id="L63" title="1 of 2 branches missed.">			assert unblockStack.isEmpty();</span>
-<span class="fc bfc" id="L64" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
-<span class="fc" id="L65">				blockingSet[u].clear();</span>
-<span class="pc bpc" id="L66" title="1 of 2 branches missed.">			assert path.isEmpty();</span>
-<span class="fc" id="L67">		}</span>
+<span class="fc" id="L64">			int n = g.vertices().size();</span>
+<span class="fc" id="L65">			isBlocked.clear();</span>
+<span class="pc bpc" id="L66" title="1 of 2 branches missed.">			assert unblockStack.isEmpty();</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
+<span class="fc" id="L68">				blockingSet[u].clear();</span>
+<span class="pc bpc" id="L69" title="1 of 2 branches missed.">			assert path.isEmpty();</span>
+<span class="fc" id="L70">		}</span>
 
 		private boolean findAllCycles(int startV, StronglyConectedComponent scc) {
-<span class="fc" id="L70">			boolean cycleFound = false;</span>
+<span class="fc" id="L73">			boolean cycleFound = false;</span>
 
-<span class="fc bfc" id="L72" title="All 2 branches covered.">			int u = path.isEmpty() ? startV : g.edgeTarget(path.topInt());</span>
-<span class="pc bpc" id="L73" title="1 of 2 branches missed.">			assert scc.contains(u);</span>
-<span class="fc" id="L74">			isBlocked.set(u);</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">			int u = path.isEmpty() ? startV : g.edgeTarget(path.topInt());</span>
+<span class="pc bpc" id="L76" title="1 of 2 branches missed.">			assert scc.contains(u);</span>
+<span class="fc" id="L77">			isBlocked.set(u);</span>
 
-<span class="fc bfc" id="L76" title="All 2 branches covered.">			for (EdgeIter it = g.edgesOut(u); it.hasNext();) {</span>
-<span class="fc" id="L77">				int e = it.nextInt();</span>
-<span class="fc" id="L78">				int v = it.v();</span>
-<span class="fc bfc" id="L79" title="All 2 branches covered.">				if (!scc.contains(v))</span>
-<span class="fc" id="L80">					continue;</span>
-<span class="fc bfc" id="L81" title="All 2 branches covered.">				if (v == startV) {</span>
-<span class="fc" id="L82">					path.push(e);</span>
-<span class="fc" id="L83">					cycles.add(new Path(g, startV, startV, new IntArrayList((IntList) path)));</span>
-<span class="fc" id="L84">					path.popInt();</span>
-<span class="fc" id="L85">					cycleFound = true;</span>
-<span class="fc bfc" id="L86" title="All 2 branches covered.">				} else if (!isBlocked.get(v)) {</span>
-<span class="fc" id="L87">					path.push(e);</span>
-<span class="fc bfc" id="L88" title="All 2 branches covered.">					if (findAllCycles(startV, scc))</span>
-<span class="fc" id="L89">						cycleFound = true;</span>
-<span class="fc" id="L90">					path.popInt();</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">			for (EdgeIter it = g.edgesOut(u); it.hasNext();) {</span>
+<span class="fc" id="L80">				int e = it.nextInt();</span>
+<span class="fc" id="L81">				int v = it.v();</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">				if (!scc.contains(v))</span>
+<span class="fc" id="L83">					continue;</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">				if (v == startV) {</span>
+<span class="fc" id="L85">					path.push(e);</span>
+<span class="fc" id="L86">					cycles.add(new Path(g, startV, startV, new IntArrayList((IntList) path)));</span>
+<span class="fc" id="L87">					path.popInt();</span>
+<span class="fc" id="L88">					cycleFound = true;</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">				} else if (!isBlocked.get(v)) {</span>
+<span class="fc" id="L90">					path.push(e);</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">					if (findAllCycles(startV, scc))</span>
+<span class="fc" id="L92">						cycleFound = true;</span>
+<span class="fc" id="L93">					path.popInt();</span>
 				}
-<span class="fc" id="L92">			}</span>
-<span class="fc bfc" id="L93" title="All 2 branches covered.">			if (cycleFound) {</span>
-<span class="fc" id="L94">				unblock(u);</span>
+<span class="fc" id="L95">			}</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">			if (cycleFound) {</span>
+<span class="fc" id="L97">				unblock(u);</span>
 			} else {
-<span class="fc bfc" id="L96" title="All 2 branches covered.">				for (EdgeIter it = g.edgesOut(u); it.hasNext();) {</span>
-<span class="fc" id="L97">					it.nextInt();</span>
-<span class="fc" id="L98">					int v = it.v();</span>
-<span class="fc bfc" id="L99" title="All 2 branches covered.">					if (!scc.contains(v))</span>
-<span class="fc" id="L100">						continue;</span>
-<span class="fc" id="L101">					blockingSet[v].add(u);</span>
-<span class="fc" id="L102">				}</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">				for (EdgeIter it = g.edgesOut(u); it.hasNext();) {</span>
+<span class="fc" id="L100">					it.nextInt();</span>
+<span class="fc" id="L101">					int v = it.v();</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">					if (!scc.contains(v))</span>
+<span class="fc" id="L103">						continue;</span>
+<span class="fc" id="L104">					blockingSet[v].add(u);</span>
+<span class="fc" id="L105">				}</span>
 			}
-<span class="fc" id="L104">			return cycleFound;</span>
+<span class="fc" id="L107">			return cycleFound;</span>
 		}
 
 		private void unblock(int v) {
-<span class="fc" id="L108">			isBlocked.clear(v);</span>
+<span class="fc" id="L111">			isBlocked.clear(v);</span>
 			for (;;) {
-<span class="fc bfc" id="L110" title="All 2 branches covered.">				for (IntIterator it = blockingSet[v].iterator(); it.hasNext();) {</span>
-<span class="fc" id="L111">					int u = it.nextInt();</span>
-<span class="fc bfc" id="L112" title="All 2 branches covered.">					if (isBlocked.get(u)) {</span>
-<span class="fc" id="L113">						isBlocked.clear(u);</span>
-<span class="fc" id="L114">						unblockStack.push(u);</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">				for (IntIterator it = blockingSet[v].iterator(); it.hasNext();) {</span>
+<span class="fc" id="L114">					int u = it.nextInt();</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">					if (isBlocked.get(u)) {</span>
+<span class="fc" id="L116">						isBlocked.clear(u);</span>
+<span class="fc" id="L117">						unblockStack.push(u);</span>
 					}
-<span class="fc" id="L116">				}</span>
-<span class="fc" id="L117">				blockingSet[v].clear();</span>
+<span class="fc" id="L119">				}</span>
+<span class="fc" id="L120">				blockingSet[v].clear();</span>
 
-<span class="fc bfc" id="L119" title="All 2 branches covered.">				if (unblockStack.isEmpty())</span>
-<span class="fc" id="L120">					break;</span>
-<span class="fc" id="L121">				v = unblockStack.popInt();</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">				if (unblockStack.isEmpty())</span>
+<span class="fc" id="L123">					break;</span>
+<span class="fc" id="L124">				v = unblockStack.popInt();</span>
 			}
-<span class="fc" id="L123">		}</span>
+<span class="fc" id="L126">		}</span>
 	}
 
 	private static Pair&lt;StronglyConectedComponent, Integer&gt; chooseSCCInSubGraph(DiGraph g, int startIdx) {
-<span class="fc" id="L127">		int nFull = g.vertices().size();</span>
-<span class="fc" id="L128">		int subToFull = startIdx;</span>
-<span class="fc" id="L129">		int nSub = nFull - subToFull;</span>
-<span class="fc" id="L130">		DiGraph gSub = new GraphArrayDirected(nSub);</span>
-<span class="fc bfc" id="L131" title="All 2 branches covered.">		for (int uSub = 0; uSub &lt; nSub; uSub++) {</span>
-<span class="fc" id="L132">			int uFull = uSub + subToFull;</span>
-<span class="fc bfc" id="L133" title="All 2 branches covered.">			for (EdgeIter it = g.edgesOut(uFull); it.hasNext();) {</span>
-<span class="fc" id="L134">				it.nextInt();</span>
-<span class="fc" id="L135">				int vSub = it.v() - subToFull;</span>
-<span class="fc bfc" id="L136" title="All 2 branches covered.">				if (vSub &gt;= 0)</span>
-<span class="fc" id="L137">					gSub.addEdge(uSub, vSub);</span>
-<span class="fc" id="L138">			}</span>
+<span class="fc" id="L130">		int nFull = g.vertices().size();</span>
+<span class="fc" id="L131">		int subToFull = startIdx;</span>
+<span class="fc" id="L132">		int nSub = nFull - subToFull;</span>
+<span class="fc" id="L133">		DiGraph gSub = new GraphArrayDirected(nSub);</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">		for (int uSub = 0; uSub &lt; nSub; uSub++) {</span>
+<span class="fc" id="L135">			int uFull = uSub + subToFull;</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">			for (EdgeIter it = g.edgesOut(uFull); it.hasNext();) {</span>
+<span class="fc" id="L137">				it.nextInt();</span>
+<span class="fc" id="L138">				int vSub = it.v() - subToFull;</span>
+<span class="fc bfc" id="L139" title="All 2 branches covered.">				if (vSub &gt;= 0)</span>
+<span class="fc" id="L140">					gSub.addEdge(uSub, vSub);</span>
+<span class="fc" id="L141">			}</span>
 		}
 
-<span class="fc" id="L141">		Connectivity.Result connectivityResult = Connectivity.findStrongConnectivityComponents(gSub);</span>
-<span class="fc" id="L142">		int[] ccSize = new int[connectivityResult.ccNum];</span>
-<span class="fc bfc" id="L143" title="All 2 branches covered.">		for (int uSub = 0; uSub &lt; nSub; uSub++)</span>
-<span class="fc" id="L144">			ccSize[connectivityResult.getVertexCcIndex(uSub)]++;</span>
+<span class="fc" id="L144">		Connectivity.Result connectivityResult = Connectivity.findStrongConnectivityComponents(gSub);</span>
+<span class="fc" id="L145">		int[] ccSize = new int[connectivityResult.ccNum];</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">		for (int uSub = 0; uSub &lt; nSub; uSub++)</span>
+<span class="fc" id="L147">			ccSize[connectivityResult.getVertexCcIndex(uSub)]++;</span>
 
-<span class="fc bfc" id="L146" title="All 2 branches covered.">		for (; startIdx &lt; nFull; startIdx++) {</span>
-<span class="fc" id="L147">			int uSub = startIdx - subToFull;</span>
-<span class="fc bfc" id="L148" title="All 4 branches covered.">			if (ccSize[connectivityResult.getVertexCcIndex(uSub)] &gt; 1 || hasSelfEdge(gSub, uSub))</span>
-<span class="fc" id="L149">				break;</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">		for (; startIdx &lt; nFull; startIdx++) {</span>
+<span class="fc" id="L150">			int uSub = startIdx - subToFull;</span>
+<span class="fc bfc" id="L151" title="All 4 branches covered.">			if (ccSize[connectivityResult.getVertexCcIndex(uSub)] &gt; 1 || hasSelfEdge(gSub, uSub))</span>
+<span class="fc" id="L152">				break;</span>
 		}
-<span class="fc bfc" id="L151" title="All 2 branches covered.">		if (startIdx &gt;= nFull)</span>
-<span class="fc" id="L152">			return null;</span>
-<span class="fc" id="L153">		int ccIdx = connectivityResult.getVertexCcIndex(startIdx - subToFull);</span>
-<span class="fc" id="L154">		return Pair.of(new StronglyConectedComponent(subToFull, connectivityResult, ccIdx), Integer.valueOf(startIdx));</span>
+<span class="fc bfc" id="L154" title="All 2 branches covered.">		if (startIdx &gt;= nFull)</span>
+<span class="fc" id="L155">			return null;</span>
+<span class="fc" id="L156">		int ccIdx = connectivityResult.getVertexCcIndex(startIdx - subToFull);</span>
+<span class="fc" id="L157">		return Pair.of(new StronglyConectedComponent(subToFull, connectivityResult, ccIdx), Integer.valueOf(startIdx));</span>
 	}
 
 	private static boolean hasSelfEdge(DiGraph g, int u) {
-<span class="fc bfc" id="L158" title="All 2 branches covered.">		for (EdgeIter it = g.edgesOut(u); it.hasNext();) {</span>
-<span class="fc" id="L159">			it.nextInt();</span>
-<span class="fc bfc" id="L160" title="All 2 branches covered.">			if (it.v() == u)</span>
-<span class="fc" id="L161">				return true;</span>
+<span class="fc bfc" id="L161" title="All 2 branches covered.">		for (EdgeIter it = g.edgesOut(u); it.hasNext();) {</span>
+<span class="fc" id="L162">			it.nextInt();</span>
+<span class="fc bfc" id="L163" title="All 2 branches covered.">			if (it.v() == u)</span>
+<span class="fc" id="L164">				return true;</span>
 		}
-<span class="fc" id="L163">		return false;</span>
+<span class="fc" id="L166">		return false;</span>
 	}
 
 	private static class StronglyConectedComponent {
@@ -169,17 +172,17 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 		private final Connectivity.Result connectivityResult;
 		private final int ccIdx;
 
-<span class="fc" id="L172">		StronglyConectedComponent(int subToFull, Connectivity.Result connectivityResult, int ccIdx) {</span>
-<span class="fc" id="L173">			this.subToFull = subToFull;</span>
-<span class="fc" id="L174">			this.connectivityResult = connectivityResult;</span>
-<span class="fc" id="L175">			this.ccIdx = ccIdx;</span>
-<span class="fc" id="L176">		}</span>
+<span class="fc" id="L175">		StronglyConectedComponent(int subToFull, Connectivity.Result connectivityResult, int ccIdx) {</span>
+<span class="fc" id="L176">			this.subToFull = subToFull;</span>
+<span class="fc" id="L177">			this.connectivityResult = connectivityResult;</span>
+<span class="fc" id="L178">			this.ccIdx = ccIdx;</span>
+<span class="fc" id="L179">		}</span>
 
 		boolean contains(int v) {
-<span class="fc" id="L179">			int vSub = v - subToFull;</span>
-<span class="fc bfc" id="L180" title="All 2 branches covered.">			if (vSub &lt; 0)</span>
-<span class="fc" id="L181">				return false;</span>
-<span class="fc bfc" id="L182" title="All 2 branches covered.">			return ccIdx == connectivityResult.getVertexCcIndex(vSub);</span>
+<span class="fc" id="L182">			int vSub = v - subToFull;</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">			if (vSub &lt; 0)</span>
+<span class="fc" id="L184">				return false;</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">			return ccIdx == connectivityResult.getVertexCcIndex(vSub);</span>
 		}
 
 	}

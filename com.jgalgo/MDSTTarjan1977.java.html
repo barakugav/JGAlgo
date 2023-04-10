@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MDSTTarjan1977.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jgalgo</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">MDSTTarjan1977.java</span></div><h1>MDSTTarjan1977.java</h1><pre class="source lang-java linenums">package com.jgalgo;
 
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Objects;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -14,198 +15,198 @@ public class MDSTTarjan1977 implements MDST {
 	 * O(m log n)
 	 */
 
-<span class="fc" id="L17">	private Heap.Builder heapBuilder = HeapPairing::new;</span>
+<span class="fc" id="L18">	private Heap.Builder heapBuilder = HeapPairing::new;</span>
 	private static final int HeavyEdge = 0xffffffff;
 	private static final double HeavyEdgeWeight = Double.MAX_VALUE;
-<span class="fc" id="L20">	private static final Object EdgeRefWeightKey = new Object();</span>
+<span class="fc" id="L21">	private static final Object EdgeRefWeightKey = new Object();</span>
 
-<span class="fc" id="L22">	public MDSTTarjan1977() {</span>
-<span class="fc" id="L23">	}</span>
+<span class="fc" id="L23">	public MDSTTarjan1977() {</span>
+<span class="fc" id="L24">	}</span>
 
 	public void setHeapBuilder(Heap.Builder heapBuilder) {
-<span class="nc" id="L26">		this.heapBuilder = Objects.requireNonNull(heapBuilder);</span>
-<span class="nc" id="L27">	}</span>
+<span class="nc" id="L27">		this.heapBuilder = Objects.requireNonNull(heapBuilder);</span>
+<span class="nc" id="L28">	}</span>
 
 	/**
 	 * finds the MST rooted from any root
 	 */
 	@Override
-	public IntCollection calcMST(Graph g0, EdgeWeightFunc w) {
-<span class="pc bpc" id="L34" title="1 of 2 branches missed.">		if (!(g0 instanceof DiGraph))</span>
-<span class="nc" id="L35">			throw new IllegalArgumentException(&quot;Only directed graphs are supported&quot;);</span>
-<span class="pc bpc" id="L36" title="1 of 4 branches missed.">		if (g0.vertices().size() == 0 || g0.edges().size() == 0)</span>
-<span class="fc" id="L37">			return IntLists.emptyList();</span>
-<span class="fc" id="L38">		DiGraph g = Graphs.referenceGraph((DiGraph) g0, EdgeRefWeightKey);</span>
-<span class="fc" id="L39">		Weights.Int edgeRefs = g.edgesWeight(EdgeRefWeightKey);</span>
+	public IntCollection calcMST(Graph g, EdgeWeightFunc w) {
+<span class="pc bpc" id="L35" title="1 of 2 branches missed.">		if (!(g instanceof DiGraph))</span>
+<span class="nc" id="L36">			throw new IllegalArgumentException(&quot;Only directed graphs are supported&quot;);</span>
+<span class="pc bpc" id="L37" title="1 of 4 branches missed.">		if (g.vertices().size() == 0 || g.edges().size() == 0)</span>
+<span class="fc" id="L38">			return IntLists.emptyList();</span>
+<span class="fc" id="L39">		DiGraph gRef = Graphs.referenceGraph((DiGraph) g, EdgeRefWeightKey);</span>
+<span class="fc" id="L40">		Weights.Int edgeRefs = gRef.edgesWeight(EdgeRefWeightKey);</span>
 
 		// Connect new root to all vertices
-<span class="fc" id="L42">		int n = g.vertices().size(), r = g.addVertex();</span>
-<span class="fc bfc" id="L43" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L44">			edgeRefs.set(g.addEdge(r, v), HeavyEdge);</span>
+<span class="fc" id="L43">		int n = gRef.vertices().size(), r = gRef.addVertex();</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
+<span class="fc" id="L45">			edgeRefs.set(gRef.addEdge(r, v), HeavyEdge);</span>
 
 		// Calc MST on new graph
-<span class="fc" id="L47">		ContractedGraph contractedGraph = contract(g, w);</span>
-<span class="fc" id="L48">		return expand(g, contractedGraph, r);</span>
+<span class="fc" id="L48">		ContractedGraph contractedGraph = contract(gRef, w);</span>
+<span class="fc" id="L49">		return expand(gRef, contractedGraph, r);</span>
 	}
 
 	@Override
-	public IntCollection calcMST(Graph g0, EdgeWeightFunc w, int root) {
-<span class="pc bpc" id="L53" title="1 of 2 branches missed.">		if (!(g0 instanceof DiGraph))</span>
-<span class="nc" id="L54">			throw new IllegalArgumentException(&quot;Only directed graphs are supported&quot;);</span>
-<span class="pc bpc" id="L55" title="1 of 4 branches missed.">		if (g0.vertices().size() == 0 || g0.edges().size() == 0)</span>
-<span class="fc" id="L56">			return IntLists.emptyList();</span>
-<span class="fc" id="L57">		DiGraph g = Graphs.referenceGraph((DiGraph) g0, EdgeRefWeightKey);</span>
+	public IntCollection calcMST(Graph g, EdgeWeightFunc w, int root) {
+<span class="pc bpc" id="L54" title="1 of 2 branches missed.">		if (!(g instanceof DiGraph))</span>
+<span class="nc" id="L55">			throw new IllegalArgumentException(&quot;Only directed graphs are supported&quot;);</span>
+<span class="pc bpc" id="L56" title="1 of 4 branches missed.">		if (g.vertices().size() == 0 || g.edges().size() == 0)</span>
+<span class="fc" id="L57">			return IntLists.emptyList();</span>
+<span class="fc" id="L58">		DiGraph gRef = Graphs.referenceGraph((DiGraph) g, EdgeRefWeightKey);</span>
 
-<span class="fc" id="L59">		ContractedGraph contractedGraph = contract(g, w);</span>
-<span class="fc" id="L60">		return expand(g, contractedGraph, root);</span>
+<span class="fc" id="L60">		ContractedGraph contractedGraph = contract(gRef, w);</span>
+<span class="fc" id="L61">		return expand(gRef, contractedGraph, root);</span>
 	}
 
 	private static IntCollection expand(DiGraph g, ContractedGraph cg, int root) {
-<span class="fc" id="L64">		int[] inEdge = new int[cg.n];</span>
+<span class="fc" id="L65">		int[] inEdge = new int[cg.n];</span>
 
-<span class="fc" id="L66">		IntStack roots = new IntArrayList();</span>
-<span class="fc" id="L67">		roots.push(root);</span>
+<span class="fc" id="L67">		IntStack roots = new IntArrayList();</span>
+<span class="fc" id="L68">		roots.push(root);</span>
 
-<span class="fc bfc" id="L69" title="All 2 branches covered.">		while (!roots.isEmpty()) {</span>
-<span class="fc" id="L70">			int r = roots.popInt();</span>
-<span class="fc" id="L71">			int e = cg.inEdge[r];</span>
-<span class="fc" id="L72">			int v = g.edgeTarget(e);</span>
-<span class="fc" id="L73">			inEdge[v] = e;</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">		while (!roots.isEmpty()) {</span>
+<span class="fc" id="L71">			int r = roots.popInt();</span>
+<span class="fc" id="L72">			int e = cg.inEdge[r];</span>
+<span class="fc" id="L73">			int v = g.edgeTarget(e);</span>
+<span class="fc" id="L74">			inEdge[v] = e;</span>
 
-<span class="fc bfc" id="L75" title="All 2 branches covered.">			int upTo = r != root ? cg.parent[r] : -1;</span>
-<span class="fc bfc" id="L76" title="All 2 branches covered.">			for (int prevChild = -1; v != upTo; v = cg.parent[prevChild = v]) {</span>
-<span class="fc" id="L77">				int child = cg.child[v];</span>
-<span class="fc bfc" id="L78" title="All 2 branches covered.">				if (child == -1)</span>
-<span class="fc" id="L79">					continue;</span>
-<span class="fc" id="L80">				for (int c = child;;) {</span>
-<span class="fc bfc" id="L81" title="All 2 branches covered.">					if (c != prevChild)</span>
-<span class="fc" id="L82">						roots.push(c);</span>
-<span class="fc" id="L83">					c = cg.brother[c];</span>
-<span class="pc bpc" id="L84" title="1 of 4 branches missed.">					if (c == -1 || c == child)</span>
-<span class="fc" id="L85">						break;</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">			int upTo = r != root ? cg.parent[r] : -1;</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">			for (int prevChild = -1; v != upTo; v = cg.parent[prevChild = v]) {</span>
+<span class="fc" id="L78">				int child = cg.child[v];</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">				if (child == -1)</span>
+<span class="fc" id="L80">					continue;</span>
+<span class="fc" id="L81">				for (int c = child;;) {</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">					if (c != prevChild)</span>
+<span class="fc" id="L83">						roots.push(c);</span>
+<span class="fc" id="L84">					c = cg.brother[c];</span>
+<span class="pc bpc" id="L85" title="1 of 4 branches missed.">					if (c == -1 || c == child)</span>
+<span class="fc" id="L86">						break;</span>
 				}
 			}
-<span class="fc" id="L88">		}</span>
+<span class="fc" id="L89">		}</span>
 
-<span class="fc" id="L90">		Weights.Int edgeRefs = g.edgesWeight(EdgeRefWeightKey);</span>
-<span class="fc" id="L91">		IntCollection mst = new IntArrayList(cg.n - 1);</span>
-<span class="fc bfc" id="L92" title="All 2 branches covered.">		for (int v = 0; v &lt; cg.n; v++) {</span>
-<span class="fc" id="L93">			int e = edgeRefs.getInt(inEdge[v]);</span>
-<span class="fc bfc" id="L94" title="All 4 branches covered.">			if (v != root &amp;&amp; e != HeavyEdge)</span>
-<span class="fc" id="L95">				mst.add(e);</span>
+<span class="fc" id="L91">		Weights.Int edgeRefs = g.edgesWeight(EdgeRefWeightKey);</span>
+<span class="fc" id="L92">		IntCollection mst = new IntArrayList(cg.n - 1);</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">		for (int v = 0; v &lt; cg.n; v++) {</span>
+<span class="fc" id="L94">			int e = edgeRefs.getInt(inEdge[v]);</span>
+<span class="fc bfc" id="L95" title="All 4 branches covered.">			if (v != root &amp;&amp; e != HeavyEdge)</span>
+<span class="fc" id="L96">				mst.add(e);</span>
 		}
-<span class="fc" id="L97">		return mst;</span>
+<span class="fc" id="L98">		return mst;</span>
 	}
 
 	private static void addEdgesUntilStronglyConnected(DiGraph g) {
-<span class="fc" id="L101">		Connectivity.Result connectivityRes = Connectivity.findStrongConnectivityComponents(g);</span>
-<span class="fc" id="L102">		int N = connectivityRes.ccNum;</span>
-<span class="fc" id="L103">		int[] v2V = connectivityRes.vertexToCC;</span>
-<span class="fc bfc" id="L104" title="All 2 branches covered.">		if (N &lt;= 1)</span>
-<span class="fc" id="L105">			return;</span>
+<span class="fc" id="L102">		Connectivity.Result connectivityRes = Connectivity.findStrongConnectivityComponents(g);</span>
+<span class="fc" id="L103">		int N = connectivityRes.ccNum;</span>
+<span class="fc" id="L104">		int[] v2V = connectivityRes.vertexToCC;</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">		if (N &lt;= 1)</span>
+<span class="fc" id="L106">			return;</span>
 
-<span class="fc" id="L107">		int[] V2v = new int[N];</span>
-<span class="fc" id="L108">		Arrays.fill(V2v, -1);</span>
-<span class="fc" id="L109">		int n = g.vertices().size();</span>
-<span class="fc bfc" id="L110" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++) {</span>
-<span class="fc" id="L111">			int V = v2V[v];</span>
-<span class="fc bfc" id="L112" title="All 2 branches covered.">			if (V2v[V] == -1)</span>
-<span class="fc" id="L113">				V2v[V] = v;</span>
+<span class="fc" id="L108">		int[] V2v = new int[N];</span>
+<span class="fc" id="L109">		Arrays.fill(V2v, -1);</span>
+<span class="fc" id="L110">		int n = g.vertices().size();</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++) {</span>
+<span class="fc" id="L112">			int V = v2V[v];</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">			if (V2v[V] == -1)</span>
+<span class="fc" id="L114">				V2v[V] = v;</span>
 		}
 
-<span class="fc" id="L116">		Weights.Int edgeRefs = g.edgesWeight(EdgeRefWeightKey);</span>
-<span class="fc bfc" id="L117" title="All 2 branches covered.">		for (int V = 1; V &lt; N; V++) {</span>
-<span class="fc" id="L118">			edgeRefs.set(g.addEdge(V2v[0], V2v[V]), HeavyEdge);</span>
-<span class="fc" id="L119">			edgeRefs.set(g.addEdge(V2v[V], V2v[0]), HeavyEdge);</span>
+<span class="fc" id="L117">		Weights.Int edgeRefs = g.edgesWeight(EdgeRefWeightKey);</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">		for (int V = 1; V &lt; N; V++) {</span>
+<span class="fc" id="L119">			edgeRefs.set(g.addEdge(V2v[0], V2v[V]), HeavyEdge);</span>
+<span class="fc" id="L120">			edgeRefs.set(g.addEdge(V2v[V], V2v[0]), HeavyEdge);</span>
 		}
-<span class="fc" id="L121">	}</span>
+<span class="fc" id="L122">	}</span>
 
 	private ContractedGraph contract(DiGraph g, EdgeWeightFunc w0) {
-<span class="fc" id="L124">		addEdgesUntilStronglyConnected(g);</span>
+<span class="fc" id="L125">		addEdgesUntilStronglyConnected(g);</span>
 
-<span class="fc" id="L126">		int n = g.vertices().size();</span>
-<span class="fc" id="L127">		int VMaxNum = n * 2; // max super vertex number</span>
+<span class="fc" id="L127">		int n = g.vertices().size();</span>
+<span class="fc" id="L128">		int VMaxNum = n * 2; // max super vertex number</span>
 
-<span class="fc" id="L129">		UnionFindValue uf = new UnionFindValueArray(n);</span>
-<span class="fc" id="L130">		int[] ufIdxToV = new int[VMaxNum];</span>
-<span class="fc bfc" id="L131" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L132">			ufIdxToV[v] = v;</span>
+<span class="fc" id="L130">		UnionFindValue uf = new UnionFindValueArray(n);</span>
+<span class="fc" id="L131">		int[] ufIdxToV = new int[VMaxNum];</span>
+<span class="fc bfc" id="L132" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
+<span class="fc" id="L133">			ufIdxToV[v] = v;</span>
 
-<span class="fc" id="L134">		Weights.Int edgeRefs = g.edgesWeight(EdgeRefWeightKey);</span>
-<span class="fc" id="L135">		EdgeWeightFunc w = e -&gt; {</span>
-<span class="fc" id="L136">			int e0 = edgeRefs.getInt(e);</span>
-<span class="fc bfc" id="L137" title="All 2 branches covered.">			return (e0 != HeavyEdge ? w0.weight(e0) : HeavyEdgeWeight) + uf.getValue(g.edgeTarget(e));</span>
+<span class="fc" id="L135">		Weights.Int edgeRefs = g.edgesWeight(EdgeRefWeightKey);</span>
+<span class="fc" id="L136">		EdgeWeightFunc w = e -&gt; {</span>
+<span class="fc" id="L137">			int e0 = edgeRefs.getInt(e);</span>
+<span class="fc bfc" id="L138" title="All 2 branches covered.">			return (e0 != HeavyEdge ? w0.weight(e0) : HeavyEdgeWeight) + uf.getValue(g.edgeTarget(e));</span>
 		};
 		@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L140">		Heap&lt;Integer&gt;[] heap = new Heap[VMaxNum];</span>
-<span class="fc bfc" id="L141" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L142">			heap[v] = heapBuilder.build(w);</span>
-<span class="fc bfc" id="L143" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc bfc" id="L144" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
-<span class="fc" id="L145">				int e = eit.nextInt();</span>
-<span class="fc" id="L146">				heap[eit.v()].add(Integer.valueOf(e));</span>
-<span class="fc" id="L147">			}</span>
+<span class="fc" id="L141">		Heap&lt;Integer&gt;[] heap = new Heap[VMaxNum];</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
+<span class="fc" id="L143">			heap[v] = heapBuilder.build(w);</span>
+<span class="fc bfc" id="L144" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
+<span class="fc" id="L146">				int e = eit.nextInt();</span>
+<span class="fc" id="L147">				heap[eit.v()].add(Integer.valueOf(e));</span>
+<span class="fc" id="L148">			}</span>
 		}
 
-<span class="fc" id="L150">		int[] parent = new int[VMaxNum];</span>
-<span class="fc" id="L151">		int[] child = new int[VMaxNum];</span>
-<span class="fc" id="L152">		int[] brother = new int[VMaxNum];</span>
-<span class="fc" id="L153">		Arrays.fill(parent, -1);</span>
-<span class="fc" id="L154">		Arrays.fill(child, -1);</span>
-<span class="fc" id="L155">		Arrays.fill(brother, -1);</span>
-<span class="fc" id="L156">		int[] inEdge = new int[VMaxNum];</span>
+<span class="fc" id="L151">		int[] parent = new int[VMaxNum];</span>
+<span class="fc" id="L152">		int[] child = new int[VMaxNum];</span>
+<span class="fc" id="L153">		int[] brother = new int[VMaxNum];</span>
+<span class="fc" id="L154">		Arrays.fill(parent, -1);</span>
+<span class="fc" id="L155">		Arrays.fill(child, -1);</span>
+<span class="fc" id="L156">		Arrays.fill(brother, -1);</span>
+<span class="fc" id="L157">		int[] inEdge = new int[VMaxNum];</span>
 
-<span class="fc" id="L158">		boolean[] onPath = new boolean[VMaxNum];</span>
-<span class="fc" id="L159">		final int startVertex = 0;</span>
-<span class="fc" id="L160">		onPath[startVertex] = true;</span>
+<span class="fc" id="L159">		BitSet onPath = new BitSet(VMaxNum);</span>
+<span class="fc" id="L160">		final int startVertex = 0;</span>
+<span class="fc" id="L161">		onPath.set(startVertex);</span>
 
-<span class="fc" id="L162">		for (int a = startVertex;;) {</span>
+<span class="fc" id="L163">		for (int a = startVertex;;) {</span>
 			// Find minimum edge that enters a
 			int u, e;
 			do {
 				// Assuming the graph is strongly connected, if heap is empty we are done
-<span class="fc bfc" id="L167" title="All 2 branches covered.">				if (heap[a].isEmpty())</span>
-<span class="fc" id="L168">					return new ContractedGraph(n, parent, child, brother, inEdge);</span>
-<span class="fc" id="L169">				e = heap[a].extractMin().intValue();</span>
-<span class="fc" id="L170">				u = ufIdxToV[uf.find(g.edgeSource(e))];</span>
-<span class="fc bfc" id="L171" title="All 2 branches covered.">			} while (a == u);</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">				if (heap[a].isEmpty())</span>
+<span class="fc" id="L169">					return new ContractedGraph(n, parent, child, brother, inEdge);</span>
+<span class="fc" id="L170">				e = heap[a].extractMin().intValue();</span>
+<span class="fc" id="L171">				u = ufIdxToV[uf.find(g.edgeSource(e))];</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">			} while (a == u);</span>
 
 			// Store the minimum edge entering a
-<span class="fc" id="L174">			inEdge[a] = e;</span>
+<span class="fc" id="L175">			inEdge[a] = e;</span>
 
 			// Subtract w(e) from the weights of all edges entering a
-<span class="fc" id="L177">			double ew = w.weight(e);</span>
-<span class="fc" id="L178">			uf.addValue(a, -ew);</span>
+<span class="fc" id="L178">			double ew = w.weight(e);</span>
+<span class="fc" id="L179">			uf.addValue(a, -ew);</span>
 
-<span class="fc bfc" id="L180" title="All 2 branches covered.">			if (!onPath[u]) {</span>
+<span class="fc bfc" id="L181" title="All 2 branches covered.">			if (!onPath.get(u)) {</span>
 				// Extend list
-<span class="fc" id="L182">				brother[u] = a;</span>
-<span class="fc" id="L183">				onPath[u] = true;</span>
-<span class="fc" id="L184">				a = u;</span>
+<span class="fc" id="L183">				brother[u] = a;</span>
+<span class="fc" id="L184">				onPath.set(u);</span>
+<span class="fc" id="L185">				a = u;</span>
 			} else {
 				// Create new super vertex
-<span class="fc" id="L187">				int c = uf.make();</span>
-<span class="fc" id="L188">				heap[c] = heapBuilder.build(w);</span>
-<span class="fc" id="L189">				brother[c] = brother[u];</span>
-<span class="fc" id="L190">				brother[u] = a;</span>
-<span class="fc" id="L191">				child[c] = a;</span>
+<span class="fc" id="L188">				int c = uf.make();</span>
+<span class="fc" id="L189">				heap[c] = heapBuilder.build(w);</span>
+<span class="fc" id="L190">				brother[c] = brother[u];</span>
+<span class="fc" id="L191">				brother[u] = a;</span>
+<span class="fc" id="L192">				child[c] = a;</span>
 
 				// Contract all children
 				do {
-<span class="fc" id="L195">					parent[a] = c;</span>
-<span class="fc" id="L196">					uf.union(c, a);</span>
-<span class="fc" id="L197">					onPath[a] = false;</span>
-<span class="fc" id="L198">					heap[c].meld(heap[a]);</span>
-<span class="fc" id="L199">					heap[a] = null;</span>
-<span class="fc" id="L200">					a = brother[a];</span>
-<span class="fc bfc" id="L201" title="All 2 branches covered.">				} while (parent[a] == -1);</span>
+<span class="fc" id="L196">					parent[a] = c;</span>
+<span class="fc" id="L197">					uf.union(c, a);</span>
+<span class="fc" id="L198">					onPath.clear(a);</span>
+<span class="fc" id="L199">					heap[c].meld(heap[a]);</span>
+<span class="fc" id="L200">					heap[a] = null;</span>
+<span class="fc" id="L201">					a = brother[a];</span>
+<span class="fc bfc" id="L202" title="All 2 branches covered.">				} while (parent[a] == -1);</span>
 
-<span class="fc" id="L203">				ufIdxToV[uf.find(c)] = c;</span>
+<span class="fc" id="L204">				ufIdxToV[uf.find(c)] = c;</span>
 
-<span class="fc" id="L205">				onPath[c] = true;</span>
-<span class="fc" id="L206">				a = c;</span>
+<span class="fc" id="L206">				onPath.set(c);</span>
+<span class="fc" id="L207">				a = c;</span>
 			}
-<span class="fc" id="L208">		}</span>
+<span class="fc" id="L209">		}</span>
 	}
 
 	private static class ContractedGraph {
@@ -216,13 +217,13 @@ public class MDSTTarjan1977 implements MDST {
 		final int[] brother;
 		final int[] inEdge;
 
-<span class="fc" id="L219">		ContractedGraph(int n, int[] parent, int[] child, int[] brother, int[] inEdge) {</span>
-<span class="fc" id="L220">			this.n = n;</span>
-<span class="fc" id="L221">			this.parent = parent;</span>
-<span class="fc" id="L222">			this.child = child;</span>
-<span class="fc" id="L223">			this.brother = brother;</span>
-<span class="fc" id="L224">			this.inEdge = inEdge;</span>
-<span class="fc" id="L225">		}</span>
+<span class="fc" id="L220">		ContractedGraph(int n, int[] parent, int[] child, int[] brother, int[] inEdge) {</span>
+<span class="fc" id="L221">			this.n = n;</span>
+<span class="fc" id="L222">			this.parent = parent;</span>
+<span class="fc" id="L223">			this.child = child;</span>
+<span class="fc" id="L224">			this.brother = brother;</span>
+<span class="fc" id="L225">			this.inEdge = inEdge;</span>
+<span class="fc" id="L226">		}</span>
 
 	}
 
