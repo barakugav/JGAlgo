@@ -27,7 +27,7 @@ class RMQTestUtils extends TestUtils {
 
 	static void testRMQ(Supplier<? extends RMQ> builder, int a[], int[][] queries) {
 		RMQ rmq = builder.get();
-		rmq.preprocessRMQ(RMQComparator.ofIntArray(a), a.length);
+		rmq.preProcessRMQ(RMQComparator.ofIntArray(a), a.length);
 
 		for (int idx = 0; idx < queries.length; idx++) {
 			int i = queries[idx][0];

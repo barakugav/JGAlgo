@@ -6,7 +6,7 @@ public class LCARMQBenderFarachColton2000 implements LCAStatic {
 
 	/*
 	 * This implementation of static LCA (Lowest common ancestor) perform a
-	 * preprocessing of O(n + m) and later answer queries of LCA queries in O(1).
+	 * pre processing of O(n + m) and later answer queries of LCA queries in O(1).
 	 *
 	 * This is done by traversing the tree with the Eulerian tour, and using RMQ on
 	 * the depths of the tour. This RMQ is a special case of the general RMQ, as the
@@ -18,15 +18,15 @@ public class LCARMQBenderFarachColton2000 implements LCAStatic {
 	private int[] vs;
 	private int[] vToDepthsIdx;
 	private final RMQ rmq;
-	private boolean preprocessed;
+	private boolean preProcessed;
 
 	public LCARMQBenderFarachColton2000() {
 		rmq = new RMQPlusMinusOneBenderFarachColton2000();
-		preprocessed = false;
+		preProcessed = false;
 	}
 
 	@Override
-	public void preprocessLCA(Graph t, int r) {
+	public void preProcessLCA(Graph t, int r) {
 		if (!Graphs.isTree(t, r))
 			throw new IllegalArgumentException();
 
@@ -73,16 +73,16 @@ public class LCARMQBenderFarachColton2000 implements LCAStatic {
 				vToDepthsIdx[v] = i;
 		}
 
-		rmq.preprocessRMQ(RMQComparator.ofIntArray(depths), depths.length);
+		rmq.preProcessRMQ(RMQComparator.ofIntArray(depths), depths.length);
 		this.vs = vs;
 		this.vToDepthsIdx = vToDepthsIdx;
-		preprocessed = true;
+		preProcessed = true;
 	}
 
 	@Override
 	public int calcLCA(int u, int v) {
-		if (!preprocessed)
-			throw new IllegalStateException("Preprocessing is required before query");
+		if (!preProcessed)
+			throw new IllegalStateException("PreProcessing is required before query");
 		int uIdx = vToDepthsIdx[u];
 		int vIdx = vToDepthsIdx[v];
 		if (uIdx > vIdx) {

@@ -7,7 +7,7 @@ public class RMQLookupTable implements RMQ {
 	/*
 	 * Naive implementation of RMQ, lookup table for each two indices.
 	 *
-	 * O(n^2) preprocessing time, O(n^2) space, O(1) query.
+	 * O(n^2) pre processing time, O(n^2) space, O(1) query.
 	 */
 
 	private LookupTable table;
@@ -17,7 +17,7 @@ public class RMQLookupTable implements RMQ {
 	}
 
 	@Override
-	public void preprocessRMQ(RMQComparator c, int n) {
+	public void preProcessRMQ(RMQComparator c, int n) {
 		if (n <= 0)
 			throw new IllegalArgumentException("Invalid legnth: " + n);
 		Objects.requireNonNull(c);
@@ -50,7 +50,7 @@ public class RMQLookupTable implements RMQ {
 	@Override
 	public int calcRMQ(int i, int j) {
 		if (table == null)
-			throw new IllegalStateException("Preprocessing is required before query");
+			throw new IllegalStateException("PreProcessing is required before query");
 		if (i < 0 || j <= i || j > table.n)
 			throw new IllegalArgumentException("Illegal indices [" + i + "," + j + "]");
 		if (i + 1 == j)

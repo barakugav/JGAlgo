@@ -67,7 +67,7 @@ public class LCARMQBenderFarachColton2000Test extends TestUtils {
 
 	private static void testLCA(Graph g, Supplier<? extends LCAStatic> builder, int[][] queries) {
 		LCAStatic lca = builder.get();
-		lca.preprocessLCA(g, 0);
+		lca.preProcessLCA(g, 0);
 
 		for (int[] query : queries) {
 			int u = query[0];

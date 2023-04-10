@@ -5,11 +5,11 @@ import java.util.Objects;
 public class RMQPowerOf2Table implements RMQ {
 
 	/*
-	 * During preprocessing create a table with log(n) rows and n columns, in each
+	 * During pre processing create a table with log(n) rows and n columns, in each
 	 * cell [i][j] store the value min_in_range[j, j + 2^i]. This allows a query in
 	 * O(1) by looking at the correct indices.
 	 *
-	 * O(n log n) preprocessing time, O(n log n) space, O(1) query.
+	 * O(n log n) pre processing time, O(n log n) space, O(1) query.
 	 */
 
 	private int n;
@@ -20,7 +20,7 @@ public class RMQPowerOf2Table implements RMQ {
 	}
 
 	@Override
-	public void preprocessRMQ(RMQComparator c, int n) {
+	public void preProcessRMQ(RMQComparator c, int n) {
 		if (n <= 0)
 			throw new IllegalArgumentException("Invalid legnth: " + n);
 		Objects.requireNonNull(c);
@@ -46,7 +46,7 @@ public class RMQPowerOf2Table implements RMQ {
 	@Override
 	public int calcRMQ(int i, int j) {
 		if (arr == null)
-			throw new IllegalStateException("Preprocessing is required before query");
+			throw new IllegalStateException("PreProcessing is required before query");
 		if (i < 0 || j <= i || j > n)
 			throw new IllegalArgumentException("Illegal indices [" + i + "," + j + "]");
 		if (i + 1 == j)

@@ -308,7 +308,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 			int[] lcaQueries = new int[queriesNum * 4];
 
 			LCAStatic lcaAlgo = new LCARMQBenderFarachColton2000();
-			lcaAlgo.preprocessLCA(t, root);
+			lcaAlgo.preProcessLCA(t, root);
 			for (int q = 0; q < queriesNum; q++) {
 				int u = queries[q * 2], v = queries[q * 2 + 1];
 				int lca = lcaAlgo.calcLCA(u, v);

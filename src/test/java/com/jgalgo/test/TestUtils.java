@@ -86,11 +86,11 @@ public class TestUtils {
 		}
 	}
 
-	static int[] randArray(int n, long seed) {
+	public static int[] randArray(int n, long seed) {
 		return randArray(n, 0, Integer.MAX_VALUE, seed);
 	}
 
-	static int[] randArray(int n, int from, int to, long seed) {
+	public static int[] randArray(int n, int from, int to, long seed) {
 		return randArray(new int[n], from, to, seed);
 	}
 

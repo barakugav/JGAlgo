@@ -15,7 +15,7 @@ abstract class RMQLinearAbstract implements RMQ {
 	 * the same block we have no implementation, and the implementations that
 	 * extends this class will implement it in different methods.
 	 *
-	 * O(n) preprocessing time, O(n) space, O(1) query.
+	 * O(n) pre processing time, O(n) space, O(1) query.
 	 */
 
 	int n;
@@ -27,14 +27,14 @@ abstract class RMQLinearAbstract implements RMQ {
 	private int[][] blocksLeftMinimum;
 	private final RMQPowerOf2Table xlogxTable;
 
-	boolean preprocessed;
+	boolean preProcessed;
 
 	RMQLinearAbstract() {
 		xlogxTable = new RMQPowerOf2Table();
-		preprocessed = false;
+		preProcessed = false;
 	}
 
-	void preprocessRMQOuterBlocks(RMQComparator c, int n) {
+	void preProcessRMQOuterBlocks(RMQComparator c, int n) {
 		blockSize = getBlockSize(n);
 		blockNum = calcBlockNum(n, blockSize);
 
@@ -62,10 +62,10 @@ abstract class RMQLinearAbstract implements RMQ {
 			}
 		}
 
-		xlogxTable.preprocessRMQ((i, j) -> this.c.compare(blocksRightMinimum[i][0], blocksRightMinimum[j][0]),
+		xlogxTable.preProcessRMQ((i, j) -> this.c.compare(blocksRightMinimum[i][0], blocksRightMinimum[j][0]),
 				blockNum);
 
-		preprocessed = true;
+		preProcessed = true;
 	}
 
 	abstract int getBlockSize(int n);
@@ -76,8 +76,8 @@ abstract class RMQLinearAbstract implements RMQ {
 
 	@Override
 	public int calcRMQ(int i, int j) {
-		if (!preprocessed)
-			throw new IllegalStateException("Preprocessing is required before query");
+		if (!preProcessed)
+			throw new IllegalStateException("PreProcessing is required before query");
 		if (i < 0 || j <= i || j > n)
 			throw new IllegalArgumentException("Illegal indices [" + i + "," + j + "]");
 		if (i + 1 == j)

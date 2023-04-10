@@ -15,10 +15,10 @@ public class RMQGabowBentleyTarjan1984 extends RMQLinearAbstract {
 	 * is the same. The number of Cartesian trees of size n the Catalan number n,
 	 * which is bounded by 4^n.
 	 *
-	 * We define the block size to be logn/4, and the preprocessing time is still
+	 * We define the block size to be logn/4, and the pre processing time is still
 	 * O(n).
 	 *
-	 * O(n) preprocessing time, O(n) space, O(1) query.
+	 * O(n) pre processing time, O(n) space, O(1) query.
 	 */
 
 	private RMQ[] interBlocksDs;
@@ -27,17 +27,17 @@ public class RMQGabowBentleyTarjan1984 extends RMQLinearAbstract {
 	}
 
 	@Override
-	public void preprocessRMQ(RMQComparator c, int n) {
+	public void preProcessRMQ(RMQComparator c, int n) {
 		if (n <= 0)
 			throw new IllegalArgumentException();
 		Objects.requireNonNull(c);
 
 		interBlocksDs = new RMQ[calcBlockNum(n, getBlockSize(n))];
-		preprocessRMQOuterBlocks(c, n);
-		preprocessRMQInnerBlocks();
+		preProcessRMQOuterBlocks(c, n);
+		preProcessRMQInnerBlocks();
 	}
 
-	private void preprocessRMQInnerBlocks() {
+	private void preProcessRMQInnerBlocks() {
 		Map<Integer, RMQ> tables = new HashMap<>();
 
 		for (int b = 0; b < blockNum; b++) {
@@ -46,7 +46,7 @@ public class RMQGabowBentleyTarjan1984 extends RMQLinearAbstract {
 			interBlocksDs[b] = tables.computeIfAbsent(Integer.valueOf(key), k -> {
 				int[] demoBlock = calcDemoBlock(k.intValue(), blockSize);
 				RMQ innerRMQ = new RMQLookupTable();
-				innerRMQ.preprocessRMQ(RMQComparator.ofIntArray(demoBlock), demoBlock.length);
+				innerRMQ.preProcessRMQ(RMQComparator.ofIntArray(demoBlock), demoBlock.length);
 				return innerRMQ;
 			});
 		}
