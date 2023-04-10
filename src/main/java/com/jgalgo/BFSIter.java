@@ -7,6 +7,32 @@ import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
+/**
+ * Bread first search (BFS) iterator.
+ * <p>
+ * The BFS iterator is used to iterate over the vertices of a graph in a bread
+ * first manner, namely by the cardinality distance of the vertices from some
+ * source(s) vertex. The iterator will visit every vertex {@code v} for which
+ * there is a path from the source(s) to {@code v}. Each such vertex will be
+ * visited exactly once.
+ * <p>
+ *
+ * <pre> {@code
+ * Graph g = ...;
+ * int sourceVertex = ...;
+ * for (BFSIter iter = new BFSIter(g, sourceVertex); iter.hasNext();) {
+ *     int v = iter.nextInt();
+ *     int e = iter.inEdge();
+ *     int layer = iter.layer();
+ *     System.out.println("Reached vertex " + v + " at layer " + layer + " using edge " + e);
+ * }
+ * }</pre>
+ *
+ * @see DFSIter
+ * @see <a href=
+ *      "https://en.wikipedia.org/wiki/Breadth-first_search">Wikipedia</a>
+ * @author Barak Ugav
+ */
 public class BFSIter implements IntIterator {
 
 	private final Graph g;
@@ -16,10 +42,24 @@ public class BFSIter implements IntIterator {
 	private int layer;
 	private int firstVInLayer;
 
+	/**
+	 * Create a BFS iterator rooted at a single source vertex.
+	 *
+	 * @param g      a graph
+	 * @param source a vertex in the graph from which the search will start from.
+	 */
 	public BFSIter(Graph g, int source) {
 		this(g, new int[] { source });
 	}
 
+	/**
+	 * Create a BFS iterator rooted at multiple sources vertices.
+	 *
+	 * @param g       a graph
+	 * @param sources multiple sources vertices in the graph from which the search
+	 *                will start from.
+	 * @throws IllegalArgumentException if the sources array is empty
+	 */
 	public BFSIter(Graph g, int[] sources) {
 		if (sources.length == 0)
 			throw new IllegalArgumentException();
@@ -38,11 +78,18 @@ public class BFSIter implements IntIterator {
 		firstVInLayer = sources[0];
 	}
 
+	/**
+	 * Check whether there is more vertices to iterate over.
+	 */
 	@Override
 	public boolean hasNext() {
 		return !queue.isEmpty();
 	}
 
+	/**
+	 * Advance the iterator and return a vertex that was not visited by the iterator
+	 * yet.
+	 */
 	@Override
 	public int nextInt() {
 		if (!hasNext())
@@ -69,10 +116,27 @@ public class BFSIter implements IntIterator {
 		return u;
 	}
 
+	/**
+	 * Get the edge that led to the last vertex returned by {@link nextInt}.
+	 * <p>
+	 * The behavior is undefined if {@link nextInt} was not called yet.
+	 *
+	 * @return the edge that led to the last vertex returned by {@link nextInt}
+	 */
 	public int inEdge() {
 		return inEdge;
 	}
 
+	/**
+	 * Get the layer of the last vertex returned by {@link nextInt}.
+	 * <p>
+	 * The layer of a vertex is the cardinality distance, the number of edges in the
+	 * path, from the source(s) to the vertex.
+	 * <p>
+	 * The behavior is undefined if {@link nextInt} was not called yet.
+	 *
+	 * @return the layer of the last vertex returned by {@link nextInt}.
+	 */
 	public int layer() {
 		return layer;
 	}
