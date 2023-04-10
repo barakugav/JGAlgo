@@ -12,11 +12,11 @@ import java.util.Set;
  * In addition to the regular {@link Heap} operations, the user can obtain a
  * {@linkplain HeapReference reference} to each inserted element via the return
  * value of the {@link #insert(Object)} function. The reference will be valid as
- * long as the element was removed from the heap. By passing the reference to
- * the heap implementation to functions such as
+ * long as the element is still in the heap. By passing the reference to the
+ * heap implementation to functions such as
  * {@link #decreaseKey(HeapReference, Object)} or
  * {@link #removeRef(HeapReference)} the heap implementation can perform the
- * operations very efficiently as is does not need to search for the element.
+ * operations efficiently as is does not need to search for the element.
  *
  * <pre> {@code
  * HeapReferenceable<Integer> heap = ...;

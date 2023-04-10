@@ -1,5 +1,17 @@
 package com.jgalgo;
 
+/**
+ * Binary search tree data structure.
+ * <p>
+ * In addition to all {@link HeapReferenceable} operations, a binary search tree
+ * (BST) allow for an efficient search for an element, not just
+ * {@link Heap#findMin()}. Every element could be found in {@code O(log n)}
+ * time, notably {@link #findMax()} in addition to {@link Heap#findMin()}. Also,
+ * given an element, the nearest (smaller or larger) element in the tree can be
+ * found efficiently.
+ *
+ * @author Barak Ugav
+ */
 public interface BST<E> extends HeapReferenceable<E> {
 
 	/**
@@ -71,6 +83,9 @@ public interface BST<E> extends HeapReferenceable<E> {
 	 * The predecessor node depends on the tree structure. If there are no duplicate
 	 * values, the predecessor is the greatest value strictly smaller than the given
 	 * element. If there are duplicate values, it may be smaller or equal.
+	 * <p>
+	 * This method behavior is undefined if the reference is not valid, namely it
+	 * reference to an element already removed, or to an element in another heap.
 	 *
 	 * @param ref reference to an element in the tree
 	 * @return reference to the predecessor element in the tree, that is an element
@@ -86,6 +101,9 @@ public interface BST<E> extends HeapReferenceable<E> {
 	 * The successor node depends on the tree structure. If there are no duplicate
 	 * values, the successor is the smallest value strictly greater than the given
 	 * element. If there are duplicate values, it may be greater or equal.
+	 * <p>
+	 * This method behavior is undefined if the reference is not valid, namely it
+	 * reference to an element already removed, or to an element in another heap.
 	 *
 	 * @param ref reference to an element in the tree
 	 * @return reference to the successor element in the tree, that is an element
@@ -133,6 +151,10 @@ public interface BST<E> extends HeapReferenceable<E> {
 	 * element, the elements in the returned tree will be to greater or equal
 	 * (rather than strictly greater). To split a tree more precisely, use
 	 * {@link #splitSmaller(Object)} or {@link #splitGreater(Object)}.
+	 *
+	 * <p>
+	 * This method behavior is undefined if the reference is not valid, namely it
+	 * reference to an element already removed, or to an element in another heap.
 	 *
 	 * @param ref given element in the tree
 	 * @return new tree with elements greater (greater or equal if duplicate
