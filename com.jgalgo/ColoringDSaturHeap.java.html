@@ -9,9 +9,9 @@ import java.util.Objects;
 	 * Compute a coloring approximation in O(m + n \log n)
 	 */
 
-<span class="fc" id="L12">	private HeapDirectAccessed.Builder heapBuilder = HeapPairing::new;</span>
+<span class="fc" id="L12">	private HeapReferenceable.Builder heapBuilder = HeapPairing::new;</span>
 
-	public void setHeapBuilder(HeapDirectAccessed.Builder heapBuilder) {
+	public void setHeapBuilder(HeapReferenceable.Builder heapBuilder) {
 <span class="nc" id="L15">		this.heapBuilder = Objects.requireNonNull(heapBuilder);</span>
 <span class="nc" id="L16">	}</span>
 
@@ -23,9 +23,9 @@ import java.util.Objects;
 <span class="fc" id="L23">		ColoringResultImpl res = new ColoringResultImpl(g);</span>
 <span class="fc" id="L24">		int n = g.vertices().size();</span>
 
-<span class="fc" id="L26">		HeapDirectAccessed&lt;HeapElm&gt; heap = heapBuilder.build();</span>
+<span class="fc" id="L26">		HeapReferenceable&lt;HeapElm&gt; heap = heapBuilder.build();</span>
 		@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L28">		HeapDirectAccessed.Handle&lt;HeapElm&gt;[] vPtrs = new HeapDirectAccessed.Handle[n];</span>
+<span class="fc" id="L28">		HeapReference&lt;HeapElm&gt;[] vPtrs = new HeapReference[n];</span>
 <span class="fc bfc" id="L29" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
 <span class="fc" id="L30">			vPtrs[u] = heap.insert(new HeapElm(u, g.degreeOut(u)));</span>
 
@@ -43,7 +43,7 @@ import java.util.Objects;
 <span class="fc" id="L43">				eit.nextInt();</span>
 <span class="fc" id="L44">				int v = eit.v();</span>
 <span class="fc bfc" id="L45" title="All 2 branches covered.">				if (res.colorOf(v) == -1) { /* v is uncolored */</span>
-<span class="fc" id="L46">					HeapDirectAccessed.Handle&lt;HeapElm&gt; vPtr = vPtrs[v];</span>
+<span class="fc" id="L46">					HeapReference&lt;HeapElm&gt; vPtr = vPtrs[v];</span>
 <span class="fc" id="L47">					HeapElm vElm = vPtr.get();</span>
 <span class="fc bfc" id="L48" title="All 2 branches covered.">					if (!vElm.neighborColors.get(color)) {</span>
 <span class="fc" id="L49">						vElm.neighborColors.set(color);</span>

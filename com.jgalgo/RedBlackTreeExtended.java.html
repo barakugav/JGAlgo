@@ -276,8 +276,8 @@ public class RedBlackTreeExtended&lt;E&gt; extends RedBlackTree&lt;E&gt; {
 <span class="fc" id="L276">		ExtensionSize() {</span>
 <span class="fc" id="L277">		}</span>
 
-		public int getSubTreeSize(Handle&lt;E&gt; handle) {
-<span class="fc" id="L280">			return getNodeData((Node&lt;E&gt;) handle);</span>
+		public int getSubTreeSize(HeapReference&lt;E&gt; ref) {
+<span class="fc" id="L280">			return getNodeData((Node&lt;E&gt;) ref);</span>
 		}
 
 		@Override
@@ -331,8 +331,8 @@ public class RedBlackTreeExtended&lt;E&gt; extends RedBlackTree&lt;E&gt; {
 <span class="fc" id="L331">		ExtensionMin() {</span>
 <span class="fc" id="L332">		}</span>
 
-		public Handle&lt;E&gt; getSubTreeMin(Handle&lt;E&gt; handle) {
-<span class="fc" id="L335">			return getNodeData((Node&lt;E&gt;) handle);</span>
+		public HeapReference&lt;E&gt; getSubTreeMin(HeapReference&lt;E&gt; ref) {
+<span class="fc" id="L335">			return getNodeData((Node&lt;E&gt;) ref);</span>
 		}
 
 		@Override
@@ -421,8 +421,8 @@ public class RedBlackTreeExtended&lt;E&gt; extends RedBlackTree&lt;E&gt; {
 <span class="fc" id="L421">		ExtensionMax() {</span>
 <span class="fc" id="L422">		}</span>
 
-		public Handle&lt;E&gt; getSubTreeMax(Handle&lt;E&gt; handle) {
-<span class="fc" id="L425">			return getNodeData((Node&lt;E&gt;) handle);</span>
+		public HeapReference&lt;E&gt; getSubTreeMax(HeapReference&lt;E&gt; ref) {
+<span class="fc" id="L425">			return getNodeData((Node&lt;E&gt;) ref);</span>
 		}
 
 		@Override

@@ -7,13 +7,13 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 
 public class AStar {
 
-	private HeapDirectAccessed.Builder heapBuilder;
+	private HeapReferenceable.Builder heapBuilder;
 
 <span class="fc" id="L12">	public AStar() {</span>
 <span class="fc" id="L13">		heapBuilder = HeapPairing::new;</span>
 <span class="fc" id="L14">	}</span>
 
-	public void setHeapBuilder(HeapDirectAccessed.Builder heapBuilder) {
+	public void setHeapBuilder(HeapReferenceable.Builder heapBuilder) {
 <span class="nc" id="L17">		this.heapBuilder = Objects.requireNonNull(heapBuilder);</span>
 <span class="nc" id="L18">	}</span>
 
@@ -21,9 +21,9 @@ public class AStar {
 <span class="fc bfc" id="L21" title="All 2 branches covered.">		if (source == target)</span>
 <span class="fc" id="L22">			return new Path(g, source, target, IntLists.emptyList());</span>
 <span class="fc" id="L23">		int n = g.vertices().size();</span>
-<span class="fc" id="L24">		HeapDirectAccessed&lt;HeapElm&gt; heap = heapBuilder.build();</span>
+<span class="fc" id="L24">		HeapReferenceable&lt;HeapElm&gt; heap = heapBuilder.build();</span>
 		@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L26">		HeapDirectAccessed.Handle&lt;HeapElm&gt;[] verticesPtrs = new HeapDirectAccessed.Handle[n];</span>
+<span class="fc" id="L26">		HeapReference&lt;HeapElm&gt;[] verticesPtrs = new HeapReference[n];</span>
 
 <span class="fc" id="L28">		SSSPResultImpl res = new SSSPResultImpl(g, source);</span>
 <span class="fc" id="L29">		res.distances[source] = 0;</span>
@@ -42,7 +42,7 @@ public class AStar {
 <span class="fc" id="L42">				res.backtrack[v] = e;</span>
 <span class="fc" id="L43">				double distanceAstimate = distance + vHeuristic.applyAsDouble(v);</span>
 
-<span class="fc" id="L45">				HeapDirectAccessed.Handle&lt;HeapElm&gt; vPtr = verticesPtrs[v];</span>
+<span class="fc" id="L45">				HeapReference&lt;HeapElm&gt; vPtr = verticesPtrs[v];</span>
 <span class="fc bfc" id="L46" title="All 2 branches covered.">				if (vPtr == null) {</span>
 <span class="fc" id="L47">					verticesPtrs[v] = heap.insert(new HeapElm(distanceAstimate, v));</span>
 				} else {

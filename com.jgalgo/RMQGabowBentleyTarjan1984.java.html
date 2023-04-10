@@ -27,7 +27,7 @@ public class RMQGabowBentleyTarjan1984 extends RMQLinearAbstract {
 <span class="fc" id="L27">	}</span>
 
 	@Override
-	public void preprocessRMQ(RMQ.Comparator c, int n) {
+	public void preprocessRMQ(RMQComparator c, int n) {
 <span class="pc bpc" id="L31" title="1 of 2 branches missed.">		if (n &lt;= 0)</span>
 <span class="nc" id="L32">			throw new IllegalArgumentException();</span>
 <span class="fc" id="L33">		Objects.requireNonNull(c);</span>
@@ -46,7 +46,7 @@ public class RMQGabowBentleyTarjan1984 extends RMQLinearAbstract {
 <span class="fc" id="L46">			interBlocksDs[b] = tables.computeIfAbsent(Integer.valueOf(key), k -&gt; {</span>
 <span class="fc" id="L47">				int[] demoBlock = calcDemoBlock(k.intValue(), blockSize);</span>
 <span class="fc" id="L48">				RMQ innerRMQ = new RMQLookupTable();</span>
-<span class="fc" id="L49">				innerRMQ.preprocessRMQ(new ArrayIntComparator(demoBlock), demoBlock.length);</span>
+<span class="fc" id="L49">				innerRMQ.preprocessRMQ(RMQComparator.ofIntArray(demoBlock), demoBlock.length);</span>
 <span class="fc" id="L50">				return innerRMQ;</span>
 			});
 		}

@@ -13,12 +13,12 @@ public class MSTPrim1957 implements MST {
 	 * O(m + nlogn)
 	 */
 
-<span class="fc" id="L16">	private HeapDirectAccessed.Builder heapBuilder = HeapPairing::new;</span>
+<span class="fc" id="L16">	private HeapReferenceable.Builder heapBuilder = HeapPairing::new;</span>
 
 <span class="fc" id="L18">	public MSTPrim1957() {</span>
 <span class="fc" id="L19">	}</span>
 
-	public void setHeapBuilder(HeapDirectAccessed.Builder heapBuilder) {
+	public void setHeapBuilder(HeapReferenceable.Builder heapBuilder) {
 <span class="nc" id="L22">		this.heapBuilder = Objects.requireNonNull(heapBuilder);</span>
 <span class="nc" id="L23">	}</span>
 
@@ -30,9 +30,9 @@ public class MSTPrim1957 implements MST {
 <span class="fc bfc" id="L30" title="All 2 branches covered.">		if (n == 0)</span>
 <span class="fc" id="L31">			return IntLists.emptyList();</span>
 
-<span class="fc" id="L33">		HeapDirectAccessed&lt;Integer&gt; heap = heapBuilder.build(w);</span>
+<span class="fc" id="L33">		HeapReferenceable&lt;Integer&gt; heap = heapBuilder.build(w);</span>
 		@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L35">		HeapDirectAccessed.Handle&lt;Integer&gt;[] verticesPtrs = new HeapDirectAccessed.Handle[n];</span>
+<span class="fc" id="L35">		HeapReference&lt;Integer&gt;[] verticesPtrs = new HeapReference[n];</span>
 <span class="fc" id="L36">		BitSet visited = new BitSet(n);</span>
 
 <span class="fc" id="L38">		IntCollection mst = new IntArrayList(n - 1);</span>
@@ -51,7 +51,7 @@ public class MSTPrim1957 implements MST {
 <span class="fc bfc" id="L51" title="All 2 branches covered.">					if (visited.get(v))</span>
 <span class="fc" id="L52">						continue;</span>
 
-<span class="fc" id="L54">					HeapDirectAccessed.Handle&lt;Integer&gt; vPtr = verticesPtrs[v];</span>
+<span class="fc" id="L54">					HeapReference&lt;Integer&gt; vPtr = verticesPtrs[v];</span>
 <span class="fc bfc" id="L55" title="All 2 branches covered.">					if (vPtr == null)</span>
 <span class="fc" id="L56">						verticesPtrs[v] = heap.insert(Integer.valueOf(e));</span>
 <span class="fc bfc" id="L57" title="All 2 branches covered.">					else if (w.compare(e, vPtr.get().intValue()) &lt; 0)</span>

@@ -9,12 +9,12 @@ import java.util.Set;
 
 import com.jgalgo.Trees.TreeNode;
 
-<span class="fc" id="L12">public class HeapBinomial&lt;E&gt; extends HeapAbstractDirectAccessed&lt;E&gt; {</span>
+<span class="fc" id="L12">public class HeapBinomial&lt;E&gt; extends HeapReferenceableAbstract&lt;E&gt; {</span>
 
 	private Node&lt;E&gt;[] roots;
 	private int rootsLen;
 	private int size;
-	private final Set&lt;Handle&lt;E&gt;&gt; handlesSet;
+	private final Set&lt;HeapReference&lt;E&gt;&gt; refsSet;
 
 	public HeapBinomial() {
 <span class="nc" id="L20">		this(null);</span>
@@ -26,7 +26,7 @@ import com.jgalgo.Trees.TreeNode;
 <span class="fc" id="L26">		rootsLen = 0;</span>
 <span class="fc" id="L27">		size = 0;</span>
 
-<span class="fc" id="L29">		handlesSet = new AbstractSet&lt;&gt;() {</span>
+<span class="fc" id="L29">		refsSet = new AbstractSet&lt;&gt;() {</span>
 
 			@Override
 			public int size() {
@@ -35,14 +35,14 @@ import com.jgalgo.Trees.TreeNode;
 
 			@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
 			@Override
-			public Iterator&lt;Handle&lt;E&gt;&gt; iterator() {
+			public Iterator&lt;HeapReference&lt;E&gt;&gt; iterator() {
 <span class="fc" id="L39">				return (Iterator) new Itr();</span>
 			}
 
 			@SuppressWarnings(&quot;unchecked&quot;)
 			@Override
 			public boolean remove(Object o) {
-<span class="nc" id="L45">				HeapBinomial.this.removeHandle((Handle&lt;E&gt;) o);</span>
+<span class="nc" id="L45">				HeapBinomial.this.removeRef((HeapReference&lt;E&gt;) o);</span>
 <span class="nc" id="L46">				return true;</span>
 			}
 
@@ -92,8 +92,8 @@ import com.jgalgo.Trees.TreeNode;
 <span class="fc" id="L92">	}</span>
 
 	@Override
-	public void decreaseKey(Handle&lt;E&gt; handle, E e) {
-<span class="fc" id="L96">		Node&lt;E&gt; node = (Node&lt;E&gt;) handle;</span>
+	public void decreaseKey(HeapReference&lt;E&gt; ref, E e) {
+<span class="fc" id="L96">		Node&lt;E&gt; node = (Node&lt;E&gt;) ref;</span>
 <span class="pc bpc" id="L97" title="1 of 2 branches missed.">		if (compare(e, node.value) &gt; 0)</span>
 <span class="nc" id="L98">			throw new IllegalArgumentException(&quot;new key is greater than existing one&quot;);</span>
 <span class="fc" id="L99">		node.value = e;</span>
@@ -114,8 +114,8 @@ import com.jgalgo.Trees.TreeNode;
 <span class="fc" id="L114">	}</span>
 
 	@Override
-	public void removeHandle(Handle&lt;E&gt; handle) {
-<span class="fc" id="L118">		Node&lt;E&gt; node = (Node&lt;E&gt;) handle;</span>
+	public void removeRef(HeapReference&lt;E&gt; ref) {
+<span class="fc" id="L118">		Node&lt;E&gt; node = (Node&lt;E&gt;) ref;</span>
 
 		/* propagate to top of the tree */
 <span class="fc bfc" id="L121" title="All 2 branches covered.">		for (Node&lt;E&gt; p; (p = node.parent) != null;)</span>
@@ -169,7 +169,7 @@ import com.jgalgo.Trees.TreeNode;
 	}
 
 	@Override
-	public Handle&lt;E&gt; insert(E e) {
+	public HeapReference&lt;E&gt; insert(E e) {
 <span class="fc" id="L173">		Node&lt;E&gt; node = new Node&lt;&gt;(e);</span>
 <span class="fc" id="L174">		Node&lt;E&gt;[] h2 = newArr(1);</span>
 <span class="fc" id="L175">		h2[0] = node;</span>
@@ -178,8 +178,8 @@ import com.jgalgo.Trees.TreeNode;
 	}
 
 	@Override
-	public Set&lt;Handle&lt;E&gt;&gt; handles() {
-<span class="fc" id="L182">		return handlesSet;</span>
+	public Set&lt;HeapReference&lt;E&gt;&gt; refsSet() {
+<span class="fc" id="L182">		return refsSet;</span>
 	}
 
 	private Node&lt;E&gt; mergeTreesDefaultCmp(Node&lt;E&gt; r1, Node&lt;E&gt; r2) {
@@ -301,7 +301,7 @@ import com.jgalgo.Trees.TreeNode;
 <span class="fc" id="L301">	}</span>
 
 	@Override
-	public Handle&lt;E&gt; findMinHandle() {
+	public HeapReference&lt;E&gt; findMinRef() {
 <span class="pc bpc" id="L305" title="1 of 2 branches missed.">		if (isEmpty())</span>
 <span class="nc" id="L306">			throw new IllegalStateException();</span>
 <span class="fc" id="L307">		Node&lt;E&gt;[] rs = roots;</span>
@@ -325,7 +325,7 @@ import com.jgalgo.Trees.TreeNode;
 <span class="fc" id="L325">		return new Node[n];</span>
 	}
 
-	private static class Node&lt;E&gt; implements Handle&lt;E&gt;, TreeNode&lt;Node&lt;E&gt;&gt; {
+	private static class Node&lt;E&gt; implements HeapReference&lt;E&gt;, TreeNode&lt;Node&lt;E&gt;&gt; {
 
 		Node&lt;E&gt; parent;
 		Node&lt;E&gt; next;

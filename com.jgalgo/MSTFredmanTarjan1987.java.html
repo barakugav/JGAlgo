@@ -13,12 +13,12 @@ public class MSTFredmanTarjan1987 implements MST {
 	 * O(m log* n)
 	 */
 
-<span class="fc" id="L16">	private HeapDirectAccessed.Builder heapBuilder = HeapPairing::new;</span>
+<span class="fc" id="L16">	private HeapReferenceable.Builder heapBuilder = HeapPairing::new;</span>
 
 <span class="fc" id="L18">	public MSTFredmanTarjan1987() {</span>
 <span class="fc" id="L19">	}</span>
 
-	public void setHeapBuilder(HeapDirectAccessed.Builder heapBuilder) {
+	public void setHeapBuilder(HeapReferenceable.Builder heapBuilder) {
 <span class="nc" id="L22">		this.heapBuilder = Objects.requireNonNull(heapBuilder);</span>
 <span class="nc" id="L23">	}</span>
 
@@ -57,10 +57,10 @@ public class MSTFredmanTarjan1987 implements MST {
 <span class="fc" id="L57">		int[] treeVertices = new int[n]; // stack of super vertices in current built tree</span>
 
 		// heap of edges going out of the current tree, one edge in per super vertex
-<span class="fc" id="L60">		HeapDirectAccessed&lt;Integer&gt; heap = heapBuilder.build(w);</span>
+<span class="fc" id="L60">		HeapReferenceable&lt;Integer&gt; heap = heapBuilder.build(w);</span>
 		// (super vertex -&gt; heap element) for fast decreaseKey
 		@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L63">		HeapDirectAccessed.Handle&lt;Integer&gt;[] vHeapElm = new HeapDirectAccessed.Handle[n];</span>
+<span class="fc" id="L63">		HeapReference&lt;Integer&gt;[] vHeapElm = new HeapReference[n];</span>
 
 <span class="fc" id="L65">		IntCollection mst = new IntArrayList(n - 1);</span>
 		for (;;) {
@@ -92,7 +92,7 @@ public class MSTFredmanTarjan1987 implements MST {
 <span class="fc bfc" id="L92" title="All 2 branches covered.">							if (vTree[v] == r)</span>
 <span class="fc" id="L93">								continue;</span>
 
-<span class="fc" id="L95">							HeapDirectAccessed.Handle&lt;Integer&gt; heapElm = vHeapElm[v];</span>
+<span class="fc" id="L95">							HeapReference&lt;Integer&gt; heapElm = vHeapElm[v];</span>
 <span class="fc bfc" id="L96" title="All 2 branches covered.">							if (heapElm == null) {</span>
 <span class="fc" id="L97">								heapElm = vHeapElm[v] = heap.insert(Integer.valueOf(e));</span>
 <span class="fc bfc" id="L98" title="All 2 branches covered.">								if (heap.size() &gt; k)</span>

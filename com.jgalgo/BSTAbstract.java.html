@@ -2,7 +2,7 @@
 
 import java.util.Comparator;
 
-public abstract class BSTAbstract&lt;E&gt; extends HeapAbstractDirectAccessed&lt;E&gt; implements BST&lt;E&gt; {
+public abstract class BSTAbstract&lt;E&gt; extends HeapReferenceableAbstract&lt;E&gt; implements BST&lt;E&gt; {
 
 	public BSTAbstract(Comparator&lt;? super E&gt; c) {
 <span class="fc" id="L8">		super(c);</span>
@@ -10,14 +10,14 @@ public abstract class BSTAbstract&lt;E&gt; extends HeapAbstractDirectAccessed&lt
 
 	@Override
 	public E findMax() {
-<span class="fc" id="L13">		return findMaxHandle().get();</span>
+<span class="fc" id="L13">		return findMaxRef().get();</span>
 	}
 
 	@Override
 	public E extractMax() {
-<span class="fc" id="L18">		Handle&lt;E&gt; max = findMaxHandle();</span>
+<span class="fc" id="L18">		HeapReference&lt;E&gt; max = findMaxRef();</span>
 <span class="fc" id="L19">		E val = max.get();</span>
-<span class="fc" id="L20">		removeHandle(max);</span>
+<span class="fc" id="L20">		removeRef(max);</span>
 <span class="fc" id="L21">		return val;</span>
 	}
 

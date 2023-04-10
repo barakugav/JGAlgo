@@ -8,13 +8,13 @@ import java.util.Set;
 
 import com.jgalgo.Trees.TreeNode;
 
-public class HeapFibonacci&lt;E&gt; extends HeapAbstractDirectAccessed&lt;E&gt; {
+public class HeapFibonacci&lt;E&gt; extends HeapReferenceableAbstract&lt;E&gt; {
 
 	private Node&lt;E&gt; minRoot;
 	private Node&lt;E&gt; begin;
 	private Node&lt;E&gt; end;
 	private int size;
-	private final Set&lt;Handle&lt;E&gt;&gt; handlesSet;
+	private final Set&lt;HeapReference&lt;E&gt;&gt; refsSet;
 
 	public HeapFibonacci() {
 <span class="nc" id="L20">		this(null);</span>
@@ -25,7 +25,7 @@ public class HeapFibonacci&lt;E&gt; extends HeapAbstractDirectAccessed&lt;E&gt; 
 <span class="fc" id="L25">		begin = end = minRoot = null;</span>
 <span class="fc" id="L26">		size = 0;</span>
 
-<span class="fc" id="L28">		handlesSet = new AbstractSet&lt;&gt;() {</span>
+<span class="fc" id="L28">		refsSet = new AbstractSet&lt;&gt;() {</span>
 
 			@Override
 			public int size() {
@@ -34,14 +34,14 @@ public class HeapFibonacci&lt;E&gt; extends HeapAbstractDirectAccessed&lt;E&gt; 
 
 			@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
 			@Override
-			public Iterator&lt;Handle&lt;E&gt;&gt; iterator() {
+			public Iterator&lt;HeapReference&lt;E&gt;&gt; iterator() {
 <span class="fc" id="L38">				return (Iterator) new Trees.PreOrderIter&lt;&gt;(begin);</span>
 			}
 
 			@SuppressWarnings(&quot;unchecked&quot;)
 			@Override
 			public boolean remove(Object o) {
-<span class="nc" id="L44">				HeapFibonacci.this.removeHandle((Handle&lt;E&gt;) o);</span>
+<span class="nc" id="L44">				HeapFibonacci.this.removeRef((HeapReference&lt;E&gt;) o);</span>
 <span class="nc" id="L45">				return true;</span>
 			}
 
@@ -69,7 +69,7 @@ public class HeapFibonacci&lt;E&gt; extends HeapAbstractDirectAccessed&lt;E&gt; 
 	}
 
 	@Override
-	public Handle&lt;E&gt; insert(E e) {
+	public HeapReference&lt;E&gt; insert(E e) {
 <span class="fc" id="L73">		Node&lt;E&gt; n = new Node&lt;&gt;(e);</span>
 <span class="fc bfc" id="L74" title="All 2 branches covered.">		if (minRoot != null) {</span>
 <span class="fc" id="L75">			Node&lt;E&gt; last = end;</span>
@@ -87,8 +87,8 @@ public class HeapFibonacci&lt;E&gt; extends HeapAbstractDirectAccessed&lt;E&gt; 
 	}
 
 	@Override
-	public Set&lt;Handle&lt;E&gt;&gt; handles() {
-<span class="fc" id="L91">		return handlesSet;</span>
+	public Set&lt;HeapReference&lt;E&gt;&gt; refsSet() {
+<span class="fc" id="L91">		return refsSet;</span>
 	}
 
 	@Override
@@ -121,7 +121,7 @@ public class HeapFibonacci&lt;E&gt; extends HeapAbstractDirectAccessed&lt;E&gt; 
 <span class="fc" id="L121">	}</span>
 
 	@Override
-	public Node&lt;E&gt; findMinHandle() {
+	public Node&lt;E&gt; findMinRef() {
 <span class="pc bpc" id="L125" title="1 of 2 branches missed.">		if (isEmpty())</span>
 <span class="nc" id="L126">			throw new IllegalStateException();</span>
 <span class="fc" id="L127">		return minRoot;</span>
@@ -172,8 +172,8 @@ public class HeapFibonacci&lt;E&gt; extends HeapAbstractDirectAccessed&lt;E&gt; 
 <span class="fc" id="L172">	}</span>
 
 	@Override
-	public void decreaseKey(Handle&lt;E&gt; handle, E e) {
-<span class="fc" id="L176">		Node&lt;E&gt; parent, n = (Node&lt;E&gt;) handle;</span>
+	public void decreaseKey(HeapReference&lt;E&gt; ref, E e) {
+<span class="fc" id="L176">		Node&lt;E&gt; parent, n = (Node&lt;E&gt;) ref;</span>
 <span class="pc bpc" id="L177" title="1 of 2 branches missed.">		if (compare(e, n.value) &gt; 0)</span>
 <span class="nc" id="L178">			throw new IllegalArgumentException(&quot;new key is greater than existing one&quot;);</span>
 <span class="fc" id="L179">		n.value = e;</span>
@@ -189,8 +189,8 @@ public class HeapFibonacci&lt;E&gt; extends HeapAbstractDirectAccessed&lt;E&gt; 
 <span class="fc" id="L189">	}</span>
 
 	@Override
-	public void removeHandle(Handle&lt;E&gt; handle) {
-<span class="fc" id="L193">		Node&lt;E&gt; prev, n = (Node&lt;E&gt;) handle;</span>
+	public void removeRef(HeapReference&lt;E&gt; ref) {
+<span class="fc" id="L193">		Node&lt;E&gt; prev, n = (Node&lt;E&gt;) ref;</span>
 
 <span class="fc bfc" id="L195" title="All 2 branches covered.">		boolean isMinRoot = n == minRoot;</span>
 <span class="fc bfc" id="L196" title="All 2 branches covered.">		if (n.parent != null) {</span>
@@ -343,7 +343,7 @@ public class HeapFibonacci&lt;E&gt; extends HeapAbstractDirectAccessed&lt;E&gt; 
 <span class="fc" id="L343">		return u;</span>
 	}
 
-	private static class Node&lt;E&gt; implements Handle&lt;E&gt;, TreeNode&lt;Node&lt;E&gt;&gt; {
+	private static class Node&lt;E&gt; implements HeapReference&lt;E&gt;, TreeNode&lt;Node&lt;E&gt;&gt; {
 
 		Node&lt;E&gt; parent;
 		Node&lt;E&gt; next;

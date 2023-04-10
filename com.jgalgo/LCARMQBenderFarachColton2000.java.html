@@ -2,8 +2,6 @@
 
 import java.util.Arrays;
 
-import com.jgalgo.RMQ.ArrayIntComparator;
-
 public class LCARMQBenderFarachColton2000 implements LCAStatic {
 
 	/*
@@ -22,78 +20,78 @@ public class LCARMQBenderFarachColton2000 implements LCAStatic {
 	private final RMQ rmq;
 	private boolean preprocessed;
 
-<span class="fc" id="L25">	public LCARMQBenderFarachColton2000() {</span>
-<span class="fc" id="L26">		rmq = new RMQPlusMinusOneBenderFarachColton2000();</span>
-<span class="fc" id="L27">		preprocessed = false;</span>
-<span class="fc" id="L28">	}</span>
+<span class="fc" id="L23">	public LCARMQBenderFarachColton2000() {</span>
+<span class="fc" id="L24">		rmq = new RMQPlusMinusOneBenderFarachColton2000();</span>
+<span class="fc" id="L25">		preprocessed = false;</span>
+<span class="fc" id="L26">	}</span>
 
 	@Override
 	public void preprocessLCA(Graph t, int r) {
-<span class="pc bpc" id="L32" title="1 of 2 branches missed.">		if (!Graphs.isTree(t, r))</span>
-<span class="nc" id="L33">			throw new IllegalArgumentException();</span>
+<span class="pc bpc" id="L30" title="1 of 2 branches missed.">		if (!Graphs.isTree(t, r))</span>
+<span class="nc" id="L31">			throw new IllegalArgumentException();</span>
 
-<span class="fc" id="L35">		int n = t.vertices().size();</span>
-<span class="fc" id="L36">		int[] depths = new int[n * 2];</span>
-<span class="fc" id="L37">		int[] vs = new int[n * 2];</span>
-<span class="fc" id="L38">		int[] parent = new int[n];</span>
+<span class="fc" id="L33">		int n = t.vertices().size();</span>
+<span class="fc" id="L34">		int[] depths = new int[n * 2];</span>
+<span class="fc" id="L35">		int[] vs = new int[n * 2];</span>
+<span class="fc" id="L36">		int[] parent = new int[n];</span>
 
-<span class="fc" id="L40">		EdgeIter[] edges = new EdgeIter[n];</span>
+<span class="fc" id="L38">		EdgeIter[] edges = new EdgeIter[n];</span>
 
-<span class="fc" id="L42">		parent[0] = -1;</span>
-<span class="fc" id="L43">		edges[0] = t.edgesOut(r);</span>
+<span class="fc" id="L40">		parent[0] = -1;</span>
+<span class="fc" id="L41">		edges[0] = t.edgesOut(r);</span>
 
-<span class="fc" id="L45">		int aLen = 0;</span>
-<span class="fc" id="L46">		dfs: for (int u = r, depth = 0;;) {</span>
-<span class="fc" id="L47">			depths[aLen] = depth;</span>
-<span class="fc" id="L48">			vs[aLen] = u;</span>
-<span class="fc" id="L49">			aLen++;</span>
+<span class="fc" id="L43">		int aLen = 0;</span>
+<span class="fc" id="L44">		dfs: for (int u = r, depth = 0;;) {</span>
+<span class="fc" id="L45">			depths[aLen] = depth;</span>
+<span class="fc" id="L46">			vs[aLen] = u;</span>
+<span class="fc" id="L47">			aLen++;</span>
 
-<span class="fc bfc" id="L51" title="All 2 branches covered.">			for (EdgeIter eit = edges[depth]; eit.hasNext();) {</span>
-<span class="fc" id="L52">				eit.nextInt();</span>
-<span class="fc" id="L53">				int v = eit.v();</span>
-<span class="fc bfc" id="L54" title="All 2 branches covered.">				if (v == parent[depth])</span>
-<span class="fc" id="L55">					continue;</span>
-<span class="fc" id="L56">				depth++;</span>
-<span class="fc" id="L57">				parent[depth] = u;</span>
-<span class="fc" id="L58">				edges[depth] = t.edgesOut(v);</span>
-<span class="fc" id="L59">				u = v;</span>
-<span class="fc" id="L60">				continue dfs;</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">			for (EdgeIter eit = edges[depth]; eit.hasNext();) {</span>
+<span class="fc" id="L50">				eit.nextInt();</span>
+<span class="fc" id="L51">				int v = eit.v();</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">				if (v == parent[depth])</span>
+<span class="fc" id="L53">					continue;</span>
+<span class="fc" id="L54">				depth++;</span>
+<span class="fc" id="L55">				parent[depth] = u;</span>
+<span class="fc" id="L56">				edges[depth] = t.edgesOut(v);</span>
+<span class="fc" id="L57">				u = v;</span>
+<span class="fc" id="L58">				continue dfs;</span>
 			}
-<span class="fc" id="L62">			u = parent[depth];</span>
-<span class="fc bfc" id="L63" title="All 2 branches covered.">			if (--depth &lt; 0)</span>
-<span class="fc" id="L64">				break;</span>
+<span class="fc" id="L60">			u = parent[depth];</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">			if (--depth &lt; 0)</span>
+<span class="fc" id="L62">				break;</span>
 		}
 
-<span class="fc" id="L67">		depths = Arrays.copyOf(depths, aLen);</span>
-<span class="fc" id="L68">		vs = Arrays.copyOf(vs, aLen);</span>
+<span class="fc" id="L65">		depths = Arrays.copyOf(depths, aLen);</span>
+<span class="fc" id="L66">		vs = Arrays.copyOf(vs, aLen);</span>
 
-<span class="fc" id="L70">		int[] vToDepthsIdx = new int[n];</span>
-<span class="fc" id="L71">		Arrays.fill(vToDepthsIdx, -1);</span>
-<span class="fc bfc" id="L72" title="All 2 branches covered.">		for (int i = 0; i &lt; aLen; i++) {</span>
-<span class="fc" id="L73">			int v = vs[i];</span>
-<span class="fc bfc" id="L74" title="All 2 branches covered.">			if (vToDepthsIdx[v] == -1)</span>
-<span class="fc" id="L75">				vToDepthsIdx[v] = i;</span>
+<span class="fc" id="L68">		int[] vToDepthsIdx = new int[n];</span>
+<span class="fc" id="L69">		Arrays.fill(vToDepthsIdx, -1);</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">		for (int i = 0; i &lt; aLen; i++) {</span>
+<span class="fc" id="L71">			int v = vs[i];</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">			if (vToDepthsIdx[v] == -1)</span>
+<span class="fc" id="L73">				vToDepthsIdx[v] = i;</span>
 		}
 
-<span class="fc" id="L78">		rmq.preprocessRMQ(new ArrayIntComparator(depths), depths.length);</span>
-<span class="fc" id="L79">		this.vs = vs;</span>
-<span class="fc" id="L80">		this.vToDepthsIdx = vToDepthsIdx;</span>
-<span class="fc" id="L81">		preprocessed = true;</span>
-<span class="fc" id="L82">	}</span>
+<span class="fc" id="L76">		rmq.preprocessRMQ(RMQComparator.ofIntArray(depths), depths.length);</span>
+<span class="fc" id="L77">		this.vs = vs;</span>
+<span class="fc" id="L78">		this.vToDepthsIdx = vToDepthsIdx;</span>
+<span class="fc" id="L79">		preprocessed = true;</span>
+<span class="fc" id="L80">	}</span>
 
 	@Override
 	public int calcLCA(int u, int v) {
-<span class="pc bpc" id="L86" title="1 of 2 branches missed.">		if (!preprocessed)</span>
-<span class="nc" id="L87">			throw new IllegalStateException(&quot;Preprocessing is required before query&quot;);</span>
-<span class="fc" id="L88">		int uIdx = vToDepthsIdx[u];</span>
-<span class="fc" id="L89">		int vIdx = vToDepthsIdx[v];</span>
-<span class="fc bfc" id="L90" title="All 2 branches covered.">		if (uIdx &gt; vIdx) {</span>
-<span class="fc" id="L91">			int temp = uIdx;</span>
-<span class="fc" id="L92">			uIdx = vIdx;</span>
-<span class="fc" id="L93">			vIdx = temp;</span>
+<span class="pc bpc" id="L84" title="1 of 2 branches missed.">		if (!preprocessed)</span>
+<span class="nc" id="L85">			throw new IllegalStateException(&quot;Preprocessing is required before query&quot;);</span>
+<span class="fc" id="L86">		int uIdx = vToDepthsIdx[u];</span>
+<span class="fc" id="L87">		int vIdx = vToDepthsIdx[v];</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">		if (uIdx &gt; vIdx) {</span>
+<span class="fc" id="L89">			int temp = uIdx;</span>
+<span class="fc" id="L90">			uIdx = vIdx;</span>
+<span class="fc" id="L91">			vIdx = temp;</span>
 		}
-<span class="fc" id="L95">		int lcaIdx = rmq.calcRMQ(uIdx, vIdx + 1);</span>
-<span class="fc" id="L96">		return vs[lcaIdx];</span>
+<span class="fc" id="L93">		int lcaIdx = rmq.calcRMQ(uIdx, vIdx + 1);</span>
+<span class="fc" id="L94">		return vs[lcaIdx];</span>
 	}
 
 }

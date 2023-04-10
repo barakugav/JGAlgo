@@ -17,7 +17,7 @@ public class RMQLookupTable implements RMQ {
 <span class="fc" id="L17">	}</span>
 
 	@Override
-	public void preprocessRMQ(RMQ.Comparator c, int n) {
+	public void preprocessRMQ(RMQComparator c, int n) {
 <span class="pc bpc" id="L21" title="1 of 2 branches missed.">		if (n &lt;= 0)</span>
 <span class="nc" id="L22">			throw new IllegalArgumentException(&quot;Invalid legnth: &quot; + n);</span>
 <span class="fc" id="L23">		Objects.requireNonNull(c);</span>

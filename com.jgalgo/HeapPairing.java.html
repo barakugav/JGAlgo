@@ -10,7 +10,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
 
-<span class="fc" id="L13">public class HeapPairing&lt;E&gt; extends HeapAbstractDirectAccessed&lt;E&gt; {</span>
+<span class="fc" id="L13">public class HeapPairing&lt;E&gt; extends HeapReferenceableAbstract&lt;E&gt; {</span>
 
 	private Node&lt;E&gt; minRoot;
 	private int size;
@@ -24,7 +24,7 @@ import java.util.Set;
 <span class="fc" id="L24">	}</span>
 
 	@Override
-	public Handle&lt;E&gt; findMinHandle() {
+	public HeapReference&lt;E&gt; findMinRef() {
 <span class="pc bpc" id="L28" title="1 of 2 branches missed.">		if (isEmpty())</span>
 <span class="nc" id="L29">			throw new IllegalStateException();</span>
 <span class="fc" id="L30">		return minRoot;</span>
@@ -36,7 +36,7 @@ import java.util.Set;
 	}
 
 	@Override
-	public Handle&lt;E&gt; insert(E e) {
+	public HeapReference&lt;E&gt; insert(E e) {
 <span class="fc" id="L40">		Node&lt;E&gt; n = new Node&lt;&gt;(e);</span>
 <span class="fc bfc" id="L41" title="All 2 branches covered.">		if (minRoot == null) {</span>
 <span class="fc" id="L42">			minRoot = n;</span>
@@ -49,8 +49,8 @@ import java.util.Set;
 	}
 
 	@Override
-	public void decreaseKey(Handle&lt;E&gt; handle, E e) {
-<span class="fc" id="L53">		Node&lt;E&gt; n = (Node&lt;E&gt;) handle;</span>
+	public void decreaseKey(HeapReference&lt;E&gt; ref, E e) {
+<span class="fc" id="L53">		Node&lt;E&gt; n = (Node&lt;E&gt;) ref;</span>
 <span class="pc bpc" id="L54" title="1 of 2 branches missed.">		if (compare(e, n.value) &gt; 0)</span>
 <span class="nc" id="L55">			throw new IllegalArgumentException(&quot;new key is greater than existing one&quot;);</span>
 <span class="fc" id="L56">		n.value = e;</span>
@@ -75,8 +75,8 @@ import java.util.Set;
 <span class="fc" id="L75">	}</span>
 
 	@Override
-	public void removeHandle(Handle&lt;E&gt; handle) {
-<span class="fc" id="L79">		Node&lt;E&gt; n = (Node&lt;E&gt;) handle;</span>
+	public void removeRef(HeapReference&lt;E&gt; ref) {
+<span class="fc" id="L79">		Node&lt;E&gt; n = (Node&lt;E&gt;) ref;</span>
 <span class="pc bpc" id="L80" title="1 of 2 branches missed.">		assert minRoot != null;</span>
 <span class="fc bfc" id="L81" title="All 2 branches covered.">		if (n != minRoot) {</span>
 <span class="fc" id="L82">			cut(n);</span>
@@ -270,7 +270,7 @@ import java.util.Set;
 <span class="fc" id="L270">	}</span>
 
 	@Override
-	public Set&lt;Handle&lt;E&gt;&gt; handles() {
+	public Set&lt;HeapReference&lt;E&gt;&gt; refsSet() {
 <span class="fc" id="L274">		return new AbstractSet&lt;&gt;() {</span>
 
 			@Override
@@ -280,14 +280,14 @@ import java.util.Set;
 
 			@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
 			@Override
-			public Iterator&lt;Handle&lt;E&gt;&gt; iterator() {
+			public Iterator&lt;HeapReference&lt;E&gt;&gt; iterator() {
 <span class="fc" id="L284">				return (Iterator) new PreOrderIter&lt;&gt;(minRoot);</span>
 			}
 
 			@SuppressWarnings(&quot;unchecked&quot;)
 			@Override
 			public boolean remove(Object o) {
-<span class="nc" id="L290">				removeHandle((Handle&lt;E&gt;) o);</span>
+<span class="nc" id="L290">				removeRef((HeapReference&lt;E&gt;) o);</span>
 <span class="nc" id="L291">				return true;</span>
 			}
 
@@ -299,7 +299,7 @@ import java.util.Set;
 		};
 	}
 
-	private static class Node&lt;E&gt; implements Handle&lt;E&gt; {
+	private static class Node&lt;E&gt; implements HeapReference&lt;E&gt; {
 
 		Node&lt;E&gt; prevOrParent;
 		Node&lt;E&gt; next;

@@ -60,11 +60,11 @@ class Utils {
 
 	/* syntax sugar to iterator for loops */
 	static &lt;E&gt; Iterable&lt;E&gt; iterable(Iterator&lt;E&gt; it) {
-<span class="fc" id="L63">		return new Iterable&lt;&gt;() {</span>
+<span class="nc" id="L63">		return new Iterable&lt;&gt;() {</span>
 
 			@Override
 			public Iterator&lt;E&gt; iterator() {
-<span class="fc" id="L67">				return it;</span>
+<span class="nc" id="L67">				return it;</span>
 			}
 		};
 	}

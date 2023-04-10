@@ -33,7 +33,7 @@ public class HeapBinary&lt;E&gt; extends HeapAbstract&lt;E&gt; {
 <span class="fc" id="L33">	}</span>
 
 	@Override
-	public HeapDirectAccessed.Handle&lt;E&gt; insert(E e) {
+	public HeapReference&lt;E&gt; insert(E e) {
 <span class="fc bfc" id="L37" title="All 2 branches covered.">		if (arr.length == size)</span>
 <span class="fc" id="L38">			grow();</span>
 

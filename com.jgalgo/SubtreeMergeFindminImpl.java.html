@@ -23,7 +23,7 @@ import java.util.Comparator;
 
 	private NodeImpl&lt;V, E&gt;[] nodes;
 	private final UnionFind uf;
-	private final HeapDirectAccessed&lt;SubTree&lt;V, E&gt;&gt; heap;
+	private final HeapReferenceable&lt;SubTree&lt;V, E&gt;&gt; heap;
 	private final LCADynamic&lt;NodeImpl&lt;V, E&gt;&gt; lca;
 
 	private final Comparator&lt;? super E&gt; weightCmp;
@@ -38,7 +38,7 @@ import java.util.Comparator;
 <span class="fc" id="L38">	}</span>
 
 	@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L41">	public SubtreeMergeFindminImpl(Comparator&lt;? super E&gt; weightCmp, HeapDirectAccessed.Builder heapBuilder) {</span>
+<span class="fc" id="L41">	public SubtreeMergeFindminImpl(Comparator&lt;? super E&gt; weightCmp, HeapReferenceable.Builder heapBuilder) {</span>
 <span class="fc" id="L42">		nodes = new NodeImpl[2];</span>
 
 <span class="fc" id="L44">		uf = new UnionFindArray();</span>
@@ -111,11 +111,11 @@ import java.util.Comparator;
 <span class="fc" id="L111">		EdgeList&lt;V, E&gt;[] uEdges = U.edges, vEdges = V.edges;</span>
 <span class="fc" id="L112">		U.edges = Arrays.copyOf(U.edges, maxSet);</span>
 <span class="fc" id="L113">		Arrays.fill(U.edges, null);</span>
-<span class="fc bfc" id="L114" title="All 2 branches covered.">		if (U.heapHandle != null)</span>
-<span class="fc" id="L115">			heap.removeHandle(U.heapHandle);</span>
-<span class="fc bfc" id="L116" title="All 2 branches covered.">		if (V.heapHandle != null)</span>
-<span class="fc" id="L117">			heap.removeHandle(V.heapHandle);</span>
-<span class="fc" id="L118">		U.heapHandle = V.heapHandle = null;</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">		if (U.heapRef != null)</span>
+<span class="fc" id="L115">			heap.removeRef(U.heapRef);</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">		if (V.heapRef != null)</span>
+<span class="fc" id="L117">			heap.removeRef(V.heapRef);</span>
+<span class="fc" id="L118">		U.heapRef = V.heapRef = null;</span>
 <span class="fc" id="L119">		U.minEdge = V.minEdge = null;</span>
 
 		/* fix current timestamp to identify redundant edges */
@@ -268,11 +268,11 @@ import java.util.Comparator;
 	private void compareAgaintSubTreeMin(SubTree&lt;V, E&gt; v, EdgeNode&lt;V, E&gt; edge) {
 <span class="fc bfc" id="L269" title="All 2 branches covered.">		if (v.minEdge == null) {</span>
 <span class="fc" id="L270">			v.minEdge = edge;</span>
-<span class="fc" id="L271">			v.heapHandle = heap.insert(v);</span>
+<span class="fc" id="L271">			v.heapRef = heap.insert(v);</span>
 
 <span class="fc bfc" id="L273" title="All 2 branches covered.">		} else if (weightCmp.compare(edge.data.data, v.minEdge.data.data) &lt; 0) {</span>
 <span class="fc" id="L274">			v.minEdge = edge;</span>
-<span class="fc" id="L275">			heap.decreaseKey(v.heapHandle, v);</span>
+<span class="fc" id="L275">			heap.decreaseKey(v.heapRef, v);</span>
 		}
 <span class="fc" id="L277">	}</span>
 
@@ -356,7 +356,7 @@ import java.util.Comparator;
 
 		EdgeList&lt;V, E&gt;[] edges;
 		EdgeNode&lt;V, E&gt; minEdge;
-		HeapDirectAccessed.Handle&lt;SubTree&lt;V, E&gt;&gt; heapHandle;
+		HeapReference&lt;SubTree&lt;V, E&gt;&gt; heapRef;
 
 		/* field used to detect redundant edges during merge */
 		EdgeNode&lt;V, E&gt; inEdge;
@@ -385,7 +385,7 @@ import java.util.Comparator;
 <span class="fc bfc" id="L385" title="All 2 branches covered.">			if (minEdge != null)</span>
 <span class="fc" id="L386">				minEdge.clear();</span>
 <span class="fc" id="L387">			minEdge = null;</span>
-<span class="fc" id="L388">			heapHandle = null;</span>
+<span class="fc" id="L388">			heapRef = null;</span>
 <span class="fc" id="L389">		}</span>
 
 	}

@@ -9,14 +9,14 @@ public class SSSPDijkstra implements SSSP {
 	 */
 
 	private int allocSize;
-	private final HeapDirectAccessed&lt;HeapElm&gt; heap;
-	private HeapDirectAccessed.Handle&lt;HeapElm&gt;[] verticesPtrs;
+	private final HeapReferenceable&lt;HeapElm&gt; heap;
+	private HeapReference&lt;HeapElm&gt;[] verticesPtrs;
 
 	public SSSPDijkstra() {
 <span class="fc" id="L16">		this(HeapPairing::new);</span>
 <span class="fc" id="L17">	}</span>
 
-<span class="fc" id="L19">	public SSSPDijkstra(HeapDirectAccessed.Builder heapBuilder) {</span>
+<span class="fc" id="L19">	public SSSPDijkstra(HeapReferenceable.Builder heapBuilder) {</span>
 <span class="fc" id="L20">		allocSize = 0;</span>
 <span class="fc" id="L21">		heap = heapBuilder.build();</span>
 <span class="fc" id="L22">	}</span>
@@ -24,7 +24,7 @@ public class SSSPDijkstra implements SSSP {
 	@SuppressWarnings(&quot;unchecked&quot;)
 	private void memAlloc(int n) {
 <span class="fc bfc" id="L26" title="All 2 branches covered.">		if (allocSize &lt; n) {</span>
-<span class="fc" id="L27">			verticesPtrs = new HeapDirectAccessed.Handle[n];</span>
+<span class="fc" id="L27">			verticesPtrs = new HeapReference[n];</span>
 <span class="fc" id="L28">			allocSize = n;</span>
 		}
 <span class="fc" id="L30">	}</span>
@@ -39,8 +39,8 @@ public class SSSPDijkstra implements SSSP {
 <span class="fc" id="L39">		int n = g.vertices().size();</span>
 
 <span class="fc" id="L41">		memAlloc(n);</span>
-<span class="fc" id="L42">		HeapDirectAccessed&lt;HeapElm&gt; heap = this.heap;</span>
-<span class="fc" id="L43">		HeapDirectAccessed.Handle&lt;HeapElm&gt;[] verticesPtrs = this.verticesPtrs;</span>
+<span class="fc" id="L42">		HeapReferenceable&lt;HeapElm&gt; heap = this.heap;</span>
+<span class="fc" id="L43">		HeapReference&lt;HeapElm&gt;[] verticesPtrs = this.verticesPtrs;</span>
 
 <span class="fc" id="L45">		SSSPResultImpl res = new SSSPResultImpl(g, source);</span>
 <span class="fc" id="L46">		res.distances[source] = 0;</span>
@@ -56,7 +56,7 @@ public class SSSPDijkstra implements SSSP {
 <span class="nc" id="L56">					throw new IllegalArgumentException(&quot;negative weights are not supported&quot;);</span>
 <span class="fc" id="L57">				double distance = res.distances[u] + ws;</span>
 
-<span class="fc" id="L59">				HeapDirectAccessed.Handle&lt;HeapElm&gt; vPtr = verticesPtrs[v];</span>
+<span class="fc" id="L59">				HeapReference&lt;HeapElm&gt; vPtr = verticesPtrs[v];</span>
 <span class="fc bfc" id="L60" title="All 2 branches covered.">				if (vPtr == null) {</span>
 <span class="fc" id="L61">					verticesPtrs[v] = heap.insert(new HeapElm(distance, v));</span>
 <span class="fc" id="L62">					res.backtrack[v] = e;</span>

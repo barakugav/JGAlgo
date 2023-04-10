@@ -17,7 +17,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 	 */
 
 <span class="fc" id="L19">	private Object bipartiteVerticesWeightKey = Weights.DefaultBipartiteWeightKey;</span>
-<span class="fc" id="L20">	private HeapDirectAccessed.Builder heapBuilder = HeapPairing::new;</span>
+<span class="fc" id="L20">	private HeapReferenceable.Builder heapBuilder = HeapPairing::new;</span>
 
 <span class="fc" id="L22">	public MatchingWeightedBipartiteHungarianMethod() {</span>
 <span class="fc" id="L23">	}</span>
@@ -26,7 +26,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 <span class="nc" id="L26">		bipartiteVerticesWeightKey = key;</span>
 <span class="nc" id="L27">	}</span>
 
-	public void setHeapBuilder(HeapDirectAccessed.Builder heapBuilder) {
+	public void setHeapBuilder(HeapReferenceable.Builder heapBuilder) {
 <span class="nc" id="L30">		this.heapBuilder = Objects.requireNonNull(heapBuilder);</span>
 <span class="nc" id="L31">	}</span>
 
@@ -59,8 +59,8 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 		private final BitSet inTree;
 
 		private final IntComparator edgeSlackComparator;
-		private final HeapDirectAccessed&lt;Integer&gt; nextTightEdge;
-		private final HeapDirectAccessed.Handle&lt;Integer&gt;[] nextTightEdgePerOutV;
+		private final HeapReferenceable&lt;Integer&gt; nextTightEdge;
+		private final HeapReference&lt;Integer&gt;[] nextTightEdgePerOutV;
 
 		private double deltaTotal;
 		private final double[] dualValBase;
@@ -77,7 +77,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 
 <span class="fc" id="L78">			edgeSlackComparator = (e1, e2) -&gt; Double.compare(edgeSlack(e1), edgeSlack(e2));</span>
 <span class="fc" id="L79">			nextTightEdge = heapBuilder.build(edgeSlackComparator);</span>
-<span class="fc" id="L80">			nextTightEdgePerOutV = new HeapDirectAccessed.Handle[n];</span>
+<span class="fc" id="L80">			nextTightEdgePerOutV = new HeapReference[n];</span>
 
 <span class="fc" id="L82">			dualValBase = new double[n];</span>
 <span class="fc" id="L83">			dualVal0 = new double[n];</span>
@@ -192,11 +192,11 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 
 		private void nextTightEdgeAdd(int u, int e) {
 <span class="fc" id="L194">			int v = g.edgeEndpoint(e, u);</span>
-<span class="fc" id="L195">			HeapDirectAccessed.Handle&lt;Integer&gt; handle = nextTightEdgePerOutV[v];</span>
-<span class="fc bfc" id="L196" title="All 2 branches covered.">			if (handle == null)</span>
+<span class="fc" id="L195">			HeapReference&lt;Integer&gt; ref = nextTightEdgePerOutV[v];</span>
+<span class="fc bfc" id="L196" title="All 2 branches covered.">			if (ref == null)</span>
 <span class="fc" id="L197">				nextTightEdgePerOutV[v] = nextTightEdge.insert(Integer.valueOf(e));</span>
-<span class="fc bfc" id="L198" title="All 2 branches covered.">			else if (edgeSlackComparator.compare(e, handle.get().intValue()) &lt; 0)</span>
-<span class="fc" id="L199">				nextTightEdge.decreaseKey(handle, Integer.valueOf(e));</span>
+<span class="fc bfc" id="L198" title="All 2 branches covered.">			else if (edgeSlackComparator.compare(e, ref.get().intValue()) &lt; 0)</span>
+<span class="fc" id="L199">				nextTightEdge.decreaseKey(ref, Integer.valueOf(e));</span>
 <span class="fc" id="L200">		}</span>
 
 		private double dualVal(int v) {

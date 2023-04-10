@@ -14,13 +14,13 @@ public class RMQPowerOf2Table implements RMQ {
 
 	private int n;
 	private int[][] arr;
-	private RMQ.Comparator c;
+	private RMQComparator c;
 
 <span class="fc" id="L19">	public RMQPowerOf2Table() {</span>
 <span class="fc" id="L20">	}</span>
 
 	@Override
-	public void preprocessRMQ(RMQ.Comparator c, int n) {
+	public void preprocessRMQ(RMQComparator c, int n) {
 <span class="pc bpc" id="L24" title="1 of 2 branches missed.">		if (n &lt;= 0)</span>
 <span class="nc" id="L25">			throw new IllegalArgumentException(&quot;Invalid legnth: &quot; + n);</span>
 <span class="fc" id="L26">		Objects.requireNonNull(c);</span>
