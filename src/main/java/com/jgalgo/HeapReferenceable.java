@@ -10,15 +10,38 @@ import java.util.Set;
  * elements.
  * <p>
  * In addition to the regular {@link Heap} operations, the user can obtain a
- * reference to each inserted element via the return value of the
- * {@link #insert(Object)} function. The reference,
+ * {@linkplain HeapReference reference} to each inserted element via the return
+ * value of the {@link #insert(Object)} function. The reference will be valid as
+ * long as the element was removed from the heap. By passing the reference to
+ * the heap implementation to functions such as
+ * {@link #decreaseKey(HeapReference, Object)} or
+ * {@link #removeRef(HeapReference)} the heap implementation can perform the
+ * operations very efficiently as is does not need to search for the element.
+ *
+ * <pre> {@code
+ * HeapReferenceable<Integer> heap = ...;
+ * HeapReference<Integer> r1 = heap.insert(5);
+ * HeapReference<Integer> r2 = heap.insert(10);
+ * HeapReference<Integer> r3 = heap.insert(3);
+ *
+ * assert heap.findMin() == 3;
+ * assert r2.get() == 10;
+ * heap.decreaseKey(r2, 2);
+ * assert r2.get() == 2;
+ * assert heap.findMinRef() == r2;
+ *
+ * heap.removeRef(r1);
+ * assert heap.size() == 2;
+ * }</pre>
+ *
+ * @see HeapReference
  */
 public interface HeapReferenceable<E> extends Heap<E> {
 
 	/**
-	 * Find the element in the heap and get a reference to it.
+	 * Find an element in the heap and get a reference to it.
 	 *
-	 * @param e an element in the heap
+	 * @param e an element
 	 * @return a reference to the element or null if the element was not found
 	 */
 	default HeapReference<E> findRef(E e) {
@@ -47,6 +70,9 @@ public interface HeapReferenceable<E> extends Heap<E> {
 
 	/**
 	 * Decrease the key of an element in the heap.
+	 * <p>
+	 * This method behavior is undefined if the reference is not valid, namely it
+	 * reference to an element already removed, or to an element in another heap.
 	 *
 	 * @param ref reference to an inserted element
 	 * @param e   new value
@@ -56,9 +82,8 @@ public interface HeapReferenceable<E> extends Heap<E> {
 	/**
 	 * Remove an element from the heap by its reference.
 	 * <p>
-	 * Note that this method behavior is undefined if the reference is not valid,
-	 * namely it reference to an element already removed, or to an element in
-	 * another heap.
+	 * This method behavior is undefined if the reference is not valid, namely it
+	 * reference to an element already removed, or to an element in another heap.
 	 *
 	 * @param ref reference to an inserted element
 	 */
