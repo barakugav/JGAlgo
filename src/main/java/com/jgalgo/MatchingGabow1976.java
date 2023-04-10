@@ -19,10 +19,13 @@ public class MatchingGabow1976 implements Matching {
 	}
 
 	@Override
-	public IntCollection calcMaxMatching(Graph g0) {
-		if (!(g0 instanceof UGraph))
+	public IntCollection calcMaxMatching(Graph g) {
+		if (!(g instanceof UGraph))
 			throw new IllegalArgumentException("only undirected graphs are supported");
-		UGraph g = (UGraph) g0;
+		return calcMaxMatching0((UGraph) g);
+	}
+
+	private static IntCollection calcMaxMatching0(UGraph g) {
 		int n = g.vertices().size();
 
 		IntPriorityQueue queue = new IntArrayFIFOQueue();

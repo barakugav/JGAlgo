@@ -29,9 +29,13 @@ public class MaxFlowPushRelabel implements MaxFlow {
 	}
 
 	@Override
-	public double calcMaxFlow(Graph g0, FlowNetwork net, int source, int target) {
-		if (!(g0 instanceof DiGraph))
+	public double calcMaxFlow(Graph g, FlowNetwork net, int source, int target) {
+		if (!(g instanceof DiGraph))
 			throw new IllegalArgumentException("only directed graphs are supported");
+		return calcMaxFlow0((DiGraph) g, net, source, target);
+	}
+
+	private double calcMaxFlow0(DiGraph g0, FlowNetwork net, int source, int target) {
 		if (source == target)
 			throw new IllegalArgumentException("Source and target can't be the same vertices");
 		debug.println("\t", getClass().getSimpleName());
@@ -68,8 +72,8 @@ public class MaxFlowPushRelabel implements MaxFlow {
 			assert f > 0;
 
 			int u = g.edgeSource(e), v = g.edgeTarget(e);
-//			if (u == g0.getEdgeSource(edgeRef.getInt(e))
-//				debug.println("F(", e.orig, ") += ", Double.valueOf(f));
+			// if (u == g0.getEdgeSource(edgeRef.getInt(e))
+			// debug.println("F(", e.orig, ") += ", Double.valueOf(f));
 
 			int rev = edgeRev.getInt(e);
 			flow.set(e, flow.getDouble(e) + f);

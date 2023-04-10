@@ -51,9 +51,13 @@ public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 	}
 
 	@Override
-	public double calcMaxFlow(Graph g0, FlowNetwork net, int source, int target) {
-		if (!(g0 instanceof DiGraph))
+	public double calcMaxFlow(Graph g, FlowNetwork net, int source, int target) {
+		if (!(g instanceof DiGraph))
 			throw new IllegalArgumentException("only directed graphs are supported");
+		return calcMaxFlow0((DiGraph) g, net, source, target);
+	}
+
+	private double calcMaxFlow0(DiGraph g0, FlowNetwork net, int source, int target) {
 		if (source == target)
 			throw new IllegalArgumentException("Source and target can't be the same vertices");
 		debug.println("\t", getClass().getSimpleName());
@@ -64,7 +68,7 @@ public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 			maxCapacity = Math.max(maxCapacity, net.getCapacity(e));
 		}
 
-		DiGraph g = referenceGraph((DiGraph) g0, net);
+		DiGraph g = referenceGraph(g0, net);
 		Weights<Ref> edgeRef = g.edgesWeight(EdgeRefWeightKey);
 		int n = g.vertices().size();
 
@@ -90,9 +94,9 @@ public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 			vertexData[u].edges = new IterPickable.Int(g.edgesOut(u));
 
 		ObjDoubleConsumer<Ref> pushFlow = (e, f) -> {
-//			Ref e = e0.data();
-//			if (e0.u() == e.orig.u())
-//				debug.println("F(", e.orig, ") += ", Double.valueOf(f));
+			// Ref e = e0.data();
+			// if (e0.u() == e.orig.u())
+			// debug.println("F(", e.orig, ") += ", Double.valueOf(f));
 			e.flow += f;
 			e.rev.flow -= f;
 			assert e.flow <= e.cap + EPS;
@@ -124,8 +128,8 @@ public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 			assert f > 0;
 
 			int u = eit.u();
-//			if (e.u() == data.orig.u())
-//				debug.println("F(", data.orig, ") += ", Double.valueOf(f));
+			// if (e.u() == data.orig.u())
+			// debug.println("F(", data.orig, ") += ", Double.valueOf(f));
 
 			data.flow += f;
 			data.rev.flow -= f;

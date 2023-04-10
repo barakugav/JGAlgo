@@ -41,10 +41,9 @@ public class MSTBoruvka1926 implements MST {
 		return Pair.of(contractedG, mstRes.mst);
 	}
 
-	private static MSTResult calcMST0(Graph g0, EdgeWeightFunc w, int numberOfRounds) {
-		if (!(g0 instanceof UGraph))
+	private static MSTResult calcMST0(Graph g, EdgeWeightFunc w, int numberOfRounds) {
+		if (!(g instanceof UGraph))
 			throw new IllegalArgumentException("only undirected graphs are supported");
-		UGraph g = (UGraph) g0;
 		int n = g.vertices().size();
 
 		int treeNum = n;

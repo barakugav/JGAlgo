@@ -25,10 +25,10 @@ public class MSTKargerKleinTarjan1995 implements MST {
 	}
 
 	@Override
-	public IntCollection calcMST(Graph g0, EdgeWeightFunc w) {
-		if (!(g0 instanceof UGraph))
+	public IntCollection calcMST(Graph g, EdgeWeightFunc w) {
+		if (!(g instanceof UGraph))
 			throw new IllegalArgumentException("only undirected graphs are supported");
-		return calcMST0((UGraph) g0, w);
+		return calcMST0((UGraph) g, w);
 	}
 
 	private IntCollection calcMST0(UGraph g, EdgeWeightFunc w) {

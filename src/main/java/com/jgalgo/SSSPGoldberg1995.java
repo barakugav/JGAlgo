@@ -24,14 +24,15 @@ public class SSSPGoldberg1995 implements SSSP {
 	}
 
 	@Override
-	public SSSP.Result calcDistances(Graph g0, EdgeWeightFunc w0, int source) {
-		if (!(g0 instanceof DiGraph))
+	public SSSP.Result calcDistances(Graph g, EdgeWeightFunc w, int source) {
+		if (!(g instanceof DiGraph))
 			throw new IllegalArgumentException("Undirected graphs are not supported");
-		DiGraph g = (DiGraph) g0;
-		if (!(w0 instanceof EdgeWeightFunc.Int))
+		if (!(w instanceof EdgeWeightFunc.Int))
 			throw new IllegalArgumentException("Only integer weights are supported");
-		EdgeWeightFunc.Int w = (EdgeWeightFunc.Int) w0;
+		return calcDistances0((DiGraph) g, (EdgeWeightFunc.Int) w, source);
+	}
 
+	private SSSP.Result calcDistances0(DiGraph g, EdgeWeightFunc.Int w, int source) {
 		int minWeight = Integer.MAX_VALUE;
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();

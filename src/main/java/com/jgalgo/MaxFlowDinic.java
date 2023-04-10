@@ -29,9 +29,13 @@ public class MaxFlowDinic implements MaxFlow {
 	private static final Object EdgeRefWeightKey = new Object();
 
 	@Override
-	public double calcMaxFlow(Graph g0, FlowNetwork net, int source, int target) {
-		if (!(g0 instanceof DiGraph))
+	public double calcMaxFlow(Graph g, FlowNetwork net, int source, int target) {
+		if (!(g instanceof DiGraph))
 			throw new IllegalArgumentException("only directed graphs are supported");
+		return calcMaxFlow0((DiGraph) g, net, source, target);
+	}
+
+	private double calcMaxFlow0(DiGraph g0, FlowNetwork net, int source, int target) {
 		if (source == target)
 			throw new IllegalArgumentException("Source and target can't be the same vertices");
 		debug.println("\t", getClass().getSimpleName());
@@ -42,7 +46,7 @@ public class MaxFlowDinic implements MaxFlow {
 			maxCapacity = Math.max(maxCapacity, net.getCapacity(e));
 		}
 
-		DiGraph g = referenceGraph((DiGraph) g0, net);
+		DiGraph g = referenceGraph(g0, net);
 		Weights<Ref> edgeRef = g.edgesWeight(EdgeRefWeightKey);
 		final int n = g.vertices().size();
 		DiGraph L = GraphBuilder.Linked.newInstance().setVerticesNum(n).setEdgesIDStrategy(Fixed.class).buildDirected();
@@ -92,8 +96,8 @@ public class MaxFlowDinic implements MaxFlow {
 
 			ObjDoubleConsumer<Ref> updateFlow = (e, weight) -> {
 				double f = net.getCapacity(e.orig) - e.flow - weight;
-//				if (e0.u() == e.orig.u())
-//					debug.println("F(", e.orig, ") += ", Double.valueOf(f));
+				// if (e0.u() == e.orig.u())
+				// debug.println("F(", e.orig, ") += ", Double.valueOf(f));
 				e.flow += f;
 				e.rev.flow -= f;
 				assert e.flow <= net.getCapacity(e.orig) + EPS;

@@ -21,9 +21,13 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 	}
 
 	@Override
-	public double calcMaxFlow(Graph g0, FlowNetwork net, int source, int target) {
-		if (!(g0 instanceof DiGraph))
+	public double calcMaxFlow(Graph g, FlowNetwork net, int source, int target) {
+		if (!(g instanceof DiGraph))
 			throw new IllegalArgumentException("only directed graphs are supported");
+		return calcMaxFlow0((DiGraph) g, net, source, target);
+	}
+
+	private static double calcMaxFlow0(DiGraph g0, FlowNetwork net, int source, int target) {
 		if (source == target)
 			throw new IllegalArgumentException("Source and target can't be the same vertices");
 

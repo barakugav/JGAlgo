@@ -30,13 +30,26 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 	}
 
 	@Override
-	public IntCollection calcMaxMatching(Graph g0, EdgeWeightFunc w) {
-		if (!(g0 instanceof UGraph))
+	public IntCollection calcMaxMatching(Graph g, EdgeWeightFunc w) {
+		if (!(g instanceof UGraph))
 			throw new IllegalArgumentException("Only undirected bipartite graphs are supported");
-		Weights.Bool partition = g0.verticesWeight(bipartiteVerticesWeightKey);
+		Weights.Bool partition = g.verticesWeight(bipartiteVerticesWeightKey);
 		Objects.requireNonNull(partition,
 				"Bipartiteness values weren't found with weight " + bipartiteVerticesWeightKey);
-		DiGraph g = referenceGraph((UGraph) g0, partition, w);
+		DiGraph g0 = referenceGraph((UGraph) g, partition, w);
+		int[] match = calcMaxMatching0(g0, w, partition);
+
+		int n = g.vertices().size();
+		IntList res = new IntArrayList();
+		for (int u = 0; u < n; u++) {
+			int e = match[u];
+			if (e != -1 && g.edgeSource(e) == u)
+				res.add(e);
+		}
+		return res;
+	}
+
+	private int[] calcMaxMatching0(DiGraph g, EdgeWeightFunc w, Weights.Bool partition) {
 		Weights<Ref> edgeRef = g.edgesWeight(EdgeRefWeightKey);
 
 		int n = g.vertices().size();
@@ -117,14 +130,7 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 				potential[u] += sp.distance(u);
 		}
 
-		IntList res = new IntArrayList();
-		for (int u = 0; u < n; u++) {
-			int e = match[u];
-			if (e != -1 && g0.edgeSource(e) == u)
-				res.add(e);
-		}
-
-		return res;
+		return match;
 	}
 
 	@Override

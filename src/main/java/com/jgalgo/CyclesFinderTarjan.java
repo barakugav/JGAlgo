@@ -15,11 +15,10 @@ public class CyclesFinderTarjan implements CyclesFinder {
 	 */
 
 	@Override
-	public List<Path> findAllCycles(Graph g0) {
-		if (!(g0 instanceof DiGraph))
+	public List<Path> findAllCycles(Graph g) {
+		if (!(g instanceof DiGraph))
 			throw new IllegalArgumentException();
-		DiGraph g = (DiGraph) g0;
-		Worker worker = new Worker(g);
+		Worker worker = new Worker((DiGraph) g);
 		int n = g.vertices().size();
 		for (int s = 0; s < n; s++) {
 			worker.findAllCycles(s);

@@ -26,10 +26,9 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 	}
 
 	@Override
-	public IntCollection calcMaxMatching(Graph g0) {
-		if (!(g0 instanceof UGraph))
+	public IntCollection calcMaxMatching(Graph g) {
+		if (!(g instanceof UGraph))
 			throw new IllegalArgumentException("only undirected bipartite graphs are supported");
-		UGraph g = (UGraph) g0;
 		int n = g.vertices().size();
 
 		Weights.Bool partition = g.verticesWeight(bipartiteVerticesWeightKey);

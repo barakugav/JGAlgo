@@ -22,10 +22,9 @@ public class MSTPrim1957 implements MST {
 	}
 
 	@Override
-	public IntCollection calcMST(Graph g0, EdgeWeightFunc w) {
-		if (!(g0 instanceof UGraph))
+	public IntCollection calcMST(Graph g, EdgeWeightFunc w) {
+		if (!(g instanceof UGraph))
 			throw new IllegalArgumentException("only undirected graphs are supported");
-		UGraph g = (UGraph) g0;
 		int n = g.vertices().size();
 		if (n == 0)
 			return IntLists.emptyList();

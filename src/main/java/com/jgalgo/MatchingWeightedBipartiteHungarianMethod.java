@@ -30,25 +30,23 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 	}
 
 	@Override
-	public IntCollection calcMaxMatching(Graph g0, EdgeWeightFunc w) {
-		if (!(g0 instanceof UGraph))
+	public IntCollection calcMaxMatching(Graph g, EdgeWeightFunc w) {
+		if (!(g instanceof UGraph))
 			throw new IllegalArgumentException("Only undirected bipartite graphs are supported");
-		UGraph g = (UGraph) g0;
 		Weights.Bool partition = g.verticesWeight(bipartiteVerticesWeightKey);
 		Objects.requireNonNull(partition,
 				"Bipartiteness values weren't found with weight " + bipartiteVerticesWeightKey);
-		return new Worker(g, partition, w).calcMaxMatching(false);
+		return new Worker((UGraph) g, partition, w).calcMaxMatching(false);
 	}
 
 	@Override
-	public IntCollection calcPerfectMaxMatching(Graph g0, EdgeWeightFunc w) {
-		if (!(g0 instanceof UGraph))
+	public IntCollection calcPerfectMaxMatching(Graph g, EdgeWeightFunc w) {
+		if (!(g instanceof UGraph))
 			throw new IllegalArgumentException("Only undirected bipartite graphs are supported");
-		UGraph g = (UGraph) g0;
 		Weights.Bool partition = g.verticesWeight(bipartiteVerticesWeightKey);
 		Objects.requireNonNull(partition,
 				"Bipartiteness values weren't found with weight " + bipartiteVerticesWeightKey);
-		return new Worker(g, partition, w).calcMaxMatching(true);
+		return new Worker((UGraph) g, partition, w).calcMaxMatching(true);
 	}
 
 	private class Worker {

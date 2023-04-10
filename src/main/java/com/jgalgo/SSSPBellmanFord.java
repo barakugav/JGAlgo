@@ -16,10 +16,9 @@ public class SSSPBellmanFord implements SSSP {
 	}
 
 	@Override
-	public SSSP.Result calcDistances(Graph g0, EdgeWeightFunc w, int source) {
-		if (!(g0 instanceof DiGraph))
+	public SSSP.Result calcDistances(Graph g, EdgeWeightFunc w, int source) {
+		if (!(g instanceof DiGraph))
 			throw new IllegalArgumentException("only directed graphs are supported");
-		DiGraph g = (DiGraph) g0;
 		int n = g.vertices().size();
 		Result res = new Result(g, source);
 		res.distances[source] = 0;

@@ -30,34 +30,34 @@ public class MDSTTarjan1977 implements MDST {
 	 * finds the MST rooted from any root
 	 */
 	@Override
-	public IntCollection calcMST(Graph g0, EdgeWeightFunc w) {
-		if (!(g0 instanceof DiGraph))
+	public IntCollection calcMST(Graph g, EdgeWeightFunc w) {
+		if (!(g instanceof DiGraph))
 			throw new IllegalArgumentException("Only directed graphs are supported");
-		if (g0.vertices().size() == 0 || g0.edges().size() == 0)
+		if (g.vertices().size() == 0 || g.edges().size() == 0)
 			return IntLists.emptyList();
-		DiGraph g = Graphs.referenceGraph((DiGraph) g0, EdgeRefWeightKey);
-		Weights.Int edgeRefs = g.edgesWeight(EdgeRefWeightKey);
+		DiGraph gRef = Graphs.referenceGraph((DiGraph) g, EdgeRefWeightKey);
+		Weights.Int edgeRefs = gRef.edgesWeight(EdgeRefWeightKey);
 
 		// Connect new root to all vertices
-		int n = g.vertices().size(), r = g.addVertex();
+		int n = gRef.vertices().size(), r = gRef.addVertex();
 		for (int v = 0; v < n; v++)
-			edgeRefs.set(g.addEdge(r, v), HeavyEdge);
+			edgeRefs.set(gRef.addEdge(r, v), HeavyEdge);
 
 		// Calc MST on new graph
-		ContractedGraph contractedGraph = contract(g, w);
-		return expand(g, contractedGraph, r);
+		ContractedGraph contractedGraph = contract(gRef, w);
+		return expand(gRef, contractedGraph, r);
 	}
 
 	@Override
-	public IntCollection calcMST(Graph g0, EdgeWeightFunc w, int root) {
-		if (!(g0 instanceof DiGraph))
+	public IntCollection calcMST(Graph g, EdgeWeightFunc w, int root) {
+		if (!(g instanceof DiGraph))
 			throw new IllegalArgumentException("Only directed graphs are supported");
-		if (g0.vertices().size() == 0 || g0.edges().size() == 0)
+		if (g.vertices().size() == 0 || g.edges().size() == 0)
 			return IntLists.emptyList();
-		DiGraph g = Graphs.referenceGraph((DiGraph) g0, EdgeRefWeightKey);
+		DiGraph gRef = Graphs.referenceGraph((DiGraph) g, EdgeRefWeightKey);
 
-		ContractedGraph contractedGraph = contract(g, w);
-		return expand(g, contractedGraph, root);
+		ContractedGraph contractedGraph = contract(gRef, w);
+		return expand(gRef, contractedGraph, root);
 	}
 
 	private static IntCollection expand(DiGraph g, ContractedGraph cg, int root) {

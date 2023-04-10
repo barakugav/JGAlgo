@@ -19,10 +19,13 @@ public class CyclesFinderJohnson implements CyclesFinder {
 	 */
 
 	@Override
-	public List<Path> findAllCycles(Graph g0) {
-		if (!(g0 instanceof DiGraph))
+	public List<Path> findAllCycles(Graph g) {
+		if (!(g instanceof DiGraph))
 			throw new IllegalArgumentException();
-		DiGraph g = (DiGraph) g0;
+		return findAllCycles0((DiGraph) g);
+	}
+
+	private static List<Path> findAllCycles0(DiGraph g) {
 		if (Graphs.containsParallelEdges(g))
 			throw new IllegalArgumentException("graph with self loops is not supported");
 		int n = g.vertices().size();
