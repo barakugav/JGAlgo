@@ -156,13 +156,14 @@ public class RedBlackTreeExtendedTest extends TestUtils {
 			HeapTestUtils.testHeap(tree, n, m, TestMode.Normal, false, compare, seedGen.nextSeed());
 
 			for (HeapReference<Integer> node : tree.refsSet()) {
-				final var expectedSize = new Object() {
-					int val = 0;
-				};
-				tree.forEachNodeInSubTree(node, descendant -> expectedSize.val++);
+				int expectedSize = 0;
+
+				for (@SuppressWarnings("unused")
+				HeapReference<Integer> descendant : Utils.iterable(tree.subTreeIterator(node)))
+					expectedSize++;
 
 				int actualSize = sizeExt.getSubTreeSize(node);
-				Assertions.assertEquals(expectedSize.val, actualSize, "Size extension repored wrong value");
+				Assertions.assertEquals(expectedSize, actualSize, "Size extension reported wrong value");
 			}
 		});
 	}
@@ -185,14 +186,12 @@ public class RedBlackTreeExtendedTest extends TestUtils {
 			HeapTestUtils.testHeap(tree, n, m, TestMode.Normal, false, compare, seedGen.nextSeed());
 
 			for (HeapReference<Integer> node : tree.refsSet()) {
-				final var expectedMin = new Object() {
-					int val = Integer.MAX_VALUE;
-				};
-				tree.forEachNodeInSubTree(node,
-						descendant -> expectedMin.val = Math.min(expectedMin.val, descendant.get()));
+				int expectedMin = Integer.MAX_VALUE;
+				for (HeapReference<Integer> descendant : Utils.iterable(tree.subTreeIterator(node)))
+					expectedMin = Math.min(expectedMin, descendant.get());
 
 				int actualMin = minExt.getSubTreeMin(node).get();
-				Assertions.assertEquals(expectedMin.val, actualMin, "Min extension repored wrong value");
+				Assertions.assertEquals(expectedMin, actualMin, "Min extension reported wrong value");
 			}
 		});
 	}
@@ -214,14 +213,12 @@ public class RedBlackTreeExtendedTest extends TestUtils {
 
 			HeapTestUtils.testHeap(tree, n, m, TestMode.Normal, false, compare, seedGen.nextSeed());
 			for (HeapReference<Integer> node : tree.refsSet()) {
-				final var expectedMax = new Object() {
-					int val = Integer.MIN_VALUE;
-				};
-				tree.forEachNodeInSubTree(node,
-						descendant -> expectedMax.val = Math.max(expectedMax.val, descendant.get()));
+				int expectedMax = Integer.MIN_VALUE;
+				for (HeapReference<Integer> descendant : Utils.iterable(tree.subTreeIterator(node)))
+					expectedMax = Math.max(expectedMax, descendant.get());
 
 				int actualMax = maxExt.getSubTreeMax(node).get();
-				Assertions.assertEquals(expectedMax.val, actualMax, "Max extension repored wrong value");
+				Assertions.assertEquals(expectedMax, actualMax, "Max extension reported wrong value");
 			}
 		});
 	}

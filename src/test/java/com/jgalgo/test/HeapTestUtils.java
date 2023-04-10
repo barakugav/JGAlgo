@@ -310,70 +310,70 @@ class HeapTestUtils extends TestUtils {
 
 			int x, expected, actual;
 			switch (op) {
-			case Insert:
-				if (elmsToInsertCursor >= elmsToInsertIds.length)
-					continue;
-				x = values[elmsToInsertIds[elmsToInsertCursor++]];
-				debug.println("Insert(", x, ")");
-
-				tracker.insert(x);
-				tracker.heap.insert(x);
-				break;
-
-			case Remove:
-				if (tracker.isEmpty() || rand.nextInt(3) != 0)
-					continue;
-				x = tracker.randElement();
-				debug.println("Remove(", x, ")");
-
-				tracker.remove(x);
-				Assertions.assertTrue(tracker.heap.remove(x), "failed to remove: " + x);
-				break;
-
-			case FindMin:
-				if (tracker.isEmpty())
-					continue;
-				debug.println("FindMin");
-
-				expected = tracker.findMin();
-				actual = tracker.heap.findMin();
-				Assertions.assertEquals(expected, actual, "failed findMin");
-				break;
-
-			case ExtractMin:
-				if (tracker.isEmpty() || rand.nextInt(3) != 0)
-					continue;
-				debug.println("ExtractMin");
-
-				expected = tracker.extractMin();
-				actual = tracker.heap.extractMin();
-				Assertions.assertEquals(expected, actual, "failed extractMin");
-				break;
-
-			case DecreaseKey: {
-				if (tracker.isEmpty())
-					continue;
-				int newVal;
-				for (int retry = 20;; retry--) {
-					if (retry <= 0)
-						continue opLoop;
-					x = tracker.randElement();
-					assert x >= 0;
-					if (x == 0)
+				case Insert:
+					if (elmsToInsertCursor >= elmsToInsertIds.length)
 						continue;
-					newVal = rand.nextInt(Math.max(x, x * 2));
-					if (compare(compare, newVal, x) <= 0)
-						break;
-				}
-				HeapReferenceable<Integer> heap0 = (HeapReferenceable<Integer>) tracker.heap;
+					x = values[elmsToInsertIds[elmsToInsertCursor++]];
+					debug.println("Insert(", x, ")");
 
-				debug.println("DecreaseKey(" + x + ", " + newVal + ")");
-				tracker.decreaseKey(x, newVal);
-				heap0.decreaseKey(heap0.findRef(x), newVal);
-				break;
-			}
-			default:
-				throw new IllegalStateException();
+					tracker.insert(x);
+					tracker.heap.insert(x);
+					break;
+
+				case Remove:
+					if (tracker.isEmpty() || rand.nextInt(3) != 0)
+						continue;
+					x = tracker.randElement();
+					debug.println("Remove(", x, ")");
+
+					tracker.remove(x);
+					Assertions.assertTrue(tracker.heap.remove(x), "failed to remove: " + x);
+					break;
+
+				case FindMin:
+					if (tracker.isEmpty())
+						continue;
+					debug.println("FindMin");
+
+					expected = tracker.findMin();
+					actual = tracker.heap.findMin();
+					Assertions.assertEquals(expected, actual, "failed findMin");
+					break;
+
+				case ExtractMin:
+					if (tracker.isEmpty() || rand.nextInt(3) != 0)
+						continue;
+					debug.println("ExtractMin");
+
+					expected = tracker.extractMin();
+					actual = tracker.heap.extractMin();
+					Assertions.assertEquals(expected, actual, "failed extractMin");
+					break;
+
+				case DecreaseKey: {
+					if (tracker.isEmpty())
+						continue;
+					int newVal;
+					for (int retry = 20;; retry--) {
+						if (retry <= 0)
+							continue opLoop;
+						x = tracker.randElement();
+						assert x >= 0;
+						if (x == 0)
+							continue;
+						newVal = rand.nextInt(Math.max(x, x * 2));
+						if (compare(compare, newVal, x) <= 0)
+							break;
+					}
+					HeapReferenceable<Integer> heap0 = (HeapReferenceable<Integer>) tracker.heap;
+
+					debug.println("DecreaseKey(" + x + ", " + newVal + ")");
+					tracker.decreaseKey(x, newVal);
+					heap0.decreaseKey(heap0.findRef(x), newVal);
+					break;
+				}
+				default:
+					throw new IllegalStateException();
 			}
 			opIdx++;
 		}
@@ -387,7 +387,7 @@ class HeapTestUtils extends TestUtils {
 		Assertions.assertEquals(expectedSize, actualSize, "size() is different than counted size using iterator");
 	}
 
-	@SuppressWarnings({ "unused" })
+	@SuppressWarnings("unused")
 	private static <E> void testHeapSize(Heap<E> h) {
 		int expected = h.size();
 		int actual = 0;

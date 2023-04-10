@@ -4,7 +4,6 @@ import java.util.AbstractSet;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.function.Consumer;
 
 public class RedBlackTree<E> extends BSTAbstract<E> {
 
@@ -433,10 +432,10 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 		return BSTUtils.getSuccessor((Node<E>) ref);
 	}
 
-	// TODO change to iterator
-	public void forEachNodeInSubTree(HeapReference<E> ref, Consumer<? super HeapReference<E>> op) {
-		for (Node<E> n : Utils.iterable(new BSTUtils.BSTIterator<>((Node<E>) ref)))
-			op.accept(n);
+	// TODO consider remove this from public API
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public Iterator<HeapReference<E>> subTreeIterator(HeapReference<E> ref) {
+		return (Iterator) (new BSTUtils.BSTIterator<>((Node<E>) ref));
 	}
 
 	static class Node<E> extends BSTUtils.Node<E, Node<E>> implements HeapReference<E> {
