@@ -2,8 +2,6 @@ package com.jgalgo;
 
 import java.util.Arrays;
 
-import com.jgalgo.RMQ.ArrayIntComparator;
-
 public class LCARMQBenderFarachColton2000 implements LCAStatic {
 
 	/*
@@ -75,7 +73,7 @@ public class LCARMQBenderFarachColton2000 implements LCAStatic {
 				vToDepthsIdx[v] = i;
 		}
 
-		rmq.preprocessRMQ(new ArrayIntComparator(depths), depths.length);
+		rmq.preprocessRMQ(RMQComparator.ofIntArray(depths), depths.length);
 		this.vs = vs;
 		this.vToDepthsIdx = vToDepthsIdx;
 		preprocessed = true;

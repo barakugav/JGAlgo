@@ -21,7 +21,7 @@ abstract class RMQLinearAbstract implements RMQ {
 	int n;
 	int blockSize;
 	int blockNum;
-	RMQ.Comparator c;
+	RMQComparator c;
 
 	private int[][] blocksRightMinimum;
 	private int[][] blocksLeftMinimum;
@@ -34,7 +34,7 @@ abstract class RMQLinearAbstract implements RMQ {
 		preprocessed = false;
 	}
 
-	void preprocessRMQOuterBlocks(RMQ.Comparator c, int n) {
+	void preprocessRMQOuterBlocks(RMQComparator c, int n) {
 		blockSize = getBlockSize(n);
 		blockNum = calcBlockNum(n, blockSize);
 
@@ -109,12 +109,12 @@ abstract class RMQLinearAbstract implements RMQ {
 
 	abstract int calcRMQInnerBlock(int block, int i, int j);
 
-	private static class PadderComparator implements RMQ.Comparator {
+	private static class PadderComparator implements RMQComparator {
 
 		final int n;
-		final RMQ.Comparator c;
+		final RMQComparator c;
 
-		PadderComparator(int n, RMQ.Comparator c) {
+		PadderComparator(int n, RMQComparator c) {
 			this.n = n;
 			this.c = c;
 		}

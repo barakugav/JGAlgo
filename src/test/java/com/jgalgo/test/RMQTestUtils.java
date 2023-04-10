@@ -6,7 +6,7 @@ import java.util.function.Supplier;
 import org.junit.jupiter.api.Assertions;
 
 import com.jgalgo.RMQ;
-import com.jgalgo.RMQ.ArrayIntComparator;
+import com.jgalgo.RMQComparator;
 
 class RMQTestUtils extends TestUtils {
 
@@ -27,7 +27,7 @@ class RMQTestUtils extends TestUtils {
 
 	static void testRMQ(Supplier<? extends RMQ> builder, int a[], int[][] queries) {
 		RMQ rmq = builder.get();
-		rmq.preprocessRMQ(new ArrayIntComparator(a), a.length);
+		rmq.preprocessRMQ(RMQComparator.ofIntArray(a), a.length);
 
 		for (int idx = 0; idx < queries.length; idx++) {
 			int i = queries[idx][0];

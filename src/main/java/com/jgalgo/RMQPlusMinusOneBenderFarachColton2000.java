@@ -24,7 +24,7 @@ public class RMQPlusMinusOneBenderFarachColton2000 extends RMQLinearAbstract {
 	}
 
 	@Override
-	public void preprocessRMQ(RMQ.Comparator c, int n) {
+	public void preprocessRMQ(RMQComparator c, int n) {
 		if (n <= 0)
 			throw new IllegalArgumentException();
 		Objects.requireNonNull(c);
@@ -43,7 +43,7 @@ public class RMQPlusMinusOneBenderFarachColton2000 extends RMQLinearAbstract {
 			interBlocksDs[b] = tables.computeIfAbsent(Integer.valueOf(key), k -> {
 				int[] demoBlock = calcDemoBlock(k.intValue(), blockSize);
 				RMQ innerRMQ = new RMQLookupTable();
-				innerRMQ.preprocessRMQ(new ArrayIntComparator(demoBlock), demoBlock.length);
+				innerRMQ.preprocessRMQ(RMQComparator.ofIntArray(demoBlock), demoBlock.length);
 				return innerRMQ;
 			});
 		}
