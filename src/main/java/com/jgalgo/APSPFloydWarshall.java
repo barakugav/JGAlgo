@@ -4,14 +4,19 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 
+/**
+ * The Floyd Warshall algorithm for all pairs shortest path.
+ * <p>
+ * Calculate the shortest path from each pair of vertices in a graph in
+ * {@code O(n}<sup>3</sup>{@code )} time and {@code O(n}<sup>2</sup>{@code )}
+ * space. Negative weights are supported.
+ *
+ * @author Barak Ugav
+ */
 public class APSPFloydWarshall implements APSP {
 
-	/**
-	 * Compute all pairs shortest paths in O(n^3)
-	 */
-
 	@Override
-	public APSP.Result calcDistances(Graph g, EdgeWeightFunc w) {
+	public APSP.Result calcAllShortestPaths(Graph g, EdgeWeightFunc w) {
 		return g instanceof DiGraph ? calcDistancesDirected((DiGraph) g, w) : calcDistancesUndirected((UGraph) g, w);
 	}
 

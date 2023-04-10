@@ -3,7 +3,7 @@ package com.jgalgo;
 /* Single Source Shortest Path */
 public interface SSSP {
 
-	public Result calcDistances(Graph g, EdgeWeightFunc w, int source);
+	public SSSP.Result calcDistances(Graph g, EdgeWeightFunc w, int source);
 
 	public static interface Result {
 

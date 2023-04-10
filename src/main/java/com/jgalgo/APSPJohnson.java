@@ -6,17 +6,33 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 
+/**
+ * Johnson's algorithm for all pairs shortest path.
+ * <p>
+ * Calculate the shortest path from each pair of vertices in a graph in
+ * {@code O(n m + n}<sup>2</sup>{@code log n)} time and
+ * {@code O(n}<sup>2</sup>{@code )} space. Negative weights are supported.
+ * <p>
+ * The algorithm is faster than using {@link SSSPBellmanFord} {@code n} times,
+ * as it uses {@link SSSPBellmanFord} once to compute a potential for each
+ * vertex, resulting in an equivalent positive weight function, allowing us to
+ * use {@link SSSPDijkstra} from each vertex as a source.
+ *
+ * @author Barak Ugav
+ */
 public class APSPJohnson implements APSP {
 
-	/**
-	 * O(nm + n^2 log n)
-	 */
+	private SSSP negativeSsssp = new SSSPBellmanFord();
+	private SSSP positiveSssp = new SSSPDijkstra();
 
 	@Override
-	public Result calcDistances(Graph g0, EdgeWeightFunc w) {
-		if (!(g0 instanceof DiGraph))
+	public APSP.Result calcAllShortestPaths(Graph g, EdgeWeightFunc w) {
+		if (!(g instanceof DiGraph))
 			throw new IllegalArgumentException("only directed graphs are supported");
-		DiGraph g = (DiGraph) g0;
+		return calcAllShortestPaths0((DiGraph) g, w);
+	}
+
+	private APSP.Result calcAllShortestPaths0(DiGraph g, EdgeWeightFunc w) {
 		int n = g.vertices().size();
 
 		boolean negWeight = false;
@@ -50,16 +66,15 @@ public class APSPJohnson implements APSP {
 		return res;
 	}
 
-	private static SuccessRes calcDistancesPositive(DiGraph g, EdgeWeightFunc w) {
+	private SuccessRes calcDistancesPositive(DiGraph g, EdgeWeightFunc w) {
 		int n = g.vertices().size();
-		SSSP ssspAlgo = new SSSPDijkstra();
 		SuccessRes res = new SuccessRes(n);
 		for (int source = 0; source < n; source++)
-			res.ssspResults[source] = ssspAlgo.calcDistances(g, w, source);
+			res.ssspResults[source] = positiveSssp.calcDistances(g, w, source);
 		return res;
 	}
 
-	private static Pair<double[], Path> calcPotential(DiGraph g, EdgeWeightFunc w) {
+	private Pair<double[], Path> calcPotential(DiGraph g, EdgeWeightFunc w) {
 		int n = g.vertices().size();
 		DiGraph refG = new GraphArrayDirected(n + 1);
 		Weights.Int edgeEef = refG.addEdgesWeight("edgeEef").ofInts();
@@ -82,7 +97,7 @@ public class APSPJohnson implements APSP {
 			int ref = edgeEef.getInt(e);
 			return ref != fakeEdge ? w.weight(ref) : 0;
 		};
-		SSSP.Result res = new SSSPBellmanFord().calcDistances(refG, refW, fakeV);
+		SSSP.Result res = negativeSsssp.calcDistances(refG, refW, fakeV);
 		if (!res.foundNegativeCycle()) {
 			double[] potential = new double[n];
 			for (int v = 0; v < n; v++)
@@ -95,6 +110,34 @@ public class APSPJohnson implements APSP {
 				negCycle.add(edgeEef.getInt(it.nextInt()));
 			return Pair.of(null, new Path(g, negCycleRef.source(), negCycleRef.target(), negCycle));
 		}
+	}
+
+	/**
+	 * Set the algorithm used for positive weights graphs.
+	 * <p>
+	 * The algorithm first calculate a potential for each vertex using an SSSP
+	 * algorithm for negative weights, than construct an equivalent positive weight
+	 * function which is used by an SSSP algorithm for positive weights to compute
+	 * all shortest paths.
+	 *
+	 * @param algo a SSSP implementation for graphs with positive weight function
+	 */
+	public void setPositiveSsspAlgo(SSSP algo) {
+		positiveSssp = Objects.requireNonNull(algo);
+	}
+
+	/**
+	 * Set the algorithm used for negative weights graphs.
+	 * <p>
+	 * The algorithm first calculate a potential for each vertex using an SSSP
+	 * algorithm for negative weights, than construct an equivalent positive weight
+	 * function which is used by an SSSP algorithm for positive weights to compute
+	 * all shortest paths.
+	 *
+	 * @param algo a SSSP implementation for graphs with negative weight function
+	 */
+	public void setNegativeSsspAlgo(SSSP algo) {
+		negativeSsssp = Objects.requireNonNull(algo);
 	}
 
 	private static class NegCycleRes implements APSP.Result {

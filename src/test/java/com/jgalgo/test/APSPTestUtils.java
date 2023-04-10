@@ -53,7 +53,7 @@ class APSPTestUtils extends TestUtils {
 
 	static void testAPSP(Graph g, EdgeWeightFunc w, Supplier<? extends APSP> builder, SSSP validationAlgo) {
 		APSP algo = builder.get();
-		APSP.Result result = algo.calcDistances(g, w);
+		APSP.Result result = algo.calcAllShortestPaths(g, w);
 
 		int n = g.vertices().size();
 		for (int source = 0; source < n; source++) {
