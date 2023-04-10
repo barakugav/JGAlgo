@@ -2,6 +2,7 @@ package com.jgalgo.bench;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -39,21 +40,9 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 @State(Scope.Benchmark)
 public class HeapReferenceableBench {
 
-	@Param
-	public GraphSize graphSize;
-
-	public static enum GraphSize {
-		v64_e256, v512_e4096, v4096_e16384;
-
-		final int n, m;
-
-		GraphSize() {
-			String[] strs = toString().split("_");
-			assert strs.length == 2;
-			this.n = Integer.parseInt(strs[0].substring(1));
-			this.m = Integer.parseInt(strs[1].substring(1));
-		}
-	}
+	@Param({ "|V|=64 |E|=256", "|V|=512 |E|=4096", "|V|=4096 |E|=16384" })
+	public String graphSize;
+	private int n, m;
 
 	private List<GraphArgs> graphs;
 
@@ -71,12 +60,16 @@ public class HeapReferenceableBench {
 
 	@Setup(Level.Iteration)
 	public void setup() {
+		Map<String, String> graphSizeValues = BenchUtils.parseArgsStr(graphSize);
+		n = Integer.parseInt(graphSizeValues.get("|V|"));
+		m = Integer.parseInt(graphSizeValues.get("|E|"));
+
 		final SeedGenerator seedGen = new SeedGenerator(0x88da246e71ef3dacL);
 		Random rand = new Random(seedGen.nextSeed());
 		final int graphsNum = 20;
 		graphs = new ArrayList<>(graphsNum);
 		for (int graphIdx = 0; graphIdx < graphsNum; graphIdx++) {
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(graphSize.n).m(graphSize.m).directed(false)
+			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false)
 					.parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
 			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());

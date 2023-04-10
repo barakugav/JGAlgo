@@ -3,6 +3,7 @@ package com.jgalgo.bench;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
@@ -36,31 +37,23 @@ import com.jgalgo.test.TestUtils.SeedGenerator;
 @State(Scope.Benchmark)
 public class LCADynamicBench {
 
-	@Param
-	public GraphSize graphSize;
-
-	public static enum GraphSize {
-		v64_e256, v512_e4096, v4096_e16384;
-
-		final int n, m;
-
-		GraphSize() {
-			String[] strs = toString().split("_");
-			assert strs.length == 2;
-			this.n = Integer.parseInt(strs[0].substring(1));
-			this.m = Integer.parseInt(strs[1].substring(1));
-		}
-	}
+	@Param({ "|V|=64 |E|=256", "|V|=512 |E|=4096", "|V|=4096 |E|=16384" })
+	public String graphSize;
+	private int n, m;
 
 	private List<Collection<Op>> lcaOps;
 
 	@Setup(Level.Iteration)
 	public void setup() {
+		Map<String, String> graphSizeValues = BenchUtils.parseArgsStr(graphSize);
+		n = Integer.parseInt(graphSizeValues.get("|V|"));
+		m = Integer.parseInt(graphSizeValues.get("|E|"));
+
 		final SeedGenerator seedGen = new SeedGenerator(0x66fed18e0b594b55L);
 		final int graphsNum = 20;
 		lcaOps = new ArrayList<>(graphsNum);
 		for (int graphIdx = 0; graphIdx < graphsNum; graphIdx++) {
-			Collection<Op> ops = LCADynamicTestUtils.generateRandOps(graphSize.n, graphSize.m, seedGen.nextSeed());
+			Collection<Op> ops = LCADynamicTestUtils.generateRandOps(n, m, seedGen.nextSeed());
 			lcaOps.add(ops);
 		}
 	}
