@@ -171,7 +171,7 @@ public class RMQBench {
 	@State(Scope.Benchmark)
 	public static class QueryRMQLookupTable extends QueryAbstract {
 
-		@Param({ "128", "2500", "6000" })
+		@Param({ "128", "2500" })
 		public int arrSize;
 		private List<Pair<RMQ, int[]>> arrays;
 
