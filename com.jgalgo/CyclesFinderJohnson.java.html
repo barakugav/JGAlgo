@@ -34,7 +34,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L34">			var p = chooseSCCInSubGraph(g, startIdx);</span>
 <span class="fc bfc" id="L35" title="All 2 branches covered.">			if (p == null)</span>
 <span class="fc" id="L36">				break;</span>
-<span class="fc" id="L37">			StronglyConectedComponent scc = p.e1;</span>
+<span class="fc" id="L37">			StronglyConnectedComponent scc = p.e1;</span>
 <span class="fc" id="L38">			startIdx = p.e2.intValue();</span>
 <span class="fc" id="L39">			worker.findAllCycles(startIdx, scc);</span>
 <span class="fc" id="L40">			worker.reset();</span>
@@ -69,7 +69,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="pc bpc" id="L69" title="1 of 2 branches missed.">			assert path.isEmpty();</span>
 <span class="fc" id="L70">		}</span>
 
-		private boolean findAllCycles(int startV, StronglyConectedComponent scc) {
+		private boolean findAllCycles(int startV, StronglyConnectedComponent scc) {
 <span class="fc" id="L73">			boolean cycleFound = false;</span>
 
 <span class="fc bfc" id="L75" title="All 2 branches covered.">			int u = path.isEmpty() ? startV : g.edgeTarget(path.topInt());</span>
@@ -126,7 +126,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L126">		}</span>
 	}
 
-	private static Pair&lt;StronglyConectedComponent, Integer&gt; chooseSCCInSubGraph(DiGraph g, int startIdx) {
+	private static Pair&lt;StronglyConnectedComponent, Integer&gt; chooseSCCInSubGraph(DiGraph g, int startIdx) {
 <span class="fc" id="L130">		int nFull = g.vertices().size();</span>
 <span class="fc" id="L131">		int subToFull = startIdx;</span>
 <span class="fc" id="L132">		int nSub = nFull - subToFull;</span>
@@ -142,19 +142,19 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 		}
 
 <span class="fc" id="L144">		Connectivity.Result connectivityResult = Connectivity.findStrongConnectivityComponents(gSub);</span>
-<span class="fc" id="L145">		int[] ccSize = new int[connectivityResult.ccNum];</span>
+<span class="fc" id="L145">		int[] ccSize = new int[connectivityResult.getNumberOfCC()];</span>
 <span class="fc bfc" id="L146" title="All 2 branches covered.">		for (int uSub = 0; uSub &lt; nSub; uSub++)</span>
-<span class="fc" id="L147">			ccSize[connectivityResult.getVertexCcIndex(uSub)]++;</span>
+<span class="fc" id="L147">			ccSize[connectivityResult.getVertexCc(uSub)]++;</span>
 
 <span class="fc bfc" id="L149" title="All 2 branches covered.">		for (; startIdx &lt; nFull; startIdx++) {</span>
 <span class="fc" id="L150">			int uSub = startIdx - subToFull;</span>
-<span class="fc bfc" id="L151" title="All 4 branches covered.">			if (ccSize[connectivityResult.getVertexCcIndex(uSub)] &gt; 1 || hasSelfEdge(gSub, uSub))</span>
+<span class="fc bfc" id="L151" title="All 4 branches covered.">			if (ccSize[connectivityResult.getVertexCc(uSub)] &gt; 1 || hasSelfEdge(gSub, uSub))</span>
 <span class="fc" id="L152">				break;</span>
 		}
 <span class="fc bfc" id="L154" title="All 2 branches covered.">		if (startIdx &gt;= nFull)</span>
 <span class="fc" id="L155">			return null;</span>
-<span class="fc" id="L156">		int ccIdx = connectivityResult.getVertexCcIndex(startIdx - subToFull);</span>
-<span class="fc" id="L157">		return Pair.of(new StronglyConectedComponent(subToFull, connectivityResult, ccIdx), Integer.valueOf(startIdx));</span>
+<span class="fc" id="L156">		int ccIdx = connectivityResult.getVertexCc(startIdx - subToFull);</span>
+<span class="fc" id="L157">		return Pair.of(new StronglyConnectedComponent(subToFull, connectivityResult, ccIdx), Integer.valueOf(startIdx));</span>
 	}
 
 	private static boolean hasSelfEdge(DiGraph g, int u) {
@@ -166,13 +166,13 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L166">		return false;</span>
 	}
 
-	private static class StronglyConectedComponent {
+	private static class StronglyConnectedComponent {
 
 		private final int subToFull;
 		private final Connectivity.Result connectivityResult;
 		private final int ccIdx;
 
-<span class="fc" id="L175">		StronglyConectedComponent(int subToFull, Connectivity.Result connectivityResult, int ccIdx) {</span>
+<span class="fc" id="L175">		StronglyConnectedComponent(int subToFull, Connectivity.Result connectivityResult, int ccIdx) {</span>
 <span class="fc" id="L176">			this.subToFull = subToFull;</span>
 <span class="fc" id="L177">			this.connectivityResult = connectivityResult;</span>
 <span class="fc" id="L178">			this.ccIdx = ccIdx;</span>
@@ -182,7 +182,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L182">			int vSub = v - subToFull;</span>
 <span class="fc bfc" id="L183" title="All 2 branches covered.">			if (vSub &lt; 0)</span>
 <span class="fc" id="L184">				return false;</span>
-<span class="fc bfc" id="L185" title="All 2 branches covered.">			return ccIdx == connectivityResult.getVertexCcIndex(vSub);</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">			return ccIdx == connectivityResult.getVertexCc(vSub);</span>
 		}
 
 	}
