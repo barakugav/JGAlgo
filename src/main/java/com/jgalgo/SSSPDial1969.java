@@ -61,7 +61,7 @@ public class SSSPDial1969 implements SSSP {
 
 		} else {
 			int[] edges = g.edges().toArray(this.edges);
-			Array.getKthElement(edges, 0, g.edges().size(), n - 1,
+			ArraysUtils.getKthElement(edges, 0, g.edges().size(), n - 1,
 					(e1, e2) -> -Integer.compare(w.weightInt(e1), w.weightInt(e2)), true);
 
 			for (int i = 0; i <= n - 1; i++)

@@ -5,9 +5,9 @@ import java.util.Comparator;
 
 import it.unimi.dsi.fastutil.ints.IntComparator;
 
-public class Array {
+public class ArraysUtils {
 
-	private Array() {
+	private ArraysUtils() {
 	}
 
 	public static <E> E getKthElement(E[] a, int k, Comparator<? super E> c) {
