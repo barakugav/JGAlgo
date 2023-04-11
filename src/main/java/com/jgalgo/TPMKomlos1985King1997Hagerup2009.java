@@ -61,8 +61,6 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 				int wordsize = n > 1 ? Utils.log2ceil(n) : 1;
 				BitsLookupTable.Count count = new BitsLookupTable.Count(wordsize);
 				BitsLookupTable.Ith ith = new BitsLookupTable.Ith(wordsize, count);
-				count.init();
-				ith.init();
 
 				getBitCount = count::bitCount;
 				getIthbit = ith::ithBit;
