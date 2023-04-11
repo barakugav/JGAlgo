@@ -15,7 +15,7 @@ abstract class RMQLinearAbstract implements RMQ {
 	 * the same block we have no implementation, and the implementations that
 	 * extends this class will implement it in different methods.
 	 *
-	 * O(n) preprocessing time, O(n) space, O(1) query.
+	 * O(n) pre processing time, O(n) space, O(1) query.
 	 */
 
 	int n;
@@ -27,14 +27,14 @@ abstract class RMQLinearAbstract implements RMQ {
 	private int[][] blocksLeftMinimum;
 	private final RMQPowerOf2Table xlogxTable;
 
-	boolean preprocessed;
+	boolean preProcessed;
 
 <span class="fc" id="L32">	RMQLinearAbstract() {</span>
 <span class="fc" id="L33">		xlogxTable = new RMQPowerOf2Table();</span>
-<span class="fc" id="L34">		preprocessed = false;</span>
+<span class="fc" id="L34">		preProcessed = false;</span>
 <span class="fc" id="L35">	}</span>
 
-	void preprocessRMQOuterBlocks(RMQComparator c, int n) {
+	void preProcessRMQOuterBlocks(RMQComparator c, int n) {
 <span class="fc" id="L38">		blockSize = getBlockSize(n);</span>
 <span class="fc" id="L39">		blockNum = calcBlockNum(n, blockSize);</span>
 
@@ -62,10 +62,10 @@ abstract class RMQLinearAbstract implements RMQ {
 			}
 		}
 
-<span class="fc" id="L65">		xlogxTable.preprocessRMQ((i, j) -&gt; this.c.compare(blocksRightMinimum[i][0], blocksRightMinimum[j][0]),</span>
+<span class="fc" id="L65">		xlogxTable.preProcessRMQ((i, j) -&gt; this.c.compare(blocksRightMinimum[i][0], blocksRightMinimum[j][0]),</span>
 				blockNum);
 
-<span class="fc" id="L68">		preprocessed = true;</span>
+<span class="fc" id="L68">		preProcessed = true;</span>
 <span class="fc" id="L69">	}</span>
 
 	abstract int getBlockSize(int n);
@@ -76,8 +76,8 @@ abstract class RMQLinearAbstract implements RMQ {
 
 	@Override
 	public int calcRMQ(int i, int j) {
-<span class="pc bpc" id="L79" title="1 of 2 branches missed.">		if (!preprocessed)</span>
-<span class="nc" id="L80">			throw new IllegalStateException(&quot;Preprocessing is required before query&quot;);</span>
+<span class="pc bpc" id="L79" title="1 of 2 branches missed.">		if (!preProcessed)</span>
+<span class="nc" id="L80">			throw new IllegalStateException(&quot;PreProcessing is required before query&quot;);</span>
 <span class="pc bpc" id="L81" title="3 of 6 branches missed.">		if (i &lt; 0 || j &lt;= i || j &gt; n)</span>
 <span class="nc" id="L82">			throw new IllegalArgumentException(&quot;Illegal indices [&quot; + i + &quot;,&quot; + j + &quot;]&quot;);</span>
 <span class="fc bfc" id="L83" title="All 2 branches covered.">		if (i + 1 == j)</span>

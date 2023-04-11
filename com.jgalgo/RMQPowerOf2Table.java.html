@@ -5,11 +5,11 @@ import java.util.Objects;
 public class RMQPowerOf2Table implements RMQ {
 
 	/*
-	 * During preprocessing create a table with log(n) rows and n columns, in each
+	 * During pre processing create a table with log(n) rows and n columns, in each
 	 * cell [i][j] store the value min_in_range[j, j + 2^i]. This allows a query in
 	 * O(1) by looking at the correct indices.
 	 *
-	 * O(n log n) preprocessing time, O(n log n) space, O(1) query.
+	 * O(n log n) pre processing time, O(n log n) space, O(1) query.
 	 */
 
 	private int n;
@@ -20,7 +20,7 @@ public class RMQPowerOf2Table implements RMQ {
 <span class="fc" id="L20">	}</span>
 
 	@Override
-	public void preprocessRMQ(RMQComparator c, int n) {
+	public void preProcessRMQ(RMQComparator c, int n) {
 <span class="pc bpc" id="L24" title="1 of 2 branches missed.">		if (n &lt;= 0)</span>
 <span class="nc" id="L25">			throw new IllegalArgumentException(&quot;Invalid legnth: &quot; + n);</span>
 <span class="fc" id="L26">		Objects.requireNonNull(c);</span>
@@ -46,7 +46,7 @@ public class RMQPowerOf2Table implements RMQ {
 	@Override
 	public int calcRMQ(int i, int j) {
 <span class="pc bpc" id="L48" title="1 of 2 branches missed.">		if (arr == null)</span>
-<span class="nc" id="L49">			throw new IllegalStateException(&quot;Preprocessing is required before query&quot;);</span>
+<span class="nc" id="L49">			throw new IllegalStateException(&quot;PreProcessing is required before query&quot;);</span>
 <span class="pc bpc" id="L50" title="3 of 6 branches missed.">		if (i &lt; 0 || j &lt;= i || j &gt; n)</span>
 <span class="nc" id="L51">			throw new IllegalArgumentException(&quot;Illegal indices [&quot; + i + &quot;,&quot; + j + &quot;]&quot;);</span>
 <span class="fc bfc" id="L52" title="All 2 branches covered.">		if (i + 1 == j)</span>

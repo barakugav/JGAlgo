@@ -6,7 +6,7 @@ public class LCARMQBenderFarachColton2000 implements LCAStatic {
 
 	/*
 	 * This implementation of static LCA (Lowest common ancestor) perform a
-	 * preprocessing of O(n + m) and later answer queries of LCA queries in O(1).
+	 * pre processing of O(n + m) and later answer queries of LCA queries in O(1).
 	 *
 	 * This is done by traversing the tree with the Eulerian tour, and using RMQ on
 	 * the depths of the tour. This RMQ is a special case of the general RMQ, as the
@@ -18,15 +18,15 @@ public class LCARMQBenderFarachColton2000 implements LCAStatic {
 	private int[] vs;
 	private int[] vToDepthsIdx;
 	private final RMQ rmq;
-	private boolean preprocessed;
+	private boolean preProcessed;
 
 <span class="fc" id="L23">	public LCARMQBenderFarachColton2000() {</span>
 <span class="fc" id="L24">		rmq = new RMQPlusMinusOneBenderFarachColton2000();</span>
-<span class="fc" id="L25">		preprocessed = false;</span>
+<span class="fc" id="L25">		preProcessed = false;</span>
 <span class="fc" id="L26">	}</span>
 
 	@Override
-	public void preprocessLCA(Graph t, int r) {
+	public void preProcessLCA(Graph t, int r) {
 <span class="pc bpc" id="L30" title="1 of 2 branches missed.">		if (!Graphs.isTree(t, r))</span>
 <span class="nc" id="L31">			throw new IllegalArgumentException();</span>
 
@@ -73,16 +73,16 @@ public class LCARMQBenderFarachColton2000 implements LCAStatic {
 <span class="fc" id="L73">				vToDepthsIdx[v] = i;</span>
 		}
 
-<span class="fc" id="L76">		rmq.preprocessRMQ(RMQComparator.ofIntArray(depths), depths.length);</span>
+<span class="fc" id="L76">		rmq.preProcessRMQ(RMQComparator.ofIntArray(depths), depths.length);</span>
 <span class="fc" id="L77">		this.vs = vs;</span>
 <span class="fc" id="L78">		this.vToDepthsIdx = vToDepthsIdx;</span>
-<span class="fc" id="L79">		preprocessed = true;</span>
+<span class="fc" id="L79">		preProcessed = true;</span>
 <span class="fc" id="L80">	}</span>
 
 	@Override
 	public int calcLCA(int u, int v) {
-<span class="pc bpc" id="L84" title="1 of 2 branches missed.">		if (!preprocessed)</span>
-<span class="nc" id="L85">			throw new IllegalStateException(&quot;Preprocessing is required before query&quot;);</span>
+<span class="pc bpc" id="L84" title="1 of 2 branches missed.">		if (!preProcessed)</span>
+<span class="nc" id="L85">			throw new IllegalStateException(&quot;PreProcessing is required before query&quot;);</span>
 <span class="fc" id="L86">		int uIdx = vToDepthsIdx[u];</span>
 <span class="fc" id="L87">		int vIdx = vToDepthsIdx[v];</span>
 <span class="fc bfc" id="L88" title="All 2 branches covered.">		if (uIdx &gt; vIdx) {</span>

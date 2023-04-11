@@ -13,9 +13,9 @@ public class RMQPlusMinusOneBenderFarachColton2000 extends RMQLinearAbstract {
 	 * difference between each consecutive elements is +1/-1.
 	 *
 	 * We define the block size to be logn/2 and therefore there are 2^blockSize
-	 * possible different blocks, and the preprocessing time is still O(n).
+	 * possible different blocks, and the pre processing time is still O(n).
 	 *
-	 * O(n) preprocessing time, O(n) space, O(1) query.
+	 * O(n) pre processing time, O(n) space, O(1) query.
 	 */
 
 	private RMQ[] interBlocksDs;
@@ -24,17 +24,17 @@ public class RMQPlusMinusOneBenderFarachColton2000 extends RMQLinearAbstract {
 <span class="fc" id="L24">	}</span>
 
 	@Override
-	public void preprocessRMQ(RMQComparator c, int n) {
+	public void preProcessRMQ(RMQComparator c, int n) {
 <span class="pc bpc" id="L28" title="1 of 2 branches missed.">		if (n &lt;= 0)</span>
 <span class="nc" id="L29">			throw new IllegalArgumentException();</span>
 <span class="fc" id="L30">		Objects.requireNonNull(c);</span>
 
 <span class="fc" id="L32">		interBlocksDs = new RMQ[calcBlockNum(n, getBlockSize(n))];</span>
-<span class="fc" id="L33">		preprocessRMQOuterBlocks(c, n);</span>
-<span class="fc" id="L34">		preprocessRMQInnerBlocks();</span>
+<span class="fc" id="L33">		preProcessRMQOuterBlocks(c, n);</span>
+<span class="fc" id="L34">		preProcessRMQInnerBlocks();</span>
 <span class="fc" id="L35">	}</span>
 
-	private void preprocessRMQInnerBlocks() {
+	private void preProcessRMQInnerBlocks() {
 <span class="fc" id="L38">		Map&lt;Integer, RMQ&gt; tables = new HashMap&lt;&gt;();</span>
 
 <span class="fc bfc" id="L40" title="All 2 branches covered.">		for (int b = 0; b &lt; blockNum; b++) {</span>
@@ -43,7 +43,7 @@ public class RMQPlusMinusOneBenderFarachColton2000 extends RMQLinearAbstract {
 <span class="fc" id="L43">			interBlocksDs[b] = tables.computeIfAbsent(Integer.valueOf(key), k -&gt; {</span>
 <span class="fc" id="L44">				int[] demoBlock = calcDemoBlock(k.intValue(), blockSize);</span>
 <span class="fc" id="L45">				RMQ innerRMQ = new RMQLookupTable();</span>
-<span class="fc" id="L46">				innerRMQ.preprocessRMQ(RMQComparator.ofIntArray(demoBlock), demoBlock.length);</span>
+<span class="fc" id="L46">				innerRMQ.preProcessRMQ(RMQComparator.ofIntArray(demoBlock), demoBlock.length);</span>
 <span class="fc" id="L47">				return innerRMQ;</span>
 			});
 		}

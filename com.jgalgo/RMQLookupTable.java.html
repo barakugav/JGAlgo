@@ -7,7 +7,7 @@ public class RMQLookupTable implements RMQ {
 	/*
 	 * Naive implementation of RMQ, lookup table for each two indices.
 	 *
-	 * O(n^2) preprocessing time, O(n^2) space, O(1) query.
+	 * O(n^2) pre processing time, O(n^2) space, O(1) query.
 	 */
 
 	private LookupTable table;
@@ -17,7 +17,7 @@ public class RMQLookupTable implements RMQ {
 <span class="fc" id="L17">	}</span>
 
 	@Override
-	public void preprocessRMQ(RMQComparator c, int n) {
+	public void preProcessRMQ(RMQComparator c, int n) {
 <span class="pc bpc" id="L21" title="1 of 2 branches missed.">		if (n &lt;= 0)</span>
 <span class="nc" id="L22">			throw new IllegalArgumentException(&quot;Invalid legnth: &quot; + n);</span>
 <span class="fc" id="L23">		Objects.requireNonNull(c);</span>
@@ -50,7 +50,7 @@ public class RMQLookupTable implements RMQ {
 	@Override
 	public int calcRMQ(int i, int j) {
 <span class="pc bpc" id="L52" title="1 of 2 branches missed.">		if (table == null)</span>
-<span class="nc" id="L53">			throw new IllegalStateException(&quot;Preprocessing is required before query&quot;);</span>
+<span class="nc" id="L53">			throw new IllegalStateException(&quot;PreProcessing is required before query&quot;);</span>
 <span class="pc bpc" id="L54" title="3 of 6 branches missed.">		if (i &lt; 0 || j &lt;= i || j &gt; table.n)</span>
 <span class="nc" id="L55">			throw new IllegalArgumentException(&quot;Illegal indices [&quot; + i + &quot;,&quot; + j + &quot;]&quot;);</span>
 <span class="fc bfc" id="L56" title="All 2 branches covered.">		if (i + 1 == j)</span>
