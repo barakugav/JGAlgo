@@ -3,11 +3,21 @@ package com.jgalgo;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
+/**
+ * A greedy coloring algorithm.
+ * <p>
+ * The algorithm examine the vertices in an arbitrary order and assign for each
+ * vertex the minimum (integer) color which is not used by its neighbors.
+ * <p>
+ * The algorithm runs in linear time, assuming the number of colors is constant.
+ * <p>
+ * Note that the result is an approximate for the minimum number of colors, as
+ * coloring is an NP-hard problem.
+ *
+ * @see <a href="https://en.wikipedia.org/wiki/Greedy_coloring">Wikipedia</a>
+ * @author Barak Ugav
+ */
 public class ColoringGreedy implements Coloring {
-
-	/**
-	 * Compute a coloring approximation in O(m n)
-	 */
 
 	@Override
 	public Coloring.Result calcColoring(UGraph g) {
@@ -16,8 +26,9 @@ public class ColoringGreedy implements Coloring {
 
 		ColoringResultImpl res = new ColoringResultImpl(g);
 		int n = g.vertices().size();
+		IntSet usedColors = new IntOpenHashSet();
 		for (int u = 0; u < n; u++) {
-			IntSet usedColors = new IntOpenHashSet();
+			usedColors.clear();
 			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 				eit.nextInt();
 				int v = eit.v();

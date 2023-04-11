@@ -6,11 +6,21 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
+/**
+ * A greedy coloring algorithm with random vertices order.
+ * <p>
+ * The algorithm examine the vertices in random order and assign for each
+ * vertex the minimum (integer) color which is not used by its neighbors.
+ * <p>
+ * The algorithm runs in linear time, assuming the number of colors is constant.
+ * <p>
+ * Note that the result is an approximate for the minimum number of colors, as
+ * coloring is an NP-hard problem.
+ *
+ * @see <a href="https://en.wikipedia.org/wiki/Greedy_coloring">Wikipedia</a>
+ * @author Barak Ugav
+ */
 public class ColoringGreedyRandom implements Coloring {
-
-	/**
-	 * Compute a coloring approximation in O(m n)
-	 */
 
 	private final Random rand;
 
@@ -34,8 +44,9 @@ public class ColoringGreedyRandom implements Coloring {
 			order[u] = u;
 		IntArrays.shuffle(order, rand);
 
+		IntSet usedColors = new IntOpenHashSet();
 		for (int u : order) {
-			IntSet usedColors = new IntOpenHashSet();
+			usedColors.clear();
 			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 				eit.nextInt();
 				int v = eit.v();

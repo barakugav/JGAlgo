@@ -33,9 +33,9 @@ JGAlgo is a collection of algorithms implemented in Java. It contains mostly alg
 | A* | $O(b^d)$ where $b$ is the branching factor and $d$ is the depth, $O(m \log n)$ worst case |
 | RMQ $\pm 1$ BenderFarachColton2000 | $O(n)$ preprocessing, $O(1)$ query |
 | RMQ GabowBentleyTarjan1984 | $O(n)$ preprocessing, $O(1)$ query |
-| LCA static BenderFarachColton2000, using RMQ | $O(n+m)$ |
+| LCA static BenderFarachColton2000, using RMQ | $O(n + m)$ |
 | LCA dynamic Gabow simple | $O(n \log^2 n + m)$ |
-| LCA dynamic Gabow2017 | $O(n+m)$ |
+| LCA dynamic Gabow2017 | $O(n + m)$ |
 | Max flow EdmondsKarp | $O(m n^2)$ |
 | Max flow Push/Relabel | $O(n^3)$ |
 | Max flow Push/Relabel using Dynamic Trees | $O\left(m n \log \left(\frac{n^2}{m}\right)\right)$ |
@@ -45,9 +45,9 @@ JGAlgo is a collection of algorithms implemented in Java. It contains mostly alg
 | MST Prim1957 | $O(m + n \log n)$ |
 | MST Yao1976 | $O(m \log \log n + n \log n)$ |
 | MST FredmanTarjan1987 | $O(m \log^* n)$ |
-| MST KargerKleinTarjan1995 randomized | $O(n+m)$ expected |
+| MST KargerKleinTarjan1995 randomized | $O(n + m)$ expected |
 | MDST Tarjan1977 directed graphs | $O(m \log n)$ |
-| Tree path maxima (TMP) Komlos1985King1997Hagerup2009 | $O(n+m)$ where $m$ is the number of queries |
+| Tree path maxima (TMP) Komlos1985King1997Hagerup2009 | $O(n + m)$ where $m$ is the number of queries |
 | Subtree Merge Findmin (used in general weighted matching) | $O(m + n \log n)$ |
 | Maximum matching bipartite unweighted HopcroftKarp1973 | $O(m \sqrt{n})$ |
 | Maximum matching general unweighted Gabow1976 | $O(m n \cdot \alpha (m,n))$ |
@@ -56,10 +56,10 @@ JGAlgo is a collection of algorithms implemented in Java. It contains mostly alg
 | Maximum matching general weighted Gabow2017 | $O(m n + n^2 \log n)$ |
 | Travelling Salesman Problem (TSP) $2$-appx using MST | $O(n^2)$ |
 | Travelling Salesman Problem (TSP) $3/2$-appx using maximum matching | $O(n^3)$ |
-| Vertex Coloring Greedy arbitrary vertices order | $O(m n)$ |
-| Vertex Coloring Greedy random vertices order | $O(m n)$ |
+| Vertex Coloring Greedy arbitrary vertices order | $O(n + m)$ assuming the number of colors is constant |
+| Vertex Coloring Greedy random vertices order | $O(n + m)$ assuming the number of colors is constant |
 | Vertex Coloring DSatur | $O(m n)$ |
-| Vertex Coloring DSatur with Heap | $O(m + n \log n)$ |
+| Vertex Coloring DSatur with Heap | $O(m + n \log n)$ assuming the number of colors is constant |
 | Vertex Coloring Recursive Largest First | $O(m n)$ |
 | Tarjan Cycles Finder | $O((m + n) (c + 1))$ where $c$ is the number of simple cycles |
 | Johnson Cycles Finder | $O((m + n) (c + 1))$ where $c$ is the number of simple cycles |
@@ -68,10 +68,10 @@ JGAlgo is a collection of algorithms implemented in Java. It contains mostly alg
 
 | Utility | Running time |
 | - | - |
-| Connectivity components calculation (undirected), strongly connected (directed) | $O(n+m)$ |
-| Topological sort calculation (DAG) | $O(n+m)$ |
-| SSSP DAG | $O(n+m)$ |
-| Euler Tour calculation | $O(n+m)$ |
+| Connectivity components calculation (undirected), strongly connected (directed) | $O(n + m)$ |
+| Topological sort calculation (DAG) | $O(n + m)$ |
+| SSSP DAG | $O(n + m)$ |
+| Euler Tour calculation | $O(n + m)$ |
 | Array k'th element | $O(n)$ |
 | Array bucket partition | $O(n \log k)$ where $k$ is the bucket size |
 | Bits Lookup tables (bit count, ith bit, ctz) | $O(n)$ preprocessing, $O(1)$ query |

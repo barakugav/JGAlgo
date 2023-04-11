@@ -6,11 +6,28 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
+/**
+ * The DSatur coloring algorithm.
+ * <p>
+ * The Saturation Degree (DSatur) coloring algorithm is a greedy algorithm,
+ * namely it examine the vertices in some order and assign for each vertex the
+ * minimum (integer) color which is not used by its neighbors. It differ from
+ * other greedy coloring algorithm by the order of the vertices: the next vertex
+ * to be colored is the vertex with the highest number of colors in its
+ * neighborhood (called saturation degree).
+ * <p>
+ * The algorithm runs in time {@code O(m n)}, and it could be implemented faster
+ * using a heap with {@code decreaseKey} operation, see
+ * {@link ColoringDSaturHeap}.
+ * <p>
+ * Note that the result is an approximate for the minimum number of colors, as
+ * coloring is an NP-hard problem.
+ *
+ * @see <a href="https://en.wikipedia.org/wiki/DSatur">Wikipedia</a>
+ * @see ColoringDSaturHeap
+ * @author Barak Ugav
+ */
 public class ColoringDSatur implements Coloring {
-
-	/**
-	 * Compute a coloring approximation in O(m n)
-	 */
 
 	@Override
 	public Coloring.Result calcColoring(UGraph g) {
