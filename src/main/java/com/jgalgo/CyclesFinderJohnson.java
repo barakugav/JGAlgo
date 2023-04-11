@@ -34,7 +34,7 @@ public class CyclesFinderJohnson implements CyclesFinder {
 			var p = chooseSCCInSubGraph(g, startIdx);
 			if (p == null)
 				break;
-			StronglyConectedComponent scc = p.e1;
+			StronglyConnectedComponent scc = p.e1;
 			startIdx = p.e2.intValue();
 			worker.findAllCycles(startIdx, scc);
 			worker.reset();
@@ -69,7 +69,7 @@ public class CyclesFinderJohnson implements CyclesFinder {
 			assert path.isEmpty();
 		}
 
-		private boolean findAllCycles(int startV, StronglyConectedComponent scc) {
+		private boolean findAllCycles(int startV, StronglyConnectedComponent scc) {
 			boolean cycleFound = false;
 
 			int u = path.isEmpty() ? startV : g.edgeTarget(path.topInt());
@@ -126,7 +126,7 @@ public class CyclesFinderJohnson implements CyclesFinder {
 		}
 	}
 
-	private static Pair<StronglyConectedComponent, Integer> chooseSCCInSubGraph(DiGraph g, int startIdx) {
+	private static Pair<StronglyConnectedComponent, Integer> chooseSCCInSubGraph(DiGraph g, int startIdx) {
 		int nFull = g.vertices().size();
 		int subToFull = startIdx;
 		int nSub = nFull - subToFull;
@@ -142,19 +142,19 @@ public class CyclesFinderJohnson implements CyclesFinder {
 		}
 
 		Connectivity.Result connectivityResult = Connectivity.findStrongConnectivityComponents(gSub);
-		int[] ccSize = new int[connectivityResult.ccNum];
+		int[] ccSize = new int[connectivityResult.getNumberOfCC()];
 		for (int uSub = 0; uSub < nSub; uSub++)
-			ccSize[connectivityResult.getVertexCcIndex(uSub)]++;
+			ccSize[connectivityResult.getVertexCc(uSub)]++;
 
 		for (; startIdx < nFull; startIdx++) {
 			int uSub = startIdx - subToFull;
-			if (ccSize[connectivityResult.getVertexCcIndex(uSub)] > 1 || hasSelfEdge(gSub, uSub))
+			if (ccSize[connectivityResult.getVertexCc(uSub)] > 1 || hasSelfEdge(gSub, uSub))
 				break;
 		}
 		if (startIdx >= nFull)
 			return null;
-		int ccIdx = connectivityResult.getVertexCcIndex(startIdx - subToFull);
-		return Pair.of(new StronglyConectedComponent(subToFull, connectivityResult, ccIdx), Integer.valueOf(startIdx));
+		int ccIdx = connectivityResult.getVertexCc(startIdx - subToFull);
+		return Pair.of(new StronglyConnectedComponent(subToFull, connectivityResult, ccIdx), Integer.valueOf(startIdx));
 	}
 
 	private static boolean hasSelfEdge(DiGraph g, int u) {
@@ -166,13 +166,13 @@ public class CyclesFinderJohnson implements CyclesFinder {
 		return false;
 	}
 
-	private static class StronglyConectedComponent {
+	private static class StronglyConnectedComponent {
 
 		private final int subToFull;
 		private final Connectivity.Result connectivityResult;
 		private final int ccIdx;
 
-		StronglyConectedComponent(int subToFull, Connectivity.Result connectivityResult, int ccIdx) {
+		StronglyConnectedComponent(int subToFull, Connectivity.Result connectivityResult, int ccIdx) {
 			this.subToFull = subToFull;
 			this.connectivityResult = connectivityResult;
 			this.ccIdx = ccIdx;
@@ -182,7 +182,7 @@ public class CyclesFinderJohnson implements CyclesFinder {
 			int vSub = v - subToFull;
 			if (vSub < 0)
 				return false;
-			return ccIdx == connectivityResult.getVertexCcIndex(vSub);
+			return ccIdx == connectivityResult.getVertexCc(vSub);
 		}
 
 	}

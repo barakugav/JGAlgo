@@ -218,7 +218,7 @@ public class EulerianTourTest extends TestUtils {
 				break;
 			}
 		}
-		assert Connectivity.findStrongConnectivityComponents(g).ccNum == 1;
+		assert Connectivity.findStrongConnectivityComponents(g).getNumberOfCC() == 1;
 		return g;
 	}
 
@@ -239,8 +239,7 @@ public class EulerianTourTest extends TestUtils {
 
 	private static void addEdgesUntilStronglyConnected(DiGraph g) {
 		Connectivity.Result connectivityRes = Connectivity.findStrongConnectivityComponents(g);
-		int N = connectivityRes.ccNum;
-		int[] v2V = connectivityRes.vertexToCC;
+		int N = connectivityRes.getNumberOfCC();
 		if (N <= 1)
 			return;
 
@@ -248,7 +247,7 @@ public class EulerianTourTest extends TestUtils {
 		Arrays.fill(V2v, -1);
 		int n = g.vertices().size();
 		for (int v = 0; v < n; v++) {
-			int V = v2V[v];
+			int V = connectivityRes.getVertexCc(v);
 			if (V2v[V] == -1)
 				V2v[V] = v;
 		}

@@ -3,6 +3,7 @@ package com.jgalgo;
 import java.util.Arrays;
 import java.util.Random;
 
+import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -75,11 +76,11 @@ public class MSTKargerKleinTarjan1995 implements MST {
 		int n = f.vertices().size();
 		/* find connectivity components in the forest, each one of them is a tree */
 		Connectivity.Result connectivityRes = Connectivity.findConnectivityComponents(f);
-		int treeCount = connectivityRes.ccNum;
-		int[] vToTree = connectivityRes.vertexToCC;
+		int treeCount = connectivityRes.getNumberOfCC();
+		Int2IntFunction vToTree = connectivityRes::getVertexCc;
 		int[] treeSizes = new int[treeCount];
 		for (int u = 0; u < n; u++)
-			treeSizes[vToTree[u]]++;
+			treeSizes[vToTree.applyAsInt(u)]++;
 
 		UGraph[] trees = new UGraph[treeSizes.length];
 		Weights.Double[] treeData = new Weights.Double[treeSizes.length];
@@ -91,14 +92,14 @@ public class MSTKargerKleinTarjan1995 implements MST {
 		int[] vToVnew = new int[n];
 		int[] treeToNextv = new int[trees.length];
 		for (int u = 0; u < n; u++)
-			vToVnew[u] = treeToNextv[vToTree[u]]++;
+			vToVnew[u] = treeToNextv[vToTree.applyAsInt(u)]++;
 
 		Weights<Ref> fRef = f.edgesWeight("ref");
 		for (IntIterator it = f.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			int u = f.edgeSource(e), v = f.edgeTarget(e);
 			int un = vToVnew[u], vn = vToVnew[v];
-			int treeIdx = vToTree[u];
+			int treeIdx = vToTree.applyAsInt(u);
 			int en = trees[treeIdx].addEdge(un, vn);
 			treeData[treeIdx].set(en, fRef.get(e).w);
 		}
@@ -116,8 +117,8 @@ public class MSTKargerKleinTarjan1995 implements MST {
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			int u = g.edgeSource(e), v = g.edgeTarget(e);
-			int ut = vToTree[u];
-			if (ut != vToTree[v])
+			int ut = vToTree.applyAsInt(u);
+			if (ut != vToTree.applyAsInt(v))
 				continue;
 			if (tpmQueries[ut].length <= (tpmQueriesNum[ut] + 1) * 2)
 				tpmQueries[ut] = Arrays.copyOf(tpmQueries[ut], tpmQueries[ut].length * 2);
@@ -140,8 +141,8 @@ public class MSTKargerKleinTarjan1995 implements MST {
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			int u = g.edgeSource(e), v = g.edgeTarget(e);
-			int ut = vToTree[u];
-			if (ut != vToTree[v] || gRef.get(e).w <= treeData[ut].weight(tpmResults[ut][tpmIdx[ut]++]))
+			int ut = vToTree.applyAsInt(u);
+			if (ut != vToTree.applyAsInt(v) || gRef.get(e).w <= treeData[ut].weight(tpmResults[ut][tpmIdx[ut]++]))
 				lightEdges.add(e);
 		}
 		return lightEdges;

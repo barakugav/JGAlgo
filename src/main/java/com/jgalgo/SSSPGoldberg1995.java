@@ -88,18 +88,17 @@ public class SSSPGoldberg1995 implements SSSP {
 
 				// Find all strong connectivity components in the graph
 				Connectivity.Result connectivityRes = Connectivity.findStrongConnectivityComponents(gNeg);
-				int N = connectivityRes.ccNum;
-				int[] v2V = connectivityRes.vertexToCC;
+				int N = connectivityRes.getNumberOfCC();
 
 				// Contract each strong connectivity component and search for a negative edge
 				// within it, if found - negative cycle found
 				G.clearEdges();
 				for (int u = 0; u < n; u++) {
-					int U = v2V[u];
+					int U = connectivityRes.getVertexCc(u);
 					for (EdgeIter eit = gNeg.edgesOut(u); eit.hasNext();) {
 						int e = eit.nextInt();
 						int v = eit.v();
-						int V = v2V[v];
+						int V = connectivityRes.getVertexCc(v);
 						int weight = weight(g, gNegEdgeRefs.getInt(e), w, potential, weightMask);
 						if (U != V) {
 							GWeights.set(G.addEdge(U, V), weight);
@@ -144,7 +143,7 @@ public class SSSPGoldberg1995 implements SSSP {
 				if (layerSize[biggestLayer] >= Math.sqrt(N)) {
 					// A layer with sqrt(|V|) was found, decrease potential of layers l,l+1,l+2,...
 					for (int v = 0; v < n; v++) {
-						int V = v2V[v], l = -(int) ssspRes.distance(V);
+						int V = connectivityRes.getVertexCc(v), l = -(int) ssspRes.distance(V);
 						if (l >= biggestLayer)
 							potential[v]--;
 					}
@@ -173,13 +172,14 @@ public class SSSPGoldberg1995 implements SSSP {
 						int u = g.edgeSource(e), v = g.edgeTarget(e);
 						int weight = weight(g, e, w, potential, weightMask);
 						if (weight > 0)
-							GWeights.set(G.addEdge(v2V[u], v2V[v]), weight);
+							GWeights.set(G.addEdge(connectivityRes.getVertexCc(u), connectivityRes.getVertexCc(v)),
+									weight);
 					}
 
 					// Calc distance with abs weight function to update potential function
 					ssspRes = ssspDial.calcDistances(G, e -> Math.abs(GWeights.getInt(e)), fakeS2, layerNum);
 					for (int v = 0; v < n; v++)
-						potential[v] += ssspRes.distance(v2V[v]);
+						potential[v] += ssspRes.distance(connectivityRes.getVertexCc(v));
 				}
 			}
 		}
