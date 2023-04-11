@@ -59,7 +59,7 @@ public class TPMTestUtils extends TestUtils {
 		return queries;
 	}
 
-	static int[] generateRandQueries(int n, int m, long seed) {
+	public static int[] generateRandQueries(int n, int m, long seed) {
 		Random rand = new Random(seed);
 		int[] queries = new int[m * 2];
 		for (int q = 0; q < m; q++) {

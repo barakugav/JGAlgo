@@ -58,7 +58,7 @@ public class TPMBench {
         for (int graphIdx = 0; graphIdx < graphsNum; graphIdx++) {
             Graph t = GraphsTestUtils.randTree(n, seedGen.nextSeed());
             EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(t, seedGen.nextSeed());
-            int[] queries = TPMTestUtils.generateAllPossibleQueries(n);
+            int[] queries = TPMTestUtils.generateRandQueries(n, n, seedGen.nextSeed());
             graphs.add(new TPMArgs(t, w, queries));
 
         }
