@@ -36,7 +36,7 @@ jgalgo,com.jgalgo,MatchingWeightedGabow2017.Worker.EdgeVal,0,9,0,0,0,4,0,1,0,1
 jgalgo,com.jgalgo,SSSPCardinality,0,36,0,2,0,8,0,3,0,2
 jgalgo,com.jgalgo,GraphBuilder.GraphCustomIDStrategies.new IDStrategy.IDAddRemoveListener() {...},8,22,1,1,3,6,2,3,1,3
 jgalgo,com.jgalgo,RMQLinearAbstract.PadderComparator,0,26,0,2,0,5,0,3,0,2
-jgalgo,com.jgalgo,BitsLookupTable.Ith,195,0,22,0,31,0,15,0,4,0
+jgalgo,com.jgalgo,BitsLookupTable.Ith,184,0,22,0,29,0,14,0,3,0
 jgalgo,com.jgalgo,Utils.NullListIterator,95,0,14,0,25,0,18,0,11,0
 jgalgo,com.jgalgo,GraphTableAbstract.new EdgeIter() {...},10,30,1,1,3,6,3,3,2,3
 jgalgo,com.jgalgo,RMQLookupTable.LookupTable8,0,32,0,0,0,7,0,4,0,4
@@ -208,7 +208,7 @@ jgalgo,com.jgalgo,GraphLinkedUndirected.EdgeVertexItr,0,36,0,2,0,8,0,5,0,4
 jgalgo,com.jgalgo,LCAGabowSimple.CharacteristicAncestors,0,12,0,0,0,5,0,1,0,1
 jgalgo,com.jgalgo,DataContainer,5,12,1,1,1,5,1,3,0,3
 jgalgo,com.jgalgo,Pair,64,15,10,0,11,5,10,2,5,2
-jgalgo,com.jgalgo,TPMKomlos1985King1997Hagerup2009.Worker,58,1056,7,91,11,205,6,56,0,13
+jgalgo,com.jgalgo,TPMKomlos1985King1997Hagerup2009.Worker,54,1056,7,91,9,205,6,56,0,13
 jgalgo,com.jgalgo,MaxFlowPushRelabel,22,492,5,41,2,96,5,23,0,5
 jgalgo,com.jgalgo,GraphArrayUndirected.EdgeIt,0,35,0,2,0,8,0,4,0,3
 jgalgo,com.jgalgo,APSPResultImpl.Abstract,4,66,1,5,1,17,1,9,0,7
@@ -227,7 +227,7 @@ jgalgo,com.jgalgo,BSTUtils.NeighborType,0,34,0,0,0,2,0,1,0,1
 jgalgo,com.jgalgo,Utils,5,114,0,2,1,22,1,9,1,8
 jgalgo,com.jgalgo,GraphTableUndirected.new GraphCapabilities() {...},0,17,0,0,0,8,0,8,0,8
 jgalgo,com.jgalgo,Weights.Factory,10,10,0,0,2,2,2,2,2,2
-jgalgo,com.jgalgo,BitsLookupTable.Count,64,0,8,0,12,0,7,0,3,0
+jgalgo,com.jgalgo,BitsLookupTable.Count,62,0,8,0,11,0,6,0,2,0
 jgalgo,com.jgalgo,RedBlackTreeExtended.ExtensionObj,0,23,0,0,0,6,0,4,0,4
 jgalgo,com.jgalgo,IDStrategy.Fixed,0,14,0,0,0,4,0,2,0,2
 jgalgo,com.jgalgo,LCAGabow2017,41,373,9,47,6,78,9,31,0,12

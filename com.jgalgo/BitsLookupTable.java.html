@@ -1,67 +1,178 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BitsLookupTable.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jgalgo</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">BitsLookupTable.java</span></div><h1>BitsLookupTable.java</h1><pre class="source lang-java linenums">package com.jgalgo;
 
+/**
+ * Lookup tables for bit operations.
+ * &lt;p&gt;
+ * Some algorithms which use the
+ * &lt;a href=&quot;https://en.wikipedia.org/wiki/Random-access_machine&quot;&gt;RAM model&lt;/a&gt;
+ * perform some bit operations such as popcount ({@link Integer#bitCount(int)})
+ * or ctz ({@link Integer#numberOfTrailingZeros(int)}) and assume these
+ * operations can be implemented in {@code O(1)}. Although the standard
+ * {@link Integer} implementation of these function is good in practice, its not
+ * implemented in 'real' {@code O(1)}, rather its implemented in
+ * {@code O(wordsize)} or {@code O(log wordsize)}. its possible to implemented
+ * these operations in true {@code O(1)} time by constructing tables of size
+ * {@code 2^wordsize}, which is usually linear in the input size, and this is
+ * what this class purpose is.
+ * &lt;p&gt;
+ * The use of this class should be used with benchmarks, as its expected to use
+ * non negligible amount of memory and gain little if any performance increase.
+ *
+ * @author Barak Ugav
+ */
 public class BitsLookupTable {
 
 	private BitsLookupTable() {
 	}
 
+	/**
+	 * Lookup table for bitCount (popcount) operation.
+	 * &lt;p&gt;
+	 * Lookup table that implement bitCount operation in {@code O(1)} time for any
+	 * wordsize (maximum number of bits needed to represent an integer) using space
+	 * {@code O(2^wordsize)} which is usually linear in the input size.
+	 * &lt;p&gt;
+	 *
+	 * &lt;pre&gt; {@code
+	 * final int n = ...;
+	 * int[] numbers = new int[] {0, 1, 2, ..., n};
+	 *
+	 * // wordsize = ceil(log2(n))
+	 * final int wordsize = (int) Math.ceil((Math.log(n) / Math.log(2)));
+	 * BitsLookupTable.Count table = new BitsLookupTable.Count(wordsize);
+	 *
+	 * for (int x : numbers) {
+	 *     assert Integer.bitCount(x) == table.bitCount(x);
+	 *     System.out.println(&quot;The number of 1 bits in &quot; + x + &quot; is &quot; + table.bitCount(x));
+	 * }
+	 * }&lt;/pre&gt;
+	 *
+	 * @author Barak Ugav
+	 */
 	public static class Count {
 
 		private final int wordsize;
 		private final byte[] bitCountTable;
 
-<span class="nc" id="L13">		public Count(int wordsize) {</span>
-<span class="nc bnc" id="L14" title="All 4 branches missed.">			if (!(0 &lt; wordsize &amp;&amp; wordsize &lt; Integer.SIZE - 1))</span>
-<span class="nc" id="L15">				throw new IllegalArgumentException(&quot;unsupported word size: &quot; + wordsize);</span>
-<span class="nc" id="L16">			this.wordsize = wordsize;</span>
-<span class="nc" id="L17">			bitCountTable = new byte[1 &lt;&lt; wordsize];</span>
-<span class="nc" id="L18">		}</span>
+		/**
+		 * Construct a new lookup table for bitCount operation for integer words of some
+		 * maximum size.
+		 *
+		 * @param wordsize maximum number of bits needed to represent an integer
+		 */
+<span class="nc" id="L63">		public Count(int wordsize) {</span>
+<span class="nc bnc" id="L64" title="All 4 branches missed.">			if (!(0 &lt; wordsize &amp;&amp; wordsize &lt; Integer.SIZE - 1))</span>
+<span class="nc" id="L65">				throw new IllegalArgumentException(&quot;unsupported word size: &quot; + wordsize);</span>
+<span class="nc" id="L66">			this.wordsize = wordsize;</span>
+<span class="nc" id="L67">			bitCountTable = new byte[1 &lt;&lt; wordsize];</span>
 
-		public void init() {
-<span class="nc bnc" id="L21" title="All 2 branches missed.">			for (int highBit = 0; highBit &lt; wordsize; highBit++) {</span>
-<span class="nc bnc" id="L22" title="All 2 branches missed.">				for (int prevx = 0; prevx &lt; 1 &lt;&lt; highBit; prevx++) {</span>
-<span class="nc" id="L23">					int x = prevx | (1 &lt;&lt; highBit);</span>
-<span class="nc" id="L24">					bitCountTable[x] = (byte) (bitCountTable[prevx] + 1);</span>
+			/* init table */
+<span class="nc bnc" id="L70" title="All 2 branches missed.">			for (int highBit = 0; highBit &lt; wordsize; highBit++) {</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">				for (int prevx = 0; prevx &lt; 1 &lt;&lt; highBit; prevx++) {</span>
+<span class="nc" id="L72">					int x = prevx | (1 &lt;&lt; highBit);</span>
+<span class="nc" id="L73">					bitCountTable[x] = (byte) (bitCountTable[prevx] + 1);</span>
 				}
 			}
-<span class="nc" id="L27">		}</span>
+<span class="nc" id="L76">		}</span>
 
+		/**
+		 * Get the number of 1 bits in an integer.
+		 * &lt;p&gt;
+		 * This function is equivalent to {@link Integer#bitCount(int)}, but its
+		 * implemented in 'true' {@code O(1)} and therefore faster (in theory!).
+		 *
+		 * @param x an integer
+		 * @return the number of 1 bits in the given integer
+		 */
 		public int bitCount(int x) {
-<span class="nc" id="L30">			return bitCountTable[x];</span>
+<span class="nc" id="L88">			return bitCountTable[x];</span>
 		}
 
 	}
 
+	/**
+	 * Lookup table for getting the i-th bit in an integer.
+	 * &lt;p&gt;
+	 * Define a list {@code S(x)} as ordered list containing all indices of 1 bits
+	 * of an integer number {@code x}, namely given an integer
+	 * {@code x = 0b b_31 b_30 ... b_0} where
+	 * {@code b_i = (x &amp; (1 &lt;&lt; i)) != 0 ? 1 : 0 }, define {@code S(x)} as the
+	 * ordered list {@code S = (i | b_i == 1)}, for example
+	 * {@code x = 9 = 0b1001, S(x) = (0, 3)}. The i-th bit of a number {@code x} is
+	 * {@code S(x)[i]}. This function does not have a standard implementation in the
+	 * {@link Integer} class, but could implemented easily in {@code O(wordsize)}
+	 * time.
+	 * &lt;p&gt;
+	 * This class construct a lookup table to answer an i-th bit query in
+	 * {@code O(1)} time using a table of size {@code O(2^wordsize)} space which is
+	 * usually linear in the input size.
+	 *
+	 * &lt;pre&gt; {@code
+	 * final int n = ...;
+	 * int[] numbers = new int[] {0, 1, 2, ..., n};
+	 *
+	 * // wordsize = ceil(log2(n))
+	 * final int wordsize = (int) Math.ceil((Math.log(n) / Math.log(2)));
+	 * BitsLookupTable.Count bitCountTable = new BitsLookupTable.Count(wordsize);
+	 * BitsLookupTable.Ith table = new BitsLookupTable.Ith(wordsize, bitCountTable);
+	 *
+	 * for (int x : numbers) {
+	 *     int numberOfOneBits = bitCountTable.bitCount(x);
+	 *     for (int i = 0; i &lt; numberOfOneBits; i++)
+	 *         System.out.println(&quot;The &quot; + i + &quot;-th bit of &quot; + x + &quot; is &quot; + table.ithBit(x, i));
+	 * }
+	 * }&lt;/pre&gt;
+	 *
+	 * @author Barak Ugav
+	 */
 	public static class Ith {
 
 		private final int wordsize;
-		private final Count count;
+		private final BitsLookupTable.Count count;
 		private final byte[][] ithBitTable;
 
-<span class="nc" id="L41">		public Ith(int wordsize, Count count) {</span>
-<span class="nc bnc" id="L42" title="All 4 branches missed.">			if (!(0 &lt; wordsize &amp;&amp; wordsize &lt; Integer.SIZE - 1))</span>
-<span class="nc" id="L43">				throw new IllegalArgumentException(&quot;unsupported word size: &quot; + wordsize);</span>
-<span class="nc bnc" id="L44" title="All 2 branches missed.">			if (count.wordsize &lt; wordsize)</span>
-<span class="nc" id="L45">				throw new IllegalArgumentException();</span>
-<span class="nc" id="L46">			this.count = count;</span>
-<span class="nc" id="L47">			this.wordsize = wordsize;</span>
-<span class="nc" id="L48">			int halfwordsize = ((wordsize - 1) / 2 + 1);</span>
-<span class="nc" id="L49">			ithBitTable = new byte[1 &lt;&lt; halfwordsize][halfwordsize];</span>
-<span class="nc" id="L50">		}</span>
+		/**
+		 * Construct a new lookup table for i-th bit operation for integer words of some
+		 * maximum size.
+		 *
+		 * @param wordsize maximum number of bits needed to represent an integer
+		 * @param count    a lookup table for the bitCount (popcount) operation
+		 */
+<span class="nc" id="L141">		public Ith(int wordsize, BitsLookupTable.Count count) {</span>
+<span class="nc bnc" id="L142" title="All 4 branches missed.">			if (!(0 &lt; wordsize &amp;&amp; wordsize &lt; Integer.SIZE - 1))</span>
+<span class="nc" id="L143">				throw new IllegalArgumentException(&quot;unsupported word size: &quot; + wordsize);</span>
+<span class="nc bnc" id="L144" title="All 2 branches missed.">			if (count.wordsize &lt; wordsize)</span>
+<span class="nc" id="L145">				throw new IllegalArgumentException();</span>
+<span class="nc" id="L146">			this.count = count;</span>
+<span class="nc" id="L147">			this.wordsize = wordsize;</span>
+<span class="nc" id="L148">			int halfwordsize = ((wordsize - 1) / 2 + 1);</span>
+<span class="nc" id="L149">			ithBitTable = new byte[1 &lt;&lt; halfwordsize][halfwordsize];</span>
 
-		public void init() {
-<span class="nc" id="L53">			int halfwordsize = ((wordsize - 1) / 2 + 1);</span>
-<span class="nc bnc" id="L54" title="All 2 branches missed.">			for (int highBit = 0; highBit &lt; halfwordsize; highBit++) {</span>
-<span class="nc bnc" id="L55" title="All 2 branches missed.">				for (int prevx = 0; prevx &lt; 1 &lt;&lt; highBit; prevx++) {</span>
-<span class="nc" id="L56">					int x = prevx | (1 &lt;&lt; highBit);</span>
-<span class="nc" id="L57">					int xBitCount = count.bitCount(x);</span>
-<span class="nc" id="L58">					ithBitTable[x][xBitCount - 1] = (byte) (highBit);</span>
-<span class="nc bnc" id="L59" title="All 2 branches missed.">					for (int i = xBitCount - 2; i &gt;= 0; i--)</span>
-<span class="nc" id="L60">						ithBitTable[x][i] = ithBitTable[prevx][i];</span>
+			/* init table */
+<span class="nc bnc" id="L152" title="All 2 branches missed.">			for (int highBit = 0; highBit &lt; halfwordsize; highBit++) {</span>
+<span class="nc bnc" id="L153" title="All 2 branches missed.">				for (int prevx = 0; prevx &lt; 1 &lt;&lt; highBit; prevx++) {</span>
+<span class="nc" id="L154">					int x = prevx | (1 &lt;&lt; highBit);</span>
+<span class="nc" id="L155">					int xBitCount = count.bitCount(x);</span>
+<span class="nc" id="L156">					ithBitTable[x][xBitCount - 1] = (byte) (highBit);</span>
+<span class="nc bnc" id="L157" title="All 2 branches missed.">					for (int i = xBitCount - 2; i &gt;= 0; i--)</span>
+<span class="nc" id="L158">						ithBitTable[x][i] = ithBitTable[prevx][i];</span>
 				}
 			}
-<span class="nc" id="L63">		}</span>
+<span class="nc" id="L161">		}</span>
 
+		/**
+		 * Get the index of i-th one bit of an integer.
+		 * &lt;p&gt;
+		 * Define a list {@code S(x)} as ordered list containing all indices of 1 bits,
+		 * for example {@code x = 9 = 0b1001, S(x) = (0 ,3)}. The i-th bit of {@code x}
+		 * is defined as {@code S(x)[i]}.
+		 *
+		 * @param x an integer number
+		 * @param i index of a one bit in range {@code [0, bitCount(x))}.
+		 * @return the index of the i-th one bit on the given integer
+		 * @throws IndexOutOfBoundsException if {@code i &lt; 0} or
+		 *                                   {@code i &gt;= bitCount(x)}.
+		 */
 		public int ithBit(int x, int i) {
 
 			/*
@@ -70,23 +181,30 @@ public class BitsLookupTable {
 			 * in O(n log n) time and size.
 			 */
 
-<span class="nc bnc" id="L73" title="All 4 branches missed.">			if (i &lt; 0 || i &gt;= count.bitCount(x))</span>
-<span class="nc" id="L74">				throw new IndexOutOfBoundsException(Integer.toBinaryString(x) + &quot;[&quot; + i + &quot;]&quot;);</span>
-<span class="nc" id="L75">			int halfwordsize = ((wordsize - 1) / 2 + 1);</span>
-<span class="nc bnc" id="L76" title="All 2 branches missed.">			if (x &lt; 1 &lt;&lt; halfwordsize)</span>
-<span class="nc" id="L77">				return ithBitTable[x][i];</span>
+<span class="nc bnc" id="L184" title="All 4 branches missed.">			if (i &lt; 0 || i &gt;= count.bitCount(x))</span>
+<span class="nc" id="L185">				throw new IndexOutOfBoundsException(Integer.toBinaryString(x) + &quot;[&quot; + i + &quot;]&quot;);</span>
+<span class="nc" id="L186">			int halfwordsize = ((wordsize - 1) / 2 + 1);</span>
+<span class="nc bnc" id="L187" title="All 2 branches missed.">			if (x &lt; 1 &lt;&lt; halfwordsize)</span>
+<span class="nc" id="L188">				return ithBitTable[x][i];</span>
 
-<span class="nc" id="L79">			int xlow = x &amp; ((1 &lt;&lt; halfwordsize) - 1);</span>
-<span class="nc" id="L80">			int xlowcount = count.bitCount(xlow);</span>
-<span class="nc bnc" id="L81" title="All 2 branches missed.">			if (i &lt; xlowcount)</span>
-<span class="nc" id="L82">				return ithBitTable[xlow][i];</span>
+<span class="nc" id="L190">			int xlow = x &amp; ((1 &lt;&lt; halfwordsize) - 1);</span>
+<span class="nc" id="L191">			int xlowcount = count.bitCount(xlow);</span>
+<span class="nc bnc" id="L192" title="All 2 branches missed.">			if (i &lt; xlowcount)</span>
+<span class="nc" id="L193">				return ithBitTable[xlow][i];</span>
 
-<span class="nc" id="L84">			int xhigh = x &gt;&gt; halfwordsize;</span>
-<span class="nc" id="L85">			return halfwordsize + ithBitTable[xhigh][i - xlowcount];</span>
+<span class="nc" id="L195">			int xhigh = x &gt;&gt; halfwordsize;</span>
+<span class="nc" id="L196">			return halfwordsize + ithBitTable[xhigh][i - xlowcount];</span>
 		}
 
+		/**
+		 * Get the number of trailing zeros of an integer.
+		 *
+		 * @param x an integer
+		 * @return the number of trailing zeros of an integer.
+		 * @see Integer#numberOfTrailingZeros(int)
+		 */
 		public int numberOfTrailingZeros(int x) {
-<span class="nc bnc" id="L89" title="All 2 branches missed.">			return x == 0 ? Integer.SIZE : ithBit(x, 0);</span>
+<span class="nc bnc" id="L207" title="All 2 branches missed.">			return x == 0 ? Integer.SIZE : ithBit(x, 0);</span>
 		}
 
 	}
