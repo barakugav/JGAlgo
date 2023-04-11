@@ -6,61 +6,78 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
-<span class="fc" id="L9">public class ColoringDSatur implements Coloring {</span>
-
-	/**
-	 * Compute a coloring approximation in O(m n)
-	 */
+/**
+ * The DSatur coloring algorithm.
+ * &lt;p&gt;
+ * The Saturation Degree (DSatur) coloring algorithm is a greedy algorithm,
+ * namely it examine the vertices in some order and assign for each vertex the
+ * minimum (integer) color which is not used by its neighbors. It differ from
+ * other greedy coloring algorithm by the order of the vertices: the next vertex
+ * to be colored is the vertex with the highest number of colors in its
+ * neighborhood (called saturation degree).
+ * &lt;p&gt;
+ * The algorithm runs in time {@code O(m n)}, and it could be implemented faster
+ * using a heap with {@code decreaseKey} operation, see
+ * {@link ColoringDSaturHeap}.
+ * &lt;p&gt;
+ * Note that the result is an approximate for the minimum number of colors, as
+ * coloring is an NP-hard problem.
+ *
+ * @see &lt;a href= &quot;https://en.wikipedia.org/wiki/DSatur&quot;&gt;Wikipedia&lt;/a&gt;
+ * @see ColoringDSaturHeap
+ * @author Barak Ugav
+ */
+<span class="fc" id="L30">public class ColoringDSatur implements Coloring {</span>
 
 	@Override
 	public Coloring.Result calcColoring(UGraph g) {
-<span class="pc bpc" id="L17" title="1 of 2 branches missed.">		if (Graphs.containsSelfLoops(g))</span>
-<span class="nc" id="L18">			throw new IllegalArgumentException(&quot;no valid coloring in graphs with self loops&quot;);</span>
+<span class="pc bpc" id="L34" title="1 of 2 branches missed.">		if (Graphs.containsSelfLoops(g))</span>
+<span class="nc" id="L35">			throw new IllegalArgumentException(&quot;no valid coloring in graphs with self loops&quot;);</span>
 
-<span class="fc" id="L20">		ColoringResultImpl res = new ColoringResultImpl(g);</span>
-<span class="fc" id="L21">		int n = g.vertices().size();</span>
+<span class="fc" id="L37">		ColoringResultImpl res = new ColoringResultImpl(g);</span>
+<span class="fc" id="L38">		int n = g.vertices().size();</span>
 
-<span class="fc" id="L23">		IntSet uncolored = new IntOpenHashSet(n);</span>
-<span class="fc" id="L24">		BitSet[] usedColors = new BitSet[n];</span>
-<span class="fc" id="L25">		int[] usedColorsNum = new int[n];</span>
-<span class="fc" id="L26">		int[] degree = new int[n];</span>
-<span class="fc bfc" id="L27" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc" id="L28">			uncolored.add(u);</span>
-<span class="fc" id="L29">			usedColors[u] = new BitSet();</span>
-<span class="fc" id="L30">			degree[u] = g.degreeOut(u);</span>
+<span class="fc" id="L40">		IntSet uncolored = new IntOpenHashSet(n);</span>
+<span class="fc" id="L41">		BitSet[] usedColors = new BitSet[n];</span>
+<span class="fc" id="L42">		int[] usedColorsNum = new int[n];</span>
+<span class="fc" id="L43">		int[] degree = new int[n];</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc" id="L45">			uncolored.add(u);</span>
+<span class="fc" id="L46">			usedColors[u] = new BitSet();</span>
+<span class="fc" id="L47">			degree[u] = g.degreeOut(u);</span>
 		}
 
-<span class="fc bfc" id="L33" title="All 2 branches covered.">		while (!uncolored.isEmpty()) {</span>
-<span class="fc" id="L34">			int u = uncolored.iterator().nextInt();</span>
-<span class="fc bfc" id="L35" title="All 2 branches covered.">			for (IntIterator it = uncolored.iterator(); it.hasNext();) {</span>
-<span class="fc" id="L36">				int u1 = it.nextInt();</span>
-<span class="fc" id="L37">				int s1 = usedColorsNum[u], s2 = usedColorsNum[u1];</span>
-<span class="fc bfc" id="L38" title="All 6 branches covered.">				if (s1 &gt; s2 || (s1 == s2 &amp;&amp; degree[u] &gt; degree[u1]))</span>
-<span class="fc" id="L39">					u = u1;</span>
-<span class="fc" id="L40">			}</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">		while (!uncolored.isEmpty()) {</span>
+<span class="fc" id="L51">			int u = uncolored.iterator().nextInt();</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">			for (IntIterator it = uncolored.iterator(); it.hasNext();) {</span>
+<span class="fc" id="L53">				int u1 = it.nextInt();</span>
+<span class="fc" id="L54">				int s1 = usedColorsNum[u], s2 = usedColorsNum[u1];</span>
+<span class="fc bfc" id="L55" title="All 6 branches covered.">				if (s1 &gt; s2 || (s1 == s2 &amp;&amp; degree[u] &gt; degree[u1]))</span>
+<span class="fc" id="L56">					u = u1;</span>
+<span class="fc" id="L57">			}</span>
 
-<span class="fc" id="L42">			int color = 0;</span>
-<span class="fc bfc" id="L43" title="All 2 branches covered.">			while (usedColors[u].get(color))</span>
-<span class="fc" id="L44">				color++;</span>
-<span class="fc" id="L45">			res.colors[u] = color;</span>
-<span class="fc" id="L46">			res.colorsNum = Math.max(res.colorsNum, color + 1);</span>
-<span class="fc" id="L47">			uncolored.remove(u);</span>
-<span class="fc" id="L48">			usedColors[u].clear();</span>
-<span class="fc" id="L49">			usedColorsNum[u] = 0;</span>
-<span class="fc" id="L50">			usedColors[u] = null;</span>
+<span class="fc" id="L59">			int color = 0;</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">			while (usedColors[u].get(color))</span>
+<span class="fc" id="L61">				color++;</span>
+<span class="fc" id="L62">			res.colors[u] = color;</span>
+<span class="fc" id="L63">			res.colorsNum = Math.max(res.colorsNum, color + 1);</span>
+<span class="fc" id="L64">			uncolored.remove(u);</span>
+<span class="fc" id="L65">			usedColors[u].clear();</span>
+<span class="fc" id="L66">			usedColorsNum[u] = 0;</span>
+<span class="fc" id="L67">			usedColors[u] = null;</span>
 
-<span class="fc bfc" id="L52" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
-<span class="fc" id="L53">				eit.nextInt();</span>
-<span class="fc" id="L54">				int v = eit.v();</span>
-<span class="fc bfc" id="L55" title="All 2 branches covered.">				if (res.colorOf(v) == -1) {/* v is uncolored */</span>
-<span class="fc bfc" id="L56" title="All 2 branches covered.">					if (!usedColors[v].get(color)) {</span>
-<span class="fc" id="L57">						usedColorsNum[v]++;</span>
-<span class="fc" id="L58">						usedColors[v].set(color);</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
+<span class="fc" id="L70">				eit.nextInt();</span>
+<span class="fc" id="L71">				int v = eit.v();</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">				if (res.colorOf(v) == -1) {/* v is uncolored */</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">					if (!usedColors[v].get(color)) {</span>
+<span class="fc" id="L74">						usedColorsNum[v]++;</span>
+<span class="fc" id="L75">						usedColors[v].set(color);</span>
 					}
 				}
-<span class="fc" id="L61">			}</span>
-<span class="fc" id="L62">		}</span>
-<span class="fc" id="L63">		return res;</span>
+<span class="fc" id="L78">			}</span>
+<span class="fc" id="L79">		}</span>
+<span class="fc" id="L80">		return res;</span>
 	}
 
 }
