@@ -39,6 +39,7 @@ JGAlgo is a collection of algorithms implemented in Java. It contains mostly alg
 | Max flow EdmondsKarp | $O(m^2 n)$ |
 | Max flow Push/Relabel | $O(n^3)$ |
 | Max flow Push/Relabel using Dynamic Trees | $O\left(m n \log \left(\frac{n^2}{m}\right)\right)$ |
+| Max flow Dinic | $O(m n^2)$ |
 | Max flow Dinic using Dynamic Trees | $O(m n \log n)$ |
 | MST Boruvka1926 | $O(m \log n)$ |
 | MST Kruskal1956 | $O(m \log n)$ |
