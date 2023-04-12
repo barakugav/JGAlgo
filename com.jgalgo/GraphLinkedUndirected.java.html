@@ -80,7 +80,7 @@ public class GraphLinkedUndirected extends GraphLinkedAbstract implements UGraph
 <span class="fc" id="L80">	}</span>
 
 	@Override
-	public void removeEdgesAll(int u) {
+	public void removeEdges(int u) {
 <span class="fc" id="L84">		checkVertexIdx(u);</span>
 <span class="fc bfc" id="L85" title="All 2 branches covered.">		for (Node p = edges.get(u), next; p != null; p = next) {</span>
 			// update u list
@@ -113,18 +113,18 @@ public class GraphLinkedUndirected extends GraphLinkedAbstract implements UGraph
 
 	@Override
 	public void clearEdges() {
-<span class="fc bfc" id="L116" title="All 2 branches covered.">		for (GraphLinkedAbstract.Node p0 : nodes()) {</span>
-<span class="fc" id="L117">			Node p = (Node) p0;</span>
-<span class="fc" id="L118">			p.nextu = p.nextv = p.prevu = p.prevv = null;</span>
-<span class="fc" id="L119">		}</span>
-<span class="fc" id="L120">		int n = vertices().size();</span>
-<span class="fc bfc" id="L121" title="All 2 branches covered.">		for (int uIdx = 0; uIdx &lt; n; uIdx++) {</span>
+<span class="nc bnc" id="L116" title="All 2 branches missed.">		for (GraphLinkedAbstract.Node p0 : nodes()) {</span>
+<span class="nc" id="L117">			Node p = (Node) p0;</span>
+<span class="nc" id="L118">			p.nextu = p.nextv = p.prevu = p.prevv = null;</span>
+<span class="nc" id="L119">		}</span>
+<span class="nc" id="L120">		int n = vertices().size();</span>
+<span class="nc bnc" id="L121" title="All 2 branches missed.">		for (int uIdx = 0; uIdx &lt; n; uIdx++) {</span>
 			// TODO do some sort of 'addKey' instead of set, no need
-<span class="fc" id="L123">			edges.set(uIdx, null);</span>
+<span class="nc" id="L123">			edges.set(uIdx, null);</span>
 		}
-<span class="fc" id="L125">		super.clearEdges();</span>
+<span class="nc" id="L125">		super.clearEdges();</span>
 
-<span class="fc" id="L127">	}</span>
+<span class="nc" id="L127">	}</span>
 
 <span class="fc" id="L129">	private static class Node extends GraphLinkedAbstract.Node {</span>
 

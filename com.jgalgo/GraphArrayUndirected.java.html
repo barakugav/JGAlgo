@@ -91,7 +91,7 @@ public class GraphArrayUndirected extends GraphArrayAbstract implements UGraph {
 <span class="fc" id="L91">	}</span>
 
 	@Override
-	public void removeEdgesAll(int u) {
+	public void removeEdges(int u) {
 <span class="fc" id="L95">		checkVertexIdx(u);</span>
 <span class="fc bfc" id="L96" title="All 2 branches covered.">		while (edgesNum.getInt(u) &gt; 0)</span>
 <span class="fc" id="L97">			removeEdge(edges.get(u)[0]);</span>

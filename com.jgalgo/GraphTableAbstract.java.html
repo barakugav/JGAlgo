@@ -135,11 +135,11 @@ abstract class GraphTableAbstract extends GraphBaseContinues {
 
 	@Override
 	public void clearEdges() {
-<span class="fc" id="L138">		int n = vertices().size();</span>
-<span class="fc bfc" id="L139" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
-<span class="fc" id="L140">			Arrays.fill(edges[u], EdgeNone);</span>
-<span class="fc" id="L141">		super.clearEdges();</span>
-<span class="fc" id="L142">	}</span>
+<span class="nc" id="L138">		int n = vertices().size();</span>
+<span class="nc bnc" id="L139" title="All 2 branches missed.">		for (int u = 0; u &lt; n; u++)</span>
+<span class="nc" id="L140">			Arrays.fill(edges[u], EdgeNone);</span>
+<span class="nc" id="L141">		super.clearEdges();</span>
+<span class="nc" id="L142">	}</span>
 
 	private static long sourceTarget2Endpoints(int u, int v) {
 <span class="fc" id="L145">		return ((u &amp; 0xffffffffL) &lt;&lt; 32) | ((v &amp; 0xffffffffL) &lt;&lt; 0);</span>

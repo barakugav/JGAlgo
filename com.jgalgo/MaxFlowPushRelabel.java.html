@@ -43,7 +43,7 @@ public class MaxFlowPushRelabel implements MaxFlow {
 
 <span class="fc" id="L44">		DiGraph g = new GraphArrayDirected(g0.vertices().size());</span>
 <span class="fc" id="L45">		Weights.Int edgeRef = g.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));</span>
-<span class="fc" id="L46">		Weights.Int edgeRev = g.addEdgesWeights(EdgeRevWeightKey, int.class, Integer.valueOf(-1));</span>
+<span class="fc" id="L46">		Weights.Int twin = g.addEdgesWeights(EdgeRevWeightKey, int.class, Integer.valueOf(-1));</span>
 <span class="fc" id="L47">		Weights.Double flow = g.addEdgesWeights(FlowWeightKey, double.class);</span>
 <span class="fc" id="L48">		Weights.Double capacity = g.addEdgesWeights(CapacityWeightKey, double.class);</span>
 <span class="fc bfc" id="L49" title="All 2 branches covered.">		for (IntIterator it = g0.edges().iterator(); it.hasNext();) {</span>
@@ -53,8 +53,8 @@ public class MaxFlowPushRelabel implements MaxFlow {
 <span class="fc" id="L53">			int e2 = g.addEdge(v, u);</span>
 <span class="fc" id="L54">			edgeRef.set(e1, e);</span>
 <span class="fc" id="L55">			edgeRef.set(e2, e);</span>
-<span class="fc" id="L56">			edgeRev.set(e1, e2);</span>
-<span class="fc" id="L57">			edgeRev.set(e2, e1);</span>
+<span class="fc" id="L56">			twin.set(e1, e2);</span>
+<span class="fc" id="L57">			twin.set(e2, e1);</span>
 <span class="fc" id="L58">			flow.set(e1, 0);</span>
 <span class="fc" id="L59">			flow.set(e2, 0);</span>
 <span class="fc" id="L60">			capacity.set(e1, net.getCapacity(e));</span>
@@ -72,7 +72,7 @@ public class MaxFlowPushRelabel implements MaxFlow {
 <span class="fc" id="L72">		IntDoubleConsumer pushFlow = (e, f) -&gt; {</span>
 <span class="pc bpc" id="L73" title="1 of 2 branches missed.">			assert f &gt; 0;</span>
 
-<span class="fc" id="L75">			int rev = edgeRev.getInt(e);</span>
+<span class="fc" id="L75">			int rev = twin.getInt(e);</span>
 <span class="fc" id="L76">			flow.set(e, flow.getDouble(e) + f);</span>
 <span class="fc" id="L77">			flow.set(rev, flow.getDouble(rev) - f);</span>
 <span class="pc bpc" id="L78" title="1 of 2 branches missed.">			assert flow.getDouble(e) &lt;= capacity.getDouble(e) + EPS;</span>

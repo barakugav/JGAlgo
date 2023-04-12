@@ -100,14 +100,14 @@ public class GraphArrayDirected extends GraphArrayAbstract implements DiGraph {
 <span class="fc" id="L100">	}</span>
 
 	@Override
-	public void removeEdgesAllOut(int u) {
+	public void removeEdgesOut(int u) {
 <span class="fc" id="L104">		checkVertexIdx(u);</span>
 <span class="fc bfc" id="L105" title="All 2 branches covered.">		while (edgesOutNum.getInt(u) &gt; 0)</span>
 <span class="fc" id="L106">			removeEdge(edgesOut.get(u)[0]);</span>
 <span class="fc" id="L107">	}</span>
 
 	@Override
-	public void removeEdgesAllIn(int v) {
+	public void removeEdgesIn(int v) {
 <span class="fc" id="L111">		checkVertexIdx(v);</span>
 <span class="fc bfc" id="L112" title="All 2 branches covered.">		while (edgesInNum.getInt(v) &gt; 0)</span>
 <span class="fc" id="L113">			removeEdge(edgesIn.get(v)[0]);</span>
