@@ -53,7 +53,7 @@ public class MaxFlowDinic implements MaxFlow {
 		Weights<Ref> edgeRefL = L.addEdgesWeight(EdgeRefWeightKey).ofObjs();
 		IntPriorityQueue bfsQueue = new IntArrayFIFOQueue();
 		int[] level = new int[n];
-		DynamicTree<Integer, Integer> dt = new DynamicTreeSplay<>(maxCapacity * 3);
+		DynamicTree<Integer, Integer> dt = new DynamicTreeSplay<>(maxCapacity * 10);
 		@SuppressWarnings("unchecked")
 		DynamicTree.Node<Integer, Integer>[] vToDt = new DynamicTree.Node[n];
 		Stack<DynamicTree.Node<Integer, Integer>> cleanupStack = new Stack<>();
@@ -88,7 +88,7 @@ public class MaxFlowDinic implements MaxFlow {
 			}
 			if (level[target] == unvisited)
 				break; /* All paths to target are saturated */
-			debug.println("taget level: ", Integer.valueOf(level[target]));
+			debug.println("target level: " + level[target]);
 
 			dt.clear();
 			for (int u = 0; u < n; u++)

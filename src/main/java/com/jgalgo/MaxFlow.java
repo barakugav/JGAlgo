@@ -1,7 +1,5 @@
 package com.jgalgo;
 
-import java.util.Objects;
-
 public interface MaxFlow {
 
 	/**
@@ -19,53 +17,44 @@ public interface MaxFlow {
 
 	public static interface FlowNetwork {
 
-		public double getCapacity(int e);
+		public double getCapacity(int edge);
 
-		public double getFlow(int e);
+		public void setCapacity(int edge, double capacity);
 
-		public void setFlow(int e, double flow);
+		public double getFlow(int edge);
 
-	}
+		public void setFlow(int edge, double flow);
 
-	public static class FlowEdgeDataDefault {
-		public final double capacity;
-		public double flow;
+		public static FlowNetwork createAsEdgeWeight(Graph g) {
+			Weights.Double capacityWeights = g.addEdgesWeight(new Object()).ofDoubles();
+			Weights.Double flowWeights = g.addEdgesWeight(new Object()).ofDoubles();
+			return new FlowNetwork() {
 
-		public FlowEdgeDataDefault(double capacity) {
-			this.capacity = capacity;
-		}
+				private static final double EPS = 0.0001;
 
-		@Override
-		public String toString() {
-			return "(" + flow + " / " + capacity + ")";
-		}
-	}
+				@Override
+				public double getCapacity(int edge) {
+					return capacityWeights.getDouble(edge);
+				}
 
-	public static class FlowNetworkDefault implements FlowNetwork {
+				@Override
+				public void setCapacity(int edge, double capacity) {
+					capacityWeights.set(edge, capacity);
+				}
 
-		private static final double EPS = 0.0001;
-		private final Weights<FlowEdgeDataDefault> data;
+				@Override
+				public double getFlow(int e) {
+					return flowWeights.getDouble(e);
+				}
 
-		public FlowNetworkDefault(Weights<FlowEdgeDataDefault> data) {
-			this.data = Objects.requireNonNull(data);
-		}
-
-		@Override
-		public double getCapacity(int e) {
-			return data.get(e).capacity;
-		}
-
-		@Override
-		public double getFlow(int e) {
-			return data.get(e).flow;
-		}
-
-		@Override
-		public void setFlow(int e, double flow) {
-			FlowEdgeDataDefault d = data.get(e);
-			if (flow > d.capacity + EPS)
-				throw new IllegalArgumentException("Illegal flow " + flow + " on edge " + e);
-			d.flow = Math.min(flow, d.capacity);
+				@Override
+				public void setFlow(int edge, double flow) {
+					double capacity = getCapacity(edge);
+					if (flow > capacity + EPS)
+						throw new IllegalArgumentException("Illegal flow " + flow + " on edge " + edge);
+					flowWeights.set(edge, Math.min(flow, capacity));
+				}
+			};
 		}
 
 	}

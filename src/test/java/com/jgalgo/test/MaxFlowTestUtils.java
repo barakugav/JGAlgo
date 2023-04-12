@@ -11,18 +11,16 @@ import org.junit.jupiter.api.Assertions;
 
 import com.jgalgo.DiGraph;
 import com.jgalgo.Graph;
+import com.jgalgo.Graphs;
 import com.jgalgo.MaxFlow;
-import com.jgalgo.Weights;
-import com.jgalgo.MaxFlow.FlowEdgeDataDefault;
 import com.jgalgo.MaxFlow.FlowNetwork;
-import com.jgalgo.MaxFlow.FlowNetworkDefault;
 import com.jgalgo.test.GraphImplTestUtils.GraphImpl;
 import com.jgalgo.test.GraphsTestUtils.RandomGraphBuilder;
 
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 @SuppressWarnings("boxing")
-class MaxFlowTestUtils extends TestUtils {
+public class MaxFlowTestUtils extends TestUtils {
 
 	private MaxFlowTestUtils() {
 	}
@@ -32,12 +30,12 @@ class MaxFlowTestUtils extends TestUtils {
 				.cycles(true).connected(false).graphImpl(graphImpl).build();
 	}
 
-	private static FlowNetwork randNetwork(DiGraph g, long seed) {
+	public static FlowNetwork randNetwork(DiGraph g, long seed) {
 		final double minGap = 0.001;
 		NavigableSet<Double> usedCaps = new TreeSet<>();
 
 		Random rand = new Random(seed);
-		Weights<FlowEdgeDataDefault> data = g.addEdgesWeight("flowData").ofObjs();
+		FlowNetwork flow = FlowNetwork.createAsEdgeWeight(g);
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			double cap;
@@ -53,10 +51,10 @@ class MaxFlowTestUtils extends TestUtils {
 			}
 			usedCaps.add(cap);
 
-			data.set(e, new FlowEdgeDataDefault(cap));
+			flow.setCapacity(e, cap);
 		}
 
-		return new FlowNetworkDefault(data);
+		return flow;
 	}
 
 	static void testRandGraphs(Supplier<? extends MaxFlow> builder, long seed) {
@@ -74,10 +72,12 @@ class MaxFlowTestUtils extends TestUtils {
 			DiGraph g = randGraph(n, m, graphImpl, seedGen.nextSeed());
 			FlowNetwork net = randNetwork(g, seedGen.nextSeed());
 			int source, target;
-			do {
+			for (;;) {
 				source = rand.nextInt(g.vertices().size());
 				target = rand.nextInt(g.vertices().size());
-			} while (source == target);
+				if (source != target && Graphs.findPath(g, source, target) != null)
+					break;
+			}
 
 			MaxFlow algo = builder.get();
 			testNetwork(g, net, source, target, algo);

@@ -29,7 +29,6 @@ public class DynamicTreeSplay<V, E> implements DynamicTree<V, E> {
 			return n;
 		splay(n);
 		return splay(BSTUtils.findMax(n));
-
 	}
 
 	@Override
@@ -49,7 +48,8 @@ public class DynamicTreeSplay<V, E> implements DynamicTree<V, E> {
 				w = w1;
 			} else if (Math.abs(w1 - p.getMinWeight(w)) <= EPS) {
 				impl.splay(p); /* perform splay to pay */
-				assert p.isLinked(); /* If fails, maxWeight was too small */
+				if (!p.isLinked())
+					throw new IllegalArgumentException("weightLimit was too small");
 				return new MinEdgeRes<>(p, w1, p.getEdgeData());
 			} else {
 				assert p.hasLeftChild();

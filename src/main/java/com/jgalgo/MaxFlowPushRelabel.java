@@ -72,16 +72,13 @@ public class MaxFlowPushRelabel implements MaxFlow {
 		IntDoubleConsumer pushFlow = (e, f) -> {
 			assert f > 0;
 
-			int u = g.edgeSource(e), v = g.edgeTarget(e);
-			// if (u == g0.getEdgeSource(edgeRef.getInt(e))
-			// debug.println("F(", e.orig, ") += ", Double.valueOf(f));
-
 			int rev = edgeRev.getInt(e);
 			flow.set(e, flow.getDouble(e) + f);
 			flow.set(rev, flow.getDouble(rev) - f);
 			assert flow.getDouble(e) <= capacity.getDouble(e) + EPS;
 			assert flow.getDouble(rev) <= capacity.getDouble(rev) + EPS;
 
+			int u = g.edgeSource(e), v = g.edgeTarget(e);
 			excess[u] -= f;
 			excess[v] += f;
 			if (!isActive.get(v)) {
@@ -131,10 +128,11 @@ public class MaxFlowPushRelabel implements MaxFlow {
 			}
 
 			/* Update isActive and add to queue if active */
-			boolean uIsActive = excess[u] > EPS;
-			isActive.set(u, uIsActive);
-			if (uIsActive)
+			if (excess[u] > EPS) {
 				active.enqueue(u);
+			} else {
+				isActive.clear(u);
+			}
 		}
 
 		/* Construct result */

@@ -58,11 +58,12 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 
 		for (;;) {
 			queue.clear();
+			visited.clear();
 			visited.set(source);
 			backtrack[target] = -1;
-			queue.enqueue(source);
 
 			// perform BFS and find a path of non saturated edges from source to target
+			queue.enqueue(source);
 			bfs: while (!queue.isEmpty()) {
 				int u = queue.dequeueInt();
 				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
@@ -98,8 +99,6 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 				flow.set(rev, Math.max(0, flow.getDouble(rev) - f));
 				p = g.edgeSource(e);
 			}
-
-			visited.clear();
 		}
 
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
