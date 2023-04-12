@@ -2,7 +2,6 @@ package com.jgalgo;
 
 import java.util.BitSet;
 
-import it.unimi.dsi.fastutil.ints.Int2DoubleFunction;
 import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
@@ -16,6 +15,7 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 	private static final Object EdgeRefWeightKey = new Object();
 	private static final Object EdgeRevWeightKey = new Object();
 	private static final Object FlowWeightKey = new Object();
+	private static final Object CapacityWeightKey = new Object();
 
 	public MaxFlowEdmondsKarp() {
 	}
@@ -31,11 +31,12 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 		if (source == target)
 			throw new IllegalArgumentException("Source and target can't be the same vertices");
 
-		DiGraph g = new GraphArrayDirected(g0.vertices().size());
-
+		int n = g0.vertices().size();
+		DiGraph g = new GraphArrayDirected(n);
 		Weights.Int edgeRef = g.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
-		Weights.Int edgeRev = g.addEdgesWeights(EdgeRevWeightKey, int.class, Integer.valueOf(-1));
+		Weights.Int twin = g.addEdgesWeights(EdgeRevWeightKey, int.class, Integer.valueOf(-1));
 		Weights.Double flow = g.addEdgesWeights(FlowWeightKey, double.class);
+		Weights.Double capacity = g.addEdgesWeights(CapacityWeightKey, double.class);
 		for (IntIterator it = g0.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			int u = g0.edgeSource(e), v = g0.edgeTarget(e);
@@ -43,16 +44,16 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 			int e2 = g.addEdge(v, u);
 			edgeRef.set(e1, e);
 			edgeRef.set(e2, e);
-			edgeRev.set(e1, e2);
-			edgeRev.set(e2, e1);
+			twin.set(e1, e2);
+			twin.set(e2, e1);
+			double cap = net.getCapacity(e);
+			capacity.set(e1, cap);
+			capacity.set(e2, cap);
 			flow.set(e1, 0);
-			flow.set(e2, net.getCapacity(e));
+			flow.set(e2, cap);
 		}
-		Int2DoubleFunction capacity = e -> net.getCapacity(edgeRef.getInt(e));
 
-		int n = g.vertices().size();
 		int[] backtrack = new int[n];
-
 		BitSet visited = new BitSet(n);
 		IntPriorityQueue queue = new IntArrayFIFOQueue();
 
@@ -70,7 +71,7 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 					int e = eit.nextInt();
 					int v = eit.v();
 
-					if (visited.get(v) || flow.getDouble(e) >= capacity.applyAsDouble(e))
+					if (visited.get(v) || flow.getDouble(e) >= capacity.getDouble(e))
 						continue;
 					backtrack[v] = e;
 					if (v == target)
@@ -88,14 +89,14 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 			double f = Double.MAX_VALUE;
 			for (int p = target; p != source;) {
 				int e = backtrack[p];
-				f = Math.min(f, capacity.applyAsDouble(e) - flow.getDouble(e));
+				f = Math.min(f, capacity.getDouble(e) - flow.getDouble(e));
 				p = g.edgeSource(e);
 			}
 
 			// update flow of all edges on path
 			for (int p = target; p != source;) {
-				int e = backtrack[p], rev = edgeRev.getInt(e);
-				flow.set(e, Math.min(capacity.applyAsDouble(e), flow.getDouble(e) + f));
+				int e = backtrack[p], rev = twin.getInt(e);
+				flow.set(e, Math.min(capacity.getDouble(e), flow.getDouble(e) + f));
 				flow.set(rev, Math.max(0, flow.getDouble(rev) - f));
 				p = g.edgeSource(e);
 			}

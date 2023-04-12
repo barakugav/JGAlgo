@@ -43,7 +43,7 @@ public class MaxFlowPushRelabel implements MaxFlow {
 
 		DiGraph g = new GraphArrayDirected(g0.vertices().size());
 		Weights.Int edgeRef = g.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
-		Weights.Int edgeRev = g.addEdgesWeights(EdgeRevWeightKey, int.class, Integer.valueOf(-1));
+		Weights.Int twin = g.addEdgesWeights(EdgeRevWeightKey, int.class, Integer.valueOf(-1));
 		Weights.Double flow = g.addEdgesWeights(FlowWeightKey, double.class);
 		Weights.Double capacity = g.addEdgesWeights(CapacityWeightKey, double.class);
 		for (IntIterator it = g0.edges().iterator(); it.hasNext();) {
@@ -53,8 +53,8 @@ public class MaxFlowPushRelabel implements MaxFlow {
 			int e2 = g.addEdge(v, u);
 			edgeRef.set(e1, e);
 			edgeRef.set(e2, e);
-			edgeRev.set(e1, e2);
-			edgeRev.set(e2, e1);
+			twin.set(e1, e2);
+			twin.set(e2, e1);
 			flow.set(e1, 0);
 			flow.set(e2, 0);
 			capacity.set(e1, net.getCapacity(e));
@@ -72,7 +72,7 @@ public class MaxFlowPushRelabel implements MaxFlow {
 		IntDoubleConsumer pushFlow = (e, f) -> {
 			assert f > 0;
 
-			int rev = edgeRev.getInt(e);
+			int rev = twin.getInt(e);
 			flow.set(e, flow.getDouble(e) + f);
 			flow.set(rev, flow.getDouble(rev) - f);
 			assert flow.getDouble(e) <= capacity.getDouble(e) + EPS;
