@@ -566,7 +566,7 @@ class GraphImplTestUtils extends TestUtils {
 
 	private static void testRandOps(Graph g, int opsNum, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-//		System.out.println("\n\n*****");
+		// System.out.println("\n\n*****");
 		GraphCapabilities capabilities = g.getCapabilities();
 		Random rand = new Random(seedGen.nextSeed());
 		RandWeighted<GraphOp> opRand = new RandWeighted<>();
@@ -592,14 +592,14 @@ class GraphImplTestUtils extends TestUtils {
 		}
 
 		final Object dataKey = new Object();
-		Weights.Int edgeData = g.addEdgesWeight(dataKey).ofInts();
+		Weights.Int edgeData = g.addEdgesWeights(dataKey, int.class);
 		UniqueGenerator dataGen = new UniqueGenerator(seedGen.nextSeed());
 
 		GraphTracker tracker = new GraphTracker(g, dataKey);
 		for (IntIterator it = g.vertices().iterator(); it.hasNext();) {
 			int v = it.nextInt();
-//			final int data = dataGen.next();
-//			edgeData.set(e, data);
+			// final int data = dataGen.next();
+			// edgeData.set(e, data);
 			tracker.addVertex(v);
 		}
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
@@ -626,97 +626,97 @@ class GraphImplTestUtils extends TestUtils {
 		opLoop: for (; opsNum > 0;) {
 			final GraphOp op = opRand.get(rand);
 			switch (op) {
-			case AddEdge: {
-				if (tracker.verticesNum() == 0)
-					continue;
-				GraphTracker.Vertex u, v;
-				for (int retry = 20;; retry--) {
-					if (retry <= 0)
-						continue opLoop;
+				case AddEdge: {
+					if (tracker.verticesNum() == 0)
+						continue;
+					GraphTracker.Vertex u, v;
+					for (int retry = 20;; retry--) {
+						if (retry <= 0)
+							continue opLoop;
 
-					u = tracker.getRandVertex(rand);
-					v = tracker.getRandVertex(rand);
-					if (!capabilities.selfEdges() && u == v)
-						continue;
-					if (!capabilities.parallelEdges() && tracker.getEdge(u, v) != null)
-						continue;
+						u = tracker.getRandVertex(rand);
+						v = tracker.getRandVertex(rand);
+						if (!capabilities.selfEdges() && u == v)
+							continue;
+						if (!capabilities.parallelEdges() && tracker.getEdge(u, v) != null)
+							continue;
+						break;
+					}
+
+					final int data = dataGen.next();
+					int e = g.addEdge(u.id, v.id);
+					edgeData.set(e, data);
+					tracker.addEdge(u, v, data);
 					break;
 				}
+				case RemoveEdge: {
+					if (tracker.edgesNum() == 0)
+						continue;
+					GraphTracker.Edge edge = tracker.getRandEdge(rand);
+					int e = getEdge.applyAsInt(edge);
 
-				final int data = dataGen.next();
-				int e = g.addEdge(u.id, v.id);
-				edgeData.set(e, data);
-				tracker.addEdge(u, v, data);
-				break;
-			}
-			case RemoveEdge: {
-				if (tracker.edgesNum() == 0)
-					continue;
-				GraphTracker.Edge edge = tracker.getRandEdge(rand);
-				int e = getEdge.applyAsInt(edge);
+					g.removeEdge(e);
+					tracker.removeEdge(edge);
+					break;
+				}
+				case RemoveEdgeAll: {
+					if (tracker.verticesNum() == 0)
+						continue;
+					GraphTracker.Vertex u = tracker.getRandVertex(rand);
+					g.removeEdgesAll(u.id);
+					tracker.removeEdgesAll(u);
+					break;
+				}
+				case RemoveEdgeAllIn: {
+					if (tracker.verticesNum() == 0)
+						continue;
+					GraphTracker.Vertex u = tracker.getRandVertex(rand);
+					g.removeEdgesAllIn(u.id);
+					tracker.removeEdgesAllIn(u);
+					break;
+				}
+				case RemoveEdgeAllOut: {
+					if (tracker.verticesNum() == 0)
+						continue;
+					GraphTracker.Vertex u = tracker.getRandVertex(rand);
+					g.removeEdgesAllOut(u.id);
+					tracker.removeEdgesAllOut(u);
+					break;
+				}
+				case ReverseEdge: {
+					if (tracker.edgesNum() == 0)
+						continue;
+					GraphTracker.Edge edge = tracker.getRandEdge(rand);
+					if (edge.u != edge.v && g.getEdge(edge.v.id, edge.u.id) != -1 && !capabilities.parallelEdges())
+						continue;
+					int e = getEdge.applyAsInt(edge);
 
-				g.removeEdge(e);
-				tracker.removeEdge(edge);
-				break;
-			}
-			case RemoveEdgeAll: {
-				if (tracker.verticesNum() == 0)
-					continue;
-				GraphTracker.Vertex u = tracker.getRandVertex(rand);
-				g.removeEdgesAll(u.id);
-				tracker.removeEdgesAll(u);
-				break;
-			}
-			case RemoveEdgeAllIn: {
-				if (tracker.verticesNum() == 0)
-					continue;
-				GraphTracker.Vertex u = tracker.getRandVertex(rand);
-				g.removeEdgesAllIn(u.id);
-				tracker.removeEdgesAllIn(u);
-				break;
-			}
-			case RemoveEdgeAllOut: {
-				if (tracker.verticesNum() == 0)
-					continue;
-				GraphTracker.Vertex u = tracker.getRandVertex(rand);
-				g.removeEdgesAllOut(u.id);
-				tracker.removeEdgesAllOut(u);
-				break;
-			}
-			case ReverseEdge: {
-				if (tracker.edgesNum() == 0)
-					continue;
-				GraphTracker.Edge edge = tracker.getRandEdge(rand);
-				if (edge.u != edge.v && g.getEdge(edge.v.id, edge.u.id) != -1 && !capabilities.parallelEdges())
-					continue;
-				int e = getEdge.applyAsInt(edge);
+					((DiGraph) g).reverseEdge(e);
+					tracker.reverseEdge(edge);
+					break;
+				}
+				case ClearEdges:
+					if (g.edges().size() == 0)
+						continue;
+					g.clearEdges();
+					tracker.clearEdges();
+					break;
 
-				((DiGraph) g).reverseEdge(e);
-				tracker.reverseEdge(edge);
-				break;
-			}
-			case ClearEdges:
-				if (g.edges().size() == 0)
-					continue;
-				g.clearEdges();
-				tracker.clearEdges();
-				break;
+				case AddVertex: {
+					int v = g.addVertex();
+					tracker.addVertex(v);
+					break;
+				}
+				case RemoveVertex:
+					if (tracker.verticesNum() == 0)
+						continue;
+					GraphTracker.Vertex v = tracker.getRandVertex(rand);
+					g.removeVertex(v.id);
+					tracker.removeVertex(v);
+					break;
 
-			case AddVertex: {
-				int v = g.addVertex();
-				tracker.addVertex(v);
-				break;
-			}
-			case RemoveVertex:
-				if (tracker.verticesNum() == 0)
-					continue;
-				GraphTracker.Vertex v = tracker.getRandVertex(rand);
-				g.removeVertex(v.id);
-				tracker.removeVertex(v);
-				break;
-
-			default:
-				throw new IllegalArgumentException("Unexpected value: " + op);
+				default:
+					throw new IllegalArgumentException("Unexpected value: " + op);
 			}
 
 			Assertions.assertEquals(tracker.verticesNum(), g.vertices().size());

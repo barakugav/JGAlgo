@@ -50,7 +50,7 @@ public class MaxFlowDinic implements MaxFlow {
 		Weights<Ref> edgeRef = g.edgesWeight(EdgeRefWeightKey);
 		final int n = g.vertices().size();
 		DiGraph L = GraphBuilder.Linked.newInstance().setVerticesNum(n).setEdgesIDStrategy(Fixed.class).buildDirected();
-		Weights<Ref> edgeRefL = L.addEdgesWeight(EdgeRefWeightKey).ofObjs();
+		Weights<Ref> edgeRefL = L.addEdgesWeights(EdgeRefWeightKey, Ref.class);
 		IntPriorityQueue bfsQueue = new IntArrayFIFOQueue();
 		int[] level = new int[n];
 		DynamicTree<Integer, Integer> dt = new DynamicTreeSplay<>(maxCapacity * 10);
@@ -192,7 +192,7 @@ public class MaxFlowDinic implements MaxFlow {
 
 	private static DiGraph referenceGraph(DiGraph g0, FlowNetwork net) {
 		DiGraph g = new GraphArrayDirected(g0.vertices().size());
-		Weights<Ref> edgeRef = g.addEdgesWeight(EdgeRefWeightKey).ofObjs();
+		Weights<Ref> edgeRef = g.addEdgesWeights(EdgeRefWeightKey, Ref.class);
 		for (IntIterator it = g0.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			int u = g0.edgeSource(e), v = g0.edgeTarget(e);

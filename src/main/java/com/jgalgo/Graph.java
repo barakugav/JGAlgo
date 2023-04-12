@@ -55,7 +55,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * int e3 = g.addEdge(v1, v3);
  *
  * // Assign some weights to the edges
- * Weights.Double w = g.addEdgesWeight("weightsKey").ofDoubles();
+ * Weights.Double w = g.addEdgesWeights("weightsKey", double.class);
  * w.set(e1, 1.2);
  * w.set(e2, 3.1);
  * w.set(e3, 15.1);
@@ -390,45 +390,79 @@ public interface Graph {
 	 * <p>
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
-	 * @param <V>        The weight type
-	 * @param <WeightsT> the weights container, used to avoid casts of containers of
-	 *                   primitive types
-	 * @param key        some key of the weights, could be anything
+	 * @param key some key of the weights, could be anything
 	 * @return vertices weights of the key, or null if no container found with the
 	 *         specified key
+	 * @param <V>        The weight data type
+	 * @param <WeightsT> the weights container, used to avoid casts of containers of
+	 *                   primitive types
 	 */
 	public <V, WeightsT extends Weights<V>> WeightsT verticesWeight(Object key);
 
 	/**
 	 * Add a new weights container associated with the vertices of this graph.
-	 * <p>
-	 * Note that a call to this function along doesn't create the container yet,
-	 * rather it returns a factory which should be used to choose the container
-	 * type. For example:
 	 *
 	 * <pre> {@code
 	 * Graph g = ...;
 	 * int v1 = g.newVertex();
 	 * int v2 = g.newVertex();
 	 *
-	 * Weights<String> namesContainer = g.addVerticesWeight("name").ofObjs();
-	 * namesContainer.set(v1, "Alice");
-	 * namesContainer.set(v2, "Bob");
+	 * Weights<String> names = g.addVerticesWeights("name", String.class);
+	 * names.set(v1, "Alice");
+	 * names.set(v2, "Bob");
 	 *
-	 * Weights.Int agesContainer = g.addVerticesWeight("age").ofInts();
-	 * namesContainer.set(v1, 42);
-	 * namesContainer.set(v2, 35);
+	 * Weights.Int ages = g.addVerticesWeights("age", int.class);
+	 * ages.set(v1, 42);
+	 * ages.set(v2, 35);
 	 * }</pre>
 	 *
 	 * <p>
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
-	 * @param key
-	 * @return
-	 * @throws IllegalArgumentException if there a vertices weights container with
-	 *                                  the same key already exists in the graph
+	 * @param key  some key of the weights, could be anything
+	 * @param type the type of the weights, used for primitive types weights
+	 * @return a new weights container
+	 * @throws IllegalArgumentException if a vertices weights container with the
+	 *                                  same key already exists in the graph
+	 * @param <V>        The weight data type
+	 * @param <WeightsT> the weights container, used to avoid casts of containers of
+	 *                   primitive types
 	 */
-	public Weights.Factory addVerticesWeight(Object key);
+	public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, Class<? super V> type);
+
+	/**
+	 * Add a new weights container associated with the vertices of this graph with
+	 * default value.
+	 *
+	 * <pre> {@code
+	 * Graph g = ...;
+	 * int v1 = g.newVertex();
+	 * int v2 = g.newVertex();
+	 * int v3 = g.newVertex();
+	 *
+	 * Weights<String> names = g.addVerticesWeights("name", String.class, "Unknown");
+	 * names.set(v1, "Alice");
+	 * names.set(v2, "Bob");
+	 *
+	 * assert "Alice".equals(names.get(v1))
+	 * assert "Bob".equals(names.get(v2))
+	 * assert "Unknown".equals(names.get(v3))
+	 * }</pre>
+	 *
+	 * <p>
+	 * See {@link Weights} for a complete documentation of the weights containers.
+	 *
+	 * @param key    some key of the weights, could be anything
+	 * @param type   the type of the weights, used for primitive types weights
+	 * @param defVal default value use for the weights container
+	 * @return a new weights container
+	 * @throws IllegalArgumentException if a vertices weights container with the
+	 *                                  same key already exists in the graph
+	 * @param <V>        The weight data type
+	 * @param <WeightsT> the weights container, used to avoid casts of containers of
+	 *                   primitive types
+	 */
+	public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, Class<? super V> type, V defVal);
 
 	/**
 	 * Remove a weight type associated with the vertices of the graph.
@@ -462,34 +496,85 @@ public interface Graph {
 	 * <p>
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
-	 * @param <E>        The weight type
-	 * @param <WeightsT> the weights container, used to avoid casts of containers of
-	 *                   primitive types
-	 * @param key        some key of the weights, could be anything
+	 * @param key some key of the weights, could be anything
 	 * @return edges weights of the key, or null if no container found with the
 	 *         specified key
+	 * @param <E>        The weight data type
+	 * @param <WeightsT> the weights container, used to avoid casts of containers of
+	 *                   primitive types
 	 */
 	public <E, WeightsT extends Weights<E>> WeightsT edgesWeight(Object key);
 
 	/**
+	 * Add a new weights container associated with the edges of this graph.
+	 *
+	 * <pre> {@code
+	 * Graph g = ...;
+	 * int v1 = g.addVertex();
+	 * int v2 = g.addVertex();
+	 * int v3 = g.addVertex();
+	 * int e1 = g.addEdge(v1, v2);
+	 * int e2 = g.addEdge(v2, v3);
+	 *
+	 * Weights<String> roadTypes = g.addEdgesWeights("roadType", String.class);
+	 * roadType.set(e1, "Asphalt");
+	 * roadType.set(e2, "Gravel");
+	 *
+	 * Weights.Double roadLengths = g.addEdgesWeights("roadLength", double.class);
+	 * lengths.set(e1, 42);
+	 * lengths.set(e2, 35);
+	 * }</pre>
 	 *
 	 * <p>
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
+	 * @param key  some key of the weights, could be anything
+	 * @param type the type of the weights, used for primitive types weights
+	 * @return a new weights container
+	 * @throws IllegalArgumentException if a edges weights container with the same
+	 *                                  key already exists in the graph
+	 * @param <E>        The weight data type
+	 * @param <WeightsT> the weights container, used to avoid casts of containers of
+	 *                   primitive types
+	 */
+	public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, Class<? super E> type);
+
+	/**
+	 * Add a new weights container associated with the edges of this graph with
+	 * default value.
+	 *
 	 * <pre> {@code
 	 * Graph g = ...;
+	 * int v1 = g.addVertex();
+	 * int v2 = g.addVertex();
+	 * int v3 = g.addVertex();
+	 * int e1 = g.addEdge(v1, v2);
+	 * int e2 = g.addEdge(v2, v3);
+	 * int e3 = g.addEdge(v1, v3);
 	 *
-	 * // Assign some weights to the edges
-	 * Weights.Double w = g.addEdgesWeight("weightsKey").ofDoubles();
-	 * w.set(e1, 1.2);
-	 * w.set(e2, 3.1);
-	 * w.set(e3, 15.1);
+	 * Weights<String> roadTypes = g.addEdgesWeights("roadType", String.class, "Unknown");
+	 * roadType.set(e1, "Asphalt");
+	 * roadType.set(e2, "Gravel");
+	 *
+	 * assert "Asphalt".equals(names.get(e1))
+	 * assert "Gravel".equals(names.get(e2))
+	 * assert "Unknown".equals(names.get(e3))
 	 * }</pre>
 	 *
-	 * @param key
-	 * @return
+	 * <p>
+	 * See {@link Weights} for a complete documentation of the weights containers.
+	 *
+	 * @param key    some key of the weights, could be anything
+	 * @param type   the type of the weights, used for primitive types weights
+	 * @param defVal default value use for the weights container
+	 * @return a new weights container
+	 * @throws IllegalArgumentException if a edges weights container with the same
+	 *                                  key already exists in the graph
+	 * @param <E>        The weight data type
+	 * @param <WeightsT> the weights container, used to avoid casts of containers of
+	 *                   primitive types
 	 */
-	public Weights.Factory addEdgesWeight(Object key);
+	public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, Class<? super E> type, E defVal);
 
 	/**
 	 * Remove a weight type associated with the edges of the graph.

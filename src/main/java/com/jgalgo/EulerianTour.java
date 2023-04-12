@@ -38,7 +38,7 @@ public class EulerianTour {
 			end = 0;
 
 		Object usedEdgesKey = new Object();
-		Weights.Bool usedEdges = g.addEdgesWeight(usedEdgesKey).defVal(false).ofBools();
+		Weights.Bool usedEdges = g.addEdgesWeights(usedEdgesKey, boolean.class);
 		try {
 			EdgeIter[] iters = new EdgeIter[n];
 			for (int u = 0; u < n; u++)
@@ -131,7 +131,7 @@ public class EulerianTour {
 			end = 0;
 
 		Object usedEdgesKey = new Object();
-		Weights.Bool usedEdges = g.addEdgesWeight(usedEdgesKey).defVal(false).ofBools();
+		Weights.Bool usedEdges = g.addEdgesWeights(usedEdgesKey, boolean.class);
 		try {
 			EdgeIter[] iters = new EdgeIter[n];
 			for (int u = 0; u < n; u++)

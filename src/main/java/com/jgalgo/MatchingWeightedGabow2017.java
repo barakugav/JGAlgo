@@ -278,7 +278,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 		Worker(Graph g0, EdgeWeightFunc w, HeapReferenceable.Builder heapBuilder, DebugPrintsManager debugPrint) {
 			int n = g0.vertices().size();
 			this.g = new GraphArrayDirected(n);
-			edgeVal = g.addEdgesWeight(EdgeValKey).ofObjs();
+			edgeVal = g.addEdgesWeights(EdgeValKey, EdgeVal.class);
 			this.w = e -> w.weight(edgeVal.get(e).e);
 
 			for (IntIterator it = g0.edges().iterator(); it.hasNext();) {

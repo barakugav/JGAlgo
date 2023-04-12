@@ -33,9 +33,9 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 
 		DiGraph g = new GraphArrayDirected(g0.vertices().size());
 
-		Weights.Int edgeRef = g.addEdgesWeight(EdgeRefWeightKey).defVal(-1).ofInts();
-		Weights.Int edgeRev = g.addEdgesWeight(EdgeRevWeightKey).defVal(-1).ofInts();
-		Weights.Double flow = g.addEdgesWeight(FlowWeightKey).ofDoubles();
+		Weights.Int edgeRef = g.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
+		Weights.Int edgeRev = g.addEdgesWeights(EdgeRevWeightKey, int.class, Integer.valueOf(-1));
+		Weights.Double flow = g.addEdgesWeights(FlowWeightKey, double.class);
 		for (IntIterator it = g0.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			int u = g0.edgeSource(e), v = g0.edgeTarget(e);

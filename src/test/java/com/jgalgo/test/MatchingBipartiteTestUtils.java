@@ -32,7 +32,7 @@ class MatchingBipartiteTestUtils extends TestUtils {
 	static Graph createGraphBipartiteFromAdjacencyMatrix(int sSize, int[][] m) {
 		int n = m.length;
 		Graph g = new GraphArrayUndirected(n);
-		Weights.Bool partition = g.addVerticesWeight(Weights.DefaultBipartiteWeightKey).ofBools();
+		Weights.Bool partition = g.addVerticesWeights(Weights.DefaultBipartiteWeightKey, boolean.class);
 		for (int u = 0; u < sSize; u++)
 			partition.set(u, true);
 		for (int v = sSize; v < n; v++)

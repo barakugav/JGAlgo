@@ -338,13 +338,13 @@ public abstract class GraphBuilder {
 		}
 
 		@Override
-		<V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, WeightsT weights) {
-			return g.addVerticesWeights(key, weights);
+		void addVerticesWeightsContainer(Object key, Weights<?> weights) {
+			g.addVerticesWeightsContainer(key, weights);
 		}
 
 		@Override
-		<E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, WeightsT weights) {
-			return g.addEdgesWeights(key, weights);
+		void addEdgesWeightsContainer(Object key, Weights<?> weights) {
+			g.addEdgesWeightsContainer(key, weights);
 		}
 
 		class EdgeItr implements EdgeIter {

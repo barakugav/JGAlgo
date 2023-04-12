@@ -117,7 +117,7 @@ public class GraphsTestUtils extends TestUtils {
 					throw new IllegalStateException();
 				n = sn + tn;
 				g = impl.newGraph(directed, n);
-				Weights.Bool partition = g.addVerticesWeight(Weights.DefaultBipartiteWeightKey).ofBools();
+				Weights.Bool partition = g.addVerticesWeights(Weights.DefaultBipartiteWeightKey, boolean.class);
 				for (int u = 0; u < sn; u++)
 					partition.set(u, true);
 				for (int u = 0; u < tn; u++)
@@ -256,7 +256,7 @@ public class GraphsTestUtils extends TestUtils {
 			throw new IllegalArgumentException();
 
 		Random rand = new Random(seed);
-		Weights.Double weight = g.addEdgesWeight("weight").ofDoubles();
+		Weights.Double weight = g.addEdgesWeights("weight", double.class);
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			weight.set(e, nextDouble(rand, minWeight, maxWeight));
@@ -284,7 +284,7 @@ public class GraphsTestUtils extends TestUtils {
 			throw new IllegalArgumentException("weight range is too small for unique weights");
 
 		RandomIntUnique rand = new RandomIntUnique(minWeight, maxWeight, seed);
-		Weights.Int weight = g.addEdgesWeight("weight").ofInts();
+		Weights.Int weight = g.addEdgesWeights("weight", int.class);
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			weight.set(e, rand.next());
@@ -301,30 +301,31 @@ public class GraphsTestUtils extends TestUtils {
 				.cycles(true).connected(false).build();
 	}
 
-//	static Graph<Integer> createGraphFromAdjacencyMatrixWeightedInt(int[][] m, DirectedType directed) {
-//		int n = m.length;
-//		Graph<Integer> g = new GraphArray<>(directed, n);
-//		for (int u = 0; u < n; u++) {
-//			for (int v = directed == DirectedType.Directed ? 0 : u + 1; v < n; v++) {
-//				if (m[u][v] == 0)
-//					continue;
-//				g.addEdge(u, v).setData(Integer.valueOf(m[u][v]));
-//			}
-//		}
-//		return g;
-//	}
-//
-//	static Graph<Integer> parseGraphFromAdjacencyMatrixWeightedInt(String s) {
-//		String[] lines = s.split("\r\n");
-//		int n = lines.length;
-//		int[][] m = new int[n][n];
-//		for (int u = 0; u < n; u++) {
-//			String[] esStr = lines[u].split(",");
-//			for (int v = u + 1; v < n; v++)
-//				Integer.parseInt(esStr[v].trim());
-//		}
-//		return createGraphFromAdjacencyMatrixWeightedInt(m, DirectedType.Undirected);
-//	}
+	// static Graph<Integer> createGraphFromAdjacencyMatrixWeightedInt(int[][] m,
+	// DirectedType directed) {
+	// int n = m.length;
+	// Graph<Integer> g = new GraphArray<>(directed, n);
+	// for (int u = 0; u < n; u++) {
+	// for (int v = directed == DirectedType.Directed ? 0 : u + 1; v < n; v++) {
+	// if (m[u][v] == 0)
+	// continue;
+	// g.addEdge(u, v).setData(Integer.valueOf(m[u][v]));
+	// }
+	// }
+	// return g;
+	// }
+	//
+	// static Graph<Integer> parseGraphFromAdjacencyMatrixWeightedInt(String s) {
+	// String[] lines = s.split("\r\n");
+	// int n = lines.length;
+	// int[][] m = new int[n][n];
+	// for (int u = 0; u < n; u++) {
+	// String[] esStr = lines[u].split(",");
+	// for (int v = u + 1; v < n; v++)
+	// Integer.parseInt(esStr[v].trim());
+	// }
+	// return createGraphFromAdjacencyMatrixWeightedInt(m, DirectedType.Undirected);
+	// }
 
 	static Graph parseGraphFromAdjacencyMatrix01(String s) {
 		String[] lines = s.split("\r\n");

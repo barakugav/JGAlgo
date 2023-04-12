@@ -110,7 +110,7 @@ public class AStarTest extends TestUtils {
 	private static GraphReverseResult reverseGraph(DiGraph g, EdgeWeightFunc w) {
 		int n = g.vertices().size();
 		DiGraph revG = new GraphArrayDirected(n);
-		Weights.Double revW = revG.addEdgesWeight("w").ofDoubles();
+		Weights.Double revW = revG.addEdgesWeights("w", double.class);
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			int u = g.edgeSource(e);

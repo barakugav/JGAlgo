@@ -63,9 +63,9 @@ public class SSSPGoldberg1995 implements SSSP {
 		SSSP dagSssp = new SSSPDag();
 
 		DiGraph gNeg = new GraphArrayDirected(n);
-		Weights.Int gNegEdgeRefs = gNeg.addEdgesWeight(EdgeRefWeightKey).defVal(-1).ofInts();
+		Weights.Int gNegEdgeRefs = gNeg.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
 		DiGraph G = new GraphArrayDirected(n);
-		Weights.Int GWeights = G.addEdgesWeight("weights").defVal(-1).ofInts();
+		Weights.Int GWeights = G.addEdgesWeights("weights", int.class, Integer.valueOf(-1));
 		int fakeS1 = G.addVertex(), fakeS2 = G.addVertex();
 
 		int minWeightWordsize = Utils.log2(-minWeight);

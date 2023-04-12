@@ -37,7 +37,7 @@ public class MDSTTarjan1977Test extends TestUtils {
 				return algo.calcMST(g, w);
 			int n = g.vertices().size();
 			Graph dg = new GraphArrayDirected(n);
-			Weights.Int edgeRef = dg.addEdgesWeight("edgeRef").defVal(-1).ofInts();
+			Weights.Int edgeRef = dg.addEdgesWeights("edgeRef", int.class, Integer.valueOf(-1));
 			for (int u = 0; u < n; u++) {
 				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 					int e = eit.nextInt();

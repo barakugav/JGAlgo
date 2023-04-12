@@ -150,19 +150,17 @@ abstract class GraphBaseContinues extends GraphBase {
 	}
 
 	@Override
-	<V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, WeightsT weights) {
+	void addVerticesWeightsContainer(Object key, Weights<?> weights) {
 		Weights<?> oldWeights = vWeights.put(key, weights);
 		if (oldWeights != null)
 			throw new IllegalArgumentException("Two weights types with the same key: " + key);
-		return weights;
 	}
 
 	@Override
-	<E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, WeightsT weights) {
+	void addEdgesWeightsContainer(Object key, Weights<?> weights) {
 		Weights<?> oldWeights = eWeights.put(key, weights);
 		if (oldWeights != null)
 			throw new IllegalArgumentException("Two weights types with the same key: " + key);
-		return weights;
 	}
 
 	@Override

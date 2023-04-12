@@ -26,8 +26,8 @@ public interface MaxFlow {
 		public void setFlow(int edge, double flow);
 
 		public static FlowNetwork createAsEdgeWeight(Graph g) {
-			Weights.Double capacityWeights = g.addEdgesWeight(new Object()).ofDoubles();
-			Weights.Double flowWeights = g.addEdgesWeight(new Object()).ofDoubles();
+			Weights.Double capacityWeights = g.addEdgesWeights(new Object(), double.class);
+			Weights.Double flowWeights = g.addEdgesWeights(new Object(), double.class);
 			return new FlowNetwork() {
 
 				private static final double EPS = 0.0001;

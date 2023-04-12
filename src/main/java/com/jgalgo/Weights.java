@@ -133,38 +133,6 @@ public interface Weights<E> {
 		}
 	}
 
-	public static interface Factory {
-		<E> Weights<E> ofObjs();
-
-		Weights.Int ofInts();
-
-		Weights.Long ofLongs();
-
-		Weights.Double ofDoubles();
-
-		Weights.Bool ofBools();
-
-		Object getDefVal();
-
-		Factory defVal(Object defVal);
-
-		default Factory defVal(int defVal) {
-			return defVal(Integer.valueOf(defVal));
-		}
-
-		default Factory defVal(long defVal) {
-			return defVal(java.lang.Long.valueOf(defVal));
-		}
-
-		default Factory defVal(double defVal) {
-			return defVal(java.lang.Double.valueOf(defVal));
-		}
-
-		default Factory defVal(boolean defVal) {
-			return defVal(Boolean.valueOf(defVal));
-		}
-	}
-
 	/**
 	 * The default vertices weight key of the bipartite property.
 	 * <p>

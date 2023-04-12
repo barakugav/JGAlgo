@@ -196,7 +196,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 			Weights.Bool partition = g.verticesWeight(Weights.DefaultBipartiteWeightKey);
 			if (partition != null) {
 				/* bipartite graph */
-				Weights.Bool partitionSuffled = g.addVerticesWeight(Weights.DefaultBipartiteWeightKey).ofBools();
+				Weights.Bool partitionSuffled = g.addVerticesWeights(Weights.DefaultBipartiteWeightKey, boolean.class);
 
 				int[] shuffleInv = new int[n];
 				for (int v = 0; v < n; v++)
@@ -206,7 +206,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 					partitionSuffled.set(v, partition.getBool(shuffleInv[v]));
 			}
 
-			Weights.Int edgeRef = shuffledG.addEdgesWeight("edgeRef").defVal(-1).ofInts();
+			Weights.Int edgeRef = shuffledG.addEdgesWeights("edgeRef", int.class, Integer.valueOf(-1));
 			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 				int e = it.nextInt();
 				int u = g.edgeSource(e), v = g.edgeTarget(e);

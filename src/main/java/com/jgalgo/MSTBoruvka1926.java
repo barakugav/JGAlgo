@@ -28,7 +28,7 @@ public class MSTBoruvka1926 implements MST {
 		MSTResult mstRes = calcMST0(g, w, numberOfRounds);
 
 		UGraph contractedG = new GraphArrayUndirected(mstRes.treeNum);
-		Weights<R> contractedGData = contractedG.addEdgesWeight(edgeValKey).ofObjs();
+		Weights<R> contractedGData = contractedG.addEdgesWeights(edgeValKey, Object.class);
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			int u = mstRes.vToTree[g.edgeSource(e)];

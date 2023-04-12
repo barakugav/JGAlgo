@@ -81,18 +81,107 @@ abstract class GraphBase implements Graph {
 	}
 
 	@Override
-	public Weights.Factory addVerticesWeight(Object key) {
-		return new WeightsFactoryVertices(key);
+	public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, Class<? super V> type) {
+		return addVerticesWeights(key, type, null);
 	}
 
 	@Override
-	public Weights.Factory addEdgesWeight(Object key) {
-		return new WeightsFactoryEdges(key);
+	public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, Class<? super V> type, V defVal) {
+		DataContainer<V> container = createContainer(type, defVal, vertices().size());
+		WeightsT weights = wrapContainer(container, getVerticesIDStrategy());
+		addVerticesWeightsContainer(key, weights);
+		return weights;
 	}
 
-	abstract <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, WeightsT weights);
+	@Override
+	public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, Class<? super E> type) {
+		return addEdgesWeights(key, type, null);
+	}
 
-	abstract <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, WeightsT weights);
+	@Override
+	public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, Class<? super E> type, E defVal) {
+		DataContainer<E> container = createContainer(type, defVal, edges().size());
+		WeightsT weights = wrapContainer(container, getEdgesIDStrategy());
+		addEdgesWeightsContainer(key, weights);
+		return weights;
+	}
+
+	private static <D> DataContainer<D> createContainer(Class<? super D> type, D defVal, int size) {
+		@SuppressWarnings("rawtypes")
+		DataContainer container;
+		if (type == int.class) {
+			int defVal0 = defVal != null ? ((Integer) defVal).intValue() : 0;
+			container = new DataContainer.Int(size, defVal0);
+		} else if (type == long.class) {
+			long defVal0 = defVal != null ? ((Long) defVal).longValue() : 0;
+			container = new DataContainer.Long(size, defVal0);
+		} else if (type == double.class) {
+			double defVal0 = defVal != null ? ((Double) defVal).doubleValue() : 0;
+			container = new DataContainer.Double(size, defVal0);
+		} else if (type == boolean.class) {
+			boolean defVal0 = defVal != null ? ((Boolean) defVal).booleanValue() : false;
+			container = new DataContainer.Bool(size, defVal0);
+		} else {
+			container = new DataContainer.Obj<>(size, defVal);
+		}
+
+		// TODO should be done in constructor
+		container.ensureCapacity(size);
+		for (int idx = 0; idx < size; idx++)
+			container.add(idx);
+
+		@SuppressWarnings("unchecked")
+		DataContainer<D> container0 = container;
+		return container0;
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <D, WeightsT extends Weights<D>> WeightsT wrapContainer(DataContainer<D> container0,
+			IDStrategy idStrat) {
+		boolean isContinues = idStrat instanceof IDStrategy.Continues;
+		if (container0 instanceof DataContainer.Obj<?>) {
+			DataContainer.Obj<D> container = (DataContainer.Obj<D>) container0;
+			if (isContinues) {
+				return (WeightsT) new WeightsImpl.Direct.Obj<>(container);
+			} else {
+				return (WeightsT) new WeightsImpl.Mapped.Obj<>(container, idStrat);
+			}
+		} else if (container0 instanceof DataContainer.Int) {
+			DataContainer.Int container = (DataContainer.Int) container0;
+			if (isContinues) {
+				return (WeightsT) new WeightsImpl.Direct.Int(container);
+			} else {
+				return (WeightsT) new WeightsImpl.Mapped.Int(container, idStrat);
+			}
+		} else if (container0 instanceof DataContainer.Long) {
+			DataContainer.Long container = (DataContainer.Long) container0;
+			if (isContinues) {
+				return (WeightsT) new WeightsImpl.Direct.Long(container);
+			} else {
+				return (WeightsT) new WeightsImpl.Mapped.Long(container, idStrat);
+			}
+		} else if (container0 instanceof DataContainer.Double) {
+			DataContainer.Double container = (DataContainer.Double) container0;
+			if (isContinues) {
+				return (WeightsT) new WeightsImpl.Direct.Double(container);
+			} else {
+				return (WeightsT) new WeightsImpl.Mapped.Double(container, idStrat);
+			}
+		} else if (container0 instanceof DataContainer.Bool) {
+			DataContainer.Bool container = (DataContainer.Bool) container0;
+			if (isContinues) {
+				return (WeightsT) new WeightsImpl.Direct.Bool(container);
+			} else {
+				return (WeightsT) new WeightsImpl.Mapped.Bool(container, idStrat);
+			}
+		} else {
+			throw new IllegalArgumentException(container0.getClass().toString());
+		}
+	}
+
+	abstract void addVerticesWeightsContainer(Object key, Weights<?> weights);
+
+	abstract void addEdgesWeightsContainer(Object key, Weights<?> weights);
 
 	@Override
 	public IDStrategy.Continues getVerticesIDStrategy() {
@@ -152,151 +241,6 @@ abstract class GraphBase implements Graph {
 		}
 		s.append('}');
 		return s.toString();
-	}
-
-	private abstract class WeightsFactoryBase implements Weights.Factory {
-		final Object key;
-		private Object defVal;
-
-		WeightsFactoryBase(Object key) {
-			this.key = key;
-		}
-
-		@Override
-		public Object getDefVal() {
-			return defVal;
-		}
-
-		@Override
-		public Weights.Factory defVal(Object defVal) {
-			this.defVal = defVal;
-			return this;
-		}
-
-		@Override
-		public <E> Weights<E> ofObjs() {
-			@SuppressWarnings("unchecked")
-			E defVal = (E) getDefVal();
-			return addWeights(new DataContainer.Obj<>(expectedSize(), defVal));
-		}
-
-		@Override
-		public Weights.Int ofInts() {
-			Integer defVal0 = (Integer) getDefVal();
-			int defVal = defVal0 != null ? defVal0.intValue() : 0;
-			return addWeights(new DataContainer.Int(expectedSize(), defVal));
-		}
-
-		@Override
-		public Weights.Long ofLongs() {
-			Long defVal0 = (Long) getDefVal();
-			long defVal = defVal0 != null ? defVal0.longValue() : 0;
-			return addWeights(new DataContainer.Long(expectedSize(), defVal));
-		}
-
-		@Override
-		public Weights.Double ofDoubles() {
-			Double defVal0 = (Double) getDefVal();
-			double defVal = defVal0 != null ? defVal0.doubleValue() : 0;
-			return addWeights(new DataContainer.Double(expectedSize(), defVal));
-		}
-
-		@Override
-		public Weights.Bool ofBools() {
-			Boolean defVal0 = (Boolean) getDefVal();
-			boolean defVal = defVal0 != null ? defVal0.booleanValue() : false;
-			return addWeights(new DataContainer.Bool(expectedSize(), defVal));
-		}
-
-		abstract int expectedSize();
-
-		abstract <E, WeightsT extends Weights<E>> WeightsT addWeights(DataContainer<E> container);
-
-		void addAllIndices(DataContainer<?> container) {
-			int n = expectedSize();
-			container.ensureCapacity(n);
-			for (int idx = 0; idx < n; idx++)
-				container.add(idx);
-		}
-
-		@SuppressWarnings("unchecked")
-		<E, WeightsT extends Weights<E>> WeightsT wrapContainer(DataContainer<E> container0, IDStrategy idStrat) {
-			boolean isContinues = idStrat instanceof IDStrategy.Continues;
-			if (container0 instanceof DataContainer.Obj<?>) {
-				DataContainer.Obj<E> container = (DataContainer.Obj<E>) container0;
-				if (isContinues) {
-					return (WeightsT) new WeightsImpl.Direct.Obj<>(container);
-				} else {
-					return (WeightsT) new WeightsImpl.Mapped.Obj<>(container, idStrat);
-				}
-			} else if (container0 instanceof DataContainer.Int) {
-				DataContainer.Int container = (DataContainer.Int) container0;
-				if (isContinues) {
-					return (WeightsT) new WeightsImpl.Direct.Int(container);
-				} else {
-					return (WeightsT) new WeightsImpl.Mapped.Int(container, idStrat);
-				}
-			} else if (container0 instanceof DataContainer.Long) {
-				DataContainer.Long container = (DataContainer.Long) container0;
-				if (isContinues) {
-					return (WeightsT) new WeightsImpl.Direct.Long(container);
-				} else {
-					return (WeightsT) new WeightsImpl.Mapped.Long(container, idStrat);
-				}
-			} else if (container0 instanceof DataContainer.Double) {
-				DataContainer.Double container = (DataContainer.Double) container0;
-				if (isContinues) {
-					return (WeightsT) new WeightsImpl.Direct.Double(container);
-				} else {
-					return (WeightsT) new WeightsImpl.Mapped.Double(container, idStrat);
-				}
-			} else if (container0 instanceof DataContainer.Bool) {
-				DataContainer.Bool container = (DataContainer.Bool) container0;
-				if (isContinues) {
-					return (WeightsT) new WeightsImpl.Direct.Bool(container);
-				} else {
-					return (WeightsT) new WeightsImpl.Mapped.Bool(container, idStrat);
-				}
-			} else {
-				throw new IllegalArgumentException(container0.getClass().toString());
-			}
-		}
-	}
-
-	private class WeightsFactoryVertices extends WeightsFactoryBase {
-		WeightsFactoryVertices(Object key) {
-			super(key);
-		}
-
-		@Override
-		int expectedSize() {
-			return vertices().size();
-		}
-
-		@Override
-		<E, WeightsT extends Weights<E>> WeightsT addWeights(DataContainer<E> container) {
-			addAllIndices(container);
-			WeightsT weights = wrapContainer(container, getVerticesIDStrategy());
-			return addVerticesWeights(key, weights);
-		}
-	}
-
-	private class WeightsFactoryEdges extends WeightsFactoryBase {
-		WeightsFactoryEdges(Object key) {
-			super(key);
-		}
-
-		@Override
-		int expectedSize() {
-			return edges().size();
-		}
-
-		@Override
-		<E, WeightsT extends Weights<E>> WeightsT addWeights(DataContainer<E> container) {
-			addAllIndices(container);
-			WeightsT weights = wrapContainer(container, getEdgesIDStrategy());
-			return addEdgesWeights(key, weights);
-		}
 	}
 
 }
