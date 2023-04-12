@@ -12,7 +12,7 @@ import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
-public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
+public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 
 	/**
 	 * Push/relabel implementation using dynamic trees.
@@ -24,7 +24,7 @@ public class MaxFlowPushRelabelWithDynamicTrees implements MaxFlow {
 	private static final double EPS = 0.0001;
 	private static final Object EdgeRefWeightKey = new Object();
 
-	public MaxFlowPushRelabelWithDynamicTrees() {
+	public MaxFlowPushRelabelDynamicTrees() {
 		debug = new DebugPrintsManager(false);
 	}
 

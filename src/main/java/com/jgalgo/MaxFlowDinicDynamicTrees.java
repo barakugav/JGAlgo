@@ -11,7 +11,7 @@ import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
-public class MaxFlowDinic implements MaxFlow {
+public class MaxFlowDinicDynamicTrees implements MaxFlow {
 
 	/**
 	 * Dinic's max flow algorithm using dynamic trees.
@@ -22,7 +22,7 @@ public class MaxFlowDinic implements MaxFlow {
 	private final DebugPrintsManager debug;
 	private static final double EPS = 0.0001;
 
-	public MaxFlowDinic() {
+	public MaxFlowDinicDynamicTrees() {
 		debug = new DebugPrintsManager(false);
 	}
 

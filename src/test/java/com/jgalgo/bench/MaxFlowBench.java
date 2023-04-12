@@ -23,10 +23,10 @@ import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.DiGraph;
 import com.jgalgo.Graphs;
 import com.jgalgo.MaxFlow;
-import com.jgalgo.MaxFlowDinic;
+import com.jgalgo.MaxFlowDinicDynamicTrees;
 import com.jgalgo.MaxFlowEdmondsKarp;
 import com.jgalgo.MaxFlowPushRelabel;
-import com.jgalgo.MaxFlowPushRelabelWithDynamicTrees;
+import com.jgalgo.MaxFlowPushRelabelDynamicTrees;
 import com.jgalgo.MaxFlow.FlowNetwork;
 import com.jgalgo.test.MaxFlowTestUtils;
 import com.jgalgo.test.GraphsTestUtils.RandomGraphBuilder;
@@ -113,7 +113,7 @@ public class MaxFlowBench {
 
     @Benchmark
     public void benchMaxFlowDinic(Blackhole blackhole) {
-        benchMaxFlow(MaxFlowDinic::new, blackhole);
+        benchMaxFlow(MaxFlowDinicDynamicTrees::new, blackhole);
     }
 
     @Benchmark
@@ -123,7 +123,7 @@ public class MaxFlowBench {
 
     @Benchmark
     public void benchMaxFlowPushRelabelWithDynamicTrees(Blackhole blackhole) {
-        benchMaxFlow(MaxFlowPushRelabelWithDynamicTrees::new, blackhole);
+        benchMaxFlow(MaxFlowPushRelabelDynamicTrees::new, blackhole);
     }
 
 }
