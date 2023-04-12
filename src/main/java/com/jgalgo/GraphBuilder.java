@@ -299,19 +299,19 @@ public abstract class GraphBuilder {
 		}
 
 		@Override
-		public void removeEdgesAll(int u) {
+		public void removeEdges(int u) {
 			int uIdx = verticesIDStrategy.idToIdx(u);
-			g.removeEdgesAll(uIdx);
+			g.removeEdges(uIdx);
 		}
 
 		@Override
-		public void removeEdgesAllOut(int u) {
-			g.removeEdgesAllOut(verticesIDStrategy.idToIdx(u));
+		public void removeEdgesOut(int u) {
+			g.removeEdgesOut(verticesIDStrategy.idToIdx(u));
 		}
 
 		@Override
-		public void removeEdgesAllIn(int v) {
-			g.removeEdgesAllIn(verticesIDStrategy.idToIdx(v));
+		public void removeEdgesIn(int v) {
+			g.removeEdgesIn(verticesIDStrategy.idToIdx(v));
 		}
 
 		@Override

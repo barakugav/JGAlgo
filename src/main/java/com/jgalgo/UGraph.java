@@ -8,7 +8,7 @@ public interface UGraph extends Graph {
 	}
 
 	@Override
-	default void removeEdgesAll(int u) {
+	default void removeEdges(int u) {
 		for (EdgeIter eit = edgesOut(u); eit.hasNext();) {
 			eit.nextInt();
 			eit.remove();
@@ -16,13 +16,13 @@ public interface UGraph extends Graph {
 	}
 
 	@Override
-	default void removeEdgesAllOut(int u) {
-		removeEdgesAll(u);
+	default void removeEdgesOut(int u) {
+		removeEdges(u);
 	}
 
 	@Override
-	default void removeEdgesAllIn(int v) {
-		removeEdgesAll(v);
+	default void removeEdgesIn(int v) {
+		removeEdges(v);
 	}
 
 	@Override

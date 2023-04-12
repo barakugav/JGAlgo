@@ -82,7 +82,7 @@ public class GraphLinkedDirected extends GraphLinkedAbstract implements DiGraph 
 	}
 
 	@Override
-	public void removeEdgesAllOut(int u) {
+	public void removeEdgesOut(int u) {
 		checkVertexIdx(u);
 		for (Node p = edgesOut.get(u), next; p != null; p = next) {
 			next = p.nextOut;
@@ -94,7 +94,7 @@ public class GraphLinkedDirected extends GraphLinkedAbstract implements DiGraph 
 	}
 
 	@Override
-	public void removeEdgesAllIn(int v) {
+	public void removeEdgesIn(int v) {
 		checkVertexIdx(v);
 		for (Node p = edgesIn.get(v), next; p != null; p = next) {
 			next = p.nextIn;

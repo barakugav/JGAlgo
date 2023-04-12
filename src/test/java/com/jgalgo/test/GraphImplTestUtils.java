@@ -682,7 +682,7 @@ class GraphImplTestUtils extends TestUtils {
 					if (tracker.verticesNum() == 0)
 						continue;
 					GraphTracker.Vertex u = tracker.getRandVertex(rand);
-					g.removeEdgesAll(u.id);
+					g.removeEdges(u.id);
 					tracker.removeEdgesAll(u);
 					break;
 				}
@@ -690,7 +690,7 @@ class GraphImplTestUtils extends TestUtils {
 					if (tracker.verticesNum() == 0)
 						continue;
 					GraphTracker.Vertex u = tracker.getRandVertex(rand);
-					g.removeEdgesAllIn(u.id);
+					g.removeEdgesIn(u.id);
 					tracker.removeEdgesAllIn(u);
 					break;
 				}
@@ -698,7 +698,7 @@ class GraphImplTestUtils extends TestUtils {
 					if (tracker.verticesNum() == 0)
 						continue;
 					GraphTracker.Vertex u = tracker.getRandVertex(rand);
-					g.removeEdgesAllOut(u.id);
+					g.removeEdgesOut(u.id);
 					tracker.removeEdgesAllOut(u);
 					break;
 				}
