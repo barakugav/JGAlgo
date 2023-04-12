@@ -26,7 +26,7 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 
 		/* Build graph from the distances table */
 <span class="fc" id="L28">		UGraph g = new GraphTableUndirected(n);</span>
-<span class="fc" id="L29">		Weights.Double weights = g.addEdgesWeight(EdgeWeightKey).ofDoubles();</span>
+<span class="fc" id="L29">		Weights.Double weights = g.addEdgesWeights(EdgeWeightKey, double.class);</span>
 <span class="fc bfc" id="L30" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
 <span class="fc bfc" id="L31" title="All 2 branches covered.">			for (int v = u + 1; v &lt; n; v++)</span>
 <span class="fc" id="L32">				weights.set(g.addEdge(u, v), distances[u][v]);</span>
@@ -45,8 +45,8 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 <span class="fc bfc" id="L45" title="All 2 branches covered.">			if (degree[u] % 2 == 1)</span>
 <span class="fc" id="L46">				mVtoV[mG.addVertex()] = u;</span>
 <span class="fc" id="L47">		int mGn = mG.vertices().size();</span>
-<span class="fc" id="L48">		Weights.Double mGWeightsNeg = mG.addEdgesWeight(EdgeWeightKey).ofDoubles();</span>
-<span class="fc" id="L49">		Weights.Int mGEdgeRef = mG.addEdgesWeight(EdgeRefWeightKey).defVal(-1).ofInts();</span>
+<span class="fc" id="L48">		Weights.Double mGWeightsNeg = mG.addEdgesWeights(EdgeWeightKey, double.class);</span>
+<span class="fc" id="L49">		Weights.Int mGEdgeRef = mG.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));</span>
 <span class="fc bfc" id="L50" title="All 2 branches covered.">		for (int u = 0; u &lt; mGn; u++) {</span>
 <span class="fc bfc" id="L51" title="All 2 branches covered.">			for (int v = u + 1; v &lt; mGn; v++) {</span>
 <span class="fc" id="L52">				int e = g.getEdge(mVtoV[u], mVtoV[v]);</span>
@@ -61,7 +61,7 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 
 		/* Build a graph of the union of the MST and the matching result */
 <span class="fc" id="L63">		UGraph g1 = new GraphArrayUndirected(n);</span>
-<span class="fc" id="L64">		Weights.Int g1EdgeRef = g1.addEdgesWeight(EdgeRefWeightKey).defVal(-1).ofInts();</span>
+<span class="fc" id="L64">		Weights.Int g1EdgeRef = g1.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));</span>
 <span class="fc bfc" id="L65" title="All 2 branches covered.">		for (IntIterator it = mst.iterator(); it.hasNext();) {</span>
 <span class="fc" id="L66">			int e = it.nextInt();</span>
 <span class="fc" id="L67">			int g1Edge = g1.addEdge(g.edgeSource(e), g.edgeTarget(e));</span>

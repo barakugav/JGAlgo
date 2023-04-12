@@ -28,7 +28,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 <span class="fc" id="L28">		MSTResult mstRes = calcMST0(g, w, numberOfRounds);</span>
 
 <span class="fc" id="L30">		UGraph contractedG = new GraphArrayUndirected(mstRes.treeNum);</span>
-<span class="fc" id="L31">		Weights&lt;R&gt; contractedGData = contractedG.addEdgesWeight(edgeValKey).ofObjs();</span>
+<span class="fc" id="L31">		Weights&lt;R&gt; contractedGData = contractedG.addEdgesWeights(edgeValKey, Object.class);</span>
 <span class="fc bfc" id="L32" title="All 2 branches covered.">		for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
 <span class="fc" id="L33">			int e = it.nextInt();</span>
 <span class="fc" id="L34">			int u = mstRes.vToTree[g.edgeSource(e)];</span>

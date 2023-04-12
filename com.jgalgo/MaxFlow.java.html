@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MaxFlow.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jgalgo</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">MaxFlow.java</span></div><h1>MaxFlow.java</h1><pre class="source lang-java linenums">package com.jgalgo;
 
-import java.util.Objects;
-
 public interface MaxFlow {
 
 	/**
@@ -19,54 +17,45 @@ public interface MaxFlow {
 
 	public static interface FlowNetwork {
 
-		public double getCapacity(int e);
+		public double getCapacity(int edge);
 
-		public double getFlow(int e);
+		public void setCapacity(int edge, double capacity);
 
-		public void setFlow(int e, double flow);
+		public double getFlow(int edge);
 
-	}
+		public void setFlow(int edge, double flow);
 
-	public static class FlowEdgeDataDefault {
-		public final double capacity;
-		public double flow;
+		public static FlowNetwork createAsEdgeWeight(Graph g) {
+<span class="fc" id="L29">			Weights.Double capacityWeights = g.addEdgesWeights(new Object(), double.class);</span>
+<span class="fc" id="L30">			Weights.Double flowWeights = g.addEdgesWeights(new Object(), double.class);</span>
+<span class="fc" id="L31">			return new FlowNetwork() {</span>
 
-<span class="fc" id="L34">		public FlowEdgeDataDefault(double capacity) {</span>
-<span class="fc" id="L35">			this.capacity = capacity;</span>
-<span class="fc" id="L36">		}</span>
+				private static final double EPS = 0.0001;
 
-		@Override
-		public String toString() {
-<span class="nc" id="L40">			return &quot;(&quot; + flow + &quot; / &quot; + capacity + &quot;)&quot;;</span>
+				@Override
+				public double getCapacity(int edge) {
+<span class="fc" id="L37">					return capacityWeights.getDouble(edge);</span>
+				}
+
+				@Override
+				public void setCapacity(int edge, double capacity) {
+<span class="fc" id="L42">					capacityWeights.set(edge, capacity);</span>
+<span class="fc" id="L43">				}</span>
+
+				@Override
+				public double getFlow(int e) {
+<span class="fc" id="L47">					return flowWeights.getDouble(e);</span>
+				}
+
+				@Override
+				public void setFlow(int edge, double flow) {
+<span class="fc" id="L52">					double capacity = getCapacity(edge);</span>
+<span class="pc bpc" id="L53" title="1 of 2 branches missed.">					if (flow &gt; capacity + EPS)</span>
+<span class="nc" id="L54">						throw new IllegalArgumentException(&quot;Illegal flow &quot; + flow + &quot; on edge &quot; + edge);</span>
+<span class="fc" id="L55">					flowWeights.set(edge, Math.min(flow, capacity));</span>
+<span class="fc" id="L56">				}</span>
+			};
 		}
-	}
-
-	public static class FlowNetworkDefault implements FlowNetwork {
-
-		private static final double EPS = 0.0001;
-		private final Weights&lt;FlowEdgeDataDefault&gt; data;
-
-<span class="fc" id="L49">		public FlowNetworkDefault(Weights&lt;FlowEdgeDataDefault&gt; data) {</span>
-<span class="fc" id="L50">			this.data = Objects.requireNonNull(data);</span>
-<span class="fc" id="L51">		}</span>
-
-		@Override
-		public double getCapacity(int e) {
-<span class="fc" id="L55">			return data.get(e).capacity;</span>
-		}
-
-		@Override
-		public double getFlow(int e) {
-<span class="fc" id="L60">			return data.get(e).flow;</span>
-		}
-
-		@Override
-		public void setFlow(int e, double flow) {
-<span class="fc" id="L65">			FlowEdgeDataDefault d = data.get(e);</span>
-<span class="pc bpc" id="L66" title="1 of 2 branches missed.">			if (flow &gt; d.capacity + EPS)</span>
-<span class="nc" id="L67">				throw new IllegalArgumentException(&quot;Illegal flow &quot; + flow + &quot; on edge &quot; + e);</span>
-<span class="fc" id="L68">			d.flow = Math.min(flow, d.capacity);</span>
-<span class="fc" id="L69">		}</span>
 
 	}
 

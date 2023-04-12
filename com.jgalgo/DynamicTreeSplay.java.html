@@ -29,27 +29,27 @@
 <span class="fc" id="L29">			return n;</span>
 <span class="fc" id="L30">		splay(n);</span>
 <span class="fc" id="L31">		return splay(BSTUtils.findMax(n));</span>
-
 	}
 
 	@Override
 	public MinEdge&lt;V, E&gt; findMinEdge(Node&lt;V, E&gt; v) {
-<span class="fc" id="L37">		SplayNode&lt;V, E&gt; n = (SplayNode&lt;V, E&gt;) v;</span>
-<span class="fc bfc" id="L38" title="All 2 branches covered.">		if (!n.isLinked())</span>
-<span class="fc" id="L39">			return null;</span>
-<span class="fc" id="L40">		splay(n);</span>
-<span class="fc" id="L41">		double w = n.getWeight();</span>
-<span class="pc bpc" id="L42" title="1 of 4 branches missed.">		if (!n.hasRightChild() || w &lt; n.right.getMinWeight(w))</span>
-<span class="pc bpc" id="L43" title="1 of 2 branches missed.">			return n.isLinked() ? new MinEdgeRes&lt;&gt;(n, w, n.getEdgeData()) : null;</span>
+<span class="fc" id="L36">		SplayNode&lt;V, E&gt; n = (SplayNode&lt;V, E&gt;) v;</span>
+<span class="fc bfc" id="L37" title="All 2 branches covered.">		if (!n.isLinked())</span>
+<span class="fc" id="L38">			return null;</span>
+<span class="fc" id="L39">		splay(n);</span>
+<span class="fc" id="L40">		double w = n.getWeight();</span>
+<span class="pc bpc" id="L41" title="1 of 4 branches missed.">		if (!n.hasRightChild() || w &lt; n.right.getMinWeight(w))</span>
+<span class="pc bpc" id="L42" title="1 of 2 branches missed.">			return n.isLinked() ? new MinEdgeRes&lt;&gt;(n, w, n.getEdgeData()) : null;</span>
 
-<span class="fc" id="L45">		for (SplayNode&lt;V, E&gt; p = n.right;;) {</span>
-<span class="fc" id="L46">			double w1 = p.getWeight(w);</span>
-<span class="fc bfc" id="L47" title="All 4 branches covered.">			if (p.hasRightChild() &amp;&amp; p.getMinWeight(w) &gt;= p.right.getMinWeight(w1) - EPS) {</span>
-<span class="fc" id="L48">				p = p.right;</span>
-<span class="fc" id="L49">				w = w1;</span>
-<span class="fc bfc" id="L50" title="All 2 branches covered.">			} else if (Math.abs(w1 - p.getMinWeight(w)) &lt;= EPS) {</span>
-<span class="fc" id="L51">				impl.splay(p); /* perform splay to pay */</span>
-<span class="pc bpc" id="L52" title="1 of 2 branches missed.">				assert p.isLinked(); /* If fails, maxWeight was too small */</span>
+<span class="fc" id="L44">		for (SplayNode&lt;V, E&gt; p = n.right;;) {</span>
+<span class="fc" id="L45">			double w1 = p.getWeight(w);</span>
+<span class="fc bfc" id="L46" title="All 4 branches covered.">			if (p.hasRightChild() &amp;&amp; p.getMinWeight(w) &gt;= p.right.getMinWeight(w1) - EPS) {</span>
+<span class="fc" id="L47">				p = p.right;</span>
+<span class="fc" id="L48">				w = w1;</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">			} else if (Math.abs(w1 - p.getMinWeight(w)) &lt;= EPS) {</span>
+<span class="fc" id="L50">				impl.splay(p); /* perform splay to pay */</span>
+<span class="pc bpc" id="L51" title="1 of 2 branches missed.">				if (!p.isLinked())</span>
+<span class="nc" id="L52">					throw new IllegalArgumentException(&quot;weightLimit was too small&quot;);</span>
 <span class="fc" id="L53">				return new MinEdgeRes&lt;&gt;(p, w1, p.getEdgeData());</span>
 			} else {
 <span class="pc bpc" id="L55" title="1 of 2 branches missed.">				assert p.hasLeftChild();</span>

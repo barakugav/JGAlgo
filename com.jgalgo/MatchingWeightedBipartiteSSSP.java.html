@@ -141,7 +141,7 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 	private static DiGraph referenceGraph(UGraph g, Weights.Bool partition, EdgeWeightFunc w) {
 <span class="fc" id="L142">		int n = g.vertices().size();</span>
 <span class="fc" id="L143">		DiGraph g0 = new GraphArrayDirected(g.vertices().size());</span>
-<span class="fc" id="L144">		Weights&lt;Ref&gt; edgeRef = g0.addEdgesWeight(EdgeRefWeightKey).ofObjs();</span>
+<span class="fc" id="L144">		Weights&lt;Ref&gt; edgeRef = g0.addEdgesWeights(EdgeRefWeightKey, Ref.class);</span>
 
 <span class="fc bfc" id="L146" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
 <span class="fc bfc" id="L147" title="All 2 branches covered.">			if (!partition.getBool(u))</span>

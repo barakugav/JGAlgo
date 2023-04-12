@@ -34,7 +34,7 @@ public interface MST {
 	public static boolean verifyMST(UGraph g, EdgeWeightFunc w, IntCollection mstEdges, TPM tpmAlgo) {
 <span class="fc" id="L35">		int n = g.vertices().size();</span>
 <span class="fc" id="L36">		UGraph mst = new GraphArrayUndirected(n);</span>
-<span class="fc" id="L37">		Weights.Int edgeRef = mst.addEdgesWeight(&quot;edgeRef&quot;).ofInts();</span>
+<span class="fc" id="L37">		Weights.Int edgeRef = mst.addEdgesWeights(&quot;edgeRef&quot;, int.class);</span>
 <span class="fc bfc" id="L38" title="All 2 branches covered.">		for (IntIterator it = mstEdges.iterator(); it.hasNext();) {</span>
 <span class="fc" id="L39">			int e = it.nextInt();</span>
 <span class="fc" id="L40">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>

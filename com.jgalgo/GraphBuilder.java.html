@@ -338,14 +338,14 @@ public abstract class GraphBuilder {
 		}
 
 		@Override
-		&lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT addVerticesWeights(Object key, WeightsT weights) {
-<span class="fc" id="L342">			return g.addVerticesWeights(key, weights);</span>
-		}
+		void addVerticesWeightsContainer(Object key, Weights&lt;?&gt; weights) {
+<span class="fc" id="L342">			g.addVerticesWeightsContainer(key, weights);</span>
+<span class="fc" id="L343">		}</span>
 
 		@Override
-		&lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT addEdgesWeights(Object key, WeightsT weights) {
-<span class="fc" id="L347">			return g.addEdgesWeights(key, weights);</span>
-		}
+		void addEdgesWeightsContainer(Object key, Weights&lt;?&gt; weights) {
+<span class="fc" id="L347">			g.addEdgesWeightsContainer(key, weights);</span>
+<span class="fc" id="L348">		}</span>
 
 		class EdgeItr implements EdgeIter {
 

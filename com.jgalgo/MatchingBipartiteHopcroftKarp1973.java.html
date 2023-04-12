@@ -49,7 +49,7 @@ public class MatchingBipartiteHopcroftKarp1973 implements Matching {
 <span class="fc" id="L49">		final int MatchedNone = -1;</span>
 <span class="fc" id="L50">		Arrays.fill(matched, MatchedNone);</span>
 <span class="fc" id="L51">		UGraph f = new GraphArrayUndirected(n);</span>
-<span class="fc" id="L52">		Weights.Int edgeRef = f.addEdgesWeight(EdgeRefWeightKey).defVal(-1).ofInts();</span>
+<span class="fc" id="L52">		Weights.Int edgeRef = f.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));</span>
 
 		for (;;) {
 			/* Perform BFS to build the alternating forest */

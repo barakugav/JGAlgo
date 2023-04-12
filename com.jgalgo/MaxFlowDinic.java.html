@@ -50,10 +50,10 @@ public class MaxFlowDinic implements MaxFlow {
 <span class="fc" id="L50">		Weights&lt;Ref&gt; edgeRef = g.edgesWeight(EdgeRefWeightKey);</span>
 <span class="fc" id="L51">		final int n = g.vertices().size();</span>
 <span class="fc" id="L52">		DiGraph L = GraphBuilder.Linked.newInstance().setVerticesNum(n).setEdgesIDStrategy(Fixed.class).buildDirected();</span>
-<span class="fc" id="L53">		Weights&lt;Ref&gt; edgeRefL = L.addEdgesWeight(EdgeRefWeightKey).ofObjs();</span>
+<span class="fc" id="L53">		Weights&lt;Ref&gt; edgeRefL = L.addEdgesWeights(EdgeRefWeightKey, Ref.class);</span>
 <span class="fc" id="L54">		IntPriorityQueue bfsQueue = new IntArrayFIFOQueue();</span>
 <span class="fc" id="L55">		int[] level = new int[n];</span>
-<span class="fc" id="L56">		DynamicTree&lt;Integer, Integer&gt; dt = new DynamicTreeSplay&lt;&gt;(maxCapacity * 3);</span>
+<span class="fc" id="L56">		DynamicTree&lt;Integer, Integer&gt; dt = new DynamicTreeSplay&lt;&gt;(maxCapacity * 10);</span>
 		@SuppressWarnings(&quot;unchecked&quot;)
 <span class="fc" id="L58">		DynamicTree.Node&lt;Integer, Integer&gt;[] vToDt = new DynamicTree.Node[n];</span>
 <span class="fc" id="L59">		Stack&lt;DynamicTree.Node&lt;Integer, Integer&gt;&gt; cleanupStack = new Stack&lt;&gt;();</span>
@@ -88,7 +88,7 @@ public class MaxFlowDinic implements MaxFlow {
 <span class="fc" id="L88">			}</span>
 <span class="fc bfc" id="L89" title="All 2 branches covered.">			if (level[target] == unvisited)</span>
 <span class="fc" id="L90">				break; /* All paths to target are saturated */</span>
-<span class="fc" id="L91">			debug.println(&quot;taget level: &quot;, Integer.valueOf(level[target]));</span>
+<span class="fc" id="L91">			debug.println(&quot;target level: &quot; + level[target]);</span>
 
 <span class="fc" id="L93">			dt.clear();</span>
 <span class="fc bfc" id="L94" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
@@ -125,7 +125,7 @@ public class MaxFlowDinic implements MaxFlow {
 <span class="fc" id="L125">						dt.cut(min.u());</span>
 
 <span class="fc" id="L127">						min = dt.findMinEdge(vToDt[source]);</span>
-<span class="pc bpc" id="L128" title="1 of 4 branches missed.">					} while (min != null &amp;&amp; Math.abs(min.weight()) &lt; EPS);</span>
+<span class="fc bfc" id="L128" title="All 4 branches covered.">					} while (min != null &amp;&amp; Math.abs(min.weight()) &lt; EPS);</span>
 
 <span class="fc bfc" id="L130" title="All 2 branches covered.">				} else if (!L.edgesOut(v).hasNext()) {</span>
 
@@ -192,7 +192,7 @@ public class MaxFlowDinic implements MaxFlow {
 
 	private static DiGraph referenceGraph(DiGraph g0, FlowNetwork net) {
 <span class="fc" id="L194">		DiGraph g = new GraphArrayDirected(g0.vertices().size());</span>
-<span class="fc" id="L195">		Weights&lt;Ref&gt; edgeRef = g.addEdgesWeight(EdgeRefWeightKey).ofObjs();</span>
+<span class="fc" id="L195">		Weights&lt;Ref&gt; edgeRef = g.addEdgesWeights(EdgeRefWeightKey, Ref.class);</span>
 <span class="fc bfc" id="L196" title="All 2 branches covered.">		for (IntIterator it = g0.edges().iterator(); it.hasNext();) {</span>
 <span class="fc" id="L197">			int e = it.nextInt();</span>
 <span class="fc" id="L198">			int u = g0.edgeSource(e), v = g0.edgeTarget(e);</span>

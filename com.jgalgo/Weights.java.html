@@ -133,38 +133,6 @@ public interface Weights&lt;E&gt; {
 		}
 	}
 
-	public static interface Factory {
-		&lt;E&gt; Weights&lt;E&gt; ofObjs();
-
-		Weights.Int ofInts();
-
-		Weights.Long ofLongs();
-
-		Weights.Double ofDoubles();
-
-		Weights.Bool ofBools();
-
-		Object getDefVal();
-
-		Factory defVal(Object defVal);
-
-		default Factory defVal(int defVal) {
-<span class="fc" id="L152">			return defVal(Integer.valueOf(defVal));</span>
-		}
-
-		default Factory defVal(long defVal) {
-<span class="nc" id="L156">			return defVal(java.lang.Long.valueOf(defVal));</span>
-		}
-
-		default Factory defVal(double defVal) {
-<span class="nc" id="L160">			return defVal(java.lang.Double.valueOf(defVal));</span>
-		}
-
-		default Factory defVal(boolean defVal) {
-<span class="fc" id="L164">			return defVal(Boolean.valueOf(defVal));</span>
-		}
-	}
-
 	/**
 	 * The default vertices weight key of the bipartite property.
 	 * &lt;p&gt;
@@ -175,10 +143,10 @@ public interface Weights&lt;E&gt; {
 	 * {@link #DefaultBipartiteWeightKey}. To use a different key, the algorithms
 	 * expose a {@code setBipartiteVerticesWeightKey(Object)} function.
 	 */
-<span class="fc" id="L178">	public static final Object DefaultBipartiteWeightKey = new Object() {</span>
+<span class="fc" id="L146">	public static final Object DefaultBipartiteWeightKey = new Object() {</span>
 		@Override
 		public String toString() {
-<span class="fc" id="L181">			return &quot;DefaultBipartiteVerticesWeightKey&quot;;</span>
+<span class="fc" id="L149">			return &quot;DefaultBipartiteVerticesWeightKey&quot;;</span>
 		}
 	};
 

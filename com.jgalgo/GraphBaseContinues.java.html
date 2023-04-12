@@ -150,61 +150,59 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 	}
 
 	@Override
-	&lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT addVerticesWeights(Object key, WeightsT weights) {
+	void addVerticesWeightsContainer(Object key, Weights&lt;?&gt; weights) {
 <span class="fc" id="L154">		Weights&lt;?&gt; oldWeights = vWeights.put(key, weights);</span>
 <span class="pc bpc" id="L155" title="1 of 2 branches missed.">		if (oldWeights != null)</span>
 <span class="nc" id="L156">			throw new IllegalArgumentException(&quot;Two weights types with the same key: &quot; + key);</span>
-<span class="fc" id="L157">		return weights;</span>
-	}
+<span class="fc" id="L157">	}</span>
 
 	@Override
-	&lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT addEdgesWeights(Object key, WeightsT weights) {
-<span class="fc" id="L162">		Weights&lt;?&gt; oldWeights = eWeights.put(key, weights);</span>
-<span class="pc bpc" id="L163" title="1 of 2 branches missed.">		if (oldWeights != null)</span>
-<span class="nc" id="L164">			throw new IllegalArgumentException(&quot;Two weights types with the same key: &quot; + key);</span>
-<span class="fc" id="L165">		return weights;</span>
-	}
+	void addEdgesWeightsContainer(Object key, Weights&lt;?&gt; weights) {
+<span class="fc" id="L161">		Weights&lt;?&gt; oldWeights = eWeights.put(key, weights);</span>
+<span class="pc bpc" id="L162" title="1 of 2 branches missed.">		if (oldWeights != null)</span>
+<span class="nc" id="L163">			throw new IllegalArgumentException(&quot;Two weights types with the same key: &quot; + key);</span>
+<span class="fc" id="L164">	}</span>
 
 	@Override
 	public Set&lt;Object&gt; getEdgesWeightsKeys() {
-<span class="fc" id="L170">		return Collections.unmodifiableSet(eWeights.keySet());</span>
+<span class="fc" id="L168">		return Collections.unmodifiableSet(eWeights.keySet());</span>
 	}
 
 	@Override
 	public Collection&lt;Weights&lt;?&gt;&gt; getEdgesWeights() {
-<span class="fc" id="L175">		return Collections.unmodifiableCollection(eWeights.values());</span>
+<span class="fc" id="L173">		return Collections.unmodifiableCollection(eWeights.values());</span>
 	}
 
 	@Override
 	public void removeEdgesWeights(Object key) {
-<span class="fc" id="L180">		eWeights.remove(key);</span>
-<span class="fc" id="L181">	}</span>
+<span class="fc" id="L178">		eWeights.remove(key);</span>
+<span class="fc" id="L179">	}</span>
 
 	void addInternalVerticesDataContainer(DataContainer&lt;?&gt; container) {
-<span class="fc" id="L184">		vWeightsInternal.add(container);</span>
-<span class="fc" id="L185">		int n = vertices().size();</span>
-<span class="fc" id="L186">		container.ensureCapacity(n);</span>
-<span class="fc bfc" id="L187" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
-<span class="fc" id="L188">			container.add(u);</span>
-<span class="fc" id="L189">	}</span>
+<span class="fc" id="L182">		vWeightsInternal.add(container);</span>
+<span class="fc" id="L183">		int n = vertices().size();</span>
+<span class="fc" id="L184">		container.ensureCapacity(n);</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
+<span class="fc" id="L186">			container.add(u);</span>
+<span class="fc" id="L187">	}</span>
 
 	void addInternalEdgesDataContainer(DataContainer&lt;?&gt; container) {
-<span class="fc" id="L192">		eWeightsInternal.add(container);</span>
-<span class="fc" id="L193">		int m = edges().size();</span>
-<span class="fc" id="L194">		container.ensureCapacity(m);</span>
-<span class="pc bpc" id="L195" title="1 of 2 branches missed.">		for (int e = 0; e &lt; m; e++)</span>
-<span class="nc" id="L196">			container.add(e);</span>
-<span class="fc" id="L197">	}</span>
+<span class="fc" id="L190">		eWeightsInternal.add(container);</span>
+<span class="fc" id="L191">		int m = edges().size();</span>
+<span class="fc" id="L192">		container.ensureCapacity(m);</span>
+<span class="pc bpc" id="L193" title="1 of 2 branches missed.">		for (int e = 0; e &lt; m; e++)</span>
+<span class="nc" id="L194">			container.add(e);</span>
+<span class="fc" id="L195">	}</span>
 
 	void checkVertexIdx(int u) {
-<span class="pc bpc" id="L200" title="1 of 2 branches missed.">		if (!vertices().contains(u))</span>
-<span class="nc" id="L201">			throw new IndexOutOfBoundsException(u);</span>
-<span class="fc" id="L202">	}</span>
+<span class="pc bpc" id="L198" title="1 of 2 branches missed.">		if (!vertices().contains(u))</span>
+<span class="nc" id="L199">			throw new IndexOutOfBoundsException(u);</span>
+<span class="fc" id="L200">	}</span>
 
 	void checkEdgeIdx(int e) {
-<span class="pc bpc" id="L205" title="1 of 2 branches missed.">		if (!edges().contains(e))</span>
-<span class="nc" id="L206">			throw new IndexOutOfBoundsException(e);</span>
-<span class="fc" id="L207">	}</span>
+<span class="pc bpc" id="L203" title="1 of 2 branches missed.">		if (!edges().contains(e))</span>
+<span class="nc" id="L204">			throw new IndexOutOfBoundsException(e);</span>
+<span class="fc" id="L205">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

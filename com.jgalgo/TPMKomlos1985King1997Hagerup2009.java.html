@@ -225,7 +225,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 <span class="fc" id="L225">				vTv[v] = v;</span>
 
 <span class="fc" id="L227">			UGraph t = new GraphArrayUndirected(n);</span>
-<span class="fc" id="L228">			Weights.Int tData = t.addEdgesWeight(&quot;edgeData&quot;).defVal(-1).ofInts();</span>
+<span class="fc" id="L228">			Weights.Int tData = t.addEdgesWeights(&quot;edgeData&quot;, int.class, Integer.valueOf(-1));</span>
 <span class="fc bfc" id="L229" title="All 2 branches covered.">			for (UGraph G = Graphs.referenceGraph(tOrig, EdgeRefWeightKey); (n = G.vertices().size()) &gt; 1;) {</span>
 <span class="fc" id="L230">				Weights.Int GData = G.edgesWeight(EdgeRefWeightKey);</span>
 
@@ -283,7 +283,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 
 				// contract G to new graph with the super vertices
 <span class="fc" id="L285">				UGraph gNext = new GraphArrayUndirected(nNext);</span>
-<span class="fc" id="L286">				Weights.Int gNextData = gNext.addEdgesWeight(EdgeRefWeightKey).defVal(-1).ofInts();</span>
+<span class="fc" id="L286">				Weights.Int gNextData = gNext.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));</span>
 <span class="fc bfc" id="L287" title="All 2 branches covered.">				for (int u = 0; u &lt; n; u++) {</span>
 <span class="fc" id="L288">					int U = vNext[u];</span>
 <span class="fc bfc" id="L289" title="All 2 branches covered.">					for (EdgeIter eit = G.edgesOut(u); eit.hasNext();) {</span>
