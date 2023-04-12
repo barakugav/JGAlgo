@@ -1,6 +1,7 @@
 package com.jgalgo;
 
 import java.util.Collection;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -25,6 +26,47 @@ abstract class GraphBase implements Graph {
 	@Override
 	public final IntSet edges() {
 		return edgesIDStrategy.idSet();
+	}
+
+	@Override
+	public EdgeIter getEdges(int u, int v) {
+		return new EdgeIter() {
+			EdgeIter it = edgesOut(u);
+			int e = -1;
+
+			@Override
+			public boolean hasNext() {
+				if (e != -1)
+					return true;
+				while (it.hasNext()) {
+					int eNext = it.nextInt();
+					if (it.v() == v) {
+						e = eNext;
+						return true;
+					}
+				}
+				return false;
+			}
+
+			@Override
+			public int nextInt() {
+				if (!hasNext())
+					throw new NoSuchElementException();
+				int ret = e;
+				e = -1;
+				return ret;
+			}
+
+			@Override
+			public int u() {
+				return u;
+			}
+
+			@Override
+			public int v() {
+				return v;
+			}
+		};
 	}
 
 	@Override

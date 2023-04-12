@@ -136,6 +136,16 @@ public class Connectivity {
 		return new Connectivity.Result(compNum, comp);
 	}
 
+	/**
+	 * Result object for connectivity components calculation.
+	 * <p>
+	 * The result object contains the partition of the vertices into the
+	 * connectivity components (strongly for directed graph). Each connectivity
+	 * component (CC) is assigned a unique integer number in range [0, ccNum), and
+	 * each vertex can be queried for its CC using {@link #getVertexCc(int)}.
+	 *
+	 * @author Barak Ugav
+	 */
 	public static class Result {
 		private int ccNum;
 		private int[] vertexToCC;
@@ -145,10 +155,23 @@ public class Connectivity {
 			this.vertexToCC = vertexToCC;
 		}
 
+		/**
+		 * Get the connectivity component containing a vertex.
+		 *
+		 * @param v a vertex in the graph
+		 * @return index of the connectivity component containing the vertex, in range
+		 *         [0, ccNum)
+		 */
 		public int getVertexCc(int v) {
 			return vertexToCC[v];
 		}
 
+		/**
+		 * Get the number of connectivity components in the graph.
+		 *
+		 * @return the number of connectivity components in the graph, non negative
+		 *         number
+		 */
 		public int getNumberOfCC() {
 			return ccNum;
 		}
