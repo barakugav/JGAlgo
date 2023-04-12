@@ -36,7 +36,7 @@ JGAlgo is a collection of algorithms implemented in Java. It contains mostly alg
 | LCA static BenderFarachColton2000, using RMQ | $O(n + m)$ |
 | LCA dynamic Gabow simple | $O(n \log^2 n + m)$ |
 | LCA dynamic Gabow2017 | $O(n + m)$ |
-| Max flow EdmondsKarp | $O(m n^2)$ |
+| Max flow EdmondsKarp | $O(m^2 n)$ |
 | Max flow Push/Relabel | $O(n^3)$ |
 | Max flow Push/Relabel using Dynamic Trees | $O\left(m n \log \left(\frac{n^2}{m}\right)\right)$ |
 | Max flow Dinic using Dynamic Trees | $O(m n \log n)$ |
