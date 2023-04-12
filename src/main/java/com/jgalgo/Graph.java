@@ -3,6 +3,7 @@ package com.jgalgo;
 import java.util.Collection;
 import java.util.Set;
 
+import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
@@ -135,6 +136,25 @@ public interface Graph {
 	void removeVertex(int v);
 
 	/**
+	 * Remove multiple vertices.
+	 * <p>
+	 * After removing a vertex, the vertices ID strategy may rename other vertices
+	 * identifiers to maintain its invariants, see {@link #getVerticesIDStrategy()}.
+	 * Theses renames can be subscribed using {@link IDStrategy#addIDSwapListener}.
+	 * <p>
+	 * This function may be useful in case a user want to remove a collection of
+	 * vertices, and does not want to update IDs within the collection due to IDs
+	 * renames.
+	 *
+	 * @param vs a collection of vertices to remove
+	 * @throws IndexOutOfBoundsException if one of the edges is not a valid edge
+	 *                                   identifier
+	 * @throws IllegalArgumentException  if the vertices collection to remove
+	 *                                   contains duplications
+	 */
+	void removeVertices(IntCollection vs);
+
+	/**
 	 * Get the edges whose source is {@code u}.
 	 *
 	 * <p>
@@ -222,10 +242,29 @@ public interface Graph {
 	 * Theses renames can be subscribed using {@link IDStrategy#addIDSwapListener}.
 	 *
 	 * @param edge the edge identifier
-	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid vertex
+	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge
 	 *                                   identifier
 	 */
 	void removeEdge(int edge);
+
+	/**
+	 * Remove multiple edges.
+	 * <p>
+	 * After removing an edge, the edges ID strategy may rename other edges
+	 * identifiers to maintain its invariants, see {@link #getEdgesIDStrategy()}.
+	 * Theses renames can be subscribed using {@link IDStrategy#addIDSwapListener}.
+	 * <p>
+	 * This function may be useful in case a user want to remove a collection of
+	 * edges, and does not want to update IDs within the collection due to IDs
+	 * renames.
+	 *
+	 * @param edges a collection of edges to remove
+	 * @throws IndexOutOfBoundsException if one of the edges is not a valid edge
+	 *                                   identifier
+	 * @throws IllegalArgumentException  if the edges collection to remove contains
+	 *                                   duplications
+	 */
+	void removeEdges(IntCollection edges);
 
 	/**
 	 * Remove all the edges of a vertex.
@@ -289,7 +328,7 @@ public interface Graph {
 	 *
 	 * @param edge the edge identifier
 	 * @return the edge source vertex
-	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid vertex
+	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge
 	 *                                   identifier
 	 */
 	public int edgeSource(int edge);
@@ -304,7 +343,7 @@ public interface Graph {
 	 *
 	 * @param edge the edge identifier
 	 * @return the edge target vertex
-	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid vertex
+	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge
 	 *                                   identifier
 	 */
 	public int edgeTarget(int edge);
@@ -315,7 +354,7 @@ public interface Graph {
 	 * @param edge     an edge identifier
 	 * @param endpoint one of the edge end-point
 	 * @return the other end-point of the edge
-	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid vertex
+	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge
 	 *                                   identifier
 	 * @throws IllegalArgumentException  if {@code endpoint} is not an endpoint of
 	 *                                   the edge

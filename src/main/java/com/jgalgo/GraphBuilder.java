@@ -6,6 +6,10 @@ import java.util.Set;
 
 import com.jgalgo.IDStrategy.IDAddRemoveListener;
 
+import it.unimi.dsi.fastutil.ints.AbstractIntCollection;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+
 public abstract class GraphBuilder {
 
 	int verticesNum;
@@ -185,6 +189,40 @@ public abstract class GraphBuilder {
 		}
 
 		@Override
+		public void removeVertices(IntCollection vs) {
+			g.removeVertices(new AbstractIntCollection() {
+
+				@Override
+				public int size() {
+					return vs.size();
+				}
+
+				@Override
+				public IntIterator iterator() {
+					return new IntIterator() {
+						final IntIterator it = vs.iterator();
+
+						@Override
+						public boolean hasNext() {
+							return it.hasNext();
+						}
+
+						@Override
+						public int nextInt() {
+							return verticesIDStrategy.idToIdx(it.nextInt());
+						}
+					};
+				}
+
+				@Override
+				public boolean contains(int uIdx) {
+					return vs.contains(verticesIDStrategy.idxToId(uIdx));
+				}
+
+			});
+		}
+
+		@Override
 		public EdgeIter edgesOut(int u) {
 			EdgeIter it = g.edgesOut(verticesIDStrategy.idToIdx(u));
 			return new EdgeItr(it);
@@ -224,6 +262,40 @@ public abstract class GraphBuilder {
 		public void removeEdge(int edge) {
 			int eIdx = edgesIDStrategy.idToIdx(edge);
 			g.removeEdge(eIdx);
+		}
+
+		@Override
+		public void removeEdges(IntCollection edges) {
+			g.removeEdges(new AbstractIntCollection() {
+
+				@Override
+				public int size() {
+					return edges.size();
+				}
+
+				@Override
+				public IntIterator iterator() {
+					return new IntIterator() {
+						final IntIterator it = edges.iterator();
+
+						@Override
+						public boolean hasNext() {
+							return it.hasNext();
+						}
+
+						@Override
+						public int nextInt() {
+							return edgesIDStrategy.idToIdx(it.nextInt());
+						}
+					};
+				}
+
+				@Override
+				public boolean contains(int eIdx) {
+					return edges.contains(edgesIDStrategy.idxToId(eIdx));
+				}
+
+			});
 		}
 
 		@Override
@@ -388,7 +460,6 @@ public abstract class GraphBuilder {
 			super(g, edgesIDStrategy);
 			if (!(g instanceof DiGraph))
 				throw new IllegalArgumentException();
-
 		}
 
 		private DiGraph digraph() {
@@ -409,7 +480,6 @@ public abstract class GraphBuilder {
 			super(g, edgesIDStrategy);
 			if (!(g instanceof UGraph))
 				throw new IllegalArgumentException();
-
 		}
 
 	}

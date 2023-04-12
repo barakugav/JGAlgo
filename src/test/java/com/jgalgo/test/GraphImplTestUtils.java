@@ -2,8 +2,10 @@ package com.jgalgo.test;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.function.ToIntFunction;
 
 import org.junit.jupiter.api.Assertions;
@@ -447,6 +449,7 @@ class GraphImplTestUtils extends TestUtils {
 			return edges.get(rand.nextInt(edges.size()));
 		}
 
+		@SuppressWarnings("unused")
 		void clearEdges() {
 			if (debugPrints)
 				System.out.println("clearEdges()");
@@ -537,11 +540,11 @@ class GraphImplTestUtils extends TestUtils {
 
 		Degree, DegreeIn, DegreeOut,
 
-		AddEdge, RemoveEdge, RemoveEdgeAll, RemoveEdgeAllIn, RemoveEdgeAllOut, ReverseEdge,
+		AddEdge, RemoveEdge, RemoveEdges, RemoveEdgesAll, RemoveEdgesAllIn, RemoveEdgesAllOut, ReverseEdge,
 
-		ClearEdges,
+		// ClearEdges,
 
-		AddVertex, RemoveVertex,
+		AddVertex, RemoveVertex, RemoveVertices,
 	}
 
 	private static class UniqueGenerator {
@@ -571,24 +574,26 @@ class GraphImplTestUtils extends TestUtils {
 		Random rand = new Random(seedGen.nextSeed());
 		RandWeighted<GraphOp> opRand = new RandWeighted<>();
 		if (capabilities.edgeAdd())
-			opRand.add(GraphOp.AddEdge, 20);
+			opRand.add(GraphOp.AddEdge, 40);
 		if (capabilities.edgeRemove()) {
-			opRand.add(GraphOp.RemoveEdge, 10);
-			opRand.add(GraphOp.RemoveEdgeAll, 1);
-			opRand.add(GraphOp.ClearEdges, 1);
+			opRand.add(GraphOp.RemoveEdge, 6);
+			opRand.add(GraphOp.RemoveEdges, 1);
+			opRand.add(GraphOp.RemoveEdgesAll, 1);
+			// opRand.add(GraphOp.ClearEdges, 1);
 		}
 		if (capabilities.edgeRemove() && capabilities.directed()) {
-			opRand.add(GraphOp.RemoveEdgeAllIn, 1);
-			opRand.add(GraphOp.RemoveEdgeAllOut, 1);
+			opRand.add(GraphOp.RemoveEdgesAllIn, 1);
+			opRand.add(GraphOp.RemoveEdgesAllOut, 1);
 		}
 		if (capabilities.directed())
 			opRand.add(GraphOp.ReverseEdge, 3);
 		if (capabilities.vertexAdd())
-			opRand.add(GraphOp.AddVertex, 4);
+			opRand.add(GraphOp.AddVertex, 10);
 		if (capabilities.vertexRemove()) {
 			if (!capabilities.edgeRemove())
 				throw new IllegalArgumentException("vertex removal can't be supported while edge removal is not");
-			opRand.add(GraphOp.RemoveVertex, 4);
+			opRand.add(GraphOp.RemoveVertex, 2);
+			opRand.add(GraphOp.RemoveVertices, 1);
 		}
 
 		final Object dataKey = new Object();
@@ -659,7 +664,21 @@ class GraphImplTestUtils extends TestUtils {
 					tracker.removeEdge(edge);
 					break;
 				}
-				case RemoveEdgeAll: {
+				case RemoveEdges: {
+					if (tracker.edgesNum() < 3)
+						continue;
+					Set<GraphTracker.Edge> edges = new HashSet<>(3);
+					while (edges.size() < 3)
+						edges.add(tracker.getRandEdge(rand));
+					IntSet edgesInt = new IntOpenHashSet(3);
+					for (GraphTracker.Edge edge : edges)
+						edgesInt.add(getEdge.applyAsInt(edge));
+					g.removeEdges(edgesInt);
+					for (GraphTracker.Edge edge : edges)
+						tracker.removeEdge(edge);
+					break;
+				}
+				case RemoveEdgesAll: {
 					if (tracker.verticesNum() == 0)
 						continue;
 					GraphTracker.Vertex u = tracker.getRandVertex(rand);
@@ -667,7 +686,7 @@ class GraphImplTestUtils extends TestUtils {
 					tracker.removeEdgesAll(u);
 					break;
 				}
-				case RemoveEdgeAllIn: {
+				case RemoveEdgesAllIn: {
 					if (tracker.verticesNum() == 0)
 						continue;
 					GraphTracker.Vertex u = tracker.getRandVertex(rand);
@@ -675,7 +694,7 @@ class GraphImplTestUtils extends TestUtils {
 					tracker.removeEdgesAllIn(u);
 					break;
 				}
-				case RemoveEdgeAllOut: {
+				case RemoveEdgesAllOut: {
 					if (tracker.verticesNum() == 0)
 						continue;
 					GraphTracker.Vertex u = tracker.getRandVertex(rand);
@@ -695,12 +714,12 @@ class GraphImplTestUtils extends TestUtils {
 					tracker.reverseEdge(edge);
 					break;
 				}
-				case ClearEdges:
-					if (g.edges().size() == 0)
-						continue;
-					g.clearEdges();
-					tracker.clearEdges();
-					break;
+				// case ClearEdges:
+				// if (g.edges().size() == 0)
+				// continue;
+				// g.clearEdges();
+				// tracker.clearEdges();
+				// break;
 
 				case AddVertex: {
 					int v = g.addVertex();
@@ -714,6 +733,20 @@ class GraphImplTestUtils extends TestUtils {
 					g.removeVertex(v.id);
 					tracker.removeVertex(v);
 					break;
+				case RemoveVertices: {
+					if (tracker.verticesNum() < 3)
+						continue;
+					Set<GraphTracker.Vertex> vertices = new HashSet<>(3);
+					while (vertices.size() < 3)
+						vertices.add(tracker.getRandVertex(rand));
+					IntSet verticesInt = new IntOpenHashSet(3);
+					for (GraphTracker.Vertex vertex : vertices)
+						verticesInt.add(vertex.id);
+					g.removeVertices(verticesInt);
+					for (GraphTracker.Vertex vertex : vertices)
+						tracker.removeVertex(vertex);
+					break;
+				}
 
 				default:
 					throw new IllegalArgumentException("Unexpected value: " + op);
