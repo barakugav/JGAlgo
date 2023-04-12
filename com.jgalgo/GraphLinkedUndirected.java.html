@@ -73,97 +73,102 @@ public class GraphLinkedUndirected extends GraphLinkedAbstract implements UGraph
 
 	@Override
 	public void removeEdge(int edge) {
-<span class="fc" id="L76">		Node n = (Node) getNode(edge);</span>
-<span class="fc" id="L77">		super.removeEdge(edge);</span>
-<span class="fc" id="L78">		removeEdge0(n, n.u);</span>
-<span class="fc" id="L79">		removeEdge0(n, n.v);</span>
-<span class="fc" id="L80">	}</span>
+<span class="fc" id="L76">		removeEdge(getNode(edge));</span>
+<span class="fc" id="L77">	}</span>
+
+	@Override
+	void removeEdge(GraphLinkedAbstract.Node node) {
+<span class="fc" id="L81">		Node n = (Node) node;</span>
+<span class="fc" id="L82">		removeEdge0(n, n.u);</span>
+<span class="fc" id="L83">		removeEdge0(n, n.v);</span>
+<span class="fc" id="L84">		super.removeEdge(node);</span>
+<span class="fc" id="L85">	}</span>
 
 	@Override
 	public void removeEdges(int u) {
-<span class="fc" id="L84">		checkVertexIdx(u);</span>
-<span class="fc bfc" id="L85" title="All 2 branches covered.">		for (Node p = edges.get(u), next; p != null; p = next) {</span>
+<span class="fc" id="L89">		checkVertexIdx(u);</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">		for (Node p = edges.get(u), next; p != null; p = next) {</span>
 			// update u list
-<span class="fc" id="L87">			next = p.next(u);</span>
-<span class="fc" id="L88">			p.nextSet(u, null);</span>
-<span class="fc" id="L89">			p.prevSet(u, null);</span>
+<span class="fc" id="L92">			next = p.next(u);</span>
+<span class="fc" id="L93">			p.nextSet(u, null);</span>
+<span class="fc" id="L94">			p.prevSet(u, null);</span>
 
 			// update v list
-<span class="fc" id="L92">			int v = p.getEndpoint(u);</span>
-<span class="fc" id="L93">			removeEdge0(p, v);</span>
+<span class="fc" id="L97">			int v = p.getEndpoint(u);</span>
+<span class="fc" id="L98">			removeEdge0(p, v);</span>
 
-<span class="fc" id="L95">			super.removeEdge(p.id);</span>
+<span class="fc" id="L100">			super.removeEdge(p.id);</span>
 		}
-<span class="fc" id="L97">		edges.set(u, null);</span>
-<span class="fc" id="L98">	}</span>
+<span class="fc" id="L102">		edges.set(u, null);</span>
+<span class="fc" id="L103">	}</span>
 
 	void removeEdge0(Node e, int w) {
-<span class="fc" id="L101">		Node next = e.next(w), prev = e.prev(w);</span>
-<span class="fc bfc" id="L102" title="All 2 branches covered.">		if (prev == null) {</span>
-<span class="fc" id="L103">			edges.set(w, next);</span>
+<span class="fc" id="L106">		Node next = e.next(w), prev = e.prev(w);</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">		if (prev == null) {</span>
+<span class="fc" id="L108">			edges.set(w, next);</span>
 		} else {
-<span class="fc" id="L105">			prev.nextSet(w, next);</span>
-<span class="fc" id="L106">			e.prevSet(w, null);</span>
+<span class="fc" id="L110">			prev.nextSet(w, next);</span>
+<span class="fc" id="L111">			e.prevSet(w, null);</span>
 		}
-<span class="fc bfc" id="L108" title="All 2 branches covered.">		if (next != null) {</span>
-<span class="fc" id="L109">			next.prevSet(w, prev);</span>
-<span class="fc" id="L110">			e.nextSet(w, null);</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">		if (next != null) {</span>
+<span class="fc" id="L114">			next.prevSet(w, prev);</span>
+<span class="fc" id="L115">			e.nextSet(w, null);</span>
 		}
-<span class="fc" id="L112">	}</span>
+<span class="fc" id="L117">	}</span>
 
 	@Override
 	public void clearEdges() {
-<span class="nc bnc" id="L116" title="All 2 branches missed.">		for (GraphLinkedAbstract.Node p0 : nodes()) {</span>
-<span class="nc" id="L117">			Node p = (Node) p0;</span>
-<span class="nc" id="L118">			p.nextu = p.nextv = p.prevu = p.prevv = null;</span>
-<span class="nc" id="L119">		}</span>
-<span class="nc" id="L120">		int n = vertices().size();</span>
-<span class="nc bnc" id="L121" title="All 2 branches missed.">		for (int uIdx = 0; uIdx &lt; n; uIdx++) {</span>
+<span class="nc bnc" id="L121" title="All 2 branches missed.">		for (GraphLinkedAbstract.Node p0 : nodes()) {</span>
+<span class="nc" id="L122">			Node p = (Node) p0;</span>
+<span class="nc" id="L123">			p.nextu = p.nextv = p.prevu = p.prevv = null;</span>
+<span class="nc" id="L124">		}</span>
+<span class="nc" id="L125">		int n = vertices().size();</span>
+<span class="nc bnc" id="L126" title="All 2 branches missed.">		for (int uIdx = 0; uIdx &lt; n; uIdx++) {</span>
 			// TODO do some sort of 'addKey' instead of set, no need
-<span class="nc" id="L123">			edges.set(uIdx, null);</span>
+<span class="nc" id="L128">			edges.set(uIdx, null);</span>
 		}
-<span class="nc" id="L125">		super.clearEdges();</span>
+<span class="nc" id="L130">		super.clearEdges();</span>
 
-<span class="nc" id="L127">	}</span>
+<span class="nc" id="L132">	}</span>
 
-<span class="fc" id="L129">	private static class Node extends GraphLinkedAbstract.Node {</span>
+<span class="fc" id="L134">	private static class Node extends GraphLinkedAbstract.Node {</span>
 
 		private Node nextu, nextv;
 		private Node prevu, prevv;
 
 		Node(int id, int u, int v) {
-<span class="fc" id="L135">			super(id, u, v);</span>
-<span class="fc" id="L136">		}</span>
+<span class="fc" id="L140">			super(id, u, v);</span>
+<span class="fc" id="L141">		}</span>
 
 		Node next(int w) {
-<span class="pc bpc" id="L139" title="1 of 4 branches missed.">			assert w == u || w == v;</span>
-<span class="fc bfc" id="L140" title="All 2 branches covered.">			return w == u ? nextu : nextv;</span>
+<span class="pc bpc" id="L144" title="1 of 4 branches missed.">			assert w == u || w == v;</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">			return w == u ? nextu : nextv;</span>
 		}
 
 		void nextSet(int w, Node n) {
-<span class="pc bpc" id="L144" title="1 of 4 branches missed.">			assert w == u || w == v;</span>
-<span class="fc bfc" id="L145" title="All 2 branches covered.">			if (w == u)</span>
-<span class="fc" id="L146">				nextu = n;</span>
+<span class="pc bpc" id="L149" title="1 of 4 branches missed.">			assert w == u || w == v;</span>
+<span class="fc bfc" id="L150" title="All 2 branches covered.">			if (w == u)</span>
+<span class="fc" id="L151">				nextu = n;</span>
 			else
-<span class="fc" id="L148">				nextv = n;</span>
-<span class="fc" id="L149">		}</span>
+<span class="fc" id="L153">				nextv = n;</span>
+<span class="fc" id="L154">		}</span>
 
 		Node prev(int w) {
-<span class="pc bpc" id="L152" title="1 of 4 branches missed.">			assert w == u || w == v;</span>
-<span class="fc bfc" id="L153" title="All 2 branches covered.">			return w == u ? prevu : prevv;</span>
+<span class="pc bpc" id="L157" title="1 of 4 branches missed.">			assert w == u || w == v;</span>
+<span class="fc bfc" id="L158" title="All 2 branches covered.">			return w == u ? prevu : prevv;</span>
 		}
 
 		void prevSet(int w, Node n) {
-<span class="pc bpc" id="L157" title="1 of 4 branches missed.">			assert w == u || w == v;</span>
-<span class="fc bfc" id="L158" title="All 2 branches covered.">			if (w == u)</span>
-<span class="fc" id="L159">				prevu = n;</span>
+<span class="pc bpc" id="L162" title="1 of 4 branches missed.">			assert w == u || w == v;</span>
+<span class="fc bfc" id="L163" title="All 2 branches covered.">			if (w == u)</span>
+<span class="fc" id="L164">				prevu = n;</span>
 			else
-<span class="fc" id="L161">				prevv = n;</span>
-<span class="fc" id="L162">		}</span>
+<span class="fc" id="L166">				prevv = n;</span>
+<span class="fc" id="L167">		}</span>
 
 		int getEndpoint(int w) {
-<span class="pc bpc" id="L165" title="1 of 4 branches missed.">			assert w == u || w == v;</span>
-<span class="fc bfc" id="L166" title="All 2 branches covered.">			return w == u ? v : u;</span>
+<span class="pc bpc" id="L170" title="1 of 4 branches missed.">			assert w == u || w == v;</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">			return w == u ? v : u;</span>
 		}
 
 	}
@@ -172,63 +177,63 @@ public class GraphLinkedUndirected extends GraphLinkedAbstract implements UGraph
 
 		private final int u;
 
-<span class="fc" id="L175">		EdgeVertexItr(int u, Node p) {</span>
-<span class="fc" id="L176">			super(p);</span>
-<span class="fc" id="L177">			this.u = u;</span>
-<span class="fc" id="L178">		}</span>
+<span class="fc" id="L180">		EdgeVertexItr(int u, Node p) {</span>
+<span class="fc" id="L181">			super(p);</span>
+<span class="fc" id="L182">			this.u = u;</span>
+<span class="fc" id="L183">		}</span>
 
 		@Override
 		Node nextNode(GraphLinkedAbstract.Node n) {
-<span class="fc" id="L182">			return ((Node) n).next(u);</span>
+<span class="fc" id="L187">			return ((Node) n).next(u);</span>
 		}
 
 		@Override
 		public int u() {
-<span class="fc" id="L187">			return u;</span>
+<span class="fc" id="L192">			return u;</span>
 		}
 
 		@Override
 		public int v() {
-<span class="fc" id="L192">			int u0 = last.u, v0 = last.v;</span>
-<span class="fc bfc" id="L193" title="All 2 branches covered.">			return u == u0 ? v0 : u0;</span>
+<span class="fc" id="L197">			int u0 = last.u, v0 = last.v;</span>
+<span class="fc bfc" id="L198" title="All 2 branches covered.">			return u == u0 ? v0 : u0;</span>
 		}
 
 	}
 
-<span class="fc" id="L198">	private static final GraphCapabilities Capabilities = new GraphCapabilities() {</span>
+<span class="fc" id="L203">	private static final GraphCapabilities Capabilities = new GraphCapabilities() {</span>
 		@Override
 		public boolean vertexAdd() {
-<span class="fc" id="L201">			return true;</span>
-		}
-
-		@Override
-		public boolean vertexRemove() {
 <span class="fc" id="L206">			return true;</span>
 		}
 
 		@Override
-		public boolean edgeAdd() {
+		public boolean vertexRemove() {
 <span class="fc" id="L211">			return true;</span>
 		}
 
 		@Override
-		public boolean edgeRemove() {
+		public boolean edgeAdd() {
 <span class="fc" id="L216">			return true;</span>
 		}
 
 		@Override
-		public boolean parallelEdges() {
+		public boolean edgeRemove() {
 <span class="fc" id="L221">			return true;</span>
 		}
 
 		@Override
+		public boolean parallelEdges() {
+<span class="fc" id="L226">			return true;</span>
+		}
+
+		@Override
 		public boolean selfEdges() {
-<span class="fc" id="L226">			return false;</span>
+<span class="fc" id="L231">			return false;</span>
 		}
 
 		@Override
 		public boolean directed() {
-<span class="fc" id="L231">			return false;</span>
+<span class="fc" id="L236">			return false;</span>
 		}
 	};
 

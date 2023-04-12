@@ -120,7 +120,7 @@ abstract class GraphArrayAbstract extends GraphBaseContinues {
 	abstract class EdgeIt implements EdgeIter {
 
 		private final int[] edges;
-		private final int count;
+		private int count;
 		private int idx;
 <span class="fc" id="L125">		int lastEdge = -1;</span>
 
@@ -140,6 +140,20 @@ abstract class GraphArrayAbstract extends GraphBaseContinues {
 <span class="nc" id="L140">				throw new NoSuchElementException();</span>
 <span class="fc" id="L141">			return lastEdge = edges[idx++];</span>
 		}
+
+		@Override
+		public void remove() {
+<span class="pc bpc" id="L146" title="1 of 2 branches missed.">			if (lastEdge == -1)</span>
+<span class="nc" id="L147">				throw new IllegalStateException();</span>
+<span class="fc" id="L148">			removeEdge(lastEdge);</span>
+			/**
+			 * The edge will be removed from entry idx-1 in edges[], go back and decrease
+			 * the edges count.
+			 */
+<span class="fc" id="L153">			count--;</span>
+<span class="fc" id="L154">			idx--;</span>
+<span class="fc" id="L155">			lastEdge = -1;</span>
+<span class="fc" id="L156">		}</span>
 
 	}
 

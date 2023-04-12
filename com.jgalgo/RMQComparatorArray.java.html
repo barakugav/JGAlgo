@@ -5,50 +5,50 @@ import java.util.Objects;
 
 <span class="nc" id="L6">class RMQComparatorArray {</span>
 
-    static class ObjDefaultCmp&lt;E&gt; implements RMQComparator {
+	static class ObjDefaultCmp&lt;E&gt; implements RMQComparator {
 
-        private final E[] arr;
+		private final E[] arr;
 
-<span class="nc" id="L12">        ObjDefaultCmp(E[] arr) {</span>
-<span class="nc" id="L13">            this.arr = Objects.requireNonNull(arr);</span>
-<span class="nc" id="L14">        }</span>
+<span class="nc" id="L12">		ObjDefaultCmp(E[] arr) {</span>
+<span class="nc" id="L13">			this.arr = Objects.requireNonNull(arr);</span>
+<span class="nc" id="L14">		}</span>
 
-        @SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
-        @Override
-        public int compare(int i, int j) {
-<span class="nc" id="L19">            return ((Comparable) arr[i]).compareTo(arr[j]);</span>
-        }
-    }
+		@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
+		@Override
+		public int compare(int i, int j) {
+<span class="nc" id="L19">			return ((Comparable) arr[i]).compareTo(arr[j]);</span>
+		}
+	}
 
-    static class ObjCustomCmp&lt;E&gt; implements RMQComparator {
+	static class ObjCustomCmp&lt;E&gt; implements RMQComparator {
 
-        private final E[] arr;
-        private final Comparator&lt;? super E&gt; c;
+		private final E[] arr;
+		private final Comparator&lt;? super E&gt; c;
 
-<span class="nc" id="L28">        ObjCustomCmp(E[] arr, Comparator&lt;? super E&gt; c) {</span>
-<span class="nc" id="L29">            this.arr = Objects.requireNonNull(arr);</span>
-<span class="nc" id="L30">            this.c = Objects.requireNonNull(c);</span>
-<span class="nc" id="L31">        }</span>
+<span class="nc" id="L28">		ObjCustomCmp(E[] arr, Comparator&lt;? super E&gt; c) {</span>
+<span class="nc" id="L29">			this.arr = Objects.requireNonNull(arr);</span>
+<span class="nc" id="L30">			this.c = Objects.requireNonNull(c);</span>
+<span class="nc" id="L31">		}</span>
 
-        @Override
-        public int compare(int i, int j) {
-<span class="nc" id="L35">            return c.compare(arr[i], arr[j]);</span>
-        }
-    }
+		@Override
+		public int compare(int i, int j) {
+<span class="nc" id="L35">			return c.compare(arr[i], arr[j]);</span>
+		}
+	}
 
-    static class Int implements RMQComparator {
+	static class Int implements RMQComparator {
 
-        private final int[] arr;
+		private final int[] arr;
 
-<span class="fc" id="L43">        Int(int[] arr) {</span>
-<span class="fc" id="L44">            this.arr = Objects.requireNonNull(arr);</span>
-<span class="fc" id="L45">        }</span>
+<span class="fc" id="L43">		Int(int[] arr) {</span>
+<span class="fc" id="L44">			this.arr = Objects.requireNonNull(arr);</span>
+<span class="fc" id="L45">		}</span>
 
-        @Override
-        public int compare(int i, int j) {
-<span class="fc" id="L49">            return Integer.compare(arr[i], arr[j]);</span>
-        }
-    }
+		@Override
+		public int compare(int i, int j) {
+<span class="fc" id="L49">			return Integer.compare(arr[i], arr[j]);</span>
+		}
+	}
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
