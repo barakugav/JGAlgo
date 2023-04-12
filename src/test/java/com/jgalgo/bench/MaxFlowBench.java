@@ -21,6 +21,7 @@ import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 
 import com.jgalgo.DiGraph;
+import com.jgalgo.GraphBuilder;
 import com.jgalgo.Graphs;
 import com.jgalgo.MaxFlow;
 import com.jgalgo.MaxFlowDinic;
@@ -113,8 +114,21 @@ public class MaxFlowBench {
     }
 
     @Benchmark
-    public void benchMaxFlowDinic(Blackhole blackhole) {
-        benchMaxFlow(MaxFlowDinic::new, blackhole);
+    public void benchMaxFlowDinicWithLinkedGraph(Blackhole blackhole) {
+        benchMaxFlow(() -> {
+            MaxFlowDinic algo = new MaxFlowDinic();
+            algo.experimental_setLayerGraphFactory(() -> GraphBuilder.newInstance("com.jgalgo.Linked"));
+            return algo;
+        }, blackhole);
+    }
+
+    @Benchmark
+    public void benchMaxFlowDinicWithArrayGraph(Blackhole blackhole) {
+        benchMaxFlow(() -> {
+            MaxFlowDinic algo = new MaxFlowDinic();
+            algo.experimental_setLayerGraphFactory(() -> GraphBuilder.newInstance("com.jgalgo.Array"));
+            return algo;
+        }, blackhole);
     }
 
     @Benchmark

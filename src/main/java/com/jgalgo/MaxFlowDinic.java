@@ -1,6 +1,8 @@
 package com.jgalgo;
 
 import java.util.Arrays;
+import java.util.Objects;
+import java.util.function.Supplier;
 
 import com.jgalgo.IDStrategy.Fixed;
 
@@ -19,12 +21,18 @@ public class MaxFlowDinic implements MaxFlow {
 	 * O(m n^2)
 	 */
 
+	private Supplier<? extends GraphBuilder> layerGraphFactory = () -> GraphBuilder.newInstance("com.jgalgo.Linked");
+
 	private static final Object EdgeRefWeightKey = new Object();
 	private static final Object EdgeRevWeightKey = new Object();
 	private static final Object FlowWeightKey = new Object();
 	private static final Object CapacityWeightKey = new Object();
 
 	public MaxFlowDinic() {
+	}
+
+	public void experimental_setLayerGraphFactory(Supplier<? extends GraphBuilder> factory) {
+		layerGraphFactory = Objects.requireNonNull(factory);
 	}
 
 	@Override
@@ -34,7 +42,7 @@ public class MaxFlowDinic implements MaxFlow {
 		return calcMaxFlow0((DiGraph) g, net, source, target);
 	}
 
-	private static double calcMaxFlow0(DiGraph g0, FlowNetwork net, int source, int target) {
+	private double calcMaxFlow0(DiGraph g0, FlowNetwork net, int source, int target) {
 		if (source == target)
 			throw new IllegalArgumentException("Source and target can't be the same vertices");
 
@@ -60,8 +68,8 @@ public class MaxFlowDinic implements MaxFlow {
 			flow.set(e2, cap);
 		}
 
-		// DiGraph L = new GraphArrayDirected(n);
-		DiGraph L = GraphBuilder.Linked.newInstance().setVerticesNum(n).setEdgesIDStrategy(Fixed.class).buildDirected();
+		GraphBuilder builder = layerGraphFactory.get();
+		DiGraph L = builder.setVerticesNum(n).setEdgesIDStrategy(Fixed.class).buildDirected();
 		Weights.Int edgeRefL = L.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
 		IntPriorityQueue bfsQueue = new IntArrayFIFOQueue();
 		int[] level = new int[n];
