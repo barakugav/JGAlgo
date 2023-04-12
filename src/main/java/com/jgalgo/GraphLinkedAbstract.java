@@ -29,6 +29,10 @@ abstract class GraphLinkedAbstract extends GraphBaseContinues {
 		return edges.get(e);
 	}
 
+	void removeEdge(Node node) {
+		super.removeEdge(node.id);
+	}
+
 	Node addEdgeNode(int u, int v) {
 		int e = super.addEdge(u, v);
 		Node n = allocNode(e, u, v);
@@ -86,6 +90,12 @@ abstract class GraphLinkedAbstract extends GraphBaseContinues {
 			return last.id;
 		}
 
+		@Override
+		public void remove() {
+			if (last == null)
+				throw new IllegalStateException();
+			removeEdge(last);
+		}
 	}
 
 	abstract static class Node {

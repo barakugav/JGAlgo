@@ -75,10 +75,15 @@ public class GraphLinkedDirected extends GraphLinkedAbstract implements DiGraph 
 
 	@Override
 	public void removeEdge(int edge) {
-		Node n = (Node) getNode(edge);
-		super.removeEdge(edge);
+		removeEdge(getNode(edge));
+	}
+
+	@Override
+	void removeEdge(GraphLinkedAbstract.Node node) {
+		Node n = (Node) node;
 		removeEdgeOutNode(n);
 		removeEdgeInNode(n);
+		super.removeEdge(node);
 	}
 
 	@Override

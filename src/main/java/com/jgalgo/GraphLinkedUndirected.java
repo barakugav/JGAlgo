@@ -73,10 +73,15 @@ public class GraphLinkedUndirected extends GraphLinkedAbstract implements UGraph
 
 	@Override
 	public void removeEdge(int edge) {
-		Node n = (Node) getNode(edge);
-		super.removeEdge(edge);
+		removeEdge(getNode(edge));
+	}
+
+	@Override
+	void removeEdge(GraphLinkedAbstract.Node node) {
+		Node n = (Node) node;
 		removeEdge0(n, n.u);
 		removeEdge0(n, n.v);
+		super.removeEdge(node);
 	}
 
 	@Override

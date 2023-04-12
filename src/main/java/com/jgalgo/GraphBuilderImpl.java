@@ -406,6 +406,11 @@ class GraphBuilderImpl {
 			}
 
 			@Override
+			public void remove() {
+				it.remove();
+			}
+
+			@Override
 			public int v() {
 				int vIdx = it.v();
 				return verticesIDStrategy.idxToId(vIdx);
