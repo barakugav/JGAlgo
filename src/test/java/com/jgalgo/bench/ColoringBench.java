@@ -36,59 +36,59 @@ import com.jgalgo.test.TestUtils.SeedGenerator;
 @State(Scope.Benchmark)
 public class ColoringBench {
 
-    @Param({ "|V|=100 |E|=100", "|V|=200 |E|=1000", "|V|=1600 |E|=10000" })
-    public String graphSize;
-    private int n, m;
+	@Param({ "|V|=100 |E|=100", "|V|=200 |E|=1000", "|V|=1600 |E|=10000" })
+	public String graphSize;
+	private int n, m;
 
-    private List<UGraph> graphs;
+	private List<UGraph> graphs;
 
-    @Setup(Level.Iteration)
-    public void setup() {
-        Map<String, String> graphSizeValues = BenchUtils.parseArgsStr(graphSize);
-        n = Integer.parseInt(graphSizeValues.get("|V|"));
-        m = Integer.parseInt(graphSizeValues.get("|E|"));
+	@Setup(Level.Iteration)
+	public void setup() {
+		Map<String, String> graphSizeValues = BenchUtils.parseArgsStr(graphSize);
+		n = Integer.parseInt(graphSizeValues.get("|V|"));
+		m = Integer.parseInt(graphSizeValues.get("|E|"));
 
-        final SeedGenerator seedGen = new SeedGenerator(0x566c25f996355cb4L);
-        final int graphsNum = 20;
-        graphs = new ArrayList<>(graphsNum);
-        for (int graphIdx = 0; graphIdx < graphsNum; graphIdx++) {
-            UGraph g = (UGraph) GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
-            graphs.add(g);
-        }
-    }
+		final SeedGenerator seedGen = new SeedGenerator(0x566c25f996355cb4L);
+		final int graphsNum = 20;
+		graphs = new ArrayList<>(graphsNum);
+		for (int graphIdx = 0; graphIdx < graphsNum; graphIdx++) {
+			UGraph g = (UGraph) GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
+			graphs.add(g);
+		}
+	}
 
-    private void benchMST(Supplier<? extends Coloring> builder, Blackhole blackhole) {
-        for (UGraph g : graphs) {
-            Coloring algo = builder.get();
-            Coloring.Result res = algo.calcColoring(g);
-            blackhole.consume(res);
-        }
-    }
+	private void benchMST(Supplier<? extends Coloring> builder, Blackhole blackhole) {
+		for (UGraph g : graphs) {
+			Coloring algo = builder.get();
+			Coloring.Result res = algo.calcColoring(g);
+			blackhole.consume(res);
+		}
+	}
 
-    @Benchmark
-    public void benchColoringGreedy(Blackhole blackhole) {
-        benchMST(ColoringGreedy::new, blackhole);
-    }
+	@Benchmark
+	public void benchColoringGreedy(Blackhole blackhole) {
+		benchMST(ColoringGreedy::new, blackhole);
+	}
 
-    @Benchmark
-    public void benchColoringGreedyRandom(Blackhole blackhole) {
-        final SeedGenerator seedGen = new SeedGenerator(0xefeae78aba502d4aL);
-        benchMST(() -> new ColoringGreedyRandom(seedGen.nextSeed()), blackhole);
-    }
+	@Benchmark
+	public void benchColoringGreedyRandom(Blackhole blackhole) {
+		final SeedGenerator seedGen = new SeedGenerator(0xefeae78aba502d4aL);
+		benchMST(() -> new ColoringGreedyRandom(seedGen.nextSeed()), blackhole);
+	}
 
-    @Benchmark
-    public void benchColoringDSatur(Blackhole blackhole) {
-        benchMST(ColoringDSatur::new, blackhole);
-    }
+	@Benchmark
+	public void benchColoringDSatur(Blackhole blackhole) {
+		benchMST(ColoringDSatur::new, blackhole);
+	}
 
-    @Benchmark
-    public void benchColoringDSaturHeap(Blackhole blackhole) {
-        benchMST(ColoringDSaturHeap::new, blackhole);
-    }
+	@Benchmark
+	public void benchColoringDSaturHeap(Blackhole blackhole) {
+		benchMST(ColoringDSaturHeap::new, blackhole);
+	}
 
-    @Benchmark
-    public void benchColoringRecursiveLargestFirst(Blackhole blackhole) {
-        benchMST(ColoringRecursiveLargestFirst::new, blackhole);
-    }
+	@Benchmark
+	public void benchColoringRecursiveLargestFirst(Blackhole blackhole) {
+		benchMST(ColoringRecursiveLargestFirst::new, blackhole);
+	}
 
 }

@@ -37,45 +37,45 @@ import it.unimi.dsi.fastutil.Pair;
 @State(Scope.Benchmark)
 public class APSPBench {
 
-    @Param({ "|V|=64 |E|=256", "|V|=200 |E|=1200", "|V|=512 |E|=4096" })
-    public String graphSize;
-    private int n, m;
+	@Param({ "|V|=64 |E|=256", "|V|=200 |E|=1200", "|V|=512 |E|=4096" })
+	public String graphSize;
+	private int n, m;
 
-    private List<Pair<Graph, EdgeWeightFunc.Int>> graphs;
+	private List<Pair<Graph, EdgeWeightFunc.Int>> graphs;
 
-    @Setup(Level.Iteration)
-    public void setup() {
-        Map<String, String> graphSizeValues = BenchUtils.parseArgsStr(graphSize);
-        n = Integer.parseInt(graphSizeValues.get("|V|"));
-        m = Integer.parseInt(graphSizeValues.get("|E|"));
+	@Setup(Level.Iteration)
+	public void setup() {
+		Map<String, String> graphSizeValues = BenchUtils.parseArgsStr(graphSize);
+		n = Integer.parseInt(graphSizeValues.get("|V|"));
+		m = Integer.parseInt(graphSizeValues.get("|E|"));
 
-        final SeedGenerator seedGen = new SeedGenerator(0xe9485d7a86646b18L);
-        final int graphsNum = 20;
-        graphs = new ArrayList<>(graphsNum);
-        for (int graphIdx = 0; graphIdx < graphsNum; graphIdx++) {
-            Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true)
-                    .parallelEdges(true).selfEdges(true)
-                    .cycles(true).connected(false).build();
-            EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
-            graphs.add(Pair.of(g, w));
-        }
-    }
+		final SeedGenerator seedGen = new SeedGenerator(0xe9485d7a86646b18L);
+		final int graphsNum = 20;
+		graphs = new ArrayList<>(graphsNum);
+		for (int graphIdx = 0; graphIdx < graphsNum; graphIdx++) {
+			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true)
+					.parallelEdges(true).selfEdges(true)
+					.cycles(true).connected(false).build();
+			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+			graphs.add(Pair.of(g, w));
+		}
+	}
 
-    private void benchAPSPPositiveWeights(Supplier<? extends APSP> builder, Blackhole blackhole) {
-        for (Pair<Graph, EdgeWeightFunc.Int> graph : graphs) {
-            APSP algo = builder.get();
-            APSP.Result result = algo.calcAllShortestPaths(graph.first(), graph.second());
-            blackhole.consume(result);
-        }
-    }
+	private void benchAPSPPositiveWeights(Supplier<? extends APSP> builder, Blackhole blackhole) {
+		for (Pair<Graph, EdgeWeightFunc.Int> graph : graphs) {
+			APSP algo = builder.get();
+			APSP.Result result = algo.calcAllShortestPaths(graph.first(), graph.second());
+			blackhole.consume(result);
+		}
+	}
 
-    @Benchmark
-    public void benchAPSPFloydWarshall(Blackhole blackhole) {
-        benchAPSPPositiveWeights(APSPFloydWarshall::new, blackhole);
-    }
+	@Benchmark
+	public void benchAPSPFloydWarshall(Blackhole blackhole) {
+		benchAPSPPositiveWeights(APSPFloydWarshall::new, blackhole);
+	}
 
-    @Benchmark
-    public void benchAPSPJohnson(Blackhole blackhole) {
-        benchAPSPPositiveWeights(APSPJohnson::new, blackhole);
-    }
+	@Benchmark
+	public void benchAPSPJohnson(Blackhole blackhole) {
+		benchAPSPPositiveWeights(APSPJohnson::new, blackhole);
+	}
 }
