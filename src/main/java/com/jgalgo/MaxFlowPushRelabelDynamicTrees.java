@@ -83,7 +83,7 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 		}
 
 		/* Data structure maintaining the children of each node in the DT */
-		LinkedListDoubleArrayFixedSize children = new LinkedListDoubleArrayFixedSize(n);
+		LinkedListDoubleArrayFixedSize children = LinkedListDoubleArrayFixedSize.newInstance(n);
 		IntPriorityQueue toCut = new IntArrayFIFOQueue();
 
 		/* Init all vertices distances */
@@ -116,7 +116,7 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 			Vertex parent = U.dtNode.getParent().getNodeData();
 			if (U.v == parent.firstDtChild)
 				parent.firstDtChild = children.next(U.v);
-			children.remove(U.v);
+			children.disconnect(U.v);
 
 			/* Remove link from DT */
 			dt.cut(U.dtNode);
@@ -179,7 +179,7 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 					if (V.firstDtChild == -1) {
 						V.firstDtChild = U.v;
 					} else {
-						children.add(V.firstDtChild, U.v);
+						children.insert(V.firstDtChild, U.v);
 					}
 					W = U;
 				} else {

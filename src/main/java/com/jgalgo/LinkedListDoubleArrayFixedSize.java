@@ -1,210 +1,223 @@
 package com.jgalgo;
 
+import java.util.Arrays;
 import java.util.NoSuchElementException;
 
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
-class LinkedListDoubleArrayFixedSize {
+interface LinkedListDoubleArrayFixedSize {
 
-	private final Impl impl;
-	private static final int none = -1;
+	static final int None = -1;
 
-	LinkedListDoubleArrayFixedSize(int n) {
-		int len = n * 2;
-		if (len <= 1 << Byte.SIZE)
-			impl = new ImplByte(len);
-		else if (len <= 1 << Short.SIZE)
-			impl = new ImplShort(len);
-		else
-			impl = new ImplInt(len);
-
-		for (int i = 0; i < len; i++)
-			impl.set(i, none);
+	static LinkedListDoubleArrayFixedSize newInstance(int n) {
+		if (n <= 1 << (Byte.SIZE - 1)) {
+			return new ImplByte(n);
+		} else if (n <= 1 << (Short.SIZE - 1)) {
+			return new ImplShort(n);
+		} else {
+			return new ImplInt(n);
+		}
 	}
 
-	int size() {
-		return impl.legnth() / 2;
-	}
+	int size();
 
-	int next(int x) {
-		return impl.get(x * 2);
-	}
+	int next(int id);
 
-	void setNext(int x, int y) {
-		impl.set(x * 2, y);
-	}
+	void setNext(int id, int next);
 
-	boolean hasNext(int x) {
-		return next(x) != none;
-	}
+	boolean hasNext(int id);
 
-	int prev(int x) {
-		return impl.get(x * 2 + 1);
-	}
+	int prev(int id);
 
-	void setPrev(int x, int y) {
-		impl.set(x * 2 + 1, y);
-	}
+	void setPrev(int id, int prev);
 
-	boolean hasPrev(int x) {
-		return prev(x) != none;
-	}
+	boolean hasPrev(int id);
 
-	void add(int l, int x) {
-		if (next(x) != none || prev(x) != none)
+	default void insert(int prev, int id) {
+		if (next(id) != None || prev(id) != None)
 			throw new IllegalArgumentException();
-		int n = next(l);
-		setNext(l, x);
-		setPrev(x, l);
-		if (n != none) {
-			setNext(x, n);
-			setPrev(n, x);
+		int next = next(prev);
+		setNext(prev, id);
+		setPrev(id, prev);
+		if (next != None) {
+			setNext(id, next);
+			setPrev(next, id);
 		}
 	}
 
-	void remove(int x) {
-		int p = prev(x), n = next(x);
-		if (p != none) {
-			setNext(p, n);
-			setPrev(x, none);
-		}
-		if (n != none) {
-			setPrev(n, p);
-			setNext(x, none);
-		}
-	}
-
-	void clear(int l) {
-		for (int n; (n = next(l)) != none; l = n) {
-			setNext(l, none);
-			setPrev(n, none);
-		}
-	}
-
-	void clear() {
-		int len = impl.legnth();
-		for (int i = 0; i < len; i++)
-			impl.set(i, none);
-	}
-
-	IntIterator iterator(int x) {
-		checkIdx(x);
-		return new Iter(x);
-	}
-
-	private void checkIdx(int x) {
-		if (!(0 <= x && x < size()))
+	default void connect(int prev, int next) {
+		if (hasNext(prev) || hasPrev(next))
 			throw new IllegalArgumentException();
+		setNext(prev, next);
+		setPrev(next, prev);
 	}
 
-	private class Iter implements IntIterator {
+	default void disconnect(int id) {
+		int prev = prev(id), next = next(id);
+		if (prev != None) {
+			setNext(prev, next);
+			setPrev(id, None);
+		}
+		if (next != None) {
+			setPrev(next, prev);
+			setNext(id, None);
+		}
+	}
 
-		int p;
+	// void clear(int id) {
+	// for (int next; (next = next(id)) != None; id = next) {
+	// setNext(id, None);
+	// setPrev(next, None);
+	// }
+	// }
 
-		Iter(int x) {
-			p = x;
+	// void clear() {
+	// int len = impl.length();
+	// for (int i = 0; i < len; i++)
+	// impl.set(i, None);
+	// }
+
+	default IntIterator iterator(int id) {
+		if (!(0 <= id && id < size()))
+			throw new IndexOutOfBoundsException(id);
+		return new IntIterator() {
+			int p = id;
+
+			@Override
+			public boolean hasNext() {
+				return p != None;
+			}
+
+			@Override
+			public int nextInt() {
+				if (!hasNext())
+					throw new NoSuchElementException();
+				int ret = p;
+				p = LinkedListDoubleArrayFixedSize.this.next(p);
+				return ret;
+			}
+
+		};
+	}
+
+	abstract static class Abstract implements LinkedListDoubleArrayFixedSize {
+
+		@Override
+		public int next(int id) {
+			return arrGet(idxOfNext(id));
 		}
 
 		@Override
-		public boolean hasNext() {
-			return p != none;
+		public void setNext(int id, int next) {
+			arrSet(idxOfNext(id), next);
 		}
 
 		@Override
-		public int nextInt() {
-			if (!hasNext())
-				throw new NoSuchElementException();
-			int ret = p;
-			p = LinkedListDoubleArrayFixedSize.this.next(p);
-			return ret;
+		public boolean hasNext(int id) {
+			return arrGet(idxOfNext(id)) != None;
 		}
 
+		@Override
+		public int prev(int id) {
+			return arrGet(idxOfPrev(id));
+		}
+
+		@Override
+		public void setPrev(int id, int prev) {
+			arrSet(idxOfPrev(id), prev);
+		}
+
+		@Override
+		public boolean hasPrev(int id) {
+			return arrGet(idxOfPrev(id)) != None;
+		}
+
+		abstract int arrGet(int idx);
+
+		abstract void arrSet(int idx, int val);
+
+		private static int idxOfNext(int id) {
+			return id * 2 + 0;
+		}
+
+		private static int idxOfPrev(int id) {
+			return id * 2 + 1;
+		}
 	}
 
-	private static interface Impl {
-
-		int legnth();
-
-		int get(int idx);
-
-		void set(int idx, int val);
-
-	}
-
-	private static class ImplByte implements Impl {
+	static class ImplByte extends Abstract {
 
 		final byte[] a;
 
-		ImplByte(int len) {
-			assert len <= 1 << Byte.SIZE;
-			a = new byte[len];
+		ImplByte(int n) {
+			a = new byte[n * 2];
+			Arrays.fill(a, (byte) None);
 		}
 
 		@Override
-		public int legnth() {
-			return a.length;
+		public int size() {
+			return a.length / 2;
 		}
 
 		@Override
-		public int get(int idx) {
+		int arrGet(int idx) {
 			return a[idx];
 		}
 
 		@Override
-		public void set(int idx, int val) {
+		void arrSet(int idx, int val) {
 			assert val < Byte.MAX_VALUE;
 			a[idx] = (byte) val;
 		}
-
 	}
 
-	private static class ImplShort implements Impl {
+	static class ImplShort extends Abstract {
 
 		final short[] a;
 
-		ImplShort(int len) {
-			assert len <= 1 << Short.SIZE;
-			a = new short[len];
+		ImplShort(int n) {
+			a = new short[n * 2];
+			Arrays.fill(a, (short) None);
 		}
 
 		@Override
-		public int legnth() {
-			return a.length;
+		public int size() {
+			return a.length / 2;
 		}
 
 		@Override
-		public int get(int idx) {
+		int arrGet(int idx) {
 			return a[idx];
 		}
 
 		@Override
-		public void set(int idx, int val) {
+		void arrSet(int idx, int val) {
 			assert val < Short.MAX_VALUE;
 			a[idx] = (short) val;
 		}
-
 	}
 
-	private static class ImplInt implements Impl {
+	static class ImplInt extends Abstract {
 
 		final int[] a;
 
-		ImplInt(int len) {
-			a = new int[len];
+		ImplInt(int n) {
+			a = new int[n * 2];
+			Arrays.fill(a, None);
 		}
 
 		@Override
-		public int legnth() {
-			return a.length;
+		public int size() {
+			return a.length / 2;
 		}
 
 		@Override
-		public int get(int idx) {
+		int arrGet(int idx) {
 			return a[idx];
 		}
 
 		@Override
-		public void set(int idx, int val) {
+		void arrSet(int idx, int val) {
 			a[idx] = val;
 		}
 

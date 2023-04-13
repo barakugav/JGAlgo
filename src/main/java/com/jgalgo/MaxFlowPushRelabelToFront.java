@@ -1,19 +1,13 @@
 package com.jgalgo;
 
-import java.util.BitSet;
-
 import com.jgalgo.Utils.IntDoubleConsumer;
 import com.jgalgo.Utils.IterPickable;
 
-import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 import it.unimi.dsi.fastutil.ints.IntIterator;
-import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
-public class MaxFlowPushRelabel implements MaxFlow {
+public class MaxFlowPushRelabelToFront implements MaxFlow {
 
 	/**
-	 * Push-relabel implementation with FIFO ordering.
-	 *
 	 * O(n^3)
 	 */
 
@@ -22,9 +16,6 @@ public class MaxFlowPushRelabel implements MaxFlow {
 	private static final Object EdgeRevWeightKey = new Object();
 	private static final Object FlowWeightKey = new Object();
 	private static final Object CapacityWeightKey = new Object();
-
-	public MaxFlowPushRelabel() {
-	}
 
 	@Override
 	public double calcMaxFlow(Graph g, FlowNetwork net, int source, int target) {
@@ -60,9 +51,21 @@ public class MaxFlowPushRelabel implements MaxFlow {
 
 		IterPickable.Int[] edges = new IterPickable.Int[n];
 		double[] excess = new double[n];
-		BitSet isActive = new BitSet(n);
-		IntPriorityQueue active = new IntArrayFIFOQueue();
 		int[] d = new int[n];
+
+		LinkedListDoubleArrayFixedSize list = LinkedListDoubleArrayFixedSize.newInstance(n);
+		int listHead = -1;
+		for (int u = 0, prev = -1; u < n; u++) {
+			if (u == source || u == target)
+				continue;
+			if (prev == -1) {
+				listHead = u;
+			} else {
+				list.setNext(prev, u);
+				list.setPrev(u, prev);
+			}
+			prev = u;
+		}
 
 		IntDoubleConsumer pushFlow = (e, f) -> {
 			assert f > 0;
@@ -76,16 +79,7 @@ public class MaxFlowPushRelabel implements MaxFlow {
 			int u = g.edgeSource(e), v = g.edgeTarget(e);
 			excess[u] -= f;
 			excess[v] += f;
-			if (!isActive.get(v)) {
-				isActive.set(v);
-				active.enqueue(v);
-			}
 		};
-
-		// set source and target as 'active' to prevent them from entering the active
-		// queue
-		isActive.set(source);
-		isActive.set(target);
 
 		/* Push as much as possible from the source vertex */
 		for (EdgeIter eit = g.edgesOut(source); eit.hasNext();) {
@@ -109,18 +103,29 @@ public class MaxFlowPushRelabel implements MaxFlow {
 		for (int u = 0; u < n; u++)
 			edges[u] = new IterPickable.Int(g.edgesOut(u));
 
-		while (!active.isEmpty()) {
-			int u = active.dequeueInt();
-			assert u != source && u != target;
+		for (IntIterator uit = list.iterator(listHead); uit.hasNext();) {
+			int u = uit.nextInt();
 			IterPickable.Int it = edges[u];
 
 			// discharge
 			while (excess[u] > EPS) {
 				if (!it.hasNext()) {
-					/* Finished iterating over all vertex edges, relabel and reset iterator */
+					// Finished iterating over all vertex edges
+
+					// relabel
 					d[u]++;
+
+					// reset iterator
 					it = edges[u] = new IterPickable.Int(g.edgesOut(u));
 					assert it.hasNext();
+
+					// move to front
+					if (u != listHead) {
+						list.disconnect(u);
+						list.connect(u, listHead);
+						listHead = u;
+						uit = list.iterator(listHead);
+					}
 				}
 
 				int e = it.pickNext();
@@ -133,7 +138,6 @@ public class MaxFlowPushRelabel implements MaxFlow {
 					it.nextInt();
 				}
 			}
-			isActive.clear(u);
 		}
 
 		/* Construct result */
