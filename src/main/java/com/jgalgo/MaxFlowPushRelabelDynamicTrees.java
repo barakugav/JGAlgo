@@ -283,7 +283,14 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 		for (EdgeIter eit = g.edgesOut(source); eit.hasNext();) {
 			int e = eit.nextInt();
 			Ref data = edgeRef.get(e);
-			totalFlow += data.flow;
+			if (g.edgeSource(e) == g0.edgeSource(data.orig))
+				totalFlow += data.flow;
+		}
+		for (EdgeIter eit = g.edgesIn(source); eit.hasNext();) {
+			int e = eit.nextInt();
+			Ref data = edgeRef.get(e);
+			if (g.edgeSource(e) == g0.edgeSource(data.orig))
+				totalFlow -= data.flow;
 		}
 		return totalFlow;
 	}

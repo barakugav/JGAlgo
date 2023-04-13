@@ -41,7 +41,8 @@ public class MaxFlowPushRelabel implements MaxFlow {
 			throw new IllegalArgumentException("Source and target can't be the same vertices");
 		debug.println("\t", getClass().getSimpleName());
 
-		DiGraph g = new GraphArrayDirected(g0.vertices().size());
+		int n = g0.vertices().size();
+		DiGraph g = new GraphArrayDirected(n);
 		Weights.Int edgeRef = g.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
 		Weights.Int twin = g.addEdgesWeights(EdgeRevWeightKey, int.class, Integer.valueOf(-1));
 		Weights.Double flow = g.addEdgesWeights(FlowWeightKey, double.class);
@@ -60,8 +61,6 @@ public class MaxFlowPushRelabel implements MaxFlow {
 			capacity.set(e1, net.getCapacity(e));
 			capacity.set(e2, 0);
 		}
-
-		int n = g.vertices().size();
 
 		IterPickable.Int[] edges = new IterPickable.Int[n];
 		double[] excess = new double[n];
@@ -87,11 +86,18 @@ public class MaxFlowPushRelabel implements MaxFlow {
 			}
 		};
 
+		// set source and target as 'active' to prevent them from entering the active
+		// queue
+		isActive.set(source);
+		isActive.set(target);
+
 		/* Push as much as possible from the source vertex */
 		for (EdgeIter eit = g.edgesOut(source); eit.hasNext();) {
 			int e = eit.nextInt();
+			if (eit.v() == source)
+				continue;
 			double f = capacity.getDouble(e) - flow.getDouble(e);
-			if (f != 0)
+			if (f > 0)
 				pushFlow.accept(e, f);
 		}
 
@@ -105,8 +111,7 @@ public class MaxFlowPushRelabel implements MaxFlow {
 
 		while (!active.isEmpty()) {
 			int u = active.dequeueInt();
-			if (u == source || u == target)
-				continue;
+			assert u != source && u != target;
 			IterPickable.Int it = edges[u];
 
 			while (excess[u] > EPS && it.hasNext()) {
@@ -146,7 +151,13 @@ public class MaxFlowPushRelabel implements MaxFlow {
 		double totalFlow = 0;
 		for (EdgeIter eit = g.edgesOut(source); eit.hasNext();) {
 			int e = eit.nextInt();
-			totalFlow += flow.getDouble(e);
+			if (g.edgeSource(e) == g0.edgeSource(edgeRef.getInt(e)))
+				totalFlow += flow.getDouble(e);
+		}
+		for (EdgeIter eit = g.edgesIn(source); eit.hasNext();) {
+			int e = eit.nextInt();
+			if (g.edgeSource(e) == g0.edgeSource(edgeRef.getInt(e)))
+				totalFlow -= flow.getDouble(e);
 		}
 		return totalFlow;
 	}

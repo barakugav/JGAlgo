@@ -113,8 +113,14 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 		for (EdgeIter eit = g.edgesOut(source); eit.hasNext();) {
 			int e = eit.nextInt();
 			int orig = edgeRef.getInt(e);
-			if (source == g0.edgeSource(orig))
+			if (g.edgeSource(e) == g0.edgeSource(orig))
 				totalFlow += flow.getDouble(e);
+		}
+		for (EdgeIter eit = g.edgesIn(source); eit.hasNext();) {
+			int e = eit.nextInt();
+			int orig = edgeRef.getInt(e);
+			if (g.edgeSource(e) == g0.edgeSource(orig))
+				totalFlow -= flow.getDouble(e);
 		}
 		return totalFlow;
 	}

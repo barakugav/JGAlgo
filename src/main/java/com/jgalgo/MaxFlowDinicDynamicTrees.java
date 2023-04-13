@@ -188,6 +188,12 @@ public class MaxFlowDinicDynamicTrees implements MaxFlow {
 			if (g.edgeSource(e) == g0.edgeSource(data.orig))
 				totalFlow += data.flow;
 		}
+		for (EdgeIter eit = g.edgesIn(source); eit.hasNext();) {
+			int e = eit.nextInt();
+			Ref data = edgeRef.get(e);
+			if (g.edgeSource(e) == g0.edgeSource(data.orig))
+				totalFlow -= data.flow;
+		}
 		return totalFlow;
 	}
 

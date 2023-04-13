@@ -174,6 +174,12 @@ public class MaxFlowDinic implements MaxFlow {
 			if (g.edgeSource(e) == g0.edgeSource(eOrig))
 				totalFlow += flow.getDouble(e);
 		}
+		for (EdgeIter eit = g.edgesIn(source); eit.hasNext();) {
+			int e = eit.nextInt();
+			int eOrig = edgeRef.getInt(e);
+			if (g.edgeSource(e) == g0.edgeSource(eOrig))
+				totalFlow -= flow.getDouble(e);
+		}
 		return totalFlow;
 	}
 
