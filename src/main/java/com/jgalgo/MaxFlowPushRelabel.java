@@ -1,6 +1,5 @@
 package com.jgalgo;
 
-import java.util.Arrays;
 import java.util.BitSet;
 
 import com.jgalgo.Utils.IntDoubleConsumer;
@@ -102,8 +101,12 @@ public class MaxFlowPushRelabel implements MaxFlow {
 		}
 
 		/* Init all vertices distances */
-		Arrays.fill(d, 0);
+		SSSP.Result initD = new SSSPCardinality().calcDistances(g, target);
+		for (int u = 0; u < n; u++)
+			if (u != source && u != target)
+				d[u] = (int) initD.distance(target);
 		d[source] = n;
+		d[target] = 0;
 
 		/* Init all vertices iterators */
 		for (int u = 0; u < n; u++)
@@ -114,30 +117,27 @@ public class MaxFlowPushRelabel implements MaxFlow {
 			assert u != source && u != target;
 			IterPickable.Int it = edges[u];
 
-			while (excess[u] > EPS && it.hasNext()) {
+			// discharge
+			while (excess[u] > EPS) {
+				if (!it.hasNext()) {
+					/* Finished iterating over all vertex edges, relabel and reset iterator */
+					d[u]++;
+					debug.println("Relabel(", Integer.valueOf(u), ") <- ", Integer.valueOf(d[u]));
+					it = edges[u] = new IterPickable.Int(g.edgesOut(u));
+					assert it.hasNext();
+				}
+
 				int e = it.pickNext();
 				double eAccess = capacity.getDouble(e) - flow.getDouble(e);
 				if (eAccess > EPS && d[u] == d[g.edgeTarget(e)] + 1) {
+					// e is admissible, push
 					double f = Math.min(excess[u], eAccess);
 					pushFlow.accept(e, f);
 				} else {
 					it.nextInt();
 				}
 			}
-
-			/* Finished iterating over all vertex edges, relabel and reset iterator */
-			if (!it.hasNext()) {
-				d[u]++;
-				debug.println("R(", Integer.valueOf(u), ") <- ", Integer.valueOf(d[u]));
-				edges[u] = new IterPickable.Int(g.edgesOut(u));
-			}
-
-			/* Update isActive and add to queue if active */
-			if (excess[u] > EPS) {
-				active.enqueue(u);
-			} else {
-				isActive.clear(u);
-			}
+			isActive.clear(u);
 		}
 
 		/* Construct result */
