@@ -2,11 +2,7 @@ package com.jgalgo;
 
 import java.util.BitSet;
 
-import com.jgalgo.Utils.IntDoubleConsumer;
-import com.jgalgo.Utils.IterPickable;
-
 import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 public class MaxFlowPushRelabel implements MaxFlow {
@@ -17,12 +13,6 @@ public class MaxFlowPushRelabel implements MaxFlow {
 	 * O(n^3)
 	 */
 
-	private static final double EPS = 0.0001;
-	private static final Object EdgeRefWeightKey = new Object();
-	private static final Object EdgeRevWeightKey = new Object();
-	private static final Object FlowWeightKey = new Object();
-	private static final Object CapacityWeightKey = new Object();
-
 	public MaxFlowPushRelabel() {
 	}
 
@@ -30,132 +20,52 @@ public class MaxFlowPushRelabel implements MaxFlow {
 	public double calcMaxFlow(Graph g, FlowNetwork net, int source, int target) {
 		if (!(g instanceof DiGraph))
 			throw new IllegalArgumentException("only directed graphs are supported");
-		return calcMaxFlow0((DiGraph) g, net, source, target);
+		return new Worker((DiGraph) g, net, source, target).calcMaxFlow();
 	}
 
-	private static double calcMaxFlow0(DiGraph g0, FlowNetwork net, int source, int target) {
-		if (source == target)
-			throw new IllegalArgumentException("Source and target can't be the same vertices");
+	private class Worker extends MaxFlowPushRelabelAbstract.Worker {
 
-		int n = g0.vertices().size();
-		DiGraph g = new GraphArrayDirected(n);
-		Weights.Int edgeRef = g.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
-		Weights.Int twin = g.addEdgesWeights(EdgeRevWeightKey, int.class, Integer.valueOf(-1));
-		Weights.Double flow = g.addEdgesWeights(FlowWeightKey, double.class);
-		Weights.Double capacity = g.addEdgesWeights(CapacityWeightKey, double.class);
-		for (IntIterator it = g0.edges().iterator(); it.hasNext();) {
-			int e = it.nextInt();
-			int u = g0.edgeSource(e), v = g0.edgeTarget(e);
-			int e1 = g.addEdge(u, v);
-			int e2 = g.addEdge(v, u);
-			edgeRef.set(e1, e);
-			edgeRef.set(e2, e);
-			twin.set(e1, e2);
-			twin.set(e2, e1);
-			flow.set(e1, 0);
-			flow.set(e2, 0);
-			capacity.set(e1, net.getCapacity(e));
-			capacity.set(e2, 0);
+		final BitSet isActive;
+		final IntPriorityQueue active;
+
+		Worker(DiGraph gOrig, FlowNetwork net, int source, int target) {
+			super(gOrig, net, source, target);
+			int n = g.vertices().size();
+			isActive = new BitSet(n);
+			active = new IntArrayFIFOQueue();
+
+			// set source and target as 'active' to prevent them from entering the active
+			// queue
+			isActive.set(source);
+			isActive.set(target);
 		}
 
-		IterPickable.Int[] edges = new IterPickable.Int[n];
-		double[] excess = new double[n];
-		BitSet isActive = new BitSet(n);
-		IntPriorityQueue active = new IntArrayFIFOQueue();
-		int[] d = new int[n];
-
-		IntDoubleConsumer pushFlow = (e, f) -> {
-			assert f > 0;
-
-			int rev = twin.getInt(e);
-			flow.set(e, flow.getDouble(e) + f);
-			flow.set(rev, flow.getDouble(rev) - f);
-			assert flow.getDouble(e) <= capacity.getDouble(e) + EPS;
-			assert flow.getDouble(rev) <= capacity.getDouble(rev) + EPS;
-
-			int u = g.edgeSource(e), v = g.edgeTarget(e);
-			excess[u] -= f;
-			excess[v] += f;
+		@Override
+		void push(int e, double f) {
+			super.push(e, f);
+			int v = g.edgeTarget(e);
 			if (!isActive.get(v)) {
 				isActive.set(v);
 				active.enqueue(v);
 			}
 		};
 
-		// set source and target as 'active' to prevent them from entering the active
-		// queue
-		isActive.set(source);
-		isActive.set(target);
-
-		/* Push as much as possible from the source vertex */
-		for (EdgeIter eit = g.edgesOut(source); eit.hasNext();) {
-			int e = eit.nextInt();
-			if (eit.v() == source)
-				continue;
-			double f = capacity.getDouble(e) - flow.getDouble(e);
-			if (f > 0)
-				pushFlow.accept(e, f);
-		}
-
-		/* Init all vertices distances */
-		SSSP.Result initD = new SSSPCardinality().calcDistances(g, target);
-		for (int u = 0; u < n; u++)
-			if (u != source && u != target)
-				d[u] = (int) initD.distance(target);
-		d[source] = n;
-		d[target] = 0;
-
-		/* Init all vertices iterators */
-		for (int u = 0; u < n; u++)
-			edges[u] = new IterPickable.Int(g.edgesOut(u));
-
-		while (!active.isEmpty()) {
-			int u = active.dequeueInt();
-			assert u != source && u != target;
-			IterPickable.Int it = edges[u];
-
-			// discharge
-			while (excess[u] > EPS) {
-				if (!it.hasNext()) {
-					/* Finished iterating over all vertex edges, relabel and reset iterator */
-					d[u]++;
-					it = edges[u] = new IterPickable.Int(g.edgesOut(u));
-					assert it.hasNext();
-				}
-
-				int e = it.pickNext();
-				double eAccess = capacity.getDouble(e) - flow.getDouble(e);
-				if (eAccess > EPS && d[u] == d[g.edgeTarget(e)] + 1) {
-					// e is admissible, push
-					double f = Math.min(excess[u], eAccess);
-					pushFlow.accept(e, f);
-				} else {
-					it.nextInt();
-				}
-			}
+		@Override
+		void discharge(int u) {
+			super.discharge(u);
 			isActive.clear(u);
 		}
 
-		/* Construct result */
-		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-			int e = it.nextInt();
-			int u = g.edgeSource(e);
-			int orig = edgeRef.getInt(e);
-			if (u == g0.edgeSource(orig))
-				net.setFlow(orig, flow.getDouble(e));
+		double calcMaxFlow() {
+			initLabels();
+			pushAsMuchFromSource();
+			while (!active.isEmpty()) {
+				int u = active.dequeueInt();
+				assert u != source && u != target;
+				discharge(u);
+			}
+			return constructResult();
 		}
-		double totalFlow = 0;
-		for (EdgeIter eit = g.edgesOut(source); eit.hasNext();) {
-			int e = eit.nextInt();
-			if (g.edgeSource(e) == g0.edgeSource(edgeRef.getInt(e)))
-				totalFlow += flow.getDouble(e);
-		}
-		for (EdgeIter eit = g.edgesIn(source); eit.hasNext();) {
-			int e = eit.nextInt();
-			if (g.edgeSource(e) == g0.edgeSource(edgeRef.getInt(e)))
-				totalFlow -= flow.getDouble(e);
-		}
-		return totalFlow;
-	}
 
+	}
 }
