@@ -59,5 +59,71 @@ public interface MaxFlow {
 
 	}
 
+	public static interface FlowNetworkInt extends FlowNetwork {
+
+		public int getCapacityInt(int edge);
+
+		@Deprecated
+		@Override
+		default double getCapacity(int edge) {
+<span class="fc" id="L69">			return getCapacityInt(edge);</span>
+		}
+
+		public void setCapacity(int edge, int capacity);
+
+		@Deprecated
+		@Override
+		default void setCapacity(int edge, double capacity) {
+<span class="nc" id="L77">			setCapacity(edge, (int) capacity);</span>
+<span class="nc" id="L78">		}</span>
+
+		public int getFlowInt(int edge);
+
+		@Deprecated
+		@Override
+		default double getFlow(int edge) {
+<span class="nc" id="L85">			return getFlowInt(edge);</span>
+		}
+
+		public void setFlow(int edge, int flow);
+
+		@Deprecated
+		@Override
+		default void setFlow(int edge, double flow) {
+<span class="nc" id="L93">			setFlow(edge, (int) flow);</span>
+<span class="nc" id="L94">		}</span>
+
+		public static FlowNetworkInt createAsEdgeWeight(Graph g) {
+<span class="fc" id="L97">			Weights.Int capacityWeights = g.addEdgesWeights(new Object(), int.class);</span>
+<span class="fc" id="L98">			Weights.Int flowWeights = g.addEdgesWeights(new Object(), int.class);</span>
+<span class="fc" id="L99">			return new FlowNetworkInt() {</span>
+
+				@Override
+				public int getCapacityInt(int edge) {
+<span class="fc" id="L103">					return capacityWeights.getInt(edge);</span>
+				}
+
+				@Override
+				public void setCapacity(int edge, int capacity) {
+<span class="fc" id="L108">					capacityWeights.set(edge, capacity);</span>
+<span class="fc" id="L109">				}</span>
+
+				@Override
+				public int getFlowInt(int e) {
+<span class="fc" id="L113">					return flowWeights.getInt(e);</span>
+				}
+
+				@Override
+				public void setFlow(int edge, int flow) {
+<span class="fc" id="L118">					int capacity = getCapacityInt(edge);</span>
+<span class="pc bpc" id="L119" title="1 of 2 branches missed.">					if (flow &gt; capacity)</span>
+<span class="nc" id="L120">						throw new IllegalArgumentException(&quot;Illegal flow &quot; + flow + &quot; on edge &quot; + edge);</span>
+<span class="fc" id="L121">					flowWeights.set(edge, Math.min(flow, capacity));</span>
+<span class="fc" id="L122">				}</span>
+			};
+		}
+
+	}
+
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

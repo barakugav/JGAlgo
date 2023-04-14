@@ -1,212 +1,225 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LinkedListDoubleArrayFixedSize.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jgalgo</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">LinkedListDoubleArrayFixedSize.java</span></div><h1>LinkedListDoubleArrayFixedSize.java</h1><pre class="source lang-java linenums">package com.jgalgo;
 
+import java.util.Arrays;
 import java.util.NoSuchElementException;
 
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
-class LinkedListDoubleArrayFixedSize {
+interface LinkedListDoubleArrayFixedSize {
 
-	private final Impl impl;
-	private static final int none = -1;
+	static final int None = -1;
 
-<span class="fc" id="L12">	LinkedListDoubleArrayFixedSize(int n) {</span>
-<span class="fc" id="L13">		int len = n * 2;</span>
-<span class="fc bfc" id="L14" title="All 2 branches covered.">		if (len &lt;= 1 &lt;&lt; Byte.SIZE)</span>
-<span class="fc" id="L15">			impl = new ImplByte(len);</span>
-<span class="pc bpc" id="L16" title="1 of 2 branches missed.">		else if (len &lt;= 1 &lt;&lt; Short.SIZE)</span>
-<span class="fc" id="L17">			impl = new ImplShort(len);</span>
-		else
-<span class="nc" id="L19">			impl = new ImplInt(len);</span>
-
-<span class="fc bfc" id="L21" title="All 2 branches covered.">		for (int i = 0; i &lt; len; i++)</span>
-<span class="fc" id="L22">			impl.set(i, none);</span>
-<span class="fc" id="L23">	}</span>
-
-	int size() {
-<span class="fc" id="L26">		return impl.legnth() / 2;</span>
-	}
-
-	int next(int x) {
-<span class="fc" id="L30">		return impl.get(x * 2);</span>
-	}
-
-	void setNext(int x, int y) {
-<span class="fc" id="L34">		impl.set(x * 2, y);</span>
-<span class="fc" id="L35">	}</span>
-
-	boolean hasNext(int x) {
-<span class="pc bpc" id="L38" title="1 of 2 branches missed.">		return next(x) != none;</span>
-	}
-
-	int prev(int x) {
-<span class="fc" id="L42">		return impl.get(x * 2 + 1);</span>
-	}
-
-	void setPrev(int x, int y) {
-<span class="fc" id="L46">		impl.set(x * 2 + 1, y);</span>
-<span class="fc" id="L47">	}</span>
-
-	boolean hasPrev(int x) {
-<span class="pc bpc" id="L50" title="1 of 2 branches missed.">		return prev(x) != none;</span>
-	}
-
-	void add(int l, int x) {
-<span class="pc bpc" id="L54" title="2 of 4 branches missed.">		if (next(x) != none || prev(x) != none)</span>
-<span class="nc" id="L55">			throw new IllegalArgumentException();</span>
-<span class="fc" id="L56">		int n = next(l);</span>
-<span class="fc" id="L57">		setNext(l, x);</span>
-<span class="fc" id="L58">		setPrev(x, l);</span>
-<span class="fc bfc" id="L59" title="All 2 branches covered.">		if (n != none) {</span>
-<span class="fc" id="L60">			setNext(x, n);</span>
-<span class="fc" id="L61">			setPrev(n, x);</span>
+	static LinkedListDoubleArrayFixedSize newInstance(int n) {
+<span class="fc bfc" id="L13" title="All 2 branches covered.">		if (n &lt;= 1 &lt;&lt; (Byte.SIZE - 1)) {</span>
+<span class="fc" id="L14">			return new ImplByte(n);</span>
+<span class="pc bpc" id="L15" title="1 of 2 branches missed.">		} else if (n &lt;= 1 &lt;&lt; (Short.SIZE - 1)) {</span>
+<span class="fc" id="L16">			return new ImplShort(n);</span>
+		} else {
+<span class="nc" id="L18">			return new ImplInt(n);</span>
 		}
-<span class="fc" id="L63">	}</span>
-
-	void remove(int x) {
-<span class="fc" id="L66">		int p = prev(x), n = next(x);</span>
-<span class="fc bfc" id="L67" title="All 2 branches covered.">		if (p != none) {</span>
-<span class="fc" id="L68">			setNext(p, n);</span>
-<span class="fc" id="L69">			setPrev(x, none);</span>
-		}
-<span class="fc bfc" id="L71" title="All 2 branches covered.">		if (n != none) {</span>
-<span class="fc" id="L72">			setPrev(n, p);</span>
-<span class="fc" id="L73">			setNext(x, none);</span>
-		}
-<span class="fc" id="L75">	}</span>
-
-	void clear(int l) {
-<span class="nc bnc" id="L78" title="All 2 branches missed.">		for (int n; (n = next(l)) != none; l = n) {</span>
-<span class="nc" id="L79">			setNext(l, none);</span>
-<span class="nc" id="L80">			setPrev(n, none);</span>
-		}
-<span class="nc" id="L82">	}</span>
-
-	void clear() {
-<span class="nc" id="L85">		int len = impl.legnth();</span>
-<span class="nc bnc" id="L86" title="All 2 branches missed.">		for (int i = 0; i &lt; len; i++)</span>
-<span class="nc" id="L87">			impl.set(i, none);</span>
-<span class="nc" id="L88">	}</span>
-
-	IntIterator iterator(int x) {
-<span class="fc" id="L91">		checkIdx(x);</span>
-<span class="fc" id="L92">		return new Iter(x);</span>
 	}
 
-	private void checkIdx(int x) {
-<span class="pc bpc" id="L96" title="2 of 4 branches missed.">		if (!(0 &lt;= x &amp;&amp; x &lt; size()))</span>
-<span class="nc" id="L97">			throw new IllegalArgumentException();</span>
-<span class="fc" id="L98">	}</span>
+	int size();
 
-	private class Iter implements IntIterator {
+	int next(int id);
 
-		int p;
+	void setNext(int id, int next);
 
-<span class="fc" id="L104">		Iter(int x) {</span>
-<span class="fc" id="L105">			p = x;</span>
-<span class="fc" id="L106">		}</span>
+	boolean hasNext(int id);
+
+	int prev(int id);
+
+	void setPrev(int id, int prev);
+
+	boolean hasPrev(int id);
+
+	default void insert(int prev, int id) {
+<span class="pc bpc" id="L37" title="2 of 4 branches missed.">		if (next(id) != None || prev(id) != None)</span>
+<span class="nc" id="L38">			throw new IllegalArgumentException();</span>
+<span class="fc" id="L39">		int next = next(prev);</span>
+<span class="fc" id="L40">		setNext(prev, id);</span>
+<span class="fc" id="L41">		setPrev(id, prev);</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">		if (next != None) {</span>
+<span class="fc" id="L43">			setNext(id, next);</span>
+<span class="fc" id="L44">			setPrev(next, id);</span>
+		}
+<span class="fc" id="L46">	}</span>
+
+	default void connect(int prev, int next) {
+<span class="pc bpc" id="L49" title="2 of 4 branches missed.">		if (hasNext(prev) || hasPrev(next))</span>
+<span class="nc" id="L50">			throw new IllegalArgumentException();</span>
+<span class="fc" id="L51">		setNext(prev, next);</span>
+<span class="fc" id="L52">		setPrev(next, prev);</span>
+<span class="fc" id="L53">	}</span>
+
+	default void disconnect(int id) {
+<span class="fc" id="L56">		int prev = prev(id), next = next(id);</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">		if (prev != None) {</span>
+<span class="fc" id="L58">			setNext(prev, next);</span>
+<span class="fc" id="L59">			setPrev(id, None);</span>
+		}
+<span class="fc bfc" id="L61" title="All 2 branches covered.">		if (next != None) {</span>
+<span class="fc" id="L62">			setPrev(next, prev);</span>
+<span class="fc" id="L63">			setNext(id, None);</span>
+		}
+<span class="fc" id="L65">	}</span>
+
+	// void clear(int id) {
+	// for (int next; (next = next(id)) != None; id = next) {
+	// setNext(id, None);
+	// setPrev(next, None);
+	// }
+	// }
+
+	// void clear() {
+	// int len = impl.length();
+	// for (int i = 0; i &lt; len; i++)
+	// impl.set(i, None);
+	// }
+
+	default IntIterator iterator(int id) {
+<span class="pc bpc" id="L81" title="2 of 4 branches missed.">		if (!(0 &lt;= id &amp;&amp; id &lt; size()))</span>
+<span class="nc" id="L82">			throw new IndexOutOfBoundsException(id);</span>
+<span class="fc" id="L83">		return new IntIterator() {</span>
+<span class="fc" id="L84">			int p = id;</span>
+
+			@Override
+			public boolean hasNext() {
+<span class="fc bfc" id="L88" title="All 2 branches covered.">				return p != None;</span>
+			}
+
+			@Override
+			public int nextInt() {
+<span class="pc bpc" id="L93" title="1 of 2 branches missed.">				if (!hasNext())</span>
+<span class="nc" id="L94">					throw new NoSuchElementException();</span>
+<span class="fc" id="L95">				int ret = p;</span>
+<span class="fc" id="L96">				p = LinkedListDoubleArrayFixedSize.this.next(p);</span>
+<span class="fc" id="L97">				return ret;</span>
+			}
+
+		};
+	}
+
+<span class="fc" id="L103">	abstract static class Abstract implements LinkedListDoubleArrayFixedSize {</span>
 
 		@Override
-		public boolean hasNext() {
-<span class="fc bfc" id="L110" title="All 2 branches covered.">			return p != none;</span>
+		public int next(int id) {
+<span class="fc" id="L107">			return arrGet(idxOfNext(id));</span>
 		}
 
 		@Override
-		public int nextInt() {
-<span class="pc bpc" id="L115" title="1 of 2 branches missed.">			if (!hasNext())</span>
-<span class="nc" id="L116">				throw new NoSuchElementException();</span>
-<span class="fc" id="L117">			int ret = p;</span>
-<span class="fc" id="L118">			p = LinkedListDoubleArrayFixedSize.this.next(p);</span>
-<span class="fc" id="L119">			return ret;</span>
+		public void setNext(int id, int next) {
+<span class="fc" id="L112">			arrSet(idxOfNext(id), next);</span>
+<span class="fc" id="L113">		}</span>
+
+		@Override
+		public boolean hasNext(int id) {
+<span class="pc bpc" id="L117" title="1 of 2 branches missed.">			return arrGet(idxOfNext(id)) != None;</span>
 		}
 
+		@Override
+		public int prev(int id) {
+<span class="fc" id="L122">			return arrGet(idxOfPrev(id));</span>
+		}
+
+		@Override
+		public void setPrev(int id, int prev) {
+<span class="fc" id="L127">			arrSet(idxOfPrev(id), prev);</span>
+<span class="fc" id="L128">		}</span>
+
+		@Override
+		public boolean hasPrev(int id) {
+<span class="pc bpc" id="L132" title="1 of 2 branches missed.">			return arrGet(idxOfPrev(id)) != None;</span>
+		}
+
+		abstract int arrGet(int idx);
+
+		abstract void arrSet(int idx, int val);
+
+		private static int idxOfNext(int id) {
+<span class="fc" id="L140">			return id * 2 + 0;</span>
+		}
+
+		private static int idxOfPrev(int id) {
+<span class="fc" id="L144">			return id * 2 + 1;</span>
+		}
 	}
 
-	private static interface Impl {
-
-		int legnth();
-
-		int get(int idx);
-
-		void set(int idx, int val);
-
-	}
-
-<span class="fc" id="L134">	private static class ImplByte implements Impl {</span>
+<span class="fc" id="L148">	static class ImplByte extends Abstract {</span>
 
 		final byte[] a;
 
-<span class="fc" id="L138">		ImplByte(int len) {</span>
-<span class="pc bpc" id="L139" title="1 of 2 branches missed.">			assert len &lt;= 1 &lt;&lt; Byte.SIZE;</span>
-<span class="fc" id="L140">			a = new byte[len];</span>
-<span class="fc" id="L141">		}</span>
+<span class="fc" id="L152">		ImplByte(int n) {</span>
+<span class="fc" id="L153">			a = new byte[n * 2];</span>
+<span class="fc" id="L154">			Arrays.fill(a, (byte) None);</span>
+<span class="fc" id="L155">		}</span>
 
 		@Override
-		public int legnth() {
-<span class="fc" id="L145">			return a.length;</span>
+		public int size() {
+<span class="fc" id="L159">			return a.length / 2;</span>
 		}
 
 		@Override
-		public int get(int idx) {
-<span class="fc" id="L150">			return a[idx];</span>
+		int arrGet(int idx) {
+<span class="fc" id="L164">			return a[idx];</span>
 		}
 
 		@Override
-		public void set(int idx, int val) {
-<span class="pc bpc" id="L155" title="1 of 2 branches missed.">			assert val &lt; Byte.MAX_VALUE;</span>
-<span class="fc" id="L156">			a[idx] = (byte) val;</span>
-<span class="fc" id="L157">		}</span>
-
+		void arrSet(int idx, int val) {
+<span class="pc bpc" id="L169" title="1 of 2 branches missed.">			assert val &lt; Byte.MAX_VALUE;</span>
+<span class="fc" id="L170">			a[idx] = (byte) val;</span>
+<span class="fc" id="L171">		}</span>
 	}
 
-<span class="fc" id="L161">	private static class ImplShort implements Impl {</span>
+<span class="fc" id="L174">	static class ImplShort extends Abstract {</span>
 
 		final short[] a;
 
-<span class="fc" id="L165">		ImplShort(int len) {</span>
-<span class="pc bpc" id="L166" title="1 of 2 branches missed.">			assert len &lt;= 1 &lt;&lt; Short.SIZE;</span>
-<span class="fc" id="L167">			a = new short[len];</span>
-<span class="fc" id="L168">		}</span>
+<span class="fc" id="L178">		ImplShort(int n) {</span>
+<span class="fc" id="L179">			a = new short[n * 2];</span>
+<span class="fc" id="L180">			Arrays.fill(a, (short) None);</span>
+<span class="fc" id="L181">		}</span>
 
 		@Override
-		public int legnth() {
-<span class="fc" id="L172">			return a.length;</span>
+		public int size() {
+<span class="fc" id="L185">			return a.length / 2;</span>
 		}
 
 		@Override
-		public int get(int idx) {
-<span class="fc" id="L177">			return a[idx];</span>
+		int arrGet(int idx) {
+<span class="fc" id="L190">			return a[idx];</span>
 		}
 
 		@Override
-		public void set(int idx, int val) {
-<span class="pc bpc" id="L182" title="1 of 2 branches missed.">			assert val &lt; Short.MAX_VALUE;</span>
-<span class="fc" id="L183">			a[idx] = (short) val;</span>
-<span class="fc" id="L184">		}</span>
-
+		void arrSet(int idx, int val) {
+<span class="pc bpc" id="L195" title="1 of 2 branches missed.">			assert val &lt; Short.MAX_VALUE;</span>
+<span class="fc" id="L196">			a[idx] = (short) val;</span>
+<span class="fc" id="L197">		}</span>
 	}
 
-	private static class ImplInt implements Impl {
+	static class ImplInt extends Abstract {
 
 		final int[] a;
 
-<span class="nc" id="L192">		ImplInt(int len) {</span>
-<span class="nc" id="L193">			a = new int[len];</span>
-<span class="nc" id="L194">		}</span>
+<span class="nc" id="L204">		ImplInt(int n) {</span>
+<span class="nc" id="L205">			a = new int[n * 2];</span>
+<span class="nc" id="L206">			Arrays.fill(a, None);</span>
+<span class="nc" id="L207">		}</span>
 
 		@Override
-		public int legnth() {
-<span class="nc" id="L198">			return a.length;</span>
+		public int size() {
+<span class="nc" id="L211">			return a.length / 2;</span>
 		}
 
 		@Override
-		public int get(int idx) {
-<span class="nc" id="L203">			return a[idx];</span>
+		int arrGet(int idx) {
+<span class="nc" id="L216">			return a[idx];</span>
 		}
 
 		@Override
-		public void set(int idx, int val) {
-<span class="nc" id="L208">			a[idx] = val;</span>
-<span class="nc" id="L209">		}</span>
+		void arrSet(int idx, int val) {
+<span class="nc" id="L221">			a[idx] = val;</span>
+<span class="nc" id="L222">		}</span>
 
 	}
 

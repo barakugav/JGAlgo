@@ -1,155 +1,138 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MaxFlowPushRelabel.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jgalgo</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">MaxFlowPushRelabel.java</span></div><h1>MaxFlowPushRelabel.java</h1><pre class="source lang-java linenums">package com.jgalgo;
 
-import java.util.Arrays;
 import java.util.BitSet;
 
-import com.jgalgo.Utils.IntDoubleConsumer;
-import com.jgalgo.Utils.IterPickable;
-
 import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 public class MaxFlowPushRelabel implements MaxFlow {
 
 	/**
-	 * Naive push/relabel implementation.
+	 * Push-relabel implementation with FIFO ordering.
 	 *
 	 * O(n^3)
 	 */
 
-	private final DebugPrintsManager debug;
-	private static final double EPS = 0.0001;
-<span class="fc" id="L23">	private static final Object EdgeRefWeightKey = new Object();</span>
-<span class="fc" id="L24">	private static final Object EdgeRevWeightKey = new Object();</span>
-<span class="fc" id="L25">	private static final Object FlowWeightKey = new Object();</span>
-<span class="fc" id="L26">	private static final Object CapacityWeightKey = new Object();</span>
-
-<span class="fc" id="L28">	public MaxFlowPushRelabel() {</span>
-<span class="fc" id="L29">		debug = new DebugPrintsManager(false);</span>
-<span class="fc" id="L30">	}</span>
+<span class="fc" id="L16">	public MaxFlowPushRelabel() {</span>
+<span class="fc" id="L17">	}</span>
 
 	@Override
 	public double calcMaxFlow(Graph g, FlowNetwork net, int source, int target) {
-<span class="pc bpc" id="L34" title="1 of 2 branches missed.">		if (!(g instanceof DiGraph))</span>
-<span class="nc" id="L35">			throw new IllegalArgumentException(&quot;only directed graphs are supported&quot;);</span>
-<span class="fc" id="L36">		return calcMaxFlow0((DiGraph) g, net, source, target);</span>
+<span class="pc bpc" id="L21" title="1 of 2 branches missed.">		if (!(g instanceof DiGraph))</span>
+<span class="nc" id="L22">			throw new IllegalArgumentException(&quot;only directed graphs are supported&quot;);</span>
+<span class="fc bfc" id="L23" title="All 2 branches covered.">		if (net instanceof FlowNetworkInt) {</span>
+<span class="fc" id="L24">			return new WorkerInt((DiGraph) g, (FlowNetworkInt) net, source, target).calcMaxFlow();</span>
+		} else {
+<span class="fc" id="L26">			return new Worker((DiGraph) g, net, source, target).calcMaxFlow();</span>
+		}
 	}
 
-	private double calcMaxFlow0(DiGraph g0, FlowNetwork net, int source, int target) {
-<span class="pc bpc" id="L40" title="1 of 2 branches missed.">		if (source == target)</span>
-<span class="nc" id="L41">			throw new IllegalArgumentException(&quot;Source and target can't be the same vertices&quot;);</span>
-<span class="fc" id="L42">		debug.println(&quot;\t&quot;, getClass().getSimpleName());</span>
+<span class="fc" id="L30">	private class Worker extends MaxFlowPushRelabelAbstract.WorkerDouble {</span>
 
-<span class="fc" id="L44">		DiGraph g = new GraphArrayDirected(g0.vertices().size());</span>
-<span class="fc" id="L45">		Weights.Int edgeRef = g.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));</span>
-<span class="fc" id="L46">		Weights.Int twin = g.addEdgesWeights(EdgeRevWeightKey, int.class, Integer.valueOf(-1));</span>
-<span class="fc" id="L47">		Weights.Double flow = g.addEdgesWeights(FlowWeightKey, double.class);</span>
-<span class="fc" id="L48">		Weights.Double capacity = g.addEdgesWeights(CapacityWeightKey, double.class);</span>
-<span class="fc bfc" id="L49" title="All 2 branches covered.">		for (IntIterator it = g0.edges().iterator(); it.hasNext();) {</span>
-<span class="fc" id="L50">			int e = it.nextInt();</span>
-<span class="fc" id="L51">			int u = g0.edgeSource(e), v = g0.edgeTarget(e);</span>
-<span class="fc" id="L52">			int e1 = g.addEdge(u, v);</span>
-<span class="fc" id="L53">			int e2 = g.addEdge(v, u);</span>
-<span class="fc" id="L54">			edgeRef.set(e1, e);</span>
-<span class="fc" id="L55">			edgeRef.set(e2, e);</span>
-<span class="fc" id="L56">			twin.set(e1, e2);</span>
-<span class="fc" id="L57">			twin.set(e2, e1);</span>
-<span class="fc" id="L58">			flow.set(e1, 0);</span>
-<span class="fc" id="L59">			flow.set(e2, 0);</span>
-<span class="fc" id="L60">			capacity.set(e1, net.getCapacity(e));</span>
-<span class="fc" id="L61">			capacity.set(e2, 0);</span>
-<span class="fc" id="L62">		}</span>
+		final ActiveQueue active;
 
-<span class="fc" id="L64">		int n = g.vertices().size();</span>
+<span class="fc" id="L34">		Worker(DiGraph gOrig, FlowNetwork net, int source, int target) {</span>
+<span class="fc" id="L35">			super(gOrig, net, source, target);</span>
+<span class="fc" id="L36">			active = new ActiveQueue(this);</span>
+<span class="fc" id="L37">		}</span>
 
-<span class="fc" id="L66">		IterPickable.Int[] edges = new IterPickable.Int[n];</span>
-<span class="fc" id="L67">		double[] excess = new double[n];</span>
-<span class="fc" id="L68">		BitSet isActive = new BitSet(n);</span>
-<span class="fc" id="L69">		IntPriorityQueue active = new IntArrayFIFOQueue();</span>
-<span class="fc" id="L70">		int[] d = new int[n];</span>
+		@Override
+		void push(int e, double f) {
+<span class="fc" id="L41">			super.push(e, f);</span>
+<span class="fc" id="L42">			active.afterPush(e);</span>
+<span class="fc" id="L43">		};</span>
 
-<span class="fc" id="L72">		IntDoubleConsumer pushFlow = (e, f) -&gt; {</span>
-<span class="pc bpc" id="L73" title="1 of 2 branches missed.">			assert f &gt; 0;</span>
+		@Override
+		boolean dischargeOrRelabel(int u) {
+<span class="fc" id="L47">			boolean relabeled = super.dischargeOrRelabel(u);</span>
+<span class="fc" id="L48">			active.afterDischargeOrRelabel(u, relabeled);</span>
+<span class="fc" id="L49">			return relabeled;</span>
+		}
 
-<span class="fc" id="L75">			int rev = twin.getInt(e);</span>
-<span class="fc" id="L76">			flow.set(e, flow.getDouble(e) + f);</span>
-<span class="fc" id="L77">			flow.set(rev, flow.getDouble(rev) - f);</span>
-<span class="pc bpc" id="L78" title="1 of 2 branches missed.">			assert flow.getDouble(e) &lt;= capacity.getDouble(e) + EPS;</span>
-<span class="pc bpc" id="L79" title="1 of 2 branches missed.">			assert flow.getDouble(rev) &lt;= capacity.getDouble(rev) + EPS;</span>
+		double calcMaxFlow() {
+<span class="fc" id="L53">			initLabels();</span>
+<span class="fc" id="L54">			pushAsMuchFromSource();</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">			while (!active.queue.isEmpty()) {</span>
+<span class="fc" id="L56">				int u = active.queue.dequeueInt();</span>
+<span class="pc bpc" id="L57" title="2 of 4 branches missed.">				assert u != source &amp;&amp; u != target;</span>
+<span class="fc" id="L58">				dischargeOrRelabel(u);</span>
+<span class="fc" id="L59">			}</span>
+<span class="fc" id="L60">			return constructResult();</span>
+		}
 
-<span class="fc" id="L81">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
-<span class="fc" id="L82">			excess[u] -= f;</span>
-<span class="fc" id="L83">			excess[v] += f;</span>
-<span class="fc bfc" id="L84" title="All 2 branches covered.">			if (!isActive.get(v)) {</span>
-<span class="fc" id="L85">				isActive.set(v);</span>
-<span class="fc" id="L86">				active.enqueue(v);</span>
+	}
+
+<span class="fc" id="L65">	private class WorkerInt extends MaxFlowPushRelabelAbstract.WorkerInt {</span>
+
+		final ActiveQueue active;
+
+<span class="fc" id="L69">		WorkerInt(DiGraph gOrig, FlowNetworkInt net, int source, int target) {</span>
+<span class="fc" id="L70">			super(gOrig, net, source, target);</span>
+<span class="fc" id="L71">			active = new ActiveQueue(this);</span>
+<span class="fc" id="L72">		}</span>
+
+		@Override
+		void push(int e, int f) {
+<span class="fc" id="L76">			super.push(e, f);</span>
+<span class="fc" id="L77">			active.afterPush(e);</span>
+<span class="fc" id="L78">		};</span>
+
+		@Override
+		boolean dischargeOrRelabel(int u) {
+<span class="fc" id="L82">			boolean relabeled = super.dischargeOrRelabel(u);</span>
+<span class="fc" id="L83">			active.afterDischargeOrRelabel(u, relabeled);</span>
+<span class="fc" id="L84">			return relabeled;</span>
+		}
+
+		double calcMaxFlow() {
+<span class="fc" id="L88">			initLabels();</span>
+<span class="fc" id="L89">			pushAsMuchFromSource();</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">			while (!active.queue.isEmpty()) {</span>
+<span class="fc" id="L91">				int u = active.queue.dequeueInt();</span>
+<span class="pc bpc" id="L92" title="2 of 4 branches missed.">				assert u != source &amp;&amp; u != target;</span>
+<span class="fc" id="L93">				dischargeOrRelabel(u);</span>
+<span class="fc" id="L94">			}</span>
+<span class="fc" id="L95">			return constructResult();</span>
+		}
+
+	}
+
+	private static class ActiveQueue {
+
+		private final DiGraph g;
+		final BitSet isActive;
+		final IntPriorityQueue queue;
+
+<span class="fc" id="L106">		ActiveQueue(MaxFlowPushRelabelAbstract.Worker worker) {</span>
+<span class="fc" id="L107">			g = worker.g;</span>
+<span class="fc" id="L108">			int n = g.vertices().size();</span>
+<span class="fc" id="L109">			isActive = new BitSet(n);</span>
+<span class="fc" id="L110">			queue = new IntArrayFIFOQueue();</span>
+
+			// set source and target as 'active' to prevent them from entering the active
+			// queue
+<span class="fc" id="L114">			isActive.set(worker.source);</span>
+<span class="fc" id="L115">			isActive.set(worker.target);</span>
+<span class="fc" id="L116">		}</span>
+
+		void afterPush(int e) {
+<span class="fc" id="L119">			int v = g.edgeTarget(e);</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">			if (!isActive.get(v)) {</span>
+<span class="fc" id="L121">				isActive.set(v);</span>
+<span class="fc" id="L122">				queue.enqueue(v);</span>
 			}
-<span class="fc" id="L88">		};</span>
+<span class="fc" id="L124">		}</span>
 
-		/* Push as much as possible from the source vertex */
-<span class="fc bfc" id="L91" title="All 2 branches covered.">		for (EdgeIter eit = g.edgesOut(source); eit.hasNext();) {</span>
-<span class="fc" id="L92">			int e = eit.nextInt();</span>
-<span class="fc" id="L93">			double f = capacity.getDouble(e) - flow.getDouble(e);</span>
-<span class="fc bfc" id="L94" title="All 2 branches covered.">			if (f != 0)</span>
-<span class="fc" id="L95">				pushFlow.accept(e, f);</span>
-<span class="fc" id="L96">		}</span>
-
-		/* Init all vertices distances */
-<span class="fc" id="L99">		Arrays.fill(d, 0);</span>
-<span class="fc" id="L100">		d[source] = n;</span>
-
-		/* Init all vertices iterators */
-<span class="fc bfc" id="L103" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
-<span class="fc" id="L104">			edges[u] = new IterPickable.Int(g.edgesOut(u));</span>
-
-<span class="fc bfc" id="L106" title="All 2 branches covered.">		while (!active.isEmpty()) {</span>
-<span class="fc" id="L107">			int u = active.dequeueInt();</span>
-<span class="fc bfc" id="L108" title="All 4 branches covered.">			if (u == source || u == target)</span>
-<span class="fc" id="L109">				continue;</span>
-<span class="fc" id="L110">			IterPickable.Int it = edges[u];</span>
-
-<span class="fc bfc" id="L112" title="All 4 branches covered.">			while (excess[u] &gt; EPS &amp;&amp; it.hasNext()) {</span>
-<span class="fc" id="L113">				int e = it.pickNext();</span>
-<span class="fc" id="L114">				double eAccess = capacity.getDouble(e) - flow.getDouble(e);</span>
-<span class="fc bfc" id="L115" title="All 4 branches covered.">				if (eAccess &gt; EPS &amp;&amp; d[u] == d[g.edgeTarget(e)] + 1) {</span>
-<span class="fc" id="L116">					double f = Math.min(excess[u], eAccess);</span>
-<span class="fc" id="L117">					pushFlow.accept(e, f);</span>
-<span class="fc" id="L118">				} else {</span>
-<span class="fc" id="L119">					it.nextInt();</span>
-				}
-<span class="fc" id="L121">			}</span>
-
-			/* Finished iterating over all vertex edges, relabel and reset iterator */
-<span class="fc bfc" id="L124" title="All 2 branches covered.">			if (!it.hasNext()) {</span>
-<span class="fc" id="L125">				d[u]++;</span>
-<span class="fc" id="L126">				debug.println(&quot;R(&quot;, Integer.valueOf(u), &quot;) &lt;- &quot;, Integer.valueOf(d[u]));</span>
-<span class="fc" id="L127">				edges[u] = new IterPickable.Int(g.edgesOut(u));</span>
-			}
-
-			/* Update isActive and add to queue if active */
-<span class="fc bfc" id="L131" title="All 2 branches covered.">			if (excess[u] &gt; EPS) {</span>
-<span class="fc" id="L132">				active.enqueue(u);</span>
+		void afterDischargeOrRelabel(int u, boolean relabeled) {
+<span class="fc bfc" id="L127" title="All 2 branches covered.">			if (relabeled) {</span>
+				// vertex was relabeled and not discharged, still active
+<span class="fc" id="L129">				queue.enqueue(u);</span>
 			} else {
-<span class="fc" id="L134">				isActive.clear(u);</span>
+				// discharged, not active anymore
+<span class="fc" id="L132">				isActive.clear(u);</span>
 			}
-<span class="fc" id="L136">		}</span>
+<span class="fc" id="L134">		}</span>
 
-		/* Construct result */
-<span class="fc bfc" id="L139" title="All 2 branches covered.">		for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
-<span class="fc" id="L140">			int e = it.nextInt();</span>
-<span class="fc" id="L141">			int u = g.edgeSource(e);</span>
-<span class="fc" id="L142">			int orig = edgeRef.getInt(e);</span>
-<span class="fc bfc" id="L143" title="All 2 branches covered.">			if (u == g0.edgeSource(orig))</span>
-<span class="fc" id="L144">				net.setFlow(orig, flow.getDouble(e));</span>
-<span class="fc" id="L145">		}</span>
-<span class="fc" id="L146">		double totalFlow = 0;</span>
-<span class="fc bfc" id="L147" title="All 2 branches covered.">		for (EdgeIter eit = g.edgesOut(source); eit.hasNext();) {</span>
-<span class="fc" id="L148">			int e = eit.nextInt();</span>
-<span class="fc" id="L149">			totalFlow += flow.getDouble(e);</span>
-<span class="fc" id="L150">		}</span>
-<span class="fc" id="L151">		return totalFlow;</span>
 	}
-
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

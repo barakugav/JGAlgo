@@ -188,24 +188,30 @@ public class MaxFlowDinicDynamicTrees implements MaxFlow {
 <span class="fc bfc" id="L188" title="All 2 branches covered.">			if (g.edgeSource(e) == g0.edgeSource(data.orig))</span>
 <span class="fc" id="L189">				totalFlow += data.flow;</span>
 <span class="fc" id="L190">		}</span>
-<span class="fc" id="L191">		return totalFlow;</span>
+<span class="fc bfc" id="L191" title="All 2 branches covered.">		for (EdgeIter eit = g.edgesIn(source); eit.hasNext();) {</span>
+<span class="fc" id="L192">			int e = eit.nextInt();</span>
+<span class="fc" id="L193">			Ref data = edgeRef.get(e);</span>
+<span class="fc bfc" id="L194" title="All 2 branches covered.">			if (g.edgeSource(e) == g0.edgeSource(data.orig))</span>
+<span class="fc" id="L195">				totalFlow -= data.flow;</span>
+<span class="fc" id="L196">		}</span>
+<span class="fc" id="L197">		return totalFlow;</span>
 	}
 
 	private static DiGraph referenceGraph(DiGraph g0, FlowNetwork net) {
-<span class="fc" id="L195">		DiGraph g = new GraphArrayDirected(g0.vertices().size());</span>
-<span class="fc" id="L196">		Weights&lt;Ref&gt; edgeRef = g.addEdgesWeights(EdgeRefWeightKey, Ref.class);</span>
-<span class="fc bfc" id="L197" title="All 2 branches covered.">		for (IntIterator it = g0.edges().iterator(); it.hasNext();) {</span>
-<span class="fc" id="L198">			int e = it.nextInt();</span>
-<span class="fc" id="L199">			int u = g0.edgeSource(e), v = g0.edgeTarget(e);</span>
-<span class="fc" id="L200">			Ref ref = new Ref(e, 0), refRev = new Ref(e, net.getCapacity(e));</span>
-<span class="fc" id="L201">			int e1 = g.addEdge(u, v);</span>
-<span class="fc" id="L202">			int e2 = g.addEdge(v, u);</span>
-<span class="fc" id="L203">			edgeRef.set(e1, ref);</span>
-<span class="fc" id="L204">			edgeRef.set(e2, refRev);</span>
-<span class="fc" id="L205">			refRev.rev = ref;</span>
-<span class="fc" id="L206">			ref.rev = refRev;</span>
-<span class="fc" id="L207">		}</span>
-<span class="fc" id="L208">		return g;</span>
+<span class="fc" id="L201">		DiGraph g = new GraphArrayDirected(g0.vertices().size());</span>
+<span class="fc" id="L202">		Weights&lt;Ref&gt; edgeRef = g.addEdgesWeights(EdgeRefWeightKey, Ref.class);</span>
+<span class="fc bfc" id="L203" title="All 2 branches covered.">		for (IntIterator it = g0.edges().iterator(); it.hasNext();) {</span>
+<span class="fc" id="L204">			int e = it.nextInt();</span>
+<span class="fc" id="L205">			int u = g0.edgeSource(e), v = g0.edgeTarget(e);</span>
+<span class="fc" id="L206">			Ref ref = new Ref(e, 0), refRev = new Ref(e, net.getCapacity(e));</span>
+<span class="fc" id="L207">			int e1 = g.addEdge(u, v);</span>
+<span class="fc" id="L208">			int e2 = g.addEdge(v, u);</span>
+<span class="fc" id="L209">			edgeRef.set(e1, ref);</span>
+<span class="fc" id="L210">			edgeRef.set(e2, refRev);</span>
+<span class="fc" id="L211">			refRev.rev = ref;</span>
+<span class="fc" id="L212">			ref.rev = refRev;</span>
+<span class="fc" id="L213">		}</span>
+<span class="fc" id="L214">		return g;</span>
 	}
 
 	private static class Ref {
@@ -214,15 +220,15 @@ public class MaxFlowDinicDynamicTrees implements MaxFlow {
 		Ref rev;
 		double flow;
 
-<span class="fc" id="L217">		Ref(int e, double flow) {</span>
-<span class="fc" id="L218">			orig = e;</span>
-<span class="fc" id="L219">			rev = null;</span>
-<span class="fc" id="L220">			this.flow = flow;</span>
-<span class="fc" id="L221">		}</span>
+<span class="fc" id="L223">		Ref(int e, double flow) {</span>
+<span class="fc" id="L224">			orig = e;</span>
+<span class="fc" id="L225">			rev = null;</span>
+<span class="fc" id="L226">			this.flow = flow;</span>
+<span class="fc" id="L227">		}</span>
 
 		@Override
 		public String toString() {
-<span class="nc" id="L225">			return &quot;R(&quot; + orig + &quot;)&quot;;</span>
+<span class="nc" id="L231">			return &quot;R(&quot; + orig + &quot;)&quot;;</span>
 		}
 
 	}

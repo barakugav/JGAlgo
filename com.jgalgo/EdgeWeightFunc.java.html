@@ -15,16 +15,17 @@ public interface EdgeWeightFunc extends IntComparator {
 	@FunctionalInterface
 	public static interface Int extends EdgeWeightFunc, IntComparator {
 
+		@Deprecated
 		@Override
 		default double weight(int e) {
-<span class="fc" id="L20">			return weightInt(e);</span>
+<span class="fc" id="L21">			return weightInt(e);</span>
 		}
 
 		public int weightInt(int e);
 
 		@Override
 		default int compare(int e1, int e2) {
-<span class="fc" id="L27">			return Integer.compare(weightInt(e1), weightInt(e2));</span>
+<span class="fc" id="L28">			return Integer.compare(weightInt(e1), weightInt(e2));</span>
 		}
 
 	}
