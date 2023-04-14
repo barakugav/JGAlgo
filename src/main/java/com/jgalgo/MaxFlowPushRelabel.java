@@ -49,17 +49,15 @@ public class MaxFlowPushRelabel implements MaxFlow {
 			return relabeled;
 		}
 
-		double calcMaxFlow() {
-			initLabels();
-			pushAsMuchFromSource();
-			while (!active.queue.isEmpty()) {
-				int u = active.queue.dequeueInt();
-				assert u != source && u != target;
-				dischargeOrRelabel(u);
-			}
-			return constructResult();
+		@Override
+		boolean hasMoreVerticesToDischarge() {
+			return !active.queue.isEmpty();
 		}
 
+		@Override
+		int nextVertexToDischarge() {
+			return active.queue.dequeueInt();
+		}
 	}
 
 	private class WorkerInt extends MaxFlowPushRelabelAbstract.WorkerInt {
@@ -84,17 +82,15 @@ public class MaxFlowPushRelabel implements MaxFlow {
 			return relabeled;
 		}
 
-		double calcMaxFlow() {
-			initLabels();
-			pushAsMuchFromSource();
-			while (!active.queue.isEmpty()) {
-				int u = active.queue.dequeueInt();
-				assert u != source && u != target;
-				dischargeOrRelabel(u);
-			}
-			return constructResult();
+		@Override
+		boolean hasMoreVerticesToDischarge() {
+			return !active.queue.isEmpty();
 		}
 
+		@Override
+		int nextVertexToDischarge() {
+			return active.queue.dequeueInt();
+		}
 	}
 
 	private static class ActiveQueue {

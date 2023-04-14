@@ -64,18 +64,7 @@ interface LinkedListDoubleArrayFixedSize {
 		}
 	}
 
-	// void clear(int id) {
-	// for (int next; (next = next(id)) != None; id = next) {
-	// setNext(id, None);
-	// setPrev(next, None);
-	// }
-	// }
-
-	// void clear() {
-	// int len = impl.length();
-	// for (int i = 0; i < len; i++)
-	// impl.set(i, None);
-	// }
+	void clear();
 
 	default IntIterator iterator(int id) {
 		if (!(0 <= id && id < size()))
@@ -169,6 +158,11 @@ interface LinkedListDoubleArrayFixedSize {
 			assert val < Byte.MAX_VALUE;
 			a[idx] = (byte) val;
 		}
+
+		@Override
+		public void clear() {
+			Arrays.fill(a, (byte) None);
+		}
 	}
 
 	static class ImplShort extends Abstract {
@@ -194,6 +188,11 @@ interface LinkedListDoubleArrayFixedSize {
 		void arrSet(int idx, int val) {
 			assert val < Short.MAX_VALUE;
 			a[idx] = (short) val;
+		}
+
+		@Override
+		public void clear() {
+			Arrays.fill(a, (short) None);
 		}
 	}
 
@@ -221,6 +220,10 @@ interface LinkedListDoubleArrayFixedSize {
 			a[idx] = val;
 		}
 
+		@Override
+		public void clear() {
+			Arrays.fill(a, None);
+		}
 	}
 
 }

@@ -35,15 +35,20 @@ public class MaxFlowPushRelabelToFront implements MaxFlow {
 			list.afterRelabel(v);
 		}
 
-		double calcMaxFlow() {
-			initLabels();
+		@Override
+		void recomputeLabels() {
+			super.recomputeLabels();
 			list.init();
-			pushAsMuchFromSource();
-			for (list.listIter = list.vertices.iterator(list.listHead); list.listIter.hasNext();) {
-				int u = list.listIter.nextInt();
-				dischargeOrRelabel(u);
-			}
-			return constructResult();
+		}
+
+		@Override
+		boolean hasMoreVerticesToDischarge() {
+			return list.listIter.hasNext();
+		}
+
+		@Override
+		int nextVertexToDischarge() {
+			return list.listIter.nextInt();
 		}
 	}
 
@@ -62,15 +67,20 @@ public class MaxFlowPushRelabelToFront implements MaxFlow {
 			list.afterRelabel(v);
 		}
 
-		double calcMaxFlow() {
-			initLabels();
+		@Override
+		void recomputeLabels() {
+			super.recomputeLabels();
 			list.init();
-			pushAsMuchFromSource();
-			for (list.listIter = list.vertices.iterator(list.listHead); list.listIter.hasNext();) {
-				int u = list.listIter.nextInt();
-				dischargeOrRelabel(u);
-			}
-			return constructResult();
+		}
+
+		@Override
+		boolean hasMoreVerticesToDischarge() {
+			return list.listIter.hasNext();
+		}
+
+		@Override
+		int nextVertexToDischarge() {
+			return list.listIter.nextInt();
 		}
 	}
 
@@ -88,6 +98,7 @@ public class MaxFlowPushRelabelToFront implements MaxFlow {
 		}
 
 		private void init() {
+			vertices.clear();
 			int[] vs = worker.g.vertices().toIntArray();
 			IntArrays.parallelQuickSort(vs, (v1, v2) -> -Integer.compare(worker.label[v1], worker.label[v2]));
 			int prev = LinkedListDoubleArrayFixedSize.None;
@@ -102,6 +113,7 @@ public class MaxFlowPushRelabelToFront implements MaxFlow {
 				}
 				prev = u;
 			}
+			listIter = vertices.iterator(listHead);
 		}
 
 		void afterRelabel(int v) {

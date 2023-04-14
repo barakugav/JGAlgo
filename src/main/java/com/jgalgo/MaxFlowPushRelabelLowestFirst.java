@@ -43,17 +43,21 @@ public class MaxFlowPushRelabelLowestFirst implements MaxFlow {
 			return relabeled;
 		}
 
-		double calcMaxFlow() {
-			initLabels();
-			pushAsMuchFromSource();
-			while (!active.isEmpty()) {
-				int u = active.dequeue();
-				assert u != source && u != target;
-				dischargeOrRelabel(u);
-			}
-			return constructResult();
+		@Override
+		void recomputeLabels() {
+			super.recomputeLabels();
+			active.afterLabelRecompute();
 		}
 
+		@Override
+		boolean hasMoreVerticesToDischarge() {
+			return !active.isEmpty();
+		}
+
+		@Override
+		int nextVertexToDischarge() {
+			return active.dequeue();
+		}
 	}
 
 	private class WorkerInt extends MaxFlowPushRelabelAbstract.WorkerInt {
@@ -78,26 +82,33 @@ public class MaxFlowPushRelabelLowestFirst implements MaxFlow {
 			return relabeled;
 		}
 
-		double calcMaxFlow() {
-			initLabels();
-			pushAsMuchFromSource();
-			while (!active.isEmpty()) {
-				int u = active.dequeue();
-				assert u != source && u != target;
-				dischargeOrRelabel(u);
-			}
-			return constructResult();
+		@Override
+		void recomputeLabels() {
+			super.recomputeLabels();
+			active.afterLabelRecompute();
 		}
 
+		@Override
+		boolean hasMoreVerticesToDischarge() {
+			return !active.isEmpty();
+		}
+
+		@Override
+		int nextVertexToDischarge() {
+			return active.dequeue();
+		}
 	}
 
 	private static class ActiveQueue {
 
 		private final DiGraph g;
-		private final BitSet isActive;
 
-		private final IntPriorityQueue[] queues;
 		private final int[] label;
+		private final int source;
+		private final int target;
+
+		private final BitSet isActive;
+		private final IntPriorityQueue[] queues;
 		// Lower bound for the lowest label, a.k.a a lower bound for the lowest entry in
 		// 'queues' which is not empty
 		private int level;
@@ -107,16 +118,29 @@ public class MaxFlowPushRelabelLowestFirst implements MaxFlow {
 			int n = g.vertices().size();
 			isActive = new BitSet(n);
 
+			label = worker.label;
+			source = worker.source;
+			target = worker.target;
+
 			queues = new IntPriorityQueue[2 * n];
 			for (int k = 1; k < queues.length; k++)
 				queues[k] = new IntArrayFIFOQueue();
-			level = 1;
-			label = worker.label;
 
 			// set source and target as 'active' to prevent them from entering the active
 			// queue
-			isActive.set(worker.source);
-			isActive.set(worker.target);
+			isActive.set(source);
+			isActive.set(target);
+		}
+
+		void afterLabelRecompute() {
+			for (int k = 1; k < queues.length; k++)
+				queues[k].clear();
+
+			level = 1;
+			int n = g.vertices().size();
+			for (int u = 0; u < n; u++)
+				if (isActive.get(u) && u != source && u != target)
+					queues[label[u]].enqueue(u);
 		}
 
 		boolean isEmpty() {

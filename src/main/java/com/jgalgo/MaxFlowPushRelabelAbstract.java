@@ -1,10 +1,15 @@
 package com.jgalgo;
 
+import java.util.Arrays;
+import java.util.BitSet;
+
 import com.jgalgo.MaxFlow.FlowNetwork;
 import com.jgalgo.MaxFlow.FlowNetworkInt;
 import com.jgalgo.Utils.IterPickable;
 
+import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 class MaxFlowPushRelabelAbstract {
 	private static final Object EdgeRefWeightKey = new Object();
@@ -25,6 +30,10 @@ class MaxFlowPushRelabelAbstract {
 
 		final int[] label;
 		final IterPickable.Int[] edgeIters;
+
+		private final LabelsReComputer labelsReComputer;
+		private int relabelsSinceLastLabelsRecompute;
+		private final int labelsReComputeThreshold;
 
 		Worker(DiGraph gOrig, FlowNetwork net, int source, int target) {
 			if (source == target)
@@ -55,18 +64,23 @@ class MaxFlowPushRelabelAbstract {
 
 			label = new int[n];
 			edgeIters = new IterPickable.Int[n];
-			for (int u = 0; u < n; u++)
-				edgeIters[u] = new IterPickable.Int(g.edgesOut(u));
+
+			labelsReComputer = new LabelsReComputer();
+			labelsReComputeThreshold = n;
 		}
 
-		void initLabels() {
+		void init() {
+			recomputeLabels();
+		}
+
+		void recomputeLabels() {
+			labelsReComputer.recompute();
+			relabelsSinceLastLabelsRecompute = 0;
+
+			// reset edge iterators
 			int n = g.vertices().size();
-			SSSP.Result initD = new SSSPCardinality().calcDistances(g, target);
 			for (int u = 0; u < n; u++)
-				if (u != source && u != target)
-					label[u] = (int) initD.distance(u);
-			label[source] = n;
-			label[target] = 0;
+				edgeIters[u] = new IterPickable.Int(g.edgesOut(u));
 		}
 
 		abstract void pushAsMuchFromSource();
@@ -82,12 +96,78 @@ class MaxFlowPushRelabelAbstract {
 
 		abstract double constructResult();
 
+		abstract boolean hasMoreVerticesToDischarge();
+
+		abstract int nextVertexToDischarge();
+
+		double calcMaxFlow() {
+			init();
+			pushAsMuchFromSource();
+			while (hasMoreVerticesToDischarge()) {
+				int u = nextVertexToDischarge();
+				boolean relabeled = dischargeOrRelabel(u);
+				if (relabeled && ++relabelsSinceLastLabelsRecompute >= labelsReComputeThreshold)
+					recomputeLabels();
+			}
+			return constructResult();
+		}
+
+		abstract boolean isResidual(int e);
+
 		boolean isOriginalEdge(int e) {
 			return g.edgeSource(e) == gOrig.edgeSource(edgeRef.getInt(e));
 		}
+
+		private class LabelsReComputer {
+
+			final BitSet visited;
+			final IntPriorityQueue queue;
+
+			LabelsReComputer() {
+				int n = g.vertices().size();
+				visited = new BitSet(n);
+				queue = new IntArrayFIFOQueue();
+			}
+
+			void recompute() {
+				// perform backward BFS from target on edges with flow < capacity
+				// perform another one from source to init unreachable vertices
+
+				assert visited.isEmpty();
+				assert queue.isEmpty();
+
+				int n = g.vertices().size();
+				Arrays.fill(label, 2 * n - 1);
+
+				visited.set(target);
+				label[target] = 0;
+				visited.set(source);
+				label[source] = n;
+				for (int start : new int[] { target, source }) {
+					queue.enqueue(start);
+
+					while (!queue.isEmpty()) {
+						int v = queue.dequeueInt();
+						int vLabel = label[v];
+						for (EdgeIter eit = g.edgesIn(v); eit.hasNext();) {
+							int e = eit.nextInt();
+							if (!isResidual(e))
+								continue;
+							int u = eit.u();
+							if (visited.get(u))
+								continue;
+							label[u] = vLabel + 1;
+							visited.set(u);
+							queue.enqueue(u);
+						}
+					}
+				}
+				visited.clear();
+			}
+		}
 	}
 
-	static class WorkerDouble extends Worker {
+	static abstract class WorkerDouble extends Worker {
 		final Weights.Double flow;
 		final Weights.Double capacity;
 
@@ -115,7 +195,7 @@ class MaxFlowPushRelabelAbstract {
 			for (EdgeIter eit = g.edgesOut(source); eit.hasNext();) {
 				int e = eit.nextInt();
 				double f = capacity.getDouble(e) - flow.getDouble(e);
-				if (f > 0)
+				if (f > 0 && label[source] > label[g.edgeTarget(e)])
 					push(e, f);
 			}
 		}
@@ -188,9 +268,13 @@ class MaxFlowPushRelabelAbstract {
 			return totalFlow;
 		}
 
+		@Override
+		boolean isResidual(int e) {
+			return capacity.getDouble(e) - flow.getDouble(e) > EPS;
+		}
 	}
 
-	static class WorkerInt extends Worker {
+	static abstract class WorkerInt extends Worker {
 		final Weights.Int flow;
 		final Weights.Int capacity;
 
@@ -216,7 +300,7 @@ class MaxFlowPushRelabelAbstract {
 			for (EdgeIter eit = g.edgesOut(source); eit.hasNext();) {
 				int e = eit.nextInt();
 				int f = capacity.getInt(e) - flow.getInt(e);
-				if (f > 0)
+				if (f > 0 && label[source] > label[g.edgeTarget(e)])
 					push(e, f);
 			}
 		}
@@ -285,6 +369,10 @@ class MaxFlowPushRelabelAbstract {
 			return totalFlow;
 		}
 
+		@Override
+		boolean isResidual(int e) {
+			return capacity.getInt(e) - flow.getInt(e) > 0;
+		}
 	}
 
 }
