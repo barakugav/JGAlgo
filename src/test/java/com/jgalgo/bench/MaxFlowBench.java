@@ -29,7 +29,10 @@ import com.jgalgo.MaxFlowDinicDynamicTrees;
 import com.jgalgo.MaxFlowEdmondsKarp;
 import com.jgalgo.MaxFlowPushRelabel;
 import com.jgalgo.MaxFlowPushRelabelDynamicTrees;
-import com.jgalgo.MaxFlow.FlowNetwork;
+import com.jgalgo.MaxFlowPushRelabelHighestFirst;
+import com.jgalgo.MaxFlowPushRelabelLowestFirst;
+import com.jgalgo.MaxFlowPushRelabelToFront;
+import com.jgalgo.MaxFlow.FlowNetworkInt;
 import com.jgalgo.test.MaxFlowTestUtils;
 import com.jgalgo.test.GraphsTestUtils.RandomGraphBuilder;
 import com.jgalgo.test.TestUtils.SeedGenerator;
@@ -43,7 +46,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 @State(Scope.Benchmark)
 public class MaxFlowBench {
 
-	@Param({ "|V|=30 |E|=300", "|V|=200 |E|=1500", "|V|=1600 |E|=10000" })
+	@Param({ "|V|=30 |E|=300", "|V|=200 |E|=1500", "|V|=800 |E|=10000" })
 	public String graphSize;
 	private int n, m;
 
@@ -51,11 +54,11 @@ public class MaxFlowBench {
 
 	private static class MaxFlowTask {
 		final DiGraph g;
-		final FlowNetwork flow;
+		final FlowNetworkInt flow;
 		final int source;
 		final int target;
 
-		MaxFlowTask(DiGraph g, FlowNetwork flow, int source, int target) {
+		MaxFlowTask(DiGraph g, FlowNetworkInt flow, int source, int target) {
 			this.g = g;
 			this.flow = flow;
 			this.source = source;
@@ -77,7 +80,7 @@ public class MaxFlowBench {
 			DiGraph g = (DiGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true)
 					.parallelEdges(false).selfEdges(false)
 					.cycles(true).connected(false).build();
-			FlowNetwork flow = MaxFlowTestUtils.randNetwork(g, seedGen.nextSeed());
+			FlowNetworkInt flow = MaxFlowTestUtils.randNetworkInt(g, seedGen.nextSeed());
 			int source, target;
 			for (;;) {
 				source = rand.nextInt(g.vertices().size());
@@ -139,6 +142,21 @@ public class MaxFlowBench {
 	@Benchmark
 	public void benchMaxFlowPushRelabel(Blackhole blackhole) {
 		benchMaxFlow(MaxFlowPushRelabel::new, blackhole);
+	}
+
+	@Benchmark
+	public void benchMaxFlowPushRelabelToFront(Blackhole blackhole) {
+		benchMaxFlow(MaxFlowPushRelabelToFront::new, blackhole);
+	}
+
+	@Benchmark
+	public void benchMaxFlowPushRelabelHighestFirst(Blackhole blackhole) {
+		benchMaxFlow(MaxFlowPushRelabelHighestFirst::new, blackhole);
+	}
+
+	@Benchmark
+	public void benchMaxFlowPushRelabelLowestFirst(Blackhole blackhole) {
+		benchMaxFlow(MaxFlowPushRelabelLowestFirst::new, blackhole);
 	}
 
 	@Benchmark

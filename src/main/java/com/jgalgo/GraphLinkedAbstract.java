@@ -95,6 +95,7 @@ abstract class GraphLinkedAbstract extends GraphBaseContinues {
 			if (last == null)
 				throw new IllegalStateException();
 			removeEdge(last);
+			last = null;
 		}
 	}
 
