@@ -15,6 +15,7 @@ public interface EdgeWeightFunc extends IntComparator {
 	@FunctionalInterface
 	public static interface Int extends EdgeWeightFunc, IntComparator {
 
+		@Deprecated
 		@Override
 		default double weight(int e) {
 			return weightInt(e);

@@ -59,4 +59,70 @@ public interface MaxFlow {
 
 	}
 
+	public static interface FlowNetworkInt extends FlowNetwork {
+
+		public int getCapacityInt(int edge);
+
+		@Deprecated
+		@Override
+		default double getCapacity(int edge) {
+			return getCapacityInt(edge);
+		}
+
+		public void setCapacity(int edge, int capacity);
+
+		@Deprecated
+		@Override
+		default void setCapacity(int edge, double capacity) {
+			setCapacity(edge, (int) capacity);
+		}
+
+		public int getFlowInt(int edge);
+
+		@Deprecated
+		@Override
+		default double getFlow(int edge) {
+			return getFlowInt(edge);
+		}
+
+		public void setFlow(int edge, int flow);
+
+		@Deprecated
+		@Override
+		default void setFlow(int edge, double flow) {
+			setFlow(edge, (int) flow);
+		}
+
+		public static FlowNetworkInt createAsEdgeWeight(Graph g) {
+			Weights.Int capacityWeights = g.addEdgesWeights(new Object(), int.class);
+			Weights.Int flowWeights = g.addEdgesWeights(new Object(), int.class);
+			return new FlowNetworkInt() {
+
+				@Override
+				public int getCapacityInt(int edge) {
+					return capacityWeights.getInt(edge);
+				}
+
+				@Override
+				public void setCapacity(int edge, int capacity) {
+					capacityWeights.set(edge, capacity);
+				}
+
+				@Override
+				public int getFlowInt(int e) {
+					return flowWeights.getInt(e);
+				}
+
+				@Override
+				public void setFlow(int edge, int flow) {
+					int capacity = getCapacityInt(edge);
+					if (flow > capacity)
+						throw new IllegalArgumentException("Illegal flow " + flow + " on edge " + edge);
+					flowWeights.set(edge, Math.min(flow, capacity));
+				}
+			};
+		}
+
+	}
+
 }

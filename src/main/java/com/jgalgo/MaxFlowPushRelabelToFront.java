@@ -1,5 +1,6 @@
 package com.jgalgo;
 
+import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 public class MaxFlowPushRelabelToFront implements MaxFlow {
@@ -12,58 +13,121 @@ public class MaxFlowPushRelabelToFront implements MaxFlow {
 	public double calcMaxFlow(Graph g, FlowNetwork net, int source, int target) {
 		if (!(g instanceof DiGraph))
 			throw new IllegalArgumentException("only directed graphs are supported");
-		return new Worker((DiGraph) g, net, source, target).calcMaxFlow();
+		if (net instanceof FlowNetworkInt) {
+			return new WorkerInt((DiGraph) g, (FlowNetworkInt) net, source, target).calcMaxFlow();
+		} else {
+			return new Worker((DiGraph) g, net, source, target).calcMaxFlow();
+		}
 	}
 
-	private static class Worker extends MaxFlowPushRelabelAbstract.Worker {
+	private static class Worker extends MaxFlowPushRelabelAbstract.WorkerDouble {
 
-		final LinkedListDoubleArrayFixedSize list;
-		int listHead = -1;
-		IntIterator listIter;
+		final VertexList list;
 
 		Worker(DiGraph gOrig, FlowNetwork net, int source, int target) {
 			super(gOrig, net, source, target);
-			int n = g.vertices().size();
-			list = LinkedListDoubleArrayFixedSize.newInstance(n);
+			list = new VertexList(this);
 		}
 
 		@Override
 		void relabel(int v, int newLabel) {
 			super.relabel(v, newLabel);
-
-			// move to front
-			if (v != listHead) {
-				list.disconnect(v);
-				list.connect(v, listHead);
-				listHead = v;
-				listIter = list.iterator(listHead);
-			}
+			list.afterRelabel(v);
 		}
 
-		private void initList() {
-			int n = g.vertices().size();
-			for (int u = 0, prev = -1; u < n; u++) {
-				if (u == source || u == target)
+		double calcMaxFlow() {
+			initLabels();
+			list.init();
+			pushAsMuchFromSource();
+			for (list.listIter = list.vertices.iterator(list.listHead); list.listIter.hasNext();) {
+				int u = list.listIter.nextInt();
+				dischargeOrRelabel(u);
+			}
+			return constructResult();
+		}
+	}
+
+	private static class WorkerInt extends MaxFlowPushRelabelAbstract.WorkerInt {
+
+		final VertexList list;
+
+		WorkerInt(DiGraph gOrig, FlowNetworkInt net, int source, int target) {
+			super(gOrig, net, source, target);
+			list = new VertexList(this);
+		}
+
+		@Override
+		void relabel(int v, int newLabel) {
+			super.relabel(v, newLabel);
+			list.afterRelabel(v);
+		}
+
+		double calcMaxFlow() {
+			initLabels();
+			list.init();
+			pushAsMuchFromSource();
+			for (list.listIter = list.vertices.iterator(list.listHead); list.listIter.hasNext();) {
+				int u = list.listIter.nextInt();
+				dischargeOrRelabel(u);
+			}
+			return constructResult();
+		}
+	}
+
+	private static class VertexList {
+
+		private final MaxFlowPushRelabelAbstract.Worker worker;
+		final LinkedListDoubleArrayFixedSize vertices;
+		int listHead = LinkedListDoubleArrayFixedSize.None;
+		IntIterator listIter;
+
+		VertexList(MaxFlowPushRelabelAbstract.Worker worker) {
+			this.worker = worker;
+			int n = worker.g.vertices().size();
+			vertices = LinkedListDoubleArrayFixedSize.newInstance(n);
+		}
+
+		private void init() {
+			int[] vs = worker.g.vertices().toIntArray();
+			IntArrays.parallelQuickSort(vs, (v1, v2) -> -Integer.compare(worker.label[v1], worker.label[v2]));
+			int prev = LinkedListDoubleArrayFixedSize.None;
+			for (int u : vs) {
+				if (u == worker.source || u == worker.target)
 					continue;
-				if (prev == -1) {
+				if (prev == LinkedListDoubleArrayFixedSize.None) {
 					listHead = u;
 				} else {
-					list.setNext(prev, u);
-					list.setPrev(u, prev);
+					vertices.setNext(prev, u);
+					vertices.setPrev(u, prev);
 				}
 				prev = u;
 			}
 		}
 
-		double calcMaxFlow() {
-			initLabels();
-			initList();
-			pushAsMuchFromSource();
-			for (listIter = list.iterator(listHead); listIter.hasNext();) {
-				int u = listIter.nextInt();
-				discharge(u);
+		void afterRelabel(int v) {
+			// move to front
+			if (v != listHead) {
+				vertices.disconnect(v);
+				vertices.connect(v, listHead);
+				listHead = v;
 			}
-			return constructResult();
+			listIter = vertices.iterator(listHead);
 		}
+
+		@Override
+		public String toString() {
+			if (listHead == LinkedListDoubleArrayFixedSize.None)
+				return "[]";
+			StringBuilder s = new StringBuilder().append('[');
+			for (IntIterator it = vertices.iterator(listHead);;) {
+				assert it.hasNext();
+				int v = it.nextInt();
+				s.append(v);
+				if (!it.hasNext())
+					return s.append(']').toString();
+				s.append(',').append(' ');
+			}
+		}
+
 	}
 }

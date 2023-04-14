@@ -55,6 +55,10 @@ public class MaxFlowDinic implements MaxFlow {
 		for (IntIterator it = g0.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			int u = g0.edgeSource(e), v = g0.edgeTarget(e);
+			if (u == v)
+				continue;
+			if (u == target || v == source)
+				continue;
 			int e1 = g.addEdge(u, v);
 			int e2 = g.addEdge(v, u);
 			edgeRef.set(e1, e);
