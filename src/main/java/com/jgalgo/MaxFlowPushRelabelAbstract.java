@@ -82,6 +82,9 @@ class MaxFlowPushRelabelAbstract {
 
 		abstract double constructResult();
 
+		boolean isOriginalEdge(int e) {
+			return g.edgeSource(e) == gOrig.edgeSource(edgeRef.getInt(e));
+		}
 	}
 
 	static class WorkerDouble extends Worker {
@@ -100,16 +103,8 @@ class MaxFlowPushRelabelAbstract {
 			capacity = g.addEdgesWeights(CapacityWeightKey, double.class);
 			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 				int e = it.nextInt();
-
 				flow.set(e, 0);
-
-				int u = g.edgeSource(e);
-				int orig = edgeRef.getInt(e);
-				if (u == gOrig.edgeSource(orig)) {
-					capacity.set(e, net.getCapacity(orig));
-				} else {
-					capacity.set(e, 0);
-				}
+				capacity.set(e, isOriginalEdge(e) ? net.getCapacity(edgeRef.getInt(e)) : 0);
 			}
 
 			excess = new double[n];
@@ -141,50 +136,53 @@ class MaxFlowPushRelabelAbstract {
 
 		@Override
 		boolean dischargeOrRelabel(int u) {
-			IterPickable.Int it = edgeIters[u];
-			while (excess[u] > EPS) {
-				if (!it.hasNext()) {
-					// Finished iterating over all vertex edges
-
-					// relabel
-					relabel(u, label[u] + 1);
-
-					// reset iterator
-					it = edgeIters[u] = new IterPickable.Int(g.edgesOut(u));
-					assert it.hasNext();
-					return true;
-				}
-
+			if (excess[u] < EPS)
+				return false;
+			for (IterPickable.Int it = edgeIters[u]; it.hasNext();) {
 				int e = it.pickNext();
 				double eAccess = capacity.getDouble(e) - flow.getDouble(e);
 				if (eAccess > EPS && label[u] == label[g.edgeTarget(e)] + 1) {
 					// e is admissible, push
-					push(e, Math.min(excess[u], eAccess));
+					if (excess[u] > eAccess) {
+						// saturating push
+						push(e, eAccess);
+						// Due to floating points, need to check again we have something to push
+						if (excess[u] < EPS)
+							return false;
+					} else {
+						// non-saturating push
+						push(e, excess[u]);
+						return false;
+					}
 				} else {
 					it.nextInt();
 				}
 			}
-			return false;
+
+			// Finished iterating over all vertex edges.
+			// Reset iterator and relabel
+			edgeIters[u] = new IterPickable.Int(g.edgesOut(u));
+			assert edgeIters[u].hasNext();
+			relabel(u, label[u] + 1);
+			return true;
 		}
 
 		@Override
 		double constructResult() {
 			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 				int e = it.nextInt();
-				int u = g.edgeSource(e);
-				int orig = edgeRef.getInt(e);
-				if (u == gOrig.edgeSource(orig))
-					net.setFlow(orig, flow.getDouble(e));
+				if (isOriginalEdge(e))
+					net.setFlow(edgeRef.getInt(e), flow.getDouble(e));
 			}
 			double totalFlow = 0;
 			for (EdgeIter eit = g.edgesOut(source); eit.hasNext();) {
 				int e = eit.nextInt();
-				if (g.edgeSource(e) == gOrig.edgeSource(edgeRef.getInt(e)))
+				if (isOriginalEdge(e))
 					totalFlow += flow.getDouble(e);
 			}
 			for (EdgeIter eit = g.edgesIn(source); eit.hasNext();) {
 				int e = eit.nextInt();
-				if (g.edgeSource(e) == gOrig.edgeSource(edgeRef.getInt(e)))
+				if (isOriginalEdge(e))
 					totalFlow -= flow.getDouble(e);
 			}
 			return totalFlow;
@@ -206,16 +204,8 @@ class MaxFlowPushRelabelAbstract {
 			capacity = g.addEdgesWeights(CapacityWeightKey, int.class);
 			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 				int e = it.nextInt();
-
 				flow.set(e, 0);
-
-				int u = g.edgeSource(e);
-				int orig = edgeRef.getInt(e);
-				if (u == gOrig.edgeSource(orig)) {
-					capacity.set(e, net.getCapacityInt(orig));
-				} else {
-					capacity.set(e, 0);
-				}
+				capacity.set(e, isOriginalEdge(e) ? net.getCapacityInt(edgeRef.getInt(e)) : 0);
 			}
 
 			excess = new int[n];
@@ -247,30 +237,30 @@ class MaxFlowPushRelabelAbstract {
 
 		@Override
 		boolean dischargeOrRelabel(int u) {
-			IterPickable.Int it = edgeIters[u];
-			while (excess[u] > 0) {
-				if (!it.hasNext()) {
-					// Finished iterating over all vertex edges
-
-					// relabel
-					relabel(u, label[u] + 1);
-
-					// reset iterator
-					it = edgeIters[u] = new IterPickable.Int(g.edgesOut(u));
-					assert it.hasNext();
-					return true;
-				}
-
+			if (excess[u] == 0)
+				return false;
+			for (IterPickable.Int it = edgeIters[u]; it.hasNext(); it.nextInt()) {
 				int e = it.pickNext();
 				int eAccess = capacity.getInt(e) - flow.getInt(e);
 				if (eAccess > 0 && label[u] == label[g.edgeTarget(e)] + 1) {
 					// e is admissible, push
-					push(e, Math.min(excess[u], eAccess));
-				} else {
-					it.nextInt();
+					if (excess[u] > eAccess) {
+						// saturating push
+						push(e, eAccess);
+					} else {
+						// non-saturating push
+						push(e, excess[u]);
+						return false;
+					}
 				}
 			}
-			return false;
+
+			// Finished iterating over all vertex edges.
+			// Reset iterator and relabel
+			edgeIters[u] = new IterPickable.Int(g.edgesOut(u));
+			assert edgeIters[u].hasNext();
+			relabel(u, label[u] + 1);
+			return true;
 		}
 
 		@Override
@@ -278,20 +268,18 @@ class MaxFlowPushRelabelAbstract {
 			FlowNetworkInt net = (FlowNetworkInt) this.net;
 			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 				int e = it.nextInt();
-				int u = g.edgeSource(e);
-				int orig = edgeRef.getInt(e);
-				if (u == gOrig.edgeSource(orig))
-					net.setFlow(orig, flow.getInt(e));
+				if (isOriginalEdge(e))
+					net.setFlow(edgeRef.getInt(e), flow.getInt(e));
 			}
 			int totalFlow = 0;
 			for (EdgeIter eit = g.edgesOut(source); eit.hasNext();) {
 				int e = eit.nextInt();
-				if (g.edgeSource(e) == gOrig.edgeSource(edgeRef.getInt(e)))
+				if (isOriginalEdge(e))
 					totalFlow += flow.getInt(e);
 			}
 			for (EdgeIter eit = g.edgesIn(source); eit.hasNext();) {
 				int e = eit.nextInt();
-				if (g.edgeSource(e) == gOrig.edgeSource(edgeRef.getInt(e)))
+				if (isOriginalEdge(e))
 					totalFlow -= flow.getInt(e);
 			}
 			return totalFlow;
