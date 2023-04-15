@@ -95,7 +95,8 @@ abstract class GraphLinkedAbstract extends GraphBaseContinues {
 <span class="pc bpc" id="L95" title="1 of 2 branches missed.">			if (last == null)</span>
 <span class="nc" id="L96">				throw new IllegalStateException();</span>
 <span class="fc" id="L97">			removeEdge(last);</span>
-<span class="fc" id="L98">		}</span>
+<span class="fc" id="L98">			last = null;</span>
+<span class="fc" id="L99">		}</span>
 	}
 
 	abstract static class Node {
@@ -103,11 +104,11 @@ abstract class GraphLinkedAbstract extends GraphBaseContinues {
 		int id;
 		int u, v;
 
-<span class="fc" id="L106">		Node(int id, int u, int v) {</span>
-<span class="fc" id="L107">			this.id = id;</span>
-<span class="fc" id="L108">			this.u = u;</span>
-<span class="fc" id="L109">			this.v = v;</span>
-<span class="fc" id="L110">		}</span>
+<span class="fc" id="L107">		Node(int id, int u, int v) {</span>
+<span class="fc" id="L108">			this.id = id;</span>
+<span class="fc" id="L109">			this.u = u;</span>
+<span class="fc" id="L110">			this.v = v;</span>
+<span class="fc" id="L111">		}</span>
 
 	}
 

@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MaxFlowPushRelabelHighestFirst.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jgalgo</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">MaxFlowPushRelabelHighestFirst.java</span></div><h1>MaxFlowPushRelabelHighestFirst.java</h1><pre class="source lang-java linenums">package com.jgalgo;
+
+import java.util.BitSet;
+
+import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
+import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
+
+public class MaxFlowPushRelabelHighestFirst implements MaxFlow {
+
+<span class="fc" id="L10">	public MaxFlowPushRelabelHighestFirst() {</span>
+<span class="fc" id="L11">	}</span>
+
+	@Override
+	public double calcMaxFlow(Graph g, FlowNetwork net, int source, int target) {
+<span class="pc bpc" id="L15" title="1 of 2 branches missed.">		if (!(g instanceof DiGraph))</span>
+<span class="nc" id="L16">			throw new IllegalArgumentException(&quot;only directed graphs are supported&quot;);</span>
+<span class="fc bfc" id="L17" title="All 2 branches covered.">		if (net instanceof FlowNetworkInt) {</span>
+<span class="fc" id="L18">			return new WorkerInt((DiGraph) g, (FlowNetworkInt) net, source, target).calcMaxFlow();</span>
+		} else {
+<span class="fc" id="L20">			return new Worker((DiGraph) g, net, source, target).calcMaxFlow();</span>
+		}
+	}
+
+	private class Worker extends MaxFlowPushRelabelAbstract.WorkerDouble {
+
+		final ActiveQueue active;
+
+<span class="fc" id="L28">		Worker(DiGraph gOrig, FlowNetwork net, int source, int target) {</span>
+<span class="fc" id="L29">			super(gOrig, net, source, target);</span>
+<span class="fc" id="L30">			active = new ActiveQueue(this);</span>
+<span class="fc" id="L31">		}</span>
+
+		@Override
+		void push(int e, double f) {
+<span class="fc" id="L35">			super.push(e, f);</span>
+<span class="fc" id="L36">			active.afterPush(e);</span>
+<span class="fc" id="L37">		};</span>
+
+		@Override
+		boolean dischargeOrRelabel(int u) {
+<span class="fc" id="L41">			boolean relabeled = super.dischargeOrRelabel(u);</span>
+<span class="fc" id="L42">			active.afterDischargeOrRelabel(u, relabeled);</span>
+<span class="fc" id="L43">			return relabeled;</span>
+		}
+
+		@Override
+		void recomputeLabels() {
+<span class="fc" id="L48">			super.recomputeLabels();</span>
+<span class="fc" id="L49">			active.init();</span>
+<span class="fc" id="L50">		}</span>
+
+		@Override
+		boolean hasMoreVerticesToDischarge() {
+<span class="fc bfc" id="L54" title="All 2 branches covered.">			return !active.isEmpty();</span>
+		}
+
+		@Override
+		int nextVertexToDischarge() {
+<span class="fc" id="L59">			return active.dequeue();</span>
+		}
+	}
+
+	private class WorkerInt extends MaxFlowPushRelabelAbstract.WorkerInt {
+
+		final ActiveQueue active;
+
+<span class="fc" id="L67">		WorkerInt(DiGraph gOrig, FlowNetworkInt net, int source, int target) {</span>
+<span class="fc" id="L68">			super(gOrig, net, source, target);</span>
+<span class="fc" id="L69">			active = new ActiveQueue(this);</span>
+<span class="fc" id="L70">		}</span>
+
+		@Override
+		void push(int e, int f) {
+<span class="fc" id="L74">			super.push(e, f);</span>
+<span class="fc" id="L75">			active.afterPush(e);</span>
+<span class="fc" id="L76">		};</span>
+
+		@Override
+		boolean dischargeOrRelabel(int u) {
+<span class="fc" id="L80">			boolean relabeled = super.dischargeOrRelabel(u);</span>
+<span class="fc" id="L81">			active.afterDischargeOrRelabel(u, relabeled);</span>
+<span class="fc" id="L82">			return relabeled;</span>
+		}
+
+		@Override
+		void recomputeLabels() {
+<span class="fc" id="L87">			super.recomputeLabels();</span>
+<span class="fc" id="L88">			active.init();</span>
+<span class="fc" id="L89">		}</span>
+
+		@Override
+		boolean hasMoreVerticesToDischarge() {
+<span class="fc bfc" id="L93" title="All 2 branches covered.">			return !active.isEmpty();</span>
+		}
+
+		@Override
+		int nextVertexToDischarge() {
+<span class="fc" id="L98">			return active.dequeue();</span>
+		}
+	}
+
+<span class="fc" id="L102">	private static class ActiveQueue {</span>
+
+		private final DiGraph g;
+		private final BitSet isActive;
+
+		private final int[] label;
+		private final int source;
+		private final int target;
+
+		private final IntPriorityQueue[] queues;
+		// Upper bound for the highest label, a.k.a an upper bound for the highest entry
+		// in 'queues' which is not empty
+		private int level;
+
+<span class="fc" id="L116">		ActiveQueue(MaxFlowPushRelabelAbstract.Worker worker) {</span>
+<span class="fc" id="L117">			g = worker.g;</span>
+<span class="fc" id="L118">			int n = g.vertices().size();</span>
+<span class="fc" id="L119">			isActive = new BitSet(n);</span>
+
+<span class="fc" id="L121">			label = worker.label;</span>
+<span class="fc" id="L122">			source = worker.source;</span>
+<span class="fc" id="L123">			target = worker.target;</span>
+
+<span class="fc" id="L125">			queues = new IntPriorityQueue[2 * n];</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">			for (int k = 1; k &lt; queues.length; k++)</span>
+<span class="fc" id="L127">				queues[k] = new IntArrayFIFOQueue();</span>
+
+			// set source and target as 'active' to prevent them from entering the active
+			// queue
+<span class="fc" id="L131">			isActive.set(source);</span>
+<span class="fc" id="L132">			isActive.set(target);</span>
+<span class="fc" id="L133">		}</span>
+
+		void init() {
+<span class="fc bfc" id="L136" title="All 2 branches covered.">			for (int k = 1; k &lt; queues.length; k++)</span>
+<span class="fc" id="L137">				queues[k].clear();</span>
+
+<span class="fc" id="L139">			level = queues.length - 1;</span>
+<span class="fc" id="L140">			int n = g.vertices().size();</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
+<span class="fc bfc" id="L142" title="All 6 branches covered.">				if (isActive.get(u) &amp;&amp; u != source &amp;&amp; u != target)</span>
+<span class="fc" id="L143">					queues[label[u]].enqueue(u);</span>
+<span class="fc" id="L144">		}</span>
+
+		boolean isEmpty() {
+<span class="fc bfc" id="L147" title="All 2 branches covered.">			for (; level &gt; 0; level--)</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">				if (!queues[level].isEmpty())</span>
+<span class="fc" id="L149">					return false;</span>
+<span class="fc" id="L150">			return true;</span>
+		}
+
+		int dequeue() {
+<span class="pc bpc" id="L154" title="1 of 2 branches missed.">			for (; level &gt; 0; level--)</span>
+<span class="pc bpc" id="L155" title="1 of 2 branches missed.">				if (!queues[level].isEmpty())</span>
+<span class="fc" id="L156">					return queues[level].dequeueInt();</span>
+<span class="nc" id="L157">			throw new IllegalStateException();</span>
+		}
+
+		void afterPush(int e) {
+<span class="fc" id="L161">			int v = g.edgeTarget(e);</span>
+<span class="fc bfc" id="L162" title="All 2 branches covered.">			if (!isActive.get(v)) {</span>
+<span class="fc" id="L163">				isActive.set(v);</span>
+<span class="fc" id="L164">				queues[label[v]].enqueue(v);</span>
+<span class="pc bpc" id="L165" title="1 of 2 branches missed.">				assert label[v] &lt; level;</span>
+			}
+<span class="fc" id="L167">		}</span>
+
+		void afterDischargeOrRelabel(int u, boolean relabeled) {
+<span class="fc bfc" id="L170" title="All 2 branches covered.">			if (relabeled) {</span>
+				// vertex was relabeled and not discharged, still active
+<span class="fc" id="L172">				int newLabel = label[u];</span>
+<span class="fc" id="L173">				queues[newLabel].enqueue(u);</span>
+<span class="pc bpc" id="L174" title="1 of 2 branches missed.">				assert label[u] &gt; level;</span>
+<span class="fc" id="L175">				level = label[u];</span>
+<span class="fc" id="L176">			} else {</span>
+				// discharged, not active anymore
+<span class="fc" id="L178">				isActive.clear(u);</span>
+			}
+<span class="fc" id="L180">		}</span>
+
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
