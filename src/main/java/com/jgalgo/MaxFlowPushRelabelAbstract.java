@@ -31,7 +31,8 @@ class MaxFlowPushRelabelAbstract {
 		final int[] label;
 		final IterPickable.Int[] edgeIters;
 
-		private final LabelsReComputer labelsReComputer;
+		private final BitSet relabelVisited;
+		private final IntPriorityQueue relabelQueue;
 		private int relabelsSinceLastLabelsRecompute;
 		private final int labelsReComputeThreshold;
 
@@ -65,7 +66,8 @@ class MaxFlowPushRelabelAbstract {
 			label = new int[n];
 			edgeIters = new IterPickable.Int[n];
 
-			labelsReComputer = new LabelsReComputer();
+			relabelVisited = new BitSet(n);
+			relabelQueue = new IntArrayFIFOQueue();
 			labelsReComputeThreshold = n;
 		}
 
@@ -74,13 +76,49 @@ class MaxFlowPushRelabelAbstract {
 		}
 
 		void recomputeLabels() {
-			labelsReComputer.recompute();
-			relabelsSinceLastLabelsRecompute = 0;
+			// perform backward BFS from target on edges with flow < capacity
+			// perform another one from source to init unreachable vertices
 
-			// reset edge iterators
+			BitSet visited = relabelVisited;
+			IntPriorityQueue queue = relabelQueue;
+			assert visited.isEmpty();
+			assert queue.isEmpty();
+
 			int n = g.vertices().size();
-			for (int u = 0; u < n; u++)
-				edgeIters[u] = new IterPickable.Int(g.edgesOut(u));
+			Arrays.fill(label, 2 * n - 1);
+
+			visited.set(target);
+			label[target] = 0;
+			visited.set(source);
+			label[source] = n;
+			for (int start : new int[] { target, source }) {
+				queue.enqueue(start);
+
+				while (!queue.isEmpty()) {
+					int v = queue.dequeueInt();
+					int vLabel = label[v];
+					for (EdgeIter eit = g.edgesIn(v); eit.hasNext();) {
+						int e = eit.nextInt();
+						if (!isResidual(e))
+							continue;
+						int u = eit.u();
+						if (visited.get(u))
+							continue;
+						label[u] = vLabel + 1;
+						onVertexLabelReCompute(u, label[u]);
+						visited.set(u);
+						queue.enqueue(u);
+					}
+				}
+			}
+			visited.clear();
+
+			relabelsSinceLastLabelsRecompute = 0;
+		}
+
+		void onVertexLabelReCompute(int u, int newLabel) {
+			// reset edge iterator
+			edgeIters[u] = new IterPickable.Int(g.edgesOut(u));
 		}
 
 		abstract void pushAsMuchFromSource();
@@ -118,53 +156,6 @@ class MaxFlowPushRelabelAbstract {
 			return g.edgeSource(e) == gOrig.edgeSource(edgeRef.getInt(e));
 		}
 
-		private class LabelsReComputer {
-
-			final BitSet visited;
-			final IntPriorityQueue queue;
-
-			LabelsReComputer() {
-				int n = g.vertices().size();
-				visited = new BitSet(n);
-				queue = new IntArrayFIFOQueue();
-			}
-
-			void recompute() {
-				// perform backward BFS from target on edges with flow < capacity
-				// perform another one from source to init unreachable vertices
-
-				assert visited.isEmpty();
-				assert queue.isEmpty();
-
-				int n = g.vertices().size();
-				Arrays.fill(label, 2 * n - 1);
-
-				visited.set(target);
-				label[target] = 0;
-				visited.set(source);
-				label[source] = n;
-				for (int start : new int[] { target, source }) {
-					queue.enqueue(start);
-
-					while (!queue.isEmpty()) {
-						int v = queue.dequeueInt();
-						int vLabel = label[v];
-						for (EdgeIter eit = g.edgesIn(v); eit.hasNext();) {
-							int e = eit.nextInt();
-							if (!isResidual(e))
-								continue;
-							int u = eit.u();
-							if (visited.get(u))
-								continue;
-							label[u] = vLabel + 1;
-							visited.set(u);
-							queue.enqueue(u);
-						}
-					}
-				}
-				visited.clear();
-			}
-		}
 	}
 
 	static abstract class WorkerDouble extends Worker {

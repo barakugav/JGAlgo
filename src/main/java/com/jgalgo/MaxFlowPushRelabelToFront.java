@@ -1,7 +1,7 @@
 package com.jgalgo;
 
-import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntIterators;
 
 public class MaxFlowPushRelabelToFront implements MaxFlow {
 
@@ -37,8 +37,18 @@ public class MaxFlowPushRelabelToFront implements MaxFlow {
 
 		@Override
 		void recomputeLabels() {
+			list.clear();
 			super.recomputeLabels();
-			list.init();
+			list.listIter = list.listHead != LinkedListDoubleArrayFixedSize.None ? list.vertices.iterator(list.listHead)
+					: IntIterators.EMPTY_ITERATOR;
+		}
+
+		@Override
+		void onVertexLabelReCompute(int u, int newLabel) {
+			super.onVertexLabelReCompute(u, newLabel);
+			if (list.listHead != LinkedListDoubleArrayFixedSize.None)
+				list.vertices.connect(u, list.listHead);
+			list.listHead = u;
 		}
 
 		@Override
@@ -69,8 +79,18 @@ public class MaxFlowPushRelabelToFront implements MaxFlow {
 
 		@Override
 		void recomputeLabels() {
+			list.clear();
 			super.recomputeLabels();
-			list.init();
+			list.listIter = list.listHead != LinkedListDoubleArrayFixedSize.None ? list.vertices.iterator(list.listHead)
+					: IntIterators.EMPTY_ITERATOR;
+		}
+
+		@Override
+		void onVertexLabelReCompute(int u, int newLabel) {
+			super.onVertexLabelReCompute(u, newLabel);
+			if (list.listHead != LinkedListDoubleArrayFixedSize.None)
+				list.vertices.connect(u, list.listHead);
+			list.listHead = u;
 		}
 
 		@Override
@@ -86,34 +106,19 @@ public class MaxFlowPushRelabelToFront implements MaxFlow {
 
 	private static class VertexList {
 
-		private final MaxFlowPushRelabelAbstract.Worker worker;
 		final LinkedListDoubleArrayFixedSize vertices;
 		int listHead = LinkedListDoubleArrayFixedSize.None;
 		IntIterator listIter;
 
 		VertexList(MaxFlowPushRelabelAbstract.Worker worker) {
-			this.worker = worker;
 			int n = worker.g.vertices().size();
 			vertices = LinkedListDoubleArrayFixedSize.newInstance(n);
 		}
 
-		private void init() {
+		void clear() {
 			vertices.clear();
-			int[] vs = worker.g.vertices().toIntArray();
-			IntArrays.parallelQuickSort(vs, (v1, v2) -> -Integer.compare(worker.label[v1], worker.label[v2]));
-			int prev = LinkedListDoubleArrayFixedSize.None;
-			for (int u : vs) {
-				if (u == worker.source || u == worker.target)
-					continue;
-				if (prev == LinkedListDoubleArrayFixedSize.None) {
-					listHead = u;
-				} else {
-					vertices.setNext(prev, u);
-					vertices.setPrev(u, prev);
-				}
-				prev = u;
-			}
-			listIter = vertices.iterator(listHead);
+			listHead = LinkedListDoubleArrayFixedSize.None;
+			listIter = null;
 		}
 
 		void afterRelabel(int v) {
