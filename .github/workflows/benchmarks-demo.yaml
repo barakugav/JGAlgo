@@ -1,13 +1,9 @@
-name: Benchmarks
+name: Benchmarks Demo
 
 permissions:
   contents: read
 
-on:
-  schedule:
-    # runs once a day, one midnight
-    # * is a special character in YAML so you have to quote this string
-    - cron:  '0 0 * * *'
+on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -21,5 +17,5 @@ jobs:
         distribution: 'adopt'
     - name: Build with Maven
       run: mvn --batch-mode --update-snapshots package -Dmaven.test.skip
-    - name: Run JMH Benchmarks
-      run: mvn --batch-mode '-Dtest=com.jgalgo.bench.TestBenchmarksSuite' test
+    - name: Run JMH Benchmarks (Demo)
+      run: mvn --batch-mode '-Dtest=com.jgalgo.bench.TestBenchmarksDemoSuite' test
