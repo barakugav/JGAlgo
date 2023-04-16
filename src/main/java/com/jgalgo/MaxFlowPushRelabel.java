@@ -43,10 +43,9 @@ public class MaxFlowPushRelabel implements MaxFlow {
 		};
 
 		@Override
-		boolean dischargeOrRelabel(int u) {
-			boolean relabeled = super.dischargeOrRelabel(u);
-			active.afterDischargeOrRelabel(u, relabeled);
-			return relabeled;
+		void discharge(int u) {
+			super.discharge(u);
+			active.afterDischarge(u);
 		}
 
 		@Override
@@ -76,10 +75,9 @@ public class MaxFlowPushRelabel implements MaxFlow {
 		};
 
 		@Override
-		boolean dischargeOrRelabel(int u) {
-			boolean relabeled = super.dischargeOrRelabel(u);
-			active.afterDischargeOrRelabel(u, relabeled);
-			return relabeled;
+		void discharge(int u) {
+			super.discharge(u);
+			active.afterDischarge(u);
 		}
 
 		@Override
@@ -119,14 +117,8 @@ public class MaxFlowPushRelabel implements MaxFlow {
 			}
 		}
 
-		void afterDischargeOrRelabel(int u, boolean relabeled) {
-			if (relabeled) {
-				// vertex was relabeled and not discharged, still active
-				queue.enqueue(u);
-			} else {
-				// discharged, not active anymore
-				isActive.clear(u);
-			}
+		void afterDischarge(int u) {
+			isActive.clear(u);
 		}
 
 	}

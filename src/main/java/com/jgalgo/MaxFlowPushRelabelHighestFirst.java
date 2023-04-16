@@ -37,10 +37,9 @@ public class MaxFlowPushRelabelHighestFirst implements MaxFlow {
 		};
 
 		@Override
-		boolean dischargeOrRelabel(int u) {
-			boolean relabeled = super.dischargeOrRelabel(u);
-			active.afterDischargeOrRelabel(u, relabeled);
-			return relabeled;
+		void discharge(int u) {
+			super.discharge(u);
+			active.afterDischarge(u);
 		}
 
 		@Override
@@ -76,10 +75,9 @@ public class MaxFlowPushRelabelHighestFirst implements MaxFlow {
 		};
 
 		@Override
-		boolean dischargeOrRelabel(int u) {
-			boolean relabeled = super.dischargeOrRelabel(u);
-			active.afterDischargeOrRelabel(u, relabeled);
-			return relabeled;
+		void discharge(int u) {
+			super.discharge(u);
+			active.afterDischarge(u);
 		}
 
 		@Override
@@ -162,21 +160,15 @@ public class MaxFlowPushRelabelHighestFirst implements MaxFlow {
 			if (!isActive.get(v)) {
 				isActive.set(v);
 				queues[label[v]].enqueue(v);
-				assert label[v] < level;
 			}
 		}
 
-		void afterDischargeOrRelabel(int u, boolean relabeled) {
-			if (relabeled) {
-				// vertex was relabeled and not discharged, still active
-				int newLabel = label[u];
-				queues[newLabel].enqueue(u);
-				assert label[u] > level;
-				level = label[u];
-			} else {
-				// discharged, not active anymore
-				isActive.clear(u);
-			}
+		void afterDischarge(int u) {
+			isActive.clear(u);
+
+			// relabel way have been performed
+			assert label[u] >= level;
+			level = label[u];
 		}
 
 	}

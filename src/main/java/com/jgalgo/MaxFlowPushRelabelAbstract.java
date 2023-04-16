@@ -76,7 +76,7 @@ class MaxFlowPushRelabelAbstract {
 		}
 
 		void recomputeLabels() {
-			// perform backward BFS from target on edges with flow < capacity
+			// perform backward BFS from target on edges with flow < capacity (residual)
 			// perform another one from source to init unreachable vertices
 
 			BitSet visited = relabelVisited;
@@ -127,10 +127,10 @@ class MaxFlowPushRelabelAbstract {
 
 		void relabel(int v, int newLabel) {
 			label[v] = newLabel;
+			relabelsSinceLastLabelsRecompute++;
 		}
 
-		// Return true if vertex was relabeled, false if discharged
-		abstract boolean dischargeOrRelabel(int u);
+		abstract void discharge(int u);
 
 		abstract double constructResult();
 
@@ -143,8 +143,8 @@ class MaxFlowPushRelabelAbstract {
 			pushAsMuchFromSource();
 			while (hasMoreVerticesToDischarge()) {
 				int u = nextVertexToDischarge();
-				boolean relabeled = dischargeOrRelabel(u);
-				if (relabeled && ++relabelsSinceLastLabelsRecompute >= labelsReComputeThreshold)
+				discharge(u);
+				if (relabelsSinceLastLabelsRecompute >= labelsReComputeThreshold)
 					recomputeLabels();
 			}
 			return constructResult();
@@ -206,10 +206,10 @@ class MaxFlowPushRelabelAbstract {
 		};
 
 		@Override
-		boolean dischargeOrRelabel(int u) {
-			if (excess[u] < EPS)
-				return false;
-			for (IterPickable.Int it = edgeIters[u]; it.hasNext();) {
+		void discharge(int u) {
+			if (excess[u] <= EPS)
+				return;
+			for (IterPickable.Int it = edgeIters[u];;) {
 				int e = it.pickNext();
 				double eAccess = capacity.getDouble(e) - flow.getDouble(e);
 				if (eAccess > EPS && label[u] == label[g.edgeTarget(e)] + 1) {
@@ -219,23 +219,22 @@ class MaxFlowPushRelabelAbstract {
 						push(e, eAccess);
 						// Due to floating points, need to check again we have something to push
 						if (excess[u] < EPS)
-							return false;
+							return;
 					} else {
 						// non-saturating push
 						push(e, excess[u]);
-						return false;
+						return;
 					}
-				} else {
-					it.nextInt();
+				}
+				it.nextInt();
+				if (!it.hasNext()) {
+					// Finished iterating over all vertex edges.
+					// Reset iterator and relabel
+					it = edgeIters[u] = new IterPickable.Int(g.edgesOut(u));
+					assert it.hasNext();
+					relabel(u, label[u] + 1);
 				}
 			}
-
-			// Finished iterating over all vertex edges.
-			// Reset iterator and relabel
-			edgeIters[u] = new IterPickable.Int(g.edgesOut(u));
-			assert edgeIters[u].hasNext();
-			relabel(u, label[u] + 1);
-			return true;
 		}
 
 		@Override
@@ -311,10 +310,10 @@ class MaxFlowPushRelabelAbstract {
 		};
 
 		@Override
-		boolean dischargeOrRelabel(int u) {
+		void discharge(int u) {
 			if (excess[u] == 0)
-				return false;
-			for (IterPickable.Int it = edgeIters[u]; it.hasNext(); it.nextInt()) {
+				return;
+			for (IterPickable.Int it = edgeIters[u];;) {
 				int e = it.pickNext();
 				int eAccess = capacity.getInt(e) - flow.getInt(e);
 				if (eAccess > 0 && label[u] == label[g.edgeTarget(e)] + 1) {
@@ -325,17 +324,18 @@ class MaxFlowPushRelabelAbstract {
 					} else {
 						// non-saturating push
 						push(e, excess[u]);
-						return false;
+						return;
 					}
 				}
+				it.nextInt();
+				if (!it.hasNext()) {
+					// Finished iterating over all vertex edges.
+					// Reset iterator and relabel
+					it = edgeIters[u] = new IterPickable.Int(g.edgesOut(u));
+					assert it.hasNext();
+					relabel(u, label[u] + 1);
+				}
 			}
-
-			// Finished iterating over all vertex edges.
-			// Reset iterator and relabel
-			edgeIters[u] = new IterPickable.Int(g.edgesOut(u));
-			assert edgeIters[u].hasNext();
-			relabel(u, label[u] + 1);
-			return true;
 		}
 
 		@Override
