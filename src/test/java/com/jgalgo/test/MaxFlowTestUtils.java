@@ -144,6 +144,10 @@ public class MaxFlowTestUtils extends TestUtils {
 	}
 
 	private static void testNetworkInt(Graph g, FlowNetworkInt net, int source, int target, MaxFlow algo) {
+		// Clear net, for debug 'drop to frame'
+		// for (IntIterator it = g.edges().iterator(); it.hasNext();)
+		// 	net.setFlow(it.nextInt(), 0);
+
 		double actualMaxFlow0 = algo.calcMaxFlow(g, net, source, target);
 		int actualMaxFlow = (int) actualMaxFlow0;
 		Assertions.assertEquals(actualMaxFlow, actualMaxFlow0, "not integral max flow in integral network");
@@ -162,7 +166,7 @@ public class MaxFlowTestUtils extends TestUtils {
 		}
 
 		int expectedMaxFlow = (int) calcExpectedFlow(g, net, source, target);
-		Assertions.assertEquals(expectedMaxFlow, actualMaxFlow, 1E-3, "Unexpected max flow");
+		Assertions.assertEquals(expectedMaxFlow, actualMaxFlow, "Unexpected max flow");
 	}
 
 	/* implementation taken from the Internet */

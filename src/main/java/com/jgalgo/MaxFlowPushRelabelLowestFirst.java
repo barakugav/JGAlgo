@@ -17,15 +17,15 @@ public class MaxFlowPushRelabelLowestFirst implements MaxFlow {
 		if (net instanceof FlowNetworkInt) {
 			return new WorkerInt((DiGraph) g, (FlowNetworkInt) net, source, target).calcMaxFlow();
 		} else {
-			return new Worker((DiGraph) g, net, source, target).calcMaxFlow();
+			return new WorkerDouble((DiGraph) g, net, source, target).calcMaxFlow();
 		}
 	}
 
-	private class Worker extends MaxFlowPushRelabelAbstract.WorkerDouble {
+	private class WorkerDouble extends MaxFlowPushRelabelAbstract.WorkerDouble {
 
 		final ActiveQueue active;
 
-		Worker(DiGraph gOrig, FlowNetwork net, int source, int target) {
+		WorkerDouble(DiGraph gOrig, FlowNetwork net, int source, int target) {
 			super(gOrig, net, source, target);
 			active = new ActiveQueue(this);
 		}
@@ -100,6 +100,7 @@ public class MaxFlowPushRelabelLowestFirst implements MaxFlow {
 	private static class ActiveQueue {
 
 		private final DiGraph g;
+		private final int n;
 
 		private final int[] label;
 		private final int source;
@@ -113,15 +114,15 @@ public class MaxFlowPushRelabelLowestFirst implements MaxFlow {
 
 		ActiveQueue(MaxFlowPushRelabelAbstract.Worker worker) {
 			g = worker.g;
-			int n = g.vertices().size();
+			n = g.vertices().size();
 			isActive = new BitSet(n);
 
 			label = worker.label;
 			source = worker.source;
 			target = worker.target;
 
-			queues = new IntPriorityQueue[2 * n];
-			for (int k = 1; k < queues.length; k++)
+			queues = new IntPriorityQueue[n];
+			for (int k = 1; k < n; k++)
 				queues[k] = new IntArrayFIFOQueue();
 
 			// set source and target as 'active' to prevent them from entering the active
@@ -131,25 +132,28 @@ public class MaxFlowPushRelabelLowestFirst implements MaxFlow {
 		}
 
 		void afterLabelRecompute() {
-			for (int k = 1; k < queues.length; k++)
+			for (int k = 1; k < n; k++)
 				queues[k].clear();
 
 			level = 1;
 			int n = g.vertices().size();
 			for (int u = 0; u < n; u++)
-				if (isActive.get(u) && u != source && u != target)
-					queues[label[u]].enqueue(u);
+				if (isActive.get(u) && u != source && u != target) {
+					int l = label[u];
+					if (l < n)
+						queues[l].enqueue(u);
+				}
 		}
 
 		boolean isEmpty() {
-			for (; level < queues.length; level++)
+			for (; level < n; level++)
 				if (!queues[level].isEmpty())
 					return false;
 			return true;
 		}
 
 		int dequeue() {
-			for (; level < queues.length; level++)
+			for (; level < n; level++)
 				if (!queues[level].isEmpty())
 					return queues[level].dequeueInt();
 			throw new IllegalStateException();
@@ -159,9 +163,10 @@ public class MaxFlowPushRelabelLowestFirst implements MaxFlow {
 			int v = g.edgeTarget(e);
 			if (!isActive.get(v)) {
 				isActive.set(v);
-				queues[label[v]].enqueue(v);
-				if (level > label[v])
-					level = label[v];
+				int l = label[v];
+				queues[l].enqueue(v);
+				if (level > l)
+					level = l;
 			}
 		}
 

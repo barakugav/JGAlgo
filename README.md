@@ -37,10 +37,10 @@ JGAlgo is a collection of algorithms implemented in Java. It contains mostly alg
 | LCA dynamic Gabow simple | $O(n \log^2 n + m)$ |
 | LCA dynamic Gabow2017 | $O(n + m)$ |
 | Max flow EdmondsKarp | $O(m^2 n)$ |
-| Max flow Push/Relabel (FIFO order) | $O(n^3)$ |
-| Max flow Push/Relabel-to-Front | $O(n^3)$ |
-| Max flow Push/Relabel Highest First | $O(n^2 \sqrt{m})$ |
-| Max flow Push/Relabel Lowest First | $O(n^2 m)$ |
+| Max flow Push/Relabel (FIFO order) <br> with global relabeling and gap heuristics | $O(n^3)$ |
+| Max flow Push/Relabel-to-Front <br> with global relabeling and gap heuristics | $O(n^3)$ |
+| Max flow Push/Relabel Highest First <br> with global relabeling and gap heuristics | $O(n^2 \sqrt{m})$ |
+| Max flow Push/Relabel Lowest First <br> with global relabeling and gap heuristics | $O(n^2 m)$ |
 | Max flow Push/Relabel using Dynamic Trees | $O\left(m n \log \left(\frac{n^2}{m}\right)\right)$ |
 | Max flow Dinic | $O(m n^2)$ |
 | Max flow Dinic using Dynamic Trees | $O(m n \log n)$ |

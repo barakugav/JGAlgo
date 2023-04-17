@@ -16,15 +16,15 @@ public class MaxFlowPushRelabelToFront implements MaxFlow {
 		if (net instanceof FlowNetworkInt) {
 			return new WorkerInt((DiGraph) g, (FlowNetworkInt) net, source, target).calcMaxFlow();
 		} else {
-			return new Worker((DiGraph) g, net, source, target).calcMaxFlow();
+			return new WorkerDouble((DiGraph) g, net, source, target).calcMaxFlow();
 		}
 	}
 
-	private static class Worker extends MaxFlowPushRelabelAbstract.WorkerDouble {
+	private static class WorkerDouble extends MaxFlowPushRelabelAbstract.WorkerDouble {
 
 		final VertexList list;
 
-		Worker(DiGraph gOrig, FlowNetwork net, int source, int target) {
+		WorkerDouble(DiGraph gOrig, FlowNetwork net, int source, int target) {
 			super(gOrig, net, source, target);
 			list = new VertexList(this);
 		}
