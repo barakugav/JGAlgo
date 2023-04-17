@@ -1,6 +1,5 @@
 GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
 jgalgo,com.jgalgo,LinkedListDoubleArrayFixedSize.Abstract,4,53,2,2,0,11,2,9,0,9
-jgalgo,com.jgalgo,EdgeIter.new EdgeIter() {...},17,0,0,0,5,0,5,0,5,0
 jgalgo,com.jgalgo,UnionFindPtr,47,141,7,17,10,35,8,12,2,6
 jgalgo,com.jgalgo,DynamicTreeSplaySized.SplayNodeSized,0,7,0,0,0,3,0,1,0,1
 jgalgo,com.jgalgo,GraphTableAbstract.EdgeIterOut,10,107,3,9,2,23,3,10,0,7
@@ -131,6 +130,7 @@ jgalgo,com.jgalgo,Utils.NullList,127,17,27,1,24,6,31,3,17,3
 jgalgo,com.jgalgo,LinkedListDoubleArrayFixedSize.ImplInt,35,0,0,0,10,0,5,0,5,0
 jgalgo,com.jgalgo,LCAGabowSimple.CharacteristicAncestors0,0,12,0,0,0,5,0,1,0,1
 jgalgo,com.jgalgo,MaxFlowPushRelabelAbstract.WorkerDouble,27,537,9,57,1,100,9,37,0,13
+jgalgo,com.jgalgo,EdgeIterImpl,8,0,0,0,2,0,2,0,2,0
 jgalgo,com.jgalgo,MaxFlowPushRelabel.WorkerInt,0,47,0,2,0,12,0,6,0,5
 jgalgo,com.jgalgo,SSSPResultImpl,9,117,0,8,2,32,2,8,2,4
 jgalgo,com.jgalgo,UnionFindValueArray,4,180,2,12,1,41,2,14,0,9
@@ -204,10 +204,10 @@ jgalgo,com.jgalgo,MatchingGabow1976,5,611,1,57,1,122,1,32,0,4
 jgalgo,com.jgalgo,APSPJohnson.NegCycleRes,8,14,0,0,2,6,2,3,2,3
 jgalgo,com.jgalgo,APSPJohnson.SuccessRes,4,33,0,0,1,6,1,4,1,4
 jgalgo,com.jgalgo,MatchingWeighted,0,7,0,0,0,1,0,2,0,2
+jgalgo,com.jgalgo,EdgeIterImpl.new EdgeIter() {...},17,0,0,0,5,0,5,0,5,0
 jgalgo,com.jgalgo,Trees,0,54,0,4,0,14,0,3,0,1
 jgalgo,com.jgalgo,GraphLinkedDirected,14,410,2,28,2,98,2,30,0,17
 jgalgo,com.jgalgo,HeapFibonacci,56,748,13,99,11,188,14,61,1,18
-jgalgo,com.jgalgo,EdgeIter,5,0,0,0,1,0,1,0,1,0
 jgalgo,com.jgalgo,SubtreeMergeFindminImpl.EdgeList,0,10,0,0,0,2,0,1,0,1
 jgalgo,com.jgalgo,RMQGabowBentleyTarjan1984,4,205,1,15,1,45,1,15,0,8
 jgalgo,com.jgalgo,RMQLookupTable.LookupTable32768,0,31,0,0,0,7,0,4,0,4

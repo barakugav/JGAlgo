@@ -1,33 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UGraph.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jgalgo</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">UGraph.java</span></div><h1>UGraph.java</h1><pre class="source lang-java linenums">package com.jgalgo;
 
+/**
+ * A discrete undirected graph with vertices and edges.
+ * &lt;p&gt;
+ * An extension to the {@link Graph} interface, where edges are undirected,
+ * namely
+ * an edge {@code e(u, v)} will appear in the iteration of {@code edgesOut(u)},
+ * {@code edgesIn(v)}, {@code edgesOut(v)} and {@code edgesIn(u)}. Also
+ * {@link #edgesOut(int)} and {@link #edgesIn(int)} are equivalent for the same
+ * vertex, same for {@link #degreeIn(int)} and {@link #degreeOut(int)}, and
+ * similarly {@link #removeEdges(int)}, {@link #removeEdgesIn(int)} and
+ * {@link #removeEdgesOut(int)}.
+ *
+ * @see DiGraph
+ * @author Barak Ugav
+ */
 public interface UGraph extends Graph {
 
 	@Override
 	default EdgeIter edgesIn(int v) {
-<span class="fc" id="L7">		return edgesOut(v);</span>
+<span class="fc" id="L22">		return edgesOut(v);</span>
 	}
 
 	@Override
 	default void removeEdges(int u) {
-<span class="fc bfc" id="L12" title="All 2 branches covered.">		for (EdgeIter eit = edgesOut(u); eit.hasNext();) {</span>
-<span class="fc" id="L13">			eit.nextInt();</span>
-<span class="fc" id="L14">			eit.remove();</span>
+<span class="fc bfc" id="L27" title="All 2 branches covered.">		for (EdgeIter eit = edgesOut(u); eit.hasNext();) {</span>
+<span class="fc" id="L28">			eit.nextInt();</span>
+<span class="fc" id="L29">			eit.remove();</span>
 		}
-<span class="fc" id="L16">	}</span>
+<span class="fc" id="L31">	}</span>
 
 	@Override
 	default void removeEdgesOut(int u) {
-<span class="nc" id="L20">		removeEdges(u);</span>
-<span class="nc" id="L21">	}</span>
+<span class="nc" id="L35">		removeEdges(u);</span>
+<span class="nc" id="L36">	}</span>
 
 	@Override
 	default void removeEdgesIn(int v) {
-<span class="nc" id="L25">		removeEdges(v);</span>
-<span class="nc" id="L26">	}</span>
+<span class="nc" id="L40">		removeEdges(v);</span>
+<span class="nc" id="L41">	}</span>
 
 	@Override
 	default int degreeIn(int v) {
-<span class="fc" id="L30">		return degreeOut(v);</span>
+<span class="fc" id="L45">		return degreeOut(v);</span>
 	}
 
 }
