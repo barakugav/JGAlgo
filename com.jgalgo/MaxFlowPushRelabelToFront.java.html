@@ -16,15 +16,15 @@ import it.unimi.dsi.fastutil.ints.IntIterators;
 <span class="fc bfc" id="L16" title="All 2 branches covered.">		if (net instanceof FlowNetworkInt) {</span>
 <span class="fc" id="L17">			return new WorkerInt((DiGraph) g, (FlowNetworkInt) net, source, target).calcMaxFlow();</span>
 		} else {
-<span class="fc" id="L19">			return new Worker((DiGraph) g, net, source, target).calcMaxFlow();</span>
+<span class="fc" id="L19">			return new WorkerDouble((DiGraph) g, net, source, target).calcMaxFlow();</span>
 		}
 	}
 
-	private static class Worker extends MaxFlowPushRelabelAbstract.WorkerDouble {
+	private static class WorkerDouble extends MaxFlowPushRelabelAbstract.WorkerDouble {
 
 		final VertexList list;
 
-		Worker(DiGraph gOrig, FlowNetwork net, int source, int target) {
+		WorkerDouble(DiGraph gOrig, FlowNetwork net, int source, int target) {
 <span class="fc" id="L28">			super(gOrig, net, source, target);</span>
 <span class="fc" id="L29">			list = new VertexList(this);</span>
 <span class="fc" id="L30">		}</span>

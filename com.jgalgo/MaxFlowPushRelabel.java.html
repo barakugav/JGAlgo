@@ -23,15 +23,15 @@ public class MaxFlowPushRelabel implements MaxFlow {
 <span class="fc bfc" id="L23" title="All 2 branches covered.">		if (net instanceof FlowNetworkInt) {</span>
 <span class="fc" id="L24">			return new WorkerInt((DiGraph) g, (FlowNetworkInt) net, source, target).calcMaxFlow();</span>
 		} else {
-<span class="fc" id="L26">			return new Worker((DiGraph) g, net, source, target).calcMaxFlow();</span>
+<span class="fc" id="L26">			return new WorkerDouble((DiGraph) g, net, source, target).calcMaxFlow();</span>
 		}
 	}
 
-	private class Worker extends MaxFlowPushRelabelAbstract.WorkerDouble {
+	private class WorkerDouble extends MaxFlowPushRelabelAbstract.WorkerDouble {
 
 		final ActiveQueue active;
 
-<span class="fc" id="L34">		Worker(DiGraph gOrig, FlowNetwork net, int source, int target) {</span>
+<span class="fc" id="L34">		WorkerDouble(DiGraph gOrig, FlowNetwork net, int source, int target) {</span>
 <span class="fc" id="L35">			super(gOrig, net, source, target);</span>
 <span class="fc" id="L36">			active = new ActiveQueue(this);</span>
 <span class="fc" id="L37">		}</span>
@@ -43,20 +43,19 @@ public class MaxFlowPushRelabel implements MaxFlow {
 <span class="fc" id="L43">		};</span>
 
 		@Override
-		boolean dischargeOrRelabel(int u) {
-<span class="fc" id="L47">			boolean relabeled = super.dischargeOrRelabel(u);</span>
-<span class="fc" id="L48">			active.afterDischargeOrRelabel(u, relabeled);</span>
-<span class="fc" id="L49">			return relabeled;</span>
-		}
+		void discharge(int u) {
+<span class="fc" id="L47">			super.discharge(u);</span>
+<span class="fc" id="L48">			active.afterDischarge(u);</span>
+<span class="fc" id="L49">		}</span>
 
 		@Override
 		boolean hasMoreVerticesToDischarge() {
-<span class="fc bfc" id="L54" title="All 2 branches covered.">			return !active.queue.isEmpty();</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">			return !active.queue.isEmpty();</span>
 		}
 
 		@Override
 		int nextVertexToDischarge() {
-<span class="fc" id="L59">			return active.queue.dequeueInt();</span>
+<span class="fc" id="L58">			return active.queue.dequeueInt();</span>
 		}
 	}
 
@@ -64,32 +63,31 @@ public class MaxFlowPushRelabel implements MaxFlow {
 
 		final ActiveQueue active;
 
-<span class="fc" id="L67">		WorkerInt(DiGraph gOrig, FlowNetworkInt net, int source, int target) {</span>
-<span class="fc" id="L68">			super(gOrig, net, source, target);</span>
-<span class="fc" id="L69">			active = new ActiveQueue(this);</span>
-<span class="fc" id="L70">		}</span>
+<span class="fc" id="L66">		WorkerInt(DiGraph gOrig, FlowNetworkInt net, int source, int target) {</span>
+<span class="fc" id="L67">			super(gOrig, net, source, target);</span>
+<span class="fc" id="L68">			active = new ActiveQueue(this);</span>
+<span class="fc" id="L69">		}</span>
 
 		@Override
 		void push(int e, int f) {
-<span class="fc" id="L74">			super.push(e, f);</span>
-<span class="fc" id="L75">			active.afterPush(e);</span>
-<span class="fc" id="L76">		};</span>
+<span class="fc" id="L73">			super.push(e, f);</span>
+<span class="fc" id="L74">			active.afterPush(e);</span>
+<span class="fc" id="L75">		};</span>
 
 		@Override
-		boolean dischargeOrRelabel(int u) {
-<span class="fc" id="L80">			boolean relabeled = super.dischargeOrRelabel(u);</span>
-<span class="fc" id="L81">			active.afterDischargeOrRelabel(u, relabeled);</span>
-<span class="fc" id="L82">			return relabeled;</span>
-		}
+		void discharge(int u) {
+<span class="fc" id="L79">			super.discharge(u);</span>
+<span class="fc" id="L80">			active.afterDischarge(u);</span>
+<span class="fc" id="L81">		}</span>
 
 		@Override
 		boolean hasMoreVerticesToDischarge() {
-<span class="fc bfc" id="L87" title="All 2 branches covered.">			return !active.queue.isEmpty();</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">			return !active.queue.isEmpty();</span>
 		}
 
 		@Override
 		int nextVertexToDischarge() {
-<span class="fc" id="L92">			return active.queue.dequeueInt();</span>
+<span class="fc" id="L90">			return active.queue.dequeueInt();</span>
 		}
 	}
 
@@ -99,35 +97,29 @@ public class MaxFlowPushRelabel implements MaxFlow {
 		final BitSet isActive;
 		final IntPriorityQueue queue;
 
-<span class="fc" id="L102">		ActiveQueue(MaxFlowPushRelabelAbstract.Worker worker) {</span>
-<span class="fc" id="L103">			g = worker.g;</span>
-<span class="fc" id="L104">			int n = g.vertices().size();</span>
-<span class="fc" id="L105">			isActive = new BitSet(n);</span>
-<span class="fc" id="L106">			queue = new IntArrayFIFOQueue();</span>
+<span class="fc" id="L100">		ActiveQueue(MaxFlowPushRelabelAbstract.Worker worker) {</span>
+<span class="fc" id="L101">			g = worker.g;</span>
+<span class="fc" id="L102">			int n = g.vertices().size();</span>
+<span class="fc" id="L103">			isActive = new BitSet(n);</span>
+<span class="fc" id="L104">			queue = new IntArrayFIFOQueue();</span>
 
 			// set source and target as 'active' to prevent them from entering the active
 			// queue
-<span class="fc" id="L110">			isActive.set(worker.source);</span>
-<span class="fc" id="L111">			isActive.set(worker.target);</span>
-<span class="fc" id="L112">		}</span>
+<span class="fc" id="L108">			isActive.set(worker.source);</span>
+<span class="fc" id="L109">			isActive.set(worker.target);</span>
+<span class="fc" id="L110">		}</span>
 
 		void afterPush(int e) {
-<span class="fc" id="L115">			int v = g.edgeTarget(e);</span>
-<span class="fc bfc" id="L116" title="All 2 branches covered.">			if (!isActive.get(v)) {</span>
-<span class="fc" id="L117">				isActive.set(v);</span>
-<span class="fc" id="L118">				queue.enqueue(v);</span>
+<span class="fc" id="L113">			int v = g.edgeTarget(e);</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">			if (!isActive.get(v)) {</span>
+<span class="fc" id="L115">				isActive.set(v);</span>
+<span class="fc" id="L116">				queue.enqueue(v);</span>
 			}
-<span class="fc" id="L120">		}</span>
+<span class="fc" id="L118">		}</span>
 
-		void afterDischargeOrRelabel(int u, boolean relabeled) {
-<span class="fc bfc" id="L123" title="All 2 branches covered.">			if (relabeled) {</span>
-				// vertex was relabeled and not discharged, still active
-<span class="fc" id="L125">				queue.enqueue(u);</span>
-			} else {
-				// discharged, not active anymore
-<span class="fc" id="L128">				isActive.clear(u);</span>
-			}
-<span class="fc" id="L130">		}</span>
+		void afterDischarge(int u) {
+<span class="fc" id="L121">			isActive.clear(u);</span>
+<span class="fc" id="L122">		}</span>
 
 	}
 }
