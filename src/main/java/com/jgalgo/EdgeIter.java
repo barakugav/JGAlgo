@@ -1,42 +1,47 @@
 package com.jgalgo;
 
-import java.util.NoSuchElementException;
-
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 /**
- * Edge iterator. Each int returned by nextInt() is ID of an edge iterated by
- * the iterator.
+ * Iterator used to iterate over edges of a vertex.
+ * <p>
+ * Each {@code int} returned by {@link #nextInt()} is an ID of an edge iterated
+ * by the iterator. The source and target of the last iterated edge are
+ * available by {@link #u()} and {@link #v()}.
+ * <p>
+ *
+ * <pre> {@code
+ * Graph g = ...;
+ * int vertex = ...;
+ * for (EdgeIter eit = g.edgesOut(vertex); eit.hasNext();) {
+ * 	int e = eit.nextInt();
+ * 	int u = eit.u();
+ * 	int v = eit.v();
+ * 	assert vertex == u;
+ * 	System.out.println("Out edge of " + vertex + ": " + e + "(" + u + ", " + v + ")");
+ * }
+ * }</pre>
+ *
+ * @author Barak Ugav
  */
 public interface EdgeIter extends IntIterator {
 
-	/** Get the source vertex of the last returned edge */
+	/**
+	 * Get the source vertex of the last returned edge.
+	 * <p>
+	 * The behavior is undefined if {@link nextInt} was not called yet.
+	 *
+	 * @return the source vertex of the last returned edge
+	 */
 	int u();
 
-	/** Get the target vertex of the last returned edge */
+	/**
+	 * Get the target vertex of the last returned edge.
+	 * <p>
+	 * The behavior is undefined if {@link nextInt} was not called yet.
+	 *
+	 * @return the target vertex of the last returned edge
+	 */
 	int v();
-
-	public static final EdgeIter Empty = new EdgeIter() {
-
-		@Override
-		public int nextInt() {
-			throw new NoSuchElementException();
-		}
-
-		@Override
-		public boolean hasNext() {
-			return false;
-		}
-
-		@Override
-		public int u() {
-			throw new NoSuchElementException();
-		}
-
-		@Override
-		public int v() {
-			throw new NoSuchElementException();
-		}
-	};
 
 }
