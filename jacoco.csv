@@ -102,7 +102,7 @@ jgalgo,com.jgalgo,GraphArrayDirected,20,459,3,15,2,88,3,21,0,15
 jgalgo,com.jgalgo,GraphTableAbstract.EdgeIterIn,10,108,3,9,2,23,3,10,0,7
 jgalgo,com.jgalgo,Graphs,407,674,58,80,73,167,44,48,9,14
 jgalgo,com.jgalgo,MSTBoruvka1926,17,353,4,46,2,82,4,26,0,5
-jgalgo,com.jgalgo,RMQPlusMinusOneBenderFarachColton2000,4,172,1,13,1,31,1,14,0,8
+jgalgo,com.jgalgo,RMQPlusMinusOneBenderFarachColton2000,4,170,1,13,1,31,1,14,0,8
 jgalgo,com.jgalgo,Path.IterDirected,16,42,1,3,2,11,3,5,2,4
 jgalgo,com.jgalgo,CyclesFinderJohnson.Worker,12,257,3,31,0,61,3,19,0,5
 jgalgo,com.jgalgo,WeightsImpl,0,13,0,0,0,6,0,3,0,3
@@ -209,7 +209,7 @@ jgalgo,com.jgalgo,GraphLinkedDirected,14,410,2,28,2,98,2,30,0,17
 jgalgo,com.jgalgo,HeapFibonacci,56,748,13,99,11,188,14,61,1,18
 jgalgo,com.jgalgo,EdgeIter,5,0,0,0,1,0,1,0,1,0
 jgalgo,com.jgalgo,SubtreeMergeFindminImpl.EdgeList,0,10,0,0,0,2,0,1,0,1
-jgalgo,com.jgalgo,RMQGabowBentleyTarjan1984,4,207,1,15,1,45,1,15,0,8
+jgalgo,com.jgalgo,RMQGabowBentleyTarjan1984,4,205,1,15,1,45,1,15,0,8
 jgalgo,com.jgalgo,RMQLookupTable.LookupTable32768,0,31,0,0,0,7,0,4,0,4
 jgalgo,com.jgalgo,MatchingBipartiteHopcroftKarp1973,10,341,2,44,4,87,3,24,1,3
 jgalgo,com.jgalgo,DynamicTreeSplay.MinEdgeRes,0,21,0,0,0,8,0,4,0,4
