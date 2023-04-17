@@ -4,11 +4,11 @@ import java.util.AbstractCollection;
 import java.util.Collection;
 import java.util.Comparator;
 
-public abstract class HeapAbstract<E> extends AbstractCollection<E> implements Heap<E> {
+abstract class HeapAbstract<E> extends AbstractCollection<E> implements Heap<E> {
 
 	final Comparator<? super E> c;
 
-	public HeapAbstract(Comparator<? super E> c) {
+	HeapAbstract(Comparator<? super E> c) {
 		this.c = c;
 	}
 
