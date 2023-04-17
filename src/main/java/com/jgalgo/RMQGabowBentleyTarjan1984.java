@@ -1,8 +1,9 @@
 package com.jgalgo;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
+
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
 public class RMQGabowBentleyTarjan1984 extends RMQLinearAbstract {
 
@@ -38,13 +39,13 @@ public class RMQGabowBentleyTarjan1984 extends RMQLinearAbstract {
 	}
 
 	private void preProcessRMQInnerBlocks() {
-		Map<Integer, RMQ> tables = new HashMap<>();
+		Int2ObjectMap<RMQ> tables = new Int2ObjectOpenHashMap<>();
 
 		for (int b = 0; b < blockNum; b++) {
 			int key = calcBlockKey(b);
 
-			interBlocksDs[b] = tables.computeIfAbsent(Integer.valueOf(key), k -> {
-				int[] demoBlock = calcDemoBlock(k.intValue(), blockSize);
+			interBlocksDs[b] = tables.computeIfAbsent(key, k -> {
+				int[] demoBlock = calcDemoBlock(k, blockSize);
 				RMQ innerRMQ = new RMQLookupTable();
 				innerRMQ.preProcessRMQ(RMQComparator.ofIntArray(demoBlock), demoBlock.length);
 				return innerRMQ;
