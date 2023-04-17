@@ -6,9 +6,11 @@
 
 # JGAlgo
 
-JGAlgo is a collection of algorithms implemented in Java. It contains mostly algorithms for various graphs problems and some utilities data structures and array algorithms.
+JGAlgo is a library of graph algorithms implemented in Java. Its aim is to provide best in practice performance using algorithms with good theoretical complexities. Although it contains some implementations which are just a proof of concept for algorithms which are only good in theory but are outperformed in practice by simpler algorithms.
+The library runs on Java 11 or higher, and it is installed using Maven (WIP).
 
-[Documentation](https://barakugav.github.io/JGAlgo)
+**Notice:** This project is still under active development and does not guarantee a stable API.
+* [Documentation](https://barakugav.github.io/JGAlgo)
 
 ## Algorithms
 
