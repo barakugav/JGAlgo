@@ -7,6 +7,17 @@ import java.util.List;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntStack;
 
+/**
+ * Tarjan's algorithm for finding all cycles in a directed graph.
+ * <p>
+ * The algorithm runs in {@code O((n+m)(c+1))} time and {@code O(n)} space where
+ * {@code c} is the number of simple cycles in the graph.
+ * <p>
+ * Based on the paper 'Enumeration of the elementary circuits of a directed
+ * graph' by Robert Tarjan.
+ *
+ * @author Barak Ugav
+ */
 public class CyclesFinderTarjan implements CyclesFinder {
 
 	/*
