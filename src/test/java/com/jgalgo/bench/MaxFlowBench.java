@@ -21,6 +21,7 @@ import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 
 import com.jgalgo.DiGraph;
+import com.jgalgo.FlowNetwork;
 import com.jgalgo.GraphBuilder;
 import com.jgalgo.Graphs;
 import com.jgalgo.MaxFlow;
@@ -32,7 +33,6 @@ import com.jgalgo.MaxFlowPushRelabelDynamicTrees;
 import com.jgalgo.MaxFlowPushRelabelHighestFirst;
 import com.jgalgo.MaxFlowPushRelabelLowestFirst;
 import com.jgalgo.MaxFlowPushRelabelToFront;
-import com.jgalgo.MaxFlow.FlowNetworkInt;
 import com.jgalgo.test.MaxFlowTestUtils;
 import com.jgalgo.test.GraphsTestUtils.RandomGraphBuilder;
 import com.jgalgo.test.TestUtils.SeedGenerator;
@@ -54,15 +54,15 @@ public class MaxFlowBench {
 
 	private static class MaxFlowTask {
 		final DiGraph g;
-		final FlowNetworkInt flow;
+		final FlowNetwork.Int flow;
 		final int source;
-		final int target;
+		final int sink;
 
-		MaxFlowTask(DiGraph g, FlowNetworkInt flow, int source, int target) {
+		MaxFlowTask(DiGraph g, FlowNetwork.Int flow, int source, int sink) {
 			this.g = g;
 			this.flow = flow;
 			this.source = source;
-			this.target = target;
+			this.sink = sink;
 		}
 	}
 
@@ -80,16 +80,16 @@ public class MaxFlowBench {
 			DiGraph g = (DiGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true)
 					.parallelEdges(false).selfEdges(false)
 					.cycles(true).connected(false).build();
-			FlowNetworkInt flow = MaxFlowTestUtils.randNetworkInt(g, seedGen.nextSeed());
-			int source, target;
+			FlowNetwork.Int flow = MaxFlowTestUtils.randNetworkInt(g, seedGen.nextSeed());
+			int source, sink;
 			for (;;) {
 				source = rand.nextInt(g.vertices().size());
-				target = rand.nextInt(g.vertices().size());
-				if (source != target && Graphs.findPath(g, source, target) != null)
+				sink = rand.nextInt(g.vertices().size());
+				if (source != sink && Graphs.findPath(g, source, sink) != null)
 					break;
 			}
 
-			graphs.add(new MaxFlowTask(g, flow, source, target));
+			graphs.add(new MaxFlowTask(g, flow, source, sink));
 		}
 	}
 
@@ -106,7 +106,7 @@ public class MaxFlowBench {
 	private void benchMaxFlow(Supplier<? extends MaxFlow> builder, Blackhole blackhole) {
 		for (MaxFlowTask graph : graphs) {
 			MaxFlow algo = builder.get();
-			double flow = algo.calcMaxFlow(graph.g, graph.flow, graph.source, graph.target);
+			double flow = algo.calcMaxFlow(graph.g, graph.flow, graph.source, graph.sink);
 			blackhole.consume(flow);
 		}
 	}

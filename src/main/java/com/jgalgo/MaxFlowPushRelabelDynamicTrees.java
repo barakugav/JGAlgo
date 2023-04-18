@@ -51,15 +51,15 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 	}
 
 	@Override
-	public double calcMaxFlow(Graph g, FlowNetwork net, int source, int target) {
+	public double calcMaxFlow(Graph g, FlowNetwork net, int source, int sink) {
 		if (!(g instanceof DiGraph))
 			throw new IllegalArgumentException("only directed graphs are supported");
-		return calcMaxFlow0((DiGraph) g, net, source, target);
+		return calcMaxFlow0((DiGraph) g, net, source, sink);
 	}
 
-	private double calcMaxFlow0(DiGraph g0, FlowNetwork net, int source, int target) {
-		if (source == target)
-			throw new IllegalArgumentException("Source and target can't be the same vertices");
+	private double calcMaxFlow0(DiGraph g0, FlowNetwork net, int source, int sink) {
+		if (source == sink)
+			throw new IllegalArgumentException("Source and sink can't be the same vertex");
 		debug.println("\t", getClass().getSimpleName());
 
 		double maxCapacity = 100;
@@ -87,12 +87,12 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 		IntPriorityQueue toCut = new IntArrayFIFOQueue();
 
 		/* Init all vertices distances */
-		SSSP.Result initD = new SSSPCardinality().calcDistances(g, target);
+		SSSP.Result initD = new SSSPCardinality().calcDistances(g, sink);
 		for (int u = 0; u < n; u++)
-			if (u != source && u != target)
-				vertexData[u].d = (int) initD.distance(target);
+			if (u != source && u != sink)
+				vertexData[u].d = (int) initD.distance(sink);
 		vertexData[source].d = n;
-		vertexData[target].d = 0;
+		vertexData[sink].d = 0;
 
 		/* Init all vertices iterators */
 		for (int u = 0; u < n; u++)
@@ -152,7 +152,7 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 
 		while (!active.isEmpty()) {
 			Vertex U = active.pop();
-			if (U.v == source || U.v == target)
+			if (U.v == source || U.v == sink)
 				continue;
 			assert U.dtNode.getParent() == null;
 			IterPickable.Int it = U.edges;
@@ -188,7 +188,7 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 					pushFlow.accept(data, f);
 					U.excess -= f;
 					V.excess += f;
-					if (V.v == source || V.v == target)
+					if (V.v == source || V.v == sink)
 						continue;
 					assert V.excess > 0;
 					W = V;

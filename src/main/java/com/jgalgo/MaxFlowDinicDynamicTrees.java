@@ -11,13 +11,21 @@ import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
+/**
+ * Dinic's algorithm for maximum flow using dynamic trees.
+ * <p>
+ * Using {@link DynamicTree} the algorithm of Dinic to maximum flow problem is
+ * implemented in time {@code O(m n log n)} and linear space. In practice, the
+ * (relative) complicated implementation of dynamic trees have little gain in
+ * the overall performance, and its probably better to use some variant of the
+ * {@link MaxFlowPushRelabel}, which has worse theoretically bounds, but runs
+ * faster in practice.
+ *
+ * @see MaxFlowDinic
+ * @see DynamicTree
+ * @author Barak Ugav
+ */
 public class MaxFlowDinicDynamicTrees implements MaxFlow {
-
-	/**
-	 * Dinic's max flow algorithm using dynamic trees.
-	 *
-	 * O(m n log n)
-	 */
 
 	private final DebugPrintsManager debug;
 	private static final double EPS = 0.0001;
@@ -29,15 +37,15 @@ public class MaxFlowDinicDynamicTrees implements MaxFlow {
 	private static final Object EdgeRefWeightKey = new Object();
 
 	@Override
-	public double calcMaxFlow(Graph g, FlowNetwork net, int source, int target) {
+	public double calcMaxFlow(Graph g, FlowNetwork net, int source, int sink) {
 		if (!(g instanceof DiGraph))
 			throw new IllegalArgumentException("only directed graphs are supported");
-		return calcMaxFlow0((DiGraph) g, net, source, target);
+		return calcMaxFlow0((DiGraph) g, net, source, sink);
 	}
 
-	private double calcMaxFlow0(DiGraph g0, FlowNetwork net, int source, int target) {
-		if (source == target)
-			throw new IllegalArgumentException("Source and target can't be the same vertices");
+	private double calcMaxFlow0(DiGraph g0, FlowNetwork net, int source, int sink) {
+		if (source == sink)
+			throw new IllegalArgumentException("Source and sink can't be the same vertex");
 		debug.println("\t", getClass().getSimpleName());
 
 		double maxCapacity = 100;
@@ -63,7 +71,7 @@ public class MaxFlowDinicDynamicTrees implements MaxFlow {
 			debug.println("calculating residual network");
 			L.clearEdges();
 
-			/* Calc the sub graph non saturated edges from source to target using BFS */
+			/* Calc the sub graph non saturated edges from source to sink using BFS */
 			final int unvisited = Integer.MAX_VALUE;
 			Arrays.fill(level, unvisited);
 			bfsQueue.clear();
@@ -71,7 +79,7 @@ public class MaxFlowDinicDynamicTrees implements MaxFlow {
 			bfsQueue.enqueue(source);
 			bfs: while (!bfsQueue.isEmpty()) {
 				int u = bfsQueue.dequeueInt();
-				if (u == target)
+				if (u == sink)
 					break bfs;
 				int lvl = level[u];
 				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
@@ -87,9 +95,9 @@ public class MaxFlowDinicDynamicTrees implements MaxFlow {
 					bfsQueue.enqueue(v);
 				}
 			}
-			if (level[target] == unvisited)
-				break; /* All paths to target are saturated */
-			debug.println("target level: " + level[target]);
+			if (level[sink] == unvisited)
+				break; /* All paths to sink are saturated */
+			debug.println("sink level: " + level[sink]);
 
 			dt.clear();
 			for (int u = 0; u < n; u++)
@@ -107,7 +115,7 @@ public class MaxFlowDinicDynamicTrees implements MaxFlow {
 
 			calcBlockFlow: for (;;) {
 				int v = dt.findRoot(vToDt[source]).getNodeData().intValue();
-				if (v == target) {
+				if (v == sink) {
 
 					/* Augment */
 					debug.println("Augment");

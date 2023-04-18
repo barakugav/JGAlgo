@@ -10,11 +10,10 @@ import java.util.function.Supplier;
 import org.junit.jupiter.api.Assertions;
 
 import com.jgalgo.DiGraph;
+import com.jgalgo.FlowNetwork;
 import com.jgalgo.Graph;
 import com.jgalgo.Graphs;
 import com.jgalgo.MaxFlow;
-import com.jgalgo.MaxFlow.FlowNetwork;
-import com.jgalgo.MaxFlow.FlowNetworkInt;
 import com.jgalgo.test.GraphImplTestUtils.GraphImpl;
 import com.jgalgo.test.GraphsTestUtils.RandomGraphBuilder;
 
@@ -58,9 +57,9 @@ public class MaxFlowTestUtils extends TestUtils {
 		return flow;
 	}
 
-	public static FlowNetworkInt randNetworkInt(DiGraph g, long seed) {
+	public static com.jgalgo.FlowNetwork.Int randNetworkInt(DiGraph g, long seed) {
 		Random rand = new Random(seed);
-		FlowNetworkInt flow = FlowNetworkInt.createAsEdgeWeight(g);
+		FlowNetwork.Int flow = FlowNetwork.Int.createAsEdgeWeight(g);
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			int cap = rand.nextInt(16384);
@@ -87,16 +86,16 @@ public class MaxFlowTestUtils extends TestUtils {
 			int n = args[0], m = args[1];
 			DiGraph g = randGraph(n, m, graphImpl, seedGen.nextSeed());
 			FlowNetwork net = randNetwork(g, seedGen.nextSeed());
-			int source, target;
+			int source, sink;
 			for (;;) {
 				source = rand.nextInt(g.vertices().size());
-				target = rand.nextInt(g.vertices().size());
-				if (source != target && Graphs.findPath(g, source, target) != null)
+				sink = rand.nextInt(g.vertices().size());
+				if (source != sink && Graphs.findPath(g, source, sink) != null)
 					break;
 			}
 
 			MaxFlow algo = builder.get();
-			testNetwork(g, net, source, target, algo);
+			testNetwork(g, net, source, sink, algo);
 		});
 	}
 
@@ -109,22 +108,22 @@ public class MaxFlowTestUtils extends TestUtils {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 			DiGraph g = randGraph(n, m, graphImpl, seedGen.nextSeed());
-			FlowNetworkInt net = randNetworkInt(g, seedGen.nextSeed());
-			int source, target;
+			FlowNetwork.Int net = randNetworkInt(g, seedGen.nextSeed());
+			int source, sink;
 			for (;;) {
 				source = rand.nextInt(g.vertices().size());
-				target = rand.nextInt(g.vertices().size());
-				if (source != target && Graphs.findPath(g, source, target) != null)
+				sink = rand.nextInt(g.vertices().size());
+				if (source != sink && Graphs.findPath(g, source, sink) != null)
 					break;
 			}
 
 			MaxFlow algo = builder.get();
-			testNetworkInt(g, net, source, target, algo);
+			testNetworkInt(g, net, source, sink, algo);
 		});
 	}
 
-	private static void testNetwork(Graph g, FlowNetwork net, int source, int target, MaxFlow algo) {
-		double actualMaxFlow = algo.calcMaxFlow(g, net, source, target);
+	private static void testNetwork(Graph g, FlowNetwork net, int source, int sink, MaxFlow algo) {
+		double actualMaxFlow = algo.calcMaxFlow(g, net, source, sink);
 
 		int n = g.vertices().size();
 		double[] vertexFlowOut = new double[n];
@@ -135,20 +134,20 @@ public class MaxFlowTestUtils extends TestUtils {
 			vertexFlowOut[v] -= net.getFlow(e);
 		}
 		for (int v = 0; v < n; v++) {
-			double expected = v == source ? actualMaxFlow : v == target ? -actualMaxFlow : 0;
+			double expected = v == source ? actualMaxFlow : v == sink ? -actualMaxFlow : 0;
 			Assertions.assertEquals(expected, vertexFlowOut[v], 1E-3, "Invalid vertex(" + v + ") flow");
 		}
 
-		double expectedMaxFlow = calcExpectedFlow(g, net, source, target);
+		double expectedMaxFlow = calcExpectedFlow(g, net, source, sink);
 		Assertions.assertEquals(expectedMaxFlow, actualMaxFlow, 1E-3, "Unexpected max flow");
 	}
 
-	private static void testNetworkInt(Graph g, FlowNetworkInt net, int source, int target, MaxFlow algo) {
+	private static void testNetworkInt(Graph g, FlowNetwork.Int net, int source, int sink, MaxFlow algo) {
 		// Clear net, for debug 'drop to frame'
 		// for (IntIterator it = g.edges().iterator(); it.hasNext();)
-		// 	net.setFlow(it.nextInt(), 0);
+		// net.setFlow(it.nextInt(), 0);
 
-		double actualMaxFlow0 = algo.calcMaxFlow(g, net, source, target);
+		double actualMaxFlow0 = algo.calcMaxFlow(g, net, source, sink);
 		int actualMaxFlow = (int) actualMaxFlow0;
 		Assertions.assertEquals(actualMaxFlow, actualMaxFlow0, "not integral max flow in integral network");
 
@@ -161,17 +160,17 @@ public class MaxFlowTestUtils extends TestUtils {
 			vertexFlowOut[v] -= net.getFlowInt(e);
 		}
 		for (int v = 0; v < n; v++) {
-			int expected = v == source ? actualMaxFlow : v == target ? -actualMaxFlow : 0;
+			int expected = v == source ? actualMaxFlow : v == sink ? -actualMaxFlow : 0;
 			Assertions.assertEquals(expected, vertexFlowOut[v], "Invalid vertex(" + v + ") flow");
 		}
 
-		int expectedMaxFlow = (int) calcExpectedFlow(g, net, source, target);
+		int expectedMaxFlow = (int) calcExpectedFlow(g, net, source, sink);
 		Assertions.assertEquals(expectedMaxFlow, actualMaxFlow, "Unexpected max flow");
 	}
 
 	/* implementation taken from the Internet */
 
-	private static double calcExpectedFlow(Graph g, FlowNetwork net, int source, int target) {
+	private static double calcExpectedFlow(Graph g, FlowNetwork net, int source, int sink) {
 		int n = g.vertices().size();
 		double[][] capacities = new double[n][n];
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
@@ -180,7 +179,7 @@ public class MaxFlowTestUtils extends TestUtils {
 			capacities[u][v] += net.getCapacity(e);
 		}
 
-		return fordFulkerson(capacities, source, target);
+		return fordFulkerson(capacities, source, sink);
 	}
 
 	private static boolean bfs(double rGraph[][], int s, int t, int parent[]) {

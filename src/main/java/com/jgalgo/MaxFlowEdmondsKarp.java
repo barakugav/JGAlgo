@@ -6,30 +6,40 @@ import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
+/**
+ * The Edmonds-Karp algorithm for maximum flow.
+ * <p>
+ * The most known implementation that solve the maximum flow problem. It does so
+ * by finding augmenting paths from the source to the sink in the residual
+ * network, and saturating at least one edge in each path. This is a
+ * specification Ford–Fulkerson method, which chooses the shortest augmenting
+ * path in each iteration. It runs in {@code O(m}<sup>2</sup>{@code n)} time and
+ * linear space.
+ * <p>
+ * Based on the paper 'Theoretical improvements in algorithmic efficiency for
+ * network flow problems' by Jack Edmonds and Richard M Karp.
+ *
+ * @see <a href=
+ *      "https://en.wikipedia.org/wiki/Edmonds%E2%80%93Karp_algorithm">Wikipedia</a>
+ * @author Barak Ugav
+ */
 public class MaxFlowEdmondsKarp implements MaxFlow {
-
-	/*
-	 * O(m^2 n)
-	 */
 
 	private static final Object EdgeRefWeightKey = new Object();
 	private static final Object EdgeRevWeightKey = new Object();
 	private static final Object FlowWeightKey = new Object();
 	private static final Object CapacityWeightKey = new Object();
 
-	public MaxFlowEdmondsKarp() {
-	}
-
 	@Override
-	public double calcMaxFlow(Graph g, FlowNetwork net, int source, int target) {
+	public double calcMaxFlow(Graph g, FlowNetwork net, int source, int sink) {
 		if (!(g instanceof DiGraph))
 			throw new IllegalArgumentException("only directed graphs are supported");
-		return calcMaxFlow0((DiGraph) g, net, source, target);
+		return calcMaxFlow0((DiGraph) g, net, source, sink);
 	}
 
-	private static double calcMaxFlow0(DiGraph g0, FlowNetwork net, int source, int target) {
-		if (source == target)
-			throw new IllegalArgumentException("Source and target can't be the same vertices");
+	private static double calcMaxFlow0(DiGraph g0, FlowNetwork net, int source, int sink) {
+		if (source == sink)
+			throw new IllegalArgumentException("Source and sink can't be the same vertex");
 
 		int n = g0.vertices().size();
 		DiGraph g = new GraphArrayDirected(n);
@@ -42,7 +52,7 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 			int u = g0.edgeSource(e), v = g0.edgeTarget(e);
 			if (u == v)
 				continue;
-			if (u == target || v == source)
+			if (u == sink || v == source)
 				continue;
 			int e1 = g.addEdge(u, v);
 			int e2 = g.addEdge(v, u);
@@ -65,9 +75,9 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 			queue.clear();
 			visited.clear();
 			visited.set(source);
-			backtrack[target] = -1;
+			backtrack[sink] = -1;
 
-			// perform BFS and find a path of non saturated edges from source to target
+			// perform BFS and find a path of non saturated edges from source to sink
 			queue.enqueue(source);
 			bfs: while (!queue.isEmpty()) {
 				int u = queue.dequeueInt();
@@ -78,27 +88,27 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 					if (visited.get(v) || flow.getDouble(e) >= capacity.getDouble(e))
 						continue;
 					backtrack[v] = e;
-					if (v == target)
+					if (v == sink)
 						break bfs;
 					visited.set(v);
 					queue.enqueue(v);
 				}
 			}
 
-			// no path to target
-			if (backtrack[target] == -1)
+			// no path to sink
+			if (backtrack[sink] == -1)
 				break;
 
 			// find out what is the maximum flow we can pass
 			double f = Double.MAX_VALUE;
-			for (int p = target; p != source;) {
+			for (int p = sink; p != source;) {
 				int e = backtrack[p];
 				f = Math.min(f, capacity.getDouble(e) - flow.getDouble(e));
 				p = g.edgeSource(e);
 			}
 
 			// update flow of all edges on path
-			for (int p = target; p != source;) {
+			for (int p = sink; p != source;) {
 				int e = backtrack[p], rev = twin.getInt(e);
 				flow.set(e, Math.min(capacity.getDouble(e), flow.getDouble(e) + f));
 				flow.set(rev, Math.max(0, flow.getDouble(rev) - f));

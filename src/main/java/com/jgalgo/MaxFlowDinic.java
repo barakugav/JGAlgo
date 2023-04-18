@@ -13,13 +13,21 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 import it.unimi.dsi.fastutil.ints.IntStack;
 
+/**
+ * Dinic's algorithm for maximum flow.
+ * <p>
+ * The algorithm finds a maximum flow by repetitively finding a blocking flow in
+ * the residual network. It runs in {@code O(m n}<sup>2</sup>{@code )} time and
+ * use linear space.
+ * <p>
+ * Based on the paper 'Algorithm for solution of a problem of maximum flow in a
+ * network with power estimation' by Y. A. Dinitz (Dinic).
+ *
+ * @see <a href=
+ *      "https://en.wikipedia.org/wiki/Dinic%27s_algorithm">Wikipedia</a>
+ * @author Barak Ugav
+ */
 public class MaxFlowDinic implements MaxFlow {
-
-	/**
-	 * Dinic's max flow algorithm.
-	 *
-	 * O(m n^2)
-	 */
 
 	private Supplier<? extends GraphBuilder> layerGraphFactory = () -> GraphBuilder.newInstance("com.jgalgo.Linked");
 
@@ -28,23 +36,20 @@ public class MaxFlowDinic implements MaxFlow {
 	private static final Object FlowWeightKey = new Object();
 	private static final Object CapacityWeightKey = new Object();
 
-	public MaxFlowDinic() {
-	}
-
 	public void experimental_setLayerGraphFactory(Supplier<? extends GraphBuilder> factory) {
 		layerGraphFactory = Objects.requireNonNull(factory);
 	}
 
 	@Override
-	public double calcMaxFlow(Graph g, FlowNetwork net, int source, int target) {
+	public double calcMaxFlow(Graph g, FlowNetwork net, int source, int sink) {
 		if (!(g instanceof DiGraph))
 			throw new IllegalArgumentException("only directed graphs are supported");
-		return calcMaxFlow0((DiGraph) g, net, source, target);
+		return calcMaxFlow0((DiGraph) g, net, source, sink);
 	}
 
-	private double calcMaxFlow0(DiGraph g0, FlowNetwork net, int source, int target) {
-		if (source == target)
-			throw new IllegalArgumentException("Source and target can't be the same vertices");
+	private double calcMaxFlow0(DiGraph g0, FlowNetwork net, int source, int sink) {
+		if (source == sink)
+			throw new IllegalArgumentException("Source and sink can't be the same vertex");
 
 		final int n = g0.vertices().size();
 		DiGraph g = new GraphArrayDirected(n);
@@ -57,7 +62,7 @@ public class MaxFlowDinic implements MaxFlow {
 			int u = g0.edgeSource(e), v = g0.edgeTarget(e);
 			if (u == v)
 				continue;
-			if (u == target || v == source)
+			if (u == sink || v == source)
 				continue;
 			int e1 = g.addEdge(u, v);
 			int e2 = g.addEdge(v, u);
@@ -81,7 +86,7 @@ public class MaxFlowDinic implements MaxFlow {
 		for (;;) {
 			L.clearEdges();
 
-			/* Calc the sub graph non saturated edges from source to target using BFS */
+			/* Calc the sub graph non saturated edges from source to sink using BFS */
 			final int unvisited = Integer.MAX_VALUE;
 			Arrays.fill(level, unvisited);
 			bfsQueue.clear();
@@ -89,7 +94,7 @@ public class MaxFlowDinic implements MaxFlow {
 			bfsQueue.enqueue(source);
 			bfs: while (!bfsQueue.isEmpty()) {
 				int u = bfsQueue.dequeueInt();
-				if (u == target)
+				if (u == sink)
 					break bfs;
 				int lvl = level[u];
 				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
@@ -104,8 +109,8 @@ public class MaxFlowDinic implements MaxFlow {
 					bfsQueue.enqueue(v);
 				}
 			}
-			if (level[target] == unvisited)
-				break; /* All paths to target are saturated */
+			if (level[sink] == unvisited)
+				break; /* All paths to sink are saturated */
 
 			searchBlockingFlow: for (;;) {
 				IntStack path = new IntArrayList();
@@ -114,7 +119,7 @@ public class MaxFlowDinic implements MaxFlow {
 					EdgeIter eit = L.edgesOut(u);
 					if (!eit.hasNext()) {
 						if (path.isEmpty()) {
-							// no path from source to target
+							// no path from source to sink
 							break searchBlockingFlow;
 						} else {
 							// retreat
@@ -126,7 +131,7 @@ public class MaxFlowDinic implements MaxFlow {
 
 					int e = eit.nextInt();
 					path.push(e);
-					if (eit.v() == target) {
+					if (eit.v() == sink) {
 						// augment
 						break searchAugPath;
 					} else {

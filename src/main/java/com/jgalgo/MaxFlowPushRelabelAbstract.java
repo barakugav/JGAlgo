@@ -3,8 +3,6 @@ package com.jgalgo;
 import java.util.Arrays;
 import java.util.BitSet;
 
-import com.jgalgo.MaxFlow.FlowNetwork;
-import com.jgalgo.MaxFlow.FlowNetworkInt;
 import com.jgalgo.Utils.IterPickable;
 
 import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
@@ -24,7 +22,7 @@ class MaxFlowPushRelabelAbstract {
 
 		final FlowNetwork net;
 		final int source;
-		final int target;
+		final int sink;
 
 		final Weights.Int edgeRef;
 		final Weights.Int twin;
@@ -42,13 +40,13 @@ class MaxFlowPushRelabelAbstract {
 		private int maxLayer;
 		// private int minLayer;
 
-		Worker(DiGraph gOrig, FlowNetwork net, int source, int target) {
-			if (source == target)
-				throw new IllegalArgumentException("Source and target can't be the same vertices");
+		Worker(DiGraph gOrig, FlowNetwork net, int source, int sink) {
+			if (source == sink)
+				throw new IllegalArgumentException("Source and sink can't be the same vertex");
 			this.gOrig = gOrig;
 			this.net = net;
 			this.source = source;
-			this.target = target;
+			this.sink = sink;
 
 			n = gOrig.vertices().size();
 			g = new GraphArrayDirected(n);
@@ -59,7 +57,7 @@ class MaxFlowPushRelabelAbstract {
 				int u = gOrig.edgeSource(e), v = gOrig.edgeTarget(e);
 				if (u == v)
 					continue;
-				if (u == target || v == source)
+				if (u == sink || v == source)
 					continue;
 				int e1 = g.addEdge(u, v);
 				int e2 = g.addEdge(v, u);
@@ -82,7 +80,7 @@ class MaxFlowPushRelabelAbstract {
 
 		void recomputeLabels() {
 			// Global labels heuristic
-			// perform backward BFS from target on edges with flow < capacity (residual)
+			// perform backward BFS from sink on edges with flow < capacity (residual)
 			// perform another one from source to init unreachable vertices
 
 			layers.clear();
@@ -97,11 +95,11 @@ class MaxFlowPushRelabelAbstract {
 
 			Arrays.fill(label, n);
 
-			visited.set(target);
-			label[target] = 0;
+			visited.set(sink);
+			label[sink] = 0;
 			visited.set(source);
 			label[source] = n;
-			queue.enqueue(target);
+			queue.enqueue(sink);
 			while (!queue.isEmpty()) {
 				int v = queue.dequeueInt();
 				int vLabel = label[v];
@@ -220,7 +218,7 @@ class MaxFlowPushRelabelAbstract {
 				edgeIters[u] = new IterPickable.Int(g.edgesOut(u));
 
 			for (int root = 0; root < n; root++) {
-				if (vState[root] != Unvisited || !hasExcess(root) || root == source || root == target)
+				if (vState[root] != Unvisited || !hasExcess(root) || root == source || root == sink)
 					continue;
 				vState[root] = OnPath;
 				dfs: for (int u = root;;) {
@@ -241,17 +239,17 @@ class MaxFlowPushRelabelAbstract {
 							eliminateCycle(e);
 
 							// back out the DFS up to the first saturated edge
-							int restart = u;
+							int backOutTo = u;
 							for (v = g.edgeTarget(edgeIters[u].pickNext()); v != u; v = g.edgeTarget(e)) {
 								e = edgeIters[v].pickNext();
 								if (vState[v] != Unvisited && !isSaturated(e))
 									continue;
 								vState[g.edgeTarget(e)] = Unvisited;
 								if (vState[v] != Unvisited)
-									restart = v;
+									backOutTo = v;
 							}
-							if (restart != u) {
-								u = restart;
+							if (backOutTo != u) {
+								u = backOutTo;
 								edgeIters[u].nextInt();
 								break edgeIteration;
 							}
@@ -319,8 +317,8 @@ class MaxFlowPushRelabelAbstract {
 
 		private static final double EPS = 0.0001;
 
-		WorkerDouble(DiGraph gOrig, FlowNetwork net, int source, int target) {
-			super(gOrig, net, source, target);
+		WorkerDouble(DiGraph gOrig, FlowNetwork net, int source, int sink) {
+			super(gOrig, net, source, sink);
 
 			flow = g.addEdgesWeights(FlowWeightKey, double.class);
 			capacity = g.addEdgesWeights(CapacityWeightKey, double.class);
@@ -483,8 +481,8 @@ class MaxFlowPushRelabelAbstract {
 
 		final int[] excess;
 
-		WorkerInt(DiGraph gOrig, FlowNetworkInt net, int source, int target) {
-			super(gOrig, net, source, target);
+		WorkerInt(DiGraph gOrig, FlowNetwork.Int net, int source, int sink) {
+			super(gOrig, net, source, sink);
 
 			flow = g.addEdgesWeights(FlowWeightKey, int.class);
 			capacity = g.addEdgesWeights(CapacityWeightKey, int.class);
@@ -599,7 +597,7 @@ class MaxFlowPushRelabelAbstract {
 
 		@Override
 		double constructResult() {
-			FlowNetworkInt net = (FlowNetworkInt) this.net;
+			FlowNetwork.Int net = (FlowNetwork.Int) this.net;
 			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 				int e = it.nextInt();
 				if (isOriginalEdge(e))

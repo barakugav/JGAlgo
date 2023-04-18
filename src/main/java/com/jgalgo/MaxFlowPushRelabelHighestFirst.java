@@ -5,28 +5,51 @@ import java.util.BitSet;
 import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
+/**
+ * The push-relabel maximum flow algorithm with highest-first ordering.
+ * <p>
+ * The push-relabel algorithm maintain a "preflow" and gradually converts it
+ * into a maximum flow by moving flow locally between neighboring nodes using
+ * <i>push</i> operations under the guidance of an admissible network maintained
+ * by <i>relabel</i> operations.
+ * <p>
+ * Different variants of the push relabel algorithm exists, mostly different in
+ * the order the vertices with excess (more in-going than out-going flow) are
+ * examined. This implementation order these vertices by highest-first order,
+ * namely it examine vertices with higher 'label' first, and achieve a running
+ * time of {@code O(n}<sup>2</sup> <span>&#8730;</span> {@code m)} using linear
+ * space.
+ * <p>
+ * Heuristics are crucial for the practical running time of push-relabel
+ * algorithm, and this implementation uses the 'global relabeling' and 'gap'
+ * heuristics.
+ *
+ * @see <a href=
+ *      "https://en.wikipedia.org/wiki/Push%E2%80%93relabel_maximum_flow_algorithm">Wikipedia</a>
+ * @see MaxFlowPushRelabel
+ * @see MaxFlowPushRelabelToFront
+ * @see MaxFlowPushRelabelLowestFirst
+ * @author Barak Ugav
+ */
 public class MaxFlowPushRelabelHighestFirst implements MaxFlow {
 
-	public MaxFlowPushRelabelHighestFirst() {
-	}
-
 	@Override
-	public double calcMaxFlow(Graph g, FlowNetwork net, int source, int target) {
+	public double calcMaxFlow(Graph g, FlowNetwork net, int source, int sink) {
 		if (!(g instanceof DiGraph))
 			throw new IllegalArgumentException("only directed graphs are supported");
-		if (net instanceof FlowNetworkInt) {
-			return new WorkerInt((DiGraph) g, (FlowNetworkInt) net, source, target).calcMaxFlow();
+		if (net instanceof FlowNetwork.Int) {
+			return new WorkerInt((DiGraph) g, (FlowNetwork.Int) net, source, sink).calcMaxFlow();
 		} else {
-			return new WorkerDouble((DiGraph) g, net, source, target).calcMaxFlow();
+			return new WorkerDouble((DiGraph) g, net, source, sink).calcMaxFlow();
 		}
 	}
 
-	private class WorkerDouble extends MaxFlowPushRelabelAbstract.WorkerDouble {
+	private static class WorkerDouble extends MaxFlowPushRelabelAbstract.WorkerDouble {
 
 		final ActiveQueue active;
 
-		WorkerDouble(DiGraph gOrig, FlowNetwork net, int source, int target) {
-			super(gOrig, net, source, target);
+		WorkerDouble(DiGraph gOrig, FlowNetwork net, int source, int sink) {
+			super(gOrig, net, source, sink);
 			active = new ActiveQueue(this);
 		}
 
@@ -59,12 +82,12 @@ public class MaxFlowPushRelabelHighestFirst implements MaxFlow {
 		}
 	}
 
-	private class WorkerInt extends MaxFlowPushRelabelAbstract.WorkerInt {
+	private static class WorkerInt extends MaxFlowPushRelabelAbstract.WorkerInt {
 
 		final ActiveQueue active;
 
-		WorkerInt(DiGraph gOrig, FlowNetworkInt net, int source, int target) {
-			super(gOrig, net, source, target);
+		WorkerInt(DiGraph gOrig, FlowNetwork.Int net, int source, int sink) {
+			super(gOrig, net, source, sink);
 			active = new ActiveQueue(this);
 		}
 
@@ -105,7 +128,7 @@ public class MaxFlowPushRelabelHighestFirst implements MaxFlow {
 
 		private final int[] label;
 		private final int source;
-		private final int target;
+		private final int sink;
 
 		private final IntPriorityQueue[] queues;
 		// Upper bound for the highest label, a.k.a an upper bound for the highest entry
@@ -119,16 +142,16 @@ public class MaxFlowPushRelabelHighestFirst implements MaxFlow {
 
 			label = worker.label;
 			source = worker.source;
-			target = worker.target;
+			sink = worker.sink;
 
 			queues = new IntPriorityQueue[n];
 			for (int k = 1; k < n; k++)
 				queues[k] = new IntArrayFIFOQueue();
 
-			// set source and target as 'active' to prevent them from entering the active
+			// set source and sink as 'active' to prevent them from entering the active
 			// queue
 			isActive.set(source);
-			isActive.set(target);
+			isActive.set(sink);
 		}
 
 		void init() {
@@ -138,7 +161,7 @@ public class MaxFlowPushRelabelHighestFirst implements MaxFlow {
 			level = n - 1;
 			int n = g.vertices().size();
 			for (int u = 0; u < n; u++)
-				if (isActive.get(u) && u != source && u != target) {
+				if (isActive.get(u) && u != source && u != sink) {
 					int l = label[u];
 					if (l < n)
 						queues[l].enqueue(u);

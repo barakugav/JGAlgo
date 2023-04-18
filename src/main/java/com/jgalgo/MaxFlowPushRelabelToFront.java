@@ -3,20 +3,43 @@ package com.jgalgo;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntIterators;
 
+/**
+ * The push-relabel maximum flow algorithm with relabel-to-front ordering.
+ * <p>
+ * The push-relabel algorithm maintain a "preflow" and gradually converts it
+ * into a maximum flow by moving flow locally between neighboring nodes using
+ * <i>push</i> operations under the guidance of an admissible network maintained
+ * by <i>relabel</i> operations.
+ * <p>
+ * Different variants of the push relabel algorithm exists, mostly different in
+ * the order the vertices with excess (more in-going than out-going flow) are
+ * examined. This implementation order these vertices by maintaining the
+ * vertices in a linked list, and moving a vertex to the front of the list each
+ * time its relabel. Iterating the list actually traverse the vertices in a
+ * topological order with respect to the admissible network. The algorithm runs
+ * in {@code O(n}<sup>3</sup> {@code )} time and uses linear space.
+ * <p>
+ * Heuristics are crucial for the practical running time of push-relabel
+ * algorithm, and this implementation uses the 'global relabeling' and 'gap'
+ * heuristics.
+ *
+ * @see <a href=
+ *      "https://en.wikipedia.org/wiki/Push%E2%80%93relabel_maximum_flow_algorithm">Wikipedia</a>
+ * @see MaxFlowPushRelabel
+ * @see MaxFlowPushRelabelHighestFirst
+ * @see MaxFlowPushRelabelLowestFirst
+ * @author Barak Ugav
+ */
 public class MaxFlowPushRelabelToFront implements MaxFlow {
 
-	/**
-	 * O(n^3)
-	 */
-
 	@Override
-	public double calcMaxFlow(Graph g, FlowNetwork net, int source, int target) {
+	public double calcMaxFlow(Graph g, FlowNetwork net, int source, int sink) {
 		if (!(g instanceof DiGraph))
 			throw new IllegalArgumentException("only directed graphs are supported");
-		if (net instanceof FlowNetworkInt) {
-			return new WorkerInt((DiGraph) g, (FlowNetworkInt) net, source, target).calcMaxFlow();
+		if (net instanceof FlowNetwork.Int) {
+			return new WorkerInt((DiGraph) g, (FlowNetwork.Int) net, source, sink).calcMaxFlow();
 		} else {
-			return new WorkerDouble((DiGraph) g, net, source, target).calcMaxFlow();
+			return new WorkerDouble((DiGraph) g, net, source, sink).calcMaxFlow();
 		}
 	}
 
@@ -24,8 +47,8 @@ public class MaxFlowPushRelabelToFront implements MaxFlow {
 
 		final VertexList list;
 
-		WorkerDouble(DiGraph gOrig, FlowNetwork net, int source, int target) {
-			super(gOrig, net, source, target);
+		WorkerDouble(DiGraph gOrig, FlowNetwork net, int source, int sink) {
+			super(gOrig, net, source, sink);
 			list = new VertexList(this);
 		}
 
@@ -66,8 +89,8 @@ public class MaxFlowPushRelabelToFront implements MaxFlow {
 
 		final VertexList list;
 
-		WorkerInt(DiGraph gOrig, FlowNetworkInt net, int source, int target) {
-			super(gOrig, net, source, target);
+		WorkerInt(DiGraph gOrig, FlowNetwork.Int net, int source, int sink) {
+			super(gOrig, net, source, sink);
 			list = new VertexList(this);
 		}
 
