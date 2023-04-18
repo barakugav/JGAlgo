@@ -51,15 +51,15 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 	}
 
 	@Override
-	public double calcMaxFlow(Graph g, FlowNetwork net, int source, int target) {
+	public double calcMaxFlow(Graph g, FlowNetwork net, int source, int sink) {
 <span class="pc bpc" id="L55" title="1 of 2 branches missed.">		if (!(g instanceof DiGraph))</span>
 <span class="nc" id="L56">			throw new IllegalArgumentException(&quot;only directed graphs are supported&quot;);</span>
-<span class="fc" id="L57">		return calcMaxFlow0((DiGraph) g, net, source, target);</span>
+<span class="fc" id="L57">		return calcMaxFlow0((DiGraph) g, net, source, sink);</span>
 	}
 
-	private double calcMaxFlow0(DiGraph g0, FlowNetwork net, int source, int target) {
-<span class="pc bpc" id="L61" title="1 of 2 branches missed.">		if (source == target)</span>
-<span class="nc" id="L62">			throw new IllegalArgumentException(&quot;Source and target can't be the same vertices&quot;);</span>
+	private double calcMaxFlow0(DiGraph g0, FlowNetwork net, int source, int sink) {
+<span class="pc bpc" id="L61" title="1 of 2 branches missed.">		if (source == sink)</span>
+<span class="nc" id="L62">			throw new IllegalArgumentException(&quot;Source and sink can't be the same vertex&quot;);</span>
 <span class="fc" id="L63">		debug.println(&quot;\t&quot;, getClass().getSimpleName());</span>
 
 <span class="fc" id="L65">		double maxCapacity = 100;</span>
@@ -87,12 +87,12 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 <span class="fc" id="L87">		IntPriorityQueue toCut = new IntArrayFIFOQueue();</span>
 
 		/* Init all vertices distances */
-<span class="fc" id="L90">		SSSP.Result initD = new SSSPCardinality().calcDistances(g, target);</span>
+<span class="fc" id="L90">		SSSP.Result initD = new SSSPCardinality().calcDistances(g, sink);</span>
 <span class="fc bfc" id="L91" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
-<span class="fc bfc" id="L92" title="All 4 branches covered.">			if (u != source &amp;&amp; u != target)</span>
-<span class="fc" id="L93">				vertexData[u].d = (int) initD.distance(target);</span>
+<span class="fc bfc" id="L92" title="All 4 branches covered.">			if (u != source &amp;&amp; u != sink)</span>
+<span class="fc" id="L93">				vertexData[u].d = (int) initD.distance(sink);</span>
 <span class="fc" id="L94">		vertexData[source].d = n;</span>
-<span class="fc" id="L95">		vertexData[target].d = 0;</span>
+<span class="fc" id="L95">		vertexData[sink].d = 0;</span>
 
 		/* Init all vertices iterators */
 <span class="fc bfc" id="L98" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
@@ -152,7 +152,7 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 
 <span class="fc bfc" id="L153" title="All 2 branches covered.">		while (!active.isEmpty()) {</span>
 <span class="fc" id="L154">			Vertex U = active.pop();</span>
-<span class="fc bfc" id="L155" title="All 4 branches covered.">			if (U.v == source || U.v == target)</span>
+<span class="fc bfc" id="L155" title="All 4 branches covered.">			if (U.v == source || U.v == sink)</span>
 <span class="fc" id="L156">				continue;</span>
 <span class="pc bpc" id="L157" title="1 of 2 branches missed.">			assert U.dtNode.getParent() == null;</span>
 <span class="fc" id="L158">			IterPickable.Int it = U.edges;</span>
@@ -188,7 +188,7 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 <span class="fc" id="L188">					pushFlow.accept(data, f);</span>
 <span class="fc" id="L189">					U.excess -= f;</span>
 <span class="fc" id="L190">					V.excess += f;</span>
-<span class="fc bfc" id="L191" title="All 4 branches covered.">					if (V.v == source || V.v == target)</span>
+<span class="fc bfc" id="L191" title="All 4 branches covered.">					if (V.v == source || V.v == sink)</span>
 <span class="fc" id="L192">						continue;</span>
 <span class="pc bpc" id="L193" title="1 of 2 branches missed.">					assert V.excess &gt; 0;</span>
 <span class="fc" id="L194">					W = V;</span>
