@@ -4,28 +4,28 @@ import java.util.NoSuchElementException;
 
 <span class="nc" id="L5">class EdgeIterImpl {</span>
 
-<span class="nc" id="L7">    public static final EdgeIter Empty = new EdgeIter() {</span>
+<span class="nc" id="L7">	public static final EdgeIter Empty = new EdgeIter() {</span>
 
-        @Override
-        public int nextInt() {
-<span class="nc" id="L11">            throw new NoSuchElementException();</span>
-        }
+		@Override
+		public int nextInt() {
+<span class="nc" id="L11">			throw new NoSuchElementException();</span>
+		}
 
-        @Override
-        public boolean hasNext() {
-<span class="nc" id="L16">            return false;</span>
-        }
+		@Override
+		public boolean hasNext() {
+<span class="nc" id="L16">			return false;</span>
+		}
 
-        @Override
-        public int u() {
-<span class="nc" id="L21">            throw new NoSuchElementException();</span>
-        }
+		@Override
+		public int u() {
+<span class="nc" id="L21">			throw new NoSuchElementException();</span>
+		}
 
-        @Override
-        public int v() {
-<span class="nc" id="L26">            throw new NoSuchElementException();</span>
-        }
-    };
+		@Override
+		public int v() {
+<span class="nc" id="L26">			throw new NoSuchElementException();</span>
+		}
+	};
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
