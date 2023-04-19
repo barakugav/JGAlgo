@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TPM.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jgalgo</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">TPM.java</span></div><h1>TPM.java</h1><pre class="source lang-java linenums">package com.jgalgo;
+
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+
+/* Tree-Path Maxima */
+public interface TPM {
+
+	/**
+	 * Calculate all tree path maxima (TPM)
+	 *
+	 * Given a tree, weight function and queries pairs of vertices, the function
+	 * will calculate for each query (u,v) the edge with the maximum weight in the
+	 * path from u to v in the given tree. This can be used to validate MST.
+	 *
+	 * @param t          a tree
+	 * @param w          a weight function
+	 * @param queries    array of queries in format [u1, v1, u2, v2, ...]
+	 * @param queriesNum number of queries in the queries array
+	 * @return array of edges in the same size as queriesNum, where each edge is the
+	 *         edge with maximum weight in the path from u to v in the tree.
+	 */
+	public int[] calcTPM(Graph t, EdgeWeightFunc w, int[] queries, int queriesNum);
+
+	/**
+	 * Verify that the given edges actually form a MST of g
+	 *
+	 * The verification is done by calculating for each original edge in g the
+	 * maximum edge in the given MST. If all of the edges which are not in the MST
+	 * have a bigger weight than the maximum one in the path of the MST, the MST is
+	 * valid.
+	 *
+	 * @param g        a undirected graph
+	 * @param w        weight function
+	 * @param mstEdges collection of edges that form a MST
+	 * @param tpmAlgo  tree path maximum algorithm, used for verification. The
+	 *                 efficiency of the verification highly depends on this
+	 *                 algorithm.
+	 * @return true if the collection of edges form a MST of g
+	 */
+	public static boolean verifyMST(UGraph g, EdgeWeightFunc w, IntCollection mstEdges, TPM tpmAlgo) {
+<span class="fc" id="L42">		int n = g.vertices().size();</span>
+<span class="fc" id="L43">		UGraph mst = new GraphArrayUndirected(n);</span>
+<span class="fc" id="L44">		Weights.Int edgeRef = mst.addEdgesWeights(&quot;edgeRef&quot;, int.class);</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">		for (IntIterator it = mstEdges.iterator(); it.hasNext();) {</span>
+<span class="fc" id="L46">			int e = it.nextInt();</span>
+<span class="fc" id="L47">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+<span class="fc" id="L48">			int ne = mst.addEdge(u, v);</span>
+<span class="fc" id="L49">			edgeRef.set(ne, e);</span>
+<span class="fc" id="L50">		}</span>
+
+<span class="fc" id="L52">		return verifyMST(g, w, mst, tpmAlgo, edgeRef);</span>
+	}
+
+	/**
+	 * Verify that the given MST is actually a MST of g
+	 *
+	 * The verification is done by calculating for each original edge in g the
+	 * maximum edge in the given MST. If all of the edges which are not in the MST
+	 * have a bigger weight than the maximum one in the path of the MST, the MST is
+	 * valid.
+	 *
+	 * @param g       a undirected graph
+	 * @param w       weight function
+	 * @param mst     spanning tree of g
+	 * @param tpmAlgo tree path maximum algorithm, used for verification. The
+	 *                efficiency of the verification highly depends on this
+	 *                algorithm.
+	 * @return true if the given spanning tree is a MST of g
+	 */
+	public static boolean verifyMST(Graph g, EdgeWeightFunc w, Graph mst, TPM tpmAlgo, Weights.Int edgeRef) {
+<span class="pc bpc" id="L72" title="1 of 2 branches missed.">		if (g instanceof DiGraph)</span>
+<span class="nc" id="L73">			throw new IllegalArgumentException(&quot;Directed graphs are not supported&quot;);</span>
+<span class="pc bpc" id="L74" title="1 of 2 branches missed.">		if (!Trees.isTree((UGraph) mst))</span>
+<span class="nc" id="L75">			return false;</span>
+
+<span class="fc" id="L77">		EdgeWeightFunc w0 = e -&gt; w.weight(edgeRef.getInt(e));</span>
+<span class="fc" id="L78">		int m = g.edges().size();</span>
+<span class="fc" id="L79">		int[] queries = new int[m * 2];</span>
+
+<span class="fc" id="L81">		int i = 0;</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">		for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
+<span class="fc" id="L83">			int e = it.nextInt();</span>
+<span class="fc" id="L84">			queries[i * 2] = g.edgeSource(e);</span>
+<span class="fc" id="L85">			queries[i * 2 + 1] = g.edgeTarget(e);</span>
+<span class="fc" id="L86">			i++;</span>
+<span class="fc" id="L87">		}</span>
+
+<span class="fc" id="L89">		int[] tpmResults = tpmAlgo.calcTPM(mst, w0, queries, m);</span>
+
+<span class="fc" id="L91">		i = 0;</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">		for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
+<span class="fc" id="L93">			int e = it.nextInt();</span>
+<span class="fc" id="L94">			int mstEdge = tpmResults[i++];</span>
+<span class="pc bpc" id="L95" title="1 of 4 branches missed.">			if (mstEdge == -1 || w.weight(e) &lt; w0.weight(mstEdge))</span>
+<span class="fc" id="L96">				return false;</span>
+<span class="fc" id="L97">		}</span>
+<span class="fc" id="L98">		return true;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

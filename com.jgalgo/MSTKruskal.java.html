@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MSTKruskal.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jgalgo</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">MSTKruskal.java</span></div><h1>MSTKruskal.java</h1><pre class="source lang-java linenums">package com.jgalgo;
+
+import java.util.Objects;
+import java.util.function.IntFunction;
+
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntLists;
+
+/**
+ * Kruskal's minimum spanning tree algorithm.
+ * &lt;p&gt;
+ * The algorithm first sort all the edges of the graph by their weight, and then
+ * examine them in increasing weight order. For each examined edge, if it
+ * connects two connectivity components that were not connected beforehand, the
+ * edge is added to the forest. The algorithm terminate after all edges were
+ * examined.
+ * &lt;p&gt;
+ * The running time of the algorithm is {@code O(m log n)} and it uses linear
+ * time. This algorithm perform good in practice and its running time compete
+ * with other algorithms such as {@link MSTPrim}, which have better time bounds
+ * in theory. Note that only undirected graphs are supported.
+ * &lt;p&gt;
+ * Based on &quot;On the shortest spanning subtree of a graph and the traveling
+ * salesman problem&quot; by Kruskal, J. B. (1956) in the book &quot;Proceedings of the
+ * American Mathematical Society&quot;.
+ *
+ * @see &lt;a href=
+ *      &quot;https://en.wikipedia.org/wiki/Kruskal%27s_algorithm&quot;&gt;Wikipedia&lt;/a&gt;
+ * @author Barak Ugav
+ */
+<span class="fc" id="L33">public class MSTKruskal implements MST {</span>
+
+<span class="fc" id="L35">	private IntFunction&lt;? extends UnionFind&gt; unionFindBuilder = UnionFindArray::new;</span>
+
+	public void experimental_setUnionFindBuilder(IntFunction&lt;? extends UnionFind&gt; builder) {
+<span class="nc" id="L38">		unionFindBuilder = Objects.requireNonNull(builder);</span>
+<span class="nc" id="L39">	}</span>
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @throws IllegalArgumentException if the graph is not undirected
+	 */
+	@Override
+	public IntCollection computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
+<span class="pc bpc" id="L48" title="1 of 2 branches missed.">		if (!(g instanceof UGraph))</span>
+<span class="nc" id="L49">			throw new IllegalArgumentException(&quot;only undirected graphs are supported&quot;);</span>
+<span class="fc" id="L50">		int n = g.vertices().size();</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">		if (n == 0)</span>
+<span class="fc" id="L52">			return IntLists.emptyList();</span>
+
+		/* sort edges */
+<span class="fc" id="L55">		int[] edges = g.edges().toIntArray();</span>
+<span class="fc" id="L56">		IntArrays.parallelQuickSort(edges, w);</span>
+
+		/* create union find data structure for each vertex */
+<span class="fc" id="L59">		UnionFind uf = unionFindBuilder.apply(n);</span>
+
+		/* iterate over the edges and build the MST */
+<span class="fc" id="L62">		IntCollection mst = new IntArrayList(n - 1);</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">		for (int e : edges) {</span>
+<span class="fc" id="L64">			int u = g.edgeSource(e);</span>
+<span class="fc" id="L65">			int v = g.edgeTarget(e);</span>
+
+<span class="fc bfc" id="L67" title="All 2 branches covered.">			if (uf.find(u) != uf.find(v)) {</span>
+<span class="fc" id="L68">				uf.union(u, v);</span>
+<span class="fc" id="L69">				mst.add(e);</span>
+			}
+		}
+<span class="fc" id="L72">		return mst;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

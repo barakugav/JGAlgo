@@ -32,7 +32,7 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 <span class="fc" id="L32">				weights.set(g.addEdge(u, v), distances[u][v]);</span>
 
 		/* Calculate MST */
-<span class="fc" id="L35">		IntCollection mst = new MSTPrim1957().calcMST(g, weights);</span>
+<span class="fc" id="L35">		IntCollection mst = new MSTPrim().computeMinimumSpanningTree(g, weights);</span>
 
 		/*
 		 * Build graph for the matching calculation, containing only vertices with odd
