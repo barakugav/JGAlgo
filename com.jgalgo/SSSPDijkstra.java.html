@@ -2,83 +2,110 @@
 
 import java.util.Arrays;
 
+/**
+ * Dijkstra's algorithm for Single Source Shortest Path (SSSP).
+ * &lt;p&gt;
+ * Compute the shortest paths from a single source to all other vertices in
+ * {@code O(m + n log n)} time, using {@link HeapReferenceable} with
+ * {@code O(1)} time for
+ * {@link HeapReferenceable#decreaseKey(HeapReference, Object)} operations.
+ * &lt;p&gt;
+ * Only positive edge weights are supported. This implementation should be the
+ * first choice for {@link SSSP} with positive weights. For negative weights use
+ * {@link SSSPBellmanFord} for floating points or {@link SSSPGoldberg} for
+ * integers.
+ *
+ * &lt;p&gt;
+ * Based on 'A note on two problems in connexion with graphs' by E. W. Dijkstra
+ * (1959). A 'note'??!! this guy changed the world, and he publish it as a
+ * 'note'.
+ * @see &lt;a href=
+ *      &quot;https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm&quot;&gt;Wikipedia&lt;/a&gt;
+ * @author Barak Ugav
+ */
 public class SSSPDijkstra implements SSSP {
 
-	/*
-	 * O(m + n log n)
-	 */
-
 	private int allocSize;
-	private final HeapReferenceable&lt;HeapElm&gt; heap;
+	private HeapReferenceable&lt;HeapElm&gt; heap;
 	private HeapReference&lt;HeapElm&gt;[] verticesPtrs;
 
-	public SSSPDijkstra() {
-<span class="fc" id="L16">		this(HeapPairing::new);</span>
-<span class="fc" id="L17">	}</span>
+<span class="fc" id="L32">	public SSSPDijkstra() {</span>
+<span class="fc" id="L33">		allocSize = 0;</span>
+<span class="fc" id="L34">		heap = new HeapPairing&lt;&gt;();</span>
+<span class="fc" id="L35">	}</span>
 
-<span class="fc" id="L19">	public SSSPDijkstra(HeapReferenceable.Builder heapBuilder) {</span>
-<span class="fc" id="L20">		allocSize = 0;</span>
-<span class="fc" id="L21">		heap = heapBuilder.build();</span>
-<span class="fc" id="L22">	}</span>
+	/**
+	 * Set the implementation of the heap used by this algorithm.
+	 *
+	 * @param heapBuilder a builder for heaps used by this algorithm
+	 */
+	public void setHeapBuilder(HeapReferenceable.Builder heapBuilder) {
+<span class="nc" id="L43">		heap = heapBuilder.build();</span>
+<span class="nc" id="L44">	}</span>
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	private void memAlloc(int n) {
-<span class="fc bfc" id="L26" title="All 2 branches covered.">		if (allocSize &lt; n) {</span>
-<span class="fc" id="L27">			verticesPtrs = new HeapReference[n];</span>
-<span class="fc" id="L28">			allocSize = n;</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">		if (allocSize &lt; n) {</span>
+<span class="fc" id="L49">			verticesPtrs = new HeapReference[n];</span>
+<span class="fc" id="L50">			allocSize = n;</span>
 		}
-<span class="fc" id="L30">	}</span>
+<span class="fc" id="L52">	}</span>
 
 	private void memClear(int n) {
-<span class="fc" id="L33">		heap.clear();</span>
-<span class="fc" id="L34">		Arrays.fill(verticesPtrs, 0, n, null);</span>
-<span class="fc" id="L35">	}</span>
+<span class="fc" id="L55">		heap.clear();</span>
+<span class="fc" id="L56">		Arrays.fill(verticesPtrs, 0, n, null);</span>
+<span class="fc" id="L57">	}</span>
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @throws IllegalArgumentException if one of the edge weights is negative
+	 */
 	@Override
-	public SSSP.Result calcDistances(Graph g, EdgeWeightFunc w, int source) {
-<span class="fc" id="L39">		int n = g.vertices().size();</span>
+	public SSSP.Result computeShortestPaths(Graph g, EdgeWeightFunc w, int source) {
+<span class="fc" id="L66">		int n = g.vertices().size();</span>
 
-<span class="fc" id="L41">		memAlloc(n);</span>
-<span class="fc" id="L42">		HeapReferenceable&lt;HeapElm&gt; heap = this.heap;</span>
-<span class="fc" id="L43">		HeapReference&lt;HeapElm&gt;[] verticesPtrs = this.verticesPtrs;</span>
+<span class="fc" id="L68">		memAlloc(n);</span>
+<span class="fc" id="L69">		HeapReferenceable&lt;HeapElm&gt; heap = this.heap;</span>
+<span class="fc" id="L70">		HeapReference&lt;HeapElm&gt;[] verticesPtrs = this.verticesPtrs;</span>
 
-<span class="fc" id="L45">		SSSPResultImpl res = new SSSPResultImpl(g, source);</span>
-<span class="fc" id="L46">		res.distances[source] = 0;</span>
+<span class="fc" id="L72">		SSSPResultImpl res = new SSSPResultImpl(g, source);</span>
+<span class="fc" id="L73">		res.distances[source] = 0;</span>
 
-<span class="fc" id="L48">		for (int u = source;;) {</span>
-<span class="fc bfc" id="L49" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
-<span class="fc" id="L50">				int e = eit.nextInt();</span>
-<span class="fc" id="L51">				int v = eit.v();</span>
-<span class="fc bfc" id="L52" title="All 2 branches covered.">				if (res.distances[v] != Double.POSITIVE_INFINITY)</span>
-<span class="fc" id="L53">					continue;</span>
-<span class="fc" id="L54">				double ws = w.weight(e);</span>
-<span class="pc bpc" id="L55" title="1 of 2 branches missed.">				if (ws &lt; 0)</span>
-<span class="nc" id="L56">					throw new IllegalArgumentException(&quot;negative weights are not supported&quot;);</span>
-<span class="fc" id="L57">				double distance = res.distances[u] + ws;</span>
+<span class="fc" id="L75">		for (int u = source;;) {</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
+<span class="fc" id="L77">				int e = eit.nextInt();</span>
+<span class="fc" id="L78">				int v = eit.v();</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">				if (res.distances[v] != Double.POSITIVE_INFINITY)</span>
+<span class="fc" id="L80">					continue;</span>
+<span class="fc" id="L81">				double ws = w.weight(e);</span>
+<span class="pc bpc" id="L82" title="1 of 2 branches missed.">				if (ws &lt; 0)</span>
+<span class="nc" id="L83">					throw new IllegalArgumentException(&quot;negative weights are not supported&quot;);</span>
+<span class="fc" id="L84">				double distance = res.distances[u] + ws;</span>
 
-<span class="fc" id="L59">				HeapReference&lt;HeapElm&gt; vPtr = verticesPtrs[v];</span>
-<span class="fc bfc" id="L60" title="All 2 branches covered.">				if (vPtr == null) {</span>
-<span class="fc" id="L61">					verticesPtrs[v] = heap.insert(new HeapElm(distance, v));</span>
-<span class="fc" id="L62">					res.backtrack[v] = e;</span>
+<span class="fc" id="L86">				HeapReference&lt;HeapElm&gt; vPtr = verticesPtrs[v];</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">				if (vPtr == null) {</span>
+<span class="fc" id="L88">					verticesPtrs[v] = heap.insert(new HeapElm(distance, v));</span>
+<span class="fc" id="L89">					res.backtrack[v] = e;</span>
 				} else {
-<span class="fc" id="L64">					HeapElm ptr = vPtr.get();</span>
-<span class="fc bfc" id="L65" title="All 2 branches covered.">					if (distance &lt; ptr.distance) {</span>
-<span class="fc" id="L66">						ptr.distance = distance;</span>
-<span class="fc" id="L67">						res.backtrack[v] = e;</span>
-<span class="fc" id="L68">						heap.decreaseKey(vPtr, ptr);</span>
+<span class="fc" id="L91">					HeapElm ptr = vPtr.get();</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">					if (distance &lt; ptr.distance) {</span>
+<span class="fc" id="L93">						ptr.distance = distance;</span>
+<span class="fc" id="L94">						res.backtrack[v] = e;</span>
+<span class="fc" id="L95">						heap.decreaseKey(vPtr, ptr);</span>
 					}
 				}
-<span class="fc" id="L71">			}</span>
+<span class="fc" id="L98">			}</span>
 
-<span class="fc bfc" id="L73" title="All 2 branches covered.">			if (heap.isEmpty())</span>
-<span class="fc" id="L74">				break;</span>
-<span class="fc" id="L75">			HeapElm next = heap.extractMin();</span>
-<span class="fc" id="L76">			res.distances[next.v] = next.distance;</span>
-<span class="fc" id="L77">			u = next.v;</span>
-<span class="fc" id="L78">		}</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">			if (heap.isEmpty())</span>
+<span class="fc" id="L101">				break;</span>
+<span class="fc" id="L102">			HeapElm next = heap.extractMin();</span>
+<span class="fc" id="L103">			res.distances[next.v] = next.distance;</span>
+<span class="fc" id="L104">			u = next.v;</span>
+<span class="fc" id="L105">		}</span>
 
-<span class="fc" id="L80">		memClear(n);</span>
-<span class="fc" id="L81">		return res;</span>
+<span class="fc" id="L107">		memClear(n);</span>
+<span class="fc" id="L108">		return res;</span>
 	}
 
 	private static class HeapElm implements Comparable&lt;HeapElm&gt; {
@@ -86,14 +113,14 @@ public class SSSPDijkstra implements SSSP {
 		double distance;
 		final int v;
 
-<span class="fc" id="L89">		HeapElm(double distance, int v) {</span>
-<span class="fc" id="L90">			this.distance = distance;</span>
-<span class="fc" id="L91">			this.v = v;</span>
-<span class="fc" id="L92">		}</span>
+<span class="fc" id="L116">		HeapElm(double distance, int v) {</span>
+<span class="fc" id="L117">			this.distance = distance;</span>
+<span class="fc" id="L118">			this.v = v;</span>
+<span class="fc" id="L119">		}</span>
 
 		@Override
 		public int compareTo(HeapElm o) {
-<span class="fc" id="L96">			return Double.compare(distance, o.distance);</span>
+<span class="fc" id="L123">			return Double.compare(distance, o.distance);</span>
 		}
 
 	}

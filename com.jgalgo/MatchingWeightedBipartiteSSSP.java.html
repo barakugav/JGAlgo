@@ -87,13 +87,13 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 
 		// Init state may include negative distances, use Bellman Ford to calculate
 		// first potential values
-<span class="fc" id="L90">		SSSP.Result sp = new SSSPBellmanFord().calcDistances(g, e -&gt; edgeRef.get(e).w, s);</span>
+<span class="fc" id="L90">		SSSP.Result sp = new SSSPBellmanFord().computeShortestPaths(g, e -&gt; edgeRef.get(e).w, s);</span>
 <span class="fc bfc" id="L91" title="All 2 branches covered.">		for (int v = 0; v &lt; n + 2; v++)</span>
 <span class="fc" id="L92">			potential[v] = sp.distance(v);</span>
 
 		for (;;) {
-<span class="fc" id="L95">			sp = ssspAlgo.calcDistances(g, spWeightFunc, s);</span>
-<span class="fc" id="L96">			Path augPath = sp.getPathTo(t);</span>
+<span class="fc" id="L95">			sp = ssspAlgo.computeShortestPaths(g, spWeightFunc, s);</span>
+<span class="fc" id="L96">			Path augPath = sp.getPath(t);</span>
 <span class="fc" id="L97">			double augPathWeight = -(sp.distance(t) + potential[t]);</span>
 <span class="pc bpc" id="L98" title="1 of 6 branches missed.">			if (augPath == null || augPathWeight &gt;= RemovedEdgeWeight || augPathWeight &lt; 0)</span>
 <span class="fc" id="L99">				break;</span>

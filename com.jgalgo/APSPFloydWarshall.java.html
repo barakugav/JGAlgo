@@ -16,11 +16,11 @@ import it.unimi.dsi.fastutil.ints.IntList;
 <span class="fc" id="L16">public class APSPFloydWarshall implements APSP {</span>
 
 	@Override
-	public APSP.Result calcAllShortestPaths(Graph g, EdgeWeightFunc w) {
-<span class="fc bfc" id="L20" title="All 2 branches covered.">		return g instanceof DiGraph ? calcDistancesDirected((DiGraph) g, w) : calcDistancesUndirected((UGraph) g, w);</span>
+	public APSP.Result computeAllShortestPaths(Graph g, EdgeWeightFunc w) {
+<span class="fc bfc" id="L20" title="All 2 branches covered.">		return g instanceof DiGraph ? computeAPSPDirected((DiGraph) g, w) : computeAPSPUndirected((UGraph) g, w);</span>
 	}
 
-	private static APSP.Result calcDistancesUndirected(UGraph g, EdgeWeightFunc w) {
+	private static APSP.Result computeAPSPUndirected(UGraph g, EdgeWeightFunc w) {
 <span class="fc" id="L24">		APSPResultImpl.Abstract res = new APSPResultImpl.Undirected(g);</span>
 <span class="fc bfc" id="L25" title="All 2 branches covered.">		for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
 <span class="fc" id="L26">			int e = it.nextInt();</span>
@@ -67,7 +67,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 <span class="fc" id="L67">		return res;</span>
 	}
 
-	private static APSP.Result calcDistancesDirected(DiGraph g, EdgeWeightFunc w) {
+	private static APSP.Result computeAPSPDirected(DiGraph g, EdgeWeightFunc w) {
 <span class="fc" id="L71">		APSPResultImpl.Abstract res = new APSPResultImpl.Directed(g);</span>
 <span class="fc bfc" id="L72" title="All 2 branches covered.">		for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
 <span class="fc" id="L73">			int e = it.nextInt();</span>

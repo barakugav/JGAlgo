@@ -98,7 +98,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 <span class="fc" id="L98">			IntPriorityQueue toCut = new IntArrayFIFOQueue();</span>
 
 			/* Init all vertices distances */
-<span class="fc" id="L101">			SSSP.Result initD = new SSSPCardinality().calcDistances(g, sink);</span>
+<span class="fc" id="L101">			SSSP.Result initD = new SSSPCardinality().computeShortestPaths(g, sink);</span>
 <span class="fc bfc" id="L102" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
 <span class="fc bfc" id="L103" title="All 4 branches covered.">				if (u != source &amp;&amp; u != sink)</span>
 <span class="fc" id="L104">					vertexData[u].d = (int) initD.distance(sink);</span>
@@ -416,7 +416,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 <span class="fc" id="L416">			IntPriorityQueue toCut = new IntArrayFIFOQueue();</span>
 
 			/* Init all vertices distances */
-<span class="fc" id="L419">			SSSP.Result initD = new SSSPCardinality().calcDistances(g, sink);</span>
+<span class="fc" id="L419">			SSSP.Result initD = new SSSPCardinality().computeShortestPaths(g, sink);</span>
 <span class="fc bfc" id="L420" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
 <span class="fc bfc" id="L421" title="All 4 branches covered.">				if (u != source &amp;&amp; u != sink)</span>
 <span class="fc" id="L422">					vertexData[u].d = (int) initD.distance(sink);</span>

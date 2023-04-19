@@ -26,7 +26,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 <span class="fc" id="L26">	private SSSP positiveSssp = new SSSPDijkstra();</span>
 
 	@Override
-	public APSP.Result calcAllShortestPaths(Graph g, EdgeWeightFunc w) {
+	public APSP.Result computeAllShortestPaths(Graph g, EdgeWeightFunc w) {
 <span class="pc bpc" id="L30" title="1 of 2 branches missed.">		if (!(g instanceof DiGraph))</span>
 <span class="nc" id="L31">			throw new IllegalArgumentException(&quot;only directed graphs are supported&quot;);</span>
 <span class="fc" id="L32">		return calcAllShortestPaths0((DiGraph) g, w);</span>
@@ -46,7 +46,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 <span class="fc bfc" id="L47" title="All 2 branches covered.">		if (!negWeight) {</span>
 			/* No negative weights, no need for potential */
-<span class="fc" id="L49">			SuccessRes res = calcDistancesPositive(g, w);</span>
+<span class="fc" id="L49">			SuccessRes res = computeAPSPPositive(g, w);</span>
 <span class="fc" id="L50">			res.potential = new double[n];</span>
 <span class="fc" id="L51">			return res;</span>
 		}
@@ -61,16 +61,16 @@ import it.unimi.dsi.fastutil.ints.IntList;
 <span class="fc" id="L61">			double vp = potential[g.edgeTarget(e)];</span>
 <span class="fc" id="L62">			return w.weight(e) + up - vp;</span>
 		};
-<span class="fc" id="L64">		SuccessRes res = calcDistancesPositive(g, wPotential);</span>
+<span class="fc" id="L64">		SuccessRes res = computeAPSPPositive(g, wPotential);</span>
 <span class="fc" id="L65">		res.potential = potential;</span>
 <span class="fc" id="L66">		return res;</span>
 	}
 
-	private SuccessRes calcDistancesPositive(DiGraph g, EdgeWeightFunc w) {
+	private SuccessRes computeAPSPPositive(DiGraph g, EdgeWeightFunc w) {
 <span class="fc" id="L70">		int n = g.vertices().size();</span>
 <span class="fc" id="L71">		SuccessRes res = new SuccessRes(n);</span>
 <span class="fc bfc" id="L72" title="All 2 branches covered.">		for (int source = 0; source &lt; n; source++)</span>
-<span class="fc" id="L73">			res.ssspResults[source] = positiveSssp.calcDistances(g, w, source);</span>
+<span class="fc" id="L73">			res.ssspResults[source] = positiveSssp.computeShortestPaths(g, w, source);</span>
 <span class="fc" id="L74">		return res;</span>
 	}
 
@@ -97,7 +97,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 <span class="fc" id="L97">			int ref = edgeEef.getInt(e);</span>
 <span class="fc bfc" id="L98" title="All 2 branches covered.">			return ref != fakeEdge ? w.weight(ref) : 0;</span>
 		};
-<span class="fc" id="L100">		SSSP.Result res = negativeSsssp.calcDistances(refG, refW, fakeV);</span>
+<span class="fc" id="L100">		SSSP.Result res = negativeSsssp.computeShortestPaths(refG, refW, fakeV);</span>
 <span class="fc bfc" id="L101" title="All 2 branches covered.">		if (!res.foundNegativeCycle()) {</span>
 <span class="fc" id="L102">			double[] potential = new double[n];</span>
 <span class="fc bfc" id="L103" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++)</span>
@@ -187,7 +187,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 		@Override
 		public Path getPath(int source, int target) {
-<span class="fc" id="L190">			return ssspResults[source].getPathTo(target);</span>
+<span class="fc" id="L190">			return ssspResults[source].getPath(target);</span>
 		}
 
 		@Override
