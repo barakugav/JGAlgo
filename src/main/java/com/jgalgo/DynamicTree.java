@@ -96,4 +96,23 @@ public interface DynamicTree<V, E> {
 
 	}
 
+	public static interface Int<V, E> extends DynamicTree<V, E> {
+
+		public void addWeight(Node<V, E> v, int w);
+
+		@Deprecated
+		@Override
+		default void addWeight(Node<V, E> v, double w) {
+			addWeight(v, (int) w);
+		}
+
+		public void link(Node<V, E> u, Node<V, E> v, int w, E edgeData);
+
+		@Deprecated
+		@Override
+		default void link(Node<V, E> u, Node<V, E> v, double w, E edgeData) {
+			link(u, v, (int) w, edgeData);
+		}
+	}
+
 }
