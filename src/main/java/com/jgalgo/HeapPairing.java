@@ -10,17 +10,63 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
 
+/**
+ * A Pairing heap implementation.
+ * <p>
+ * A pointer based heap implementation that support almost any operation in
+ * {@code O(1)} amortized time, except {@link #removeRef(HeapReference)} and
+ * {@link #decreaseKey(HeapReference, Object)} which takes {@code O(log n)} time
+ * amortized.
+ * <p>
+ * Using this heap, {@link SSSPDijkstra} can be implemented in time
+ * {@code O(m + n log n)} rather than {@code O(m log n)} as the
+ * {@link #decreaseKey(HeapReference, Object)} operation is performed in
+ * {@code O(1)} time amortized.
+ * <p>
+ * Pairing heaps are one of the best pointer based heaps implementations in
+ * practice, and should be used as a default choice for the general use case.
+ *
+ * @see <a href="https://en.wikipedia.org/wiki/Pairing_heap">Wikipedia</a>
+ * @author Barak Ugav
+ */
 public class HeapPairing<E> extends HeapReferenceableAbstract<E> {
 
 	private Node<E> minRoot;
 	private int size;
 
+	/**
+	 * Constructs a new, empty Pairing heap, sorted according to the natural
+	 * ordering of its elements.
+	 * <p>
+	 * All elements inserted into the heap must implement the {@link Comparable}
+	 * interface. Furthermore, all such elements must be <i>mutually comparable</i>:
+	 * {@code e1.compareTo(e2)} must not throw a {@code ClassCastException} for any
+	 * elements {@code e1} and {@code e2} in the heap. If the user attempts to
+	 * insert an element to the heap that violates this constraint (for example, the
+	 * user attempts to insert a string element to a heap whose elements are
+	 * integers), the {@code insert} call will throw a {@code ClassCastException}.
+	 */
 	public HeapPairing() {
 		this(null);
 	}
 
-	public HeapPairing(Comparator<? super E> c) {
-		super(c);
+	/**
+	 * Constructs a new, empty Pairing heap, sorted according to the specified
+	 * comparator.
+	 * <p>
+	 * All elements inserted into the heap must be <i>mutually comparable</i> by the
+	 * specified comparator: {@code comparator.compare(e1, e2)} must not throw a
+	 * {@code ClassCastException} for any elements {@code e1} and {@code e2} in the
+	 * heap. If the user attempts to insert an element to the heap that violates
+	 * this constraint, the {@code insert} call will throw a
+	 * {@code ClassCastException}.
+	 *
+	 * @param comparator the comparator that will be used to order this heap.
+	 *                   If {@code null}, the {@linkplain Comparable natural
+	 *                   ordering} of the elements will be used.
+	 */
+	public HeapPairing(Comparator<? super E> comparator) {
+		super(comparator);
 	}
 
 	@Override
