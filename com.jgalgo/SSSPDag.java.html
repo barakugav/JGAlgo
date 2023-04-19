@@ -9,7 +9,7 @@
 <span class="fc" id="L9">		SSSPResultImpl res = new SSSPResultImpl(g, source);</span>
 <span class="fc" id="L10">		res.distances[source] = 0;</span>
 
-<span class="fc" id="L12">		int[] topolSort = Graphs.calcTopologicalSortingDAG((DiGraph) g);</span>
+<span class="fc" id="L12">		int[] topolSort = TopologicalOrder.calcTopologicalSortingDAG((DiGraph) g);</span>
 <span class="fc" id="L13">		boolean sourceSeen = false;</span>
 <span class="fc bfc" id="L14" title="All 2 branches covered.">		for (int u : topolSort) {</span>
 <span class="fc bfc" id="L15" title="All 2 branches covered.">			if (!sourceSeen) {</span>

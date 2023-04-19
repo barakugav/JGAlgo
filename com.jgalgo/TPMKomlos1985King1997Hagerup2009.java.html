@@ -33,7 +33,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 <span class="nc" id="L33">			throw new IllegalArgumentException(&quot;only undirected graphs are supported&quot;);</span>
 <span class="pc bpc" id="L34" title="1 of 2 branches missed.">		if (queries.length / 2 &lt; queriesNum)</span>
 <span class="nc" id="L35">			throw new IllegalArgumentException(&quot;queries should be in format [u0, v0, u1, v1, ...]&quot;);</span>
-<span class="pc bpc" id="L36" title="1 of 2 branches missed.">		if (!Graphs.isTree((UGraph) t))</span>
+<span class="pc bpc" id="L36" title="1 of 2 branches missed.">		if (!Trees.isTree((UGraph) t))</span>
 <span class="nc" id="L37">			throw new IllegalArgumentException(&quot;only trees are supported&quot;);</span>
 <span class="pc bpc" id="L38" title="1 of 2 branches missed.">		if (t.vertices().size() == 0)</span>
 <span class="nc" id="L39">			return new int[queriesNum];</span>

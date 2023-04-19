@@ -266,19 +266,19 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 <span class="fc" id="L266">		}</span>
 
 		@Override
-		public void removeEdges(int u) {
+		public void removeEdgesOf(int u) {
 <span class="fc" id="L270">			int uIdx = verticesIDStrategy.idToIdx(u);</span>
-<span class="fc" id="L271">			g.removeEdges(uIdx);</span>
+<span class="fc" id="L271">			g.removeEdgesOf(uIdx);</span>
 <span class="fc" id="L272">		}</span>
 
 		@Override
-		public void removeEdgesOut(int u) {
-<span class="fc" id="L276">			g.removeEdgesOut(verticesIDStrategy.idToIdx(u));</span>
+		public void removeEdgesOutOf(int u) {
+<span class="fc" id="L276">			g.removeEdgesOutOf(verticesIDStrategy.idToIdx(u));</span>
 <span class="fc" id="L277">		}</span>
 
 		@Override
-		public void removeEdgesIn(int v) {
-<span class="fc" id="L281">			g.removeEdgesIn(verticesIDStrategy.idToIdx(v));</span>
+		public void removeEdgesInOf(int v) {
+<span class="fc" id="L281">			g.removeEdgesInOf(verticesIDStrategy.idToIdx(v));</span>
 <span class="fc" id="L282">		}</span>
 
 		@Override

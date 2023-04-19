@@ -5,177 +5,209 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntStack;
 
-<span class="fc" id="L8">public class EulerianTour {</span>
+/**
+ * Eulerian tour calculation algorithm.
+ * &lt;p&gt;
+ * An Eulerian tour is a tour that visits every edge exactly once (allowing for
+ * revisiting vertices). For a connected undirected graph, if all vertices have
+ * an even degree, an Eulerian cycle will be found. If exactly two vertices have
+ * an odd degree, called {@code s,t}, an Eulerian tour that start at {@code s}
+ * and ends at {@code t} exists. For any other vertices degrees an Eulerian tour
+ * does not exists. For a strongly connected directed graph, the in-degree and
+ * out-degree of each vertex must be equal for an Eulerian cycle to exists. If
+ * exactly one vertex {@code s} has one more out-edge than in-edges, and one
+ * vertex {@code t} has one more in-edge than out-edges, an Eulerian tour that
+ * start at {@code s} and ends at {@code t} exists.
+ * &lt;p&gt;
+ *
+ * @see &lt;a href=&quot;https://en.wikipedia.org/wiki/Eulerian_path&quot;&gt;Wikipedia&lt;/a&gt;
+ * @see TSPMetricMSTAppx
+ * @see TSPMetricMatchingAppx
+ * @author Barak Ugav
+ */
+<span class="fc" id="L28">public class EulerianTour {</span>
 
 	private EulerianTour() {
 	}
 
+	/**
+	 * Calculate an Eulerian tour in the graph that visit all edges exactly once.
+	 * &lt;p&gt;
+	 * The graph is assumed to be (strongly) connected. Either a cycle or tour will
+	 * be found, depending on the vertices degrees.
+	 * &lt;p&gt;
+	 * The running time and space of this function is {@code O(m + n)}.
+	 *
+	 * @param g a graph
+	 * @return an Eulerian tour that visit all edges of the graph exactly once
+	 * @throws IllegalArgumentException if there is no Eulerian tour in the graph
+	 */
 	public static Path calcTour(Graph g) {
-<span class="fc bfc" id="L14" title="All 2 branches covered.">		return g instanceof DiGraph ? calcTourDirected((DiGraph) g) : calcTourUndirected((UGraph) g);</span>
+<span class="fc bfc" id="L46" title="All 2 branches covered.">		return g instanceof DiGraph ? calcTourDirected((DiGraph) g) : calcTourUndirected((UGraph) g);</span>
 	}
 
 	private static Path calcTourUndirected(UGraph g) {
-<span class="fc" id="L18">		int n = g.vertices().size();</span>
+<span class="fc" id="L50">		int n = g.vertices().size();</span>
 
-<span class="fc" id="L20">		int start = -1, end = -1;</span>
-<span class="fc bfc" id="L21" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc bfc" id="L22" title="All 2 branches covered.">			if (degreeWithoutSelfLoops(g, u) % 2 == 0)</span>
-<span class="fc" id="L23">				continue;</span>
-<span class="fc bfc" id="L24" title="All 2 branches covered.">			if (start == -1)</span>
-<span class="fc" id="L25">				start = u;</span>
-<span class="pc bpc" id="L26" title="1 of 2 branches missed.">			else if (end == -1)</span>
-<span class="fc" id="L27">				end = u;</span>
+<span class="fc" id="L52">		int start = -1, end = -1;</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">			if (degreeWithoutSelfLoops(g, u) % 2 == 0)</span>
+<span class="fc" id="L55">				continue;</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">			if (start == -1)</span>
+<span class="fc" id="L57">				start = u;</span>
+<span class="pc bpc" id="L58" title="1 of 2 branches missed.">			else if (end == -1)</span>
+<span class="fc" id="L59">				end = u;</span>
 			else
-<span class="nc" id="L29">				throw new IllegalArgumentException(</span>
+<span class="nc" id="L61">				throw new IllegalArgumentException(</span>
 						&quot;More than two vertices have an odd degree (&quot; + start + &quot;, &quot; + end + &quot;, &quot; + u + &quot;)&quot;);
 		}
-<span class="pc bpc" id="L32" title="1 of 6 branches missed.">		if (start != -1 ^ end != -1)</span>
-<span class="nc" id="L33">			throw new IllegalArgumentException(</span>
+<span class="pc bpc" id="L64" title="1 of 6 branches missed.">		if (start != -1 ^ end != -1)</span>
+<span class="nc" id="L65">			throw new IllegalArgumentException(</span>
 					&quot;Eulerian tour exists only if all vertices have even degree or only two vertices have odd degree&quot;);
-<span class="fc bfc" id="L35" title="All 2 branches covered.">		if (start == -1)</span>
-<span class="fc" id="L36">			start = 0;</span>
-<span class="fc bfc" id="L37" title="All 2 branches covered.">		if (end == -1)</span>
-<span class="fc" id="L38">			end = 0;</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">		if (start == -1)</span>
+<span class="fc" id="L68">			start = 0;</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">		if (end == -1)</span>
+<span class="fc" id="L70">			end = 0;</span>
 
-<span class="fc" id="L40">		Object usedEdgesKey = new Object();</span>
-<span class="fc" id="L41">		Weights.Bool usedEdges = g.addEdgesWeights(usedEdgesKey, boolean.class);</span>
+<span class="fc" id="L72">		Object usedEdgesKey = new Object();</span>
+<span class="fc" id="L73">		Weights.Bool usedEdges = g.addEdgesWeights(usedEdgesKey, boolean.class);</span>
 		try {
-<span class="fc" id="L43">			EdgeIter[] iters = new EdgeIter[n];</span>
-<span class="fc bfc" id="L44" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
-<span class="fc" id="L45">				iters[u] = g.edgesOut(u);</span>
+<span class="fc" id="L75">			EdgeIter[] iters = new EdgeIter[n];</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
+<span class="fc" id="L77">				iters[u] = g.edgesOut(u);</span>
 
-<span class="fc" id="L47">			IntArrayList tour = new IntArrayList(g.edges().size());</span>
-<span class="fc" id="L48">			IntStack queue = new IntArrayList();</span>
+<span class="fc" id="L79">			IntArrayList tour = new IntArrayList(g.edges().size());</span>
+<span class="fc" id="L80">			IntStack queue = new IntArrayList();</span>
 
-<span class="fc" id="L50">			for (int u = end;;) {</span>
+<span class="fc" id="L82">			for (int u = end;;) {</span>
 				findCycle: for (;;) {
 					int e, v;
-<span class="fc" id="L53">					for (EdgeIter iter = iters[u];;) {</span>
-<span class="fc bfc" id="L54" title="All 2 branches covered.">						if (!iter.hasNext())</span>
-<span class="fc" id="L55">							break findCycle;</span>
-<span class="fc" id="L56">						e = iter.nextInt();</span>
-<span class="fc bfc" id="L57" title="All 2 branches covered.">						if (!usedEdges.getBool(e)) {</span>
-<span class="fc" id="L58">							v = iter.v();</span>
-<span class="fc" id="L59">							break;</span>
+<span class="fc" id="L85">					for (EdgeIter iter = iters[u];;) {</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">						if (!iter.hasNext())</span>
+<span class="fc" id="L87">							break findCycle;</span>
+<span class="fc" id="L88">						e = iter.nextInt();</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">						if (!usedEdges.getBool(e)) {</span>
+<span class="fc" id="L90">							v = iter.v();</span>
+<span class="fc" id="L91">							break;</span>
 						}
 					}
-<span class="fc" id="L62">					usedEdges.set(e, true);</span>
-<span class="fc" id="L63">					queue.push(e);</span>
-<span class="fc" id="L64">					u = v;</span>
-<span class="fc" id="L65">				}</span>
+<span class="fc" id="L94">					usedEdges.set(e, true);</span>
+<span class="fc" id="L95">					queue.push(e);</span>
+<span class="fc" id="L96">					u = v;</span>
+<span class="fc" id="L97">				}</span>
 
-<span class="fc bfc" id="L67" title="All 2 branches covered.">				if (queue.isEmpty())</span>
-<span class="fc" id="L68">					break;</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">				if (queue.isEmpty())</span>
+<span class="fc" id="L100">					break;</span>
 
-<span class="fc" id="L70">				int e = queue.popInt();</span>
-<span class="fc" id="L71">				tour.add(e);</span>
-<span class="fc" id="L72">				u = g.edgeEndpoint(e, u);</span>
-<span class="fc" id="L73">			}</span>
+<span class="fc" id="L102">				int e = queue.popInt();</span>
+<span class="fc" id="L103">				tour.add(e);</span>
+<span class="fc" id="L104">				u = g.edgeEndpoint(e, u);</span>
+<span class="fc" id="L105">			}</span>
 
-<span class="fc bfc" id="L75" title="All 2 branches covered.">			for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
-<span class="fc" id="L76">				int e = it.nextInt();</span>
-<span class="pc bpc" id="L77" title="1 of 2 branches missed.">				if (!usedEdges.getBool(e))</span>
-<span class="nc" id="L78">					throw new IllegalArgumentException(&quot;Graph is not connected&quot;);</span>
-<span class="fc" id="L79">			}</span>
-<span class="fc" id="L80">			return new Path(g, start, end, tour);</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">			for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
+<span class="fc" id="L108">				int e = it.nextInt();</span>
+<span class="pc bpc" id="L109" title="1 of 2 branches missed.">				if (!usedEdges.getBool(e))</span>
+<span class="nc" id="L110">					throw new IllegalArgumentException(&quot;Graph is not connected&quot;);</span>
+<span class="fc" id="L111">			}</span>
+<span class="fc" id="L112">			return new Path(g, start, end, tour);</span>
 
 		} finally {
-<span class="fc" id="L83">			g.removeEdgesWeights(usedEdgesKey);</span>
+<span class="fc" id="L115">			g.removeEdgesWeights(usedEdgesKey);</span>
 		}
 	}
 
 	private static int degreeWithoutSelfLoops(UGraph g, int u) {
-<span class="fc" id="L88">		int d = 0;</span>
-<span class="fc bfc" id="L89" title="All 2 branches covered.">		for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
-<span class="fc" id="L90">			eit.nextInt();</span>
-<span class="fc bfc" id="L91" title="All 2 branches covered.">			if (eit.v() != u)</span>
-<span class="fc" id="L92">				d++;</span>
+<span class="fc" id="L120">		int d = 0;</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">		for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
+<span class="fc" id="L122">			eit.nextInt();</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">			if (eit.v() != u)</span>
+<span class="fc" id="L124">				d++;</span>
 		}
-<span class="fc" id="L94">		return d;</span>
+<span class="fc" id="L126">		return d;</span>
 	}
 
 	private static Path calcTourDirected(DiGraph g) {
-<span class="fc" id="L98">		int n = g.vertices().size();</span>
+<span class="fc" id="L130">		int n = g.vertices().size();</span>
 
-<span class="fc" id="L100">		int start = -1, end = -1;</span>
-<span class="fc bfc" id="L101" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc" id="L102">			int outD = g.degreeOut(u);</span>
-<span class="fc" id="L103">			int inD = g.degreeIn(u);</span>
-<span class="fc bfc" id="L104" title="All 2 branches covered.">			if (outD == inD)</span>
-<span class="fc" id="L105">				continue;</span>
-<span class="fc bfc" id="L106" title="All 2 branches covered.">			if (outD == inD + 1) {</span>
-<span class="pc bpc" id="L107" title="1 of 2 branches missed.">				if (start == -1) {</span>
-<span class="fc" id="L108">					start = u;</span>
+<span class="fc" id="L132">		int start = -1, end = -1;</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc" id="L134">			int outD = g.degreeOut(u);</span>
+<span class="fc" id="L135">			int inD = g.degreeIn(u);</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">			if (outD == inD)</span>
+<span class="fc" id="L137">				continue;</span>
+<span class="fc bfc" id="L138" title="All 2 branches covered.">			if (outD == inD + 1) {</span>
+<span class="pc bpc" id="L139" title="1 of 2 branches missed.">				if (start == -1) {</span>
+<span class="fc" id="L140">					start = u;</span>
 				} else {
-<span class="nc" id="L110">					throw new IllegalArgumentException(</span>
+<span class="nc" id="L142">					throw new IllegalArgumentException(</span>
 							&quot;More than one vertex have an extra out edge (&quot; + start + &quot;, &quot; + u + &quot;)&quot;);
 				}
-<span class="pc bpc" id="L113" title="1 of 2 branches missed.">			} else if (outD + 1 == inD) {</span>
-<span class="pc bpc" id="L114" title="1 of 2 branches missed.">				if (end == -1) {</span>
-<span class="fc" id="L115">					end = u;</span>
+<span class="pc bpc" id="L145" title="1 of 2 branches missed.">			} else if (outD + 1 == inD) {</span>
+<span class="pc bpc" id="L146" title="1 of 2 branches missed.">				if (end == -1) {</span>
+<span class="fc" id="L147">					end = u;</span>
 				} else {
-<span class="nc" id="L117">					throw new IllegalArgumentException(</span>
+<span class="nc" id="L149">					throw new IllegalArgumentException(</span>
 							&quot;More than one vertex have an extra in edge (&quot; + end + &quot;, &quot; + u + &quot;)&quot;);
 				}
 			} else {
-<span class="nc" id="L121">				throw new IllegalArgumentException(</span>
+<span class="nc" id="L153">				throw new IllegalArgumentException(</span>
 						&quot;Can't compute Eulerian tour with vertex degrees (&quot; + u + &quot;: in=&quot; + inD + &quot; out=&quot; + outD + &quot;)&quot;);
 			}
 		}
-<span class="pc bpc" id="L125" title="1 of 6 branches missed.">		if (start != -1 ^ end != -1)</span>
-<span class="nc" id="L126">			throw new IllegalArgumentException(&quot;Eulerian tour exists in a directed graph only if all vertices have &quot;</span>
+<span class="pc bpc" id="L157" title="1 of 6 branches missed.">		if (start != -1 ^ end != -1)</span>
+<span class="nc" id="L158">			throw new IllegalArgumentException(&quot;Eulerian tour exists in a directed graph only if all vertices have &quot;</span>
 					+ &quot;equal in and out degree or only one have an extra in edge and one have an extra out edge&quot;);
-<span class="fc bfc" id="L128" title="All 2 branches covered.">		if (start == -1)</span>
-<span class="fc" id="L129">			start = 0;</span>
-<span class="fc bfc" id="L130" title="All 2 branches covered.">		if (end == -1)</span>
-<span class="fc" id="L131">			end = 0;</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">		if (start == -1)</span>
+<span class="fc" id="L161">			start = 0;</span>
+<span class="fc bfc" id="L162" title="All 2 branches covered.">		if (end == -1)</span>
+<span class="fc" id="L163">			end = 0;</span>
 
-<span class="fc" id="L133">		Object usedEdgesKey = new Object();</span>
-<span class="fc" id="L134">		Weights.Bool usedEdges = g.addEdgesWeights(usedEdgesKey, boolean.class);</span>
+<span class="fc" id="L165">		Object usedEdgesKey = new Object();</span>
+<span class="fc" id="L166">		Weights.Bool usedEdges = g.addEdgesWeights(usedEdgesKey, boolean.class);</span>
 		try {
-<span class="fc" id="L136">			EdgeIter[] iters = new EdgeIter[n];</span>
-<span class="fc bfc" id="L137" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
-<span class="fc" id="L138">				iters[u] = g.edgesOut(u);</span>
+<span class="fc" id="L168">			EdgeIter[] iters = new EdgeIter[n];</span>
+<span class="fc bfc" id="L169" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
+<span class="fc" id="L170">				iters[u] = g.edgesOut(u);</span>
 
-<span class="fc" id="L140">			IntArrayList tour = new IntArrayList(g.edges().size());</span>
-<span class="fc" id="L141">			IntStack queue = new IntArrayList();</span>
+<span class="fc" id="L172">			IntArrayList tour = new IntArrayList(g.edges().size());</span>
+<span class="fc" id="L173">			IntStack queue = new IntArrayList();</span>
 
-<span class="fc" id="L143">			for (int u = start;;) {</span>
+<span class="fc" id="L175">			for (int u = start;;) {</span>
 				findCycle: for (;;) {
 					int e, v;
-<span class="fc" id="L146">					for (EdgeIter iter = iters[u];;) {</span>
-<span class="fc bfc" id="L147" title="All 2 branches covered.">						if (!iter.hasNext())</span>
-<span class="fc" id="L148">							break findCycle;</span>
-<span class="fc" id="L149">						e = iter.nextInt();</span>
-<span class="pc bpc" id="L150" title="1 of 2 branches missed.">						if (!usedEdges.getBool(e)) {</span>
-<span class="fc" id="L151">							v = iter.v();</span>
-<span class="fc" id="L152">							break;</span>
+<span class="fc" id="L178">					for (EdgeIter iter = iters[u];;) {</span>
+<span class="fc bfc" id="L179" title="All 2 branches covered.">						if (!iter.hasNext())</span>
+<span class="fc" id="L180">							break findCycle;</span>
+<span class="fc" id="L181">						e = iter.nextInt();</span>
+<span class="pc bpc" id="L182" title="1 of 2 branches missed.">						if (!usedEdges.getBool(e)) {</span>
+<span class="fc" id="L183">							v = iter.v();</span>
+<span class="fc" id="L184">							break;</span>
 						}
 					}
-<span class="fc" id="L155">					usedEdges.set(e, true);</span>
-<span class="fc" id="L156">					queue.push(e);</span>
-<span class="fc" id="L157">					u = v;</span>
-<span class="fc" id="L158">				}</span>
+<span class="fc" id="L187">					usedEdges.set(e, true);</span>
+<span class="fc" id="L188">					queue.push(e);</span>
+<span class="fc" id="L189">					u = v;</span>
+<span class="fc" id="L190">				}</span>
 
-<span class="fc bfc" id="L160" title="All 2 branches covered.">				if (queue.isEmpty())</span>
-<span class="fc" id="L161">					break;</span>
+<span class="fc bfc" id="L192" title="All 2 branches covered.">				if (queue.isEmpty())</span>
+<span class="fc" id="L193">					break;</span>
 
-<span class="fc" id="L163">				int e = queue.popInt();</span>
-<span class="fc" id="L164">				tour.add(e);</span>
-<span class="pc bpc" id="L165" title="1 of 2 branches missed.">				assert g.edgeTarget(e) == u;</span>
-<span class="fc" id="L166">				u = g.edgeSource(e);</span>
-<span class="fc" id="L167">			}</span>
+<span class="fc" id="L195">				int e = queue.popInt();</span>
+<span class="fc" id="L196">				tour.add(e);</span>
+<span class="pc bpc" id="L197" title="1 of 2 branches missed.">				assert g.edgeTarget(e) == u;</span>
+<span class="fc" id="L198">				u = g.edgeSource(e);</span>
+<span class="fc" id="L199">			}</span>
 
-<span class="fc bfc" id="L169" title="All 2 branches covered.">			for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
-<span class="fc" id="L170">				int e = it.nextInt();</span>
-<span class="pc bpc" id="L171" title="1 of 2 branches missed.">				if (!usedEdges.getBool(e))</span>
-<span class="nc" id="L172">					throw new IllegalArgumentException(&quot;Graph is not connected&quot;);</span>
-<span class="fc" id="L173">			}</span>
-<span class="fc" id="L174">			IntArrays.reverse(tour.elements(), 0, tour.size());</span>
-<span class="fc" id="L175">			return new Path(g, start, end, tour);</span>
+<span class="fc bfc" id="L201" title="All 2 branches covered.">			for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
+<span class="fc" id="L202">				int e = it.nextInt();</span>
+<span class="pc bpc" id="L203" title="1 of 2 branches missed.">				if (!usedEdges.getBool(e))</span>
+<span class="nc" id="L204">					throw new IllegalArgumentException(&quot;Graph is not connected&quot;);</span>
+<span class="fc" id="L205">			}</span>
+<span class="fc" id="L206">			IntArrays.reverse(tour.elements(), 0, tour.size());</span>
+<span class="fc" id="L207">			return new Path(g, start, end, tour);</span>
 
 		} finally {
-<span class="fc" id="L178">			g.removeEdgesWeights(usedEdgesKey);</span>
+<span class="fc" id="L210">			g.removeEdgesWeights(usedEdgesKey);</span>
 		}
 	}
 

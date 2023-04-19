@@ -64,7 +64,7 @@ public interface MST {
 	public static boolean verifyMST(Graph g, EdgeWeightFunc w, Graph mst, TPM tpmAlgo, Weights.Int edgeRef) {
 <span class="pc bpc" id="L65" title="1 of 2 branches missed.">		if (g instanceof DiGraph)</span>
 <span class="nc" id="L66">			throw new IllegalArgumentException(&quot;Directed graphs are not supported&quot;);</span>
-<span class="pc bpc" id="L67" title="1 of 2 branches missed.">		if (!Graphs.isTree((UGraph) mst))</span>
+<span class="pc bpc" id="L67" title="1 of 2 branches missed.">		if (!Trees.isTree((UGraph) mst))</span>
 <span class="nc" id="L68">			return false;</span>
 
 <span class="fc" id="L70">		EdgeWeightFunc w0 = e -&gt; w.weight(edgeRef.getInt(e));</span>
