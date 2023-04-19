@@ -12,9 +12,9 @@ import com.jgalgo.Graph;
 import com.jgalgo.Path;
 import com.jgalgo.SSSP;
 import com.jgalgo.SSSPBellmanFord;
-import com.jgalgo.SSSPDial1969;
+import com.jgalgo.SSSPDial;
 import com.jgalgo.SSSPDijkstra;
-import com.jgalgo.SSSPGoldberg1995;
+import com.jgalgo.SSSPGoldberg;
 import com.jgalgo.test.GraphsTestUtils.RandomGraphBuilder;
 
 public class SSSPTestUtils extends TestUtils {
@@ -48,7 +48,7 @@ public class SSSPTestUtils extends TestUtils {
 			int source = rand.nextInt(g.vertices().size());
 
 			SSSP algo = builder.get();
-			SSSP validationAlgo = algo instanceof SSSPDijkstra ? new SSSPDial1969() : new SSSPDijkstra();
+			SSSP validationAlgo = algo instanceof SSSPDijkstra ? new SSSPDial() : new SSSPDijkstra();
 			testAlgo(g, w, source, algo, validationAlgo);
 		});
 	}
@@ -65,7 +65,7 @@ public class SSSPTestUtils extends TestUtils {
 			int source = 0;
 
 			SSSP algo = builder.get();
-			SSSP validationAlgo = algo instanceof SSSPBellmanFord ? new SSSPGoldberg1995() : new SSSPBellmanFord();
+			SSSP validationAlgo = algo instanceof SSSPBellmanFord ? new SSSPGoldberg() : new SSSPBellmanFord();
 			testAlgo(g, w, source, algo, validationAlgo);
 		});
 	}

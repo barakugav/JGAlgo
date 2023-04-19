@@ -11,7 +11,7 @@ import com.jgalgo.Graph;
 import com.jgalgo.Path;
 import com.jgalgo.SSSP;
 import com.jgalgo.SSSPDijkstra;
-import com.jgalgo.SSSPGoldberg1995;
+import com.jgalgo.SSSPGoldberg;
 import com.jgalgo.test.GraphsTestUtils.RandomGraphBuilder;
 
 class APSPTestUtils extends TestUtils {
@@ -47,7 +47,7 @@ class APSPTestUtils extends TestUtils {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
 			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
-			testAPSP(g, w, builder, new SSSPGoldberg1995());
+			testAPSP(g, w, builder, new SSSPGoldberg());
 		});
 	}
 

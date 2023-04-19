@@ -24,7 +24,7 @@ import com.jgalgo.EdgeWeightFunc;
 import com.jgalgo.Graph;
 import com.jgalgo.SSSP;
 import com.jgalgo.SSSPBellmanFord;
-import com.jgalgo.SSSPGoldberg1995;
+import com.jgalgo.SSSPGoldberg;
 import com.jgalgo.test.GraphsTestUtils;
 import com.jgalgo.test.GraphsTestUtils.RandomGraphBuilder;
 import com.jgalgo.test.TestUtils.SeedGenerator;
@@ -77,7 +77,7 @@ public class SSSPNegativeWeightsBench {
 
 	@Benchmark
 	public void benchSSSPNegativeWeightsGoldberg1995(Blackhole blackhole) {
-		benchSSSPNegativeWeights(SSSPGoldberg1995::new, blackhole);
+		benchSSSPNegativeWeights(SSSPGoldberg::new, blackhole);
 	}
 
 	private static class GraphArgs {

@@ -24,7 +24,7 @@ import com.jgalgo.EdgeWeightFunc;
 import com.jgalgo.Graph;
 import com.jgalgo.SSSP;
 import com.jgalgo.SSSPBellmanFord;
-import com.jgalgo.SSSPDial1969;
+import com.jgalgo.SSSPDial;
 import com.jgalgo.SSSPDijkstra;
 import com.jgalgo.test.GraphsTestUtils;
 import com.jgalgo.test.GraphsTestUtils.RandomGraphBuilder;
@@ -78,7 +78,7 @@ public class SSSPPositiveWeightsBench {
 
 	@Benchmark
 	public void benchSSSPPositiveWeightsDial1969(Blackhole blackhole) {
-		benchSSSPPositiveWeights(SSSPDial1969::new, blackhole);
+		benchSSSPPositiveWeights(SSSPDial::new, blackhole);
 	}
 
 	@Benchmark

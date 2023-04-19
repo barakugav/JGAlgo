@@ -2,22 +2,44 @@ package com.jgalgo;
 
 import java.util.Arrays;
 
+/**
+ * Dijkstra's algorithm for Single Source Shortest Path (SSSP).
+ * <p>
+ * Compute the shortest paths from a single source to all other vertices in
+ * {@code O(m + n log n)} time, using {@link HeapReferenceable} with
+ * {@code O(1)} time for
+ * {@link HeapReferenceable#decreaseKey(HeapReference, Object)} operations.
+ * <p>
+ * Only positive edge weights are supported. This implementation should be the
+ * first choice for {@link SSSP} with positive weights. For negative weights use
+ * {@link SSSPBellmanFord} for floating points or {@link SSSPGoldberg} for
+ * integers.
+ *
+ * <p>
+ * Based on 'A note on two problems in connexion with graphs' by E. W. Dijkstra
+ * (1959). A 'note'??!! this guy changed the world, and he publish it as a
+ * 'note'.
+ * @see <a href=
+ *      "https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm">Wikipedia</a>
+ * @author Barak Ugav
+ */
 public class SSSPDijkstra implements SSSP {
 
-	/*
-	 * O(m + n log n)
-	 */
-
 	private int allocSize;
-	private final HeapReferenceable<HeapElm> heap;
+	private HeapReferenceable<HeapElm> heap;
 	private HeapReference<HeapElm>[] verticesPtrs;
 
 	public SSSPDijkstra() {
-		this(HeapPairing::new);
+		allocSize = 0;
+		heap = new HeapPairing<>();
 	}
 
-	public SSSPDijkstra(HeapReferenceable.Builder heapBuilder) {
-		allocSize = 0;
+	/**
+	 * Set the implementation of the heap used by this algorithm.
+	 *
+	 * @param heapBuilder a builder for heaps used by this algorithm
+	 */
+	public void setHeapBuilder(HeapReferenceable.Builder heapBuilder) {
 		heap = heapBuilder.build();
 	}
 
@@ -34,6 +56,11 @@ public class SSSPDijkstra implements SSSP {
 		Arrays.fill(verticesPtrs, 0, n, null);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @throws IllegalArgumentException if one of the edge weights is negative
+	 */
 	@Override
 	public SSSP.Result computeShortestPaths(Graph g, EdgeWeightFunc w, int source) {
 		int n = g.vertices().size();

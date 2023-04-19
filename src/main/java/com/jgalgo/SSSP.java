@@ -56,6 +56,8 @@ package com.jgalgo;
  * }</pre>
  *
  * @see APSP
+ * @see <a href=
+ *      "https://en.wikipedia.org/wiki/Shortest_path_problem#Single-source_shortest_paths">Wikipedia</a>
  * @author Barak Ugav
  */
 public interface SSSP {

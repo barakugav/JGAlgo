@@ -4,14 +4,29 @@ import java.util.Arrays;
 
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
-public class SSSPDial1969 implements SSSP {
+/**
+ * Dial's algorithm for Single Source Shortest Path for positive integer
+ * weights.
+ * <p>
+ * The algorithm runs in {@code O(n + m + D)} where {@code D} is the maximum
+ * distance, or the sum of heaviest n-1 edges if the maximum distance is not
+ * known. It takes advantage of the fact that a heap for integers can be
+ * implemented using buckets, one for each weight. Such a heap require {@code D}
+ * buckets, and therefore the algorithm running time and space depends on
+ * {@code D}.
+ * <p>
+ * This algorithm should be used in case the maximal distance is known in
+ * advance, and its small. For example, its used by {@link SSSPDial} as a
+ * subroutine, where the maximum distance is bounded by the number of layers.
+ * <p>
+ * Based on 'Algorithm 360: Shortest-Path Forest with Topological Ordering' by
+ * Dial, Robert B. (1969).
+ *
+ * @author Barak Ugav
+ */
+public class SSSPDial implements SSSP {
 
-	/*
-	 * edges) O(m + D) where D is the maximum distance, or the sum of heaviest n-1
-	 * edges if the maximum distance is not known
-	 */
-
-	public SSSPDial1969() {
+	public SSSPDial() {
 		allocSizeN = allocSizeM = 0;
 		heap = new DialHeap();
 	}
@@ -40,11 +55,18 @@ public class SSSPDial1969 implements SSSP {
 		Arrays.fill(verticesPtrs, 0, n, null);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @throws IllegalArgumentException if one of the edge weights is negative or
+	 *                                  the weight function is not of type
+	 *                                  {@link EdgeWeightFunc.Int}
+	 */
 	@Override
-	public SSSP.Result computeShortestPaths(Graph g, EdgeWeightFunc w0, int source) {
-		if (!(w0 instanceof EdgeWeightFunc.Int))
+	public SSSP.Result computeShortestPaths(Graph g, EdgeWeightFunc w, int source) {
+		if (!(w instanceof EdgeWeightFunc.Int))
 			throw new IllegalArgumentException("only int weights are supported");
-		EdgeWeightFunc.Int w = (EdgeWeightFunc.Int) w0;
+		EdgeWeightFunc.Int w0 = (EdgeWeightFunc.Int) w;
 
 		int n = g.vertices().size(), m = g.edges().size();
 		if (n <= 0)
@@ -56,23 +78,35 @@ public class SSSPDial1969 implements SSSP {
 		if (m <= n - 1) {
 			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 				int e = it.nextInt();
-				maxDistance += w.weightInt(e);
+				maxDistance += w0.weightInt(e);
 			}
 
 		} else {
 			int[] edges = g.edges().toArray(this.edges);
 			ArraysUtils.getKthElement(edges, 0, g.edges().size(), n - 1,
-					(e1, e2) -> -Integer.compare(w.weightInt(e1), w.weightInt(e2)), true);
+					(e1, e2) -> -Integer.compare(w0.weightInt(e1), w0.weightInt(e2)), true);
 
 			for (int i = 0; i <= n - 1; i++)
-				maxDistance += w.weightInt(edges[i]);
+				maxDistance += w0.weightInt(edges[i]);
 		}
 
-		SSSP.Result res = computeShortestPaths(g, w, source, maxDistance);
+		SSSP.Result res = computeShortestPaths(g, w0, source, maxDistance);
 		memClear(n, m);
 		return res;
 	}
 
+	/**
+	 * Compute the shortest paths from a source to any other vertex in a graph,
+	 * given a maximal distance bound.
+	 *
+	 * @param g           a graph
+	 * @param w           an integer weight function with non negative values
+	 * @param source      a source vertex
+	 * @param maxDistance a bound on the maximal distance to any vertex in the graph
+	 * @return a result object containing the distances and shortest paths from the
+	 *         source to any other vertex
+	 * @see #computeShortestPaths(Graph, EdgeWeightFunc, int)
+	 */
 	public SSSP.Result computeShortestPaths(Graph g, EdgeWeightFunc.Int w, int source, int maxDistance) {
 		int n = g.vertices().size(), m = g.edges().size();
 		if (n <= 0)

@@ -1,7 +1,23 @@
 package com.jgalgo;
 
+/**
+ * Linear Single Source Shortest Path (SSSP) algorithm for directed acyclic
+ * graphs (DAG).
+ * <p>
+ * The algorithm first compute a topological sorting of the vertices in linear
+ * time, and then traverse the vertices in that order and determine the distance
+ * for each one of them.
+ *
+ * @see TopologicalOrder
+ * @author Barak Ugav
+ */
 public class SSSPDag implements SSSP {
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @throws IllegalArgumentException if graph is not directed or contains cycles
+	 */
 	@Override
 	public SSSPDag.Result computeShortestPaths(Graph g, EdgeWeightFunc w, int source) {
 		if (!(g instanceof DiGraph))

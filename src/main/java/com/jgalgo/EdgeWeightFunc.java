@@ -94,7 +94,7 @@ public interface EdgeWeightFunc extends IntComparator {
 	 * EdgeWeightFunc.Int weightFunc = weights;
 	 *
 	 * // Calculate the shortest paths from v1 to all other vertices
-	 * SSSP ssspAlgo = new SSSPDial1969();
+	 * SSSP ssspAlgo = new SSSPDial();
 	 * SSSP.Result ssspRes = ssspAlgo.computeShortestPaths(g, weightFunc, v1);
 	 *
 	 * // Print the shortest path from v1 to v3
@@ -109,8 +109,8 @@ public interface EdgeWeightFunc extends IntComparator {
 	 * }
 	 * }</pre>
 	 *
-	 * @see SSSPDial1969
-	 * @see SSSPGoldberg1995
+	 * @see SSSPDial
+	 * @see SSSPGoldberg
 	 * @author Barak Ugav
 	 */
 	@FunctionalInterface

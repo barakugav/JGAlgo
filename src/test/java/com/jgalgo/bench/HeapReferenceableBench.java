@@ -81,7 +81,8 @@ public class HeapReferenceableBench {
 	private void benchHeap(HeapReferenceable.Builder heapBuilder, Blackhole blackhole) {
 		for (GraphArgs args : graphs) {
 			/* SSSP */
-			SSSP algo = new SSSPDijkstra(heapBuilder);
+			SSSPDijkstra algo = new SSSPDijkstra();
+			algo.setHeapBuilder(heapBuilder);
 			SSSP.Result ssspRes = algo.computeShortestPaths(args.g, args.w, args.source);
 			blackhole.consume(ssspRes);
 
