@@ -16,7 +16,7 @@ public class SSSPBellmanFord implements SSSP {
 	}
 
 	@Override
-	public SSSP.Result calcDistances(Graph g, EdgeWeightFunc w, int source) {
+	public SSSP.Result computeShortestPaths(Graph g, EdgeWeightFunc w, int source) {
 		if (!(g instanceof DiGraph))
 			throw new IllegalArgumentException("only directed graphs are supported");
 		int n = g.vertices().size();
@@ -83,10 +83,10 @@ public class SSSPBellmanFord implements SSSP {
 		}
 
 		@Override
-		public Path getPathTo(int target) {
+		public Path getPath(int target) {
 			if (foundNegativeCycle())
 				throw new IllegalStateException();
-			return super.getPathTo(target);
+			return super.getPath(target);
 		}
 
 		@Override

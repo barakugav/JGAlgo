@@ -12,14 +12,14 @@ package com.jgalgo;
 public interface APSP {
 
 	/**
-	 * Calculate all shortest paths between all pairs of vertices in a graph.
+	 * Compute all shortest paths between all pairs of vertices in a graph.
 	 *
 	 * @param g a graph
 	 * @param w a weight function
 	 * @return a result object containing information on the shortest path between
 	 *         each two pair of vertices
 	 */
-	public APSP.Result calcAllShortestPaths(Graph g, EdgeWeightFunc w);
+	public APSP.Result computeAllShortestPaths(Graph g, EdgeWeightFunc w);
 
 	/**
 	 * A result object for an {@link APSP} algorithm.

@@ -82,7 +82,7 @@ public class HeapReferenceableBench {
 		for (GraphArgs args : graphs) {
 			/* SSSP */
 			SSSP algo = new SSSPDijkstra(heapBuilder);
-			SSSP.Result ssspRes = algo.calcDistances(args.g, args.w, args.source);
+			SSSP.Result ssspRes = algo.computeShortestPaths(args.g, args.w, args.source);
 			blackhole.consume(ssspRes);
 
 			/* Prim MST */

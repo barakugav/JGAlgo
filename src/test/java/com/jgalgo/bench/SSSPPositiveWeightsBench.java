@@ -66,7 +66,7 @@ public class SSSPPositiveWeightsBench {
 	private void benchSSSPPositiveWeights(Supplier<? extends SSSP> builder, Blackhole blackhole) {
 		for (GraphArgs args : graphs) {
 			SSSP algo = builder.get();
-			SSSP.Result result = algo.calcDistances(args.g, args.w, args.source);
+			SSSP.Result result = algo.computeShortestPaths(args.g, args.w, args.source);
 			blackhole.consume(result);
 		}
 	}

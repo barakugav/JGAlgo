@@ -64,7 +64,7 @@ public class APSPBench {
 	private void benchAPSPPositiveWeights(Supplier<? extends APSP> builder, Blackhole blackhole) {
 		for (Pair<Graph, EdgeWeightFunc.Int> graph : graphs) {
 			APSP algo = builder.get();
-			APSP.Result result = algo.calcAllShortestPaths(graph.first(), graph.second());
+			APSP.Result result = algo.computeAllShortestPaths(graph.first(), graph.second());
 			blackhole.consume(result);
 		}
 	}

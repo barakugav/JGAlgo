@@ -3,7 +3,7 @@ package com.jgalgo;
 public class SSSPDag implements SSSP {
 
 	@Override
-	public SSSPDag.Result calcDistances(Graph g, EdgeWeightFunc w, int source) {
+	public SSSPDag.Result computeShortestPaths(Graph g, EdgeWeightFunc w, int source) {
 		if (!(g instanceof DiGraph))
 			throw new IllegalArgumentException("Only DAG graphs are supported");
 		SSSPResultImpl res = new SSSPResultImpl(g, source);

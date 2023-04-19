@@ -26,7 +26,7 @@ public class APSPJohnson implements APSP {
 	private SSSP positiveSssp = new SSSPDijkstra();
 
 	@Override
-	public APSP.Result calcAllShortestPaths(Graph g, EdgeWeightFunc w) {
+	public APSP.Result computeAllShortestPaths(Graph g, EdgeWeightFunc w) {
 		if (!(g instanceof DiGraph))
 			throw new IllegalArgumentException("only directed graphs are supported");
 		return calcAllShortestPaths0((DiGraph) g, w);
@@ -46,7 +46,7 @@ public class APSPJohnson implements APSP {
 
 		if (!negWeight) {
 			/* No negative weights, no need for potential */
-			SuccessRes res = calcDistancesPositive(g, w);
+			SuccessRes res = computeAPSPPositive(g, w);
 			res.potential = new double[n];
 			return res;
 		}
@@ -61,16 +61,16 @@ public class APSPJohnson implements APSP {
 			double vp = potential[g.edgeTarget(e)];
 			return w.weight(e) + up - vp;
 		};
-		SuccessRes res = calcDistancesPositive(g, wPotential);
+		SuccessRes res = computeAPSPPositive(g, wPotential);
 		res.potential = potential;
 		return res;
 	}
 
-	private SuccessRes calcDistancesPositive(DiGraph g, EdgeWeightFunc w) {
+	private SuccessRes computeAPSPPositive(DiGraph g, EdgeWeightFunc w) {
 		int n = g.vertices().size();
 		SuccessRes res = new SuccessRes(n);
 		for (int source = 0; source < n; source++)
-			res.ssspResults[source] = positiveSssp.calcDistances(g, w, source);
+			res.ssspResults[source] = positiveSssp.computeShortestPaths(g, w, source);
 		return res;
 	}
 
@@ -97,7 +97,7 @@ public class APSPJohnson implements APSP {
 			int ref = edgeEef.getInt(e);
 			return ref != fakeEdge ? w.weight(ref) : 0;
 		};
-		SSSP.Result res = negativeSsssp.calcDistances(refG, refW, fakeV);
+		SSSP.Result res = negativeSsssp.computeShortestPaths(refG, refW, fakeV);
 		if (!res.foundNegativeCycle()) {
 			double[] potential = new double[n];
 			for (int v = 0; v < n; v++)
@@ -187,7 +187,7 @@ public class APSPJohnson implements APSP {
 
 		@Override
 		public Path getPath(int source, int target) {
-			return ssspResults[source].getPathTo(target);
+			return ssspResults[source].getPath(target);
 		}
 
 		@Override

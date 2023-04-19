@@ -16,11 +16,11 @@ import it.unimi.dsi.fastutil.ints.IntList;
 public class APSPFloydWarshall implements APSP {
 
 	@Override
-	public APSP.Result calcAllShortestPaths(Graph g, EdgeWeightFunc w) {
-		return g instanceof DiGraph ? calcDistancesDirected((DiGraph) g, w) : calcDistancesUndirected((UGraph) g, w);
+	public APSP.Result computeAllShortestPaths(Graph g, EdgeWeightFunc w) {
+		return g instanceof DiGraph ? computeAPSPDirected((DiGraph) g, w) : computeAPSPUndirected((UGraph) g, w);
 	}
 
-	private static APSP.Result calcDistancesUndirected(UGraph g, EdgeWeightFunc w) {
+	private static APSP.Result computeAPSPUndirected(UGraph g, EdgeWeightFunc w) {
 		APSPResultImpl.Abstract res = new APSPResultImpl.Undirected(g);
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
@@ -67,7 +67,7 @@ public class APSPFloydWarshall implements APSP {
 		return res;
 	}
 
-	private static APSP.Result calcDistancesDirected(DiGraph g, EdgeWeightFunc w) {
+	private static APSP.Result computeAPSPDirected(DiGraph g, EdgeWeightFunc w) {
 		APSPResultImpl.Abstract res = new APSPResultImpl.Directed(g);
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();

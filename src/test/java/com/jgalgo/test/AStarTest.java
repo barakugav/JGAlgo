@@ -81,7 +81,7 @@ public class AStarTest extends TestUtils {
 				w = rev.w;
 			}
 
-			SSSP.Result ssspRes = new SSSPDijkstra().calcDistances(g, w, params.target);
+			SSSP.Result ssspRes = new SSSPDijkstra().computeShortestPaths(g, w, params.target);
 			return v -> ssspRes.distance(v);
 		});
 	}
@@ -102,7 +102,7 @@ public class AStarTest extends TestUtils {
 				w0.put(e, w.weight(e) * rand.nextDouble());
 			}
 
-			SSSP.Result ssspRes = new SSSPDijkstra().calcDistances(g, e -> w0.get(e), params.target);
+			SSSP.Result ssspRes = new SSSPDijkstra().computeShortestPaths(g, e -> w0.get(e), params.target);
 			return v -> ssspRes.distance(v);
 		});
 	}
@@ -146,7 +146,7 @@ public class AStarTest extends TestUtils {
 			Function<HeuristicParams, IntToDoubleFunction> vHeuristicBuilder) {
 		return () -> new SSSP() {
 			@Override
-			public SSSP.Result calcDistances(Graph g, EdgeWeightFunc w, int source) {
+			public SSSP.Result computeShortestPaths(Graph g, EdgeWeightFunc w, int source) {
 				int n = g.vertices().size();
 				Path[] paths = new Path[n];
 				double[] distances = new double[n];
@@ -170,7 +170,7 @@ public class AStarTest extends TestUtils {
 					}
 
 					@Override
-					public Path getPathTo(int v) {
+					public Path getPath(int v) {
 						return paths[v];
 					}
 

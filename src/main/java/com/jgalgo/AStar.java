@@ -60,7 +60,7 @@ public class AStar {
 			verticesPtrs[next.v] = null;
 			u = next.v;
 			if (u == target)
-				return res.getPathTo(target);
+				return res.getPath(target);
 		}
 		return null;
 	}

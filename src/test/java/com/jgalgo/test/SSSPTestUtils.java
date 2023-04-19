@@ -71,12 +71,12 @@ public class SSSPTestUtils extends TestUtils {
 	}
 
 	static void testAlgo(Graph g, EdgeWeightFunc w, int source, SSSP algo, SSSP validationAlgo) {
-		SSSP.Result result = algo.calcDistances(g, w, source);
+		SSSP.Result result = algo.computeShortestPaths(g, w, source);
 		validateResult(g, w, source, result, validationAlgo);
 	}
 
 	static void validateResult(Graph g, EdgeWeightFunc w, int source, SSSP.Result result, SSSP validationAlgo) {
-		SSSP.Result expectedRes = validationAlgo.calcDistances(g, w, source);
+		SSSP.Result expectedRes = validationAlgo.computeShortestPaths(g, w, source);
 
 		if (result.foundNegativeCycle()) {
 			Path cycle = null;
@@ -102,7 +102,7 @@ public class SSSPTestUtils extends TestUtils {
 			double expectedDistance = expectedRes.distance(v);
 			double actualDistance = result.distance(v);
 			assertEquals(expectedDistance, actualDistance, "Distance to vertex " + v + " is wrong");
-			Path path = result.getPathTo(v);
+			Path path = result.getPath(v);
 			if (path != null) {
 				double pathWeight = getPathWeight(path, w);
 				assertEquals(pathWeight, actualDistance, "Path to vertex " + v + " doesn't match distance ("

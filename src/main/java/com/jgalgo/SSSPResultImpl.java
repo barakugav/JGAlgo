@@ -30,7 +30,7 @@ class SSSPResultImpl implements Result {
 	}
 
 	@Override
-	public Path getPathTo(int target) {
+	public Path getPath(int target) {
 		if (distances[target] == Double.POSITIVE_INFINITY)
 			return null;
 		IntArrayList path = new IntArrayList();
@@ -95,7 +95,7 @@ class SSSPResultImpl implements Result {
 		}
 
 		@Override
-		public Path getPathTo(int target) {
+		public Path getPath(int target) {
 			if (distances[target] == Integer.MAX_VALUE)
 				return null;
 			IntArrayList path = new IntArrayList();

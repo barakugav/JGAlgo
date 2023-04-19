@@ -31,7 +31,7 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
  *
  * // Calculate the shortest paths from v1 to all other vertices
  * SSSP ssspAlgo = new SSSPDijkstra();
- * SSSP.Result ssspRes = ssspAlgo.calcDistances(g, weightFunc, v1);
+ * SSSP.Result ssspRes = ssspAlgo.computeShortestPaths(g, weightFunc, v1);
  *
  * // Print the shortest path from v1 to v3
  * assert ssspRes.distance(v3) == 4.3;
@@ -95,7 +95,7 @@ public interface EdgeWeightFunc extends IntComparator {
 	 *
 	 * // Calculate the shortest paths from v1 to all other vertices
 	 * SSSP ssspAlgo = new SSSPDial1969();
-	 * SSSP.Result ssspRes = ssspAlgo.calcDistances(g, weightFunc, v1);
+	 * SSSP.Result ssspRes = ssspAlgo.computeShortestPaths(g, weightFunc, v1);
 	 *
 	 * // Print the shortest path from v1 to v3
 	 * assert ssspRes.distance(v3) == 4;

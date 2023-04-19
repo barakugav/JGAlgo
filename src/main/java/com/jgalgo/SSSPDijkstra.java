@@ -35,7 +35,7 @@ public class SSSPDijkstra implements SSSP {
 	}
 
 	@Override
-	public SSSP.Result calcDistances(Graph g, EdgeWeightFunc w, int source) {
+	public SSSP.Result computeShortestPaths(Graph g, EdgeWeightFunc w, int source) {
 		int n = g.vertices().size();
 
 		memAlloc(n);

@@ -39,7 +39,7 @@ public class SSSPCardinalityTest extends TestUtils {
 			int source = rand.nextInt(g.vertices().size());
 
 			SSSPCardinality algo = new SSSPCardinality();
-			SSSP.Result actualRes = algo.calcDistances(g, source);
+			SSSP.Result actualRes = algo.computeShortestPaths(g, source);
 
 			SSSP validationAlgo = new SSSPDijkstra();
 			SSSPTestUtils.validateResult(g, w, source, actualRes, validationAlgo);

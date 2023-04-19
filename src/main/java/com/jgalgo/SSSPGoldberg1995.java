@@ -25,15 +25,15 @@ public class SSSPGoldberg1995 implements SSSP {
 	}
 
 	@Override
-	public SSSP.Result calcDistances(Graph g, EdgeWeightFunc w, int source) {
+	public SSSP.Result computeShortestPaths(Graph g, EdgeWeightFunc w, int source) {
 		if (!(g instanceof DiGraph))
 			throw new IllegalArgumentException("Undirected graphs are not supported");
 		if (!(w instanceof EdgeWeightFunc.Int))
 			throw new IllegalArgumentException("Only integer weights are supported");
-		return calcDistances0((DiGraph) g, (EdgeWeightFunc.Int) w, source);
+		return computeShortestPaths0((DiGraph) g, (EdgeWeightFunc.Int) w, source);
 	}
 
-	private SSSP.Result calcDistances0(DiGraph g, EdgeWeightFunc.Int w, int source) {
+	private SSSP.Result computeShortestPaths0(DiGraph g, EdgeWeightFunc.Int w, int source) {
 		int minWeight = Integer.MAX_VALUE;
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
@@ -41,14 +41,14 @@ public class SSSPGoldberg1995 implements SSSP {
 		}
 		if (minWeight >= 0)
 			// All weights are positive, use Dijkstra
-			return positiveSsspAlgo.calcDistances(g, w, source);
+			return positiveSsspAlgo.computeShortestPaths(g, w, source);
 
 		Pair<int[], Path> p = calcPotential(g, w, minWeight);
 		if (p.e2 != null)
 			return Result.ofNegCycle(source, p.e2);
 		int[] potential = p.e1;
 		PotentialWeightFunction pw = new PotentialWeightFunction(g, w, potential);
-		SSSP.Result res = positiveSsspAlgo.calcDistances(g, pw, source);
+		SSSP.Result res = positiveSsspAlgo.computeShortestPaths(g, pw, source);
 		return Result.ofSuccess(source, potential, res);
 	}
 
@@ -118,7 +118,7 @@ public class SSSPGoldberg1995 implements SSSP {
 				// Create a fake vertex S, connect with 0 edges to all and calc distances
 				for (int U = 0; U < N; U++)
 					GWeights.set(G.addEdge(fakeS1, U), 0);
-				SSSP.Result ssspRes = dagSssp.calcDistances(G, GWeights, fakeS1);
+				SSSP.Result ssspRes = dagSssp.computeShortestPaths(G, GWeights, fakeS1);
 
 				// Divide super vertices into layers by distance
 				int layerNum = 0;
@@ -153,7 +153,7 @@ public class SSSPGoldberg1995 implements SSSP {
 					// on the path and with edge r to all other vertices
 					connected.clear();
 					int assignedWeight = layerNum - 2;
-					for (IntIterator it = ssspRes.getPathTo(vertexInMaxLayer).iterator(); it.hasNext();) {
+					for (IntIterator it = ssspRes.getPath(vertexInMaxLayer).iterator(); it.hasNext();) {
 						int e = it.nextInt();
 						int ew = GWeights.getInt(e);
 						if (ew < 0) {
@@ -177,7 +177,7 @@ public class SSSPGoldberg1995 implements SSSP {
 					}
 
 					// Calc distance with abs weight function to update potential function
-					ssspRes = ssspDial.calcDistances(G, e -> Math.abs(GWeights.getInt(e)), fakeS2, layerNum);
+					ssspRes = ssspDial.computeShortestPaths(G, e -> Math.abs(GWeights.getInt(e)), fakeS2, layerNum);
 					for (int v = 0; v < n; v++)
 						potential[v] += ssspRes.distance(connectivityRes.getVertexCc(v));
 				}
@@ -233,10 +233,10 @@ public class SSSPGoldberg1995 implements SSSP {
 		}
 
 		@Override
-		public Path getPathTo(int target) {
+		public Path getPath(int target) {
 			if (foundNegativeCycle())
 				throw new IllegalStateException();
-			return dijkstraRes.getPathTo(target);
+			return dijkstraRes.getPath(target);
 		}
 
 		@Override

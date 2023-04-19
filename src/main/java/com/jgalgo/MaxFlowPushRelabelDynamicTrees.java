@@ -98,7 +98,7 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 			IntPriorityQueue toCut = new IntArrayFIFOQueue();
 
 			/* Init all vertices distances */
-			SSSP.Result initD = new SSSPCardinality().calcDistances(g, sink);
+			SSSP.Result initD = new SSSPCardinality().computeShortestPaths(g, sink);
 			for (int u = 0; u < n; u++)
 				if (u != source && u != sink)
 					vertexData[u].d = (int) initD.distance(sink);
@@ -416,7 +416,7 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 			IntPriorityQueue toCut = new IntArrayFIFOQueue();
 
 			/* Init all vertices distances */
-			SSSP.Result initD = new SSSPCardinality().calcDistances(g, sink);
+			SSSP.Result initD = new SSSPCardinality().computeShortestPaths(g, sink);
 			for (int u = 0; u < n; u++)
 				if (u != source && u != sink)
 					vertexData[u].d = (int) initD.distance(sink);

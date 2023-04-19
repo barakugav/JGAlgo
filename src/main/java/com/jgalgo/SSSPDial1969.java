@@ -41,7 +41,7 @@ public class SSSPDial1969 implements SSSP {
 	}
 
 	@Override
-	public SSSP.Result calcDistances(Graph g, EdgeWeightFunc w0, int source) {
+	public SSSP.Result computeShortestPaths(Graph g, EdgeWeightFunc w0, int source) {
 		if (!(w0 instanceof EdgeWeightFunc.Int))
 			throw new IllegalArgumentException("only int weights are supported");
 		EdgeWeightFunc.Int w = (EdgeWeightFunc.Int) w0;
@@ -68,12 +68,12 @@ public class SSSPDial1969 implements SSSP {
 				maxDistance += w.weightInt(edges[i]);
 		}
 
-		SSSP.Result res = calcDistances(g, w, source, maxDistance);
+		SSSP.Result res = computeShortestPaths(g, w, source, maxDistance);
 		memClear(n, m);
 		return res;
 	}
 
-	public SSSP.Result calcDistances(Graph g, EdgeWeightFunc.Int w, int source, int maxDistance) {
+	public SSSP.Result computeShortestPaths(Graph g, EdgeWeightFunc.Int w, int source, int maxDistance) {
 		int n = g.vertices().size(), m = g.edges().size();
 		if (n <= 0)
 			throw new IllegalArgumentException();

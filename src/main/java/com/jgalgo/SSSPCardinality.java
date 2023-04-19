@@ -2,7 +2,7 @@ package com.jgalgo;
 
 public class SSSPCardinality {
 
-	public SSSP.Result calcDistances(Graph g, int source) {
+	public SSSP.Result computeShortestPaths(Graph g, int source) {
 		SSSPResultImpl.Int res = new SSSPResultImpl.Int(g, source);
 		for (BFSIter it = new BFSIter(g, source); it.hasNext();) {
 			int v = it.nextInt();
