@@ -372,7 +372,7 @@ class GraphImplTestUtils extends TestUtils {
 		}
 
 		void removeVertex(Vertex v) {
-			removeEdgesAll(v);
+			removeEdgesOf(v);
 
 			boolean removed = vertices.remove(v);
 			Assertions.assertTrue(removed);
@@ -427,21 +427,21 @@ class GraphImplTestUtils extends TestUtils {
 			Assertions.assertTrue(removed);
 		}
 
-		void removeEdgesAll(Vertex u) {
+		void removeEdgesOf(Vertex u) {
 			if (debugPrints)
-				System.out.println("removeEdgesAll(" + u + ")");
+				System.out.println("removeEdgesOf(" + u + ")");
 			edges.removeIf(edge -> edge.u == u || edge.v == u);
 		}
 
-		void removeEdgesAllOut(Vertex u) {
+		void removeEdgesOutOf(Vertex u) {
 			if (debugPrints)
-				System.out.println("removeEdgesAllOut(" + u + ")");
+				System.out.println("removeEdgesOutOf(" + u + ")");
 			edges.removeIf(edge -> edge.u == u);
 		}
 
-		void removeEdgesAllIn(Vertex v) {
+		void removeEdgesInOf(Vertex v) {
 			if (debugPrints)
-				System.out.println("removeEdgesAllIn(" + v + ")");
+				System.out.println("removeEdgesInOf(" + v + ")");
 			edges.removeIf(edge -> edge.v == v);
 		}
 
@@ -766,8 +766,8 @@ class GraphImplTestUtils extends TestUtils {
 					if (tracker.verticesNum() == 0)
 						continue;
 					GraphTracker.Vertex u = tracker.getRandVertex(rand);
-					g.removeEdges(u.id);
-					tracker.removeEdgesAll(u);
+					g.removeEdgesOf(u.id);
+					tracker.removeEdgesOf(u);
 					break;
 				}
 				case RemoveEdgesOfVertexUsingIter: {
@@ -782,15 +782,15 @@ class GraphImplTestUtils extends TestUtils {
 						it.nextInt();
 						it.remove();
 					}
-					tracker.removeEdgesAll(u);
+					tracker.removeEdgesOf(u);
 					break;
 				}
 				case RemoveEdgesInOfVertex: {
 					if (tracker.verticesNum() == 0)
 						continue;
 					GraphTracker.Vertex u = tracker.getRandVertex(rand);
-					g.removeEdgesIn(u.id);
-					tracker.removeEdgesAllIn(u);
+					g.removeEdgesInOf(u.id);
+					tracker.removeEdgesInOf(u);
 					break;
 				}
 				case RemoveEdgesInOfVertexUsingIter: {
@@ -801,15 +801,15 @@ class GraphImplTestUtils extends TestUtils {
 						it.nextInt();
 						it.remove();
 					}
-					tracker.removeEdgesAllIn(u);
+					tracker.removeEdgesInOf(u);
 					break;
 				}
 				case RemoveEdgesOutOfVertex: {
 					if (tracker.verticesNum() == 0)
 						continue;
 					GraphTracker.Vertex u = tracker.getRandVertex(rand);
-					g.removeEdgesOut(u.id);
-					tracker.removeEdgesAllOut(u);
+					g.removeEdgesOutOf(u.id);
+					tracker.removeEdgesOutOf(u);
 					break;
 				}
 				case RemoveEdgesOutOfVertexUsingIter: {
@@ -820,7 +820,7 @@ class GraphImplTestUtils extends TestUtils {
 						it.nextInt();
 						it.remove();
 					}
-					tracker.removeEdgesAllOut(u);
+					tracker.removeEdgesOutOf(u);
 					break;
 				}
 				case ReverseEdge: {

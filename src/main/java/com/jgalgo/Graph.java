@@ -278,9 +278,9 @@ public interface Graph {
 	 * @throws IndexOutOfBoundsException if {@code u} is not a valid vertex
 	 *                                   identifier
 	 */
-	default void removeEdges(int u) {
-		removeEdgesOut(u);
-		removeEdgesIn(u);
+	default void removeEdgesOf(int u) {
+		removeEdgesOutOf(u);
+		removeEdgesInOf(u);
 	}
 
 	/**
@@ -294,7 +294,7 @@ public interface Graph {
 	 * @throws IndexOutOfBoundsException if {@code u} is not a valid vertex
 	 *                                   identifier
 	 */
-	default void removeEdgesOut(int u) {
+	default void removeEdgesOutOf(int u) {
 		for (EdgeIter eit = edgesOut(u); eit.hasNext();) {
 			eit.nextInt();
 			eit.remove();
@@ -312,7 +312,7 @@ public interface Graph {
 	 * @throws IndexOutOfBoundsException if {@code v} is not a valid vertex
 	 *                                   identifier
 	 */
-	default void removeEdgesIn(int v) {
+	default void removeEdgesInOf(int v) {
 		for (EdgeIter eit = edgesIn(v); eit.hasNext();) {
 			eit.nextInt();
 			eit.remove();

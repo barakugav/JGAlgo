@@ -85,7 +85,7 @@ public class GraphLinkedUndirected extends GraphLinkedAbstract implements UGraph
 	}
 
 	@Override
-	public void removeEdges(int u) {
+	public void removeEdgesOf(int u) {
 		checkVertexIdx(u);
 		for (Node p = edges.get(u), next; p != null; p = next) {
 			// update u list

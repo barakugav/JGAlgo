@@ -9,8 +9,8 @@ package com.jgalgo;
  * {@code edgesIn(v)}, {@code edgesOut(v)} and {@code edgesIn(u)}. Also
  * {@link #edgesOut(int)} and {@link #edgesIn(int)} are equivalent for the same
  * vertex, same for {@link #degreeIn(int)} and {@link #degreeOut(int)}, and
- * similarly {@link #removeEdges(int)}, {@link #removeEdgesIn(int)} and
- * {@link #removeEdgesOut(int)}.
+ * similarly {@link #removeEdgesOf(int)}, {@link #removeEdgesInOf(int)} and
+ * {@link #removeEdgesOutOf(int)}.
  *
  * @see DiGraph
  * @author Barak Ugav
@@ -23,7 +23,7 @@ public interface UGraph extends Graph {
 	}
 
 	@Override
-	default void removeEdges(int u) {
+	default void removeEdgesOf(int u) {
 		for (EdgeIter eit = edgesOut(u); eit.hasNext();) {
 			eit.nextInt();
 			eit.remove();
@@ -31,13 +31,13 @@ public interface UGraph extends Graph {
 	}
 
 	@Override
-	default void removeEdgesOut(int u) {
-		removeEdges(u);
+	default void removeEdgesOutOf(int u) {
+		removeEdgesOf(u);
 	}
 
 	@Override
-	default void removeEdgesIn(int v) {
-		removeEdges(v);
+	default void removeEdgesInOf(int v) {
+		removeEdgesOf(v);
 	}
 
 	@Override

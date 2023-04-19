@@ -155,7 +155,7 @@ public class MaxFlowDinicDynamicTrees implements MaxFlow {
 
 						dt.cut(m.u());
 					}
-					L.removeEdgesIn(v);
+					L.removeEdgesInOf(v);
 
 				} else {
 					/* Advance */

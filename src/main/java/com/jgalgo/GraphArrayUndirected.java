@@ -91,7 +91,7 @@ public class GraphArrayUndirected extends GraphArrayAbstract implements UGraph {
 	}
 
 	@Override
-	public void removeEdges(int u) {
+	public void removeEdgesOf(int u) {
 		checkVertexIdx(u);
 		while (edgesNum.getInt(u) > 0)
 			removeEdge(edges.get(u)[0]);

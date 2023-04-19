@@ -266,19 +266,19 @@ class GraphBuilderImpl {
 		}
 
 		@Override
-		public void removeEdges(int u) {
+		public void removeEdgesOf(int u) {
 			int uIdx = verticesIDStrategy.idToIdx(u);
-			g.removeEdges(uIdx);
+			g.removeEdgesOf(uIdx);
 		}
 
 		@Override
-		public void removeEdgesOut(int u) {
-			g.removeEdgesOut(verticesIDStrategy.idToIdx(u));
+		public void removeEdgesOutOf(int u) {
+			g.removeEdgesOutOf(verticesIDStrategy.idToIdx(u));
 		}
 
 		@Override
-		public void removeEdgesIn(int v) {
-			g.removeEdgesIn(verticesIDStrategy.idToIdx(v));
+		public void removeEdgesInOf(int v) {
+			g.removeEdgesInOf(verticesIDStrategy.idToIdx(v));
 		}
 
 		@Override
