@@ -64,7 +64,7 @@ public interface MST {
 	public static boolean verifyMST(Graph g, EdgeWeightFunc w, Graph mst, TPM tpmAlgo, Weights.Int edgeRef) {
 		if (g instanceof DiGraph)
 			throw new IllegalArgumentException("Directed graphs are not supported");
-		if (!Graphs.isTree((UGraph) mst))
+		if (!Trees.isTree((UGraph) mst))
 			return false;
 
 		EdgeWeightFunc w0 = e -> w.weight(edgeRef.getInt(e));

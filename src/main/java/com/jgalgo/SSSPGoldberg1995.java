@@ -105,7 +105,7 @@ public class SSSPGoldberg1995 implements SSSP {
 
 						} else if (weight < 0) {
 							// negative cycle
-							Path negCycle0 = Graphs.findPath(gNeg, v, u);
+							Path negCycle0 = Path.findPath(gNeg, v, u);
 							IntList negCycle = new IntArrayList(negCycle0.size() + 1);
 							for (IntIterator it = negCycle0.iterator(); it.hasNext();)
 								negCycle.add(gNegEdgeRefs.getInt(it.nextInt()));

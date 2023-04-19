@@ -1,14 +1,86 @@
 package com.jgalgo;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 
-class Trees {
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntStack;
+
+public class Trees {
 
 	private Trees() {
+	}
+
+	public static boolean isTree(UGraph g) {
+		IntIterator vIter = g.vertices().iterator();
+		return !vIter.hasNext() ? true : isTree(g, vIter.nextInt());
+	}
+
+	public static boolean isTree(Graph g, int root) {
+		return isForest(g, new int[] { root });
+	}
+
+	public static boolean isForest(Graph g) {
+		int n = g.vertices().size();
+		int[] roots = new int[n];
+		for (int u = 0; u < n; u++)
+			roots[u] = u;
+		return isForest(g, roots, true);
+	}
+
+	public static boolean isForest(Graph g, int[] roots) {
+		return isForest(g, roots, false);
+	}
+
+	private static boolean isForest(Graph g, int[] roots, boolean allowVisitedRoot) {
+		int n = g.vertices().size();
+		if (n == 0)
+			return true;
+		boolean directed = g instanceof DiGraph;
+
+		BitSet visited = new BitSet(n);
+		int[] parent = new int[n];
+		Arrays.fill(parent, -1);
+
+		IntStack stack = new IntArrayList();
+		int visitedCount = 0;
+
+		for (int i = 0; i < roots.length; i++) {
+			int root = roots[i];
+			if (visited.get(root)) {
+				if (allowVisitedRoot)
+					continue;
+				return false;
+			}
+
+			stack.push(root);
+			visited.set(root);
+
+			while (!stack.isEmpty()) {
+				int u = stack.popInt();
+				visitedCount++;
+
+				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
+					eit.nextInt();
+					int v = eit.v();
+					if (!directed && v == parent[u])
+						continue;
+					if (visited.get(v))
+						return false;
+					visited.set(v);
+					stack.push(v);
+					parent[v] = u;
+				}
+			}
+		}
+
+		return visitedCount == n;
 	}
 
 	interface TreeNode<N extends TreeNode<N>> {

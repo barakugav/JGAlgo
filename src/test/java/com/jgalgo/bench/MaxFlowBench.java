@@ -23,7 +23,6 @@ import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.DiGraph;
 import com.jgalgo.FlowNetwork;
 import com.jgalgo.GraphBuilder;
-import com.jgalgo.Graphs;
 import com.jgalgo.MaxFlow;
 import com.jgalgo.MaxFlowDinic;
 import com.jgalgo.MaxFlowDinicDynamicTrees;
@@ -33,6 +32,7 @@ import com.jgalgo.MaxFlowPushRelabelDynamicTrees;
 import com.jgalgo.MaxFlowPushRelabelHighestFirst;
 import com.jgalgo.MaxFlowPushRelabelLowestFirst;
 import com.jgalgo.MaxFlowPushRelabelToFront;
+import com.jgalgo.Path;
 import com.jgalgo.test.MaxFlowTestUtils;
 import com.jgalgo.test.GraphsTestUtils.RandomGraphBuilder;
 import com.jgalgo.test.TestUtils.SeedGenerator;
@@ -85,7 +85,7 @@ public class MaxFlowBench {
 			for (;;) {
 				source = rand.nextInt(g.vertices().size());
 				sink = rand.nextInt(g.vertices().size());
-				if (source != sink && Graphs.findPath(g, source, sink) != null)
+				if (source != sink && Path.findPath(g, source, sink) != null)
 					break;
 			}
 

@@ -1,6 +1,10 @@
 package com.jgalgo;
 
+import java.util.Arrays;
+
 import it.unimi.dsi.fastutil.ints.AbstractIntList;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntListIterator;
@@ -134,6 +138,55 @@ public class Path extends AbstractIntList {
 	@Override
 	public int lastIndexOf(int k) {
 		return edges.lastIndexOf(k);
+	}
+
+	/**
+	 * Find a valid path from u to v.
+	 *
+	 * <p>
+	 * This function uses BFS, which will result in the shortest path in the number
+	 * of edges.
+	 *
+	 * @param g a graph
+	 * @param u source vertex
+	 * @param v target vertex
+	 * @return list of edges that represent a valid path from u to v, null if path
+	 *         not found
+	 */
+	public static Path findPath(Graph g, final int u, final int v) {
+		if (u == v)
+			return new Path(g, u, v, IntLists.emptyList());
+		boolean reverse = true;
+		int u0 = u, v0 = v;
+		if (g instanceof UGraph) {
+			u0 = v;
+			v0 = u;
+			reverse = false;
+		}
+		int n = g.vertices().size();
+		int[] backtrack = new int[n];
+		Arrays.fill(backtrack, -1);
+
+		IntArrayList path = new IntArrayList();
+		for (BFSIter it = new BFSIter(g, u0); it.hasNext();) {
+			int p = it.nextInt();
+			backtrack[p] = it.inEdge();
+			if (p == v0)
+				break;
+		}
+
+		if (backtrack[v0] == -1)
+			return null;
+
+		for (int p = v0; p != u0;) {
+			int e = backtrack[p];
+			path.add(e);
+			p = g.edgeEndpoint(e, p);
+		}
+
+		if (reverse)
+			IntArrays.reverse(path.elements(), 0, path.size());
+		return new Path(g, u, v, path);
 	}
 
 }

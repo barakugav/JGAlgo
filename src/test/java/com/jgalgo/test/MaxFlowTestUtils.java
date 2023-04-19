@@ -12,8 +12,8 @@ import org.junit.jupiter.api.Assertions;
 import com.jgalgo.DiGraph;
 import com.jgalgo.FlowNetwork;
 import com.jgalgo.Graph;
-import com.jgalgo.Graphs;
 import com.jgalgo.MaxFlow;
+import com.jgalgo.Path;
 import com.jgalgo.test.GraphImplTestUtils.GraphImpl;
 import com.jgalgo.test.GraphsTestUtils.RandomGraphBuilder;
 
@@ -90,7 +90,7 @@ public class MaxFlowTestUtils extends TestUtils {
 			for (;;) {
 				source = rand.nextInt(g.vertices().size());
 				sink = rand.nextInt(g.vertices().size());
-				if (source != sink && Graphs.findPath(g, source, sink) != null)
+				if (source != sink && Path.findPath(g, source, sink) != null)
 					break;
 			}
 
@@ -113,7 +113,7 @@ public class MaxFlowTestUtils extends TestUtils {
 			for (;;) {
 				source = rand.nextInt(g.vertices().size());
 				sink = rand.nextInt(g.vertices().size());
-				if (source != sink && Graphs.findPath(g, source, sink) != null)
+				if (source != sink && Path.findPath(g, source, sink) != null)
 					break;
 			}
 

@@ -27,7 +27,7 @@ public class LCARMQBenderFarachColton2000 implements LCAStatic {
 
 	@Override
 	public void preProcessLCA(Graph t, int r) {
-		if (!Graphs.isTree(t, r))
+		if (!Trees.isTree(t, r))
 			throw new IllegalArgumentException();
 
 		int n = t.vertices().size();

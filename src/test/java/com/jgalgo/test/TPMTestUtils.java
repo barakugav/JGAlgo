@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Assertions;
 import com.jgalgo.EdgeWeightFunc;
 import com.jgalgo.Graph;
 import com.jgalgo.GraphArrayUndirected;
-import com.jgalgo.Graphs;
 import com.jgalgo.MST;
 import com.jgalgo.MSTKruskal1956;
 import com.jgalgo.Path;
@@ -32,7 +31,7 @@ public class TPMTestUtils extends TestUtils {
 		for (int q = 0; q < queriesNum; q++) {
 			int u = queries[q * 2], v = queries[q * 2 + 1];
 
-			Path path = Graphs.findPath(t, u, v);
+			Path path = Path.findPath(t, u, v);
 
 			int maxEdge = -1;
 			double maxEdgeWeight = 0;
@@ -146,7 +145,7 @@ public class TPMTestUtils extends TestUtils {
 				e = edges[rand.nextInt(edges.length)];
 			} while (mstEdges.contains(e));
 
-			Path mstPath = Graphs.findPath(mst, g.edgeSource(e), g.edgeTarget(e));
+			Path mstPath = Path.findPath(mst, g.edgeSource(e), g.edgeTarget(e));
 			int edgeToRemove = mstPath.getInt(rand.nextInt(mstPath.size()));
 			mst.removeEdge(edgeToRemove);
 			int en = mst.addEdge(g.edgeSource(e), g.edgeTarget(e));
