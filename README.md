@@ -27,10 +27,10 @@ The library runs on Java 11 or higher, and it is installed using Maven (WIP).
 | Union Find | $O(m \cdot \alpha(m,n))$ where $\alpha(\cdot, \cdot)$ is the inverse Ackermann func |
 | Split Find Min | $O(m \log n)$ for $m$ operations |
 | SSSP Dijkstra positive weights | $O(m + n \log n)$ |
-| SSSP Dial1969 positive integer weights | $O(m + D)$ where $D$ is the maximum distance |
+| SSSP Dial positive integer weights | $O(m + D)$ where $D$ is the maximum distance |
 | SSSP BellmanFord general weights | $O(m n)$ |
-| SSSP Goldberg1995 positive and negative integer weights | $O(m \sqrt{n} \log N)$ where $N$ is the minimum negative weight |
-| APSP FloydWarshall general weights | $O(n^3)$ |
+| SSSP Goldberg positive and negative integer weights | $O(m \sqrt{n} \log N)$ where $N$ is the minimum negative weight |
+| APSP Floyd-Warshall general weights | $O(n^3)$ |
 | APSP Johnson general weights | $O(m n + n^2 \log n)$ |
 | A* | $O(b^d)$ where $b$ is the branching factor and $d$ is the depth, $O(m \log n)$ worst case |
 | RMQ $\pm 1$ BenderFarachColton2000 | $O(n)$ preprocessing, $O(1)$ query |
@@ -46,13 +46,13 @@ The library runs on Java 11 or higher, and it is installed using Maven (WIP).
 | Max flow Push/Relabel using Dynamic Trees | $O\left(m n \log \left(\frac{n^2}{m}\right)\right)$ |
 | Max flow Dinic | $O(m n^2)$ |
 | Max flow Dinic using Dynamic Trees | $O(m n \log n)$ |
-| MST Boruvka1926 | $O(m \log n)$ |
-| MST Kruskal1956 | $O(m \log n)$ |
-| MST Prim1957 | $O(m + n \log n)$ |
-| MST Yao1976 | $O(m \log \log n + n \log n)$ |
-| MST FredmanTarjan1987 | $O(m \log^* n)$ |
-| MST KargerKleinTarjan1995 randomized | $O(n + m)$ expected |
-| MDST Tarjan1977 directed graphs | $O(m \log n)$ |
+| MST Boruvka | $O(m \log n)$ |
+| MST Kruskal | $O(m \log n)$ |
+| MST Prim | $O(m + n \log n)$ |
+| MST Yao | $O(m \log \log n + n \log n)$ |
+| MST Fredman-Tarjan | $O(m \log^* n)$ |
+| MST Karger-Klein-Tarjan randomized | $O(n + m)$ expected |
+| MDST Tarjan directed graphs | $O(m \log n)$ |
 | Tree path maxima (TMP) Komlos1985King1997Hagerup2009 | $O(n + m)$ where $m$ is the number of queries |
 | Subtree Merge Findmin (used in general weighted matching) | $O(m + n \log n)$ |
 | Maximum matching bipartite unweighted HopcroftKarp1973 | $O(m \sqrt{n})$ |

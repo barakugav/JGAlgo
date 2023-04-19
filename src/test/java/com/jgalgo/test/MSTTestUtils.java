@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.jgalgo.EdgeWeightFunc;
 import com.jgalgo.Graph;
 import com.jgalgo.MST;
-import com.jgalgo.MSTKruskal1956;
+import com.jgalgo.MSTKruskal;
 import com.jgalgo.test.GraphImplTestUtils.GraphImpl;
 
 import it.unimi.dsi.fastutil.ints.IntAVLTreeSet;
@@ -37,7 +37,7 @@ class MSTTestUtils extends TestUtils {
 			Graph g = GraphsTestUtils.randGraph(n, m, graphImpl, seedGen.nextSeed());
 			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 
-			IntCollection mst = algo.calcMST(g, w);
+			IntCollection mst = algo.computeMinimumSpanningTree(g, w);
 			verifyMST(g, w, mst);
 		});
 	}
@@ -80,7 +80,7 @@ class MSTTestUtils extends TestUtils {
 		 * It's hard to verify MST, we use Kruskal algorithm to verify the others, and
 		 * assume its implementation is correct
 		 */
-		IntCollection expected = new MSTKruskal1956().calcMST(g, w);
+		IntCollection expected = new MSTKruskal().computeMinimumSpanningTree(g, w);
 
 		IntComparator c = new MSTEdgeComparator(g, w);
 		IntSet actualSet = new IntAVLTreeSet(c);

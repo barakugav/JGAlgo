@@ -2,17 +2,29 @@ package com.jgalgo;
 
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
-/* Directed version of MST */
+/**
+ * Minimum spanning tree algorithm for directed graphs.
+ * <p>
+ * A spanning tree in directed graph is defined similarly to a spanning tree in
+ * undirected graph, but the 'spanning tree' does not yield a strongly connected
+ * graph, but a weakly connected tree rooted at some vertex.
+ *
+ * @author Barak Ugav
+ */
 public interface MDST extends MST {
 
 	/**
-	 * Calculate MDST from some vertex in the graph.
+	 * {@inheritDoc}
+	 * <p>
+	 * The result tree will be rooted at some vertex chosen by the algorithm.
+	 *
+	 * @throws IllegalArgumentException if the graph is not directed
 	 */
 	@Override
-	public IntCollection calcMST(Graph g, EdgeWeightFunc w);
+	public IntCollection computeMinimumSpanningTree(Graph g, EdgeWeightFunc w);
 
 	/**
-	 * Calculate minimum directed spanning tree (MDST) in a directed graph, rooted
+	 * Compute a minimum directed spanning tree (MDST) in a directed graph, rooted
 	 * at the given vertex
 	 *
 	 * @param g    a directed graph
@@ -20,6 +32,6 @@ public interface MDST extends MST {
 	 * @param root vertex in the graph the spanning tree will be rooted from
 	 * @return all edges composing the spanning tree
 	 */
-	public IntCollection calcMST(Graph g, EdgeWeightFunc w, int root);
+	public IntCollection computeMinimumSpanningTree(DiGraph g, EdgeWeightFunc w, int root);
 
 }

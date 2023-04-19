@@ -2,14 +2,14 @@ package com.jgalgo.test;
 
 import org.junit.jupiter.api.Test;
 
-import com.jgalgo.MSTYao1976;
+import com.jgalgo.MSTYao;
 
-public class MSTYao1976Test extends TestUtils {
+public class MSTYaoTest extends TestUtils {
 
 	@Test
 	public void testRandGraph() {
 		final long seed = 0x9d78f3343689fe2dL;
-		MSTTestUtils.testRandGraph(MSTYao1976::new, seed);
+		MSTTestUtils.testRandGraph(MSTYao::new, seed);
 	}
 
 }

@@ -38,7 +38,7 @@ public class TSPMetricMSTAppx implements TSPMetric {
 				weights.set(g.addEdge(u, v), distances[u][v]);
 
 		/* Calculate MST */
-		IntCollection mst = new MSTPrim1957().calcMST(g, weights);
+		IntCollection mst = new MSTPrim().computeMinimumSpanningTree(g, weights);
 
 		/* Build a graph with each MST edge duplicated */
 		UGraph g1 = new GraphArrayUndirected(n);

@@ -11,7 +11,7 @@ import com.jgalgo.EdgeWeightFunc;
 import com.jgalgo.Graph;
 import com.jgalgo.GraphArrayDirected;
 import com.jgalgo.MDST;
-import com.jgalgo.MDSTTarjan1977;
+import com.jgalgo.MDSTTarjan;
 import com.jgalgo.MST;
 import com.jgalgo.Weights;
 import com.jgalgo.test.GraphImplTestUtils.GraphImpl;
@@ -21,7 +21,7 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
-public class MDSTTarjan1977Test extends TestUtils {
+public class MDSTTarjanTest extends TestUtils {
 
 	private static class MDSTUndirectedWrapper implements MST {
 
@@ -32,9 +32,9 @@ public class MDSTTarjan1977Test extends TestUtils {
 		}
 
 		@Override
-		public IntCollection calcMST(Graph g, EdgeWeightFunc w) {
+		public IntCollection computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
 			if (g instanceof DiGraph)
-				return algo.calcMST(g, w);
+				return algo.computeMinimumSpanningTree(g, w);
 			int n = g.vertices().size();
 			Graph dg = new GraphArrayDirected(n);
 			Weights.Int edgeRef = dg.addEdgesWeights("edgeRef", int.class, Integer.valueOf(-1));
@@ -46,7 +46,7 @@ public class MDSTTarjan1977Test extends TestUtils {
 					edgeRef.set(dg.addEdge(v, u), e);
 				}
 			}
-			IntCollection mst0 = algo.calcMST(dg, e -> w.weight(edgeRef.getInt(e)));
+			IntCollection mst0 = algo.computeMinimumSpanningTree(dg, e -> w.weight(edgeRef.getInt(e)));
 			IntCollection mst = new IntArrayList(mst0.size());
 			for (IntIterator it = mst0.iterator(); it.hasNext();)
 				mst.add(edgeRef.getInt(it.nextInt()));
@@ -57,13 +57,13 @@ public class MDSTTarjan1977Test extends TestUtils {
 	@Test
 	public void testRandGraphUndirected() {
 		final long seed = 0x9234356819f0ea1dL;
-		MSTTestUtils.testRandGraph(() -> new MDSTUndirectedWrapper(new MDSTTarjan1977()), seed);
+		MSTTestUtils.testRandGraph(() -> new MDSTUndirectedWrapper(new MDSTTarjan()), seed);
 	}
 
 	@Test
 	public void testRandGraphDirected() {
 		final long seed = 0xdb81d5dd5fe0d5b3L;
-		testRandGraph(MDSTTarjan1977::new, seed);
+		testRandGraph(MDSTTarjan::new, seed);
 	}
 
 	private static void testRandGraph(Supplier<? extends MDST> builder, long seed) {
@@ -77,7 +77,8 @@ public class MDSTTarjan1977Test extends TestUtils {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(false)
+			DiGraph g = (DiGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true)
+					.parallelEdges(false)
 					.selfEdges(false).cycles(true).connected(false).graphImpl(graphImpl).build();
 			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 
@@ -86,9 +87,9 @@ public class MDSTTarjan1977Test extends TestUtils {
 		});
 	}
 
-	private static void testRandGraph(MDST algo, Graph g, EdgeWeightFunc w) {
+	private static void testRandGraph(MDST algo, DiGraph g, EdgeWeightFunc w) {
 		@SuppressWarnings("unused")
-		IntCollection mst = algo.calcMST(g, w, 0);
+		IntCollection mst = algo.computeMinimumSpanningTree(g, w, 0);
 		// TODO verify the result
 	}
 

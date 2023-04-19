@@ -7,23 +7,47 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntLists;
 
-public class MSTFredmanTarjan1987 implements MST {
-
-	/*
-	 * O(m log* n)
-	 */
+/**
+ * Fredman and Tarjan’s minimum spanning tree algorithm.
+ * <p>
+ * The algorithm runs in iterations. In each iteration, multiple runs of the
+ * {@link MSTPrim} algorithm will be run (sequently) on the vertices: instead of
+ * growing the tree of Prim's algorithm until it connect all vertices, we grow
+ * the heap that is used to order the out going edges until it reaches a certain
+ * size limit. Once the heap reached the limit, we start Prim's algorithm from
+ * another vertex until the new heap reaches the limit, and repeat that until we
+ * have a spanning forest. Than, we <i>contract</i> each forest to a single
+ * super vertex, and we advance to the next iteration.
+ * <p>
+ * The algorithm runs in {@code O(m log* n)} time and uses linear space. In
+ * practice, {@link MSTPrim} usually out-preform this algorithm. Note that only
+ * undirected graphs are supported.
+ * <p>
+ * Based on "Fibonacci Heaps and Their Uses in Improved Network Optimization
+ * Algorithms" by M.L. Fredman and R.E. Tarjan.
+ *
+ * @author Barak Ugav
+ */
+public class MSTFredmanTarjan implements MST {
 
 	private HeapReferenceable.Builder heapBuilder = HeapPairing::new;
 
-	public MSTFredmanTarjan1987() {
-	}
-
+	/**
+	 * Set the implementation of the heap used by this algorithm.
+	 *
+	 * @param heapBuilder a builder for heaps used by this algorithm
+	 */
 	public void setHeapBuilder(HeapReferenceable.Builder heapBuilder) {
 		this.heapBuilder = Objects.requireNonNull(heapBuilder);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @throws IllegalArgumentException if the graph is not undirected
+	 */
 	@Override
-	public IntCollection calcMST(Graph g, EdgeWeightFunc w) {
+	public IntCollection computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
 		if (!(g instanceof UGraph))
 			throw new IllegalArgumentException("only undirected graphs are supported");
 		int n = g.vertices().size(), m = g.edges().size();
@@ -63,10 +87,10 @@ public class MSTFredmanTarjan1987 implements MST {
 		HeapReference<Integer>[] vHeapElm = new HeapReference[n];
 
 		IntCollection mst = new IntArrayList(n - 1);
-		for (;;) {
+		for (int niNext;; ni = niNext) {
 			int kExp = 2 * m / ni;
 			int k = kExp < Integer.SIZE ? 1 << kExp : Integer.MAX_VALUE;
-			int niNext = 0;
+			niNext = 0;
 
 			Arrays.fill(vTree, 0, ni, -1);
 			for (int r = 0; r < ni; r++) {
@@ -168,7 +192,6 @@ public class MSTFredmanTarjan1987 implements MST {
 			// If we failed to contract the graph, we are done
 			if (ni == niNext)
 				break;
-			ni = niNext;
 
 			// update super vertex labels for all vertices
 			for (int v = 0; v < n; v++)

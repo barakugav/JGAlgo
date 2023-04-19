@@ -9,8 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.jgalgo.EdgeWeightFunc;
 import com.jgalgo.Graph;
 import com.jgalgo.GraphArrayUndirected;
-import com.jgalgo.MST;
-import com.jgalgo.MSTKruskal1956;
+import com.jgalgo.MSTKruskal;
 import com.jgalgo.Path;
 import com.jgalgo.TPM;
 import com.jgalgo.UGraph;
@@ -110,10 +109,10 @@ public class TPMTestUtils extends TestUtils {
 			UGraph g = (UGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
 					.selfEdges(false).cycles(true).connected(true).build();
 			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
-			IntCollection mstEdges = new MSTKruskal1956().calcMST(g, w);
+			IntCollection mstEdges = new MSTKruskal().computeMinimumSpanningTree(g, w);
 
 			TPM algo = builder.get();
-			assertTrue(MST.verifyMST(g, w, mstEdges, algo));
+			assertTrue(TPM.verifyMST(g, w, mstEdges, algo));
 		});
 	}
 
@@ -128,7 +127,7 @@ public class TPMTestUtils extends TestUtils {
 					.selfEdges(false).cycles(true).connected(true).build();
 			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 
-			IntCollection mstEdges = new MSTKruskal1956().calcMST(g, w);
+			IntCollection mstEdges = new MSTKruskal().computeMinimumSpanningTree(g, w);
 			Graph mst = new GraphArrayUndirected(g.vertices().size());
 			Weights.Int edgeRef = mst.addEdgesWeights("edgeRef", int.class, Integer.valueOf(-1));
 			for (IntIterator it = mstEdges.iterator(); it.hasNext();) {
@@ -153,7 +152,7 @@ public class TPMTestUtils extends TestUtils {
 
 			TPM algo = builder.get();
 
-			assertFalse(MST.verifyMST(g, w, mst, algo, edgeRef), "MST validation failed");
+			assertFalse(TPM.verifyMST(g, w, mst, algo, edgeRef), "MST validation failed");
 		});
 	}
 

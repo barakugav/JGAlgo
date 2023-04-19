@@ -2,49 +2,37 @@ package com.jgalgo;
 
 import java.util.Arrays;
 
-import it.unimi.dsi.fastutil.ints.Int2ObjectFunction;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 
-public class MSTBoruvka1926 implements MST {
+/**
+ * Yao's buckets minimum spanning tree algorithm.
+ * <p>
+ * The algorithm runs in {@code O(m log log n + n log n)} and uses linear space.
+ * Its running time in practice is not the best compared to {@link MSTKruskal}
+ * and {@link MSTPrim}. Note that only undirected graphs are supported.
+ * <p>
+ * Based on "An 0(|E|loglog|V|) algorithm for finding minimum spanning trees" by
+ * Andrew Chi-chih Yao (1976).
+ *
+ * @author Barak Ugav
+ */
+public class MSTYao implements MST {
 
-	/*
-	 * O(m log n)
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
-
-	public MSTBoruvka1926() {
-	}
-
 	@Override
-	public IntCollection calcMST(Graph g, EdgeWeightFunc w) {
-		return calcMST0(g, w, Integer.MAX_VALUE).mst;
-	}
-
-	static <E, R> Pair<UGraph, IntCollection> runBoruvka(Graph g, EdgeWeightFunc w, int numberOfRounds,
-			Int2ObjectFunction<R> edgeValAssigner, String edgeValKey) {
-		if (numberOfRounds <= 0)
-			throw new IllegalArgumentException();
-		MSTResult mstRes = calcMST0(g, w, numberOfRounds);
-
-		UGraph contractedG = new GraphArrayUndirected(mstRes.treeNum);
-		Weights<R> contractedGData = contractedG.addEdgesWeights(edgeValKey, Object.class);
-		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-			int e = it.nextInt();
-			int u = mstRes.vToTree[g.edgeSource(e)];
-			int v = mstRes.vToTree[g.edgeTarget(e)];
-			if (u == v)
-				continue;
-			int ne = contractedG.addEdge(u, v);
-			contractedGData.set(ne, edgeValAssigner.apply(e));
-		}
-		return Pair.of(contractedG, mstRes.mst);
-	}
-
-	private static MSTResult calcMST0(Graph g, EdgeWeightFunc w, int numberOfRounds) {
+	public IntCollection computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
 		if (!(g instanceof UGraph))
 			throw new IllegalArgumentException("only undirected graphs are supported");
 		int n = g.vertices().size();
+
+		int[][][] edges = partitionEdgesToBuckets(g, w);
+		int[] firstValidBucketIdxs = new int[n];
 
 		int treeNum = n;
 		int[] vTree = new int[n];
@@ -58,25 +46,33 @@ public class MSTBoruvka1926 implements MST {
 		int[] path = new int[n];
 
 		IntCollection mst = new IntArrayList();
-		for (int i = 0; i < numberOfRounds; i++) {
+		for (;;) {
 			Arrays.fill(minGraphWeights, 0, treeNum, Double.MAX_VALUE);
 
 			/* find minimum edge going out of each tree */
 			for (int u = 0; u < n; u++) {
 				int tree = vTree[u];
 
-				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
-					int e = eit.nextInt();
-					int v = eit.v();
-					if (tree == vTree[v])
-						continue;
+				int[][] vertexBuckets = edges[u];
+				int b;
+				for (b = firstValidBucketIdxs[u]; b < vertexBuckets.length; b++) {
+					boolean foundEdge = false;
+					for (int i = 0; i < vertexBuckets[b].length; i++) {
+						int e = vertexBuckets[b][i];
+						if (tree == vTree[g.edgeSource(e)] && tree == vTree[g.edgeTarget(e)])
+							continue;
+						foundEdge = true;
 
-					double eWeight = w.weight(e);
-					if (eWeight < minGraphWeights[tree]) {
-						minEdges[tree] = e;
-						minGraphWeights[tree] = eWeight;
+						double eWeight = w.weight(e);
+						if (eWeight < minGraphWeights[tree]) {
+							minEdges[tree] = e;
+							minGraphWeights[tree] = eWeight;
+						}
 					}
+					if (foundEdge)
+						break;
 				}
+				firstValidBucketIdxs[u] = b;
 			}
 
 			/* add min edges to MST */
@@ -98,7 +94,7 @@ public class MSTBoruvka1926 implements MST {
 
 			/*
 			 * the graph of the trees (vertex per tree, minimum out edges of the trees) is a
-			 * graph where each vertex has one out edge at most, and we want to find all the
+			 * graph where each vertex has one out edge at most we want to find all the
 			 * connectivity components between the trees and label the vertices of G with
 			 * new trees indices
 			 */
@@ -144,19 +140,43 @@ public class MSTBoruvka1926 implements MST {
 				vTree[v] = vTreeNext[vTree[v]];
 		}
 
-		return new MSTResult(vTree, treeNum, mst);
+		return mst;
 	}
 
-	private static class MSTResult {
-		final int[] vToTree;
-		final int treeNum;
-		final IntCollection mst;
+	private static int[][][] partitionEdgesToBuckets(Graph g, EdgeWeightFunc w) {
+		int n = g.vertices().size(), k = Utils.log2ceil(n);
 
-		MSTResult(int[] vToTree, int treeNum, IntCollection mst) {
-			this.vToTree = vToTree;
-			this.treeNum = treeNum;
-			this.mst = mst;
+		int[][][] edges = new int[n][][];
+		int[] edgesTemp = new int[n];
+
+		for (int u = 0; u < n; u++) {
+			int edgesCount = 0;
+			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();)
+				edgesTemp[edgesCount++] = eit.nextInt();
+
+			if (edgesCount <= k) {
+				IntArrays.parallelQuickSort(edgesTemp, 0, edgesCount, w);
+				edges[u] = new int[edgesCount][];
+				for (int i = 0; i < edgesCount; i++)
+					edges[u][i] = new int[] { edgesTemp[i] };
+
+			} else {
+				int bucketSize = (edgesCount - 1) / k + 1;
+				int bucketNum = (edgesCount - 1) / bucketSize + 1;
+				ArraysUtils.bucketPartition(edgesTemp, 0, edgesCount, w, bucketSize);
+				edges[u] = new int[bucketNum][];
+
+				for (int b = 0; b < bucketNum; b++) {
+					int bucketBegin = b * bucketSize;
+					int bucketEnd = Math.min(bucketBegin + bucketSize, edgesCount);
+					int[] bucket = new int[bucketEnd - bucketBegin];
+					System.arraycopy(edgesTemp, bucketBegin, bucket, 0, bucketEnd - bucketBegin);
+					edges[u][b] = bucket;
+				}
+			}
 		}
+
+		return edges;
 	}
 
 }

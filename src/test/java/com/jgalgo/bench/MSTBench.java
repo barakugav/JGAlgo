@@ -22,12 +22,12 @@ import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.EdgeWeightFunc;
 import com.jgalgo.Graph;
 import com.jgalgo.MST;
-import com.jgalgo.MSTBoruvka1926;
-import com.jgalgo.MSTFredmanTarjan1987;
-import com.jgalgo.MSTKargerKleinTarjan1995;
-import com.jgalgo.MSTKruskal1956;
-import com.jgalgo.MSTPrim1957;
-import com.jgalgo.MSTYao1976;
+import com.jgalgo.MSTBoruvka;
+import com.jgalgo.MSTFredmanTarjan;
+import com.jgalgo.MSTKargerKleinTarjan;
+import com.jgalgo.MSTKruskal;
+import com.jgalgo.MSTPrim;
+import com.jgalgo.MSTYao;
 import com.jgalgo.test.GraphsTestUtils;
 import com.jgalgo.test.TestUtils.SeedGenerator;
 
@@ -68,39 +68,39 @@ public class MSTBench {
 			Graph g = gw.first();
 			EdgeWeightFunc.Int w = gw.second();
 			MST algo = builder.get();
-			IntCollection mst = algo.calcMST(g, w);
+			IntCollection mst = algo.computeMinimumSpanningTree(g, w);
 			blackhole.consume(mst);
 		}
 	}
 
 	@Benchmark
-	public void benchMSTBoruvka1926(Blackhole blackhole) {
-		benchMST(MSTBoruvka1926::new, blackhole);
+	public void benchMSTBoruvka(Blackhole blackhole) {
+		benchMST(MSTBoruvka::new, blackhole);
 	}
 
 	@Benchmark
-	public void benchMSTFredmanTarjan1987(Blackhole blackhole) {
-		benchMST(MSTFredmanTarjan1987::new, blackhole);
+	public void benchMSTFredmanTarjan(Blackhole blackhole) {
+		benchMST(MSTFredmanTarjan::new, blackhole);
 	}
 
 	@Benchmark
-	public void benchMSTKruskal1956(Blackhole blackhole) {
-		benchMST(MSTKruskal1956::new, blackhole);
+	public void benchMSTKruskal(Blackhole blackhole) {
+		benchMST(MSTKruskal::new, blackhole);
 	}
 
 	@Benchmark
-	public void benchMSTPrim1957(Blackhole blackhole) {
-		benchMST(MSTPrim1957::new, blackhole);
+	public void benchMSTPrim(Blackhole blackhole) {
+		benchMST(MSTPrim::new, blackhole);
 	}
 
 	@Benchmark
-	public void benchMSTYao1976(Blackhole blackhole) {
-		benchMST(MSTYao1976::new, blackhole);
+	public void benchMSTYao(Blackhole blackhole) {
+		benchMST(MSTYao::new, blackhole);
 	}
 
 	@Benchmark
-	public void benchMSTKargerKleinTarjan1995(Blackhole blackhole) {
-		benchMST(MSTKargerKleinTarjan1995::new, blackhole);
+	public void benchMSTKargerKleinTarjan(Blackhole blackhole) {
+		benchMST(MSTKargerKleinTarjan::new, blackhole);
 	}
 
 }

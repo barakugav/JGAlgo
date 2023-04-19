@@ -9,30 +9,51 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntLists;
 
-public class MSTKargerKleinTarjan1995 implements MST {
-
-	/*
-	 * Randomize algorithm for MST. O(m + n)
-	 */
+/**
+ * Karger, Klein and Tarjan randomized linear minimum spanning tree algorithm
+ * <p>
+ * The algorithm runs in {@code O(m + n)} expected time, and uses linear space
+ * in expectation. In practice, this algorithm is out-performed by almost all
+ * simpler algorithms. Note that only undirected graphs are supported.
+ * <p>
+ * Based on "A randomized linear-time algorithm to find minimum spanning trees"
+ * by Karger, David R.; Klein, Philip N.; Tarjan, Robert E. (1995).
+ *
+ * @author Barak Ugav
+ */
+public class MSTKargerKleinTarjan implements MST {
 
 	private final Random seedGenerator;
 
-	public MSTKargerKleinTarjan1995() {
+	/**
+	 * Create a new MST algorithm with random seed.
+	 */
+	public MSTKargerKleinTarjan() {
 		this(new Random().nextLong());
 	}
 
-	public MSTKargerKleinTarjan1995(long seed) {
+	/**
+	 * Create a new MST algorithm with the given seed.
+	 *
+	 * @param seed a seed used for all random generators
+	 */
+	public MSTKargerKleinTarjan(long seed) {
 		seedGenerator = new Random(seed ^ 0x1af7babf9783fd8bL);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @throws IllegalArgumentException if the graph is not undirected
+	 */
 	@Override
-	public IntCollection calcMST(Graph g, EdgeWeightFunc w) {
+	public IntCollection computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
 		if (!(g instanceof UGraph))
 			throw new IllegalArgumentException("only undirected graphs are supported");
-		return calcMST0((UGraph) g, w);
+		return computeMST((UGraph) g, w);
 	}
 
-	private IntCollection calcMST0(UGraph g, EdgeWeightFunc w) {
+	private IntCollection computeMST(UGraph g, EdgeWeightFunc w) {
 		if (g.vertices().size() == 0 || g.edges().size() == 0)
 			return IntLists.emptyList();
 		/*
@@ -41,17 +62,17 @@ public class MSTKargerKleinTarjan1995 implements MST {
 		 * the data stored in each edge is a reference to the old edge. This is a little
 		 * bit clumsy, but didn't find another way.
 		 */
-		Pair<UGraph, IntCollection> r = MSTBoruvka1926.runBoruvka(g, w, 2, e -> new Ref(e, w.weight(e)), "ref");
+		Pair<UGraph, IntCollection> r = MSTBoruvka.runBoruvka(g, w, 2, e -> new Ref(e, w.weight(e)), "ref");
 		UGraph g0 = r.e1;
 		IntCollection f0 = r.e2;
 		UGraph g1 = randSubgraph(g0);
 		Weights<Ref> g1Ref = g1.edgesWeight("ref");
-		IntCollection f1Edges = calcMST0(g1, e -> g1Ref.get(e).w);
+		IntCollection f1Edges = computeMST(g1, e -> g1Ref.get(e).w);
 		UGraph f1 = Graphs.subGraph(g1, f1Edges);
 		IntCollection e2 = lightEdges(g0, f1);
 		UGraph g2 = Graphs.subGraph(g0, e2);
 		Weights<Ref> g2Ref = g2.edgesWeight("ref");
-		IntCollection f2 = calcMST0(g2, e -> g2Ref.get(e).w);
+		IntCollection f2 = computeMST(g2, e -> g2Ref.get(e).w);
 
 		for (IntIterator it = f2.iterator(); it.hasNext();) {
 			int eRef = it.nextInt();
@@ -148,12 +169,12 @@ public class MSTKargerKleinTarjan1995 implements MST {
 		return lightEdges;
 	}
 
-	public static class Ref {
+	private static class Ref {
 
-		public final int e;
-		public final double w;
+		final int e;
+		final double w;
 
-		public Ref(int e, double w) {
+		Ref(int e, double w) {
 			this.e = e;
 			this.w = w;
 		}

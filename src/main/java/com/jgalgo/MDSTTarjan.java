@@ -9,29 +9,33 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntLists;
 import it.unimi.dsi.fastutil.ints.IntStack;
 
-public class MDSTTarjan1977 implements MDST {
-
-	/*
-	 * O(m log n)
-	 */
+/**
+ * Tarjan's minimum directed spanning tree algorithm.
+ * <p>
+ * The algorithm run in {@code O(m log n)} time and uses linear space.
+ * <p>
+ * Based on 'Finding optimum branchings' by R. E. Tarjan.
+ *
+ * @author Barak Ugav
+ */
+public class MDSTTarjan implements MDST {
 
 	private Heap.Builder heapBuilder = HeapPairing::new;
 	private static final int HeavyEdge = 0xffffffff;
 	private static final double HeavyEdgeWeight = Double.MAX_VALUE;
 	private static final Object EdgeRefWeightKey = new Object();
 
-	public MDSTTarjan1977() {
-	}
-
+	/**
+	 * Set the implementation of the heap used by this algorithm.
+	 *
+	 * @param heapBuilder a builder for heaps used by this algorithm
+	 */
 	public void setHeapBuilder(Heap.Builder heapBuilder) {
 		this.heapBuilder = Objects.requireNonNull(heapBuilder);
 	}
 
-	/**
-	 * finds the MST rooted from any root
-	 */
 	@Override
-	public IntCollection calcMST(Graph g, EdgeWeightFunc w) {
+	public IntCollection computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
 		if (!(g instanceof DiGraph))
 			throw new IllegalArgumentException("Only directed graphs are supported");
 		if (g.vertices().size() == 0 || g.edges().size() == 0)
@@ -50,12 +54,10 @@ public class MDSTTarjan1977 implements MDST {
 	}
 
 	@Override
-	public IntCollection calcMST(Graph g, EdgeWeightFunc w, int root) {
-		if (!(g instanceof DiGraph))
-			throw new IllegalArgumentException("Only directed graphs are supported");
+	public IntCollection computeMinimumSpanningTree(DiGraph g, EdgeWeightFunc w, int root) {
 		if (g.vertices().size() == 0 || g.edges().size() == 0)
 			return IntLists.emptyList();
-		DiGraph gRef = Graphs.referenceGraph((DiGraph) g, EdgeRefWeightKey);
+		DiGraph gRef = Graphs.referenceGraph(g, EdgeRefWeightKey);
 
 		ContractedGraph contractedGraph = contract(gRef, w);
 		return expand(gRef, contractedGraph, root);

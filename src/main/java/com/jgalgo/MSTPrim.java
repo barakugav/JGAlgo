@@ -7,23 +7,46 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntLists;
 
-public class MSTPrim1957 implements MST {
-
-	/*
-	 * O(m + nlogn)
-	 */
+/**
+ * Prim's minimum spanning tree algorithm.
+ * <p>
+ * The algorithm maintain a tree and repeatedly adds the lightest edge that
+ * connect a vertex from tree to the reset of the vertices. The algorithm is
+ * similar to {@link SSSPDijkstra} in its idea, and it also uses a
+ * {@link HeapReferenceable} and updated its elements using
+ * {@link HeapReferenceable#decreaseKey(HeapReference, Object)}.
+ * <p>
+ * The running time of Prim's algorithm is {@code O(m + n log n)} and it uses
+ * linear space. It's running time is very good it practice and can be used as a
+ * first choice for {@link MST} algorithm. Note that only undirected graphs are
+ * supported.
+ * <p>
+ * Based on "Shortest connection networks And some generalizations" by Prim, R.
+ * C. (1957).
+ *
+ * @see <a href="https://en.wikipedia.org/wiki/Prim%27s_algorithm">Wikipedia</a>
+ * @author Barak Ugav
+ */
+public class MSTPrim implements MST {
 
 	private HeapReferenceable.Builder heapBuilder = HeapPairing::new;
 
-	public MSTPrim1957() {
-	}
-
+	/**
+	 * Set the implementation of the heap used by this algorithm.
+	 *
+	 * @param heapBuilder a builder for heaps used by this algorithm
+	 */
 	public void setHeapBuilder(HeapReferenceable.Builder heapBuilder) {
 		this.heapBuilder = Objects.requireNonNull(heapBuilder);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @throws IllegalArgumentException if the graph is not undirected
+	 */
 	@Override
-	public IntCollection calcMST(Graph g, EdgeWeightFunc w) {
+	public IntCollection computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
 		if (!(g instanceof UGraph))
 			throw new IllegalArgumentException("only undirected graphs are supported");
 		int n = g.vertices().size();

@@ -24,7 +24,7 @@ import com.jgalgo.Graph;
 import com.jgalgo.HeapReferenceable;
 import com.jgalgo.HeapFibonacci;
 import com.jgalgo.HeapPairing;
-import com.jgalgo.MSTPrim1957;
+import com.jgalgo.MSTPrim;
 import com.jgalgo.SSSP;
 import com.jgalgo.SSSPDijkstra;
 import com.jgalgo.test.GraphsTestUtils;
@@ -87,9 +87,9 @@ public class HeapReferenceableBench {
 			blackhole.consume(ssspRes);
 
 			/* Prim MST */
-			MSTPrim1957 mstAlgo = new MSTPrim1957();
+			MSTPrim mstAlgo = new MSTPrim();
 			mstAlgo.setHeapBuilder(heapBuilder);
-			IntCollection mst = mstAlgo.calcMST(args.g, args.w);
+			IntCollection mst = mstAlgo.computeMinimumSpanningTree(args.g, args.w);
 			blackhole.consume(mst);
 		}
 	}

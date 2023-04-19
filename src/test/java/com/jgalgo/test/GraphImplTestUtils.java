@@ -16,8 +16,8 @@ import com.jgalgo.Graph;
 import com.jgalgo.GraphArrayDirected;
 import com.jgalgo.GraphArrayUndirected;
 import com.jgalgo.GraphCapabilities;
-import com.jgalgo.MDSTTarjan1977;
-import com.jgalgo.MSTKruskal1956;
+import com.jgalgo.MDSTTarjan;
+import com.jgalgo.MSTKruskal;
 import com.jgalgo.MatchingGabow1976;
 import com.jgalgo.MatchingWeightedBipartiteHungarianMethod;
 import com.jgalgo.MaxFlowEdmondsKarp;
@@ -278,11 +278,11 @@ class GraphImplTestUtils extends TestUtils {
 	}
 
 	static void testUndirectedMST(GraphImpl graphImpl, long seed) {
-		MSTTestUtils.testRandGraph(MSTKruskal1956::new, graphImpl, seed);
+		MSTTestUtils.testRandGraph(MSTKruskal::new, graphImpl, seed);
 	}
 
 	static void testDirectedMDST(GraphImpl graphImpl, long seed) {
-		MDSTTarjan1977Test.testRandGraph(MDSTTarjan1977::new, graphImpl, seed);
+		MDSTTarjanTest.testRandGraph(MDSTTarjan::new, graphImpl, seed);
 	}
 
 	static void testDirectedMaxFlow(GraphImpl graphImpl, long seed) {
