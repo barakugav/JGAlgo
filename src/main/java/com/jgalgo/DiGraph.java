@@ -7,8 +7,12 @@ package com.jgalgo;
  * an edge {@code e(u, v)} will appear in the iteration of {@code edgesOut(u)}
  * and {@code edgesIn(v)} and will not appear in the iteration of
  * {@code edgesOut(v)} and {@code edgesIn(u)}.
+ * <p>
+ * Use {@link GraphArrayDirected} as a default implementation of directed
+ * graphs, its the most efficient for most use cases.
  *
  * @see UGraph
+ * @see GraphArrayDirected
  * @author Barak Ugav
  */
 public interface DiGraph extends Graph {

@@ -1,14 +1,34 @@
 package com.jgalgo;
 
+/**
+ * A directed graph implementation using linked lists to store edge lists.
+ * <p>
+ * The edges of each vertex will be stored as a linked list. This implementation
+ * is efficient in use cases where multiple vertices/edges removals are
+ * performed, but it should not be the default choice for a directed graph.
+ *
+ * @see GraphLinkedUndirected
+ * @see GraphArrayDirected
+ * @author Barak Ugav
+ */
 public class GraphLinkedDirected extends GraphLinkedAbstract implements DiGraph {
 
 	private final DataContainer.Obj<Node> edgesIn;
 	private final DataContainer.Obj<Node> edgesOut;
 
+	/**
+	 * Create a new graph with no vertices and edges.
+	 */
 	public GraphLinkedDirected() {
 		this(0);
 	}
 
+	/**
+	 * Create a new graph with no edges and {@code n} vertices numbered
+	 * {@code 0,1,2,..,n-1}.
+	 *
+	 * @param n the number of initial vertices number
+	 */
 	public GraphLinkedDirected(int n) {
 		super(n, Capabilities);
 

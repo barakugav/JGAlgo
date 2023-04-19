@@ -1,7 +1,30 @@
 package com.jgalgo;
 
+/**
+ * A undirected graph implementation using 2D table to store all edges.
+ * <p>
+ * The graph is initialized with a fixed number of vertices, {@code n}, and does
+ * not support addition or removals of vertices. A fixed sized table of size
+ * {@code [n][n]} stores the edges of the graph. The implementation does not
+ * support multiple edges with identical source and target.
+ * <p>
+ * This implementation is efficient for use cases where fast lookups of edge
+ * {@code (u, v)} are required, as they can be answered in {@code O(1)} time,
+ * but it should not be the default choice for an undirected graph.
+ *
+ * @see GraphTableDirected
+ * @author Barak Ugav
+ */
 public class GraphTableUndirected extends GraphTableAbstract implements UGraph {
 
+	/**
+	 * Create a new graph with no edges and {@code n} vertices numbered
+	 * {@code 0,1,2,..,n-1}.
+	 * <p>
+	 * Vertices can not be added or removed after the graph was created.
+	 *
+	 * @param n the number of initial vertices number
+	 */
 	public GraphTableUndirected(int n) {
 		super(n, Capabilities);
 	}

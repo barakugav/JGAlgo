@@ -2,15 +2,37 @@ package com.jgalgo;
 
 import it.unimi.dsi.fastutil.ints.IntArrays;
 
+/**
+ * An undirected graph implementation using arrays to store edge lists.
+ * <p>
+ * The edges of each vertex will be stored as an array of ints. This
+ * implementation is the most efficient for most use cases and should be used as
+ * the first choice for an undirected graph implementation.
+ * <p>
+ * If the use case require multiple vertices/edges removals,
+ * {@link GraphLinkedUndirected} could be more efficient.
+ *
+ * @see GraphArrayDirected
+ * @author Barak Ugav
+ */
 public class GraphArrayUndirected extends GraphArrayAbstract implements UGraph {
 
 	private final DataContainer.Obj<int[]> edges;
 	private final DataContainer.Int edgesNum;
 
+	/**
+	 * Create a new graph with no vertices and edges.
+	 */
 	public GraphArrayUndirected() {
 		this(0);
 	}
 
+	/**
+	 * Create a new graph with no edges and {@code n} vertices numbered
+	 * {@code 0,1,2,..,n-1}.
+	 *
+	 * @param n the number of initial vertices number
+	 */
 	public GraphArrayUndirected(int n) {
 		super(n, Capabilities);
 		edgesNum = new DataContainer.Int(n, 0);

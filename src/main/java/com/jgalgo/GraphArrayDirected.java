@@ -3,6 +3,19 @@ package com.jgalgo;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
+/**
+ * A directed graph implementation using arrays to store edge lists.
+ * <p>
+ * The edges of each vertex will be stored as an array of ints. This
+ * implementation is the most efficient for most use cases and should be used as
+ * the first choice for a directed graph implementation.
+ * <p>
+ * If the use case require multiple vertices/edges removals,
+ * {@link GraphLinkedDirected} could be more efficient.
+ *
+ * @see GraphArrayUndirected
+ * @author Barak Ugav
+ */
 public class GraphArrayDirected extends GraphArrayAbstract implements DiGraph {
 
 	private final DataContainer.Obj<int[]> edgesOut;
@@ -10,10 +23,19 @@ public class GraphArrayDirected extends GraphArrayAbstract implements DiGraph {
 	private final DataContainer.Obj<int[]> edgesIn;
 	private final DataContainer.Int edgesInNum;
 
+	/**
+	 * Create a new graph with no vertices and edges.
+	 */
 	public GraphArrayDirected() {
 		this(0);
 	}
 
+	/**
+	 * Create a new graph with no edges and {@code n} vertices numbered
+	 * {@code 0,1,2,..,n-1}.
+	 *
+	 * @param n the number of initial vertices number
+	 */
 	public GraphArrayDirected(int n) {
 		super(n, Capabilities);
 		edgesOut = new DataContainer.Obj<>(n, IntArrays.EMPTY_ARRAY);

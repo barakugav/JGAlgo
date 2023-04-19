@@ -124,7 +124,7 @@ public interface FlowNetwork {
     }
 
     /**
-     * Flow on graph edges, with capacities and flows integer values.
+     * Flow on graph edges, with integer capacities and flows values.
      * <p>
      * Similar to the regular {@link FlowNetwork} interface, but with integer
      * capacities and flows. Some algorithms that work on flow networks are

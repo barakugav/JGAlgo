@@ -11,6 +11,9 @@ package com.jgalgo;
  * vertex, same for {@link #degreeIn(int)} and {@link #degreeOut(int)}, and
  * similarly {@link #removeEdgesOf(int)}, {@link #removeEdgesInOf(int)} and
  * {@link #removeEdgesOutOf(int)}.
+ * <p>
+ * Use {@link GraphArrayUndirected} as a default implementation of undirected
+ * graphs, its the most efficient for most use cases.
  *
  * @see DiGraph
  * @author Barak Ugav

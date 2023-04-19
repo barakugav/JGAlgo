@@ -22,11 +22,21 @@ abstract class GraphTableAbstract extends GraphBaseContinues {
 		addInternalEdgesDataContainer(edgeEndpoints);
 	}
 
+	/**
+	 * Vertex addition is not support. The number of vertices is fixed and should be
+	 * specified in the constructor.
+	 */
+	@Deprecated
 	@Override
 	public final int addVertex() {
 		throw new UnsupportedOperationException();
 	}
 
+	/**
+	 * Vertex removal is not support. The number of vertices is fixed and should be
+	 * specified in the constructor.
+	 */
+	@Deprecated
 	@Override
 	public final void removeVertex(int v) {
 		throw new UnsupportedOperationException();
