@@ -3,7 +3,7 @@ package com.jgalgo.test;
 import java.util.List;
 import java.util.Random;
 
-import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import com.jgalgo.Graph;
@@ -24,7 +24,7 @@ public class TreesTest extends TestUtils {
 			UGraph g = (UGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false)
 					.parallelEdges(false).selfEdges(false).cycles(false).connected(true).build();
 
-			Assertions.assertTrue(Trees.isTree(g));
+			assertTrue(Trees.isTree(g));
 		});
 	}
 
@@ -42,7 +42,7 @@ public class TreesTest extends TestUtils {
 			int e = edges[rand.nextInt(edges.length)];
 			g.removeEdge(e);
 
-			Assertions.assertFalse(Trees.isTree(g));
+			assertFalse(Trees.isTree(g));
 		});
 	}
 
@@ -63,7 +63,7 @@ public class TreesTest extends TestUtils {
 			} while (u == v);
 			g.addEdge(u, v);
 
-			Assertions.assertFalse(Trees.isTree(g));
+			assertFalse(Trees.isTree(g));
 		});
 	}
 
@@ -79,7 +79,7 @@ public class TreesTest extends TestUtils {
 					.selfEdges(false).cycles(false).connected(true).build();
 			int root = rand.nextInt(n);
 
-			Assertions.assertTrue(Trees.isTree(g, root));
+			assertTrue(Trees.isTree(g, root));
 		});
 	}
 
@@ -98,7 +98,7 @@ public class TreesTest extends TestUtils {
 			int e = edges[rand.nextInt(edges.length)];
 			g.removeEdge(e);
 
-			Assertions.assertFalse(Trees.isTree(g, root));
+			assertFalse(Trees.isTree(g, root));
 		});
 	}
 
@@ -120,7 +120,7 @@ public class TreesTest extends TestUtils {
 			} while (u == v);
 			g.addEdge(u, v);
 
-			Assertions.assertFalse(Trees.isTree(g, root));
+			assertFalse(Trees.isTree(g, root));
 		});
 	}
 
@@ -140,7 +140,7 @@ public class TreesTest extends TestUtils {
 				int e = edges[rand.nextInt(edges.length)];
 				g.removeEdge(e);
 			}
-			Assertions.assertTrue(Trees.isForest(g));
+			assertTrue(Trees.isForest(g));
 		});
 	}
 
@@ -169,7 +169,7 @@ public class TreesTest extends TestUtils {
 					break;
 				}
 			}
-			Assertions.assertFalse(Trees.isForest(g));
+			assertFalse(Trees.isForest(g));
 		});
 	}
 

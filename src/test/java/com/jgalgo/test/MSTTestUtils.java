@@ -3,7 +3,7 @@ package com.jgalgo.test;
 import java.util.List;
 import java.util.function.Supplier;
 
-import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.jgalgo.EdgeWeightFunc;
 import com.jgalgo.Graph;
@@ -86,11 +86,11 @@ class MSTTestUtils extends TestUtils {
 		IntSet actualSet = new IntAVLTreeSet(c);
 		actualSet.addAll(mst);
 
-		Assertions.assertEquals(mst.size(), actualSet.size(), "MST contains duplications");
-		Assertions.assertEquals(expected.size(), actualSet.size(), "unexpected MST size");
+		assertEquals(mst.size(), actualSet.size(), "MST contains duplications");
+		assertEquals(expected.size(), actualSet.size(), "unexpected MST size");
 		for (IntIterator it = expected.iterator(); it.hasNext();) {
 			int e = it.nextInt();
-			Assertions.assertTrue(actualSet.contains(e), "MST doesn't contains edge: " + e);
+			assertTrue(actualSet.contains(e), "MST doesn't contains edge: " + e);
 		}
 	}
 

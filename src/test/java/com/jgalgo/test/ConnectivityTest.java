@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
 
-import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import com.jgalgo.BFSIter;
@@ -97,7 +97,7 @@ public class ConnectivityTest extends TestUtils {
 	}
 
 	private static void assertConnectivityResultsEqual(Graph g, Pair<Integer, int[]> r1, Connectivity.Result r2) {
-		Assertions.assertEquals(r1.first(), r2.getNumberOfCC());
+		assertEquals(r1.first(), r2.getNumberOfCC());
 		Int2IntMap cc1To2Map = new Int2IntOpenHashMap(r2.getNumberOfCC());
 		int n = g.vertices().size();
 		for (int u = 0; u < n; u++) {
@@ -105,7 +105,7 @@ public class ConnectivityTest extends TestUtils {
 			int cc2 = r2.getVertexCc(u);
 			if (cc1To2Map.containsKey(cc1)) {
 				int cc1Mapped = cc1To2Map.get(cc1);
-				Assertions.assertEquals(cc1Mapped, cc2);
+				assertEquals(cc1Mapped, cc2);
 			} else {
 				cc1To2Map.put(cc1, cc2);
 			}
@@ -117,9 +117,9 @@ public class ConnectivityTest extends TestUtils {
 		int n = g.vertices().size();
 		for (int v = 0; v < n; v++)
 			ccs.set(res.getVertexCc(v));
-		Assertions.assertEquals(ccs.cardinality(), res.getNumberOfCC());
+		assertEquals(ccs.cardinality(), res.getNumberOfCC());
 		for (int cc = 0; cc < res.getNumberOfCC(); cc++)
-			Assertions.assertTrue(ccs.get(cc));
+			assertTrue(ccs.get(cc));
 	}
 
 }

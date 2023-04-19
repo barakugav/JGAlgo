@@ -7,7 +7,7 @@ import java.util.Random;
 import java.util.TreeSet;
 import java.util.function.Supplier;
 
-import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.jgalgo.DiGraph;
 import com.jgalgo.FlowNetwork;
@@ -135,11 +135,11 @@ public class MaxFlowTestUtils extends TestUtils {
 		}
 		for (int v = 0; v < n; v++) {
 			double expected = v == source ? actualMaxFlow : v == sink ? -actualMaxFlow : 0;
-			Assertions.assertEquals(expected, vertexFlowOut[v], 1E-3, "Invalid vertex(" + v + ") flow");
+			assertEquals(expected, vertexFlowOut[v], 1E-3, "Invalid vertex(" + v + ") flow");
 		}
 
 		double expectedMaxFlow = calcExpectedFlow(g, net, source, sink);
-		Assertions.assertEquals(expectedMaxFlow, actualMaxFlow, 1E-3, "Unexpected max flow");
+		assertEquals(expectedMaxFlow, actualMaxFlow, 1E-3, "Unexpected max flow");
 	}
 
 	private static void testNetworkInt(Graph g, FlowNetwork.Int net, int source, int sink, MaxFlow algo) {
@@ -149,7 +149,7 @@ public class MaxFlowTestUtils extends TestUtils {
 
 		double actualMaxFlow0 = algo.calcMaxFlow(g, net, source, sink);
 		int actualMaxFlow = (int) actualMaxFlow0;
-		Assertions.assertEquals(actualMaxFlow, actualMaxFlow0, "not integral max flow in integral network");
+		assertEquals(actualMaxFlow, actualMaxFlow0, "not integral max flow in integral network");
 
 		int n = g.vertices().size();
 		int[] vertexFlowOut = new int[n];
@@ -161,11 +161,11 @@ public class MaxFlowTestUtils extends TestUtils {
 		}
 		for (int v = 0; v < n; v++) {
 			int expected = v == source ? actualMaxFlow : v == sink ? -actualMaxFlow : 0;
-			Assertions.assertEquals(expected, vertexFlowOut[v], "Invalid vertex(" + v + ") flow");
+			assertEquals(expected, vertexFlowOut[v], "Invalid vertex(" + v + ") flow");
 		}
 
 		int expectedMaxFlow = (int) calcExpectedFlow(g, net, source, sink);
-		Assertions.assertEquals(expectedMaxFlow, actualMaxFlow, "Unexpected max flow");
+		assertEquals(expectedMaxFlow, actualMaxFlow, "Unexpected max flow");
 	}
 
 	/* implementation taken from the Internet */

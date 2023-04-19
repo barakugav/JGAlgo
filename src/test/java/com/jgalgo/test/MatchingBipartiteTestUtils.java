@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.jgalgo.EdgeIter;
 import com.jgalgo.Graph;
@@ -78,7 +78,7 @@ class MatchingBipartiteTestUtils extends TestUtils {
 					"matching is bigger than validation algo found: " + match.size() + " > " + expectedMatchSize);
 			throw new IllegalStateException();
 		}
-		Assertions.assertTrue(match.size() == expectedMatchSize, "unexpected match size");
+		assertTrue(match.size() == expectedMatchSize, "unexpected match size");
 	}
 
 	private static int calcExpectedMaxMatching(Graph g) {

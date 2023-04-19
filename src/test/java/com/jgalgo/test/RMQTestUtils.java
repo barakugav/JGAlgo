@@ -3,7 +3,7 @@ package com.jgalgo.test;
 import java.util.Random;
 import java.util.function.Supplier;
 
-import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.jgalgo.RMQ;
 import com.jgalgo.RMQComparator;
@@ -43,7 +43,7 @@ class RMQTestUtils extends TestUtils {
 				System.err.println("data size: " + a.length);
 				System.err.println("queries num: " + queries.length);
 				System.err.println(formatRMQDataAndQueries(a, queries));
-				Assertions.fail();
+				fail();
 			}
 		}
 	}

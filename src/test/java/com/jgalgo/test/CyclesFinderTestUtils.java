@@ -5,7 +5,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.IntSupplier;
 
-import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.jgalgo.CyclesFinder;
 import com.jgalgo.CyclesFinderJohnson;
@@ -34,7 +34,7 @@ class CyclesFinderTestUtils extends TestUtils {
 		Path c2 = new Path(g, 1, 1, IntList.of(e1, e2));
 		List<Path> expected = List.of(c1, c2);
 
-		Assertions.assertEquals(transformCyclesToCanocical(expected), transformCyclesToCanocical(actual));
+		assertEquals(transformCyclesToCanocical(expected), transformCyclesToCanocical(actual));
 	}
 
 	static void testRandGraphs(CyclesFinder cyclesFinder, long seed) {
@@ -55,7 +55,7 @@ class CyclesFinderTestUtils extends TestUtils {
 				: new CyclesFinderTarjan();
 		List<Path> actual = cyclesFinder.findAllCycles(g);
 		List<Path> expected = validationAlgo.findAllCycles(g);
-		Assertions.assertEquals(transformCyclesToCanocical(expected), transformCyclesToCanocical(actual), g.toString());
+		assertEquals(transformCyclesToCanocical(expected), transformCyclesToCanocical(actual), g.toString());
 	}
 
 	private static Set<IntList> transformCyclesToCanocical(List<Path> cycles) {

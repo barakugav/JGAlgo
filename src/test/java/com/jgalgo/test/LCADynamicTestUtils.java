@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
 
-import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.jgalgo.LCADynamic;
 
@@ -64,20 +64,20 @@ public class LCADynamicTestUtils extends TestUtils {
 
 		for (int op : opsOrder) {
 			switch (op) {
-			case addLeafOp: {
-				int p = (nodesCount - 1) / 2;
-				ops.add(new OpAddLeaf(p));
-				nodesCount++;
-				break;
-			}
-			case lcaOp: {
-				int x = rand.nextInt(nodesCount);
-				int y = rand.nextInt(nodesCount);
-				ops.add(new OpLCAQuery(x, y));
-				break;
-			}
-			default:
-				throw new IllegalStateException();
+				case addLeafOp: {
+					int p = (nodesCount - 1) / 2;
+					ops.add(new OpAddLeaf(p));
+					nodesCount++;
+					break;
+				}
+				case lcaOp: {
+					int x = rand.nextInt(nodesCount);
+					int y = rand.nextInt(nodesCount);
+					ops.add(new OpLCAQuery(x, y));
+					break;
+				}
+				default:
+					throw new IllegalStateException();
 			}
 		}
 		return ops;
@@ -107,20 +107,20 @@ public class LCADynamicTestUtils extends TestUtils {
 
 		for (int op : opsOrder) {
 			switch (op) {
-			case addLeafOp: {
-				int p = rand.nextInt(nodesCount);
-				ops.add(new OpAddLeaf(p));
-				nodesCount++;
-				break;
-			}
-			case lcaOp: {
-				int x = rand.nextInt(nodesCount);
-				int y = rand.nextInt(nodesCount);
-				ops.add(new OpLCAQuery(x, y));
-				break;
-			}
-			default:
-				throw new IllegalStateException();
+				case addLeafOp: {
+					int p = rand.nextInt(nodesCount);
+					ops.add(new OpAddLeaf(p));
+					nodesCount++;
+					break;
+				}
+				case lcaOp: {
+					int x = rand.nextInt(nodesCount);
+					int y = rand.nextInt(nodesCount);
+					ops.add(new OpLCAQuery(x, y));
+					break;
+				}
+				default:
+					throw new IllegalStateException();
 			}
 		}
 		return ops;
@@ -158,7 +158,7 @@ public class LCADynamicTestUtils extends TestUtils {
 
 				LCADynamic.Node<Integer> lcaExpected = x;
 				LCADynamic.Node<Integer> lcaActual = lca.calcLCA(nodes.get(op.x), nodes.get(op.y));
-				Assertions.assertEquals(lcaExpected, lcaActual, "LCA has an expected value");
+				assertEquals(lcaExpected, lcaActual, "LCA has an expected value");
 
 			} else {
 				throw new IllegalStateException();

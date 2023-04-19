@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Random;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.jgalgo.DFSIter;
 import com.jgalgo.Graph;
@@ -32,9 +32,9 @@ public class DFSIterTest extends TestUtils {
 				int v = it.nextInt();
 				IntList pathFromSource = it.edgePath();
 				int e = v == source ? -1 : pathFromSource.getInt(pathFromSource.size() - 1);
-				Assertions.assertFalse(visited.get(v), "already visited vertex " + v);
+				assertFalse(visited.get(v), "already visited vertex " + v);
 				if (v != source)
-					Assertions.assertTrue(g.edgeEndpoint(e, g.edgeEndpoint(e, v)) == v,
+					assertTrue(g.edgeEndpoint(e, g.edgeEndpoint(e, v)) == v,
 							"v is not an endpoint of inEdge");
 				visited.set(v);
 			}

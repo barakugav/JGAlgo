@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
 
-import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import com.jgalgo.SubtreeMergeFindmin;
@@ -168,7 +168,7 @@ public class SubtreeMergeFindminTest extends TestUtils {
 						expected[0] = expected[1];
 						expected[1] = temp;
 					}
-					Assertions.assertTrue(Arrays.equals(expected, actual),
+					assertTrue(Arrays.equals(expected, actual),
 							"Algo found unexpected edge: " + Arrays.toString(expected) + " != "
 									+ Arrays.toString(actual));
 					break;

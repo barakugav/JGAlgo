@@ -10,7 +10,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
 
-import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.jgalgo.BST;
 import com.jgalgo.Heap;
@@ -48,7 +48,7 @@ class BSTTestUtils extends TestUtils {
 				}
 				int expected = tracker.extractMax();
 				int actual = tracker.tree().extractMax();
-				Assertions.assertEquals(expected, actual, "failed extractMax");
+				assertEquals(expected, actual, "failed extractMax");
 			}
 		});
 	}
@@ -131,7 +131,7 @@ class BSTTestUtils extends TestUtils {
 			}
 			actual = actualRef == null ? null : actualRef.get();
 
-			Assertions.assertEquals(expected, actual, "Failed to find smaller/greater of " + searchedElm);
+			assertEquals(expected, actual, "Failed to find smaller/greater of " + searchedElm);
 		}
 	}
 
@@ -201,7 +201,7 @@ class BSTTestUtils extends TestUtils {
 			} while (searchedElm == null);
 
 			HeapReference<Integer> h = tracker.tree().findRef(searchedElm);
-			Assertions.assertNotNull(h, "Failed to find ref for " + searchedElm);
+			assertNotNull(h, "Failed to find ref for " + searchedElm);
 
 			Integer actual, expected;
 			if (predecessor) {
@@ -214,7 +214,7 @@ class BSTTestUtils extends TestUtils {
 				expected = tracker.higher(searchedElm);
 			}
 
-			Assertions.assertEquals(expected, actual, "Failed to find predecessor/successor of " + searchedElm);
+			assertEquals(expected, actual, "Failed to find predecessor/successor of " + searchedElm);
 		}
 	}
 

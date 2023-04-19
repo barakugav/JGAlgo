@@ -3,7 +3,7 @@ package com.jgalgo.test;
 import java.util.List;
 import java.util.function.Supplier;
 
-import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.jgalgo.Coloring;
 import com.jgalgo.UGraph;
@@ -42,9 +42,9 @@ class ColoringTestUtils extends TestUtils {
 		int[] seenColorsArrExpected = new int[seenColorsArr.length];
 		for (int i = 0; i < seenColorsArrExpected.length; i++)
 			seenColorsArrExpected[i] = i;
-		Assertions.assertArrayEquals(seenColorsArrExpected, seenColorsArr, "colors are expected to be 0,1,2,3,...");
+		assertArrayEquals(seenColorsArrExpected, seenColorsArr, "colors are expected to be 0,1,2,3,...");
 
-		Assertions.assertEquals(seenColorsArr.length, coloring.colorsNum(), "wrong colors num");
+		assertEquals(seenColorsArr.length, coloring.colorsNum(), "wrong colors num");
 
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
@@ -52,7 +52,7 @@ class ColoringTestUtils extends TestUtils {
 			int v = g.edgeTarget(e);
 			int c1 = coloring.colorOf(u);
 			int c2 = coloring.colorOf(v);
-			Assertions.assertNotEquals(c1, c2, "neighbor vertices " + u + "," + v + " have the same color: " + c1);
+			assertNotEquals(c1, c2, "neighbor vertices " + u + "," + v + " have the same color: " + c1);
 		}
 	}
 

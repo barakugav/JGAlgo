@@ -3,7 +3,7 @@ package com.jgalgo.test;
 import java.util.List;
 import java.util.function.Supplier;
 
-import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.jgalgo.DiGraph;
 import com.jgalgo.EdgeWeightFunc;
@@ -111,7 +111,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 					.println("matching is better than validation algo found: " + actualWeight + " > " + expectedWeight);
 			throw new IllegalStateException();
 		}
-		Assertions.assertEquals(expectedWeight, actualWeight, "unexpected match weight");
+		assertEquals(expectedWeight, actualWeight, "unexpected match weight");
 	}
 
 	static void randGraphsWeightedPerfect(Supplier<? extends MatchingWeighted> builder, long seed) {
@@ -147,7 +147,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 					"matching size is better than validation algo found: " + actualSize + " > " + expectedSize);
 			throw new IllegalStateException();
 		}
-		Assertions.assertEquals(expectedSize, actualSize, "unexpected match size");
+		assertEquals(expectedSize, actualSize, "unexpected match size");
 
 		double expectedWeight = calcMatchingWeight(validationWeightedAlgo.calcPerfectMaxMatching(g, w), w);
 		if (actualWeight > expectedWeight) {
@@ -155,7 +155,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 					"matching weight is better than validation algo found: " + actualWeight + " > " + expectedWeight);
 			throw new IllegalStateException();
 		}
-		Assertions.assertEquals(expectedWeight, actualWeight, "unexpected match weight");
+		assertEquals(expectedWeight, actualWeight, "unexpected match weight");
 	}
 
 	private static double calcMatchingWeight(IntCollection matching, EdgeWeightFunc w) {

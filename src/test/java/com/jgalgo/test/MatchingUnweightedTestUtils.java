@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.jgalgo.EdgeIter;
 import com.jgalgo.Graph;
@@ -38,7 +38,7 @@ class MatchingUnweightedTestUtils extends TestUtils {
 	private static void testAlgo(Matching algo, Graph g, int expectedMatchSize) {
 		IntCollection match = algo.calcMaxMatching(g);
 		validateMatching(g, match);
-		Assertions.assertEquals(expectedMatchSize, match.size(), "unexpected match size");
+		assertEquals(expectedMatchSize, match.size(), "unexpected match size");
 	}
 
 	static <E> void validateMatching(Graph g, IntCollection matching) {
@@ -47,7 +47,7 @@ class MatchingUnweightedTestUtils extends TestUtils {
 			int e = it.nextInt();
 			for (int v : new int[] { g.edgeSource(e), g.edgeTarget(e) }) {
 				boolean dup = matched.contains(Integer.valueOf(v));
-				Assertions.assertFalse(dup, "Invalid matching, clash: " + v + " " + e);
+				assertFalse(dup, "Invalid matching, clash: " + v + " " + e);
 				matched.add(Integer.valueOf(v));
 			}
 		}

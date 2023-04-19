@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
 
-import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.jgalgo.UnionFind;
 
@@ -35,23 +35,23 @@ class UnionFindTestUtils extends TestUtils {
 
 		while (m-- > 0) {
 			switch (rand.nextInt(OP_NUM)) {
-			case OP_FIND:
-				int x = rand.nextInt(n);
-				int actualSet = set[uf.find(x)];
-				int expectedSet = set[x];
-				Assertions.assertEquals(expectedSet, actualSet, "unexpected set");
-				break;
-			case OP_UNION:
-				int a = rand.nextInt(n), b = rand.nextInt(n);
-				uf.union(a, b);
-				int aset = set[a];
-				int bset = set[b];
-				for (int i = 0; i < n; i++)
-					if (set[i] == bset)
-						set[i] = aset;
-				break;
-			default:
-				throw new IllegalStateException();
+				case OP_FIND:
+					int x = rand.nextInt(n);
+					int actualSet = set[uf.find(x)];
+					int expectedSet = set[x];
+					assertEquals(expectedSet, actualSet, "unexpected set");
+					break;
+				case OP_UNION:
+					int a = rand.nextInt(n), b = rand.nextInt(n);
+					uf.union(a, b);
+					int aset = set[a];
+					int bset = set[b];
+					for (int i = 0; i < n; i++)
+						if (set[i] == bset)
+							set[i] = aset;
+					break;
+				default:
+					throw new IllegalStateException();
 			}
 		}
 	}

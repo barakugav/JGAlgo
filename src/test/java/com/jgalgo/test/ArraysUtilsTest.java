@@ -3,7 +3,7 @@ package com.jgalgo.test;
 import java.util.List;
 import java.util.Random;
 
-import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import com.jgalgo.ArraysUtils;
@@ -44,7 +44,7 @@ public class ArraysUtilsTest extends TestUtils {
 		java.util.Arrays.sort(a);
 		int expected = a[k];
 
-		Assertions.assertEquals(expected, actual, "Unexpected K'th elemet");
+		assertEquals(expected, actual, "Unexpected K'th elemet");
 	}
 
 	@Test
@@ -66,7 +66,7 @@ public class ArraysUtilsTest extends TestUtils {
 				int bucketBegin = b * bucketSize;
 				int bucketEnd = Math.min(bucketBegin + bucketSize, n);
 				for (int i = bucketBegin; i < bucketEnd; i++) {
-					Assertions.assertTrue(a[bucketBegin] <= A[i].intValue() && A[i].intValue() <= a[bucketEnd - 1],
+					assertTrue(a[bucketBegin] <= A[i].intValue() && A[i].intValue() <= a[bucketEnd - 1],
 							"Bucket element " + A[i] + " is not in range [" + a[bucketBegin] + ", " + a[bucketEnd - 1]
 									+ "]");
 				}

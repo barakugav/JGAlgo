@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
 
-import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.jgalgo.EdgeWeightFunc;
 import com.jgalgo.Graph;
@@ -69,11 +69,11 @@ public class TPMTestUtils extends TestUtils {
 	}
 
 	static void compareActualToExpectedResults(int[] queries, int[] actual, int[] expected, EdgeWeightFunc w) {
-		Assertions.assertEquals(expected.length, actual.length, "Unexpected result size");
+		assertEquals(expected.length, actual.length, "Unexpected result size");
 		for (int i = 0; i < actual.length; i++) {
 			double aw = actual[i] != -1 ? w.weight(actual[i]) : Double.MIN_VALUE;
 			double ew = expected[i] != -1 ? w.weight(expected[i]) : Double.MIN_VALUE;
-			Assertions.assertEquals(ew, aw, "Unexpected result for query (" + queries[i * 2] + ", " + queries[i * 2 + 1]
+			assertEquals(ew, aw, "Unexpected result for query (" + queries[i * 2] + ", " + queries[i * 2 + 1]
 					+ "): " + actual[i] + " != " + expected[i]);
 		}
 	}
@@ -113,7 +113,7 @@ public class TPMTestUtils extends TestUtils {
 			IntCollection mstEdges = new MSTKruskal1956().calcMST(g, w);
 
 			TPM algo = builder.get();
-			Assertions.assertTrue(MST.verifyMST(g, w, mstEdges, algo));
+			assertTrue(MST.verifyMST(g, w, mstEdges, algo));
 		});
 	}
 
@@ -153,7 +153,7 @@ public class TPMTestUtils extends TestUtils {
 
 			TPM algo = builder.get();
 
-			Assertions.assertFalse(MST.verifyMST(g, w, mst, algo, edgeRef), "MST validation failed");
+			assertFalse(MST.verifyMST(g, w, mst, algo, edgeRef), "MST validation failed");
 		});
 	}
 

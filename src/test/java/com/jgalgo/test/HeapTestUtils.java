@@ -12,7 +12,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Function;
 
-import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.jgalgo.Heap;
 import com.jgalgo.HeapReferenceable;
@@ -264,7 +264,7 @@ class HeapTestUtils extends TestUtils {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		if (clear) {
 			heap.clear();
-			Assertions.assertTrue(heap.size() == 0 && heap.isEmpty(), "failed clear");
+			assertTrue(heap.size() == 0 && heap.isEmpty(), "failed clear");
 		}
 
 		HeapTracker tracker = new HeapTracker(heap, 0, compare, seedGen.nextSeed());
@@ -272,7 +272,7 @@ class HeapTestUtils extends TestUtils {
 
 		if (clear) {
 			heap.clear();
-			Assertions.assertTrue(heap.size() == 0 && heap.isEmpty(), "failed clear");
+			assertTrue(heap.size() == 0 && heap.isEmpty(), "failed clear");
 		}
 	}
 
@@ -327,7 +327,7 @@ class HeapTestUtils extends TestUtils {
 					debug.println("Remove(", x, ")");
 
 					tracker.remove(x);
-					Assertions.assertTrue(tracker.heap.remove(x), "failed to remove: " + x);
+					assertTrue(tracker.heap.remove(x), "failed to remove: " + x);
 					break;
 
 				case FindMin:
@@ -337,7 +337,7 @@ class HeapTestUtils extends TestUtils {
 
 					expected = tracker.findMin();
 					actual = tracker.heap.findMin();
-					Assertions.assertEquals(expected, actual, "failed findMin");
+					assertEquals(expected, actual, "failed findMin");
 					break;
 
 				case ExtractMin:
@@ -347,7 +347,7 @@ class HeapTestUtils extends TestUtils {
 
 					expected = tracker.extractMin();
 					actual = tracker.heap.extractMin();
-					Assertions.assertEquals(expected, actual, "failed extractMin");
+					assertEquals(expected, actual, "failed extractMin");
 					break;
 
 				case DecreaseKey: {
@@ -384,7 +384,7 @@ class HeapTestUtils extends TestUtils {
 			it.next();
 			actualSize++;
 		}
-		Assertions.assertEquals(expectedSize, actualSize, "size() is different than counted size using iterator");
+		assertEquals(expectedSize, actualSize, "size() is different than counted size using iterator");
 	}
 
 	@SuppressWarnings("unused")
@@ -393,7 +393,7 @@ class HeapTestUtils extends TestUtils {
 		int actual = 0;
 		for (E e : h)
 			actual++;
-		Assertions.assertEquals(expected, actual, "unexpected size");
+		assertEquals(expected, actual, "unexpected size");
 
 	}
 

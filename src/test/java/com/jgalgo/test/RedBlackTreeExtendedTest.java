@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
-import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import com.jgalgo.Heap;
@@ -163,7 +163,7 @@ public class RedBlackTreeExtendedTest extends TestUtils {
 					expectedSize++;
 
 				int actualSize = sizeExt.getSubTreeSize(node);
-				Assertions.assertEquals(expectedSize, actualSize, "Size extension reported wrong value");
+				assertEquals(expectedSize, actualSize, "Size extension reported wrong value");
 			}
 		});
 	}
@@ -191,7 +191,7 @@ public class RedBlackTreeExtendedTest extends TestUtils {
 					expectedMin = Math.min(expectedMin, descendant.get());
 
 				int actualMin = minExt.getSubTreeMin(node).get();
-				Assertions.assertEquals(expectedMin, actualMin, "Min extension reported wrong value");
+				assertEquals(expectedMin, actualMin, "Min extension reported wrong value");
 			}
 		});
 	}
@@ -218,7 +218,7 @@ public class RedBlackTreeExtendedTest extends TestUtils {
 					expectedMax = Math.max(expectedMax, descendant.get());
 
 				int actualMax = maxExt.getSubTreeMax(node).get();
-				Assertions.assertEquals(expectedMax, actualMax, "Max extension reported wrong value");
+				assertEquals(expectedMax, actualMax, "Max extension reported wrong value");
 			}
 		});
 	}

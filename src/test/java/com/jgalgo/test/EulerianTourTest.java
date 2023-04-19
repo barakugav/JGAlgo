@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import com.jgalgo.Connectivity;
@@ -75,12 +75,12 @@ public class EulerianTourTest extends TestUtils {
 		for (EdgeIter it = tour.edgeIter(); it.hasNext();) {
 			int e = it.nextInt();
 			boolean alreadyUsed = !usedEdges.add(e);
-			Assertions.assertFalse(alreadyUsed, "edge appear twice in tour: " + e);
+			assertFalse(alreadyUsed, "edge appear twice in tour: " + e);
 		}
 
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
-			Assertions.assertTrue(usedEdges.contains(e), "edge was not used: " + e);
+			assertTrue(usedEdges.contains(e), "edge was not used: " + e);
 		}
 	}
 

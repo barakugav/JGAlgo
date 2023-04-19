@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Random;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.jgalgo.Graph;
 import com.jgalgo.Path;
@@ -31,10 +31,10 @@ public class PathTest extends TestUtils {
 			Path actual = Path.findPath(g, source, target);
 			Path expected = validationAlgo.calcDistances(g, w -> 1, source).getPathTo(target);
 			if (expected == null) {
-				Assertions.assertNull(actual, "found non existing path");
+				assertNull(actual, "found non existing path");
 			} else {
-				Assertions.assertNotNull(actual, "failed to found a path");
-				Assertions.assertEquals(expected.size(), actual.size(), "failed to find shortest path");
+				assertNotNull(actual, "failed to found a path");
+				assertEquals(expected.size(), actual.size(), "failed to find shortest path");
 			}
 		});
 	}

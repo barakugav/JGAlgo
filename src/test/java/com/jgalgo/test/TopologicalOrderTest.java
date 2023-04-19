@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.jgalgo.DiGraph;
 import com.jgalgo.EdgeIter;
@@ -42,7 +42,7 @@ public class TopologicalOrderTest extends TestUtils {
 				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 					eit.nextInt();
 					int v = eit.v();
-					Assertions.assertFalse(seenVertices.contains(Integer.valueOf(v)));
+					assertFalse(seenVertices.contains(Integer.valueOf(v)));
 				}
 				seenVertices.add(Integer.valueOf(u));
 			}

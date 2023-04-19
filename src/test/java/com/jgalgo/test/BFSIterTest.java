@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Random;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.jgalgo.BFSIter;
 import com.jgalgo.Graph;
@@ -29,9 +29,9 @@ public class BFSIterTest extends TestUtils {
 			for (BFSIter it = new BFSIter(g, source); it.hasNext();) {
 				int v = it.nextInt();
 				int e = it.inEdge();
-				Assertions.assertFalse(visited.get(v), "already visited vertex " + v);
+				assertFalse(visited.get(v), "already visited vertex " + v);
 				if (v != source)
-					Assertions.assertTrue(g.edgeEndpoint(e, g.edgeEndpoint(e, v)) == v,
+					assertTrue(g.edgeEndpoint(e, g.edgeEndpoint(e, v)) == v,
 							"v is not an endpoint of inEdge");
 				visited.set(v);
 			}

@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
 
-import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import com.jgalgo.SplitFind;
@@ -43,22 +43,22 @@ public class SplitFindMinArrayTest extends TestUtils {
 		int x;
 		while (m-- > 0) {
 			switch (rand.nextInt(OPS_NUM)) {
-			case OP_FIND:
-				x = rand.nextInt(n);
-				int expected = sequence[x];
-				int actual = sequence[sf.find(x)];
-				Assertions.assertEquals(expected, actual, "find failed!");
-				break;
-			case OP_SPLIT:
-				x = rand.nextInt(n);
-				sf.split(x);
-				int seqOld = sequence[x];
-				int seqNew = sequencesNum++;
-				for (int i = x; i < n && sequence[i] == seqOld; i++)
-					sequence[i] = seqNew;
-				break;
-			default:
-				throw new IllegalStateException();
+				case OP_FIND:
+					x = rand.nextInt(n);
+					int expected = sequence[x];
+					int actual = sequence[sf.find(x)];
+					assertEquals(expected, actual, "find failed!");
+					break;
+				case OP_SPLIT:
+					x = rand.nextInt(n);
+					sf.split(x);
+					int seqOld = sequence[x];
+					int seqNew = sequencesNum++;
+					for (int i = x; i < n && sequence[i] == seqOld; i++)
+						sequence[i] = seqNew;
+					break;
+				default:
+					throw new IllegalStateException();
 			}
 		}
 	}
@@ -95,38 +95,38 @@ public class SplitFindMinArrayTest extends TestUtils {
 		int x;
 		while (m-- > 0) {
 			switch (rand.nextInt(OPS_NUM)) {
-			case OP_FIND:
-				x = rand.nextInt(n);
-				int expected = sequence[x];
-				int actual = sequence[sf.find(x)];
-				Assertions.assertEquals(expected, actual, "find failed!");
-				break;
-			case OP_SPLIT:
-				x = rand.nextInt(n);
-				sf.split(x);
-				int seqOld = sequence[x];
-				int seqNew = sequencesNum++;
-				for (int i = x; i < n && sequence[i] == seqOld; i++)
-					sequence[i] = seqNew;
-				break;
-			case OP_FINDMIN:
-				x = rand.nextInt(n);
-				double expectedKey = Double.MAX_VALUE;
-				for (int i = x - 1; i >= 0 && sequence[i] == sequence[x]; i--)
-					if (sf.getKey(i) < expectedKey)
-						expectedKey = sf.getKey(i);
-				for (int i = x; i < n && sequence[i] == sequence[x]; i++)
-					if (sf.getKey(i) < expectedKey)
-						expectedKey = sf.getKey(i);
-				double actualKey = sf.getKey(sf.findMin(x));
-				Assertions.assertEquals(expectedKey, actualKey, "findmin failed!");
-				break;
-			case OP_DECREASEKEY:
-				x = rand.nextInt(n);
-				sf.decreaseKey(x, sf.getKey(x) * rand.nextDouble());
-				break;
-			default:
-				throw new IllegalStateException();
+				case OP_FIND:
+					x = rand.nextInt(n);
+					int expected = sequence[x];
+					int actual = sequence[sf.find(x)];
+					assertEquals(expected, actual, "find failed!");
+					break;
+				case OP_SPLIT:
+					x = rand.nextInt(n);
+					sf.split(x);
+					int seqOld = sequence[x];
+					int seqNew = sequencesNum++;
+					for (int i = x; i < n && sequence[i] == seqOld; i++)
+						sequence[i] = seqNew;
+					break;
+				case OP_FINDMIN:
+					x = rand.nextInt(n);
+					double expectedKey = Double.MAX_VALUE;
+					for (int i = x - 1; i >= 0 && sequence[i] == sequence[x]; i--)
+						if (sf.getKey(i) < expectedKey)
+							expectedKey = sf.getKey(i);
+					for (int i = x; i < n && sequence[i] == sequence[x]; i++)
+						if (sf.getKey(i) < expectedKey)
+							expectedKey = sf.getKey(i);
+					double actualKey = sf.getKey(sf.findMin(x));
+					assertEquals(expectedKey, actualKey, "findmin failed!");
+					break;
+				case OP_DECREASEKEY:
+					x = rand.nextInt(n);
+					sf.decreaseKey(x, sf.getKey(x) * rand.nextDouble());
+					break;
+				default:
+					throw new IllegalStateException();
 			}
 		}
 	}

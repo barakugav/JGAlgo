@@ -3,7 +3,7 @@ package com.jgalgo.test;
 import java.util.List;
 import java.util.function.Supplier;
 
-import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.jgalgo.APSP;
 import com.jgalgo.EdgeWeightFunc;
@@ -67,28 +67,28 @@ class APSPTestUtils extends TestUtils {
 				}
 				if (cycle != null) {
 					double cycleWeight = SSSPTestUtils.getPathWeight(cycle, w);
-					Assertions.assertTrue(cycleWeight != Double.NaN, "Invalid cycle: " + cycle);
-					Assertions.assertTrue(cycleWeight < 0, "Cycle is not negative: " + cycle);
+					assertTrue(cycleWeight != Double.NaN, "Invalid cycle: " + cycle);
+					assertTrue(cycleWeight < 0, "Cycle is not negative: " + cycle);
 					if (!expectedRes.foundNegativeCycle())
 						throw new IllegalStateException("validation algorithm didn't find negative cycle: " + cycle);
 				} else {
-					Assertions.assertTrue(expectedRes.foundNegativeCycle(), "found non existing negative cycle");
+					assertTrue(expectedRes.foundNegativeCycle(), "found non existing negative cycle");
 				}
 				return;
 			}
-			Assertions.assertFalse(expectedRes.foundNegativeCycle(), "failed to found negative cycle");
+			assertFalse(expectedRes.foundNegativeCycle(), "failed to found negative cycle");
 
 			for (int target = 0; target < n; target++) {
 				double expectedDistance = expectedRes.distance(target);
 				double actualDistance = result.distance(source, target);
-				Assertions.assertEquals(expectedDistance, actualDistance, "Distance to vertex " + target + " is wrong");
+				assertEquals(expectedDistance, actualDistance, "Distance to vertex " + target + " is wrong");
 				Path path = result.getPath(source, target);
 				if (path != null) {
 					double pathWeight = SSSPTestUtils.getPathWeight(path, w);
-					Assertions.assertEquals(pathWeight, actualDistance, "Path to vertex " + target
+					assertEquals(pathWeight, actualDistance, "Path to vertex " + target
 							+ " doesn't match distance (" + actualDistance + " != " + pathWeight + "): " + path);
 				} else {
-					Assertions.assertEquals(Double.POSITIVE_INFINITY, actualDistance,
+					assertEquals(Double.POSITIVE_INFINITY, actualDistance,
 							"Distance to vertex " + target + " is not infinity but path is null");
 				}
 			}

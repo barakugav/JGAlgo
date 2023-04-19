@@ -7,7 +7,7 @@ import java.util.Random;
 import java.util.function.DoubleFunction;
 import java.util.function.Function;
 
-import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import com.jgalgo.DynamicTree;
@@ -105,7 +105,7 @@ public class DynamicTreeSplayTest extends TestUtils {
 					TrackerNode root = findRoot.apply(node);
 					DynamicTree.Node<TrackerNode, Void> expected = root.dtNode;
 					DynamicTree.Node<TrackerNode, Void> actual = tree.findRoot(node.dtNode);
-					Assertions.assertEquals(expected, actual, "FindRoot failure");
+					assertEquals(expected, actual, "FindRoot failure");
 					break;
 				}
 				case FindMinEdge: {
@@ -124,7 +124,7 @@ public class DynamicTreeSplayTest extends TestUtils {
 					Object[] actual = actual0 != null ? new Object[] { actual0.u(), (int) Math.round(actual0.weight()) }
 							: null;
 
-					Assertions.assertTrue(Arrays.equals(expected, actual),
+					assertTrue(Arrays.equals(expected, actual),
 							"FindMinEdge failure: " + Arrays.toString(expected) + " != " + Arrays.toString(actual));
 					break;
 				}
@@ -215,7 +215,7 @@ public class DynamicTreeSplayTest extends TestUtils {
 					}
 
 					int actual = tree.size(node.dtNode);
-					Assertions.assertEquals(expected, actual, "Wrong size");
+					assertEquals(expected, actual, "Wrong size");
 					break;
 				}
 				default:

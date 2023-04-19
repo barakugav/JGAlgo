@@ -6,7 +6,7 @@ import java.util.Random;
 import java.util.function.Predicate;
 import java.util.function.ToDoubleFunction;
 
-import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import com.jgalgo.TSPMetricMSTAppx;
@@ -57,9 +57,9 @@ public class TSPMetricTest extends TestUtils {
 					return false;
 			return true;
 		};
-		Assertions.assertTrue(isPathVisitAllVertices.test(appxMst),
+		assertTrue(isPathVisitAllVertices.test(appxMst),
 				"MST approximation result doesn't visit every vertex");
-		Assertions.assertTrue(isPathVisitAllVertices.test(appxMatch),
+		assertTrue(isPathVisitAllVertices.test(appxMatch),
 				"Matching approximation result doesn't visit every vertex");
 
 		ToDoubleFunction<int[]> pathLength = path -> {
@@ -73,7 +73,7 @@ public class TSPMetricTest extends TestUtils {
 		double mstAppxLen = pathLength.applyAsDouble(appxMst);
 		double matchAppxLen = pathLength.applyAsDouble(appxMatch);
 
-		Assertions.assertTrue(mstAppxLen * 3 / 2 >= matchAppxLen && matchAppxLen * 2 > mstAppxLen,
+		assertTrue(mstAppxLen * 3 / 2 >= matchAppxLen && matchAppxLen * 2 > mstAppxLen,
 				"Approximations factor doesn't match");
 
 	}

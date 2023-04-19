@@ -8,7 +8,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.function.ToIntFunction;
 
-import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.jgalgo.DiGraph;
 import com.jgalgo.EdgeIter;
@@ -73,8 +73,8 @@ class GraphImplTestUtils extends TestUtils {
 				int v = g.addVertex();
 				verticesSet.add(v);
 			}
-			Assertions.assertEquals(verticesSet, g.vertices());
-			Assertions.assertEquals(IntSets.emptySet(), g.edges());
+			assertEquals(verticesSet, g.vertices());
+			assertEquals(IntSets.emptySet(), g.edges());
 		}
 	}
 
@@ -85,8 +85,8 @@ class GraphImplTestUtils extends TestUtils {
 			IntSet verticesSet = new IntOpenHashSet();
 			for (int v = 0; v < n; v++)
 				verticesSet.add(v);
-			Assertions.assertEquals(verticesSet, g.vertices());
-			Assertions.assertEquals(IntSets.emptySet(), g.edges());
+			assertEquals(verticesSet, g.vertices());
+			assertEquals(IntSets.emptySet(), g.edges());
 		}
 	}
 
@@ -103,7 +103,7 @@ class GraphImplTestUtils extends TestUtils {
 					edges.put(e, new int[] { e, u, v });
 				}
 			}
-			Assertions.assertEquals(edges.keySet(), g.edges());
+			assertEquals(edges.keySet(), g.edges());
 			for (int[] edge : edges.values()) {
 				int e = edge[0], u = edge[1], v = edge[2];
 				assertEndpoints(g, e, u, v);
@@ -113,13 +113,13 @@ class GraphImplTestUtils extends TestUtils {
 
 	private static void assertEndpoints(Graph g, int e, int u, int v) {
 		if (g.getCapabilities().directed()) {
-			Assertions.assertEquals(u, g.edgeSource(e));
-			Assertions.assertEquals(v, g.edgeTarget(e));
+			assertEquals(u, g.edgeSource(e));
+			assertEquals(v, g.edgeTarget(e));
 		} else {
-			Assertions.assertEquals(intSetOf(u, v), intSetOf(g.edgeSource(e), g.edgeTarget(e)));
+			assertEquals(intSetOf(u, v), intSetOf(g.edgeSource(e), g.edgeTarget(e)));
 		}
-		Assertions.assertEquals(u, g.edgeEndpoint(e, v));
-		Assertions.assertEquals(v, g.edgeEndpoint(e, u));
+		assertEquals(u, g.edgeEndpoint(e, v));
+		assertEquals(v, g.edgeEndpoint(e, u));
 	}
 
 	static void testGetEdge(GraphImpl graphImpl) {
@@ -146,7 +146,7 @@ class GraphImplTestUtils extends TestUtils {
 				IntIterator endpointsIt = endpoints.iterator();
 				int u = endpointsIt.nextInt(), v = endpointsIt.hasNext() ? endpointsIt.nextInt() : u;
 				int e = edge.getIntValue();
-				Assertions.assertEquals(e, g.getEdge(u, v));
+				assertEquals(e, g.getEdge(u, v));
 			}
 		}
 	}
@@ -179,7 +179,7 @@ class GraphImplTestUtils extends TestUtils {
 					int e = eit.nextInt();
 					uEdges.add(e);
 				}
-				Assertions.assertEquals(edgesOut.get(u), uEdges);
+				assertEquals(edgesOut.get(u), uEdges);
 			}
 			if (directed) {
 				for (IntIterator it = g.vertices().iterator(); it.hasNext();) {
@@ -187,22 +187,22 @@ class GraphImplTestUtils extends TestUtils {
 					IntSet uEdges = new IntOpenHashSet();
 					for (EdgeIter eit = ((DiGraph) g).edgesOut(u); eit.hasNext();) {
 						int e = eit.nextInt();
-						Assertions.assertEquals(u, eit.u());
-						Assertions.assertEquals(g.edgeEndpoint(e, u), eit.v());
+						assertEquals(u, eit.u());
+						assertEquals(g.edgeEndpoint(e, u), eit.v());
 						uEdges.add(e);
 					}
-					Assertions.assertEquals(edgesOut.get(u), uEdges);
+					assertEquals(edgesOut.get(u), uEdges);
 				}
 				for (IntIterator it = g.vertices().iterator(); it.hasNext();) {
 					int v = it.nextInt();
 					IntSet vEdges = new IntOpenHashSet();
 					for (EdgeIter eit = ((DiGraph) g).edgesIn(v); eit.hasNext();) {
 						int e = eit.nextInt();
-						Assertions.assertEquals(v, eit.v());
-						Assertions.assertEquals(g.edgeEndpoint(e, v), eit.u());
+						assertEquals(v, eit.v());
+						assertEquals(g.edgeEndpoint(e, v), eit.u());
 						vEdges.add(e);
 					}
-					Assertions.assertEquals(edgesIn.get(v), vEdges);
+					assertEquals(edgesIn.get(v), vEdges);
 				}
 			}
 		}
@@ -233,15 +233,15 @@ class GraphImplTestUtils extends TestUtils {
 					int e = eit.nextInt();
 					int v = eit.v();
 					if (directed) {
-						Assertions.assertEquals(edges.get(e), IntList.of(eit.u(), eit.v()));
+						assertEquals(edges.get(e), IntList.of(eit.u(), eit.v()));
 					} else {
-						Assertions.assertEquals(edges.get(e), intSetOf(eit.u(), eit.v()));
+						assertEquals(edges.get(e), intSetOf(eit.u(), eit.v()));
 					}
-					Assertions.assertEquals(u, eit.u());
-					Assertions.assertEquals(v, g.edgeEndpoint(e, u));
+					assertEquals(u, eit.u());
+					assertEquals(v, g.edgeEndpoint(e, u));
 					if (directed) {
-						Assertions.assertEquals(g.edgeSource(e), eit.u());
-						Assertions.assertEquals(g.edgeTarget(e), eit.v());
+						assertEquals(g.edgeSource(e), eit.u());
+						assertEquals(g.edgeTarget(e), eit.v());
 					}
 				}
 			}
@@ -271,8 +271,8 @@ class GraphImplTestUtils extends TestUtils {
 			}
 			for (IntIterator it = g.vertices().iterator(); it.hasNext();) {
 				int u = it.nextInt();
-				Assertions.assertEquals(degreeOut.get(u), g.degreeOut(u), "u=" + u);
-				Assertions.assertEquals(degreeIn.get(u), g.degreeIn(u), "u=" + u);
+				assertEquals(degreeOut.get(u), g.degreeOut(u), "u=" + u);
+				assertEquals(degreeIn.get(u), g.degreeIn(u), "u=" + u);
 			}
 		}
 	}
@@ -375,12 +375,12 @@ class GraphImplTestUtils extends TestUtils {
 			removeEdgesOf(v);
 
 			boolean removed = vertices.remove(v);
-			Assertions.assertTrue(removed);
+			assertTrue(removed);
 		}
 
 		Vertex getVertex(int id) {
 			Vertex v = vertices.get(id);
-			Assertions.assertEquals(v.id, id);
+			assertEquals(v.id, id);
 			assert v.id == id;
 			return v;
 		}
@@ -399,7 +399,7 @@ class GraphImplTestUtils extends TestUtils {
 			for (Edge edge : edges)
 				if (edge.data == data)
 					return edge;
-			Assertions.fail("edge not found");
+			fail("edge not found");
 			return null;
 		}
 
@@ -424,7 +424,7 @@ class GraphImplTestUtils extends TestUtils {
 			if (debugPrints)
 				System.out.println("removeEdge(" + edge.u + ", " + edge.v + ")");
 			boolean removed = edges.remove(edge);
-			Assertions.assertTrue(removed);
+			assertTrue(removed);
 		}
 
 		void removeEdgesOf(Vertex u) {
@@ -465,7 +465,7 @@ class GraphImplTestUtils extends TestUtils {
 		}
 
 		void checkEdgesEqual(Graph g) {
-			Assertions.assertEquals(edgesNum(), g.edges().size());
+			assertEquals(edgesNum(), g.edges().size());
 			Weights.Int edgeData = g.edgesWeight(dataKey);
 
 			List<IntList> actual = new ArrayList<>();
@@ -508,7 +508,7 @@ class GraphImplTestUtils extends TestUtils {
 			};
 			actual.sort(cmp);
 			expected.sort(cmp);
-			Assertions.assertEquals(expected, actual);
+			assertEquals(expected, actual);
 		}
 
 		private static class Vertex {
@@ -640,7 +640,7 @@ class GraphImplTestUtils extends TestUtils {
 					break;
 				}
 			}
-			Assertions.assertTrue(e != -1, "edge not found");
+			assertTrue(e != -1, "edge not found");
 			return e;
 		};
 
@@ -692,7 +692,7 @@ class GraphImplTestUtils extends TestUtils {
 						if (edgeData.getInt(eOther) != edge.data) {
 							GraphTracker.Edge edgeOther = tracker.getEdge(edgeData.getInt(eOther));
 							boolean duplication = !iterationExpected.add(edgeOther);
-							Assertions.assertFalse(duplication);
+							assertFalse(duplication);
 						}
 					}
 					boolean removed = false;
@@ -702,16 +702,16 @@ class GraphImplTestUtils extends TestUtils {
 						if (edgeData.getInt(eOther) != edge.data) {
 							GraphTracker.Edge edgeOther = tracker.getEdge(edgeData.getInt(eOther));
 							boolean duplication = !iterationActual.add(edgeOther);
-							Assertions.assertFalse(duplication);
+							assertFalse(duplication);
 						} else {
-							Assertions.assertFalse(removed);
+							assertFalse(removed);
 							it.remove();
 							tracker.removeEdge(edge);
 							removed = true;
 						}
 					}
-					Assertions.assertTrue(removed);
-					Assertions.assertEquals(iterationExpected, iterationActual);
+					assertTrue(removed);
+					assertEquals(iterationExpected, iterationActual);
 					break;
 				}
 				case RemoveEdgeUsingInIter: {
@@ -726,7 +726,7 @@ class GraphImplTestUtils extends TestUtils {
 						if (edgeData.getInt(eOther) != edge.data) {
 							GraphTracker.Edge edgeOther = tracker.getEdge(edgeData.getInt(eOther));
 							boolean duplication = !iterationExpected.add(edgeOther);
-							Assertions.assertFalse(duplication);
+							assertFalse(duplication);
 						}
 					}
 					boolean removed = false;
@@ -736,16 +736,16 @@ class GraphImplTestUtils extends TestUtils {
 						if (edgeData.getInt(eOther) != edge.data) {
 							GraphTracker.Edge edgeOther = tracker.getEdge(edgeData.getInt(eOther));
 							boolean duplication = !iterationActual.add(edgeOther);
-							Assertions.assertFalse(duplication);
+							assertFalse(duplication);
 						} else {
-							Assertions.assertFalse(removed);
+							assertFalse(removed);
 							it.remove();
 							tracker.removeEdge(edge);
 							removed = true;
 						}
 					}
-					Assertions.assertTrue(removed);
-					Assertions.assertEquals(iterationExpected, iterationActual);
+					assertTrue(removed);
+					assertEquals(iterationExpected, iterationActual);
 					break;
 				}
 				case RemoveEdgesMulti: {
@@ -873,8 +873,8 @@ class GraphImplTestUtils extends TestUtils {
 					throw new IllegalArgumentException("Unexpected value: " + op);
 			}
 
-			Assertions.assertEquals(tracker.verticesNum(), g.vertices().size());
-			Assertions.assertEquals(tracker.edgesNum(), g.edges().size());
+			assertEquals(tracker.verticesNum(), g.vertices().size());
+			assertEquals(tracker.edgesNum(), g.edges().size());
 			tracker.checkEdgesEqual(g);
 
 			opsNum--;

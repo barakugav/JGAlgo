@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
 
-import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import com.jgalgo.BFSIter;
@@ -74,7 +74,7 @@ public class LCARMQBenderFarachColton2000Test extends TestUtils {
 			int v = query[1];
 			int expected = query[2];
 			int actual = lca.calcLCA(u, v);
-			Assertions.assertEquals(expected, actual, "<- [" + u + "," + v + "]");
+			assertEquals(expected, actual, "<- [" + u + "," + v + "]");
 		}
 	}
 
