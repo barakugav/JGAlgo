@@ -98,8 +98,22 @@ abstract class GraphTableAbstract extends GraphBaseContinues {
 		if (edges[u][v] != EdgeNone)
 			throw new IllegalArgumentException("parallel edges are not supported");
 		int e = super.addEdge(u, v);
+		edgeEndpoints.add(e);
 		edgeEndpoints.set(e, sourceTarget2Endpoints(u, v));
 		return e;
+	}
+
+	@Override
+	public void removeEdge(int e) {
+		e = edgeSwapBeforeRemove(e);
+		edgeEndpoints.remove(e);
+		super.removeEdge(e);
+	}
+
+	@Override
+	void edgeSwap(int e1, int e2) {
+		edgeEndpoints.swap(e1, e2);
+		super.edgeSwap(e1, e2);
 	}
 
 	void reverseEdge(int edge) {
@@ -138,6 +152,11 @@ abstract class GraphTableAbstract extends GraphBaseContinues {
 		return endpoints2Target(edgeEndpoints.getLong(edge));
 	}
 
+	/**
+	 * Clearing is not supported, as vertices removal are not supported. The number
+	 * of vertices is fixed and should be specified in the constructor.
+	 */
+	@Deprecated
 	@Override
 	public void clear() {
 		throw new UnsupportedOperationException();
@@ -148,6 +167,7 @@ abstract class GraphTableAbstract extends GraphBaseContinues {
 		int n = vertices().size();
 		for (int u = 0; u < n; u++)
 			Arrays.fill(edges[u], EdgeNone);
+		edgeEndpoints.clear();
 		super.clearEdges();
 	}
 

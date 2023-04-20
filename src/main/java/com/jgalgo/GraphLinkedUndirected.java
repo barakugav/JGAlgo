@@ -35,6 +35,20 @@ public class GraphLinkedUndirected extends GraphLinkedAbstract implements UGraph
 	}
 
 	@Override
+	public int addVertex() {
+		int v = super.addVertex();
+		edges.add(v);
+		return v;
+	}
+
+	@Override
+	public void removeVertex(int v) {
+		v = vertexSwapBeforeRemove(v);
+		super.removeVertex(v);
+		edges.remove(v);
+	}
+
+	@Override
 	void vertexSwap(int v1, int v2) {
 		final int tempV = -2;
 		for (Node p = edges.get(v1), next; p != null; p = next) {
@@ -58,6 +72,8 @@ public class GraphLinkedUndirected extends GraphLinkedAbstract implements UGraph
 			if (p.v == tempV)
 				p.v = v2;
 		}
+
+		edges.swap(v1, v2);
 
 		super.vertexSwap(v1, v2);
 	}
@@ -148,7 +164,12 @@ public class GraphLinkedUndirected extends GraphLinkedAbstract implements UGraph
 			edges.set(uIdx, null);
 		}
 		super.clearEdges();
+	}
 
+	@Override
+	public void clear() {
+		super.clear();
+		edges.clear();
 	}
 
 	private static class Node extends GraphLinkedAbstract.Node {

@@ -31,12 +31,24 @@ abstract class GraphLinkedAbstract extends GraphBaseContinues {
 		return n;
 	}
 
+	@Override
+	public void removeEdge(int e) {
+		removeEdge0(e);
+	}
+
+	private void removeEdge0(int e) {
+		e = edgeSwapBeforeRemove(e);
+		edges.remove(e);
+		super.removeEdge(e);
+	}
+
 	void removeEdge(Node node) {
-		super.removeEdge(node.id);
+		removeEdge0(node.id);
 	}
 
 	Node addEdgeNode(int u, int v) {
 		int e = super.addEdge(u, v);
+		edges.add(e);
 		Node n = allocNode(e, u, v);
 		edges.set(e, n);
 		return n;
@@ -49,6 +61,7 @@ abstract class GraphLinkedAbstract extends GraphBaseContinues {
 		Node n1 = getNode(e1), n2 = getNode(e2);
 		n1.id = e2;
 		n2.id = e1;
+		edges.swap(e1, e2);
 		super.edgeSwap(e1, e2);
 	}
 
@@ -66,6 +79,12 @@ abstract class GraphLinkedAbstract extends GraphBaseContinues {
 
 	Collection<Node> nodes() {
 		return edges.values();
+	}
+
+	@Override
+	public void clearEdges() {
+		edges.clear();
+		super.clearEdges();
 	}
 
 	abstract class EdgeItr implements EdgeIter {

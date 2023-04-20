@@ -50,6 +50,26 @@ public class GraphArrayDirected extends GraphArrayAbstract implements DiGraph {
 	}
 
 	@Override
+	public int addVertex() {
+		int v = super.addVertex();
+		edgesOut.add(v);
+		edgesOutNum.add(v);
+		edgesIn.add(v);
+		edgesInNum.add(v);
+		return v;
+	}
+
+	@Override
+	public void removeVertex(int v) {
+		v = vertexSwapBeforeRemove(v);
+		super.removeVertex(v);
+		edgesOut.remove(v);
+		edgesOutNum.remove(v);
+		edgesIn.remove(v);
+		edgesInNum.remove(v);
+	}
+
+	@Override
 	void vertexSwap(int v1, int v2) {
 		int[] es1Out = edgesOut.get(v1);
 		int es1OutLen = edgesOutNum.getInt(v1);
@@ -70,6 +90,11 @@ public class GraphArrayDirected extends GraphArrayAbstract implements DiGraph {
 		int es2InLen = edgesInNum.getInt(v2);
 		for (int i = 0; i < es2InLen; i++)
 			replaceEdgeTarget(es2In[i], v1);
+
+		edgesOut.swap(v1, v2);
+		edgesOutNum.swap(v1, v2);
+		edgesIn.swap(v1, v2);
+		edgesInNum.swap(v1, v2);
 
 		super.vertexSwap(v1, v2);
 	}
@@ -170,6 +195,15 @@ public class GraphArrayDirected extends GraphArrayAbstract implements DiGraph {
 			edgesInNum.set(u, 0);
 		}
 		super.clearEdges();
+	}
+
+	@Override
+	public void clear() {
+		super.clear();
+		edgesOut.clear();
+		edgesOutNum.clear();
+		edgesIn.clear();
+		edgesInNum.clear();
 	}
 
 	private class EdgeOutIt extends EdgeIt {

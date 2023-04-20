@@ -40,6 +40,22 @@ public class GraphLinkedDirected extends GraphLinkedAbstract implements DiGraph 
 	}
 
 	@Override
+	public int addVertex() {
+		int v = super.addVertex();
+		edgesOut.add(v);
+		edgesIn.add(v);
+		return v;
+	}
+
+	@Override
+	public void removeVertex(int v) {
+		v = vertexSwapBeforeRemove(v);
+		super.removeVertex(v);
+		edgesOut.remove(v);
+		edgesIn.remove(v);
+	}
+
+	@Override
 	void vertexSwap(int v1, int v2) {
 		for (Node p = edgesOut.get(v1); p != null; p = p.nextOut)
 			p.u = v2;
@@ -49,6 +65,10 @@ public class GraphLinkedDirected extends GraphLinkedAbstract implements DiGraph 
 			p.u = v1;
 		for (Node p = edgesIn.get(v2); p != null; p = p.nextIn)
 			p.v = v1;
+
+		edgesOut.swap(v1, v2);
+		edgesIn.swap(v1, v2);
+
 		super.vertexSwap(v1, v2);
 	}
 
@@ -184,6 +204,13 @@ public class GraphLinkedDirected extends GraphLinkedAbstract implements DiGraph 
 			edgesIn.set(uIdx, null);
 		}
 		super.clearEdges();
+	}
+
+	@Override
+	public void clear() {
+		super.clear();
+		edgesOut.clear();
+		edgesIn.clear();
 	}
 
 	private abstract class EdgeIterImpl extends GraphLinkedAbstract.EdgeItr {

@@ -16,8 +16,22 @@ abstract class GraphArrayAbstract extends GraphBaseContinues {
 	@Override
 	public int addEdge(int u, int v) {
 		int e = super.addEdge(u, v);
+		edgeEndpoints.add(e);
 		edgeEndpoints.set(e, sourceTarget2Endpoints(u, v));
 		return e;
+	}
+
+	@Override
+	public void removeEdge(int e) {
+		e = edgeSwapBeforeRemove(e);
+		edgeEndpoints.remove(e);
+		super.removeEdge(e);
+	}
+
+	@Override
+	void edgeSwap(int e1, int e2) {
+		edgeEndpoints.swap(e1, e2);
+		super.edgeSwap(e1, e2);
 	}
 
 	static void addEdgeToList(DataContainer.Obj<int[]> edges, DataContainer.Int edgesNum, int w, int e) {
@@ -103,6 +117,12 @@ abstract class GraphArrayAbstract extends GraphBaseContinues {
 		if (target == oldEndpoint)
 			target = newEndpoint;
 		edgeEndpoints.set(edge, sourceTarget2Endpoints(source, target));
+	}
+
+	@Override
+	public void clearEdges() {
+		edgeEndpoints.clear();
+		super.clearEdges();
 	}
 
 	private static long sourceTarget2Endpoints(int u, int v) {

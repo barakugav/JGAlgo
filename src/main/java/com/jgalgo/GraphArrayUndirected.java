@@ -35,11 +35,27 @@ public class GraphArrayUndirected extends GraphArrayAbstract implements UGraph {
 	 */
 	public GraphArrayUndirected(int n) {
 		super(n, Capabilities);
-		edgesNum = new DataContainer.Int(n, 0);
 		edges = new DataContainer.Obj<>(n, IntArrays.EMPTY_ARRAY);
+		edgesNum = new DataContainer.Int(n, 0);
 
-		addInternalVerticesDataContainer(edgesNum);
 		addInternalVerticesDataContainer(edges);
+		addInternalVerticesDataContainer(edgesNum);
+	}
+
+	@Override
+	public int addVertex() {
+		int v = super.addVertex();
+		edges.add(v);
+		edgesNum.add(v);
+		return v;
+	}
+
+	@Override
+	public void removeVertex(int v) {
+		v = vertexSwapBeforeRemove(v);
+		super.removeVertex(v);
+		edges.remove(v);
+		edgesNum.remove(v);
 	}
 
 	@Override
@@ -56,6 +72,9 @@ public class GraphArrayUndirected extends GraphArrayAbstract implements UGraph {
 			replaceEdgeEndpoint(es2[i], v2, v1);
 		for (int i = 0; i < es1Len; i++)
 			replaceEdgeEndpoint(es1[i], tempV, v2);
+
+		edges.swap(v1, v2);
+		edgesNum.swap(v1, v2);
 
 		super.vertexSwap(v1, v2);
 	}
@@ -133,6 +152,13 @@ public class GraphArrayUndirected extends GraphArrayAbstract implements UGraph {
 			edgesNum.set(u, 0);
 		}
 		super.clearEdges();
+	}
+
+	@Override
+	public void clear() {
+		super.clear();
+		edges.clear();
+		edgesNum.clear();
 	}
 
 	private class EdgeIt extends GraphArrayAbstract.EdgeIt {
