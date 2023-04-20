@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 /**
- * Implementation of the {@link SubtreeMergeFindMin} data structure.
+ * Implementation of the {@link SubtreeMergeFindMin2} data structure.
  * <p>
  * AddLeaf is O(1) amortized, merge is O(log n), addNonTreeEdge is O(1) and
  * findMin is O(1). In total, this data structure support m operations on n
@@ -12,7 +12,7 @@ import java.util.Comparator;
  *
  * @author Barak Ugav
  */
-public class SubtreeMergeFindMinImpl<E> implements SubtreeMergeFindMin<E> {
+public class SubtreeMergeFindMinImpl2<E> implements SubtreeMergeFindMin2<E> {
 
 	private NodeImpl<E>[] nodes;
 	private final UnionFind uf;
@@ -26,7 +26,7 @@ public class SubtreeMergeFindMinImpl<E> implements SubtreeMergeFindMin<E> {
 	 * Create a new SMF data structure with the {@linkplain Comparable natural
 	 * ordering} comparator for edge weights.
 	 */
-	public SubtreeMergeFindMinImpl() {
+	public SubtreeMergeFindMinImpl2() {
 		this(null);
 	}
 
@@ -36,7 +36,7 @@ public class SubtreeMergeFindMinImpl<E> implements SubtreeMergeFindMin<E> {
 	 *
 	 * @param weightCmp comparator used to compare edge weights.
 	 */
-	public SubtreeMergeFindMinImpl(Comparator<? super E> weightCmp) {
+	public SubtreeMergeFindMinImpl2(Comparator<? super E> weightCmp) {
 		this(weightCmp, HeapPairing::new);
 	}
 
@@ -48,7 +48,7 @@ public class SubtreeMergeFindMinImpl<E> implements SubtreeMergeFindMin<E> {
 	 * @param heapBuilder heap builder used to provide a custom heap implementation.
 	 */
 	@SuppressWarnings("unchecked")
-	public SubtreeMergeFindMinImpl(Comparator<? super E> weightCmp, HeapReferenceable.Builder heapBuilder) {
+	public SubtreeMergeFindMinImpl2(Comparator<? super E> weightCmp, HeapReferenceable.Builder heapBuilder) {
 		nodes = new NodeImpl[2];
 
 		uf = new UnionFindArray();
