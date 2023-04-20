@@ -154,7 +154,7 @@ class Graphs {
 
 <span class="pc bpc" id="L155" title="1 of 2 branches missed.">			if (data0 instanceof Weights.Int) {</span>
 <span class="nc" id="L156">				Weights.Int data = (Weights.Int) data0;</span>
-<span class="nc" id="L157">				int defVal = data.defaultValInt();</span>
+<span class="nc" id="L157">				int defVal = data.defaultWeightInt();</span>
 <span class="nc" id="L158">				Weights.Int datas = g1.addEdgesWeights(key, int.class, Integer.valueOf(defVal));</span>
 <span class="nc bnc" id="L159" title="All 2 branches missed.">				for (IntIterator it = g1.edges().iterator(); it.hasNext();) {</span>
 <span class="nc" id="L160">					int s = it.nextInt();</span>
@@ -165,7 +165,7 @@ class Graphs {
 
 <span class="pc bpc" id="L166" title="1 of 2 branches missed.">			} else if (data0 instanceof Weights.Double) {</span>
 <span class="nc" id="L167">				Weights.Double data = (Weights.Double) data0;</span>
-<span class="nc" id="L168">				double defVal = data.defaultValDouble();</span>
+<span class="nc" id="L168">				double defVal = data.defaultWeightDouble();</span>
 <span class="nc" id="L169">				Weights.Double datas = g1.addEdgesWeights(key, double.class, Double.valueOf(defVal));</span>
 <span class="nc bnc" id="L170" title="All 2 branches missed.">				for (IntIterator it = g1.edges().iterator(); it.hasNext();) {</span>
 <span class="nc" id="L171">					int s = it.nextInt();</span>
@@ -175,7 +175,7 @@ class Graphs {
 <span class="nc" id="L175">				}</span>
 
 <span class="nc" id="L177">			} else {</span>
-<span class="fc" id="L178">				Object defVal = data0.defaultVal();</span>
+<span class="fc" id="L178">				Object defVal = data0.defaultWeight();</span>
 				@SuppressWarnings(&quot;rawtypes&quot;)
 <span class="fc" id="L180">				Weights datas = g1.addEdgesWeights(key, Object.class, defVal);</span>
 <span class="fc bfc" id="L181" title="All 2 branches covered.">				for (IntIterator it = g1.edges().iterator(); it.hasNext();) {</span>

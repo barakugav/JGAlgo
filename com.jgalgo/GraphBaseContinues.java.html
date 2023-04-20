@@ -125,14 +125,14 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 	public void clear() {
 <span class="fc" id="L126">		super.clear();</span>
 <span class="pc bpc" id="L127" title="1 of 2 branches missed.">		for (Weights&lt;?&gt; weight : vWeights.values())</span>
-<span class="nc" id="L128">			((WeightsImpl&lt;?&gt;) weight).clear();</span>
+<span class="nc" id="L128">			((WeightsImpl&lt;?&gt;) weight).container.clear();</span>
 <span class="fc" id="L129">	}</span>
 
 	@Override
 	public void clearEdges() {
 <span class="fc" id="L133">		super.clearEdges();</span>
 <span class="fc bfc" id="L134" title="All 2 branches covered.">		for (Weights&lt;?&gt; weight : eWeights.values())</span>
-<span class="fc" id="L135">			weight.clear();</span>
+<span class="fc" id="L135">			((WeightsImpl&lt;?&gt;) weight).container.clear();</span>
 <span class="fc" id="L136">	}</span>
 
 	@Override

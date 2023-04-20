@@ -9,10 +9,22 @@ import java.util.Objects;
 import it.unimi.dsi.fastutil.booleans.AbstractBooleanCollection;
 import it.unimi.dsi.fastutil.booleans.BooleanCollection;
 import it.unimi.dsi.fastutil.booleans.BooleanIterator;
+import it.unimi.dsi.fastutil.bytes.AbstractByteCollection;
+import it.unimi.dsi.fastutil.bytes.ByteArrays;
+import it.unimi.dsi.fastutil.bytes.ByteCollection;
+import it.unimi.dsi.fastutil.bytes.ByteIterator;
+import it.unimi.dsi.fastutil.chars.AbstractCharCollection;
+import it.unimi.dsi.fastutil.chars.CharArrays;
+import it.unimi.dsi.fastutil.chars.CharCollection;
+import it.unimi.dsi.fastutil.chars.CharIterator;
 import it.unimi.dsi.fastutil.doubles.AbstractDoubleCollection;
 import it.unimi.dsi.fastutil.doubles.DoubleArrays;
 import it.unimi.dsi.fastutil.doubles.DoubleCollection;
 import it.unimi.dsi.fastutil.doubles.DoubleIterator;
+import it.unimi.dsi.fastutil.floats.AbstractFloatCollection;
+import it.unimi.dsi.fastutil.floats.FloatArrays;
+import it.unimi.dsi.fastutil.floats.FloatCollection;
+import it.unimi.dsi.fastutil.floats.FloatIterator;
 import it.unimi.dsi.fastutil.ints.AbstractIntCollection;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -25,13 +37,17 @@ import it.unimi.dsi.fastutil.objects.AbstractObjectCollection;
 import it.unimi.dsi.fastutil.objects.ObjectArrays;
 import it.unimi.dsi.fastutil.objects.ObjectCollection;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
+import it.unimi.dsi.fastutil.shorts.AbstractShortCollection;
+import it.unimi.dsi.fastutil.shorts.ShortArrays;
+import it.unimi.dsi.fastutil.shorts.ShortCollection;
+import it.unimi.dsi.fastutil.shorts.ShortIterator;
 
-<span class="fc" id="L29">abstract class DataContainer&lt;E&gt; {</span>
+<span class="fc" id="L45">abstract class DataContainer&lt;E&gt; {</span>
 	int size;
 
 	void clear() {
-<span class="fc" id="L33">		size = 0;</span>
-<span class="fc" id="L34">	}</span>
+<span class="fc" id="L49">		size = 0;</span>
+<span class="fc" id="L50">	}</span>
 
 	abstract void add(int idx);
 
@@ -45,623 +61,1115 @@ import it.unimi.dsi.fastutil.objects.ObjectIterator;
 
 	void checkIdx(int idx) {
 		// TODO add some messege of ID strategy choice
-<span class="pc bpc" id="L48" title="1 of 2 branches missed.">		if (idx &gt;= size)</span>
-<span class="nc" id="L49">			throw new IndexOutOfBoundsException(idx);</span>
-<span class="fc" id="L50">	}</span>
+<span class="pc bpc" id="L64" title="1 of 2 branches missed.">		if (idx &gt;= size)</span>
+<span class="nc" id="L65">			throw new IndexOutOfBoundsException(idx);</span>
+<span class="fc" id="L66">	}</span>
 
-<span class="fc" id="L52">	static class Obj&lt;E&gt; extends DataContainer&lt;E&gt; {</span>
+<span class="fc" id="L68">	static class Obj&lt;E&gt; extends DataContainer&lt;E&gt; {</span>
 
 		private Object[] weights;
 		private final E defaultVal;
 		private final ObjectCollection&lt;E&gt; values;
 
-<span class="fc" id="L58">		Obj(int expectedSize, E defVal) {</span>
-<span class="fc bfc" id="L59" title="All 2 branches covered.">			weights = expectedSize &gt; 0 ? new Object[expectedSize] : ObjectArrays.EMPTY_ARRAY;</span>
-<span class="fc" id="L60">			defaultVal = defVal;</span>
-<span class="fc" id="L61">			values = new AbstractObjectCollection&lt;&gt;() {</span>
+<span class="fc" id="L74">		Obj(int expectedSize, E defVal) {</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">			weights = expectedSize &gt; 0 ? new Object[expectedSize] : ObjectArrays.EMPTY_ARRAY;</span>
+<span class="fc" id="L76">			defaultVal = defVal;</span>
+<span class="fc" id="L77">			values = new AbstractObjectCollection&lt;&gt;() {</span>
 
 				@Override
 				public int size() {
-<span class="nc" id="L65">					return size;</span>
+<span class="nc" id="L81">					return size;</span>
 				}
 
 				@Override
 				public ObjectIterator&lt;E&gt; iterator() {
-<span class="fc" id="L70">					return new ObjectIterator&lt;&gt;() {</span>
-<span class="fc" id="L71">						int idx = 0;</span>
+<span class="fc" id="L86">					return new ObjectIterator&lt;&gt;() {</span>
+<span class="fc" id="L87">						int idx = 0;</span>
 
 						@Override
 						public boolean hasNext() {
-<span class="fc bfc" id="L75" title="All 2 branches covered.">							return idx &lt; size;</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">							return idx &lt; size;</span>
 						}
 
 						@SuppressWarnings(&quot;unchecked&quot;)
 						@Override
 						public E next() {
-<span class="pc bpc" id="L81" title="1 of 2 branches missed.">							if (!hasNext())</span>
-<span class="nc" id="L82">								throw new NoSuchElementException();</span>
-<span class="fc" id="L83">							return (E) weights[idx++];</span>
+<span class="pc bpc" id="L97" title="1 of 2 branches missed.">							if (!hasNext())</span>
+<span class="nc" id="L98">								throw new NoSuchElementException();</span>
+<span class="fc" id="L99">							return (E) weights[idx++];</span>
 						}
 					};
 				}
 			};
-<span class="fc" id="L88">		}</span>
+<span class="fc" id="L104">		}</span>
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		public E get(int idx) {
-<span class="fc" id="L92">			checkIdx(idx);</span>
-<span class="fc" id="L93">			return (E) weights[idx];</span>
+<span class="fc" id="L108">			checkIdx(idx);</span>
+<span class="fc" id="L109">			return (E) weights[idx];</span>
 		}
 
-		public void set(int idx, E weight) {
-<span class="fc" id="L97">			checkIdx(idx);</span>
-<span class="fc" id="L98">			weights[idx] = weight;</span>
-<span class="fc" id="L99">		}</span>
+		void set(int idx, E weight) {
+<span class="fc" id="L113">			checkIdx(idx);</span>
+<span class="fc" id="L114">			weights[idx] = weight;</span>
+<span class="fc" id="L115">		}</span>
 
-		public E defaultVal() {
-<span class="fc" id="L102">			return defaultVal;</span>
+		E defaultVal() {
+<span class="fc" id="L118">			return defaultVal;</span>
 		}
 
 		@Override
 		void add(int idx) {
-<span class="pc bpc" id="L107" title="1 of 2 branches missed.">			assert idx == size : &quot;only continues idxs are supported&quot;;</span>
-<span class="fc" id="L108">			ensureCapacity(size + 1);</span>
-<span class="fc" id="L109">			weights[idx] = defaultVal;</span>
-<span class="fc" id="L110">			size++;</span>
-<span class="fc" id="L111">		}</span>
-
-		@Override
-		void remove(int idx) {
-<span class="pc bpc" id="L115" title="1 of 2 branches missed.">			assert idx == size - 1 : &quot;only continues idxs are supported&quot;;</span>
-<span class="fc" id="L116">			weights[idx] = null;</span>
-<span class="fc" id="L117">			size--;</span>
-<span class="fc" id="L118">		}</span>
-
-		@Override
-		void ensureCapacity(int capacity) {
-<span class="fc bfc" id="L122" title="All 2 branches covered.">			if (capacity &lt; weights.length)</span>
-<span class="fc" id="L123">				return;</span>
-<span class="fc" id="L124">			int newLen = Math.max(2, weights.length * 2);</span>
-<span class="fc" id="L125">			newLen = Math.max(newLen, capacity);</span>
-<span class="fc" id="L126">			weights = Arrays.copyOf(weights, newLen);</span>
+<span class="pc bpc" id="L123" title="1 of 2 branches missed.">			assert idx == size : &quot;only continues idxs are supported&quot;;</span>
+<span class="fc" id="L124">			ensureCapacity(size + 1);</span>
+<span class="fc" id="L125">			weights[idx] = defaultVal;</span>
+<span class="fc" id="L126">			size++;</span>
 <span class="fc" id="L127">		}</span>
 
 		@Override
+		void remove(int idx) {
+<span class="pc bpc" id="L131" title="1 of 2 branches missed.">			assert idx == size - 1 : &quot;only continues idxs are supported&quot;;</span>
+<span class="fc" id="L132">			weights[idx] = null;</span>
+<span class="fc" id="L133">			size--;</span>
+<span class="fc" id="L134">		}</span>
+
+		@Override
+		void ensureCapacity(int capacity) {
+<span class="fc bfc" id="L138" title="All 2 branches covered.">			if (capacity &lt; weights.length)</span>
+<span class="fc" id="L139">				return;</span>
+<span class="fc" id="L140">			int newLen = Math.max(2, weights.length * 2);</span>
+<span class="fc" id="L141">			newLen = Math.max(newLen, capacity);</span>
+<span class="fc" id="L142">			weights = Arrays.copyOf(weights, newLen);</span>
+<span class="fc" id="L143">		}</span>
+
+		@Override
 		void swap(int k1, int k2) {
-<span class="fc" id="L131">			checkIdx(k1);</span>
-<span class="fc" id="L132">			checkIdx(k2);</span>
-<span class="fc" id="L133">			Object temp = weights[k1];</span>
-<span class="fc" id="L134">			weights[k1] = weights[k2];</span>
-<span class="fc" id="L135">			weights[k2] = temp;</span>
-<span class="fc" id="L136">		}</span>
+<span class="fc" id="L147">			checkIdx(k1);</span>
+<span class="fc" id="L148">			checkIdx(k2);</span>
+<span class="fc" id="L149">			Object temp = weights[k1];</span>
+<span class="fc" id="L150">			weights[k1] = weights[k2];</span>
+<span class="fc" id="L151">			weights[k2] = temp;</span>
+<span class="fc" id="L152">		}</span>
 
 		@Override
 		public void clear() {
-<span class="fc" id="L140">			Arrays.fill(weights, 0, size, null);</span>
-<span class="fc" id="L141">			super.clear();</span>
-<span class="fc" id="L142">		}</span>
+<span class="fc" id="L156">			Arrays.fill(weights, 0, size, null);</span>
+<span class="fc" id="L157">			super.clear();</span>
+<span class="fc" id="L158">		}</span>
 
 		@Override
 		Collection&lt;E&gt; values() {
-<span class="fc" id="L146">			return values;</span>
+<span class="fc" id="L162">			return values;</span>
 		}
 
 		@Override
 		public boolean equals(Object other) {
-<span class="nc bnc" id="L151" title="All 2 branches missed.">			if (other == this)</span>
-<span class="nc" id="L152">				return true;</span>
-<span class="nc bnc" id="L153" title="All 2 branches missed.">			if (!(other instanceof DataContainer.Obj&lt;?&gt;))</span>
-<span class="nc" id="L154">				return false;</span>
-<span class="nc" id="L155">			DataContainer.Obj&lt;?&gt; o = (DataContainer.Obj&lt;?&gt;) other;</span>
-<span class="nc" id="L156">			return Arrays.equals(weights, 0, size, o.weights, 0, o.size);</span>
+<span class="nc bnc" id="L167" title="All 2 branches missed.">			if (other == this)</span>
+<span class="nc" id="L168">				return true;</span>
+<span class="nc bnc" id="L169" title="All 2 branches missed.">			if (!(other instanceof DataContainer.Obj&lt;?&gt;))</span>
+<span class="nc" id="L170">				return false;</span>
+<span class="nc" id="L171">			DataContainer.Obj&lt;?&gt; o = (DataContainer.Obj&lt;?&gt;) other;</span>
+<span class="nc" id="L172">			return Arrays.equals(weights, 0, size, o.weights, 0, o.size);</span>
 		}
 
 		@Override
 		public int hashCode() {
-<span class="nc" id="L161">			int h = 1;</span>
-<span class="nc bnc" id="L162" title="All 2 branches missed.">			for (int i = 0; i &lt; size; i++)</span>
-<span class="nc" id="L163">				h = 31 * h + Objects.hashCode(weights[i]);</span>
-<span class="nc" id="L164">			return h;</span>
+<span class="nc" id="L177">			int h = 1;</span>
+<span class="nc bnc" id="L178" title="All 2 branches missed.">			for (int i = 0; i &lt; size; i++)</span>
+<span class="nc" id="L179">				h = 31 * h + Objects.hashCode(weights[i]);</span>
+<span class="nc" id="L180">			return h;</span>
 		}
 
 		@Override
 		public String toString() {
-<span class="nc" id="L169">			int iMax = size - 1;</span>
-<span class="nc bnc" id="L170" title="All 2 branches missed.">			if (iMax == -1)</span>
-<span class="nc" id="L171">				return &quot;[]&quot;;</span>
+<span class="nc" id="L185">			int iMax = size - 1;</span>
+<span class="nc bnc" id="L186" title="All 2 branches missed.">			if (iMax == -1)</span>
+<span class="nc" id="L187">				return &quot;[]&quot;;</span>
 
-<span class="nc" id="L173">			StringBuilder b = new StringBuilder();</span>
-<span class="nc" id="L174">			b.append('[');</span>
-<span class="nc" id="L175">			for (int i = 0;; i++) {</span>
-<span class="nc" id="L176">				b.append(String.valueOf(weights[i]));</span>
-<span class="nc bnc" id="L177" title="All 2 branches missed.">				if (i == iMax)</span>
-<span class="nc" id="L178">					return b.append(']').toString();</span>
-<span class="nc" id="L179">				b.append(&quot;, &quot;);</span>
+<span class="nc" id="L189">			StringBuilder b = new StringBuilder();</span>
+<span class="nc" id="L190">			b.append('[');</span>
+<span class="nc" id="L191">			for (int i = 0;; i++) {</span>
+<span class="nc" id="L192">				b.append(String.valueOf(weights[i]));</span>
+<span class="nc bnc" id="L193" title="All 2 branches missed.">				if (i == iMax)</span>
+<span class="nc" id="L194">					return b.append(']').toString();</span>
+<span class="nc" id="L195">				b.append(&quot;, &quot;);</span>
 			}
 		}
 	}
 
-<span class="fc" id="L184">	static class Int extends DataContainer&lt;Integer&gt; {</span>
+<span class="fc" id="L200">	static class Byte extends DataContainer&lt;java.lang.Byte&gt; {</span>
+
+		private byte[] weights;
+		private final byte defaultVal;
+		private final ByteCollection values;
+
+<span class="fc" id="L206">		Byte(int expectedSize, byte defVal) {</span>
+<span class="pc bpc" id="L207" title="1 of 2 branches missed.">			weights = expectedSize &gt; 0 ? new byte[expectedSize] : ByteArrays.EMPTY_ARRAY;</span>
+<span class="fc" id="L208">			defaultVal = defVal;</span>
+<span class="fc" id="L209">			values = new AbstractByteCollection() {</span>
+
+				@Override
+				public int size() {
+<span class="nc" id="L213">					return size;</span>
+				}
+
+				@Override
+				public ByteIterator iterator() {
+<span class="nc" id="L218">					return new ByteIterator() {</span>
+<span class="nc" id="L219">						int idx = 0;</span>
+
+						@Override
+						public boolean hasNext() {
+<span class="nc bnc" id="L223" title="All 2 branches missed.">							return idx &lt; size;</span>
+						}
+
+						@Override
+						public byte nextByte() {
+<span class="nc bnc" id="L228" title="All 2 branches missed.">							if (!hasNext())</span>
+<span class="nc" id="L229">								throw new NoSuchElementException();</span>
+<span class="nc" id="L230">							return weights[idx++];</span>
+						}
+					};
+				}
+			};
+<span class="fc" id="L235">		}</span>
+
+		byte getByte(int idx) {
+<span class="fc" id="L238">			checkIdx(idx);</span>
+<span class="fc" id="L239">			return weights[idx];</span>
+		}
+
+		void set(int idx, byte weight) {
+<span class="fc" id="L243">			checkIdx(idx);</span>
+<span class="fc" id="L244">			weights[idx] = weight;</span>
+<span class="fc" id="L245">		}</span>
+
+		byte defaultValByte() {
+<span class="fc" id="L248">			return defaultVal;</span>
+		}
+
+		@Override
+		public void add(int idx) {
+<span class="pc bpc" id="L253" title="1 of 2 branches missed.">			assert idx == size : &quot;only continues idxs are supported&quot;;</span>
+<span class="fc" id="L254">			ensureCapacity(size + 1);</span>
+<span class="fc" id="L255">			weights[idx] = defaultVal;</span>
+<span class="fc" id="L256">			size++;</span>
+<span class="fc" id="L257">		}</span>
+
+		@Override
+		void remove(int idx) {
+<span class="pc bpc" id="L261" title="1 of 2 branches missed.">			assert idx == size - 1 : &quot;only continues idxs are supported&quot;;</span>
+<span class="fc" id="L262">			size--;</span>
+<span class="fc" id="L263">		}</span>
+
+		@Override
+		void ensureCapacity(int capacity) {
+<span class="fc bfc" id="L267" title="All 2 branches covered.">			if (capacity &lt; weights.length)</span>
+<span class="fc" id="L268">				return;</span>
+<span class="fc" id="L269">			int newLen = Math.max(2, weights.length * 2);</span>
+<span class="fc" id="L270">			newLen = Math.max(newLen, capacity);</span>
+<span class="fc" id="L271">			weights = Arrays.copyOf(weights, newLen);</span>
+<span class="fc" id="L272">		}</span>
+
+		@Override
+		void swap(int k1, int k2) {
+<span class="fc" id="L276">			checkIdx(k1);</span>
+<span class="fc" id="L277">			checkIdx(k2);</span>
+<span class="fc" id="L278">			byte temp = weights[k1];</span>
+<span class="fc" id="L279">			weights[k1] = weights[k2];</span>
+<span class="fc" id="L280">			weights[k2] = temp;</span>
+<span class="fc" id="L281">		}</span>
+
+		@Override
+		ByteCollection values() {
+<span class="nc" id="L285">			return values;</span>
+		}
+
+		@Override
+		public boolean equals(Object other) {
+<span class="nc bnc" id="L290" title="All 2 branches missed.">			if (this == other)</span>
+<span class="nc" id="L291">				return true;</span>
+<span class="nc bnc" id="L292" title="All 2 branches missed.">			if (!(other instanceof DataContainer.Byte))</span>
+<span class="nc" id="L293">				return false;</span>
+<span class="nc" id="L294">			DataContainer.Byte o = (DataContainer.Byte) other;</span>
+<span class="nc" id="L295">			return Arrays.equals(weights, 0, size, o.weights, 0, o.size);</span>
+		}
+
+		@Override
+		public int hashCode() {
+<span class="nc" id="L300">			int h = 1;</span>
+<span class="nc bnc" id="L301" title="All 2 branches missed.">			for (int i = 0; i &lt; size; i++)</span>
+<span class="nc" id="L302">				h = 31 * h + java.lang.Byte.hashCode(weights[i]);</span>
+<span class="nc" id="L303">			return h;</span>
+		}
+
+		@Override
+		public String toString() {
+<span class="nc" id="L308">			int iMax = size - 1;</span>
+<span class="nc bnc" id="L309" title="All 2 branches missed.">			if (iMax == -1)</span>
+<span class="nc" id="L310">				return &quot;[]&quot;;</span>
+
+<span class="nc" id="L312">			StringBuilder b = new StringBuilder();</span>
+<span class="nc" id="L313">			b.append('[');</span>
+<span class="nc" id="L314">			for (int i = 0;; i++) {</span>
+<span class="nc" id="L315">				b.append(String.valueOf(weights[i]));</span>
+<span class="nc bnc" id="L316" title="All 2 branches missed.">				if (i == iMax)</span>
+<span class="nc" id="L317">					return b.append(']').toString();</span>
+<span class="nc" id="L318">				b.append(&quot;, &quot;);</span>
+			}
+		}
+	}
+
+<span class="fc" id="L323">	static class Short extends DataContainer&lt;java.lang.Short&gt; {</span>
+
+		private short[] weights;
+		private final short defaultVal;
+		private final ShortCollection values;
+
+<span class="fc" id="L329">		Short(int expectedSize, short defVal) {</span>
+<span class="pc bpc" id="L330" title="1 of 2 branches missed.">			weights = expectedSize &gt; 0 ? new short[expectedSize] : ShortArrays.EMPTY_ARRAY;</span>
+<span class="fc" id="L331">			defaultVal = defVal;</span>
+<span class="fc" id="L332">			values = new AbstractShortCollection() {</span>
+
+				@Override
+				public int size() {
+<span class="nc" id="L336">					return size;</span>
+				}
+
+				@Override
+				public ShortIterator iterator() {
+<span class="nc" id="L341">					return new ShortIterator() {</span>
+<span class="nc" id="L342">						int idx = 0;</span>
+
+						@Override
+						public boolean hasNext() {
+<span class="nc bnc" id="L346" title="All 2 branches missed.">							return idx &lt; size;</span>
+						}
+
+						@Override
+						public short nextShort() {
+<span class="nc bnc" id="L351" title="All 2 branches missed.">							if (!hasNext())</span>
+<span class="nc" id="L352">								throw new NoSuchElementException();</span>
+<span class="nc" id="L353">							return weights[idx++];</span>
+						}
+					};
+				}
+			};
+<span class="fc" id="L358">		}</span>
+
+		short getShort(int idx) {
+<span class="fc" id="L361">			checkIdx(idx);</span>
+<span class="fc" id="L362">			return weights[idx];</span>
+		}
+
+		void set(int idx, short weight) {
+<span class="fc" id="L366">			checkIdx(idx);</span>
+<span class="fc" id="L367">			weights[idx] = weight;</span>
+<span class="fc" id="L368">		}</span>
+
+		short defaultValShort() {
+<span class="fc" id="L371">			return defaultVal;</span>
+		}
+
+		@Override
+		public void add(int idx) {
+<span class="pc bpc" id="L376" title="1 of 2 branches missed.">			assert idx == size : &quot;only continues idxs are supported&quot;;</span>
+<span class="fc" id="L377">			ensureCapacity(size + 1);</span>
+<span class="fc" id="L378">			weights[idx] = defaultVal;</span>
+<span class="fc" id="L379">			size++;</span>
+<span class="fc" id="L380">		}</span>
+
+		@Override
+		void remove(int idx) {
+<span class="pc bpc" id="L384" title="1 of 2 branches missed.">			assert idx == size - 1 : &quot;only continues idxs are supported&quot;;</span>
+<span class="fc" id="L385">			size--;</span>
+<span class="fc" id="L386">		}</span>
+
+		@Override
+		void ensureCapacity(int capacity) {
+<span class="fc bfc" id="L390" title="All 2 branches covered.">			if (capacity &lt; weights.length)</span>
+<span class="fc" id="L391">				return;</span>
+<span class="fc" id="L392">			int newLen = Math.max(2, weights.length * 2);</span>
+<span class="fc" id="L393">			newLen = Math.max(newLen, capacity);</span>
+<span class="fc" id="L394">			weights = Arrays.copyOf(weights, newLen);</span>
+<span class="fc" id="L395">		}</span>
+
+		@Override
+		void swap(int k1, int k2) {
+<span class="fc" id="L399">			checkIdx(k1);</span>
+<span class="fc" id="L400">			checkIdx(k2);</span>
+<span class="fc" id="L401">			short temp = weights[k1];</span>
+<span class="fc" id="L402">			weights[k1] = weights[k2];</span>
+<span class="fc" id="L403">			weights[k2] = temp;</span>
+<span class="fc" id="L404">		}</span>
+
+		@Override
+		ShortCollection values() {
+<span class="nc" id="L408">			return values;</span>
+		}
+
+		@Override
+		public boolean equals(Object other) {
+<span class="nc bnc" id="L413" title="All 2 branches missed.">			if (this == other)</span>
+<span class="nc" id="L414">				return true;</span>
+<span class="nc bnc" id="L415" title="All 2 branches missed.">			if (!(other instanceof DataContainer.Short))</span>
+<span class="nc" id="L416">				return false;</span>
+<span class="nc" id="L417">			DataContainer.Short o = (DataContainer.Short) other;</span>
+<span class="nc" id="L418">			return Arrays.equals(weights, 0, size, o.weights, 0, o.size);</span>
+		}
+
+		@Override
+		public int hashCode() {
+<span class="nc" id="L423">			int h = 1;</span>
+<span class="nc bnc" id="L424" title="All 2 branches missed.">			for (int i = 0; i &lt; size; i++)</span>
+<span class="nc" id="L425">				h = 31 * h + java.lang.Short.hashCode(weights[i]);</span>
+<span class="nc" id="L426">			return h;</span>
+		}
+
+		@Override
+		public String toString() {
+<span class="nc" id="L431">			int iMax = size - 1;</span>
+<span class="nc bnc" id="L432" title="All 2 branches missed.">			if (iMax == -1)</span>
+<span class="nc" id="L433">				return &quot;[]&quot;;</span>
+
+<span class="nc" id="L435">			StringBuilder b = new StringBuilder();</span>
+<span class="nc" id="L436">			b.append('[');</span>
+<span class="nc" id="L437">			for (int i = 0;; i++) {</span>
+<span class="nc" id="L438">				b.append(String.valueOf(weights[i]));</span>
+<span class="nc bnc" id="L439" title="All 2 branches missed.">				if (i == iMax)</span>
+<span class="nc" id="L440">					return b.append(']').toString();</span>
+<span class="nc" id="L441">				b.append(&quot;, &quot;);</span>
+			}
+		}
+	}
+
+<span class="fc" id="L446">	static class Int extends DataContainer&lt;Integer&gt; {</span>
 
 		private int[] weights;
 		private final int defaultVal;
 		private final IntCollection values;
 
-<span class="fc" id="L190">		Int(int expectedSize, int defVal) {</span>
-<span class="fc bfc" id="L191" title="All 2 branches covered.">			weights = expectedSize &gt; 0 ? new int[expectedSize] : IntArrays.EMPTY_ARRAY;</span>
-<span class="fc" id="L192">			defaultVal = defVal;</span>
-<span class="fc" id="L193">			values = new AbstractIntCollection() {</span>
+<span class="fc" id="L452">		Int(int expectedSize, int defVal) {</span>
+<span class="fc bfc" id="L453" title="All 2 branches covered.">			weights = expectedSize &gt; 0 ? new int[expectedSize] : IntArrays.EMPTY_ARRAY;</span>
+<span class="fc" id="L454">			defaultVal = defVal;</span>
+<span class="fc" id="L455">			values = new AbstractIntCollection() {</span>
 
 				@Override
 				public int size() {
-<span class="nc" id="L197">					return size;</span>
+<span class="nc" id="L459">					return size;</span>
 				}
 
 				@Override
 				public IntIterator iterator() {
-<span class="nc" id="L202">					return new IntIterator() {</span>
-<span class="nc" id="L203">						int idx = 0;</span>
+<span class="nc" id="L464">					return new IntIterator() {</span>
+<span class="nc" id="L465">						int idx = 0;</span>
 
 						@Override
 						public boolean hasNext() {
-<span class="nc bnc" id="L207" title="All 2 branches missed.">							return idx &lt; size;</span>
+<span class="nc bnc" id="L469" title="All 2 branches missed.">							return idx &lt; size;</span>
 						}
 
 						@Override
 						public int nextInt() {
-<span class="nc bnc" id="L212" title="All 2 branches missed.">							if (!hasNext())</span>
-<span class="nc" id="L213">								throw new NoSuchElementException();</span>
-<span class="nc" id="L214">							return weights[idx++];</span>
+<span class="nc bnc" id="L474" title="All 2 branches missed.">							if (!hasNext())</span>
+<span class="nc" id="L475">								throw new NoSuchElementException();</span>
+<span class="nc" id="L476">							return weights[idx++];</span>
 						}
 					};
 				}
 			};
-<span class="fc" id="L219">		}</span>
+<span class="fc" id="L481">		}</span>
 
-		public int getInt(int idx) {
-<span class="fc" id="L222">			checkIdx(idx);</span>
-<span class="fc" id="L223">			return weights[idx];</span>
+		int getInt(int idx) {
+<span class="fc" id="L484">			checkIdx(idx);</span>
+<span class="fc" id="L485">			return weights[idx];</span>
 		}
 
-		public void set(int idx, int weight) {
-<span class="fc" id="L227">			checkIdx(idx);</span>
-<span class="fc" id="L228">			weights[idx] = weight;</span>
-<span class="fc" id="L229">		}</span>
+		void set(int idx, int weight) {
+<span class="fc" id="L489">			checkIdx(idx);</span>
+<span class="fc" id="L490">			weights[idx] = weight;</span>
+<span class="fc" id="L491">		}</span>
 
-		public int defaultValInt() {
-<span class="nc" id="L232">			return defaultVal;</span>
+		int defaultValInt() {
+<span class="fc" id="L494">			return defaultVal;</span>
 		}
 
 		@Override
 		void add(int idx) {
-<span class="pc bpc" id="L237" title="1 of 2 branches missed.">			assert idx == size : &quot;only continues idxs are supported&quot;;</span>
-<span class="fc" id="L238">			ensureCapacity(size + 1);</span>
-<span class="fc" id="L239">			weights[idx] = defaultVal;</span>
-<span class="fc" id="L240">			size++;</span>
-<span class="fc" id="L241">		}</span>
+<span class="pc bpc" id="L499" title="1 of 2 branches missed.">			assert idx == size : &quot;only continues idxs are supported&quot;;</span>
+<span class="fc" id="L500">			ensureCapacity(size + 1);</span>
+<span class="fc" id="L501">			weights[idx] = defaultVal;</span>
+<span class="fc" id="L502">			size++;</span>
+<span class="fc" id="L503">		}</span>
 
 		@Override
 		void remove(int idx) {
-<span class="pc bpc" id="L245" title="1 of 2 branches missed.">			assert idx == size - 1 : &quot;only continues idxs are supported&quot;;</span>
-<span class="fc" id="L246">			size--;</span>
-<span class="fc" id="L247">		}</span>
+<span class="pc bpc" id="L507" title="1 of 2 branches missed.">			assert idx == size - 1 : &quot;only continues idxs are supported&quot;;</span>
+<span class="fc" id="L508">			size--;</span>
+<span class="fc" id="L509">		}</span>
 
 		@Override
 		void ensureCapacity(int capacity) {
-<span class="fc bfc" id="L251" title="All 2 branches covered.">			if (capacity &lt; weights.length)</span>
-<span class="fc" id="L252">				return;</span>
-<span class="fc" id="L253">			int newLen = Math.max(2, weights.length * 2);</span>
-<span class="fc" id="L254">			newLen = Math.max(newLen, capacity);</span>
-<span class="fc" id="L255">			weights = Arrays.copyOf(weights, newLen);</span>
-<span class="fc" id="L256">		}</span>
+<span class="fc bfc" id="L513" title="All 2 branches covered.">			if (capacity &lt; weights.length)</span>
+<span class="fc" id="L514">				return;</span>
+<span class="fc" id="L515">			int newLen = Math.max(2, weights.length * 2);</span>
+<span class="fc" id="L516">			newLen = Math.max(newLen, capacity);</span>
+<span class="fc" id="L517">			weights = Arrays.copyOf(weights, newLen);</span>
+<span class="fc" id="L518">		}</span>
 
 		@Override
 		void swap(int i1, int i2) {
-<span class="fc" id="L260">			checkIdx(i1);</span>
-<span class="fc" id="L261">			checkIdx(i2);</span>
-<span class="fc" id="L262">			int temp = weights[i1];</span>
-<span class="fc" id="L263">			weights[i1] = weights[i2];</span>
-<span class="fc" id="L264">			weights[i2] = temp;</span>
-<span class="fc" id="L265">		}</span>
+<span class="fc" id="L522">			checkIdx(i1);</span>
+<span class="fc" id="L523">			checkIdx(i2);</span>
+<span class="fc" id="L524">			int temp = weights[i1];</span>
+<span class="fc" id="L525">			weights[i1] = weights[i2];</span>
+<span class="fc" id="L526">			weights[i2] = temp;</span>
+<span class="fc" id="L527">		}</span>
 
 		@Override
 		IntCollection values() {
-<span class="nc" id="L269">			return values;</span>
+<span class="nc" id="L531">			return values;</span>
 		}
 
 		@Override
 		public boolean equals(Object other) {
-<span class="nc bnc" id="L274" title="All 2 branches missed.">			if (this == other)</span>
-<span class="nc" id="L275">				return true;</span>
-<span class="nc bnc" id="L276" title="All 2 branches missed.">			if (!(other instanceof DataContainer.Int))</span>
-<span class="nc" id="L277">				return false;</span>
-<span class="nc" id="L278">			DataContainer.Int o = (DataContainer.Int) other;</span>
-<span class="nc" id="L279">			return Arrays.equals(weights, 0, size, o.weights, 0, o.size);</span>
+<span class="nc bnc" id="L536" title="All 2 branches missed.">			if (this == other)</span>
+<span class="nc" id="L537">				return true;</span>
+<span class="nc bnc" id="L538" title="All 2 branches missed.">			if (!(other instanceof DataContainer.Int))</span>
+<span class="nc" id="L539">				return false;</span>
+<span class="nc" id="L540">			DataContainer.Int o = (DataContainer.Int) other;</span>
+<span class="nc" id="L541">			return Arrays.equals(weights, 0, size, o.weights, 0, o.size);</span>
 		}
 
 		@Override
 		public int hashCode() {
-<span class="nc" id="L284">			int h = 1;</span>
-<span class="nc bnc" id="L285" title="All 2 branches missed.">			for (int i = 0; i &lt; size; i++)</span>
-<span class="nc" id="L286">				h = 31 * h + weights[i];</span>
-<span class="nc" id="L287">			return h;</span>
+<span class="nc" id="L546">			int h = 1;</span>
+<span class="nc bnc" id="L547" title="All 2 branches missed.">			for (int i = 0; i &lt; size; i++)</span>
+<span class="nc" id="L548">				h = 31 * h + weights[i];</span>
+<span class="nc" id="L549">			return h;</span>
 		}
 
 		@Override
 		public String toString() {
-<span class="nc" id="L292">			int iMax = size - 1;</span>
-<span class="nc bnc" id="L293" title="All 2 branches missed.">			if (iMax == -1)</span>
-<span class="nc" id="L294">				return &quot;[]&quot;;</span>
+<span class="nc" id="L554">			int iMax = size - 1;</span>
+<span class="nc bnc" id="L555" title="All 2 branches missed.">			if (iMax == -1)</span>
+<span class="nc" id="L556">				return &quot;[]&quot;;</span>
 
-<span class="nc" id="L296">			StringBuilder b = new StringBuilder();</span>
-<span class="nc" id="L297">			b.append('[');</span>
-<span class="nc" id="L298">			for (int i = 0;; i++) {</span>
-<span class="nc" id="L299">				b.append(String.valueOf(weights[i]));</span>
-<span class="nc bnc" id="L300" title="All 2 branches missed.">				if (i == iMax)</span>
-<span class="nc" id="L301">					return b.append(']').toString();</span>
-<span class="nc" id="L302">				b.append(&quot;, &quot;);</span>
+<span class="nc" id="L558">			StringBuilder b = new StringBuilder();</span>
+<span class="nc" id="L559">			b.append('[');</span>
+<span class="nc" id="L560">			for (int i = 0;; i++) {</span>
+<span class="nc" id="L561">				b.append(String.valueOf(weights[i]));</span>
+<span class="nc bnc" id="L562" title="All 2 branches missed.">				if (i == iMax)</span>
+<span class="nc" id="L563">					return b.append(']').toString();</span>
+<span class="nc" id="L564">				b.append(&quot;, &quot;);</span>
 			}
 		}
 	}
 
-<span class="fc" id="L307">	static class Long extends DataContainer&lt;java.lang.Long&gt; {</span>
+<span class="fc" id="L569">	static class Long extends DataContainer&lt;java.lang.Long&gt; {</span>
 
 		private long[] weights;
 		private final long defaultVal;
 		private final LongCollection values;
 
-<span class="fc" id="L313">		Long(int expectedSize, long defVal) {</span>
-<span class="fc bfc" id="L314" title="All 2 branches covered.">			weights = expectedSize &gt; 0 ? new long[expectedSize] : LongArrays.EMPTY_ARRAY;</span>
-<span class="fc" id="L315">			defaultVal = defVal;</span>
-<span class="fc" id="L316">			values = new AbstractLongCollection() {</span>
+<span class="fc" id="L575">		Long(int expectedSize, long defVal) {</span>
+<span class="fc bfc" id="L576" title="All 2 branches covered.">			weights = expectedSize &gt; 0 ? new long[expectedSize] : LongArrays.EMPTY_ARRAY;</span>
+<span class="fc" id="L577">			defaultVal = defVal;</span>
+<span class="fc" id="L578">			values = new AbstractLongCollection() {</span>
 
 				@Override
 				public int size() {
-<span class="nc" id="L320">					return size;</span>
+<span class="nc" id="L582">					return size;</span>
 				}
 
 				@Override
 				public LongIterator iterator() {
-<span class="nc" id="L325">					return new LongIterator() {</span>
-<span class="nc" id="L326">						int idx = 0;</span>
+<span class="nc" id="L587">					return new LongIterator() {</span>
+<span class="nc" id="L588">						int idx = 0;</span>
 
 						@Override
 						public boolean hasNext() {
-<span class="nc bnc" id="L330" title="All 2 branches missed.">							return idx &lt; size;</span>
+<span class="nc bnc" id="L592" title="All 2 branches missed.">							return idx &lt; size;</span>
 						}
 
 						@Override
 						public long nextLong() {
-<span class="nc bnc" id="L335" title="All 2 branches missed.">							if (!hasNext())</span>
-<span class="nc" id="L336">								throw new NoSuchElementException();</span>
-<span class="nc" id="L337">							return weights[idx++];</span>
+<span class="nc bnc" id="L597" title="All 2 branches missed.">							if (!hasNext())</span>
+<span class="nc" id="L598">								throw new NoSuchElementException();</span>
+<span class="nc" id="L599">							return weights[idx++];</span>
 						}
 					};
 				}
 			};
-<span class="fc" id="L342">		}</span>
+<span class="fc" id="L604">		}</span>
 
-		public long getLong(int idx) {
-<span class="fc" id="L345">			checkIdx(idx);</span>
-<span class="fc" id="L346">			return weights[idx];</span>
+		long getLong(int idx) {
+<span class="fc" id="L607">			checkIdx(idx);</span>
+<span class="fc" id="L608">			return weights[idx];</span>
 		}
 
-		public void set(int idx, long weight) {
-<span class="fc" id="L350">			checkIdx(idx);</span>
-<span class="fc" id="L351">			weights[idx] = weight;</span>
-<span class="fc" id="L352">		}</span>
+		void set(int idx, long weight) {
+<span class="fc" id="L612">			checkIdx(idx);</span>
+<span class="fc" id="L613">			weights[idx] = weight;</span>
+<span class="fc" id="L614">		}</span>
 
-		public long defaultValLong() {
-<span class="nc" id="L355">			return defaultVal;</span>
+		long defaultValLong() {
+<span class="fc" id="L617">			return defaultVal;</span>
 		}
 
 		@Override
 		public void add(int idx) {
-<span class="pc bpc" id="L360" title="1 of 2 branches missed.">			assert idx == size : &quot;only continues idxs are supported&quot;;</span>
-<span class="fc" id="L361">			ensureCapacity(size + 1);</span>
-<span class="fc" id="L362">			weights[idx] = defaultVal;</span>
-<span class="fc" id="L363">			size++;</span>
-<span class="fc" id="L364">		}</span>
+<span class="pc bpc" id="L622" title="1 of 2 branches missed.">			assert idx == size : &quot;only continues idxs are supported&quot;;</span>
+<span class="fc" id="L623">			ensureCapacity(size + 1);</span>
+<span class="fc" id="L624">			weights[idx] = defaultVal;</span>
+<span class="fc" id="L625">			size++;</span>
+<span class="fc" id="L626">		}</span>
 
 		@Override
 		void remove(int idx) {
-<span class="pc bpc" id="L368" title="1 of 2 branches missed.">			assert idx == size - 1 : &quot;only continues idxs are supported&quot;;</span>
-<span class="fc" id="L369">			size--;</span>
-<span class="fc" id="L370">		}</span>
+<span class="pc bpc" id="L630" title="1 of 2 branches missed.">			assert idx == size - 1 : &quot;only continues idxs are supported&quot;;</span>
+<span class="fc" id="L631">			size--;</span>
+<span class="fc" id="L632">		}</span>
 
 		@Override
 		void ensureCapacity(int capacity) {
-<span class="fc bfc" id="L374" title="All 2 branches covered.">			if (capacity &lt; weights.length)</span>
-<span class="fc" id="L375">				return;</span>
-<span class="fc" id="L376">			int newLen = Math.max(2, weights.length * 2);</span>
-<span class="fc" id="L377">			newLen = Math.max(newLen, capacity);</span>
-<span class="fc" id="L378">			weights = Arrays.copyOf(weights, newLen);</span>
-<span class="fc" id="L379">		}</span>
+<span class="fc bfc" id="L636" title="All 2 branches covered.">			if (capacity &lt; weights.length)</span>
+<span class="fc" id="L637">				return;</span>
+<span class="fc" id="L638">			int newLen = Math.max(2, weights.length * 2);</span>
+<span class="fc" id="L639">			newLen = Math.max(newLen, capacity);</span>
+<span class="fc" id="L640">			weights = Arrays.copyOf(weights, newLen);</span>
+<span class="fc" id="L641">		}</span>
 
 		@Override
 		void swap(int k1, int k2) {
-<span class="fc" id="L383">			checkIdx(k1);</span>
-<span class="fc" id="L384">			checkIdx(k2);</span>
-<span class="fc" id="L385">			long temp = weights[k1];</span>
-<span class="fc" id="L386">			weights[k1] = weights[k2];</span>
-<span class="fc" id="L387">			weights[k2] = temp;</span>
-<span class="fc" id="L388">		}</span>
+<span class="fc" id="L645">			checkIdx(k1);</span>
+<span class="fc" id="L646">			checkIdx(k2);</span>
+<span class="fc" id="L647">			long temp = weights[k1];</span>
+<span class="fc" id="L648">			weights[k1] = weights[k2];</span>
+<span class="fc" id="L649">			weights[k2] = temp;</span>
+<span class="fc" id="L650">		}</span>
 
 		@Override
 		LongCollection values() {
-<span class="nc" id="L392">			return values;</span>
+<span class="nc" id="L654">			return values;</span>
 		}
 
 		@Override
 		public boolean equals(Object other) {
-<span class="nc bnc" id="L397" title="All 2 branches missed.">			if (this == other)</span>
-<span class="nc" id="L398">				return true;</span>
-<span class="nc bnc" id="L399" title="All 2 branches missed.">			if (!(other instanceof DataContainer.Long))</span>
-<span class="nc" id="L400">				return false;</span>
-<span class="nc" id="L401">			DataContainer.Long o = (DataContainer.Long) other;</span>
-<span class="nc" id="L402">			return Arrays.equals(weights, 0, size, o.weights, 0, o.size);</span>
+<span class="nc bnc" id="L659" title="All 2 branches missed.">			if (this == other)</span>
+<span class="nc" id="L660">				return true;</span>
+<span class="nc bnc" id="L661" title="All 2 branches missed.">			if (!(other instanceof DataContainer.Long))</span>
+<span class="nc" id="L662">				return false;</span>
+<span class="nc" id="L663">			DataContainer.Long o = (DataContainer.Long) other;</span>
+<span class="nc" id="L664">			return Arrays.equals(weights, 0, size, o.weights, 0, o.size);</span>
 		}
 
 		@Override
 		public int hashCode() {
-<span class="nc" id="L407">			int h = 1;</span>
-<span class="nc bnc" id="L408" title="All 2 branches missed.">			for (int i = 0; i &lt; size; i++)</span>
-<span class="nc" id="L409">				h = 31 * h + java.lang.Long.hashCode(weights[i]);</span>
-<span class="nc" id="L410">			return h;</span>
+<span class="nc" id="L669">			int h = 1;</span>
+<span class="nc bnc" id="L670" title="All 2 branches missed.">			for (int i = 0; i &lt; size; i++)</span>
+<span class="nc" id="L671">				h = 31 * h + java.lang.Long.hashCode(weights[i]);</span>
+<span class="nc" id="L672">			return h;</span>
 		}
 
 		@Override
 		public String toString() {
-<span class="nc" id="L415">			int iMax = size - 1;</span>
-<span class="nc bnc" id="L416" title="All 2 branches missed.">			if (iMax == -1)</span>
-<span class="nc" id="L417">				return &quot;[]&quot;;</span>
+<span class="nc" id="L677">			int iMax = size - 1;</span>
+<span class="nc bnc" id="L678" title="All 2 branches missed.">			if (iMax == -1)</span>
+<span class="nc" id="L679">				return &quot;[]&quot;;</span>
 
-<span class="nc" id="L419">			StringBuilder b = new StringBuilder();</span>
-<span class="nc" id="L420">			b.append('[');</span>
-<span class="nc" id="L421">			for (int i = 0;; i++) {</span>
-<span class="nc" id="L422">				b.append(String.valueOf(weights[i]));</span>
-<span class="nc bnc" id="L423" title="All 2 branches missed.">				if (i == iMax)</span>
-<span class="nc" id="L424">					return b.append(']').toString();</span>
-<span class="nc" id="L425">				b.append(&quot;, &quot;);</span>
+<span class="nc" id="L681">			StringBuilder b = new StringBuilder();</span>
+<span class="nc" id="L682">			b.append('[');</span>
+<span class="nc" id="L683">			for (int i = 0;; i++) {</span>
+<span class="nc" id="L684">				b.append(String.valueOf(weights[i]));</span>
+<span class="nc bnc" id="L685" title="All 2 branches missed.">				if (i == iMax)</span>
+<span class="nc" id="L686">					return b.append(']').toString();</span>
+<span class="nc" id="L687">				b.append(&quot;, &quot;);</span>
 			}
 		}
 	}
 
-<span class="fc" id="L430">	static class Double extends DataContainer&lt;java.lang.Double&gt; {</span>
+<span class="fc" id="L692">	static class Float extends DataContainer&lt;java.lang.Float&gt; {</span>
+
+		private float[] weights;
+		private final float defaultVal;
+		private final FloatCollection values;
+
+<span class="fc" id="L698">		Float(int expectedSize, float defVal) {</span>
+<span class="pc bpc" id="L699" title="1 of 2 branches missed.">			weights = expectedSize &gt; 0 ? new float[expectedSize] : FloatArrays.EMPTY_ARRAY;</span>
+<span class="fc" id="L700">			defaultVal = defVal;</span>
+<span class="fc" id="L701">			values = new AbstractFloatCollection() {</span>
+
+				@Override
+				public int size() {
+<span class="nc" id="L705">					return size;</span>
+				}
+
+				@Override
+				public FloatIterator iterator() {
+<span class="nc" id="L710">					return new FloatIterator() {</span>
+<span class="nc" id="L711">						int idx = 0;</span>
+
+						@Override
+						public boolean hasNext() {
+<span class="nc bnc" id="L715" title="All 2 branches missed.">							return idx &lt; size;</span>
+						}
+
+						@Override
+						public float nextFloat() {
+<span class="nc bnc" id="L720" title="All 2 branches missed.">							if (!hasNext())</span>
+<span class="nc" id="L721">								throw new NoSuchElementException();</span>
+<span class="nc" id="L722">							return weights[idx++];</span>
+						}
+					};
+				}
+			};
+<span class="fc" id="L727">		}</span>
+
+		float getFloat(int idx) {
+<span class="fc" id="L730">			checkIdx(idx);</span>
+<span class="fc" id="L731">			return weights[idx];</span>
+		}
+
+		void set(int idx, float weight) {
+<span class="fc" id="L735">			checkIdx(idx);</span>
+<span class="fc" id="L736">			weights[idx] = weight;</span>
+<span class="fc" id="L737">		}</span>
+
+		float defaultValFloat() {
+<span class="fc" id="L740">			return defaultVal;</span>
+		}
+
+		@Override
+		void add(int idx) {
+<span class="pc bpc" id="L745" title="1 of 2 branches missed.">			assert idx == size : &quot;only continues idxs are supported&quot;;</span>
+<span class="fc" id="L746">			ensureCapacity(size + 1);</span>
+<span class="fc" id="L747">			weights[idx] = defaultVal;</span>
+<span class="fc" id="L748">			size++;</span>
+<span class="fc" id="L749">		}</span>
+
+		@Override
+		void remove(int idx) {
+<span class="pc bpc" id="L753" title="1 of 2 branches missed.">			assert idx == size - 1 : &quot;only continues idxs are supported&quot;;</span>
+<span class="fc" id="L754">			size--;</span>
+<span class="fc" id="L755">		}</span>
+
+		@Override
+		void ensureCapacity(int capacity) {
+<span class="fc bfc" id="L759" title="All 2 branches covered.">			if (capacity &lt; weights.length)</span>
+<span class="fc" id="L760">				return;</span>
+<span class="fc" id="L761">			int newLen = Math.max(2, weights.length * 2);</span>
+<span class="fc" id="L762">			newLen = Math.max(newLen, capacity);</span>
+<span class="fc" id="L763">			weights = Arrays.copyOf(weights, newLen);</span>
+<span class="fc" id="L764">		}</span>
+
+		@Override
+		void swap(int k1, int k2) {
+<span class="fc" id="L768">			checkIdx(k1);</span>
+<span class="fc" id="L769">			checkIdx(k2);</span>
+<span class="fc" id="L770">			float temp = weights[k1];</span>
+<span class="fc" id="L771">			weights[k1] = weights[k2];</span>
+<span class="fc" id="L772">			weights[k2] = temp;</span>
+<span class="fc" id="L773">		}</span>
+
+		@Override
+		FloatCollection values() {
+<span class="nc" id="L777">			return values;</span>
+		}
+
+		@Override
+		public boolean equals(Object other) {
+<span class="nc bnc" id="L782" title="All 2 branches missed.">			if (this == other)</span>
+<span class="nc" id="L783">				return true;</span>
+<span class="nc bnc" id="L784" title="All 2 branches missed.">			if (!(other instanceof DataContainer.Float))</span>
+<span class="nc" id="L785">				return false;</span>
+<span class="nc" id="L786">			DataContainer.Float o = (DataContainer.Float) other;</span>
+<span class="nc" id="L787">			return Arrays.equals(weights, 0, size, o.weights, 0, o.size);</span>
+		}
+
+		@Override
+		public int hashCode() {
+<span class="nc" id="L792">			int h = 1;</span>
+<span class="nc bnc" id="L793" title="All 2 branches missed.">			for (int i = 0; i &lt; size; i++)</span>
+<span class="nc" id="L794">				h = 31 * h + java.lang.Float.hashCode(weights[i]);</span>
+<span class="nc" id="L795">			return h;</span>
+		}
+
+		@Override
+		public String toString() {
+<span class="nc" id="L800">			int iMax = size - 1;</span>
+<span class="nc bnc" id="L801" title="All 2 branches missed.">			if (iMax == -1)</span>
+<span class="nc" id="L802">				return &quot;[]&quot;;</span>
+
+<span class="nc" id="L804">			StringBuilder b = new StringBuilder();</span>
+<span class="nc" id="L805">			b.append('[');</span>
+<span class="nc" id="L806">			for (int i = 0;; i++) {</span>
+<span class="nc" id="L807">				b.append(String.valueOf(weights[i]));</span>
+<span class="nc bnc" id="L808" title="All 2 branches missed.">				if (i == iMax)</span>
+<span class="nc" id="L809">					return b.append(']').toString();</span>
+<span class="nc" id="L810">				b.append(&quot;, &quot;);</span>
+			}
+		}
+	}
+
+<span class="fc" id="L815">	static class Double extends DataContainer&lt;java.lang.Double&gt; {</span>
 
 		private double[] weights;
 		private final double defaultVal;
 		private final DoubleCollection values;
 
-<span class="fc" id="L436">		Double(int expectedSize, double defVal) {</span>
-<span class="fc bfc" id="L437" title="All 2 branches covered.">			weights = expectedSize &gt; 0 ? new double[expectedSize] : DoubleArrays.EMPTY_ARRAY;</span>
-<span class="fc" id="L438">			defaultVal = defVal;</span>
-<span class="fc" id="L439">			values = new AbstractDoubleCollection() {</span>
+<span class="fc" id="L821">		Double(int expectedSize, double defVal) {</span>
+<span class="fc bfc" id="L822" title="All 2 branches covered.">			weights = expectedSize &gt; 0 ? new double[expectedSize] : DoubleArrays.EMPTY_ARRAY;</span>
+<span class="fc" id="L823">			defaultVal = defVal;</span>
+<span class="fc" id="L824">			values = new AbstractDoubleCollection() {</span>
 
 				@Override
 				public int size() {
-<span class="nc" id="L443">					return size;</span>
+<span class="nc" id="L828">					return size;</span>
 				}
 
 				@Override
 				public DoubleIterator iterator() {
-<span class="nc" id="L448">					return new DoubleIterator() {</span>
-<span class="nc" id="L449">						int idx = 0;</span>
+<span class="nc" id="L833">					return new DoubleIterator() {</span>
+<span class="nc" id="L834">						int idx = 0;</span>
 
 						@Override
 						public boolean hasNext() {
-<span class="nc bnc" id="L453" title="All 2 branches missed.">							return idx &lt; size;</span>
+<span class="nc bnc" id="L838" title="All 2 branches missed.">							return idx &lt; size;</span>
 						}
 
 						@Override
 						public double nextDouble() {
-<span class="nc bnc" id="L458" title="All 2 branches missed.">							if (!hasNext())</span>
-<span class="nc" id="L459">								throw new NoSuchElementException();</span>
-<span class="nc" id="L460">							return weights[idx++];</span>
+<span class="nc bnc" id="L843" title="All 2 branches missed.">							if (!hasNext())</span>
+<span class="nc" id="L844">								throw new NoSuchElementException();</span>
+<span class="nc" id="L845">							return weights[idx++];</span>
 						}
 					};
 				}
 			};
-<span class="fc" id="L465">		}</span>
+<span class="fc" id="L850">		}</span>
 
-		public double getDouble(int idx) {
-<span class="fc" id="L468">			checkIdx(idx);</span>
-<span class="fc" id="L469">			return weights[idx];</span>
+		double getDouble(int idx) {
+<span class="fc" id="L853">			checkIdx(idx);</span>
+<span class="fc" id="L854">			return weights[idx];</span>
 		}
 
-		public void set(int idx, double weight) {
-<span class="fc" id="L473">			checkIdx(idx);</span>
-<span class="fc" id="L474">			weights[idx] = weight;</span>
-<span class="fc" id="L475">		}</span>
+		void set(int idx, double weight) {
+<span class="fc" id="L858">			checkIdx(idx);</span>
+<span class="fc" id="L859">			weights[idx] = weight;</span>
+<span class="fc" id="L860">		}</span>
 
-		public double defaultValDouble() {
-<span class="nc" id="L478">			return defaultVal;</span>
+		double defaultValDouble() {
+<span class="fc" id="L863">			return defaultVal;</span>
 		}
 
 		@Override
 		void add(int idx) {
-<span class="pc bpc" id="L483" title="1 of 2 branches missed.">			assert idx == size : &quot;only continues idxs are supported&quot;;</span>
-<span class="fc" id="L484">			ensureCapacity(size + 1);</span>
-<span class="fc" id="L485">			weights[idx] = defaultVal;</span>
-<span class="fc" id="L486">			size++;</span>
-<span class="fc" id="L487">		}</span>
+<span class="pc bpc" id="L868" title="1 of 2 branches missed.">			assert idx == size : &quot;only continues idxs are supported&quot;;</span>
+<span class="fc" id="L869">			ensureCapacity(size + 1);</span>
+<span class="fc" id="L870">			weights[idx] = defaultVal;</span>
+<span class="fc" id="L871">			size++;</span>
+<span class="fc" id="L872">		}</span>
 
 		@Override
 		void remove(int idx) {
-<span class="nc bnc" id="L491" title="All 2 branches missed.">			assert idx == size - 1 : &quot;only continues idxs are supported&quot;;</span>
-<span class="nc" id="L492">			size--;</span>
-<span class="nc" id="L493">		}</span>
+<span class="pc bpc" id="L876" title="1 of 2 branches missed.">			assert idx == size - 1 : &quot;only continues idxs are supported&quot;;</span>
+<span class="fc" id="L877">			size--;</span>
+<span class="fc" id="L878">		}</span>
 
 		@Override
 		void ensureCapacity(int capacity) {
-<span class="fc bfc" id="L497" title="All 2 branches covered.">			if (capacity &lt; weights.length)</span>
-<span class="fc" id="L498">				return;</span>
-<span class="fc" id="L499">			int newLen = Math.max(2, weights.length * 2);</span>
-<span class="fc" id="L500">			newLen = Math.max(newLen, capacity);</span>
-<span class="fc" id="L501">			weights = Arrays.copyOf(weights, newLen);</span>
-<span class="fc" id="L502">		}</span>
+<span class="fc bfc" id="L882" title="All 2 branches covered.">			if (capacity &lt; weights.length)</span>
+<span class="fc" id="L883">				return;</span>
+<span class="fc" id="L884">			int newLen = Math.max(2, weights.length * 2);</span>
+<span class="fc" id="L885">			newLen = Math.max(newLen, capacity);</span>
+<span class="fc" id="L886">			weights = Arrays.copyOf(weights, newLen);</span>
+<span class="fc" id="L887">		}</span>
 
 		@Override
 		void swap(int k1, int k2) {
-<span class="nc" id="L506">			checkIdx(k1);</span>
-<span class="nc" id="L507">			checkIdx(k2);</span>
-<span class="nc" id="L508">			double temp = weights[k1];</span>
-<span class="nc" id="L509">			weights[k1] = weights[k2];</span>
-<span class="nc" id="L510">			weights[k2] = temp;</span>
-<span class="nc" id="L511">		}</span>
+<span class="fc" id="L891">			checkIdx(k1);</span>
+<span class="fc" id="L892">			checkIdx(k2);</span>
+<span class="fc" id="L893">			double temp = weights[k1];</span>
+<span class="fc" id="L894">			weights[k1] = weights[k2];</span>
+<span class="fc" id="L895">			weights[k2] = temp;</span>
+<span class="fc" id="L896">		}</span>
 
 		@Override
 		DoubleCollection values() {
-<span class="nc" id="L515">			return values;</span>
+<span class="nc" id="L900">			return values;</span>
 		}
 
 		@Override
 		public boolean equals(Object other) {
-<span class="nc bnc" id="L520" title="All 2 branches missed.">			if (this == other)</span>
-<span class="nc" id="L521">				return true;</span>
-<span class="nc bnc" id="L522" title="All 2 branches missed.">			if (!(other instanceof DataContainer.Double))</span>
-<span class="nc" id="L523">				return false;</span>
-<span class="nc" id="L524">			DataContainer.Double o = (DataContainer.Double) other;</span>
-<span class="nc" id="L525">			return Arrays.equals(weights, 0, size, o.weights, 0, o.size);</span>
+<span class="nc bnc" id="L905" title="All 2 branches missed.">			if (this == other)</span>
+<span class="nc" id="L906">				return true;</span>
+<span class="nc bnc" id="L907" title="All 2 branches missed.">			if (!(other instanceof DataContainer.Double))</span>
+<span class="nc" id="L908">				return false;</span>
+<span class="nc" id="L909">			DataContainer.Double o = (DataContainer.Double) other;</span>
+<span class="nc" id="L910">			return Arrays.equals(weights, 0, size, o.weights, 0, o.size);</span>
 		}
 
 		@Override
 		public int hashCode() {
-<span class="nc" id="L530">			int h = 1;</span>
-<span class="nc bnc" id="L531" title="All 2 branches missed.">			for (int i = 0; i &lt; size; i++)</span>
-<span class="nc" id="L532">				h = 31 * h + java.lang.Double.hashCode(weights[i]);</span>
-<span class="nc" id="L533">			return h;</span>
+<span class="nc" id="L915">			int h = 1;</span>
+<span class="nc bnc" id="L916" title="All 2 branches missed.">			for (int i = 0; i &lt; size; i++)</span>
+<span class="nc" id="L917">				h = 31 * h + java.lang.Double.hashCode(weights[i]);</span>
+<span class="nc" id="L918">			return h;</span>
 		}
 
 		@Override
 		public String toString() {
-<span class="nc" id="L538">			int iMax = size - 1;</span>
-<span class="nc bnc" id="L539" title="All 2 branches missed.">			if (iMax == -1)</span>
-<span class="nc" id="L540">				return &quot;[]&quot;;</span>
+<span class="nc" id="L923">			int iMax = size - 1;</span>
+<span class="nc bnc" id="L924" title="All 2 branches missed.">			if (iMax == -1)</span>
+<span class="nc" id="L925">				return &quot;[]&quot;;</span>
 
-<span class="nc" id="L542">			StringBuilder b = new StringBuilder();</span>
-<span class="nc" id="L543">			b.append('[');</span>
-<span class="nc" id="L544">			for (int i = 0;; i++) {</span>
-<span class="nc" id="L545">				b.append(String.valueOf(weights[i]));</span>
-<span class="nc bnc" id="L546" title="All 2 branches missed.">				if (i == iMax)</span>
-<span class="nc" id="L547">					return b.append(']').toString();</span>
-<span class="nc" id="L548">				b.append(&quot;, &quot;);</span>
+<span class="nc" id="L927">			StringBuilder b = new StringBuilder();</span>
+<span class="nc" id="L928">			b.append('[');</span>
+<span class="nc" id="L929">			for (int i = 0;; i++) {</span>
+<span class="nc" id="L930">				b.append(String.valueOf(weights[i]));</span>
+<span class="nc bnc" id="L931" title="All 2 branches missed.">				if (i == iMax)</span>
+<span class="nc" id="L932">					return b.append(']').toString();</span>
+<span class="nc" id="L933">				b.append(&quot;, &quot;);</span>
 			}
 		}
 	}
 
-<span class="fc" id="L553">	static class Bool extends DataContainer&lt;Boolean&gt; {</span>
+<span class="fc" id="L938">	static class Bool extends DataContainer&lt;Boolean&gt; {</span>
 
 		private final BitSet weights;
 		private final boolean defaultVal;
 		private final BooleanCollection values;
 
-<span class="fc" id="L559">		Bool(int expectedSize, boolean defVal) {</span>
+<span class="fc" id="L944">		Bool(int expectedSize, boolean defVal) {</span>
 			// We don't do anything with expectedSize, but we keep it for forward
 			// compatibility
-<span class="fc" id="L562">			weights = new BitSet();</span>
-<span class="fc" id="L563">			defaultVal = defVal;</span>
-<span class="fc" id="L564">			values = new AbstractBooleanCollection() {</span>
+<span class="fc" id="L947">			weights = new BitSet();</span>
+<span class="fc" id="L948">			defaultVal = defVal;</span>
+<span class="fc" id="L949">			values = new AbstractBooleanCollection() {</span>
 
 				@Override
 				public int size() {
-<span class="nc" id="L568">					return size;</span>
+<span class="nc" id="L953">					return size;</span>
 				}
 
 				@Override
 				public BooleanIterator iterator() {
-<span class="nc" id="L573">					return new BooleanIterator() {</span>
-<span class="nc" id="L574">						int idx = 0;</span>
+<span class="nc" id="L958">					return new BooleanIterator() {</span>
+<span class="nc" id="L959">						int idx = 0;</span>
 
 						@Override
 						public boolean hasNext() {
-<span class="nc bnc" id="L578" title="All 2 branches missed.">							return idx &lt; size;</span>
+<span class="nc bnc" id="L963" title="All 2 branches missed.">							return idx &lt; size;</span>
 						}
 
 						@Override
 						public boolean nextBoolean() {
-<span class="nc bnc" id="L583" title="All 2 branches missed.">							if (!hasNext())</span>
-<span class="nc" id="L584">								throw new NoSuchElementException();</span>
-<span class="nc" id="L585">							return weights.get(idx++);</span>
+<span class="nc bnc" id="L968" title="All 2 branches missed.">							if (!hasNext())</span>
+<span class="nc" id="L969">								throw new NoSuchElementException();</span>
+<span class="nc" id="L970">							return weights.get(idx++);</span>
 						}
 					};
 				}
 			};
-<span class="fc" id="L590">		}</span>
+<span class="fc" id="L975">		}</span>
 
-		public boolean getBool(int idx) {
-<span class="fc" id="L593">			checkIdx(idx);</span>
-<span class="fc" id="L594">			return weights.get(idx);</span>
+		boolean getBool(int idx) {
+<span class="fc" id="L978">			checkIdx(idx);</span>
+<span class="fc" id="L979">			return weights.get(idx);</span>
 		}
 
-		public void set(int idx, boolean weight) {
-<span class="fc" id="L598">			checkIdx(idx);</span>
-<span class="fc" id="L599">			weights.set(idx, weight);</span>
-<span class="fc" id="L600">		}</span>
+		void set(int idx, boolean weight) {
+<span class="fc" id="L983">			checkIdx(idx);</span>
+<span class="fc" id="L984">			weights.set(idx, weight);</span>
+<span class="fc" id="L985">		}</span>
 
-		public boolean defaultValBool() {
-<span class="nc" id="L603">			return defaultVal;</span>
+		boolean defaultValBool() {
+<span class="fc" id="L988">			return defaultVal;</span>
 		}
 
 		@Override
 		void add(int idx) {
-<span class="pc bpc" id="L608" title="1 of 2 branches missed.">			assert idx == size : &quot;only continues idxs are supported&quot;;</span>
-<span class="fc" id="L609">			weights.set(idx, defaultVal);</span>
-<span class="fc" id="L610">			size++;</span>
-<span class="fc" id="L611">		}</span>
+<span class="pc bpc" id="L993" title="1 of 2 branches missed.">			assert idx == size : &quot;only continues idxs are supported&quot;;</span>
+<span class="fc" id="L994">			weights.set(idx, defaultVal);</span>
+<span class="fc" id="L995">			size++;</span>
+<span class="fc" id="L996">		}</span>
 
 		@Override
 		void remove(int idx) {
-<span class="nc bnc" id="L615" title="All 2 branches missed.">			assert idx == size - 1 : &quot;only continues idxs are supported&quot;;</span>
-<span class="nc" id="L616">			size--;</span>
-<span class="nc" id="L617">		}</span>
+<span class="pc bpc" id="L1000" title="1 of 2 branches missed.">			assert idx == size - 1 : &quot;only continues idxs are supported&quot;;</span>
+<span class="fc" id="L1001">			size--;</span>
+<span class="fc" id="L1002">		}</span>
 
 		@Override
 		void ensureCapacity(int capacity) {
-<span class="fc" id="L621">		}</span>
+<span class="fc" id="L1006">		}</span>
 
 		@Override
 		void swap(int k1, int k2) {
-<span class="nc" id="L625">			checkIdx(k1);</span>
-<span class="nc" id="L626">			checkIdx(k2);</span>
-<span class="nc" id="L627">			boolean temp = weights.get(k1);</span>
-<span class="nc" id="L628">			weights.set(k1, weights.get(k2));</span>
-<span class="nc" id="L629">			weights.set(k2, temp);</span>
-<span class="nc" id="L630">		}</span>
+<span class="fc" id="L1010">			checkIdx(k1);</span>
+<span class="fc" id="L1011">			checkIdx(k2);</span>
+<span class="fc" id="L1012">			boolean temp = weights.get(k1);</span>
+<span class="fc" id="L1013">			weights.set(k1, weights.get(k2));</span>
+<span class="fc" id="L1014">			weights.set(k2, temp);</span>
+<span class="fc" id="L1015">		}</span>
 
 		@Override
 		BooleanCollection values() {
-<span class="nc" id="L634">			return values;</span>
+<span class="nc" id="L1019">			return values;</span>
 		}
 
 		@Override
 		public boolean equals(Object other) {
-<span class="nc bnc" id="L639" title="All 2 branches missed.">			if (this == other)</span>
-<span class="nc" id="L640">				return true;</span>
-<span class="nc bnc" id="L641" title="All 2 branches missed.">			if (!(other instanceof DataContainer.Bool))</span>
-<span class="nc" id="L642">				return false;</span>
-<span class="nc" id="L643">			DataContainer.Bool o = (DataContainer.Bool) other;</span>
-<span class="nc bnc" id="L644" title="All 4 branches missed.">			return size == o.size &amp;&amp; weights.equals(o.weights);</span>
+<span class="nc bnc" id="L1024" title="All 2 branches missed.">			if (this == other)</span>
+<span class="nc" id="L1025">				return true;</span>
+<span class="nc bnc" id="L1026" title="All 2 branches missed.">			if (!(other instanceof DataContainer.Bool))</span>
+<span class="nc" id="L1027">				return false;</span>
+<span class="nc" id="L1028">			DataContainer.Bool o = (DataContainer.Bool) other;</span>
+<span class="nc bnc" id="L1029" title="All 4 branches missed.">			return size == o.size &amp;&amp; weights.equals(o.weights);</span>
 		}
 
 		@Override
 		public int hashCode() {
-<span class="nc" id="L649">			return size * 1237 ^ weights.hashCode();</span>
+<span class="nc" id="L1034">			return size * 1237 ^ weights.hashCode();</span>
 		}
 
 		@Override
 		public String toString() {
-<span class="nc" id="L654">			int iMax = size - 1;</span>
-<span class="nc bnc" id="L655" title="All 2 branches missed.">			if (iMax == -1)</span>
-<span class="nc" id="L656">				return &quot;[]&quot;;</span>
+<span class="nc" id="L1039">			int iMax = size - 1;</span>
+<span class="nc bnc" id="L1040" title="All 2 branches missed.">			if (iMax == -1)</span>
+<span class="nc" id="L1041">				return &quot;[]&quot;;</span>
 
-<span class="nc" id="L658">			StringBuilder b = new StringBuilder();</span>
-<span class="nc" id="L659">			b.append('[');</span>
-<span class="nc" id="L660">			for (int i = 0;; i++) {</span>
-<span class="nc" id="L661">				b.append(String.valueOf(weights.get(i)));</span>
-<span class="nc bnc" id="L662" title="All 2 branches missed.">				if (i == iMax)</span>
-<span class="nc" id="L663">					return b.append(']').toString();</span>
-<span class="nc" id="L664">				b.append(&quot;, &quot;);</span>
+<span class="nc" id="L1043">			StringBuilder b = new StringBuilder();</span>
+<span class="nc" id="L1044">			b.append('[');</span>
+<span class="nc" id="L1045">			for (int i = 0;; i++) {</span>
+<span class="nc" id="L1046">				b.append(String.valueOf(weights.get(i)));</span>
+<span class="nc bnc" id="L1047" title="All 2 branches missed.">				if (i == iMax)</span>
+<span class="nc" id="L1048">					return b.append(']').toString();</span>
+<span class="nc" id="L1049">				b.append(&quot;, &quot;);</span>
+			}
+		}
+	}
+
+<span class="fc" id="L1054">	static class Char extends DataContainer&lt;Character&gt; {</span>
+
+		private char[] weights;
+		private final char defaultVal;
+		private final CharCollection values;
+
+<span class="fc" id="L1060">		Char(int expectedSize, char defVal) {</span>
+<span class="pc bpc" id="L1061" title="1 of 2 branches missed.">			weights = expectedSize &gt; 0 ? new char[expectedSize] : CharArrays.EMPTY_ARRAY;</span>
+<span class="fc" id="L1062">			defaultVal = defVal;</span>
+<span class="fc" id="L1063">			values = new AbstractCharCollection() {</span>
+
+				@Override
+				public int size() {
+<span class="nc" id="L1067">					return size;</span>
+				}
+
+				@Override
+				public CharIterator iterator() {
+<span class="nc" id="L1072">					return new CharIterator() {</span>
+<span class="nc" id="L1073">						int idx = 0;</span>
+
+						@Override
+						public boolean hasNext() {
+<span class="nc bnc" id="L1077" title="All 2 branches missed.">							return idx &lt; size;</span>
+						}
+
+						@Override
+						public char nextChar() {
+<span class="nc bnc" id="L1082" title="All 2 branches missed.">							if (!hasNext())</span>
+<span class="nc" id="L1083">								throw new NoSuchElementException();</span>
+<span class="nc" id="L1084">							return weights[idx++];</span>
+						}
+					};
+				}
+			};
+<span class="fc" id="L1089">		}</span>
+
+		char getChar(int idx) {
+<span class="fc" id="L1092">			checkIdx(idx);</span>
+<span class="fc" id="L1093">			return weights[idx];</span>
+		}
+
+		void set(int idx, char weight) {
+<span class="fc" id="L1097">			checkIdx(idx);</span>
+<span class="fc" id="L1098">			weights[idx] = weight;</span>
+<span class="fc" id="L1099">		}</span>
+
+		char defaultValChar() {
+<span class="fc" id="L1102">			return defaultVal;</span>
+		}
+
+		@Override
+		void add(int idx) {
+<span class="pc bpc" id="L1107" title="1 of 2 branches missed.">			assert idx == size : &quot;only continues idxs are supported&quot;;</span>
+<span class="fc" id="L1108">			ensureCapacity(size + 1);</span>
+<span class="fc" id="L1109">			weights[idx] = defaultVal;</span>
+<span class="fc" id="L1110">			size++;</span>
+<span class="fc" id="L1111">		}</span>
+
+		@Override
+		void remove(int idx) {
+<span class="pc bpc" id="L1115" title="1 of 2 branches missed.">			assert idx == size - 1 : &quot;only continues idxs are supported&quot;;</span>
+<span class="fc" id="L1116">			size--;</span>
+<span class="fc" id="L1117">		}</span>
+
+		@Override
+		void ensureCapacity(int capacity) {
+<span class="fc bfc" id="L1121" title="All 2 branches covered.">			if (capacity &lt; weights.length)</span>
+<span class="fc" id="L1122">				return;</span>
+<span class="fc" id="L1123">			int newLen = Math.max(2, weights.length * 2);</span>
+<span class="fc" id="L1124">			newLen = Math.max(newLen, capacity);</span>
+<span class="fc" id="L1125">			weights = Arrays.copyOf(weights, newLen);</span>
+<span class="fc" id="L1126">		}</span>
+
+		@Override
+		void swap(int k1, int k2) {
+<span class="fc" id="L1130">			checkIdx(k1);</span>
+<span class="fc" id="L1131">			checkIdx(k2);</span>
+<span class="fc" id="L1132">			char temp = weights[k1];</span>
+<span class="fc" id="L1133">			weights[k1] = weights[k2];</span>
+<span class="fc" id="L1134">			weights[k2] = temp;</span>
+<span class="fc" id="L1135">		}</span>
+
+		@Override
+		CharCollection values() {
+<span class="nc" id="L1139">			return values;</span>
+		}
+
+		@Override
+		public boolean equals(Object other) {
+<span class="nc bnc" id="L1144" title="All 2 branches missed.">			if (this == other)</span>
+<span class="nc" id="L1145">				return true;</span>
+<span class="nc bnc" id="L1146" title="All 2 branches missed.">			if (!(other instanceof DataContainer.Char))</span>
+<span class="nc" id="L1147">				return false;</span>
+<span class="nc" id="L1148">			DataContainer.Char o = (DataContainer.Char) other;</span>
+<span class="nc" id="L1149">			return Arrays.equals(weights, 0, size, o.weights, 0, o.size);</span>
+		}
+
+		@Override
+		public int hashCode() {
+<span class="nc" id="L1154">			int h = 1;</span>
+<span class="nc bnc" id="L1155" title="All 2 branches missed.">			for (int i = 0; i &lt; size; i++)</span>
+<span class="nc" id="L1156">				h = 31 * h + Character.hashCode(weights[i]);</span>
+<span class="nc" id="L1157">			return h;</span>
+		}
+
+		@Override
+		public String toString() {
+<span class="nc" id="L1162">			int iMax = size - 1;</span>
+<span class="nc bnc" id="L1163" title="All 2 branches missed.">			if (iMax == -1)</span>
+<span class="nc" id="L1164">				return &quot;[]&quot;;</span>
+
+<span class="nc" id="L1166">			StringBuilder b = new StringBuilder();</span>
+<span class="nc" id="L1167">			b.append('[');</span>
+<span class="nc" id="L1168">			for (int i = 0;; i++) {</span>
+<span class="nc" id="L1169">				b.append(String.valueOf(weights[i]));</span>
+<span class="nc bnc" id="L1170" title="All 2 branches missed.">				if (i == iMax)</span>
+<span class="nc" id="L1171">					return b.append(']').toString();</span>
+<span class="nc" id="L1172">				b.append(&quot;, &quot;);</span>
 			}
 		}
 	}

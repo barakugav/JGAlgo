@@ -109,73 +109,121 @@ abstract class GraphBase implements Graph {
 	private static &lt;D&gt; DataContainer&lt;D&gt; createContainer(Class&lt;? super D&gt; type, D defVal, int size) {
 		@SuppressWarnings(&quot;rawtypes&quot;)
 		DataContainer container;
-<span class="fc bfc" id="L112" title="All 2 branches covered.">		if (type == int.class) {</span>
-<span class="fc bfc" id="L113" title="All 2 branches covered.">			int defVal0 = defVal != null ? ((Integer) defVal).intValue() : 0;</span>
-<span class="fc" id="L114">			container = new DataContainer.Int(size, defVal0);</span>
-<span class="pc bpc" id="L115" title="1 of 2 branches missed.">		} else if (type == long.class) {</span>
-<span class="nc bnc" id="L116" title="All 2 branches missed.">			long defVal0 = defVal != null ? ((Long) defVal).longValue() : 0;</span>
-<span class="nc" id="L117">			container = new DataContainer.Long(size, defVal0);</span>
-<span class="pc bfc" id="L118" title="All 2 branches covered.">		} else if (type == double.class) {</span>
-<span class="pc bpc" id="L119" title="1 of 2 branches missed.">			double defVal0 = defVal != null ? ((Double) defVal).doubleValue() : 0;</span>
-<span class="fc" id="L120">			container = new DataContainer.Double(size, defVal0);</span>
-<span class="fc bfc" id="L121" title="All 2 branches covered.">		} else if (type == boolean.class) {</span>
-<span class="pc bpc" id="L122" title="1 of 2 branches missed.">			boolean defVal0 = defVal != null ? ((Boolean) defVal).booleanValue() : false;</span>
-<span class="fc" id="L123">			container = new DataContainer.Bool(size, defVal0);</span>
-<span class="fc" id="L124">		} else {</span>
-<span class="fc" id="L125">			container = new DataContainer.Obj&lt;&gt;(size, defVal);</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">		if (type == byte.class) {</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">			byte defVal0 = defVal != null ? ((Byte) defVal).byteValue() : 0;</span>
+<span class="fc" id="L114">			container = new DataContainer.Byte(size, defVal0);</span>
+
+<span class="fc bfc" id="L116" title="All 2 branches covered.">		} else if (type == short.class) {</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">			short defVal0 = defVal != null ? ((Short) defVal).shortValue() : 0;</span>
+<span class="fc" id="L118">			container = new DataContainer.Short(size, defVal0);</span>
+
+<span class="fc bfc" id="L120" title="All 2 branches covered.">		} else if (type == int.class) {</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">			int defVal0 = defVal != null ? ((Integer) defVal).intValue() : 0;</span>
+<span class="fc" id="L122">			container = new DataContainer.Int(size, defVal0);</span>
+
+<span class="fc bfc" id="L124" title="All 2 branches covered.">		} else if (type == long.class) {</span>
+<span class="fc bfc" id="L125" title="All 2 branches covered.">			long defVal0 = defVal != null ? ((Long) defVal).longValue() : 0;</span>
+<span class="fc" id="L126">			container = new DataContainer.Long(size, defVal0);</span>
+
+<span class="fc bfc" id="L128" title="All 2 branches covered.">		} else if (type == float.class) {</span>
+<span class="fc bfc" id="L129" title="All 2 branches covered.">			float defVal0 = defVal != null ? ((Float) defVal).floatValue() : 0;</span>
+<span class="fc" id="L130">			container = new DataContainer.Float(size, defVal0);</span>
+
+<span class="fc bfc" id="L132" title="All 2 branches covered.">		} else if (type == double.class) {</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">			double defVal0 = defVal != null ? ((Double) defVal).doubleValue() : 0;</span>
+<span class="fc" id="L134">			container = new DataContainer.Double(size, defVal0);</span>
+
+<span class="fc bfc" id="L136" title="All 2 branches covered.">		} else if (type == boolean.class) {</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">			boolean defVal0 = defVal != null ? ((Boolean) defVal).booleanValue() : false;</span>
+<span class="fc" id="L138">			container = new DataContainer.Bool(size, defVal0);</span>
+
+<span class="fc bfc" id="L140" title="All 2 branches covered.">		} else if (type == char.class) {</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">			char defVal0 = defVal != null ? ((Character) defVal).charValue() : 0;</span>
+<span class="fc" id="L142">			container = new DataContainer.Char(size, defVal0);</span>
+
+<span class="fc" id="L144">		} else {</span>
+<span class="fc" id="L145">			container = new DataContainer.Obj&lt;&gt;(size, defVal);</span>
 		}
 
 		// TODO should be done in constructor
-<span class="fc" id="L129">		container.ensureCapacity(size);</span>
-<span class="fc bfc" id="L130" title="All 2 branches covered.">		for (int idx = 0; idx &lt; size; idx++)</span>
-<span class="fc" id="L131">			container.add(idx);</span>
+<span class="fc" id="L149">		container.ensureCapacity(size);</span>
+<span class="fc bfc" id="L150" title="All 2 branches covered.">		for (int idx = 0; idx &lt; size; idx++)</span>
+<span class="fc" id="L151">			container.add(idx);</span>
 
 		@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L134">		DataContainer&lt;D&gt; container0 = container;</span>
-<span class="fc" id="L135">		return container0;</span>
+<span class="fc" id="L154">		DataContainer&lt;D&gt; container0 = container;</span>
+<span class="fc" id="L155">		return container0;</span>
 	}
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	private static &lt;D, WeightsT extends Weights&lt;D&gt;&gt; WeightsT wrapContainer(DataContainer&lt;D&gt; container0,
 			IDStrategy idStrat) {
-<span class="fc" id="L141">		boolean isContinues = idStrat instanceof IDStrategy.Continues;</span>
-<span class="fc bfc" id="L142" title="All 2 branches covered.">		if (container0 instanceof DataContainer.Obj&lt;?&gt;) {</span>
-<span class="fc" id="L143">			DataContainer.Obj&lt;D&gt; container = (DataContainer.Obj&lt;D&gt;) container0;</span>
-<span class="fc bfc" id="L144" title="All 2 branches covered.">			if (isContinues) {</span>
-<span class="fc" id="L145">				return (WeightsT) new WeightsImpl.Direct.Obj&lt;&gt;(container);</span>
+<span class="fc" id="L161">		boolean isContinues = idStrat instanceof IDStrategy.Continues;</span>
+<span class="fc bfc" id="L162" title="All 2 branches covered.">		if (container0 instanceof DataContainer.Obj&lt;?&gt;) {</span>
+<span class="fc" id="L163">			DataContainer.Obj&lt;D&gt; container = (DataContainer.Obj&lt;D&gt;) container0;</span>
+<span class="fc bfc" id="L164" title="All 2 branches covered.">			if (isContinues) {</span>
+<span class="fc" id="L165">				return (WeightsT) new WeightsImpl.Direct.Obj&lt;&gt;(container);</span>
 			} else {
-<span class="fc" id="L147">				return (WeightsT) new WeightsImpl.Mapped.Obj&lt;&gt;(container, idStrat);</span>
+<span class="fc" id="L167">				return (WeightsT) new WeightsImpl.Mapped.Obj&lt;&gt;(container, idStrat);</span>
 			}
-<span class="fc bfc" id="L149" title="All 2 branches covered.">		} else if (container0 instanceof DataContainer.Int) {</span>
-<span class="fc" id="L150">			DataContainer.Int container = (DataContainer.Int) container0;</span>
-<span class="fc bfc" id="L151" title="All 2 branches covered.">			if (isContinues) {</span>
-<span class="fc" id="L152">				return (WeightsT) new WeightsImpl.Direct.Int(container);</span>
+<span class="fc bfc" id="L169" title="All 2 branches covered.">		} else if (container0 instanceof DataContainer.Byte) {</span>
+<span class="fc" id="L170">			DataContainer.Byte container = (DataContainer.Byte) container0;</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">			if (isContinues) {</span>
+<span class="fc" id="L172">				return (WeightsT) new WeightsImpl.Direct.Byte(container);</span>
 			} else {
-<span class="fc" id="L154">				return (WeightsT) new WeightsImpl.Mapped.Int(container, idStrat);</span>
+<span class="fc" id="L174">				return (WeightsT) new WeightsImpl.Mapped.Byte(container, idStrat);</span>
 			}
-<span class="pc bpc" id="L156" title="1 of 2 branches missed.">		} else if (container0 instanceof DataContainer.Long) {</span>
-<span class="nc" id="L157">			DataContainer.Long container = (DataContainer.Long) container0;</span>
-<span class="nc bnc" id="L158" title="All 2 branches missed.">			if (isContinues) {</span>
-<span class="nc" id="L159">				return (WeightsT) new WeightsImpl.Direct.Long(container);</span>
+<span class="fc bfc" id="L176" title="All 2 branches covered.">		} else if (container0 instanceof DataContainer.Short) {</span>
+<span class="fc" id="L177">			DataContainer.Short container = (DataContainer.Short) container0;</span>
+<span class="fc bfc" id="L178" title="All 2 branches covered.">			if (isContinues) {</span>
+<span class="fc" id="L179">				return (WeightsT) new WeightsImpl.Direct.Short(container);</span>
 			} else {
-<span class="nc" id="L161">				return (WeightsT) new WeightsImpl.Mapped.Long(container, idStrat);</span>
+<span class="fc" id="L181">				return (WeightsT) new WeightsImpl.Mapped.Short(container, idStrat);</span>
 			}
-<span class="fc bfc" id="L163" title="All 2 branches covered.">		} else if (container0 instanceof DataContainer.Double) {</span>
-<span class="fc" id="L164">			DataContainer.Double container = (DataContainer.Double) container0;</span>
-<span class="fc bfc" id="L165" title="All 2 branches covered.">			if (isContinues) {</span>
-<span class="fc" id="L166">				return (WeightsT) new WeightsImpl.Direct.Double(container);</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">		} else if (container0 instanceof DataContainer.Int) {</span>
+<span class="fc" id="L184">			DataContainer.Int container = (DataContainer.Int) container0;</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">			if (isContinues) {</span>
+<span class="fc" id="L186">				return (WeightsT) new WeightsImpl.Direct.Int(container);</span>
 			} else {
-<span class="fc" id="L168">				return (WeightsT) new WeightsImpl.Mapped.Double(container, idStrat);</span>
+<span class="fc" id="L188">				return (WeightsT) new WeightsImpl.Mapped.Int(container, idStrat);</span>
 			}
-<span class="pc bpc" id="L170" title="1 of 2 branches missed.">		} else if (container0 instanceof DataContainer.Bool) {</span>
-<span class="fc" id="L171">			DataContainer.Bool container = (DataContainer.Bool) container0;</span>
-<span class="pc bpc" id="L172" title="1 of 2 branches missed.">			if (isContinues) {</span>
-<span class="fc" id="L173">				return (WeightsT) new WeightsImpl.Direct.Bool(container);</span>
+<span class="fc bfc" id="L190" title="All 2 branches covered.">		} else if (container0 instanceof DataContainer.Long) {</span>
+<span class="fc" id="L191">			DataContainer.Long container = (DataContainer.Long) container0;</span>
+<span class="fc bfc" id="L192" title="All 2 branches covered.">			if (isContinues) {</span>
+<span class="fc" id="L193">				return (WeightsT) new WeightsImpl.Direct.Long(container);</span>
 			} else {
-<span class="nc" id="L175">				return (WeightsT) new WeightsImpl.Mapped.Bool(container, idStrat);</span>
+<span class="fc" id="L195">				return (WeightsT) new WeightsImpl.Mapped.Long(container, idStrat);</span>
+			}
+<span class="fc bfc" id="L197" title="All 2 branches covered.">		} else if (container0 instanceof DataContainer.Float) {</span>
+<span class="fc" id="L198">			DataContainer.Float container = (DataContainer.Float) container0;</span>
+<span class="fc bfc" id="L199" title="All 2 branches covered.">			if (isContinues) {</span>
+<span class="fc" id="L200">				return (WeightsT) new WeightsImpl.Direct.Float(container);</span>
+			} else {
+<span class="fc" id="L202">				return (WeightsT) new WeightsImpl.Mapped.Float(container, idStrat);</span>
+			}
+<span class="fc bfc" id="L204" title="All 2 branches covered.">		} else if (container0 instanceof DataContainer.Double) {</span>
+<span class="fc" id="L205">			DataContainer.Double container = (DataContainer.Double) container0;</span>
+<span class="fc bfc" id="L206" title="All 2 branches covered.">			if (isContinues) {</span>
+<span class="fc" id="L207">				return (WeightsT) new WeightsImpl.Direct.Double(container);</span>
+			} else {
+<span class="fc" id="L209">				return (WeightsT) new WeightsImpl.Mapped.Double(container, idStrat);</span>
+			}
+<span class="fc bfc" id="L211" title="All 2 branches covered.">		} else if (container0 instanceof DataContainer.Bool) {</span>
+<span class="fc" id="L212">			DataContainer.Bool container = (DataContainer.Bool) container0;</span>
+<span class="fc bfc" id="L213" title="All 2 branches covered.">			if (isContinues) {</span>
+<span class="fc" id="L214">				return (WeightsT) new WeightsImpl.Direct.Bool(container);</span>
+			} else {
+<span class="fc" id="L216">				return (WeightsT) new WeightsImpl.Mapped.Bool(container, idStrat);</span>
+			}
+<span class="pc bpc" id="L218" title="1 of 2 branches missed.">		} else if (container0 instanceof DataContainer.Char) {</span>
+<span class="fc" id="L219">			DataContainer.Char container = (DataContainer.Char) container0;</span>
+<span class="fc bfc" id="L220" title="All 2 branches covered.">			if (isContinues) {</span>
+<span class="fc" id="L221">				return (WeightsT) new WeightsImpl.Direct.Char(container);</span>
+			} else {
+<span class="fc" id="L223">				return (WeightsT) new WeightsImpl.Mapped.Char(container, idStrat);</span>
 			}
 		} else {
-<span class="nc" id="L178">			throw new IllegalArgumentException(container0.getClass().toString());</span>
+<span class="nc" id="L226">			throw new IllegalArgumentException(container0.getClass().toString());</span>
 		}
 	}
 
@@ -185,62 +233,62 @@ abstract class GraphBase implements Graph {
 
 	@Override
 	public IDStrategy.Continues getVerticesIDStrategy() {
-<span class="fc" id="L188">		return verticesIDStrategy;</span>
+<span class="fc" id="L236">		return verticesIDStrategy;</span>
 	}
 
 	@Override
 	public IDStrategy getEdgesIDStrategy() {
-<span class="fc" id="L193">		return edgesIDStrategy;</span>
+<span class="fc" id="L241">		return edgesIDStrategy;</span>
 	}
 
 	@Override
 	public GraphCapabilities getCapabilities() {
-<span class="fc" id="L198">		return capabilities;</span>
+<span class="fc" id="L246">		return capabilities;</span>
 	}
 
 	@Override
 	public String toString() {
-<span class="fc" id="L203">		StringBuilder s = new StringBuilder();</span>
-<span class="fc" id="L204">		s.append('{');</span>
-<span class="fc" id="L205">		int n = vertices().size();</span>
-<span class="fc" id="L206">		Collection&lt;Weights&lt;?&gt;&gt; weights = getEdgesWeights();</span>
+<span class="fc" id="L251">		StringBuilder s = new StringBuilder();</span>
+<span class="fc" id="L252">		s.append('{');</span>
+<span class="fc" id="L253">		int n = vertices().size();</span>
+<span class="fc" id="L254">		Collection&lt;Weights&lt;?&gt;&gt; weights = getEdgesWeights();</span>
 
-<span class="fc" id="L208">		boolean firstVertex = true;</span>
-<span class="fc bfc" id="L209" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc bfc" id="L210" title="All 2 branches covered.">			if (firstVertex) {</span>
-<span class="fc" id="L211">				firstVertex = false;</span>
+<span class="fc" id="L256">		boolean firstVertex = true;</span>
+<span class="fc bfc" id="L257" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc bfc" id="L258" title="All 2 branches covered.">			if (firstVertex) {</span>
+<span class="fc" id="L259">				firstVertex = false;</span>
 			} else {
-<span class="fc" id="L213">				s.append(&quot;, &quot;);</span>
+<span class="fc" id="L261">				s.append(&quot;, &quot;);</span>
 			}
-<span class="fc" id="L215">			s.append('v').append(u).append(&quot;: [&quot;);</span>
+<span class="fc" id="L263">			s.append('v').append(u).append(&quot;: [&quot;);</span>
 
-<span class="fc" id="L217">			boolean firstEdge = true;</span>
-<span class="fc bfc" id="L218" title="All 2 branches covered.">			for (EdgeIter eit = edgesOut(u); eit.hasNext();) {</span>
-<span class="fc" id="L219">				int e = eit.nextInt();</span>
-<span class="fc" id="L220">				int v = eit.v();</span>
-<span class="fc bfc" id="L221" title="All 2 branches covered.">				if (firstEdge)</span>
-<span class="fc" id="L222">					firstEdge = false;</span>
+<span class="fc" id="L265">			boolean firstEdge = true;</span>
+<span class="fc bfc" id="L266" title="All 2 branches covered.">			for (EdgeIter eit = edgesOut(u); eit.hasNext();) {</span>
+<span class="fc" id="L267">				int e = eit.nextInt();</span>
+<span class="fc" id="L268">				int v = eit.v();</span>
+<span class="fc bfc" id="L269" title="All 2 branches covered.">				if (firstEdge)</span>
+<span class="fc" id="L270">					firstEdge = false;</span>
 				else
-<span class="fc" id="L224">					s.append(&quot;, &quot;);</span>
-<span class="fc" id="L225">				s.append(e).append('(').append(u).append(&quot;, &quot;).append(v).append(')');</span>
-<span class="pc bpc" id="L226" title="1 of 2 branches missed.">				if (!weights.isEmpty()) {</span>
-<span class="nc" id="L227">					s.append('[');</span>
-<span class="nc" id="L228">					boolean firstData = true;</span>
-<span class="nc bnc" id="L229" title="All 2 branches missed.">					for (Weights&lt;?&gt; weight : weights) {</span>
-<span class="nc bnc" id="L230" title="All 2 branches missed.">						if (firstData) {</span>
-<span class="nc" id="L231">							firstData = false;</span>
+<span class="fc" id="L272">					s.append(&quot;, &quot;);</span>
+<span class="fc" id="L273">				s.append(e).append('(').append(u).append(&quot;, &quot;).append(v).append(')');</span>
+<span class="pc bpc" id="L274" title="1 of 2 branches missed.">				if (!weights.isEmpty()) {</span>
+<span class="nc" id="L275">					s.append('[');</span>
+<span class="nc" id="L276">					boolean firstData = true;</span>
+<span class="nc bnc" id="L277" title="All 2 branches missed.">					for (Weights&lt;?&gt; weight : weights) {</span>
+<span class="nc bnc" id="L278" title="All 2 branches missed.">						if (firstData) {</span>
+<span class="nc" id="L279">							firstData = false;</span>
 						} else {
-<span class="nc" id="L233">							s.append(&quot;, &quot;);</span>
+<span class="nc" id="L281">							s.append(&quot;, &quot;);</span>
 						}
-<span class="nc" id="L235">						s.append(weight.get(e));</span>
-<span class="nc" id="L236">					}</span>
-<span class="nc" id="L237">					s.append(']');</span>
+<span class="nc" id="L283">						s.append(weight.get(e));</span>
+<span class="nc" id="L284">					}</span>
+<span class="nc" id="L285">					s.append(']');</span>
 				}
-<span class="fc" id="L239">			}</span>
-<span class="fc" id="L240">			s.append(']');</span>
+<span class="fc" id="L287">			}</span>
+<span class="fc" id="L288">			s.append(']');</span>
 		}
-<span class="fc" id="L242">		s.append('}');</span>
-<span class="fc" id="L243">		return s.toString();</span>
+<span class="fc" id="L290">		s.append('}');</span>
+<span class="fc" id="L291">		return s.toString();</span>
 	}
 
 }
