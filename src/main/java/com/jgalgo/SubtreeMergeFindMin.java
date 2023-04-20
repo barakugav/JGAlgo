@@ -17,7 +17,7 @@ import java.util.NoSuchElementException;
  *
  * @author Barak Ugav
  */
-public interface SubtreeMergeFindMin2<E> {
+public interface SubtreeMergeFindMin<E> {
 
 	/**
 	 * Init the tree and create the root node.
@@ -95,7 +95,7 @@ public interface SubtreeMergeFindMin2<E> {
 	public void clear();
 
 	/**
-	 * A result of {@link SubtreeMergeFindMin2#findMinNonTreeEdge()} query.
+	 * A result of {@link SubtreeMergeFindMin#findMinNonTreeEdge()} query.
 	 *
 	 * @author Barak Ugav
 	 */
@@ -125,7 +125,7 @@ public interface SubtreeMergeFindMin2<E> {
 	}
 
 	/**
-	 * A tree node in an {@link SubtreeMergeFindMin2} data structure.
+	 * A tree node in an {@link SubtreeMergeFindMin} data structure.
 	 *
 	 * @author Barak Ugav
 	 */

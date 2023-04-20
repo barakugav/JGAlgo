@@ -120,13 +120,13 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 		final HeapReferenceable<EdgeEvent> growEvents;
 
 		/* Heap storing all the blossom and augmenting events */
-		final SubtreeMergeFindMin2<EdgeEvent> smf;
+		final SubtreeMergeFindMin<EdgeEvent> smf;
 
 		/* Dummy SMF node, use as root of roots (SMF support only one tree) */
-		SubtreeMergeFindMin2.Node smfRootOfRoots;
+		SubtreeMergeFindMin.Node smfRootOfRoots;
 
 		/* SMF index of each vertex: vertex -> SMF identifier */
-		final SubtreeMergeFindMin2.Node[] vToSMFId;
+		final SubtreeMergeFindMin.Node[] vToSMFId;
 
 		/*
 		 * array used to calculate the path from a vertex to blossom base, used to
@@ -313,10 +313,10 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 			vertexDualValBase = new double[n];
 
 			vToGrowEvent = new EdgeEvent[n];
-			vToSMFId = new SubtreeMergeFindMin2.Node[n];
+			vToSMFId = new SubtreeMergeFindMin.Node[n];
 			oddBlossomPath = new int[n];
 			growEvents = heapBuilder.build((e1, e2) -> Double.compare(growEventsKey(e1), growEventsKey(e2)));
-			smf = new SubtreeMergeFindMinImpl2<>((e1, e2) -> Double.compare(e1.slack, e2.slack));
+			smf = new SubtreeMergeFindMinImpl<>((e1, e2) -> Double.compare(e1.slack, e2.slack));
 			expandEvents = heapBuilder.build((b1, b2) -> Double.compare(b1.expandDelta, b2.expandDelta));
 
 			unionQueue = new IntArrayFIFOQueue();
@@ -373,13 +373,13 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 						int base = b.base;
 
 						/* Update SMF data structure */
-						SubtreeMergeFindMin2.Node baseSMFNode = smfAddLeaf(base, smfRootOfRoots);
+						SubtreeMergeFindMin.Node baseSMFNode = smfAddLeaf(base, smfRootOfRoots);
 						forEachVertexInBlossom(b, u -> {
 							blossoms[u].isEven = true;
 							find0.union(base, u);
 
 							if (u != base) {
-								SubtreeMergeFindMin2.Node smfNode = smfAddLeaf(u, baseSMFNode);
+								SubtreeMergeFindMin.Node smfNode = smfAddLeaf(u, baseSMFNode);
 								smf.mergeSubTrees(baseSMFNode, smfNode);
 							}
 						});
@@ -521,7 +521,7 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 			assert oddBlossomPath[0] == v;
 			assert vToSMFId[u] != null;
 			assert vToSMFId[v] == null;
-			SubtreeMergeFindMin2.Node smfParent = smfAddLeaf(v, vToSMFId[u]);
+			SubtreeMergeFindMin.Node smfParent = smfAddLeaf(v, vToSMFId[u]);
 			for (int i = 1; i < pathLen; i++) {
 				assert vToSMFId[oddBlossomPath[i]] == null;
 				smfParent = smfAddLeaf(oddBlossomPath[i], smfParent);
@@ -594,18 +594,18 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 						b.z0 = dualVal(b);
 					b.parent = newb;
 					connectSubBlossoms(b, prev, toPrevEdge, !prevIsRight);
-					SubtreeMergeFindMin2.Node smfTopNode = vToSMFId[g.edgeSource(b.treeParentEdge)];
+					SubtreeMergeFindMin.Node smfTopNode = vToSMFId[g.edgeSource(b.treeParentEdge)];
 					smf.mergeSubTrees(vToSMFId[g.edgeTarget(b.treeParentEdge)], smfTopNode);
 					forEachVertexInBlossom(b, v -> {
 						blossoms[v].isEven = true;
 
-						SubtreeMergeFindMin2.Node smfId = vToSMFId[v];
+						SubtreeMergeFindMin.Node smfId = vToSMFId[v];
 						if (smfId == null) {
 							smfId = smfAddLeaf(v, smfTopNode);
 							smf.mergeSubTrees(smfId, smfTopNode);
 						} else {
 							while (!smf.isSameSubTree(smfId, smfTopNode)) {
-								SubtreeMergeFindMin2.Node p = smfParent(smfId);
+								SubtreeMergeFindMin.Node p = smfParent(smfId);
 								smf.mergeSubTrees(smfId, p);
 								smfId = p;
 							}
@@ -654,10 +654,10 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 			 * Therefore, we first merge the base to all it's SMF ancestors in the blossom,
 			 * and than merging all vertices up to the base sub tree.
 			 */
-			final SubtreeMergeFindMin2.Node smfBaseNode = vToSMFId[base];
+			final SubtreeMergeFindMin.Node smfBaseNode = vToSMFId[base];
 			assert smfBaseNode != null;
-			for (SubtreeMergeFindMin2.Node smfId = smfBaseNode;;) {
-				SubtreeMergeFindMin2.Node parentSmf = smfParent(smfId);
+			for (SubtreeMergeFindMin.Node smfId = smfBaseNode;;) {
+				SubtreeMergeFindMin.Node parentSmf = smfParent(smfId);
 				if (parentSmf == null || topBlossom(parentSmf.getNodeData()) != V)
 					break;
 				smf.mergeSubTrees(smfBaseNode, parentSmf);
@@ -665,13 +665,13 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 			}
 
 			forEachVertexInBlossom(V, v -> {
-				SubtreeMergeFindMin2.Node smfNode = vToSMFId[v];
+				SubtreeMergeFindMin.Node smfNode = vToSMFId[v];
 				if (smfNode == null) {
 					smfNode = smfAddLeaf(v, smfBaseNode);
 					smf.mergeSubTrees(smfBaseNode, smfNode);
 				} else {
 					while (!smf.isSameSubTree(smfNode, smfBaseNode)) {
-						SubtreeMergeFindMin2.Node p = smfParent(smfNode);
+						SubtreeMergeFindMin.Node p = smfParent(smfNode);
 						smf.mergeSubTrees(smfNode, p);
 						smfNode = p;
 					}
@@ -1129,15 +1129,15 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 			twinData.b1 = left;
 		}
 
-		private SubtreeMergeFindMin2.Node smfAddLeaf(int v, SubtreeMergeFindMin2.Node parentSmfNode) {
-			SubtreeMergeFindMin2.Node smfNode = smf.addLeaf(parentSmfNode);
+		private SubtreeMergeFindMin.Node smfAddLeaf(int v, SubtreeMergeFindMin.Node parentSmfNode) {
+			SubtreeMergeFindMin.Node smfNode = smf.addLeaf(parentSmfNode);
 			smfNode.setNodeData(blossoms[v]);
 			assert vToSMFId[v] == null;
 			return vToSMFId[v] = smfNode;
 		}
 
-		private SubtreeMergeFindMin2.Node smfParent(SubtreeMergeFindMin2.Node smfNode) {
-			SubtreeMergeFindMin2.Node p = smfNode.getParent();
+		private SubtreeMergeFindMin.Node smfParent(SubtreeMergeFindMin.Node smfNode) {
+			SubtreeMergeFindMin.Node p = smfNode.getParent();
 			return p != smfRootOfRoots ? p : null;
 		}
 
