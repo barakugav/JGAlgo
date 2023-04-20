@@ -26,7 +26,9 @@ abstract class GraphLinkedAbstract extends GraphBaseContinues {
 	}
 
 	Node getNode(int e) {
-		return edges.get(e);
+		Node n = edges.get(e);
+		assert n.id == e;
+		return n;
 	}
 
 	void removeEdge(Node node) {
@@ -44,7 +46,7 @@ abstract class GraphLinkedAbstract extends GraphBaseContinues {
 
 	@Override
 	void edgeSwap(int e1, int e2) {
-		Node n1 = edges.get(e2), n2 = edges.get(e2);
+		Node n1 = getNode(e1), n2 = getNode(e2);
 		n1.id = e2;
 		n2.id = e1;
 		super.edgeSwap(e1, e2);
