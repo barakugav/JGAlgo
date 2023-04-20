@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MaximumMatchingWeighted.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jgalgo</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">MaximumMatchingWeighted.java</span></div><h1>MaximumMatchingWeighted.java</h1><pre class="source lang-java linenums">package com.jgalgo;
+
+import it.unimi.dsi.fastutil.ints.IntCollection;
+
+/**
+ * Maximum weighted matching algorithm.
+ * &lt;p&gt;
+ * Given a graph {@code G=(V,E)}, a matching is a sub set of edges {@code M}
+ * such that any vertex in {@code V} have at most one adjacent edge in
+ * {@code M}. A maximum matching is a matching with the maximum edges weight sum
+ * with respect to some weight function. The 'maximum matching' with out weight
+ * is referred as 'maximum cardinality matching'.
+ * &lt;p&gt;
+ * A perfect maximum matching is a matching with the maximum edges weight sum
+ * out of all the matching with are maximum cardinality matching. Note that the
+ * weight of a perfect maximum matching is smaller or equal to the weight of a
+ * maximum weight matching.
+ * &lt;p&gt;
+ *
+ * @see &lt;a href=
+ *      &quot;https://en.wikipedia.org/wiki/Maximum_weight_matching&quot;&gt;Wikipedia&lt;/a&gt;
+ * @author Barak Ugav
+ */
+public interface MaximumMatchingWeighted extends MaximumMatching {
+
+	/**
+	 * Compute the maximum weighted matching of a weighted undirected graph.
+	 * &lt;p&gt;
+	 *
+	 * @param g an undirected graph
+	 * @param w a weight function
+	 * @return collection of edges representing the matching
+	 */
+	public IntCollection computeMaximumMatching(UGraph g, EdgeWeightFunc w);
+
+	/**
+	 * Compute the maximum perfect matching of a weighted undirected graph.
+	 * &lt;p&gt;
+	 *
+	 * @param g an undirected graph
+	 * @param w a weight function
+	 * @return collection of edges representing perfect matching, or the maximal one
+	 *         if no perfect one found
+	 */
+	public IntCollection computeMaximumPerfectMatching(UGraph g, EdgeWeightFunc w);
+
+	/**
+	 * {@inheritDoc}
+	 * &lt;p&gt;
+	 * Compute the maximum cardinality matching of a weighted undirected graph.
+	 */
+	@Override
+	default IntCollection computeMaximumMatching(UGraph g) {
+<span class="fc" id="L54">		return computeMaximumMatching(g, e -&gt; 1);</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

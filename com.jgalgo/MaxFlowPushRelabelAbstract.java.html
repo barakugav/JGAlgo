@@ -289,7 +289,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 		abstract void eliminateExcessWithTopologicalOrder(int topoBegin, int topoEnd, int[] topoNext);
 
-		double calcMaxFlow() {
+		double computeMaxFlow() {
 			// first phase
 <span class="fc" id="L294">			calcMaxPreflow();</span>
 			// second phase

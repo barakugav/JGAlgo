@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RMQStaticComparator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jgalgo</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">RMQStaticComparator.java</span></div><h1>RMQStaticComparator.java</h1><pre class="source lang-java linenums">package com.jgalgo;
+
+import java.util.Comparator;
+import java.util.Objects;
+
+/**
+ * Comparator used to compare elements in a sequence by {@link RMQStatic}
+ * algorithms.
+ * &lt;p&gt;
+ * When an {@link RMQStatic} perform a preprocessing, the sequence itself of
+ * elements is not passed to it, rather a comparator that can compare two
+ * elements by their indices. The comparator must remain valid as long as
+ * queries are still issued to the RMQ implementation.
+ *
+ * @author Barak Ugav
+ */
+@FunctionalInterface
+public interface RMQStaticComparator {
+
+	/**
+	 * Compare the i'th and j'th elements in the sequence.
+	 *
+	 * @param i index of first element
+	 * @param j index of second element
+	 * @return value less than zero if the i'th element is smaller than the j'th
+	 *         element, value greater than zero if the j'th is smaller than the i'th
+	 *         and zero if they are equal
+	 */
+	public int compare(int i, int j);
+
+	/**
+	 * Create an RMQ comparator from an object array.
+	 *
+	 * @param &lt;E&gt; the array type
+	 * @param arr an array
+	 * @return an RMQ comparator that will compare elements in the array using their
+	 *         {@linkplain Comparable natural ordering}.
+	 */
+	@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
+	public static &lt;E&gt; RMQStaticComparator ofObjArray(E[] arr) {
+<span class="nc" id="L41">		Objects.requireNonNull(arr);</span>
+<span class="nc" id="L42">		return (i, j) -&gt; ((Comparable) arr[i]).compareTo(arr[j]);</span>
+	}
+
+	/**
+	 * Create an RMQ comparator from an object array with a custom comparator.
+	 *
+	 * @param &lt;E&gt; the array type
+	 * @param arr an array
+	 * @param c   the comparator that will be used to compare elements in the array.
+	 *            If {@code null}, the {@linkplain Comparable natural ordering} of
+	 *            the elements will be used.
+	 * @return an RMQ comparator that will compare elements in the array using the
+	 *         given comparator
+	 */
+	public static &lt;E&gt; RMQStaticComparator ofObjArray(E[] arr, Comparator&lt;? super E&gt; c) {
+<span class="nc bnc" id="L57" title="All 2 branches missed.">		if (c == null) {</span>
+<span class="nc" id="L58">			return ofObjArray(arr);</span>
+		} else {
+<span class="nc" id="L60">			Objects.requireNonNull(arr);</span>
+<span class="nc" id="L61">			return (i, j) -&gt; c.compare(arr[i], arr[j]);</span>
+		}
+	}
+
+	/**
+	 * Create an RMQ comparator from an {@code int} array.
+	 *
+	 * @param arr an array
+	 * @return an RMQ comparator that will compare elements in the array using
+	 *         {@code Integer.compare()}.
+	 */
+	public static RMQStaticComparator ofIntArray(int[] arr) {
+<span class="fc" id="L73">		Objects.requireNonNull(arr);</span>
+<span class="fc" id="L74">		return (i, j) -&gt; Integer.compare(arr[i], arr[j]);</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

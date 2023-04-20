@@ -98,181 +98,201 @@ abstract class GraphTableAbstract extends GraphBaseContinues {
 <span class="pc bpc" id="L98" title="1 of 2 branches missed.">		if (edges[u][v] != EdgeNone)</span>
 <span class="nc" id="L99">			throw new IllegalArgumentException(&quot;parallel edges are not supported&quot;);</span>
 <span class="fc" id="L100">		int e = super.addEdge(u, v);</span>
-<span class="fc" id="L101">		edgeEndpoints.set(e, sourceTarget2Endpoints(u, v));</span>
-<span class="fc" id="L102">		return e;</span>
+<span class="fc" id="L101">		edgeEndpoints.add(e);</span>
+<span class="fc" id="L102">		edgeEndpoints.set(e, sourceTarget2Endpoints(u, v));</span>
+<span class="fc" id="L103">		return e;</span>
 	}
 
+	@Override
+	public void removeEdge(int e) {
+<span class="fc" id="L108">		e = edgeSwapBeforeRemove(e);</span>
+<span class="fc" id="L109">		edgeEndpoints.remove(e);</span>
+<span class="fc" id="L110">		super.removeEdge(e);</span>
+<span class="fc" id="L111">	}</span>
+
+	@Override
+	void edgeSwap(int e1, int e2) {
+<span class="fc" id="L115">		edgeEndpoints.swap(e1, e2);</span>
+<span class="fc" id="L116">		super.edgeSwap(e1, e2);</span>
+<span class="fc" id="L117">	}</span>
+
 	void reverseEdge(int edge) {
-<span class="fc" id="L106">		long endpoints = edgeEndpoints.getLong(edge);</span>
-<span class="fc" id="L107">		int u = endpoints2Source(endpoints);</span>
-<span class="fc" id="L108">		int v = endpoints2Target(endpoints);</span>
-<span class="pc bpc" id="L109" title="1 of 2 branches missed.">		if (u == v)</span>
-<span class="nc" id="L110">			return;</span>
-<span class="fc" id="L111">		endpoints = sourceTarget2Endpoints(v, u);</span>
-<span class="fc" id="L112">		edgeEndpoints.set(edge, endpoints);</span>
-<span class="fc" id="L113">	}</span>
+<span class="fc" id="L120">		long endpoints = edgeEndpoints.getLong(edge);</span>
+<span class="fc" id="L121">		int u = endpoints2Source(endpoints);</span>
+<span class="fc" id="L122">		int v = endpoints2Target(endpoints);</span>
+<span class="pc bpc" id="L123" title="1 of 2 branches missed.">		if (u == v)</span>
+<span class="nc" id="L124">			return;</span>
+<span class="fc" id="L125">		endpoints = sourceTarget2Endpoints(v, u);</span>
+<span class="fc" id="L126">		edgeEndpoints.set(edge, endpoints);</span>
+<span class="fc" id="L127">	}</span>
 
 	@Override
 	public int edgeEndpoint(int edge, int endpoint) {
-<span class="fc" id="L117">		long endpoints = edgeEndpoints.getLong(edge);</span>
-<span class="fc" id="L118">		int u = endpoints2Source(endpoints);</span>
-<span class="fc" id="L119">		int v = endpoints2Target(endpoints);</span>
-<span class="fc bfc" id="L120" title="All 2 branches covered.">		if (endpoint == u) {</span>
-<span class="fc" id="L121">			return v;</span>
-<span class="pc bpc" id="L122" title="1 of 2 branches missed.">		} else if (endpoint == v) {</span>
-<span class="fc" id="L123">			return u;</span>
+<span class="fc" id="L131">		long endpoints = edgeEndpoints.getLong(edge);</span>
+<span class="fc" id="L132">		int u = endpoints2Source(endpoints);</span>
+<span class="fc" id="L133">		int v = endpoints2Target(endpoints);</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">		if (endpoint == u) {</span>
+<span class="fc" id="L135">			return v;</span>
+<span class="pc bpc" id="L136" title="1 of 2 branches missed.">		} else if (endpoint == v) {</span>
+<span class="fc" id="L137">			return u;</span>
 		} else {
-<span class="nc" id="L125">			throw new IllegalArgumentException();</span>
+<span class="nc" id="L139">			throw new IllegalArgumentException();</span>
 		}
 	}
 
 	@Override
 	public int edgeSource(int edge) {
-<span class="fc" id="L131">		checkEdgeIdx(edge);</span>
-<span class="fc" id="L132">		return endpoints2Source(edgeEndpoints.getLong(edge));</span>
+<span class="fc" id="L145">		checkEdgeIdx(edge);</span>
+<span class="fc" id="L146">		return endpoints2Source(edgeEndpoints.getLong(edge));</span>
 	}
 
 	@Override
 	public int edgeTarget(int edge) {
-<span class="fc" id="L137">		checkEdgeIdx(edge);</span>
-<span class="fc" id="L138">		return endpoints2Target(edgeEndpoints.getLong(edge));</span>
+<span class="fc" id="L151">		checkEdgeIdx(edge);</span>
+<span class="fc" id="L152">		return endpoints2Target(edgeEndpoints.getLong(edge));</span>
 	}
 
+	/**
+	 * Clearing is not supported, as vertices removal are not supported. The number
+	 * of vertices is fixed and should be specified in the constructor.
+	 */
+	@Deprecated
 	@Override
 	public void clear() {
-<span class="nc" id="L143">		throw new UnsupportedOperationException();</span>
+<span class="nc" id="L162">		throw new UnsupportedOperationException();</span>
 	}
 
 	@Override
 	public void clearEdges() {
-<span class="nc" id="L148">		int n = vertices().size();</span>
-<span class="nc bnc" id="L149" title="All 2 branches missed.">		for (int u = 0; u &lt; n; u++)</span>
-<span class="nc" id="L150">			Arrays.fill(edges[u], EdgeNone);</span>
-<span class="nc" id="L151">		super.clearEdges();</span>
-<span class="nc" id="L152">	}</span>
+<span class="nc" id="L167">		int n = vertices().size();</span>
+<span class="nc bnc" id="L168" title="All 2 branches missed.">		for (int u = 0; u &lt; n; u++)</span>
+<span class="nc" id="L169">			Arrays.fill(edges[u], EdgeNone);</span>
+<span class="nc" id="L170">		edgeEndpoints.clear();</span>
+<span class="nc" id="L171">		super.clearEdges();</span>
+<span class="nc" id="L172">	}</span>
 
 	private static long sourceTarget2Endpoints(int u, int v) {
-<span class="fc" id="L155">		return ((u &amp; 0xffffffffL) &lt;&lt; 32) | ((v &amp; 0xffffffffL) &lt;&lt; 0);</span>
+<span class="fc" id="L175">		return ((u &amp; 0xffffffffL) &lt;&lt; 32) | ((v &amp; 0xffffffffL) &lt;&lt; 0);</span>
 	}
 
 	private static int endpoints2Source(long endpoints) {
-<span class="fc" id="L159">		return (int) ((endpoints &gt;&gt; 32) &amp; 0xffffffffL);</span>
+<span class="fc" id="L179">		return (int) ((endpoints &gt;&gt; 32) &amp; 0xffffffffL);</span>
 	}
 
 	private static int endpoints2Target(long endpoints) {
-<span class="fc" id="L163">		return (int) ((endpoints &gt;&gt; 0) &amp; 0xffffffffL);</span>
+<span class="fc" id="L183">		return (int) ((endpoints &gt;&gt; 0) &amp; 0xffffffffL);</span>
 	}
 
 	class EdgeIterOut implements EdgeIter {
 
 		private final int u;
 		private int v;
-<span class="fc" id="L170">		private int lastV = -1;</span>
+<span class="fc" id="L190">		private int lastV = -1;</span>
 
-<span class="fc" id="L172">		EdgeIterOut(int u) {</span>
-<span class="pc bpc" id="L173" title="2 of 4 branches missed.">			if (!(0 &lt;= u &amp;&amp; u &lt; vertices().size()))</span>
-<span class="nc" id="L174">				throw new IllegalArgumentException(&quot;Illegal vertex: &quot; + u);</span>
-<span class="fc" id="L175">			this.u = u;</span>
+<span class="fc" id="L192">		EdgeIterOut(int u) {</span>
+<span class="pc bpc" id="L193" title="2 of 4 branches missed.">			if (!(0 &lt;= u &amp;&amp; u &lt; vertices().size()))</span>
+<span class="nc" id="L194">				throw new IllegalArgumentException(&quot;Illegal vertex: &quot; + u);</span>
+<span class="fc" id="L195">			this.u = u;</span>
 
-<span class="fc" id="L177">			v = 0;</span>
-<span class="fc" id="L178">			advanceUntilNext();</span>
-<span class="fc" id="L179">		}</span>
+<span class="fc" id="L197">			v = 0;</span>
+<span class="fc" id="L198">			advanceUntilNext();</span>
+<span class="fc" id="L199">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="fc bfc" id="L183" title="All 2 branches covered.">			return v &gt;= 0;</span>
+<span class="fc bfc" id="L203" title="All 2 branches covered.">			return v &gt;= 0;</span>
 		}
 
 		@Override
 		public int nextInt() {
-<span class="pc bpc" id="L188" title="1 of 2 branches missed.">			if (!hasNext())</span>
-<span class="nc" id="L189">				throw new NoSuchElementException();</span>
-<span class="fc" id="L190">			int e = edges[u][lastV = v++];</span>
-<span class="fc" id="L191">			advanceUntilNext();</span>
-<span class="fc" id="L192">			return e;</span>
+<span class="pc bpc" id="L208" title="1 of 2 branches missed.">			if (!hasNext())</span>
+<span class="nc" id="L209">				throw new NoSuchElementException();</span>
+<span class="fc" id="L210">			int e = edges[u][lastV = v++];</span>
+<span class="fc" id="L211">			advanceUntilNext();</span>
+<span class="fc" id="L212">			return e;</span>
 		}
 
 		void advanceUntilNext() {
-<span class="fc" id="L196">			int n = vertices().size();</span>
-<span class="fc bfc" id="L197" title="All 2 branches covered.">			for (int next = v; next &lt; n; next++) {</span>
-<span class="fc bfc" id="L198" title="All 2 branches covered.">				if (edges[u][next] != EdgeNone) {</span>
-<span class="fc" id="L199">					v = next;</span>
-<span class="fc" id="L200">					return;</span>
+<span class="fc" id="L216">			int n = vertices().size();</span>
+<span class="fc bfc" id="L217" title="All 2 branches covered.">			for (int next = v; next &lt; n; next++) {</span>
+<span class="fc bfc" id="L218" title="All 2 branches covered.">				if (edges[u][next] != EdgeNone) {</span>
+<span class="fc" id="L219">					v = next;</span>
+<span class="fc" id="L220">					return;</span>
 				}
 			}
-<span class="fc" id="L203">			v = -1;</span>
-<span class="fc" id="L204">		}</span>
+<span class="fc" id="L223">			v = -1;</span>
+<span class="fc" id="L224">		}</span>
 
 		@Override
 		public int u() {
-<span class="fc" id="L208">			return u;</span>
+<span class="fc" id="L228">			return u;</span>
 		}
 
 		@Override
 		public int v() {
-<span class="fc" id="L213">			return lastV;</span>
+<span class="fc" id="L233">			return lastV;</span>
 		}
 
 		@Override
 		public void remove() {
-<span class="fc" id="L218">			removeEdge(edges[u()][v()]);</span>
-<span class="fc" id="L219">		}</span>
+<span class="fc" id="L238">			removeEdge(edges[u()][v()]);</span>
+<span class="fc" id="L239">		}</span>
 	}
 
 	class EdgeIterIn implements EdgeIter {
 
 		private int u;
 		private final int v;
-<span class="fc" id="L226">		private int lastU = -1;</span>
+<span class="fc" id="L246">		private int lastU = -1;</span>
 
-<span class="fc" id="L228">		EdgeIterIn(int v) {</span>
-<span class="pc bpc" id="L229" title="2 of 4 branches missed.">			if (!(0 &lt;= v &amp;&amp; v &lt; vertices().size()))</span>
-<span class="nc" id="L230">				throw new IllegalArgumentException(&quot;Illegal vertex: &quot; + v);</span>
-<span class="fc" id="L231">			this.v = v;</span>
+<span class="fc" id="L248">		EdgeIterIn(int v) {</span>
+<span class="pc bpc" id="L249" title="2 of 4 branches missed.">			if (!(0 &lt;= v &amp;&amp; v &lt; vertices().size()))</span>
+<span class="nc" id="L250">				throw new IllegalArgumentException(&quot;Illegal vertex: &quot; + v);</span>
+<span class="fc" id="L251">			this.v = v;</span>
 
-<span class="fc" id="L233">			u = 0;</span>
-<span class="fc" id="L234">			advanceUntilNext();</span>
-<span class="fc" id="L235">		}</span>
+<span class="fc" id="L253">			u = 0;</span>
+<span class="fc" id="L254">			advanceUntilNext();</span>
+<span class="fc" id="L255">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="fc bfc" id="L239" title="All 2 branches covered.">			return u != -1;</span>
+<span class="fc bfc" id="L259" title="All 2 branches covered.">			return u != -1;</span>
 		}
 
 		@Override
 		public int nextInt() {
-<span class="pc bpc" id="L244" title="1 of 2 branches missed.">			if (!hasNext())</span>
-<span class="nc" id="L245">				throw new NoSuchElementException();</span>
-<span class="fc" id="L246">			int e = edges[lastU = u++][v];</span>
-<span class="fc" id="L247">			advanceUntilNext();</span>
-<span class="fc" id="L248">			return e;</span>
+<span class="pc bpc" id="L264" title="1 of 2 branches missed.">			if (!hasNext())</span>
+<span class="nc" id="L265">				throw new NoSuchElementException();</span>
+<span class="fc" id="L266">			int e = edges[lastU = u++][v];</span>
+<span class="fc" id="L267">			advanceUntilNext();</span>
+<span class="fc" id="L268">			return e;</span>
 		}
 
 		private void advanceUntilNext() {
-<span class="fc" id="L252">			int n = vertices().size();</span>
-<span class="fc bfc" id="L253" title="All 2 branches covered.">			for (int next = u; next &lt; n; next++) {</span>
-<span class="fc bfc" id="L254" title="All 2 branches covered.">				if (edges[next][v] != EdgeNone) {</span>
-<span class="fc" id="L255">					u = next;</span>
-<span class="fc" id="L256">					return;</span>
+<span class="fc" id="L272">			int n = vertices().size();</span>
+<span class="fc bfc" id="L273" title="All 2 branches covered.">			for (int next = u; next &lt; n; next++) {</span>
+<span class="fc bfc" id="L274" title="All 2 branches covered.">				if (edges[next][v] != EdgeNone) {</span>
+<span class="fc" id="L275">					u = next;</span>
+<span class="fc" id="L276">					return;</span>
 				}
 			}
-<span class="fc" id="L259">			u = -1;</span>
-<span class="fc" id="L260">		}</span>
+<span class="fc" id="L279">			u = -1;</span>
+<span class="fc" id="L280">		}</span>
 
 		@Override
 		public int u() {
-<span class="fc" id="L264">			return lastU;</span>
+<span class="fc" id="L284">			return lastU;</span>
 		}
 
 		@Override
 		public int v() {
-<span class="fc" id="L269">			return v;</span>
+<span class="fc" id="L289">			return v;</span>
 		}
 
 		@Override
 		public void remove() {
-<span class="fc" id="L274">			removeEdge(edges[u()][v()]);</span>
-<span class="fc" id="L275">		}</span>
+<span class="fc" id="L294">			removeEdge(edges[u()][v()]);</span>
+<span class="fc" id="L295">		}</span>
 	}
 
 }

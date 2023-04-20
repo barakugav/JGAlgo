@@ -305,11 +305,11 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 		private static int[] splitQueriesIntoLCAQueries(UGraph t, int root, int[] queries, int queriesNum) {
 <span class="fc" id="L306">			int[] lcaQueries = new int[queriesNum * 4];</span>
 
-<span class="fc" id="L308">			LCAStatic lcaAlgo = new LCARMQBenderFarachColton2000();</span>
-<span class="fc" id="L309">			lcaAlgo.preProcessLCA(t, root);</span>
+<span class="fc" id="L308">			LCAStatic lcaAlgo = new LCAStaticRMQ();</span>
+<span class="fc" id="L309">			LCAStatic.DataStructure lcaDS = lcaAlgo.preProcessTree(t, root);</span>
 <span class="fc bfc" id="L310" title="All 2 branches covered.">			for (int q = 0; q &lt; queriesNum; q++) {</span>
 <span class="fc" id="L311">				int u = queries[q * 2], v = queries[q * 2 + 1];</span>
-<span class="fc" id="L312">				int lca = lcaAlgo.calcLCA(u, v);</span>
+<span class="fc" id="L312">				int lca = lcaDS.findLowestCommonAncestor(u, v);</span>
 <span class="fc" id="L313">				lcaQueries[q * 4] = u;</span>
 <span class="fc" id="L314">				lcaQueries[q * 4 + 1] = lca;</span>
 <span class="fc" id="L315">				lcaQueries[q * 4 + 2] = v;</span>

@@ -3,7 +3,7 @@
 import java.util.Collection;
 import java.util.NoSuchElementException;
 
-abstract class GraphLinkedAbstract extends GraphBaseContinues {
+<span class="fc" id="L6">abstract class GraphLinkedAbstract extends GraphBaseContinues {</span>
 
 	private final DataContainer.Obj&lt;Node&gt; edges;
 
@@ -26,77 +26,98 @@ abstract class GraphLinkedAbstract extends GraphBaseContinues {
 	}
 
 	Node getNode(int e) {
-<span class="fc" id="L29">		return edges.get(e);</span>
+<span class="fc" id="L29">		Node n = edges.get(e);</span>
+<span class="pc bpc" id="L30" title="1 of 2 branches missed.">		assert n.id == e;</span>
+<span class="fc" id="L31">		return n;</span>
 	}
 
+	@Override
+	public void removeEdge(int e) {
+<span class="fc" id="L36">		removeEdge0(e);</span>
+<span class="fc" id="L37">	}</span>
+
+	private void removeEdge0(int e) {
+<span class="fc" id="L40">		e = edgeSwapBeforeRemove(e);</span>
+<span class="fc" id="L41">		edges.remove(e);</span>
+<span class="fc" id="L42">		super.removeEdge(e);</span>
+<span class="fc" id="L43">	}</span>
+
 	void removeEdge(Node node) {
-<span class="fc" id="L33">		super.removeEdge(node.id);</span>
-<span class="fc" id="L34">	}</span>
+<span class="fc" id="L46">		removeEdge0(node.id);</span>
+<span class="fc" id="L47">	}</span>
 
 	Node addEdgeNode(int u, int v) {
-<span class="fc" id="L37">		int e = super.addEdge(u, v);</span>
-<span class="fc" id="L38">		Node n = allocNode(e, u, v);</span>
-<span class="fc" id="L39">		edges.set(e, n);</span>
-<span class="fc" id="L40">		return n;</span>
+<span class="fc" id="L50">		int e = super.addEdge(u, v);</span>
+<span class="fc" id="L51">		edges.add(e);</span>
+<span class="fc" id="L52">		Node n = allocNode(e, u, v);</span>
+<span class="fc" id="L53">		edges.set(e, n);</span>
+<span class="fc" id="L54">		return n;</span>
 	}
 
 	abstract Node allocNode(int id, int u, int v);
 
 	@Override
 	void edgeSwap(int e1, int e2) {
-<span class="fc" id="L47">		Node n1 = edges.get(e2), n2 = edges.get(e2);</span>
-<span class="fc" id="L48">		n1.id = e2;</span>
-<span class="fc" id="L49">		n2.id = e1;</span>
-<span class="fc" id="L50">		super.edgeSwap(e1, e2);</span>
-<span class="fc" id="L51">	}</span>
+<span class="fc" id="L61">		Node n1 = getNode(e1), n2 = getNode(e2);</span>
+<span class="fc" id="L62">		n1.id = e2;</span>
+<span class="fc" id="L63">		n2.id = e1;</span>
+<span class="fc" id="L64">		edges.swap(e1, e2);</span>
+<span class="fc" id="L65">		super.edgeSwap(e1, e2);</span>
+<span class="fc" id="L66">	}</span>
 
 	@Override
 	public int edgeSource(int e) {
-<span class="fc" id="L55">		checkEdgeIdx(e);</span>
-<span class="fc" id="L56">		return getNode(e).u;</span>
+<span class="fc" id="L70">		checkEdgeIdx(e);</span>
+<span class="fc" id="L71">		return getNode(e).u;</span>
 	}
 
 	@Override
 	public int edgeTarget(int e) {
-<span class="fc" id="L61">		checkEdgeIdx(e);</span>
-<span class="fc" id="L62">		return getNode(e).v;</span>
+<span class="fc" id="L76">		checkEdgeIdx(e);</span>
+<span class="fc" id="L77">		return getNode(e).v;</span>
 	}
 
 	Collection&lt;Node&gt; nodes() {
-<span class="fc" id="L66">		return edges.values();</span>
+<span class="fc" id="L81">		return edges.values();</span>
 	}
+
+	@Override
+	public void clearEdges() {
+<span class="fc" id="L86">		edges.clear();</span>
+<span class="fc" id="L87">		super.clearEdges();</span>
+<span class="fc" id="L88">	}</span>
 
 	abstract class EdgeItr implements EdgeIter {
 
 		private Node next;
 		Node last;
 
-<span class="fc" id="L74">		EdgeItr(Node p) {</span>
-<span class="fc" id="L75">			this.next = p;</span>
-<span class="fc" id="L76">		}</span>
+<span class="fc" id="L95">		EdgeItr(Node p) {</span>
+<span class="fc" id="L96">			this.next = p;</span>
+<span class="fc" id="L97">		}</span>
 
 		abstract Node nextNode(Node n);
 
 		@Override
 		public boolean hasNext() {
-<span class="fc bfc" id="L82" title="All 2 branches covered.">			return next != null;</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">			return next != null;</span>
 		}
 
 		@Override
 		public int nextInt() {
-<span class="pc bpc" id="L87" title="1 of 2 branches missed.">			if (!hasNext())</span>
-<span class="nc" id="L88">				throw new NoSuchElementException();</span>
-<span class="fc" id="L89">			next = nextNode(last = next);</span>
-<span class="fc" id="L90">			return last.id;</span>
+<span class="pc bpc" id="L108" title="1 of 2 branches missed.">			if (!hasNext())</span>
+<span class="nc" id="L109">				throw new NoSuchElementException();</span>
+<span class="fc" id="L110">			next = nextNode(last = next);</span>
+<span class="fc" id="L111">			return last.id;</span>
 		}
 
 		@Override
 		public void remove() {
-<span class="pc bpc" id="L95" title="1 of 2 branches missed.">			if (last == null)</span>
-<span class="nc" id="L96">				throw new IllegalStateException();</span>
-<span class="fc" id="L97">			removeEdge(last);</span>
-<span class="fc" id="L98">			last = null;</span>
-<span class="fc" id="L99">		}</span>
+<span class="pc bpc" id="L116" title="1 of 2 branches missed.">			if (last == null)</span>
+<span class="nc" id="L117">				throw new IllegalStateException();</span>
+<span class="fc" id="L118">			removeEdge(last);</span>
+<span class="fc" id="L119">			last = null;</span>
+<span class="fc" id="L120">		}</span>
 	}
 
 	abstract static class Node {
@@ -104,11 +125,11 @@ abstract class GraphLinkedAbstract extends GraphBaseContinues {
 		int id;
 		int u, v;
 
-<span class="fc" id="L107">		Node(int id, int u, int v) {</span>
-<span class="fc" id="L108">			this.id = id;</span>
-<span class="fc" id="L109">			this.u = u;</span>
-<span class="fc" id="L110">			this.v = v;</span>
-<span class="fc" id="L111">		}</span>
+<span class="fc" id="L128">		Node(int id, int u, int v) {</span>
+<span class="fc" id="L129">			this.id = id;</span>
+<span class="fc" id="L130">			this.u = u;</span>
+<span class="fc" id="L131">			this.v = v;</span>
+<span class="fc" id="L132">		}</span>
 
 	}
 

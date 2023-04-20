@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LCAStaticRMQ.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jgalgo</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">LCAStaticRMQ.java</span></div><h1>LCAStaticRMQ.java</h1><pre class="source lang-java linenums">package com.jgalgo;
+
+import java.util.Arrays;
+
+/**
+ * Static LCA implementation using RMQ.
+ * &lt;p&gt;
+ * By traversing the tree once and assigning for each vertex a number
+ * corresponding to its depth, the LCA query is equivalent to a range minimum
+ * query. This RMQ problem is a special case of RMQ, as the different between
+ * any pair of consecutive elements is always +1/-1, and
+ * {@link RMQStaticPlusMinusOne} can be used.
+ * &lt;p&gt;
+ * The algorithm require preprocessing of {@code O(n)} time and space and answer
+ * queries in {@code O(1)} time.
+ * &lt;p&gt;
+ * Based on 'Fast Algorithms for Finding Nearest Common Ancestors' by D. Harel,
+ * R. Tarjan (1984).
+ *
+ * @author Barak Ugav
+ */
+public class LCAStaticRMQ implements LCAStatic {
+
+	private final RMQStatic rmq;
+
+<span class="fc" id="L26">	public LCAStaticRMQ() {</span>
+<span class="fc" id="L27">		rmq = new RMQStaticPlusMinusOne();</span>
+<span class="fc" id="L28">	}</span>
+
+	@Override
+	public LCAStatic.DataStructure preProcessTree(Graph t, int r) {
+<span class="pc bpc" id="L32" title="1 of 2 branches missed.">		if (!Trees.isTree(t, r))</span>
+<span class="nc" id="L33">			throw new IllegalArgumentException();</span>
+
+<span class="fc" id="L35">		int n = t.vertices().size();</span>
+<span class="fc" id="L36">		int[] depths = new int[n * 2];</span>
+<span class="fc" id="L37">		int[] vs = new int[n * 2];</span>
+<span class="fc" id="L38">		int[] parent = new int[n];</span>
+
+<span class="fc" id="L40">		EdgeIter[] edges = new EdgeIter[n];</span>
+
+<span class="fc" id="L42">		parent[0] = -1;</span>
+<span class="fc" id="L43">		edges[0] = t.edgesOut(r);</span>
+
+<span class="fc" id="L45">		int aLen = 0;</span>
+<span class="fc" id="L46">		dfs: for (int u = r, depth = 0;;) {</span>
+<span class="fc" id="L47">			depths[aLen] = depth;</span>
+<span class="fc" id="L48">			vs[aLen] = u;</span>
+<span class="fc" id="L49">			aLen++;</span>
+
+<span class="fc bfc" id="L51" title="All 2 branches covered.">			for (EdgeIter eit = edges[depth]; eit.hasNext();) {</span>
+<span class="fc" id="L52">				eit.nextInt();</span>
+<span class="fc" id="L53">				int v = eit.v();</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">				if (v == parent[depth])</span>
+<span class="fc" id="L55">					continue;</span>
+<span class="fc" id="L56">				depth++;</span>
+<span class="fc" id="L57">				parent[depth] = u;</span>
+<span class="fc" id="L58">				edges[depth] = t.edgesOut(v);</span>
+<span class="fc" id="L59">				u = v;</span>
+<span class="fc" id="L60">				continue dfs;</span>
+			}
+<span class="fc" id="L62">			u = parent[depth];</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">			if (--depth &lt; 0)</span>
+<span class="fc" id="L64">				break;</span>
+		}
+
+<span class="fc" id="L67">		depths = Arrays.copyOf(depths, aLen);</span>
+<span class="fc" id="L68">		vs = Arrays.copyOf(vs, aLen);</span>
+
+<span class="fc" id="L70">		int[] vToDepthsIdx = new int[n];</span>
+<span class="fc" id="L71">		Arrays.fill(vToDepthsIdx, -1);</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">		for (int i = 0; i &lt; aLen; i++) {</span>
+<span class="fc" id="L73">			int v = vs[i];</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">			if (vToDepthsIdx[v] == -1)</span>
+<span class="fc" id="L75">				vToDepthsIdx[v] = i;</span>
+		}
+
+<span class="fc" id="L78">		RMQStatic.DataStructure rmqDS = rmq.preProcessSequence(RMQStaticComparator.ofIntArray(depths), depths.length);</span>
+<span class="fc" id="L79">		return new DS(vs, vToDepthsIdx, rmqDS);</span>
+	}
+
+	private static class DS implements LCAStatic.DataStructure {
+
+		private final int[] vs;
+		private final int[] vToDepthsIdx;
+		private final RMQStatic.DataStructure rmqDS;
+
+<span class="fc" id="L88">		DS(int[] vs, int[] vToDepthsIdx, RMQStatic.DataStructure rmqDS) {</span>
+<span class="fc" id="L89">			this.vs = vs;</span>
+<span class="fc" id="L90">			this.vToDepthsIdx = vToDepthsIdx;</span>
+<span class="fc" id="L91">			this.rmqDS = rmqDS;</span>
+<span class="fc" id="L92">		}</span>
+
+		@Override
+		public int findLowestCommonAncestor(int u, int v) {
+<span class="fc" id="L96">			int uIdx = vToDepthsIdx[u];</span>
+<span class="fc" id="L97">			int vIdx = vToDepthsIdx[v];</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">			if (uIdx &gt; vIdx) {</span>
+<span class="fc" id="L99">				int temp = uIdx;</span>
+<span class="fc" id="L100">				uIdx = vIdx;</span>
+<span class="fc" id="L101">				vIdx = temp;</span>
+			}
+<span class="fc" id="L103">			int lcaIdx = rmqDS.findMinimumInRange(uIdx, vIdx);</span>
+<span class="fc" id="L104">			return vs[lcaIdx];</span>
+		}
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

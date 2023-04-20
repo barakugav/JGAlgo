@@ -35,163 +35,189 @@ public class GraphArrayUndirected extends GraphArrayAbstract implements UGraph {
 	 */
 	public GraphArrayUndirected(int n) {
 <span class="fc" id="L37">		super(n, Capabilities);</span>
-<span class="fc" id="L38">		edgesNum = new DataContainer.Int(n, 0);</span>
-<span class="fc" id="L39">		edges = new DataContainer.Obj&lt;&gt;(n, IntArrays.EMPTY_ARRAY);</span>
+<span class="fc" id="L38">		edges = new DataContainer.Obj&lt;&gt;(n, IntArrays.EMPTY_ARRAY);</span>
+<span class="fc" id="L39">		edgesNum = new DataContainer.Int(n, 0);</span>
 
-<span class="fc" id="L41">		addInternalVerticesDataContainer(edgesNum);</span>
-<span class="fc" id="L42">		addInternalVerticesDataContainer(edges);</span>
+<span class="fc" id="L41">		addInternalVerticesDataContainer(edges);</span>
+<span class="fc" id="L42">		addInternalVerticesDataContainer(edgesNum);</span>
 <span class="fc" id="L43">	}</span>
 
 	@Override
+	public int addVertex() {
+<span class="fc" id="L47">		int v = super.addVertex();</span>
+<span class="fc" id="L48">		edges.add(v);</span>
+<span class="fc" id="L49">		edgesNum.add(v);</span>
+<span class="fc" id="L50">		return v;</span>
+	}
+
+	@Override
+	public void removeVertex(int v) {
+<span class="fc" id="L55">		v = vertexSwapBeforeRemove(v);</span>
+<span class="fc" id="L56">		super.removeVertex(v);</span>
+<span class="fc" id="L57">		edges.remove(v);</span>
+<span class="fc" id="L58">		edgesNum.remove(v);</span>
+<span class="fc" id="L59">	}</span>
+
+	@Override
 	void vertexSwap(int v1, int v2) {
-<span class="fc" id="L47">		int[] es1 = edges.get(v1);</span>
-<span class="fc" id="L48">		int es1Len = edgesNum.getInt(v1);</span>
-<span class="fc" id="L49">		int[] es2 = edges.get(v2);</span>
-<span class="fc" id="L50">		int es2Len = edgesNum.getInt(v2);</span>
+<span class="fc" id="L63">		int[] es1 = edges.get(v1);</span>
+<span class="fc" id="L64">		int es1Len = edgesNum.getInt(v1);</span>
+<span class="fc" id="L65">		int[] es2 = edges.get(v2);</span>
+<span class="fc" id="L66">		int es2Len = edgesNum.getInt(v2);</span>
 
-<span class="fc" id="L52">		final int tempV = -2;</span>
-<span class="pc bpc" id="L53" title="1 of 2 branches missed.">		for (int i = 0; i &lt; es1Len; i++)</span>
-<span class="nc" id="L54">			replaceEdgeEndpoint(es1[i], v1, tempV);</span>
-<span class="fc bfc" id="L55" title="All 2 branches covered.">		for (int i = 0; i &lt; es2Len; i++)</span>
-<span class="fc" id="L56">			replaceEdgeEndpoint(es2[i], v2, v1);</span>
-<span class="pc bpc" id="L57" title="1 of 2 branches missed.">		for (int i = 0; i &lt; es1Len; i++)</span>
-<span class="nc" id="L58">			replaceEdgeEndpoint(es1[i], tempV, v2);</span>
+<span class="fc" id="L68">		final int tempV = -2;</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">		for (int i = 0; i &lt; es1Len; i++)</span>
+<span class="fc" id="L70">			replaceEdgeEndpoint(es1[i], v1, tempV);</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">		for (int i = 0; i &lt; es2Len; i++)</span>
+<span class="fc" id="L72">			replaceEdgeEndpoint(es2[i], v2, v1);</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">		for (int i = 0; i &lt; es1Len; i++)</span>
+<span class="fc" id="L74">			replaceEdgeEndpoint(es1[i], tempV, v2);</span>
 
-<span class="fc" id="L60">		super.vertexSwap(v1, v2);</span>
-<span class="fc" id="L61">	}</span>
+<span class="fc" id="L76">		edges.swap(v1, v2);</span>
+<span class="fc" id="L77">		edgesNum.swap(v1, v2);</span>
+
+<span class="fc" id="L79">		super.vertexSwap(v1, v2);</span>
+<span class="fc" id="L80">	}</span>
 
 	@Override
 	public EdgeIter edgesOut(int u) {
-<span class="fc" id="L65">		checkVertexIdx(u);</span>
-<span class="fc" id="L66">		return new EdgeIt(u, edges.get(u), edgesNum.getInt(u));</span>
+<span class="fc" id="L84">		checkVertexIdx(u);</span>
+<span class="fc" id="L85">		return new EdgeIt(u, edges.get(u), edgesNum.getInt(u));</span>
 	}
 
 	@Override
 	public int addEdge(int u, int v) {
-<span class="fc" id="L71">		int e = super.addEdge(u, v);</span>
-<span class="fc" id="L72">		addEdgeToList(edges, edgesNum, u, e);</span>
-<span class="fc bfc" id="L73" title="All 2 branches covered.">		if (u != v)</span>
-<span class="fc" id="L74">			addEdgeToList(edges, edgesNum, v, e);</span>
-<span class="fc" id="L75">		return e;</span>
+<span class="fc" id="L90">		int e = super.addEdge(u, v);</span>
+<span class="fc" id="L91">		addEdgeToList(edges, edgesNum, u, e);</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">		if (u != v)</span>
+<span class="fc" id="L93">			addEdgeToList(edges, edgesNum, v, e);</span>
+<span class="fc" id="L94">		return e;</span>
 	}
 
 	@Override
 	public void removeEdge(int e) {
-<span class="fc" id="L80">		e = edgeSwapBeforeRemove(e);</span>
-<span class="fc" id="L81">		int u = edgeSource(e), v = edgeTarget(e);</span>
-<span class="fc" id="L82">		removeEdgeFromList(edges, edgesNum, u, e);</span>
-<span class="fc bfc" id="L83" title="All 2 branches covered.">		if (u != v)</span>
-<span class="fc" id="L84">			removeEdgeFromList(edges, edgesNum, v, e);</span>
-<span class="fc" id="L85">		super.removeEdge(e);</span>
-<span class="fc" id="L86">	}</span>
+<span class="fc" id="L99">		e = edgeSwapBeforeRemove(e);</span>
+<span class="fc" id="L100">		int u = edgeSource(e), v = edgeTarget(e);</span>
+<span class="fc" id="L101">		removeEdgeFromList(edges, edgesNum, u, e);</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">		if (u != v)</span>
+<span class="fc" id="L103">			removeEdgeFromList(edges, edgesNum, v, e);</span>
+<span class="fc" id="L104">		super.removeEdge(e);</span>
+<span class="fc" id="L105">	}</span>
 
 	@Override
 	void edgeSwap(int e1, int e2) {
-<span class="pc bpc" id="L90" title="1 of 2 branches missed.">		assert e1 != e2;</span>
+<span class="pc bpc" id="L109" title="1 of 2 branches missed.">		assert e1 != e2;</span>
 
-<span class="fc" id="L92">		int u1 = edgeSource(e1), v1 = edgeTarget(e1);</span>
-<span class="fc" id="L93">		int[] u1es = edges.get(u1);</span>
-<span class="fc" id="L94">		int i1 = edgeIndexOf(u1es, edgesNum.getInt(u1), e1);</span>
-<span class="fc" id="L95">		u1es[i1] = e2;</span>
-<span class="fc bfc" id="L96" title="All 2 branches covered.">		if (u1 != v1) {</span>
-<span class="fc" id="L97">			int[] v1es = edges.get(v1);</span>
-<span class="fc" id="L98">			int j1 = edgeIndexOf(v1es, edgesNum.getInt(v1), e1);</span>
-<span class="fc" id="L99">			v1es[j1] = e2;</span>
+<span class="fc" id="L111">		int u1 = edgeSource(e1), v1 = edgeTarget(e1);</span>
+<span class="fc" id="L112">		int[] u1es = edges.get(u1);</span>
+<span class="fc" id="L113">		int i1 = edgeIndexOf(u1es, edgesNum.getInt(u1), e1);</span>
+<span class="fc" id="L114">		u1es[i1] = e2;</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">		if (u1 != v1) {</span>
+<span class="fc" id="L116">			int[] v1es = edges.get(v1);</span>
+<span class="fc" id="L117">			int j1 = edgeIndexOf(v1es, edgesNum.getInt(v1), e1);</span>
+<span class="fc" id="L118">			v1es[j1] = e2;</span>
 		}
 
-<span class="fc" id="L102">		int u2 = edgeSource(e2), v2 = edgeTarget(e2);</span>
-<span class="fc" id="L103">		int[] u2es = edges.get(u2);</span>
-<span class="fc" id="L104">		int i2 = edgeIndexOf(u2es, edgesNum.getInt(u2), e2);</span>
-<span class="fc" id="L105">		u2es[i2] = e1;</span>
-<span class="fc bfc" id="L106" title="All 2 branches covered.">		if (u2 != v2) {</span>
-<span class="fc" id="L107">			int[] v2es = edges.get(v2);</span>
-<span class="fc" id="L108">			int j2 = edgeIndexOf(v2es, edgesNum.getInt(v2), e2);</span>
-<span class="fc" id="L109">			v2es[j2] = e1;</span>
+<span class="fc" id="L121">		int u2 = edgeSource(e2), v2 = edgeTarget(e2);</span>
+<span class="fc" id="L122">		int[] u2es = edges.get(u2);</span>
+<span class="fc" id="L123">		int i2 = edgeIndexOf(u2es, edgesNum.getInt(u2), e2);</span>
+<span class="fc" id="L124">		u2es[i2] = e1;</span>
+<span class="fc bfc" id="L125" title="All 2 branches covered.">		if (u2 != v2) {</span>
+<span class="fc" id="L126">			int[] v2es = edges.get(v2);</span>
+<span class="fc" id="L127">			int j2 = edgeIndexOf(v2es, edgesNum.getInt(v2), e2);</span>
+<span class="fc" id="L128">			v2es[j2] = e1;</span>
 		}
 
-<span class="fc" id="L112">		super.edgeSwap(e1, e2);</span>
-<span class="fc" id="L113">	}</span>
+<span class="fc" id="L131">		super.edgeSwap(e1, e2);</span>
+<span class="fc" id="L132">	}</span>
 
 	@Override
 	public void removeEdgesOf(int u) {
-<span class="fc" id="L117">		checkVertexIdx(u);</span>
-<span class="fc bfc" id="L118" title="All 2 branches covered.">		while (edgesNum.getInt(u) &gt; 0)</span>
-<span class="fc" id="L119">			removeEdge(edges.get(u)[0]);</span>
-<span class="fc" id="L120">	}</span>
+<span class="fc" id="L136">		checkVertexIdx(u);</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">		while (edgesNum.getInt(u) &gt; 0)</span>
+<span class="fc" id="L138">			removeEdge(edges.get(u)[0]);</span>
+<span class="fc" id="L139">	}</span>
 
 	@Override
 	public int degreeOut(int u) {
-<span class="fc" id="L124">		checkVertexIdx(u);</span>
-<span class="fc" id="L125">		return edgesNum.getInt(u);</span>
+<span class="fc" id="L143">		checkVertexIdx(u);</span>
+<span class="fc" id="L144">		return edgesNum.getInt(u);</span>
 	}
 
 	@Override
 	public void clearEdges() {
-<span class="fc" id="L130">		int n = vertices().size();</span>
-<span class="fc bfc" id="L131" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc" id="L132">			edges.set(u, IntArrays.EMPTY_ARRAY);</span>
-<span class="fc" id="L133">			edgesNum.set(u, 0);</span>
+<span class="fc" id="L149">		int n = vertices().size();</span>
+<span class="fc bfc" id="L150" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc" id="L151">			edges.set(u, IntArrays.EMPTY_ARRAY);</span>
+<span class="fc" id="L152">			edgesNum.set(u, 0);</span>
 		}
-<span class="fc" id="L135">		super.clearEdges();</span>
-<span class="fc" id="L136">	}</span>
+<span class="fc" id="L154">		super.clearEdges();</span>
+<span class="fc" id="L155">	}</span>
+
+	@Override
+	public void clear() {
+<span class="fc" id="L159">		super.clear();</span>
+<span class="fc" id="L160">		edges.clear();</span>
+<span class="fc" id="L161">		edgesNum.clear();</span>
+<span class="fc" id="L162">	}</span>
 
 	private class EdgeIt extends GraphArrayAbstract.EdgeIt {
 
 		private final int u;
 
-<span class="fc" id="L142">		EdgeIt(int u, int[] edges, int count) {</span>
-<span class="fc" id="L143">			super(edges, count);</span>
-<span class="fc" id="L144">			this.u = u;</span>
-<span class="fc" id="L145">		}</span>
+<span class="fc" id="L168">		EdgeIt(int u, int[] edges, int count) {</span>
+<span class="fc" id="L169">			super(edges, count);</span>
+<span class="fc" id="L170">			this.u = u;</span>
+<span class="fc" id="L171">		}</span>
 
 		@Override
 		public int u() {
-<span class="fc" id="L149">			return u;</span>
+<span class="fc" id="L175">			return u;</span>
 		}
 
 		@Override
 		public int v() {
-<span class="fc" id="L154">			int u0 = edgeSource(lastEdge);</span>
-<span class="fc" id="L155">			int v0 = edgeTarget(lastEdge);</span>
-<span class="fc bfc" id="L156" title="All 2 branches covered.">			return u == u0 ? v0 : u0;</span>
+<span class="fc" id="L180">			int u0 = edgeSource(lastEdge);</span>
+<span class="fc" id="L181">			int v0 = edgeTarget(lastEdge);</span>
+<span class="fc bfc" id="L182" title="All 2 branches covered.">			return u == u0 ? v0 : u0;</span>
 		}
 
 	}
 
-<span class="fc" id="L161">	private static final GraphCapabilities Capabilities = new GraphCapabilities() {</span>
+<span class="fc" id="L187">	private static final GraphCapabilities Capabilities = new GraphCapabilities() {</span>
 		@Override
 		public boolean vertexAdd() {
-<span class="fc" id="L164">			return true;</span>
+<span class="fc" id="L190">			return true;</span>
 		}
 
 		@Override
 		public boolean vertexRemove() {
-<span class="fc" id="L169">			return true;</span>
+<span class="fc" id="L195">			return true;</span>
 		}
 
 		@Override
 		public boolean edgeAdd() {
-<span class="fc" id="L174">			return true;</span>
+<span class="fc" id="L200">			return true;</span>
 		}
 
 		@Override
 		public boolean edgeRemove() {
-<span class="fc" id="L179">			return true;</span>
+<span class="fc" id="L205">			return true;</span>
 		}
 
 		@Override
 		public boolean parallelEdges() {
-<span class="fc" id="L184">			return true;</span>
+<span class="fc" id="L210">			return true;</span>
 		}
 
 		@Override
 		public boolean selfEdges() {
-<span class="fc" id="L189">			return true;</span>
+<span class="fc" id="L215">			return true;</span>
 		}
 
 		@Override
 		public boolean directed() {
-<span class="fc" id="L194">			return false;</span>
+<span class="fc" id="L220">			return false;</span>
 		}
 	};
 
