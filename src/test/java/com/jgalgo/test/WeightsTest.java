@@ -1,12 +1,11 @@
 package com.jgalgo.test;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.Random;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.jgalgo.Graph;
 import com.jgalgo.Weights;
