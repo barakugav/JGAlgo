@@ -12,8 +12,8 @@ import java.util.function.Supplier;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-import com.jgalgo.SubtreeMergeFindmin;
-import com.jgalgo.SubtreeMergeFindminImpl;
+import com.jgalgo.SubtreeMergeFindMin;
+import com.jgalgo.SubtreeMergeFindMinImpl;
 import com.jgalgo.UnionFind;
 import com.jgalgo.UnionFindArray;
 
@@ -29,7 +29,7 @@ public class SubtreeMergeFindminTest extends TestUtils {
 				phase(8, 512, 512), phase(8, 512, 2048), phase(1, 4096, 4096), phase(1, 4096, 16384));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
-			testRandOps(SubtreeMergeFindminImpl::new, n, m, seedGen.nextSeed());
+			testRandOps(SubtreeMergeFindMinImpl::new, n, m, seedGen.nextSeed());
 		});
 	}
 
@@ -47,9 +47,12 @@ public class SubtreeMergeFindminTest extends TestUtils {
 		}
 	}
 
+	private static int getNodeId(SubtreeMergeFindMin.Node node) {
+		return node.<TrackerNode>getNodeData().id;
+	}
+
 	@SuppressWarnings({ "boxing", "unchecked" })
-	private static void testRandOps(Supplier<? extends SubtreeMergeFindmin<TrackerNode, Integer>> builder, int n, int m,
-			long seed) {
+	private static void testRandOps(Supplier<? extends SubtreeMergeFindMin<Integer>> builder, int n, int m, long seed) {
 		if (n < 2)
 			throw new IllegalArgumentException();
 		final SeedGenerator seedGen = new SeedGenerator(seed);
@@ -68,75 +71,75 @@ public class SubtreeMergeFindminTest extends TestUtils {
 		ops2[0] = Op.AddLeaf;
 		ops = ops2;
 
-		List<SubtreeMergeFindmin.Node<TrackerNode>> nodes = new ArrayList<>();
+		List<SubtreeMergeFindMin.Node> nodes = new ArrayList<>();
 		UnionFind uf = new UnionFindArray();
 		List<int[]>[] subtreeEdges = new List[n];
 		int[] edgeInsertWeights = randPermutation(ops.length, seedGen.nextSeed());
 		int edgeInsertWeightsIdx = 0;
 
-		SubtreeMergeFindmin<TrackerNode, Integer> algo = builder.get();
-		SubtreeMergeFindmin.Node<TrackerNode> root = algo.initTree(new TrackerNode(uf.make(), 0));
+		SubtreeMergeFindMin<Integer> algo = builder.get();
+
+		SubtreeMergeFindMin.Node root = algo.initTree();
+		root.setNodeData(new TrackerNode(uf.make(), 0));
 		nodes.add(root);
-		subtreeEdges[root.getNodeData().id] = new LinkedList<>();
+		subtreeEdges[getNodeId(root)] = new LinkedList<>();
 
 		for (Op op : ops) {
 			switch (op) {
 				case AddLeaf: {
-					SubtreeMergeFindmin.Node<TrackerNode> p = nodes.get(rand.nextInt(nodes.size()));
-					SubtreeMergeFindmin.Node<TrackerNode> node = algo.addLeaf(p,
-							new TrackerNode(uf.make(), p.getNodeData().depth + 1));
+					SubtreeMergeFindMin.Node p = nodes.get(rand.nextInt(nodes.size()));
+					SubtreeMergeFindMin.Node node = algo.addLeaf(p);
+					node.setNodeData(new TrackerNode(uf.make(), p.<TrackerNode>getNodeData().depth + 1));
 					nodes.add(node);
-					subtreeEdges[node.getNodeData().id] = new LinkedList<>();
+					subtreeEdges[getNodeId(node)] = new LinkedList<>();
 					break;
 				}
 				case AddNonTreeEdge: {
-					SubtreeMergeFindmin.Node<TrackerNode> u = nodes.get(rand.nextInt(nodes.size()));
-					SubtreeMergeFindmin.Node<TrackerNode> v = nodes.get(rand.nextInt(nodes.size()));
+					SubtreeMergeFindMin.Node u = nodes.get(rand.nextInt(nodes.size()));
+					SubtreeMergeFindMin.Node v = nodes.get(rand.nextInt(nodes.size()));
 					int weight = edgeInsertWeights[edgeInsertWeightsIdx++];
 					algo.addNonTreeEdge(u, v, weight);
-					subtreeEdges[uf.find(u.getNodeData().id)]
-							.add(new int[] { u.getNodeData().id, v.getNodeData().id, weight });
-					subtreeEdges[uf.find(u.getNodeData().id)]
-							.add(new int[] { u.getNodeData().id, v.getNodeData().id, weight });
+					subtreeEdges[uf.find(getNodeId(u))].add(new int[] { getNodeId(u), getNodeId(v), weight });
+					subtreeEdges[uf.find(getNodeId(u))].add(new int[] { getNodeId(u), getNodeId(v), weight });
 					break;
 				}
 				case Merge: {
-					SubtreeMergeFindmin.Node<TrackerNode> u, v;
+					SubtreeMergeFindMin.Node u, v;
 					for (;;) {
 						u = nodes.get(rand.nextInt(nodes.size()));
 						v = nodes.get(rand.nextInt(nodes.size()));
 						/* assume u0 is upper */
-						SubtreeMergeFindmin.Node<TrackerNode> u0 = u.getNodeData().depth <= v.getNodeData().depth ? u
-								: v;
-						SubtreeMergeFindmin.Node<TrackerNode> v0 = u.getNodeData().depth <= v.getNodeData().depth ? v
-								: u;
-						SubtreeMergeFindmin.Node<TrackerNode> p;
-						for (p = v0; p.getNodeData().depth > u0.getNodeData().depth + 1;)
+						SubtreeMergeFindMin.Node u0 = u.<TrackerNode>getNodeData().depth <= v
+								.<TrackerNode>getNodeData().depth ? u : v;
+						SubtreeMergeFindMin.Node v0 = u.<TrackerNode>getNodeData().depth <= v
+								.<TrackerNode>getNodeData().depth ? v : u;
+						SubtreeMergeFindMin.Node p;
+						for (p = v0; p.<TrackerNode>getNodeData().depth > u0.<TrackerNode>getNodeData().depth + 1;)
 							p = p.getParent();
-						if (uf.find(p.getNodeData().id) == uf.find(v0.getNodeData().id) && p.getParent() == u0)
+						if (uf.find(getNodeId(p)) == uf.find(getNodeId(v0)) && p.getParent() == u0)
 							break;
 					}
 					algo.mergeSubTrees(u, v);
-					u = nodes.get(uf.find(u.getNodeData().id));
-					v = nodes.get(uf.find(v.getNodeData().id));
+					u = nodes.get(uf.find(getNodeId(u)));
+					v = nodes.get(uf.find(getNodeId(v)));
 					if (u == v)
 						break;
-					int w = uf.union(u.getNodeData().id, v.getNodeData().id);
-					for (SubtreeMergeFindmin.Node<TrackerNode> z : new SubtreeMergeFindmin.Node[] { u, v }) {
-						for (Iterator<int[]> it = subtreeEdges[z.getNodeData().id].iterator(); it.hasNext();) {
+					int w = uf.union(getNodeId(u), getNodeId(v));
+					for (SubtreeMergeFindMin.Node z : new SubtreeMergeFindMin.Node[] { u, v }) {
+						for (Iterator<int[]> it = subtreeEdges[getNodeId(z)].iterator(); it.hasNext();) {
 							int[] edge = it.next();
 							int eU = edge[0], eV = edge[1];
 							if (uf.find(eU) == uf.find(eV))
 								it.remove();
 						}
 					}
-					List<int[]> elU = subtreeEdges[u.getNodeData().id], elV = subtreeEdges[v.getNodeData().id];
+					List<int[]> elU = subtreeEdges[getNodeId(u)], elV = subtreeEdges[getNodeId(v)];
 					List<int[]> elW = new LinkedList<>();
 					elW.addAll(elU);
 					elW.addAll(elV);
 					elU.clear();
 					elV.clear();
-					subtreeEdges[u.getNodeData().id] = subtreeEdges[v.getNodeData().id] = null;
+					subtreeEdges[getNodeId(u)] = subtreeEdges[getNodeId(v)] = null;
 					subtreeEdges[w] = elW;
 					break;
 				}
@@ -158,11 +161,10 @@ public class SubtreeMergeFindminTest extends TestUtils {
 						visited.set(V);
 					}
 
-					SubtreeMergeFindmin.MinEdge<TrackerNode, Integer> actual0 = algo.findMinNonTreeEdge();
+					SubtreeMergeFindMin.MinEdge<Integer> actual0 = algo.findMinNonTreeEdge();
 					int[] expected = min;
 					int[] actual = actual0 == null ? null
-							: new int[] { actual0.u().getNodeData().id, actual0.v().getNodeData().id,
-									actual0.edgeData() };
+							: new int[] { getNodeId(actual0.u()), getNodeId(actual0.v()), actual0.edgeData() };
 					if (expected != null && actual != null && expected[0] != actual[0]) {
 						int temp = expected[0];
 						expected[0] = expected[1];
