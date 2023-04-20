@@ -2,9 +2,9 @@ package com.jgalgo;
 
 import java.util.Arrays;
 
-import com.jgalgo.LCAGabowSimple.CharacteristicAncestors;
+import com.jgalgo.LCADynamicGabowSimple.CharacteristicAncestors;
 
-public class LCAGabow2017<V> implements LCADynamic<V> {
+public class LCADynamicGabowLinear<V> implements LCADynamic<V> {
 
 	/*
 	 * This implementation is a dynamic LCA implementation from Gabow17, which
@@ -23,12 +23,12 @@ public class LCAGabow2017<V> implements LCADynamic<V> {
 	 */
 
 	private int nodes2Num;
-	private final LCAGabowSimple<Node0<V>> lca0;
+	private final LCADynamicGabowSimple<Node0<V>> lca0;
 
 	private static final int SUB_TREE_MAX_SIZE = Integer.SIZE;
 
-	public LCAGabow2017() {
-		lca0 = new LCAGabowSimple<>();
+	public LCADynamicGabowLinear() {
+		lca0 = new LCADynamicGabowSimple<>();
 	}
 
 	@Override

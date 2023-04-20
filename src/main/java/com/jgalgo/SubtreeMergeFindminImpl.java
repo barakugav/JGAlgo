@@ -42,7 +42,7 @@ public class SubtreeMergeFindminImpl<V, E> implements SubtreeMergeFindmin<V, E> 
 		nodes = new NodeImpl[2];
 
 		uf = new UnionFindArray();
-		lca = new LCAGabow2017<>();
+		lca = new LCADynamicGabowLinear<>();
 
 		this.weightCmp = weightCmp != null ? weightCmp : Utils.getDefaultComparator();
 		timestamp = 0;

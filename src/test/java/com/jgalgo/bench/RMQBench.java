@@ -20,11 +20,11 @@ import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 
 import com.jgalgo.RMQStatic;
-import com.jgalgo.RMQComparator;
-import com.jgalgo.RMQGabowBentleyTarjan1984;
-import com.jgalgo.RMQLookupTable;
-import com.jgalgo.RMQPlusMinusOneBenderFarachColton2000;
-import com.jgalgo.RMQPowerOf2Table;
+import com.jgalgo.RMQStaticComparator;
+import com.jgalgo.RMQStaticCartesianTrees;
+import com.jgalgo.RMQStaticLookupTable;
+import com.jgalgo.RMQStaticPlusMinusOne;
+import com.jgalgo.RMQStaticPowerOf2Table;
 import com.jgalgo.test.TestUtils;
 import com.jgalgo.test.TestUtils.SeedGenerator;
 
@@ -41,7 +41,7 @@ public class RMQBench {
 
 		@Param({ "128", "2500", "15000" })
 		public int arrSize;
-		private List<Pair<Integer, RMQComparator>> arrays;
+		private List<Pair<Integer, RMQStaticComparator>> arrays;
 
 		@Setup(Level.Trial)
 		public void setup() {
@@ -49,12 +49,12 @@ public class RMQBench {
 			arrays = new ArrayList<>();
 			for (int arrNum = 20; arrNum-- > 0;) {
 				int[] arr = TestUtils.randArray(arrSize, seedGen.nextSeed());
-				arrays.add(Pair.of(Integer.valueOf(arrSize), RMQComparator.ofIntArray(arr)));
+				arrays.add(Pair.of(Integer.valueOf(arrSize), RMQStaticComparator.ofIntArray(arr)));
 			}
 		}
 
 		private void benchPreProcess(Supplier<? extends RMQStatic> builder, Blackhole blackhole) {
-			for (Pair<Integer, RMQComparator> arr : arrays) {
+			for (Pair<Integer, RMQStaticComparator> arr : arrays) {
 				RMQStatic rmq = builder.get();
 				rmq.preProcessSequence(arr.second(), arr.first().intValue());
 				blackhole.consume(rmq);
@@ -62,18 +62,18 @@ public class RMQBench {
 		}
 
 		@Benchmark
-		public void RMQLookupTable(Blackhole blackhole) {
-			benchPreProcess(RMQLookupTable::new, blackhole);
+		public void LookupTable(Blackhole blackhole) {
+			benchPreProcess(RMQStaticLookupTable::new, blackhole);
 		}
 
 		@Benchmark
-		public void RMQPowerOf2Table(Blackhole blackhole) {
-			benchPreProcess(RMQPowerOf2Table::new, blackhole);
+		public void PowerOf2Table(Blackhole blackhole) {
+			benchPreProcess(RMQStaticPowerOf2Table::new, blackhole);
 		}
 
 		@Benchmark
-		public void RMQGabowBentleyTarjan1984(Blackhole blackhole) {
-			benchPreProcess(RMQGabowBentleyTarjan1984::new, blackhole);
+		public void CartesianTrees(Blackhole blackhole) {
+			benchPreProcess(RMQStaticCartesianTrees::new, blackhole);
 		}
 
 	}
@@ -87,7 +87,7 @@ public class RMQBench {
 
 		@Param({ "128", "2500", "15000" })
 		public int arrSize;
-		private List<Pair<Integer, RMQComparator>> arrays;
+		private List<Pair<Integer, RMQStaticComparator>> arrays;
 
 		@Setup(Level.Trial)
 		public void setup() {
@@ -97,14 +97,14 @@ public class RMQBench {
 				int[] arr = new int[arrSize];
 				for (int i = 1; i < arrSize; i++)
 					arr[i] = arr[i - 1] + (rand.nextBoolean() ? +1 : -1);
-				arrays.add(Pair.of(Integer.valueOf(arrSize), RMQComparator.ofIntArray(arr)));
+				arrays.add(Pair.of(Integer.valueOf(arrSize), RMQStaticComparator.ofIntArray(arr)));
 			}
 		}
 
 		@Benchmark
 		public void benchPreProcess(Blackhole blackhole) {
-			for (Pair<Integer, RMQComparator> arr : arrays) {
-				RMQStatic rmq = new RMQPlusMinusOneBenderFarachColton2000();
+			for (Pair<Integer, RMQStaticComparator> arr : arrays) {
+				RMQStatic rmq = new RMQStaticPlusMinusOne();
 				rmq.preProcessSequence(arr.second(), arr.first().intValue());
 				blackhole.consume(rmq);
 			}
@@ -126,7 +126,7 @@ public class RMQBench {
 				int[] arr = randArray(arrSize, seedGen.nextSeed());
 
 				RMQStatic rmq = builder.get();
-				RMQStatic.DataStructure rmqDS = rmq.preProcessSequence(RMQComparator.ofIntArray(arr), arrSize);
+				RMQStatic.DataStructure rmqDS = rmq.preProcessSequence(RMQStaticComparator.ofIntArray(arr), arrSize);
 
 				int queriesNum = arrSize;
 				int[] queries = TestUtils.randArray(queriesNum * 2, 0, arrSize, seedGen.nextSeed());
@@ -138,7 +138,6 @@ public class RMQBench {
 						i = j;
 						j = temp;
 					}
-					j++;
 					queries[q * 2] = i;
 					queries[q * 2 + 1] = j;
 				}
@@ -162,103 +161,103 @@ public class RMQBench {
 			}
 		}
 
-	}
+		@BenchmarkMode(Mode.AverageTime)
+		@OutputTimeUnit(TimeUnit.MILLISECONDS)
+		@Warmup(iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
+		@Measurement(iterations = 1, time = 1, timeUnit = TimeUnit.SECONDS)
+		@State(Scope.Benchmark)
+		public static class LookupTable extends QueryAbstract {
 
-	@BenchmarkMode(Mode.AverageTime)
-	@OutputTimeUnit(TimeUnit.MILLISECONDS)
-	@Warmup(iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
-	@Measurement(iterations = 1, time = 1, timeUnit = TimeUnit.SECONDS)
-	@State(Scope.Benchmark)
-	public static class QueryRMQLookupTable extends QueryAbstract {
+			@Param({ "128", "2500" })
+			public int arrSize;
+			private List<Pair<RMQStatic.DataStructure, int[]>> arrays;
 
-		@Param({ "128", "2500" })
-		public int arrSize;
-		private List<Pair<RMQStatic.DataStructure, int[]>> arrays;
+			@Setup(Level.Iteration)
+			public void setup() {
+				arrays = createArrays(RMQStaticLookupTable::new, arrSize);
+			}
 
-		@Setup(Level.Iteration)
-		public void setup() {
-			arrays = createArrays(RMQLookupTable::new, arrSize);
+			@Benchmark
+			public void benchQuery(Blackhole blackhole) {
+				benchQuery(arrays, blackhole);
+			}
 		}
 
-		@Benchmark
-		public void benchQuery(Blackhole blackhole) {
-			benchQuery(arrays, blackhole);
-		}
-	}
+		@BenchmarkMode(Mode.AverageTime)
+		@OutputTimeUnit(TimeUnit.MILLISECONDS)
+		@Warmup(iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
+		@Measurement(iterations = 1, time = 1, timeUnit = TimeUnit.SECONDS)
+		@State(Scope.Benchmark)
+		public static class PowerOf2Table extends QueryAbstract {
 
-	@BenchmarkMode(Mode.AverageTime)
-	@OutputTimeUnit(TimeUnit.MILLISECONDS)
-	@Warmup(iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
-	@Measurement(iterations = 1, time = 1, timeUnit = TimeUnit.SECONDS)
-	@State(Scope.Benchmark)
-	public static class QueryRMQPowerOf2Table extends QueryAbstract {
+			@Param({ "128", "2500", "15000" })
+			public int arrSize;
+			private List<Pair<RMQStatic.DataStructure, int[]>> arrays;
 
-		@Param({ "128", "2500", "15000" })
-		public int arrSize;
-		private List<Pair<RMQStatic.DataStructure, int[]>> arrays;
+			@Setup(Level.Iteration)
+			public void setup() {
+				arrays = createArrays(RMQStaticPowerOf2Table::new, arrSize);
+			}
 
-		@Setup(Level.Iteration)
-		public void setup() {
-			arrays = createArrays(RMQPowerOf2Table::new, arrSize);
-		}
-
-		@Benchmark
-		public void benchQuery(Blackhole blackhole) {
-			benchQuery(arrays, blackhole);
-		}
-	}
-
-	@BenchmarkMode(Mode.AverageTime)
-	@OutputTimeUnit(TimeUnit.MILLISECONDS)
-	@Warmup(iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
-	@Measurement(iterations = 1, time = 1, timeUnit = TimeUnit.SECONDS)
-	@State(Scope.Benchmark)
-	public static class QueryRMQPlusMinusOneBenderFarachColton2000 extends QueryAbstract {
-
-		@Param({ "128", "2500", "15000" })
-		public int arrSize;
-		private List<Pair<RMQStatic.DataStructure, int[]>> arrays;
-
-		@Override
-		int[] randArray(int size, long seed) {
-			final Random rand = new Random(seed);
-			int[] arr = new int[size];
-			for (int i = 1; i < arrSize; i++)
-				arr[i] = arr[i - 1] + (rand.nextBoolean() ? +1 : -1);
-			return arr;
+			@Benchmark
+			public void benchQuery(Blackhole blackhole) {
+				benchQuery(arrays, blackhole);
+			}
 		}
 
-		@Setup(Level.Iteration)
-		public void setup() {
-			arrays = createArrays(RMQPlusMinusOneBenderFarachColton2000::new, arrSize);
+		@BenchmarkMode(Mode.AverageTime)
+		@OutputTimeUnit(TimeUnit.MILLISECONDS)
+		@Warmup(iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
+		@Measurement(iterations = 1, time = 1, timeUnit = TimeUnit.SECONDS)
+		@State(Scope.Benchmark)
+		public static class PlusMinusOne extends QueryAbstract {
+
+			@Param({ "128", "2500", "15000" })
+			public int arrSize;
+			private List<Pair<RMQStatic.DataStructure, int[]>> arrays;
+
+			@Override
+			int[] randArray(int size, long seed) {
+				final Random rand = new Random(seed);
+				int[] arr = new int[size];
+				for (int i = 1; i < arrSize; i++)
+					arr[i] = arr[i - 1] + (rand.nextBoolean() ? +1 : -1);
+				return arr;
+			}
+
+			@Setup(Level.Iteration)
+			public void setup() {
+				arrays = createArrays(RMQStaticPlusMinusOne::new, arrSize);
+			}
+
+			@Benchmark
+			public void benchQuery(Blackhole blackhole) {
+				benchQuery(arrays, blackhole);
+			}
 		}
 
-		@Benchmark
-		public void benchQuery(Blackhole blackhole) {
-			benchQuery(arrays, blackhole);
+		@BenchmarkMode(Mode.AverageTime)
+		@OutputTimeUnit(TimeUnit.MILLISECONDS)
+		@Warmup(iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
+		@Measurement(iterations = 1, time = 1, timeUnit = TimeUnit.SECONDS)
+		@State(Scope.Benchmark)
+		public static class CartesianTrees extends QueryAbstract {
+
+			@Param({ "128", "2500", "15000" })
+			public int arrSize;
+			private List<Pair<RMQStatic.DataStructure, int[]>> arrays;
+
+			@Setup(Level.Iteration)
+			public void setup() {
+				arrays = createArrays(RMQStaticCartesianTrees::new, arrSize);
+			}
+
+			@Benchmark
+			public void benchQuery(Blackhole blackhole) {
+				benchQuery(arrays, blackhole);
+			}
 		}
-	}
 
-	@BenchmarkMode(Mode.AverageTime)
-	@OutputTimeUnit(TimeUnit.MILLISECONDS)
-	@Warmup(iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
-	@Measurement(iterations = 1, time = 1, timeUnit = TimeUnit.SECONDS)
-	@State(Scope.Benchmark)
-	public static class QueryRMQGabowBentleyTarjan1984 extends QueryAbstract {
-
-		@Param({ "128", "2500", "15000" })
-		public int arrSize;
-		private List<Pair<RMQStatic.DataStructure, int[]>> arrays;
-
-		@Setup(Level.Iteration)
-		public void setup() {
-			arrays = createArrays(RMQGabowBentleyTarjan1984::new, arrSize);
-		}
-
-		@Benchmark
-		public void benchQuery(Blackhole blackhole) {
-			benchQuery(arrays, blackhole);
-		}
 	}
 
 }

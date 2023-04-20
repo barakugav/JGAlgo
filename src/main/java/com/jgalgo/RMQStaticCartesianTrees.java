@@ -5,46 +5,48 @@ import java.util.Objects;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
-public class RMQGabowBentleyTarjan1984 extends RMQLinearAbstract {
-
-	/*
-	 * Extends the abstract linear implementation of RMQ and solves the inner block
-	 * query by calculating in advance all the possible blocks, and creating a naive
-	 * lookup table for each one of them.
-	 *
-	 * Each block is essentially equivalent to another if the Cartesian tree of it
-	 * is the same. The number of Cartesian trees of size n the Catalan number n,
-	 * which is bounded by 4^n.
-	 *
-	 * We define the block size to be logn/4, and the pre processing time is still
-	 * O(n).
-	 *
-	 * O(n) pre processing time, O(n) space, O(1) query.
-	 */
-
-	public RMQGabowBentleyTarjan1984() {
-	}
+/**
+ * Static RMQ which uses Cartesian trees answering a query in constant time and
+ * requiring linear preprocessing time.
+ * <p>
+ * The sequence is divided into blocks of size {@code (log n) / 4}, and for each
+ * block a Cartesian tree is created. The total number of possible Cartesian
+ * trees of such size is bounded by {@code O(n)} (Catalan number).
+ * <p>
+ * To answer on queries which does not fall in the same block, the minimum of
+ * each block is stored, and {@link RMQStaticPowerOf2Table} is used on the
+ * {@code O(n / log n)} elements, which is linear in total.
+ * <p>
+ * The algorithm required {@code O(n)} preprocessing time and space and answer
+ * queries in {@code O(1)} time.
+ * <p>
+ * Based on 'Scaling and related techniques for geometry problems' by Harold N.
+ * Gabow; Jon Louis Bentley; Robert E. Tarjan (1984).
+ *
+ * @author Barak Ugav
+ */
+public class RMQStaticCartesianTrees extends RMQStaticLinearAbstract {
 
 	@Override
-	public RMQStatic.DataStructure preProcessSequence(RMQComparator c, int n) {
+	public RMQStatic.DataStructure preProcessSequence(RMQStaticComparator c, int n) {
 		if (n <= 0)
 			throw new IllegalArgumentException();
 		Objects.requireNonNull(c);
 		return new DS(c, n);
 	}
 
-	private class DS extends RMQLinearAbstract.DS {
+	private class DS extends RMQStaticLinearAbstract.DS {
 
 		private RMQStatic.DataStructure[] interBlocksDs;
 
-		DS(RMQComparator c, int n) {
+		DS(RMQStaticComparator c, int n) {
 			interBlocksDs = new RMQStatic.DataStructure[calcBlockNum(n, getBlockSize(n))];
 			preProcessRMQOuterBlocks(c, n);
 			preProcessRMQInnerBlocks();
 		}
 
 		private void preProcessRMQInnerBlocks() {
-			RMQStatic innerRMQ = new RMQLookupTable();
+			RMQStatic innerRMQ = new RMQStaticLookupTable();
 			Int2ObjectMap<RMQStatic.DataStructure> tables = new Int2ObjectOpenHashMap<>();
 
 			for (int b = 0; b < blockNum; b++) {
@@ -52,7 +54,7 @@ public class RMQGabowBentleyTarjan1984 extends RMQLinearAbstract {
 
 				interBlocksDs[b] = tables.computeIfAbsent(key, k -> {
 					int[] demoBlock = calcDemoBlock(k, blockSize);
-					return innerRMQ.preProcessSequence(RMQComparator.ofIntArray(demoBlock), demoBlock.length);
+					return innerRMQ.preProcessSequence(RMQStaticComparator.ofIntArray(demoBlock), demoBlock.length);
 				});
 			}
 		}
@@ -108,7 +110,7 @@ public class RMQGabowBentleyTarjan1984 extends RMQLinearAbstract {
 
 		@Override
 		int calcRMQInnerBlock(int block, int i, int j) {
-			return block * blockSize + interBlocksDs[block].findMinimumInRange(i, j + 1);
+			return block * blockSize + interBlocksDs[block].findMinimumInRange(i, j);
 		}
 
 	}

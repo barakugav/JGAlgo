@@ -2,20 +2,20 @@ package com.jgalgo.test;
 
 import org.junit.jupiter.api.Test;
 
-import com.jgalgo.LCAGabowSimple;
+import com.jgalgo.LCADynamicGabowSimple;
 
-public class LCAGabowSimpleTest extends TestUtils {
+public class LCADynamicGabowSimpleTest extends TestUtils {
 
 	@Test
 	public void testFullBinaryTreesRandOps() {
 		final long seed = 0x86404fac670d965fL;
-		LCADynamicTestUtils.fullBinaryTreesRandOps(LCAGabowSimple::new, seed);
+		LCADynamicTestUtils.fullBinaryTreesRandOps(LCADynamicGabowSimple::new, seed);
 	}
 
 	@Test
 	public void testRandTrees() {
 		final long seed = 0xe88bc85f0bcad617L;
-		LCADynamicTestUtils.randTrees(LCAGabowSimple::new, seed);
+		LCADynamicTestUtils.randTrees(LCADynamicGabowSimple::new, seed);
 	}
 
 }

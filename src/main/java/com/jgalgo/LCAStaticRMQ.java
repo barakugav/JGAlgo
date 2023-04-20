@@ -2,23 +2,29 @@ package com.jgalgo;
 
 import java.util.Arrays;
 
-public class LCARMQBenderFarachColton2000 implements LCAStatic {
-
-	/*
-	 * This implementation of static LCA (Lowest common ancestor) perform a
-	 * pre processing of O(n + m) and later answer queries of LCA queries in O(1).
-	 *
-	 * This is done by traversing the tree with the Eulerian tour, and using RMQ on
-	 * the depths of the tour. This RMQ is a special case of the general RMQ, as the
-	 * difference between two consecutive elements is always +1/-1, and therefore
-	 * allow more efficient implementation using
-	 * RMQPlusMinusOneBenderFarachColton2000.
-	 */
+/**
+ * Static LCA implementation using RMQ.
+ * <p>
+ * By traversing the tree once and assigning for each vertex a number
+ * corresponding to its depth, the LCA query is equivalent to a range minimum
+ * query. This RMQ problem is a special case of RMQ, as the different between
+ * any pair of consecutive elements is always +1/-1, and
+ * {@link RMQStaticPlusMinusOne} can be used.
+ * <p>
+ * The algorithm require preprocessing of {@code O(n)} time and space and answer
+ * queries in {@code O(1)} time.
+ * <p>
+ * Based on 'Fast Algorithms for Finding Nearest Common Ancestors' by D. Harel,
+ * R. Tarjan (1984).
+ *
+ * @author Barak Ugav
+ */
+public class LCAStaticRMQ implements LCAStatic {
 
 	private final RMQStatic rmq;
 
-	public LCARMQBenderFarachColton2000() {
-		rmq = new RMQPlusMinusOneBenderFarachColton2000();
+	public LCAStaticRMQ() {
+		rmq = new RMQStaticPlusMinusOne();
 	}
 
 	@Override
@@ -69,7 +75,7 @@ public class LCARMQBenderFarachColton2000 implements LCAStatic {
 				vToDepthsIdx[v] = i;
 		}
 
-		RMQStatic.DataStructure rmqDS = rmq.preProcessSequence(RMQComparator.ofIntArray(depths), depths.length);
+		RMQStatic.DataStructure rmqDS = rmq.preProcessSequence(RMQStaticComparator.ofIntArray(depths), depths.length);
 		return new DS(vs, vToDepthsIdx, rmqDS);
 	}
 
@@ -94,7 +100,7 @@ public class LCARMQBenderFarachColton2000 implements LCAStatic {
 				uIdx = vIdx;
 				vIdx = temp;
 			}
-			int lcaIdx = rmqDS.findMinimumInRange(uIdx, vIdx + 1);
+			int lcaIdx = rmqDS.findMinimumInRange(uIdx, vIdx);
 			return vs[lcaIdx];
 		}
 	}

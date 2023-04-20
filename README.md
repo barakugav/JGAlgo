@@ -33,11 +33,11 @@ The library runs on Java 11 or higher, and it is installed using Maven (WIP).
 | APSP Floyd-Warshall general weights | $O(n^3)$ |
 | APSP Johnson general weights | $O(m n + n^2 \log n)$ |
 | A* | $O(b^d)$ where $b$ is the branching factor and $d$ is the depth, $O(m \log n)$ worst case |
-| RMQ $\pm 1$ BenderFarachColton2000 | $O(n)$ preprocessing, $O(1)$ query |
-| RMQ GabowBentleyTarjan1984 | $O(n)$ preprocessing, $O(1)$ query |
-| LCA static BenderFarachColton2000, using RMQ | $O(n + m)$ |
-| LCA dynamic Gabow simple | $O(n \log^2 n + m)$ |
-| LCA dynamic Gabow2017 | $O(n + m)$ |
+| RMQ static $\pm 1$ by reduction to LCA | $O(n)$ preprocessing, $O(1)$ query |
+| RMQ static using Cartesian trees | $O(n)$ preprocessing, $O(1)$ query |
+| LCA static by reduction to RMQ | $O(n + m)$ |
+| LCA dynamic Gabow (without bit tricks) | $O(n \log^2 n + m)$ |
+| LCA dynamic Gabow linear (using RAM model) | $O(n + m)$ |
 | Max flow EdmondsKarp | $O(m^2 n)$ |
 | Max flow Push/Relabel (FIFO order) <br> with global relabeling and gap heuristics | $O(n^3)$ |
 | Max flow Push/Relabel-to-Front <br> with global relabeling and gap heuristics | $O(n^3)$ |
@@ -60,8 +60,8 @@ The library runs on Java 11 or higher, and it is installed using Maven (WIP).
 | Maximum matching bipartite weighted using SSSP | $O(m n + n^2 \log n)$ |
 | Maximum matching bipartite weighted Hungarian method with heaps | $O(m n + n^2 \log n)$ |
 | Maximum matching general weighted Gabow1990 implementation with dynamic LCA | $O(m n + n^2 \log n)$ |
-| Travelling Salesman Problem (TSP) $2$-appx using MST | $O(n^2)$ |
-| Travelling Salesman Problem (TSP) $3/2$-appx using maximum matching | $O(n^3)$ |
+| Traveling Salesman Problem (TSP) $2$-appx using MST | $O(n^2)$ |
+| Traveling Salesman Problem (TSP) $3/2$-appx using maximum matching | $O(n^3)$ |
 | Vertex Coloring Greedy arbitrary vertices order | $O(n + m)$ assuming the number of colors is constant |
 | Vertex Coloring Greedy random vertices order | $O(n + m)$ assuming the number of colors is constant |
 | Vertex Coloring DSatur | $O(m n)$ |

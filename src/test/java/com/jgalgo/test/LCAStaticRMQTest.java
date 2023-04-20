@@ -9,10 +9,10 @@ import org.junit.jupiter.api.Test;
 
 import com.jgalgo.BFSIter;
 import com.jgalgo.Graph;
-import com.jgalgo.LCARMQBenderFarachColton2000;
+import com.jgalgo.LCAStaticRMQ;
 import com.jgalgo.LCAStatic;
 
-public class LCARMQBenderFarachColton2000Test extends TestUtils {
+public class LCAStaticRMQTest extends TestUtils {
 
 	private static int[][] randLCAQueries(Graph g, int r, int queriesNum, long seed) {
 		Random rand = new Random(seed);
@@ -88,7 +88,7 @@ public class LCARMQBenderFarachColton2000Test extends TestUtils {
 			int n = args[0], m = args[1];
 			Graph g = GraphsTestUtils.randTree(n, seedGen.nextSeed());
 			int[][] queries = randLCAQueries(g, 0, m, seedGen.nextSeed());
-			testLCA(g, LCARMQBenderFarachColton2000::new, queries);
+			testLCA(g, LCAStaticRMQ::new, queries);
 		});
 	}
 

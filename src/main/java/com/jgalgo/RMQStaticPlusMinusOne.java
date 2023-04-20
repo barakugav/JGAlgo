@@ -5,40 +5,51 @@ import java.util.Objects;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
-public class RMQPlusMinusOneBenderFarachColton2000 extends RMQLinearAbstract {
-
-	/*
-	 * Extends the abstract linear implementation of RMQ and solves the inner block
-	 * query by calculating in advance all the possible blocks, and creating a naive
-	 * lookup table for each one of them. This is only possible because the
-	 * difference between each consecutive elements is +1/-1.
-	 *
-	 * We define the block size to be logn/2 and therefore there are 2^blockSize
-	 * possible different blocks, and the pre processing time is still O(n).
-	 *
-	 * O(n) pre processing time, O(n) space, O(1) query.
-	 */
+/**
+ * Static RMQ for sequences for which the different between any pair of
+ * consecutive elements is <span>&#177;</span>{@code 1}.
+ * <p>
+ * The algorithm divide the sequence into blocks of size {@code O((log n) / 2)},
+ * and then create all possible lookup tables of the sub sequences of the
+ * smaller blocks. Because the different between any pair of consecutive
+ * elements, the number of such blocks is {@code O(} <span>&#8730;</span>
+ * {@code n)} and the total space and preprocessing time of all these blocks is
+ * {@code O(n)}.
+ * <p>
+ * To answer on queries which does not fall in the same block, the minimum of
+ * each block is stored, and {@link RMQStaticPowerOf2Table} is used on the
+ * {@code O(n / log n)} elements, which is linear in total.
+ * <p>
+ * This algorithm is used for the static implementation of the lowest common
+ * ancestor algorithm, see {@link LCAStaticRMQ}.
+ * <p>
+ * Based on 'Fast Algorithms for Finding Nearest Common Ancestors' by D. Harel,
+ * R. Tarjan (1984).
+ *
+ * @author Barak Ugav
+ */
+public class RMQStaticPlusMinusOne extends RMQStaticLinearAbstract {
 
 	@Override
-	public RMQStatic.DataStructure preProcessSequence(RMQComparator c, int n) {
+	public RMQStatic.DataStructure preProcessSequence(RMQStaticComparator c, int n) {
 		if (n <= 0)
 			throw new IllegalArgumentException();
 		Objects.requireNonNull(c);
 		return new DS(c, n);
 	}
 
-	private class DS extends RMQLinearAbstract.DS {
+	private class DS extends RMQStaticLinearAbstract.DS {
 
 		private RMQStatic.DataStructure[] interBlocksDs;
 
-		DS(RMQComparator c, int n) {
+		DS(RMQStaticComparator c, int n) {
 			interBlocksDs = new RMQStatic.DataStructure[calcBlockNum(n, getBlockSize(n))];
 			preProcessRMQOuterBlocks(c, n);
 			preProcessRMQInnerBlocks();
 		}
 
 		private void preProcessRMQInnerBlocks() {
-			RMQStatic innerRMQ = new RMQLookupTable();
+			RMQStatic innerRMQ = new RMQStaticLookupTable();
 			Int2ObjectMap<RMQStatic.DataStructure> tables = new Int2ObjectOpenHashMap<>();
 
 			for (int b = 0; b < blockNum; b++) {
@@ -46,7 +57,7 @@ public class RMQPlusMinusOneBenderFarachColton2000 extends RMQLinearAbstract {
 
 				interBlocksDs[b] = tables.computeIfAbsent(key, k -> {
 					int[] demoBlock = calcDemoBlock(k);
-					return innerRMQ.preProcessSequence(RMQComparator.ofIntArray(demoBlock), demoBlock.length);
+					return innerRMQ.preProcessSequence(RMQStaticComparator.ofIntArray(demoBlock), demoBlock.length);
 				});
 			}
 		}
@@ -81,7 +92,7 @@ public class RMQPlusMinusOneBenderFarachColton2000 extends RMQLinearAbstract {
 
 		@Override
 		int calcRMQInnerBlock(int block, int i, int j) {
-			return block * blockSize + interBlocksDs[block].findMinimumInRange(i, j + 1);
+			return block * blockSize + interBlocksDs[block].findMinimumInRange(i, j);
 		}
 
 	}

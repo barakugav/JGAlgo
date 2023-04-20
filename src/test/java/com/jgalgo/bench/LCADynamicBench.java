@@ -21,8 +21,8 @@ import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 
 import com.jgalgo.LCADynamic;
-import com.jgalgo.LCAGabow2017;
-import com.jgalgo.LCAGabowSimple;
+import com.jgalgo.LCADynamicGabowLinear;
+import com.jgalgo.LCADynamicGabowSimple;
 import com.jgalgo.test.LCADynamicTestUtils;
 import com.jgalgo.test.LCADynamicTestUtils.Op;
 import com.jgalgo.test.LCADynamicTestUtils.OpAddLeaf;
@@ -88,12 +88,12 @@ public class LCADynamicBench {
 
 	@Benchmark
 	public void benchLCAGabow2017(Blackhole blackhole) {
-		benchLCA(LCAGabow2017::new, blackhole);
+		benchLCA(LCADynamicGabowLinear::new, blackhole);
 	}
 
 	@Benchmark
 	public void benchLCAGabowSimple(Blackhole blackhole) {
-		benchLCA(LCAGabowSimple::new, blackhole);
+		benchLCA(LCADynamicGabowSimple::new, blackhole);
 	}
 
 }

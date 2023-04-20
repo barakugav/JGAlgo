@@ -305,7 +305,7 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 		private static int[] splitQueriesIntoLCAQueries(UGraph t, int root, int[] queries, int queriesNum) {
 			int[] lcaQueries = new int[queriesNum * 4];
 
-			LCAStatic lcaAlgo = new LCARMQBenderFarachColton2000();
+			LCAStatic lcaAlgo = new LCAStaticRMQ();
 			LCAStatic.DataStructure lcaDS = lcaAlgo.preProcessTree(t, root);
 			for (int q = 0; q < queriesNum; q++) {
 				int u = queries[q * 2], v = queries[q * 2 + 1];

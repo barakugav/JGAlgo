@@ -2,7 +2,7 @@ package com.jgalgo;
 
 import java.util.Arrays;
 
-public class LCAGabowSimple<V> implements LCADynamic<V> {
+public class LCADynamicGabowSimple<V> implements LCADynamic<V> {
 
 	/**
 	 * This implementation is a dynamic LCA implementation from Gabow17, which
@@ -21,7 +21,7 @@ public class LCAGabowSimple<V> implements LCADynamic<V> {
 	@SuppressWarnings("rawtypes")
 	private static final NodeImpl[] EMPTY_NODE_ARR = new NodeImpl[0];
 
-	public LCAGabowSimple() {
+	public LCADynamicGabowSimple() {
 		nodesNum = 0;
 	}
 

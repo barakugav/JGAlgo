@@ -1,6 +1,6 @@
 package com.jgalgo;
 
-abstract class RMQLinearAbstract implements RMQStatic {
+abstract class RMQStaticLinearAbstract implements RMQStatic {
 
 	/*
 	 * This implementation divides the elements sequence into blocks, for each block
@@ -18,10 +18,10 @@ abstract class RMQLinearAbstract implements RMQStatic {
 	 * O(n) pre processing time, O(n) space, O(1) query.
 	 */
 
-	private final RMQPowerOf2Table xlogxTable;
+	private final RMQStaticPowerOf2Table xlogxTable;
 
-	RMQLinearAbstract() {
-		xlogxTable = new RMQPowerOf2Table();
+	RMQStaticLinearAbstract() {
+		xlogxTable = new RMQStaticPowerOf2Table();
 	}
 
 	abstract class DS implements RMQStatic.DataStructure {
@@ -29,13 +29,13 @@ abstract class RMQLinearAbstract implements RMQStatic {
 		int n;
 		int blockSize;
 		int blockNum;
-		RMQComparator c;
+		RMQStaticComparator c;
 
 		private int[][] blocksRightMinimum;
 		private int[][] blocksLeftMinimum;
 		private RMQStatic.DataStructure xlogxTableDS;
 
-		void preProcessRMQOuterBlocks(RMQComparator c, int n) {
+		void preProcessRMQOuterBlocks(RMQStaticComparator c, int n) {
 			blockSize = getBlockSize(n);
 			blockNum = calcBlockNum(n, blockSize);
 
@@ -76,11 +76,10 @@ abstract class RMQLinearAbstract implements RMQStatic {
 
 		@Override
 		public int findMinimumInRange(int i, int j) {
-			if (i < 0 || j <= i || j > n)
+			if (!(0 <= i && i <= j && j < n))
 				throw new IllegalArgumentException("Illegal indices [" + i + "," + j + "]");
-			if (i + 1 == j)
+			if (i == j)
 				return i;
-			j--;
 
 			int blk0 = i / blockSize;
 			int blk1 = j / blockSize;
@@ -93,7 +92,7 @@ abstract class RMQLinearAbstract implements RMQStatic {
 				int min = c.compare(blk0min, blk1min) < 0 ? blk0min : blk1min;
 
 				if (blk0 + 1 != blk1) {
-					int middleBlk = xlogxTableDS.findMinimumInRange(blk0 + 1, blk1);
+					int middleBlk = xlogxTableDS.findMinimumInRange(blk0 + 1, blk1 - 1);
 					int middleMin = blocksRightMinimum[middleBlk][0];
 					min = c.compare(min, middleMin) < 0 ? min : middleMin;
 				}
@@ -107,12 +106,12 @@ abstract class RMQLinearAbstract implements RMQStatic {
 		abstract int calcRMQInnerBlock(int block, int i, int j);
 	}
 
-	private static class PadderComparator implements RMQComparator {
+	private static class PadderComparator implements RMQStaticComparator {
 
 		final int n;
-		final RMQComparator c;
+		final RMQStaticComparator c;
 
-		PadderComparator(int n, RMQComparator c) {
+		PadderComparator(int n, RMQStaticComparator c) {
 			this.n = n;
 			this.c = c;
 		}

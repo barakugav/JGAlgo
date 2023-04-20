@@ -2,16 +2,23 @@ package com.jgalgo;
 
 import java.util.Objects;
 
-public class RMQLookupTable implements RMQStatic {
-
-	/*
-	 * Naive implementation of RMQ, lookup table for each two indices.
-	 *
-	 * O(n^2) pre processing time, O(n^2) space, O(1) query.
-	 */
+/**
+ * Naive lookup table for RMQ queries.
+ * <p>
+ * For a sequence of size {@code n}, a lookup table of size {@code O(n^2)} will
+ * be constructed, such that for each two indices {@code i,j} the index of the
+ * minimum element in the range {@code [i,j]} can be simple accessed from the
+ * table in {@code O(1)} time.
+ * <p>
+ * This algorithm require {@code O(n^2)} pre processing time and space, and
+ * answer queries in {@code O(1)}.
+ *
+ * @author Barak Ugav
+ */
+public class RMQStaticLookupTable implements RMQStatic {
 
 	@Override
-	public RMQStatic.DataStructure preProcessSequence(RMQComparator c, int n) {
+	public RMQStatic.DataStructure preProcessSequence(RMQStaticComparator c, int n) {
 		if (n <= 0)
 			throw new IllegalArgumentException("Invalid length: " + n);
 		Objects.requireNonNull(c);
@@ -40,7 +47,7 @@ public class RMQLookupTable implements RMQStatic {
 		private final byte[] arr;
 		private static final int LIMIT = 1 << ((Byte.SIZE - 1) / 2);
 
-		DS8(RMQComparator c, byte n) {
+		DS8(RMQStaticComparator c, byte n) {
 			arr = new byte[arrSize(n)];
 			this.n = n;
 
@@ -56,11 +63,11 @@ public class RMQLookupTable implements RMQStatic {
 
 		@Override
 		public int findMinimumInRange(int i, int j) {
-			if (i < 0 || j <= i || j > n)
+			if (!(0 <= i && i <= j && j < n))
 				throw new IllegalArgumentException("Illegal indices [" + i + "," + j + "]");
-			if (i + 1 == j)
+			if (i == j)
 				return i;
-			return arr[indexOf(n, i, j - 1)];
+			return arr[indexOf(n, i, j)];
 		}
 	}
 
@@ -71,7 +78,7 @@ public class RMQLookupTable implements RMQStatic {
 
 		private static final int LIMIT = 1 << ((Short.SIZE - 1) / 2);
 
-		DS128(RMQComparator c, short n) {
+		DS128(RMQStaticComparator c, short n) {
 			arr = new short[arrSize(n)];
 			this.n = n;
 
@@ -87,11 +94,11 @@ public class RMQLookupTable implements RMQStatic {
 
 		@Override
 		public int findMinimumInRange(int i, int j) {
-			if (i < 0 || j <= i || j > n)
+			if (!(0 <= i && i <= j && j < n))
 				throw new IllegalArgumentException("Illegal indices [" + i + "," + j + "]");
-			if (i + 1 == j)
+			if (i == j)
 				return i;
-			return arr[indexOf(n, i, j - 1)];
+			return arr[indexOf(n, i, j)];
 		}
 	}
 
@@ -102,7 +109,7 @@ public class RMQLookupTable implements RMQStatic {
 
 		private static final int LIMIT = 1 << ((Integer.SIZE - 1) / 2);
 
-		DS32768(RMQComparator c, int n) {
+		DS32768(RMQStaticComparator c, int n) {
 			arr = new int[arrSize(n)];
 			this.n = n;
 
@@ -118,11 +125,11 @@ public class RMQLookupTable implements RMQStatic {
 
 		@Override
 		public int findMinimumInRange(int i, int j) {
-			if (i < 0 || j <= i || j > n)
+			if (!(0 <= i && i <= j && j < n))
 				throw new IllegalArgumentException("Illegal indices [" + i + "," + j + "]");
-			if (i + 1 == j)
+			if (i == j)
 				return i;
-			return arr[indexOf(n, i, j - 1)];
+			return arr[indexOf(n, i, j)];
 		}
 	}
 

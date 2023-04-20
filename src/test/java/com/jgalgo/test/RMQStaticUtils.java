@@ -6,11 +6,11 @@ import java.util.function.Supplier;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.jgalgo.RMQStatic;
-import com.jgalgo.RMQComparator;
+import com.jgalgo.RMQStaticComparator;
 
-class RMQTestUtils extends TestUtils {
+class RMQStaticUtils extends TestUtils {
 
-	private RMQTestUtils() {
+	private RMQStaticUtils() {
 	}
 
 	static void testRMQ65536(Supplier<? extends RMQStatic> builder, long seed) {
@@ -27,7 +27,7 @@ class RMQTestUtils extends TestUtils {
 
 	static void testRMQ(Supplier<? extends RMQStatic> builder, int a[], int[][] queries) {
 		RMQStatic rmq = builder.get();
-		RMQStatic.DataStructure rmqDS = rmq.preProcessSequence(RMQComparator.ofIntArray(a), a.length);
+		RMQStatic.DataStructure rmqDS = rmq.preProcessSequence(RMQStaticComparator.ofIntArray(a), a.length);
 
 		for (int idx = 0; idx < queries.length; idx++) {
 			int i = queries[idx][0];
@@ -63,10 +63,10 @@ class RMQTestUtils extends TestUtils {
 				continue;
 			int blockBase = (i / blockSize) * blockSize;
 			int blockEnd = blockBase + blockSize;
-			int j = rand.nextInt(blockEnd - i) + i + 1;
+			int j = rand.nextInt(blockEnd - i) + i;
 
 			int m = i;
-			for (int k = i; k < j; k++)
+			for (int k = i; k <= j; k++)
 				if (a[k] < a[m])
 					m = k;
 			queries[q++] = new int[] { i, j, m };

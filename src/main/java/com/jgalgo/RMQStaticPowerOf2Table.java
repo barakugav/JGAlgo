@@ -2,18 +2,21 @@ package com.jgalgo;
 
 import java.util.Objects;
 
-public class RMQPowerOf2Table implements RMQStatic {
-
-	/*
-	 * During pre processing create a table with log(n) rows and n columns, in each
-	 * cell [i][j] store the value min_in_range[j, j + 2^i]. This allows a query in
-	 * O(1) by looking at the correct indices.
-	 *
-	 * O(n log n) pre processing time, O(n log n) space, O(1) query.
-	 */
+/**
+ * Static RMQ algorithm using {@code O(n log n)} space and answering a query in
+ * {@code O(1)} time.
+ * <p>
+ * An array of size {@code [log n][n]} is created, and at each entry
+ * {@code [k][i]} the index of the minimum element in range {@code [i, i+k)} is
+ * stored. A query can be answered by two access to the array, giving a total
+ * query time of {@code O(1)}.
+ *
+ * @author Barak Ugav
+ */
+public class RMQStaticPowerOf2Table implements RMQStatic {
 
 	@Override
-	public RMQStatic.DataStructure preProcessSequence(RMQComparator c, int n) {
+	public RMQStatic.DataStructure preProcessSequence(RMQStaticComparator c, int n) {
 		if (n <= 0)
 			throw new IllegalArgumentException("Invalid length: " + n);
 		Objects.requireNonNull(c);
@@ -23,9 +26,9 @@ public class RMQPowerOf2Table implements RMQStatic {
 	private static class DS implements RMQStatic.DataStructure {
 		private int n;
 		private int[][] arr;
-		private RMQComparator c;
+		private RMQStaticComparator c;
 
-		DS(RMQComparator c, int n) {
+		DS(RMQStaticComparator c, int n) {
 			this.n = n;
 			arr = new int[Utils.log2ceil(n + 1) - 1][n - 1];
 			this.c = c;
@@ -47,12 +50,11 @@ public class RMQPowerOf2Table implements RMQStatic {
 
 		@Override
 		public int findMinimumInRange(int i, int j) {
-			if (arr == null)
-				throw new IllegalStateException("PreProcessing is required before query");
-			if (i < 0 || j <= i || j > n)
+			if (!(0 <= i && i <= j && j < n))
 				throw new IllegalArgumentException("Illegal indices [" + i + "," + j + "]");
-			if (i + 1 == j)
+			if (i == j)
 				return i;
+			j++;
 
 			int k = Utils.log2(j - i);
 			int kSize = 1 << k;
