@@ -87,5 +87,31 @@ import it.unimi.dsi.fastutil.ints.IntList;
 <span class="fc" id="L87">		return true;</span>
 	}
 
+	static void checkArgDistanceTableSymmetric(double[][] distances) {
+<span class="fc" id="L91">		int n = distances.length;</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
+<span class="pc bpc" id="L93" title="1 of 2 branches missed.">			if (distances[u].length != n)</span>
+<span class="nc" id="L94">				throw new IllegalArgumentException(&quot;Distances table is not full&quot;);</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">			for (int v = u + 1; v &lt; n; v++)</span>
+<span class="pc bpc" id="L97" title="1 of 2 branches missed.">				if (distances[u][v] != distances[v][u])</span>
+<span class="nc" id="L98">					throw new IllegalArgumentException(&quot;Distance is not symmetric: (&quot; + u + &quot;, &quot; + v + &quot;) &quot;</span>
+							+ distances[u][v] + &quot; != &quot; + distances[v][u]);
+<span class="fc" id="L100">	}</span>
+
+	static void checkArgDistanceTableIsMetric(double[][] distances) {
+<span class="fc" id="L103">		final double eps = 0.001;</span>
+<span class="fc" id="L104">		int n = distances.length;</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
+<span class="pc bpc" id="L106" title="1 of 2 branches missed.">			if (distances[u].length != n)</span>
+<span class="nc" id="L107">				throw new IllegalArgumentException(&quot;Distances table is not full&quot;);</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">			for (int v = u + 1; v &lt; n; v++)</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">				for (int w = v + 1; w &lt; n; w++)</span>
+<span class="pc bpc" id="L111" title="1 of 2 branches missed.">					if (distances[u][v] + distances[v][w] + eps &lt; distances[u][w])</span>
+<span class="nc" id="L112">						throw new IllegalArgumentException(&quot;Distance table is not metric: (&quot; + u + &quot;, &quot; + v + &quot;, &quot; + w</span>
+								+ &quot;) &quot; + distances[u][v] + &quot; + &quot; + distances[v][w] + &quot; &lt; &quot; + distances[u][w]);
+<span class="fc" id="L114">	}</span>
+
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
