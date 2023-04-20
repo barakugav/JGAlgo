@@ -2,6 +2,21 @@ package com.jgalgo;
 
 import java.util.Arrays;
 
+/**
+ * Array implementation of the Union Find data structure.
+ * <p>
+ * The elements are represented in a continuos array, which is most efficient
+ * for storage, and performance as the rate of cache miss is low. This
+ * implementation should be used as the default implementation for the
+ * {@link UnionFind} interface.
+ * <p>
+ * The running time of {@code m} operations on the data structure is
+ * {@code O(m \alpha (m, n))} where {@code \alpha} is the inverse Ackermann's
+ * function. The inverse Ackermann's function is extremely slow and for any
+ * practical use should be treated as constant.
+ *
+ * @author Barak Ugav
+ */
 public class UnionFindArray implements UnionFind {
 
 	int[] parent;
@@ -10,13 +25,22 @@ public class UnionFindArray implements UnionFind {
 
 	static final int NO_PARENT = -1;
 
+	/**
+	 * Create an empty Union Find data structure with no elements.
+	 */
 	public UnionFindArray() {
 		this(0);
 	}
 
+	/**
+	 * Create a new Union Find data structure with {@code n} elements with ids
+	 * {@code 0,1,2,...,n-1}.
+	 *
+	 * @param n the number of initial elements in the data structure
+	 */
 	public UnionFindArray(int n) {
 		if (n < 0)
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("n is negative: " + n);
 		int arrSize = n == 0 ? 2 : n;
 		parent = new int[arrSize];
 		rank = new byte[arrSize];

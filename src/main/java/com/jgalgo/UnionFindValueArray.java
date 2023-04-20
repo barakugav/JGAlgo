@@ -2,14 +2,36 @@ package com.jgalgo;
 
 import java.util.Arrays;
 
+/**
+ * Array implementation of the Union Find data structure with values.
+ * <p>
+ * The elements are represented in a continuos array, which is most efficient
+ * for storage, and performance as the rate of cache miss is low.
+ * <p>
+ * The running time of {@code m} operations on the data structure is
+ * {@code O(m \alpha (m, n))} where {@code \alpha} is the inverse Ackermann's
+ * function. The inverse Ackermann's function is extremely slow and for any
+ * practical use should be treated as constant.
+ *
+ * @author Barak Ugav
+ */
 public class UnionFindValueArray extends UnionFindArray implements UnionFindValue {
 
 	private double[] deltas;
 
+	/**
+	 * Create an empty Union Find data structure with no elements.
+	 */
 	public UnionFindValueArray() {
 		this(0);
 	}
 
+	/**
+	 * Create a new Union Find data structure with {@code n} elements with ids
+	 * {@code 0,1,2,...,n-1}, all with value {@code 0}.
+	 *
+	 * @param n the number of initial elements in the data structure
+	 */
 	public UnionFindValueArray(int n) {
 		super(n);
 		int arrSize = n == 0 ? 2 : n;
@@ -33,7 +55,7 @@ public class UnionFindValueArray extends UnionFindArray implements UnionFindValu
 	@Override
 	public double getValue(int x) {
 		if (x < 0 || x >= size)
-			throw new IllegalArgumentException();
+			throw new IndexOutOfBoundsException(x);
 		int[] p = parent;
 		double sum = 0;
 		for (int r = x;; r = p[r]) {

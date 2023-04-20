@@ -2,18 +2,42 @@ package com.jgalgo;
 
 import java.util.Arrays;
 
+/**
+ * Pointer based implementation for the Union Find data structure.
+ * <p>
+ * Each element is represented as a Object allocated on the heap. This
+ * implementation is usually out-performed by the {@link UnionFindArray}
+ * implementation.
+ * <p>
+ * The running time of {@code m} operations on the data structure is
+ * {@code O(m \alpha (m, n))} where {@code \alpha} is the inverse Ackermann's
+ * function. The inverse Ackermann's function is extremely slow and for any
+ * practical use should be treated as constant.
+ *
+ * @see UnionFindArray
+ * @author Barak Ugav
+ */
 public class UnionFindPtr implements UnionFind {
 
 	private Elm[] elements;
 	private int size;
 
+	/**
+	 * Create an empty Union Find data structure with no elements.
+	 */
 	public UnionFindPtr() {
 		this(0);
 	}
 
+	/**
+	 * Create a new Union Find data structure with {@code n} elements with ids
+	 * {@code 0,1,2,...,n-1}.
+	 *
+	 * @param n the number of initial elements in the data structure
+	 */
 	public UnionFindPtr(int n) {
 		if (n < 0)
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("n is negative: " + n);
 		elements = new Elm[n == 0 ? 2 : n];
 		for (int i = 0; i < n; i++)
 			elements[i] = new Elm(i);
