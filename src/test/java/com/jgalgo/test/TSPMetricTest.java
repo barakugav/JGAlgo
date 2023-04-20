@@ -45,8 +45,8 @@ public class TSPMetricTest extends TestUtils {
 			}
 		}
 
-		int[] appxMst = new TSPMetricMSTAppx().calcTSP(distances);
-		int[] appxMatch = new TSPMetricMatchingAppx().calcTSP(distances);
+		int[] appxMst = new TSPMetricMSTAppx().computeShortestTour(distances);
+		int[] appxMatch = new TSPMetricMatchingAppx().computeShortestTour(distances);
 
 		Predicate<int[]> isPathVisitAllVertices = path -> {
 			BitSet visited = new BitSet(n);

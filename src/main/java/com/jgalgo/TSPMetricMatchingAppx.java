@@ -4,25 +4,32 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
+/**
+ * TSP 3/2-approximation using maximum matching.
+ * <p>
+ * The running of this algorithm is {@code O(n^3)} and it achieve
+ * 3/2-approximation to the optimal TSP solution.
+ *
+ * @author Barak Ugav
+ */
 public class TSPMetricMatchingAppx implements TSPMetric {
-
-	/**
-	 * Calculate a TSP 3/2-approximation in O(n^3) using maximum matching
-	 */
 
 	private static final Object EdgeWeightKey = new Object();
 	private static final Object EdgeRefWeightKey = new Object();
 
+	/**
+	 * Create a new TSP 3/2-approximation algorithm.
+	 */
 	public TSPMetricMatchingAppx() {
 	}
 
 	@Override
-	public int[] calcTSP(double[][] distances) {
+	public int[] computeShortestTour(double[][] distances) {
 		int n = distances.length;
 		if (n == 0)
 			return IntArrays.EMPTY_ARRAY;
-		TSPMetric.checkArgDistanceTableSymmetric(distances);
-		TSPMetric.checkArgDistanceTableIsMetric(distances);
+		TSPMetricUtils.checkArgDistanceTableSymmetric(distances);
+		TSPMetricUtils.checkArgDistanceTableIsMetric(distances);
 
 		/* Build graph from the distances table */
 		UGraph g = new GraphTableUndirected(n);

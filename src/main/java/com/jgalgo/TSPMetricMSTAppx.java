@@ -4,11 +4,21 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
+/**
+ * TSP 2-approximation using MST.
+ * <p>
+ * An MST of a graph weight is less or equal to the optimal TSP tour. By
+ * doubling each edge in such MST and finding an Eulerian tour on these edges a
+ * tour was found with weight at most {@code 2} times the optimal TSP tour. In
+ * addition, shortcuts are used if vertices are repeated in the initial Eulerian
+ * tour - this is possible only in the metric special case.
+ * <p>
+ * The running of this algorithm is {@code O(n^2)} and it achieve
+ * 2-approximation to the optimal TSP solution.
+ *
+ * @author Barak Ugav
+ */
 public class TSPMetricMSTAppx implements TSPMetric {
-
-	/**
-	 * Calculate a TSP 2-approximation in O(n^2) using MST
-	 */
 
 	/*
 	 * If true, the algorithm will validate the distance table and check the metric
@@ -18,21 +28,24 @@ public class TSPMetricMSTAppx implements TSPMetric {
 	private static final Object DoubleWeightKey = new Object();
 	private static final Object EdgeRefWeightKey = new Object();
 
+	/**
+	 * Create a new TSP 2-approximation algorithm.
+	 */
 	public TSPMetricMSTAppx() {
 	}
 
 	@Override
-	public int[] calcTSP(double[][] distances) {
+	public int[] computeShortestTour(double[][] distances) {
 		int n = distances.length;
 		if (n == 0)
 			return IntArrays.EMPTY_ARRAY;
-		TSPMetric.checkArgDistanceTableSymmetric(distances);
+		TSPMetricUtils.checkArgDistanceTableSymmetric(distances);
 		if (VALIDATE_METRIC)
-			TSPMetric.checkArgDistanceTableIsMetric(distances);
+			TSPMetricUtils.checkArgDistanceTableIsMetric(distances);
 
 		/* Build graph from the distances table */
 		UGraph g = new GraphTableUndirected(n);
-		Weights.Double weights = g.addEdgesWeights(DoubleWeightKey,double.class);
+		Weights.Double weights = g.addEdgesWeights(DoubleWeightKey, double.class);
 		for (int u = 0; u < n; u++)
 			for (int v = u + 1; v < n; v++)
 				weights.set(g.addEdge(u, v), distances[u][v]);
