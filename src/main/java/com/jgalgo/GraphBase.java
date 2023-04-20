@@ -109,18 +109,38 @@ abstract class GraphBase implements Graph {
 	private static <D> DataContainer<D> createContainer(Class<? super D> type, D defVal, int size) {
 		@SuppressWarnings("rawtypes")
 		DataContainer container;
-		if (type == int.class) {
+		if (type == byte.class) {
+			byte defVal0 = defVal != null ? ((Byte) defVal).byteValue() : 0;
+			container = new DataContainer.Byte(size, defVal0);
+
+		} else if (type == short.class) {
+			short defVal0 = defVal != null ? ((Short) defVal).shortValue() : 0;
+			container = new DataContainer.Short(size, defVal0);
+
+		} else if (type == int.class) {
 			int defVal0 = defVal != null ? ((Integer) defVal).intValue() : 0;
 			container = new DataContainer.Int(size, defVal0);
+
 		} else if (type == long.class) {
 			long defVal0 = defVal != null ? ((Long) defVal).longValue() : 0;
 			container = new DataContainer.Long(size, defVal0);
+
+		} else if (type == float.class) {
+			float defVal0 = defVal != null ? ((Float) defVal).floatValue() : 0;
+			container = new DataContainer.Float(size, defVal0);
+
 		} else if (type == double.class) {
 			double defVal0 = defVal != null ? ((Double) defVal).doubleValue() : 0;
 			container = new DataContainer.Double(size, defVal0);
+
 		} else if (type == boolean.class) {
 			boolean defVal0 = defVal != null ? ((Boolean) defVal).booleanValue() : false;
 			container = new DataContainer.Bool(size, defVal0);
+
+		} else if (type == char.class) {
+			char defVal0 = defVal != null ? ((Character) defVal).charValue() : 0;
+			container = new DataContainer.Char(size, defVal0);
+
 		} else {
 			container = new DataContainer.Obj<>(size, defVal);
 		}
@@ -146,6 +166,20 @@ abstract class GraphBase implements Graph {
 			} else {
 				return (WeightsT) new WeightsImpl.Mapped.Obj<>(container, idStrat);
 			}
+		} else if (container0 instanceof DataContainer.Byte) {
+			DataContainer.Byte container = (DataContainer.Byte) container0;
+			if (isContinues) {
+				return (WeightsT) new WeightsImpl.Direct.Byte(container);
+			} else {
+				return (WeightsT) new WeightsImpl.Mapped.Byte(container, idStrat);
+			}
+		} else if (container0 instanceof DataContainer.Short) {
+			DataContainer.Short container = (DataContainer.Short) container0;
+			if (isContinues) {
+				return (WeightsT) new WeightsImpl.Direct.Short(container);
+			} else {
+				return (WeightsT) new WeightsImpl.Mapped.Short(container, idStrat);
+			}
 		} else if (container0 instanceof DataContainer.Int) {
 			DataContainer.Int container = (DataContainer.Int) container0;
 			if (isContinues) {
@@ -160,6 +194,13 @@ abstract class GraphBase implements Graph {
 			} else {
 				return (WeightsT) new WeightsImpl.Mapped.Long(container, idStrat);
 			}
+		} else if (container0 instanceof DataContainer.Float) {
+			DataContainer.Float container = (DataContainer.Float) container0;
+			if (isContinues) {
+				return (WeightsT) new WeightsImpl.Direct.Float(container);
+			} else {
+				return (WeightsT) new WeightsImpl.Mapped.Float(container, idStrat);
+			}
 		} else if (container0 instanceof DataContainer.Double) {
 			DataContainer.Double container = (DataContainer.Double) container0;
 			if (isContinues) {
@@ -173,6 +214,13 @@ abstract class GraphBase implements Graph {
 				return (WeightsT) new WeightsImpl.Direct.Bool(container);
 			} else {
 				return (WeightsT) new WeightsImpl.Mapped.Bool(container, idStrat);
+			}
+		} else if (container0 instanceof DataContainer.Char) {
+			DataContainer.Char container = (DataContainer.Char) container0;
+			if (isContinues) {
+				return (WeightsT) new WeightsImpl.Direct.Char(container);
+			} else {
+				return (WeightsT) new WeightsImpl.Mapped.Char(container, idStrat);
 			}
 		} else {
 			throw new IllegalArgumentException(container0.getClass().toString());

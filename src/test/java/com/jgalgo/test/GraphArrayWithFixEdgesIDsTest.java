@@ -9,7 +9,7 @@ import com.jgalgo.test.GraphImplTestUtils.GraphImpl;
 
 public class GraphArrayWithFixEdgesIDsTest extends TestUtils {
 
-	private static GraphImpl graphImpl() {
+	static GraphImpl graphImpl() {
 		return new GraphImpl() {
 
 			@Override

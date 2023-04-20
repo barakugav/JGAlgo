@@ -297,8 +297,8 @@ public class GraphsTestUtils extends TestUtils {
 	}
 
 	static UGraph randGraph(int n, int m, GraphImpl graphImpl, long seed) {
-		return (UGraph) new RandomGraphBuilder(seed).n(n).m(m).directed(false).parallelEdges(false).selfEdges(false)
-				.cycles(true).connected(false).build();
+		return (UGraph) new RandomGraphBuilder(seed).graphImpl(graphImpl).n(n).m(m).directed(false).parallelEdges(false)
+				.selfEdges(false).cycles(true).connected(false).build();
 	}
 
 	// static Graph<Integer> createGraphFromAdjacencyMatrixWeightedInt(int[][] m,

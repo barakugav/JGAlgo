@@ -1,135 +1,512 @@
 package com.jgalgo;
 
-public interface Weights<E> {
+public interface Weights<W> {
 
-	public E get(int id);
+	/**
+	 * Get the weight associated with the given id.
+	 *
+	 * @param id an id of edge/vertex
+	 * @return the weight associated with the given id
+	 */
+	public W get(int id);
 
-	public void set(int id, E data);
+	/**
+	 * Set the weight associated with the given id.
+	 *
+	 * @param id     an id of edge/vertex
+	 * @param weight new weight that will be associated with the given id
+	 */
+	public void set(int id, W weight);
 
-	public E defaultVal();
+	/**
+	 * Get the default weight of this weights container.
+	 * <p>
+	 * The default weight is the weight associated with all ids that were not
+	 * explicitly set using {@link #set(int, Object)}.
+	 *
+	 * @return the default weight of this weights container.
+	 */
+	public W defaultWeight();
 
-	public void clear();
+	/**
+	 * Specific weights of primitive type {@code byte}.
+	 *
+	 * @author Barak Ugav
+	 */
+	public static interface Byte extends Weights<java.lang.Byte>, EdgeWeightFunc.Int {
 
+		/**
+		 * Get the weight associated with the given id.
+		 *
+		 * @param id an id of edge/vertex.
+		 * @return the weight associated with the given id.
+		 */
+		public byte getByte(int id);
+
+		@Deprecated
+		@Override
+		default java.lang.Byte get(int id) {
+			return java.lang.Byte.valueOf(getByte(id));
+		}
+
+		/**
+		 * Set the weight associated with the given id.
+		 *
+		 * @param id     an id of edge/vertex
+		 * @param weight new weight that will be associated with the given id
+		 */
+		public void set(int id, byte weight);
+
+		@Deprecated
+		@Override
+		default void set(int id, java.lang.Byte weight) {
+			set(id, weight.byteValue());
+		}
+
+		/**
+		 * Get the default weight of this weights container.
+		 * <p>
+		 * The default weight is the weight associated with all ids that were not
+		 * explicitly set using {@link #set(int, byte)}.
+		 *
+		 * @return the default weight of this weights container.
+		 */
+		public byte defaultWeightByte();
+
+		@Deprecated
+		@Override
+		default java.lang.Byte defaultWeight() {
+			return java.lang.Byte.valueOf(defaultWeightByte());
+		}
+
+		/**
+		 * {@inheritDoc}
+		 * <p>
+		 * Implement the {@link EdgeWeightFunc.Int} interface by using the weights of
+		 * the container.
+		 */
+		@Override
+		default int weightInt(int id) {
+			return getByte(id);
+		}
+	}
+
+	/**
+	 * Specific weights of primitive type {@code short}.
+	 *
+	 * @author Barak Ugav
+	 */
+	public static interface Short extends Weights<java.lang.Short>, EdgeWeightFunc.Int {
+
+		/**
+		 * Get the weight associated with the given id.
+		 *
+		 * @param id an id of edge/vertex.
+		 * @return the weight associated with the given id.
+		 */
+		public short getShort(int id);
+
+		@Deprecated
+		@Override
+		default java.lang.Short get(int id) {
+			return java.lang.Short.valueOf(getShort(id));
+		}
+
+		/**
+		 * Set the weight associated with the given id.
+		 *
+		 * @param id     an id of edge/vertex
+		 * @param weight new weight that will be associated with the given id
+		 */
+		public void set(int id, short weight);
+
+		@Deprecated
+		@Override
+		default void set(int id, java.lang.Short weight) {
+			set(id, weight.shortValue());
+		}
+
+		/**
+		 * Get the default weight of this weights container.
+		 * <p>
+		 * The default weight is the weight associated with all ids that were not
+		 * explicitly set using {@link #set(int, short)}.
+		 *
+		 * @return the default weight of this weights container.
+		 */
+		public short defaultWeightShort();
+
+		@Deprecated
+		@Override
+		default java.lang.Short defaultWeight() {
+			return java.lang.Short.valueOf(defaultWeightShort());
+		}
+
+		/**
+		 * {@inheritDoc}
+		 * <p>
+		 * Implement the {@link EdgeWeightFunc.Int} interface by using the weights of
+		 * the container.
+		 */
+		@Override
+		default int weightInt(int id) {
+			return getShort(id);
+		}
+	}
+
+	/**
+	 * Specific weights of primitive type {@code int}.
+	 *
+	 * @author Barak Ugav
+	 */
 	public static interface Int extends Weights<Integer>, EdgeWeightFunc.Int {
 
-		public int getInt(int key);
+		/**
+		 * Get the weight associated with the given id.
+		 *
+		 * @param id an id of edge/vertex.
+		 * @return the weight associated with the given id.
+		 */
+		public int getInt(int id);
 
 		@Deprecated
 		@Override
-		default Integer get(int key) {
-			return Integer.valueOf(getInt(key));
+		default Integer get(int id) {
+			return Integer.valueOf(getInt(id));
 		}
 
-		public void set(int key, int weight);
+		/**
+		 * Set the weight associated with the given id.
+		 *
+		 * @param id     an id of edge/vertex
+		 * @param weight new weight that will be associated with the given id
+		 */
+		public void set(int id, int weight);
 
 		@Deprecated
 		@Override
-		default void set(int key, Integer data) {
-			set(key, data.intValue());
+		default void set(int id, Integer weight) {
+			set(id, weight.intValue());
 		}
 
-		public int defaultValInt();
+		/**
+		 * Get the default weight of this weights container.
+		 * <p>
+		 * The default weight is the weight associated with all ids that were not
+		 * explicitly set using {@link #set(int, int)}.
+		 *
+		 * @return the default weight of this weights container.
+		 */
+		public int defaultWeightInt();
 
 		@Deprecated
 		@Override
-		default Integer defaultVal() {
-			return Integer.valueOf(defaultValInt());
+		default Integer defaultWeight() {
+			return Integer.valueOf(defaultWeightInt());
 		}
 
+		/**
+		 * {@inheritDoc}
+		 * <p>
+		 * Implement the {@link EdgeWeightFunc.Int} interface by using the weights of
+		 * the container.
+		 */
 		@Override
-		default int weightInt(int key) {
-			return getInt(key);
+		default int weightInt(int id) {
+			return getInt(id);
 		}
 	}
 
+	/**
+	 * Specific weights of primitive type {@code long}.
+	 *
+	 * @author Barak Ugav
+	 */
 	public static interface Long extends Weights<java.lang.Long>, EdgeWeightFunc {
 
-		public long getLong(int key);
+		/**
+		 * Get the weight associated with the given id.
+		 *
+		 * @param id an id of edge/vertex.
+		 * @return the weight associated with the given id.
+		 */
+		public long getLong(int id);
 
 		@Deprecated
 		@Override
-		default java.lang.Long get(int key) {
-			return java.lang.Long.valueOf(getLong(key));
+		default java.lang.Long get(int id) {
+			return java.lang.Long.valueOf(getLong(id));
 		}
 
-		public void set(int key, long weight);
+		/**
+		 * Set the weight associated with the given id.
+		 *
+		 * @param id     an id of edge/vertex
+		 * @param weight new weight that will be associated with the given id
+		 */
+		public void set(int id, long weight);
 
 		@Deprecated
 		@Override
-		default void set(int key, java.lang.Long data) {
-			set(key, data.longValue());
+		default void set(int id, java.lang.Long weight) {
+			set(id, weight.longValue());
 		}
 
-		public long defaultValLong();
+		/**
+		 * Get the default weight of this weights container.
+		 * <p>
+		 * The default weight is the weight associated with all ids that were not
+		 * explicitly set using {@link #set(int, long)}.
+		 *
+		 * @return the default weight of this weights container.
+		 */
+		public long defaultWeightLong();
 
 		@Deprecated
 		@Override
-		default java.lang.Long defaultVal() {
-			return java.lang.Long.valueOf(defaultValLong());
+		default java.lang.Long defaultWeight() {
+			return java.lang.Long.valueOf(defaultWeightLong());
 		}
 
+		/**
+		 * {@inheritDoc}
+		 * <p>
+		 * Implement the {@link EdgeWeightFunc} interface by using the weights of the
+		 * container.
+		 */
 		@Override
-		default double weight(int key) {
-			return getLong(key);
+		default double weight(int id) {
+			return getLong(id);
 		}
 	}
 
+	/**
+	 * Specific weights of primitive type {@code float}.
+	 *
+	 * @author Barak Ugav
+	 */
+	public static interface Float extends Weights<java.lang.Float>, EdgeWeightFunc {
+
+		/**
+		 * Get the weight associated with the given id.
+		 *
+		 * @param id an id of edge/vertex.
+		 * @return the weight associated with the given id.
+		 */
+		public float getFloat(int id);
+
+		@Deprecated
+		@Override
+		default java.lang.Float get(int id) {
+			return java.lang.Float.valueOf(getFloat(id));
+		}
+
+		/**
+		 * Set the weight associated with the given id.
+		 *
+		 * @param id     an id of edge/vertex
+		 * @param weight new weight that will be associated with the given id
+		 */
+		public void set(int id, float weight);
+
+		@Deprecated
+		@Override
+		default void set(int id, java.lang.Float weight) {
+			set(id, weight.floatValue());
+		}
+
+		/**
+		 * Get the default weight of this weights container.
+		 * <p>
+		 * The default weight is the weight associated with all ids that were not
+		 * explicitly set using {@link #set(int, float)}.
+		 *
+		 * @return the default weight of this weights container.
+		 */
+		public float defaultWeightFloat();
+
+		@Deprecated
+		@Override
+		default java.lang.Float defaultWeight() {
+			return java.lang.Float.valueOf(defaultWeightFloat());
+		}
+
+		/**
+		 * {@inheritDoc}
+		 * <p>
+		 * Implement the {@link EdgeWeightFunc} interface by using the weights of the
+		 * container.
+		 */
+		@Override
+		default double weight(int id) {
+			return getFloat(id);
+		}
+	}
+
+	/**
+	 * Specific weights of primitive type {@code double}.
+	 *
+	 * @author Barak Ugav
+	 */
 	public static interface Double extends Weights<java.lang.Double>, EdgeWeightFunc {
 
-		public double getDouble(int key);
+		/**
+		 * Get the weight associated with the given id.
+		 *
+		 * @param id an id of edge/vertex.
+		 * @return the weight associated with the given id.
+		 */
+		public double getDouble(int id);
 
 		@Deprecated
 		@Override
-		default java.lang.Double get(int key) {
-			return java.lang.Double.valueOf(getDouble(key));
+		default java.lang.Double get(int id) {
+			return java.lang.Double.valueOf(getDouble(id));
 		}
 
-		public void set(int key, double weight);
+		/**
+		 * Set the weight associated with the given id.
+		 *
+		 * @param id     an id of edge/vertex
+		 * @param weight new weight that will be associated with the given id
+		 */
+		public void set(int id, double weight);
 
 		@Deprecated
 		@Override
-		default void set(int key, java.lang.Double data) {
-			set(key, data.doubleValue());
+		default void set(int id, java.lang.Double weight) {
+			set(id, weight.doubleValue());
 		}
 
-		public double defaultValDouble();
+		/**
+		 * Get the default weight of this weights container.
+		 * <p>
+		 * The default weight is the weight associated with all ids that were not
+		 * explicitly set using {@link #set(int, double)}.
+		 *
+		 * @return the default weight of this weights container.
+		 */
+		public double defaultWeightDouble();
 
 		@Deprecated
 		@Override
-		default java.lang.Double defaultVal() {
-			return java.lang.Double.valueOf(defaultValDouble());
+		default java.lang.Double defaultWeight() {
+			return java.lang.Double.valueOf(defaultWeightDouble());
 		}
 
+		/**
+		 * {@inheritDoc}
+		 * <p>
+		 * Implement the {@link EdgeWeightFunc} interface by using the weights of the
+		 * container.
+		 */
 		@Override
-		default double weight(int key) {
-			return getDouble(key);
+		default double weight(int id) {
+			return getDouble(id);
 		}
 	}
 
+	/**
+	 * Specific weights of primitive type {@code boolean}.
+	 *
+	 * @author Barak Ugav
+	 */
 	public static interface Bool extends Weights<Boolean> {
 
-		public boolean getBool(int key);
+		/**
+		 * Get the weight associated with the given id.
+		 *
+		 * @param id an id of edge/vertex.
+		 * @return the weight associated with the given id.
+		 */
+		public boolean getBool(int id);
 
 		@Deprecated
 		@Override
-		default Boolean get(int key) {
-			return Boolean.valueOf(getBool(key));
+		default Boolean get(int id) {
+			return Boolean.valueOf(getBool(id));
 		}
 
-		public void set(int key, boolean weight);
+		/**
+		 * Set the weight associated with the given id.
+		 *
+		 * @param id     an id of edge/vertex
+		 * @param weight new weight that will be associated with the given id
+		 */
+		public void set(int id, boolean weight);
 
 		@Deprecated
 		@Override
-		default void set(int key, Boolean data) {
-			set(key, data.booleanValue());
+		default void set(int id, Boolean weight) {
+			set(id, weight.booleanValue());
 		}
 
-		public boolean defaultValBool();
+		/**
+		 * Get the default weight of this weights container.
+		 * <p>
+		 * The default weight is the weight associated with all ids that were not
+		 * explicitly set using {@link #set(int, boolean)}.
+		 *
+		 * @return the default weight of this weights container.
+		 */
+		public boolean defaultWeightBool();
 
 		@Deprecated
 		@Override
-		default Boolean defaultVal() {
-			return Boolean.valueOf(defaultValBool());
+		default Boolean defaultWeight() {
+			return Boolean.valueOf(defaultWeightBool());
+		}
+	}
+
+	/**
+	 * Specific weights of primitive type {@code char}.
+	 *
+	 * @author Barak Ugav
+	 */
+	public static interface Char extends Weights<Character> {
+
+		/**
+		 * Get the weight associated with the given id.
+		 *
+		 * @param id an id of edge/vertex.
+		 * @return the weight associated with the given id.
+		 */
+		public char getChar(int id);
+
+		@Deprecated
+		@Override
+		default Character get(int id) {
+			return Character.valueOf(getChar(id));
+		}
+
+		/**
+		 * Set the weight associated with the given id.
+		 *
+		 * @param id     an id of edge/vertex
+		 * @param weight new weight that will be associated with the given id
+		 */
+		public void set(int id, char weight);
+
+		@Deprecated
+		@Override
+		default void set(int id, Character weight) {
+			set(id, weight.charValue());
+		}
+
+		/**
+		 * Get the default weight of this weights container.
+		 * <p>
+		 * The default weight is the weight associated with all ids that were not
+		 * explicitly set using {@link #set(int, char)}.
+		 *
+		 * @return the default weight of this weights container.
+		 */
+		public char defaultWeightChar();
+
+		@Deprecated
+		@Override
+		default Character defaultWeight() {
+			return Character.valueOf(defaultWeightChar());
 		}
 	}
 

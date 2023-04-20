@@ -125,14 +125,14 @@ abstract class GraphBaseContinues extends GraphBase {
 	public void clear() {
 		super.clear();
 		for (Weights<?> weight : vWeights.values())
-			((WeightsImpl<?>) weight).clear();
+			((WeightsImpl<?>) weight).container.clear();
 	}
 
 	@Override
 	public void clearEdges() {
 		super.clearEdges();
 		for (Weights<?> weight : eWeights.values())
-			weight.clear();
+			((WeightsImpl<?>) weight).container.clear();
 	}
 
 	@Override

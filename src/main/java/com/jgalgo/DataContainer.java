@@ -9,10 +9,22 @@ import java.util.Objects;
 import it.unimi.dsi.fastutil.booleans.AbstractBooleanCollection;
 import it.unimi.dsi.fastutil.booleans.BooleanCollection;
 import it.unimi.dsi.fastutil.booleans.BooleanIterator;
+import it.unimi.dsi.fastutil.bytes.AbstractByteCollection;
+import it.unimi.dsi.fastutil.bytes.ByteArrays;
+import it.unimi.dsi.fastutil.bytes.ByteCollection;
+import it.unimi.dsi.fastutil.bytes.ByteIterator;
+import it.unimi.dsi.fastutil.chars.AbstractCharCollection;
+import it.unimi.dsi.fastutil.chars.CharArrays;
+import it.unimi.dsi.fastutil.chars.CharCollection;
+import it.unimi.dsi.fastutil.chars.CharIterator;
 import it.unimi.dsi.fastutil.doubles.AbstractDoubleCollection;
 import it.unimi.dsi.fastutil.doubles.DoubleArrays;
 import it.unimi.dsi.fastutil.doubles.DoubleCollection;
 import it.unimi.dsi.fastutil.doubles.DoubleIterator;
+import it.unimi.dsi.fastutil.floats.AbstractFloatCollection;
+import it.unimi.dsi.fastutil.floats.FloatArrays;
+import it.unimi.dsi.fastutil.floats.FloatCollection;
+import it.unimi.dsi.fastutil.floats.FloatIterator;
 import it.unimi.dsi.fastutil.ints.AbstractIntCollection;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -25,6 +37,10 @@ import it.unimi.dsi.fastutil.objects.AbstractObjectCollection;
 import it.unimi.dsi.fastutil.objects.ObjectArrays;
 import it.unimi.dsi.fastutil.objects.ObjectCollection;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
+import it.unimi.dsi.fastutil.shorts.AbstractShortCollection;
+import it.unimi.dsi.fastutil.shorts.ShortArrays;
+import it.unimi.dsi.fastutil.shorts.ShortCollection;
+import it.unimi.dsi.fastutil.shorts.ShortIterator;
 
 abstract class DataContainer<E> {
 	int size;
@@ -93,12 +109,12 @@ abstract class DataContainer<E> {
 			return (E) weights[idx];
 		}
 
-		public void set(int idx, E weight) {
+		void set(int idx, E weight) {
 			checkIdx(idx);
 			weights[idx] = weight;
 		}
 
-		public E defaultVal() {
+		E defaultVal() {
 			return defaultVal;
 		}
 
@@ -181,6 +197,252 @@ abstract class DataContainer<E> {
 		}
 	}
 
+	static class Byte extends DataContainer<java.lang.Byte> {
+
+		private byte[] weights;
+		private final byte defaultVal;
+		private final ByteCollection values;
+
+		Byte(int expectedSize, byte defVal) {
+			weights = expectedSize > 0 ? new byte[expectedSize] : ByteArrays.EMPTY_ARRAY;
+			defaultVal = defVal;
+			values = new AbstractByteCollection() {
+
+				@Override
+				public int size() {
+					return size;
+				}
+
+				@Override
+				public ByteIterator iterator() {
+					return new ByteIterator() {
+						int idx = 0;
+
+						@Override
+						public boolean hasNext() {
+							return idx < size;
+						}
+
+						@Override
+						public byte nextByte() {
+							if (!hasNext())
+								throw new NoSuchElementException();
+							return weights[idx++];
+						}
+					};
+				}
+			};
+		}
+
+		byte getByte(int idx) {
+			checkIdx(idx);
+			return weights[idx];
+		}
+
+		void set(int idx, byte weight) {
+			checkIdx(idx);
+			weights[idx] = weight;
+		}
+
+		byte defaultValByte() {
+			return defaultVal;
+		}
+
+		@Override
+		public void add(int idx) {
+			assert idx == size : "only continues idxs are supported";
+			ensureCapacity(size + 1);
+			weights[idx] = defaultVal;
+			size++;
+		}
+
+		@Override
+		void remove(int idx) {
+			assert idx == size - 1 : "only continues idxs are supported";
+			size--;
+		}
+
+		@Override
+		void ensureCapacity(int capacity) {
+			if (capacity < weights.length)
+				return;
+			int newLen = Math.max(2, weights.length * 2);
+			newLen = Math.max(newLen, capacity);
+			weights = Arrays.copyOf(weights, newLen);
+		}
+
+		@Override
+		void swap(int k1, int k2) {
+			checkIdx(k1);
+			checkIdx(k2);
+			byte temp = weights[k1];
+			weights[k1] = weights[k2];
+			weights[k2] = temp;
+		}
+
+		@Override
+		ByteCollection values() {
+			return values;
+		}
+
+		@Override
+		public boolean equals(Object other) {
+			if (this == other)
+				return true;
+			if (!(other instanceof DataContainer.Byte))
+				return false;
+			DataContainer.Byte o = (DataContainer.Byte) other;
+			return Arrays.equals(weights, 0, size, o.weights, 0, o.size);
+		}
+
+		@Override
+		public int hashCode() {
+			int h = 1;
+			for (int i = 0; i < size; i++)
+				h = 31 * h + java.lang.Byte.hashCode(weights[i]);
+			return h;
+		}
+
+		@Override
+		public String toString() {
+			int iMax = size - 1;
+			if (iMax == -1)
+				return "[]";
+
+			StringBuilder b = new StringBuilder();
+			b.append('[');
+			for (int i = 0;; i++) {
+				b.append(String.valueOf(weights[i]));
+				if (i == iMax)
+					return b.append(']').toString();
+				b.append(", ");
+			}
+		}
+	}
+
+	static class Short extends DataContainer<java.lang.Short> {
+
+		private short[] weights;
+		private final short defaultVal;
+		private final ShortCollection values;
+
+		Short(int expectedSize, short defVal) {
+			weights = expectedSize > 0 ? new short[expectedSize] : ShortArrays.EMPTY_ARRAY;
+			defaultVal = defVal;
+			values = new AbstractShortCollection() {
+
+				@Override
+				public int size() {
+					return size;
+				}
+
+				@Override
+				public ShortIterator iterator() {
+					return new ShortIterator() {
+						int idx = 0;
+
+						@Override
+						public boolean hasNext() {
+							return idx < size;
+						}
+
+						@Override
+						public short nextShort() {
+							if (!hasNext())
+								throw new NoSuchElementException();
+							return weights[idx++];
+						}
+					};
+				}
+			};
+		}
+
+		short getShort(int idx) {
+			checkIdx(idx);
+			return weights[idx];
+		}
+
+		void set(int idx, short weight) {
+			checkIdx(idx);
+			weights[idx] = weight;
+		}
+
+		short defaultValShort() {
+			return defaultVal;
+		}
+
+		@Override
+		public void add(int idx) {
+			assert idx == size : "only continues idxs are supported";
+			ensureCapacity(size + 1);
+			weights[idx] = defaultVal;
+			size++;
+		}
+
+		@Override
+		void remove(int idx) {
+			assert idx == size - 1 : "only continues idxs are supported";
+			size--;
+		}
+
+		@Override
+		void ensureCapacity(int capacity) {
+			if (capacity < weights.length)
+				return;
+			int newLen = Math.max(2, weights.length * 2);
+			newLen = Math.max(newLen, capacity);
+			weights = Arrays.copyOf(weights, newLen);
+		}
+
+		@Override
+		void swap(int k1, int k2) {
+			checkIdx(k1);
+			checkIdx(k2);
+			short temp = weights[k1];
+			weights[k1] = weights[k2];
+			weights[k2] = temp;
+		}
+
+		@Override
+		ShortCollection values() {
+			return values;
+		}
+
+		@Override
+		public boolean equals(Object other) {
+			if (this == other)
+				return true;
+			if (!(other instanceof DataContainer.Short))
+				return false;
+			DataContainer.Short o = (DataContainer.Short) other;
+			return Arrays.equals(weights, 0, size, o.weights, 0, o.size);
+		}
+
+		@Override
+		public int hashCode() {
+			int h = 1;
+			for (int i = 0; i < size; i++)
+				h = 31 * h + java.lang.Short.hashCode(weights[i]);
+			return h;
+		}
+
+		@Override
+		public String toString() {
+			int iMax = size - 1;
+			if (iMax == -1)
+				return "[]";
+
+			StringBuilder b = new StringBuilder();
+			b.append('[');
+			for (int i = 0;; i++) {
+				b.append(String.valueOf(weights[i]));
+				if (i == iMax)
+					return b.append(']').toString();
+				b.append(", ");
+			}
+		}
+	}
+
 	static class Int extends DataContainer<Integer> {
 
 		private int[] weights;
@@ -218,17 +480,17 @@ abstract class DataContainer<E> {
 			};
 		}
 
-		public int getInt(int idx) {
+		int getInt(int idx) {
 			checkIdx(idx);
 			return weights[idx];
 		}
 
-		public void set(int idx, int weight) {
+		void set(int idx, int weight) {
 			checkIdx(idx);
 			weights[idx] = weight;
 		}
 
-		public int defaultValInt() {
+		int defaultValInt() {
 			return defaultVal;
 		}
 
@@ -341,17 +603,17 @@ abstract class DataContainer<E> {
 			};
 		}
 
-		public long getLong(int idx) {
+		long getLong(int idx) {
 			checkIdx(idx);
 			return weights[idx];
 		}
 
-		public void set(int idx, long weight) {
+		void set(int idx, long weight) {
 			checkIdx(idx);
 			weights[idx] = weight;
 		}
 
-		public long defaultValLong() {
+		long defaultValLong() {
 			return defaultVal;
 		}
 
@@ -427,6 +689,129 @@ abstract class DataContainer<E> {
 		}
 	}
 
+	static class Float extends DataContainer<java.lang.Float> {
+
+		private float[] weights;
+		private final float defaultVal;
+		private final FloatCollection values;
+
+		Float(int expectedSize, float defVal) {
+			weights = expectedSize > 0 ? new float[expectedSize] : FloatArrays.EMPTY_ARRAY;
+			defaultVal = defVal;
+			values = new AbstractFloatCollection() {
+
+				@Override
+				public int size() {
+					return size;
+				}
+
+				@Override
+				public FloatIterator iterator() {
+					return new FloatIterator() {
+						int idx = 0;
+
+						@Override
+						public boolean hasNext() {
+							return idx < size;
+						}
+
+						@Override
+						public float nextFloat() {
+							if (!hasNext())
+								throw new NoSuchElementException();
+							return weights[idx++];
+						}
+					};
+				}
+			};
+		}
+
+		float getFloat(int idx) {
+			checkIdx(idx);
+			return weights[idx];
+		}
+
+		void set(int idx, float weight) {
+			checkIdx(idx);
+			weights[idx] = weight;
+		}
+
+		float defaultValFloat() {
+			return defaultVal;
+		}
+
+		@Override
+		void add(int idx) {
+			assert idx == size : "only continues idxs are supported";
+			ensureCapacity(size + 1);
+			weights[idx] = defaultVal;
+			size++;
+		}
+
+		@Override
+		void remove(int idx) {
+			assert idx == size - 1 : "only continues idxs are supported";
+			size--;
+		}
+
+		@Override
+		void ensureCapacity(int capacity) {
+			if (capacity < weights.length)
+				return;
+			int newLen = Math.max(2, weights.length * 2);
+			newLen = Math.max(newLen, capacity);
+			weights = Arrays.copyOf(weights, newLen);
+		}
+
+		@Override
+		void swap(int k1, int k2) {
+			checkIdx(k1);
+			checkIdx(k2);
+			float temp = weights[k1];
+			weights[k1] = weights[k2];
+			weights[k2] = temp;
+		}
+
+		@Override
+		FloatCollection values() {
+			return values;
+		}
+
+		@Override
+		public boolean equals(Object other) {
+			if (this == other)
+				return true;
+			if (!(other instanceof DataContainer.Float))
+				return false;
+			DataContainer.Float o = (DataContainer.Float) other;
+			return Arrays.equals(weights, 0, size, o.weights, 0, o.size);
+		}
+
+		@Override
+		public int hashCode() {
+			int h = 1;
+			for (int i = 0; i < size; i++)
+				h = 31 * h + java.lang.Float.hashCode(weights[i]);
+			return h;
+		}
+
+		@Override
+		public String toString() {
+			int iMax = size - 1;
+			if (iMax == -1)
+				return "[]";
+
+			StringBuilder b = new StringBuilder();
+			b.append('[');
+			for (int i = 0;; i++) {
+				b.append(String.valueOf(weights[i]));
+				if (i == iMax)
+					return b.append(']').toString();
+				b.append(", ");
+			}
+		}
+	}
+
 	static class Double extends DataContainer<java.lang.Double> {
 
 		private double[] weights;
@@ -464,17 +849,17 @@ abstract class DataContainer<E> {
 			};
 		}
 
-		public double getDouble(int idx) {
+		double getDouble(int idx) {
 			checkIdx(idx);
 			return weights[idx];
 		}
 
-		public void set(int idx, double weight) {
+		void set(int idx, double weight) {
 			checkIdx(idx);
 			weights[idx] = weight;
 		}
 
-		public double defaultValDouble() {
+		double defaultValDouble() {
 			return defaultVal;
 		}
 
@@ -589,17 +974,17 @@ abstract class DataContainer<E> {
 			};
 		}
 
-		public boolean getBool(int idx) {
+		boolean getBool(int idx) {
 			checkIdx(idx);
 			return weights.get(idx);
 		}
 
-		public void set(int idx, boolean weight) {
+		void set(int idx, boolean weight) {
 			checkIdx(idx);
 			weights.set(idx, weight);
 		}
 
-		public boolean defaultValBool() {
+		boolean defaultValBool() {
 			return defaultVal;
 		}
 
@@ -659,6 +1044,129 @@ abstract class DataContainer<E> {
 			b.append('[');
 			for (int i = 0;; i++) {
 				b.append(String.valueOf(weights.get(i)));
+				if (i == iMax)
+					return b.append(']').toString();
+				b.append(", ");
+			}
+		}
+	}
+
+	static class Char extends DataContainer<Character> {
+
+		private char[] weights;
+		private final char defaultVal;
+		private final CharCollection values;
+
+		Char(int expectedSize, char defVal) {
+			weights = expectedSize > 0 ? new char[expectedSize] : CharArrays.EMPTY_ARRAY;
+			defaultVal = defVal;
+			values = new AbstractCharCollection() {
+
+				@Override
+				public int size() {
+					return size;
+				}
+
+				@Override
+				public CharIterator iterator() {
+					return new CharIterator() {
+						int idx = 0;
+
+						@Override
+						public boolean hasNext() {
+							return idx < size;
+						}
+
+						@Override
+						public char nextChar() {
+							if (!hasNext())
+								throw new NoSuchElementException();
+							return weights[idx++];
+						}
+					};
+				}
+			};
+		}
+
+		char getChar(int idx) {
+			checkIdx(idx);
+			return weights[idx];
+		}
+
+		void set(int idx, char weight) {
+			checkIdx(idx);
+			weights[idx] = weight;
+		}
+
+		char defaultValChar() {
+			return defaultVal;
+		}
+
+		@Override
+		void add(int idx) {
+			assert idx == size : "only continues idxs are supported";
+			ensureCapacity(size + 1);
+			weights[idx] = defaultVal;
+			size++;
+		}
+
+		@Override
+		void remove(int idx) {
+			assert idx == size - 1 : "only continues idxs are supported";
+			size--;
+		}
+
+		@Override
+		void ensureCapacity(int capacity) {
+			if (capacity < weights.length)
+				return;
+			int newLen = Math.max(2, weights.length * 2);
+			newLen = Math.max(newLen, capacity);
+			weights = Arrays.copyOf(weights, newLen);
+		}
+
+		@Override
+		void swap(int k1, int k2) {
+			checkIdx(k1);
+			checkIdx(k2);
+			char temp = weights[k1];
+			weights[k1] = weights[k2];
+			weights[k2] = temp;
+		}
+
+		@Override
+		CharCollection values() {
+			return values;
+		}
+
+		@Override
+		public boolean equals(Object other) {
+			if (this == other)
+				return true;
+			if (!(other instanceof DataContainer.Char))
+				return false;
+			DataContainer.Char o = (DataContainer.Char) other;
+			return Arrays.equals(weights, 0, size, o.weights, 0, o.size);
+		}
+
+		@Override
+		public int hashCode() {
+			int h = 1;
+			for (int i = 0; i < size; i++)
+				h = 31 * h + Character.hashCode(weights[i]);
+			return h;
+		}
+
+		@Override
+		public String toString() {
+			int iMax = size - 1;
+			if (iMax == -1)
+				return "[]";
+
+			StringBuilder b = new StringBuilder();
+			b.append('[');
+			for (int i = 0;; i++) {
+				b.append(String.valueOf(weights[i]));
 				if (i == iMax)
 					return b.append(']').toString();
 				b.append(", ");

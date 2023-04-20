@@ -154,7 +154,7 @@ class Graphs {
 
 			if (data0 instanceof Weights.Int) {
 				Weights.Int data = (Weights.Int) data0;
-				int defVal = data.defaultValInt();
+				int defVal = data.defaultWeightInt();
 				Weights.Int datas = g1.addEdgesWeights(key, int.class, Integer.valueOf(defVal));
 				for (IntIterator it = g1.edges().iterator(); it.hasNext();) {
 					int s = it.nextInt();
@@ -165,7 +165,7 @@ class Graphs {
 
 			} else if (data0 instanceof Weights.Double) {
 				Weights.Double data = (Weights.Double) data0;
-				double defVal = data.defaultValDouble();
+				double defVal = data.defaultWeightDouble();
 				Weights.Double datas = g1.addEdgesWeights(key, double.class, Double.valueOf(defVal));
 				for (IntIterator it = g1.edges().iterator(); it.hasNext();) {
 					int s = it.nextInt();
@@ -175,7 +175,7 @@ class Graphs {
 				}
 
 			} else {
-				Object defVal = data0.defaultVal();
+				Object defVal = data0.defaultWeight();
 				@SuppressWarnings("rawtypes")
 				Weights datas = g1.addEdgesWeights(key, Object.class, defVal);
 				for (IntIterator it = g1.edges().iterator(); it.hasNext();) {
