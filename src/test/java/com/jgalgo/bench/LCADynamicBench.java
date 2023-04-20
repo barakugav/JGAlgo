@@ -58,23 +58,23 @@ public class LCADynamicBench {
 		}
 	}
 
-	private void benchLCA(Supplier<? extends LCADynamic<Void>> builder, Blackhole blackhole) {
+	private void benchLCA(Supplier<? extends LCADynamic> builder, Blackhole blackhole) {
 		for (Collection<Op> ops : lcaOps) {
-			LCADynamic<Void> lca = builder.get();
-			List<LCADynamic.Node<Void>> nodes = new ArrayList<>();
+			LCADynamic lca = builder.get();
+			List<LCADynamic.Node> nodes = new ArrayList<>();
 			for (Op op0 : ops) {
 				if (op0 instanceof OpInitTree) {
-					nodes.add(lca.initTree(null));
+					nodes.add(lca.initTree());
 
 				} else if (op0 instanceof OpAddLeaf) {
 					OpAddLeaf op = (OpAddLeaf) op0;
-					LCADynamic.Node<Void> parent = nodes.get(op.parent);
-					nodes.add(lca.addLeaf(parent, null));
+					LCADynamic.Node parent = nodes.get(op.parent);
+					nodes.add(lca.addLeaf(parent));
 
 				} else if (op0 instanceof OpLCAQuery) {
 					OpLCAQuery op = (OpLCAQuery) op0;
-					LCADynamic.Node<Void> x = nodes.get(op.x), y = nodes.get(op.y);
-					LCADynamic.Node<Void> lcaRes = lca.calcLCA(x, y);
+					LCADynamic.Node x = nodes.get(op.x), y = nodes.get(op.y);
+					LCADynamic.Node lcaRes = lca.findLowestCommonAncestor(x, y);
 					blackhole.consume(lcaRes);
 
 				} else {

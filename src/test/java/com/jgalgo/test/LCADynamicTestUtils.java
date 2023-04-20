@@ -18,7 +18,7 @@ public class LCADynamicTestUtils extends TestUtils {
 	private LCADynamicTestUtils() {
 	}
 
-	static void fullBinaryTreesRandOps(Supplier<? extends LCADynamic<Integer>> builder, long seed) {
+	static void fullBinaryTreesRandOps(Supplier<? extends LCADynamic> builder, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(128, 16, 16), phase(128, 16, 32), phase(64, 64, 64), phase(64, 64, 128),
 				phase(8, 512, 512), phase(8, 512, 2048), phase(1, 4096, 4096), phase(1, 4096, 16384));
@@ -29,7 +29,7 @@ public class LCADynamicTestUtils extends TestUtils {
 		});
 	}
 
-	static void randTrees(Supplier<? extends LCADynamic<Integer>> builder, long seed) {
+	static void randTrees(Supplier<? extends LCADynamic> builder, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(128, 16, 16), phase(128, 16, 32), phase(64, 64, 64), phase(64, 64, 128),
 				phase(8, 512, 512), phase(8, 512, 2048), phase(1, 4096, 4096), phase(1, 4096, 16384));
@@ -127,37 +127,41 @@ public class LCADynamicTestUtils extends TestUtils {
 	}
 
 	@SuppressWarnings("boxing")
-	static void testLCA(Supplier<? extends LCADynamic<Integer>> builder, int n, Collection<Op> ops) {
-		List<LCADynamic.Node<Integer>> nodes = new ArrayList<>();
-		LCADynamic<Integer> lca = builder.get();
+	static void testLCA(Supplier<? extends LCADynamic> builder, int n, Collection<Op> ops) {
+		List<LCADynamic.Node> nodes = new ArrayList<>();
+		LCADynamic lca = builder.get();
 
 		for (Op op0 : ops) {
 			if (op0 instanceof OpInitTree) {
-				nodes.add(lca.initTree(0));
+				LCADynamic.Node root = lca.initTree();
+				root.setNodeData(0);
+				nodes.add(root);
 
 			} else if (op0 instanceof OpAddLeaf) {
 				OpAddLeaf op = (OpAddLeaf) op0;
-				LCADynamic.Node<Integer> parent = nodes.get(op.parent);
-				nodes.add(lca.addLeaf(parent, parent.getNodeData() + 1));
+				LCADynamic.Node parent = nodes.get(op.parent);
+				LCADynamic.Node leaf = lca.addLeaf(parent);
+				leaf.setNodeData(parent.<Integer>getNodeData() + 1);
+				nodes.add(leaf);
 
 			} else if (op0 instanceof OpLCAQuery) {
 				OpLCAQuery op = (OpLCAQuery) op0;
 
-				LCADynamic.Node<Integer> x = nodes.get(op.x), y = nodes.get(op.y);
-				if (x.getNodeData() > y.getNodeData()) {
-					LCADynamic.Node<Integer> temp = x;
+				LCADynamic.Node x = nodes.get(op.x), y = nodes.get(op.y);
+				if (x.<Integer>getNodeData() > y.<Integer>getNodeData()) {
+					LCADynamic.Node temp = x;
 					x = y;
 					y = temp;
 				}
-				while (x.getNodeData() < y.getNodeData())
+				while (x.<Integer>getNodeData() < y.<Integer>getNodeData())
 					y = y.getParent();
 				while (x != y) {
 					x = x.getParent();
 					y = y.getParent();
 				}
 
-				LCADynamic.Node<Integer> lcaExpected = x;
-				LCADynamic.Node<Integer> lcaActual = lca.calcLCA(nodes.get(op.x), nodes.get(op.y));
+				LCADynamic.Node lcaExpected = x;
+				LCADynamic.Node lcaActual = lca.findLowestCommonAncestor(nodes.get(op.x), nodes.get(op.y));
 				assertEquals(lcaExpected, lcaActual, "LCA has an expected value");
 
 			} else {

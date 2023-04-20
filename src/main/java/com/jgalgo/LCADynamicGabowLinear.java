@@ -4,18 +4,31 @@ import java.util.Arrays;
 
 import com.jgalgo.LCADynamicGabowSimple.CharacteristicAncestors;
 
-public class LCADynamicGabowLinear<V> implements LCADynamic<V> {
+/**
+ * Gabow linear dynamic LCA data structure.
+ * <p>
+ * The algorithm use {@link LCADynamicGabowSimple} as a base, but uses two
+ * layers of bit tricks to remove the {@code O(log^2 n)} factor of the simpler
+ * data structure. Each layer have less nodes than the previous one by a factor
+ * of {@code O(log n)}, until the simpler data structure is used on
+ * {@code O(n / (log^2 n))} nodes. This implementation is much faster in
+ * practice and always should be used over the simpler one.
+ * <p>
+ * The running time of this algorithm for {@code m} operations is
+ * {@code O(m + n)} and it uses linear space. More specifically, the
+ * {@link #addLeaf(LCADynamic.Node)} operation is perform in {@code O(1)}
+ * amortized time and
+ * {@link #findLowestCommonAncestor(LCADynamic.Node, LCADynamic.Node)} is
+ * perform in constant time.
+ * <p>
+ * Based on 'Data Structures for Weighted Matching and Nearest Common Ancestors
+ * with Linking' by Harold N. Gabow (1990).
+ *
+ * @author Barak Ugav
+ */
+public class LCADynamicGabowLinear implements LCADynamic {
 
 	/*
-	 * This implementation is a dynamic LCA implementation from Gabow17, which
-	 * allows addLeaf and LCA queries, with addLeaf O(1) amortized and LCA query
-	 * O(1).
-	 *
-	 * This is an extension to the simple LCA algorithm of Gabow. It uses the simple
-	 * implementation as a black box, and adds two layers of trees, where each
-	 * layers have less nodes by a factor of O(log n), decreasing the total time
-	 * from O(m + log^2 n) to O(m + n).
-	 *
 	 * implementation note: in the original paper, Gabow stated to use look tables
 	 * for the bit tricks (lsb, msb). It's possible to do so, using BitsLookupTable,
 	 * but the standard Java implementation already perform these operations in
@@ -23,32 +36,35 @@ public class LCADynamicGabowLinear<V> implements LCADynamic<V> {
 	 */
 
 	private int nodes2Num;
-	private final LCADynamicGabowSimple<Node0<V>> lca0;
+	private final LCADynamicGabowSimple lca0;
 
 	private static final int SUB_TREE_MAX_SIZE = Integer.SIZE;
 
+	/**
+	 * Create a new dynamic LCA data structure that contains zero nodes.
+	 */
 	public LCADynamicGabowLinear() {
-		lca0 = new LCADynamicGabowSimple<>();
+		lca0 = new LCADynamicGabowSimple();
 	}
 
 	@Override
-	public Node<V> initTree(V nodeData) {
+	public Node initTree() {
 		if (size() != 0)
 			throw new IllegalStateException();
-		return newNode2(null, nodeData);
+		return newNode2(null);
 	}
 
 	@Override
-	public Node<V> addLeaf(Node<V> parent, V nodeData) {
-		return newNode2((Node2<V>) parent, nodeData);
+	public Node addLeaf(Node parent) {
+		return newNode2((Node2) parent);
 	}
 
-	private Node2<V> newNode2(Node2<V> parent, V nodeData) {
-		Node2<V> node = new Node2<>(parent, nodeData);
+	private Node2 newNode2(Node2 parent) {
+		Node2 node = new Node2(parent);
 
 		if (parent == null || parent.subTree.isFull()) {
 			/* make the new node a root of a new sub tree */
-			node.subTree = new Node1<>(node);
+			node.subTree = new Node1(node);
 		} else {
 			/* add new node to the parent sub tree */
 			node.subTree = parent.subTree;
@@ -60,18 +76,18 @@ public class LCADynamicGabowLinear<V> implements LCADynamic<V> {
 
 		if (node.subTree.isFull()) {
 			/* new full sub tree, add to next level tree */
-			Node2<V> topParent = node.subTree.top.parent;
-			Node1<V> tparent = topParent != null ? topParent.subTree : null;
+			Node2 topParent = node.subTree.top.parent;
+			Node1 tparent = topParent != null ? topParent.subTree : null;
 			addFullNode1(node.subTree, tparent);
 		}
 
 		return node;
 	}
 
-	private void addFullNode1(Node1<V> node, Node1<V> parent) {
+	private void addFullNode1(Node1 node, Node1 parent) {
 		if (parent == null || parent.subTree.isFull()) {
 			/* make the new node a root of a new sub tree */
-			node.subTree = new Node0<>(node);
+			node.subTree = new Node0(node);
 		} else {
 			/* add new node to the parent sub tree */
 			node.subTree = parent.subTree;
@@ -83,21 +99,21 @@ public class LCADynamicGabowLinear<V> implements LCADynamic<V> {
 
 		if (node.subTree.isFull()) {
 			/* new full sub tree, add to next level tree */
-			Node1<V> topParent = node.subTree.top.getParent();
-			Node0<V> tparent = topParent != null ? topParent.subTree : null;
+			Node1 topParent = node.subTree.top.getParent();
+			Node0 tparent = topParent != null ? topParent.subTree : null;
 			addFullNode0(node.subTree, tparent);
 		}
 	}
 
-	private void addFullNode0(Node0<V> node, Node0<V> parent) {
+	private void addFullNode0(Node0 node, Node0 parent) {
 		if (parent == null) {
-			node.lcaId = lca0.initTree(node);
+			(node.lcaId = lca0.initTree()).setNodeData(node);
 		} else {
-			node.lcaId = lca0.addLeaf(parent.lcaId, node);
+			(node.lcaId = lca0.addLeaf(parent.lcaId)).setNodeData(node);
 		}
 	}
 
-	private Node2<V> calcLCA(Node2<V> x2, Node2<V> y2) {
+	private Node2 calcLCA(Node2 x2, Node2 y2) {
 		if (x2.subTree != y2.subTree) {
 			if (!x2.subTree.isFull())
 				x2 = x2.subTree.top.parent;
@@ -105,8 +121,8 @@ public class LCADynamicGabowLinear<V> implements LCADynamic<V> {
 				y2 = y2.subTree.top.parent;
 
 			/* Calculate CAs in the next level tree */
-			Node1<V> x1 = x2.subTree, y1 = y2.subTree;
-			Node1<V> ax1 = null, ay1 = null;
+			Node1 x1 = x2.subTree, y1 = y2.subTree;
+			Node1 ax1 = null, ay1 = null;
 			if (x1.subTree != y1.subTree) {
 				if (!x1.subTree.isFull()) {
 					ax1 = x1.subTree.top;
@@ -118,9 +134,9 @@ public class LCADynamicGabowLinear<V> implements LCADynamic<V> {
 				}
 
 				/* Calculate CAs in the next level tree */
-				Node0<V> x0 = x1.subTree, y0 = y1.subTree;
-				CharacteristicAncestors<Node0<V>> ca0 = lca0.calcCA(x0.lcaId, y0.lcaId);
-				Node0<V> a0 = ca0.a.getNodeData(), ax0 = ca0.ax.getNodeData(), ay0 = ca0.ay.getNodeData();
+				Node0 x0 = x1.subTree, y0 = y1.subTree;
+				CharacteristicAncestors ca0 = lca0.calcCA(x0.lcaId, y0.lcaId);
+				Node0 a0 = ca0.a.getNodeData(), ax0 = ca0.ax.getNodeData(), ay0 = ca0.ay.getNodeData();
 
 				if (a0 != ax0) {
 					ax1 = ax0.top;
@@ -135,7 +151,7 @@ public class LCADynamicGabowLinear<V> implements LCADynamic<V> {
 			assert x1.subTree == y1.subTree;
 			/* calculate LCA within sub tree */
 			int commonAncestors1 = x1.ancestorsBitmap & y1.ancestorsBitmap;
-			Node1<V> a1 = x1.subTree.nodes[31 - Integer.numberOfLeadingZeros(commonAncestors1)];
+			Node1 a1 = x1.subTree.nodes[31 - Integer.numberOfLeadingZeros(commonAncestors1)];
 			if (a1 != x1) {
 				int x1UncommonAncestors = x1.ancestorsBitmap & ~y1.ancestorsBitmap;
 				ax1 = x1.subTree.nodes[Integer.numberOfTrailingZeros(x1UncommonAncestors)];
@@ -162,8 +178,8 @@ public class LCADynamicGabowLinear<V> implements LCADynamic<V> {
 	}
 
 	@Override
-	public Node<V> calcLCA(Node<V> x, Node<V> y) {
-		return calcLCA((Node2<V>) x, (Node2<V>) y);
+	public Node findLowestCommonAncestor(Node x, Node y) {
+		return calcLCA((Node2) x, (Node2) y);
 	}
 
 	@Override
@@ -176,62 +192,61 @@ public class LCADynamicGabowLinear<V> implements LCADynamic<V> {
 		lca0.clear();
 	}
 
-	private static class Node2<V> implements LCADynamic.Node<V> {
-		V nodeData;
+	private static class Node2 implements LCADynamic.Node {
+		Object nodeData;
 
 		/* level 2 info */
-		final Node2<V> parent;
-		Node1<V> subTree;
+		final Node2 parent;
+		Node1 subTree;
 		int idWithinSubTree;
 		int ancestorsBitmap;
 
-		Node2(Node2<V> parent, V nodeData) {
+		Node2(Node2 parent) {
 			this.parent = parent;
-			this.nodeData = nodeData;
 		}
 
 		@Override
-		public V getNodeData() {
-			return nodeData;
+		@SuppressWarnings("unchecked")
+		public <D> D getNodeData() {
+			return (D) nodeData;
 		}
 
 		@Override
-		public void setNodeData(V data) {
+		public void setNodeData(Object data) {
 			nodeData = data;
 		}
 
 		@Override
-		public Node<V> getParent() {
+		public Node getParent() {
 			return parent;
 		}
 
-//		void clear() {
-//			subTree = null;
-//		}
+		// void clear() {
+		// subTree = null;
+		// }
 	}
 
-	private static class Node1<V> {
+	private static class Node1 {
 		/* level 2 info */
-		final Node2<V> top;
-		Node2<V>[] nodes;
+		final Node2 top;
+		Node2[] nodes;
 		int size;
 
 		/* level 1 info */
-		Node0<V> subTree;
+		Node0 subTree;
 		int idWithinSubTree;
 		int ancestorsBitmap;
 
-		@SuppressWarnings("unchecked")
-		Node1(Node2<V> top) {
+		Node1(Node2 top) {
 			this.top = top;
 			nodes = new Node2[4];
 		}
 
-		Node1<V> getParent() {
+		Node1 getParent() {
 			return top.parent != null ? top.parent.subTree : null;
 		}
 
-		void addNode(Node2<V> node) {
+		void addNode(Node2 node) {
 			assert size < SUB_TREE_MAX_SIZE;
 			node.idWithinSubTree = size++;
 			if (node.idWithinSubTree >= nodes.length)
@@ -243,28 +258,27 @@ public class LCADynamicGabowLinear<V> implements LCADynamic<V> {
 			return size == SUB_TREE_MAX_SIZE;
 		}
 
-//		void clear() {
-//			nodes = null;
-//			subTree = null;
-//		}
+		// void clear() {
+		// nodes = null;
+		// subTree = null;
+		// }
 	}
 
-	private static class Node0<V> {
+	private static class Node0 {
 		/* level 1 info */
-		final Node1<V> top;
-		Node1<V>[] nodes;
+		final Node1 top;
+		Node1[] nodes;
 		int size;
 
 		/* level 0 info */
-		LCADynamic.Node<Node0<V>> lcaId;
+		LCADynamic.Node lcaId;
 
-		@SuppressWarnings("unchecked")
-		Node0(Node1<V> top) {
+		Node0(Node1 top) {
 			this.top = top;
 			nodes = new Node1[4];
 		}
 
-		void addNode(Node1<V> node) {
+		void addNode(Node1 node) {
 			assert size < SUB_TREE_MAX_SIZE;
 			node.idWithinSubTree = size++;
 			if (node.idWithinSubTree >= nodes.length)
@@ -276,9 +290,9 @@ public class LCADynamicGabowLinear<V> implements LCADynamic<V> {
 			return size == SUB_TREE_MAX_SIZE;
 		}
 
-//		void clear() {
-//			nodes = null;
-//		}
+		// void clear() {
+		// nodes = null;
+		// }
 	}
 
 	private static int ithBit(int b) {

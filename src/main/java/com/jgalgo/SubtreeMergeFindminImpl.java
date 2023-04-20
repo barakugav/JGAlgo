@@ -24,7 +24,7 @@ public class SubtreeMergeFindminImpl<V, E> implements SubtreeMergeFindmin<V, E> 
 	private NodeImpl<V, E>[] nodes;
 	private final UnionFind uf;
 	private final HeapReferenceable<SubTree<V, E>> heap;
-	private final LCADynamic<NodeImpl<V, E>> lca;
+	private final LCADynamic lca;
 
 	private final Comparator<? super E> weightCmp;
 	private int timestamp;
@@ -42,7 +42,7 @@ public class SubtreeMergeFindminImpl<V, E> implements SubtreeMergeFindmin<V, E> 
 		nodes = new NodeImpl[2];
 
 		uf = new UnionFindArray();
-		lca = new LCADynamicGabowLinear<>();
+		lca = new LCADynamicGabowLinear();
 
 		this.weightCmp = weightCmp != null ? weightCmp : Utils.getDefaultComparator();
 		timestamp = 0;
@@ -67,7 +67,9 @@ public class SubtreeMergeFindminImpl<V, E> implements SubtreeMergeFindmin<V, E> 
 		NodeImpl<V, E> node = new NodeImpl<>(parent, nodeData);
 
 		/* Add to LCA data structure */
-		node.lcaNode = parent == null ? lca.initTree(node) : lca.addLeaf(parent.lcaNode, node);
+		node.lcaNode = parent == null ? lca.initTree() : lca.addLeaf(parent.lcaNode);
+		node.lcaNode.setNodeData(node);
+
 
 		/* Add to UF data structure */
 		node.ufIdx = uf.make();
@@ -129,7 +131,7 @@ public class SubtreeMergeFindminImpl<V, E> implements SubtreeMergeFindmin<V, E> 
 			if (el == null)
 				continue;
 			U.edges[setIdx] = el;
-			compareAgaintSubTreeMin(U, el.min);
+			compareAgainstSubTreeMin(U, el.min);
 		}
 		/* Examine all edges in set <= r */
 		for (int setIdx = 0; setIdx <= rank; setIdx++) {
@@ -209,7 +211,7 @@ public class SubtreeMergeFindminImpl<V, E> implements SubtreeMergeFindmin<V, E> 
 		Edge<V, E> edge = new Edge<>(u, v, edgedata);
 
 		/* split edge into two edges (u, lca(u,v)), (v, lca(u,v)) */
-		LCADynamic.Node<NodeImpl<V, E>> l = lca.calcLCA(u.lcaNode, v.lcaNode);
+		LCADynamic.Node l = lca.findLowestCommonAncestor(u.lcaNode, v.lcaNode);
 		if (u.lcaNode != l) {
 			addEdgeNode(new EdgeNode<>(u, l.getNodeData(), edge));
 			addEdgeNode(new EdgeNode<>(v, l.getNodeData(), edge));
@@ -254,18 +256,18 @@ public class SubtreeMergeFindminImpl<V, E> implements SubtreeMergeFindmin<V, E> 
 
 		if (edgeList.head == null) {
 			edgeList.head = edgeList.tail = edgeList.min = edge;
-			compareAgaintSubTreeMin(v, edge);
+			compareAgainstSubTreeMin(v, edge);
 		} else {
 			edgeList.tail.next = edge;
 			edgeList.tail = edge;
 			if (weightCmp.compare(edge.data.data, edgeList.min.data.data) < 0) {
 				edgeList.min = edge;
-				compareAgaintSubTreeMin(v, edge);
+				compareAgainstSubTreeMin(v, edge);
 			}
 		}
 	}
 
-	private void compareAgaintSubTreeMin(SubTree<V, E> v, EdgeNode<V, E> edge) {
+	private void compareAgainstSubTreeMin(SubTree<V, E> v, EdgeNode<V, E> edge) {
 		if (v.minEdge == null) {
 			v.minEdge = edge;
 			v.heapRef = heap.insert(v);
@@ -314,7 +316,7 @@ public class SubtreeMergeFindminImpl<V, E> implements SubtreeMergeFindmin<V, E> 
 		private final NodeImpl<V, E> parent;
 		private final int depth;
 		private int ufIdx;
-		private LCADynamic.Node<NodeImpl<V, E>> lcaNode;
+		private LCADynamic.Node lcaNode;
 		private SubTree<V, E> subtree;
 
 		NodeImpl(NodeImpl<V, E> parent, V nodeData) {

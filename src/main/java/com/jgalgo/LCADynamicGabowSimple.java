@@ -2,13 +2,27 @@ package com.jgalgo;
 
 import java.util.Arrays;
 
-public class LCADynamicGabowSimple<V> implements LCADynamic<V> {
-
-	/**
-	 * This implementation is a dynamic LCA implementation from Gabow17, which
-	 * allows addLeaf and LCA queries, with addLeaf O(log^2 n) amortized and LCA
-	 * query O(1).
-	 */
+/**
+ * Gabow implementation for dynamic LCA data structure with {@code O(log^2 n)}
+ * amortized time for {@code addLeaf()} operation.
+ * <p>
+ * The running time of this algorithm for {@code m} operations is
+ * {@code O(m log^2 n)} and it uses linear space. More specifically, the
+ * {@link #addLeaf(LCADynamic.Node)} operation is perform in {@code O(log^2 n)}
+ * amortized time and
+ * {@link #findLowestCommonAncestor(LCADynamic.Node, LCADynamic.Node)} is
+ * perform in constant time.
+ * <p>
+ * This implementation is used by the better linear LCA algorithm
+ * {@link LCADynamicGabowLinear} and rarely should be used directly.
+ * <p>
+ * Based on the simpler data structure presented in 'Data Structures for
+ * Weighted Matching and Nearest Common Ancestors with Linking' by Harold N.
+ * Gabow (1990).
+ *
+ * @author Barak Ugav
+ */
+public class LCADynamicGabowSimple implements LCADynamic {
 
 	private int nodesNum;
 
@@ -18,28 +32,30 @@ public class LCADynamicGabowSimple<V> implements LCADynamic<V> {
 	private static final int e = 4;
 	private static final int c = 5;
 
-	@SuppressWarnings("rawtypes")
 	private static final NodeImpl[] EMPTY_NODE_ARR = new NodeImpl[0];
 
+	/**
+	 * Create a new dynamic LCA data structure that contains zero nodes.
+	 */
 	public LCADynamicGabowSimple() {
 		nodesNum = 0;
 	}
 
 	@Override
-	public Node<V> initTree(V nodeData) {
+	public Node initTree() {
 		if (size() != 0)
 			throw new IllegalStateException();
-		return newNode(null, nodeData);
+		return newNode(null);
 	}
 
 	@Override
-	public Node<V> addLeaf(Node<V> parent, V nodeData) {
-		return newNode((NodeImpl<V>) parent, nodeData);
+	public Node addLeaf(Node parent) {
+		return newNode((NodeImpl) parent);
 	}
 
-	private Node<V> newNode(NodeImpl<V> parent, V nodeData) {
+	private Node newNode(NodeImpl parent) {
 		nodesNum++;
-		NodeImpl<V> node = new NodeImpl<>(parent, nodeData);
+		NodeImpl node = new NodeImpl(parent);
 
 		node.isApex = true;
 		if (parent != null) {
@@ -47,8 +63,8 @@ public class LCADynamicGabowSimple<V> implements LCADynamic<V> {
 			node.cParent = parent.getPathApex();
 		}
 
-		NodeImpl<V> lastAncestorRequireCompress = null;
-		for (NodeImpl<V> a = node; a != null; a = a.cParent) {
+		NodeImpl lastAncestorRequireCompress = null;
+		for (NodeImpl a = node; a != null; a = a.cParent) {
 			a.size++;
 			if (a.isRequireRecompress())
 				lastAncestorRequireCompress = a;
@@ -58,7 +74,7 @@ public class LCADynamicGabowSimple<V> implements LCADynamic<V> {
 		return node;
 	}
 
-	private void recompress(NodeImpl<V> subtreeRoot) {
+	private void recompress(NodeImpl subtreeRoot) {
 		/* first, compute the size of each node subtree */
 		computeSize(subtreeRoot);
 
@@ -67,18 +83,17 @@ public class LCADynamicGabowSimple<V> implements LCADynamic<V> {
 		assert subtreeRoot.isApex;
 
 		/* recompute ancestor tables */
-		computeAcestorTables(subtreeRoot);
+		computeAncestorTables(subtreeRoot);
 	}
 
-	private int computeSize(NodeImpl<V> node) {
+	private int computeSize(NodeImpl node) {
 		int size = 1;
 		for (int i = 0; i < node.childrenNum; i++)
 			size += computeSize(node.children[i]);
 		return node.size = size;
 	}
 
-	@SuppressWarnings("unchecked")
-	private void buildCompressedTree(NodeImpl<V> node) {
+	private void buildCompressedTree(NodeImpl node) {
 		node.cParent = node.isRoot() ? null : node.parent.getPathApex();
 
 		node.path = node.isApex ? EMPTY_NODE_ARR : null;
@@ -99,18 +114,18 @@ public class LCADynamicGabowSimple<V> implements LCADynamic<V> {
 		node.idxUpperFatMaxChild = node.idxLower + 1;
 
 		for (int i = 0; i < node.childrenNum; i++) {
-			NodeImpl<V> child = node.children[i];
+			NodeImpl child = node.children[i];
 			child.isApex = child.size <= node.size / 2;
 			buildCompressedTree(child);
 		}
 	}
 
-	private void computeAcestorTables(NodeImpl<V> node) {
+	private void computeAncestorTables(NodeImpl node) {
 		int ancestorTableSize = logBetaFloor(c * pow(nodesNum, e));
 		node.ancestorTableInit(ancestorTableSize);
 
 		int tableIdx = 0;
-		for (NodeImpl<V> a = node, last = null;; a = a.cParent) {
+		for (NodeImpl a = node, last = null;; a = a.cParent) {
 			for (; (c - 2) * pow(a.sigma, e) >= pow(beta, tableIdx); tableIdx++)
 				if (last != null)
 					node.ancestorTable[tableIdx] = last;
@@ -124,7 +139,7 @@ public class LCADynamicGabowSimple<V> implements LCADynamic<V> {
 		}
 
 		for (int i = 0; i < node.childrenNum; i++)
-			computeAcestorTables(node.children[i]);
+			computeAncestorTables(node.children[i]);
 	}
 
 	private static double /* integer */ pow(double /* integer */ a, double /* integer */ b) {
@@ -145,22 +160,21 @@ public class LCADynamicGabowSimple<V> implements LCADynamic<V> {
 		return (int) x;
 	}
 
-	@SuppressWarnings("unchecked")
-	private CharacteristicAncestors0<V> calcCACompressed(NodeImpl<V> x, NodeImpl<V> y) {
+	private static CharacteristicAncestors0 calcCACompressed(NodeImpl x, NodeImpl y) {
 		if (x == y)
-			return new CharacteristicAncestors0<>(x, x, x);
+			return new CharacteristicAncestors0(x, x, x);
 		int i = logBetaFloor(Math.abs(x.idxLower - y.idxLower));
 
-		NodeImpl<V>[] a = new NodeImpl[2];
-		NodeImpl<V>[] az = new NodeImpl[2];
+		NodeImpl[] a = new NodeImpl[2];
+		NodeImpl[] az = new NodeImpl[2];
 		for (int zIdx = 0; zIdx < 2; zIdx++) {
-			NodeImpl<V> z = zIdx == 0 ? x : y;
-			NodeImpl<V> z0 = zIdx == 0 ? y : x;
+			NodeImpl z = zIdx == 0 ? x : y;
+			NodeImpl z0 = zIdx == 0 ? y : x;
 
-			NodeImpl<V> v = z.ancestorTable[i];
-			NodeImpl<V> w = v != null ? v.cParent : z;
+			NodeImpl v = z.ancestorTable[i];
+			NodeImpl w = v != null ? v.cParent : z;
 
-			NodeImpl<V> b, bz;
+			NodeImpl b, bz;
 			if ((c - 2) * pow(w.sigma, e) > Math.abs(x.idxLower - y.idxLower)) {
 				b = w;
 				bz = v != null ? v : z;
@@ -178,47 +192,47 @@ public class LCADynamicGabowSimple<V> implements LCADynamic<V> {
 			}
 		}
 
-		NodeImpl<V> ax = az[0], ay = az[1];
+		NodeImpl ax = az[0], ay = az[1];
 		assert a[0] == a[1];
 		assert ax == a[0] || ax.cParent == a[0];
 		assert ay == a[0] || ay.cParent == a[0];
-		return new CharacteristicAncestors0<>(a[0], ax, ay);
+		return new CharacteristicAncestors0(a[0], ax, ay);
 	}
 
-	private CharacteristicAncestors0<V> calcCA0(NodeImpl<V> x, NodeImpl<V> y) {
+	private static CharacteristicAncestors0 calcCA0(NodeImpl x, NodeImpl y) {
 		if (x == y)
-			return new CharacteristicAncestors0<>(x, x, x);
-		CharacteristicAncestors0<V> cac = calcCACompressed(x, y);
+			return new CharacteristicAncestors0(x, x, x);
+		CharacteristicAncestors0 cac = calcCACompressed(x, y);
 
 		/* c is an apex of path P */
-		NodeImpl<V> c = cac.a, cx = cac.ax, cy = cac.ay;
+		NodeImpl c = cac.a, cx = cac.ax, cy = cac.ay;
 		assert c == c.getPathApex();
 
 		/* bz is the first ancestor of cz on P */
-		NodeImpl<V> bx = cx != c && cx.isApex ? cx.parent : cx;
-		NodeImpl<V> by = cy != c && cy.isApex ? cy.parent : cy;
+		NodeImpl bx = cx != c && cx.isApex ? cx.parent : cx;
+		NodeImpl by = cy != c && cy.isApex ? cy.parent : cy;
 		assert c == bx.getPathApex();
 		assert c == by.getPathApex();
 
 		/* a is the shallower vertex of bx and by */
-		NodeImpl<V> a = bx.pathIdx < by.pathIdx ? bx : by;
+		NodeImpl a = bx.pathIdx < by.pathIdx ? bx : by;
 
-		NodeImpl<V> ax = a != bx ? a.getPathApex().path[a.pathIdx + 1] : cx;
-		NodeImpl<V> ay = a != by ? a.getPathApex().path[a.pathIdx + 1] : cy;
+		NodeImpl ax = a != bx ? a.getPathApex().path[a.pathIdx + 1] : cx;
+		NodeImpl ay = a != by ? a.getPathApex().path[a.pathIdx + 1] : cy;
 
 		assert ax == a || ax.parent == a;
 		assert ay == a || ay.parent == a;
-		return new CharacteristicAncestors0<>(a, ax, ay);
+		return new CharacteristicAncestors0(a, ax, ay);
 	}
 
 	@Override
-	public Node<V> calcLCA(Node<V> x, Node<V> y) {
-		return calcCA0((NodeImpl<V>) x, (NodeImpl<V>) y).a;
+	public Node findLowestCommonAncestor(Node x, Node y) {
+		return calcCA0((NodeImpl) x, (NodeImpl) y).a;
 	}
 
-	public CharacteristicAncestors<V> calcCA(Node<V> x, Node<V> y) {
-		CharacteristicAncestors0<V> ca = calcCA0((NodeImpl<V>) x, (NodeImpl<V>) y);
-		return new CharacteristicAncestors<>(ca.a, ca.ax, ca.ay);
+	CharacteristicAncestors calcCA(Node x, Node y) {
+		CharacteristicAncestors0 ca = calcCA0((NodeImpl) x, (NodeImpl) y);
+		return new CharacteristicAncestors(ca.a, ca.ax, ca.ay);
 	}
 
 	@Override
@@ -231,22 +245,22 @@ public class LCADynamicGabowSimple<V> implements LCADynamic<V> {
 		nodesNum = 0;
 	}
 
-	private static class NodeImpl<V> implements Node<V> {
+	private static class NodeImpl implements Node {
 		/* --- user tree data --- */
-		V nodeData;
+		Object nodeData;
 		/* tree parent */
-		final NodeImpl<V> parent;
+		final NodeImpl parent;
 		/* children nodes of this node */
-		NodeImpl<V>[] children;
+		NodeImpl[] children;
 		int childrenNum;
 		/* number of nodes in subtree */
 		int size;
 
 		/* --- compressed tree data --- */
 		/* parent in the compressed tree */
-		NodeImpl<V> cParent;
+		NodeImpl cParent;
 		/* If the node is apex, contains all the nodes in it's path, else null */
-		NodeImpl<V>[] path;
+		NodeImpl[] path;
 		int pathSize;
 		/* Index of the node within it's path */
 		int pathIdx;
@@ -265,27 +279,26 @@ public class LCADynamicGabowSimple<V> implements LCADynamic<V> {
 		/* flag for head (shallower) of path node */
 		boolean isApex;
 		/* ancestor table */
-		NodeImpl<V>[] ancestorTable;
+		NodeImpl[] ancestorTable;
 
-		@SuppressWarnings("unchecked")
-		NodeImpl(NodeImpl<V> parent, V nodeData) {
+		NodeImpl(NodeImpl parent) {
 			this.parent = parent;
-			this.nodeData = nodeData;
 			children = EMPTY_NODE_ARR;
 		}
 
 		@Override
-		public V getNodeData() {
-			return nodeData;
+		@SuppressWarnings("unchecked")
+		public <D> D getNodeData() {
+			return (D) nodeData;
 		}
 
 		@Override
-		public void setNodeData(V data) {
+		public void setNodeData(Object data) {
 			nodeData = data;
 		}
 
 		@Override
-		public Node<V> getParent() {
+		public Node getParent() {
 			return parent;
 		}
 
@@ -294,17 +307,17 @@ public class LCADynamicGabowSimple<V> implements LCADynamic<V> {
 			return parent == null;
 		}
 
-		void addChild(NodeImpl<V> c) {
+		void addChild(NodeImpl c) {
 			if (childrenNum >= children.length)
 				children = Arrays.copyOf(children, Math.max(children.length * 2, 2));
 			children[childrenNum++] = c;
 		}
 
-		NodeImpl<V> getPathApex() {
+		NodeImpl getPathApex() {
 			return isApex ? this : cParent;
 		}
 
-		void addToPath(NodeImpl<V> c) {
+		void addToPath(NodeImpl c) {
 			if (pathSize >= path.length)
 				path = Arrays.copyOf(path, Math.max(path.length * 2, 2));
 			path[pathSize++] = c;
@@ -314,7 +327,6 @@ public class LCADynamicGabowSimple<V> implements LCADynamic<V> {
 			return size >= alpha * sigma;
 		}
 
-		@SuppressWarnings("unchecked")
 		void ancestorTableInit(int size) {
 			if (ancestorTable != null && ancestorTable.length >= size)
 				Arrays.fill(ancestorTable, null);
@@ -327,30 +339,30 @@ public class LCADynamicGabowSimple<V> implements LCADynamic<V> {
 			return "V" + (isApex ? "*" : "") + "<" + getNodeData() + ">";
 		}
 
-//		void clear() {
-//			parent = cParent = null;
-//			Arrays.fill(children, 0, childrenNum, null);
-//			Arrays.fill(path, 0, pathSize, null);
-//			Arrays.fill(ancestorTable, null);
-//			children = path = ancestorTable = null;
-//		}
+		// void clear() {
+		// parent = cParent = null;
+		// Arrays.fill(children, 0, childrenNum, null);
+		// Arrays.fill(path, 0, pathSize, null);
+		// Arrays.fill(ancestorTable, null);
+		// children = path = ancestorTable = null;
+		// }
 
 	}
 
-	private static class CharacteristicAncestors0<V> {
-		NodeImpl<V> a, ax, ay;
+	private static class CharacteristicAncestors0 {
+		NodeImpl a, ax, ay;
 
-		CharacteristicAncestors0(NodeImpl<V> a, NodeImpl<V> ax, NodeImpl<V> ay) {
+		CharacteristicAncestors0(NodeImpl a, NodeImpl ax, NodeImpl ay) {
 			this.a = a;
 			this.ax = ax;
 			this.ay = ay;
 		}
 	}
 
-	public static class CharacteristicAncestors<V> {
-		public final Node<V> a, ax, ay;
+	static class CharacteristicAncestors {
+		final Node a, ax, ay;
 
-		CharacteristicAncestors(Node<V> a, Node<V> ax, Node<V> ay) {
+		CharacteristicAncestors(Node a, Node ax, Node ay) {
 			this.a = a;
 			this.ax = ax;
 			this.ay = ay;
