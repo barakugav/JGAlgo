@@ -5,7 +5,7 @@ import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.jgalgo.RMQ;
+import com.jgalgo.RMQStatic;
 import com.jgalgo.RMQComparator;
 
 class RMQTestUtils extends TestUtils {
@@ -13,11 +13,11 @@ class RMQTestUtils extends TestUtils {
 	private RMQTestUtils() {
 	}
 
-	static void testRMQ65536(Supplier<? extends RMQ> builder, long seed) {
+	static void testRMQ65536(Supplier<? extends RMQStatic> builder, long seed) {
 		testRMQ(builder, 65536, 4096, seed);
 	}
 
-	static void testRMQ(Supplier<? extends RMQ> builder, int n, int queriesNum, long seed) {
+	static void testRMQ(Supplier<? extends RMQStatic> builder, int n, int queriesNum, long seed) {
 		int[] a = new int[n];
 		int[][] queries = new int[queriesNum][];
 		randRMQDataAndQueries(a, queries, seed);
@@ -25,16 +25,16 @@ class RMQTestUtils extends TestUtils {
 		testRMQ(builder, a, queries);
 	}
 
-	static void testRMQ(Supplier<? extends RMQ> builder, int a[], int[][] queries) {
-		RMQ rmq = builder.get();
-		rmq.preProcessRMQ(RMQComparator.ofIntArray(a), a.length);
+	static void testRMQ(Supplier<? extends RMQStatic> builder, int a[], int[][] queries) {
+		RMQStatic rmq = builder.get();
+		RMQStatic.DataStructure rmqDS = rmq.preProcessSequence(RMQComparator.ofIntArray(a), a.length);
 
 		for (int idx = 0; idx < queries.length; idx++) {
 			int i = queries[idx][0];
 			int j = queries[idx][1];
 			int expectedIdx = queries[idx][2];
 			int expected = a[expectedIdx];
-			int actualIdx = rmq.calcRMQ(i, j);
+			int actualIdx = rmqDS.findMinimumInRange(i, j);
 			int actual = a[actualIdx];
 
 			if (actual != expected) {

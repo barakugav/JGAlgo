@@ -15,18 +15,14 @@ public class LCARMQBenderFarachColton2000 implements LCAStatic {
 	 * RMQPlusMinusOneBenderFarachColton2000.
 	 */
 
-	private int[] vs;
-	private int[] vToDepthsIdx;
-	private final RMQ rmq;
-	private boolean preProcessed;
+	private final RMQStatic rmq;
 
 	public LCARMQBenderFarachColton2000() {
 		rmq = new RMQPlusMinusOneBenderFarachColton2000();
-		preProcessed = false;
 	}
 
 	@Override
-	public void preProcessLCA(Graph t, int r) {
+	public LCAStatic.DataStructure preProcessTree(Graph t, int r) {
 		if (!Trees.isTree(t, r))
 			throw new IllegalArgumentException();
 
@@ -73,25 +69,34 @@ public class LCARMQBenderFarachColton2000 implements LCAStatic {
 				vToDepthsIdx[v] = i;
 		}
 
-		rmq.preProcessRMQ(RMQComparator.ofIntArray(depths), depths.length);
-		this.vs = vs;
-		this.vToDepthsIdx = vToDepthsIdx;
-		preProcessed = true;
+		RMQStatic.DataStructure rmqDS = rmq.preProcessSequence(RMQComparator.ofIntArray(depths), depths.length);
+		return new DS(vs, vToDepthsIdx, rmqDS);
 	}
 
-	@Override
-	public int calcLCA(int u, int v) {
-		if (!preProcessed)
-			throw new IllegalStateException("PreProcessing is required before query");
-		int uIdx = vToDepthsIdx[u];
-		int vIdx = vToDepthsIdx[v];
-		if (uIdx > vIdx) {
-			int temp = uIdx;
-			uIdx = vIdx;
-			vIdx = temp;
+	private static class DS implements LCAStatic.DataStructure {
+
+		private final int[] vs;
+		private final int[] vToDepthsIdx;
+		private final RMQStatic.DataStructure rmqDS;
+
+		DS(int[] vs, int[] vToDepthsIdx, RMQStatic.DataStructure rmqDS) {
+			this.vs = vs;
+			this.vToDepthsIdx = vToDepthsIdx;
+			this.rmqDS = rmqDS;
 		}
-		int lcaIdx = rmq.calcRMQ(uIdx, vIdx + 1);
-		return vs[lcaIdx];
+
+		@Override
+		public int findLowestCommonAncestor(int u, int v) {
+			int uIdx = vToDepthsIdx[u];
+			int vIdx = vToDepthsIdx[v];
+			if (uIdx > vIdx) {
+				int temp = uIdx;
+				uIdx = vIdx;
+				vIdx = temp;
+			}
+			int lcaIdx = rmqDS.findMinimumInRange(uIdx, vIdx + 1);
+			return vs[lcaIdx];
+		}
 	}
 
 }

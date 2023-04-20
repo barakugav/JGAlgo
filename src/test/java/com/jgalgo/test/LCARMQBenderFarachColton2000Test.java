@@ -67,13 +67,13 @@ public class LCARMQBenderFarachColton2000Test extends TestUtils {
 
 	private static void testLCA(Graph g, Supplier<? extends LCAStatic> builder, int[][] queries) {
 		LCAStatic lca = builder.get();
-		lca.preProcessLCA(g, 0);
+		LCAStatic.DataStructure lcaDS = lca.preProcessTree(g, 0);
 
 		for (int[] query : queries) {
 			int u = query[0];
 			int v = query[1];
 			int expected = query[2];
-			int actual = lca.calcLCA(u, v);
+			int actual = lcaDS.findLowestCommonAncestor(u, v);
 			assertEquals(expected, actual, "<- [" + u + "," + v + "]");
 		}
 	}

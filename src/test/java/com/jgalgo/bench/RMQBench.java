@@ -19,7 +19,7 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 
-import com.jgalgo.RMQ;
+import com.jgalgo.RMQStatic;
 import com.jgalgo.RMQComparator;
 import com.jgalgo.RMQGabowBentleyTarjan1984;
 import com.jgalgo.RMQLookupTable;
@@ -53,10 +53,10 @@ public class RMQBench {
 			}
 		}
 
-		private void benchPreProcess(Supplier<? extends RMQ> builder, Blackhole blackhole) {
+		private void benchPreProcess(Supplier<? extends RMQStatic> builder, Blackhole blackhole) {
 			for (Pair<Integer, RMQComparator> arr : arrays) {
-				RMQ rmq = builder.get();
-				rmq.preProcessRMQ(arr.second(), arr.first().intValue());
+				RMQStatic rmq = builder.get();
+				rmq.preProcessSequence(arr.second(), arr.first().intValue());
 				blackhole.consume(rmq);
 			}
 		}
@@ -104,8 +104,8 @@ public class RMQBench {
 		@Benchmark
 		public void benchPreProcess(Blackhole blackhole) {
 			for (Pair<Integer, RMQComparator> arr : arrays) {
-				RMQ rmq = new RMQPlusMinusOneBenderFarachColton2000();
-				rmq.preProcessRMQ(arr.second(), arr.first().intValue());
+				RMQStatic rmq = new RMQPlusMinusOneBenderFarachColton2000();
+				rmq.preProcessSequence(arr.second(), arr.first().intValue());
 				blackhole.consume(rmq);
 			}
 		}
@@ -118,15 +118,15 @@ public class RMQBench {
 			return TestUtils.randArray(size, seed);
 		}
 
-		List<Pair<RMQ, int[]>> createArrays(Supplier<? extends RMQ> builder, int arrSize) {
+		List<Pair<RMQStatic.DataStructure, int[]>> createArrays(Supplier<? extends RMQStatic> builder, int arrSize) {
 			final SeedGenerator seedGen = new SeedGenerator(0x5b3fba9dd26f2769L);
 
-			List<Pair<RMQ, int[]>> arrays = new ArrayList<>();
+			List<Pair<RMQStatic.DataStructure, int[]>> arrays = new ArrayList<>();
 			for (int arrNum = 20; arrNum-- > 0;) {
 				int[] arr = randArray(arrSize, seedGen.nextSeed());
 
-				RMQ rmq = builder.get();
-				rmq.preProcessRMQ(RMQComparator.ofIntArray(arr), arrSize);
+				RMQStatic rmq = builder.get();
+				RMQStatic.DataStructure rmqDS = rmq.preProcessSequence(RMQComparator.ofIntArray(arr), arrSize);
 
 				int queriesNum = arrSize;
 				int[] queries = TestUtils.randArray(queriesNum * 2, 0, arrSize, seedGen.nextSeed());
@@ -143,20 +143,20 @@ public class RMQBench {
 					queries[q * 2 + 1] = j;
 				}
 
-				arrays.add(Pair.of(rmq, queries));
+				arrays.add(Pair.of(rmqDS, queries));
 			}
 			return arrays;
 		}
 
-		public void benchQuery(List<Pair<RMQ, int[]>> arrays, Blackhole blackhole) {
-			for (Pair<RMQ, int[]> arr : arrays) {
-				RMQ rmq = arr.first();
+		public void benchQuery(List<Pair<RMQStatic.DataStructure, int[]>> arrays, Blackhole blackhole) {
+			for (Pair<RMQStatic.DataStructure, int[]> arr : arrays) {
+				RMQStatic.DataStructure rmq = arr.first();
 				int[] queries = arr.second();
 				int queriesNum = queries.length / 2;
 				for (int q = 0; q < queriesNum; q++) {
 					int i = queries[q * 2];
 					int j = queries[q * 2 + 1];
-					int res = rmq.calcRMQ(i, j);
+					int res = rmq.findMinimumInRange(i, j);
 					blackhole.consume(res);
 				}
 			}
@@ -173,7 +173,7 @@ public class RMQBench {
 
 		@Param({ "128", "2500" })
 		public int arrSize;
-		private List<Pair<RMQ, int[]>> arrays;
+		private List<Pair<RMQStatic.DataStructure, int[]>> arrays;
 
 		@Setup(Level.Iteration)
 		public void setup() {
@@ -195,7 +195,7 @@ public class RMQBench {
 
 		@Param({ "128", "2500", "15000" })
 		public int arrSize;
-		private List<Pair<RMQ, int[]>> arrays;
+		private List<Pair<RMQStatic.DataStructure, int[]>> arrays;
 
 		@Setup(Level.Iteration)
 		public void setup() {
@@ -217,7 +217,7 @@ public class RMQBench {
 
 		@Param({ "128", "2500", "15000" })
 		public int arrSize;
-		private List<Pair<RMQ, int[]>> arrays;
+		private List<Pair<RMQStatic.DataStructure, int[]>> arrays;
 
 		@Override
 		int[] randArray(int size, long seed) {
@@ -248,7 +248,7 @@ public class RMQBench {
 
 		@Param({ "128", "2500", "15000" })
 		public int arrSize;
-		private List<Pair<RMQ, int[]>> arrays;
+		private List<Pair<RMQStatic.DataStructure, int[]>> arrays;
 
 		@Setup(Level.Iteration)
 		public void setup() {

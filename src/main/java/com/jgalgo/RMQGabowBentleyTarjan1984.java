@@ -22,89 +22,95 @@ public class RMQGabowBentleyTarjan1984 extends RMQLinearAbstract {
 	 * O(n) pre processing time, O(n) space, O(1) query.
 	 */
 
-	private RMQ[] interBlocksDs;
-
 	public RMQGabowBentleyTarjan1984() {
 	}
 
 	@Override
-	public void preProcessRMQ(RMQComparator c, int n) {
+	public RMQStatic.DataStructure preProcessSequence(RMQComparator c, int n) {
 		if (n <= 0)
 			throw new IllegalArgumentException();
 		Objects.requireNonNull(c);
-
-		interBlocksDs = new RMQ[calcBlockNum(n, getBlockSize(n))];
-		preProcessRMQOuterBlocks(c, n);
-		preProcessRMQInnerBlocks();
+		return new DS(c, n);
 	}
 
-	private void preProcessRMQInnerBlocks() {
-		Int2ObjectMap<RMQ> tables = new Int2ObjectOpenHashMap<>();
+	private class DS extends RMQLinearAbstract.DS {
 
-		for (int b = 0; b < blockNum; b++) {
-			int key = calcBlockKey(b);
+		private RMQStatic.DataStructure[] interBlocksDs;
 
-			interBlocksDs[b] = tables.computeIfAbsent(key, k -> {
-				int[] demoBlock = calcDemoBlock(k, blockSize);
-				RMQ innerRMQ = new RMQLookupTable();
-				innerRMQ.preProcessRMQ(RMQComparator.ofIntArray(demoBlock), demoBlock.length);
-				return innerRMQ;
-			});
+		DS(RMQComparator c, int n) {
+			interBlocksDs = new RMQStatic.DataStructure[calcBlockNum(n, getBlockSize(n))];
+			preProcessRMQOuterBlocks(c, n);
+			preProcessRMQInnerBlocks();
 		}
-	}
 
-	private int calcBlockKey(int b) {
-		int[] nodes = new int[blockSize];
-		int nodesCount = 0;
+		private void preProcessRMQInnerBlocks() {
+			RMQStatic innerRMQ = new RMQLookupTable();
+			Int2ObjectMap<RMQStatic.DataStructure> tables = new Int2ObjectOpenHashMap<>();
 
-		int key = 0;
-		int keyIdx = 0;
+			for (int b = 0; b < blockNum; b++) {
+				int key = calcBlockKey(b);
 
-		int base = b * blockSize;
-		for (int i = 0; i < blockSize; i++) {
-			int x = base + i;
-			while (nodesCount > 0 && c.compare(x, nodes[nodesCount - 1]) < 0) {
-				nodesCount--;
-				key |= 1 << (keyIdx++);
+				interBlocksDs[b] = tables.computeIfAbsent(key, k -> {
+					int[] demoBlock = calcDemoBlock(k, blockSize);
+					return innerRMQ.preProcessSequence(RMQComparator.ofIntArray(demoBlock), demoBlock.length);
+				});
 			}
-			nodes[nodesCount++] = x;
-			keyIdx++;
 		}
 
-		return key;
-	}
+		private int calcBlockKey(int b) {
+			int[] nodes = new int[blockSize];
+			int nodesCount = 0;
 
-	private static int[] calcDemoBlock(int key, int blockSize) {
-		int[] demoBlock = new int[blockSize];
+			int key = 0;
+			int keyIdx = 0;
 
-		int[] nodes = new int[blockSize];
-		int nodesCount = 0;
-
-		int keyIdx = 0;
-
-		for (int i = 0; i < demoBlock.length; i++) {
-			int x = nodesCount > 0 ? nodes[nodesCount - 1] + blockSize : 0;
-			while ((key & (1 << keyIdx)) != 0) {
-				x = nodes[nodesCount-- - 1] - 1;
+			int base = b * blockSize;
+			for (int i = 0; i < blockSize; i++) {
+				int x = base + i;
+				while (nodesCount > 0 && c.compare(x, nodes[nodesCount - 1]) < 0) {
+					nodesCount--;
+					key |= 1 << (keyIdx++);
+				}
+				nodes[nodesCount++] = x;
 				keyIdx++;
 			}
-			nodes[nodesCount++] = x;
-			keyIdx++;
 
-			demoBlock[i] = x;
+			return key;
 		}
 
-		return demoBlock;
-	}
+		private int[] calcDemoBlock(int key, int blockSize) {
+			int[] demoBlock = new int[blockSize];
 
-	@Override
-	int getBlockSize(int n) {
-		return (int) Math.ceil(Utils.log2((double) n) / 4);
-	}
+			int[] nodes = new int[blockSize];
+			int nodesCount = 0;
 
-	@Override
-	int calcRMQInnerBlock(int block, int i, int j) {
-		return block * blockSize + interBlocksDs[block].calcRMQ(i, j + 1);
+			int keyIdx = 0;
+
+			for (int i = 0; i < demoBlock.length; i++) {
+				int x = nodesCount > 0 ? nodes[nodesCount - 1] + blockSize : 0;
+				while ((key & (1 << keyIdx)) != 0) {
+					x = nodes[nodesCount-- - 1] - 1;
+					keyIdx++;
+				}
+				nodes[nodesCount++] = x;
+				keyIdx++;
+
+				demoBlock[i] = x;
+			}
+
+			return demoBlock;
+		}
+
+		@Override
+		int getBlockSize(int n) {
+			return (int) Math.ceil(Utils.log2((double) n) / 4);
+		}
+
+		@Override
+		int calcRMQInnerBlock(int block, int i, int j) {
+			return block * blockSize + interBlocksDs[block].findMinimumInRange(i, j + 1);
+		}
+
 	}
 
 }

@@ -19,68 +19,71 @@ public class RMQPlusMinusOneBenderFarachColton2000 extends RMQLinearAbstract {
 	 * O(n) pre processing time, O(n) space, O(1) query.
 	 */
 
-	private RMQ[] interBlocksDs;
-
-	public RMQPlusMinusOneBenderFarachColton2000() {
-	}
-
 	@Override
-	public void preProcessRMQ(RMQComparator c, int n) {
+	public RMQStatic.DataStructure preProcessSequence(RMQComparator c, int n) {
 		if (n <= 0)
 			throw new IllegalArgumentException();
 		Objects.requireNonNull(c);
-
-		interBlocksDs = new RMQ[calcBlockNum(n, getBlockSize(n))];
-		preProcessRMQOuterBlocks(c, n);
-		preProcessRMQInnerBlocks();
+		return new DS(c, n);
 	}
 
-	private void preProcessRMQInnerBlocks() {
-		Int2ObjectMap<RMQ> tables = new Int2ObjectOpenHashMap<>();
+	private class DS extends RMQLinearAbstract.DS {
 
-		for (int b = 0; b < blockNum; b++) {
-			int key = calcBlockKey(b);
+		private RMQStatic.DataStructure[] interBlocksDs;
 
-			interBlocksDs[b] = tables.computeIfAbsent(key, k -> {
-				int[] demoBlock = calcDemoBlock(k, blockSize);
-				RMQ innerRMQ = new RMQLookupTable();
-				innerRMQ.preProcessRMQ(RMQComparator.ofIntArray(demoBlock), demoBlock.length);
-				return innerRMQ;
-			});
-		}
-	}
-
-	private int calcBlockKey(int b) {
-		int key = 0;
-
-		int base = b * blockSize;
-		for (int i = blockSize - 2; i >= 0; i--) {
-			key <<= 1;
-			if (c.compare(base + i + 1, base + i) < 0)
-				key |= 1;
+		DS(RMQComparator c, int n) {
+			interBlocksDs = new RMQStatic.DataStructure[calcBlockNum(n, getBlockSize(n))];
+			preProcessRMQOuterBlocks(c, n);
+			preProcessRMQInnerBlocks();
 		}
 
-		return key;
-	}
+		private void preProcessRMQInnerBlocks() {
+			RMQStatic innerRMQ = new RMQLookupTable();
+			Int2ObjectMap<RMQStatic.DataStructure> tables = new Int2ObjectOpenHashMap<>();
 
-	private static int[] calcDemoBlock(int key, int blockSize) {
-		int[] demoBlock = new int[blockSize];
+			for (int b = 0; b < blockNum; b++) {
+				int key = calcBlockKey(b);
 
-		demoBlock[0] = 0;
-		for (int i = 1; i < demoBlock.length; i++)
-			demoBlock[i] = demoBlock[i - 1] + ((key & (1 << (i - 1))) != 0 ? -1 : 1);
+				interBlocksDs[b] = tables.computeIfAbsent(key, k -> {
+					int[] demoBlock = calcDemoBlock(k);
+					return innerRMQ.preProcessSequence(RMQComparator.ofIntArray(demoBlock), demoBlock.length);
+				});
+			}
+		}
 
-		return demoBlock;
-	}
+		private int calcBlockKey(int b) {
+			int key = 0;
 
-	@Override
-	int getBlockSize(int n) {
-		return n <= 1 ? 1 : (int) Math.ceil(Utils.log2((double) n) / 2);
-	}
+			int base = b * blockSize;
+			for (int i = blockSize - 2; i >= 0; i--) {
+				key <<= 1;
+				if (c.compare(base + i + 1, base + i) < 0)
+					key |= 1;
+			}
 
-	@Override
-	int calcRMQInnerBlock(int block, int i, int j) {
-		return block * blockSize + interBlocksDs[block].calcRMQ(i, j + 1);
+			return key;
+		}
+
+		private int[] calcDemoBlock(int key) {
+			int[] demoBlock = new int[blockSize];
+
+			demoBlock[0] = 0;
+			for (int i = 1; i < demoBlock.length; i++)
+				demoBlock[i] = demoBlock[i - 1] + ((key & (1 << (i - 1))) != 0 ? -1 : 1);
+
+			return demoBlock;
+		}
+
+		@Override
+		int getBlockSize(int n) {
+			return n <= 1 ? 1 : (int) Math.ceil(Utils.log2((double) n) / 2);
+		}
+
+		@Override
+		int calcRMQInnerBlock(int block, int i, int j) {
+			return block * blockSize + interBlocksDs[block].findMinimumInRange(i, j + 1);
+		}
+
 	}
 
 }
