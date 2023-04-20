@@ -28,7 +28,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 public class ColoringRecursiveLargestFirst implements Coloring {
 
 	@Override
-	public Result calcColoring(UGraph g) {
+	public Result computeColoring(UGraph g) {
 		if (Graphs.containsSelfLoops(g))
 			throw new IllegalArgumentException("no valid coloring in graphs with self loops");
 

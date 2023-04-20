@@ -25,7 +25,7 @@ public interface Coloring {
 	 * @param g a graph
 	 * @return a valid coloring with (hopefully) small number of different colors
 	 */
-	Coloring.Result calcColoring(UGraph g);
+	Coloring.Result computeColoring(UGraph g);
 
 	/**
 	 * A coloring result containing a color for each vertex.

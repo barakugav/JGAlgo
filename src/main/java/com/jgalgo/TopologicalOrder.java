@@ -3,11 +3,36 @@ package com.jgalgo;
 import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
+/**
+ * Algorithm that calculate a topological order of graph vertices.
+ * <p>
+ * A topological ordering of a directed graph is a linear ordering of its
+ * vertices such that for every directed edge {@code (u, v)}, {@code u} comes
+ * before {@code v} in the ordering. A topological ordering exist if and only if
+ * the graph is directed and acyclic (DAG).
+ * <p>
+ * This algorithm compute the topological ordering of a given DAG graph in
+ * linear time and space.
+ *
+ * @see <a href=
+ *      "https://en.wikipedia.org/wiki/Topological_sorting">Wikipedia</a>
+ * @author Barak Ugav
+ */
 public class TopologicalOrder {
 	private TopologicalOrder() {
 	}
 
-	public static int[] calcTopologicalSortingDAG(DiGraph g) {
+	/**
+	 * Compute the topological order of a DAG vertices.
+	 * <p>
+	 * This function runs in linear time.
+	 *
+	 * @param g a directed acyclic graph (DAG).
+	 * @return an array of size {@code n} with the vertices of the graph order in
+	 *         the topological order.
+	 * @throws IllegalArgumentException if the graph is not DAG
+	 */
+	public static int[] computeTopologicalSortingDAG(DiGraph g) {
 		int n = g.vertices().size();
 		int[] inDegree = new int[n];
 		IntPriorityQueue queue = new IntArrayFIFOQueue();

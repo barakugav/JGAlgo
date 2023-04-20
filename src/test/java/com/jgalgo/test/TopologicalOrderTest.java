@@ -34,7 +34,7 @@ public class TopologicalOrderTest extends TestUtils {
 			DiGraph g = (DiGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true)
 					.parallelEdges(true).selfEdges(false).cycles(false).connected(connected).build();
 
-			int[] topolSort = TopologicalOrder.calcTopologicalSortingDAG(g);
+			int[] topolSort = TopologicalOrder.computeTopologicalSortingDAG(g);
 
 			Set<Integer> seenVertices = new HashSet<>(n);
 			for (int i = 0; i < n; i++) {

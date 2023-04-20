@@ -25,7 +25,7 @@ public class SSSPDag implements SSSP {
 		SSSPResultImpl res = new SSSPResultImpl(g, source);
 		res.distances[source] = 0;
 
-		int[] topolSort = TopologicalOrder.calcTopologicalSortingDAG((DiGraph) g);
+		int[] topolSort = TopologicalOrder.computeTopologicalSortingDAG((DiGraph) g);
 		boolean sourceSeen = false;
 		for (int u : topolSort) {
 			if (!sourceSeen) {

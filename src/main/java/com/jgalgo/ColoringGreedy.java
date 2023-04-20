@@ -20,7 +20,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 public class ColoringGreedy implements Coloring {
 
 	@Override
-	public Coloring.Result calcColoring(UGraph g) {
+	public Coloring.Result computeColoring(UGraph g) {
 		if (Graphs.containsSelfLoops(g))
 			throw new IllegalArgumentException("no valid coloring in graphs with self loops");
 

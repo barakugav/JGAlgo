@@ -1,5 +1,70 @@
 package com.jgalgo;
 
+/**
+ * Weights of graph vertices or edges.
+ * <p>
+ * A weights object associated with the edges (vertices) of a graph support
+ * getting and setting a weight value for each edge (vertex) using the
+ * {@link #get(int)} and {@link #set(int, Object)} methods. Such weights are
+ * useful for various algorithms such as {@link SSSP} or
+ * {@link MaximumMatchingWeighted} to assigned the <i>cost</i> of edges. Another
+ * example is boolean weights used to represent the partition of vertices in
+ * bipartite graphs, which is used by algorithms such as
+ * {@link MaximumMatchingBipartiteHopcroftKarp}.
+ * <p>
+ * An exiting graph expose two methods to add new type of weights associated
+ * with its vertices or edges: {@link Graph#addVerticesWeights(Object, Class)}
+ * and {@link Graph#addEdgesWeights(Object, Class)}. Weights of primitive types
+ * can be created by passing a primitive class to these methods, for example
+ * this snippet demonstrate how a {@code double} weights type can be added to a
+ * graph, and then passed to {@link SSSPDijkstra}:
+ *
+ * <pre> {@code
+ * // Create a directed graph with three vertices and edges between them
+ * DiGraph g = new GraphArrayDirected();
+ * int v1 = g.addVertex();
+ * int v2 = g.addVertex();
+ * int v3 = g.addVertex();
+ * int e1 = g.addEdge(v1, v2);
+ * int e2 = g.addEdge(v2, v3);
+ * int e3 = g.addEdge(v1, v3);
+ *
+ * // Assign some weights to the edges
+ * Weights.Double w = g.addEdgesWeights("weightsKey", double.class);
+ * w.set(e1, 1.2);
+ * w.set(e2, 3.1);
+ * w.set(e3, 15.1);
+ *
+ * // Calculate the shortest paths from v1 to all other vertices
+ * SSSP ssspAlgo = new SSSPDijkstra();
+ * SSSP.Result ssspRes = ssspAlgo.computeShortestPaths(g, w, v1);
+ *
+ * // Print the shortest path from v1 to v3
+ * assert ssspRes.distance(v3) == 4.3;
+ * assert ssspRes.getPathTo(v3).equals(IntList.of(e1, e2));
+ * System.out.println("Distance from v1 to v3 is: " + ssspRes.distance(v3));
+ * System.out.println("The shortest path from v1 to v3 is:");
+ * for (IntIterator it = ssspRes.getPathTo(v3).iterator(); it.hasNext();) {
+ * 	int e = it.nextInt();
+ * 	int u = g.edgeSource(e), v = g.edgeTarget(e);
+ * 	System.out.println(" " + e + "(" + u + ", " + v + ")");
+ * }
+ * }</pre>
+ *
+ * <p>
+ * A default weight can be provided in the time of the weights container. The
+ * default weight will be returned from the {@link #get(int)} method for every
+ * edge (vertex) that was not explicitly set another value using
+ * {@link #set(int, Object)}.
+ * <p>
+ * If the weights container is associated with the edges of the graph, and the
+ * {@link IDStrategy} of the edges performed some swaps to maintain its
+ * invariant (see
+ * {@link IDStrategy#addIDSwapListener(IDStrategy.IDSwapListener)}) the weights
+ * container will be updated to the edges ids automatically.
+ *
+ * @author Barak Ugav
+ */
 public interface Weights<W> {
 
 	/**

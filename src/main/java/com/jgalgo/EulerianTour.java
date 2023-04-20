@@ -31,7 +31,7 @@ public class EulerianTour {
 	}
 
 	/**
-	 * Calculate an Eulerian tour in the graph that visit all edges exactly once.
+	 * Compute an Eulerian tour in the graph that visit all edges exactly once.
 	 * <p>
 	 * The graph is assumed to be (strongly) connected. Either a cycle or tour will
 	 * be found, depending on the vertices degrees.
@@ -42,11 +42,11 @@ public class EulerianTour {
 	 * @return an Eulerian tour that visit all edges of the graph exactly once
 	 * @throws IllegalArgumentException if there is no Eulerian tour in the graph
 	 */
-	public static Path calcTour(Graph g) {
-		return g instanceof DiGraph ? calcTourDirected((DiGraph) g) : calcTourUndirected((UGraph) g);
+	public static Path computeEulerianTour(Graph g) {
+		return g instanceof DiGraph ? computeTourDirected((DiGraph) g) : computeTourUndirected((UGraph) g);
 	}
 
-	private static Path calcTourUndirected(UGraph g) {
+	private static Path computeTourUndirected(UGraph g) {
 		int n = g.vertices().size();
 
 		int start = -1, end = -1;
@@ -126,7 +126,7 @@ public class EulerianTour {
 		return d;
 	}
 
-	private static Path calcTourDirected(DiGraph g) {
+	private static Path computeTourDirected(DiGraph g) {
 		int n = g.vertices().size();
 
 		int start = -1, end = -1;

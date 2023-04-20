@@ -34,10 +34,10 @@ public class APSPJohnson implements APSP {
 	public APSP.Result computeAllShortestPaths(Graph g, EdgeWeightFunc w) {
 		if (!(g instanceof DiGraph))
 			throw new IllegalArgumentException("only directed graphs are supported");
-		return calcAllShortestPaths0((DiGraph) g, w);
+		return computeAllShortestPaths0((DiGraph) g, w);
 	}
 
-	private APSP.Result calcAllShortestPaths0(DiGraph g, EdgeWeightFunc w) {
+	private APSP.Result computeAllShortestPaths0(DiGraph g, EdgeWeightFunc w) {
 		int n = g.vertices().size();
 
 		boolean negWeight = false;

@@ -24,7 +24,7 @@ class ColoringTestUtils extends TestUtils {
 			UGraph g = (UGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
 					.selfEdges(false).cycles(true).connected(false).build();
 			Coloring coloringAlgo = coloringAlgoBuilder.get();
-			Coloring.Result coloring = coloringAlgo.calcColoring(g);
+			Coloring.Result coloring = coloringAlgo.computeColoring(g);
 			validateColoring(g, coloring);
 		});
 	}

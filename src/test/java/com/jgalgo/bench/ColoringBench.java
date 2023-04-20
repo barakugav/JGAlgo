@@ -60,7 +60,7 @@ public class ColoringBench {
 	private void benchMST(Supplier<? extends Coloring> builder, Blackhole blackhole) {
 		for (UGraph g : graphs) {
 			Coloring algo = builder.get();
-			Coloring.Result res = algo.calcColoring(g);
+			Coloring.Result res = algo.computeColoring(g);
 			blackhole.consume(res);
 		}
 	}

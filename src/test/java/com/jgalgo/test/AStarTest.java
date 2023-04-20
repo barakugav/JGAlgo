@@ -155,7 +155,7 @@ public class AStarTest extends TestUtils {
 				AStar astart = new AStar();
 				for (int target = 0; target < n; target++) {
 					IntToDoubleFunction vHeuristic = vHeuristicBuilder.apply(new HeuristicParams(g, w, source, target));
-					Path path = astart.calcPath(g, w, source, target, vHeuristic);
+					Path path = astart.computeShortestPath(g, w, source, target, vHeuristic);
 					if (path != null) {
 						paths[target] = path;
 						distances[target] = SSSPTestUtils.getPathWeight(path, w);
