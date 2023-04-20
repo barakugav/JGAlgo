@@ -25,6 +25,11 @@ public class APSPJohnson implements APSP {
 	private SSSP negativeSsssp = new SSSPBellmanFord();
 	private SSSP positiveSssp = new SSSPDijkstra();
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @throws IllegalArgumentException if the graph is not directed
+	 */
 	@Override
 	public APSP.Result computeAllShortestPaths(Graph g, EdgeWeightFunc w) {
 		if (!(g instanceof DiGraph))

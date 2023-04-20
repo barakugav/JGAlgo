@@ -123,7 +123,7 @@ public class MaxFlowTestUtils extends TestUtils {
 	}
 
 	private static void testNetwork(Graph g, FlowNetwork net, int source, int sink, MaxFlow algo) {
-		double actualMaxFlow = algo.calcMaxFlow(g, net, source, sink);
+		double actualMaxFlow = algo.computeMaximumFlow(g, net, source, sink);
 
 		int n = g.vertices().size();
 		double[] vertexFlowOut = new double[n];
@@ -147,7 +147,7 @@ public class MaxFlowTestUtils extends TestUtils {
 		// for (IntIterator it = g.edges().iterator(); it.hasNext();)
 		// net.setFlow(it.nextInt(), 0);
 
-		double actualMaxFlow0 = algo.calcMaxFlow(g, net, source, sink);
+		double actualMaxFlow0 = algo.computeMaximumFlow(g, net, source, sink);
 		int actualMaxFlow = (int) actualMaxFlow0;
 		assertEquals(actualMaxFlow, actualMaxFlow0, "not integral max flow in integral network");
 

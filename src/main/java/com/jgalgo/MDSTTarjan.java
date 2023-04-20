@@ -34,6 +34,11 @@ public class MDSTTarjan implements MDST {
 		this.heapBuilder = Objects.requireNonNull(heapBuilder);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @throws IllegalArgumentException if the graph is not directed
+	 */
 	@Override
 	public IntCollection computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
 		if (!(g instanceof DiGraph))

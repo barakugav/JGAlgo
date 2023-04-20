@@ -40,14 +40,19 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 
 	private static final Object EdgeRefWeightKey = new Object();
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @throws IllegalArgumentException if the graph is not directed
+	 */
 	@Override
-	public double calcMaxFlow(Graph g, FlowNetwork net, int source, int sink) {
+	public double computeMaximumFlow(Graph g, FlowNetwork net, int source, int sink) {
 		if (!(g instanceof DiGraph))
 			throw new IllegalArgumentException("only directed graphs are supported");
 		if (net instanceof FlowNetwork.Int) {
-			return new WorkerInt((DiGraph) g, (FlowNetwork.Int) net, source, sink).calcMaxFlow();
+			return new WorkerInt((DiGraph) g, (FlowNetwork.Int) net, source, sink).computeMaxFlow();
 		} else {
-			return new WorkerDouble((DiGraph) g, net, source, sink).calcMaxFlow();
+			return new WorkerDouble((DiGraph) g, net, source, sink).computeMaxFlow();
 		}
 	}
 
@@ -68,7 +73,7 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 			this.sink = sink;
 		}
 
-		double calcMaxFlow() {
+		double computeMaxFlow() {
 			if (source == sink)
 				throw new IllegalArgumentException("Source and sink can't be the same vertex");
 			debug.println("\t", getClass().getSimpleName());
@@ -386,7 +391,7 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 			this.sink = sink;
 		}
 
-		double calcMaxFlow() {
+		double computeMaxFlow() {
 			if (source == sink)
 				throw new IllegalArgumentException("Source and sink can't be the same vertex");
 			debug.println("\t", getClass().getSimpleName());

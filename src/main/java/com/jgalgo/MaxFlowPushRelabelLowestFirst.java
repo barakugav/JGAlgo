@@ -32,14 +32,19 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  */
 public class MaxFlowPushRelabelLowestFirst implements MaxFlow {
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @throws IllegalArgumentException if the graph is not directed
+	 */
 	@Override
-	public double calcMaxFlow(Graph g, FlowNetwork net, int source, int sink) {
+	public double computeMaximumFlow(Graph g, FlowNetwork net, int source, int sink) {
 		if (!(g instanceof DiGraph))
 			throw new IllegalArgumentException("only directed graphs are supported");
 		if (net instanceof FlowNetwork.Int) {
-			return new WorkerInt((DiGraph) g, (FlowNetwork.Int) net, source, sink).calcMaxFlow();
+			return new WorkerInt((DiGraph) g, (FlowNetwork.Int) net, source, sink).computeMaxFlow();
 		} else {
-			return new WorkerDouble((DiGraph) g, net, source, sink).calcMaxFlow();
+			return new WorkerDouble((DiGraph) g, net, source, sink).computeMaxFlow();
 		}
 	}
 

@@ -36,14 +36,19 @@ public class MaxFlowDinicDynamicTrees implements MaxFlow {
 
 	private static final Object EdgeRefWeightKey = new Object();
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @throws IllegalArgumentException if the graph is not directed
+	 */
 	@Override
-	public double calcMaxFlow(Graph g, FlowNetwork net, int source, int sink) {
+	public double computeMaximumFlow(Graph g, FlowNetwork net, int source, int sink) {
 		if (!(g instanceof DiGraph))
 			throw new IllegalArgumentException("only directed graphs are supported");
-		return calcMaxFlow0((DiGraph) g, net, source, sink);
+		return computeMaxFlow((DiGraph) g, net, source, sink);
 	}
 
-	private double calcMaxFlow0(DiGraph g0, FlowNetwork net, int source, int sink) {
+	private double computeMaxFlow(DiGraph g0, FlowNetwork net, int source, int sink) {
 		if (source == sink)
 			throw new IllegalArgumentException("Source and sink can't be the same vertex");
 		debug.println("\t", getClass().getSimpleName());

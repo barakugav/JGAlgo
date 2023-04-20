@@ -289,7 +289,7 @@ class MaxFlowPushRelabelAbstract {
 
 		abstract void eliminateExcessWithTopologicalOrder(int topoBegin, int topoEnd, int[] topoNext);
 
-		double calcMaxFlow() {
+		double computeMaxFlow() {
 			// first phase
 			calcMaxPreflow();
 			// second phase

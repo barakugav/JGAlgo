@@ -106,7 +106,7 @@ public class MaxFlowBench {
 	private void benchMaxFlow(Supplier<? extends MaxFlow> builder, Blackhole blackhole) {
 		for (MaxFlowTask graph : graphs) {
 			MaxFlow algo = builder.get();
-			double flow = algo.calcMaxFlow(graph.g, graph.flow, graph.source, graph.sink);
+			double flow = algo.computeMaximumFlow(graph.g, graph.flow, graph.source, graph.sink);
 			blackhole.consume(flow);
 		}
 	}

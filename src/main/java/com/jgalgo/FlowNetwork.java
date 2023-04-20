@@ -26,7 +26,7 @@ package com.jgalgo;
  * int targetVertex = ...;
  * MaxFlow maxFlowAlg = ...;
  *
- * double totalFlow = maxFlowAlg.calcMaxFlow(g, net, sourceVertex, targetVertex);
+ * double totalFlow = maxFlowAlg.computeMaximumFlow(g, net, sourceVertex, targetVertex);
  * System.out.println("The maximum flow that can be pushed in the network is " + totalFlow);
  * for (IntIterator it = g.edges().iterator(); it.hasNext();) {
  * 	int e = it.nextInt();
