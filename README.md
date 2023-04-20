@@ -55,11 +55,11 @@ The library runs on Java 11 or higher, and it is installed using Maven (WIP).
 | MDST Tarjan directed graphs | $O(m \log n)$ |
 | Tree path maxima (TMP) Komlos1985King1997Hagerup2009 | $O(n + m)$ where $m$ is the number of queries |
 | Subtree Merge Findmin (used in general weighted matching) | $O(m + n \log n)$ |
-| Maximum matching bipartite unweighted HopcroftKarp1973 | $O(m \sqrt{n})$ |
-| Maximum matching general unweighted Gabow1976 | $O(m n \cdot \alpha (m,n))$ |
-| Maximum matching bipartite weighted SSSP | $O(m n + n^2 \log n)$ |
-| Maximum matching bipartite weighted Hungarian method | $O(m n + n^2 \log n)$ |
-| Maximum matching general weighted Gabow2017 | $O(m n + n^2 \log n)$ |
+| Maximum matching bipartite unweighted Hopcroft-Karp | $O(m \sqrt{n})$ |
+| Maximum matching general unweighted Gabow1976 with Union-Find | $O(m n \cdot \alpha (m,n))$ |
+| Maximum matching bipartite weighted using SSSP | $O(m n + n^2 \log n)$ |
+| Maximum matching bipartite weighted Hungarian method with heaps | $O(m n + n^2 \log n)$ |
+| Maximum matching general weighted Gabow1990 implementation with dynamic LCA | $O(m n + n^2 \log n)$ |
 | Travelling Salesman Problem (TSP) $2$-appx using MST | $O(n^2)$ |
 | Travelling Salesman Problem (TSP) $3/2$-appx using maximum matching | $O(n^3)$ |
 | Vertex Coloring Greedy arbitrary vertices order | $O(n + m)$ assuming the number of colors is constant |

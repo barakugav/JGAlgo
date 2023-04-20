@@ -10,44 +10,77 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 
-public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighted {
-
-	/*
-	 * O(m n + n^2 log n)
-	 */
+/**
+ * Kuhn's Hungarian method for maximum weighted matching in bipartite graphs.
+ * <p>
+ * The running time of the algorithm is {@code m n + n^2 log n} and it uses
+ * linear space.
+ * <p>
+ * Based on 'The Hungarian method for the assignment problem' by Kuhn, H.W.
+ * (1955). The original paper stated a running time of {@code n^3}, but by using
+ * heaps with {@code decreaseKey} operations in {@code O(1)} the running time
+ * can be reduced to {@code m n + n^2 log n}, as done in this implementation.
+ *
+ * @author Barak Ugav
+ */
+public class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumMatchingWeighted {
 
 	private Object bipartiteVerticesWeightKey = Weights.DefaultBipartiteWeightKey;
 	private HeapReferenceable.Builder heapBuilder = HeapPairing::new;
 
-	public MatchingWeightedBipartiteHungarianMethod() {
-	}
-
+	/**
+	 * Set the key used to get the bipartiteness property of vertices.
+	 * <p>
+	 * The algorithm run on bipartite graphs and expect the user to provide the
+	 * vertices partition by a boolean vertices weights using
+	 * {@link Graph#verticesWeight(Object)}. By default, the weights are searched
+	 * using the key {@link Weights#DefaultBipartiteWeightKey}. To override this
+	 * default behavior, use this function to choose a different key.
+	 *
+	 * @param key an object key that will be used to get the bipartite vertices
+	 *            partition by {@code g.verticesWeight(key)}.
+	 */
 	public void setBipartiteVerticesWeightKey(Object key) {
 		bipartiteVerticesWeightKey = key;
 	}
 
+	/**
+	 * Set the implementation of the heap used by this algorithm.
+	 *
+	 * @param heapBuilder a builder for heaps used by this algorithm
+	 */
 	public void setHeapBuilder(HeapReferenceable.Builder heapBuilder) {
 		this.heapBuilder = Objects.requireNonNull(heapBuilder);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @throws NullPointerException if the bipartiteness vertices weights is not
+	 *                              found. See
+	 *                              {@link #setBipartiteVerticesWeightKey(Object)}.
+	 */
 	@Override
-	public IntCollection calcMaxMatching(Graph g, EdgeWeightFunc w) {
-		if (!(g instanceof UGraph))
-			throw new IllegalArgumentException("Only undirected bipartite graphs are supported");
+	public IntCollection computeMaximumMatching(UGraph g, EdgeWeightFunc w) {
 		Weights.Bool partition = g.verticesWeight(bipartiteVerticesWeightKey);
 		Objects.requireNonNull(partition,
 				"Bipartiteness values weren't found with weight " + bipartiteVerticesWeightKey);
-		return new Worker((UGraph) g, partition, w).calcMaxMatching(false);
+		return new Worker(g, partition, w).computeMaxMatching(false);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @throws NullPointerException if the bipartiteness vertices weights is not
+	 *                              found. See
+	 *                              {@link #setBipartiteVerticesWeightKey(Object)}.
+	 */
 	@Override
-	public IntCollection calcPerfectMaxMatching(Graph g, EdgeWeightFunc w) {
-		if (!(g instanceof UGraph))
-			throw new IllegalArgumentException("Only undirected bipartite graphs are supported");
+	public IntCollection computeMaximumPerfectMatching(UGraph g, EdgeWeightFunc w) {
 		Weights.Bool partition = g.verticesWeight(bipartiteVerticesWeightKey);
 		Objects.requireNonNull(partition,
 				"Bipartiteness values weren't found with weight " + bipartiteVerticesWeightKey);
-		return new Worker((UGraph) g, partition, w).calcMaxMatching(true);
+		return new Worker(g, partition, w).computeMaxMatching(true);
 	}
 
 	private class Worker {
@@ -83,7 +116,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 			dualVal0 = new double[n];
 		}
 
-		IntCollection calcMaxMatching(boolean perfect) {
+		IntCollection computeMaxMatching(boolean perfect) {
 			final int n = g.vertices().size();
 			final int EdgeNone = -1;
 
@@ -117,12 +150,13 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 
 				currentTree: for (;;) {
 					while (!nextTightEdge.isEmpty()) {
-						int e = nextTightEdge.findMin().intValue();
+						HeapReference<Integer> minRef = nextTightEdge.findMinRef();
+						int e = minRef.get().intValue();
 						int u0 = g.edgeSource(e), v0 = g.edgeTarget(e);
 
 						if (inTree.get(u0) && inTree.get(v0)) {
 							// Vertex already in tree, edge is irrelevant
-							nextTightEdge.extractMin();
+							nextTightEdge.removeRef(minRef);
 							continue;
 						}
 						int v = inTree.get(u0) ? v0 : u0;
@@ -132,7 +166,7 @@ public class MatchingWeightedBipartiteHungarianMethod implements MatchingWeighte
 							break;
 
 						// Edge is tight, add it to the tree
-						nextTightEdge.extractMin();
+						nextTightEdge.removeRef(minRef);
 						parent[v] = e;
 						vertexAddedToTree(v);
 

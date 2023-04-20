@@ -134,6 +134,10 @@ public class DynamicTreeSplay<V, E> implements DynamicTree<V, E> {
 		throw new UnsupportedOperationException();
 	}
 
+	/**
+	 * @throws UnsupportedOperationException
+	 */
+	@Deprecated
 	@Override
 	public int size(Node<V, E> v) {
 		throw new UnsupportedOperationException();

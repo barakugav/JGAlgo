@@ -8,36 +8,64 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 
-public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
-
-	/*
-	 * O(m n + n^2 log n)
-	 */
+/**
+ * Maximum weighted matching algorithm using {@link SSSP} for bipartite graphs.
+ * <p>
+ * The running time of this algorithm is {@code O(m n + n^2 log n)} and it uses
+ * linear space. If a different {@link SSSP} algorithm is provided using
+ * {@link #setSsspAlgo(SSSP)} the running time will be {@code O(n)} times the
+ * running time of the shortest path algorithm on a graph of size {@code O(n)}.
+ *
+ * @author Barak Ugav
+ */
+public class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeighted {
 
 	private Object bipartiteVerticesWeightKey = Weights.DefaultBipartiteWeightKey;
 	private SSSP ssspAlgo = new SSSPDijkstra();
 	private static final Object EdgeRefWeightKey = new Object();
 
-	public MatchingWeightedBipartiteSSSP() {
-	}
-
+	/**
+	 * Set the {@link SSSP} algorithm used by this algorithm.
+	 * <p>
+	 * The shortest path algorithm should support non negative floating points
+	 * weights. The default implementation uses {@link SSSPDijkstra}.
+	 *
+	 * @param algo an shortest path algorithm
+	 */
 	public void setSsspAlgo(SSSP algo) {
 		ssspAlgo = Objects.requireNonNull(algo);
 	}
 
+	/**
+	 * Set the key used to get the bipartiteness property of vertices.
+	 * <p>
+	 * The algorithm run on bipartite graphs and expect the user to provide the
+	 * vertices partition by a boolean vertices weights using
+	 * {@link Graph#verticesWeight(Object)}. By default, the weights are searched
+	 * using the key {@link Weights#DefaultBipartiteWeightKey}. To override this
+	 * default behavior, use this function to choose a different key.
+	 *
+	 * @param key an object key that will be used to get the bipartite vertices
+	 *            partition by {@code g.verticesWeight(key)}.
+	 */
 	public void setBipartiteVerticesWeightKey(Object key) {
 		bipartiteVerticesWeightKey = key;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @throws NullPointerException if the bipartiteness vertices weights is not
+	 *                              found. See
+	 *                              {@link #setBipartiteVerticesWeightKey(Object)}.
+	 */
 	@Override
-	public IntCollection calcMaxMatching(Graph g, EdgeWeightFunc w) {
-		if (!(g instanceof UGraph))
-			throw new IllegalArgumentException("Only undirected bipartite graphs are supported");
+	public IntCollection computeMaximumMatching(UGraph g, EdgeWeightFunc w) {
 		Weights.Bool partition = g.verticesWeight(bipartiteVerticesWeightKey);
 		Objects.requireNonNull(partition,
 				"Bipartiteness values weren't found with weight " + bipartiteVerticesWeightKey);
-		DiGraph g0 = referenceGraph((UGraph) g, partition, w);
-		int[] match = calcMaxMatching0(g0, w, partition);
+		DiGraph g0 = referenceGraph(g, partition, w);
+		int[] match = computeMaxMatching(g0, w, partition);
 
 		int n = g.vertices().size();
 		IntList res = new IntArrayList();
@@ -49,7 +77,7 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 		return res;
 	}
 
-	private int[] calcMaxMatching0(DiGraph g, EdgeWeightFunc w, Weights.Bool partition) {
+	private int[] computeMaxMatching(DiGraph g, EdgeWeightFunc w, Weights.Bool partition) {
 		Weights<Ref> edgeRef = g.edgesWeight(EdgeRefWeightKey);
 
 		int n = g.vertices().size();
@@ -133,8 +161,12 @@ public class MatchingWeightedBipartiteSSSP implements MatchingWeighted {
 		return match;
 	}
 
+	/**
+	 * @throws UnsupportedOperationException
+	 */
+	@Deprecated
 	@Override
-	public IntCollection calcPerfectMaxMatching(Graph g, EdgeWeightFunc w) {
+	public IntCollection computeMaximumPerfectMatching(UGraph g, EdgeWeightFunc w) {
 		throw new UnsupportedOperationException();
 	}
 

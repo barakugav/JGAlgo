@@ -19,39 +19,46 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
-public class MatchingWeightedGabow2017 implements MatchingWeighted {
+/**
+ * Edmonds' Blossom algorithm for Maximum weighted matching with Gabow's dynamic
+ * LCA data structure.
+ * <p>
+ * This algorithm runs in {@code O(m n + n^2 log n)} time and uses linear space.
+ * <p>
+ * Based on the original paper 'Paths, Trees, and Flowers' by Jack Edmonds
+ * (1965), later improved by 'An Efficient Implementation of Edmonds Algorithm
+ * for Maximum Matching on Graphs' by Harold N. Gabow (1976), and using the
+ * efficient dynamic LCA from 'Data Structures for Weighted Matching and Nearest
+ * Common Ancestors with Linking' by Harold N. Gabow (1990) resulting in the
+ * final running time.
+ *
+ * @author Barak Ugav
+ */
+public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted {
 
-	/*
-	 * This class implement Edmonds' "Blossom algorithm" for weighted matching on
-	 * general graphs. The algorithm runs in O(m n + n^2 log n).
-	 */
-
-	private final DebugPrintsManager debugPrintManager;
+	private final DebugPrintsManager debugPrintManager = new DebugPrintsManager();
 	private HeapReferenceable.Builder heapBuilder = HeapPairing::new;
 
 	private static final double EPS = 0.00001;
 
-	public MatchingWeightedGabow2017() {
-		debugPrintManager = new DebugPrintsManager();
-	}
-
+	/**
+	 * Set the implementation of the heap used by this algorithm.
+	 *
+	 * @param heapBuilder a builder for heaps used by this algorithm
+	 */
 	public void setHeapBuilder(HeapReferenceable.Builder heapBuilder) {
 		this.heapBuilder = Objects.requireNonNull(heapBuilder);
 	}
 
 	@Override
-	public IntCollection calcMaxMatching(Graph g, EdgeWeightFunc w) {
-		if (g instanceof DiGraph)
-			throw new IllegalArgumentException("Only undirected bipartite graphs are supported");
-		return new Worker(g, w, heapBuilder, debugPrintManager).calcMaxMatching(false);
+	public IntCollection computeMaximumMatching(UGraph g, EdgeWeightFunc w) {
+		return new Worker(g, w, heapBuilder, debugPrintManager).computeMaxMatching(false);
 
 	}
 
 	@Override
-	public IntCollection calcPerfectMaxMatching(Graph g, EdgeWeightFunc w) {
-		if (g instanceof DiGraph)
-			throw new IllegalArgumentException("Only undirected bipartite graphs are supported");
-		return new Worker(g, w, heapBuilder, debugPrintManager).calcMaxMatching(true);
+	public IntCollection computeMaximumPerfectMatching(UGraph g, EdgeWeightFunc w) {
+		return new Worker(g, w, heapBuilder, debugPrintManager).computeMaxMatching(true);
 	}
 
 	private static class Worker {
@@ -319,7 +326,7 @@ public class MatchingWeightedGabow2017 implements MatchingWeighted {
 			this.debug = debugPrint;
 		}
 
-		private IntCollection calcMaxMatching(boolean perfect) {
+		private IntCollection computeMaxMatching(boolean perfect) {
 			int n = g.vertices().size();
 
 			// init dual value of all vertices as maxWeight / 2

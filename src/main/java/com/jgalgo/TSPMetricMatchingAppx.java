@@ -57,7 +57,7 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 		}
 
 		/* Calculate maximum matching between the odd vertices */
-		IntCollection matching = new MatchingWeightedGabow2017().calcPerfectMaxMatching(mG, mGWeightsNeg);
+		IntCollection matching = new MaximumMatchingWeightedGabow1990().computeMaximumPerfectMatching(mG, mGWeightsNeg);
 
 		/* Build a graph of the union of the MST and the matching result */
 		UGraph g1 = new GraphArrayUndirected(n);

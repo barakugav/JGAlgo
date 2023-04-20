@@ -80,16 +80,28 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 		super.meld(h);
 	}
 
+	/**
+	 * @throws UnsupportedOperationException
+	 */
+	@Deprecated
 	@Override
 	public BST<E> splitSmaller(E e) {
 		throw new UnsupportedOperationException();
 	}
 
+	/**
+	 * @throws UnsupportedOperationException
+	 */
+	@Deprecated
 	@Override
 	public BST<E> splitGreater(E e) {
 		throw new UnsupportedOperationException();
 	}
 
+	/**
+	 * @throws UnsupportedOperationException
+	 */
+	@Deprecated
 	@Override
 	public RedBlackTree<E> split(HeapReference<E> ref) {
 		throw new UnsupportedOperationException();

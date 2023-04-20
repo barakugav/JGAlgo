@@ -52,7 +52,7 @@ public class ColoringBench {
 		final int graphsNum = 20;
 		graphs = new ArrayList<>(graphsNum);
 		for (int graphIdx = 0; graphIdx < graphsNum; graphIdx++) {
-			UGraph g = (UGraph) GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
+			UGraph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
 			graphs.add(g);
 		}
 	}

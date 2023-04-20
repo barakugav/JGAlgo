@@ -9,7 +9,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.jgalgo.EdgeIter;
 import com.jgalgo.Graph;
 import com.jgalgo.GraphArrayUndirected;
-import com.jgalgo.Matching;
+import com.jgalgo.MaximumMatching;
+import com.jgalgo.UGraph;
 import com.jgalgo.Weights;
 import com.jgalgo.test.GraphImplTestUtils.GraphImpl;
 import com.jgalgo.test.GraphsTestUtils.RandomGraphBuilder;
@@ -24,14 +25,15 @@ class MatchingBipartiteTestUtils extends TestUtils {
 	private MatchingBipartiteTestUtils() {
 	}
 
-	static Graph randGraphBipartite(int sn, int tn, int m, GraphImpl graphImpl, long seed) {
-		return new RandomGraphBuilder(seed).sn(sn).tn(tn).m(m).directed(false).bipartite(true).parallelEdges(false)
+	static UGraph randGraphBipartite(int sn, int tn, int m, GraphImpl graphImpl, long seed) {
+		return (UGraph) new RandomGraphBuilder(seed).sn(sn).tn(tn).m(m).directed(false).bipartite(true)
+				.parallelEdges(false)
 				.selfEdges(false).cycles(true).connected(false).graphImpl(graphImpl).build();
 	}
 
-	static Graph createGraphBipartiteFromAdjacencyMatrix(int sSize, int[][] m) {
+	static UGraph createGraphBipartiteFromAdjacencyMatrix(int sSize, int[][] m) {
 		int n = m.length;
-		Graph g = new GraphArrayUndirected(n);
+		UGraph g = new GraphArrayUndirected(n);
 		Weights.Bool partition = g.addVerticesWeights(Weights.DefaultBipartiteWeightKey, boolean.class);
 		for (int u = 0; u < sSize; u++)
 			partition.set(u, true);
@@ -48,11 +50,11 @@ class MatchingBipartiteTestUtils extends TestUtils {
 		return g;
 	}
 
-	static void randBipartiteGraphs(Supplier<? extends Matching> builder, long seed) {
+	static void randBipartiteGraphs(Supplier<? extends MaximumMatching> builder, long seed) {
 		randBipartiteGraphs(builder, GraphImplTestUtils.GRAPH_IMPL_DEFAULT, seed);
 	}
 
-	static void randBipartiteGraphs(Supplier<? extends Matching> builder, GraphImpl graphImpl, long seed) {
+	static void randBipartiteGraphs(Supplier<? extends MaximumMatching> builder, GraphImpl graphImpl, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(256, 4, 4, 4), phase(128, 16, 16, 64), phase(16, 128, 128, 128),
 				phase(16, 128, 128, 512), phase(2, 1024, 1024, 1024), phase(1, 1024, 1024, 5467));
@@ -60,16 +62,16 @@ class MatchingBipartiteTestUtils extends TestUtils {
 			int sn = args[0];
 			int tn = args[1];
 			int m = args[2];
-			Graph g = randGraphBipartite(sn, tn, m, graphImpl, seedGen.nextSeed());
+			UGraph g = randGraphBipartite(sn, tn, m, graphImpl, seedGen.nextSeed());
 
-			Matching algo = builder.get();
+			MaximumMatching algo = builder.get();
 			int expeced = calcExpectedMaxMatching(g);
 			testBipartiteAlgo(algo, g, expeced);
 		});
 	}
 
-	private static void testBipartiteAlgo(Matching algo, Graph g, int expectedMatchSize) {
-		IntCollection match = algo.calcMaxMatching(g);
+	private static void testBipartiteAlgo(MaximumMatching algo, UGraph g, int expectedMatchSize) {
+		IntCollection match = algo.computeMaximumMatching(g);
 
 		MatchingUnweightedTestUtils.validateMatching(g, match);
 

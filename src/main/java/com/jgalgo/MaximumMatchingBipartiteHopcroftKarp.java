@@ -10,26 +10,50 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
-public class MatchingBipartiteHopcroftKarp1973 implements Matching {
-
-	/*
-	 * Maximum matching in unweighted undirected bipartite graph in O(m n^0.5)
-	 */
+/**
+ * Hopcroft–Karp maximum unweighted matching algorithm for undirected bipartite
+ * graphs.
+ * <p>
+ * The algorithm runs in {@code O(m} <span>&#8730;</span> {@code n)} and it uses
+ * linear space.
+ * <p>
+ * Based on "A n^5/2 Algorithm for Maximum Matchings in Bipartite Graphs" by J.
+ * Hopcroft and R. Karp (1973).
+ *
+ * @see <a href=
+ *      "https://en.wikipedia.org/wiki/Hopcroft%E2%80%93Karp_algorithm">Wikipedia</a>
+ * @author Barak Ugav
+ */
+public class MaximumMatchingBipartiteHopcroftKarp implements MaximumMatching {
 
 	private Object bipartiteVerticesWeightKey = Weights.DefaultBipartiteWeightKey;
 	private static final Object EdgeRefWeightKey = new Object();
 
-	public MatchingBipartiteHopcroftKarp1973() {
-	}
-
+	/**
+	 * Set the key used to get the bipartiteness property of vertices.
+	 * <p>
+	 * The algorithm run on bipartite graphs and expect the user to provide the
+	 * vertices partition by a boolean vertices weights using
+	 * {@link Graph#verticesWeight(Object)}. By default, the weights are searched
+	 * using the key {@link Weights#DefaultBipartiteWeightKey}. To override this
+	 * default behavior, use this function to choose a different key.
+	 *
+	 * @param key an object key that will be used to get the bipartite vertices
+	 *            partition by {@code g.verticesWeight(key)}.
+	 */
 	public void setBipartiteVerticesWeightKey(Object key) {
 		bipartiteVerticesWeightKey = key;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @throws NullPointerException if the bipartiteness vertices weights is not
+	 *                              found. See
+	 *                              {@link #setBipartiteVerticesWeightKey(Object)}.
+	 */
 	@Override
-	public IntCollection calcMaxMatching(Graph g) {
-		if (!(g instanceof UGraph))
-			throw new IllegalArgumentException("only undirected bipartite graphs are supported");
+	public IntCollection computeMaximumMatching(UGraph g) {
 		int n = g.vertices().size();
 
 		Weights.Bool partition = g.verticesWeight(bipartiteVerticesWeightKey);

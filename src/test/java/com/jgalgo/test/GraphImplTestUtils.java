@@ -18,9 +18,9 @@ import com.jgalgo.GraphArrayUndirected;
 import com.jgalgo.GraphCapabilities;
 import com.jgalgo.MDSTTarjan;
 import com.jgalgo.MSTKruskal;
-import com.jgalgo.MatchingGabow1976;
-import com.jgalgo.MatchingWeightedBipartiteHungarianMethod;
 import com.jgalgo.MaxFlowEdmondsKarp;
+import com.jgalgo.MaximumMatchingGabow1976;
+import com.jgalgo.MaximumMatchingWeightedBipartiteHungarianMethod;
 import com.jgalgo.Weights;
 import com.jgalgo.test.GraphsTestUtils.RandomGraphBuilder;
 
@@ -290,11 +290,12 @@ class GraphImplTestUtils extends TestUtils {
 	}
 
 	static void testUndirectedBipartiteMatching(GraphImpl graphImpl, long seed) {
-		MatchingBipartiteTestUtils.randBipartiteGraphs(MatchingGabow1976::new, graphImpl, seed);
+		MatchingBipartiteTestUtils.randBipartiteGraphs(MaximumMatchingGabow1976::new, graphImpl, seed);
 	}
 
 	static void testUndirectedBipartiteMatchingWeighted(GraphImpl graphImpl, long seed) {
-		MatchingWeightedTestUtils.randGraphsBipartiteWeighted(MatchingWeightedBipartiteHungarianMethod::new, graphImpl,
+		MatchingWeightedTestUtils.randGraphsBipartiteWeighted(MaximumMatchingWeightedBipartiteHungarianMethod::new,
+				graphImpl,
 				seed);
 	}
 
@@ -355,6 +356,9 @@ class GraphImplTestUtils extends TestUtils {
 				vertices.set(id1, v2);
 				vertices.set(id2, v1);
 			});
+
+			if (debugPrints)
+				 System.out.println("\n\n*****");
 		}
 
 		int verticesNum() {
@@ -372,6 +376,8 @@ class GraphImplTestUtils extends TestUtils {
 		}
 
 		void removeVertex(Vertex v) {
+			if (debugPrints)
+				System.out.println("removeVertex()");
 			removeEdgesOf(v);
 
 			boolean removed = vertices.remove(v);
@@ -580,7 +586,6 @@ class GraphImplTestUtils extends TestUtils {
 
 	private static void testRandOps(Graph g, int opsNum, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		// System.out.println("\n\n*****");
 		GraphCapabilities capabilities = g.getCapabilities();
 		Random rand = new Random(seedGen.nextSeed());
 		RandWeighted<GraphOp> opRand = new RandWeighted<>();

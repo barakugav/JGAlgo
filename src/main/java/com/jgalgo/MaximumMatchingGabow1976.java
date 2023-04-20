@@ -9,24 +9,30 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
-public class MatchingGabow1976 implements Matching {
-
-	/*
-	 * Maximum matching in unweighted undirected graph in O(m n alpha(m, n)) (alpha
-	 * is inverse Ackermann's function)
-	 */
-
-	public MatchingGabow1976() {
-	}
+/**
+ * Gabow's implementation of Endmond's algorithm for cardinality maximum
+ * matching in general graphs.
+ * <p>
+ * The algorithm runs {@code n} iterations, in each one the matching is
+ * increased by one. In each iteration, a BFS is run from the unmatched vertices
+ * using only alternating paths, searching for an augmenting path. When a
+ * blossom is detected, the algorithm contract it to a 'super vertex' and
+ * continue in the BFS. Instead of storing the blossom explicitly as stated in
+ * the paper, we use {@link UnionFind} to implicitly represent the blossoms.
+ * Each iteration require {@code m \alpha (m, n)} time, where
+ * {@code \alpha (m, n)} is inverse Ackermann's function.
+ * <p>
+ * Based on 'An Efficient Implementation of Edmonds Algorithm for Maximum
+ * Matching on Graphs' by Harold N. Gabow (1976). Although the original paper
+ * stated the running time is {@code O(n^3)}, we implement it using
+ * {@link UnionFind}, and the running time is {@code O(m n \alpha (m, n))}.
+ *
+ * @author Barak Ugav
+ */
+public class MaximumMatchingGabow1976 implements MaximumMatching {
 
 	@Override
-	public IntCollection calcMaxMatching(Graph g) {
-		if (!(g instanceof UGraph))
-			throw new IllegalArgumentException("only undirected graphs are supported");
-		return calcMaxMatching0((UGraph) g);
-	}
-
-	private static IntCollection calcMaxMatching0(UGraph g) {
+	public IntCollection computeMaximumMatching(UGraph g) {
 		int n = g.vertices().size();
 
 		IntPriorityQueue queue = new IntArrayFIFOQueue();
@@ -79,10 +85,10 @@ public class MatchingGabow1976 implements Matching {
 
 					if (vRoot == -1) {
 						// unexplored vertex, add to tree
-						int matchedEdge = matched[v];
 						root[v] = uRoot;
 						parent[v] = e;
 
+						int matchedEdge = matched[v];
 						int w = g.edgeEndpoint(matchedEdge, v);
 						root[w] = uRoot;
 						isEven.set(w);
@@ -126,7 +132,7 @@ public class MatchingGabow1976 implements Matching {
 						// Find all vertices of the blossom
 						int blossomVerticesSize = 0;
 						for (int p : new int[] { uBase, vBase }) {
-							final int brigeEdge = e, brigeVertex = p == uBase ? u : v;
+							final int bridgeEdge = e, bridgeVertex = p == uBase ? u : v;
 							while (p != base) {
 								// handle even vertex
 								blossomVertices[blossomVerticesSize++] = p;
@@ -135,8 +141,8 @@ public class MatchingGabow1976 implements Matching {
 								p = g.edgeEndpoint(matched[p], p);
 								blossomVertices[blossomVerticesSize++] = p;
 								queue.enqueue(p); // add the odd vertex that became even to the queue
-								bridge[p * 2 + 0] = brigeEdge;
-								bridge[p * 2 + 1] = brigeVertex;
+								bridge[p * 2 + 0] = bridgeEdge;
+								bridge[p * 2 + 1] = bridgeVertex;
 
 								p = bases[uf.find(g.edgeEndpoint(parent[p], p))];
 							}

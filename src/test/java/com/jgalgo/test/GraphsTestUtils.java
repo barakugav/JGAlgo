@@ -292,7 +292,7 @@ public class GraphsTestUtils extends TestUtils {
 		return weight;
 	}
 
-	public static Graph randGraph(int n, int m, long seed) {
+	public static UGraph randGraph(int n, int m, long seed) {
 		return randGraph(n, m, GraphImplTestUtils.GRAPH_IMPL_DEFAULT, seed);
 	}
 

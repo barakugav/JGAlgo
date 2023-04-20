@@ -28,13 +28,6 @@ abstract class HeapAbstract<E> extends AbstractCollection<E> implements Heap<E> 
 	}
 
 	@Override
-	public E extractMin() {
-		E min = findMin();
-		remove(min);
-		return min;
-	}
-
-	@Override
 	public void meld(Heap<? extends E> h) {
 		if (h == this)
 			return;

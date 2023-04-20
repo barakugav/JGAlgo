@@ -11,7 +11,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.jgalgo.EdgeIter;
 import com.jgalgo.Graph;
-import com.jgalgo.Matching;
+import com.jgalgo.MaximumMatching;
+import com.jgalgo.UGraph;
 
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -21,22 +22,22 @@ class MatchingUnweightedTestUtils extends TestUtils {
 	private MatchingUnweightedTestUtils() {
 	}
 
-	static void randGraphs(Supplier<? extends Matching> builder, long seed) {
+	static void randGraphs(Supplier<? extends MaximumMatching> builder, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(256, 16, 8), phase(256, 16, 16), phase(128, 32, 32), phase(128, 32, 64),
 				phase(64, 64, 64), phase(64, 64, 128), phase(16, 256, 256), phase(16, 256, 512), phase(1, 2048, 2048),
 				phase(1, 2048, 3249));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
-			Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
-			Matching algo = builder.get();
+			UGraph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
+			MaximumMatching algo = builder.get();
 			int expeced = calcExpectedMaxMatching(g);
 			testAlgo(algo, g, expeced);
 		});
 	}
 
-	private static void testAlgo(Matching algo, Graph g, int expectedMatchSize) {
-		IntCollection match = algo.calcMaxMatching(g);
+	private static void testAlgo(MaximumMatching algo, UGraph g, int expectedMatchSize) {
+		IntCollection match = algo.computeMaximumMatching(g);
 		validateMatching(g, match);
 		assertEquals(expectedMatchSize, match.size(), "unexpected match size");
 	}
