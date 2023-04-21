@@ -9,23 +9,63 @@ import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntStack;
 
+/**
+ * A utilities class containing graph trees related methods.
+ *
+ * @author Barak Ugav
+ */
 public class Trees {
 
 	private Trees() {
 	}
 
+	/**
+	 * Check if an undirected graph is a tree.
+	 * <p>
+	 * An undirected graph is a tree if its connected and contains no cycle,
+	 * therefore {@code n-1} edges.
+	 * <p>
+	 * This method runs in linear time.
+	 *
+	 * @param g a graph
+	 * @return {@code true} if the graph is a tree, else {@code false}
+	 */
 	public static boolean isTree(UGraph g) {
-		IntIterator vIter = g.vertices().iterator();
-		return !vIter.hasNext() ? true : isTree(g, vIter.nextInt());
+		return g.vertices().isEmpty() ? true : isTree(g, 0);
 	}
 
+	/**
+	 * Check if a graph is a tree rooted as some vertex.
+	 * <p>
+	 * For undirected graphs, a graph which is a tree rooted at some vertex can be
+	 * rooted at any other vertex and will always be a tree. For directed graphs
+	 * however this is not true. A directed graph might be a tree rooted at some
+	 * vertex, but will no be connected if we root it at another vertex.
+	 * <p>
+	 * This method runs in linear time.
+	 *
+	 * @param g    a graph
+	 * @param root a root vertex
+	 * @return {@code true} if the graph is a tree rooted at {@code root}, else
+	 *         {@code false}.
+	 */
 	public static boolean isTree(Graph g, int root) {
 		return isForest(g, new int[] { root });
 	}
 
+	/**
+	 * Check if a graph is a forest.
+	 * <p>
+	 * A forest is a graph which can be divided into trees, which is equivalent to
+	 * saying a graph with no cycles.
+	 * <p>
+	 * This method runs in linear time.
+	 *
+	 * @param g a graph
+	 * @return {@code true} if the graph is a forest, else {@code false}
+	 */
 	public static boolean isForest(Graph g) {
 		int n = g.vertices().size();
 		int[] roots = new int[n];
@@ -34,6 +74,20 @@ public class Trees {
 		return isForest(g, roots, true);
 	}
 
+	/**
+	 * Check if a graph is a forest rooted at the given roots.
+	 * <p>
+	 * A forest is a graph which can be divided into trees, which is equivalent to
+	 * saying a graph with no cycles. For a graph to be a forest rooted at some
+	 * given roots, all vertices must be reachable from the roots, and the roots can
+	 * not be reached from another root.
+	 * <p>
+	 * This method runs in linear time.
+	 *
+	 * @param g a graph
+	 * @param roots a set of roots
+	 * @return true if the graph is a forest rooted at the given roots.
+	 */
 	public static boolean isForest(Graph g, int[] roots) {
 		return isForest(g, roots, false);
 	}

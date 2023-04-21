@@ -172,8 +172,7 @@ class GraphImplTestUtils extends TestUtils {
 					}
 				}
 			}
-			for (IntIterator it = g.vertices().iterator(); it.hasNext();) {
-				int u = it.nextInt();
+			for (int u = 0; u < n; u++) {
 				IntSet uEdges = new IntOpenHashSet();
 				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 					int e = eit.nextInt();
@@ -182,8 +181,7 @@ class GraphImplTestUtils extends TestUtils {
 				assertEquals(edgesOut.get(u), uEdges);
 			}
 			if (directed) {
-				for (IntIterator it = g.vertices().iterator(); it.hasNext();) {
-					int u = it.nextInt();
+				for (int u = 0; u < n; u++) {
 					IntSet uEdges = new IntOpenHashSet();
 					for (EdgeIter eit = ((DiGraph) g).edgesOut(u); eit.hasNext();) {
 						int e = eit.nextInt();
@@ -193,8 +191,7 @@ class GraphImplTestUtils extends TestUtils {
 					}
 					assertEquals(edgesOut.get(u), uEdges);
 				}
-				for (IntIterator it = g.vertices().iterator(); it.hasNext();) {
-					int v = it.nextInt();
+				for (int v = 0; v < n; v++) {
 					IntSet vEdges = new IntOpenHashSet();
 					for (EdgeIter eit = ((DiGraph) g).edgesIn(v); eit.hasNext();) {
 						int e = eit.nextInt();
@@ -227,8 +224,7 @@ class GraphImplTestUtils extends TestUtils {
 					}
 				}
 			}
-			for (IntIterator it = g.vertices().iterator(); it.hasNext();) {
-				int u = it.nextInt();
+			for (int u = 0; u < n; u++) {
 				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 					int e = eit.nextInt();
 					int v = eit.v();
@@ -269,8 +265,7 @@ class GraphImplTestUtils extends TestUtils {
 					}
 				}
 			}
-			for (IntIterator it = g.vertices().iterator(); it.hasNext();) {
-				int u = it.nextInt();
+			for (int u = 0; u < n; u++) {
 				assertEquals(degreeOut.get(u), g.degreeOut(u), "u=" + u);
 				assertEquals(degreeIn.get(u), g.degreeIn(u), "u=" + u);
 			}
@@ -358,7 +353,7 @@ class GraphImplTestUtils extends TestUtils {
 			});
 
 			if (debugPrints)
-				 System.out.println("\n\n*****");
+				System.out.println("\n\n*****");
 		}
 
 		int verticesNum() {
@@ -622,8 +617,8 @@ class GraphImplTestUtils extends TestUtils {
 		UniqueGenerator dataGen = new UniqueGenerator(seedGen.nextSeed());
 
 		GraphTracker tracker = new GraphTracker(g, dataKey);
-		for (IntIterator it = g.vertices().iterator(); it.hasNext();) {
-			int v = it.nextInt();
+		int n = g.vertices().size();
+		for (int v = 0; v < n; v++) {
 			// final int data = dataGen.next();
 			// edgeData.set(e, data);
 			tracker.addVertex(v);

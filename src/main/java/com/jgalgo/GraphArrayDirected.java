@@ -1,7 +1,6 @@
 package com.jgalgo;
 
 import it.unimi.dsi.fastutil.ints.IntArrays;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 
 /**
  * A directed graph implementation using arrays to store edge lists.
@@ -186,8 +185,8 @@ public class GraphArrayDirected extends GraphArrayAbstract implements DiGraph {
 
 	@Override
 	public void clearEdges() {
-		for (IntIterator it = vertices().iterator(); it.hasNext();) {
-			int u = it.nextInt();
+		int n = vertices().size();
+		for (int u = 0; u < n; u++) {
 			// TODO do some sort of 'addKey' instead of set, no need
 			edgesOut.set(u, IntArrays.EMPTY_ARRAY);
 			edgesIn.set(u, IntArrays.EMPTY_ARRAY);
