@@ -1,6 +1,5 @@
 package com.jgalgo;
 
-import java.util.Arrays;
 import java.util.Random;
 
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
@@ -129,28 +128,22 @@ public class MSTKargerKleinTarjan implements MST {
 		 * use the tree path maxima to find the heaviest edge in the path connecting u v
 		 * for each edge in g
 		 */
-		TPM tpm = new TPMKomlos1985King1997Hagerup2009();
-		int[][] tpmQueries = new int[trees.length][];
+		TPM tpm = new TPMHagerup();
+		TPM.Queries[] tpmQueries = new TPM.Queries[trees.length];
 		for (int t = 0; t < trees.length; t++)
-			tpmQueries[t] = new int[2];
-		int[] tpmQueriesNum = new int[trees.length];
-
+			tpmQueries[t] = new TPM.Queries();
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			int u = g.edgeSource(e), v = g.edgeTarget(e);
 			int ut = vToTree.applyAsInt(u);
 			if (ut != vToTree.applyAsInt(v))
 				continue;
-			if (tpmQueries[ut].length <= (tpmQueriesNum[ut] + 1) * 2)
-				tpmQueries[ut] = Arrays.copyOf(tpmQueries[ut], tpmQueries[ut].length * 2);
-			tpmQueries[ut][tpmQueriesNum[ut] * 2] = vToVnew[u];
-			tpmQueries[ut][tpmQueriesNum[ut] * 2 + 1] = vToVnew[v];
-			tpmQueriesNum[ut]++;
+			tpmQueries[ut].addQuery(vToVnew[u], vToVnew[v]);
 		}
 
 		int[][] tpmResults = new int[trees.length][];
 		for (int t = 0; t < trees.length; t++)
-			tpmResults[t] = tpm.calcTPM(trees[t], treeData[t], tpmQueries[t], tpmQueriesNum[t]);
+			tpmResults[t] = tpm.computeHeaviestEdgeInTreePaths(trees[t], treeData[t], tpmQueries[t]);
 
 		/*
 		 * Find all light edge by comparing each edge in g to the heaviest edge on the

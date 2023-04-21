@@ -53,7 +53,7 @@ The library runs on Java 11 or higher, and it is installed using Maven (WIP).
 | MST Fredman-Tarjan | $O(m \log^* n)$ |
 | MST Karger-Klein-Tarjan randomized | $O(n + m)$ expected |
 | MDST Tarjan directed graphs | $O(m \log n)$ |
-| Tree path maxima (TMP) Komlos1985King1997Hagerup2009 | $O(n + m)$ where $m$ is the number of queries |
+| Tree path maxima (TMP) Hagerup | $O(n + m)$ where $m$ is the number of queries |
 | Subtree Merge Findmin (used in general weighted matching) | $O(m + n \log n)$ |
 | Maximum matching bipartite unweighted Hopcroft-Karp | $O(m \sqrt{n})$ |
 | Maximum matching general unweighted Gabow1976 with Union-Find | $O(m n \cdot \alpha (m,n))$ |

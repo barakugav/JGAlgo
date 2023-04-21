@@ -1,42 +1,120 @@
 package com.jgalgo;
 
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntIntPair;
 import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntList;
 
-/* Tree-Path Maxima */
+/**
+ * Tree Path Maxima (TPM) algorithm.
+ * <p>
+ * Given a tree {@code T} and a sequence of vertices pairs
+ * (u<sub>1</sub>,v<sub>1</sub>),(u<sub>2</sub>, v<sub>2</sub>),... called
+ * <i>queries</i>, the tree path maxima problem is to find for each pair
+ * (u<sub>i</sub>, v<sub>i</sub>) the heaviest edge on the path between
+ * u<sub>i</sub> and v<sub>i</sub> in {@code T}.
+ * <p>
+ * TPM can be used to validate if a spanning tree is minimum spanning tree (MST)
+ * or not, by checking for each edge {@code (u, v)} that is not in the tree that
+ * it is heavier than the heaviest edge in the path from {@code u} to {@code v}
+ * in the tree. If a TPM on {@code n} vertices and {@code m} queries can be
+ * answer in {@code O(n + m)} time than an MST can be validated in linear time.
+ *
+ * @author Barak Ugav
+ */
 public interface TPM {
 
 	/**
-	 * Calculate all tree path maxima (TPM)
+	 * Compute the heaviest edge in multiple tree paths.
+	 * <p>
+	 * The {@code queries} container contains pairs of vertices, each corresponding
+	 * to a simple path in the given {@code tree}. For each of these paths, the
+	 * heaviest edge in the path will be computed.
 	 *
-	 * Given a tree, weight function and queries pairs of vertices, the function
-	 * will calculate for each query (u,v) the edge with the maximum weight in the
-	 * path from u to v in the given tree. This can be used to validate MST.
-	 *
-	 * @param t          a tree
-	 * @param w          a weight function
-	 * @param queries    array of queries in format [u1, v1, u2, v2, ...]
-	 * @param queriesNum number of queries in the queries array
-	 * @return array of edges in the same size as queriesNum, where each edge is the
-	 *         edge with maximum weight in the path from u to v in the tree.
+	 * @param tree    a tree
+	 * @param w       a weight function
+	 * @param queries a sequence of queries as pairs of vertices, each corresponding
+	 *                to a unique simple path in the tree.
+	 * @return array of edges in the same size as the queries container, where the
+	 *         edge in the {@code i}'th entry is the heaviest edge in the tree path
+	 *         between the two vertices of the {@code i}'th query.
 	 */
-	public int[] calcTPM(Graph t, EdgeWeightFunc w, int[] queries, int queriesNum);
+	public int[] computeHeaviestEdgeInTreePaths(Graph tree, EdgeWeightFunc w, TPM.Queries queries);
 
 	/**
-	 * Verify that the given edges actually form a MST of g
+	 * Queries container for {@link TPM} computations.
+	 * <p>
+	 * Queries are added one by one to this container, and than the Queries object
+	 * is passed to the {@link TPM} algorithm using
+	 * {@link TPM#computeHeaviestEdgeInTreePaths(Graph, EdgeWeightFunc, Queries)}.
 	 *
-	 * The verification is done by calculating for each original edge in g the
+	 * @author Barak Ugav
+	 */
+	static class Queries {
+		private final IntList qs;
+
+		/**
+		 * Create an empty queries container.
+		 */
+		public Queries() {
+			qs = new IntArrayList();
+		}
+
+		/**
+		 * Add a query for the heaviest edge in a tree between two vertices.
+		 *
+		 * @param u the first vertex
+		 * @param v the second vertex
+		 */
+		public void addQuery(int u, int v) {
+			qs.add(u);
+			qs.add(v);
+		}
+
+		/**
+		 * Get a query by index.
+		 *
+		 * @param idx index of the query. Must be in range {@code [0, size())}
+		 * @return pair with the two vertices of the query
+		 * @throws IndexOutOfBoundsException if {@code idx < 0} or {@code idx >= size()}
+		 */
+		public IntIntPair getQuery(int idx) {
+			return IntIntPair.of(qs.getInt(idx * 2), qs.getInt(idx * 2 + 1));
+		}
+
+		/**
+		 * Get the number of queries in this container.
+		 *
+		 * @return the number of queries in this container
+		 */
+		public int size() {
+			return qs.size() / 2;
+		}
+
+		/**
+		 * Clear the container from all existing queries.
+		 */
+		public void clear() {
+			qs.clear();
+		}
+
+	}
+
+	/**
+	 * Verify that the given edges actually form an MST of a graph.
+	 * <p>
+	 * The verification is done by computing for each original edge in the graph the
 	 * maximum edge in the given MST. If all of the edges which are not in the MST
-	 * have a bigger weight than the maximum one in the path of the MST, the MST is
+	 * have a greater weight than the maximum one in the path of the MST, the MST is
 	 * valid.
 	 *
-	 * @param g        a undirected graph
-	 * @param w        weight function
-	 * @param mstEdges collection of edges that form a MST
-	 * @param tpmAlgo  tree path maximum algorithm, used for verification. The
-	 *                 efficiency of the verification highly depends on this
-	 *                 algorithm.
-	 * @return true if the collection of edges form a MST of g
+	 * @param g        an undirected graph
+	 * @param w        a weight function
+	 * @param mstEdges collection of edges that form an MST
+	 * @param tpmAlgo  tree path maximum algorithm, used for verification
+	 * @return {@code true} if the collection of edges form an MST of {@code g},
+	 *         else {@code false}
 	 */
 	public static boolean verifyMST(UGraph g, EdgeWeightFunc w, IntCollection mstEdges, TPM tpmAlgo) {
 		int n = g.vertices().size();
@@ -48,47 +126,18 @@ public interface TPM {
 			int ne = mst.addEdge(u, v);
 			edgeRef.set(ne, e);
 		}
-
-		return verifyMST(g, w, mst, tpmAlgo, edgeRef);
-	}
-
-	/**
-	 * Verify that the given MST is actually a MST of g
-	 *
-	 * The verification is done by calculating for each original edge in g the
-	 * maximum edge in the given MST. If all of the edges which are not in the MST
-	 * have a bigger weight than the maximum one in the path of the MST, the MST is
-	 * valid.
-	 *
-	 * @param g       a undirected graph
-	 * @param w       weight function
-	 * @param mst     spanning tree of g
-	 * @param tpmAlgo tree path maximum algorithm, used for verification. The
-	 *                efficiency of the verification highly depends on this
-	 *                algorithm.
-	 * @return true if the given spanning tree is a MST of g
-	 */
-	public static boolean verifyMST(Graph g, EdgeWeightFunc w, Graph mst, TPM tpmAlgo, Weights.Int edgeRef) {
-		if (g instanceof DiGraph)
-			throw new IllegalArgumentException("Directed graphs are not supported");
-		if (!Trees.isTree((UGraph) mst))
+		if (!Trees.isTree(mst))
 			return false;
 
 		EdgeWeightFunc w0 = e -> w.weight(edgeRef.getInt(e));
-		int m = g.edges().size();
-		int[] queries = new int[m * 2];
-
-		int i = 0;
+		TPM.Queries queries = new TPM.Queries();
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
-			queries[i * 2] = g.edgeSource(e);
-			queries[i * 2 + 1] = g.edgeTarget(e);
-			i++;
+			queries.addQuery(g.edgeSource(e), g.edgeTarget(e));
 		}
+		int[] tpmResults = tpmAlgo.computeHeaviestEdgeInTreePaths(mst, w0, queries);
 
-		int[] tpmResults = tpmAlgo.calcTPM(mst, w0, queries, m);
-
-		i = 0;
+		int i = 0;
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			int mstEdge = tpmResults[i++];

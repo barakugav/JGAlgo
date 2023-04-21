@@ -7,37 +7,63 @@ import com.jgalgo.Utils.BiInt2IntFunction;
 
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
+import it.unimi.dsi.fastutil.ints.IntIntPair;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
-public class TPMKomlos1985King1997Hagerup2009 implements TPM {
-
-	/*
-	 * O(m + n) where m is the number of queries
-	 */
+/**
+ * Hagerup's Tree Path Maxima (TPM) linear time algorithm.
+ * <p>
+ * The algorithm runs in {@code O(n + m)} where {@code n} is the number of
+ * vertices in the tree and {@code m} is the number of queries. It also uses
+ * {@code O(n + m)} space.
+ * <p>
+ * Based on 'Linear verification for spanning trees' by J Komlos (1985), 'A
+ * Simpler Minimum Spanning Tree Verification Algorithm' by V King (1997) and
+ * 'An Even Simpler Linear-Time Algorithm for Verifying Minimum Spanning Trees'
+ * by T Hagerup (2009).
+ *
+ * @author Barak Ugav
+ */
+public class TPMHagerup implements TPM {
 
 	private boolean useBitsLookupTables = false;
 
 	private static final Object EdgeRefWeightKey = new Object();
 
-	public TPMKomlos1985King1997Hagerup2009() {
+	/**
+	 * Create a new TPM object.
+	 */
+	public TPMHagerup() {
 	}
 
+	/**
+	 * Enable/disable the use of bits lookup tables.
+	 * <p>
+	 * Some operations on integers such such as popcount
+	 * ({@link Integer#bitCount(int)}) or ctz
+	 * ({@link Integer#numberOfTrailingZeros(int)}) are assumed to be implemented in
+	 * {@code O(1)} by the algorithm. According to theoretical papers its possible
+	 * to implement this operations in 'real' {@code O(1)} with lookup tables. In
+	 * practice, integers are 32bit numbers and all such operations are fast without
+	 * any lookup tables.
+	 * <p>
+	 * This method enable or disable the use of bits lookup tables.
+	 *
+	 * @see BitsLookupTable
+	 * @param enable
+	 */
 	public void useBitsLookupTables(boolean enable) {
 		useBitsLookupTables = enable;
 	}
 
 	@Override
-	public int[] calcTPM(Graph t, EdgeWeightFunc w, int[] queries, int queriesNum) {
-		if (!(t instanceof UGraph))
+	public int[] computeHeaviestEdgeInTreePaths(Graph tree, EdgeWeightFunc w, TPM.Queries queries) {
+		if (!(tree instanceof UGraph))
 			throw new IllegalArgumentException("only undirected graphs are supported");
-		if (queries.length / 2 < queriesNum)
-			throw new IllegalArgumentException("queries should be in format [u0, v0, u1, v1, ...]");
-		if (!Trees.isTree((UGraph) t))
+		if (!Trees.isTree((UGraph) tree))
 			throw new IllegalArgumentException("only trees are supported");
-		if (t.vertices().size() == 0)
-			return new int[queriesNum];
-		return new Worker((UGraph) t, w, useBitsLookupTables).calcTPM(queries, queriesNum);
+		return new Worker((UGraph) tree, w, useBitsLookupTables).calcTPM(queries);
 	}
 
 	private static class Worker {
@@ -80,12 +106,12 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 			}
 		}
 
-		int[] calcTPM(int[] queries, int queriesNum) {
+		int[] calcTPM(TPM.Queries queries) {
 			Pair<UGraph, Integer> r = buildBoruvkaFullyBranchingTree();
 			UGraph t = r.e1;
 			int root = r.e2.intValue();
 
-			int[] lcaQueries = splitQueriesIntoLCAQueries(t, root, queries, queriesNum);
+			int[] lcaQueries = splitQueriesIntoLCAQueries(t, root, queries);
 
 			Pair<int[], int[]> r2 = getEdgeToParentsAndDepth(t, root);
 			int[] edgeToParent = r2.e1;
@@ -302,13 +328,15 @@ public class TPMKomlos1985King1997Hagerup2009 implements TPM {
 			return Pair.of(t, Integer.valueOf(vTv[0]));
 		}
 
-		private static int[] splitQueriesIntoLCAQueries(UGraph t, int root, int[] queries, int queriesNum) {
+		private static int[] splitQueriesIntoLCAQueries(UGraph t, int root, TPM.Queries queries) {
+			int queriesNum = queries.size();
 			int[] lcaQueries = new int[queriesNum * 4];
 
 			LCAStatic lcaAlgo = new LCAStaticRMQ();
 			LCAStatic.DataStructure lcaDS = lcaAlgo.preProcessTree(t, root);
 			for (int q = 0; q < queriesNum; q++) {
-				int u = queries[q * 2], v = queries[q * 2 + 1];
+				IntIntPair query = queries.getQuery(q);
+				int u = query.firstInt(), v = query.secondInt();
 				int lca = lcaDS.findLowestCommonAncestor(u, v);
 				lcaQueries[q * 4] = u;
 				lcaQueries[q * 4 + 1] = lca;

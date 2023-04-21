@@ -17,6 +17,7 @@ import com.jgalgo.Weights;
 import com.jgalgo.test.GraphsTestUtils.RandomGraphBuilder;
 
 import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntIntPair;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 public class TPMTestUtils extends TestUtils {
@@ -24,11 +25,12 @@ public class TPMTestUtils extends TestUtils {
 	private TPMTestUtils() {
 	}
 
-	private static int[] calcExpectedTPM(Graph t, EdgeWeightFunc w, int[] queries) {
-		int queriesNum = queries.length / 2;
+	private static int[] calcExpectedTPM(Graph t, EdgeWeightFunc w, TPM.Queries queries) {
+		int queriesNum = queries.size();
 		int[] res = new int[queriesNum];
 		for (int q = 0; q < queriesNum; q++) {
-			int u = queries[q * 2], v = queries[q * 2 + 1];
+			IntIntPair query = queries.getQuery(q);
+			int u = query.firstInt(), v = query.secondInt();
 
 			Path path = Path.findPath(t, u, v);
 
@@ -46,33 +48,30 @@ public class TPMTestUtils extends TestUtils {
 		return res;
 	}
 
-	public static int[] generateAllPossibleQueries(int n) {
-		int[] queries = new int[(n + 1) * n];
-		for (int q = 0, i = 0; i < n; i++) {
-			for (int j = i; j < n; j++, q++) {
-				queries[q * 2] = i;
-				queries[q * 2 + 1] = j;
-			}
-		}
+	public static TPM.Queries generateAllPossibleQueries(int n) {
+		TPM.Queries queries = new TPM.Queries();
+		for (int i = 0; i < n; i++)
+			for (int j = i; j < n; j++)
+				queries.addQuery(i, j);
 		return queries;
 	}
 
-	public static int[] generateRandQueries(int n, int m, long seed) {
+	public static TPM.Queries generateRandQueries(int n, int m, long seed) {
 		Random rand = new Random(seed);
-		int[] queries = new int[m * 2];
-		for (int q = 0; q < m; q++) {
-			queries[q * 2] = rand.nextInt(n);
-			queries[q * 2 + 1] = rand.nextInt(n);
-		}
+		TPM.Queries queries = new TPM.Queries();
+		for (int q = 0; q < m; q++)
+			queries.addQuery(rand.nextInt(n), rand.nextInt(n));
 		return queries;
 	}
 
-	static void compareActualToExpectedResults(int[] queries, int[] actual, int[] expected, EdgeWeightFunc w) {
+	static void compareActualToExpectedResults(TPM.Queries queries, int[] actual, int[] expected, EdgeWeightFunc w) {
 		assertEquals(expected.length, actual.length, "Unexpected result size");
 		for (int i = 0; i < actual.length; i++) {
+			IntIntPair query = queries.getQuery(i);
+			int u = query.firstInt(), v = query.secondInt();
 			double aw = actual[i] != -1 ? w.weight(actual[i]) : Double.MIN_VALUE;
 			double ew = expected[i] != -1 ? w.weight(expected[i]) : Double.MIN_VALUE;
-			assertEquals(ew, aw, "Unexpected result for query (" + queries[i * 2] + ", " + queries[i * 2 + 1]
+			assertEquals(ew, aw, "Unexpected result for query (" + u + ", " + v
 					+ "): " + actual[i] + " != " + expected[i]);
 		}
 	}
@@ -93,9 +92,9 @@ public class TPMTestUtils extends TestUtils {
 		Graph t = GraphsTestUtils.randTree(n, seedGen.nextSeed());
 		EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(t, seedGen.nextSeed());
 
-		int[] queries = n <= 64 ? generateAllPossibleQueries(n)
+		TPM.Queries queries = n <= 64 ? generateAllPossibleQueries(n)
 				: generateRandQueries(n, Math.min(n * 64, 8192), seedGen.nextSeed());
-		int[] actual = algo.calcTPM(t, w, queries, queries.length / 2);
+		int[] actual = algo.computeHeaviestEdgeInTreePaths(t, w, queries);
 		int[] expected = calcExpectedTPM(t, w, queries);
 		compareActualToExpectedResults(queries, actual, expected, w);
 	}
@@ -112,7 +111,8 @@ public class TPMTestUtils extends TestUtils {
 			IntCollection mstEdges = new MSTKruskal().computeMinimumSpanningTree(g, w);
 
 			TPM algo = builder.get();
-			assertTrue(TPM.verifyMST(g, w, mstEdges, algo));
+			boolean isMST = TPM.verifyMST(g, w, mstEdges, algo);
+			assertTrue(isMST);
 		});
 	}
 
@@ -139,20 +139,25 @@ public class TPMTestUtils extends TestUtils {
 
 			Random rand = new Random(seedGen.nextSeed());
 			int[] edges = g.edges().toIntArray();
-			int e;
-			do {
-				e = edges[rand.nextInt(edges.length)];
-			} while (mstEdges.contains(e));
+			for (;;) {
+				int badEdge;
+				do {
+					badEdge = edges[rand.nextInt(edges.length)];
+				} while (mstEdges.contains(badEdge));
 
-			Path mstPath = Path.findPath(mst, g.edgeSource(e), g.edgeTarget(e));
-			int edgeToRemove = mstPath.getInt(rand.nextInt(mstPath.size()));
-			mst.removeEdge(edgeToRemove);
-			int en = mst.addEdge(g.edgeSource(e), g.edgeTarget(e));
-			edgeRef.set(en, e);
+				Path mstPath = Path.findPath(mst, g.edgeSource(badEdge), g.edgeTarget(badEdge));
+				int goodEdge = mstPath.getInt(rand.nextInt(mstPath.size()));
+
+				if (w.weightInt(edgeRef.getInt(goodEdge)) < w.weightInt(badEdge)) {
+					mstEdges.rem(goodEdge);
+					mstEdges.add(badEdge);
+					break;
+				}
+			}
 
 			TPM algo = builder.get();
-
-			assertFalse(TPM.verifyMST(g, w, mst, algo, edgeRef), "MST validation failed");
+			boolean isMST = TPM.verifyMST(g, w, mstEdges, algo);
+			assertFalse(isMST, "MST validation failed");
 		});
 	}
 

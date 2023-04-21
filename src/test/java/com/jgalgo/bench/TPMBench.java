@@ -21,7 +21,7 @@ import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.EdgeWeightFunc;
 import com.jgalgo.Graph;
 import com.jgalgo.TPM;
-import com.jgalgo.TPMKomlos1985King1997Hagerup2009;
+import com.jgalgo.TPMHagerup;
 import com.jgalgo.test.GraphsTestUtils;
 import com.jgalgo.test.TPMTestUtils;
 import com.jgalgo.test.TestUtils.SeedGenerator;
@@ -41,9 +41,9 @@ public class TPMBench {
 	private static class TPMArgs {
 		final Graph tree;
 		final EdgeWeightFunc w;
-		final int[] queries;
+		final TPM.Queries queries;
 
-		TPMArgs(Graph tree, EdgeWeightFunc w, int[] queries) {
+		TPMArgs(Graph tree, EdgeWeightFunc w, TPM.Queries queries) {
 			this.tree = tree;
 			this.w = w;
 			this.queries = queries;
@@ -58,7 +58,7 @@ public class TPMBench {
 		for (int graphIdx = 0; graphIdx < graphsNum; graphIdx++) {
 			Graph t = GraphsTestUtils.randTree(n, seedGen.nextSeed());
 			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(t, seedGen.nextSeed());
-			int[] queries = TPMTestUtils.generateRandQueries(n, n, seedGen.nextSeed());
+			TPM.Queries queries = TPMTestUtils.generateRandQueries(n, n, seedGen.nextSeed());
 			graphs.add(new TPMArgs(t, w, queries));
 
 		}
@@ -67,24 +67,24 @@ public class TPMBench {
 	private void benchTPM(Supplier<? extends TPM> builder, Blackhole blackhole) {
 		TPM algo = builder.get();
 		for (TPMArgs g : graphs) {
-			int[] actual = algo.calcTPM(g.tree, g.w, g.queries, g.queries.length / 2);
+			int[] actual = algo.computeHeaviestEdgeInTreePaths(g.tree, g.w, g.queries);
 			blackhole.consume(actual);
 		}
 	}
 
 	@Benchmark
-	public void benchTPMKomlos1985King1997Hagerup2009(Blackhole blackhole) {
+	public void benchTPMHagerup(Blackhole blackhole) {
 		benchTPM(() -> {
-			TPMKomlos1985King1997Hagerup2009 algo = new TPMKomlos1985King1997Hagerup2009();
+			TPMHagerup algo = new TPMHagerup();
 			algo.useBitsLookupTables(false);
 			return algo;
 		}, blackhole);
 	}
 
 	@Benchmark
-	public void benchTPMKomlos1985King1997Hagerup2009WithBitsLookupTable(Blackhole blackhole) {
+	public void benchTPMHagerupWithBitsLookupTable(Blackhole blackhole) {
 		benchTPM(() -> {
-			TPMKomlos1985King1997Hagerup2009 algo = new TPMKomlos1985King1997Hagerup2009();
+			TPMHagerup algo = new TPMHagerup();
 			algo.useBitsLookupTables(true);
 			return algo;
 		}, blackhole);
