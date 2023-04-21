@@ -5,16 +5,16 @@ import java.util.Comparator;
 
 import it.unimi.dsi.fastutil.ints.IntComparator;
 
-public class ArraysUtils {
+class ArraysUtils {
 
 	private ArraysUtils() {
 	}
 
-	public static <E> E getKthElement(E[] a, int k, Comparator<? super E> c) {
+	static <E> E getKthElement(E[] a, int k, Comparator<? super E> c) {
 		return getKthElement(a, 0, a.length, k, c, false);
 	}
 
-	public static int getKthElement(int[] a, int k, IntComparator c) {
+	static int getKthElement(int[] a, int k, IntComparator c) {
 		return getKthElement(a, 0, a.length, k, c, false);
 	}
 
@@ -35,7 +35,7 @@ public class ArraysUtils {
 	 *                the end it will be partitioned by the Kth element
 	 * @return the Kth element
 	 */
-	public static <E> E getKthElement(E[] a, int from, int to, int k, Comparator<? super E> c, boolean inPlace) {
+	static <E> E getKthElement(E[] a, int from, int to, int k, Comparator<? super E> c, boolean inPlace) {
 		if (from < 0 || from >= to || to > a.length || k >= to - from)
 			throw new IndexOutOfBoundsException("a(" + a.length + ")[" + from + ", " + to + "][" + k + "]");
 		if (!inPlace) {
@@ -65,7 +65,7 @@ public class ArraysUtils {
 	 *                the end it will be partitioned by the Kth element
 	 * @return the Kth element
 	 */
-	public static int getKthElement(int[] a, int from, int to, int k, IntComparator c, boolean inPlace) {
+	static int getKthElement(int[] a, int from, int to, int k, IntComparator c, boolean inPlace) {
 		if (from < 0 || from >= to || to > a.length || k >= to - from)
 			throw new IndexOutOfBoundsException("a(" + a.length + ")[" + from + ", " + to + "][" + k + "]");
 		if (!inPlace) {
@@ -126,7 +126,7 @@ public class ArraysUtils {
 	 * @param c     comparator
 	 * @return the last index of element smaller or equal to the pivot (exclusive)
 	 */
-	public static <E> int pivotPartition(E[] a, int from, int to, E pivot, Comparator<? super E> c) {
+	static <E> int pivotPartition(E[] a, int from, int to, E pivot, Comparator<? super E> c) {
 		if (from < 0 || from >= to || to > a.length)
 			throw new IndexOutOfBoundsException("a(" + a.length + ")[" + from + ", " + to + "]");
 		c = c != null ? c : Utils.getDefaultComparator();
@@ -158,7 +158,7 @@ public class ArraysUtils {
 	 * @param c     comparator
 	 * @return the last index of element smaller or equal to the pivot (exclusive)
 	 */
-	public static int pivotPartition(int[] a, int from, int to, int pivot, IntComparator c) {
+	static int pivotPartition(int[] a, int from, int to, int pivot, IntComparator c) {
 		if (from < 0 || from >= to || to > a.length)
 			throw new IndexOutOfBoundsException("a(" + a.length + ")[" + from + ", " + to + "]");
 		c = c != null ? c : Integer::compare;
@@ -274,7 +274,7 @@ public class ArraysUtils {
 	 * @param bucketSize the size of the bucket. Last bucket may be smaller than the
 	 *                   specified value.
 	 */
-	public static <E> void bucketPartition(E[] a, int from, int to, Comparator<? super E> c, int bucketSize) {
+	static <E> void bucketPartition(E[] a, int from, int to, Comparator<? super E> c, int bucketSize) {
 		if (from < 0 || from >= to || to > a.length || bucketSize <= 0)
 			throw new IndexOutOfBoundsException("a(" + a.length + ")[" + from + ", " + to + "][" + bucketSize + "]");
 		c = c != null ? c : Utils.getDefaultComparator();
@@ -294,7 +294,7 @@ public class ArraysUtils {
 	 * @param bucketSize the size of the bucket. Last bucket may be smaller than the
 	 *                   specified value.
 	 */
-	public static void bucketPartition(int[] a, int from, int to, IntComparator c, int bucketSize) {
+	static void bucketPartition(int[] a, int from, int to, IntComparator c, int bucketSize) {
 		if (from < 0 || from >= to || to > a.length || bucketSize <= 0)
 			throw new IndexOutOfBoundsException("a(" + a.length + ")[" + from + ", " + to + "][" + bucketSize + "]");
 		c = c != null ? c : Integer::compare;
