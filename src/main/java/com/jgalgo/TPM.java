@@ -33,7 +33,7 @@ public interface TPM {
 	 * heaviest edge in the path will be computed.
 	 *
 	 * @param tree    a tree
-	 * @param w       a weight function
+	 * @param w       an edge weight function
 	 * @param queries a sequence of queries as pairs of vertices, each corresponding
 	 *                to a unique simple path in the tree.
 	 * @return array of edges in the same size as the queries container, where the
@@ -110,7 +110,7 @@ public interface TPM {
 	 * valid.
 	 *
 	 * @param g        an undirected graph
-	 * @param w        a weight function
+	 * @param w        an edge weight function
 	 * @param mstEdges collection of edges that form an MST
 	 * @param tpmAlgo  tree path maximum algorithm, used for verification
 	 * @return {@code true} if the collection of edges form an MST of {@code g},

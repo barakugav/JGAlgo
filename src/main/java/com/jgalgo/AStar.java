@@ -5,18 +5,55 @@ import java.util.function.IntToDoubleFunction;
 
 import it.unimi.dsi.fastutil.ints.IntLists;
 
+/**
+ * A* shortest path algorithm.
+ * <p>
+ * The A star (A*) algorithm try to find the shortest path from a source to
+ * target vertex. It uses a heuristic that map a vertex to an estimation of its
+ * distance from the target position.
+ * <p>
+ * An advantage of the A* algorithm over other {@link SSSP} algorithm, is that
+ * it can terminate much faster for the specific source and target, especially
+ * if the heuristic is good.
+ * <p>
+ * The running time of this algorithm is {@code O(m + n log n)} in the worse
+ * case, and it uses linear space.
+ *
+ * @see <a href=
+ *      "https://en.wikipedia.org/wiki/A*_search_algorithm">Wikipedia</a>
+ * @author Barak Ugav
+ */
 public class AStar {
 
-	private HeapReferenceable.Builder heapBuilder;
+	private HeapReferenceable.Builder heapBuilder = HeapPairing::new;
 
+	/**
+	 * Construct a new AStart algorithm.
+	 */
 	public AStar() {
-		heapBuilder = HeapPairing::new;
 	}
 
+	/**
+	 * Set the implementation of the heap used by this algorithm.
+	 *
+	 * @param heapBuilder a builder for heaps used by this algorithm
+	 */
 	public void setHeapBuilder(HeapReferenceable.Builder heapBuilder) {
 		this.heapBuilder = Objects.requireNonNull(heapBuilder);
 	}
 
+	/**
+	 * Compute the shortest path between two vertices in a graph.
+	 *
+	 * @param g          a graph
+	 * @param w          an edge weight function
+	 * @param source     a source vertex
+	 * @param target     a target vertex
+	 * @param vHeuristic a heuristic function that map each vertex to
+	 *                   {@code double}. The heuristic should be close to the real
+	 *                   distance of each vertex to the target.
+	 * @return the short path found from {@code source} to {@code target}
+	 */
 	public Path computeShortestPath(Graph g, EdgeWeightFunc w, int source, int target, IntToDoubleFunction vHeuristic) {
 		if (source == target)
 			return new Path(g, source, target, IntLists.emptyList());

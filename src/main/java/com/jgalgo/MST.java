@@ -20,7 +20,7 @@ public interface MST {
 	 * Compute the minimum spanning tree (MST) of a given graph.
 	 *
 	 * @param g a graph
-	 * @param w a weight function
+	 * @param w an edge weight function
 	 * @return all edges that compose the MST, which there are {@code n-1} of them
 	 *         (or less, forming a forest if the graph is not connected)
 	 */

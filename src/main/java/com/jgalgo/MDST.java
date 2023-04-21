@@ -28,7 +28,7 @@ public interface MDST extends MST {
 	 * at the given vertex
 	 *
 	 * @param g    a directed graph
-	 * @param w    weight function
+	 * @param w    an edge weight function
 	 * @param root vertex in the graph the spanning tree will be rooted from
 	 * @return all edges composing the spanning tree
 	 */

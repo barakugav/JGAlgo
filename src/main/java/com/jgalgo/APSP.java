@@ -15,7 +15,7 @@ public interface APSP {
 	 * Compute all shortest paths between all pairs of vertices in a graph.
 	 *
 	 * @param g a graph
-	 * @param w a weight function
+	 * @param w an edge weight function
 	 * @return a result object containing information on the shortest path between
 	 *         each two pair of vertices
 	 */
