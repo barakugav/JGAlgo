@@ -10,6 +10,39 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntListIterator;
 import it.unimi.dsi.fastutil.ints.IntLists;
 
+/**
+ * A path of edges in a graph.
+ * <p>
+ * A path is a list of edges e<sub>1</sub>,e<sub>2</sub>,... where each target
+ * vertex of edge e<sub>i</sub> is the source vertex of the next edge
+ * e<sub>i+1</sub>. If the graph is undirected the definition of a 'source' and
+ * 'target' are interchangeable, and each pair of consecutive edges simply share
+ * an endpoint.
+ * <p>
+ * The Path object can be treated as a {@link IntList} of edges.
+ * <p>
+ * A Path object might be used to represent a cycle as well, if the source and
+ * target of the path are the same vertex.
+ * <p>
+ * If the underlying graph was modified after the Path object was created, the
+ * Path object should not be used.
+ *
+ * <pre> {@code
+ * Graph g = ...;
+ * int sourceVertex = ...;
+ * int targetVertex = ...;
+ * Path p = Path.findPath(g, sourceVertex, targetVertex);
+ *
+ * System.out.println("The path between u and v consist of the following edges:");
+ * for (EdgeIter it = p.edgeIter(); it.hasNext();) {
+ * 	int e = it.nextInt();
+ * 	int u = it.u(), v = it.v();
+ * 	System.out.println(" " + e + "(" + u + ", " + v + ")");
+ * }
+ * }</pre>
+ *
+ * @author Barak Ugav
+ */
 public class Path extends AbstractIntList {
 
 	private final Graph g;
@@ -17,6 +50,16 @@ public class Path extends AbstractIntList {
 	private final int target;
 	private final IntList edges;
 
+	/**
+	 * Construct a new path in a graph from an edge list, a source and a target
+	 * vertices.
+	 *
+	 * @param g      a graph
+	 * @param source a source vertex
+	 * @param target a target vertex
+	 * @param edges  a list of edges that form a path from the {@code source} to the
+	 *               {@code target} vertices in the graph.
+	 */
 	public Path(Graph g, int source, int target, IntList edges) {
 		this.g = g;
 		this.source = source;
@@ -24,19 +67,43 @@ public class Path extends AbstractIntList {
 		this.edges = edges instanceof IntLists.UnmodifiableList ? edges : IntLists.unmodifiable(edges);
 	}
 
+	/**
+	 * Get the source vertex of the path.
+	 * <p>
+	 * If the returned vertex is the same as {@link #target()}, the represented path
+	 * is actually a cycle.
+	 *
+	 * @return the source vertex of the path.
+	 */
 	public int source() {
 		return source;
 	}
 
+	/**
+	 * Get the target vertex of the path.
+	 * <p>
+	 * If the returned vertex is the same as {@link #source()}, the represented path
+	 * is actually a cycle.
+	 *
+	 * @return the target vertex of the path.
+	 */
 	public int target() {
 		return target;
 	}
 
+	/**
+	 * Get an iterator that iterate over the edges of the path.
+	 */
 	@Override
 	public IntListIterator iterator() {
 		return edges.iterator();
 	}
 
+	/**
+	 * Get an {@link EdgeIter} that iterate over the edges of the path.
+	 *
+	 * @return an {@link EdgeIter} that iterate over the edges of the path.
+	 */
 	public EdgeIter edgeIter() {
 		if (g instanceof UGraph) {
 			return new IterUndirected((UGraph) g, edges, source);
@@ -141,8 +208,7 @@ public class Path extends AbstractIntList {
 	}
 
 	/**
-	 * Find a valid path from u to v.
-	 *
+	 * Find a valid path from {@code u} to {@code v}.
 	 * <p>
 	 * This function uses BFS, which will result in the shortest path in the number
 	 * of edges.
@@ -150,8 +216,8 @@ public class Path extends AbstractIntList {
 	 * @param g a graph
 	 * @param u source vertex
 	 * @param v target vertex
-	 * @return list of edges that represent a valid path from u to v, null if path
-	 *         not found
+	 * @return a path from {@code u} to {@code v}, or {@code null} if no such path
+	 *         was found
 	 */
 	public static Path findPath(Graph g, final int u, final int v) {
 		if (u == v)
