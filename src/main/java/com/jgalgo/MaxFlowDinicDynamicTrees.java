@@ -67,10 +67,12 @@ public class MaxFlowDinicDynamicTrees implements MaxFlow {
 		Weights<Ref> edgeRefL = L.addEdgesWeights(EdgeRefWeightKey, Ref.class);
 		IntPriorityQueue bfsQueue = new IntArrayFIFOQueue();
 		int[] level = new int[n];
-		DynamicTree<Integer, Integer> dt = new DynamicTreeSplay<>(maxCapacity * 10);
-		@SuppressWarnings("unchecked")
-		DynamicTree.Node<Integer, Integer>[] vToDt = new DynamicTree.Node[n];
-		Stack<DynamicTree.Node<Integer, Integer>> cleanupStack = new Stack<>();
+		DynamicTree dt = new DynamicTreeSplay(maxCapacity * 10);
+		DynamicTree.Node[] vToDt = new DynamicTree.Node[n];
+		Stack<DynamicTree.Node> cleanupStack = new Stack<>();
+
+		int[] edgeToParent = new int[n];
+		Arrays.fill(edgeToParent, -1);
 
 		for (;;) {
 			debug.println("calculating residual network");
@@ -106,12 +108,10 @@ public class MaxFlowDinicDynamicTrees implements MaxFlow {
 
 			dt.clear();
 			for (int u = 0; u < n; u++)
-				vToDt[u] = dt.makeTree(Integer.valueOf(u));
+				(vToDt[u] = dt.makeTree()).setNodeData(Integer.valueOf(u));
 
 			ObjDoubleConsumer<Ref> updateFlow = (e, weight) -> {
 				double f = net.getCapacity(e.orig) - e.flow - weight;
-				// if (e0.u() == e.orig.u())
-				// debug.println("F(", e.orig, ") += ", Double.valueOf(f));
 				e.flow += f;
 				e.rev.flow -= f;
 				assert e.flow <= net.getCapacity(e.orig) + EPS;
@@ -119,18 +119,18 @@ public class MaxFlowDinicDynamicTrees implements MaxFlow {
 			};
 
 			calcBlockFlow: for (;;) {
-				int v = dt.findRoot(vToDt[source]).getNodeData().intValue();
+				int v = dt.findRoot(vToDt[source]).<Integer>getNodeData().intValue();
 				if (v == sink) {
 
 					/* Augment */
 					debug.println("Augment");
-					MinEdge<Integer, Integer> min = dt.findMinEdge(vToDt[source]);
+					MinEdge min = dt.findMinEdge(vToDt[source]);
 					dt.addWeight(vToDt[source], -min.weight());
 
 					/* Delete all saturated edges */
 					debug.println("Delete");
 					do {
-						int e = min.getData().intValue();
+						int e = edgeToParent[min.u().<Integer>getNodeData().intValue()];
 						assert vToDt[L.edgeSource(e)] == min.u();
 						Ref ref = edgeRefL.get(e);
 						L.removeEdge(e);
@@ -153,8 +153,8 @@ public class MaxFlowDinicDynamicTrees implements MaxFlow {
 						if (vToDt[u].getParent() != vToDt[v])
 							continue; /* If the edge is not in the DT, ignore */
 
-						MinEdge<Integer, Integer> m = dt.findMinEdge(vToDt[u]);
-						assert e == m.getData().intValue();
+						MinEdge m = dt.findMinEdge(vToDt[u]);
+						assert e == edgeToParent[m.u().<Integer>getNodeData().intValue()];
 						Ref ref = edgeRefL.get(e);
 						updateFlow.accept(ref, m.weight());
 
@@ -168,19 +168,20 @@ public class MaxFlowDinicDynamicTrees implements MaxFlow {
 					EdgeIter eit = L.edgesOut(v);
 					int e = eit.nextInt();
 					Ref eRef = edgeRefL.get(e);
-					dt.link(vToDt[eit.u()], vToDt[eit.v()], net.getCapacity(eRef.orig) - eRef.flow, Integer.valueOf(e));
+					dt.link(vToDt[eit.u()], vToDt[eit.v()], net.getCapacity(eRef.orig) - eRef.flow);
+					edgeToParent[eit.u()] = e;
 				}
 			}
 
 			/* Cleanup all the edges that stayed in the DT */
 			for (int u = 0; u < n; u++) {
-				for (DynamicTree.Node<Integer, Integer> uDt = vToDt[u], pDt; (pDt = uDt.getParent()) != null; uDt = pDt)
+				for (DynamicTree.Node uDt = vToDt[u], pDt; (pDt = uDt.getParent()) != null; uDt = pDt)
 					cleanupStack.push(uDt);
 				while (!cleanupStack.isEmpty()) {
-					DynamicTree.Node<Integer, Integer> uDt = cleanupStack.pop();
+					DynamicTree.Node uDt = cleanupStack.pop();
 					assert uDt.getParent() == dt.findRoot(uDt);
-					MinEdge<Integer, Integer> m = dt.findMinEdge(uDt);
-					Ref ref = edgeRefL.get(m.getData().intValue());
+					MinEdge m = dt.findMinEdge(uDt);
+					Ref ref = edgeRefL.get(edgeToParent[m.u().<Integer>getNodeData().intValue()]);
 					updateFlow.accept(ref, m.weight());
 					dt.cut(m.u());
 				}

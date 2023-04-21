@@ -1,63 +1,62 @@
 package com.jgalgo;
 
-public class DynamicTreeSplaySizedInt<V, E> extends DynamicTreeSplayInt<V, E> {
+public class DynamicTreeSplaySizedInt extends DynamicTreeSplayInt {
 
 	public DynamicTreeSplaySizedInt(int weightLimit) {
-		super(new SplayImplWithSize<>(), weightLimit);
+		super(new SplayImplWithSize(), weightLimit);
 	}
 
 	@Override
-	public int size(Node<V, E> v) {
-		SplayNodeSized<V, E> n = (SplayNodeSized<V, E>) v;
+	public int size(Node v) {
+		SplayNodeSized n = (SplayNodeSized) v;
 		splay(n);
 		return n.size;
 	}
 
 	@Override
-	SplayNodeSized<V, E> newNode(V nodeData) {
-		return new SplayNodeSized<>(nodeData);
+	SplayNodeSized newNode() {
+		return new SplayNodeSized();
 	}
 
 	@Override
-	void beforeCut(SplayNode<V, E> n0) {
+	void beforeCut(SplayNode n0) {
 		super.beforeCut(n0);
-		SplayNodeSized<V, E> n = (SplayNodeSized<V, E>) n0;
-		n.size -= ((SplayNodeSized<V, E>) n.right).size;
+		SplayNodeSized n = (SplayNodeSized) n0;
+		n.size -= ((SplayNodeSized) n.right).size;
 	}
 
 	@Override
-	void afterLink(SplayNode<V, E> n0) {
+	void afterLink(SplayNode n0) {
 		super.afterLink(n0);
-		SplayNodeSized<V, E> parent = (SplayNodeSized<V, E>) n0.userParent;
-		parent.size += ((SplayNodeSized<V, E>) n0).size;
+		SplayNodeSized parent = (SplayNodeSized) n0.userParent;
+		parent.size += ((SplayNodeSized) n0).size;
 	}
 
-	static class SplayNodeSized<V, E> extends DynamicTreeSplayInt.SplayNode<V, E> {
+	static class SplayNodeSized extends DynamicTreeSplayInt.SplayNode {
 
 		int size;
 
-		SplayNodeSized(V nodeData) {
-			super(nodeData);
+		SplayNodeSized() {
 			size = 1;
 		}
 
 	}
 
-	static class SplayImplWithSize<V, E> extends DynamicTreeSplayInt.SplayImplWithRelativeWeights<V, E> {
+	static class SplayImplWithSize extends DynamicTreeSplayInt.SplayImplWithRelativeWeights {
 
 		@Override
-		void beforeRotate(SplayNode<V, E> n0) {
+		void beforeRotate(SplayNode n0) {
 			super.beforeRotate(n0);
 
-			SplayNodeSized<V, E> n = (SplayNodeSized<V, E>) n0;
-			SplayNodeSized<V, E> parent = (SplayNodeSized<V, E>) n.parent;
+			SplayNodeSized n = (SplayNodeSized) n0;
+			SplayNodeSized parent = (SplayNodeSized) n.parent;
 			int parentOldSize = parent.size;
 
 			if (n.isLeftChild()) {
-				parent.size = parentOldSize - n.size + (n.hasRightChild() ? ((SplayNodeSized<V, E>) n.right).size : 0);
+				parent.size = parentOldSize - n.size + (n.hasRightChild() ? ((SplayNodeSized) n.right).size : 0);
 			} else {
 				assert n.isRightChild();
-				parent.size = parentOldSize - n.size + (n.hasLeftChild() ? ((SplayNodeSized<V, E>) n.left).size : 0);
+				parent.size = parentOldSize - n.size + (n.hasLeftChild() ? ((SplayNodeSized) n.left).size : 0);
 			}
 
 			n.size = parentOldSize;

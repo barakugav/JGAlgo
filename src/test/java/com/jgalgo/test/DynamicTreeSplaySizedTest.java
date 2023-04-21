@@ -21,6 +21,6 @@ public class DynamicTreeSplaySizedTest extends TestUtils {
 	public void testRandOpsInt() {
 		final long seed = 0x9efac04f7e9404cdL;
 		List<Op> ops = List.of(Op.MakeTree, Op.FindRoot, Op.FindMinEdge, Op.AddWeight, Op.Link, Op.Cut, Op.Size);
-		DynamicTreeSplayTest.testRandOps(maxWeight -> new DynamicTreeSplaySizedInt<>((int) maxWeight), ops, seed);
+		DynamicTreeSplayTest.testRandOps(maxWeight -> new DynamicTreeSplaySizedInt((int) maxWeight), ops, seed);
 	}
 }

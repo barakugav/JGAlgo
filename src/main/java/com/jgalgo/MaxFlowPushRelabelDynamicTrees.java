@@ -91,10 +91,10 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 			final int maxTreeSize = Math.max(1, n * n / g.edges().size());
 
 			QueueFixSize<Vertex> active = new QueueFixSize<>(n);
-			DynamicTree<Vertex, Integer> dt = new DynamicTreeSplaySized<>(maxCapacity * 10);
+			DynamicTree dt = new DynamicTreeSplaySized(maxCapacity * 10);
 			Vertex[] vertexData = new Vertex[n];
 			for (int u = 0; u < n; u++) {
-				vertexData[u] = new Vertex(u, dt.makeTree(null));
+				vertexData[u] = new Vertex(u, dt.makeTree());
 				vertexData[u].dtNode.setNodeData(vertexData[u]);
 			}
 
@@ -115,9 +115,6 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 				vertexData[u].edges = new IterPickable.Int(g.edgesOut(u));
 
 			ObjDoubleConsumer<Ref> pushFlow = (e, f) -> {
-				// Ref e = e0.data();
-				// if (e0.u() == e.orig.u())
-				// debug.println("F(", e.orig, ") += ", Double.valueOf(f));
 				e.flow += f;
 				e.rev.flow -= f;
 				assert e.flow <= e.cap + EPS;
@@ -149,8 +146,6 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 				assert f > 0;
 
 				int u = eit.u();
-				// if (e.u() == data.orig.u())
-				// debug.println("F(", data.orig, ") += ", Double.valueOf(f));
 
 				data.flow += f;
 				data.rev.flow -= f;
@@ -190,7 +185,8 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 					int vSize = dt.size(V.dtNode);
 					if (uSize + vSize <= maxTreeSize) {
 						/* Link u to a node with admissible edge and start pushing */
-						dt.link(U.dtNode, V.dtNode, eAccess, Integer.valueOf(e));
+						dt.link(U.dtNode, V.dtNode, eAccess);
+						U.edgeToParent = e;
 						assert !children.hasNext(U.v) && !children.hasPrev(U.v);
 						if (V.firstDtChild == -1) {
 							V.firstDtChild = U.v;
@@ -213,7 +209,7 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 					/* Continue as long as u has excess and it is not the root */
 					while (W.excess > EPS && W.dtNode.getParent() != null) {
 						/* Find the maximum flow that can be pushed */
-						MinEdge<Vertex, Integer> minEdge = dt.findMinEdge(W.dtNode);
+						MinEdge minEdge = dt.findMinEdge(W.dtNode);
 						double f = Math.min(W.excess, minEdge.weight());
 
 						/* Push from u up to u's tree root */
@@ -233,7 +229,7 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 							minEdge = dt.findMinEdge(W.dtNode);
 							if (minEdge.weight() > EPS)
 								break;
-							Ref edgeData = edgeRef.get(minEdge.getData().intValue());
+							Ref edgeData = edgeRef.get(minEdge.u().<Vertex>getNodeData().edgeToParent);
 							updateFlow.accept(edgeData, minEdge.weight());
 							cut.accept(minEdge.u().getNodeData());
 						}
@@ -260,8 +256,8 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 							assert childData.dtNode.getParent() == U.dtNode;
 
 							/* update flow */
-							MinEdge<Vertex, Integer> m = dt.findMinEdge(childData.dtNode);
-							Ref edgeData = edgeRef.get(m.getData().intValue());
+							MinEdge m = dt.findMinEdge(childData.dtNode);
+							Ref edgeData = edgeRef.get(m.u().<Vertex>getNodeData().edgeToParent);
 							updateFlow.accept(edgeData, m.weight());
 
 							/* cut child */
@@ -278,16 +274,16 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 			}
 
 			/* Cleanup all the edges that stayed in the DT */
-			Stack<DynamicTree.Node<Vertex, Integer>> cleanupStack = new Stack<>();
+			Stack<DynamicTree.Node> cleanupStack = new Stack<>();
 			for (int u = 0; u < n; u++) {
-				for (DynamicTree.Node<Vertex, Integer> uDt = vertexData[u].dtNode,
+				for (DynamicTree.Node uDt = vertexData[u].dtNode,
 						pDt; (pDt = uDt.getParent()) != null; uDt = pDt)
 					cleanupStack.push(uDt);
 				while (!cleanupStack.isEmpty()) {
-					DynamicTree.Node<Vertex, Integer> uDt = cleanupStack.pop();
+					DynamicTree.Node uDt = cleanupStack.pop();
 					assert uDt.getParent().getParent() == null;
-					MinEdge<Vertex, Integer> m = dt.findMinEdge(uDt);
-					Ref edgeData = edgeRef.get(m.getData().intValue());
+					MinEdge m = dt.findMinEdge(uDt);
+					Ref edgeData = edgeRef.get(m.u().<Vertex>getNodeData().edgeToParent);
 					updateFlow.accept(edgeData, m.weight());
 					dt.cut(m.u());
 				}
@@ -338,10 +334,12 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 			int d;
 			IterPickable.Int edges;
 
-			final DynamicTree.Node<Vertex, Integer> dtNode;
+			final DynamicTree.Node dtNode;
 			int firstDtChild;
 
-			Vertex(int v, DynamicTree.Node<Vertex, Integer> dtNode) {
+			int edgeToParent = -1;
+
+			Vertex(int v, DynamicTree.Node dtNode) {
 				this.v = v;
 				excess = 0;
 				isActive = false;
@@ -409,10 +407,10 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 			final int maxTreeSize = Math.max(1, n * n / g.edges().size());
 
 			QueueFixSize<Vertex> active = new QueueFixSize<>(n);
-			DynamicTree.Int<Vertex, Integer> dt = new DynamicTreeSplaySizedInt<>(maxCapacity * 10);
+			DynamicTree.Int dt = new DynamicTreeSplaySizedInt(maxCapacity * 10);
 			Vertex[] vertexData = new Vertex[n];
 			for (int u = 0; u < n; u++) {
-				vertexData[u] = new Vertex(u, dt.makeTree(null));
+				vertexData[u] = new Vertex(u, dt.makeTree());
 				vertexData[u].dtNode.setNodeData(vertexData[u]);
 			}
 
@@ -433,9 +431,6 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 				vertexData[u].edges = new IterPickable.Int(g.edgesOut(u));
 
 			ObjDoubleConsumer<Ref> pushFlow = (e, f) -> {
-				// Ref e = e0.data();
-				// if (e0.u() == e.orig.u())
-				// debug.println("F(", e.orig, ") += ", Double.valueOf(f));
 				e.flow += f;
 				e.rev.flow -= f;
 				assert e.flow <= e.cap;
@@ -467,8 +462,6 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 				assert f > 0;
 
 				int u = eit.u();
-				// if (e.u() == data.orig.u())
-				// debug.println("F(", data.orig, ") += ", Double.valueOf(f));
 
 				data.flow += f;
 				data.rev.flow -= f;
@@ -508,7 +501,8 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 					int vSize = dt.size(V.dtNode);
 					if (uSize + vSize <= maxTreeSize) {
 						/* Link u to a node with admissible edge and start pushing */
-						dt.link(U.dtNode, V.dtNode, eAccess, Integer.valueOf(e));
+						dt.link(U.dtNode, V.dtNode, eAccess);
+						U.edgeToParent = e;
 						assert !children.hasNext(U.v) && !children.hasPrev(U.v);
 						if (V.firstDtChild == -1) {
 							V.firstDtChild = U.v;
@@ -531,7 +525,7 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 					/* Continue as long as u has excess and it is not the root */
 					while (W.excess > 0 && W.dtNode.getParent() != null) {
 						/* Find the maximum flow that can be pushed */
-						MinEdge<Vertex, Integer> minEdge = dt.findMinEdge(W.dtNode);
+						MinEdge minEdge = dt.findMinEdge(W.dtNode);
 						int f = Math.min(W.excess, (int) minEdge.weight());
 
 						/* Push from u up to u's tree root */
@@ -551,7 +545,7 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 							minEdge = dt.findMinEdge(W.dtNode);
 							if (minEdge.weight() > 0)
 								break;
-							Ref edgeData = edgeRef.get(minEdge.getData().intValue());
+							Ref edgeData = edgeRef.get(minEdge.u().<Vertex>getNodeData().edgeToParent);
 							updateFlow.accept(edgeData, minEdge.weight());
 							cut.accept(minEdge.u().getNodeData());
 						}
@@ -578,8 +572,8 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 							assert childData.dtNode.getParent() == U.dtNode;
 
 							/* update flow */
-							MinEdge<Vertex, Integer> m = dt.findMinEdge(childData.dtNode);
-							Ref edgeData = edgeRef.get(m.getData().intValue());
+							MinEdge m = dt.findMinEdge(childData.dtNode);
+							Ref edgeData = edgeRef.get(m.u().<Vertex>getNodeData().edgeToParent);
 							updateFlow.accept(edgeData, m.weight());
 
 							/* cut child */
@@ -596,16 +590,16 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 			}
 
 			/* Cleanup all the edges that stayed in the DT */
-			Stack<DynamicTree.Node<Vertex, Integer>> cleanupStack = new Stack<>();
+			Stack<DynamicTree.Node> cleanupStack = new Stack<>();
 			for (int u = 0; u < n; u++) {
-				for (DynamicTree.Node<Vertex, Integer> uDt = vertexData[u].dtNode,
+				for (DynamicTree.Node uDt = vertexData[u].dtNode,
 						pDt; (pDt = uDt.getParent()) != null; uDt = pDt)
 					cleanupStack.push(uDt);
 				while (!cleanupStack.isEmpty()) {
-					DynamicTree.Node<Vertex, Integer> uDt = cleanupStack.pop();
+					DynamicTree.Node uDt = cleanupStack.pop();
 					assert uDt.getParent().getParent() == null;
-					MinEdge<Vertex, Integer> m = dt.findMinEdge(uDt);
-					Ref edgeData = edgeRef.get(m.getData().intValue());
+					MinEdge m = dt.findMinEdge(uDt);
+					Ref edgeData = edgeRef.get(m.u().<Vertex>getNodeData().edgeToParent);
 					updateFlow.accept(edgeData, m.weight());
 					dt.cut(m.u());
 				}
@@ -656,10 +650,11 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 			int d;
 			IterPickable.Int edges;
 
-			final DynamicTree.Node<Vertex, Integer> dtNode;
+			final DynamicTree.Node dtNode;
 			int firstDtChild;
+			int edgeToParent = -1;
 
-			Vertex(int v, DynamicTree.Node<Vertex, Integer> dtNode) {
+			Vertex(int v, DynamicTree.Node dtNode) {
 				this.v = v;
 				excess = 0;
 				isActive = false;

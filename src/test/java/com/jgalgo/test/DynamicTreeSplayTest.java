@@ -25,14 +25,14 @@ public class DynamicTreeSplayTest extends TestUtils {
 	@Test
 	public void testRandOpsInt() {
 		final long seed = 0xdaf8a976847115a1L;
-		testRandOps(maxWeight -> new DynamicTreeSplayInt<>((int) maxWeight), seed);
+		testRandOps(maxWeight -> new DynamicTreeSplayInt((int) maxWeight), seed);
 	}
 
-	static void testRandOps(DoubleFunction<? extends DynamicTree<TrackerNode, Void>> builder, long seed) {
+	static void testRandOps(DoubleFunction<? extends DynamicTree> builder, long seed) {
 		testRandOps(builder, List.of(Op.MakeTree, Op.FindRoot, Op.FindMinEdge, Op.AddWeight, Op.Link, Op.Cut), seed);
 	}
 
-	static void testRandOps(DoubleFunction<? extends DynamicTree<TrackerNode, Void>> builder, List<Op> ops, long seed) {
+	static void testRandOps(DoubleFunction<? extends DynamicTree> builder, List<Op> ops, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(1024, 16), phase(256, 32), phase(256, 64), phase(128, 128), phase(64, 512),
 				phase(64, 2048), phase(64, 4096), phase(32, 16384));
@@ -48,7 +48,7 @@ public class DynamicTreeSplayTest extends TestUtils {
 
 	static class TrackerNode {
 		final int id;
-		DynamicTree.Node<TrackerNode, Void> dtNode;
+		DynamicTree.Node dtNode;
 		TrackerNode parent;
 		final List<TrackerNode> children = new ArrayList<>();
 		int edgeWeight;
@@ -64,7 +64,7 @@ public class DynamicTreeSplayTest extends TestUtils {
 	}
 
 	@SuppressWarnings("boxing")
-	private static void testRandOps(DoubleFunction<? extends DynamicTree<TrackerNode, Void>> builder, final int m,
+	private static void testRandOps(DoubleFunction<? extends DynamicTree> builder, final int m,
 			List<Op> ops, long seed) {
 		DebugPrintsManager debug = new DebugPrintsManager(false);
 		debug.println("\tnew iteration");
@@ -75,7 +75,7 @@ public class DynamicTreeSplayTest extends TestUtils {
 		final int MAX_WEIGHT_ADD = 100;
 		List<TrackerNode> nodes = new ArrayList<>();
 		List<TrackerNode> roots = new ArrayList<>();
-		DynamicTree<TrackerNode, Void> tree = builder.apply(MAX_WEIGHT);
+		DynamicTree tree = builder.apply(MAX_WEIGHT);
 
 		Function<TrackerNode, TrackerNode> findRoot = node -> {
 			TrackerNode root;
@@ -89,7 +89,7 @@ public class DynamicTreeSplayTest extends TestUtils {
 			switch (op) {
 				case MakeTree: {
 					TrackerNode node = new TrackerNode(nodes.size());
-					DynamicTree.Node<TrackerNode, Void> dtNode = tree.makeTree(node);
+					DynamicTree.Node dtNode = tree.makeTree();
 					node.dtNode = dtNode;
 					debug.println(op, "() -> ", dtNode);
 					nodes.add(node);
@@ -103,8 +103,8 @@ public class DynamicTreeSplayTest extends TestUtils {
 					debug.println(op, "(", node, ")");
 
 					TrackerNode root = findRoot.apply(node);
-					DynamicTree.Node<TrackerNode, Void> expected = root.dtNode;
-					DynamicTree.Node<TrackerNode, Void> actual = tree.findRoot(node.dtNode);
+					DynamicTree.Node expected = root.dtNode;
+					DynamicTree.Node actual = tree.findRoot(node.dtNode);
 					assertEquals(expected, actual, "FindRoot failure");
 					break;
 				}
@@ -120,7 +120,7 @@ public class DynamicTreeSplayTest extends TestUtils {
 							min = p;
 					Object[] expected = min != null ? new Object[] { min.dtNode, min.edgeWeight } : null;
 
-					DynamicTree.MinEdge<TrackerNode, Void> actual0 = tree.findMinEdge(node.dtNode);
+					DynamicTree.MinEdge actual0 = tree.findMinEdge(node.dtNode);
 					Object[] actual = actual0 != null ? new Object[] { actual0.u(), (int) Math.round(actual0.weight()) }
 							: null;
 
@@ -162,7 +162,7 @@ public class DynamicTreeSplayTest extends TestUtils {
 					int weight = rand.nextInt(MAX_WEIGHT_LINK);
 					debug.println(op, "(", a, ", ", b, ", ", weight, ")");
 
-					tree.link(a.dtNode, b.dtNode, weight, null);
+					tree.link(a.dtNode, b.dtNode, weight);
 
 					a.parent = b;
 					a.edgeWeight = weight;
