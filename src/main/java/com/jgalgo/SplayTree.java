@@ -6,18 +6,58 @@ import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
 
+/**
+ * Splay binary search tree.
+ * <p>
+ * The splay tree is a binary search tree which is not strictly balanced, in
+ * contrast to {@link RedBlackTree}. The splay tree has a property that recent
+ * accessed elements are closer to the root, and therefore faster to access. All
+ * operations have a time complexity of {@code O(log n)} amortized time.
+ * <p>
+ * The splay tree is specifically efficient for splits and joins operations.
+ *
+ * @see <a href="https://en.wikipedia.org/wiki/Splay_tree">Wikipedia</a>
+ * @author Barak Ugav
+ */
 public class SplayTree<E> extends BSTAbstract<E> {
 
 	private NodeSized<E> root;
 	private final SplayImplWithSize<E> impl = new SplayImplWithSize<>();
 	private final Set<HeapReference<E>> refsSet;
 
+	/**
+	 * Constructs a new, empty splay tree, sorted according to the natural
+	 * ordering of its elements.
+	 * <p>
+	 * All elements inserted into the tree must implement the {@link Comparable}
+	 * interface. Furthermore, all such elements must be <i>mutually comparable</i>:
+	 * {@code e1.compareTo(e2)} must not throw a {@code ClassCastException} for any
+	 * elements {@code e1} and {@code e2} in the tree. If the user attempts to
+	 * insert an element to the tree that violates this constraint (for example, the
+	 * user attempts to insert a string element to a tree whose elements are
+	 * integers), the {@code insert} call will throw a {@code ClassCastException}.
+	 */
 	public SplayTree() {
 		this(null);
 	}
 
-	public SplayTree(Comparator<? super E> c) {
-		super(c);
+	/**
+	 * Constructs a new, empty splay tree, sorted according to the specified
+	 * comparator.
+	 * <p>
+	 * All elements inserted into the tree must be <i>mutually comparable</i> by the
+	 * specified comparator: {@code comparator.compare(e1, e2)} must not throw a
+	 * {@code ClassCastException} for any elements {@code e1} and {@code e2} in the
+	 * tree. If the user attempts to insert an element to the tree that violates
+	 * this constraint, the {@code insert} call will throw a
+	 * {@code ClassCastException}.
+	 *
+	 * @param comparator the comparator that will be used to order this tree.
+	 *                   If {@code null}, the {@linkplain Comparable natural
+	 *                   ordering} of the elements will be used.
+	 */
+	public SplayTree(Comparator<? super E> comparator) {
+		super(comparator);
 		root = null;
 
 		refsSet = new AbstractSet<>() {
