@@ -5,6 +5,16 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Set;
 
+/**
+ * A red black balanced binary search tree.
+ * <p>
+ * A red black tree is a balanced binary search tree that its height is always
+ * {@code O(log n)}. All operations are performed in {@code O(log n)} time.
+ *
+ * @see <a href=
+ *      "https://en.wikipedia.org/wiki/Red%E2%80%93black_tree">Wikipedia</a>
+ * @author Barak Ugav
+ */
 public class RedBlackTree<E> extends BSTAbstract<E> {
 
 	private int size;
@@ -14,12 +24,39 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 	static final boolean Red = true;
 	static final boolean Black = false;
 
+	/**
+	 * Constructs a new, empty red black tree, sorted according to the natural
+	 * ordering of its elements.
+	 * <p>
+	 * All elements inserted into the tree must implement the {@link Comparable}
+	 * interface. Furthermore, all such elements must be <i>mutually comparable</i>:
+	 * {@code e1.compareTo(e2)} must not throw a {@code ClassCastException} for any
+	 * elements {@code e1} and {@code e2} in the tree. If the user attempts to
+	 * insert an element to the tree that violates this constraint (for example, the
+	 * user attempts to insert a string element to a tree whose elements are
+	 * integers), the {@code insert} call will throw a {@code ClassCastException}.
+	 */
 	public RedBlackTree() {
 		this(null);
 	}
 
-	public RedBlackTree(Comparator<? super E> c) {
-		super(c);
+	/**
+	 * Constructs a new, empty red black tree, sorted according to the specified
+	 * comparator.
+	 * <p>
+	 * All elements inserted into the tree must be <i>mutually comparable</i> by the
+	 * specified comparator: {@code comparator.compare(e1, e2)} must not throw a
+	 * {@code ClassCastException} for any elements {@code e1} and {@code e2} in the
+	 * tree. If the user attempts to insert an element to the tree that violates
+	 * this constraint, the {@code insert} call will throw a
+	 * {@code ClassCastException}.
+	 *
+	 * @param comparator the comparator that will be used to order this tree.
+	 *                   If {@code null}, the {@linkplain Comparable natural
+	 *                   ordering} of the elements will be used.
+	 */
+	public RedBlackTree(Comparator<? super E> comparator) {
+		super(comparator);
 		root = null;
 		size = 0;
 
@@ -83,7 +120,6 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 	/**
 	 * @throws UnsupportedOperationException
 	 */
-	@Deprecated
 	@Override
 	public BST<E> splitSmaller(E e) {
 		throw new UnsupportedOperationException();
@@ -92,7 +128,6 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 	/**
 	 * @throws UnsupportedOperationException
 	 */
-	@Deprecated
 	@Override
 	public BST<E> splitGreater(E e) {
 		throw new UnsupportedOperationException();
@@ -101,7 +136,6 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 	/**
 	 * @throws UnsupportedOperationException
 	 */
-	@Deprecated
 	@Override
 	public RedBlackTree<E> split(HeapReference<E> ref) {
 		throw new UnsupportedOperationException();

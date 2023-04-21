@@ -13,9 +13,7 @@ import com.jgalgo.Heap;
 import com.jgalgo.HeapReference;
 import com.jgalgo.RedBlackTree;
 import com.jgalgo.RedBlackTreeExtended;
-import com.jgalgo.RedBlackTreeExtended.ExtensionMax;
-import com.jgalgo.RedBlackTreeExtended.ExtensionMin;
-import com.jgalgo.RedBlackTreeExtended.ExtensionSize;
+import com.jgalgo.RedBlackTreeExtension;
 import com.jgalgo.test.HeapTestUtils.TestMode;
 
 @SuppressWarnings("boxing")
@@ -123,16 +121,14 @@ public class RedBlackTreeExtendedTest extends TestUtils {
 
 	private static class SizeValidatorTree<E> extends HeapWrapper<E> {
 
-		private SizeValidatorTree(RedBlackTree<E> tree, ExtensionSize<E> sizeExt) {
+		private SizeValidatorTree(RedBlackTree<E> tree, RedBlackTreeExtension.Size<E> sizeExt) {
 			super(tree);
 		}
 
 		@SuppressWarnings("unused")
 		static <E> SizeValidatorTree<E> newInstance(Comparator<? super E> c) {
-			RedBlackTreeExtended.Builder<E> builder = new RedBlackTreeExtended.Builder<>();
-			builder.comparator(c);
-			ExtensionSize<E> sizeExt = builder.addSizeExtension();
-			RedBlackTree<E> tree = builder.build();
+			RedBlackTreeExtension.Size<E> sizeExt = new RedBlackTreeExtension.Size<>();
+			RedBlackTree<E> tree = new RedBlackTreeExtended<>(c, List.of(sizeExt));
 			return new SizeValidatorTree<>(tree, sizeExt);
 		}
 
@@ -148,10 +144,8 @@ public class RedBlackTreeExtendedTest extends TestUtils {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 
-			RedBlackTreeExtended.Builder<Integer> builder = new RedBlackTreeExtended.Builder<>();
-			builder.comparator(compare);
-			ExtensionSize<Integer> sizeExt = builder.addSizeExtension();
-			RedBlackTree<Integer> tree = builder.build();
+			RedBlackTreeExtension.Size<Integer> sizeExt = new RedBlackTreeExtension.Size<>();
+			RedBlackTree<Integer> tree = new RedBlackTreeExtended<>(compare, List.of(sizeExt));
 
 			HeapTestUtils.testHeap(tree, n, m, TestMode.Normal, false, compare, seedGen.nextSeed());
 
@@ -178,10 +172,8 @@ public class RedBlackTreeExtendedTest extends TestUtils {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 
-			RedBlackTreeExtended.Builder<Integer> builder = new RedBlackTreeExtended.Builder<>();
-			builder.comparator(compare);
-			ExtensionMin<Integer> minExt = builder.addMinExtension();
-			RedBlackTree<Integer> tree = builder.build();
+			RedBlackTreeExtension.Min<Integer> minExt = new RedBlackTreeExtension.Min<>();
+			RedBlackTree<Integer> tree = new RedBlackTreeExtended<>(compare, List.of(minExt));
 
 			HeapTestUtils.testHeap(tree, n, m, TestMode.Normal, false, compare, seedGen.nextSeed());
 
@@ -206,10 +198,8 @@ public class RedBlackTreeExtendedTest extends TestUtils {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 
-			RedBlackTreeExtended.Builder<Integer> builder = new RedBlackTreeExtended.Builder<>();
-			builder.comparator(compare);
-			ExtensionMax<Integer> maxExt = builder.addMaxExtension();
-			RedBlackTree<Integer> tree = builder.build();
+			RedBlackTreeExtension.Max<Integer> maxExt = new RedBlackTreeExtension.Max<>();
+			RedBlackTree<Integer> tree = new RedBlackTreeExtended<>(compare, List.of(maxExt));
 
 			HeapTestUtils.testHeap(tree, n, m, TestMode.Normal, false, compare, seedGen.nextSeed());
 			for (HeapReference<Integer> node : tree.refsSet()) {
