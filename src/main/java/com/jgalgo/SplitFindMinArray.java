@@ -3,16 +3,28 @@ package com.jgalgo;
 import java.util.Collection;
 import java.util.Comparator;
 
+/**
+ * A {@link SplitFindMin} implementation using arrays.
+ * <p>
+ * The data structure support the {@link #init(Collection, Comparator)} in
+ * {@code O(n)} time, the {@link #decreaseKey(int, Object)} operation in
+ * {@code O(1)} time and the {@link #split(int)} operation in {@code O(log n)}
+ * time amortized. The data structure uses linear space.
+ * <p>
+ * This data structure is used in the maximum weighted matching for general
+ * graphs.
+ *
+ * @author Barak Ugav
+ */
 public class SplitFindMinArray<K> implements SplitFindMin<K> {
-
-	/*
-	 * make O(n), find findMin decreaseKey O(1), split O(log n) amortized.
-	 */
 
 	private K[] keys;
 	private Block[] blocks;
 	private Comparator<? super K> c;
 
+	/**
+	 * Create an empty Split-Find-Min data structure.
+	 */
 	public SplitFindMinArray() {
 	}
 

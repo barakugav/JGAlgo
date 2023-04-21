@@ -46,7 +46,8 @@ public interface UnionFind {
 	/**
 	 * Find the set of an element and get an arbitrary element from it.
 	 * <p>
-	 * {@code find(a) == find(b)} iff {@code a} and {@code b} are in the same set.
+	 * {@code find(a) == find(b)} if an only if {@code a} and {@code b} are in the
+	 * same set.
 	 *
 	 * @param x element in the data structure
 	 * @return arbitrary element from the set of x
