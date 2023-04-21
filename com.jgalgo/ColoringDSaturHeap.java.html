@@ -39,7 +39,7 @@ import java.util.Objects;
 <span class="nc" id="L39">	}</span>
 
 	@Override
-	public Coloring.Result calcColoring(UGraph g) {
+	public Coloring.Result computeColoring(UGraph g) {
 <span class="pc bpc" id="L43" title="1 of 2 branches missed.">		if (Graphs.containsSelfLoops(g))</span>
 <span class="nc" id="L44">			throw new IllegalArgumentException(&quot;no valid coloring in graphs with self loops&quot;);</span>
 

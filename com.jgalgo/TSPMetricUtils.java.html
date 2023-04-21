@@ -19,7 +19,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 <span class="pc bpc" id="L19" title="1 of 2 branches missed.">			assert g1.degreeOut(u) % 2 == 0;</span>
 
 		/* Calculate Eulerian tour in the new graph */
-<span class="fc" id="L22">		Path tour = EulerianTour.calcTour(g1);</span>
+<span class="fc" id="L22">		Path tour = EulerianTour.computeEulerianTour(g1);</span>
 <span class="pc bpc" id="L23" title="1 of 2 branches missed.">		assert isValidCycle(g1, tour);</span>
 <span class="pc bpc" id="L24" title="1 of 2 branches missed.">		assert isPathVisitEvery(g1, tour);</span>
 

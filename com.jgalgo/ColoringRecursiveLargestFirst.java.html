@@ -28,7 +28,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 <span class="fc" id="L28">public class ColoringRecursiveLargestFirst implements Coloring {</span>
 
 	@Override
-	public Result calcColoring(UGraph g) {
+	public Result computeColoring(UGraph g) {
 <span class="pc bpc" id="L32" title="1 of 2 branches missed.">		if (Graphs.containsSelfLoops(g))</span>
 <span class="nc" id="L33">			throw new IllegalArgumentException(&quot;no valid coloring in graphs with self loops&quot;);</span>
 

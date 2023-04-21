@@ -1,549 +1,200 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RedBlackTreeExtended.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jgalgo</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">RedBlackTreeExtended.java</span></div><h1>RedBlackTreeExtended.java</h1><pre class="source lang-java linenums">package com.jgalgo;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.List;
 
-import it.unimi.dsi.fastutil.ints.IntArrays;
-import it.unimi.dsi.fastutil.objects.ObjectArrays;
-
+/**
+ * A red black tree that support extensions such as subtree size/min/max.
+ * &lt;p&gt;
+ * Each node in the balanced binary tree can maintain properties such as its
+ * subtree size, or a reference to the minimum/maximum element in its subtree.
+ * These properties can be updated during the regular operations of the red
+ * black tree without increasing the asymptotical running time.
+ * &lt;p&gt;
+ * This red black tree implementation support arbitrary number of extensions,
+ * for example a size and max extensions are used in this snippet:
+ *
+ * &lt;pre&gt; {@code
+ * RedBlackTreeExtension.Size&lt;Integer&gt; sizeExt = new RedBlackTreeExtension.Size&lt;&gt;();
+ * RedBlackTreeExtension.Max&lt;Integer&gt; maxExt = new RedBlackTreeExtension.Max&lt;&gt;();
+ * RedBlackTreeExtended&lt;Integer&gt; tree = new RedBlackTreeExtended&lt;&gt;(List.of(sizeExt, maxExt));
+ *
+ * HeapReference&lt;Integer&gt; e1 = tree.insert(15);
+ * tree.insert(5);
+ * tree.insert(3);
+ * tree.insert(1);
+ * ...
+ * tree.insert(1);
+ *
+ * int subTreeSize = sizeExt.getSubTreeSize(e1);
+ * HeapReference&lt;Integer&gt; subTreeMax = maxExt.getSubTreeMax(e1);
+ * System.out.println(&quot;The subtree of &quot; + e1 + &quot; is of size &quot; + subTreeSize);
+ * System.out.println(&quot;The maximum element in the sub tree of &quot; + e1 + &quot; is &quot; + subTreeMax);
+ * }&lt;/pre&gt;
+ *
+ * @author Barak Ugav
+ */
 public class RedBlackTreeExtended&lt;E&gt; extends RedBlackTree&lt;E&gt; {
 
 	private Node&lt;E&gt;[] nodes;
 	private int nodesNextIdx;
-	private final Extension&lt;E&gt;[] extensions;
+	private final RedBlackTreeExtension&lt;E&gt;[] extensions;
 
 	@SuppressWarnings(&quot;rawtypes&quot;)
-<span class="fc" id="L19">	private static final Node[] EmptyNodesArray = new Node[0];</span>
+<span class="fc" id="L45">	private static final Node[] EmptyNodesArray = new Node[0];</span>
 
+	/**
+	 * Constructs a new, empty red black tree, with the given extensions, sorted
+	 * according to the natural ordering of its elements.
+	 * &lt;p&gt;
+	 * All elements inserted into the tree must implement the {@link Comparable}
+	 * interface. Furthermore, all such elements must be &lt;i&gt;mutually comparable&lt;/i&gt;:
+	 * {@code e1.compareTo(e2)} must not throw a {@code ClassCastException} for any
+	 * elements {@code e1} and {@code e2} in the tree. If the user attempts to
+	 * insert an element to the tree that violates this constraint (for example, the
+	 * user attempts to insert a string element to a tree whose elements are
+	 * integers), the {@code insert} call will throw a {@code ClassCastException}.
+	 * &lt;p&gt;
+	 * The provided extensions must be used souly by this tree. If an extension was
+	 * used in another tree, it should not be passed to a new one for reuse.
+	 *
+	 * @param extensions a collections of extensions to be used by this red black
+	 *                   tree.
+	 * @throws IllegalArgumentException if the extensions collection is empty
+	 */
+	public RedBlackTreeExtended(Collection&lt;? extends RedBlackTreeExtension&lt;E&gt;&gt; extensions) {
+<span class="nc" id="L67">		this(null, extensions);</span>
+<span class="nc" id="L68">	}</span>
+
+	/**
+	 * Constructs a new, empty red black tree, with the given extensions, sorted
+	 * according to the specified comparator.
+	 * &lt;p&gt;
+	 * All elements inserted into the tree must be &lt;i&gt;mutually comparable&lt;/i&gt; by the
+	 * specified comparator: {@code comparator.compare(e1, e2)} must not throw a
+	 * {@code ClassCastException} for any elements {@code e1} and {@code e2} in the
+	 * tree. If the user attempts to insert an element to the tree that violates
+	 * this constraint, the {@code insert} call will throw a
+	 * {@code ClassCastException}.
+	 * &lt;p&gt;
+	 * The provided extensions must be used souly by this tree. If an extension was
+	 * used in another tree, it should not be passed to a new one for reuse.
+	 *
+	 * @param comparator the comparator that will be used to order this tree.
+	 *                   If {@code null}, the {@linkplain Comparable natural
+	 *                   ordering} of the elements will be used.
+	 * @param extensions a collections of extensions to be used by this red black
+	 *                   tree.
+	 * @throws IllegalArgumentException if the extensions collection is empty
+	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
-	RedBlackTreeExtended(Comparator&lt;? super E&gt; c, Collection&lt;? extends Extension&lt;E&gt;&gt; extensions) {
-<span class="fc" id="L23">		super(c);</span>
-<span class="fc" id="L24">		this.extensions = extensions.toArray(len -&gt; new Extension[len]);</span>
-<span class="fc" id="L25">		nodes = EmptyNodesArray;</span>
-<span class="fc" id="L26">	}</span>
+	public RedBlackTreeExtended(Comparator&lt;? super E&gt; comparator,
+			Collection&lt;? extends RedBlackTreeExtension&lt;E&gt;&gt; extensions) {
+<span class="fc" id="L94">		super(comparator);</span>
+<span class="pc bpc" id="L95" title="1 of 2 branches missed.">		if (extensions.isEmpty())</span>
+<span class="nc" id="L96">			throw new IllegalArgumentException(&quot;No extensions provided. Use the regular Red Black tree.&quot;);</span>
+<span class="fc" id="L97">		this.extensions = extensions.toArray(len -&gt; new RedBlackTreeExtension[len]);</span>
+<span class="fc" id="L98">		nodes = EmptyNodesArray;</span>
+<span class="fc" id="L99">	}</span>
 
 	@Override
 	Node&lt;E&gt; newNode(E e) {
-<span class="fc" id="L30">		int idx = nodesNextIdx++;</span>
-<span class="fc bfc" id="L31" title="All 2 branches covered.">		if (idx &gt;= nodes.length) {</span>
-<span class="fc" id="L32">			int newLen = Math.max(2, nodes.length * 2);</span>
-<span class="fc" id="L33">			nodes = Arrays.copyOf(nodes, newLen);</span>
-<span class="fc bfc" id="L34" title="All 2 branches covered.">			for (Extension&lt;E&gt; extension : extensions)</span>
-<span class="fc" id="L35">				extension.data.expand(newLen);</span>
+<span class="fc" id="L103">		int idx = nodesNextIdx++;</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">		if (idx &gt;= nodes.length) {</span>
+<span class="fc" id="L105">			int newLen = Math.max(2, nodes.length * 2);</span>
+<span class="fc" id="L106">			nodes = Arrays.copyOf(nodes, newLen);</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">			for (RedBlackTreeExtension&lt;E&gt; extension : extensions)</span>
+<span class="fc" id="L108">				extension.data.expand(newLen);</span>
 		}
-<span class="pc bpc" id="L37" title="1 of 2 branches missed.">		assert nodes[idx] == null;</span>
-<span class="fc" id="L38">		Node&lt;E&gt; n = nodes[idx] = new Node&lt;&gt;(e, idx);</span>
-<span class="fc bfc" id="L39" title="All 2 branches covered.">		for (Extension&lt;E&gt; extension : extensions)</span>
-<span class="fc" id="L40">			extension.initNode(n);</span>
-<span class="fc" id="L41">		return n;</span>
+<span class="pc bpc" id="L110" title="1 of 2 branches missed.">		assert nodes[idx] == null;</span>
+<span class="fc" id="L111">		Node&lt;E&gt; n = nodes[idx] = new Node&lt;&gt;(e, idx);</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">		for (RedBlackTreeExtension&lt;E&gt; extension : extensions)</span>
+<span class="fc" id="L113">			extension.initNode(n);</span>
+<span class="fc" id="L114">		return n;</span>
 	}
 
 	@Override
 	void removeNode(RedBlackTree.Node&lt;E&gt; n0) {
-<span class="fc" id="L46">		super.removeNode(n0);</span>
-<span class="fc" id="L47">		Node&lt;E&gt; n = (Node&lt;E&gt;) n0;</span>
-<span class="pc bpc" id="L48" title="1 of 2 branches missed.">		assert nodes[n.idx] == n;</span>
-<span class="fc" id="L49">		nodes[n.idx] = null;</span>
-<span class="fc bfc" id="L50" title="All 2 branches covered.">		for (Extension&lt;E&gt; extension : extensions)</span>
-<span class="fc" id="L51">			extension.data.clear(n.idx);</span>
-<span class="fc bfc" id="L52" title="All 2 branches covered.">		if (size() &lt; nodesNextIdx / 2)</span>
-<span class="fc" id="L53">			reassignIndices();</span>
-<span class="fc" id="L54">	}</span>
+<span class="fc" id="L119">		super.removeNode(n0);</span>
+<span class="fc" id="L120">		Node&lt;E&gt; n = (Node&lt;E&gt;) n0;</span>
+<span class="pc bpc" id="L121" title="1 of 2 branches missed.">		assert nodes[n.idx] == n;</span>
+<span class="fc" id="L122">		nodes[n.idx] = null;</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">		for (RedBlackTreeExtension&lt;E&gt; extension : extensions)</span>
+<span class="fc" id="L124">			extension.data.clear(n.idx);</span>
+<span class="fc bfc" id="L125" title="All 2 branches covered.">		if (size() &lt; nodesNextIdx / 2)</span>
+<span class="fc" id="L126">			reassignIndices();</span>
+<span class="fc" id="L127">	}</span>
 
 	private void reassignIndices() {
-<span class="fc" id="L57">		Node&lt;E&gt;[] nodes = this.nodes;</span>
-<span class="fc" id="L58">		int maxNodeIdx = nodesNextIdx;</span>
-<span class="fc" id="L59">		int newNextIdx = 0;</span>
-<span class="fc bfc" id="L60" title="All 2 branches covered.">		for (int idx = 0; idx &lt; maxNodeIdx; idx++) {</span>
-<span class="fc" id="L61">			Node&lt;E&gt; node = nodes[idx];</span>
-<span class="fc bfc" id="L62" title="All 2 branches covered.">			if (node == null)</span>
-<span class="fc" id="L63">				continue;</span>
-<span class="pc bpc" id="L64" title="1 of 2 branches missed.">			assert node.idx == idx;</span>
-<span class="fc" id="L65">			int newIdx = newNextIdx++;</span>
-<span class="fc" id="L66">			nodes[idx] = null;</span>
-<span class="fc" id="L67">			nodes[node.idx = newIdx] = node;</span>
-<span class="fc bfc" id="L68" title="All 2 branches covered.">			for (Extension&lt;E&gt; extension : extensions)</span>
-<span class="fc" id="L69">				extension.data.swap(idx, newIdx);</span>
+<span class="fc" id="L130">		Node&lt;E&gt;[] nodes = this.nodes;</span>
+<span class="fc" id="L131">		int maxNodeIdx = nodesNextIdx;</span>
+<span class="fc" id="L132">		int newNextIdx = 0;</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">		for (int idx = 0; idx &lt; maxNodeIdx; idx++) {</span>
+<span class="fc" id="L134">			Node&lt;E&gt; node = nodes[idx];</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">			if (node == null)</span>
+<span class="fc" id="L136">				continue;</span>
+<span class="pc bpc" id="L137" title="1 of 2 branches missed.">			assert node.idx == idx;</span>
+<span class="fc" id="L138">			int newIdx = newNextIdx++;</span>
+<span class="fc" id="L139">			nodes[idx] = null;</span>
+<span class="fc" id="L140">			nodes[node.idx = newIdx] = node;</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">			for (RedBlackTreeExtension&lt;E&gt; extension : extensions)</span>
+<span class="fc" id="L142">				extension.data.swap(idx, newIdx);</span>
 		}
-<span class="fc" id="L71">		nodesNextIdx = newNextIdx;</span>
-<span class="fc" id="L72">	}</span>
+<span class="fc" id="L144">		nodesNextIdx = newNextIdx;</span>
+<span class="fc" id="L145">	}</span>
 
 	@Override
 	void swap(RedBlackTree.Node&lt;E&gt; a, RedBlackTree.Node&lt;E&gt; b) {
-<span class="fc" id="L76">		Node&lt;E&gt; n1 = (Node&lt;E&gt;) a, n2 = (Node&lt;E&gt;) b;</span>
-<span class="fc bfc" id="L77" title="All 2 branches covered.">		for (Extension&lt;E&gt; extension : extensions)</span>
-<span class="fc" id="L78">			extension.beforeNodeSwap((Node&lt;E&gt;) a, (Node&lt;E&gt;) b);</span>
-<span class="fc" id="L79">		super.swap(n1, n2);</span>
-<span class="fc" id="L80">	}</span>
+<span class="fc" id="L149">		Node&lt;E&gt; n1 = (Node&lt;E&gt;) a, n2 = (Node&lt;E&gt;) b;</span>
+<span class="fc bfc" id="L150" title="All 2 branches covered.">		for (RedBlackTreeExtension&lt;E&gt; extension : extensions)</span>
+<span class="fc" id="L151">			extension.beforeNodeSwap((Node&lt;E&gt;) a, (Node&lt;E&gt;) b);</span>
+<span class="fc" id="L152">		super.swap(n1, n2);</span>
+<span class="fc" id="L153">	}</span>
 
 	@Override
 	void afterInsert(RedBlackTree.Node&lt;E&gt; n) {
-<span class="fc bfc" id="L84" title="All 2 branches covered.">		for (Extension&lt;E&gt; extension : extensions)</span>
-<span class="fc" id="L85">			extension.afterInsert((Node&lt;E&gt;) n);</span>
-<span class="fc" id="L86">	}</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">		for (RedBlackTreeExtension&lt;E&gt; extension : extensions)</span>
+<span class="fc" id="L158">			extension.afterInsert((Node&lt;E&gt;) n);</span>
+<span class="fc" id="L159">	}</span>
 
 	@Override
 	void beforeRemove(RedBlackTree.Node&lt;E&gt; n) {
-<span class="fc bfc" id="L90" title="All 2 branches covered.">		for (Extension&lt;E&gt; extension : extensions)</span>
-<span class="fc" id="L91">			extension.beforeRemove((Node&lt;E&gt;) n);</span>
-<span class="fc" id="L92">	}</span>
+<span class="fc bfc" id="L163" title="All 2 branches covered.">		for (RedBlackTreeExtension&lt;E&gt; extension : extensions)</span>
+<span class="fc" id="L164">			extension.beforeRemove((Node&lt;E&gt;) n);</span>
+<span class="fc" id="L165">	}</span>
 
 	@Override
 	void beforeRotateLeft(RedBlackTree.Node&lt;E&gt; n) {
-<span class="fc bfc" id="L96" title="All 2 branches covered.">		for (Extension&lt;E&gt; extension : extensions)</span>
-<span class="fc" id="L97">			extension.beforeRotateLeft((Node&lt;E&gt;) n);</span>
-<span class="fc" id="L98">	}</span>
+<span class="fc bfc" id="L169" title="All 2 branches covered.">		for (RedBlackTreeExtension&lt;E&gt; extension : extensions)</span>
+<span class="fc" id="L170">			extension.beforeRotateLeft((Node&lt;E&gt;) n);</span>
+<span class="fc" id="L171">	}</span>
 
 	@Override
 	void beforeRotateRight(RedBlackTree.Node&lt;E&gt; n) {
-<span class="fc bfc" id="L102" title="All 2 branches covered.">		for (Extension&lt;E&gt; extension : extensions)</span>
-<span class="fc" id="L103">			extension.beforeRotateRight((Node&lt;E&gt;) n);</span>
-<span class="fc" id="L104">	}</span>
+<span class="fc bfc" id="L175" title="All 2 branches covered.">		for (RedBlackTreeExtension&lt;E&gt; extension : extensions)</span>
+<span class="fc" id="L176">			extension.beforeRotateRight((Node&lt;E&gt;) n);</span>
+<span class="fc" id="L177">	}</span>
 
-	private static class Node&lt;E&gt; extends RedBlackTree.Node&lt;E&gt; {
+	static class Node&lt;E&gt; extends RedBlackTree.Node&lt;E&gt; {
 
-		private int idx;
+		int idx;
 
 		Node(E e, int idx) {
-<span class="fc" id="L111">			super(e);</span>
-<span class="fc" id="L112">			this.idx = idx;</span>
-<span class="fc" id="L113">		}</span>
+<span class="fc" id="L184">			super(e);</span>
+<span class="fc" id="L185">			this.idx = idx;</span>
+<span class="fc" id="L186">		}</span>
 
 		Node&lt;E&gt; parent() {
-<span class="fc" id="L116">			return (Node&lt;E&gt;) parent;</span>
+<span class="fc" id="L189">			return (Node&lt;E&gt;) parent;</span>
 		}
 
 		Node&lt;E&gt; left() {
-<span class="fc" id="L120">			return (Node&lt;E&gt;) left;</span>
+<span class="fc" id="L193">			return (Node&lt;E&gt;) left;</span>
 		}
 
 		Node&lt;E&gt; right() {
-<span class="fc" id="L124">			return (Node&lt;E&gt;) right;</span>
-		}
-
-	}
-
-	private static abstract class ExtensionData {
-		abstract void swap(int idx1, int idx2);
-
-		abstract void clear(int idx);
-
-		abstract void expand(int newCapacity);
-
-		static class Obj&lt;D&gt; extends ExtensionData {
-			private Object[] data;
-
-<span class="fc" id="L139">			Obj() {</span>
-<span class="fc" id="L140">				data = ObjectArrays.EMPTY_ARRAY;</span>
-<span class="fc" id="L141">			}</span>
-
-			@SuppressWarnings(&quot;unchecked&quot;)
-			D get(int idx) {
-<span class="fc" id="L145">				return (D) data[idx];</span>
-			}
-
-			void set(int idx, D d) {
-<span class="fc" id="L149">				data[idx] = d;</span>
-<span class="fc" id="L150">			}</span>
-
-			@Override
-			void swap(int idx1, int idx2) {
-<span class="fc" id="L154">				Object temp = data[idx1];</span>
-<span class="fc" id="L155">				data[idx1] = data[idx2];</span>
-<span class="fc" id="L156">				data[idx2] = temp;</span>
-<span class="fc" id="L157">			}</span>
-
-			@Override
-			void clear(int idx) {
-<span class="fc" id="L161">				data[idx] = null;</span>
-<span class="fc" id="L162">			}</span>
-
-			@Override
-			void expand(int newCapacity) {
-<span class="fc" id="L166">				data = Arrays.copyOf(data, newCapacity);</span>
-<span class="fc" id="L167">			}</span>
-		}
-
-		static class Int extends ExtensionData {
-			private int[] data;
-
-<span class="fc" id="L173">			Int() {</span>
-<span class="fc" id="L174">				data = IntArrays.EMPTY_ARRAY;</span>
-<span class="fc" id="L175">			}</span>
-
-			int get(int idx) {
-<span class="fc" id="L178">				return data[idx];</span>
-			}
-
-			void set(int idx, int d) {
-<span class="fc" id="L182">				data[idx] = d;</span>
-<span class="fc" id="L183">			}</span>
-
-			@Override
-			void swap(int idx1, int idx2) {
-<span class="fc" id="L187">				int temp = data[idx1];</span>
-<span class="fc" id="L188">				data[idx1] = data[idx2];</span>
-<span class="fc" id="L189">				data[idx2] = temp;</span>
-<span class="fc" id="L190">			}</span>
-
-			@Override
-			void clear(int idx) {
-<span class="fc" id="L194">				data[idx] = 0;</span>
-<span class="fc" id="L195">			}</span>
-
-			@Override
-			void expand(int newCapacity) {
-<span class="fc" id="L199">				data = Arrays.copyOf(data, newCapacity);</span>
-<span class="fc" id="L200">			}</span>
-		}
-	}
-
-	private static abstract class Extension&lt;E&gt; {
-		final ExtensionData data;
-
-<span class="fc" id="L207">		private Extension(ExtensionData data) {</span>
-<span class="fc" id="L208">			this.data = data;</span>
-<span class="fc" id="L209">		}</span>
-
-		void initNode(Node&lt;E&gt; n) {
-<span class="nc" id="L212">		}</span>
-
-		void removeNodeData(Node&lt;E&gt; n) {
-<span class="nc" id="L215">		}</span>
-
-		void afterInsert(Node&lt;E&gt; n) {
-<span class="nc" id="L218">		}</span>
-
-		void beforeRemove(Node&lt;E&gt; n) {
-<span class="nc" id="L221">		}</span>
-
-		void beforeNodeSwap(Node&lt;E&gt; a, Node&lt;E&gt; b) {
-<span class="nc" id="L224">		}</span>
-
-		void beforeRotateLeft(Node&lt;E&gt; n) {
-<span class="nc" id="L227">		}</span>
-
-		void beforeRotateRight(Node&lt;E&gt; n) {
-<span class="nc" id="L230">		}</span>
-
-	}
-
-	private static abstract class ExtensionObj&lt;E, D&gt; extends Extension&lt;E&gt; {
-
-		public ExtensionObj() {
-<span class="fc" id="L237">			super(new ExtensionData.Obj&lt;D&gt;());</span>
-<span class="fc" id="L238">		}</span>
-
-		@SuppressWarnings(&quot;unchecked&quot;)
-		private ExtensionData.Obj&lt;D&gt; data() {
-<span class="fc" id="L242">			return (ExtensionData.Obj&lt;D&gt;) data;</span>
-		}
-
-		public D getNodeData(Node&lt;E&gt; n) {
-<span class="fc" id="L246">			return data().get(n.idx);</span>
-		}
-
-		public void setNodeData(Node&lt;E&gt; n, D data) {
-<span class="fc" id="L250">			data().set(n.idx, data);</span>
-<span class="fc" id="L251">		}</span>
-
-	}
-
-	private static abstract class ExtensionInt&lt;E&gt; extends Extension&lt;E&gt; {
-
-		public ExtensionInt() {
-<span class="fc" id="L258">			super(new ExtensionData.Int());</span>
-<span class="fc" id="L259">		}</span>
-
-		private ExtensionData.Int data() {
-<span class="fc" id="L262">			return (ExtensionData.Int) data;</span>
-		}
-
-		public int getNodeData(Node&lt;E&gt; n) {
-<span class="fc" id="L266">			return data().get(n.idx);</span>
-		}
-
-		public void setNodeData(Node&lt;E&gt; n, int data) {
-<span class="fc" id="L270">			data().set(n.idx, data);</span>
-<span class="fc" id="L271">		}</span>
-	}
-
-	public static class ExtensionSize&lt;E&gt; extends ExtensionInt&lt;E&gt; {
-
-<span class="fc" id="L276">		ExtensionSize() {</span>
-<span class="fc" id="L277">		}</span>
-
-		public int getSubTreeSize(HeapReference&lt;E&gt; ref) {
-<span class="fc" id="L280">			return getNodeData((Node&lt;E&gt;) ref);</span>
-		}
-
-		@Override
-		void initNode(Node&lt;E&gt; n) {
-<span class="fc" id="L285">			setNodeData(n, 1);</span>
-<span class="fc" id="L286">		}</span>
-
-		@Override
-		void afterInsert(Node&lt;E&gt; n) {
-			/* for each ancestor, increase sub tree size by 1 */
-<span class="fc bfc" id="L291" title="All 2 branches covered.">			for (; (n = n.parent()) != null;)</span>
-<span class="fc" id="L292">				setNodeData(n, getNodeData(n) + 1);</span>
-<span class="fc" id="L293">		}</span>
-
-		@Override
-		void beforeRemove(Node&lt;E&gt; n) {
-			/* for each ancestor, decrease sub tree size by 1 */
-<span class="fc bfc" id="L298" title="All 2 branches covered.">			for (; (n = n.parent()) != null;)</span>
-<span class="fc" id="L299">				setNodeData(n, getNodeData(n) - 1);</span>
-<span class="fc" id="L300">		}</span>
-
-		@Override
-		void beforeNodeSwap(Node&lt;E&gt; a, Node&lt;E&gt; b) {
-<span class="fc" id="L304">			int s = getNodeData(a);</span>
-<span class="fc" id="L305">			setNodeData(a, getNodeData(b));</span>
-<span class="fc" id="L306">			setNodeData(b, s);</span>
-<span class="fc" id="L307">		}</span>
-
-		@Override
-		void beforeRotateLeft(Node&lt;E&gt; n) {
-<span class="fc" id="L311">			Node&lt;E&gt; child = n.right(), grandchild = child.left();</span>
-<span class="fc bfc" id="L312" title="All 2 branches covered.">			int childSize = getNodeData(child), grandchildSize = grandchild != null ? getNodeData(grandchild) : 0;</span>
-
-<span class="fc" id="L314">			setNodeData(n, getNodeData(n) - childSize + grandchildSize);</span>
-<span class="fc" id="L315">			setNodeData(child, childSize - grandchildSize + getNodeData(n));</span>
-<span class="fc" id="L316">		}</span>
-
-		@Override
-		void beforeRotateRight(Node&lt;E&gt; n) {
-<span class="fc" id="L320">			Node&lt;E&gt; child = n.left(), grandchild = child.right();</span>
-<span class="fc bfc" id="L321" title="All 2 branches covered.">			int childSize = getNodeData(child), grandchildSize = grandchild != null ? getNodeData(grandchild) : 0;</span>
-
-<span class="fc" id="L323">			setNodeData(n, getNodeData(n) - childSize + grandchildSize);</span>
-<span class="fc" id="L324">			setNodeData(child, childSize - grandchildSize + getNodeData(n));</span>
-<span class="fc" id="L325">		}</span>
-
-	}
-
-<span class="fc" id="L329">	public static class ExtensionMin&lt;E&gt; extends ExtensionObj&lt;E, Node&lt;E&gt;&gt; {</span>
-
-<span class="fc" id="L331">		ExtensionMin() {</span>
-<span class="fc" id="L332">		}</span>
-
-		public HeapReference&lt;E&gt; getSubTreeMin(HeapReference&lt;E&gt; ref) {
-<span class="fc" id="L335">			return getNodeData((Node&lt;E&gt;) ref);</span>
-		}
-
-		@Override
-		void initNode(Node&lt;E&gt; n) {
-			/* minimum node of subtree of the single node is the node itself */
-<span class="fc" id="L341">			setNodeData(n, n);</span>
-<span class="fc" id="L342">		}</span>
-
-		@Override
-		void afterInsert(Node&lt;E&gt; n) {
-<span class="fc bfc" id="L346" title="All 4 branches covered.">			for (Node&lt;E&gt; p = n; p.parent() != null &amp;&amp; p == p.parent().left(); p = p.parent())</span>
-<span class="fc" id="L347">				setNodeData(p.parent(), n);</span>
-<span class="fc" id="L348">		}</span>
-
-		@Override
-		void beforeRemove(Node&lt;E&gt; n) {
-			Node&lt;E&gt; min;
-<span class="fc bfc" id="L353" title="All 2 branches covered.">			if (n.left() != null)</span>
-<span class="fc" id="L354">				min = getNodeData(n.left());</span>
-<span class="fc bfc" id="L355" title="All 2 branches covered.">			else if (n.right() != null)</span>
-<span class="fc" id="L356">				min = getNodeData(n.right());</span>
-			else
-<span class="fc" id="L358">				min = n.parent();</span>
-
-<span class="fc bfc" id="L360" title="All 4 branches covered.">			for (Node&lt;E&gt; p = n; p.parent() != null &amp;&amp; p == p.parent().left(); p = p.parent())</span>
-<span class="fc" id="L361">				setNodeData(p.parent(), min);</span>
-<span class="fc" id="L362">		}</span>
-
-		@Override
-		void beforeNodeSwap(Node&lt;E&gt; a, Node&lt;E&gt; b) {
-<span class="pc bpc" id="L366" title="1 of 2 branches missed.">			if (getNodeData(b) == a) {</span>
-<span class="nc" id="L367">				Node&lt;E&gt; temp = a;</span>
-<span class="nc" id="L368">				a = b;</span>
-<span class="nc" id="L369">				a = temp;</span>
-			}
-<span class="pc bpc" id="L371" title="1 of 2 branches missed.">			if (getNodeData(a) == b) {</span>
-<span class="nc bnc" id="L372" title="All 2 branches missed.">				assert getNodeData(b) == b;</span>
-<span class="nc bnc" id="L373" title="All 4 branches missed.">				for (Node&lt;E&gt; p = b; p.parent() != null &amp;&amp; p == p.parent().left(); p = p.parent())</span>
-<span class="nc" id="L374">					setNodeData(p.parent(), a);</span>
-<span class="nc bnc" id="L375" title="All 2 branches missed.">				assert getNodeData(a) == a : &quot;a should be ancestor of b&quot;;</span>
-<span class="nc" id="L376">				setNodeData(b, a);</span>
-<span class="nc" id="L377">				return;</span>
-			}
-
-			Node&lt;E&gt; aData, bData;
-<span class="pc bpc" id="L381" title="1 of 2 branches missed.">			if (a.hasLeftChild()) {</span>
-<span class="pc bpc" id="L382" title="1 of 2 branches missed.">				assert getNodeData(a) == getNodeData(a.left());</span>
-<span class="fc" id="L383">				bData = getNodeData(a);</span>
-			} else {
-<span class="nc bnc" id="L385" title="All 2 branches missed.">				assert getNodeData(a) == a;</span>
-<span class="nc bnc" id="L386" title="All 4 branches missed.">				for (Node&lt;E&gt; p = a; p.parent() != null &amp;&amp; p == p.parent().left(); p = p.parent()) {</span>
-<span class="nc bnc" id="L387" title="All 2 branches missed.">					assert p.parent() != b;</span>
-<span class="nc" id="L388">					setNodeData(p.parent(), b);</span>
-				}
-<span class="nc" id="L390">				bData = b;</span>
-			}
-<span class="pc bpc" id="L392" title="1 of 2 branches missed.">			if (b.hasLeftChild()) {</span>
-<span class="nc bnc" id="L393" title="All 2 branches missed.">				assert getNodeData(b) == getNodeData(b.left());</span>
-<span class="nc" id="L394">				aData = getNodeData(b);</span>
-			} else {
-<span class="pc bpc" id="L396" title="1 of 2 branches missed.">				assert getNodeData(b) == b;</span>
-<span class="pc bpc" id="L397" title="1 of 4 branches missed.">				for (Node&lt;E&gt; p = b; p.parent() != null &amp;&amp; p == p.parent().left(); p = p.parent())</span>
-<span class="fc" id="L398">					setNodeData(p.parent(), a);</span>
-<span class="fc" id="L399">				aData = a;</span>
-			}
-<span class="fc" id="L401">			setNodeData(a, aData);</span>
-<span class="fc" id="L402">			setNodeData(b, bData);</span>
-<span class="fc" id="L403">		}</span>
-
-		@Override
-		void beforeRotateLeft(Node&lt;E&gt; n) {
-<span class="fc" id="L407">			Node&lt;E&gt; child = n.right();</span>
-<span class="fc" id="L408">			setNodeData(child, getNodeData(n));</span>
-<span class="fc" id="L409">		}</span>
-
-		@Override
-		void beforeRotateRight(Node&lt;E&gt; n) {
-<span class="fc" id="L413">			Node&lt;E&gt; grandchild = n.left().right();</span>
-<span class="fc bfc" id="L414" title="All 2 branches covered.">			setNodeData(n, grandchild != null ? getNodeData(grandchild) : n);</span>
-<span class="fc" id="L415">		}</span>
-
-	}
-
-<span class="fc" id="L419">	public static class ExtensionMax&lt;E&gt; extends ExtensionObj&lt;E, Node&lt;E&gt;&gt; {</span>
-
-<span class="fc" id="L421">		ExtensionMax() {</span>
-<span class="fc" id="L422">		}</span>
-
-		public HeapReference&lt;E&gt; getSubTreeMax(HeapReference&lt;E&gt; ref) {
-<span class="fc" id="L425">			return getNodeData((Node&lt;E&gt;) ref);</span>
-		}
-
-		@Override
-		void initNode(Node&lt;E&gt; n) {
-			/* maximum node of subtree of the single node is the node itself */
-<span class="fc" id="L431">			setNodeData(n, n);</span>
-<span class="fc" id="L432">		}</span>
-
-		@Override
-		void afterInsert(Node&lt;E&gt; n) {
-<span class="fc bfc" id="L436" title="All 4 branches covered.">			for (Node&lt;E&gt; p = n; p.parent() != null &amp;&amp; p == p.parent().right(); p = p.parent())</span>
-<span class="fc" id="L437">				setNodeData(p.parent(), n);</span>
-<span class="fc" id="L438">		}</span>
-
-		@Override
-		void beforeRemove(Node&lt;E&gt; n) {
-			Node&lt;E&gt; max;
-<span class="fc bfc" id="L443" title="All 2 branches covered.">			if (n.right() != null)</span>
-<span class="fc" id="L444">				max = getNodeData(n.right());</span>
-<span class="fc bfc" id="L445" title="All 2 branches covered.">			else if (n.left() != null)</span>
-<span class="fc" id="L446">				max = getNodeData(n.left());</span>
-			else
-<span class="fc" id="L448">				max = n.parent();</span>
-
-<span class="fc bfc" id="L450" title="All 4 branches covered.">			for (Node&lt;E&gt; p = n; p.parent() != null &amp;&amp; p == p.parent().right(); p = p.parent())</span>
-<span class="fc" id="L451">				setNodeData(p.parent(), max);</span>
-<span class="fc" id="L452">		}</span>
-
-		@Override
-		void beforeNodeSwap(Node&lt;E&gt; a, Node&lt;E&gt; b) {
-<span class="pc bpc" id="L456" title="1 of 2 branches missed.">			if (getNodeData(b) == a) {</span>
-<span class="nc" id="L457">				Node&lt;E&gt; temp = a;</span>
-<span class="nc" id="L458">				a = b;</span>
-<span class="nc" id="L459">				a = temp;</span>
-			}
-<span class="fc bfc" id="L461" title="All 2 branches covered.">			if (getNodeData(a) == b) {</span>
-<span class="pc bpc" id="L462" title="1 of 2 branches missed.">				assert getNodeData(b) == b;</span>
-<span class="fc bfc" id="L463" title="All 4 branches covered.">				for (Node&lt;E&gt; p = b; p.parent() != null &amp;&amp; p == p.parent().right(); p = p.parent())</span>
-<span class="fc" id="L464">					setNodeData(p.parent(), a);</span>
-<span class="pc bpc" id="L465" title="1 of 2 branches missed.">				assert getNodeData(a) == a : &quot;a should be ancestor of b&quot;;</span>
-<span class="fc" id="L466">				setNodeData(b, a);</span>
-<span class="fc" id="L467">				return;</span>
-			}
-
-			Node&lt;E&gt; aData, bData;
-<span class="pc bpc" id="L471" title="1 of 2 branches missed.">			if (a.hasRightChild()) {</span>
-<span class="pc bpc" id="L472" title="1 of 2 branches missed.">				assert getNodeData(a) == getNodeData(a.right());</span>
-<span class="fc" id="L473">				bData = getNodeData(a);</span>
-			} else {
-<span class="nc bnc" id="L475" title="All 2 branches missed.">				assert getNodeData(a) == a;</span>
-<span class="nc bnc" id="L476" title="All 4 branches missed.">				for (Node&lt;E&gt; p = a; p.parent() != null &amp;&amp; p == p.parent().right(); p = p.parent()) {</span>
-<span class="nc bnc" id="L477" title="All 2 branches missed.">					assert p.parent() != b;</span>
-<span class="nc" id="L478">					setNodeData(p.parent(), b);</span>
-				}
-<span class="nc" id="L480">				bData = b;</span>
-			}
-<span class="fc bfc" id="L482" title="All 2 branches covered.">			if (b.hasRightChild()) {</span>
-<span class="pc bpc" id="L483" title="1 of 2 branches missed.">				assert getNodeData(b) == getNodeData(b.right());</span>
-<span class="fc" id="L484">				aData = getNodeData(b);</span>
-			} else {
-<span class="pc bpc" id="L486" title="1 of 2 branches missed.">				assert getNodeData(b) == b;</span>
-<span class="pc bpc" id="L487" title="2 of 4 branches missed.">				for (Node&lt;E&gt; p = b; p.parent() != null &amp;&amp; p == p.parent().right(); p = p.parent())</span>
-<span class="nc" id="L488">					setNodeData(p.parent(), a);</span>
-<span class="fc" id="L489">				aData = a;</span>
-			}
-<span class="fc" id="L491">			setNodeData(a, aData);</span>
-<span class="fc" id="L492">			setNodeData(b, bData);</span>
-<span class="fc" id="L493">		}</span>
-
-		@Override
-		void beforeRotateLeft(Node&lt;E&gt; n) {
-<span class="fc" id="L497">			Node&lt;E&gt; grandchild = n.right().left();</span>
-<span class="fc bfc" id="L498" title="All 2 branches covered.">			setNodeData(n, grandchild != null ? getNodeData(grandchild) : n);</span>
-<span class="fc" id="L499">		}</span>
-
-		@Override
-		void beforeRotateRight(Node&lt;E&gt; n) {
-<span class="fc" id="L503">			Node&lt;E&gt; child = n.left();</span>
-<span class="fc" id="L504">			setNodeData(child, getNodeData(n));</span>
-<span class="fc" id="L505">		}</span>
-
-	}
-
-	public static class Builder&lt;E&gt; {
-
-		private Comparator&lt;? super E&gt; c;
-		private final List&lt;Extension&lt;E&gt;&gt; extensions;
-
-<span class="fc" id="L514">		public Builder() {</span>
-<span class="fc" id="L515">			c = null;</span>
-<span class="fc" id="L516">			extensions = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L517">		}</span>
-
-		public void comparator(Comparator&lt;? super E&gt; c) {
-<span class="fc" id="L520">			this.c = c;</span>
-<span class="fc" id="L521">		}</span>
-
-		public ExtensionSize&lt;E&gt; addSizeExtension() {
-<span class="fc" id="L524">			return addExtension(new ExtensionSize&lt;&gt;());</span>
-		}
-
-		public ExtensionMin&lt;E&gt; addMinExtension() {
-<span class="fc" id="L528">			return addExtension(new ExtensionMin&lt;&gt;());</span>
-		}
-
-		public ExtensionMax&lt;E&gt; addMaxExtension() {
-<span class="fc" id="L532">			return addExtension(new ExtensionMax&lt;&gt;());</span>
-		}
-
-		private &lt;T extends Extension&lt;E&gt;&gt; T addExtension(T extension) {
-<span class="fc" id="L536">			extensions.add(extension);</span>
-<span class="fc" id="L537">			return extension;</span>
-		}
-
-		public void clear() {
-<span class="nc" id="L541">			c = null;</span>
-<span class="nc" id="L542">			extensions.clear();</span>
-<span class="nc" id="L543">		}</span>
-
-		public RedBlackTree&lt;E&gt; build() {
-<span class="pc bpc" id="L546" title="1 of 2 branches missed.">			return extensions.isEmpty() ? new RedBlackTree&lt;&gt;(c) : new RedBlackTreeExtended&lt;&gt;(c, extensions);</span>
+<span class="fc" id="L197">			return (Node&lt;E&gt;) right;</span>
 		}
 
 	}

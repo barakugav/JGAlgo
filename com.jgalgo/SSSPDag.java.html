@@ -25,7 +25,7 @@
 <span class="fc" id="L25">		SSSPResultImpl res = new SSSPResultImpl(g, source);</span>
 <span class="fc" id="L26">		res.distances[source] = 0;</span>
 
-<span class="fc" id="L28">		int[] topolSort = TopologicalOrder.calcTopologicalSortingDAG((DiGraph) g);</span>
+<span class="fc" id="L28">		int[] topolSort = TopologicalOrder.computeTopologicalSortingDAG((DiGraph) g);</span>
 <span class="fc" id="L29">		boolean sourceSeen = false;</span>
 <span class="fc bfc" id="L30" title="All 2 branches covered.">		for (int u : topolSort) {</span>
 <span class="fc bfc" id="L31" title="All 2 branches covered.">			if (!sourceSeen) {</span>

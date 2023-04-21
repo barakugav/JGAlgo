@@ -17,7 +17,7 @@ public class AStar {
 <span class="nc" id="L17">		this.heapBuilder = Objects.requireNonNull(heapBuilder);</span>
 <span class="nc" id="L18">	}</span>
 
-	public Path calcPath(Graph g, EdgeWeightFunc w, int source, int target, IntToDoubleFunction vHeuristic) {
+	public Path computeShortestPath(Graph g, EdgeWeightFunc w, int source, int target, IntToDoubleFunction vHeuristic) {
 <span class="fc bfc" id="L21" title="All 2 branches covered.">		if (source == target)</span>
 <span class="fc" id="L22">			return new Path(g, source, target, IntLists.emptyList());</span>
 <span class="fc" id="L23">		int n = g.vertices().size();</span>
