@@ -444,7 +444,7 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 					if (deltaNext == delta2) {
 						growStep();
 					} else if (deltaNext == delta3) {
-						assert delta == smf.findMinNonTreeEdge().edgeData().slack / 2;
+						assert Utils.isEqual(delta, smf.findMinNonTreeEdge().edgeData().slack / 2);
 						int e = smf.findMinNonTreeEdge().edgeData().e;
 						int u = g.edgeSource(e), v = g.edgeTarget(e);
 						assert isEven(u) && isEven(v);
@@ -691,7 +691,7 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 		private void expandStep() {
 			debug.println("expandStep");
 
-			assert delta == expandEvents.findMin().expandDelta;
+			assert Utils.isEqual(delta, expandEvents.findMin().expandDelta);
 			final Blossom B = expandEvents.extractMin();
 
 			assert B.root != -1 && !B.isEven && !B.isSingleton() && dualVal(B) <= EPS;

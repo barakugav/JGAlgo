@@ -49,7 +49,7 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 		UGraph mG = new GraphArrayUndirected();
 		int[] mVtoV = new int[n];
 		for (int u = 0; u < n; u++)
-			if (degree[u] % 2 == 1)
+			if (degree[u] % 2 != 0)
 				mVtoV[mG.addVertex()] = u;
 		int mGn = mG.vertices().size();
 		Weights.Double mGWeightsNeg = mG.addEdgesWeights(EdgeWeightKey, double.class);

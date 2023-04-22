@@ -58,6 +58,12 @@ class Utils {
 		return ((Comparable<E>) e1).compareTo(e2);
 	}
 
+	static boolean isEqual(double a, double b) {
+		double mag = Math.max(Math.abs(a), Math.abs(b));
+		double eps = mag * 1E-6;
+		return Math.abs(a - b) <= eps;
+	}
+
 	/* syntax sugar to iterator for loops */
 	static <E> Iterable<E> iterable(Iterator<E> it) {
 		return new Iterable<>() {

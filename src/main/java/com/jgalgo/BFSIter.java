@@ -15,6 +15,8 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  * source(s) vertex. The iterator will visit every vertex {@code v} for which
  * there is a path from the source(s) to {@code v}. Each such vertex will be
  * visited exactly once.
+ * <p>
+ * The graph should not be modified during the BFS iteration.
  *
  * <pre> {@code
  * Graph g = ...;

@@ -19,7 +19,6 @@ abstract class RandomWalkIter implements IntIterator {
 		edges = new int[g.vertices().size()][];
 		v = source;
 		this.rand = rand;
-		edges[v] = getEdges(v);
 	}
 
 	public static RandomWalkIter createWithAllEdges(Graph g, int source) {
@@ -70,6 +69,7 @@ abstract class RandomWalkIter implements IntIterator {
 	private static class IterWithAllEdges extends RandomWalkIter {
 		IterWithAllEdges(Graph g, int source, Random rand) {
 			super(g, source, rand);
+			super.edges[super.v] = getEdges(super.v);
 		}
 
 		@Override
@@ -84,6 +84,7 @@ abstract class RandomWalkIter implements IntIterator {
 	private static class IterWithoutSelfLoops extends RandomWalkIter {
 		IterWithoutSelfLoops(Graph g, int source, Random rand) {
 			super(g, source, rand);
+			super.edges[super.v] = getEdges(super.v);
 		}
 
 		@Override
@@ -105,6 +106,7 @@ abstract class RandomWalkIter implements IntIterator {
 		IterUniformNeighborDist(Graph g, int source, Random rand) {
 			super(g, source, rand);
 			visits = new int[g.vertices().size()];
+			super.edges[super.v] = getEdges(super.v);
 		}
 
 		@Override

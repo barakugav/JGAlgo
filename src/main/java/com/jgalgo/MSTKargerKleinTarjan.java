@@ -28,7 +28,7 @@ public class MSTKargerKleinTarjan implements MST {
 	 * Create a new MST algorithm with random seed.
 	 */
 	public MSTKargerKleinTarjan() {
-		this(new Random().nextLong());
+		this(System.nanoTime() ^ 0x905a1dad25b30034L);
 	}
 
 	/**

@@ -8,6 +8,7 @@ import java.util.NoSuchElementException;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntLists;
 
 /**
  * Depth first search (DFS) iterator.
@@ -17,6 +18,8 @@ import it.unimi.dsi.fastutil.ints.IntList;
  * backtracking. The iterator will visit every vertex {@code v} for which there
  * is a path from the source(s) to {@code v}. Each such vertex will be visited
  * exactly once.
+ * <p>
+ * The graph should not be modified during the DFS iteration.
  *
  * <pre> {@code
  * Graph g = ...;
@@ -38,6 +41,7 @@ public class DFSIter implements IntIterator {
 	private final BitSet visited;
 	private final List<EdgeIter> edgeIters;
 	private final IntList edgePath;
+	private final IntList edgePathView;
 	private boolean isValid;
 
 	/**
@@ -52,6 +56,7 @@ public class DFSIter implements IntIterator {
 		visited = new BitSet(n);
 		edgeIters = new ArrayList<>();
 		edgePath = new IntArrayList();
+		edgePathView = IntLists.unmodifiable(edgePath);
 
 		visited.set(source);
 		edgeIters.add(g.edgesOut(source));
@@ -109,6 +114,6 @@ public class DFSIter implements IntIterator {
 	 *         by the user.
 	 */
 	public IntList edgePath() {
-		return edgePath;
+		return edgePathView;
 	}
 }

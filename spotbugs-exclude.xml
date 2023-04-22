@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+  <Match>
+    <!-- we dont care about serialization (currently) -->
+    <Bug pattern="SE_COMPARATOR_SHOULD_BE_SERIALIZABLE" />
+  </Match>
+  <Match>
+    <!-- Heap element in A* implementation is only used in a heap, in which the compareTo() method
+    is used and the equals() is not -->
+    <Class name="com.jgalgo.AStar$HeapElm" />
+    <Bug pattern="EQ_COMPARETO_USE_OBJECT_EQUALS" />
+  </Match>
+  <Match>
+    <!-- Heap element in Dijkstra implementation is only used in a heap, in which the
+    compareTo() method is used and the equals() is not -->
+    <Class name="com.jgalgo.SSSPDijkstra$HeapElm" />
+    <Bug pattern="EQ_COMPARETO_USE_OBJECT_EQUALS" />
+  </Match>
+  <Match>
+    <!-- Heap element in DSatur coloring implementation is only used in a heap, in which the
+    compareTo() method is used and the equals() is not -->
+    <Class name="com.jgalgo.ColoringDSaturHeap$HeapElm" />
+    <Bug pattern="EQ_COMPARETO_USE_OBJECT_EQUALS" />
+  </Match>
+  <Match>
+    <!-- DSatur coloring heap SHOULD negate the comparison result, as we want vertices with GREATER
+    degree to be extracted first from the heap -->
+    <Class name="com.jgalgo.ColoringDSaturHeap$HeapElm" />
+    <Method name="compareTo" />
+    <Bug pattern="RV_NEGATING_RESULT_OF_COMPARETO" />
+  </Match>
+  <Match>
+    <!-- BFS iterator indeed store a mutable reference to the graph and the user should not modify
+    the graph while the BFS iterator is in use -->
+    <Class name="com.jgalgo.BFSIter" />
+    <Constructor />
+    <Local name="g" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <!-- DFS iterator indeed store a mutable reference to the graph and the user should not modify
+    the graph while the DFS iterator is in use -->
+    <Class name="com.jgalgo.DFSIter" />
+    <Constructor />
+    <Local name="g" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <!-- The Path object indeed store a mutable reference to the graph and the user should not
+    modify the graph while the Path object is in use -->
+    <Class name="com.jgalgo.Path" />
+    <Constructor />
+    <Local name="g" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <!-- The retuned list is an unmodifiable view of the real list -->
+    <Class name="com.jgalgo.DFSIter" />
+    <Method name="edgePath" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <!-- The return value is a view of the heap, and the user SHOULD modify the heap through it -->
+    <Class name="com.jgalgo.HeapBinomial" />
+    <Method name="refsSet" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <!-- The return value is a view of the heap, and the user SHOULD modify the heap through it -->
+    <Class name="com.jgalgo.HeapFibonacci" />
+    <Method name="refsSet" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <!-- The return value is a view of the tree, and the user SHOULD modify the tree through it -->
+    <Class name="com.jgalgo.RedBlackTree" />
+    <Method name="refsSet" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <!-- The return value is a view of the tree, and the user SHOULD modify the tree through it -->
+    <Class name="com.jgalgo.SplayTree" />
+    <Method name="refsSet" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <!-- The return value is reference to the minimum root node, and its desire to expose it -->
+    <Class name="com.jgalgo.HeapFibonacci" />
+    <Method name="findMinRef" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <!-- should be fine -->
+    <Class name="com.jgalgo.MaximumMatchingWeightedGabow1990$Worker" />
+    <Bug pattern="FL_FLOATS_AS_LOOP_COUNTERS" />
+  </Match>
+  <Match>
+    <!-- intentional -->
+    <Class name="com.jgalgo.SSSPDial$DialHeap" />
+    <Method name="extractMin" />
+    <Field name="scanIdx" />
+    <Bug pattern="SA_FIELD_SELF_ASSIGNMENT" />
+  </Match>
+</FindBugsFilter>

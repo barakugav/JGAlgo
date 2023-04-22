@@ -194,8 +194,7 @@ abstract class GraphTableAbstract extends GraphBaseContinues {
 				throw new IllegalArgumentException("Illegal vertex: " + u);
 			this.u = u;
 
-			v = 0;
-			advanceUntilNext();
+			advanceUntilNext(0);
 		}
 
 		@Override
@@ -207,14 +206,14 @@ abstract class GraphTableAbstract extends GraphBaseContinues {
 		public int nextInt() {
 			if (!hasNext())
 				throw new NoSuchElementException();
-			int e = edges[u][lastV = v++];
-			advanceUntilNext();
+			int e = edges[u][lastV = v];
+			advanceUntilNext(v + 1);
 			return e;
 		}
 
-		void advanceUntilNext() {
+		void advanceUntilNext(int next) {
 			int n = vertices().size();
-			for (int next = v; next < n; next++) {
+			for (; next < n; next++) {
 				if (edges[u][next] != EdgeNone) {
 					v = next;
 					return;
@@ -250,8 +249,7 @@ abstract class GraphTableAbstract extends GraphBaseContinues {
 				throw new IllegalArgumentException("Illegal vertex: " + v);
 			this.v = v;
 
-			u = 0;
-			advanceUntilNext();
+			advanceUntilNext(0);
 		}
 
 		@Override
@@ -263,14 +261,14 @@ abstract class GraphTableAbstract extends GraphBaseContinues {
 		public int nextInt() {
 			if (!hasNext())
 				throw new NoSuchElementException();
-			int e = edges[lastU = u++][v];
-			advanceUntilNext();
+			int e = edges[lastU = u][v];
+			advanceUntilNext(u + 1);
 			return e;
 		}
 
-		private void advanceUntilNext() {
+		private void advanceUntilNext(int next) {
 			int n = vertices().size();
-			for (int next = u; next < n; next++) {
+			for (; next < n; next++) {
 				if (edges[next][v] != EdgeNone) {
 					u = next;
 					return;

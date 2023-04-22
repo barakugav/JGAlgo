@@ -153,7 +153,7 @@ public class TPMHagerup implements TPM {
 
 				res[i] = (va == -1 || (ua != -1 && w.weight(edgeData.getInt(ua)) >= w.weight(edgeData.getInt(va))))
 						? (ua != -1 ? edgeData.getInt(ua) : -1)
-						: (va != -1 ? edgeData.getInt(va) : -1);
+						: /* va != -1 */ edgeData.getInt(va);
 			}
 
 			return res;

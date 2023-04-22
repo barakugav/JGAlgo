@@ -237,7 +237,7 @@ public class RedBlackTreeExtension<E> {
 			if (getNodeData(b) == a) {
 				RedBlackTreeExtended.Node<E> temp = a;
 				a = b;
-				a = temp;
+				b = temp;
 			}
 			if (getNodeData(a) == b) {
 				assert getNodeData(b) == b;
@@ -367,7 +367,7 @@ public class RedBlackTreeExtension<E> {
 			if (getNodeData(b) == a) {
 				RedBlackTreeExtended.Node<E> temp = a;
 				a = b;
-				a = temp;
+				b = temp;
 			}
 			if (getNodeData(a) == b) {
 				assert getNodeData(b) == b;

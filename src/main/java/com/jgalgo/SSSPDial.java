@@ -87,9 +87,10 @@ public class SSSPDial implements SSSP {
 		} else {
 			int[] edges = g.edges().toArray(this.edges);
 			ArraysUtils.getKthElement(edges, 0, g.edges().size(), n - 1,
-					(e1, e2) -> -Integer.compare(w0.weightInt(e1), w0.weightInt(e2)), true);
+					(e1, e2) -> Integer.compare(w0.weightInt(e1), w0.weightInt(e2)), true);
 
-			for (int i = 0; i <= n - 1; i++)
+			/* sum the n-1 heaviest weights */
+			for (int i = edges.length - n - 1; i < edges.length; i++)
 				maxDistance += w0.weightInt(edges[i]);
 		}
 
