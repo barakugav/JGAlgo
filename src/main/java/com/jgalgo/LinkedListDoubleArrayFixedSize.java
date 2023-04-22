@@ -34,7 +34,7 @@ interface LinkedListDoubleArrayFixedSize {
 	boolean hasPrev(int id);
 
 	default void insert(int prev, int id) {
-		if (next(id) != None || prev(id) != None)
+		if (hasNext(id) || hasPrev(id))
 			throw new IllegalArgumentException();
 		int next = next(prev);
 		setNext(prev, id);
