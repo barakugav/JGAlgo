@@ -62,7 +62,7 @@ public class MaxFlowDinicDynamicTrees implements MaxFlow {
 		DiGraph g = referenceGraph(g0, net);
 		Weights<Ref> edgeRef = g.edgesWeight(EdgeRefWeightKey);
 		final int n = g.vertices().size();
-		GraphBuilder builder = GraphBuilder.newInstance("com.jgalgo.Linked");
+		GraphBuilder builder = new GraphBuilder.Linked();
 		DiGraph L = builder.setVerticesNum(n).setEdgesIDStrategy(Fixed.class).buildDirected();
 		Weights<Ref> edgeRefL = L.addEdgesWeights(EdgeRefWeightKey, Ref.class);
 		IntPriorityQueue bfsQueue = new IntArrayFIFOQueue();

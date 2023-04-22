@@ -120,7 +120,7 @@ public class MaxFlowBench {
 	public void benchMaxFlowDinicWithLinkedGraph(Blackhole blackhole) {
 		benchMaxFlow(() -> {
 			MaxFlowDinic algo = new MaxFlowDinic();
-			algo.experimental_setLayerGraphFactory(() -> GraphBuilder.newInstance("com.jgalgo.Linked"));
+			algo.experimental_setLayerGraphFactory(GraphBuilder.Linked::new);
 			return algo;
 		}, blackhole);
 	}
@@ -129,7 +129,7 @@ public class MaxFlowBench {
 	public void benchMaxFlowDinicWithArrayGraph(Blackhole blackhole) {
 		benchMaxFlow(() -> {
 			MaxFlowDinic algo = new MaxFlowDinic();
-			algo.experimental_setLayerGraphFactory(() -> GraphBuilder.newInstance("com.jgalgo.Array"));
+			algo.experimental_setLayerGraphFactory(GraphBuilder.Array::new);
 			return algo;
 		}, blackhole);
 	}

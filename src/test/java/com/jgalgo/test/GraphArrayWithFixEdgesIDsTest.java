@@ -15,10 +15,10 @@ public class GraphArrayWithFixEdgesIDsTest extends TestUtils {
 			@Override
 			public Graph newGraph(boolean directed, int vertices) {
 				if (directed) {
-					return GraphBuilder.newInstance("com.jgalgo.Array").setEdgesIDStrategy(IDStrategy.Fixed.class)
+					return new GraphBuilder.Array().setEdgesIDStrategy(IDStrategy.Fixed.class)
 							.setVerticesNum(vertices).buildDirected();
 				} else {
-					return GraphBuilder.newInstance("com.jgalgo.Array").setEdgesIDStrategy(IDStrategy.Fixed.class)
+					return new GraphBuilder.Array().setEdgesIDStrategy(IDStrategy.Fixed.class)
 							.setVerticesNum(vertices).buildUndirected();
 				}
 			}

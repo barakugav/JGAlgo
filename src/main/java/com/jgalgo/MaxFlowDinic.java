@@ -29,7 +29,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
  */
 public class MaxFlowDinic implements MaxFlow {
 
-	private Supplier<? extends GraphBuilder> layerGraphFactory = () -> GraphBuilder.newInstance("com.jgalgo.Linked");
+	private Supplier<? extends GraphBuilder> layerGraphFactory = GraphBuilder.Linked::new;
 
 	private static final Object EdgeRefWeightKey = new Object();
 	private static final Object EdgeRevWeightKey = new Object();

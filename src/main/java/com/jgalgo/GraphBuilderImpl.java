@@ -1,6 +1,7 @@
 package com.jgalgo;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -12,7 +13,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 
 class GraphBuilderImpl {
 
-	private static abstract class Abstract implements GraphBuilder {
+	static abstract class Abstract implements GraphBuilder {
 
 		int verticesNum;
 		Class<? extends IDStrategy> edgesIDStrategy;
@@ -27,6 +28,10 @@ class GraphBuilderImpl {
 
 		@Override
 		public GraphBuilder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy) {
+			if (edgesIDStrategy != null
+					&& !List.of(IDStrategy.Continues.class, IDStrategy.Fixed.class, IDStrategy.Rand.class)
+							.contains(edgesIDStrategy))
+				throw new IllegalArgumentException("unknown ID strategy: " + edgesIDStrategy.toString());
 			this.edgesIDStrategy = edgesIDStrategy;
 			return this;
 		}
@@ -54,42 +59,6 @@ class GraphBuilderImpl {
 			} else {
 				throw new IllegalArgumentException(strategyClass.toString());
 			}
-		}
-	}
-
-	static class Array extends GraphBuilderImpl.Abstract {
-		@Override
-		public UGraph buildUndirected() {
-			return (UGraph) wrapWithCustomIDStrategies(new GraphArrayUndirected(verticesNum));
-		}
-
-		@Override
-		public DiGraph buildDirected() {
-			return (DiGraph) wrapWithCustomIDStrategies(new GraphArrayDirected(verticesNum));
-		}
-	}
-
-	static class Linked extends GraphBuilderImpl.Abstract {
-		@Override
-		public UGraph buildUndirected() {
-			return (UGraph) wrapWithCustomIDStrategies(new GraphLinkedUndirected(verticesNum));
-		}
-
-		@Override
-		public DiGraph buildDirected() {
-			return (DiGraph) wrapWithCustomIDStrategies(new GraphLinkedDirected(verticesNum));
-		}
-	}
-
-	static class Table extends GraphBuilderImpl.Abstract {
-		@Override
-		public UGraph buildUndirected() {
-			return (UGraph) wrapWithCustomIDStrategies(new GraphTableUndirected(verticesNum));
-		}
-
-		@Override
-		public DiGraph buildDirected() {
-			return (DiGraph) wrapWithCustomIDStrategies(new GraphTableDirected(verticesNum));
 		}
 	}
 
