@@ -1,31 +1,34 @@
 package com.jgalgo.test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.function.DoubleFunction;
 import java.util.function.Function;
+import java.util.function.ToIntFunction;
 
-import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import com.jgalgo.DynamicTree;
-import com.jgalgo.DynamicTreeBuilder;
+import com.jgalgo.DynamicTreeSplay;
+import com.jgalgo.DynamicTreeSplayInt;
 
 public class DynamicTreeSplayTest extends TestUtils {
 
 	@Test
 	public void testRandOps() {
 		final long seed = 0xc5fb8821e8139b3eL;
-		testRandOps(maxWeight -> new DynamicTreeBuilder().setWeightLimit(maxWeight).build(), seed);
+		testRandOps(DynamicTreeSplay::new, seed);
 	}
 
 	@Test
 	public void testRandOpsInt() {
 		final long seed = 0xdaf8a976847115a1L;
-		testRandOps(maxWeight -> new DynamicTreeBuilder().setIntWeightsEnable(true).setWeightLimit(maxWeight).build(),
-				seed);
+		testRandOps(maxWeight -> new DynamicTreeSplayInt((int) maxWeight), seed);
 	}
 
 	static void testRandOps(DoubleFunction<? extends DynamicTree> builder, long seed) {
@@ -33,17 +36,22 @@ public class DynamicTreeSplayTest extends TestUtils {
 	}
 
 	static void testRandOps(DoubleFunction<? extends DynamicTree> builder, List<Op> ops, long seed) {
+		testRandOps(builder, ops, null, seed);
+	}
+
+	static void testRandOps(DoubleFunction<? extends DynamicTree> builder, List<Op> ops,
+			ToIntFunction<DynamicTree.Node> sizeFunc, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(1024, 16), phase(256, 32), phase(256, 64), phase(128, 128), phase(64, 512),
 				phase(64, 2048), phase(64, 4096), phase(32, 16384));
 		runTestMultiple(phases, (testIter, args) -> {
 			int m = args[0];
-			testRandOps(builder, m, ops, seedGen.nextSeed());
+			testRandOps(builder, m, ops, sizeFunc, seedGen.nextSeed());
 		});
 	}
 
 	static enum Op {
-		MakeTree, FindRoot, FindMinEdge, AddWeight, Link, Cut, Evert, Size
+		MakeTree, FindRoot, FindMinEdge, AddWeight, Link, Cut, Size
 	}
 
 	static class TrackerNode {
@@ -64,8 +72,8 @@ public class DynamicTreeSplayTest extends TestUtils {
 	}
 
 	@SuppressWarnings("boxing")
-	private static void testRandOps(DoubleFunction<? extends DynamicTree> builder, final int m,
-			List<Op> ops, long seed) {
+	private static void testRandOps(DoubleFunction<? extends DynamicTree> builder, final int m, List<Op> ops,
+			ToIntFunction<DynamicTree.Node> sizeFunc, long seed) {
 		DebugPrintsManager debug = new DebugPrintsManager(false);
 		debug.println("\tnew iteration");
 		Random rand = new Random(seed);
@@ -196,9 +204,6 @@ public class DynamicTreeSplayTest extends TestUtils {
 					tree.cut(node.dtNode);
 					break;
 				}
-				case Evert: {
-					throw new UnsupportedOperationException();
-				}
 				case Size: {
 					if (nodes.isEmpty())
 						continue;
@@ -214,7 +219,7 @@ public class DynamicTreeSplayTest extends TestUtils {
 						stack.addAll(n.children);
 					}
 
-					int actual = tree.size(node.dtNode);
+					int actual = sizeFunc.applyAsInt(node.dtNode);
 					assertEquals(expected, actual, "Wrong size");
 					break;
 				}

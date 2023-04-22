@@ -1,6 +1,7 @@
 package com.jgalgo;
 
 import java.util.BitSet;
+import java.util.List;
 
 import com.jgalgo.DynamicTree.MinEdge;
 import com.jgalgo.Utils.IterPickable;
@@ -75,8 +76,9 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 		final Weights.Int edgeRef;
 		final Weights.Int twin;
 
-		final int maxTreeSize;
 		final DynamicTree dt;
+		final DynamicTreeSplayExtension.TreeSize dtTreeSize;
+		final int maxTreeSize;
 
 		final QueueFixSize<Vertex> active;
 		final Vertex[] vertexData;
@@ -111,8 +113,9 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 			}
 
 			int n = g.vertices().size();
+			dtTreeSize = new DynamicTreeSplayExtension.TreeSize();
+			dt = createDynamicTree(dtTreeSize);
 			maxTreeSize = Math.max(1, n * n / g.edges().size());
-			dt = createDynamicTree();
 
 			active = new QueueFixSize<>(n);
 			vertexData = new Vertex[n];
@@ -133,7 +136,7 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 
 		abstract Vertex newVertex(int v, DynamicTree.Node dtNode);
 
-		abstract DynamicTree createDynamicTree();
+		abstract DynamicTree createDynamicTree(DynamicTreeSplayExtension.TreeSize treeSizeExtension);
 
 		void recomputeLabels() {
 			// Global labels heuristic
@@ -185,7 +188,7 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 				assert U.v != source && U.v != sink;
 				assert U.dtNode.getParent() == null;
 				IterPickable.Int it = U.edgeIter;
-				int uSize = dt.size(U.dtNode);
+				int uSize = dtTreeSize.getTreeSize(U.dtNode);
 
 				while (U.hasExcess() && it.hasNext()) {
 					int e = it.pickNext();
@@ -198,7 +201,7 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 					}
 
 					Vertex W;
-					int vSize = dt.size(V.dtNode);
+					int vSize = dtTreeSize.getTreeSize(V.dtNode);
 					if (uSize + vSize <= maxTreeSize) {
 						/* Link u to a node with admissible edge and start pushing */
 						dt.link(U.dtNode, V.dtNode, getResidualCapacity(e));
@@ -367,13 +370,13 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 		}
 
 		@Override
-		DynamicTree createDynamicTree() {
+		DynamicTree createDynamicTree(DynamicTreeSplayExtension.TreeSize treeSizeExtension) {
 			double maxCapacity = 100;
 			for (IntIterator it = gOrig.edges().iterator(); it.hasNext();) {
 				int e = it.nextInt();
 				maxCapacity = Math.max(maxCapacity, net.getCapacity(e));
 			}
-			return new DynamicTreeSplaySized(maxCapacity * 10);
+			return new DynamicTreeSplayExtended(maxCapacity * 10, List.of(treeSizeExtension));
 		}
 
 		private void pushFlow(int e, double f) {
@@ -517,14 +520,14 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 		}
 
 		@Override
-		DynamicTree createDynamicTree() {
+		DynamicTree createDynamicTree(DynamicTreeSplayExtension.TreeSize treeSizeExtension) {
 			FlowNetwork.Int net = (FlowNetwork.Int) this.net;
 			int maxCapacity = 100;
 			for (IntIterator it = gOrig.edges().iterator(); it.hasNext();) {
 				int e = it.nextInt();
 				maxCapacity = Math.max(maxCapacity, net.getCapacityInt(e));
 			}
-			return new DynamicTreeSplaySizedInt(maxCapacity * 10);
+			return new DynamicTreeSplayIntExtended(maxCapacity * 10, List.of(treeSizeExtension));
 		}
 
 		private void pushFlow(int e, int f) {

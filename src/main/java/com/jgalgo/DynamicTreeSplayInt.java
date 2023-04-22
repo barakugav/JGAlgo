@@ -1,11 +1,35 @@
 package com.jgalgo;
 
-class DynamicTreeSplayInt implements DynamicTree {
+/**
+ * Dynamic trees with integer edges weights implementation using splay trees.
+ * <p>
+ * Each tree is represented as a set of paths where each path is a sequence of
+ * descending nodes in the tree. When an element is accessed, the paths are
+ * split and merged so the path from the element to the root will be a single
+ * path in the underlying representation. This implementation achieve amortized
+ * {@code O(log n)} time for each operation.
+ * <p>
+ * Based on 'A Data Structure for Dynamic Trees' by Sleator, D. D.; Tarjan, R. E
+ * (1983), although the original paper did not use splay trees for the
+ * implementation.
+ *
+ * @see <a href="https://en.wikipedia.org/wiki/Link/cut_tree">Wikipedia</a>
+ * @author Barak Ugav
+ */
+public class DynamicTreeSplayInt implements DynamicTree {
 
 	private final int rootWeight;
 	private final SplayTree.SplayImpl<Object, SplayNode> impl;
 
-	DynamicTreeSplayInt(int weightLimit) {
+	/**
+	 * Create a new empty dynamic tree data structure.
+	 *
+	 * @param weightLimit a limit on the weights of the edges. The limit is an upper
+	 *                    bound on the sum of each edge weight and the weights
+	 *                    modification that are performed using
+	 *                    {@link #addWeight(com.jgalgo.DynamicTree.Node, double)}.
+	 */
+	public DynamicTreeSplayInt(int weightLimit) {
 		this(new SplayImplWithRelativeWeights(), weightLimit);
 	}
 
@@ -132,15 +156,6 @@ class DynamicTreeSplayInt implements DynamicTree {
 		n.right.parent = null;
 		n.right = null;
 		n.unlink();
-	}
-
-	/**
-	 * @throws UnsupportedOperationException
-	 */
-	@Deprecated
-	@Override
-	public int size(Node v) {
-		throw new UnsupportedOperationException();
 	}
 
 	@Override

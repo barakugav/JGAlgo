@@ -3,6 +3,7 @@ package com.jgalgo;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Objects;
 
 /**
  * A red black tree that support extensions such as subtree size/min/max.
@@ -94,6 +95,8 @@ public class RedBlackTreeExtended<E> extends RedBlackTree<E> {
 		if (extensions.isEmpty())
 			throw new IllegalArgumentException("No extensions provided. Use the regular Red Black tree.");
 		this.extensions = extensions.toArray(len -> new RedBlackTreeExtension[len]);
+		for (RedBlackTreeExtension<E> extension : extensions)
+			Objects.requireNonNull(extension);
 		nodes = EmptyNodesArray;
 	}
 

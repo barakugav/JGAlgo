@@ -77,14 +77,6 @@ public interface DynamicTree {
 	public void cut(Node v);
 
 	/**
-	 * Get the number of nodes in the node tree.
-	 *
-	 * @param v a node
-	 * @return size of the node's tree
-	 */
-	public int size(Node v);
-
-	/**
 	 * Clear the whole data structure
 	 */
 	public void clear();
