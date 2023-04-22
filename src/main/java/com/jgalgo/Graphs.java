@@ -137,57 +137,123 @@ class Graphs {
 		return g0;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	static UGraph subGraph(UGraph g, IntCollection edgeSet) {
 		final Object edgeMappingKey = new Object();
-		UGraph g1 = new GraphArrayUndirected(g.vertices().size());
+		UGraph subG = new GraphArrayUndirected(g.vertices().size());
 
-		Weights.Int sub2Edge = g1.addEdgesWeights(edgeMappingKey, int.class);
+		Weights.Int sub2Edge = subG.addEdgesWeights(edgeMappingKey, int.class);
 		for (IntIterator it = edgeSet.iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			int u = g.edgeSource(e), v = g.edgeTarget(e);
-			int s = g1.addEdge(u, v);
+			int s = subG.addEdge(u, v);
 			sub2Edge.set(s, e);
 		}
 		for (Object key : g.getEdgesWeightsKeys()) {
 			Weights<?> data0 = g.edgesWeight(key);
+			Weights dataSub0 = subG.addEdgesWeights(key, ((WeightsImpl) data0).container.getTypeClass(),
+					data0.defaultWeight());
 
-			if (data0 instanceof Weights.Int) {
+			if (data0 instanceof Weights.Byte) {
+				Weights.Byte data = (Weights.Byte) data0;
+				Weights.Byte dataSub = (Weights.Byte) dataSub0;
+				byte defVal = data.defaultWeightByte();
+				for (IntIterator it = subG.edges().iterator(); it.hasNext();) {
+					int s = it.nextInt();
+					byte w = data.getByte(sub2Edge.getInt(s));
+					if (w != defVal)
+						dataSub.set(s, w);
+				}
+
+			} else if (data0 instanceof Weights.Short) {
+				Weights.Short data = (Weights.Short) data0;
+				Weights.Short dataSub = (Weights.Short) dataSub0;
+				short defVal = data.defaultWeightShort();
+				for (IntIterator it = subG.edges().iterator(); it.hasNext();) {
+					int s = it.nextInt();
+					short w = data.getShort(sub2Edge.getInt(s));
+					if (w != defVal)
+						dataSub.set(s, w);
+				}
+
+			} else if (data0 instanceof Weights.Int) {
 				Weights.Int data = (Weights.Int) data0;
+				Weights.Int dataSub = (Weights.Int) dataSub0;
 				int defVal = data.defaultWeightInt();
-				Weights.Int datas = g1.addEdgesWeights(key, int.class, Integer.valueOf(defVal));
-				for (IntIterator it = g1.edges().iterator(); it.hasNext();) {
+				for (IntIterator it = subG.edges().iterator(); it.hasNext();) {
 					int s = it.nextInt();
 					int w = data.getInt(sub2Edge.getInt(s));
 					if (w != defVal)
-						datas.set(s, w);
+						dataSub.set(s, w);
+				}
+
+			} else if (data0 instanceof Weights.Long) {
+				Weights.Long data = (Weights.Long) data0;
+				Weights.Long dataSub = (Weights.Long) dataSub0;
+				long defVal = data.defaultWeightLong();
+				for (IntIterator it = subG.edges().iterator(); it.hasNext();) {
+					int s = it.nextInt();
+					long w = data.getLong(sub2Edge.getInt(s));
+					if (w != defVal)
+						dataSub.set(s, w);
+				}
+
+			} else if (data0 instanceof Weights.Float) {
+				Weights.Float data = (Weights.Float) data0;
+				Weights.Float dataSub = (Weights.Float) dataSub0;
+				float defVal = data.defaultWeightFloat();
+				for (IntIterator it = subG.edges().iterator(); it.hasNext();) {
+					int s = it.nextInt();
+					float w = data.getFloat(sub2Edge.getInt(s));
+					if (w != defVal)
+						dataSub.set(s, w);
 				}
 
 			} else if (data0 instanceof Weights.Double) {
 				Weights.Double data = (Weights.Double) data0;
+				Weights.Double dataSub = (Weights.Double) dataSub0;
 				double defVal = data.defaultWeightDouble();
-				Weights.Double datas = g1.addEdgesWeights(key, double.class, Double.valueOf(defVal));
-				for (IntIterator it = g1.edges().iterator(); it.hasNext();) {
+				for (IntIterator it = subG.edges().iterator(); it.hasNext();) {
 					int s = it.nextInt();
 					double w = data.getDouble(sub2Edge.getInt(s));
 					if (w != defVal)
-						datas.set(s, w);
+						dataSub.set(s, w);
+				}
+
+			} else if (data0 instanceof Weights.Bool) {
+				Weights.Bool data = (Weights.Bool) data0;
+				Weights.Bool dataSub = (Weights.Bool) dataSub0;
+				boolean defVal = data.defaultWeightBool();
+				for (IntIterator it = subG.edges().iterator(); it.hasNext();) {
+					int s = it.nextInt();
+					boolean w = data.getBool(sub2Edge.getInt(s));
+					if (w != defVal)
+						dataSub.set(s, w);
+				}
+
+			} else if (data0 instanceof Weights.Char) {
+				Weights.Char data = (Weights.Char) data0;
+				Weights.Char dataSub = (Weights.Char) dataSub0;
+				char defVal = data.defaultWeightChar();
+				for (IntIterator it = subG.edges().iterator(); it.hasNext();) {
+					int s = it.nextInt();
+					char w = data.getChar(sub2Edge.getInt(s));
+					if (w != defVal)
+						dataSub.set(s, w);
 				}
 
 			} else {
 				Object defVal = data0.defaultWeight();
-				@SuppressWarnings("rawtypes")
-				Weights datas = g1.addEdgesWeights(key, Object.class, defVal);
-				for (IntIterator it = g1.edges().iterator(); it.hasNext();) {
+				for (IntIterator it = subG.edges().iterator(); it.hasNext();) {
 					int s = it.nextInt();
 					Object w = data0.get(sub2Edge.getInt(s));
 					if (w != defVal)
-						datas.set(s, w);
+						dataSub0.set(s, w);
 				}
 			}
 		}
-		g1.removeEdgesWeights(edgeMappingKey);
-		return g1;
+		subG.removeEdgesWeights(edgeMappingKey);
+		return subG;
 	}
 
 	static boolean containsSelfLoops(Graph g) {

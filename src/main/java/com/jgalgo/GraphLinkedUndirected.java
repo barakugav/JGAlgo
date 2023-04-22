@@ -30,7 +30,7 @@ public class GraphLinkedUndirected extends GraphLinkedAbstract implements UGraph
 	 */
 	public GraphLinkedUndirected(int n) {
 		super(n, Capabilities);
-		edges = new DataContainer.Obj<>(n, null);
+		edges = new DataContainer.Obj<>(n, null, Node.class);
 		addInternalVerticesDataContainer(edges);
 	}
 

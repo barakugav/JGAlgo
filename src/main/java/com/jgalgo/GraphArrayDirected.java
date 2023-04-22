@@ -37,9 +37,9 @@ public class GraphArrayDirected extends GraphArrayAbstract implements DiGraph {
 	 */
 	public GraphArrayDirected(int n) {
 		super(n, Capabilities);
-		edgesOut = new DataContainer.Obj<>(n, IntArrays.EMPTY_ARRAY);
+		edgesOut = new DataContainer.Obj<>(n, IntArrays.EMPTY_ARRAY, int[].class);
 		edgesOutNum = new DataContainer.Int(n, 0);
-		edgesIn = new DataContainer.Obj<>(n, IntArrays.EMPTY_ARRAY);
+		edgesIn = new DataContainer.Obj<>(n, IntArrays.EMPTY_ARRAY, int[].class);
 		edgesInNum = new DataContainer.Int(n, 0);
 
 		addInternalVerticesDataContainer(edgesOut);

@@ -142,7 +142,7 @@ abstract class GraphBase implements Graph {
 			container = new DataContainer.Char(size, defVal0);
 
 		} else {
-			container = new DataContainer.Obj<>(size, defVal);
+			container = new DataContainer.Obj<>(size, defVal, type);
 		}
 
 		// TODO should be done in constructor

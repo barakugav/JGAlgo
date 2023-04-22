@@ -59,6 +59,8 @@ abstract class DataContainer<E> {
 
 	abstract Collection<E> values();
 
+	abstract Class<E> getTypeClass();
+
 	void checkIdx(int idx) {
 		// TODO add some messege of ID strategy choice
 		if (idx >= size)
@@ -70,10 +72,12 @@ abstract class DataContainer<E> {
 		private Object[] weights;
 		private final E defaultVal;
 		private final ObjectCollection<E> values;
+		private final Class<E> type;
 
-		Obj(int expectedSize, E defVal) {
+		Obj(int expectedSize, E defVal, Class<E> type) {
 			weights = expectedSize > 0 ? new Object[expectedSize] : ObjectArrays.EMPTY_ARRAY;
 			defaultVal = defVal;
+			this.type = Objects.requireNonNull(type);
 			values = new AbstractObjectCollection<>() {
 
 				@Override
@@ -160,6 +164,11 @@ abstract class DataContainer<E> {
 		@Override
 		Collection<E> values() {
 			return values;
+		}
+
+		@Override
+		Class<E> getTypeClass() {
+			return type;
 		}
 
 		@Override
@@ -286,6 +295,11 @@ abstract class DataContainer<E> {
 		}
 
 		@Override
+		Class<java.lang.Byte> getTypeClass() {
+			return byte.class;
+		}
+
+		@Override
 		public boolean equals(Object other) {
 			if (this == other)
 				return true;
@@ -406,6 +420,11 @@ abstract class DataContainer<E> {
 		@Override
 		ShortCollection values() {
 			return values;
+		}
+
+		@Override
+		Class<java.lang.Short> getTypeClass() {
+			return short.class;
 		}
 
 		@Override
@@ -532,6 +551,11 @@ abstract class DataContainer<E> {
 		}
 
 		@Override
+		Class<Integer> getTypeClass() {
+			return int.class;
+		}
+
+		@Override
 		public boolean equals(Object other) {
 			if (this == other)
 				return true;
@@ -652,6 +676,11 @@ abstract class DataContainer<E> {
 		@Override
 		LongCollection values() {
 			return values;
+		}
+
+		@Override
+		Class<java.lang.Long> getTypeClass() {
+			return long.class;
 		}
 
 		@Override
@@ -778,6 +807,11 @@ abstract class DataContainer<E> {
 		}
 
 		@Override
+		Class<java.lang.Float> getTypeClass() {
+			return float.class;
+		}
+
+		@Override
 		public boolean equals(Object other) {
 			if (this == other)
 				return true;
@@ -901,6 +935,11 @@ abstract class DataContainer<E> {
 		}
 
 		@Override
+		Class<java.lang.Double> getTypeClass() {
+			return double.class;
+		}
+
+		@Override
 		public boolean equals(Object other) {
 			if (this == other)
 				return true;
@@ -1017,6 +1056,11 @@ abstract class DataContainer<E> {
 		@Override
 		BooleanCollection values() {
 			return values;
+		}
+
+		@Override
+		Class<Boolean> getTypeClass() {
+			return boolean.class;
 		}
 
 		@Override
@@ -1137,6 +1181,11 @@ abstract class DataContainer<E> {
 		@Override
 		CharCollection values() {
 			return values;
+		}
+
+		@Override
+		Class<Character> getTypeClass() {
+			return char.class;
 		}
 
 		@Override
