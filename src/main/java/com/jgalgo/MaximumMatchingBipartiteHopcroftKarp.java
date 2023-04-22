@@ -54,9 +54,11 @@ public class MaximumMatchingBipartiteHopcroftKarp implements MaximumMatching {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @throws NullPointerException if the bipartiteness vertices weights is not
-	 *                              found. See
-	 *                              {@link #setBipartiteVerticesWeightKey(Object)}.
+	 * @throws NullPointerException     if the bipartiteness vertices weights is not
+	 *                                  found. See
+	 *                                  {@link #setBipartiteVerticesWeightKey(Object)}.
+	 * @throws IllegalArgumentException if the graph is no bipartite with respect to
+	 *                                  the provided partition
 	 */
 	@Override
 	public IntCollection computeMaximumMatching(UGraph g) {
@@ -65,6 +67,8 @@ public class MaximumMatchingBipartiteHopcroftKarp implements MaximumMatching {
 		Weights.Bool partition = g.verticesWeight(bipartiteVerticesWeightKey);
 		Objects.requireNonNull(partition,
 				"Bipartiteness values weren't found with weight " + bipartiteVerticesWeightKey);
+		if (Bipartite.isValidBipartitePartition(g, partition))
+			throw new IllegalArgumentException("the graph is not bipartite");
 
 		/* BFS */
 		int[] depths = new int[n];

@@ -61,15 +61,18 @@ public class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeig
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @throws NullPointerException if the bipartiteness vertices weights is not
-	 *                              found. See
-	 *                              {@link #setBipartiteVerticesWeightKey(Object)}.
+	 * @throws NullPointerException     if the bipartiteness vertices weights is not
+	 *                                  found. See
+	 *                                  {@link #setBipartiteVerticesWeightKey(Object)}.
+	 * @throws IllegalArgumentException if the graph is no bipartite with respect to the provided partition
 	 */
 	@Override
 	public IntCollection computeMaximumMatching(UGraph g, EdgeWeightFunc w) {
 		Weights.Bool partition = g.verticesWeight(bipartiteVerticesWeightKey);
 		Objects.requireNonNull(partition,
 				"Bipartiteness values weren't found with weight " + bipartiteVerticesWeightKey);
+		if (Bipartite.isValidBipartitePartition(g, partition))
+			throw new IllegalArgumentException("the graph is not bipartite");
 		DiGraph g0 = referenceGraph(g, partition, w);
 		int[] match = computeMaxMatching(g0, w, partition);
 

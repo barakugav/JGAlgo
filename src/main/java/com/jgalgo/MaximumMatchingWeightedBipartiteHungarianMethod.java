@@ -62,9 +62,11 @@ public class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumM
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @throws NullPointerException if the bipartiteness vertices weights is not
-	 *                              found. See
-	 *                              {@link #setBipartiteVerticesWeightKey(Object)}.
+	 * @throws NullPointerException     if the bipartiteness vertices weights is not
+	 *                                  found. See
+	 *                                  {@link #setBipartiteVerticesWeightKey(Object)}.
+	 * @throws IllegalArgumentException if the graph is no bipartite with respect to
+	 *                                  the provided partition
 	 */
 	@Override
 	public IntCollection computeMaximumMatching(UGraph g, EdgeWeightFunc w) {
@@ -77,9 +79,11 @@ public class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumM
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @throws NullPointerException if the bipartiteness vertices weights is not
-	 *                              found. See
-	 *                              {@link #setBipartiteVerticesWeightKey(Object)}.
+	 * @throws NullPointerException     if the bipartiteness vertices weights is not
+	 *                                  found. See
+	 *                                  {@link #setBipartiteVerticesWeightKey(Object)}.
+	 * @throws IllegalArgumentException if the graph is no bipartite with respect to
+	 *                                  the provided partition
 	 */
 	@Override
 	public IntCollection computeMaximumPerfectMatching(UGraph g, EdgeWeightFunc w) {
@@ -107,6 +111,9 @@ public class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumM
 
 		@SuppressWarnings("unchecked")
 		Worker(UGraph g, Weights.Bool partition, EdgeWeightFunc w) {
+			if (Bipartite.isValidBipartitePartition(g, partition))
+				throw new IllegalArgumentException("the graph is not bipartite");
+
 			this.g = g;
 			this.partition = partition;
 			this.w = w;
