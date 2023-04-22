@@ -444,7 +444,7 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 <span class="fc bfc" id="L444" title="All 2 branches covered.">					if (deltaNext == delta2) {</span>
 <span class="fc" id="L445">						growStep();</span>
 <span class="fc bfc" id="L446" title="All 2 branches covered.">					} else if (deltaNext == delta3) {</span>
-<span class="pc bpc" id="L447" title="1 of 2 branches missed.">						assert delta == smf.findMinNonTreeEdge().edgeData().slack / 2;</span>
+<span class="pc bpc" id="L447" title="1 of 2 branches missed.">						assert Utils.isEqual(delta, smf.findMinNonTreeEdge().edgeData().slack / 2);</span>
 <span class="fc" id="L448">						int e = smf.findMinNonTreeEdge().edgeData().e;</span>
 <span class="fc" id="L449">						int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
 <span class="pc bpc" id="L450" title="2 of 4 branches missed.">						assert isEven(u) &amp;&amp; isEven(v);</span>
@@ -691,7 +691,7 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 		private void expandStep() {
 <span class="fc" id="L692">			debug.println(&quot;expandStep&quot;);</span>
 
-<span class="pc bpc" id="L694" title="1 of 2 branches missed.">			assert delta == expandEvents.findMin().expandDelta;</span>
+<span class="pc bpc" id="L694" title="1 of 2 branches missed.">			assert Utils.isEqual(delta, expandEvents.findMin().expandDelta);</span>
 <span class="fc" id="L695">			final Blossom B = expandEvents.extractMin();</span>
 
 <span class="pc bpc" id="L697" title="4 of 8 branches missed.">			assert B.root != -1 &amp;&amp; !B.isEven &amp;&amp; !B.isSingleton() &amp;&amp; dualVal(B) &lt;= EPS;</span>

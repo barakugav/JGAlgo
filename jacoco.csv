@@ -1,8 +1,8 @@
 GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
 jgalgo,com.jgalgo,LinkedListDoubleArrayFixedSize.Abstract,4,53,2,2,0,11,2,9,0,9
 jgalgo,com.jgalgo,UnionFindPtr,49,141,7,17,10,35,8,12,2,6
-jgalgo,com.jgalgo,GraphTableAbstract.EdgeIterOut,10,107,3,9,2,23,3,10,0,7
-jgalgo,com.jgalgo,TPMHagerup.Worker,54,1057,7,91,9,207,6,56,0,13
+jgalgo,com.jgalgo,GraphTableAbstract.EdgeIterOut,10,101,3,9,2,22,3,10,0,7
+jgalgo,com.jgalgo,TPMHagerup.Worker,53,1053,6,90,9,207,5,56,0,13
 jgalgo,com.jgalgo,GraphLinkedAbstract,8,141,2,4,1,40,2,14,0,13
 jgalgo,com.jgalgo,HeapBinary,16,469,7,55,6,111,8,37,1,13
 jgalgo,com.jgalgo,RMQStaticPlusMinusOne,4,15,1,1,1,5,1,2,0,2
@@ -28,7 +28,7 @@ jgalgo,com.jgalgo,DynamicTreeSplaySized,0,53,0,0,0,14,0,5,0,5
 jgalgo,com.jgalgo,RMQStaticPowerOf2Table.DS,7,171,3,17,1,23,3,9,0,2
 jgalgo,com.jgalgo,SplitFindMin,0,10,0,0,0,2,0,2,0,2
 jgalgo,com.jgalgo,DynamicTreeSplayInt.SplayImplWithRelativeWeights,4,172,1,19,0,31,1,12,0,3
-jgalgo,com.jgalgo,TSPMetricMatchingAppx,2,250,1,17,1,48,1,11,0,3
+jgalgo,com.jgalgo,TSPMetricMatchingAppx,2,249,1,17,1,48,1,11,0,3
 jgalgo,com.jgalgo,WeightsImpl.Mapped.Bool,0,30,0,0,0,7,0,5,0,5
 jgalgo,com.jgalgo,DataContainer.Double.1.new DoubleIterator() {...},40,0,4,0,6,0,5,0,3,0
 jgalgo,com.jgalgo,MSTBoruvka.MSTResult,0,12,0,0,0,5,0,1,0,1
@@ -42,7 +42,7 @@ jgalgo,com.jgalgo,MaxFlowPushRelabelDynamicTrees.WorkerInt.Ref,4,15,0,0,1,6,1,1,
 jgalgo,com.jgalgo,RMQStaticPowerOf2Table,6,14,1,1,1,5,1,2,0,2
 jgalgo,com.jgalgo,Trees.PreOrderIter,4,52,1,9,1,17,1,8,0,4
 jgalgo,com.jgalgo,APSPResultImpl.Directed,16,110,4,10,2,25,4,9,0,6
-jgalgo,com.jgalgo,RandomWalkIter,146,0,6,0,24,0,12,0,9,0
+jgalgo,com.jgalgo,RandomWalkIter,137,0,6,0,23,0,12,0,9,0
 jgalgo,com.jgalgo,GraphArrayUndirected,4,384,1,19,0,82,1,23,0,14
 jgalgo,com.jgalgo,RedBlackTree,93,796,23,119,10,209,27,81,4,33
 jgalgo,com.jgalgo,RedBlackTreeExtension.Int,0,23,0,0,0,6,0,4,0,4
@@ -56,7 +56,7 @@ jgalgo,com.jgalgo,GraphArrayAbstract,7,296,3,13,3,73,3,23,0,18
 jgalgo,com.jgalgo,IDStrategy.Continues.new AbstractIntSet() {...},1,24,2,2,0,4,2,4,0,4
 jgalgo,com.jgalgo,HeapAbstract,21,38,5,3,6,11,4,6,1,5
 jgalgo,com.jgalgo,LCADynamicGabowLinear.Node0,4,59,1,5,0,12,1,6,0,4
-jgalgo,com.jgalgo,GraphTableAbstract.EdgeIterIn,10,108,3,9,2,23,3,10,0,7
+jgalgo,com.jgalgo,GraphTableAbstract.EdgeIterIn,10,102,3,9,2,22,3,10,0,7
 jgalgo,com.jgalgo,LCADynamicGabowLinear.Node2,0,16,0,0,0,7,0,4,0,4
 jgalgo,com.jgalgo,LCADynamicGabowLinear.Node1,4,70,1,7,0,13,1,8,0,5
 jgalgo,com.jgalgo,Graphs,396,330,53,33,70,77,39,20,9,7
@@ -86,7 +86,7 @@ jgalgo,com.jgalgo,WeightsImpl.Direct.Short,0,23,0,0,0,7,0,5,0,5
 jgalgo,com.jgalgo,RedBlackTreeExtended.Node,0,19,0,0,0,6,0,4,0,4
 jgalgo,com.jgalgo,DynamicTreeBuilder,15,83,5,15,3,20,5,10,0,5
 jgalgo,com.jgalgo,GraphArrayAbstract.EdgeIt,8,66,2,4,2,14,2,5,0,4
-jgalgo,com.jgalgo,RandomWalkIter.IterWithAllEdges,27,0,2,0,6,0,3,0,2,0
+jgalgo,com.jgalgo,RandomWalkIter.IterWithAllEdges,36,0,2,0,7,0,3,0,2,0
 jgalgo,com.jgalgo,BSTAbstract,0,19,0,0,0,7,0,3,0,3
 jgalgo,com.jgalgo,LinkedListDoubleArrayFixedSize.new IntIterator() {...},4,36,1,3,1,7,1,4,0,3
 jgalgo,com.jgalgo,WeightsImpl.Mapped.Float,0,30,0,0,0,7,0,5,0,5
@@ -127,7 +127,7 @@ jgalgo,com.jgalgo,APSPJohnson.SuccessRes,4,33,0,0,1,6,1,4,1,4
 jgalgo,com.jgalgo,EdgeIterImpl.new EdgeIter() {...},17,0,0,0,5,0,5,0,5,0
 jgalgo,com.jgalgo,GraphLinkedDirected,9,463,0,30,4,111,1,34,1,19
 jgalgo,com.jgalgo,DynamicTreeSplay.MinEdgeRes,0,15,0,0,0,6,0,3,0,3
-jgalgo,com.jgalgo,RandomWalkIter.IterWithoutSelfLoops,36,0,4,0,9,0,4,0,2,0
+jgalgo,com.jgalgo,RandomWalkIter.IterWithoutSelfLoops,45,0,4,0,10,0,4,0,2,0
 jgalgo,com.jgalgo,Utils.QueueFixSize,124,80,18,4,22,15,13,5,3,4
 jgalgo,com.jgalgo,DynamicTreeSplay.SplayNode,23,61,2,4,5,19,3,13,1,12
 jgalgo,com.jgalgo,GraphLinkedUndirected.EdgeVertexItr,0,36,0,2,0,8,0,5,0,4
@@ -161,9 +161,9 @@ jgalgo,com.jgalgo,MaxFlowPushRelabelLowestFirst.ActiveQueue,11,198,2,24,1,40,2,1
 jgalgo,com.jgalgo,Weights.Float,5,15,0,0,1,4,1,3,1,3
 jgalgo,com.jgalgo,MaxFlowPushRelabelToFront,5,30,1,3,1,6,1,3,0,2
 jgalgo,com.jgalgo,DataContainer.Short.1.new ShortIterator() {...},40,0,4,0,6,0,5,0,3,0
-jgalgo,com.jgalgo,RandomWalkIter.IterUniformNeighborDist,61,0,4,0,14,0,4,0,2,0
+jgalgo,com.jgalgo,RandomWalkIter.IterUniformNeighborDist,70,0,4,0,15,0,4,0,2,0
 jgalgo,com.jgalgo,HeapBinomial.Itr,0,53,0,8,0,14,0,6,0,2
-jgalgo,com.jgalgo,DFSIter,10,147,3,11,2,32,3,9,0,5
+jgalgo,com.jgalgo,DFSIter,10,152,3,11,2,33,3,9,0,5
 jgalgo,com.jgalgo,DynamicTreeSplaySizedInt.SplayNodeSized,0,6,0,0,0,3,0,1,0,1
 jgalgo,com.jgalgo,DataContainer.Float,103,128,13,5,21,32,12,10,4,9
 jgalgo,com.jgalgo,SplitFindMinArray.Sequence,13,9,2,0,1,4,2,1,1,1
@@ -235,7 +235,7 @@ jgalgo,com.jgalgo,LCADynamicGabowLinear,43,372,9,47,6,78,9,31,0,12
 jgalgo,com.jgalgo,GraphBuilderImpl.GraphCustomIDStrategies.new AbstractIntCollection() {...},9,18,0,0,1,3,1,3,1,3
 jgalgo,com.jgalgo,Weights.Byte,4,15,0,0,1,4,1,3,1,3
 jgalgo,com.jgalgo,ColoringDSaturHeap,11,125,1,13,3,31,2,8,1,2
-jgalgo,com.jgalgo,SSSPDial,36,288,7,23,8,67,6,15,0,6
+jgalgo,com.jgalgo,SSSPDial,36,291,7,23,8,67,6,15,0,6
 jgalgo,com.jgalgo,WeightsImpl.Mapped.Int,0,30,0,0,0,7,0,5,0,5
 jgalgo,com.jgalgo,GraphBase.new EdgeIter() {...},12,59,2,6,4,15,4,5,2,3
 jgalgo,com.jgalgo,LCADynamicGabowSimple.NodeImpl,14,144,3,19,1,25,3,20,1,11
@@ -309,7 +309,7 @@ jgalgo,com.jgalgo,GraphLinkedDirected.EdgeIterOut,0,12,0,0,0,4,0,2,0,2
 jgalgo,com.jgalgo,BSTUtils.NeighborType,0,34,0,0,0,2,0,1,0,1
 jgalgo,com.jgalgo,MaxFlowPushRelabelHighestFirst.ActiveQueue,19,221,4,28,1,46,4,19,0,7
 jgalgo,com.jgalgo,MaxFlowDinicDynamicTrees,30,699,7,59,2,147,7,32,0,6
-jgalgo,com.jgalgo,Utils,5,114,0,2,1,22,1,9,1,8
+jgalgo,com.jgalgo,Utils,6,134,1,3,1,25,2,10,1,9
 jgalgo,com.jgalgo,GraphTableUndirected.new GraphCapabilities() {...},0,17,0,0,0,8,0,8,0,8
 jgalgo,com.jgalgo,IDStrategy.Fixed,0,14,0,0,0,4,0,2,0,2
 jgalgo,com.jgalgo,MaxFlowPushRelabelAbstract.Worker,23,714,8,82,3,166,8,49,0,12
@@ -342,7 +342,7 @@ jgalgo,com.jgalgo,MaxFlowPushRelabelHighestFirst.WorkerDouble,0,48,0,2,0,14,0,7,
 jgalgo,com.jgalgo,WeightsImpl.Direct.Double,0,23,0,0,0,7,0,5,0,5
 jgalgo,com.jgalgo,MaximumMatchingWeightedBipartiteSSSP.Ref,12,9,2,0,1,4,2,1,1,1
 jgalgo,com.jgalgo,RMQStaticCartesianTrees.DS,0,203,0,14,0,41,0,14,0,7
-jgalgo,com.jgalgo,MSTKargerKleinTarjan,12,467,1,33,3,83,2,24,1,8
+jgalgo,com.jgalgo,MSTKargerKleinTarjan,11,467,1,33,3,83,2,24,1,8
 jgalgo,com.jgalgo,DataContainer.Obj.new AbstractObjectCollection() {...},4,11,0,0,1,2,1,2,1,2
 jgalgo,com.jgalgo,LinkedListDoubleArrayFixedSize.ImplShort,4,41,1,1,0,12,1,6,0,6
 jgalgo,com.jgalgo,WeightsImpl.Direct.Int,0,23,0,0,0,7,0,5,0,5

@@ -237,7 +237,7 @@ public class RedBlackTreeExtension&lt;E&gt; {
 <span class="pc bpc" id="L237" title="1 of 2 branches missed.">			if (getNodeData(b) == a) {</span>
 <span class="nc" id="L238">				RedBlackTreeExtended.Node&lt;E&gt; temp = a;</span>
 <span class="nc" id="L239">				a = b;</span>
-<span class="nc" id="L240">				a = temp;</span>
+<span class="nc" id="L240">				b = temp;</span>
 			}
 <span class="pc bpc" id="L242" title="1 of 2 branches missed.">			if (getNodeData(a) == b) {</span>
 <span class="nc bnc" id="L243" title="All 2 branches missed.">				assert getNodeData(b) == b;</span>
@@ -367,7 +367,7 @@ public class RedBlackTreeExtension&lt;E&gt; {
 <span class="pc bpc" id="L367" title="1 of 2 branches missed.">			if (getNodeData(b) == a) {</span>
 <span class="nc" id="L368">				RedBlackTreeExtended.Node&lt;E&gt; temp = a;</span>
 <span class="nc" id="L369">				a = b;</span>
-<span class="nc" id="L370">				a = temp;</span>
+<span class="nc" id="L370">				b = temp;</span>
 			}
 <span class="fc bfc" id="L372" title="All 2 branches covered.">			if (getNodeData(a) == b) {</span>
 <span class="pc bpc" id="L373" title="1 of 2 branches missed.">				assert getNodeData(b) == b;</span>

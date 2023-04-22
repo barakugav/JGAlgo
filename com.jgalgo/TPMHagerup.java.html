@@ -153,7 +153,7 @@ public class TPMHagerup implements TPM {
 
 <span class="pc bpc" id="L154" title="1 of 6 branches missed.">				res[i] = (va == -1 || (ua != -1 &amp;&amp; w.weight(edgeData.getInt(ua)) &gt;= w.weight(edgeData.getInt(va))))</span>
 <span class="fc bfc" id="L155" title="All 2 branches covered.">						? (ua != -1 ? edgeData.getInt(ua) : -1)</span>
-<span class="pc bpc" id="L156" title="1 of 2 branches missed.">						: (va != -1 ? edgeData.getInt(va) : -1);</span>
+<span class="fc" id="L156">						: /* va != -1 */ edgeData.getInt(va);</span>
 			}
 
 <span class="fc" id="L159">			return res;</span>
