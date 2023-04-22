@@ -32,8 +32,8 @@ public class GraphLinkedDirected extends GraphLinkedAbstract implements DiGraph 
 	public GraphLinkedDirected(int n) {
 <span class="fc" id="L33">		super(n, Capabilities);</span>
 
-<span class="fc" id="L35">		edgesIn = new DataContainer.Obj&lt;&gt;(n, null);</span>
-<span class="fc" id="L36">		edgesOut = new DataContainer.Obj&lt;&gt;(n, null);</span>
+<span class="fc" id="L35">		edgesIn = new DataContainer.Obj&lt;&gt;(n, null, Node.class);</span>
+<span class="fc" id="L36">		edgesOut = new DataContainer.Obj&lt;&gt;(n, null, Node.class);</span>
 
 <span class="fc" id="L38">		addInternalVerticesDataContainer(edgesIn);</span>
 <span class="fc" id="L39">		addInternalVerticesDataContainer(edgesOut);</span>

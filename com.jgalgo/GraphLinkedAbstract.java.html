@@ -9,7 +9,7 @@ import java.util.NoSuchElementException;
 
 	GraphLinkedAbstract(int n, GraphCapabilities capabilities) {
 <span class="fc" id="L11">		super(n, capabilities);</span>
-<span class="fc" id="L12">		edges = new DataContainer.Obj&lt;&gt;(n, null);</span>
+<span class="fc" id="L12">		edges = new DataContainer.Obj&lt;&gt;(n, null, Node.class);</span>
 <span class="fc" id="L13">		addInternalEdgesDataContainer(edges);</span>
 <span class="fc" id="L14">	}</span>
 

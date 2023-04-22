@@ -35,7 +35,7 @@ public class GraphArrayUndirected extends GraphArrayAbstract implements UGraph {
 	 */
 	public GraphArrayUndirected(int n) {
 <span class="fc" id="L37">		super(n, Capabilities);</span>
-<span class="fc" id="L38">		edges = new DataContainer.Obj&lt;&gt;(n, IntArrays.EMPTY_ARRAY);</span>
+<span class="fc" id="L38">		edges = new DataContainer.Obj&lt;&gt;(n, IntArrays.EMPTY_ARRAY, int[].class);</span>
 <span class="fc" id="L39">		edgesNum = new DataContainer.Int(n, 0);</span>
 
 <span class="fc" id="L41">		addInternalVerticesDataContainer(edges);</span>
