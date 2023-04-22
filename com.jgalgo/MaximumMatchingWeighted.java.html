@@ -28,7 +28,7 @@ public interface MaximumMatchingWeighted extends MaximumMatching {
 	 * &lt;p&gt;
 	 *
 	 * @param g an undirected graph
-	 * @param w a weight function
+	 * @param w an edge weight function
 	 * @return collection of edges representing the matching
 	 */
 	public IntCollection computeMaximumMatching(UGraph g, EdgeWeightFunc w);
@@ -38,7 +38,7 @@ public interface MaximumMatchingWeighted extends MaximumMatching {
 	 * &lt;p&gt;
 	 *
 	 * @param g an undirected graph
-	 * @param w a weight function
+	 * @param w an edge weight function
 	 * @return collection of edges representing perfect matching, or the maximal one
 	 *         if no perfect one found
 	 */

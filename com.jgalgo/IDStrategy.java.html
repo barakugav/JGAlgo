@@ -332,32 +332,79 @@ public abstract class IDStrategy {
 	/**
 	 * Remove an ID swap listener.
 	 *
+	 * @param listener the listener to remove
 	 * @see #addIDSwapListener(IDSwapListener)
+	 */
+	public void removeIDSwapListener(IDSwapListener listener) {
+<span class="nc" id="L339">		idSwapListeners.remove(listener);</span>
+<span class="nc" id="L340">	}</span>
+
+	/**
+	 * Add a listener that will be notified each time the strategy add or remove an
+	 * id.
+	 *
+	 * @param listener a listener object that will be called when the strategy add
+	 *                 or remove an id
+	 */
+	public void addIDAddRemoveListener(IDAddRemoveListener listener) {
+<span class="fc" id="L350">		idAddRemoveListeners.add(Objects.requireNonNull(listener));</span>
+<span class="fc" id="L351">	}</span>
+
+	/**
+	 * Remove an ID add/remove listener.
 	 *
 	 * @param listener the listener to remove
 	 */
-	public void removeIDSwapListener(IDSwapListener listener) {
-<span class="nc" id="L340">		idSwapListeners.remove(listener);</span>
-<span class="nc" id="L341">	}</span>
-
-	public void addIDAddRemoveListener(IDAddRemoveListener listener) {
-<span class="fc" id="L344">		idAddRemoveListeners.add(Objects.requireNonNull(listener));</span>
-<span class="fc" id="L345">	}</span>
-
 	public void removeIDAddRemoveListener(IDAddRemoveListener listener) {
-<span class="nc" id="L348">		idAddRemoveListeners.remove(listener);</span>
-<span class="nc" id="L349">	}</span>
+<span class="nc" id="L359">		idAddRemoveListeners.remove(listener);</span>
+<span class="nc" id="L360">	}</span>
 
+	/**
+	 * A listener that will be notified each time a strategy chooses to swap two
+	 * IDs.
+	 * &lt;p&gt;
+	 * The strategy implementation might swap IDs to maintain its invariants. These
+	 * swaps can be subscribed using this
+	 * {@link IDStrategy#addIDSwapListener(IDSwapListener)}, and the listener will
+	 * be called when a swap occur.
+	 *
+	 * @author Barak Ugav
+	 */
 	@FunctionalInterface
 	public static interface IDSwapListener {
+
+		/**
+		 * A callback that is called when {@code id1} and {@code id2} are swapped.
+		 *
+		 * @param id1 the first id
+		 * @param id2 the second id
+		 */
 		void idSwap(int id1, int id2);
 	}
 
+	/**
+	 * A listener that will be notified each time a strategy add or remove an id.
+	 *
+	 * @author Barak Ugav
+	 */
 	public static interface IDAddRemoveListener {
+		/**
+		 * A callback that is called when {@code id} is added by the strategy.
+		 *
+		 * @param id the new id
+		 */
 		void idAdd(int id);
 
+		/**
+		 * A callback that is called when {@code id} is removed by the strategy.
+		 *
+		 * @param id the removed id
+		 */
 		void idRemove(int id);
 
+		/**
+		 * A callback that is called when all ids are removed from the strategy.
+		 */
 		void idsClear();
 	}
 

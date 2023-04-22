@@ -7,7 +7,7 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 
-public abstract class RandomWalkIter implements IntIterator {
+abstract class RandomWalkIter implements IntIterator {
 
 	final Graph g;
 	private final int[][] edges;

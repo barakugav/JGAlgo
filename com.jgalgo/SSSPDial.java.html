@@ -100,7 +100,7 @@ public class SSSPDial implements SSSP {
 	 * given a maximal distance bound.
 	 *
 	 * @param g           a graph
-	 * @param w           an integer weight function with non negative values
+	 * @param w           an integer edge weight function with non negative values
 	 * @param source      a source vertex
 	 * @param maxDistance a bound on the maximal distance to any vertex in the graph
 	 * @return a result object containing the distances and shortest paths from the
