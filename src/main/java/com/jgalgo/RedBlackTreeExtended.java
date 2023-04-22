@@ -38,7 +38,6 @@ import java.util.Comparator;
 public class RedBlackTreeExtended<E> extends RedBlackTree<E> {
 
 	private Node<E>[] nodes;
-	private int nodesNextIdx;
 	private final RedBlackTreeExtension<E>[] extensions;
 
 	@SuppressWarnings("rawtypes")
@@ -100,7 +99,7 @@ public class RedBlackTreeExtended<E> extends RedBlackTree<E> {
 
 	@Override
 	Node<E> newNode(E e) {
-		int idx = nodesNextIdx++;
+		int idx = size();
 		if (idx >= nodes.length) {
 			int newLen = Math.max(2, nodes.length * 2);
 			nodes = Arrays.copyOf(nodes, newLen);
@@ -118,30 +117,22 @@ public class RedBlackTreeExtended<E> extends RedBlackTree<E> {
 	void removeNode(RedBlackTree.Node<E> n0) {
 		super.removeNode(n0);
 		Node<E> n = (Node<E>) n0;
-		assert nodes[n.idx] == n;
-		nodes[n.idx] = null;
-		for (RedBlackTreeExtension<E> extension : extensions)
-			extension.data.clear(n.idx);
-		if (size() < nodesNextIdx / 2)
-			reassignIndices();
-	}
+		int nIdx = n.idx;
+		assert nodes[nIdx] == n;
 
-	private void reassignIndices() {
-		Node<E>[] nodes = this.nodes;
-		int maxNodeIdx = nodesNextIdx;
-		int newNextIdx = 0;
-		for (int idx = 0; idx < maxNodeIdx; idx++) {
-			Node<E> node = nodes[idx];
-			if (node == null)
-				continue;
-			assert node.idx == idx;
-			int newIdx = newNextIdx++;
-			nodes[idx] = null;
-			nodes[node.idx = newIdx] = node;
-			for (RedBlackTreeExtension<E> extension : extensions)
-				extension.data.swap(idx, newIdx);
+		int lastIdx = size();
+		Node<E> last = nodes[lastIdx];
+		assert last.idx == lastIdx;
+		nodes[nIdx] = last;
+
+		nodes[lastIdx] = null;
+
+		for (RedBlackTreeExtension<E> extension : extensions) {
+			extension.data.swap(nIdx, lastIdx);
+			extension.data.clear(lastIdx);
 		}
-		nodesNextIdx = newNextIdx;
+		last.idx = nIdx;
+		n.idx = -1;
 	}
 
 	@Override
@@ -174,6 +165,14 @@ public class RedBlackTreeExtended<E> extends RedBlackTree<E> {
 	void beforeRotateRight(RedBlackTree.Node<E> n) {
 		for (RedBlackTreeExtension<E> extension : extensions)
 			extension.beforeRotateRight((Node<E>) n);
+	}
+
+	@Override
+	public void clear() {
+		int s = size();
+		for (RedBlackTreeExtension<E> extension : extensions)
+			extension.data.clear(s);
+		super.clear();
 	}
 
 	static class Node<E> extends RedBlackTree.Node<E> {
