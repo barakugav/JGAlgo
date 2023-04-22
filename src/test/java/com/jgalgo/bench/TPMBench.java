@@ -76,7 +76,7 @@ public class TPMBench {
 	public void benchTPMHagerup(Blackhole blackhole) {
 		benchTPM(() -> {
 			TPMHagerup algo = new TPMHagerup();
-			algo.useBitsLookupTables(false);
+			algo.setBitsLookupTablesEnable(false);
 			return algo;
 		}, blackhole);
 	}
@@ -85,7 +85,7 @@ public class TPMBench {
 	public void benchTPMHagerupWithBitsLookupTable(Blackhole blackhole) {
 		benchTPM(() -> {
 			TPMHagerup algo = new TPMHagerup();
-			algo.useBitsLookupTables(true);
+			algo.setBitsLookupTablesEnable(true);
 			return algo;
 		}, blackhole);
 	}

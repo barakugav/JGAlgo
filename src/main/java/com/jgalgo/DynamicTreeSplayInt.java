@@ -1,11 +1,11 @@
 package com.jgalgo;
 
-public class DynamicTreeSplayInt implements DynamicTree.Int {
+class DynamicTreeSplayInt implements DynamicTree {
 
 	private final int rootWeight;
 	private final SplayTree.SplayImpl<Object, SplayNode> impl;
 
-	public DynamicTreeSplayInt(int weightLimit) {
+	DynamicTreeSplayInt(int weightLimit) {
 		this(new SplayImplWithRelativeWeights(), weightLimit);
 	}
 
@@ -59,7 +59,11 @@ public class DynamicTreeSplayInt implements DynamicTree.Int {
 	}
 
 	@Override
-	public void addWeight(Node v, int w) {
+	public void addWeight(Node v, double w) {
+		int wInt = (int) w;
+		if (w != wInt)
+			throw new IllegalArgumentException("weight is not an integer");
+
 		SplayNode n = (SplayNode) v;
 		if (!n.isLinked())
 			return;
@@ -68,9 +72,9 @@ public class DynamicTreeSplayInt implements DynamicTree.Int {
 		if (!n.hasRightChild())
 			return;
 
-		n.weightDiff += w;
+		n.weightDiff += wInt;
 		if (n.hasLeftChild()) {
-			n.left.weightDiff -= w;
+			n.left.weightDiff -= wInt;
 
 			int nW = n.getWeight();
 			int minW = n.hasRightChild() ? Math.min(nW, n.right.getMinWeight(nW)) : nW;
@@ -81,20 +85,23 @@ public class DynamicTreeSplayInt implements DynamicTree.Int {
 	}
 
 	@Override
-	public void link(Node child, Node v, int w) {
+	public void link(Node child, Node parent, double w) {
+		int wInt = (int) w;
+		if (w != wInt)
+			throw new IllegalArgumentException("weight is not an integer");
 		if (child != findRoot(child))
 			throw new IllegalArgumentException("child node must be a root");
-		if (child == findRoot(v))
+		if (child == findRoot(parent))
 			throw new IllegalArgumentException("Both nodes are in the same tree");
-		if (w >= rootWeight / 2)
+		if (wInt >= rootWeight / 2)
 			throw new IllegalArgumentException("Weight is over the limit");
 		SplayNode t1 = splay((SplayNode) child);
-		SplayNode t2 = splay((SplayNode) v);
+		SplayNode t2 = splay((SplayNode) parent);
 
 		assert !t1.isLinked() && !t1.hasRightChild();
 
 		int oldWeight = t1.getWeight();
-		t1.weightDiff = w;
+		t1.weightDiff = wInt;
 		t1.minWeightDiff = 0;
 		if (t1.hasLeftChild()) {
 			t1.left.weightDiff += oldWeight - t1.getWeight();
@@ -125,12 +132,6 @@ public class DynamicTreeSplayInt implements DynamicTree.Int {
 		n.right.parent = null;
 		n.right = null;
 		n.unlink();
-	}
-
-	@Override
-	public void evert(Node v) {
-		// TODO
-		throw new UnsupportedOperationException();
 	}
 
 	/**

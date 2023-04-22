@@ -407,7 +407,7 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 			final int maxTreeSize = Math.max(1, n * n / g.edges().size());
 
 			QueueFixSize<Vertex> active = new QueueFixSize<>(n);
-			DynamicTree.Int dt = new DynamicTreeSplaySizedInt(maxCapacity * 10);
+			DynamicTree dt = new DynamicTreeSplaySizedInt(maxCapacity * 10);
 			Vertex[] vertexData = new Vertex[n];
 			for (int u = 0; u < n; u++) {
 				vertexData[u] = new Vertex(u, dt.makeTree());

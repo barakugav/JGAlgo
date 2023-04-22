@@ -1,5 +1,28 @@
 package com.jgalgo;
 
+/**
+ * Dynamic tree data structure that support link/cut operations.
+ * <p>
+ * The dynamic tree data structure is a set of nodes forming a forest and
+ * support the following operations:
+ * <ul>
+ * <li>{@link #makeTree()} - create a new node which will form a tree of size
+ * one.</li>
+ * <li>{@link #findRoot(Node)} - find the root node of a given node.</li>
+ * <li>{@link #link(Node, Node, double)} - link a node (root) to a parent with
+ * weighted edge.</li>
+ * <li>{@link #cut(Node)} - remove the edge from a node to its parent.</li>
+ * <li>{@link #addWeight(Node, double)} - add a weight to all edges on the path
+ * from a node to its tree root.</li>
+ * <li>{@link #findMinEdge(Node)} - find the edge with minimum weight from on
+ * the path from a node to its tree root.</li>
+ * </ul>
+ * <p>
+ * Note: this API will change in the future
+ *
+ * @see <a href="https://en.wikipedia.org/wiki/Link/cut_tree">Wikipedia</a>
+ * @author Barak Ugav
+ */
 public interface DynamicTree {
 
 	/**
@@ -54,13 +77,6 @@ public interface DynamicTree {
 	public void cut(Node v);
 
 	/**
-	 * Change the root of a tree to be a node.
-	 *
-	 * @param v a node which will be the new root of it's tree
-	 */
-	public void evert(Node v);
-
-	/**
 	 * Get the number of nodes in the node tree.
 	 *
 	 * @param v a node
@@ -106,7 +122,7 @@ public interface DynamicTree {
 
 	/**
 	 * A return type for {@link DynamicTree#findMinEdge(Node)} method representing
-	 * the minimum edge from the node to its tree root.
+	 * the minimum edge from a node to its tree root.
 	 *
 	 * @author Barak Ugav
 	 */
@@ -134,46 +150,6 @@ public interface DynamicTree {
 		 */
 		public double weight();
 
-	}
-
-	/**
-	 * {@link DynamicTree} with {@code int} weights.
-	 *
-	 * @author Barak Ugav
-	 */
-	public static interface Int extends DynamicTree {
-
-		/**
-		 * Add a weight to all of the edges from {@code v} to it's tree root
-		 *
-		 * @param v a node
-		 * @param w a weight to add
-		 */
-		public void addWeight(Node v, int w);
-
-		@Deprecated
-		@Override
-		default void addWeight(Node v, double w) {
-			addWeight(v, (int) w);
-		}
-
-		/**
-		 * Link a root to be a child of some other node of another tree.
-		 *
-		 * @param child  a root of some tree
-		 * @param parent a node in another tree
-		 * @param w      the new edge weight
-		 * @throws IllegalArgumentException if {@code child} is not a root or if
-		 *                                  {@code child} and {@code root} are in the
-		 *                                  same tree.
-		 */
-		public void link(Node child, Node parent, int w);
-
-		@Deprecated
-		@Override
-		default void link(Node child, Node parent, double w) {
-			link(child, parent, (int) w);
-		}
 	}
 
 }

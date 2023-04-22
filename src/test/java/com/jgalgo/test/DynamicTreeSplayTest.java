@@ -11,21 +11,21 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import com.jgalgo.DynamicTree;
-import com.jgalgo.DynamicTreeSplay;
-import com.jgalgo.DynamicTreeSplayInt;
+import com.jgalgo.DynamicTreeBuilder;
 
 public class DynamicTreeSplayTest extends TestUtils {
 
 	@Test
 	public void testRandOps() {
 		final long seed = 0xc5fb8821e8139b3eL;
-		testRandOps(DynamicTreeSplay::new, seed);
+		testRandOps(maxWeight -> new DynamicTreeBuilder().setWeightLimit(maxWeight).build(), seed);
 	}
 
 	@Test
 	public void testRandOpsInt() {
 		final long seed = 0xdaf8a976847115a1L;
-		testRandOps(maxWeight -> new DynamicTreeSplayInt((int) maxWeight), seed);
+		testRandOps(maxWeight -> new DynamicTreeBuilder().setIntWeightsEnable(true).setWeightLimit(maxWeight).build(),
+				seed);
 	}
 
 	static void testRandOps(DoubleFunction<? extends DynamicTree> builder, long seed) {

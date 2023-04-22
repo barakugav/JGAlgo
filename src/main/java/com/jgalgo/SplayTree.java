@@ -15,6 +15,8 @@ import java.util.Set;
  * operations have a time complexity of {@code O(log n)} amortized time.
  * <p>
  * The splay tree is specifically efficient for splits and joins operations.
+ * <p>
+ * Based on 'Self-Adjusting Binary Search Trees' by Sleator and Tarjan (1985).
  *
  * @see <a href="https://en.wikipedia.org/wiki/Splay_tree">Wikipedia</a>
  * @author Barak Ugav

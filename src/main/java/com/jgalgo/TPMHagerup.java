@@ -53,7 +53,7 @@ public class TPMHagerup implements TPM {
 	 * @see BitsLookupTable
 	 * @param enable
 	 */
-	public void useBitsLookupTables(boolean enable) {
+	public void setBitsLookupTablesEnable(boolean enable) {
 		useBitsLookupTables = enable;
 	}
 

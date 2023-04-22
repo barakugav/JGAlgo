@@ -1,12 +1,18 @@
 package com.jgalgo;
 
-public class DynamicTreeSplay implements DynamicTree {
+class DynamicTreeSplay implements DynamicTree {
+
+	/*
+	 * Based on 'A Data Structure for Dynamic Trees' by Sleator, D. D.; Tarjan, R. E
+	 * (1983), although the original paper did not use splay trees for the
+	 * implementation.
+	 */
 
 	private final double rootWeight;
 	private final SplayTree.SplayImpl<Object, SplayNode> impl;
 	private static final double EPS = 0.00001;
 
-	public DynamicTreeSplay(double weightLimit) {
+	DynamicTreeSplay(double weightLimit) {
 		this(new SplayImplWithRelativeWeights(), weightLimit);
 	}
 
@@ -126,12 +132,6 @@ public class DynamicTreeSplay implements DynamicTree {
 		n.right.parent = null;
 		n.right = null;
 		n.unlink();
-	}
-
-	@Override
-	public void evert(Node v) {
-		// TODO
-		throw new UnsupportedOperationException();
 	}
 
 	/**

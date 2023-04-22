@@ -1,8 +1,8 @@
 package com.jgalgo;
 
-public class DynamicTreeSplaySizedInt extends DynamicTreeSplayInt {
+class DynamicTreeSplaySizedInt extends DynamicTreeSplayInt {
 
-	public DynamicTreeSplaySizedInt(int weightLimit) {
+	DynamicTreeSplaySizedInt(int weightLimit) {
 		super(new SplayImplWithSize(), weightLimit);
 	}
 
