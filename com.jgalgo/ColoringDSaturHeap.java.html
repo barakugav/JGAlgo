@@ -25,9 +25,15 @@ import java.util.Objects;
  * @see ColoringDSatur
  * @author Barak Ugav
  */
-<span class="fc" id="L28">public class ColoringDSaturHeap implements Coloring {</span>
+public class ColoringDSaturHeap implements Coloring {
 
 <span class="fc" id="L30">	private HeapReferenceable.Builder heapBuilder = HeapPairing::new;</span>
+
+	/**
+	 * Create a new coloring algorithm object.
+	 */
+<span class="fc" id="L35">	public ColoringDSaturHeap() {</span>
+<span class="fc" id="L36">	}</span>
 
 	/**
 	 * Set the implementation of the heap used by this algorithm.
@@ -35,70 +41,70 @@ import java.util.Objects;
 	 * @param heapBuilder a builder for heaps used by this algorithm
 	 */
 	public void setHeapBuilder(HeapReferenceable.Builder heapBuilder) {
-<span class="nc" id="L38">		this.heapBuilder = Objects.requireNonNull(heapBuilder);</span>
-<span class="nc" id="L39">	}</span>
+<span class="nc" id="L44">		this.heapBuilder = Objects.requireNonNull(heapBuilder);</span>
+<span class="nc" id="L45">	}</span>
 
 	@Override
 	public Coloring.Result computeColoring(UGraph g) {
-<span class="pc bpc" id="L43" title="1 of 2 branches missed.">		if (Graphs.containsSelfLoops(g))</span>
-<span class="nc" id="L44">			throw new IllegalArgumentException(&quot;no valid coloring in graphs with self loops&quot;);</span>
+<span class="pc bpc" id="L49" title="1 of 2 branches missed.">		if (Graphs.containsSelfLoops(g))</span>
+<span class="nc" id="L50">			throw new IllegalArgumentException(&quot;no valid coloring in graphs with self loops&quot;);</span>
 
-<span class="fc" id="L46">		ColoringResultImpl res = new ColoringResultImpl(g);</span>
-<span class="fc" id="L47">		int n = g.vertices().size();</span>
+<span class="fc" id="L52">		ColoringResultImpl res = new ColoringResultImpl(g);</span>
+<span class="fc" id="L53">		int n = g.vertices().size();</span>
 
-<span class="fc" id="L49">		HeapReferenceable&lt;HeapElm&gt; heap = heapBuilder.build();</span>
+<span class="fc" id="L55">		HeapReferenceable&lt;HeapElm&gt; heap = heapBuilder.build();</span>
 		@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L51">		HeapReference&lt;HeapElm&gt;[] vPtrs = new HeapReference[n];</span>
-<span class="fc bfc" id="L52" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
-<span class="fc" id="L53">			vPtrs[u] = heap.insert(new HeapElm(u, g.degreeOut(u)));</span>
+<span class="fc" id="L57">		HeapReference&lt;HeapElm&gt;[] vPtrs = new HeapReference[n];</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
+<span class="fc" id="L59">			vPtrs[u] = heap.insert(new HeapElm(u, g.degreeOut(u)));</span>
 
-<span class="fc bfc" id="L55" title="All 2 branches covered.">		while (!heap.isEmpty()) {</span>
-<span class="fc" id="L56">			HeapElm elm = heap.extractMin();</span>
-<span class="fc" id="L57">			int u = elm.v;</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">		while (!heap.isEmpty()) {</span>
+<span class="fc" id="L62">			HeapElm elm = heap.extractMin();</span>
+<span class="fc" id="L63">			int u = elm.v;</span>
 
-<span class="fc" id="L59">			int color = 0;</span>
-<span class="fc bfc" id="L60" title="All 2 branches covered.">			while (elm.neighborColors.get(color))</span>
-<span class="fc" id="L61">				color++;</span>
-<span class="fc" id="L62">			res.colors[u] = color;</span>
-<span class="fc" id="L63">			res.colorsNum = Math.max(res.colorsNum, color + 1);</span>
+<span class="fc" id="L65">			int color = 0;</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">			while (elm.neighborColors.get(color))</span>
+<span class="fc" id="L67">				color++;</span>
+<span class="fc" id="L68">			res.colors[u] = color;</span>
+<span class="fc" id="L69">			res.colorsNum = Math.max(res.colorsNum, color + 1);</span>
 
-<span class="fc bfc" id="L65" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
-<span class="fc" id="L66">				eit.nextInt();</span>
-<span class="fc" id="L67">				int v = eit.v();</span>
-<span class="fc bfc" id="L68" title="All 2 branches covered.">				if (res.colorOf(v) == -1) { /* v is uncolored */</span>
-<span class="fc" id="L69">					HeapReference&lt;HeapElm&gt; vPtr = vPtrs[v];</span>
-<span class="fc" id="L70">					HeapElm vElm = vPtr.get();</span>
-<span class="fc bfc" id="L71" title="All 2 branches covered.">					if (!vElm.neighborColors.get(color)) {</span>
-<span class="fc" id="L72">						vElm.neighborColors.set(color);</span>
-<span class="fc" id="L73">						vElm.neighborColorsNum++;</span>
-<span class="fc" id="L74">						heap.decreaseKey(vPtr, vElm);</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
+<span class="fc" id="L72">				eit.nextInt();</span>
+<span class="fc" id="L73">				int v = eit.v();</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">				if (res.colorOf(v) == -1) { /* v is uncolored */</span>
+<span class="fc" id="L75">					HeapReference&lt;HeapElm&gt; vPtr = vPtrs[v];</span>
+<span class="fc" id="L76">					HeapElm vElm = vPtr.get();</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">					if (!vElm.neighborColors.get(color)) {</span>
+<span class="fc" id="L78">						vElm.neighborColors.set(color);</span>
+<span class="fc" id="L79">						vElm.neighborColorsNum++;</span>
+<span class="fc" id="L80">						heap.decreaseKey(vPtr, vElm);</span>
 					}
 				}
-<span class="fc" id="L77">			}</span>
-<span class="fc" id="L78">		}</span>
-<span class="fc" id="L79">		return res;</span>
+<span class="fc" id="L83">			}</span>
+<span class="fc" id="L84">		}</span>
+<span class="fc" id="L85">		return res;</span>
 	}
 
 	private static class HeapElm implements Comparable&lt;HeapElm&gt; {
 		final int v;
 		final int degree;
-<span class="fc" id="L85">		final BitSet neighborColors = new BitSet();</span>
+<span class="fc" id="L91">		final BitSet neighborColors = new BitSet();</span>
 		int neighborColorsNum;
 
-<span class="fc" id="L88">		HeapElm(int v, int degree) {</span>
-<span class="fc" id="L89">			this.v = v;</span>
-<span class="fc" id="L90">			this.degree = degree;</span>
-<span class="fc" id="L91">		}</span>
+<span class="fc" id="L94">		HeapElm(int v, int degree) {</span>
+<span class="fc" id="L95">			this.v = v;</span>
+<span class="fc" id="L96">			this.degree = degree;</span>
+<span class="fc" id="L97">		}</span>
 
 		@Override
 		public int compareTo(HeapElm o) {
 			int c;
-<span class="fc bfc" id="L96" title="All 2 branches covered.">			if ((c = Integer.compare(neighborColorsNum, o.neighborColorsNum)) != 0)</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">			if ((c = Integer.compare(neighborColorsNum, o.neighborColorsNum)) != 0)</span>
 				// negate compare, more neighbor colors should be extracted from the heap first
-<span class="fc" id="L98">				return -c;</span>
-<span class="fc bfc" id="L99" title="All 2 branches covered.">			if ((c = Integer.compare(degree, o.degree)) != 0)</span>
-<span class="fc" id="L100">				return c;</span>
-<span class="fc" id="L101">			return 0;</span>
+<span class="fc" id="L104">				return -c;</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">			if ((c = Integer.compare(degree, o.degree)) != 0)</span>
+<span class="fc" id="L106">				return c;</span>
+<span class="fc" id="L107">			return 0;</span>
 		}
 	}
 

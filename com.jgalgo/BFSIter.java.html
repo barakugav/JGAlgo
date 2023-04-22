@@ -15,7 +15,6 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  * source(s) vertex. The iterator will visit every vertex {@code v} for which
  * there is a path from the source(s) to {@code v}. Each such vertex will be
  * visited exactly once.
- * &lt;p&gt;
  *
  * &lt;pre&gt; {@code
  * Graph g = ...;
@@ -49,8 +48,8 @@ public class BFSIter implements IntIterator {
 	 * @param source a vertex in the graph from which the search will start from.
 	 */
 	public BFSIter(Graph g, int source) {
-<span class="fc" id="L52">		this(g, new int[] { source });</span>
-<span class="fc" id="L53">	}</span>
+<span class="fc" id="L51">		this(g, new int[] { source });</span>
+<span class="fc" id="L52">	}</span>
 
 	/**
 	 * Create a BFS iterator rooted at multiple sources vertices.
@@ -60,30 +59,30 @@ public class BFSIter implements IntIterator {
 	 *                will start from.
 	 * @throws IllegalArgumentException if the sources array is empty
 	 */
-<span class="fc" id="L63">	public BFSIter(Graph g, int[] sources) {</span>
-<span class="pc bpc" id="L64" title="1 of 2 branches missed.">		if (sources.length == 0)</span>
-<span class="nc" id="L65">			throw new IllegalArgumentException();</span>
-<span class="fc" id="L66">		this.g = g;</span>
-<span class="fc" id="L67">		int n = g.vertices().size();</span>
-<span class="fc" id="L68">		visited = new BitSet(n);</span>
-<span class="fc" id="L69">		queue = new IntArrayFIFOQueue();</span>
-<span class="fc" id="L70">		inEdge = -1;</span>
-<span class="fc" id="L71">		layer = -1;</span>
+<span class="fc" id="L62">	public BFSIter(Graph g, int[] sources) {</span>
+<span class="pc bpc" id="L63" title="1 of 2 branches missed.">		if (sources.length == 0)</span>
+<span class="nc" id="L64">			throw new IllegalArgumentException();</span>
+<span class="fc" id="L65">		this.g = g;</span>
+<span class="fc" id="L66">		int n = g.vertices().size();</span>
+<span class="fc" id="L67">		visited = new BitSet(n);</span>
+<span class="fc" id="L68">		queue = new IntArrayFIFOQueue();</span>
+<span class="fc" id="L69">		inEdge = -1;</span>
+<span class="fc" id="L70">		layer = -1;</span>
 
-<span class="fc bfc" id="L73" title="All 2 branches covered.">		for (int source : sources) {</span>
-<span class="fc" id="L74">			visited.set(source);</span>
-<span class="fc" id="L75">			queue.enqueue(source);</span>
-<span class="fc" id="L76">			queue.enqueue(-1);</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">		for (int source : sources) {</span>
+<span class="fc" id="L73">			visited.set(source);</span>
+<span class="fc" id="L74">			queue.enqueue(source);</span>
+<span class="fc" id="L75">			queue.enqueue(-1);</span>
 		}
-<span class="fc" id="L78">		firstVInLayer = sources[0];</span>
-<span class="fc" id="L79">	}</span>
+<span class="fc" id="L77">		firstVInLayer = sources[0];</span>
+<span class="fc" id="L78">	}</span>
 
 	/**
 	 * Check whether there is more vertices to iterate over.
 	 */
 	@Override
 	public boolean hasNext() {
-<span class="fc bfc" id="L86" title="All 2 branches covered.">		return !queue.isEmpty();</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">		return !queue.isEmpty();</span>
 	}
 
 	/**
@@ -92,28 +91,28 @@ public class BFSIter implements IntIterator {
 	 */
 	@Override
 	public int nextInt() {
-<span class="pc bpc" id="L95" title="1 of 2 branches missed.">		if (!hasNext())</span>
-<span class="nc" id="L96">			throw new NoSuchElementException();</span>
-<span class="fc" id="L97">		final int u = queue.dequeueInt();</span>
-<span class="fc" id="L98">		inEdge = queue.dequeueInt();</span>
-<span class="fc bfc" id="L99" title="All 2 branches covered.">		if (u == firstVInLayer) {</span>
-<span class="fc" id="L100">			layer++;</span>
-<span class="fc" id="L101">			firstVInLayer = -1;</span>
+<span class="pc bpc" id="L94" title="1 of 2 branches missed.">		if (!hasNext())</span>
+<span class="nc" id="L95">			throw new NoSuchElementException();</span>
+<span class="fc" id="L96">		final int u = queue.dequeueInt();</span>
+<span class="fc" id="L97">		inEdge = queue.dequeueInt();</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">		if (u == firstVInLayer) {</span>
+<span class="fc" id="L99">			layer++;</span>
+<span class="fc" id="L100">			firstVInLayer = -1;</span>
 		}
 
-<span class="fc bfc" id="L104" title="All 2 branches covered.">		for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
-<span class="fc" id="L105">			int e = eit.nextInt();</span>
-<span class="fc" id="L106">			int v = eit.v();</span>
-<span class="fc bfc" id="L107" title="All 2 branches covered.">			if (visited.get(v))</span>
-<span class="fc" id="L108">				continue;</span>
-<span class="fc" id="L109">			visited.set(v);</span>
-<span class="fc" id="L110">			queue.enqueue(v);</span>
-<span class="fc" id="L111">			queue.enqueue(e);</span>
-<span class="fc bfc" id="L112" title="All 2 branches covered.">			if (firstVInLayer == -1)</span>
-<span class="fc" id="L113">				firstVInLayer = v;</span>
-<span class="fc" id="L114">		}</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">		for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
+<span class="fc" id="L104">			int e = eit.nextInt();</span>
+<span class="fc" id="L105">			int v = eit.v();</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">			if (visited.get(v))</span>
+<span class="fc" id="L107">				continue;</span>
+<span class="fc" id="L108">			visited.set(v);</span>
+<span class="fc" id="L109">			queue.enqueue(v);</span>
+<span class="fc" id="L110">			queue.enqueue(e);</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">			if (firstVInLayer == -1)</span>
+<span class="fc" id="L112">				firstVInLayer = v;</span>
+<span class="fc" id="L113">		}</span>
 
-<span class="fc" id="L116">		return u;</span>
+<span class="fc" id="L115">		return u;</span>
 	}
 
 	/**
@@ -124,7 +123,7 @@ public class BFSIter implements IntIterator {
 	 * @return the edge that led to the last vertex returned by {@link nextInt}
 	 */
 	public int inEdge() {
-<span class="fc" id="L127">		return inEdge;</span>
+<span class="fc" id="L126">		return inEdge;</span>
 	}
 
 	/**
@@ -138,7 +137,7 @@ public class BFSIter implements IntIterator {
 	 * @return the layer of the last vertex returned by {@link nextInt}.
 	 */
 	public int layer() {
-<span class="fc" id="L141">		return layer;</span>
+<span class="fc" id="L140">		return layer;</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

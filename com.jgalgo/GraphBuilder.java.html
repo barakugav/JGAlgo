@@ -1,29 +1,148 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GraphBuilder.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jgalgo</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">GraphBuilder.java</span></div><h1>GraphBuilder.java</h1><pre class="source lang-java linenums">package com.jgalgo;
 
+/**
+ * A graph builder.
+ * &lt;p&gt;
+ * A graph builder can be used as a factory for multiple graphs with the same
+ * implementation, to specified the initial number of vertices or to modify the
+ * edge IDs strategy. In this following example, a builder is used to build
+ * multiple directed graphs based on linked edge list implementation with fixed
+ * edge IDs and {@code 15} initial vertices:
+ *
+ * &lt;pre&gt; {@code
+ * GraphBuilder builder = new GraphBuilder.Linked();
+ * builder.setVerticesNum(15);
+ * builder.setEdgesIDStrategy(IDStrategy.Fixed.class);
+ *
+ * DiGraph g1 = builder.buildDirected();
+ * DiGraph g2 = builder.buildDirected();
+ * DiGraph g3 = builder.buildDirected();
+ * ...
+ * }&lt;/pre&gt;
+ *
+ * @author Barak Ugav
+ */
 public interface GraphBuilder {
 
+	/**
+	 * Set the number of initial vertices in the graph.
+	 * &lt;p&gt;
+	 * The default value is zero.
+	 *
+	 * @param n number of initial vertices in the graph
+	 * @return this builder
+	 */
 	GraphBuilder setVerticesNum(int n);
 
+	/**
+	 * Set the edges ID strategy of this builder.
+	 * &lt;p&gt;
+	 * The default strategy used by this builder is {@link IDStrategy.Continues},
+	 * namely the edges IDs will always be {@code [0,1,2,...,edgesNum-1]}. This
+	 * default strategy may perform some IDs rename to maintain its invariant during
+	 * the lifetime of the graph. A different strategy such as
+	 * {@link IDStrategy.Fixed} may be used to ensure no IDs rename are performed.
+	 *
+	 * @param edgesIDStrategy type of edge ID strategy to use, or {@code null} for
+	 *                        default strategy
+	 * @return this builder
+	 * @throws IllegalArgumentException if the strategy type is not supported
+	 * @see IDStrategy
+	 */
 	GraphBuilder setEdgesIDStrategy(Class&lt;? extends IDStrategy&gt; edgesIDStrategy);
 
+	/**
+	 * Build an undirected graph with the options of this builder.
+	 *
+	 * @return a new undirected graph with the options of this builder.
+	 */
 	UGraph buildUndirected();
 
+	/**
+	 * Build a directed graph with the options of this builder.
+	 *
+	 * @return a new directed graph with the options of this builder.
+	 */
 	DiGraph buildDirected();
 
+	/**
+	 * Get a new builder instance.
+	 *
+	 * @return a new builder with default options.
+	 */
 	static GraphBuilder newInstance() {
-<span class="nc" id="L14">		return new GraphBuilderImpl.Array();</span>
+<span class="nc" id="L74">		return new GraphBuilder.Array();</span>
 	}
 
-	static GraphBuilder newInstance(String impl) {
-<span class="pc bpc" id="L18" title="2 of 4 branches missed.">		switch (impl) {</span>
-			case &quot;com.jgalgo.Array&quot;:
-<span class="fc" id="L20">				return new GraphBuilderImpl.Array();</span>
-			case &quot;com.jgalgo.Linked&quot;:
-<span class="fc" id="L22">				return new GraphBuilderImpl.Linked();</span>
-			case &quot;com.jgalgo.Table&quot;:
-<span class="nc" id="L24">				return new GraphBuilderImpl.Table();</span>
-			default:
-<span class="nc" id="L26">				throw new IllegalArgumentException(&quot;Unexpected value: &quot; + impl);</span>
+	/**
+	 * Graph builder based on array graph implementations such as
+	 * {@link GraphArrayDirected} and {@link GraphArrayUndirected}.
+	 *
+	 * @author Barak Ugav
+	 */
+	static class Array extends GraphBuilderImpl.Abstract {
+		/**
+		 * Create a new builder with default options.
+		 */
+<span class="fc" id="L87">		public Array() {</span>
+<span class="fc" id="L88">		}</span>
+
+		@Override
+		public UGraph buildUndirected() {
+<span class="fc" id="L92">			return (UGraph) wrapWithCustomIDStrategies(new GraphArrayUndirected(verticesNum));</span>
+		}
+
+		@Override
+		public DiGraph buildDirected() {
+<span class="fc" id="L97">			return (DiGraph) wrapWithCustomIDStrategies(new GraphArrayDirected(verticesNum));</span>
+		}
+	}
+
+	/**
+	 * Graph builder based on array graph implementations such as
+	 * {@link GraphLinkedDirected} and {@link GraphLinkedUndirected}.
+	 *
+	 * @author Barak Ugav
+	 */
+	static class Linked extends GraphBuilderImpl.Abstract {
+		/**
+		 * Create a new builder with default options.
+		 */
+<span class="fc" id="L111">		public Linked() {</span>
+<span class="fc" id="L112">		}</span>
+
+		@Override
+		public UGraph buildUndirected() {
+<span class="nc" id="L116">			return (UGraph) wrapWithCustomIDStrategies(new GraphLinkedUndirected(verticesNum));</span>
+		}
+
+		@Override
+		public DiGraph buildDirected() {
+<span class="fc" id="L121">			return (DiGraph) wrapWithCustomIDStrategies(new GraphLinkedDirected(verticesNum));</span>
+		}
+	}
+
+	/**
+	 * Graph builder based on array graph implementations such as
+	 * {@link GraphTableDirected} and {@link GraphTableUndirected}.
+	 *
+	 * @author Barak Ugav
+	 */
+	static class Table extends GraphBuilderImpl.Abstract {
+		/**
+		 * Create a new builder with default options.
+		 */
+<span class="nc" id="L135">		public Table() {</span>
+<span class="nc" id="L136">		}</span>
+
+		@Override
+		public UGraph buildUndirected() {
+<span class="nc" id="L140">			return (UGraph) wrapWithCustomIDStrategies(new GraphTableUndirected(verticesNum));</span>
+		}
+
+		@Override
+		public DiGraph buildDirected() {
+<span class="nc" id="L145">			return (DiGraph) wrapWithCustomIDStrategies(new GraphTableDirected(verticesNum));</span>
 		}
 	}
 

@@ -51,19 +51,20 @@ public class TPMHagerup implements TPM {
 	 * This method enable or disable the use of bits lookup tables.
 	 *
 	 * @see BitsLookupTable
-	 * @param enable
+	 * @param enable if {@code true} bits lookup table will be constructed and used,
+	 *               else methods from {@link Integer} will be used.
 	 */
 	public void setBitsLookupTablesEnable(boolean enable) {
-<span class="nc" id="L57">		useBitsLookupTables = enable;</span>
-<span class="nc" id="L58">	}</span>
+<span class="nc" id="L58">		useBitsLookupTables = enable;</span>
+<span class="nc" id="L59">	}</span>
 
 	@Override
 	public int[] computeHeaviestEdgeInTreePaths(Graph tree, EdgeWeightFunc w, TPM.Queries queries) {
-<span class="pc bpc" id="L62" title="1 of 2 branches missed.">		if (!(tree instanceof UGraph))</span>
-<span class="nc" id="L63">			throw new IllegalArgumentException(&quot;only undirected graphs are supported&quot;);</span>
-<span class="pc bpc" id="L64" title="1 of 2 branches missed.">		if (!Trees.isTree((UGraph) tree))</span>
-<span class="nc" id="L65">			throw new IllegalArgumentException(&quot;only trees are supported&quot;);</span>
-<span class="fc" id="L66">		return new Worker((UGraph) tree, w, useBitsLookupTables).calcTPM(queries);</span>
+<span class="pc bpc" id="L63" title="1 of 2 branches missed.">		if (!(tree instanceof UGraph))</span>
+<span class="nc" id="L64">			throw new IllegalArgumentException(&quot;only undirected graphs are supported&quot;);</span>
+<span class="pc bpc" id="L65" title="1 of 2 branches missed.">		if (!Trees.isTree((UGraph) tree))</span>
+<span class="nc" id="L66">			throw new IllegalArgumentException(&quot;only trees are supported&quot;);</span>
+<span class="fc" id="L67">		return new Worker((UGraph) tree, w, useBitsLookupTables).calcTPM(queries);</span>
 	}
 
 	private static class Worker {
@@ -78,120 +79,120 @@ public class TPMHagerup implements TPM {
 		private final BiInt2IntFunction getIthbit;
 		private final Int2IntFunction getNumberOfTrailingZeros;
 
-<span class="fc" id="L81">		Worker(UGraph t, EdgeWeightFunc w, boolean useBitsLookupTables) {</span>
-<span class="fc" id="L82">			this.tOrig = t;</span>
-<span class="fc" id="L83">			this.w = w;</span>
+<span class="fc" id="L82">		Worker(UGraph t, EdgeWeightFunc w, boolean useBitsLookupTables) {</span>
+<span class="fc" id="L83">			this.tOrig = t;</span>
+<span class="fc" id="L84">			this.w = w;</span>
 
-<span class="pc bpc" id="L85" title="1 of 2 branches missed.">			if (useBitsLookupTables) {</span>
-<span class="nc" id="L86">				int n = t.vertices().size();</span>
-<span class="nc bnc" id="L87" title="All 2 branches missed.">				int wordsize = n &gt; 1 ? Utils.log2ceil(n) : 1;</span>
-<span class="nc" id="L88">				BitsLookupTable.Count count = new BitsLookupTable.Count(wordsize);</span>
-<span class="nc" id="L89">				BitsLookupTable.Ith ith = new BitsLookupTable.Ith(wordsize, count);</span>
+<span class="pc bpc" id="L86" title="1 of 2 branches missed.">			if (useBitsLookupTables) {</span>
+<span class="nc" id="L87">				int n = t.vertices().size();</span>
+<span class="nc bnc" id="L88" title="All 2 branches missed.">				int wordsize = n &gt; 1 ? Utils.log2ceil(n) : 1;</span>
+<span class="nc" id="L89">				BitsLookupTable.Count count = new BitsLookupTable.Count(wordsize);</span>
+<span class="nc" id="L90">				BitsLookupTable.Ith ith = new BitsLookupTable.Ith(wordsize, count);</span>
 
-<span class="nc" id="L91">				getBitCount = count::bitCount;</span>
-<span class="nc" id="L92">				getIthbit = ith::ithBit;</span>
-<span class="nc" id="L93">				getNumberOfTrailingZeros = ith::numberOfTrailingZeros;</span>
-<span class="nc" id="L94">			} else {</span>
-<span class="fc" id="L95">				getBitCount = Integer::bitCount;</span>
-<span class="fc" id="L96">				getIthbit = (x, i) -&gt; {</span>
-<span class="pc bpc" id="L97" title="2 of 4 branches missed.">					if (i &lt; 0 || i &gt;= getBitCount.applyAsInt(x))</span>
-<span class="nc" id="L98">						throw new IndexOutOfBoundsException(Integer.toBinaryString(x) + &quot;[&quot; + i + &quot;]&quot;);</span>
-<span class="fc bfc" id="L99" title="All 2 branches covered.">					for (; i &gt; 0; i--) {</span>
-<span class="fc" id="L100">						int z = Integer.numberOfTrailingZeros(x);</span>
-<span class="fc" id="L101">						x &amp;= ~(1 &lt;&lt; z);</span>
+<span class="nc" id="L92">				getBitCount = count::bitCount;</span>
+<span class="nc" id="L93">				getIthbit = ith::ithBit;</span>
+<span class="nc" id="L94">				getNumberOfTrailingZeros = ith::numberOfTrailingZeros;</span>
+<span class="nc" id="L95">			} else {</span>
+<span class="fc" id="L96">				getBitCount = Integer::bitCount;</span>
+<span class="fc" id="L97">				getIthbit = (x, i) -&gt; {</span>
+<span class="pc bpc" id="L98" title="2 of 4 branches missed.">					if (i &lt; 0 || i &gt;= getBitCount.applyAsInt(x))</span>
+<span class="nc" id="L99">						throw new IndexOutOfBoundsException(Integer.toBinaryString(x) + &quot;[&quot; + i + &quot;]&quot;);</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">					for (; i &gt; 0; i--) {</span>
+<span class="fc" id="L101">						int z = Integer.numberOfTrailingZeros(x);</span>
+<span class="fc" id="L102">						x &amp;= ~(1 &lt;&lt; z);</span>
 					}
-<span class="fc" id="L103">					return Integer.numberOfTrailingZeros(x);</span>
+<span class="fc" id="L104">					return Integer.numberOfTrailingZeros(x);</span>
 				};
-<span class="fc" id="L105">				getNumberOfTrailingZeros = Integer::numberOfTrailingZeros;</span>
+<span class="fc" id="L106">				getNumberOfTrailingZeros = Integer::numberOfTrailingZeros;</span>
 			}
-<span class="fc" id="L107">		}</span>
+<span class="fc" id="L108">		}</span>
 
 		int[] calcTPM(TPM.Queries queries) {
-<span class="fc" id="L110">			Pair&lt;UGraph, Integer&gt; r = buildBoruvkaFullyBranchingTree();</span>
-<span class="fc" id="L111">			UGraph t = r.e1;</span>
-<span class="fc" id="L112">			int root = r.e2.intValue();</span>
+<span class="fc" id="L111">			Pair&lt;UGraph, Integer&gt; r = buildBoruvkaFullyBranchingTree();</span>
+<span class="fc" id="L112">			UGraph t = r.e1;</span>
+<span class="fc" id="L113">			int root = r.e2.intValue();</span>
 
-<span class="fc" id="L114">			int[] lcaQueries = splitQueriesIntoLCAQueries(t, root, queries);</span>
+<span class="fc" id="L115">			int[] lcaQueries = splitQueriesIntoLCAQueries(t, root, queries);</span>
 
-<span class="fc" id="L116">			Pair&lt;int[], int[]&gt; r2 = getEdgeToParentsAndDepth(t, root);</span>
-<span class="fc" id="L117">			int[] edgeToParent = r2.e1;</span>
-<span class="fc" id="L118">			int[] depths = r2.e2;</span>
+<span class="fc" id="L117">			Pair&lt;int[], int[]&gt; r2 = getEdgeToParentsAndDepth(t, root);</span>
+<span class="fc" id="L118">			int[] edgeToParent = r2.e1;</span>
+<span class="fc" id="L119">			int[] depths = r2.e2;</span>
 
-<span class="fc" id="L120">			int[] q = calcQueriesPerVertex(t, lcaQueries, depths, edgeToParent);</span>
-<span class="fc" id="L121">			int[][] a = calcAnswersPerVertex(t, root, q, edgeToParent);</span>
-<span class="fc" id="L122">			return extractEdgesFromAnswers(a, q, lcaQueries, depths, t.edgesWeight(&quot;edgeData&quot;));</span>
+<span class="fc" id="L121">			int[] q = calcQueriesPerVertex(t, lcaQueries, depths, edgeToParent);</span>
+<span class="fc" id="L122">			int[][] a = calcAnswersPerVertex(t, root, q, edgeToParent);</span>
+<span class="fc" id="L123">			return extractEdgesFromAnswers(a, q, lcaQueries, depths, t.edgesWeight(&quot;edgeData&quot;));</span>
 		}
 
 		private int[] extractEdgesFromAnswers(int[][] a, int[] q, int[] lcaQueries, int[] depths,
 				Weights.Int edgeData) {
-<span class="fc" id="L127">			int queriesNum = lcaQueries.length / 4;</span>
-<span class="fc" id="L128">			int[] res = new int[queriesNum];</span>
+<span class="fc" id="L128">			int queriesNum = lcaQueries.length / 4;</span>
+<span class="fc" id="L129">			int[] res = new int[queriesNum];</span>
 
-<span class="fc bfc" id="L130" title="All 2 branches covered.">			for (int i = 0; i &lt; queriesNum; i++) {</span>
-<span class="fc" id="L131">				int u = lcaQueries[i * 4];</span>
-<span class="fc" id="L132">				int v = lcaQueries[i * 4 + 2];</span>
-<span class="fc" id="L133">				int lca = lcaQueries[i * 4 + 1];</span>
-<span class="fc" id="L134">				int lcaDepth = depths[lca];</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">			for (int i = 0; i &lt; queriesNum; i++) {</span>
+<span class="fc" id="L132">				int u = lcaQueries[i * 4];</span>
+<span class="fc" id="L133">				int v = lcaQueries[i * 4 + 2];</span>
+<span class="fc" id="L134">				int lca = lcaQueries[i * 4 + 1];</span>
+<span class="fc" id="L135">				int lcaDepth = depths[lca];</span>
 
-<span class="fc" id="L136">				int ua = -1, va = -1;</span>
+<span class="fc" id="L137">				int ua = -1, va = -1;</span>
 
-<span class="fc" id="L138">				int qusize = getBitCount.applyAsInt(q[u]);</span>
-<span class="fc bfc" id="L139" title="All 2 branches covered.">				for (int j = 0; j &lt; qusize; j++) {</span>
-<span class="fc bfc" id="L140" title="All 2 branches covered.">					if (getIthbit.apply(q[u], j) == lcaDepth) {</span>
-<span class="fc" id="L141">						ua = a[u][j];</span>
-<span class="fc" id="L142">						break;</span>
+<span class="fc" id="L139">				int qusize = getBitCount.applyAsInt(q[u]);</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">				for (int j = 0; j &lt; qusize; j++) {</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">					if (getIthbit.apply(q[u], j) == lcaDepth) {</span>
+<span class="fc" id="L142">						ua = a[u][j];</span>
+<span class="fc" id="L143">						break;</span>
 					}
 				}
-<span class="fc" id="L145">				int qvsize = getBitCount.applyAsInt(q[v]);</span>
-<span class="fc bfc" id="L146" title="All 2 branches covered.">				for (int j = 0; j &lt; qvsize; j++) {</span>
-<span class="fc bfc" id="L147" title="All 2 branches covered.">					if (getIthbit.apply(q[v], j) == lcaDepth) {</span>
-<span class="fc" id="L148">						va = a[v][j];</span>
-<span class="fc" id="L149">						break;</span>
+<span class="fc" id="L146">				int qvsize = getBitCount.applyAsInt(q[v]);</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">				for (int j = 0; j &lt; qvsize; j++) {</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">					if (getIthbit.apply(q[v], j) == lcaDepth) {</span>
+<span class="fc" id="L149">						va = a[v][j];</span>
+<span class="fc" id="L150">						break;</span>
 					}
 				}
 
-<span class="pc bpc" id="L153" title="1 of 6 branches missed.">				res[i] = (va == -1 || (ua != -1 &amp;&amp; w.weight(edgeData.getInt(ua)) &gt;= w.weight(edgeData.getInt(va))))</span>
-<span class="fc bfc" id="L154" title="All 2 branches covered.">						? (ua != -1 ? edgeData.getInt(ua) : -1)</span>
-<span class="pc bpc" id="L155" title="1 of 2 branches missed.">						: (va != -1 ? edgeData.getInt(va) : -1);</span>
+<span class="pc bpc" id="L154" title="1 of 6 branches missed.">				res[i] = (va == -1 || (ua != -1 &amp;&amp; w.weight(edgeData.getInt(ua)) &gt;= w.weight(edgeData.getInt(va))))</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">						? (ua != -1 ? edgeData.getInt(ua) : -1)</span>
+<span class="pc bpc" id="L156" title="1 of 2 branches missed.">						: (va != -1 ? edgeData.getInt(va) : -1);</span>
 			}
 
-<span class="fc" id="L158">			return res;</span>
+<span class="fc" id="L159">			return res;</span>
 		}
 
 		private int[][] calcAnswersPerVertex(UGraph t, int root, int[] q, int[] edgeToParent) {
-<span class="fc" id="L162">			int n = t.vertices().size();</span>
-<span class="fc" id="L163">			int[] a = new int[n];</span>
+<span class="fc" id="L163">			int n = t.vertices().size();</span>
+<span class="fc" id="L164">			int[] a = new int[n];</span>
 
-<span class="fc" id="L165">			int leavesDepth = Graphs.getFullyBranchingTreeDepth(t, root);</span>
+<span class="fc" id="L166">			int leavesDepth = Graphs.getFullyBranchingTreeDepth(t, root);</span>
 
-<span class="fc" id="L167">			Weights.Int tData = t.edgesWeight(&quot;edgeData&quot;);</span>
-<span class="fc" id="L168">			int[][] res = new int[tOrig.vertices().size()][];</span>
+<span class="fc" id="L168">			Weights.Int tData = t.edgesWeight(&quot;edgeData&quot;);</span>
+<span class="fc" id="L169">			int[][] res = new int[tOrig.vertices().size()][];</span>
 
-<span class="fc bfc" id="L170" title="All 2 branches covered.">			for (DFSIter it = new DFSIter(t, root); it.hasNext();) {</span>
-<span class="fc" id="L171">				int v = it.nextInt();</span>
-<span class="fc" id="L172">				IntList edgesFromRoot = it.edgePath();</span>
-<span class="fc bfc" id="L173" title="All 2 branches covered.">				if (edgesFromRoot.isEmpty())</span>
-<span class="fc" id="L174">					continue;</span>
-<span class="fc" id="L175">				int depth = edgesFromRoot.size();</span>
-<span class="fc" id="L176">				int edgeToChild = edgesFromRoot.getInt(depth - 1);</span>
-<span class="fc" id="L177">				int u = t.edgeEndpoint(edgeToChild, v);</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">			for (DFSIter it = new DFSIter(t, root); it.hasNext();) {</span>
+<span class="fc" id="L172">				int v = it.nextInt();</span>
+<span class="fc" id="L173">				IntList edgesFromRoot = it.edgePath();</span>
+<span class="fc bfc" id="L174" title="All 2 branches covered.">				if (edgesFromRoot.isEmpty())</span>
+<span class="fc" id="L175">					continue;</span>
+<span class="fc" id="L176">				int depth = edgesFromRoot.size();</span>
+<span class="fc" id="L177">				int edgeToChild = edgesFromRoot.getInt(depth - 1);</span>
+<span class="fc" id="L178">				int u = t.edgeEndpoint(edgeToChild, v);</span>
 
-<span class="fc" id="L179">				a[v] = subseq(a[u], q[u], q[v]);</span>
-<span class="fc" id="L180">				int j = binarySearch(a[v], w.weight(tData.getInt(edgeToChild)), edgesFromRoot, tData);</span>
-<span class="fc" id="L181">				a[v] = repSuf(a[v], depth, j);</span>
+<span class="fc" id="L180">				a[v] = subseq(a[u], q[u], q[v]);</span>
+<span class="fc" id="L181">				int j = binarySearch(a[v], w.weight(tData.getInt(edgeToChild)), edgesFromRoot, tData);</span>
+<span class="fc" id="L182">				a[v] = repSuf(a[v], depth, j);</span>
 
-<span class="fc bfc" id="L183" title="All 2 branches covered.">				if (depth == leavesDepth) {</span>
-<span class="fc" id="L184">					int qvsize = getBitCount.applyAsInt(q[v]);</span>
-<span class="fc" id="L185">					int[] resv = new int[qvsize];</span>
-<span class="fc bfc" id="L186" title="All 2 branches covered.">					for (int i = 0; i &lt; qvsize; i++) {</span>
-<span class="fc" id="L187">						int b = getIthbit.apply(q[v], i);</span>
-<span class="fc" id="L188">						int s = getNumberOfTrailingZeros.applyAsInt(successor(a[v], 1 &lt;&lt; b) &gt;&gt; 1);</span>
-<span class="fc" id="L189">						resv[i] = edgesFromRoot.getInt(s);</span>
+<span class="fc bfc" id="L184" title="All 2 branches covered.">				if (depth == leavesDepth) {</span>
+<span class="fc" id="L185">					int qvsize = getBitCount.applyAsInt(q[v]);</span>
+<span class="fc" id="L186">					int[] resv = new int[qvsize];</span>
+<span class="fc bfc" id="L187" title="All 2 branches covered.">					for (int i = 0; i &lt; qvsize; i++) {</span>
+<span class="fc" id="L188">						int b = getIthbit.apply(q[v], i);</span>
+<span class="fc" id="L189">						int s = getNumberOfTrailingZeros.applyAsInt(successor(a[v], 1 &lt;&lt; b) &gt;&gt; 1);</span>
+<span class="fc" id="L190">						resv[i] = edgesFromRoot.getInt(s);</span>
 					}
-<span class="fc" id="L191">					res[v] = resv;</span>
+<span class="fc" id="L192">					res[v] = resv;</span>
 				}
-<span class="fc" id="L193">			}</span>
-<span class="fc" id="L194">			return res;</span>
+<span class="fc" id="L194">			}</span>
+<span class="fc" id="L195">			return res;</span>
 		}
 
 		private static int successor(int a, int b) {
@@ -208,207 +209,207 @@ public class TPMHagerup implements TPM {
 			 * Don't even ask why the commented code above is equivalent to the bit tricks
 			 * below. Hagerup 2009.
 			 */
-<span class="fc" id="L211">			return a &amp; (~(a | b) ^ ((~a | b) + b));</span>
+<span class="fc" id="L212">			return a &amp; (~(a | b) ^ ((~a | b) + b));</span>
 		}
 
 		private static int subseq(int au, int qu, int qv) {
-<span class="fc" id="L215">			return successor(au, qv);</span>
+<span class="fc" id="L216">			return successor(au, qv);</span>
 		}
 
 		private int binarySearch(int av, double weight, IntList edgesToRoot, Weights.Int edgeData) {
-<span class="fc" id="L219">			int avsize = getBitCount.applyAsInt(av);</span>
-<span class="fc bfc" id="L220" title="All 4 branches covered.">			if (avsize == 0 || w.weight(edgeData.getInt(edgesToRoot.getInt(getIthbit.apply(av, 0) - 1))) &lt; weight)</span>
-<span class="fc" id="L221">				return 0;</span>
+<span class="fc" id="L220">			int avsize = getBitCount.applyAsInt(av);</span>
+<span class="fc bfc" id="L221" title="All 4 branches covered.">			if (avsize == 0 || w.weight(edgeData.getInt(edgesToRoot.getInt(getIthbit.apply(av, 0) - 1))) &lt; weight)</span>
+<span class="fc" id="L222">				return 0;</span>
 
-<span class="fc" id="L223">			for (int from = 0, to = avsize;;) {</span>
-<span class="fc bfc" id="L224" title="All 2 branches covered.">				if (from == to - 1)</span>
-<span class="fc" id="L225">					return getIthbit.apply(av, from) + 1;</span>
-<span class="fc" id="L226">				int mid = (from + to) / 2;</span>
-<span class="fc" id="L227">				int avi = getIthbit.apply(av, mid);</span>
-<span class="fc bfc" id="L228" title="All 2 branches covered.">				if (w.weight(edgeData.getInt(edgesToRoot.getInt(avi - 1))) &gt;= weight)</span>
-<span class="fc" id="L229">					from = mid;</span>
+<span class="fc" id="L224">			for (int from = 0, to = avsize;;) {</span>
+<span class="fc bfc" id="L225" title="All 2 branches covered.">				if (from == to - 1)</span>
+<span class="fc" id="L226">					return getIthbit.apply(av, from) + 1;</span>
+<span class="fc" id="L227">				int mid = (from + to) / 2;</span>
+<span class="fc" id="L228">				int avi = getIthbit.apply(av, mid);</span>
+<span class="fc bfc" id="L229" title="All 2 branches covered.">				if (w.weight(edgeData.getInt(edgesToRoot.getInt(avi - 1))) &gt;= weight)</span>
+<span class="fc" id="L230">					from = mid;</span>
 				else
-<span class="fc" id="L231">					to = mid;</span>
-<span class="fc" id="L232">			}</span>
+<span class="fc" id="L232">					to = mid;</span>
+<span class="fc" id="L233">			}</span>
 		}
 
 		private static int repSuf(int av, int depth, int j) {
-<span class="fc" id="L236">			av &amp;= (1 &lt;&lt; j) - 1;</span>
-<span class="fc" id="L237">			av |= 1 &lt;&lt; depth;</span>
-<span class="fc" id="L238">			return av;</span>
+<span class="fc" id="L237">			av &amp;= (1 &lt;&lt; j) - 1;</span>
+<span class="fc" id="L238">			av |= 1 &lt;&lt; depth;</span>
+<span class="fc" id="L239">			return av;</span>
 		}
 
 		private Pair&lt;UGraph, Integer&gt; buildBoruvkaFullyBranchingTree() {
-<span class="fc" id="L242">			int n = tOrig.vertices().size();</span>
-<span class="fc" id="L243">			int[] minEdges = new int[n];</span>
-<span class="fc" id="L244">			double[] minGraphWeights = new double[n];</span>
-<span class="fc" id="L245">			int[] vNext = new int[n];</span>
-<span class="fc" id="L246">			int[] path = new int[n];</span>
-<span class="fc" id="L247">			int[] vTv = new int[n];</span>
-<span class="fc" id="L248">			int[] vTvNext = new int[n];</span>
+<span class="fc" id="L243">			int n = tOrig.vertices().size();</span>
+<span class="fc" id="L244">			int[] minEdges = new int[n];</span>
+<span class="fc" id="L245">			double[] minGraphWeights = new double[n];</span>
+<span class="fc" id="L246">			int[] vNext = new int[n];</span>
+<span class="fc" id="L247">			int[] path = new int[n];</span>
+<span class="fc" id="L248">			int[] vTv = new int[n];</span>
+<span class="fc" id="L249">			int[] vTvNext = new int[n];</span>
 
-<span class="fc bfc" id="L250" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L251">				vTv[v] = v;</span>
+<span class="fc bfc" id="L251" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++)</span>
+<span class="fc" id="L252">				vTv[v] = v;</span>
 
-<span class="fc" id="L253">			UGraph t = new GraphArrayUndirected(n);</span>
-<span class="fc" id="L254">			Weights.Int tData = t.addEdgesWeights(&quot;edgeData&quot;, int.class, Integer.valueOf(-1));</span>
-<span class="fc bfc" id="L255" title="All 2 branches covered.">			for (UGraph G = Graphs.referenceGraph(tOrig, EdgeRefWeightKey); (n = G.vertices().size()) &gt; 1;) {</span>
-<span class="fc" id="L256">				Weights.Int GData = G.edgesWeight(EdgeRefWeightKey);</span>
+<span class="fc" id="L254">			UGraph t = new GraphArrayUndirected(n);</span>
+<span class="fc" id="L255">			Weights.Int tData = t.addEdgesWeights(&quot;edgeData&quot;, int.class, Integer.valueOf(-1));</span>
+<span class="fc bfc" id="L256" title="All 2 branches covered.">			for (UGraph G = Graphs.referenceGraph(tOrig, EdgeRefWeightKey); (n = G.vertices().size()) &gt; 1;) {</span>
+<span class="fc" id="L257">				Weights.Int GData = G.edgesWeight(EdgeRefWeightKey);</span>
 
 				// Find minimum edge of each vertex
-<span class="fc" id="L259">				Arrays.fill(minEdges, 0, n, -1);</span>
-<span class="fc" id="L260">				Arrays.fill(minGraphWeights, 0, n, Double.MAX_VALUE);</span>
-<span class="fc bfc" id="L261" title="All 2 branches covered.">				for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc bfc" id="L262" title="All 2 branches covered.">					for (EdgeIter eit = G.edgesOut(u); eit.hasNext();) {</span>
-<span class="fc" id="L263">						int e = eit.nextInt();</span>
-<span class="fc" id="L264">						double eWeight = w.weight(GData.getInt(e));</span>
-<span class="fc bfc" id="L265" title="All 2 branches covered.">						if (eWeight &lt; minGraphWeights[u]) {</span>
-<span class="fc" id="L266">							minEdges[u] = e;</span>
-<span class="fc" id="L267">							minGraphWeights[u] = eWeight;</span>
+<span class="fc" id="L260">				Arrays.fill(minEdges, 0, n, -1);</span>
+<span class="fc" id="L261">				Arrays.fill(minGraphWeights, 0, n, Double.MAX_VALUE);</span>
+<span class="fc bfc" id="L262" title="All 2 branches covered.">				for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc bfc" id="L263" title="All 2 branches covered.">					for (EdgeIter eit = G.edgesOut(u); eit.hasNext();) {</span>
+<span class="fc" id="L264">						int e = eit.nextInt();</span>
+<span class="fc" id="L265">						double eWeight = w.weight(GData.getInt(e));</span>
+<span class="fc bfc" id="L266" title="All 2 branches covered.">						if (eWeight &lt; minGraphWeights[u]) {</span>
+<span class="fc" id="L267">							minEdges[u] = e;</span>
+<span class="fc" id="L268">							minGraphWeights[u] = eWeight;</span>
 						}
-<span class="fc" id="L269">					}</span>
+<span class="fc" id="L270">					}</span>
 				}
 
 				// find connectivity components, and label each vertex with new super vertex
-<span class="fc" id="L273">				final int UNVISITED = -1;</span>
-<span class="fc" id="L274">				final int IN_PATH = -2;</span>
-<span class="fc" id="L275">				Arrays.fill(vNext, 0, n, UNVISITED);</span>
-<span class="fc" id="L276">				int nNext = 0;</span>
-<span class="fc bfc" id="L277" title="All 2 branches covered.">				for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc" id="L278">					int pathLength = 0;</span>
+<span class="fc" id="L274">				final int UNVISITED = -1;</span>
+<span class="fc" id="L275">				final int IN_PATH = -2;</span>
+<span class="fc" id="L276">				Arrays.fill(vNext, 0, n, UNVISITED);</span>
+<span class="fc" id="L277">				int nNext = 0;</span>
+<span class="fc bfc" id="L278" title="All 2 branches covered.">				for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc" id="L279">					int pathLength = 0;</span>
 					// find all reachable vertices from u
-<span class="fc" id="L280">					for (int p = u;;) {</span>
-<span class="fc bfc" id="L281" title="All 2 branches covered.">						if (vNext[p] == UNVISITED) {</span>
+<span class="fc" id="L281">					for (int p = u;;) {</span>
+<span class="fc bfc" id="L282" title="All 2 branches covered.">						if (vNext[p] == UNVISITED) {</span>
 							// another vertex on the path, continue
-<span class="fc" id="L283">							path[pathLength++] = p;</span>
-<span class="fc" id="L284">							vNext[p] = IN_PATH;</span>
+<span class="fc" id="L284">							path[pathLength++] = p;</span>
+<span class="fc" id="L285">							vNext[p] = IN_PATH;</span>
 
-<span class="fc" id="L286">							p = G.edgeEndpoint(minEdges[p], p);</span>
-<span class="fc" id="L287">							continue;</span>
+<span class="fc" id="L287">							p = G.edgeEndpoint(minEdges[p], p);</span>
+<span class="fc" id="L288">							continue;</span>
 						}
 
 						// if found label use it label, else - add new label
-<span class="fc bfc" id="L291" title="All 2 branches covered.">						int V = vNext[p] &gt;= 0 ? vNext[p] : nNext++;</span>
+<span class="fc bfc" id="L292" title="All 2 branches covered.">						int V = vNext[p] &gt;= 0 ? vNext[p] : nNext++;</span>
 						// assign the new label to all trees on path
-<span class="fc bfc" id="L293" title="All 2 branches covered.">						while (pathLength-- &gt; 0)</span>
-<span class="fc" id="L294">							vNext[path[pathLength]] = V;</span>
+<span class="fc bfc" id="L294" title="All 2 branches covered.">						while (pathLength-- &gt; 0)</span>
+<span class="fc" id="L295">							vNext[path[pathLength]] = V;</span>
 						break;
 					}
 				}
 
 				// construct new layer in the output tree graph
-<span class="fc bfc" id="L300" title="All 2 branches covered.">				for (int V = 0; V &lt; nNext; V++)</span>
-<span class="fc" id="L301">					vTvNext[V] = t.addVertex();</span>
-<span class="fc bfc" id="L302" title="All 2 branches covered.">				for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc" id="L303">					int e = t.addEdge(vTv[u], vTvNext[vNext[u]]);</span>
-<span class="fc" id="L304">					tData.set(e, GData.getInt(minEdges[u]));</span>
+<span class="fc bfc" id="L301" title="All 2 branches covered.">				for (int V = 0; V &lt; nNext; V++)</span>
+<span class="fc" id="L302">					vTvNext[V] = t.addVertex();</span>
+<span class="fc bfc" id="L303" title="All 2 branches covered.">				for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc" id="L304">					int e = t.addEdge(vTv[u], vTvNext[vNext[u]]);</span>
+<span class="fc" id="L305">					tData.set(e, GData.getInt(minEdges[u]));</span>
 				}
-<span class="fc" id="L306">				int[] temp = vTv;</span>
-<span class="fc" id="L307">				vTv = vTvNext;</span>
-<span class="fc" id="L308">				vTvNext = temp;</span>
+<span class="fc" id="L307">				int[] temp = vTv;</span>
+<span class="fc" id="L308">				vTv = vTvNext;</span>
+<span class="fc" id="L309">				vTvNext = temp;</span>
 
 				// contract G to new graph with the super vertices
-<span class="fc" id="L311">				UGraph gNext = new GraphArrayUndirected(nNext);</span>
-<span class="fc" id="L312">				Weights.Int gNextData = gNext.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));</span>
-<span class="fc bfc" id="L313" title="All 2 branches covered.">				for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc" id="L314">					int U = vNext[u];</span>
-<span class="fc bfc" id="L315" title="All 2 branches covered.">					for (EdgeIter eit = G.edgesOut(u); eit.hasNext();) {</span>
-<span class="fc" id="L316">						int e = eit.nextInt();</span>
-<span class="fc" id="L317">						int V = vNext[eit.v()];</span>
-<span class="fc bfc" id="L318" title="All 2 branches covered.">						if (U != V) {</span>
-<span class="fc" id="L319">							int E = gNext.addEdge(U, V);</span>
-<span class="fc" id="L320">							gNextData.set(E, GData.getInt(e));</span>
+<span class="fc" id="L312">				UGraph gNext = new GraphArrayUndirected(nNext);</span>
+<span class="fc" id="L313">				Weights.Int gNextData = gNext.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));</span>
+<span class="fc bfc" id="L314" title="All 2 branches covered.">				for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc" id="L315">					int U = vNext[u];</span>
+<span class="fc bfc" id="L316" title="All 2 branches covered.">					for (EdgeIter eit = G.edgesOut(u); eit.hasNext();) {</span>
+<span class="fc" id="L317">						int e = eit.nextInt();</span>
+<span class="fc" id="L318">						int V = vNext[eit.v()];</span>
+<span class="fc bfc" id="L319" title="All 2 branches covered.">						if (U != V) {</span>
+<span class="fc" id="L320">							int E = gNext.addEdge(U, V);</span>
+<span class="fc" id="L321">							gNextData.set(E, GData.getInt(e));</span>
 						}
-<span class="fc" id="L322">					}</span>
+<span class="fc" id="L323">					}</span>
 				}
 
-<span class="fc" id="L325">				G.clear();</span>
-<span class="fc" id="L326">				G = gNext;</span>
-<span class="fc" id="L327">			}</span>
-<span class="fc" id="L328">			return Pair.of(t, Integer.valueOf(vTv[0]));</span>
+<span class="fc" id="L326">				G.clear();</span>
+<span class="fc" id="L327">				G = gNext;</span>
+<span class="fc" id="L328">			}</span>
+<span class="fc" id="L329">			return Pair.of(t, Integer.valueOf(vTv[0]));</span>
 		}
 
 		private static int[] splitQueriesIntoLCAQueries(UGraph t, int root, TPM.Queries queries) {
-<span class="fc" id="L332">			int queriesNum = queries.size();</span>
-<span class="fc" id="L333">			int[] lcaQueries = new int[queriesNum * 4];</span>
+<span class="fc" id="L333">			int queriesNum = queries.size();</span>
+<span class="fc" id="L334">			int[] lcaQueries = new int[queriesNum * 4];</span>
 
-<span class="fc" id="L335">			LCAStatic lcaAlgo = new LCAStaticRMQ();</span>
-<span class="fc" id="L336">			LCAStatic.DataStructure lcaDS = lcaAlgo.preProcessTree(t, root);</span>
-<span class="fc bfc" id="L337" title="All 2 branches covered.">			for (int q = 0; q &lt; queriesNum; q++) {</span>
-<span class="fc" id="L338">				IntIntPair query = queries.getQuery(q);</span>
-<span class="fc" id="L339">				int u = query.firstInt(), v = query.secondInt();</span>
-<span class="fc" id="L340">				int lca = lcaDS.findLowestCommonAncestor(u, v);</span>
-<span class="fc" id="L341">				lcaQueries[q * 4] = u;</span>
-<span class="fc" id="L342">				lcaQueries[q * 4 + 1] = lca;</span>
-<span class="fc" id="L343">				lcaQueries[q * 4 + 2] = v;</span>
-<span class="fc" id="L344">				lcaQueries[q * 4 + 3] = lca;</span>
+<span class="fc" id="L336">			LCAStatic lcaAlgo = new LCAStaticRMQ();</span>
+<span class="fc" id="L337">			LCAStatic.DataStructure lcaDS = lcaAlgo.preProcessTree(t, root);</span>
+<span class="fc bfc" id="L338" title="All 2 branches covered.">			for (int q = 0; q &lt; queriesNum; q++) {</span>
+<span class="fc" id="L339">				IntIntPair query = queries.getQuery(q);</span>
+<span class="fc" id="L340">				int u = query.firstInt(), v = query.secondInt();</span>
+<span class="fc" id="L341">				int lca = lcaDS.findLowestCommonAncestor(u, v);</span>
+<span class="fc" id="L342">				lcaQueries[q * 4] = u;</span>
+<span class="fc" id="L343">				lcaQueries[q * 4 + 1] = lca;</span>
+<span class="fc" id="L344">				lcaQueries[q * 4 + 2] = v;</span>
+<span class="fc" id="L345">				lcaQueries[q * 4 + 3] = lca;</span>
 			}
-<span class="fc" id="L346">			return lcaQueries;</span>
+<span class="fc" id="L347">			return lcaQueries;</span>
 		}
 
 		private static Pair&lt;int[], int[]&gt; getEdgeToParentsAndDepth(UGraph t, int root) {
-<span class="fc" id="L350">			int n = t.vertices().size();</span>
-<span class="fc" id="L351">			int[] edgeToParent = new int[n];</span>
-<span class="fc" id="L352">			Arrays.fill(edgeToParent, -1);</span>
-<span class="fc" id="L353">			int[] depths = new int[n];</span>
+<span class="fc" id="L351">			int n = t.vertices().size();</span>
+<span class="fc" id="L352">			int[] edgeToParent = new int[n];</span>
+<span class="fc" id="L353">			Arrays.fill(edgeToParent, -1);</span>
+<span class="fc" id="L354">			int[] depths = new int[n];</span>
 
-<span class="fc bfc" id="L355" title="All 2 branches covered.">			for (BFSIter it = new BFSIter(t, root); it.hasNext();) {</span>
-<span class="fc" id="L356">				int v = it.nextInt();</span>
-<span class="fc" id="L357">				int e = it.inEdge();</span>
-<span class="fc bfc" id="L358" title="All 2 branches covered.">				if (e != -1) {</span>
-<span class="fc" id="L359">					edgeToParent[v] = e;</span>
-<span class="fc" id="L360">					depths[v] = depths[t.edgeEndpoint(e, v)] + 1;</span>
+<span class="fc bfc" id="L356" title="All 2 branches covered.">			for (BFSIter it = new BFSIter(t, root); it.hasNext();) {</span>
+<span class="fc" id="L357">				int v = it.nextInt();</span>
+<span class="fc" id="L358">				int e = it.inEdge();</span>
+<span class="fc bfc" id="L359" title="All 2 branches covered.">				if (e != -1) {</span>
+<span class="fc" id="L360">					edgeToParent[v] = e;</span>
+<span class="fc" id="L361">					depths[v] = depths[t.edgeEndpoint(e, v)] + 1;</span>
 				}
-<span class="fc" id="L362">			}</span>
+<span class="fc" id="L363">			}</span>
 
-<span class="fc" id="L364">			return Pair.of(edgeToParent, depths);</span>
+<span class="fc" id="L365">			return Pair.of(edgeToParent, depths);</span>
 		}
 
 		private static int[] calcQueriesPerVertex(UGraph g, int[] lcaQueries, int[] depths, int[] edgeToParent) {
-<span class="fc" id="L368">			final int n = g.vertices().size();</span>
+<span class="fc" id="L369">			final int n = g.vertices().size();</span>
 
-<span class="fc" id="L370">			int[] q = new int[n];</span>
-<span class="fc" id="L371">			Arrays.fill(q, 0);</span>
+<span class="fc" id="L371">			int[] q = new int[n];</span>
+<span class="fc" id="L372">			Arrays.fill(q, 0);</span>
 
-<span class="fc" id="L373">			int queriesNum = lcaQueries.length / 2;</span>
-<span class="fc bfc" id="L374" title="All 2 branches covered.">			for (int query = 0; query &lt; queriesNum; query++) {</span>
-<span class="fc" id="L375">				int u = lcaQueries[query * 2];</span>
-<span class="fc" id="L376">				int ancestor = lcaQueries[query * 2 + 1];</span>
-<span class="fc bfc" id="L377" title="All 2 branches covered.">				if (u == ancestor)</span>
-<span class="fc" id="L378">					continue;</span>
-<span class="fc" id="L379">				q[u] |= 1 &lt;&lt; depths[ancestor];</span>
+<span class="fc" id="L374">			int queriesNum = lcaQueries.length / 2;</span>
+<span class="fc bfc" id="L375" title="All 2 branches covered.">			for (int query = 0; query &lt; queriesNum; query++) {</span>
+<span class="fc" id="L376">				int u = lcaQueries[query * 2];</span>
+<span class="fc" id="L377">				int ancestor = lcaQueries[query * 2 + 1];</span>
+<span class="fc bfc" id="L378" title="All 2 branches covered.">				if (u == ancestor)</span>
+<span class="fc" id="L379">					continue;</span>
+<span class="fc" id="L380">				q[u] |= 1 &lt;&lt; depths[ancestor];</span>
 			}
 
 			/* Start traversing the full branching tree from the leaves upwards */
-<span class="fc" id="L383">			int maxDepth = -1;</span>
-<span class="fc bfc" id="L384" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
-<span class="fc bfc" id="L385" title="All 2 branches covered.">				if (depths[u] &gt; maxDepth)</span>
-<span class="fc" id="L386">					maxDepth = depths[u];</span>
-<span class="fc" id="L387">			IntPriorityQueue queue = new IntArrayFIFOQueue();</span>
-<span class="fc" id="L388">			BitSet queued = new BitSet(n);</span>
-<span class="fc bfc" id="L389" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc bfc" id="L390" title="All 2 branches covered.">				if (depths[u] == maxDepth) {</span>
-<span class="fc" id="L391">					queue.enqueue(u);</span>
-<span class="fc" id="L392">					queued.set(u);</span>
+<span class="fc" id="L384">			int maxDepth = -1;</span>
+<span class="fc bfc" id="L385" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
+<span class="fc bfc" id="L386" title="All 2 branches covered.">				if (depths[u] &gt; maxDepth)</span>
+<span class="fc" id="L387">					maxDepth = depths[u];</span>
+<span class="fc" id="L388">			IntPriorityQueue queue = new IntArrayFIFOQueue();</span>
+<span class="fc" id="L389">			BitSet queued = new BitSet(n);</span>
+<span class="fc bfc" id="L390" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc bfc" id="L391" title="All 2 branches covered.">				if (depths[u] == maxDepth) {</span>
+<span class="fc" id="L392">					queue.enqueue(u);</span>
+<span class="fc" id="L393">					queued.set(u);</span>
 				}
 			}
 
-<span class="fc bfc" id="L396" title="All 2 branches covered.">			while (!queue.isEmpty()) {</span>
-<span class="fc" id="L397">				int u = queue.dequeueInt();</span>
+<span class="fc bfc" id="L397" title="All 2 branches covered.">			while (!queue.isEmpty()) {</span>
+<span class="fc" id="L398">				int u = queue.dequeueInt();</span>
 
-<span class="fc" id="L399">				int ep = edgeToParent[u];</span>
-<span class="fc bfc" id="L400" title="All 2 branches covered.">				if (ep == -1)</span>
-<span class="fc" id="L401">					continue;</span>
-<span class="fc" id="L402">				int parent = g.edgeEndpoint(ep, u);</span>
-<span class="fc" id="L403">				q[parent] |= q[u] &amp; ~(1 &lt;&lt; depths[parent]);</span>
+<span class="fc" id="L400">				int ep = edgeToParent[u];</span>
+<span class="fc bfc" id="L401" title="All 2 branches covered.">				if (ep == -1)</span>
+<span class="fc" id="L402">					continue;</span>
+<span class="fc" id="L403">				int parent = g.edgeEndpoint(ep, u);</span>
+<span class="fc" id="L404">				q[parent] |= q[u] &amp; ~(1 &lt;&lt; depths[parent]);</span>
 
-<span class="fc bfc" id="L405" title="All 2 branches covered.">				if (queued.get(parent))</span>
-<span class="fc" id="L406">					continue;</span>
-<span class="fc" id="L407">				queue.enqueue(parent);</span>
-<span class="fc" id="L408">				queued.set(parent);</span>
-<span class="fc" id="L409">			}</span>
+<span class="fc bfc" id="L406" title="All 2 branches covered.">				if (queued.get(parent))</span>
+<span class="fc" id="L407">					continue;</span>
+<span class="fc" id="L408">				queue.enqueue(parent);</span>
+<span class="fc" id="L409">				queued.set(parent);</span>
+<span class="fc" id="L410">			}</span>
 
-<span class="fc" id="L411">			return q;</span>
+<span class="fc" id="L412">			return q;</span>
 		}
 
 	}

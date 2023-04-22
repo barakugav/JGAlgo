@@ -11,7 +11,13 @@
  * @see BFSIter
  * @author Barak Ugav
  */
-<span class="fc" id="L14">public class SSSPCardinality {</span>
+public class SSSPCardinality {
+
+	/**
+	 * Construct a new cardinality SSSP algorithm object.
+	 */
+<span class="fc" id="L19">	public SSSPCardinality() {</span>
+<span class="fc" id="L20">	}</span>
 
 	/**
 	 * Compute the shortest paths from a source to all other vertices with
@@ -24,13 +30,13 @@
 	 * @see SSSP#computeShortestPaths(Graph, EdgeWeightFunc, int)
 	 */
 	public SSSP.Result computeShortestPaths(Graph g, int source) {
-<span class="fc" id="L27">		SSSPResultImpl.Int res = new SSSPResultImpl.Int(g, source);</span>
-<span class="fc bfc" id="L28" title="All 2 branches covered.">		for (BFSIter it = new BFSIter(g, source); it.hasNext();) {</span>
-<span class="fc" id="L29">			int v = it.nextInt();</span>
-<span class="fc" id="L30">			res.distances[v] = it.layer();</span>
-<span class="fc" id="L31">			res.backtrack[v] = it.inEdge();</span>
-<span class="fc" id="L32">		}</span>
-<span class="fc" id="L33">		return res;</span>
+<span class="fc" id="L33">		SSSPResultImpl.Int res = new SSSPResultImpl.Int(g, source);</span>
+<span class="fc bfc" id="L34" title="All 2 branches covered.">		for (BFSIter it = new BFSIter(g, source); it.hasNext();) {</span>
+<span class="fc" id="L35">			int v = it.nextInt();</span>
+<span class="fc" id="L36">			res.distances[v] = it.layer();</span>
+<span class="fc" id="L37">			res.backtrack[v] = it.inEdge();</span>
+<span class="fc" id="L38">		}</span>
+<span class="fc" id="L39">		return res;</span>
 	}
 
 }

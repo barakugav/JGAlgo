@@ -31,7 +31,7 @@ public class UnionFindPtr implements UnionFind {
 
 	/**
 	 * Create a new Union Find data structure with {@code n} elements with ids
-	 * {@code 0,1,2,...,n-1}.
+	 * {@code 0,1,2,...,n-1}, each of them form a set of a single element.
 	 *
 	 * @param n the number of initial elements in the data structure
 	 */

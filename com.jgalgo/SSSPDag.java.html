@@ -11,7 +11,13 @@
  * @see TopologicalOrder
  * @author Barak Ugav
  */
-<span class="fc" id="L14">public class SSSPDag implements SSSP {</span>
+public class SSSPDag implements SSSP {
+
+	/**
+	 * Construct a new SSSP algorithm object.
+	 */
+<span class="fc" id="L19">	public SSSPDag() {</span>
+<span class="fc" id="L20">	}</span>
 
 	/**
 	 * {@inheritDoc}
@@ -20,31 +26,31 @@
 	 */
 	@Override
 	public SSSPDag.Result computeShortestPaths(Graph g, EdgeWeightFunc w, int source) {
-<span class="pc bpc" id="L23" title="1 of 2 branches missed.">		if (!(g instanceof DiGraph))</span>
-<span class="nc" id="L24">			throw new IllegalArgumentException(&quot;Only DAG graphs are supported&quot;);</span>
-<span class="fc" id="L25">		SSSPResultImpl res = new SSSPResultImpl(g, source);</span>
-<span class="fc" id="L26">		res.distances[source] = 0;</span>
+<span class="pc bpc" id="L29" title="1 of 2 branches missed.">		if (!(g instanceof DiGraph))</span>
+<span class="nc" id="L30">			throw new IllegalArgumentException(&quot;Only DAG graphs are supported&quot;);</span>
+<span class="fc" id="L31">		SSSPResultImpl res = new SSSPResultImpl(g, source);</span>
+<span class="fc" id="L32">		res.distances[source] = 0;</span>
 
-<span class="fc" id="L28">		int[] topolSort = TopologicalOrder.computeTopologicalSortingDAG((DiGraph) g);</span>
-<span class="fc" id="L29">		boolean sourceSeen = false;</span>
-<span class="fc bfc" id="L30" title="All 2 branches covered.">		for (int u : topolSort) {</span>
-<span class="fc bfc" id="L31" title="All 2 branches covered.">			if (!sourceSeen) {</span>
-<span class="fc bfc" id="L32" title="All 2 branches covered.">				if (u != source)</span>
-<span class="fc" id="L33">					continue;</span>
-<span class="fc" id="L34">				sourceSeen = true;</span>
+<span class="fc" id="L34">		int[] topolSort = TopologicalOrder.computeTopologicalSortingDAG((DiGraph) g);</span>
+<span class="fc" id="L35">		boolean sourceSeen = false;</span>
+<span class="fc bfc" id="L36" title="All 2 branches covered.">		for (int u : topolSort) {</span>
+<span class="fc bfc" id="L37" title="All 2 branches covered.">			if (!sourceSeen) {</span>
+<span class="fc bfc" id="L38" title="All 2 branches covered.">				if (u != source)</span>
+<span class="fc" id="L39">					continue;</span>
+<span class="fc" id="L40">				sourceSeen = true;</span>
 			}
-<span class="fc bfc" id="L36" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
-<span class="fc" id="L37">				int e = eit.nextInt();</span>
-<span class="fc" id="L38">				int v = eit.v();</span>
-<span class="fc" id="L39">				double d = res.distances[u] + w.weight(e);</span>
-<span class="fc bfc" id="L40" title="All 2 branches covered.">				if (d &lt; res.distances[v]) {</span>
-<span class="fc" id="L41">					res.distances[v] = d;</span>
-<span class="fc" id="L42">					res.backtrack[v] = e;</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
+<span class="fc" id="L43">				int e = eit.nextInt();</span>
+<span class="fc" id="L44">				int v = eit.v();</span>
+<span class="fc" id="L45">				double d = res.distances[u] + w.weight(e);</span>
+<span class="fc bfc" id="L46" title="All 2 branches covered.">				if (d &lt; res.distances[v]) {</span>
+<span class="fc" id="L47">					res.distances[v] = d;</span>
+<span class="fc" id="L48">					res.backtrack[v] = e;</span>
 				}
-<span class="fc" id="L44">			}</span>
+<span class="fc" id="L50">			}</span>
 		}
 
-<span class="fc" id="L47">		return res;</span>
+<span class="fc" id="L53">		return res;</span>
 	}
 
 }

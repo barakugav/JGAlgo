@@ -17,7 +17,6 @@
  * except the source and sink the sum of flow units going along
  * {@link Graph#edgesIn(int)} must be equal to the sum of flow units going along
  * {@link Graph#edgesOut(int)}.
- * &lt;p&gt;
  *
  * &lt;pre&gt; {@code
  * DiGraph g = ...;
@@ -92,34 +91,34 @@ public interface FlowNetwork {
      * @return a flow network implemented as edge weights
      */
     static FlowNetwork createAsEdgeWeight(Graph g) {
-<span class="fc" id="L95">        Weights.Double capacityWeights = g.addEdgesWeights(new Object(), double.class);</span>
-<span class="fc" id="L96">        Weights.Double flowWeights = g.addEdgesWeights(new Object(), double.class);</span>
-<span class="fc" id="L97">        return new FlowNetwork() {</span>
+<span class="fc" id="L94">        Weights.Double capacityWeights = g.addEdgesWeights(new Object(), double.class);</span>
+<span class="fc" id="L95">        Weights.Double flowWeights = g.addEdgesWeights(new Object(), double.class);</span>
+<span class="fc" id="L96">        return new FlowNetwork() {</span>
 
             private static final double EPS = 0.0001;
 
             @Override
             public double getCapacity(int edge) {
-<span class="fc" id="L103">                return capacityWeights.getDouble(edge);</span>
+<span class="fc" id="L102">                return capacityWeights.getDouble(edge);</span>
             }
 
             @Override
             public void setCapacity(int edge, double capacity) {
-<span class="fc" id="L108">                capacityWeights.set(edge, capacity);</span>
-<span class="fc" id="L109">            }</span>
+<span class="fc" id="L107">                capacityWeights.set(edge, capacity);</span>
+<span class="fc" id="L108">            }</span>
 
             @Override
             public double getFlow(int e) {
-<span class="fc" id="L113">                return flowWeights.getDouble(e);</span>
+<span class="fc" id="L112">                return flowWeights.getDouble(e);</span>
             }
 
             @Override
             public void setFlow(int edge, double flow) {
-<span class="fc" id="L118">                double capacity = getCapacity(edge);</span>
-<span class="pc bpc" id="L119" title="1 of 2 branches missed.">                if (flow &gt; capacity + EPS)</span>
-<span class="nc" id="L120">                    throw new IllegalArgumentException(&quot;Illegal flow &quot; + flow + &quot; on edge &quot; + edge);</span>
-<span class="fc" id="L121">                flowWeights.set(edge, Math.min(flow, capacity));</span>
-<span class="fc" id="L122">            }</span>
+<span class="fc" id="L117">                double capacity = getCapacity(edge);</span>
+<span class="pc bpc" id="L118" title="1 of 2 branches missed.">                if (flow &gt; capacity + EPS)</span>
+<span class="nc" id="L119">                    throw new IllegalArgumentException(&quot;Illegal flow &quot; + flow + &quot; on edge &quot; + edge);</span>
+<span class="fc" id="L120">                flowWeights.set(edge, Math.min(flow, capacity));</span>
+<span class="fc" id="L121">            }</span>
         };
     }
 
@@ -148,7 +147,7 @@ public interface FlowNetwork {
         @Deprecated
         @Override
         default double getCapacity(int edge) {
-<span class="fc" id="L151">            return getCapacityInt(edge);</span>
+<span class="fc" id="L150">            return getCapacityInt(edge);</span>
         }
 
         /**
@@ -164,8 +163,8 @@ public interface FlowNetwork {
         @Deprecated
         @Override
         default void setCapacity(int edge, double capacity) {
-<span class="nc" id="L167">            setCapacity(edge, (int) capacity);</span>
-<span class="nc" id="L168">        }</span>
+<span class="nc" id="L166">            setCapacity(edge, (int) capacity);</span>
+<span class="nc" id="L167">        }</span>
 
         /**
          * Get the integer amount of flow units going along an edge.
@@ -180,7 +179,7 @@ public interface FlowNetwork {
         @Deprecated
         @Override
         default double getFlow(int edge) {
-<span class="nc" id="L183">            return getFlowInt(edge);</span>
+<span class="nc" id="L182">            return getFlowInt(edge);</span>
         }
 
         /**
@@ -196,8 +195,8 @@ public interface FlowNetwork {
         @Deprecated
         @Override
         default void setFlow(int edge, double flow) {
-<span class="nc" id="L199">            setFlow(edge, (int) flow);</span>
-<span class="nc" id="L200">        }</span>
+<span class="nc" id="L198">            setFlow(edge, (int) flow);</span>
+<span class="nc" id="L199">        }</span>
 
         /**
          * Create an integer flow network by adding edge weights using
@@ -210,32 +209,32 @@ public interface FlowNetwork {
          * @return a flow network implemented as edge weights
          */
         static FlowNetwork.Int createAsEdgeWeight(Graph g) {
-<span class="fc" id="L213">            Weights.Int capacityWeights = g.addEdgesWeights(new Object(), int.class);</span>
-<span class="fc" id="L214">            Weights.Int flowWeights = g.addEdgesWeights(new Object(), int.class);</span>
-<span class="fc" id="L215">            return new FlowNetwork.Int() {</span>
+<span class="fc" id="L212">            Weights.Int capacityWeights = g.addEdgesWeights(new Object(), int.class);</span>
+<span class="fc" id="L213">            Weights.Int flowWeights = g.addEdgesWeights(new Object(), int.class);</span>
+<span class="fc" id="L214">            return new FlowNetwork.Int() {</span>
 
                 @Override
                 public int getCapacityInt(int edge) {
-<span class="fc" id="L219">                    return capacityWeights.getInt(edge);</span>
+<span class="fc" id="L218">                    return capacityWeights.getInt(edge);</span>
                 }
 
                 @Override
                 public void setCapacity(int edge, int capacity) {
-<span class="fc" id="L224">                    capacityWeights.set(edge, capacity);</span>
-<span class="fc" id="L225">                }</span>
+<span class="fc" id="L223">                    capacityWeights.set(edge, capacity);</span>
+<span class="fc" id="L224">                }</span>
 
                 @Override
                 public int getFlowInt(int e) {
-<span class="fc" id="L229">                    return flowWeights.getInt(e);</span>
+<span class="fc" id="L228">                    return flowWeights.getInt(e);</span>
                 }
 
                 @Override
                 public void setFlow(int edge, int flow) {
-<span class="fc" id="L234">                    int capacity = getCapacityInt(edge);</span>
-<span class="pc bpc" id="L235" title="1 of 2 branches missed.">                    if (flow &gt; capacity)</span>
-<span class="nc" id="L236">                        throw new IllegalArgumentException(&quot;Illegal flow &quot; + flow + &quot; on edge &quot; + edge);</span>
-<span class="fc" id="L237">                    flowWeights.set(edge, Math.min(flow, capacity));</span>
-<span class="fc" id="L238">                }</span>
+<span class="fc" id="L233">                    int capacity = getCapacityInt(edge);</span>
+<span class="pc bpc" id="L234" title="1 of 2 branches missed.">                    if (flow &gt; capacity)</span>
+<span class="nc" id="L235">                        throw new IllegalArgumentException(&quot;Illegal flow &quot; + flow + &quot; on edge &quot; + edge);</span>
+<span class="fc" id="L236">                    flowWeights.set(edge, Math.min(flow, capacity));</span>
+<span class="fc" id="L237">                }</span>
             };
         }
 
