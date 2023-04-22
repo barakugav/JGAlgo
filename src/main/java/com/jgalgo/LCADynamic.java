@@ -8,7 +8,6 @@ package com.jgalgo;
  * from the root (lowest). Algorithm implementing this interface support
  * modifying the tree by adding leafs as children to existing parents nodes,
  * while supporting LCA queries.
- * <p>
  *
  * <pre> {@code
  * LCADynamic lca = ...;
@@ -30,7 +29,6 @@ public interface LCADynamic {
 
 	/**
 	 * Initialize the tree the LCA will operate on and create a root node.
-	 * <p>
 	 *
 	 * @return the new root node
 	 * @throws IllegalStateException if the tree is not empty
@@ -39,7 +37,6 @@ public interface LCADynamic {
 
 	/**
 	 * Add a new leaf node to the tree.
-	 * <p>
 	 *
 	 * @param parent parent of the new node
 	 * @return the new node
@@ -48,7 +45,6 @@ public interface LCADynamic {
 
 	/**
 	 * Find the lowest common ancestor of two nodes in the tree.
-	 * <p>
 	 *
 	 * @param u the first node
 	 * @param v the second node

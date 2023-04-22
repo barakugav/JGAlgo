@@ -7,7 +7,6 @@ package com.jgalgo;
  * support, along with regular operation, value of each elements and addition of
  * some value to all elements of a set using the {@link #addValue(int, double)}
  * method.
- * <p>
  *
  * <pre> {@code
  * UnionFindValue uf = ...;
@@ -37,7 +36,6 @@ public interface UnionFindValue extends UnionFind {
 
 	/**
 	 * Create a new element with a given value.
-	 * <p>
 	 *
 	 * @param value the value of the new element
 	 * @return identifier of the new element in the union find data structure
@@ -56,7 +54,6 @@ public interface UnionFindValue extends UnionFind {
 
 	/**
 	 * Get the value of an element.
-	 * <p>
 	 *
 	 * @param x an element in the data structure
 	 * @return value of the element

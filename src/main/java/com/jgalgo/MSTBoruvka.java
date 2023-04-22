@@ -30,6 +30,12 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 public class MSTBoruvka implements MST {
 
 	/**
+	 * Construct a new MST algorithm object.
+	 */
+	public MSTBoruvka() {
+	}
+
+	/**
 	 * {@inheritDoc}
 	 *
 	 * @throws IllegalArgumentException if the graph is not undirected

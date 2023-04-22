@@ -31,6 +31,12 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  */
 public class MaximumMatchingGabow1976 implements MaximumMatching {
 
+	/**
+	 * Create a new maximum matching object.
+	 */
+	public MaximumMatchingGabow1976() {
+	}
+
 	@Override
 	public IntCollection computeMaximumMatching(UGraph g) {
 		int n = g.vertices().size();

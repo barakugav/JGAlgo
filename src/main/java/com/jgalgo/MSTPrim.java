@@ -32,6 +32,12 @@ public class MSTPrim implements MST {
 	private HeapReferenceable.Builder heapBuilder = HeapPairing::new;
 
 	/**
+	 * Construct a new MST algorithm object.
+	 */
+	public MSTPrim() {
+	}
+
+	/**
 	 * Set the implementation of the heap used by this algorithm.
 	 *
 	 * @param heapBuilder a builder for heaps used by this algorithm

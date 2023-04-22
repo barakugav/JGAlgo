@@ -29,15 +29,33 @@ import it.unimi.dsi.fastutil.ints.IntStack;
  */
 public class MaxFlowDinic implements MaxFlow {
 
-	private Supplier<? extends GraphBuilder> layerGraphFactory = GraphBuilder.Linked::new;
+	private Supplier<? extends GraphBuilder> layerGraphBuilder = GraphBuilder.Linked::new;
 
 	private static final Object EdgeRefWeightKey = new Object();
 	private static final Object EdgeRevWeightKey = new Object();
 	private static final Object FlowWeightKey = new Object();
 	private static final Object CapacityWeightKey = new Object();
 
-	public void experimental_setLayerGraphFactory(Supplier<? extends GraphBuilder> factory) {
-		layerGraphFactory = Objects.requireNonNull(factory);
+	/**
+	 * Create a new maximum flow algorithm object.
+	 */
+	public MaxFlowDinic() {
+	}
+
+	/**
+	 * [experimental API] Set the graph implementation used by this algorithm for
+	 * the layers graph.
+	 * <p>
+	 * Multiple {@code remove} operations are performed on the layers graph,
+	 * therefore its non trivial that an array graph implementation should be used,
+	 * as linked graph implementation perform {@code remove} operations more
+	 * efficiently.
+	 *
+	 * @param builder a builder that provide instances of graphs for the layers
+	 *                graph
+	 */
+	public void experimental_setLayerGraphFactory(Supplier<? extends GraphBuilder> builder) {
+		layerGraphBuilder = Objects.requireNonNull(builder);
 	}
 
 	/**
@@ -82,7 +100,7 @@ public class MaxFlowDinic implements MaxFlow {
 			flow.set(e2, cap);
 		}
 
-		GraphBuilder builder = layerGraphFactory.get();
+		GraphBuilder builder = layerGraphBuilder.get();
 		DiGraph L = builder.setVerticesNum(n).setEdgesIDStrategy(Fixed.class).buildDirected();
 		Weights.Int edgeRefL = L.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
 		IntPriorityQueue bfsQueue = new IntArrayFIFOQueue();

@@ -17,7 +17,6 @@ import it.unimi.dsi.fastutil.ints.IntList;
  * backtracking. The iterator will visit every vertex {@code v} for which there
  * is a path from the source(s) to {@code v}. Each such vertex will be visited
  * exactly once.
- * <p>
  *
  * <pre> {@code
  * Graph g = ...;

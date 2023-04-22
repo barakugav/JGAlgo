@@ -24,6 +24,12 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 public class SSSPBellmanFord implements SSSP {
 
 	/**
+	 * Construct a new SSSP algorithm object.
+	 */
+	public SSSPBellmanFord() {
+	}
+
+	/**
 	 * {@inheritDoc}
 	 *
 	 * @throws IllegalArgumentException if the graph is not directed

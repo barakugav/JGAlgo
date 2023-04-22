@@ -25,6 +25,12 @@ public class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeig
 	private static final Object EdgeRefWeightKey = new Object();
 
 	/**
+	 * Create a new maximum weighted matching object.
+	 */
+	public MaximumMatchingWeightedBipartiteSSSP() {
+	}
+
+	/**
 	 * Set the {@link SSSP} algorithm used by this algorithm.
 	 * <p>
 	 * The shortest path algorithm should support non negative floating points
@@ -162,7 +168,8 @@ public class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeig
 	}
 
 	/**
-	 * @throws UnsupportedOperationException
+	 * @throws UnsupportedOperationException this implementation does not support
+	 *                                       perfect matching computation
 	 */
 	@Deprecated
 	@Override

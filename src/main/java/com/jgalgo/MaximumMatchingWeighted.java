@@ -15,7 +15,6 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * out of all the matching with are maximum cardinality matching. Note that the
  * weight of a perfect maximum matching is smaller or equal to the weight of a
  * maximum weight matching.
- * <p>
  *
  * @see <a href=
  *      "https://en.wikipedia.org/wiki/Maximum_weight_matching">Wikipedia</a>
@@ -25,7 +24,6 @@ public interface MaximumMatchingWeighted extends MaximumMatching {
 
 	/**
 	 * Compute the maximum weighted matching of a weighted undirected graph.
-	 * <p>
 	 *
 	 * @param g an undirected graph
 	 * @param w an edge weight function
@@ -35,7 +33,6 @@ public interface MaximumMatchingWeighted extends MaximumMatching {
 
 	/**
 	 * Compute the maximum perfect matching of a weighted undirected graph.
-	 * <p>
 	 *
 	 * @param g an undirected graph
 	 * @param w an edge weight function

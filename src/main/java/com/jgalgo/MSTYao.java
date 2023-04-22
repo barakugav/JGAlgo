@@ -21,6 +21,12 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 public class MSTYao implements MST {
 
 	/**
+	 * Construct a new MST algorithm object.
+	 */
+	public MSTYao() {
+	}
+
+	/**
 	 * {@inheritDoc}
 	 *
 	 * @throws IllegalArgumentException if the graph is not undirected

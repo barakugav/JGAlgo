@@ -15,6 +15,12 @@ import it.unimi.dsi.fastutil.ints.IntList;
  */
 public class APSPFloydWarshall implements APSP {
 
+	/**
+	 * Create a new APSP algorithm object.
+	 */
+	public APSPFloydWarshall() {
+	}
+
 	@Override
 	public APSP.Result computeAllShortestPaths(Graph g, EdgeWeightFunc w) {
 		return g instanceof DiGraph ? computeAPSPDirected((DiGraph) g, w) : computeAPSPUndirected((UGraph) g, w);

@@ -27,6 +27,12 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  */
 public class ColoringRecursiveLargestFirst implements Coloring {
 
+	/**
+	 * Create a new coloring algorithm object.
+	 */
+	public ColoringRecursiveLargestFirst() {
+	}
+
 	@Override
 	public Result computeColoring(UGraph g) {
 		if (Graphs.containsSelfLoops(g))

@@ -15,6 +15,12 @@ import java.util.Objects;
  */
 public class RMQStaticPowerOf2Table implements RMQStatic {
 
+	/**
+	 * Construct a new static RMQ algorithm object.
+	 */
+	public RMQStaticPowerOf2Table() {
+	}
+
 	@Override
 	public RMQStatic.DataStructure preProcessSequence(RMQStaticComparator c, int n) {
 		if (n <= 0)

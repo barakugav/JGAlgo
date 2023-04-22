@@ -31,6 +31,12 @@ public class MaxFlowEdmondsKarp implements MaxFlow {
 	private static final Object CapacityWeightKey = new Object();
 
 	/**
+	 * Create a new maximum flow algorithm object.
+	 */
+	public MaxFlowEdmondsKarp() {
+	}
+
+	/**
 	 * {@inheritDoc}
 	 *
 	 * @throws IllegalArgumentException if the graph is not directed

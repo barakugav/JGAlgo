@@ -17,6 +17,12 @@ import java.util.Objects;
  */
 public class RMQStaticLookupTable implements RMQStatic {
 
+	/**
+	 * Construct a new static RMQ algorithm object.
+	 */
+	public RMQStaticLookupTable() {
+	}
+
 	@Override
 	public RMQStatic.DataStructure preProcessSequence(RMQStaticComparator c, int n) {
 		if (n <= 0)

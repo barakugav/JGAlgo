@@ -17,7 +17,6 @@ package com.jgalgo;
  * except the source and sink the sum of flow units going along
  * {@link Graph#edgesIn(int)} must be equal to the sum of flow units going along
  * {@link Graph#edgesOut(int)}.
- * <p>
  *
  * <pre> {@code
  * DiGraph g = ...;

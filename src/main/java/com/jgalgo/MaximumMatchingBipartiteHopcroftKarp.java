@@ -30,6 +30,12 @@ public class MaximumMatchingBipartiteHopcroftKarp implements MaximumMatching {
 	private static final Object EdgeRefWeightKey = new Object();
 
 	/**
+	 * Create a new maximum matching object.
+	 */
+	public MaximumMatchingBipartiteHopcroftKarp() {
+	}
+
+	/**
 	 * Set the key used to get the bipartiteness property of vertices.
 	 * <p>
 	 * The algorithm run on bipartite graphs and expect the user to provide the

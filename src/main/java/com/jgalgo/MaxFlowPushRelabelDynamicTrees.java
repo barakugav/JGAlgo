@@ -41,6 +41,12 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 	private static final Object EdgeRefWeightKey = new Object();
 
 	/**
+	 * Create a new maximum flow algorithm object.
+	 */
+	public MaxFlowPushRelabelDynamicTrees() {
+	}
+
+	/**
 	 * {@inheritDoc}
 	 *
 	 * @throws IllegalArgumentException if the graph is not directed

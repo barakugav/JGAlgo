@@ -42,6 +42,12 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 	private static final double EPS = 0.00001;
 
 	/**
+	 * Create a new maximum weighted matching object.
+	 */
+	public MaximumMatchingWeightedGabow1990() {
+	}
+
+	/**
 	 * Set the implementation of the heap used by this algorithm.
 	 *
 	 * @param heapBuilder a builder for heaps used by this algorithm

@@ -26,6 +26,12 @@ public class APSPJohnson implements APSP {
 	private SSSP positiveSssp = new SSSPDijkstra();
 
 	/**
+	 * Create a new APSP algorithm object.
+	 */
+	public APSPJohnson() {
+	}
+
+	/**
 	 * {@inheritDoc}
 	 *
 	 * @throws IllegalArgumentException if the graph is not directed

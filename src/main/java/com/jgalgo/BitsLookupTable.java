@@ -31,7 +31,6 @@ public class BitsLookupTable {
 	 * Lookup table that implement bitCount operation in {@code O(1)} time for any
 	 * wordsize (maximum number of bits needed to represent an integer) using space
 	 * {@code O(2^wordsize)} which is usually linear in the input size.
-	 * <p>
 	 *
 	 * <pre> {@code
 	 * final int n = ...;

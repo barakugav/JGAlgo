@@ -29,6 +29,12 @@ public class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumM
 	private HeapReferenceable.Builder heapBuilder = HeapPairing::new;
 
 	/**
+	 * Create a new maximum weighted matching object.
+	 */
+	public MaximumMatchingWeightedBipartiteHungarianMethod() {
+	}
+
+	/**
 	 * Set the key used to get the bipartiteness property of vertices.
 	 * <p>
 	 * The algorithm run on bipartite graphs and expect the user to provide the

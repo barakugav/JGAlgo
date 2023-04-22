@@ -30,6 +30,12 @@ public class ColoringDSaturHeap implements Coloring {
 	private HeapReferenceable.Builder heapBuilder = HeapPairing::new;
 
 	/**
+	 * Create a new coloring algorithm object.
+	 */
+	public ColoringDSaturHeap() {
+	}
+
+	/**
 	 * Set the implementation of the heap used by this algorithm.
 	 *
 	 * @param heapBuilder a builder for heaps used by this algorithm

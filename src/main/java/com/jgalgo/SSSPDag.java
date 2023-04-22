@@ -14,6 +14,12 @@ package com.jgalgo;
 public class SSSPDag implements SSSP {
 
 	/**
+	 * Construct a new SSSP algorithm object.
+	 */
+	public SSSPDag() {
+	}
+
+	/**
 	 * {@inheritDoc}
 	 *
 	 * @throws IllegalArgumentException if graph is not directed or contains cycles

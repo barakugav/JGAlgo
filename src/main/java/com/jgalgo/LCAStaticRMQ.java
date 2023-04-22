@@ -23,6 +23,9 @@ public class LCAStaticRMQ implements LCAStatic {
 
 	private final RMQStatic rmq;
 
+	/**
+	 * Create a new static LCA algorithm object.
+	 */
 	public LCAStaticRMQ() {
 		rmq = new RMQStaticPlusMinusOne();
 	}

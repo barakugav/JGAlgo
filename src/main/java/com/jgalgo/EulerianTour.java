@@ -18,7 +18,6 @@ import it.unimi.dsi.fastutil.ints.IntStack;
  * exactly one vertex {@code s} has one more out-edge than in-edges, and one
  * vertex {@code t} has one more in-edge than out-edges, an Eulerian tour that
  * start at {@code s} and ends at {@code t} exists.
- * <p>
  *
  * @see <a href="https://en.wikipedia.org/wiki/Eulerian_path">Wikipedia</a>
  * @see TSPMetricMSTAppx

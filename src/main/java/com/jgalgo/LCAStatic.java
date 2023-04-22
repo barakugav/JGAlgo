@@ -11,7 +11,6 @@ package com.jgalgo;
  * <p>
  * Most implementation of this interface achieve linear or near linear
  * preprocessing time and constant or logarithmic query time.
- * <p>
  *
  * <pre> {@code
  * Graph tree = new GraphArrayUndirected();
@@ -46,6 +45,8 @@ public interface LCAStatic {
 	 *
 	 * @param tree a tree
 	 * @param root root of the tree
+	 * @return a data structure built from the preprocessing, that can answer LCA
+	 *         queries efficiently
 	 */
 	public LCAStatic.DataStructure preProcessTree(Graph tree, int root);
 

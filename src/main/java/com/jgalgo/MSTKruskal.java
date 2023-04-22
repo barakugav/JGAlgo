@@ -34,6 +34,19 @@ public class MSTKruskal implements MST {
 
 	private IntFunction<? extends UnionFind> unionFindBuilder = UnionFindArray::new;
 
+	/**
+	 * Construct a new MST algorithm object.
+	 */
+	public MSTKruskal() {
+	}
+
+	/**
+	 * [experimental API] Set the implementation of {@link UnionFind} used by this
+	 * algorithm.
+	 *
+	 * @param builder a builder function that accept a number of elements {@code n}
+	 *                and create a {@link UnionFind} with IDs {@code 0,1,2,...,n-1}.
+	 */
 	public void experimental_setUnionFindBuilder(IntFunction<? extends UnionFind> builder) {
 		unionFindBuilder = Objects.requireNonNull(builder);
 	}

@@ -14,6 +14,12 @@ package com.jgalgo;
 public class SSSPCardinality {
 
 	/**
+	 * Construct a new cardinality SSSP algorithm object.
+	 */
+	public SSSPCardinality() {
+	}
+
+	/**
 	 * Compute the shortest paths from a source to all other vertices with
 	 * cardinality weight function.
 	 *

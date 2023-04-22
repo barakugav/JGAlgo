@@ -19,6 +19,12 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  */
 public class ColoringGreedy implements Coloring {
 
+	/**
+	 * Create a new coloring algorithm object.
+	 */
+	public ColoringGreedy() {
+	}
+
 	@Override
 	public Coloring.Result computeColoring(UGraph g) {
 		if (Graphs.containsSelfLoops(g))

@@ -14,11 +14,11 @@ import java.util.Arrays;
  * first choice for {@link SSSP} with positive weights. For negative weights use
  * {@link SSSPBellmanFord} for floating points or {@link SSSPGoldberg} for
  * integers.
- *
  * <p>
  * Based on 'A note on two problems in connexion with graphs' by E. W. Dijkstra
  * (1959). A 'note'??!! this guy changed the world, and he publish it as a
  * 'note'.
+ *
  * @see <a href=
  *      "https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm">Wikipedia</a>
  * @author Barak Ugav
@@ -29,6 +29,9 @@ public class SSSPDijkstra implements SSSP {
 	private HeapReferenceable<HeapElm> heap;
 	private HeapReference<HeapElm>[] verticesPtrs;
 
+	/**
+	 * Construct a new SSSP algorithm object.
+	 */
 	public SSSPDijkstra() {
 		allocSize = 0;
 		heap = new HeapPairing<>();

@@ -30,6 +30,12 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
  */
 public class RMQStaticPlusMinusOne extends RMQStaticLinearAbstract {
 
+	/**
+	 * Construct a new static RMQ algorithm object.
+	 */
+	public RMQStaticPlusMinusOne() {
+	}
+
 	@Override
 	public RMQStatic.DataStructure preProcessSequence(RMQStaticComparator c, int n) {
 		if (n <= 0)

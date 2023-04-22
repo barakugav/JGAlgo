@@ -20,10 +20,11 @@ import it.unimi.dsi.fastutil.ints.IntStack;
  */
 public class CyclesFinderTarjan implements CyclesFinder {
 
-	/*
-	 * Find all cycles in a directed graph in O((n+m)(c+1)) where c is the number of
-	 * simple cycles in the graph
+	/**
+	 * Create a new cycles finder algorithm object.
 	 */
+	public CyclesFinderTarjan() {
+	}
 
 	@Override
 	public List<Path> findAllCycles(Graph g) {

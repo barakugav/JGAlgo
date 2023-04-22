@@ -10,7 +10,6 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
  * minimizing/maximizing some objective function based on the weights of the
  * edges. This interface is the API by which the user specify the weights of the
  * edges.
- * <p>
  *
  * <pre> {@code
  * // Create a directed graph with three vertices and edges between them
@@ -74,7 +73,6 @@ public interface EdgeWeightFunc extends IntComparator {
 	 * Some algorithms implementations support only integers weights, or run faster
 	 * in such a case. This interface is the API for these algorithms for the edges
 	 * integer weights.
-	 * <p>
 	 *
 	 * <pre> {@code
 	 * // Create a directed graph with three vertices and edges between them

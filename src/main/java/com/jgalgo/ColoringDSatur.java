@@ -29,6 +29,12 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  */
 public class ColoringDSatur implements Coloring {
 
+	/**
+	 * Create a new coloring algorithm object.
+	 */
+	public ColoringDSatur() {
+	}
+
 	@Override
 	public Coloring.Result computeColoring(UGraph g) {
 		if (Graphs.containsSelfLoops(g))

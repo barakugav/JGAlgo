@@ -24,10 +24,18 @@ public class ColoringGreedyRandom implements Coloring {
 
 	private final Random rand;
 
+	/**
+	 * Create a new coloring algorithm object with random seed.
+	 */
 	public ColoringGreedyRandom() {
 		rand = new Random();
 	}
 
+	/**
+	 * Create a new coloring algorithm object with the provided seed.
+	 *
+	 * @param seed the seed to use for all random operations
+	 */
 	public ColoringGreedyRandom(long seed) {
 		rand = new Random(seed);
 	}

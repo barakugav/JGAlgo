@@ -26,6 +26,12 @@ public class MDSTTarjan implements MDST {
 	private static final Object EdgeRefWeightKey = new Object();
 
 	/**
+	 * Construct a new MDST algorithm object.
+	 */
+	public MDSTTarjan() {
+	}
+
+	/**
 	 * Set the implementation of the heap used by this algorithm.
 	 *
 	 * @param heapBuilder a builder for heaps used by this algorithm

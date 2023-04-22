@@ -33,6 +33,12 @@ import it.unimi.dsi.fastutil.ints.IntIterators;
 public class MaxFlowPushRelabelToFront implements MaxFlow {
 
 	/**
+	 * Create a new maximum flow algorithm object.
+	 */
+	public MaxFlowPushRelabelToFront() {
+	}
+
+	/**
 	 * {@inheritDoc}
 	 *
 	 * @throws IllegalArgumentException if the graph is not directed

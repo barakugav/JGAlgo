@@ -13,7 +13,6 @@ package com.jgalgo;
  * (return the same representative for any element in the set).</li>
  * <li>{@link #union(int, int)} - union the sets of two elements.</li>
  * </ul>
- * <p>
  *
  * <pre> {@code
  * UnionFind uf = ...;
@@ -65,7 +64,6 @@ public interface UnionFind {
 
 	/**
 	 * Get the number of elements in all the sets in the union find data structure.
-	 * <p>
 	 *
 	 * @return number of elements in the data structure
 	 */

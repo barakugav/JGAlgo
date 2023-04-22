@@ -118,7 +118,8 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 	}
 
 	/**
-	 * @throws UnsupportedOperationException
+	 * @throws UnsupportedOperationException the current implementation doesn't
+	 *                                       support this operation
 	 */
 	@Override
 	public BST<E> splitSmaller(E e) {
@@ -126,7 +127,8 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 	}
 
 	/**
-	 * @throws UnsupportedOperationException
+	 * @throws UnsupportedOperationException the current implementation doesn't
+	 *                                       support this operation
 	 */
 	@Override
 	public BST<E> splitGreater(E e) {
@@ -134,7 +136,8 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 	}
 
 	/**
-	 * @throws UnsupportedOperationException
+	 * @throws UnsupportedOperationException the current implementation doesn't
+	 *                                       support this operation
 	 */
 	@Override
 	public RedBlackTree<E> split(HeapReference<E> ref) {
@@ -478,9 +481,15 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 		return BSTUtils.getSuccessor((Node<E>) ref);
 	}
 
-	// TODO consider remove this from public API
+	/**
+	 * [experimental API] Get an iterator that iterate over all the nodes in a
+	 * node's sub tree.
+	 *
+	 * @param ref a reference to a node in the tree
+	 * @return an iterator that iterate over all the nodes in the node's sub tree
+	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public Iterator<HeapReference<E>> subTreeIterator(HeapReference<E> ref) {
+	public Iterator<HeapReference<E>> experimental_subTreeIterator(HeapReference<E> ref) {
 		return (Iterator) (new BSTUtils.BSTIterator<>((Node<E>) ref));
 	}
 

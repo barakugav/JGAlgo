@@ -27,14 +27,15 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  */
 public class MaxFlowDinicDynamicTrees implements MaxFlow {
 
-	private final DebugPrintsManager debug;
+	private final DebugPrintsManager debug = new DebugPrintsManager(false);
 	private static final double EPS = 0.0001;
-
-	public MaxFlowDinicDynamicTrees() {
-		debug = new DebugPrintsManager(false);
-	}
-
 	private static final Object EdgeRefWeightKey = new Object();
+
+	/**
+	 * Create a new maximum flow algorithm object.
+	 */
+	public MaxFlowDinicDynamicTrees() {
+	}
 
 	/**
 	 * {@inheritDoc}

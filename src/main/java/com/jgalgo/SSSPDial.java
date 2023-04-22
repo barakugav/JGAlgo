@@ -26,6 +26,9 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  */
 public class SSSPDial implements SSSP {
 
+	/**
+	 * Construct a new SSSP algorithm object.
+	 */
 	public SSSPDial() {
 		allocSizeN = allocSizeM = 0;
 		heap = new DialHeap();

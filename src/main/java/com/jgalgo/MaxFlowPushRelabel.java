@@ -37,6 +37,12 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 public class MaxFlowPushRelabel implements MaxFlow {
 
 	/**
+	 * Create a new maximum flow algorithm object.
+	 */
+	public MaxFlowPushRelabel() {
+	}
+
+	/**
 	 * {@inheritDoc}
 	 *
 	 * @throws IllegalArgumentException if the graph is not directed

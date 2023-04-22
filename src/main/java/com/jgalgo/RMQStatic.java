@@ -25,6 +25,8 @@ public interface RMQStatic {
 	 *                   Comparator
 	 *                   definition below
 	 * @param n          the number of elements in the sequence
+	 * @return a data structure built from the preprocessing, that can answer RMQ
+	 *         queries efficiently
 	 */
 	public RMQStatic.DataStructure preProcessSequence(RMQStaticComparator comparator, int n);
 

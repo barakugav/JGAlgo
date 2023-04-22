@@ -15,7 +15,6 @@ package com.jgalgo;
  * smaller than the given element and a set with elements greater or equals the
  * given element.</li>
  * </ul>
- * <p>
  *
  * <pre> {@code
  * SplitFind sf = ...;

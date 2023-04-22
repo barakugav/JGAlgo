@@ -36,6 +36,9 @@ public class SSSPGoldberg implements SSSP {
 	private static final Object EdgeRefWeightKey = new Object();
 	private SSSP positiveSsspAlgo = new SSSPDijkstra();
 
+	/**
+	 * Construct a new SSSP algorithm object.
+	 */
 	public SSSPGoldberg() {
 	}
 

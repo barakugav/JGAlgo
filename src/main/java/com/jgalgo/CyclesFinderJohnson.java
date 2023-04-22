@@ -24,6 +24,12 @@ import it.unimi.dsi.fastutil.ints.IntStack;
  */
 public class CyclesFinderJohnson implements CyclesFinder {
 
+	/**
+	 * Create a new cycles finder algorithm object.
+	 */
+	public CyclesFinderJohnson() {
+	}
+
 	@Override
 	public List<Path> findAllCycles(Graph g) {
 		if (!(g instanceof DiGraph))

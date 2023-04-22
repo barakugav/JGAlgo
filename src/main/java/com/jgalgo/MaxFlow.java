@@ -10,7 +10,6 @@ package com.jgalgo;
  * of flow units originated at the source and reach the sink, which is
  * equivalent to the sum of flows going out(in) of the source(sink) subtracted
  * by the sum of flows going in(out) to the source(sink).
- * <p>
  *
  * <pre> {@code
  * DiGraph g = ...;
