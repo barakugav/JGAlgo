@@ -19,7 +19,7 @@ jgalgo,com.jgalgo,DataContainer.Long.new AbstractLongCollection() {...},9,6,0,0,
 jgalgo,com.jgalgo,ColoringDSatur,5,171,1,21,1,40,1,12,0,2
 jgalgo,com.jgalgo,SSSPCardinality,0,36,0,2,0,9,0,3,0,2
 jgalgo,com.jgalgo,SSSPGoldberg.Result,23,76,5,7,4,15,5,9,1,7
-jgalgo,com.jgalgo,MaximumMatchingWeightedBipartiteSSSP,19,417,2,34,6,81,5,23,3,7
+jgalgo,com.jgalgo,MaximumMatchingWeightedBipartiteSSSP,24,421,3,35,7,82,6,23,3,7
 jgalgo,com.jgalgo,DebugPrintsManager,228,33,45,5,71,16,46,7,21,7
 jgalgo,com.jgalgo,MaximumMatchingWeightedBipartiteHungarianMethod,10,53,0,0,4,10,2,3,2,3
 jgalgo,com.jgalgo,SplayTree.SplayImpl,4,117,1,21,0,37,1,15,0,5
@@ -49,6 +49,7 @@ jgalgo,com.jgalgo,RedBlackTreeExtension.Int,0,23,0,0,0,6,0,4,0,4
 jgalgo,com.jgalgo,Utils.new Iterable() {...},9,0,0,0,2,0,2,0,2,0
 jgalgo,com.jgalgo,Utils.new IntIterator() {...},4,37,1,3,1,7,1,4,0,3
 jgalgo,com.jgalgo,DataContainer.Int.1.new IntIterator() {...},40,0,4,0,6,0,5,0,3,0
+jgalgo,com.jgalgo,Bipartite,2,28,1,3,1,6,1,2,0,1
 jgalgo,com.jgalgo,GraphArrayDirected.EdgeInIt,0,21,0,0,0,6,0,3,0,3
 jgalgo,com.jgalgo,SSSPDial.DialHeap.Node,0,9,0,0,0,4,0,1,0,1
 jgalgo,com.jgalgo,BSTUtils,86,608,25,119,23,185,21,71,0,18
@@ -101,7 +102,7 @@ jgalgo,com.jgalgo,Weights.Short,4,15,0,0,1,4,1,3,1,3
 jgalgo,com.jgalgo,CyclesFinderTarjan,4,32,1,3,1,9,1,3,0,2
 jgalgo,com.jgalgo,GraphBuilder.Linked,9,12,0,0,1,3,1,2,1,2
 jgalgo,com.jgalgo,IDStrategy.FixedAbstract,30,149,6,6,3,37,7,9,1,9
-jgalgo,com.jgalgo,MaximumMatchingBipartiteHopcroftKarp,5,338,1,43,3,86,2,24,1,3
+jgalgo,com.jgalgo,MaximumMatchingBipartiteHopcroftKarp,10,342,2,44,4,87,3,24,1,3
 jgalgo,com.jgalgo,DataContainer.Char.1.new CharIterator() {...},40,0,4,0,6,0,5,0,3,0
 jgalgo,com.jgalgo,WeightsImpl.Direct,0,4,0,0,0,2,0,1,0,1
 jgalgo,com.jgalgo,DataContainer.Bool,92,96,14,2,18,26,12,9,4,9
@@ -114,7 +115,7 @@ jgalgo,com.jgalgo,IDStrategy.Continues.1.new IntIterator() {...},4,30,1,3,1,5,1,
 jgalgo,com.jgalgo,DynamicTreeSplaySized.SplayImplWithSize,4,61,1,7,0,11,1,6,0,3
 jgalgo,com.jgalgo,ColoringGreedy,5,76,1,9,1,21,1,6,0,2
 jgalgo,com.jgalgo,TPMHagerup,14,29,2,2,4,7,3,3,1,3
-jgalgo,com.jgalgo,MaximumMatchingWeightedBipartiteHungarianMethod.Worker,6,491,3,55,2,92,3,33,0,7
+jgalgo,com.jgalgo,MaximumMatchingWeightedBipartiteHungarianMethod.Worker,11,495,4,56,3,93,4,33,0,7
 jgalgo,com.jgalgo,RMQStaticLinearAbstract.DS,7,301,3,29,1,40,3,18,0,5
 jgalgo,com.jgalgo,HeapBinomial.Node,7,46,0,0,2,19,2,9,2,9
 jgalgo,com.jgalgo,GraphLinkedUndirected.Node,20,106,5,25,0,19,5,17,0,7
