@@ -55,9 +55,7 @@ class MaxFlowPushRelabelAbstract {
 			for (IntIterator it = gOrig.edges().iterator(); it.hasNext();) {
 				int e = it.nextInt();
 				int u = gOrig.edgeSource(e), v = gOrig.edgeTarget(e);
-				if (u == v)
-					continue;
-				if (u == sink || v == source)
+				if (u == v || u == sink || v == source)
 					continue;
 				int e1 = g.addEdge(u, v);
 				int e2 = g.addEdge(v, u);

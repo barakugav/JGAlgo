@@ -1,7 +1,6 @@
 package com.jgalgo;
 
 import java.util.function.Consumer;
-import java.util.function.ObjDoubleConsumer;
 
 import com.jgalgo.DynamicTree.MinEdge;
 import com.jgalgo.Utils.IterPickable;
@@ -39,6 +38,9 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 
 	private static final Object EdgeRefWeightKey = new Object();
+	private static final Object EdgeRevWeightKey = new Object();
+	private static final Object FlowWeightKey = new Object();
+	private static final Object CapacityWeightKey = new Object();
 
 	/**
 	 * Create a new maximum flow algorithm object.
@@ -62,36 +64,85 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 		}
 	}
 
-	private static class WorkerDouble {
+	private static class AbstractWorker {
 
-		final DiGraph gOring;
-		final FlowNetwork net;
+		final DiGraph gOrig;
 		final int source;
 		final int sink;
 
-		private static final double EPS = 0.0001;
-		private final DebugPrintsManager debug = new DebugPrintsManager(false);
-
-		WorkerDouble(DiGraph gOring, FlowNetwork net, int source, int sink) {
-			this.gOring = gOring;
-			this.net = net;
+		AbstractWorker(DiGraph gOrig, int source, int sink) {
+			if (source == sink)
+				throw new IllegalArgumentException("Source and sink can't be the same vertex");
+			this.gOrig = gOrig;
 			this.source = source;
 			this.sink = sink;
 		}
 
+	}
+
+	private static class WorkerDouble extends AbstractWorker {
+
+		final FlowNetwork net;
+
+		private static final double EPS = 0.0001;
+		private final DebugPrintsManager debug = new DebugPrintsManager(false);
+
+		WorkerDouble(DiGraph gOrig, FlowNetwork net, int source, int sink) {
+			super(gOrig, source, sink);
+			this.net = net;
+		}
+
+		DiGraph g;
+		Weights.Int edgeRef;
+		Weights.Int twin;
+		Weights.Double capacity;
+		Weights.Double flow;
+
+		private void pushFlow(int e, double f) {
+			int t = twin.getInt(e);
+			flow.set(e, flow.getDouble(e) + f);
+			flow.set(t, flow.getDouble(t) - f);
+			assert flow.getDouble(e) <= capacity.getDouble(e) + EPS;
+			assert flow.getDouble(t) <= capacity.getDouble(t) + EPS;
+		}
+
+		private void updateFlow(int e, double weight) {
+			pushFlow(e, capacity.getDouble(e) - flow.getDouble(e) - weight);
+		}
+
 		double computeMaxFlow() {
-			if (source == sink)
-				throw new IllegalArgumentException("Source and sink can't be the same vertex");
 			debug.println("\t", getClass().getSimpleName());
 
 			double maxCapacity = 100;
-			for (IntIterator it = gOring.edges().iterator(); it.hasNext();) {
+			for (IntIterator it = gOrig.edges().iterator(); it.hasNext();) {
 				int e = it.nextInt();
 				maxCapacity = Math.max(maxCapacity, net.getCapacity(e));
 			}
 
-			DiGraph g = referenceGraph(gOring, net);
-			Weights<Ref> edgeRef = g.edgesWeight(EdgeRefWeightKey);
+			g = new GraphArrayDirected(gOrig.vertices().size());
+			edgeRef = g.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
+			twin = g.addEdgesWeights(EdgeRevWeightKey, int.class, Integer.valueOf(-1));
+			for (IntIterator it = gOrig.edges().iterator(); it.hasNext();) {
+				int e = it.nextInt();
+				int u = gOrig.edgeSource(e), v = gOrig.edgeTarget(e);
+				if (u == v || u == sink || v == source)
+					continue;
+
+				int e1 = g.addEdge(u, v);
+				int e2 = g.addEdge(v, u);
+				edgeRef.set(e1, e);
+				edgeRef.set(e2, e);
+				twin.set(e1, e2);
+				twin.set(e2, e1);
+			}
+
+			flow = g.addEdgesWeights(FlowWeightKey, double.class);
+			capacity = g.addEdgesWeights(CapacityWeightKey, double.class);
+			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+				int e = it.nextInt();
+				flow.set(e, 0);
+				capacity.set(e, isOriginalEdge(e) ? net.getCapacity(edgeRef.getInt(e)) : 0);
+			}
 			int n = g.vertices().size();
 
 			final int maxTreeSize = Math.max(1, n * n / g.edges().size());
@@ -112,23 +163,13 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 			SSSP.Result initD = new SSSPCardinality().computeShortestPaths(g, sink);
 			for (int u = 0; u < n; u++)
 				if (u != source && u != sink)
-					vertexData[u].d = (int) initD.distance(sink);
+					vertexData[u].d = (int) initD.distance(u);
 			vertexData[source].d = n;
 			vertexData[sink].d = 0;
 
 			/* Init all vertices iterators */
 			for (int u = 0; u < n; u++)
 				vertexData[u].edges = new IterPickable.Int(g.edgesOut(u));
-
-			ObjDoubleConsumer<Ref> pushFlow = (e, f) -> {
-				e.flow += f;
-				e.rev.flow -= f;
-				assert e.flow <= e.cap + EPS;
-				assert e.rev.flow <= e.rev.cap + EPS;
-			};
-			ObjDoubleConsumer<Ref> updateFlow = (e, weight) -> {
-				pushFlow.accept(e, e.cap - e.flow - weight);
-			};
 
 			Consumer<Vertex> cut = U -> {
 				/* Remove vertex from parent children list */
@@ -145,18 +186,15 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 			for (EdgeIter eit = g.edgesOut(source); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = eit.v();
-				Ref data = edgeRef.get(e);
-				double f = data.cap - data.flow;
+				// Ref data = edgeRef.get(e);
+				double f = capacity.getDouble(e) - flow.getDouble(e);
 				if (f == 0)
 					continue;
 				assert f > 0;
 
 				int u = eit.u();
 
-				data.flow += f;
-				data.rev.flow -= f;
-				assert data.flow <= data.cap + EPS;
-				assert data.rev.flow <= data.rev.cap + EPS;
+				pushFlow(e, f);
 
 				Vertex U = vertexData[u], V = vertexData[v];
 				U.excess -= f;
@@ -177,9 +215,9 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 
 				while (U.excess > EPS && it.hasNext()) {
 					int e = it.pickNext();
-					Ref data = edgeRef.get(e);
+					// Ref data = edgeRef.get(e);
 					Vertex V = vertexData[g.edgeTarget(e)];
-					double eAccess = data.cap - data.flow;
+					double eAccess = capacity.getDouble(e) - flow.getDouble(e);
 
 					if (!(eAccess > EPS && U.d == V.d + 1)) {
 						/* edge is not admissible, just advance */
@@ -203,7 +241,7 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 					} else {
 						/* Avoid big trees, no link, push manually and continue pushing in v's tree */
 						double f = Math.min(U.excess, eAccess);
-						pushFlow.accept(data, f);
+						pushFlow(e, f);
 						U.excess -= f;
 						V.excess += f;
 						if (V.v == source || V.v == sink)
@@ -235,8 +273,8 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 							minEdge = dt.findMinEdge(W.dtNode);
 							if (minEdge.weight() > EPS)
 								break;
-							Ref edgeData = edgeRef.get(minEdge.u().<Vertex>getNodeData().edgeToParent);
-							updateFlow.accept(edgeData, minEdge.weight());
+							int minEdgeId = minEdge.u().<Vertex>getNodeData().edgeToParent;
+							updateFlow(minEdgeId, minEdge.weight());
 							cut.accept(minEdge.u().getNodeData());
 						}
 					}
@@ -263,8 +301,8 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 
 							/* update flow */
 							MinEdge m = dt.findMinEdge(childData.dtNode);
-							Ref edgeData = edgeRef.get(m.u().<Vertex>getNodeData().edgeToParent);
-							updateFlow.accept(edgeData, m.weight());
+							int e = m.u().<Vertex>getNodeData().edgeToParent;
+							updateFlow(e, m.weight());
 
 							/* cut child */
 							toCut.enqueue(child);
@@ -289,8 +327,8 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 					DynamicTree.Node uDt = cleanupStack.pop();
 					assert uDt.getParent().getParent() == null;
 					MinEdge m = dt.findMinEdge(uDt);
-					Ref edgeData = edgeRef.get(m.u().<Vertex>getNodeData().edgeToParent);
-					updateFlow.accept(edgeData, m.weight());
+					int e = m.u().<Vertex>getNodeData().edgeToParent;
+					updateFlow(e, m.weight());
 					dt.cut(m.u());
 				}
 			}
@@ -298,39 +336,25 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 			/* Construct result */
 			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 				int e = it.nextInt();
-				Ref data = edgeRef.get(e);
-				if (g.edgeSource(e) == gOring.edgeSource(data.orig))
-					net.setFlow(data.orig, data.flow);
+				if (isOriginalEdge(e))
+					net.setFlow(edgeRef.getInt(e), flow.getDouble(e));
 			}
 			double totalFlow = 0;
 			for (EdgeIter eit = g.edgesOut(source); eit.hasNext();) {
 				int e = eit.nextInt();
-				Ref data = edgeRef.get(e);
-				if (g.edgeSource(e) == gOring.edgeSource(data.orig))
-					totalFlow += data.flow;
+				if (isOriginalEdge(e))
+					totalFlow += flow.getDouble(e);
 			}
 			for (EdgeIter eit = g.edgesIn(source); eit.hasNext();) {
 				int e = eit.nextInt();
-				Ref data = edgeRef.get(e);
-				if (g.edgeSource(e) == gOring.edgeSource(data.orig))
-					totalFlow -= data.flow;
+				if (isOriginalEdge(e))
+					totalFlow -= flow.getDouble(e);
 			}
 			return totalFlow;
 		}
 
-		private static DiGraph referenceGraph(DiGraph g0, FlowNetwork net) {
-			DiGraph g = new GraphArrayDirected(g0.vertices().size());
-			Weights<Ref> edgeRef = g.addEdgesWeights(EdgeRefWeightKey, Ref.class);
-			for (IntIterator it = g0.edges().iterator(); it.hasNext();) {
-				int e = it.nextInt();
-				int u = g0.edgeSource(e), v = g0.edgeTarget(e);
-				Ref ref = new Ref(e, net.getCapacity(e), 0), refRev = new Ref(e, 0, 0);
-				edgeRef.set(g.addEdge(u, v), ref);
-				edgeRef.set(g.addEdge(v, u), refRev);
-				refRev.rev = ref;
-				ref.rev = refRev;
-			}
-			return g;
+		private boolean isOriginalEdge(int e) {
+			return g.edgeSource(e) == gOrig.edgeSource(edgeRef.getInt(e));
 		}
 
 		private static class Vertex {
@@ -357,57 +381,69 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 			}
 		}
 
-		private static class Ref {
-
-			final int orig;
-			Ref rev;
-			final double cap;
-			double flow;
-
-			Ref(int e, double cap, double flow) {
-				orig = e;
-				rev = null;
-				this.cap = cap;
-				this.flow = flow;
-			}
-
-			@Override
-			public String toString() {
-				return "R(" + orig + ")";
-			}
-
-		}
 	}
 
-	private static class WorkerInt {
+	private static class WorkerInt extends AbstractWorker {
 
-		final DiGraph gOring;
 		final FlowNetwork.Int net;
-		final int source;
-		final int sink;
 
 		private final DebugPrintsManager debug = new DebugPrintsManager(false);
 
-		WorkerInt(DiGraph gOring, FlowNetwork.Int net, int source, int sink) {
-			this.gOring = gOring;
+		WorkerInt(DiGraph gOrig, FlowNetwork.Int net, int source, int sink) {
+			super(gOrig, source, sink);
 			this.net = net;
-			this.source = source;
-			this.sink = sink;
+		}
+
+		DiGraph g;
+		Weights.Int edgeRef;
+		Weights.Int twin;
+		Weights.Int capacity;
+		Weights.Int flow;
+
+		private void pushFlow(int e, int f) {
+			int t = twin.getInt(e);
+			flow.set(e, flow.getInt(e) + f);
+			flow.set(t, flow.getInt(t) - f);
+			assert flow.getInt(e) <= capacity.getInt(e);
+			assert flow.getInt(t) <= capacity.getInt(t);
+		}
+
+		private void updateFlow(int e, int weight) {
+			pushFlow(e, capacity.getInt(e) - flow.getInt(e) - weight);
 		}
 
 		double computeMaxFlow() {
-			if (source == sink)
-				throw new IllegalArgumentException("Source and sink can't be the same vertex");
 			debug.println("\t", getClass().getSimpleName());
 
 			int maxCapacity = 100;
-			for (IntIterator it = gOring.edges().iterator(); it.hasNext();) {
+			for (IntIterator it = gOrig.edges().iterator(); it.hasNext();) {
 				int e = it.nextInt();
 				maxCapacity = Math.max(maxCapacity, net.getCapacityInt(e));
 			}
 
-			DiGraph g = referenceGraph(gOring, net);
-			Weights<Ref> edgeRef = g.edgesWeight(EdgeRefWeightKey);
+			g = new GraphArrayDirected(gOrig.vertices().size());
+			edgeRef = g.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
+			twin = g.addEdgesWeights(EdgeRevWeightKey, int.class, Integer.valueOf(-1));
+			for (IntIterator it = gOrig.edges().iterator(); it.hasNext();) {
+				int e = it.nextInt();
+				int u = gOrig.edgeSource(e), v = gOrig.edgeTarget(e);
+				if (u == v || u == sink || v == source)
+					continue;
+
+				int e1 = g.addEdge(u, v);
+				int e2 = g.addEdge(v, u);
+				edgeRef.set(e1, e);
+				edgeRef.set(e2, e);
+				twin.set(e1, e2);
+				twin.set(e2, e1);
+			}
+			flow = g.addEdgesWeights(FlowWeightKey, int.class);
+			capacity = g.addEdgesWeights(CapacityWeightKey, int.class);
+			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+				int e = it.nextInt();
+				flow.set(e, 0);
+				capacity.set(e, isOriginalEdge(e) ? net.getCapacityInt(edgeRef.getInt(e)) : 0);
+			}
 			int n = g.vertices().size();
 
 			final int maxTreeSize = Math.max(1, n * n / g.edges().size());
@@ -428,23 +464,13 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 			SSSP.Result initD = new SSSPCardinality().computeShortestPaths(g, sink);
 			for (int u = 0; u < n; u++)
 				if (u != source && u != sink)
-					vertexData[u].d = (int) initD.distance(sink);
+					vertexData[u].d = (int) initD.distance(u);
 			vertexData[source].d = n;
 			vertexData[sink].d = 0;
 
 			/* Init all vertices iterators */
 			for (int u = 0; u < n; u++)
 				vertexData[u].edges = new IterPickable.Int(g.edgesOut(u));
-
-			ObjDoubleConsumer<Ref> pushFlow = (e, f) -> {
-				e.flow += f;
-				e.rev.flow -= f;
-				assert e.flow <= e.cap;
-				assert e.rev.flow <= e.rev.cap;
-			};
-			ObjDoubleConsumer<Ref> updateFlow = (e, weight) -> {
-				pushFlow.accept(e, e.cap - e.flow - weight);
-			};
 
 			Consumer<Vertex> cut = U -> {
 				/* Remove vertex from parent children list */
@@ -461,18 +487,14 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 			for (EdgeIter eit = g.edgesOut(source); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = eit.v();
-				Ref data = edgeRef.get(e);
-				int f = data.cap - data.flow;
+				int f = capacity.getInt(e) - flow.getInt(e);
 				if (f == 0)
 					continue;
 				assert f > 0;
 
 				int u = eit.u();
 
-				data.flow += f;
-				data.rev.flow -= f;
-				assert data.flow <= data.cap;
-				assert data.rev.flow <= data.rev.cap;
+				pushFlow(e, f);
 
 				Vertex U = vertexData[u], V = vertexData[v];
 				U.excess -= f;
@@ -493,9 +515,8 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 
 				while (U.excess > 0 && it.hasNext()) {
 					int e = it.pickNext();
-					Ref data = edgeRef.get(e);
 					Vertex V = vertexData[g.edgeTarget(e)];
-					int eAccess = data.cap - data.flow;
+					int eAccess = capacity.getInt(e) - flow.getInt(e);
 
 					if (!(eAccess > 0 && U.d == V.d + 1)) {
 						/* edge is not admissible, just advance */
@@ -519,7 +540,7 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 					} else {
 						/* Avoid big trees, no link, push manually and continue pushing in v's tree */
 						int f = Math.min(U.excess, eAccess);
-						pushFlow.accept(data, f);
+						pushFlow(e, f);
 						U.excess -= f;
 						V.excess += f;
 						if (V.v == source || V.v == sink)
@@ -551,8 +572,8 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 							minEdge = dt.findMinEdge(W.dtNode);
 							if (minEdge.weight() > 0)
 								break;
-							Ref edgeData = edgeRef.get(minEdge.u().<Vertex>getNodeData().edgeToParent);
-							updateFlow.accept(edgeData, minEdge.weight());
+							int minEdgeId = minEdge.u().<Vertex>getNodeData().edgeToParent;
+							updateFlow(minEdgeId, (int) minEdge.weight());
 							cut.accept(minEdge.u().getNodeData());
 						}
 					}
@@ -579,8 +600,8 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 
 							/* update flow */
 							MinEdge m = dt.findMinEdge(childData.dtNode);
-							Ref edgeData = edgeRef.get(m.u().<Vertex>getNodeData().edgeToParent);
-							updateFlow.accept(edgeData, m.weight());
+							int e = m.u().<Vertex>getNodeData().edgeToParent;
+							updateFlow(e, (int) m.weight());
 
 							/* cut child */
 							toCut.enqueue(child);
@@ -605,8 +626,8 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 					DynamicTree.Node uDt = cleanupStack.pop();
 					assert uDt.getParent().getParent() == null;
 					MinEdge m = dt.findMinEdge(uDt);
-					Ref edgeData = edgeRef.get(m.u().<Vertex>getNodeData().edgeToParent);
-					updateFlow.accept(edgeData, m.weight());
+					int e = m.u().<Vertex>getNodeData().edgeToParent;
+					updateFlow(e, (int) m.weight());
 					dt.cut(m.u());
 				}
 			}
@@ -614,39 +635,25 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 			/* Construct result */
 			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 				int e = it.nextInt();
-				Ref data = edgeRef.get(e);
-				if (g.edgeSource(e) == gOring.edgeSource(data.orig))
-					net.setFlow(data.orig, data.flow);
+				if (isOriginalEdge(e))
+					net.setFlow(edgeRef.getInt(e), flow.getInt(e));
 			}
 			int totalFlow = 0;
 			for (EdgeIter eit = g.edgesOut(source); eit.hasNext();) {
 				int e = eit.nextInt();
-				Ref data = edgeRef.get(e);
-				if (g.edgeSource(e) == gOring.edgeSource(data.orig))
-					totalFlow += data.flow;
+				if (isOriginalEdge(e))
+					totalFlow += flow.getInt(e);
 			}
 			for (EdgeIter eit = g.edgesIn(source); eit.hasNext();) {
 				int e = eit.nextInt();
-				Ref data = edgeRef.get(e);
-				if (g.edgeSource(e) == gOring.edgeSource(data.orig))
-					totalFlow -= data.flow;
+				if (isOriginalEdge(e))
+					totalFlow -= flow.getInt(e);
 			}
 			return totalFlow;
 		}
 
-		private static DiGraph referenceGraph(DiGraph g0, FlowNetwork.Int net) {
-			DiGraph g = new GraphArrayDirected(g0.vertices().size());
-			Weights<Ref> edgeRef = g.addEdgesWeights(EdgeRefWeightKey, Ref.class);
-			for (IntIterator it = g0.edges().iterator(); it.hasNext();) {
-				int e = it.nextInt();
-				int u = g0.edgeSource(e), v = g0.edgeTarget(e);
-				Ref ref = new Ref(e, net.getCapacityInt(e), 0), refRev = new Ref(e, 0, 0);
-				edgeRef.set(g.addEdge(u, v), ref);
-				edgeRef.set(g.addEdge(v, u), refRev);
-				refRev.rev = ref;
-				ref.rev = refRev;
-			}
-			return g;
+		private boolean isOriginalEdge(int e) {
+			return g.edgeSource(e) == gOrig.edgeSource(edgeRef.getInt(e));
 		}
 
 		private static class Vertex {
@@ -670,27 +677,6 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 				this.dtNode = dtNode;
 				firstDtChild = -1;
 			}
-		}
-
-		private static class Ref {
-
-			final int orig;
-			Ref rev;
-			final int cap;
-			int flow;
-
-			Ref(int e, int cap, int flow) {
-				orig = e;
-				rev = null;
-				this.cap = cap;
-				this.flow = flow;
-			}
-
-			@Override
-			public String toString() {
-				return "R(" + orig + ")";
-			}
-
 		}
 	}
 
