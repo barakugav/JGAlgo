@@ -498,7 +498,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 <span class="fc bfc" id="L498" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(source); eit.hasNext();) {</span>
 <span class="fc" id="L499">				int e = eit.nextInt();</span>
 <span class="fc" id="L500">				int f = getResidualCapacity(e);</span>
-<span class="fc bfc" id="L501" title="All 4 branches covered.">				if (f &gt; 0 &amp;&amp; label[source] &gt; label[g.edgeTarget(e)])</span>
+<span class="pc bpc" id="L501" title="1 of 4 branches missed.">				if (f &gt; 0 &amp;&amp; label[source] &gt; label[g.edgeTarget(e)])</span>
 <span class="fc" id="L502">					push(e, f);</span>
 <span class="fc" id="L503">			}</span>
 <span class="fc" id="L504">		}</span>

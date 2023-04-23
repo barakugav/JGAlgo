@@ -664,11 +664,11 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 <span class="pc bpc" id="L664" title="1 of 2 branches missed.">			assert smfBaseNode != null;</span>
 <span class="fc" id="L665">			for (SubtreeMergeFindMin.Node smfId = smfBaseNode;;) {</span>
 <span class="fc" id="L666">				SubtreeMergeFindMin.Node parentSmf = smfParent(smfId);</span>
-<span class="pc bpc" id="L667" title="1 of 4 branches missed.">				if (parentSmf == null || topBlossom(parentSmf.getNodeData()) != V)</span>
+<span class="pc bpc" id="L667" title="2 of 4 branches missed.">				if (parentSmf == null || topBlossom(parentSmf.getNodeData()) != V)</span>
 <span class="fc" id="L668">					break;</span>
-<span class="fc" id="L669">				smf.mergeSubTrees(smfBaseNode, parentSmf);</span>
-<span class="fc" id="L670">				smfId = parentSmf;</span>
-<span class="fc" id="L671">			}</span>
+<span class="nc" id="L669">				smf.mergeSubTrees(smfBaseNode, parentSmf);</span>
+<span class="nc" id="L670">				smfId = parentSmf;</span>
+<span class="nc" id="L671">			}</span>
 
 <span class="fc" id="L673">			forEachVertexInBlossom(V, v -&gt; {</span>
 <span class="fc" id="L674">				SubtreeMergeFindMin.Node smfNode = vToSMFId[v];</span>
@@ -676,11 +676,11 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 <span class="fc" id="L676">					smfNode = smfAddLeaf(v, smfBaseNode);</span>
 <span class="fc" id="L677">					smf.mergeSubTrees(smfBaseNode, smfNode);</span>
 				} else {
-<span class="fc bfc" id="L679" title="All 2 branches covered.">					while (!smf.isSameSubTree(smfNode, smfBaseNode)) {</span>
-<span class="fc" id="L680">						SubtreeMergeFindMin.Node p = smfParent(smfNode);</span>
-<span class="fc" id="L681">						smf.mergeSubTrees(smfNode, p);</span>
-<span class="fc" id="L682">						smfNode = p;</span>
-<span class="fc" id="L683">					}</span>
+<span class="pc bpc" id="L679" title="1 of 2 branches missed.">					while (!smf.isSameSubTree(smfNode, smfBaseNode)) {</span>
+<span class="nc" id="L680">						SubtreeMergeFindMin.Node p = smfParent(smfNode);</span>
+<span class="nc" id="L681">						smf.mergeSubTrees(smfNode, p);</span>
+<span class="nc" id="L682">						smfNode = p;</span>
+<span class="nc" id="L683">					}</span>
 				}
 <span class="fc" id="L685">			});</span>
 
@@ -989,7 +989,7 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 
 		private Blossom topBlossom(Blossom v) {
 <span class="pc bpc" id="L991" title="1 of 2 branches missed.">			assert v.isSingleton();</span>
-<span class="fc bfc" id="L992" title="All 2 branches covered.">			return v.isEven ? find0(v.base) : find1(v.base);</span>
+<span class="pc bpc" id="L992" title="1 of 2 branches missed.">			return v.isEven ? find0(v.base) : find1(v.base);</span>
 		}
 
 		private void forEachBlossom(Consumer&lt;Blossom&gt; f) {

@@ -231,8 +231,8 @@ public class LCADynamicGabowSimple implements LCADynamic {
 	}
 
 	CharacteristicAncestors calcCA(Node x, Node y) {
-<span class="fc" id="L234">		CharacteristicAncestors0 ca = calcCA0((NodeImpl) x, (NodeImpl) y);</span>
-<span class="fc" id="L235">		return new CharacteristicAncestors(ca.a, ca.ax, ca.ay);</span>
+<span class="nc" id="L234">		CharacteristicAncestors0 ca = calcCA0((NodeImpl) x, (NodeImpl) y);</span>
+<span class="nc" id="L235">		return new CharacteristicAncestors(ca.a, ca.ax, ca.ay);</span>
 	}
 
 	@Override
@@ -362,11 +362,11 @@ public class LCADynamicGabowSimple implements LCADynamic {
 	static class CharacteristicAncestors {
 		final Node a, ax, ay;
 
-<span class="fc" id="L365">		CharacteristicAncestors(Node a, Node ax, Node ay) {</span>
-<span class="fc" id="L366">			this.a = a;</span>
-<span class="fc" id="L367">			this.ax = ax;</span>
-<span class="fc" id="L368">			this.ay = ay;</span>
-<span class="fc" id="L369">		}</span>
+<span class="nc" id="L365">		CharacteristicAncestors(Node a, Node ax, Node ay) {</span>
+<span class="nc" id="L366">			this.a = a;</span>
+<span class="nc" id="L367">			this.ax = ax;</span>
+<span class="nc" id="L368">			this.ay = ay;</span>
+<span class="nc" id="L369">		}</span>
 	}
 
 }

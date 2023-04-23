@@ -140,7 +140,7 @@ public class MaxFlowDinicDynamicTrees implements MaxFlow {
 <span class="fc" id="L140">						dt.cut(min.u());</span>
 
 <span class="fc" id="L142">						min = dt.findMinEdge(vToDt[source]);</span>
-<span class="fc bfc" id="L143" title="All 4 branches covered.">					} while (min != null &amp;&amp; Math.abs(min.weight()) &lt; EPS);</span>
+<span class="pc bpc" id="L143" title="1 of 4 branches missed.">					} while (min != null &amp;&amp; Math.abs(min.weight()) &lt; EPS);</span>
 
 <span class="fc bfc" id="L145" title="All 2 branches covered.">				} else if (!L.edgesOut(v).hasNext()) {</span>
 
