@@ -31,7 +31,7 @@ import com.jgalgo.test.TestUtils.SeedGenerator;
 
 import it.unimi.dsi.fastutil.Pair;
 
-public class RMQBench {
+public class RMQStaticBench {
 
 	@BenchmarkMode(Mode.AverageTime)
 	@OutputTimeUnit(TimeUnit.MILLISECONDS)
@@ -117,112 +117,122 @@ public class RMQBench {
 
 	}
 
-	public static class QueryAbstract {
-
-		private final int arrsNum = 31;
-		private final AtomicInteger arrIdx = new AtomicInteger();
+	public static class Query {
 
 		int[] randArray(int size, long seed) {
 			return TestUtils.randArray(size, seed);
 		}
 
-		List<Pair<RMQStatic.DataStructure, int[]>> createArrays(Supplier<? extends RMQStatic> builder, int n) {
+		Pair<RMQStatic.DataStructure, int[]> createArray(Supplier<? extends RMQStatic> builder, int n) {
 			final SeedGenerator seedGen = new SeedGenerator(0x5b3fba9dd26f2769L);
 
-			List<Pair<RMQStatic.DataStructure, int[]>> arrays = new ArrayList<>();
-			for (int aIdx = 0; aIdx < arrsNum; aIdx++) {
-				int[] arr = randArray(n, seedGen.nextSeed());
+			int[] arr = randArray(n, seedGen.nextSeed());
 
-				RMQStatic rmq = builder.get();
-				RMQStatic.DataStructure rmqDS = rmq.preProcessSequence(RMQStaticComparator.ofIntArray(arr), n);
+			RMQStatic rmq = builder.get();
+			RMQStatic.DataStructure rmqDS = rmq.preProcessSequence(RMQStaticComparator.ofIntArray(arr), n);
 
-				int queriesNum = n;
-				int[] queries = TestUtils.randArray(queriesNum * 2, 0, n, seedGen.nextSeed());
-				for (int q = 0; q < queriesNum; q++) {
-					int i = queries[q * 2];
-					int j = queries[q * 2 + 1];
-					if (j < i) {
-						int temp = i;
-						i = j;
-						j = temp;
-					}
-					queries[q * 2] = i;
-					queries[q * 2 + 1] = j;
-				}
-
-				arrays.add(Pair.of(rmqDS, queries));
-			}
-			return arrays;
-		}
-
-		public void benchQuery(List<Pair<RMQStatic.DataStructure, int[]>> arrays, Blackhole blackhole) {
-			// TODO perform a single query in each bench
-			Pair<RMQStatic.DataStructure, int[]> arr = arrays.get(arrIdx.getAndUpdate(i -> (i + 1) % arrsNum));
-			RMQStatic.DataStructure rmq = arr.first();
-			int[] queries = arr.second();
-			int queriesNum = queries.length / 2;
+			int queriesNum = n;
+			int[] queries = TestUtils.randArray(queriesNum * 2, 0, n, seedGen.nextSeed());
 			for (int q = 0; q < queriesNum; q++) {
 				int i = queries[q * 2];
 				int j = queries[q * 2 + 1];
-				int res = rmq.findMinimumInRange(i, j);
+				if (j < i) {
+					int temp = i;
+					i = j;
+					j = temp;
+				}
+				queries[q * 2] = i;
+				queries[q * 2 + 1] = j;
+			}
+
+			return Pair.of(rmqDS, queries);
+		}
+
+		@BenchmarkMode(Mode.AverageTime)
+		@OutputTimeUnit(TimeUnit.NANOSECONDS)
+		@Warmup(iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
+		@Measurement(iterations = 1, time = 1, timeUnit = TimeUnit.SECONDS)
+		@State(Scope.Benchmark)
+		public static class LookupTable extends Query {
+
+			@Param({ "128", "2500" })
+			public int n;
+			private RMQStatic.DataStructure rmq;
+			private int[] queries;
+			private int queryIdx;
+			private int queryI, queryJ;
+
+			@Setup(Level.Iteration)
+			public void setupCreateArray() {
+				Pair<RMQStatic.DataStructure, int[]> p = createArray(RMQStaticLookupTable::new, n);
+				rmq = p.first();
+				queries = p.second();
+				queryIdx = 0;
+			}
+
+			@Setup(Level.Invocation)
+			public void setupQueryIndices() {
+				queryI = queries[queryIdx * 2 + 0];
+				queryJ = queries[queryIdx * 2 + 1];
+				queryIdx = (queryIdx + 1) % (queries.length / 2);
+			}
+
+			@Benchmark
+			public void benchQuery(Blackhole blackhole) {
+				int res = rmq.findMinimumInRange(queryI, queryJ);
 				blackhole.consume(res);
 			}
 		}
 
 		@BenchmarkMode(Mode.AverageTime)
-		@OutputTimeUnit(TimeUnit.MILLISECONDS)
+		@OutputTimeUnit(TimeUnit.NANOSECONDS)
 		@Warmup(iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
 		@Measurement(iterations = 1, time = 1, timeUnit = TimeUnit.SECONDS)
 		@State(Scope.Benchmark)
-		public static class LookupTable extends QueryAbstract {
+		public static class PowerOf2Table extends Query {
 
-			@Param({ "128", "2500" })
+			@Param({ "128", "2500", "15000" })
 			public int n;
-			private List<Pair<RMQStatic.DataStructure, int[]>> arrays;
+			private RMQStatic.DataStructure rmq;
+			private int[] queries;
+			private int queryIdx;
+			private int queryI, queryJ;
 
 			@Setup(Level.Iteration)
-			public void setup() {
-				arrays = createArrays(RMQStaticLookupTable::new, n);
+			public void setupCreateArray() {
+				Pair<RMQStatic.DataStructure, int[]> p = createArray(RMQStaticPowerOf2Table::new, n);
+				rmq = p.first();
+				queries = p.second();
+				queryIdx = 0;
+			}
+
+			@Setup(Level.Invocation)
+			public void setupQueryIndices() {
+				queryI = queries[queryIdx * 2 + 0];
+				queryJ = queries[queryIdx * 2 + 1];
+				queryIdx = (queryIdx + 1) % (queries.length / 2);
 			}
 
 			@Benchmark
 			public void benchQuery(Blackhole blackhole) {
-				benchQuery(arrays, blackhole);
+				int res = rmq.findMinimumInRange(queryI, queryJ);
+				blackhole.consume(res);
 			}
 		}
 
 		@BenchmarkMode(Mode.AverageTime)
-		@OutputTimeUnit(TimeUnit.MILLISECONDS)
+		@OutputTimeUnit(TimeUnit.NANOSECONDS)
 		@Warmup(iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
 		@Measurement(iterations = 1, time = 1, timeUnit = TimeUnit.SECONDS)
 		@State(Scope.Benchmark)
-		public static class PowerOf2Table extends QueryAbstract {
+		public static class PlusMinusOne extends Query {
 
 			@Param({ "128", "2500", "15000" })
 			public int n;
-			private List<Pair<RMQStatic.DataStructure, int[]>> arrays;
-
-			@Setup(Level.Iteration)
-			public void setup() {
-				arrays = createArrays(RMQStaticPowerOf2Table::new, n);
-			}
-
-			@Benchmark
-			public void benchQuery(Blackhole blackhole) {
-				benchQuery(arrays, blackhole);
-			}
-		}
-
-		@BenchmarkMode(Mode.AverageTime)
-		@OutputTimeUnit(TimeUnit.MILLISECONDS)
-		@Warmup(iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
-		@Measurement(iterations = 1, time = 1, timeUnit = TimeUnit.SECONDS)
-		@State(Scope.Benchmark)
-		public static class PlusMinusOne extends QueryAbstract {
-
-			@Param({ "128", "2500", "15000" })
-			public int n;
-			private List<Pair<RMQStatic.DataStructure, int[]>> arrays;
+			private RMQStatic.DataStructure rmq;
+			private int[] queries;
+			private int queryIdx;
+			private int queryI, queryJ;
 
 			@Override
 			int[] randArray(int size, long seed) {
@@ -234,35 +244,60 @@ public class RMQBench {
 			}
 
 			@Setup(Level.Iteration)
-			public void setup() {
-				arrays = createArrays(RMQStaticPlusMinusOne::new, n);
+			public void setupCreateArray() {
+				Pair<RMQStatic.DataStructure, int[]> p = createArray(RMQStaticPlusMinusOne::new, n);
+				rmq = p.first();
+				queries = p.second();
+				queryIdx = 0;
+			}
+
+			@Setup(Level.Invocation)
+			public void setupQueryIndices() {
+				queryI = queries[queryIdx * 2 + 0];
+				queryJ = queries[queryIdx * 2 + 1];
+				queryIdx = (queryIdx + 1) % (queries.length / 2);
 			}
 
 			@Benchmark
 			public void benchQuery(Blackhole blackhole) {
-				benchQuery(arrays, blackhole);
+				int res = rmq.findMinimumInRange(queryI, queryJ);
+				blackhole.consume(res);
 			}
 		}
 
 		@BenchmarkMode(Mode.AverageTime)
-		@OutputTimeUnit(TimeUnit.MILLISECONDS)
+		@OutputTimeUnit(TimeUnit.NANOSECONDS)
 		@Warmup(iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
 		@Measurement(iterations = 1, time = 1, timeUnit = TimeUnit.SECONDS)
 		@State(Scope.Benchmark)
-		public static class CartesianTrees extends QueryAbstract {
+		public static class CartesianTrees extends Query {
 
 			@Param({ "128", "2500", "15000" })
 			public int n;
-			private List<Pair<RMQStatic.DataStructure, int[]>> arrays;
+			private RMQStatic.DataStructure rmq;
+			private int[] queries;
+			private int queryIdx;
+			private int queryI, queryJ;
 
 			@Setup(Level.Iteration)
-			public void setup() {
-				arrays = createArrays(RMQStaticCartesianTrees::new, n);
+			public void setupCreateArray() {
+				Pair<RMQStatic.DataStructure, int[]> p = createArray(RMQStaticCartesianTrees::new, n);
+				rmq = p.first();
+				queries = p.second();
+				queryIdx = 0;
+			}
+
+			@Setup(Level.Invocation)
+			public void setupQueryIndices() {
+				queryI = queries[queryIdx * 2 + 0];
+				queryJ = queries[queryIdx * 2 + 1];
+				queryIdx = (queryIdx + 1) % (queries.length / 2);
 			}
 
 			@Benchmark
 			public void benchQuery(Blackhole blackhole) {
-				benchQuery(arrays, blackhole);
+				int res = rmq.findMinimumInRange(queryI, queryJ);
+				blackhole.consume(res);
 			}
 		}
 
