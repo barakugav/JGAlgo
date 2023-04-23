@@ -38,7 +38,7 @@ import com.jgalgo.test.TestUtils.SeedGenerator;
 public class ColoringBench {
 
 	@Param({ "|V|=100 |E|=100", "|V|=200 |E|=1000", "|V|=1600 |E|=10000" })
-	public String graphSize;
+	public String args;
 	private int n, m;
 
 	private List<UGraph> graphs;
@@ -47,9 +47,9 @@ public class ColoringBench {
 
 	@Setup(Level.Iteration)
 	public void setup() {
-		Map<String, String> graphSizeValues = BenchUtils.parseArgsStr(graphSize);
-		n = Integer.parseInt(graphSizeValues.get("|V|"));
-		m = Integer.parseInt(graphSizeValues.get("|E|"));
+		Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
+		n = Integer.parseInt(argsMap.get("|V|"));
+		m = Integer.parseInt(argsMap.get("|E|"));
 
 		final SeedGenerator seedGen = new SeedGenerator(0x566c25f996355cb4L);
 		graphs = new ArrayList<>(graphsNum);

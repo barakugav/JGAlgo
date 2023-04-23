@@ -48,7 +48,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 public class MaxFlowBench {
 
 	@Param({ "|V|=30 |E|=300", "|V|=200 |E|=1500", "|V|=800 |E|=10000" })
-	public String graphSize;
+	public String args;
 	private int n, m;
 
 	private List<MaxFlowTask> graphs;
@@ -57,9 +57,9 @@ public class MaxFlowBench {
 
 	@Setup(Level.Trial)
 	public void setup() {
-		Map<String, String> graphSizeValues = BenchUtils.parseArgsStr(graphSize);
-		n = Integer.parseInt(graphSizeValues.get("|V|"));
-		m = Integer.parseInt(graphSizeValues.get("|E|"));
+		Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
+		n = Integer.parseInt(argsMap.get("|V|"));
+		m = Integer.parseInt(argsMap.get("|E|"));
 
 		final SeedGenerator seedGen = new SeedGenerator(0xe75b8a2fb16463ecL);
 		Random rand = new Random(seedGen.nextSeed());

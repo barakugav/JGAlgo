@@ -39,7 +39,7 @@ import it.unimi.dsi.fastutil.Pair;
 public class APSPBench {
 
 	@Param({ "|V|=64 |E|=256", "|V|=200 |E|=1200", "|V|=512 |E|=4096" })
-	public String graphSize;
+	public String args;
 	private int n, m;
 
 	private List<Pair<Graph, EdgeWeightFunc.Int>> graphs;
@@ -48,9 +48,9 @@ public class APSPBench {
 
 	@Setup(Level.Iteration)
 	public void setup() {
-		Map<String, String> graphSizeValues = BenchUtils.parseArgsStr(graphSize);
-		n = Integer.parseInt(graphSizeValues.get("|V|"));
-		m = Integer.parseInt(graphSizeValues.get("|E|"));
+		Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
+		n = Integer.parseInt(argsMap.get("|V|"));
+		m = Integer.parseInt(argsMap.get("|E|"));
 
 		final SeedGenerator seedGen = new SeedGenerator(0xe9485d7a86646b18L);
 		graphs = new ArrayList<>(graphsNum);

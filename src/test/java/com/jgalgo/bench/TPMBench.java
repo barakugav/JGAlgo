@@ -2,6 +2,7 @@ package com.jgalgo.bench;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
@@ -34,7 +35,8 @@ import com.jgalgo.test.TestUtils.SeedGenerator;
 @State(Scope.Benchmark)
 public class TPMBench {
 
-	@Param({ "64", "200", "5000" })
+	@Param({ "N=128", "N=2500", "N=15000" })
+	public String args;
 	public int n;
 
 	private List<TPMArgs> graphs;
@@ -43,6 +45,9 @@ public class TPMBench {
 
 	@Setup(Level.Iteration)
 	public void setup() {
+		Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
+		n = Integer.parseInt(argsMap.get("N"));
+
 		final SeedGenerator seedGen = new SeedGenerator(0x28ddf3f2d9c5c873L);
 		graphs = new ArrayList<>(graphsNum);
 		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {

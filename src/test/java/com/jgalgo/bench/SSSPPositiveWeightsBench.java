@@ -39,7 +39,7 @@ import com.jgalgo.test.TestUtils.SeedGenerator;
 public class SSSPPositiveWeightsBench {
 
 	@Param({ "|V|=64 |E|=256", "|V|=512 |E|=4096", "|V|=4096 |E|=16384" })
-	public String graphSize;
+	public String args;
 	private int n, m;
 
 	private List<GraphArgs> graphs;
@@ -48,9 +48,9 @@ public class SSSPPositiveWeightsBench {
 
 	@Setup(Level.Iteration)
 	public void setup() {
-		Map<String, String> graphSizeValues = BenchUtils.parseArgsStr(graphSize);
-		n = Integer.parseInt(graphSizeValues.get("|V|"));
-		m = Integer.parseInt(graphSizeValues.get("|E|"));
+		Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
+		n = Integer.parseInt(argsMap.get("|V|"));
+		m = Integer.parseInt(argsMap.get("|E|"));
 
 		final SeedGenerator seedGen = new SeedGenerator(0x88da246e71ef3dacL);
 		Random rand = new Random(seedGen.nextSeed());

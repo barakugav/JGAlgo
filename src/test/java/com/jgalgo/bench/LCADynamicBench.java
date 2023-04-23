@@ -39,7 +39,7 @@ import com.jgalgo.test.TestUtils.SeedGenerator;
 public class LCADynamicBench {
 
 	@Param({ "|V|=64 M=256", "|V|=512 M=4096", "|V|=4096 M=16384" })
-	public String graphSize;
+	public String args;
 	private int n, m;
 
 	private List<Collection<Op>> lcaOps;
@@ -48,9 +48,9 @@ public class LCADynamicBench {
 
 	@Setup(Level.Iteration)
 	public void setup() {
-		Map<String, String> graphSizeValues = BenchUtils.parseArgsStr(graphSize);
-		n = Integer.parseInt(graphSizeValues.get("|V|"));
-		m = Integer.parseInt(graphSizeValues.get("M"));
+		Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
+		n = Integer.parseInt(argsMap.get("|V|"));
+		m = Integer.parseInt(argsMap.get("M"));
 
 		final SeedGenerator seedGen = new SeedGenerator(0x66fed18e0b594b55L);
 		lcaOps = new ArrayList<>(graphsNum);

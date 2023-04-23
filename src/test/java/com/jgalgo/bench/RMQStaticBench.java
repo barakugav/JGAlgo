@@ -2,6 +2,7 @@ package com.jgalgo.bench;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -40,7 +41,8 @@ public class RMQStaticBench {
 	@State(Scope.Benchmark)
 	public static class PreProcess {
 
-		@Param({ "128", "2500", "15000" })
+		@Param({ "N=128", "N=2500", "N=15000" })
+		public String args;
 		public int n;
 
 		private List<Pair<Integer, RMQStaticComparator>> arrays;
@@ -49,6 +51,9 @@ public class RMQStaticBench {
 
 		@Setup(Level.Trial)
 		public void setup() {
+			Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
+			n = Integer.parseInt(argsMap.get("N"));
+
 			final SeedGenerator seedGen = new SeedGenerator(0xea7471a0349fe14eL);
 			arrays = new ArrayList<>();
 			for (int aIdx = 0; aIdx < arrsNum; aIdx++) {
@@ -88,7 +93,8 @@ public class RMQStaticBench {
 	@State(Scope.Benchmark)
 	public static class PreProcessPlusMinusOne {
 
-		@Param({ "128", "2500", "15000" })
+		@Param({ "N=128", "N=2500", "N=15000" })
+		public String args;
 		public int n;
 
 		private List<Pair<Integer, RMQStaticComparator>> arrays;
@@ -97,6 +103,9 @@ public class RMQStaticBench {
 
 		@Setup(Level.Trial)
 		public void setup() {
+			Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
+			n = Integer.parseInt(argsMap.get("N"));
+
 			final Random rand = new Random(0x9fc881bb3f61bc29L);
 			arrays = new ArrayList<>();
 			for (int aIdx = 0; aIdx < arrsNum; aIdx++) {
@@ -155,8 +164,10 @@ public class RMQStaticBench {
 		@State(Scope.Benchmark)
 		public static class LookupTable extends Query {
 
-			@Param({ "128", "2500" })
+			@Param({ "N=128", "N=2500" })
+			public String args;
 			public int n;
+
 			private RMQStatic.DataStructure rmq;
 			private int[] queries;
 			private int queryIdx;
@@ -164,6 +175,9 @@ public class RMQStaticBench {
 
 			@Setup(Level.Iteration)
 			public void setupCreateArray() {
+				Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
+				n = Integer.parseInt(argsMap.get("N"));
+
 				Pair<RMQStatic.DataStructure, int[]> p = createArray(RMQStaticLookupTable::new, n);
 				rmq = p.first();
 				queries = p.second();
@@ -191,8 +205,10 @@ public class RMQStaticBench {
 		@State(Scope.Benchmark)
 		public static class PowerOf2Table extends Query {
 
-			@Param({ "128", "2500", "15000" })
+			@Param({ "N=128", "N=2500", "N=15000" })
+			public String args;
 			public int n;
+
 			private RMQStatic.DataStructure rmq;
 			private int[] queries;
 			private int queryIdx;
@@ -200,6 +216,9 @@ public class RMQStaticBench {
 
 			@Setup(Level.Iteration)
 			public void setupCreateArray() {
+				Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
+				n = Integer.parseInt(argsMap.get("N"));
+
 				Pair<RMQStatic.DataStructure, int[]> p = createArray(RMQStaticPowerOf2Table::new, n);
 				rmq = p.first();
 				queries = p.second();
@@ -227,8 +246,10 @@ public class RMQStaticBench {
 		@State(Scope.Benchmark)
 		public static class PlusMinusOne extends Query {
 
-			@Param({ "128", "2500", "15000" })
+			@Param({ "N=128", "N=2500", "N=15000" })
+			public String args;
 			public int n;
+
 			private RMQStatic.DataStructure rmq;
 			private int[] queries;
 			private int queryIdx;
@@ -245,6 +266,9 @@ public class RMQStaticBench {
 
 			@Setup(Level.Iteration)
 			public void setupCreateArray() {
+				Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
+				n = Integer.parseInt(argsMap.get("N"));
+
 				Pair<RMQStatic.DataStructure, int[]> p = createArray(RMQStaticPlusMinusOne::new, n);
 				rmq = p.first();
 				queries = p.second();
@@ -272,8 +296,10 @@ public class RMQStaticBench {
 		@State(Scope.Benchmark)
 		public static class CartesianTrees extends Query {
 
-			@Param({ "128", "2500", "15000" })
+			@Param({ "N=128", "N=2500", "N=15000" })
+			public String args;
 			public int n;
+
 			private RMQStatic.DataStructure rmq;
 			private int[] queries;
 			private int queryIdx;
@@ -281,6 +307,9 @@ public class RMQStaticBench {
 
 			@Setup(Level.Iteration)
 			public void setupCreateArray() {
+				Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
+				n = Integer.parseInt(argsMap.get("N"));
+
 				Pair<RMQStatic.DataStructure, int[]> p = createArray(RMQStaticCartesianTrees::new, n);
 				rmq = p.first();
 				queries = p.second();
