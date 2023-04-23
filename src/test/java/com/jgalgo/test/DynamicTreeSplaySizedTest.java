@@ -9,7 +9,7 @@ import com.jgalgo.DynamicTreeSplayExtension;
 import com.jgalgo.DynamicTreeSplayIntExtended;
 import com.jgalgo.test.DynamicTreeSplayTest.Op;
 
-public class DynamicTreeSplaySizedTest extends TestUtils {
+public class DynamicTreeSplaySizedTest extends TestBase {
 
 	@Test
 	public void testRandOps() {

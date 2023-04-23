@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import com.jgalgo.MaximumMatchingWeightedGabow1990;
 
-public class MaximumMatchingWeightedGabow1990Test extends TestUtils {
+public class MaximumMatchingWeightedGabow1990Test extends TestBase {
 
 	@Test
 	public void testRandBipartiteGraphsWeight1() {

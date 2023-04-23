@@ -3,9 +3,8 @@ package com.jgalgo.test;
 import org.junit.jupiter.api.Test;
 
 import com.jgalgo.ColoringGreedyRandom;
-import com.jgalgo.test.TestUtils.SeedGenerator;
 
-public class ColoringGreedyRandomTest {
+public class ColoringGreedyRandomTest extends TestBase {
 
 	@Test
 	public void testRandGraphs() {

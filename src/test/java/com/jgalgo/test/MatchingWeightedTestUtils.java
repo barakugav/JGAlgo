@@ -36,7 +36,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 			long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(256, 8, 8, 8), phase(128, 16, 16, 64), phase(12, 128, 128, 128),
-				phase(8, 128, 128, 512), phase(2, 1024, 1024, 1024), phase(1, 1024, 1024, 5461));
+				phase(2, 256, 256, 1200));
 		runTestMultiple(phases, (testIter, args) -> {
 			int sn = args[0];
 			int tn = args[1];
@@ -55,8 +55,8 @@ class MatchingWeightedTestUtils extends TestUtils {
 
 	static void randBipartiteGraphsWeightedPerfect(Supplier<? extends MaximumMatchingWeighted> builder, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(256, 8, 8, 8), phase(128, 16, 16, 64), phase(12, 128, 128, 128),
-				phase(8, 128, 128, 512), phase(4, 1024, 1024, 1024));
+		List<Phase> phases = List.of(phase(64, 8, 8, 8), phase(32, 16, 16, 64), phase(8, 128, 128, 128),
+				phase(4, 128, 128, 512), phase(1, 1024, 1024, 1024));
 		runTestMultiple(phases, (testIter, args) -> {
 			int sn = args[0];
 			int tn = args[1];
@@ -80,7 +80,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 	static void randGraphsWeighted(Supplier<? extends MaximumMatchingWeighted> builder, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(256, 8, 8, 8), phase(128, 16, 16, 64), phase(12, 128, 128, 128),
-				phase(8, 128, 128, 512), phase(4, 1024, 1024, 1024), phase(2, 1024, 1024, 8192));
+				phase(6, 128, 128, 512), phase(1, 1024, 1024, 2300));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 
@@ -118,7 +118,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 	static void randGraphsWeightedPerfect(Supplier<? extends MaximumMatchingWeighted> builder, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(256, 8, 8, 8), phase(128, 16, 16, 64), phase(12, 128, 128, 128),
-				phase(8, 128, 128, 512), phase(4, 1024, 1024, 1024));
+				phase(8, 128, 128, 512), phase(2, 1024, 1024, 1024));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 

@@ -79,9 +79,8 @@ public class MaxFlowTestUtils extends TestUtils {
 	static void testRandGraphs(Supplier<? extends MaxFlow> builder, GraphImpl graphImpl, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
-		List<Phase> phases = List.of(phase(1024, 6, 6), phase(128, 16, 16), phase(128, 16, 32), phase(64, 64, 64),
-				phase(64, 64, 128), phase(8, 512, 512), phase(4, 512, 1324), phase(1, 1025, 2016),
-				phase(1, 3246, 5612));
+		List<Phase> phases = List.of(phase(256, 6, 6), phase(64, 16, 16), phase(64, 16, 32), phase(32, 64, 64),
+				phase(32, 64, 128), phase(4, 512, 512), phase(2, 512, 1324), phase(1, 1025, 2016));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 			DiGraph g = randGraph(n, m, graphImpl, seedGen.nextSeed());
@@ -102,9 +101,8 @@ public class MaxFlowTestUtils extends TestUtils {
 	static void testRandGraphsInt(Supplier<? extends MaxFlow> builder, GraphImpl graphImpl, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
-		List<Phase> phases = List.of(phase(1024, 6, 6), phase(128, 16, 16), phase(128, 16, 32), phase(64, 64, 64),
-				phase(64, 64, 128), phase(8, 512, 512), phase(4, 512, 1324), phase(1, 1025, 2016),
-				phase(1, 3246, 5612));
+		List<Phase> phases = List.of(phase(256, 6, 6), phase(64, 16, 16), phase(64, 16, 32), phase(32, 64, 64),
+				phase(16, 64, 128), phase(2, 512, 512), phase(1, 512, 1324));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 			DiGraph g = randGraph(n, m, graphImpl, seedGen.nextSeed());

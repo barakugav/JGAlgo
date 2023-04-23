@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import com.jgalgo.MSTPrim;
 
-public class MSTPrimTest extends TestUtils {
+public class MSTPrimTest extends TestBase {
 
 	@Test
 	public void testRandGraph() {

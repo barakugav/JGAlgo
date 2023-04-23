@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import com.jgalgo.MaxFlowDinicDynamicTrees;
 
-public class MaxFlowDinicDynamicTreesTest extends TestUtils {
+public class MaxFlowDinicDynamicTreesTest extends TestBase {
 
 	@Test
 	public void testRandGraphs() {

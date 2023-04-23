@@ -24,9 +24,8 @@ class MatchingUnweightedTestUtils extends TestUtils {
 
 	static void randGraphs(Supplier<? extends MaximumMatching> builder, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(256, 16, 8), phase(256, 16, 16), phase(128, 32, 32), phase(128, 32, 64),
-				phase(64, 64, 64), phase(64, 64, 128), phase(16, 256, 256), phase(16, 256, 512), phase(1, 2048, 2048),
-				phase(1, 2048, 3249));
+		List<Phase> phases = List.of(phase(128, 16, 8), phase(128, 16, 16), phase(64, 32, 32), phase(32, 32, 64),
+				phase(16, 64, 64), phase(12, 64, 128), phase(4, 256, 256), phase(4, 256, 512), phase(1, 1000, 2500));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 			UGraph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());

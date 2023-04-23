@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import com.jgalgo.RMQStaticPowerOf2Table;
 
-public class RMQStaticPowerOf2TableTest extends TestUtils {
+public class RMQStaticPowerOf2TableTest extends TestBase {
 
 	@Test
 	public void testRegularNRange64to256() {

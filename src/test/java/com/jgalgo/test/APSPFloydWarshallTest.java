@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import com.jgalgo.APSPFloydWarshall;
 
-class APSPFloydWarshallTest {
+class APSPFloydWarshallTest extends TestBase {
 
 	@Test
 	public void testRandGraphDirectedPositiveInt() {

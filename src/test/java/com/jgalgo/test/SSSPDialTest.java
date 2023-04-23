@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import com.jgalgo.SSSPDial;
 
-public class SSSPDialTest extends TestUtils {
+public class SSSPDialTest extends TestBase {
 
 	@Test
 	public void testRandGraphDirectedPositiveInt() {

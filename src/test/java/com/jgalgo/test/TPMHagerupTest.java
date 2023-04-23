@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import com.jgalgo.TPMHagerup;
 
-public class TPMHagerupTest extends TestUtils {
+public class TPMHagerupTest extends TestBase {
 
 	@Test
 	public void testTPM() {

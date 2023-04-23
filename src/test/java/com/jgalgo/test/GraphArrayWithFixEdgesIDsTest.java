@@ -7,7 +7,7 @@ import com.jgalgo.GraphBuilder;
 import com.jgalgo.IDStrategy;
 import com.jgalgo.test.GraphImplTestUtils.GraphImpl;
 
-public class GraphArrayWithFixEdgesIDsTest extends TestUtils {
+public class GraphArrayWithFixEdgesIDsTest extends TestBase {
 
 	static GraphImpl graphImpl() {
 		return new GraphImpl() {

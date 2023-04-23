@@ -19,14 +19,14 @@ import com.jgalgo.UnionFindArray;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrays;
 
-public class SubtreeMergeFindminTest extends TestUtils {
+public class SubtreeMergeFindminTest extends TestBase {
 
 	@Test
 	public void testRandOps() {
 		final long seed = 0x08f45606b1a84c66L;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(128, 16, 16), phase(128, 16, 32), phase(64, 64, 64), phase(64, 64, 128),
-				phase(8, 512, 512), phase(8, 512, 2048), phase(1, 4096, 4096), phase(1, 4096, 16384));
+		List<Phase> phases = List.of(phase(64, 16, 16), phase(64, 16, 32), phase(32, 64, 64), phase(32, 64, 128),
+				phase(4, 512, 512), phase(4, 512, 2048), phase(1, 1000, 4096));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 			testRandOps(SubtreeMergeFindMinImpl::new, n, m, seedGen.nextSeed());

@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import com.jgalgo.RedBlackTree;
 
-public class RedBlackTreeTest extends TestUtils {
+public class RedBlackTreeTest extends TestBase {
 
 	@Test
 	public void testRandOpsDefaultCompare() {

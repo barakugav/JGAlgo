@@ -17,7 +17,7 @@ import com.jgalgo.DynamicTree;
 import com.jgalgo.DynamicTreeSplay;
 import com.jgalgo.DynamicTreeSplayInt;
 
-public class DynamicTreeSplayTest extends TestUtils {
+public class DynamicTreeSplayTest extends TestBase {
 
 	@Test
 	public void testRandOps() {
@@ -42,8 +42,8 @@ public class DynamicTreeSplayTest extends TestUtils {
 	static void testRandOps(DoubleFunction<? extends DynamicTree> builder, List<Op> ops,
 			ToIntFunction<DynamicTree.Node> sizeFunc, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(1024, 16), phase(256, 32), phase(256, 64), phase(128, 128), phase(64, 512),
-				phase(64, 2048), phase(64, 4096), phase(32, 16384));
+		List<Phase> phases = List.of(phase(256, 16), phase(64, 32), phase(64, 64), phase(32, 128), phase(16, 512),
+				phase(16, 2048), phase(8, 4096), phase(4, 16384));
 		runTestMultiple(phases, (testIter, args) -> {
 			int m = args[0];
 			testRandOps(builder, m, ops, sizeFunc, seedGen.nextSeed());

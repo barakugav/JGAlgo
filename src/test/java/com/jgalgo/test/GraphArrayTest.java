@@ -7,7 +7,7 @@ import com.jgalgo.GraphArrayDirected;
 import com.jgalgo.GraphArrayUndirected;
 import com.jgalgo.test.GraphImplTestUtils.GraphImpl;
 
-public class GraphArrayTest extends TestUtils {
+public class GraphArrayTest extends TestBase {
 
 	private static GraphImpl graphImpl() {
 		return new GraphImpl() {

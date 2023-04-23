@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import com.jgalgo.MSTFredmanTarjan;
 
-public class MSTFredmanTarjanTest extends TestUtils {
+public class MSTFredmanTarjanTest extends TestBase {
 
 	@Test
 	public void testRandGraph() {

@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import com.jgalgo.MaxFlowDinic;
 
-public class MaxFlowDinicTest extends TestUtils {
+public class MaxFlowDinicTest extends TestBase {
 
 	@Test
 	public void testRandGraphs() {

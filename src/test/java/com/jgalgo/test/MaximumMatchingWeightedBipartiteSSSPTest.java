@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import com.jgalgo.MaximumMatchingWeightedBipartiteSSSP;
 
-public class MaximumMatchingWeightedBipartiteSSSPTest extends TestUtils {
+public class MaximumMatchingWeightedBipartiteSSSPTest extends TestBase {
 
 	@Test
 	public void testRandBipartiteGraphsWeight1() {

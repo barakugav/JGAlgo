@@ -11,7 +11,7 @@ import com.jgalgo.SSSPDag;
 import com.jgalgo.SSSPDijkstra;
 import com.jgalgo.test.GraphsTestUtils.RandomGraphBuilder;
 
-public class SSSPDagTest extends TestUtils {
+public class SSSPDagTest extends TestBase {
 
 	@Test
 	public void testDistancesDAGUnconnected() {

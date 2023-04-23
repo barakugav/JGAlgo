@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import com.jgalgo.MaxFlowPushRelabelDynamicTrees;
 
-public class MaxFlowPushRelabelDynamicTreesTest extends TestUtils {
+public class MaxFlowPushRelabelDynamicTreesTest extends TestBase {
 
 	@Test
 	public void testRandGraphs() {

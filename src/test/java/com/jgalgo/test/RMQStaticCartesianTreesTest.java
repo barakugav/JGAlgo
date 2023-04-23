@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import com.jgalgo.RMQStaticCartesianTrees;
 
-public class RMQStaticCartesianTreesTest extends TestUtils {
+public class RMQStaticCartesianTreesTest extends TestBase {
 
 	@Test
 	public void testRegular65536() {

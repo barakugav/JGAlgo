@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import com.jgalgo.HeapBinomial;
 
-public class HeapBinomialTest extends TestUtils {
+public class HeapBinomialTest extends TestBase {
 
 	@Test
 	public void testRandOpsDefaultCompare() {

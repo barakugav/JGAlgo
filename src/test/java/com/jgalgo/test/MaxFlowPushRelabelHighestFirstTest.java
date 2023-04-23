@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import com.jgalgo.MaxFlowPushRelabelHighestFirst;
 
-public class MaxFlowPushRelabelHighestFirstTest extends TestUtils {
+public class MaxFlowPushRelabelHighestFirstTest extends TestBase {
 
 	@Test
 	public void testRandGraphsDoubleFlow() {

@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import com.jgalgo.UnionFindValue;
 import com.jgalgo.UnionFindValueArray;
 
-public class UnionFindValueArrayTest extends TestUtils {
+public class UnionFindValueArrayTest extends TestBase {
 
 	@Test
 	public void testRandRegularUFOps() {

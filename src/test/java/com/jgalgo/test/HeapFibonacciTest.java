@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import com.jgalgo.HeapFibonacci;
 
-public class HeapFibonacciTest extends TestUtils {
+public class HeapFibonacciTest extends TestBase {
 
 	@Test
 	public void testRandOpsDefaultCompare() {

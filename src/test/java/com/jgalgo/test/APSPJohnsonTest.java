@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import com.jgalgo.APSPJohnson;
 
-class APSPJohnsonTest {
+class APSPJohnsonTest extends TestBase {
 
 	@Test
 	public void testRandGraphDirectedPositiveInt() {

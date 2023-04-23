@@ -12,7 +12,7 @@ import com.jgalgo.Graph;
 import com.jgalgo.LCAStaticRMQ;
 import com.jgalgo.LCAStatic;
 
-public class LCAStaticRMQTest extends TestUtils {
+public class LCAStaticRMQTest extends TestBase {
 
 	private static int[][] randLCAQueries(Graph g, int r, int queriesNum, long seed) {
 		Random rand = new Random(seed);

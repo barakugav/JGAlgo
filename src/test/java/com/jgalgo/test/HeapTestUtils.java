@@ -35,8 +35,8 @@ class HeapTestUtils extends TestUtils {
 	private static void testRandOps(Function<Comparator<? super Integer>, ? extends Heap<Integer>> heapBuilder,
 			Comparator<? super Integer> compare, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(256, 16, 16), phase(128, 64, 128), phase(64, 512, 1024),
-				phase(16, 4096, 8096), phase(8, 16384, 32768));
+		List<Phase> phases = List.of(phase(128, 16, 16), phase(64, 64, 128), phase(32, 512, 1024),
+				phase(8, 4096, 8096), phase(4, 16384, 32768));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 			Heap<Integer> heap = heapBuilder.apply(compare);

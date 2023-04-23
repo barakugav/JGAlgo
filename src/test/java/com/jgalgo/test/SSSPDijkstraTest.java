@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import com.jgalgo.SSSPDijkstra;
 
-public class SSSPDijkstraTest extends TestUtils {
+public class SSSPDijkstraTest extends TestBase {
 
 	@Test
 	public void testRandGraphDirectedPositiveInt() {

@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import com.jgalgo.MaximumMatchingBipartiteHopcroftKarp;
 
-public class MaximumMatchingBipartiteHopcroftKarpTest extends TestUtils {
+public class MaximumMatchingBipartiteHopcroftKarpTest extends TestBase {
 
 	@Test
 	public void testRandBipartiteGraphs() {

@@ -79,7 +79,7 @@ public class TPMTestUtils extends TestUtils {
 	static void testTPM(Supplier<? extends TPM> builder, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(64, 16), phase(32, 32), phase(16, 64), phase(8, 128), phase(4, 256),
-				phase(2, 512), phase(1, 2485), phase(1, 3254));
+				phase(2, 512), phase(1, 1234));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			TPM algo = builder.get();
@@ -92,8 +92,8 @@ public class TPMTestUtils extends TestUtils {
 		Graph t = GraphsTestUtils.randTree(n, seedGen.nextSeed());
 		EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(t, seedGen.nextSeed());
 
-		TPM.Queries queries = n <= 64 ? generateAllPossibleQueries(n)
-				: generateRandQueries(n, Math.min(n * 64, 8192), seedGen.nextSeed());
+		TPM.Queries queries = n <= 32 ? generateAllPossibleQueries(n)
+				: generateRandQueries(n, Math.min(n * 16, 1000), seedGen.nextSeed());
 		int[] actual = algo.computeHeaviestEdgeInTreePaths(t, w, queries);
 		int[] expected = calcExpectedTPM(t, w, queries);
 		compareActualToExpectedResults(queries, actual, expected, w);

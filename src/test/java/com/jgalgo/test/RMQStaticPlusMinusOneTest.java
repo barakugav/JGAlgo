@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import com.jgalgo.RMQStaticPlusMinusOne;
 
-public class RMQStaticPlusMinusOneTest extends TestUtils {
+public class RMQStaticPlusMinusOneTest extends TestBase {
 
 	@Test
 	public void testRegular() {

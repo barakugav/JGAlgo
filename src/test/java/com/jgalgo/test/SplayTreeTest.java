@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import com.jgalgo.SplayTree;
 
-public class SplayTreeTest extends TestUtils {
+public class SplayTreeTest extends TestBase {
 
 	@Test
 	public void testRandOpsDefaultCompare() {

@@ -11,7 +11,7 @@ import com.jgalgo.BFSIter;
 import com.jgalgo.Graph;
 import com.jgalgo.test.GraphsTestUtils.RandomGraphBuilder;
 
-public class BFSIterTest extends TestUtils {
+public class BFSIterTest extends TestBase {
 
 	@Test
 	public void testBfsConnected() {

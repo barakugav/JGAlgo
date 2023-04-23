@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import com.jgalgo.SSSPBellmanFord;
 
-public class SSSPBellmanFordTest extends TestUtils {
+public class SSSPBellmanFordTest extends TestBase {
 
 	@Test
 	public void testRandGraphPositiveInt() {

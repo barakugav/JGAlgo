@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import com.jgalgo.Coloring;
 import com.jgalgo.ColoringGreedy;
 
-public class ColoringGreedyTest {
+public class ColoringGreedyTest extends TestBase {
 
 	@Test
 	public void testRandGraphs() {

@@ -7,7 +7,7 @@ import com.jgalgo.GraphLinkedDirected;
 import com.jgalgo.GraphLinkedUndirected;
 import com.jgalgo.test.GraphImplTestUtils.GraphImpl;
 
-public class GraphLinkedTest extends TestUtils {
+public class GraphLinkedTest extends TestBase {
 
 	private static GraphImpl graphImpl() {
 		return new GraphImpl() {

@@ -13,7 +13,7 @@ import com.jgalgo.SplitFindMin;
 import com.jgalgo.SplitFindMinArray;
 
 @SuppressWarnings("boxing")
-public class SplitFindMinArrayTest extends TestUtils {
+public class SplitFindMinArrayTest extends TestBase {
 
 	private static void testSplitFind(Supplier<? extends SplitFind> builder, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);

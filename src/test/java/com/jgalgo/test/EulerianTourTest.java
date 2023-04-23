@@ -22,7 +22,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
-public class EulerianTourTest extends TestUtils {
+public class EulerianTourTest extends TestBase {
 
 	@Test
 	public void testRandGraphUndirectedAllEvenDegree() {

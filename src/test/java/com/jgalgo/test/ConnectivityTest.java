@@ -19,7 +19,7 @@ import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
-public class ConnectivityTest extends TestUtils {
+public class ConnectivityTest extends TestBase {
 
 	@Test
 	public void randGraphUndirected() {

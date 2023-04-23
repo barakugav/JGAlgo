@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import com.jgalgo.HeapBinary;
 
-public class HeapBinaryTest extends TestUtils {
+public class HeapBinaryTest extends TestBase {
 
 	@Test
 	public void testRandOpsDefaultCompare() {

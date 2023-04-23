@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import com.jgalgo.MaximumMatchingGabow1976;
 
-public class MatchingGabow1976Test extends TestUtils {
+public class MatchingGabow1976Test extends TestBase {
 
 	@Test
 	public void testRandBipartiteGraphs() {

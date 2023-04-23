@@ -8,7 +8,7 @@ package com.jgalgo.test;
 
 // import com.jgalgo.ArraysUtils;
 
-public class ArraysUtilsTest extends TestUtils {
+public class ArraysUtilsTest  extends TestBase {
 
 	// @Test
 	// public void testGetKthElementRandArrayUnique() {

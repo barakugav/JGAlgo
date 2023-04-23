@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import com.jgalgo.MSTKruskal;
 
-public class MSTKruskalTest extends TestUtils {
+public class MSTKruskalTest extends TestBase {
 
 	@Test
 	public void testRandGraph() {

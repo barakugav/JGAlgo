@@ -12,7 +12,7 @@ import com.jgalgo.SSSP;
 import com.jgalgo.SSSPDijkstra;
 import com.jgalgo.test.GraphsTestUtils.RandomGraphBuilder;
 
-public class PathTest extends TestUtils {
+public class PathTest extends TestBase {
 
 	@Test
 	public void testFindPath() {

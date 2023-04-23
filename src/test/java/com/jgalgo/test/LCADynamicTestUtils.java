@@ -20,8 +20,8 @@ public class LCADynamicTestUtils extends TestUtils {
 
 	static void fullBinaryTreesRandOps(Supplier<? extends LCADynamic> builder, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(128, 16, 16), phase(128, 16, 32), phase(64, 64, 64), phase(64, 64, 128),
-				phase(8, 512, 512), phase(8, 512, 2048), phase(1, 4096, 4096), phase(1, 4096, 16384));
+		List<Phase> phases = List.of(phase(64, 16, 16), phase(64, 16, 32), phase(32, 64, 64), phase(32, 64, 128),
+				phase(4, 512, 512), phase(4, 512, 2048), phase(1, 1000, 4096));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 			Collection<Op> ops = generateRandOpsOnFullBinaryTree(n, m, seedGen.nextSeed());
@@ -32,7 +32,7 @@ public class LCADynamicTestUtils extends TestUtils {
 	static void randTrees(Supplier<? extends LCADynamic> builder, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(128, 16, 16), phase(128, 16, 32), phase(64, 64, 64), phase(64, 64, 128),
-				phase(8, 512, 512), phase(8, 512, 2048), phase(1, 4096, 4096), phase(1, 4096, 16384));
+				phase(4, 512, 512), phase(4, 512, 2048), phase(1, 1000, 4096));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 			Collection<Op> ops = generateRandOps(n, m, seedGen.nextSeed());

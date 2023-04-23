@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import com.jgalgo.RMQStaticLookupTable;
 
-public class RMQStaticLookupTableTest extends TestUtils {
+public class RMQStaticLookupTableTest extends TestBase {
 
 	@Test
 	public void testRegularNRange64to256() {

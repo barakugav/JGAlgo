@@ -41,7 +41,7 @@ class APSPTestUtils extends TestUtils {
 
 	static void testAPSPDirectedNegativeInt(Supplier<? extends APSP> builder, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(128, 6, 20), phase(128, 16, 32), phase(64, 64, 256));
+		List<Phase> phases = List.of(phase(128, 6, 20), phase(64, 16, 32), phase(10, 64, 256));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)

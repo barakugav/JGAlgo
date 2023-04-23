@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import com.jgalgo.HeapPairing;
 
-public class HeapPairingTest extends TestUtils {
+public class HeapPairingTest extends TestBase {
 
 	@Test
 	public void testRandOpsDefaultCompare() {

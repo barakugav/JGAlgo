@@ -15,7 +15,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
 @SuppressWarnings("boxing")
-public class WeightsTest {
+public class WeightsTest extends TestBase {
 
 	@Test
 	public void testWeightsObjects() {

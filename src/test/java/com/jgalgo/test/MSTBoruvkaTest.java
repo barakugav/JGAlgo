@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import com.jgalgo.MSTBoruvka;
 
-public class MSTBoruvkaTest extends TestUtils {
+public class MSTBoruvkaTest extends TestBase {
 
 	@Test
 	public void testRandGraph() {

@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import com.jgalgo.UnionFindArray;
 
-public class UnionFindArrayTest extends TestUtils {
+public class UnionFindArrayTest extends TestBase {
 
 	@Test
 	public void testRandOps() {

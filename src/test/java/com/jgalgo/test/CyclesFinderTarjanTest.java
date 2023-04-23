@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import com.jgalgo.CyclesFinderTarjan;
 
-public class CyclesFinderTarjanTest {
+public class CyclesFinderTarjanTest extends TestBase {
 
 	@Test
 	public void testSimpleGraph() {

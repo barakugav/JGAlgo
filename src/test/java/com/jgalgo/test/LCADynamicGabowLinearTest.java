@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import com.jgalgo.LCADynamicGabowLinear;
 
-public class LCADynamicGabowLinearTest extends TestUtils {
+public class LCADynamicGabowLinearTest extends TestBase {
 
 	@Test
 	public void testFullBinaryTreesRandOps() {

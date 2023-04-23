@@ -7,11 +7,12 @@ import com.jgalgo.GraphArrayDirected;
 import com.jgalgo.SSSP;
 import com.jgalgo.SSSPDijkstra;
 import com.jgalgo.Weights;
+import com.jgalgo.test.TestBase;
 
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 
-public class ReadmeExample {
+public class ReadmeExample extends TestBase {
 
 	@Test
 	public void testReadmeExample() {

@@ -12,7 +12,7 @@ import com.jgalgo.SSSPCardinality;
 import com.jgalgo.SSSPDijkstra;
 import com.jgalgo.test.GraphsTestUtils.RandomGraphBuilder;
 
-public class SSSPCardinalityTest extends TestUtils {
+public class SSSPCardinalityTest extends TestBase {
 
 	@Test
 	public void testRandGraphDirectedPositiveInt() {

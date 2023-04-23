@@ -13,7 +13,7 @@ import com.jgalgo.test.GraphsTestUtils.RandomGraphBuilder;
 
 import it.unimi.dsi.fastutil.ints.IntList;
 
-public class DFSIterTest extends TestUtils {
+public class DFSIterTest extends TestBase {
 
 	@Test
 	public void testDfsConnected() {

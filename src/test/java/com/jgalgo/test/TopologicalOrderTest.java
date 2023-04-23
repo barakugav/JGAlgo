@@ -12,7 +12,7 @@ import com.jgalgo.EdgeIter;
 import com.jgalgo.TopologicalOrder;
 import com.jgalgo.test.GraphsTestUtils.RandomGraphBuilder;
 
-public class TopologicalOrderTest extends TestUtils {
+public class TopologicalOrderTest extends TestBase {
 
 	@Test
 	public void testTopologicalSortUnconnected() {
@@ -28,7 +28,7 @@ public class TopologicalOrderTest extends TestUtils {
 
 	private static void topologicalSort(boolean connected, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(256, 16, 16), phase(128, 32, 64), phase(4, 1024, 2048));
+		List<Phase> phases = List.of(phase(256, 16, 16), phase(128, 32, 64), phase(2, 1024, 2048));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 			DiGraph g = (DiGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true)

@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import com.jgalgo.MSTKargerKleinTarjan;
 
-public class MSTKargerKleinTarjanTest extends TestUtils {
+public class MSTKargerKleinTarjanTest extends TestBase {
 
 	@Test
 	public void testRandGraph() {

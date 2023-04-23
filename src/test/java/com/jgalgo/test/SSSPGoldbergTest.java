@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import com.jgalgo.SSSPGoldberg;
 
-public class SSSPGoldbergTest extends TestUtils {
+public class SSSPGoldbergTest extends TestBase {
 
 	@Test
 	public void testRandGraphPositiveInt() {

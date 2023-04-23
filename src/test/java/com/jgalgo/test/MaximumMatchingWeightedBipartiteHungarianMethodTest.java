@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import com.jgalgo.MaximumMatchingWeightedBipartiteHungarianMethod;
 
-public class MaximumMatchingWeightedBipartiteHungarianMethodTest extends TestUtils {
+public class MaximumMatchingWeightedBipartiteHungarianMethodTest extends TestBase {
 
 	@Test
 	public void testRandBipartiteGraphsWeight1() {

@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import com.jgalgo.MaxFlowEdmondsKarp;
 
-public class MaxFlowEdmondsKarpTest extends TestUtils {
+public class MaxFlowEdmondsKarpTest extends TestBase {
 
 	@Test
 	public void testRandGraphs() {

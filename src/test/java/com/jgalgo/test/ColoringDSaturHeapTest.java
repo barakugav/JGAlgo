@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import com.jgalgo.Coloring;
 import com.jgalgo.ColoringDSaturHeap;
 
-public class ColoringDSaturHeapTest {
+public class ColoringDSaturHeapTest extends TestBase {
 
 	@Test
 	public void testRandGraphs() {

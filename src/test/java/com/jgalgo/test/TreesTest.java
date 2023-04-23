@@ -12,7 +12,7 @@ import com.jgalgo.Trees;
 import com.jgalgo.UGraph;
 import com.jgalgo.test.GraphsTestUtils.RandomGraphBuilder;
 
-public class TreesTest extends TestUtils {
+public class TreesTest extends TestBase {
 
 	@Test
 	public void testIsTreeUnrootedPositive() {

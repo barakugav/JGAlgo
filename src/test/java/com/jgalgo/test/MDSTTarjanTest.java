@@ -21,7 +21,7 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
-public class MDSTTarjanTest extends TestUtils {
+public class MDSTTarjanTest extends TestBase {
 
 	private static class MDSTUndirectedWrapper implements MST {
 

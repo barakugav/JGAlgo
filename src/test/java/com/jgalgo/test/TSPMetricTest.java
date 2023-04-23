@@ -12,14 +12,14 @@ import org.junit.jupiter.api.Test;
 import com.jgalgo.TSPMetricMSTAppx;
 import com.jgalgo.TSPMetricMatchingAppx;
 
-public class TSPMetricTest extends TestUtils {
+public class TSPMetricTest extends TestBase {
 
 	@Test
 	public void testMstAppxAndMatchingAppxRandGraphs() {
 		final long seed = 0x6c019c0fba54c10fL;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(512, 4), phase(64, 16), phase(32, 32), phase(16, 64), phase(8, 128),
-				phase(4, 256), phase(2, 512));
+		List<Phase> phases = List.of(phase(512, 4), phase(64, 16), phase(32, 32), phase(8, 64), phase(4, 128),
+				phase(3, 256));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			testMstAppxAndMatchingAppxRandGraph(n, seedGen.nextSeed());

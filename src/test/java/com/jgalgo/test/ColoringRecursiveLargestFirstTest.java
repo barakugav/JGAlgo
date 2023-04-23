@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import com.jgalgo.Coloring;
 import com.jgalgo.ColoringRecursiveLargestFirst;
 
-public class ColoringRecursiveLargestFirstTest {
+public class ColoringRecursiveLargestFirstTest extends TestBase {
 
 	@Test
 	public void testRandGraphs() {

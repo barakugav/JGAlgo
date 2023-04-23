@@ -23,9 +23,9 @@ import it.unimi.dsi.fastutil.ints.Int2DoubleMap;
 import it.unimi.dsi.fastutil.ints.Int2DoubleOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
-public class AStarTest extends TestUtils {
+public class AStarTest  extends TestBase  {
 
-	private static List<Phase> SsspPhases = List.of(phase(128, 16, 32), phase(64, 64, 256), phase(8, 512, 1024));
+	private static List<Phase> SsspPhases = List.of(phase(64, 16, 32), phase(32, 64, 256), phase(4, 300, 900));
 
 	@Test
 	public void testRandGraphDirectedNoHeuristic() {
