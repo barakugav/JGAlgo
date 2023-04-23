@@ -25,15 +25,15 @@ import java.util.Arrays;
  */
 public class SSSPDijkstra implements SSSP {
 
-	private int allocSize;
-	private HeapReferenceable<HeapElm> heap;
-	private HeapReference<HeapElm>[] verticesPtrs;
+	@SuppressWarnings("rawtypes")
+	private HeapReferenceable heap;
+	@SuppressWarnings("rawtypes")
+	private HeapReference[] verticesPtrs;
 
 	/**
 	 * Construct a new SSSP algorithm object.
 	 */
 	public SSSPDijkstra() {
-		allocSize = 0;
 		heap = new HeapPairing<>();
 	}
 
@@ -46,19 +46,6 @@ public class SSSPDijkstra implements SSSP {
 		heap = heapBuilder.build();
 	}
 
-	@SuppressWarnings("unchecked")
-	private void memAlloc(int n) {
-		if (allocSize < n) {
-			verticesPtrs = new HeapReference[n];
-			allocSize = n;
-		}
-	}
-
-	private void memClear(int n) {
-		heap.clear();
-		Arrays.fill(verticesPtrs, 0, n, null);
-	}
-
 	/**
 	 * {@inheritDoc}
 	 *
@@ -67,65 +54,151 @@ public class SSSPDijkstra implements SSSP {
 	@Override
 	public SSSP.Result computeShortestPaths(Graph g, EdgeWeightFunc w, int source) {
 		int n = g.vertices().size();
+		if (verticesPtrs == null || verticesPtrs.length < n)
+			verticesPtrs = new HeapReference[n];
 
-		memAlloc(n);
-		HeapReferenceable<HeapElm> heap = this.heap;
-		HeapReference<HeapElm>[] verticesPtrs = this.verticesPtrs;
-
-		SSSPResultImpl res = new SSSPResultImpl(g, source);
-		res.distances[source] = 0;
-
-		for (int u = source;;) {
-			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
-				int e = eit.nextInt();
-				int v = eit.v();
-				if (res.distances[v] != Double.POSITIVE_INFINITY)
-					continue;
-				double ws = w.weight(e);
-				if (ws < 0)
-					throw new IllegalArgumentException("negative weights are not supported");
-				double distance = res.distances[u] + ws;
-
-				HeapReference<HeapElm> vPtr = verticesPtrs[v];
-				if (vPtr == null) {
-					verticesPtrs[v] = heap.insert(new HeapElm(distance, v));
-					res.backtrack[v] = e;
-				} else {
-					HeapElm ptr = vPtr.get();
-					if (distance < ptr.distance) {
-						ptr.distance = distance;
-						res.backtrack[v] = e;
-						heap.decreaseKey(vPtr, ptr);
-					}
-				}
-			}
-
-			if (heap.isEmpty())
-				break;
-			HeapElm next = heap.extractMin();
-			res.distances[next.v] = next.distance;
-			u = next.v;
+		SSSP.Result res;
+		if (w instanceof EdgeWeightFunc.Int) {
+			res = new WorkerInt(heap, verticesPtrs).computeSSSP(g, (EdgeWeightFunc.Int) w, source);
+		} else {
+			res = new WorkerDouble(heap, verticesPtrs).computeSSSP(g, w, source);
 		}
 
-		memClear(n);
+		heap.clear();
+		Arrays.fill(verticesPtrs, 0, n, null);
 		return res;
 	}
 
-	private static class HeapElm implements Comparable<HeapElm> {
+	private static class WorkerDouble {
 
-		double distance;
-		final int v;
+		private final HeapReferenceable<HeapElm> heap;
+		private final HeapReference<HeapElm>[] verticesPtrs;
 
-		HeapElm(double distance, int v) {
-			this.distance = distance;
-			this.v = v;
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+		WorkerDouble(HeapReferenceable heap, HeapReference[] verticesPtrs) {
+			this.heap = heap;
+			this.verticesPtrs = verticesPtrs;
 		}
 
-		@Override
-		public int compareTo(HeapElm o) {
-			return Double.compare(distance, o.distance);
+		SSSP.Result computeSSSP(Graph g, EdgeWeightFunc w, int source) {
+			SSSPResultImpl res = new SSSPResultImpl(g, source);
+			res.distances[source] = 0;
+
+			for (int u = source;;) {
+				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
+					int e = eit.nextInt();
+					int v = eit.v();
+					if (res.distances[v] != Double.POSITIVE_INFINITY)
+						continue;
+					double ws = w.weight(e);
+					if (ws < 0)
+						throw new IllegalArgumentException("negative weights are not supported");
+					double distance = res.distances[u] + ws;
+
+					HeapReference<HeapElm> vPtr = verticesPtrs[v];
+					if (vPtr == null) {
+						verticesPtrs[v] = heap.insert(new HeapElm(distance, v));
+						res.backtrack[v] = e;
+					} else {
+						HeapElm ptr = vPtr.get();
+						if (distance < ptr.distance) {
+							ptr.distance = distance;
+							res.backtrack[v] = e;
+							heap.decreaseKey(vPtr, ptr);
+						}
+					}
+				}
+
+				if (heap.isEmpty())
+					break;
+				HeapElm next = heap.extractMin();
+				res.distances[next.v] = next.distance;
+				u = next.v;
+			}
+
+			return res;
 		}
 
+		private static class HeapElm implements Comparable<HeapElm> {
+			double distance;
+			final int v;
+
+			HeapElm(double distance, int v) {
+				this.distance = distance;
+				this.v = v;
+			}
+
+			@Override
+			public int compareTo(HeapElm o) {
+				return Double.compare(distance, o.distance);
+			}
+		}
+	}
+
+	private static class WorkerInt {
+
+		private final HeapReferenceable<HeapElm> heap;
+		private final HeapReference<HeapElm>[] verticesPtrs;
+
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+		WorkerInt(HeapReferenceable heap, HeapReference[] verticesPtrs) {
+			this.heap = heap;
+			this.verticesPtrs = verticesPtrs;
+		}
+
+		SSSP.Result computeSSSP(Graph g, EdgeWeightFunc.Int w, int source) {
+			SSSPResultImpl.Int res = new SSSPResultImpl.Int(g, source);
+			res.distances[source] = 0;
+
+			for (int u = source;;) {
+				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
+					int e = eit.nextInt();
+					int v = eit.v();
+					if (res.distances[v] != Integer.MAX_VALUE)
+						continue;
+					int ws = w.weightInt(e);
+					if (ws < 0)
+						throw new IllegalArgumentException("negative weights are not supported");
+					int distance = res.distances[u] + ws;
+
+					HeapReference<HeapElm> vPtr = verticesPtrs[v];
+					if (vPtr == null) {
+						verticesPtrs[v] = heap.insert(new HeapElm(distance, v));
+						res.backtrack[v] = e;
+					} else {
+						HeapElm ptr = vPtr.get();
+						if (distance < ptr.distance) {
+							ptr.distance = distance;
+							res.backtrack[v] = e;
+							heap.decreaseKey(vPtr, ptr);
+						}
+					}
+				}
+
+				if (heap.isEmpty())
+					break;
+				HeapElm next = heap.extractMin();
+				res.distances[next.v] = next.distance;
+				u = next.v;
+			}
+
+			return res;
+		}
+
+		private static class HeapElm implements Comparable<HeapElm> {
+			int distance;
+			final int v;
+
+			HeapElm(int distance, int v) {
+				this.distance = distance;
+				this.v = v;
+			}
+
+			@Override
+			public int compareTo(HeapElm o) {
+				return Integer.compare(distance, o.distance);
+			}
+		}
 	}
 
 }

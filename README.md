@@ -7,10 +7,10 @@
 
 # JGAlgo
 
-JGAlgo is a library of graph algorithms implemented in Java. Its aim is to provide best in practice performance by implementing algorithms with guaranteed theoretical complexities. Although it contains some implementations that are just a proof of concept for good in theory algorithms for which there are faster and simpler algorithms in practie.
+JGAlgo is a library of graph algorithms implemented in Java. Its aim is to provide best in practice performance by implementing algorithms with guaranteed theoretical complexities. Although it contains some implementations that are just a proof of concept for good in-theory algorithms for which there are faster and simpler algorithms in practice.
 The library runs on Java 11 or higher, and it is installed using Maven (WIP).
 
-The implementations in this library are **fast** ([Benchmarks](https://github.com/barakugav/JGAlgo/actions/workflows/benchmarks.yaml)), you can't be much faster than this in Java:
+The implementations in this library are **fast** ([Benchmarks](https://github.com/barakugav/JGAlgo/actions/workflows/benchmarks.yaml)):
 - All underlying building blocks of the library are primitives
 - No costly hash maps are used, just plain primitive arrays, yielding smaller memory footprint and better cache hit rates
 - Extensive use of [fastutil](https://fastutil.di.unimi.it/) for all collections used

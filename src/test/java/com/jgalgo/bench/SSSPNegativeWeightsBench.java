@@ -32,8 +32,8 @@ import com.jgalgo.test.TestUtils.SeedGenerator;
 
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
-@Warmup(iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
-@Measurement(iterations = 1, time = 10, timeUnit = TimeUnit.SECONDS)
+@Warmup(iterations = 4, time = 5, timeUnit = TimeUnit.SECONDS)
+@Measurement(iterations = 3, time = 5, timeUnit = TimeUnit.SECONDS)
 @State(Scope.Benchmark)
 public class SSSPNegativeWeightsBench {
 
@@ -72,12 +72,12 @@ public class SSSPNegativeWeightsBench {
 	}
 
 	@Benchmark
-	public void benchSSSPNegativeWeightsBellmanFord(Blackhole blackhole) {
+	public void BellmanFord(Blackhole blackhole) {
 		benchSSSPNegativeWeights(SSSPBellmanFord::new, blackhole);
 	}
 
 	@Benchmark
-	public void benchSSSPNegativeWeightsGoldberg1995(Blackhole blackhole) {
+	public void GoldbergSSSP(Blackhole blackhole) {
 		benchSSSPNegativeWeights(SSSPGoldberg::new, blackhole);
 	}
 

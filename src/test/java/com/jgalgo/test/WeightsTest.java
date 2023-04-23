@@ -9,7 +9,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.jgalgo.Graph;
 import com.jgalgo.Weights;
-import com.jgalgo.test.TestUtils.SeedGenerator;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;

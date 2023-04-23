@@ -13,7 +13,13 @@
   <Match>
     <!-- Heap element in Dijkstra implementation is only used in a heap, in which the
     compareTo() method is used and the equals() is not -->
-    <Class name="com.jgalgo.SSSPDijkstra$HeapElm" />
+    <Class name="com.jgalgo.SSSPDijkstra$WorkerDouble$HeapElm" />
+    <Bug pattern="EQ_COMPARETO_USE_OBJECT_EQUALS" />
+  </Match>
+  <Match>
+    <!-- Heap element in Dijkstra implementation is only used in a heap, in which the
+    compareTo() method is used and the equals() is not -->
+    <Class name="com.jgalgo.SSSPDijkstra$WorkerInt$HeapElm" />
     <Bug pattern="EQ_COMPARETO_USE_OBJECT_EQUALS" />
   </Match>
   <Match>
