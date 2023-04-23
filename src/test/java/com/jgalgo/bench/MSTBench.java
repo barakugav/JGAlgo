@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 import org.openjdk.jmh.annotations.Benchmark;
@@ -46,6 +47,8 @@ public class MSTBench {
 	private int n, m;
 
 	private List<Pair<Graph, EdgeWeightFunc.Int>> graphs;
+	private final int graphsNum = 31;
+	private final AtomicInteger graphIdx = new AtomicInteger();
 
 	@Setup(Level.Iteration)
 	public void setup() {
@@ -54,9 +57,8 @@ public class MSTBench {
 		m = Integer.parseInt(graphSizeValues.get("|E|"));
 
 		final SeedGenerator seedGen = new SeedGenerator(0xe75b8a2fb16463ecL);
-		final int graphsNum = 20;
 		graphs = new ArrayList<>(graphsNum);
-		for (int graphIdx = 0; graphIdx < graphsNum; graphIdx++) {
+		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
 			Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
 			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			graphs.add(Pair.of(g, w));
@@ -64,13 +66,12 @@ public class MSTBench {
 	}
 
 	private void benchMST(Supplier<? extends MST> builder, Blackhole blackhole) {
-		for (Pair<Graph, EdgeWeightFunc.Int> gw : graphs) {
-			Graph g = gw.first();
-			EdgeWeightFunc.Int w = gw.second();
-			MST algo = builder.get();
-			IntCollection mst = algo.computeMinimumSpanningTree(g, w);
-			blackhole.consume(mst);
-		}
+		Pair<Graph, EdgeWeightFunc.Int> gw = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
+		Graph g = gw.first();
+		EdgeWeightFunc.Int w = gw.second();
+		MST algo = builder.get();
+		IntCollection mst = algo.computeMinimumSpanningTree(g, w);
+		blackhole.consume(mst);
 	}
 
 	@Benchmark

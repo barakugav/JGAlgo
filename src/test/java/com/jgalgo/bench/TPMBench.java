@@ -3,6 +3,7 @@ package com.jgalgo.bench;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 import org.openjdk.jmh.annotations.Benchmark;
@@ -37,25 +38,14 @@ public class TPMBench {
 	public int n;
 
 	private List<TPMArgs> graphs;
-
-	private static class TPMArgs {
-		final Graph tree;
-		final EdgeWeightFunc w;
-		final TPM.Queries queries;
-
-		TPMArgs(Graph tree, EdgeWeightFunc w, TPM.Queries queries) {
-			this.tree = tree;
-			this.w = w;
-			this.queries = queries;
-		}
-	}
+	private final int graphsNum = 31;
+	private final AtomicInteger graphIdx = new AtomicInteger();
 
 	@Setup(Level.Iteration)
 	public void setup() {
 		final SeedGenerator seedGen = new SeedGenerator(0x28ddf3f2d9c5c873L);
-		final int graphsNum = 20;
 		graphs = new ArrayList<>(graphsNum);
-		for (int graphIdx = 0; graphIdx < graphsNum; graphIdx++) {
+		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
 			Graph t = GraphsTestUtils.randTree(n, seedGen.nextSeed());
 			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(t, seedGen.nextSeed());
 			TPM.Queries queries = TPMTestUtils.generateRandQueries(n, n, seedGen.nextSeed());
@@ -65,11 +55,10 @@ public class TPMBench {
 	}
 
 	private void benchTPM(Supplier<? extends TPM> builder, Blackhole blackhole) {
+		TPMArgs g = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 		TPM algo = builder.get();
-		for (TPMArgs g : graphs) {
-			int[] actual = algo.computeHeaviestEdgeInTreePaths(g.tree, g.w, g.queries);
-			blackhole.consume(actual);
-		}
+		int[] result = algo.computeHeaviestEdgeInTreePaths(g.tree, g.w, g.queries);
+		blackhole.consume(result);
 	}
 
 	@Benchmark
@@ -88,6 +77,18 @@ public class TPMBench {
 			algo.setBitsLookupTablesEnable(true);
 			return algo;
 		}, blackhole);
+	}
+
+	private static class TPMArgs {
+		final Graph tree;
+		final EdgeWeightFunc w;
+		final TPM.Queries queries;
+
+		TPMArgs(Graph tree, EdgeWeightFunc w, TPM.Queries queries) {
+			this.tree = tree;
+			this.w = w;
+			this.queries = queries;
+		}
 	}
 
 }

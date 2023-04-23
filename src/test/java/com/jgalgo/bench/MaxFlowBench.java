@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 import org.openjdk.jmh.annotations.Benchmark;
@@ -51,20 +52,8 @@ public class MaxFlowBench {
 	private int n, m;
 
 	private List<MaxFlowTask> graphs;
-
-	private static class MaxFlowTask {
-		final DiGraph g;
-		final FlowNetwork.Int flow;
-		final int source;
-		final int sink;
-
-		MaxFlowTask(DiGraph g, FlowNetwork.Int flow, int source, int sink) {
-			this.g = g;
-			this.flow = flow;
-			this.source = source;
-			this.sink = sink;
-		}
-	}
+	private final int graphsNum = 31;
+	private final AtomicInteger graphIdx = new AtomicInteger();
 
 	@Setup(Level.Trial)
 	public void setup() {
@@ -74,9 +63,8 @@ public class MaxFlowBench {
 
 		final SeedGenerator seedGen = new SeedGenerator(0xe75b8a2fb16463ecL);
 		Random rand = new Random(seedGen.nextSeed());
-		final int graphsNum = 20;
 		graphs = new ArrayList<>(graphsNum);
-		for (int graphIdx = 0; graphIdx < graphsNum; graphIdx++) {
+		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
 			DiGraph g = (DiGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true)
 					.parallelEdges(false).selfEdges(false)
 					.cycles(true).connected(false).build();
@@ -104,11 +92,10 @@ public class MaxFlowBench {
 	}
 
 	private void benchMaxFlow(Supplier<? extends MaxFlow> builder, Blackhole blackhole) {
-		for (MaxFlowTask graph : graphs) {
-			MaxFlow algo = builder.get();
-			double flow = algo.computeMaximumFlow(graph.g, graph.flow, graph.source, graph.sink);
-			blackhole.consume(flow);
-		}
+		MaxFlowTask graph = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
+		MaxFlow algo = builder.get();
+		double flow = algo.computeMaximumFlow(graph.g, graph.flow, graph.source, graph.sink);
+		blackhole.consume(flow);
 	}
 
 	@Benchmark
@@ -162,6 +149,20 @@ public class MaxFlowBench {
 	@Benchmark
 	public void benchMaxFlowPushRelabelDynamicTrees(Blackhole blackhole) {
 		benchMaxFlow(MaxFlowPushRelabelDynamicTrees::new, blackhole);
+	}
+
+	private static class MaxFlowTask {
+		final DiGraph g;
+		final FlowNetwork.Int flow;
+		final int source;
+		final int sink;
+
+		MaxFlowTask(DiGraph g, FlowNetwork.Int flow, int source, int sink) {
+			this.g = g;
+			this.flow = flow;
+			this.source = source;
+			this.sink = sink;
+		}
 	}
 
 }

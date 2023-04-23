@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
@@ -45,6 +46,53 @@ public class HeapReferenceableBench {
 	private int n, m;
 
 	private List<GraphArgs> graphs;
+	private final int graphsNum = 31;
+	private final AtomicInteger graphIdx = new AtomicInteger();
+
+	@Setup(Level.Iteration)
+	public void setup() {
+		Map<String, String> graphSizeValues = BenchUtils.parseArgsStr(graphSize);
+		n = Integer.parseInt(graphSizeValues.get("|V|"));
+		m = Integer.parseInt(graphSizeValues.get("|E|"));
+
+		final SeedGenerator seedGen = new SeedGenerator(0x88da246e71ef3dacL);
+		Random rand = new Random(seedGen.nextSeed());
+		graphs = new ArrayList<>(graphsNum);
+		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
+			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false)
+					.parallelEdges(true)
+					.selfEdges(true).cycles(true).connected(false).build();
+			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+			int source = rand.nextInt(g.vertices().size());
+			graphs.add(new GraphArgs(g, w, source));
+		}
+	}
+
+	private void benchHeap(HeapReferenceable.Builder heapBuilder, Blackhole blackhole) {
+		GraphArgs args = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
+
+		/* SSSP */
+		SSSPDijkstra algo = new SSSPDijkstra();
+		algo.setHeapBuilder(heapBuilder);
+		SSSP.Result ssspRes = algo.computeShortestPaths(args.g, args.w, args.source);
+		blackhole.consume(ssspRes);
+
+		/* Prim MST */
+		MSTPrim mstAlgo = new MSTPrim();
+		mstAlgo.setHeapBuilder(heapBuilder);
+		IntCollection mst = mstAlgo.computeMinimumSpanningTree(args.g, args.w);
+		blackhole.consume(mst);
+	}
+
+	@Benchmark
+	public void benchHeapPairing(Blackhole blackhole) {
+		benchHeap(HeapPairing::new, blackhole);
+	}
+
+	@Benchmark
+	public void benchHeapFibonacci(Blackhole blackhole) {
+		benchHeap(HeapFibonacci::new, blackhole);
+	}
 
 	private static class GraphArgs {
 		final Graph g;
@@ -56,52 +104,6 @@ public class HeapReferenceableBench {
 			this.w = w;
 			this.source = source;
 		}
-	}
-
-	@Setup(Level.Iteration)
-	public void setup() {
-		Map<String, String> graphSizeValues = BenchUtils.parseArgsStr(graphSize);
-		n = Integer.parseInt(graphSizeValues.get("|V|"));
-		m = Integer.parseInt(graphSizeValues.get("|E|"));
-
-		final SeedGenerator seedGen = new SeedGenerator(0x88da246e71ef3dacL);
-		Random rand = new Random(seedGen.nextSeed());
-		final int graphsNum = 20;
-		graphs = new ArrayList<>(graphsNum);
-		for (int graphIdx = 0; graphIdx < graphsNum; graphIdx++) {
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false)
-					.parallelEdges(true)
-					.selfEdges(true).cycles(true).connected(false).build();
-			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
-			int source = rand.nextInt(g.vertices().size());
-			graphs.add(new GraphArgs(g, w, source));
-		}
-	}
-
-	private void benchHeap(HeapReferenceable.Builder heapBuilder, Blackhole blackhole) {
-		for (GraphArgs args : graphs) {
-			/* SSSP */
-			SSSPDijkstra algo = new SSSPDijkstra();
-			algo.setHeapBuilder(heapBuilder);
-			SSSP.Result ssspRes = algo.computeShortestPaths(args.g, args.w, args.source);
-			blackhole.consume(ssspRes);
-
-			/* Prim MST */
-			MSTPrim mstAlgo = new MSTPrim();
-			mstAlgo.setHeapBuilder(heapBuilder);
-			IntCollection mst = mstAlgo.computeMinimumSpanningTree(args.g, args.w);
-			blackhole.consume(mst);
-		}
-	}
-
-	@Benchmark
-	public void benchHeapPairing(Blackhole blackhole) {
-		benchHeap(HeapPairing::new, blackhole);
-	}
-
-	@Benchmark
-	public void benchHeapFibonacci(Blackhole blackhole) {
-		benchHeap(HeapFibonacci::new, blackhole);
 	}
 
 }

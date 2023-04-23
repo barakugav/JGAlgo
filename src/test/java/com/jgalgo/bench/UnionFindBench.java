@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.IntFunction;
 
 import org.openjdk.jmh.annotations.Benchmark;
@@ -28,9 +29,7 @@ import com.jgalgo.test.GraphsTestUtils;
 import com.jgalgo.test.TestUtils.SeedGenerator;
 
 import it.unimi.dsi.fastutil.Pair;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
-import it.unimi.dsi.fastutil.ints.IntCollection;
 
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
@@ -44,6 +43,8 @@ public class UnionFindBench {
 	private int n, m;
 
 	private List<Pair<Graph, int[]>> graphs;
+	private final int graphsNum = 31;
+	private final AtomicInteger graphIdx = new AtomicInteger();
 
 	@Setup(Level.Iteration)
 	public void setup() {
@@ -52,9 +53,8 @@ public class UnionFindBench {
 		m = Integer.parseInt(graphSizeValues.get("|E|"));
 
 		final SeedGenerator seedGen = new SeedGenerator(0xecbc984604fcd0afL);
-		final int graphsNum = 20;
 		graphs = new ArrayList<>(graphsNum);
-		for (int graphIdx = 0; graphIdx < graphsNum; graphIdx++) {
+		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
 			Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
 			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 
@@ -65,18 +65,27 @@ public class UnionFindBench {
 			int[] edges = g.edges().toIntArray();
 			IntArrays.parallelQuickSort(edges, w);
 
-			graphs.add(Pair.of(g, edges));
+			int[] edgesWithEndpoint = new int[edges.length * 3];
+			for (int i = 0; i < edges.length; i++) {
+				int e = edges[i];
+				int u = g.edgeSource(e);
+				int v = g.edgeTarget(e);
+				edgesWithEndpoint[i * 3 + 0] = e;
+				edgesWithEndpoint[i * 3 + 1] = u;
+				edgesWithEndpoint[i * 3 + 2] = v;
+			}
+
+			graphs.add(Pair.of(g, edgesWithEndpoint));
 		}
 	}
 
-	private void benchUnionFind(IntFunction<? extends UnionFind> builder, Blackhole blackhole) {
-		for (Pair<Graph, int[]> graph : graphs) {
-			IntCollection mst = calcMSTKruskal(graph.first(), graph.second(), builder);
-			blackhole.consume(mst);
-		}
+	private void benchUnionFindByRunningMSTKruskal(IntFunction<? extends UnionFind> builder, Blackhole blackhole) {
+		Pair<Graph, int[]> graph = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
+		int[] mst = calcMSTKruskal(graph.first(), graph.second(), builder);
+		blackhole.consume(mst);
 	}
 
-	private static IntCollection calcMSTKruskal(Graph g, int[] edges, IntFunction<? extends UnionFind> ufBuilder) {
+	private static int[] calcMSTKruskal(Graph g, int[] edges, IntFunction<? extends UnionFind> ufBuilder) {
 		/* !! assume the edge array is sorted by weight !! */
 		int n = g.vertices().size();
 
@@ -84,14 +93,16 @@ public class UnionFindBench {
 		UnionFind uf = ufBuilder.apply(n);
 
 		/* iterate over the edges and build the MST */
-		IntCollection mst = new IntArrayList(n - 1);
-		for (int e : edges) {
-			int u = g.edgeSource(e);
-			int v = g.edgeTarget(e);
+		int[] mst = new int[n - 1];
+		int mstSize = 0;
+		for (int i = 0; i < edges.length / 3; i++) {
+			int e = edges[i * 3 + 0];
+			int u = edges[i * 3 + 1];
+			int v = edges[i * 3 + 2];
 
 			if (uf.find(u) != uf.find(v)) {
 				uf.union(u, v);
-				mst.add(e);
+				mst[mstSize++] = e;
 			}
 		}
 		return mst;
@@ -99,12 +110,12 @@ public class UnionFindBench {
 
 	@Benchmark
 	public void benchUnionFindArray(Blackhole blackhole) {
-		benchUnionFind(UnionFindArray::new, blackhole);
+		benchUnionFindByRunningMSTKruskal(UnionFindArray::new, blackhole);
 	}
 
 	@Benchmark
 	public void benchUnionFindPtr(Blackhole blackhole) {
-		benchUnionFind(UnionFindPtr::new, blackhole);
+		benchUnionFindByRunningMSTKruskal(UnionFindPtr::new, blackhole);
 	}
 
 }

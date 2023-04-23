@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 import org.openjdk.jmh.annotations.Benchmark;
@@ -42,6 +43,8 @@ public class SSSPPositiveWeightsBench {
 	private int n, m;
 
 	private List<GraphArgs> graphs;
+	private final int graphsNum = 31;
+	private final AtomicInteger graphIdx = new AtomicInteger();
 
 	@Setup(Level.Iteration)
 	public void setup() {
@@ -51,9 +54,8 @@ public class SSSPPositiveWeightsBench {
 
 		final SeedGenerator seedGen = new SeedGenerator(0x88da246e71ef3dacL);
 		Random rand = new Random(seedGen.nextSeed());
-		final int graphsNum = 20;
 		graphs = new ArrayList<>(graphsNum);
-		for (int graphIdx = 0; graphIdx < graphsNum; graphIdx++) {
+		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true)
 					.parallelEdges(true).selfEdges(true)
 					.cycles(true).connected(false).build();
@@ -64,11 +66,10 @@ public class SSSPPositiveWeightsBench {
 	}
 
 	private void benchSSSPPositiveWeights(Supplier<? extends SSSP> builder, Blackhole blackhole) {
-		for (GraphArgs args : graphs) {
-			SSSP algo = builder.get();
-			SSSP.Result result = algo.computeShortestPaths(args.g, args.w, args.source);
-			blackhole.consume(result);
-		}
+		GraphArgs args = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
+		SSSP algo = builder.get();
+		SSSP.Result result = algo.computeShortestPaths(args.g, args.w, args.source);
+		blackhole.consume(result);
 	}
 
 	@Benchmark

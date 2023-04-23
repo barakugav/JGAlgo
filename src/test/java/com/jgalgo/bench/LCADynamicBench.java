@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 import org.openjdk.jmh.annotations.Benchmark;
@@ -37,53 +38,54 @@ import com.jgalgo.test.TestUtils.SeedGenerator;
 @State(Scope.Benchmark)
 public class LCADynamicBench {
 
-	@Param({ "|V|=64 |E|=256", "|V|=512 |E|=4096", "|V|=4096 |E|=16384" })
+	@Param({ "|V|=64 M=256", "|V|=512 M=4096", "|V|=4096 M=16384" })
 	public String graphSize;
 	private int n, m;
 
 	private List<Collection<Op>> lcaOps;
+	private final int graphsNum = 31;
+	private final AtomicInteger graphIdx = new AtomicInteger();
 
 	@Setup(Level.Iteration)
 	public void setup() {
 		Map<String, String> graphSizeValues = BenchUtils.parseArgsStr(graphSize);
 		n = Integer.parseInt(graphSizeValues.get("|V|"));
-		m = Integer.parseInt(graphSizeValues.get("|E|"));
+		m = Integer.parseInt(graphSizeValues.get("M"));
 
 		final SeedGenerator seedGen = new SeedGenerator(0x66fed18e0b594b55L);
-		final int graphsNum = 20;
 		lcaOps = new ArrayList<>(graphsNum);
-		for (int graphIdx = 0; graphIdx < graphsNum; graphIdx++) {
+		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
 			Collection<Op> ops = LCADynamicTestUtils.generateRandOps(n, m, seedGen.nextSeed());
 			lcaOps.add(ops);
 		}
 	}
 
 	private void benchLCA(Supplier<? extends LCADynamic> builder, Blackhole blackhole) {
-		for (Collection<Op> ops : lcaOps) {
-			LCADynamic lca = builder.get();
-			List<LCADynamic.Node> nodes = new ArrayList<>();
-			for (Op op0 : ops) {
-				if (op0 instanceof OpInitTree) {
-					nodes.add(lca.initTree());
+		Collection<Op> ops = lcaOps.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
+		LCADynamic lca = builder.get();
+		LCADynamic.Node[] nodes = new LCADynamic.Node[n];
+		int nodesNum = 0;
+		for (Op op0 : ops) {
+			if (op0 instanceof OpInitTree) {
+				nodes[nodesNum++] = lca.initTree();
 
-				} else if (op0 instanceof OpAddLeaf) {
-					OpAddLeaf op = (OpAddLeaf) op0;
-					LCADynamic.Node parent = nodes.get(op.parent);
-					nodes.add(lca.addLeaf(parent));
+			} else if (op0 instanceof OpAddLeaf) {
+				OpAddLeaf op = (OpAddLeaf) op0;
+				LCADynamic.Node parent = nodes[op.parent];
+				nodes[nodesNum++] = lca.addLeaf(parent);
 
-				} else if (op0 instanceof OpLCAQuery) {
-					OpLCAQuery op = (OpLCAQuery) op0;
-					LCADynamic.Node x = nodes.get(op.x), y = nodes.get(op.y);
-					LCADynamic.Node lcaRes = lca.findLowestCommonAncestor(x, y);
-					blackhole.consume(lcaRes);
+			} else if (op0 instanceof OpLCAQuery) {
+				OpLCAQuery op = (OpLCAQuery) op0;
+				LCADynamic.Node x = nodes[op.x], y = nodes[op.y];
+				LCADynamic.Node lcaRes = lca.findLowestCommonAncestor(x, y);
+				blackhole.consume(lcaRes);
 
-				} else {
-					throw new IllegalStateException();
-				}
+			} else {
+				throw new IllegalStateException();
 			}
-			blackhole.consume(lca);
-			blackhole.consume(nodes);
 		}
+		blackhole.consume(lca);
+		blackhole.consume(nodes);
 	}
 
 	@Benchmark

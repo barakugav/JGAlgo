@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 import org.openjdk.jmh.annotations.Benchmark;
@@ -42,6 +43,8 @@ public class APSPBench {
 	private int n, m;
 
 	private List<Pair<Graph, EdgeWeightFunc.Int>> graphs;
+	private final int graphsNum = 31;
+	private final AtomicInteger graphIdx = new AtomicInteger();
 
 	@Setup(Level.Iteration)
 	public void setup() {
@@ -50,9 +53,8 @@ public class APSPBench {
 		m = Integer.parseInt(graphSizeValues.get("|E|"));
 
 		final SeedGenerator seedGen = new SeedGenerator(0xe9485d7a86646b18L);
-		final int graphsNum = 20;
 		graphs = new ArrayList<>(graphsNum);
-		for (int graphIdx = 0; graphIdx < graphsNum; graphIdx++) {
+		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true)
 					.parallelEdges(true).selfEdges(true)
 					.cycles(true).connected(false).build();
@@ -62,11 +64,10 @@ public class APSPBench {
 	}
 
 	private void benchAPSPPositiveWeights(Supplier<? extends APSP> builder, Blackhole blackhole) {
-		for (Pair<Graph, EdgeWeightFunc.Int> graph : graphs) {
-			APSP algo = builder.get();
-			APSP.Result result = algo.computeAllShortestPaths(graph.first(), graph.second());
-			blackhole.consume(result);
-		}
+		Pair<Graph, EdgeWeightFunc.Int> graph = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
+		APSP algo = builder.get();
+		APSP.Result result = algo.computeAllShortestPaths(graph.first(), graph.second());
+		blackhole.consume(result);
 	}
 
 	@Benchmark

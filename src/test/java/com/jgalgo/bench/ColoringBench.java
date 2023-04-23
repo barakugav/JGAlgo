@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 import org.openjdk.jmh.annotations.Benchmark;
@@ -41,6 +42,8 @@ public class ColoringBench {
 	private int n, m;
 
 	private List<UGraph> graphs;
+	private final int graphsNum = 31;
+	private final AtomicInteger graphIdx = new AtomicInteger();
 
 	@Setup(Level.Iteration)
 	public void setup() {
@@ -49,20 +52,18 @@ public class ColoringBench {
 		m = Integer.parseInt(graphSizeValues.get("|E|"));
 
 		final SeedGenerator seedGen = new SeedGenerator(0x566c25f996355cb4L);
-		final int graphsNum = 20;
 		graphs = new ArrayList<>(graphsNum);
-		for (int graphIdx = 0; graphIdx < graphsNum; graphIdx++) {
+		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
 			UGraph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
 			graphs.add(g);
 		}
 	}
 
 	private void benchMST(Supplier<? extends Coloring> builder, Blackhole blackhole) {
-		for (UGraph g : graphs) {
-			Coloring algo = builder.get();
-			Coloring.Result res = algo.computeColoring(g);
-			blackhole.consume(res);
-		}
+		UGraph g = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
+		Coloring algo = builder.get();
+		Coloring.Result res = algo.computeColoring(g);
+		blackhole.consume(res);
 	}
 
 	@Benchmark
