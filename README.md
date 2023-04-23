@@ -7,83 +7,24 @@
 
 # JGAlgo
 
-JGAlgo is a library of graph algorithms implemented in Java. Its aim is to provide best in practice performance by implementing algorithms with guaranteed theoretical complexities. Although it contains some implementations which are just a proof of concept for algorithms which are only good in theory but are outperformed in practice by simpler algorithms.
+JGAlgo is a library of graph algorithms implemented in Java. Its aim is to provide best in practice performance by implementing algorithms with guaranteed theoretical complexities. Although it contains some implementations that are just a proof of concept for good in theory algorithms for which there are faster and simpler algorithms in practie.
 The library runs on Java 11 or higher, and it is installed using Maven (WIP).
+
+The implementations in this library are **fast** ([Benchmarks](https://github.com/barakugav/JGAlgo/actions/workflows/benchmarks.yaml)), you can't be much faster than this in Java:
+- All underlying building blocks of the library are primitives
+- No costly hash maps are used, just plain primitive arrays, yielding smaller memory footprint and better cache hit rates
+- Extensive use of [fastutil](https://fastutil.di.unimi.it/) for all collections used
+- Memory allocations are postpone and reused by algorithms objects
 
 **Notice:** This project is still under active development and does not guarantee a stable API.
 * [Documentation](https://barakugav.github.io/JGAlgo)
 
-## Algorithms
+A large variety of algorithm are still needed for the library. If you are passionate about data structures and graph algorithms, don't hesitate to join us and contribute.
 
-
-| Algorithm | Running time |
-| - | - |
-| Binary heap | $O(m \log n)$ for $m$ operations |
-| Binomial heap | $O(m \log n)$ for $m$ operations |
-| Fibonacci heap | $O(m \log n)$ for $m$ operations, decrease key in $O(1)$ |
-| Pairing heap | $O(m \log n)$ for $m$ operations, decrease key in $O(\log \log n)$, very good pointer based heap in practice |
-| Red-Black tree (sub tree size/max/min extensions supported) | $O(m \log n)$ for $m$ operations |
-| Splay Tree | $O(m \log n)$ for $m$ operations, efficient splits and joins |
-| Dynamic Tree using Splay trees | $O(m \log n)$ for $m$ operations |
-| Union Find | $O(m \cdot \alpha(m,n))$ where $\alpha(\cdot, \cdot)$ is the inverse Ackermann func |
-| Split Find Min | $O(m \log n)$ for $m$ operations |
-| SSSP Dijkstra positive weights | $O(m + n \log n)$ |
-| SSSP Dial positive integer weights | $O(m + D)$ where $D$ is the maximum distance |
-| SSSP BellmanFord general weights | $O(m n)$ |
-| SSSP Goldberg positive and negative integer weights | $O(m \sqrt{n} \log N)$ where $N$ is the minimum negative weight |
-| APSP Floyd-Warshall general weights | $O(n^3)$ |
-| APSP Johnson general weights | $O(m n + n^2 \log n)$ |
-| A* | $O(b^d)$ where $b$ is the branching factor and $d$ is the depth, $O(m \log n)$ worst case |
-| RMQ static $\pm 1$ by reduction to LCA | $O(n)$ preprocessing, $O(1)$ query |
-| RMQ static using Cartesian trees | $O(n)$ preprocessing, $O(1)$ query |
-| LCA static by reduction to RMQ | $O(n + m)$ |
-| LCA dynamic Gabow (without bit tricks) | $O(n \log^2 n + m)$ |
-| LCA dynamic Gabow linear (using RAM model) | $O(n + m)$ |
-| Max flow EdmondsKarp | $O(m^2 n)$ |
-| Max flow Push/Relabel (FIFO order) <br> with global relabeling and gap heuristics | $O(n^3)$ |
-| Max flow Push/Relabel-to-Front <br> with global relabeling and gap heuristics | $O(n^3)$ |
-| Max flow Push/Relabel Highest First <br> with global relabeling and gap heuristics | $O(n^2 \sqrt{m})$ |
-| Max flow Push/Relabel Lowest First <br> with global relabeling and gap heuristics | $O(n^2 m)$ |
-| Max flow Push/Relabel using Dynamic Trees | $O\left(m n \log \left(\frac{n^2}{m}\right)\right)$ |
-| Max flow Dinic | $O(m n^2)$ |
-| Max flow Dinic using Dynamic Trees | $O(m n \log n)$ |
-| MST Boruvka | $O(m \log n)$ |
-| MST Kruskal | $O(m \log n)$ |
-| MST Prim | $O(m + n \log n)$ |
-| MST Yao | $O(m \log \log n + n \log n)$ |
-| MST Fredman-Tarjan | $O(m \log^* n)$ |
-| MST Karger-Klein-Tarjan randomized | $O(n + m)$ expected |
-| MDST Tarjan directed graphs | $O(m \log n)$ |
-| Tree path maxima (TMP) Hagerup | $O(n + m)$ where $m$ is the number of queries |
-| Subtree Merge Findmin (used in general weighted matching) | $O(m + n \log n)$ |
-| Maximum matching bipartite unweighted Hopcroft-Karp | $O(m \sqrt{n})$ |
-| Maximum matching general unweighted Gabow1976 with Union-Find | $O(m n \cdot \alpha (m,n))$ |
-| Maximum matching bipartite weighted using SSSP | $O(m n + n^2 \log n)$ |
-| Maximum matching bipartite weighted Hungarian method with heaps | $O(m n + n^2 \log n)$ |
-| Maximum matching general weighted Gabow1990 implementation with dynamic LCA | $O(m n + n^2 \log n)$ |
-| Traveling Salesman Problem (TSP) $2$-appx using MST | $O(n^2)$ |
-| Traveling Salesman Problem (TSP) $3/2$-appx using maximum matching | $O(n^3)$ |
-| Vertex Coloring Greedy arbitrary vertices order | $O(n + m)$ assuming the number of colors is constant |
-| Vertex Coloring Greedy random vertices order | $O(n + m)$ assuming the number of colors is constant |
-| Vertex Coloring DSatur | $O(m n)$ |
-| Vertex Coloring DSatur with Heap | $O(m + n \log n)$ assuming the number of colors is constant |
-| Vertex Coloring Recursive Largest First | $O(m n)$ |
-| Tarjan Cycles Finder | $O((m + n) (c + 1))$ where $c$ is the number of simple cycles |
-| Johnson Cycles Finder | $O((m + n) (c + 1))$ where $c$ is the number of simple cycles |
-
-### Additional Utils
-
-| Utility | Running time |
-| - | - |
-| Connectivity components calculation (undirected), strongly connected (directed) | $O(n + m)$ |
-| Topological sort calculation (DAG) | $O(n + m)$ |
-| SSSP DAG | $O(n + m)$ |
-| Euler Tour calculation | $O(n + m)$ |
-| Array k'th element | $O(n)$ |
-| Array bucket partition | $O(n \log k)$ where $k$ is the bucket size |
-| Bits Lookup tables (bit count, ith bit, ctz) | $O(n)$ preprocessing, $O(1)$ query |
 
 ## Graph API
+
+The most basic object in the library is a [Graph](https://barakugav.github.io/JGAlgo/com/jgalgo/Graph.html). A graph consist of vertices and edges (directed or undirected) connecting between pairs of vertices, all represented by `int` primitive IDs. Algorithms such as [Dijkstra shortest path algorithm](https://barakugav.github.io/JGAlgo/com/jgalgo/SSSPDijkstra.html) accept a graph as an input and perform some computation on it. Here is a snippet creating a [directed graph](https://barakugav.github.io/JGAlgo/com/jgalgo/DiGraph.html) with three vertices and edges with real values weights, and computing the shortest paths from a source vertex using Dijkstra's algorithm:
 
 ```java
 /* Create a directed graph with three vertices and edges between them */
@@ -116,3 +57,72 @@ for (IntIterator it = ssspRes.getPathTo(v3).iterator(); it.hasNext();) {
 	System.out.println(" " + e + "(" + u + ", " + v + ")");
 }
 ```
+
+## Algorithms
+
+| Algorithm | Running time |
+| - | - |
+| Binary heap | $O(m \log n)$ for $m$ operations |
+| Binomial heap | $O(m \log n)$ for $m$ operations |
+| Fibonacci heap | $O(m \log n)$ for $m$ operations, decrease key in $O(1)$ |
+| Pairing heap | $O(m \log n)$ for $m$ operations, decrease key in $O(\log \log n)$, very good pointer based heap in practice |
+| Red-Black tree <br>&nbsp;&nbsp; supported extensions: sub tree size/max/min  | $O(m \log n)$ for $m$ operations |
+| Splay Tree | $O(m \log n)$ for $m$ operations, efficient splits and joins |
+| Dynamic Tree using Splay trees <br>&nbsp;&nbsp; supported extensions: node's tree size <br>&nbsp;&nbsp; (for push/relabel with dynamic trees) | $O(m \log n)$ for $m$ operations |
+| Union Find | $O(m \cdot \alpha(m,n))$ where $\alpha(\cdot, \cdot)$ is the inverse Ackermann func |
+| Split Find Min | $O(m \log n)$ for $m$ operations |
+| SSSP Dijkstra positive weights | $O(m + n \log n)$ |
+| SSSP Dial positive integer weights | $O(m + D)$ where $D$ is the maximum distance |
+| SSSP BellmanFord general weights | $O(m n)$ |
+| SSSP Goldberg positive and negative integer weights | $O(m \sqrt{n} \log N)$ where $N$ is the minimum negative weight |
+| APSP Floyd-Warshall general weights | $O(n^3)$ |
+| APSP Johnson general weights | $O(m n + n^2 \log n)$ |
+| A* | $O(b^d)$ where $b$ is the branching factor and $d$ is the depth, $O(m \log n)$ worst case |
+| RMQ static $\pm 1$ by reduction to LCA | $O(n)$ preprocessing, $O(1)$ query |
+| RMQ static using Cartesian trees | $O(n)$ preprocessing, $O(1)$ query |
+| LCA static by reduction to RMQ | $O(n + m)$ |
+| LCA dynamic Gabow (without bit tricks) | $O(n \log^2 n + m)$ |
+| LCA dynamic Gabow linear (using RAM model) | $O(n + m)$ |
+| Max flow EdmondsKarp | $O(m^2 n)$ |
+| Max flow Push/Relabel (FIFO order) <br>&nbsp;&nbsp; with global relabeling and gap heuristics | $O(n^3)$ |
+| Max flow Push/Relabel-to-Front <br>&nbsp;&nbsp; with global relabeling and gap heuristics | $O(n^3)$ |
+| Max flow Push/Relabel Highest First <br>&nbsp;&nbsp; with global relabeling and gap heuristics | $O(n^2 \sqrt{m})$ |
+| Max flow Push/Relabel Lowest First <br>&nbsp;&nbsp; with global relabeling and gap heuristics | $O(n^2 m)$ |
+| Max flow Push/Relabel using Dynamic Trees | $O\left(m n \log \left(\frac{n^2}{m}\right)\right)$ |
+| Max flow Dinic | $O(m n^2)$ |
+| Max flow Dinic using Dynamic Trees | $O(m n \log n)$ |
+| MST Boruvka | $O(m \log n)$ |
+| MST Kruskal | $O(m \log n)$ |
+| MST Prim | $O(m + n \log n)$ |
+| MST Yao | $O(m \log \log n + n \log n)$ |
+| MST Fredman-Tarjan | $O(m \log^* n)$ |
+| MST Karger-Klein-Tarjan randomized | $O(n + m)$ expected |
+| MDST Tarjan directed graphs | $O(m \log n)$ |
+| Tree path maxima (TMP) Hagerup | $O(n + m)$ where $m$ is the number of queries |
+| Subtree Merge Findmin <br>&nbsp;&nbsp;(used in general weighted matching) | $O(m + n \log n)$ |
+| Maximum matching bipartite unweighted Hopcroft-Karp | $O(m \sqrt{n})$ |
+| Maximum matching general unweighted Gabow1976 with Union-Find | $O(m n \cdot \alpha (m,n))$ |
+| Maximum matching bipartite weighted using SSSP | $O(m n + n^2 \log n)$ |
+| Maximum matching bipartite weighted Hungarian method with heaps | $O(m n + n^2 \log n)$ |
+| Maximum matching general weighted Gabow1990 implementation with dynamic LCA | $O(m n + n^2 \log n)$ |
+| Traveling Salesman Problem (TSP) $2$-appx using MST | $O(n^2)$ |
+| Traveling Salesman Problem (TSP) $3/2$-appx using maximum matching | $O(n^3)$ |
+| Vertex Coloring Greedy arbitrary vertices order | $O(n + m)$ assuming the number of colors is constant |
+| Vertex Coloring Greedy random vertices order | $O(n + m)$ assuming the number of colors is constant |
+| Vertex Coloring DSatur | $O(m n)$ |
+| Vertex Coloring DSatur with Heap | $O(m + n \log n)$ assuming the number of colors is constant |
+| Vertex Coloring Recursive Largest First | $O(m n)$ |
+| Tarjan Cycles Finder | $O((m + n) (c + 1))$ where $c$ is the number of simple cycles |
+| Johnson Cycles Finder | $O((m + n) (c + 1))$ where $c$ is the number of simple cycles |
+
+### Additional Utils
+
+| Utility | Running time |
+| - | - |
+| Connectivity components calculation (undirected), strongly connected (directed) | $O(n + m)$ |
+| Topological sort calculation (DAG) | $O(n + m)$ |
+| SSSP DAG | $O(n + m)$ |
+| Euler Tour calculation | $O(n + m)$ |
+| Array k'th element | $O(n)$ |
+| Array bucket partition | $O(n \log k)$ where $k$ is the bucket size |
+| Bits Lookup tables (bit count, ith bit, ctz) | $O(n)$ preprocessing, $O(1)$ query |
