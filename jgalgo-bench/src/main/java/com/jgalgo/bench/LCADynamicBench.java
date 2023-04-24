@@ -88,12 +88,12 @@ public class LCADynamicBench {
 	}
 
 	@Benchmark
-	public void benchLCAGabow2017(Blackhole blackhole) {
+	public void GabowLinear(Blackhole blackhole) {
 		benchLCA(LCADynamicGabowLinear::new, blackhole);
 	}
 
 	@Benchmark
-	public void benchLCAGabowSimple(Blackhole blackhole) {
+	public void GabowSimple(Blackhole blackhole) {
 		benchLCA(LCADynamicGabowSimple::new, blackhole);
 	}
 

@@ -63,7 +63,7 @@ public class SSSPNegativeWeightsBench {
 		}
 	}
 
-	private void benchSSSPNegativeWeights(Supplier<? extends SSSP> builder, Blackhole blackhole) {
+	private void benchSSSP(Supplier<? extends SSSP> builder, Blackhole blackhole) {
 		GraphArgs args = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 		SSSP algo = builder.get();
 		SSSP.Result result = algo.computeShortestPaths(args.g, args.w, args.source);
@@ -72,12 +72,12 @@ public class SSSPNegativeWeightsBench {
 
 	@Benchmark
 	public void BellmanFord(Blackhole blackhole) {
-		benchSSSPNegativeWeights(SSSPBellmanFord::new, blackhole);
+		benchSSSP(SSSPBellmanFord::new, blackhole);
 	}
 
 	@Benchmark
-	public void GoldbergSSSP(Blackhole blackhole) {
-		benchSSSPNegativeWeights(SSSPGoldberg::new, blackhole);
+	public void Goldberg(Blackhole blackhole) {
+		benchSSSP(SSSPGoldberg::new, blackhole);
 	}
 
 	private static class GraphArgs {

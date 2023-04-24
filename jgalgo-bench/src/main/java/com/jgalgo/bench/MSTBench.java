@@ -74,32 +74,32 @@ public class MSTBench {
 	}
 
 	@Benchmark
-	public void benchMSTBoruvka(Blackhole blackhole) {
+	public void Boruvka(Blackhole blackhole) {
 		benchMST(MSTBoruvka::new, blackhole);
 	}
 
 	@Benchmark
-	public void benchMSTFredmanTarjan(Blackhole blackhole) {
+	public void FredmanTarjan(Blackhole blackhole) {
 		benchMST(MSTFredmanTarjan::new, blackhole);
 	}
 
 	@Benchmark
-	public void benchMSTKruskal(Blackhole blackhole) {
+	public void Kruskal(Blackhole blackhole) {
 		benchMST(MSTKruskal::new, blackhole);
 	}
 
 	@Benchmark
-	public void benchMSTPrim(Blackhole blackhole) {
+	public void Prim(Blackhole blackhole) {
 		benchMST(MSTPrim::new, blackhole);
 	}
 
 	@Benchmark
-	public void benchMSTYao(Blackhole blackhole) {
+	public void Yao(Blackhole blackhole) {
 		benchMST(MSTYao::new, blackhole);
 	}
 
 	@Benchmark
-	public void benchMSTKargerKleinTarjan(Blackhole blackhole) {
+	public void KargerKleinTarjan(Blackhole blackhole) {
 		benchMST(MSTKargerKleinTarjan::new, blackhole);
 	}
 

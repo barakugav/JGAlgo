@@ -108,12 +108,12 @@ public class UnionFindBench {
 	}
 
 	@Benchmark
-	public void benchUnionFindArray(Blackhole blackhole) {
+	public void UnionFindArrayMSTKruskal(Blackhole blackhole) {
 		benchUnionFindByRunningMSTKruskal(UnionFindArray::new, blackhole);
 	}
 
 	@Benchmark
-	public void benchUnionFindPtr(Blackhole blackhole) {
+	public void UnionFindPtrMSTKruskal(Blackhole blackhole) {
 		benchUnionFindByRunningMSTKruskal(UnionFindPtr::new, blackhole);
 	}
 

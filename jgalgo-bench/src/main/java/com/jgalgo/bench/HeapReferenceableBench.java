@@ -22,12 +22,15 @@ import org.openjdk.jmh.infra.Blackhole;
 
 import com.jgalgo.EdgeWeightFunc;
 import com.jgalgo.Graph;
+import com.jgalgo.HeapBinomial;
 import com.jgalgo.HeapFibonacci;
 import com.jgalgo.HeapPairing;
 import com.jgalgo.HeapReferenceable;
 import com.jgalgo.MSTPrim;
+import com.jgalgo.RedBlackTree;
 import com.jgalgo.SSSP;
 import com.jgalgo.SSSPDijkstra;
+import com.jgalgo.SplayTree;
 import com.jgalgo.bench.GraphsTestUtils.RandomGraphBuilder;
 import com.jgalgo.bench.TestUtils.SeedGenerator;
 
@@ -35,8 +38,8 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
-@Warmup(iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
-@Measurement(iterations = 1, time = 10, timeUnit = TimeUnit.SECONDS)
+@Warmup(iterations = 3, time = 5, timeUnit = TimeUnit.SECONDS)
+@Measurement(iterations = 2, time = 5, timeUnit = TimeUnit.SECONDS)
 @State(Scope.Benchmark)
 public class HeapReferenceableBench {
 
@@ -84,13 +87,28 @@ public class HeapReferenceableBench {
 	}
 
 	@Benchmark
-	public void benchHeapPairing(Blackhole blackhole) {
+	public void Pairing(Blackhole blackhole) {
 		benchHeap(HeapPairing::new, blackhole);
 	}
 
 	@Benchmark
-	public void benchHeapFibonacci(Blackhole blackhole) {
+	public void Fibonacci(Blackhole blackhole) {
 		benchHeap(HeapFibonacci::new, blackhole);
+	}
+
+	@Benchmark
+	public void Binomial(Blackhole blackhole) {
+		benchHeap(HeapBinomial::new, blackhole);
+	}
+
+	@Benchmark
+	public void RedBlackTree(Blackhole blackhole) {
+		benchHeap(RedBlackTree::new, blackhole);
+	}
+
+	@Benchmark
+	public void SplayTree(Blackhole blackhole) {
+		benchHeap(SplayTree::new, blackhole);
 	}
 
 	private static class GraphArgs {

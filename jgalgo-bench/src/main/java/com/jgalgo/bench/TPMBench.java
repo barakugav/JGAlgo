@@ -34,9 +34,9 @@ import com.jgalgo.bench.TestUtils.SeedGenerator;
 @State(Scope.Benchmark)
 public class TPMBench {
 
-	@Param({ "N=128", "N=2500", "N=15000" })
+	@Param({ "N=128 M=128", "N=2500 M=2500", "N=15000 M=15000" })
 	public String args;
-	public int n;
+	public int n, m;
 
 	private List<TPMArgs> graphs;
 	private final int graphsNum = 31;
@@ -46,15 +46,15 @@ public class TPMBench {
 	public void setup() {
 		Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
 		n = Integer.parseInt(argsMap.get("N"));
+		m = Integer.parseInt(argsMap.get("M"));
 
 		final SeedGenerator seedGen = new SeedGenerator(0x28ddf3f2d9c5c873L);
 		graphs = new ArrayList<>(graphsNum);
 		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
 			Graph t = GraphsTestUtils.randTree(n, seedGen.nextSeed());
 			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(t, seedGen.nextSeed());
-			TPM.Queries queries = generateRandQueries(n, n, seedGen.nextSeed());
+			TPM.Queries queries = generateRandQueries(n, m, seedGen.nextSeed());
 			graphs.add(new TPMArgs(t, w, queries));
-
 		}
 	}
 
@@ -66,7 +66,7 @@ public class TPMBench {
 	}
 
 	@Benchmark
-	public void benchTPMHagerup(Blackhole blackhole) {
+	public void TPMHagerup(Blackhole blackhole) {
 		benchTPM(() -> {
 			TPMHagerup algo = new TPMHagerup();
 			algo.setBitsLookupTablesEnable(false);
@@ -75,7 +75,7 @@ public class TPMBench {
 	}
 
 	@Benchmark
-	public void benchTPMHagerupWithBitsLookupTable(Blackhole blackhole) {
+	public void TPMHagerupWithBitsLookupTable(Blackhole blackhole) {
 		benchTPM(() -> {
 			TPMHagerup algo = new TPMHagerup();
 			algo.setBitsLookupTablesEnable(true);

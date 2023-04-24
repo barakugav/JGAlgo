@@ -98,12 +98,12 @@ public class MaxFlowBench {
 	}
 
 	@Benchmark
-	public void benchMaxFlowEdmondsKarp(Blackhole blackhole) {
+	public void EdmondsKarp(Blackhole blackhole) {
 		benchMaxFlow(MaxFlowEdmondsKarp::new, blackhole);
 	}
 
 	@Benchmark
-	public void benchMaxFlowDinicWithLinkedGraph(Blackhole blackhole) {
+	public void DinicWithLinkedGraph(Blackhole blackhole) {
 		benchMaxFlow(() -> {
 			MaxFlowDinic algo = new MaxFlowDinic();
 			algo.experimental_setLayerGraphFactory(GraphBuilder.Linked::new);
@@ -112,7 +112,7 @@ public class MaxFlowBench {
 	}
 
 	@Benchmark
-	public void benchMaxFlowDinicWithArrayGraph(Blackhole blackhole) {
+	public void DinicWithArrayGraph(Blackhole blackhole) {
 		benchMaxFlow(() -> {
 			MaxFlowDinic algo = new MaxFlowDinic();
 			algo.experimental_setLayerGraphFactory(GraphBuilder.Array::new);
@@ -121,32 +121,32 @@ public class MaxFlowBench {
 	}
 
 	@Benchmark
-	public void benchMaxFlowDinicDynamicTrees(Blackhole blackhole) {
+	public void DinicDynamicTrees(Blackhole blackhole) {
 		benchMaxFlow(MaxFlowDinicDynamicTrees::new, blackhole);
 	}
 
 	@Benchmark
-	public void benchMaxFlowPushRelabel(Blackhole blackhole) {
+	public void PushRelabel(Blackhole blackhole) {
 		benchMaxFlow(MaxFlowPushRelabel::new, blackhole);
 	}
 
 	@Benchmark
-	public void benchMaxFlowPushRelabelToFront(Blackhole blackhole) {
+	public void PushRelabelToFront(Blackhole blackhole) {
 		benchMaxFlow(MaxFlowPushRelabelToFront::new, blackhole);
 	}
 
 	@Benchmark
-	public void benchMaxFlowPushRelabelHighestFirst(Blackhole blackhole) {
+	public void PushRelabelHighestFirst(Blackhole blackhole) {
 		benchMaxFlow(MaxFlowPushRelabelHighestFirst::new, blackhole);
 	}
 
 	@Benchmark
-	public void benchMaxFlowPushRelabelLowestFirst(Blackhole blackhole) {
+	public void PushRelabelLowestFirst(Blackhole blackhole) {
 		benchMaxFlow(MaxFlowPushRelabelLowestFirst::new, blackhole);
 	}
 
 	@Benchmark
-	public void benchMaxFlowPushRelabelDynamicTrees(Blackhole blackhole) {
+	public void PushRelabelDynamicTrees(Blackhole blackhole) {
 		benchMaxFlow(MaxFlowPushRelabelDynamicTrees::new, blackhole);
 	}
 

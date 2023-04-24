@@ -58,7 +58,7 @@ public class ColoringBench {
 		}
 	}
 
-	private void benchMST(Supplier<? extends Coloring> builder, Blackhole blackhole) {
+	private void benchColoring(Supplier<? extends Coloring> builder, Blackhole blackhole) {
 		UGraph g = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 		Coloring algo = builder.get();
 		Coloring.Result res = algo.computeColoring(g);
@@ -66,29 +66,29 @@ public class ColoringBench {
 	}
 
 	@Benchmark
-	public void benchColoringGreedy(Blackhole blackhole) {
-		benchMST(ColoringGreedy::new, blackhole);
+	public void Greedy(Blackhole blackhole) {
+		benchColoring(ColoringGreedy::new, blackhole);
 	}
 
 	@Benchmark
-	public void benchColoringGreedyRandom(Blackhole blackhole) {
+	public void GreedyRandom(Blackhole blackhole) {
 		final SeedGenerator seedGen = new SeedGenerator(0xefeae78aba502d4aL);
-		benchMST(() -> new ColoringGreedyRandom(seedGen.nextSeed()), blackhole);
+		benchColoring(() -> new ColoringGreedyRandom(seedGen.nextSeed()), blackhole);
 	}
 
 	@Benchmark
-	public void benchColoringDSatur(Blackhole blackhole) {
-		benchMST(ColoringDSatur::new, blackhole);
+	public void DSatur(Blackhole blackhole) {
+		benchColoring(ColoringDSatur::new, blackhole);
 	}
 
 	@Benchmark
-	public void benchColoringDSaturHeap(Blackhole blackhole) {
-		benchMST(ColoringDSaturHeap::new, blackhole);
+	public void DSaturHeap(Blackhole blackhole) {
+		benchColoring(ColoringDSaturHeap::new, blackhole);
 	}
 
 	@Benchmark
-	public void benchColoringRecursiveLargestFirst(Blackhole blackhole) {
-		benchMST(ColoringRecursiveLargestFirst::new, blackhole);
+	public void RecursiveLargestFirst(Blackhole blackhole) {
+		benchColoring(ColoringRecursiveLargestFirst::new, blackhole);
 	}
 
 }

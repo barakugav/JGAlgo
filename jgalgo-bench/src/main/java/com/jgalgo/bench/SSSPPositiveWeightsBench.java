@@ -64,7 +64,7 @@ public class SSSPPositiveWeightsBench {
 		}
 	}
 
-	private void benchSSSPPositiveWeights(Supplier<? extends SSSP> builder, Blackhole blackhole) {
+	private void benchSSSP(Supplier<? extends SSSP> builder, Blackhole blackhole) {
 		GraphArgs args = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 		SSSP algo = builder.get();
 		SSSP.Result result = algo.computeShortestPaths(args.g, args.w, args.source);
@@ -72,18 +72,18 @@ public class SSSPPositiveWeightsBench {
 	}
 
 	@Benchmark
-	public void benchSSSPPositiveWeightsDijkstra(Blackhole blackhole) {
-		benchSSSPPositiveWeights(SSSPDijkstra::new, blackhole);
+	public void Dijkstra(Blackhole blackhole) {
+		benchSSSP(SSSPDijkstra::new, blackhole);
 	}
 
 	@Benchmark
-	public void benchSSSPPositiveWeightsDial1969(Blackhole blackhole) {
-		benchSSSPPositiveWeights(SSSPDial::new, blackhole);
+	public void Dial(Blackhole blackhole) {
+		benchSSSP(SSSPDial::new, blackhole);
 	}
 
 	@Benchmark
-	public void benchSSSPPositiveWeightsBellmanFord(Blackhole blackhole) {
-		benchSSSPPositiveWeights(SSSPBellmanFord::new, blackhole);
+	public void BellmanFord(Blackhole blackhole) {
+		benchSSSP(SSSPBellmanFord::new, blackhole);
 	}
 
 	private static class GraphArgs {

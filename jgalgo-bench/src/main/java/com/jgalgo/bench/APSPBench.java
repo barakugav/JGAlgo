@@ -70,12 +70,12 @@ public class APSPBench {
 	}
 
 	@Benchmark
-	public void benchAPSPFloydWarshall(Blackhole blackhole) {
+	public void FloydWarshall(Blackhole blackhole) {
 		benchAPSPPositiveWeights(APSPFloydWarshall::new, blackhole);
 	}
 
 	@Benchmark
-	public void benchAPSPJohnson(Blackhole blackhole) {
+	public void Johnson(Blackhole blackhole) {
 		benchAPSPPositiveWeights(APSPJohnson::new, blackhole);
 	}
 }
