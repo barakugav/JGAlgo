@@ -17,7 +17,7 @@ jobs:
         distribution: 'adopt'
 
     - name: Build with Maven
-      run: mvn --batch-mode --update-snapshots package -Dmaven.test.skip
+      run: mvn --batch-mode --update-snapshots package '-Dmaven.test.skip'
 
     - name: Run JUnit Tests
-      run: mvn --batch-mode '-Dtest=com.jgalgo.test.*Test' test
+      run: mvn --batch-mode test '-DfailIfNoTests=false'

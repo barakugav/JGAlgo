@@ -4,7 +4,7 @@ bin/
 .project
 .settings
 *.bak
-/target/
+**/target/
 /.apt_generated/
 /.apt_generated_tests/
 /.vscode/

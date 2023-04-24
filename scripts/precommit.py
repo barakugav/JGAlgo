@@ -16,16 +16,13 @@ def main():
     run_cmd("mvn --batch-mode --update-snapshots package -Dmaven.test.skip")
 
     print("\n\n ============ Tests ============\n")
-    run_cmd("mvn --batch-mode -Dtest=com.jgalgo.test.*Test test")
-
-    print("\n\n ============ Benchmarks (Demo) ============\n")
-    run_cmd("mvn --batch-mode -Dtest=com.jgalgo.bench.TestBenchmarksDemoSuite test")
+    run_cmd("mvn --batch-mode test -DfailIfNoTests=false")
 
     print("\n\n ============ SpotBugs ============\n")
-    run_cmd("mvn --batch-mode spotbugs:check")
+    run_cmd("mvn --batch-mode spotbugs:check -pl jgalgo-core")
 
     print("\n\n ============ Javadoc ============\n")
-    run_cmd("mvn --batch-mode javadoc:javadoc")
+    run_cmd("mvn javadoc:aggregate -pl jgalgo-core")
 
     print("\nPre-commit check passed successfully")
 

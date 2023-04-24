@@ -15,20 +15,21 @@ jobs:
     - name: Set up JDK 11
       uses: actions/setup-java@v3
       with:
-        java-version: '11'
+        java-version: 11
         distribution: 'adopt'
 
     - name: Build with Maven
-      run: mvn --batch-mode --update-snapshots package -Dmaven.test.skip
+      run: mvn --batch-mode --update-snapshots package '-Dmaven.test.skip'
 
     - name: Run JUnit Tests with Jacoco coverage
-      run: mvn --batch-mode clean jacoco:prepare-agent '-Dtest=com.jgalgo.test.*Test' test jacoco:report
+      run: mvn --batch-mode -pl jgalgo-core clean jacoco:prepare-agent test jacoco:report
 
     - name: Generate JaCoCo Badge
       uses: cicirello/jacoco-badge-generator@v2
       with:
+        jacoco-csv-file: jgalgo-core/target/site/jacoco/jacoco.csv
         generate-coverage-badge: true
-        badges-directory: target/site/jacoco/badges
+        badges-directory: jgalgo-core/target/site/jacoco/badges
 
     - name: Publish Jacoco Coverage Report
       uses: JamesIves/github-pages-deploy-action@v4.4.1
@@ -36,5 +37,5 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         branch: coverage
         clean: true
-        folder: target/site/jacoco
+        folder: jgalgo-core/target/site/jacoco
         target-folder: .

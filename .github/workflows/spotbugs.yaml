@@ -17,7 +17,7 @@ jobs:
         distribution: 'adopt'
 
     - name: Build with Maven
-      run: mvn --batch-mode --update-snapshots package -Dmaven.test.skip
+      run: mvn --batch-mode --update-snapshots package '-Dmaven.test.skip'
 
     - name: statically analyze code using SpotBugs
-      run: mvn --batch-mode spotbugs:check
+      run: mvn --batch-mode spotbugs:check -pl jgalgo-core
