@@ -153,72 +153,68 @@ public class MDSTTarjan implements MDST {
 <span class="fc" id="L153">		Heap&lt;Integer&gt;[] heap = new Heap[VMaxNum];</span>
 <span class="fc bfc" id="L154" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
 <span class="fc" id="L155">			heap[v] = heapBuilder.build(w);</span>
-<span class="fc bfc" id="L156" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc bfc" id="L157" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
-<span class="fc" id="L158">				int e = eit.nextInt();</span>
-<span class="fc" id="L159">				heap[eit.v()].add(Integer.valueOf(e));</span>
-<span class="fc" id="L160">			}</span>
-		}
+<span class="fc bfc" id="L156" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesIn(v); eit.hasNext();)</span>
+<span class="fc" id="L158">				heap[v].add(Integer.valueOf(eit.nextInt()));</span>
 
-<span class="fc" id="L163">		int[] parent = new int[VMaxNum];</span>
-<span class="fc" id="L164">		int[] child = new int[VMaxNum];</span>
-<span class="fc" id="L165">		int[] brother = new int[VMaxNum];</span>
-<span class="fc" id="L166">		Arrays.fill(parent, -1);</span>
-<span class="fc" id="L167">		Arrays.fill(child, -1);</span>
-<span class="fc" id="L168">		Arrays.fill(brother, -1);</span>
-<span class="fc" id="L169">		int[] inEdge = new int[VMaxNum];</span>
+<span class="fc" id="L160">		int[] parent = new int[VMaxNum];</span>
+<span class="fc" id="L161">		int[] child = new int[VMaxNum];</span>
+<span class="fc" id="L162">		int[] brother = new int[VMaxNum];</span>
+<span class="fc" id="L163">		Arrays.fill(parent, -1);</span>
+<span class="fc" id="L164">		Arrays.fill(child, -1);</span>
+<span class="fc" id="L165">		Arrays.fill(brother, -1);</span>
+<span class="fc" id="L166">		int[] inEdge = new int[VMaxNum];</span>
 
-<span class="fc" id="L171">		BitSet onPath = new BitSet(VMaxNum);</span>
-<span class="fc" id="L172">		final int startVertex = 0;</span>
-<span class="fc" id="L173">		onPath.set(startVertex);</span>
+<span class="fc" id="L168">		BitSet onPath = new BitSet(VMaxNum);</span>
+<span class="fc" id="L169">		final int startVertex = 0;</span>
+<span class="fc" id="L170">		onPath.set(startVertex);</span>
 
-<span class="fc" id="L175">		for (int a = startVertex;;) {</span>
+<span class="fc" id="L172">		for (int a = startVertex;;) {</span>
 			// Find minimum edge that enters a
 			int u, e;
 			do {
 				// Assuming the graph is strongly connected, if heap is empty we are done
-<span class="fc bfc" id="L180" title="All 2 branches covered.">				if (heap[a].isEmpty())</span>
-<span class="fc" id="L181">					return new ContractedGraph(n, parent, child, brother, inEdge);</span>
-<span class="fc" id="L182">				e = heap[a].extractMin().intValue();</span>
-<span class="fc" id="L183">				u = ufIdxToV[uf.find(g.edgeSource(e))];</span>
-<span class="fc bfc" id="L184" title="All 2 branches covered.">			} while (a == u);</span>
+<span class="fc bfc" id="L177" title="All 2 branches covered.">				if (heap[a].isEmpty())</span>
+<span class="fc" id="L178">					return new ContractedGraph(n, parent, child, brother, inEdge);</span>
+<span class="fc" id="L179">				e = heap[a].extractMin().intValue();</span>
+<span class="fc" id="L180">				u = ufIdxToV[uf.find(g.edgeSource(e))];</span>
+<span class="fc bfc" id="L181" title="All 2 branches covered.">			} while (a == u);</span>
 
 			// Store the minimum edge entering a
-<span class="fc" id="L187">			inEdge[a] = e;</span>
+<span class="fc" id="L184">			inEdge[a] = e;</span>
 
 			// Subtract w(e) from the weights of all edges entering a
-<span class="fc" id="L190">			double ew = w.weight(e);</span>
-<span class="fc" id="L191">			uf.addValue(a, -ew);</span>
+<span class="fc" id="L187">			uf.addValue(a, -w.weight(e));</span>
 
-<span class="fc bfc" id="L193" title="All 2 branches covered.">			if (!onPath.get(u)) {</span>
+<span class="fc bfc" id="L189" title="All 2 branches covered.">			if (!onPath.get(u)) {</span>
 				// Extend list
-<span class="fc" id="L195">				brother[u] = a;</span>
-<span class="fc" id="L196">				onPath.set(u);</span>
-<span class="fc" id="L197">				a = u;</span>
+<span class="fc" id="L191">				brother[u] = a;</span>
+<span class="fc" id="L192">				onPath.set(u);</span>
+<span class="fc" id="L193">				a = u;</span>
 			} else {
 				// Create new super vertex
-<span class="fc" id="L200">				int c = uf.make();</span>
-<span class="fc" id="L201">				heap[c] = heapBuilder.build(w);</span>
-<span class="fc" id="L202">				brother[c] = brother[u];</span>
-<span class="fc" id="L203">				brother[u] = a;</span>
-<span class="fc" id="L204">				child[c] = a;</span>
+<span class="fc" id="L196">				int c = uf.make();</span>
+<span class="fc" id="L197">				Heap&lt;Integer&gt; cHeap = heap[c] = heapBuilder.build(w);</span>
+<span class="fc" id="L198">				brother[c] = brother[u];</span>
+<span class="fc" id="L199">				brother[u] = a;</span>
+<span class="fc" id="L200">				child[c] = a;</span>
 
 				// Contract all children
 				do {
-<span class="fc" id="L208">					parent[a] = c;</span>
-<span class="fc" id="L209">					uf.union(c, a);</span>
-<span class="fc" id="L210">					onPath.clear(a);</span>
-<span class="fc" id="L211">					heap[c].meld(heap[a]);</span>
-<span class="fc" id="L212">					heap[a] = null;</span>
-<span class="fc" id="L213">					a = brother[a];</span>
-<span class="fc bfc" id="L214" title="All 2 branches covered.">				} while (parent[a] == -1);</span>
+<span class="fc" id="L204">					parent[a] = c;</span>
+<span class="fc" id="L205">					uf.union(c, a);</span>
+<span class="fc" id="L206">					onPath.clear(a);</span>
+<span class="fc" id="L207">					cHeap.meld(heap[a]);</span>
+<span class="fc" id="L208">					heap[a] = null;</span>
+<span class="fc" id="L209">					a = brother[a];</span>
+<span class="fc bfc" id="L210" title="All 2 branches covered.">				} while (parent[a] == -1);</span>
 
-<span class="fc" id="L216">				ufIdxToV[uf.find(c)] = c;</span>
+<span class="fc" id="L212">				ufIdxToV[uf.find(c)] = c;</span>
 
-<span class="fc" id="L218">				onPath.set(c);</span>
-<span class="fc" id="L219">				a = c;</span>
+<span class="fc" id="L214">				onPath.set(c);</span>
+<span class="fc" id="L215">				a = c;</span>
 			}
-<span class="fc" id="L221">		}</span>
+<span class="fc" id="L217">		}</span>
 	}
 
 	private static class ContractedGraph {
@@ -229,13 +225,13 @@ public class MDSTTarjan implements MDST {
 		final int[] brother;
 		final int[] inEdge;
 
-<span class="fc" id="L232">		ContractedGraph(int n, int[] parent, int[] child, int[] brother, int[] inEdge) {</span>
-<span class="fc" id="L233">			this.n = n;</span>
-<span class="fc" id="L234">			this.parent = parent;</span>
-<span class="fc" id="L235">			this.child = child;</span>
-<span class="fc" id="L236">			this.brother = brother;</span>
-<span class="fc" id="L237">			this.inEdge = inEdge;</span>
-<span class="fc" id="L238">		}</span>
+<span class="fc" id="L228">		ContractedGraph(int n, int[] parent, int[] child, int[] brother, int[] inEdge) {</span>
+<span class="fc" id="L229">			this.n = n;</span>
+<span class="fc" id="L230">			this.parent = parent;</span>
+<span class="fc" id="L231">			this.child = child;</span>
+<span class="fc" id="L232">			this.brother = brother;</span>
+<span class="fc" id="L233">			this.inEdge = inEdge;</span>
+<span class="fc" id="L234">		}</span>
 
 	}
 
