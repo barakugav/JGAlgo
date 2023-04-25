@@ -58,12 +58,12 @@ public class SSSPDijkstra implements SSSP {
 			verticesPtrs = new HeapReference[n];
 
 		SSSP.Result res;
-		// if (w instanceof EdgeWeightFunc.Int) {
-			// res = new WorkerInt(heap, verticesPtrs).computeSSSP(g, (EdgeWeightFunc.Int) w, source);
-		// } else {
-			// res = new WorkerDouble(heap, verticesPtrs).computeSSSP(g, w, source);
+		if (w instanceof EdgeWeightFunc.Int) {
+			res = new WorkerInt(heap, verticesPtrs).computeSSSP(g, (EdgeWeightFunc.Int) w, source);
+		} else {
+			res = new WorkerDouble(heap, verticesPtrs).computeSSSP(g, w, source);
 			res = new WorkerDouble(new HeapPairing<>(), new HeapReference[n]).computeSSSP(g, w, source);
-		// }
+		}
 
 		heap.clear();
 		Arrays.fill(verticesPtrs, 0, n, null);

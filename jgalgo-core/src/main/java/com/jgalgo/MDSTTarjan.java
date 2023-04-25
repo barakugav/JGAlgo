@@ -153,12 +153,9 @@ public class MDSTTarjan implements MDST {
 		Heap<Integer>[] heap = new Heap[VMaxNum];
 		for (int v = 0; v < n; v++)
 			heap[v] = heapBuilder.build(w);
-		for (int u = 0; u < n; u++) {
-			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
-				int e = eit.nextInt();
-				heap[eit.v()].add(Integer.valueOf(e));
-			}
-		}
+		for (int v = 0; v < n; v++)
+			for (EdgeIter eit = g.edgesIn(v); eit.hasNext();)
+				heap[v].add(Integer.valueOf(eit.nextInt()));
 
 		int[] parent = new int[VMaxNum];
 		int[] child = new int[VMaxNum];
@@ -187,8 +184,7 @@ public class MDSTTarjan implements MDST {
 			inEdge[a] = e;
 
 			// Subtract w(e) from the weights of all edges entering a
-			double ew = w.weight(e);
-			uf.addValue(a, -ew);
+			uf.addValue(a, -w.weight(e));
 
 			if (!onPath.get(u)) {
 				// Extend list
@@ -198,7 +194,7 @@ public class MDSTTarjan implements MDST {
 			} else {
 				// Create new super vertex
 				int c = uf.make();
-				heap[c] = heapBuilder.build(w);
+				Heap<Integer> cHeap = heap[c] = heapBuilder.build(w);
 				brother[c] = brother[u];
 				brother[u] = a;
 				child[c] = a;
@@ -208,7 +204,7 @@ public class MDSTTarjan implements MDST {
 					parent[a] = c;
 					uf.union(c, a);
 					onPath.clear(a);
-					heap[c].meld(heap[a]);
+					cHeap.meld(heap[a]);
 					heap[a] = null;
 					a = brother[a];
 				} while (parent[a] == -1);
