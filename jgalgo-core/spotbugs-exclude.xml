@@ -78,6 +78,12 @@
     <Bug pattern="EI_EXPOSE_REP" />
   </Match>
   <Match>
+    <!-- The return value is a view of the heap, and the user SHOULD modify the heap through it -->
+    <Class name="com.jgalgo.HeapPairing" />
+    <Method name="refsSet" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
     <!-- The return value is a view of the tree, and the user SHOULD modify the tree through it -->
     <Class name="com.jgalgo.RedBlackTree" />
     <Method name="refsSet" />

@@ -1,14 +1,15 @@
 package com.jgalgo;
 
 import java.util.AbstractSet;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
+
+import it.unimi.dsi.fastutil.Stack;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
  * A Pairing heap implementation.
@@ -33,6 +34,9 @@ public class HeapPairing<E> extends HeapReferenceableAbstract<E> {
 
 	private Node<E> minRoot;
 	private int size;
+	private final Set<HeapReference<E>> refsSet;
+	@SuppressWarnings("unchecked")
+	private Node<E>[] tempHeapArray = new Node[4];
 
 	/**
 	 * Constructs a new, empty Pairing heap, sorted according to the natural
@@ -67,6 +71,32 @@ public class HeapPairing<E> extends HeapReferenceableAbstract<E> {
 	 */
 	public HeapPairing(Comparator<? super E> comparator) {
 		super(comparator);
+		refsSet = new AbstractSet<>() {
+
+			@Override
+			public int size() {
+				return size;
+			}
+
+			@SuppressWarnings({ "unchecked", "rawtypes" })
+			@Override
+			public Iterator<HeapReference<E>> iterator() {
+				return (Iterator) new PreOrderIter<>(minRoot);
+			}
+
+			@SuppressWarnings("unchecked")
+			@Override
+			public boolean remove(Object o) {
+				removeRef((HeapReference<E>) o);
+				return true;
+			}
+
+			@Override
+			public void clear() {
+				HeapPairing.this.clear();
+			}
+
+		};
 	}
 
 	@Override
@@ -139,31 +169,24 @@ public class HeapPairing<E> extends HeapReferenceableAbstract<E> {
 			return;
 		}
 
-		/* collect and disassemble children */
-		int heapsNum = childrenNum(minRoot);
-		@SuppressWarnings("unchecked")
-		Node<E>[] heaps = new Node[heapsNum];
-		disassembleChildren(minRoot, heaps);
+		/* disassemble children */
+		Node<E>[] heaps = tempHeapArray;
+		int heapsNum = 0;
+		for (Node<E> p = minRoot.child, next;; p = next) {
+			if (heapsNum == heaps.length)
+				tempHeapArray = heaps = Arrays.copyOf(heaps, heaps.length * 2);
+			heaps[heapsNum++] = p;
+
+			p.prevOrParent = null;
+			next = p.next;
+			if (next == null)
+				break;
+			p.next = null;
+		}
+		minRoot.child = null;
 
 		/* meld all sub heaps */
-		minRoot = meld(heaps);
-	}
-
-	private static int childrenNum(Node<?> n) {
-		int count = 0;
-		for (Node<?> p = n.child; p != null; p = p.next)
-			count++;
-		return count;
-	}
-
-	private static <E> void disassembleChildren(Node<E> n, Node<E>[] childrenOut) {
-		int idx = 0;
-		for (Node<E> p = n.child, next; p != null; p = next) {
-			next = p.next;
-			p.next = p.prevOrParent = null;
-			childrenOut[idx++] = p;
-		}
-		n.child = null;
+		minRoot = meld(heaps, heapsNum);
 	}
 
 	@Override
@@ -195,9 +218,10 @@ public class HeapPairing<E> extends HeapReferenceableAbstract<E> {
 		assert newChild.prevOrParent == null;
 		assert newChild.next == null;
 		Node<E> oldChild = parent.child;
-		newChild.next = oldChild;
-		if (oldChild != null)
+		if (oldChild != null) {
 			oldChild.prevOrParent = newChild;
+			newChild.next = oldChild;
+		}
 		parent.child = newChild;
 		newChild.prevOrParent = parent;
 	}
@@ -240,9 +264,7 @@ public class HeapPairing<E> extends HeapReferenceableAbstract<E> {
 		return n1;
 	}
 
-	private Node<E> meld(Node<E>[] heaps) {
-		int heapsNum = heaps.length;
-
+	private Node<E> meld(Node<E>[] heaps, int heapsNum) {
 		if (c == null) {
 			/* meld pairs from left to right */
 			for (int i = 0; i < heapsNum / 2; i++) {
@@ -257,12 +279,10 @@ public class HeapPairing<E> extends HeapReferenceableAbstract<E> {
 			heapsNum = (heapsNum + 1) / 2;
 
 			/* meld all from right to left */
-			while (heapsNum > 1) {
-				Node<E> n1 = heaps[heapsNum - 2];
-				Node<E> n2 = heaps[heapsNum - 1];
-				heaps[heapsNum - 2] = meldDefaultCmp(n1, n2);
-				heapsNum--;
-			}
+			Node<E> root = heaps[--heapsNum];
+			for (; heapsNum > 0; heapsNum--)
+				root = meldDefaultCmp(heaps[heapsNum - 1], root);
+			return root;
 		} else {
 			/* meld pairs from left to right */
 			for (int i = 0; i < heapsNum / 2; i++) {
@@ -277,39 +297,39 @@ public class HeapPairing<E> extends HeapReferenceableAbstract<E> {
 			heapsNum = (heapsNum + 1) / 2;
 
 			/* meld all from right to left */
-			while (heapsNum > 1) {
-				Node<E> n1 = heaps[heapsNum - 2];
-				Node<E> n2 = heaps[heapsNum - 1];
-				heaps[heapsNum - 2] = meldCustomCmp(n1, n2);
-				heapsNum--;
-			}
+			Node<E> root = heaps[--heapsNum];
+			for (; heapsNum > 0; heapsNum--)
+				root = meldCustomCmp(heaps[heapsNum - 1], root);
+			return root;
 		}
-
-		Node<E> root = heaps[0];
-		Arrays.fill(heaps, null); // help GC
-		return root;
 	}
 
 	@Override
 	public void clear() {
+		Arrays.fill(tempHeapArray, null); // help GC
 		if (minRoot == null) {
 			assert size == 0;
 			return;
 		}
 
-		List<Node<E>> stack = new ArrayList<>();
-		stack.add(minRoot);
-		do {
-			int idx = stack.size() - 1;
-			Node<E> n = stack.get(idx);
-			stack.remove(idx);
-
-			for (Node<E> p = n.child; p != null; p = p.next)
-				stack.add(p);
-
-			n.prevOrParent = n.next = n.child = null;
-			n.value = null;
-		} while (!stack.isEmpty());
+		for (Node<E> p = minRoot;;) {
+			while (p.child != null) {
+				p = p.child;
+				while (p.next != null)
+					p = p.next;
+			}
+			p.value = null;
+			Node<E> prev = p.prevOrParent;
+			if (prev == null)
+				break;
+			p.prevOrParent = null;
+			if (prev.next == p) {
+				prev.next = null;
+			} else {
+				prev.child = null;
+			}
+			p = prev;
+		}
 
 		minRoot = null;
 		size = 0;
@@ -317,32 +337,7 @@ public class HeapPairing<E> extends HeapReferenceableAbstract<E> {
 
 	@Override
 	public Set<HeapReference<E>> refsSet() {
-		return new AbstractSet<>() {
-
-			@Override
-			public int size() {
-				return size;
-			}
-
-			@SuppressWarnings({ "unchecked", "rawtypes" })
-			@Override
-			public Iterator<HeapReference<E>> iterator() {
-				return (Iterator) new PreOrderIter<>(minRoot);
-			}
-
-			@SuppressWarnings("unchecked")
-			@Override
-			public boolean remove(Object o) {
-				removeRef((HeapReference<E>) o);
-				return true;
-			}
-
-			@Override
-			public void clear() {
-				HeapPairing.this.clear();
-			}
-
-		};
+		return refsSet;
 	}
 
 	private static class Node<E> implements HeapReference<E> {
@@ -370,11 +365,11 @@ public class HeapPairing<E> extends HeapReferenceableAbstract<E> {
 
 	private static class PreOrderIter<E> implements Iterator<Node<E>> {
 
-		private final List<Node<E>> path = new ArrayList<>();
+		private final Stack<Node<E>> path = new ObjectArrayList<>();
 
 		PreOrderIter(Node<E> p) {
 			if (p != null)
-				path.add(p);
+				path.push(p);
 		}
 
 		@Override
@@ -386,17 +381,17 @@ public class HeapPairing<E> extends HeapReferenceableAbstract<E> {
 		public Node<E> next() {
 			if (!hasNext())
 				throw new NoSuchElementException();
-			final Node<E> ret = path.get(path.size() - 1);
+			final Node<E> ret = path.top();
 
 			Node<E> next;
 			if ((next = ret.child) != null) {
-				path.add(next);
+				path.push(next);
 			} else {
 				Node<E> p0;
 				do {
-					p0 = path.remove(path.size() - 1);
+					p0 = path.pop();
 					if ((next = p0.next) != null) {
-						path.add(next);
+						path.push(next);
 						break;
 					}
 				} while (!path.isEmpty());
