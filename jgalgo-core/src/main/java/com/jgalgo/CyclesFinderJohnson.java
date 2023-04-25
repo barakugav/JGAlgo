@@ -10,6 +10,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntStack;
+import it.unimi.dsi.fastutil.objects.ObjectIntPair;
 
 /**
  * Johnson's algorithm for finding all cycles in a directed graph.
@@ -46,8 +47,8 @@ public class CyclesFinderJohnson implements CyclesFinder {
 			var p = chooseSCCInSubGraph(g, startIdx);
 			if (p == null)
 				break;
-			StronglyConnectedComponent scc = p.e1;
-			startIdx = p.e2.intValue();
+			StronglyConnectedComponent scc = p.first();
+			startIdx = p.secondInt();
 			worker.findAllCycles(startIdx, scc);
 			worker.reset();
 		}
@@ -138,7 +139,7 @@ public class CyclesFinderJohnson implements CyclesFinder {
 		}
 	}
 
-	private static Pair<StronglyConnectedComponent, Integer> chooseSCCInSubGraph(DiGraph g, int startIdx) {
+	private static ObjectIntPair<StronglyConnectedComponent> chooseSCCInSubGraph(DiGraph g, int startIdx) {
 		int nFull = g.vertices().size();
 		int subToFull = startIdx;
 		int nSub = nFull - subToFull;
@@ -166,7 +167,7 @@ public class CyclesFinderJohnson implements CyclesFinder {
 		if (startIdx >= nFull)
 			return null;
 		int ccIdx = connectivityResult.getVertexCc(startIdx - subToFull);
-		return Pair.of(new StronglyConnectedComponent(subToFull, connectivityResult, ccIdx), Integer.valueOf(startIdx));
+		return ObjectIntPair.of(new StronglyConnectedComponent(subToFull, connectivityResult, ccIdx), startIdx);
 	}
 
 	private static boolean hasSelfEdge(DiGraph g, int u) {

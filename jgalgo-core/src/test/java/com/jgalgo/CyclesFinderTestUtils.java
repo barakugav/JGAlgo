@@ -28,7 +28,7 @@ class CyclesFinderTestUtils extends TestUtils {
 		Path c2 = new Path(g, 1, 1, IntList.of(e1, e2));
 		List<Path> expected = List.of(c1, c2);
 
-		assertEquals(transformCyclesToCanocical(expected), transformCyclesToCanocical(actual));
+		assertEquals(transformCyclesToCanonical(expected), transformCyclesToCanonical(actual));
 	}
 
 	static void testRandGraphs(CyclesFinder cyclesFinder, long seed) {
@@ -49,14 +49,14 @@ class CyclesFinderTestUtils extends TestUtils {
 				: new CyclesFinderTarjan();
 		List<Path> actual = cyclesFinder.findAllCycles(g);
 		List<Path> expected = validationAlgo.findAllCycles(g);
-		assertEquals(transformCyclesToCanocical(expected), transformCyclesToCanocical(actual), g.toString());
+		assertEquals(transformCyclesToCanonical(expected), transformCyclesToCanonical(actual), g.toString());
 	}
 
-	private static Set<IntList> transformCyclesToCanocical(List<Path> cycles) {
+	private static Set<IntList> transformCyclesToCanonical(List<Path> cycles) {
 		Set<IntList> cycles0 = new TreeSet<>();
 		for (Path cycle : cycles) {
 			IntArrayList cycle0 = new IntArrayList(cycle);
-			transformCycleToCanocical(cycle0);
+			transformCycleToCanonical(cycle0);
 			cycles0.add(cycle0);
 		}
 		if (cycles0.size() != cycles.size())
@@ -64,7 +64,7 @@ class CyclesFinderTestUtils extends TestUtils {
 		return cycles0;
 	}
 
-	private static void transformCycleToCanocical(IntArrayList c) {
+	private static void transformCycleToCanonical(IntArrayList c) {
 		final int s = c.size();
 		IntSupplier findMinIdx = () -> {
 			int minIdx = -1, min = Integer.MAX_VALUE;

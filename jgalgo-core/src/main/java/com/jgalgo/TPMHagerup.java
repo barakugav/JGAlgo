@@ -10,6 +10,7 @@ import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 import it.unimi.dsi.fastutil.ints.IntIntPair;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
+import it.unimi.dsi.fastutil.objects.ObjectIntPair;
 
 /**
  * Hagerup's Tree Path Maxima (TPM) linear time algorithm.
@@ -108,9 +109,9 @@ public class TPMHagerup implements TPM {
 		}
 
 		int[] calcTPM(TPM.Queries queries) {
-			Pair<UGraph, Integer> r = buildBoruvkaFullyBranchingTree();
-			UGraph t = r.e1;
-			int root = r.e2.intValue();
+			ObjectIntPair<UGraph> r = buildBoruvkaFullyBranchingTree();
+			UGraph t = r.first();
+			int root = r.secondInt();
 
 			int[] lcaQueries = splitQueriesIntoLCAQueries(t, root, queries);
 
@@ -239,7 +240,7 @@ public class TPMHagerup implements TPM {
 			return av;
 		}
 
-		private Pair<UGraph, Integer> buildBoruvkaFullyBranchingTree() {
+		private ObjectIntPair<UGraph> buildBoruvkaFullyBranchingTree() {
 			int n = tOrig.vertices().size();
 			int[] minEdges = new int[n];
 			double[] minGraphWeights = new double[n];
@@ -326,7 +327,7 @@ public class TPMHagerup implements TPM {
 				G.clear();
 				G = gNext;
 			}
-			return Pair.of(t, Integer.valueOf(vTv[0]));
+			return ObjectIntPair.of(t, vTv[0]);
 		}
 
 		private static int[] splitQueriesIntoLCAQueries(UGraph t, int root, TPM.Queries queries) {
