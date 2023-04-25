@@ -1,0 +1,205 @@
+package com.jgalgo;
+
+import java.util.Arrays;
+import java.util.function.IntPredicate;
+
+import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
+
+/**
+ * Howard's algorithm for minimum mean cycle detection.
+ * <p>
+ * The algorithm runs in {@code O(m N)} and uses linear space, where {@code N}
+ * is product of the out-degrees of all the vertices in the graph. Although this
+ * bound is not polynomial, this algorithm perform well in practice. There are
+ * other bounds on the time such as {@code O(n m \alpha)} where {@code \alpha}
+ * is the number of simple cycles in the graph, or
+ * {@code O(n^2 m (MaxW-MinW)/\epsilon)} where {@code MaxW,MinW} are the maximum
+ * and minimum edge weight in the graph, and {@code \epsilon} is the precision
+ * of the algorithm.
+ * <p>
+ * Based on 'Efficient Algorithms for Optimal Cycle Mean and Optimum Cost to
+ * Time Ratio Problems' by Ali Dasdan, Sandy S. Irani, Rajesh K. Gupta (1999).
+ *
+ * @author Barak Ugav
+ */
+public class MinimumMeanCycleHoward implements MinimumMeanCycle {
+
+	private static final double EPS = 0.0001;
+
+	/**
+	 * Create a new minimum mean cycle algorithm.
+	 */
+	public MinimumMeanCycleHoward() {
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @throws IllegalArgumentException if the graph is not directed
+	 */
+	@Override
+	public Path computeMinimumMeanCycle(Graph g, EdgeWeightFunc w) {
+		if (!(g instanceof DiGraph))
+			throw new IllegalArgumentException("only directed graphs are supported");
+		int n = g.vertices().size();
+
+		/* find all SCC */
+		Connectivity.Result cc = Connectivity.findStrongConnectivityComponents((DiGraph) g);
+		int ccNum = cc.getNumberOfCC();
+		IntList[] ccVertices = new IntList[ccNum];
+		IntList[] ccEdges = new IntList[ccNum];
+		for (int c = 0; c < ccNum; c++) {
+			ccVertices[c] = new IntArrayList();
+			ccEdges[c] = new IntArrayList();
+		}
+		for (int u = 0; u < n; u++)
+			ccVertices[cc.getVertexCc(u)].add(u);
+		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+			int e = it.nextInt();
+			int u = cc.getVertexCc(g.edgeSource(e));
+			int v = cc.getVertexCc(g.edgeTarget(e));
+			if (u == v)
+				ccEdges[u].add(e);
+		}
+
+		/* init distances and policy */
+		double[] d = new double[n];
+		Arrays.fill(d, Double.POSITIVE_INFINITY);
+		int[] policy = new int[n];
+		Arrays.fill(policy, -1);
+		for (int c = 0; c < ccNum; c++) {
+			for (IntIterator it = ccEdges[c].iterator(); it.hasNext();) {
+				int e = it.nextInt();
+				double ew = w.weight(e);
+				int u = g.edgeSource(e);
+				if (ew < d[u]) {
+					d[u] = ew;
+					policy[u] = e;
+				}
+			}
+		}
+
+		IntPriorityQueue queue = new IntArrayFIFOQueue();
+
+		double overallBestCycleMeanWeight = Double.POSITIVE_INFINITY;
+		int overallBestCycleVertex = -1;
+		int nextSearchIdx = 1;
+		int[] visitIdx = new int[n];
+		/* operate on each SCC separately */
+		for (int c = 0; c < ccNum; c++) {
+			if (ccVertices[c].size() < 2)
+				continue;
+			/* run in iteration as long as we find improvements */
+			sccLoop: for (;;) {
+				double bestCycleMeanWeight = Double.POSITIVE_INFINITY;
+				int bestCycleVertex = -1;
+
+				final int iterationFirstSearchIdx = nextSearchIdx;
+				IntPredicate visited = v -> visitIdx[v] >= iterationFirstSearchIdx;
+				/* DFS root loop */
+				for (IntIterator rootIt = ccVertices[c].iterator(); rootIt.hasNext();) {
+					final int root = rootIt.nextInt();
+					if (visited.test(root))
+						continue;
+					final int searchIdx = nextSearchIdx++;
+
+					/* Run DFS from root */
+					int cycleVertex;
+					for (int v = root;;) {
+						visitIdx[v] = searchIdx;
+						v = g.edgeTarget(policy[v]);
+						if (visited.test(v)) {
+							cycleVertex = visitIdx[v] == searchIdx ? v : -1;
+							break;
+						}
+					}
+
+					/* cycle found */
+					if (cycleVertex != -1) {
+
+						/* find cycle mean weight */
+						double cycleWeight = 0;
+						int cycleLength = 0;
+						for (int v = cycleVertex;;) {
+							int e = policy[v];
+							cycleWeight += w.weight(e);
+							cycleLength++;
+
+							v = g.edgeTarget(e);
+							if (v == cycleVertex)
+								break;
+						}
+
+						/* compare to best */
+						cycleWeight = cycleWeight / cycleLength;
+						if (bestCycleMeanWeight > cycleWeight) {
+							bestCycleMeanWeight = cycleWeight;
+							bestCycleVertex = cycleVertex;
+						}
+					}
+				}
+				assert bestCycleVertex != -1;
+				if (overallBestCycleMeanWeight > bestCycleMeanWeight) {
+					overallBestCycleMeanWeight = bestCycleMeanWeight;
+					overallBestCycleVertex = bestCycleVertex;
+				}
+
+				/* run a reversed BFS from a vertex in the best cycle */
+				final int searchIdx = nextSearchIdx++;
+				visitIdx[bestCycleVertex] = searchIdx;
+				assert queue.isEmpty();
+				queue.enqueue(bestCycleVertex);
+				while (!queue.isEmpty()) {
+					int v = queue.dequeueInt();
+					for (EdgeIter eit = g.edgesIn(v); eit.hasNext();) {
+						int e = eit.nextInt();
+						int u = g.edgeSource(e);
+						if (policy[u] != e || visited.test(u))
+							continue;
+						/* update distance */
+						d[u] += w.weight(e) - bestCycleMeanWeight;
+
+						/* enqueue in BFS */
+						visitIdx[u] = searchIdx;
+						queue.enqueue(u);
+					}
+				}
+
+				/* check for improvements */
+				boolean improved = false;
+				for (IntIterator eit = ccEdges[c].iterator(); eit.hasNext();) {
+					int e = eit.nextInt();
+					int u = g.edgeSource(e);
+					int v = g.edgeTarget(e);
+					double newDistance = d[v] + w.weight(e) - bestCycleMeanWeight;
+					double delta = d[u] - newDistance;
+					if (delta > 0) {
+						if (delta > EPS)
+							improved = true;
+						d[u] = newDistance;
+						policy[u] = e;
+					}
+				}
+				if (!improved)
+					break sccLoop;
+			}
+		}
+
+		if (overallBestCycleVertex == -1)
+			return null;
+		IntList cycle = new IntArrayList();
+		for (int v = overallBestCycleVertex;;) {
+			int e = policy[v];
+			cycle.add(e);
+			v = g.edgeTarget(e);
+			if (v == overallBestCycleVertex)
+				break;
+		}
+		return new Path(g, overallBestCycleVertex, overallBestCycleVertex, cycle);
+	}
+
+}

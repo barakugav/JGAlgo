@@ -114,6 +114,7 @@ for (IntIterator it = ssspRes.getPathTo(v3).iterator(); it.hasNext();) {
 | Vertex Coloring Recursive Largest First | $O(m n)$ |
 | Tarjan Cycles Finder | $O((m + n) (c + 1))$ where $c$ is the number of simple cycles |
 | Johnson Cycles Finder | $O((m + n) (c + 1))$ where $c$ is the number of simple cycles |
+| Minimum Mean Cycle Howard | $O(m N)$ where $N$ is product of the out-degrees of all the vertices. Perform well in practice. |
 
 ### Additional Utils
 

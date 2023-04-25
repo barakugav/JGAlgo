@@ -147,8 +147,8 @@ public class Connectivity {
 	 * @author Barak Ugav
 	 */
 	public static class Result {
-		private int ccNum;
-		private int[] vertexToCC;
+		private final int ccNum;
+		private final int[] vertexToCC;
 
 		private Result(int ccNum, int[] vertexToCC) {
 			this.ccNum = ccNum;
@@ -174,6 +174,11 @@ public class Connectivity {
 		 */
 		public int getNumberOfCC() {
 			return ccNum;
+		}
+
+		@Override
+		public String toString() {
+			return Arrays.toString(vertexToCC);
 		}
 	}
 
