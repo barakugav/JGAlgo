@@ -87,8 +87,7 @@ abstract class GraphBase implements Graph {
 
 	@Override
 	public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, Class<? super V> type, V defVal) {
-		DataContainer<V> container = createContainer(type, defVal, vertices().size());
-		WeightsT weights = wrapContainer(container, getVerticesIDStrategy());
+		WeightsT weights = WeightsImpl.newInstance(getVerticesIDStrategy(), type, defVal);
 		addVerticesWeightsContainer(key, weights);
 		return weights;
 	}
@@ -100,131 +99,9 @@ abstract class GraphBase implements Graph {
 
 	@Override
 	public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, Class<? super E> type, E defVal) {
-		DataContainer<E> container = createContainer(type, defVal, edges().size());
-		WeightsT weights = wrapContainer(container, getEdgesIDStrategy());
+		WeightsT weights = WeightsImpl.newInstance(getEdgesIDStrategy(), type, defVal);
 		addEdgesWeightsContainer(key, weights);
 		return weights;
-	}
-
-	private static <D> DataContainer<D> createContainer(Class<? super D> type, D defVal, int size) {
-		@SuppressWarnings("rawtypes")
-		DataContainer container;
-		if (type == byte.class) {
-			byte defVal0 = defVal != null ? ((Byte) defVal).byteValue() : 0;
-			container = new DataContainer.Byte(size, defVal0);
-
-		} else if (type == short.class) {
-			short defVal0 = defVal != null ? ((Short) defVal).shortValue() : 0;
-			container = new DataContainer.Short(size, defVal0);
-
-		} else if (type == int.class) {
-			int defVal0 = defVal != null ? ((Integer) defVal).intValue() : 0;
-			container = new DataContainer.Int(size, defVal0);
-
-		} else if (type == long.class) {
-			long defVal0 = defVal != null ? ((Long) defVal).longValue() : 0;
-			container = new DataContainer.Long(size, defVal0);
-
-		} else if (type == float.class) {
-			float defVal0 = defVal != null ? ((Float) defVal).floatValue() : 0;
-			container = new DataContainer.Float(size, defVal0);
-
-		} else if (type == double.class) {
-			double defVal0 = defVal != null ? ((Double) defVal).doubleValue() : 0;
-			container = new DataContainer.Double(size, defVal0);
-
-		} else if (type == boolean.class) {
-			boolean defVal0 = defVal != null ? ((Boolean) defVal).booleanValue() : false;
-			container = new DataContainer.Bool(size, defVal0);
-
-		} else if (type == char.class) {
-			char defVal0 = defVal != null ? ((Character) defVal).charValue() : 0;
-			container = new DataContainer.Char(size, defVal0);
-
-		} else {
-			container = new DataContainer.Obj<>(size, defVal, type);
-		}
-
-		// TODO should be done in constructor
-		container.ensureCapacity(size);
-		for (int idx = 0; idx < size; idx++)
-			container.add(idx);
-
-		@SuppressWarnings("unchecked")
-		DataContainer<D> container0 = container;
-		return container0;
-	}
-
-	@SuppressWarnings("unchecked")
-	private static <D, WeightsT extends Weights<D>> WeightsT wrapContainer(DataContainer<D> container0,
-			IDStrategy idStrat) {
-		boolean isContinues = idStrat instanceof IDStrategy.Continues;
-		if (container0 instanceof DataContainer.Obj<?>) {
-			DataContainer.Obj<D> container = (DataContainer.Obj<D>) container0;
-			if (isContinues) {
-				return (WeightsT) new WeightsImpl.Direct.Obj<>(container);
-			} else {
-				return (WeightsT) new WeightsImpl.Mapped.Obj<>(container, idStrat);
-			}
-		} else if (container0 instanceof DataContainer.Byte) {
-			DataContainer.Byte container = (DataContainer.Byte) container0;
-			if (isContinues) {
-				return (WeightsT) new WeightsImpl.Direct.Byte(container);
-			} else {
-				return (WeightsT) new WeightsImpl.Mapped.Byte(container, idStrat);
-			}
-		} else if (container0 instanceof DataContainer.Short) {
-			DataContainer.Short container = (DataContainer.Short) container0;
-			if (isContinues) {
-				return (WeightsT) new WeightsImpl.Direct.Short(container);
-			} else {
-				return (WeightsT) new WeightsImpl.Mapped.Short(container, idStrat);
-			}
-		} else if (container0 instanceof DataContainer.Int) {
-			DataContainer.Int container = (DataContainer.Int) container0;
-			if (isContinues) {
-				return (WeightsT) new WeightsImpl.Direct.Int(container);
-			} else {
-				return (WeightsT) new WeightsImpl.Mapped.Int(container, idStrat);
-			}
-		} else if (container0 instanceof DataContainer.Long) {
-			DataContainer.Long container = (DataContainer.Long) container0;
-			if (isContinues) {
-				return (WeightsT) new WeightsImpl.Direct.Long(container);
-			} else {
-				return (WeightsT) new WeightsImpl.Mapped.Long(container, idStrat);
-			}
-		} else if (container0 instanceof DataContainer.Float) {
-			DataContainer.Float container = (DataContainer.Float) container0;
-			if (isContinues) {
-				return (WeightsT) new WeightsImpl.Direct.Float(container);
-			} else {
-				return (WeightsT) new WeightsImpl.Mapped.Float(container, idStrat);
-			}
-		} else if (container0 instanceof DataContainer.Double) {
-			DataContainer.Double container = (DataContainer.Double) container0;
-			if (isContinues) {
-				return (WeightsT) new WeightsImpl.Direct.Double(container);
-			} else {
-				return (WeightsT) new WeightsImpl.Mapped.Double(container, idStrat);
-			}
-		} else if (container0 instanceof DataContainer.Bool) {
-			DataContainer.Bool container = (DataContainer.Bool) container0;
-			if (isContinues) {
-				return (WeightsT) new WeightsImpl.Direct.Bool(container);
-			} else {
-				return (WeightsT) new WeightsImpl.Mapped.Bool(container, idStrat);
-			}
-		} else if (container0 instanceof DataContainer.Char) {
-			DataContainer.Char container = (DataContainer.Char) container0;
-			if (isContinues) {
-				return (WeightsT) new WeightsImpl.Direct.Char(container);
-			} else {
-				return (WeightsT) new WeightsImpl.Mapped.Char(container, idStrat);
-			}
-		} else {
-			throw new IllegalArgumentException(container0.getClass().toString());
-		}
 	}
 
 	abstract void addVerticesWeightsContainer(Object key, Weights<?> weights);

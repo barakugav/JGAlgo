@@ -67,6 +67,49 @@ abstract class DataContainer<E> {
 			throw new IndexOutOfBoundsException(idx);
 	}
 
+	static <D> DataContainer<D> newInstance(Class<? super D> type, D defVal, int size) {
+		@SuppressWarnings("rawtypes")
+		DataContainer container;
+		if (type == byte.class) {
+			byte defVal0 = defVal != null ? ((java.lang.Byte) defVal).byteValue() : 0;
+			container = new DataContainer.Byte(size, defVal0);
+
+		} else if (type == short.class) {
+			short defVal0 = defVal != null ? ((java.lang.Short) defVal).shortValue() : 0;
+			container = new DataContainer.Short(size, defVal0);
+
+		} else if (type == int.class) {
+			int defVal0 = defVal != null ? ((Integer) defVal).intValue() : 0;
+			container = new DataContainer.Int(size, defVal0);
+
+		} else if (type == long.class) {
+			long defVal0 = defVal != null ? ((java.lang.Long) defVal).longValue() : 0;
+			container = new DataContainer.Long(size, defVal0);
+
+		} else if (type == float.class) {
+			float defVal0 = defVal != null ? ((java.lang.Float) defVal).floatValue() : 0;
+			container = new DataContainer.Float(size, defVal0);
+
+		} else if (type == double.class) {
+			double defVal0 = defVal != null ? ((java.lang.Double) defVal).doubleValue() : 0;
+			container = new DataContainer.Double(size, defVal0);
+
+		} else if (type == boolean.class) {
+			boolean defVal0 = defVal != null ? ((Boolean) defVal).booleanValue() : false;
+			container = new DataContainer.Bool(size, defVal0);
+
+		} else if (type == char.class) {
+			char defVal0 = defVal != null ? ((Character) defVal).charValue() : 0;
+			container = new DataContainer.Char(size, defVal0);
+
+		} else {
+			container = new DataContainer.Obj<>(size, defVal, type);
+		}
+		@SuppressWarnings("unchecked")
+		DataContainer<D> container0 = container;
+		return container0;
+	}
+
 	static class Obj<E> extends DataContainer<E> {
 
 		private Object[] weights;

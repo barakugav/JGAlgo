@@ -12,6 +12,89 @@ abstract class WeightsImpl<E> implements Weights<E> {
 		return container;
 	}
 
+	static <E, WeightsT extends Weights<E>> WeightsT newInstance(IDStrategy idStrategy, Class<? super E> type,
+			E defVal) {
+		int size = idStrategy.size();
+		DataContainer<E> container = DataContainer.newInstance(type, defVal, size);
+		// TODO should be done in constructor
+		container.ensureCapacity(size);
+		for (int idx = 0; idx < size; idx++)
+			container.add(idx);
+		return wrapContainer(container, idStrategy);
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <E, WeightsT extends Weights<E>> WeightsT wrapContainer(DataContainer<E> container0,
+			IDStrategy idStrat) {
+		boolean isContinues = idStrat instanceof IDStrategy.Continues;
+		if (container0 instanceof DataContainer.Obj<?>) {
+			DataContainer.Obj<E> container = (DataContainer.Obj<E>) container0;
+			if (isContinues) {
+				return (WeightsT) new WeightsImpl.Direct.Obj<>(container);
+			} else {
+				return (WeightsT) new WeightsImpl.Mapped.Obj<>(container, idStrat);
+			}
+		} else if (container0 instanceof DataContainer.Byte) {
+			DataContainer.Byte container = (DataContainer.Byte) container0;
+			if (isContinues) {
+				return (WeightsT) new WeightsImpl.Direct.Byte(container);
+			} else {
+				return (WeightsT) new WeightsImpl.Mapped.Byte(container, idStrat);
+			}
+		} else if (container0 instanceof DataContainer.Short) {
+			DataContainer.Short container = (DataContainer.Short) container0;
+			if (isContinues) {
+				return (WeightsT) new WeightsImpl.Direct.Short(container);
+			} else {
+				return (WeightsT) new WeightsImpl.Mapped.Short(container, idStrat);
+			}
+		} else if (container0 instanceof DataContainer.Int) {
+			DataContainer.Int container = (DataContainer.Int) container0;
+			if (isContinues) {
+				return (WeightsT) new WeightsImpl.Direct.Int(container);
+			} else {
+				return (WeightsT) new WeightsImpl.Mapped.Int(container, idStrat);
+			}
+		} else if (container0 instanceof DataContainer.Long) {
+			DataContainer.Long container = (DataContainer.Long) container0;
+			if (isContinues) {
+				return (WeightsT) new WeightsImpl.Direct.Long(container);
+			} else {
+				return (WeightsT) new WeightsImpl.Mapped.Long(container, idStrat);
+			}
+		} else if (container0 instanceof DataContainer.Float) {
+			DataContainer.Float container = (DataContainer.Float) container0;
+			if (isContinues) {
+				return (WeightsT) new WeightsImpl.Direct.Float(container);
+			} else {
+				return (WeightsT) new WeightsImpl.Mapped.Float(container, idStrat);
+			}
+		} else if (container0 instanceof DataContainer.Double) {
+			DataContainer.Double container = (DataContainer.Double) container0;
+			if (isContinues) {
+				return (WeightsT) new WeightsImpl.Direct.Double(container);
+			} else {
+				return (WeightsT) new WeightsImpl.Mapped.Double(container, idStrat);
+			}
+		} else if (container0 instanceof DataContainer.Bool) {
+			DataContainer.Bool container = (DataContainer.Bool) container0;
+			if (isContinues) {
+				return (WeightsT) new WeightsImpl.Direct.Bool(container);
+			} else {
+				return (WeightsT) new WeightsImpl.Mapped.Bool(container, idStrat);
+			}
+		} else if (container0 instanceof DataContainer.Char) {
+			DataContainer.Char container = (DataContainer.Char) container0;
+			if (isContinues) {
+				return (WeightsT) new WeightsImpl.Direct.Char(container);
+			} else {
+				return (WeightsT) new WeightsImpl.Mapped.Char(container, idStrat);
+			}
+		} else {
+			throw new IllegalArgumentException(container0.getClass().toString());
+		}
+	}
+
 	static abstract class Direct<E> extends WeightsImpl<E> {
 		private Direct(DataContainer<E> data) {
 			super(data);

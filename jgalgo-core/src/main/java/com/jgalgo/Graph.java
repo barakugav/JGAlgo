@@ -440,6 +440,11 @@ public interface Graph {
 
 	/**
 	 * Add a new weights container associated with the vertices of this graph.
+	 * <p>
+	 * The created weights will be bounded to this graph, and will be updated when
+	 * the graph is updated. To create an external weights container, for example in
+	 * cases the graph is a user input we are not allowed to modify it, use
+	 * {@link Weights#createExternalVerticesWeights(Graph, Class)}.
 	 *
 	 * <pre> {@code
 	 * Graph g = ...;
@@ -472,6 +477,11 @@ public interface Graph {
 	/**
 	 * Add a new weights container associated with the vertices of this graph with
 	 * default value.
+	 * <p>
+	 * The created weights will be bounded to this graph, and will be updated when
+	 * the graph is updated. To create an external weights container, for example in
+	 * cases the graph is a user input we are not allowed to modify it, use
+	 * {@link Weights#createExternalVerticesWeights(Graph, Class, Object)}.
 	 *
 	 * <pre> {@code
 	 * Graph g = ...;
@@ -546,6 +556,11 @@ public interface Graph {
 
 	/**
 	 * Add a new weights container associated with the edges of this graph.
+	 * <p>
+	 * The created weights will be bounded to this graph, and will be updated when
+	 * the graph is updated. To create an external weights container, for example in
+	 * cases the graph is a user input we are not allowed to modify it, use
+	 * {@link Weights#createExternalEdgesWeights(Graph, Class)}.
 	 *
 	 * <pre> {@code
 	 * Graph g = ...;
@@ -581,6 +596,11 @@ public interface Graph {
 	/**
 	 * Add a new weights container associated with the edges of this graph with
 	 * default value.
+	 * <p>
+	 * The created weights will be bounded to this graph, and will be updated when
+	 * the graph is updated. To create an external weights container, for example in
+	 * cases the graph is a user input we are not allowed to modify it, use
+	 * {@link Weights#createExternalEdgesWeights(Graph, Class, Object)}.
 	 *
 	 * <pre> {@code
 	 * Graph g = ...;

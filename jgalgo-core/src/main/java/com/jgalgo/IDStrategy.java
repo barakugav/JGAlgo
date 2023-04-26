@@ -114,6 +114,11 @@ public abstract class IDStrategy {
 		}
 
 		@Override
+		int size() {
+			return size;
+		}
+
+		@Override
 		void clear() {
 			size = 0;
 		}
@@ -186,6 +191,11 @@ public abstract class IDStrategy {
 			idxToId.remove(idx);
 			idToIdx.remove(id);
 			notifyIDRemove(id);
+		}
+
+		@Override
+		int size() {
+			return idToIdx.size();
 		}
 
 		@Override
@@ -278,6 +288,8 @@ public abstract class IDStrategy {
 	abstract int newIdx();
 
 	abstract void removeIdx(int idx);
+
+	abstract int size();
 
 	abstract void clear();
 

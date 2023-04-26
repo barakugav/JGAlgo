@@ -576,6 +576,83 @@ public interface Weights<W> {
 	}
 
 	/**
+	 * Create an external vertex weights container.
+	 * <p>
+	 * An external weights container is a container that associate a weight to each
+	 * vertex in the graph, but does not update when the graph is updated. This
+	 * method should be used only in cases where the graph is unmodifiable.
+	 *
+	 * @param g    a graph
+	 * @param type the type of the weights, used for primitive types weights
+	 * @return a new weights container
+	 * @param <E>        the weights type
+	 * @param <WeightsT> the weights container, used to avoid casts of containers of
+	 *                   primitive types
+	 */
+	public static <E, WeightsT extends Weights<E>> WeightsT createExternalVerticesWeights(Graph g,
+			Class<? super E> type) {
+		return createExternalVerticesWeights(g, type, null);
+	}
+
+	/**
+	 * Create an external vertex weights container with default values.
+	 * <p>
+	 * An external weights container is a container that associate a weight to each
+	 * vertex in the graph, but does not update when the graph is updated. This
+	 * method should be used only in cases where the graph is unmodifiable.
+	 *
+	 * @param g      a graph
+	 * @param type   the type of the weights, used for primitive types weights
+	 * @param defVal default value use for the weights container
+	 * @return a new weights container
+	 * @param <E>        the weights type
+	 * @param <WeightsT> the weights container, used to avoid casts of containers of
+	 *                   primitive types
+	 */
+	public static <E, WeightsT extends Weights<E>> WeightsT createExternalVerticesWeights(Graph g,
+			Class<? super E> type, E defVal) {
+		return WeightsImpl.newInstance(g.getVerticesIDStrategy(), type, defVal);
+	}
+
+	/**
+	 * Create an external edge weights container.
+	 * <p>
+	 * An external weights container is a container that associate a weight to each
+	 * edge in the graph, but does not update when the graph is updated. This method
+	 * should be used only in cases where the graph is unmodifiable.
+	 *
+	 * @param g    a graph
+	 * @param type the type of the weights, used for primitive types weights
+	 * @return a new weights container
+	 * @param <E>        the weights type
+	 * @param <WeightsT> the weights container, used to avoid casts of containers of
+	 *                   primitive types
+	 */
+	public static <E, WeightsT extends Weights<E>> WeightsT createExternalEdgesWeights(Graph g, Class<? super E> type) {
+		return createExternalEdgesWeights(g, type, null);
+	}
+
+	/**
+	 * Create an external edge weights container with default values.
+	 * <p>
+	 * An external weights container is a container that associate a weight to each
+	 * edge in the graph, but does not update when the graph is updated. This method
+	 * should be used only in cases where the graph is unmodifiable.
+	 *
+	 * @param g      a graph
+	 * @param type   the type of the weights, used for primitive types weights
+	 * @param defVal default value use for the weights container
+	 * @return a new weights container
+	 * @param <E>        the weights type
+	 * @param <WeightsT> the weights container, used to avoid casts of containers of
+	 *                   primitive types
+	 */
+	public static <E, WeightsT extends Weights<E>> WeightsT createExternalEdgesWeights(Graph g, Class<? super E> type,
+			E defVal) {
+		return WeightsImpl.newInstance(g.getEdgesIDStrategy(), type, defVal);
+	}
+
+	/**
 	 * The default vertices weight key of the bipartite property.
 	 * <p>
 	 * A bipartite graph is a graph in which the vertices are partitioned into two

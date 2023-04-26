@@ -68,51 +68,45 @@ public class EulerianTour {
 		if (end == -1)
 			end = 0;
 
-		Object usedEdgesKey = new Object();
-		Weights.Bool usedEdges = g.addEdgesWeights(usedEdgesKey, boolean.class);
-		try {
-			EdgeIter[] iters = new EdgeIter[n];
-			for (int u = 0; u < n; u++)
-				iters[u] = g.edgesOut(u);
+		Weights.Bool usedEdges = Weights.createExternalEdgesWeights(g, boolean.class);
+		EdgeIter[] iters = new EdgeIter[n];
+		for (int u = 0; u < n; u++)
+			iters[u] = g.edgesOut(u);
 
-			IntArrayList tour = new IntArrayList(g.edges().size());
-			IntStack queue = new IntArrayList();
+		IntArrayList tour = new IntArrayList(g.edges().size());
+		IntStack queue = new IntArrayList();
 
-			for (int u = end;;) {
-				findCycle: for (;;) {
-					int e, v;
-					for (EdgeIter iter = iters[u];;) {
-						if (!iter.hasNext())
-							break findCycle;
-						e = iter.nextInt();
-						if (!usedEdges.getBool(e)) {
-							v = iter.v();
-							break;
-						}
+		for (int u = end;;) {
+			findCycle: for (;;) {
+				int e, v;
+				for (EdgeIter iter = iters[u];;) {
+					if (!iter.hasNext())
+						break findCycle;
+					e = iter.nextInt();
+					if (!usedEdges.getBool(e)) {
+						v = iter.v();
+						break;
 					}
-					usedEdges.set(e, true);
-					queue.push(e);
-					u = v;
 				}
-
-				if (queue.isEmpty())
-					break;
-
-				int e = queue.popInt();
-				tour.add(e);
-				u = g.edgeEndpoint(e, u);
+				usedEdges.set(e, true);
+				queue.push(e);
+				u = v;
 			}
 
-			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-				int e = it.nextInt();
-				if (!usedEdges.getBool(e))
-					throw new IllegalArgumentException("Graph is not connected");
-			}
-			return new Path(g, start, end, tour);
+			if (queue.isEmpty())
+				break;
 
-		} finally {
-			g.removeEdgesWeights(usedEdgesKey);
+			int e = queue.popInt();
+			tour.add(e);
+			u = g.edgeEndpoint(e, u);
 		}
+
+		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+			int e = it.nextInt();
+			if (!usedEdges.getBool(e))
+				throw new IllegalArgumentException("Graph is not connected");
+		}
+		return new Path(g, start, end, tour);
 	}
 
 	private static int degreeWithoutSelfLoops(UGraph g, int u) {
@@ -161,53 +155,47 @@ public class EulerianTour {
 		if (end == -1)
 			end = 0;
 
-		Object usedEdgesKey = new Object();
-		Weights.Bool usedEdges = g.addEdgesWeights(usedEdgesKey, boolean.class);
-		try {
-			EdgeIter[] iters = new EdgeIter[n];
-			for (int u = 0; u < n; u++)
-				iters[u] = g.edgesOut(u);
+		Weights.Bool usedEdges = Weights.createExternalEdgesWeights(g, boolean.class);
+		EdgeIter[] iters = new EdgeIter[n];
+		for (int u = 0; u < n; u++)
+			iters[u] = g.edgesOut(u);
 
-			IntArrayList tour = new IntArrayList(g.edges().size());
-			IntStack queue = new IntArrayList();
+		IntArrayList tour = new IntArrayList(g.edges().size());
+		IntStack queue = new IntArrayList();
 
-			for (int u = start;;) {
-				findCycle: for (;;) {
-					int e, v;
-					for (EdgeIter iter = iters[u];;) {
-						if (!iter.hasNext())
-							break findCycle;
-						e = iter.nextInt();
-						if (!usedEdges.getBool(e)) {
-							v = iter.v();
-							break;
-						}
+		for (int u = start;;) {
+			findCycle: for (;;) {
+				int e, v;
+				for (EdgeIter iter = iters[u];;) {
+					if (!iter.hasNext())
+						break findCycle;
+					e = iter.nextInt();
+					if (!usedEdges.getBool(e)) {
+						v = iter.v();
+						break;
 					}
-					usedEdges.set(e, true);
-					queue.push(e);
-					u = v;
 				}
-
-				if (queue.isEmpty())
-					break;
-
-				int e = queue.popInt();
-				tour.add(e);
-				assert g.edgeTarget(e) == u;
-				u = g.edgeSource(e);
+				usedEdges.set(e, true);
+				queue.push(e);
+				u = v;
 			}
 
-			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-				int e = it.nextInt();
-				if (!usedEdges.getBool(e))
-					throw new IllegalArgumentException("Graph is not connected");
-			}
-			IntArrays.reverse(tour.elements(), 0, tour.size());
-			return new Path(g, start, end, tour);
+			if (queue.isEmpty())
+				break;
 
-		} finally {
-			g.removeEdgesWeights(usedEdgesKey);
+			int e = queue.popInt();
+			tour.add(e);
+			assert g.edgeTarget(e) == u;
+			u = g.edgeSource(e);
 		}
+
+		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+			int e = it.nextInt();
+			if (!usedEdges.getBool(e))
+				throw new IllegalArgumentException("Graph is not connected");
+		}
+		IntArrays.reverse(tour.elements(), 0, tour.size());
+		return new Path(g, start, end, tour);
 	}
 
 }
