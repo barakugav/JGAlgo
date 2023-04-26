@@ -33,8 +33,9 @@ import it.unimi.dsi.fastutil.ints.IntList;
  */
 public class SSSPGoldberg implements SSSP {
 
-	private static final Object EdgeRefWeightKey = new Object();
 	private SSSP positiveSsspAlgo = new SSSPDijkstra();
+	private final ConnectivityAlgorithm ccAlg = ConnectivityAlgorithm.newBuilder().build();
+	private static final Object EdgeRefWeightKey = new Object();
 
 	/**
 	 * Construct a new SSSP algorithm object.
@@ -90,7 +91,7 @@ public class SSSPGoldberg implements SSSP {
 		return Result.ofSuccess(source, potential, res);
 	}
 
-	private static Pair<int[], Path> calcPotential(DiGraph g, EdgeWeightFunc.Int w, int minWeight) {
+	private Pair<int[], Path> calcPotential(DiGraph g, EdgeWeightFunc.Int w, int minWeight) {
 		int n = g.vertices().size();
 		int[] potential = new int[n];
 
@@ -125,7 +126,7 @@ public class SSSPGoldberg implements SSSP {
 				}
 
 				// Find all strong connectivity components in the graph
-				Connectivity.Result connectivityRes = Connectivity.findStrongConnectivityComponents(gNeg);
+				ConnectivityAlgorithm.Result connectivityRes = ccAlg.computeConnectivityComponents(gNeg);
 				int N = connectivityRes.getNumberOfCC();
 
 				// Contract each strong connectivity component and search for a negative edge

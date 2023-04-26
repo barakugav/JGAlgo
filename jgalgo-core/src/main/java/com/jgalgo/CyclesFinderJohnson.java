@@ -25,6 +25,8 @@ import it.unimi.dsi.fastutil.objects.ObjectIntPair;
  */
 public class CyclesFinderJohnson implements CyclesFinder {
 
+	private final ConnectivityAlgorithm ccAlg = ConnectivityAlgorithm.newBuilder().build();
+
 	/**
 	 * Create a new cycles finder algorithm object.
 	 */
@@ -38,7 +40,7 @@ public class CyclesFinderJohnson implements CyclesFinder {
 		return findAllCycles0((DiGraph) g);
 	}
 
-	private static List<Path> findAllCycles0(DiGraph g) {
+	private List<Path> findAllCycles0(DiGraph g) {
 		if (Graphs.containsParallelEdges(g))
 			throw new IllegalArgumentException("graph with self loops is not supported");
 		int n = g.vertices().size();
@@ -139,7 +141,7 @@ public class CyclesFinderJohnson implements CyclesFinder {
 		}
 	}
 
-	private static ObjectIntPair<StronglyConnectedComponent> chooseSCCInSubGraph(DiGraph g, int startIdx) {
+	private ObjectIntPair<StronglyConnectedComponent> chooseSCCInSubGraph(DiGraph g, int startIdx) {
 		int nFull = g.vertices().size();
 		int subToFull = startIdx;
 		int nSub = nFull - subToFull;
@@ -154,7 +156,7 @@ public class CyclesFinderJohnson implements CyclesFinder {
 			}
 		}
 
-		Connectivity.Result connectivityResult = Connectivity.findStrongConnectivityComponents(gSub);
+		ConnectivityAlgorithm.Result connectivityResult = ccAlg.computeConnectivityComponents(gSub);
 		int[] ccSize = new int[connectivityResult.getNumberOfCC()];
 		for (int uSub = 0; uSub < nSub; uSub++)
 			ccSize[connectivityResult.getVertexCc(uSub)]++;
@@ -182,10 +184,10 @@ public class CyclesFinderJohnson implements CyclesFinder {
 	private static class StronglyConnectedComponent {
 
 		private final int subToFull;
-		private final Connectivity.Result connectivityResult;
+		private final ConnectivityAlgorithm.Result connectivityResult;
 		private final int ccIdx;
 
-		StronglyConnectedComponent(int subToFull, Connectivity.Result connectivityResult, int ccIdx) {
+		StronglyConnectedComponent(int subToFull, ConnectivityAlgorithm.Result connectivityResult, int ccIdx) {
 			this.subToFull = subToFull;
 			this.connectivityResult = connectivityResult;
 			this.ccIdx = ccIdx;

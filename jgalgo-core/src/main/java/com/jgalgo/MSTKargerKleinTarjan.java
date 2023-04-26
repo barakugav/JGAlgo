@@ -23,6 +23,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 public class MSTKargerKleinTarjan implements MST {
 
 	private final Random seedGenerator;
+	private final ConnectivityAlgorithm ccAlg = ConnectivityAlgorithm.newBuilder().build();
 
 	/**
 	 * Create a new MST algorithm with random seed.
@@ -92,10 +93,10 @@ public class MSTKargerKleinTarjan implements MST {
 		return Graphs.subGraph(g, edgeSet);
 	}
 
-	private static IntCollection lightEdges(UGraph g, UGraph f) {
+	private IntCollection lightEdges(UGraph g, UGraph f) {
 		int n = f.vertices().size();
 		/* find connectivity components in the forest, each one of them is a tree */
-		Connectivity.Result connectivityRes = Connectivity.findConnectivityComponents(f);
+		ConnectivityAlgorithm.Result connectivityRes = ccAlg.computeConnectivityComponents(f);
 		int treeCount = connectivityRes.getNumberOfCC();
 		Int2IntFunction vToTree = connectivityRes::getVertexCc;
 		int[] treeSizes = new int[treeCount];

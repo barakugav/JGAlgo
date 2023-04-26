@@ -21,6 +21,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 public class MDSTTarjan implements MDST {
 
 	private Heap.Builder heapBuilder = HeapPairing::new;
+	private final ConnectivityAlgorithm ccAlg = ConnectivityAlgorithm.newBuilder().build();
 	private static final int HeavyEdge = 0xffffffff;
 	private static final double HeavyEdgeWeight = Double.MAX_VALUE;
 	private static final Object EdgeRefWeightKey = new Object();
@@ -111,8 +112,8 @@ public class MDSTTarjan implements MDST {
 		return mst;
 	}
 
-	private static void addEdgesUntilStronglyConnected(DiGraph g) {
-		Connectivity.Result connectivityRes = Connectivity.findStrongConnectivityComponents(g);
+	private void addEdgesUntilStronglyConnected(DiGraph g) {
+		ConnectivityAlgorithm.Result connectivityRes = ccAlg.computeConnectivityComponents(g);
 		int N = connectivityRes.getNumberOfCC();
 		if (N <= 1)
 			return;

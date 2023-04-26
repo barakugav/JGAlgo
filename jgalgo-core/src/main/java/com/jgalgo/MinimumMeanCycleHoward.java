@@ -28,6 +28,8 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  */
 public class MinimumMeanCycleHoward implements MinimumMeanCycle {
 
+	private final ConnectivityAlgorithm ccAlg = ConnectivityAlgorithm.newBuilder().build();
+
 	private static final double EPS = 0.0001;
 
 	/**
@@ -48,13 +50,15 @@ public class MinimumMeanCycleHoward implements MinimumMeanCycle {
 		int n = g.vertices().size();
 
 		/* find all SCC */
-		Connectivity.Result cc = Connectivity.findStrongConnectivityComponents((DiGraph) g);
+		ConnectivityAlgorithm.Result cc = ccAlg.computeConnectivityComponents(g);
 		int ccNum = cc.getNumberOfCC();
 		IntList[] ccVertices = new IntList[ccNum];
 		IntList[] ccEdges = new IntList[ccNum];
 		for (int c = 0; c < ccNum; c++) {
-			ccVertices[c] = new IntArrayList();
-			ccEdges[c] = new IntArrayList();
+			ccVertices[c] = MemoryReuse.ensureAllocated(ccVertices[c], IntArrayList::new);
+			ccEdges[c] = MemoryReuse.ensureAllocated(ccEdges[c], IntArrayList::new);
+			assert ccVertices[c].isEmpty();
+			assert ccEdges[c].isEmpty();
 		}
 		for (int u = 0; u < n; u++)
 			ccVertices[cc.getVertexCc(u)].add(u);
@@ -199,7 +203,13 @@ public class MinimumMeanCycleHoward implements MinimumMeanCycle {
 			if (v == overallBestCycleVertex)
 				break;
 		}
-		return new Path(g, overallBestCycleVertex, overallBestCycleVertex, cycle);
+		Path result = new Path(g, overallBestCycleVertex, overallBestCycleVertex, cycle);
+
+		for (int c = 0; c < ccNum; c++) {
+			ccVertices[c].clear();
+			ccEdges[c].clear();
+		}
+		return result;
 	}
 
 }

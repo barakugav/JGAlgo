@@ -27,7 +27,8 @@ public class ConnectivityTest extends TestBase {
 			int n = args[0], m = args[1];
 			UGraph g = (UGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
-			Connectivity.Result actual = Connectivity.findConnectivityComponents(g);
+			ConnectivityAlgorithm.Result actual = ConnectivityAlgorithm.newBuilder().build()
+					.computeConnectivityComponents(g);
 			validateConnectivityResult(g, actual);
 			Pair<Integer, int[]> expected = calcUndirectedConnectivity(g);
 			assertConnectivityResultsEqual(g, expected, actual);
@@ -59,7 +60,8 @@ public class ConnectivityTest extends TestBase {
 			int n = args[0], m = args[1];
 			DiGraph g = (DiGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true)
 					.parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
-			Connectivity.Result actual = Connectivity.findStrongConnectivityComponents(g);
+			ConnectivityAlgorithm.Result actual = ConnectivityAlgorithm.newBuilder().build()
+					.computeConnectivityComponents(g);
 			validateConnectivityResult(g, actual);
 			Pair<Integer, int[]> expected = calcDirectedConnectivity(g);
 			assertConnectivityResultsEqual(g, expected, actual);
@@ -93,7 +95,8 @@ public class ConnectivityTest extends TestBase {
 		return Pair.of(Integer.valueOf(ccNum), vertexToCC);
 	}
 
-	private static void assertConnectivityResultsEqual(Graph g, Pair<Integer, int[]> r1, Connectivity.Result r2) {
+	private static void assertConnectivityResultsEqual(Graph g, Pair<Integer, int[]> r1,
+			ConnectivityAlgorithm.Result r2) {
 		assertEquals(r1.first(), r2.getNumberOfCC());
 		Int2IntMap cc1To2Map = new Int2IntOpenHashMap(r2.getNumberOfCC());
 		int n = g.vertices().size();
@@ -109,7 +112,7 @@ public class ConnectivityTest extends TestBase {
 		}
 	}
 
-	private static void validateConnectivityResult(Graph g, Connectivity.Result res) {
+	private static void validateConnectivityResult(Graph g, ConnectivityAlgorithm.Result res) {
 		BitSet ccs = new BitSet();
 		int n = g.vertices().size();
 		for (int v = 0; v < n; v++)
