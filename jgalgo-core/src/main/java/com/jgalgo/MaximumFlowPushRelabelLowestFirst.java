@@ -25,17 +25,17 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  *
  * @see <a href=
  *      "https://en.wikipedia.org/wiki/Push%E2%80%93relabel_maximum_flow_algorithm">Wikipedia</a>
- * @see MaxFlowPushRelabel
- * @see MaxFlowPushRelabelToFront
- * @see MaxFlowPushRelabelHighestFirst
+ * @see MaximumFlowPushRelabel
+ * @see MaximumFlowPushRelabelToFront
+ * @see MaximumFlowPushRelabelHighestFirst
  * @author Barak Ugav
  */
-public class MaxFlowPushRelabelLowestFirst implements MaxFlow {
+public class MaximumFlowPushRelabelLowestFirst implements MaximumFlow {
 
 	/**
 	 * Create a new maximum flow algorithm object.
 	 */
-	public MaxFlowPushRelabelLowestFirst() {
+	public MaximumFlowPushRelabelLowestFirst() {
 	}
 
 	/**
@@ -54,7 +54,7 @@ public class MaxFlowPushRelabelLowestFirst implements MaxFlow {
 		}
 	}
 
-	private static class WorkerDouble extends MaxFlowPushRelabelAbstract.WorkerDouble {
+	private static class WorkerDouble extends MaximumFlowPushRelabelAbstract.WorkerDouble {
 
 		final ActiveQueue active;
 
@@ -92,7 +92,7 @@ public class MaxFlowPushRelabelLowestFirst implements MaxFlow {
 		}
 	}
 
-	private static class WorkerInt extends MaxFlowPushRelabelAbstract.WorkerInt {
+	private static class WorkerInt extends MaximumFlowPushRelabelAbstract.WorkerInt {
 
 		final ActiveQueue active;
 
@@ -145,7 +145,7 @@ public class MaxFlowPushRelabelLowestFirst implements MaxFlow {
 		// 'queues' which is not empty
 		private int level;
 
-		ActiveQueue(MaxFlowPushRelabelAbstract.Worker worker) {
+		ActiveQueue(MaximumFlowPushRelabelAbstract.Worker worker) {
 			g = worker.g;
 			n = g.vertices().size();
 			isActive = new BitSet(n);

@@ -23,7 +23,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
  *
  * @author Barak Ugav
  */
-public interface TPM {
+public interface TreePathMaxima {
 
 	/**
 	 * Compute the heaviest edge in multiple tree paths.
@@ -40,14 +40,14 @@ public interface TPM {
 	 *         edge in the {@code i}'th entry is the heaviest edge in the tree path
 	 *         between the two vertices of the {@code i}'th query.
 	 */
-	public int[] computeHeaviestEdgeInTreePaths(Graph tree, EdgeWeightFunc w, TPM.Queries queries);
+	public int[] computeHeaviestEdgeInTreePaths(Graph tree, EdgeWeightFunc w, TreePathMaxima.Queries queries);
 
 	/**
-	 * Queries container for {@link TPM} computations.
+	 * Queries container for {@link TreePathMaxima} computations.
 	 * <p>
 	 * Queries are added one by one to this container, and than the Queries object
-	 * is passed to the {@link TPM} algorithm using
-	 * {@link TPM#computeHeaviestEdgeInTreePaths(Graph, EdgeWeightFunc, Queries)}.
+	 * is passed to the {@link TreePathMaxima} algorithm using
+	 * {@link TreePathMaxima#computeHeaviestEdgeInTreePaths(Graph, EdgeWeightFunc, Queries)}.
 	 *
 	 * @author Barak Ugav
 	 */
@@ -116,7 +116,7 @@ public interface TPM {
 	 * @return {@code true} if the collection of edges form an MST of {@code g},
 	 *         else {@code false}
 	 */
-	public static boolean verifyMST(UGraph g, EdgeWeightFunc w, IntCollection mstEdges, TPM tpmAlgo) {
+	public static boolean verifyMST(UGraph g, EdgeWeightFunc w, IntCollection mstEdges, TreePathMaxima tpmAlgo) {
 		int n = g.vertices().size();
 		UGraph mst = new GraphArrayUndirected(n);
 		Weights.Int edgeRef = mst.addEdgesWeights("edgeRef", int.class);
@@ -130,7 +130,7 @@ public interface TPM {
 			return false;
 
 		EdgeWeightFunc w0 = e -> w.weight(edgeRef.getInt(e));
-		TPM.Queries queries = new TPM.Queries();
+		TreePathMaxima.Queries queries = new TreePathMaxima.Queries();
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			queries.addQuery(g.edgeSource(e), g.edgeTarget(e));

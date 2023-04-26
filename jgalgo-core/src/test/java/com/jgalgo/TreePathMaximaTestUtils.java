@@ -14,12 +14,12 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIntPair;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
-public class TPMTestUtils extends TestUtils {
+public class TreePathMaximaTestUtils extends TestUtils {
 
-	private TPMTestUtils() {
+	private TreePathMaximaTestUtils() {
 	}
 
-	private static int[] calcExpectedTPM(Graph t, EdgeWeightFunc w, TPM.Queries queries) {
+	private static int[] calcExpectedTPM(Graph t, EdgeWeightFunc w, TreePathMaxima.Queries queries) {
 		int queriesNum = queries.size();
 		int[] res = new int[queriesNum];
 		for (int q = 0; q < queriesNum; q++) {
@@ -42,23 +42,23 @@ public class TPMTestUtils extends TestUtils {
 		return res;
 	}
 
-	public static TPM.Queries generateAllPossibleQueries(int n) {
-		TPM.Queries queries = new TPM.Queries();
+	public static TreePathMaxima.Queries generateAllPossibleQueries(int n) {
+		TreePathMaxima.Queries queries = new TreePathMaxima.Queries();
 		for (int i = 0; i < n; i++)
 			for (int j = i; j < n; j++)
 				queries.addQuery(i, j);
 		return queries;
 	}
 
-	public static TPM.Queries generateRandQueries(int n, int m, long seed) {
+	public static TreePathMaxima.Queries generateRandQueries(int n, int m, long seed) {
 		Random rand = new Random(seed);
-		TPM.Queries queries = new TPM.Queries();
+		TreePathMaxima.Queries queries = new TreePathMaxima.Queries();
 		for (int q = 0; q < m; q++)
 			queries.addQuery(rand.nextInt(n), rand.nextInt(n));
 		return queries;
 	}
 
-	static void compareActualToExpectedResults(TPM.Queries queries, int[] actual, int[] expected, EdgeWeightFunc w) {
+	static void compareActualToExpectedResults(TreePathMaxima.Queries queries, int[] actual, int[] expected, EdgeWeightFunc w) {
 		assertEquals(expected.length, actual.length, "Unexpected result size");
 		for (int i = 0; i < actual.length; i++) {
 			IntIntPair query = queries.getQuery(i);
@@ -70,30 +70,30 @@ public class TPMTestUtils extends TestUtils {
 		}
 	}
 
-	static void testTPM(Supplier<? extends TPM> builder, long seed) {
+	static void testTPM(Supplier<? extends TreePathMaxima> builder, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(64, 16), phase(32, 32), phase(16, 64), phase(8, 128), phase(4, 256),
 				phase(2, 512), phase(1, 1234));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
-			TPM algo = builder.get();
+			TreePathMaxima algo = builder.get();
 			testTPM(algo, n, seedGen.nextSeed());
 		});
 	}
 
-	private static void testTPM(TPM algo, int n, long seed) {
+	private static void testTPM(TreePathMaxima algo, int n, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Graph t = GraphsTestUtils.randTree(n, seedGen.nextSeed());
 		EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(t, seedGen.nextSeed());
 
-		TPM.Queries queries = n <= 32 ? generateAllPossibleQueries(n)
+		TreePathMaxima.Queries queries = n <= 32 ? generateAllPossibleQueries(n)
 				: generateRandQueries(n, Math.min(n * 16, 1000), seedGen.nextSeed());
 		int[] actual = algo.computeHeaviestEdgeInTreePaths(t, w, queries);
 		int[] expected = calcExpectedTPM(t, w, queries);
 		compareActualToExpectedResults(queries, actual, expected, w);
 	}
 
-	static void verifyMSTPositive(Supplier<? extends TPM> builder, long seed) {
+	static void verifyMSTPositive(Supplier<? extends TreePathMaxima> builder, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(256, 8, 16), phase(128, 16, 32), phase(64, 64, 128), phase(32, 128, 256),
 				phase(8, 2048, 4096), phase(2, 8192, 16384));
@@ -104,13 +104,13 @@ public class TPMTestUtils extends TestUtils {
 			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			IntCollection mstEdges = new MSTKruskal().computeMinimumSpanningTree(g, w);
 
-			TPM algo = builder.get();
-			boolean isMST = TPM.verifyMST(g, w, mstEdges, algo);
+			TreePathMaxima algo = builder.get();
+			boolean isMST = TreePathMaxima.verifyMST(g, w, mstEdges, algo);
 			assertTrue(isMST);
 		});
 	}
 
-	static void verifyMSTNegative(Supplier<? extends TPM> builder, long seed) {
+	static void verifyMSTNegative(Supplier<? extends TreePathMaxima> builder, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(256, 8, 16), phase(128, 16, 32), phase(64, 64, 128), phase(32, 128, 256),
 				phase(8, 2048, 4096), phase(2, 8192, 16384));
@@ -149,8 +149,8 @@ public class TPMTestUtils extends TestUtils {
 				}
 			}
 
-			TPM algo = builder.get();
-			boolean isMST = TPM.verifyMST(g, w, mstEdges, algo);
+			TreePathMaxima algo = builder.get();
+			boolean isMST = TreePathMaxima.verifyMST(g, w, mstEdges, algo);
 			assertFalse(isMST, "MST validation failed");
 		});
 	}

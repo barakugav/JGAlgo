@@ -25,21 +25,21 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  * <p>
  * This algorithm can be implemented with better time theoretical bound using
  * {@link DynamicTree}, but in practice it has little to non advantages. See
- * {@link MaxFlowDinicDynamicTrees}.
+ * {@link MaximumFlowDinicDynamicTrees}.
  *
  * @see <a href=
  *      "https://en.wikipedia.org/wiki/Push%E2%80%93relabel_maximum_flow_algorithm">Wikipedia</a>
- * @see MaxFlowPushRelabelToFront
- * @see MaxFlowPushRelabelHighestFirst
- * @see MaxFlowPushRelabelLowestFirst
+ * @see MaximumFlowPushRelabelToFront
+ * @see MaximumFlowPushRelabelHighestFirst
+ * @see MaximumFlowPushRelabelLowestFirst
  * @author Barak Ugav
  */
-public class MaxFlowPushRelabel implements MaxFlow {
+public class MaximumFlowPushRelabel implements MaximumFlow {
 
 	/**
 	 * Create a new maximum flow algorithm object.
 	 */
-	public MaxFlowPushRelabel() {
+	public MaximumFlowPushRelabel() {
 	}
 
 	/**
@@ -58,7 +58,7 @@ public class MaxFlowPushRelabel implements MaxFlow {
 		}
 	}
 
-	private static class WorkerDouble extends MaxFlowPushRelabelAbstract.WorkerDouble {
+	private static class WorkerDouble extends MaximumFlowPushRelabelAbstract.WorkerDouble {
 
 		final ActiveQueue active;
 
@@ -90,7 +90,7 @@ public class MaxFlowPushRelabel implements MaxFlow {
 		}
 	}
 
-	private static class WorkerInt extends MaxFlowPushRelabelAbstract.WorkerInt {
+	private static class WorkerInt extends MaximumFlowPushRelabelAbstract.WorkerInt {
 
 		final ActiveQueue active;
 
@@ -128,7 +128,7 @@ public class MaxFlowPushRelabel implements MaxFlow {
 		final BitSet isActive;
 		final IntPriorityQueue queue;
 
-		ActiveQueue(MaxFlowPushRelabelAbstract.Worker worker) {
+		ActiveQueue(MaximumFlowPushRelabelAbstract.Worker worker) {
 			g = worker.g;
 			int n = g.vertices().size();
 			isActive = new BitSet(n);

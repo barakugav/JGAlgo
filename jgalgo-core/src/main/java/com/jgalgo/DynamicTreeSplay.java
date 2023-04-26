@@ -52,7 +52,7 @@ public class DynamicTreeSplay implements DynamicTree {
 		if (!n.isLinked())
 			return n;
 		splay(n);
-		return splay(BSTUtils.findMax(n));
+		return splay(BinarySearchTrees.findMax(n));
 	}
 
 	@Override

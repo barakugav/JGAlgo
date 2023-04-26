@@ -25,7 +25,7 @@ public class SplayTreeTest extends TestBase {
 	@Test
 	public void testExtractMax() {
 		final long seed = 0xb6921b23fa734769L;
-		BSTTestUtils.testExtractMax(SplayTree::new, seed);
+		BinarySearchTreeTestUtils.testExtractMax(SplayTree::new, seed);
 	}
 
 	@Test
@@ -55,13 +55,13 @@ public class SplayTreeTest extends TestBase {
 	@Test
 	public void testSplitDefaultCompare() {
 		final long seed = 0x353e23967b348089L;
-		BSTTestUtils.testSplitDefaultCompare(SplayTree::new, seed);
+		BinarySearchTreeTestUtils.testSplitDefaultCompare(SplayTree::new, seed);
 	}
 
 	@Test
 	public void testSplitCustomCompare() {
 		final long seed = 0x40b238cf34d778c0L;
-		BSTTestUtils.testSplitCustomCompare(SplayTree::new, seed);
+		BinarySearchTreeTestUtils.testSplitCustomCompare(SplayTree::new, seed);
 	}
 
 	@Test
@@ -79,49 +79,49 @@ public class SplayTreeTest extends TestBase {
 	@Test
 	public void testFindSmallersDefaultCompare() {
 		final long seed = 0x77f393a0a7508c84L;
-		BSTTestUtils.testFindSmallersDefaultCompare(SplayTree::new, seed);
+		BinarySearchTreeTestUtils.testFindSmallersDefaultCompare(SplayTree::new, seed);
 	}
 
 	@Test
 	public void testFindSmallersCustomCompare() {
 		final long seed = 0x99a37616f1023b0fL;
-		BSTTestUtils.testFindSmallersCustomCompare(SplayTree::new, seed);
+		BinarySearchTreeTestUtils.testFindSmallersCustomCompare(SplayTree::new, seed);
 	}
 
 	@Test
 	public void testFindGreatersDefaultCompare() {
 		final long seed = 0xf8ec8ed64600635fL;
-		BSTTestUtils.testFindGreatersDefaultCompare(SplayTree::new, seed);
+		BinarySearchTreeTestUtils.testFindGreatersDefaultCompare(SplayTree::new, seed);
 	}
 
 	@Test
 	public void testFindGreaterCustomCompare() {
 		final long seed = 0xf890218f3f5420a9L;
-		BSTTestUtils.testFindGreatersCustomCompare(SplayTree::new, seed);
+		BinarySearchTreeTestUtils.testFindGreatersCustomCompare(SplayTree::new, seed);
 	}
 
 	@Test
 	public void testGetPredecessorDefaultCompare() {
 		final long seed = 0x09395f66760a5c55L;
-		BSTTestUtils.testGetPredecessorsDefaultCompare(SplayTree::new, seed);
+		BinarySearchTreeTestUtils.testGetPredecessorsDefaultCompare(SplayTree::new, seed);
 	}
 
 	@Test
 	public void testGetPredecessorCustomCompare() {
 		final long seed = 0x2f8fd18ab64a2b15L;
-		BSTTestUtils.testGetPredecessorsCustomCompare(SplayTree::new, seed);
+		BinarySearchTreeTestUtils.testGetPredecessorsCustomCompare(SplayTree::new, seed);
 	}
 
 	@Test
 	public void testGetSuccessorDefaultCompare() {
 		final long seed = 0x7ec6e57911f958c1L;
-		BSTTestUtils.testGetSuccessorsDefaultCompare(SplayTree::new, seed);
+		BinarySearchTreeTestUtils.testGetSuccessorsDefaultCompare(SplayTree::new, seed);
 	}
 
 	@Test
 	public void testGetSuccessorCustomCompare() {
 		final long seed = 0x782385e30e24c822L;
-		BSTTestUtils.testGetSuccessorsCustomCompare(SplayTree::new, seed);
+		BinarySearchTreeTestUtils.testGetSuccessorsCustomCompare(SplayTree::new, seed);
 	}
 
 }

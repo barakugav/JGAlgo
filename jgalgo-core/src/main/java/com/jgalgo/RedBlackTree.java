@@ -15,7 +15,7 @@ import java.util.Set;
  *      "https://en.wikipedia.org/wiki/Red%E2%80%93black_tree">Wikipedia</a>
  * @author Barak Ugav
  */
-public class RedBlackTree<E> extends BSTAbstract<E> {
+public class RedBlackTree<E> extends BinarySearchTreeAbstract<E> {
 
 	private int size;
 	private Node<E> root;
@@ -70,7 +70,7 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 			@SuppressWarnings({ "unchecked", "rawtypes" })
 			@Override
 			public Iterator<HeapReference<E>> iterator() {
-				return (Iterator) new BSTUtils.BSTIterator<>(root);
+				return (Iterator) new BinarySearchTrees.BSTIterator<>(root);
 			}
 
 			@SuppressWarnings("unchecked")
@@ -106,7 +106,7 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 	public void clear() {
 		if (root == null)
 			return;
-		BSTUtils.clear(root);
+		BinarySearchTrees.clear(root);
 		root = null;
 		size = 0;
 	}
@@ -122,7 +122,7 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 	 *                                       support this operation
 	 */
 	@Override
-	public BST<E> splitSmaller(E e) {
+	public BinarySearchTree<E> splitSmaller(E e) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -131,7 +131,7 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 	 *                                       support this operation
 	 */
 	@Override
-	public BST<E> splitGreater(E e) {
+	public BinarySearchTree<E> splitGreater(E e) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -146,21 +146,21 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 
 	@Override
 	public HeapReference<E> findRef(E e) {
-		return BSTUtils.find(root, c, e);
+		return BinarySearchTrees.find(root, c, e);
 	}
 
 	@Override
 	public HeapReference<E> findMinRef() {
 		if (root == null)
 			throw new IllegalStateException();
-		return BSTUtils.findMin(root);
+		return BinarySearchTrees.findMin(root);
 	}
 
 	@Override
 	public HeapReference<E> findMaxRef() {
 		if (root == null)
 			throw new IllegalStateException();
-		return BSTUtils.findMax(root);
+		return BinarySearchTrees.findMax(root);
 	}
 
 	@Override
@@ -182,7 +182,7 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 			root = n;
 			afterInsert(n);
 		} else {
-			BSTUtils.insert(root, c, n);
+			BinarySearchTrees.insert(root, c, n);
 			afterInsert(n);
 			fixAfterInsert(n);
 		}
@@ -279,7 +279,7 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 
 		/* 2 children, switch place with a single child node */
 		if (n.left != null && n.right != null)
-			swap(n, BSTUtils.getSuccessor(n));
+			swap(n, BinarySearchTrees.getSuccessor(n));
 		assert n.left == null || n.right == null;
 		Node<E> parent = n.parent;
 
@@ -441,7 +441,7 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 	}
 
 	void swap(Node<E> n1, Node<E> n2) {
-		BSTUtils.swap(n1, n2);
+		BinarySearchTrees.swap(n1, n2);
 		if (n1 == root)
 			root = n2;
 		else if (n2 == root)
@@ -453,32 +453,32 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 
 	@Override
 	public HeapReference<E> findOrSmaller(E e) {
-		return BSTUtils.findOrSmaller(root, c, e);
+		return BinarySearchTrees.findOrSmaller(root, c, e);
 	}
 
 	@Override
 	public HeapReference<E> findOrGreater(E e) {
-		return BSTUtils.findOrGreater(root, c, e);
+		return BinarySearchTrees.findOrGreater(root, c, e);
 	}
 
 	@Override
 	public HeapReference<E> findSmaller(E e) {
-		return BSTUtils.findSmaller(root, c, e);
+		return BinarySearchTrees.findSmaller(root, c, e);
 	}
 
 	@Override
 	public HeapReference<E> findGreater(E e) {
-		return BSTUtils.findGreater(root, c, e);
+		return BinarySearchTrees.findGreater(root, c, e);
 	}
 
 	@Override
 	public HeapReference<E> getPredecessor(HeapReference<E> ref) {
-		return BSTUtils.getPredecessor((Node<E>) ref);
+		return BinarySearchTrees.getPredecessor((Node<E>) ref);
 	}
 
 	@Override
 	public HeapReference<E> getSuccessor(HeapReference<E> ref) {
-		return BSTUtils.getSuccessor((Node<E>) ref);
+		return BinarySearchTrees.getSuccessor((Node<E>) ref);
 	}
 
 	/**
@@ -490,10 +490,10 @@ public class RedBlackTree<E> extends BSTAbstract<E> {
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Iterator<HeapReference<E>> experimental_subTreeIterator(HeapReference<E> ref) {
-		return (Iterator) (new BSTUtils.BSTIterator<>((Node<E>) ref));
+		return (Iterator) (new BinarySearchTrees.BSTIterator<>((Node<E>) ref));
 	}
 
-	static class Node<E> extends BSTUtils.Node<E, Node<E>> implements HeapReference<E> {
+	static class Node<E> extends BinarySearchTrees.Node<E, Node<E>> implements HeapReference<E> {
 
 		private boolean color;
 

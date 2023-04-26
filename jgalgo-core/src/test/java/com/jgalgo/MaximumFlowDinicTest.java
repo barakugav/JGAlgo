@@ -2,12 +2,12 @@ package com.jgalgo;
 
 import org.junit.jupiter.api.Test;
 
-public class MaxFlowDinicTest extends TestBase {
+public class MaximumFlowDinicTest extends TestBase {
 
 	@Test
 	public void testRandGraphs() {
 		final long seed = 0xa79b303ec46fd984L;
-		MaxFlowTestUtils.testRandGraphs(MaxFlowDinic::new, seed);
+		MaximumFlowTestUtils.testRandGraphs(MaximumFlowDinic::new, seed);
 	}
 
 }

@@ -31,12 +31,12 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  * to {@code m n log (n^2 / m)} and linear space. This implementation uses FIFO
  * to order the vertices to be examined. Note that this implementation is
  * usually out preformed in practice by simpler variants of the push-relabel
- * algorithm, such as {@link MaxFlowPushRelabelHighestFirst}.
+ * algorithm, such as {@link MaximumFlowPushRelabelHighestFirst}.
  *
- * @see MaxFlowPushRelabel
+ * @see MaximumFlowPushRelabel
  * @author Barak Ugav
  */
-public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
+public class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 
 	private static final Object EdgeRefWeightKey = new Object();
 	private static final Object EdgeRevWeightKey = new Object();
@@ -46,7 +46,7 @@ public class MaxFlowPushRelabelDynamicTrees implements MaxFlow {
 	/**
 	 * Create a new maximum flow algorithm object.
 	 */
-	public MaxFlowPushRelabelDynamicTrees() {
+	public MaximumFlowPushRelabelDynamicTrees() {
 	}
 
 	/**

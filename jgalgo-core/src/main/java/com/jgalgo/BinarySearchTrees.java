@@ -5,9 +5,9 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.BiFunction;
 
-class BSTUtils {
+class BinarySearchTrees {
 
-	private BSTUtils() {
+	private BinarySearchTrees() {
 	}
 
 	static <E, N extends Node<E, N>> N find(N root, Comparator<? super E> c, E e) {

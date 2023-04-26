@@ -24,15 +24,15 @@ import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.DiGraph;
 import com.jgalgo.FlowNetwork;
 import com.jgalgo.GraphBuilder;
-import com.jgalgo.MaxFlow;
-import com.jgalgo.MaxFlowDinic;
-import com.jgalgo.MaxFlowDinicDynamicTrees;
-import com.jgalgo.MaxFlowEdmondsKarp;
-import com.jgalgo.MaxFlowPushRelabel;
-import com.jgalgo.MaxFlowPushRelabelDynamicTrees;
-import com.jgalgo.MaxFlowPushRelabelHighestFirst;
-import com.jgalgo.MaxFlowPushRelabelLowestFirst;
-import com.jgalgo.MaxFlowPushRelabelToFront;
+import com.jgalgo.MaximumFlow;
+import com.jgalgo.MaximumFlowDinic;
+import com.jgalgo.MaximumFlowDinicDynamicTrees;
+import com.jgalgo.MaximumFlowEdmondsKarp;
+import com.jgalgo.MaximumFlowPushRelabel;
+import com.jgalgo.MaximumFlowPushRelabelDynamicTrees;
+import com.jgalgo.MaximumFlowPushRelabelHighestFirst;
+import com.jgalgo.MaximumFlowPushRelabelLowestFirst;
+import com.jgalgo.MaximumFlowPushRelabelToFront;
 import com.jgalgo.Path;
 import com.jgalgo.bench.GraphsTestUtils.RandomGraphBuilder;
 import com.jgalgo.bench.TestUtils.SeedGenerator;
@@ -44,7 +44,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 @Warmup(iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
 @Measurement(iterations = 1, time = 10, timeUnit = TimeUnit.SECONDS)
 @State(Scope.Benchmark)
-public class MaxFlowBench {
+public class MaximumFlowBench {
 
 	@Param({ "|V|=30 |E|=300", "|V|=200 |E|=1500", "|V|=800 |E|=10000" })
 	public String args;
@@ -90,22 +90,22 @@ public class MaxFlowBench {
 		}
 	}
 
-	private void benchMaxFlow(Supplier<? extends MaxFlow> builder, Blackhole blackhole) {
+	private void benchMaxFlow(Supplier<? extends MaximumFlow> builder, Blackhole blackhole) {
 		MaxFlowTask graph = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
-		MaxFlow algo = builder.get();
+		MaximumFlow algo = builder.get();
 		double flow = algo.computeMaximumFlow(graph.g, graph.flow, graph.source, graph.sink);
 		blackhole.consume(flow);
 	}
 
 	@Benchmark
 	public void EdmondsKarp(Blackhole blackhole) {
-		benchMaxFlow(MaxFlowEdmondsKarp::new, blackhole);
+		benchMaxFlow(MaximumFlowEdmondsKarp::new, blackhole);
 	}
 
 	@Benchmark
 	public void DinicWithLinkedGraph(Blackhole blackhole) {
 		benchMaxFlow(() -> {
-			MaxFlowDinic algo = new MaxFlowDinic();
+			MaximumFlowDinic algo = new MaximumFlowDinic();
 			algo.experimental_setLayerGraphFactory(GraphBuilder.Linked::new);
 			return algo;
 		}, blackhole);
@@ -114,7 +114,7 @@ public class MaxFlowBench {
 	@Benchmark
 	public void DinicWithArrayGraph(Blackhole blackhole) {
 		benchMaxFlow(() -> {
-			MaxFlowDinic algo = new MaxFlowDinic();
+			MaximumFlowDinic algo = new MaximumFlowDinic();
 			algo.experimental_setLayerGraphFactory(GraphBuilder.Array::new);
 			return algo;
 		}, blackhole);
@@ -122,32 +122,32 @@ public class MaxFlowBench {
 
 	@Benchmark
 	public void DinicDynamicTrees(Blackhole blackhole) {
-		benchMaxFlow(MaxFlowDinicDynamicTrees::new, blackhole);
+		benchMaxFlow(MaximumFlowDinicDynamicTrees::new, blackhole);
 	}
 
 	@Benchmark
 	public void PushRelabel(Blackhole blackhole) {
-		benchMaxFlow(MaxFlowPushRelabel::new, blackhole);
+		benchMaxFlow(MaximumFlowPushRelabel::new, blackhole);
 	}
 
 	@Benchmark
 	public void PushRelabelToFront(Blackhole blackhole) {
-		benchMaxFlow(MaxFlowPushRelabelToFront::new, blackhole);
+		benchMaxFlow(MaximumFlowPushRelabelToFront::new, blackhole);
 	}
 
 	@Benchmark
 	public void PushRelabelHighestFirst(Blackhole blackhole) {
-		benchMaxFlow(MaxFlowPushRelabelHighestFirst::new, blackhole);
+		benchMaxFlow(MaximumFlowPushRelabelHighestFirst::new, blackhole);
 	}
 
 	@Benchmark
 	public void PushRelabelLowestFirst(Blackhole blackhole) {
-		benchMaxFlow(MaxFlowPushRelabelLowestFirst::new, blackhole);
+		benchMaxFlow(MaximumFlowPushRelabelLowestFirst::new, blackhole);
 	}
 
 	@Benchmark
 	public void PushRelabelDynamicTrees(Blackhole blackhole) {
-		benchMaxFlow(MaxFlowPushRelabelDynamicTrees::new, blackhole);
+		benchMaxFlow(MaximumFlowPushRelabelDynamicTrees::new, blackhole);
 	}
 
 	private static class MaxFlowTask {

@@ -25,17 +25,17 @@ import it.unimi.dsi.fastutil.ints.IntIterators;
  *
  * @see <a href=
  *      "https://en.wikipedia.org/wiki/Push%E2%80%93relabel_maximum_flow_algorithm">Wikipedia</a>
- * @see MaxFlowPushRelabel
- * @see MaxFlowPushRelabelHighestFirst
- * @see MaxFlowPushRelabelLowestFirst
+ * @see MaximumFlowPushRelabel
+ * @see MaximumFlowPushRelabelHighestFirst
+ * @see MaximumFlowPushRelabelLowestFirst
  * @author Barak Ugav
  */
-public class MaxFlowPushRelabelToFront implements MaxFlow {
+public class MaximumFlowPushRelabelToFront implements MaximumFlow {
 
 	/**
 	 * Create a new maximum flow algorithm object.
 	 */
-	public MaxFlowPushRelabelToFront() {
+	public MaximumFlowPushRelabelToFront() {
 	}
 
 	/**
@@ -54,7 +54,7 @@ public class MaxFlowPushRelabelToFront implements MaxFlow {
 		}
 	}
 
-	private static class WorkerDouble extends MaxFlowPushRelabelAbstract.WorkerDouble {
+	private static class WorkerDouble extends MaximumFlowPushRelabelAbstract.WorkerDouble {
 
 		final VertexList list;
 
@@ -96,7 +96,7 @@ public class MaxFlowPushRelabelToFront implements MaxFlow {
 		}
 	}
 
-	private static class WorkerInt extends MaxFlowPushRelabelAbstract.WorkerInt {
+	private static class WorkerInt extends MaximumFlowPushRelabelAbstract.WorkerInt {
 
 		final VertexList list;
 
@@ -144,7 +144,7 @@ public class MaxFlowPushRelabelToFront implements MaxFlow {
 		int listHead = LinkedListDoubleArrayFixedSize.None;
 		IntIterator listIter;
 
-		VertexList(MaxFlowPushRelabelAbstract.Worker worker) {
+		VertexList(MaximumFlowPushRelabelAbstract.Worker worker) {
 			int n = worker.g.vertices().size();
 			vertices = LinkedListDoubleArrayFixedSize.newInstance(n);
 		}

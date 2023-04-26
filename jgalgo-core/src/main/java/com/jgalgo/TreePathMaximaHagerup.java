@@ -26,7 +26,7 @@ import it.unimi.dsi.fastutil.objects.ObjectIntPair;
  *
  * @author Barak Ugav
  */
-public class TPMHagerup implements TPM {
+public class TreePathMaximaHagerup implements TreePathMaxima {
 
 	private boolean useBitsLookupTables = false;
 
@@ -35,7 +35,7 @@ public class TPMHagerup implements TPM {
 	/**
 	 * Create a new TPM object.
 	 */
-	public TPMHagerup() {
+	public TreePathMaximaHagerup() {
 	}
 
 	/**
@@ -60,7 +60,7 @@ public class TPMHagerup implements TPM {
 	}
 
 	@Override
-	public int[] computeHeaviestEdgeInTreePaths(Graph tree, EdgeWeightFunc w, TPM.Queries queries) {
+	public int[] computeHeaviestEdgeInTreePaths(Graph tree, EdgeWeightFunc w, TreePathMaxima.Queries queries) {
 		if (!(tree instanceof UGraph))
 			throw new IllegalArgumentException("only undirected graphs are supported");
 		if (!Trees.isTree((UGraph) tree))
@@ -108,7 +108,7 @@ public class TPMHagerup implements TPM {
 			}
 		}
 
-		int[] calcTPM(TPM.Queries queries) {
+		int[] calcTPM(TreePathMaxima.Queries queries) {
 			ObjectIntPair<UGraph> r = buildBoruvkaFullyBranchingTree();
 			UGraph t = r.first();
 			int root = r.secondInt();
@@ -330,7 +330,7 @@ public class TPMHagerup implements TPM {
 			return ObjectIntPair.of(t, vTv[0]);
 		}
 
-		private static int[] splitQueriesIntoLCAQueries(UGraph t, int root, TPM.Queries queries) {
+		private static int[] splitQueriesIntoLCAQueries(UGraph t, int root, TreePathMaxima.Queries queries) {
 			int queriesNum = queries.size();
 			int[] lcaQueries = new int[queriesNum * 4];
 

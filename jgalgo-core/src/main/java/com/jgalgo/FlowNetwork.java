@@ -23,7 +23,7 @@ package com.jgalgo;
  * FlowNetwork net = ...;
  * int sourceVertex = ...;
  * int targetVertex = ...;
- * MaxFlow maxFlowAlg = ...;
+ * MaximumFlow maxFlowAlg = ...;
  *
  * double totalFlow = maxFlowAlg.computeMaximumFlow(g, net, sourceVertex, targetVertex);
  * System.out.println("The maximum flow that can be pushed in the network is " + totalFlow);
@@ -35,7 +35,7 @@ package com.jgalgo;
  * }
  * }</pre>
  *
- * @see MaxFlow
+ * @see MaximumFlow
  * @author Barak Ugav
  */
 public interface FlowNetwork {

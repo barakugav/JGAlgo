@@ -31,7 +31,7 @@ package com.jgalgo;
  * @see FlowNetwork
  * @author Barak Ugav
  */
-public interface MaxFlow {
+public interface MaximumFlow {
 
 	/**
 	 * Calculate the maximum flow in a flow network.

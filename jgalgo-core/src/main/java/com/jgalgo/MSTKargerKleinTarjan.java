@@ -129,10 +129,10 @@ public class MSTKargerKleinTarjan implements MST {
 		 * use the tree path maxima to find the heaviest edge in the path connecting u v
 		 * for each edge in g
 		 */
-		TPM tpm = new TPMHagerup();
-		TPM.Queries[] tpmQueries = new TPM.Queries[trees.length];
+		TreePathMaxima tpm = new TreePathMaximaHagerup();
+		TreePathMaxima.Queries[] tpmQueries = new TreePathMaxima.Queries[trees.length];
 		for (int t = 0; t < trees.length; t++)
-			tpmQueries[t] = new TPM.Queries();
+			tpmQueries[t] = new TreePathMaxima.Queries();
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			int u = g.edgeSource(e), v = g.edgeTarget(e);

@@ -12,7 +12,7 @@ package com.jgalgo;
  *
  * @author Barak Ugav
  */
-public interface BST<E> extends HeapReferenceable<E> {
+public interface BinarySearchTree<E> extends HeapReferenceable<E> {
 
 	/**
 	 * Find the maximum element in the tree.
@@ -124,7 +124,7 @@ public interface BST<E> extends HeapReferenceable<E> {
 	 * @param e a pivot element
 	 * @return new tree with elements strictly smaller than the given element
 	 */
-	public BST<E> splitSmaller(E e);
+	public BinarySearchTree<E> splitSmaller(E e);
 
 	/**
 	 * Split the current BST into two different BSTs with elements smaller or equal
@@ -138,7 +138,7 @@ public interface BST<E> extends HeapReferenceable<E> {
 	 * @param e a pivot element
 	 * @return new tree with elements strictly greater than the given element
 	 */
-	public BST<E> splitGreater(E e);
+	public BinarySearchTree<E> splitGreater(E e);
 
 	/**
 	 * Split the current BST into two different BSTs with elements smaller and
@@ -160,6 +160,6 @@ public interface BST<E> extends HeapReferenceable<E> {
 	 * @return new tree with elements greater (greater or equal if duplicate
 	 *         elements of the given element exists) than the given element
 	 */
-	public BST<E> split(HeapReference<E> ref);
+	public BinarySearchTree<E> split(HeapReference<E> ref);
 
 }

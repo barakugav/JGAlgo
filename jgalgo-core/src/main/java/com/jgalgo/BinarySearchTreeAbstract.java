@@ -2,9 +2,9 @@ package com.jgalgo;
 
 import java.util.Comparator;
 
-abstract class BSTAbstract<E> extends HeapReferenceableAbstract<E> implements BST<E> {
+abstract class BinarySearchTreeAbstract<E> extends HeapReferenceableAbstract<E> implements BinarySearchTree<E> {
 
-	public BSTAbstract(Comparator<? super E> c) {
+	public BinarySearchTreeAbstract(Comparator<? super E> c) {
 		super(c);
 	}
 

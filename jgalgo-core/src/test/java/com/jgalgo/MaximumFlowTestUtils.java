@@ -15,9 +15,9 @@ import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 @SuppressWarnings("boxing")
-public class MaxFlowTestUtils extends TestUtils {
+public class MaximumFlowTestUtils extends TestUtils {
 
-	private MaxFlowTestUtils() {
+	private MaximumFlowTestUtils() {
 	}
 
 	private static DiGraph randGraph(int n, int m, GraphImpl graphImpl, long seed) {
@@ -63,15 +63,15 @@ public class MaxFlowTestUtils extends TestUtils {
 		return flow;
 	}
 
-	static void testRandGraphs(Supplier<? extends MaxFlow> builder, long seed) {
+	static void testRandGraphs(Supplier<? extends MaximumFlow> builder, long seed) {
 		testRandGraphs(builder, GraphImplTestUtils.GRAPH_IMPL_DEFAULT, seed);
 	}
 
-	static void testRandGraphsInt(Supplier<? extends MaxFlow> builder, long seed) {
+	static void testRandGraphsInt(Supplier<? extends MaximumFlow> builder, long seed) {
 		testRandGraphsInt(builder, GraphImplTestUtils.GRAPH_IMPL_DEFAULT, seed);
 	}
 
-	static void testRandGraphs(Supplier<? extends MaxFlow> builder, GraphImpl graphImpl, long seed) {
+	static void testRandGraphs(Supplier<? extends MaximumFlow> builder, GraphImpl graphImpl, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
 		List<Phase> phases = List.of(phase(256, 6, 6), phase(64, 16, 16), phase(64, 16, 32), phase(32, 64, 64),
@@ -88,12 +88,12 @@ public class MaxFlowTestUtils extends TestUtils {
 					break;
 			}
 
-			MaxFlow algo = builder.get();
+			MaximumFlow algo = builder.get();
 			testNetwork(g, net, source, sink, algo);
 		});
 	}
 
-	static void testRandGraphsInt(Supplier<? extends MaxFlow> builder, GraphImpl graphImpl, long seed) {
+	static void testRandGraphsInt(Supplier<? extends MaximumFlow> builder, GraphImpl graphImpl, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
 		List<Phase> phases = List.of(phase(256, 6, 6), phase(64, 16, 16), phase(64, 16, 32), phase(32, 64, 64),
@@ -110,12 +110,12 @@ public class MaxFlowTestUtils extends TestUtils {
 					break;
 			}
 
-			MaxFlow algo = builder.get();
+			MaximumFlow algo = builder.get();
 			testNetworkInt(g, net, source, sink, algo);
 		});
 	}
 
-	private static void testNetwork(Graph g, FlowNetwork net, int source, int sink, MaxFlow algo) {
+	private static void testNetwork(Graph g, FlowNetwork net, int source, int sink, MaximumFlow algo) {
 		double actualMaxFlow = algo.computeMaximumFlow(g, net, source, sink);
 
 		int n = g.vertices().size();
@@ -135,7 +135,7 @@ public class MaxFlowTestUtils extends TestUtils {
 		assertEquals(expectedMaxFlow, actualMaxFlow, 1E-3, "Unexpected max flow");
 	}
 
-	private static void testNetworkInt(Graph g, FlowNetwork.Int net, int source, int sink, MaxFlow algo) {
+	private static void testNetworkInt(Graph g, FlowNetwork.Int net, int source, int sink, MaximumFlow algo) {
 		// Clear net, for debug 'drop to frame'
 		// for (IntIterator it = g.edges().iterator(); it.hasNext();)
 		// net.setFlow(it.nextInt(), 0);

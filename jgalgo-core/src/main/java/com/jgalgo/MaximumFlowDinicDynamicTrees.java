@@ -18,14 +18,14 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  * implemented in time {@code O(m n log n)} and linear space. In practice, the
  * (relative) complicated implementation of dynamic trees have little gain in
  * the overall performance, and its probably better to use some variant of the
- * {@link MaxFlowPushRelabel}, which has worse theoretically bounds, but runs
+ * {@link MaximumFlowPushRelabel}, which has worse theoretically bounds, but runs
  * faster in practice.
  *
- * @see MaxFlowDinic
+ * @see MaximumFlowDinic
  * @see DynamicTree
  * @author Barak Ugav
  */
-public class MaxFlowDinicDynamicTrees implements MaxFlow {
+public class MaximumFlowDinicDynamicTrees implements MaximumFlow {
 
 	private final DebugPrintsManager debug = new DebugPrintsManager(false);
 	private static final double EPS = 0.0001;
@@ -34,7 +34,7 @@ public class MaxFlowDinicDynamicTrees implements MaxFlow {
 	/**
 	 * Create a new maximum flow algorithm object.
 	 */
-	public MaxFlowDinicDynamicTrees() {
+	public MaximumFlowDinicDynamicTrees() {
 	}
 
 	/**

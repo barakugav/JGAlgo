@@ -23,8 +23,8 @@ import org.openjdk.jmh.infra.Blackhole;
 
 import com.jgalgo.EdgeWeightFunc;
 import com.jgalgo.Graph;
-import com.jgalgo.TPM;
-import com.jgalgo.TPMHagerup;
+import com.jgalgo.TreePathMaxima;
+import com.jgalgo.TreePathMaximaHagerup;
 import com.jgalgo.bench.TestUtils.SeedGenerator;
 
 @BenchmarkMode(Mode.AverageTime)
@@ -32,7 +32,7 @@ import com.jgalgo.bench.TestUtils.SeedGenerator;
 @Warmup(iterations = 2, time = 1, timeUnit = TimeUnit.SECONDS)
 @Measurement(iterations = 1, time = 10, timeUnit = TimeUnit.SECONDS)
 @State(Scope.Benchmark)
-public class TPMBench {
+public class TreePathMaximaBench {
 
 	@Param({ "N=128 M=128", "N=2500 M=2500", "N=15000 M=15000" })
 	public String args;
@@ -53,14 +53,14 @@ public class TPMBench {
 		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
 			Graph t = GraphsTestUtils.randTree(n, seedGen.nextSeed());
 			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(t, seedGen.nextSeed());
-			TPM.Queries queries = generateRandQueries(n, m, seedGen.nextSeed());
+			TreePathMaxima.Queries queries = generateRandQueries(n, m, seedGen.nextSeed());
 			graphs.add(new TPMArgs(t, w, queries));
 		}
 	}
 
-	private void benchTPM(Supplier<? extends TPM> builder, Blackhole blackhole) {
+	private void benchTPM(Supplier<? extends TreePathMaxima> builder, Blackhole blackhole) {
 		TPMArgs g = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
-		TPM algo = builder.get();
+		TreePathMaxima algo = builder.get();
 		int[] result = algo.computeHeaviestEdgeInTreePaths(g.tree, g.w, g.queries);
 		blackhole.consume(result);
 	}
@@ -68,7 +68,7 @@ public class TPMBench {
 	@Benchmark
 	public void TPMHagerup(Blackhole blackhole) {
 		benchTPM(() -> {
-			TPMHagerup algo = new TPMHagerup();
+			TreePathMaximaHagerup algo = new TreePathMaximaHagerup();
 			algo.setBitsLookupTablesEnable(false);
 			return algo;
 		}, blackhole);
@@ -77,7 +77,7 @@ public class TPMBench {
 	@Benchmark
 	public void TPMHagerupWithBitsLookupTable(Blackhole blackhole) {
 		benchTPM(() -> {
-			TPMHagerup algo = new TPMHagerup();
+			TreePathMaximaHagerup algo = new TreePathMaximaHagerup();
 			algo.setBitsLookupTablesEnable(true);
 			return algo;
 		}, blackhole);
@@ -86,18 +86,18 @@ public class TPMBench {
 	private static class TPMArgs {
 		final Graph tree;
 		final EdgeWeightFunc w;
-		final TPM.Queries queries;
+		final TreePathMaxima.Queries queries;
 
-		TPMArgs(Graph tree, EdgeWeightFunc w, TPM.Queries queries) {
+		TPMArgs(Graph tree, EdgeWeightFunc w, TreePathMaxima.Queries queries) {
 			this.tree = tree;
 			this.w = w;
 			this.queries = queries;
 		}
 	}
 
-	private static TPM.Queries generateRandQueries(int n, int m, long seed) {
+	private static TreePathMaxima.Queries generateRandQueries(int n, int m, long seed) {
 		Random rand = new Random(seed);
-		TPM.Queries queries = new TPM.Queries();
+		TreePathMaxima.Queries queries = new TreePathMaxima.Queries();
 		for (int q = 0; q < m; q++)
 			queries.addQuery(rand.nextInt(n), rand.nextInt(n));
 		return queries;

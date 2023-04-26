@@ -21,7 +21,7 @@ import java.util.Set;
  * @see <a href="https://en.wikipedia.org/wiki/Splay_tree">Wikipedia</a>
  * @author Barak Ugav
  */
-public class SplayTree<E> extends BSTAbstract<E> {
+public class SplayTree<E> extends BinarySearchTreeAbstract<E> {
 
 	private NodeSized<E> root;
 	private final SplayImplWithSize<E> impl = new SplayImplWithSize<>();
@@ -72,7 +72,7 @@ public class SplayTree<E> extends BSTAbstract<E> {
 			@SuppressWarnings({ "unchecked", "rawtypes" })
 			@Override
 			public Iterator<HeapReference<E>> iterator() {
-				return (Iterator) new BSTUtils.BSTIterator<>(root);
+				return (Iterator) new BinarySearchTrees.BSTIterator<>(root);
 			}
 
 			@SuppressWarnings("unchecked")
@@ -111,7 +111,7 @@ public class SplayTree<E> extends BSTAbstract<E> {
 		if (root == null)
 			return root = n;
 
-		BSTUtils.insert(root, c, n);
+		BinarySearchTrees.insert(root, c, n);
 		for (NodeSized<E> p = n.parent; p != null; p = p.parent)
 			p.size++;
 		return root = impl.splay(n);
@@ -123,7 +123,7 @@ public class SplayTree<E> extends BSTAbstract<E> {
 
 		/* If the node has two children, swap with successor */
 		if (n.hasLeftChild() && n.hasRightChild())
-			swap(n, BSTUtils.getSuccessor(n));
+			swap(n, BinarySearchTrees.getSuccessor(n));
 
 		NodeSized<E> child;
 		if (!n.hasLeftChild()) {
@@ -157,7 +157,7 @@ public class SplayTree<E> extends BSTAbstract<E> {
 	}
 
 	private void swap(NodeSized<E> n1, NodeSized<E> n2) {
-		BSTUtils.swap(n1, n2);
+		BinarySearchTrees.swap(n1, n2);
 		if (n1 == root)
 			root = n2;
 		else if (n2 == root)
@@ -179,62 +179,62 @@ public class SplayTree<E> extends BSTAbstract<E> {
 
 	@Override
 	public HeapReference<E> findRef(E e) {
-		NodeSized<E> n = BSTUtils.find(root, c, e);
+		NodeSized<E> n = BinarySearchTrees.find(root, c, e);
 		return n == null ? null : (root = impl.splay(n));
 	}
 
 	@Override
 	public HeapReference<E> findMinRef() {
 		checkTreeNotEmpty();
-		return root = impl.splay(BSTUtils.findMin(root));
+		return root = impl.splay(BinarySearchTrees.findMin(root));
 	}
 
 	@Override
 	public HeapReference<E> findMaxRef() {
 		checkTreeNotEmpty();
-		return root = impl.splay(BSTUtils.findMax(root));
+		return root = impl.splay(BinarySearchTrees.findMax(root));
 	}
 
 	@Override
 	public HeapReference<E> findOrSmaller(E e) {
-		NodeSized<E> n = BSTUtils.findOrSmaller(root, c, e);
+		NodeSized<E> n = BinarySearchTrees.findOrSmaller(root, c, e);
 		return n == null ? null : (root = impl.splay(n));
 	}
 
 	@Override
 	public HeapReference<E> findOrGreater(E e) {
-		NodeSized<E> n = BSTUtils.findOrGreater(root, c, e);
+		NodeSized<E> n = BinarySearchTrees.findOrGreater(root, c, e);
 		return n == null ? null : (root = impl.splay(n));
 	}
 
 	@Override
 	public HeapReference<E> findSmaller(E e) {
-		NodeSized<E> n = BSTUtils.findSmaller(root, c, e);
+		NodeSized<E> n = BinarySearchTrees.findSmaller(root, c, e);
 		return n == null ? null : (root = impl.splay(n));
 	}
 
 	@Override
 	public HeapReference<E> findGreater(E e) {
-		NodeSized<E> n = BSTUtils.findGreater(root, c, e);
+		NodeSized<E> n = BinarySearchTrees.findGreater(root, c, e);
 		return n == null ? null : (root = impl.splay(n));
 	}
 
 	@Override
 	public HeapReference<E> getPredecessor(HeapReference<E> ref) {
-		NodeSized<E> n = BSTUtils.getPredecessor((NodeSized<E>) ref);
+		NodeSized<E> n = BinarySearchTrees.getPredecessor((NodeSized<E>) ref);
 		return n == null ? null : (root = impl.splay(n));
 	}
 
 	@Override
 	public HeapReference<E> getSuccessor(HeapReference<E> ref) {
-		NodeSized<E> n = BSTUtils.getSuccessor((NodeSized<E>) ref);
+		NodeSized<E> n = BinarySearchTrees.getSuccessor((NodeSized<E>) ref);
 		return n == null ? null : (root = impl.splay(n));
 	}
 
 	@Override
 	public E extractMin() {
 		checkTreeNotEmpty();
-		NodeSized<E> n = BSTUtils.findMin(root);
+		NodeSized<E> n = BinarySearchTrees.findMin(root);
 		E ret = n.data;
 		removeRef(n);
 		return ret;
@@ -357,11 +357,11 @@ public class SplayTree<E> extends BSTAbstract<E> {
 	public void clear() {
 		if (root == null)
 			return;
-		BSTUtils.clear(root);
+		BinarySearchTrees.clear(root);
 		root = null;
 	}
 
-	static class Node<E, N extends Node<E, N>> extends BSTUtils.Node<E, N> implements HeapReference<E> {
+	static class Node<E, N extends Node<E, N>> extends BinarySearchTrees.Node<E, N> implements HeapReference<E> {
 
 		Node(E e) {
 			super(e);
