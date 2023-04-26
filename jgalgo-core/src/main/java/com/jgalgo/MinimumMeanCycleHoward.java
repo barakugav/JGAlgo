@@ -103,8 +103,8 @@ public class MinimumMeanCycleHoward implements MinimumMeanCycle {
 		int[] visitIdx = this.visitIdx = MemoryReuse.ensureLength(this.visitIdx, n);
 		Arrays.fill(visitIdx, 0, n, 0);
 		/* operate on each SCC separately */
-		for (int c = 0; c < ccNum; c++) {
-			if (ccVertices[c].size() < 2)
+		for (int ccIdx = 0; ccIdx < ccNum; ccIdx++) {
+			if (ccVertices[ccIdx].size() < 2)
 				continue;
 			/* run in iteration as long as we find improvements */
 			sccLoop: for (;;) {
@@ -114,7 +114,7 @@ public class MinimumMeanCycleHoward implements MinimumMeanCycle {
 				final int iterationFirstSearchIdx = nextSearchIdx;
 				IntPredicate visited = v -> visitIdx[v] >= iterationFirstSearchIdx;
 				/* DFS root loop */
-				for (IntIterator rootIt = ccVertices[c].iterator(); rootIt.hasNext();) {
+				for (IntIterator rootIt = ccVertices[ccIdx].iterator(); rootIt.hasNext();) {
 					final int root = rootIt.nextInt();
 					if (visited.test(root))
 						continue;
@@ -184,7 +184,7 @@ public class MinimumMeanCycleHoward implements MinimumMeanCycle {
 
 				/* check for improvements */
 				boolean improved = false;
-				for (IntIterator eit = ccEdges[c].iterator(); eit.hasNext();) {
+				for (IntIterator eit = ccEdges[ccIdx].iterator(); eit.hasNext();) {
 					int e = eit.nextInt();
 					int u = g.edgeSource(e);
 					int v = g.edgeTarget(e);

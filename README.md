@@ -115,6 +115,7 @@ for (IntIterator it = ssspRes.getPathTo(v3).iterator(); it.hasNext();) {
 | Tarjan Cycles Finder | $O((m + n) (c + 1))$ where $c$ is the number of simple cycles |
 | Johnson Cycles Finder | $O((m + n) (c + 1))$ where $c$ is the number of simple cycles |
 | Minimum Mean Cycle Howard | $O(m N)$ where $N$ is product of the out-degrees of all the vertices. Perform well in practice. |
+| Minimum Mean Cycle Dasdan-Gupta | $O(m n)$ |
 
 ### Additional Utils
 
