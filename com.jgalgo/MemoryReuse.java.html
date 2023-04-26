@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MemoryReuse.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">MemoryReuse.java</span></div><h1>MemoryReuse.java</h1><pre class="source lang-java linenums">package com.jgalgo;
+
+import java.util.Arrays;
+import java.util.function.Supplier;
+
+import it.unimi.dsi.fastutil.doubles.DoubleArrays;
+import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.ints.IntList;
+
+<span class="nc" id="L10">class MemoryReuse {</span>
+
+	static int[] ensureLength(int[] a, int len) {
+<span class="fc bfc" id="L13" title="All 2 branches covered.">		return a.length &gt;= len ? a : new int[newLength(a, len)];</span>
+	}
+
+	static int[][] ensureLength(int[][] a, int rows, int columns) {
+<span class="pc bpc" id="L17" title="1 of 2 branches missed.">		if (a.length &lt; rows) {</span>
+<span class="fc" id="L18">			int oldLen = a.length;</span>
+<span class="fc" id="L19">			a = Arrays.copyOf(a, newLength(a, rows));</span>
+<span class="fc" id="L20">			Arrays.fill(a, oldLen, a.length, IntArrays.EMPTY_ARRAY);</span>
+		}
+<span class="fc bfc" id="L22" title="All 2 branches covered.">		for (int r = 0; r &lt; rows; r++)</span>
+<span class="pc bpc" id="L23" title="1 of 2 branches missed.">			if (a[r].length &lt; columns)</span>
+<span class="fc" id="L24">				a[r] = Arrays.copyOf(a[r], newLength(a[r], columns));</span>
+<span class="fc" id="L25">		return a;</span>
+	}
+
+	static double[] ensureLength(double[] a, int len) {
+<span class="pc bpc" id="L29" title="1 of 2 branches missed.">		return a.length &gt;= len ? a : new double[newLength(a, len)];</span>
+	}
+
+	static double[][] ensureLength(double[][] a, int rows, int columns) {
+<span class="pc bpc" id="L33" title="1 of 2 branches missed.">		if (a.length &lt; rows) {</span>
+<span class="fc" id="L34">			int oldLen = a.length;</span>
+<span class="fc" id="L35">			a = Arrays.copyOf(a, newLength(a, rows));</span>
+<span class="fc" id="L36">			Arrays.fill(a, oldLen, a.length, DoubleArrays.EMPTY_ARRAY);</span>
+		}
+<span class="fc bfc" id="L38" title="All 2 branches covered.">		for (int r = 0; r &lt; rows; r++)</span>
+<span class="pc bpc" id="L39" title="1 of 2 branches missed.">			if (a[r].length &lt; columns)</span>
+<span class="fc" id="L40">				a[r] = Arrays.copyOf(a[r], newLength(a[r], columns));</span>
+<span class="fc" id="L41">		return a;</span>
+	}
+
+	static boolean[] ensureLength(boolean[] a, int len) {
+<span class="pc bpc" id="L45" title="1 of 2 branches missed.">		return a.length &gt;= len ? a : new boolean[newLength(a, len)];</span>
+	}
+
+	static &lt;T&gt; T[] ensureLength(T[] a, int len) {
+<span class="fc bfc" id="L49" title="All 2 branches covered.">		return a.length &gt;= len ? a : Arrays.copyOf(a, newLength(a, len));</span>
+	}
+
+	static &lt;T&gt; T ensureAllocated(T a, Supplier&lt;? extends T&gt; builder) {
+<span class="fc bfc" id="L53" title="All 2 branches covered.">		return a != null ? a : builder.get();</span>
+	}
+
+	private static int newLength(int[] a, int len) {
+<span class="fc" id="L57">		return Math.max(a.length * 2, len);</span>
+	}
+
+	private static int newLength(double[] a, int len) {
+<span class="fc" id="L61">		return Math.max(a.length * 2, len);</span>
+	}
+
+	private static int newLength(boolean[] a, int len) {
+<span class="fc" id="L65">		return Math.max(a.length * 2, len);</span>
+	}
+
+	private static &lt;T&gt; int newLength(T[] a, int len) {
+<span class="fc" id="L69">		return Math.max(a.length * 2, len);</span>
+	}
+
+<span class="fc" id="L72">	static final EdgeIter[] EmptyEdgeIterArr = new EdgeIter[0];</span>
+<span class="fc" id="L73">	static final IntList[] EmptyIntListArr = new IntList[0];</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
