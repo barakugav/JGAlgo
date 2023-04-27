@@ -13,6 +13,7 @@ package com.jgalgo;
  * efficiently given the reference, as the implementation doesn't need to search
  * for the element in the heap.
  *
+ * @param <E> the elements type
  * @see HeapReferenceable
  * @author Barak Ugav
  */

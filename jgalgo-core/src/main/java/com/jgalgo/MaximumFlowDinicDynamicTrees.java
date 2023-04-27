@@ -18,8 +18,8 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  * implemented in time {@code O(m n log n)} and linear space. In practice, the
  * (relative) complicated implementation of dynamic trees have little gain in
  * the overall performance, and its probably better to use some variant of the
- * {@link MaximumFlowPushRelabel}, which has worse theoretically bounds, but runs
- * faster in practice.
+ * {@link MaximumFlowPushRelabel}, which has worse theoretically bounds, but
+ * runs faster in practice.
  *
  * @see MaximumFlowDinic
  * @see DynamicTree
@@ -63,8 +63,8 @@ public class MaximumFlowDinicDynamicTrees implements MaximumFlow {
 		DiGraph g = referenceGraph(g0, net);
 		Weights<Ref> edgeRef = g.edgesWeight(EdgeRefWeightKey);
 		final int n = g.vertices().size();
-		GraphBuilder builder = new GraphBuilder.Linked();
-		DiGraph L = builder.setVerticesNum(n).setEdgesIDStrategy(Fixed.class).buildDirected();
+		DiGraph.Builder builder = new GraphBuilderImpl.LinkedDirected();
+		DiGraph L = builder.setVerticesNum(n).setEdgesIDStrategy(Fixed.class).build();
 		Weights<Ref> edgeRefL = L.addEdgesWeights(EdgeRefWeightKey, Ref.class);
 		IntPriorityQueue bfsQueue = new IntArrayFIFOQueue();
 		int[] level = new int[n];

@@ -47,7 +47,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  *
  * <pre> {@code
  * // Create a directed graph with three vertices and edges between them
- * DiGraph g = new GraphArrayDirected();
+ * DiGraph g = DiGraph.newBuilder().build();
  * int v1 = g.addVertex();
  * int v2 = g.addVertex();
  * int v3 = g.addVertex();
@@ -62,7 +62,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * w.set(e3, 15.1);
  *
  * // Calculate the shortest paths from v1 to all other vertices
- * SSSP ssspAlgo = new SSSPDijkstra();
+ * SSSP ssspAlgo = SSSP.newBuilder().build();
  * SSSP.Result ssspRes = ssspAlgo.computeShortestPaths(g, w, v1);
  *
  * // Print the shortest path from v1 to v3
@@ -707,5 +707,49 @@ public interface Graph {
 	 * @see GraphCapabilities
 	 */
 	public GraphCapabilities getCapabilities();
+
+	/**
+	 * A builder for {@link Graph} objects.
+	 *
+	 * @see UGraph#newBuilder()
+	 * @see DiGraph#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder {
+
+		/**
+		 * Create a new graph.
+		 *
+		 * @return a new graph with the builder options
+		 */
+		Graph build();
+
+		/**
+		 * Set the number of initial vertices in the graph.
+		 * <p>
+		 * The default value is zero.
+		 *
+		 * @param n number of initial vertices in the graph
+		 * @return this builder
+		 */
+		Graph.Builder setVerticesNum(int n);
+
+		/**
+		 * Set the edges ID strategy of this builder.
+		 * <p>
+		 * The default strategy used by this builder is {@link IDStrategy.Continues},
+		 * namely the edges IDs will always be {@code [0,1,2,...,edgesNum-1]}. This
+		 * default strategy may perform some IDs rename to maintain its invariant during
+		 * the lifetime of the graph. A different strategy such as
+		 * {@link IDStrategy.Fixed} may be used to ensure no IDs rename are performed.
+		 *
+		 * @param edgesIDStrategy type of edge ID strategy to use, or {@code null} for
+		 *                        default strategy
+		 * @return this builder
+		 * @throws IllegalArgumentException if the strategy type is not supported
+		 * @see IDStrategy
+		 */
+		Graph.Builder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy);
+	}
 
 }

@@ -16,7 +16,7 @@ package com.jgalgo;
  * @see <a href="https://en.wikipedia.org/wiki/Link/cut_tree">Wikipedia</a>
  * @author Barak Ugav
  */
-public class DynamicTreeSplay implements DynamicTree {
+class DynamicTreeSplay implements DynamicTree {
 
 	private final double rootWeight;
 	private final SplayTree.SplayImpl<Object, SplayNode> impl;
@@ -30,7 +30,7 @@ public class DynamicTreeSplay implements DynamicTree {
 	 *                    modification that are performed using
 	 *                    {@link #addWeight(com.jgalgo.DynamicTree.Node, double)}.
 	 */
-	public DynamicTreeSplay(double weightLimit) {
+	DynamicTreeSplay(double weightLimit) {
 		this(new SplayImplWithRelativeWeights(), weightLimit);
 	}
 
@@ -346,6 +346,11 @@ public class DynamicTreeSplay implements DynamicTree {
 			return w;
 		}
 
+	}
+
+	@Override
+	public <Ext extends DynamicTreeExtension> Ext getExtension(Class<Ext> extensionType) {
+		return null;
 	}
 
 }

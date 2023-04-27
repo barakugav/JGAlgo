@@ -24,4 +24,59 @@ public interface MaximumMatching {
 	 */
 	public IntCollection computeMaximumMatching(UGraph g);
 
+	/**
+	 * Create a new maximum matching algorithm builder.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link MaximumMatching}
+	 * object.
+	 *
+	 * @return a new builder that can build {@link MaximumMatching} objects
+	 */
+	static MaximumMatching.Builder newBuilder() {
+		return new MaximumMatching.Builder() {
+
+			boolean isBipartite = false;
+
+			@Override
+			public MaximumMatching build() {
+				return isBipartite ? new MaximumMatchingBipartiteHopcroftKarp() : new MaximumMatchingGabow1976();
+			}
+
+			@Override
+			public Builder setBipartite(boolean bipartite) {
+				isBipartite = bipartite;
+				return this;
+			}
+		};
+	}
+
+	/**
+	 * A builder for {@link MaximumMatching} objects.
+	 *
+	 * @see MaximumMatching#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder {
+
+		/**
+		 * Create a new maximum matching algorithm object.
+		 *
+		 * @return a new maximum matching algorithm
+		 */
+		MaximumMatching build();
+
+		/**
+		 * Set whether the maximum matching objects should support only bipartite
+		 * graphs.
+		 * <p>
+		 * If the input graphs are known to be bipartite, simpler or more efficient
+		 * algorithm may exists.
+		 *
+		 * @param bipartite if {@code true}, the create maximum matching objects will
+		 *                  support bipartite graphs only
+		 * @return this builder
+		 */
+		MaximumMatching.Builder setBipartite(boolean bipartite);
+	}
+
 }

@@ -26,4 +26,39 @@ public interface DiGraph extends Graph {
 	 */
 	public void reverseEdge(int edge);
 
+	/**
+	 * Create a directed graph builder.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link DiGraph}
+	 * object.
+	 *
+	 * @return a new builder that can build {@link DiGraph} objects
+	 */
+	static DiGraph.Builder newBuilder() {
+		return new GraphBuilderImpl.ArrayDirected();
+	}
+
+	/**
+	 * A builder for {@link DiGraph} objects.
+	 *
+	 * @see DiGraph#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder extends Graph.Builder {
+
+		/**
+		 * Create a new directed graph.
+		 *
+		 * @return a new directed graph with the builder options
+		 */
+		@Override
+		DiGraph build();
+
+		@Override
+		DiGraph.Builder setVerticesNum(int n);
+
+		@Override
+		DiGraph.Builder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy);
+	}
+
 }

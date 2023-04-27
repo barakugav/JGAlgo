@@ -34,4 +34,32 @@ public interface MDST extends MST {
 	 */
 	public IntCollection computeMinimumSpanningTree(DiGraph g, EdgeWeightFunc w, int root);
 
+	/**
+	 * Create a new minimum directed spanning tree algorithm builder.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link MDST}
+	 * object.
+	 *
+	 * @return a new builder that can build {@link MDST} objects
+	 */
+	static MDST.Builder newBuilder() {
+		return MDSTTarjan::new;
+	}
+
+	/**
+	 * A builder for {@link MDST} objects.
+	 *
+	 * @see MDST#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder {
+
+		/**
+		 * Create a new algorithm object for minimum directed spanning tree computation.
+		 *
+		 * @return a new minimum directed spanning tree algorithm
+		 */
+		MDST build();
+	}
+
 }

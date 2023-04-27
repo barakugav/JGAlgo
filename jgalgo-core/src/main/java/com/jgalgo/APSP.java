@@ -73,4 +73,31 @@ public interface APSP {
 		public Path getNegativeCycle();
 	}
 
+	/**
+	 * Create a new all pairs shortest paths algorithm builder.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link APSP} object.
+	 *
+	 * @return a new builder that can build {@link APSP} objects
+	 */
+	static APSP.Builder newBuilder() {
+		return APSPJohnson::new;
+	}
+
+	/**
+	 * A builder for {@link APSP} objects.
+	 *
+	 * @see APSP#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder {
+
+		/**
+		 * Create a new algorithm object for all pairs shortest paths computation.
+		 *
+		 * @return a new all pairs shortest paths algorithm
+		 */
+		APSP build();
+	}
+
 }

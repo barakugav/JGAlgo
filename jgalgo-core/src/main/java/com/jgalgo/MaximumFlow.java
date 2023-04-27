@@ -13,10 +13,13 @@ package com.jgalgo;
  *
  * <pre> {@code
  * DiGraph g = ...;
- * FlowNetwork net = ...;
+ * FlowNetwork net = FlowNetwork.createAsEdgeWeight(g);
+ * for (IntIterator edgeIter = g.edges().iterator(); edgeIter.hasNext();)
+ *  f.setCapacity(edgeIter.nextInt(), 1);
+ *
  * int sourceVertex = ...;
  * int targetVertex = ...;
- * MaxFlow maxFlowAlg = ...;
+ * MaxFlow maxFlowAlg = MaximumFlow.newBuilder().build();
  *
  * double totalFlow = maxFlowAlg.computeMaximumFlow(g, net, sourceVertex, targetVertex);
  * System.out.println("The maximum flow that can be pushed in the network is " + totalFlow);
@@ -46,5 +49,34 @@ public interface MaximumFlow {
 	 * @return the maximum flow in the network from the source to the sink
 	 */
 	double computeMaximumFlow(Graph g, FlowNetwork net, int source, int sink);
+
+	/**
+	 * Create a new maximum flow algorithm builder.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link MaximumFlow}
+	 * object.
+	 *
+	 * @return a new builder that can build {@link MaximumFlow} objects
+	 */
+	static MaximumFlow.Builder newBuilder() {
+		return MaximumFlowPushRelabelHighestFirst::new;
+	}
+
+	/**
+	 * A builder for {@link MaximumFlow} objects.
+	 *
+	 * @see MaximumFlow#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder {
+
+		/**
+		 * Create a new algorithm object for maximum flow computation.
+		 *
+		 * @return a new maximum flow algorithm
+		 */
+		MaximumFlow build();
+
+	}
 
 }

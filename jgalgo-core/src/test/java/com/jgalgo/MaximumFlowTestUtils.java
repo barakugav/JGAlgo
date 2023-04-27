@@ -25,7 +25,7 @@ public class MaximumFlowTestUtils extends TestUtils {
 				.cycles(true).connected(false).graphImpl(graphImpl).build();
 	}
 
-	public static FlowNetwork randNetwork(DiGraph g, long seed) {
+	static FlowNetwork randNetwork(DiGraph g, long seed) {
 		final double minGap = 0.001;
 		NavigableSet<Double> usedCaps = new TreeSet<>();
 
@@ -52,7 +52,7 @@ public class MaximumFlowTestUtils extends TestUtils {
 		return flow;
 	}
 
-	public static FlowNetwork.Int randNetworkInt(DiGraph g, long seed) {
+	static FlowNetwork.Int randNetworkInt(DiGraph g, long seed) {
 		Random rand = new Random(seed);
 		FlowNetwork.Int flow = FlowNetwork.Int.createAsEdgeWeight(g);
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {

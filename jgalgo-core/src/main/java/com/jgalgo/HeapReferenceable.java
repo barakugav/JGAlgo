@@ -19,7 +19,7 @@ import java.util.Set;
  * operations efficiently as is does not need to search for the element.
  *
  * <pre> {@code
- * HeapReferenceable<Integer> heap = ...;
+ * HeapReferenceable<Integer> heap = HeapReferenceable.newBuilder().build();
  * HeapReference<Integer> r1 = heap.insert(5);
  * HeapReference<Integer> r2 = heap.insert(10);
  * HeapReference<Integer> r3 = heap.insert(3);
@@ -114,15 +114,29 @@ public interface HeapReferenceable<E> extends Heap<E> {
 	}
 
 	/**
+	 * Create a new referenceable heaps builder.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link HeapReferenceable}
+	 * object.
+	 *
+	 * @return a new builder that can build {@link HeapReferenceable} objects
+	 */
+	static HeapReferenceable.Builder newBuilder() {
+		return HeapPairing::new;
+	}
+
+	/**
 	 * Builder for referenceable heaps.
 	 * <p>
 	 * Used to change heaps implementations which are used as black box by some
 	 * algorithms.
 	 *
+	 * @see HeapReferenceable#newBuilder()
 	 * @author Barak Ugav
 	 */
 	@FunctionalInterface
 	public static interface Builder extends Heap.Builder {
+
 		@Override
 		<E> HeapReferenceable<E> build(Comparator<? super E> cmp);
 

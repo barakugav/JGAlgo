@@ -28,7 +28,7 @@ public interface RMQStatic {
 	 * @return a data structure built from the preprocessing, that can answer RMQ
 	 *         queries efficiently
 	 */
-	public RMQStatic.DataStructure preProcessSequence(RMQStaticComparator comparator, int n);
+	RMQStatic.DataStructure preProcessSequence(RMQStaticComparator comparator, int n);
 
 	/**
 	 * Data structure result created from a static RMQ pre-processing.
@@ -46,8 +46,36 @@ public interface RMQStatic {
 		 * @throws IllegalArgumentException if either {@code i} or {@code j} are not in
 		 *                                  range {@code [0, n)} or if {@code i > j}.
 		 */
-		public int findMinimumInRange(int i, int j);
+		int findMinimumInRange(int i, int j);
 
+	}
+
+	/**
+	 * Create a new static range minimum queries algorithm builder.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link RMQStatic}
+	 * object.
+	 *
+	 * @return a new builder that can build {@link RMQStatic} objects
+	 */
+	static RMQStatic.Builder newBuilder() {
+		return RMQStaticCartesianTrees::new;
+	}
+
+	/**
+	 * A builder for {@link RMQStatic} objects.
+	 *
+	 * @see RMQStatic#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder {
+
+		/**
+		 * Create a new static range minimum queries algorithm.
+		 *
+		 * @return a new static range minimum queries algorithm
+		 */
+		RMQStatic build();
 	}
 
 }

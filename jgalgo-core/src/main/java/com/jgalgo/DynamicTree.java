@@ -144,4 +144,120 @@ public interface DynamicTree {
 
 	}
 
+	/**
+	 * Get an extension supported by this dynamic tree.
+	 * <p>
+	 * Different extensions are supported in addition to the regular
+	 * {@link DynamicTree} interface. The extensions do not change the asymptotical
+	 * running time of the implementation. Here is an example of a
+	 * {@link DynamicTreeExtension.TreeSize} extension use.
+	 *
+	 * <pre> {@code
+	 * DynamicTree.Builder builder = DynamicTree.newBuilder();
+	 * builder.addExtension(DynamicTreeExtension.TreeSize.class);
+	 *
+	 * DynamicTree dt = builder.build();
+	 * DynamicTreeExtension.TreeSize treeSizeExt = dt.getExtension(DynamicTreeExtension.TreeSize.class);
+	 * ...
+	 * DynamicTree.Node n1 = dt.makeTree();
+	 * DynamicTree.Node n2 = dt.makeTree();
+	 *
+	 * System.out.println("The number of nodes in the tree of " + n1 + " is " + treeSizeExt.getTreeSize(n1));
+	 * }</pre>
+	 *
+	 * @param <Ext>         the extension type
+	 * @param extensionType the extension type class
+	 * @return the extension object or {@code null} if no matching extension was
+	 *         found
+	 * @see DynamicTreeExtension
+	 * @see DynamicTree.Builder#addExtension(Class)
+	 */
+	public <Ext extends DynamicTreeExtension> Ext getExtension(Class<Ext> extensionType);
+
+	/**
+	 * Create a new dynamic trees algorithm builder.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link DynamicTree} object.
+	 *
+	 * @return a new builder that can build {@link DynamicTree} objects
+	 */
+	static DynamicTree.Builder newBuilder() {
+		return new DynamicTreeBuilderImpl();
+	}
+
+	/**
+	 * A builder for {@link DynamicTree} objects.
+	 *
+	 * @see DynamicTree#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder {
+
+		/**
+		 * Create a new dynamic trees algorithm.
+		 *
+		 * @return a new dynamic trees algorithm
+		 */
+		DynamicTree build();
+
+		/**
+		 * Set the maximum edge weight the dynamic trees should support.
+		 * <p>
+		 * Some implementations required this value to be set before building
+		 * {@link DynamicTree} instances.
+		 *
+		 * @param maxWeight a limit on the weights of the edges. The limit is an upper
+		 *                  bound on the sum of each edge weight and the weights
+		 *                  modification that are performed using
+		 *                  {@link #addWeight(com.jgalgo.DynamicTree.Node, double)}.
+		 * @return this builder
+		 */
+		DynamicTree.Builder setMaxWeight(double maxWeight);
+
+		/**
+		 * Enable/disable integer weights.
+		 * <p>
+		 * More efficient and accurate implementations may be supported if the weights
+		 * are known to be integer.
+		 *
+		 * @param enable if {@code true}, the built {@link DynamicTree} objects will
+		 *               support only integer weights
+		 * @return this builder
+		 */
+		DynamicTree.Builder setIntWeights(boolean enable);
+
+		/**
+		 * Add an extension to all trees built by this builder.
+		 * <p>
+		 * For example, this is the recommended way to create a dynamic tree data
+		 * structure with tree size extension:
+		 *
+		 * <pre> {@code
+		 * DynamicTree.Builder builder = DynamicTree.newBuilder();
+		 * builder.addExtension(DynamicTreeExtension.TreeSize.class);
+		 *
+		 * DynamicTree dt = builder.build();
+		 * DynamicTreeExtension.TreeSize treeSizeExt = dt.getExtension(DynamicTreeExtension.TreeSize.class);
+		 * ...
+		 * DynamicTree.Node n1 = dt.makeTree();
+		 * DynamicTree.Node n2 = dt.makeTree();
+		 *
+		 * System.out.println("The number of nodes in the tree of " + n1 + " is " + treeSizeExt.getTreeSize(n1));
+		 * }</pre>
+		 *
+		 * @param extensionType the extension type
+		 * @return this builder
+		 * @see DynamicTree#getExtension(Class)
+		 */
+		DynamicTree.Builder addExtension(Class<? extends DynamicTreeExtension> extensionType);
+
+		/**
+		 * Remove an extension that was added using {@link #addExtension(Class)}.
+		 *
+		 * @param extensionType the extension type
+		 * @return this builder
+		 */
+		DynamicTree.Builder removeExtension(Class<? extends DynamicTreeExtension> extensionType);
+	}
+
 }

@@ -1,5 +1,6 @@
 package com.jgalgo;
 
+import java.util.Comparator;
 import java.util.NoSuchElementException;
 
 /**
@@ -15,6 +16,7 @@ import java.util.NoSuchElementException;
  * tree structure, and the findMin operation query for the non tree edge with
  * minimum weight that connects two different subtrees.
  *
+ * @param <E> the edges element type
  * @author Barak Ugav
  */
 public interface SubtreeMergeFindMin<E> {
@@ -97,6 +99,7 @@ public interface SubtreeMergeFindMin<E> {
 	/**
 	 * A result of {@link SubtreeMergeFindMin#findMinNonTreeEdge()} query.
 	 *
+	 * @param <E> the edge element type
 	 * @author Barak Ugav
 	 */
 	public static interface MinEdge<E> {
@@ -157,6 +160,46 @@ public interface SubtreeMergeFindMin<E> {
 		 */
 		public void setNodeData(Object data);
 
+	}
+
+	/**
+	 * Create a new subtree-merge-findMin algorithm builder.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link SubtreeMergeFindMin}
+	 * object.
+	 *
+	 * @return a new builder that can build {@link SubtreeMergeFindMin} objects
+	 */
+	static SubtreeMergeFindMin.Builder newBuilder() {
+		return SubtreeMergeFindMinImpl::new;
+	}
+
+	/**
+	 * A builder for {@link SubtreeMergeFindMin} objects.
+	 *
+	 * @see SubtreeMergeFindMin#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder {
+		/**
+		 * Build a new subtree-merge-findMin data structure with the given comparator.
+		 *
+		 * @param <E> the edges weights type
+		 * @param cmp the comparator that will be used to order the edges weights
+		 * @return the newly constructed subtree-merge-findMin data structure
+		 */
+		<E> SubtreeMergeFindMin<E> build(Comparator<? super E> cmp);
+
+		/**
+		 * Build a new subtree-merge-findMin data structure with {@linkplain Comparable
+		 * natural ordering}.
+		 *
+		 * @param <E> the edges weights type
+		 * @return the newly constructed subtree-merge-findMin data structure
+		 */
+		default <E> SubtreeMergeFindMin<E> build() {
+			return build(null);
+		}
 	}
 
 }

@@ -10,7 +10,7 @@ package com.jgalgo;
  * while supporting LCA queries.
  *
  * <pre> {@code
- * LCADynamic lca = ...;
+ * LCADynamic lca = LCADynamic.newBuilder().build();
  * Node rt = lca.initTree();
  * Node n1 = lca.addLeaf(rt);
  * Node n2 = lca.addLeaf(rt);
@@ -97,6 +97,34 @@ public interface LCADynamic {
 		 */
 		public void setNodeData(Object data);
 
+	}
+
+	/**
+	 * Create a new dynamic LCA algorithm builder.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link LCADynamic}
+	 * object.
+	 *
+	 * @return a new builder that can build {@link LCADynamic} objects
+	 */
+	static LCADynamic.Builder newBuilder() {
+		return LCADynamicGabowLinear::new;
+	}
+
+	/**
+	 * A builder for {@link LCADynamic} objects.
+	 *
+	 * @see LCADynamic#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder {
+
+		/**
+		 * Create a new dynamic LCA algorithm.
+		 *
+		 * @return a new dynamic LCA algorithm
+		 */
+		LCADynamic build();
 	}
 
 }

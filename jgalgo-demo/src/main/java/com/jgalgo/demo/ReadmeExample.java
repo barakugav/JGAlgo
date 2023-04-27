@@ -1,9 +1,7 @@
 package com.jgalgo.demo;
 
 import com.jgalgo.DiGraph;
-import com.jgalgo.GraphArrayDirected;
 import com.jgalgo.SSSP;
-import com.jgalgo.SSSPDijkstra;
 import com.jgalgo.Weights;
 
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -13,7 +11,7 @@ public class ReadmeExample {
 
 	public static void readmeExample() {
 		/* Create a directed graph with three vertices and edges between them */
-		DiGraph g = new GraphArrayDirected();
+		DiGraph g = DiGraph.newBuilder().build();
 		int v1 = g.addVertex();
 		int v2 = g.addVertex();
 		int v3 = g.addVertex();
@@ -28,7 +26,7 @@ public class ReadmeExample {
 		w.set(e3, 15.1);
 
 		/* Calculate the shortest paths from v1 to all other vertices */
-		SSSP ssspAlgo = new SSSPDijkstra();
+		SSSP ssspAlgo = SSSP.newBuilder().build();
 		SSSP.Result ssspRes = ssspAlgo.computeShortestPaths(g, w, v1);
 
 		/* Print the shortest path from v1 to v3 */

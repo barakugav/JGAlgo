@@ -17,7 +17,7 @@ package com.jgalgo;
  * </ul>
  *
  * <pre> {@code
- * SplitFind sf = ...;
+ * SplitFind sf = SplitFind.newBuilder().build();
  * sf.init(5);
  * assert sf.find(1) == sf.find(2);
  * assert sf.find(1) == sf.find(3);
@@ -64,5 +64,33 @@ public interface SplitFind {
 	 *          included in the greater sequence
 	 */
 	public void split(int x);
+
+	/**
+	 * Create a new split-find data structure builder.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link SplitFind}
+	 * object.
+	 *
+	 * @return a new builder that can build {@link SplitFind} objects
+	 */
+	static SplitFind.Builder newBuilder() {
+		return SplitFindMinArray::new;
+	}
+
+	/**
+	 * A builder for {@link SplitFind} objects.
+	 *
+	 * @see SplitFind#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder {
+
+		/**
+		 * Create a new split-find data structure
+		 *
+		 * @return a new split-find data structure
+		 */
+		SplitFind build();
+	}
 
 }

@@ -23,7 +23,6 @@ import org.openjdk.jmh.infra.Blackhole;
 
 import com.jgalgo.DiGraph;
 import com.jgalgo.FlowNetwork;
-import com.jgalgo.GraphBuilder;
 import com.jgalgo.MaximumFlow;
 import com.jgalgo.MaximumFlowDinic;
 import com.jgalgo.MaximumFlowDinicDynamicTrees;
@@ -103,21 +102,8 @@ public class MaximumFlowBench {
 	}
 
 	@Benchmark
-	public void DinicWithLinkedGraph(Blackhole blackhole) {
-		benchMaxFlow(() -> {
-			MaximumFlowDinic algo = new MaximumFlowDinic();
-			algo.experimental_setLayerGraphFactory(GraphBuilder.Linked::new);
-			return algo;
-		}, blackhole);
-	}
-
-	@Benchmark
-	public void DinicWithArrayGraph(Blackhole blackhole) {
-		benchMaxFlow(() -> {
-			MaximumFlowDinic algo = new MaximumFlowDinic();
-			algo.experimental_setLayerGraphFactory(GraphBuilder.Array::new);
-			return algo;
-		}, blackhole);
+	public void Dinic(Blackhole blackhole) {
+		benchMaxFlow(MaximumFlowDinic::new, blackhole);
 	}
 
 	@Benchmark

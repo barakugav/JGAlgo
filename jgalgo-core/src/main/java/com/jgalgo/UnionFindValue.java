@@ -9,7 +9,7 @@ package com.jgalgo;
  * method.
  *
  * <pre> {@code
- * UnionFindValue uf = ...;
+ * UnionFindValue uf = UnionFindValue.newBuilder().build();
  * int x1 = uf.make(4);
  * int x2 = uf.make(11);
  * int x3 = uf.make(6);
@@ -67,5 +67,33 @@ public interface UnionFindValue extends UnionFind {
 	 * @param value value to add to all elements of the set of {@code x}
 	 */
 	public void addValue(int x, double value);
+
+	/**
+	 * Create a new union-find with values data structure builder.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link UnionFindValue}
+	 * object.
+	 *
+	 * @return a new builder that can build {@link UnionFindValue} objects
+	 */
+	static UnionFindValue.Builder newBuilder() {
+		return UnionFindValueArray::new;
+	}
+
+	/**
+	 * A builder for {@link UnionFindValue} objects.
+	 *
+	 * @see UnionFindValue#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder {
+
+		/**
+		 * Create a new union-find with values data structure
+		 *
+		 * @return a new union-find with values data structure
+		 */
+		UnionFindValue build();
+	}
 
 }

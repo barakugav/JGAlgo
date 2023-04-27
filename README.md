@@ -28,7 +28,7 @@ The most basic object in the library is a [Graph](https://barakugav.github.io/JG
 
 ```java
 /* Create a directed graph with three vertices and edges between them */
-DiGraph g = new GraphArrayDirected();
+DiGraph g = DiGraph.newBuilder().build();
 int v1 = g.addVertex();
 int v2 = g.addVertex();
 int v3 = g.addVertex();
@@ -43,7 +43,7 @@ w.set(e2, 3.1);
 w.set(e3, 15.1);
 
 /* Calculate the shortest paths from v1 to all other vertices */
-SSSP ssspAlgo = new SSSPDijkstra();
+SSSP ssspAlgo = SSSP.newBuilder().build();
 SSSP.Result ssspRes = ssspAlgo.computeShortestPaths(g, w, v1);
 
 /* Print the shortest path from v1 to v3 */

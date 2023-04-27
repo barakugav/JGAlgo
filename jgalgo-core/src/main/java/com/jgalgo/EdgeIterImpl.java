@@ -4,7 +4,7 @@ import java.util.NoSuchElementException;
 
 class EdgeIterImpl {
 
-	public static final EdgeIter Empty = new EdgeIter() {
+	static final EdgeIter Empty = new EdgeIter() {
 
 		@Override
 		public int nextInt() {

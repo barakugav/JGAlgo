@@ -48,4 +48,40 @@ public interface UGraph extends Graph {
 		return degreeOut(v);
 	}
 
+	/**
+	 * Create an undirected graph builder.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link DiGraph}
+	 * object.
+	 *
+	 * @return a new builder that can build {@link DiGraph} objects
+	 */
+	static UGraph.Builder newBuilder() {
+		return new GraphBuilderImpl.ArrayUndirected();
+
+	}
+
+	/**
+	 * A builder for {@link UGraph} objects.
+	 *
+	 * @see UGraph#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder extends Graph.Builder {
+
+		/**
+		 * Create a new undirected graph.
+		 *
+		 * @return a new undirected graph with the builder options
+		 */
+		@Override
+		UGraph build();
+
+		@Override
+		UGraph.Builder setVerticesNum(int n);
+
+		@Override
+		UGraph.Builder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy);
+	}
+
 }

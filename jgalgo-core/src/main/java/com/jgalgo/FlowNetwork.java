@@ -20,10 +20,13 @@ package com.jgalgo;
  *
  * <pre> {@code
  * DiGraph g = ...;
- * FlowNetwork net = ...;
+ * FlowNetwork net = FlowNetwork.createAsEdgeWeight(g);
+ * for (IntIterator edgeIter = g.edges().iterator(); edgeIter.hasNext();)
+ *  f.setCapacity(edgeIter.nextInt(), 1);
+ *
  * int sourceVertex = ...;
  * int targetVertex = ...;
- * MaximumFlow maxFlowAlg = ...;
+ * MaximumFlow maxFlowAlg = MaximumFlow.newBuilder().build();
  *
  * double totalFlow = maxFlowAlg.computeMaximumFlow(g, net, sourceVertex, targetVertex);
  * System.out.println("The maximum flow that can be pushed in the network is " + totalFlow);

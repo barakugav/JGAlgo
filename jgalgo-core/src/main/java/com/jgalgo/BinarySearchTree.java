@@ -1,5 +1,7 @@
 package com.jgalgo;
 
+import java.util.Comparator;
+
 /**
  * Binary search tree data structure.
  * <p>
@@ -10,6 +12,7 @@ package com.jgalgo;
  * given an element, the nearest (smaller or larger) element in the tree can be
  * found efficiently.
  *
+ * @param <E> the elements type
  * @author Barak Ugav
  */
 public interface BinarySearchTree<E> extends HeapReferenceable<E> {
@@ -161,5 +164,82 @@ public interface BinarySearchTree<E> extends HeapReferenceable<E> {
 	 *         elements of the given element exists) than the given element
 	 */
 	public BinarySearchTree<E> split(HeapReference<E> ref);
+
+	/**
+	 * Create a new binary search tree algorithm builder.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link BinarySearchTree}
+	 * object.
+	 *
+	 * @return a new builder that can build {@link BinarySearchTree} objects
+	 */
+	static BinarySearchTree.Builder newBuilder() {
+		return new BinarySearchTree.Builder() {
+
+			boolean splitRequired;
+			boolean meldRequired;
+
+			@Override
+			public <E> BinarySearchTree<E> build(Comparator<? super E> cmp) {
+				if (splitRequired || meldRequired) {
+					return new SplayTree<>(cmp);
+				} else {
+					return new RedBlackTree<>(cmp);
+				}
+			}
+
+			@Override
+			public Builder setSplits(boolean enable) {
+				splitRequired = enable;
+				return this;
+			}
+
+			@Override
+			public Builder setMelds(boolean enable) {
+				meldRequired = enable;
+				return this;
+			}
+		};
+	}
+
+	/**
+	 * A builder for {@link BinarySearchTree} objects.
+	 *
+	 * @see BinarySearchTree#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder extends HeapReferenceable.Builder {
+
+		@Override
+		<E> BinarySearchTree<E> build(Comparator<? super E> cmp);
+
+		@Override
+		default <E> BinarySearchTree<E> build() {
+			return build(null);
+		}
+
+		/**
+		 * Enable/disable efficient split operations.
+		 *
+		 * @param enable if {@code true} the split operations such as
+		 *               {@link BinarySearchTree#split(HeapReference)},
+		 *               {@link BinarySearchTree#splitSmaller(Object)} and
+		 *               {@link BinarySearchTree#splitGreater(Object)} will be supported
+		 *               efficiently by the trees created by this builder
+		 * @return this builder
+		 */
+		BinarySearchTree.Builder setSplits(boolean enable);
+
+		/**
+		 * Enable/disable efficient {@link BinarySearchTree#meld(Heap)} operations.
+		 *
+		 * @param enable if {@code true} the {@link BinarySearchTree#meld(Heap)}
+		 *               operation will be supported efficiently by the trees created by
+		 *               this builder
+		 * @return this builder
+		 */
+		BinarySearchTree.Builder setMelds(boolean enable);
+
+	}
 
 }

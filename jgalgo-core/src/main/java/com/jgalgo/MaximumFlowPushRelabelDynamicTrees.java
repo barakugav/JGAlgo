@@ -1,7 +1,6 @@
 package com.jgalgo;
 
 import java.util.BitSet;
-import java.util.List;
 
 import com.jgalgo.DynamicTree.MinEdge;
 import com.jgalgo.Utils.IterPickable;
@@ -77,7 +76,7 @@ public class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 		final Weights.Int twin;
 
 		final DynamicTree dt;
-		final DynamicTreeSplayExtension.TreeSize dtTreeSize;
+		final DynamicTreeExtension.TreeSize dtTreeSize;
 		final int maxTreeSize;
 
 		final QueueFixSize<Vertex> active;
@@ -113,8 +112,10 @@ public class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 			}
 
 			int n = g.vertices().size();
-			dtTreeSize = new DynamicTreeSplayExtension.TreeSize();
-			dt = createDynamicTree(dtTreeSize);
+			double maxWeight = getMaxWeight();
+			dt = DynamicTree.newBuilder().setMaxWeight(maxWeight * 10).setIntWeights(this instanceof WorkerInt)
+					.addExtension(DynamicTreeExtension.TreeSize.class).build();
+			dtTreeSize = dt.getExtension(DynamicTreeExtension.TreeSize.class);
 			maxTreeSize = Math.max(1, n * n / g.edges().size());
 
 			active = new QueueFixSize<>(n);
@@ -136,7 +137,7 @@ public class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 
 		abstract Vertex newVertex(int v, DynamicTree.Node dtNode);
 
-		abstract DynamicTree createDynamicTree(DynamicTreeSplayExtension.TreeSize treeSizeExtension);
+		abstract double getMaxWeight();
 
 		void recomputeLabels() {
 			// Global labels heuristic
@@ -370,13 +371,13 @@ public class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 		}
 
 		@Override
-		DynamicTree createDynamicTree(DynamicTreeSplayExtension.TreeSize treeSizeExtension) {
+		double getMaxWeight() {
 			double maxCapacity = 100;
 			for (IntIterator it = gOrig.edges().iterator(); it.hasNext();) {
 				int e = it.nextInt();
 				maxCapacity = Math.max(maxCapacity, net.getCapacity(e));
 			}
-			return new DynamicTreeSplayExtended(maxCapacity * 10, List.of(treeSizeExtension));
+			return maxCapacity;
 		}
 
 		private void pushFlow(int e, double f) {
@@ -520,14 +521,14 @@ public class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 		}
 
 		@Override
-		DynamicTree createDynamicTree(DynamicTreeSplayExtension.TreeSize treeSizeExtension) {
+		double getMaxWeight() {
 			FlowNetwork.Int net = (FlowNetwork.Int) this.net;
 			int maxCapacity = 100;
 			for (IntIterator it = gOrig.edges().iterator(); it.hasNext();) {
 				int e = it.nextInt();
 				maxCapacity = Math.max(maxCapacity, net.getCapacityInt(e));
 			}
-			return new DynamicTreeSplayIntExtended(maxCapacity * 10, List.of(treeSizeExtension));
+			return maxCapacity;
 		}
 
 		private void pushFlow(int e, int f) {

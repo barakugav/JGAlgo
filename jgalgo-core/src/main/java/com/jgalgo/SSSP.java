@@ -25,7 +25,7 @@ package com.jgalgo;
  *
  * <pre> {@code
  * // Create a directed graph with three vertices and edges between them
- * DiGraph g = new GraphArrayDirected();
+ * DiGraph g = DiGraph.newBuilder().build();
  * int v1 = g.addVertex();
  * int v2 = g.addVertex();
  * int v3 = g.addVertex();
@@ -40,7 +40,7 @@ package com.jgalgo;
  * w.set(e3, 15.1);
  *
  * // Calculate the shortest paths from v1 to all other vertices
- * SSSP ssspAlgo = new SSSPDijkstra();
+ * SSSP ssspAlgo = SSSP.newBuilder().build();
  * SSSP.Result ssspRes = ssspAlgo.computeShortestPaths(g, w, v1);
  *
  * // Print the shortest path from v1 to v3
@@ -123,6 +123,103 @@ public interface SSSP {
 		 *                               {@code false}.
 		 */
 		public Path getNegativeCycle();
+
+	}
+
+	/**
+	 * Create a new single source shortest path algorithm builder.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link SSSP}
+	 * object.
+	 *
+	 * @return a new builder that can build {@link SSSP} objects
+	 */
+	static SSSP.Builder newBuilder() {
+		return new SSSPBuilderImpl();
+	}
+
+	/**
+	 * A builder for {@link SSSP} objects.
+	 *
+	 * @see SSSP#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder {
+
+		/**
+		 * Create a new algorithm object for single source shortest path computation.
+		 *
+		 * @return a new single source shortest path algorithm
+		 */
+		SSSP build();
+
+		/**
+		 * Enable/disable integer weights.
+		 * <p>
+		 * More efficient and accurate implementations may be supported if the edge
+		 * weights are known to be integer.
+		 *
+		 * @param enable if {@code true}, the built {@link SSSP} objects will
+		 *               support only integer weights
+		 * @return this builder
+		 */
+		SSSP.Builder setIntWeights(boolean enable);
+
+		/**
+		 * Enable/disable the support for negative numbers.
+		 * <p>
+		 * More efficient and accurate implementations may be supported if its known in
+		 * advance that all edge weights will be positive (which is the default).
+		 *
+		 *
+		 * @param enable if {@code true}, the built {@link SSSP} objects will support
+		 *               negative numbers
+		 * @return this builder
+		 */
+		SSSP.Builder setNegativeWeights(boolean enable);
+
+		/**
+		 * Set the minimum weight that should be supported.
+		 * <p>
+		 * This method may be used as a hint to choose an {@link SSSP} implementation.
+		 *
+		 * @param minWeight a minimum weight lower bound on all edge weights
+		 * @return this builder
+		 */
+		SSSP.Builder setMinWeight(double minWeight);
+
+		/**
+		 * Set the maximum weight that should be supported.
+		 * <p>
+		 * This method may be used as a hint to choose an {@link SSSP} implementation.
+		 *
+		 * @param maxWeight a maximum weight upper bound on all edge weights
+		 * @return this builder
+		 */
+		SSSP.Builder setMaxWeight(double maxWeight);
+
+		/**
+		 * Set the maximum distance that should be supported.
+		 * <p>
+		 * This method may be used as a hint to choose an {@link SSSP} implementation.
+		 *
+		 * @param maxDistance a maximum distance upper bound on the distance from the
+		 *                  source to any vertex
+		 * @return this builder
+		 */
+		SSSP.Builder setMaxDistance(double maxDistance);
+
+		/**
+		 * Enable/disable the support for directed acyclic graphs (DAG) only.
+		 * <p>
+		 * More efficient algorithm may exists if we know in advance all input graphs
+		 * will be DAG.
+		 *
+		 * @param dagGraphs if {@code true}, the built {@link SSSP} objects will support
+		 *                  only directed acyclic graphs
+		 * @return this builder
+		 */
+		SSSP.Builder setDag(boolean dagGraphs);
 
 	}
 

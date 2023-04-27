@@ -51,4 +51,52 @@ public interface MaximumMatchingWeighted extends MaximumMatching {
 		return computeMaximumMatching(g, e -> 1);
 	}
 
+	/**
+	 * Create a new maximum weighted matching algorithm builder.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link MaximumMatchingWeighted}
+	 * object.
+	 *
+	 * @return a new builder that can build {@link MaximumMatchingWeighted}
+	 *         objects
+	 */
+	static MaximumMatchingWeighted.Builder newBuilder() {
+		return new MaximumMatchingWeighted.Builder() {
+
+			boolean isBipartite = false;
+
+			@Override
+			public MaximumMatchingWeighted build() {
+				return isBipartite ? new MaximumMatchingWeightedBipartiteHungarianMethod()
+						: new MaximumMatchingWeightedGabow1990();
+			}
+
+			@Override
+			public Builder setBipartite(boolean bipartite) {
+				isBipartite = bipartite;
+				return this;
+			}
+		};
+	}
+
+	/**
+	 * A builder for {@link MaximumMatchingWeighted} objects.
+	 *
+	 * @see MaximumMatchingWeighted#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder extends MaximumMatching.Builder {
+
+		/**
+		 * Create a new maximum weighted matching algorithm object.
+		 *
+		 * @return a new maximum weighted matching algorithm
+		 */
+		@Override
+		MaximumMatchingWeighted build();
+
+		@Override
+		MaximumMatchingWeighted.Builder setBipartite(boolean bipartite);
+	}
+
 }

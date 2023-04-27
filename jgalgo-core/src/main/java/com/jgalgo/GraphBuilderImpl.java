@@ -13,13 +13,139 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 
 class GraphBuilderImpl {
 
-	static abstract class Abstract implements GraphBuilder {
+	static class ArrayUndirected extends GraphBuilderImpl.Abstract implements UGraph.Builder {
+
+		@Override
+		public UGraph build() {
+			return (UGraph) wrapWithCustomIDStrategies(new GraphArrayUndirected(verticesNum));
+		}
+
+		@Override
+		public UGraph.Builder setVerticesNum(int n) {
+			super.setVerticesNum(n);
+			return this;
+		}
+
+		@Override
+		public UGraph.Builder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy) {
+			super.setEdgesIDStrategy(edgesIDStrategy);
+			return this;
+		}
+
+	}
+
+	static class ArrayDirected extends GraphBuilderImpl.Abstract implements DiGraph.Builder {
+
+		@Override
+		public DiGraph build() {
+			return (DiGraph) wrapWithCustomIDStrategies(new GraphArrayDirected(verticesNum));
+		}
+
+		@Override
+		public DiGraph.Builder setVerticesNum(int n) {
+			super.setVerticesNum(n);
+			return this;
+		}
+
+		@Override
+		public DiGraph.Builder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy) {
+			super.setEdgesIDStrategy(edgesIDStrategy);
+			return this;
+		}
+
+	}
+
+	static class LinkedUndirected extends GraphBuilderImpl.Abstract implements UGraph.Builder {
+
+		@Override
+		public UGraph build() {
+			return (UGraph) wrapWithCustomIDStrategies(new GraphLinkedUndirected(verticesNum));
+		}
+
+		@Override
+		public UGraph.Builder setVerticesNum(int n) {
+			super.setVerticesNum(n);
+			return this;
+		}
+
+		@Override
+		public UGraph.Builder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy) {
+			super.setEdgesIDStrategy(edgesIDStrategy);
+			return this;
+		}
+
+	}
+
+	static class LinkedDirected extends GraphBuilderImpl.Abstract implements DiGraph.Builder {
+
+		@Override
+		public DiGraph build() {
+			return (DiGraph) wrapWithCustomIDStrategies(new GraphLinkedDirected(verticesNum));
+		}
+
+		@Override
+		public DiGraph.Builder setVerticesNum(int n) {
+			super.setVerticesNum(n);
+			return this;
+		}
+
+		@Override
+		public DiGraph.Builder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy) {
+			super.setEdgesIDStrategy(edgesIDStrategy);
+			return this;
+		}
+
+	}
+
+	static class TableUndirected extends GraphBuilderImpl.Abstract implements UGraph.Builder {
+
+		@Override
+		public UGraph build() {
+			return (UGraph) wrapWithCustomIDStrategies(new GraphTableUndirected(verticesNum));
+		}
+
+		@Override
+		public UGraph.Builder setVerticesNum(int n) {
+			super.setVerticesNum(n);
+			return this;
+		}
+
+		@Override
+		public UGraph.Builder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy) {
+			super.setEdgesIDStrategy(edgesIDStrategy);
+			return this;
+		}
+
+	}
+
+	static class TableDirected extends GraphBuilderImpl.Abstract implements DiGraph.Builder {
+
+		@Override
+		public DiGraph build() {
+			return (DiGraph) wrapWithCustomIDStrategies(new GraphTableDirected(verticesNum));
+		}
+
+		@Override
+		public DiGraph.Builder setVerticesNum(int n) {
+			super.setVerticesNum(n);
+			return this;
+		}
+
+		@Override
+		public DiGraph.Builder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy) {
+			super.setEdgesIDStrategy(edgesIDStrategy);
+			return this;
+		}
+
+	}
+
+	private static abstract class Abstract implements Graph.Builder {
 
 		int verticesNum;
 		Class<? extends IDStrategy> edgesIDStrategy;
 
 		@Override
-		public GraphBuilder setVerticesNum(int n) {
+		public Graph.Builder setVerticesNum(int n) {
 			if (n < 0)
 				throw new IllegalArgumentException();
 			verticesNum = n;
@@ -27,7 +153,7 @@ class GraphBuilderImpl {
 		}
 
 		@Override
-		public GraphBuilder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy) {
+		public Graph.Builder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy) {
 			if (edgesIDStrategy != null
 					&& !List.of(IDStrategy.Continues.class, IDStrategy.Fixed.class, IDStrategy.Rand.class)
 							.contains(edgesIDStrategy))

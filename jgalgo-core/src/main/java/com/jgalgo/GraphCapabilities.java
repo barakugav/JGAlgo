@@ -7,7 +7,7 @@ package com.jgalgo;
  * some operations. Each graph provide its capabilities using
  * {@link Graph#getCapabilities()}.
  *
- * @see GraphBuilder
+ * @see Graph.Builder
  * @see GraphArrayUndirected
  * @see GraphLinkedUndirected
  * @see GraphTableUndirected

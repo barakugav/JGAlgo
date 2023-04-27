@@ -13,7 +13,7 @@ package com.jgalgo;
  * preprocessing time and constant or logarithmic query time.
  *
  * <pre> {@code
- * Graph tree = new GraphArrayUndirected();
+ * Graph tree = UGraph.newBuilder().build();
  * int rt = tree.addVertex();
  * int v1 = tree.addVertex();
  * int v2 = tree.addVertex();
@@ -27,7 +27,7 @@ package com.jgalgo;
  * tree.addEdge(rt, v4);
  * tree.addEdge(v4, v5);
  *
- * LCAStatic lca = ...;
+ * LCAStatic lca = LCAStatic.newBuilder().build();
  * LCAStatic.DataStructure lcaDS = lca.preProcessTree(tree, rt);
  * assert lcaDS.findLowestCommonAncestor(v1, v4) == rt;
  * assert lcaDS.findLowestCommonAncestor(v2, v3) == v1;
@@ -65,6 +65,34 @@ public interface LCAStatic {
 		 * @return the lowest common ancestor of {@code u} and {@code v}
 		 */
 		public int findLowestCommonAncestor(int u, int v);
+	}
+
+	/**
+	 * Create a new static LCA algorithm builder.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link LCAStatic}
+	 * object.
+	 *
+	 * @return a new builder that can build {@link LCAStatic} objects
+	 */
+	static LCAStatic.Builder newBuilder() {
+		return LCAStaticRMQ::new;
+	}
+
+	/**
+	 * A builder for {@link LCAStatic} objects.
+	 *
+	 * @see LCAStatic#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder {
+
+		/**
+		 * Create a new static LCA algorithm.
+		 *
+		 * @return a new static LCA algorithm
+		 */
+		LCAStatic build();
 	}
 
 }

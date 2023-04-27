@@ -15,7 +15,7 @@ package com.jgalgo;
  * </ul>
  *
  * <pre> {@code
- * UnionFind uf = ...;
+ * UnionFind uf = UnionFind.newBuilder().build();
  * int x1 = uf.make();
  * int x2 = uf.make();
  * int x3 = uf.make();
@@ -75,5 +75,33 @@ public interface UnionFind {
 	 * This method can be used to reuse allocated memory of the data structure.
 	 */
 	public void clear();
+
+	/**
+	 * Create a new union-find data structure builder.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link UnionFind}
+	 * object.
+	 *
+	 * @return a new builder that can build {@link UnionFind} objects
+	 */
+	static UnionFind.Builder newBuilder() {
+		return UnionFindArray::new;
+	}
+
+	/**
+	 * A builder for {@link UnionFind} objects.
+	 *
+	 * @see UnionFind#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder {
+
+		/**
+		 * Create a new union-find data structure
+		 *
+		 * @return a new union-find data structure
+		 */
+		UnionFind build();
+	}
 
 }

@@ -15,6 +15,7 @@ import com.jgalgo.Utils.NullList;
  * is comparable to any other key by a provided comparator, and the minimum key
  * in each set can be queried using {@link #findMin(int)}.
  *
+ * @param <K> the keys type
  * @author Barak Ugav
  */
 public interface SplitFindMin<K> extends SplitFind {
@@ -62,5 +63,41 @@ public interface SplitFindMin<K> extends SplitFind {
 	 *         sequence
 	 */
 	public boolean decreaseKey(int x, K newKey);
+
+	/**
+	 * Create a new split-find-min data structure builder.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link SplitFindMin}
+	 * object.
+	 *
+	 * @return a new builder that can build {@link SplitFindMin} objects
+	 */
+	static SplitFindMin.Builder newBuilder() {
+		return SplitFindMinArray::new;
+	}
+
+	/**
+	 * A builder for {@link SplitFindMin} objects.
+	 *
+	 * @see SplitFindMin#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder extends SplitFind.Builder {
+
+		/**
+		 * Create a new split-find-min data structure
+		 *
+		 * @return a new split-find-min data structure
+		 * @param <K> the keys type
+		 */
+		<K> SplitFindMin<K> buildWithFindMin();
+
+		@SuppressWarnings("rawtypes")
+		@Override
+		default SplitFindMin build() {
+			return buildWithFindMin();
+		}
+
+	}
 
 }

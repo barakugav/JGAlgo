@@ -24,4 +24,32 @@ public interface MinimumMeanCycle {
 	 */
 	Path computeMinimumMeanCycle(Graph g, EdgeWeightFunc w);
 
+	/**
+	 * Create a new minimum mean cycle algorithm builder.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link MinimumMeanCycle}
+	 * object.
+	 *
+	 * @return a new builder that can build {@link MinimumMeanCycle} objects
+	 */
+	static MinimumMeanCycle.Builder newBuilder() {
+		return MinimumMeanCycleHoward::new;
+	}
+
+	/**
+	 * A builder for {@link MinimumMeanCycle} objects.
+	 *
+	 * @see MinimumMeanCycle#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder {
+
+		/**
+		 * Create a new algorithm object for minimum mean cycle computation.
+		 *
+		 * @return a new minimum mean cycle algorithm
+		 */
+		MinimumMeanCycle build();
+	}
+
 }

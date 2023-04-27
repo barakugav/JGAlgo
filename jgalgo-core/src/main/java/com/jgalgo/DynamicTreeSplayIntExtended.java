@@ -17,7 +17,7 @@ import com.jgalgo.DynamicTreeSplayExtension.SplayNodeExtended;
  * @see DynamicTreeSplayExtension
  * @author Barak Ugav
  */
-public class DynamicTreeSplayIntExtended extends DynamicTreeSplayInt {
+class DynamicTreeSplayIntExtended extends DynamicTreeSplayInt {
 
 	private Node[] nodes;
 	private int nodesCount;
@@ -38,7 +38,7 @@ public class DynamicTreeSplayIntExtended extends DynamicTreeSplayInt {
 	 *                                  such a case, the regular
 	 *                                  {@link DynamicTreeSplay} should be used
 	 */
-	public DynamicTreeSplayIntExtended(int weightLimit, Collection<? extends DynamicTreeSplayExtension> extensions) {
+	DynamicTreeSplayIntExtended(int weightLimit, Collection<? extends DynamicTreeSplayExtension> extensions) {
 		this(weightLimit, extensions.toArray(len -> new DynamicTreeSplayExtension[len]));
 	}
 
@@ -117,6 +117,15 @@ public class DynamicTreeSplayIntExtended extends DynamicTreeSplayInt {
 				extension.beforeRotate(n);
 		}
 
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <Ext extends DynamicTreeExtension> Ext getExtension(Class<Ext> extensionType) {
+		for (DynamicTreeSplayExtension ext : extensions)
+			if (extensionType.isAssignableFrom(ext.getClass()))
+				return (Ext) ext;
+		return null;
 	}
 
 }

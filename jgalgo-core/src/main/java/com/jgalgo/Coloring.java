@@ -13,6 +13,31 @@ package com.jgalgo;
  * <p>
  * Each color is represented as an integer in range {@code [0, colorsNum)}.
  *
+ * <pre> {@code
+ * UGraph g = UGraph.newBuilder().build();
+ * int v1 = g.addVertex();
+ * int v2 = g.addVertex();
+ * int v3 = g.addVertex();
+ * int v4 = g.addVertex();
+ * g.addEdge(v1, v2);
+ * g.addEdge(v2, v3);
+ * g.addEdge(v3, v1);
+ * g.addEdge(v3, v4);
+ *
+ * Coloring coloringAlg = Coloring.newBuilder().build();
+ * Coloring.Result colors = coloringAlg.computeColoring(g);
+ * System.out.println("A valid coloring with " + colors.colorsNum() + " colors was found");
+ * for (IntIterator uit = g.vertices().iterator(); uit.hasNext();) {
+ * 	int u = uit.nextInt();
+ * 	System.out.println("The color of vertex " + u + " is " + colors.colorOf(u));
+ * 	for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
+ * 		eit.nextInt();
+ * 		int v = eit.v();
+ * 		assert colors.colorOf(u) != colors.colorOf(v);
+ * 	}
+ * }
+ * }</pre>
+ *
  * @see <a href="https://en.wikipedia.org/wiki/Graph_coloring">Wikipedia</a>
  * @author Barak Ugav
  */
@@ -49,6 +74,33 @@ public interface Coloring {
 		 */
 		int colorOf(int v);
 
+	}
+
+	/**
+	 * Create a new coloring algorithm builder.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link Coloring} object.
+	 *
+	 * @return a new builder that can build {@link Coloring} objects
+	 */
+	static Coloring.Builder newBuilder() {
+		return ColoringDSaturHeap::new;
+	}
+
+	/**
+	 * A builder for {@link Coloring} objects.
+	 *
+	 * @see Coloring#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder {
+
+		/**
+		 * Create a new algorithm object for coloring computation.
+		 *
+		 * @return a new coloring algorithm
+		 */
+		Coloring build();
 	}
 
 }

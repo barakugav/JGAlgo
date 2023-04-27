@@ -102,6 +102,34 @@ public interface TreePathMaxima {
 	}
 
 	/**
+	 * Create a new tree path maxima algorithm builder.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link TreePathMaxima}
+	 * object.
+	 *
+	 * @return a new builder that can build {@link TreePathMaxima} objects
+	 */
+	static TreePathMaxima.Builder newBuilder() {
+		return TreePathMaximaHagerup::new;
+	}
+
+	/**
+	 * A builder for {@link TreePathMaxima} objects.
+	 *
+	 * @see TreePathMaxima#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder {
+
+		/**
+		 * Create a new algorithm object for tree path maxima computation.
+		 *
+		 * @return a new tree path maxima algorithm
+		 */
+		TreePathMaxima build();
+	}
+
+	/**
 	 * Verify that the given edges actually form an MST of a graph.
 	 * <p>
 	 * The verification is done by computing for each original edge in the graph the

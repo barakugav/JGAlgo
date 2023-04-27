@@ -26,4 +26,32 @@ public interface MST {
 	 */
 	IntCollection computeMinimumSpanningTree(Graph g, EdgeWeightFunc w);
 
+	/**
+	 * Create a new minimum spanning tree algorithm builder.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link MST}
+	 * object.
+	 *
+	 * @return a new builder that can build {@link MST} objects
+	 */
+	static MST.Builder newBuilder() {
+		return MSTPrim::new;
+	}
+
+	/**
+	 * A builder for {@link MST} objects.
+	 *
+	 * @see MST#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder {
+
+		/**
+		 * Create a new algorithm object for minimum spanning tree computation.
+		 *
+		 * @return a new minimum spanning tree algorithm
+		 */
+		MST build();
+	}
+
 }

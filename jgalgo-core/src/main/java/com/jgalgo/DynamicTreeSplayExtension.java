@@ -5,34 +5,7 @@ import java.util.Objects;
 
 import it.unimi.dsi.fastutil.ints.IntArrays;
 
-/**
- * An extension to a splay tree dynamic trees implementation.
- * <p>
- * Extension such as {@link DynamicTreeSplayExtension.TreeSize} can be added to
- * either {@link DynamicTreeSplayExtended} or
- * {@link DynamicTreeSplayIntExtended} without increasing asymptotical running
- * time of any of the operations.
- * <p>
- * The extensions must be used in the constructor of the extended dynamic trees
- * implementations, and must not be used more than one time.
- *
- * <pre> {@code
- * DynamicTreeSplayExtension.TreeSize treeSizeExt = new DynamicTreeSplayExtension.TreeSize();
- * double weightLimit = 0;
- * DynamicTree dt = new DynamicTreeSplayExtended(weightLimit, List.of(treeSizeExt));
- * DynamicTree.Node n1 = dt.makeTree();
- * DynamicTree.Node n2 = dt.makeTree();
- * ...
- * dt.link(n1, n2, 5.5);
- *
- * System.out.println("The number of nodes in the tree of " + n1 + " is " + treeSizeExt.getTreeSize(n1));
- * }</pre>
- *
- * @see DynamicTreeSplayExtended
- * @see DynamicTreeSplayIntExtended
- * @author Barak Ugav
- */
-public abstract class DynamicTreeSplayExtension {
+abstract class DynamicTreeSplayExtension implements DynamicTreeExtension {
 
 	final ExtensionData data;
 	DynamicTree dt;
@@ -64,31 +37,7 @@ public abstract class DynamicTreeSplayExtension {
 
 	abstract void beforeRotate(SplayTree.Node<?, ?> n);
 
-	/**
-	 * An extension to {@link DynamicTree} that keep track on the number of nodes in
-	 * each tree.
-	 * <p>
-	 * The extension add some fields to each node, and maintain them during
-	 * operation on the forest. The asymptotical running time of any operation does
-	 * not increase, and an addition operation that query the number of nodes in the
-	 * current tree of any given node is added via the
-	 * {@link #getTreeSize(com.jgalgo.DynamicTree.Node)} method.
-	 *
-	 * <pre> {@code
-	 * DynamicTreeSplayExtension.TreeSize treeSizeExt = new DynamicTreeSplayExtension.TreeSize();
-	 * double weightLimit = 0;
-	 * DynamicTree dt = new DynamicTreeSplayExtended(weightLimit, List.of(treeSizeExt));
-	 * DynamicTree.Node n1 = dt.makeTree();
-	 * DynamicTree.Node n2 = dt.makeTree();
-	 * ...
-	 * dt.link(n1, n2, 5.5);
-	 *
-	 * System.out.println("The number of nodes in the tree of " + n1 + " is " + treeSizeExt.getTreeSize(n1));
-	 * }</pre>
-	 *
-	 * @author Barak Ugav
-	 */
-	public static class TreeSize extends DynamicTreeSplayExtension.Int {
+	static class TreeSize extends DynamicTreeSplayExtension.Int implements DynamicTreeExtension.TreeSize {
 
 		/**
 		 * Create a new Tree Size extensions.
@@ -96,15 +45,10 @@ public abstract class DynamicTreeSplayExtension {
 		 * Each instance of this extension should be used in a single dynamic tree
 		 * object.
 		 */
-		public TreeSize() {
+		TreeSize() {
 		}
 
-		/**
-		 * Get the number of nodes in the current tree of a given node.
-		 *
-		 * @param node a node in the dynamic tree data structure
-		 * @return the number nodes in the tree of the node
-		 */
+		@Override
 		public int getTreeSize(DynamicTree.Node node) {
 			SplayTree.Node<?, ?> n = (SplayTree.Node<?, ?>) node;
 			splay(n);

@@ -15,7 +15,7 @@ import java.util.Comparator;
  * {@code decreaseKey()}.
  *
  * <pre> {@code
- * Heap<Integer> h = ...;
+ * Heap<Integer> h = Heap.newBuilder().build();
  * h.insert(5);
  * h.insert(10);
  * h.insert(1);
@@ -33,6 +33,7 @@ import java.util.Comparator;
  * assert h.size() == 2;
  * }</pre>
  *
+ * @param <E> the elements type
  * @see <a href=
  *      "https://en.wikipedia.org/wiki/Heap_(data_structure)">Wikipedia</a>
  * @see HeapReferenceable
@@ -88,14 +89,25 @@ public interface Heap<E> extends Collection<E> {
 	public Comparator<? super E> comparator();
 
 	/**
+	 * Create a new heaps builder.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link Heap} object.
+	 *
+	 * @return a new builder that can build {@link Heap} objects
+	 */
+	static Heap.Builder newBuilder() {
+		return HeapBinary::new;
+	}
+
+	/**
 	 * Builder for heaps.
 	 * <p>
 	 * Used to change heaps implementations which are used as black box by some
 	 * algorithms.
 	 *
+	 * @see Heap#newBuilder()
 	 * @author Barak Ugav
 	 */
-	@FunctionalInterface
 	public static interface Builder {
 		/**
 		 * Build a new heap with the given comparator.

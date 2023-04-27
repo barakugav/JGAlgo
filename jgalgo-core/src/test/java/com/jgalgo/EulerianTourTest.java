@@ -49,7 +49,7 @@ public class EulerianTourTest extends TestBase {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 			UGraph g = randUGraph(n, m, allEvenVertices, seedGen.nextSeed());
-			Path tour = EulerianTour.computeEulerianTour(g);
+			Path tour = EulerianTourAlgorithm.newBuilder().build().computeEulerianTour(g);
 			validateEulerianTour(g, tour);
 		});
 	}
@@ -60,7 +60,7 @@ public class EulerianTourTest extends TestBase {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 			DiGraph g = randDiGraph(n, m, allEqualInOutDegree, seedGen.nextSeed());
-			Path tour = EulerianTour.computeEulerianTour(g);
+			Path tour = EulerianTourAlgorithm.newBuilder().build().computeEulerianTour(g);
 			validateEulerianTour(g, tour);
 		});
 	}
