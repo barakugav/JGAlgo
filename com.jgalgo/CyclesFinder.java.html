@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CyclesFinder.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">CyclesFinder.java</span></div><h1>CyclesFinder.java</h1><pre class="source lang-java linenums">package com.jgalgo;
+
+import java.util.List;
+
+/**
+ * An algorithm that finds all cycles in a graph.
+ *
+ * @author Barak Ugav
+ */
+public interface CyclesFinder {
+
+	/**
+	 * Find all cycles in the given graph.
+	 *
+	 * @param g a graph
+	 * @return a list of all cycles in the graph
+	 */
+	public List&lt;Path&gt; findAllCycles(Graph g);
+
+	/**
+	 * Create a new cycles finder algorithm builder.
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link CyclesFinder} object.
+	 *
+	 * @return a new builder that can build {@link CyclesFinder} objects
+	 */
+	static CyclesFinder.Builder newBuilder() {
+<span class="nc" id="L28">		return CyclesFinderTarjan::new;</span>
+	}
+
+	/**
+	 * A builder for {@link CyclesFinder} objects.
+	 *
+	 * @see CyclesFinder#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder {
+
+		/**
+		 * Create a new algorithm object for cycles computation.
+		 *
+		 * @return a new cycles finder algorithm
+		 */
+		CyclesFinder build();
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

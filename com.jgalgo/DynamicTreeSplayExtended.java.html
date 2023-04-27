@@ -17,7 +17,7 @@ import com.jgalgo.DynamicTreeSplayExtension.SplayNodeExtended;
  * @see DynamicTreeSplayExtension
  * @author Barak Ugav
  */
-public class DynamicTreeSplayExtended extends DynamicTreeSplay {
+class DynamicTreeSplayExtended extends DynamicTreeSplay {
 
 	private Node[] nodes;
 	private int nodesCount;
@@ -38,7 +38,7 @@ public class DynamicTreeSplayExtended extends DynamicTreeSplay {
 	 *                                  such a case, the regular
 	 *                                  {@link DynamicTreeSplay} should be used
 	 */
-	public DynamicTreeSplayExtended(double weightLimit, Collection&lt;? extends DynamicTreeSplayExtension&gt; extensions) {
+	DynamicTreeSplayExtended(double weightLimit, Collection&lt;? extends DynamicTreeSplayExtension&gt; extensions) {
 <span class="fc" id="L42">		this(weightLimit, extensions.toArray(len -&gt; new DynamicTreeSplayExtension[len]));</span>
 <span class="fc" id="L43">	}</span>
 
@@ -117,6 +117,15 @@ public class DynamicTreeSplayExtended extends DynamicTreeSplay {
 <span class="fc" id="L117">				extension.beforeRotate(n);</span>
 <span class="fc" id="L118">		}</span>
 
+	}
+
+	@SuppressWarnings(&quot;unchecked&quot;)
+	@Override
+	public &lt;Ext extends DynamicTreeExtension&gt; Ext getExtension(Class&lt;Ext&gt; extensionType) {
+<span class="pc bpc" id="L125" title="1 of 2 branches missed.">		for (DynamicTreeSplayExtension ext : extensions)</span>
+<span class="pc bpc" id="L126" title="1 of 2 branches missed.">			if (extensionType.isAssignableFrom(ext.getClass()))</span>
+<span class="fc" id="L127">				return (Ext) ext;</span>
+<span class="nc" id="L128">		return null;</span>
 	}
 
 }

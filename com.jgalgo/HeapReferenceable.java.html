@@ -19,7 +19,7 @@ import java.util.Set;
  * operations efficiently as is does not need to search for the element.
  *
  * &lt;pre&gt; {@code
- * HeapReferenceable&lt;Integer&gt; heap = ...;
+ * HeapReferenceable&lt;Integer&gt; heap = HeapReferenceable.newBuilder().build();
  * HeapReference&lt;Integer&gt; r1 = heap.insert(5);
  * HeapReference&lt;Integer&gt; r2 = heap.insert(10);
  * HeapReference&lt;Integer&gt; r3 = heap.insert(3);
@@ -114,21 +114,35 @@ public interface HeapReferenceable&lt;E&gt; extends Heap&lt;E&gt; {
 	}
 
 	/**
+	 * Create a new referenceable heaps builder.
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link HeapReferenceable}
+	 * object.
+	 *
+	 * @return a new builder that can build {@link HeapReferenceable} objects
+	 */
+	static HeapReferenceable.Builder newBuilder() {
+<span class="nc" id="L125">		return HeapPairing::new;</span>
+	}
+
+	/**
 	 * Builder for referenceable heaps.
 	 * &lt;p&gt;
 	 * Used to change heaps implementations which are used as black box by some
 	 * algorithms.
 	 *
+	 * @see HeapReferenceable#newBuilder()
 	 * @author Barak Ugav
 	 */
 	@FunctionalInterface
 	public static interface Builder extends Heap.Builder {
+
 		@Override
 		&lt;E&gt; HeapReferenceable&lt;E&gt; build(Comparator&lt;? super E&gt; cmp);
 
 		@Override
 		default &lt;E&gt; HeapReferenceable&lt;E&gt; build() {
-<span class="fc" id="L131">			return build(null);</span>
+<span class="fc" id="L145">			return build(null);</span>
 		}
 	}
 

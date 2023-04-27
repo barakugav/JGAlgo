@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Coloring.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">Coloring.java</span></div><h1>Coloring.java</h1><pre class="source lang-java linenums">package com.jgalgo;
+
+/**
+ * An algorithm that assign a color to each vertex in a graph while avoiding
+ * identical color for any pair of adjacent vertices.
+ * &lt;p&gt;
+ * Given a graph {@code G=(V,E)} a valid coloring is a function {@code C:v-&gt;c}
+ * for any vertex {@code v} in {@code V} where each edge {@code (u, v)} in
+ * {@code E} satisfy {@code C(u) != C(v)}. The objective is to minimize the
+ * total number of different colors. The problem is NP-hard, but various
+ * heuristics exists which give decent results for general graphs and optimal
+ * results for special cases.
+ * &lt;p&gt;
+ * Each color is represented as an integer in range {@code [0, colorsNum)}.
+ *
+ * &lt;pre&gt; {@code
+ * UGraph g = UGraph.newBuilder().build();
+ * int v1 = g.addVertex();
+ * int v2 = g.addVertex();
+ * int v3 = g.addVertex();
+ * int v4 = g.addVertex();
+ * g.addEdge(v1, v2);
+ * g.addEdge(v2, v3);
+ * g.addEdge(v3, v1);
+ * g.addEdge(v3, v4);
+ *
+ * Coloring coloringAlg = Coloring.newBuilder().build();
+ * Coloring.Result colors = coloringAlg.computeColoring(g);
+ * System.out.println(&quot;A valid coloring with &quot; + colors.colorsNum() + &quot; colors was found&quot;);
+ * for (IntIterator uit = g.vertices().iterator(); uit.hasNext();) {
+ * 	int u = uit.nextInt();
+ * 	System.out.println(&quot;The color of vertex &quot; + u + &quot; is &quot; + colors.colorOf(u));
+ * 	for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
+ * 		eit.nextInt();
+ * 		int v = eit.v();
+ * 		assert colors.colorOf(u) != colors.colorOf(v);
+ * 	}
+ * }
+ * }&lt;/pre&gt;
+ *
+ * @see &lt;a href=&quot;https://en.wikipedia.org/wiki/Graph_coloring&quot;&gt;Wikipedia&lt;/a&gt;
+ * @author Barak Ugav
+ */
+public interface Coloring {
+
+	/**
+	 * Assign a color to each vertex of the given graph, resulting in a valid
+	 * coloring.
+	 *
+	 * @param g a graph
+	 * @return a valid coloring with (hopefully) small number of different colors
+	 */
+	Coloring.Result computeColoring(UGraph g);
+
+	/**
+	 * A coloring result containing a color for each vertex.
+	 *
+	 * @author Barak Ugav
+	 */
+	interface Result {
+
+		/**
+		 * The total number of different colors used in the coloring.
+		 *
+		 * @return number of different colors
+		 */
+		int colorsNum();
+
+		/**
+		 * Get the color assigned to a vertex.
+		 *
+		 * @param v a vertex identifier in the graph
+		 * @return a color of the vertex, represented as integer
+		 */
+		int colorOf(int v);
+
+	}
+
+	/**
+	 * Create a new coloring algorithm builder.
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link Coloring} object.
+	 *
+	 * @return a new builder that can build {@link Coloring} objects
+	 */
+	static Coloring.Builder newBuilder() {
+<span class="nc" id="L87">		return ColoringDSaturHeap::new;</span>
+	}
+
+	/**
+	 * A builder for {@link Coloring} objects.
+	 *
+	 * @see Coloring#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder {
+
+		/**
+		 * Create a new algorithm object for coloring computation.
+		 *
+		 * @return a new coloring algorithm
+		 */
+		Coloring build();
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

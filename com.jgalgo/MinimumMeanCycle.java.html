@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MinimumMeanCycle.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">MinimumMeanCycle.java</span></div><h1>MinimumMeanCycle.java</h1><pre class="source lang-java linenums">package com.jgalgo;
+
+/**
+ * Algorithm that find the cycle with the minimum mean weight.
+ * &lt;p&gt;
+ * Given a graph {@code G}, a cycle in {@code G} is a sequence of edges that
+ * form a path, and its first edge source is also its last edge target. Given an
+ * edge weight function, we can define for each such cycle its mean weight, by
+ * summing its edges weights and dividing by its length (the number of edges in
+ * the cycle). Algorithms implementing this interface find the cycle with the
+ * minimum mean weight among all the cycles in the given graph.
+ *
+ * @author Barak Ugav
+ */
+public interface MinimumMeanCycle {
+
+	/**
+	 * Compute the minimum mean cycle in a graph.
+	 *
+	 * @param g a graph
+	 * @param w an edge weight function
+	 * @return the cycle with the minimum mean weight in the graph, or {@code null}
+	 *         if no cycles were found
+	 */
+	Path computeMinimumMeanCycle(Graph g, EdgeWeightFunc w);
+
+	/**
+	 * Create a new minimum mean cycle algorithm builder.
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link MinimumMeanCycle}
+	 * object.
+	 *
+	 * @return a new builder that can build {@link MinimumMeanCycle} objects
+	 */
+	static MinimumMeanCycle.Builder newBuilder() {
+<span class="nc" id="L36">		return MinimumMeanCycleHoward::new;</span>
+	}
+
+	/**
+	 * A builder for {@link MinimumMeanCycle} objects.
+	 *
+	 * @see MinimumMeanCycle#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder {
+
+		/**
+		 * Create a new algorithm object for minimum mean cycle computation.
+		 *
+		 * @return a new minimum mean cycle algorithm
+		 */
+		MinimumMeanCycle build();
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

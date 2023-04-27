@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MaximumMatching.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">MaximumMatching.java</span></div><h1>MaximumMatching.java</h1><pre class="source lang-java linenums">package com.jgalgo;
+
+import it.unimi.dsi.fastutil.ints.IntCollection;
+
+/**
+ * Maximum matching algorithm.
+ * &lt;p&gt;
+ * Given a graph {@code G=(V,E)}, a matching is a sub set of edges {@code M}
+ * such that any vertex in {@code V} have at most one adjacent edge in
+ * {@code M}. A maximum matching is a matching with the maximum number of edges
+ * in {@code M}.
+ *
+ * @see &lt;a href=
+ *      &quot;https://en.wikipedia.org/wiki/Matching_(graph_theory)&quot;&gt;Wikipedia&lt;/a&gt;
+ * @author Barak Ugav
+ */
+public interface MaximumMatching {
+
+	/**
+	 * Compute the maximum matching of unweighted undirected graph.
+	 *
+	 * @param g an undirected graph
+	 * @return collection of edges representing a maximum matching
+	 */
+	public IntCollection computeMaximumMatching(UGraph g);
+
+	/**
+	 * Create a new maximum matching algorithm builder.
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link MaximumMatching}
+	 * object.
+	 *
+	 * @return a new builder that can build {@link MaximumMatching} objects
+	 */
+	static MaximumMatching.Builder newBuilder() {
+<span class="nc" id="L36">		return new MaximumMatching.Builder() {</span>
+
+<span class="nc" id="L38">			boolean isBipartite = false;</span>
+
+			@Override
+			public MaximumMatching build() {
+<span class="nc bnc" id="L42" title="All 2 branches missed.">				return isBipartite ? new MaximumMatchingBipartiteHopcroftKarp() : new MaximumMatchingGabow1976();</span>
+			}
+
+			@Override
+			public Builder setBipartite(boolean bipartite) {
+<span class="nc" id="L47">				isBipartite = bipartite;</span>
+<span class="nc" id="L48">				return this;</span>
+			}
+		};
+	}
+
+	/**
+	 * A builder for {@link MaximumMatching} objects.
+	 *
+	 * @see MaximumMatching#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder {
+
+		/**
+		 * Create a new maximum matching algorithm object.
+		 *
+		 * @return a new maximum matching algorithm
+		 */
+		MaximumMatching build();
+
+		/**
+		 * Set whether the maximum matching objects should support only bipartite
+		 * graphs.
+		 * &lt;p&gt;
+		 * If the input graphs are known to be bipartite, simpler or more efficient
+		 * algorithm may exists.
+		 *
+		 * @param bipartite if {@code true}, the create maximum matching objects will
+		 *                  support bipartite graphs only
+		 * @return this builder
+		 */
+		MaximumMatching.Builder setBipartite(boolean bipartite);
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

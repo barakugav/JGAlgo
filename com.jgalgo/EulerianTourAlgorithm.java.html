@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EulerianTourAlgorithm.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">EulerianTourAlgorithm.java</span></div><h1>EulerianTourAlgorithm.java</h1><pre class="source lang-java linenums">package com.jgalgo;
+
+/**
+ * Eulerian tour calculation algorithm.
+ * &lt;p&gt;
+ * An Eulerian tour is a tour that visits every edge exactly once (allowing for
+ * revisiting vertices). For a connected undirected graph, if all vertices have
+ * an even degree, an Eulerian cycle will be found. If exactly two vertices have
+ * an odd degree, called {@code s,t}, an Eulerian tour that start at {@code s}
+ * and ends at {@code t} exists. For any other vertices degrees an Eulerian tour
+ * does not exists. For a strongly connected directed graph, the in-degree and
+ * out-degree of each vertex must be equal for an Eulerian cycle to exists. If
+ * exactly one vertex {@code s} has one more out-edge than in-edges, and one
+ * vertex {@code t} has one more in-edge than out-edges, an Eulerian tour that
+ * start at {@code s} and ends at {@code t} exists.
+ *
+ * @see &lt;a href=&quot;https://en.wikipedia.org/wiki/Eulerian_path&quot;&gt;Wikipedia&lt;/a&gt;
+ * @see TSPMetricMSTAppx
+ * @see TSPMetricMatchingAppx
+ * @author Barak Ugav
+ */
+public interface EulerianTourAlgorithm {
+
+	/**
+	 * Compute an Eulerian tour in the graph that visit all edges exactly once.
+	 * &lt;p&gt;
+	 * The graph is assumed to be (strongly) connected. Either a cycle or tour will
+	 * be found, depending on the vertices degrees.
+	 * &lt;p&gt;
+	 * The running time and space of this function is {@code O(m + n)}.
+	 *
+	 * @param g a graph
+	 * @return an Eulerian tour that visit all edges of the graph exactly once
+	 * @throws IllegalArgumentException if there is no Eulerian tour in the graph
+	 */
+	public Path computeEulerianTour(Graph g);
+
+	/**
+	 * Create a new Eulerian tour algorithm builder.
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link EulerianTourAlgorithm}
+	 * object.
+	 *
+	 * @return a new builder that can build {@link EulerianTourAlgorithm} objects
+	 */
+	static EulerianTourAlgorithm.Builder newBuilder() {
+<span class="fc" id="L47">		return EulerianTourImpl::new;</span>
+	}
+
+	/**
+	 * A builder for {@link EulerianTourAlgorithm} objects.
+	 *
+	 * @see EulerianTourAlgorithm#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder {
+
+		/**
+		 * Create a new algorithm object for Eulerian tours computation.
+		 *
+		 * @return a new Eulerian tour algorithm
+		 */
+		EulerianTourAlgorithm build();
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

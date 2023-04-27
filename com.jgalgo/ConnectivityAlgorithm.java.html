@@ -51,20 +51,21 @@ public interface ConnectivityAlgorithm {
 	}
 
 	/**
-	 * Get a new connectivity algorithm builder.
+	 * Create a new connectivity algorithm builder.
 	 * &lt;p&gt;
-	 * This is the intended way to instantiate a new {@link ConnectivityAlgorithm}
+	 * This is the recommended way to instantiate a new {@link ConnectivityAlgorithm}
 	 * object.
 	 *
-	 * @return a new builder that can builder {@link ConnectivityAlgorithm} objects.
+	 * @return a new builder that can build {@link ConnectivityAlgorithm} objects
 	 */
 	static ConnectivityAlgorithm.Builder newBuilder() {
 <span class="fc" id="L62">		return new ConnectivityAlgorithmImpl.Builder();</span>
 	}
 
 	/**
-	 * A builder for {@link ConnectivityAlgorithm} object.
+	 * A builder for {@link ConnectivityAlgorithm} objects.
 	 *
+	 * @see ConnectivityAlgorithm#newBuilder()
 	 * @author Barak Ugav
 	 */
 	static interface Builder {
@@ -72,7 +73,7 @@ public interface ConnectivityAlgorithm {
 		/**
 		 * Create a new algorithm object for connectivity components computation.
 		 *
-		 * @return a new connectivity components algorithm.
+		 * @return a new connectivity components algorithm
 		 */
 		ConnectivityAlgorithm build();
 	}

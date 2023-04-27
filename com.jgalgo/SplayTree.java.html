@@ -21,7 +21,7 @@ import java.util.Set;
  * @see &lt;a href=&quot;https://en.wikipedia.org/wiki/Splay_tree&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
  */
-<span class="fc" id="L24">public class SplayTree&lt;E&gt; extends BSTAbstract&lt;E&gt; {</span>
+<span class="fc" id="L24">public class SplayTree&lt;E&gt; extends BinarySearchTreeAbstract&lt;E&gt; {</span>
 
 	private NodeSized&lt;E&gt; root;
 <span class="fc" id="L27">	private final SplayImplWithSize&lt;E&gt; impl = new SplayImplWithSize&lt;&gt;();</span>
@@ -72,7 +72,7 @@ import java.util.Set;
 			@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
 			@Override
 			public Iterator&lt;HeapReference&lt;E&gt;&gt; iterator() {
-<span class="fc" id="L75">				return (Iterator) new BSTUtils.BSTIterator&lt;&gt;(root);</span>
+<span class="fc" id="L75">				return (Iterator) new BinarySearchTrees.BSTIterator&lt;&gt;(root);</span>
 			}
 
 			@SuppressWarnings(&quot;unchecked&quot;)
@@ -111,7 +111,7 @@ import java.util.Set;
 <span class="fc bfc" id="L111" title="All 2 branches covered.">		if (root == null)</span>
 <span class="fc" id="L112">			return root = n;</span>
 
-<span class="fc" id="L114">		BSTUtils.insert(root, c, n);</span>
+<span class="fc" id="L114">		BinarySearchTrees.insert(root, c, n);</span>
 <span class="fc bfc" id="L115" title="All 2 branches covered.">		for (NodeSized&lt;E&gt; p = n.parent; p != null; p = p.parent)</span>
 <span class="fc" id="L116">			p.size++;</span>
 <span class="fc" id="L117">		return root = impl.splay(n);</span>
@@ -123,7 +123,7 @@ import java.util.Set;
 
 		/* If the node has two children, swap with successor */
 <span class="fc bfc" id="L125" title="All 4 branches covered.">		if (n.hasLeftChild() &amp;&amp; n.hasRightChild())</span>
-<span class="fc" id="L126">			swap(n, BSTUtils.getSuccessor(n));</span>
+<span class="fc" id="L126">			swap(n, BinarySearchTrees.getSuccessor(n));</span>
 
 		NodeSized&lt;E&gt; child;
 <span class="fc bfc" id="L129" title="All 2 branches covered.">		if (!n.hasLeftChild()) {</span>
@@ -157,7 +157,7 @@ import java.util.Set;
 <span class="fc" id="L157">	}</span>
 
 	private void swap(NodeSized&lt;E&gt; n1, NodeSized&lt;E&gt; n2) {
-<span class="fc" id="L160">		BSTUtils.swap(n1, n2);</span>
+<span class="fc" id="L160">		BinarySearchTrees.swap(n1, n2);</span>
 <span class="pc bpc" id="L161" title="1 of 2 branches missed.">		if (n1 == root)</span>
 <span class="fc" id="L162">			root = n2;</span>
 <span class="nc bnc" id="L163" title="All 2 branches missed.">		else if (n2 == root)</span>
@@ -179,62 +179,62 @@ import java.util.Set;
 
 	@Override
 	public HeapReference&lt;E&gt; findRef(E e) {
-<span class="fc" id="L182">		NodeSized&lt;E&gt; n = BSTUtils.find(root, c, e);</span>
+<span class="fc" id="L182">		NodeSized&lt;E&gt; n = BinarySearchTrees.find(root, c, e);</span>
 <span class="pc bpc" id="L183" title="1 of 2 branches missed.">		return n == null ? null : (root = impl.splay(n));</span>
 	}
 
 	@Override
 	public HeapReference&lt;E&gt; findMinRef() {
 <span class="fc" id="L188">		checkTreeNotEmpty();</span>
-<span class="fc" id="L189">		return root = impl.splay(BSTUtils.findMin(root));</span>
+<span class="fc" id="L189">		return root = impl.splay(BinarySearchTrees.findMin(root));</span>
 	}
 
 	@Override
 	public HeapReference&lt;E&gt; findMaxRef() {
 <span class="fc" id="L194">		checkTreeNotEmpty();</span>
-<span class="fc" id="L195">		return root = impl.splay(BSTUtils.findMax(root));</span>
+<span class="fc" id="L195">		return root = impl.splay(BinarySearchTrees.findMax(root));</span>
 	}
 
 	@Override
 	public HeapReference&lt;E&gt; findOrSmaller(E e) {
-<span class="fc" id="L200">		NodeSized&lt;E&gt; n = BSTUtils.findOrSmaller(root, c, e);</span>
+<span class="fc" id="L200">		NodeSized&lt;E&gt; n = BinarySearchTrees.findOrSmaller(root, c, e);</span>
 <span class="fc bfc" id="L201" title="All 2 branches covered.">		return n == null ? null : (root = impl.splay(n));</span>
 	}
 
 	@Override
 	public HeapReference&lt;E&gt; findOrGreater(E e) {
-<span class="fc" id="L206">		NodeSized&lt;E&gt; n = BSTUtils.findOrGreater(root, c, e);</span>
+<span class="fc" id="L206">		NodeSized&lt;E&gt; n = BinarySearchTrees.findOrGreater(root, c, e);</span>
 <span class="fc bfc" id="L207" title="All 2 branches covered.">		return n == null ? null : (root = impl.splay(n));</span>
 	}
 
 	@Override
 	public HeapReference&lt;E&gt; findSmaller(E e) {
-<span class="fc" id="L212">		NodeSized&lt;E&gt; n = BSTUtils.findSmaller(root, c, e);</span>
+<span class="fc" id="L212">		NodeSized&lt;E&gt; n = BinarySearchTrees.findSmaller(root, c, e);</span>
 <span class="fc bfc" id="L213" title="All 2 branches covered.">		return n == null ? null : (root = impl.splay(n));</span>
 	}
 
 	@Override
 	public HeapReference&lt;E&gt; findGreater(E e) {
-<span class="fc" id="L218">		NodeSized&lt;E&gt; n = BSTUtils.findGreater(root, c, e);</span>
+<span class="fc" id="L218">		NodeSized&lt;E&gt; n = BinarySearchTrees.findGreater(root, c, e);</span>
 <span class="fc bfc" id="L219" title="All 2 branches covered.">		return n == null ? null : (root = impl.splay(n));</span>
 	}
 
 	@Override
 	public HeapReference&lt;E&gt; getPredecessor(HeapReference&lt;E&gt; ref) {
-<span class="fc" id="L224">		NodeSized&lt;E&gt; n = BSTUtils.getPredecessor((NodeSized&lt;E&gt;) ref);</span>
+<span class="fc" id="L224">		NodeSized&lt;E&gt; n = BinarySearchTrees.getPredecessor((NodeSized&lt;E&gt;) ref);</span>
 <span class="fc bfc" id="L225" title="All 2 branches covered.">		return n == null ? null : (root = impl.splay(n));</span>
 	}
 
 	@Override
 	public HeapReference&lt;E&gt; getSuccessor(HeapReference&lt;E&gt; ref) {
-<span class="fc" id="L230">		NodeSized&lt;E&gt; n = BSTUtils.getSuccessor((NodeSized&lt;E&gt;) ref);</span>
+<span class="fc" id="L230">		NodeSized&lt;E&gt; n = BinarySearchTrees.getSuccessor((NodeSized&lt;E&gt;) ref);</span>
 <span class="fc bfc" id="L231" title="All 2 branches covered.">		return n == null ? null : (root = impl.splay(n));</span>
 	}
 
 	@Override
 	public E extractMin() {
 <span class="fc" id="L236">		checkTreeNotEmpty();</span>
-<span class="fc" id="L237">		NodeSized&lt;E&gt; n = BSTUtils.findMin(root);</span>
+<span class="fc" id="L237">		NodeSized&lt;E&gt; n = BinarySearchTrees.findMin(root);</span>
 <span class="fc" id="L238">		E ret = n.data;</span>
 <span class="fc" id="L239">		removeRef(n);</span>
 <span class="fc" id="L240">		return ret;</span>
@@ -357,11 +357,11 @@ import java.util.Set;
 	public void clear() {
 <span class="fc bfc" id="L358" title="All 2 branches covered.">		if (root == null)</span>
 <span class="fc" id="L359">			return;</span>
-<span class="fc" id="L360">		BSTUtils.clear(root);</span>
+<span class="fc" id="L360">		BinarySearchTrees.clear(root);</span>
 <span class="fc" id="L361">		root = null;</span>
 <span class="fc" id="L362">	}</span>
 
-	static class Node&lt;E, N extends Node&lt;E, N&gt;&gt; extends BSTUtils.Node&lt;E, N&gt; implements HeapReference&lt;E&gt; {
+	static class Node&lt;E, N extends Node&lt;E, N&gt;&gt; extends BinarySearchTrees.Node&lt;E, N&gt; implements HeapReference&lt;E&gt; {
 
 		Node(E e) {
 <span class="fc" id="L367">			super(e);</span>

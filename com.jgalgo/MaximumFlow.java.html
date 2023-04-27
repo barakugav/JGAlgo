@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MaximumFlow.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">MaximumFlow.java</span></div><h1>MaximumFlow.java</h1><pre class="source lang-java linenums">package com.jgalgo;
+
+/**
+ * Calculate the maximum flow in a flow network.
+ * &lt;p&gt;
+ * A maximum flow is firstly a valid flow, namely for each vertex except the
+ * source and sink the sum of flow units going along {@link Graph#edgesIn(int)}
+ * must be equal to the sum of flow units going along
+ * {@link Graph#edgesOut(int)}. In addition, a maximum flow maximize the number
+ * of flow units originated at the source and reach the sink, which is
+ * equivalent to the sum of flows going out(in) of the source(sink) subtracted
+ * by the sum of flows going in(out) to the source(sink).
+ *
+ * &lt;pre&gt; {@code
+ * DiGraph g = ...;
+ * FlowNetwork net = FlowNetwork.createAsEdgeWeight(g);
+ * for (IntIterator edgeIter = g.edges().iterator(); edgeIter.hasNext();)
+ *  f.setCapacity(edgeIter.nextInt(), 1);
+ *
+ * int sourceVertex = ...;
+ * int targetVertex = ...;
+ * MaxFlow maxFlowAlg = MaximumFlow.newBuilder().build();
+ *
+ * double totalFlow = maxFlowAlg.computeMaximumFlow(g, net, sourceVertex, targetVertex);
+ * System.out.println(&quot;The maximum flow that can be pushed in the network is &quot; + totalFlow);
+ * for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+ * 	int e = it.nextInt();
+ * 	double capacity = net.getCapacity(e);
+ * 	double flow = net.getFlow(e);
+ * 	System.out.println(&quot;flow on edge &quot; + e + &quot;: &quot; + flow + &quot;/&quot; + capacity);
+ * }
+ * }&lt;/pre&gt;
+ *
+ * @see FlowNetwork
+ * @author Barak Ugav
+ */
+public interface MaximumFlow {
+
+	/**
+	 * Calculate the maximum flow in a flow network.
+	 * &lt;p&gt;
+	 * The function will set the edges flow by
+	 * {@link FlowNetwork#setFlow(int, double)}.
+	 *
+	 * @param g      a graph
+	 * @param net    network flow
+	 * @param source a source vertex
+	 * @param sink   a sink vertex
+	 * @return the maximum flow in the network from the source to the sink
+	 */
+	double computeMaximumFlow(Graph g, FlowNetwork net, int source, int sink);
+
+	/**
+	 * Create a new maximum flow algorithm builder.
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link MaximumFlow}
+	 * object.
+	 *
+	 * @return a new builder that can build {@link MaximumFlow} objects
+	 */
+	static MaximumFlow.Builder newBuilder() {
+<span class="nc" id="L62">		return MaximumFlowPushRelabelHighestFirst::new;</span>
+	}
+
+	/**
+	 * A builder for {@link MaximumFlow} objects.
+	 *
+	 * @see MaximumFlow#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder {
+
+		/**
+		 * Create a new algorithm object for maximum flow computation.
+		 *
+		 * @return a new maximum flow algorithm
+		 */
+		MaximumFlow build();
+
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

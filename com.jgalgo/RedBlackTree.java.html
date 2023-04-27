@@ -15,7 +15,7 @@ import java.util.Set;
  *      &quot;https://en.wikipedia.org/wiki/Red%E2%80%93black_tree&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
  */
-<span class="fc" id="L18">public class RedBlackTree&lt;E&gt; extends BSTAbstract&lt;E&gt; {</span>
+<span class="fc" id="L18">public class RedBlackTree&lt;E&gt; extends BinarySearchTreeAbstract&lt;E&gt; {</span>
 
 	private int size;
 	private Node&lt;E&gt; root;
@@ -70,7 +70,7 @@ import java.util.Set;
 			@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
 			@Override
 			public Iterator&lt;HeapReference&lt;E&gt;&gt; iterator() {
-<span class="fc" id="L73">				return (Iterator) new BSTUtils.BSTIterator&lt;&gt;(root);</span>
+<span class="fc" id="L73">				return (Iterator) new BinarySearchTrees.BSTIterator&lt;&gt;(root);</span>
 			}
 
 			@SuppressWarnings(&quot;unchecked&quot;)
@@ -106,7 +106,7 @@ import java.util.Set;
 	public void clear() {
 <span class="fc bfc" id="L107" title="All 2 branches covered.">		if (root == null)</span>
 <span class="fc" id="L108">			return;</span>
-<span class="fc" id="L109">		BSTUtils.clear(root);</span>
+<span class="fc" id="L109">		BinarySearchTrees.clear(root);</span>
 <span class="fc" id="L110">		root = null;</span>
 <span class="fc" id="L111">		size = 0;</span>
 <span class="fc" id="L112">	}</span>
@@ -122,7 +122,7 @@ import java.util.Set;
 	 *                                       support this operation
 	 */
 	@Override
-	public BST&lt;E&gt; splitSmaller(E e) {
+	public BinarySearchTree&lt;E&gt; splitSmaller(E e) {
 <span class="nc" id="L126">		throw new UnsupportedOperationException();</span>
 	}
 
@@ -131,7 +131,7 @@ import java.util.Set;
 	 *                                       support this operation
 	 */
 	@Override
-	public BST&lt;E&gt; splitGreater(E e) {
+	public BinarySearchTree&lt;E&gt; splitGreater(E e) {
 <span class="nc" id="L135">		throw new UnsupportedOperationException();</span>
 	}
 
@@ -146,21 +146,21 @@ import java.util.Set;
 
 	@Override
 	public HeapReference&lt;E&gt; findRef(E e) {
-<span class="fc" id="L149">		return BSTUtils.find(root, c, e);</span>
+<span class="fc" id="L149">		return BinarySearchTrees.find(root, c, e);</span>
 	}
 
 	@Override
 	public HeapReference&lt;E&gt; findMinRef() {
 <span class="pc bpc" id="L154" title="1 of 2 branches missed.">		if (root == null)</span>
 <span class="nc" id="L155">			throw new IllegalStateException();</span>
-<span class="fc" id="L156">		return BSTUtils.findMin(root);</span>
+<span class="fc" id="L156">		return BinarySearchTrees.findMin(root);</span>
 	}
 
 	@Override
 	public HeapReference&lt;E&gt; findMaxRef() {
 <span class="pc bpc" id="L161" title="1 of 2 branches missed.">		if (root == null)</span>
 <span class="nc" id="L162">			throw new IllegalStateException();</span>
-<span class="fc" id="L163">		return BSTUtils.findMax(root);</span>
+<span class="fc" id="L163">		return BinarySearchTrees.findMax(root);</span>
 	}
 
 	@Override
@@ -182,7 +182,7 @@ import java.util.Set;
 <span class="fc" id="L182">			root = n;</span>
 <span class="fc" id="L183">			afterInsert(n);</span>
 		} else {
-<span class="fc" id="L185">			BSTUtils.insert(root, c, n);</span>
+<span class="fc" id="L185">			BinarySearchTrees.insert(root, c, n);</span>
 <span class="fc" id="L186">			afterInsert(n);</span>
 <span class="fc" id="L187">			fixAfterInsert(n);</span>
 		}
@@ -279,7 +279,7 @@ import java.util.Set;
 
 		/* 2 children, switch place with a single child node */
 <span class="fc bfc" id="L281" title="All 4 branches covered.">		if (n.left != null &amp;&amp; n.right != null)</span>
-<span class="fc" id="L282">			swap(n, BSTUtils.getSuccessor(n));</span>
+<span class="fc" id="L282">			swap(n, BinarySearchTrees.getSuccessor(n));</span>
 <span class="pc bpc" id="L283" title="1 of 4 branches missed.">		assert n.left == null || n.right == null;</span>
 <span class="fc" id="L284">		Node&lt;E&gt; parent = n.parent;</span>
 
@@ -441,7 +441,7 @@ import java.util.Set;
 <span class="fc" id="L441">	}</span>
 
 	void swap(Node&lt;E&gt; n1, Node&lt;E&gt; n2) {
-<span class="fc" id="L444">		BSTUtils.swap(n1, n2);</span>
+<span class="fc" id="L444">		BinarySearchTrees.swap(n1, n2);</span>
 <span class="fc bfc" id="L445" title="All 2 branches covered.">		if (n1 == root)</span>
 <span class="fc" id="L446">			root = n2;</span>
 <span class="pc bpc" id="L447" title="1 of 2 branches missed.">		else if (n2 == root)</span>
@@ -453,32 +453,32 @@ import java.util.Set;
 
 	@Override
 	public HeapReference&lt;E&gt; findOrSmaller(E e) {
-<span class="fc" id="L456">		return BSTUtils.findOrSmaller(root, c, e);</span>
+<span class="fc" id="L456">		return BinarySearchTrees.findOrSmaller(root, c, e);</span>
 	}
 
 	@Override
 	public HeapReference&lt;E&gt; findOrGreater(E e) {
-<span class="fc" id="L461">		return BSTUtils.findOrGreater(root, c, e);</span>
+<span class="fc" id="L461">		return BinarySearchTrees.findOrGreater(root, c, e);</span>
 	}
 
 	@Override
 	public HeapReference&lt;E&gt; findSmaller(E e) {
-<span class="fc" id="L466">		return BSTUtils.findSmaller(root, c, e);</span>
+<span class="fc" id="L466">		return BinarySearchTrees.findSmaller(root, c, e);</span>
 	}
 
 	@Override
 	public HeapReference&lt;E&gt; findGreater(E e) {
-<span class="fc" id="L471">		return BSTUtils.findGreater(root, c, e);</span>
+<span class="fc" id="L471">		return BinarySearchTrees.findGreater(root, c, e);</span>
 	}
 
 	@Override
 	public HeapReference&lt;E&gt; getPredecessor(HeapReference&lt;E&gt; ref) {
-<span class="fc" id="L476">		return BSTUtils.getPredecessor((Node&lt;E&gt;) ref);</span>
+<span class="fc" id="L476">		return BinarySearchTrees.getPredecessor((Node&lt;E&gt;) ref);</span>
 	}
 
 	@Override
 	public HeapReference&lt;E&gt; getSuccessor(HeapReference&lt;E&gt; ref) {
-<span class="fc" id="L481">		return BSTUtils.getSuccessor((Node&lt;E&gt;) ref);</span>
+<span class="fc" id="L481">		return BinarySearchTrees.getSuccessor((Node&lt;E&gt;) ref);</span>
 	}
 
 	/**
@@ -490,10 +490,10 @@ import java.util.Set;
 	 */
 	@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
 	public Iterator&lt;HeapReference&lt;E&gt;&gt; experimental_subTreeIterator(HeapReference&lt;E&gt; ref) {
-<span class="fc" id="L493">		return (Iterator) (new BSTUtils.BSTIterator&lt;&gt;((Node&lt;E&gt;) ref));</span>
+<span class="fc" id="L493">		return (Iterator) (new BinarySearchTrees.BSTIterator&lt;&gt;((Node&lt;E&gt;) ref));</span>
 	}
 
-	static class Node&lt;E&gt; extends BSTUtils.Node&lt;E, Node&lt;E&gt;&gt; implements HeapReference&lt;E&gt; {
+	static class Node&lt;E&gt; extends BinarySearchTrees.Node&lt;E, Node&lt;E&gt;&gt; implements HeapReference&lt;E&gt; {
 
 		private boolean color;
 

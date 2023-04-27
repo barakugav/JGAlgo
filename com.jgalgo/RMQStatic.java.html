@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RMQStatic.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">RMQStatic.java</span></div><h1>RMQStatic.java</h1><pre class="source lang-java linenums">package com.jgalgo;
+
+/**
+ * Static Range Minimum Query (RMQ) algorithm.
+ * &lt;p&gt;
+ * Given a sequence of {@code n} comparable objects we would like to perform
+ * pre-processing and than be able to answer queries of the type: &quot;what is the
+ * minimum element in the range [i, j]?&quot; for any indices {@code 0 &lt; i,j &lt;= n}.
+ * Algorithm implementing this interface usually require linear or close to
+ * linear processing time and try to achieve constant or logarithmic query time.
+ * &lt;p&gt;
+ * The sequence itself is never passed to the algorithm, rather a
+ * {@link RMQStaticComparator} which support comparing two elements given their
+ * &lt;i&gt;indices&lt;/i&gt; only.
+ *
+ * @author Barak Ugav
+ */
+public interface RMQStatic {
+
+	/**
+	 * Perform a static pre processing of a sequence of elements for future RMQ
+	 * (Range minimum query) queries.
+	 *
+	 * @param comparator comparator used to compare between two elements, see the
+	 *                   Comparator
+	 *                   definition below
+	 * @param n          the number of elements in the sequence
+	 * @return a data structure built from the preprocessing, that can answer RMQ
+	 *         queries efficiently
+	 */
+	RMQStatic.DataStructure preProcessSequence(RMQStaticComparator comparator, int n);
+
+	/**
+	 * Data structure result created from a static RMQ pre-processing.
+	 *
+	 * @author Barak Ugav
+	 */
+	interface DataStructure {
+
+		/**
+		 * Find the minimum element in range [i, j].
+		 *
+		 * @param i index of range start (including)
+		 * @param j index of the range end (including)
+		 * @return the index of the minimum element in the range
+		 * @throws IllegalArgumentException if either {@code i} or {@code j} are not in
+		 *                                  range {@code [0, n)} or if {@code i &gt; j}.
+		 */
+		int findMinimumInRange(int i, int j);
+
+	}
+
+	/**
+	 * Create a new static range minimum queries algorithm builder.
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link RMQStatic}
+	 * object.
+	 *
+	 * @return a new builder that can build {@link RMQStatic} objects
+	 */
+	static RMQStatic.Builder newBuilder() {
+<span class="nc" id="L62">		return RMQStaticCartesianTrees::new;</span>
+	}
+
+	/**
+	 * A builder for {@link RMQStatic} objects.
+	 *
+	 * @see RMQStatic#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder {
+
+		/**
+		 * Create a new static range minimum queries algorithm.
+		 *
+		 * @return a new static range minimum queries algorithm
+		 */
+		RMQStatic build();
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

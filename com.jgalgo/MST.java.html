@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MST.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">MST.java</span></div><h1>MST.java</h1><pre class="source lang-java linenums">package com.jgalgo;
+
+import it.unimi.dsi.fastutil.ints.IntCollection;
+
+/**
+ * Minimum spanning tree algorithm.
+ * &lt;p&gt;
+ * A spanning tree is an edge sub set of the graph edges which form a tree and
+ * connect (span) all the vertices of the graph. A minimum spanning tree (MST)
+ * is a spanning tree with the minimum edge weights sum over all spanning trees.
+ *
+ * @see &lt;a href=
+ *      &quot;https://en.wikipedia.org/wiki/Minimum_spanning_tree&quot;&gt;Wikipedia&lt;/a&gt;
+ * @see MDST
+ * @author Barak Ugav
+ */
+public interface MST {
+
+	/**
+	 * Compute the minimum spanning tree (MST) of a given graph.
+	 *
+	 * @param g a graph
+	 * @param w an edge weight function
+	 * @return all edges that compose the MST, which there are {@code n-1} of them
+	 *         (or less, forming a forest if the graph is not connected)
+	 */
+	IntCollection computeMinimumSpanningTree(Graph g, EdgeWeightFunc w);
+
+	/**
+	 * Create a new minimum spanning tree algorithm builder.
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link MST}
+	 * object.
+	 *
+	 * @return a new builder that can build {@link MST} objects
+	 */
+	static MST.Builder newBuilder() {
+<span class="nc" id="L38">		return MSTPrim::new;</span>
+	}
+
+	/**
+	 * A builder for {@link MST} objects.
+	 *
+	 * @see MST#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder {
+
+		/**
+		 * Create a new algorithm object for minimum spanning tree computation.
+		 *
+		 * @return a new minimum spanning tree algorithm
+		 */
+		MST build();
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

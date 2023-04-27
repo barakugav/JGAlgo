@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TreePathMaxima.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">TreePathMaxima.java</span></div><h1>TreePathMaxima.java</h1><pre class="source lang-java linenums">package com.jgalgo;
+
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntIntPair;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntList;
+
+/**
+ * Tree Path Maxima (TPM) algorithm.
+ * &lt;p&gt;
+ * Given a tree {@code T} and a sequence of vertices pairs
+ * (u&lt;sub&gt;1&lt;/sub&gt;,v&lt;sub&gt;1&lt;/sub&gt;),(u&lt;sub&gt;2&lt;/sub&gt;, v&lt;sub&gt;2&lt;/sub&gt;),... called
+ * &lt;i&gt;queries&lt;/i&gt;, the tree path maxima problem is to find for each pair
+ * (u&lt;sub&gt;i&lt;/sub&gt;, v&lt;sub&gt;i&lt;/sub&gt;) the heaviest edge on the path between
+ * u&lt;sub&gt;i&lt;/sub&gt; and v&lt;sub&gt;i&lt;/sub&gt; in {@code T}.
+ * &lt;p&gt;
+ * TPM can be used to validate if a spanning tree is minimum spanning tree (MST)
+ * or not, by checking for each edge {@code (u, v)} that is not in the tree that
+ * it is heavier than the heaviest edge in the path from {@code u} to {@code v}
+ * in the tree. If a TPM on {@code n} vertices and {@code m} queries can be
+ * answer in {@code O(n + m)} time than an MST can be validated in linear time.
+ *
+ * @author Barak Ugav
+ */
+public interface TreePathMaxima {
+
+	/**
+	 * Compute the heaviest edge in multiple tree paths.
+	 * &lt;p&gt;
+	 * The {@code queries} container contains pairs of vertices, each corresponding
+	 * to a simple path in the given {@code tree}. For each of these paths, the
+	 * heaviest edge in the path will be computed.
+	 *
+	 * @param tree    a tree
+	 * @param w       an edge weight function
+	 * @param queries a sequence of queries as pairs of vertices, each corresponding
+	 *                to a unique simple path in the tree.
+	 * @return array of edges in the same size as the queries container, where the
+	 *         edge in the {@code i}'th entry is the heaviest edge in the tree path
+	 *         between the two vertices of the {@code i}'th query.
+	 */
+	public int[] computeHeaviestEdgeInTreePaths(Graph tree, EdgeWeightFunc w, TreePathMaxima.Queries queries);
+
+	/**
+	 * Queries container for {@link TreePathMaxima} computations.
+	 * &lt;p&gt;
+	 * Queries are added one by one to this container, and than the Queries object
+	 * is passed to the {@link TreePathMaxima} algorithm using
+	 * {@link TreePathMaxima#computeHeaviestEdgeInTreePaths(Graph, EdgeWeightFunc, Queries)}.
+	 *
+	 * @author Barak Ugav
+	 */
+	static class Queries {
+		private final IntList qs;
+
+		/**
+		 * Create an empty queries container.
+		 */
+<span class="fc" id="L60">		public Queries() {</span>
+<span class="fc" id="L61">			qs = new IntArrayList();</span>
+<span class="fc" id="L62">		}</span>
+
+		/**
+		 * Add a query for the heaviest edge in a tree between two vertices.
+		 *
+		 * @param u the first vertex
+		 * @param v the second vertex
+		 */
+		public void addQuery(int u, int v) {
+<span class="fc" id="L71">			qs.add(u);</span>
+<span class="fc" id="L72">			qs.add(v);</span>
+<span class="fc" id="L73">		}</span>
+
+		/**
+		 * Get a query by index.
+		 *
+		 * @param idx index of the query. Must be in range {@code [0, size())}
+		 * @return pair with the two vertices of the query
+		 * @throws IndexOutOfBoundsException if {@code idx &lt; 0} or {@code idx &gt;= size()}
+		 */
+		public IntIntPair getQuery(int idx) {
+<span class="fc" id="L83">			return IntIntPair.of(qs.getInt(idx * 2), qs.getInt(idx * 2 + 1));</span>
+		}
+
+		/**
+		 * Get the number of queries in this container.
+		 *
+		 * @return the number of queries in this container
+		 */
+		public int size() {
+<span class="fc" id="L92">			return qs.size() / 2;</span>
+		}
+
+		/**
+		 * Clear the container from all existing queries.
+		 */
+		public void clear() {
+<span class="nc" id="L99">			qs.clear();</span>
+<span class="nc" id="L100">		}</span>
+
+	}
+
+	/**
+	 * Create a new tree path maxima algorithm builder.
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link TreePathMaxima}
+	 * object.
+	 *
+	 * @return a new builder that can build {@link TreePathMaxima} objects
+	 */
+	static TreePathMaxima.Builder newBuilder() {
+<span class="nc" id="L113">		return TreePathMaximaHagerup::new;</span>
+	}
+
+	/**
+	 * A builder for {@link TreePathMaxima} objects.
+	 *
+	 * @see TreePathMaxima#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder {
+
+		/**
+		 * Create a new algorithm object for tree path maxima computation.
+		 *
+		 * @return a new tree path maxima algorithm
+		 */
+		TreePathMaxima build();
+	}
+
+	/**
+	 * Verify that the given edges actually form an MST of a graph.
+	 * &lt;p&gt;
+	 * The verification is done by computing for each original edge in the graph the
+	 * maximum edge in the given MST. If all of the edges which are not in the MST
+	 * have a greater weight than the maximum one in the path of the MST, the MST is
+	 * valid.
+	 *
+	 * @param g        an undirected graph
+	 * @param w        an edge weight function
+	 * @param mstEdges collection of edges that form an MST
+	 * @param tpmAlgo  tree path maximum algorithm, used for verification
+	 * @return {@code true} if the collection of edges form an MST of {@code g},
+	 *         else {@code false}
+	 */
+	public static boolean verifyMST(UGraph g, EdgeWeightFunc w, IntCollection mstEdges, TreePathMaxima tpmAlgo) {
+<span class="fc" id="L148">		int n = g.vertices().size();</span>
+<span class="fc" id="L149">		UGraph mst = new GraphArrayUndirected(n);</span>
+<span class="fc" id="L150">		Weights.Int edgeRef = mst.addEdgesWeights(&quot;edgeRef&quot;, int.class);</span>
+<span class="fc bfc" id="L151" title="All 2 branches covered.">		for (IntIterator it = mstEdges.iterator(); it.hasNext();) {</span>
+<span class="fc" id="L152">			int e = it.nextInt();</span>
+<span class="fc" id="L153">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+<span class="fc" id="L154">			int ne = mst.addEdge(u, v);</span>
+<span class="fc" id="L155">			edgeRef.set(ne, e);</span>
+<span class="fc" id="L156">		}</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">		if (!Trees.isTree(mst))</span>
+<span class="fc" id="L158">			return false;</span>
+
+<span class="fc" id="L160">		EdgeWeightFunc w0 = e -&gt; w.weight(edgeRef.getInt(e));</span>
+<span class="fc" id="L161">		TreePathMaxima.Queries queries = new TreePathMaxima.Queries();</span>
+<span class="fc bfc" id="L162" title="All 2 branches covered.">		for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
+<span class="fc" id="L163">			int e = it.nextInt();</span>
+<span class="fc" id="L164">			queries.addQuery(g.edgeSource(e), g.edgeTarget(e));</span>
+<span class="fc" id="L165">		}</span>
+<span class="fc" id="L166">		int[] tpmResults = tpmAlgo.computeHeaviestEdgeInTreePaths(mst, w0, queries);</span>
+
+<span class="fc" id="L168">		int i = 0;</span>
+<span class="fc bfc" id="L169" title="All 2 branches covered.">		for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
+<span class="fc" id="L170">			int e = it.nextInt();</span>
+<span class="fc" id="L171">			int mstEdge = tpmResults[i++];</span>
+<span class="pc bpc" id="L172" title="1 of 4 branches missed.">			if (mstEdge == -1 || w.weight(e) &lt; w0.weight(mstEdge))</span>
+<span class="fc" id="L173">				return false;</span>
+<span class="fc" id="L174">		}</span>
+<span class="fc" id="L175">		return true;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -48,5 +48,41 @@ public interface UGraph extends Graph {
 <span class="fc" id="L48">		return degreeOut(v);</span>
 	}
 
+	/**
+	 * Create an undirected graph builder.
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link DiGraph}
+	 * object.
+	 *
+	 * @return a new builder that can build {@link DiGraph} objects
+	 */
+	static UGraph.Builder newBuilder() {
+<span class="fc" id="L60">		return new GraphBuilderImpl.ArrayUndirected();</span>
+
+	}
+
+	/**
+	 * A builder for {@link UGraph} objects.
+	 *
+	 * @see UGraph#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder extends Graph.Builder {
+
+		/**
+		 * Create a new undirected graph.
+		 *
+		 * @return a new undirected graph with the builder options
+		 */
+		@Override
+		UGraph build();
+
+		@Override
+		UGraph.Builder setVerticesNum(int n);
+
+		@Override
+		UGraph.Builder setEdgesIDStrategy(Class&lt;? extends IDStrategy&gt; edgesIDStrategy);
+	}
+
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -51,5 +51,53 @@ public interface MaximumMatchingWeighted extends MaximumMatching {
 <span class="fc" id="L51">		return computeMaximumMatching(g, e -&gt; 1);</span>
 	}
 
+	/**
+	 * Create a new maximum weighted matching algorithm builder.
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link MaximumMatchingWeighted}
+	 * object.
+	 *
+	 * @return a new builder that can build {@link MaximumMatchingWeighted}
+	 *         objects
+	 */
+	static MaximumMatchingWeighted.Builder newBuilder() {
+<span class="nc" id="L64">		return new MaximumMatchingWeighted.Builder() {</span>
+
+<span class="nc" id="L66">			boolean isBipartite = false;</span>
+
+			@Override
+			public MaximumMatchingWeighted build() {
+<span class="nc bnc" id="L70" title="All 2 branches missed.">				return isBipartite ? new MaximumMatchingWeightedBipartiteHungarianMethod()</span>
+<span class="nc" id="L71">						: new MaximumMatchingWeightedGabow1990();</span>
+			}
+
+			@Override
+			public Builder setBipartite(boolean bipartite) {
+<span class="nc" id="L76">				isBipartite = bipartite;</span>
+<span class="nc" id="L77">				return this;</span>
+			}
+		};
+	}
+
+	/**
+	 * A builder for {@link MaximumMatchingWeighted} objects.
+	 *
+	 * @see MaximumMatchingWeighted#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder extends MaximumMatching.Builder {
+
+		/**
+		 * Create a new maximum weighted matching algorithm object.
+		 *
+		 * @return a new maximum weighted matching algorithm
+		 */
+		@Override
+		MaximumMatchingWeighted build();
+
+		@Override
+		MaximumMatchingWeighted.Builder setBipartite(boolean bipartite);
+	}
+
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

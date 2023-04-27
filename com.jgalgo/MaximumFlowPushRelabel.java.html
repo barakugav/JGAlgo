@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MaximumFlowPushRelabel.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">MaximumFlowPushRelabel.java</span></div><h1>MaximumFlowPushRelabel.java</h1><pre class="source lang-java linenums">package com.jgalgo;
+
+import java.util.BitSet;
+
+import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
+import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
+
+/**
+ * The push-relabel maximum flow algorithm with FIFO ordering.
+ * &lt;p&gt;
+ * The push-relabel algorithm maintain a &quot;preflow&quot; and gradually converts it
+ * into a maximum flow by moving flow locally between neighboring nodes using
+ * &lt;i&gt;push&lt;/i&gt; operations under the guidance of an admissible network maintained
+ * by &lt;i&gt;relabel&lt;/i&gt; operations.
+ * &lt;p&gt;
+ * Different variants of the push relabel algorithm exists, mostly different in
+ * the order the vertices with excess (more in-going than out-going flow) are
+ * examined. This implementation order these vertices in a first-in-first-out
+ * (FIFO) order, and achieve a running time of {@code O(n}&lt;sup&gt;3&lt;/sup&gt;{@code )}
+ * using linear space.
+ * &lt;p&gt;
+ * Heuristics are crucial for the practical running time of push-relabel
+ * algorithm, and this implementation uses the 'global relabeling' and 'gap'
+ * heuristics.
+ * &lt;p&gt;
+ * This algorithm can be implemented with better time theoretical bound using
+ * {@link DynamicTree}, but in practice it has little to non advantages. See
+ * {@link MaximumFlowDinicDynamicTrees}.
+ *
+ * @see &lt;a href=
+ *      &quot;https://en.wikipedia.org/wiki/Push%E2%80%93relabel_maximum_flow_algorithm&quot;&gt;Wikipedia&lt;/a&gt;
+ * @see MaximumFlowPushRelabelToFront
+ * @see MaximumFlowPushRelabelHighestFirst
+ * @see MaximumFlowPushRelabelLowestFirst
+ * @author Barak Ugav
+ */
+public class MaximumFlowPushRelabel implements MaximumFlow {
+
+	/**
+	 * Create a new maximum flow algorithm object.
+	 */
+<span class="fc" id="L42">	public MaximumFlowPushRelabel() {</span>
+<span class="fc" id="L43">	}</span>
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @throws IllegalArgumentException if the graph is not directed
+	 */
+	@Override
+	public double computeMaximumFlow(Graph g, FlowNetwork net, int source, int sink) {
+<span class="pc bpc" id="L52" title="1 of 2 branches missed.">		if (!(g instanceof DiGraph))</span>
+<span class="nc" id="L53">			throw new IllegalArgumentException(&quot;only directed graphs are supported&quot;);</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">		if (net instanceof FlowNetwork.Int) {</span>
+<span class="fc" id="L55">			return new WorkerInt((DiGraph) g, (FlowNetwork.Int) net, source, sink).computeMaxFlow();</span>
+		} else {
+<span class="fc" id="L57">			return new WorkerDouble((DiGraph) g, net, source, sink).computeMaxFlow();</span>
+		}
+	}
+
+	private static class WorkerDouble extends MaximumFlowPushRelabelAbstract.WorkerDouble {
+
+		final ActiveQueue active;
+
+		WorkerDouble(DiGraph gOrig, FlowNetwork net, int source, int sink) {
+<span class="fc" id="L66">			super(gOrig, net, source, sink);</span>
+<span class="fc" id="L67">			active = new ActiveQueue(this);</span>
+<span class="fc" id="L68">		}</span>
+
+		@Override
+		void push(int e, double f) {
+<span class="fc" id="L72">			super.push(e, f);</span>
+<span class="fc" id="L73">			active.afterPush(e);</span>
+<span class="fc" id="L74">		};</span>
+
+		@Override
+		void discharge(int u) {
+<span class="fc" id="L78">			super.discharge(u);</span>
+<span class="fc" id="L79">			active.afterDischarge(u);</span>
+<span class="fc" id="L80">		}</span>
+
+		@Override
+		boolean hasMoreVerticesToDischarge() {
+<span class="fc bfc" id="L84" title="All 2 branches covered.">			return !active.queue.isEmpty();</span>
+		}
+
+		@Override
+		int nextVertexToDischarge() {
+<span class="fc" id="L89">			return active.queue.dequeueInt();</span>
+		}
+	}
+
+	private static class WorkerInt extends MaximumFlowPushRelabelAbstract.WorkerInt {
+
+		final ActiveQueue active;
+
+		WorkerInt(DiGraph gOrig, FlowNetwork.Int net, int source, int sink) {
+<span class="fc" id="L98">			super(gOrig, net, source, sink);</span>
+<span class="fc" id="L99">			active = new ActiveQueue(this);</span>
+<span class="fc" id="L100">		}</span>
+
+		@Override
+		void push(int e, int f) {
+<span class="fc" id="L104">			super.push(e, f);</span>
+<span class="fc" id="L105">			active.afterPush(e);</span>
+<span class="fc" id="L106">		};</span>
+
+		@Override
+		void discharge(int u) {
+<span class="fc" id="L110">			super.discharge(u);</span>
+<span class="fc" id="L111">			active.afterDischarge(u);</span>
+<span class="fc" id="L112">		}</span>
+
+		@Override
+		boolean hasMoreVerticesToDischarge() {
+<span class="fc bfc" id="L116" title="All 2 branches covered.">			return !active.queue.isEmpty();</span>
+		}
+
+		@Override
+		int nextVertexToDischarge() {
+<span class="fc" id="L121">			return active.queue.dequeueInt();</span>
+		}
+	}
+
+	private static class ActiveQueue {
+
+		private final DiGraph g;
+		final BitSet isActive;
+		final IntPriorityQueue queue;
+
+<span class="fc" id="L131">		ActiveQueue(MaximumFlowPushRelabelAbstract.Worker worker) {</span>
+<span class="fc" id="L132">			g = worker.g;</span>
+<span class="fc" id="L133">			int n = g.vertices().size();</span>
+<span class="fc" id="L134">			isActive = new BitSet(n);</span>
+<span class="fc" id="L135">			queue = new IntArrayFIFOQueue();</span>
+
+			// set source and sink as 'active' to prevent them from entering the active
+			// queue
+<span class="fc" id="L139">			isActive.set(worker.source);</span>
+<span class="fc" id="L140">			isActive.set(worker.sink);</span>
+<span class="fc" id="L141">		}</span>
+
+		void afterPush(int e) {
+<span class="fc" id="L144">			int v = g.edgeTarget(e);</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">			if (!isActive.get(v)) {</span>
+<span class="fc" id="L146">				isActive.set(v);</span>
+<span class="fc" id="L147">				queue.enqueue(v);</span>
+			}
+<span class="fc" id="L149">		}</span>
+
+		void afterDischarge(int u) {
+<span class="fc" id="L152">			isActive.clear(u);</span>
+<span class="fc" id="L153">		}</span>
+
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

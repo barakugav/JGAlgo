@@ -15,7 +15,7 @@ import java.util.Comparator;
  * {@code decreaseKey()}.
  *
  * &lt;pre&gt; {@code
- * Heap&lt;Integer&gt; h = ...;
+ * Heap&lt;Integer&gt; h = Heap.newBuilder().build();
  * h.insert(5);
  * h.insert(10);
  * h.insert(1);
@@ -33,6 +33,7 @@ import java.util.Comparator;
  * assert h.size() == 2;
  * }&lt;/pre&gt;
  *
+ * @param &lt;E&gt; the elements type
  * @see &lt;a href=
  *      &quot;https://en.wikipedia.org/wiki/Heap_(data_structure)&quot;&gt;Wikipedia&lt;/a&gt;
  * @see HeapReferenceable
@@ -88,14 +89,25 @@ public interface Heap&lt;E&gt; extends Collection&lt;E&gt; {
 	public Comparator&lt;? super E&gt; comparator();
 
 	/**
+	 * Create a new heaps builder.
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link Heap} object.
+	 *
+	 * @return a new builder that can build {@link Heap} objects
+	 */
+	static Heap.Builder newBuilder() {
+<span class="nc" id="L99">		return HeapBinary::new;</span>
+	}
+
+	/**
 	 * Builder for heaps.
 	 * &lt;p&gt;
 	 * Used to change heaps implementations which are used as black box by some
 	 * algorithms.
 	 *
+	 * @see Heap#newBuilder()
 	 * @author Barak Ugav
 	 */
-	@FunctionalInterface
 	public static interface Builder {
 		/**
 		 * Build a new heap with the given comparator.
@@ -113,7 +125,7 @@ public interface Heap&lt;E&gt; extends Collection&lt;E&gt; {
 		 * @return the newly constructed heap
 		 */
 		default &lt;E&gt; Heap&lt;E&gt; build() {
-<span class="nc" id="L116">			return build(null);</span>
+<span class="nc" id="L128">			return build(null);</span>
 		}
 	}
 

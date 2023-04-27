@@ -16,7 +16,7 @@
  * @see &lt;a href=&quot;https://en.wikipedia.org/wiki/Link/cut_tree&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
  */
-<span class="fc" id="L19">public class DynamicTreeSplayInt implements DynamicTree {</span>
+<span class="fc" id="L19">class DynamicTreeSplayInt implements DynamicTree {</span>
 
 	private final int rootWeight;
 	private final SplayTree.SplayImpl&lt;Object, SplayNode&gt; impl;
@@ -29,7 +29,7 @@
 	 *                    modification that are performed using
 	 *                    {@link #addWeight(com.jgalgo.DynamicTree.Node, double)}.
 	 */
-	public DynamicTreeSplayInt(int weightLimit) {
+	DynamicTreeSplayInt(int weightLimit) {
 <span class="fc" id="L33">		this(new SplayImplWithRelativeWeights(), weightLimit);</span>
 <span class="fc" id="L34">	}</span>
 
@@ -51,7 +51,7 @@
 <span class="fc bfc" id="L51" title="All 2 branches covered.">		if (!n.isLinked())</span>
 <span class="fc" id="L52">			return n;</span>
 <span class="fc" id="L53">		splay(n);</span>
-<span class="fc" id="L54">		return splay(BSTUtils.findMax(n));</span>
+<span class="fc" id="L54">		return splay(BinarySearchTrees.findMax(n));</span>
 	}
 
 	@Override
@@ -352,6 +352,11 @@
 <span class="fc" id="L352">			return w;</span>
 		}
 
+	}
+
+	@Override
+	public &lt;Ext extends DynamicTreeExtension&gt; Ext getExtension(Class&lt;Ext&gt; extensionType) {
+<span class="nc" id="L359">		return null;</span>
 	}
 
 }
