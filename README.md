@@ -13,7 +13,7 @@ The library runs on Java 11 or higher, and it is installed using Maven (WIP).
 The implementations in this library are **fast** ([Benchmarks](https://github.com/barakugav/JGAlgo/actions/workflows/benchmarks.yaml)):
 - All underlying building blocks of the library are primitives
 - No costly hash maps are used, just plain primitive arrays, yielding smaller memory footprint and better cache hit rates
-- Extensive use of [fastutil](https://fastutil.di.unimi.it/) for all collections used
+- Extensive use of [fastutil](https://fastutil.di.unimi.it/) for all collections
 - Memory allocations are postpone and reused by algorithms objects
 
 **Notice:** This project is still under active development and does not guarantee a stable API.
@@ -24,7 +24,7 @@ A large variety of algorithm are still needed for the library. If you are passio
 
 ## Graph API
 
-The most basic object in the library is a [Graph](https://barakugav.github.io/JGAlgo/com/jgalgo/Graph.html). A graph consist of vertices and edges (directed or undirected) connecting between pairs of vertices, all represented by `int` primitive IDs. Algorithms such as [Dijkstra shortest path algorithm](https://barakugav.github.io/JGAlgo/com/jgalgo/SSSPDijkstra.html) accept a graph as an input and perform some computation on it. Here is a snippet creating a [directed graph](https://barakugav.github.io/JGAlgo/com/jgalgo/DiGraph.html) with three vertices and edges with real values weights, and computing the shortest paths from a source vertex using Dijkstra's algorithm:
+The most basic object in the library is a [Graph](https://barakugav.github.io/JGAlgo/com/jgalgo/Graph.html). A graph consist of vertices and edges (directed or undirected) connecting between pairs of vertices, all represented by `int` primitive IDs. Algorithms such as [Dijkstra shortest path algorithm](https://barakugav.github.io/JGAlgo/com/jgalgo/SSSPDijkstra.html) accept a graph as an input and perform some computation on it. Here is a snippet creating a [directed graph](https://barakugav.github.io/JGAlgo/com/jgalgo/DiGraph.html) with three vertices and edges with real values weights, and computing the shortest paths from a source vertex:
 
 ```java
 /* Create a directed graph with three vertices and edges between them */
