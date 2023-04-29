@@ -5,7 +5,6 @@ import java.util.BitSet;
 
 import com.jgalgo.Utils.IterPickable;
 
-import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 

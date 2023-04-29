@@ -3,7 +3,6 @@ package com.jgalgo;
 import java.util.BitSet;
 import java.util.NoSuchElementException;
 
-import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
