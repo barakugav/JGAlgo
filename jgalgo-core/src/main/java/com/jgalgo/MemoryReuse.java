@@ -2,7 +2,6 @@ package com.jgalgo;
 
 import java.util.Arrays;
 import java.util.function.Supplier;
-
 import it.unimi.dsi.fastutil.doubles.DoubleArrays;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -71,5 +70,8 @@ class MemoryReuse {
 
 	static final EdgeIter[] EmptyEdgeIterArr = new EdgeIter[0];
 	static final IntList[] EmptyIntListArr = new IntList[0];
+	static final UGraph[] EmptyUGraphArr = new UGraph[0];
+	static final Weights.Double[] EmptyWeightsDoubleArr = new Weights.Double[0];
+	static final TreePathMaxima.Queries[] EmptyTpmQueriesArr = new TreePathMaxima.Queries[0];
 
 }
