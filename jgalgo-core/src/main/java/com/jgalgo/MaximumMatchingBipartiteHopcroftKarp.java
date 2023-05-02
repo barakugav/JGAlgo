@@ -13,8 +13,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  * Hopcroft–Karp maximum unweighted matching algorithm for undirected bipartite
  * graphs.
  * <p>
- * The algorithm runs in {@code O(m} <span>&#8730;</span> {@code n)} and it uses
- * linear space.
+ * The algorithm runs in \(O(m \sqrt{n})\) and it uses linear space.
  * <p>
  * Based on "A n^5/2 Algorithm for Maximum Matchings in Bipartite Graphs" by J.
  * Hopcroft and R. Karp (1973).

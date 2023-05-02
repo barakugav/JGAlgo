@@ -4,7 +4,7 @@ package com.jgalgo;
  * A discrete directed graph with vertices and edges.
  * <p>
  * An extension to the {@link Graph} interface, where edges are directed, namely
- * an edge {@code e(u, v)} will appear in the iteration of {@code edgesOut(u)}
+ * an edge \(e(u, v)\) will appear in the iteration of {@code edgesOut(u)}
  * and {@code edgesIn(v)} and will not appear in the iteration of
  * {@code edgesOut(v)} and {@code edgesIn(u)}.
  * <p>

@@ -14,9 +14,9 @@ import it.unimi.dsi.fastutil.objects.ObjectIntPair;
 /**
  * Hagerup's Tree Path Maxima (TPM) linear time algorithm.
  * <p>
- * The algorithm runs in {@code O(n + m)} where {@code n} is the number of
- * vertices in the tree and {@code m} is the number of queries. It also uses
- * {@code O(n + m)} space.
+ * The algorithm runs in \(O(n + m)\) where \(n\) is the number of
+ * vertices in the tree and \(m\) is the number of queries. It also uses
+ * \(O(n + m)\) space.
  * <p>
  * Based on 'Linear verification for spanning trees' by J Komlos (1985), 'A
  * Simpler Minimum Spanning Tree Verification Algorithm' by V King (1997) and
@@ -43,8 +43,8 @@ public class TreePathMaximaHagerup implements TreePathMaxima {
 	 * Some operations on integers such such as popcount
 	 * ({@link Integer#bitCount(int)}) or ctz
 	 * ({@link Integer#numberOfTrailingZeros(int)}) are assumed to be implemented in
-	 * {@code O(1)} by the algorithm. According to theoretical papers its possible
-	 * to implement this operations in 'real' {@code O(1)} with lookup tables. In
+	 * \(O(1)\) by the algorithm. According to theoretical papers its possible
+	 * to implement this operations in 'real' \(O(1)\) with lookup tables. In
 	 * practice, integers are 32bit numbers and all such operations are fast without
 	 * any lookup tables.
 	 * <p>

@@ -16,7 +16,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  * the order the vertices with excess (more in-going than out-going flow) are
  * examined. This implementation order these vertices by lowest-first order,
  * namely it examine vertices with low 'label' first, and achieve a running
- * time of {@code O(n}<sup>2</sup> {@code m)} using linear space.
+ * time of \(O(n^2 m)\) using linear space.
  * <p>
  * Heuristics are crucial for the practical running time of push-relabel
  * algorithm, and this implementation uses the 'global relabeling' and 'gap'

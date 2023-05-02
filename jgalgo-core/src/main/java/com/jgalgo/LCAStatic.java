@@ -5,9 +5,9 @@ package com.jgalgo;
  * <p>
  * The lowest common ancestor of two vertices in a tree is the vertex that
  * appear in both vertices paths to the root (common ancestor), and its farthest
- * from the root (lowest). Given a tree {@code G=(V,E)}, we would like to pre
+ * from the root (lowest). Given a tree \(G=(V,E)\), we would like to pre
  * process it and then answer queries of the type "what is the lower common
- * ancestor of two vertices {@code u} and {@code v}?".
+ * ancestor of two vertices \(u\) and \(v\)?".
  * <p>
  * Most implementation of this interface achieve linear or near linear
  * preprocessing time and constant or logarithmic query time.
@@ -62,7 +62,7 @@ public interface LCAStatic {
 		 *
 		 * @param u the first vertex
 		 * @param v the second vertex
-		 * @return the lowest common ancestor of {@code u} and {@code v}
+		 * @return the lowest common ancestor of \(u\) and \(v\)
 		 */
 		public int findLowestCommonAncestor(int u, int v);
 	}

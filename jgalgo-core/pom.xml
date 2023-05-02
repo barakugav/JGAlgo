@@ -4,14 +4,14 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-        <groupId>com.jgalgo</groupId>
-        <artifactId>jgalgo</artifactId>
-        <version>0.1.0-SNAPSHOT</version>
-    </parent>
+		<groupId>com.jgalgo</groupId>
+		<artifactId>jgalgo</artifactId>
+		<version>0.1.0-SNAPSHOT</version>
+	</parent>
 	<artifactId>jgalgo-core</artifactId>
 	<name>JGAlgo - Core</name>
 	<url>https://barakugav.github.io/JGAlgo</url>
-    <packaging>jar</packaging>
+	<packaging>jar</packaging>
 
 	<properties>
 		<!-- Default argLine in case Jacoco agent was not run -->
@@ -52,17 +52,11 @@
 
 	<build>
 		<pluginManagement>
-			<!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent
-			pom) -->
 			<plugins>
-				<!-- clean lifecycle, see
-				https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
 				<plugin>
 					<artifactId>maven-clean-plugin</artifactId>
 					<version>3.1.0</version>
 				</plugin>
-				<!-- default lifecycle, jar packaging: see
-				https://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_jar_packaging -->
 				<plugin>
 					<artifactId>maven-resources-plugin</artifactId>
 					<version>3.0.2</version>
@@ -91,8 +85,6 @@
 					<artifactId>maven-deploy-plugin</artifactId>
 					<version>2.8.2</version>
 				</plugin>
-				<!-- site lifecycle, see
-				https://maven.apache.org/ref/current/maven-core/lifecycles.html#site_Lifecycle -->
 				<plugin>
 					<artifactId>maven-site-plugin</artifactId>
 					<version>3.7.1</version>
@@ -100,6 +92,26 @@
 				<plugin>
 					<artifactId>maven-project-info-reports-plugin</artifactId>
 					<version>3.0.0</version>
+				</plugin>
+
+				<!-- Javadoc plugin -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>3.5.0</version>
+					<configuration>
+						<show>protected</show>
+						<source>${java.version}</source>
+
+						<!-- Allow javascipts for Latex -->
+						<additionalJOption>--allow-script-in-comments</additionalJOption>
+
+						<!-- Include MathJax to present Latex in our documentation -->
+						<header>
+							&lt;script type="text/javascript"
+							src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"&gt;&lt;/script&gt;
+						</header>
+					</configuration>
 				</plugin>
 
 				<!-- Jacoco Coverage -->

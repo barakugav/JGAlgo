@@ -11,10 +11,10 @@ import it.unimi.dsi.fastutil.ints.IntList;
 /**
  * Maximum weighted matching algorithm using {@link SSSP} for bipartite graphs.
  * <p>
- * The running time of this algorithm is {@code O(m n + n^2 log n)} and it uses
+ * The running time of this algorithm is \(O(m n + n^2 \log n)\) and it uses
  * linear space. If a different {@link SSSP} algorithm is provided using
- * {@link #setSsspAlgo(SSSP)} the running time will be {@code O(n)} times the
- * running time of the shortest path algorithm on a graph of size {@code O(n)}.
+ * {@link #setSsspAlgo(SSSP)} the running time will be \(O(n)\) times the
+ * running time of the shortest path algorithm on a graph of size \(O(n)\).
  *
  * @author Barak Ugav
  */

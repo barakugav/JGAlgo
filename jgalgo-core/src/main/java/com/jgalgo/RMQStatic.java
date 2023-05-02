@@ -3,10 +3,10 @@ package com.jgalgo;
 /**
  * Static Range Minimum Query (RMQ) algorithm.
  * <p>
- * Given a sequence of {@code n} comparable objects we would like to perform
+ * Given a sequence of \(n\) comparable objects we would like to perform
  * pre-processing and than be able to answer queries of the type: "what is the
- * minimum element in the range [i, j]?" for any indices {@code 0 < i,j <= n}.
- * Algorithm implementing this interface usually require linear or close to
+ * minimum element in the range \([i, j]\)?" for any indices \(0 \leq i \leq j \leq
+ * n\). Algorithm implementing this interface usually require linear or close to
  * linear processing time and try to achieve constant or logarithmic query time.
  * <p>
  * The sequence itself is never passed to the algorithm, rather a

@@ -13,11 +13,10 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 /**
  * A path of edges in a graph.
  * <p>
- * A path is a list of edges e<sub>1</sub>,e<sub>2</sub>,... where each target
- * vertex of edge e<sub>i</sub> is the source vertex of the next edge
- * e<sub>i+1</sub>. If the graph is undirected the definition of a 'source' and
- * 'target' are interchangeable, and each pair of consecutive edges simply share
- * an endpoint.
+ * A path is a list of edges \(e_1,e_2,\ldots\) where each target vertex of edge
+ * \(e_i\) is the source vertex of the next edge \(e_{i+1}\). If the graph is
+ * undirected the definition of a 'source' and 'target' are interchangeable, and
+ * each pair of consecutive edges simply share an endpoint.
  * <p>
  * The Path object can be treated as a {@link IntList} of edges.
  * <p>
@@ -208,7 +207,7 @@ public class Path extends AbstractIntList {
 	}
 
 	/**
-	 * Find a valid path from {@code u} to {@code v}.
+	 * Find a valid path from \(u\) to \(v\).
 	 * <p>
 	 * This function uses BFS, which will result in the shortest path in the number
 	 * of edges.
@@ -216,7 +215,7 @@ public class Path extends AbstractIntList {
 	 * @param g a graph
 	 * @param u source vertex
 	 * @param v target vertex
-	 * @return a path from {@code u} to {@code v}, or {@code null} if no such path
+	 * @return a path from \(u\) to \(v\), or {@code null} if no such path
 	 *         was found
 	 */
 	public static Path findPath(Graph g, final int u, final int v) {

@@ -16,10 +16,10 @@ import it.unimi.dsi.fastutil.ints.IntLists;
  * the heap that is used to order the out going edges until it reaches a certain
  * size limit. Once the heap reached the limit, we start Prim's algorithm from
  * another vertex until the new heap reaches the limit, and repeat that until we
- * have a spanning forest. Than, we <i>contract</i> each forest to a single
+ * have a spanning forest. Than, we <i>contract</i> each tree to a single
  * super vertex, and we advance to the next iteration.
  * <p>
- * The algorithm runs in {@code O(m log* n)} time and uses linear space. In
+ * The algorithm runs in \(O(m \log^* n)\) time and uses linear space. In
  * practice, {@link MSTPrim} usually out-preform this algorithm. Note that only
  * undirected graphs are supported.
  * <p>

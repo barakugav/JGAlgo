@@ -3,7 +3,7 @@ package com.jgalgo;
 /**
  * An algorithm that compute all pairs shortest path (APSP) in a graph.
  * <p>
- * The regular {@link SSSP} can be used multiple times to achieve the same
+ * The regular {@link SSSP} can be used \(n\) times to achieve the same
  * result, but it may be more efficient to use a APSP algorithm in the first
  * place.
  *

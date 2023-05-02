@@ -8,12 +8,11 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  * Dial's algorithm for Single Source Shortest Path for positive integer
  * weights.
  * <p>
- * The algorithm runs in {@code O(n + m + D)} where {@code D} is the maximum
+ * The algorithm runs in \(O(n + m + D)\) where \(D\) is the maximum
  * distance, or the sum of heaviest n-1 edges if the maximum distance is not
  * known. It takes advantage of the fact that a heap for integers can be
- * implemented using buckets, one for each weight. Such a heap require {@code D}
- * buckets, and therefore the algorithm running time and space depends on
- * {@code D}.
+ * implemented using buckets, one for each weight. Such a heap require \(D\)
+ * buckets, and therefore the algorithm running time and space depends on \(D\).
  * <p>
  * This algorithm should be used in case the maximal distance is known in
  * advance, and its small. For example, its used by {@link SSSPDial} as a

@@ -1,7 +1,7 @@
 package com.jgalgo;
 
 /**
- * Dynamic tree data structure that support link/cut operations.
+ * Dynamic tree data structure that support {@code link} and {@code cut} operations.
  * <p>
  * The dynamic tree data structure is a set of nodes forming a forest and
  * support the following operations:
@@ -33,10 +33,10 @@ public interface DynamicTree {
 	public Node makeTree();
 
 	/**
-	 * Find the root of the tree containing {@code v}
+	 * Find the root of the tree containing \(v\).
 	 *
 	 * @param v a node
-	 * @return the root of the tree containing {@code v}
+	 * @return the root of the tree containing \(v\)
 	 */
 	public Node findRoot(Node v);
 
@@ -44,13 +44,13 @@ public interface DynamicTree {
 	 * Find the minimum edge on the path from a node to it's tree root.
 	 *
 	 * @param v a node
-	 * @return the minimum edge from {@code v} to it's tree root, or {@code null} if
+	 * @return the minimum edge from \(v\) to it's tree root, or {@code null} if
 	 *         no such edge exists
 	 */
 	public MinEdge findMinEdge(Node v);
 
 	/**
-	 * Add a weight to all of the edges from {@code v} to it's tree root
+	 * Add a weight to all of the edges from \(v\) to it's tree root.
 	 *
 	 * @param v a node
 	 * @param w a weight to add

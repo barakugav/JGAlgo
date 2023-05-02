@@ -11,8 +11,8 @@ import java.util.Arrays;
  * any pair of consecutive elements is always +1/-1, and
  * {@link RMQStaticPlusMinusOne} can be used.
  * <p>
- * The algorithm require preprocessing of {@code O(n)} time and space and answer
- * queries in {@code O(1)} time.
+ * The algorithm require preprocessing of \(O(n)\) time and space and answer
+ * queries in \(O(1)\) time.
  * <p>
  * Based on 'Fast Algorithms for Finding Nearest Common Ancestors' by D. Harel,
  * R. Tarjan (1984).

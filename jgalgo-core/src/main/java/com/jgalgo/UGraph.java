@@ -5,7 +5,7 @@ package com.jgalgo;
  * <p>
  * An extension to the {@link Graph} interface, where edges are undirected,
  * namely
- * an edge {@code e(u, v)} will appear in the iteration of {@code edgesOut(u)},
+ * an edge \(e(u, v)\) will appear in the iteration of {@code edgesOut(u)},
  * {@code edgesIn(v)}, {@code edgesOut(v)} and {@code edgesIn(u)}. Also
  * {@link #edgesOut(int)} and {@link #edgesIn(int)} are equivalent for the same
  * vertex, same for {@link #degreeIn(int)} and {@link #degreeOut(int)}, and

@@ -8,18 +8,18 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  * The Recursive Largest First coloring algorithm.
  * <p>
  * The Recursive Largest First (RLF) coloring algorithm assign colors to
- * vertices in the following way: identify a maximal independent set S, assign
- * to S a new color, repeat as long as there are uncolored vertices. The maximal
- * independent set is chosen in a greedy fashion; the vertex with the maximum
- * number of uncolored vertices is first added to S, than vertices are added one
- * after another by choosing the vertex with maximum number of neighbors
- * adjacent to vertices in S, until no more vertices can be added to S (all
- * uncolored vertices are adjacent to vertices in S).
+ * vertices in the following way: identify a maximal independent set \(S\), assign
+ * to \(S\) a new color, repeat as long as there are uncolored vertices. The
+ * maximal independent set is chosen in a greedy fashion; the vertex with the
+ * maximum number of uncolored vertices is first added to \(S\), than vertices are
+ * added one after another by choosing the vertex with maximum number of
+ * neighbors adjacent to vertices in \(S\), until no more vertices can be added to
+ * \(S\) (all uncolored vertices are adjacent to vertices in \(S\)).
  * <p>
- * The algorithm runs in time {@code O(m n)}.
+ * The algorithm runs in time \(O(n m)\).
  * <p>
  * Note that the result is an approximate for the minimum number of colors, as
- * coloring is an NP-hard problem.
+ * finding an optimal coloring is an NP-hard problem.
  *
  * @see <a href=
  *      "https://en.wikipedia.org/wiki/Recursive_largest_first_algorithm">Wikipedia</a>

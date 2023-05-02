@@ -7,6 +7,11 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 
 class EulerianTourImpl implements EulerianTourAlgorithm {
 
+	/**
+	 * {@inheritDoc}
+	 * <p>
+	 * The running time and space of this function is \(O(n + m)\).
+	 */
 	@Override
 	public Path computeEulerianTour(Graph g) {
 		return g instanceof DiGraph ? computeTourDirected((DiGraph) g) : computeTourUndirected((UGraph) g);

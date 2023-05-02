@@ -8,15 +8,15 @@ import com.jgalgo.LCADynamicGabowSimple.CharacteristicAncestors;
  * Gabow linear dynamic LCA data structure.
  * <p>
  * The algorithm use {@link LCADynamicGabowSimple} as a base, but uses two
- * layers of bit tricks to remove the {@code O(log^2 n)} factor of the simpler
+ * layers of bit tricks to remove the \(O(\log^2 n)\) factor of the simpler
  * data structure. Each layer have less nodes than the previous one by a factor
- * of {@code O(log n)}, until the simpler data structure is used on
- * {@code O(n / (log^2 n))} nodes. This implementation is much faster in
+ * of \(O(\log n)\), until the simpler data structure is used on
+ * \(O(n / \log^2 n)\) nodes. This implementation is much faster in
  * practice and always should be used over the simpler one.
  * <p>
- * The running time of this algorithm for {@code m} operations is
- * {@code O(m + n)} and it uses linear space. More specifically, the
- * {@link #addLeaf(LCADynamic.Node)} operation is perform in {@code O(1)}
+ * The running time of this algorithm for \(m\) operations is
+ * \(O(n + m)\) and it uses linear space. More specifically, the
+ * {@link #addLeaf(LCADynamic.Node)} operation is perform in \(O(1)\)
  * amortized time and
  * {@link #findLowestCommonAncestor(LCADynamic.Node, LCADynamic.Node)} is
  * perform in constant time.

@@ -26,7 +26,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  * all weights on the path.
  * <p>
  * Using the dynamic trees reduce the running time of the push-relabel algorithm
- * to {@code m n log (n^2 / m)} and linear space. This implementation uses FIFO
+ * to \(O(m n \log (n^2 / m))\) and linear space. This implementation uses FIFO
  * to order the vertices to be examined. Note that this implementation is
  * usually out preformed in practice by simpler variants of the push-relabel
  * algorithm, such as {@link MaximumFlowPushRelabelHighestFirst}.

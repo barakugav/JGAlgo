@@ -17,7 +17,7 @@ import it.unimi.dsi.fastutil.ints.IntIterators;
  * vertices in a linked list, and moving a vertex to the front of the list each
  * time its relabel. Iterating the list actually traverse the vertices in a
  * topological order with respect to the admissible network. The algorithm runs
- * in {@code O(n}<sup>3</sup> {@code )} time and uses linear space.
+ * in \(O(n^3)\) time and uses linear space.
  * <p>
  * Heuristics are crucial for the practical running time of push-relabel
  * algorithm, and this implementation uses the 'global relabeling' and 'gap'

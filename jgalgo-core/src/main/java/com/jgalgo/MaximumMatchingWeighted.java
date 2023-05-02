@@ -5,9 +5,9 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 /**
  * Maximum weighted matching algorithm.
  * <p>
- * Given a graph {@code G=(V,E)}, a matching is a sub set of edges {@code M}
- * such that any vertex in {@code V} have at most one adjacent edge in
- * {@code M}. A maximum matching is a matching with the maximum edges weight sum
+ * Given a graph \(G=(V,E)\), a matching is a sub set of edges \(M\)
+ * such that any vertex in \(V\) have at most one adjacent edge in
+ * \(M\). A maximum matching is a matching with the maximum edges weight sum
  * with respect to some weight function. The 'maximum matching' with out weight
  * is referred as 'maximum cardinality matching'.
  * <p>

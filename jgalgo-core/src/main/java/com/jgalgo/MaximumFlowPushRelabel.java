@@ -15,8 +15,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  * Different variants of the push relabel algorithm exists, mostly different in
  * the order the vertices with excess (more in-going than out-going flow) are
  * examined. This implementation order these vertices in a first-in-first-out
- * (FIFO) order, and achieve a running time of {@code O(n}<sup>3</sup>{@code )}
- * using linear space.
+ * (FIFO) order, and achieve a running time of \(O(n^3)\) using linear space.
  * <p>
  * Heuristics are crucial for the practical running time of push-relabel
  * algorithm, and this implementation uses the 'global relabeling' and 'gap'
@@ -24,7 +23,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  * <p>
  * This algorithm can be implemented with better time theoretical bound using
  * {@link DynamicTree}, but in practice it has little to non advantages. See
- * {@link MaximumFlowDinicDynamicTrees}.
+ * {@link MaximumFlowPushRelabelDynamicTrees}.
  *
  * @see <a href=
  *      "https://en.wikipedia.org/wiki/Push%E2%80%93relabel_maximum_flow_algorithm">Wikipedia</a>

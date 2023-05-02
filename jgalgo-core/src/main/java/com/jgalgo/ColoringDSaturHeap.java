@@ -15,11 +15,11 @@ import java.util.Objects;
  * <p>
  * This implementation differ from {@link ColoringDSatur} as it uses a heap to
  * maintain the uncolored vertices, and perform {@code decreaseKey} operations.
- * The running time of the algorithm is {@code O(m + log n)} assuming the number
+ * The running time of the algorithm is \(O(m + \log n)\) assuming the number
  * of colors is constant.
  * <p>
  * Note that the result is an approximate for the minimum number of colors, as
- * coloring is an NP-hard problem.
+ * finding an optimal coloring is an NP-hard problem.
  *
  * @see <a href="https://en.wikipedia.org/wiki/DSatur">Wikipedia</a>
  * @see ColoringDSatur

@@ -7,18 +7,17 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
 /**
  * Static RMQ for sequences for which the different between any pair of
- * consecutive elements is <span>&#177;</span>{@code 1}.
+ * consecutive elements is \(\pm 1\).
  * <p>
- * The algorithm divide the sequence into blocks of size {@code O((log n) / 2)},
+ * The algorithm divide the sequence into blocks of size \(O(\log n / 2)\),
  * and then create all possible lookup tables of the sub sequences of the
  * smaller blocks. Because the different between any pair of consecutive
- * elements, the number of such blocks is {@code O(} <span>&#8730;</span>
- * {@code n)} and the total space and preprocessing time of all these blocks is
- * {@code O(n)}.
+ * elements, the number of such blocks is \(O(\sqrt{n})\) and the total space and
+ * preprocessing time of all these blocks is \(O(n)\).
  * <p>
  * To answer on queries which does not fall in the same block, the minimum of
  * each block is stored, and {@link RMQStaticPowerOf2Table} is used on the
- * {@code O(n / log n)} elements, which is linear in total.
+ * \(O(n / \log n)\) elements, which is linear in total.
  * <p>
  * This algorithm is used for the static implementation of the lowest common
  * ancestor algorithm, see {@link LCAStaticRMQ}.

@@ -13,13 +13,13 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 /**
  * Howard's algorithm for minimum mean cycle detection.
  * <p>
- * The algorithm runs in {@code O(m N)} and uses linear space, where {@code N}
+ * The algorithm runs in \(O(m N)\) and uses linear space, where \(N\)
  * is product of the out-degrees of all the vertices in the graph. Although this
  * bound is not polynomial, this algorithm perform well in practice. There are
- * other bounds on the time such as {@code O(n m \alpha)} where {@code \alpha}
- * is the number of simple cycles in the graph, or
- * {@code O(n^2 m (MaxW-MinW)/\epsilon)} where {@code MaxW,MinW} are the maximum
- * and minimum edge weight in the graph, and {@code \epsilon} is the precision
+ * other bounds on the time such as \(O(n m \alpha)\) where \(\alpha\) is the number
+ * of simple cycles in the graph, or \(O(n^2 m (MaxW-MinW)/\epsilon)\) where
+ * \(MaxW,MinW\) are the maximum and minimum edge weight in the graph, and
+ * \(\epsilon\) is the precision
  * of the algorithm.
  * <p>
  * Based on 'Efficient Algorithms for Optimal Cycle Mean and Optimum Cost to

@@ -25,7 +25,7 @@ public class Trees {
 	 * Check if an undirected graph is a tree.
 	 * <p>
 	 * An undirected graph is a tree if its connected and contains no cycle,
-	 * therefore {@code n-1} edges.
+	 * therefore \(n-1\) edges.
 	 * <p>
 	 * This method runs in linear time.
 	 *

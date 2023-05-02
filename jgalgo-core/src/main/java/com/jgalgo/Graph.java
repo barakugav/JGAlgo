@@ -9,7 +9,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 /**
  * A discrete graph with vertices and edges.
  * <p>
- * A graph consist of a finite set of vertices {@code V} and edges {@code E}.
+ * A graph consist of a finite set of vertices \(V\) and edges \(E\).
  * Vertices are some objects, and edges are connections between the vertices,
  * for example vertices can be cities and edges could be the roads between them.
  * Edges could be directed or undirected. Weights may be assigned to vertices
@@ -17,19 +17,19 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * Than, questions such as "what is the shortest path between two cities?" might
  * be answered using graph algorithms.
  * <p>
- * Each edge {@code e=(u, v)} in the graph has a <i>source</i>, {@code u}, and a
- * <i>target</i> {@code v}. In undirected graphs the 'source' and 'target' can
+ * Each edge \(e=(u, v)\) in the graph has a <i>source</i>, \(u\), and a
+ * <i>target</i> \(v\). In undirected graphs the 'source' and 'target' can
  * be switched, as the edge is not directed, and we treat the source and target
- * as interchangeable <i>end points</i>. If an edge {@code (u, v)} exist in the
- * graph, we say the vertices {@code u} and {@code v} and <i>neighbors</i>, or
+ * as interchangeable <i>end points</i>. If an edge \((u,v)\) exist in the
+ * graph, we say the vertices \(u\) and \(v\) and <i>neighbors</i>, or
  * <i>adjacent</i>. The edges are usually stored in some list for each vertex,
- * allowing efficient iteration of its edges. The <i>degree</i> of an edges is
+ * allowing efficient iteration of its edges. The <i>degree</i> of a vertex is
  * the number of its edges. In directed graph, we have both <i>in-degree</i> and
  * <i>out-degree</i>, which are the number of edges going in and out the vertex,
  * respectively.
  * <p>
- * Vertices can be added or removed. When a vertex {@code v} is removed, all the
- * edges with {@code v} as one of their end points are removed as well. Edge can
+ * Vertices can be added or removed. When a vertex \(v\) is removed, all the
+ * edges with \(v\) as one of their end points are removed as well. Edges can
  * be added as connection to existing vertices, or removed.
  * <p>
  * Each vertex in the graph is identified by a unique non negative int ID. The
@@ -41,9 +41,9 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * implementation assign new IDs to added edges, or if it rename some of them
  * when the user remove an edge, see {@link #getEdgesIDStrategy()}.
  * <p>
- * The number of vertices, {@code |V|}, is usually denoted as {@code n} in
+ * The number of vertices, \(|V|\), is usually denoted as \(n\) in
  * algorithms time and space complexities. And similarly, the number of edges,
- * {@code |E|}, is usually denoted as {@code m}.
+ * \(|E|\), is usually denoted as \(m\).
  *
  * <pre> {@code
  * // Create a directed graph with three vertices and edges between them
@@ -130,7 +130,7 @@ public interface Graph {
 	 * @see IDStrategy
 	 *
 	 * @param v the vertex identifier to remove
-	 * @throws IndexOutOfBoundsException if {@code v} is not a valid vertex
+	 * @throws IndexOutOfBoundsException if \(v\) is not a valid vertex
 	 *                                   identifier
 	 */
 	void removeVertex(int v);
@@ -155,50 +155,49 @@ public interface Graph {
 	void removeVertices(IntCollection vs);
 
 	/**
-	 * Get the edges whose source is {@code u}.
+	 * Get the edges whose source is \(u\).
 	 *
 	 * <p>
-	 * Get an edge iterator that iterate over all edges whose source is {@code u}.
+	 * Get an edge iterator that iterate over all edges whose source is \(u\).
 	 * In case the graph is undirected, the iterator will iterate over edges whose
-	 * {@code u} is one of their end points.
+	 * \(u\) is one of their end points.
 	 *
 	 * @param u a source vertex
 	 * @return an iterator of all the edges whose source is u
-	 * @throws IndexOutOfBoundsException if {@code u} is not a valid vertex
+	 * @throws IndexOutOfBoundsException if \(u\) is not a valid vertex
 	 *                                   identifier
 	 */
 	EdgeIter edgesOut(int u);
 
 	/**
-	 * Get the edges whose target is {@code v}.
+	 * Get the edges whose target is \(v\).
 	 *
 	 * <p>
-	 * Get an edge iterator that iterate over all edges whose target is {@code v}.
+	 * Get an edge iterator that iterate over all edges whose target is \(v\).
 	 * In case the graph is undirected, the iterator will iterate over edges whose
-	 * {@code v} is one of their end points.
+	 * \(v\) is one of their end points.
 	 *
 	 * @param v a target vertex
-	 * @return an iterator of all the edges whose target is {@code v}
-	 * @throws IndexOutOfBoundsException if {@code v} is not a valid vertex
-	 *                                   identifier
+	 * @return an iterator of all the edges whose target is \(v\)
+	 * @throws IndexOutOfBoundsException if \(v\) is not a valid vertex identifier
 	 */
 	EdgeIter edgesIn(int v);
 
 	/**
-	 * Get the edge whose source is {@code u} and target is {@code v}.
+	 * Get the edge whose source is \(u\) and target is \(v\).
 	 *
 	 * <p>
 	 * If the graph is not directed, the return edge is an edge that its end-points
-	 * are {@code u} and {@code v}.
+	 * are \(u\) and \(v\).
 	 *
 	 * <p>
-	 * In case there are multiple (parallel) edges between {@code u} and {@code v},
+	 * In case there are multiple (parallel) edges between \(u\) and \(v\),
 	 * a single arbitrary one is returned.
 	 *
 	 * @param u a source vertex
 	 * @param v a target vertex
 	 * @return id of the edge or {@code -1} if no such edge exists
-	 * @throws IndexOutOfBoundsException if {@code u} or {@code v} are not valid
+	 * @throws IndexOutOfBoundsException if \(u\) or \(v\) are not valid
 	 *                                   vertices identifiers
 	 */
 	default int getEdge(int u, int v) {
@@ -211,13 +210,13 @@ public interface Graph {
 	}
 
 	/**
-	 * Get the edges whose source is {@code u} and target is {@code v}.
+	 * Get the edges whose source is \(u\) and target is \(v\).
 	 *
 	 * @param u a source vertex
 	 * @param v a target vertex
-	 * @return an iterator of all the edges whose source is {@code u} and target is
-	 *         {@code v}
-	 * @throws IndexOutOfBoundsException if {@code u} or {@code v} are not valid
+	 * @return an iterator of all the edges whose source is \(u\) and target is
+	 *         \(v\)
+	 * @throws IndexOutOfBoundsException if \(u\) or \(v\) are not valid
 	 *                                   vertices identifiers
 	 */
 	EdgeIter getEdges(int u, int v);
@@ -228,7 +227,7 @@ public interface Graph {
 	 * @param u a source vertex
 	 * @param v a target vertex
 	 * @return the new edge identifier
-	 * @throws IndexOutOfBoundsException if {@code u} or {@code v} are not valid
+	 * @throws IndexOutOfBoundsException if \(u\) or \(v\) are not valid
 	 *                                   vertices identifiers
 	 */
 	int addEdge(int u, int v);
@@ -275,7 +274,7 @@ public interface Graph {
 	 * Theses renames can be subscribed using {@link IDStrategy#addIDSwapListener}.
 	 *
 	 * @param u a vertex in the graph
-	 * @throws IndexOutOfBoundsException if {@code u} is not a valid vertex
+	 * @throws IndexOutOfBoundsException if \(u\) is not a valid vertex
 	 *                                   identifier
 	 */
 	default void removeEdgesOf(int u) {
@@ -284,14 +283,14 @@ public interface Graph {
 	}
 
 	/**
-	 * Remove all edges whose source is {@code u}.
+	 * Remove all edges whose source is \(u\).
 	 * <p>
 	 * After removing an edge, the edges ID strategy may rename other edges
 	 * identifiers to maintain its invariants, see {@link #getEdgesIDStrategy()}.
 	 * Theses renames can be subscribed using {@link IDStrategy#addIDSwapListener}.
 	 *
 	 * @param u a vertex in the graph
-	 * @throws IndexOutOfBoundsException if {@code u} is not a valid vertex
+	 * @throws IndexOutOfBoundsException if \(u\) is not a valid vertex
 	 *                                   identifier
 	 */
 	default void removeEdgesOutOf(int u) {
@@ -302,14 +301,14 @@ public interface Graph {
 	}
 
 	/**
-	 * Remove all edges whose target is {@code v}.
+	 * Remove all edges whose target is \(v\).
 	 * <p>
 	 * After removing an edge, the edges ID strategy may rename other edges
 	 * identifiers to maintain its invariants, see {@link #getEdgesIDStrategy()}.
 	 * Theses renames can be subscribed using {@link IDStrategy#addIDSwapListener}.
 	 *
 	 * @param v a vertex in the graph
-	 * @throws IndexOutOfBoundsException if {@code v} is not a valid vertex
+	 * @throws IndexOutOfBoundsException if \(v\) is not a valid vertex
 	 *                                   identifier
 	 */
 	default void removeEdgesInOf(int v) {
@@ -376,7 +375,7 @@ public interface Graph {
 	 *
 	 * @param u a source vertex
 	 * @return the number of edges whose source is u
-	 * @throws IndexOutOfBoundsException if {@code u} is not a valid vertex
+	 * @throws IndexOutOfBoundsException if \(u\) is not a valid vertex
 	 *                                   identifier
 	 */
 	default int degreeOut(int u) {
@@ -393,7 +392,7 @@ public interface Graph {
 	 *
 	 * @param v a target vertex
 	 * @return the number of edges whose target is v
-	 * @throws IndexOutOfBoundsException if {@code v} is not a valid vertex
+	 * @throws IndexOutOfBoundsException if \(v\) is not a valid vertex
 	 *                                   identifier
 	 */
 	default int degreeIn(int v) {

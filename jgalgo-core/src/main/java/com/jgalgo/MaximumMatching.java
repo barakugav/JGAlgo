@@ -5,10 +5,10 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 /**
  * Maximum matching algorithm.
  * <p>
- * Given a graph {@code G=(V,E)}, a matching is a sub set of edges {@code M}
- * such that any vertex in {@code V} have at most one adjacent edge in
- * {@code M}. A maximum matching is a matching with the maximum number of edges
- * in {@code M}.
+ * Given a graph \(G=(V,E)\), a matching is a sub set of edges \(M\)
+ * such that any vertex in \(V\) have at most one adjacent edge in
+ * \(M\). A maximum matching is a matching with the maximum number of edges
+ * in \(M\).
  *
  * @see <a href=
  *      "https://en.wikipedia.org/wiki/Matching_(graph_theory)">Wikipedia</a>

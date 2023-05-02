@@ -6,8 +6,8 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  * Algorithm that calculate a topological order of graph vertices.
  * <p>
  * A topological ordering of a directed graph is a linear ordering of its
- * vertices such that for every directed edge {@code (u, v)}, {@code u} comes
- * before {@code v} in the ordering. A topological ordering exist if and only if
+ * vertices such that for every directed edge \((u,v)\), \(u\) comes
+ * before \(v\) in the ordering. A topological ordering exist if and only if
  * the graph is directed and acyclic (DAG).
  * <p>
  * This algorithm compute the topological ordering of a given DAG graph in
@@ -27,7 +27,7 @@ public class TopologicalOrder {
 	 * This function runs in linear time.
 	 *
 	 * @param g a directed acyclic graph (DAG).
-	 * @return an array of size {@code n} with the vertices of the graph order in
+	 * @return an array of size \(n\) with the vertices of the graph order in
 	 *         the topological order.
 	 * @throws IllegalArgumentException if the graph is not DAG
 	 */

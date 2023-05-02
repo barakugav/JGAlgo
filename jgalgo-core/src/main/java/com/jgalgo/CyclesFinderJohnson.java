@@ -15,8 +15,8 @@ import it.unimi.dsi.fastutil.objects.ObjectIntPair;
 /**
  * Johnson's algorithm for finding all cycles in a directed graph.
  * <p>
- * The algorithm runs in {@code O((n+m)(c+1))} time and {@code O(n + m)} space
- * where {@code c} is the number of simple cycles in the graph.
+ * The algorithm runs in \(O((n+m)(c+1))\) time and \(O(n + m)\) space
+ * where \(c\) is the number of simple cycles in the graph.
  * <p>
  * Based on the paper 'finding all the elementary circuits of a directed graph'
  * by Donald b. Johnson.

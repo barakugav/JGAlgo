@@ -9,17 +9,16 @@ import it.unimi.dsi.fastutil.ints.IntList;
 /**
  * Tree Path Maxima (TPM) algorithm.
  * <p>
- * Given a tree {@code T} and a sequence of vertices pairs
- * (u<sub>1</sub>,v<sub>1</sub>),(u<sub>2</sub>, v<sub>2</sub>),... called
- * <i>queries</i>, the tree path maxima problem is to find for each pair
- * (u<sub>i</sub>, v<sub>i</sub>) the heaviest edge on the path between
- * u<sub>i</sub> and v<sub>i</sub> in {@code T}.
+ * Given a tree \(T\) and a sequence of vertices pairs
+ * \((u_1,v_1),(u_2,v_2),\ldots\) called <i>queries</i>, the tree path maxima
+ * problem is to find for each pair \((u_i,v_i)\) the heaviest edge on the path
+ * between \(u_i\) and \(v_i\) in \(T\).
  * <p>
  * TPM can be used to validate if a spanning tree is minimum spanning tree (MST)
- * or not, by checking for each edge {@code (u, v)} that is not in the tree that
- * it is heavier than the heaviest edge in the path from {@code u} to {@code v}
- * in the tree. If a TPM on {@code n} vertices and {@code m} queries can be
- * answer in {@code O(n + m)} time than an MST can be validated in linear time.
+ * or not, by checking for each edge \((u,v)\) that is not in the tree that
+ * it is heavier than the heaviest edge in the path from \(u\) to \(v\)
+ * in the tree. If a TPM on \(n\) vertices and \(m\) queries can be
+ * answer in \(O(n + m)\) time than an MST can be validated in linear time.
  *
  * @author Barak Ugav
  */
@@ -37,7 +36,7 @@ public interface TreePathMaxima {
 	 * @param queries a sequence of queries as pairs of vertices, each corresponding
 	 *                to a unique simple path in the tree.
 	 * @return array of edges in the same size as the queries container, where the
-	 *         edge in the {@code i}'th entry is the heaviest edge in the tree path
+	 *         edge in the {@code i}-th entry is the heaviest edge in the tree path
 	 *         between the two vertices of the {@code i}'th query.
 	 */
 	public int[] computeHeaviestEdgeInTreePaths(Graph tree, EdgeWeightFunc w, TreePathMaxima.Queries queries);

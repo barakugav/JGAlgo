@@ -4,14 +4,14 @@ package com.jgalgo;
  * An algorithm that assign a color to each vertex in a graph while avoiding
  * identical color for any pair of adjacent vertices.
  * <p>
- * Given a graph {@code G=(V,E)} a valid coloring is a function {@code C:v->c}
- * for any vertex {@code v} in {@code V} where each edge {@code (u, v)} in
- * {@code E} satisfy {@code C(u) != C(v)}. The objective is to minimize the
+ * Given a graph \(G=(V,E)\) a valid coloring is a function \(C:v \rightarrow c\)
+ * for any vertex \(v\) in \(V\) where each edge \((u,v)\) in
+ * \(E\) satisfy \(C(u) \neq C(v)\). The objective is to minimize the
  * total number of different colors. The problem is NP-hard, but various
  * heuristics exists which give decent results for general graphs and optimal
  * results for special cases.
  * <p>
- * Each color is represented as an integer in range {@code [0, colorsNum)}.
+ * Each color is represented as an integer in range \([0, \textit{colorsNum})\).
  *
  * <pre> {@code
  * UGraph g = UGraph.newBuilder().build();

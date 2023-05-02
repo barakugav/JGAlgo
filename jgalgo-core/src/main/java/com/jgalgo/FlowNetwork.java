@@ -4,8 +4,8 @@ package com.jgalgo;
  * Flow on graph edges, with capacities and flows values.
  * <p>
  * A flow network on graph edges is defined as two functions: the capacity
- * function {@code C:E->R} and flow function {@code F:E->R}. The capacity
- * function define how many units of flow an edge can transfer from its
+ * function \(C:E \rightarrow R\) and flow function \( F:E \rightarrow R\). The
+ * capacity function define how many units of flow an edge can transfer from its
  * source to its target. The flow function is the number of units of flow that
  * are currently transferred along the edge. For each edge, the flow must be
  * smaller or equal to its capacity.

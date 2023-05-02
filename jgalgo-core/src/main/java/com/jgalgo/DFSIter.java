@@ -15,8 +15,8 @@ import it.unimi.dsi.fastutil.ints.IntLists;
  * <p>
  * The DFS iterator is used to iterate over the vertices of a graph is a depth
  * first manner, namely it explore as far as possible along each branch before
- * backtracking. The iterator will visit every vertex {@code v} for which there
- * is a path from the source(s) to {@code v}. Each such vertex will be visited
+ * backtracking. The iterator will visit every vertex \(v\) for which there
+ * is a path from the source(s) to \(v\). Each such vertex will be visited
  * exactly once.
  * <p>
  * The graph should not be modified during the DFS iteration.

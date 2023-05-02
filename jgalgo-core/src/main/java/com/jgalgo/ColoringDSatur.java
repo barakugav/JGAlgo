@@ -16,12 +16,12 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * to be colored is the vertex with the highest number of colors in its
  * neighborhood (called saturation degree).
  * <p>
- * The algorithm runs in time {@code O(m n)}, and it could be implemented faster
+ * The algorithm runs in time \(O(n m)\), and it could be implemented faster
  * using a heap with {@code decreaseKey} operation, see
  * {@link ColoringDSaturHeap}.
  * <p>
  * Note that the result is an approximate for the minimum number of colors, as
- * coloring is an NP-hard problem.
+ * finding an optimal coloring is an NP-hard problem.
  *
  * @see <a href="https://en.wikipedia.org/wiki/DSatur">Wikipedia</a>
  * @see ColoringDSaturHeap

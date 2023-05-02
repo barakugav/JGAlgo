@@ -9,7 +9,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 /**
  * Yao's buckets minimum spanning tree algorithm.
  * <p>
- * The algorithm runs in {@code O(m log log n + n log n)} and uses linear space.
+ * The algorithm runs in \(O(m \log \log n + n \log n)\) and uses linear space.
  * Its running time in practice is not the best compared to {@link MSTKruskal}
  * and {@link MSTPrim}. Note that only undirected graphs are supported.
  * <p>

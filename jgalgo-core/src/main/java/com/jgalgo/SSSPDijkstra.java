@@ -6,8 +6,8 @@ import java.util.Arrays;
  * Dijkstra's algorithm for Single Source Shortest Path (SSSP).
  * <p>
  * Compute the shortest paths from a single source to all other vertices in
- * {@code O(m + n log n)} time, using {@link HeapReferenceable} with
- * {@code O(1)} time for
+ * \(O(m + n \log n)\) time, using {@link HeapReferenceable} with
+ * \(O(1)\) time for
  * {@link HeapReferenceable#decreaseKey(HeapReference, Object)} operations.
  * <p>
  * Only positive edge weights are supported. This implementation should be the

@@ -15,14 +15,14 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * A Pairing heap implementation.
  * <p>
  * A pointer based heap implementation that support almost any operation in
- * {@code O(1)} amortized time, except {@link #removeRef(HeapReference)} and
- * {@link #decreaseKey(HeapReference, Object)} which takes {@code O(log n)} time
+ * \(O(1)\) amortized time, except {@link #removeRef(HeapReference)} and
+ * {@link #decreaseKey(HeapReference, Object)} which takes \(O(\log n)\) time
  * amortized.
  * <p>
  * Using this heap, {@link SSSPDijkstra} can be implemented in time
- * {@code O(m + n log n)} rather than {@code O(m log n)} as the
+ * \(O(m + n \log n)\) rather than \(O(m \log n)\) as the
  * {@link #decreaseKey(HeapReference, Object)} operation is performed in
- * {@code O(1)} time amortized.
+ * \(O(1)\) time amortized.
  * <p>
  * Pairing heaps are one of the best pointer based heaps implementations in
  * practice, and should be used as a default choice for the general use case.

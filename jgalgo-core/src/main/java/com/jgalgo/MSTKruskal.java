@@ -17,7 +17,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
  * edge is added to the forest. The algorithm terminate after all edges were
  * examined.
  * <p>
- * The running time of the algorithm is {@code O(m log n)} and it uses linear
+ * The running time of the algorithm is \(O(m \log n)\) and it uses linear
  * time. This algorithm perform good in practice and its running time compete
  * with other algorithms such as {@link MSTPrim}, which have better time bounds
  * in theory. Note that only undirected graphs are supported.
@@ -44,7 +44,7 @@ public class MSTKruskal implements MST {
 	 * [experimental API] Set the implementation of {@link UnionFind} used by this
 	 * algorithm.
 	 *
-	 * @param builder a builder function that accept a number of elements {@code n}
+	 * @param builder a builder function that accept a number of elements \(n\)
 	 *                and create a {@link UnionFind} with IDs {@code 0,1,2,...,n-1}.
 	 */
 	public void experimental_setUnionFindBuilder(IntFunction<? extends UnionFind> builder) {

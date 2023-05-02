@@ -7,7 +7,7 @@ package com.jgalgo;
  * descending nodes in the tree. When an element is accessed, the paths are
  * split and merged so the path from the element to the root will be a single
  * path in the underlying representation. This implementation achieve amortized
- * {@code O(log n)} time for each operation.
+ * \(O(\log n)\) time for each operation.
  * <p>
  * Based on 'A Data Structure for Dynamic Trees' by Sleator, D. D.; Tarjan, R. E
  * (1983), although the original paper did not use splay trees for the

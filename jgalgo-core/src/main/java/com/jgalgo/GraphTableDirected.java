@@ -1,15 +1,16 @@
 package com.jgalgo;
 
 /**
- * A directed graph implementation using 2D table to store all edges.
+ * A directed graph implementation using a two dimensional table to store all
+ * edges.
  * <p>
- * The graph is initialized with a fixed number of vertices, {@code n}, and does
+ * The graph is initialized with a fixed number of vertices, \(n\), and does
  * not support addition or removals of vertices. A fixed sized table of size
  * {@code [n][n]} stores the edges of the graph. The implementation does not
  * support multiple edges with identical source and target.
  * <p>
  * This implementation is efficient for use cases where fast lookups of edge
- * {@code (u, v)} are required, as they can be answered in {@code O(1)} time,
+ * \((u,v)\) are required, as they can be answered in \(O(1)\) time,
  * but it should not be the default choice for a directed graph.
  *
  * @see GraphTableUndirected

@@ -14,14 +14,13 @@ import it.unimi.dsi.fastutil.ints.IntList;
  * <p>
  * The algorithm operate on integer weights and uses the scaling approach.
  * During the scaling iterations, a potential function is maintained, which
- * gives a equivalent weight function with values {@code -1,0,1,2,3,...}. The
+ * gives a equivalent weight function with values \(-1,0,1,2,3,\ldots\). The
  * potential is updated from iteration to iteration, until the full
  * representation of the integer numbers is used, and the real shortest paths
- * and distances are computed. Let {@code N} be the absolute value of the
- * minimum negative number. The algorithm perform {@code log N} iteration, and
- * each iteration is performed in time {@code O(m} <span>&#8730;</span>
- * {@code n)} time. In total, the running time is {@code O(m}
- * <span>&#8730;</span> {@code n log N)}.
+ * and distances are computed. Let \(N\) be the absolute value of the
+ * minimum negative number. The algorithm perform \(O(\log N)\) iteration, and
+ * each iteration is performed in time \(O(m \sqrt{n})\) time. In total, the
+ * running time is \(O(m \sqrt{n} \log N)\).
  * <p>
  * This algorithm is great in practice, and should be used for weights function
  * with integer negative values.

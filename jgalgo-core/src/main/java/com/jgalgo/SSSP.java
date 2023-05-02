@@ -3,9 +3,9 @@ package com.jgalgo;
 /**
  * Single Source Shortest Path algorithm.
  * <p>
- * Given a graph {@code G=(V,E)}, and a weight function {@code w:E->R}, one
- * might ask what is the shortest path from a <i>source</i> vertex {@code s} to
- * all other vertices in {@code V}, where the 'shortest' is defined by comparing
+ * Given a graph \(G=(V,E)\), and a weight function \(w:E \rightarrow R\), one
+ * might ask what is the shortest path from a <i>source</i> vertex to
+ * all other vertices in \(V\), where the 'shortest' is defined by comparing
  * the sum of edges weights of each path. A Single Source Shortest Path (SSSP)
  * is able to compute these shortest paths from a source to any other vertex,
  * along with the distances, which are the shortest paths lengths (weights).
@@ -20,7 +20,7 @@ package com.jgalgo;
  * contain any cycles, and it could be solved in linear time for any weights
  * types
  * using {@link SSSPDag}. Another special case arise when the weight function
- * assign {@code 1} to any edges, and the shortest paths could be computed again
+ * assign \(1\) to any edges, and the shortest paths could be computed again
  * in linear time using {@link SSSPCardinality}.
  *
  * <pre> {@code
@@ -204,7 +204,7 @@ public interface SSSP {
 		 * This method may be used as a hint to choose an {@link SSSP} implementation.
 		 *
 		 * @param maxDistance a maximum distance upper bound on the distance from the
-		 *                  source to any vertex
+		 *                    source to any vertex
 		 * @return this builder
 		 */
 		SSSP.Builder setMaxDistance(double maxDistance);

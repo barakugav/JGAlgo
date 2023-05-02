@@ -16,8 +16,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
  * Dinic's algorithm for maximum flow.
  * <p>
  * The algorithm finds a maximum flow by repetitively finding a blocking flow in
- * the residual network. It runs in {@code O(m n}<sup>2</sup>{@code )} time and
- * use linear space.
+ * the residual network. It runs in \(O(m n^2)\) time and use linear space.
  * <p>
  * Based on the paper 'Algorithm for solution of a problem of maximum flow in a
  * network with power estimation' by Y. A. Dinitz (Dinic).

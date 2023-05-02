@@ -6,13 +6,13 @@ package com.jgalgo;
  * An Eulerian tour is a tour that visits every edge exactly once (allowing for
  * revisiting vertices). For a connected undirected graph, if all vertices have
  * an even degree, an Eulerian cycle will be found. If exactly two vertices have
- * an odd degree, called {@code s,t}, an Eulerian tour that start at {@code s}
- * and ends at {@code t} exists. For any other vertices degrees an Eulerian tour
+ * an odd degree, called \(s,t\), an Eulerian tour that start at \(s\)
+ * and ends at \(t\) exists. For any other vertices degrees an Eulerian tour
  * does not exists. For a strongly connected directed graph, the in-degree and
  * out-degree of each vertex must be equal for an Eulerian cycle to exists. If
- * exactly one vertex {@code s} has one more out-edge than in-edges, and one
- * vertex {@code t} has one more in-edge than out-edges, an Eulerian tour that
- * start at {@code s} and ends at {@code t} exists.
+ * exactly one vertex \(s\) has one more out-edge than in-edges, and one
+ * vertex \(t\) has one more in-edge than out-edges, an Eulerian tour that
+ * start at \(s\) and ends at \(t\) exists.
  *
  * @see <a href="https://en.wikipedia.org/wiki/Eulerian_path">Wikipedia</a>
  * @see TSPMetricMSTAppx
@@ -26,8 +26,6 @@ public interface EulerianTourAlgorithm {
 	 * <p>
 	 * The graph is assumed to be (strongly) connected. Either a cycle or tour will
 	 * be found, depending on the vertices degrees.
-	 * <p>
-	 * The running time and space of this function is {@code O(m + n)}.
 	 *
 	 * @param g a graph
 	 * @return an Eulerian tour that visit all edges of the graph exactly once

@@ -16,7 +16,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
  * {@link HeapReferenceable} and updated its elements using
  * {@link HeapReferenceable#decreaseKey(HeapReference, Object)}.
  * <p>
- * The running time of Prim's algorithm is {@code O(m + n log n)} and it uses
+ * The running time of Prim's algorithm is \(O(m + n \log n)\) and it uses
  * linear space. It's running time is very good it practice and can be used as a
  * first choice for {@link MST} algorithm. Note that only undirected graphs are
  * supported.

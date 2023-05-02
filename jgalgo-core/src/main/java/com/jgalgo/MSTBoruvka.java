@@ -17,7 +17,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  * case the original graph was connected, or when there are no incident edges to
  * the remaining super vertices.
  * <p>
- * The running time of the algorithm is {@code O(m log n)} and it uses linear
+ * The running time of the algorithm is \(O(m \log n)\) and it uses linear
  * space. Note that only undirected graphs are supported.
  * <p>
  * Based on "O jistém problému minimálním" [About a certain minimal problem] by

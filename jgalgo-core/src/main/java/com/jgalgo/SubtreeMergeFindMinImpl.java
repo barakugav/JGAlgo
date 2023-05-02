@@ -6,9 +6,9 @@ import java.util.Comparator;
 /**
  * Implementation of the {@link SubtreeMergeFindMin} data structure.
  * <p>
- * AddLeaf is O(1) amortized, merge is O(log n), addNonTreeEdge is O(1) and
- * findMin is O(1). In total, this data structure support m operations on n
- * nodes in time O(m + n log n).
+ * AddLeaf is \(O(1)\) amortized, merge is \(O(\log n)\), addNonTreeEdge is \(O(1)\)
+ * and findMin is \(O(1)\). In total, this data structure support \(m\) operations
+ * on \(n\) nodes in time \(O(m + n \log n)\).
  *
  * @author Barak Ugav
  */
