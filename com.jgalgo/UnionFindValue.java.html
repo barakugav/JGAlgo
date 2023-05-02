@@ -3,10 +3,8 @@
 /**
  * Union Find with {@code double} values for the elements.
  * &lt;p&gt;
- * This interface is an extension to the {@link UnionFind} interface that
- * support, along with regular operation, value of each elements and addition of
- * some value to all elements of a set using the {@link #addValue(int, double)}
- * method.
+ * This interface is an extension to the {@link UnionFind} interface that support, along with regular operation, value
+ * of each elements and addition of some value to all elements of a set using the {@link #addValue(int, double)} method.
  *
  * &lt;pre&gt; {@code
  * UnionFindValue uf = UnionFindValue.newBuilder().build();
@@ -37,8 +35,8 @@ public interface UnionFindValue extends UnionFind {
 	/**
 	 * Create a new element with a given value.
 	 *
-	 * @param value the value of the new element
-	 * @return identifier of the new element in the union find data structure
+	 * @param  value the value of the new element
+	 * @return       identifier of the new element in the union find data structure
 	 */
 	public int make(double value);
 
@@ -49,14 +47,14 @@ public interface UnionFindValue extends UnionFind {
 	 */
 	@Override
 	default int make() {
-<span class="nc" id="L52">		return make(0);</span>
+<span class="nc" id="L50">		return make(0);</span>
 	}
 
 	/**
 	 * Get the value of an element.
 	 *
-	 * @param x an element in the data structure
-	 * @return value of the element
+	 * @param  x an element in the data structure
+	 * @return   value of the element
 	 */
 	public double getValue(int x);
 
@@ -71,19 +69,18 @@ public interface UnionFindValue extends UnionFind {
 	/**
 	 * Create a new union-find with values data structure builder.
 	 * &lt;p&gt;
-	 * This is the recommended way to instantiate a new {@link UnionFindValue}
-	 * object.
+	 * This is the recommended way to instantiate a new {@link UnionFindValue} object.
 	 *
 	 * @return a new builder that can build {@link UnionFindValue} objects
 	 */
 	static UnionFindValue.Builder newBuilder() {
-<span class="nc" id="L80">		return UnionFindValueArray::new;</span>
+<span class="nc" id="L77">		return UnionFindValueArray::new;</span>
 	}
 
 	/**
 	 * A builder for {@link UnionFindValue} objects.
 	 *
-	 * @see UnionFindValue#newBuilder()
+	 * @see    UnionFindValue#newBuilder()
 	 * @author Barak Ugav
 	 */
 	static interface Builder {

@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Coloring.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">Coloring.java</span></div><h1>Coloring.java</h1><pre class="source lang-java linenums">package com.jgalgo;
 
 /**
- * An algorithm that assign a color to each vertex in a graph while avoiding
- * identical color for any pair of adjacent vertices.
+ * An algorithm that assign a color to each vertex in a graph while avoiding identical color for any pair of adjacent
+ * vertices.
  * &lt;p&gt;
- * Given a graph \(G=(V,E)\) a valid coloring is a function \(C:v \rightarrow c\)
- * for any vertex \(v\) in \(V\) where each edge \((u,v)\) in
- * \(E\) satisfy \(C(u) \neq C(v)\). The objective is to minimize the
- * total number of different colors. The problem is NP-hard, but various
- * heuristics exists which give decent results for general graphs and optimal
- * results for special cases.
+ * Given a graph \(G=(V,E)\) a valid coloring is a function \(C:v \rightarrow c\) for any vertex \(v\) in \(V\) where
+ * each edge \((u,v)\) in \(E\) satisfy \(C(u) \neq C(v)\). The objective is to minimize the total number of different
+ * colors. The problem is NP-hard, but various heuristics exists which give decent results for general graphs and
+ * optimal results for special cases.
  * &lt;p&gt;
  * Each color is represented as an integer in range \([0, \textit{colorsNum})\).
  *
@@ -38,17 +36,16 @@
  * }
  * }&lt;/pre&gt;
  *
- * @see &lt;a href=&quot;https://en.wikipedia.org/wiki/Graph_coloring&quot;&gt;Wikipedia&lt;/a&gt;
+ * @see    &lt;a href=&quot;https://en.wikipedia.org/wiki/Graph_coloring&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
  */
 public interface Coloring {
 
 	/**
-	 * Assign a color to each vertex of the given graph, resulting in a valid
-	 * coloring.
+	 * Assign a color to each vertex of the given graph, resulting in a valid coloring.
 	 *
-	 * @param g a graph
-	 * @return a valid coloring with (hopefully) small number of different colors
+	 * @param  g a graph
+	 * @return   a valid coloring with (hopefully) small number of different colors
 	 */
 	Coloring.Result computeColoring(UGraph g);
 
@@ -69,8 +66,8 @@ public interface Coloring {
 		/**
 		 * Get the color assigned to a vertex.
 		 *
-		 * @param v a vertex identifier in the graph
-		 * @return a color of the vertex, represented as integer
+		 * @param  v a vertex identifier in the graph
+		 * @return   a color of the vertex, represented as integer
 		 */
 		int colorOf(int v);
 
@@ -84,13 +81,13 @@ public interface Coloring {
 	 * @return a new builder that can build {@link Coloring} objects
 	 */
 	static Coloring.Builder newBuilder() {
-<span class="nc" id="L87">		return ColoringDSaturHeap::new;</span>
+<span class="nc" id="L84">		return ColoringDSaturHeap::new;</span>
 	}
 
 	/**
 	 * A builder for {@link Coloring} objects.
 	 *
-	 * @see Coloring#newBuilder()
+	 * @see    Coloring#newBuilder()
 	 * @author Barak Ugav
 	 */
 	static interface Builder {

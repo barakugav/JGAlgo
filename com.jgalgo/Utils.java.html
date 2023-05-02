@@ -14,63 +14,62 @@ import java.util.Objects;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 class Utils {
-	private Utils() {
-	}
+	private Utils() {}
 
-<span class="fc" id="L20">	private static final double LOG2 = Math.log(2);</span>
-<span class="fc" id="L21">	private static final double LOG2_INV = 1 / LOG2;</span>
+<span class="fc" id="L19">	private static final double LOG2 = Math.log(2);</span>
+<span class="fc" id="L20">	private static final double LOG2_INV = 1 / LOG2;</span>
 
 	static double log2(double x) {
-<span class="fc" id="L24">		return Math.log(x) * LOG2_INV;</span>
+<span class="fc" id="L23">		return Math.log(x) * LOG2_INV;</span>
 	}
 
 	static int log2(int x) {
-<span class="fc" id="L28">		int r = 0xFFFF - x &gt;&gt; 31 &amp; 0x10;</span>
-<span class="fc" id="L29">		x &gt;&gt;= r;</span>
-<span class="fc" id="L30">		int shift = 0xFF - x &gt;&gt; 31 &amp; 0x8;</span>
-<span class="fc" id="L31">		x &gt;&gt;= shift;</span>
-<span class="fc" id="L32">		r |= shift;</span>
-<span class="fc" id="L33">		shift = 0xF - x &gt;&gt; 31 &amp; 0x4;</span>
-<span class="fc" id="L34">		x &gt;&gt;= shift;</span>
-<span class="fc" id="L35">		r |= shift;</span>
-<span class="fc" id="L36">		shift = 0x3 - x &gt;&gt; 31 &amp; 0x2;</span>
-<span class="fc" id="L37">		x &gt;&gt;= shift;</span>
-<span class="fc" id="L38">		r |= shift;</span>
-<span class="fc" id="L39">		r |= (x &gt;&gt; 1);</span>
-<span class="fc" id="L40">		return r;</span>
+<span class="fc" id="L27">		int r = 0xFFFF - x &gt;&gt; 31 &amp; 0x10;</span>
+<span class="fc" id="L28">		x &gt;&gt;= r;</span>
+<span class="fc" id="L29">		int shift = 0xFF - x &gt;&gt; 31 &amp; 0x8;</span>
+<span class="fc" id="L30">		x &gt;&gt;= shift;</span>
+<span class="fc" id="L31">		r |= shift;</span>
+<span class="fc" id="L32">		shift = 0xF - x &gt;&gt; 31 &amp; 0x4;</span>
+<span class="fc" id="L33">		x &gt;&gt;= shift;</span>
+<span class="fc" id="L34">		r |= shift;</span>
+<span class="fc" id="L35">		shift = 0x3 - x &gt;&gt; 31 &amp; 0x2;</span>
+<span class="fc" id="L36">		x &gt;&gt;= shift;</span>
+<span class="fc" id="L37">		r |= shift;</span>
+<span class="fc" id="L38">		r |= (x &gt;&gt; 1);</span>
+<span class="fc" id="L39">		return r;</span>
 	}
 
 	static int log2ceil(int x) {
-<span class="fc" id="L44">		int r = log2(x);</span>
-<span class="fc bfc" id="L45" title="All 2 branches covered.">		return (1 &lt;&lt; r) == x ? r : r + 1;</span>
+<span class="fc" id="L43">		int r = log2(x);</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">		return (1 &lt;&lt; r) == x ? r : r + 1;</span>
 	}
 
 	@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
-<span class="fc" id="L49">	private static final Comparator DEFAULT_COMPARATOR = (a, b) -&gt; ((Comparable) a).compareTo(b);</span>
+<span class="fc" id="L48">	private static final Comparator DEFAULT_COMPARATOR = (a, b) -&gt; ((Comparable) a).compareTo(b);</span>
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	static &lt;E&gt; Comparator&lt;E&gt; getDefaultComparator() {
-<span class="fc" id="L53">		return DEFAULT_COMPARATOR;</span>
+<span class="fc" id="L52">		return DEFAULT_COMPARATOR;</span>
 	}
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	static &lt;E&gt; int cmpDefault(E e1, E e2) {
-<span class="fc" id="L58">		return ((Comparable&lt;E&gt;) e1).compareTo(e2);</span>
+<span class="fc" id="L57">		return ((Comparable&lt;E&gt;) e1).compareTo(e2);</span>
 	}
 
 	static boolean isEqual(double a, double b) {
-<span class="fc" id="L62">		double mag = Math.max(Math.abs(a), Math.abs(b));</span>
-<span class="fc" id="L63">		double eps = mag * 1E-6;</span>
-<span class="pc bpc" id="L64" title="1 of 2 branches missed.">		return Math.abs(a - b) &lt;= eps;</span>
+<span class="fc" id="L61">		double mag = Math.max(Math.abs(a), Math.abs(b));</span>
+<span class="fc" id="L62">		double eps = mag * 1E-6;</span>
+<span class="pc bpc" id="L63" title="1 of 2 branches missed.">		return Math.abs(a - b) &lt;= eps;</span>
 	}
 
 	/* syntax sugar to iterator for loops */
 	static &lt;E&gt; Iterable&lt;E&gt; iterable(Iterator&lt;E&gt; it) {
-<span class="fc" id="L69">		return new Iterable&lt;&gt;() {</span>
+<span class="fc" id="L68">		return new Iterable&lt;&gt;() {</span>
 
 			@Override
 			public Iterator&lt;E&gt; iterator() {
-<span class="fc" id="L73">				return it;</span>
+<span class="fc" id="L72">				return it;</span>
 			}
 		};
 	}
@@ -79,38 +78,38 @@ class Utils {
 
 		private final Iterator&lt;? super E&gt; it;
 		private Object pick;
-<span class="fc" id="L82">		private static final Object PickNone = new Object();</span>
+<span class="fc" id="L81">		private static final Object PickNone = new Object();</span>
 
-<span class="nc" id="L84">		IterPickable(Iterator&lt;? super E&gt; it) {</span>
-<span class="nc" id="L85">			this.it = Objects.requireNonNull(it);</span>
-<span class="nc" id="L86">			pick = PickNone;</span>
-<span class="nc" id="L87">		}</span>
+<span class="nc" id="L83">		IterPickable(Iterator&lt;? super E&gt; it) {</span>
+<span class="nc" id="L84">			this.it = Objects.requireNonNull(it);</span>
+<span class="nc" id="L85">			pick = PickNone;</span>
+<span class="nc" id="L86">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="nc bnc" id="L91" title="All 2 branches missed.">			if (pick != PickNone)</span>
-<span class="nc" id="L92">				return true;</span>
-<span class="nc bnc" id="L93" title="All 2 branches missed.">			if (!it.hasNext())</span>
-<span class="nc" id="L94">				return false;</span>
-<span class="nc" id="L95">			pick = it.next();</span>
-<span class="nc" id="L96">			return true;</span>
+<span class="nc bnc" id="L90" title="All 2 branches missed.">			if (pick != PickNone)</span>
+<span class="nc" id="L91">				return true;</span>
+<span class="nc bnc" id="L92" title="All 2 branches missed.">			if (!it.hasNext())</span>
+<span class="nc" id="L93">				return false;</span>
+<span class="nc" id="L94">			pick = it.next();</span>
+<span class="nc" id="L95">			return true;</span>
 		}
 
 		@Override
 		public E next() {
-<span class="nc bnc" id="L101" title="All 2 branches missed.">			if (!hasNext())</span>
-<span class="nc" id="L102">				throw new NoSuchElementException();</span>
+<span class="nc bnc" id="L100" title="All 2 branches missed.">			if (!hasNext())</span>
+<span class="nc" id="L101">				throw new NoSuchElementException();</span>
 			@SuppressWarnings(&quot;unchecked&quot;)
-<span class="nc" id="L104">			E n = (E) pick;</span>
-<span class="nc" id="L105">			pick = PickNone;</span>
-<span class="nc" id="L106">			return n;</span>
+<span class="nc" id="L103">			E n = (E) pick;</span>
+<span class="nc" id="L104">			pick = PickNone;</span>
+<span class="nc" id="L105">			return n;</span>
 		}
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		E pickNext() {
-<span class="nc bnc" id="L111" title="All 2 branches missed.">			if (!hasNext())</span>
-<span class="nc" id="L112">				throw new NoSuchElementException();</span>
-<span class="nc" id="L113">			return (E) pick;</span>
+<span class="nc bnc" id="L110" title="All 2 branches missed.">			if (!hasNext())</span>
+<span class="nc" id="L111">				throw new NoSuchElementException();</span>
+<span class="nc" id="L112">			return (E) pick;</span>
 		}
 
 		static class Int implements IntIterator {
@@ -119,34 +118,34 @@ class Utils {
 			private int pick;
 			private boolean isPickValid;
 
-<span class="fc" id="L122">			Int(IntIterator it) {</span>
-<span class="fc" id="L123">				this.it = Objects.requireNonNull(it);</span>
-<span class="fc" id="L124">				isPickValid = false;</span>
-<span class="fc" id="L125">			}</span>
+<span class="fc" id="L121">			Int(IntIterator it) {</span>
+<span class="fc" id="L122">				this.it = Objects.requireNonNull(it);</span>
+<span class="fc" id="L123">				isPickValid = false;</span>
+<span class="fc" id="L124">			}</span>
 
 			@Override
 			public boolean hasNext() {
-<span class="fc bfc" id="L129" title="All 2 branches covered.">				if (isPickValid)</span>
-<span class="fc" id="L130">					return true;</span>
-<span class="fc bfc" id="L131" title="All 2 branches covered.">				if (!it.hasNext())</span>
-<span class="fc" id="L132">					return false;</span>
-<span class="fc" id="L133">				pick = it.nextInt();</span>
-<span class="fc" id="L134">				isPickValid = true;</span>
-<span class="fc" id="L135">				return true;</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">				if (isPickValid)</span>
+<span class="fc" id="L129">					return true;</span>
+<span class="fc bfc" id="L130" title="All 2 branches covered.">				if (!it.hasNext())</span>
+<span class="fc" id="L131">					return false;</span>
+<span class="fc" id="L132">				pick = it.nextInt();</span>
+<span class="fc" id="L133">				isPickValid = true;</span>
+<span class="fc" id="L134">				return true;</span>
 			}
 
 			@Override
 			public int nextInt() {
-<span class="pc bpc" id="L140" title="1 of 2 branches missed.">				if (!hasNext())</span>
-<span class="nc" id="L141">					throw new NoSuchElementException();</span>
-<span class="fc" id="L142">				isPickValid = false;</span>
-<span class="fc" id="L143">				return pick;</span>
+<span class="pc bpc" id="L139" title="1 of 2 branches missed.">				if (!hasNext())</span>
+<span class="nc" id="L140">					throw new NoSuchElementException();</span>
+<span class="fc" id="L141">				isPickValid = false;</span>
+<span class="fc" id="L142">				return pick;</span>
 			}
 
 			int pickNext() {
-<span class="pc bpc" id="L147" title="1 of 2 branches missed.">				if (!hasNext())</span>
-<span class="nc" id="L148">					throw new NoSuchElementException();</span>
-<span class="fc" id="L149">				return pick;</span>
+<span class="pc bpc" id="L146" title="1 of 2 branches missed.">				if (!hasNext())</span>
+<span class="nc" id="L147">					throw new NoSuchElementException();</span>
+<span class="fc" id="L148">				return pick;</span>
 			}
 
 		}
@@ -159,70 +158,70 @@ class Utils {
 		private final Object[] q;
 		private int begin, end;
 
-<span class="fc" id="L162">		QueueFixSize(int maxSize) {</span>
+<span class="fc" id="L161">		QueueFixSize(int maxSize) {</span>
 			/* round size of next power of 2 */
-<span class="fc" id="L164">			maxSize = 1 &lt;&lt; (32 - Integer.numberOfLeadingZeros(maxSize));</span>
-<span class="fc" id="L165">			idxMask = maxSize - 1;</span>
-<span class="fc" id="L166">			q = new Object[maxSize];</span>
-<span class="fc" id="L167">			begin = end = 0;</span>
-<span class="fc" id="L168">		}</span>
+<span class="fc" id="L163">			maxSize = 1 &lt;&lt; (32 - Integer.numberOfLeadingZeros(maxSize));</span>
+<span class="fc" id="L164">			idxMask = maxSize - 1;</span>
+<span class="fc" id="L165">			q = new Object[maxSize];</span>
+<span class="fc" id="L166">			begin = end = 0;</span>
+<span class="fc" id="L167">		}</span>
 
 		int size() {
-<span class="nc bnc" id="L171" title="All 2 branches missed.">			return begin &lt;= end ? end - begin : q.length - begin + end;</span>
+<span class="nc bnc" id="L170" title="All 2 branches missed.">			return begin &lt;= end ? end - begin : q.length - begin + end;</span>
 		}
 
 		boolean isEmpty() {
-<span class="fc bfc" id="L175" title="All 2 branches covered.">			return begin == end;</span>
+<span class="fc bfc" id="L174" title="All 2 branches covered.">			return begin == end;</span>
 		}
 
 		void push(E x) {
-<span class="pc bpc" id="L179" title="1 of 2 branches missed.">			if (((end + 1) &amp; idxMask) == begin)</span>
-<span class="nc" id="L180">				throw new IndexOutOfBoundsException();</span>
-<span class="fc" id="L181">			q[end] = x;</span>
-<span class="fc" id="L182">			end = (end + 1) &amp; idxMask;</span>
-<span class="fc" id="L183">		}</span>
+<span class="pc bpc" id="L178" title="1 of 2 branches missed.">			if (((end + 1) &amp; idxMask) == begin)</span>
+<span class="nc" id="L179">				throw new IndexOutOfBoundsException();</span>
+<span class="fc" id="L180">			q[end] = x;</span>
+<span class="fc" id="L181">			end = (end + 1) &amp; idxMask;</span>
+<span class="fc" id="L182">		}</span>
 
 		E pop() {
-<span class="pc bpc" id="L186" title="1 of 2 branches missed.">			if (isEmpty())</span>
-<span class="nc" id="L187">				throw new NoSuchElementException();</span>
+<span class="pc bpc" id="L185" title="1 of 2 branches missed.">			if (isEmpty())</span>
+<span class="nc" id="L186">				throw new NoSuchElementException();</span>
 			@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L189">			E x = (E) q[begin];</span>
-<span class="fc" id="L190">			begin = (begin + 1) &amp; idxMask;</span>
-<span class="fc" id="L191">			return x;</span>
+<span class="fc" id="L188">			E x = (E) q[begin];</span>
+<span class="fc" id="L189">			begin = (begin + 1) &amp; idxMask;</span>
+<span class="fc" id="L190">			return x;</span>
 		}
 
 		void clear() {
-<span class="nc" id="L195">			begin = end = 0;</span>
-<span class="nc" id="L196">		}</span>
+<span class="nc" id="L194">			begin = end = 0;</span>
+<span class="nc" id="L195">		}</span>
 
 		@Override
 		public String toString() {
-<span class="nc" id="L200">			StringBuilder b = new StringBuilder();</span>
-<span class="nc" id="L201">			b.append('[');</span>
+<span class="nc" id="L199">			StringBuilder b = new StringBuilder();</span>
+<span class="nc" id="L200">			b.append('[');</span>
 
-<span class="nc" id="L203">			int lastIdx = Math.min(end, q.length) - 1;</span>
-<span class="nc bnc" id="L204" title="All 2 branches missed.">			if (begin &lt;= lastIdx) {</span>
-<span class="nc" id="L205">				for (int i = begin;; i++) {</span>
-<span class="nc" id="L206">					b.append(q[i]);</span>
-<span class="nc bnc" id="L207" title="All 2 branches missed.">					if (i == lastIdx) {</span>
-<span class="nc bnc" id="L208" title="All 4 branches missed.">						if (end &lt; begin &amp;&amp; end != 0)</span>
-<span class="nc" id="L209">							b.append(&quot;, &quot;);</span>
+<span class="nc" id="L202">			int lastIdx = Math.min(end, q.length) - 1;</span>
+<span class="nc bnc" id="L203" title="All 2 branches missed.">			if (begin &lt;= lastIdx) {</span>
+<span class="nc" id="L204">				for (int i = begin;; i++) {</span>
+<span class="nc" id="L205">					b.append(q[i]);</span>
+<span class="nc bnc" id="L206" title="All 2 branches missed.">					if (i == lastIdx) {</span>
+<span class="nc bnc" id="L207" title="All 4 branches missed.">						if (end &lt; begin &amp;&amp; end != 0)</span>
+<span class="nc" id="L208">							b.append(&quot;, &quot;);</span>
 						break;
 					}
-<span class="nc" id="L212">					b.append(&quot;, &quot;);</span>
+<span class="nc" id="L211">					b.append(&quot;, &quot;);</span>
 				}
 			}
 
-<span class="nc bnc" id="L216" title="All 4 branches missed.">			if (end &lt; begin &amp;&amp; end != 0) {</span>
-<span class="nc" id="L217">				for (int i = 0;; i++) {</span>
-<span class="nc" id="L218">					b.append(q[i]);</span>
-<span class="nc bnc" id="L219" title="All 2 branches missed.">					if (i == end - 1)</span>
-<span class="nc" id="L220">						break;</span>
-<span class="nc" id="L221">					b.append(&quot;, &quot;);</span>
+<span class="nc bnc" id="L215" title="All 4 branches missed.">			if (end &lt; begin &amp;&amp; end != 0) {</span>
+<span class="nc" id="L216">				for (int i = 0;; i++) {</span>
+<span class="nc" id="L217">					b.append(q[i]);</span>
+<span class="nc bnc" id="L218" title="All 2 branches missed.">					if (i == end - 1)</span>
+<span class="nc" id="L219">						break;</span>
+<span class="nc" id="L220">					b.append(&quot;, &quot;);</span>
 				}
 			}
 
-<span class="nc" id="L225">			return b.append(']').toString();</span>
+<span class="nc" id="L224">			return b.append(']').toString();</span>
 		}
 
 	}
@@ -232,46 +231,46 @@ class Utils {
 		private Object[] s;
 		private int size;
 
-<span class="fc" id="L235">		Stack() {</span>
-<span class="fc" id="L236">			s = new Object[2];</span>
-<span class="fc" id="L237">			size = 0;</span>
-<span class="fc" id="L238">		}</span>
+<span class="fc" id="L234">		Stack() {</span>
+<span class="fc" id="L235">			s = new Object[2];</span>
+<span class="fc" id="L236">			size = 0;</span>
+<span class="fc" id="L237">		}</span>
 
 		int size() {
-<span class="nc" id="L241">			return size;</span>
+<span class="nc" id="L240">			return size;</span>
 		}
 
 		boolean isEmpty() {
-<span class="fc bfc" id="L245" title="All 2 branches covered.">			return size == 0;</span>
+<span class="fc bfc" id="L244" title="All 2 branches covered.">			return size == 0;</span>
 		}
 
 		void push(E x) {
-<span class="fc bfc" id="L249" title="All 2 branches covered.">			if (size &gt;= s.length)</span>
-<span class="fc" id="L250">				s = Arrays.copyOf(s, Math.max(s.length * 2, 2));</span>
-<span class="fc" id="L251">			s[size++] = x;</span>
-<span class="fc" id="L252">		}</span>
+<span class="fc bfc" id="L248" title="All 2 branches covered.">			if (size &gt;= s.length)</span>
+<span class="fc" id="L249">				s = Arrays.copyOf(s, Math.max(s.length * 2, 2));</span>
+<span class="fc" id="L250">			s[size++] = x;</span>
+<span class="fc" id="L251">		}</span>
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		E pop() {
-<span class="fc" id="L256">			return (E) s[--size];</span>
+<span class="fc" id="L255">			return (E) s[--size];</span>
 		}
 
 		void clear() {
-<span class="nc" id="L260">			size = 0;</span>
-<span class="nc" id="L261">		}</span>
+<span class="nc" id="L259">			size = 0;</span>
+<span class="nc" id="L260">		}</span>
 
 		@Override
 		public String toString() {
-<span class="nc bnc" id="L265" title="All 2 branches missed.">			if (isEmpty())</span>
-<span class="nc" id="L266">				return &quot;[]&quot;;</span>
+<span class="nc bnc" id="L264" title="All 2 branches missed.">			if (isEmpty())</span>
+<span class="nc" id="L265">				return &quot;[]&quot;;</span>
 
-<span class="nc" id="L268">			StringBuilder b = new StringBuilder();</span>
-<span class="nc" id="L269">			b.append('[');</span>
-<span class="nc" id="L270">			for (int i = 0;; i++) {</span>
-<span class="nc" id="L271">				b.append(s[i]);</span>
-<span class="nc bnc" id="L272" title="All 2 branches missed.">				if (i == size - 1)</span>
-<span class="nc" id="L273">					return b.append(']').toString();</span>
-<span class="nc" id="L274">				b.append(&quot;, &quot;);</span>
+<span class="nc" id="L267">			StringBuilder b = new StringBuilder();</span>
+<span class="nc" id="L268">			b.append('[');</span>
+<span class="nc" id="L269">			for (int i = 0;; i++) {</span>
+<span class="nc" id="L270">				b.append(s[i]);</span>
+<span class="nc bnc" id="L271" title="All 2 branches missed.">				if (i == size - 1)</span>
+<span class="nc" id="L272">					return b.append(']').toString();</span>
+<span class="nc" id="L273">				b.append(&quot;, &quot;);</span>
 			}
 		}
 
@@ -281,23 +280,23 @@ class Utils {
 
 		private int size;
 
-<span class="fc" id="L284">		NullIterator(int size) {</span>
-<span class="pc bpc" id="L285" title="1 of 2 branches missed.">			if (size &lt; 0)</span>
-<span class="nc" id="L286">				throw new IllegalArgumentException();</span>
-<span class="fc" id="L287">			this.size = size;</span>
-<span class="fc" id="L288">		}</span>
+<span class="fc" id="L283">		NullIterator(int size) {</span>
+<span class="pc bpc" id="L284" title="1 of 2 branches missed.">			if (size &lt; 0)</span>
+<span class="nc" id="L285">				throw new IllegalArgumentException();</span>
+<span class="fc" id="L286">			this.size = size;</span>
+<span class="fc" id="L287">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="fc bfc" id="L292" title="All 2 branches covered.">			return size &gt; 0;</span>
+<span class="fc bfc" id="L291" title="All 2 branches covered.">			return size &gt; 0;</span>
 		}
 
 		@Override
 		public E next() {
-<span class="pc bpc" id="L297" title="1 of 2 branches missed.">			if (!hasNext())</span>
-<span class="nc" id="L298">				throw new NoSuchElementException();</span>
-<span class="fc" id="L299">			size--;</span>
-<span class="fc" id="L300">			return null;</span>
+<span class="pc bpc" id="L296" title="1 of 2 branches missed.">			if (!hasNext())</span>
+<span class="nc" id="L297">				throw new NoSuchElementException();</span>
+<span class="fc" id="L298">			size--;</span>
+<span class="fc" id="L299">			return null;</span>
 		}
 
 	}
@@ -308,67 +307,67 @@ class Utils {
 		private int idx;
 
 		NullListIterator(int size) {
-<span class="nc" id="L311">			this(size, 0);</span>
-<span class="nc" id="L312">		}</span>
+<span class="nc" id="L310">			this(size, 0);</span>
+<span class="nc" id="L311">		}</span>
 
-<span class="nc" id="L314">		NullListIterator(int size, int idx) {</span>
-<span class="nc bnc" id="L315" title="All 2 branches missed.">			if (size &lt; 0)</span>
-<span class="nc" id="L316">				throw new IllegalArgumentException();</span>
-<span class="nc bnc" id="L317" title="All 4 branches missed.">			if (idx &lt; 0 || idx &gt; size)</span>
-<span class="nc" id="L318">				throw new IllegalArgumentException();</span>
-<span class="nc" id="L319">			this.size = size;</span>
-<span class="nc" id="L320">			this.idx = idx;</span>
-<span class="nc" id="L321">		}</span>
+<span class="nc" id="L313">		NullListIterator(int size, int idx) {</span>
+<span class="nc bnc" id="L314" title="All 2 branches missed.">			if (size &lt; 0)</span>
+<span class="nc" id="L315">				throw new IllegalArgumentException();</span>
+<span class="nc bnc" id="L316" title="All 4 branches missed.">			if (idx &lt; 0 || idx &gt; size)</span>
+<span class="nc" id="L317">				throw new IllegalArgumentException();</span>
+<span class="nc" id="L318">			this.size = size;</span>
+<span class="nc" id="L319">			this.idx = idx;</span>
+<span class="nc" id="L320">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="nc bnc" id="L325" title="All 2 branches missed.">			return idx &lt; size;</span>
+<span class="nc bnc" id="L324" title="All 2 branches missed.">			return idx &lt; size;</span>
 		}
 
 		@Override
 		public E next() {
-<span class="nc bnc" id="L330" title="All 2 branches missed.">			if (!hasNext())</span>
-<span class="nc" id="L331">				throw new NoSuchElementException();</span>
-<span class="nc" id="L332">			idx++;</span>
-<span class="nc" id="L333">			return null;</span>
+<span class="nc bnc" id="L329" title="All 2 branches missed.">			if (!hasNext())</span>
+<span class="nc" id="L330">				throw new NoSuchElementException();</span>
+<span class="nc" id="L331">			idx++;</span>
+<span class="nc" id="L332">			return null;</span>
 		}
 
 		@Override
 		public boolean hasPrevious() {
-<span class="nc bnc" id="L338" title="All 2 branches missed.">			return idx &gt; 0;</span>
+<span class="nc bnc" id="L337" title="All 2 branches missed.">			return idx &gt; 0;</span>
 		}
 
 		@Override
 		public E previous() {
-<span class="nc bnc" id="L343" title="All 2 branches missed.">			if (!hasPrevious())</span>
-<span class="nc" id="L344">				throw new NoSuchElementException();</span>
-<span class="nc" id="L345">			idx--;</span>
-<span class="nc" id="L346">			return null;</span>
+<span class="nc bnc" id="L342" title="All 2 branches missed.">			if (!hasPrevious())</span>
+<span class="nc" id="L343">				throw new NoSuchElementException();</span>
+<span class="nc" id="L344">			idx--;</span>
+<span class="nc" id="L345">			return null;</span>
 		}
 
 		@Override
 		public int nextIndex() {
-<span class="nc" id="L351">			return idx;</span>
+<span class="nc" id="L350">			return idx;</span>
 		}
 
 		@Override
 		public int previousIndex() {
-<span class="nc" id="L356">			return idx - 1;</span>
+<span class="nc" id="L355">			return idx - 1;</span>
 		}
 
 		@Override
 		public void remove() {
-<span class="nc" id="L361">			throw new UnsupportedOperationException();</span>
+<span class="nc" id="L360">			throw new UnsupportedOperationException();</span>
 		}
 
 		@Override
 		public void set(E e) {
-<span class="nc" id="L366">			throw new UnsupportedOperationException();</span>
+<span class="nc" id="L365">			throw new UnsupportedOperationException();</span>
 		}
 
 		@Override
 		public void add(E e) {
-<span class="nc" id="L371">			throw new UnsupportedOperationException();</span>
+<span class="nc" id="L370">			throw new UnsupportedOperationException();</span>
 		}
 
 	}
@@ -377,132 +376,132 @@ class Utils {
 
 		private final int size;
 
-<span class="fc" id="L380">		NullList(int size) {</span>
-<span class="pc bpc" id="L381" title="1 of 2 branches missed.">			if (size &lt; 0)</span>
-<span class="nc" id="L382">				throw new IllegalArgumentException();</span>
-<span class="fc" id="L383">			this.size = size;</span>
-<span class="fc" id="L384">		}</span>
+<span class="fc" id="L379">		NullList(int size) {</span>
+<span class="pc bpc" id="L380" title="1 of 2 branches missed.">			if (size &lt; 0)</span>
+<span class="nc" id="L381">				throw new IllegalArgumentException();</span>
+<span class="fc" id="L382">			this.size = size;</span>
+<span class="fc" id="L383">		}</span>
 
 		@Override
 		public int size() {
-<span class="fc" id="L388">			return size;</span>
+<span class="fc" id="L387">			return size;</span>
 		}
 
 		@Override
 		public boolean contains(Object o) {
-<span class="nc bnc" id="L393" title="All 4 branches missed.">			return o == null &amp;&amp; size &gt; 0;</span>
+<span class="nc bnc" id="L392" title="All 4 branches missed.">			return o == null &amp;&amp; size &gt; 0;</span>
 		}
 
 		@Override
 		public Iterator&lt;E&gt; iterator() {
-<span class="fc" id="L398">			return new NullIterator&lt;&gt;(size);</span>
+<span class="fc" id="L397">			return new NullIterator&lt;&gt;(size);</span>
 		}
 
 		@Override
 		public boolean add(E e) {
-<span class="nc" id="L403">			throw new UnsupportedOperationException();</span>
+<span class="nc" id="L402">			throw new UnsupportedOperationException();</span>
 		}
 
 		@Override
 		public boolean remove(Object o) {
-<span class="nc" id="L408">			throw new UnsupportedOperationException();</span>
+<span class="nc" id="L407">			throw new UnsupportedOperationException();</span>
 		}
 
 		@Override
 		public boolean addAll(Collection&lt;? extends E&gt; c) {
-<span class="nc" id="L413">			throw new UnsupportedOperationException();</span>
+<span class="nc" id="L412">			throw new UnsupportedOperationException();</span>
 		}
 
 		@Override
 		public boolean addAll(int index, Collection&lt;? extends E&gt; c) {
-<span class="nc" id="L418">			throw new UnsupportedOperationException();</span>
+<span class="nc" id="L417">			throw new UnsupportedOperationException();</span>
 		}
 
 		@Override
 		public boolean removeAll(Collection&lt;?&gt; c) {
-<span class="nc" id="L423">			throw new UnsupportedOperationException();</span>
+<span class="nc" id="L422">			throw new UnsupportedOperationException();</span>
 		}
 
 		@Override
 		public boolean retainAll(Collection&lt;?&gt; c) {
-<span class="nc" id="L428">			throw new UnsupportedOperationException();</span>
+<span class="nc" id="L427">			throw new UnsupportedOperationException();</span>
 		}
 
 		@Override
 		public void clear() {
-<span class="nc" id="L433">			throw new UnsupportedOperationException();</span>
+<span class="nc" id="L432">			throw new UnsupportedOperationException();</span>
 		}
 
 		@Override
 		public E get(int index) {
-<span class="nc bnc" id="L438" title="All 4 branches missed.">			if (index &lt; 0 || index &gt;= size)</span>
-<span class="nc" id="L439">				throw new IndexOutOfBoundsException();</span>
-<span class="nc" id="L440">			return null;</span>
+<span class="nc bnc" id="L437" title="All 4 branches missed.">			if (index &lt; 0 || index &gt;= size)</span>
+<span class="nc" id="L438">				throw new IndexOutOfBoundsException();</span>
+<span class="nc" id="L439">			return null;</span>
 		}
 
 		@Override
 		public E set(int index, E element) {
-<span class="nc" id="L445">			throw new UnsupportedOperationException();</span>
+<span class="nc" id="L444">			throw new UnsupportedOperationException();</span>
 		}
 
 		@Override
 		public void add(int index, E element) {
-<span class="nc" id="L450">			throw new UnsupportedOperationException();</span>
+<span class="nc" id="L449">			throw new UnsupportedOperationException();</span>
 		}
 
 		@Override
 		public E remove(int index) {
-<span class="nc" id="L455">			throw new UnsupportedOperationException();</span>
+<span class="nc" id="L454">			throw new UnsupportedOperationException();</span>
 		}
 
 		@Override
 		public int indexOf(Object o) {
-<span class="nc bnc" id="L460" title="All 4 branches missed.">			return o == null &amp;&amp; size &gt; 0 ? 0 : -1;</span>
+<span class="nc bnc" id="L459" title="All 4 branches missed.">			return o == null &amp;&amp; size &gt; 0 ? 0 : -1;</span>
 		}
 
 		@Override
 		public int lastIndexOf(Object o) {
-<span class="nc bnc" id="L465" title="All 4 branches missed.">			return o == null &amp;&amp; size &gt; 0 ? size - 1 : -1;</span>
+<span class="nc bnc" id="L464" title="All 4 branches missed.">			return o == null &amp;&amp; size &gt; 0 ? size - 1 : -1;</span>
 		}
 
 		@Override
 		public ListIterator&lt;E&gt; listIterator() {
-<span class="nc" id="L470">			return new NullListIterator&lt;&gt;(size);</span>
+<span class="nc" id="L469">			return new NullListIterator&lt;&gt;(size);</span>
 		}
 
 		@Override
 		public ListIterator&lt;E&gt; listIterator(int index) {
-<span class="nc" id="L475">			return new NullListIterator&lt;&gt;(size, index);</span>
+<span class="nc" id="L474">			return new NullListIterator&lt;&gt;(size, index);</span>
 		}
 
 		@Override
 		public List&lt;E&gt; subList(int fromIndex, int toIndex) {
-<span class="nc bnc" id="L480" title="All 6 branches missed.">			if (fromIndex &lt; 0 || fromIndex &gt;= toIndex || toIndex &gt; size)</span>
-<span class="nc" id="L481">				throw new IllegalArgumentException();</span>
-<span class="nc bnc" id="L482" title="All 4 branches missed.">			if (fromIndex == 0 &amp;&amp; toIndex == size)</span>
-<span class="nc" id="L483">				return this;</span>
-<span class="nc" id="L484">			return new NullList&lt;&gt;(toIndex - fromIndex);</span>
+<span class="nc bnc" id="L479" title="All 6 branches missed.">			if (fromIndex &lt; 0 || fromIndex &gt;= toIndex || toIndex &gt; size)</span>
+<span class="nc" id="L480">				throw new IllegalArgumentException();</span>
+<span class="nc bnc" id="L481" title="All 4 branches missed.">			if (fromIndex == 0 &amp;&amp; toIndex == size)</span>
+<span class="nc" id="L482">				return this;</span>
+<span class="nc" id="L483">			return new NullList&lt;&gt;(toIndex - fromIndex);</span>
 		}
 
 	}
 
 	static IntIterator bitSetIterator(BitSet bitSet) {
-<span class="fc" id="L490">		return new IntIterator() {</span>
+<span class="fc" id="L489">		return new IntIterator() {</span>
 
-<span class="fc" id="L492">			int bit = bitSet.nextSetBit(0);</span>
+<span class="fc" id="L491">			int bit = bitSet.nextSetBit(0);</span>
 
 			@Override
 			public boolean hasNext() {
-<span class="fc bfc" id="L496" title="All 2 branches covered.">				return bit != -1;</span>
+<span class="fc bfc" id="L495" title="All 2 branches covered.">				return bit != -1;</span>
 			}
 
 			@Override
 			public int nextInt() {
-<span class="pc bpc" id="L501" title="1 of 2 branches missed.">				if (!hasNext())</span>
-<span class="nc" id="L502">					throw new NoSuchElementException();</span>
-<span class="fc" id="L503">				int ret = bit;</span>
-<span class="fc" id="L504">				bit = bitSet.nextSetBit(bit + 1);</span>
-<span class="fc" id="L505">				return ret;</span>
+<span class="pc bpc" id="L500" title="1 of 2 branches missed.">				if (!hasNext())</span>
+<span class="nc" id="L501">					throw new NoSuchElementException();</span>
+<span class="fc" id="L502">				int ret = bit;</span>
+<span class="fc" id="L503">				bit = bitSet.nextSetBit(bit + 1);</span>
+<span class="fc" id="L504">				return ret;</span>
 			}
 		};
 	}

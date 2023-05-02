@@ -4,13 +4,11 @@ import java.util.Comparator;
 import java.util.Objects;
 
 /**
- * Comparator used to compare elements in a sequence by {@link RMQStatic}
- * algorithms.
+ * Comparator used to compare elements in a sequence by {@link RMQStatic} algorithms.
  * &lt;p&gt;
- * When an {@link RMQStatic} perform a preprocessing, the sequence itself of
- * elements is not passed to it, rather a comparator that can compare two
- * elements by their indices. The comparator must remain valid as long as
- * queries are still issued to the RMQ implementation.
+ * When an {@link RMQStatic} perform a preprocessing, the sequence itself of elements is not passed to it, rather a
+ * comparator that can compare two elements by their indices. The comparator must remain valid as long as queries are
+ * still issued to the RMQ implementation.
  *
  * @author Barak Ugav
  */
@@ -20,58 +18,54 @@ public interface RMQStaticComparator {
 	/**
 	 * Compare the i'th and j'th elements in the sequence.
 	 *
-	 * @param i index of first element
-	 * @param j index of second element
-	 * @return value less than zero if the i'th element is smaller than the j'th
-	 *         element, value greater than zero if the j'th is smaller than the i'th
-	 *         and zero if they are equal
+	 * @param  i index of first element
+	 * @param  j index of second element
+	 * @return   value less than zero if the i'th element is smaller than the j'th element, value greater than zero if
+	 *           the j'th is smaller than the i'th and zero if they are equal
 	 */
 	public int compare(int i, int j);
 
 	/**
 	 * Create an RMQ comparator from an object array.
 	 *
-	 * @param &lt;E&gt; the array type
-	 * @param arr an array
-	 * @return an RMQ comparator that will compare elements in the array using their
-	 *         {@linkplain Comparable natural ordering}.
+	 * @param  &lt;E&gt; the array type
+	 * @param  arr an array
+	 * @return     an RMQ comparator that will compare elements in the array using their {@linkplain Comparable natural
+	 *             ordering}.
 	 */
 	@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
 	public static &lt;E&gt; RMQStaticComparator ofObjArray(E[] arr) {
-<span class="nc" id="L41">		Objects.requireNonNull(arr);</span>
-<span class="nc" id="L42">		return (i, j) -&gt; ((Comparable) arr[i]).compareTo(arr[j]);</span>
+<span class="nc" id="L38">		Objects.requireNonNull(arr);</span>
+<span class="nc" id="L39">		return (i, j) -&gt; ((Comparable) arr[i]).compareTo(arr[j]);</span>
 	}
 
 	/**
 	 * Create an RMQ comparator from an object array with a custom comparator.
 	 *
-	 * @param &lt;E&gt; the array type
-	 * @param arr an array
-	 * @param c   the comparator that will be used to compare elements in the array.
-	 *            If {@code null}, the {@linkplain Comparable natural ordering} of
-	 *            the elements will be used.
-	 * @return an RMQ comparator that will compare elements in the array using the
-	 *         given comparator
+	 * @param  &lt;E&gt; the array type
+	 * @param  arr an array
+	 * @param  c   the comparator that will be used to compare elements in the array. If {@code null}, the
+	 *                 {@linkplain Comparable natural ordering} of the elements will be used.
+	 * @return     an RMQ comparator that will compare elements in the array using the given comparator
 	 */
 	public static &lt;E&gt; RMQStaticComparator ofObjArray(E[] arr, Comparator&lt;? super E&gt; c) {
-<span class="nc bnc" id="L57" title="All 2 branches missed.">		if (c == null) {</span>
-<span class="nc" id="L58">			return ofObjArray(arr);</span>
+<span class="nc bnc" id="L52" title="All 2 branches missed.">		if (c == null) {</span>
+<span class="nc" id="L53">			return ofObjArray(arr);</span>
 		} else {
-<span class="nc" id="L60">			Objects.requireNonNull(arr);</span>
-<span class="nc" id="L61">			return (i, j) -&gt; c.compare(arr[i], arr[j]);</span>
+<span class="nc" id="L55">			Objects.requireNonNull(arr);</span>
+<span class="nc" id="L56">			return (i, j) -&gt; c.compare(arr[i], arr[j]);</span>
 		}
 	}
 
 	/**
 	 * Create an RMQ comparator from an {@code int} array.
 	 *
-	 * @param arr an array
-	 * @return an RMQ comparator that will compare elements in the array using
-	 *         {@code Integer.compare()}.
+	 * @param  arr an array
+	 * @return     an RMQ comparator that will compare elements in the array using {@code Integer.compare()}.
 	 */
 	public static RMQStaticComparator ofIntArray(int[] arr) {
-<span class="fc" id="L73">		Objects.requireNonNull(arr);</span>
-<span class="fc" id="L74">		return (i, j) -&gt; Integer.compare(arr[i], arr[j]);</span>
+<span class="fc" id="L67">		Objects.requireNonNull(arr);</span>
+<span class="fc" id="L68">		return (i, j) -&gt; Integer.compare(arr[i], arr[j]);</span>
 	}
 
 }

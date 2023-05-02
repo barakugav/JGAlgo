@@ -8,13 +8,12 @@ import java.util.Objects;
 /**
  * A red black tree that support extensions such as subtree size/min/max.
  * &lt;p&gt;
- * Each node in the balanced binary tree can maintain properties such as its
- * subtree size, or a reference to the minimum/maximum element in its subtree.
- * These properties can be updated during the regular operations of the red
+ * Each node in the balanced binary tree can maintain properties such as its subtree size, or a reference to the
+ * minimum/maximum element in its subtree. These properties can be updated during the regular operations of the red
  * black tree without increasing the asymptotical running time.
  * &lt;p&gt;
- * This red black tree implementation support arbitrary number of extensions,
- * for example a size and max extensions are used in this snippet:
+ * This red black tree implementation support arbitrary number of extensions, for example a size and max extensions are
+ * used in this snippet:
  *
  * &lt;pre&gt; {@code
  * RedBlackTreeExtension.Size&lt;Integer&gt; sizeExt = new RedBlackTreeExtension.Size&lt;&gt;();
@@ -42,161 +41,153 @@ public class RedBlackTreeExtended&lt;E&gt; extends RedBlackTree&lt;E&gt; {
 	private final RedBlackTreeExtension&lt;E&gt;[] extensions;
 
 	@SuppressWarnings(&quot;rawtypes&quot;)
-<span class="fc" id="L45">	private static final Node[] EmptyNodesArray = new Node[0];</span>
+<span class="fc" id="L44">	private static final Node[] EmptyNodesArray = new Node[0];</span>
 
 	/**
-	 * Constructs a new, empty red black tree, with the given extensions, sorted
-	 * according to the natural ordering of its elements.
+	 * Constructs a new, empty red black tree, with the given extensions, sorted according to the natural ordering of
+	 * its elements.
 	 * &lt;p&gt;
-	 * All elements inserted into the tree must implement the {@link Comparable}
-	 * interface. Furthermore, all such elements must be &lt;i&gt;mutually comparable&lt;/i&gt;:
-	 * {@code e1.compareTo(e2)} must not throw a {@code ClassCastException} for any
-	 * elements {@code e1} and {@code e2} in the tree. If the user attempts to
-	 * insert an element to the tree that violates this constraint (for example, the
-	 * user attempts to insert a string element to a tree whose elements are
-	 * integers), the {@code insert} call will throw a {@code ClassCastException}.
+	 * All elements inserted into the tree must implement the {@link Comparable} interface. Furthermore, all such
+	 * elements must be &lt;i&gt;mutually comparable&lt;/i&gt;: {@code e1.compareTo(e2)} must not throw a {@code ClassCastException}
+	 * for any elements {@code e1} and {@code e2} in the tree. If the user attempts to insert an element to the tree
+	 * that violates this constraint (for example, the user attempts to insert a string element to a tree whose elements
+	 * are integers), the {@code insert} call will throw a {@code ClassCastException}.
 	 * &lt;p&gt;
-	 * The provided extensions must be used souly by this tree. If an extension was
-	 * used in another tree, it should not be passed to a new one for reuse.
+	 * The provided extensions must be used souly by this tree. If an extension was used in another tree, it should not
+	 * be passed to a new one for reuse.
 	 *
-	 * @param extensions a collections of extensions to be used by this red black
-	 *                   tree.
+	 * @param  extensions               a collections of extensions to be used by this red black tree.
 	 * @throws IllegalArgumentException if the extensions collection is empty
 	 */
 	public RedBlackTreeExtended(Collection&lt;? extends RedBlackTreeExtension&lt;E&gt;&gt; extensions) {
-<span class="nc" id="L67">		this(null, extensions);</span>
-<span class="nc" id="L68">	}</span>
+<span class="nc" id="L63">		this(null, extensions);</span>
+<span class="nc" id="L64">	}</span>
 
 	/**
-	 * Constructs a new, empty red black tree, with the given extensions, sorted
-	 * according to the specified comparator.
+	 * Constructs a new, empty red black tree, with the given extensions, sorted according to the specified comparator.
 	 * &lt;p&gt;
-	 * All elements inserted into the tree must be &lt;i&gt;mutually comparable&lt;/i&gt; by the
-	 * specified comparator: {@code comparator.compare(e1, e2)} must not throw a
-	 * {@code ClassCastException} for any elements {@code e1} and {@code e2} in the
-	 * tree. If the user attempts to insert an element to the tree that violates
-	 * this constraint, the {@code insert} call will throw a
-	 * {@code ClassCastException}.
+	 * All elements inserted into the tree must be &lt;i&gt;mutually comparable&lt;/i&gt; by the specified comparator:
+	 * {@code comparator.compare(e1, e2)} must not throw a {@code ClassCastException} for any elements {@code e1} and
+	 * {@code e2} in the tree. If the user attempts to insert an element to the tree that violates this constraint, the
+	 * {@code insert} call will throw a {@code ClassCastException}.
 	 * &lt;p&gt;
-	 * The provided extensions must be used souly by this tree. If an extension was
-	 * used in another tree, it should not be passed to a new one for reuse.
+	 * The provided extensions must be used souly by this tree. If an extension was used in another tree, it should not
+	 * be passed to a new one for reuse.
 	 *
-	 * @param comparator the comparator that will be used to order this tree.
-	 *                   If {@code null}, the {@linkplain Comparable natural
-	 *                   ordering} of the elements will be used.
-	 * @param extensions a collections of extensions to be used by this red black
-	 *                   tree.
+	 * @param  comparator               the comparator that will be used to order this tree. If {@code null}, the
+	 *                                      {@linkplain Comparable natural ordering} of the elements will be used.
+	 * @param  extensions               a collections of extensions to be used by this red black tree.
 	 * @throws IllegalArgumentException if the extensions collection is empty
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public RedBlackTreeExtended(Comparator&lt;? super E&gt; comparator,
 			Collection&lt;? extends RedBlackTreeExtension&lt;E&gt;&gt; extensions) {
-<span class="fc" id="L94">		super(comparator);</span>
-<span class="pc bpc" id="L95" title="1 of 2 branches missed.">		if (extensions.isEmpty())</span>
-<span class="nc" id="L96">			throw new IllegalArgumentException(&quot;No extensions provided. Use the regular Red Black tree.&quot;);</span>
-<span class="fc" id="L97">		this.extensions = extensions.toArray(len -&gt; new RedBlackTreeExtension[len]);</span>
-<span class="fc bfc" id="L98" title="All 2 branches covered.">		for (RedBlackTreeExtension&lt;E&gt; extension : extensions)</span>
-<span class="fc" id="L99">			Objects.requireNonNull(extension);</span>
-<span class="fc" id="L100">		nodes = EmptyNodesArray;</span>
-<span class="fc" id="L101">	}</span>
+<span class="fc" id="L85">		super(comparator);</span>
+<span class="pc bpc" id="L86" title="1 of 2 branches missed.">		if (extensions.isEmpty())</span>
+<span class="nc" id="L87">			throw new IllegalArgumentException(&quot;No extensions provided. Use the regular Red Black tree.&quot;);</span>
+<span class="fc" id="L88">		this.extensions = extensions.toArray(len -&gt; new RedBlackTreeExtension[len]);</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">		for (RedBlackTreeExtension&lt;E&gt; extension : extensions)</span>
+<span class="fc" id="L90">			Objects.requireNonNull(extension);</span>
+<span class="fc" id="L91">		nodes = EmptyNodesArray;</span>
+<span class="fc" id="L92">	}</span>
 
 	@Override
 	Node&lt;E&gt; newNode(E e) {
-<span class="fc" id="L105">		int idx = size();</span>
-<span class="fc bfc" id="L106" title="All 2 branches covered.">		if (idx &gt;= nodes.length) {</span>
-<span class="fc" id="L107">			int newLen = Math.max(2, nodes.length * 2);</span>
-<span class="fc" id="L108">			nodes = Arrays.copyOf(nodes, newLen);</span>
-<span class="fc bfc" id="L109" title="All 2 branches covered.">			for (RedBlackTreeExtension&lt;E&gt; extension : extensions)</span>
-<span class="fc" id="L110">				extension.data.expand(newLen);</span>
+<span class="fc" id="L96">		int idx = size();</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">		if (idx &gt;= nodes.length) {</span>
+<span class="fc" id="L98">			int newLen = Math.max(2, nodes.length * 2);</span>
+<span class="fc" id="L99">			nodes = Arrays.copyOf(nodes, newLen);</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">			for (RedBlackTreeExtension&lt;E&gt; extension : extensions)</span>
+<span class="fc" id="L101">				extension.data.expand(newLen);</span>
 		}
-<span class="pc bpc" id="L112" title="1 of 2 branches missed.">		assert nodes[idx] == null;</span>
-<span class="fc" id="L113">		Node&lt;E&gt; n = nodes[idx] = new Node&lt;&gt;(e, idx);</span>
-<span class="fc bfc" id="L114" title="All 2 branches covered.">		for (RedBlackTreeExtension&lt;E&gt; extension : extensions)</span>
-<span class="fc" id="L115">			extension.initNode(n);</span>
-<span class="fc" id="L116">		return n;</span>
+<span class="pc bpc" id="L103" title="1 of 2 branches missed.">		assert nodes[idx] == null;</span>
+<span class="fc" id="L104">		Node&lt;E&gt; n = nodes[idx] = new Node&lt;&gt;(e, idx);</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">		for (RedBlackTreeExtension&lt;E&gt; extension : extensions)</span>
+<span class="fc" id="L106">			extension.initNode(n);</span>
+<span class="fc" id="L107">		return n;</span>
 	}
 
 	@Override
 	void removeNode(RedBlackTree.Node&lt;E&gt; n0) {
-<span class="fc" id="L121">		super.removeNode(n0);</span>
-<span class="fc" id="L122">		Node&lt;E&gt; n = (Node&lt;E&gt;) n0;</span>
-<span class="fc" id="L123">		int nIdx = n.idx;</span>
-<span class="pc bpc" id="L124" title="1 of 2 branches missed.">		assert nodes[nIdx] == n;</span>
+<span class="fc" id="L112">		super.removeNode(n0);</span>
+<span class="fc" id="L113">		Node&lt;E&gt; n = (Node&lt;E&gt;) n0;</span>
+<span class="fc" id="L114">		int nIdx = n.idx;</span>
+<span class="pc bpc" id="L115" title="1 of 2 branches missed.">		assert nodes[nIdx] == n;</span>
 
-<span class="fc" id="L126">		int lastIdx = size();</span>
-<span class="fc" id="L127">		Node&lt;E&gt; last = nodes[lastIdx];</span>
-<span class="pc bpc" id="L128" title="1 of 2 branches missed.">		assert last.idx == lastIdx;</span>
-<span class="fc" id="L129">		nodes[nIdx] = last;</span>
+<span class="fc" id="L117">		int lastIdx = size();</span>
+<span class="fc" id="L118">		Node&lt;E&gt; last = nodes[lastIdx];</span>
+<span class="pc bpc" id="L119" title="1 of 2 branches missed.">		assert last.idx == lastIdx;</span>
+<span class="fc" id="L120">		nodes[nIdx] = last;</span>
 
-<span class="fc" id="L131">		nodes[lastIdx] = null;</span>
+<span class="fc" id="L122">		nodes[lastIdx] = null;</span>
 
-<span class="fc bfc" id="L133" title="All 2 branches covered.">		for (RedBlackTreeExtension&lt;E&gt; extension : extensions) {</span>
-<span class="fc" id="L134">			extension.data.swap(nIdx, lastIdx);</span>
-<span class="fc" id="L135">			extension.data.clear(lastIdx);</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">		for (RedBlackTreeExtension&lt;E&gt; extension : extensions) {</span>
+<span class="fc" id="L125">			extension.data.swap(nIdx, lastIdx);</span>
+<span class="fc" id="L126">			extension.data.clear(lastIdx);</span>
 		}
-<span class="fc" id="L137">		last.idx = nIdx;</span>
-<span class="fc" id="L138">		n.idx = -1;</span>
-<span class="fc" id="L139">	}</span>
+<span class="fc" id="L128">		last.idx = nIdx;</span>
+<span class="fc" id="L129">		n.idx = -1;</span>
+<span class="fc" id="L130">	}</span>
 
 	@Override
 	void swap(RedBlackTree.Node&lt;E&gt; a, RedBlackTree.Node&lt;E&gt; b) {
-<span class="fc" id="L143">		Node&lt;E&gt; n1 = (Node&lt;E&gt;) a, n2 = (Node&lt;E&gt;) b;</span>
-<span class="fc bfc" id="L144" title="All 2 branches covered.">		for (RedBlackTreeExtension&lt;E&gt; extension : extensions)</span>
-<span class="fc" id="L145">			extension.beforeNodeSwap((Node&lt;E&gt;) a, (Node&lt;E&gt;) b);</span>
-<span class="fc" id="L146">		super.swap(n1, n2);</span>
-<span class="fc" id="L147">	}</span>
+<span class="fc" id="L134">		Node&lt;E&gt; n1 = (Node&lt;E&gt;) a, n2 = (Node&lt;E&gt;) b;</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">		for (RedBlackTreeExtension&lt;E&gt; extension : extensions)</span>
+<span class="fc" id="L136">			extension.beforeNodeSwap((Node&lt;E&gt;) a, (Node&lt;E&gt;) b);</span>
+<span class="fc" id="L137">		super.swap(n1, n2);</span>
+<span class="fc" id="L138">	}</span>
 
 	@Override
 	void afterInsert(RedBlackTree.Node&lt;E&gt; n) {
-<span class="fc bfc" id="L151" title="All 2 branches covered.">		for (RedBlackTreeExtension&lt;E&gt; extension : extensions)</span>
-<span class="fc" id="L152">			extension.afterInsert((Node&lt;E&gt;) n);</span>
-<span class="fc" id="L153">	}</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">		for (RedBlackTreeExtension&lt;E&gt; extension : extensions)</span>
+<span class="fc" id="L143">			extension.afterInsert((Node&lt;E&gt;) n);</span>
+<span class="fc" id="L144">	}</span>
 
 	@Override
 	void beforeRemove(RedBlackTree.Node&lt;E&gt; n) {
-<span class="fc bfc" id="L157" title="All 2 branches covered.">		for (RedBlackTreeExtension&lt;E&gt; extension : extensions)</span>
-<span class="fc" id="L158">			extension.beforeRemove((Node&lt;E&gt;) n);</span>
-<span class="fc" id="L159">	}</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">		for (RedBlackTreeExtension&lt;E&gt; extension : extensions)</span>
+<span class="fc" id="L149">			extension.beforeRemove((Node&lt;E&gt;) n);</span>
+<span class="fc" id="L150">	}</span>
 
 	@Override
 	void beforeRotateLeft(RedBlackTree.Node&lt;E&gt; n) {
-<span class="fc bfc" id="L163" title="All 2 branches covered.">		for (RedBlackTreeExtension&lt;E&gt; extension : extensions)</span>
-<span class="fc" id="L164">			extension.beforeRotateLeft((Node&lt;E&gt;) n);</span>
-<span class="fc" id="L165">	}</span>
+<span class="fc bfc" id="L154" title="All 2 branches covered.">		for (RedBlackTreeExtension&lt;E&gt; extension : extensions)</span>
+<span class="fc" id="L155">			extension.beforeRotateLeft((Node&lt;E&gt;) n);</span>
+<span class="fc" id="L156">	}</span>
 
 	@Override
 	void beforeRotateRight(RedBlackTree.Node&lt;E&gt; n) {
-<span class="fc bfc" id="L169" title="All 2 branches covered.">		for (RedBlackTreeExtension&lt;E&gt; extension : extensions)</span>
-<span class="fc" id="L170">			extension.beforeRotateRight((Node&lt;E&gt;) n);</span>
-<span class="fc" id="L171">	}</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">		for (RedBlackTreeExtension&lt;E&gt; extension : extensions)</span>
+<span class="fc" id="L161">			extension.beforeRotateRight((Node&lt;E&gt;) n);</span>
+<span class="fc" id="L162">	}</span>
 
 	@Override
 	public void clear() {
-<span class="nc" id="L175">		int s = size();</span>
-<span class="nc bnc" id="L176" title="All 2 branches missed.">		for (RedBlackTreeExtension&lt;E&gt; extension : extensions)</span>
-<span class="nc" id="L177">			extension.data.clear(s);</span>
-<span class="nc" id="L178">		super.clear();</span>
-<span class="nc" id="L179">	}</span>
+<span class="nc" id="L166">		int s = size();</span>
+<span class="nc bnc" id="L167" title="All 2 branches missed.">		for (RedBlackTreeExtension&lt;E&gt; extension : extensions)</span>
+<span class="nc" id="L168">			extension.data.clear(s);</span>
+<span class="nc" id="L169">		super.clear();</span>
+<span class="nc" id="L170">	}</span>
 
 	static class Node&lt;E&gt; extends RedBlackTree.Node&lt;E&gt; {
 
 		int idx;
 
 		Node(E e, int idx) {
-<span class="fc" id="L186">			super(e);</span>
-<span class="fc" id="L187">			this.idx = idx;</span>
-<span class="fc" id="L188">		}</span>
+<span class="fc" id="L177">			super(e);</span>
+<span class="fc" id="L178">			this.idx = idx;</span>
+<span class="fc" id="L179">		}</span>
 
 		Node&lt;E&gt; parent() {
-<span class="fc" id="L191">			return (Node&lt;E&gt;) parent;</span>
+<span class="fc" id="L182">			return (Node&lt;E&gt;) parent;</span>
 		}
 
 		Node&lt;E&gt; left() {
-<span class="fc" id="L195">			return (Node&lt;E&gt;) left;</span>
+<span class="fc" id="L186">			return (Node&lt;E&gt;) left;</span>
 		}
 
 		Node&lt;E&gt; right() {
-<span class="fc" id="L199">			return (Node&lt;E&gt;) right;</span>
+<span class="fc" id="L190">			return (Node&lt;E&gt;) right;</span>
 		}
 
 	}

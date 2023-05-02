@@ -8,30 +8,25 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 /**
  * A* shortest path algorithm.
  * &lt;p&gt;
- * The A star (\(A^*\)) algorithm try to find the shortest path from a source to
- * target vertex. It uses a heuristic that map a vertex to an estimation of its
- * distance from the target position.
+ * The A star (\(A^*\)) algorithm try to find the shortest path from a source to target vertex. It uses a heuristic that
+ * map a vertex to an estimation of its distance from the target position.
  * &lt;p&gt;
- * An advantage of the \(A^*\) algorithm over other {@link SSSP} algorithm, is that
- * it can terminate much faster for the specific source and target, especially
- * if the heuristic is good.
+ * An advantage of the \(A^*\) algorithm over other {@link SSSP} algorithm, is that it can terminate much faster for the
+ * specific source and target, especially if the heuristic is good.
  * &lt;p&gt;
- * The running time of this algorithm is \(O(m + n \log n)\) in the worse
- * case, and it uses linear space.
+ * The running time of this algorithm is \(O(m + n \log n)\) in the worse case, and it uses linear space.
  *
- * @see &lt;a href=
- *      &quot;https://en.wikipedia.org/wiki/A*_search_algorithm&quot;&gt;Wikipedia&lt;/a&gt;
+ * @see    &lt;a href= &quot;https://en.wikipedia.org/wiki/A*_search_algorithm&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
  */
 public class AStar {
 
-<span class="fc" id="L28">	private HeapReferenceable.Builder heapBuilder = HeapPairing::new;</span>
+<span class="fc" id="L24">	private HeapReferenceable.Builder heapBuilder = HeapPairing::new;</span>
 
 	/**
 	 * Construct a new AStart algorithm.
 	 */
-<span class="fc" id="L33">	public AStar() {</span>
-<span class="fc" id="L34">	}</span>
+<span class="fc" id="L29">	public AStar() {}</span>
 
 	/**
 	 * Set the implementation of the heap used by this algorithm.
@@ -39,67 +34,66 @@ public class AStar {
 	 * @param heapBuilder a builder for heaps used by this algorithm
 	 */
 	public void setHeapBuilder(HeapReferenceable.Builder heapBuilder) {
-<span class="nc" id="L42">		this.heapBuilder = Objects.requireNonNull(heapBuilder);</span>
-<span class="nc" id="L43">	}</span>
+<span class="nc" id="L37">		this.heapBuilder = Objects.requireNonNull(heapBuilder);</span>
+<span class="nc" id="L38">	}</span>
 
 	/**
 	 * Compute the shortest path between two vertices in a graph.
 	 *
-	 * @param g          a graph
-	 * @param w          an edge weight function
-	 * @param source     a source vertex
-	 * @param target     a target vertex
-	 * @param vHeuristic a heuristic function that map each vertex to
-	 *                   {@code double}. The heuristic should be close to the real
-	 *                   distance of each vertex to the target.
-	 * @return the short path found from {@code source} to {@code target}
+	 * @param  g          a graph
+	 * @param  w          an edge weight function
+	 * @param  source     a source vertex
+	 * @param  target     a target vertex
+	 * @param  vHeuristic a heuristic function that map each vertex to {@code double}. The heuristic should be close to
+	 *                        the real distance of each vertex to the target.
+	 * @return            the short path found from {@code source} to {@code target}
 	 */
 	public Path computeShortestPath(Graph g, EdgeWeightFunc w, int source, int target, IntToDoubleFunction vHeuristic) {
-<span class="fc bfc" id="L58" title="All 2 branches covered.">		if (source == target)</span>
-<span class="fc" id="L59">			return new Path(g, source, target, IntLists.emptyList());</span>
-<span class="fc" id="L60">		int n = g.vertices().size();</span>
-<span class="fc" id="L61">		HeapReferenceable&lt;HeapElm&gt; heap = heapBuilder.build();</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">		if (source == target)</span>
+<span class="fc" id="L53">			return new Path(g, source, target, IntLists.emptyList());</span>
+<span class="fc" id="L54">		int n = g.vertices().size();</span>
+<span class="fc" id="L55">		HeapReferenceable&lt;HeapElm&gt; heap = heapBuilder.build();</span>
 		@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L63">		HeapReference&lt;HeapElm&gt;[] verticesPtrs = new HeapReference[n];</span>
+<span class="fc" id="L57">		HeapReference&lt;HeapElm&gt;[] verticesPtrs = new HeapReference[n];</span>
 
-<span class="fc" id="L65">		SSSPResultImpl res = new SSSPResultImpl(g, source);</span>
-<span class="fc" id="L66">		res.distances[source] = 0;</span>
+<span class="fc" id="L59">		SSSPResultImpl res = new SSSPResultImpl(g, source);</span>
+<span class="fc" id="L60">		res.distances[source] = 0;</span>
 
-<span class="fc" id="L68">		for (int u = source;;) {</span>
-<span class="fc bfc" id="L69" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
-<span class="fc" id="L70">				int e = eit.nextInt();</span>
-<span class="fc" id="L71">				int v = eit.v();</span>
-<span class="fc" id="L72">				double ws = w.weight(e);</span>
-<span class="pc bpc" id="L73" title="1 of 2 branches missed.">				if (ws &lt; 0)</span>
-<span class="nc" id="L74">					throw new IllegalArgumentException(&quot;negative weights are not supported&quot;);</span>
-<span class="fc" id="L75">				double distance = res.distances[u] + ws;</span>
-<span class="fc bfc" id="L76" title="All 2 branches covered.">				if (distance &gt;= res.distances[v])</span>
-<span class="fc" id="L77">					continue;</span>
-<span class="fc" id="L78">				res.distances[v] = distance;</span>
-<span class="fc" id="L79">				res.backtrack[v] = e;</span>
-<span class="fc" id="L80">				double distanceAstimate = distance + vHeuristic.applyAsDouble(v);</span>
+<span class="fc" id="L62">		for (int u = source;;) {</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
+<span class="fc" id="L64">				int e = eit.nextInt();</span>
+<span class="fc" id="L65">				int v = eit.v();</span>
+<span class="fc" id="L66">				double ws = w.weight(e);</span>
+<span class="pc bpc" id="L67" title="1 of 2 branches missed.">				if (ws &lt; 0)</span>
+<span class="nc" id="L68">					throw new IllegalArgumentException(&quot;negative weights are not supported&quot;);</span>
+<span class="fc" id="L69">				double distance = res.distances[u] + ws;</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">				if (distance &gt;= res.distances[v])</span>
+<span class="fc" id="L71">					continue;</span>
+<span class="fc" id="L72">				res.distances[v] = distance;</span>
+<span class="fc" id="L73">				res.backtrack[v] = e;</span>
+<span class="fc" id="L74">				double distanceAstimate = distance + vHeuristic.applyAsDouble(v);</span>
 
-<span class="fc" id="L82">				HeapReference&lt;HeapElm&gt; vPtr = verticesPtrs[v];</span>
-<span class="fc bfc" id="L83" title="All 2 branches covered.">				if (vPtr == null) {</span>
-<span class="fc" id="L84">					verticesPtrs[v] = heap.insert(new HeapElm(distanceAstimate, v));</span>
+<span class="fc" id="L76">				HeapReference&lt;HeapElm&gt; vPtr = verticesPtrs[v];</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">				if (vPtr == null) {</span>
+<span class="fc" id="L78">					verticesPtrs[v] = heap.insert(new HeapElm(distanceAstimate, v));</span>
 				} else {
-<span class="fc" id="L86">					HeapElm ptr = vPtr.get();</span>
-<span class="fc bfc" id="L87" title="All 2 branches covered.">					if (distanceAstimate &lt; ptr.distanceAstimate) {</span>
-<span class="fc" id="L88">						ptr.distanceAstimate = distanceAstimate;</span>
-<span class="fc" id="L89">						heap.decreaseKey(vPtr, ptr);</span>
+<span class="fc" id="L80">					HeapElm ptr = vPtr.get();</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">					if (distanceAstimate &lt; ptr.distanceAstimate) {</span>
+<span class="fc" id="L82">						ptr.distanceAstimate = distanceAstimate;</span>
+<span class="fc" id="L83">						heap.decreaseKey(vPtr, ptr);</span>
 					}
 				}
-<span class="fc" id="L92">			}</span>
+<span class="fc" id="L86">			}</span>
 
-<span class="fc bfc" id="L94" title="All 2 branches covered.">			if (heap.isEmpty())</span>
-<span class="fc" id="L95">				break;</span>
-<span class="fc" id="L96">			HeapElm next = heap.extractMin();</span>
-<span class="fc" id="L97">			verticesPtrs[next.v] = null;</span>
-<span class="fc" id="L98">			u = next.v;</span>
-<span class="fc bfc" id="L99" title="All 2 branches covered.">			if (u == target)</span>
-<span class="fc" id="L100">				return res.getPath(target);</span>
-<span class="fc" id="L101">		}</span>
-<span class="fc" id="L102">		return null;</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">			if (heap.isEmpty())</span>
+<span class="fc" id="L89">				break;</span>
+<span class="fc" id="L90">			HeapElm next = heap.extractMin();</span>
+<span class="fc" id="L91">			verticesPtrs[next.v] = null;</span>
+<span class="fc" id="L92">			u = next.v;</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">			if (u == target)</span>
+<span class="fc" id="L94">				return res.getPath(target);</span>
+<span class="fc" id="L95">		}</span>
+<span class="fc" id="L96">		return null;</span>
 	}
 
 	private static class HeapElm implements Comparable&lt;HeapElm&gt; {
@@ -107,14 +101,14 @@ public class AStar {
 		double distanceAstimate;
 		final int v;
 
-<span class="fc" id="L110">		HeapElm(double distanceAstimate, int v) {</span>
-<span class="fc" id="L111">			this.distanceAstimate = distanceAstimate;</span>
-<span class="fc" id="L112">			this.v = v;</span>
-<span class="fc" id="L113">		}</span>
+<span class="fc" id="L104">		HeapElm(double distanceAstimate, int v) {</span>
+<span class="fc" id="L105">			this.distanceAstimate = distanceAstimate;</span>
+<span class="fc" id="L106">			this.v = v;</span>
+<span class="fc" id="L107">		}</span>
 
 		@Override
 		public int compareTo(HeapElm o) {
-<span class="fc" id="L117">			return Double.compare(distanceAstimate, o.distanceAstimate);</span>
+<span class="fc" id="L111">			return Double.compare(distanceAstimate, o.distanceAstimate);</span>
 		}
 
 	}

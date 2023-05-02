@@ -5,19 +5,15 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 /**
  * Maximum weighted matching algorithm.
  * &lt;p&gt;
- * Given a graph \(G=(V,E)\), a matching is a sub set of edges \(M\)
- * such that any vertex in \(V\) have at most one adjacent edge in
- * \(M\). A maximum matching is a matching with the maximum edges weight sum
- * with respect to some weight function. The 'maximum matching' with out weight
- * is referred as 'maximum cardinality matching'.
+ * Given a graph \(G=(V,E)\), a matching is a sub set of edges \(M\) such that any vertex in \(V\) have at most one
+ * adjacent edge in \(M\). A maximum matching is a matching with the maximum edges weight sum with respect to some
+ * weight function. The 'maximum matching' with out weight is referred as 'maximum cardinality matching'.
  * &lt;p&gt;
- * A perfect maximum matching is a matching with the maximum edges weight sum
- * out of all the matching with are maximum cardinality matching. Note that the
- * weight of a perfect maximum matching is smaller or equal to the weight of a
+ * A perfect maximum matching is a matching with the maximum edges weight sum out of all the matching with are maximum
+ * cardinality matching. Note that the weight of a perfect maximum matching is smaller or equal to the weight of a
  * maximum weight matching.
  *
- * @see &lt;a href=
- *      &quot;https://en.wikipedia.org/wiki/Maximum_weight_matching&quot;&gt;Wikipedia&lt;/a&gt;
+ * @see    &lt;a href= &quot;https://en.wikipedia.org/wiki/Maximum_weight_matching&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
  */
 public interface MaximumMatchingWeighted extends MaximumMatching {
@@ -25,19 +21,18 @@ public interface MaximumMatchingWeighted extends MaximumMatching {
 	/**
 	 * Compute the maximum weighted matching of a weighted undirected graph.
 	 *
-	 * @param g an undirected graph
-	 * @param w an edge weight function
-	 * @return collection of edges representing the matching
+	 * @param  g an undirected graph
+	 * @param  w an edge weight function
+	 * @return   collection of edges representing the matching
 	 */
 	public IntCollection computeMaximumMatching(UGraph g, EdgeWeightFunc w);
 
 	/**
 	 * Compute the maximum perfect matching of a weighted undirected graph.
 	 *
-	 * @param g an undirected graph
-	 * @param w an edge weight function
-	 * @return collection of edges representing perfect matching, or the maximal one
-	 *         if no perfect one found
+	 * @param  g an undirected graph
+	 * @param  w an edge weight function
+	 * @return   collection of edges representing perfect matching, or the maximal one if no perfect one found
 	 */
 	public IntCollection computeMaximumPerfectMatching(UGraph g, EdgeWeightFunc w);
 
@@ -48,33 +43,31 @@ public interface MaximumMatchingWeighted extends MaximumMatching {
 	 */
 	@Override
 	default IntCollection computeMaximumMatching(UGraph g) {
-<span class="fc" id="L51">		return computeMaximumMatching(g, e -&gt; 1);</span>
+<span class="fc" id="L46">		return computeMaximumMatching(g, e -&gt; 1);</span>
 	}
 
 	/**
 	 * Create a new maximum weighted matching algorithm builder.
 	 * &lt;p&gt;
-	 * This is the recommended way to instantiate a new {@link MaximumMatchingWeighted}
-	 * object.
+	 * This is the recommended way to instantiate a new {@link MaximumMatchingWeighted} object.
 	 *
-	 * @return a new builder that can build {@link MaximumMatchingWeighted}
-	 *         objects
+	 * @return a new builder that can build {@link MaximumMatchingWeighted} objects
 	 */
 	static MaximumMatchingWeighted.Builder newBuilder() {
-<span class="nc" id="L64">		return new MaximumMatchingWeighted.Builder() {</span>
+<span class="nc" id="L57">		return new MaximumMatchingWeighted.Builder() {</span>
 
-<span class="nc" id="L66">			boolean isBipartite = false;</span>
+<span class="nc" id="L59">			boolean isBipartite = false;</span>
 
 			@Override
 			public MaximumMatchingWeighted build() {
-<span class="nc bnc" id="L70" title="All 2 branches missed.">				return isBipartite ? new MaximumMatchingWeightedBipartiteHungarianMethod()</span>
-<span class="nc" id="L71">						: new MaximumMatchingWeightedGabow1990();</span>
+<span class="nc bnc" id="L63" title="All 2 branches missed.">				return isBipartite ? new MaximumMatchingWeightedBipartiteHungarianMethod()</span>
+<span class="nc" id="L64">						: new MaximumMatchingWeightedGabow1990();</span>
 			}
 
 			@Override
 			public Builder setBipartite(boolean bipartite) {
-<span class="nc" id="L76">				isBipartite = bipartite;</span>
-<span class="nc" id="L77">				return this;</span>
+<span class="nc" id="L69">				isBipartite = bipartite;</span>
+<span class="nc" id="L70">				return this;</span>
 			}
 		};
 	}
@@ -82,7 +75,7 @@ public interface MaximumMatchingWeighted extends MaximumMatching {
 	/**
 	 * A builder for {@link MaximumMatchingWeighted} objects.
 	 *
-	 * @see MaximumMatchingWeighted#newBuilder()
+	 * @see    MaximumMatchingWeighted#newBuilder()
 	 * @author Barak Ugav
 	 */
 	static interface Builder extends MaximumMatching.Builder {

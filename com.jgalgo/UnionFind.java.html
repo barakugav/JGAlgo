@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UnionFind.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">UnionFind.java</span></div><h1>UnionFind.java</h1><pre class="source lang-java linenums">package com.jgalgo;
 
 /**
- * Data structure of a finite set of elements supporting union and find
- * operations.
+ * Data structure of a finite set of elements supporting union and find operations.
  * &lt;p&gt;
- * The Union Find data structure stores a collection of disjoint sets. Each such
- * set has some representative element, which is an arbitrary element from the
- * set. Three basic operations are supported:
+ * The Union Find data structure stores a collection of disjoint sets. Each such set has some representative element,
+ * which is an arbitrary element from the set. Three basic operations are supported:
  * &lt;ul&gt;
  * &lt;li&gt;{@link #make()} - create a new element in a new set.&lt;/li&gt;
- * &lt;li&gt;{@link #find(int)} - find the representative of the set of an element
- * (return the same representative for any element in the set).&lt;/li&gt;
+ * &lt;li&gt;{@link #find(int)} - find the representative of the set of an element (return the same representative for any
+ * element in the set).&lt;/li&gt;
  * &lt;li&gt;{@link #union(int, int)} - union the sets of two elements.&lt;/li&gt;
  * &lt;/ul&gt;
  *
@@ -29,8 +27,7 @@
  * assert uf.find(x1) != uf.find(x3);
  * }&lt;/pre&gt;
  *
- * @see &lt;a href=
- *      &quot;https://en.wikipedia.org/wiki/Disjoint-set_data_structure&quot;&gt;Wikipedia&lt;/a&gt;
+ * @see    &lt;a href= &quot;https://en.wikipedia.org/wiki/Disjoint-set_data_structure&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
  */
 public interface UnionFind {
@@ -45,20 +42,19 @@ public interface UnionFind {
 	/**
 	 * Find the set of an element and get an arbitrary element from it.
 	 * &lt;p&gt;
-	 * {@code find(a) == find(b)} if an only if {@code a} and {@code b} are in the
-	 * same set.
+	 * {@code find(a) == find(b)} if an only if {@code a} and {@code b} are in the same set.
 	 *
-	 * @param x element in the data structure
-	 * @return arbitrary element from the set of x
+	 * @param  x element in the data structure
+	 * @return   arbitrary element from the set of x
 	 */
 	public int find(int x);
 
 	/**
 	 * Union the two sets of {@code a} and {@code b}.
 	 *
-	 * @param a the first element
-	 * @param b the second element
-	 * @return arbitrary element from the union of sets of {@code a} and {@code b}.
+	 * @param  a the first element
+	 * @param  b the second element
+	 * @return   arbitrary element from the union of sets of {@code a} and {@code b}.
 	 */
 	public int union(int a, int b);
 
@@ -79,19 +75,18 @@ public interface UnionFind {
 	/**
 	 * Create a new union-find data structure builder.
 	 * &lt;p&gt;
-	 * This is the recommended way to instantiate a new {@link UnionFind}
-	 * object.
+	 * This is the recommended way to instantiate a new {@link UnionFind} object.
 	 *
 	 * @return a new builder that can build {@link UnionFind} objects
 	 */
 	static UnionFind.Builder newBuilder() {
-<span class="nc" id="L88">		return UnionFindArray::new;</span>
+<span class="nc" id="L83">		return UnionFindArray::new;</span>
 	}
 
 	/**
 	 * A builder for {@link UnionFind} objects.
 	 *
-	 * @see UnionFind#newBuilder()
+	 * @see    UnionFind#newBuilder()
 	 * @author Barak Ugav
 	 */
 	static interface Builder {

@@ -5,22 +5,20 @@ import java.util.Comparator;
 /**
  * Binary search tree data structure.
  * &lt;p&gt;
- * In addition to all {@link HeapReferenceable} operations, a binary search tree
- * (BST) allow for an efficient search for an element, not just
- * {@link Heap#findMin()}. Every element could be found in \(O(\log n)\)
- * time, notably {@link #findMax()} in addition to {@link Heap#findMin()}. Also,
- * given an element, the nearest (smaller or larger) element in the tree can be
- * found efficiently.
+ * In addition to all {@link HeapReferenceable} operations, a binary search tree (BST) allow for an efficient search for
+ * an element, not just {@link Heap#findMin()}. Every element could be found in \(O(\log n)\) time, notably
+ * {@link #findMax()} in addition to {@link Heap#findMin()}. Also, given an element, the nearest (smaller or larger)
+ * element in the tree can be found efficiently.
  *
- * @param &lt;E&gt; the elements type
- * @author Barak Ugav
+ * @param  &lt;E&gt; the elements type
+ * @author     Barak Ugav
  */
 public interface BinarySearchTree&lt;E&gt; extends HeapReferenceable&lt;E&gt; {
 
 	/**
 	 * Find the maximum element in the tree.
 	 *
-	 * @return the maximum element in the tree
+	 * @return                       the maximum element in the tree
 	 * @throws IllegalStateException if the tree is empty
 	 */
 	public E findMax();
@@ -28,7 +26,7 @@ public interface BinarySearchTree&lt;E&gt; extends HeapReferenceable&lt;E&gt; {
 	/**
 	 * Extract the maximum element in the tree.
 	 *
-	 * @return the maximum element in the tree
+	 * @return                       the maximum element in the tree
 	 * @throws IllegalStateException if the tree is empty
 	 */
 	public E extractMax();
@@ -36,46 +34,43 @@ public interface BinarySearchTree&lt;E&gt; extends HeapReferenceable&lt;E&gt; {
 	/**
 	 * Find maximal element in the tree and return a reference to it.
 	 *
-	 * @return a reference to the maximal element in the tree
+	 * @return                       a reference to the maximal element in the tree
 	 * @throws IllegalStateException if the tree is empty
 	 */
 	public HeapReference&lt;E&gt; findMaxRef();
 
 	/**
-	 * Search for an element in the tree or the greatest element strictly smaller
-	 * (predecessor) than it if it's not found.
+	 * Search for an element in the tree or the greatest element strictly smaller (predecessor) than it if it's not
+	 * found.
 	 *
-	 * @param e the search element
-	 * @return reference to the searched element or it's predecessor if the element
-	 *         is not found, or null if there is no predecessor
+	 * @param  e the search element
+	 * @return   reference to the searched element or it's predecessor if the element is not found, or null if there is
+	 *           no predecessor
 	 */
 	public HeapReference&lt;E&gt; findOrSmaller(E e);
 
 	/**
-	 * Search for an element in the tree or the smallest element strictly greater
-	 * (successor) than it if it's not found.
+	 * Search for an element in the tree or the smallest element strictly greater (successor) than it if it's not found.
 	 *
-	 * @param e the search element
-	 * @return reference to the searched element or it's successor if the element is
-	 *         not found, or null if there is no successor
+	 * @param  e the search element
+	 * @return   reference to the searched element or it's successor if the element is not found, or null if there is no
+	 *           successor
 	 */
 	public HeapReference&lt;E&gt; findOrGreater(E e);
 
 	/**
 	 * Find the greatest element strictly smaller than an element.
 	 *
-	 * @param e an element
-	 * @return reference to the predecessor element with strictly smaller value or
-	 *         null if no such exists
+	 * @param  e an element
+	 * @return   reference to the predecessor element with strictly smaller value or null if no such exists
 	 */
 	public HeapReference&lt;E&gt; findSmaller(E e);
 
 	/**
 	 * Find the smallest element strictly greater than an element.
 	 *
-	 * @param e an element
-	 * @return reference to the successor element with strictly greater value or
-	 *         null if no such exists
+	 * @param  e an element
+	 * @return   reference to the successor element with strictly greater value or null if no such exists
 	 */
 	public HeapReference&lt;E&gt; findGreater(E e);
 
@@ -83,17 +78,16 @@ public interface BinarySearchTree&lt;E&gt; extends HeapReferenceable&lt;E&gt; {
 	 * Get the predecessor of a node in the tree.
 	 *
 	 * &lt;p&gt;
-	 * The predecessor node depends on the tree structure. If there are no duplicate
-	 * values, the predecessor is the greatest value strictly smaller than the given
-	 * element. If there are duplicate values, it may be smaller or equal.
+	 * The predecessor node depends on the tree structure. If there are no duplicate values, the predecessor is the
+	 * greatest value strictly smaller than the given element. If there are duplicate values, it may be smaller or
+	 * equal.
 	 * &lt;p&gt;
-	 * This method behavior is undefined if the reference is not valid, namely it
-	 * reference to an element already removed, or to an element in another heap.
+	 * This method behavior is undefined if the reference is not valid, namely it reference to an element already
+	 * removed, or to an element in another heap.
 	 *
-	 * @param ref reference to an element in the tree
-	 * @return reference to the predecessor element in the tree, that is an element
-	 *         smaller or equal to the given referenced element, or null if no such
-	 *         predecessor exists
+	 * @param  ref reference to an element in the tree
+	 * @return     reference to the predecessor element in the tree, that is an element smaller or equal to the given
+	 *             referenced element, or null if no such predecessor exists
 	 */
 	public HeapReference&lt;E&gt; getPredecessor(HeapReference&lt;E&gt; ref);
 
@@ -101,103 +95,95 @@ public interface BinarySearchTree&lt;E&gt; extends HeapReferenceable&lt;E&gt; {
 	 * Finds the successor of an element in the tree.
 	 *
 	 * &lt;p&gt;
-	 * The successor node depends on the tree structure. If there are no duplicate
-	 * values, the successor is the smallest value strictly greater than the given
-	 * element. If there are duplicate values, it may be greater or equal.
+	 * The successor node depends on the tree structure. If there are no duplicate values, the successor is the smallest
+	 * value strictly greater than the given element. If there are duplicate values, it may be greater or equal.
 	 * &lt;p&gt;
-	 * This method behavior is undefined if the reference is not valid, namely it
-	 * reference to an element already removed, or to an element in another heap.
+	 * This method behavior is undefined if the reference is not valid, namely it reference to an element already
+	 * removed, or to an element in another heap.
 	 *
-	 * @param ref reference to an element in the tree
-	 * @return reference to the successor element in the tree, that is an element
-	 *         greater or equal to the given referenced element, or null if no such
-	 *         successor exists
+	 * @param  ref reference to an element in the tree
+	 * @return     reference to the successor element in the tree, that is an element greater or equal to the given
+	 *             referenced element, or null if no such successor exists
 	 */
 	public HeapReference&lt;E&gt; getSuccessor(HeapReference&lt;E&gt; ref);
 
 	/**
-	 * Split the current BST into two different BSTs with elements strictly smaller
-	 * and greater or equal than an element.
+	 * Split the current BST into two different BSTs with elements strictly smaller and greater or equal than an
+	 * element.
 	 *
 	 * &lt;p&gt;
-	 * After this operation, all elements in this tree will be greater or equal than
-	 * the given element, and the returned new tree will contain elements strictly
-	 * smaller than the given element.
+	 * After this operation, all elements in this tree will be greater or equal than the given element, and the returned
+	 * new tree will contain elements strictly smaller than the given element.
 	 *
-	 * @param e a pivot element
-	 * @return new tree with elements strictly smaller than the given element
+	 * @param  e a pivot element
+	 * @return   new tree with elements strictly smaller than the given element
 	 */
 	public BinarySearchTree&lt;E&gt; splitSmaller(E e);
 
 	/**
-	 * Split the current BST into two different BSTs with elements smaller or equal
-	 * and strictly greater than an element.
+	 * Split the current BST into two different BSTs with elements smaller or equal and strictly greater than an
+	 * element.
 	 *
 	 * &lt;p&gt;
-	 * After this operation, all elements in this tree will be smaller or equal than
-	 * the given element, and the returned new tree will contain elements strictly
-	 * greater than the given element.
+	 * After this operation, all elements in this tree will be smaller or equal than the given element, and the returned
+	 * new tree will contain elements strictly greater than the given element.
 	 *
-	 * @param e a pivot element
-	 * @return new tree with elements strictly greater than the given element
+	 * @param  e a pivot element
+	 * @return   new tree with elements strictly greater than the given element
 	 */
 	public BinarySearchTree&lt;E&gt; splitGreater(E e);
 
 	/**
-	 * Split the current BST into two different BSTs with elements smaller and
-	 * bigger than an element.
+	 * Split the current BST into two different BSTs with elements smaller and bigger than an element.
 	 *
 	 * &lt;p&gt;
-	 * After this operation, all elements in this tree will be smaller or equal to
-	 * the given element, and the returned new tree will contain elements greater
-	 * than the given element. If the tree contains duplications of the given
-	 * element, the elements in the returned tree will be to greater or equal
-	 * (rather than strictly greater). To split a tree more precisely, use
-	 * {@link #splitSmaller(Object)} or {@link #splitGreater(Object)}.
+	 * After this operation, all elements in this tree will be smaller or equal to the given element, and the returned
+	 * new tree will contain elements greater than the given element. If the tree contains duplications of the given
+	 * element, the elements in the returned tree will be to greater or equal (rather than strictly greater). To split a
+	 * tree more precisely, use {@link #splitSmaller(Object)} or {@link #splitGreater(Object)}.
 	 *
 	 * &lt;p&gt;
-	 * This method behavior is undefined if the reference is not valid, namely it
-	 * reference to an element already removed, or to an element in another heap.
+	 * This method behavior is undefined if the reference is not valid, namely it reference to an element already
+	 * removed, or to an element in another heap.
 	 *
-	 * @param ref given element in the tree
-	 * @return new tree with elements greater (greater or equal if duplicate
-	 *         elements of the given element exists) than the given element
+	 * @param  ref given element in the tree
+	 * @return     new tree with elements greater (greater or equal if duplicate elements of the given element exists)
+	 *             than the given element
 	 */
 	public BinarySearchTree&lt;E&gt; split(HeapReference&lt;E&gt; ref);
 
 	/**
 	 * Create a new binary search tree algorithm builder.
 	 * &lt;p&gt;
-	 * This is the recommended way to instantiate a new {@link BinarySearchTree}
-	 * object.
+	 * This is the recommended way to instantiate a new {@link BinarySearchTree} object.
 	 *
 	 * @return a new builder that can build {@link BinarySearchTree} objects
 	 */
 	static BinarySearchTree.Builder newBuilder() {
-<span class="nc" id="L177">		return new BinarySearchTree.Builder() {</span>
+<span class="nc" id="L163">		return new BinarySearchTree.Builder() {</span>
 
 			boolean splitRequired;
 			boolean meldRequired;
 
 			@Override
 			public &lt;E&gt; BinarySearchTree&lt;E&gt; build(Comparator&lt;? super E&gt; cmp) {
-<span class="nc bnc" id="L184" title="All 4 branches missed.">				if (splitRequired || meldRequired) {</span>
-<span class="nc" id="L185">					return new SplayTree&lt;&gt;(cmp);</span>
+<span class="nc bnc" id="L170" title="All 4 branches missed.">				if (splitRequired || meldRequired) {</span>
+<span class="nc" id="L171">					return new SplayTree&lt;&gt;(cmp);</span>
 				} else {
-<span class="nc" id="L187">					return new RedBlackTree&lt;&gt;(cmp);</span>
+<span class="nc" id="L173">					return new RedBlackTree&lt;&gt;(cmp);</span>
 				}
 			}
 
 			@Override
 			public Builder setSplits(boolean enable) {
-<span class="nc" id="L193">				splitRequired = enable;</span>
-<span class="nc" id="L194">				return this;</span>
+<span class="nc" id="L179">				splitRequired = enable;</span>
+<span class="nc" id="L180">				return this;</span>
 			}
 
 			@Override
 			public Builder setMelds(boolean enable) {
-<span class="nc" id="L199">				meldRequired = enable;</span>
-<span class="nc" id="L200">				return this;</span>
+<span class="nc" id="L185">				meldRequired = enable;</span>
+<span class="nc" id="L186">				return this;</span>
 			}
 		};
 	}
@@ -205,7 +191,7 @@ public interface BinarySearchTree&lt;E&gt; extends HeapReferenceable&lt;E&gt; {
 	/**
 	 * A builder for {@link BinarySearchTree} objects.
 	 *
-	 * @see BinarySearchTree#newBuilder()
+	 * @see    BinarySearchTree#newBuilder()
 	 * @author Barak Ugav
 	 */
 	static interface Builder extends HeapReferenceable.Builder {
@@ -215,28 +201,26 @@ public interface BinarySearchTree&lt;E&gt; extends HeapReferenceable&lt;E&gt; {
 
 		@Override
 		default &lt;E&gt; BinarySearchTree&lt;E&gt; build() {
-<span class="nc" id="L218">			return build(null);</span>
+<span class="nc" id="L204">			return build(null);</span>
 		}
 
 		/**
 		 * Enable/disable efficient split operations.
 		 *
-		 * @param enable if {@code true} the split operations such as
-		 *               {@link BinarySearchTree#split(HeapReference)},
-		 *               {@link BinarySearchTree#splitSmaller(Object)} and
-		 *               {@link BinarySearchTree#splitGreater(Object)} will be supported
-		 *               efficiently by the trees created by this builder
-		 * @return this builder
+		 * @param  enable if {@code true} the split operations such as {@link BinarySearchTree#split(HeapReference)},
+		 *                    {@link BinarySearchTree#splitSmaller(Object)} and
+		 *                    {@link BinarySearchTree#splitGreater(Object)} will be supported efficiently by the trees
+		 *                    created by this builder
+		 * @return        this builder
 		 */
 		BinarySearchTree.Builder setSplits(boolean enable);
 
 		/**
 		 * Enable/disable efficient {@link BinarySearchTree#meld(Heap)} operations.
 		 *
-		 * @param enable if {@code true} the {@link BinarySearchTree#meld(Heap)}
-		 *               operation will be supported efficiently by the trees created by
-		 *               this builder
-		 * @return this builder
+		 * @param  enable if {@code true} the {@link BinarySearchTree#meld(Heap)} operation will be supported
+		 *                    efficiently by the trees created by this builder
+		 * @return        this builder
 		 */
 		BinarySearchTree.Builder setMelds(boolean enable);
 

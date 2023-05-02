@@ -5,13 +5,12 @@ import java.util.Arrays;
 /**
  * Array implementation of the Union Find data structure with values.
  * &lt;p&gt;
- * The elements are represented in a continuos array, which is most efficient
- * for storage, and performance as the rate of cache miss is low.
+ * The elements are represented in a continuos array, which is most efficient for storage, and performance as the rate
+ * of cache miss is low.
  * &lt;p&gt;
- * The running time of \(m\) operations on \(n\) elements is
- * \(O(m \cdot \alpha (m, n))\) where \(\alpha(\cdot,\cdot)\) is the inverse
- * Ackermann's function. The inverse Ackermann's function is extremely slow and
- * for any practical use should be treated as constant.
+ * The running time of \(m\) operations on \(n\) elements is \(O(m \cdot \alpha (m, n))\) where \(\alpha(\cdot,\cdot)\)
+ * is the inverse Ackermann's function. The inverse Ackermann's function is extremely slow and for any practical use
+ * should be treated as constant.
  *
  * @author Barak Ugav
  */
@@ -23,88 +22,88 @@ public class UnionFindValueArray extends UnionFindArray implements UnionFindValu
 	 * Create an empty Union Find data structure with no elements.
 	 */
 	public UnionFindValueArray() {
-<span class="fc" id="L26">		this(0);</span>
-<span class="fc" id="L27">	}</span>
+<span class="fc" id="L25">		this(0);</span>
+<span class="fc" id="L26">	}</span>
 
 	/**
-	 * Create a new Union Find data structure with \(n\) elements with ids
-	 * {@code 0,1,2,...,n-1}, all with value {@code 0}.
+	 * Create a new Union Find data structure with \(n\) elements with ids {@code 0,1,2,...,n-1}, all with value
+	 * {@code 0}.
 	 *
 	 * @param n the number of initial elements in the data structure
 	 */
 	public UnionFindValueArray(int n) {
-<span class="fc" id="L36">		super(n);</span>
-<span class="fc bfc" id="L37" title="All 2 branches covered.">		int arrSize = n == 0 ? 2 : n;</span>
-<span class="fc" id="L38">		deltas = new double[arrSize];</span>
-<span class="fc" id="L39">	}</span>
+<span class="fc" id="L35">		super(n);</span>
+<span class="fc bfc" id="L36" title="All 2 branches covered.">		int arrSize = n == 0 ? 2 : n;</span>
+<span class="fc" id="L37">		deltas = new double[arrSize];</span>
+<span class="fc" id="L38">	}</span>
 
 	@Override
 	public int make(double value) {
-<span class="fc bfc" id="L43" title="All 2 branches covered.">		if (deltas.length &lt;= size)</span>
-<span class="fc" id="L44">			deltas = Arrays.copyOf(deltas, size * 2);</span>
-<span class="fc" id="L45">		int x = super.make();</span>
-<span class="fc" id="L46">		deltas[x] = value;</span>
-<span class="fc" id="L47">		return x;</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">		if (deltas.length &lt;= size)</span>
+<span class="fc" id="L43">			deltas = Arrays.copyOf(deltas, size * 2);</span>
+<span class="fc" id="L44">		int x = super.make();</span>
+<span class="fc" id="L45">		deltas[x] = value;</span>
+<span class="fc" id="L46">		return x;</span>
 	}
 
 	@Override
 	public int make() {
-<span class="fc" id="L52">		return make(0);</span>
+<span class="fc" id="L51">		return make(0);</span>
 	}
 
 	@Override
 	public double getValue(int x) {
-<span class="pc bpc" id="L57" title="2 of 4 branches missed.">		if (x &lt; 0 || x &gt;= size)</span>
-<span class="nc" id="L58">			throw new IndexOutOfBoundsException(x);</span>
-<span class="fc" id="L59">		int[] p = parent;</span>
-<span class="fc" id="L60">		double sum = 0;</span>
-<span class="fc" id="L61">		for (int r = x;; r = p[r]) {</span>
-<span class="fc bfc" id="L62" title="All 2 branches covered.">			if (p[r] == NO_PARENT) {</span>
-<span class="fc" id="L63">				pathCompression(x, r, sum);</span>
-<span class="fc" id="L64">				return sum + deltas[r];</span>
+<span class="pc bpc" id="L56" title="2 of 4 branches missed.">		if (x &lt; 0 || x &gt;= size)</span>
+<span class="nc" id="L57">			throw new IndexOutOfBoundsException(x);</span>
+<span class="fc" id="L58">		int[] p = parent;</span>
+<span class="fc" id="L59">		double sum = 0;</span>
+<span class="fc" id="L60">		for (int r = x;; r = p[r]) {</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">			if (p[r] == NO_PARENT) {</span>
+<span class="fc" id="L62">				pathCompression(x, r, sum);</span>
+<span class="fc" id="L63">				return sum + deltas[r];</span>
 			}
-<span class="fc" id="L66">			sum += deltas[r];</span>
+<span class="fc" id="L65">			sum += deltas[r];</span>
 		}
 	}
 
 	@Override
 	public void addValue(int x, double value) {
-<span class="fc" id="L72">		deltas[find(x)] += value;</span>
-<span class="fc" id="L73">	}</span>
+<span class="fc" id="L71">		deltas[find(x)] += value;</span>
+<span class="fc" id="L72">	}</span>
 
 	@Override
 	int find0(int x) {
-<span class="fc" id="L77">		int[] p = parent;</span>
+<span class="fc" id="L76">		int[] p = parent;</span>
 
 		/* Find root and calc delta sum (not including r's delta) */
-<span class="fc" id="L80">		double sum = 0;</span>
+<span class="fc" id="L79">		double sum = 0;</span>
 		int r;
-<span class="fc bfc" id="L82" title="All 2 branches covered.">		for (r = x; p[r] != NO_PARENT; r = p[r])</span>
-<span class="fc" id="L83">			sum += deltas[r];</span>
-<span class="fc" id="L84">		pathCompression(x, r, sum);</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">		for (r = x; p[r] != NO_PARENT; r = p[r])</span>
+<span class="fc" id="L82">			sum += deltas[r];</span>
+<span class="fc" id="L83">		pathCompression(x, r, sum);</span>
 
-<span class="fc" id="L86">		return r;</span>
+<span class="fc" id="L85">		return r;</span>
 	}
 
 	// deltaSum shouldn't include the delta of the root
 	private void pathCompression(int x, int r, double deltaSum) {
-<span class="fc" id="L91">		int[] p = parent;</span>
-<span class="fc bfc" id="L92" title="All 2 branches covered.">		for (; x != r;) {</span>
-<span class="fc" id="L93">			double delta = deltas[x];</span>
-<span class="fc" id="L94">			deltas[x] = deltaSum;</span>
-<span class="fc" id="L95">			deltaSum -= delta;</span>
+<span class="fc" id="L90">		int[] p = parent;</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">		for (; x != r;) {</span>
+<span class="fc" id="L92">			double delta = deltas[x];</span>
+<span class="fc" id="L93">			deltas[x] = deltaSum;</span>
+<span class="fc" id="L94">			deltaSum -= delta;</span>
 
-<span class="fc" id="L97">			int next = p[x];</span>
-<span class="fc" id="L98">			p[x] = r;</span>
-<span class="fc" id="L99">			x = next;</span>
-<span class="fc" id="L100">		}</span>
-<span class="fc" id="L101">	}</span>
+<span class="fc" id="L96">			int next = p[x];</span>
+<span class="fc" id="L97">			p[x] = r;</span>
+<span class="fc" id="L98">			x = next;</span>
+<span class="fc" id="L99">		}</span>
+<span class="fc" id="L100">	}</span>
 
 	@Override
 	void unionSetParent(int c, int p) {
-<span class="fc" id="L105">		parent[c] = p;</span>
-<span class="fc" id="L106">		deltas[c] -= deltas[p];</span>
-<span class="fc" id="L107">	}</span>
+<span class="fc" id="L104">		parent[c] = p;</span>
+<span class="fc" id="L105">		deltas[c] -= deltas[p];</span>
+<span class="fc" id="L106">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

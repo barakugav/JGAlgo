@@ -5,65 +5,61 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 /**
  * Algorithm that calculate a topological order of graph vertices.
  * &lt;p&gt;
- * A topological ordering of a directed graph is a linear ordering of its
- * vertices such that for every directed edge \((u,v)\), \(u\) comes
- * before \(v\) in the ordering. A topological ordering exist if and only if
- * the graph is directed and acyclic (DAG).
+ * A topological ordering of a directed graph is a linear ordering of its vertices such that for every directed edge
+ * \((u,v)\), \(u\) comes before \(v\) in the ordering. A topological ordering exist if and only if the graph is
+ * directed and acyclic (DAG).
  * &lt;p&gt;
- * This algorithm compute the topological ordering of a given DAG graph in
- * linear time and space.
+ * This algorithm compute the topological ordering of a given DAG graph in linear time and space.
  *
- * @see &lt;a href=
- *      &quot;https://en.wikipedia.org/wiki/Topological_sorting&quot;&gt;Wikipedia&lt;/a&gt;
+ * @see    &lt;a href= &quot;https://en.wikipedia.org/wiki/Topological_sorting&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
  */
 public class TopologicalOrder {
-	private TopologicalOrder() {
-	}
+	private TopologicalOrder() {}
 
 	/**
 	 * Compute the topological order of a DAG vertices.
 	 * &lt;p&gt;
 	 * This function runs in linear time.
 	 *
-	 * @param g a directed acyclic graph (DAG).
-	 * @return an array of size \(n\) with the vertices of the graph order in
-	 *         the topological order.
+	 * @param  g                        a directed acyclic graph (DAG).
+	 * @return                          an array of size \(n\) with the vertices of the graph order in the topological
+	 *                                  order.
 	 * @throws IllegalArgumentException if the graph is not DAG
 	 */
 	public static int[] computeTopologicalSortingDAG(DiGraph g) {
-<span class="fc" id="L35">		int n = g.vertices().size();</span>
-<span class="fc" id="L36">		int[] inDegree = new int[n];</span>
-<span class="fc" id="L37">		IntPriorityQueue queue = new IntArrayFIFOQueue();</span>
-<span class="fc" id="L38">		int[] topolSort = new int[n];</span>
-<span class="fc" id="L39">		int topolSortSize = 0;</span>
+<span class="fc" id="L31">		int n = g.vertices().size();</span>
+<span class="fc" id="L32">		int[] inDegree = new int[n];</span>
+<span class="fc" id="L33">		IntPriorityQueue queue = new IntArrayFIFOQueue();</span>
+<span class="fc" id="L34">		int[] topolSort = new int[n];</span>
+<span class="fc" id="L35">		int topolSortSize = 0;</span>
 
 		// calc in degree of all vertices
-<span class="fc bfc" id="L42" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L43">			inDegree[v] = g.degreeIn(v);</span>
+<span class="fc bfc" id="L38" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
+<span class="fc" id="L39">			inDegree[v] = g.degreeIn(v);</span>
 
 		// Find vertices with zero in degree and insert them to the queue
-<span class="fc bfc" id="L46" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
-<span class="fc bfc" id="L47" title="All 2 branches covered.">			if (inDegree[v] == 0)</span>
-<span class="fc" id="L48">				queue.enqueue(v);</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">			if (inDegree[v] == 0)</span>
+<span class="fc" id="L44">				queue.enqueue(v);</span>
 
 		// Poll vertices from the queue and &quot;remove&quot; each one from the tree and add new
 		// zero in degree vertices to the queue
-<span class="fc bfc" id="L52" title="All 2 branches covered.">		while (!queue.isEmpty()) {</span>
-<span class="fc" id="L53">			int u = queue.dequeueInt();</span>
-<span class="fc" id="L54">			topolSort[topolSortSize++] = u;</span>
-<span class="fc bfc" id="L55" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
-<span class="fc" id="L56">				eit.nextInt();</span>
-<span class="fc" id="L57">				int v = eit.v();</span>
-<span class="fc bfc" id="L58" title="All 2 branches covered.">				if (--inDegree[v] == 0)</span>
-<span class="fc" id="L59">					queue.enqueue(v);</span>
-<span class="fc" id="L60">			}</span>
-<span class="fc" id="L61">		}</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">		while (!queue.isEmpty()) {</span>
+<span class="fc" id="L49">			int u = queue.dequeueInt();</span>
+<span class="fc" id="L50">			topolSort[topolSortSize++] = u;</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
+<span class="fc" id="L52">				eit.nextInt();</span>
+<span class="fc" id="L53">				int v = eit.v();</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">				if (--inDegree[v] == 0)</span>
+<span class="fc" id="L55">					queue.enqueue(v);</span>
+<span class="fc" id="L56">			}</span>
+<span class="fc" id="L57">		}</span>
 
-<span class="pc bpc" id="L63" title="1 of 2 branches missed.">		if (topolSortSize != n)</span>
-<span class="nc" id="L64">			throw new IllegalArgumentException(&quot;G is not a directed acyclic graph (DAG)&quot;);</span>
+<span class="pc bpc" id="L59" title="1 of 2 branches missed.">		if (topolSortSize != n)</span>
+<span class="nc" id="L60">			throw new IllegalArgumentException(&quot;G is not a directed acyclic graph (DAG)&quot;);</span>
 
-<span class="fc" id="L66">		return topolSort;</span>
+<span class="fc" id="L62">		return topolSort;</span>
 	}
 
 }

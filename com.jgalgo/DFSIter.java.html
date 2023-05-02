@@ -13,11 +13,9 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 /**
  * Depth first search (DFS) iterator.
  * &lt;p&gt;
- * The DFS iterator is used to iterate over the vertices of a graph is a depth
- * first manner, namely it explore as far as possible along each branch before
- * backtracking. The iterator will visit every vertex \(v\) for which there
- * is a path from the source(s) to \(v\). Each such vertex will be visited
- * exactly once.
+ * The DFS iterator is used to iterate over the vertices of a graph is a depth first manner, namely it explore as far as
+ * possible along each branch before backtracking. The iterator will visit every vertex \(v\) for which there is a path
+ * from the source(s) to \(v\). Each such vertex will be visited exactly once.
  * &lt;p&gt;
  * The graph should not be modified during the DFS iteration.
  *
@@ -31,11 +29,11 @@ import it.unimi.dsi.fastutil.ints.IntLists;
  * }
  * }&lt;/pre&gt;
  *
- * @see BFSIter
- * @see &lt;a href=&quot;https://en.wikipedia.org/wiki/Depth-first_search&quot;&gt;Wikipedia&lt;/a&gt;
+ * @see    BFSIter
+ * @see    &lt;a href=&quot;https://en.wikipedia.org/wiki/Depth-first_search&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
  */
-<span class="fc" id="L38">public class DFSIter implements IntIterator {</span>
+<span class="fc" id="L36">public class DFSIter implements IntIterator {</span>
 
 	private final Graph g;
 	private final BitSet visited;
@@ -50,58 +48,57 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 	 * @param g      a graph
 	 * @param source a vertex in the graph from which the search will start from.
 	 */
-<span class="fc" id="L53">	public DFSIter(Graph g, int source) {</span>
-<span class="fc" id="L54">		int n = g.vertices().size();</span>
-<span class="fc" id="L55">		this.g = g;</span>
-<span class="fc" id="L56">		visited = new BitSet(n);</span>
-<span class="fc" id="L57">		edgeIters = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L58">		edgePath = new IntArrayList();</span>
-<span class="fc" id="L59">		edgePathView = IntLists.unmodifiable(edgePath);</span>
+<span class="fc" id="L51">	public DFSIter(Graph g, int source) {</span>
+<span class="fc" id="L52">		int n = g.vertices().size();</span>
+<span class="fc" id="L53">		this.g = g;</span>
+<span class="fc" id="L54">		visited = new BitSet(n);</span>
+<span class="fc" id="L55">		edgeIters = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L56">		edgePath = new IntArrayList();</span>
+<span class="fc" id="L57">		edgePathView = IntLists.unmodifiable(edgePath);</span>
 
-<span class="fc" id="L61">		visited.set(source);</span>
-<span class="fc" id="L62">		edgeIters.add(g.edgesOut(source));</span>
-<span class="fc" id="L63">		isValid = true;</span>
-<span class="fc" id="L64">	}</span>
+<span class="fc" id="L59">		visited.set(source);</span>
+<span class="fc" id="L60">		edgeIters.add(g.edgesOut(source));</span>
+<span class="fc" id="L61">		isValid = true;</span>
+<span class="fc" id="L62">	}</span>
 
 	/**
 	 * Check whether there is more vertices to iterate over.
 	 */
 	@Override
 	public boolean hasNext() {
-<span class="fc bfc" id="L71" title="All 2 branches covered.">		if (isValid)</span>
-<span class="fc" id="L72">			return true;</span>
-<span class="pc bpc" id="L73" title="1 of 2 branches missed.">		if (edgeIters.isEmpty())</span>
-<span class="nc" id="L74">			return false;</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">		if (isValid)</span>
+<span class="fc" id="L70">			return true;</span>
+<span class="pc bpc" id="L71" title="1 of 2 branches missed.">		if (edgeIters.isEmpty())</span>
+<span class="nc" id="L72">			return false;</span>
 		for (;;) {
-<span class="fc bfc" id="L76" title="All 2 branches covered.">			for (EdgeIter eit = edgeIters.get(edgeIters.size() - 1); eit.hasNext();) {</span>
-<span class="fc" id="L77">				int e = eit.nextInt();</span>
-<span class="fc" id="L78">				int v = eit.v();</span>
-<span class="fc bfc" id="L79" title="All 2 branches covered.">				if (visited.get(v))</span>
-<span class="fc" id="L80">					continue;</span>
-<span class="fc" id="L81">				visited.set(v);</span>
-<span class="fc" id="L82">				edgeIters.add(g.edgesOut(v));</span>
-<span class="fc" id="L83">				edgePath.add(e);</span>
-<span class="fc" id="L84">				return isValid = true;</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">			for (EdgeIter eit = edgeIters.get(edgeIters.size() - 1); eit.hasNext();) {</span>
+<span class="fc" id="L75">				int e = eit.nextInt();</span>
+<span class="fc" id="L76">				int v = eit.v();</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">				if (visited.get(v))</span>
+<span class="fc" id="L78">					continue;</span>
+<span class="fc" id="L79">				visited.set(v);</span>
+<span class="fc" id="L80">				edgeIters.add(g.edgesOut(v));</span>
+<span class="fc" id="L81">				edgePath.add(e);</span>
+<span class="fc" id="L82">				return isValid = true;</span>
 			}
-<span class="fc" id="L86">			edgeIters.remove(edgeIters.size() - 1);</span>
-<span class="fc bfc" id="L87" title="All 2 branches covered.">			if (edgeIters.isEmpty()) {</span>
-<span class="pc bpc" id="L88" title="1 of 2 branches missed.">				assert edgePath.isEmpty();</span>
-<span class="fc" id="L89">				return false;</span>
+<span class="fc" id="L84">			edgeIters.remove(edgeIters.size() - 1);</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">			if (edgeIters.isEmpty()) {</span>
+<span class="pc bpc" id="L86" title="1 of 2 branches missed.">				assert edgePath.isEmpty();</span>
+<span class="fc" id="L87">				return false;</span>
 			}
-<span class="fc" id="L91">			edgePath.removeInt(edgePath.size() - 1);</span>
+<span class="fc" id="L89">			edgePath.removeInt(edgePath.size() - 1);</span>
 		}
 	}
 
 	/**
-	 * Advance the iterator and return a vertex that was not visited by the iterator
-	 * yet.
+	 * Advance the iterator and return a vertex that was not visited by the iterator yet.
 	 */
 	@Override
 	public int nextInt() {
-<span class="pc bpc" id="L101" title="1 of 2 branches missed.">		if (!hasNext())</span>
-<span class="nc" id="L102">			throw new NoSuchElementException();</span>
-<span class="fc" id="L103">		isValid = false;</span>
-<span class="fc" id="L104">		return edgeIters.get(edgeIters.size() - 1).u();</span>
+<span class="pc bpc" id="L98" title="1 of 2 branches missed.">		if (!hasNext())</span>
+<span class="nc" id="L99">			throw new NoSuchElementException();</span>
+<span class="fc" id="L100">		isValid = false;</span>
+<span class="fc" id="L101">		return edgeIters.get(edgeIters.size() - 1).u();</span>
 	}
 
 	/**
@@ -109,12 +106,11 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 	 * &lt;p&gt;
 	 * The behavior is undefined if {@link nextInt} was not called yet.
 	 *
-	 * @return list of edges forming a path from the source to the last vertex
-	 *         returned by {@link nextInt}. The returned list should not be modified
-	 *         by the user.
+	 * @return list of edges forming a path from the source to the last vertex returned by {@link nextInt}. The returned
+	 *         list should not be modified by the user.
 	 */
 	public IntList edgePath() {
-<span class="fc" id="L117">		return edgePathView;</span>
+<span class="fc" id="L113">		return edgePathView;</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

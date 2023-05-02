@@ -9,15 +9,15 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 /**
  * A greedy coloring algorithm with random vertices order.
  * &lt;p&gt;
- * The algorithm examine the vertices in random order and assign for each
- * vertex the minimum (integer) color which is not used by its neighbors.
+ * The algorithm examine the vertices in random order and assign for each vertex the minimum (integer) color which is
+ * not used by its neighbors.
  * &lt;p&gt;
  * The algorithm runs in linear time, assuming the number of colors is constant.
  * &lt;p&gt;
- * Note that the result is an approximate for the minimum number of colors, as
- * finding an optimal coloring is an NP-hard problem.
+ * Note that the result is an approximate for the minimum number of colors, as finding an optimal coloring is an NP-hard
+ * problem.
  *
- * @see &lt;a href=&quot;https://en.wikipedia.org/wiki/Greedy_coloring&quot;&gt;Wikipedia&lt;/a&gt;
+ * @see    &lt;a href=&quot;https://en.wikipedia.org/wiki/Greedy_coloring&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
  */
 public class ColoringGreedyRandom implements Coloring {

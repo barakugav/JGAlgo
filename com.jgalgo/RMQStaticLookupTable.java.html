@@ -5,13 +5,11 @@ import java.util.Objects;
 /**
  * Naive lookup table for RMQ queries.
  * &lt;p&gt;
- * For a sequence of size \(n\), a lookup table of size \(O(n^2)\) will
- * be constructed, such that for each two indices \(i,j\) the index of the
- * minimum element in the range \([i,j]\) can be simply accessed from the
- * table in \(O(1)\) time.
+ * For a sequence of size \(n\), a lookup table of size \(O(n^2)\) will be constructed, such that for each two indices
+ * \(i,j\) the index of the minimum element in the range \([i,j]\) can be simply accessed from the table in \(O(1)\)
+ * time.
  * &lt;p&gt;
- * This algorithm require \(O(n^2)\) pre processing time and space, and
- * answer queries in \(O(1)\).
+ * This algorithm require \(O(n^2)\) pre processing time and space, and answer queries in \(O(1)\).
  *
  * @author Barak Ugav
  */
@@ -20,31 +18,30 @@ public class RMQStaticLookupTable implements RMQStatic {
 	/**
 	 * Construct a new static RMQ algorithm object.
 	 */
-<span class="fc" id="L23">	public RMQStaticLookupTable() {</span>
-<span class="fc" id="L24">	}</span>
+<span class="fc" id="L21">	public RMQStaticLookupTable() {}</span>
 
 	@Override
 	public RMQStatic.DataStructure preProcessSequence(RMQStaticComparator c, int n) {
-<span class="pc bpc" id="L28" title="1 of 2 branches missed.">		if (n &lt;= 0)</span>
-<span class="nc" id="L29">			throw new IllegalArgumentException(&quot;Invalid length: &quot; + n);</span>
-<span class="fc" id="L30">		Objects.requireNonNull(c);</span>
+<span class="pc bpc" id="L25" title="1 of 2 branches missed.">		if (n &lt;= 0)</span>
+<span class="nc" id="L26">			throw new IllegalArgumentException(&quot;Invalid length: &quot; + n);</span>
+<span class="fc" id="L27">		Objects.requireNonNull(c);</span>
 
-<span class="fc bfc" id="L32" title="All 2 branches covered.">		if (n &lt;= DS8.LIMIT)</span>
-<span class="fc" id="L33">			return new DS8(c, (byte) n);</span>
-<span class="fc bfc" id="L34" title="All 2 branches covered.">		else if (n &lt;= DS128.LIMIT)</span>
-<span class="fc" id="L35">			return new DS128(c, (short) n);</span>
-<span class="pc bpc" id="L36" title="1 of 2 branches missed.">		else if (n &lt;= DS32768.LIMIT)</span>
-<span class="fc" id="L37">			return new DS32768(c, n);</span>
+<span class="fc bfc" id="L29" title="All 2 branches covered.">		if (n &lt;= DS8.LIMIT)</span>
+<span class="fc" id="L30">			return new DS8(c, (byte) n);</span>
+<span class="fc bfc" id="L31" title="All 2 branches covered.">		else if (n &lt;= DS128.LIMIT)</span>
+<span class="fc" id="L32">			return new DS128(c, (short) n);</span>
+<span class="pc bpc" id="L33" title="1 of 2 branches missed.">		else if (n &lt;= DS32768.LIMIT)</span>
+<span class="fc" id="L34">			return new DS32768(c, n);</span>
 		else
-<span class="nc" id="L39">			throw new IllegalArgumentException(&quot;N too big (&quot; + n + &quot;)&quot;);</span>
+<span class="nc" id="L36">			throw new IllegalArgumentException(&quot;N too big (&quot; + n + &quot;)&quot;);</span>
 	}
 
 	private static int arrSize(int n) {
-<span class="fc" id="L43">		return n * (n - 1) / 2;</span>
+<span class="fc" id="L40">		return n * (n - 1) / 2;</span>
 	}
 
 	private static int indexOf(int n, int i, int j) {
-<span class="fc" id="L47">		return (2 * n - i - 1) * i / 2 + j - i - 1;</span>
+<span class="fc" id="L44">		return (2 * n - i - 1) * i / 2 + j - i - 1;</span>
 	}
 
 	private static class DS8 implements RMQStatic.DataStructure {
@@ -53,27 +50,27 @@ public class RMQStaticLookupTable implements RMQStatic {
 		private final byte[] arr;
 		private static final int LIMIT = 1 &lt;&lt; ((Byte.SIZE - 1) / 2);
 
-<span class="fc" id="L56">		DS8(RMQStaticComparator c, byte n) {</span>
-<span class="fc" id="L57">			arr = new byte[arrSize(n)];</span>
-<span class="fc" id="L58">			this.n = n;</span>
+<span class="fc" id="L53">		DS8(RMQStaticComparator c, byte n) {</span>
+<span class="fc" id="L54">			arr = new byte[arrSize(n)];</span>
+<span class="fc" id="L55">			this.n = n;</span>
 
-<span class="fc bfc" id="L60" title="All 2 branches covered.">			for (byte i = 0; i &lt; n - 1; i++)</span>
-<span class="fc bfc" id="L61" title="All 2 branches covered.">				arr[indexOf(n, i, i + 1)] = c.compare(i, i + 1) &lt; 0 ? i : (byte) (i + 1);</span>
-<span class="fc bfc" id="L62" title="All 2 branches covered.">			for (byte i = 0; i &lt; n - 2; i++) {</span>
-<span class="fc bfc" id="L63" title="All 2 branches covered.">				for (byte j = (byte) (i + 2); j &lt; n; j++) {</span>
-<span class="fc" id="L64">					byte m = arr[indexOf(n, i, j - 1)];</span>
-<span class="fc bfc" id="L65" title="All 2 branches covered.">					arr[indexOf(n, i, j)] = c.compare(m, j) &lt; 0 ? m : j;</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">			for (byte i = 0; i &lt; n - 1; i++)</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">				arr[indexOf(n, i, i + 1)] = c.compare(i, i + 1) &lt; 0 ? i : (byte) (i + 1);</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">			for (byte i = 0; i &lt; n - 2; i++) {</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">				for (byte j = (byte) (i + 2); j &lt; n; j++) {</span>
+<span class="fc" id="L61">					byte m = arr[indexOf(n, i, j - 1)];</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">					arr[indexOf(n, i, j)] = c.compare(m, j) &lt; 0 ? m : j;</span>
 				}
 			}
-<span class="fc" id="L68">		}</span>
+<span class="fc" id="L65">		}</span>
 
 		@Override
 		public int findMinimumInRange(int i, int j) {
-<span class="pc bpc" id="L72" title="3 of 6 branches missed.">			if (!(0 &lt;= i &amp;&amp; i &lt;= j &amp;&amp; j &lt; n))</span>
-<span class="nc" id="L73">				throw new IllegalArgumentException(&quot;Illegal indices [&quot; + i + &quot;,&quot; + j + &quot;]&quot;);</span>
-<span class="pc bpc" id="L74" title="1 of 2 branches missed.">			if (i == j)</span>
-<span class="nc" id="L75">				return i;</span>
-<span class="fc" id="L76">			return arr[indexOf(n, i, j)];</span>
+<span class="pc bpc" id="L69" title="3 of 6 branches missed.">			if (!(0 &lt;= i &amp;&amp; i &lt;= j &amp;&amp; j &lt; n))</span>
+<span class="nc" id="L70">				throw new IllegalArgumentException(&quot;Illegal indices [&quot; + i + &quot;,&quot; + j + &quot;]&quot;);</span>
+<span class="pc bpc" id="L71" title="1 of 2 branches missed.">			if (i == j)</span>
+<span class="nc" id="L72">				return i;</span>
+<span class="fc" id="L73">			return arr[indexOf(n, i, j)];</span>
 		}
 	}
 
@@ -84,27 +81,27 @@ public class RMQStaticLookupTable implements RMQStatic {
 
 		private static final int LIMIT = 1 &lt;&lt; ((Short.SIZE - 1) / 2);
 
-<span class="fc" id="L87">		DS128(RMQStaticComparator c, short n) {</span>
-<span class="fc" id="L88">			arr = new short[arrSize(n)];</span>
-<span class="fc" id="L89">			this.n = n;</span>
+<span class="fc" id="L84">		DS128(RMQStaticComparator c, short n) {</span>
+<span class="fc" id="L85">			arr = new short[arrSize(n)];</span>
+<span class="fc" id="L86">			this.n = n;</span>
 
-<span class="fc bfc" id="L91" title="All 2 branches covered.">			for (short i = 0; i &lt; n - 1; i++)</span>
-<span class="fc bfc" id="L92" title="All 2 branches covered.">				arr[indexOf(n, i, i + 1)] = c.compare(i, i + 1) &lt; 0 ? i : (short) (i + 1);</span>
-<span class="fc bfc" id="L93" title="All 2 branches covered.">			for (short i = 0; i &lt; n - 2; i++) {</span>
-<span class="fc bfc" id="L94" title="All 2 branches covered.">				for (short j = (short) (i + 2); j &lt; n; j++) {</span>
-<span class="fc" id="L95">					short m = arr[indexOf(n, i, j - 1)];</span>
-<span class="fc bfc" id="L96" title="All 2 branches covered.">					arr[indexOf(n, i, j)] = c.compare(m, j) &lt; 0 ? m : j;</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">			for (short i = 0; i &lt; n - 1; i++)</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">				arr[indexOf(n, i, i + 1)] = c.compare(i, i + 1) &lt; 0 ? i : (short) (i + 1);</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">			for (short i = 0; i &lt; n - 2; i++) {</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">				for (short j = (short) (i + 2); j &lt; n; j++) {</span>
+<span class="fc" id="L92">					short m = arr[indexOf(n, i, j - 1)];</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">					arr[indexOf(n, i, j)] = c.compare(m, j) &lt; 0 ? m : j;</span>
 				}
 			}
-<span class="fc" id="L99">		}</span>
+<span class="fc" id="L96">		}</span>
 
 		@Override
 		public int findMinimumInRange(int i, int j) {
-<span class="pc bpc" id="L103" title="3 of 6 branches missed.">			if (!(0 &lt;= i &amp;&amp; i &lt;= j &amp;&amp; j &lt; n))</span>
-<span class="nc" id="L104">				throw new IllegalArgumentException(&quot;Illegal indices [&quot; + i + &quot;,&quot; + j + &quot;]&quot;);</span>
-<span class="fc bfc" id="L105" title="All 2 branches covered.">			if (i == j)</span>
-<span class="fc" id="L106">				return i;</span>
-<span class="fc" id="L107">			return arr[indexOf(n, i, j)];</span>
+<span class="pc bpc" id="L100" title="3 of 6 branches missed.">			if (!(0 &lt;= i &amp;&amp; i &lt;= j &amp;&amp; j &lt; n))</span>
+<span class="nc" id="L101">				throw new IllegalArgumentException(&quot;Illegal indices [&quot; + i + &quot;,&quot; + j + &quot;]&quot;);</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">			if (i == j)</span>
+<span class="fc" id="L103">				return i;</span>
+<span class="fc" id="L104">			return arr[indexOf(n, i, j)];</span>
 		}
 	}
 
@@ -115,27 +112,27 @@ public class RMQStaticLookupTable implements RMQStatic {
 
 		private static final int LIMIT = 1 &lt;&lt; ((Integer.SIZE - 1) / 2);
 
-<span class="fc" id="L118">		DS32768(RMQStaticComparator c, int n) {</span>
-<span class="fc" id="L119">			arr = new int[arrSize(n)];</span>
-<span class="fc" id="L120">			this.n = n;</span>
+<span class="fc" id="L115">		DS32768(RMQStaticComparator c, int n) {</span>
+<span class="fc" id="L116">			arr = new int[arrSize(n)];</span>
+<span class="fc" id="L117">			this.n = n;</span>
 
-<span class="fc bfc" id="L122" title="All 2 branches covered.">			for (int i = 0; i &lt; n - 1; i++)</span>
-<span class="fc bfc" id="L123" title="All 2 branches covered.">				arr[indexOf(n, i, i + 1)] = c.compare(i, i + 1) &lt; 0 ? i : i + 1;</span>
-<span class="fc bfc" id="L124" title="All 2 branches covered.">			for (int i = 0; i &lt; n - 2; i++) {</span>
-<span class="fc bfc" id="L125" title="All 2 branches covered.">				for (int j = i + 2; j &lt; n; j++) {</span>
-<span class="fc" id="L126">					int m = arr[indexOf(n, i, j - 1)];</span>
-<span class="fc bfc" id="L127" title="All 2 branches covered.">					arr[indexOf(n, i, j)] = c.compare(m, j) &lt; 0 ? m : j;</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">			for (int i = 0; i &lt; n - 1; i++)</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">				arr[indexOf(n, i, i + 1)] = c.compare(i, i + 1) &lt; 0 ? i : i + 1;</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">			for (int i = 0; i &lt; n - 2; i++) {</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">				for (int j = i + 2; j &lt; n; j++) {</span>
+<span class="fc" id="L123">					int m = arr[indexOf(n, i, j - 1)];</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">					arr[indexOf(n, i, j)] = c.compare(m, j) &lt; 0 ? m : j;</span>
 				}
 			}
-<span class="fc" id="L130">		}</span>
+<span class="fc" id="L127">		}</span>
 
 		@Override
 		public int findMinimumInRange(int i, int j) {
-<span class="pc bpc" id="L134" title="3 of 6 branches missed.">			if (!(0 &lt;= i &amp;&amp; i &lt;= j &amp;&amp; j &lt; n))</span>
-<span class="nc" id="L135">				throw new IllegalArgumentException(&quot;Illegal indices [&quot; + i + &quot;,&quot; + j + &quot;]&quot;);</span>
-<span class="fc bfc" id="L136" title="All 2 branches covered.">			if (i == j)</span>
-<span class="fc" id="L137">				return i;</span>
-<span class="fc" id="L138">			return arr[indexOf(n, i, j)];</span>
+<span class="pc bpc" id="L131" title="3 of 6 branches missed.">			if (!(0 &lt;= i &amp;&amp; i &lt;= j &amp;&amp; j &lt; n))</span>
+<span class="nc" id="L132">				throw new IllegalArgumentException(&quot;Illegal indices [&quot; + i + &quot;,&quot; + j + &quot;]&quot;);</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">			if (i == j)</span>
+<span class="fc" id="L134">				return i;</span>
+<span class="fc" id="L135">			return arr[indexOf(n, i, j)];</span>
 		}
 	}
 

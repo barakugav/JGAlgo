@@ -6,22 +6,18 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
 /**
- * Static RMQ which uses Cartesian trees answering a query in constant time and
- * requiring linear preprocessing time.
+ * Static RMQ which uses Cartesian trees answering a query in constant time and requiring linear preprocessing time.
  * &lt;p&gt;
- * The sequence is divided into blocks of size \((\log n) / 4\), and for each
- * block a Cartesian tree is created. The total number of possible Cartesian
- * trees of such size is bounded by \(O(n)\) (Catalan number).
+ * The sequence is divided into blocks of size \((\log n) / 4\), and for each block a Cartesian tree is created. The
+ * total number of possible Cartesian trees of such size is bounded by \(O(n)\) (Catalan number).
  * &lt;p&gt;
- * To answer on queries which does not fall in the same block, the minimum of
- * each block is stored, and {@link RMQStaticPowerOf2Table} is used on the
- * \(O(n / \log n)\) elements, which is linear in total.
+ * To answer on queries which does not fall in the same block, the minimum of each block is stored, and
+ * {@link RMQStaticPowerOf2Table} is used on the \(O(n / \log n)\) elements, which is linear in total.
  * &lt;p&gt;
- * The algorithm required \(O(n)\) preprocessing time and space and answer
- * queries in \(O(1)\) time.
+ * The algorithm required \(O(n)\) preprocessing time and space and answer queries in \(O(1)\) time.
  * &lt;p&gt;
- * Based on 'Scaling and related techniques for geometry problems' by Harold N.
- * Gabow; Jon Louis Bentley; Robert E. Tarjan (1984).
+ * Based on 'Scaling and related techniques for geometry problems' by Harold N. Gabow; Jon Louis Bentley; Robert E.
+ * Tarjan (1984).
  *
  * @author Barak Ugav
  */
@@ -30,93 +26,92 @@ public class RMQStaticCartesianTrees extends RMQStaticLinearAbstract {
 	/**
 	 * Construct a new static RMQ algorithm object.
 	 */
-<span class="fc" id="L33">	public RMQStaticCartesianTrees() {</span>
-<span class="fc" id="L34">	}</span>
+<span class="fc" id="L29">	public RMQStaticCartesianTrees() {}</span>
 
 	@Override
 	public RMQStatic.DataStructure preProcessSequence(RMQStaticComparator c, int n) {
-<span class="pc bpc" id="L38" title="1 of 2 branches missed.">		if (n &lt;= 0)</span>
-<span class="nc" id="L39">			throw new IllegalArgumentException();</span>
-<span class="fc" id="L40">		Objects.requireNonNull(c);</span>
-<span class="fc" id="L41">		return new DS(c, n);</span>
+<span class="pc bpc" id="L33" title="1 of 2 branches missed.">		if (n &lt;= 0)</span>
+<span class="nc" id="L34">			throw new IllegalArgumentException();</span>
+<span class="fc" id="L35">		Objects.requireNonNull(c);</span>
+<span class="fc" id="L36">		return new DS(c, n);</span>
 	}
 
 	private class DS extends RMQStaticLinearAbstract.DS {
 
 		private RMQStatic.DataStructure[] interBlocksDs;
 
-<span class="fc" id="L48">		DS(RMQStaticComparator c, int n) {</span>
-<span class="fc" id="L49">			interBlocksDs = new RMQStatic.DataStructure[calcBlockNum(n, getBlockSize(n))];</span>
-<span class="fc" id="L50">			preProcessRMQOuterBlocks(c, n);</span>
-<span class="fc" id="L51">			preProcessRMQInnerBlocks();</span>
-<span class="fc" id="L52">		}</span>
+<span class="fc" id="L43">		DS(RMQStaticComparator c, int n) {</span>
+<span class="fc" id="L44">			interBlocksDs = new RMQStatic.DataStructure[calcBlockNum(n, getBlockSize(n))];</span>
+<span class="fc" id="L45">			preProcessRMQOuterBlocks(c, n);</span>
+<span class="fc" id="L46">			preProcessRMQInnerBlocks();</span>
+<span class="fc" id="L47">		}</span>
 
 		private void preProcessRMQInnerBlocks() {
-<span class="fc" id="L55">			RMQStatic innerRMQ = new RMQStaticLookupTable();</span>
-<span class="fc" id="L56">			Int2ObjectMap&lt;RMQStatic.DataStructure&gt; tables = new Int2ObjectOpenHashMap&lt;&gt;();</span>
+<span class="fc" id="L50">			RMQStatic innerRMQ = new RMQStaticLookupTable();</span>
+<span class="fc" id="L51">			Int2ObjectMap&lt;RMQStatic.DataStructure&gt; tables = new Int2ObjectOpenHashMap&lt;&gt;();</span>
 
-<span class="fc bfc" id="L58" title="All 2 branches covered.">			for (int b = 0; b &lt; blockNum; b++) {</span>
-<span class="fc" id="L59">				int key = calcBlockKey(b);</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">			for (int b = 0; b &lt; blockNum; b++) {</span>
+<span class="fc" id="L54">				int key = calcBlockKey(b);</span>
 
-<span class="fc" id="L61">				interBlocksDs[b] = tables.computeIfAbsent(key, k -&gt; {</span>
-<span class="fc" id="L62">					int[] demoBlock = calcDemoBlock(k, blockSize);</span>
-<span class="fc" id="L63">					return innerRMQ.preProcessSequence(RMQStaticComparator.ofIntArray(demoBlock), demoBlock.length);</span>
+<span class="fc" id="L56">				interBlocksDs[b] = tables.computeIfAbsent(key, k -&gt; {</span>
+<span class="fc" id="L57">					int[] demoBlock = calcDemoBlock(k, blockSize);</span>
+<span class="fc" id="L58">					return innerRMQ.preProcessSequence(RMQStaticComparator.ofIntArray(demoBlock), demoBlock.length);</span>
 				});
 			}
-<span class="fc" id="L66">		}</span>
+<span class="fc" id="L61">		}</span>
 
 		private int calcBlockKey(int b) {
-<span class="fc" id="L69">			int[] nodes = new int[blockSize];</span>
-<span class="fc" id="L70">			int nodesCount = 0;</span>
+<span class="fc" id="L64">			int[] nodes = new int[blockSize];</span>
+<span class="fc" id="L65">			int nodesCount = 0;</span>
 
-<span class="fc" id="L72">			int key = 0;</span>
-<span class="fc" id="L73">			int keyIdx = 0;</span>
+<span class="fc" id="L67">			int key = 0;</span>
+<span class="fc" id="L68">			int keyIdx = 0;</span>
 
-<span class="fc" id="L75">			int base = b * blockSize;</span>
-<span class="fc bfc" id="L76" title="All 2 branches covered.">			for (int i = 0; i &lt; blockSize; i++) {</span>
-<span class="fc" id="L77">				int x = base + i;</span>
-<span class="fc bfc" id="L78" title="All 4 branches covered.">				while (nodesCount &gt; 0 &amp;&amp; c.compare(x, nodes[nodesCount - 1]) &lt; 0) {</span>
-<span class="fc" id="L79">					nodesCount--;</span>
-<span class="fc" id="L80">					key |= 1 &lt;&lt; (keyIdx++);</span>
+<span class="fc" id="L70">			int base = b * blockSize;</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">			for (int i = 0; i &lt; blockSize; i++) {</span>
+<span class="fc" id="L72">				int x = base + i;</span>
+<span class="fc bfc" id="L73" title="All 4 branches covered.">				while (nodesCount &gt; 0 &amp;&amp; c.compare(x, nodes[nodesCount - 1]) &lt; 0) {</span>
+<span class="fc" id="L74">					nodesCount--;</span>
+<span class="fc" id="L75">					key |= 1 &lt;&lt; (keyIdx++);</span>
 				}
-<span class="fc" id="L82">				nodes[nodesCount++] = x;</span>
-<span class="fc" id="L83">				keyIdx++;</span>
+<span class="fc" id="L77">				nodes[nodesCount++] = x;</span>
+<span class="fc" id="L78">				keyIdx++;</span>
 			}
 
-<span class="fc" id="L86">			return key;</span>
+<span class="fc" id="L81">			return key;</span>
 		}
 
 		private int[] calcDemoBlock(int key, int blockSize) {
-<span class="fc" id="L90">			int[] demoBlock = new int[blockSize];</span>
+<span class="fc" id="L85">			int[] demoBlock = new int[blockSize];</span>
 
-<span class="fc" id="L92">			int[] nodes = new int[blockSize];</span>
-<span class="fc" id="L93">			int nodesCount = 0;</span>
+<span class="fc" id="L87">			int[] nodes = new int[blockSize];</span>
+<span class="fc" id="L88">			int nodesCount = 0;</span>
 
-<span class="fc" id="L95">			int keyIdx = 0;</span>
+<span class="fc" id="L90">			int keyIdx = 0;</span>
 
-<span class="fc bfc" id="L97" title="All 2 branches covered.">			for (int i = 0; i &lt; demoBlock.length; i++) {</span>
-<span class="fc bfc" id="L98" title="All 2 branches covered.">				int x = nodesCount &gt; 0 ? nodes[nodesCount - 1] + blockSize : 0;</span>
-<span class="fc bfc" id="L99" title="All 2 branches covered.">				while ((key &amp; (1 &lt;&lt; keyIdx)) != 0) {</span>
-<span class="fc" id="L100">					x = nodes[nodesCount-- - 1] - 1;</span>
-<span class="fc" id="L101">					keyIdx++;</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">			for (int i = 0; i &lt; demoBlock.length; i++) {</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">				int x = nodesCount &gt; 0 ? nodes[nodesCount - 1] + blockSize : 0;</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">				while ((key &amp; (1 &lt;&lt; keyIdx)) != 0) {</span>
+<span class="fc" id="L95">					x = nodes[nodesCount-- - 1] - 1;</span>
+<span class="fc" id="L96">					keyIdx++;</span>
 				}
-<span class="fc" id="L103">				nodes[nodesCount++] = x;</span>
-<span class="fc" id="L104">				keyIdx++;</span>
+<span class="fc" id="L98">				nodes[nodesCount++] = x;</span>
+<span class="fc" id="L99">				keyIdx++;</span>
 
-<span class="fc" id="L106">				demoBlock[i] = x;</span>
+<span class="fc" id="L101">				demoBlock[i] = x;</span>
 			}
 
-<span class="fc" id="L109">			return demoBlock;</span>
+<span class="fc" id="L104">			return demoBlock;</span>
 		}
 
 		@Override
 		int getBlockSize(int n) {
-<span class="fc" id="L114">			return (int) Math.ceil(Utils.log2((double) n) / 4);</span>
+<span class="fc" id="L109">			return (int) Math.ceil(Utils.log2((double) n) / 4);</span>
 		}
 
 		@Override
 		int calcRMQInnerBlock(int block, int i, int j) {
-<span class="fc" id="L119">			return block * blockSize + interBlocksDs[block].findMinimumInRange(i, j);</span>
+<span class="fc" id="L114">			return block * blockSize + interBlocksDs[block].findMinimumInRange(i, j);</span>
 		}
 
 	}

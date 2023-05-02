@@ -6,15 +6,15 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 /**
  * A greedy coloring algorithm.
  * &lt;p&gt;
- * The algorithm examine the vertices in an arbitrary order and assign for each
- * vertex the minimum (integer) color which is not used by its neighbors.
+ * The algorithm examine the vertices in an arbitrary order and assign for each vertex the minimum (integer) color which
+ * is not used by its neighbors.
  * &lt;p&gt;
  * The algorithm runs in linear time, assuming the number of colors is constant.
  * &lt;p&gt;
- * Note that the result is an approximate for the minimum number of colors, as
- * finding an optimal coloring is an NP-hard problem.
+ * Note that the result is an approximate for the minimum number of colors, as finding an optimal coloring is an NP-hard
+ * problem.
  *
- * @see &lt;a href=&quot;https://en.wikipedia.org/wiki/Greedy_coloring&quot;&gt;Wikipedia&lt;/a&gt;
+ * @see    &lt;a href=&quot;https://en.wikipedia.org/wiki/Greedy_coloring&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
  */
 public class ColoringGreedy implements Coloring {
@@ -22,33 +22,32 @@ public class ColoringGreedy implements Coloring {
 	/**
 	 * Create a new coloring algorithm object.
 	 */
-<span class="fc" id="L25">	public ColoringGreedy() {</span>
-<span class="fc" id="L26">	}</span>
+<span class="fc" id="L25">	public ColoringGreedy() {}</span>
 
 	@Override
 	public Coloring.Result computeColoring(UGraph g) {
-<span class="pc bpc" id="L30" title="1 of 2 branches missed.">		if (GraphsUtils.containsSelfLoops(g))</span>
-<span class="nc" id="L31">			throw new IllegalArgumentException(&quot;no valid coloring in graphs with self loops&quot;);</span>
+<span class="pc bpc" id="L29" title="1 of 2 branches missed.">		if (GraphsUtils.containsSelfLoops(g))</span>
+<span class="nc" id="L30">			throw new IllegalArgumentException(&quot;no valid coloring in graphs with self loops&quot;);</span>
 
-<span class="fc" id="L33">		ColoringResultImpl res = new ColoringResultImpl(g);</span>
-<span class="fc" id="L34">		int n = g.vertices().size();</span>
-<span class="fc" id="L35">		IntSet usedColors = new IntOpenHashSet();</span>
-<span class="fc bfc" id="L36" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc" id="L37">			usedColors.clear();</span>
-<span class="fc bfc" id="L38" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
-<span class="fc" id="L39">				eit.nextInt();</span>
-<span class="fc" id="L40">				int v = eit.v();</span>
-<span class="fc" id="L41">				int c = res.colorOf(v);</span>
-<span class="fc bfc" id="L42" title="All 2 branches covered.">				if (c != -1)</span>
-<span class="fc" id="L43">					usedColors.add(c);</span>
-<span class="fc" id="L44">			}</span>
-<span class="fc" id="L45">			int color = 0;</span>
-<span class="fc bfc" id="L46" title="All 2 branches covered.">			while (usedColors.contains(color))</span>
-<span class="fc" id="L47">				color++;</span>
-<span class="fc" id="L48">			res.colors[u] = color;</span>
-<span class="fc" id="L49">			res.colorsNum = Math.max(res.colorsNum, color + 1);</span>
+<span class="fc" id="L32">		ColoringResultImpl res = new ColoringResultImpl(g);</span>
+<span class="fc" id="L33">		int n = g.vertices().size();</span>
+<span class="fc" id="L34">		IntSet usedColors = new IntOpenHashSet();</span>
+<span class="fc bfc" id="L35" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc" id="L36">			usedColors.clear();</span>
+<span class="fc bfc" id="L37" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
+<span class="fc" id="L38">				eit.nextInt();</span>
+<span class="fc" id="L39">				int v = eit.v();</span>
+<span class="fc" id="L40">				int c = res.colorOf(v);</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">				if (c != -1)</span>
+<span class="fc" id="L42">					usedColors.add(c);</span>
+<span class="fc" id="L43">			}</span>
+<span class="fc" id="L44">			int color = 0;</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">			while (usedColors.contains(color))</span>
+<span class="fc" id="L46">				color++;</span>
+<span class="fc" id="L47">			res.colors[u] = color;</span>
+<span class="fc" id="L48">			res.colorsNum = Math.max(res.colorsNum, color + 1);</span>
 		}
-<span class="fc" id="L51">		return res;</span>
+<span class="fc" id="L50">		return res;</span>
 	}
 
 }
