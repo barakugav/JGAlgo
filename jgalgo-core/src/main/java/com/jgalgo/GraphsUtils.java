@@ -6,9 +6,9 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectFunction;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
-class Graphs {
+class GraphsUtils {
 
-	private Graphs() {
+	private GraphsUtils() {
 	}
 
 	static int getFullyBranchingTreeDepth(Graph t, int root) {

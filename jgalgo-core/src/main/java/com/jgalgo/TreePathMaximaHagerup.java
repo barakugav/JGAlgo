@@ -163,7 +163,7 @@ public class TreePathMaximaHagerup implements TreePathMaxima {
 			int n = t.vertices().size();
 			int[] a = new int[n];
 
-			int leavesDepth = Graphs.getFullyBranchingTreeDepth(t, root);
+			int leavesDepth = GraphsUtils.getFullyBranchingTreeDepth(t, root);
 
 			Weights.Int tData = t.edgesWeight("edgeData");
 			int[][] res = new int[tOrig.vertices().size()][];
@@ -253,7 +253,7 @@ public class TreePathMaximaHagerup implements TreePathMaxima {
 
 			UGraph t = new GraphArrayUndirected(n);
 			Weights.Int tData = t.addEdgesWeights("edgeData", int.class, Integer.valueOf(-1));
-			for (UGraph G = Graphs.referenceGraph(tOrig, EdgeRefWeightKey); (n = G.vertices().size()) > 1;) {
+			for (UGraph G = GraphsUtils.referenceGraph(tOrig, EdgeRefWeightKey); (n = G.vertices().size()) > 1;) {
 				Weights.Int GData = G.edgesWeight(EdgeRefWeightKey);
 
 				// Find minimum edge of each vertex

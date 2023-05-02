@@ -68,9 +68,9 @@ public class MSTKargerKleinTarjan implements MST {
 		UGraph g1 = randSubgraph(g0);
 		Weights<Ref> g1Ref = g1.edgesWeight("ref");
 		IntCollection f1Edges = computeMST(g1, e -> g1Ref.get(e).w);
-		UGraph f1 = Graphs.subGraph(g1, f1Edges);
+		UGraph f1 = GraphsUtils.subGraph(g1, f1Edges);
 		IntCollection e2 = lightEdges(g0, f1);
-		UGraph g2 = Graphs.subGraph(g0, e2);
+		UGraph g2 = GraphsUtils.subGraph(g0, e2);
 		Weights<Ref> g2Ref = g2.edgesWeight("ref");
 		IntCollection f2 = computeMST(g2, e -> g2Ref.get(e).w);
 
@@ -90,7 +90,7 @@ public class MSTKargerKleinTarjan implements MST {
 			if (rand.nextBoolean())
 				edgeSet.add(e);
 		}
-		return Graphs.subGraph(g, edgeSet);
+		return GraphsUtils.subGraph(g, edgeSet);
 	}
 
 	private IntCollection lightEdges(UGraph g, UGraph f) {

@@ -52,7 +52,7 @@ public class MDSTTarjan implements MDST {
 			throw new IllegalArgumentException("Only directed graphs are supported");
 		if (g.vertices().size() == 0 || g.edges().size() == 0)
 			return IntLists.emptyList();
-		DiGraph gRef = Graphs.referenceGraph((DiGraph) g, EdgeRefWeightKey);
+		DiGraph gRef = GraphsUtils.referenceGraph((DiGraph) g, EdgeRefWeightKey);
 		Weights.Int edgeRefs = gRef.edgesWeight(EdgeRefWeightKey);
 
 		// Connect new root to all vertices
@@ -69,7 +69,7 @@ public class MDSTTarjan implements MDST {
 	public IntCollection computeMinimumSpanningTree(DiGraph g, EdgeWeightFunc w, int root) {
 		if (g.vertices().size() == 0 || g.edges().size() == 0)
 			return IntLists.emptyList();
-		DiGraph gRef = Graphs.referenceGraph(g, EdgeRefWeightKey);
+		DiGraph gRef = GraphsUtils.referenceGraph(g, EdgeRefWeightKey);
 
 		ContractedGraph contractedGraph = contract(gRef, w);
 		return expand(gRef, contractedGraph, root);

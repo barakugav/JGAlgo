@@ -41,7 +41,7 @@ public class CyclesFinderJohnson implements CyclesFinder {
 	}
 
 	private List<Path> findAllCycles0(DiGraph g) {
-		if (Graphs.containsParallelEdges(g))
+		if (GraphsUtils.containsParallelEdges(g))
 			throw new IllegalArgumentException("graph with self loops is not supported");
 		int n = g.vertices().size();
 		Worker worker = new Worker(g);

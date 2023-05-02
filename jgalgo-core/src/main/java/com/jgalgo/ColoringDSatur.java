@@ -37,7 +37,7 @@ public class ColoringDSatur implements Coloring {
 
 	@Override
 	public Coloring.Result computeColoring(UGraph g) {
-		if (Graphs.containsSelfLoops(g))
+		if (GraphsUtils.containsSelfLoops(g))
 			throw new IllegalArgumentException("no valid coloring in graphs with self loops");
 
 		ColoringResultImpl res = new ColoringResultImpl(g);
