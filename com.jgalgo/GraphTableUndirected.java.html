@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GraphTableUndirected.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">GraphTableUndirected.java</span></div><h1>GraphTableUndirected.java</h1><pre class="source lang-java linenums">package com.jgalgo;
 
 /**
- * A undirected graph implementation using 2D table to store all edges.
+ * A undirected graph implementation using a two dimensional table to store all
+ * edges.
  * &lt;p&gt;
- * The graph is initialized with a fixed number of vertices, {@code n}, and does
+ * The graph is initialized with a fixed number of vertices, $n$, and does
  * not support addition or removals of vertices. A fixed sized table of size
  * {@code [n][n]} stores the edges of the graph. The implementation does not
  * support multiple edges with identical source and target.
  * &lt;p&gt;
  * This implementation is efficient for use cases where fast lookups of edge
- * {@code (u, v)} are required, as they can be answered in {@code O(1)} time,
+ * $(u,v)$ are required, as they can be answered in $O(1)$ time,
  * but it should not be the default choice for an undirected graph.
  *
  * @see GraphTableDirected
@@ -26,67 +27,67 @@ public class GraphTableUndirected extends GraphTableAbstract implements UGraph {
 	 * @param n the number of initial vertices number
 	 */
 	public GraphTableUndirected(int n) {
-<span class="fc" id="L29">		super(n, Capabilities);</span>
-<span class="fc" id="L30">	}</span>
+<span class="fc" id="L30">		super(n, Capabilities);</span>
+<span class="fc" id="L31">	}</span>
 
 	@Override
 	public int addEdge(int u, int v) {
-<span class="fc" id="L34">		int e = super.addEdge(u, v);</span>
-<span class="fc" id="L35">		edges[u][v] = edges[v][u] = e;</span>
-<span class="fc" id="L36">		return e;</span>
+<span class="fc" id="L35">		int e = super.addEdge(u, v);</span>
+<span class="fc" id="L36">		edges[u][v] = edges[v][u] = e;</span>
+<span class="fc" id="L37">		return e;</span>
 	}
 
 	@Override
 	public void removeEdge(int e) {
-<span class="fc" id="L41">		e = edgeSwapBeforeRemove(e);</span>
-<span class="fc" id="L42">		int u = edgeSource(e), v = edgeTarget(e);</span>
-<span class="fc" id="L43">		edges[u][v] = edges[v][u] = EdgeNone;</span>
-<span class="fc" id="L44">		super.removeEdge(e);</span>
-<span class="fc" id="L45">	}</span>
+<span class="fc" id="L42">		e = edgeSwapBeforeRemove(e);</span>
+<span class="fc" id="L43">		int u = edgeSource(e), v = edgeTarget(e);</span>
+<span class="fc" id="L44">		edges[u][v] = edges[v][u] = EdgeNone;</span>
+<span class="fc" id="L45">		super.removeEdge(e);</span>
+<span class="fc" id="L46">	}</span>
 
 	@Override
 	void edgeSwap(int e1, int e2) {
-<span class="fc" id="L49">		int u1 = edgeSource(e1), v1 = edgeTarget(e1);</span>
-<span class="fc" id="L50">		int u2 = edgeSource(e2), v2 = edgeTarget(e2);</span>
-<span class="fc" id="L51">		edges[u1][v1] = edges[v1][u1] = e2;</span>
-<span class="fc" id="L52">		edges[u2][v2] = edges[v2][u2] = e1;</span>
-<span class="fc" id="L53">		super.edgeSwap(e1, e2);</span>
-<span class="fc" id="L54">	}</span>
+<span class="fc" id="L50">		int u1 = edgeSource(e1), v1 = edgeTarget(e1);</span>
+<span class="fc" id="L51">		int u2 = edgeSource(e2), v2 = edgeTarget(e2);</span>
+<span class="fc" id="L52">		edges[u1][v1] = edges[v1][u1] = e2;</span>
+<span class="fc" id="L53">		edges[u2][v2] = edges[v2][u2] = e1;</span>
+<span class="fc" id="L54">		super.edgeSwap(e1, e2);</span>
+<span class="fc" id="L55">	}</span>
 
-<span class="fc" id="L56">	private static final GraphCapabilities Capabilities = new GraphCapabilities() {</span>
+<span class="fc" id="L57">	private static final GraphCapabilities Capabilities = new GraphCapabilities() {</span>
 		@Override
 		public boolean vertexAdd() {
-<span class="fc" id="L59">			return false;</span>
+<span class="fc" id="L60">			return false;</span>
 		}
 
 		@Override
 		public boolean vertexRemove() {
-<span class="fc" id="L64">			return false;</span>
+<span class="fc" id="L65">			return false;</span>
 		}
 
 		@Override
 		public boolean edgeAdd() {
-<span class="fc" id="L69">			return true;</span>
+<span class="fc" id="L70">			return true;</span>
 		}
 
 		@Override
 		public boolean edgeRemove() {
-<span class="fc" id="L74">			return true;</span>
+<span class="fc" id="L75">			return true;</span>
 		}
 
 		@Override
 		public boolean parallelEdges() {
-<span class="fc" id="L79">			return false;</span>
+<span class="fc" id="L80">			return false;</span>
 		}
 
 		@Override
 		public boolean selfEdges() {
-<span class="fc" id="L84">			return true;</span>
+<span class="fc" id="L85">			return true;</span>
 		}
 
 		@Override
 		public boolean directed() {
-<span class="fc" id="L89">			return false;</span>
+<span class="fc" id="L90">			return false;</span>
 		}
 	};
 

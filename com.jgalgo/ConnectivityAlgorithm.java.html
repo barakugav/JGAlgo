@@ -11,8 +11,8 @@ public interface ConnectivityAlgorithm {
 	 * Find all (strongly) connectivity components in a graph.
 	 * &lt;p&gt;
 	 * A (strongly) connected component is a maximal set of vertices for which for
-	 * any pair of vertices {@code u, v} in the set there exist a path from
-	 * {@code u} to {@code v} and from {@code v} to {@code u}.
+	 * any pair of vertices $u, v$ in the set there exist a path from
+	 * $u$ to $v$ and from $v$ to $u$.
 	 *
 	 * @param g a graph
 	 * @return a result object containing the partition of the vertices into
@@ -53,13 +53,14 @@ public interface ConnectivityAlgorithm {
 	/**
 	 * Create a new connectivity algorithm builder.
 	 * &lt;p&gt;
-	 * This is the recommended way to instantiate a new {@link ConnectivityAlgorithm}
+	 * This is the recommended way to instantiate a new
+	 * {@link ConnectivityAlgorithm}
 	 * object.
 	 *
 	 * @return a new builder that can build {@link ConnectivityAlgorithm} objects
 	 */
 	static ConnectivityAlgorithm.Builder newBuilder() {
-<span class="fc" id="L62">		return new ConnectivityAlgorithmImpl.Builder();</span>
+<span class="fc" id="L63">		return new ConnectivityAlgorithmImpl.Builder();</span>
 	}
 
 	/**

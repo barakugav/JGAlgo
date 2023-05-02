@@ -5,7 +5,7 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 	/*
 	 * This implementation divides the elements sequence into blocks, for each block
 	 * calculate the minimum in the block and the minimum within the block from each
-	 * index to the borders of the block. In addition, we use the O(x log x)
+	 * index to the borders of the block. In addition, we use the $O(x \log x)$
 	 * implementation on the minimum values from each block (which we have less than
 	 * n).
 	 *
@@ -15,7 +15,7 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 	 * the same block we have no implementation, and the implementations that
 	 * extends this class will implement it in different methods.
 	 *
-	 * O(n) pre processing time, O(n) space, O(1) query.
+	 * $O(n)$ pre processing time, $O(n)$ space, $O(1)$ query.
 	 */
 
 	private final RMQStaticPowerOf2Table xlogxTable;

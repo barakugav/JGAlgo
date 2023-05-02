@@ -9,10 +9,10 @@ import java.util.Arrays;
  * implementation is usually out-performed by the {@link UnionFindArray}
  * implementation.
  * &lt;p&gt;
- * The running time of {@code m} operations on the data structure is
- * {@code O(m \alpha (m, n))} where {@code \alpha} is the inverse Ackermann's
- * function. The inverse Ackermann's function is extremely slow and for any
- * practical use should be treated as constant.
+ * The running time of $m$ operations on $n$ elements is
+ * $O(m \cdot \alpha (m, n))$ where $\alpha(\cdot,\cdot)$ is the inverse
+ * Ackermann's function. The inverse Ackermann's function is extremely slow and
+ * for any practical use should be treated as constant.
  *
  * @see UnionFindArray
  * @author Barak Ugav
@@ -30,7 +30,7 @@ public class UnionFindPtr implements UnionFind {
 <span class="fc" id="L30">	}</span>
 
 	/**
-	 * Create a new Union Find data structure with {@code n} elements with ids
+	 * Create a new Union Find data structure with $n$ elements with ids
 	 * {@code 0,1,2,...,n-1}, each of them form a set of a single element.
 	 *
 	 * @param n the number of initial elements in the data structure

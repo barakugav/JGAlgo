@@ -12,19 +12,19 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  * Gabow's implementation of Endmond's algorithm for cardinality maximum
  * matching in general graphs.
  * &lt;p&gt;
- * The algorithm runs {@code n} iterations, in each one the matching is
+ * The algorithm runs $n$ iterations, in each one the matching is
  * increased by one. In each iteration, a BFS is run from the unmatched vertices
  * using only alternating paths, searching for an augmenting path. When a
  * blossom is detected, the algorithm contract it to a 'super vertex' and
  * continue in the BFS. Instead of storing the blossom explicitly as stated in
  * the paper, we use {@link UnionFind} to implicitly represent the blossoms.
- * Each iteration require {@code m \alpha (m, n)} time, where
- * {@code \alpha (m, n)} is inverse Ackermann's function.
+ * Each iteration require $O(m n \cdot \alpha (m, n))$ time, where
+ * $\alpha (\cdot, \cdot)$ is inverse Ackermann's function.
  * &lt;p&gt;
  * Based on 'An Efficient Implementation of Edmonds Algorithm for Maximum
  * Matching on Graphs' by Harold N. Gabow (1976). Although the original paper
- * stated the running time is {@code O(n^3)}, we implement it using
- * {@link UnionFind}, and the running time is {@code O(m n \alpha (m, n))}.
+ * stated the running time is $O(n^3)$, we implement it using {@link UnionFind},
+ * and the running time is $O(m n \alpha (m, n))$.
  *
  * @author Barak Ugav
  */
