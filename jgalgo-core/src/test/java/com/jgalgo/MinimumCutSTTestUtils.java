@@ -69,10 +69,11 @@ class MinimumCutSTTestUtils extends TestUtils {
 				int cutWeight = cutWeight(g, w, cut);
 				if (minCutWeight > cutWeight)
 					assertTrue(minCutWeight <= cutWeight, "failed to find minimum cut: " + cut);
+				cut.clear();
 			}
 
 		} else {
-			MinimumCutST validationAlgo = alg instanceof MaximumFlowPushRelabel
+			MinimumCutST validationAlgo = alg instanceof MaximumFlowPushRelabelAbstract
 					? MinimumCutST.newFromMaximumFlow(new MaximumFlowEdmondsKarp())
 					: new MaximumFlowPushRelabel();
 			IntList minCutExpected = validationAlgo.computeMinimumCut(g, w, source, sink);
