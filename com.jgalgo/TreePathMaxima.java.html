@@ -9,16 +9,16 @@ import it.unimi.dsi.fastutil.ints.IntList;
 /**
  * Tree Path Maxima (TPM) algorithm.
  * &lt;p&gt;
- * Given a tree $T$ and a sequence of vertices pairs
- * $(u_1,v_1),(u_2,v_2),\ldots$ called &lt;i&gt;queries&lt;/i&gt;, the tree path maxima
- * problem is to find for each pair $(u_i,v_i)$ the heaviest edge on the path
- * between $u_i$ and $v_i$ in $T$.
+ * Given a tree \(T\) and a sequence of vertices pairs
+ * \((u_1,v_1),(u_2,v_2),\ldots\) called &lt;i&gt;queries&lt;/i&gt;, the tree path maxima
+ * problem is to find for each pair \((u_i,v_i)\) the heaviest edge on the path
+ * between \(u_i\) and \(v_i\) in \(T\).
  * &lt;p&gt;
  * TPM can be used to validate if a spanning tree is minimum spanning tree (MST)
- * or not, by checking for each edge $(u,v)$ that is not in the tree that
- * it is heavier than the heaviest edge in the path from $u$ to $v$
- * in the tree. If a TPM on $n$ vertices and $m$ queries can be
- * answer in $O(n + m)$ time than an MST can be validated in linear time.
+ * or not, by checking for each edge \((u,v)\) that is not in the tree that
+ * it is heavier than the heaviest edge in the path from \(u\) to \(v\)
+ * in the tree. If a TPM on \(n\) vertices and \(m\) queries can be
+ * answer in \(O(n + m)\) time than an MST can be validated in linear time.
  *
  * @author Barak Ugav
  */

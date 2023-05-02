@@ -10,9 +10,9 @@ import it.unimi.dsi.fastutil.ints.IntList;
  * Johnson's algorithm for all pairs shortest path.
  * &lt;p&gt;
  * Calculate the shortest path between each pair of vertices in a graph in
- * $O(n m + n^2 \log n)$ time using $O(n^2)$ space. Negative weights are supported.
+ * \(O(n m + n^2 \log n)\) time using \(O(n^2)\) space. Negative weights are supported.
  * &lt;p&gt;
- * The algorithm is faster than using {@link SSSPBellmanFord} $n$ times,
+ * The algorithm is faster than using {@link SSSPBellmanFord} \(n\) times,
  * as it uses {@link SSSPBellmanFord} once to compute a potential for each
  * vertex, resulting in an equivalent positive weight function, allowing us to
  * use {@link SSSPDijkstra} from each vertex as a source.

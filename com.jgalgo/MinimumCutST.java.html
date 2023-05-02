@@ -5,16 +5,16 @@ import it.unimi.dsi.fastutil.ints.IntList;
 /**
  * Minimum Cut algorithm with terminal vertices (source-sink, S-T).
  * &lt;p&gt;
- * Given a graph $G=(V,E)$, a cut is a partition of $V$ into two
- * sets $C, \bar{C} = V \setminus C$. Given a weight function, the weight of a cut
- * $(C,\bar{C})$ is the weight sum of all edges $(u,v)$ such that $u$
- * is in $C$ and $v$ is in $\bar{C}$. There are two variants of the
+ * Given a graph \(G=(V,E)\), a cut is a partition of \(V\) into two
+ * sets \(C, \bar{C} = V \setminus C\). Given a weight function, the weight of a
+ * cut \((C,\bar{C})\) is the weight sum of all edges \((u,v)\) such that \(u\)
+ * is in \(C\) and \(v\) is in \(\bar{C}\). There are two variants of the
  * problem to find a minimum weight cut: (1) With terminal vertices, and (2)
  * without terminal vertices. In the variant with terminal vertices, we are
  * given two special vertices {@code source (S)} and {@code sink (T)} and we
- * need to find the minimum cut $(C,\bar{C})$ such that the {@code source} is
- * in $C$ and the {@code sink} is in $\bar{C}$. In the variant without
- * terminal vertices we need to find the global cut, and $C,\bar{C}$ just must
+ * need to find the minimum cut \((C,\bar{C})\) such that the {@code source} is
+ * in \(C\) and the {@code sink} is in \(\bar{C}\). In the variant without
+ * terminal vertices we need to find the global cut, and \(C,\bar{C}\) just must
  * not be empty.
  * &lt;p&gt;
  * Algorithm implementing this interface compute the minimum cut given two
@@ -29,16 +29,16 @@ public interface MinimumCutST {
 	 * Compute the minimum cut in a graph and a weight function with two terminal
 	 * vertices.
 	 * &lt;p&gt;
-	 * Given a graph $G=(V,E)$, a cut is a partition of $V$ into twos
-	 * sets $C, \bar{C} = V \setminus C$. The return value of this function is the set
-	 * $C$, and $\bar{C}$ can be computed easily by the caller if needed.
+	 * Given a graph \(G=(V,E)\), a cut is a partition of \(V\) into twos
+	 * sets \(C, \bar{C} = V \setminus C\). The return value of this function is the
+	 * set \(C\), and \(\bar{C}\) can be computed easily by the caller if needed.
 	 *
 	 * @param g      a graph
 	 * @param w      an edge weight function
-	 * @param source a special vertex that will be in $C$
-	 * @param sink   a special vertex that will be in $\bar{C}$
+	 * @param source a special vertex that will be in \(C\)
+	 * @param sink   a special vertex that will be in \(\bar{C}\)
 	 * @return the set C, where the minimum cut is a partition of the vertices
-	 *         $V$ into two sets $C, \bar{C} = V \setminus C$
+	 *         \(V\) into two sets \(C, \bar{C} = V \setminus C\)
 	 * @throws IllegalArgumentException if the source and the sink are the same
 	 *                                  vertex
 	 */

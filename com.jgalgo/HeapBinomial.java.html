@@ -14,14 +14,14 @@ import com.jgalgo.Trees.TreeNode;
  * A binomial heap implementation.
  * &lt;p&gt;
  * Pointer based data structure that support user references to the internal
- * nodes, allowing efficient $O(\log n)$ implementation of the
+ * nodes, allowing efficient \(O(\log n)\) implementation of the
  * {@link #removeRef(HeapReference)} and
  * {@link #decreaseKey(HeapReference, Object)} operations. The regular
  * operations like {@link #insert(Object)}, {@link #extractMin()} and
- * {@link #findMin()} are also implemented in $O(\log n)$ time. Another
+ * {@link #findMin()} are also implemented in \(O(\log n)\) time. Another
  * advantage of the binomial heap is its ability to merge with another binomial
- * heap in $O(\log n)$ time, which is much faster than the required
- * $O(n)$ time of binary heaps.
+ * heap in \(O(\log n)\) time, which is much faster than the required
+ * \(O(n)\) time of binary heaps.
  * &lt;p&gt;
  * Although it has great complexities bounds,
  * {@link #decreaseKey(HeapReference, Object)} can be implemented faster using
