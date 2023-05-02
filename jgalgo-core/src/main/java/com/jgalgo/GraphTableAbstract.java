@@ -59,7 +59,7 @@ abstract class GraphTableAbstract extends GraphBaseContinues {
 	public EdgeIter getEdges(int u, int v) {
 		int e = edges[u][v];
 		if (e == EdgeNone) {
-			return EdgeIterImpl.Empty;
+			return GraphsUtils.EmptyEdgeIter;
 		} else {
 			return new EdgeIter() {
 
