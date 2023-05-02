@@ -29,8 +29,7 @@ public class MDSTTarjan implements MDST {
 	/**
 	 * Construct a new MDST algorithm object.
 	 */
-	public MDSTTarjan() {
-	}
+	public MDSTTarjan() {}
 
 	/**
 	 * Set the implementation of the heap used by this algorithm.

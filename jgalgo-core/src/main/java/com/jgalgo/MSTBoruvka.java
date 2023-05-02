@@ -10,21 +10,17 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 /**
  * Boruvka minimum spanning tree algorithm.
  * <p>
- * The algorithm run in iterations. In each iteration it finds the minimum edge
- * incident for each vertex, and adds all of these edges to the forest. Each
- * connected component in the forest become a 'super vertex' in the next
- * iteration. The algorithm terminate when there is a single super vertex in the
- * case the original graph was connected, or when there are no incident edges to
- * the remaining super vertices.
+ * The algorithm run in iterations. In each iteration it finds the minimum edge incident for each vertex, and adds all
+ * of these edges to the forest. Each connected component in the forest become a 'super vertex' in the next iteration.
+ * The algorithm terminate when there is a single super vertex in the case the original graph was connected, or when
+ * there are no incident edges to the remaining super vertices.
  * <p>
- * The running time of the algorithm is \(O(m \log n)\) and it uses linear
- * space. Note that only undirected graphs are supported.
+ * The running time of the algorithm is \(O(m \log n)\) and it uses linear space. Note that only undirected graphs are
+ * supported.
  * <p>
- * Based on "O jistém problému minimálním" [About a certain minimal problem] by
- * Borůvka, Otakar (1926).
+ * Based on "O jistém problému minimálním" [About a certain minimal problem] by Borůvka, Otakar (1926).
  *
- * @see <a href=
- *      "https://en.wikipedia.org/wiki/Bor%C5%AFvka%27s_algorithm">Wikipedia</a>
+ * @see    <a href= "https://en.wikipedia.org/wiki/Bor%C5%AFvka%27s_algorithm">Wikipedia</a>
  * @author Barak Ugav
  */
 public class MSTBoruvka implements MST {
@@ -32,8 +28,7 @@ public class MSTBoruvka implements MST {
 	/**
 	 * Construct a new MST algorithm object.
 	 */
-	public MSTBoruvka() {
-	}
+	public MSTBoruvka() {}
 
 	/**
 	 * {@inheritDoc}
@@ -121,10 +116,9 @@ public class MSTBoruvka implements MST {
 			}
 
 			/*
-			 * the graph of the trees (vertex per tree, minimum out edges of the trees) is a
-			 * graph where each vertex has one out edge at most, and we want to find all the
-			 * connectivity components between the trees and label the vertices of G with
-			 * new trees indices
+			 * the graph of the trees (vertex per tree, minimum out edges of the trees) is a graph where each vertex has
+			 * one out edge at most, and we want to find all the connectivity components between the trees and label the
+			 * vertices of G with new trees indices
 			 */
 			final int UNVISITED = -1;
 			final int IN_PATH = -2;

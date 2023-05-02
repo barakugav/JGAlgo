@@ -5,19 +5,15 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 /**
  * Maximum weighted matching algorithm.
  * <p>
- * Given a graph \(G=(V,E)\), a matching is a sub set of edges \(M\)
- * such that any vertex in \(V\) have at most one adjacent edge in
- * \(M\). A maximum matching is a matching with the maximum edges weight sum
- * with respect to some weight function. The 'maximum matching' with out weight
- * is referred as 'maximum cardinality matching'.
+ * Given a graph \(G=(V,E)\), a matching is a sub set of edges \(M\) such that any vertex in \(V\) have at most one
+ * adjacent edge in \(M\). A maximum matching is a matching with the maximum edges weight sum with respect to some
+ * weight function. The 'maximum matching' with out weight is referred as 'maximum cardinality matching'.
  * <p>
- * A perfect maximum matching is a matching with the maximum edges weight sum
- * out of all the matching with are maximum cardinality matching. Note that the
- * weight of a perfect maximum matching is smaller or equal to the weight of a
+ * A perfect maximum matching is a matching with the maximum edges weight sum out of all the matching with are maximum
+ * cardinality matching. Note that the weight of a perfect maximum matching is smaller or equal to the weight of a
  * maximum weight matching.
  *
- * @see <a href=
- *      "https://en.wikipedia.org/wiki/Maximum_weight_matching">Wikipedia</a>
+ * @see    <a href= "https://en.wikipedia.org/wiki/Maximum_weight_matching">Wikipedia</a>
  * @author Barak Ugav
  */
 public interface MaximumMatchingWeighted extends MaximumMatching {
@@ -25,19 +21,18 @@ public interface MaximumMatchingWeighted extends MaximumMatching {
 	/**
 	 * Compute the maximum weighted matching of a weighted undirected graph.
 	 *
-	 * @param g an undirected graph
-	 * @param w an edge weight function
-	 * @return collection of edges representing the matching
+	 * @param  g an undirected graph
+	 * @param  w an edge weight function
+	 * @return   collection of edges representing the matching
 	 */
 	public IntCollection computeMaximumMatching(UGraph g, EdgeWeightFunc w);
 
 	/**
 	 * Compute the maximum perfect matching of a weighted undirected graph.
 	 *
-	 * @param g an undirected graph
-	 * @param w an edge weight function
-	 * @return collection of edges representing perfect matching, or the maximal one
-	 *         if no perfect one found
+	 * @param  g an undirected graph
+	 * @param  w an edge weight function
+	 * @return   collection of edges representing perfect matching, or the maximal one if no perfect one found
 	 */
 	public IntCollection computeMaximumPerfectMatching(UGraph g, EdgeWeightFunc w);
 
@@ -54,11 +49,9 @@ public interface MaximumMatchingWeighted extends MaximumMatching {
 	/**
 	 * Create a new maximum weighted matching algorithm builder.
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link MaximumMatchingWeighted}
-	 * object.
+	 * This is the recommended way to instantiate a new {@link MaximumMatchingWeighted} object.
 	 *
-	 * @return a new builder that can build {@link MaximumMatchingWeighted}
-	 *         objects
+	 * @return a new builder that can build {@link MaximumMatchingWeighted} objects
 	 */
 	static MaximumMatchingWeighted.Builder newBuilder() {
 		return new MaximumMatchingWeighted.Builder() {
@@ -82,7 +75,7 @@ public interface MaximumMatchingWeighted extends MaximumMatching {
 	/**
 	 * A builder for {@link MaximumMatchingWeighted} objects.
 	 *
-	 * @see MaximumMatchingWeighted#newBuilder()
+	 * @see    MaximumMatchingWeighted#newBuilder()
 	 * @author Barak Ugav
 	 */
 	static interface Builder extends MaximumMatching.Builder {

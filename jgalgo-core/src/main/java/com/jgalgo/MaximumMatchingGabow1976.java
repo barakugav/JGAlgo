@@ -9,22 +9,17 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 /**
- * Gabow's implementation of Endmond's algorithm for cardinality maximum
- * matching in general graphs.
+ * Gabow's implementation of Endmond's algorithm for cardinality maximum matching in general graphs.
  * <p>
- * The algorithm runs \(n\) iterations, in each one the matching is
- * increased by one. In each iteration, a BFS is run from the unmatched vertices
- * using only alternating paths, searching for an augmenting path. When a
- * blossom is detected, the algorithm contract it to a 'super vertex' and
- * continue in the BFS. Instead of storing the blossom explicitly as stated in
- * the paper, we use {@link UnionFind} to implicitly represent the blossoms.
- * Each iteration require \(O(m n \cdot \alpha (m, n))\) time, where
- * \(\alpha (\cdot, \cdot)\) is inverse Ackermann's function.
+ * The algorithm runs \(n\) iterations, in each one the matching is increased by one. In each iteration, a BFS is run
+ * from the unmatched vertices using only alternating paths, searching for an augmenting path. When a blossom is
+ * detected, the algorithm contract it to a 'super vertex' and continue in the BFS. Instead of storing the blossom
+ * explicitly as stated in the paper, we use {@link UnionFind} to implicitly represent the blossoms. Each iteration
+ * require \(O(m n \cdot \alpha (m, n))\) time, where \(\alpha (\cdot, \cdot)\) is inverse Ackermann's function.
  * <p>
- * Based on 'An Efficient Implementation of Edmonds Algorithm for Maximum
- * Matching on Graphs' by Harold N. Gabow (1976). Although the original paper
- * stated the running time is \(O(n^3)\), we implement it using {@link UnionFind},
- * and the running time is \(O(m n \alpha (m, n))\).
+ * Based on 'An Efficient Implementation of Edmonds Algorithm for Maximum Matching on Graphs' by Harold N. Gabow (1976).
+ * Although the original paper stated the running time is \(O(n^3)\), we implement it using {@link UnionFind}, and the
+ * running time is \(O(m n \alpha (m, n))\).
  *
  * @author Barak Ugav
  */
@@ -33,8 +28,7 @@ public class MaximumMatchingGabow1976 implements MaximumMatching {
 	/**
 	 * Create a new maximum matching object.
 	 */
-	public MaximumMatchingGabow1976() {
-	}
+	public MaximumMatchingGabow1976() {}
 
 	@Override
 	public IntCollection computeMaximumMatching(UGraph g) {

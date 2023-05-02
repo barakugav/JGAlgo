@@ -3,19 +3,16 @@ package com.jgalgo;
 /**
  * A discrete undirected graph with vertices and edges.
  * <p>
- * An extension to the {@link Graph} interface, where edges are undirected,
- * namely
- * an edge \(e(u, v)\) will appear in the iteration of {@code edgesOut(u)},
- * {@code edgesIn(v)}, {@code edgesOut(v)} and {@code edgesIn(u)}. Also
- * {@link #edgesOut(int)} and {@link #edgesIn(int)} are equivalent for the same
- * vertex, same for {@link #degreeIn(int)} and {@link #degreeOut(int)}, and
- * similarly {@link #removeEdgesOf(int)}, {@link #removeEdgesInOf(int)} and
+ * An extension to the {@link Graph} interface, where edges are undirected, namely an edge \(e(u, v)\) will appear in
+ * the iteration of {@code edgesOut(u)}, {@code edgesIn(v)}, {@code edgesOut(v)} and {@code edgesIn(u)}. Also
+ * {@link #edgesOut(int)} and {@link #edgesIn(int)} are equivalent for the same vertex, same for {@link #degreeIn(int)}
+ * and {@link #degreeOut(int)}, and similarly {@link #removeEdgesOf(int)}, {@link #removeEdgesInOf(int)} and
  * {@link #removeEdgesOutOf(int)}.
  * <p>
- * Use {@link GraphArrayUndirected} as a default implementation of undirected
- * graphs, its the most efficient for most use cases.
+ * Use {@link GraphArrayUndirected} as a default implementation of undirected graphs, its the most efficient for most
+ * use cases.
  *
- * @see DiGraph
+ * @see    DiGraph
  * @author Barak Ugav
  */
 public interface UGraph extends Graph {
@@ -51,8 +48,7 @@ public interface UGraph extends Graph {
 	/**
 	 * Create an undirected graph builder.
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link DiGraph}
-	 * object.
+	 * This is the recommended way to instantiate a new {@link DiGraph} object.
 	 *
 	 * @return a new builder that can build {@link DiGraph} objects
 	 */
@@ -64,7 +60,7 @@ public interface UGraph extends Graph {
 	/**
 	 * A builder for {@link UGraph} objects.
 	 *
-	 * @see UGraph#newBuilder()
+	 * @see    UGraph#newBuilder()
 	 * @author Barak Ugav
 	 */
 	static interface Builder extends Graph.Builder {

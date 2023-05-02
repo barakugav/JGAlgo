@@ -6,23 +6,20 @@ import java.util.Objects;
 /**
  * The DSatur coloring algorithm implemented with a heap.
  * <p>
- * The Saturation Degree (DSatur) coloring algorithm is a greedy algorithm,
- * namely it examine the vertices in some order and assign for each vertex the
- * minimum (integer) color which is not used by its neighbors. It differ from
- * other greedy coloring algorithm by the order of the vertices: the next vertex
- * to be colored is the vertex with the highest number of colors in its
- * neighborhood (called saturation degree).
+ * The Saturation Degree (DSatur) coloring algorithm is a greedy algorithm, namely it examine the vertices in some order
+ * and assign for each vertex the minimum (integer) color which is not used by its neighbors. It differ from other
+ * greedy coloring algorithm by the order of the vertices: the next vertex to be colored is the vertex with the highest
+ * number of colors in its neighborhood (called saturation degree).
  * <p>
- * This implementation differ from {@link ColoringDSatur} as it uses a heap to
- * maintain the uncolored vertices, and perform {@code decreaseKey} operations.
- * The running time of the algorithm is \(O(m + \log n)\) assuming the number
- * of colors is constant.
+ * This implementation differ from {@link ColoringDSatur} as it uses a heap to maintain the uncolored vertices, and
+ * perform {@code decreaseKey} operations. The running time of the algorithm is \(O(m + \log n)\) assuming the number of
+ * colors is constant.
  * <p>
- * Note that the result is an approximate for the minimum number of colors, as
- * finding an optimal coloring is an NP-hard problem.
+ * Note that the result is an approximate for the minimum number of colors, as finding an optimal coloring is an NP-hard
+ * problem.
  *
- * @see <a href="https://en.wikipedia.org/wiki/DSatur">Wikipedia</a>
- * @see ColoringDSatur
+ * @see    <a href="https://en.wikipedia.org/wiki/DSatur">Wikipedia</a>
+ * @see    ColoringDSatur
  * @author Barak Ugav
  */
 public class ColoringDSaturHeap implements Coloring {
@@ -32,8 +29,7 @@ public class ColoringDSaturHeap implements Coloring {
 	/**
 	 * Create a new coloring algorithm object.
 	 */
-	public ColoringDSaturHeap() {
-	}
+	public ColoringDSaturHeap() {}
 
 	/**
 	 * Set the implementation of the heap used by this algorithm.

@@ -11,12 +11,11 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 /**
  * Karger, Klein and Tarjan randomized linear minimum spanning tree algorithm
  * <p>
- * The algorithm runs in \(O(n + m)\) expected time, and uses linear space
- * in expectation. In practice, this algorithm is out-performed by almost all
- * simpler algorithms. Note that only undirected graphs are supported.
+ * The algorithm runs in \(O(n + m)\) expected time, and uses linear space in expectation. In practice, this algorithm
+ * is out-performed by almost all simpler algorithms. Note that only undirected graphs are supported.
  * <p>
- * Based on "A randomized linear-time algorithm to find minimum spanning trees"
- * by Karger, David R.; Klein, Philip N.; Tarjan, Robert E. (1995).
+ * Based on "A randomized linear-time algorithm to find minimum spanning trees" by Karger, David R.; Klein, Philip N.;
+ * Tarjan, Robert E. (1995).
  *
  * @author Barak Ugav
  */
@@ -57,10 +56,9 @@ public class MSTKargerKleinTarjan implements MST {
 		if (g.vertices().size() == 0 || g.edges().size() == 0)
 			return IntLists.emptyList();
 		/*
-		 * we run Boruvka to reduce the number of vertices by a factor of 4, and the
-		 * constructed graph contains now edges with different edge indices. Therefore,
-		 * the data stored in each edge is a reference to the old edge. This is a little
-		 * bit clumsy, but didn't find another way.
+		 * we run Boruvka to reduce the number of vertices by a factor of 4, and the constructed graph contains now
+		 * edges with different edge indices. Therefore, the data stored in each edge is a reference to the old edge.
+		 * This is a little bit clumsy, but didn't find another way.
 		 */
 		Pair<UGraph, IntCollection> r = MSTBoruvka.runBoruvka(g, w, 2, e -> new Ref(e, w.weight(e)), "ref");
 		UGraph g0 = r.e1;
@@ -126,8 +124,7 @@ public class MSTKargerKleinTarjan implements MST {
 		}
 
 		/*
-		 * use the tree path maxima to find the heaviest edge in the path connecting u v
-		 * for each edge in g
+		 * use the tree path maxima to find the heaviest edge in the path connecting u v for each edge in g
 		 */
 		TreePathMaxima tpm = new TreePathMaximaHagerup();
 		TreePathMaxima.Queries[] tpmQueries = new TreePathMaxima.Queries[trees.length];
@@ -147,8 +144,7 @@ public class MSTKargerKleinTarjan implements MST {
 			tpmResults[t] = tpm.computeHeaviestEdgeInTreePaths(trees[t], treeData[t], tpmQueries[t]);
 
 		/*
-		 * Find all light edge by comparing each edge in g to the heaviest edge on the
-		 * path from u to v in f
+		 * Find all light edge by comparing each edge in g to the heaviest edge on the path from u to v in f
 		 */
 		Weights<Ref> gRef = g.edgesWeight("ref");
 		IntCollection lightEdges = new IntArrayList();

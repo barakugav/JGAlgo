@@ -15,13 +15,11 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 
 class MatchingBipartiteTestUtils extends TestUtils {
 
-	private MatchingBipartiteTestUtils() {
-	}
+	private MatchingBipartiteTestUtils() {}
 
 	static UGraph randGraphBipartite(int sn, int tn, int m, GraphImpl graphImpl, long seed) {
 		return (UGraph) new RandomGraphBuilder(seed).sn(sn).tn(tn).m(m).directed(false).bipartite(true)
-				.parallelEdges(false)
-				.selfEdges(false).cycles(true).connected(false).graphImpl(graphImpl).build();
+				.parallelEdges(false).selfEdges(false).cycles(true).connected(false).graphImpl(graphImpl).build();
 	}
 
 	static UGraph createGraphBipartiteFromAdjacencyMatrix(int sSize, int[][] m) {
@@ -103,8 +101,7 @@ class MatchingBipartiteTestUtils extends TestUtils {
 	}
 
 	/*
-	 * Maximum Bipartite Matching implementation of Ford-Fulkerson algorithm from
-	 * the Internet
+	 * Maximum Bipartite Matching implementation of Ford-Fulkerson algorithm from the Internet
 	 */
 	private static int maxBPM(boolean g[][]) {
 		int sn = g.length, tn = g[0].length;

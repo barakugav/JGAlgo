@@ -8,13 +8,12 @@ import java.util.Objects;
 /**
  * A red black tree that support extensions such as subtree size/min/max.
  * <p>
- * Each node in the balanced binary tree can maintain properties such as its
- * subtree size, or a reference to the minimum/maximum element in its subtree.
- * These properties can be updated during the regular operations of the red
+ * Each node in the balanced binary tree can maintain properties such as its subtree size, or a reference to the
+ * minimum/maximum element in its subtree. These properties can be updated during the regular operations of the red
  * black tree without increasing the asymptotical running time.
  * <p>
- * This red black tree implementation support arbitrary number of extensions,
- * for example a size and max extensions are used in this snippet:
+ * This red black tree implementation support arbitrary number of extensions, for example a size and max extensions are
+ * used in this snippet:
  *
  * <pre> {@code
  * RedBlackTreeExtension.Size<Integer> sizeExt = new RedBlackTreeExtension.Size<>();
@@ -45,22 +44,19 @@ public class RedBlackTreeExtended<E> extends RedBlackTree<E> {
 	private static final Node[] EmptyNodesArray = new Node[0];
 
 	/**
-	 * Constructs a new, empty red black tree, with the given extensions, sorted
-	 * according to the natural ordering of its elements.
+	 * Constructs a new, empty red black tree, with the given extensions, sorted according to the natural ordering of
+	 * its elements.
 	 * <p>
-	 * All elements inserted into the tree must implement the {@link Comparable}
-	 * interface. Furthermore, all such elements must be <i>mutually comparable</i>:
-	 * {@code e1.compareTo(e2)} must not throw a {@code ClassCastException} for any
-	 * elements {@code e1} and {@code e2} in the tree. If the user attempts to
-	 * insert an element to the tree that violates this constraint (for example, the
-	 * user attempts to insert a string element to a tree whose elements are
-	 * integers), the {@code insert} call will throw a {@code ClassCastException}.
+	 * All elements inserted into the tree must implement the {@link Comparable} interface. Furthermore, all such
+	 * elements must be <i>mutually comparable</i>: {@code e1.compareTo(e2)} must not throw a {@code ClassCastException}
+	 * for any elements {@code e1} and {@code e2} in the tree. If the user attempts to insert an element to the tree
+	 * that violates this constraint (for example, the user attempts to insert a string element to a tree whose elements
+	 * are integers), the {@code insert} call will throw a {@code ClassCastException}.
 	 * <p>
-	 * The provided extensions must be used souly by this tree. If an extension was
-	 * used in another tree, it should not be passed to a new one for reuse.
+	 * The provided extensions must be used souly by this tree. If an extension was used in another tree, it should not
+	 * be passed to a new one for reuse.
 	 *
-	 * @param extensions a collections of extensions to be used by this red black
-	 *                   tree.
+	 * @param  extensions               a collections of extensions to be used by this red black tree.
 	 * @throws IllegalArgumentException if the extensions collection is empty
 	 */
 	public RedBlackTreeExtended(Collection<? extends RedBlackTreeExtension<E>> extensions) {
@@ -68,24 +64,19 @@ public class RedBlackTreeExtended<E> extends RedBlackTree<E> {
 	}
 
 	/**
-	 * Constructs a new, empty red black tree, with the given extensions, sorted
-	 * according to the specified comparator.
+	 * Constructs a new, empty red black tree, with the given extensions, sorted according to the specified comparator.
 	 * <p>
-	 * All elements inserted into the tree must be <i>mutually comparable</i> by the
-	 * specified comparator: {@code comparator.compare(e1, e2)} must not throw a
-	 * {@code ClassCastException} for any elements {@code e1} and {@code e2} in the
-	 * tree. If the user attempts to insert an element to the tree that violates
-	 * this constraint, the {@code insert} call will throw a
-	 * {@code ClassCastException}.
+	 * All elements inserted into the tree must be <i>mutually comparable</i> by the specified comparator:
+	 * {@code comparator.compare(e1, e2)} must not throw a {@code ClassCastException} for any elements {@code e1} and
+	 * {@code e2} in the tree. If the user attempts to insert an element to the tree that violates this constraint, the
+	 * {@code insert} call will throw a {@code ClassCastException}.
 	 * <p>
-	 * The provided extensions must be used souly by this tree. If an extension was
-	 * used in another tree, it should not be passed to a new one for reuse.
+	 * The provided extensions must be used souly by this tree. If an extension was used in another tree, it should not
+	 * be passed to a new one for reuse.
 	 *
-	 * @param comparator the comparator that will be used to order this tree.
-	 *                   If {@code null}, the {@linkplain Comparable natural
-	 *                   ordering} of the elements will be used.
-	 * @param extensions a collections of extensions to be used by this red black
-	 *                   tree.
+	 * @param  comparator               the comparator that will be used to order this tree. If {@code null}, the
+	 *                                      {@linkplain Comparable natural ordering} of the elements will be used.
+	 * @param  extensions               a collections of extensions to be used by this red black tree.
 	 * @throws IllegalArgumentException if the extensions collection is empty
 	 */
 	@SuppressWarnings("unchecked")

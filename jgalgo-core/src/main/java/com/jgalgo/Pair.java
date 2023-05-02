@@ -7,8 +7,7 @@ class Pair<E1, E2> implements Comparable<Pair<E1, E2>> {
 	E1 e1;
 	E2 e2;
 
-	Pair() {
-	}
+	Pair() {}
 
 	Pair(E1 e1, E2 e2) {
 		this.e1 = e1;

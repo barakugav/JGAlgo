@@ -6,15 +6,15 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 /**
  * A greedy coloring algorithm.
  * <p>
- * The algorithm examine the vertices in an arbitrary order and assign for each
- * vertex the minimum (integer) color which is not used by its neighbors.
+ * The algorithm examine the vertices in an arbitrary order and assign for each vertex the minimum (integer) color which
+ * is not used by its neighbors.
  * <p>
  * The algorithm runs in linear time, assuming the number of colors is constant.
  * <p>
- * Note that the result is an approximate for the minimum number of colors, as
- * finding an optimal coloring is an NP-hard problem.
+ * Note that the result is an approximate for the minimum number of colors, as finding an optimal coloring is an NP-hard
+ * problem.
  *
- * @see <a href="https://en.wikipedia.org/wiki/Greedy_coloring">Wikipedia</a>
+ * @see    <a href="https://en.wikipedia.org/wiki/Greedy_coloring">Wikipedia</a>
  * @author Barak Ugav
  */
 public class ColoringGreedy implements Coloring {
@@ -22,8 +22,7 @@ public class ColoringGreedy implements Coloring {
 	/**
 	 * Create a new coloring algorithm object.
 	 */
-	public ColoringGreedy() {
-	}
+	public ColoringGreedy() {}
 
 	@Override
 	public Coloring.Result computeColoring(UGraph g) {

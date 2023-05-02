@@ -7,8 +7,8 @@ import it.unimi.dsi.fastutil.ints.IntList;
 /**
  * The Floyd Warshall algorithm for all pairs shortest path.
  * <p>
- * Calculate the shortest path between each pair of vertices in a graph in
- * \(O(n^3)\) time using \(O(n^2)\) space. Negative weights are supported.
+ * Calculate the shortest path between each pair of vertices in a graph in \(O(n^3)\) time using \(O(n^2)\) space.
+ * Negative weights are supported.
  *
  * @author Barak Ugav
  */
@@ -17,8 +17,7 @@ public class APSPFloydWarshall implements APSP {
 	/**
 	 * Create a new APSP algorithm object.
 	 */
-	public APSPFloydWarshall() {
-	}
+	public APSPFloydWarshall() {}
 
 	@Override
 	public APSP.Result computeAllShortestPaths(Graph g, EdgeWeightFunc w) {
@@ -91,7 +90,6 @@ public class APSPFloydWarshall implements APSP {
 				res.setEdgeTo(u, v, e);
 			}
 		}
-		;
 		int n = g.vertices().size();
 		for (int k = 0; k < n; k++) {
 			/* Calc shortest path between each pair (u,v) by using vertices 1,2,..,k */

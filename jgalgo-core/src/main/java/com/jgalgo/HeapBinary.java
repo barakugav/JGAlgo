@@ -9,19 +9,16 @@ import java.util.NoSuchElementException;
 /**
  * A binary heap implementation using an array.
  * <p>
- * The binary heap is the most simple implementation of a heap. It does not use
- * some complex pointer based data structure, but rather a simple continue
- * array, to store its elements. Its have very small memory footprint and should
- * be used as default implementation in use cases where only
- * {@link #insert(Object)} and {@link #extractMin()} operations are required,
- * both implemented in \(O(\log n) time. If the minimum is only peeked without
- * extraction using {@link #findMin()}, constant number of operations are
- * performed.
+ * The binary heap is the most simple implementation of a heap. It does not use some complex pointer based data
+ * structure, but rather a simple continue array, to store its elements. Its have very small memory footprint and should
+ * be used as default implementation in use cases where only {@link #insert(Object)} and {@link #extractMin()}
+ * operations are required, both implemented in \(O(\log n) time. If the minimum is only peeked without extraction using
+ * {@link #findMin()}, constant number of operations are performed.
  * <p>
- * If fast {@code remove(...)} or {@code decreaseKey(...)} operations are
- * required, consider using {@link HeapPairing} or {@link HeapFibonacci}.
+ * If fast {@code remove(...)} or {@code decreaseKey(...)} operations are required, consider using {@link HeapPairing}
+ * or {@link HeapFibonacci}.
  *
- * @see <a href="https://en.wikipedia.org/wiki/Binary_heap">Wikipedia</a>
+ * @see    <a href="https://en.wikipedia.org/wiki/Binary_heap">Wikipedia</a>
  * @author Barak Ugav
  */
 public class HeapBinary<E> extends HeapAbstract<E> {
@@ -30,35 +27,28 @@ public class HeapBinary<E> extends HeapAbstract<E> {
 	private int size;
 
 	/**
-	 * Constructs a new, empty binary heap, sorted according to the natural ordering
-	 * of its elements.
+	 * Constructs a new, empty binary heap, sorted according to the natural ordering of its elements.
 	 * <p>
-	 * All elements inserted into the heap must implement the {@link Comparable}
-	 * interface. Furthermore, all such elements must be <i>mutually comparable</i>:
-	 * {@code e1.compareTo(e2)} must not throw a {@code ClassCastException} for any
-	 * elements {@code e1} and {@code e2} in the heap. If the user attempts to
-	 * insert an element to the heap that violates this constraint (for example, the
-	 * user attempts to insert a string element to a heap whose elements are
-	 * integers), the {@code insert} call will throw a {@code ClassCastException}.
+	 * All elements inserted into the heap must implement the {@link Comparable} interface. Furthermore, all such
+	 * elements must be <i>mutually comparable</i>: {@code e1.compareTo(e2)} must not throw a {@code ClassCastException}
+	 * for any elements {@code e1} and {@code e2} in the heap. If the user attempts to insert an element to the heap
+	 * that violates this constraint (for example, the user attempts to insert a string element to a heap whose elements
+	 * are integers), the {@code insert} call will throw a {@code ClassCastException}.
 	 */
 	public HeapBinary() {
 		this(null);
 	}
 
 	/**
-	 * Constructs a new, empty binary heap, sorted according to the specified
-	 * comparator.
+	 * Constructs a new, empty binary heap, sorted according to the specified comparator.
 	 * <p>
-	 * All elements inserted into the heap must be <i>mutually comparable</i> by the
-	 * specified comparator: {@code comparator.compare(e1, e2)} must not throw a
-	 * {@code ClassCastException} for any elements {@code e1} and {@code e2} in the
-	 * heap. If the user attempts to insert an element to the heap that violates
-	 * this constraint, the {@code insert} call will throw a
-	 * {@code ClassCastException}.
+	 * All elements inserted into the heap must be <i>mutually comparable</i> by the specified comparator:
+	 * {@code comparator.compare(e1, e2)} must not throw a {@code ClassCastException} for any elements {@code e1} and
+	 * {@code e2} in the heap. If the user attempts to insert an element to the heap that violates this constraint, the
+	 * {@code insert} call will throw a {@code ClassCastException}.
 	 *
-	 * @param comparator the comparator that will be used to order this heap.
-	 *                   If {@code null}, the {@linkplain Comparable natural
-	 *                   ordering} of the elements will be used.
+	 * @param comparator the comparator that will be used to order this heap. If {@code null}, the
+	 *                       {@linkplain Comparable natural ordering} of the elements will be used.
 	 */
 	public HeapBinary(Comparator<? super E> comparator) {
 		super(comparator);

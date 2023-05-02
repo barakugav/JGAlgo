@@ -13,13 +13,11 @@ import it.unimi.dsi.fastutil.ints.IntList;
 /**
  * Kuhn's Hungarian method for maximum weighted matching in bipartite graphs.
  * <p>
- * The running time of the algorithm is \(O(m n + n^2 \log n)\) and it uses
- * linear space.
+ * The running time of the algorithm is \(O(m n + n^2 \log n)\) and it uses linear space.
  * <p>
- * Based on 'The Hungarian method for the assignment problem' by Kuhn, H.W.
- * (1955). The original paper stated a running time of \(O(n^3)\), but by using
- * heaps with {@code decreaseKey} operations in \(O(1)\) the running time
- * can be reduced to \(O(m n + n^2 \log n)\), as done in this implementation.
+ * Based on 'The Hungarian method for the assignment problem' by Kuhn, H.W. (1955). The original paper stated a running
+ * time of \(O(n^3)\), but by using heaps with {@code decreaseKey} operations in \(O(1)\) the running time can be
+ * reduced to \(O(m n + n^2 \log n)\), as done in this implementation.
  *
  * @author Barak Ugav
  */
@@ -31,20 +29,18 @@ public class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumM
 	/**
 	 * Create a new maximum weighted matching object.
 	 */
-	public MaximumMatchingWeightedBipartiteHungarianMethod() {
-	}
+	public MaximumMatchingWeightedBipartiteHungarianMethod() {}
 
 	/**
 	 * Set the key used to get the bipartiteness property of vertices.
 	 * <p>
-	 * The algorithm run on bipartite graphs and expect the user to provide the
-	 * vertices partition by a boolean vertices weights using
-	 * {@link Graph#verticesWeight(Object)}. By default, the weights are searched
-	 * using the key {@link Weights#DefaultBipartiteWeightKey}. To override this
-	 * default behavior, use this function to choose a different key.
+	 * The algorithm run on bipartite graphs and expect the user to provide the vertices partition by a boolean vertices
+	 * weights using {@link Graph#verticesWeight(Object)}. By default, the weights are searched using the key
+	 * {@link Weights#DefaultBipartiteWeightKey}. To override this default behavior, use this function to choose a
+	 * different key.
 	 *
-	 * @param key an object key that will be used to get the bipartite vertices
-	 *            partition by {@code g.verticesWeight(key)}.
+	 * @param key an object key that will be used to get the bipartite vertices partition by
+	 *                {@code g.verticesWeight(key)}.
 	 */
 	public void setBipartiteVerticesWeightKey(Object key) {
 		bipartiteVerticesWeightKey = key;
@@ -62,11 +58,9 @@ public class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumM
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @throws NullPointerException     if the bipartiteness vertices weights is not
-	 *                                  found. See
-	 *                                  {@link #setBipartiteVerticesWeightKey(Object)}.
-	 * @throws IllegalArgumentException if the graph is no bipartite with respect to
-	 *                                  the provided partition
+	 * @throws NullPointerException     if the bipartiteness vertices weights is not found. See
+	 *                                      {@link #setBipartiteVerticesWeightKey(Object)}.
+	 * @throws IllegalArgumentException if the graph is no bipartite with respect to the provided partition
 	 */
 	@Override
 	public IntCollection computeMaximumMatching(UGraph g, EdgeWeightFunc w) {
@@ -79,11 +73,9 @@ public class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumM
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @throws NullPointerException     if the bipartiteness vertices weights is not
-	 *                                  found. See
-	 *                                  {@link #setBipartiteVerticesWeightKey(Object)}.
-	 * @throws IllegalArgumentException if the graph is no bipartite with respect to
-	 *                                  the provided partition
+	 * @throws NullPointerException     if the bipartiteness vertices weights is not found. See
+	 *                                      {@link #setBipartiteVerticesWeightKey(Object)}.
+	 * @throws IllegalArgumentException if the graph is no bipartite with respect to the provided partition
 	 */
 	@Override
 	public IntCollection computeMaximumPerfectMatching(UGraph g, EdgeWeightFunc w) {

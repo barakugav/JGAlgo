@@ -7,14 +7,12 @@ import java.util.Objects;
 import com.jgalgo.DynamicTreeSplayExtension.SplayNodeExtended;
 
 /**
- * Dynamic trees implementation using splay trees that support various
- * extensions.
+ * Dynamic trees implementation using splay trees that support various extensions.
  * <p>
- * Some extensions such as {@link DynamicTreeSplayExtension.TreeSize} can be
- * added to the tree without increasing the asymptotical running time of any
- * operation.
+ * Some extensions such as {@link DynamicTreeSplayExtension.TreeSize} can be added to the tree without increasing the
+ * asymptotical running time of any operation.
  *
- * @see DynamicTreeSplayExtension
+ * @see    DynamicTreeSplayExtension
  * @author Barak Ugav
  */
 class DynamicTreeSplayExtended extends DynamicTreeSplay {
@@ -27,16 +25,13 @@ class DynamicTreeSplayExtended extends DynamicTreeSplay {
 	/**
 	 * Create a new empty dynamic tree data structure with extensions.
 	 *
-	 * @param weightLimit a limit on the weights of the edges. The limit is an upper
-	 *                    bound on the sum of each edge weight and the weights
-	 *                    modification that are performed using
-	 *                    {@link #addWeight(com.jgalgo.DynamicTree.Node, double)}.
-	 * @param extensions  a collection of extensions the data structure will use.
-	 *                    Each extension must not be used in any other tree than
-	 *                    this one.
-	 * @throws IllegalArgumentException if the extensions collection is empty. In
-	 *                                  such a case, the regular
-	 *                                  {@link DynamicTreeSplay} should be used
+	 * @param  weightLimit              a limit on the weights of the edges. The limit is an upper bound on the sum of
+	 *                                      each edge weight and the weights modification that are performed using
+	 *                                      {@link #addWeight(com.jgalgo.DynamicTree.Node, double)}.
+	 * @param  extensions               a collection of extensions the data structure will use. Each extension must not
+	 *                                      be used in any other tree than this one.
+	 * @throws IllegalArgumentException if the extensions collection is empty. In such a case, the regular
+	 *                                      {@link DynamicTreeSplay} should be used
 	 */
 	DynamicTreeSplayExtended(double weightLimit, Collection<? extends DynamicTreeSplayExtension> extensions) {
 		this(weightLimit, extensions.toArray(len -> new DynamicTreeSplayExtension[len]));

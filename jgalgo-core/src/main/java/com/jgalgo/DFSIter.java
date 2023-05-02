@@ -13,11 +13,9 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 /**
  * Depth first search (DFS) iterator.
  * <p>
- * The DFS iterator is used to iterate over the vertices of a graph is a depth
- * first manner, namely it explore as far as possible along each branch before
- * backtracking. The iterator will visit every vertex \(v\) for which there
- * is a path from the source(s) to \(v\). Each such vertex will be visited
- * exactly once.
+ * The DFS iterator is used to iterate over the vertices of a graph is a depth first manner, namely it explore as far as
+ * possible along each branch before backtracking. The iterator will visit every vertex \(v\) for which there is a path
+ * from the source(s) to \(v\). Each such vertex will be visited exactly once.
  * <p>
  * The graph should not be modified during the DFS iteration.
  *
@@ -31,8 +29,8 @@ import it.unimi.dsi.fastutil.ints.IntLists;
  * }
  * }</pre>
  *
- * @see BFSIter
- * @see <a href="https://en.wikipedia.org/wiki/Depth-first_search">Wikipedia</a>
+ * @see    BFSIter
+ * @see    <a href="https://en.wikipedia.org/wiki/Depth-first_search">Wikipedia</a>
  * @author Barak Ugav
  */
 public class DFSIter implements IntIterator {
@@ -93,8 +91,7 @@ public class DFSIter implements IntIterator {
 	}
 
 	/**
-	 * Advance the iterator and return a vertex that was not visited by the iterator
-	 * yet.
+	 * Advance the iterator and return a vertex that was not visited by the iterator yet.
 	 */
 	@Override
 	public int nextInt() {
@@ -109,9 +106,8 @@ public class DFSIter implements IntIterator {
 	 * <p>
 	 * The behavior is undefined if {@link nextInt} was not called yet.
 	 *
-	 * @return list of edges forming a path from the source to the last vertex
-	 *         returned by {@link nextInt}. The returned list should not be modified
-	 *         by the user.
+	 * @return list of edges forming a path from the source to the last vertex returned by {@link nextInt}. The returned
+	 *         list should not be modified by the user.
 	 */
 	public IntList edgePath() {
 		return edgePathView;

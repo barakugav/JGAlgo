@@ -167,8 +167,7 @@ abstract class GraphArrayAbstract extends GraphBaseContinues {
 				throw new IllegalStateException();
 			removeEdge(lastEdge);
 			/**
-			 * The edge will be removed from entry idx-1 in edges[], go back and decrease
-			 * the edges count.
+			 * The edge will be removed from entry idx-1 in edges[], go back and decrease the edges count.
 			 */
 			count--;
 			idx--;

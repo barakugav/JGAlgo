@@ -5,21 +5,17 @@ import java.util.Arrays;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 /**
- * Dial's algorithm for Single Source Shortest Path for positive integer
- * weights.
+ * Dial's algorithm for Single Source Shortest Path for positive integer weights.
  * <p>
- * The algorithm runs in \(O(n + m + D)\) where \(D\) is the maximum
- * distance, or the sum of heaviest n-1 edges if the maximum distance is not
- * known. It takes advantage of the fact that a heap for integers can be
- * implemented using buckets, one for each weight. Such a heap require \(D\)
- * buckets, and therefore the algorithm running time and space depends on \(D\).
+ * The algorithm runs in \(O(n + m + D)\) where \(D\) is the maximum distance, or the sum of heaviest n-1 edges if the
+ * maximum distance is not known. It takes advantage of the fact that a heap for integers can be implemented using
+ * buckets, one for each weight. Such a heap require \(D\) buckets, and therefore the algorithm running time and space
+ * depends on \(D\).
  * <p>
- * This algorithm should be used in case the maximal distance is known in
- * advance, and its small. For example, its used by {@link SSSPDial} as a
- * subroutine, where the maximum distance is bounded by the number of layers.
+ * This algorithm should be used in case the maximal distance is known in advance, and its small. For example, its used
+ * by {@link SSSPDial} as a subroutine, where the maximum distance is bounded by the number of layers.
  * <p>
- * Based on 'Algorithm 360: Shortest-Path Forest with Topological Ordering' by
- * Dial, Robert B. (1969).
+ * Based on 'Algorithm 360: Shortest-Path Forest with Topological Ordering' by Dial, Robert B. (1969).
  *
  * @author Barak Ugav
  */
@@ -60,9 +56,8 @@ public class SSSPDial implements SSSP {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @throws IllegalArgumentException if one of the edge weights is negative or
-	 *                                  the weight function is not of type
-	 *                                  {@link EdgeWeightFunc.Int}
+	 * @throws IllegalArgumentException if one of the edge weights is negative or the weight function is not of type
+	 *                                      {@link EdgeWeightFunc.Int}
 	 */
 	@Override
 	public SSSP.Result computeShortestPaths(Graph g, EdgeWeightFunc w, int source) {
@@ -99,16 +94,15 @@ public class SSSPDial implements SSSP {
 	}
 
 	/**
-	 * Compute the shortest paths from a source to any other vertex in a graph,
-	 * given a maximal distance bound.
+	 * Compute the shortest paths from a source to any other vertex in a graph, given a maximal distance bound.
 	 *
-	 * @param g           a graph
-	 * @param w           an integer edge weight function with non negative values
-	 * @param source      a source vertex
-	 * @param maxDistance a bound on the maximal distance to any vertex in the graph
-	 * @return a result object containing the distances and shortest paths from the
-	 *         source to any other vertex
-	 * @see #computeShortestPaths(Graph, EdgeWeightFunc, int)
+	 * @param  g           a graph
+	 * @param  w           an integer edge weight function with non negative values
+	 * @param  source      a source vertex
+	 * @param  maxDistance a bound on the maximal distance to any vertex in the graph
+	 * @return             a result object containing the distances and shortest paths from the source to any other
+	 *                     vertex
+	 * @see                #computeShortestPaths(Graph, EdgeWeightFunc, int)
 	 */
 	public SSSP.Result computeShortestPaths(Graph g, EdgeWeightFunc.Int w, int source, int maxDistance) {
 		int n = g.vertices().size(), m = g.edges().size();

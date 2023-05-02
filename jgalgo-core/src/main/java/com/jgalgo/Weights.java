@@ -3,21 +3,16 @@ package com.jgalgo;
 /**
  * Weights of graph vertices or edges.
  * <p>
- * A weights object associated with the edges (vertices) of a graph support
- * getting and setting a weight value for each edge (vertex) using the
- * {@link #get(int)} and {@link #set(int, Object)} methods. Such weights are
- * useful for various algorithms such as {@link SSSP} or
- * {@link MaximumMatchingWeighted} to assigned the <i>cost</i> of edges. Another
- * example is boolean weights used to represent the partition of vertices in
- * bipartite graphs, which is used by algorithms such as
- * {@link MaximumMatchingBipartiteHopcroftKarp}.
+ * A weights object associated with the edges (vertices) of a graph support getting and setting a weight value for each
+ * edge (vertex) using the {@link #get(int)} and {@link #set(int, Object)} methods. Such weights are useful for various
+ * algorithms such as {@link SSSP} or {@link MaximumMatchingWeighted} to assigned the <i>cost</i> of edges. Another
+ * example is boolean weights used to represent the partition of vertices in bipartite graphs, which is used by
+ * algorithms such as {@link MaximumMatchingBipartiteHopcroftKarp}.
  * <p>
- * An exiting graph expose two methods to add new type of weights associated
- * with its vertices or edges: {@link Graph#addVerticesWeights(Object, Class)}
- * and {@link Graph#addEdgesWeights(Object, Class)}. Weights of primitive types
- * can be created by passing a primitive class to these methods, for example
- * this snippet demonstrate how a {@code double} weights type can be added to a
- * graph, and then passed to {@link SSSPDijkstra}:
+ * An exiting graph expose two methods to add new type of weights associated with its vertices or edges:
+ * {@link Graph#addVerticesWeights(Object, Class)} and {@link Graph#addEdgesWeights(Object, Class)}. Weights of
+ * primitive types can be created by passing a primitive class to these methods, for example this snippet demonstrate
+ * how a {@code double} weights type can be added to a graph, and then passed to {@link SSSPDijkstra}:
  *
  * <pre> {@code
  * // Create a directed graph with three vertices and edges between them
@@ -52,27 +47,24 @@ package com.jgalgo;
  * }</pre>
  *
  * <p>
- * A default weight can be provided in the time of the weights container. The
- * default weight will be returned from the {@link #get(int)} method for every
- * edge (vertex) that was not explicitly set another value using
+ * A default weight can be provided in the time of the weights container. The default weight will be returned from the
+ * {@link #get(int)} method for every edge (vertex) that was not explicitly set another value using
  * {@link #set(int, Object)}.
  * <p>
- * If the weights container is associated with the edges of the graph, and the
- * {@link IDStrategy} of the edges performed some swaps to maintain its
- * invariant (see
- * {@link IDStrategy#addIDSwapListener(IDStrategy.IDSwapListener)}) the weights
- * container will be updated to the edges ids automatically.
+ * If the weights container is associated with the edges of the graph, and the {@link IDStrategy} of the edges performed
+ * some swaps to maintain its invariant (see {@link IDStrategy#addIDSwapListener(IDStrategy.IDSwapListener)}) the
+ * weights container will be updated to the edges ids automatically.
  *
- * @param <W> the weights type
- * @author Barak Ugav
+ * @param  <W> the weights type
+ * @author     Barak Ugav
  */
 public interface Weights<W> {
 
 	/**
 	 * Get the weight associated with the given id.
 	 *
-	 * @param id an id of edge/vertex
-	 * @return the weight associated with the given id
+	 * @param  id an id of edge/vertex
+	 * @return    the weight associated with the given id
 	 */
 	public W get(int id);
 
@@ -87,8 +79,8 @@ public interface Weights<W> {
 	/**
 	 * Get the default weight of this weights container.
 	 * <p>
-	 * The default weight is the weight associated with all ids that were not
-	 * explicitly set using {@link #set(int, Object)}.
+	 * The default weight is the weight associated with all ids that were not explicitly set using
+	 * {@link #set(int, Object)}.
 	 *
 	 * @return the default weight of this weights container.
 	 */
@@ -104,8 +96,8 @@ public interface Weights<W> {
 		/**
 		 * Get the weight associated with the given id.
 		 *
-		 * @param id an id of edge/vertex.
-		 * @return the weight associated with the given id.
+		 * @param  id an id of edge/vertex.
+		 * @return    the weight associated with the given id.
 		 */
 		public byte getByte(int id);
 
@@ -132,8 +124,8 @@ public interface Weights<W> {
 		/**
 		 * Get the default weight of this weights container.
 		 * <p>
-		 * The default weight is the weight associated with all ids that were not
-		 * explicitly set using {@link #set(int, byte)}.
+		 * The default weight is the weight associated with all ids that were not explicitly set using
+		 * {@link #set(int, byte)}.
 		 *
 		 * @return the default weight of this weights container.
 		 */
@@ -148,8 +140,7 @@ public interface Weights<W> {
 		/**
 		 * {@inheritDoc}
 		 * <p>
-		 * Implement the {@link EdgeWeightFunc.Int} interface by using the weights of
-		 * the container.
+		 * Implement the {@link EdgeWeightFunc.Int} interface by using the weights of the container.
 		 */
 		@Override
 		default int weightInt(int id) {
@@ -167,8 +158,8 @@ public interface Weights<W> {
 		/**
 		 * Get the weight associated with the given id.
 		 *
-		 * @param id an id of edge/vertex.
-		 * @return the weight associated with the given id.
+		 * @param  id an id of edge/vertex.
+		 * @return    the weight associated with the given id.
 		 */
 		public short getShort(int id);
 
@@ -195,8 +186,8 @@ public interface Weights<W> {
 		/**
 		 * Get the default weight of this weights container.
 		 * <p>
-		 * The default weight is the weight associated with all ids that were not
-		 * explicitly set using {@link #set(int, short)}.
+		 * The default weight is the weight associated with all ids that were not explicitly set using
+		 * {@link #set(int, short)}.
 		 *
 		 * @return the default weight of this weights container.
 		 */
@@ -211,8 +202,7 @@ public interface Weights<W> {
 		/**
 		 * {@inheritDoc}
 		 * <p>
-		 * Implement the {@link EdgeWeightFunc.Int} interface by using the weights of
-		 * the container.
+		 * Implement the {@link EdgeWeightFunc.Int} interface by using the weights of the container.
 		 */
 		@Override
 		default int weightInt(int id) {
@@ -230,8 +220,8 @@ public interface Weights<W> {
 		/**
 		 * Get the weight associated with the given id.
 		 *
-		 * @param id an id of edge/vertex.
-		 * @return the weight associated with the given id.
+		 * @param  id an id of edge/vertex.
+		 * @return    the weight associated with the given id.
 		 */
 		public int getInt(int id);
 
@@ -258,8 +248,8 @@ public interface Weights<W> {
 		/**
 		 * Get the default weight of this weights container.
 		 * <p>
-		 * The default weight is the weight associated with all ids that were not
-		 * explicitly set using {@link #set(int, int)}.
+		 * The default weight is the weight associated with all ids that were not explicitly set using
+		 * {@link #set(int, int)}.
 		 *
 		 * @return the default weight of this weights container.
 		 */
@@ -274,8 +264,7 @@ public interface Weights<W> {
 		/**
 		 * {@inheritDoc}
 		 * <p>
-		 * Implement the {@link EdgeWeightFunc.Int} interface by using the weights of
-		 * the container.
+		 * Implement the {@link EdgeWeightFunc.Int} interface by using the weights of the container.
 		 */
 		@Override
 		default int weightInt(int id) {
@@ -293,8 +282,8 @@ public interface Weights<W> {
 		/**
 		 * Get the weight associated with the given id.
 		 *
-		 * @param id an id of edge/vertex.
-		 * @return the weight associated with the given id.
+		 * @param  id an id of edge/vertex.
+		 * @return    the weight associated with the given id.
 		 */
 		public long getLong(int id);
 
@@ -321,8 +310,8 @@ public interface Weights<W> {
 		/**
 		 * Get the default weight of this weights container.
 		 * <p>
-		 * The default weight is the weight associated with all ids that were not
-		 * explicitly set using {@link #set(int, long)}.
+		 * The default weight is the weight associated with all ids that were not explicitly set using
+		 * {@link #set(int, long)}.
 		 *
 		 * @return the default weight of this weights container.
 		 */
@@ -337,8 +326,7 @@ public interface Weights<W> {
 		/**
 		 * {@inheritDoc}
 		 * <p>
-		 * Implement the {@link EdgeWeightFunc} interface by using the weights of the
-		 * container.
+		 * Implement the {@link EdgeWeightFunc} interface by using the weights of the container.
 		 */
 		@Override
 		default double weight(int id) {
@@ -356,8 +344,8 @@ public interface Weights<W> {
 		/**
 		 * Get the weight associated with the given id.
 		 *
-		 * @param id an id of edge/vertex.
-		 * @return the weight associated with the given id.
+		 * @param  id an id of edge/vertex.
+		 * @return    the weight associated with the given id.
 		 */
 		public float getFloat(int id);
 
@@ -384,8 +372,8 @@ public interface Weights<W> {
 		/**
 		 * Get the default weight of this weights container.
 		 * <p>
-		 * The default weight is the weight associated with all ids that were not
-		 * explicitly set using {@link #set(int, float)}.
+		 * The default weight is the weight associated with all ids that were not explicitly set using
+		 * {@link #set(int, float)}.
 		 *
 		 * @return the default weight of this weights container.
 		 */
@@ -400,8 +388,7 @@ public interface Weights<W> {
 		/**
 		 * {@inheritDoc}
 		 * <p>
-		 * Implement the {@link EdgeWeightFunc} interface by using the weights of the
-		 * container.
+		 * Implement the {@link EdgeWeightFunc} interface by using the weights of the container.
 		 */
 		@Override
 		default double weight(int id) {
@@ -419,8 +406,8 @@ public interface Weights<W> {
 		/**
 		 * Get the weight associated with the given id.
 		 *
-		 * @param id an id of edge/vertex.
-		 * @return the weight associated with the given id.
+		 * @param  id an id of edge/vertex.
+		 * @return    the weight associated with the given id.
 		 */
 		public double getDouble(int id);
 
@@ -447,8 +434,8 @@ public interface Weights<W> {
 		/**
 		 * Get the default weight of this weights container.
 		 * <p>
-		 * The default weight is the weight associated with all ids that were not
-		 * explicitly set using {@link #set(int, double)}.
+		 * The default weight is the weight associated with all ids that were not explicitly set using
+		 * {@link #set(int, double)}.
 		 *
 		 * @return the default weight of this weights container.
 		 */
@@ -463,8 +450,7 @@ public interface Weights<W> {
 		/**
 		 * {@inheritDoc}
 		 * <p>
-		 * Implement the {@link EdgeWeightFunc} interface by using the weights of the
-		 * container.
+		 * Implement the {@link EdgeWeightFunc} interface by using the weights of the container.
 		 */
 		@Override
 		default double weight(int id) {
@@ -482,8 +468,8 @@ public interface Weights<W> {
 		/**
 		 * Get the weight associated with the given id.
 		 *
-		 * @param id an id of edge/vertex.
-		 * @return the weight associated with the given id.
+		 * @param  id an id of edge/vertex.
+		 * @return    the weight associated with the given id.
 		 */
 		public boolean getBool(int id);
 
@@ -510,8 +496,8 @@ public interface Weights<W> {
 		/**
 		 * Get the default weight of this weights container.
 		 * <p>
-		 * The default weight is the weight associated with all ids that were not
-		 * explicitly set using {@link #set(int, boolean)}.
+		 * The default weight is the weight associated with all ids that were not explicitly set using
+		 * {@link #set(int, boolean)}.
 		 *
 		 * @return the default weight of this weights container.
 		 */
@@ -534,8 +520,8 @@ public interface Weights<W> {
 		/**
 		 * Get the weight associated with the given id.
 		 *
-		 * @param id an id of edge/vertex.
-		 * @return the weight associated with the given id.
+		 * @param  id an id of edge/vertex.
+		 * @return    the weight associated with the given id.
 		 */
 		public char getChar(int id);
 
@@ -562,8 +548,8 @@ public interface Weights<W> {
 		/**
 		 * Get the default weight of this weights container.
 		 * <p>
-		 * The default weight is the weight associated with all ids that were not
-		 * explicitly set using {@link #set(int, char)}.
+		 * The default weight is the weight associated with all ids that were not explicitly set using
+		 * {@link #set(int, char)}.
 		 *
 		 * @return the default weight of this weights container.
 		 */
@@ -579,16 +565,14 @@ public interface Weights<W> {
 	/**
 	 * Create an external vertex weights container.
 	 * <p>
-	 * An external weights container is a container that associate a weight to each
-	 * vertex in the graph, but does not update when the graph is updated. This
-	 * method should be used only in cases where the graph is unmodifiable.
+	 * An external weights container is a container that associate a weight to each vertex in the graph, but does not
+	 * update when the graph is updated. This method should be used only in cases where the graph is unmodifiable.
 	 *
-	 * @param g    a graph
-	 * @param type the type of the weights, used for primitive types weights
-	 * @return a new weights container
-	 * @param <E>        the weights type
-	 * @param <WeightsT> the weights container, used to avoid casts of containers of
-	 *                   primitive types
+	 * @param  g          a graph
+	 * @param  type       the type of the weights, used for primitive types weights
+	 * @return            a new weights container
+	 * @param  <E>        the weights type
+	 * @param  <WeightsT> the weights container, used to avoid casts of containers of primitive types
 	 */
 	public static <E, WeightsT extends Weights<E>> WeightsT createExternalVerticesWeights(Graph g,
 			Class<? super E> type) {
@@ -598,17 +582,15 @@ public interface Weights<W> {
 	/**
 	 * Create an external vertex weights container with default values.
 	 * <p>
-	 * An external weights container is a container that associate a weight to each
-	 * vertex in the graph, but does not update when the graph is updated. This
-	 * method should be used only in cases where the graph is unmodifiable.
+	 * An external weights container is a container that associate a weight to each vertex in the graph, but does not
+	 * update when the graph is updated. This method should be used only in cases where the graph is unmodifiable.
 	 *
-	 * @param g      a graph
-	 * @param type   the type of the weights, used for primitive types weights
-	 * @param defVal default value use for the weights container
-	 * @return a new weights container
-	 * @param <E>        the weights type
-	 * @param <WeightsT> the weights container, used to avoid casts of containers of
-	 *                   primitive types
+	 * @param  g          a graph
+	 * @param  type       the type of the weights, used for primitive types weights
+	 * @param  defVal     default value use for the weights container
+	 * @return            a new weights container
+	 * @param  <E>        the weights type
+	 * @param  <WeightsT> the weights container, used to avoid casts of containers of primitive types
 	 */
 	public static <E, WeightsT extends Weights<E>> WeightsT createExternalVerticesWeights(Graph g,
 			Class<? super E> type, E defVal) {
@@ -618,16 +600,14 @@ public interface Weights<W> {
 	/**
 	 * Create an external edge weights container.
 	 * <p>
-	 * An external weights container is a container that associate a weight to each
-	 * edge in the graph, but does not update when the graph is updated. This method
-	 * should be used only in cases where the graph is unmodifiable.
+	 * An external weights container is a container that associate a weight to each edge in the graph, but does not
+	 * update when the graph is updated. This method should be used only in cases where the graph is unmodifiable.
 	 *
-	 * @param g    a graph
-	 * @param type the type of the weights, used for primitive types weights
-	 * @return a new weights container
-	 * @param <E>        the weights type
-	 * @param <WeightsT> the weights container, used to avoid casts of containers of
-	 *                   primitive types
+	 * @param  g          a graph
+	 * @param  type       the type of the weights, used for primitive types weights
+	 * @return            a new weights container
+	 * @param  <E>        the weights type
+	 * @param  <WeightsT> the weights container, used to avoid casts of containers of primitive types
 	 */
 	public static <E, WeightsT extends Weights<E>> WeightsT createExternalEdgesWeights(Graph g, Class<? super E> type) {
 		return createExternalEdgesWeights(g, type, null);
@@ -636,17 +616,15 @@ public interface Weights<W> {
 	/**
 	 * Create an external edge weights container with default values.
 	 * <p>
-	 * An external weights container is a container that associate a weight to each
-	 * edge in the graph, but does not update when the graph is updated. This method
-	 * should be used only in cases where the graph is unmodifiable.
+	 * An external weights container is a container that associate a weight to each edge in the graph, but does not
+	 * update when the graph is updated. This method should be used only in cases where the graph is unmodifiable.
 	 *
-	 * @param g      a graph
-	 * @param type   the type of the weights, used for primitive types weights
-	 * @param defVal default value use for the weights container
-	 * @return a new weights container
-	 * @param <E>        the weights type
-	 * @param <WeightsT> the weights container, used to avoid casts of containers of
-	 *                   primitive types
+	 * @param  g          a graph
+	 * @param  type       the type of the weights, used for primitive types weights
+	 * @param  defVal     default value use for the weights container
+	 * @return            a new weights container
+	 * @param  <E>        the weights type
+	 * @param  <WeightsT> the weights container, used to avoid casts of containers of primitive types
 	 */
 	public static <E, WeightsT extends Weights<E>> WeightsT createExternalEdgesWeights(Graph g, Class<? super E> type,
 			E defVal) {
@@ -656,12 +634,11 @@ public interface Weights<W> {
 	/**
 	 * The default vertices weight key of the bipartite property.
 	 * <p>
-	 * A bipartite graph is a graph in which the vertices are partitioned into two
-	 * sets V1,V2 and there are no edges between two vertices u,v if they are both
-	 * in V1 or both in V2. Some algorithms expect a bipartite graph as an input,
-	 * and the partition V1,V2 is expected to be a vertex boolean weight keyed by
-	 * {@link #DefaultBipartiteWeightKey}. To use a different key, the algorithms
-	 * expose a {@code setBipartiteVerticesWeightKey(Object)} function.
+	 * A bipartite graph is a graph in which the vertices are partitioned into two sets V1,V2 and there are no edges
+	 * between two vertices u,v if they are both in V1 or both in V2. Some algorithms expect a bipartite graph as an
+	 * input, and the partition V1,V2 is expected to be a vertex boolean weight keyed by
+	 * {@link #DefaultBipartiteWeightKey}. To use a different key, the algorithms expose a
+	 * {@code setBipartiteVerticesWeightKey(Object)} function.
 	 */
 	public static final Object DefaultBipartiteWeightKey = new Object() {
 		@Override

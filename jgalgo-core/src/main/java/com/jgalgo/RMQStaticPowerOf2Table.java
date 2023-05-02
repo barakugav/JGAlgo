@@ -3,13 +3,11 @@ package com.jgalgo;
 import java.util.Objects;
 
 /**
- * Static RMQ algorithm using \(O(n \log n)\) space and answering a query in
- * \(O(1)\) time.
+ * Static RMQ algorithm using \(O(n \log n)\) space and answering a query in \(O(1)\) time.
  * <p>
- * An array of size {@code [log n][n]} is created, and at each entry
- * {@code [k][i]} the index of the minimum element in range {@code [i, i+k)} is
- * stored. A query can be answered by two access to the array, giving a total
- * query time of \(O(1)\).
+ * An array of size {@code [log n][n]} is created, and at each entry {@code [k][i]} the index of the minimum element in
+ * range {@code [i, i+k)} is stored. A query can be answered by two access to the array, giving a total query time of
+ * \(O(1)\).
  *
  * @author Barak Ugav
  */
@@ -18,8 +16,7 @@ public class RMQStaticPowerOf2Table implements RMQStatic {
 	/**
 	 * Construct a new static RMQ algorithm object.
 	 */
-	public RMQStaticPowerOf2Table() {
-	}
+	public RMQStaticPowerOf2Table() {}
 
 	@Override
 	public RMQStatic.DataStructure preProcessSequence(RMQStaticComparator c, int n) {

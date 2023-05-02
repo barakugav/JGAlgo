@@ -11,10 +11,9 @@ import it.unimi.dsi.fastutil.ints.IntList;
 /**
  * Maximum weighted matching algorithm using {@link SSSP} for bipartite graphs.
  * <p>
- * The running time of this algorithm is \(O(m n + n^2 \log n)\) and it uses
- * linear space. If a different {@link SSSP} algorithm is provided using
- * {@link #setSsspAlgo(SSSP)} the running time will be \(O(n)\) times the
- * running time of the shortest path algorithm on a graph of size \(O(n)\).
+ * The running time of this algorithm is \(O(m n + n^2 \log n)\) and it uses linear space. If a different {@link SSSP}
+ * algorithm is provided using {@link #setSsspAlgo(SSSP)} the running time will be \(O(n)\) times the running time of
+ * the shortest path algorithm on a graph of size \(O(n)\).
  *
  * @author Barak Ugav
  */
@@ -27,14 +26,13 @@ public class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeig
 	/**
 	 * Create a new maximum weighted matching object.
 	 */
-	public MaximumMatchingWeightedBipartiteSSSP() {
-	}
+	public MaximumMatchingWeightedBipartiteSSSP() {}
 
 	/**
 	 * Set the {@link SSSP} algorithm used by this algorithm.
 	 * <p>
-	 * The shortest path algorithm should support non negative floating points
-	 * weights. The default implementation uses {@link SSSPDijkstra}.
+	 * The shortest path algorithm should support non negative floating points weights. The default implementation uses
+	 * {@link SSSPDijkstra}.
 	 *
 	 * @param algo an shortest path algorithm
 	 */
@@ -45,14 +43,13 @@ public class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeig
 	/**
 	 * Set the key used to get the bipartiteness property of vertices.
 	 * <p>
-	 * The algorithm run on bipartite graphs and expect the user to provide the
-	 * vertices partition by a boolean vertices weights using
-	 * {@link Graph#verticesWeight(Object)}. By default, the weights are searched
-	 * using the key {@link Weights#DefaultBipartiteWeightKey}. To override this
-	 * default behavior, use this function to choose a different key.
+	 * The algorithm run on bipartite graphs and expect the user to provide the vertices partition by a boolean vertices
+	 * weights using {@link Graph#verticesWeight(Object)}. By default, the weights are searched using the key
+	 * {@link Weights#DefaultBipartiteWeightKey}. To override this default behavior, use this function to choose a
+	 * different key.
 	 *
-	 * @param key an object key that will be used to get the bipartite vertices
-	 *            partition by {@code g.verticesWeight(key)}.
+	 * @param key an object key that will be used to get the bipartite vertices partition by
+	 *                {@code g.verticesWeight(key)}.
 	 */
 	public void setBipartiteVerticesWeightKey(Object key) {
 		bipartiteVerticesWeightKey = key;
@@ -61,9 +58,8 @@ public class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeig
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @throws NullPointerException     if the bipartiteness vertices weights is not
-	 *                                  found. See
-	 *                                  {@link #setBipartiteVerticesWeightKey(Object)}.
+	 * @throws NullPointerException     if the bipartiteness vertices weights is not found. See
+	 *                                      {@link #setBipartiteVerticesWeightKey(Object)}.
 	 * @throws IllegalArgumentException if the graph is no bipartite with respect to the provided partition
 	 */
 	@Override
@@ -171,8 +167,7 @@ public class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeig
 	}
 
 	/**
-	 * @throws UnsupportedOperationException this implementation does not support
-	 *                                       perfect matching computation
+	 * @throws UnsupportedOperationException this implementation does not support perfect matching computation
 	 */
 	@Deprecated
 	@Override

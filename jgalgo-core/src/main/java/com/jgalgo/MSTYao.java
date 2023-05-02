@@ -9,12 +9,10 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 /**
  * Yao's buckets minimum spanning tree algorithm.
  * <p>
- * The algorithm runs in \(O(m \log \log n + n \log n)\) and uses linear space.
- * Its running time in practice is not the best compared to {@link MSTKruskal}
- * and {@link MSTPrim}. Note that only undirected graphs are supported.
+ * The algorithm runs in \(O(m \log \log n + n \log n)\) and uses linear space. Its running time in practice is not the
+ * best compared to {@link MSTKruskal} and {@link MSTPrim}. Note that only undirected graphs are supported.
  * <p>
- * Based on "An 0(|E|loglog|V|) algorithm for finding minimum spanning trees" by
- * Andrew Chi-chih Yao (1976).
+ * Based on "An 0(|E|loglog|V|) algorithm for finding minimum spanning trees" by Andrew Chi-chih Yao (1976).
  *
  * @author Barak Ugav
  */
@@ -23,8 +21,7 @@ public class MSTYao implements MST {
 	/**
 	 * Construct a new MST algorithm object.
 	 */
-	public MSTYao() {
-	}
+	public MSTYao() {}
 
 	/**
 	 * {@inheritDoc}
@@ -99,10 +96,9 @@ public class MSTYao implements MST {
 			}
 
 			/*
-			 * the graph of the trees (vertex per tree, minimum out edges of the trees) is a
-			 * graph where each vertex has one out edge at most we want to find all the
-			 * connectivity components between the trees and label the vertices of G with
-			 * new trees indices
+			 * the graph of the trees (vertex per tree, minimum out edges of the trees) is a graph where each vertex has
+			 * one out edge at most we want to find all the connectivity components between the trees and label the
+			 * vertices of G with new trees indices
 			 */
 			final int UNVISITED = -1;
 			final int IN_PATH = -2;

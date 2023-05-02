@@ -7,18 +7,15 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 /**
- * Bellman–Ford algorithm for Single Source Shortest Path (SSSP) with negative
- * weights in directed graphs.
+ * Bellman–Ford algorithm for Single Source Shortest Path (SSSP) with negative weights in directed graphs.
  * <p>
- * Compute the shortest paths from a single source to all other vertices with
- * weight function of arbitrary values. The algorithm runs in \(O(n m)\)
- * time and uses linear space.
+ * Compute the shortest paths from a single source to all other vertices with weight function of arbitrary values. The
+ * algorithm runs in \(O(n m)\) time and uses linear space.
  * <p>
- * In case there are only positive weights, use {@link SSSPDijkstra}. In case
- * the weights are integers, use {@link SSSPGoldberg}.
+ * In case there are only positive weights, use {@link SSSPDijkstra}. In case the weights are integers, use
+ * {@link SSSPGoldberg}.
  *
- * @see <a href=
- *      "https://en.wikipedia.org/wiki/Bellman%E2%80%93Ford_algorithm">Wikipedia</a>
+ * @see    <a href= "https://en.wikipedia.org/wiki/Bellman%E2%80%93Ford_algorithm">Wikipedia</a>
  * @author Barak Ugav
  */
 public class SSSPBellmanFord implements SSSP {
@@ -26,8 +23,7 @@ public class SSSPBellmanFord implements SSSP {
 	/**
 	 * Construct a new SSSP algorithm object.
 	 */
-	public SSSPBellmanFord() {
-	}
+	public SSSPBellmanFord() {}
 
 	/**
 	 * {@inheritDoc}

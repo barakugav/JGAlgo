@@ -3,10 +3,8 @@ package com.jgalgo;
 /**
  * Union Find with {@code double} values for the elements.
  * <p>
- * This interface is an extension to the {@link UnionFind} interface that
- * support, along with regular operation, value of each elements and addition of
- * some value to all elements of a set using the {@link #addValue(int, double)}
- * method.
+ * This interface is an extension to the {@link UnionFind} interface that support, along with regular operation, value
+ * of each elements and addition of some value to all elements of a set using the {@link #addValue(int, double)} method.
  *
  * <pre> {@code
  * UnionFindValue uf = UnionFindValue.newBuilder().build();
@@ -37,8 +35,8 @@ public interface UnionFindValue extends UnionFind {
 	/**
 	 * Create a new element with a given value.
 	 *
-	 * @param value the value of the new element
-	 * @return identifier of the new element in the union find data structure
+	 * @param  value the value of the new element
+	 * @return       identifier of the new element in the union find data structure
 	 */
 	public int make(double value);
 
@@ -55,8 +53,8 @@ public interface UnionFindValue extends UnionFind {
 	/**
 	 * Get the value of an element.
 	 *
-	 * @param x an element in the data structure
-	 * @return value of the element
+	 * @param  x an element in the data structure
+	 * @return   value of the element
 	 */
 	public double getValue(int x);
 
@@ -71,8 +69,7 @@ public interface UnionFindValue extends UnionFind {
 	/**
 	 * Create a new union-find with values data structure builder.
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link UnionFindValue}
-	 * object.
+	 * This is the recommended way to instantiate a new {@link UnionFindValue} object.
 	 *
 	 * @return a new builder that can build {@link UnionFindValue} objects
 	 */
@@ -83,7 +80,7 @@ public interface UnionFindValue extends UnionFind {
 	/**
 	 * A builder for {@link UnionFindValue} objects.
 	 *
-	 * @see UnionFindValue#newBuilder()
+	 * @see    UnionFindValue#newBuilder()
 	 * @author Barak Ugav
 	 */
 	static interface Builder {

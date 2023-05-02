@@ -21,8 +21,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 class GraphsTestUtils extends TestUtils {
 
-	private GraphsTestUtils() {
-	}
+	private GraphsTestUtils() {}
 
 	static class RandomGraphBuilder {
 
@@ -287,8 +286,8 @@ class GraphsTestUtils extends TestUtils {
 	}
 
 	static UGraph randGraph(int n, int m, long seed) {
-		return (UGraph) new RandomGraphBuilder(seed).n(n).m(m).directed(false).parallelEdges(false)
-				.selfEdges(false).cycles(true).connected(false).build();
+		return (UGraph) new RandomGraphBuilder(seed).n(n).m(m).directed(false).parallelEdges(false).selfEdges(false)
+				.cycles(true).connected(false).build();
 	}
 
 }

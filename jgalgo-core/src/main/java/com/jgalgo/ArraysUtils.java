@@ -7,8 +7,7 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
 
 class ArraysUtils {
 
-	private ArraysUtils() {
-	}
+	private ArraysUtils() {}
 
 	static <E> E getKthElement(E[] a, int k, Comparator<? super E> c) {
 		return getKthElement(a, 0, a.length, k, c, false);
@@ -25,15 +24,15 @@ class ArraysUtils {
 	 *
 	 * \(O(n)\)
 	 *
-	 * @param <E>     the array element type
-	 * @param a       an array
-	 * @param from    first index (inclusive)
-	 * @param to      last index (exclusive)
-	 * @param k       index of the desire element in the sorted array
-	 * @param c       comparator
-	 * @param inPlace if true, all operations will be done on the given array and at
-	 *                the end it will be partitioned by the Kth element
-	 * @return the Kth element
+	 * @param  <E>     the array element type
+	 * @param  a       an array
+	 * @param  from    first index (inclusive)
+	 * @param  to      last index (exclusive)
+	 * @param  k       index of the desire element in the sorted array
+	 * @param  c       comparator
+	 * @param  inPlace if true, all operations will be done on the given array and at the end it will be partitioned by
+	 *                     the Kth element
+	 * @return         the Kth element
 	 */
 	static <E> E getKthElement(E[] a, int from, int to, int k, Comparator<? super E> c, boolean inPlace) {
 		if (from < 0 || from >= to || to > a.length || k >= to - from)
@@ -56,14 +55,14 @@ class ArraysUtils {
 	 *
 	 * \(O(n)\)
 	 *
-	 * @param a       an array
-	 * @param from    first index (inclusive)
-	 * @param to      last index (exclusive)
-	 * @param k       index of the desire element in the sorted array
-	 * @param c       comparator
-	 * @param inPlace if true, all operations will be done on the given array and at
-	 *                the end it will be partitioned by the Kth element
-	 * @return the Kth element
+	 * @param  a       an array
+	 * @param  from    first index (inclusive)
+	 * @param  to      last index (exclusive)
+	 * @param  k       index of the desire element in the sorted array
+	 * @param  c       comparator
+	 * @param  inPlace if true, all operations will be done on the given array and at the end it will be partitioned by
+	 *                     the Kth element
+	 * @return         the Kth element
 	 */
 	static int getKthElement(int[] a, int from, int to, int k, IntComparator c, boolean inPlace) {
 		if (from < 0 || from >= to || to > a.length || k >= to - from)
@@ -118,13 +117,13 @@ class ArraysUtils {
 	 *
 	 * \(O(n)\)
 	 *
-	 * @param <E>   the array element type
-	 * @param a     an array
-	 * @param from  first index (inclusive)
-	 * @param to    last index (exclusive)
-	 * @param pivot an element to partition the array by
-	 * @param c     comparator
-	 * @return the last index of element smaller or equal to the pivot (exclusive)
+	 * @param  <E>   the array element type
+	 * @param  a     an array
+	 * @param  from  first index (inclusive)
+	 * @param  to    last index (exclusive)
+	 * @param  pivot an element to partition the array by
+	 * @param  c     comparator
+	 * @return       the last index of element smaller or equal to the pivot (exclusive)
 	 */
 	static <E> int pivotPartition(E[] a, int from, int to, E pivot, Comparator<? super E> c) {
 		if (from < 0 || from >= to || to > a.length)
@@ -151,12 +150,12 @@ class ArraysUtils {
 	 *
 	 * \(O(n)\)
 	 *
-	 * @param a     an array
-	 * @param from  first index (inclusive)
-	 * @param to    last index (exclusive)
-	 * @param pivot an element to partition the array by
-	 * @param c     comparator
-	 * @return the last index of element smaller or equal to the pivot (exclusive)
+	 * @param  a     an array
+	 * @param  from  first index (inclusive)
+	 * @param  to    last index (exclusive)
+	 * @param  pivot an element to partition the array by
+	 * @param  c     comparator
+	 * @return       the last index of element smaller or equal to the pivot (exclusive)
 	 */
 	static int pivotPartition(int[] a, int from, int to, int pivot, IntComparator c) {
 		if (from < 0 || from >= to || to > a.length)
@@ -261,8 +260,7 @@ class ArraysUtils {
 	}
 
 	/**
-	 * Partition an array to buckets where each element in bucket i is smaller than
-	 * all elements in bucket i+1.
+	 * Partition an array to buckets where each element in bucket i is smaller than all elements in bucket i+1.
 	 * <p>
 	 * \(O(n \log k)\) where k is the number of buckets of the output.
 	 *
@@ -271,8 +269,7 @@ class ArraysUtils {
 	 * @param from       first index (inclusive)
 	 * @param to         last index (exclusive)
 	 * @param c          comparator
-	 * @param bucketSize the size of the bucket. Last bucket may be smaller than the
-	 *                   specified value.
+	 * @param bucketSize the size of the bucket. Last bucket may be smaller than the specified value.
 	 */
 	static <E> void bucketPartition(E[] a, int from, int to, Comparator<? super E> c, int bucketSize) {
 		if (from < 0 || from >= to || to > a.length || bucketSize <= 0)
@@ -282,8 +279,7 @@ class ArraysUtils {
 	}
 
 	/**
-	 * Partition an array to buckets where each element in bucket i is smaller than
-	 * all elements in bucket i+1.
+	 * Partition an array to buckets where each element in bucket i is smaller than all elements in bucket i+1.
 	 * <p>
 	 * \(O(n \log k)\) where k is the number of buckets of the output.
 	 *
@@ -291,8 +287,7 @@ class ArraysUtils {
 	 * @param from       first index (inclusive)
 	 * @param to         last index (exclusive)
 	 * @param c          comparator
-	 * @param bucketSize the size of the bucket. Last bucket may be smaller than the
-	 *                   specified value.
+	 * @param bucketSize the size of the bucket. Last bucket may be smaller than the specified value.
 	 */
 	static void bucketPartition(int[] a, int from, int to, IntComparator c, int bucketSize) {
 		if (from < 0 || from >= to || to > a.length || bucketSize <= 0)

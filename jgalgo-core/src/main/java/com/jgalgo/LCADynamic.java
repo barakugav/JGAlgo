@@ -3,11 +3,9 @@ package com.jgalgo;
 /**
  * Dynamic algorithm for Lowest Common Ancestor (LCA) queries.
  * <p>
- * The lowest common ancestor of two vertices in a tree is the vertex that
- * appear in both vertices paths to the root (common ancestor), and its farthest
- * from the root (lowest). Algorithm implementing this interface support
- * modifying the tree by adding leafs as children to existing parents nodes,
- * while supporting LCA queries.
+ * The lowest common ancestor of two vertices in a tree is the vertex that appear in both vertices paths to the root
+ * (common ancestor), and its farthest from the root (lowest). Algorithm implementing this interface support modifying
+ * the tree by adding leafs as children to existing parents nodes, while supporting LCA queries.
  *
  * <pre> {@code
  * LCADynamic lca = LCADynamic.newBuilder().build();
@@ -30,7 +28,7 @@ public interface LCADynamic {
 	/**
 	 * Initialize the tree the LCA will operate on and create a root node.
 	 *
-	 * @return the new root node
+	 * @return                       the new root node
 	 * @throws IllegalStateException if the tree is not empty
 	 */
 	public Node initTree();
@@ -38,17 +36,17 @@ public interface LCADynamic {
 	/**
 	 * Add a new leaf node to the tree.
 	 *
-	 * @param parent parent of the new node
-	 * @return the new node
+	 * @param  parent parent of the new node
+	 * @return        the new node
 	 */
 	public Node addLeaf(Node parent);
 
 	/**
 	 * Find the lowest common ancestor of two nodes in the tree.
 	 *
-	 * @param u the first node
-	 * @param v the second node
-	 * @return the lowest common ancestor of the two nodes
+	 * @param  u the first node
+	 * @param  v the second node
+	 * @return   the lowest common ancestor of the two nodes
 	 */
 	public Node findLowestCommonAncestor(Node u, Node v);
 
@@ -74,19 +72,17 @@ public interface LCADynamic {
 		/**
 		 * Get the parent node of this node.
 		 *
-		 * @return the parent of this node or {@code null} if this node is the root of
-		 *         the tree.
+		 * @return the parent of this node or {@code null} if this node is the root of the tree.
 		 */
 		public Node getParent();
 
 		/**
 		 * Get the user data of this node.
 		 * <p>
-		 * Note that the conversion of the data stored in the implementation to the user
-		 * type is unsafe.
+		 * Note that the conversion of the data stored in the implementation to the user type is unsafe.
 		 *
-		 * @param <D> the data type
-		 * @return the user data of this node
+		 * @param  <D> the data type
+		 * @return     the user data of this node
 		 */
 		public <D> D getNodeData();
 
@@ -102,8 +98,7 @@ public interface LCADynamic {
 	/**
 	 * Create a new dynamic LCA algorithm builder.
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link LCADynamic}
-	 * object.
+	 * This is the recommended way to instantiate a new {@link LCADynamic} object.
 	 *
 	 * @return a new builder that can build {@link LCADynamic} objects
 	 */
@@ -114,7 +109,7 @@ public interface LCADynamic {
 	/**
 	 * A builder for {@link LCADynamic} objects.
 	 *
-	 * @see LCADynamic#newBuilder()
+	 * @see    LCADynamic#newBuilder()
 	 * @author Barak Ugav
 	 */
 	static interface Builder {

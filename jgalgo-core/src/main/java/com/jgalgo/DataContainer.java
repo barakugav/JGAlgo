@@ -1084,8 +1084,7 @@ abstract class DataContainer<E> {
 		}
 
 		@Override
-		void ensureCapacity(int capacity) {
-		}
+		void ensureCapacity(int capacity) {}
 
 		@Override
 		void swap(int k1, int k2) {

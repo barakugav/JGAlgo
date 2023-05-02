@@ -14,12 +14,11 @@ import it.unimi.dsi.fastutil.ints.IntList;
 /**
  * Dasdan and Gupta algorithm for minimum mean cycle.
  * <p>
- * The algorithm runs in \(O(n m)\) time and uses \(O(n^2)\) space.
- * Although this algorithm have a strong polynomial bound,
- * {@link MinimumMeanCycleHoward} is usually faster.
+ * The algorithm runs in \(O(n m)\) time and uses \(O(n^2)\) space. Although this algorithm have a strong polynomial
+ * bound, {@link MinimumMeanCycleHoward} is usually faster.
  * <p>
- * Based on 'Efficient algorithms for optimum cycle mean and optimum cost to
- * time ratio problems' by Ali Dasdan, Sandy S. Irani, Rajesh K. Gupta (1999).
+ * Based on 'Efficient algorithms for optimum cycle mean and optimum cost to time ratio problems' by Ali Dasdan, Sandy
+ * S. Irani, Rajesh K. Gupta (1999).
  *
  * @author Barak Ugav
  */
@@ -38,8 +37,7 @@ public class MinimumMeanCycleDasdanGupta implements MinimumMeanCycle {
 	/**
 	 * Create a new minimum mean cycle algorithm.
 	 */
-	public MinimumMeanCycleDasdanGupta() {
-	}
+	public MinimumMeanCycleDasdanGupta() {}
 
 	/**
 	 * {@inheritDoc}

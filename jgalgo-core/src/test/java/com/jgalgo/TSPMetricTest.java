@@ -16,8 +16,8 @@ public class TSPMetricTest extends TestBase {
 	public void testMstAppxAndMatchingAppxRandGraphs() {
 		final long seed = 0x6c019c0fba54c10fL;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(512, 4), phase(64, 16), phase(32, 32), phase(8, 64), phase(4, 128),
-				phase(3, 256));
+		List<Phase> phases =
+				List.of(phase(512, 4), phase(64, 16), phase(32, 32), phase(8, 64), phase(4, 128), phase(3, 256));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			testMstAppxAndMatchingAppxRandGraph(n, seedGen.nextSeed());
@@ -55,10 +55,8 @@ public class TSPMetricTest extends TestBase {
 					return false;
 			return true;
 		};
-		assertTrue(isPathVisitAllVertices.test(appxMst),
-				"MST approximation result doesn't visit every vertex");
-		assertTrue(isPathVisitAllVertices.test(appxMatch),
-				"Matching approximation result doesn't visit every vertex");
+		assertTrue(isPathVisitAllVertices.test(appxMst), "MST approximation result doesn't visit every vertex");
+		assertTrue(isPathVisitAllVertices.test(appxMatch), "Matching approximation result doesn't visit every vertex");
 
 		ToDoubleFunction<int[]> pathLength = path -> {
 			double d = 0;

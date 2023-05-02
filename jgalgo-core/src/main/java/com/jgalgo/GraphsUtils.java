@@ -8,8 +8,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 
 class GraphsUtils {
 
-	private GraphsUtils() {
-	}
+	private GraphsUtils() {}
 
 	static int getFullyBranchingTreeDepth(Graph t, int root) {
 		for (int parent = -1, u = root, depth = 0;; depth++) {
@@ -151,8 +150,8 @@ class GraphsUtils {
 		}
 		for (Object key : g.getEdgesWeightsKeys()) {
 			Weights<?> data0 = g.edgesWeight(key);
-			Weights dataSub0 = subG.addEdgesWeights(key, ((WeightsImpl) data0).container.getTypeClass(),
-					data0.defaultWeight());
+			Weights dataSub0 =
+					subG.addEdgesWeights(key, ((WeightsImpl) data0).container.getTypeClass(), data0.defaultWeight());
 
 			if (data0 instanceof Weights.Byte) {
 				Weights.Byte data = (Weights.Byte) data0;

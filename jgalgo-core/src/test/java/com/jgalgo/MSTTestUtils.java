@@ -15,8 +15,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 class MSTTestUtils extends TestUtils {
 
-	private MSTTestUtils() {
-	}
+	private MSTTestUtils() {}
 
 	static void testRandGraph(MST algo, long seed) {
 		testRandGraph(algo, GraphImplTestUtils.GRAPH_IMPL_DEFAULT, seed);
@@ -72,8 +71,8 @@ class MSTTestUtils extends TestUtils {
 
 	private static void verifyMST(Graph g, EdgeWeightFunc w, IntCollection mst) {
 		/*
-		 * It's hard to verify MST, we use Kruskal algorithm to verify the others, and
-		 * assume its implementation is correct
+		 * It's hard to verify MST, we use Kruskal algorithm to verify the others, and assume its implementation is
+		 * correct
 		 */
 		IntCollection expected = new MSTKruskal().computeMinimumSpanningTree(g, w);
 

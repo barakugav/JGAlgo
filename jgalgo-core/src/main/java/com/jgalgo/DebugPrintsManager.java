@@ -2,7 +2,7 @@ package com.jgalgo;
 
 import java.io.PrintStream;
 
-//TODO remove
+// TODO remove
 class DebugPrintsManager {
 
 	private boolean enable;

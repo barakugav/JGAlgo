@@ -7,8 +7,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 /**
  * TSP \(3/2\)-approximation using maximum matching.
  * <p>
- * The running of this algorithm is \(O(n^3)\) and it achieve
- * \(3/2\)-approximation to the optimal TSP solution.
+ * The running of this algorithm is \(O(n^3)\) and it achieve \(3/2\)-approximation to the optimal TSP solution.
  *
  * @author Barak Ugav
  */
@@ -20,8 +19,7 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 	/**
 	 * Create a new TSP \(3/2\)-approximation algorithm.
 	 */
-	public TSPMetricMatchingAppx() {
-	}
+	public TSPMetricMatchingAppx() {}
 
 	@Override
 	public int[] computeShortestTour(double[][] distances) {
@@ -42,8 +40,7 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 		IntCollection mst = new MSTPrim().computeMinimumSpanningTree(g, weights);
 
 		/*
-		 * Build graph for the matching calculation, containing only vertices with odd
-		 * degree from the MST
+		 * Build graph for the matching calculation, containing only vertices with odd degree from the MST
 		 */
 		int[] degree = GraphsUtils.calcDegree(g, mst);
 		UGraph mG = new GraphArrayUndirected();

@@ -538,10 +538,7 @@ class GraphImplTestUtils extends TestUtils {
 
 		Degree, DegreeIn, DegreeOut,
 
-		AddEdge, RemoveEdge, RemoveEdgeUsingOutIter, RemoveEdgeUsingInIter, RemoveEdgesMulti, RemoveEdgesOfVertex,
-		RemoveEdgesOfVertexUsingIter,
-		RemoveEdgesInOfVertex, RemoveEdgesInOfVertexUsingIter, RemoveEdgesOutOfVertex, RemoveEdgesOutOfVertexUsingIter,
-		ReverseEdge,
+		AddEdge, RemoveEdge, RemoveEdgeUsingOutIter, RemoveEdgeUsingInIter, RemoveEdgesMulti, RemoveEdgesOfVertex, RemoveEdgesOfVertexUsingIter, RemoveEdgesInOfVertex, RemoveEdgesInOfVertexUsingIter, RemoveEdgesOutOfVertex, RemoveEdgesOutOfVertexUsingIter, ReverseEdge,
 
 		// ClearEdges,
 

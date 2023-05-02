@@ -163,8 +163,8 @@ public class RedBlackTreeExtendedTest extends TestBase {
 		final long seed = 0xe5136a0085e719d1L;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		final Comparator<Integer> compare = null;
-		List<Phase> phases = List.of(phase(64, 16, 16), phase(64, 64, 128), phase(32, 512, 1024),
-				phase(8, 4096, 8096), phase(4, 16384, 32768));
+		List<Phase> phases = List.of(phase(64, 16, 16), phase(64, 64, 128), phase(32, 512, 1024), phase(8, 4096, 8096),
+				phase(4, 16384, 32768));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 
@@ -189,8 +189,8 @@ public class RedBlackTreeExtendedTest extends TestBase {
 		final long seed = 0x7674bddef0a0863bL;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		final Comparator<Integer> compare = null;
-		List<Phase> phases = List.of(phase(64, 16, 16), phase(64, 64, 128), phase(32, 512, 1024),
-				phase(8, 4096, 8096), phase(4, 16384, 32768));
+		List<Phase> phases = List.of(phase(64, 16, 16), phase(64, 64, 128), phase(32, 512, 1024), phase(8, 4096, 8096),
+				phase(4, 16384, 32768));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 

@@ -13,18 +13,15 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 /**
  * A path of edges in a graph.
  * <p>
- * A path is a list of edges \(e_1,e_2,\ldots\) where each target vertex of edge
- * \(e_i\) is the source vertex of the next edge \(e_{i+1}\). If the graph is
- * undirected the definition of a 'source' and 'target' are interchangeable, and
+ * A path is a list of edges \(e_1,e_2,\ldots\) where each target vertex of edge \(e_i\) is the source vertex of the
+ * next edge \(e_{i+1}\). If the graph is undirected the definition of a 'source' and 'target' are interchangeable, and
  * each pair of consecutive edges simply share an endpoint.
  * <p>
  * The Path object can be treated as a {@link IntList} of edges.
  * <p>
- * A Path object might be used to represent a cycle as well, if the source and
- * target of the path are the same vertex.
+ * A Path object might be used to represent a cycle as well, if the source and target of the path are the same vertex.
  * <p>
- * If the underlying graph was modified after the Path object was created, the
- * Path object should not be used.
+ * If the underlying graph was modified after the Path object was created, the Path object should not be used.
  *
  * <pre> {@code
  * Graph g = ...;
@@ -50,14 +47,13 @@ public class Path extends AbstractIntList {
 	private final IntList edges;
 
 	/**
-	 * Construct a new path in a graph from an edge list, a source and a target
-	 * vertices.
+	 * Construct a new path in a graph from an edge list, a source and a target vertices.
 	 *
 	 * @param g      a graph
 	 * @param source a source vertex
 	 * @param target a target vertex
-	 * @param edges  a list of edges that form a path from the {@code source} to the
-	 *               {@code target} vertices in the graph.
+	 * @param edges  a list of edges that form a path from the {@code source} to the {@code target} vertices in the
+	 *                   graph.
 	 */
 	public Path(Graph g, int source, int target, IntList edges) {
 		this.g = g;
@@ -69,8 +65,7 @@ public class Path extends AbstractIntList {
 	/**
 	 * Get the source vertex of the path.
 	 * <p>
-	 * If the returned vertex is the same as {@link #target()}, the represented path
-	 * is actually a cycle.
+	 * If the returned vertex is the same as {@link #target()}, the represented path is actually a cycle.
 	 *
 	 * @return the source vertex of the path.
 	 */
@@ -81,8 +76,7 @@ public class Path extends AbstractIntList {
 	/**
 	 * Get the target vertex of the path.
 	 * <p>
-	 * If the returned vertex is the same as {@link #source()}, the represented path
-	 * is actually a cycle.
+	 * If the returned vertex is the same as {@link #source()}, the represented path is actually a cycle.
 	 *
 	 * @return the target vertex of the path.
 	 */
@@ -209,14 +203,12 @@ public class Path extends AbstractIntList {
 	/**
 	 * Find a valid path from \(u\) to \(v\).
 	 * <p>
-	 * This function uses BFS, which will result in the shortest path in the number
-	 * of edges.
+	 * This function uses BFS, which will result in the shortest path in the number of edges.
 	 *
-	 * @param g a graph
-	 * @param u source vertex
-	 * @param v target vertex
-	 * @return a path from \(u\) to \(v\), or {@code null} if no such path
-	 *         was found
+	 * @param  g a graph
+	 * @param  u source vertex
+	 * @param  v target vertex
+	 * @return   a path from \(u\) to \(v\), or {@code null} if no such path was found
 	 */
 	public static Path findPath(Graph g, final int u, final int v) {
 		if (u == v)

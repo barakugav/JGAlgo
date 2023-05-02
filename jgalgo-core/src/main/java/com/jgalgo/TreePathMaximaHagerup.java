@@ -14,14 +14,12 @@ import it.unimi.dsi.fastutil.objects.ObjectIntPair;
 /**
  * Hagerup's Tree Path Maxima (TPM) linear time algorithm.
  * <p>
- * The algorithm runs in \(O(n + m)\) where \(n\) is the number of
- * vertices in the tree and \(m\) is the number of queries. It also uses
- * \(O(n + m)\) space.
+ * The algorithm runs in \(O(n + m)\) where \(n\) is the number of vertices in the tree and \(m\) is the number of
+ * queries. It also uses \(O(n + m)\) space.
  * <p>
- * Based on 'Linear verification for spanning trees' by J Komlos (1985), 'A
- * Simpler Minimum Spanning Tree Verification Algorithm' by V King (1997) and
- * 'An Even Simpler Linear-Time Algorithm for Verifying Minimum Spanning Trees'
- * by T Hagerup (2009).
+ * Based on 'Linear verification for spanning trees' by J Komlos (1985), 'A Simpler Minimum Spanning Tree Verification
+ * Algorithm' by V King (1997) and 'An Even Simpler Linear-Time Algorithm for Verifying Minimum Spanning Trees' by T
+ * Hagerup (2009).
  *
  * @author Barak Ugav
  */
@@ -34,25 +32,21 @@ public class TreePathMaximaHagerup implements TreePathMaxima {
 	/**
 	 * Create a new TPM object.
 	 */
-	public TreePathMaximaHagerup() {
-	}
+	public TreePathMaximaHagerup() {}
 
 	/**
 	 * Enable/disable the use of bits lookup tables.
 	 * <p>
-	 * Some operations on integers such such as popcount
-	 * ({@link Integer#bitCount(int)}) or ctz
-	 * ({@link Integer#numberOfTrailingZeros(int)}) are assumed to be implemented in
-	 * \(O(1)\) by the algorithm. According to theoretical papers its possible
-	 * to implement this operations in 'real' \(O(1)\) with lookup tables. In
-	 * practice, integers are 32bit numbers and all such operations are fast without
-	 * any lookup tables.
+	 * Some operations on integers such such as popcount ({@link Integer#bitCount(int)}) or ctz
+	 * ({@link Integer#numberOfTrailingZeros(int)}) are assumed to be implemented in \(O(1)\) by the algorithm.
+	 * According to theoretical papers its possible to implement this operations in 'real' \(O(1)\) with lookup tables.
+	 * In practice, integers are 32bit numbers and all such operations are fast without any lookup tables.
 	 * <p>
 	 * This method enable or disable the use of bits lookup tables.
 	 *
-	 * @see BitsLookupTable
-	 * @param enable if {@code true} bits lookup table will be constructed and used,
-	 *               else methods from {@link Integer} will be used.
+	 * @see          BitsLookupTable
+	 * @param enable if {@code true} bits lookup table will be constructed and used, else methods from {@link Integer}
+	 *                   will be used.
 	 */
 	public void setBitsLookupTablesEnable(boolean enable) {
 		useBitsLookupTables = enable;
@@ -70,8 +64,7 @@ public class TreePathMaximaHagerup implements TreePathMaxima {
 	private static class Worker {
 
 		/*
-		 * Original tree, in other functions 't' refers to the Boruvka fully branching
-		 * tree
+		 * Original tree, in other functions 't' refers to the Boruvka fully branching tree
 		 */
 		final UGraph tOrig;
 		final EdgeWeightFunc w;
@@ -206,8 +199,7 @@ public class TreePathMaximaHagerup implements TreePathMaxima {
 			// return r;
 
 			/*
-			 * Don't even ask why the commented code above is equivalent to the bit tricks
-			 * below. Hagerup 2009.
+			 * Don't even ask why the commented code above is equivalent to the bit tricks below. Hagerup 2009.
 			 */
 			return a & (~(a | b) ^ ((~a | b) + b));
 		}

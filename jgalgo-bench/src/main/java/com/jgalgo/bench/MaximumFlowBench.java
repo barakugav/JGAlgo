@@ -66,8 +66,7 @@ public class MaximumFlowBench {
 		graphs = new ArrayList<>(graphsNum);
 		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
 			DiGraph g = (DiGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true)
-					.parallelEdges(false).selfEdges(false)
-					.cycles(true).connected(false).build();
+					.parallelEdges(false).selfEdges(false).cycles(true).connected(false).build();
 			FlowNetwork.Int flow = randNetworkInt(g, seedGen.nextSeed());
 			int source, sink;
 			for (;;) {

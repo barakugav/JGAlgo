@@ -59,8 +59,7 @@ public class MinimumMeanCycleBench {
 		graphs = new ArrayList<>(graphsNum);
 		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
 			DiGraph g = (DiGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true)
-					.parallelEdges(true).selfEdges(false)
-					.cycles(true).connected(false).build();
+					.parallelEdges(true).selfEdges(false).cycles(true).connected(false).build();
 			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			graphs.add(Pair.of(g, w));
 		}

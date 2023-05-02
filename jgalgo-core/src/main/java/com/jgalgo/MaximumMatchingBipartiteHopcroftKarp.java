@@ -10,16 +10,13 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 /**
- * Hopcroft–Karp maximum unweighted matching algorithm for undirected bipartite
- * graphs.
+ * Hopcroft–Karp maximum unweighted matching algorithm for undirected bipartite graphs.
  * <p>
  * The algorithm runs in \(O(m \sqrt{n})\) and it uses linear space.
  * <p>
- * Based on "A n^5/2 Algorithm for Maximum Matchings in Bipartite Graphs" by J.
- * Hopcroft and R. Karp (1973).
+ * Based on "A n^5/2 Algorithm for Maximum Matchings in Bipartite Graphs" by J. Hopcroft and R. Karp (1973).
  *
- * @see <a href=
- *      "https://en.wikipedia.org/wiki/Hopcroft%E2%80%93Karp_algorithm">Wikipedia</a>
+ * @see    <a href= "https://en.wikipedia.org/wiki/Hopcroft%E2%80%93Karp_algorithm">Wikipedia</a>
  * @author Barak Ugav
  */
 public class MaximumMatchingBipartiteHopcroftKarp implements MaximumMatching {
@@ -30,20 +27,18 @@ public class MaximumMatchingBipartiteHopcroftKarp implements MaximumMatching {
 	/**
 	 * Create a new maximum matching object.
 	 */
-	public MaximumMatchingBipartiteHopcroftKarp() {
-	}
+	public MaximumMatchingBipartiteHopcroftKarp() {}
 
 	/**
 	 * Set the key used to get the bipartiteness property of vertices.
 	 * <p>
-	 * The algorithm run on bipartite graphs and expect the user to provide the
-	 * vertices partition by a boolean vertices weights using
-	 * {@link Graph#verticesWeight(Object)}. By default, the weights are searched
-	 * using the key {@link Weights#DefaultBipartiteWeightKey}. To override this
-	 * default behavior, use this function to choose a different key.
+	 * The algorithm run on bipartite graphs and expect the user to provide the vertices partition by a boolean vertices
+	 * weights using {@link Graph#verticesWeight(Object)}. By default, the weights are searched using the key
+	 * {@link Weights#DefaultBipartiteWeightKey}. To override this default behavior, use this function to choose a
+	 * different key.
 	 *
-	 * @param key an object key that will be used to get the bipartite vertices
-	 *            partition by {@code g.verticesWeight(key)}.
+	 * @param key an object key that will be used to get the bipartite vertices partition by
+	 *                {@code g.verticesWeight(key)}.
 	 */
 	public void setBipartiteVerticesWeightKey(Object key) {
 		bipartiteVerticesWeightKey = key;
@@ -52,11 +47,9 @@ public class MaximumMatchingBipartiteHopcroftKarp implements MaximumMatching {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @throws NullPointerException     if the bipartiteness vertices weights is not
-	 *                                  found. See
-	 *                                  {@link #setBipartiteVerticesWeightKey(Object)}.
-	 * @throws IllegalArgumentException if the graph is no bipartite with respect to
-	 *                                  the provided partition
+	 * @throws NullPointerException     if the bipartiteness vertices weights is not found. See
+	 *                                      {@link #setBipartiteVerticesWeightKey(Object)}.
+	 * @throws IllegalArgumentException if the graph is no bipartite with respect to the provided partition
 	 */
 	@Override
 	public IntCollection computeMaximumMatching(UGraph g) {
@@ -126,8 +119,7 @@ public class MaximumMatchingBipartiteHopcroftKarp implements MaximumMatching {
 				break;
 
 			/*
-			 * Run DFS to find the maximal number of paths from unmatched S vertices to
-			 * unmatched T vertices
+			 * Run DFS to find the maximal number of paths from unmatched S vertices to unmatched T vertices
 			 */
 			for (int u = 0; u < n; u++) {
 				if (!partition.getBool(u) || matched[u] != MatchedNone)
@@ -161,8 +153,7 @@ public class MaximumMatchingBipartiteHopcroftKarp implements MaximumMatching {
 						edges[++depth] = f.edgesOut(v);
 					} else {
 						/*
-						 * Pop two edges (one from the matching and the other not in the matching) from
-						 * the DFS path
+						 * Pop two edges (one from the matching and the other not in the matching) from the DFS path
 						 */
 						depth -= 2;
 					}

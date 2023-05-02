@@ -15,8 +15,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 
 public class TreePathMaximaTestUtils extends TestUtils {
 
-	private TreePathMaximaTestUtils() {
-	}
+	private TreePathMaximaTestUtils() {}
 
 	private static int[] calcExpectedTPM(Graph t, EdgeWeightFunc w, TreePathMaxima.Queries queries) {
 		int queriesNum = queries.size();
@@ -65,8 +64,8 @@ public class TreePathMaximaTestUtils extends TestUtils {
 			int u = query.firstInt(), v = query.secondInt();
 			double aw = actual[i] != -1 ? w.weight(actual[i]) : Double.MIN_VALUE;
 			double ew = expected[i] != -1 ? w.weight(expected[i]) : Double.MIN_VALUE;
-			assertEquals(ew, aw, "Unexpected result for query (" + u + ", " + v
-					+ "): " + actual[i] + " != " + expected[i]);
+			assertEquals(ew, aw,
+					"Unexpected result for query (" + u + ", " + v + "): " + actual[i] + " != " + expected[i]);
 		}
 	}
 

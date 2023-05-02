@@ -3,16 +3,15 @@ package com.jgalgo;
 /**
  * A discrete directed graph with vertices and edges.
  * <p>
- * An extension to the {@link Graph} interface, where edges are directed, namely
- * an edge \(e(u, v)\) will appear in the iteration of {@code edgesOut(u)}
- * and {@code edgesIn(v)} and will not appear in the iteration of
- * {@code edgesOut(v)} and {@code edgesIn(u)}.
+ * An extension to the {@link Graph} interface, where edges are directed, namely an edge \(e(u, v)\) will appear in the
+ * iteration of {@code edgesOut(u)} and {@code edgesIn(v)} and will not appear in the iteration of {@code edgesOut(v)}
+ * and {@code edgesIn(u)}.
  * <p>
- * Use {@link GraphArrayDirected} as a default implementation of directed
- * graphs, its the most efficient for most use cases.
+ * Use {@link GraphArrayDirected} as a default implementation of directed graphs, its the most efficient for most use
+ * cases.
  *
- * @see UGraph
- * @see GraphArrayDirected
+ * @see    UGraph
+ * @see    GraphArrayDirected
  * @author Barak Ugav
  */
 public interface DiGraph extends Graph {
@@ -20,17 +19,15 @@ public interface DiGraph extends Graph {
 	/**
 	 * Reverse an edge by switching its source and target.
 	 *
-	 * @param edge an existing edge in the graph
-	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge
-	 *                                   identifier
+	 * @param  edge                      an existing edge in the graph
+	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
 	 */
 	public void reverseEdge(int edge);
 
 	/**
 	 * Create a directed graph builder.
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link DiGraph}
-	 * object.
+	 * This is the recommended way to instantiate a new {@link DiGraph} object.
 	 *
 	 * @return a new builder that can build {@link DiGraph} objects
 	 */
@@ -41,7 +38,7 @@ public interface DiGraph extends Graph {
 	/**
 	 * A builder for {@link DiGraph} objects.
 	 *
-	 * @see DiGraph#newBuilder()
+	 * @see    DiGraph#newBuilder()
 	 * @author Barak Ugav
 	 */
 	static interface Builder extends Graph.Builder {

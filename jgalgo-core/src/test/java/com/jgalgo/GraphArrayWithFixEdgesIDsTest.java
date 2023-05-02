@@ -12,11 +12,11 @@ public class GraphArrayWithFixEdgesIDsTest extends TestBase {
 			@Override
 			public Graph newGraph(boolean directed, int vertices) {
 				if (directed) {
-					return DiGraph.newBuilder().setEdgesIDStrategy(IDStrategy.Fixed.class)
-							.setVerticesNum(vertices).build();
+					return DiGraph.newBuilder().setEdgesIDStrategy(IDStrategy.Fixed.class).setVerticesNum(vertices)
+							.build();
 				} else {
-					return UGraph.newBuilder().setEdgesIDStrategy(IDStrategy.Fixed.class)
-							.setVerticesNum(vertices).build();
+					return UGraph.newBuilder().setEdgesIDStrategy(IDStrategy.Fixed.class).setVerticesNum(vertices)
+							.build();
 				}
 			}
 		};

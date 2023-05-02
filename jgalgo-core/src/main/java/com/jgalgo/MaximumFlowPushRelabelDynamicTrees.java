@@ -13,25 +13,21 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 /**
  * The push relabel algorithm for maximum flow using dynamic trees.
  * <p>
- * The push-relabel algorithm maintain a "preflow" and gradually converts it
- * into a maximum flow by moving flow locally between neighboring nodes using
- * <i>push</i> operations under the guidance of an admissible network maintained
- * by <i>relabel</i> operations.
+ * The push-relabel algorithm maintain a "preflow" and gradually converts it into a maximum flow by moving flow locally
+ * between neighboring nodes using <i>push</i> operations under the guidance of an admissible network maintained by
+ * <i>relabel</i> operations.
  * <p>
- * Conceptually, the dynamic trees are used to push flow along multiple edges
- * simultaneously. The current flow of each individual edges is not maintained
- * explicitly, rather each path is stored as a dynamic tree, and the flow is
- * stored as a weight of the tree edges - to calculate the weight (flow) of an
- * edge, one would have to traverse the tree from the root to the edge and sum
- * all weights on the path.
+ * Conceptually, the dynamic trees are used to push flow along multiple edges simultaneously. The current flow of each
+ * individual edges is not maintained explicitly, rather each path is stored as a dynamic tree, and the flow is stored
+ * as a weight of the tree edges - to calculate the weight (flow) of an edge, one would have to traverse the tree from
+ * the root to the edge and sum all weights on the path.
  * <p>
- * Using the dynamic trees reduce the running time of the push-relabel algorithm
- * to \(O(m n \log (n^2 / m))\) and linear space. This implementation uses FIFO
- * to order the vertices to be examined. Note that this implementation is
- * usually out preformed in practice by simpler variants of the push-relabel
- * algorithm, such as {@link MaximumFlowPushRelabelHighestFirst}.
+ * Using the dynamic trees reduce the running time of the push-relabel algorithm to \(O(m n \log (n^2 / m))\) and linear
+ * space. This implementation uses FIFO to order the vertices to be examined. Note that this implementation is usually
+ * out preformed in practice by simpler variants of the push-relabel algorithm, such as
+ * {@link MaximumFlowPushRelabelHighestFirst}.
  *
- * @see MaximumFlowPushRelabel
+ * @see    MaximumFlowPushRelabel
  * @author Barak Ugav
  */
 public class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
@@ -44,8 +40,7 @@ public class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 	/**
 	 * Create a new maximum flow algorithm object.
 	 */
-	public MaximumFlowPushRelabelDynamicTrees() {
-	}
+	public MaximumFlowPushRelabelDynamicTrees() {}
 
 	/**
 	 * {@inheritDoc}
@@ -212,7 +207,7 @@ public class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 						V.firstDtChild = U.v;
 						W = U;
 					} else {
-						/* Avoid big trees, no link, push manually and continue pushing in v's tree */
+						// Avoid big trees, no link, push manually and continue pushing in v's tree
 						pushAlongEdge(e);
 						if (V.v == source || V.v == sink)
 							continue;
@@ -294,8 +289,7 @@ public class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 			int n = g.vertices().size();
 			Stack<DynamicTree.Node> cleanupStack = new Stack<>();
 			for (int u = 0; u < n; u++) {
-				for (DynamicTree.Node uDt = vertexData(u).dtNode,
-						pDt; (pDt = uDt.getParent()) != null; uDt = pDt)
+				for (DynamicTree.Node uDt = vertexData(u).dtNode, pDt; (pDt = uDt.getParent()) != null; uDt = pDt)
 					cleanupStack.push(uDt);
 				while (!cleanupStack.isEmpty()) {
 					DynamicTree.Node uDt = cleanupStack.pop();

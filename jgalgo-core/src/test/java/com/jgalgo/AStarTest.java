@@ -131,8 +131,7 @@ public class AStarTest extends TestBase {
 		}
 	}
 
-	private static SSSP AStarAsSSSP(
-			Function<HeuristicParams, IntToDoubleFunction> vHeuristicBuilder) {
+	private static SSSP AStarAsSSSP(Function<HeuristicParams, IntToDoubleFunction> vHeuristicBuilder) {
 		return new SSSP() {
 			@Override
 			public SSSP.Result computeShortestPaths(Graph g, EdgeWeightFunc w, int source) {

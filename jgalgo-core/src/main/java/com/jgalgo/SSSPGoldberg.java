@@ -9,24 +9,18 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
- * Goldberg's algorithm for SSSP for integer (positive and negative) weights on
- * directed graphs.
+ * Goldberg's algorithm for SSSP for integer (positive and negative) weights on directed graphs.
  * <p>
- * The algorithm operate on integer weights and uses the scaling approach.
- * During the scaling iterations, a potential function is maintained, which
- * gives a equivalent weight function with values \(-1,0,1,2,3,\ldots\). The
- * potential is updated from iteration to iteration, until the full
- * representation of the integer numbers is used, and the real shortest paths
- * and distances are computed. Let \(N\) be the absolute value of the
- * minimum negative number. The algorithm perform \(O(\log N)\) iteration, and
- * each iteration is performed in time \(O(m \sqrt{n})\) time. In total, the
- * running time is \(O(m \sqrt{n} \log N)\).
+ * The algorithm operate on integer weights and uses the scaling approach. During the scaling iterations, a potential
+ * function is maintained, which gives a equivalent weight function with values \(-1,0,1,2,3,\ldots\). The potential is
+ * updated from iteration to iteration, until the full representation of the integer numbers is used, and the real
+ * shortest paths and distances are computed. Let \(N\) be the absolute value of the minimum negative number. The
+ * algorithm perform \(O(\log N)\) iteration, and each iteration is performed in time \(O(m \sqrt{n})\) time. In total,
+ * the running time is \(O(m \sqrt{n} \log N)\).
  * <p>
- * This algorithm is great in practice, and should be used for weights function
- * with integer negative values.
+ * This algorithm is great in practice, and should be used for weights function with integer negative values.
  * <p>
- * Based on 'Scaling algorithms for the shortest paths problem' by Goldberg,
- * A.V. (1995).
+ * Based on 'Scaling algorithms for the shortest paths problem' by Goldberg, A.V. (1995).
  *
  * @author Barak Ugav
  */
@@ -39,15 +33,13 @@ public class SSSPGoldberg implements SSSP {
 	/**
 	 * Construct a new SSSP algorithm object.
 	 */
-	public SSSPGoldberg() {
-	}
+	public SSSPGoldberg() {}
 
 	/**
 	 * Set the algorithm used for positive weights graphs.
 	 * <p>
-	 * The algorithm first calculate a potential for each vertex and construct an
-	 * equivalent positive weight function which is used by an SSSP algorithm for
-	 * positive weights to compute the final shortest paths.
+	 * The algorithm first calculate a potential for each vertex and construct an equivalent positive weight function
+	 * which is used by an SSSP algorithm for positive weights to compute the final shortest paths.
 	 *
 	 * @param algo a SSSP implementation for graphs with positive weight function
 	 */
@@ -58,9 +50,8 @@ public class SSSPGoldberg implements SSSP {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @throws IllegalArgumentException if the graph is not directed or the edge
-	 *                                  weights function is not of type
-	 *                                  {@link EdgeWeightFunc.Int}
+	 * @throws IllegalArgumentException if the graph is not directed or the edge weights function is not of type
+	 *                                      {@link EdgeWeightFunc.Int}
 	 */
 	@Override
 	public SSSP.Result computeShortestPaths(Graph g, EdgeWeightFunc w, int source) {

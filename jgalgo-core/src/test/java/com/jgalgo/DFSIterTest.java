@@ -34,8 +34,7 @@ public class DFSIterTest extends TestBase {
 				int e = v == source ? -1 : pathFromSource.getInt(pathFromSource.size() - 1);
 				assertFalse(visited.get(v), "already visited vertex " + v);
 				if (v != source)
-					assertTrue(g.edgeEndpoint(e, g.edgeEndpoint(e, v)) == v,
-							"v is not an endpoint of inEdge");
+					assertTrue(g.edgeEndpoint(e, g.edgeEndpoint(e, v)) == v, "v is not an endpoint of inEdge");
 				visited.set(v);
 			}
 		});

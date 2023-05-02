@@ -6,22 +6,18 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
 /**
- * Static RMQ which uses Cartesian trees answering a query in constant time and
- * requiring linear preprocessing time.
+ * Static RMQ which uses Cartesian trees answering a query in constant time and requiring linear preprocessing time.
  * <p>
- * The sequence is divided into blocks of size \((\log n) / 4\), and for each
- * block a Cartesian tree is created. The total number of possible Cartesian
- * trees of such size is bounded by \(O(n)\) (Catalan number).
+ * The sequence is divided into blocks of size \((\log n) / 4\), and for each block a Cartesian tree is created. The
+ * total number of possible Cartesian trees of such size is bounded by \(O(n)\) (Catalan number).
  * <p>
- * To answer on queries which does not fall in the same block, the minimum of
- * each block is stored, and {@link RMQStaticPowerOf2Table} is used on the
- * \(O(n / \log n)\) elements, which is linear in total.
+ * To answer on queries which does not fall in the same block, the minimum of each block is stored, and
+ * {@link RMQStaticPowerOf2Table} is used on the \(O(n / \log n)\) elements, which is linear in total.
  * <p>
- * The algorithm required \(O(n)\) preprocessing time and space and answer
- * queries in \(O(1)\) time.
+ * The algorithm required \(O(n)\) preprocessing time and space and answer queries in \(O(1)\) time.
  * <p>
- * Based on 'Scaling and related techniques for geometry problems' by Harold N.
- * Gabow; Jon Louis Bentley; Robert E. Tarjan (1984).
+ * Based on 'Scaling and related techniques for geometry problems' by Harold N. Gabow; Jon Louis Bentley; Robert E.
+ * Tarjan (1984).
  *
  * @author Barak Ugav
  */
@@ -30,8 +26,7 @@ public class RMQStaticCartesianTrees extends RMQStaticLinearAbstract {
 	/**
 	 * Construct a new static RMQ algorithm object.
 	 */
-	public RMQStaticCartesianTrees() {
-	}
+	public RMQStaticCartesianTrees() {}
 
 	@Override
 	public RMQStatic.DataStructure preProcessSequence(RMQStaticComparator c, int n) {

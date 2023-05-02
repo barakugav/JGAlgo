@@ -13,15 +13,13 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 /**
  * Dinic's algorithm for maximum flow using dynamic trees.
  * <p>
- * Using {@link DynamicTree} the algorithm of Dinic to maximum flow problem is
- * implemented in time \(O(m n \log n)\) and linear space. In practice, the
- * (relative) complicated implementation of dynamic trees have little gain in
- * the overall performance, and its probably better to use some variant of the
- * {@link MaximumFlowPushRelabel}, which has worse theoretically bounds, but
- * runs faster in practice.
+ * Using {@link DynamicTree} the algorithm of Dinic to maximum flow problem is implemented in time \(O(m n \log n)\) and
+ * linear space. In practice, the (relative) complicated implementation of dynamic trees have little gain in the overall
+ * performance, and its probably better to use some variant of the {@link MaximumFlowPushRelabel}, which has worse
+ * theoretically bounds, but runs faster in practice.
  *
- * @see MaximumFlowDinic
- * @see DynamicTree
+ * @see    MaximumFlowDinic
+ * @see    DynamicTree
  * @author Barak Ugav
  */
 public class MaximumFlowDinicDynamicTrees implements MaximumFlow {
@@ -33,8 +31,7 @@ public class MaximumFlowDinicDynamicTrees implements MaximumFlow {
 	/**
 	 * Create a new maximum flow algorithm object.
 	 */
-	public MaximumFlowDinicDynamicTrees() {
-	}
+	public MaximumFlowDinicDynamicTrees() {}
 
 	/**
 	 * {@inheritDoc}

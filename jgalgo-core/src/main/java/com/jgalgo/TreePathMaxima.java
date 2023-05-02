@@ -9,16 +9,14 @@ import it.unimi.dsi.fastutil.ints.IntList;
 /**
  * Tree Path Maxima (TPM) algorithm.
  * <p>
- * Given a tree \(T\) and a sequence of vertices pairs
- * \((u_1,v_1),(u_2,v_2),\ldots\) called <i>queries</i>, the tree path maxima
- * problem is to find for each pair \((u_i,v_i)\) the heaviest edge on the path
- * between \(u_i\) and \(v_i\) in \(T\).
+ * Given a tree \(T\) and a sequence of vertices pairs \((u_1,v_1),(u_2,v_2),\ldots\) called <i>queries</i>, the tree
+ * path maxima problem is to find for each pair \((u_i,v_i)\) the heaviest edge on the path between \(u_i\) and \(v_i\)
+ * in \(T\).
  * <p>
- * TPM can be used to validate if a spanning tree is minimum spanning tree (MST)
- * or not, by checking for each edge \((u,v)\) that is not in the tree that
- * it is heavier than the heaviest edge in the path from \(u\) to \(v\)
- * in the tree. If a TPM on \(n\) vertices and \(m\) queries can be
- * answer in \(O(n + m)\) time than an MST can be validated in linear time.
+ * TPM can be used to validate if a spanning tree is minimum spanning tree (MST) or not, by checking for each edge
+ * \((u,v)\) that is not in the tree that it is heavier than the heaviest edge in the path from \(u\) to \(v\) in the
+ * tree. If a TPM on \(n\) vertices and \(m\) queries can be answer in \(O(n + m)\) time than an MST can be validated in
+ * linear time.
  *
  * @author Barak Ugav
  */
@@ -27,25 +25,23 @@ public interface TreePathMaxima {
 	/**
 	 * Compute the heaviest edge in multiple tree paths.
 	 * <p>
-	 * The {@code queries} container contains pairs of vertices, each corresponding
-	 * to a simple path in the given {@code tree}. For each of these paths, the
-	 * heaviest edge in the path will be computed.
+	 * The {@code queries} container contains pairs of vertices, each corresponding to a simple path in the given
+	 * {@code tree}. For each of these paths, the heaviest edge in the path will be computed.
 	 *
-	 * @param tree    a tree
-	 * @param w       an edge weight function
-	 * @param queries a sequence of queries as pairs of vertices, each corresponding
-	 *                to a unique simple path in the tree.
-	 * @return array of edges in the same size as the queries container, where the
-	 *         edge in the {@code i}-th entry is the heaviest edge in the tree path
-	 *         between the two vertices of the {@code i}'th query.
+	 * @param  tree    a tree
+	 * @param  w       an edge weight function
+	 * @param  queries a sequence of queries as pairs of vertices, each corresponding to a unique simple path in the
+	 *                     tree.
+	 * @return         array of edges in the same size as the queries container, where the edge in the {@code i}-th
+	 *                 entry is the heaviest edge in the tree path between the two vertices of the {@code i}'th query.
 	 */
 	public int[] computeHeaviestEdgeInTreePaths(Graph tree, EdgeWeightFunc w, TreePathMaxima.Queries queries);
 
 	/**
 	 * Queries container for {@link TreePathMaxima} computations.
 	 * <p>
-	 * Queries are added one by one to this container, and than the Queries object
-	 * is passed to the {@link TreePathMaxima} algorithm using
+	 * Queries are added one by one to this container, and than the Queries object is passed to the
+	 * {@link TreePathMaxima} algorithm using
 	 * {@link TreePathMaxima#computeHeaviestEdgeInTreePaths(Graph, EdgeWeightFunc, Queries)}.
 	 *
 	 * @author Barak Ugav
@@ -74,8 +70,8 @@ public interface TreePathMaxima {
 		/**
 		 * Get a query by index.
 		 *
-		 * @param idx index of the query. Must be in range {@code [0, size())}
-		 * @return pair with the two vertices of the query
+		 * @param  idx                       index of the query. Must be in range {@code [0, size())}
+		 * @return                           pair with the two vertices of the query
 		 * @throws IndexOutOfBoundsException if {@code idx < 0} or {@code idx >= size()}
 		 */
 		public IntIntPair getQuery(int idx) {
@@ -103,8 +99,7 @@ public interface TreePathMaxima {
 	/**
 	 * Create a new tree path maxima algorithm builder.
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link TreePathMaxima}
-	 * object.
+	 * This is the recommended way to instantiate a new {@link TreePathMaxima} object.
 	 *
 	 * @return a new builder that can build {@link TreePathMaxima} objects
 	 */
@@ -115,7 +110,7 @@ public interface TreePathMaxima {
 	/**
 	 * A builder for {@link TreePathMaxima} objects.
 	 *
-	 * @see TreePathMaxima#newBuilder()
+	 * @see    TreePathMaxima#newBuilder()
 	 * @author Barak Ugav
 	 */
 	static interface Builder {
@@ -131,17 +126,15 @@ public interface TreePathMaxima {
 	/**
 	 * Verify that the given edges actually form an MST of a graph.
 	 * <p>
-	 * The verification is done by computing for each original edge in the graph the
-	 * maximum edge in the given MST. If all of the edges which are not in the MST
-	 * have a greater weight than the maximum one in the path of the MST, the MST is
-	 * valid.
+	 * The verification is done by computing for each original edge in the graph the maximum edge in the given MST. If
+	 * all of the edges which are not in the MST have a greater weight than the maximum one in the path of the MST, the
+	 * MST is valid.
 	 *
-	 * @param g        an undirected graph
-	 * @param w        an edge weight function
-	 * @param mstEdges collection of edges that form an MST
-	 * @param tpmAlgo  tree path maximum algorithm, used for verification
-	 * @return {@code true} if the collection of edges form an MST of {@code g},
-	 *         else {@code false}
+	 * @param  g        an undirected graph
+	 * @param  w        an edge weight function
+	 * @param  mstEdges collection of edges that form an MST
+	 * @param  tpmAlgo  tree path maximum algorithm, used for verification
+	 * @return          {@code true} if the collection of edges form an MST of {@code g}, else {@code false}
 	 */
 	public static boolean verifyMST(UGraph g, EdgeWeightFunc w, IntCollection mstEdges, TreePathMaxima tpmAlgo) {
 		int n = g.vertices().size();

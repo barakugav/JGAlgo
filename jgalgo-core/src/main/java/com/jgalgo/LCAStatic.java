@@ -3,14 +3,12 @@ package com.jgalgo;
 /**
  * Static Lowest Common Ancestor (LCA) algorithm.
  * <p>
- * The lowest common ancestor of two vertices in a tree is the vertex that
- * appear in both vertices paths to the root (common ancestor), and its farthest
- * from the root (lowest). Given a tree \(G=(V,E)\), we would like to pre
- * process it and then answer queries of the type "what is the lower common
- * ancestor of two vertices \(u\) and \(v\)?".
+ * The lowest common ancestor of two vertices in a tree is the vertex that appear in both vertices paths to the root
+ * (common ancestor), and its farthest from the root (lowest). Given a tree \(G=(V,E)\), we would like to pre process it
+ * and then answer queries of the type "what is the lower common ancestor of two vertices \(u\) and \(v\)?".
  * <p>
- * Most implementation of this interface achieve linear or near linear
- * preprocessing time and constant or logarithmic query time.
+ * Most implementation of this interface achieve linear or near linear preprocessing time and constant or logarithmic
+ * query time.
  *
  * <pre> {@code
  * Graph tree = UGraph.newBuilder().build();
@@ -40,13 +38,11 @@ package com.jgalgo;
 public interface LCAStatic {
 
 	/**
-	 * Perform a static pre processing of a tree for future LCA (Lowest common
-	 * ancestor) queries.
+	 * Perform a static pre processing of a tree for future LCA (Lowest common ancestor) queries.
 	 *
-	 * @param tree a tree
-	 * @param root root of the tree
-	 * @return a data structure built from the preprocessing, that can answer LCA
-	 *         queries efficiently
+	 * @param  tree a tree
+	 * @param  root root of the tree
+	 * @return      a data structure built from the preprocessing, that can answer LCA queries efficiently
 	 */
 	public LCAStatic.DataStructure preProcessTree(Graph tree, int root);
 
@@ -60,9 +56,9 @@ public interface LCAStatic {
 		/**
 		 * Find the lowest common ancestor of two vertices in the tree.
 		 *
-		 * @param u the first vertex
-		 * @param v the second vertex
-		 * @return the lowest common ancestor of \(u\) and \(v\)
+		 * @param  u the first vertex
+		 * @param  v the second vertex
+		 * @return   the lowest common ancestor of \(u\) and \(v\)
 		 */
 		public int findLowestCommonAncestor(int u, int v);
 	}
@@ -70,8 +66,7 @@ public interface LCAStatic {
 	/**
 	 * Create a new static LCA algorithm builder.
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link LCAStatic}
-	 * object.
+	 * This is the recommended way to instantiate a new {@link LCAStatic} object.
 	 *
 	 * @return a new builder that can build {@link LCAStatic} objects
 	 */
@@ -82,7 +77,7 @@ public interface LCAStatic {
 	/**
 	 * A builder for {@link LCAStatic} objects.
 	 *
-	 * @see LCAStatic#newBuilder()
+	 * @see    LCAStatic#newBuilder()
 	 * @author Barak Ugav
 	 */
 	static interface Builder {

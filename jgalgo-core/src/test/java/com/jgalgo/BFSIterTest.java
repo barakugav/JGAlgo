@@ -31,8 +31,7 @@ public class BFSIterTest extends TestBase {
 				int e = it.inEdge();
 				assertFalse(visited.get(v), "already visited vertex " + v);
 				if (v != source)
-					assertTrue(g.edgeEndpoint(e, g.edgeEndpoint(e, v)) == v,
-							"v is not an endpoint of inEdge");
+					assertTrue(g.edgeEndpoint(e, g.edgeEndpoint(e, v)) == v, "v is not an endpoint of inEdge");
 				visited.set(v);
 			}
 		});

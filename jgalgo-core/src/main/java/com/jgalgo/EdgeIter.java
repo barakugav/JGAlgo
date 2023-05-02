@@ -5,9 +5,8 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 /**
  * Iterator used to iterate over edges of a vertex.
  * <p>
- * Each {@code int} returned by {@link #nextInt()} is an ID of an edge iterated
- * by the iterator. The source and target of the last iterated edge are
- * available by {@link #u()} and {@link #v()}.
+ * Each {@code int} returned by {@link #nextInt()} is an ID of an edge iterated by the iterator. The source and target
+ * of the last iterated edge are available by {@link #u()} and {@link #v()}.
  *
  * <pre> {@code
  * Graph g = ...;

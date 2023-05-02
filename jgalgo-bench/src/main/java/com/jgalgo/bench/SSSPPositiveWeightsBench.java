@@ -57,9 +57,8 @@ public class SSSPPositiveWeightsBench {
 		Random rand = new Random(seedGen.nextSeed());
 		graphs = new ArrayList<>(graphsNum);
 		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true)
-					.parallelEdges(true).selfEdges(true)
-					.cycles(true).connected(false).build();
+			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
+					.selfEdges(true).cycles(true).connected(false).build();
 			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			int source = rand.nextInt(g.vertices().size());
 			graphs.add(new GraphArgs(g, w, source));

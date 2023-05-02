@@ -14,8 +14,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 
 class MatchingUnweightedTestUtils extends TestUtils {
 
-	private MatchingUnweightedTestUtils() {
-	}
+	private MatchingUnweightedTestUtils() {}
 
 	static void randGraphs(MaximumMatching algo, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);

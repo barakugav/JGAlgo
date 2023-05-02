@@ -7,32 +7,25 @@ import com.jgalgo.LCADynamicGabowSimple.CharacteristicAncestors;
 /**
  * Gabow linear dynamic LCA data structure.
  * <p>
- * The algorithm use {@link LCADynamicGabowSimple} as a base, but uses two
- * layers of bit tricks to remove the \(O(\log^2 n)\) factor of the simpler
- * data structure. Each layer have less nodes than the previous one by a factor
- * of \(O(\log n)\), until the simpler data structure is used on
- * \(O(n / \log^2 n)\) nodes. This implementation is much faster in
+ * The algorithm use {@link LCADynamicGabowSimple} as a base, but uses two layers of bit tricks to remove the \(O(\log^2
+ * n)\) factor of the simpler data structure. Each layer have less nodes than the previous one by a factor of \(O(\log
+ * n)\), until the simpler data structure is used on \(O(n / \log^2 n)\) nodes. This implementation is much faster in
  * practice and always should be used over the simpler one.
  * <p>
- * The running time of this algorithm for \(m\) operations is
- * \(O(n + m)\) and it uses linear space. More specifically, the
- * {@link #addLeaf(LCADynamic.Node)} operation is perform in \(O(1)\)
- * amortized time and
- * {@link #findLowestCommonAncestor(LCADynamic.Node, LCADynamic.Node)} is
- * perform in constant time.
+ * The running time of this algorithm for \(m\) operations is \(O(n + m)\) and it uses linear space. More specifically,
+ * the {@link #addLeaf(LCADynamic.Node)} operation is perform in \(O(1)\) amortized time and
+ * {@link #findLowestCommonAncestor(LCADynamic.Node, LCADynamic.Node)} is perform in constant time.
  * <p>
- * Based on 'Data Structures for Weighted Matching and Nearest Common Ancestors
- * with Linking' by Harold N. Gabow (1990).
+ * Based on 'Data Structures for Weighted Matching and Nearest Common Ancestors with Linking' by Harold N. Gabow (1990).
  *
  * @author Barak Ugav
  */
 public class LCADynamicGabowLinear implements LCADynamic {
 
 	/*
-	 * implementation note: in the original paper, Gabow stated to use look tables
-	 * for the bit tricks (lsb, msb). It's possible to do so, using BitsLookupTable,
-	 * but the standard Java implementation already perform these operations in
-	 * constant time (less than 10 operations).
+	 * implementation note: in the original paper, Gabow stated to use look tables for the bit tricks (lsb, msb). It's
+	 * possible to do so, using BitsLookupTable, but the standard Java implementation already perform these operations
+	 * in constant time (less than 10 operations).
 	 */
 
 	private int nodes2Num;

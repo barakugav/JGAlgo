@@ -13,21 +13,16 @@ import com.jgalgo.Trees.TreeNode;
 /**
  * A binomial heap implementation.
  * <p>
- * Pointer based data structure that support user references to the internal
- * nodes, allowing efficient \(O(\log n)\) implementation of the
- * {@link #removeRef(HeapReference)} and
- * {@link #decreaseKey(HeapReference, Object)} operations. The regular
- * operations like {@link #insert(Object)}, {@link #extractMin()} and
- * {@link #findMin()} are also implemented in \(O(\log n)\) time. Another
- * advantage of the binomial heap is its ability to merge with another binomial
- * heap in \(O(\log n)\) time, which is much faster than the required
- * \(O(n)\) time of binary heaps.
+ * Pointer based data structure that support user references to the internal nodes, allowing efficient \(O(\log n)\)
+ * implementation of the {@link #removeRef(HeapReference)} and {@link #decreaseKey(HeapReference, Object)} operations.
+ * The regular operations like {@link #insert(Object)}, {@link #extractMin()} and {@link #findMin()} are also
+ * implemented in \(O(\log n)\) time. Another advantage of the binomial heap is its ability to merge with another
+ * binomial heap in \(O(\log n)\) time, which is much faster than the required \(O(n)\) time of binary heaps.
  * <p>
- * Although it has great complexities bounds,
- * {@link #decreaseKey(HeapReference, Object)} can be implemented faster using
- * {@link HeapPairing} or {@link HeapFibonacci}.
+ * Although it has great complexities bounds, {@link #decreaseKey(HeapReference, Object)} can be implemented faster
+ * using {@link HeapPairing} or {@link HeapFibonacci}.
  *
- * @see <a href="https://en.wikipedia.org/wiki/Binomial_heap">Wikipedia</a>
+ * @see    <a href="https://en.wikipedia.org/wiki/Binomial_heap">Wikipedia</a>
  * @author Barak Ugav
  */
 public class HeapBinomial<E> extends HeapReferenceableAbstract<E> {
@@ -38,35 +33,28 @@ public class HeapBinomial<E> extends HeapReferenceableAbstract<E> {
 	private final Set<HeapReference<E>> refsSet;
 
 	/**
-	 * Constructs a new, empty binomial heap, sorted according to the natural
-	 * ordering of its elements.
+	 * Constructs a new, empty binomial heap, sorted according to the natural ordering of its elements.
 	 * <p>
-	 * All elements inserted into the heap must implement the {@link Comparable}
-	 * interface. Furthermore, all such elements must be <i>mutually comparable</i>:
-	 * {@code e1.compareTo(e2)} must not throw a {@code ClassCastException} for any
-	 * elements {@code e1} and {@code e2} in the heap. If the user attempts to
-	 * insert an element to the heap that violates this constraint (for example, the
-	 * user attempts to insert a string element to a heap whose elements are
-	 * integers), the {@code insert} call will throw a {@code ClassCastException}.
+	 * All elements inserted into the heap must implement the {@link Comparable} interface. Furthermore, all such
+	 * elements must be <i>mutually comparable</i>: {@code e1.compareTo(e2)} must not throw a {@code ClassCastException}
+	 * for any elements {@code e1} and {@code e2} in the heap. If the user attempts to insert an element to the heap
+	 * that violates this constraint (for example, the user attempts to insert a string element to a heap whose elements
+	 * are integers), the {@code insert} call will throw a {@code ClassCastException}.
 	 */
 	public HeapBinomial() {
 		this(null);
 	}
 
 	/**
-	 * Constructs a new, empty binomial heap, sorted according to the specified
-	 * comparator.
+	 * Constructs a new, empty binomial heap, sorted according to the specified comparator.
 	 * <p>
-	 * All elements inserted into the heap must be <i>mutually comparable</i> by the
-	 * specified comparator: {@code comparator.compare(e1, e2)} must not throw a
-	 * {@code ClassCastException} for any elements {@code e1} and {@code e2} in the
-	 * heap. If the user attempts to insert an element to the heap that violates
-	 * this constraint, the {@code insert} call will throw a
-	 * {@code ClassCastException}.
+	 * All elements inserted into the heap must be <i>mutually comparable</i> by the specified comparator:
+	 * {@code comparator.compare(e1, e2)} must not throw a {@code ClassCastException} for any elements {@code e1} and
+	 * {@code e2} in the heap. If the user attempts to insert an element to the heap that violates this constraint, the
+	 * {@code insert} call will throw a {@code ClassCastException}.
 	 *
-	 * @param comparator the comparator that will be used to order this heap.
-	 *                   If {@code null}, the {@linkplain Comparable natural
-	 *                   ordering} of the elements will be used.
+	 * @param comparator the comparator that will be used to order this heap. If {@code null}, the
+	 *                       {@linkplain Comparable natural ordering} of the elements will be used.
 	 */
 	public HeapBinomial(Comparator<? super E> comparator) {
 		super(comparator);

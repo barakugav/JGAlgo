@@ -14,8 +14,7 @@ import java.util.Objects;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 class Utils {
-	private Utils() {
-	}
+	private Utils() {}
 
 	private static final double LOG2 = Math.log(2);
 	private static final double LOG2_INV = 1 / LOG2;

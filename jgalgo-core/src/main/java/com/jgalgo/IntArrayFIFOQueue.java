@@ -9,9 +9,8 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 /**
- * A duplication of {@link it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue}, but
- * without the {@code reduce()} operation. Namely, the internal buffer is never
- * replaced with a smaller one.
+ * A duplication of {@link it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue}, but without the {@code reduce()} operation.
+ * Namely, the internal buffer is never replaced with a smaller one.
  *
  * @author Barak Ugav
  */
@@ -25,26 +24,22 @@ class IntArrayFIFOQueue implements IntPriorityQueue, Serializable {
 	/** The current (cached) length of {@link #array}. */
 	transient int length;
 	/**
-	 * The start position in {@link #array}. It is always strictly smaller than
-	 * {@link #length}.
+	 * The start position in {@link #array}. It is always strictly smaller than {@link #length}.
 	 */
 	transient int start;
 	/**
-	 * The end position in {@link #array}. It is always strictly smaller than
-	 * {@link #length}. Might be
-	 * actually smaller than {@link #start} because {@link #array} is used
-	 * cyclically.
+	 * The end position in {@link #array}. It is always strictly smaller than {@link #length}. Might be actually smaller
+	 * than {@link #start} because {@link #array} is used cyclically.
 	 */
 	transient int end;
 
 	/**
 	 * Creates a new empty queue with given capacity.
 	 *
-	 * @implNote Because of inner limitations of the JVM, the initial capacity
-	 *           cannot exceed
-	 *           {@link it.unimi.dsi.fastutil.Arrays#MAX_ARRAY_SIZE} &minus; 1.
+	 * @implNote          Because of inner limitations of the JVM, the initial capacity cannot exceed
+	 *                    {@link it.unimi.dsi.fastutil.Arrays#MAX_ARRAY_SIZE} &minus; 1.
 	 *
-	 * @param capacity the initial capacity of this queue.
+	 * @param    capacity the initial capacity of this queue.
 	 */
 
 	IntArrayFIFOQueue(final int capacity) {
@@ -60,8 +55,7 @@ class IntArrayFIFOQueue implements IntPriorityQueue, Serializable {
 	}
 
 	/**
-	 * Creates a new empty queue with standard {@linkplain #INITIAL_CAPACITY initial
-	 * capacity}.
+	 * Creates a new empty queue with standard {@linkplain #INITIAL_CAPACITY initial capacity}.
 	 */
 	IntArrayFIFOQueue() {
 		this(INITIAL_CAPACITY);
@@ -70,8 +64,7 @@ class IntArrayFIFOQueue implements IntPriorityQueue, Serializable {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @implSpec This implementation returns {@code null} (FIFO queues have no
-	 *           comparator).
+	 * @implSpec This implementation returns {@code null} (FIFO queues have no comparator).
 	 */
 	@Override
 	public IntComparator comparator() {
@@ -91,7 +84,7 @@ class IntArrayFIFOQueue implements IntPriorityQueue, Serializable {
 	/**
 	 * Dequeues the {@linkplain PriorityQueue#last() last} element from the queue.
 	 *
-	 * @return the dequeued element.
+	 * @return                        the dequeued element.
 	 * @throws NoSuchElementException if the queue is empty.
 	 */
 	int dequeueLastInt() {
@@ -132,8 +125,7 @@ class IntArrayFIFOQueue implements IntPriorityQueue, Serializable {
 	}
 
 	/**
-	 * Enqueues a new element as the first element (in dequeuing order) of the
-	 * queue.
+	 * Enqueues a new element as the first element (in dequeuing order) of the queue.
 	 *
 	 * @param x the element to enqueue.
 	 */

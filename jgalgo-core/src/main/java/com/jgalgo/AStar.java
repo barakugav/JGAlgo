@@ -8,19 +8,15 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 /**
  * A* shortest path algorithm.
  * <p>
- * The A star (\(A^*\)) algorithm try to find the shortest path from a source to
- * target vertex. It uses a heuristic that map a vertex to an estimation of its
- * distance from the target position.
+ * The A star (\(A^*\)) algorithm try to find the shortest path from a source to target vertex. It uses a heuristic that
+ * map a vertex to an estimation of its distance from the target position.
  * <p>
- * An advantage of the \(A^*\) algorithm over other {@link SSSP} algorithm, is that
- * it can terminate much faster for the specific source and target, especially
- * if the heuristic is good.
+ * An advantage of the \(A^*\) algorithm over other {@link SSSP} algorithm, is that it can terminate much faster for the
+ * specific source and target, especially if the heuristic is good.
  * <p>
- * The running time of this algorithm is \(O(m + n \log n)\) in the worse
- * case, and it uses linear space.
+ * The running time of this algorithm is \(O(m + n \log n)\) in the worse case, and it uses linear space.
  *
- * @see <a href=
- *      "https://en.wikipedia.org/wiki/A*_search_algorithm">Wikipedia</a>
+ * @see    <a href= "https://en.wikipedia.org/wiki/A*_search_algorithm">Wikipedia</a>
  * @author Barak Ugav
  */
 public class AStar {
@@ -30,8 +26,7 @@ public class AStar {
 	/**
 	 * Construct a new AStart algorithm.
 	 */
-	public AStar() {
-	}
+	public AStar() {}
 
 	/**
 	 * Set the implementation of the heap used by this algorithm.
@@ -45,14 +40,13 @@ public class AStar {
 	/**
 	 * Compute the shortest path between two vertices in a graph.
 	 *
-	 * @param g          a graph
-	 * @param w          an edge weight function
-	 * @param source     a source vertex
-	 * @param target     a target vertex
-	 * @param vHeuristic a heuristic function that map each vertex to
-	 *                   {@code double}. The heuristic should be close to the real
-	 *                   distance of each vertex to the target.
-	 * @return the short path found from {@code source} to {@code target}
+	 * @param  g          a graph
+	 * @param  w          an edge weight function
+	 * @param  source     a source vertex
+	 * @param  target     a target vertex
+	 * @param  vHeuristic a heuristic function that map each vertex to {@code double}. The heuristic should be close to
+	 *                        the real distance of each vertex to the target.
+	 * @return            the short path found from {@code source} to {@code target}
 	 */
 	public Path computeShortestPath(Graph g, EdgeWeightFunc w, int source, int target, IntToDoubleFunction vHeuristic) {
 		if (source == target)

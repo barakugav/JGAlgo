@@ -10,21 +10,18 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 /**
  * Prim's minimum spanning tree algorithm.
  * <p>
- * The algorithm maintain a tree and repeatedly adds the lightest edge that
- * connect a vertex from tree to the reset of the vertices. The algorithm is
- * similar to {@link SSSPDijkstra} in its idea, and it also uses a
+ * The algorithm maintain a tree and repeatedly adds the lightest edge that connect a vertex from tree to the reset of
+ * the vertices. The algorithm is similar to {@link SSSPDijkstra} in its idea, and it also uses a
  * {@link HeapReferenceable} and updated its elements using
  * {@link HeapReferenceable#decreaseKey(HeapReference, Object)}.
  * <p>
- * The running time of Prim's algorithm is \(O(m + n \log n)\) and it uses
- * linear space. It's running time is very good it practice and can be used as a
- * first choice for {@link MST} algorithm. Note that only undirected graphs are
+ * The running time of Prim's algorithm is \(O(m + n \log n)\) and it uses linear space. It's running time is very good
+ * it practice and can be used as a first choice for {@link MST} algorithm. Note that only undirected graphs are
  * supported.
  * <p>
- * Based on "Shortest connection networks And some generalizations" by Prim, R.
- * C. (1957).
+ * Based on "Shortest connection networks And some generalizations" by Prim, R. C. (1957).
  *
- * @see <a href="https://en.wikipedia.org/wiki/Prim%27s_algorithm">Wikipedia</a>
+ * @see    <a href="https://en.wikipedia.org/wiki/Prim%27s_algorithm">Wikipedia</a>
  * @author Barak Ugav
  */
 public class MSTPrim implements MST {
@@ -34,8 +31,7 @@ public class MSTPrim implements MST {
 	/**
 	 * Construct a new MST algorithm object.
 	 */
-	public MSTPrim() {
-	}
+	public MSTPrim() {}
 
 	/**
 	 * Set the implementation of the heap used by this algorithm.

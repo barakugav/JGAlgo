@@ -42,11 +42,9 @@ abstract class DynamicTreeSplayExtension implements DynamicTreeExtension {
 		/**
 		 * Create a new Tree Size extensions.
 		 * <p>
-		 * Each instance of this extension should be used in a single dynamic tree
-		 * object.
+		 * Each instance of this extension should be used in a single dynamic tree object.
 		 */
-		TreeSize() {
-		}
+		TreeSize() {}
 
 		@Override
 		public int getTreeSize(DynamicTree.Node node) {

@@ -5,13 +5,12 @@ import java.util.Arrays;
 /**
  * Array implementation of the Union Find data structure with values.
  * <p>
- * The elements are represented in a continuos array, which is most efficient
- * for storage, and performance as the rate of cache miss is low.
+ * The elements are represented in a continuos array, which is most efficient for storage, and performance as the rate
+ * of cache miss is low.
  * <p>
- * The running time of \(m\) operations on \(n\) elements is
- * \(O(m \cdot \alpha (m, n))\) where \(\alpha(\cdot,\cdot)\) is the inverse
- * Ackermann's function. The inverse Ackermann's function is extremely slow and
- * for any practical use should be treated as constant.
+ * The running time of \(m\) operations on \(n\) elements is \(O(m \cdot \alpha (m, n))\) where \(\alpha(\cdot,\cdot)\)
+ * is the inverse Ackermann's function. The inverse Ackermann's function is extremely slow and for any practical use
+ * should be treated as constant.
  *
  * @author Barak Ugav
  */
@@ -27,8 +26,8 @@ public class UnionFindValueArray extends UnionFindArray implements UnionFindValu
 	}
 
 	/**
-	 * Create a new Union Find data structure with \(n\) elements with ids
-	 * {@code 0,1,2,...,n-1}, all with value {@code 0}.
+	 * Create a new Union Find data structure with \(n\) elements with ids {@code 0,1,2,...,n-1}, all with value
+	 * {@code 0}.
 	 *
 	 * @param n the number of initial elements in the data structure
 	 */

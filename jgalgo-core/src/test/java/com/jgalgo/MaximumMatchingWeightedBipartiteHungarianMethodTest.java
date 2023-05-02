@@ -13,14 +13,15 @@ public class MaximumMatchingWeightedBipartiteHungarianMethodTest extends TestBas
 	@Test
 	public void testRandBipartiteGraphsWeighted() {
 		final long seed = 0x3f731f291383dd24L;
-		MatchingWeightedTestUtils.randGraphsBipartiteWeighted(new MaximumMatchingWeightedBipartiteHungarianMethod(), seed);
+		MatchingWeightedTestUtils.randGraphsBipartiteWeighted(new MaximumMatchingWeightedBipartiteHungarianMethod(),
+				seed);
 	}
 
 	@Test
 	public void testRandBipartiteGraphsWeightedPerfect() {
 		final long seed = 0x3b7892e59492d431L;
-		MatchingWeightedTestUtils.randBipartiteGraphsWeightedPerfect(new MaximumMatchingWeightedBipartiteHungarianMethod(),
-				seed);
+		MatchingWeightedTestUtils
+				.randBipartiteGraphsWeightedPerfect(new MaximumMatchingWeightedBipartiteHungarianMethod(), seed);
 	}
 
 }

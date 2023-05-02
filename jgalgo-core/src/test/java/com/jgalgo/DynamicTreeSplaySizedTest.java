@@ -30,7 +30,7 @@ public class DynamicTreeSplaySizedTest extends TestBase {
 		};
 		DynamicTreeSplayTest.testRandOps(maxWeight -> {
 			holder.treeSizeExt = new DynamicTreeSplayExtension.TreeSize();
-			return new DynamicTreeSplayIntExtended((int)maxWeight, List.of(holder.treeSizeExt));
+			return new DynamicTreeSplayIntExtended((int) maxWeight, List.of(holder.treeSizeExt));
 		}, ops, node -> holder.treeSizeExt.getTreeSize(node), seed);
 	}
 }

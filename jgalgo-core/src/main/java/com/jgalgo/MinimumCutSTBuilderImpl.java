@@ -8,8 +8,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 class MinimumCutSTBuilderImpl {
 
-	private MinimumCutSTBuilderImpl() {
-	}
+	private MinimumCutSTBuilderImpl() {}
 
 	static class Default implements MinimumCutST.Builder {
 		@Override
@@ -58,9 +57,9 @@ class MinimumCutSTBuilderImpl {
 					}
 					if (directed) {
 						/*
-						 * We don't have any guarantee that the graph has a twin edge for each edge, so
-						 * we iterate over the in edges and search for edges with non zero flow which
-						 * imply an existent of an out edge in the residual network
+						 * We don't have any guarantee that the graph has a twin edge for each edge, so we iterate over
+						 * the in edges and search for edges with non zero flow which imply an existent of an out edge
+						 * in the residual network
 						 */
 						for (EdgeIter it = g.edgesIn(u); it.hasNext();) {
 							int e = it.nextInt();

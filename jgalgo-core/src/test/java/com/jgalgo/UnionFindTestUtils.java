@@ -10,8 +10,8 @@ class UnionFindTestUtils extends TestUtils {
 
 	static void randOps(Supplier<? extends UnionFind> builder, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(256, 8, 16), phase(64, 64, 256), phase(16, 1024, 2048),
-				phase(2, 8096, 16384));
+		List<Phase> phases =
+				List.of(phase(256, 8, 16), phase(64, 64, 256), phase(16, 1024, 2048), phase(2, 8096, 16384));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 			randOps(builder, n, m, seedGen.nextSeed());

@@ -16,23 +16,20 @@ import java.util.TreeMap;
 
 class HeapTestUtils extends TestUtils {
 
-	private HeapTestUtils() {
-	}
+	private HeapTestUtils() {}
 
-	static void testRandOpsDefaultCompare(Heap.Builder heapBuilder,
-			long seed) {
+	static void testRandOpsDefaultCompare(Heap.Builder heapBuilder, long seed) {
 		testRandOps(heapBuilder, null, seed);
 	}
 
-	static void testRandOpsCustomCompare(Heap.Builder heapBuilder,
-			long seed) {
+	static void testRandOpsCustomCompare(Heap.Builder heapBuilder, long seed) {
 		testRandOps(heapBuilder, (x1, x2) -> -Integer.compare(x1.intValue(), x2.intValue()), seed);
 	}
 
 	private static void testRandOps(Heap.Builder heapBuilder, Comparator<? super Integer> compare, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(128, 16, 16), phase(64, 64, 128), phase(32, 512, 1024),
-				phase(8, 4096, 8096), phase(4, 16384, 32768));
+		List<Phase> phases = List.of(phase(128, 16, 16), phase(64, 64, 128), phase(32, 512, 1024), phase(8, 4096, 8096),
+				phase(4, 16384, 32768));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 			Heap<Integer> heap = heapBuilder.build(compare);
@@ -53,28 +50,24 @@ class HeapTestUtils extends TestUtils {
 		});
 	}
 
-	static void testMeldDefaultCompare(Heap.Builder heapBuilder,
-			long seed) {
+	static void testMeldDefaultCompare(Heap.Builder heapBuilder, long seed) {
 		testMeld(heapBuilder, false, null, seed);
 	}
 
-	static void testMeldCustomCompare(Heap.Builder heapBuilder,
-			long seed) {
+	static void testMeldCustomCompare(Heap.Builder heapBuilder, long seed) {
 		testMeld(heapBuilder, false, (x1, x2) -> -Integer.compare(x1.intValue(), x2.intValue()), seed);
 	}
 
-	static void testMeldWithOrderedValuesDefaultCompare(
-			Heap.Builder heapBuilder, long seed) {
+	static void testMeldWithOrderedValuesDefaultCompare(Heap.Builder heapBuilder, long seed) {
 		testMeld(heapBuilder, true, null, seed);
 	}
 
-	static void testMeldWithOrderedValuesCustomCompare(
-			Heap.Builder heapBuilder, long seed) {
+	static void testMeldWithOrderedValuesCustomCompare(Heap.Builder heapBuilder, long seed) {
 		testMeld(heapBuilder, true, (x1, x2) -> -Integer.compare(x1.intValue(), x2.intValue()), seed);
 	}
 
-	private static void testMeld(Heap.Builder heapBuilder,
-			boolean orderedValues, Comparator<? super Integer> compare, long seed) {
+	private static void testMeld(Heap.Builder heapBuilder, boolean orderedValues, Comparator<? super Integer> compare,
+			long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(64, 16), phase(64, 32), phase(8, 256), phase(1, 2048));
 		runTestMultiple(phases, (testIter, args) -> {
@@ -83,16 +76,16 @@ class HeapTestUtils extends TestUtils {
 		});
 	}
 
-	private static void testMeld(Heap.Builder heapBuilder,
-			boolean orderedValues, int hCount, Comparator<? super Integer> compare, long seed) {
+	private static void testMeld(Heap.Builder heapBuilder, boolean orderedValues, int hCount,
+			Comparator<? super Integer> compare, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Set<HeapTracker> heaps = new HashSet<>();
 		HeapTrackerIdGenerator heapTrackerIdGen = new HeapTrackerIdGenerator(seedGen.nextSeed());
 
 		int elm = 0;
 		for (int i = 0; i < hCount; i++) {
-			HeapTracker h = new HeapTracker(heapBuilder.build(compare), heapTrackerIdGen.nextId(), compare,
-					seedGen.nextSeed());
+			HeapTracker h =
+					new HeapTracker(heapBuilder.build(compare), heapTrackerIdGen.nextId(), compare, seedGen.nextSeed());
 			heaps.add(h);
 			if (!orderedValues) {
 				testHeap(h, 16, 16, TestMode.InsertFirst, Math.max(16, (int) Math.sqrt(hCount * 32)), compare,
@@ -128,18 +121,15 @@ class HeapTestUtils extends TestUtils {
 		}
 	}
 
-	static void testDecreaseKeyDefaultCompare(
-			Heap.Builder heapBuilder, long seed) {
+	static void testDecreaseKeyDefaultCompare(Heap.Builder heapBuilder, long seed) {
 		testDecreaseKey(heapBuilder, null, seed);
 	}
 
-	static void testDecreaseKeyCustomCompare(Heap.Builder heapBuilder,
-			long seed) {
+	static void testDecreaseKeyCustomCompare(Heap.Builder heapBuilder, long seed) {
 		testDecreaseKey(heapBuilder, (x1, x2) -> -Integer.compare(x1.intValue(), x2.intValue()), seed);
 	}
 
-	private static void testDecreaseKey(Heap.Builder heapBuilder,
-			Comparator<? super Integer> compare, long seed) {
+	private static void testDecreaseKey(Heap.Builder heapBuilder, Comparator<? super Integer> compare, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(256, 16), phase(128, 64), phase(64, 512), phase(16, 4096), phase(2, 16384));
 		runTestMultiple(phases, (testIter, args) -> {

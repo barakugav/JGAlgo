@@ -9,13 +9,12 @@ import it.unimi.dsi.fastutil.ints.IntList;
 /**
  * Johnson's algorithm for all pairs shortest path.
  * <p>
- * Calculate the shortest path between each pair of vertices in a graph in
- * \(O(n m + n^2 \log n)\) time using \(O(n^2)\) space. Negative weights are supported.
+ * Calculate the shortest path between each pair of vertices in a graph in \(O(n m + n^2 \log n)\) time using \(O(n^2)\)
+ * space. Negative weights are supported.
  * <p>
- * The algorithm is faster than using {@link SSSPBellmanFord} \(n\) times,
- * as it uses {@link SSSPBellmanFord} once to compute a potential for each
- * vertex, resulting in an equivalent positive weight function, allowing us to
- * use {@link SSSPDijkstra} from each vertex as a source.
+ * The algorithm is faster than using {@link SSSPBellmanFord} \(n\) times, as it uses {@link SSSPBellmanFord} once to
+ * compute a potential for each vertex, resulting in an equivalent positive weight function, allowing us to use
+ * {@link SSSPDijkstra} from each vertex as a source.
  *
  * @author Barak Ugav
  */
@@ -27,8 +26,7 @@ public class APSPJohnson implements APSP {
 	/**
 	 * Create a new APSP algorithm object.
 	 */
-	public APSPJohnson() {
-	}
+	public APSPJohnson() {}
 
 	/**
 	 * {@inheritDoc}
@@ -125,10 +123,9 @@ public class APSPJohnson implements APSP {
 	/**
 	 * Set the algorithm used for positive weights graphs.
 	 * <p>
-	 * The algorithm first calculate a potential for each vertex using an SSSP
-	 * algorithm for negative weights, than construct an equivalent positive weight
-	 * function which is used by an SSSP algorithm for positive weights to compute
-	 * all shortest paths.
+	 * The algorithm first calculate a potential for each vertex using an SSSP algorithm for negative weights, than
+	 * construct an equivalent positive weight function which is used by an SSSP algorithm for positive weights to
+	 * compute all shortest paths.
 	 *
 	 * @param algo a SSSP implementation for graphs with positive weight function
 	 */
@@ -139,10 +136,9 @@ public class APSPJohnson implements APSP {
 	/**
 	 * Set the algorithm used for negative weights graphs.
 	 * <p>
-	 * The algorithm first calculate a potential for each vertex using an SSSP
-	 * algorithm for negative weights, than construct an equivalent positive weight
-	 * function which is used by an SSSP algorithm for positive weights to compute
-	 * all shortest paths.
+	 * The algorithm first calculate a potential for each vertex using an SSSP algorithm for negative weights, than
+	 * construct an equivalent positive weight function which is used by an SSSP algorithm for positive weights to
+	 * compute all shortest paths.
 	 *
 	 * @param algo a SSSP implementation for graphs with negative weight function
 	 */

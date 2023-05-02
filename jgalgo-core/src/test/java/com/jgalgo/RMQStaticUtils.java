@@ -6,8 +6,7 @@ import java.util.Random;
 
 class RMQStaticUtils extends TestUtils {
 
-	private RMQStaticUtils() {
-	}
+	private RMQStaticUtils() {}
 
 	static void testRMQ65536(RMQStatic algo, long seed) {
 		testRMQ(algo, 65536, 4096, seed);

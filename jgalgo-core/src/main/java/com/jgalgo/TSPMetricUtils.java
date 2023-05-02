@@ -8,8 +8,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 class TSPMetricUtils {
 
-	private TSPMetricUtils() {
-	}
+	private TSPMetricUtils() {}
 
 	static Path calcEulerianTourAndConvertToHamiltonianCycle(UGraph g, UGraph g1, Weights.Int edgeRef) {
 		int n = g.vertices().size();

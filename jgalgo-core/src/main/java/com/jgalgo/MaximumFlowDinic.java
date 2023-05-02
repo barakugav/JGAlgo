@@ -15,14 +15,13 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 /**
  * Dinic's algorithm for maximum flow.
  * <p>
- * The algorithm finds a maximum flow by repetitively finding a blocking flow in
- * the residual network. It runs in \(O(m n^2)\) time and use linear space.
+ * The algorithm finds a maximum flow by repetitively finding a blocking flow in the residual network. It runs in \(O(m
+ * n^2)\) time and use linear space.
  * <p>
- * Based on the paper 'Algorithm for solution of a problem of maximum flow in a
- * network with power estimation' by Y. A. Dinitz (Dinic).
+ * Based on the paper 'Algorithm for solution of a problem of maximum flow in a network with power estimation' by Y. A.
+ * Dinitz (Dinic).
  *
- * @see <a href=
- *      "https://en.wikipedia.org/wiki/Dinic%27s_algorithm">Wikipedia</a>
+ * @see    <a href= "https://en.wikipedia.org/wiki/Dinic%27s_algorithm">Wikipedia</a>
  * @author Barak Ugav
  */
 public class MaximumFlowDinic implements MaximumFlow {
@@ -37,20 +36,16 @@ public class MaximumFlowDinic implements MaximumFlow {
 	/**
 	 * Create a new maximum flow algorithm object.
 	 */
-	public MaximumFlowDinic() {
-	}
+	public MaximumFlowDinic() {}
 
 	/**
-	 * [experimental API] Set the graph implementation used by this algorithm for
-	 * the layers graph.
+	 * [experimental API] Set the graph implementation used by this algorithm for the layers graph.
 	 * <p>
-	 * Multiple {@code remove} operations are performed on the layers graph,
-	 * therefore its non trivial that an array graph implementation should be used,
-	 * as linked graph implementation perform {@code remove} operations more
+	 * Multiple {@code remove} operations are performed on the layers graph, therefore its non trivial that an array
+	 * graph implementation should be used, as linked graph implementation perform {@code remove} operations more
 	 * efficiently.
 	 *
-	 * @param builder a builder that provide instances of graphs for the layers
-	 *                graph
+	 * @param builder a builder that provide instances of graphs for the layers graph
 	 */
 	public void experimental_setLayerGraphFactory(Supplier<? extends DiGraph.Builder> builder) {
 		layerGraphBuilder = Objects.requireNonNull(builder);

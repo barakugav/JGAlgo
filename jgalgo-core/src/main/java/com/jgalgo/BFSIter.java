@@ -9,11 +9,9 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 /**
  * Bread first search (BFS) iterator.
  * <p>
- * The BFS iterator is used to iterate over the vertices of a graph in a bread
- * first manner, namely by the cardinality distance of the vertices from some
- * source(s) vertex. The iterator will visit every vertex \(v\) for which
- * there is a path from the source(s) to \(v\). Each such vertex will be
- * visited exactly once.
+ * The BFS iterator is used to iterate over the vertices of a graph in a bread first manner, namely by the cardinality
+ * distance of the vertices from some source(s) vertex. The iterator will visit every vertex \(v\) for which there is a
+ * path from the source(s) to \(v\). Each such vertex will be visited exactly once.
  * <p>
  * The graph should not be modified during the BFS iteration.
  *
@@ -28,9 +26,8 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  * }
  * }</pre>
  *
- * @see DFSIter
- * @see <a href=
- *      "https://en.wikipedia.org/wiki/Breadth-first_search">Wikipedia</a>
+ * @see    DFSIter
+ * @see    <a href= "https://en.wikipedia.org/wiki/Breadth-first_search">Wikipedia</a>
  * @author Barak Ugav
  */
 public class BFSIter implements IntIterator {
@@ -55,9 +52,8 @@ public class BFSIter implements IntIterator {
 	/**
 	 * Create a BFS iterator rooted at multiple sources vertices.
 	 *
-	 * @param g       a graph
-	 * @param sources multiple sources vertices in the graph from which the search
-	 *                will start from.
+	 * @param  g                        a graph
+	 * @param  sources                  multiple sources vertices in the graph from which the search will start from.
 	 * @throws IllegalArgumentException if the sources array is empty
 	 */
 	public BFSIter(Graph g, int[] sources) {
@@ -87,8 +83,7 @@ public class BFSIter implements IntIterator {
 	}
 
 	/**
-	 * Advance the iterator and return a vertex that was not visited by the iterator
-	 * yet.
+	 * Advance the iterator and return a vertex that was not visited by the iterator yet.
 	 */
 	@Override
 	public int nextInt() {
@@ -130,8 +125,8 @@ public class BFSIter implements IntIterator {
 	/**
 	 * Get the layer of the last vertex returned by {@link nextInt}.
 	 * <p>
-	 * The layer of a vertex is the cardinality distance, the number of edges in the
-	 * path, from the source(s) to the vertex.
+	 * The layer of a vertex is the cardinality distance, the number of edges in the path, from the source(s) to the
+	 * vertex.
 	 * <p>
 	 * The behavior is undefined if {@link nextInt} was not called yet.
 	 *

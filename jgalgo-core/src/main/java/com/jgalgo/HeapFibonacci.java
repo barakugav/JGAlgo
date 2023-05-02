@@ -11,20 +11,16 @@ import com.jgalgo.Trees.TreeNode;
 /**
  * A Fibonacci heap implementation.
  * <p>
- * A pointer based heap implementation that support almost any operation in
- * \(O(1)\) amortized time, except {@link #removeRef(HeapReference)} which
- * takes \(O(\log n)\) time amortized.
+ * A pointer based heap implementation that support almost any operation in \(O(1)\) amortized time, except
+ * {@link #removeRef(HeapReference)} which takes \(O(\log n)\) time amortized.
  * <p>
- * Using this heap, {@link SSSPDijkstra} can be implemented in time
- * \(O(m + n \log n)\) rather than \(O(m \log n)\) as the
- * {@link #decreaseKey(HeapReference, Object)} operation is performed in
- * \(O(1)\) time amortized.
+ * Using this heap, {@link SSSPDijkstra} can be implemented in time \(O(m + n \log n)\) rather than \(O(m \log n)\) as
+ * the {@link #decreaseKey(HeapReference, Object)} operation is performed in \(O(1)\) time amortized.
  * <p>
- * In practice, the Fibonacci heaps are quire complex, and in some cases is
- * better to use {@link HeapPairing}.
+ * In practice, the Fibonacci heaps are quire complex, and in some cases is better to use {@link HeapPairing}.
  *
- * @see <a href="https://en.wikipedia.org/wiki/Fibonacci_heap">Wikipedia</a>
- * @see HeapPairing
+ * @see    <a href="https://en.wikipedia.org/wiki/Fibonacci_heap">Wikipedia</a>
+ * @see    HeapPairing
  * @author Barak Ugav
  */
 public class HeapFibonacci<E> extends HeapReferenceableAbstract<E> {
@@ -36,35 +32,28 @@ public class HeapFibonacci<E> extends HeapReferenceableAbstract<E> {
 	private final Set<HeapReference<E>> refsSet;
 
 	/**
-	 * Constructs a new, empty Fibonacci heap, sorted according to the natural
-	 * ordering of its elements.
+	 * Constructs a new, empty Fibonacci heap, sorted according to the natural ordering of its elements.
 	 * <p>
-	 * All elements inserted into the heap must implement the {@link Comparable}
-	 * interface. Furthermore, all such elements must be <i>mutually comparable</i>:
-	 * {@code e1.compareTo(e2)} must not throw a {@code ClassCastException} for any
-	 * elements {@code e1} and {@code e2} in the heap. If the user attempts to
-	 * insert an element to the heap that violates this constraint (for example, the
-	 * user attempts to insert a string element to a heap whose elements are
-	 * integers), the {@code insert} call will throw a {@code ClassCastException}.
+	 * All elements inserted into the heap must implement the {@link Comparable} interface. Furthermore, all such
+	 * elements must be <i>mutually comparable</i>: {@code e1.compareTo(e2)} must not throw a {@code ClassCastException}
+	 * for any elements {@code e1} and {@code e2} in the heap. If the user attempts to insert an element to the heap
+	 * that violates this constraint (for example, the user attempts to insert a string element to a heap whose elements
+	 * are integers), the {@code insert} call will throw a {@code ClassCastException}.
 	 */
 	public HeapFibonacci() {
 		this(null);
 	}
 
 	/**
-	 * Constructs a new, empty Fibonacci heap, sorted according to the specified
-	 * comparator.
+	 * Constructs a new, empty Fibonacci heap, sorted according to the specified comparator.
 	 * <p>
-	 * All elements inserted into the heap must be <i>mutually comparable</i> by the
-	 * specified comparator: {@code comparator.compare(e1, e2)} must not throw a
-	 * {@code ClassCastException} for any elements {@code e1} and {@code e2} in the
-	 * heap. If the user attempts to insert an element to the heap that violates
-	 * this constraint, the {@code insert} call will throw a
-	 * {@code ClassCastException}.
+	 * All elements inserted into the heap must be <i>mutually comparable</i> by the specified comparator:
+	 * {@code comparator.compare(e1, e2)} must not throw a {@code ClassCastException} for any elements {@code e1} and
+	 * {@code e2} in the heap. If the user attempts to insert an element to the heap that violates this constraint, the
+	 * {@code insert} call will throw a {@code ClassCastException}.
 	 *
-	 * @param comparator the comparator that will be used to order this heap.
-	 *                   If {@code null}, the {@linkplain Comparable natural
-	 *                   ordering} of the elements will be used.
+	 * @param comparator the comparator that will be used to order this heap. If {@code null}, the
+	 *                       {@linkplain Comparable natural ordering} of the elements will be used.
 	 */
 	public HeapFibonacci(Comparator<? super E> comparator) {
 		super(comparator);

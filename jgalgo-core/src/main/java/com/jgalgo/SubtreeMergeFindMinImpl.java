@@ -6,9 +6,8 @@ import java.util.Comparator;
 /**
  * Implementation of the {@link SubtreeMergeFindMin} data structure.
  * <p>
- * AddLeaf is \(O(1)\) amortized, merge is \(O(\log n)\), addNonTreeEdge is \(O(1)\)
- * and findMin is \(O(1)\). In total, this data structure support \(m\) operations
- * on \(n\) nodes in time \(O(m + n \log n)\).
+ * AddLeaf is \(O(1)\) amortized, merge is \(O(\log n)\), addNonTreeEdge is \(O(1)\) and findMin is \(O(1)\). In total,
+ * this data structure support \(m\) operations on \(n\) nodes in time \(O(m + n \log n)\).
  *
  * @author Barak Ugav
  */
@@ -23,16 +22,14 @@ public class SubtreeMergeFindMinImpl<E> implements SubtreeMergeFindMin<E> {
 	private int timestamp;
 
 	/**
-	 * Create a new SMF data structure with the {@linkplain Comparable natural
-	 * ordering} comparator for edge weights.
+	 * Create a new SMF data structure with the {@linkplain Comparable natural ordering} comparator for edge weights.
 	 */
 	public SubtreeMergeFindMinImpl() {
 		this(null);
 	}
 
 	/**
-	 * Create a new SMF data structure with the provided comparator for edge
-	 * weights.
+	 * Create a new SMF data structure with the provided comparator for edge weights.
 	 *
 	 * @param weightCmp comparator used to compare edge weights.
 	 */
@@ -41,8 +38,7 @@ public class SubtreeMergeFindMinImpl<E> implements SubtreeMergeFindMin<E> {
 	}
 
 	/**
-	 * Create a new SMF data structure with the provided comparator for edge
-	 * weights and a custom heap implementation.
+	 * Create a new SMF data structure with the provided comparator for edge weights and a custom heap implementation.
 	 *
 	 * @param weightCmp   comparator used to compare edge weights.
 	 * @param heapBuilder heap builder used to provide a custom heap implementation.

@@ -1,16 +1,14 @@
 package com.jgalgo;
 
 /**
- * Data structure of a finite set of elements supporting union and find
- * operations.
+ * Data structure of a finite set of elements supporting union and find operations.
  * <p>
- * The Union Find data structure stores a collection of disjoint sets. Each such
- * set has some representative element, which is an arbitrary element from the
- * set. Three basic operations are supported:
+ * The Union Find data structure stores a collection of disjoint sets. Each such set has some representative element,
+ * which is an arbitrary element from the set. Three basic operations are supported:
  * <ul>
  * <li>{@link #make()} - create a new element in a new set.</li>
- * <li>{@link #find(int)} - find the representative of the set of an element
- * (return the same representative for any element in the set).</li>
+ * <li>{@link #find(int)} - find the representative of the set of an element (return the same representative for any
+ * element in the set).</li>
  * <li>{@link #union(int, int)} - union the sets of two elements.</li>
  * </ul>
  *
@@ -29,8 +27,7 @@ package com.jgalgo;
  * assert uf.find(x1) != uf.find(x3);
  * }</pre>
  *
- * @see <a href=
- *      "https://en.wikipedia.org/wiki/Disjoint-set_data_structure">Wikipedia</a>
+ * @see    <a href= "https://en.wikipedia.org/wiki/Disjoint-set_data_structure">Wikipedia</a>
  * @author Barak Ugav
  */
 public interface UnionFind {
@@ -45,20 +42,19 @@ public interface UnionFind {
 	/**
 	 * Find the set of an element and get an arbitrary element from it.
 	 * <p>
-	 * {@code find(a) == find(b)} if an only if {@code a} and {@code b} are in the
-	 * same set.
+	 * {@code find(a) == find(b)} if an only if {@code a} and {@code b} are in the same set.
 	 *
-	 * @param x element in the data structure
-	 * @return arbitrary element from the set of x
+	 * @param  x element in the data structure
+	 * @return   arbitrary element from the set of x
 	 */
 	public int find(int x);
 
 	/**
 	 * Union the two sets of {@code a} and {@code b}.
 	 *
-	 * @param a the first element
-	 * @param b the second element
-	 * @return arbitrary element from the union of sets of {@code a} and {@code b}.
+	 * @param  a the first element
+	 * @param  b the second element
+	 * @return   arbitrary element from the union of sets of {@code a} and {@code b}.
 	 */
 	public int union(int a, int b);
 
@@ -79,8 +75,7 @@ public interface UnionFind {
 	/**
 	 * Create a new union-find data structure builder.
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link UnionFind}
-	 * object.
+	 * This is the recommended way to instantiate a new {@link UnionFind} object.
 	 *
 	 * @return a new builder that can build {@link UnionFind} objects
 	 */
@@ -91,7 +86,7 @@ public interface UnionFind {
 	/**
 	 * A builder for {@link UnionFind} objects.
 	 *
-	 * @see UnionFind#newBuilder()
+	 * @see    UnionFind#newBuilder()
 	 * @author Barak Ugav
 	 */
 	static interface Builder {

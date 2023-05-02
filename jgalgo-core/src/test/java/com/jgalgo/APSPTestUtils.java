@@ -10,8 +10,7 @@ import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
 
 class APSPTestUtils extends TestUtils {
 
-	private APSPTestUtils() {
-	}
+	private APSPTestUtils() {}
 
 	static void testAPSPDirectedPositiveInt(APSP algo, long seed) {
 		testAPSPPositiveInt(algo, true, seed);
@@ -78,8 +77,8 @@ class APSPTestUtils extends TestUtils {
 				Path path = result.getPath(source, target);
 				if (path != null) {
 					double pathWeight = SSSPTestUtils.getPathWeight(path, w);
-					assertEquals(pathWeight, actualDistance, "Path to vertex " + target
-							+ " doesn't match distance (" + actualDistance + " != " + pathWeight + "): " + path);
+					assertEquals(pathWeight, actualDistance, "Path to vertex " + target + " doesn't match distance ("
+							+ actualDistance + " != " + pathWeight + "): " + path);
 				} else {
 					assertEquals(Double.POSITIVE_INFINITY, actualDistance,
 							"Distance to vertex " + target + " is not infinity but path is null");

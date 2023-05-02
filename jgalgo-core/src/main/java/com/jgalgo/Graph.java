@@ -8,42 +8,33 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * A discrete graph with vertices and edges.
+ *
  * <p>
- * A graph consist of a finite set of vertices \(V\) and edges \(E\).
- * Vertices are some objects, and edges are connections between the vertices,
- * for example vertices can be cities and edges could be the roads between them.
- * Edges could be directed or undirected. Weights may be assigned to vertices
- * or edges, for example the length of a road might be a weight of an edge.
- * Than, questions such as "what is the shortest path between two cities?" might
- * be answered using graph algorithms.
+ * A graph consist of a finite set of vertices \(V\) and edges \(E\). Vertices are some objects, and edges are
+ * connections between the vertices, for example vertices can be cities and edges could be the roads between them. Edges
+ * could be directed or undirected. Weights may be assigned to vertices or edges, for example the length of a road might
+ * be a weight of an edge. Than, questions such as "what is the shortest path between two cities?" might be answered
+ * using graph algorithms.
  * <p>
- * Each edge \(e=(u, v)\) in the graph has a <i>source</i>, \(u\), and a
- * <i>target</i> \(v\). In undirected graphs the 'source' and 'target' can
- * be switched, as the edge is not directed, and we treat the source and target
- * as interchangeable <i>end points</i>. If an edge \((u,v)\) exist in the
- * graph, we say the vertices \(u\) and \(v\) and <i>neighbors</i>, or
- * <i>adjacent</i>. The edges are usually stored in some list for each vertex,
- * allowing efficient iteration of its edges. The <i>degree</i> of a vertex is
- * the number of its edges. In directed graph, we have both <i>in-degree</i> and
- * <i>out-degree</i>, which are the number of edges going in and out the vertex,
- * respectively.
+ * Each edge \(e=(u, v)\) in the graph has a <i>source</i>, \(u\), and a <i>target</i> \(v\). In undirected graphs the
+ * 'source' and 'target' can be switched, as the edge is not directed, and we treat the source and target as
+ * interchangeable <i>end points</i>. If an edge \((u,v)\) exist in the graph, we say the vertices \(u\) and \(v\) and
+ * <i>neighbors</i>, or <i>adjacent</i>. The edges are usually stored in some list for each vertex, allowing efficient
+ * iteration of its edges. The <i>degree</i> of a vertex is the number of its edges. In directed graph, we have both
+ * <i>in-degree</i> and <i>out-degree</i>, which are the number of edges going in and out the vertex, respectively.
  * <p>
- * Vertices can be added or removed. When a vertex \(v\) is removed, all the
- * edges with \(v\) as one of their end points are removed as well. Edges can
- * be added as connection to existing vertices, or removed.
+ * Vertices can be added or removed. When a vertex \(v\) is removed, all the edges with \(v\) as one of their end points
+ * are removed as well. Edges can be added as connection to existing vertices, or removed.
  * <p>
- * Each vertex in the graph is identified by a unique non negative int ID. The
- * set of vertices in the graph is always {@code (0,1,2, ...,verticesNum-1)}.
- * To maintain this, the graph implementation may rename existing vertices when
- * the user remove a vertex, see {@link #getVerticesIDStrategy()}. Similar to
- * vertices, each edge in the graph is identified by a unique non negative int
- * ID. In contrast to the vertices IDs, it's not specified how the graph
- * implementation assign new IDs to added edges, or if it rename some of them
- * when the user remove an edge, see {@link #getEdgesIDStrategy()}.
+ * Each vertex in the graph is identified by a unique non negative int ID. The set of vertices in the graph is always
+ * {@code (0,1,2, ...,verticesNum-1)}. To maintain this, the graph implementation may rename existing vertices when the
+ * user remove a vertex, see {@link #getVerticesIDStrategy()}. Similar to vertices, each edge in the graph is identified
+ * by a unique non negative int ID. In contrast to the vertices IDs, it's not specified how the graph implementation
+ * assign new IDs to added edges, or if it rename some of them when the user remove an edge, see
+ * {@link #getEdgesIDStrategy()}.
  * <p>
- * The number of vertices, \(|V|\), is usually denoted as \(n\) in
- * algorithms time and space complexities. And similarly, the number of edges,
- * \(|E|\), is usually denoted as \(m\).
+ * The number of vertices, \(|V|\), is usually denoted as \(n\) in algorithms time and space complexities. And
+ * similarly, the number of edges, \(|E|\), is usually denoted as \(m\).
  *
  * <pre> {@code
  * // Create a directed graph with three vertices and edges between them
@@ -77,8 +68,8 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * }
  * }</pre>
  *
- * @see DiGraph
- * @see UGraph
+ * @see    DiGraph
+ * @see    UGraph
  * @author Barak Ugav
  */
 public interface Graph {
@@ -87,10 +78,9 @@ public interface Graph {
 	 * Get the set of all vertices of the graph.
 	 *
 	 * <p>
-	 * Each vertex in the graph is identified by a unique non negative int ID,
-	 * determined by {@link #getVerticesIDStrategy()}. The returned set is a set of
-	 * all these identifiers, and its size is equivalent to the number of vertices
-	 * in the graph.
+	 * Each vertex in the graph is identified by a unique non negative int ID, determined by
+	 * {@link #getVerticesIDStrategy()}. The returned set is a set of all these identifiers, and its size is equivalent
+	 * to the number of vertices in the graph.
 	 *
 	 * @return a set containing all IDs of the graph vertices
 	 */
@@ -100,10 +90,9 @@ public interface Graph {
 	 * Get the set of all edges of the graph.
 	 *
 	 * <p>
-	 * Each edge in the graph is identified by a unique non negative int ID,
-	 * determined by {@link #getEdgesIDStrategy()}. The returned set is a set of all
-	 * these identifiers, and its size is equivalent to the number of edges in the
-	 * graph.
+	 * Each edge in the graph is identified by a unique non negative int ID, determined by
+	 * {@link #getEdgesIDStrategy()}. The returned set is a set of all these identifiers, and its size is equivalent to
+	 * the number of edges in the graph.
 	 *
 	 * @return a set containing all IDs of the graph edges
 	 */
@@ -120,37 +109,30 @@ public interface Graph {
 	 * Remove a vertex and all its edges from the graph.
 	 *
 	 * <p>
-	 * After removing a vertex, the vertices ID strategy may rename other vertices
-	 * identifiers to maintain its invariants, see {@link #getVerticesIDStrategy()}.
-	 * Theses renames can be subscribed using {@link IDStrategy#addIDSwapListener}.
-	 * It may be more convenient to remove all edges of a vertex and ignore it,
-	 * instead of actually removing it and dealing with IDs renames, but that
-	 * depends on the specific use case.
+	 * After removing a vertex, the vertices ID strategy may rename other vertices identifiers to maintain its
+	 * invariants, see {@link #getVerticesIDStrategy()}. Theses renames can be subscribed using
+	 * {@link IDStrategy#addIDSwapListener}. It may be more convenient to remove all edges of a vertex and ignore it,
+	 * instead of actually removing it and dealing with IDs renames, but that depends on the specific use case.
 	 *
-	 * @see IDStrategy
-	 *
-	 * @param v the vertex identifier to remove
-	 * @throws IndexOutOfBoundsException if \(v\) is not a valid vertex
-	 *                                   identifier
+	 * @see                              IDStrategy
+	 * @param  v                         the vertex identifier to remove
+	 * @throws IndexOutOfBoundsException if \(v\) is not a valid vertex identifier
 	 */
 	void removeVertex(int v);
 
 	/**
 	 * Remove multiple vertices.
 	 * <p>
-	 * After removing a vertex, the vertices ID strategy may rename other vertices
-	 * identifiers to maintain its invariants, see {@link #getVerticesIDStrategy()}.
-	 * Theses renames can be subscribed using {@link IDStrategy#addIDSwapListener}.
+	 * After removing a vertex, the vertices ID strategy may rename other vertices identifiers to maintain its
+	 * invariants, see {@link #getVerticesIDStrategy()}. Theses renames can be subscribed using
+	 * {@link IDStrategy#addIDSwapListener}.
 	 * <p>
-	 * This function may be useful in case a user want to remove a collection of
-	 * vertices, and does not want to update IDs within the collection due to IDs
-	 * renames.
+	 * This function may be useful in case a user want to remove a collection of vertices, and does not want to update
+	 * IDs within the collection due to IDs renames.
 	 *
-	 * @param vs a collection of vertices to remove
-	 * @throws IndexOutOfBoundsException if one of the edges is not a valid edge
-	 *                                   identifier
-	 * @throws IllegalArgumentException  if the vertices collection to remove
-	 *                                   contains duplications
+	 * @param  vs                        a collection of vertices to remove
+	 * @throws IndexOutOfBoundsException if one of the edges is not a valid edge identifier
+	 * @throws IllegalArgumentException  if the vertices collection to remove contains duplications
 	 */
 	void removeVertices(IntCollection vs);
 
@@ -158,14 +140,12 @@ public interface Graph {
 	 * Get the edges whose source is \(u\).
 	 *
 	 * <p>
-	 * Get an edge iterator that iterate over all edges whose source is \(u\).
-	 * In case the graph is undirected, the iterator will iterate over edges whose
-	 * \(u\) is one of their end points.
+	 * Get an edge iterator that iterate over all edges whose source is \(u\). In case the graph is undirected, the
+	 * iterator will iterate over edges whose \(u\) is one of their end points.
 	 *
-	 * @param u a source vertex
-	 * @return an iterator of all the edges whose source is u
-	 * @throws IndexOutOfBoundsException if \(u\) is not a valid vertex
-	 *                                   identifier
+	 * @param  u                         a source vertex
+	 * @return                           an iterator of all the edges whose source is u
+	 * @throws IndexOutOfBoundsException if \(u\) is not a valid vertex identifier
 	 */
 	EdgeIter edgesOut(int u);
 
@@ -173,12 +153,11 @@ public interface Graph {
 	 * Get the edges whose target is \(v\).
 	 *
 	 * <p>
-	 * Get an edge iterator that iterate over all edges whose target is \(v\).
-	 * In case the graph is undirected, the iterator will iterate over edges whose
-	 * \(v\) is one of their end points.
+	 * Get an edge iterator that iterate over all edges whose target is \(v\). In case the graph is undirected, the
+	 * iterator will iterate over edges whose \(v\) is one of their end points.
 	 *
-	 * @param v a target vertex
-	 * @return an iterator of all the edges whose target is \(v\)
+	 * @param  v                         a target vertex
+	 * @return                           an iterator of all the edges whose target is \(v\)
 	 * @throws IndexOutOfBoundsException if \(v\) is not a valid vertex identifier
 	 */
 	EdgeIter edgesIn(int v);
@@ -187,18 +166,15 @@ public interface Graph {
 	 * Get the edge whose source is \(u\) and target is \(v\).
 	 *
 	 * <p>
-	 * If the graph is not directed, the return edge is an edge that its end-points
-	 * are \(u\) and \(v\).
+	 * If the graph is not directed, the return edge is an edge that its end-points are \(u\) and \(v\).
 	 *
 	 * <p>
-	 * In case there are multiple (parallel) edges between \(u\) and \(v\),
-	 * a single arbitrary one is returned.
+	 * In case there are multiple (parallel) edges between \(u\) and \(v\), a single arbitrary one is returned.
 	 *
-	 * @param u a source vertex
-	 * @param v a target vertex
-	 * @return id of the edge or {@code -1} if no such edge exists
-	 * @throws IndexOutOfBoundsException if \(u\) or \(v\) are not valid
-	 *                                   vertices identifiers
+	 * @param  u                         a source vertex
+	 * @param  v                         a target vertex
+	 * @return                           id of the edge or {@code -1} if no such edge exists
+	 * @throws IndexOutOfBoundsException if \(u\) or \(v\) are not valid vertices identifiers
 	 */
 	default int getEdge(int u, int v) {
 		for (EdgeIter it = edgesOut(u); it.hasNext();) {
@@ -212,23 +188,20 @@ public interface Graph {
 	/**
 	 * Get the edges whose source is \(u\) and target is \(v\).
 	 *
-	 * @param u a source vertex
-	 * @param v a target vertex
-	 * @return an iterator of all the edges whose source is \(u\) and target is
-	 *         \(v\)
-	 * @throws IndexOutOfBoundsException if \(u\) or \(v\) are not valid
-	 *                                   vertices identifiers
+	 * @param  u                         a source vertex
+	 * @param  v                         a target vertex
+	 * @return                           an iterator of all the edges whose source is \(u\) and target is \(v\)
+	 * @throws IndexOutOfBoundsException if \(u\) or \(v\) are not valid vertices identifiers
 	 */
 	EdgeIter getEdges(int u, int v);
 
 	/**
 	 * Add a new edge to the graph.
 	 *
-	 * @param u a source vertex
-	 * @param v a target vertex
-	 * @return the new edge identifier
-	 * @throws IndexOutOfBoundsException if \(u\) or \(v\) are not valid
-	 *                                   vertices identifiers
+	 * @param  u                         a source vertex
+	 * @param  v                         a target vertex
+	 * @return                           the new edge identifier
+	 * @throws IndexOutOfBoundsException if \(u\) or \(v\) are not valid vertices identifiers
 	 */
 	int addEdge(int u, int v);
 
@@ -236,32 +209,26 @@ public interface Graph {
 	 * Remove an edge from the graph.
 	 *
 	 * <p>
-	 * After removing an edge, the edges ID strategy may rename other edges
-	 * identifiers to maintain its invariants, see {@link #getEdgesIDStrategy()}.
-	 * Theses renames can be subscribed using {@link IDStrategy#addIDSwapListener}.
+	 * After removing an edge, the edges ID strategy may rename other edges identifiers to maintain its invariants, see
+	 * {@link #getEdgesIDStrategy()}. Theses renames can be subscribed using {@link IDStrategy#addIDSwapListener}.
 	 *
-	 * @param edge the edge identifier
-	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge
-	 *                                   identifier
+	 * @param  edge                      the edge identifier
+	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
 	 */
 	void removeEdge(int edge);
 
 	/**
 	 * Remove multiple edges.
 	 * <p>
-	 * After removing an edge, the edges ID strategy may rename other edges
-	 * identifiers to maintain its invariants, see {@link #getEdgesIDStrategy()}.
-	 * Theses renames can be subscribed using {@link IDStrategy#addIDSwapListener}.
+	 * After removing an edge, the edges ID strategy may rename other edges identifiers to maintain its invariants, see
+	 * {@link #getEdgesIDStrategy()}. Theses renames can be subscribed using {@link IDStrategy#addIDSwapListener}.
 	 * <p>
-	 * This function may be useful in case a user want to remove a collection of
-	 * edges, and does not want to update IDs within the collection due to IDs
-	 * renames.
+	 * This function may be useful in case a user want to remove a collection of edges, and does not want to update IDs
+	 * within the collection due to IDs renames.
 	 *
-	 * @param edges a collection of edges to remove
-	 * @throws IndexOutOfBoundsException if one of the edges is not a valid edge
-	 *                                   identifier
-	 * @throws IllegalArgumentException  if the edges collection to remove contains
-	 *                                   duplications
+	 * @param  edges                     a collection of edges to remove
+	 * @throws IndexOutOfBoundsException if one of the edges is not a valid edge identifier
+	 * @throws IllegalArgumentException  if the edges collection to remove contains duplications
 	 */
 	void removeEdges(IntCollection edges);
 
@@ -269,13 +236,11 @@ public interface Graph {
 	 * Remove all the edges of a vertex.
 	 *
 	 * <p>
-	 * After removing an edge, the edges ID strategy may rename other edges
-	 * identifiers to maintain its invariants, see {@link #getEdgesIDStrategy()}.
-	 * Theses renames can be subscribed using {@link IDStrategy#addIDSwapListener}.
+	 * After removing an edge, the edges ID strategy may rename other edges identifiers to maintain its invariants, see
+	 * {@link #getEdgesIDStrategy()}. Theses renames can be subscribed using {@link IDStrategy#addIDSwapListener}.
 	 *
-	 * @param u a vertex in the graph
-	 * @throws IndexOutOfBoundsException if \(u\) is not a valid vertex
-	 *                                   identifier
+	 * @param  u                         a vertex in the graph
+	 * @throws IndexOutOfBoundsException if \(u\) is not a valid vertex identifier
 	 */
 	default void removeEdgesOf(int u) {
 		removeEdgesOutOf(u);
@@ -285,13 +250,11 @@ public interface Graph {
 	/**
 	 * Remove all edges whose source is \(u\).
 	 * <p>
-	 * After removing an edge, the edges ID strategy may rename other edges
-	 * identifiers to maintain its invariants, see {@link #getEdgesIDStrategy()}.
-	 * Theses renames can be subscribed using {@link IDStrategy#addIDSwapListener}.
+	 * After removing an edge, the edges ID strategy may rename other edges identifiers to maintain its invariants, see
+	 * {@link #getEdgesIDStrategy()}. Theses renames can be subscribed using {@link IDStrategy#addIDSwapListener}.
 	 *
-	 * @param u a vertex in the graph
-	 * @throws IndexOutOfBoundsException if \(u\) is not a valid vertex
-	 *                                   identifier
+	 * @param  u                         a vertex in the graph
+	 * @throws IndexOutOfBoundsException if \(u\) is not a valid vertex identifier
 	 */
 	default void removeEdgesOutOf(int u) {
 		for (EdgeIter eit = edgesOut(u); eit.hasNext();) {
@@ -303,13 +266,11 @@ public interface Graph {
 	/**
 	 * Remove all edges whose target is \(v\).
 	 * <p>
-	 * After removing an edge, the edges ID strategy may rename other edges
-	 * identifiers to maintain its invariants, see {@link #getEdgesIDStrategy()}.
-	 * Theses renames can be subscribed using {@link IDStrategy#addIDSwapListener}.
+	 * After removing an edge, the edges ID strategy may rename other edges identifiers to maintain its invariants, see
+	 * {@link #getEdgesIDStrategy()}. Theses renames can be subscribed using {@link IDStrategy#addIDSwapListener}.
 	 *
-	 * @param v a vertex in the graph
-	 * @throws IndexOutOfBoundsException if \(v\) is not a valid vertex
-	 *                                   identifier
+	 * @param  v                         a vertex in the graph
+	 * @throws IndexOutOfBoundsException if \(v\) is not a valid vertex identifier
 	 */
 	default void removeEdgesInOf(int v) {
 		for (EdgeIter eit = edgesIn(v); eit.hasNext();) {
@@ -322,13 +283,12 @@ public interface Graph {
 	 * Get the source vertex of an edge.
 	 *
 	 * <p>
-	 * If the graph is undirected, this function return an arbitrary end-point of
-	 * the edge, but always other end-point than {@link #edgeTarget(int)} returns.
+	 * If the graph is undirected, this function return an arbitrary end-point of the edge, but always other end-point
+	 * than {@link #edgeTarget(int)} returns.
 	 *
-	 * @param edge the edge identifier
-	 * @return the edge source vertex
-	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge
-	 *                                   identifier
+	 * @param  edge                      the edge identifier
+	 * @return                           the edge source vertex
+	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
 	 */
 	public int edgeSource(int edge);
 
@@ -336,27 +296,23 @@ public interface Graph {
 	 * Get the target vertex of an edge.
 	 *
 	 * <p>
-	 * If the graph is undirected, this function return an arbitrary end-point of
-	 * the edge, but always the other end-point than {@link #edgeSource(int)}
-	 * returns.
+	 * If the graph is undirected, this function return an arbitrary end-point of the edge, but always the other
+	 * end-point than {@link #edgeSource(int)} returns.
 	 *
-	 * @param edge the edge identifier
-	 * @return the edge target vertex
-	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge
-	 *                                   identifier
+	 * @param  edge                      the edge identifier
+	 * @return                           the edge target vertex
+	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
 	 */
 	public int edgeTarget(int edge);
 
 	/**
 	 * Get the other end-point of an edge.
 	 *
-	 * @param edge     an edge identifier
-	 * @param endpoint one of the edge end-point
-	 * @return the other end-point of the edge
-	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge
-	 *                                   identifier
-	 * @throws IllegalArgumentException  if {@code endpoint} is not an endpoint of
-	 *                                   the edge
+	 * @param  edge                      an edge identifier
+	 * @param  endpoint                  one of the edge end-point
+	 * @return                           the other end-point of the edge
+	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
+	 * @throws IllegalArgumentException  if {@code endpoint} is not an endpoint of the edge
 	 */
 	default int edgeEndpoint(int edge, int endpoint) {
 		int u = edgeSource(edge);
@@ -373,10 +329,9 @@ public interface Graph {
 	/**
 	 * Get the out degree of a source vertex.
 	 *
-	 * @param u a source vertex
-	 * @return the number of edges whose source is u
-	 * @throws IndexOutOfBoundsException if \(u\) is not a valid vertex
-	 *                                   identifier
+	 * @param  u                         a source vertex
+	 * @return                           the number of edges whose source is u
+	 * @throws IndexOutOfBoundsException if \(u\) is not a valid vertex identifier
 	 */
 	default int degreeOut(int u) {
 		int count = 0;
@@ -390,10 +345,9 @@ public interface Graph {
 	/**
 	 * Get the in degree of a target vertex.
 	 *
-	 * @param v a target vertex
-	 * @return the number of edges whose target is v
-	 * @throws IndexOutOfBoundsException if \(v\) is not a valid vertex
-	 *                                   identifier
+	 * @param  v                         a target vertex
+	 * @return                           the number of edges whose target is v
+	 * @throws IndexOutOfBoundsException if \(v\) is not a valid vertex identifier
 	 */
 	default int degreeIn(int v) {
 		int count = 0;
@@ -410,8 +364,7 @@ public interface Graph {
 	 * <p>
 	 * This function might be used to reuse an already allocated graph object.
 	 * <p>
-	 * Note that this function also clears any weights associated with the vertices
-	 * or edges.
+	 * Note that this function also clears any weights associated with the vertices or edges.
 	 */
 	public void clear();
 
@@ -428,21 +381,18 @@ public interface Graph {
 	 * <p>
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
-	 * @param key some key of the weights, could be anything
-	 * @return vertices weights of the key, or null if no container found with the
-	 *         specified key
-	 * @param <V>        The weight data type
-	 * @param <WeightsT> the weights container, used to avoid casts of containers of
-	 *                   primitive types
+	 * @param  key        some key of the weights, could be anything
+	 * @return            vertices weights of the key, or null if no container found with the specified key
+	 * @param  <V>        The weight data type
+	 * @param  <WeightsT> the weights container, used to avoid casts of containers of primitive types
 	 */
 	public <V, WeightsT extends Weights<V>> WeightsT verticesWeight(Object key);
 
 	/**
 	 * Add a new weights container associated with the vertices of this graph.
 	 * <p>
-	 * The created weights will be bounded to this graph, and will be updated when
-	 * the graph is updated. To create an external weights container, for example in
-	 * cases the graph is a user input we are not allowed to modify it, use
+	 * The created weights will be bounded to this graph, and will be updated when the graph is updated. To create an
+	 * external weights container, for example in cases the graph is a user input we are not allowed to modify it, use
 	 * {@link Weights#createExternalVerticesWeights(Graph, Class)}.
 	 *
 	 * <pre> {@code
@@ -462,24 +412,20 @@ public interface Graph {
 	 * <p>
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
-	 * @param key  some key of the weights, could be anything
-	 * @param type the type of the weights, used for primitive types weights
-	 * @return a new weights container
-	 * @throws IllegalArgumentException if a vertices weights container with the
-	 *                                  same key already exists in the graph
-	 * @param <V>        The weight data type
-	 * @param <WeightsT> the weights container, used to avoid casts of containers of
-	 *                   primitive types
+	 * @param  key                      some key of the weights, could be anything
+	 * @param  type                     the type of the weights, used for primitive types weights
+	 * @return                          a new weights container
+	 * @throws IllegalArgumentException if a vertices weights container with the same key already exists in the graph
+	 * @param  <V>                      The weight data type
+	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types
 	 */
 	public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, Class<? super V> type);
 
 	/**
-	 * Add a new weights container associated with the vertices of this graph with
-	 * default value.
+	 * Add a new weights container associated with the vertices of this graph with default value.
 	 * <p>
-	 * The created weights will be bounded to this graph, and will be updated when
-	 * the graph is updated. To create an external weights container, for example in
-	 * cases the graph is a user input we are not allowed to modify it, use
+	 * The created weights will be bounded to this graph, and will be updated when the graph is updated. To create an
+	 * external weights container, for example in cases the graph is a user input we are not allowed to modify it, use
 	 * {@link Weights#createExternalVerticesWeights(Graph, Class, Object)}.
 	 *
 	 * <pre> {@code
@@ -500,15 +446,13 @@ public interface Graph {
 	 * <p>
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
-	 * @param key    some key of the weights, could be anything
-	 * @param type   the type of the weights, used for primitive types weights
-	 * @param defVal default value use for the weights container
-	 * @return a new weights container
-	 * @throws IllegalArgumentException if a vertices weights container with the
-	 *                                  same key already exists in the graph
-	 * @param <V>        The weight data type
-	 * @param <WeightsT> the weights container, used to avoid casts of containers of
-	 *                   primitive types
+	 * @param  key                      some key of the weights, could be anything
+	 * @param  type                     the type of the weights, used for primitive types weights
+	 * @param  defVal                   default value use for the weights container
+	 * @return                          a new weights container
+	 * @throws IllegalArgumentException if a vertices weights container with the same key already exists in the graph
+	 * @param  <V>                      The weight data type
+	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types
 	 */
 	public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, Class<? super V> type, V defVal);
 
@@ -544,21 +488,18 @@ public interface Graph {
 	 * <p>
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
-	 * @param key some key of the weights, could be anything
-	 * @return edges weights of the key, or null if no container found with the
-	 *         specified key
-	 * @param <E>        The weight data type
-	 * @param <WeightsT> the weights container, used to avoid casts of containers of
-	 *                   primitive types
+	 * @param  key        some key of the weights, could be anything
+	 * @return            edges weights of the key, or null if no container found with the specified key
+	 * @param  <E>        The weight data type
+	 * @param  <WeightsT> the weights container, used to avoid casts of containers of primitive types
 	 */
 	public <E, WeightsT extends Weights<E>> WeightsT edgesWeight(Object key);
 
 	/**
 	 * Add a new weights container associated with the edges of this graph.
 	 * <p>
-	 * The created weights will be bounded to this graph, and will be updated when
-	 * the graph is updated. To create an external weights container, for example in
-	 * cases the graph is a user input we are not allowed to modify it, use
+	 * The created weights will be bounded to this graph, and will be updated when the graph is updated. To create an
+	 * external weights container, for example in cases the graph is a user input we are not allowed to modify it, use
 	 * {@link Weights#createExternalEdgesWeights(Graph, Class)}.
 	 *
 	 * <pre> {@code
@@ -581,24 +522,20 @@ public interface Graph {
 	 * <p>
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
-	 * @param key  some key of the weights, could be anything
-	 * @param type the type of the weights, used for primitive types weights
-	 * @return a new weights container
-	 * @throws IllegalArgumentException if a edges weights container with the same
-	 *                                  key already exists in the graph
-	 * @param <E>        The weight data type
-	 * @param <WeightsT> the weights container, used to avoid casts of containers of
-	 *                   primitive types
+	 * @param  key                      some key of the weights, could be anything
+	 * @param  type                     the type of the weights, used for primitive types weights
+	 * @return                          a new weights container
+	 * @throws IllegalArgumentException if a edges weights container with the same key already exists in the graph
+	 * @param  <E>                      The weight data type
+	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types
 	 */
 	public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, Class<? super E> type);
 
 	/**
-	 * Add a new weights container associated with the edges of this graph with
-	 * default value.
+	 * Add a new weights container associated with the edges of this graph with default value.
 	 * <p>
-	 * The created weights will be bounded to this graph, and will be updated when
-	 * the graph is updated. To create an external weights container, for example in
-	 * cases the graph is a user input we are not allowed to modify it, use
+	 * The created weights will be bounded to this graph, and will be updated when the graph is updated. To create an
+	 * external weights container, for example in cases the graph is a user input we are not allowed to modify it, use
 	 * {@link Weights#createExternalEdgesWeights(Graph, Class, Object)}.
 	 *
 	 * <pre> {@code
@@ -622,15 +559,13 @@ public interface Graph {
 	 * <p>
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
-	 * @param key    some key of the weights, could be anything
-	 * @param type   the type of the weights, used for primitive types weights
-	 * @param defVal default value use for the weights container
-	 * @return a new weights container
-	 * @throws IllegalArgumentException if a edges weights container with the same
-	 *                                  key already exists in the graph
-	 * @param <E>        The weight data type
-	 * @param <WeightsT> the weights container, used to avoid casts of containers of
-	 *                   primitive types
+	 * @param  key                      some key of the weights, could be anything
+	 * @param  type                     the type of the weights, used for primitive types weights
+	 * @param  defVal                   default value use for the weights container
+	 * @return                          a new weights container
+	 * @throws IllegalArgumentException if a edges weights container with the same key already exists in the graph
+	 * @param  <E>                      The weight data type
+	 * @param  <WeightsT>               the weights container, used to avoid casts of containers of primitive types
 	 */
 	public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, Class<? super E> type, E defVal);
 
@@ -665,14 +600,12 @@ public interface Graph {
 	 * Get the ID strategy of the vertices of the graph.
 	 *
 	 * <p>
-	 * Each vertex in the graph is identified by a unique non negative int ID, which
-	 * is determined by some strategy. Only {@link IDStrategy.Continues} is
-	 * supported for vertices, which ensure that at all times the vertices IDs are
-	 * {@code 0,1,..., verticesNum-1}, and it might rename some vertices when a
-	 * vertex is removed to maintain this invariant. This rename can be subscribed
-	 * using {@link IDStrategy#addIDSwapListener}.
+	 * Each vertex in the graph is identified by a unique non negative int ID, which is determined by some strategy.
+	 * Only {@link IDStrategy.Continues} is supported for vertices, which ensure that at all times the vertices IDs are
+	 * {@code 0,1,..., verticesNum-1}, and it might rename some vertices when a vertex is removed to maintain this
+	 * invariant. This rename can be subscribed using {@link IDStrategy#addIDSwapListener}.
 	 *
-	 * @see IDStrategy
+	 * @see    IDStrategy
 	 *
 	 * @return the vertices IDs strategy
 	 */
@@ -682,17 +615,14 @@ public interface Graph {
 	 * Get the ID strategy of the edges of the graph.
 	 *
 	 * <p>
-	 * Each edge in the graph is identified by a unique non negative int ID, which
-	 * is determined by some strategy. For example, {@link IDStrategy.Continues}
-	 * ensure that at all times the edges IDs are {@code 0,1,..., edgesNum-1}, and
-	 * it might rename some edges when an edge is removed to maintain this
-	 * invariant. This rename can be subscribed using
-	 * {@link IDStrategy#addIDSwapListener}. Another option for an ID strategy is
-	 * {@link IDStrategy.Fixed} which ensure once an edge is assigned an ID, it will
-	 * not change. There might be some performance differences between different ID
-	 * strategies.
+	 * Each edge in the graph is identified by a unique non negative int ID, which is determined by some strategy. For
+	 * example, {@link IDStrategy.Continues} ensure that at all times the edges IDs are {@code 0,1,..., edgesNum-1}, and
+	 * it might rename some edges when an edge is removed to maintain this invariant. This rename can be subscribed
+	 * using {@link IDStrategy#addIDSwapListener}. Another option for an ID strategy is {@link IDStrategy.Fixed} which
+	 * ensure once an edge is assigned an ID, it will not change. There might be some performance differences between
+	 * different ID strategies.
 	 *
-	 * @see IDStrategy
+	 * @see    IDStrategy
 	 *
 	 * @return the edges IDs strategy
 	 */
@@ -701,17 +631,16 @@ public interface Graph {
 	/**
 	 * Get the {@linkplain GraphCapabilities capabilities} of this graph.
 	 *
-	 * @return a {@link GraphCapabilities} object describing what this graph support
-	 *         and what not.
-	 * @see GraphCapabilities
+	 * @return a {@link GraphCapabilities} object describing what this graph support and what not.
+	 * @see    GraphCapabilities
 	 */
 	public GraphCapabilities getCapabilities();
 
 	/**
 	 * A builder for {@link Graph} objects.
 	 *
-	 * @see UGraph#newBuilder()
-	 * @see DiGraph#newBuilder()
+	 * @see    UGraph#newBuilder()
+	 * @see    DiGraph#newBuilder()
 	 * @author Barak Ugav
 	 */
 	static interface Builder {
@@ -728,25 +657,23 @@ public interface Graph {
 		 * <p>
 		 * The default value is zero.
 		 *
-		 * @param n number of initial vertices in the graph
-		 * @return this builder
+		 * @param  n number of initial vertices in the graph
+		 * @return   this builder
 		 */
 		Graph.Builder setVerticesNum(int n);
 
 		/**
 		 * Set the edges ID strategy of this builder.
 		 * <p>
-		 * The default strategy used by this builder is {@link IDStrategy.Continues},
-		 * namely the edges IDs will always be {@code [0,1,2,...,edgesNum-1]}. This
-		 * default strategy may perform some IDs rename to maintain its invariant during
-		 * the lifetime of the graph. A different strategy such as
-		 * {@link IDStrategy.Fixed} may be used to ensure no IDs rename are performed.
+		 * The default strategy used by this builder is {@link IDStrategy.Continues}, namely the edges IDs will always
+		 * be {@code [0,1,2,...,edgesNum-1]}. This default strategy may perform some IDs rename to maintain its
+		 * invariant during the lifetime of the graph. A different strategy such as {@link IDStrategy.Fixed} may be used
+		 * to ensure no IDs rename are performed.
 		 *
-		 * @param edgesIDStrategy type of edge ID strategy to use, or {@code null} for
-		 *                        default strategy
-		 * @return this builder
+		 * @param  edgesIDStrategy          type of edge ID strategy to use, or {@code null} for default strategy
+		 * @return                          this builder
 		 * @throws IllegalArgumentException if the strategy type is not supported
-		 * @see IDStrategy
+		 * @see                             IDStrategy
 		 */
 		Graph.Builder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy);
 	}

@@ -3,19 +3,15 @@ package com.jgalgo;
 /**
  * Flow on graph edges, with capacities and flows values.
  * <p>
- * A flow network on graph edges is defined as two functions: the capacity
- * function \(C:E \rightarrow R\) and flow function \( F:E \rightarrow R\). The
- * capacity function define how many units of flow an edge can transfer from its
- * source to its target. The flow function is the number of units of flow that
- * are currently transferred along the edge. For each edge, the flow must be
- * smaller or equal to its capacity.
+ * A flow network on graph edges is defined as two functions: the capacity function \(C:E \rightarrow R\) and flow
+ * function \( F:E \rightarrow R\). The capacity function define how many units of flow an edge can transfer from its
+ * source to its target. The flow function is the number of units of flow that are currently transferred along the edge.
+ * For each edge, the flow must be smaller or equal to its capacity.
  * <p>
- * Problems formulated using flow networks involve a source and a sink vertices.
- * The source is a vertex from which the flow is originated, and every flow
- * going along its edges must reach the sink vertex using the edges of the
- * graphs while not violating the capacities of the network. For each vertex
- * except the source and sink the sum of flow units going along
- * {@link Graph#edgesIn(int)} must be equal to the sum of flow units going along
+ * Problems formulated using flow networks involve a source and a sink vertices. The source is a vertex from which the
+ * flow is originated, and every flow going along its edges must reach the sink vertex using the edges of the graphs
+ * while not violating the capacities of the network. For each vertex except the source and sink the sum of flow units
+ * going along {@link Graph#edgesIn(int)} must be equal to the sum of flow units going along
  * {@link Graph#edgesOut(int)}.
  *
  * <pre> {@code
@@ -38,7 +34,7 @@ package com.jgalgo;
  * }
  * }</pre>
  *
- * @see MaximumFlow
+ * @see    MaximumFlow
  * @author Barak Ugav
  */
 public interface FlowNetwork {
@@ -46,52 +42,47 @@ public interface FlowNetwork {
     /**
      * Get the capacity of an edge.
      *
-     * @param edge an edge identifier in the graph
-     * @return the capacity of the edge
-     * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge
-     *                                   identifier
+     * @param  edge                      an edge identifier in the graph
+     * @return                           the capacity of the edge
+     * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
      */
     double getCapacity(int edge);
 
     /**
      * Set the capacity of an edge.
      *
-     * @param edge     an edge identifier in the graph
-     * @param capacity the new capacity of the edge
-     * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge
-     *                                   identifier
+     * @param  edge                      an edge identifier in the graph
+     * @param  capacity                  the new capacity of the edge
+     * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
      */
     void setCapacity(int edge, double capacity);
 
     /**
      * Get the amount of flow units going along an edge.
      *
-     * @param edge an edge identifier in the graph
-     * @return the amount of flow units going along an edge
-     * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge
-     *                                   identifier
+     * @param  edge                      an edge identifier in the graph
+     * @return                           the amount of flow units going along an edge
+     * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
      */
     double getFlow(int edge);
 
     /**
      * Set the amount of flow units going along an edge.
      *
-     * @param edge an edge identifier in the graph
-     * @param flow the new flow of the edge
-     * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge
-     *                                   identifier
+     * @param  edge                      an edge identifier in the graph
+     * @param  flow                      the new flow of the edge
+     * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
      */
     void setFlow(int edge, double flow);
 
     /**
-     * Create a flow network by adding edge weights using
-     * {@link Graph#addEdgesWeights}.
+     * Create a flow network by adding edge weights using {@link Graph#addEdgesWeights}.
      * <p>
-     * Unless {@link #setCapacity(int, double)} or {@link #setFlow(int, double)} are
-     * used, the capacity and flow of each edge will be zero.
+     * Unless {@link #setCapacity(int, double)} or {@link #setFlow(int, double)} are used, the capacity and flow of each
+     * edge will be zero.
      *
-     * @param g a graph
-     * @return a flow network implemented as edge weights
+     * @param  g a graph
+     * @return   a flow network implemented as edge weights
      */
     static FlowNetwork createAsEdgeWeight(Graph g) {
         Weights.Double capacityWeights = g.addEdgesWeights(new Object(), double.class);
@@ -128,10 +119,9 @@ public interface FlowNetwork {
     /**
      * Flow on graph edges, with integer capacities and flows values.
      * <p>
-     * Similar to the regular {@link FlowNetwork} interface, but with integer
-     * capacities and flows. Some algorithms that work on flow networks are
-     * specifically for integers networks, or may performed faster if the capacities
-     * and flows are integers.
+     * Similar to the regular {@link FlowNetwork} interface, but with integer capacities and flows. Some algorithms that
+     * work on flow networks are specifically for integers networks, or may performed faster if the capacities and flows
+     * are integers.
      *
      * @author Barak Ugav
      */
@@ -140,10 +130,9 @@ public interface FlowNetwork {
         /**
          * Get the integer capacity of an edge.
          *
-         * @param edge an edge identifier in the graph
-         * @return the capacity of the edge
-         * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge
-         *                                   identifier
+         * @param  edge                      an edge identifier in the graph
+         * @return                           the capacity of the edge
+         * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
          */
         public int getCapacityInt(int edge);
 
@@ -156,10 +145,9 @@ public interface FlowNetwork {
         /**
          * Set the integer capacity of an edge.
          *
-         * @param edge     an edge identifier in the graph
-         * @param capacity the new capacity of the edge
-         * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge
-         *                                   identifier
+         * @param  edge                      an edge identifier in the graph
+         * @param  capacity                  the new capacity of the edge
+         * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
          */
         public void setCapacity(int edge, int capacity);
 
@@ -172,10 +160,9 @@ public interface FlowNetwork {
         /**
          * Get the integer amount of flow units going along an edge.
          *
-         * @param edge an edge identifier in the graph
-         * @return the amount of flow units going along an edge
-         * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge
-         *                                   identifier
+         * @param  edge                      an edge identifier in the graph
+         * @return                           the amount of flow units going along an edge
+         * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
          */
         public int getFlowInt(int edge);
 
@@ -188,10 +175,9 @@ public interface FlowNetwork {
         /**
          * Set the integer amount of flow units going along an edge.
          *
-         * @param edge an edge identifier in the graph
-         * @param flow the new flow of the edge
-         * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge
-         *                                   identifier
+         * @param  edge                      an edge identifier in the graph
+         * @param  flow                      the new flow of the edge
+         * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
          */
         public void setFlow(int edge, int flow);
 
@@ -202,14 +188,13 @@ public interface FlowNetwork {
         }
 
         /**
-         * Create an integer flow network by adding edge weights using
-         * {@link Graph#addEdgesWeights}.
+         * Create an integer flow network by adding edge weights using {@link Graph#addEdgesWeights}.
          * <p>
-         * Unless {@link #setCapacity(int, int)} or {@link #setFlow(int, int)} are
-         * used, the capacity and flow of each edge will be zero.
+         * Unless {@link #setCapacity(int, int)} or {@link #setFlow(int, int)} are used, the capacity and flow of each
+         * edge will be zero.
          *
-         * @param g a graph
-         * @return a flow network implemented as edge weights
+         * @param  g a graph
+         * @return   a flow network implemented as edge weights
          */
         static FlowNetwork.Int createAsEdgeWeight(Graph g) {
             Weights.Int capacityWeights = g.addEdgesWeights(new Object(), int.class);

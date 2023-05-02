@@ -1,15 +1,13 @@
 package com.jgalgo;
 
 /**
- * An algorithm that assign a color to each vertex in a graph while avoiding
- * identical color for any pair of adjacent vertices.
+ * An algorithm that assign a color to each vertex in a graph while avoiding identical color for any pair of adjacent
+ * vertices.
  * <p>
- * Given a graph \(G=(V,E)\) a valid coloring is a function \(C:v \rightarrow c\)
- * for any vertex \(v\) in \(V\) where each edge \((u,v)\) in
- * \(E\) satisfy \(C(u) \neq C(v)\). The objective is to minimize the
- * total number of different colors. The problem is NP-hard, but various
- * heuristics exists which give decent results for general graphs and optimal
- * results for special cases.
+ * Given a graph \(G=(V,E)\) a valid coloring is a function \(C:v \rightarrow c\) for any vertex \(v\) in \(V\) where
+ * each edge \((u,v)\) in \(E\) satisfy \(C(u) \neq C(v)\). The objective is to minimize the total number of different
+ * colors. The problem is NP-hard, but various heuristics exists which give decent results for general graphs and
+ * optimal results for special cases.
  * <p>
  * Each color is represented as an integer in range \([0, \textit{colorsNum})\).
  *
@@ -38,17 +36,16 @@ package com.jgalgo;
  * }
  * }</pre>
  *
- * @see <a href="https://en.wikipedia.org/wiki/Graph_coloring">Wikipedia</a>
+ * @see    <a href="https://en.wikipedia.org/wiki/Graph_coloring">Wikipedia</a>
  * @author Barak Ugav
  */
 public interface Coloring {
 
 	/**
-	 * Assign a color to each vertex of the given graph, resulting in a valid
-	 * coloring.
+	 * Assign a color to each vertex of the given graph, resulting in a valid coloring.
 	 *
-	 * @param g a graph
-	 * @return a valid coloring with (hopefully) small number of different colors
+	 * @param  g a graph
+	 * @return   a valid coloring with (hopefully) small number of different colors
 	 */
 	Coloring.Result computeColoring(UGraph g);
 
@@ -69,8 +66,8 @@ public interface Coloring {
 		/**
 		 * Get the color assigned to a vertex.
 		 *
-		 * @param v a vertex identifier in the graph
-		 * @return a color of the vertex, represented as integer
+		 * @param  v a vertex identifier in the graph
+		 * @return   a color of the vertex, represented as integer
 		 */
 		int colorOf(int v);
 
@@ -90,7 +87,7 @@ public interface Coloring {
 	/**
 	 * A builder for {@link Coloring} objects.
 	 *
-	 * @see Coloring#newBuilder()
+	 * @see    Coloring#newBuilder()
 	 * @author Barak Ugav
 	 */
 	static interface Builder {

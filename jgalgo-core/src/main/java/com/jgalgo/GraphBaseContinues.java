@@ -46,9 +46,8 @@ abstract class GraphBaseContinues extends GraphBase {
 				throw new IllegalArgumentException("vertex identifier duplication: " + v1);
 		}
 		/*
-		 * When we remove a vertex, a rename may be performed, swapping the removed
-		 * vertex id with numberOfVertices-1. By removing them in decreasing order, the
-		 * smaller IDs remain valid.
+		 * When we remove a vertex, a rename may be performed, swapping the removed vertex id with numberOfVertices-1.
+		 * By removing them in decreasing order, the smaller IDs remain valid.
 		 */
 		for (int i = vsArr.length - 1; i >= 0; i--)
 			removeVertex(vsArr[i]);
@@ -98,9 +97,8 @@ abstract class GraphBaseContinues extends GraphBase {
 				throw new IllegalArgumentException("edge identifier duplication: " + e1);
 		}
 		/*
-		 * When we remove an edge, a rename may be performed, swapping the removed edge
-		 * id with numberOfEdges-1. By removing them in decreasing order, the smaller
-		 * IDs remain valid.
+		 * When we remove an edge, a rename may be performed, swapping the removed edge id with numberOfEdges-1. By
+		 * removing them in decreasing order, the smaller IDs remain valid.
 		 */
 		for (int i = edgesArr.length - 1; i >= 0; i--)
 			removeEdge(edgesArr[i]);

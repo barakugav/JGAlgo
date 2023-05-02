@@ -13,8 +13,7 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
 
 public class LCADynamicTestUtils extends TestUtils {
 
-	private LCADynamicTestUtils() {
-	}
+	private LCADynamicTestUtils() {}
 
 	static void fullBinaryTreesRandOps(Supplier<? extends LCADynamic> builder, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);

@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 
 public class SplayTreeTest extends TestBase {
 
-
 	private static BinarySearchTree.Builder createBuilder() {
 		return new BinarySearchTree.Builder() {
 

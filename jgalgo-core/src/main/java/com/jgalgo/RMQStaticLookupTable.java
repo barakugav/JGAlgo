@@ -5,13 +5,11 @@ import java.util.Objects;
 /**
  * Naive lookup table for RMQ queries.
  * <p>
- * For a sequence of size \(n\), a lookup table of size \(O(n^2)\) will
- * be constructed, such that for each two indices \(i,j\) the index of the
- * minimum element in the range \([i,j]\) can be simply accessed from the
- * table in \(O(1)\) time.
+ * For a sequence of size \(n\), a lookup table of size \(O(n^2)\) will be constructed, such that for each two indices
+ * \(i,j\) the index of the minimum element in the range \([i,j]\) can be simply accessed from the table in \(O(1)\)
+ * time.
  * <p>
- * This algorithm require \(O(n^2)\) pre processing time and space, and
- * answer queries in \(O(1)\).
+ * This algorithm require \(O(n^2)\) pre processing time and space, and answer queries in \(O(1)\).
  *
  * @author Barak Ugav
  */
@@ -20,8 +18,7 @@ public class RMQStaticLookupTable implements RMQStatic {
 	/**
 	 * Construct a new static RMQ algorithm object.
 	 */
-	public RMQStaticLookupTable() {
-	}
+	public RMQStaticLookupTable() {}
 
 	@Override
 	public RMQStatic.DataStructure preProcessSequence(RMQStaticComparator c, int n) {

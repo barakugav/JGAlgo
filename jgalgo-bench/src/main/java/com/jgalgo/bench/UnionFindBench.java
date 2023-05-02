@@ -60,8 +60,8 @@ public class UnionFindBench {
 			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 
 			/*
-			 * sort the edges in setup instead of using standard Kruskal MST implementation
-			 * during benchmark to isolate union find operations
+			 * sort the edges in setup instead of using standard Kruskal MST implementation during benchmark to isolate
+			 * union find operations
 			 */
 			int[] edges = g.edges().toIntArray();
 			IntArrays.parallelQuickSort(edges, w);

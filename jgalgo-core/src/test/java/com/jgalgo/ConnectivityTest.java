@@ -27,8 +27,8 @@ public class ConnectivityTest extends TestBase {
 			int n = args[0], m = args[1];
 			UGraph g = (UGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
-			ConnectivityAlgorithm.Result actual = ConnectivityAlgorithm.newBuilder().build()
-					.computeConnectivityComponents(g);
+			ConnectivityAlgorithm.Result actual =
+					ConnectivityAlgorithm.newBuilder().build().computeConnectivityComponents(g);
 			validateConnectivityResult(g, actual);
 			Pair<Integer, int[]> expected = calcUndirectedConnectivity(g);
 			assertConnectivityResultsEqual(g, expected, actual);
@@ -60,8 +60,8 @@ public class ConnectivityTest extends TestBase {
 			int n = args[0], m = args[1];
 			DiGraph g = (DiGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true)
 					.parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
-			ConnectivityAlgorithm.Result actual = ConnectivityAlgorithm.newBuilder().build()
-					.computeConnectivityComponents(g);
+			ConnectivityAlgorithm.Result actual =
+					ConnectivityAlgorithm.newBuilder().build().computeConnectivityComponents(g);
 			validateConnectivityResult(g, actual);
 			Pair<Integer, int[]> expected = calcDirectedConnectivity(g);
 			assertConnectivityResultsEqual(g, expected, actual);

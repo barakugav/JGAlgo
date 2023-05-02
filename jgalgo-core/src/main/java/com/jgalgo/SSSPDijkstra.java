@@ -5,22 +5,18 @@ import java.util.Arrays;
 /**
  * Dijkstra's algorithm for Single Source Shortest Path (SSSP).
  * <p>
- * Compute the shortest paths from a single source to all other vertices in
- * \(O(m + n \log n)\) time, using {@link HeapReferenceable} with
- * \(O(1)\) time for
- * {@link HeapReferenceable#decreaseKey(HeapReference, Object)} operations.
+ * Compute the shortest paths from a single source to all other vertices in \(O(m + n \log n)\) time, using
+ * {@link HeapReferenceable} with \(O(1)\) time for {@link HeapReferenceable#decreaseKey(HeapReference, Object)}
+ * operations.
  * <p>
- * Only positive edge weights are supported. This implementation should be the
- * first choice for {@link SSSP} with positive weights. For negative weights use
- * {@link SSSPBellmanFord} for floating points or {@link SSSPGoldberg} for
+ * Only positive edge weights are supported. This implementation should be the first choice for {@link SSSP} with
+ * positive weights. For negative weights use {@link SSSPBellmanFord} for floating points or {@link SSSPGoldberg} for
  * integers.
  * <p>
- * Based on 'A note on two problems in connexion with graphs' by E. W. Dijkstra
- * (1959). A 'note'??!! this guy changed the world, and he publish it as a
- * 'note'.
+ * Based on 'A note on two problems in connexion with graphs' by E. W. Dijkstra (1959). A 'note'??!! this guy changed
+ * the world, and he publish it as a 'note'.
  *
- * @see <a href=
- *      "https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm">Wikipedia</a>
+ * @see    <a href= "https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm">Wikipedia</a>
  * @author Barak Ugav
  */
 public class SSSPDijkstra implements SSSP {

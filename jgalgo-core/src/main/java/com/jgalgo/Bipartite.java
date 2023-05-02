@@ -3,8 +3,7 @@ package com.jgalgo;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 class Bipartite {
-	private Bipartite() {
-	}
+	private Bipartite() {}
 
 	static boolean isValidBipartitePartition(Graph g, Weights.Bool partition) {
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {

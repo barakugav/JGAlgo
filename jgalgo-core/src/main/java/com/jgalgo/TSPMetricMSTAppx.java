@@ -7,22 +7,20 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 /**
  * TSP \(2\)-approximation using MST.
  * <p>
- * An MST of a graph weight is less or equal to the optimal TSP tour. By
- * doubling each edge in such MST and finding an Eulerian tour on these edges a
- * tour was found with weight at most \(2\) times the optimal TSP tour. In
- * addition, shortcuts are used if vertices are repeated in the initial Eulerian
- * tour - this is possible only in the metric special case.
+ * An MST of a graph weight is less or equal to the optimal TSP tour. By doubling each edge in such MST and finding an
+ * Eulerian tour on these edges a tour was found with weight at most \(2\) times the optimal TSP tour. In addition,
+ * shortcuts are used if vertices are repeated in the initial Eulerian tour - this is possible only in the metric
+ * special case.
  * <p>
- * The running of this algorithm is \(O(n^2)\) and it achieve
- * \(2\)-approximation to the optimal TSP solution.
+ * The running of this algorithm is \(O(n^2)\) and it achieve \(2\)-approximation to the optimal TSP solution.
  *
  * @author Barak Ugav
  */
 public class TSPMetricMSTAppx implements TSPMetric {
 
 	/*
-	 * If true, the algorithm will validate the distance table and check the metric
-	 * constrain is satisfied. This increases the running time to O(n^3)
+	 * If true, the algorithm will validate the distance table and check the metric constrain is satisfied. This
+	 * increases the running time to O(n^3)
 	 */
 	private static final boolean VALIDATE_METRIC = true;
 	private static final Object DoubleWeightKey = new Object();
@@ -31,8 +29,7 @@ public class TSPMetricMSTAppx implements TSPMetric {
 	/**
 	 * Create a new TSP \(2\)-approximation algorithm.
 	 */
-	public TSPMetricMSTAppx() {
-	}
+	public TSPMetricMSTAppx() {}
 
 	@Override
 	public int[] computeShortestTour(double[][] distances) {

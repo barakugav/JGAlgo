@@ -45,8 +45,8 @@ class CyclesFinderTestUtils extends TestUtils {
 	}
 
 	private static void testGraph(DiGraph g, CyclesFinder cyclesFinder) {
-		CyclesFinder validationAlgo = cyclesFinder instanceof CyclesFinderTarjan ? new CyclesFinderJohnson()
-				: new CyclesFinderTarjan();
+		CyclesFinder validationAlgo =
+				cyclesFinder instanceof CyclesFinderTarjan ? new CyclesFinderJohnson() : new CyclesFinderTarjan();
 		List<Path> actual = cyclesFinder.findAllCycles(g);
 		List<Path> expected = validationAlgo.findAllCycles(g);
 		assertEquals(transformCyclesToCanonical(expected), transformCyclesToCanonical(actual), g.toString());

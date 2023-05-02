@@ -3,13 +3,11 @@ package com.jgalgo;
 /**
  * Calculate the maximum flow in a flow network.
  * <p>
- * A maximum flow is firstly a valid flow, namely for each vertex except the
- * source and sink the sum of flow units going along {@link Graph#edgesIn(int)}
- * must be equal to the sum of flow units going along
- * {@link Graph#edgesOut(int)}. In addition, a maximum flow maximize the number
- * of flow units originated at the source and reaching the sink, which is
- * equivalent to the sum of flows going out(in) of the source(sink) subtracted
- * by the sum of flows going in(out) to the source(sink).
+ * A maximum flow is firstly a valid flow, namely for each vertex except the source and sink the sum of flow units going
+ * along {@link Graph#edgesIn(int)} must be equal to the sum of flow units going along {@link Graph#edgesOut(int)}. In
+ * addition, a maximum flow maximize the number of flow units originated at the source and reaching the sink, which is
+ * equivalent to the sum of flows going out(in) of the source(sink) subtracted by the sum of flows going in(out) to the
+ * source(sink).
  *
  * <pre> {@code
  * DiGraph g = ...;
@@ -31,7 +29,7 @@ package com.jgalgo;
  * }
  * }</pre>
  *
- * @see FlowNetwork
+ * @see    FlowNetwork
  * @author Barak Ugav
  */
 public interface MaximumFlow {
@@ -39,24 +37,21 @@ public interface MaximumFlow {
 	/**
 	 * Calculate the maximum flow in a flow network.
 	 * <p>
-	 * The function will set the edges flow by
-	 * {@link FlowNetwork#setFlow(int, double)}.
+	 * The function will set the edges flow by {@link FlowNetwork#setFlow(int, double)}.
 	 *
-	 * @param g      a graph
-	 * @param net    network flow
-	 * @param source a source vertex
-	 * @param sink   a sink vertex
-	 * @return the maximum flow in the network from the source to the sink
-	 * @throws IllegalArgumentException if the source and the sink are the same
-	 *                                  vertex
+	 * @param  g                        a graph
+	 * @param  net                      network flow
+	 * @param  source                   a source vertex
+	 * @param  sink                     a sink vertex
+	 * @return                          the maximum flow in the network from the source to the sink
+	 * @throws IllegalArgumentException if the source and the sink are the same vertex
 	 */
 	double computeMaximumFlow(Graph g, FlowNetwork net, int source, int sink);
 
 	/**
 	 * Create a new maximum flow algorithm builder.
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link MaximumFlow}
-	 * object.
+	 * This is the recommended way to instantiate a new {@link MaximumFlow} object.
 	 *
 	 * @return a new builder that can build {@link MaximumFlow} objects
 	 */
@@ -67,7 +62,7 @@ public interface MaximumFlow {
 	/**
 	 * A builder for {@link MaximumFlow} objects.
 	 *
-	 * @see MaximumFlow#newBuilder()
+	 * @see    MaximumFlow#newBuilder()
 	 * @author Barak Ugav
 	 */
 	static interface Builder {

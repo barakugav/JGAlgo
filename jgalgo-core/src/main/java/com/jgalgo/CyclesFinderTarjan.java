@@ -10,11 +10,10 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 /**
  * Tarjan's algorithm for finding all cycles in a directed graph.
  * <p>
- * The algorithm runs in \(O((n+m)(c+1))\) time and \(O(n)\) space where
- * \(c\) is the number of simple cycles in the graph.
+ * The algorithm runs in \(O((n+m)(c+1))\) time and \(O(n)\) space where \(c\) is the number of simple cycles in the
+ * graph.
  * <p>
- * Based on the paper 'Enumeration of the elementary circuits of a directed
- * graph' by Robert Tarjan.
+ * Based on the paper 'Enumeration of the elementary circuits of a directed graph' by Robert Tarjan.
  *
  * @author Barak Ugav
  */
@@ -23,8 +22,7 @@ public class CyclesFinderTarjan implements CyclesFinder {
 	/**
 	 * Create a new cycles finder algorithm object.
 	 */
-	public CyclesFinderTarjan() {
-	}
+	public CyclesFinderTarjan() {}
 
 	@Override
 	public List<Path> findAllCycles(Graph g) {

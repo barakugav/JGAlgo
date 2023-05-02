@@ -3,17 +3,14 @@ package com.jgalgo;
 abstract class RMQStaticLinearAbstract implements RMQStatic {
 
 	/*
-	 * This implementation divides the elements sequence into blocks, for each block
-	 * calculate the minimum in the block and the minimum within the block from each
-	 * index to the borders of the block. In addition, we use the \(O(x \log x)\)
-	 * implementation on the minimum values from each block (which we have less than
-	 * n).
+	 * This implementation divides the elements sequence into blocks, for each block calculate the minimum in the block
+	 * and the minimum within the block from each index to the borders of the block. In addition, we use the \(O(x \log
+	 * x)\) implementation on the minimum values from each block (which we have less than n).
 	 *
-	 * To answer a query, if the two indices are not in the same block, we check the
-	 * minimum from i to the end of the block, from j to the end of the block, and
-	 * the minimum along all the blocks between them. If the two elements are not in
-	 * the same block we have no implementation, and the implementations that
-	 * extends this class will implement it in different methods.
+	 * To answer a query, if the two indices are not in the same block, we check the minimum from i to the end of the
+	 * block, from j to the end of the block, and the minimum along all the blocks between them. If the two elements are
+	 * not in the same block we have no implementation, and the implementations that extends this class will implement
+	 * it in different methods.
 	 *
 	 * \(O(n)\) pre processing time, \(O(n)\) space, \(O(1)\) query.
 	 */
@@ -64,8 +61,7 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 			}
 
 			xlogxTableDS = xlogxTable.preProcessSequence(
-					(i, j) -> this.c.compare(blocksRightMinimum[i][0], blocksRightMinimum[j][0]),
-					blockNum);
+					(i, j) -> this.c.compare(blocksRightMinimum[i][0], blocksRightMinimum[j][0]), blockNum);
 		}
 
 		abstract int getBlockSize(int n);

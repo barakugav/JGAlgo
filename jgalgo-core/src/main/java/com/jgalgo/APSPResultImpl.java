@@ -8,8 +8,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 abstract class APSPResultImpl implements APSP.Result {
 
-	private APSPResultImpl() {
-	}
+	private APSPResultImpl() {}
 
 	abstract void setDistance(int source, int target, double distance);
 

@@ -105,10 +105,10 @@ public class SubtreeMergeFindminTest extends TestBase {
 						u = nodes.get(rand.nextInt(nodes.size()));
 						v = nodes.get(rand.nextInt(nodes.size()));
 						/* assume u0 is upper */
-						SubtreeMergeFindMin.Node u0 = u.<TrackerNode>getNodeData().depth <= v
-								.<TrackerNode>getNodeData().depth ? u : v;
-						SubtreeMergeFindMin.Node v0 = u.<TrackerNode>getNodeData().depth <= v
-								.<TrackerNode>getNodeData().depth ? v : u;
+						SubtreeMergeFindMin.Node u0 =
+								u.<TrackerNode>getNodeData().depth <= v.<TrackerNode>getNodeData().depth ? u : v;
+						SubtreeMergeFindMin.Node v0 =
+								u.<TrackerNode>getNodeData().depth <= v.<TrackerNode>getNodeData().depth ? v : u;
 						SubtreeMergeFindMin.Node p;
 						for (p = v0; p.<TrackerNode>getNodeData().depth > u0.<TrackerNode>getNodeData().depth + 1;)
 							p = p.getParent();
@@ -166,9 +166,8 @@ public class SubtreeMergeFindminTest extends TestBase {
 						expected[0] = expected[1];
 						expected[1] = temp;
 					}
-					assertTrue(Arrays.equals(expected, actual),
-							"Algo found unexpected edge: " + Arrays.toString(expected) + " != "
-									+ Arrays.toString(actual));
+					assertTrue(Arrays.equals(expected, actual), "Algo found unexpected edge: "
+							+ Arrays.toString(expected) + " != " + Arrays.toString(actual));
 					break;
 				}
 				default:

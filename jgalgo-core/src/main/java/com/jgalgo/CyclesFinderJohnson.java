@@ -15,11 +15,10 @@ import it.unimi.dsi.fastutil.objects.ObjectIntPair;
 /**
  * Johnson's algorithm for finding all cycles in a directed graph.
  * <p>
- * The algorithm runs in \(O((n+m)(c+1))\) time and \(O(n + m)\) space
- * where \(c\) is the number of simple cycles in the graph.
+ * The algorithm runs in \(O((n+m)(c+1))\) time and \(O(n + m)\) space where \(c\) is the number of simple cycles in the
+ * graph.
  * <p>
- * Based on the paper 'finding all the elementary circuits of a directed graph'
- * by Donald b. Johnson.
+ * Based on the paper 'finding all the elementary circuits of a directed graph' by Donald b. Johnson.
  *
  * @author Barak Ugav
  */
@@ -30,8 +29,7 @@ public class CyclesFinderJohnson implements CyclesFinder {
 	/**
 	 * Create a new cycles finder algorithm object.
 	 */
-	public CyclesFinderJohnson() {
-	}
+	public CyclesFinderJohnson() {}
 
 	@Override
 	public List<Path> findAllCycles(Graph g) {

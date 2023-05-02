@@ -11,8 +11,7 @@ import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
 
 public class SSSPTestUtils extends TestUtils {
 
-	private SSSPTestUtils() {
-	}
+	private SSSPTestUtils() {}
 
 	public static void testSSSPDirectedPositiveInt(SSSP algo, long seed) {
 		testSSSPPositiveInt(algo, true, seed);
@@ -23,8 +22,8 @@ public class SSSPTestUtils extends TestUtils {
 	}
 
 	private static void testSSSPPositiveInt(SSSP algo, boolean directed, long seed) {
-		List<Phase> phases = List.of(phase(128, 16, 32), phase(64, 64, 256), phase(8, 512, 4096),
-				phase(1, 4096, 16384));
+		List<Phase> phases =
+				List.of(phase(128, 16, 32), phase(64, 64, 256), phase(8, 512, 4096), phase(1, 4096, 16384));
 		testSSSPPositiveInt(algo, directed, seed, phases);
 	}
 

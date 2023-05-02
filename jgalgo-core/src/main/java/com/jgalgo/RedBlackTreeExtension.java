@@ -8,13 +8,12 @@ import it.unimi.dsi.fastutil.objects.ObjectArrays;
 /**
  * An extension property to Red Black tree nodes such as subtree size/min/max.
  * <p>
- * Each node in the balanced binary tree can maintain properties such as its
- * subtree size, or a reference to the minimum/maximum element in its subtree.
- * These properties can be updated during the regular operations of the red
+ * Each node in the balanced binary tree can maintain properties such as its subtree size, or a reference to the
+ * minimum/maximum element in its subtree. These properties can be updated during the regular operations of the red
  * black tree without increasing the asymptotical running time.
  * <p>
- * Each extension should be used in exactly one red black tree. If an extension
- * was used in another tree, it should not be passed to a new one for reuse.
+ * Each extension should be used in exactly one red black tree. If an extension was used in another tree, it should not
+ * be passed to a new one for reuse.
  *
  * <pre> {@code
  * RedBlackTreeExtension.Size<Integer> sizeExt = new RedBlackTreeExtension.Size<>();
@@ -44,33 +43,25 @@ public class RedBlackTreeExtension<E> {
 		this.data = data;
 	}
 
-	void initNode(RedBlackTreeExtended.Node<E> n) {
-	}
+	void initNode(RedBlackTreeExtended.Node<E> n) {}
 
-	void removeNodeData(RedBlackTreeExtended.Node<E> n) {
-	}
+	void removeNodeData(RedBlackTreeExtended.Node<E> n) {}
 
-	void afterInsert(RedBlackTreeExtended.Node<E> n) {
-	}
+	void afterInsert(RedBlackTreeExtended.Node<E> n) {}
 
-	void beforeRemove(RedBlackTreeExtended.Node<E> n) {
-	}
+	void beforeRemove(RedBlackTreeExtended.Node<E> n) {}
 
-	void beforeNodeSwap(RedBlackTreeExtended.Node<E> a, RedBlackTreeExtended.Node<E> b) {
-	}
+	void beforeNodeSwap(RedBlackTreeExtended.Node<E> a, RedBlackTreeExtended.Node<E> b) {}
 
-	void beforeRotateLeft(RedBlackTreeExtended.Node<E> n) {
-	}
+	void beforeRotateLeft(RedBlackTreeExtended.Node<E> n) {}
 
-	void beforeRotateRight(RedBlackTreeExtended.Node<E> n) {
-	}
+	void beforeRotateRight(RedBlackTreeExtended.Node<E> n) {}
 
 	/**
 	 * A subtree size extension to a red black tree.
 	 * <p>
-	 * The extension will keep track of the subtree size of each node in the red
-	 * black tree. This is implemented without increasing the asymptotical running
-	 * time.
+	 * The extension will keep track of the subtree size of each node in the red black tree. This is implemented without
+	 * increasing the asymptotical running time.
 	 *
 	 * <pre> {@code
 	 * RedBlackTreeExtension.Size<Integer> sizeExt = new RedBlackTreeExtension.Size<>();
@@ -96,16 +87,14 @@ public class RedBlackTreeExtension<E> {
 		 * <p>
 		 * A new extension should be used for each red black tree individually.
 		 */
-		public Size() {
-		}
+		public Size() {}
 
 		/**
 		 * Get the number of nodes in the subtree of given red black tree node.
 		 *
-		 * @param ref a reference to a red black tree node
-		 * @return the number of nodes in the subtree of given red black tree node. The
-		 *         counting include the node itself, therefore the returned value is
-		 *         always greater or equal to one.
+		 * @param  ref a reference to a red black tree node
+		 * @return     the number of nodes in the subtree of given red black tree node. The counting include the node
+		 *             itself, therefore the returned value is always greater or equal to one.
 		 */
 		public int getSubTreeSize(HeapReference<E> ref) {
 			return getNodeData((RedBlackTreeExtended.Node<E>) ref);
@@ -160,9 +149,8 @@ public class RedBlackTreeExtension<E> {
 	/**
 	 * A subtree minimum element extension to a red black tree.
 	 * <p>
-	 * The extension will keep track of the minimum element in the subtree of each
-	 * node in the red black tree. This is implemented without increasing the
-	 * asymptotical running time.
+	 * The extension will keep track of the minimum element in the subtree of each node in the red black tree. This is
+	 * implemented without increasing the asymptotical running time.
 	 *
 	 * <pre> {@code
 	 * RedBlackTreeExtension.Min<Integer> minExt = new RedBlackTreeExtension.Min<>();
@@ -190,17 +178,15 @@ public class RedBlackTreeExtension<E> {
 		 * <p>
 		 * A new extension should be used for each red black tree individually.
 		 */
-		public Min() {
-		}
+		public Min() {}
 
 		/**
-		 * Get a reference to the minimum node in the subtree of given red black tree
-		 * node.
+		 * Get a reference to the minimum node in the subtree of given red black tree node.
 		 *
-		 * @param ref a reference to a red black tree node
-		 * @return a reference to the minimum node in the subtree of given red black
-		 *         tree node. The subtree include the given node itself, therefore the
-		 *         returned element is always smaller or equal to the provided node.
+		 * @param  ref a reference to a red black tree node
+		 * @return     a reference to the minimum node in the subtree of given red black tree node. The subtree include
+		 *             the given node itself, therefore the returned element is always smaller or equal to the provided
+		 *             node.
 		 */
 		public HeapReference<E> getSubTreeMin(HeapReference<E> ref) {
 			return getNodeData((RedBlackTreeExtended.Node<E>) ref);
@@ -290,9 +276,8 @@ public class RedBlackTreeExtension<E> {
 	/**
 	 * A subtree maximum element extension to a red black tree.
 	 * <p>
-	 * The extension will keep track of the maximum element in the subtree of each
-	 * node in the red black tree. This is implemented without increasing the
-	 * asymptotical running time.
+	 * The extension will keep track of the maximum element in the subtree of each node in the red black tree. This is
+	 * implemented without increasing the asymptotical running time.
 	 *
 	 * <pre> {@code
 	 * RedBlackTreeExtension.Max<Integer> maxExt = new RedBlackTreeExtension.Max<>();
@@ -320,17 +305,15 @@ public class RedBlackTreeExtension<E> {
 		 * <p>
 		 * A new extension should be used for each red black tree individually.
 		 */
-		public Max() {
-		}
+		public Max() {}
 
 		/**
-		 * Get a reference to the maximum node in the subtree of given red black tree
-		 * node.
+		 * Get a reference to the maximum node in the subtree of given red black tree node.
 		 *
-		 * @param ref a reference to a red black tree node
-		 * @return a reference to the maximum node in the subtree of given red black
-		 *         tree node. The subtree include the given node itself, therefore the
-		 *         returned element is always greater or equal to the provided node.
+		 * @param  ref a reference to a red black tree node
+		 * @return     a reference to the maximum node in the subtree of given red black tree node. The subtree include
+		 *             the given node itself, therefore the returned element is always greater or equal to the provided
+		 *             node.
 		 */
 		public HeapReference<E> getSubTreeMax(HeapReference<E> ref) {
 			return getNodeData((RedBlackTreeExtended.Node<E>) ref);
@@ -384,8 +367,8 @@ public class RedBlackTreeExtension<E> {
 				bData = getNodeData(a);
 			} else {
 				assert getNodeData(a) == a;
-				for (RedBlackTreeExtended.Node<E> p = a; p.parent() != null
-						&& p == p.parent().right(); p = p.parent()) {
+				for (RedBlackTreeExtended.Node<E> p = a; p.parent() != null && p == p.parent().right(); p =
+						p.parent()) {
 					assert p.parent() != b;
 					setNodeData(p.parent(), b);
 				}

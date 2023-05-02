@@ -14,8 +14,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 public class GraphsTestUtils extends TestUtils {
 
-	private GraphsTestUtils() {
-	}
+	private GraphsTestUtils() {}
 
 	public static class RandomGraphBuilder {
 

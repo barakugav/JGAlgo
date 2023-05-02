@@ -16,8 +16,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 @SuppressWarnings("boxing")
 public class MaximumFlowTestUtils extends TestUtils {
 
-	private MaximumFlowTestUtils() {
-	}
+	private MaximumFlowTestUtils() {}
 
 	private static DiGraph randGraph(int n, int m, GraphImpl graphImpl, long seed) {
 		return (DiGraph) new RandomGraphBuilder(seed).n(n).m(m).directed(true).parallelEdges(false).selfEdges(false)

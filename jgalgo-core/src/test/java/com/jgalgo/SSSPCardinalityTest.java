@@ -25,8 +25,8 @@ public class SSSPCardinalityTest extends TestBase {
 		EdgeWeightFunc w = e -> 1;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
-		List<Phase> phases = List.of(phase(128, 16, 32), phase(64, 64, 256), phase(8, 512, 4096),
-				phase(1, 4096, 16384));
+		List<Phase> phases =
+				List.of(phase(128, 16, 32), phase(64, 64, 256), phase(8, 512, 4096), phase(1, 4096, 16384));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(true)

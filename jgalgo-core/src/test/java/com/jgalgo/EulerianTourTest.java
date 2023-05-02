@@ -199,8 +199,7 @@ public class EulerianTourTest extends TestBase {
 			assert g.degreeOut(u) == g.degreeIn(u);
 		if (!allEqualInOutDegree) {
 			/*
-			 * Add another edge resulting in one vertex with extra out degree, and one
-			 * vertex with extra in degree
+			 * Add another edge resulting in one vertex with extra out degree, and one vertex with extra in degree
 			 */
 			if (n <= 1)
 				throw new IllegalArgumentException();
@@ -233,8 +232,8 @@ public class EulerianTourTest extends TestBase {
 	}
 
 	private static void addEdgesUntilStronglyConnected(DiGraph g) {
-		ConnectivityAlgorithm.Result connectivityRes = ConnectivityAlgorithm.newBuilder().build()
-				.computeConnectivityComponents(g);
+		ConnectivityAlgorithm.Result connectivityRes =
+				ConnectivityAlgorithm.newBuilder().build().computeConnectivityComponents(g);
 		int N = connectivityRes.getNumberOfCC();
 		if (N <= 1)
 			return;

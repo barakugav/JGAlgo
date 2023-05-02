@@ -3,14 +3,13 @@ package com.jgalgo;
 /**
  * Object specifying the capabilities of a graph implementation.
  * <p>
- * Each implementation of the {@link Graph} interface may are may not support
- * some operations. Each graph provide its capabilities using
- * {@link Graph#getCapabilities()}.
+ * Each implementation of the {@link Graph} interface may are may not support some operations. Each graph provide its
+ * capabilities using {@link Graph#getCapabilities()}.
  *
- * @see Graph.Builder
- * @see GraphArrayUndirected
- * @see GraphLinkedUndirected
- * @see GraphTableUndirected
+ * @see    Graph.Builder
+ * @see    GraphArrayUndirected
+ * @see    GraphLinkedUndirected
+ * @see    GraphTableUndirected
  * @author Barak Ugav
  */
 public interface GraphCapabilities {
@@ -55,8 +54,7 @@ public interface GraphCapabilities {
 	/**
 	 * Checks whether self edges are supported.
 	 * <p>
-	 * Self edges are edges with the same source and target, namely a vertex with an
-	 * edge to itself.
+	 * Self edges are edges with the same source and target, namely a vertex with an edge to itself.
 	 *
 	 * @return true if the graph support self edges, else false.
 	 */

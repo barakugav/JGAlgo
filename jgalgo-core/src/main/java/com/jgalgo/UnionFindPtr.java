@@ -5,16 +5,14 @@ import java.util.Arrays;
 /**
  * Pointer based implementation for the Union Find data structure.
  * <p>
- * Each element is represented as a Object allocated on the heap. This
- * implementation is usually out-performed by the {@link UnionFindArray}
- * implementation.
+ * Each element is represented as a Object allocated on the heap. This implementation is usually out-performed by the
+ * {@link UnionFindArray} implementation.
  * <p>
- * The running time of \(m\) operations on \(n\) elements is
- * \(O(m \cdot \alpha (m, n))\) where \(\alpha(\cdot,\cdot)\) is the inverse
- * Ackermann's function. The inverse Ackermann's function is extremely slow and
- * for any practical use should be treated as constant.
+ * The running time of \(m\) operations on \(n\) elements is \(O(m \cdot \alpha (m, n))\) where \(\alpha(\cdot,\cdot)\)
+ * is the inverse Ackermann's function. The inverse Ackermann's function is extremely slow and for any practical use
+ * should be treated as constant.
  *
- * @see UnionFindArray
+ * @see    UnionFindArray
  * @author Barak Ugav
  */
 public class UnionFindPtr implements UnionFind {
@@ -30,8 +28,8 @@ public class UnionFindPtr implements UnionFind {
 	}
 
 	/**
-	 * Create a new Union Find data structure with \(n\) elements with ids
-	 * {@code 0,1,2,...,n-1}, each of them form a set of a single element.
+	 * Create a new Union Find data structure with \(n\) elements with ids {@code 0,1,2,...,n-1}, each of them form a
+	 * set of a single element.
 	 *
 	 * @param n the number of initial elements in the data structure
 	 */
@@ -65,8 +63,7 @@ public class UnionFindPtr implements UnionFind {
 
 		/* Find root */
 		Elm r;
-		for (r = e; r.parent != null; r = r.parent)
-			;
+		for (r = e; r.parent != null; r = r.parent);
 
 		/* path compression */
 		for (; e != r;) {

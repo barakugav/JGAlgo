@@ -9,22 +9,19 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 /**
  * The DSatur coloring algorithm.
  * <p>
- * The Saturation Degree (DSatur) coloring algorithm is a greedy algorithm,
- * namely it examine the vertices in some order and assign for each vertex the
- * minimum (integer) color which is not used by its neighbors. It differ from
- * other greedy coloring algorithm by the order of the vertices: the next vertex
- * to be colored is the vertex with the highest number of colors in its
- * neighborhood (called saturation degree).
+ * The Saturation Degree (DSatur) coloring algorithm is a greedy algorithm, namely it examine the vertices in some order
+ * and assign for each vertex the minimum (integer) color which is not used by its neighbors. It differ from other
+ * greedy coloring algorithm by the order of the vertices: the next vertex to be colored is the vertex with the highest
+ * number of colors in its neighborhood (called saturation degree).
  * <p>
- * The algorithm runs in time \(O(n m)\), and it could be implemented faster
- * using a heap with {@code decreaseKey} operation, see
- * {@link ColoringDSaturHeap}.
+ * The algorithm runs in time \(O(n m)\), and it could be implemented faster using a heap with {@code decreaseKey}
+ * operation, see {@link ColoringDSaturHeap}.
  * <p>
- * Note that the result is an approximate for the minimum number of colors, as
- * finding an optimal coloring is an NP-hard problem.
+ * Note that the result is an approximate for the minimum number of colors, as finding an optimal coloring is an NP-hard
+ * problem.
  *
- * @see <a href="https://en.wikipedia.org/wiki/DSatur">Wikipedia</a>
- * @see ColoringDSaturHeap
+ * @see    <a href="https://en.wikipedia.org/wiki/DSatur">Wikipedia</a>
+ * @see    ColoringDSaturHeap
  * @author Barak Ugav
  */
 public class ColoringDSatur implements Coloring {
@@ -32,8 +29,7 @@ public class ColoringDSatur implements Coloring {
 	/**
 	 * Create a new coloring algorithm object.
 	 */
-	public ColoringDSatur() {
-	}
+	public ColoringDSatur() {}
 
 	@Override
 	public Coloring.Result computeColoring(UGraph g) {

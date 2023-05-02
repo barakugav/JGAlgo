@@ -5,11 +5,9 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
 /**
  * Weight function that maps a graph edge to a weight.
  * <p>
- * Many algorithms such as {@link SSSP}, {@link MST}, {@link MaximumMatchingWeighted},
- * and more, try to find a set of edges satisfying some constraint while
- * minimizing/maximizing some objective function based on the weights of the
- * edges. This interface is the API by which the user specify the weights of the
- * edges.
+ * Many algorithms such as {@link SSSP}, {@link MST}, {@link MaximumMatchingWeighted}, and more, try to find a set of
+ * edges satisfying some constraint while minimizing/maximizing some objective function based on the weights of the
+ * edges. This interface is the API by which the user specify the weights of the edges.
  *
  * <pre> {@code
  * // Create a directed graph with three vertices and edges between them
@@ -52,10 +50,9 @@ public interface EdgeWeightFunc extends IntComparator {
 	/**
 	 * Get the weight of an edge.
 	 *
-	 * @param e an edge identifier
-	 * @return the weight of the edge
-	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge
-	 *                                   identifier
+	 * @param  e                         an edge identifier
+	 * @return                           the weight of the edge
+	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
 	 */
 	public double weight(int e);
 
@@ -70,9 +67,8 @@ public interface EdgeWeightFunc extends IntComparator {
 	/**
 	 * Weight function that maps a graph edge to an integer weight.
 	 * <p>
-	 * Some algorithms implementations support only integers weights, or run faster
-	 * in such a case. This interface is the API for these algorithms for the edges
-	 * integer weights.
+	 * Some algorithms implementations support only integers weights, or run faster in such a case. This interface is
+	 * the API for these algorithms for the edges integer weights.
 	 *
 	 * <pre> {@code
 	 * // Create a directed graph with three vertices and edges between them
@@ -107,8 +103,8 @@ public interface EdgeWeightFunc extends IntComparator {
 	 * }
 	 * }</pre>
 	 *
-	 * @see SSSPDial
-	 * @see SSSPGoldberg
+	 * @see    SSSPDial
+	 * @see    SSSPGoldberg
 	 * @author Barak Ugav
 	 */
 	@FunctionalInterface
@@ -123,10 +119,9 @@ public interface EdgeWeightFunc extends IntComparator {
 		/**
 		 * Get the integer weight of an edge.
 		 *
-		 * @param e an edge identifier
-		 * @return the integer weight of the edge
-		 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge
-		 *                                   identifier
+		 * @param  e                         an edge identifier
+		 * @return                           the integer weight of the edge
+		 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
 		 */
 		public int weightInt(int e);
 

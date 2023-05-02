@@ -23,8 +23,7 @@ abstract class GraphTableAbstract extends GraphBaseContinues {
 	}
 
 	/**
-	 * Vertex addition is not support. The number of vertices is fixed and should be
-	 * specified in the constructor.
+	 * Vertex addition is not support. The number of vertices is fixed and should be specified in the constructor.
 	 */
 	@Deprecated
 	@Override
@@ -33,8 +32,7 @@ abstract class GraphTableAbstract extends GraphBaseContinues {
 	}
 
 	/**
-	 * Vertex removal is not support. The number of vertices is fixed and should be
-	 * specified in the constructor.
+	 * Vertex removal is not support. The number of vertices is fixed and should be specified in the constructor.
 	 */
 	@Deprecated
 	@Override
@@ -153,8 +151,8 @@ abstract class GraphTableAbstract extends GraphBaseContinues {
 	}
 
 	/**
-	 * Clearing is not supported, as vertices removal are not supported. The number
-	 * of vertices is fixed and should be specified in the constructor.
+	 * Clearing is not supported, as vertices removal are not supported. The number of vertices is fixed and should be
+	 * specified in the constructor.
 	 */
 	@Deprecated
 	@Override

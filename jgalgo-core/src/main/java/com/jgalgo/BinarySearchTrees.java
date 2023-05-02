@@ -7,8 +7,7 @@ import java.util.function.BiFunction;
 
 class BinarySearchTrees {
 
-	private BinarySearchTrees() {
-	}
+	private BinarySearchTrees() {}
 
 	static <E, N extends Node<E, N>> N find(N root, Comparator<? super E> c, E e) {
 		return findOrNeighbor(root, c, e, NeighborType.None);
@@ -32,26 +31,26 @@ class BinarySearchTrees {
 			return null;
 		BiFunction<NeighborType, N, N> onLeftChildMissing = (nType, p) -> {
 			switch (nType) {
-			case None:
-				return null;
-			case Predecessor:
-				return getPredecessor(p);
-			case Successor:
-				return p;
-			default:
-				throw new IllegalArgumentException("Unexpected value: " + neighborType);
+				case None:
+					return null;
+				case Predecessor:
+					return getPredecessor(p);
+				case Successor:
+					return p;
+				default:
+					throw new IllegalArgumentException("Unexpected value: " + neighborType);
 			}
 		};
 		BiFunction<NeighborType, N, N> onRightChildMissing = (nType, p) -> {
 			switch (nType) {
-			case None:
-				return null;
-			case Predecessor:
-				return p;
-			case Successor:
-				return getSuccessor(p);
-			default:
-				throw new IllegalArgumentException("Unexpected value: " + neighborType);
+				case None:
+					return null;
+				case Predecessor:
+					return p;
+				case Successor:
+					return getSuccessor(p);
+				default:
+					throw new IllegalArgumentException("Unexpected value: " + neighborType);
 			}
 		};
 		if (c == null) {

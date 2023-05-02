@@ -3,22 +3,18 @@ package com.jgalgo;
 import java.util.Arrays;
 
 /**
- * Gabow implementation for dynamic LCA data structure with \(O(\log^2 n)\)
- * amortized time for {@code addLeaf()} operation.
+ * Gabow implementation for dynamic LCA data structure with \(O(\log^2 n)\) amortized time for {@code addLeaf()}
+ * operation.
  * <p>
- * The running time of this algorithm for \(m\) operations over \(n\) nodes is
- * \(O(m + n \log^2 n)\) and it uses linear space. More specifically, the
- * {@link #addLeaf(LCADynamic.Node)} operation is perform in \(O(\log^2 n)\)
- * amortized time and
- * {@link #findLowestCommonAncestor(LCADynamic.Node, LCADynamic.Node)} is
- * perform in constant time.
+ * The running time of this algorithm for \(m\) operations over \(n\) nodes is \(O(m + n \log^2 n)\) and it uses linear
+ * space. More specifically, the {@link #addLeaf(LCADynamic.Node)} operation is perform in \(O(\log^2 n)\) amortized
+ * time and {@link #findLowestCommonAncestor(LCADynamic.Node, LCADynamic.Node)} is perform in constant time.
  * <p>
- * This implementation is used by the better linear LCA algorithm
- * {@link LCADynamicGabowLinear} and rarely should be used directly.
+ * This implementation is used by the better linear LCA algorithm {@link LCADynamicGabowLinear} and rarely should be
+ * used directly.
  * <p>
- * Based on the simpler data structure presented in 'Data Structures for
- * Weighted Matching and Nearest Common Ancestors with Linking' by Harold N.
- * Gabow (1990).
+ * Based on the simpler data structure presented in 'Data Structures for Weighted Matching and Nearest Common Ancestors
+ * with Linking' by Harold N. Gabow (1990).
  *
  * @author Barak Ugav
  */

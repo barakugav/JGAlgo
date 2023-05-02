@@ -3,30 +3,24 @@ package com.jgalgo;
 /**
  * Static Range Minimum Query (RMQ) algorithm.
  * <p>
- * Given a sequence of \(n\) comparable objects we would like to perform
- * pre-processing and than be able to answer queries of the type: "what is the
- * minimum element in the range \([i, j]\)?" for any indices \(0 \leq i \leq j \leq
- * n\). Algorithm implementing this interface usually require linear or close to
- * linear processing time and try to achieve constant or logarithmic query time.
+ * Given a sequence of \(n\) comparable objects we would like to perform pre-processing and than be able to answer
+ * queries of the type: "what is the minimum element in the range \([i, j]\)?" for any indices \(0 \leq i \leq j \leq
+ * n\). Algorithm implementing this interface usually require linear or close to linear processing time and try to
+ * achieve constant or logarithmic query time.
  * <p>
- * The sequence itself is never passed to the algorithm, rather a
- * {@link RMQStaticComparator} which support comparing two elements given their
- * <i>indices</i> only.
+ * The sequence itself is never passed to the algorithm, rather a {@link RMQStaticComparator} which support comparing
+ * two elements given their <i>indices</i> only.
  *
  * @author Barak Ugav
  */
 public interface RMQStatic {
 
 	/**
-	 * Perform a static pre processing of a sequence of elements for future RMQ
-	 * (Range minimum query) queries.
+	 * Perform a static pre processing of a sequence of elements for future RMQ (Range minimum query) queries.
 	 *
-	 * @param comparator comparator used to compare between two elements, see the
-	 *                   Comparator
-	 *                   definition below
-	 * @param n          the number of elements in the sequence
-	 * @return a data structure built from the preprocessing, that can answer RMQ
-	 *         queries efficiently
+	 * @param  comparator comparator used to compare between two elements, see the Comparator definition below
+	 * @param  n          the number of elements in the sequence
+	 * @return            a data structure built from the preprocessing, that can answer RMQ queries efficiently
 	 */
 	RMQStatic.DataStructure preProcessSequence(RMQStaticComparator comparator, int n);
 
@@ -40,11 +34,11 @@ public interface RMQStatic {
 		/**
 		 * Find the minimum element in range [i, j].
 		 *
-		 * @param i index of range start (including)
-		 * @param j index of the range end (including)
-		 * @return the index of the minimum element in the range
-		 * @throws IllegalArgumentException if either {@code i} or {@code j} are not in
-		 *                                  range {@code [0, n)} or if {@code i > j}.
+		 * @param  i                        index of range start (including)
+		 * @param  j                        index of the range end (including)
+		 * @return                          the index of the minimum element in the range
+		 * @throws IllegalArgumentException if either {@code i} or {@code j} are not in range {@code [0, n)} or if
+		 *                                      {@code i > j}.
 		 */
 		int findMinimumInRange(int i, int j);
 
@@ -53,8 +47,7 @@ public interface RMQStatic {
 	/**
 	 * Create a new static range minimum queries algorithm builder.
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link RMQStatic}
-	 * object.
+	 * This is the recommended way to instantiate a new {@link RMQStatic} object.
 	 *
 	 * @return a new builder that can build {@link RMQStatic} objects
 	 */
@@ -65,7 +58,7 @@ public interface RMQStatic {
 	/**
 	 * A builder for {@link RMQStatic} objects.
 	 *
-	 * @see RMQStatic#newBuilder()
+	 * @see    RMQStatic#newBuilder()
 	 * @author Barak Ugav
 	 */
 	static interface Builder {

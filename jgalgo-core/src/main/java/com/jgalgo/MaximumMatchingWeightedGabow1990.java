@@ -19,17 +19,14 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 /**
- * Edmonds' Blossom algorithm for Maximum weighted matching with Gabow's dynamic
- * LCA data structure.
+ * Edmonds' Blossom algorithm for Maximum weighted matching with Gabow's dynamic LCA data structure.
  * <p>
  * This algorithm runs in \(O(m n + n^2 \log n)\) time and uses linear space.
  * <p>
- * Based on the original paper 'Paths, Trees, and Flowers' by Jack Edmonds
- * (1965), later improved by 'An Efficient Implementation of Edmonds Algorithm
- * for Maximum Matching on Graphs' by Harold N. Gabow (1976), and using the
- * efficient dynamic LCA from 'Data Structures for Weighted Matching and Nearest
- * Common Ancestors with Linking' by Harold N. Gabow (1990) resulting in the
- * final running time.
+ * Based on the original paper 'Paths, Trees, and Flowers' by Jack Edmonds (1965), later improved by 'An Efficient
+ * Implementation of Edmonds Algorithm for Maximum Matching on Graphs' by Harold N. Gabow (1976), and using the
+ * efficient dynamic LCA from 'Data Structures for Weighted Matching and Nearest Common Ancestors with Linking' by
+ * Harold N. Gabow (1990) resulting in the final running time.
  *
  * @author Barak Ugav
  */
@@ -43,8 +40,7 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 	/**
 	 * Create a new maximum weighted matching object.
 	 */
-	public MaximumMatchingWeightedGabow1990() {
-	}
+	public MaximumMatchingWeightedGabow1990() {}
 
 	/**
 	 * Set the implementation of the heap used by this algorithm.
@@ -83,8 +79,7 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 		final Blossom[] blossoms;
 
 		/*
-		 * Union find data structure for even blossoms, used with find0Blossoms:
-		 * find0Blossoms[find0.find(v)]
+		 * Union find data structure for even blossoms, used with find0Blossoms: find0Blossoms[find0.find(v)]
 		 */
 		final UnionFind find0;
 
@@ -92,8 +87,8 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 		final Blossom[] find0Blossoms;
 
 		/*
-		 * Split find data structure for odd and out blossoms, used with vToFind1Idx and
-		 * find1Blossoms: find1Blossoms[find1.find(vToFind1Idx[v])]
+		 * Split find data structure for odd and out blossoms, used with vToFind1Idx and find1Blossoms:
+		 * find1Blossoms[find1.find(vToFind1Idx[v])]
 		 */
 		final SplitFindMin<EdgeEvent> find1;
 
@@ -107,8 +102,7 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 		final Blossom[] find1Blossoms;
 
 		/*
-		 * index used to check whether a blossom was reached in the current blossom
-		 * traverse
+		 * index used to check whether a blossom was reached in the current blossom traverse
 		 */
 		int blossomVisitIdx;
 
@@ -134,8 +128,8 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 		final SubtreeMergeFindMin.Node[] vToSMFId;
 
 		/*
-		 * array used to calculate the path from a vertex to blossom base, used to
-		 * calculate SMF skeleton from odd blossoms
+		 * array used to calculate the path from a vertex to blossom base, used to calculate SMF skeleton from odd
+		 * blossoms
 		 */
 		final int[] oddBlossomPath;
 
@@ -163,32 +157,27 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 			Blossom child;
 
 			/*
-			 * left brother in current sub blossoms level (share parent), null if top
-			 * blossom
+			 * left brother in current sub blossoms level (share parent), null if top blossom
 			 */
 			Blossom left;
 
 			/*
-			 * right brother in current sub blossoms level (share parent), null if top
-			 * blossom
+			 * right brother in current sub blossoms level (share parent), null if top blossom
 			 */
 			Blossom right;
 
 			/*
-			 * the edge that connected this blossom and it's left brother, null if left is
-			 * null
+			 * the edge that connected this blossom and it's left brother, null if left is null
 			 */
 			int toLeftEdge = -1;
 
 			/*
-			 * the edge that connected this blossom and it's right brother, null if right is
-			 * null
+			 * the edge that connected this blossom and it's right brother, null if right is null
 			 */
 			int toRightEdge = -1;
 
 			/*
-			 * index of root vertex in the search tree, -1 if this blossom is out. relevant
-			 * only for top blossoms
+			 * index of root vertex in the search tree, -1 if this blossom is out. relevant only for top blossoms
 			 */
 			int root;
 
@@ -196,15 +185,13 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 			int treeParentEdge = -1;
 
 			/*
-			 * true if this blossom is even, maintained only for trivial blossoms and top
-			 * blossoms
+			 * true if this blossom is even, maintained only for trivial blossoms and top blossoms
 			 */
 			boolean isEven;
 
 			/*
-			 * find1 data structure label the vertices with indices, these are the first and
-			 * last (exclusive) indices of all vertices in this blossoms. only relevant if
-			 * odd
+			 * find1 data structure label the vertices with indices, these are the first and last (exclusive) indices of
+			 * all vertices in this blossoms. only relevant if odd
 			 */
 			int find1SeqBegin;
 			int find1SeqEnd;
@@ -219,14 +206,13 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 			double delta1;
 
 			/*
-			 * the accumulated deltas this blossom was part of odd blossom, doesn't include
-			 * the time this blossom is top odd blossom
+			 * the accumulated deltas this blossom was part of odd blossom, doesn't include the time this blossom is top
+			 * odd blossom
 			 */
 			double deltaOdd;
 
 			/*
-			 * pointer to the grow event for this blossom, relevant only if this blossom is
-			 * out
+			 * pointer to the grow event for this blossom, relevant only if this blossom is out
 			 */
 			HeapReference<EdgeEvent> growRef;
 
@@ -234,8 +220,7 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 			double expandDelta;
 
 			/*
-			 * pointer to the expand event for this blossom, relevant only if this blossom
-			 * is top odd
+			 * pointer to the expand event for this blossom, relevant only if this blossom is top odd
 			 */
 			HeapReference<Blossom> expandRef;
 
@@ -347,8 +332,8 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 			for (int u = 0; u < n; u++)
 				blossoms[u] = new Blossom(u);
 
-			Comparator<EdgeEvent> edgeSlackBarComparator = (e1,
-					e2) -> (e2 == null ? -1 : e1 == null ? 1 : Double.compare(e1.slack, e2.slack));
+			Comparator<EdgeEvent> edgeSlackBarComparator =
+					(e1, e2) -> (e2 == null ? -1 : e1 == null ? 1 : Double.compare(e1.slack, e2.slack));
 
 			mainLoop: for (;;) {
 
@@ -412,8 +397,8 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 				currentSearch: for (;;) {
 					double delta1 = delta1Threshold;
 					double delta2 = growEvents.isEmpty() ? Double.MAX_VALUE : growEventsKey(growEvents.findMin());
-					double delta3 = !smf.hasNonTreeEdge() ? Double.MAX_VALUE
-							: smf.findMinNonTreeEdge().edgeData().slack / 2;
+					double delta3 =
+							!smf.hasNonTreeEdge() ? Double.MAX_VALUE : smf.findMinNonTreeEdge().edgeData().slack / 2;
 					double delta4 = expandEvents.isEmpty() ? Double.MAX_VALUE : expandEvents.findMin().expandDelta;
 
 					double deltaNext = Math.min(delta2, Math.min(delta3, delta4));
@@ -429,8 +414,7 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 								.collect(Collectors.joining(", ", "[", "]")));
 						List<Blossom> topLevelBlossoms = new ArrayList<>();
 						for (Blossom b : blossoms) {
-							for (; b.parent != null; b = b.parent)
-								;
+							for (; b.parent != null; b = b.parent);
 							topLevelBlossoms.add(b);
 						}
 						debug.print(" ", topLevelBlossoms.stream().distinct().filter(b -> !b.isSingleton())
@@ -654,10 +638,9 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 			find0Blossoms[find0.find(base)] = V;
 
 			/*
-			 * If a SMF structure already exists in the blossom, we can't just merge all the
-			 * vertices with the base, as not all of them will be adjacent sub trees.
-			 * Therefore, we first merge the base to all it's SMF ancestors in the blossom,
-			 * and than merging all vertices up to the base sub tree.
+			 * If a SMF structure already exists in the blossom, we can't just merge all the vertices with the base, as
+			 * not all of them will be adjacent sub trees. Therefore, we first merge the base to all it's SMF ancestors
+			 * in the blossom, and than merging all vertices up to the base sub tree.
 			 */
 			final SubtreeMergeFindMin.Node smfBaseNode = vToSMFId[base];
 			assert smfBaseNode != null;

@@ -5,9 +5,8 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 /**
  * Minimum spanning tree algorithm for directed graphs.
  * <p>
- * A spanning tree in directed graph is defined similarly to a spanning tree in
- * undirected graph, but the 'spanning tree' does not yield a strongly connected
- * graph, but a weakly connected tree rooted at some vertex.
+ * A spanning tree in directed graph is defined similarly to a spanning tree in undirected graph, but the 'spanning
+ * tree' does not yield a strongly connected graph, but a weakly connected tree rooted at some vertex.
  *
  * @author Barak Ugav
  */
@@ -24,21 +23,19 @@ public interface MDST extends MST {
 	public IntCollection computeMinimumSpanningTree(Graph g, EdgeWeightFunc w);
 
 	/**
-	 * Compute a minimum directed spanning tree (MDST) in a directed graph, rooted
-	 * at the given vertex
+	 * Compute a minimum directed spanning tree (MDST) in a directed graph, rooted at the given vertex
 	 *
-	 * @param g    a directed graph
-	 * @param w    an edge weight function
-	 * @param root vertex in the graph the spanning tree will be rooted from
-	 * @return all edges composing the spanning tree
+	 * @param  g    a directed graph
+	 * @param  w    an edge weight function
+	 * @param  root vertex in the graph the spanning tree will be rooted from
+	 * @return      all edges composing the spanning tree
 	 */
 	public IntCollection computeMinimumSpanningTree(DiGraph g, EdgeWeightFunc w, int root);
 
 	/**
 	 * Create a new minimum directed spanning tree algorithm builder.
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link MDST}
-	 * object.
+	 * This is the recommended way to instantiate a new {@link MDST} object.
 	 *
 	 * @return a new builder that can build {@link MDST} objects
 	 */
@@ -49,7 +46,7 @@ public interface MDST extends MST {
 	/**
 	 * A builder for {@link MDST} objects.
 	 *
-	 * @see MDST#newBuilder()
+	 * @see    MDST#newBuilder()
 	 * @author Barak Ugav
 	 */
 	static interface Builder {

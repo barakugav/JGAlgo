@@ -8,11 +8,10 @@ import java.util.Set;
 /**
  * A red black balanced binary search tree.
  * <p>
- * A red black tree is a balanced binary search tree that its height is always
- * \(O(\log n)\). All operations are performed in \(O(\log n)\) time.
+ * A red black tree is a balanced binary search tree that its height is always \(O(\log n)\). All operations are
+ * performed in \(O(\log n)\) time.
  *
- * @see <a href=
- *      "https://en.wikipedia.org/wiki/Red%E2%80%93black_tree">Wikipedia</a>
+ * @see    <a href= "https://en.wikipedia.org/wiki/Red%E2%80%93black_tree">Wikipedia</a>
  * @author Barak Ugav
  */
 public class RedBlackTree<E> extends BinarySearchTreeAbstract<E> {
@@ -25,35 +24,28 @@ public class RedBlackTree<E> extends BinarySearchTreeAbstract<E> {
 	static final boolean Black = false;
 
 	/**
-	 * Constructs a new, empty red black tree, sorted according to the natural
-	 * ordering of its elements.
+	 * Constructs a new, empty red black tree, sorted according to the natural ordering of its elements.
 	 * <p>
-	 * All elements inserted into the tree must implement the {@link Comparable}
-	 * interface. Furthermore, all such elements must be <i>mutually comparable</i>:
-	 * {@code e1.compareTo(e2)} must not throw a {@code ClassCastException} for any
-	 * elements {@code e1} and {@code e2} in the tree. If the user attempts to
-	 * insert an element to the tree that violates this constraint (for example, the
-	 * user attempts to insert a string element to a tree whose elements are
-	 * integers), the {@code insert} call will throw a {@code ClassCastException}.
+	 * All elements inserted into the tree must implement the {@link Comparable} interface. Furthermore, all such
+	 * elements must be <i>mutually comparable</i>: {@code e1.compareTo(e2)} must not throw a {@code ClassCastException}
+	 * for any elements {@code e1} and {@code e2} in the tree. If the user attempts to insert an element to the tree
+	 * that violates this constraint (for example, the user attempts to insert a string element to a tree whose elements
+	 * are integers), the {@code insert} call will throw a {@code ClassCastException}.
 	 */
 	public RedBlackTree() {
 		this(null);
 	}
 
 	/**
-	 * Constructs a new, empty red black tree, sorted according to the specified
-	 * comparator.
+	 * Constructs a new, empty red black tree, sorted according to the specified comparator.
 	 * <p>
-	 * All elements inserted into the tree must be <i>mutually comparable</i> by the
-	 * specified comparator: {@code comparator.compare(e1, e2)} must not throw a
-	 * {@code ClassCastException} for any elements {@code e1} and {@code e2} in the
-	 * tree. If the user attempts to insert an element to the tree that violates
-	 * this constraint, the {@code insert} call will throw a
-	 * {@code ClassCastException}.
+	 * All elements inserted into the tree must be <i>mutually comparable</i> by the specified comparator:
+	 * {@code comparator.compare(e1, e2)} must not throw a {@code ClassCastException} for any elements {@code e1} and
+	 * {@code e2} in the tree. If the user attempts to insert an element to the tree that violates this constraint, the
+	 * {@code insert} call will throw a {@code ClassCastException}.
 	 *
-	 * @param comparator the comparator that will be used to order this tree.
-	 *                   If {@code null}, the {@linkplain Comparable natural
-	 *                   ordering} of the elements will be used.
+	 * @param comparator the comparator that will be used to order this tree. If {@code null}, the
+	 *                       {@linkplain Comparable natural ordering} of the elements will be used.
 	 */
 	public RedBlackTree(Comparator<? super E> comparator) {
 		super(comparator);
@@ -118,8 +110,7 @@ public class RedBlackTree<E> extends BinarySearchTreeAbstract<E> {
 	}
 
 	/**
-	 * @throws UnsupportedOperationException the current implementation doesn't
-	 *                                       support this operation
+	 * @throws UnsupportedOperationException the current implementation doesn't support this operation
 	 */
 	@Override
 	public BinarySearchTree<E> splitSmaller(E e) {
@@ -127,8 +118,7 @@ public class RedBlackTree<E> extends BinarySearchTreeAbstract<E> {
 	}
 
 	/**
-	 * @throws UnsupportedOperationException the current implementation doesn't
-	 *                                       support this operation
+	 * @throws UnsupportedOperationException the current implementation doesn't support this operation
 	 */
 	@Override
 	public BinarySearchTree<E> splitGreater(E e) {
@@ -136,8 +126,7 @@ public class RedBlackTree<E> extends BinarySearchTreeAbstract<E> {
 	}
 
 	/**
-	 * @throws UnsupportedOperationException the current implementation doesn't
-	 *                                       support this operation
+	 * @throws UnsupportedOperationException the current implementation doesn't support this operation
 	 */
 	@Override
 	public RedBlackTree<E> split(HeapReference<E> ref) {
@@ -482,11 +471,10 @@ public class RedBlackTree<E> extends BinarySearchTreeAbstract<E> {
 	}
 
 	/**
-	 * [experimental API] Get an iterator that iterate over all the nodes in a
-	 * node's sub tree.
+	 * [experimental API] Get an iterator that iterate over all the nodes in a node's sub tree.
 	 *
-	 * @param ref a reference to a node in the tree
-	 * @return an iterator that iterate over all the nodes in the node's sub tree
+	 * @param  ref a reference to a node in the tree
+	 * @return     an iterator that iterate over all the nodes in the node's sub tree
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Iterator<HeapReference<E>> experimental_subTreeIterator(HeapReference<E> ref) {
@@ -519,16 +507,12 @@ public class RedBlackTree<E> extends BinarySearchTreeAbstract<E> {
 		return new Node<>(e);
 	}
 
-	void afterInsert(Node<E> n) {
-	}
+	void afterInsert(Node<E> n) {}
 
-	void beforeRemove(Node<E> n) {
-	}
+	void beforeRemove(Node<E> n) {}
 
-	void beforeRotateLeft(Node<E> n) {
-	}
+	void beforeRotateLeft(Node<E> n) {}
 
-	void beforeRotateRight(Node<E> n) {
-	}
+	void beforeRotateRight(Node<E> n) {}
 
 }

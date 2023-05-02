@@ -6,28 +6,23 @@ import it.unimi.dsi.fastutil.ints.IntIterators;
 /**
  * The push-relabel maximum flow algorithm with relabel-to-front ordering.
  * <p>
- * The push-relabel algorithm maintain a "preflow" and gradually converts it
- * into a maximum flow by moving flow locally between neighboring nodes using
- * <i>push</i> operations under the guidance of an admissible network maintained
- * by <i>relabel</i> operations.
+ * The push-relabel algorithm maintain a "preflow" and gradually converts it into a maximum flow by moving flow locally
+ * between neighboring nodes using <i>push</i> operations under the guidance of an admissible network maintained by
+ * <i>relabel</i> operations.
  * <p>
- * Different variants of the push relabel algorithm exists, mostly different in
- * the order the vertices with excess (more in-going than out-going flow) are
- * examined. This implementation order these vertices by maintaining the
- * vertices in a linked list, and moving a vertex to the front of the list each
- * time its relabel. Iterating the list actually traverse the vertices in a
- * topological order with respect to the admissible network. The algorithm runs
- * in \(O(n^3)\) time and uses linear space.
+ * Different variants of the push relabel algorithm exists, mostly different in the order the vertices with excess (more
+ * in-going than out-going flow) are examined. This implementation order these vertices by maintaining the vertices in a
+ * linked list, and moving a vertex to the front of the list each time its relabel. Iterating the list actually traverse
+ * the vertices in a topological order with respect to the admissible network. The algorithm runs in \(O(n^3)\) time and
+ * uses linear space.
  * <p>
- * Heuristics are crucial for the practical running time of push-relabel
- * algorithm, and this implementation uses the 'global relabeling' and 'gap'
- * heuristics.
+ * Heuristics are crucial for the practical running time of push-relabel algorithm, and this implementation uses the
+ * 'global relabeling' and 'gap' heuristics.
  *
- * @see <a href=
- *      "https://en.wikipedia.org/wiki/Push%E2%80%93relabel_maximum_flow_algorithm">Wikipedia</a>
- * @see MaximumFlowPushRelabel
- * @see MaximumFlowPushRelabelHighestFirst
- * @see MaximumFlowPushRelabelLowestFirst
+ * @see    <a href= "https://en.wikipedia.org/wiki/Push%E2%80%93relabel_maximum_flow_algorithm">Wikipedia</a>
+ * @see    MaximumFlowPushRelabel
+ * @see    MaximumFlowPushRelabelHighestFirst
+ * @see    MaximumFlowPushRelabelLowestFirst
  * @author Barak Ugav
  */
 public class MaximumFlowPushRelabelToFront extends MaximumFlowPushRelabelAbstract {
@@ -35,8 +30,7 @@ public class MaximumFlowPushRelabelToFront extends MaximumFlowPushRelabelAbstrac
 	/**
 	 * Create a new maximum flow algorithm object.
 	 */
-	public MaximumFlowPushRelabelToFront() {
-	}
+	public MaximumFlowPushRelabelToFront() {}
 
 	@Override
 	WorkerDouble newWorkerDouble(DiGraph gOrig, FlowNetwork net, int source, int sink) {

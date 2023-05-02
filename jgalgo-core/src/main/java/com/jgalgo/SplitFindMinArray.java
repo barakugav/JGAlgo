@@ -6,13 +6,11 @@ import java.util.Comparator;
 /**
  * A {@link SplitFindMin} implementation using arrays.
  * <p>
- * The data structure support the {@link #init(Collection, Comparator)} in
- * \(O(n)\) time, the {@link #decreaseKey(int, Object)} operation in
- * \(O(1)\) time and the {@link #split(int)} operation in \(O(\log n)\)
+ * The data structure support the {@link #init(Collection, Comparator)} in \(O(n)\) time, the
+ * {@link #decreaseKey(int, Object)} operation in \(O(1)\) time and the {@link #split(int)} operation in \(O(\log n)\)
  * time amortized. The data structure uses linear space.
  * <p>
- * This data structure is used in the maximum weighted matching for general
- * graphs.
+ * This data structure is used in the maximum weighted matching for general graphs.
  *
  * @author Barak Ugav
  */
@@ -25,8 +23,7 @@ public class SplitFindMinArray<K> implements SplitFindMin<K> {
 	/**
 	 * Create an empty Split-Find-Min data structure.
 	 */
-	public SplitFindMinArray() {
-	}
+	public SplitFindMinArray() {}
 
 	@SuppressWarnings("unchecked")
 	@Override
