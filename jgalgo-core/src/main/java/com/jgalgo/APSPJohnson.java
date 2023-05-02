@@ -1,7 +1,7 @@
 package com.jgalgo;
 
 import java.util.Objects;
-
+import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -60,9 +60,9 @@ public class APSPJohnson implements APSP {
 		}
 
 		Pair<double[], Path> potential0 = calcPotential(g, w);
-		if (potential0.e2 != null)
-			return new NegCycleRes(potential0.e2);
-		double[] potential = potential0.e1;
+		if (potential0.second() != null)
+			return new NegCycleRes(potential0.second());
+		double[] potential = potential0.first();
 
 		EdgeWeightFunc wPotential = e -> {
 			double up = potential[g.edgeSource(e)];

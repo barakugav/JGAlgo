@@ -2,9 +2,8 @@ package com.jgalgo;
 
 import java.util.Arrays;
 import java.util.BitSet;
-
 import com.jgalgo.Utils.BiInt2IntFunction;
-
+import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 import it.unimi.dsi.fastutil.ints.IntIntPair;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -108,8 +107,8 @@ public class TreePathMaximaHagerup implements TreePathMaxima {
 			int[] lcaQueries = splitQueriesIntoLCAQueries(t, root, queries);
 
 			Pair<int[], int[]> r2 = getEdgeToParentsAndDepth(t, root);
-			int[] edgeToParent = r2.e1;
-			int[] depths = r2.e2;
+			int[] edgeToParent = r2.first();
+			int[] depths = r2.second();
 
 			int[] q = calcQueriesPerVertex(t, lcaQueries, depths, edgeToParent);
 			int[][] a = calcAnswersPerVertex(t, root, q, edgeToParent);

@@ -1,7 +1,7 @@
 package com.jgalgo;
 
 import java.util.Random;
-
+import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -61,8 +61,8 @@ public class MSTKargerKleinTarjan implements MST {
 		 * This is a little bit clumsy, but didn't find another way.
 		 */
 		Pair<UGraph, IntCollection> r = MSTBoruvka.runBoruvka(g, w, 2, e -> new Ref(e, w.weight(e)), "ref");
-		UGraph g0 = r.e1;
-		IntCollection f0 = r.e2;
+		UGraph g0 = r.first();
+		IntCollection f0 = r.second();
 		UGraph g1 = randSubgraph(g0);
 		Weights<Ref> g1Ref = g1.edgesWeight("ref");
 		IntCollection f1Edges = computeMST(g1, e -> g1Ref.get(e).w);

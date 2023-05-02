@@ -3,7 +3,7 @@ package com.jgalgo;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Objects;
-
+import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -73,9 +73,9 @@ public class SSSPGoldberg implements SSSP {
 			return positiveSsspAlgo.computeShortestPaths(g, w, source);
 
 		Pair<int[], Path> p = calcPotential(g, w, minWeight);
-		if (p.e2 != null)
-			return Result.ofNegCycle(source, p.e2);
-		int[] potential = p.e1;
+		if (p.second() != null)
+			return Result.ofNegCycle(source, p.second());
+		int[] potential = p.first();
 		PotentialWeightFunction pw = new PotentialWeightFunction(g, w, potential);
 		SSSP.Result res = positiveSsspAlgo.computeShortestPaths(g, pw, source);
 		return Result.ofSuccess(source, potential, res);
