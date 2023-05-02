@@ -8,7 +8,7 @@ public class MSTKargerKleinTarjanTest extends TestBase {
 	public void testRandGraph() {
 		final long seed = 0xe76fc4911bdb2da2L;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		MSTTestUtils.testRandGraph(() -> new MSTKargerKleinTarjan(seedGen.nextSeed()), seedGen.nextSeed());
+		MSTTestUtils.testRandGraph(new MSTKargerKleinTarjan(seedGen.nextSeed()), seedGen.nextSeed());
 	}
 
 }

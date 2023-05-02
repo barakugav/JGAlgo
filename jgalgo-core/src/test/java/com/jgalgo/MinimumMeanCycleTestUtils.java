@@ -5,13 +5,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
-import java.util.function.Supplier;
 
 import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
 
 public class MinimumMeanCycleTestUtils extends TestBase {
 
-	static void testMinimumMeanCycle(Supplier<? extends MinimumMeanCycle> builder, long seed) {
+	static void testMinimumMeanCycle(MinimumMeanCycle algo, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(128, 3, 2), phase(128, 16, 32), phase(64, 64, 128), phase(8, 500, 2010));
 		runTestMultiple(phases, (testIter, args) -> {
@@ -23,7 +22,6 @@ public class MinimumMeanCycleTestUtils extends TestBase {
 					.selfEdges(false).cycles(true).connected(false).build();
 			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 
-			MinimumMeanCycle algo = builder.get();
 			verifyMinimumMeanCycle(algo, g, w);
 		});
 	}

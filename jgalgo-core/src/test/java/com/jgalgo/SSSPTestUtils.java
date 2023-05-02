@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.Random;
-import java.util.function.Supplier;
 
 import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
 
@@ -15,21 +14,21 @@ public class SSSPTestUtils extends TestUtils {
 	private SSSPTestUtils() {
 	}
 
-	public static void testSSSPDirectedPositiveInt(Supplier<? extends SSSP> builder, long seed) {
-		testSSSPPositiveInt(builder, true, seed);
+	public static void testSSSPDirectedPositiveInt(SSSP algo, long seed) {
+		testSSSPPositiveInt(algo, true, seed);
 	}
 
-	public static void testSSSPUndirectedPositiveInt(Supplier<? extends SSSP> builder, long seed) {
-		testSSSPPositiveInt(builder, false, seed);
+	public static void testSSSPUndirectedPositiveInt(SSSP algo, long seed) {
+		testSSSPPositiveInt(algo, false, seed);
 	}
 
-	private static void testSSSPPositiveInt(Supplier<? extends SSSP> builder, boolean directed, long seed) {
+	private static void testSSSPPositiveInt(SSSP algo, boolean directed, long seed) {
 		List<Phase> phases = List.of(phase(128, 16, 32), phase(64, 64, 256), phase(8, 512, 4096),
 				phase(1, 4096, 16384));
-		testSSSPPositiveInt(builder, directed, seed, phases);
+		testSSSPPositiveInt(algo, directed, seed, phases);
 	}
 
-	static void testSSSPPositiveInt(Supplier<? extends SSSP> builder, boolean directed, long seed, List<Phase> phases) {
+	static void testSSSPPositiveInt(SSSP algo, boolean directed, long seed, List<Phase> phases) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
 
@@ -40,13 +39,12 @@ public class SSSPTestUtils extends TestUtils {
 			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			int source = rand.nextInt(g.vertices().size());
 
-			SSSP algo = builder.get();
 			SSSP validationAlgo = algo instanceof SSSPDijkstra ? new SSSPDial() : new SSSPDijkstra();
 			testAlgo(g, w, source, algo, validationAlgo);
 		});
 	}
 
-	static void testSSSPDirectedNegativeInt(Supplier<? extends SSSP> builder, long seed) {
+	static void testSSSPDirectedNegativeInt(SSSP algo, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(512, 4, 4), phase(128, 16, 32), phase(64, 64, 256), phase(8, 512, 4096),
 				phase(2, 1024, 4096));
@@ -57,7 +55,6 @@ public class SSSPTestUtils extends TestUtils {
 			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
 			int source = 0;
 
-			SSSP algo = builder.get();
 			SSSP validationAlgo = algo instanceof SSSPBellmanFord ? new SSSPGoldberg() : new SSSPBellmanFord();
 			testAlgo(g, w, source, algo, validationAlgo);
 		});

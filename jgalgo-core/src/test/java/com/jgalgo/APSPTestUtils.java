@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
-import java.util.function.Supplier;
 
 import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
 
@@ -14,15 +13,15 @@ class APSPTestUtils extends TestUtils {
 	private APSPTestUtils() {
 	}
 
-	static void testAPSPDirectedPositiveInt(Supplier<? extends APSP> builder, long seed) {
-		testAPSPPositiveInt(builder, true, seed);
+	static void testAPSPDirectedPositiveInt(APSP algo, long seed) {
+		testAPSPPositiveInt(algo, true, seed);
 	}
 
-	static void testAPSPUndirectedPositiveInt(Supplier<? extends APSP> builder, long seed) {
-		testAPSPPositiveInt(builder, false, seed);
+	static void testAPSPUndirectedPositiveInt(APSP algo, long seed) {
+		testAPSPPositiveInt(algo, false, seed);
 	}
 
-	private static void testAPSPPositiveInt(Supplier<? extends APSP> builder, boolean directed, long seed) {
+	private static void testAPSPPositiveInt(APSP algo, boolean directed, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(128, 6, 20), phase(128, 16, 32), phase(64, 64, 256));
 		runTestMultiple(phases, (testIter, args) -> {
@@ -30,11 +29,11 @@ class APSPTestUtils extends TestUtils {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
 			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
-			testAPSP(g, w, builder, new SSSPDijkstra());
+			testAPSP(g, w, algo, new SSSPDijkstra());
 		});
 	}
 
-	static void testAPSPDirectedNegativeInt(Supplier<? extends APSP> builder, long seed) {
+	static void testAPSPDirectedNegativeInt(APSP algo, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(128, 6, 20), phase(64, 16, 32), phase(10, 64, 256));
 		runTestMultiple(phases, (testIter, args) -> {
@@ -42,12 +41,11 @@ class APSPTestUtils extends TestUtils {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
 			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
-			testAPSP(g, w, builder, new SSSPGoldberg());
+			testAPSP(g, w, algo, new SSSPGoldberg());
 		});
 	}
 
-	static void testAPSP(Graph g, EdgeWeightFunc w, Supplier<? extends APSP> builder, SSSP validationAlgo) {
-		APSP algo = builder.get();
+	static void testAPSP(Graph g, EdgeWeightFunc w, APSP algo, SSSP validationAlgo) {
 		APSP.Result result = algo.computeAllShortestPaths(g, w);
 
 		int n = g.vertices().size();

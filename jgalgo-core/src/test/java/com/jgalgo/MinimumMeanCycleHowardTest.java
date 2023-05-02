@@ -7,7 +7,7 @@ public class MinimumMeanCycleHowardTest extends TestBase {
 	@Test
 	public void testRandGraph() {
 		final long seed = 0x6968128e5b6c70dfL;
-		MinimumMeanCycleTestUtils.testMinimumMeanCycle(MinimumMeanCycleHoward::new, seed);
+		MinimumMeanCycleTestUtils.testMinimumMeanCycle(new MinimumMeanCycleHoward(), seed);
 	}
 
 }

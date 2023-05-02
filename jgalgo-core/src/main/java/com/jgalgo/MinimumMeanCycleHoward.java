@@ -201,18 +201,18 @@ public class MinimumMeanCycleHoward implements MinimumMeanCycle {
 			}
 		}
 
-		if (overallBestCycleVertex == -1)
-			return null;
-		IntList cycle = new IntArrayList();
-		for (int v = overallBestCycleVertex;;) {
-			int e = policy[v];
-			cycle.add(e);
-			v = g.edgeTarget(e);
-			if (v == overallBestCycleVertex)
-				break;
+		Path result = null;
+		if (overallBestCycleVertex != -1) {
+			IntList cycle = new IntArrayList();
+			for (int v = overallBestCycleVertex;;) {
+				int e = policy[v];
+				cycle.add(e);
+				v = g.edgeTarget(e);
+				if (v == overallBestCycleVertex)
+					break;
+			}
+			result = new Path(g, overallBestCycleVertex, overallBestCycleVertex, cycle);
 		}
-		Path result = new Path(g, overallBestCycleVertex, overallBestCycleVertex, cycle);
-
 		for (int c = 0; c < ccNum; c++) {
 			ccVertices[c].clear();
 			ccEdges[c].clear();

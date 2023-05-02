@@ -7,8 +7,7 @@ public class ColoringGreedyTest extends TestBase {
 	@Test
 	public void testRandGraphs() {
 		final long seed = 0xe57268894020f1d1L;
-		Coloring algo = new ColoringGreedy();
-		ColoringTestUtils.testRandGraphs(() -> algo, seed);
+		ColoringTestUtils.testRandGraphs(new ColoringGreedy(), seed);
 	}
 
 }

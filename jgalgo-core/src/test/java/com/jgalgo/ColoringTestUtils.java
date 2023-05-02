@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.util.List;
-import java.util.function.Supplier;
 
 import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
 
@@ -16,15 +15,14 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 class ColoringTestUtils extends TestUtils {
 
-	static void testRandGraphs(Supplier<? extends Coloring> coloringAlgoBuilder, long seed) {
+	static void testRandGraphs(Coloring algo, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(256, 16, 8), phase(128, 32, 64), phase(4, 2048, 8192));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 			UGraph g = (UGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
 					.selfEdges(false).cycles(true).connected(false).build();
-			Coloring coloringAlgo = coloringAlgoBuilder.get();
-			Coloring.Result coloring = coloringAlgo.computeColoring(g);
+			Coloring.Result coloring = algo.computeColoring(g);
 			validateColoring(g, coloring);
 		});
 	}

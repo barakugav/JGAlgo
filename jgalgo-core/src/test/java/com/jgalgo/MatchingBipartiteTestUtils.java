@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Supplier;
 
 import com.jgalgo.GraphImplTestUtils.GraphImpl;
 import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
@@ -44,11 +43,11 @@ class MatchingBipartiteTestUtils extends TestUtils {
 		return g;
 	}
 
-	static void randBipartiteGraphs(Supplier<? extends MaximumMatching> builder, long seed) {
-		randBipartiteGraphs(builder, GraphImplTestUtils.GRAPH_IMPL_DEFAULT, seed);
+	static void randBipartiteGraphs(MaximumMatching algo, long seed) {
+		randBipartiteGraphs(algo, GraphImplTestUtils.GRAPH_IMPL_DEFAULT, seed);
 	}
 
-	static void randBipartiteGraphs(Supplier<? extends MaximumMatching> builder, GraphImpl graphImpl, long seed) {
+	static void randBipartiteGraphs(MaximumMatching algo, GraphImpl graphImpl, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(128, 4, 4, 4), phase(64, 16, 16, 64), phase(8, 128, 128, 128),
 				phase(8, 128, 128, 512), phase(1, 300, 300, 1100));
@@ -58,7 +57,6 @@ class MatchingBipartiteTestUtils extends TestUtils {
 			int m = args[2];
 			UGraph g = randGraphBipartite(sn, tn, m, graphImpl, seedGen.nextSeed());
 
-			MaximumMatching algo = builder.get();
 			int expeced = calcExpectedMaxMatching(g);
 			testBipartiteAlgo(algo, g, expeced);
 		});

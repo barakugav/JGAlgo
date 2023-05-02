@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.function.IntToDoubleFunction;
-import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Test;
 
@@ -13,7 +12,7 @@ import it.unimi.dsi.fastutil.ints.Int2DoubleMap;
 import it.unimi.dsi.fastutil.ints.Int2DoubleOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
-public class AStarTest  extends TestBase  {
+public class AStarTest extends TestBase {
 
 	private static List<Phase> SsspPhases = List.of(phase(64, 16, 32), phase(32, 64, 256), phase(4, 300, 900));
 
@@ -57,11 +56,11 @@ public class AStarTest  extends TestBase  {
 				seedGen.nextSeed(), SsspPhases);
 	}
 
-	private static Supplier<? extends SSSP> AStarAsSSSPWithNoHeuristic() {
+	private static SSSP AStarAsSSSPWithNoHeuristic() {
 		return AStarAsSSSP(params -> (v -> 0));
 	}
 
-	private static Supplier<? extends SSSP> AStarAsSSSPWithPerfectHeuristic() {
+	private static SSSP AStarAsSSSPWithPerfectHeuristic() {
 		return AStarAsSSSP(params -> {
 			Graph g = params.g;
 			EdgeWeightFunc w = params.w;
@@ -76,7 +75,7 @@ public class AStarTest  extends TestBase  {
 		});
 	}
 
-	private static Supplier<? extends SSSP> AStarAsSSSPWithRandAdmissibleHeuristic(long seed) {
+	private static SSSP AStarAsSSSPWithRandAdmissibleHeuristic(long seed) {
 		Random rand = new Random(seed);
 		return AStarAsSSSP(params -> {
 			Graph g = params.g;
@@ -132,9 +131,9 @@ public class AStarTest  extends TestBase  {
 		}
 	}
 
-	private static Supplier<? extends SSSP> AStarAsSSSP(
+	private static SSSP AStarAsSSSP(
 			Function<HeuristicParams, IntToDoubleFunction> vHeuristicBuilder) {
-		return () -> new SSSP() {
+		return new SSSP() {
 			@Override
 			public SSSP.Result computeShortestPaths(Graph g, EdgeWeightFunc w, int source) {
 				int n = g.vertices().size();

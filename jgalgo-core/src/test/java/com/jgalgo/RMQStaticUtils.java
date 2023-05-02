@@ -3,27 +3,25 @@ package com.jgalgo;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Random;
-import java.util.function.Supplier;
 
 class RMQStaticUtils extends TestUtils {
 
 	private RMQStaticUtils() {
 	}
 
-	static void testRMQ65536(Supplier<? extends RMQStatic> builder, long seed) {
-		testRMQ(builder, 65536, 4096, seed);
+	static void testRMQ65536(RMQStatic algo, long seed) {
+		testRMQ(algo, 65536, 4096, seed);
 	}
 
-	static void testRMQ(Supplier<? extends RMQStatic> builder, int n, int queriesNum, long seed) {
+	static void testRMQ(RMQStatic algo, int n, int queriesNum, long seed) {
 		int[] a = new int[n];
 		int[][] queries = new int[queriesNum][];
 		randRMQDataAndQueries(a, queries, seed);
 
-		testRMQ(builder, a, queries);
+		testRMQ(algo, a, queries);
 	}
 
-	static void testRMQ(Supplier<? extends RMQStatic> builder, int a[], int[][] queries) {
-		RMQStatic rmq = builder.get();
+	static void testRMQ(RMQStatic rmq, int a[], int[][] queries) {
 		RMQStatic.DataStructure rmqDS = rmq.preProcessSequence(RMQStaticComparator.ofIntArray(a), a.length);
 
 		for (int idx = 0; idx < queries.length; idx++) {

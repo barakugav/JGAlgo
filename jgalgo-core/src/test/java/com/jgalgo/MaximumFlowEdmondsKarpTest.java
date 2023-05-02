@@ -7,7 +7,7 @@ public class MaximumFlowEdmondsKarpTest extends TestBase {
 	@Test
 	public void testRandGraphs() {
 		final long seed = 0x398eea4097bc0600L;
-		MaximumFlowTestUtils.testRandGraphs(MaximumFlowEdmondsKarp::new, seed);
+		MaximumFlowTestUtils.testRandGraphs(new MaximumFlowEdmondsKarp(), seed);
 	}
 
 }

@@ -7,12 +7,12 @@ public class MaximumFlowPushRelabelHighestFirstTest extends TestBase {
 	@Test
 	public void testRandGraphsDoubleFlow() {
 		final long seed = 0x307ba0f4e538bcdfL;
-		MaximumFlowTestUtils.testRandGraphs(MaximumFlowPushRelabelHighestFirst::new, seed);
+		MaximumFlowTestUtils.testRandGraphs(new MaximumFlowPushRelabelHighestFirst(), seed);
 	}
 
 	@Test
 	public void testRandGraphsIntFlow() {
 		final long seed = 0x5c4a4099bab06fdbL;
-		MaximumFlowTestUtils.testRandGraphsInt(MaximumFlowPushRelabelHighestFirst::new, seed);
+		MaximumFlowTestUtils.testRandGraphsInt(new MaximumFlowPushRelabelHighestFirst(), seed);
 	}
 }

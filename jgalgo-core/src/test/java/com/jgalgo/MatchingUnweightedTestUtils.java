@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Supplier;
 
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -18,14 +17,13 @@ class MatchingUnweightedTestUtils extends TestUtils {
 	private MatchingUnweightedTestUtils() {
 	}
 
-	static void randGraphs(Supplier<? extends MaximumMatching> builder, long seed) {
+	static void randGraphs(MaximumMatching algo, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(128, 16, 8), phase(128, 16, 16), phase(64, 32, 32), phase(32, 32, 64),
 				phase(16, 64, 64), phase(12, 64, 128), phase(4, 256, 256), phase(4, 256, 512), phase(1, 1000, 2500));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 			UGraph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
-			MaximumMatching algo = builder.get();
 			int expeced = calcExpectedMaxMatching(g);
 			testAlgo(algo, g, expeced);
 		});

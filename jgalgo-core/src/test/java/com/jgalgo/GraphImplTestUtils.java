@@ -264,23 +264,23 @@ class GraphImplTestUtils extends TestUtils {
 	}
 
 	static void testUndirectedMST(GraphImpl graphImpl, long seed) {
-		MSTTestUtils.testRandGraph(MSTKruskal::new, graphImpl, seed);
+		MSTTestUtils.testRandGraph(new MSTKruskal(), graphImpl, seed);
 	}
 
 	static void testDirectedMDST(GraphImpl graphImpl, long seed) {
-		MDSTTarjanTest.testRandGraph(MDSTTarjan::new, graphImpl, seed);
+		MDSTTarjanTest.testRandGraph(new MDSTTarjan(), graphImpl, seed);
 	}
 
 	static void testDirectedMaxFlow(GraphImpl graphImpl, long seed) {
-		MaximumFlowTestUtils.testRandGraphs(MaximumFlowEdmondsKarp::new, graphImpl, seed);
+		MaximumFlowTestUtils.testRandGraphs(new MaximumFlowEdmondsKarp(), graphImpl, seed);
 	}
 
 	static void testUndirectedBipartiteMatching(GraphImpl graphImpl, long seed) {
-		MatchingBipartiteTestUtils.randBipartiteGraphs(MaximumMatchingGabow1976::new, graphImpl, seed);
+		MatchingBipartiteTestUtils.randBipartiteGraphs(new MaximumMatchingGabow1976(), graphImpl, seed);
 	}
 
 	static void testUndirectedBipartiteMatchingWeighted(GraphImpl graphImpl, long seed) {
-		MatchingWeightedTestUtils.randGraphsBipartiteWeighted(MaximumMatchingWeightedBipartiteHungarianMethod::new,
+		MatchingWeightedTestUtils.randGraphsBipartiteWeighted(new MaximumMatchingWeightedBipartiteHungarianMethod(),
 				graphImpl, seed);
 	}
 

@@ -7,13 +7,13 @@ public class MaximumMatchingWeightedBipartiteSSSPTest extends TestBase {
 	@Test
 	public void testRandBipartiteGraphsWeight1() {
 		final long seed = 0x6d2c36b6f7f5d43fL;
-		MatchingBipartiteTestUtils.randBipartiteGraphs(MaximumMatchingWeightedBipartiteSSSP::new, seed);
+		MatchingBipartiteTestUtils.randBipartiteGraphs(new MaximumMatchingWeightedBipartiteSSSP(), seed);
 	}
 
 	@Test
 	public void testRandBipartiteGraphsWeighted() {
 		final long seed = 0x131359e008ab11acL;
-		MatchingWeightedTestUtils.randGraphsBipartiteWeighted(MaximumMatchingWeightedBipartiteSSSP::new, seed);
+		MatchingWeightedTestUtils.randGraphsBipartiteWeighted(new MaximumMatchingWeightedBipartiteSSSP(), seed);
 	}
 
 }

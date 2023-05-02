@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.NavigableSet;
 import java.util.Random;
 import java.util.TreeSet;
-import java.util.function.Supplier;
 
 import com.jgalgo.GraphImplTestUtils.GraphImpl;
 import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
@@ -63,15 +62,15 @@ public class MaximumFlowTestUtils extends TestUtils {
 		return flow;
 	}
 
-	static void testRandGraphs(Supplier<? extends MaximumFlow> builder, long seed) {
-		testRandGraphs(builder, GraphImplTestUtils.GRAPH_IMPL_DEFAULT, seed);
+	static void testRandGraphs(MaximumFlow algo, long seed) {
+		testRandGraphs(algo, GraphImplTestUtils.GRAPH_IMPL_DEFAULT, seed);
 	}
 
-	static void testRandGraphsInt(Supplier<? extends MaximumFlow> builder, long seed) {
-		testRandGraphsInt(builder, GraphImplTestUtils.GRAPH_IMPL_DEFAULT, seed);
+	static void testRandGraphsInt(MaximumFlow algo, long seed) {
+		testRandGraphsInt(algo, GraphImplTestUtils.GRAPH_IMPL_DEFAULT, seed);
 	}
 
-	static void testRandGraphs(Supplier<? extends MaximumFlow> builder, GraphImpl graphImpl, long seed) {
+	static void testRandGraphs(MaximumFlow algo, GraphImpl graphImpl, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
 		List<Phase> phases = List.of(phase(256, 6, 6), phase(64, 16, 16), phase(64, 16, 32), phase(32, 64, 64),
@@ -88,12 +87,11 @@ public class MaximumFlowTestUtils extends TestUtils {
 					break;
 			}
 
-			MaximumFlow algo = builder.get();
 			testNetwork(g, net, source, sink, algo);
 		});
 	}
 
-	static void testRandGraphsInt(Supplier<? extends MaximumFlow> builder, GraphImpl graphImpl, long seed) {
+	static void testRandGraphsInt(MaximumFlow algo, GraphImpl graphImpl, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
 		List<Phase> phases = List.of(phase(256, 6, 6), phase(64, 16, 16), phase(64, 16, 32), phase(32, 64, 64),
@@ -110,7 +108,6 @@ public class MaximumFlowTestUtils extends TestUtils {
 					break;
 			}
 
-			MaximumFlow algo = builder.get();
 			testNetworkInt(g, net, source, sink, algo);
 		});
 	}

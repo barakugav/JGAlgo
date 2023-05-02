@@ -12,7 +12,7 @@ public class RMQStaticPlusMinusOneTest extends TestBase {
 		int[][] queries = new int[64][];
 		RMQStaticUtils.randRMQDataPlusMinusOne(a, seedGen.nextSeed());
 		RMQStaticUtils.randRMQQueries(a, queries, a.length, seedGen.nextSeed());
-		RMQStaticUtils.testRMQ(RMQStaticPlusMinusOne::new, a, queries);
+		RMQStaticUtils.testRMQ(new RMQStaticPlusMinusOne(), a, queries);
 	}
 
 	@Test
@@ -25,7 +25,7 @@ public class RMQStaticPlusMinusOneTest extends TestBase {
 			RMQStaticUtils.randRMQDataPlusMinusOne(a, seedGen.nextSeed());
 			RMQStaticUtils.randRMQQueries(a, queries, a.length, seedGen.nextSeed());
 
-			RMQStaticUtils.testRMQ(RMQStaticPlusMinusOne::new, a, queries);
+			RMQStaticUtils.testRMQ(new RMQStaticPlusMinusOne(), a, queries);
 		}
 	}
 
@@ -37,7 +37,7 @@ public class RMQStaticPlusMinusOneTest extends TestBase {
 		int[][] queries = new int[64][];
 		RMQStaticUtils.randRMQDataPlusMinusOne(a, seedGen.nextSeed());
 		RMQStaticUtils.randRMQQueries(a, queries, 4, seedGen.nextSeed());
-		RMQStaticUtils.testRMQ(RMQStaticPlusMinusOne::new, a, queries);
+		RMQStaticUtils.testRMQ(new RMQStaticPlusMinusOne(), a, queries);
 	}
 
 }

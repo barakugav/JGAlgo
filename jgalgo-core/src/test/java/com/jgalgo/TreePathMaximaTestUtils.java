@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.Random;
-import java.util.function.Supplier;
 
 import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
 
@@ -58,7 +57,8 @@ public class TreePathMaximaTestUtils extends TestUtils {
 		return queries;
 	}
 
-	static void compareActualToExpectedResults(TreePathMaxima.Queries queries, int[] actual, int[] expected, EdgeWeightFunc w) {
+	static void compareActualToExpectedResults(TreePathMaxima.Queries queries, int[] actual, int[] expected,
+			EdgeWeightFunc w) {
 		assertEquals(expected.length, actual.length, "Unexpected result size");
 		for (int i = 0; i < actual.length; i++) {
 			IntIntPair query = queries.getQuery(i);
@@ -70,13 +70,12 @@ public class TreePathMaximaTestUtils extends TestUtils {
 		}
 	}
 
-	static void testTPM(Supplier<? extends TreePathMaxima> builder, long seed) {
+	static void testTPM(TreePathMaxima algo, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(64, 16), phase(32, 32), phase(16, 64), phase(8, 128), phase(4, 256),
 				phase(2, 512), phase(1, 1234));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
-			TreePathMaxima algo = builder.get();
 			testTPM(algo, n, seedGen.nextSeed());
 		});
 	}
@@ -93,7 +92,7 @@ public class TreePathMaximaTestUtils extends TestUtils {
 		compareActualToExpectedResults(queries, actual, expected, w);
 	}
 
-	static void verifyMSTPositive(Supplier<? extends TreePathMaxima> builder, long seed) {
+	static void verifyMSTPositive(TreePathMaxima algo, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(256, 8, 16), phase(128, 16, 32), phase(64, 64, 128), phase(32, 128, 256),
 				phase(8, 2048, 4096), phase(2, 8192, 16384));
@@ -104,13 +103,12 @@ public class TreePathMaximaTestUtils extends TestUtils {
 			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			IntCollection mstEdges = new MSTKruskal().computeMinimumSpanningTree(g, w);
 
-			TreePathMaxima algo = builder.get();
 			boolean isMST = TreePathMaxima.verifyMST(g, w, mstEdges, algo);
 			assertTrue(isMST);
 		});
 	}
 
-	static void verifyMSTNegative(Supplier<? extends TreePathMaxima> builder, long seed) {
+	static void verifyMSTNegative(TreePathMaxima algo, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(256, 8, 16), phase(128, 16, 32), phase(64, 64, 128), phase(32, 128, 256),
 				phase(8, 2048, 4096), phase(2, 8192, 16384));
@@ -149,7 +147,6 @@ public class TreePathMaximaTestUtils extends TestUtils {
 				}
 			}
 
-			TreePathMaxima algo = builder.get();
 			boolean isMST = TreePathMaxima.verifyMST(g, w, mstEdges, algo);
 			assertFalse(isMST, "MST validation failed");
 		});
