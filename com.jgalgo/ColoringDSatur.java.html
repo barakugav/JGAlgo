@@ -37,7 +37,7 @@ public class ColoringDSatur implements Coloring {
 
 	@Override
 	public Coloring.Result computeColoring(UGraph g) {
-<span class="pc bpc" id="L40" title="1 of 2 branches missed.">		if (Graphs.containsSelfLoops(g))</span>
+<span class="pc bpc" id="L40" title="1 of 2 branches missed.">		if (GraphsUtils.containsSelfLoops(g))</span>
 <span class="nc" id="L41">			throw new IllegalArgumentException(&quot;no valid coloring in graphs with self loops&quot;);</span>
 
 <span class="fc" id="L43">		ColoringResultImpl res = new ColoringResultImpl(g);</span>

@@ -45,7 +45,7 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 		 * Build graph for the matching calculation, containing only vertices with odd
 		 * degree from the MST
 		 */
-<span class="fc" id="L48">		int[] degree = Graphs.calcDegree(g, mst);</span>
+<span class="fc" id="L48">		int[] degree = GraphsUtils.calcDegree(g, mst);</span>
 <span class="fc" id="L49">		UGraph mG = new GraphArrayUndirected();</span>
 <span class="fc" id="L50">		int[] mVtoV = new int[n];</span>
 <span class="fc bfc" id="L51" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>

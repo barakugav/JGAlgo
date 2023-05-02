@@ -68,9 +68,9 @@ public class MSTKargerKleinTarjan implements MST {
 <span class="fc" id="L68">		UGraph g1 = randSubgraph(g0);</span>
 <span class="fc" id="L69">		Weights&lt;Ref&gt; g1Ref = g1.edgesWeight(&quot;ref&quot;);</span>
 <span class="fc" id="L70">		IntCollection f1Edges = computeMST(g1, e -&gt; g1Ref.get(e).w);</span>
-<span class="fc" id="L71">		UGraph f1 = Graphs.subGraph(g1, f1Edges);</span>
+<span class="fc" id="L71">		UGraph f1 = GraphsUtils.subGraph(g1, f1Edges);</span>
 <span class="fc" id="L72">		IntCollection e2 = lightEdges(g0, f1);</span>
-<span class="fc" id="L73">		UGraph g2 = Graphs.subGraph(g0, e2);</span>
+<span class="fc" id="L73">		UGraph g2 = GraphsUtils.subGraph(g0, e2);</span>
 <span class="fc" id="L74">		Weights&lt;Ref&gt; g2Ref = g2.edgesWeight(&quot;ref&quot;);</span>
 <span class="fc" id="L75">		IntCollection f2 = computeMST(g2, e -&gt; g2Ref.get(e).w);</span>
 
@@ -90,7 +90,7 @@ public class MSTKargerKleinTarjan implements MST {
 <span class="fc bfc" id="L90" title="All 2 branches covered.">			if (rand.nextBoolean())</span>
 <span class="fc" id="L91">				edgeSet.add(e);</span>
 <span class="fc" id="L92">		}</span>
-<span class="fc" id="L93">		return Graphs.subGraph(g, edgeSet);</span>
+<span class="fc" id="L93">		return GraphsUtils.subGraph(g, edgeSet);</span>
 	}
 
 	private IntCollection lightEdges(UGraph g, UGraph f) {

@@ -52,7 +52,7 @@ public class MDSTTarjan implements MDST {
 <span class="nc" id="L52">			throw new IllegalArgumentException(&quot;Only directed graphs are supported&quot;);</span>
 <span class="pc bpc" id="L53" title="1 of 4 branches missed.">		if (g.vertices().size() == 0 || g.edges().size() == 0)</span>
 <span class="fc" id="L54">			return IntLists.emptyList();</span>
-<span class="fc" id="L55">		DiGraph gRef = Graphs.referenceGraph((DiGraph) g, EdgeRefWeightKey);</span>
+<span class="fc" id="L55">		DiGraph gRef = GraphsUtils.referenceGraph((DiGraph) g, EdgeRefWeightKey);</span>
 <span class="fc" id="L56">		Weights.Int edgeRefs = gRef.edgesWeight(EdgeRefWeightKey);</span>
 
 		// Connect new root to all vertices
@@ -69,7 +69,7 @@ public class MDSTTarjan implements MDST {
 	public IntCollection computeMinimumSpanningTree(DiGraph g, EdgeWeightFunc w, int root) {
 <span class="pc bpc" id="L70" title="1 of 4 branches missed.">		if (g.vertices().size() == 0 || g.edges().size() == 0)</span>
 <span class="fc" id="L71">			return IntLists.emptyList();</span>
-<span class="fc" id="L72">		DiGraph gRef = Graphs.referenceGraph(g, EdgeRefWeightKey);</span>
+<span class="fc" id="L72">		DiGraph gRef = GraphsUtils.referenceGraph(g, EdgeRefWeightKey);</span>
 
 <span class="fc" id="L74">		ContractedGraph contractedGraph = contract(gRef, w);</span>
 <span class="fc" id="L75">		return expand(gRef, contractedGraph, root);</span>
