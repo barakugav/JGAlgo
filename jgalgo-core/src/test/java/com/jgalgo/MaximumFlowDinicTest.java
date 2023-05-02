@@ -10,4 +10,11 @@ public class MaximumFlowDinicTest extends TestBase {
 		MaximumFlowTestUtils.testRandGraphs(new MaximumFlowDinic(), seed);
 	}
 
+	@Test
+	public void testMinimumCutRandGraphs() {
+		final long seed = 0xb49154497703863bL;
+		MinimumCutST algo = MinimumCutST.newFromMaximumFlow(new MaximumFlowDinic());
+		MinimumCutSTTestUtils.testRandGraphs(algo, seed);
+	}
+
 }

@@ -47,6 +47,8 @@ public interface MaximumFlow {
 	 * @param source a source vertex
 	 * @param sink   a sink vertex
 	 * @return the maximum flow in the network from the source to the sink
+	 * @throws IllegalArgumentException if the source and the sink are the same
+	 *                                  vertex
 	 */
 	double computeMaximumFlow(Graph g, FlowNetwork net, int source, int sink);
 

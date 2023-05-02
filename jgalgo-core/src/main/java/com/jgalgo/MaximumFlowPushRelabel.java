@@ -33,7 +33,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  * @see MaximumFlowPushRelabelLowestFirst
  * @author Barak Ugav
  */
-public class MaximumFlowPushRelabel implements MaximumFlow {
+public class MaximumFlowPushRelabel extends MaximumFlowPushRelabelAbstract {
 
 	/**
 	 * Create a new maximum flow algorithm object.
@@ -41,20 +41,14 @@ public class MaximumFlowPushRelabel implements MaximumFlow {
 	public MaximumFlowPushRelabel() {
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @throws IllegalArgumentException if the graph is not directed
-	 */
 	@Override
-	public double computeMaximumFlow(Graph g, FlowNetwork net, int source, int sink) {
-		if (!(g instanceof DiGraph))
-			throw new IllegalArgumentException("only directed graphs are supported");
-		if (net instanceof FlowNetwork.Int) {
-			return new WorkerInt((DiGraph) g, (FlowNetwork.Int) net, source, sink).computeMaxFlow();
-		} else {
-			return new WorkerDouble((DiGraph) g, net, source, sink).computeMaxFlow();
-		}
+	WorkerDouble newWorkerDouble(DiGraph gOrig, FlowNetwork net, int source, int sink) {
+		return new WorkerDouble(gOrig, net, source, sink);
+	}
+
+	@Override
+	WorkerInt newWorkerInt(DiGraph gOrig, FlowNetwork.Int net, int source, int sink) {
+		return new WorkerInt(gOrig, net, source, sink);
 	}
 
 	private static class WorkerDouble extends MaximumFlowPushRelabelAbstract.WorkerDouble {

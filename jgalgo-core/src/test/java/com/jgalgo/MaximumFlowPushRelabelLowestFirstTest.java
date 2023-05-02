@@ -15,4 +15,18 @@ public class MaximumFlowPushRelabelLowestFirstTest extends TestBase {
 		final long seed = 0x0204011e1b393aaaL;
 		MaximumFlowTestUtils.testRandGraphsInt(new MaximumFlowPushRelabelLowestFirst(), seed);
 	}
+
+	@Test
+	public void testMinimumCutRandGraphs() {
+		final long seed = 0x9a378c8dd98b3bceL;
+		MinimumCutSTTestUtils.testRandGraphs(new MaximumFlowPushRelabelLowestFirst(), seed);
+	}
+
+	@Test
+	public void testMinimumCutRandGraphsUsingGenericMinCutFromMaxFlow() {
+		final long seed = 0x5fc7b22045f53253L;
+		MinimumCutST algo = MinimumCutST.newFromMaximumFlow(new MaximumFlowPushRelabelLowestFirst());
+		MinimumCutSTTestUtils.testRandGraphs(algo, seed);
+	}
+
 }

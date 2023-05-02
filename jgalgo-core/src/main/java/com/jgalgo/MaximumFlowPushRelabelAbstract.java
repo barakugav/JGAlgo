@@ -5,14 +5,99 @@ import java.util.BitSet;
 
 import com.jgalgo.Utils.IterPickable;
 
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
-class MaximumFlowPushRelabelAbstract {
+abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCutST {
 	private static final Object EdgeRefWeightKey = new Object();
 	private static final Object EdgeRevWeightKey = new Object();
 	private static final Object FlowWeightKey = new Object();
 	private static final Object CapacityWeightKey = new Object();
+
+	abstract WorkerDouble newWorkerDouble(DiGraph gOrig, FlowNetwork net, int source, int sink);
+
+	abstract WorkerInt newWorkerInt(DiGraph gOrig, FlowNetwork.Int net, int source, int sink);
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @throws IllegalArgumentException if the graph is not directed
+	 */
+	@Override
+	public double computeMaximumFlow(Graph g, FlowNetwork net, int source, int sink) {
+		if (!(g instanceof DiGraph))
+			throw new IllegalArgumentException("only directed graphs are supported");
+		if (net instanceof FlowNetwork.Int) {
+			return newWorkerInt((DiGraph) g, (FlowNetwork.Int) net, source, sink).computeMaxFlow();
+		} else {
+			return newWorkerDouble((DiGraph) g, net, source, sink).computeMaxFlow();
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @throws IllegalArgumentException if the graph is not directed
+	 */
+	@Override
+	public IntList computeMinimumCut(Graph g, EdgeWeightFunc w, int source, int sink) {
+		if (!(g instanceof DiGraph))
+			throw new IllegalArgumentException("only directed graphs are supported");
+		if (w instanceof EdgeWeightFunc.Int) {
+			EdgeWeightFunc.Int wInt = (EdgeWeightFunc.Int) w;
+			FlowNetwork.Int net = new FlowNetwork.Int() {
+
+				@Override
+				public int getCapacityInt(int edge) {
+					return wInt.weightInt(edge);
+				}
+
+				@Override
+				public void setCapacity(int edge, int capacity) {
+					throw new UnsupportedOperationException("Unimplemented method 'setCapacity'");
+				}
+
+				@Override
+				public int getFlowInt(int edge) {
+					throw new UnsupportedOperationException("Unimplemented method 'getFlowInt'");
+				}
+
+				@Override
+				public void setFlow(int edge, int flow) {
+					throw new UnsupportedOperationException("Unimplemented method 'setFlow'");
+				}
+
+			};
+			return newWorkerInt((DiGraph) g, net, source, sink).computeMinimumCut();
+		} else {
+			FlowNetwork net = new FlowNetwork() {
+
+				@Override
+				public double getCapacity(int edge) {
+					return w.weight(edge);
+				}
+
+				@Override
+				public void setCapacity(int edge, double capacity) {
+					throw new UnsupportedOperationException("Unimplemented method 'setCapacity'");
+				}
+
+				@Override
+				public double getFlow(int edge) {
+					throw new UnsupportedOperationException("Unimplemented method 'getFlow'");
+				}
+
+				@Override
+				public void setFlow(int edge, double flow) {
+					throw new UnsupportedOperationException("Unimplemented method 'setFlow'");
+				}
+
+			};
+			return newWorkerDouble((DiGraph) g, net, source, sink).computeMinimumCut();
+		}
+	}
 
 	static abstract class Worker {
 		final DiGraph g;
@@ -292,6 +377,41 @@ class MaximumFlowPushRelabelAbstract {
 			// second phase
 			convertPreflowToFlow();
 			return constructResult();
+		}
+
+		IntList computeMinimumCut() {
+			// first phase
+			calcMaxPreflow();
+			// no need for second phase
+			// find the unreachable vertices from sink
+
+			BitSet visited = relabelVisited;
+			IntPriorityQueue queue = relabelQueue;
+			assert visited.isEmpty();
+			assert queue.isEmpty();
+
+			visited.set(sink);
+			queue.enqueue(sink);
+			while (!queue.isEmpty()) {
+				int v = queue.dequeueInt();
+				for (EdgeIter eit = g.edgesIn(v); eit.hasNext();) {
+					int e = eit.nextInt();
+					if (!isResidual(e))
+						continue;
+					int u = eit.u();
+					if (visited.get(u))
+						continue;
+					visited.set(u);
+					queue.enqueue(u);
+				}
+			}
+			assert !visited.get(source);
+			IntList cut = new IntArrayList(n - visited.cardinality());
+			for (int u = 0; u < n; u++)
+				if (!visited.get(u))
+					cut.add(u);
+			visited.clear();
+			return cut;
 		}
 
 		abstract boolean hasExcess(int u);
