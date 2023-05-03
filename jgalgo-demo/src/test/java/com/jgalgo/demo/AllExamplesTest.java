@@ -18,11 +18,17 @@ package com.jgalgo.demo;
 
 import org.junit.jupiter.api.Test;
 
-public class ReadmeExampleTest {
+public class AllExamplesTest {
 
 	@Test
-	public void testRun() {
+	public void ReadmeExample() {
 		ReadmeExample.readmeExample();
+	}
+
+	@Test
+	public void BfsDfsExample() {
+		BfsDfsExample.BFSExample();
+		BfsDfsExample.DFSExample();
 	}
 
 }

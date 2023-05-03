@@ -41,7 +41,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
  * for (DFSIter iter = new DFSIter(g, sourceVertex); iter.hasNext();) {
  *     int v = iter.nextInt();
  *     IntList edgePath = iter.edgePath();
- *     System.out.println("Reached vertex v using the edges: " + edgePath);
+ *     System.out.println("Reached vertex " + v + " using the edges: " + edgePath);
  * }
  * }</pre>
  *
