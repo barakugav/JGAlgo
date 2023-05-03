@@ -1,4 +1,20 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GraphTableDirected.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">GraphTableDirected.java</span></div><h1>GraphTableDirected.java</h1><pre class="source lang-java linenums">package com.jgalgo;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GraphTableDirected.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">GraphTableDirected.java</span></div><h1>GraphTableDirected.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo;
 
 /**
  * A directed graph implementation using a two dimensional table to store all edges.
@@ -23,89 +39,89 @@ public class GraphTableDirected extends GraphTableAbstract implements DiGraph {
 	 * @param n the number of initial vertices number
 	 */
 	public GraphTableDirected(int n) {
-<span class="fc" id="L26">		super(n, Capabilities);</span>
-<span class="fc" id="L27">	}</span>
+<span class="fc" id="L42">		super(n, Capabilities);</span>
+<span class="fc" id="L43">	}</span>
 
 	@Override
 	public EdgeIter edgesOut(int u) {
-<span class="fc" id="L31">		return new EdgeIterOut(u);</span>
+<span class="fc" id="L47">		return new EdgeIterOut(u);</span>
 	}
 
 	@Override
 	public EdgeIter edgesIn(int v) {
-<span class="fc" id="L36">		return new EdgeIterIn(v);</span>
+<span class="fc" id="L52">		return new EdgeIterIn(v);</span>
 	}
 
 	@Override
 	public int addEdge(int u, int v) {
-<span class="fc" id="L41">		int e = super.addEdge(u, v);</span>
-<span class="fc" id="L42">		edges[u][v] = e;</span>
-<span class="fc" id="L43">		return e;</span>
+<span class="fc" id="L57">		int e = super.addEdge(u, v);</span>
+<span class="fc" id="L58">		edges[u][v] = e;</span>
+<span class="fc" id="L59">		return e;</span>
 	}
 
 	@Override
 	public void removeEdge(int e) {
-<span class="fc" id="L48">		e = edgeSwapBeforeRemove(e);</span>
-<span class="fc" id="L49">		int u = edgeSource(e), v = edgeTarget(e);</span>
-<span class="fc" id="L50">		edges[u][v] = EdgeNone;</span>
-<span class="fc" id="L51">		super.removeEdge(e);</span>
-<span class="fc" id="L52">	}</span>
+<span class="fc" id="L64">		e = edgeSwapBeforeRemove(e);</span>
+<span class="fc" id="L65">		int u = edgeSource(e), v = edgeTarget(e);</span>
+<span class="fc" id="L66">		edges[u][v] = EdgeNone;</span>
+<span class="fc" id="L67">		super.removeEdge(e);</span>
+<span class="fc" id="L68">	}</span>
 
 	@Override
 	void edgeSwap(int e1, int e2) {
-<span class="fc" id="L56">		int u1 = edgeSource(e1), v1 = edgeTarget(e1);</span>
-<span class="fc" id="L57">		int u2 = edgeSource(e2), v2 = edgeTarget(e2);</span>
-<span class="fc" id="L58">		edges[u1][v1] = e2;</span>
-<span class="fc" id="L59">		edges[u2][v2] = e1;</span>
-<span class="fc" id="L60">		super.edgeSwap(e1, e2);</span>
-<span class="fc" id="L61">	}</span>
+<span class="fc" id="L72">		int u1 = edgeSource(e1), v1 = edgeTarget(e1);</span>
+<span class="fc" id="L73">		int u2 = edgeSource(e2), v2 = edgeTarget(e2);</span>
+<span class="fc" id="L74">		edges[u1][v1] = e2;</span>
+<span class="fc" id="L75">		edges[u2][v2] = e1;</span>
+<span class="fc" id="L76">		super.edgeSwap(e1, e2);</span>
+<span class="fc" id="L77">	}</span>
 
 	@Override
 	public void reverseEdge(int e) {
-<span class="fc" id="L65">		int u = edgeSource(e), v = edgeTarget(e);</span>
-<span class="fc bfc" id="L66" title="All 2 branches covered.">		if (u == v)</span>
-<span class="fc" id="L67">			return;</span>
-<span class="pc bpc" id="L68" title="1 of 2 branches missed.">		if (edges[v][u] != EdgeNone)</span>
-<span class="nc" id="L69">			throw new IllegalArgumentException(&quot;parallel edges are not supported&quot;);</span>
-<span class="fc" id="L70">		edges[v][u] = e;</span>
-<span class="fc" id="L71">		edges[u][v] = EdgeNone;</span>
-<span class="fc" id="L72">		super.reverseEdge(e);</span>
-<span class="fc" id="L73">	}</span>
+<span class="fc" id="L81">		int u = edgeSource(e), v = edgeTarget(e);</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">		if (u == v)</span>
+<span class="fc" id="L83">			return;</span>
+<span class="pc bpc" id="L84" title="1 of 2 branches missed.">		if (edges[v][u] != EdgeNone)</span>
+<span class="nc" id="L85">			throw new IllegalArgumentException(&quot;parallel edges are not supported&quot;);</span>
+<span class="fc" id="L86">		edges[v][u] = e;</span>
+<span class="fc" id="L87">		edges[u][v] = EdgeNone;</span>
+<span class="fc" id="L88">		super.reverseEdge(e);</span>
+<span class="fc" id="L89">	}</span>
 
-<span class="fc" id="L75">	private static final GraphCapabilities Capabilities = new GraphCapabilities() {</span>
+<span class="fc" id="L91">	private static final GraphCapabilities Capabilities = new GraphCapabilities() {</span>
 		@Override
 		public boolean vertexAdd() {
-<span class="fc" id="L78">			return false;</span>
+<span class="fc" id="L94">			return false;</span>
 		}
 
 		@Override
 		public boolean vertexRemove() {
-<span class="fc" id="L83">			return false;</span>
+<span class="fc" id="L99">			return false;</span>
 		}
 
 		@Override
 		public boolean edgeAdd() {
-<span class="fc" id="L88">			return true;</span>
+<span class="fc" id="L104">			return true;</span>
 		}
 
 		@Override
 		public boolean edgeRemove() {
-<span class="fc" id="L93">			return true;</span>
+<span class="fc" id="L109">			return true;</span>
 		}
 
 		@Override
 		public boolean parallelEdges() {
-<span class="fc" id="L98">			return false;</span>
+<span class="fc" id="L114">			return false;</span>
 		}
 
 		@Override
 		public boolean selfEdges() {
-<span class="fc" id="L103">			return true;</span>
+<span class="fc" id="L119">			return true;</span>
 		}
 
 		@Override
 		public boolean directed() {
-<span class="fc" id="L108">			return true;</span>
+<span class="fc" id="L124">			return true;</span>
 		}
 	};
 

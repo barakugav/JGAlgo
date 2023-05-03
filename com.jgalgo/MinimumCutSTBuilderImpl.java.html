@@ -1,4 +1,20 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MinimumCutSTBuilderImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">MinimumCutSTBuilderImpl.java</span></div><h1>MinimumCutSTBuilderImpl.java</h1><pre class="source lang-java linenums">package com.jgalgo;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MinimumCutSTBuilderImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">MinimumCutSTBuilderImpl.java</span></div><h1>MinimumCutSTBuilderImpl.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo;
 
 import java.util.BitSet;
 
@@ -10,101 +26,101 @@ class MinimumCutSTBuilderImpl {
 
 	private MinimumCutSTBuilderImpl() {}
 
-<span class="nc" id="L13">	static class Default implements MinimumCutST.Builder {</span>
+<span class="nc" id="L29">	static class Default implements MinimumCutST.Builder {</span>
 		@Override
 		public MinimumCutST build() {
-<span class="nc" id="L16">			return new MaximumFlowPushRelabel();</span>
+<span class="nc" id="L32">			return new MaximumFlowPushRelabel();</span>
 		}
 	}
 
 	static MinimumCutST buildFromMaxFlow(MaximumFlow maxFlowAlg) {
-<span class="fc" id="L21">		return new MinimumCutST() {</span>
+<span class="fc" id="L37">		return new MinimumCutST() {</span>
 
-<span class="fc" id="L23">			private final BitSet visited = new BitSet();</span>
-<span class="fc" id="L24">			private final IntPriorityQueue queue = new IntArrayFIFOQueue();</span>
+<span class="fc" id="L39">			private final BitSet visited = new BitSet();</span>
+<span class="fc" id="L40">			private final IntPriorityQueue queue = new IntArrayFIFOQueue();</span>
 
 			@Override
 			public IntList computeMinimumCut(Graph g, EdgeWeightFunc w, int source, int sink) {
-<span class="pc bpc" id="L28" title="1 of 2 branches missed.">				assert visited.isEmpty();</span>
-<span class="pc bpc" id="L29" title="1 of 2 branches missed.">				assert queue.isEmpty();</span>
+<span class="pc bpc" id="L44" title="1 of 2 branches missed.">				assert visited.isEmpty();</span>
+<span class="pc bpc" id="L45" title="1 of 2 branches missed.">				assert queue.isEmpty();</span>
 
 				/* create a flow network with weights as capacities */
-<span class="fc" id="L32">				FlowNetwork net = createFlowNetworkFromEdgeWeightFunc(g, w);</span>
+<span class="fc" id="L48">				FlowNetwork net = createFlowNetworkFromEdgeWeightFunc(g, w);</span>
 
 				/* compute max flow */
-<span class="fc" id="L35">				maxFlowAlg.computeMaximumFlow(g, net, source, sink);</span>
+<span class="fc" id="L51">				maxFlowAlg.computeMaximumFlow(g, net, source, sink);</span>
 
 				/* perform a BFS from source and use only non saturated edges */
-<span class="fc" id="L38">				IntList cut = new IntArrayList();</span>
-<span class="fc" id="L39">				final double eps = 0.00001;</span>
-<span class="fc" id="L40">				final boolean directed = g instanceof DiGraph;</span>
-<span class="fc" id="L41">				cut.add(source);</span>
-<span class="fc" id="L42">				visited.set(source);</span>
-<span class="fc" id="L43">				queue.enqueue(source);</span>
-<span class="fc bfc" id="L44" title="All 2 branches covered.">				while (!queue.isEmpty()) {</span>
-<span class="fc" id="L45">					int u = queue.dequeueInt();</span>
+<span class="fc" id="L54">				IntList cut = new IntArrayList();</span>
+<span class="fc" id="L55">				final double eps = 0.00001;</span>
+<span class="fc" id="L56">				final boolean directed = g instanceof DiGraph;</span>
+<span class="fc" id="L57">				cut.add(source);</span>
+<span class="fc" id="L58">				visited.set(source);</span>
+<span class="fc" id="L59">				queue.enqueue(source);</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">				while (!queue.isEmpty()) {</span>
+<span class="fc" id="L61">					int u = queue.dequeueInt();</span>
 
-<span class="fc bfc" id="L47" title="All 2 branches covered.">					for (EdgeIter it = g.edgesOut(u); it.hasNext();) {</span>
-<span class="fc" id="L48">						int e = it.nextInt();</span>
-<span class="fc" id="L49">						int v = it.v();</span>
-<span class="fc bfc" id="L50" title="All 2 branches covered.">						if (visited.get(v))</span>
-<span class="fc" id="L51">							continue;</span>
-<span class="fc bfc" id="L52" title="All 2 branches covered.">						if (Math.abs(net.getCapacity(e) - net.getFlow(e)) &lt; eps)</span>
-<span class="fc" id="L53">							continue; // saturated edge</span>
-<span class="fc" id="L54">						cut.add(v);</span>
-<span class="fc" id="L55">						visited.set(v);</span>
-<span class="fc" id="L56">						queue.enqueue(v);</span>
-<span class="fc" id="L57">					}</span>
-<span class="pc bpc" id="L58" title="1 of 2 branches missed.">					if (directed) {</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">					for (EdgeIter it = g.edgesOut(u); it.hasNext();) {</span>
+<span class="fc" id="L64">						int e = it.nextInt();</span>
+<span class="fc" id="L65">						int v = it.v();</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">						if (visited.get(v))</span>
+<span class="fc" id="L67">							continue;</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">						if (Math.abs(net.getCapacity(e) - net.getFlow(e)) &lt; eps)</span>
+<span class="fc" id="L69">							continue; // saturated edge</span>
+<span class="fc" id="L70">						cut.add(v);</span>
+<span class="fc" id="L71">						visited.set(v);</span>
+<span class="fc" id="L72">						queue.enqueue(v);</span>
+<span class="fc" id="L73">					}</span>
+<span class="pc bpc" id="L74" title="1 of 2 branches missed.">					if (directed) {</span>
 						/*
 						 * We don't have any guarantee that the graph has a twin edge for each edge, so we iterate over
 						 * the in edges and search for edges with non zero flow which imply an existent of an out edge
 						 * in the residual network
 						 */
-<span class="fc bfc" id="L64" title="All 2 branches covered.">						for (EdgeIter it = g.edgesIn(u); it.hasNext();) {</span>
-<span class="fc" id="L65">							int e = it.nextInt();</span>
-<span class="fc" id="L66">							int v = it.u();</span>
-<span class="fc bfc" id="L67" title="All 2 branches covered.">							if (visited.get(v))</span>
-<span class="fc" id="L68">								continue;</span>
-<span class="fc bfc" id="L69" title="All 2 branches covered.">							if (net.getFlow(e) &lt; eps)</span>
-<span class="fc" id="L70">								continue; // saturated edge</span>
-<span class="fc" id="L71">							cut.add(v);</span>
-<span class="fc" id="L72">							visited.set(v);</span>
-<span class="fc" id="L73">							queue.enqueue(v);</span>
-<span class="fc" id="L74">						}</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">						for (EdgeIter it = g.edgesIn(u); it.hasNext();) {</span>
+<span class="fc" id="L81">							int e = it.nextInt();</span>
+<span class="fc" id="L82">							int v = it.u();</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">							if (visited.get(v))</span>
+<span class="fc" id="L84">								continue;</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">							if (net.getFlow(e) &lt; eps)</span>
+<span class="fc" id="L86">								continue; // saturated edge</span>
+<span class="fc" id="L87">							cut.add(v);</span>
+<span class="fc" id="L88">							visited.set(v);</span>
+<span class="fc" id="L89">							queue.enqueue(v);</span>
+<span class="fc" id="L90">						}</span>
 					}
-<span class="fc" id="L76">				}</span>
-<span class="fc" id="L77">				visited.clear();</span>
-<span class="fc" id="L78">				return cut;</span>
+<span class="fc" id="L92">				}</span>
+<span class="fc" id="L93">				visited.clear();</span>
+<span class="fc" id="L94">				return cut;</span>
 			}
 
 		};
 	}
 
 	static FlowNetwork createFlowNetworkFromEdgeWeightFunc(Graph g, EdgeWeightFunc w) {
-<span class="fc" id="L85">		Weights.Double flow = Weights.createExternalEdgesWeights(g, double.class);</span>
-<span class="fc" id="L86">		FlowNetwork net = new FlowNetwork() {</span>
+<span class="fc" id="L101">		Weights.Double flow = Weights.createExternalEdgesWeights(g, double.class);</span>
+<span class="fc" id="L102">		FlowNetwork net = new FlowNetwork() {</span>
 			@Override
 			public double getCapacity(int edge) {
-<span class="fc" id="L89">				return w.weight(edge);</span>
+<span class="fc" id="L105">				return w.weight(edge);</span>
 			}
 
 			@Override
 			public void setCapacity(int edge, double cap) {
-<span class="nc" id="L94">				throw new UnsupportedOperationException();</span>
+<span class="nc" id="L110">				throw new UnsupportedOperationException();</span>
 			}
 
 			@Override
 			public double getFlow(int edge) {
-<span class="fc" id="L99">				return flow.getDouble(edge);</span>
+<span class="fc" id="L115">				return flow.getDouble(edge);</span>
 			}
 
 			@Override
 			public void setFlow(int edge, double f) {
-<span class="fc" id="L104">				flow.set(edge, f);</span>
-<span class="fc" id="L105">			}</span>
+<span class="fc" id="L120">				flow.set(edge, f);</span>
+<span class="fc" id="L121">			}</span>
 		};
-<span class="fc" id="L107">		return net;</span>
+<span class="fc" id="L123">		return net;</span>
 	}
 
 }

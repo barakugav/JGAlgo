@@ -1,4 +1,20 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UnionFindPtr.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">UnionFindPtr.java</span></div><h1>UnionFindPtr.java</h1><pre class="source lang-java linenums">package com.jgalgo;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UnionFindPtr.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">UnionFindPtr.java</span></div><h1>UnionFindPtr.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo;
 
 import java.util.Arrays;
 
@@ -24,8 +40,8 @@ public class UnionFindPtr implements UnionFind {
 	 * Create an empty Union Find data structure with no elements.
 	 */
 	public UnionFindPtr() {
-<span class="fc" id="L27">		this(0);</span>
-<span class="fc" id="L28">	}</span>
+<span class="fc" id="L43">		this(0);</span>
+<span class="fc" id="L44">	}</span>
 
 	/**
 	 * Create a new Union Find data structure with \(n\) elements with ids {@code 0,1,2,...,n-1}, each of them form a
@@ -33,80 +49,80 @@ public class UnionFindPtr implements UnionFind {
 	 *
 	 * @param n the number of initial elements in the data structure
 	 */
-<span class="fc" id="L36">	public UnionFindPtr(int n) {</span>
-<span class="pc bpc" id="L37" title="1 of 2 branches missed.">		if (n &lt; 0)</span>
-<span class="nc" id="L38">			throw new IllegalArgumentException(&quot;n is negative: &quot; + n);</span>
-<span class="pc bpc" id="L39" title="1 of 2 branches missed.">		elements = new Elm[n == 0 ? 2 : n];</span>
-<span class="pc bpc" id="L40" title="1 of 2 branches missed.">		for (int i = 0; i &lt; n; i++)</span>
-<span class="nc" id="L41">			elements[i] = new Elm(i);</span>
-<span class="fc" id="L42">		size = n;</span>
-<span class="fc" id="L43">	}</span>
+<span class="fc" id="L52">	public UnionFindPtr(int n) {</span>
+<span class="pc bpc" id="L53" title="1 of 2 branches missed.">		if (n &lt; 0)</span>
+<span class="nc" id="L54">			throw new IllegalArgumentException(&quot;n is negative: &quot; + n);</span>
+<span class="pc bpc" id="L55" title="1 of 2 branches missed.">		elements = new Elm[n == 0 ? 2 : n];</span>
+<span class="pc bpc" id="L56" title="1 of 2 branches missed.">		for (int i = 0; i &lt; n; i++)</span>
+<span class="nc" id="L57">			elements[i] = new Elm(i);</span>
+<span class="fc" id="L58">		size = n;</span>
+<span class="fc" id="L59">	}</span>
 
 	@Override
 	public int make() {
-<span class="fc bfc" id="L47" title="All 2 branches covered.">		if (elements.length &lt;= size)</span>
-<span class="fc" id="L48">			elements = Arrays.copyOf(elements, size * 2);</span>
-<span class="fc" id="L49">		int x = size++;</span>
-<span class="fc" id="L50">		elements[x] = new Elm(x);</span>
-<span class="fc" id="L51">		return x;</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">		if (elements.length &lt;= size)</span>
+<span class="fc" id="L64">			elements = Arrays.copyOf(elements, size * 2);</span>
+<span class="fc" id="L65">		int x = size++;</span>
+<span class="fc" id="L66">		elements[x] = new Elm(x);</span>
+<span class="fc" id="L67">		return x;</span>
 	}
 
 	@Override
 	public int find(int x) {
-<span class="fc" id="L56">		return find0(x).idx;</span>
+<span class="fc" id="L72">		return find0(x).idx;</span>
 	}
 
 	private Elm find0(int x) {
-<span class="pc bpc" id="L60" title="2 of 4 branches missed.">		if (x &lt; 0 || x &gt;= size)</span>
-<span class="nc" id="L61">			throw new IllegalArgumentException();</span>
-<span class="fc" id="L62">		Elm e = elements[x];</span>
+<span class="pc bpc" id="L76" title="2 of 4 branches missed.">		if (x &lt; 0 || x &gt;= size)</span>
+<span class="nc" id="L77">			throw new IllegalArgumentException();</span>
+<span class="fc" id="L78">		Elm e = elements[x];</span>
 
 		/* Find root */
 		Elm r;
-<span class="fc bfc" id="L66" title="All 2 branches covered.">		for (r = e; r.parent != null; r = r.parent);</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">		for (r = e; r.parent != null; r = r.parent);</span>
 
 		/* path compression */
-<span class="fc bfc" id="L69" title="All 2 branches covered.">		for (; e != r;) {</span>
-<span class="fc" id="L70">			Elm next = e.parent;</span>
-<span class="fc" id="L71">			e.parent = r;</span>
-<span class="fc" id="L72">			e = next;</span>
-<span class="fc" id="L73">		}</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">		for (; e != r;) {</span>
+<span class="fc" id="L86">			Elm next = e.parent;</span>
+<span class="fc" id="L87">			e.parent = r;</span>
+<span class="fc" id="L88">			e = next;</span>
+<span class="fc" id="L89">		}</span>
 
-<span class="fc" id="L75">		return r;</span>
+<span class="fc" id="L91">		return r;</span>
 	}
 
 	@Override
 	public int union(int aIdx, int bIdx) {
-<span class="fc" id="L80">		Elm a = find0(aIdx);</span>
-<span class="fc" id="L81">		Elm b = find0(bIdx);</span>
-<span class="fc bfc" id="L82" title="All 2 branches covered.">		if (a == b)</span>
-<span class="fc" id="L83">			return a.idx;</span>
+<span class="fc" id="L96">		Elm a = find0(aIdx);</span>
+<span class="fc" id="L97">		Elm b = find0(bIdx);</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">		if (a == b)</span>
+<span class="fc" id="L99">			return a.idx;</span>
 
-<span class="fc bfc" id="L85" title="All 2 branches covered.">		if (a.rank &lt; b.rank) {</span>
-<span class="fc" id="L86">			Elm temp = a;</span>
-<span class="fc" id="L87">			a = b;</span>
-<span class="fc" id="L88">			b = temp;</span>
-<span class="fc bfc" id="L89" title="All 2 branches covered.">		} else if (a.rank == b.rank)</span>
-<span class="fc" id="L90">			a.rank++;</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">		if (a.rank &lt; b.rank) {</span>
+<span class="fc" id="L102">			Elm temp = a;</span>
+<span class="fc" id="L103">			a = b;</span>
+<span class="fc" id="L104">			b = temp;</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">		} else if (a.rank == b.rank)</span>
+<span class="fc" id="L106">			a.rank++;</span>
 
-<span class="fc" id="L92">		b.parent = a;</span>
-<span class="fc" id="L93">		return a.idx;</span>
+<span class="fc" id="L108">		b.parent = a;</span>
+<span class="fc" id="L109">		return a.idx;</span>
 	}
 
 	@Override
 	public int size() {
-<span class="nc" id="L98">		return size;</span>
+<span class="nc" id="L114">		return size;</span>
 	}
 
 	@Override
 	public void clear() {
-<span class="nc bnc" id="L103" title="All 2 branches missed.">		for (int i = 0; i &lt; size; i++) {</span>
-<span class="nc" id="L104">			Elm e = elements[i];</span>
-<span class="nc" id="L105">			e.parent = null;</span>
-<span class="nc" id="L106">			elements[i] = null;</span>
+<span class="nc bnc" id="L119" title="All 2 branches missed.">		for (int i = 0; i &lt; size; i++) {</span>
+<span class="nc" id="L120">			Elm e = elements[i];</span>
+<span class="nc" id="L121">			e.parent = null;</span>
+<span class="nc" id="L122">			elements[i] = null;</span>
 		}
-<span class="nc" id="L108">		size = 0;</span>
-<span class="nc" id="L109">	}</span>
+<span class="nc" id="L124">		size = 0;</span>
+<span class="nc" id="L125">	}</span>
 
 	private static class Elm {
 
@@ -114,11 +130,11 @@ public class UnionFindPtr implements UnionFind {
 		Elm parent;
 		byte rank;
 
-<span class="fc" id="L117">		Elm(int idx) {</span>
-<span class="fc" id="L118">			this.idx = idx;</span>
-<span class="fc" id="L119">			parent = null;</span>
-<span class="fc" id="L120">			rank = 0;</span>
-<span class="fc" id="L121">		}</span>
+<span class="fc" id="L133">		Elm(int idx) {</span>
+<span class="fc" id="L134">			this.idx = idx;</span>
+<span class="fc" id="L135">			parent = null;</span>
+<span class="fc" id="L136">			rank = 0;</span>
+<span class="fc" id="L137">		}</span>
 
 	}
 

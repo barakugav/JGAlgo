@@ -1,4 +1,20 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UnionFindArray.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">UnionFindArray.java</span></div><h1>UnionFindArray.java</h1><pre class="source lang-java linenums">package com.jgalgo;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UnionFindArray.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">UnionFindArray.java</span></div><h1>UnionFindArray.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo;
 
 import java.util.Arrays;
 
@@ -27,8 +43,8 @@ public class UnionFindArray implements UnionFind {
 	 * Create an empty Union Find data structure with no elements.
 	 */
 	public UnionFindArray() {
-<span class="fc" id="L30">		this(0);</span>
-<span class="fc" id="L31">	}</span>
+<span class="fc" id="L46">		this(0);</span>
+<span class="fc" id="L47">	}</span>
 
 	/**
 	 * Create a new Union Find data structure with \(n\) elements with ids {@code 0,1,2,...,n-1}, each of them form a
@@ -36,84 +52,84 @@ public class UnionFindArray implements UnionFind {
 	 *
 	 * @param n the number of initial elements in the data structure
 	 */
-<span class="fc" id="L39">	public UnionFindArray(int n) {</span>
-<span class="pc bpc" id="L40" title="1 of 2 branches missed.">		if (n &lt; 0)</span>
-<span class="nc" id="L41">			throw new IllegalArgumentException(&quot;n is negative: &quot; + n);</span>
-<span class="fc bfc" id="L42" title="All 2 branches covered.">		int arrSize = n == 0 ? 2 : n;</span>
-<span class="fc" id="L43">		parent = new int[arrSize];</span>
-<span class="fc" id="L44">		rank = new byte[arrSize];</span>
-<span class="fc" id="L45">		Arrays.fill(parent, NO_PARENT);</span>
-<span class="fc" id="L46">		size = n;</span>
-<span class="fc" id="L47">	}</span>
+<span class="fc" id="L55">	public UnionFindArray(int n) {</span>
+<span class="pc bpc" id="L56" title="1 of 2 branches missed.">		if (n &lt; 0)</span>
+<span class="nc" id="L57">			throw new IllegalArgumentException(&quot;n is negative: &quot; + n);</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">		int arrSize = n == 0 ? 2 : n;</span>
+<span class="fc" id="L59">		parent = new int[arrSize];</span>
+<span class="fc" id="L60">		rank = new byte[arrSize];</span>
+<span class="fc" id="L61">		Arrays.fill(parent, NO_PARENT);</span>
+<span class="fc" id="L62">		size = n;</span>
+<span class="fc" id="L63">	}</span>
 
 	@Override
 	public int make() {
-<span class="fc bfc" id="L51" title="All 2 branches covered.">		if (parent.length &lt;= size) {</span>
-<span class="fc" id="L52">			int oldLength = parent.length;</span>
-<span class="fc" id="L53">			parent = Arrays.copyOf(parent, size * 2);</span>
-<span class="fc" id="L54">			rank = Arrays.copyOf(rank, size * 2);</span>
-<span class="fc" id="L55">			Arrays.fill(parent, oldLength, parent.length, NO_PARENT);</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">		if (parent.length &lt;= size) {</span>
+<span class="fc" id="L68">			int oldLength = parent.length;</span>
+<span class="fc" id="L69">			parent = Arrays.copyOf(parent, size * 2);</span>
+<span class="fc" id="L70">			rank = Arrays.copyOf(rank, size * 2);</span>
+<span class="fc" id="L71">			Arrays.fill(parent, oldLength, parent.length, NO_PARENT);</span>
 		}
-<span class="fc" id="L57">		return size++;</span>
+<span class="fc" id="L73">		return size++;</span>
 	}
 
 	@Override
 	public int find(int x) {
-<span class="pc bpc" id="L62" title="2 of 4 branches missed.">		if (x &lt; 0 || x &gt;= size)</span>
-<span class="nc" id="L63">			throw new IllegalArgumentException(&quot;Illegal identifier &quot; + x);</span>
-<span class="fc" id="L64">		return find0(x);</span>
+<span class="pc bpc" id="L78" title="2 of 4 branches missed.">		if (x &lt; 0 || x &gt;= size)</span>
+<span class="nc" id="L79">			throw new IllegalArgumentException(&quot;Illegal identifier &quot; + x);</span>
+<span class="fc" id="L80">		return find0(x);</span>
 	}
 
 	int find0(int x) {
-<span class="fc" id="L68">		int[] p = parent;</span>
+<span class="fc" id="L84">		int[] p = parent;</span>
 
 		/* Find root */
 		int r;
-<span class="fc bfc" id="L72" title="All 2 branches covered.">		for (r = x; p[r] != NO_PARENT; r = p[r]);</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">		for (r = x; p[r] != NO_PARENT; r = p[r]);</span>
 
 		/* path compression */
-<span class="fc bfc" id="L75" title="All 2 branches covered.">		for (; x != r;) {</span>
-<span class="fc" id="L76">			int next = p[x];</span>
-<span class="fc" id="L77">			p[x] = r;</span>
-<span class="fc" id="L78">			x = next;</span>
-<span class="fc" id="L79">		}</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">		for (; x != r;) {</span>
+<span class="fc" id="L92">			int next = p[x];</span>
+<span class="fc" id="L93">			p[x] = r;</span>
+<span class="fc" id="L94">			x = next;</span>
+<span class="fc" id="L95">		}</span>
 
-<span class="fc" id="L81">		return r;</span>
+<span class="fc" id="L97">		return r;</span>
 	}
 
 	@Override
 	public int union(int a, int b) {
-<span class="fc" id="L86">		a = find(a);</span>
-<span class="fc" id="L87">		b = find(b);</span>
-<span class="fc bfc" id="L88" title="All 2 branches covered.">		if (a == b)</span>
-<span class="fc" id="L89">			return a;</span>
-<span class="fc" id="L90">		byte[] r = rank;</span>
+<span class="fc" id="L102">		a = find(a);</span>
+<span class="fc" id="L103">		b = find(b);</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">		if (a == b)</span>
+<span class="fc" id="L105">			return a;</span>
+<span class="fc" id="L106">		byte[] r = rank;</span>
 
-<span class="fc bfc" id="L92" title="All 2 branches covered.">		if (r[a] &lt; r[b]) {</span>
-<span class="fc" id="L93">			int temp = a;</span>
-<span class="fc" id="L94">			a = b;</span>
-<span class="fc" id="L95">			b = temp;</span>
-<span class="fc bfc" id="L96" title="All 2 branches covered.">		} else if (r[a] == r[b])</span>
-<span class="fc" id="L97">			r[a]++;</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">		if (r[a] &lt; r[b]) {</span>
+<span class="fc" id="L109">			int temp = a;</span>
+<span class="fc" id="L110">			a = b;</span>
+<span class="fc" id="L111">			b = temp;</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">		} else if (r[a] == r[b])</span>
+<span class="fc" id="L113">			r[a]++;</span>
 
-<span class="fc" id="L99">		unionSetParent(b, a);</span>
-<span class="fc" id="L100">		return a;</span>
+<span class="fc" id="L115">		unionSetParent(b, a);</span>
+<span class="fc" id="L116">		return a;</span>
 	}
 
 	void unionSetParent(int c, int p) {
-<span class="fc" id="L104">		parent[c] = p;</span>
-<span class="fc" id="L105">	}</span>
+<span class="fc" id="L120">		parent[c] = p;</span>
+<span class="fc" id="L121">	}</span>
 
 	@Override
 	public int size() {
-<span class="fc" id="L109">		return size;</span>
+<span class="fc" id="L125">		return size;</span>
 	}
 
 	@Override
 	public void clear() {
-<span class="fc" id="L114">		Arrays.fill(parent, 0, size, NO_PARENT);</span>
-<span class="fc" id="L115">		size = 0;</span>
-<span class="fc" id="L116">	}</span>
+<span class="fc" id="L130">		Arrays.fill(parent, 0, size, NO_PARENT);</span>
+<span class="fc" id="L131">		size = 0;</span>
+<span class="fc" id="L132">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

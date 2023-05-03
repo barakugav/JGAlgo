@@ -1,4 +1,20 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Weights.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">Weights.java</span></div><h1>Weights.java</h1><pre class="source lang-java linenums">package com.jgalgo;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Weights.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">Weights.java</span></div><h1>Weights.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo;
 
 /**
  * Weights of graph vertices or edges.
@@ -104,7 +120,7 @@ public interface Weights&lt;W&gt; {
 		@Deprecated
 		@Override
 		default java.lang.Byte get(int id) {
-<span class="fc" id="L107">			return java.lang.Byte.valueOf(getByte(id));</span>
+<span class="fc" id="L123">			return java.lang.Byte.valueOf(getByte(id));</span>
 		}
 
 		/**
@@ -118,8 +134,8 @@ public interface Weights&lt;W&gt; {
 		@Deprecated
 		@Override
 		default void set(int id, java.lang.Byte weight) {
-<span class="fc" id="L121">			set(id, weight.byteValue());</span>
-<span class="fc" id="L122">		}</span>
+<span class="fc" id="L137">			set(id, weight.byteValue());</span>
+<span class="fc" id="L138">		}</span>
 
 		/**
 		 * Get the default weight of this weights container.
@@ -134,7 +150,7 @@ public interface Weights&lt;W&gt; {
 		@Deprecated
 		@Override
 		default java.lang.Byte defaultWeight() {
-<span class="fc" id="L137">			return java.lang.Byte.valueOf(defaultWeightByte());</span>
+<span class="fc" id="L153">			return java.lang.Byte.valueOf(defaultWeightByte());</span>
 		}
 
 		/**
@@ -144,7 +160,7 @@ public interface Weights&lt;W&gt; {
 		 */
 		@Override
 		default int weightInt(int id) {
-<span class="nc" id="L147">			return getByte(id);</span>
+<span class="nc" id="L163">			return getByte(id);</span>
 		}
 	}
 
@@ -166,7 +182,7 @@ public interface Weights&lt;W&gt; {
 		@Deprecated
 		@Override
 		default java.lang.Short get(int id) {
-<span class="fc" id="L169">			return java.lang.Short.valueOf(getShort(id));</span>
+<span class="fc" id="L185">			return java.lang.Short.valueOf(getShort(id));</span>
 		}
 
 		/**
@@ -180,8 +196,8 @@ public interface Weights&lt;W&gt; {
 		@Deprecated
 		@Override
 		default void set(int id, java.lang.Short weight) {
-<span class="fc" id="L183">			set(id, weight.shortValue());</span>
-<span class="fc" id="L184">		}</span>
+<span class="fc" id="L199">			set(id, weight.shortValue());</span>
+<span class="fc" id="L200">		}</span>
 
 		/**
 		 * Get the default weight of this weights container.
@@ -196,7 +212,7 @@ public interface Weights&lt;W&gt; {
 		@Deprecated
 		@Override
 		default java.lang.Short defaultWeight() {
-<span class="fc" id="L199">			return java.lang.Short.valueOf(defaultWeightShort());</span>
+<span class="fc" id="L215">			return java.lang.Short.valueOf(defaultWeightShort());</span>
 		}
 
 		/**
@@ -206,7 +222,7 @@ public interface Weights&lt;W&gt; {
 		 */
 		@Override
 		default int weightInt(int id) {
-<span class="nc" id="L209">			return getShort(id);</span>
+<span class="nc" id="L225">			return getShort(id);</span>
 		}
 	}
 
@@ -228,7 +244,7 @@ public interface Weights&lt;W&gt; {
 		@Deprecated
 		@Override
 		default Integer get(int id) {
-<span class="fc" id="L231">			return Integer.valueOf(getInt(id));</span>
+<span class="fc" id="L247">			return Integer.valueOf(getInt(id));</span>
 		}
 
 		/**
@@ -242,8 +258,8 @@ public interface Weights&lt;W&gt; {
 		@Deprecated
 		@Override
 		default void set(int id, Integer weight) {
-<span class="fc" id="L245">			set(id, weight.intValue());</span>
-<span class="fc" id="L246">		}</span>
+<span class="fc" id="L261">			set(id, weight.intValue());</span>
+<span class="fc" id="L262">		}</span>
 
 		/**
 		 * Get the default weight of this weights container.
@@ -258,7 +274,7 @@ public interface Weights&lt;W&gt; {
 		@Deprecated
 		@Override
 		default Integer defaultWeight() {
-<span class="fc" id="L261">			return Integer.valueOf(defaultWeightInt());</span>
+<span class="fc" id="L277">			return Integer.valueOf(defaultWeightInt());</span>
 		}
 
 		/**
@@ -268,7 +284,7 @@ public interface Weights&lt;W&gt; {
 		 */
 		@Override
 		default int weightInt(int id) {
-<span class="fc" id="L271">			return getInt(id);</span>
+<span class="fc" id="L287">			return getInt(id);</span>
 		}
 	}
 
@@ -290,7 +306,7 @@ public interface Weights&lt;W&gt; {
 		@Deprecated
 		@Override
 		default java.lang.Long get(int id) {
-<span class="fc" id="L293">			return java.lang.Long.valueOf(getLong(id));</span>
+<span class="fc" id="L309">			return java.lang.Long.valueOf(getLong(id));</span>
 		}
 
 		/**
@@ -304,8 +320,8 @@ public interface Weights&lt;W&gt; {
 		@Deprecated
 		@Override
 		default void set(int id, java.lang.Long weight) {
-<span class="fc" id="L307">			set(id, weight.longValue());</span>
-<span class="fc" id="L308">		}</span>
+<span class="fc" id="L323">			set(id, weight.longValue());</span>
+<span class="fc" id="L324">		}</span>
 
 		/**
 		 * Get the default weight of this weights container.
@@ -320,7 +336,7 @@ public interface Weights&lt;W&gt; {
 		@Deprecated
 		@Override
 		default java.lang.Long defaultWeight() {
-<span class="fc" id="L323">			return java.lang.Long.valueOf(defaultWeightLong());</span>
+<span class="fc" id="L339">			return java.lang.Long.valueOf(defaultWeightLong());</span>
 		}
 
 		/**
@@ -330,7 +346,7 @@ public interface Weights&lt;W&gt; {
 		 */
 		@Override
 		default double weight(int id) {
-<span class="nc" id="L333">			return getLong(id);</span>
+<span class="nc" id="L349">			return getLong(id);</span>
 		}
 	}
 
@@ -352,7 +368,7 @@ public interface Weights&lt;W&gt; {
 		@Deprecated
 		@Override
 		default java.lang.Float get(int id) {
-<span class="fc" id="L355">			return java.lang.Float.valueOf(getFloat(id));</span>
+<span class="fc" id="L371">			return java.lang.Float.valueOf(getFloat(id));</span>
 		}
 
 		/**
@@ -366,8 +382,8 @@ public interface Weights&lt;W&gt; {
 		@Deprecated
 		@Override
 		default void set(int id, java.lang.Float weight) {
-<span class="fc" id="L369">			set(id, weight.floatValue());</span>
-<span class="fc" id="L370">		}</span>
+<span class="fc" id="L385">			set(id, weight.floatValue());</span>
+<span class="fc" id="L386">		}</span>
 
 		/**
 		 * Get the default weight of this weights container.
@@ -382,7 +398,7 @@ public interface Weights&lt;W&gt; {
 		@Deprecated
 		@Override
 		default java.lang.Float defaultWeight() {
-<span class="fc" id="L385">			return java.lang.Float.valueOf(defaultWeightFloat());</span>
+<span class="fc" id="L401">			return java.lang.Float.valueOf(defaultWeightFloat());</span>
 		}
 
 		/**
@@ -392,7 +408,7 @@ public interface Weights&lt;W&gt; {
 		 */
 		@Override
 		default double weight(int id) {
-<span class="nc" id="L395">			return getFloat(id);</span>
+<span class="nc" id="L411">			return getFloat(id);</span>
 		}
 	}
 
@@ -414,7 +430,7 @@ public interface Weights&lt;W&gt; {
 		@Deprecated
 		@Override
 		default java.lang.Double get(int id) {
-<span class="fc" id="L417">			return java.lang.Double.valueOf(getDouble(id));</span>
+<span class="fc" id="L433">			return java.lang.Double.valueOf(getDouble(id));</span>
 		}
 
 		/**
@@ -428,8 +444,8 @@ public interface Weights&lt;W&gt; {
 		@Deprecated
 		@Override
 		default void set(int id, java.lang.Double weight) {
-<span class="fc" id="L431">			set(id, weight.doubleValue());</span>
-<span class="fc" id="L432">		}</span>
+<span class="fc" id="L447">			set(id, weight.doubleValue());</span>
+<span class="fc" id="L448">		}</span>
 
 		/**
 		 * Get the default weight of this weights container.
@@ -444,7 +460,7 @@ public interface Weights&lt;W&gt; {
 		@Deprecated
 		@Override
 		default java.lang.Double defaultWeight() {
-<span class="fc" id="L447">			return java.lang.Double.valueOf(defaultWeightDouble());</span>
+<span class="fc" id="L463">			return java.lang.Double.valueOf(defaultWeightDouble());</span>
 		}
 
 		/**
@@ -454,7 +470,7 @@ public interface Weights&lt;W&gt; {
 		 */
 		@Override
 		default double weight(int id) {
-<span class="fc" id="L457">			return getDouble(id);</span>
+<span class="fc" id="L473">			return getDouble(id);</span>
 		}
 	}
 
@@ -476,7 +492,7 @@ public interface Weights&lt;W&gt; {
 		@Deprecated
 		@Override
 		default Boolean get(int id) {
-<span class="fc" id="L479">			return Boolean.valueOf(getBool(id));</span>
+<span class="fc" id="L495">			return Boolean.valueOf(getBool(id));</span>
 		}
 
 		/**
@@ -490,8 +506,8 @@ public interface Weights&lt;W&gt; {
 		@Deprecated
 		@Override
 		default void set(int id, Boolean weight) {
-<span class="fc" id="L493">			set(id, weight.booleanValue());</span>
-<span class="fc" id="L494">		}</span>
+<span class="fc" id="L509">			set(id, weight.booleanValue());</span>
+<span class="fc" id="L510">		}</span>
 
 		/**
 		 * Get the default weight of this weights container.
@@ -506,7 +522,7 @@ public interface Weights&lt;W&gt; {
 		@Deprecated
 		@Override
 		default Boolean defaultWeight() {
-<span class="fc" id="L509">			return Boolean.valueOf(defaultWeightBool());</span>
+<span class="fc" id="L525">			return Boolean.valueOf(defaultWeightBool());</span>
 		}
 	}
 
@@ -528,7 +544,7 @@ public interface Weights&lt;W&gt; {
 		@Deprecated
 		@Override
 		default Character get(int id) {
-<span class="fc" id="L531">			return Character.valueOf(getChar(id));</span>
+<span class="fc" id="L547">			return Character.valueOf(getChar(id));</span>
 		}
 
 		/**
@@ -542,8 +558,8 @@ public interface Weights&lt;W&gt; {
 		@Deprecated
 		@Override
 		default void set(int id, Character weight) {
-<span class="fc" id="L545">			set(id, weight.charValue());</span>
-<span class="fc" id="L546">		}</span>
+<span class="fc" id="L561">			set(id, weight.charValue());</span>
+<span class="fc" id="L562">		}</span>
 
 		/**
 		 * Get the default weight of this weights container.
@@ -558,7 +574,7 @@ public interface Weights&lt;W&gt; {
 		@Deprecated
 		@Override
 		default Character defaultWeight() {
-<span class="fc" id="L561">			return Character.valueOf(defaultWeightChar());</span>
+<span class="fc" id="L577">			return Character.valueOf(defaultWeightChar());</span>
 		}
 	}
 
@@ -576,7 +592,7 @@ public interface Weights&lt;W&gt; {
 	 */
 	public static &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT createExternalVerticesWeights(Graph g,
 			Class&lt;? super E&gt; type) {
-<span class="nc" id="L579">		return createExternalVerticesWeights(g, type, null);</span>
+<span class="nc" id="L595">		return createExternalVerticesWeights(g, type, null);</span>
 	}
 
 	/**
@@ -594,7 +610,7 @@ public interface Weights&lt;W&gt; {
 	 */
 	public static &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT createExternalVerticesWeights(Graph g,
 			Class&lt;? super E&gt; type, E defVal) {
-<span class="nc" id="L597">		return WeightsImpl.newInstance(g.getVerticesIDStrategy(), type, defVal);</span>
+<span class="nc" id="L613">		return WeightsImpl.newInstance(g.getVerticesIDStrategy(), type, defVal);</span>
 	}
 
 	/**
@@ -610,7 +626,7 @@ public interface Weights&lt;W&gt; {
 	 * @param  &lt;WeightsT&gt; the weights container, used to avoid casts of containers of primitive types
 	 */
 	public static &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT createExternalEdgesWeights(Graph g, Class&lt;? super E&gt; type) {
-<span class="fc" id="L613">		return createExternalEdgesWeights(g, type, null);</span>
+<span class="fc" id="L629">		return createExternalEdgesWeights(g, type, null);</span>
 	}
 
 	/**
@@ -628,7 +644,7 @@ public interface Weights&lt;W&gt; {
 	 */
 	public static &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT createExternalEdgesWeights(Graph g, Class&lt;? super E&gt; type,
 			E defVal) {
-<span class="fc" id="L631">		return WeightsImpl.newInstance(g.getEdgesIDStrategy(), type, defVal);</span>
+<span class="fc" id="L647">		return WeightsImpl.newInstance(g.getEdgesIDStrategy(), type, defVal);</span>
 	}
 
 	/**
@@ -640,10 +656,10 @@ public interface Weights&lt;W&gt; {
 	 * {@link #DefaultBipartiteWeightKey}. To use a different key, the algorithms expose a
 	 * {@code setBipartiteVerticesWeightKey(Object)} function.
 	 */
-<span class="fc" id="L643">	public static final Object DefaultBipartiteWeightKey = new Object() {</span>
+<span class="fc" id="L659">	public static final Object DefaultBipartiteWeightKey = new Object() {</span>
 		@Override
 		public String toString() {
-<span class="fc" id="L646">			return &quot;DefaultBipartiteVerticesWeightKey&quot;;</span>
+<span class="fc" id="L662">			return &quot;DefaultBipartiteVerticesWeightKey&quot;;</span>
 		}
 	};
 

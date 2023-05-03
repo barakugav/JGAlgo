@@ -1,4 +1,20 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MSTKruskal.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">MSTKruskal.java</span></div><h1>MSTKruskal.java</h1><pre class="source lang-java linenums">package com.jgalgo;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MSTKruskal.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">MSTKruskal.java</span></div><h1>MSTKruskal.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo;
 
 import java.util.Objects;
 import java.util.function.IntFunction;
@@ -27,12 +43,12 @@ import it.unimi.dsi.fastutil.ints.IntLists;
  */
 public class MSTKruskal implements MST {
 
-<span class="fc" id="L30">	private IntFunction&lt;? extends UnionFind&gt; unionFindBuilder = UnionFindArray::new;</span>
+<span class="fc" id="L46">	private IntFunction&lt;? extends UnionFind&gt; unionFindBuilder = UnionFindArray::new;</span>
 
 	/**
 	 * Construct a new MST algorithm object.
 	 */
-<span class="fc" id="L35">	public MSTKruskal() {}</span>
+<span class="fc" id="L51">	public MSTKruskal() {}</span>
 
 	/**
 	 * [experimental API] Set the implementation of {@link UnionFind} used by this algorithm.
@@ -41,8 +57,8 @@ public class MSTKruskal implements MST {
 	 *                    {@code 0,1,2,...,n-1}.
 	 */
 	public void experimental_setUnionFindBuilder(IntFunction&lt;? extends UnionFind&gt; builder) {
-<span class="nc" id="L44">		unionFindBuilder = Objects.requireNonNull(builder);</span>
-<span class="nc" id="L45">	}</span>
+<span class="nc" id="L60">		unionFindBuilder = Objects.requireNonNull(builder);</span>
+<span class="nc" id="L61">	}</span>
 
 	/**
 	 * {@inheritDoc}
@@ -51,31 +67,31 @@ public class MSTKruskal implements MST {
 	 */
 	@Override
 	public IntCollection computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
-<span class="pc bpc" id="L54" title="1 of 2 branches missed.">		if (!(g instanceof UGraph))</span>
-<span class="nc" id="L55">			throw new IllegalArgumentException(&quot;only undirected graphs are supported&quot;);</span>
-<span class="fc" id="L56">		int n = g.vertices().size();</span>
-<span class="fc bfc" id="L57" title="All 2 branches covered.">		if (n == 0)</span>
-<span class="fc" id="L58">			return IntLists.emptyList();</span>
+<span class="pc bpc" id="L70" title="1 of 2 branches missed.">		if (!(g instanceof UGraph))</span>
+<span class="nc" id="L71">			throw new IllegalArgumentException(&quot;only undirected graphs are supported&quot;);</span>
+<span class="fc" id="L72">		int n = g.vertices().size();</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">		if (n == 0)</span>
+<span class="fc" id="L74">			return IntLists.emptyList();</span>
 
 		/* sort edges */
-<span class="fc" id="L61">		int[] edges = g.edges().toIntArray();</span>
-<span class="fc" id="L62">		IntArrays.parallelQuickSort(edges, w);</span>
+<span class="fc" id="L77">		int[] edges = g.edges().toIntArray();</span>
+<span class="fc" id="L78">		IntArrays.parallelQuickSort(edges, w);</span>
 
 		/* create union find data structure for each vertex */
-<span class="fc" id="L65">		UnionFind uf = unionFindBuilder.apply(n);</span>
+<span class="fc" id="L81">		UnionFind uf = unionFindBuilder.apply(n);</span>
 
 		/* iterate over the edges and build the MST */
-<span class="fc" id="L68">		IntCollection mst = new IntArrayList(n - 1);</span>
-<span class="fc bfc" id="L69" title="All 2 branches covered.">		for (int e : edges) {</span>
-<span class="fc" id="L70">			int u = g.edgeSource(e);</span>
-<span class="fc" id="L71">			int v = g.edgeTarget(e);</span>
+<span class="fc" id="L84">		IntCollection mst = new IntArrayList(n - 1);</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">		for (int e : edges) {</span>
+<span class="fc" id="L86">			int u = g.edgeSource(e);</span>
+<span class="fc" id="L87">			int v = g.edgeTarget(e);</span>
 
-<span class="fc bfc" id="L73" title="All 2 branches covered.">			if (uf.find(u) != uf.find(v)) {</span>
-<span class="fc" id="L74">				uf.union(u, v);</span>
-<span class="fc" id="L75">				mst.add(e);</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">			if (uf.find(u) != uf.find(v)) {</span>
+<span class="fc" id="L90">				uf.union(u, v);</span>
+<span class="fc" id="L91">				mst.add(e);</span>
 			}
 		}
-<span class="fc" id="L78">		return mst;</span>
+<span class="fc" id="L94">		return mst;</span>
 	}
 
 }

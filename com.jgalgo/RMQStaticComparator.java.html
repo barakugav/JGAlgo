@@ -1,4 +1,20 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RMQStaticComparator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">RMQStaticComparator.java</span></div><h1>RMQStaticComparator.java</h1><pre class="source lang-java linenums">package com.jgalgo;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RMQStaticComparator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">RMQStaticComparator.java</span></div><h1>RMQStaticComparator.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo;
 
 import java.util.Comparator;
 import java.util.Objects;
@@ -35,8 +51,8 @@ public interface RMQStaticComparator {
 	 */
 	@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
 	public static &lt;E&gt; RMQStaticComparator ofObjArray(E[] arr) {
-<span class="nc" id="L38">		Objects.requireNonNull(arr);</span>
-<span class="nc" id="L39">		return (i, j) -&gt; ((Comparable) arr[i]).compareTo(arr[j]);</span>
+<span class="nc" id="L54">		Objects.requireNonNull(arr);</span>
+<span class="nc" id="L55">		return (i, j) -&gt; ((Comparable) arr[i]).compareTo(arr[j]);</span>
 	}
 
 	/**
@@ -49,11 +65,11 @@ public interface RMQStaticComparator {
 	 * @return     an RMQ comparator that will compare elements in the array using the given comparator
 	 */
 	public static &lt;E&gt; RMQStaticComparator ofObjArray(E[] arr, Comparator&lt;? super E&gt; c) {
-<span class="nc bnc" id="L52" title="All 2 branches missed.">		if (c == null) {</span>
-<span class="nc" id="L53">			return ofObjArray(arr);</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">		if (c == null) {</span>
+<span class="nc" id="L69">			return ofObjArray(arr);</span>
 		} else {
-<span class="nc" id="L55">			Objects.requireNonNull(arr);</span>
-<span class="nc" id="L56">			return (i, j) -&gt; c.compare(arr[i], arr[j]);</span>
+<span class="nc" id="L71">			Objects.requireNonNull(arr);</span>
+<span class="nc" id="L72">			return (i, j) -&gt; c.compare(arr[i], arr[j]);</span>
 		}
 	}
 
@@ -64,8 +80,8 @@ public interface RMQStaticComparator {
 	 * @return     an RMQ comparator that will compare elements in the array using {@code Integer.compare()}.
 	 */
 	public static RMQStaticComparator ofIntArray(int[] arr) {
-<span class="fc" id="L67">		Objects.requireNonNull(arr);</span>
-<span class="fc" id="L68">		return (i, j) -&gt; Integer.compare(arr[i], arr[j]);</span>
+<span class="fc" id="L83">		Objects.requireNonNull(arr);</span>
+<span class="fc" id="L84">		return (i, j) -&gt; Integer.compare(arr[i], arr[j]);</span>
 	}
 
 }

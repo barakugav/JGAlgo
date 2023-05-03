@@ -1,4 +1,20 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RMQStaticPowerOf2Table.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">RMQStaticPowerOf2Table.java</span></div><h1>RMQStaticPowerOf2Table.java</h1><pre class="source lang-java linenums">package com.jgalgo;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RMQStaticPowerOf2Table.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">RMQStaticPowerOf2Table.java</span></div><h1>RMQStaticPowerOf2Table.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo;
 
 import java.util.Objects;
 
@@ -16,14 +32,14 @@ public class RMQStaticPowerOf2Table implements RMQStatic {
 	/**
 	 * Construct a new static RMQ algorithm object.
 	 */
-<span class="fc" id="L19">	public RMQStaticPowerOf2Table() {}</span>
+<span class="fc" id="L35">	public RMQStaticPowerOf2Table() {}</span>
 
 	@Override
 	public RMQStatic.DataStructure preProcessSequence(RMQStaticComparator c, int n) {
-<span class="pc bpc" id="L23" title="1 of 2 branches missed.">		if (n &lt;= 0)</span>
-<span class="nc" id="L24">			throw new IllegalArgumentException(&quot;Invalid length: &quot; + n);</span>
-<span class="fc" id="L25">		Objects.requireNonNull(c);</span>
-<span class="fc" id="L26">		return new DS(c, n);</span>
+<span class="pc bpc" id="L39" title="1 of 2 branches missed.">		if (n &lt;= 0)</span>
+<span class="nc" id="L40">			throw new IllegalArgumentException(&quot;Invalid length: &quot; + n);</span>
+<span class="fc" id="L41">		Objects.requireNonNull(c);</span>
+<span class="fc" id="L42">		return new DS(c, n);</span>
 	}
 
 	private static class DS implements RMQStatic.DataStructure {
@@ -31,40 +47,40 @@ public class RMQStaticPowerOf2Table implements RMQStatic {
 		private int[][] arr;
 		private RMQStaticComparator c;
 
-<span class="fc" id="L34">		DS(RMQStaticComparator c, int n) {</span>
-<span class="fc" id="L35">			this.n = n;</span>
-<span class="fc" id="L36">			arr = new int[Utils.log2ceil(n + 1) - 1][n - 1];</span>
-<span class="fc" id="L37">			this.c = c;</span>
+<span class="fc" id="L50">		DS(RMQStaticComparator c, int n) {</span>
+<span class="fc" id="L51">			this.n = n;</span>
+<span class="fc" id="L52">			arr = new int[Utils.log2ceil(n + 1) - 1][n - 1];</span>
+<span class="fc" id="L53">			this.c = c;</span>
 
-<span class="fc bfc" id="L39" title="All 2 branches covered.">			for (int i = 0; i &lt; n - 1; i++)</span>
-<span class="fc bfc" id="L40" title="All 2 branches covered.">				arr[0][i] = c.compare(i, i + 1) &lt; 0 ? i : i + 1;</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">			for (int i = 0; i &lt; n - 1; i++)</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">				arr[0][i] = c.compare(i, i + 1) &lt; 0 ? i : i + 1;</span>
 
-<span class="fc bfc" id="L42" title="All 2 branches covered.">			for (int k = 1; k &lt; arr.length; k++) {</span>
-<span class="fc" id="L43">				int pkSize = 1 &lt;&lt; k;</span>
-<span class="fc" id="L44">				int kSize = 1 &lt;&lt; (k + 1);</span>
-<span class="fc bfc" id="L45" title="All 2 branches covered.">				for (int i = 0; i &lt; n - kSize + 1; i++) {</span>
-<span class="fc" id="L46">					int idx0 = arr[k - 1][i];</span>
-<span class="fc" id="L47">					int idx1 = arr[k - 1][Math.min(i + pkSize, n - pkSize)];</span>
-<span class="fc bfc" id="L48" title="All 2 branches covered.">					arr[k][i] = c.compare(idx0, idx1) &lt; 0 ? idx0 : idx1;</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">			for (int k = 1; k &lt; arr.length; k++) {</span>
+<span class="fc" id="L59">				int pkSize = 1 &lt;&lt; k;</span>
+<span class="fc" id="L60">				int kSize = 1 &lt;&lt; (k + 1);</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">				for (int i = 0; i &lt; n - kSize + 1; i++) {</span>
+<span class="fc" id="L62">					int idx0 = arr[k - 1][i];</span>
+<span class="fc" id="L63">					int idx1 = arr[k - 1][Math.min(i + pkSize, n - pkSize)];</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">					arr[k][i] = c.compare(idx0, idx1) &lt; 0 ? idx0 : idx1;</span>
 				}
 			}
 
-<span class="fc" id="L52">		}</span>
+<span class="fc" id="L68">		}</span>
 
 		@Override
 		public int findMinimumInRange(int i, int j) {
-<span class="pc bpc" id="L56" title="3 of 6 branches missed.">			if (!(0 &lt;= i &amp;&amp; i &lt;= j &amp;&amp; j &lt; n))</span>
-<span class="nc" id="L57">				throw new IllegalArgumentException(&quot;Illegal indices [&quot; + i + &quot;,&quot; + j + &quot;]&quot;);</span>
-<span class="fc bfc" id="L58" title="All 2 branches covered.">			if (i == j)</span>
-<span class="fc" id="L59">				return i;</span>
-<span class="fc" id="L60">			j++;</span>
+<span class="pc bpc" id="L72" title="3 of 6 branches missed.">			if (!(0 &lt;= i &amp;&amp; i &lt;= j &amp;&amp; j &lt; n))</span>
+<span class="nc" id="L73">				throw new IllegalArgumentException(&quot;Illegal indices [&quot; + i + &quot;,&quot; + j + &quot;]&quot;);</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">			if (i == j)</span>
+<span class="fc" id="L75">				return i;</span>
+<span class="fc" id="L76">			j++;</span>
 
-<span class="fc" id="L62">			int k = Utils.log2(j - i);</span>
-<span class="fc" id="L63">			int kSize = 1 &lt;&lt; k;</span>
+<span class="fc" id="L78">			int k = Utils.log2(j - i);</span>
+<span class="fc" id="L79">			int kSize = 1 &lt;&lt; k;</span>
 
-<span class="fc" id="L65">			int idx0 = arr[k - 1][i];</span>
-<span class="fc" id="L66">			int idx1 = arr[k - 1][j - kSize];</span>
-<span class="fc bfc" id="L67" title="All 2 branches covered.">			return c.compare(idx0, idx1) &lt; 0 ? idx0 : idx1;</span>
+<span class="fc" id="L81">			int idx0 = arr[k - 1][i];</span>
+<span class="fc" id="L82">			int idx1 = arr[k - 1][j - kSize];</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">			return c.compare(idx0, idx1) &lt; 0 ? idx0 : idx1;</span>
 		}
 	}
 

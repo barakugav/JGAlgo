@@ -1,4 +1,20 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TSPMetricUtils.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">TSPMetricUtils.java</span></div><h1>TSPMetricUtils.java</h1><pre class="source lang-java linenums">package com.jgalgo;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TSPMetricUtils.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">TSPMetricUtils.java</span></div><h1>TSPMetricUtils.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo;
 
 import java.util.BitSet;
 
@@ -6,111 +22,111 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 
-<span class="fc" id="L9">class TSPMetricUtils {</span>
+<span class="fc" id="L25">class TSPMetricUtils {</span>
 
 	private TSPMetricUtils() {}
 
 	static Path calcEulerianTourAndConvertToHamiltonianCycle(UGraph g, UGraph g1, Weights.Int edgeRef) {
-<span class="fc" id="L14">		int n = g.vertices().size();</span>
+<span class="fc" id="L30">		int n = g.vertices().size();</span>
 
 		/* Assert degree is actually even in the new graph */
-<span class="fc bfc" id="L17" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
-<span class="pc bpc" id="L18" title="1 of 2 branches missed.">			assert g1.degreeOut(u) % 2 == 0;</span>
+<span class="fc bfc" id="L33" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
+<span class="pc bpc" id="L34" title="1 of 2 branches missed.">			assert g1.degreeOut(u) % 2 == 0;</span>
 
 		/* Calculate Eulerian tour in the new graph */
-<span class="fc" id="L21">		Path tour = EulerianTourAlgorithm.newBuilder().build().computeEulerianTour(g1);</span>
-<span class="pc bpc" id="L22" title="1 of 2 branches missed.">		assert isValidCycle(g1, tour);</span>
-<span class="pc bpc" id="L23" title="1 of 2 branches missed.">		assert isPathVisitEvery(g1, tour);</span>
+<span class="fc" id="L37">		Path tour = EulerianTourAlgorithm.newBuilder().build().computeEulerianTour(g1);</span>
+<span class="pc bpc" id="L38" title="1 of 2 branches missed.">		assert isValidCycle(g1, tour);</span>
+<span class="pc bpc" id="L39" title="1 of 2 branches missed.">		assert isPathVisitEvery(g1, tour);</span>
 
 		/* Use shortcuts to convert to a Hamiltonian cycle */
-<span class="fc" id="L26">		IntList cycle = new IntArrayList(n);</span>
-<span class="fc" id="L27">		int firstVertex = -1, lastVertex = -1;</span>
-<span class="fc" id="L28">		BitSet visited = new BitSet(n);</span>
-<span class="fc bfc" id="L29" title="All 2 branches covered.">		for (EdgeIter it = tour.edgeIter(); it.hasNext();) {</span>
-<span class="fc" id="L30">			int e0 = it.nextInt();</span>
-<span class="fc" id="L31">			int e = edgeRef.getInt(e0);</span>
-<span class="fc" id="L32">			final int u = it.u();</span>
-<span class="fc bfc" id="L33" title="All 2 branches covered.">			if (firstVertex == -1)</span>
-<span class="fc" id="L34">				firstVertex = u;</span>
-<span class="fc" id="L35">			visited.set(u);</span>
-<span class="fc bfc" id="L36" title="All 4 branches covered.">			while (visited.get(it.v()) &amp;&amp; it.hasNext()) {</span>
-<span class="fc" id="L37">				it.nextInt();</span>
-<span class="fc" id="L38">				e = g.getEdge(u, it.v());</span>
+<span class="fc" id="L42">		IntList cycle = new IntArrayList(n);</span>
+<span class="fc" id="L43">		int firstVertex = -1, lastVertex = -1;</span>
+<span class="fc" id="L44">		BitSet visited = new BitSet(n);</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">		for (EdgeIter it = tour.edgeIter(); it.hasNext();) {</span>
+<span class="fc" id="L46">			int e0 = it.nextInt();</span>
+<span class="fc" id="L47">			int e = edgeRef.getInt(e0);</span>
+<span class="fc" id="L48">			final int u = it.u();</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">			if (firstVertex == -1)</span>
+<span class="fc" id="L50">				firstVertex = u;</span>
+<span class="fc" id="L51">			visited.set(u);</span>
+<span class="fc bfc" id="L52" title="All 4 branches covered.">			while (visited.get(it.v()) &amp;&amp; it.hasNext()) {</span>
+<span class="fc" id="L53">				it.nextInt();</span>
+<span class="fc" id="L54">				e = g.getEdge(u, it.v());</span>
 			}
-<span class="fc" id="L40">			cycle.add(e);</span>
-<span class="fc" id="L41">			lastVertex = it.v();</span>
-<span class="fc" id="L42">		}</span>
+<span class="fc" id="L56">			cycle.add(e);</span>
+<span class="fc" id="L57">			lastVertex = it.v();</span>
+<span class="fc" id="L58">		}</span>
 
-<span class="pc bpc" id="L44" title="1 of 2 branches missed.">		assert firstVertex == lastVertex;</span>
-<span class="fc" id="L45">		Path cycle0 = new Path(g, firstVertex, lastVertex, cycle);</span>
-<span class="pc bpc" id="L46" title="1 of 2 branches missed.">		assert isValidCycle(g, cycle0);</span>
-<span class="pc bpc" id="L47" title="1 of 2 branches missed.">		assert isPathVisitEvery(g, cycle0);</span>
-<span class="fc" id="L48">		return cycle0;</span>
+<span class="pc bpc" id="L60" title="1 of 2 branches missed.">		assert firstVertex == lastVertex;</span>
+<span class="fc" id="L61">		Path cycle0 = new Path(g, firstVertex, lastVertex, cycle);</span>
+<span class="pc bpc" id="L62" title="1 of 2 branches missed.">		assert isValidCycle(g, cycle0);</span>
+<span class="pc bpc" id="L63" title="1 of 2 branches missed.">		assert isPathVisitEvery(g, cycle0);</span>
+<span class="fc" id="L64">		return cycle0;</span>
 	}
 
 	static IntList pathToVerticesList(Path edges) {
-<span class="fc" id="L52">		IntList res = new IntArrayList();</span>
-<span class="fc bfc" id="L53" title="All 2 branches covered.">		for (EdgeIter it = edges.edgeIter(); it.hasNext();) {</span>
-<span class="fc" id="L54">			it.nextInt();</span>
-<span class="fc" id="L55">			res.add(it.u());</span>
+<span class="fc" id="L68">		IntList res = new IntArrayList();</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">		for (EdgeIter it = edges.edgeIter(); it.hasNext();) {</span>
+<span class="fc" id="L70">			it.nextInt();</span>
+<span class="fc" id="L71">			res.add(it.u());</span>
 		}
-<span class="fc" id="L57">		return res;</span>
+<span class="fc" id="L73">		return res;</span>
 	}
 
 	private static boolean isValidCycle(UGraph g, Path path) {
-<span class="fc" id="L61">		EdgeIter it = path.edgeIter();</span>
-<span class="fc" id="L62">		it.nextInt();</span>
-<span class="fc" id="L63">		final int begin = it.u();</span>
+<span class="fc" id="L77">		EdgeIter it = path.edgeIter();</span>
+<span class="fc" id="L78">		it.nextInt();</span>
+<span class="fc" id="L79">		final int begin = it.u();</span>
 		for (;;) {
-<span class="fc bfc" id="L65" title="All 2 branches covered.">			if (!it.hasNext())</span>
-<span class="pc bpc" id="L66" title="1 of 2 branches missed.">				return it.v() == begin;</span>
-<span class="fc" id="L67">			int lastV = it.v();</span>
-<span class="fc" id="L68">			it.nextInt();</span>
-<span class="pc bpc" id="L69" title="1 of 2 branches missed.">			if (lastV != it.u())</span>
-<span class="nc" id="L70">				return false;</span>
-<span class="fc" id="L71">		}</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">			if (!it.hasNext())</span>
+<span class="pc bpc" id="L82" title="1 of 2 branches missed.">				return it.v() == begin;</span>
+<span class="fc" id="L83">			int lastV = it.v();</span>
+<span class="fc" id="L84">			it.nextInt();</span>
+<span class="pc bpc" id="L85" title="1 of 2 branches missed.">			if (lastV != it.u())</span>
+<span class="nc" id="L86">				return false;</span>
+<span class="fc" id="L87">		}</span>
 	}
 
 	private static boolean isPathVisitEvery(UGraph g, Path path) {
-<span class="fc" id="L75">		final int n = g.vertices().size();</span>
-<span class="fc" id="L76">		BitSet visited = new BitSet(n);</span>
-<span class="fc bfc" id="L77" title="All 2 branches covered.">		for (IntIterator it = path.iterator(); it.hasNext();) {</span>
-<span class="fc" id="L78">			int e = it.nextInt();</span>
-<span class="fc" id="L79">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
-<span class="fc" id="L80">			visited.set(u);</span>
-<span class="fc" id="L81">			visited.set(v);</span>
-<span class="fc" id="L82">		}</span>
-<span class="fc bfc" id="L83" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
-<span class="pc bpc" id="L84" title="1 of 2 branches missed.">			if (!visited.get(u))</span>
-<span class="nc" id="L85">				return false;</span>
-<span class="fc" id="L86">		return true;</span>
+<span class="fc" id="L91">		final int n = g.vertices().size();</span>
+<span class="fc" id="L92">		BitSet visited = new BitSet(n);</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">		for (IntIterator it = path.iterator(); it.hasNext();) {</span>
+<span class="fc" id="L94">			int e = it.nextInt();</span>
+<span class="fc" id="L95">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+<span class="fc" id="L96">			visited.set(u);</span>
+<span class="fc" id="L97">			visited.set(v);</span>
+<span class="fc" id="L98">		}</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
+<span class="pc bpc" id="L100" title="1 of 2 branches missed.">			if (!visited.get(u))</span>
+<span class="nc" id="L101">				return false;</span>
+<span class="fc" id="L102">		return true;</span>
 	}
 
 	static void checkArgDistanceTableSymmetric(double[][] distances) {
-<span class="fc" id="L90">		int n = distances.length;</span>
-<span class="fc bfc" id="L91" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
-<span class="pc bpc" id="L92" title="1 of 2 branches missed.">			if (distances[u].length != n)</span>
-<span class="nc" id="L93">				throw new IllegalArgumentException(&quot;Distances table is not full&quot;);</span>
-<span class="fc bfc" id="L94" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
-<span class="fc bfc" id="L95" title="All 2 branches covered.">			for (int v = u + 1; v &lt; n; v++)</span>
-<span class="pc bpc" id="L96" title="1 of 2 branches missed.">				if (distances[u][v] != distances[v][u])</span>
-<span class="nc" id="L97">					throw new IllegalArgumentException(&quot;Distance is not symmetric: (&quot; + u + &quot;, &quot; + v + &quot;) &quot;</span>
+<span class="fc" id="L106">		int n = distances.length;</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
+<span class="pc bpc" id="L108" title="1 of 2 branches missed.">			if (distances[u].length != n)</span>
+<span class="nc" id="L109">				throw new IllegalArgumentException(&quot;Distances table is not full&quot;);</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">			for (int v = u + 1; v &lt; n; v++)</span>
+<span class="pc bpc" id="L112" title="1 of 2 branches missed.">				if (distances[u][v] != distances[v][u])</span>
+<span class="nc" id="L113">					throw new IllegalArgumentException(&quot;Distance is not symmetric: (&quot; + u + &quot;, &quot; + v + &quot;) &quot;</span>
 							+ distances[u][v] + &quot; != &quot; + distances[v][u]);
-<span class="fc" id="L99">	}</span>
+<span class="fc" id="L115">	}</span>
 
 	static void checkArgDistanceTableIsMetric(double[][] distances) {
-<span class="fc" id="L102">		final double eps = 0.001;</span>
-<span class="fc" id="L103">		int n = distances.length;</span>
-<span class="fc bfc" id="L104" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
-<span class="pc bpc" id="L105" title="1 of 2 branches missed.">			if (distances[u].length != n)</span>
-<span class="nc" id="L106">				throw new IllegalArgumentException(&quot;Distances table is not full&quot;);</span>
-<span class="fc bfc" id="L107" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
-<span class="fc bfc" id="L108" title="All 2 branches covered.">			for (int v = u + 1; v &lt; n; v++)</span>
-<span class="fc bfc" id="L109" title="All 2 branches covered.">				for (int w = v + 1; w &lt; n; w++)</span>
-<span class="pc bpc" id="L110" title="1 of 2 branches missed.">					if (distances[u][v] + distances[v][w] + eps &lt; distances[u][w])</span>
-<span class="nc" id="L111">						throw new IllegalArgumentException(&quot;Distance table is not metric: (&quot; + u + &quot;, &quot; + v + &quot;, &quot; + w</span>
+<span class="fc" id="L118">		final double eps = 0.001;</span>
+<span class="fc" id="L119">		int n = distances.length;</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
+<span class="pc bpc" id="L121" title="1 of 2 branches missed.">			if (distances[u].length != n)</span>
+<span class="nc" id="L122">				throw new IllegalArgumentException(&quot;Distances table is not full&quot;);</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">			for (int v = u + 1; v &lt; n; v++)</span>
+<span class="fc bfc" id="L125" title="All 2 branches covered.">				for (int w = v + 1; w &lt; n; w++)</span>
+<span class="pc bpc" id="L126" title="1 of 2 branches missed.">					if (distances[u][v] + distances[v][w] + eps &lt; distances[u][w])</span>
+<span class="nc" id="L127">						throw new IllegalArgumentException(&quot;Distance table is not metric: (&quot; + u + &quot;, &quot; + v + &quot;, &quot; + w</span>
 								+ &quot;) &quot; + distances[u][v] + &quot; + &quot; + distances[v][w] + &quot; &lt; &quot; + distances[u][w]);
-<span class="fc" id="L113">	}</span>
+<span class="fc" id="L129">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

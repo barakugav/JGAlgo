@@ -1,4 +1,20 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RMQStaticLinearAbstract.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">RMQStaticLinearAbstract.java</span></div><h1>RMQStaticLinearAbstract.java</h1><pre class="source lang-java linenums">package com.jgalgo;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RMQStaticLinearAbstract.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">RMQStaticLinearAbstract.java</span></div><h1>RMQStaticLinearAbstract.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo;
 
 abstract class RMQStaticLinearAbstract implements RMQStatic {
 
@@ -17,11 +33,11 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 
 	private final RMQStaticPowerOf2Table xlogxTable;
 
-<span class="fc" id="L20">	RMQStaticLinearAbstract() {</span>
-<span class="fc" id="L21">		xlogxTable = new RMQStaticPowerOf2Table();</span>
-<span class="fc" id="L22">	}</span>
+<span class="fc" id="L36">	RMQStaticLinearAbstract() {</span>
+<span class="fc" id="L37">		xlogxTable = new RMQStaticPowerOf2Table();</span>
+<span class="fc" id="L38">	}</span>
 
-<span class="fc" id="L24">	abstract class DS implements RMQStatic.DataStructure {</span>
+<span class="fc" id="L40">	abstract class DS implements RMQStatic.DataStructure {</span>
 
 		int n;
 		int blockSize;
@@ -33,69 +49,69 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 		private RMQStatic.DataStructure xlogxTableDS;
 
 		void preProcessRMQOuterBlocks(RMQStaticComparator c, int n) {
-<span class="fc" id="L36">			blockSize = getBlockSize(n);</span>
-<span class="fc" id="L37">			blockNum = calcBlockNum(n, blockSize);</span>
+<span class="fc" id="L52">			blockSize = getBlockSize(n);</span>
+<span class="fc" id="L53">			blockNum = calcBlockNum(n, blockSize);</span>
 
-<span class="fc" id="L39">			this.n = n;</span>
-<span class="fc bfc" id="L40" title="All 2 branches covered.">			this.c = c = n &lt; blockNum * blockSize ? new PadderComparator(n, c) : c;</span>
+<span class="fc" id="L55">			this.n = n;</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">			this.c = c = n &lt; blockNum * blockSize ? new PadderComparator(n, c) : c;</span>
 
-<span class="fc" id="L42">			blocksRightMinimum = new int[blockNum][blockSize - 1];</span>
-<span class="fc" id="L43">			blocksLeftMinimum = new int[blockNum][blockSize - 1];</span>
+<span class="fc" id="L58">			blocksRightMinimum = new int[blockNum][blockSize - 1];</span>
+<span class="fc" id="L59">			blocksLeftMinimum = new int[blockNum][blockSize - 1];</span>
 
-<span class="fc bfc" id="L45" title="All 2 branches covered.">			for (int b = 0; b &lt; blockNum; b++) {</span>
-<span class="fc" id="L46">				int base = b * blockSize;</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">			for (int b = 0; b &lt; blockNum; b++) {</span>
+<span class="fc" id="L62">				int base = b * blockSize;</span>
 
-<span class="fc" id="L48">				int min = 0;</span>
-<span class="fc bfc" id="L49" title="All 2 branches covered.">				for (int i = 0; i &lt; blockSize - 1; i++) {</span>
-<span class="fc bfc" id="L50" title="All 2 branches covered.">					if (c.compare(base + i + 1, base + min) &lt; 0)</span>
-<span class="fc" id="L51">						min = i + 1;</span>
-<span class="fc" id="L52">					blocksLeftMinimum[b][i] = base + min;</span>
+<span class="fc" id="L64">				int min = 0;</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">				for (int i = 0; i &lt; blockSize - 1; i++) {</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">					if (c.compare(base + i + 1, base + min) &lt; 0)</span>
+<span class="fc" id="L67">						min = i + 1;</span>
+<span class="fc" id="L68">					blocksLeftMinimum[b][i] = base + min;</span>
 				}
 
-<span class="fc" id="L55">				min = blockSize - 1;</span>
-<span class="fc bfc" id="L56" title="All 2 branches covered.">				for (int i = blockSize - 2; i &gt;= 0; i--) {</span>
-<span class="fc bfc" id="L57" title="All 2 branches covered.">					if (c.compare(base + i, base + min) &lt; 0)</span>
-<span class="fc" id="L58">						min = i;</span>
-<span class="fc" id="L59">					blocksRightMinimum[b][i] = base + min;</span>
+<span class="fc" id="L71">				min = blockSize - 1;</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">				for (int i = blockSize - 2; i &gt;= 0; i--) {</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">					if (c.compare(base + i, base + min) &lt; 0)</span>
+<span class="fc" id="L74">						min = i;</span>
+<span class="fc" id="L75">					blocksRightMinimum[b][i] = base + min;</span>
 				}
 			}
 
-<span class="fc" id="L63">			xlogxTableDS = xlogxTable.preProcessSequence(</span>
-<span class="fc" id="L64">					(i, j) -&gt; this.c.compare(blocksRightMinimum[i][0], blocksRightMinimum[j][0]), blockNum);</span>
-<span class="fc" id="L65">		}</span>
+<span class="fc" id="L79">			xlogxTableDS = xlogxTable.preProcessSequence(</span>
+<span class="fc" id="L80">					(i, j) -&gt; this.c.compare(blocksRightMinimum[i][0], blocksRightMinimum[j][0]), blockNum);</span>
+<span class="fc" id="L81">		}</span>
 
 		abstract int getBlockSize(int n);
 
 		int calcBlockNum(int n, int blockSize) {
-<span class="fc" id="L70">			return (int) Math.ceil((double) n / blockSize);</span>
+<span class="fc" id="L86">			return (int) Math.ceil((double) n / blockSize);</span>
 		}
 
 		@Override
 		public int findMinimumInRange(int i, int j) {
-<span class="pc bpc" id="L75" title="3 of 6 branches missed.">			if (!(0 &lt;= i &amp;&amp; i &lt;= j &amp;&amp; j &lt; n))</span>
-<span class="nc" id="L76">				throw new IllegalArgumentException(&quot;Illegal indices [&quot; + i + &quot;,&quot; + j + &quot;]&quot;);</span>
-<span class="fc bfc" id="L77" title="All 2 branches covered.">			if (i == j)</span>
-<span class="fc" id="L78">				return i;</span>
+<span class="pc bpc" id="L91" title="3 of 6 branches missed.">			if (!(0 &lt;= i &amp;&amp; i &lt;= j &amp;&amp; j &lt; n))</span>
+<span class="nc" id="L92">				throw new IllegalArgumentException(&quot;Illegal indices [&quot; + i + &quot;,&quot; + j + &quot;]&quot;);</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">			if (i == j)</span>
+<span class="fc" id="L94">				return i;</span>
 
-<span class="fc" id="L80">			int blk0 = i / blockSize;</span>
-<span class="fc" id="L81">			int blk1 = j / blockSize;</span>
-<span class="fc" id="L82">			int innerI = i % blockSize;</span>
-<span class="fc" id="L83">			int innerJ = j % blockSize;</span>
+<span class="fc" id="L96">			int blk0 = i / blockSize;</span>
+<span class="fc" id="L97">			int blk1 = j / blockSize;</span>
+<span class="fc" id="L98">			int innerI = i % blockSize;</span>
+<span class="fc" id="L99">			int innerJ = j % blockSize;</span>
 
-<span class="fc bfc" id="L85" title="All 2 branches covered.">			if (blk0 != blk1) {</span>
-<span class="fc bfc" id="L86" title="All 2 branches covered.">				int blk0min = innerI == blockSize - 1 ? blk0 * blockSize + innerI : blocksRightMinimum[blk0][innerI];</span>
-<span class="fc bfc" id="L87" title="All 2 branches covered.">				int blk1min = innerJ == 0 ? blk1 * blockSize + innerJ : blocksLeftMinimum[blk1][innerJ - 1];</span>
-<span class="fc bfc" id="L88" title="All 2 branches covered.">				int min = c.compare(blk0min, blk1min) &lt; 0 ? blk0min : blk1min;</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">			if (blk0 != blk1) {</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">				int blk0min = innerI == blockSize - 1 ? blk0 * blockSize + innerI : blocksRightMinimum[blk0][innerI];</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">				int blk1min = innerJ == 0 ? blk1 * blockSize + innerJ : blocksLeftMinimum[blk1][innerJ - 1];</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">				int min = c.compare(blk0min, blk1min) &lt; 0 ? blk0min : blk1min;</span>
 
-<span class="fc bfc" id="L90" title="All 2 branches covered.">				if (blk0 + 1 != blk1) {</span>
-<span class="fc" id="L91">					int middleBlk = xlogxTableDS.findMinimumInRange(blk0 + 1, blk1 - 1);</span>
-<span class="fc" id="L92">					int middleMin = blocksRightMinimum[middleBlk][0];</span>
-<span class="fc bfc" id="L93" title="All 2 branches covered.">					min = c.compare(min, middleMin) &lt; 0 ? min : middleMin;</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">				if (blk0 + 1 != blk1) {</span>
+<span class="fc" id="L107">					int middleBlk = xlogxTableDS.findMinimumInRange(blk0 + 1, blk1 - 1);</span>
+<span class="fc" id="L108">					int middleMin = blocksRightMinimum[middleBlk][0];</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">					min = c.compare(min, middleMin) &lt; 0 ? min : middleMin;</span>
 				}
 
-<span class="fc" id="L96">				return min;</span>
+<span class="fc" id="L112">				return min;</span>
 			} else {
-<span class="fc" id="L98">				return calcRMQInnerBlock(blk0, innerI, innerJ);</span>
+<span class="fc" id="L114">				return calcRMQInnerBlock(blk0, innerI, innerJ);</span>
 			}
 		}
 
@@ -107,14 +123,14 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 		final int n;
 		final RMQStaticComparator c;
 
-<span class="fc" id="L110">		PadderComparator(int n, RMQStaticComparator c) {</span>
-<span class="fc" id="L111">			this.n = n;</span>
-<span class="fc" id="L112">			this.c = c;</span>
-<span class="fc" id="L113">		}</span>
+<span class="fc" id="L126">		PadderComparator(int n, RMQStaticComparator c) {</span>
+<span class="fc" id="L127">			this.n = n;</span>
+<span class="fc" id="L128">			this.c = c;</span>
+<span class="fc" id="L129">		}</span>
 
 		@Override
 		public int compare(int i, int j) {
-<span class="fc bfc" id="L117" title="All 2 branches covered.">			return i &gt;= n ? i : c.compare(i, Math.min(j, n - 1));</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">			return i &gt;= n ? i : c.compare(i, Math.min(j, n - 1));</span>
 		}
 
 	}

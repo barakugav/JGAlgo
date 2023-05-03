@@ -1,4 +1,20 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MaximumMatchingGabow1976.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">MaximumMatchingGabow1976.java</span></div><h1>MaximumMatchingGabow1976.java</h1><pre class="source lang-java linenums">package com.jgalgo;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MaximumMatchingGabow1976.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">MaximumMatchingGabow1976.java</span></div><h1>MaximumMatchingGabow1976.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo;
 
 import java.util.Arrays;
 import java.util.BitSet;
@@ -28,180 +44,180 @@ public class MaximumMatchingGabow1976 implements MaximumMatching {
 	/**
 	 * Create a new maximum matching object.
 	 */
-<span class="fc" id="L31">	public MaximumMatchingGabow1976() {}</span>
+<span class="fc" id="L47">	public MaximumMatchingGabow1976() {}</span>
 
 	@Override
 	public IntCollection computeMaximumMatching(UGraph g) {
-<span class="fc" id="L35">		int n = g.vertices().size();</span>
+<span class="fc" id="L51">		int n = g.vertices().size();</span>
 
-<span class="fc" id="L37">		IntPriorityQueue queue = new IntArrayFIFOQueue();</span>
-<span class="fc" id="L38">		int[] root = new int[n];</span>
-<span class="fc" id="L39">		BitSet isEven = new BitSet(n);</span>
+<span class="fc" id="L53">		IntPriorityQueue queue = new IntArrayFIFOQueue();</span>
+<span class="fc" id="L54">		int[] root = new int[n];</span>
+<span class="fc" id="L55">		BitSet isEven = new BitSet(n);</span>
 
-<span class="fc" id="L41">		final int EdgeNone = -1;</span>
-<span class="fc" id="L42">		int[] matched = new int[n];</span>
-<span class="fc" id="L43">		Arrays.fill(matched, EdgeNone);</span>
-<span class="fc" id="L44">		int[] bridge = new int[n * 2];</span>
-<span class="fc" id="L45">		int[] parent = new int[n]; // vertex -&gt; edge</span>
+<span class="fc" id="L57">		final int EdgeNone = -1;</span>
+<span class="fc" id="L58">		int[] matched = new int[n];</span>
+<span class="fc" id="L59">		Arrays.fill(matched, EdgeNone);</span>
+<span class="fc" id="L60">		int[] bridge = new int[n * 2];</span>
+<span class="fc" id="L61">		int[] parent = new int[n]; // vertex -&gt; edge</span>
 
-<span class="fc" id="L47">		int[] augPath = new int[n];</span>
-<span class="fc" id="L48">		BitSet setmatch = new BitSet(n);</span>
+<span class="fc" id="L63">		int[] augPath = new int[n];</span>
+<span class="fc" id="L64">		BitSet setmatch = new BitSet(n);</span>
 
-<span class="fc" id="L50">		int[] blossomBaseSearchNotes = new int[n];</span>
-<span class="fc" id="L51">		int blossomBaseSearchNotesIndex = 0;</span>
-<span class="fc" id="L52">		int[] blossomVertices = new int[n];</span>
+<span class="fc" id="L66">		int[] blossomBaseSearchNotes = new int[n];</span>
+<span class="fc" id="L67">		int blossomBaseSearchNotesIndex = 0;</span>
+<span class="fc" id="L68">		int[] blossomVertices = new int[n];</span>
 
-<span class="fc" id="L54">		UnionFind uf = new UnionFindArray();</span>
-<span class="fc" id="L55">		int[] bases = new int[n];</span>
+<span class="fc" id="L70">		UnionFind uf = new UnionFindArray();</span>
+<span class="fc" id="L71">		int[] bases = new int[n];</span>
 
 		for (;;) {
-<span class="fc" id="L58">			Arrays.fill(root, -1);</span>
+<span class="fc" id="L74">			Arrays.fill(root, -1);</span>
 
-<span class="fc bfc" id="L60" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc" id="L61">				uf.make();</span>
-<span class="fc" id="L62">				bases[u] = u;</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc" id="L77">				uf.make();</span>
+<span class="fc" id="L78">				bases[u] = u;</span>
 			}
 
-<span class="fc" id="L65">			int augPathSize = 0;</span>
+<span class="fc" id="L81">			int augPathSize = 0;</span>
 
-<span class="fc" id="L67">			queue.clear();</span>
-<span class="fc bfc" id="L68" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc bfc" id="L69" title="All 2 branches covered.">				if (matched[u] != EdgeNone)</span>
-<span class="fc" id="L70">					continue;</span>
-<span class="fc" id="L71">				root[u] = u;</span>
-<span class="fc" id="L72">				isEven.set(u);</span>
-<span class="fc" id="L73">				queue.enqueue(u);</span>
+<span class="fc" id="L83">			queue.clear();</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">				if (matched[u] != EdgeNone)</span>
+<span class="fc" id="L86">					continue;</span>
+<span class="fc" id="L87">				root[u] = u;</span>
+<span class="fc" id="L88">				isEven.set(u);</span>
+<span class="fc" id="L89">				queue.enqueue(u);</span>
 			}
 
-<span class="fc bfc" id="L76" title="All 2 branches covered.">			bfs: while (!queue.isEmpty()) {</span>
-<span class="fc" id="L77">				final int u = queue.dequeueInt();</span>
-<span class="fc" id="L78">				int uRoot = root[u];</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">			bfs: while (!queue.isEmpty()) {</span>
+<span class="fc" id="L93">				final int u = queue.dequeueInt();</span>
+<span class="fc" id="L94">				int uRoot = root[u];</span>
 
-<span class="fc bfc" id="L80" title="All 2 branches covered.">				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
-<span class="fc" id="L81">					final int e = eit.nextInt();</span>
-<span class="fc" id="L82">					final int v = eit.v();</span>
-<span class="fc" id="L83">					int vRoot = root[v];</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
+<span class="fc" id="L97">					final int e = eit.nextInt();</span>
+<span class="fc" id="L98">					final int v = eit.v();</span>
+<span class="fc" id="L99">					int vRoot = root[v];</span>
 
-<span class="fc bfc" id="L85" title="All 2 branches covered.">					if (vRoot == -1) {</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">					if (vRoot == -1) {</span>
 						// unexplored vertex, add to tree
-<span class="fc" id="L87">						root[v] = uRoot;</span>
-<span class="fc" id="L88">						parent[v] = e;</span>
+<span class="fc" id="L103">						root[v] = uRoot;</span>
+<span class="fc" id="L104">						parent[v] = e;</span>
 
-<span class="fc" id="L90">						int matchedEdge = matched[v];</span>
-<span class="fc" id="L91">						int w = g.edgeEndpoint(matchedEdge, v);</span>
-<span class="fc" id="L92">						root[w] = uRoot;</span>
-<span class="fc" id="L93">						isEven.set(w);</span>
-<span class="fc" id="L94">						queue.enqueue(w);</span>
-<span class="fc" id="L95">						continue;</span>
+<span class="fc" id="L106">						int matchedEdge = matched[v];</span>
+<span class="fc" id="L107">						int w = g.edgeEndpoint(matchedEdge, v);</span>
+<span class="fc" id="L108">						root[w] = uRoot;</span>
+<span class="fc" id="L109">						isEven.set(w);</span>
+<span class="fc" id="L110">						queue.enqueue(w);</span>
+<span class="fc" id="L111">						continue;</span>
 					}
 
-<span class="fc" id="L98">					int vBase = bases[uf.find(v)];</span>
-<span class="fc bfc" id="L99" title="All 2 branches covered.">					if (!isEven.get(vBase))</span>
+<span class="fc" id="L114">					int vBase = bases[uf.find(v)];</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">					if (!isEven.get(vBase))</span>
 						// edge to an odd vertex in some tree, ignore
-<span class="fc" id="L101">						continue;</span>
+<span class="fc" id="L117">						continue;</span>
 
-<span class="fc bfc" id="L103" title="All 2 branches covered.">					if (vRoot == uRoot) {</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">					if (vRoot == uRoot) {</span>
 						// Blossom
-<span class="fc" id="L105">						int uBase = bases[uf.find(u)];</span>
-<span class="fc bfc" id="L106" title="All 2 branches covered.">						if (uBase == vBase)</span>
+<span class="fc" id="L121">						int uBase = bases[uf.find(u)];</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">						if (uBase == vBase)</span>
 							// edge within existing blossom, ignore
-<span class="fc" id="L108">							continue;</span>
+<span class="fc" id="L124">							continue;</span>
 
 						// Find base for the new blossom
-<span class="fc" id="L111">						int base, searchIdx = ++blossomBaseSearchNotesIndex;</span>
-<span class="fc" id="L112">						blossomBaseSearch: for (int[] ps = new int[] { uBase, vBase };;) {</span>
-<span class="fc bfc" id="L113" title="All 2 branches covered.">							for (int i = 0; i &lt; ps.length; i++) {</span>
-<span class="fc" id="L114">								int p = ps[i];</span>
-<span class="fc bfc" id="L115" title="All 2 branches covered.">								if (p == -1)</span>
-<span class="fc" id="L116">									continue;</span>
-<span class="fc bfc" id="L117" title="All 2 branches covered.">								if (blossomBaseSearchNotes[p] == searchIdx) {</span>
-<span class="fc" id="L118">									base = p;</span>
-<span class="fc" id="L119">									break blossomBaseSearch;</span>
+<span class="fc" id="L127">						int base, searchIdx = ++blossomBaseSearchNotesIndex;</span>
+<span class="fc" id="L128">						blossomBaseSearch: for (int[] ps = new int[] { uBase, vBase };;) {</span>
+<span class="fc bfc" id="L129" title="All 2 branches covered.">							for (int i = 0; i &lt; ps.length; i++) {</span>
+<span class="fc" id="L130">								int p = ps[i];</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">								if (p == -1)</span>
+<span class="fc" id="L132">									continue;</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">								if (blossomBaseSearchNotes[p] == searchIdx) {</span>
+<span class="fc" id="L134">									base = p;</span>
+<span class="fc" id="L135">									break blossomBaseSearch;</span>
 								}
-<span class="fc" id="L121">								blossomBaseSearchNotes[p] = searchIdx;</span>
-<span class="fc bfc" id="L122" title="All 2 branches covered.">								if (p != uRoot) {</span>
-<span class="fc" id="L123">									p = g.edgeEndpoint(matched[p], p);</span>
-<span class="fc" id="L124">									p = g.edgeEndpoint(parent[p], p); // move 2 up</span>
-<span class="fc" id="L125">									ps[i] = bases[uf.find(p)];</span>
+<span class="fc" id="L137">								blossomBaseSearchNotes[p] = searchIdx;</span>
+<span class="fc bfc" id="L138" title="All 2 branches covered.">								if (p != uRoot) {</span>
+<span class="fc" id="L139">									p = g.edgeEndpoint(matched[p], p);</span>
+<span class="fc" id="L140">									p = g.edgeEndpoint(parent[p], p); // move 2 up</span>
+<span class="fc" id="L141">									ps[i] = bases[uf.find(p)];</span>
 								} else
-<span class="fc" id="L127">									ps[i] = -1;</span>
+<span class="fc" id="L143">									ps[i] = -1;</span>
 							}
 						}
 
 						// Find all vertices of the blossom
-<span class="fc" id="L132">						int blossomVerticesSize = 0;</span>
-<span class="fc bfc" id="L133" title="All 2 branches covered.">						for (int p : new int[] { uBase, vBase }) {</span>
-<span class="fc bfc" id="L134" title="All 2 branches covered.">							final int bridgeEdge = e, bridgeVertex = p == uBase ? u : v;</span>
-<span class="fc bfc" id="L135" title="All 2 branches covered.">							while (p != base) {</span>
+<span class="fc" id="L148">						int blossomVerticesSize = 0;</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">						for (int p : new int[] { uBase, vBase }) {</span>
+<span class="fc bfc" id="L150" title="All 2 branches covered.">							final int bridgeEdge = e, bridgeVertex = p == uBase ? u : v;</span>
+<span class="fc bfc" id="L151" title="All 2 branches covered.">							while (p != base) {</span>
 								// handle even vertex
-<span class="fc" id="L137">								blossomVertices[blossomVerticesSize++] = p;</span>
+<span class="fc" id="L153">								blossomVertices[blossomVerticesSize++] = p;</span>
 
 								// handle odd vertex
-<span class="fc" id="L140">								p = g.edgeEndpoint(matched[p], p);</span>
-<span class="fc" id="L141">								blossomVertices[blossomVerticesSize++] = p;</span>
-<span class="fc" id="L142">								queue.enqueue(p); // add the odd vertex that became even to the queue</span>
-<span class="fc" id="L143">								bridge[p * 2 + 0] = bridgeEdge;</span>
-<span class="fc" id="L144">								bridge[p * 2 + 1] = bridgeVertex;</span>
+<span class="fc" id="L156">								p = g.edgeEndpoint(matched[p], p);</span>
+<span class="fc" id="L157">								blossomVertices[blossomVerticesSize++] = p;</span>
+<span class="fc" id="L158">								queue.enqueue(p); // add the odd vertex that became even to the queue</span>
+<span class="fc" id="L159">								bridge[p * 2 + 0] = bridgeEdge;</span>
+<span class="fc" id="L160">								bridge[p * 2 + 1] = bridgeVertex;</span>
 
-<span class="fc" id="L146">								p = bases[uf.find(g.edgeEndpoint(parent[p], p))];</span>
+<span class="fc" id="L162">								p = bases[uf.find(g.edgeEndpoint(parent[p], p))];</span>
 							}
 						}
 
 						// Union all UF elements in the new blossom
-<span class="fc bfc" id="L151" title="All 2 branches covered.">						for (int i = 0; i &lt; blossomVerticesSize; i++)</span>
-<span class="fc" id="L152">							uf.union(base, blossomVertices[i]);</span>
-<span class="fc" id="L153">						bases[uf.find(base)] = base; // make sure the UF value is the base</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">						for (int i = 0; i &lt; blossomVerticesSize; i++)</span>
+<span class="fc" id="L168">							uf.union(base, blossomVertices[i]);</span>
+<span class="fc" id="L169">						bases[uf.find(base)] = base; // make sure the UF value is the base</span>
 
-<span class="fc" id="L155">					} else {</span>
+<span class="fc" id="L171">					} else {</span>
 						// augmenting path
-<span class="fc" id="L157">						augPathSize = findPath(g, u, uRoot, isEven, matched, parent, bridge, augPath, 0);</span>
-<span class="fc" id="L158">						augPath[augPathSize++] = e;</span>
-<span class="fc" id="L159">						augPathSize = findPath(g, v, vRoot, isEven, matched, parent, bridge, augPath, augPathSize);</span>
-<span class="fc" id="L160">						break bfs;</span>
+<span class="fc" id="L173">						augPathSize = findPath(g, u, uRoot, isEven, matched, parent, bridge, augPath, 0);</span>
+<span class="fc" id="L174">						augPath[augPathSize++] = e;</span>
+<span class="fc" id="L175">						augPathSize = findPath(g, v, vRoot, isEven, matched, parent, bridge, augPath, augPathSize);</span>
+<span class="fc" id="L176">						break bfs;</span>
 					}
-<span class="fc" id="L162">				}</span>
-<span class="fc" id="L163">			}</span>
-<span class="fc bfc" id="L164" title="All 2 branches covered.">			if (augPathSize == 0)</span>
-<span class="fc" id="L165">				break;</span>
+<span class="fc" id="L178">				}</span>
+<span class="fc" id="L179">			}</span>
+<span class="fc bfc" id="L180" title="All 2 branches covered.">			if (augPathSize == 0)</span>
+<span class="fc" id="L181">				break;</span>
 
-<span class="fc bfc" id="L167" title="All 2 branches covered.">			for (int i = 0; i &lt; augPathSize; i++) {</span>
-<span class="fc" id="L168">				int e = augPath[i];</span>
-<span class="fc" id="L169">				int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
-<span class="fc bfc" id="L170" title="All 4 branches covered.">				setmatch.set(i, matched[u] == EdgeNone || g.edgeTarget(matched[u]) != v);</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">			for (int i = 0; i &lt; augPathSize; i++) {</span>
+<span class="fc" id="L184">				int e = augPath[i];</span>
+<span class="fc" id="L185">				int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+<span class="fc bfc" id="L186" title="All 4 branches covered.">				setmatch.set(i, matched[u] == EdgeNone || g.edgeTarget(matched[u]) != v);</span>
 			}
-<span class="fc bfc" id="L172" title="All 2 branches covered.">			for (int i = 0; i &lt; augPathSize; i++) {</span>
-<span class="fc" id="L173">				int e = augPath[i];</span>
-<span class="fc bfc" id="L174" title="All 2 branches covered.">				if (setmatch.get(i))</span>
-<span class="fc" id="L175">					matched[g.edgeSource(e)] = matched[g.edgeTarget(e)] = e;</span>
+<span class="fc bfc" id="L188" title="All 2 branches covered.">			for (int i = 0; i &lt; augPathSize; i++) {</span>
+<span class="fc" id="L189">				int e = augPath[i];</span>
+<span class="fc bfc" id="L190" title="All 2 branches covered.">				if (setmatch.get(i))</span>
+<span class="fc" id="L191">					matched[g.edgeSource(e)] = matched[g.edgeTarget(e)] = e;</span>
 			}
 
-<span class="fc" id="L178">			isEven.clear();</span>
-<span class="fc" id="L179">			uf.clear();</span>
-<span class="fc" id="L180">		}</span>
+<span class="fc" id="L194">			isEven.clear();</span>
+<span class="fc" id="L195">			uf.clear();</span>
+<span class="fc" id="L196">		}</span>
 
-<span class="fc" id="L182">		IntList res = new IntArrayList();</span>
-<span class="fc bfc" id="L183" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
-<span class="fc bfc" id="L184" title="All 4 branches covered.">			if (matched[u] != EdgeNone &amp;&amp; u == g.edgeSource(matched[u]))</span>
-<span class="fc" id="L185">				res.add(matched[u]);</span>
-<span class="fc" id="L186">		return res;</span>
+<span class="fc" id="L198">		IntList res = new IntArrayList();</span>
+<span class="fc bfc" id="L199" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
+<span class="fc bfc" id="L200" title="All 4 branches covered.">			if (matched[u] != EdgeNone &amp;&amp; u == g.edgeSource(matched[u]))</span>
+<span class="fc" id="L201">				res.add(matched[u]);</span>
+<span class="fc" id="L202">		return res;</span>
 	}
 
 	private static int findPath(UGraph g, int s, int t, BitSet isEven, int[] match, int[] parent, int[] bridge,
 			int[] path, int pathSize) {
-<span class="fc bfc" id="L191" title="All 2 branches covered.">		if (s == t)</span>
-<span class="fc" id="L192">			return pathSize;</span>
-<span class="fc bfc" id="L193" title="All 2 branches covered.">		if (isEven.get(s)) {</span>
-<span class="fc" id="L194">			int v = g.edgeEndpoint(match[s], s);</span>
-<span class="fc" id="L195">			path[pathSize++] = match[s];</span>
-<span class="fc" id="L196">			path[pathSize++] = parent[v];</span>
-<span class="fc" id="L197">			return findPath(g, g.edgeEndpoint(parent[v], v), t, isEven, match, parent, bridge, path, pathSize);</span>
+<span class="fc bfc" id="L207" title="All 2 branches covered.">		if (s == t)</span>
+<span class="fc" id="L208">			return pathSize;</span>
+<span class="fc bfc" id="L209" title="All 2 branches covered.">		if (isEven.get(s)) {</span>
+<span class="fc" id="L210">			int v = g.edgeEndpoint(match[s], s);</span>
+<span class="fc" id="L211">			path[pathSize++] = match[s];</span>
+<span class="fc" id="L212">			path[pathSize++] = parent[v];</span>
+<span class="fc" id="L213">			return findPath(g, g.edgeEndpoint(parent[v], v), t, isEven, match, parent, bridge, path, pathSize);</span>
 		} else {
-<span class="fc" id="L199">			int vw = bridge[s * 2 + 0];</span>
-<span class="fc" id="L200">			int v = bridge[s * 2 + 1], w = g.edgeEndpoint(vw, v);</span>
-<span class="fc" id="L201">			path[pathSize++] = match[s];</span>
-<span class="fc" id="L202">			pathSize = findPath(g, v, g.edgeEndpoint(match[s], s), isEven, match, parent, bridge, path, pathSize);</span>
-<span class="fc" id="L203">			path[pathSize++] = vw;</span>
-<span class="fc" id="L204">			return findPath(g, w, t, isEven, match, parent, bridge, path, pathSize);</span>
+<span class="fc" id="L215">			int vw = bridge[s * 2 + 0];</span>
+<span class="fc" id="L216">			int v = bridge[s * 2 + 1], w = g.edgeEndpoint(vw, v);</span>
+<span class="fc" id="L217">			path[pathSize++] = match[s];</span>
+<span class="fc" id="L218">			pathSize = findPath(g, v, g.edgeEndpoint(match[s], s), isEven, match, parent, bridge, path, pathSize);</span>
+<span class="fc" id="L219">			path[pathSize++] = vw;</span>
+<span class="fc" id="L220">			return findPath(g, w, t, isEven, match, parent, bridge, path, pathSize);</span>
 		}
 	}
 

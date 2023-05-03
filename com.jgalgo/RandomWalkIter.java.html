@@ -1,4 +1,20 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RandomWalkIter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">RandomWalkIter.java</span></div><h1>RandomWalkIter.java</h1><pre class="source lang-java linenums">package com.jgalgo;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RandomWalkIter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">RandomWalkIter.java</span></div><h1>RandomWalkIter.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo;
 
 import java.util.NoSuchElementException;
 import java.util.Random;
@@ -14,88 +30,88 @@ abstract class RandomWalkIter implements IntIterator {
 	private int v;
 	private final Random rand;
 
-<span class="nc" id="L17">	private RandomWalkIter(Graph g, int source, Random rand) {</span>
-<span class="nc" id="L18">		this.g = g;</span>
-<span class="nc" id="L19">		edges = new int[g.vertices().size()][];</span>
-<span class="nc" id="L20">		v = source;</span>
-<span class="nc" id="L21">		this.rand = rand;</span>
-<span class="nc" id="L22">	}</span>
+<span class="nc" id="L33">	private RandomWalkIter(Graph g, int source, Random rand) {</span>
+<span class="nc" id="L34">		this.g = g;</span>
+<span class="nc" id="L35">		edges = new int[g.vertices().size()][];</span>
+<span class="nc" id="L36">		v = source;</span>
+<span class="nc" id="L37">		this.rand = rand;</span>
+<span class="nc" id="L38">	}</span>
 
 	public static RandomWalkIter createWithAllEdges(Graph g, int source) {
-<span class="nc" id="L25">		return new IterWithAllEdges(g, source, new Random());</span>
+<span class="nc" id="L41">		return new IterWithAllEdges(g, source, new Random());</span>
 	}
 
 	public static RandomWalkIter createWithAllEdges(Graph g, int source, long seed) {
-<span class="nc" id="L29">		return new IterWithAllEdges(g, source, new Random(seed));</span>
+<span class="nc" id="L45">		return new IterWithAllEdges(g, source, new Random(seed));</span>
 	}
 
 	public static RandomWalkIter createWithoutSelfLoops(Graph g, int source) {
-<span class="nc" id="L33">		return new IterWithoutSelfLoops(g, source, new Random());</span>
+<span class="nc" id="L49">		return new IterWithoutSelfLoops(g, source, new Random());</span>
 	}
 
 	public static RandomWalkIter createWithoutSelfLoops(Graph g, int source, long seed) {
-<span class="nc" id="L37">		return new IterWithoutSelfLoops(g, source, new Random(seed));</span>
+<span class="nc" id="L53">		return new IterWithoutSelfLoops(g, source, new Random(seed));</span>
 	}
 
 	public static RandomWalkIter createWithUniformNeighborDist(Graph g, int source) {
-<span class="nc" id="L41">		return new IterUniformNeighborDist(g, source, new Random());</span>
+<span class="nc" id="L57">		return new IterUniformNeighborDist(g, source, new Random());</span>
 	}
 
 	public static RandomWalkIter createWithUniformNeighborDist(Graph g, int source, long seed) {
-<span class="nc" id="L45">		return new IterUniformNeighborDist(g, source, new Random(seed));</span>
+<span class="nc" id="L61">		return new IterUniformNeighborDist(g, source, new Random(seed));</span>
 	}
 
 	@Override
 	public boolean hasNext() {
-<span class="nc bnc" id="L50" title="All 2 branches missed.">		return edges[v].length == 0;</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">		return edges[v].length == 0;</span>
 	}
 
 	@Override
 	public int nextInt() {
-<span class="nc bnc" id="L55" title="All 2 branches missed.">		if (!hasNext())</span>
-<span class="nc" id="L56">			throw new NoSuchElementException();</span>
-<span class="nc" id="L57">		int[] es = edges[v];</span>
-<span class="nc" id="L58">		int eIdx = rand.nextInt(es.length);</span>
-<span class="nc" id="L59">		int e = es[eIdx];</span>
-<span class="nc" id="L60">		int ret = v;</span>
-<span class="nc" id="L61">		v = g.edgeEndpoint(e, v);</span>
-<span class="nc bnc" id="L62" title="All 2 branches missed.">		if (edges[v] == null)</span>
-<span class="nc" id="L63">			edges[v] = getEdges(v);</span>
-<span class="nc" id="L64">		return ret;</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">		if (!hasNext())</span>
+<span class="nc" id="L72">			throw new NoSuchElementException();</span>
+<span class="nc" id="L73">		int[] es = edges[v];</span>
+<span class="nc" id="L74">		int eIdx = rand.nextInt(es.length);</span>
+<span class="nc" id="L75">		int e = es[eIdx];</span>
+<span class="nc" id="L76">		int ret = v;</span>
+<span class="nc" id="L77">		v = g.edgeEndpoint(e, v);</span>
+<span class="nc bnc" id="L78" title="All 2 branches missed.">		if (edges[v] == null)</span>
+<span class="nc" id="L79">			edges[v] = getEdges(v);</span>
+<span class="nc" id="L80">		return ret;</span>
 	}
 
 	abstract int[] getEdges(int u);
 
 	private static class IterWithAllEdges extends RandomWalkIter {
 		IterWithAllEdges(Graph g, int source, Random rand) {
-<span class="nc" id="L71">			super(g, source, rand);</span>
-<span class="nc" id="L72">			super.edges[super.v] = getEdges(super.v);</span>
-<span class="nc" id="L73">		}</span>
+<span class="nc" id="L87">			super(g, source, rand);</span>
+<span class="nc" id="L88">			super.edges[super.v] = getEdges(super.v);</span>
+<span class="nc" id="L89">		}</span>
 
 		@Override
 		int[] getEdges(int u) {
-<span class="nc" id="L77">			IntList es = new IntArrayList();</span>
-<span class="nc bnc" id="L78" title="All 2 branches missed.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();)</span>
-<span class="nc" id="L79">				es.add(eit.nextInt());</span>
-<span class="nc" id="L80">			return es.toIntArray();</span>
+<span class="nc" id="L93">			IntList es = new IntArrayList();</span>
+<span class="nc bnc" id="L94" title="All 2 branches missed.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();)</span>
+<span class="nc" id="L95">				es.add(eit.nextInt());</span>
+<span class="nc" id="L96">			return es.toIntArray();</span>
 		}
 	}
 
 	private static class IterWithoutSelfLoops extends RandomWalkIter {
 		IterWithoutSelfLoops(Graph g, int source, Random rand) {
-<span class="nc" id="L86">			super(g, source, rand);</span>
-<span class="nc" id="L87">			super.edges[super.v] = getEdges(super.v);</span>
-<span class="nc" id="L88">		}</span>
+<span class="nc" id="L102">			super(g, source, rand);</span>
+<span class="nc" id="L103">			super.edges[super.v] = getEdges(super.v);</span>
+<span class="nc" id="L104">		}</span>
 
 		@Override
 		int[] getEdges(int u) {
-<span class="nc" id="L92">			IntList es = new IntArrayList();</span>
-<span class="nc bnc" id="L93" title="All 2 branches missed.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
-<span class="nc" id="L94">				int e = eit.nextInt();</span>
-<span class="nc bnc" id="L95" title="All 2 branches missed.">				if (g.edgeEndpoint(e, u) != u)</span>
-<span class="nc" id="L96">					es.add(e);</span>
-<span class="nc" id="L97">			}</span>
-<span class="nc" id="L98">			return es.toIntArray();</span>
+<span class="nc" id="L108">			IntList es = new IntArrayList();</span>
+<span class="nc bnc" id="L109" title="All 2 branches missed.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
+<span class="nc" id="L110">				int e = eit.nextInt();</span>
+<span class="nc bnc" id="L111" title="All 2 branches missed.">				if (g.edgeEndpoint(e, u) != u)</span>
+<span class="nc" id="L112">					es.add(e);</span>
+<span class="nc" id="L113">			}</span>
+<span class="nc" id="L114">			return es.toIntArray();</span>
 		}
 	}
 
@@ -104,24 +120,24 @@ abstract class RandomWalkIter implements IntIterator {
 		private int lastVisitIdx;
 
 		IterUniformNeighborDist(Graph g, int source, Random rand) {
-<span class="nc" id="L107">			super(g, source, rand);</span>
-<span class="nc" id="L108">			visits = new int[g.vertices().size()];</span>
-<span class="nc" id="L109">			super.edges[super.v] = getEdges(super.v);</span>
-<span class="nc" id="L110">		}</span>
+<span class="nc" id="L123">			super(g, source, rand);</span>
+<span class="nc" id="L124">			visits = new int[g.vertices().size()];</span>
+<span class="nc" id="L125">			super.edges[super.v] = getEdges(super.v);</span>
+<span class="nc" id="L126">		}</span>
 
 		@Override
 		int[] getEdges(int u) {
-<span class="nc" id="L114">			int visitIdx = ++lastVisitIdx;</span>
-<span class="nc" id="L115">			IntList es = new IntArrayList();</span>
-<span class="nc bnc" id="L116" title="All 2 branches missed.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
-<span class="nc" id="L117">				int e = eit.nextInt();</span>
-<span class="nc" id="L118">				int v = g.edgeEndpoint(e, u);</span>
-<span class="nc bnc" id="L119" title="All 2 branches missed.">				if (visits[v] == visitIdx)</span>
-<span class="nc" id="L120">					continue; /* already added */</span>
-<span class="nc" id="L121">				visits[v] = visitIdx;</span>
-<span class="nc" id="L122">				es.add(e);</span>
-<span class="nc" id="L123">			}</span>
-<span class="nc" id="L124">			return es.toIntArray();</span>
+<span class="nc" id="L130">			int visitIdx = ++lastVisitIdx;</span>
+<span class="nc" id="L131">			IntList es = new IntArrayList();</span>
+<span class="nc bnc" id="L132" title="All 2 branches missed.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
+<span class="nc" id="L133">				int e = eit.nextInt();</span>
+<span class="nc" id="L134">				int v = g.edgeEndpoint(e, u);</span>
+<span class="nc bnc" id="L135" title="All 2 branches missed.">				if (visits[v] == visitIdx)</span>
+<span class="nc" id="L136">					continue; /* already added */</span>
+<span class="nc" id="L137">				visits[v] = visitIdx;</span>
+<span class="nc" id="L138">				es.add(e);</span>
+<span class="nc" id="L139">			}</span>
+<span class="nc" id="L140">			return es.toIntArray();</span>
 		}
 	}
 

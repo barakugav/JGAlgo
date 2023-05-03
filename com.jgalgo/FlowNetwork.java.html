@@ -1,4 +1,20 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FlowNetwork.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">FlowNetwork.java</span></div><h1>FlowNetwork.java</h1><pre class="source lang-java linenums">package com.jgalgo;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FlowNetwork.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">FlowNetwork.java</span></div><h1>FlowNetwork.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo;
 
 /**
  * Flow on graph edges, with capacities and flows values.
@@ -85,34 +101,34 @@ public interface FlowNetwork {
      * @return   a flow network implemented as edge weights
      */
     static FlowNetwork createAsEdgeWeight(Graph g) {
-<span class="fc" id="L88">        Weights.Double capacityWeights = g.addEdgesWeights(new Object(), double.class);</span>
-<span class="fc" id="L89">        Weights.Double flowWeights = g.addEdgesWeights(new Object(), double.class);</span>
-<span class="fc" id="L90">        return new FlowNetwork() {</span>
+<span class="fc" id="L104">        Weights.Double capacityWeights = g.addEdgesWeights(new Object(), double.class);</span>
+<span class="fc" id="L105">        Weights.Double flowWeights = g.addEdgesWeights(new Object(), double.class);</span>
+<span class="fc" id="L106">        return new FlowNetwork() {</span>
 
             private static final double EPS = 0.0001;
 
             @Override
             public double getCapacity(int edge) {
-<span class="fc" id="L96">                return capacityWeights.getDouble(edge);</span>
+<span class="fc" id="L112">                return capacityWeights.getDouble(edge);</span>
             }
 
             @Override
             public void setCapacity(int edge, double capacity) {
-<span class="fc" id="L101">                capacityWeights.set(edge, capacity);</span>
-<span class="fc" id="L102">            }</span>
+<span class="fc" id="L117">                capacityWeights.set(edge, capacity);</span>
+<span class="fc" id="L118">            }</span>
 
             @Override
             public double getFlow(int e) {
-<span class="fc" id="L106">                return flowWeights.getDouble(e);</span>
+<span class="fc" id="L122">                return flowWeights.getDouble(e);</span>
             }
 
             @Override
             public void setFlow(int edge, double flow) {
-<span class="fc" id="L111">                double capacity = getCapacity(edge);</span>
-<span class="pc bpc" id="L112" title="1 of 2 branches missed.">                if (flow &gt; capacity + EPS)</span>
-<span class="nc" id="L113">                    throw new IllegalArgumentException(&quot;Illegal flow &quot; + flow + &quot; on edge &quot; + edge);</span>
-<span class="fc" id="L114">                flowWeights.set(edge, Math.min(flow, capacity));</span>
-<span class="fc" id="L115">            }</span>
+<span class="fc" id="L127">                double capacity = getCapacity(edge);</span>
+<span class="pc bpc" id="L128" title="1 of 2 branches missed.">                if (flow &gt; capacity + EPS)</span>
+<span class="nc" id="L129">                    throw new IllegalArgumentException(&quot;Illegal flow &quot; + flow + &quot; on edge &quot; + edge);</span>
+<span class="fc" id="L130">                flowWeights.set(edge, Math.min(flow, capacity));</span>
+<span class="fc" id="L131">            }</span>
         };
     }
 
@@ -139,7 +155,7 @@ public interface FlowNetwork {
         @Deprecated
         @Override
         default double getCapacity(int edge) {
-<span class="fc" id="L142">            return getCapacityInt(edge);</span>
+<span class="fc" id="L158">            return getCapacityInt(edge);</span>
         }
 
         /**
@@ -154,8 +170,8 @@ public interface FlowNetwork {
         @Deprecated
         @Override
         default void setCapacity(int edge, double capacity) {
-<span class="nc" id="L157">            setCapacity(edge, (int) capacity);</span>
-<span class="nc" id="L158">        }</span>
+<span class="nc" id="L173">            setCapacity(edge, (int) capacity);</span>
+<span class="nc" id="L174">        }</span>
 
         /**
          * Get the integer amount of flow units going along an edge.
@@ -169,7 +185,7 @@ public interface FlowNetwork {
         @Deprecated
         @Override
         default double getFlow(int edge) {
-<span class="nc" id="L172">            return getFlowInt(edge);</span>
+<span class="nc" id="L188">            return getFlowInt(edge);</span>
         }
 
         /**
@@ -184,8 +200,8 @@ public interface FlowNetwork {
         @Deprecated
         @Override
         default void setFlow(int edge, double flow) {
-<span class="nc" id="L187">            setFlow(edge, (int) flow);</span>
-<span class="nc" id="L188">        }</span>
+<span class="nc" id="L203">            setFlow(edge, (int) flow);</span>
+<span class="nc" id="L204">        }</span>
 
         /**
          * Create an integer flow network by adding edge weights using {@link Graph#addEdgesWeights}.
@@ -197,32 +213,32 @@ public interface FlowNetwork {
          * @return   a flow network implemented as edge weights
          */
         static FlowNetwork.Int createAsEdgeWeight(Graph g) {
-<span class="fc" id="L200">            Weights.Int capacityWeights = g.addEdgesWeights(new Object(), int.class);</span>
-<span class="fc" id="L201">            Weights.Int flowWeights = g.addEdgesWeights(new Object(), int.class);</span>
-<span class="fc" id="L202">            return new FlowNetwork.Int() {</span>
+<span class="fc" id="L216">            Weights.Int capacityWeights = g.addEdgesWeights(new Object(), int.class);</span>
+<span class="fc" id="L217">            Weights.Int flowWeights = g.addEdgesWeights(new Object(), int.class);</span>
+<span class="fc" id="L218">            return new FlowNetwork.Int() {</span>
 
                 @Override
                 public int getCapacityInt(int edge) {
-<span class="fc" id="L206">                    return capacityWeights.getInt(edge);</span>
+<span class="fc" id="L222">                    return capacityWeights.getInt(edge);</span>
                 }
 
                 @Override
                 public void setCapacity(int edge, int capacity) {
-<span class="fc" id="L211">                    capacityWeights.set(edge, capacity);</span>
-<span class="fc" id="L212">                }</span>
+<span class="fc" id="L227">                    capacityWeights.set(edge, capacity);</span>
+<span class="fc" id="L228">                }</span>
 
                 @Override
                 public int getFlowInt(int e) {
-<span class="fc" id="L216">                    return flowWeights.getInt(e);</span>
+<span class="fc" id="L232">                    return flowWeights.getInt(e);</span>
                 }
 
                 @Override
                 public void setFlow(int edge, int flow) {
-<span class="fc" id="L221">                    int capacity = getCapacityInt(edge);</span>
-<span class="pc bpc" id="L222" title="1 of 2 branches missed.">                    if (flow &gt; capacity)</span>
-<span class="nc" id="L223">                        throw new IllegalArgumentException(&quot;Illegal flow &quot; + flow + &quot; on edge &quot; + edge);</span>
-<span class="fc" id="L224">                    flowWeights.set(edge, Math.min(flow, capacity));</span>
-<span class="fc" id="L225">                }</span>
+<span class="fc" id="L237">                    int capacity = getCapacityInt(edge);</span>
+<span class="pc bpc" id="L238" title="1 of 2 branches missed.">                    if (flow &gt; capacity)</span>
+<span class="nc" id="L239">                        throw new IllegalArgumentException(&quot;Illegal flow &quot; + flow + &quot; on edge &quot; + edge);</span>
+<span class="fc" id="L240">                    flowWeights.set(edge, Math.min(flow, capacity));</span>
+<span class="fc" id="L241">                }</span>
             };
         }
 

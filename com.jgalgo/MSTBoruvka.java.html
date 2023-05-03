@@ -1,4 +1,20 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MSTBoruvka.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">MSTBoruvka.java</span></div><h1>MSTBoruvka.java</h1><pre class="source lang-java linenums">package com.jgalgo;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MSTBoruvka.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">MSTBoruvka.java</span></div><h1>MSTBoruvka.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo;
 
 import java.util.Arrays;
 import it.unimi.dsi.fastutil.Pair;
@@ -24,14 +40,14 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  * @see    &lt;a href= &quot;https://en.wikipedia.org/wiki/Bor%C5%AFvka%27s_algorithm&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
  */
-<span class="fc" id="L27">public class MSTBoruvka implements MST {</span>
+<span class="fc" id="L43">public class MSTBoruvka implements MST {</span>
 
-<span class="fc" id="L29">	private final AllocatedMemory allocatedMem = new AllocatedMemory();</span>
+<span class="fc" id="L45">	private final AllocatedMemory allocatedMem = new AllocatedMemory();</span>
 
 	/**
 	 * Construct a new MST algorithm object.
 	 */
-<span class="fc" id="L34">	public MSTBoruvka() {}</span>
+<span class="fc" id="L50">	public MSTBoruvka() {}</span>
 
 	/**
 	 * {@inheritDoc}
@@ -40,82 +56,82 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 	 */
 	@Override
 	public IntCollection computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
-<span class="fc" id="L43">		return computeMST(g, w, Integer.MAX_VALUE).mst;</span>
+<span class="fc" id="L59">		return computeMST(g, w, Integer.MAX_VALUE).mst;</span>
 	}
 
-	&lt;E&gt; Pair&lt;UGraph, IntCollection&gt; runBoruvka(Graph g, EdgeWeightFunc w, int numberOfRounds, Object edgeRefKey) {
-<span class="pc bpc" id="L47" title="1 of 2 branches missed.">		if (numberOfRounds &lt;= 0)</span>
-<span class="nc" id="L48">			throw new IllegalArgumentException();</span>
-<span class="fc" id="L49">		MSTResult mstRes = computeMST(g, w, numberOfRounds);</span>
+	Pair&lt;UGraph, IntCollection&gt; runBoruvka(Graph g, EdgeWeightFunc w, int numberOfRounds, Object edgeRefKey) {
+<span class="pc bpc" id="L63" title="1 of 2 branches missed.">		if (numberOfRounds &lt;= 0)</span>
+<span class="nc" id="L64">			throw new IllegalArgumentException();</span>
+<span class="fc" id="L65">		MSTResult mstRes = computeMST(g, w, numberOfRounds);</span>
 
-<span class="fc" id="L51">		UGraph contractedG = new GraphArrayUndirected(mstRes.treeNum);</span>
-<span class="fc" id="L52">		Weights.Int edgeRef = contractedG.addEdgesWeights(edgeRefKey, int.class);</span>
-<span class="fc bfc" id="L53" title="All 2 branches covered.">		for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
-<span class="fc" id="L54">			int e = it.nextInt();</span>
-<span class="fc" id="L55">			int u = mstRes.vToTree[g.edgeSource(e)];</span>
-<span class="fc" id="L56">			int v = mstRes.vToTree[g.edgeTarget(e)];</span>
-<span class="fc bfc" id="L57" title="All 2 branches covered.">			if (u == v)</span>
-<span class="fc" id="L58">				continue;</span>
-<span class="fc" id="L59">			int ne = contractedG.addEdge(u, v);</span>
-<span class="fc" id="L60">			edgeRef.set(ne, e);</span>
-<span class="fc" id="L61">		}</span>
-<span class="fc" id="L62">		return Pair.of(contractedG, mstRes.mst);</span>
+<span class="fc" id="L67">		UGraph contractedG = new GraphArrayUndirected(mstRes.treeNum);</span>
+<span class="fc" id="L68">		Weights.Int edgeRef = contractedG.addEdgesWeights(edgeRefKey, int.class);</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">		for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
+<span class="fc" id="L70">			int e = it.nextInt();</span>
+<span class="fc" id="L71">			int u = mstRes.vToTree[g.edgeSource(e)];</span>
+<span class="fc" id="L72">			int v = mstRes.vToTree[g.edgeTarget(e)];</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">			if (u == v)</span>
+<span class="fc" id="L74">				continue;</span>
+<span class="fc" id="L75">			int ne = contractedG.addEdge(u, v);</span>
+<span class="fc" id="L76">			edgeRef.set(ne, e);</span>
+<span class="fc" id="L77">		}</span>
+<span class="fc" id="L78">		return Pair.of(contractedG, mstRes.mst);</span>
 	}
 
 	private MSTResult computeMST(Graph g, EdgeWeightFunc w, int numberOfRounds) {
-<span class="pc bpc" id="L66" title="1 of 2 branches missed.">		if (!(g instanceof UGraph))</span>
-<span class="nc" id="L67">			throw new IllegalArgumentException(&quot;only undirected graphs are supported&quot;);</span>
-<span class="fc" id="L68">		allocatedMem.allocate(g);</span>
-<span class="fc" id="L69">		int n = g.vertices().size();</span>
+<span class="pc bpc" id="L82" title="1 of 2 branches missed.">		if (!(g instanceof UGraph))</span>
+<span class="nc" id="L83">			throw new IllegalArgumentException(&quot;only undirected graphs are supported&quot;);</span>
+<span class="fc" id="L84">		allocatedMem.allocate(g);</span>
+<span class="fc" id="L85">		int n = g.vertices().size();</span>
 
-<span class="fc" id="L71">		int treeNum = n;</span>
-<span class="fc" id="L72">		int[] vTree = allocatedMem.vTree;</span>
-<span class="fc" id="L73">		int[] vTreeNext = allocatedMem.vTreeNext;</span>
-<span class="fc bfc" id="L74" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L75">			vTree[v] = v;</span>
+<span class="fc" id="L87">		int treeNum = n;</span>
+<span class="fc" id="L88">		int[] vTree = allocatedMem.vTree;</span>
+<span class="fc" id="L89">		int[] vTreeNext = allocatedMem.vTreeNext;</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
+<span class="fc" id="L91">			vTree[v] = v;</span>
 
-<span class="fc" id="L77">		int[] minEdges = allocatedMem.minEdges;</span>
-<span class="fc" id="L78">		Arrays.fill(minEdges, 0, n, -1);</span>
-<span class="fc" id="L79">		double[] minGraphWeights = allocatedMem.minGraphWeights;</span>
-<span class="fc" id="L80">		int[] path = allocatedMem.path;</span>
+<span class="fc" id="L93">		int[] minEdges = allocatedMem.minEdges;</span>
+<span class="fc" id="L94">		Arrays.fill(minEdges, 0, n, -1);</span>
+<span class="fc" id="L95">		double[] minGraphWeights = allocatedMem.minGraphWeights;</span>
+<span class="fc" id="L96">		int[] path = allocatedMem.path;</span>
 
-<span class="fc" id="L82">		IntCollection mst = new IntArrayList();</span>
-<span class="fc bfc" id="L83" title="All 2 branches covered.">		for (int i = 0; i &lt; numberOfRounds; i++) {</span>
-<span class="fc" id="L84">			Arrays.fill(minGraphWeights, 0, treeNum, Double.MAX_VALUE);</span>
+<span class="fc" id="L98">		IntCollection mst = new IntArrayList();</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">		for (int i = 0; i &lt; numberOfRounds; i++) {</span>
+<span class="fc" id="L100">			Arrays.fill(minGraphWeights, 0, treeNum, Double.MAX_VALUE);</span>
 
 			/* find minimum edge going out of each tree */
-<span class="fc bfc" id="L87" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc" id="L88">				int tree = vTree[u];</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc" id="L104">				int tree = vTree[u];</span>
 
-<span class="fc bfc" id="L90" title="All 2 branches covered.">				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
-<span class="fc" id="L91">					int e = eit.nextInt();</span>
-<span class="fc" id="L92">					int v = eit.v();</span>
-<span class="fc bfc" id="L93" title="All 2 branches covered.">					if (tree == vTree[v])</span>
-<span class="fc" id="L94">						continue;</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
+<span class="fc" id="L107">					int e = eit.nextInt();</span>
+<span class="fc" id="L108">					int v = eit.v();</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">					if (tree == vTree[v])</span>
+<span class="fc" id="L110">						continue;</span>
 
-<span class="fc" id="L96">					double eWeight = w.weight(e);</span>
-<span class="fc bfc" id="L97" title="All 2 branches covered.">					if (eWeight &lt; minGraphWeights[tree]) {</span>
-<span class="fc" id="L98">						minEdges[tree] = e;</span>
-<span class="fc" id="L99">						minGraphWeights[tree] = eWeight;</span>
+<span class="fc" id="L112">					double eWeight = w.weight(e);</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">					if (eWeight &lt; minGraphWeights[tree]) {</span>
+<span class="fc" id="L114">						minEdges[tree] = e;</span>
+<span class="fc" id="L115">						minGraphWeights[tree] = eWeight;</span>
 					}
-<span class="fc" id="L101">				}</span>
+<span class="fc" id="L117">				}</span>
 			}
 
 			/* add min edges to MST */
-<span class="fc bfc" id="L105" title="All 2 branches covered.">			for (int tree = 0; tree &lt; treeNum; tree++) {</span>
-<span class="fc" id="L106">				int e = minEdges[tree];</span>
-<span class="fc bfc" id="L107" title="All 2 branches covered.">				if (e == -1)</span>
-<span class="fc" id="L108">					continue;</span>
-<span class="fc" id="L109">				int ut = vTree[g.edgeSource(e)], vt = vTree[g.edgeTarget(e)];</span>
-<span class="fc bfc" id="L110" title="All 2 branches covered.">				if (tree == vt) {</span>
-<span class="fc" id="L111">					int temp = ut;</span>
-<span class="fc" id="L112">					ut = vt;</span>
-<span class="fc" id="L113">					vt = temp;</span>
-<span class="fc" id="L114">				} else {</span>
-<span class="pc bpc" id="L115" title="1 of 2 branches missed.">					assert tree == ut;</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">			for (int tree = 0; tree &lt; treeNum; tree++) {</span>
+<span class="fc" id="L122">				int e = minEdges[tree];</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">				if (e == -1)</span>
+<span class="fc" id="L124">					continue;</span>
+<span class="fc" id="L125">				int ut = vTree[g.edgeSource(e)], vt = vTree[g.edgeTarget(e)];</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">				if (tree == vt) {</span>
+<span class="fc" id="L127">					int temp = ut;</span>
+<span class="fc" id="L128">					ut = vt;</span>
+<span class="fc" id="L129">					vt = temp;</span>
+<span class="fc" id="L130">				} else {</span>
+<span class="pc bpc" id="L131" title="1 of 2 branches missed.">					assert tree == ut;</span>
 				}
-<span class="fc bfc" id="L117" title="All 4 branches covered.">				if (ut &lt; vt || minEdges[vt] != e)</span>
-<span class="fc" id="L118">					mst.add(e);</span>
+<span class="fc bfc" id="L133" title="All 4 branches covered.">				if (ut &lt; vt || minEdges[vt] != e)</span>
+<span class="fc" id="L134">					mst.add(e);</span>
 			}
 
 			/*
@@ -123,49 +139,49 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 			 * one out edge at most, and we want to find all the connectivity components between the trees and label the
 			 * vertices of G with new trees indices
 			 */
-<span class="fc" id="L126">			final int UNVISITED = -1;</span>
-<span class="fc" id="L127">			final int IN_PATH = -2;</span>
-<span class="fc" id="L128">			Arrays.fill(vTreeNext, 0, treeNum, UNVISITED);</span>
-<span class="fc" id="L129">			int treeNumNext = 0;</span>
-<span class="fc bfc" id="L130" title="All 2 branches covered.">			for (int t = 0; t &lt; treeNum; t++) {</span>
-<span class="fc" id="L131">				int pathLength = 0;</span>
+<span class="fc" id="L142">			final int UNVISITED = -1;</span>
+<span class="fc" id="L143">			final int IN_PATH = -2;</span>
+<span class="fc" id="L144">			Arrays.fill(vTreeNext, 0, treeNum, UNVISITED);</span>
+<span class="fc" id="L145">			int treeNumNext = 0;</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">			for (int t = 0; t &lt; treeNum; t++) {</span>
+<span class="fc" id="L147">				int pathLength = 0;</span>
 				/* find all reachable trees from t */
-<span class="fc" id="L133">				for (int tPtr = t;;) {</span>
-<span class="fc bfc" id="L134" title="All 2 branches covered.">					if (vTreeNext[tPtr] == UNVISITED) {</span>
+<span class="fc" id="L149">				for (int tPtr = t;;) {</span>
+<span class="fc bfc" id="L150" title="All 2 branches covered.">					if (vTreeNext[tPtr] == UNVISITED) {</span>
 						/* another vertex on the path, continue */
-<span class="fc" id="L136">						path[pathLength++] = tPtr;</span>
-<span class="fc" id="L137">						vTreeNext[tPtr] = IN_PATH;</span>
+<span class="fc" id="L152">						path[pathLength++] = tPtr;</span>
+<span class="fc" id="L153">						vTreeNext[tPtr] = IN_PATH;</span>
 
-<span class="fc bfc" id="L139" title="All 2 branches covered.">						if (minEdges[tPtr] != -1) {</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">						if (minEdges[tPtr] != -1) {</span>
 							int nextTPtr;
-<span class="fc bfc" id="L141" title="All 2 branches covered.">							if ((nextTPtr = vTree[g.edgeSource(minEdges[tPtr])]) == tPtr)</span>
-<span class="fc" id="L142">								nextTPtr = vTree[g.edgeTarget(minEdges[tPtr])];</span>
-<span class="pc bpc" id="L143" title="1 of 2 branches missed.">							assert nextTPtr != tPtr;</span>
-<span class="fc" id="L144">							tPtr = nextTPtr;</span>
-<span class="fc" id="L145">							continue;</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">							if ((nextTPtr = vTree[g.edgeSource(minEdges[tPtr])]) == tPtr)</span>
+<span class="fc" id="L158">								nextTPtr = vTree[g.edgeTarget(minEdges[tPtr])];</span>
+<span class="pc bpc" id="L159" title="1 of 2 branches missed.">							assert nextTPtr != tPtr;</span>
+<span class="fc" id="L160">							tPtr = nextTPtr;</span>
+<span class="fc" id="L161">							continue;</span>
 						}
 					}
 
 					/* if found label tree use it label, else - add new label */
-<span class="fc bfc" id="L150" title="All 2 branches covered.">					int newTree = vTreeNext[tPtr] &gt;= 0 ? vTreeNext[tPtr] : treeNumNext++;</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">					int newTree = vTreeNext[tPtr] &gt;= 0 ? vTreeNext[tPtr] : treeNumNext++;</span>
 					/* assign the new label to all trees on path */
-<span class="fc bfc" id="L152" title="All 2 branches covered.">					while (pathLength-- &gt; 0)</span>
-<span class="fc" id="L153">						vTreeNext[path[pathLength]] = newTree;</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">					while (pathLength-- &gt; 0)</span>
+<span class="fc" id="L169">						vTreeNext[path[pathLength]] = newTree;</span>
 					break;
 				}
 			}
 
-<span class="fc bfc" id="L158" title="All 2 branches covered.">			if (treeNum == treeNumNext)</span>
-<span class="fc" id="L159">				break;</span>
-<span class="fc" id="L160">			treeNum = treeNumNext;</span>
-<span class="fc" id="L161">			Arrays.fill(minEdges, 0, treeNum, -1);</span>
+<span class="fc bfc" id="L174" title="All 2 branches covered.">			if (treeNum == treeNumNext)</span>
+<span class="fc" id="L175">				break;</span>
+<span class="fc" id="L176">			treeNum = treeNumNext;</span>
+<span class="fc" id="L177">			Arrays.fill(minEdges, 0, treeNum, -1);</span>
 
 			/* assign new tree indices to G's vertices */
-<span class="fc bfc" id="L164" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L165">				vTree[v] = vTreeNext[vTree[v]];</span>
+<span class="fc bfc" id="L180" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++)</span>
+<span class="fc" id="L181">				vTree[v] = vTreeNext[vTree[v]];</span>
 		}
 
-<span class="fc" id="L168">		return new MSTResult(vTree, treeNum, mst);</span>
+<span class="fc" id="L184">		return new MSTResult(vTree, treeNum, mst);</span>
 	}
 
 	private static class MSTResult {
@@ -173,28 +189,28 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 		final int treeNum;
 		final IntCollection mst;
 
-<span class="fc" id="L176">		MSTResult(int[] vToTree, int treeNum, IntCollection mst) {</span>
-<span class="fc" id="L177">			this.vToTree = vToTree;</span>
-<span class="fc" id="L178">			this.treeNum = treeNum;</span>
-<span class="fc" id="L179">			this.mst = mst;</span>
-<span class="fc" id="L180">		}</span>
+<span class="fc" id="L192">		MSTResult(int[] vToTree, int treeNum, IntCollection mst) {</span>
+<span class="fc" id="L193">			this.vToTree = vToTree;</span>
+<span class="fc" id="L194">			this.treeNum = treeNum;</span>
+<span class="fc" id="L195">			this.mst = mst;</span>
+<span class="fc" id="L196">		}</span>
 	}
 
-<span class="fc" id="L183">	private static class AllocatedMemory {</span>
-<span class="fc" id="L184">		int[] vTree = IntArrays.EMPTY_ARRAY;</span>
-<span class="fc" id="L185">		int[] vTreeNext = IntArrays.EMPTY_ARRAY;</span>
-<span class="fc" id="L186">		int[] minEdges = IntArrays.EMPTY_ARRAY;</span>
-<span class="fc" id="L187">		double[] minGraphWeights = DoubleArrays.EMPTY_ARRAY;</span>
-<span class="fc" id="L188">		int[] path = IntArrays.EMPTY_ARRAY;</span>
+<span class="fc" id="L199">	private static class AllocatedMemory {</span>
+<span class="fc" id="L200">		int[] vTree = IntArrays.EMPTY_ARRAY;</span>
+<span class="fc" id="L201">		int[] vTreeNext = IntArrays.EMPTY_ARRAY;</span>
+<span class="fc" id="L202">		int[] minEdges = IntArrays.EMPTY_ARRAY;</span>
+<span class="fc" id="L203">		double[] minGraphWeights = DoubleArrays.EMPTY_ARRAY;</span>
+<span class="fc" id="L204">		int[] path = IntArrays.EMPTY_ARRAY;</span>
 
 		void allocate(Graph g) {
-<span class="fc" id="L191">			int n = g.vertices().size();</span>
-<span class="fc" id="L192">			vTree = MemoryReuse.ensureLength(vTree, n);</span>
-<span class="fc" id="L193">			vTreeNext = MemoryReuse.ensureLength(vTreeNext, n);</span>
-<span class="fc" id="L194">			minEdges = MemoryReuse.ensureLength(minEdges, n);</span>
-<span class="fc" id="L195">			minGraphWeights = MemoryReuse.ensureLength(minGraphWeights, n);</span>
-<span class="fc" id="L196">			path = MemoryReuse.ensureLength(path, n);</span>
-<span class="fc" id="L197">		}</span>
+<span class="fc" id="L207">			int n = g.vertices().size();</span>
+<span class="fc" id="L208">			vTree = MemoryReuse.ensureLength(vTree, n);</span>
+<span class="fc" id="L209">			vTreeNext = MemoryReuse.ensureLength(vTreeNext, n);</span>
+<span class="fc" id="L210">			minEdges = MemoryReuse.ensureLength(minEdges, n);</span>
+<span class="fc" id="L211">			minGraphWeights = MemoryReuse.ensureLength(minGraphWeights, n);</span>
+<span class="fc" id="L212">			path = MemoryReuse.ensureLength(path, n);</span>
+<span class="fc" id="L213">		}</span>
 	}
 
 }

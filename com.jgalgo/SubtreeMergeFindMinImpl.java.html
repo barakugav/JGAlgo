@@ -1,4 +1,20 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SubtreeMergeFindMinImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">SubtreeMergeFindMinImpl.java</span></div><h1>SubtreeMergeFindMinImpl.java</h1><pre class="source lang-java linenums">package com.jgalgo;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SubtreeMergeFindMinImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">SubtreeMergeFindMinImpl.java</span></div><h1>SubtreeMergeFindMinImpl.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -11,7 +27,7 @@ import java.util.Comparator;
  *
  * @author Barak Ugav
  */
-<span class="fc" id="L14">public class SubtreeMergeFindMinImpl&lt;E&gt; implements SubtreeMergeFindMin&lt;E&gt; {</span>
+<span class="fc" id="L30">public class SubtreeMergeFindMinImpl&lt;E&gt; implements SubtreeMergeFindMin&lt;E&gt; {</span>
 
 	private NodeImpl&lt;E&gt;[] nodes;
 	private final UnionFind uf;
@@ -25,8 +41,8 @@ import java.util.Comparator;
 	 * Create a new SMF data structure with the {@linkplain Comparable natural ordering} comparator for edge weights.
 	 */
 	public SubtreeMergeFindMinImpl() {
-<span class="fc" id="L28">		this(null);</span>
-<span class="fc" id="L29">	}</span>
+<span class="fc" id="L44">		this(null);</span>
+<span class="fc" id="L45">	}</span>
 
 	/**
 	 * Create a new SMF data structure with the provided comparator for edge weights.
@@ -34,8 +50,8 @@ import java.util.Comparator;
 	 * @param weightCmp comparator used to compare edge weights.
 	 */
 	public SubtreeMergeFindMinImpl(Comparator&lt;? super E&gt; weightCmp) {
-<span class="fc" id="L37">		this(weightCmp, HeapPairing::new);</span>
-<span class="fc" id="L38">	}</span>
+<span class="fc" id="L53">		this(weightCmp, HeapPairing::new);</span>
+<span class="fc" id="L54">	}</span>
 
 	/**
 	 * Create a new SMF data structure with the provided comparator for edge weights and a custom heap implementation.
@@ -44,275 +60,275 @@ import java.util.Comparator;
 	 * @param heapBuilder heap builder used to provide a custom heap implementation.
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L47">	public SubtreeMergeFindMinImpl(Comparator&lt;? super E&gt; weightCmp, HeapReferenceable.Builder heapBuilder) {</span>
-<span class="fc" id="L48">		nodes = new NodeImpl[2];</span>
+<span class="fc" id="L63">	public SubtreeMergeFindMinImpl(Comparator&lt;? super E&gt; weightCmp, HeapReferenceable.Builder heapBuilder) {</span>
+<span class="fc" id="L64">		nodes = new NodeImpl[2];</span>
 
-<span class="fc" id="L50">		uf = new UnionFindArray();</span>
-<span class="fc" id="L51">		lca = new LCADynamicGabowLinear();</span>
+<span class="fc" id="L66">		uf = new UnionFindArray();</span>
+<span class="fc" id="L67">		lca = new LCADynamicGabowLinear();</span>
 
-<span class="fc bfc" id="L53" title="All 2 branches covered.">		this.weightCmp = weightCmp != null ? weightCmp : Utils.getDefaultComparator();</span>
-<span class="fc" id="L54">		timestamp = 0;</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">		this.weightCmp = weightCmp != null ? weightCmp : Utils.getDefaultComparator();</span>
+<span class="fc" id="L70">		timestamp = 0;</span>
 
-<span class="fc" id="L56">		heap = heapBuilder.build((t1, t2) -&gt; this.weightCmp.compare(t1.minEdge.data.data, t2.minEdge.data.data));</span>
-<span class="fc" id="L57">	}</span>
+<span class="fc" id="L72">		heap = heapBuilder.build((t1, t2) -&gt; this.weightCmp.compare(t1.minEdge.data.data, t2.minEdge.data.data));</span>
+<span class="fc" id="L73">	}</span>
 
 	@Override
 	public Node initTree() {
-<span class="pc bpc" id="L61" title="1 of 2 branches missed.">		if (size() != 0)</span>
-<span class="nc" id="L62">			throw new IllegalStateException(&quot;Tree is not empty&quot;);</span>
-<span class="fc" id="L63">		return newNode(null);</span>
+<span class="pc bpc" id="L77" title="1 of 2 branches missed.">		if (size() != 0)</span>
+<span class="nc" id="L78">			throw new IllegalStateException(&quot;Tree is not empty&quot;);</span>
+<span class="fc" id="L79">		return newNode(null);</span>
 	}
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	@Override
 	public Node addLeaf(Node parent) {
-<span class="fc" id="L69">		return newNode((NodeImpl&lt;E&gt;) parent);</span>
+<span class="fc" id="L85">		return newNode((NodeImpl&lt;E&gt;) parent);</span>
 	}
 
 	private Node newNode(NodeImpl&lt;E&gt; parent) {
-<span class="fc" id="L73">		NodeImpl&lt;E&gt; node = new NodeImpl&lt;&gt;(parent);</span>
+<span class="fc" id="L89">		NodeImpl&lt;E&gt; node = new NodeImpl&lt;&gt;(parent);</span>
 
 		/* Add to LCA data structure */
-<span class="fc bfc" id="L76" title="All 2 branches covered.">		node.lcaNode = parent == null ? lca.initTree() : lca.addLeaf(parent.lcaNode);</span>
-<span class="fc" id="L77">		node.lcaNode.setNodeData(node);</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">		node.lcaNode = parent == null ? lca.initTree() : lca.addLeaf(parent.lcaNode);</span>
+<span class="fc" id="L93">		node.lcaNode.setNodeData(node);</span>
 
 		/* Add to UF data structure */
-<span class="fc" id="L80">		node.ufIdx = uf.make();</span>
+<span class="fc" id="L96">		node.ufIdx = uf.make();</span>
 
-<span class="fc bfc" id="L82" title="All 2 branches covered.">		if (node.ufIdx &gt;= nodes.length)</span>
-<span class="fc" id="L83">			nodes = Arrays.copyOf(nodes, Math.max(nodes.length * 2, 2));</span>
-<span class="fc" id="L84">		nodes[node.ufIdx] = node;</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">		if (node.ufIdx &gt;= nodes.length)</span>
+<span class="fc" id="L99">			nodes = Arrays.copyOf(nodes, Math.max(nodes.length * 2, 2));</span>
+<span class="fc" id="L100">		nodes[node.ufIdx] = node;</span>
 
-<span class="fc" id="L86">		return node;</span>
+<span class="fc" id="L102">		return node;</span>
 	}
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	@Override
 	public boolean isSameSubTree(Node u, Node v) {
-<span class="fc bfc" id="L92" title="All 2 branches covered.">		return uf.find(((NodeImpl&lt;E&gt;) u).ufIdx) == uf.find(((NodeImpl&lt;E&gt;) v).ufIdx);</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">		return uf.find(((NodeImpl&lt;E&gt;) u).ufIdx) == uf.find(((NodeImpl&lt;E&gt;) v).ufIdx);</span>
 	}
 
 	@Override
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public void mergeSubTrees(Node u0, Node v0) {
-<span class="fc" id="L98">		NodeImpl&lt;E&gt; u = (NodeImpl&lt;E&gt;) u0, v = (NodeImpl&lt;E&gt;) v0;</span>
-<span class="fc" id="L99">		SubTree&lt;E&gt; U = nodes[uf.find(u.ufIdx)].subtree, V = nodes[uf.find(v.ufIdx)].subtree;</span>
-<span class="fc bfc" id="L100" title="All 2 branches covered.">		if (U == V)</span>
-<span class="fc" id="L101">			return;</span>
+<span class="fc" id="L114">		NodeImpl&lt;E&gt; u = (NodeImpl&lt;E&gt;) u0, v = (NodeImpl&lt;E&gt;) v0;</span>
+<span class="fc" id="L115">		SubTree&lt;E&gt; U = nodes[uf.find(u.ufIdx)].subtree, V = nodes[uf.find(v.ufIdx)].subtree;</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">		if (U == V)</span>
+<span class="fc" id="L117">			return;</span>
 
 		/* assume U is above V */
-<span class="fc bfc" id="L104" title="All 2 branches covered.">		if (U.top.depth &gt; V.top.depth) {</span>
-<span class="fc" id="L105">			SubTree&lt;E&gt; temp = U;</span>
-<span class="fc" id="L106">			U = V;</span>
-<span class="fc" id="L107">			V = temp;</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">		if (U.top.depth &gt; V.top.depth) {</span>
+<span class="fc" id="L121">			SubTree&lt;E&gt; temp = U;</span>
+<span class="fc" id="L122">			U = V;</span>
+<span class="fc" id="L123">			V = temp;</span>
 		}
-<span class="pc bpc" id="L109" title="2 of 4 branches missed.">		if (V.top.parent == null || subTree(V.top.parent) != U)</span>
-<span class="nc" id="L110">			throw new IllegalArgumentException(&quot;Subtrees are not adjacent&quot;);</span>
+<span class="pc bpc" id="L125" title="2 of 4 branches missed.">		if (V.top.parent == null || subTree(V.top.parent) != U)</span>
+<span class="nc" id="L126">			throw new IllegalArgumentException(&quot;Subtrees are not adjacent&quot;);</span>
 
 		/* update union find */
-<span class="fc" id="L113">		int w = uf.union(U.top.ufIdx, V.top.ufIdx);</span>
-<span class="fc" id="L114">		nodes[w].subtree = U;</span>
+<span class="fc" id="L129">		int w = uf.union(U.top.ufIdx, V.top.ufIdx);</span>
+<span class="fc" id="L130">		nodes[w].subtree = U;</span>
 
-<span class="fc" id="L116">		U.size += V.size;</span>
-<span class="fc" id="L117">		int rank = U.rank(), maxSet = Math.max(U.edges.length, V.edges.length);</span>
-<span class="fc" id="L118">		EdgeList&lt;E&gt;[] uEdges = U.edges, vEdges = V.edges;</span>
-<span class="fc" id="L119">		U.edges = Arrays.copyOf(U.edges, maxSet);</span>
-<span class="fc" id="L120">		Arrays.fill(U.edges, null);</span>
-<span class="fc bfc" id="L121" title="All 2 branches covered.">		if (U.heapRef != null)</span>
-<span class="fc" id="L122">			heap.removeRef(U.heapRef);</span>
-<span class="fc bfc" id="L123" title="All 2 branches covered.">		if (V.heapRef != null)</span>
-<span class="fc" id="L124">			heap.removeRef(V.heapRef);</span>
-<span class="fc" id="L125">		U.heapRef = V.heapRef = null;</span>
-<span class="fc" id="L126">		U.minEdge = V.minEdge = null;</span>
+<span class="fc" id="L132">		U.size += V.size;</span>
+<span class="fc" id="L133">		int rank = U.rank(), maxSet = Math.max(U.edges.length, V.edges.length);</span>
+<span class="fc" id="L134">		EdgeList&lt;E&gt;[] uEdges = U.edges, vEdges = V.edges;</span>
+<span class="fc" id="L135">		U.edges = Arrays.copyOf(U.edges, maxSet);</span>
+<span class="fc" id="L136">		Arrays.fill(U.edges, null);</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">		if (U.heapRef != null)</span>
+<span class="fc" id="L138">			heap.removeRef(U.heapRef);</span>
+<span class="fc bfc" id="L139" title="All 2 branches covered.">		if (V.heapRef != null)</span>
+<span class="fc" id="L140">			heap.removeRef(V.heapRef);</span>
+<span class="fc" id="L141">		U.heapRef = V.heapRef = null;</span>
+<span class="fc" id="L142">		U.minEdge = V.minEdge = null;</span>
 
 		/* fix current timestamp to identify redundant edges */
-<span class="fc" id="L129">		final int t = ++timestamp;</span>
+<span class="fc" id="L145">		final int t = ++timestamp;</span>
 
 		/* All edges in sets &gt;= r+1 are good, just union */
-<span class="fc bfc" id="L132" title="All 2 branches covered.">		for (int setIdx = rank + 1; setIdx &lt; maxSet; setIdx++) {</span>
-<span class="fc bfc" id="L133" title="All 2 branches covered.">			EdgeList&lt;E&gt; el1 = uEdges.length &gt; setIdx ? uEdges[setIdx] : null;</span>
-<span class="fc bfc" id="L134" title="All 2 branches covered.">			EdgeList&lt;E&gt; el2 = vEdges.length &gt; setIdx ? vEdges[setIdx] : null;</span>
-<span class="fc" id="L135">			EdgeList&lt;E&gt; el = concatenateEdgeLists(el1, el2);</span>
-<span class="fc bfc" id="L136" title="All 2 branches covered.">			if (el == null)</span>
-<span class="fc" id="L137">				continue;</span>
-<span class="fc" id="L138">			U.edges[setIdx] = el;</span>
-<span class="fc" id="L139">			compareAgainstSubTreeMin(U, el.min);</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">		for (int setIdx = rank + 1; setIdx &lt; maxSet; setIdx++) {</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">			EdgeList&lt;E&gt; el1 = uEdges.length &gt; setIdx ? uEdges[setIdx] : null;</span>
+<span class="fc bfc" id="L150" title="All 2 branches covered.">			EdgeList&lt;E&gt; el2 = vEdges.length &gt; setIdx ? vEdges[setIdx] : null;</span>
+<span class="fc" id="L151">			EdgeList&lt;E&gt; el = concatenateEdgeLists(el1, el2);</span>
+<span class="fc bfc" id="L152" title="All 2 branches covered.">			if (el == null)</span>
+<span class="fc" id="L153">				continue;</span>
+<span class="fc" id="L154">			U.edges[setIdx] = el;</span>
+<span class="fc" id="L155">			compareAgainstSubTreeMin(U, el.min);</span>
 		}
 		/* Examine all edges in set &lt;= r */
-<span class="fc bfc" id="L142" title="All 2 branches covered.">		for (int setIdx = 0; setIdx &lt;= rank; setIdx++) {</span>
-<span class="fc bfc" id="L143" title="All 2 branches covered.">			EdgeList&lt;E&gt; el1 = uEdges.length &gt; setIdx ? uEdges[setIdx] : null;</span>
-<span class="fc bfc" id="L144" title="All 2 branches covered.">			EdgeList&lt;E&gt; el2 = vEdges.length &gt; setIdx ? vEdges[setIdx] : null;</span>
-<span class="fc bfc" id="L145" title="All 2 branches covered.">			for (EdgeList&lt;E&gt; el : new EdgeList[] { el1, el2 }) {</span>
-<span class="fc bfc" id="L146" title="All 2 branches covered.">				if (el == null)</span>
-<span class="fc" id="L147">					continue;</span>
-<span class="fc bfc" id="L148" title="All 2 branches covered.">				for (EdgeNode&lt;E&gt; edge, next; (edge = el.head) != null; el.head = next) {</span>
-<span class="fc" id="L149">					next = edge.next;</span>
-<span class="fc" id="L150">					edge.next = null;</span>
+<span class="fc bfc" id="L158" title="All 2 branches covered.">		for (int setIdx = 0; setIdx &lt;= rank; setIdx++) {</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">			EdgeList&lt;E&gt; el1 = uEdges.length &gt; setIdx ? uEdges[setIdx] : null;</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">			EdgeList&lt;E&gt; el2 = vEdges.length &gt; setIdx ? vEdges[setIdx] : null;</span>
+<span class="fc bfc" id="L161" title="All 2 branches covered.">			for (EdgeList&lt;E&gt; el : new EdgeList[] { el1, el2 }) {</span>
+<span class="fc bfc" id="L162" title="All 2 branches covered.">				if (el == null)</span>
+<span class="fc" id="L163">					continue;</span>
+<span class="fc bfc" id="L164" title="All 2 branches covered.">				for (EdgeNode&lt;E&gt; edge, next; (edge = el.head) != null; el.head = next) {</span>
+<span class="fc" id="L165">					next = edge.next;</span>
+<span class="fc" id="L166">					edge.next = null;</span>
 
-<span class="fc" id="L152">					SubTree&lt;E&gt; eU = subTree(edge.u), eV = subTree(edge.v);</span>
-<span class="fc bfc" id="L153" title="All 2 branches covered.">					if (eU == eV) {</span>
+<span class="fc" id="L168">					SubTree&lt;E&gt; eU = subTree(edge.u), eV = subTree(edge.v);</span>
+<span class="fc bfc" id="L169" title="All 2 branches covered.">					if (eU == eV) {</span>
 						/* edge is bad */
-<span class="fc" id="L155">						edge.clear();</span>
-<span class="fc" id="L156">						continue;</span>
+<span class="fc" id="L171">						edge.clear();</span>
+<span class="fc" id="L172">						continue;</span>
 					}
 
 					/* assume eU is U */
-<span class="fc bfc" id="L160" title="All 2 branches covered.">					if (eU != U) {</span>
-<span class="fc" id="L161">						SubTree&lt;E&gt; temp = eU;</span>
-<span class="fc" id="L162">						eU = eV;</span>
-<span class="fc" id="L163">						eV = temp;</span>
+<span class="fc bfc" id="L176" title="All 2 branches covered.">					if (eU != U) {</span>
+<span class="fc" id="L177">						SubTree&lt;E&gt; temp = eU;</span>
+<span class="fc" id="L178">						eU = eV;</span>
+<span class="fc" id="L179">						eV = temp;</span>
 					}
-<span class="pc bpc" id="L165" title="1 of 2 branches missed.">					assert eU == U;</span>
+<span class="pc bpc" id="L181" title="1 of 2 branches missed.">					assert eU == U;</span>
 
-<span class="fc bfc" id="L167" title="All 4 branches covered.">					if (eV.inEdgeTimestamp == t &amp;&amp; weightCmp.compare(eV.inEdge.data.data, edge.data.data) &lt;= 0) {</span>
+<span class="fc bfc" id="L183" title="All 4 branches covered.">					if (eV.inEdgeTimestamp == t &amp;&amp; weightCmp.compare(eV.inEdge.data.data, edge.data.data) &lt;= 0) {</span>
 						/* edge is redundant */
-<span class="fc" id="L169">						edge.clear();</span>
-<span class="fc" id="L170">						continue;</span>
+<span class="fc" id="L185">						edge.clear();</span>
+<span class="fc" id="L186">						continue;</span>
 					}
 
 					/* update inEdge */
-<span class="fc" id="L174">					eV.inEdgeTimestamp = t;</span>
-<span class="fc" id="L175">					eV.inEdge = edge;</span>
+<span class="fc" id="L190">					eV.inEdgeTimestamp = t;</span>
+<span class="fc" id="L191">					eV.inEdge = edge;</span>
 
 					/* add edge to the appropriate set */
-<span class="fc" id="L178">					addEdgeNode(edge);</span>
+<span class="fc" id="L194">					addEdgeNode(edge);</span>
 				}
-<span class="fc" id="L180">				el.clear();</span>
+<span class="fc" id="L196">				el.clear();</span>
 			}
 		}
-<span class="fc" id="L183">		Arrays.fill(uEdges, null);</span>
-<span class="fc" id="L184">		Arrays.fill(vEdges, null);</span>
-<span class="fc" id="L185">	}</span>
+<span class="fc" id="L199">		Arrays.fill(uEdges, null);</span>
+<span class="fc" id="L200">		Arrays.fill(vEdges, null);</span>
+<span class="fc" id="L201">	}</span>
 
 	private EdgeList&lt;E&gt; concatenateEdgeLists(EdgeList&lt;E&gt; el1, EdgeList&lt;E&gt; el2) {
-<span class="fc bfc" id="L188" title="All 2 branches covered.">		if (el1 == null)</span>
-<span class="fc" id="L189">			return el2;</span>
-<span class="fc bfc" id="L190" title="All 2 branches covered.">		if (el2 == null)</span>
-<span class="fc" id="L191">			return el1;</span>
+<span class="fc bfc" id="L204" title="All 2 branches covered.">		if (el1 == null)</span>
+<span class="fc" id="L205">			return el2;</span>
+<span class="fc bfc" id="L206" title="All 2 branches covered.">		if (el2 == null)</span>
+<span class="fc" id="L207">			return el1;</span>
 
-<span class="fc" id="L193">		el1.tail.next = el2.head;</span>
-<span class="fc" id="L194">		el1.tail = el2.tail;</span>
-<span class="fc bfc" id="L195" title="All 2 branches covered.">		if (weightCmp.compare(el2.min.data.data, el1.min.data.data) &lt; 0)</span>
-<span class="fc" id="L196">			el1.min = el2.min;</span>
+<span class="fc" id="L209">		el1.tail.next = el2.head;</span>
+<span class="fc" id="L210">		el1.tail = el2.tail;</span>
+<span class="fc bfc" id="L211" title="All 2 branches covered.">		if (weightCmp.compare(el2.min.data.data, el1.min.data.data) &lt; 0)</span>
+<span class="fc" id="L212">			el1.min = el2.min;</span>
 
 		/* clear el2 */
-<span class="fc" id="L199">		el2.clear();</span>
-<span class="fc" id="L200">		return el1;</span>
+<span class="fc" id="L215">		el2.clear();</span>
+<span class="fc" id="L216">		return el1;</span>
 	}
 
 	@Override
 	public void addNonTreeEdge(Node u0, Node v0, E edgedata) {
-<span class="fc bfc" id="L205" title="All 2 branches covered.">		if (u0 == v0)</span>
-<span class="fc" id="L206">			return;</span>
+<span class="fc bfc" id="L221" title="All 2 branches covered.">		if (u0 == v0)</span>
+<span class="fc" id="L222">			return;</span>
 		@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L208">		NodeImpl&lt;E&gt; u = (NodeImpl&lt;E&gt;) u0, v = (NodeImpl&lt;E&gt;) v0;</span>
+<span class="fc" id="L224">		NodeImpl&lt;E&gt; u = (NodeImpl&lt;E&gt;) u0, v = (NodeImpl&lt;E&gt;) v0;</span>
 
 		/* assume u is above v */
-<span class="fc bfc" id="L211" title="All 2 branches covered.">		if (u.depth &gt; v.depth) {</span>
-<span class="fc" id="L212">			NodeImpl&lt;E&gt; temp = u;</span>
-<span class="fc" id="L213">			u = v;</span>
-<span class="fc" id="L214">			v = temp;</span>
+<span class="fc bfc" id="L227" title="All 2 branches covered.">		if (u.depth &gt; v.depth) {</span>
+<span class="fc" id="L228">			NodeImpl&lt;E&gt; temp = u;</span>
+<span class="fc" id="L229">			u = v;</span>
+<span class="fc" id="L230">			v = temp;</span>
 		}
-<span class="fc" id="L216">		Edge&lt;E&gt; edge = new Edge&lt;&gt;(u, v, edgedata);</span>
+<span class="fc" id="L232">		Edge&lt;E&gt; edge = new Edge&lt;&gt;(u, v, edgedata);</span>
 
 		/* split edge into two edges (u, lca(u,v)), (v, lca(u,v)) */
-<span class="fc" id="L219">		LCADynamic.Node l = lca.findLowestCommonAncestor(u.lcaNode, v.lcaNode);</span>
-<span class="fc bfc" id="L220" title="All 2 branches covered.">		if (u.lcaNode != l) {</span>
-<span class="fc" id="L221">			addEdgeNode(new EdgeNode&lt;&gt;(u, l.getNodeData(), edge));</span>
-<span class="fc" id="L222">			addEdgeNode(new EdgeNode&lt;&gt;(v, l.getNodeData(), edge));</span>
+<span class="fc" id="L235">		LCADynamic.Node l = lca.findLowestCommonAncestor(u.lcaNode, v.lcaNode);</span>
+<span class="fc bfc" id="L236" title="All 2 branches covered.">		if (u.lcaNode != l) {</span>
+<span class="fc" id="L237">			addEdgeNode(new EdgeNode&lt;&gt;(u, l.getNodeData(), edge));</span>
+<span class="fc" id="L238">			addEdgeNode(new EdgeNode&lt;&gt;(v, l.getNodeData(), edge));</span>
 		} else {
-<span class="fc" id="L224">			addEdgeNode(new EdgeNode&lt;&gt;(v, u, edge));</span>
+<span class="fc" id="L240">			addEdgeNode(new EdgeNode&lt;&gt;(v, u, edge));</span>
 		}
-<span class="fc" id="L226">	}</span>
+<span class="fc" id="L242">	}</span>
 
 	private void addEdgeNode(EdgeNode&lt;E&gt; edge) {
 		/* assume u is deeper */
-<span class="pc bpc" id="L230" title="1 of 2 branches missed.">		assert edge.u.depth &gt; edge.v.depth;</span>
+<span class="pc bpc" id="L246" title="1 of 2 branches missed.">		assert edge.u.depth &gt; edge.v.depth;</span>
 
-<span class="fc" id="L232">		SubTree&lt;E&gt; u = subTree(edge.u), v = subTree(edge.v);</span>
-<span class="fc bfc" id="L233" title="All 2 branches covered.">		if (u == v)</span>
-<span class="fc" id="L234">			return; /* ignore edge within same sub tree */</span>
+<span class="fc" id="L248">		SubTree&lt;E&gt; u = subTree(edge.u), v = subTree(edge.v);</span>
+<span class="fc bfc" id="L249" title="All 2 branches covered.">		if (u == v)</span>
+<span class="fc" id="L250">			return; /* ignore edge within same sub tree */</span>
 
-<span class="fc" id="L236">		int span = Utils.log2(edge.u.depth - edge.v.depth + 1);</span>
-<span class="fc" id="L237">		int uRank = u.rank(), vRank = v.rank();</span>
+<span class="fc" id="L252">		int span = Utils.log2(edge.u.depth - edge.v.depth + 1);</span>
+<span class="fc" id="L253">		int uRank = u.rank(), vRank = v.rank();</span>
 
-<span class="fc bfc" id="L239" title="All 2 branches covered.">		if (uRank &lt; span)</span>
+<span class="fc bfc" id="L255" title="All 2 branches covered.">		if (uRank &lt; span)</span>
 			/* long */
-<span class="fc" id="L241">			addEdgeToSet(u, span, edge);</span>
-<span class="fc bfc" id="L242" title="All 2 branches covered.">		else if (uRank &lt;= vRank)</span>
+<span class="fc" id="L257">			addEdgeToSet(u, span, edge);</span>
+<span class="fc bfc" id="L258" title="All 2 branches covered.">		else if (uRank &lt;= vRank)</span>
 			/* up */
-<span class="fc" id="L244">			addEdgeToSet(u, Math.max(uRank + 1, vRank), edge);</span>
+<span class="fc" id="L260">			addEdgeToSet(u, Math.max(uRank + 1, vRank), edge);</span>
 		else
 			/* down */
-<span class="fc" id="L247">			addEdgeToSet(v, uRank, edge);</span>
-<span class="fc" id="L248">	}</span>
+<span class="fc" id="L263">			addEdgeToSet(v, uRank, edge);</span>
+<span class="fc" id="L264">	}</span>
 
 	private void addEdgeToSet(SubTree&lt;E&gt; v, int setIdx, EdgeNode&lt;E&gt; edge) {
-<span class="fc bfc" id="L251" title="All 2 branches covered.">		if (v.edges.length &lt;= setIdx) {</span>
-<span class="fc" id="L252">			int newLen = v.edges.length;</span>
+<span class="fc bfc" id="L267" title="All 2 branches covered.">		if (v.edges.length &lt;= setIdx) {</span>
+<span class="fc" id="L268">			int newLen = v.edges.length;</span>
 			do {
-<span class="fc" id="L254">				newLen = Math.max(newLen * 2, 2);</span>
-<span class="fc bfc" id="L255" title="All 2 branches covered.">			} while (newLen &lt;= setIdx);</span>
-<span class="fc" id="L256">			v.edges = Arrays.copyOf(v.edges, newLen);</span>
+<span class="fc" id="L270">				newLen = Math.max(newLen * 2, 2);</span>
+<span class="fc bfc" id="L271" title="All 2 branches covered.">			} while (newLen &lt;= setIdx);</span>
+<span class="fc" id="L272">			v.edges = Arrays.copyOf(v.edges, newLen);</span>
 		}
-<span class="fc bfc" id="L258" title="All 2 branches covered.">		if (v.edges[setIdx] == null)</span>
-<span class="fc" id="L259">			v.edges[setIdx] = new EdgeList&lt;&gt;();</span>
-<span class="fc" id="L260">		EdgeList&lt;E&gt; edgeList = v.edges[setIdx];</span>
+<span class="fc bfc" id="L274" title="All 2 branches covered.">		if (v.edges[setIdx] == null)</span>
+<span class="fc" id="L275">			v.edges[setIdx] = new EdgeList&lt;&gt;();</span>
+<span class="fc" id="L276">		EdgeList&lt;E&gt; edgeList = v.edges[setIdx];</span>
 
-<span class="fc bfc" id="L262" title="All 2 branches covered.">		if (edgeList.head == null) {</span>
-<span class="fc" id="L263">			edgeList.head = edgeList.tail = edgeList.min = edge;</span>
-<span class="fc" id="L264">			compareAgainstSubTreeMin(v, edge);</span>
+<span class="fc bfc" id="L278" title="All 2 branches covered.">		if (edgeList.head == null) {</span>
+<span class="fc" id="L279">			edgeList.head = edgeList.tail = edgeList.min = edge;</span>
+<span class="fc" id="L280">			compareAgainstSubTreeMin(v, edge);</span>
 		} else {
-<span class="fc" id="L266">			edgeList.tail.next = edge;</span>
-<span class="fc" id="L267">			edgeList.tail = edge;</span>
-<span class="fc bfc" id="L268" title="All 2 branches covered.">			if (weightCmp.compare(edge.data.data, edgeList.min.data.data) &lt; 0) {</span>
-<span class="fc" id="L269">				edgeList.min = edge;</span>
-<span class="fc" id="L270">				compareAgainstSubTreeMin(v, edge);</span>
+<span class="fc" id="L282">			edgeList.tail.next = edge;</span>
+<span class="fc" id="L283">			edgeList.tail = edge;</span>
+<span class="fc bfc" id="L284" title="All 2 branches covered.">			if (weightCmp.compare(edge.data.data, edgeList.min.data.data) &lt; 0) {</span>
+<span class="fc" id="L285">				edgeList.min = edge;</span>
+<span class="fc" id="L286">				compareAgainstSubTreeMin(v, edge);</span>
 			}
 		}
-<span class="fc" id="L273">	}</span>
+<span class="fc" id="L289">	}</span>
 
 	private void compareAgainstSubTreeMin(SubTree&lt;E&gt; v, EdgeNode&lt;E&gt; edge) {
-<span class="fc bfc" id="L276" title="All 2 branches covered.">		if (v.minEdge == null) {</span>
-<span class="fc" id="L277">			v.minEdge = edge;</span>
-<span class="fc" id="L278">			v.heapRef = heap.insert(v);</span>
+<span class="fc bfc" id="L292" title="All 2 branches covered.">		if (v.minEdge == null) {</span>
+<span class="fc" id="L293">			v.minEdge = edge;</span>
+<span class="fc" id="L294">			v.heapRef = heap.insert(v);</span>
 
-<span class="fc bfc" id="L280" title="All 2 branches covered.">		} else if (weightCmp.compare(edge.data.data, v.minEdge.data.data) &lt; 0) {</span>
-<span class="fc" id="L281">			v.minEdge = edge;</span>
-<span class="fc" id="L282">			heap.decreaseKey(v.heapRef, v);</span>
+<span class="fc bfc" id="L296" title="All 2 branches covered.">		} else if (weightCmp.compare(edge.data.data, v.minEdge.data.data) &lt; 0) {</span>
+<span class="fc" id="L297">			v.minEdge = edge;</span>
+<span class="fc" id="L298">			heap.decreaseKey(v.heapRef, v);</span>
 		}
-<span class="fc" id="L284">	}</span>
+<span class="fc" id="L300">	}</span>
 
 	@Override
 	public boolean hasNonTreeEdge() {
-<span class="fc bfc" id="L288" title="All 2 branches covered.">		return !heap.isEmpty();</span>
+<span class="fc bfc" id="L304" title="All 2 branches covered.">		return !heap.isEmpty();</span>
 	}
 
 	@Override
 	public MinEdge&lt;E&gt; findMinNonTreeEdge() {
-<span class="fc bfc" id="L293" title="All 2 branches covered.">		return heap.isEmpty() ? null : heap.findMin().minEdge.data;</span>
+<span class="fc bfc" id="L309" title="All 2 branches covered.">		return heap.isEmpty() ? null : heap.findMin().minEdge.data;</span>
 	}
 
 	@Override
 	public int size() {
-<span class="fc" id="L298">		return uf.size();</span>
+<span class="fc" id="L314">		return uf.size();</span>
 	}
 
 	@Override
 	public void clear() {
-<span class="fc" id="L303">		int size = size();</span>
-<span class="fc" id="L304">		uf.clear();</span>
-<span class="fc bfc" id="L305" title="All 2 branches covered.">		for (int i = 0; i &lt; size; i++) {</span>
-<span class="fc" id="L306">			nodes[i].clear();</span>
-<span class="fc" id="L307">			nodes[i] = null;</span>
+<span class="fc" id="L319">		int size = size();</span>
+<span class="fc" id="L320">		uf.clear();</span>
+<span class="fc bfc" id="L321" title="All 2 branches covered.">		for (int i = 0; i &lt; size; i++) {</span>
+<span class="fc" id="L322">			nodes[i].clear();</span>
+<span class="fc" id="L323">			nodes[i] = null;</span>
 		}
-<span class="fc" id="L309">		heap.clear();</span>
-<span class="fc" id="L310">		lca.clear();</span>
-<span class="fc" id="L311">		timestamp = 0;</span>
-<span class="fc" id="L312">	}</span>
+<span class="fc" id="L325">		heap.clear();</span>
+<span class="fc" id="L326">		lca.clear();</span>
+<span class="fc" id="L327">		timestamp = 0;</span>
+<span class="fc" id="L328">	}</span>
 
 	private SubTree&lt;E&gt; subTree(NodeImpl&lt;E&gt; node) {
-<span class="fc" id="L315">		return nodes[uf.find(node.ufIdx)].subtree;</span>
+<span class="fc" id="L331">		return nodes[uf.find(node.ufIdx)].subtree;</span>
 	}
 
 	private static class NodeImpl&lt;E&gt; implements Node {
@@ -324,35 +340,35 @@ import java.util.Comparator;
 		private LCADynamic.Node lcaNode;
 		private SubTree&lt;E&gt; subtree;
 
-<span class="fc" id="L327">		NodeImpl(NodeImpl&lt;E&gt; parent) {</span>
-<span class="fc" id="L328">			this.parent = parent;</span>
-<span class="fc bfc" id="L329" title="All 2 branches covered.">			depth = parent != null ? parent.depth + 1 : 0;</span>
-<span class="fc" id="L330">			subtree = new SubTree&lt;&gt;(this);</span>
-<span class="fc" id="L331">		}</span>
+<span class="fc" id="L343">		NodeImpl(NodeImpl&lt;E&gt; parent) {</span>
+<span class="fc" id="L344">			this.parent = parent;</span>
+<span class="fc bfc" id="L345" title="All 2 branches covered.">			depth = parent != null ? parent.depth + 1 : 0;</span>
+<span class="fc" id="L346">			subtree = new SubTree&lt;&gt;(this);</span>
+<span class="fc" id="L347">		}</span>
 
 		@Override
 		@SuppressWarnings(&quot;unchecked&quot;)
 		public &lt;V&gt; V getNodeData() {
-<span class="fc" id="L336">			return (V) nodeData;</span>
+<span class="fc" id="L352">			return (V) nodeData;</span>
 		}
 
 		@Override
 		public void setNodeData(Object data) {
-<span class="fc" id="L341">			nodeData = data;</span>
-<span class="fc" id="L342">		}</span>
+<span class="fc" id="L357">			nodeData = data;</span>
+<span class="fc" id="L358">		}</span>
 
 		@Override
 		public Node getParent() {
-<span class="fc" id="L346">			return parent;</span>
+<span class="fc" id="L362">			return parent;</span>
 		}
 
 		void clear() {
-<span class="fc" id="L350">			nodeData = null;</span>
-<span class="fc" id="L351">			lcaNode = null;</span>
-<span class="pc bpc" id="L352" title="1 of 2 branches missed.">			if (subtree != null)</span>
-<span class="fc" id="L353">				subtree.clear();</span>
-<span class="fc" id="L354">			subtree = null;</span>
-<span class="fc" id="L355">		}</span>
+<span class="fc" id="L366">			nodeData = null;</span>
+<span class="fc" id="L367">			lcaNode = null;</span>
+<span class="pc bpc" id="L368" title="1 of 2 branches missed.">			if (subtree != null)</span>
+<span class="fc" id="L369">				subtree.clear();</span>
+<span class="fc" id="L370">			subtree = null;</span>
+<span class="fc" id="L371">		}</span>
 
 	}
 
@@ -369,31 +385,31 @@ import java.util.Comparator;
 		EdgeNode&lt;E&gt; inEdge;
 		int inEdgeTimestamp;
 
-<span class="fc" id="L372">		private static final EdgeList&lt;?&gt;[] EMPTY_EDGELIST_ARR = new EdgeList[0];</span>
+<span class="fc" id="L388">		private static final EdgeList&lt;?&gt;[] EMPTY_EDGELIST_ARR = new EdgeList[0];</span>
 
 		@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L375">		SubTree(NodeImpl&lt;E&gt; node) {</span>
-<span class="fc" id="L376">			top = node;</span>
-<span class="fc" id="L377">			size = 1;</span>
-<span class="fc" id="L378">			edges = (EdgeList&lt;E&gt;[]) EMPTY_EDGELIST_ARR;</span>
-<span class="fc" id="L379">		}</span>
+<span class="fc" id="L391">		SubTree(NodeImpl&lt;E&gt; node) {</span>
+<span class="fc" id="L392">			top = node;</span>
+<span class="fc" id="L393">			size = 1;</span>
+<span class="fc" id="L394">			edges = (EdgeList&lt;E&gt;[]) EMPTY_EDGELIST_ARR;</span>
+<span class="fc" id="L395">		}</span>
 
 		int rank() {
-<span class="fc" id="L382">			return Utils.log2(size);</span>
+<span class="fc" id="L398">			return Utils.log2(size);</span>
 		}
 
 		void clear() {
-<span class="fc bfc" id="L386" title="All 2 branches covered.">			for (int i = 0; i &lt; edges.length; i++) {</span>
-<span class="fc bfc" id="L387" title="All 2 branches covered.">				if (edges[i] == null)</span>
-<span class="fc" id="L388">					continue;</span>
-<span class="fc" id="L389">				edges[i].clear();</span>
-<span class="fc" id="L390">				edges[i] = null;</span>
+<span class="fc bfc" id="L402" title="All 2 branches covered.">			for (int i = 0; i &lt; edges.length; i++) {</span>
+<span class="fc bfc" id="L403" title="All 2 branches covered.">				if (edges[i] == null)</span>
+<span class="fc" id="L404">					continue;</span>
+<span class="fc" id="L405">				edges[i].clear();</span>
+<span class="fc" id="L406">				edges[i] = null;</span>
 			}
-<span class="fc bfc" id="L392" title="All 2 branches covered.">			if (minEdge != null)</span>
-<span class="fc" id="L393">				minEdge.clear();</span>
-<span class="fc" id="L394">			minEdge = null;</span>
-<span class="fc" id="L395">			heapRef = null;</span>
-<span class="fc" id="L396">		}</span>
+<span class="fc bfc" id="L408" title="All 2 branches covered.">			if (minEdge != null)</span>
+<span class="fc" id="L409">				minEdge.clear();</span>
+<span class="fc" id="L410">			minEdge = null;</span>
+<span class="fc" id="L411">			heapRef = null;</span>
+<span class="fc" id="L412">		}</span>
 
 	}
 
@@ -402,8 +418,8 @@ import java.util.Comparator;
 		EdgeNode&lt;E&gt; min;
 
 		void clear() {
-<span class="fc" id="L405">			head = tail = min = null;</span>
-<span class="fc" id="L406">		}</span>
+<span class="fc" id="L421">			head = tail = min = null;</span>
+<span class="fc" id="L422">		}</span>
 	}
 
 	private static class EdgeNode&lt;E&gt; {
@@ -411,19 +427,19 @@ import java.util.Comparator;
 		final Edge&lt;E&gt; data;
 		EdgeNode&lt;E&gt; next;
 
-<span class="fc" id="L414">		EdgeNode(NodeImpl&lt;E&gt; u, NodeImpl&lt;E&gt; v, Edge&lt;E&gt; data) {</span>
-<span class="fc" id="L415">			this.u = u;</span>
-<span class="fc" id="L416">			this.v = v;</span>
-<span class="fc" id="L417">			this.data = data;</span>
-<span class="fc" id="L418">		}</span>
+<span class="fc" id="L430">		EdgeNode(NodeImpl&lt;E&gt; u, NodeImpl&lt;E&gt; v, Edge&lt;E&gt; data) {</span>
+<span class="fc" id="L431">			this.u = u;</span>
+<span class="fc" id="L432">			this.v = v;</span>
+<span class="fc" id="L433">			this.data = data;</span>
+<span class="fc" id="L434">		}</span>
 
 		void clear() {
-<span class="fc" id="L421">			next = null;</span>
-<span class="fc" id="L422">		}</span>
+<span class="fc" id="L437">			next = null;</span>
+<span class="fc" id="L438">		}</span>
 
 		@Override
 		public String toString() {
-<span class="nc" id="L426">			return String.valueOf(data);</span>
+<span class="nc" id="L442">			return String.valueOf(data);</span>
 		}
 	}
 
@@ -431,30 +447,30 @@ import java.util.Comparator;
 		public final Node u, v;
 		public final E data;
 
-<span class="fc" id="L434">		Edge(Node u, Node v, E data) {</span>
-<span class="fc" id="L435">			this.u = u;</span>
-<span class="fc" id="L436">			this.v = v;</span>
-<span class="fc" id="L437">			this.data = data;</span>
-<span class="fc" id="L438">		}</span>
+<span class="fc" id="L450">		Edge(Node u, Node v, E data) {</span>
+<span class="fc" id="L451">			this.u = u;</span>
+<span class="fc" id="L452">			this.v = v;</span>
+<span class="fc" id="L453">			this.data = data;</span>
+<span class="fc" id="L454">		}</span>
 
 		@Override
 		public String toString() {
-<span class="nc" id="L442">			return &quot;(&quot; + u + &quot;, &quot; + v + &quot;, &quot; + data + &quot;)&quot;;</span>
+<span class="nc" id="L458">			return &quot;(&quot; + u + &quot;, &quot; + v + &quot;, &quot; + data + &quot;)&quot;;</span>
 		}
 
 		@Override
 		public Node u() {
-<span class="fc" id="L447">			return u;</span>
+<span class="fc" id="L463">			return u;</span>
 		}
 
 		@Override
 		public Node v() {
-<span class="fc" id="L452">			return v;</span>
+<span class="fc" id="L468">			return v;</span>
 		}
 
 		@Override
 		public E edgeData() {
-<span class="fc" id="L457">			return data;</span>
+<span class="fc" id="L473">			return data;</span>
 		}
 
 	}

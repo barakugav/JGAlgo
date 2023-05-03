@@ -1,4 +1,20 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SplitFindMinArray.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">SplitFindMinArray.java</span></div><h1>SplitFindMinArray.java</h1><pre class="source lang-java linenums">package com.jgalgo;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SplitFindMinArray.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">SplitFindMinArray.java</span></div><h1>SplitFindMinArray.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -23,178 +39,178 @@ public class SplitFindMinArray&lt;K&gt; implements SplitFindMin&lt;K&gt; {
 	/**
 	 * Create an empty Split-Find-Min data structure.
 	 */
-<span class="fc" id="L26">	public SplitFindMinArray() {}</span>
+<span class="fc" id="L42">	public SplitFindMinArray() {}</span>
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	@Override
 	public void init(Collection&lt;K&gt; keys, Comparator&lt;? super K&gt; c) {
-<span class="fc" id="L31">		int elmNum = keys.size();</span>
-<span class="fc" id="L32">		this.keys = (K[]) new Object[elmNum];</span>
-<span class="fc" id="L33">		blocks = new Block[elmNum];</span>
-<span class="fc bfc" id="L34" title="All 2 branches covered.">		this.c = c = c != null ? c : Utils.getDefaultComparator();</span>
-<span class="pc bpc" id="L35" title="1 of 2 branches missed.">		if (elmNum == 0)</span>
-<span class="nc" id="L36">			return;</span>
+<span class="fc" id="L47">		int elmNum = keys.size();</span>
+<span class="fc" id="L48">		this.keys = (K[]) new Object[elmNum];</span>
+<span class="fc" id="L49">		blocks = new Block[elmNum];</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">		this.c = c = c != null ? c : Utils.getDefaultComparator();</span>
+<span class="pc bpc" id="L51" title="1 of 2 branches missed.">		if (elmNum == 0)</span>
+<span class="nc" id="L52">			return;</span>
 
-<span class="fc" id="L38">		int i = 0;</span>
-<span class="fc bfc" id="L39" title="All 2 branches covered.">		for (K key : keys)</span>
-<span class="fc" id="L40">			this.keys[i++] = key;</span>
+<span class="fc" id="L54">		int i = 0;</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">		for (K key : keys)</span>
+<span class="fc" id="L56">			this.keys[i++] = key;</span>
 
-<span class="fc" id="L42">		Block head = null, tail = null;</span>
-<span class="fc bfc" id="L43" title="All 2 branches covered.">		for (int size = elmNum; size &gt; 0;) {</span>
-<span class="fc" id="L44">			int blkSize = 1 &lt;&lt; Integer.numberOfTrailingZeros(size);</span>
-<span class="fc bfc" id="L45" title="All 2 branches covered.">			int from = tail == null ? 0 : tail.to;</span>
-<span class="fc" id="L46">			int to = from + blkSize;</span>
-<span class="fc" id="L47">			Block blk = newBlock(from, to);</span>
-<span class="fc bfc" id="L48" title="All 2 branches covered.">			if (head == null) {</span>
-<span class="fc" id="L49">				head = blk;</span>
+<span class="fc" id="L58">		Block head = null, tail = null;</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">		for (int size = elmNum; size &gt; 0;) {</span>
+<span class="fc" id="L60">			int blkSize = 1 &lt;&lt; Integer.numberOfTrailingZeros(size);</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">			int from = tail == null ? 0 : tail.to;</span>
+<span class="fc" id="L62">			int to = from + blkSize;</span>
+<span class="fc" id="L63">			Block blk = newBlock(from, to);</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">			if (head == null) {</span>
+<span class="fc" id="L65">				head = blk;</span>
 			}
-<span class="fc" id="L51">			tail = blk;</span>
-<span class="fc" id="L52">			size -= blkSize;</span>
-<span class="fc" id="L53">		}</span>
-<span class="fc" id="L54">		newSequence(head, tail);</span>
-<span class="fc" id="L55">	}</span>
+<span class="fc" id="L67">			tail = blk;</span>
+<span class="fc" id="L68">			size -= blkSize;</span>
+<span class="fc" id="L69">		}</span>
+<span class="fc" id="L70">		newSequence(head, tail);</span>
+<span class="fc" id="L71">	}</span>
 
 	@Override
 	public int find(int x) {
-<span class="fc" id="L59">		return blocks[x].seq.head.from;</span>
+<span class="fc" id="L75">		return blocks[x].seq.head.from;</span>
 	}
 
 	@Override
 	public void split(int x) {
-<span class="pc bpc" id="L64" title="1 of 2 branches missed.">		if (x == blocks.length)</span>
-<span class="nc" id="L65">			return;</span>
-<span class="fc" id="L66">		Block blk = blocks[x];</span>
-<span class="fc" id="L67">		Sequence seq = blk.seq;</span>
+<span class="pc bpc" id="L80" title="1 of 2 branches missed.">		if (x == blocks.length)</span>
+<span class="nc" id="L81">			return;</span>
+<span class="fc" id="L82">		Block blk = blocks[x];</span>
+<span class="fc" id="L83">		Sequence seq = blk.seq;</span>
 
-<span class="fc bfc" id="L69" title="All 2 branches covered.">		if (x == seq.head.from)</span>
-<span class="fc" id="L70">			return;</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">		if (x == seq.head.from)</span>
+<span class="fc" id="L86">			return;</span>
 
-<span class="fc bfc" id="L72" title="All 2 branches covered.">		if (x != blk.from) {</span>
-<span class="fc" id="L73">			Block head = null, tail = null;</span>
-<span class="fc bfc" id="L74" title="All 2 branches covered.">			for (int size = x - blk.from; size &gt; 0;) {</span>
-<span class="fc" id="L75">				int blkSize = 1 &lt;&lt; (31 - Integer.numberOfLeadingZeros(size));</span>
-<span class="fc bfc" id="L76" title="All 2 branches covered.">				int from = tail == null ? blk.from : tail.to;</span>
-<span class="fc" id="L77">				int to = from + blkSize;</span>
-<span class="fc" id="L78">				Block newBlk = newBlock(from, to);</span>
-<span class="fc bfc" id="L79" title="All 2 branches covered.">				if (head == null)</span>
-<span class="fc" id="L80">					head = newBlk;</span>
-<span class="fc" id="L81">				tail = newBlk;</span>
-<span class="fc" id="L82">				size -= blkSize;</span>
-<span class="fc" id="L83">			}</span>
-<span class="fc bfc" id="L84" title="All 2 branches covered.">			newSequence(seq.head.from == head.from ? head : seq.head, tail);</span>
-<span class="fc" id="L85">		} else</span>
-<span class="fc" id="L86">			newSequence(seq.head, blocks[blk.from - 1]);</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">		if (x != blk.from) {</span>
+<span class="fc" id="L89">			Block head = null, tail = null;</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">			for (int size = x - blk.from; size &gt; 0;) {</span>
+<span class="fc" id="L91">				int blkSize = 1 &lt;&lt; (31 - Integer.numberOfLeadingZeros(size));</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">				int from = tail == null ? blk.from : tail.to;</span>
+<span class="fc" id="L93">				int to = from + blkSize;</span>
+<span class="fc" id="L94">				Block newBlk = newBlock(from, to);</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">				if (head == null)</span>
+<span class="fc" id="L96">					head = newBlk;</span>
+<span class="fc" id="L97">				tail = newBlk;</span>
+<span class="fc" id="L98">				size -= blkSize;</span>
+<span class="fc" id="L99">			}</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">			newSequence(seq.head.from == head.from ? head : seq.head, tail);</span>
+<span class="fc" id="L101">		} else</span>
+<span class="fc" id="L102">			newSequence(seq.head, blocks[blk.from - 1]);</span>
 
-<span class="fc" id="L88">		Block head = nextBlk(blk), tail = null;</span>
-<span class="fc bfc" id="L89" title="All 2 branches covered.">		for (int size = blk.to - x; size &gt; 0;) {</span>
-<span class="fc" id="L90">			int blkSize = 1 &lt;&lt; (31 - Integer.numberOfLeadingZeros(size));</span>
-<span class="fc bfc" id="L91" title="All 2 branches covered.">			int to = head == null ? blk.to : head.from;</span>
-<span class="fc" id="L92">			int from = to - blkSize;</span>
-<span class="fc" id="L93">			Block newBlk = newBlock(from, to);</span>
-<span class="fc bfc" id="L94" title="All 2 branches covered.">			if (tail == null)</span>
-<span class="fc" id="L95">				tail = newBlk;</span>
-<span class="fc" id="L96">			head = newBlk;</span>
-<span class="fc" id="L97">			size -= blkSize;</span>
-<span class="fc" id="L98">		}</span>
-<span class="fc bfc" id="L99" title="All 2 branches covered.">		newSequence(head, seq.tail.to == tail.to ? tail : seq.tail);</span>
+<span class="fc" id="L104">		Block head = nextBlk(blk), tail = null;</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">		for (int size = blk.to - x; size &gt; 0;) {</span>
+<span class="fc" id="L106">			int blkSize = 1 &lt;&lt; (31 - Integer.numberOfLeadingZeros(size));</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">			int to = head == null ? blk.to : head.from;</span>
+<span class="fc" id="L108">			int from = to - blkSize;</span>
+<span class="fc" id="L109">			Block newBlk = newBlock(from, to);</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">			if (tail == null)</span>
+<span class="fc" id="L111">				tail = newBlk;</span>
+<span class="fc" id="L112">			head = newBlk;</span>
+<span class="fc" id="L113">			size -= blkSize;</span>
+<span class="fc" id="L114">		}</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">		newSequence(head, seq.tail.to == tail.to ? tail : seq.tail);</span>
 
-<span class="fc" id="L101">		blk.seq = null;</span>
-<span class="fc" id="L102">		seq.head = seq.tail = null;</span>
-<span class="fc" id="L103">	}</span>
+<span class="fc" id="L117">		blk.seq = null;</span>
+<span class="fc" id="L118">		seq.head = seq.tail = null;</span>
+<span class="fc" id="L119">	}</span>
 
 	private Block nextBlk(Block blk) {
-<span class="fc" id="L106">		Block[] blocks = this.blocks;</span>
-<span class="fc" id="L107">		int t = blk.to;</span>
-<span class="fc bfc" id="L108" title="All 2 branches covered.">		if (t &gt;= blocks.length)</span>
-<span class="fc" id="L109">			return null;</span>
-<span class="fc" id="L110">		Block next = blocks[t];</span>
-<span class="fc bfc" id="L111" title="All 2 branches covered.">		return blk.seq == next.seq ? next : null;</span>
+<span class="fc" id="L122">		Block[] blocks = this.blocks;</span>
+<span class="fc" id="L123">		int t = blk.to;</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">		if (t &gt;= blocks.length)</span>
+<span class="fc" id="L125">			return null;</span>
+<span class="fc" id="L126">		Block next = blocks[t];</span>
+<span class="fc bfc" id="L127" title="All 2 branches covered.">		return blk.seq == next.seq ? next : null;</span>
 	}
 
 	@Override
 	public K getKey(int x) {
-<span class="fc" id="L116">		return keys[x];</span>
+<span class="fc" id="L132">		return keys[x];</span>
 	}
 
 	@Override
 	public int findMin(int x) {
-<span class="fc" id="L121">		return blocks[x].seq.min;</span>
+<span class="fc" id="L137">		return blocks[x].seq.min;</span>
 	}
 
 	@Override
 	public boolean decreaseKey(int x, K newKey) {
-<span class="fc" id="L126">		K[] keys = this.keys;</span>
-<span class="fc" id="L127">		Comparator&lt;? super K&gt; c = this.c;</span>
+<span class="fc" id="L142">		K[] keys = this.keys;</span>
+<span class="fc" id="L143">		Comparator&lt;? super K&gt; c = this.c;</span>
 
-<span class="fc" id="L129">		Block blk = blocks[x];</span>
-<span class="fc" id="L130">		Sequence seq = blk.seq;</span>
-<span class="fc" id="L131">		keys[x] = newKey;</span>
+<span class="fc" id="L145">		Block blk = blocks[x];</span>
+<span class="fc" id="L146">		Sequence seq = blk.seq;</span>
+<span class="fc" id="L147">		keys[x] = newKey;</span>
 
-<span class="fc bfc" id="L133" title="All 4 branches covered.">		if (blk.min == x || c.compare(newKey, keys[blk.min]) &lt; 0) {</span>
-<span class="fc" id="L134">			blk.min = x;</span>
-<span class="fc bfc" id="L135" title="All 4 branches covered.">			if (seq.min == x || c.compare(newKey, keys[seq.min]) &lt; 0) {</span>
-<span class="fc" id="L136">				seq.min = x;</span>
-<span class="fc" id="L137">				return true;</span>
+<span class="fc bfc" id="L149" title="All 4 branches covered.">		if (blk.min == x || c.compare(newKey, keys[blk.min]) &lt; 0) {</span>
+<span class="fc" id="L150">			blk.min = x;</span>
+<span class="fc bfc" id="L151" title="All 4 branches covered.">			if (seq.min == x || c.compare(newKey, keys[seq.min]) &lt; 0) {</span>
+<span class="fc" id="L152">				seq.min = x;</span>
+<span class="fc" id="L153">				return true;</span>
 			}
 		}
-<span class="fc" id="L140">		return false;</span>
+<span class="fc" id="L156">		return false;</span>
 	}
 
 	@Override
 	public String toString() {
-<span class="nc bnc" id="L145" title="All 4 branches missed.">		if (blocks == null || blocks.length == 0)</span>
-<span class="nc" id="L146">			return &quot;[]&quot;;</span>
-<span class="nc" id="L147">		StringBuilder s = new StringBuilder();</span>
-<span class="nc" id="L148">		s.append('[');</span>
-<span class="nc" id="L149">		for (int i = 0;;) {</span>
-<span class="nc" id="L150">			Sequence seq = blocks[i].seq;</span>
-<span class="nc" id="L151">			s.append(seq);</span>
-<span class="nc" id="L152">			i = seq.tail.to;</span>
-<span class="nc bnc" id="L153" title="All 2 branches missed.">			if (i &gt;= blocks.length)</span>
-<span class="nc" id="L154">				break;</span>
-<span class="nc" id="L155">			s.append(&quot;, &quot;);</span>
-<span class="nc" id="L156">		}</span>
-<span class="nc" id="L157">		s.append(']');</span>
-<span class="nc" id="L158">		return s.toString();</span>
+<span class="nc bnc" id="L161" title="All 4 branches missed.">		if (blocks == null || blocks.length == 0)</span>
+<span class="nc" id="L162">			return &quot;[]&quot;;</span>
+<span class="nc" id="L163">		StringBuilder s = new StringBuilder();</span>
+<span class="nc" id="L164">		s.append('[');</span>
+<span class="nc" id="L165">		for (int i = 0;;) {</span>
+<span class="nc" id="L166">			Sequence seq = blocks[i].seq;</span>
+<span class="nc" id="L167">			s.append(seq);</span>
+<span class="nc" id="L168">			i = seq.tail.to;</span>
+<span class="nc bnc" id="L169" title="All 2 branches missed.">			if (i &gt;= blocks.length)</span>
+<span class="nc" id="L170">				break;</span>
+<span class="nc" id="L171">			s.append(&quot;, &quot;);</span>
+<span class="nc" id="L172">		}</span>
+<span class="nc" id="L173">		s.append(']');</span>
+<span class="nc" id="L174">		return s.toString();</span>
 	}
 
 	private Sequence newSequence(Block head, Block tail) {
-<span class="fc" id="L162">		K[] keys = this.keys;</span>
-<span class="fc" id="L163">		Block[] blocks = this.blocks;</span>
-<span class="fc" id="L164">		Comparator&lt;? super K&gt; c = this.c;</span>
+<span class="fc" id="L178">		K[] keys = this.keys;</span>
+<span class="fc" id="L179">		Block[] blocks = this.blocks;</span>
+<span class="fc" id="L180">		Comparator&lt;? super K&gt; c = this.c;</span>
 
-<span class="fc" id="L166">		Sequence seq = new Sequence(head, tail);</span>
+<span class="fc" id="L182">		Sequence seq = new Sequence(head, tail);</span>
 
-<span class="fc" id="L168">		int min = -1;</span>
-<span class="fc" id="L169">		for (Block blk = head;;) {</span>
-<span class="fc" id="L170">			blk.seq = seq;</span>
-<span class="fc bfc" id="L171" title="All 4 branches covered.">			if (min == -1 || c.compare(keys[min], keys[blk.min]) &gt; 0)</span>
-<span class="fc" id="L172">				min = blk.min;</span>
-<span class="pc bpc" id="L173" title="1 of 4 branches missed.">			if (blk == tail || blk.to &gt;= blocks.length)</span>
-<span class="nc" id="L174">				break;</span>
-<span class="fc" id="L175">			blk = blocks[blk.to];</span>
+<span class="fc" id="L184">		int min = -1;</span>
+<span class="fc" id="L185">		for (Block blk = head;;) {</span>
+<span class="fc" id="L186">			blk.seq = seq;</span>
+<span class="fc bfc" id="L187" title="All 4 branches covered.">			if (min == -1 || c.compare(keys[min], keys[blk.min]) &gt; 0)</span>
+<span class="fc" id="L188">				min = blk.min;</span>
+<span class="pc bpc" id="L189" title="1 of 4 branches missed.">			if (blk == tail || blk.to &gt;= blocks.length)</span>
+<span class="nc" id="L190">				break;</span>
+<span class="fc" id="L191">			blk = blocks[blk.to];</span>
 		}
-<span class="fc" id="L177">		seq.min = min;</span>
+<span class="fc" id="L193">		seq.min = min;</span>
 
-<span class="fc" id="L179">		return seq;</span>
+<span class="fc" id="L195">		return seq;</span>
 	}
 
 	private Block newBlock(int from, int to) {
-<span class="fc" id="L183">		K[] keys = this.keys;</span>
-<span class="fc" id="L184">		Block[] blocks = this.blocks;</span>
-<span class="fc" id="L185">		Comparator&lt;? super K&gt; c = this.c;</span>
+<span class="fc" id="L199">		K[] keys = this.keys;</span>
+<span class="fc" id="L200">		Block[] blocks = this.blocks;</span>
+<span class="fc" id="L201">		Comparator&lt;? super K&gt; c = this.c;</span>
 
-<span class="fc" id="L187">		Block blk = new Block(from, to);</span>
+<span class="fc" id="L203">		Block blk = new Block(from, to);</span>
 
-<span class="fc" id="L189">		int min = -1;</span>
-<span class="fc bfc" id="L190" title="All 2 branches covered.">		for (int i = from; i &lt; to; i++) {</span>
-<span class="fc" id="L191">			blocks[i] = blk;</span>
-<span class="fc bfc" id="L192" title="All 4 branches covered.">			if (min == -1 || c.compare(keys[min], keys[i]) &gt; 0)</span>
-<span class="fc" id="L193">				min = i;</span>
+<span class="fc" id="L205">		int min = -1;</span>
+<span class="fc bfc" id="L206" title="All 2 branches covered.">		for (int i = from; i &lt; to; i++) {</span>
+<span class="fc" id="L207">			blocks[i] = blk;</span>
+<span class="fc bfc" id="L208" title="All 4 branches covered.">			if (min == -1 || c.compare(keys[min], keys[i]) &gt; 0)</span>
+<span class="fc" id="L209">				min = i;</span>
 		}
-<span class="fc" id="L195">		blk.min = min;</span>
+<span class="fc" id="L211">		blk.min = min;</span>
 
-<span class="fc" id="L197">		return blk;</span>
+<span class="fc" id="L213">		return blk;</span>
 	}
 
 	private static class Sequence {
@@ -203,14 +219,14 @@ public class SplitFindMinArray&lt;K&gt; implements SplitFindMin&lt;K&gt; {
 		Block tail;
 		int min;
 
-<span class="fc" id="L206">		Sequence(Block head, Block tail) {</span>
-<span class="fc" id="L207">			this.head = head;</span>
-<span class="fc" id="L208">			this.tail = tail;</span>
-<span class="fc" id="L209">		}</span>
+<span class="fc" id="L222">		Sequence(Block head, Block tail) {</span>
+<span class="fc" id="L223">			this.head = head;</span>
+<span class="fc" id="L224">			this.tail = tail;</span>
+<span class="fc" id="L225">		}</span>
 
 		@Override
 		public String toString() {
-<span class="nc bnc" id="L213" title="All 2 branches missed.">			return head == null ? &quot;[cleared]&quot; : &quot;[&quot; + head.from + &quot;, &quot; + tail.to + &quot;]&quot;;</span>
+<span class="nc bnc" id="L229" title="All 2 branches missed.">			return head == null ? &quot;[cleared]&quot; : &quot;[&quot; + head.from + &quot;, &quot; + tail.to + &quot;]&quot;;</span>
 		}
 
 	}
@@ -222,14 +238,14 @@ public class SplitFindMinArray&lt;K&gt; implements SplitFindMin&lt;K&gt; {
 		final int to;
 		int min;
 
-<span class="fc" id="L225">		Block(int from, int to) {</span>
-<span class="fc" id="L226">			this.from = from;</span>
-<span class="fc" id="L227">			this.to = to;</span>
-<span class="fc" id="L228">		}</span>
+<span class="fc" id="L241">		Block(int from, int to) {</span>
+<span class="fc" id="L242">			this.from = from;</span>
+<span class="fc" id="L243">			this.to = to;</span>
+<span class="fc" id="L244">		}</span>
 
 		@Override
 		public String toString() {
-<span class="nc" id="L232">			return &quot;[&quot; + from + &quot;, &quot; + to + &quot;]&quot;;</span>
+<span class="nc" id="L248">			return &quot;[&quot; + from + &quot;, &quot; + to + &quot;]&quot;;</span>
 		}
 
 	}

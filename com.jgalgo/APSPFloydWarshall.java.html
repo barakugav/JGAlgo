@@ -1,4 +1,20 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>APSPFloydWarshall.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">APSPFloydWarshall.java</span></div><h1>APSPFloydWarshall.java</h1><pre class="source lang-java linenums">package com.jgalgo;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>APSPFloydWarshall.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">APSPFloydWarshall.java</span></div><h1>APSPFloydWarshall.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -17,118 +33,118 @@ public class APSPFloydWarshall implements APSP {
 	/**
 	 * Create a new APSP algorithm object.
 	 */
-<span class="fc" id="L20">	public APSPFloydWarshall() {}</span>
+<span class="fc" id="L36">	public APSPFloydWarshall() {}</span>
 
 	@Override
 	public APSP.Result computeAllShortestPaths(Graph g, EdgeWeightFunc w) {
-<span class="fc bfc" id="L24" title="All 2 branches covered.">		return g instanceof DiGraph ? computeAPSPDirected((DiGraph) g, w) : computeAPSPUndirected((UGraph) g, w);</span>
+<span class="fc bfc" id="L40" title="All 2 branches covered.">		return g instanceof DiGraph ? computeAPSPDirected((DiGraph) g, w) : computeAPSPUndirected((UGraph) g, w);</span>
 	}
 
 	private static APSP.Result computeAPSPUndirected(UGraph g, EdgeWeightFunc w) {
-<span class="fc" id="L28">		APSPResultImpl.Abstract res = new APSPResultImpl.Undirected(g);</span>
-<span class="fc bfc" id="L29" title="All 2 branches covered.">		for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
-<span class="fc" id="L30">			int e = it.nextInt();</span>
-<span class="fc" id="L31">			int u = g.edgeSource(e);</span>
-<span class="fc" id="L32">			int v = g.edgeTarget(e);</span>
-<span class="fc" id="L33">			double ew = w.weight(e);</span>
-<span class="fc bfc" id="L34" title="All 2 branches covered.">			if (u == v) {</span>
-<span class="pc bpc" id="L35" title="1 of 2 branches missed.">				if (ew &lt; 0) {</span>
-<span class="nc" id="L36">					res.setNegCycle(new Path(g, u, u, IntList.of(e)));</span>
-<span class="nc" id="L37">					return res;</span>
+<span class="fc" id="L44">		APSPResultImpl.Abstract res = new APSPResultImpl.Undirected(g);</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">		for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
+<span class="fc" id="L46">			int e = it.nextInt();</span>
+<span class="fc" id="L47">			int u = g.edgeSource(e);</span>
+<span class="fc" id="L48">			int v = g.edgeTarget(e);</span>
+<span class="fc" id="L49">			double ew = w.weight(e);</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">			if (u == v) {</span>
+<span class="pc bpc" id="L51" title="1 of 2 branches missed.">				if (ew &lt; 0) {</span>
+<span class="nc" id="L52">					res.setNegCycle(new Path(g, u, u, IntList.of(e)));</span>
+<span class="nc" id="L53">					return res;</span>
 				}
 				continue;
 			}
-<span class="fc bfc" id="L41" title="All 2 branches covered.">			if (ew &lt; res.distance(u, v)) {</span>
-<span class="fc" id="L42">				res.setDistance(u, v, ew);</span>
-<span class="fc" id="L43">				res.setEdgeTo(u, v, e);</span>
-<span class="fc" id="L44">				res.setEdgeTo(v, u, e);</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">			if (ew &lt; res.distance(u, v)) {</span>
+<span class="fc" id="L58">				res.setDistance(u, v, ew);</span>
+<span class="fc" id="L59">				res.setEdgeTo(u, v, e);</span>
+<span class="fc" id="L60">				res.setEdgeTo(v, u, e);</span>
 			}
-<span class="fc" id="L46">		}</span>
-<span class="fc" id="L47">		int n = g.vertices().size();</span>
-<span class="fc bfc" id="L48" title="All 2 branches covered.">		for (int k = 0; k &lt; n; k++) {</span>
+<span class="fc" id="L62">		}</span>
+<span class="fc" id="L63">		int n = g.vertices().size();</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">		for (int k = 0; k &lt; n; k++) {</span>
 			/* Calc shortest path between each pair (u,v) by using vertices 1,2,..,k */
-<span class="fc bfc" id="L50" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc bfc" id="L51" title="All 2 branches covered.">				for (int v = u + 1; v &lt; n; v++) {</span>
-<span class="fc" id="L52">					double duk = res.distance(u, k);</span>
-<span class="fc bfc" id="L53" title="All 2 branches covered.">					if (duk == Double.POSITIVE_INFINITY)</span>
-<span class="fc" id="L54">						continue;</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">				for (int v = u + 1; v &lt; n; v++) {</span>
+<span class="fc" id="L68">					double duk = res.distance(u, k);</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">					if (duk == Double.POSITIVE_INFINITY)</span>
+<span class="fc" id="L70">						continue;</span>
 
-<span class="fc" id="L56">					double dkv = res.distance(k, v);</span>
-<span class="fc bfc" id="L57" title="All 2 branches covered.">					if (dkv == Double.POSITIVE_INFINITY)</span>
-<span class="fc" id="L58">						continue;</span>
+<span class="fc" id="L72">					double dkv = res.distance(k, v);</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">					if (dkv == Double.POSITIVE_INFINITY)</span>
+<span class="fc" id="L74">						continue;</span>
 
-<span class="fc" id="L60">					double dis = duk + dkv;</span>
-<span class="fc bfc" id="L61" title="All 2 branches covered.">					if (dis &lt; res.distance(u, v)) {</span>
-<span class="fc" id="L62">						res.setDistance(u, v, dis);</span>
-<span class="fc" id="L63">						res.setEdgeTo(u, v, res.getEdgeTo(u, k));</span>
-<span class="fc" id="L64">						res.setEdgeTo(v, u, res.getEdgeTo(v, k));</span>
+<span class="fc" id="L76">					double dis = duk + dkv;</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">					if (dis &lt; res.distance(u, v)) {</span>
+<span class="fc" id="L78">						res.setDistance(u, v, dis);</span>
+<span class="fc" id="L79">						res.setEdgeTo(u, v, res.getEdgeTo(u, k));</span>
+<span class="fc" id="L80">						res.setEdgeTo(v, u, res.getEdgeTo(v, k));</span>
 					}
 				}
 			}
-<span class="pc bpc" id="L68" title="1 of 2 branches missed.">			if (detectNegCycle(res, n, k))</span>
-<span class="nc" id="L69">				return res;</span>
+<span class="pc bpc" id="L84" title="1 of 2 branches missed.">			if (detectNegCycle(res, n, k))</span>
+<span class="nc" id="L85">				return res;</span>
 		}
-<span class="fc" id="L71">		return res;</span>
+<span class="fc" id="L87">		return res;</span>
 	}
 
 	private static APSP.Result computeAPSPDirected(DiGraph g, EdgeWeightFunc w) {
-<span class="fc" id="L75">		APSPResultImpl.Abstract res = new APSPResultImpl.Directed(g);</span>
-<span class="fc bfc" id="L76" title="All 2 branches covered.">		for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
-<span class="fc" id="L77">			int e = it.nextInt();</span>
-<span class="fc" id="L78">			int u = g.edgeSource(e);</span>
-<span class="fc" id="L79">			int v = g.edgeTarget(e);</span>
-<span class="fc" id="L80">			double ew = w.weight(e);</span>
-<span class="fc bfc" id="L81" title="All 2 branches covered.">			if (u == v) {</span>
-<span class="fc bfc" id="L82" title="All 2 branches covered.">				if (ew &lt; 0) {</span>
-<span class="fc" id="L83">					res.setNegCycle(new Path(g, u, u, IntList.of(e)));</span>
-<span class="fc" id="L84">					return res;</span>
+<span class="fc" id="L91">		APSPResultImpl.Abstract res = new APSPResultImpl.Directed(g);</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">		for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
+<span class="fc" id="L93">			int e = it.nextInt();</span>
+<span class="fc" id="L94">			int u = g.edgeSource(e);</span>
+<span class="fc" id="L95">			int v = g.edgeTarget(e);</span>
+<span class="fc" id="L96">			double ew = w.weight(e);</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">			if (u == v) {</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">				if (ew &lt; 0) {</span>
+<span class="fc" id="L99">					res.setNegCycle(new Path(g, u, u, IntList.of(e)));</span>
+<span class="fc" id="L100">					return res;</span>
 				}
 				continue;
 			}
-<span class="fc bfc" id="L88" title="All 2 branches covered.">			if (ew &lt; res.distance(u, v)) {</span>
-<span class="fc" id="L89">				res.setDistance(u, v, ew);</span>
-<span class="fc" id="L90">				res.setEdgeTo(u, v, e);</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">			if (ew &lt; res.distance(u, v)) {</span>
+<span class="fc" id="L105">				res.setDistance(u, v, ew);</span>
+<span class="fc" id="L106">				res.setEdgeTo(u, v, e);</span>
 			}
-<span class="fc" id="L92">		}</span>
-<span class="fc" id="L93">		int n = g.vertices().size();</span>
-<span class="fc bfc" id="L94" title="All 2 branches covered.">		for (int k = 0; k &lt; n; k++) {</span>
+<span class="fc" id="L108">		}</span>
+<span class="fc" id="L109">		int n = g.vertices().size();</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">		for (int k = 0; k &lt; n; k++) {</span>
 			/* Calc shortest path between each pair (u,v) by using vertices 1,2,..,k */
-<span class="fc bfc" id="L96" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc bfc" id="L97" title="All 2 branches covered.">				for (int v = 0; v &lt; n; v++) {</span>
-<span class="fc" id="L98">					double duk = res.distance(u, k);</span>
-<span class="fc bfc" id="L99" title="All 2 branches covered.">					if (duk == Double.POSITIVE_INFINITY)</span>
-<span class="fc" id="L100">						continue;</span>
-<span class="fc" id="L101">					double dkv = res.distance(k, v);</span>
-<span class="fc bfc" id="L102" title="All 2 branches covered.">					if (dkv == Double.POSITIVE_INFINITY)</span>
-<span class="fc" id="L103">						continue;</span>
-<span class="fc" id="L104">					double dis = duk + dkv;</span>
-<span class="fc bfc" id="L105" title="All 2 branches covered.">					if (dis &lt; res.distance(u, v)) {</span>
-<span class="fc" id="L106">						res.setDistance(u, v, dis);</span>
-<span class="fc" id="L107">						res.setEdgeTo(u, v, res.getEdgeTo(u, k));</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">				for (int v = 0; v &lt; n; v++) {</span>
+<span class="fc" id="L114">					double duk = res.distance(u, k);</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">					if (duk == Double.POSITIVE_INFINITY)</span>
+<span class="fc" id="L116">						continue;</span>
+<span class="fc" id="L117">					double dkv = res.distance(k, v);</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">					if (dkv == Double.POSITIVE_INFINITY)</span>
+<span class="fc" id="L119">						continue;</span>
+<span class="fc" id="L120">					double dis = duk + dkv;</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">					if (dis &lt; res.distance(u, v)) {</span>
+<span class="fc" id="L122">						res.setDistance(u, v, dis);</span>
+<span class="fc" id="L123">						res.setEdgeTo(u, v, res.getEdgeTo(u, k));</span>
 					}
 				}
 			}
-<span class="fc bfc" id="L111" title="All 2 branches covered.">			if (detectNegCycle(res, n, k))</span>
-<span class="fc" id="L112">				return res;</span>
+<span class="fc bfc" id="L127" title="All 2 branches covered.">			if (detectNegCycle(res, n, k))</span>
+<span class="fc" id="L128">				return res;</span>
 		}
-<span class="fc" id="L114">		return res;</span>
+<span class="fc" id="L130">		return res;</span>
 	}
 
 	private static boolean detectNegCycle(APSPResultImpl.Abstract res, int n, int k) {
-<span class="fc bfc" id="L118" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc" id="L119">			double d1 = res.distance(u, k);</span>
-<span class="fc" id="L120">			double d2 = res.distance(k, u);</span>
-<span class="fc bfc" id="L121" title="All 4 branches covered.">			if (d1 == Double.POSITIVE_INFINITY || d2 == Double.POSITIVE_INFINITY)</span>
-<span class="fc" id="L122">				continue;</span>
-<span class="fc bfc" id="L123" title="All 2 branches covered.">			if (d1 + d2 &lt; 0) {</span>
-<span class="fc" id="L124">				IntList negCycle = new IntArrayList();</span>
-<span class="fc" id="L125">				negCycle.addAll(res.getPath(u, k));</span>
-<span class="fc" id="L126">				negCycle.addAll(res.getPath(k, u));</span>
-<span class="fc" id="L127">				res.setNegCycle(new Path(res.graph(), u, u, negCycle));</span>
-<span class="fc" id="L128">				return true;</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc" id="L135">			double d1 = res.distance(u, k);</span>
+<span class="fc" id="L136">			double d2 = res.distance(k, u);</span>
+<span class="fc bfc" id="L137" title="All 4 branches covered.">			if (d1 == Double.POSITIVE_INFINITY || d2 == Double.POSITIVE_INFINITY)</span>
+<span class="fc" id="L138">				continue;</span>
+<span class="fc bfc" id="L139" title="All 2 branches covered.">			if (d1 + d2 &lt; 0) {</span>
+<span class="fc" id="L140">				IntList negCycle = new IntArrayList();</span>
+<span class="fc" id="L141">				negCycle.addAll(res.getPath(u, k));</span>
+<span class="fc" id="L142">				negCycle.addAll(res.getPath(k, u));</span>
+<span class="fc" id="L143">				res.setNegCycle(new Path(res.graph(), u, u, negCycle));</span>
+<span class="fc" id="L144">				return true;</span>
 			}
 		}
-<span class="fc" id="L131">		return false;</span>
+<span class="fc" id="L147">		return false;</span>
 	}
 
 }
