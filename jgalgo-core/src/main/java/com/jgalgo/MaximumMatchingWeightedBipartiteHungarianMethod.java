@@ -51,7 +51,7 @@ public class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumM
 	 * Set the key used to get the bipartiteness property of vertices.
 	 * <p>
 	 * The algorithm run on bipartite graphs and expect the user to provide the vertices partition by a boolean vertices
-	 * weights using {@link Graph#verticesWeight(Object)}. By default, the weights are searched using the key
+	 * weights using {@link Graph#getVerticesWeights(Object)}. By default, the weights are searched using the key
 	 * {@link Weights#DefaultBipartiteWeightKey}. To override this default behavior, use this function to choose a
 	 * different key.
 	 *
@@ -80,7 +80,7 @@ public class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumM
 	 */
 	@Override
 	public IntCollection computeMaximumMatching(UGraph g, EdgeWeightFunc w) {
-		Weights.Bool partition = g.verticesWeight(bipartiteVerticesWeightKey);
+		Weights.Bool partition = g.getVerticesWeights(bipartiteVerticesWeightKey);
 		Objects.requireNonNull(partition,
 				"Bipartiteness values weren't found with weight " + bipartiteVerticesWeightKey);
 		return new Worker(g, partition, w).computeMaxMatching(false);
@@ -95,7 +95,7 @@ public class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumM
 	 */
 	@Override
 	public IntCollection computeMaximumPerfectMatching(UGraph g, EdgeWeightFunc w) {
-		Weights.Bool partition = g.verticesWeight(bipartiteVerticesWeightKey);
+		Weights.Bool partition = g.getVerticesWeights(bipartiteVerticesWeightKey);
 		Objects.requireNonNull(partition,
 				"Bipartiteness values weren't found with weight " + bipartiteVerticesWeightKey);
 		return new Worker(g, partition, w).computeMaxMatching(true);

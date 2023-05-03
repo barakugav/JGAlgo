@@ -190,7 +190,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 
 			UGraph shuffledG = new GraphArrayUndirected(n);
 
-			Weights.Bool partition = g.verticesWeight(Weights.DefaultBipartiteWeightKey);
+			Weights.Bool partition = g.getVerticesWeights(Weights.DefaultBipartiteWeightKey);
 			if (partition != null) {
 				/* bipartite graph */
 				Weights.Bool partitionSuffled = g.addVerticesWeights(Weights.DefaultBipartiteWeightKey, boolean.class);

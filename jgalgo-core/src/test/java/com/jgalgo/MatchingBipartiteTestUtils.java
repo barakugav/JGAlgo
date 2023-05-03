@@ -90,7 +90,7 @@ class MatchingBipartiteTestUtils extends TestUtils {
 	}
 
 	private static int calcExpectedMaxMatching(Graph g) {
-		Weights.Bool partition = g.verticesWeight(Weights.DefaultBipartiteWeightKey);
+		Weights.Bool partition = g.getVerticesWeights(Weights.DefaultBipartiteWeightKey);
 		Objects.requireNonNull(partition,
 				"Bipartiteness values weren't found with weight" + Weights.DefaultBipartiteWeightKey);
 

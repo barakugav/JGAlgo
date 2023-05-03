@@ -68,7 +68,7 @@ public class MDSTTarjan implements MDST {
 		if (g.vertices().size() == 0 || g.edges().size() == 0)
 			return IntLists.emptyList();
 		DiGraph gRef = GraphsUtils.referenceGraph((DiGraph) g, EdgeRefWeightKey);
-		Weights.Int edgeRefs = gRef.edgesWeight(EdgeRefWeightKey);
+		Weights.Int edgeRefs = gRef.getEdgesWeights(EdgeRefWeightKey);
 
 		// Connect new root to all vertices
 		int n = gRef.vertices().size(), r = gRef.addVertex();
@@ -117,7 +117,7 @@ public class MDSTTarjan implements MDST {
 			}
 		}
 
-		Weights.Int edgeRefs = g.edgesWeight(EdgeRefWeightKey);
+		Weights.Int edgeRefs = g.getEdgesWeights(EdgeRefWeightKey);
 		IntCollection mst = new IntArrayList(cg.n - 1);
 		for (int v = 0; v < cg.n; v++) {
 			int e = edgeRefs.getInt(inEdge[v]);
@@ -142,7 +142,7 @@ public class MDSTTarjan implements MDST {
 				V2v[V] = v;
 		}
 
-		Weights.Int edgeRefs = g.edgesWeight(EdgeRefWeightKey);
+		Weights.Int edgeRefs = g.getEdgesWeights(EdgeRefWeightKey);
 		for (int V = 1; V < N; V++) {
 			edgeRefs.set(g.addEdge(V2v[0], V2v[V]), HeavyEdge);
 			edgeRefs.set(g.addEdge(V2v[V], V2v[0]), HeavyEdge);
@@ -160,7 +160,7 @@ public class MDSTTarjan implements MDST {
 		for (int v = 0; v < n; v++)
 			ufIdxToV[v] = v;
 
-		Weights.Int edgeRefs = g.edgesWeight(EdgeRefWeightKey);
+		Weights.Int edgeRefs = g.getEdgesWeights(EdgeRefWeightKey);
 		EdgeWeightFunc w = e -> {
 			int e0 = edgeRefs.getInt(e);
 			return (e0 != HeavyEdge ? w0.weight(e0) : HeavyEdgeWeight) + uf.getValue(g.edgeTarget(e));

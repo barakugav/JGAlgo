@@ -49,7 +49,7 @@ public class MaximumMatchingBipartiteHopcroftKarp implements MaximumMatching {
 	 * Set the key used to get the bipartiteness property of vertices.
 	 * <p>
 	 * The algorithm run on bipartite graphs and expect the user to provide the vertices partition by a boolean vertices
-	 * weights using {@link Graph#verticesWeight(Object)}. By default, the weights are searched using the key
+	 * weights using {@link Graph#getVerticesWeights(Object)}. By default, the weights are searched using the key
 	 * {@link Weights#DefaultBipartiteWeightKey}. To override this default behavior, use this function to choose a
 	 * different key.
 	 *
@@ -71,7 +71,7 @@ public class MaximumMatchingBipartiteHopcroftKarp implements MaximumMatching {
 	public IntCollection computeMaximumMatching(UGraph g) {
 		int n = g.vertices().size();
 
-		Weights.Bool partition = g.verticesWeight(bipartiteVerticesWeightKey);
+		Weights.Bool partition = g.getVerticesWeights(bipartiteVerticesWeightKey);
 		Objects.requireNonNull(partition,
 				"Bipartiteness values weren't found with weight " + bipartiteVerticesWeightKey);
 		if (Bipartite.isValidBipartitePartition(g, partition))

@@ -16,10 +16,12 @@
 
 package com.jgalgo;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-
+import java.util.Set;
+import java.util.function.ObjIntConsumer;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 abstract class GraphBase implements Graph {
@@ -151,7 +153,30 @@ abstract class GraphBase implements Graph {
 		StringBuilder s = new StringBuilder();
 		s.append('{');
 		int n = vertices().size();
-		Collection<Weights<?>> weights = getEdgesWeights();
+
+		Set<Object> verticesWeightsKeys = getVerticesWeightKeys();
+		Collection<Weights<?>> verticesWeights = new ArrayList<>(verticesWeightsKeys.size());
+		for (Object key : verticesWeightsKeys)
+			verticesWeights.add(getVerticesWeights(key));
+
+		Set<Object> edgesWeightsKeys = getEdgesWeightsKeys();
+		Collection<Weights<?>> edgesWeights = new ArrayList<>(edgesWeightsKeys.size());
+		for (Object key : edgesWeightsKeys)
+			edgesWeights.add(getEdgesWeights(key));
+
+		ObjIntConsumer<Collection<Weights<?>>> appendWeights = (weights, key) -> {
+			s.append('[');
+			boolean firstData = true;
+			for (Weights<?> weight : weights) {
+				if (firstData) {
+					firstData = false;
+				} else {
+					s.append(", ");
+				}
+				s.append(weight.get(key));
+			}
+			s.append(']');
+		};
 
 		boolean firstVertex = true;
 		for (int u = 0; u < n; u++) {
@@ -160,8 +185,11 @@ abstract class GraphBase implements Graph {
 			} else {
 				s.append(", ");
 			}
-			s.append('v').append(u).append(": [");
+			s.append('v').append(u);
+			if (!verticesWeights.isEmpty())
+				appendWeights.accept(verticesWeights, u);
 
+			s.append(": [");
 			boolean firstEdge = true;
 			for (EdgeIter eit = edgesOut(u); eit.hasNext();) {
 				int e = eit.nextInt();
@@ -170,20 +198,12 @@ abstract class GraphBase implements Graph {
 					firstEdge = false;
 				else
 					s.append(", ");
-				s.append(e).append('(').append(u).append(", ").append(v).append(')');
-				if (!weights.isEmpty()) {
-					s.append('[');
-					boolean firstData = true;
-					for (Weights<?> weight : weights) {
-						if (firstData) {
-							firstData = false;
-						} else {
-							s.append(", ");
-						}
-						s.append(weight.get(e));
-					}
-					s.append(']');
+				s.append(e).append('(').append(u).append(", ").append(v);
+				if (!edgesWeights.isEmpty()) {
+					s.append(", ");
+					appendWeights.accept(edgesWeights, e);
 				}
+				s.append(')');
 			}
 			s.append(']');
 		}

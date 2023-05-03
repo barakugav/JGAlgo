@@ -73,7 +73,7 @@ public class MaximumFlowDinicDynamicTrees implements MaximumFlow {
 		}
 
 		DiGraph g = referenceGraph(g0, net);
-		Weights<Ref> edgeRef = g.edgesWeight(EdgeRefWeightKey);
+		Weights<Ref> edgeRef = g.getEdgesWeights(EdgeRefWeightKey);
 		final int n = g.vertices().size();
 		DiGraph.Builder builder = new GraphBuilderImpl.LinkedDirected();
 		DiGraph L = builder.setVerticesNum(n).setEdgesIDStrategy(Fixed.class).build();

@@ -16,13 +16,10 @@
 
 package com.jgalgo;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-
 import com.jgalgo.IDStrategy.IDAddRemoveListener;
-
 import it.unimi.dsi.fastutil.ints.AbstractIntCollection;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -438,8 +435,8 @@ class GraphBuilderImpl {
 		}
 
 		@Override
-		public <V, WeightsT extends Weights<V>> WeightsT verticesWeight(Object key) {
-			return g.verticesWeight(key);
+		public <V, WeightsT extends Weights<V>> WeightsT getVerticesWeights(Object key) {
+			return g.getVerticesWeights(key);
 		}
 
 		@Override
@@ -448,18 +445,13 @@ class GraphBuilderImpl {
 		}
 
 		@Override
-		public Collection<Weights<?>> getVerticesWeights() {
-			return g.getVerticesWeights();
-		}
-
-		@Override
 		public void removeVerticesWeights(Object key) {
 			g.removeVerticesWeights(key);
 		}
 
 		@Override
-		public <E, WeightsT extends Weights<E>> WeightsT edgesWeight(Object key) {
-			return g.edgesWeight(key);
+		public <E, WeightsT extends Weights<E>> WeightsT getEdgesWeights(Object key) {
+			return g.getEdgesWeights(key);
 		}
 
 		@Override
@@ -470,11 +462,6 @@ class GraphBuilderImpl {
 		@Override
 		public void removeEdgesWeights(Object key) {
 			g.removeEdgesWeights(key);
-		}
-
-		@Override
-		public Collection<Weights<?>> getEdgesWeights() {
-			return g.getEdgesWeights();
 		}
 
 		@Override

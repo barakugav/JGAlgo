@@ -16,9 +16,7 @@
 
 package com.jgalgo;
 
-import java.util.Collection;
 import java.util.Set;
-
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -402,7 +400,7 @@ public interface Graph {
 	 * @param  <V>        The weight data type
 	 * @param  <WeightsT> the weights container, used to avoid casts of containers of primitive types
 	 */
-	public <V, WeightsT extends Weights<V>> WeightsT verticesWeight(Object key);
+	public <V, WeightsT extends Weights<V>> WeightsT getVerticesWeights(Object key);
 
 	/**
 	 * Add a new weights container associated with the vertices of this graph.
@@ -491,15 +489,6 @@ public interface Graph {
 	public Set<Object> getVerticesWeightKeys();
 
 	/**
-	 * Get all vertices weights.
-	 * <p>
-	 * See {@link Weights} for a complete documentation of the weights containers.
-	 *
-	 * @return all vertices weights
-	 */
-	public Collection<Weights<?>> getVerticesWeights();
-
-	/**
 	 * Get the edges weights of some key.
 	 * <p>
 	 * See {@link Weights} for a complete documentation of the weights containers.
@@ -509,7 +498,7 @@ public interface Graph {
 	 * @param  <E>        The weight data type
 	 * @param  <WeightsT> the weights container, used to avoid casts of containers of primitive types
 	 */
-	public <E, WeightsT extends Weights<E>> WeightsT edgesWeight(Object key);
+	public <E, WeightsT extends Weights<E>> WeightsT getEdgesWeights(Object key);
 
 	/**
 	 * Add a new weights container associated with the edges of this graph.
@@ -602,15 +591,6 @@ public interface Graph {
 	 * @return the keys of all the associated edges weights
 	 */
 	public Set<Object> getEdgesWeightsKeys();
-
-	/**
-	 * Get all edges weights.
-	 * <p>
-	 * See {@link Weights} for a complete documentation of the weights containers.
-	 *
-	 * @return all edges weights
-	 */
-	public Collection<Weights<?>> getEdgesWeights();
 
 	/**
 	 * Get the ID strategy of the vertices of the graph.

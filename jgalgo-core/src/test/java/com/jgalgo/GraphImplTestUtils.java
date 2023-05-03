@@ -472,7 +472,7 @@ class GraphImplTestUtils extends TestUtils {
 
 		void checkEdgesEqual(Graph g) {
 			assertEquals(edgesNum(), g.edges().size());
-			Weights.Int edgeData = g.edgesWeight(dataKey);
+			Weights.Int edgeData = g.getEdgesWeights(dataKey);
 
 			List<IntList> actual = new ArrayList<>();
 			List<IntList> expected = new ArrayList<>();

@@ -16,11 +16,9 @@
 
 package com.jgalgo;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
-
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
@@ -151,7 +149,7 @@ abstract class GraphBaseContinues extends GraphBase {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <V, WeightsT extends Weights<V>> WeightsT verticesWeight(Object key) {
+	public <V, WeightsT extends Weights<V>> WeightsT getVerticesWeights(Object key) {
 		return (WeightsT) vWeights.get(key);
 	}
 
@@ -161,18 +159,13 @@ abstract class GraphBaseContinues extends GraphBase {
 	}
 
 	@Override
-	public Collection<Weights<?>> getVerticesWeights() {
-		return Collections.unmodifiableCollection(vWeights.values());
-	}
-
-	@Override
 	public void removeVerticesWeights(Object key) {
 		vWeights.remove(key);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <E, WeightsT extends Weights<E>> WeightsT edgesWeight(Object key) {
+	public <E, WeightsT extends Weights<E>> WeightsT getEdgesWeights(Object key) {
 		return (WeightsT) eWeights.get(key);
 	}
 
@@ -198,11 +191,6 @@ abstract class GraphBaseContinues extends GraphBase {
 	@Override
 	public Set<Object> getEdgesWeightsKeys() {
 		return Collections.unmodifiableSet(eWeights.keySet());
-	}
-
-	@Override
-	public Collection<Weights<?>> getEdgesWeights() {
-		return Collections.unmodifiableCollection(eWeights.values());
 	}
 
 	@Override

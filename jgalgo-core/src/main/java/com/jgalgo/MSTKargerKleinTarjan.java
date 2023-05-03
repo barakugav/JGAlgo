@@ -85,22 +85,22 @@ public class MSTKargerKleinTarjan implements MST {
 		Pair<UGraph, IntCollection> r = boruvka.runBoruvka(g, w, 2, "edgeRef_g0");
 		UGraph g0 = r.first();
 		IntCollection f0 = r.second();
-		Weights.Int g0Ref = g0.edgesWeight("edgeRef_g0");
+		Weights.Int g0Ref = g0.getEdgesWeights("edgeRef_g0");
 
 		/* Find a random subgraph G1 in the contracted graph G0, by choosing each edge with probability 0.5 */
 		UGraph g1 = randSubgraph(g0, "edgeRef_g1", g0Ref);
-		Weights.Int g1Ref = g1.edgesWeight("edgeRef_g1");
+		Weights.Int g1Ref = g1.getEdgesWeights("edgeRef_g1");
 		Weights.Double g1W = assignWeightsFromEdgeRef(g1, w, "w_g1", g1Ref);
 
 		/* Compute an MST (actually a forest) F1 in the random subgraph G1 */
 		IntCollection f1Edges = computeMST(g1, g1W);
 		UGraph f1 = subGraph(g1, f1Edges, "edgeRef_f1", g1Ref);
-		Weights.Int f1Ref = f1.edgesWeight("edgeRef_f1");
+		Weights.Int f1Ref = f1.getEdgesWeights("edgeRef_f1");
 
 		/* Find all the light edges in G0 with respect to the computed forest F1 */
 		IntCollection e2 = lightEdges(g0, e -> w.weight(g0Ref.getInt(e)), f1, e -> w.weight(f1Ref.getInt(e)));
 		UGraph g2 = subGraph(g0, e2, "edgeRef_g2", g0Ref);
-		Weights.Int g2Ref = g2.edgesWeight("edgeRef_g2");
+		Weights.Int g2Ref = g2.getEdgesWeights("edgeRef_g2");
 		Weights.Double g2W = assignWeightsFromEdgeRef(g2, w, "w_g2", g2Ref);
 
 		/* The result is F0 and F2 */
@@ -159,7 +159,7 @@ public class MSTKargerKleinTarjan implements MST {
 		UGraph[] trees = allocatedMem.trees;
 		Weights.Double[] treeData = allocatedMem.treeData;
 		for (int t = 0; t < treeCount; t++)
-			treeData[t] = trees[t].edgesWeight("weight");
+			treeData[t] = trees[t].getEdgesWeights("weight");
 
 		int[] vToVnew = allocatedMem.vToVnew;
 		for (int u = 0; u < n; u++) {
