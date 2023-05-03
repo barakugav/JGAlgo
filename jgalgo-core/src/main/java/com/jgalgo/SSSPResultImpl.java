@@ -50,7 +50,7 @@ class SSSPResultImpl implements Result {
 		if (distances[target] == Double.POSITIVE_INFINITY)
 			return null;
 		IntArrayList path = new IntArrayList();
-		if (g instanceof DiGraph) {
+		if (g.getCapabilities().directed()) {
 			for (int v = target;;) {
 				int e = backtrack[v];
 				if (e == -1)
@@ -59,7 +59,7 @@ class SSSPResultImpl implements Result {
 				v = g.edgeSource(e);
 			}
 		} else {
-			UGraph g = (UGraph) this.g;
+			Graph g = this.g;
 			for (int v = target;;) {
 				int e = backtrack[v];
 				if (e == -1)

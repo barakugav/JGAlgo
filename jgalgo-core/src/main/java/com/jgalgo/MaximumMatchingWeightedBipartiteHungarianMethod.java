@@ -19,7 +19,6 @@ package com.jgalgo;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Objects;
-
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntComparator;
@@ -79,7 +78,9 @@ public class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumM
 	 * @throws IllegalArgumentException if the graph is no bipartite with respect to the provided partition
 	 */
 	@Override
-	public IntCollection computeMaximumMatching(UGraph g, EdgeWeightFunc w) {
+	public IntCollection computeMaximumMatching(Graph g, EdgeWeightFunc w) {
+		if (g.getCapabilities().directed())
+			throw new IllegalArgumentException("directed graphs are not supported");
 		Weights.Bool partition = g.getVerticesWeights(bipartiteVerticesWeightKey);
 		Objects.requireNonNull(partition,
 				"Bipartiteness values weren't found with weight " + bipartiteVerticesWeightKey);
@@ -94,7 +95,9 @@ public class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumM
 	 * @throws IllegalArgumentException if the graph is no bipartite with respect to the provided partition
 	 */
 	@Override
-	public IntCollection computeMaximumPerfectMatching(UGraph g, EdgeWeightFunc w) {
+	public IntCollection computeMaximumPerfectMatching(Graph g, EdgeWeightFunc w) {
+		if (g.getCapabilities().directed())
+			throw new IllegalArgumentException("directed graphs are not supported");
 		Weights.Bool partition = g.getVerticesWeights(bipartiteVerticesWeightKey);
 		Objects.requireNonNull(partition,
 				"Bipartiteness values weren't found with weight " + bipartiteVerticesWeightKey);
@@ -103,7 +106,7 @@ public class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumM
 
 	private class Worker {
 
-		private final UGraph g;
+		private final Graph g;
 		private final Weights.Bool partition;
 		private final EdgeWeightFunc w;
 
@@ -118,7 +121,7 @@ public class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumM
 		private final double[] dualVal0;
 
 		@SuppressWarnings("unchecked")
-		Worker(UGraph g, Weights.Bool partition, EdgeWeightFunc w) {
+		Worker(Graph g, Weights.Bool partition, EdgeWeightFunc w) {
 			if (Bipartite.isValidBipartitePartition(g, partition))
 				throw new IllegalArgumentException("the graph is not bipartite");
 

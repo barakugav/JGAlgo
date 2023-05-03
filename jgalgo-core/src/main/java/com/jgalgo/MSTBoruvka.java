@@ -59,12 +59,12 @@ public class MSTBoruvka implements MST {
 		return computeMST(g, w, Integer.MAX_VALUE).mst;
 	}
 
-	Pair<UGraph, IntCollection> runBoruvka(Graph g, EdgeWeightFunc w, int numberOfRounds, Object edgeRefKey) {
+	Pair<Graph, IntCollection> runBoruvka(Graph g, EdgeWeightFunc w, int numberOfRounds, Object edgeRefKey) {
 		if (numberOfRounds <= 0)
 			throw new IllegalArgumentException();
 		MSTResult mstRes = computeMST(g, w, numberOfRounds);
 
-		UGraph contractedG = new GraphArrayUndirected(mstRes.treeNum);
+		Graph contractedG = new GraphArrayUndirected(mstRes.treeNum);
 		Weights.Int edgeRef = contractedG.addEdgesWeights(edgeRefKey, int.class);
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
@@ -79,8 +79,8 @@ public class MSTBoruvka implements MST {
 	}
 
 	private MSTResult computeMST(Graph g, EdgeWeightFunc w, int numberOfRounds) {
-		if (!(g instanceof UGraph))
-			throw new IllegalArgumentException("only undirected graphs are supported");
+		if (g.getCapabilities().directed())
+			throw new IllegalArgumentException("directed graphs are not supported");
 		allocatedMem.allocate(g);
 		int n = g.vertices().size();
 

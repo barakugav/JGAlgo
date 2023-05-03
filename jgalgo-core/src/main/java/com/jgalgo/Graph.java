@@ -40,6 +40,15 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * Vertices can be added or removed. When a vertex \(v\) is removed, all the edges with \(v\) as one of their end points
  * are removed as well. Edges can be added as connection to existing vertices, or removed.
  * <p>
+ * A directed graph and an undirected graph both implement this interface. In a directed graph, the edges are
+ * <i>directed</i> namely an edge \(e(u, v)\) will appear in the iteration of {@code edgesOut(u)} and {@code edgesIn(v)}
+ * and will not appear in the iteration of {@code edgesOut(v)} and {@code edgesIn(u)}. In an undirected graph, the edges
+ * are undirected, namely an edge \(e(u, v)\) will appear in the iteration of {@code edgesOut(u)}, {@code edgesIn(v)},
+ * {@code edgesOut(v)} and {@code edgesIn(u)}. Also {@link #edgesOut(int)} and {@link #edgesIn(int)} are equivalent for
+ * the same vertex, same for {@link #degreeIn(int)} and {@link #degreeOut(int)}, and similarly
+ * {@link #removeEdgesOf(int)}, {@link #removeEdgesInOf(int)} and {@link #removeEdgesOutOf(int)}. To check if a graph is
+ * directed or not, use the {@link #getCapabilities()} method.
+ * <p>
  * Each vertex in the graph is identified by a unique non negative int ID. The set of vertices in the graph is always
  * {@code (0,1,2, ...,verticesNum-1)}. To maintain this, the graph implementation may rename existing vertices when the
  * user remove a vertex, see {@link #getVerticesIDStrategy()}. Similar to vertices, each edge in the graph is identified
@@ -52,7 +61,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  *
  * <pre> {@code
  * // Create a directed graph with three vertices and edges between them
- * DiGraph g = DiGraph.newBuilder().build();
+ * Graph g = Graph.newBuilderDirected().build();
  * int v1 = g.addVertex();
  * int v2 = g.addVertex();
  * int v3 = g.addVertex();
@@ -82,8 +91,6 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * }
  * }</pre>
  *
- * @see    DiGraph
- * @see    UGraph
  * @author Barak Ugav
  */
 public interface Graph {
@@ -292,6 +299,16 @@ public interface Graph {
 			eit.remove();
 		}
 	}
+
+	/**
+	 * Reverse an edge by switching its source and target.
+	 * <p>
+	 * If the graph is undirected, this method does nothing.
+	 *
+	 * @param  edge                      an existing edge in the graph
+	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
+	 */
+	public void reverseEdge(int edge);
 
 	/**
 	 * Get the source vertex of an edge.
@@ -633,10 +650,30 @@ public interface Graph {
 	public GraphCapabilities getCapabilities();
 
 	/**
+	 * Create an undirected graph builder.
+	 * <p>
+	 * This is the recommended way to instantiate a new undirected graph.
+	 *
+	 * @return a new builder that can build undirected graphs
+	 */
+	public static Graph.Builder newBuilderUndirected() {
+		return new GraphBuilderImpl.ArrayUndirected();
+	}
+
+	/**
+	 * Create a directed graph builder.
+	 * <p>
+	 * This is the recommended way to instantiate a new directed graph.
+	 *
+	 * @return a new builder that can build directed graphs
+	 */
+	public static Graph.Builder newBuilderDirected() {
+		return new GraphBuilderImpl.ArrayDirected();
+	}
+
+	/**
 	 * A builder for {@link Graph} objects.
 	 *
-	 * @see    UGraph#newBuilder()
-	 * @see    DiGraph#newBuilder()
 	 * @author Barak Ugav
 	 */
 	static interface Builder {

@@ -17,16 +17,13 @@
 package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NavigableSet;
 import java.util.Random;
 import java.util.TreeSet;
-
 import com.jgalgo.GraphImplTestUtils.GraphImpl;
 import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
-
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 @SuppressWarnings("boxing")
@@ -34,12 +31,12 @@ public class MaximumFlowTestUtils extends TestUtils {
 
 	private MaximumFlowTestUtils() {}
 
-	private static DiGraph randGraph(int n, int m, GraphImpl graphImpl, long seed) {
-		return (DiGraph) new RandomGraphBuilder(seed).n(n).m(m).directed(true).parallelEdges(false).selfEdges(false)
-				.cycles(true).connected(false).graphImpl(graphImpl).build();
+	private static Graph randGraph(int n, int m, GraphImpl graphImpl, long seed) {
+		return new RandomGraphBuilder(seed).n(n).m(m).directed(true).parallelEdges(false).selfEdges(false).cycles(true)
+				.connected(false).graphImpl(graphImpl).build();
 	}
 
-	static FlowNetwork randNetwork(DiGraph g, long seed) {
+	static FlowNetwork randNetwork(Graph g, long seed) {
 		final double minGap = 0.001;
 		NavigableSet<Double> usedCaps = new TreeSet<>();
 
@@ -66,7 +63,7 @@ public class MaximumFlowTestUtils extends TestUtils {
 		return flow;
 	}
 
-	static FlowNetwork.Int randNetworkInt(DiGraph g, long seed) {
+	static FlowNetwork.Int randNetworkInt(Graph g, long seed) {
 		Random rand = new Random(seed);
 		FlowNetwork.Int flow = FlowNetwork.Int.createAsEdgeWeight(g);
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
@@ -92,7 +89,7 @@ public class MaximumFlowTestUtils extends TestUtils {
 				phase(32, 64, 128), phase(4, 512, 512), phase(2, 512, 1324), phase(1, 1025, 2016));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
-			DiGraph g = randGraph(n, m, graphImpl, seedGen.nextSeed());
+			Graph g = randGraph(n, m, graphImpl, seedGen.nextSeed());
 			FlowNetwork net = randNetwork(g, seedGen.nextSeed());
 			int source, sink;
 			for (;;) {
@@ -113,7 +110,7 @@ public class MaximumFlowTestUtils extends TestUtils {
 				phase(16, 64, 128), phase(2, 512, 512), phase(1, 512, 1324));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
-			DiGraph g = randGraph(n, m, graphImpl, seedGen.nextSeed());
+			Graph g = randGraph(n, m, graphImpl, seedGen.nextSeed());
 			FlowNetwork.Int net = randNetworkInt(g, seedGen.nextSeed());
 			int source, sink;
 			for (;;) {

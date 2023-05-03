@@ -26,7 +26,7 @@ package com.jgalgo;
  * @see    GraphArrayDirected
  * @author Barak Ugav
  */
-public class GraphLinkedDirected extends GraphLinkedAbstract implements DiGraph {
+public class GraphLinkedDirected extends GraphLinkedAbstract {
 
 	private final DataContainer.Obj<Node> edgesIn;
 	private final DataContainer.Obj<Node> edgesOut;

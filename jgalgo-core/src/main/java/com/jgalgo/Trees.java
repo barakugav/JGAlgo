@@ -43,10 +43,13 @@ public class Trees {
 	 * <p>
 	 * This method runs in linear time.
 	 *
-	 * @param  g a graph
-	 * @return   {@code true} if the graph is a tree, else {@code false}
+	 * @param  g                        a graph
+	 * @return                          {@code true} if the graph is a tree, else {@code false}
+	 * @throws IllegalArgumentException if {@code g} is a directed graph
 	 */
-	public static boolean isTree(UGraph g) {
+	public static boolean isTree(Graph g) {
+		if (g.getCapabilities().directed())
+			throw new IllegalArgumentException("directed graphs are not supported");
 		return g.vertices().isEmpty() ? true : isTree(g, 0);
 	}
 
@@ -106,7 +109,7 @@ public class Trees {
 		int n = g.vertices().size();
 		if (n == 0)
 			return true;
-		boolean directed = g instanceof DiGraph;
+		boolean directed = g.getCapabilities().directed();
 
 		BitSet visited = new BitSet(n);
 		int[] parent = new int[n];

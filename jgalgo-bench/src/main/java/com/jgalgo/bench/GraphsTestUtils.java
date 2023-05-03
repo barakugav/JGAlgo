@@ -20,16 +20,13 @@ import java.util.BitSet;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
-
 import com.jgalgo.EdgeIter;
 import com.jgalgo.Graph;
 import com.jgalgo.GraphArrayDirected;
 import com.jgalgo.GraphArrayUndirected;
-import com.jgalgo.UGraph;
 import com.jgalgo.UnionFind;
 import com.jgalgo.UnionFindArray;
 import com.jgalgo.Weights;
-
 import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -246,13 +243,13 @@ class GraphsTestUtils extends TestUtils {
 
 	}
 
-	static UGraph randTree(int n, long seed) {
-		return (UGraph) new RandomGraphBuilder(seed).n(n).m(n - 1).directed(false).selfEdges(false).cycles(false)
+	static Graph randTree(int n, long seed) {
+		return new RandomGraphBuilder(seed).n(n).m(n - 1).directed(false).selfEdges(false).cycles(false)
 				.connected(true).build();
 	}
 
-	static UGraph randForest(int n, int m, long seed) {
-		return (UGraph) new RandomGraphBuilder(seed).n(n).m(m).directed(false).selfEdges(false).cycles(false)
+	static Graph randForest(int n, int m, long seed) {
+		return new RandomGraphBuilder(seed).n(n).m(m).directed(false).selfEdges(false).cycles(false)
 				.connected(false).build();
 	}
 
@@ -301,8 +298,8 @@ class GraphsTestUtils extends TestUtils {
 		return weight;
 	}
 
-	static UGraph randGraph(int n, int m, long seed) {
-		return (UGraph) new RandomGraphBuilder(seed).n(n).m(m).directed(false).parallelEdges(false).selfEdges(false)
+	static Graph randGraph(int n, int m, long seed) {
+		return new RandomGraphBuilder(seed).n(n).m(m).directed(false).parallelEdges(false).selfEdges(false)
 				.cycles(true).connected(false).build();
 	}
 

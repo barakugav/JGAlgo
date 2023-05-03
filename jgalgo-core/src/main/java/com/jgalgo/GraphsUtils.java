@@ -41,7 +41,7 @@ class GraphsUtils {
 		}
 	}
 
-	static int[] calcDegree(UGraph g, IntCollection edges) {
+	static int[] calcDegree(Graph g, IntCollection edges) {
 		int[] degree = new int[g.vertices().size()];
 		for (IntIterator eit = edges.iterator(); eit.hasNext();) {
 			int e = eit.nextInt();
@@ -129,26 +129,26 @@ class GraphsUtils {
 		return String.join("", Collections.nCopies(n, s));
 	}
 
-	static DiGraph referenceGraph(DiGraph g, Object refEdgeWeightKey) {
-		DiGraph g0 = new GraphArrayDirected(g.vertices().size());
-		Weights.Int edgeRef = g0.addEdgesWeights(refEdgeWeightKey, int.class);
-		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-			int e = it.nextInt();
-			int e0 = g0.addEdge(g.edgeSource(e), g.edgeTarget(e));
-			edgeRef.set(e0, e);
+	static Graph referenceGraph(Graph g, Object refEdgeWeightKey) {
+		if (g.getCapabilities().directed()) {
+			Graph g0 = new GraphArrayDirected(g.vertices().size());
+			Weights.Int edgeRef = g0.addEdgesWeights(refEdgeWeightKey, int.class);
+			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+				int e = it.nextInt();
+				int e0 = g0.addEdge(g.edgeSource(e), g.edgeTarget(e));
+				edgeRef.set(e0, e);
+			}
+			return g0;
+		} else {
+			Graph g0 = new GraphArrayUndirected(g.vertices().size());
+			Weights.Int edgeRef = g0.addEdgesWeights(refEdgeWeightKey, int.class);
+			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+				int e = it.nextInt();
+				int e0 = g0.addEdge(g.edgeSource(e), g.edgeTarget(e));
+				edgeRef.set(e0, e);
+			}
+			return g0;
 		}
-		return g0;
-	}
-
-	static UGraph referenceGraph(UGraph g, Object refEdgeWeightKey) {
-		UGraph g0 = new GraphArrayUndirected(g.vertices().size());
-		Weights.Int edgeRef = g0.addEdgesWeights(refEdgeWeightKey, int.class);
-		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-			int e = it.nextInt();
-			int e0 = g0.addEdge(g.edgeSource(e), g.edgeTarget(e));
-			edgeRef.set(e0, e);
-		}
-		return g0;
 	}
 
 	static boolean containsSelfLoops(Graph g) {
@@ -181,6 +181,42 @@ class GraphsUtils {
 			}
 		}
 		return false;
+	}
+
+	static interface UndirectedGraphImpl extends Graph {
+
+		@Override
+		default EdgeIter edgesIn(int v) {
+			return edgesOut(v);
+		}
+
+		@Override
+		default void removeEdgesOf(int u) {
+			for (EdgeIter eit = edgesOut(u); eit.hasNext();) {
+				eit.nextInt();
+				eit.remove();
+			}
+		}
+
+		@Override
+		default void removeEdgesOutOf(int u) {
+			removeEdgesOf(u);
+		}
+
+		@Override
+		default void removeEdgesInOf(int v) {
+			removeEdgesOf(v);
+		}
+
+		@Override
+		default void reverseEdge(int edge) {
+			// Do nothing
+		}
+
+		default int degreeIn(int v) {
+			return degreeOut(v);
+		}
+
 	}
 
 }

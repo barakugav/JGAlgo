@@ -17,7 +17,6 @@
 package com.jgalgo;
 
 import org.junit.jupiter.api.Test;
-
 import com.jgalgo.GraphImplTestUtils.GraphImpl;
 
 public class GraphArrayWithFixEdgesIDsTest extends TestBase {
@@ -28,11 +27,11 @@ public class GraphArrayWithFixEdgesIDsTest extends TestBase {
 			@Override
 			public Graph newGraph(boolean directed, int vertices) {
 				if (directed) {
-					return DiGraph.newBuilder().setEdgesIDStrategy(IDStrategy.Fixed.class).setVerticesNum(vertices)
-							.build();
+					return Graph.newBuilderDirected().setEdgesIDStrategy(IDStrategy.Fixed.class)
+							.setVerticesNum(vertices).build();
 				} else {
-					return UGraph.newBuilder().setEdgesIDStrategy(IDStrategy.Fixed.class).setVerticesNum(vertices)
-							.build();
+					return Graph.newBuilderUndirected().setEdgesIDStrategy(IDStrategy.Fixed.class)
+							.setVerticesNum(vertices).build();
 				}
 			}
 		};

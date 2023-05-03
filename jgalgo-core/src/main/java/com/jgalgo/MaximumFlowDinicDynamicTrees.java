@@ -18,11 +18,9 @@ package com.jgalgo;
 
 import java.util.Arrays;
 import java.util.function.ObjDoubleConsumer;
-
 import com.jgalgo.DynamicTree.MinEdge;
 import com.jgalgo.IDStrategy.Fixed;
 import com.jgalgo.Utils.Stack;
-
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
@@ -56,12 +54,12 @@ public class MaximumFlowDinicDynamicTrees implements MaximumFlow {
 	 */
 	@Override
 	public double computeMaximumFlow(Graph g, FlowNetwork net, int source, int sink) {
-		if (!(g instanceof DiGraph))
+		if (!g.getCapabilities().directed())
 			throw new IllegalArgumentException("only directed graphs are supported");
-		return computeMaxFlow((DiGraph) g, net, source, sink);
+		return computeMaxFlow(g, net, source, sink);
 	}
 
-	private double computeMaxFlow(DiGraph g0, FlowNetwork net, int source, int sink) {
+	private double computeMaxFlow(Graph g0, FlowNetwork net, int source, int sink) {
 		if (source == sink)
 			throw new IllegalArgumentException("Source and sink can't be the same vertex");
 		debug.println("\t", getClass().getSimpleName());
@@ -72,11 +70,11 @@ public class MaximumFlowDinicDynamicTrees implements MaximumFlow {
 			maxCapacity = Math.max(maxCapacity, net.getCapacity(e));
 		}
 
-		DiGraph g = referenceGraph(g0, net);
+		Graph g = referenceGraph(g0, net);
 		Weights<Ref> edgeRef = g.getEdgesWeights(EdgeRefWeightKey);
 		final int n = g.vertices().size();
-		DiGraph.Builder builder = new GraphBuilderImpl.LinkedDirected();
-		DiGraph L = builder.setVerticesNum(n).setEdgesIDStrategy(Fixed.class).build();
+		Graph.Builder builder = new GraphBuilderImpl.LinkedDirected();
+		Graph L = builder.setVerticesNum(n).setEdgesIDStrategy(Fixed.class).build();
 		Weights<Ref> edgeRefL = L.addEdgesWeights(EdgeRefWeightKey, Ref.class);
 		IntPriorityQueue bfsQueue = new IntArrayFIFOQueue();
 		int[] level = new int[n];
@@ -224,8 +222,8 @@ public class MaximumFlowDinicDynamicTrees implements MaximumFlow {
 		return totalFlow;
 	}
 
-	private static DiGraph referenceGraph(DiGraph g0, FlowNetwork net) {
-		DiGraph g = new GraphArrayDirected(g0.vertices().size());
+	private static Graph referenceGraph(Graph g0, FlowNetwork net) {
+		Graph g = new GraphArrayDirected(g0.vertices().size());
 		Weights<Ref> edgeRef = g.addEdgesWeights(EdgeRefWeightKey, Ref.class);
 		for (IntIterator it = g0.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();

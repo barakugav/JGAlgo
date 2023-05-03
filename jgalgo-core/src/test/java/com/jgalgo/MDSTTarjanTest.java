@@ -17,12 +17,9 @@
 package com.jgalgo;
 
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
-
 import com.jgalgo.GraphImplTestUtils.GraphImpl;
 import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
-
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -39,7 +36,7 @@ public class MDSTTarjanTest extends TestBase {
 
 		@Override
 		public IntCollection computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
-			if (g instanceof DiGraph)
+			if (g.getCapabilities().directed())
 				return algo.computeMinimumSpanningTree(g, w);
 			int n = g.vertices().size();
 			Graph dg = new GraphArrayDirected(n);
@@ -83,15 +80,15 @@ public class MDSTTarjanTest extends TestBase {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 
-			DiGraph g = (DiGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true)
-					.parallelEdges(false).selfEdges(false).cycles(true).connected(false).graphImpl(graphImpl).build();
+			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(false)
+					.selfEdges(false).cycles(true).connected(false).graphImpl(graphImpl).build();
 			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 
 			testRandGraph(algo, g, w);
 		});
 	}
 
-	private static void testRandGraph(MDST algo, DiGraph g, EdgeWeightFunc w) {
+	private static void testRandGraph(MDST algo, Graph g, EdgeWeightFunc w) {
 		@SuppressWarnings("unused")
 		IntCollection mst = algo.computeMinimumSpanningTree(g, w, 0);
 		// TODO verify the result

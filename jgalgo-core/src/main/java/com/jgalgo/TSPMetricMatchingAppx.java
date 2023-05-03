@@ -46,7 +46,7 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 		TSPMetricUtils.checkArgDistanceTableIsMetric(distances);
 
 		/* Build graph from the distances table */
-		UGraph g = new GraphTableUndirected(n);
+		Graph g = new GraphTableUndirected(n);
 		Weights.Double weights = g.addEdgesWeights(EdgeWeightKey, double.class);
 		for (int u = 0; u < n; u++)
 			for (int v = u + 1; v < n; v++)
@@ -59,7 +59,7 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 		 * Build graph for the matching calculation, containing only vertices with odd degree from the MST
 		 */
 		int[] degree = GraphsUtils.calcDegree(g, mst);
-		UGraph mG = new GraphArrayUndirected();
+		Graph mG = new GraphArrayUndirected();
 		int[] mVtoV = new int[n];
 		for (int u = 0; u < n; u++)
 			if (degree[u] % 2 != 0)
@@ -80,7 +80,7 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 		IntCollection matching = new MaximumMatchingWeightedGabow1990().computeMaximumPerfectMatching(mG, mGWeightsNeg);
 
 		/* Build a graph of the union of the MST and the matching result */
-		UGraph g1 = new GraphArrayUndirected(n);
+		Graph g1 = new GraphArrayUndirected(n);
 		Weights.Int g1EdgeRef = g1.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
 		for (IntIterator it = mst.iterator(); it.hasNext();) {
 			int e = it.nextInt();

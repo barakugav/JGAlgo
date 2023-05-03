@@ -17,7 +17,6 @@
 package com.jgalgo;
 
 import java.util.BitSet;
-
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
@@ -53,7 +52,7 @@ class MinimumCutSTBuilderImpl {
 				/* perform a BFS from source and use only non saturated edges */
 				IntList cut = new IntArrayList();
 				final double eps = 0.00001;
-				final boolean directed = g instanceof DiGraph;
+				final boolean directed = g.getCapabilities().directed();
 				cut.add(source);
 				visited.set(source);
 				queue.enqueue(source);

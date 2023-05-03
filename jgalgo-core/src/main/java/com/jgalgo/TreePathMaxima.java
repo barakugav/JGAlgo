@@ -146,15 +146,19 @@ public interface TreePathMaxima {
 	 * all of the edges which are not in the MST have a greater weight than the maximum one in the path of the MST, the
 	 * MST is valid.
 	 *
-	 * @param  g        an undirected graph
-	 * @param  w        an edge weight function
-	 * @param  mstEdges collection of edges that form an MST
-	 * @param  tpmAlgo  tree path maximum algorithm, used for verification
-	 * @return          {@code true} if the collection of edges form an MST of {@code g}, else {@code false}
+	 * @param  g                        an undirected graph
+	 * @param  w                        an edge weight function
+	 * @param  mstEdges                 collection of edges that form an MST
+	 * @param  tpmAlgo                  tree path maximum algorithm, used for verification
+	 * @return                          {@code true} if the collection of edges form an MST of {@code g}, else
+	 *                                  {@code false}
+	 * @throws IllegalArgumentException if {@code g} is a directed graph
 	 */
-	public static boolean verifyMST(UGraph g, EdgeWeightFunc w, IntCollection mstEdges, TreePathMaxima tpmAlgo) {
+	public static boolean verifyMST(Graph g, EdgeWeightFunc w, IntCollection mstEdges, TreePathMaxima tpmAlgo) {
+		if (g.getCapabilities().directed())
+			throw new IllegalArgumentException("directed graphs are not supported");
 		int n = g.vertices().size();
-		UGraph mst = new GraphArrayUndirected(n);
+		Graph mst = new GraphArrayUndirected(n);
 		Weights.Int edgeRef = mst.addEdgesWeights("edgeRef", int.class);
 		for (IntIterator it = mstEdges.iterator(); it.hasNext();) {
 			int e = it.nextInt();

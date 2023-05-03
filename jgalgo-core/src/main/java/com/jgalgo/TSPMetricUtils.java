@@ -26,7 +26,7 @@ class TSPMetricUtils {
 
 	private TSPMetricUtils() {}
 
-	static Path calcEulerianTourAndConvertToHamiltonianCycle(UGraph g, UGraph g1, Weights.Int edgeRef) {
+	static Path calcEulerianTourAndConvertToHamiltonianCycle(Graph g, Graph g1, Weights.Int edgeRef) {
 		int n = g.vertices().size();
 
 		/* Assert degree is actually even in the new graph */
@@ -73,7 +73,7 @@ class TSPMetricUtils {
 		return res;
 	}
 
-	private static boolean isValidCycle(UGraph g, Path path) {
+	private static boolean isValidCycle(Graph g, Path path) {
 		EdgeIter it = path.edgeIter();
 		it.nextInt();
 		final int begin = it.u();
@@ -87,7 +87,7 @@ class TSPMetricUtils {
 		}
 	}
 
-	private static boolean isPathVisitEvery(UGraph g, Path path) {
+	private static boolean isPathVisitEvery(Graph g, Path path) {
 		final int n = g.vertices().size();
 		BitSet visited = new BitSet(n);
 		for (IntIterator it = path.iterator(); it.hasNext();) {

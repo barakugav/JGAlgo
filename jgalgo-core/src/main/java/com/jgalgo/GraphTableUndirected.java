@@ -16,6 +16,8 @@
 
 package com.jgalgo;
 
+import com.jgalgo.GraphsUtils.UndirectedGraphImpl;
+
 /**
  * A undirected graph implementation using a two dimensional table to store all edges.
  * <p>
@@ -29,7 +31,7 @@ package com.jgalgo;
  * @see    GraphTableDirected
  * @author Barak Ugav
  */
-public class GraphTableUndirected extends GraphTableAbstract implements UGraph {
+public class GraphTableUndirected extends GraphTableAbstract implements UndirectedGraphImpl {
 
 	/**
 	 * Create a new graph with no edges and {@code n} vertices numbered {@code 0,1,2,..,n-1}.

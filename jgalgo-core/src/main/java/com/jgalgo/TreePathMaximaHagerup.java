@@ -69,11 +69,11 @@ public class TreePathMaximaHagerup implements TreePathMaxima {
 
 	@Override
 	public int[] computeHeaviestEdgeInTreePaths(Graph tree, EdgeWeightFunc w, TreePathMaxima.Queries queries) {
-		if (!(tree instanceof UGraph))
-			throw new IllegalArgumentException("only undirected graphs are supported");
-		if (!Trees.isTree((UGraph) tree))
+		if (tree.getCapabilities().directed())
+			throw new IllegalArgumentException("directed graphs are not supported");
+		if (!Trees.isTree(tree))
 			throw new IllegalArgumentException("only trees are supported");
-		return new Worker((UGraph) tree, w, useBitsLookupTables).calcTPM(queries);
+		return new Worker(tree, w, useBitsLookupTables).calcTPM(queries);
 	}
 
 	private static class Worker {
@@ -81,13 +81,13 @@ public class TreePathMaximaHagerup implements TreePathMaxima {
 		/*
 		 * Original tree, in other functions 't' refers to the Boruvka fully branching tree
 		 */
-		final UGraph tOrig;
+		final Graph tOrig;
 		final EdgeWeightFunc w;
 		private final Int2IntFunction getBitCount;
 		private final BiInt2IntFunction getIthbit;
 		private final Int2IntFunction getNumberOfTrailingZeros;
 
-		Worker(UGraph t, EdgeWeightFunc w, boolean useBitsLookupTables) {
+		Worker(Graph t, EdgeWeightFunc w, boolean useBitsLookupTables) {
 			this.tOrig = t;
 			this.w = w;
 
@@ -116,8 +116,8 @@ public class TreePathMaximaHagerup implements TreePathMaxima {
 		}
 
 		int[] calcTPM(TreePathMaxima.Queries queries) {
-			ObjectIntPair<UGraph> r = buildBoruvkaFullyBranchingTree();
-			UGraph t = r.first();
+			ObjectIntPair<Graph> r = buildBoruvkaFullyBranchingTree();
+			Graph t = r.first();
 			int root = r.secondInt();
 
 			int[] lcaQueries = splitQueriesIntoLCAQueries(t, root, queries);
@@ -167,7 +167,7 @@ public class TreePathMaximaHagerup implements TreePathMaxima {
 			return res;
 		}
 
-		private int[][] calcAnswersPerVertex(UGraph t, int root, int[] q, int[] edgeToParent) {
+		private int[][] calcAnswersPerVertex(Graph t, int root, int[] q, int[] edgeToParent) {
 			int n = t.vertices().size();
 			int[] a = new int[n];
 
@@ -246,7 +246,7 @@ public class TreePathMaximaHagerup implements TreePathMaxima {
 			return av;
 		}
 
-		private ObjectIntPair<UGraph> buildBoruvkaFullyBranchingTree() {
+		private ObjectIntPair<Graph> buildBoruvkaFullyBranchingTree() {
 			int n = tOrig.vertices().size();
 			int[] minEdges = new int[n];
 			double[] minGraphWeights = new double[n];
@@ -258,9 +258,9 @@ public class TreePathMaximaHagerup implements TreePathMaxima {
 			for (int v = 0; v < n; v++)
 				vTv[v] = v;
 
-			UGraph t = new GraphArrayUndirected(n);
+			Graph t = new GraphArrayUndirected(n);
 			Weights.Int tData = t.addEdgesWeights("edgeData", int.class, Integer.valueOf(-1));
-			for (UGraph G = GraphsUtils.referenceGraph(tOrig, EdgeRefWeightKey); (n = G.vertices().size()) > 1;) {
+			for (Graph G = GraphsUtils.referenceGraph(tOrig, EdgeRefWeightKey); (n = G.vertices().size()) > 1;) {
 				Weights.Int GData = G.getEdgesWeights(EdgeRefWeightKey);
 
 				// Find minimum edge of each vertex
@@ -316,7 +316,7 @@ public class TreePathMaximaHagerup implements TreePathMaxima {
 				vTvNext = temp;
 
 				// contract G to new graph with the super vertices
-				UGraph gNext = new GraphArrayUndirected(nNext);
+				Graph gNext = new GraphArrayUndirected(nNext);
 				Weights.Int gNextData = gNext.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
 				for (int u = 0; u < n; u++) {
 					int U = vNext[u];
@@ -336,7 +336,7 @@ public class TreePathMaximaHagerup implements TreePathMaxima {
 			return ObjectIntPair.of(t, vTv[0]);
 		}
 
-		private static int[] splitQueriesIntoLCAQueries(UGraph t, int root, TreePathMaxima.Queries queries) {
+		private static int[] splitQueriesIntoLCAQueries(Graph t, int root, TreePathMaxima.Queries queries) {
 			int queriesNum = queries.size();
 			int[] lcaQueries = new int[queriesNum * 4];
 
@@ -354,7 +354,7 @@ public class TreePathMaximaHagerup implements TreePathMaxima {
 			return lcaQueries;
 		}
 
-		private static Pair<int[], int[]> getEdgeToParentsAndDepth(UGraph t, int root) {
+		private static Pair<int[], int[]> getEdgeToParentsAndDepth(Graph t, int root) {
 			int n = t.vertices().size();
 			int[] edgeToParent = new int[n];
 			Arrays.fill(edgeToParent, -1);
@@ -372,7 +372,7 @@ public class TreePathMaximaHagerup implements TreePathMaxima {
 			return Pair.of(edgeToParent, depths);
 		}
 
-		private static int[] calcQueriesPerVertex(UGraph g, int[] lcaQueries, int[] depths, int[] edgeToParent) {
+		private static int[] calcQueriesPerVertex(Graph g, int[] lcaQueries, int[] depths, int[] edgeToParent) {
 			final int n = g.vertices().size();
 
 			int[] q = new int[n];

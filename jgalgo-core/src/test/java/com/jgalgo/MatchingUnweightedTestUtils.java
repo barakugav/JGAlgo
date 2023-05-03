@@ -38,13 +38,13 @@ class MatchingUnweightedTestUtils extends TestUtils {
 				phase(16, 64, 64), phase(12, 64, 128), phase(4, 256, 256), phase(4, 256, 512), phase(1, 1000, 2500));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
-			UGraph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
+			Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
 			int expeced = calcExpectedMaxMatching(g);
 			testAlgo(algo, g, expeced);
 		});
 	}
 
-	private static void testAlgo(MaximumMatching algo, UGraph g, int expectedMatchSize) {
+	private static void testAlgo(MaximumMatching algo, Graph g, int expectedMatchSize) {
 		IntCollection match = algo.computeMaximumMatching(g);
 		validateMatching(g, match);
 		assertEquals(expectedMatchSize, match.size(), "unexpected match size");

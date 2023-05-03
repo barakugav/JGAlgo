@@ -16,6 +16,8 @@
 
 package com.jgalgo;
 
+import com.jgalgo.GraphsUtils.UndirectedGraphImpl;
+
 /**
  * An undirected graph implementation using linked lists to store edge lists.
  * <p>
@@ -26,7 +28,7 @@ package com.jgalgo;
  * @see    GraphArrayUndirected
  * @author Barak Ugav
  */
-public class GraphLinkedUndirected extends GraphLinkedAbstract implements UGraph {
+public class GraphLinkedUndirected extends GraphLinkedAbstract implements UndirectedGraphImpl {
 
 	private final DataContainer.Obj<Node> edges;
 

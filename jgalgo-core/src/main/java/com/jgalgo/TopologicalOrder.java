@@ -43,7 +43,9 @@ public class TopologicalOrder {
 	 *                                  order.
 	 * @throws IllegalArgumentException if the graph is not DAG
 	 */
-	public static int[] computeTopologicalSortingDAG(DiGraph g) {
+	public static int[] computeTopologicalSortingDAG(Graph g) {
+		if (!g.getCapabilities().directed())
+			throw new IllegalArgumentException("Only directed graphs are supported");
 		int n = g.vertices().size();
 		int[] inDegree = new int[n];
 		IntPriorityQueue queue = new IntArrayFIFOQueue();

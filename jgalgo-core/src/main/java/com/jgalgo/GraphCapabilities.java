@@ -33,28 +33,28 @@ public interface GraphCapabilities {
 	/**
 	 * Checks whether vertex additions are supported.
 	 *
-	 * @return true if the graph support vertex additions, else false.
+	 * @return {@code true} if the graph support vertex additions, else {@code false}.
 	 */
 	boolean vertexAdd();
 
 	/**
 	 * Checks whether vertex removals are supported.
 	 *
-	 * @return true if the graph support vertex removals, else false.
+	 * @return {@code true} if the graph support vertex removals, else {@code false}.
 	 */
 	boolean vertexRemove();
 
 	/**
 	 * Checks whether edge additions are supported.
 	 *
-	 * @return true if the graph support edge additions, else false.
+	 * @return {@code true} if the graph support edge additions, else {@code false}.
 	 */
 	boolean edgeAdd();
 
 	/**
 	 * Checks whether edge removals are supported.
 	 *
-	 * @return true if the graph support edge removals, else false.
+	 * @return {@code true} if the graph support edge removals, else {@code false}.
 	 */
 	boolean edgeRemove();
 
@@ -63,7 +63,7 @@ public interface GraphCapabilities {
 	 * <p>
 	 * Parallel edges are multiple edges with identical source and target.
 	 *
-	 * @return true if the graph support parallel edges, else false.
+	 * @return {@code true} if the graph support parallel edges, else {@code false}.
 	 */
 	boolean parallelEdges();
 
@@ -72,14 +72,14 @@ public interface GraphCapabilities {
 	 * <p>
 	 * Self edges are edges with the same source and target, namely a vertex with an edge to itself.
 	 *
-	 * @return true if the graph support self edges, else false.
+	 * @return {@code true} if the graph support self edges, else {@code false}.
 	 */
 	boolean selfEdges();
 
 	/**
 	 * Checks whether the graph is directed.
 	 *
-	 * @return true if the graph is directed, else false.
+	 * @return {@code true} if the graph is directed, else {@code false}.
 	 */
 	boolean directed();
 

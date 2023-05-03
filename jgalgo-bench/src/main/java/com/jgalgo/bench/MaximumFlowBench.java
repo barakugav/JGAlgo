@@ -23,7 +23,6 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
-
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -37,9 +36,8 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
-
-import com.jgalgo.DiGraph;
 import com.jgalgo.FlowNetwork;
+import com.jgalgo.Graph;
 import com.jgalgo.MaximumFlow;
 import com.jgalgo.MaximumFlowDinic;
 import com.jgalgo.MaximumFlowDinicDynamicTrees;
@@ -52,7 +50,6 @@ import com.jgalgo.MaximumFlowPushRelabelToFront;
 import com.jgalgo.Path;
 import com.jgalgo.bench.GraphsTestUtils.RandomGraphBuilder;
 import com.jgalgo.bench.TestUtils.SeedGenerator;
-
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 @BenchmarkMode(Mode.AverageTime)
@@ -81,8 +78,8 @@ public class MaximumFlowBench {
 		Random rand = new Random(seedGen.nextSeed());
 		graphs = new ArrayList<>(graphsNum);
 		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-			DiGraph g = (DiGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true)
-					.parallelEdges(false).selfEdges(false).cycles(true).connected(false).build();
+			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(false)
+					.selfEdges(false).cycles(true).connected(false).build();
 			FlowNetwork.Int flow = randNetworkInt(g, seedGen.nextSeed());
 			int source, sink;
 			for (;;) {
@@ -154,12 +151,12 @@ public class MaximumFlowBench {
 	}
 
 	private static class MaxFlowTask {
-		final DiGraph g;
+		final Graph g;
 		final FlowNetwork.Int flow;
 		final int source;
 		final int sink;
 
-		MaxFlowTask(DiGraph g, FlowNetwork.Int flow, int source, int sink) {
+		MaxFlowTask(Graph g, FlowNetwork.Int flow, int source, int sink) {
 			this.g = g;
 			this.flow = flow;
 			this.source = source;
@@ -167,7 +164,7 @@ public class MaximumFlowBench {
 		}
 	}
 
-	private static FlowNetwork.Int randNetworkInt(DiGraph g, long seed) {
+	private static FlowNetwork.Int randNetworkInt(Graph g, long seed) {
 		Random rand = new Random(seed);
 		FlowNetwork.Int flow = FlowNetwork.Int.createAsEdgeWeight(g);
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {

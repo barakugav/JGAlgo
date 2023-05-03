@@ -29,7 +29,7 @@ package com.jgalgo;
  * @see    GraphTableUndirected
  * @author Barak Ugav
  */
-public class GraphTableDirected extends GraphTableAbstract implements DiGraph {
+public class GraphTableDirected extends GraphTableAbstract {
 
 	/**
 	 * Create a new graph with no edges and {@code n} vertices numbered {@code 0,1,2,..,n-1}.
@@ -85,7 +85,7 @@ public class GraphTableDirected extends GraphTableAbstract implements DiGraph {
 			throw new IllegalArgumentException("parallel edges are not supported");
 		edges[v][u] = e;
 		edges[u][v] = EdgeNone;
-		super.reverseEdge(e);
+		super.reverseEdge0(e);
 	}
 
 	private static final GraphCapabilities Capabilities = new GraphCapabilities() {

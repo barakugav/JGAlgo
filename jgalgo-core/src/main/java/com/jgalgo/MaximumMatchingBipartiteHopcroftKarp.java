@@ -68,7 +68,9 @@ public class MaximumMatchingBipartiteHopcroftKarp implements MaximumMatching {
 	 * @throws IllegalArgumentException if the graph is no bipartite with respect to the provided partition
 	 */
 	@Override
-	public IntCollection computeMaximumMatching(UGraph g) {
+	public IntCollection computeMaximumMatching(Graph g) {
+		if (g.getCapabilities().directed())
+			throw new IllegalArgumentException("directed graphs are not supported");
 		int n = g.vertices().size();
 
 		Weights.Bool partition = g.getVerticesWeights(bipartiteVerticesWeightKey);
@@ -89,7 +91,7 @@ public class MaximumMatchingBipartiteHopcroftKarp implements MaximumMatching {
 		int[] matched = new int[n];
 		final int MatchedNone = -1;
 		Arrays.fill(matched, MatchedNone);
-		UGraph f = new GraphArrayUndirected(n);
+		Graph f = new GraphArrayUndirected(n);
 		Weights.Int edgeRef = f.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
 
 		for (;;) {

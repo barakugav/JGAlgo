@@ -47,7 +47,9 @@ public class MaximumMatchingGabow1976 implements MaximumMatching {
 	public MaximumMatchingGabow1976() {}
 
 	@Override
-	public IntCollection computeMaximumMatching(UGraph g) {
+	public IntCollection computeMaximumMatching(Graph g) {
+		if (g.getCapabilities().directed())
+			throw new IllegalArgumentException("directed graphs are not supported");
 		int n = g.vertices().size();
 
 		IntPriorityQueue queue = new IntArrayFIFOQueue();
@@ -202,7 +204,7 @@ public class MaximumMatchingGabow1976 implements MaximumMatching {
 		return res;
 	}
 
-	private static int findPath(UGraph g, int s, int t, BitSet isEven, int[] match, int[] parent, int[] bridge,
+	private static int findPath(Graph g, int s, int t, BitSet isEven, int[] match, int[] parent, int[] bridge,
 			int[] path, int pathSize) {
 		if (s == t)
 			return pathSize;

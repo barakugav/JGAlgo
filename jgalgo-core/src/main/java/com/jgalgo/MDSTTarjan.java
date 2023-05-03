@@ -19,7 +19,6 @@ package com.jgalgo;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Objects;
-
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntLists;
@@ -63,11 +62,11 @@ public class MDSTTarjan implements MDST {
 	 */
 	@Override
 	public IntCollection computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
-		if (!(g instanceof DiGraph))
+		if (!g.getCapabilities().directed())
 			throw new IllegalArgumentException("Only directed graphs are supported");
 		if (g.vertices().size() == 0 || g.edges().size() == 0)
 			return IntLists.emptyList();
-		DiGraph gRef = GraphsUtils.referenceGraph((DiGraph) g, EdgeRefWeightKey);
+		Graph gRef = GraphsUtils.referenceGraph(g, EdgeRefWeightKey);
 		Weights.Int edgeRefs = gRef.getEdgesWeights(EdgeRefWeightKey);
 
 		// Connect new root to all vertices
@@ -81,16 +80,18 @@ public class MDSTTarjan implements MDST {
 	}
 
 	@Override
-	public IntCollection computeMinimumSpanningTree(DiGraph g, EdgeWeightFunc w, int root) {
+	public IntCollection computeMinimumSpanningTree(Graph g, EdgeWeightFunc w, int root) {
+		if (!g.getCapabilities().directed())
+			throw new IllegalArgumentException("Only directed graphs are supported");
 		if (g.vertices().size() == 0 || g.edges().size() == 0)
 			return IntLists.emptyList();
-		DiGraph gRef = GraphsUtils.referenceGraph(g, EdgeRefWeightKey);
+		Graph gRef = GraphsUtils.referenceGraph(g, EdgeRefWeightKey);
 
 		ContractedGraph contractedGraph = contract(gRef, w);
 		return expand(gRef, contractedGraph, root);
 	}
 
-	private static IntCollection expand(DiGraph g, ContractedGraph cg, int root) {
+	private static IntCollection expand(Graph g, ContractedGraph cg, int root) {
 		int[] inEdge = new int[cg.n];
 
 		IntStack roots = new IntArrayList();
@@ -127,7 +128,7 @@ public class MDSTTarjan implements MDST {
 		return mst;
 	}
 
-	private void addEdgesUntilStronglyConnected(DiGraph g) {
+	private void addEdgesUntilStronglyConnected(Graph g) {
 		ConnectivityAlgorithm.Result connectivityRes = ccAlg.computeConnectivityComponents(g);
 		int N = connectivityRes.getNumberOfCC();
 		if (N <= 1)
@@ -149,7 +150,7 @@ public class MDSTTarjan implements MDST {
 		}
 	}
 
-	private ContractedGraph contract(DiGraph g, EdgeWeightFunc w0) {
+	private ContractedGraph contract(Graph g, EdgeWeightFunc w0) {
 		addEdgesUntilStronglyConnected(g);
 
 		int n = g.vertices().size();

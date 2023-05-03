@@ -84,7 +84,7 @@ abstract class APSPResultImpl implements APSP.Result {
 		private final int n;
 		private final double[] distances;
 
-		Undirected(UGraph g) {
+		Undirected(Graph g) {
 			super(g);
 			n = g.vertices().size();
 			distances = new double[n * (n - 1) / 2];
@@ -130,16 +130,12 @@ abstract class APSPResultImpl implements APSP.Result {
 			return new Path(graph(), source, target, path);
 		}
 
-		@Override
-		UGraph graph() {
-			return (UGraph) super.graph();
-		}
 	}
 
 	static class Directed extends Abstract {
 		private final double[][] distances;
 
-		Directed(DiGraph g) {
+		Directed(Graph g) {
 			super(g);
 			int n = g.vertices().size();
 			distances = new double[n][n];
@@ -178,10 +174,6 @@ abstract class APSPResultImpl implements APSP.Result {
 			return new Path(graph(), source, target, path);
 		}
 
-		@Override
-		DiGraph graph() {
-			return (DiGraph) super.graph();
-		}
 	}
 
 }

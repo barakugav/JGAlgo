@@ -19,7 +19,6 @@ package com.jgalgo;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
-
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntStack;
 
@@ -42,9 +41,9 @@ public class CyclesFinderTarjan implements CyclesFinder {
 
 	@Override
 	public List<Path> findAllCycles(Graph g) {
-		if (!(g instanceof DiGraph))
+		if (!g.getCapabilities().directed())
 			throw new IllegalArgumentException();
-		Worker worker = new Worker((DiGraph) g);
+		Worker worker = new Worker(g);
 		int n = g.vertices().size();
 		for (int s = 0; s < n; s++) {
 			worker.findAllCycles(s);
@@ -54,13 +53,13 @@ public class CyclesFinderTarjan implements CyclesFinder {
 	}
 
 	private static class Worker {
-		private final DiGraph g;
+		private final Graph g;
 		private final IntStack path = new IntArrayList();
 		private final IntStack markedStack = new IntArrayList();
 		private final BitSet isMarked;
 		private final List<Path> cycles = new ArrayList<>();
 
-		Worker(DiGraph g) {
+		Worker(Graph g) {
 			this.g = g;
 			int n = g.vertices().size();
 			isMarked = new BitSet(n);

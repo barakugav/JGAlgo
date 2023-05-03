@@ -39,12 +39,12 @@ public class SSSPDag implements SSSP {
 	 */
 	@Override
 	public SSSPDag.Result computeShortestPaths(Graph g, EdgeWeightFunc w, int source) {
-		if (!(g instanceof DiGraph))
+		if (!g.getCapabilities().directed())
 			throw new IllegalArgumentException("Only DAG graphs are supported");
 		SSSPResultImpl res = new SSSPResultImpl(g, source);
 		res.distances[source] = 0;
 
-		int[] topolSort = TopologicalOrder.computeTopologicalSortingDAG((DiGraph) g);
+		int[] topolSort = TopologicalOrder.computeTopologicalSortingDAG( g);
 		boolean sourceSeen = false;
 		for (int u : topolSort) {
 			if (!sourceSeen) {

@@ -41,12 +41,13 @@ public interface MDST extends MST {
 	/**
 	 * Compute a minimum directed spanning tree (MDST) in a directed graph, rooted at the given vertex
 	 *
-	 * @param  g    a directed graph
-	 * @param  w    an edge weight function
-	 * @param  root vertex in the graph the spanning tree will be rooted from
-	 * @return      all edges composing the spanning tree
+	 * @param  g                        a directed graph
+	 * @param  w                        an edge weight function
+	 * @param  root                     vertex in the graph the spanning tree will be rooted from
+	 * @return                          all edges composing the spanning tree
+	 * @throws IllegalArgumentException if {@code g} is not directed
 	 */
-	public IntCollection computeMinimumSpanningTree(DiGraph g, EdgeWeightFunc w, int root);
+	public IntCollection computeMinimumSpanningTree(Graph g, EdgeWeightFunc w, int root);
 
 	/**
 	 * Create a new minimum directed spanning tree algorithm builder.

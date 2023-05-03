@@ -30,10 +30,10 @@ class EulerianTourImpl implements EulerianTourAlgorithm {
 	 */
 	@Override
 	public Path computeEulerianTour(Graph g) {
-		return g instanceof DiGraph ? computeTourDirected((DiGraph) g) : computeTourUndirected((UGraph) g);
+		return g.getCapabilities().directed() ? computeTourDirected(g) : computeTourUndirected(g);
 	}
 
-	private static Path computeTourUndirected(UGraph g) {
+	private static Path computeTourUndirected(Graph g) {
 		int n = g.vertices().size();
 
 		int start = -1, end = -1;
@@ -97,7 +97,7 @@ class EulerianTourImpl implements EulerianTourAlgorithm {
 		return new Path(g, start, end, tour);
 	}
 
-	private static int degreeWithoutSelfLoops(UGraph g, int u) {
+	private static int degreeWithoutSelfLoops(Graph g, int u) {
 		int d = 0;
 		for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 			eit.nextInt();
@@ -107,7 +107,7 @@ class EulerianTourImpl implements EulerianTourAlgorithm {
 		return d;
 	}
 
-	private static Path computeTourDirected(DiGraph g) {
+	private static Path computeTourDirected(Graph g) {
 		int n = g.vertices().size();
 
 		int start = -1, end = -1;

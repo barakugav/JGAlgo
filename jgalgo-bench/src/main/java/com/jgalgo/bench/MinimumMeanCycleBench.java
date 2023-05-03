@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
-
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -36,8 +35,6 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
-
-import com.jgalgo.DiGraph;
 import com.jgalgo.EdgeWeightFunc;
 import com.jgalgo.Graph;
 import com.jgalgo.MinimumMeanCycle;
@@ -46,7 +43,6 @@ import com.jgalgo.MinimumMeanCycleHoward;
 import com.jgalgo.Path;
 import com.jgalgo.bench.GraphsTestUtils.RandomGraphBuilder;
 import com.jgalgo.bench.TestUtils.SeedGenerator;
-
 import it.unimi.dsi.fastutil.Pair;
 
 @BenchmarkMode(Mode.AverageTime)
@@ -74,8 +70,8 @@ public class MinimumMeanCycleBench {
 		final SeedGenerator seedGen = new SeedGenerator(0xe75b8a2fb16463ecL);
 		graphs = new ArrayList<>(graphsNum);
 		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-			DiGraph g = (DiGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true)
-					.parallelEdges(true).selfEdges(false).cycles(true).connected(false).build();
+			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
+					.selfEdges(false).cycles(true).connected(false).build();
 			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			graphs.add(Pair.of(g, w));
 		}

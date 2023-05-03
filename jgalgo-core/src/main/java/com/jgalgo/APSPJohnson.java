@@ -51,12 +51,8 @@ public class APSPJohnson implements APSP {
 	 */
 	@Override
 	public APSP.Result computeAllShortestPaths(Graph g, EdgeWeightFunc w) {
-		if (!(g instanceof DiGraph))
+		if (!g.getCapabilities().directed())
 			throw new IllegalArgumentException("only directed graphs are supported");
-		return computeAllShortestPaths0((DiGraph) g, w);
-	}
-
-	private APSP.Result computeAllShortestPaths0(DiGraph g, EdgeWeightFunc w) {
 		int n = g.vertices().size();
 
 		boolean negWeight = false;
@@ -90,7 +86,7 @@ public class APSPJohnson implements APSP {
 		return res;
 	}
 
-	private SuccessRes computeAPSPPositive(DiGraph g, EdgeWeightFunc w) {
+	private SuccessRes computeAPSPPositive(Graph g, EdgeWeightFunc w) {
 		int n = g.vertices().size();
 		SuccessRes res = new SuccessRes(n);
 		for (int source = 0; source < n; source++)
@@ -98,9 +94,9 @@ public class APSPJohnson implements APSP {
 		return res;
 	}
 
-	private Pair<double[], Path> calcPotential(DiGraph g, EdgeWeightFunc w) {
+	private Pair<double[], Path> calcPotential(Graph g, EdgeWeightFunc w) {
 		int n = g.vertices().size();
-		DiGraph refG = new GraphArrayDirected(n + 1);
+		Graph refG = new GraphArrayDirected(n + 1);
 		Weights.Int edgeEef = refG.addEdgesWeights("edgeEef", int.class, Integer.valueOf(-1));
 		for (int u = 0; u < n; u++) {
 			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {

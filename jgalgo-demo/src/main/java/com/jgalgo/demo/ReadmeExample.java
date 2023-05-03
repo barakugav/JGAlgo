@@ -16,10 +16,9 @@
 
 package com.jgalgo.demo;
 
-import com.jgalgo.DiGraph;
+import com.jgalgo.Graph;
 import com.jgalgo.SSSP;
 import com.jgalgo.Weights;
-
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 
@@ -27,7 +26,7 @@ public class ReadmeExample {
 
 	public static void readmeExample() {
 		/* Create a directed graph with three vertices and edges between them */
-		DiGraph g = DiGraph.newBuilder().build();
+		Graph g = Graph.newBuilderDirected().build();
 		int v1 = g.addVertex();
 		int v2 = g.addVertex();
 		int v3 = g.addVertex();

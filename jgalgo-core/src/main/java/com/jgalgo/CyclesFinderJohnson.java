@@ -19,7 +19,6 @@ package com.jgalgo;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
-
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -49,12 +48,8 @@ public class CyclesFinderJohnson implements CyclesFinder {
 
 	@Override
 	public List<Path> findAllCycles(Graph g) {
-		if (!(g instanceof DiGraph))
+		if (!g.getCapabilities().directed())
 			throw new IllegalArgumentException();
-		return findAllCycles0((DiGraph) g);
-	}
-
-	private List<Path> findAllCycles0(DiGraph g) {
 		if (GraphsUtils.containsParallelEdges(g))
 			throw new IllegalArgumentException("graph with self loops is not supported");
 		int n = g.vertices().size();
@@ -73,14 +68,14 @@ public class CyclesFinderJohnson implements CyclesFinder {
 
 	private static class Worker {
 
-		private final DiGraph g;
+		private final Graph g;
 		private final BitSet isBlocked;
 		private final IntSet[] blockingSet;
 		private final IntStack unblockStack = new IntArrayList();
 		private final IntStack path = new IntArrayList();
 		private final List<Path> cycles = new ArrayList<>();
 
-		Worker(DiGraph g) {
+		Worker(Graph g) {
 			this.g = g;
 			int n = g.vertices().size();
 			isBlocked = new BitSet(n);
@@ -155,11 +150,11 @@ public class CyclesFinderJohnson implements CyclesFinder {
 		}
 	}
 
-	private ObjectIntPair<StronglyConnectedComponent> chooseSCCInSubGraph(DiGraph g, int startIdx) {
+	private ObjectIntPair<StronglyConnectedComponent> chooseSCCInSubGraph(Graph g, int startIdx) {
 		int nFull = g.vertices().size();
 		int subToFull = startIdx;
 		int nSub = nFull - subToFull;
-		DiGraph gSub = new GraphArrayDirected(nSub);
+		Graph gSub = new GraphArrayDirected(nSub);
 		for (int uSub = 0; uSub < nSub; uSub++) {
 			int uFull = uSub + subToFull;
 			for (EdgeIter it = g.edgesOut(uFull); it.hasNext();) {
@@ -186,7 +181,7 @@ public class CyclesFinderJohnson implements CyclesFinder {
 		return ObjectIntPair.of(new StronglyConnectedComponent(subToFull, connectivityResult, ccIdx), startIdx);
 	}
 
-	private static boolean hasSelfEdge(DiGraph g, int u) {
+	private static boolean hasSelfEdge(Graph g, int u) {
 		for (EdgeIter it = g.edgesOut(u); it.hasNext();) {
 			it.nextInt();
 			if (it.v() == u)

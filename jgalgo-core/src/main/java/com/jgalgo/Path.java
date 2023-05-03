@@ -112,22 +112,16 @@ public class Path extends AbstractIntList {
 	 * @return an {@link EdgeIter} that iterate over the edges of the path.
 	 */
 	public EdgeIter edgeIter() {
-		if (g instanceof UGraph) {
-			return new IterUndirected((UGraph) g, edges, source);
-		} else if (g instanceof DiGraph) {
-			return new IterDirected((DiGraph) g, edges);
-		} else {
-			throw new IllegalArgumentException();
-		}
+		return g.getCapabilities().directed() ? new IterDirected(g, edges) : new IterUndirected(g, edges, source);
 	}
 
 	private static class IterUndirected implements EdgeIterImpl {
 
-		private final UGraph g;
+		private final Graph g;
 		private final IntListIterator it;
 		private int e = -1, v = -1;
 
-		IterUndirected(UGraph g, IntList path, int source) {
+		IterUndirected(Graph g, IntList path, int source) {
 			this.g = g;
 			v = source;
 			it = path.iterator();
@@ -167,11 +161,13 @@ public class Path extends AbstractIntList {
 
 	private static class IterDirected implements EdgeIterImpl {
 
-		private final DiGraph g;
+		private final Graph g;
 		private final IntListIterator it;
 		private int e = -1;
 
-		IterDirected(DiGraph g, IntList path) {
+		IterDirected(Graph g, IntList path) {
+			if (!g.getCapabilities().directed())
+				throw new IllegalArgumentException("Only directed graphs are supported");
 			this.g = g;
 			it = path.iterator();
 		}
@@ -243,7 +239,7 @@ public class Path extends AbstractIntList {
 			return new Path(g, u, v, IntLists.emptyList());
 		boolean reverse = true;
 		int u0 = u, v0 = v;
-		if (g instanceof UGraph) {
+		if (!g.getCapabilities().directed()) {
 			u0 = v;
 			v0 = u;
 			reverse = false;

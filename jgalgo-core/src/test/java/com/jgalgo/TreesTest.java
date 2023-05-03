@@ -35,8 +35,8 @@ public class TreesTest extends TestBase {
 		List<Phase> phases = List.of(phase(256, 16), phase(128, 32), phase(4, 2048));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = n - 1;
-			UGraph g = (UGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false)
-					.parallelEdges(false).selfEdges(false).cycles(false).connected(true).build();
+			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(false)
+					.selfEdges(false).cycles(false).connected(true).build();
 
 			assertTrue(Trees.isTree(g));
 		});
@@ -50,8 +50,8 @@ public class TreesTest extends TestBase {
 		List<Phase> phases = List.of(phase(256, 16), phase(128, 32), phase(4, 2048));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = n - 1;
-			UGraph g = (UGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false)
-					.parallelEdges(false).selfEdges(false).cycles(false).connected(true).build();
+			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(false)
+					.selfEdges(false).cycles(false).connected(true).build();
 			int[] edges = g.edges().toIntArray();
 			int e = edges[rand.nextInt(edges.length)];
 			g.removeEdge(e);
@@ -68,8 +68,8 @@ public class TreesTest extends TestBase {
 		List<Phase> phases = List.of(phase(256, 16), phase(128, 32), phase(4, 2048));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = n - 1;
-			UGraph g = (UGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false)
-					.parallelEdges(false).selfEdges(false).cycles(false).connected(true).build();
+			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(false)
+					.selfEdges(false).cycles(false).connected(true).build();
 			int u, v;
 			do {
 				u = rand.nextInt(n);

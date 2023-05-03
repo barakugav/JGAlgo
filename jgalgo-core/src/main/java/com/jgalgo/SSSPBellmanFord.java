@@ -48,7 +48,7 @@ public class SSSPBellmanFord implements SSSP {
 	 */
 	@Override
 	public SSSP.Result computeShortestPaths(Graph g, EdgeWeightFunc w, int source) {
-		if (!(g instanceof DiGraph))
+		if (!g.getCapabilities().directed())
 			throw new IllegalArgumentException("only directed graphs are supported");
 		int n = g.vertices().size();
 		Result res = new Result(g, source);

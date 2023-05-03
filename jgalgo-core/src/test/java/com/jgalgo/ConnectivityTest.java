@@ -18,15 +18,11 @@ package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
-
 import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
-
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
@@ -41,7 +37,7 @@ public class ConnectivityTest extends TestBase {
 		List<Phase> phases = List.of(phase(128, 16, 32), phase(64, 64, 256), phase(8, 512, 1024));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
-			UGraph g = (UGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
+			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
 			ConnectivityAlgorithm.Result actual =
 					ConnectivityAlgorithm.newBuilder().build().computeConnectivityComponents(g);
@@ -51,7 +47,7 @@ public class ConnectivityTest extends TestBase {
 		});
 	}
 
-	private static Pair<Integer, int[]> calcUndirectedConnectivity(UGraph g) {
+	private static Pair<Integer, int[]> calcUndirectedConnectivity(Graph g) {
 		int n = g.vertices().size();
 		int ccNum = 0;
 		int[] vertexToCC = new int[n];
@@ -74,8 +70,8 @@ public class ConnectivityTest extends TestBase {
 		List<Phase> phases = List.of(phase(128, 16, 32), phase(64, 64, 256), phase(8, 512, 1024));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
-			DiGraph g = (DiGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true)
-					.parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
+			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
+					.selfEdges(true).cycles(true).connected(false).build();
 			ConnectivityAlgorithm.Result actual =
 					ConnectivityAlgorithm.newBuilder().build().computeConnectivityComponents(g);
 			validateConnectivityResult(g, actual);
@@ -84,7 +80,7 @@ public class ConnectivityTest extends TestBase {
 		});
 	}
 
-	private static Pair<Integer, int[]> calcDirectedConnectivity(DiGraph g) {
+	private static Pair<Integer, int[]> calcDirectedConnectivity(Graph g) {
 		int n = g.vertices().size();
 		BitSet[] reach = new BitSet[n];
 		for (int start = 0; start < n; start++) {

@@ -32,18 +32,18 @@ class ConnectivityAlgorithmImpl implements ConnectivityAlgorithm {
 
 	@Override
 	public ConnectivityAlgorithm.Result computeConnectivityComponents(Graph g) {
-		if (g instanceof DiGraph) {
+		if (g.getCapabilities().directed()) {
 			int n = g.vertices().size();
 			stack1 = MemoryReuse.ensureAllocated(stack1, IntArrayList::new);
 			stack2 = MemoryReuse.ensureAllocated(stack2, IntArrayList::new);
 			arr1 = MemoryReuse.ensureLength(arr1, n);
 			arr2 = MemoryReuse.ensureLength(arr2, n);
 			arr3 = MemoryReuse.ensureLength(arr3, n);
-			return new WorkerDirected(stack1, stack2, arr1, arr2, arr3).computeCC((DiGraph) g);
+			return new WorkerDirected(stack1, stack2, arr1, arr2, arr3).computeCC(g);
 
 		} else {
 			stack1 = MemoryReuse.ensureAllocated(stack1, IntArrayList::new);
-			return new WorkerUndirected(stack1).computeCC((UGraph) g);
+			return new WorkerUndirected(stack1).computeCC(g);
 		}
 	}
 
@@ -55,7 +55,7 @@ class ConnectivityAlgorithmImpl implements ConnectivityAlgorithm {
 			this.stack = stack;
 		}
 
-		ConnectivityAlgorithm.Result computeCC(UGraph g) {
+		ConnectivityAlgorithm.Result computeCC(Graph g) {
 			int n = g.vertices().size();
 			int[] comp = new int[n];
 			Arrays.fill(comp, -1);
@@ -105,7 +105,7 @@ class ConnectivityAlgorithmImpl implements ConnectivityAlgorithm {
 			this.edges = arrN3;
 		}
 
-		ConnectivityAlgorithm.Result computeCC(DiGraph g) {
+		ConnectivityAlgorithm.Result computeCC(Graph g) {
 			// implementation of Tarjan's strongly connected components algorithm
 			// https://en.wikipedia.org/wiki/Tarjan%27s_strongly_connected_components_algorithm
 

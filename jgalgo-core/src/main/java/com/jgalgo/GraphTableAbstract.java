@@ -137,7 +137,7 @@ abstract class GraphTableAbstract extends GraphBaseContinues {
 		super.edgeSwap(e1, e2);
 	}
 
-	void reverseEdge(int edge) {
+	void reverseEdge0(int edge) {
 		long endpoints = edgeEndpoints.getLong(edge);
 		int u = endpoints2Source(endpoints);
 		int v = endpoints2Target(endpoints);

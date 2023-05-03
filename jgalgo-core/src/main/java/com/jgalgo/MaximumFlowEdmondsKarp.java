@@ -17,7 +17,6 @@
 package com.jgalgo;
 
 import java.util.BitSet;
-
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
@@ -54,23 +53,23 @@ public class MaximumFlowEdmondsKarp implements MaximumFlow {
 	 */
 	@Override
 	public double computeMaximumFlow(Graph g, FlowNetwork net, int source, int sink) {
-		if (!(g instanceof DiGraph))
+		if (!g.getCapabilities().directed())
 			throw new IllegalArgumentException("only directed graphs are supported");
 		if (net instanceof FlowNetwork.Int) {
-			return new WorkerInt((DiGraph) g, (FlowNetwork.Int) net, source, sink).computeMaxFlow();
+			return new WorkerInt(g, (FlowNetwork.Int) net, source, sink).computeMaxFlow();
 		} else {
-			return new WorkerDouble((DiGraph) g, net, source, sink).computeMaxFlow();
+			return new WorkerDouble(g, net, source, sink).computeMaxFlow();
 		}
 	}
 
 	private static class WorkerDouble {
 
-		final DiGraph gOring;
+		final Graph gOring;
 		final FlowNetwork net;
 		final int source;
 		final int sink;
 
-		WorkerDouble(DiGraph gOring, FlowNetwork net, int source, int sink) {
+		WorkerDouble(Graph gOring, FlowNetwork net, int source, int sink) {
 			this.gOring = gOring;
 			this.net = net;
 			this.source = source;
@@ -82,7 +81,7 @@ public class MaximumFlowEdmondsKarp implements MaximumFlow {
 				throw new IllegalArgumentException("Source and sink can't be the same vertex");
 
 			int n = gOring.vertices().size();
-			DiGraph g = new GraphArrayDirected(n);
+			Graph g = new GraphArrayDirected(n);
 			Weights.Int edgeRef = g.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
 			Weights.Int twin = g.addEdgesWeights(EdgeRevWeightKey, int.class, Integer.valueOf(-1));
 			Weights.Double flow = g.addEdgesWeights(FlowWeightKey, double.class);
@@ -182,12 +181,12 @@ public class MaximumFlowEdmondsKarp implements MaximumFlow {
 
 	private static class WorkerInt {
 
-		final DiGraph gOring;
+		final Graph gOring;
 		final FlowNetwork.Int net;
 		final int source;
 		final int sink;
 
-		WorkerInt(DiGraph gOring, FlowNetwork.Int net, int source, int sink) {
+		WorkerInt(Graph gOring, FlowNetwork.Int net, int source, int sink) {
 			this.gOring = gOring;
 			this.net = net;
 			this.source = source;
@@ -199,7 +198,7 @@ public class MaximumFlowEdmondsKarp implements MaximumFlow {
 				throw new IllegalArgumentException("Source and sink can't be the same vertex");
 
 			int n = gOring.vertices().size();
-			DiGraph g = new GraphArrayDirected(n);
+			Graph g = new GraphArrayDirected(n);
 			Weights.Int edgeRef = g.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
 			Weights.Int twin = g.addEdgesWeights(EdgeRevWeightKey, int.class, Integer.valueOf(-1));
 			Weights.Int flow = g.addEdgesWeights(FlowWeightKey, int.class);

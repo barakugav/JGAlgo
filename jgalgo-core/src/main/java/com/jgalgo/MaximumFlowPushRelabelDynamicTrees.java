@@ -62,23 +62,23 @@ public class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 	 */
 	@Override
 	public double computeMaximumFlow(Graph g, FlowNetwork net, int source, int sink) {
-		if (!(g instanceof DiGraph))
+		if (!g.getCapabilities().directed())
 			throw new IllegalArgumentException("only directed graphs are supported");
 		if (net instanceof FlowNetwork.Int) {
-			return new WorkerInt((DiGraph) g, (FlowNetwork.Int) net, source, sink).computeMaxFlow();
+			return new WorkerInt(g, (FlowNetwork.Int) net, source, sink).computeMaxFlow();
 		} else {
-			return new WorkerDouble((DiGraph) g, net, source, sink).computeMaxFlow();
+			return new WorkerDouble(g, net, source, sink).computeMaxFlow();
 		}
 	}
 
 	private static abstract class AbstractWorker {
 
 		final FlowNetwork net;
-		final DiGraph gOrig;
+		final Graph gOrig;
 		final int source;
 		final int sink;
 
-		final DiGraph g;
+		final Graph g;
 		final Weights.Int edgeRef;
 		final Weights.Int twin;
 
@@ -93,7 +93,7 @@ public class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 		final LinkedListDoubleArrayFixedSize children;
 		final IntPriorityQueue toCut = new IntArrayFIFOQueue();
 
-		AbstractWorker(DiGraph gOrig, FlowNetwork net, int source, int sink) {
+		AbstractWorker(Graph gOrig, FlowNetwork net, int source, int sink) {
 			if (source == sink)
 				throw new IllegalArgumentException("Source and sink can't be the same vertex");
 			this.gOrig = gOrig;
@@ -359,7 +359,7 @@ public class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 
 		private static final double EPS = 0.0001;
 
-		WorkerDouble(DiGraph gOrig, FlowNetwork net, int source, int sink) {
+		WorkerDouble(Graph gOrig, FlowNetwork net, int source, int sink) {
 			super(gOrig, net, source, sink);
 
 			flow = g.addEdgesWeights(FlowWeightKey, double.class);
@@ -509,7 +509,7 @@ public class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 		final Weights.Int capacity;
 		final Weights.Int flow;
 
-		WorkerInt(DiGraph gOrig, FlowNetwork.Int net, int source, int sink) {
+		WorkerInt(Graph gOrig, FlowNetwork.Int net, int source, int sink) {
 			super(gOrig, net, source, sink);
 
 			flow = g.addEdgesWeights(FlowWeightKey, int.class);

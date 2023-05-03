@@ -19,6 +19,7 @@ package com.jgalgo;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import com.jgalgo.GraphsUtils.UndirectedGraphImpl;
 import com.jgalgo.IDStrategy.IDAddRemoveListener;
 import it.unimi.dsi.fastutil.ints.AbstractIntCollection;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -26,126 +27,126 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 
 class GraphBuilderImpl {
 
-	static class ArrayUndirected extends GraphBuilderImpl.Abstract implements UGraph.Builder {
+	static class ArrayUndirected extends GraphBuilderImpl.Abstract {
 
 		@Override
-		public UGraph build() {
-			return (UGraph) wrapWithCustomIDStrategies(new GraphArrayUndirected(verticesNum));
+		public Graph build() {
+			return wrapWithCustomIDStrategies(new GraphArrayUndirected(verticesNum));
 		}
 
 		@Override
-		public UGraph.Builder setVerticesNum(int n) {
+		public Graph.Builder setVerticesNum(int n) {
 			super.setVerticesNum(n);
 			return this;
 		}
 
 		@Override
-		public UGraph.Builder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy) {
+		public Graph.Builder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy) {
 			super.setEdgesIDStrategy(edgesIDStrategy);
 			return this;
 		}
 
 	}
 
-	static class ArrayDirected extends GraphBuilderImpl.Abstract implements DiGraph.Builder {
+	static class ArrayDirected extends GraphBuilderImpl.Abstract {
 
 		@Override
-		public DiGraph build() {
-			return (DiGraph) wrapWithCustomIDStrategies(new GraphArrayDirected(verticesNum));
+		public Graph build() {
+			return wrapWithCustomIDStrategies(new GraphArrayDirected(verticesNum));
 		}
 
 		@Override
-		public DiGraph.Builder setVerticesNum(int n) {
+		public Graph.Builder setVerticesNum(int n) {
 			super.setVerticesNum(n);
 			return this;
 		}
 
 		@Override
-		public DiGraph.Builder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy) {
+		public Graph.Builder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy) {
 			super.setEdgesIDStrategy(edgesIDStrategy);
 			return this;
 		}
 
 	}
 
-	static class LinkedUndirected extends GraphBuilderImpl.Abstract implements UGraph.Builder {
+	static class LinkedUndirected extends GraphBuilderImpl.Abstract {
 
 		@Override
-		public UGraph build() {
-			return (UGraph) wrapWithCustomIDStrategies(new GraphLinkedUndirected(verticesNum));
+		public Graph build() {
+			return wrapWithCustomIDStrategies(new GraphLinkedUndirected(verticesNum));
 		}
 
 		@Override
-		public UGraph.Builder setVerticesNum(int n) {
+		public Graph.Builder setVerticesNum(int n) {
 			super.setVerticesNum(n);
 			return this;
 		}
 
 		@Override
-		public UGraph.Builder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy) {
+		public Graph.Builder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy) {
 			super.setEdgesIDStrategy(edgesIDStrategy);
 			return this;
 		}
 
 	}
 
-	static class LinkedDirected extends GraphBuilderImpl.Abstract implements DiGraph.Builder {
+	static class LinkedDirected extends GraphBuilderImpl.Abstract {
 
 		@Override
-		public DiGraph build() {
-			return (DiGraph) wrapWithCustomIDStrategies(new GraphLinkedDirected(verticesNum));
+		public Graph build() {
+			return wrapWithCustomIDStrategies(new GraphLinkedDirected(verticesNum));
 		}
 
 		@Override
-		public DiGraph.Builder setVerticesNum(int n) {
+		public Graph.Builder setVerticesNum(int n) {
 			super.setVerticesNum(n);
 			return this;
 		}
 
 		@Override
-		public DiGraph.Builder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy) {
+		public Graph.Builder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy) {
 			super.setEdgesIDStrategy(edgesIDStrategy);
 			return this;
 		}
 
 	}
 
-	static class TableUndirected extends GraphBuilderImpl.Abstract implements UGraph.Builder {
+	static class TableUndirected extends GraphBuilderImpl.Abstract {
 
 		@Override
-		public UGraph build() {
-			return (UGraph) wrapWithCustomIDStrategies(new GraphTableUndirected(verticesNum));
+		public Graph build() {
+			return wrapWithCustomIDStrategies(new GraphTableUndirected(verticesNum));
 		}
 
 		@Override
-		public UGraph.Builder setVerticesNum(int n) {
+		public Graph.Builder setVerticesNum(int n) {
 			super.setVerticesNum(n);
 			return this;
 		}
 
 		@Override
-		public UGraph.Builder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy) {
+		public Graph.Builder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy) {
 			super.setEdgesIDStrategy(edgesIDStrategy);
 			return this;
 		}
 
 	}
 
-	static class TableDirected extends GraphBuilderImpl.Abstract implements DiGraph.Builder {
+	static class TableDirected extends GraphBuilderImpl.Abstract {
 
 		@Override
-		public DiGraph build() {
-			return (DiGraph) wrapWithCustomIDStrategies(new GraphTableDirected(verticesNum));
+		public Graph build() {
+			return wrapWithCustomIDStrategies(new GraphTableDirected(verticesNum));
 		}
 
 		@Override
-		public DiGraph.Builder setVerticesNum(int n) {
+		public Graph.Builder setVerticesNum(int n) {
 			super.setVerticesNum(n);
 			return this;
 		}
 
 		@Override
-		public DiGraph.Builder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy) {
+		public Graph.Builder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy) {
 			super.setEdgesIDStrategy(edgesIDStrategy);
 			return this;
 		}
@@ -179,7 +180,7 @@ class GraphBuilderImpl {
 			IDStrategy eIDStrat = createIDStrategy(edgesIDStrategy);
 			if (eIDStrat == null)
 				return g;
-			if (g instanceof DiGraph) {
+			if (g.getCapabilities().directed()) {
 				return new GraphCustomIDStrategiesDirected(g, eIDStrat);
 			} else {
 				return new GraphCustomIDStrategiesUndirected(g, eIDStrat);
@@ -201,7 +202,7 @@ class GraphBuilderImpl {
 		}
 	}
 
-	private static class GraphCustomIDStrategies extends GraphBase {
+	private abstract static class GraphCustomIDStrategies extends GraphBase {
 
 		final GraphBaseContinues g;
 
@@ -530,31 +531,28 @@ class GraphBuilderImpl {
 
 	}
 
-	private static class GraphCustomIDStrategiesDirected extends GraphCustomIDStrategies implements DiGraph {
+	private static class GraphCustomIDStrategiesDirected extends GraphCustomIDStrategies {
 
 		GraphCustomIDStrategiesDirected(GraphBaseContinues g, IDStrategy edgesIDStrategy) {
 			super(g, edgesIDStrategy);
-			if (!(g instanceof DiGraph))
+			if (!g.getCapabilities().directed())
 				throw new IllegalArgumentException();
-		}
-
-		private DiGraph digraph() {
-			return (DiGraph) g;
 		}
 
 		@Override
 		public void reverseEdge(int edge) {
 			int eIdx = edgesIDStrategy.idToIdx(edge);
-			digraph().reverseEdge(eIdx);
+			g.reverseEdge(eIdx);
 		}
 
 	}
 
-	private static class GraphCustomIDStrategiesUndirected extends GraphCustomIDStrategies implements UGraph {
+	private static class GraphCustomIDStrategiesUndirected extends GraphCustomIDStrategies
+			implements UndirectedGraphImpl {
 
 		GraphCustomIDStrategiesUndirected(GraphBaseContinues g, IDStrategy edgesIDStrategy) {
 			super(g, edgesIDStrategy);
-			if (!(g instanceof UGraph))
+			if (g.getCapabilities().directed())
 				throw new IllegalArgumentException();
 		}
 

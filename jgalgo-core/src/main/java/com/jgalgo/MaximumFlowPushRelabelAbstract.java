@@ -29,9 +29,9 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 	private static final Object FlowWeightKey = new Object();
 	private static final Object CapacityWeightKey = new Object();
 
-	abstract WorkerDouble newWorkerDouble(DiGraph gOrig, FlowNetwork net, int source, int sink);
+	abstract WorkerDouble newWorkerDouble(Graph gOrig, FlowNetwork net, int source, int sink);
 
-	abstract WorkerInt newWorkerInt(DiGraph gOrig, FlowNetwork.Int net, int source, int sink);
+	abstract WorkerInt newWorkerInt(Graph gOrig, FlowNetwork.Int net, int source, int sink);
 
 	/**
 	 * {@inheritDoc}
@@ -40,12 +40,12 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 	 */
 	@Override
 	public double computeMaximumFlow(Graph g, FlowNetwork net, int source, int sink) {
-		if (!(g instanceof DiGraph))
+		if (!g.getCapabilities().directed())
 			throw new IllegalArgumentException("only directed graphs are supported");
 		if (net instanceof FlowNetwork.Int) {
-			return newWorkerInt((DiGraph) g, (FlowNetwork.Int) net, source, sink).computeMaxFlow();
+			return newWorkerInt(g, (FlowNetwork.Int) net, source, sink).computeMaxFlow();
 		} else {
-			return newWorkerDouble((DiGraph) g, net, source, sink).computeMaxFlow();
+			return newWorkerDouble(g, net, source, sink).computeMaxFlow();
 		}
 	}
 
@@ -56,7 +56,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 	 */
 	@Override
 	public IntList computeMinimumCut(Graph g, EdgeWeightFunc w, int source, int sink) {
-		if (!(g instanceof DiGraph))
+		if (!g.getCapabilities().directed())
 			throw new IllegalArgumentException("only directed graphs are supported");
 		if (w instanceof EdgeWeightFunc.Int) {
 			EdgeWeightFunc.Int wInt = (EdgeWeightFunc.Int) w;
@@ -83,7 +83,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 				}
 
 			};
-			return newWorkerInt((DiGraph) g, net, source, sink).computeMinimumCut();
+			return newWorkerInt(g, net, source, sink).computeMinimumCut();
 		} else {
 			FlowNetwork net = new FlowNetwork() {
 
@@ -108,13 +108,13 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 				}
 
 			};
-			return newWorkerDouble((DiGraph) g, net, source, sink).computeMinimumCut();
+			return newWorkerDouble(g, net, source, sink).computeMinimumCut();
 		}
 	}
 
 	static abstract class Worker {
-		final DiGraph g;
-		final DiGraph gOrig;
+		final Graph g;
+		final Graph gOrig;
 		final int n;
 
 		final FlowNetwork net;
@@ -140,7 +140,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 		private final int[] layersHeadInactive;
 		private int maxLayerInactive;
 
-		Worker(DiGraph gOrig, FlowNetwork net, int source, int sink) {
+		Worker(Graph gOrig, FlowNetwork net, int source, int sink) {
 			if (source == sink)
 				throw new IllegalArgumentException("Source and sink can't be the same vertex");
 			this.gOrig = gOrig;
@@ -498,7 +498,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 
 		private static final double EPS = 0.0001;
 
-		WorkerDouble(DiGraph gOrig, FlowNetwork net, int source, int sink) {
+		WorkerDouble(Graph gOrig, FlowNetwork net, int source, int sink) {
 			super(gOrig, net, source, sink);
 
 			flow = g.addEdgesWeights(FlowWeightKey, double.class);
@@ -668,7 +668,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 
 		final int[] excess;
 
-		WorkerInt(DiGraph gOrig, FlowNetwork.Int net, int source, int sink) {
+		WorkerInt(Graph gOrig, FlowNetwork.Int net, int source, int sink) {
 			super(gOrig, net, source, sink);
 
 			flow = g.addEdgesWeights(FlowWeightKey, int.class);

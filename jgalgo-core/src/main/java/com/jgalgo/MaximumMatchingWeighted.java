@@ -37,20 +37,23 @@ public interface MaximumMatchingWeighted extends MaximumMatching {
 	/**
 	 * Compute the maximum weighted matching of a weighted undirected graph.
 	 *
-	 * @param  g an undirected graph
-	 * @param  w an edge weight function
-	 * @return   collection of edges representing the matching
+	 * @param  g                        an undirected graph
+	 * @param  w                        an edge weight function
+	 * @return                          collection of edges representing the matching
+	 * @throws IllegalArgumentException if {@code g} is a directed graph
 	 */
-	public IntCollection computeMaximumMatching(UGraph g, EdgeWeightFunc w);
+	public IntCollection computeMaximumMatching(Graph g, EdgeWeightFunc w);
 
 	/**
 	 * Compute the maximum perfect matching of a weighted undirected graph.
 	 *
-	 * @param  g an undirected graph
-	 * @param  w an edge weight function
-	 * @return   collection of edges representing perfect matching, or the maximal one if no perfect one found
+	 * @param  g                        an undirected graph
+	 * @param  w                        an edge weight function
+	 * @return                          collection of edges representing perfect matching, or the maximal one if no
+	 *                                  perfect one found
+	 * @throws IllegalArgumentException if {@code g} is a directed graph
 	 */
-	public IntCollection computeMaximumPerfectMatching(UGraph g, EdgeWeightFunc w);
+	public IntCollection computeMaximumPerfectMatching(Graph g, EdgeWeightFunc w);
 
 	/**
 	 * {@inheritDoc}
@@ -58,7 +61,7 @@ public interface MaximumMatchingWeighted extends MaximumMatching {
 	 * Compute the maximum cardinality matching of a weighted undirected graph.
 	 */
 	@Override
-	default IntCollection computeMaximumMatching(UGraph g) {
+	default IntCollection computeMaximumMatching(Graph g) {
 		return computeMaximumMatching(g, e -> 1);
 	}
 

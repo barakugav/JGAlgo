@@ -18,7 +18,6 @@ package com.jgalgo;
 
 import java.util.Arrays;
 import java.util.Objects;
-
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -79,13 +78,15 @@ public class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeig
 	 * @throws IllegalArgumentException if the graph is no bipartite with respect to the provided partition
 	 */
 	@Override
-	public IntCollection computeMaximumMatching(UGraph g, EdgeWeightFunc w) {
+	public IntCollection computeMaximumMatching(Graph g, EdgeWeightFunc w) {
+		if (g.getCapabilities().directed())
+			throw new IllegalArgumentException("directed graphs are not supported");
 		Weights.Bool partition = g.getVerticesWeights(bipartiteVerticesWeightKey);
 		Objects.requireNonNull(partition,
 				"Bipartiteness values weren't found with weight " + bipartiteVerticesWeightKey);
 		if (Bipartite.isValidBipartitePartition(g, partition))
 			throw new IllegalArgumentException("the graph is not bipartite");
-		DiGraph g0 = referenceGraph(g, partition, w);
+		Graph g0 = referenceGraph(g, partition, w);
 		int[] match = computeMaxMatching(g0, w, partition);
 
 		int n = g.vertices().size();
@@ -98,7 +99,7 @@ public class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeig
 		return res;
 	}
 
-	private int[] computeMaxMatching(DiGraph g, EdgeWeightFunc w, Weights.Bool partition) {
+	private int[] computeMaxMatching(Graph g, EdgeWeightFunc w, Weights.Bool partition) {
 		Weights<Ref> edgeRef = g.getEdgesWeights(EdgeRefWeightKey);
 
 		int n = g.vertices().size();
@@ -187,13 +188,13 @@ public class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeig
 	 */
 	@Deprecated
 	@Override
-	public IntCollection computeMaximumPerfectMatching(UGraph g, EdgeWeightFunc w) {
+	public IntCollection computeMaximumPerfectMatching(Graph g, EdgeWeightFunc w) {
 		throw new UnsupportedOperationException();
 	}
 
-	private static DiGraph referenceGraph(UGraph g, Weights.Bool partition, EdgeWeightFunc w) {
+	private static Graph referenceGraph(Graph g, Weights.Bool partition, EdgeWeightFunc w) {
 		int n = g.vertices().size();
-		DiGraph g0 = new GraphArrayDirected(g.vertices().size());
+		Graph g0 = new GraphArrayDirected(g.vertices().size());
 		Weights<Ref> edgeRef = g0.addEdgesWeights(EdgeRefWeightKey, Ref.class);
 
 		for (int u = 0; u < n; u++) {

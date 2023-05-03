@@ -26,7 +26,7 @@ package com.jgalgo;
  * source(sink).
  *
  * <pre> {@code
- * DiGraph g = ...;
+ * Graph g = ...;
  * FlowNetwork net = FlowNetwork.createAsEdgeWeight(g);
  * for (IntIterator edgeIter = g.edges().iterator(); edgeIter.hasNext();)
  *  f.setCapacity(edgeIter.nextInt(), 1);

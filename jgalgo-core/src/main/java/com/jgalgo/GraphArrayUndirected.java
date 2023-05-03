@@ -16,6 +16,7 @@
 
 package com.jgalgo;
 
+import com.jgalgo.GraphsUtils.UndirectedGraphImpl;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 
 /**
@@ -29,7 +30,7 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
  * @see    GraphArrayDirected
  * @author Barak Ugav
  */
-public class GraphArrayUndirected extends GraphArrayAbstract implements UGraph {
+public class GraphArrayUndirected extends GraphArrayAbstract implements UndirectedGraphImpl {
 
 	private final DataContainer.Obj<int[]> edges;
 	private final DataContainer.Int edgesNum;

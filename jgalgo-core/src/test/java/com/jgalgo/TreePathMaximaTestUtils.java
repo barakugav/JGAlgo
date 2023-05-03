@@ -113,7 +113,7 @@ public class TreePathMaximaTestUtils extends TestUtils {
 				phase(8, 2048, 4096), phase(2, 8192, 16384));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
-			UGraph g = (UGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
+			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
 					.selfEdges(false).cycles(true).connected(true).build();
 			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			IntCollection mstEdges = new MSTKruskal().computeMinimumSpanningTree(g, w);
@@ -130,7 +130,7 @@ public class TreePathMaximaTestUtils extends TestUtils {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 
-			UGraph g = (UGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
+			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
 					.selfEdges(false).cycles(true).connected(true).build();
 			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 

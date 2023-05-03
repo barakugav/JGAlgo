@@ -72,34 +72,34 @@ public class MSTKargerKleinTarjan implements MST {
 	 */
 	@Override
 	public IntCollection computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
-		if (!(g instanceof UGraph))
-			throw new IllegalArgumentException("only undirected graphs are supported");
-		return computeMST((UGraph) g, w);
+		if (g.getCapabilities().directed())
+			throw new IllegalArgumentException("directed graphs are not supported");
+		return computeMST(g, w);
 	}
 
-	private IntCollection computeMST(UGraph g, EdgeWeightFunc w) {
+	private IntCollection computeMST(Graph g, EdgeWeightFunc w) {
 		if (g.vertices().size() == 0 || g.edges().size() == 0)
 			return IntLists.emptyList();
 
 		/* Run Boruvka to reduce the number of vertices by a factor of 4 by contraction */
-		Pair<UGraph, IntCollection> r = boruvka.runBoruvka(g, w, 2, "edgeRef_g0");
-		UGraph g0 = r.first();
+		Pair<Graph, IntCollection> r = boruvka.runBoruvka(g, w, 2, "edgeRef_g0");
+		Graph g0 = r.first();
 		IntCollection f0 = r.second();
 		Weights.Int g0Ref = g0.getEdgesWeights("edgeRef_g0");
 
 		/* Find a random subgraph G1 in the contracted graph G0, by choosing each edge with probability 0.5 */
-		UGraph g1 = randSubgraph(g0, "edgeRef_g1", g0Ref);
+		Graph g1 = randSubgraph(g0, "edgeRef_g1", g0Ref);
 		Weights.Int g1Ref = g1.getEdgesWeights("edgeRef_g1");
 		Weights.Double g1W = assignWeightsFromEdgeRef(g1, w, "w_g1", g1Ref);
 
 		/* Compute an MST (actually a forest) F1 in the random subgraph G1 */
 		IntCollection f1Edges = computeMST(g1, g1W);
-		UGraph f1 = subGraph(g1, f1Edges, "edgeRef_f1", g1Ref);
+		Graph f1 = subGraph(g1, f1Edges, "edgeRef_f1", g1Ref);
 		Weights.Int f1Ref = f1.getEdgesWeights("edgeRef_f1");
 
 		/* Find all the light edges in G0 with respect to the computed forest F1 */
 		IntCollection e2 = lightEdges(g0, e -> w.weight(g0Ref.getInt(e)), f1, e -> w.weight(f1Ref.getInt(e)));
-		UGraph g2 = subGraph(g0, e2, "edgeRef_g2", g0Ref);
+		Graph g2 = subGraph(g0, e2, "edgeRef_g2", g0Ref);
 		Weights.Int g2Ref = g2.getEdgesWeights("edgeRef_g2");
 		Weights.Double g2W = assignWeightsFromEdgeRef(g2, w, "w_g2", g2Ref);
 
@@ -113,8 +113,8 @@ public class MSTKargerKleinTarjan implements MST {
 		return f0;
 	}
 
-	static UGraph subGraph(UGraph g, IntCollection edgeSet, Object edgeDataKey, Weights.Int edgeRef) {
-		UGraph subG = new GraphArrayUndirected(g.vertices().size());
+	static Graph subGraph(Graph g, IntCollection edgeSet, Object edgeDataKey, Weights.Int edgeRef) {
+		Graph subG = new GraphArrayUndirected(g.vertices().size());
 		Weights.Int edgeRefSub = subG.addEdgesWeights(edgeDataKey, int.class);
 		for (IntIterator it = edgeSet.iterator(); it.hasNext();) {
 			int e = it.nextInt();
@@ -134,7 +134,7 @@ public class MSTKargerKleinTarjan implements MST {
 		return w2;
 	}
 
-	private UGraph randSubgraph(UGraph g, Object edgeRefKey, Weights.Int edgeRef) {
+	private Graph randSubgraph(Graph g, Object edgeRefKey, Weights.Int edgeRef) {
 		allocatedMem.allocateForRandSubGraph();
 		IntCollection edgeSet = allocatedMem.edgeList;
 		edgeSet.clear();
@@ -147,7 +147,7 @@ public class MSTKargerKleinTarjan implements MST {
 		return subGraph(g, edgeSet, edgeRefKey, edgeRef);
 	}
 
-	private IntCollection lightEdges(UGraph g, Int2DoubleFunction gw, UGraph f, Int2DoubleFunction fw) {
+	private IntCollection lightEdges(Graph g, Int2DoubleFunction gw, Graph f, Int2DoubleFunction fw) {
 		final int n = f.vertices().size();
 		/* find connectivity components in the forest, each one of them is a tree */
 		ConnectivityAlgorithm.Result connectivityRes = ccAlg.computeConnectivityComponents(f);
@@ -156,7 +156,7 @@ public class MSTKargerKleinTarjan implements MST {
 
 		allocatedMem.allocateForLightEdges(n, treeCount);
 
-		UGraph[] trees = allocatedMem.trees;
+		Graph[] trees = allocatedMem.trees;
 		Weights.Double[] treeData = allocatedMem.treeData;
 		for (int t = 0; t < treeCount; t++)
 			treeData[t] = trees[t].getEdgesWeights("weight");
@@ -213,7 +213,7 @@ public class MSTKargerKleinTarjan implements MST {
 	private static class AllocatedMemory {
 		IntList edgeList;
 
-		UGraph[] trees = MemoryReuse.EmptyUGraphArr;
+		Graph[] trees = MemoryReuse.EmptyGraphArr;
 		int[] vToVnew = IntArrays.EMPTY_ARRAY;
 		Weights.Double[] treeData = MemoryReuse.EmptyWeightsDoubleArr;
 
@@ -236,7 +236,7 @@ public class MSTKargerKleinTarjan implements MST {
 			tpmResults = MemoryReuse.ensureLength(tpmResults, treeCount);
 
 			for (int tIdx = 0; tIdx < treeCount; tIdx++) {
-				UGraph tree = trees[tIdx] = MemoryReuse.ensureAllocated(trees[tIdx], () -> new GraphArrayUndirected());
+				Graph tree = trees[tIdx] = MemoryReuse.ensureAllocated(trees[tIdx], () -> new GraphArrayUndirected());
 				treeData[tIdx] =
 						MemoryReuse.ensureAllocated(treeData[tIdx], () -> tree.addEdgesWeights("weight", double.class));
 

@@ -18,15 +18,11 @@ package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-
 import org.junit.jupiter.api.Test;
-
 import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
-
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -64,7 +60,7 @@ public class EulerianTourTest extends TestBase {
 		List<Phase> phases = List.of(phase(128, 16, 32), phase(64, 64, 256), phase(8, 512, 1024));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
-			UGraph g = randUGraph(n, m, allEvenVertices, seedGen.nextSeed());
+			Graph g = randUGraph(n, m, allEvenVertices, seedGen.nextSeed());
 			Path tour = EulerianTourAlgorithm.newBuilder().build().computeEulerianTour(g);
 			validateEulerianTour(g, tour);
 		});
@@ -75,7 +71,7 @@ public class EulerianTourTest extends TestBase {
 		List<Phase> phases = List.of(phase(128, 16, 32), phase(64, 64, 256), phase(8, 512, 1024));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
-			DiGraph g = randDiGraph(n, m, allEqualInOutDegree, seedGen.nextSeed());
+			Graph g = randDiGraph(n, m, allEqualInOutDegree, seedGen.nextSeed());
 			Path tour = EulerianTourAlgorithm.newBuilder().build().computeEulerianTour(g);
 			validateEulerianTour(g, tour);
 		});
@@ -95,11 +91,11 @@ public class EulerianTourTest extends TestBase {
 		}
 	}
 
-	private static UGraph randUGraph(int n, int m, boolean allEvenVertices, long seed) {
+	private static Graph randUGraph(int n, int m, boolean allEvenVertices, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
 
-		UGraph g = (UGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
+		Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
 				.selfEdges(true).cycles(true).connected(true).build();
 
 		IntList oddVertices = new IntArrayList();
@@ -150,11 +146,11 @@ public class EulerianTourTest extends TestBase {
 		return g;
 	}
 
-	private static DiGraph randDiGraph(int n, int m, boolean allEqualInOutDegree, long seed) {
+	private static Graph randDiGraph(int n, int m, boolean allEqualInOutDegree, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
 
-		DiGraph g = (DiGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
+		Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
 				.selfEdges(true).cycles(true).connected(true).build();
 		addEdgesUntilStronglyConnected(g);
 
@@ -232,7 +228,7 @@ public class EulerianTourTest extends TestBase {
 		return g;
 	}
 
-	private static int degreeWithoutSelfLoops(UGraph g, int u) {
+	private static int degreeWithoutSelfLoops(Graph g, int u) {
 		int d = 0;
 		for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 			eit.nextInt();
@@ -247,7 +243,7 @@ public class EulerianTourTest extends TestBase {
 		list.removeInt(list.size() - 1);
 	}
 
-	private static void addEdgesUntilStronglyConnected(DiGraph g) {
+	private static void addEdgesUntilStronglyConnected(Graph g) {
 		ConnectivityAlgorithm.Result connectivityRes =
 				ConnectivityAlgorithm.newBuilder().build().computeConnectivityComponents(g);
 		int N = connectivityRes.getNumberOfCC();

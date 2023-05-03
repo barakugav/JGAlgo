@@ -25,9 +25,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.IntConsumer;
 import java.util.stream.Collectors;
-
 import com.jgalgo.Utils.NullList;
-
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -68,13 +66,17 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 	}
 
 	@Override
-	public IntCollection computeMaximumMatching(UGraph g, EdgeWeightFunc w) {
+	public IntCollection computeMaximumMatching(Graph g, EdgeWeightFunc w) {
+		if (g.getCapabilities().directed())
+			throw new IllegalArgumentException("directed graphs are not supported");
 		return new Worker(g, w, heapBuilder, debugPrintManager).computeMaxMatching(false);
 
 	}
 
 	@Override
-	public IntCollection computeMaximumPerfectMatching(UGraph g, EdgeWeightFunc w) {
+	public IntCollection computeMaximumPerfectMatching(Graph g, EdgeWeightFunc w) {
+		if (g.getCapabilities().directed())
+			throw new IllegalArgumentException("directed graphs are not supported");
 		return new Worker(g, w, heapBuilder, debugPrintManager).computeMaxMatching(true);
 	}
 

@@ -190,7 +190,7 @@ class GraphImplTestUtils extends TestUtils {
 			if (directed) {
 				for (int u = 0; u < n; u++) {
 					IntSet uEdges = new IntOpenHashSet();
-					for (EdgeIter eit = ((DiGraph) g).edgesOut(u); eit.hasNext();) {
+					for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 						int e = eit.nextInt();
 						assertEquals(u, eit.u());
 						assertEquals(g.edgeEndpoint(e, u), eit.v());
@@ -200,7 +200,7 @@ class GraphImplTestUtils extends TestUtils {
 				}
 				for (int v = 0; v < n; v++) {
 					IntSet vEdges = new IntOpenHashSet();
-					for (EdgeIter eit = ((DiGraph) g).edgesIn(v); eit.hasNext();) {
+					for (EdgeIter eit = g.edgesIn(v); eit.hasNext();) {
 						int e = eit.nextInt();
 						assertEquals(v, eit.v());
 						assertEquals(g.edgeEndpoint(e, v), eit.u());
@@ -346,7 +346,7 @@ class GraphImplTestUtils extends TestUtils {
 		private final boolean debugPrints = false;
 
 		GraphTracker(Graph g, Object dataKey) {
-			this.directed = g instanceof DiGraph;
+			this.directed = g.getCapabilities().directed();
 			this.dataKey = dataKey;
 
 			g.getVerticesIDStrategy().addIDSwapListener((id1, id2) -> {
@@ -833,7 +833,7 @@ class GraphImplTestUtils extends TestUtils {
 						continue;
 					int e = getEdge.applyAsInt(edge);
 
-					((DiGraph) g).reverseEdge(e);
+					g.reverseEdge(e);
 					tracker.reverseEdge(edge);
 					break;
 				}

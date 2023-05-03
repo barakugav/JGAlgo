@@ -57,7 +57,7 @@ public class TSPMetricMSTAppx implements TSPMetric {
 			TSPMetricUtils.checkArgDistanceTableIsMetric(distances);
 
 		/* Build graph from the distances table */
-		UGraph g = new GraphTableUndirected(n);
+		Graph g = new GraphTableUndirected(n);
 		Weights.Double weights = g.addEdgesWeights(DoubleWeightKey, double.class);
 		for (int u = 0; u < n; u++)
 			for (int v = u + 1; v < n; v++)
@@ -67,7 +67,7 @@ public class TSPMetricMSTAppx implements TSPMetric {
 		IntCollection mst = new MSTPrim().computeMinimumSpanningTree(g, weights);
 
 		/* Build a graph with each MST edge duplicated */
-		UGraph g1 = new GraphArrayUndirected(n);
+		Graph g1 = new GraphArrayUndirected(n);
 		Weights.Int edgeRef = g1.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
 		for (IntIterator it = mst.iterator(); it.hasNext();) {
 			int e = it.nextInt();

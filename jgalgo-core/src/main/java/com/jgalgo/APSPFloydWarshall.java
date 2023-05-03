@@ -37,10 +37,10 @@ public class APSPFloydWarshall implements APSP {
 
 	@Override
 	public APSP.Result computeAllShortestPaths(Graph g, EdgeWeightFunc w) {
-		return g instanceof DiGraph ? computeAPSPDirected((DiGraph) g, w) : computeAPSPUndirected((UGraph) g, w);
+		return g.getCapabilities().directed() ? computeAPSPDirected(g, w) : computeAPSPUndirected(g, w);
 	}
 
-	private static APSP.Result computeAPSPUndirected(UGraph g, EdgeWeightFunc w) {
+	private static APSP.Result computeAPSPUndirected(Graph g, EdgeWeightFunc w) {
 		APSPResultImpl.Abstract res = new APSPResultImpl.Undirected(g);
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
@@ -87,7 +87,7 @@ public class APSPFloydWarshall implements APSP {
 		return res;
 	}
 
-	private static APSP.Result computeAPSPDirected(DiGraph g, EdgeWeightFunc w) {
+	private static APSP.Result computeAPSPDirected(Graph g, EdgeWeightFunc w) {
 		APSPResultImpl.Abstract res = new APSPResultImpl.Directed(g);
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();

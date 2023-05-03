@@ -17,14 +17,11 @@
 package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.IntSupplier;
-
 import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
-
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -32,7 +29,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 class CyclesFinderTestUtils extends TestUtils {
 
 	static void testSimpleGraph(CyclesFinder cyclesFinder) {
-		DiGraph g = new GraphArrayDirected(16);
+		Graph g = new GraphArrayDirected(16);
 		int e0 = g.addEdge(0, 1);
 		int e1 = g.addEdge(1, 2);
 		int e2 = g.addEdge(2, 1);
@@ -54,13 +51,13 @@ class CyclesFinderTestUtils extends TestUtils {
 				phase(64, 64, 64));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
-			DiGraph g = (DiGraph) new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true)
-					.parallelEdges(false).selfEdges(true).cycles(true).connected(false).build();
+			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(false)
+					.selfEdges(true).cycles(true).connected(false).build();
 			testGraph(g, cyclesFinder);
 		});
 	}
 
-	private static void testGraph(DiGraph g, CyclesFinder cyclesFinder) {
+	private static void testGraph(Graph g, CyclesFinder cyclesFinder) {
 		CyclesFinder validationAlgo =
 				cyclesFinder instanceof CyclesFinderTarjan ? new CyclesFinderJohnson() : new CyclesFinderTarjan();
 		List<Path> actual = cyclesFinder.findAllCycles(g);

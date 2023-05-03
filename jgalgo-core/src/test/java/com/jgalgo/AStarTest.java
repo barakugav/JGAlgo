@@ -21,9 +21,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.function.IntToDoubleFunction;
-
 import org.junit.jupiter.api.Test;
-
 import it.unimi.dsi.fastutil.ints.Int2DoubleMap;
 import it.unimi.dsi.fastutil.ints.Int2DoubleOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -80,8 +78,8 @@ public class AStarTest extends TestBase {
 		return AStarAsSSSP(params -> {
 			Graph g = params.g;
 			EdgeWeightFunc w = params.w;
-			if (params.g instanceof DiGraph) {
-				GraphReverseResult rev = reverseGraph((DiGraph) params.g, params.w);
+			if (params.g.getCapabilities().directed()) {
+				GraphReverseResult rev = reverseGraph(params.g, params.w);
 				g = rev.g;
 				w = rev.w;
 			}
@@ -96,8 +94,8 @@ public class AStarTest extends TestBase {
 		return AStarAsSSSP(params -> {
 			Graph g = params.g;
 			EdgeWeightFunc w = params.w;
-			if (params.g instanceof DiGraph) {
-				GraphReverseResult rev = reverseGraph((DiGraph) params.g, params.w);
+			if (params.g.getCapabilities().directed()) {
+				GraphReverseResult rev = reverseGraph(params.g, params.w);
 				g = rev.g;
 				w = rev.w;
 			}
@@ -112,9 +110,9 @@ public class AStarTest extends TestBase {
 		});
 	}
 
-	private static GraphReverseResult reverseGraph(DiGraph g, EdgeWeightFunc w) {
+	private static GraphReverseResult reverseGraph(Graph g, EdgeWeightFunc w) {
 		int n = g.vertices().size();
-		DiGraph revG = new GraphArrayDirected(n);
+		Graph revG = new GraphArrayDirected(n);
 		Weights.Double revW = revG.addEdgesWeights("w", double.class);
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
@@ -129,7 +127,7 @@ public class AStarTest extends TestBase {
 	}
 
 	private static class GraphReverseResult {
-		DiGraph g;
+		Graph g;
 		EdgeWeightFunc w;
 	}
 

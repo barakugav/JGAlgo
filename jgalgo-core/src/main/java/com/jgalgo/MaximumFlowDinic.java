@@ -42,7 +42,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
  */
 public class MaximumFlowDinic implements MaximumFlow {
 
-	private Supplier<? extends DiGraph.Builder> layerGraphBuilder = GraphBuilderImpl.LinkedDirected::new;
+	private Supplier<? extends Graph.Builder> layerGraphBuilder = GraphBuilderImpl.LinkedDirected::new;
 
 	private static final Object EdgeRefWeightKey = new Object();
 	private static final Object EdgeRevWeightKey = new Object();
@@ -63,7 +63,7 @@ public class MaximumFlowDinic implements MaximumFlow {
 	 *
 	 * @param builder a builder that provide instances of graphs for the layers graph
 	 */
-	public void experimental_setLayerGraphFactory(Supplier<? extends DiGraph.Builder> builder) {
+	public void experimental_setLayerGraphFactory(Supplier<? extends Graph.Builder> builder) {
 		layerGraphBuilder = Objects.requireNonNull(builder);
 	}
 
@@ -74,17 +74,17 @@ public class MaximumFlowDinic implements MaximumFlow {
 	 */
 	@Override
 	public double computeMaximumFlow(Graph g, FlowNetwork net, int source, int sink) {
-		if (!(g instanceof DiGraph))
+		if (!g.getCapabilities().directed())
 			throw new IllegalArgumentException("only directed graphs are supported");
-		return computeMaxFlow((DiGraph) g, net, source, sink);
+		return computeMaxFlow(g, net, source, sink);
 	}
 
-	private double computeMaxFlow(DiGraph g0, FlowNetwork net, int source, int sink) {
+	private double computeMaxFlow(Graph g0, FlowNetwork net, int source, int sink) {
 		if (source == sink)
 			throw new IllegalArgumentException("Source and sink can't be the same vertex");
 
 		final int n = g0.vertices().size();
-		DiGraph g = new GraphArrayDirected(n);
+		Graph g = new GraphArrayDirected(n);
 		Weights.Int edgeRef = g.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
 		Weights.Int twin = g.addEdgesWeights(EdgeRevWeightKey, int.class, Integer.valueOf(-1));
 		Weights.Double flow = g.addEdgesWeights(FlowWeightKey, double.class);
@@ -109,8 +109,8 @@ public class MaximumFlowDinic implements MaximumFlow {
 			flow.set(e2, cap);
 		}
 
-		DiGraph.Builder builder = layerGraphBuilder.get();
-		DiGraph L = builder.setVerticesNum(n).setEdgesIDStrategy(Fixed.class).build();
+		Graph.Builder builder = layerGraphBuilder.get();
+		Graph L = builder.setVerticesNum(n).setEdgesIDStrategy(Fixed.class).build();
 		Weights.Int edgeRefL = L.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
 		IntPriorityQueue bfsQueue = new IntArrayFIFOQueue();
 		int[] level = new int[n];

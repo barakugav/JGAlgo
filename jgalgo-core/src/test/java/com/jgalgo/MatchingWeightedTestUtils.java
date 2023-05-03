@@ -44,7 +44,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 			int tn = args[1];
 			int m = args[2];
 
-			UGraph g = MatchingBipartiteTestUtils.randGraphBipartite(sn, tn, m, graphImpl, seedGen.nextSeed());
+			Graph g = MatchingBipartiteTestUtils.randGraphBipartite(sn, tn, m, graphImpl, seedGen.nextSeed());
 			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
 
 			MaximumMatchingWeighted validationAlgo = algo instanceof MaximumMatchingWeightedBipartiteSSSP
@@ -63,7 +63,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 			int tn = args[1];
 			int m = args[2];
 
-			UGraph g = MatchingBipartiteTestUtils.randGraphBipartite(sn, tn, m, GraphImplTestUtils.GRAPH_IMPL_DEFAULT,
+			Graph g = MatchingBipartiteTestUtils.randGraphBipartite(sn, tn, m, GraphImplTestUtils.GRAPH_IMPL_DEFAULT,
 					seedGen.nextSeed());
 			int maxWeight = m < 50 ? 100 : m * 2 + 2;
 			EdgeWeightFunc.Int w =
@@ -85,7 +85,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 
-			UGraph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
+			Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
 			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
 
 			// have nothing other than MaximumMatchingWeightedGabow1990, at least shuffle
@@ -97,7 +97,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 		});
 	}
 
-	private static void testGraphWeighted(MaximumMatchingWeighted algo, UGraph g, EdgeWeightFunc.Int w,
+	private static void testGraphWeighted(MaximumMatchingWeighted algo, Graph g, EdgeWeightFunc.Int w,
 			MaximumMatchingWeighted validationAlgo) {
 		IntCollection actual = algo.computeMaximumMatching(g, w);
 		MatchingUnweightedTestUtils.validateMatching(g, actual);
@@ -121,7 +121,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 
-			UGraph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
+			Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
 			int maxWeight = m < 50 ? 100 : m * 2 + 2;
 			EdgeWeightFunc.Int w =
 					GraphsTestUtils.assignRandWeightsInt(g, -maxWeight, maxWeight / 4, seedGen.nextSeed());
@@ -133,7 +133,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 		});
 	}
 
-	private static void testGraphWeightedPerfect(MaximumMatchingWeighted algo, UGraph g, EdgeWeightFunc.Int w,
+	private static void testGraphWeightedPerfect(MaximumMatchingWeighted algo, Graph g, EdgeWeightFunc.Int w,
 			MaximumMatching validationUnweightedAlgo, MaximumMatchingWeighted validationWeightedAlgo) {
 		IntCollection actual = algo.computeMaximumPerfectMatching(g, w);
 		MatchingUnweightedTestUtils.validateMatching(g, actual);
@@ -175,20 +175,20 @@ class MatchingWeightedTestUtils extends TestUtils {
 		}
 
 		@Override
-		public IntCollection computeMaximumMatching(UGraph g, EdgeWeightFunc w) {
+		public IntCollection computeMaximumMatching(Graph g, EdgeWeightFunc w) {
 			return computeMaximumMatchingShuffled(g, w, false);
 		}
 
 		@Override
-		public IntCollection computeMaximumPerfectMatching(UGraph g, EdgeWeightFunc w) {
+		public IntCollection computeMaximumPerfectMatching(Graph g, EdgeWeightFunc w) {
 			return computeMaximumMatchingShuffled(g, w, true);
 		}
 
-		private IntCollection computeMaximumMatchingShuffled(UGraph g, EdgeWeightFunc w, boolean perfect) {
+		private IntCollection computeMaximumMatchingShuffled(Graph g, EdgeWeightFunc w, boolean perfect) {
 			int n = g.vertices().size();
 			int[] shuffle = randPermutation(n, seedGen.nextSeed());
 
-			UGraph shuffledG = new GraphArrayUndirected(n);
+			Graph shuffledG = new GraphArrayUndirected(n);
 
 			Weights.Bool partition = g.getVerticesWeights(Weights.DefaultBipartiteWeightKey);
 			if (partition != null) {

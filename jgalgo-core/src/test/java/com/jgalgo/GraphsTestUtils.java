@@ -245,14 +245,14 @@ public class GraphsTestUtils extends TestUtils {
 
 	}
 
-	public static UGraph randTree(int n, long seed) {
-		return (UGraph) new RandomGraphBuilder(seed).n(n).m(n - 1).directed(false).selfEdges(false).cycles(false)
-				.connected(true).build();
+	public static Graph randTree(int n, long seed) {
+		return new RandomGraphBuilder(seed).n(n).m(n - 1).directed(false).selfEdges(false).cycles(false).connected(true)
+				.build();
 	}
 
-	static UGraph randForest(int n, int m, long seed) {
-		return (UGraph) new RandomGraphBuilder(seed).n(n).m(m).directed(false).selfEdges(false).cycles(false)
-				.connected(false).build();
+	static Graph randForest(int n, int m, long seed) {
+		return new RandomGraphBuilder(seed).n(n).m(m).directed(false).selfEdges(false).cycles(false).connected(false)
+				.build();
 	}
 
 	static Weights.Double assignRandWeights(Graph g, long seed) {
@@ -300,12 +300,12 @@ public class GraphsTestUtils extends TestUtils {
 		return weight;
 	}
 
-	public static UGraph randGraph(int n, int m, long seed) {
+	public static Graph randGraph(int n, int m, long seed) {
 		return randGraph(n, m, GraphImplTestUtils.GRAPH_IMPL_DEFAULT, seed);
 	}
 
-	static UGraph randGraph(int n, int m, GraphImpl graphImpl, long seed) {
-		return (UGraph) new RandomGraphBuilder(seed).graphImpl(graphImpl).n(n).m(m).directed(false).parallelEdges(false)
+	static Graph randGraph(int n, int m, GraphImpl graphImpl, long seed) {
+		return new RandomGraphBuilder(seed).graphImpl(graphImpl).n(n).m(m).directed(false).parallelEdges(false)
 				.selfEdges(false).cycles(true).connected(false).build();
 	}
 

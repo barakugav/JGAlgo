@@ -64,7 +64,7 @@ public class MinimumMeanCycleHoward implements MinimumMeanCycle {
 	 */
 	@Override
 	public Path computeMinimumMeanCycle(Graph g, EdgeWeightFunc w) {
-		if (!(g instanceof DiGraph))
+		if (!g.getCapabilities().directed())
 			throw new IllegalArgumentException("only directed graphs are supported");
 		int n = g.vertices().size();
 

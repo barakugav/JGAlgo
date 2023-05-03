@@ -29,7 +29,7 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
  * @see    GraphArrayUndirected
  * @author Barak Ugav
  */
-public class GraphArrayDirected extends GraphArrayAbstract implements DiGraph {
+public class GraphArrayDirected extends GraphArrayAbstract {
 
 	private final DataContainer.Obj<int[]> edgesOut;
 	private final DataContainer.Int edgesOutNum;
@@ -181,7 +181,7 @@ public class GraphArrayDirected extends GraphArrayAbstract implements DiGraph {
 		removeEdgeFromList(edgesIn, edgesInNum, v, e);
 		addEdgeToList(edgesOut, edgesOutNum, v, e);
 		addEdgeToList(edgesIn, edgesInNum, u, e);
-		super.reverseEdge(e);
+		super.reverseEdge0(e);
 	}
 
 	@Override

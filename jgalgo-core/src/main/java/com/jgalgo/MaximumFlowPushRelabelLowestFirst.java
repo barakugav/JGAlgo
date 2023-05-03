@@ -44,12 +44,12 @@ public class MaximumFlowPushRelabelLowestFirst extends MaximumFlowPushRelabelAbs
 	public MaximumFlowPushRelabelLowestFirst() {}
 
 	@Override
-	WorkerDouble newWorkerDouble(DiGraph gOrig, FlowNetwork net, int source, int sink) {
+	WorkerDouble newWorkerDouble(Graph gOrig, FlowNetwork net, int source, int sink) {
 		return new WorkerDouble(gOrig, net, source, sink);
 	}
 
 	@Override
-	WorkerInt newWorkerInt(DiGraph gOrig, FlowNetwork.Int net, int source, int sink) {
+	WorkerInt newWorkerInt(Graph gOrig, FlowNetwork.Int net, int source, int sink) {
 		return new WorkerInt(gOrig, net, source, sink);
 	}
 
@@ -57,7 +57,7 @@ public class MaximumFlowPushRelabelLowestFirst extends MaximumFlowPushRelabelAbs
 
 		int minLayerActive;
 
-		WorkerDouble(DiGraph gOrig, FlowNetwork net, int source, int sink) {
+		WorkerDouble(Graph gOrig, FlowNetwork net, int source, int sink) {
 			super(gOrig, net, source, sink);
 		}
 
@@ -97,7 +97,7 @@ public class MaximumFlowPushRelabelLowestFirst extends MaximumFlowPushRelabelAbs
 
 		int minLayerActive;
 
-		WorkerInt(DiGraph gOrig, FlowNetwork.Int net, int source, int sink) {
+		WorkerInt(Graph gOrig, FlowNetwork.Int net, int source, int sink) {
 			super(gOrig, net, source, sink);
 		}
 

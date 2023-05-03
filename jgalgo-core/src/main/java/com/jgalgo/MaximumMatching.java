@@ -32,10 +32,11 @@ public interface MaximumMatching {
 	/**
 	 * Compute the maximum matching of unweighted undirected graph.
 	 *
-	 * @param  g an undirected graph
-	 * @return   collection of edges representing a maximum matching
+	 * @param  g                        an undirected graph
+	 * @return                          collection of edges representing a maximum matching
+	 * @throws IllegalArgumentException if {@code g} is a directed graph
 	 */
-	public IntCollection computeMaximumMatching(UGraph g);
+	public IntCollection computeMaximumMatching(Graph g);
 
 	/**
 	 * Create a new maximum matching algorithm builder.

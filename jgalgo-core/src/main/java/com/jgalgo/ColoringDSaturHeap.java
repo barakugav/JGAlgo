@@ -57,7 +57,9 @@ public class ColoringDSaturHeap implements Coloring {
 	}
 
 	@Override
-	public Coloring.Result computeColoring(UGraph g) {
+	public Coloring.Result computeColoring(Graph g) {
+		if (g.getCapabilities().directed())
+			throw new IllegalArgumentException("directed graphs are not supported");
 		if (GraphsUtils.containsSelfLoops(g))
 			throw new IllegalArgumentException("no valid coloring in graphs with self loops");
 

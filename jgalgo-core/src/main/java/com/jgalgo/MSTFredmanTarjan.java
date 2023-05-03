@@ -66,8 +66,8 @@ public class MSTFredmanTarjan implements MST {
 	 */
 	@Override
 	public IntCollection computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
-		if (!(g instanceof UGraph))
-			throw new IllegalArgumentException("only undirected graphs are supported");
+		if (g.getCapabilities().directed())
+			throw new IllegalArgumentException("directed graphs are not supported");
 		int n = g.vertices().size(), m = g.edges().size();
 		if (n == 0)
 			return IntLists.emptyList();

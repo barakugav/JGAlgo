@@ -17,7 +17,6 @@
 package com.jgalgo;
 
 import java.util.BitSet;
-
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 /**
@@ -51,12 +50,12 @@ public class MaximumFlowPushRelabel extends MaximumFlowPushRelabelAbstract {
 	public MaximumFlowPushRelabel() {}
 
 	@Override
-	WorkerDouble newWorkerDouble(DiGraph gOrig, FlowNetwork net, int source, int sink) {
+	WorkerDouble newWorkerDouble(Graph gOrig, FlowNetwork net, int source, int sink) {
 		return new WorkerDouble(gOrig, net, source, sink);
 	}
 
 	@Override
-	WorkerInt newWorkerInt(DiGraph gOrig, FlowNetwork.Int net, int source, int sink) {
+	WorkerInt newWorkerInt(Graph gOrig, FlowNetwork.Int net, int source, int sink) {
 		return new WorkerInt(gOrig, net, source, sink);
 	}
 
@@ -64,7 +63,7 @@ public class MaximumFlowPushRelabel extends MaximumFlowPushRelabelAbstract {
 
 		final ActiveQueue active;
 
-		WorkerDouble(DiGraph gOrig, FlowNetwork net, int source, int sink) {
+		WorkerDouble(Graph gOrig, FlowNetwork net, int source, int sink) {
 			super(gOrig, net, source, sink);
 			active = new ActiveQueue(this);
 		}
@@ -96,7 +95,7 @@ public class MaximumFlowPushRelabel extends MaximumFlowPushRelabelAbstract {
 
 		final ActiveQueue active;
 
-		WorkerInt(DiGraph gOrig, FlowNetwork.Int net, int source, int sink) {
+		WorkerInt(Graph gOrig, FlowNetwork.Int net, int source, int sink) {
 			super(gOrig, net, source, sink);
 			active = new ActiveQueue(this);
 		}
@@ -126,7 +125,7 @@ public class MaximumFlowPushRelabel extends MaximumFlowPushRelabelAbstract {
 
 	private static class ActiveQueue {
 
-		private final DiGraph g;
+		private final Graph g;
 		final BitSet isActive;
 		final IntPriorityQueue queue;
 

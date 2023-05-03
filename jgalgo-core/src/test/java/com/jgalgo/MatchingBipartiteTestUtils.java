@@ -33,14 +33,14 @@ class MatchingBipartiteTestUtils extends TestUtils {
 
 	private MatchingBipartiteTestUtils() {}
 
-	static UGraph randGraphBipartite(int sn, int tn, int m, GraphImpl graphImpl, long seed) {
-		return (UGraph) new RandomGraphBuilder(seed).sn(sn).tn(tn).m(m).directed(false).bipartite(true)
+	static Graph randGraphBipartite(int sn, int tn, int m, GraphImpl graphImpl, long seed) {
+		return new RandomGraphBuilder(seed).sn(sn).tn(tn).m(m).directed(false).bipartite(true)
 				.parallelEdges(false).selfEdges(false).cycles(true).connected(false).graphImpl(graphImpl).build();
 	}
 
-	static UGraph createGraphBipartiteFromAdjacencyMatrix(int sSize, int[][] m) {
+	static Graph createGraphBipartiteFromAdjacencyMatrix(int sSize, int[][] m) {
 		int n = m.length;
-		UGraph g = new GraphArrayUndirected(n);
+		Graph g = new GraphArrayUndirected(n);
 		Weights.Bool partition = g.addVerticesWeights(Weights.DefaultBipartiteWeightKey, boolean.class);
 		for (int u = 0; u < sSize; u++)
 			partition.set(u, true);
@@ -69,14 +69,14 @@ class MatchingBipartiteTestUtils extends TestUtils {
 			int sn = args[0];
 			int tn = args[1];
 			int m = args[2];
-			UGraph g = randGraphBipartite(sn, tn, m, graphImpl, seedGen.nextSeed());
+			Graph g = randGraphBipartite(sn, tn, m, graphImpl, seedGen.nextSeed());
 
 			int expeced = calcExpectedMaxMatching(g);
 			testBipartiteAlgo(algo, g, expeced);
 		});
 	}
 
-	private static void testBipartiteAlgo(MaximumMatching algo, UGraph g, int expectedMatchSize) {
+	private static void testBipartiteAlgo(MaximumMatching algo, Graph g, int expectedMatchSize) {
 		IntCollection match = algo.computeMaximumMatching(g);
 
 		MatchingUnweightedTestUtils.validateMatching(g, match);
