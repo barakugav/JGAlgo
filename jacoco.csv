@@ -1,7 +1,7 @@
 GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
 JGAlgo - Core,com.jgalgo,LinkedListDoubleArrayFixedSize.Abstract,4,53,2,2,0,11,2,9,0,9
 JGAlgo - Core,com.jgalgo,UnionFindPtr,49,141,7,17,10,35,8,12,2,6
-JGAlgo - Core,com.jgalgo,MaximumFlowPushRelabelAbstract,25,69,3,5,4,14,3,5,0,4
+JGAlgo - Core,com.jgalgo,MaximumFlowPushRelabelAbstract,24,68,3,5,4,14,3,5,0,4
 JGAlgo - Core,com.jgalgo,SplitFind,2,0,0,0,1,0,1,0,1,0
 JGAlgo - Core,com.jgalgo,GraphTableAbstract.EdgeIterOut,27,101,5,9,5,22,5,10,1,7
 JGAlgo - Core,com.jgalgo,GraphLinkedAbstract,8,142,2,4,1,40,2,14,0,13
@@ -12,21 +12,21 @@ JGAlgo - Core,com.jgalgo,RedBlackTreeExtension.ExtensionData.Obj,0,49,0,0,0,14,0
 JGAlgo - Core,com.jgalgo,GraphBuilderImpl,3,0,0,0,1,0,1,0,1,0
 JGAlgo - Core,com.jgalgo,DataContainer.Obj.1.new ObjectIterator() {...},4,36,1,3,1,5,1,4,0,3
 JGAlgo - Core,com.jgalgo,DataContainer.Byte.new AbstractByteCollection() {...},9,6,0,0,2,1,2,1,2,1
-JGAlgo - Core,com.jgalgo,MDSTTarjan,11,550,4,54,3,117,5,33,1,8
+JGAlgo - Core,com.jgalgo,MDSTTarjan,16,554,5,55,4,118,6,33,1,8
 JGAlgo - Core,com.jgalgo,LinkedListDoubleArrayFixedSize.ImplByte,4,41,1,1,0,12,1,6,0,6
 JGAlgo - Core,com.jgalgo,CyclesFinder,2,0,0,0,1,0,1,0,1,0
 JGAlgo - Core,com.jgalgo,DataContainer.Long.new AbstractLongCollection() {...},9,6,0,0,2,1,2,1,2,1
 JGAlgo - Core,com.jgalgo,WeightsImpl.Mapped.Char,0,30,0,0,0,7,0,5,0,5
-JGAlgo - Core,com.jgalgo,ColoringDSatur,5,171,1,21,1,39,1,12,0,2
+JGAlgo - Core,com.jgalgo,ColoringDSatur,10,175,2,22,2,40,2,12,0,2
 JGAlgo - Core,com.jgalgo,MaximumFlowPushRelabelToFront.VertexList,48,51,6,2,11,16,4,5,1,4
 JGAlgo - Core,com.jgalgo,SSSPCardinality,0,36,0,2,0,8,0,3,0,2
 JGAlgo - Core,com.jgalgo,SSSPGoldberg.Result,23,76,5,7,4,15,5,9,1,7
-JGAlgo - Core,com.jgalgo,MaximumMatchingWeightedBipartiteSSSP,24,421,3,35,7,81,6,23,3,7
+JGAlgo - Core,com.jgalgo,MaximumMatchingWeightedBipartiteSSSP,29,425,4,36,8,82,7,23,3,7
 JGAlgo - Core,com.jgalgo,MaximumFlowPushRelabelHighestFirst.WorkerDouble,11,44,2,6,1,9,2,5,0,3
 JGAlgo - Core,com.jgalgo,Utils.IterPeekableImpl.Int,55,0,8,0,18,0,8,0,4,0
 JGAlgo - Core,com.jgalgo,DebugPrintsManager,228,33,45,5,71,16,46,7,21,7
-JGAlgo - Core,com.jgalgo,GraphBuilderImpl.TableUndirected,24,0,0,0,6,0,4,0,4,0
-JGAlgo - Core,com.jgalgo,MaximumMatchingWeightedBipartiteHungarianMethod,10,53,0,0,4,9,2,3,2,3
+JGAlgo - Core,com.jgalgo,GraphBuilderImpl.TableUndirected,23,0,0,0,6,0,4,0,4,0
+JGAlgo - Core,com.jgalgo,MaximumMatchingWeightedBipartiteHungarianMethod,20,61,2,2,6,11,4,3,2,3
 JGAlgo - Core,com.jgalgo,SplayTree.SplayImpl,4,117,1,21,0,36,1,15,0,5
 JGAlgo - Core,com.jgalgo,Heap,2,0,0,0,1,0,1,0,1,0
 JGAlgo - Core,com.jgalgo,MaximumFlow,2,0,0,0,1,0,1,0,1,0
@@ -36,6 +36,7 @@ JGAlgo - Core,com.jgalgo,DynamicTreeSplayIntExtended.Node,0,9,0,0,0,4,0,2,0,2
 JGAlgo - Core,com.jgalgo,SplitFindMin,2,10,0,0,1,2,1,2,1,2
 JGAlgo - Core,com.jgalgo,TSPMetricMatchingAppx,2,249,1,17,1,47,1,11,0,3
 JGAlgo - Core,com.jgalgo,DynamicTreeSplayInt.SplayImplWithRelativeWeights,4,172,1,19,0,31,1,12,0,3
+JGAlgo - Core,com.jgalgo,TopologicalOrderAlgorithm,0,2,0,0,0,1,0,1,0,1
 JGAlgo - Core,com.jgalgo,DynamicTreeSplayExtension.ExtensionData.Int,25,24,0,0,6,8,2,4,2,4
 JGAlgo - Core,com.jgalgo,MaximumFlowPushRelabelAbstract.Worker,45,998,15,121,1,231,15,69,0,16
 JGAlgo - Core,com.jgalgo,BinarySearchTrees.Node,0,77,0,14,0,13,0,15,0,8
@@ -47,13 +48,13 @@ JGAlgo - Core,com.jgalgo,MSTBoruvka.MSTResult,0,12,0,0,0,5,0,1,0,1
 JGAlgo - Core,com.jgalgo,DynamicTreeBuilderImpl,40,98,7,11,8,20,7,8,1,5
 JGAlgo - Core,com.jgalgo,SubtreeMergeFindMinImpl.EdgeList,0,10,0,0,0,2,0,1,0,1
 JGAlgo - Core,com.jgalgo,GraphLinkedDirected.EdgeIterIn,0,12,0,0,0,4,0,2,0,2
-JGAlgo - Core,com.jgalgo,MSTBoruvka,17,367,4,46,2,84,4,26,0,5
+JGAlgo - Core,com.jgalgo,MSTBoruvka,17,368,4,46,2,84,4,26,0,5
 JGAlgo - Core,com.jgalgo,BFSIter,8,154,2,14,2,37,2,12,0,6
 JGAlgo - Core,com.jgalgo,DataContainer.Long.1.new LongIterator() {...},40,0,4,0,6,0,5,0,3,0
 JGAlgo - Core,com.jgalgo,Trees.PreOrderIter,4,52,1,9,1,17,1,8,0,4
 JGAlgo - Core,com.jgalgo,RMQStaticPowerOf2Table,6,14,1,1,1,4,1,2,0,2
 JGAlgo - Core,com.jgalgo,APSP,2,0,0,0,1,0,1,0,1,0
-JGAlgo - Core,com.jgalgo,APSPResultImpl.Directed,16,110,4,10,2,25,4,9,0,6
+JGAlgo - Core,com.jgalgo,APSPResultImpl.Directed,16,106,4,10,2,24,4,8,0,5
 JGAlgo - Core,com.jgalgo,RandomWalkIter,137,0,6,0,23,0,12,0,9,0
 JGAlgo - Core,com.jgalgo,GraphArrayUndirected,4,385,1,19,0,82,1,23,0,14
 JGAlgo - Core,com.jgalgo,RedBlackTree,93,796,23,119,10,209,27,81,4,33
@@ -68,7 +69,7 @@ JGAlgo - Core,com.jgalgo,GraphArrayAbstract,7,296,3,13,3,73,3,23,0,18
 JGAlgo - Core,com.jgalgo,IDStrategy.Continues.new AbstractIntSet() {...},1,24,2,2,0,4,2,4,0,4
 JGAlgo - Core,com.jgalgo,BinarySearchTree.new BinarySearchTree.Builder() {...},29,0,4,0,8,0,6,0,4,0
 JGAlgo - Core,com.jgalgo,HeapAbstract,21,38,5,3,6,11,4,6,1,5
-JGAlgo - Core,com.jgalgo,MaximumFlowPushRelabelDynamicTrees,5,47,1,3,1,9,1,4,0,3
+JGAlgo - Core,com.jgalgo,MaximumFlowPushRelabelDynamicTrees,5,46,1,3,1,9,1,4,0,3
 JGAlgo - Core,com.jgalgo,LCADynamicGabowLinear.Node0,6,57,2,4,0,12,2,5,0,4
 JGAlgo - Core,com.jgalgo,GraphTableAbstract.EdgeIterIn,27,102,5,9,5,22,5,10,1,7
 JGAlgo - Core,com.jgalgo,LCADynamicGabowLinear.Node2,0,16,0,0,0,7,0,4,0,4
@@ -88,18 +89,18 @@ JGAlgo - Core,com.jgalgo,DataContainer.Float.1.new FloatIterator() {...},40,0,4,
 JGAlgo - Core,com.jgalgo,Weights.Char,0,15,0,0,0,4,0,3,0,3
 JGAlgo - Core,com.jgalgo,GraphLinkedUndirected.new GraphCapabilities() {...},0,17,0,0,0,8,0,8,0,8
 JGAlgo - Core,com.jgalgo,MaximumMatchingWeighted.new MaximumMatchingWeighted.Builder() {...},22,0,2,0,6,0,4,0,3,0
-JGAlgo - Core,com.jgalgo,TreePathMaxima,2,119,1,11,1,26,2,7,1,2
+JGAlgo - Core,com.jgalgo,TreePathMaxima,7,123,2,12,2,27,3,7,1,2
 JGAlgo - Core,com.jgalgo,WeightsImpl.Direct.Obj,0,23,0,0,0,7,0,5,0,5
 JGAlgo - Core,com.jgalgo,GraphArrayUndirected.new GraphCapabilities() {...},0,17,0,0,0,8,0,8,0,8
 JGAlgo - Core,com.jgalgo,Weights,11,16,0,0,2,3,2,3,2,3
 JGAlgo - Core,com.jgalgo,TSPMetricUtils,79,328,13,45,6,69,13,23,0,7
 JGAlgo - Core,com.jgalgo,Utils.NullList,127,17,27,1,24,6,31,3,17,3
-JGAlgo - Core,com.jgalgo,GraphsUtils,317,227,42,24,51,53,32,16,9,6
+JGAlgo - Core,com.jgalgo,GraphsUtils,317,231,42,26,51,54,32,16,9,5
 JGAlgo - Core,com.jgalgo,MaximumFlowPushRelabelAbstract.WorkerInt,27,535,10,60,1,103,10,38,0,13
 JGAlgo - Core,com.jgalgo,MaximumFlowPushRelabelAbstract.WorkerDouble,27,554,10,62,1,104,10,39,0,13
 JGAlgo - Core,com.jgalgo,WeightsImpl.Direct.Byte,0,23,0,0,0,7,0,5,0,5
 JGAlgo - Core,com.jgalgo,SSSPResultImpl,9,117,0,8,2,32,2,8,2,4
-JGAlgo - Core,com.jgalgo,CyclesFinderJohnson,9,192,2,26,2,45,2,17,0,5
+JGAlgo - Core,com.jgalgo,CyclesFinderJohnson,9,188,2,26,2,44,2,16,0,4
 JGAlgo - Core,com.jgalgo,WeightsImpl.Direct.Short,0,23,0,0,0,7,0,5,0,5
 JGAlgo - Core,com.jgalgo,RedBlackTreeExtended.Node,0,19,0,0,0,6,0,4,0,4
 JGAlgo - Core,com.jgalgo,GraphArrayAbstract.EdgeIt,12,75,3,5,3,16,3,6,0,5
@@ -110,7 +111,7 @@ JGAlgo - Core,com.jgalgo,WeightsImpl.Mapped.Float,0,30,0,0,0,7,0,5,0,5
 JGAlgo - Core,com.jgalgo,MDSTTarjan.ContractedGraph,0,18,0,0,0,7,0,1,0,1
 JGAlgo - Core,com.jgalgo,MaximumFlowPushRelabelHighestFirst.WorkerInt,11,44,2,6,1,9,2,5,0,3
 JGAlgo - Core,com.jgalgo,AStar,11,153,1,15,3,38,2,9,1,2
-JGAlgo - Core,com.jgalgo,APSPFloydWarshall,14,365,2,52,3,75,2,30,0,5
+JGAlgo - Core,com.jgalgo,APSPFloydWarshall,14,364,2,52,3,75,2,30,0,5
 JGAlgo - Core,com.jgalgo,LinkedListDoubleArrayFixedSize,50,77,11,11,12,18,9,7,1,4
 JGAlgo - Core,com.jgalgo,ColoringDSaturHeap.HeapElm,0,37,0,4,0,10,0,4,0,2
 JGAlgo - Core,com.jgalgo,WeightsImpl.Mapped.Long,0,30,0,0,0,7,0,5,0,5
@@ -121,7 +122,7 @@ JGAlgo - Core,com.jgalgo,SSSPDijkstra.WorkerInt.HeapElm,0,15,0,0,0,5,0,2,0,2
 JGAlgo - Core,com.jgalgo,SSSPBuilderImpl,49,0,6,0,17,0,11,0,8,0
 JGAlgo - Core,com.jgalgo,ConnectivityAlgorithmImpl.WorkerUndirected,8,95,2,12,0,27,2,8,0,3
 JGAlgo - Core,com.jgalgo,IDStrategy.FixedAbstract,30,153,6,6,3,38,7,10,1,10
-JGAlgo - Core,com.jgalgo,MaximumMatchingBipartiteHopcroftKarp,10,342,2,44,4,86,3,24,1,3
+JGAlgo - Core,com.jgalgo,MaximumMatchingBipartiteHopcroftKarp,15,346,3,45,5,87,4,24,1,3
 JGAlgo - Core,com.jgalgo,DataContainer.Char.1.new CharIterator() {...},40,0,4,0,6,0,5,0,3,0
 JGAlgo - Core,com.jgalgo,WeightsImpl.Direct,0,4,0,0,0,2,0,1,0,1
 JGAlgo - Core,com.jgalgo,MemoryReuse,3,190,0,22,1,30,1,23,1,12
@@ -130,7 +131,7 @@ JGAlgo - Core,com.jgalgo,SSSPBellmanFord.Result,23,32,5,5,4,9,5,6,1,5
 JGAlgo - Core,com.jgalgo,RedBlackTree.Node,11,7,2,0,1,3,2,2,1,2
 JGAlgo - Core,com.jgalgo,MaximumMatchingWeightedGabow1990.Worker,389,3099,75,287,34,579,77,157,7,46
 JGAlgo - Core,com.jgalgo,IDStrategy.Continues.1.new IntIterator() {...},4,30,1,3,1,5,1,4,0,3
-JGAlgo - Core,com.jgalgo,ColoringGreedy,5,76,1,9,1,20,1,6,0,2
+JGAlgo - Core,com.jgalgo,ColoringGreedy,10,80,2,10,2,21,2,6,0,2
 JGAlgo - Core,com.jgalgo,MaximumMatchingWeightedBipartiteHungarianMethod.Worker,11,495,4,56,3,93,4,33,0,7
 JGAlgo - Core,com.jgalgo,RMQStaticLinearAbstract.DS,7,301,3,29,1,40,3,18,0,5
 JGAlgo - Core,com.jgalgo,HeapBinomial.Node,7,46,0,0,2,19,2,9,2,9
@@ -141,7 +142,7 @@ JGAlgo - Core,com.jgalgo,MaximumFlowPushRelabelDynamicTrees.AbstractWorker.Verte
 JGAlgo - Core,com.jgalgo,SubtreeMergeFindMinImpl.SubTree,0,58,0,6,0,17,0,7,0,4
 JGAlgo - Core,com.jgalgo,RMQStaticLookupTable.DS32768,7,108,3,15,1,14,3,8,0,2
 JGAlgo - Core,com.jgalgo,APSPJohnson.NegCycleRes,8,14,0,0,2,6,2,3,2,3
-JGAlgo - Core,com.jgalgo,GraphBuilderImpl.LinkedDirected,0,24,0,0,0,6,0,4,0,4
+JGAlgo - Core,com.jgalgo,GraphBuilderImpl.LinkedDirected,0,23,0,0,0,6,0,4,0,4
 JGAlgo - Core,com.jgalgo,APSPJohnson.SuccessRes,4,33,0,0,1,6,1,4,1,4
 JGAlgo - Core,com.jgalgo,EdgeIterImpl.new EdgeIterImpl() {...},18,3,0,0,5,1,5,1,5,1
 JGAlgo - Core,com.jgalgo,GraphLinkedDirected,9,465,0,30,4,111,1,34,1,19
@@ -157,17 +158,18 @@ JGAlgo - Core,com.jgalgo,MaximumMatchingWeightedGabow1990.Worker.Blossom,16,22,4
 JGAlgo - Core,com.jgalgo,GraphArrayUndirected.EdgeIt,0,35,0,2,0,8,0,4,0,3
 JGAlgo - Core,com.jgalgo,DynamicTree,0,4,0,0,0,1,0,1,0,1
 JGAlgo - Core,com.jgalgo,GraphArrayDirected.new GraphCapabilities() {...},0,17,0,0,0,8,0,8,0,8
+JGAlgo - Core,com.jgalgo,GraphsUtils.UndirectedGraphImpl,9,22,0,2,5,6,3,4,3,3
 JGAlgo - Core,com.jgalgo,DataContainer.Byte.1.new ByteIterator() {...},40,0,4,0,6,0,5,0,3,0
 JGAlgo - Core,com.jgalgo,DataContainer.Char,105,128,13,5,22,32,13,10,5,9
 JGAlgo - Core,com.jgalgo,HeapReferenceable.Builder,0,4,0,0,0,1,0,1,0,1
 JGAlgo - Core,com.jgalgo,SubtreeMergeFindMinImpl.NodeImpl,0,48,1,3,0,15,1,6,0,5
-JGAlgo - Core,com.jgalgo,MaximumMatchingGabow1976,0,604,0,56,0,119,0,31,0,3
+JGAlgo - Core,com.jgalgo,MaximumMatchingGabow1976,5,608,1,57,1,120,1,31,0,3
 JGAlgo - Core,com.jgalgo,BitsLookupTable.Count,62,0,8,0,11,0,6,0,2,0
 JGAlgo - Core,com.jgalgo,LCADynamicGabowSimple.CharacteristicAncestors0,0,12,0,0,0,5,0,1,0,1
-JGAlgo - Core,com.jgalgo,APSPResultImpl.Undirected,16,137,4,12,2,28,4,11,0,7
+JGAlgo - Core,com.jgalgo,APSPResultImpl.Undirected,16,133,4,12,2,27,4,10,0,6
 JGAlgo - Core,com.jgalgo,Weights.Double,0,19,0,0,0,5,0,4,0,4
 JGAlgo - Core,com.jgalgo,DataContainer.Obj,102,152,12,6,21,38,11,13,4,11
-JGAlgo - Core,com.jgalgo,GraphBuilderImpl.GraphCustomIDStrategies,45,310,0,2,14,63,8,28,8,27
+JGAlgo - Core,com.jgalgo,GraphBuilderImpl.GraphCustomIDStrategies,37,310,0,2,12,63,6,28,6,27
 JGAlgo - Core,com.jgalgo,DynamicTreeSplayInt.SplayNode,23,61,2,4,5,19,3,13,1,12
 JGAlgo - Core,com.jgalgo,RMQStaticCartesianTrees,4,15,1,1,1,4,1,2,0,2
 JGAlgo - Core,com.jgalgo,SSSPDijkstra.WorkerInt,5,125,1,11,1,32,1,7,0,2
@@ -181,7 +183,7 @@ JGAlgo - Core,com.jgalgo,Weights.Float,5,15,0,0,1,4,1,3,1,3
 JGAlgo - Core,com.jgalgo,DynamicTreeSplayExtension,9,40,2,4,2,11,2,4,0,3
 JGAlgo - Core,com.jgalgo,DataContainer.Short.1.new ShortIterator() {...},40,0,4,0,6,0,5,0,3,0
 JGAlgo - Core,com.jgalgo,RandomWalkIter.IterUniformNeighborDist,70,0,4,0,15,0,4,0,2,0
-JGAlgo - Core,com.jgalgo,TreePathMaximaHagerup,14,29,2,2,4,6,3,3,1,3
+JGAlgo - Core,com.jgalgo,TreePathMaximaHagerup,14,28,2,2,4,6,3,3,1,3
 JGAlgo - Core,com.jgalgo,HeapBinomial.Itr,0,53,0,8,0,14,0,6,0,2
 JGAlgo - Core,com.jgalgo,DFSIter,10,152,3,11,2,33,3,9,0,5
 JGAlgo - Core,com.jgalgo,DynamicTreeSplayExtension.Int,0,25,0,0,0,6,0,4,0,4
@@ -203,17 +205,17 @@ JGAlgo - Core,com.jgalgo,SplayTree,84,710,24,80,11,143,24,56,1,27
 JGAlgo - Core,com.jgalgo,GraphTableUndirected,0,110,0,0,0,17,0,5,0,5
 JGAlgo - Core,com.jgalgo,Weights.Int,0,19,0,0,0,5,0,4,0,4
 JGAlgo - Core,com.jgalgo,EdgeWeightFunc,0,8,0,0,0,1,0,1,0,1
-JGAlgo - Core,com.jgalgo,ConnectivityAlgorithmImpl,0,85,0,2,0,14,0,3,0,2
+JGAlgo - Core,com.jgalgo,ConnectivityAlgorithmImpl,0,84,0,2,0,14,0,3,0,2
 JGAlgo - Core,com.jgalgo,BinarySearchTree.Builder,4,0,0,0,1,0,1,0,1,0
 JGAlgo - Core,com.jgalgo,MaximumFlowDinic,27,476,6,48,6,117,7,25,1,4
-JGAlgo - Core,com.jgalgo,MSTFredmanTarjan,11,355,2,40,3,90,3,21,1,2
-JGAlgo - Core,com.jgalgo,ColoringGreedyRandom,13,110,1,11,4,26,2,7,1,2
+JGAlgo - Core,com.jgalgo,MSTFredmanTarjan,11,356,2,40,3,90,3,21,1,2
+JGAlgo - Core,com.jgalgo,ColoringGreedyRandom,18,114,2,12,5,27,3,7,1,2
 JGAlgo - Core,com.jgalgo,RedBlackTreeExtension,7,6,0,0,7,3,7,1,7,1
 JGAlgo - Core,com.jgalgo,UnionFind,2,0,0,0,1,0,1,0,1,0
 JGAlgo - Core,com.jgalgo,MaximumFlowDinicDynamicTrees.Ref,4,12,0,0,1,5,1,1,1,1
 JGAlgo - Core,com.jgalgo,MinimumCutSTBuilderImpl.new FlowNetwork() {...},4,25,0,0,1,5,1,4,1,4
-JGAlgo - Core,com.jgalgo,MinimumCutSTBuilderImpl.new MinimumCutST() {...},8,159,3,17,0,41,3,10,0,3
-JGAlgo - Core,com.jgalgo,Path,16,171,2,18,3,43,4,16,2,8
+JGAlgo - Core,com.jgalgo,MinimumCutSTBuilderImpl.new MinimumCutST() {...},8,160,3,17,0,41,3,10,0,3
+JGAlgo - Core,com.jgalgo,Path,12,167,1,17,2,40,3,16,2,8
 JGAlgo - Core,com.jgalgo,MaximumMatchingWeighted,4,7,0,0,1,1,1,2,1,2
 JGAlgo - Core,com.jgalgo,RMQStaticLookupTable,12,63,2,6,2,11,2,6,0,4
 JGAlgo - Core,com.jgalgo,MaximumMatchingWeightedGabow1990.Worker.EdgeEvent,6,9,0,0,1,4,1,1,1,1
@@ -222,22 +224,21 @@ JGAlgo - Core,com.jgalgo,CyclesFinderTarjan.Worker,0,161,0,16,0,40,0,11,0,3
 JGAlgo - Core,com.jgalgo,DataContainer.Bool.new AbstractBooleanCollection() {...},9,6,0,0,2,1,2,1,2,1
 JGAlgo - Core,com.jgalgo,MaximumFlowPushRelabelDynamicTrees.AbstractWorker,41,720,13,79,1,147,13,42,0,9
 JGAlgo - Core,com.jgalgo,GraphLinkedDirected.new GraphCapabilities() {...},0,17,0,0,0,8,0,8,0,8
-JGAlgo - Core,com.jgalgo,GraphBuilderImpl.GraphCustomIDStrategiesUndirected,4,8,1,1,1,3,1,1,0,1
-JGAlgo - Core,com.jgalgo,DiGraph,0,4,0,0,0,1,0,1,0,1
+JGAlgo - Core,com.jgalgo,GraphBuilderImpl.GraphCustomIDStrategiesUndirected,4,9,1,1,1,3,1,1,0,1
 JGAlgo - Core,com.jgalgo,RedBlackTreeExtension.ExtensionData,0,3,0,0,0,1,0,1,0,1
 JGAlgo - Core,com.jgalgo,GraphTableDirected.new GraphCapabilities() {...},0,17,0,0,0,8,0,8,0,8
 JGAlgo - Core,com.jgalgo,UnionFindPtr.Elm,0,12,0,0,0,5,0,1,0,1
 JGAlgo - Core,com.jgalgo,DataContainer.Int.new AbstractIntCollection() {...},9,6,0,0,2,1,2,1,2,1
-JGAlgo - Core,com.jgalgo,Graph,23,86,4,12,7,27,3,12,1,6
+JGAlgo - Core,com.jgalgo,Graph,23,94,4,12,7,29,3,14,1,8
 JGAlgo - Core,com.jgalgo,WeightsImpl.Mapped.Short,0,30,0,0,0,7,0,5,0,5
-JGAlgo - Core,com.jgalgo,MaximumMatchingWeightedGabow1990,6,35,0,0,2,5,1,3,1,3
+JGAlgo - Core,com.jgalgo,MaximumMatchingWeightedGabow1990,16,43,2,2,4,7,3,3,1,3
 JGAlgo - Core,com.jgalgo,GraphArrayDirected.EdgeOutIt,0,21,0,0,0,6,0,3,0,3
 JGAlgo - Core,com.jgalgo,HeapPairing.new AbstractSet() {...},15,13,0,0,5,2,3,2,3,2
 JGAlgo - Core,com.jgalgo,CyclesFinderJohnson.StronglyConnectedComponent,0,32,0,4,0,9,0,4,0,2
 JGAlgo - Core,com.jgalgo,BitsLookupTable.Ith,184,0,22,0,29,0,14,0,3,0
 JGAlgo - Core,com.jgalgo,FlowNetwork.new FlowNetwork() {...},7,43,1,1,1,9,1,5,0,5
 JGAlgo - Core,com.jgalgo,Utils.NullListIterator,95,0,14,0,25,0,18,0,11,0
-JGAlgo - Core,com.jgalgo,MinimumMeanCycleHoward,40,526,6,62,5,128,6,32,0,4
+JGAlgo - Core,com.jgalgo,MinimumMeanCycleHoward,40,527,6,62,5,128,6,32,0,4
 JGAlgo - Core,com.jgalgo,GraphTableAbstract.new EdgeIterImpl() {...},20,30,3,1,6,6,5,3,3,3
 JGAlgo - Core,com.jgalgo,WeightsImpl.Mapped.Byte,0,30,0,0,0,7,0,5,0,5
 JGAlgo - Core,com.jgalgo,HeapPairing,74,584,20,72,5,150,20,44,0,18
@@ -261,7 +262,7 @@ JGAlgo - Core,com.jgalgo,GraphBuilderImpl.GraphCustomIDStrategies.new AbstractIn
 JGAlgo - Core,com.jgalgo,LCADynamicGabowLinear,130,285,22,34,23,61,17,23,1,11
 JGAlgo - Core,com.jgalgo,Weights.Byte,4,15,0,0,1,4,1,3,1,3
 JGAlgo - Core,com.jgalgo,MaximumFlowPushRelabel.WorkerDouble,0,44,0,2,0,11,0,6,0,5
-JGAlgo - Core,com.jgalgo,ColoringDSaturHeap,11,125,1,13,3,30,2,8,1,2
+JGAlgo - Core,com.jgalgo,ColoringDSaturHeap,16,129,2,14,4,31,3,8,1,2
 JGAlgo - Core,com.jgalgo,MaximumFlowPushRelabelLowestFirst,0,19,0,0,0,3,0,3,0,3
 JGAlgo - Core,com.jgalgo,MSTKargerKleinTarjan.AllocatedMemory,0,125,0,2,0,20,0,7,0,6
 JGAlgo - Core,com.jgalgo,SSSPDial,36,291,7,23,8,67,6,15,0,6
@@ -273,15 +274,14 @@ JGAlgo - Core,com.jgalgo,LCADynamicGabowSimple.NodeImpl,14,144,3,19,1,25,3,20,1,
 JGAlgo - Core,com.jgalgo,LCAStatic,2,0,0,0,1,0,1,0,1,0
 JGAlgo - Core,com.jgalgo,RMQStatic,2,0,0,0,1,0,1,0,1,0
 JGAlgo - Core,com.jgalgo,DataContainer.Int,103,129,12,6,22,32,12,11,5,9
-JGAlgo - Core,com.jgalgo,MSTPrim,11,140,2,20,3,38,3,11,1,2
+JGAlgo - Core,com.jgalgo,MSTPrim,11,141,2,20,3,38,3,11,1,2
 JGAlgo - Core,com.jgalgo,RedBlackTreeExtended,49,314,6,24,8,51,7,20,2,10
 JGAlgo - Core,com.jgalgo,WeightsImpl.Direct.Char,0,23,0,0,0,7,0,5,0,5
-JGAlgo - Core,com.jgalgo,TopologicalOrder,5,86,1,13,1,22,1,7,0,1
 JGAlgo - Core,com.jgalgo,MaximumFlowPushRelabel.ActiveQueue,0,57,0,2,0,15,0,4,0,3
 JGAlgo - Core,com.jgalgo,DataContainer.Long,104,129,12,6,22,32,12,11,5,9
 JGAlgo - Core,com.jgalgo,MSTBoruvka.AllocatedMemory,0,53,0,0,0,13,0,2,0,2
-JGAlgo - Core,com.jgalgo,MinimumMeanCycleDasdanGupta,13,568,5,55,1,106,5,28,0,3
-JGAlgo - Core,com.jgalgo,MSTKruskal,11,79,1,7,3,17,2,5,1,2
+JGAlgo - Core,com.jgalgo,MinimumMeanCycleDasdanGupta,13,569,5,55,1,106,5,28,0,3
+JGAlgo - Core,com.jgalgo,MSTKruskal,11,80,1,7,3,17,2,5,1,2
 JGAlgo - Core,com.jgalgo,MaximumMatching,4,0,0,0,1,0,1,0,1,0
 JGAlgo - Core,com.jgalgo,DataContainer.Double,104,129,12,6,22,32,12,11,5,9
 JGAlgo - Core,com.jgalgo,MaximumFlowPushRelabelDynamicTrees.WorkerInt.Vertex,0,15,0,2,0,4,0,3,0,2
@@ -291,10 +291,10 @@ JGAlgo - Core,com.jgalgo,SplayTree.NodeSized,0,13,0,0,0,6,0,2,0,2
 JGAlgo - Core,com.jgalgo,GraphArrayDirected,19,542,1,17,6,106,2,25,1,17
 JGAlgo - Core,com.jgalgo,MaximumFlowPushRelabelDynamicTrees.WorkerDouble.Vertex,0,17,0,2,0,4,0,3,0,2
 JGAlgo - Core,com.jgalgo,BinarySearchTrees,86,608,25,119,23,185,21,71,0,18
-JGAlgo - Core,com.jgalgo,Path.IterDirected,26,42,1,3,5,11,4,5,3,4
+JGAlgo - Core,com.jgalgo,Path.IterDirected,31,46,2,4,6,12,5,5,3,4
 JGAlgo - Core,com.jgalgo,WeightsImpl,7,208,1,37,1,56,1,22,0,4
 JGAlgo - Core,com.jgalgo,SSSP,4,0,0,0,1,0,1,0,1,0
-JGAlgo - Core,com.jgalgo,SSSPBellmanFord,5,179,1,17,1,38,1,10,0,2
+JGAlgo - Core,com.jgalgo,SSSPBellmanFord,5,180,1,17,1,38,1,10,0,2
 JGAlgo - Core,com.jgalgo,GraphLinkedDirected.Node,0,6,0,0,0,2,0,1,0,1
 JGAlgo - Core,com.jgalgo,MST,2,0,0,0,1,0,1,0,1,0
 JGAlgo - Core,com.jgalgo,DynamicTreeSplay,54,482,17,45,7,109,18,29,1,15
@@ -309,25 +309,26 @@ JGAlgo - Core,com.jgalgo,LinkedListDoubleArrayFixedSize.ImplInt,35,0,0,0,10,0,5,
 JGAlgo - Core,com.jgalgo,MaximumFlowPushRelabelDynamicTrees.WorkerDouble,15,446,4,32,1,83,4,26,0,12
 JGAlgo - Core,com.jgalgo,EdgeIterImpl,0,5,0,0,0,1,0,1,0,1
 JGAlgo - Core,com.jgalgo,UnionFindValueArray,5,180,2,12,1,41,2,14,0,9
+JGAlgo - Core,com.jgalgo,TopologicalOrderAlgorithmImpl,14,113,3,15,2,28,3,9,0,3
 JGAlgo - Core,com.jgalgo,DataContainer.Bool.1.new BooleanIterator() {...},40,0,4,0,6,0,5,0,3,0
 JGAlgo - Core,com.jgalgo,AStar.HeapElm,0,15,0,0,0,5,0,2,0,2
 JGAlgo - Core,com.jgalgo,SSSPGoldberg,16,622,2,68,4,121,3,40,1,7
-JGAlgo - Core,com.jgalgo,GraphBuilderImpl.LinkedUndirected,24,0,0,0,6,0,4,0,4,0
+JGAlgo - Core,com.jgalgo,GraphBuilderImpl.LinkedUndirected,23,0,0,0,6,0,4,0,4,0
 JGAlgo - Core,com.jgalgo,MaximumFlowDinicDynamicTrees,30,699,8,58,2,146,8,31,0,6
-JGAlgo - Core,com.jgalgo,MaximumFlowEdmondsKarp,16,36,2,2,2,8,2,3,0,3
+JGAlgo - Core,com.jgalgo,MaximumFlowEdmondsKarp,15,36,2,2,2,8,2,3,0,3
 JGAlgo - Core,com.jgalgo,DataContainer.Short,105,128,13,5,22,32,13,10,5,9
 JGAlgo - Core,com.jgalgo,HeapPairing.PreOrderIter,4,61,1,11,1,16,1,8,0,3
 JGAlgo - Core,com.jgalgo,TreePathMaxima.Queries,0,45,0,0,0,10,0,5,0,5
-JGAlgo - Core,com.jgalgo,MSTYao,13,451,3,55,1,96,3,30,0,4
+JGAlgo - Core,com.jgalgo,MSTYao,13,452,3,55,1,96,3,30,0,4
 JGAlgo - Core,com.jgalgo,Path.IterUndirected,14,69,1,3,3,14,2,7,1,6
 JGAlgo - Core,com.jgalgo,DataContainer.Double.new AbstractDoubleCollection() {...},9,6,0,0,2,1,2,1,2,1
 JGAlgo - Core,com.jgalgo,RedBlackTreeExtension.Min,118,172,25,23,16,35,16,17,0,9
 JGAlgo - Core,com.jgalgo,MaximumMatchingWeightedGabow1990.Worker.EdgeVal,0,9,0,0,0,4,0,1,0,1
 JGAlgo - Core,com.jgalgo,WeightsImpl.Direct.Bool,0,23,0,0,0,7,0,5,0,5
-JGAlgo - Core,com.jgalgo,APSPJohnson,17,292,1,25,5,61,3,19,2,7
+JGAlgo - Core,com.jgalgo,APSPJohnson,17,287,1,25,5,60,3,18,2,6
 JGAlgo - Core,com.jgalgo,IDStrategy.Rand,22,0,4,0,6,0,4,0,2,0
-JGAlgo - Core,com.jgalgo,GraphBuilderImpl.ArrayDirected,0,24,0,0,0,6,0,4,0,4
-JGAlgo - Core,com.jgalgo,ColoringRecursiveLargestFirst,5,219,1,39,1,57,1,21,0,2
+JGAlgo - Core,com.jgalgo,GraphBuilderImpl.ArrayDirected,0,23,0,0,0,6,0,4,0,4
+JGAlgo - Core,com.jgalgo,ColoringRecursiveLargestFirst,10,223,2,40,2,58,2,21,0,2
 JGAlgo - Core,com.jgalgo,DynamicTreeSplayExtension.TreeSize,4,107,1,7,0,22,1,10,0,7
 JGAlgo - Core,com.jgalgo,Utils.Stack,46,58,4,4,12,10,5,6,3,4
 JGAlgo - Core,com.jgalgo,MaximumFlowPushRelabelDynamicTrees.WorkerInt,15,448,5,31,1,84,5,25,0,12
@@ -342,10 +343,10 @@ JGAlgo - Core,com.jgalgo,Utils.IterPeekableImpl,55,5,8,0,18,1,8,1,4,1
 JGAlgo - Core,com.jgalgo,Weights.new Object() {...},0,5,0,0,0,2,0,2,0,2
 JGAlgo - Core,com.jgalgo,SubtreeMergeFindMin,2,0,0,0,1,0,1,0,1,0
 JGAlgo - Core,com.jgalgo,RMQStaticLinearAbstract.PadderComparator,0,26,0,2,0,5,0,3,0,2
-JGAlgo - Core,com.jgalgo,GraphBuilderImpl.ArrayUndirected,0,24,0,0,0,6,0,4,0,4
+JGAlgo - Core,com.jgalgo,GraphBuilderImpl.ArrayUndirected,0,23,0,0,0,6,0,4,0,4
 JGAlgo - Core,com.jgalgo,DataContainer.Byte,105,128,13,5,22,32,13,10,5,9
 JGAlgo - Core,com.jgalgo,GraphBuilderImpl.GraphCustomIDStrategies.3.new IntIterator() {...},25,0,0,0,4,0,3,0,3,0
-JGAlgo - Core,com.jgalgo,Trees,6,203,4,24,2,53,4,16,0,6
+JGAlgo - Core,com.jgalgo,Trees,11,208,5,25,3,54,5,16,0,6
 JGAlgo - Core,com.jgalgo,HeapFibonacci,56,748,13,99,11,188,14,61,1,18
 JGAlgo - Core,com.jgalgo,GraphLinkedUndirected,57,323,5,29,13,76,5,27,2,13
 JGAlgo - Core,com.jgalgo,HeapBinomial,43,748,15,137,11,172,16,77,1,16
@@ -357,12 +358,13 @@ JGAlgo - Core,com.jgalgo,UnionFindArray,12,186,3,17,2,45,3,16,0,9
 JGAlgo - Core,com.jgalgo,MinimumCutST,4,3,0,0,1,1,1,1,1,1
 JGAlgo - Core,com.jgalgo,RMQStaticComparator,36,14,2,0,6,2,5,2,4,2
 JGAlgo - Core,com.jgalgo,GraphLinkedDirected.EdgeIterOut,0,12,0,0,0,4,0,2,0,2
+JGAlgo - Core,com.jgalgo,TopologicalOrderAlgorithmImpl.AllocatedMemory,0,24,0,0,0,6,0,2,0,2
 JGAlgo - Core,com.jgalgo,GraphTableUndirected.new GraphCapabilities() {...},0,17,0,0,0,8,0,8,0,8
 JGAlgo - Core,com.jgalgo,Utils,1,139,1,3,0,26,1,11,0,10
-JGAlgo - Core,com.jgalgo,EulerianTourImpl,54,384,10,62,8,100,10,32,0,6
+JGAlgo - Core,com.jgalgo,EulerianTourImpl,54,383,10,62,8,100,10,32,0,6
 JGAlgo - Core,com.jgalgo,IDStrategy.Fixed,0,14,0,0,0,4,0,2,0,2
-JGAlgo - Core,com.jgalgo,GraphBuilderImpl.Abstract,30,54,9,9,8,17,8,5,0,4
-JGAlgo - Core,com.jgalgo,SSSPDag,5,89,1,11,1,20,1,7,0,2
+JGAlgo - Core,com.jgalgo,GraphBuilderImpl.Abstract,30,55,9,9,8,17,8,5,0,4
+JGAlgo - Core,com.jgalgo,SSSPDag,5,95,1,11,1,21,1,7,0,2
 JGAlgo - Core,com.jgalgo,RedBlackTreeExtension.Obj,0,23,0,0,0,6,0,4,0,4
 JGAlgo - Core,com.jgalgo,HeapReferenceable,5,49,2,8,2,11,3,5,1,2
 JGAlgo - Core,com.jgalgo,LCAStaticRMQ,4,147,1,11,1,39,1,7,0,2
@@ -378,9 +380,8 @@ JGAlgo - Core,com.jgalgo,SSSPDial.DialHeap,23,155,3,19,8,48,2,16,0,7
 JGAlgo - Core,com.jgalgo,WeightsImpl.Direct.Float,0,23,0,0,0,7,0,5,0,5
 JGAlgo - Core,com.jgalgo,ArraysUtils,203,623,60,76,30,114,45,43,3,17
 JGAlgo - Core,com.jgalgo,DataContainer.Short.new AbstractShortCollection() {...},9,6,0,0,2,1,2,1,2,1
-JGAlgo - Core,com.jgalgo,UGraph,8,26,0,2,4,7,2,5,2,4
 JGAlgo - Core,com.jgalgo,Weights.Long,5,15,0,0,1,4,1,3,1,3
-JGAlgo - Core,com.jgalgo,GraphBuilderImpl.TableDirected,24,0,0,0,6,0,4,0,4,0
+JGAlgo - Core,com.jgalgo,GraphBuilderImpl.TableDirected,23,0,0,0,6,0,4,0,4,0
 JGAlgo - Core,com.jgalgo,ConnectivityAlgorithmImpl.Builder,0,7,0,0,0,2,0,2,0,2
 JGAlgo - Core,com.jgalgo,LCADynamicGabowSimple,75,647,17,89,4,113,18,54,1,18
 JGAlgo - Core,com.jgalgo,MinimumCutSTBuilderImpl.Default,7,0,0,0,2,0,2,0,2,0
@@ -400,12 +401,12 @@ JGAlgo - Core,com.jgalgo,MaximumFlowEdmondsKarp.WorkerDouble,12,385,4,34,3,88,4,
 JGAlgo - Core,com.jgalgo,HeapBinary.It,4,37,1,3,1,6,1,4,0,3
 JGAlgo - Core,com.jgalgo,Coloring,2,0,0,0,1,0,1,0,1,0
 JGAlgo - Core,com.jgalgo,GraphTableAbstract,51,210,6,10,14,45,10,17,5,14
-JGAlgo - Core,com.jgalgo,GraphBaseContinues,157,349,18,30,26,81,21,32,6,23
-JGAlgo - Core,com.jgalgo,GraphBuilderImpl.GraphCustomIDStrategiesDirected,4,22,1,1,1,7,1,3,0,3
+JGAlgo - Core,com.jgalgo,GraphBaseContinues,142,354,18,30,23,82,18,33,3,24
+JGAlgo - Core,com.jgalgo,GraphBuilderImpl.GraphCustomIDStrategiesDirected,4,19,1,1,1,6,1,2,0,2
 JGAlgo - Core,com.jgalgo,HeapFibonacci.new AbstractSet() {...},15,13,0,0,5,2,3,2,3,2
 JGAlgo - Core,com.jgalgo,MaximumMatching.new MaximumMatching.Builder() {...},22,0,2,0,5,0,4,0,3,0
 JGAlgo - Core,com.jgalgo,MinimumMeanCycle,2,0,0,0,1,0,1,0,1,0
-JGAlgo - Core,com.jgalgo,GraphBase,36,182,5,9,9,47,3,18,0,14
+JGAlgo - Core,com.jgalgo,GraphBase,69,219,8,12,15,56,7,18,1,14
 JGAlgo - Core,com.jgalgo,SplayTree.Node,0,7,0,0,0,3,0,2,0,2
 JGAlgo - Core,com.jgalgo,ConnectivityAlgorithmImpl.Result,4,17,0,0,1,6,1,3,1,3
 JGAlgo - Core,com.jgalgo,MaximumFlowPushRelabelHighestFirst,0,19,0,0,0,3,0,3,0,3

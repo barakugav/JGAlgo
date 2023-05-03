@@ -22,15 +22,17 @@ package com.jgalgo;
  * The algorithm first compute a topological sorting of the vertices in linear time, and then traverse the vertices in
  * that order and determine the distance for each one of them.
  *
- * @see    TopologicalOrder
+ * @see    TopologicalOrderAlgorithm
  * @author Barak Ugav
  */
 public class SSSPDag implements SSSP {
 
+<span class="fc" id="L30">	private final TopologicalOrderAlgorithm topoAlg = TopologicalOrderAlgorithm.newBuilder().build();</span>
+
 	/**
 	 * Construct a new SSSP algorithm object.
 	 */
-<span class="fc" id="L33">	public SSSPDag() {}</span>
+<span class="fc" id="L35">	public SSSPDag() {}</span>
 
 	/**
 	 * {@inheritDoc}
@@ -39,31 +41,31 @@ public class SSSPDag implements SSSP {
 	 */
 	@Override
 	public SSSPDag.Result computeShortestPaths(Graph g, EdgeWeightFunc w, int source) {
-<span class="pc bpc" id="L42" title="1 of 2 branches missed.">		if (!(g instanceof DiGraph))</span>
-<span class="nc" id="L43">			throw new IllegalArgumentException(&quot;Only DAG graphs are supported&quot;);</span>
-<span class="fc" id="L44">		SSSPResultImpl res = new SSSPResultImpl(g, source);</span>
-<span class="fc" id="L45">		res.distances[source] = 0;</span>
+<span class="pc bpc" id="L44" title="1 of 2 branches missed.">		if (!g.getCapabilities().directed())</span>
+<span class="nc" id="L45">			throw new IllegalArgumentException(&quot;Only DAG graphs are supported&quot;);</span>
+<span class="fc" id="L46">		SSSPResultImpl res = new SSSPResultImpl(g, source);</span>
+<span class="fc" id="L47">		res.distances[source] = 0;</span>
 
-<span class="fc" id="L47">		int[] topolSort = TopologicalOrder.computeTopologicalSortingDAG((DiGraph) g);</span>
-<span class="fc" id="L48">		boolean sourceSeen = false;</span>
-<span class="fc bfc" id="L49" title="All 2 branches covered.">		for (int u : topolSort) {</span>
-<span class="fc bfc" id="L50" title="All 2 branches covered.">			if (!sourceSeen) {</span>
-<span class="fc bfc" id="L51" title="All 2 branches covered.">				if (u != source)</span>
-<span class="fc" id="L52">					continue;</span>
-<span class="fc" id="L53">				sourceSeen = true;</span>
+<span class="fc" id="L49">		int[] topolSort = topoAlg.computeTopologicalSorting(g);</span>
+<span class="fc" id="L50">		boolean sourceSeen = false;</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">		for (int u : topolSort) {</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">			if (!sourceSeen) {</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">				if (u != source)</span>
+<span class="fc" id="L54">					continue;</span>
+<span class="fc" id="L55">				sourceSeen = true;</span>
 			}
-<span class="fc bfc" id="L55" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
-<span class="fc" id="L56">				int e = eit.nextInt();</span>
-<span class="fc" id="L57">				int v = eit.v();</span>
-<span class="fc" id="L58">				double d = res.distances[u] + w.weight(e);</span>
-<span class="fc bfc" id="L59" title="All 2 branches covered.">				if (d &lt; res.distances[v]) {</span>
-<span class="fc" id="L60">					res.distances[v] = d;</span>
-<span class="fc" id="L61">					res.backtrack[v] = e;</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
+<span class="fc" id="L58">				int e = eit.nextInt();</span>
+<span class="fc" id="L59">				int v = eit.v();</span>
+<span class="fc" id="L60">				double d = res.distances[u] + w.weight(e);</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">				if (d &lt; res.distances[v]) {</span>
+<span class="fc" id="L62">					res.distances[v] = d;</span>
+<span class="fc" id="L63">					res.backtrack[v] = e;</span>
 				}
-<span class="fc" id="L63">			}</span>
+<span class="fc" id="L65">			}</span>
 		}
 
-<span class="fc" id="L66">		return res;</span>
+<span class="fc" id="L68">		return res;</span>
 	}
 
 }

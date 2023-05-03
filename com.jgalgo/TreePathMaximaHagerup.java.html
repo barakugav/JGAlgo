@@ -69,11 +69,11 @@ public class TreePathMaximaHagerup implements TreePathMaxima {
 
 	@Override
 	public int[] computeHeaviestEdgeInTreePaths(Graph tree, EdgeWeightFunc w, TreePathMaxima.Queries queries) {
-<span class="pc bpc" id="L72" title="1 of 2 branches missed.">		if (!(tree instanceof UGraph))</span>
-<span class="nc" id="L73">			throw new IllegalArgumentException(&quot;only undirected graphs are supported&quot;);</span>
-<span class="pc bpc" id="L74" title="1 of 2 branches missed.">		if (!Trees.isTree((UGraph) tree))</span>
+<span class="pc bpc" id="L72" title="1 of 2 branches missed.">		if (tree.getCapabilities().directed())</span>
+<span class="nc" id="L73">			throw new IllegalArgumentException(&quot;directed graphs are not supported&quot;);</span>
+<span class="pc bpc" id="L74" title="1 of 2 branches missed.">		if (!Trees.isTree(tree))</span>
 <span class="nc" id="L75">			throw new IllegalArgumentException(&quot;only trees are supported&quot;);</span>
-<span class="fc" id="L76">		return new Worker((UGraph) tree, w, useBitsLookupTables).calcTPM(queries);</span>
+<span class="fc" id="L76">		return new Worker(tree, w, useBitsLookupTables).calcTPM(queries);</span>
 	}
 
 	private static class Worker {
@@ -81,13 +81,13 @@ public class TreePathMaximaHagerup implements TreePathMaxima {
 		/*
 		 * Original tree, in other functions 't' refers to the Boruvka fully branching tree
 		 */
-		final UGraph tOrig;
+		final Graph tOrig;
 		final EdgeWeightFunc w;
 		private final Int2IntFunction getBitCount;
 		private final BiInt2IntFunction getIthbit;
 		private final Int2IntFunction getNumberOfTrailingZeros;
 
-<span class="fc" id="L90">		Worker(UGraph t, EdgeWeightFunc w, boolean useBitsLookupTables) {</span>
+<span class="fc" id="L90">		Worker(Graph t, EdgeWeightFunc w, boolean useBitsLookupTables) {</span>
 <span class="fc" id="L91">			this.tOrig = t;</span>
 <span class="fc" id="L92">			this.w = w;</span>
 
@@ -116,8 +116,8 @@ public class TreePathMaximaHagerup implements TreePathMaxima {
 <span class="fc" id="L116">		}</span>
 
 		int[] calcTPM(TreePathMaxima.Queries queries) {
-<span class="fc" id="L119">			ObjectIntPair&lt;UGraph&gt; r = buildBoruvkaFullyBranchingTree();</span>
-<span class="fc" id="L120">			UGraph t = r.first();</span>
+<span class="fc" id="L119">			ObjectIntPair&lt;Graph&gt; r = buildBoruvkaFullyBranchingTree();</span>
+<span class="fc" id="L120">			Graph t = r.first();</span>
 <span class="fc" id="L121">			int root = r.secondInt();</span>
 
 <span class="fc" id="L123">			int[] lcaQueries = splitQueriesIntoLCAQueries(t, root, queries);</span>
@@ -128,7 +128,7 @@ public class TreePathMaximaHagerup implements TreePathMaxima {
 
 <span class="fc" id="L129">			int[] q = calcQueriesPerVertex(t, lcaQueries, depths, edgeToParent);</span>
 <span class="fc" id="L130">			int[][] a = calcAnswersPerVertex(t, root, q, edgeToParent);</span>
-<span class="fc" id="L131">			return extractEdgesFromAnswers(a, q, lcaQueries, depths, t.edgesWeight(&quot;edgeData&quot;));</span>
+<span class="fc" id="L131">			return extractEdgesFromAnswers(a, q, lcaQueries, depths, t.getEdgesWeights(&quot;edgeData&quot;));</span>
 		}
 
 		private int[] extractEdgesFromAnswers(int[][] a, int[] q, int[] lcaQueries, int[] depths,
@@ -167,13 +167,13 @@ public class TreePathMaximaHagerup implements TreePathMaxima {
 <span class="fc" id="L167">			return res;</span>
 		}
 
-		private int[][] calcAnswersPerVertex(UGraph t, int root, int[] q, int[] edgeToParent) {
+		private int[][] calcAnswersPerVertex(Graph t, int root, int[] q, int[] edgeToParent) {
 <span class="fc" id="L171">			int n = t.vertices().size();</span>
 <span class="fc" id="L172">			int[] a = new int[n];</span>
 
 <span class="fc" id="L174">			int leavesDepth = GraphsUtils.getFullyBranchingTreeDepth(t, root);</span>
 
-<span class="fc" id="L176">			Weights.Int tData = t.edgesWeight(&quot;edgeData&quot;);</span>
+<span class="fc" id="L176">			Weights.Int tData = t.getEdgesWeights(&quot;edgeData&quot;);</span>
 <span class="fc" id="L177">			int[][] res = new int[tOrig.vertices().size()][];</span>
 
 <span class="fc bfc" id="L179" title="All 2 branches covered.">			for (DFSIter it = new DFSIter(t, root); it.hasNext();) {</span>
@@ -246,7 +246,7 @@ public class TreePathMaximaHagerup implements TreePathMaxima {
 <span class="fc" id="L246">			return av;</span>
 		}
 
-		private ObjectIntPair&lt;UGraph&gt; buildBoruvkaFullyBranchingTree() {
+		private ObjectIntPair&lt;Graph&gt; buildBoruvkaFullyBranchingTree() {
 <span class="fc" id="L250">			int n = tOrig.vertices().size();</span>
 <span class="fc" id="L251">			int[] minEdges = new int[n];</span>
 <span class="fc" id="L252">			double[] minGraphWeights = new double[n];</span>
@@ -258,10 +258,10 @@ public class TreePathMaximaHagerup implements TreePathMaxima {
 <span class="fc bfc" id="L258" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++)</span>
 <span class="fc" id="L259">				vTv[v] = v;</span>
 
-<span class="fc" id="L261">			UGraph t = new GraphArrayUndirected(n);</span>
+<span class="fc" id="L261">			Graph t = new GraphArrayUndirected(n);</span>
 <span class="fc" id="L262">			Weights.Int tData = t.addEdgesWeights(&quot;edgeData&quot;, int.class, Integer.valueOf(-1));</span>
-<span class="fc bfc" id="L263" title="All 2 branches covered.">			for (UGraph G = GraphsUtils.referenceGraph(tOrig, EdgeRefWeightKey); (n = G.vertices().size()) &gt; 1;) {</span>
-<span class="fc" id="L264">				Weights.Int GData = G.edgesWeight(EdgeRefWeightKey);</span>
+<span class="fc bfc" id="L263" title="All 2 branches covered.">			for (Graph G = GraphsUtils.referenceGraph(tOrig, EdgeRefWeightKey); (n = G.vertices().size()) &gt; 1;) {</span>
+<span class="fc" id="L264">				Weights.Int GData = G.getEdgesWeights(EdgeRefWeightKey);</span>
 
 				// Find minimum edge of each vertex
 <span class="fc" id="L267">				Arrays.fill(minEdges, 0, n, -1);</span>
@@ -316,7 +316,7 @@ public class TreePathMaximaHagerup implements TreePathMaxima {
 <span class="fc" id="L316">				vTvNext = temp;</span>
 
 				// contract G to new graph with the super vertices
-<span class="fc" id="L319">				UGraph gNext = new GraphArrayUndirected(nNext);</span>
+<span class="fc" id="L319">				Graph gNext = new GraphArrayUndirected(nNext);</span>
 <span class="fc" id="L320">				Weights.Int gNextData = gNext.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));</span>
 <span class="fc bfc" id="L321" title="All 2 branches covered.">				for (int u = 0; u &lt; n; u++) {</span>
 <span class="fc" id="L322">					int U = vNext[u];</span>
@@ -336,7 +336,7 @@ public class TreePathMaximaHagerup implements TreePathMaxima {
 <span class="fc" id="L336">			return ObjectIntPair.of(t, vTv[0]);</span>
 		}
 
-		private static int[] splitQueriesIntoLCAQueries(UGraph t, int root, TreePathMaxima.Queries queries) {
+		private static int[] splitQueriesIntoLCAQueries(Graph t, int root, TreePathMaxima.Queries queries) {
 <span class="fc" id="L340">			int queriesNum = queries.size();</span>
 <span class="fc" id="L341">			int[] lcaQueries = new int[queriesNum * 4];</span>
 
@@ -354,7 +354,7 @@ public class TreePathMaximaHagerup implements TreePathMaxima {
 <span class="fc" id="L354">			return lcaQueries;</span>
 		}
 
-		private static Pair&lt;int[], int[]&gt; getEdgeToParentsAndDepth(UGraph t, int root) {
+		private static Pair&lt;int[], int[]&gt; getEdgeToParentsAndDepth(Graph t, int root) {
 <span class="fc" id="L358">			int n = t.vertices().size();</span>
 <span class="fc" id="L359">			int[] edgeToParent = new int[n];</span>
 <span class="fc" id="L360">			Arrays.fill(edgeToParent, -1);</span>
@@ -372,7 +372,7 @@ public class TreePathMaximaHagerup implements TreePathMaxima {
 <span class="fc" id="L372">			return Pair.of(edgeToParent, depths);</span>
 		}
 
-		private static int[] calcQueriesPerVertex(UGraph g, int[] lcaQueries, int[] depths, int[] edgeToParent) {
+		private static int[] calcQueriesPerVertex(Graph g, int[] lcaQueries, int[] depths, int[] edgeToParent) {
 <span class="fc" id="L376">			final int n = g.vertices().size();</span>
 
 <span class="fc" id="L378">			int[] q = new int[n];</span>

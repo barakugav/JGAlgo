@@ -51,88 +51,84 @@ public class APSPJohnson implements APSP {
 	 */
 	@Override
 	public APSP.Result computeAllShortestPaths(Graph g, EdgeWeightFunc w) {
-<span class="pc bpc" id="L54" title="1 of 2 branches missed.">		if (!(g instanceof DiGraph))</span>
+<span class="pc bpc" id="L54" title="1 of 2 branches missed.">		if (!g.getCapabilities().directed())</span>
 <span class="nc" id="L55">			throw new IllegalArgumentException(&quot;only directed graphs are supported&quot;);</span>
-<span class="fc" id="L56">		return computeAllShortestPaths0((DiGraph) g, w);</span>
-	}
+<span class="fc" id="L56">		int n = g.vertices().size();</span>
 
-	private APSP.Result computeAllShortestPaths0(DiGraph g, EdgeWeightFunc w) {
-<span class="fc" id="L60">		int n = g.vertices().size();</span>
-
-<span class="fc" id="L62">		boolean negWeight = false;</span>
-<span class="fc bfc" id="L63" title="All 2 branches covered.">		for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
-<span class="fc" id="L64">			int e = it.nextInt();</span>
-<span class="fc bfc" id="L65" title="All 2 branches covered.">			if (w.weight(e) &lt; 0) {</span>
-<span class="fc" id="L66">				negWeight = true;</span>
-<span class="fc" id="L67">				break;</span>
+<span class="fc" id="L58">		boolean negWeight = false;</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">		for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
+<span class="fc" id="L60">			int e = it.nextInt();</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">			if (w.weight(e) &lt; 0) {</span>
+<span class="fc" id="L62">				negWeight = true;</span>
+<span class="fc" id="L63">				break;</span>
 			}
-<span class="fc" id="L69">		}</span>
+<span class="fc" id="L65">		}</span>
 
-<span class="fc bfc" id="L71" title="All 2 branches covered.">		if (!negWeight) {</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">		if (!negWeight) {</span>
 			/* No negative weights, no need for potential */
-<span class="fc" id="L73">			SuccessRes res = computeAPSPPositive(g, w);</span>
-<span class="fc" id="L74">			res.potential = new double[n];</span>
-<span class="fc" id="L75">			return res;</span>
+<span class="fc" id="L69">			SuccessRes res = computeAPSPPositive(g, w);</span>
+<span class="fc" id="L70">			res.potential = new double[n];</span>
+<span class="fc" id="L71">			return res;</span>
 		}
 
-<span class="fc" id="L78">		Pair&lt;double[], Path&gt; potential0 = calcPotential(g, w);</span>
-<span class="fc bfc" id="L79" title="All 2 branches covered.">		if (potential0.second() != null)</span>
-<span class="fc" id="L80">			return new NegCycleRes(potential0.second());</span>
-<span class="fc" id="L81">		double[] potential = potential0.first();</span>
+<span class="fc" id="L74">		Pair&lt;double[], Path&gt; potential0 = calcPotential(g, w);</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">		if (potential0.second() != null)</span>
+<span class="fc" id="L76">			return new NegCycleRes(potential0.second());</span>
+<span class="fc" id="L77">		double[] potential = potential0.first();</span>
 
-<span class="fc" id="L83">		EdgeWeightFunc wPotential = e -&gt; {</span>
-<span class="fc" id="L84">			double up = potential[g.edgeSource(e)];</span>
-<span class="fc" id="L85">			double vp = potential[g.edgeTarget(e)];</span>
-<span class="fc" id="L86">			return w.weight(e) + up - vp;</span>
+<span class="fc" id="L79">		EdgeWeightFunc wPotential = e -&gt; {</span>
+<span class="fc" id="L80">			double up = potential[g.edgeSource(e)];</span>
+<span class="fc" id="L81">			double vp = potential[g.edgeTarget(e)];</span>
+<span class="fc" id="L82">			return w.weight(e) + up - vp;</span>
 		};
-<span class="fc" id="L88">		SuccessRes res = computeAPSPPositive(g, wPotential);</span>
-<span class="fc" id="L89">		res.potential = potential;</span>
-<span class="fc" id="L90">		return res;</span>
+<span class="fc" id="L84">		SuccessRes res = computeAPSPPositive(g, wPotential);</span>
+<span class="fc" id="L85">		res.potential = potential;</span>
+<span class="fc" id="L86">		return res;</span>
 	}
 
-	private SuccessRes computeAPSPPositive(DiGraph g, EdgeWeightFunc w) {
-<span class="fc" id="L94">		int n = g.vertices().size();</span>
-<span class="fc" id="L95">		SuccessRes res = new SuccessRes(n);</span>
-<span class="fc bfc" id="L96" title="All 2 branches covered.">		for (int source = 0; source &lt; n; source++)</span>
-<span class="fc" id="L97">			res.ssspResults[source] = positiveSssp.computeShortestPaths(g, w, source);</span>
-<span class="fc" id="L98">		return res;</span>
+	private SuccessRes computeAPSPPositive(Graph g, EdgeWeightFunc w) {
+<span class="fc" id="L90">		int n = g.vertices().size();</span>
+<span class="fc" id="L91">		SuccessRes res = new SuccessRes(n);</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">		for (int source = 0; source &lt; n; source++)</span>
+<span class="fc" id="L93">			res.ssspResults[source] = positiveSssp.computeShortestPaths(g, w, source);</span>
+<span class="fc" id="L94">		return res;</span>
 	}
 
-	private Pair&lt;double[], Path&gt; calcPotential(DiGraph g, EdgeWeightFunc w) {
-<span class="fc" id="L102">		int n = g.vertices().size();</span>
-<span class="fc" id="L103">		DiGraph refG = new GraphArrayDirected(n + 1);</span>
-<span class="fc" id="L104">		Weights.Int edgeEef = refG.addEdgesWeights(&quot;edgeEef&quot;, int.class, Integer.valueOf(-1));</span>
-<span class="fc bfc" id="L105" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc bfc" id="L106" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
-<span class="fc" id="L107">				int e = eit.nextInt();</span>
-<span class="fc" id="L108">				int v = eit.v();</span>
-<span class="fc" id="L109">				int refE = refG.addEdge(u, v);</span>
-<span class="fc" id="L110">				edgeEef.set(refE, e);</span>
-<span class="fc" id="L111">			}</span>
+	private Pair&lt;double[], Path&gt; calcPotential(Graph g, EdgeWeightFunc w) {
+<span class="fc" id="L98">		int n = g.vertices().size();</span>
+<span class="fc" id="L99">		Graph refG = new GraphArrayDirected(n + 1);</span>
+<span class="fc" id="L100">		Weights.Int edgeEef = refG.addEdgesWeights(&quot;edgeEef&quot;, int.class, Integer.valueOf(-1));</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
+<span class="fc" id="L103">				int e = eit.nextInt();</span>
+<span class="fc" id="L104">				int v = eit.v();</span>
+<span class="fc" id="L105">				int refE = refG.addEdge(u, v);</span>
+<span class="fc" id="L106">				edgeEef.set(refE, e);</span>
+<span class="fc" id="L107">			}</span>
 		}
 
 		/* Add fake vertex */
-<span class="fc" id="L115">		final int fakeV = n;</span>
-<span class="fc" id="L116">		final int fakeEdge = -1;</span>
-<span class="fc bfc" id="L117" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L118">			edgeEef.set(refG.addEdge(fakeV, v), fakeEdge);</span>
+<span class="fc" id="L111">		final int fakeV = n;</span>
+<span class="fc" id="L112">		final int fakeEdge = -1;</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
+<span class="fc" id="L114">			edgeEef.set(refG.addEdge(fakeV, v), fakeEdge);</span>
 
-<span class="fc" id="L120">		EdgeWeightFunc refW = e -&gt; {</span>
-<span class="fc" id="L121">			int ref = edgeEef.getInt(e);</span>
-<span class="fc bfc" id="L122" title="All 2 branches covered.">			return ref != fakeEdge ? w.weight(ref) : 0;</span>
+<span class="fc" id="L116">		EdgeWeightFunc refW = e -&gt; {</span>
+<span class="fc" id="L117">			int ref = edgeEef.getInt(e);</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">			return ref != fakeEdge ? w.weight(ref) : 0;</span>
 		};
-<span class="fc" id="L124">		SSSP.Result res = negativeSsssp.computeShortestPaths(refG, refW, fakeV);</span>
-<span class="fc bfc" id="L125" title="All 2 branches covered.">		if (!res.foundNegativeCycle()) {</span>
-<span class="fc" id="L126">			double[] potential = new double[n];</span>
-<span class="fc bfc" id="L127" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L128">				potential[v] = res.distance(v);</span>
-<span class="fc" id="L129">			return Pair.of(potential, null);</span>
+<span class="fc" id="L120">		SSSP.Result res = negativeSsssp.computeShortestPaths(refG, refW, fakeV);</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">		if (!res.foundNegativeCycle()) {</span>
+<span class="fc" id="L122">			double[] potential = new double[n];</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++)</span>
+<span class="fc" id="L124">				potential[v] = res.distance(v);</span>
+<span class="fc" id="L125">			return Pair.of(potential, null);</span>
 		} else {
-<span class="fc" id="L131">			Path negCycleRef = res.getNegativeCycle();</span>
-<span class="fc" id="L132">			IntList negCycle = new IntArrayList(negCycleRef.size());</span>
-<span class="fc bfc" id="L133" title="All 2 branches covered.">			for (IntIterator it = negCycleRef.iterator(); it.hasNext();)</span>
-<span class="fc" id="L134">				negCycle.add(edgeEef.getInt(it.nextInt()));</span>
-<span class="fc" id="L135">			return Pair.of(null, new Path(g, negCycleRef.source(), negCycleRef.target(), negCycle));</span>
+<span class="fc" id="L127">			Path negCycleRef = res.getNegativeCycle();</span>
+<span class="fc" id="L128">			IntList negCycle = new IntArrayList(negCycleRef.size());</span>
+<span class="fc bfc" id="L129" title="All 2 branches covered.">			for (IntIterator it = negCycleRef.iterator(); it.hasNext();)</span>
+<span class="fc" id="L130">				negCycle.add(edgeEef.getInt(it.nextInt()));</span>
+<span class="fc" id="L131">			return Pair.of(null, new Path(g, negCycleRef.source(), negCycleRef.target(), negCycle));</span>
 		}
 	}
 
@@ -146,8 +142,8 @@ public class APSPJohnson implements APSP {
 	 * @param algo a SSSP implementation for graphs with positive weight function
 	 */
 	public void setPositiveSsspAlgo(SSSP algo) {
-<span class="nc" id="L149">		positiveSssp = Objects.requireNonNull(algo);</span>
-<span class="nc" id="L150">	}</span>
+<span class="nc" id="L145">		positiveSssp = Objects.requireNonNull(algo);</span>
+<span class="nc" id="L146">	}</span>
 
 	/**
 	 * Set the algorithm used for negative weights graphs.
@@ -159,36 +155,36 @@ public class APSPJohnson implements APSP {
 	 * @param algo a SSSP implementation for graphs with negative weight function
 	 */
 	public void setNegativeSsspAlgo(SSSP algo) {
-<span class="nc" id="L162">		negativeSsssp = Objects.requireNonNull(algo);</span>
-<span class="nc" id="L163">	}</span>
+<span class="nc" id="L158">		negativeSsssp = Objects.requireNonNull(algo);</span>
+<span class="nc" id="L159">	}</span>
 
 	private static class NegCycleRes implements APSP.Result {
 
 		private final Path negCycle;
 
-<span class="fc" id="L169">		public NegCycleRes(Path negCycle) {</span>
-<span class="fc" id="L170">			Objects.requireNonNull(negCycle);</span>
-<span class="fc" id="L171">			this.negCycle = negCycle;</span>
-<span class="fc" id="L172">		}</span>
+<span class="fc" id="L165">		public NegCycleRes(Path negCycle) {</span>
+<span class="fc" id="L166">			Objects.requireNonNull(negCycle);</span>
+<span class="fc" id="L167">			this.negCycle = negCycle;</span>
+<span class="fc" id="L168">		}</span>
 
 		@Override
 		public double distance(int source, int target) {
-<span class="nc" id="L176">			throw new IllegalStateException();</span>
+<span class="nc" id="L172">			throw new IllegalStateException();</span>
 		}
 
 		@Override
 		public Path getPath(int source, int target) {
-<span class="nc" id="L181">			throw new IllegalStateException();</span>
+<span class="nc" id="L177">			throw new IllegalStateException();</span>
 		}
 
 		@Override
 		public boolean foundNegativeCycle() {
-<span class="fc" id="L186">			return true;</span>
+<span class="fc" id="L182">			return true;</span>
 		}
 
 		@Override
 		public Path getNegativeCycle() {
-<span class="fc" id="L191">			return negCycle;</span>
+<span class="fc" id="L187">			return negCycle;</span>
 		}
 
 	}
@@ -198,28 +194,28 @@ public class APSPJohnson implements APSP {
 		final SSSP.Result[] ssspResults;
 		double[] potential;
 
-<span class="fc" id="L201">		SuccessRes(int n) {</span>
-<span class="fc" id="L202">			ssspResults = new SSSP.Result[n];</span>
-<span class="fc" id="L203">		}</span>
+<span class="fc" id="L197">		SuccessRes(int n) {</span>
+<span class="fc" id="L198">			ssspResults = new SSSP.Result[n];</span>
+<span class="fc" id="L199">		}</span>
 
 		@Override
 		public double distance(int source, int target) {
-<span class="fc" id="L207">			return ssspResults[source].distance(target) + potential[target] - potential[source];</span>
+<span class="fc" id="L203">			return ssspResults[source].distance(target) + potential[target] - potential[source];</span>
 		}
 
 		@Override
 		public Path getPath(int source, int target) {
-<span class="fc" id="L212">			return ssspResults[source].getPath(target);</span>
+<span class="fc" id="L208">			return ssspResults[source].getPath(target);</span>
 		}
 
 		@Override
 		public boolean foundNegativeCycle() {
-<span class="fc" id="L217">			return false;</span>
+<span class="fc" id="L213">			return false;</span>
 		}
 
 		@Override
 		public Path getNegativeCycle() {
-<span class="nc" id="L222">			throw new IllegalStateException();</span>
+<span class="nc" id="L218">			throw new IllegalStateException();</span>
 		}
 
 	}

@@ -42,7 +42,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
  */
 public class MaximumFlowDinic implements MaximumFlow {
 
-<span class="fc" id="L45">	private Supplier&lt;? extends DiGraph.Builder&gt; layerGraphBuilder = GraphBuilderImpl.LinkedDirected::new;</span>
+<span class="fc" id="L45">	private Supplier&lt;? extends Graph.Builder&gt; layerGraphBuilder = GraphBuilderImpl.LinkedDirected::new;</span>
 
 <span class="fc" id="L47">	private static final Object EdgeRefWeightKey = new Object();</span>
 <span class="fc" id="L48">	private static final Object EdgeRevWeightKey = new Object();</span>
@@ -63,7 +63,7 @@ public class MaximumFlowDinic implements MaximumFlow {
 	 *
 	 * @param builder a builder that provide instances of graphs for the layers graph
 	 */
-	public void experimental_setLayerGraphFactory(Supplier&lt;? extends DiGraph.Builder&gt; builder) {
+	public void experimental_setLayerGraphFactory(Supplier&lt;? extends Graph.Builder&gt; builder) {
 <span class="nc" id="L67">		layerGraphBuilder = Objects.requireNonNull(builder);</span>
 <span class="nc" id="L68">	}</span>
 
@@ -74,17 +74,17 @@ public class MaximumFlowDinic implements MaximumFlow {
 	 */
 	@Override
 	public double computeMaximumFlow(Graph g, FlowNetwork net, int source, int sink) {
-<span class="pc bpc" id="L77" title="1 of 2 branches missed.">		if (!(g instanceof DiGraph))</span>
+<span class="pc bpc" id="L77" title="1 of 2 branches missed.">		if (!g.getCapabilities().directed())</span>
 <span class="nc" id="L78">			throw new IllegalArgumentException(&quot;only directed graphs are supported&quot;);</span>
-<span class="fc" id="L79">		return computeMaxFlow((DiGraph) g, net, source, sink);</span>
+<span class="fc" id="L79">		return computeMaxFlow(g, net, source, sink);</span>
 	}
 
-	private double computeMaxFlow(DiGraph g0, FlowNetwork net, int source, int sink) {
+	private double computeMaxFlow(Graph g0, FlowNetwork net, int source, int sink) {
 <span class="pc bpc" id="L83" title="1 of 2 branches missed.">		if (source == sink)</span>
 <span class="nc" id="L84">			throw new IllegalArgumentException(&quot;Source and sink can't be the same vertex&quot;);</span>
 
 <span class="fc" id="L86">		final int n = g0.vertices().size();</span>
-<span class="fc" id="L87">		DiGraph g = new GraphArrayDirected(n);</span>
+<span class="fc" id="L87">		Graph g = new GraphArrayDirected(n);</span>
 <span class="fc" id="L88">		Weights.Int edgeRef = g.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));</span>
 <span class="fc" id="L89">		Weights.Int twin = g.addEdgesWeights(EdgeRevWeightKey, int.class, Integer.valueOf(-1));</span>
 <span class="fc" id="L90">		Weights.Double flow = g.addEdgesWeights(FlowWeightKey, double.class);</span>
@@ -109,8 +109,8 @@ public class MaximumFlowDinic implements MaximumFlow {
 <span class="fc" id="L109">			flow.set(e2, cap);</span>
 <span class="fc" id="L110">		}</span>
 
-<span class="fc" id="L112">		DiGraph.Builder builder = layerGraphBuilder.get();</span>
-<span class="fc" id="L113">		DiGraph L = builder.setVerticesNum(n).setEdgesIDStrategy(Fixed.class).build();</span>
+<span class="fc" id="L112">		Graph.Builder builder = layerGraphBuilder.get();</span>
+<span class="fc" id="L113">		Graph L = builder.setVerticesNum(n).setEdgesIDStrategy(Fixed.class).build();</span>
 <span class="fc" id="L114">		Weights.Int edgeRefL = L.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));</span>
 <span class="fc" id="L115">		IntPriorityQueue bfsQueue = new IntArrayFIFOQueue();</span>
 <span class="fc" id="L116">		int[] level = new int[n];</span>

@@ -28,7 +28,7 @@ package com.jgalgo;
  * Each color is represented as an integer in range \([0, \textit{colorsNum})\).
  *
  * &lt;pre&gt; {@code
- * UGraph g = UGraph.newBuilder().build();
+ * Graph g = Graph.newBuilderUndirected().build();
  * int v1 = g.addVertex();
  * int v2 = g.addVertex();
  * int v3 = g.addVertex();
@@ -60,10 +60,11 @@ public interface Coloring {
 	/**
 	 * Assign a color to each vertex of the given graph, resulting in a valid coloring.
 	 *
-	 * @param  g a graph
-	 * @return   a valid coloring with (hopefully) small number of different colors
+	 * @param  g                        a graph
+	 * @return                          a valid coloring with (hopefully) small number of different colors
+	 * @throws IllegalArgumentException if {@code g} is directed
 	 */
-	Coloring.Result computeColoring(UGraph g);
+	Coloring.Result computeColoring(Graph g);
 
 	/**
 	 * A coloring result containing a color for each vertex.
@@ -97,7 +98,7 @@ public interface Coloring {
 	 * @return a new builder that can build {@link Coloring} objects
 	 */
 	static Coloring.Builder newBuilder() {
-<span class="nc" id="L100">		return ColoringDSaturHeap::new;</span>
+<span class="nc" id="L101">		return ColoringDSaturHeap::new;</span>
 	}
 
 	/**

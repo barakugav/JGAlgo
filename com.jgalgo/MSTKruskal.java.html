@@ -67,8 +67,8 @@ public class MSTKruskal implements MST {
 	 */
 	@Override
 	public IntCollection computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
-<span class="pc bpc" id="L70" title="1 of 2 branches missed.">		if (!(g instanceof UGraph))</span>
-<span class="nc" id="L71">			throw new IllegalArgumentException(&quot;only undirected graphs are supported&quot;);</span>
+<span class="pc bpc" id="L70" title="1 of 2 branches missed.">		if (g.getCapabilities().directed())</span>
+<span class="nc" id="L71">			throw new IllegalArgumentException(&quot;directed graphs are not supported&quot;);</span>
 <span class="fc" id="L72">		int n = g.vertices().size();</span>
 <span class="fc bfc" id="L73" title="All 2 branches covered.">		if (n == 0)</span>
 <span class="fc" id="L74">			return IntLists.emptyList();</span>

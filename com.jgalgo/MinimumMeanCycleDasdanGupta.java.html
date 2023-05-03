@@ -62,7 +62,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 	 */
 	@Override
 	public Path computeMinimumMeanCycle(Graph g, EdgeWeightFunc w) {
-<span class="pc bpc" id="L65" title="1 of 2 branches missed.">		if (!(g instanceof DiGraph))</span>
+<span class="pc bpc" id="L65" title="1 of 2 branches missed.">		if (!g.getCapabilities().directed())</span>
 <span class="nc" id="L66">			throw new IllegalArgumentException(&quot;only directed graphs are supported&quot;);</span>
 <span class="fc" id="L67">		int n = g.vertices().size();</span>
 

@@ -37,10 +37,10 @@ public class APSPFloydWarshall implements APSP {
 
 	@Override
 	public APSP.Result computeAllShortestPaths(Graph g, EdgeWeightFunc w) {
-<span class="fc bfc" id="L40" title="All 2 branches covered.">		return g instanceof DiGraph ? computeAPSPDirected((DiGraph) g, w) : computeAPSPUndirected((UGraph) g, w);</span>
+<span class="fc bfc" id="L40" title="All 2 branches covered.">		return g.getCapabilities().directed() ? computeAPSPDirected(g, w) : computeAPSPUndirected(g, w);</span>
 	}
 
-	private static APSP.Result computeAPSPUndirected(UGraph g, EdgeWeightFunc w) {
+	private static APSP.Result computeAPSPUndirected(Graph g, EdgeWeightFunc w) {
 <span class="fc" id="L44">		APSPResultImpl.Abstract res = new APSPResultImpl.Undirected(g);</span>
 <span class="fc bfc" id="L45" title="All 2 branches covered.">		for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
 <span class="fc" id="L46">			int e = it.nextInt();</span>
@@ -87,7 +87,7 @@ public class APSPFloydWarshall implements APSP {
 <span class="fc" id="L87">		return res;</span>
 	}
 
-	private static APSP.Result computeAPSPDirected(DiGraph g, EdgeWeightFunc w) {
+	private static APSP.Result computeAPSPDirected(Graph g, EdgeWeightFunc w) {
 <span class="fc" id="L91">		APSPResultImpl.Abstract res = new APSPResultImpl.Directed(g);</span>
 <span class="fc bfc" id="L92" title="All 2 branches covered.">		for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
 <span class="fc" id="L93">			int e = it.nextInt();</span>

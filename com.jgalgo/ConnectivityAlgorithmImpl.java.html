@@ -32,18 +32,18 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 
 	@Override
 	public ConnectivityAlgorithm.Result computeConnectivityComponents(Graph g) {
-<span class="fc bfc" id="L35" title="All 2 branches covered.">		if (g instanceof DiGraph) {</span>
+<span class="fc bfc" id="L35" title="All 2 branches covered.">		if (g.getCapabilities().directed()) {</span>
 <span class="fc" id="L36">			int n = g.vertices().size();</span>
 <span class="fc" id="L37">			stack1 = MemoryReuse.ensureAllocated(stack1, IntArrayList::new);</span>
 <span class="fc" id="L38">			stack2 = MemoryReuse.ensureAllocated(stack2, IntArrayList::new);</span>
 <span class="fc" id="L39">			arr1 = MemoryReuse.ensureLength(arr1, n);</span>
 <span class="fc" id="L40">			arr2 = MemoryReuse.ensureLength(arr2, n);</span>
 <span class="fc" id="L41">			arr3 = MemoryReuse.ensureLength(arr3, n);</span>
-<span class="fc" id="L42">			return new WorkerDirected(stack1, stack2, arr1, arr2, arr3).computeCC((DiGraph) g);</span>
+<span class="fc" id="L42">			return new WorkerDirected(stack1, stack2, arr1, arr2, arr3).computeCC(g);</span>
 
 		} else {
 <span class="fc" id="L45">			stack1 = MemoryReuse.ensureAllocated(stack1, IntArrayList::new);</span>
-<span class="fc" id="L46">			return new WorkerUndirected(stack1).computeCC((UGraph) g);</span>
+<span class="fc" id="L46">			return new WorkerUndirected(stack1).computeCC(g);</span>
 		}
 	}
 
@@ -55,7 +55,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L55">			this.stack = stack;</span>
 <span class="fc" id="L56">		}</span>
 
-		ConnectivityAlgorithm.Result computeCC(UGraph g) {
+		ConnectivityAlgorithm.Result computeCC(Graph g) {
 <span class="fc" id="L59">			int n = g.vertices().size();</span>
 <span class="fc" id="L60">			int[] comp = new int[n];</span>
 <span class="fc" id="L61">			Arrays.fill(comp, -1);</span>
@@ -105,7 +105,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L105">			this.edges = arrN3;</span>
 <span class="fc" id="L106">		}</span>
 
-		ConnectivityAlgorithm.Result computeCC(DiGraph g) {
+		ConnectivityAlgorithm.Result computeCC(Graph g) {
 			// implementation of Tarjan's strongly connected components algorithm
 			// https://en.wikipedia.org/wiki/Tarjan%27s_strongly_connected_components_algorithm
 

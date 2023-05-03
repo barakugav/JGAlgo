@@ -50,7 +50,7 @@ class SSSPResultImpl implements Result {
 <span class="fc bfc" id="L50" title="All 2 branches covered.">		if (distances[target] == Double.POSITIVE_INFINITY)</span>
 <span class="fc" id="L51">			return null;</span>
 <span class="fc" id="L52">		IntArrayList path = new IntArrayList();</span>
-<span class="fc bfc" id="L53" title="All 2 branches covered.">		if (g instanceof DiGraph) {</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">		if (g.getCapabilities().directed()) {</span>
 <span class="fc" id="L54">			for (int v = target;;) {</span>
 <span class="fc" id="L55">				int e = backtrack[v];</span>
 <span class="fc bfc" id="L56" title="All 2 branches covered.">				if (e == -1)</span>
@@ -59,7 +59,7 @@ class SSSPResultImpl implements Result {
 <span class="fc" id="L59">				v = g.edgeSource(e);</span>
 <span class="fc" id="L60">			}</span>
 		} else {
-<span class="fc" id="L62">			UGraph g = (UGraph) this.g;</span>
+<span class="fc" id="L62">			Graph g = this.g;</span>
 <span class="fc" id="L63">			for (int v = target;;) {</span>
 <span class="fc" id="L64">				int e = backtrack[v];</span>
 <span class="fc bfc" id="L65" title="All 2 branches covered.">				if (e == -1)</span>

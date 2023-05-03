@@ -62,23 +62,23 @@ public class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 	 */
 	@Override
 	public double computeMaximumFlow(Graph g, FlowNetwork net, int source, int sink) {
-<span class="pc bpc" id="L65" title="1 of 2 branches missed.">		if (!(g instanceof DiGraph))</span>
+<span class="pc bpc" id="L65" title="1 of 2 branches missed.">		if (!g.getCapabilities().directed())</span>
 <span class="nc" id="L66">			throw new IllegalArgumentException(&quot;only directed graphs are supported&quot;);</span>
 <span class="fc bfc" id="L67" title="All 2 branches covered.">		if (net instanceof FlowNetwork.Int) {</span>
-<span class="fc" id="L68">			return new WorkerInt((DiGraph) g, (FlowNetwork.Int) net, source, sink).computeMaxFlow();</span>
+<span class="fc" id="L68">			return new WorkerInt(g, (FlowNetwork.Int) net, source, sink).computeMaxFlow();</span>
 		} else {
-<span class="fc" id="L70">			return new WorkerDouble((DiGraph) g, net, source, sink).computeMaxFlow();</span>
+<span class="fc" id="L70">			return new WorkerDouble(g, net, source, sink).computeMaxFlow();</span>
 		}
 	}
 
 <span class="fc" id="L74">	private static abstract class AbstractWorker {</span>
 
 		final FlowNetwork net;
-		final DiGraph gOrig;
+		final Graph gOrig;
 		final int source;
 		final int sink;
 
-		final DiGraph g;
+		final Graph g;
 		final Weights.Int edgeRef;
 		final Weights.Int twin;
 
@@ -93,7 +93,7 @@ public class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 		final LinkedListDoubleArrayFixedSize children;
 <span class="fc" id="L94">		final IntPriorityQueue toCut = new IntArrayFIFOQueue();</span>
 
-<span class="fc" id="L96">		AbstractWorker(DiGraph gOrig, FlowNetwork net, int source, int sink) {</span>
+<span class="fc" id="L96">		AbstractWorker(Graph gOrig, FlowNetwork net, int source, int sink) {</span>
 <span class="pc bpc" id="L97" title="1 of 2 branches missed.">			if (source == sink)</span>
 <span class="nc" id="L98">				throw new IllegalArgumentException(&quot;Source and sink can't be the same vertex&quot;);</span>
 <span class="fc" id="L99">			this.gOrig = gOrig;</span>
@@ -359,7 +359,7 @@ public class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 
 		private static final double EPS = 0.0001;
 
-		WorkerDouble(DiGraph gOrig, FlowNetwork net, int source, int sink) {
+		WorkerDouble(Graph gOrig, FlowNetwork net, int source, int sink) {
 <span class="fc" id="L363">			super(gOrig, net, source, sink);</span>
 
 <span class="fc" id="L365">			flow = g.addEdgesWeights(FlowWeightKey, double.class);</span>
@@ -509,7 +509,7 @@ public class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 		final Weights.Int capacity;
 		final Weights.Int flow;
 
-		WorkerInt(DiGraph gOrig, FlowNetwork.Int net, int source, int sink) {
+		WorkerInt(Graph gOrig, FlowNetwork.Int net, int source, int sink) {
 <span class="fc" id="L513">			super(gOrig, net, source, sink);</span>
 
 <span class="fc" id="L515">			flow = g.addEdgesWeights(FlowWeightKey, int.class);</span>

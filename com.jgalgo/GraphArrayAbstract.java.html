@@ -76,7 +76,7 @@ abstract class GraphArrayAbstract extends GraphBaseContinues {
 <span class="fc" id="L76">		edgesNum.set(w, num - 1);</span>
 <span class="fc" id="L77">	}</span>
 
-	void reverseEdge(int edge) {
+	void reverseEdge0(int edge) {
 <span class="fc" id="L80">		long endpoints = edgeEndpoints.getLong(edge);</span>
 <span class="fc" id="L81">		int u = endpoints2Source(endpoints);</span>
 <span class="fc" id="L82">		int v = endpoints2Target(endpoints);</span>

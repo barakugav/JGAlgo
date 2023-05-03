@@ -41,29 +41,31 @@ public class ColoringGreedy implements Coloring {
 <span class="fc" id="L41">	public ColoringGreedy() {}</span>
 
 	@Override
-	public Coloring.Result computeColoring(UGraph g) {
-<span class="pc bpc" id="L45" title="1 of 2 branches missed.">		if (GraphsUtils.containsSelfLoops(g))</span>
-<span class="nc" id="L46">			throw new IllegalArgumentException(&quot;no valid coloring in graphs with self loops&quot;);</span>
+	public Coloring.Result computeColoring(Graph g) {
+<span class="pc bpc" id="L45" title="1 of 2 branches missed.">		if (g.getCapabilities().directed())</span>
+<span class="nc" id="L46">			throw new IllegalArgumentException(&quot;directed graphs are not supported&quot;);</span>
+<span class="pc bpc" id="L47" title="1 of 2 branches missed.">		if (GraphsUtils.containsSelfLoops(g))</span>
+<span class="nc" id="L48">			throw new IllegalArgumentException(&quot;no valid coloring in graphs with self loops&quot;);</span>
 
-<span class="fc" id="L48">		ColoringResultImpl res = new ColoringResultImpl(g);</span>
-<span class="fc" id="L49">		int n = g.vertices().size();</span>
-<span class="fc" id="L50">		IntSet usedColors = new IntOpenHashSet();</span>
-<span class="fc bfc" id="L51" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc" id="L52">			usedColors.clear();</span>
-<span class="fc bfc" id="L53" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
-<span class="fc" id="L54">				eit.nextInt();</span>
-<span class="fc" id="L55">				int v = eit.v();</span>
-<span class="fc" id="L56">				int c = res.colorOf(v);</span>
-<span class="fc bfc" id="L57" title="All 2 branches covered.">				if (c != -1)</span>
-<span class="fc" id="L58">					usedColors.add(c);</span>
-<span class="fc" id="L59">			}</span>
-<span class="fc" id="L60">			int color = 0;</span>
-<span class="fc bfc" id="L61" title="All 2 branches covered.">			while (usedColors.contains(color))</span>
-<span class="fc" id="L62">				color++;</span>
-<span class="fc" id="L63">			res.colors[u] = color;</span>
-<span class="fc" id="L64">			res.colorsNum = Math.max(res.colorsNum, color + 1);</span>
+<span class="fc" id="L50">		ColoringResultImpl res = new ColoringResultImpl(g);</span>
+<span class="fc" id="L51">		int n = g.vertices().size();</span>
+<span class="fc" id="L52">		IntSet usedColors = new IntOpenHashSet();</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc" id="L54">			usedColors.clear();</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
+<span class="fc" id="L56">				eit.nextInt();</span>
+<span class="fc" id="L57">				int v = eit.v();</span>
+<span class="fc" id="L58">				int c = res.colorOf(v);</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">				if (c != -1)</span>
+<span class="fc" id="L60">					usedColors.add(c);</span>
+<span class="fc" id="L61">			}</span>
+<span class="fc" id="L62">			int color = 0;</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">			while (usedColors.contains(color))</span>
+<span class="fc" id="L64">				color++;</span>
+<span class="fc" id="L65">			res.colors[u] = color;</span>
+<span class="fc" id="L66">			res.colorsNum = Math.max(res.colorsNum, color + 1);</span>
 		}
-<span class="fc" id="L66">		return res;</span>
+<span class="fc" id="L68">		return res;</span>
 	}
 
 }

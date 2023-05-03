@@ -29,9 +29,9 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 <span class="fc" id="L29">	private static final Object FlowWeightKey = new Object();</span>
 <span class="fc" id="L30">	private static final Object CapacityWeightKey = new Object();</span>
 
-	abstract WorkerDouble newWorkerDouble(DiGraph gOrig, FlowNetwork net, int source, int sink);
+	abstract WorkerDouble newWorkerDouble(Graph gOrig, FlowNetwork net, int source, int sink);
 
-	abstract WorkerInt newWorkerInt(DiGraph gOrig, FlowNetwork.Int net, int source, int sink);
+	abstract WorkerInt newWorkerInt(Graph gOrig, FlowNetwork.Int net, int source, int sink);
 
 	/**
 	 * {@inheritDoc}
@@ -40,12 +40,12 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 	 */
 	@Override
 	public double computeMaximumFlow(Graph g, FlowNetwork net, int source, int sink) {
-<span class="pc bpc" id="L43" title="1 of 2 branches missed.">		if (!(g instanceof DiGraph))</span>
+<span class="pc bpc" id="L43" title="1 of 2 branches missed.">		if (!g.getCapabilities().directed())</span>
 <span class="nc" id="L44">			throw new IllegalArgumentException(&quot;only directed graphs are supported&quot;);</span>
 <span class="fc bfc" id="L45" title="All 2 branches covered.">		if (net instanceof FlowNetwork.Int) {</span>
-<span class="fc" id="L46">			return newWorkerInt((DiGraph) g, (FlowNetwork.Int) net, source, sink).computeMaxFlow();</span>
+<span class="fc" id="L46">			return newWorkerInt(g, (FlowNetwork.Int) net, source, sink).computeMaxFlow();</span>
 		} else {
-<span class="fc" id="L48">			return newWorkerDouble((DiGraph) g, net, source, sink).computeMaxFlow();</span>
+<span class="fc" id="L48">			return newWorkerDouble(g, net, source, sink).computeMaxFlow();</span>
 		}
 	}
 
@@ -56,7 +56,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 	 */
 	@Override
 	public IntList computeMinimumCut(Graph g, EdgeWeightFunc w, int source, int sink) {
-<span class="pc bpc" id="L59" title="1 of 2 branches missed.">		if (!(g instanceof DiGraph))</span>
+<span class="pc bpc" id="L59" title="1 of 2 branches missed.">		if (!g.getCapabilities().directed())</span>
 <span class="nc" id="L60">			throw new IllegalArgumentException(&quot;only directed graphs are supported&quot;);</span>
 <span class="pc bpc" id="L61" title="1 of 2 branches missed.">		if (w instanceof EdgeWeightFunc.Int) {</span>
 <span class="fc" id="L62">			EdgeWeightFunc.Int wInt = (EdgeWeightFunc.Int) w;</span>
@@ -83,7 +83,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 				}
 
 			};
-<span class="fc" id="L86">			return newWorkerInt((DiGraph) g, net, source, sink).computeMinimumCut();</span>
+<span class="fc" id="L86">			return newWorkerInt(g, net, source, sink).computeMinimumCut();</span>
 		} else {
 <span class="nc" id="L88">			FlowNetwork net = new FlowNetwork() {</span>
 
@@ -108,13 +108,13 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 				}
 
 			};
-<span class="nc" id="L111">			return newWorkerDouble((DiGraph) g, net, source, sink).computeMinimumCut();</span>
+<span class="nc" id="L111">			return newWorkerDouble(g, net, source, sink).computeMinimumCut();</span>
 		}
 	}
 
 <span class="fc" id="L115">	static abstract class Worker {</span>
-		final DiGraph g;
-		final DiGraph gOrig;
+		final Graph g;
+		final Graph gOrig;
 		final int n;
 
 		final FlowNetwork net;
@@ -140,7 +140,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 		private final int[] layersHeadInactive;
 		private int maxLayerInactive;
 
-<span class="fc" id="L143">		Worker(DiGraph gOrig, FlowNetwork net, int source, int sink) {</span>
+<span class="fc" id="L143">		Worker(Graph gOrig, FlowNetwork net, int source, int sink) {</span>
 <span class="pc bpc" id="L144" title="1 of 2 branches missed.">			if (source == sink)</span>
 <span class="nc" id="L145">				throw new IllegalArgumentException(&quot;Source and sink can't be the same vertex&quot;);</span>
 <span class="fc" id="L146">			this.gOrig = gOrig;</span>
@@ -498,7 +498,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 		private static final double EPS = 0.0001;
 
-		WorkerDouble(DiGraph gOrig, FlowNetwork net, int source, int sink) {
+		WorkerDouble(Graph gOrig, FlowNetwork net, int source, int sink) {
 <span class="fc" id="L502">			super(gOrig, net, source, sink);</span>
 
 <span class="fc" id="L504">			flow = g.addEdgesWeights(FlowWeightKey, double.class);</span>
@@ -668,7 +668,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 		final int[] excess;
 
-		WorkerInt(DiGraph gOrig, FlowNetwork.Int net, int source, int sink) {
+		WorkerInt(Graph gOrig, FlowNetwork.Int net, int source, int sink) {
 <span class="fc" id="L672">			super(gOrig, net, source, sink);</span>
 
 <span class="fc" id="L674">			flow = g.addEdgesWeights(FlowWeightKey, int.class);</span>

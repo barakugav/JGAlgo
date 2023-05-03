@@ -57,7 +57,7 @@ public class TSPMetricMSTAppx implements TSPMetric {
 <span class="fc" id="L57">			TSPMetricUtils.checkArgDistanceTableIsMetric(distances);</span>
 
 		/* Build graph from the distances table */
-<span class="fc" id="L60">		UGraph g = new GraphTableUndirected(n);</span>
+<span class="fc" id="L60">		Graph g = new GraphTableUndirected(n);</span>
 <span class="fc" id="L61">		Weights.Double weights = g.addEdgesWeights(DoubleWeightKey, double.class);</span>
 <span class="fc bfc" id="L62" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
 <span class="fc bfc" id="L63" title="All 2 branches covered.">			for (int v = u + 1; v &lt; n; v++)</span>
@@ -67,7 +67,7 @@ public class TSPMetricMSTAppx implements TSPMetric {
 <span class="fc" id="L67">		IntCollection mst = new MSTPrim().computeMinimumSpanningTree(g, weights);</span>
 
 		/* Build a graph with each MST edge duplicated */
-<span class="fc" id="L70">		UGraph g1 = new GraphArrayUndirected(n);</span>
+<span class="fc" id="L70">		Graph g1 = new GraphArrayUndirected(n);</span>
 <span class="fc" id="L71">		Weights.Int edgeRef = g1.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));</span>
 <span class="fc bfc" id="L72" title="All 2 branches covered.">		for (IntIterator it = mst.iterator(); it.hasNext();) {</span>
 <span class="fc" id="L73">			int e = it.nextInt();</span>

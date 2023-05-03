@@ -26,7 +26,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 	private TSPMetricUtils() {}
 
-	static Path calcEulerianTourAndConvertToHamiltonianCycle(UGraph g, UGraph g1, Weights.Int edgeRef) {
+	static Path calcEulerianTourAndConvertToHamiltonianCycle(Graph g, Graph g1, Weights.Int edgeRef) {
 <span class="fc" id="L30">		int n = g.vertices().size();</span>
 
 		/* Assert degree is actually even in the new graph */
@@ -73,7 +73,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 <span class="fc" id="L73">		return res;</span>
 	}
 
-	private static boolean isValidCycle(UGraph g, Path path) {
+	private static boolean isValidCycle(Graph g, Path path) {
 <span class="fc" id="L77">		EdgeIter it = path.edgeIter();</span>
 <span class="fc" id="L78">		it.nextInt();</span>
 <span class="fc" id="L79">		final int begin = it.u();</span>
@@ -87,7 +87,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 <span class="fc" id="L87">		}</span>
 	}
 
-	private static boolean isPathVisitEvery(UGraph g, Path path) {
+	private static boolean isPathVisitEvery(Graph g, Path path) {
 <span class="fc" id="L91">		final int n = g.vertices().size();</span>
 <span class="fc" id="L92">		BitSet visited = new BitSet(n);</span>
 <span class="fc bfc" id="L93" title="All 2 branches covered.">		for (IntIterator it = path.iterator(); it.hasNext();) {</span>

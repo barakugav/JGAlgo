@@ -18,7 +18,6 @@ package com.jgalgo;
 
 import java.util.Arrays;
 import java.util.Objects;
-
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -35,14 +34,14 @@ import it.unimi.dsi.fastutil.ints.IntList;
  */
 public class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeighted {
 
-<span class="fc" id="L38">	private Object bipartiteVerticesWeightKey = Weights.DefaultBipartiteWeightKey;</span>
-<span class="fc" id="L39">	private SSSP ssspAlgo = new SSSPDijkstra();</span>
-<span class="fc" id="L40">	private static final Object EdgeRefWeightKey = new Object();</span>
+<span class="fc" id="L37">	private Object bipartiteVerticesWeightKey = Weights.DefaultBipartiteWeightKey;</span>
+<span class="fc" id="L38">	private SSSP ssspAlgo = new SSSPDijkstra();</span>
+<span class="fc" id="L39">	private static final Object EdgeRefWeightKey = new Object();</span>
 
 	/**
 	 * Create a new maximum weighted matching object.
 	 */
-<span class="fc" id="L45">	public MaximumMatchingWeightedBipartiteSSSP() {}</span>
+<span class="fc" id="L44">	public MaximumMatchingWeightedBipartiteSSSP() {}</span>
 
 	/**
 	 * Set the {@link SSSP} algorithm used by this algorithm.
@@ -53,14 +52,14 @@ public class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeig
 	 * @param algo an shortest path algorithm
 	 */
 	public void setSsspAlgo(SSSP algo) {
-<span class="nc" id="L56">		ssspAlgo = Objects.requireNonNull(algo);</span>
-<span class="nc" id="L57">	}</span>
+<span class="nc" id="L55">		ssspAlgo = Objects.requireNonNull(algo);</span>
+<span class="nc" id="L56">	}</span>
 
 	/**
 	 * Set the key used to get the bipartiteness property of vertices.
 	 * &lt;p&gt;
 	 * The algorithm run on bipartite graphs and expect the user to provide the vertices partition by a boolean vertices
-	 * weights using {@link Graph#verticesWeight(Object)}. By default, the weights are searched using the key
+	 * weights using {@link Graph#getVerticesWeights(Object)}. By default, the weights are searched using the key
 	 * {@link Weights#DefaultBipartiteWeightKey}. To override this default behavior, use this function to choose a
 	 * different key.
 	 *
@@ -68,8 +67,8 @@ public class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeig
 	 *                {@code g.verticesWeight(key)}.
 	 */
 	public void setBipartiteVerticesWeightKey(Object key) {
-<span class="nc" id="L71">		bipartiteVerticesWeightKey = key;</span>
-<span class="nc" id="L72">	}</span>
+<span class="nc" id="L70">		bipartiteVerticesWeightKey = key;</span>
+<span class="nc" id="L71">	}</span>
 
 	/**
 	 * {@inheritDoc}
@@ -79,107 +78,109 @@ public class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeig
 	 * @throws IllegalArgumentException if the graph is no bipartite with respect to the provided partition
 	 */
 	@Override
-	public IntCollection computeMaximumMatching(UGraph g, EdgeWeightFunc w) {
-<span class="fc" id="L83">		Weights.Bool partition = g.verticesWeight(bipartiteVerticesWeightKey);</span>
-<span class="fc" id="L84">		Objects.requireNonNull(partition,</span>
+	public IntCollection computeMaximumMatching(Graph g, EdgeWeightFunc w) {
+<span class="pc bpc" id="L82" title="1 of 2 branches missed.">		if (g.getCapabilities().directed())</span>
+<span class="nc" id="L83">			throw new IllegalArgumentException(&quot;directed graphs are not supported&quot;);</span>
+<span class="fc" id="L84">		Weights.Bool partition = g.getVerticesWeights(bipartiteVerticesWeightKey);</span>
+<span class="fc" id="L85">		Objects.requireNonNull(partition,</span>
 				&quot;Bipartiteness values weren't found with weight &quot; + bipartiteVerticesWeightKey);
-<span class="pc bpc" id="L86" title="1 of 2 branches missed.">		if (Bipartite.isValidBipartitePartition(g, partition))</span>
-<span class="nc" id="L87">			throw new IllegalArgumentException(&quot;the graph is not bipartite&quot;);</span>
-<span class="fc" id="L88">		DiGraph g0 = referenceGraph(g, partition, w);</span>
-<span class="fc" id="L89">		int[] match = computeMaxMatching(g0, w, partition);</span>
+<span class="pc bpc" id="L87" title="1 of 2 branches missed.">		if (Bipartite.isValidBipartitePartition(g, partition))</span>
+<span class="nc" id="L88">			throw new IllegalArgumentException(&quot;the graph is not bipartite&quot;);</span>
+<span class="fc" id="L89">		Graph g0 = referenceGraph(g, partition, w);</span>
+<span class="fc" id="L90">		int[] match = computeMaxMatching(g0, w, partition);</span>
 
-<span class="fc" id="L91">		int n = g.vertices().size();</span>
-<span class="fc" id="L92">		IntList res = new IntArrayList();</span>
-<span class="fc bfc" id="L93" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc" id="L94">			int e = match[u];</span>
-<span class="fc bfc" id="L95" title="All 4 branches covered.">			if (e != -1 &amp;&amp; g.edgeSource(e) == u)</span>
-<span class="fc" id="L96">				res.add(e);</span>
+<span class="fc" id="L92">		int n = g.vertices().size();</span>
+<span class="fc" id="L93">		IntList res = new IntArrayList();</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc" id="L95">			int e = match[u];</span>
+<span class="fc bfc" id="L96" title="All 4 branches covered.">			if (e != -1 &amp;&amp; g.edgeSource(e) == u)</span>
+<span class="fc" id="L97">				res.add(e);</span>
 		}
-<span class="fc" id="L98">		return res;</span>
+<span class="fc" id="L99">		return res;</span>
 	}
 
-	private int[] computeMaxMatching(DiGraph g, EdgeWeightFunc w, Weights.Bool partition) {
-<span class="fc" id="L102">		Weights&lt;Ref&gt; edgeRef = g.edgesWeight(EdgeRefWeightKey);</span>
+	private int[] computeMaxMatching(Graph g, EdgeWeightFunc w, Weights.Bool partition) {
+<span class="fc" id="L103">		Weights&lt;Ref&gt; edgeRef = g.getEdgesWeights(EdgeRefWeightKey);</span>
 
-<span class="fc" id="L104">		int n = g.vertices().size();</span>
-<span class="fc" id="L105">		int s = g.addVertex(), t = g.addVertex();</span>
+<span class="fc" id="L105">		int n = g.vertices().size();</span>
+<span class="fc" id="L106">		int s = g.addVertex(), t = g.addVertex();</span>
 
-<span class="fc" id="L107">		int[] match = new int[n];</span>
-<span class="fc" id="L108">		Arrays.fill(match, -1);</span>
+<span class="fc" id="L108">		int[] match = new int[n];</span>
+<span class="fc" id="L109">		Arrays.fill(match, -1);</span>
 
-<span class="fc" id="L110">		double maxWeight = 1;</span>
-<span class="fc bfc" id="L111" title="All 2 branches covered.">		for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
-<span class="fc" id="L112">			int e = it.nextInt();</span>
-<span class="fc" id="L113">			maxWeight = Math.max(maxWeight, edgeRef.get(e).w);</span>
-<span class="fc" id="L114">		}</span>
-<span class="pc bpc" id="L115" title="1 of 2 branches missed.">		if (!Double.isFinite(maxWeight))</span>
-<span class="nc" id="L116">			throw new IllegalArgumentException(&quot;non finite weights&quot;);</span>
-<span class="fc" id="L117">		final double RemovedEdgeWeight = maxWeight * n;</span>
+<span class="fc" id="L111">		double maxWeight = 1;</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">		for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
+<span class="fc" id="L113">			int e = it.nextInt();</span>
+<span class="fc" id="L114">			maxWeight = Math.max(maxWeight, edgeRef.get(e).w);</span>
+<span class="fc" id="L115">		}</span>
+<span class="pc bpc" id="L116" title="1 of 2 branches missed.">		if (!Double.isFinite(maxWeight))</span>
+<span class="nc" id="L117">			throw new IllegalArgumentException(&quot;non finite weights&quot;);</span>
+<span class="fc" id="L118">		final double RemovedEdgeWeight = maxWeight * n;</span>
 
 		// Negate unmatched edges
-<span class="fc bfc" id="L120" title="All 2 branches covered.">		for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
-<span class="fc" id="L121">			int e = it.nextInt();</span>
-<span class="fc" id="L122">			Ref r = edgeRef.get(e);</span>
-<span class="fc" id="L123">			r.w = -r.w;</span>
-<span class="fc" id="L124">		}</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">		for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
+<span class="fc" id="L122">			int e = it.nextInt();</span>
+<span class="fc" id="L123">			Ref r = edgeRef.get(e);</span>
+<span class="fc" id="L124">			r.w = -r.w;</span>
+<span class="fc" id="L125">		}</span>
 		// Connected unmatched vertices to fake vertices s,t
-<span class="fc bfc" id="L126" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc bfc" id="L127" title="All 2 branches covered.">			if (partition.getBool(u)) {</span>
-<span class="fc" id="L128">				edgeRef.set(g.addEdge(s, u), new Ref(-1, 0));</span>
+<span class="fc bfc" id="L127" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">			if (partition.getBool(u)) {</span>
+<span class="fc" id="L129">				edgeRef.set(g.addEdge(s, u), new Ref(-1, 0));</span>
 			} else {
-<span class="fc" id="L130">				edgeRef.set(g.addEdge(u, t), new Ref(-1, 0));</span>
+<span class="fc" id="L131">				edgeRef.set(g.addEdge(u, t), new Ref(-1, 0));</span>
 			}
 		}
 
-<span class="fc" id="L134">		double[] potential = new double[n + 2];</span>
-<span class="fc" id="L135">		EdgeWeightFunc spWeightFunc = e -&gt; edgeRef.get(e).w + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];</span>
+<span class="fc" id="L135">		double[] potential = new double[n + 2];</span>
+<span class="fc" id="L136">		EdgeWeightFunc spWeightFunc = e -&gt; edgeRef.get(e).w + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];</span>
 
 		// Init state may include negative distances, use Bellman Ford to calculate
 		// first potential values
-<span class="fc" id="L139">		SSSP.Result sp = new SSSPBellmanFord().computeShortestPaths(g, e -&gt; edgeRef.get(e).w, s);</span>
-<span class="fc bfc" id="L140" title="All 2 branches covered.">		for (int v = 0; v &lt; n + 2; v++)</span>
-<span class="fc" id="L141">			potential[v] = sp.distance(v);</span>
+<span class="fc" id="L140">		SSSP.Result sp = new SSSPBellmanFord().computeShortestPaths(g, e -&gt; edgeRef.get(e).w, s);</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">		for (int v = 0; v &lt; n + 2; v++)</span>
+<span class="fc" id="L142">			potential[v] = sp.distance(v);</span>
 
 		for (;;) {
-<span class="fc" id="L144">			sp = ssspAlgo.computeShortestPaths(g, spWeightFunc, s);</span>
-<span class="fc" id="L145">			Path augPath = sp.getPath(t);</span>
-<span class="fc" id="L146">			double augPathWeight = -(sp.distance(t) + potential[t]);</span>
-<span class="pc bpc" id="L147" title="1 of 6 branches missed.">			if (augPath == null || augPathWeight &gt;= RemovedEdgeWeight || augPathWeight &lt; 0)</span>
-<span class="fc" id="L148">				break;</span>
+<span class="fc" id="L145">			sp = ssspAlgo.computeShortestPaths(g, spWeightFunc, s);</span>
+<span class="fc" id="L146">			Path augPath = sp.getPath(t);</span>
+<span class="fc" id="L147">			double augPathWeight = -(sp.distance(t) + potential[t]);</span>
+<span class="pc bpc" id="L148" title="1 of 6 branches missed.">			if (augPath == null || augPathWeight &gt;= RemovedEdgeWeight || augPathWeight &lt; 0)</span>
+<span class="fc" id="L149">				break;</span>
 
 			// avoid using augPath.iterator() as we modify the graph during iteration
-<span class="fc" id="L151">			IntIterator it = new IntArrayList(augPath).iterator();</span>
+<span class="fc" id="L152">			IntIterator it = new IntArrayList(augPath).iterator();</span>
 			// 'remove' edge from S to new matched vertex
-<span class="fc" id="L153">			edgeRef.get(it.nextInt()).w = RemovedEdgeWeight;</span>
+<span class="fc" id="L154">			edgeRef.get(it.nextInt()).w = RemovedEdgeWeight;</span>
 			for (;;) {
-<span class="fc" id="L155">				int matchedEdge = it.nextInt();</span>
+<span class="fc" id="L156">				int matchedEdge = it.nextInt();</span>
 
 				// Reverse newly matched edge
-<span class="fc" id="L158">				g.reverseEdge(matchedEdge);</span>
-<span class="fc" id="L159">				Ref r = edgeRef.get(matchedEdge);</span>
-<span class="fc" id="L160">				match[g.edgeSource(matchedEdge)] = match[g.edgeTarget(matchedEdge)] = r.orig;</span>
-<span class="fc" id="L161">				r.w = -r.w;</span>
+<span class="fc" id="L159">				g.reverseEdge(matchedEdge);</span>
+<span class="fc" id="L160">				Ref r = edgeRef.get(matchedEdge);</span>
+<span class="fc" id="L161">				match[g.edgeSource(matchedEdge)] = match[g.edgeTarget(matchedEdge)] = r.orig;</span>
+<span class="fc" id="L162">				r.w = -r.w;</span>
 
-<span class="fc" id="L163">				int unmatchedEdge = it.nextInt();</span>
+<span class="fc" id="L164">				int unmatchedEdge = it.nextInt();</span>
 
-<span class="fc bfc" id="L165" title="All 2 branches covered.">				if (!it.hasNext()) {</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">				if (!it.hasNext()) {</span>
 					// 'remove' edge from new matched vertex to T
-<span class="fc" id="L167">					edgeRef.get(unmatchedEdge).w = RemovedEdgeWeight;</span>
-<span class="fc" id="L168">					break;</span>
+<span class="fc" id="L168">					edgeRef.get(unmatchedEdge).w = RemovedEdgeWeight;</span>
+<span class="fc" id="L169">					break;</span>
 				}
 
 				// Reverse newly unmatched edge
-<span class="fc" id="L172">				g.reverseEdge(unmatchedEdge);</span>
-<span class="fc" id="L173">				r = edgeRef.get(unmatchedEdge);</span>
-<span class="fc" id="L174">				r.w = -r.w;</span>
-<span class="fc" id="L175">			}</span>
+<span class="fc" id="L173">				g.reverseEdge(unmatchedEdge);</span>
+<span class="fc" id="L174">				r = edgeRef.get(unmatchedEdge);</span>
+<span class="fc" id="L175">				r.w = -r.w;</span>
+<span class="fc" id="L176">			}</span>
 
 			// Update potential based on the distances
-<span class="fc bfc" id="L178" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
-<span class="fc" id="L179">				potential[u] += sp.distance(u);</span>
-<span class="fc" id="L180">		}</span>
+<span class="fc bfc" id="L179" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
+<span class="fc" id="L180">				potential[u] += sp.distance(u);</span>
+<span class="fc" id="L181">		}</span>
 
-<span class="fc" id="L182">		return match;</span>
+<span class="fc" id="L183">		return match;</span>
 	}
 
 	/**
@@ -187,28 +188,28 @@ public class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeig
 	 */
 	@Deprecated
 	@Override
-	public IntCollection computeMaximumPerfectMatching(UGraph g, EdgeWeightFunc w) {
-<span class="nc" id="L191">		throw new UnsupportedOperationException();</span>
+	public IntCollection computeMaximumPerfectMatching(Graph g, EdgeWeightFunc w) {
+<span class="nc" id="L192">		throw new UnsupportedOperationException();</span>
 	}
 
-	private static DiGraph referenceGraph(UGraph g, Weights.Bool partition, EdgeWeightFunc w) {
-<span class="fc" id="L195">		int n = g.vertices().size();</span>
-<span class="fc" id="L196">		DiGraph g0 = new GraphArrayDirected(g.vertices().size());</span>
-<span class="fc" id="L197">		Weights&lt;Ref&gt; edgeRef = g0.addEdgesWeights(EdgeRefWeightKey, Ref.class);</span>
+	private static Graph referenceGraph(Graph g, Weights.Bool partition, EdgeWeightFunc w) {
+<span class="fc" id="L196">		int n = g.vertices().size();</span>
+<span class="fc" id="L197">		Graph g0 = new GraphArrayDirected(g.vertices().size());</span>
+<span class="fc" id="L198">		Weights&lt;Ref&gt; edgeRef = g0.addEdgesWeights(EdgeRefWeightKey, Ref.class);</span>
 
-<span class="fc bfc" id="L199" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc bfc" id="L200" title="All 2 branches covered.">			if (!partition.getBool(u))</span>
-<span class="fc" id="L201">				continue;</span>
-<span class="fc bfc" id="L202" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
-<span class="fc" id="L203">				int e = eit.nextInt();</span>
-<span class="fc" id="L204">				double weight = w.weight(e);</span>
-<span class="fc bfc" id="L205" title="All 2 branches covered.">				if (weight &lt; 0)</span>
-<span class="fc" id="L206">					continue; // no reason to match negative edges</span>
-<span class="fc" id="L207">				int e0 = g0.addEdge(u, eit.v());</span>
-<span class="fc" id="L208">				edgeRef.set(e0, new Ref(e, weight));</span>
-<span class="fc" id="L209">			}</span>
+<span class="fc bfc" id="L200" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc bfc" id="L201" title="All 2 branches covered.">			if (!partition.getBool(u))</span>
+<span class="fc" id="L202">				continue;</span>
+<span class="fc bfc" id="L203" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
+<span class="fc" id="L204">				int e = eit.nextInt();</span>
+<span class="fc" id="L205">				double weight = w.weight(e);</span>
+<span class="fc bfc" id="L206" title="All 2 branches covered.">				if (weight &lt; 0)</span>
+<span class="fc" id="L207">					continue; // no reason to match negative edges</span>
+<span class="fc" id="L208">				int e0 = g0.addEdge(u, eit.v());</span>
+<span class="fc" id="L209">				edgeRef.set(e0, new Ref(e, weight));</span>
+<span class="fc" id="L210">			}</span>
 		}
-<span class="fc" id="L211">		return g0;</span>
+<span class="fc" id="L212">		return g0;</span>
 	}
 
 	private static class Ref {
@@ -216,14 +217,14 @@ public class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeig
 		public final int orig;
 		public double w;
 
-<span class="fc" id="L219">		public Ref(int e, double w) {</span>
-<span class="fc" id="L220">			orig = e;</span>
-<span class="fc" id="L221">			this.w = w;</span>
-<span class="fc" id="L222">		}</span>
+<span class="fc" id="L220">		public Ref(int e, double w) {</span>
+<span class="fc" id="L221">			orig = e;</span>
+<span class="fc" id="L222">			this.w = w;</span>
+<span class="fc" id="L223">		}</span>
 
 		@Override
 		public String toString() {
-<span class="nc bnc" id="L226" title="All 2 branches missed.">			return orig != -1 ? String.valueOf(orig) : Double.toString(w);</span>
+<span class="nc bnc" id="L227" title="All 2 branches missed.">			return orig != -1 ? String.valueOf(orig) : Double.toString(w);</span>
 		}
 
 	}

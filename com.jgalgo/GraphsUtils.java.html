@@ -41,7 +41,7 @@ class GraphsUtils {
 		}
 	}
 
-	static int[] calcDegree(UGraph g, IntCollection edges) {
+	static int[] calcDegree(Graph g, IntCollection edges) {
 <span class="fc" id="L45">		int[] degree = new int[g.vertices().size()];</span>
 <span class="fc bfc" id="L46" title="All 2 branches covered.">		for (IntIterator eit = edges.iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L47">			int e = eit.nextInt();</span>
@@ -129,26 +129,26 @@ class GraphsUtils {
 <span class="nc" id="L129">		return String.join(&quot;&quot;, Collections.nCopies(n, s));</span>
 	}
 
-	static DiGraph referenceGraph(DiGraph g, Object refEdgeWeightKey) {
-<span class="fc" id="L133">		DiGraph g0 = new GraphArrayDirected(g.vertices().size());</span>
-<span class="fc" id="L134">		Weights.Int edgeRef = g0.addEdgesWeights(refEdgeWeightKey, int.class);</span>
-<span class="fc bfc" id="L135" title="All 2 branches covered.">		for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
-<span class="fc" id="L136">			int e = it.nextInt();</span>
-<span class="fc" id="L137">			int e0 = g0.addEdge(g.edgeSource(e), g.edgeTarget(e));</span>
-<span class="fc" id="L138">			edgeRef.set(e0, e);</span>
-<span class="fc" id="L139">		}</span>
-<span class="fc" id="L140">		return g0;</span>
-	}
-
-	static UGraph referenceGraph(UGraph g, Object refEdgeWeightKey) {
-<span class="fc" id="L144">		UGraph g0 = new GraphArrayUndirected(g.vertices().size());</span>
-<span class="fc" id="L145">		Weights.Int edgeRef = g0.addEdgesWeights(refEdgeWeightKey, int.class);</span>
-<span class="fc bfc" id="L146" title="All 2 branches covered.">		for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
-<span class="fc" id="L147">			int e = it.nextInt();</span>
-<span class="fc" id="L148">			int e0 = g0.addEdge(g.edgeSource(e), g.edgeTarget(e));</span>
-<span class="fc" id="L149">			edgeRef.set(e0, e);</span>
-<span class="fc" id="L150">		}</span>
-<span class="fc" id="L151">		return g0;</span>
+	static Graph referenceGraph(Graph g, Object refEdgeWeightKey) {
+<span class="fc bfc" id="L133" title="All 2 branches covered.">		if (g.getCapabilities().directed()) {</span>
+<span class="fc" id="L134">			Graph g0 = new GraphArrayDirected(g.vertices().size());</span>
+<span class="fc" id="L135">			Weights.Int edgeRef = g0.addEdgesWeights(refEdgeWeightKey, int.class);</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">			for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
+<span class="fc" id="L137">				int e = it.nextInt();</span>
+<span class="fc" id="L138">				int e0 = g0.addEdge(g.edgeSource(e), g.edgeTarget(e));</span>
+<span class="fc" id="L139">				edgeRef.set(e0, e);</span>
+<span class="fc" id="L140">			}</span>
+<span class="fc" id="L141">			return g0;</span>
+		} else {
+<span class="fc" id="L143">			Graph g0 = new GraphArrayUndirected(g.vertices().size());</span>
+<span class="fc" id="L144">			Weights.Int edgeRef = g0.addEdgesWeights(refEdgeWeightKey, int.class);</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">			for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
+<span class="fc" id="L146">				int e = it.nextInt();</span>
+<span class="fc" id="L147">				int e0 = g0.addEdge(g.edgeSource(e), g.edgeTarget(e));</span>
+<span class="fc" id="L148">				edgeRef.set(e0, e);</span>
+<span class="fc" id="L149">			}</span>
+<span class="fc" id="L150">			return g0;</span>
+		}
 	}
 
 	static boolean containsSelfLoops(Graph g) {
@@ -181,6 +181,42 @@ class GraphsUtils {
 <span class="fc" id="L181">			}</span>
 		}
 <span class="fc" id="L183">		return false;</span>
+	}
+
+	static interface UndirectedGraphImpl extends Graph {
+
+		@Override
+		default EdgeIter edgesIn(int v) {
+<span class="fc" id="L190">			return edgesOut(v);</span>
+		}
+
+		@Override
+		default void removeEdgesOf(int u) {
+<span class="fc bfc" id="L195" title="All 2 branches covered.">			for (EdgeIter eit = edgesOut(u); eit.hasNext();) {</span>
+<span class="fc" id="L196">				eit.nextInt();</span>
+<span class="fc" id="L197">				eit.remove();</span>
+			}
+<span class="fc" id="L199">		}</span>
+
+		@Override
+		default void removeEdgesOutOf(int u) {
+<span class="nc" id="L203">			removeEdgesOf(u);</span>
+<span class="nc" id="L204">		}</span>
+
+		@Override
+		default void removeEdgesInOf(int v) {
+<span class="nc" id="L208">			removeEdgesOf(v);</span>
+<span class="nc" id="L209">		}</span>
+
+		@Override
+		default void reverseEdge(int edge) {
+			// Do nothing
+<span class="nc" id="L214">		}</span>
+
+		default int degreeIn(int v) {
+<span class="fc" id="L217">			return degreeOut(v);</span>
+		}
+
 	}
 
 }

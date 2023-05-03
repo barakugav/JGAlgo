@@ -71,14 +71,14 @@ public class SSSPGoldberg implements SSSP {
 	 */
 	@Override
 	public SSSP.Result computeShortestPaths(Graph g, EdgeWeightFunc w, int source) {
-<span class="pc bpc" id="L74" title="1 of 2 branches missed.">		if (!(g instanceof DiGraph))</span>
+<span class="pc bpc" id="L74" title="1 of 2 branches missed.">		if (!g.getCapabilities().directed())</span>
 <span class="nc" id="L75">			throw new IllegalArgumentException(&quot;Undirected graphs are not supported&quot;);</span>
 <span class="pc bpc" id="L76" title="1 of 2 branches missed.">		if (!(w instanceof EdgeWeightFunc.Int))</span>
 <span class="nc" id="L77">			throw new IllegalArgumentException(&quot;Only integer weights are supported&quot;);</span>
-<span class="fc" id="L78">		return computeShortestPaths0((DiGraph) g, (EdgeWeightFunc.Int) w, source);</span>
+<span class="fc" id="L78">		return computeShortestPaths0(g, (EdgeWeightFunc.Int) w, source);</span>
 	}
 
-	private SSSP.Result computeShortestPaths0(DiGraph g, EdgeWeightFunc.Int w, int source) {
+	private SSSP.Result computeShortestPaths0(Graph g, EdgeWeightFunc.Int w, int source) {
 <span class="fc" id="L82">		int minWeight = Integer.MAX_VALUE;</span>
 <span class="fc bfc" id="L83" title="All 2 branches covered.">		for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
 <span class="fc" id="L84">			int e = it.nextInt();</span>
@@ -97,7 +97,7 @@ public class SSSPGoldberg implements SSSP {
 <span class="fc" id="L97">		return Result.ofSuccess(source, potential, res);</span>
 	}
 
-	private Pair&lt;int[], Path&gt; calcPotential(DiGraph g, EdgeWeightFunc.Int w, int minWeight) {
+	private Pair&lt;int[], Path&gt; calcPotential(Graph g, EdgeWeightFunc.Int w, int minWeight) {
 <span class="fc" id="L101">		int n = g.vertices().size();</span>
 <span class="fc" id="L102">		int[] potential = new int[n];</span>
 
@@ -107,9 +107,9 @@ public class SSSPGoldberg implements SSSP {
 <span class="fc" id="L107">		SSSPDial ssspDial = new SSSPDial();</span>
 <span class="fc" id="L108">		SSSP dagSssp = new SSSPDag();</span>
 
-<span class="fc" id="L110">		DiGraph gNeg = new GraphArrayDirected(n);</span>
+<span class="fc" id="L110">		Graph gNeg = new GraphArrayDirected(n);</span>
 <span class="fc" id="L111">		Weights.Int gNegEdgeRefs = gNeg.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));</span>
-<span class="fc" id="L112">		DiGraph G = new GraphArrayDirected(n);</span>
+<span class="fc" id="L112">		Graph G = new GraphArrayDirected(n);</span>
 <span class="fc" id="L113">		Weights.Int GWeights = G.addEdgesWeights(&quot;weights&quot;, int.class, Integer.valueOf(-1));</span>
 <span class="fc" id="L114">		int fakeS1 = G.addVertex(), fakeS2 = G.addVertex();</span>
 
@@ -232,7 +232,7 @@ public class SSSPGoldberg implements SSSP {
 <span class="fc" id="L232">		return Pair.of(potential, null);</span>
 	}
 
-	private static int weight(DiGraph g, int e, EdgeWeightFunc.Int w, int[] potential, int weightMask) {
+	private static int weight(Graph g, int e, EdgeWeightFunc.Int w, int[] potential, int weightMask) {
 <span class="fc" id="L236">		int weight = w.weightInt(e);</span>
 		// weight = ceil(weight / 2^weightMask)
 <span class="fc bfc" id="L238" title="All 2 branches covered.">		if (weightMask != 0) {</span>
@@ -305,11 +305,11 @@ public class SSSPGoldberg implements SSSP {
 
 	private static class PotentialWeightFunction implements EdgeWeightFunc.Int {
 
-		private final DiGraph g;
+		private final Graph g;
 		private final EdgeWeightFunc.Int w;
 		private final int[] potential;
 
-<span class="fc" id="L312">		PotentialWeightFunction(DiGraph g, EdgeWeightFunc.Int w, int[] potential) {</span>
+<span class="fc" id="L312">		PotentialWeightFunction(Graph g, EdgeWeightFunc.Int w, int[] potential) {</span>
 <span class="fc" id="L313">			this.g = g;</span>
 <span class="fc" id="L314">			this.w = w;</span>
 <span class="fc" id="L315">			this.potential = potential;</span>

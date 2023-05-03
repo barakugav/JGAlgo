@@ -32,10 +32,11 @@ public interface MaximumMatching {
 	/**
 	 * Compute the maximum matching of unweighted undirected graph.
 	 *
-	 * @param  g an undirected graph
-	 * @return   collection of edges representing a maximum matching
+	 * @param  g                        an undirected graph
+	 * @return                          collection of edges representing a maximum matching
+	 * @throws IllegalArgumentException if {@code g} is a directed graph
 	 */
-	public IntCollection computeMaximumMatching(UGraph g);
+	public IntCollection computeMaximumMatching(Graph g);
 
 	/**
 	 * Create a new maximum matching algorithm builder.
@@ -45,19 +46,19 @@ public interface MaximumMatching {
 	 * @return a new builder that can build {@link MaximumMatching} objects
 	 */
 	static MaximumMatching.Builder newBuilder() {
-<span class="nc" id="L48">		return new MaximumMatching.Builder() {</span>
+<span class="nc" id="L49">		return new MaximumMatching.Builder() {</span>
 
-<span class="nc" id="L50">			boolean isBipartite = false;</span>
+<span class="nc" id="L51">			boolean isBipartite = false;</span>
 
 			@Override
 			public MaximumMatching build() {
-<span class="nc bnc" id="L54" title="All 2 branches missed.">				return isBipartite ? new MaximumMatchingBipartiteHopcroftKarp() : new MaximumMatchingGabow1976();</span>
+<span class="nc bnc" id="L55" title="All 2 branches missed.">				return isBipartite ? new MaximumMatchingBipartiteHopcroftKarp() : new MaximumMatchingGabow1976();</span>
 			}
 
 			@Override
 			public Builder setBipartite(boolean bipartite) {
-<span class="nc" id="L59">				isBipartite = bipartite;</span>
-<span class="nc" id="L60">				return this;</span>
+<span class="nc" id="L60">				isBipartite = bipartite;</span>
+<span class="nc" id="L61">				return this;</span>
 			}
 		};
 	}

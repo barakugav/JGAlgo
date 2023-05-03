@@ -30,10 +30,10 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 	 */
 	@Override
 	public Path computeEulerianTour(Graph g) {
-<span class="fc bfc" id="L33" title="All 2 branches covered.">		return g instanceof DiGraph ? computeTourDirected((DiGraph) g) : computeTourUndirected((UGraph) g);</span>
+<span class="fc bfc" id="L33" title="All 2 branches covered.">		return g.getCapabilities().directed() ? computeTourDirected(g) : computeTourUndirected(g);</span>
 	}
 
-	private static Path computeTourUndirected(UGraph g) {
+	private static Path computeTourUndirected(Graph g) {
 <span class="fc" id="L37">		int n = g.vertices().size();</span>
 
 <span class="fc" id="L39">		int start = -1, end = -1;</span>
@@ -97,7 +97,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L97">		return new Path(g, start, end, tour);</span>
 	}
 
-	private static int degreeWithoutSelfLoops(UGraph g, int u) {
+	private static int degreeWithoutSelfLoops(Graph g, int u) {
 <span class="fc" id="L101">		int d = 0;</span>
 <span class="fc bfc" id="L102" title="All 2 branches covered.">		for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
 <span class="fc" id="L103">			eit.nextInt();</span>
@@ -107,7 +107,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L107">		return d;</span>
 	}
 
-	private static Path computeTourDirected(DiGraph g) {
+	private static Path computeTourDirected(Graph g) {
 <span class="fc" id="L111">		int n = g.vertices().size();</span>
 
 <span class="fc" id="L113">		int start = -1, end = -1;</span>
