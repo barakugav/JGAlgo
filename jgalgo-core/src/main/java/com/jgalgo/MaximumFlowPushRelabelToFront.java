@@ -61,7 +61,7 @@ public class MaximumFlowPushRelabelToFront extends MaximumFlowPushRelabelAbstrac
 			list.clear();
 			super.recomputeLabels();
 			list.listIter = list.listHead != LinkedListDoubleArrayFixedSize.None ? list.vertices.iterator(list.listHead)
-					: Utils.IterPickable.Int.Empty;
+					: Utils.IterPeekable.Int.Empty;
 		}
 
 		@Override
@@ -75,7 +75,7 @@ public class MaximumFlowPushRelabelToFront extends MaximumFlowPushRelabelAbstrac
 		@Override
 		boolean hasMoreVerticesToDischarge() {
 			for (; list.listIter.hasNext(); list.listIter.nextInt())
-				if (hasExcess(list.listIter.pickNext()))
+				if (hasExcess(list.listIter.peekNext()))
 					return true;
 			return false;
 		}
@@ -110,7 +110,7 @@ public class MaximumFlowPushRelabelToFront extends MaximumFlowPushRelabelAbstrac
 			list.clear();
 			super.recomputeLabels();
 			list.listIter = list.listHead != LinkedListDoubleArrayFixedSize.None ? list.vertices.iterator(list.listHead)
-					: Utils.IterPickable.Int.Empty;
+					: Utils.IterPeekable.Int.Empty;
 		}
 
 		@Override
@@ -124,7 +124,7 @@ public class MaximumFlowPushRelabelToFront extends MaximumFlowPushRelabelAbstrac
 		@Override
 		boolean hasMoreVerticesToDischarge() {
 			for (; list.listIter.hasNext(); list.listIter.nextInt())
-				if (hasExcess(list.listIter.pickNext()))
+				if (hasExcess(list.listIter.peekNext()))
 					return true;
 			return false;
 		}
@@ -143,7 +143,7 @@ public class MaximumFlowPushRelabelToFront extends MaximumFlowPushRelabelAbstrac
 
 		final LinkedListDoubleArrayFixedSize vertices;
 		int listHead = LinkedListDoubleArrayFixedSize.None;
-		Utils.IterPickable.Int listIter;
+		Utils.IterPeekable.Int listIter;
 
 		VertexList(MaximumFlowPushRelabelAbstract.Worker worker) {
 			int n = worker.g.vertices().size();

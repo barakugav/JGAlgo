@@ -1,12 +1,9 @@
 package com.jgalgo;
 
 import java.util.BitSet;
-
 import com.jgalgo.DynamicTree.MinEdge;
-import com.jgalgo.Utils.IterPickable;
 import com.jgalgo.Utils.QueueFixSize;
 import com.jgalgo.Utils.Stack;
-
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
@@ -126,7 +123,7 @@ public class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 
 			/* Init all vertices iterators */
 			for (int u = 0; u < n; u++)
-				vertexData(u).edgeIter = new Utils.IterPickableImpl.Int(g.edgesOut(u));
+				vertexData(u).edgeIter = (EdgeIterImpl) g.edgesOut(u);
 		}
 
 		abstract Vertex newVertex(int v, DynamicTree.Node dtNode);
@@ -182,11 +179,11 @@ public class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 				Vertex U = active.pop();
 				assert U.v != source && U.v != sink;
 				assert U.dtNode.getParent() == null;
-				IterPickable.Int it = U.edgeIter;
+				EdgeIterImpl it = U.edgeIter;
 				int uSize = dtTreeSize.getTreeSize(U.dtNode);
 
 				while (U.hasExcess() && it.hasNext()) {
-					int e = it.pickNext();
+					int e = it.peekNext();
 					Vertex V = vertexData(g.edgeTarget(e));
 
 					if (!(isResidual(e) && U.label == V.label + 1)) {
@@ -228,7 +225,7 @@ public class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 				/* Finished iterating over all vertex edges */
 				if (!it.hasNext()) {
 					U.label++;
-					U.edgeIter = new Utils.IterPickableImpl.Int(g.edgesOut(U.v));
+					U.edgeIter = (EdgeIterImpl) g.edgesOut(U.v);
 					cutAllChildren(U);
 				}
 
@@ -321,7 +318,7 @@ public class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 			final int v;
 			boolean isActive;
 			int label;
-			IterPickable.Int edgeIter;
+			EdgeIterImpl edgeIter;
 
 			final DynamicTree.Node dtNode;
 			int firstDtChild;

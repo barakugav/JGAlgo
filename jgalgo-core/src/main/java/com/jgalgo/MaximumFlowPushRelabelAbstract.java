@@ -2,9 +2,6 @@ package com.jgalgo;
 
 import java.util.Arrays;
 import java.util.BitSet;
-
-import com.jgalgo.Utils.IterPickable;
-
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -112,7 +109,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 		final Weights.Int twin;
 
 		final int[] label;
-		final IterPickable.Int[] edgeIters;
+		final EdgeIterImpl[] edgeIters;
 
 		private final BitSet relabelVisited;
 		private final IntPriorityQueue relabelQueue;
@@ -153,7 +150,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 			}
 
 			label = new int[n];
-			edgeIters = new IterPickable.Int[n];
+			edgeIters = new EdgeIterImpl[n];
 
 			relabelVisited = new BitSet(n);
 			relabelQueue = new IntArrayFIFOQueue();
@@ -212,7 +209,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 
 		void onVertexLabelReCompute(int u, int newLabel) {
 			// reset edge iterator
-			edgeIters[u] = new Utils.IterPickableImpl.Int(g.edgesOut(u));
+			edgeIters[u] = (EdgeIterImpl) g.edgesOut(u);
 			if (hasExcess(u))
 				addToLayerActive(u, newLabel);
 			else
@@ -348,7 +345,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 
 			// reuse edgeIters array
 			for (int u = 0; u < n; u++)
-				edgeIters[u] = new Utils.IterPickableImpl.Int(g.edgesOut(u));
+				edgeIters[u] = (EdgeIterImpl) g.edgesOut(u);
 
 			for (int root = 0; root < n; root++) {
 				if (vState[root] != Unvisited || !hasExcess(root) || root == source || root == sink)
@@ -356,7 +353,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 				vState[root] = OnPath;
 				dfs: for (int u = root;;) {
 					edgeIteration: for (; edgeIters[u].hasNext(); edgeIters[u].nextInt()) {
-						int e = edgeIters[u].pickNext();
+						int e = edgeIters[u].peekNext();
 						if (isOriginalEdge(e) || !isResidual(e))
 							continue;
 						int v = g.edgeTarget(e);
@@ -373,8 +370,8 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 
 							// back out the DFS up to the first saturated edge
 							int backOutTo = u;
-							for (v = g.edgeTarget(edgeIters[u].pickNext()); v != u; v = g.edgeTarget(e)) {
-								e = edgeIters[v].pickNext();
+							for (v = g.edgeTarget(edgeIters[u].peekNext()); v != u; v = g.edgeTarget(e)) {
+								e = edgeIters[v].peekNext();
 								if (vState[v] != Unvisited && !isSaturated(e))
 									continue;
 								vState[g.edgeTarget(e)] = Unvisited;
@@ -417,7 +414,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 		}
 
 		/* eliminated a cycle found during the DFS of convertPreflowToFlow */
-		/* the cycle can be found by following e and edgeIters[u].pickNext() */
+		/* the cycle can be found by following e and edgeIters[u].peekNext() */
 		abstract void eliminateCycle(int e);
 
 		abstract void eliminateExcessWithTopologicalOrder(int topoBegin, int topoEnd, int[] topoNext);
@@ -533,8 +530,8 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 
 		@Override
 		void discharge(int u) {
-			for (IterPickable.Int it = edgeIters[u];;) {
-				int e = it.pickNext();
+			for (EdgeIterImpl it = edgeIters[u];;) {
+				int e = it.peekNext();
 				int v = g.edgeTarget(e);
 				double eAccess = getResidualCapacity(e);
 				if (eAccess > EPS && label[u] == label[v] + 1) {
@@ -562,7 +559,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 					relabel(u, label[u] + 1);
 					if (label[u] >= n)
 						break;
-					it = edgeIters[u] = new Utils.IterPickableImpl.Int(g.edgesOut(u));
+					it = edgeIters[u] = (EdgeIterImpl) g.edgesOut(u);
 					assert it.hasNext();
 				}
 			}
@@ -574,7 +571,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 			int v = g.edgeTarget(e);
 			double delta = getResidualCapacity(e);
 			for (;;) {
-				e = edgeIters[v].pickNext();
+				e = edgeIters[v].peekNext();
 				delta = Math.min(delta, getResidualCapacity(e));
 				if (v == u)
 					break;
@@ -583,7 +580,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 
 			// remove delta from all edges of the cycle
 			for (v = u;;) {
-				e = edgeIters[v].pickNext();
+				e = edgeIters[v].peekNext();
 				int eTwin = twin.getInt(e);
 				flow.set(e, flow.getDouble(e) + delta);
 				flow.set(eTwin, flow.getDouble(eTwin) - delta);
@@ -703,8 +700,8 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 
 		@Override
 		void discharge(int u) {
-			for (IterPickable.Int it = edgeIters[u];;) {
-				int e = it.pickNext();
+			for (EdgeIterImpl it = edgeIters[u];;) {
+				int e = it.peekNext();
 				int v = g.edgeTarget(e);
 				int eAccess = getResidualCapacity(e);
 				if (eAccess > 0 && label[u] == label[v] + 1) {
@@ -729,7 +726,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 					relabel(u, label[u] + 1);
 					if (label[u] >= n)
 						break;
-					it = edgeIters[u] = new Utils.IterPickableImpl.Int(g.edgesOut(u));
+					it = edgeIters[u] = (EdgeIterImpl) g.edgesOut(u);
 					assert it.hasNext();
 				}
 			}
@@ -741,7 +738,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 			int v = g.edgeTarget(e);
 			int delta = getResidualCapacity(e);
 			for (;;) {
-				e = edgeIters[v].pickNext();
+				e = edgeIters[v].peekNext();
 				delta = Math.min(delta, getResidualCapacity(e));
 				if (v == u)
 					break;
@@ -750,7 +747,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 
 			// remove delta from all edges of the cycle
 			for (v = u;;) {
-				e = edgeIters[v].pickNext();
+				e = edgeIters[v].peekNext();
 				int eTwin = twin.getInt(e);
 				flow.set(e, flow.getInt(e) + delta);
 				flow.set(eTwin, flow.getInt(eTwin) - delta);

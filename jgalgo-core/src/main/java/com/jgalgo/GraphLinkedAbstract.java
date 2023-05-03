@@ -87,7 +87,7 @@ abstract class GraphLinkedAbstract extends GraphBaseContinues {
 		super.clearEdges();
 	}
 
-	abstract class EdgeItr implements EdgeIter {
+	abstract class EdgeItr implements EdgeIterImpl {
 
 		private Node next;
 		Node last;
@@ -109,6 +109,13 @@ abstract class GraphLinkedAbstract extends GraphBaseContinues {
 				throw new NoSuchElementException();
 			next = nextNode(last = next);
 			return last.id;
+		}
+
+		@Override
+		public int peekNext() {
+			if (!hasNext())
+				throw new NoSuchElementException();
+			return next.id;
 		}
 
 		@Override

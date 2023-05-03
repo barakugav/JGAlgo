@@ -1,11 +1,9 @@
 package com.jgalgo;
 
 import java.util.Arrays;
-
 import it.unimi.dsi.fastutil.ints.AbstractIntList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntListIterator;
 import it.unimi.dsi.fastutil.ints.IntLists;
@@ -107,10 +105,10 @@ public class Path extends AbstractIntList {
 		}
 	}
 
-	private static class IterUndirected implements EdgeIter {
+	private static class IterUndirected implements EdgeIterImpl {
 
 		private final UGraph g;
-		private final IntIterator it;
+		private final IntListIterator it;
 		private int e = -1, v = -1;
 
 		IterUndirected(UGraph g, IntList path, int source) {
@@ -133,6 +131,13 @@ public class Path extends AbstractIntList {
 		}
 
 		@Override
+		public int peekNext() {
+			int peek = it.nextInt();
+			it.previousInt(); /* go back */
+			return peek;
+		}
+
+		@Override
 		public int u() {
 			return g.edgeEndpoint(e, v);
 		}
@@ -144,10 +149,10 @@ public class Path extends AbstractIntList {
 
 	}
 
-	private static class IterDirected implements EdgeIter {
+	private static class IterDirected implements EdgeIterImpl {
 
 		private final DiGraph g;
-		private final IntIterator it;
+		private final IntListIterator it;
 		private int e = -1;
 
 		IterDirected(DiGraph g, IntList path) {
@@ -166,6 +171,13 @@ public class Path extends AbstractIntList {
 			if (e != -1)
 				assert g.edgeTarget(e) == g.edgeSource(eNext);
 			return e = eNext;
+		}
+
+		@Override
+		public int peekNext() {
+			int peek = it.nextInt();
+			it.previousInt(); /* go back */
+			return peek;
 		}
 
 		@Override

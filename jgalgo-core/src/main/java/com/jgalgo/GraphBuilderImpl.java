@@ -481,12 +481,12 @@ class GraphBuilderImpl {
 			g.addEdgesWeightsContainer(key, weights);
 		}
 
-		class EdgeItr implements EdgeIter {
+		class EdgeItr implements EdgeIterImpl {
 
-			private final EdgeIter it;
+			private final EdgeIterImpl it;
 
 			EdgeItr(EdgeIter it) {
-				this.it = it;
+				this.it = (EdgeIterImpl) it;
 			}
 
 			@Override
@@ -497,6 +497,12 @@ class GraphBuilderImpl {
 			@Override
 			public int nextInt() {
 				int eIdx = it.nextInt();
+				return edgesIDStrategy.idxToId(eIdx);
+			}
+
+			@Override
+			public int peekNext() {
+				int eIdx = it.peekNext();
 				return edgesIDStrategy.idxToId(eIdx);
 			}
 

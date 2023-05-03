@@ -137,7 +137,7 @@ abstract class GraphArrayAbstract extends GraphBaseContinues {
 		return (int) ((endpoints >> 0) & 0xffffffffL);
 	}
 
-	abstract class EdgeIt implements EdgeIter {
+	abstract class EdgeIt implements EdgeIterImpl {
 
 		private final int[] edges;
 		private int count;
@@ -159,6 +159,13 @@ abstract class GraphArrayAbstract extends GraphBaseContinues {
 			if (!hasNext())
 				throw new NoSuchElementException();
 			return lastEdge = edges[idx++];
+		}
+
+		@Override
+		public int peekNext() {
+			if (!hasNext())
+				throw new NoSuchElementException();
+			return edges[idx];
 		}
 
 		@Override

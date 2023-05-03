@@ -45,6 +45,7 @@ public class MaximumFlowPushRelabelLowestFirst extends MaximumFlowPushRelabelAbs
 			super(gOrig, net, source, sink);
 		}
 
+		@Override
 		void recomputeLabels() {
 			minLayerActive = 0;
 			super.recomputeLabels();
@@ -84,6 +85,7 @@ public class MaximumFlowPushRelabelLowestFirst extends MaximumFlowPushRelabelAbs
 			super(gOrig, net, source, sink);
 		}
 
+		@Override
 		void recomputeLabels() {
 			minLayerActive = 0;
 			super.recomputeLabels();

@@ -1,7 +1,6 @@
 package com.jgalgo;
 
 import java.util.Collections;
-import java.util.NoSuchElementException;
 import it.unimi.dsi.fastutil.ints.Int2ObjectFunction;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -167,28 +166,5 @@ class GraphsUtils {
 		}
 		return false;
 	}
-
-	static final EdgeIter EmptyEdgeIter = new EdgeIter() {
-
-		@Override
-		public int nextInt() {
-			throw new NoSuchElementException();
-		}
-
-		@Override
-		public boolean hasNext() {
-			return false;
-		}
-
-		@Override
-		public int u() {
-			throw new NoSuchElementException();
-		}
-
-		@Override
-		public int v() {
-			throw new NoSuchElementException();
-		}
-	};
 
 }

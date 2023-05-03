@@ -59,9 +59,9 @@ abstract class GraphTableAbstract extends GraphBaseContinues {
 	public EdgeIter getEdges(int u, int v) {
 		int e = edges[u][v];
 		if (e == EdgeNone) {
-			return GraphsUtils.EmptyEdgeIter;
+			return EdgeIterImpl.Empty;
 		} else {
-			return new EdgeIter() {
+			return new EdgeIterImpl() {
 
 				boolean first = true;
 
@@ -75,6 +75,13 @@ abstract class GraphTableAbstract extends GraphBaseContinues {
 					if (!hasNext())
 						throw new NoSuchElementException();
 					first = false;
+					return e;
+				}
+
+				@Override
+				public int peekNext() {
+					if (!hasNext())
+						throw new NoSuchElementException();
 					return e;
 				}
 
@@ -181,7 +188,7 @@ abstract class GraphTableAbstract extends GraphBaseContinues {
 		return (int) ((endpoints >> 0) & 0xffffffffL);
 	}
 
-	class EdgeIterOut implements EdgeIter {
+	class EdgeIterOut implements EdgeIterImpl {
 
 		private final int u;
 		private int v;
@@ -207,6 +214,13 @@ abstract class GraphTableAbstract extends GraphBaseContinues {
 			int e = edges[u][lastV = v];
 			advanceUntilNext(v + 1);
 			return e;
+		}
+
+		@Override
+		public int peekNext() {
+			if (!hasNext())
+				throw new NoSuchElementException();
+			return edges[u][v];
 		}
 
 		void advanceUntilNext(int next) {
@@ -236,7 +250,7 @@ abstract class GraphTableAbstract extends GraphBaseContinues {
 		}
 	}
 
-	class EdgeIterIn implements EdgeIter {
+	class EdgeIterIn implements EdgeIterImpl {
 
 		private int u;
 		private final int v;
@@ -262,6 +276,13 @@ abstract class GraphTableAbstract extends GraphBaseContinues {
 			int e = edges[lastU = u][v];
 			advanceUntilNext(u + 1);
 			return e;
+		}
+
+		@Override
+		public int peekNext() {
+			if (!hasNext())
+				throw new NoSuchElementException();
+			return edges[u][v];
 		}
 
 		private void advanceUntilNext(int next) {

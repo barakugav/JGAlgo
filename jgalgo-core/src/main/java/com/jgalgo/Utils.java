@@ -74,15 +74,15 @@ class Utils {
 		};
 	}
 
-	static interface IterPickable<E> extends Iterator<E> {
+	static interface IterPeekable<E> extends Iterator<E> {
 
-		E pickNext();
+		E peekNext();
 
 		static interface Int extends IntIterator {
 
-			int pickNext();
+			int peekNext();
 
-			static final IterPickable.Int Empty = new IterPickable.Int() {
+			static final IterPeekable.Int Empty = new IterPeekable.Int() {
 
 				@Override
 				public boolean hasNext() {
@@ -95,7 +95,7 @@ class Utils {
 				}
 
 				@Override
-				public int pickNext() {
+				public int peekNext() {
 					throw new NoSuchElementException();
 				}
 			};
@@ -104,24 +104,24 @@ class Utils {
 
 	}
 
-	static class IterPickableImpl<E> implements IterPickable<E> {
+	static class IterPeekableImpl<E> implements IterPeekable<E> {
 
 		private final Iterator<? super E> it;
-		private Object pick;
-		private static final Object PickNone = new Object();
+		private Object peek;
+		private static final Object PeekNone = new Object();
 
-		IterPickableImpl(Iterator<? super E> it) {
+		IterPeekableImpl(Iterator<? super E> it) {
 			this.it = Objects.requireNonNull(it);
-			pick = PickNone;
+			peek = PeekNone;
 		}
 
 		@Override
 		public boolean hasNext() {
-			if (pick != PickNone)
+			if (peek != PeekNone)
 				return true;
 			if (!it.hasNext())
 				return false;
-			pick = it.next();
+			peek = it.next();
 			return true;
 		}
 
@@ -130,38 +130,38 @@ class Utils {
 			if (!hasNext())
 				throw new NoSuchElementException();
 			@SuppressWarnings("unchecked")
-			E n = (E) pick;
-			pick = PickNone;
+			E n = (E) peek;
+			peek = PeekNone;
 			return n;
 		}
 
 		@Override
 		@SuppressWarnings("unchecked")
-		public E pickNext() {
+		public E peekNext() {
 			if (!hasNext())
 				throw new NoSuchElementException();
-			return (E) pick;
+			return (E) peek;
 		}
 
-		static class Int implements IterPickable.Int {
+		static class Int implements IterPeekable.Int {
 
 			private final IntIterator it;
-			private int pick;
-			private boolean isPickValid;
+			private int peek;
+			private boolean isPeekValid;
 
 			Int(IntIterator it) {
 				this.it = Objects.requireNonNull(it);
-				isPickValid = false;
+				isPeekValid = false;
 			}
 
 			@Override
 			public boolean hasNext() {
-				if (isPickValid)
+				if (isPeekValid)
 					return true;
 				if (!it.hasNext())
 					return false;
-				pick = it.nextInt();
-				isPickValid = true;
+				peek = it.nextInt();
+				isPeekValid = true;
 				return true;
 			}
 
@@ -169,15 +169,15 @@ class Utils {
 			public int nextInt() {
 				if (!hasNext())
 					throw new NoSuchElementException();
-				isPickValid = false;
-				return pick;
+				isPeekValid = false;
+				return peek;
 			}
 
 			@Override
-			public int pickNext() {
+			public int peekNext() {
 				if (!hasNext())
 					throw new NoSuchElementException();
-				return pick;
+				return peek;
 			}
 
 		}

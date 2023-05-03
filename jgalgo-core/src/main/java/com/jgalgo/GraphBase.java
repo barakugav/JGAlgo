@@ -30,7 +30,7 @@ abstract class GraphBase implements Graph {
 
 	@Override
 	public EdgeIter getEdges(int u, int v) {
-		return new EdgeIter() {
+		return new EdgeIterImpl() {
 			EdgeIter it = edgesOut(u);
 			int e = -1;
 
@@ -55,6 +55,13 @@ abstract class GraphBase implements Graph {
 				int ret = e;
 				e = -1;
 				return ret;
+			}
+
+			@Override
+			public int peekNext() {
+				if (!hasNext())
+					throw new NoSuchElementException();
+				return e;
 			}
 
 			@Override

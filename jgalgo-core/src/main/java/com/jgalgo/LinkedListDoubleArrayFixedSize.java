@@ -64,10 +64,10 @@ interface LinkedListDoubleArrayFixedSize {
 
 	void clear();
 
-	default Utils.IterPickable.Int iterator(int id) {
+	default Utils.IterPeekable.Int iterator(int id) {
 		if (!(0 <= id && id < size()))
 			throw new IndexOutOfBoundsException(id);
-		return new Utils.IterPickable.Int() {
+		return new Utils.IterPeekable.Int() {
 			int p = id;
 
 			@Override
@@ -85,7 +85,7 @@ interface LinkedListDoubleArrayFixedSize {
 			}
 
 			@Override
-			public int pickNext() {
+			public int peekNext() {
 				if (!hasNext())
 					throw new NoSuchElementException();
 				return p;
