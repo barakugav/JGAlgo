@@ -24,142 +24,112 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 
 class ConnectivityAlgorithmImpl implements ConnectivityAlgorithm {
 
-	private IntStack stack1;
-	private IntStack stack2;
-	private int[] arr1 = IntArrays.EMPTY_ARRAY;
-	private int[] arr2 = IntArrays.EMPTY_ARRAY;
-	private EdgeIter[] arr3 = MemoryReuse.EmptyEdgeIterArr;
+	private final AllocatedMemory allocatedMemory = new AllocatedMemory();
 
 	@Override
 	public ConnectivityAlgorithm.Result computeConnectivityComponents(Graph g) {
-		if (g.getCapabilities().directed()) {
-			int n = g.vertices().size();
-			stack1 = MemoryReuse.ensureAllocated(stack1, IntArrayList::new);
-			stack2 = MemoryReuse.ensureAllocated(stack2, IntArrayList::new);
-			arr1 = MemoryReuse.ensureLength(arr1, n);
-			arr2 = MemoryReuse.ensureLength(arr2, n);
-			arr3 = MemoryReuse.ensureLength(arr3, n);
-			return new WorkerDirected(stack1, stack2, arr1, arr2, arr3).computeCC(g);
-
-		} else {
-			stack1 = MemoryReuse.ensureAllocated(stack1, IntArrayList::new);
-			return new WorkerUndirected(stack1).computeCC(g);
-		}
+		return g.getCapabilities().directed() ? computeSCCDirected(g) : computeSCCUndirected(g);
 	}
 
-	private static class WorkerUndirected {
-		private final IntStack stack;
+	private ConnectivityAlgorithm.Result computeSCCDirected(Graph g) {
+		allocatedMemory.allocatedDirected(g);
+		IntStack s = allocatedMemory.stack1;
+		IntStack p = allocatedMemory.stack2;
+		assert s.isEmpty();
+		assert p.isEmpty();
+		int[] dfsPath = allocatedMemory.dfsPath;
+		int[] c = allocatedMemory.c;
+		EdgeIter[] edges = allocatedMemory.edges;
 
-		WorkerUndirected(IntStack stack) {
-			assert stack.isEmpty();
-			this.stack = stack;
-		}
+		// implementation of Tarjan's strongly connected components algorithm
+		// https://en.wikipedia.org/wiki/Tarjan%27s_strongly_connected_components_algorithm
 
-		ConnectivityAlgorithm.Result computeCC(Graph g) {
-			int n = g.vertices().size();
-			int[] comp = new int[n];
-			Arrays.fill(comp, -1);
-			int compNum = 0;
+		int n = g.vertices().size();
+		int[] comp = new int[n];
+		Arrays.fill(comp, -1);
+		int compNum = 0;
 
-			for (int root = 0; root < n; root++) {
-				if (comp[root] != -1)
-					continue;
+		Arrays.fill(c, 0);
+		int cNext = 1;
 
-				final int compIdx = compNum++;
-				stack.push(root);
-				comp[root] = compIdx;
+		for (int root = 0; root < n; root++) {
+			if (comp[root] != -1)
+				continue;
+			dfsPath[0] = root;
+			edges[0] = g.edgesOut(root);
+			c[root] = cNext++;
+			s.push(root);
+			p.push(root);
 
-				while (!stack.isEmpty()) {
-					int u = stack.popInt();
+			dfs: for (int depth = 0;;) {
+				for (EdgeIter eit = edges[depth]; eit.hasNext();) {
+					eit.nextInt();
+					int v = eit.v();
+					if (c[v] == 0) {
+						c[v] = cNext++;
+						s.push(v);
+						p.push(v);
 
-					for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
-						eit.nextInt();
-						int v = eit.v();
-						if (comp[v] != -1) {
-							assert comp[v] == compIdx;
-							continue;
-						}
-						comp[v] = compIdx;
-						stack.push(v);
-					}
+						dfsPath[++depth] = v;
+						edges[depth] = g.edgesOut(v);
+						continue dfs;
+					} else if (comp[v] == -1)
+						while (c[p.topInt()] > c[v])
+							p.popInt();
 				}
+				int u = dfsPath[depth];
+				if (p.topInt() == u) {
+					int v;
+					do {
+						v = s.popInt();
+						comp[v] = compNum;
+					} while (v != u);
+					compNum++;
+					p.popInt();
+				}
+
+				edges[depth] = null;
+				if (depth-- == 0)
+					break;
 			}
-			return new Result(compNum, comp);
 		}
+		return new Result(compNum, comp);
 	}
 
-	private static class WorkerDirected {
-		private final IntStack s;
-		private final IntStack p;
-		private final int[] dfsPath;
-		private final int[] c;
-		private final EdgeIter[] edges;
+	private ConnectivityAlgorithm.Result computeSCCUndirected(Graph g) {
+		allocatedMemory.allocatedUndirected(g);
+		IntStack stack = allocatedMemory.stack1;
+		assert stack.isEmpty();
 
-		WorkerDirected(IntStack stack1, IntStack stack2, int[] arrN1, int[] arrN2, EdgeIter[] arrN3) {
-			assert stack1.isEmpty();
-			assert stack2.isEmpty();
-			this.s = stack1;
-			this.p = stack2;
-			this.dfsPath = arrN1;
-			this.c = arrN2;
-			this.edges = arrN3;
-		}
+		int n = g.vertices().size();
+		int[] comp = new int[n];
+		Arrays.fill(comp, -1);
+		int compNum = 0;
 
-		ConnectivityAlgorithm.Result computeCC(Graph g) {
-			// implementation of Tarjan's strongly connected components algorithm
-			// https://en.wikipedia.org/wiki/Tarjan%27s_strongly_connected_components_algorithm
+		for (int root = 0; root < n; root++) {
+			if (comp[root] != -1)
+				continue;
 
-			int n = g.vertices().size();
-			int[] comp = new int[n];
-			Arrays.fill(comp, -1);
-			int compNum = 0;
+			final int compIdx = compNum++;
+			stack.push(root);
+			comp[root] = compIdx;
 
-			Arrays.fill(c, 0);
-			int cNext = 1;
+			while (!stack.isEmpty()) {
+				int u = stack.popInt();
 
-			for (int root = 0; root < n; root++) {
-				if (comp[root] != -1)
-					continue;
-				dfsPath[0] = root;
-				edges[0] = g.edgesOut(root);
-				c[root] = cNext++;
-				s.push(root);
-				p.push(root);
-
-				dfs: for (int depth = 0;;) {
-					for (EdgeIter eit = edges[depth]; eit.hasNext();) {
-						eit.nextInt();
-						int v = eit.v();
-						if (c[v] == 0) {
-							c[v] = cNext++;
-							s.push(v);
-							p.push(v);
-
-							dfsPath[++depth] = v;
-							edges[depth] = g.edgesOut(v);
-							continue dfs;
-						} else if (comp[v] == -1)
-							while (c[p.topInt()] > c[v])
-								p.popInt();
+				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
+					eit.nextInt();
+					int v = eit.v();
+					if (comp[v] != -1) {
+						assert comp[v] == compIdx;
+						continue;
 					}
-					int u = dfsPath[depth];
-					if (p.topInt() == u) {
-						int v;
-						do {
-							v = s.popInt();
-							comp[v] = compNum;
-						} while (v != u);
-						compNum++;
-						p.popInt();
-					}
-
-					edges[depth] = null;
-					if (depth-- == 0)
-						break;
+					comp[v] = compIdx;
+					stack.push(v);
 				}
 			}
-			return new Result(compNum, comp);
 		}
+		return new Result(compNum, comp);
 	}
 
 	private static class Result implements ConnectivityAlgorithm.Result {
@@ -184,6 +154,28 @@ class ConnectivityAlgorithmImpl implements ConnectivityAlgorithm {
 		@Override
 		public String toString() {
 			return Arrays.toString(vertexToCC);
+		}
+	}
+
+	private static class AllocatedMemory {
+		private IntStack stack1;
+		private IntStack stack2;
+		private int[] dfsPath = IntArrays.EMPTY_ARRAY;
+		private int[] c = IntArrays.EMPTY_ARRAY;
+		private EdgeIter[] edges = MemoryReuse.EmptyEdgeIterArr;
+
+		void allocatedDirected(Graph g) {
+			int n = g.vertices().size();
+			stack1 = MemoryReuse.ensureAllocated(stack1, IntArrayList::new);
+			stack2 = MemoryReuse.ensureAllocated(stack2, IntArrayList::new);
+			dfsPath = MemoryReuse.ensureLength(dfsPath, n);
+			c = MemoryReuse.ensureLength(c, n);
+			edges = MemoryReuse.ensureLength(edges, n);
+
+		}
+
+		void allocatedUndirected(Graph g) {
+			stack1 = MemoryReuse.ensureAllocated(stack1, IntArrayList::new);
 		}
 	}
 
