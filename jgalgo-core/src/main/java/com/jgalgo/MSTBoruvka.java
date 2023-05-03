@@ -43,7 +43,7 @@ public class MSTBoruvka implements MST {
 		return computeMST(g, w, Integer.MAX_VALUE).mst;
 	}
 
-	<E> Pair<UGraph, IntCollection> runBoruvka(Graph g, EdgeWeightFunc w, int numberOfRounds, Object edgeRefKey) {
+	Pair<UGraph, IntCollection> runBoruvka(Graph g, EdgeWeightFunc w, int numberOfRounds, Object edgeRefKey) {
 		if (numberOfRounds <= 0)
 			throw new IllegalArgumentException();
 		MSTResult mstRes = computeMST(g, w, numberOfRounds);

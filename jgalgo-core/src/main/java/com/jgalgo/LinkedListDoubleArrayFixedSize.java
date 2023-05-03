@@ -3,8 +3,6 @@ package com.jgalgo;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 
-import it.unimi.dsi.fastutil.ints.IntIterator;
-
 interface LinkedListDoubleArrayFixedSize {
 
 	static final int None = -1;
@@ -66,10 +64,10 @@ interface LinkedListDoubleArrayFixedSize {
 
 	void clear();
 
-	default IntIterator iterator(int id) {
+	default Utils.IterPickable.Int iterator(int id) {
 		if (!(0 <= id && id < size()))
 			throw new IndexOutOfBoundsException(id);
-		return new IntIterator() {
+		return new Utils.IterPickable.Int() {
 			int p = id;
 
 			@Override
@@ -84,6 +82,13 @@ interface LinkedListDoubleArrayFixedSize {
 				int ret = p;
 				p = LinkedListDoubleArrayFixedSize.this.next(p);
 				return ret;
+			}
+
+			@Override
+			public int pickNext() {
+				if (!hasNext())
+					throw new NoSuchElementException();
+				return p;
 			}
 
 		};

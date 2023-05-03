@@ -126,7 +126,7 @@ public class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 
 			/* Init all vertices iterators */
 			for (int u = 0; u < n; u++)
-				vertexData(u).edgeIter = new IterPickable.Int(g.edgesOut(u));
+				vertexData(u).edgeIter = new Utils.IterPickableImpl.Int(g.edgesOut(u));
 		}
 
 		abstract Vertex newVertex(int v, DynamicTree.Node dtNode);
@@ -228,7 +228,7 @@ public class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 				/* Finished iterating over all vertex edges */
 				if (!it.hasNext()) {
 					U.label++;
-					U.edgeIter = new IterPickable.Int(g.edgesOut(U.v));
+					U.edgeIter = new Utils.IterPickableImpl.Int(g.edgesOut(U.v));
 					cutAllChildren(U);
 				}
 

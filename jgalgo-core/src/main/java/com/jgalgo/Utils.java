@@ -74,13 +74,43 @@ class Utils {
 		};
 	}
 
-	static class IterPickable<E> implements Iterator<E> {
+	static interface IterPickable<E> extends Iterator<E> {
+
+		E pickNext();
+
+		static interface Int extends IntIterator {
+
+			int pickNext();
+
+			static final IterPickable.Int Empty = new IterPickable.Int() {
+
+				@Override
+				public boolean hasNext() {
+					return false;
+				}
+
+				@Override
+				public int nextInt() {
+					throw new NoSuchElementException();
+				}
+
+				@Override
+				public int pickNext() {
+					throw new NoSuchElementException();
+				}
+			};
+
+		}
+
+	}
+
+	static class IterPickableImpl<E> implements IterPickable<E> {
 
 		private final Iterator<? super E> it;
 		private Object pick;
 		private static final Object PickNone = new Object();
 
-		IterPickable(Iterator<? super E> it) {
+		IterPickableImpl(Iterator<? super E> it) {
 			this.it = Objects.requireNonNull(it);
 			pick = PickNone;
 		}
@@ -105,14 +135,15 @@ class Utils {
 			return n;
 		}
 
+		@Override
 		@SuppressWarnings("unchecked")
-		E pickNext() {
+		public E pickNext() {
 			if (!hasNext())
 				throw new NoSuchElementException();
 			return (E) pick;
 		}
 
-		static class Int implements IntIterator {
+		static class Int implements IterPickable.Int {
 
 			private final IntIterator it;
 			private int pick;
@@ -142,7 +173,8 @@ class Utils {
 				return pick;
 			}
 
-			int pickNext() {
+			@Override
+			public int pickNext() {
 				if (!hasNext())
 					throw new NoSuchElementException();
 				return pick;

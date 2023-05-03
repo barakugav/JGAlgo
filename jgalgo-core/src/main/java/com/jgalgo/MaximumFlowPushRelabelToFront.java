@@ -1,7 +1,6 @@
 package com.jgalgo;
 
 import it.unimi.dsi.fastutil.ints.IntIterator;
-import it.unimi.dsi.fastutil.ints.IntIterators;
 
 /**
  * The push-relabel maximum flow algorithm with relabel-to-front ordering.
@@ -62,7 +61,7 @@ public class MaximumFlowPushRelabelToFront extends MaximumFlowPushRelabelAbstrac
 			list.clear();
 			super.recomputeLabels();
 			list.listIter = list.listHead != LinkedListDoubleArrayFixedSize.None ? list.vertices.iterator(list.listHead)
-					: IntIterators.EMPTY_ITERATOR;
+					: Utils.IterPickable.Int.Empty;
 		}
 
 		@Override
@@ -75,12 +74,19 @@ public class MaximumFlowPushRelabelToFront extends MaximumFlowPushRelabelAbstrac
 
 		@Override
 		boolean hasMoreVerticesToDischarge() {
-			return list.listIter.hasNext();
+			for (; list.listIter.hasNext(); list.listIter.nextInt())
+				if (hasExcess(list.listIter.pickNext()))
+					return true;
+			return false;
 		}
 
 		@Override
 		int nextVertexToDischarge() {
-			return list.listIter.nextInt();
+			int v;
+			while (list.listIter.hasNext())
+				if (hasExcess(v = list.listIter.nextInt()))
+					return v;
+			throw new IllegalStateException();
 		}
 	}
 
@@ -104,7 +110,7 @@ public class MaximumFlowPushRelabelToFront extends MaximumFlowPushRelabelAbstrac
 			list.clear();
 			super.recomputeLabels();
 			list.listIter = list.listHead != LinkedListDoubleArrayFixedSize.None ? list.vertices.iterator(list.listHead)
-					: IntIterators.EMPTY_ITERATOR;
+					: Utils.IterPickable.Int.Empty;
 		}
 
 		@Override
@@ -117,12 +123,19 @@ public class MaximumFlowPushRelabelToFront extends MaximumFlowPushRelabelAbstrac
 
 		@Override
 		boolean hasMoreVerticesToDischarge() {
-			return list.listIter.hasNext();
+			for (; list.listIter.hasNext(); list.listIter.nextInt())
+				if (hasExcess(list.listIter.pickNext()))
+					return true;
+			return false;
 		}
 
 		@Override
 		int nextVertexToDischarge() {
-			return list.listIter.nextInt();
+			int v;
+			while (list.listIter.hasNext())
+				if (hasExcess(v = list.listIter.nextInt()))
+					return v;
+			throw new IllegalStateException();
 		}
 	}
 
@@ -130,7 +143,7 @@ public class MaximumFlowPushRelabelToFront extends MaximumFlowPushRelabelAbstrac
 
 		final LinkedListDoubleArrayFixedSize vertices;
 		int listHead = LinkedListDoubleArrayFixedSize.None;
-		IntIterator listIter;
+		Utils.IterPickable.Int listIter;
 
 		VertexList(MaximumFlowPushRelabelAbstract.Worker worker) {
 			int n = worker.g.vertices().size();

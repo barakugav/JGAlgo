@@ -119,10 +119,13 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 		private int relabelsSinceLastLabelsRecompute;
 		private final int labelsReComputeThreshold;
 
-		private final LinkedListDoubleArrayFixedSize layers;
-		final int[] layersHead;
-		private int maxLayer;
-		// private int minLayer;
+		final LinkedListDoubleArrayFixedSize layersActive;
+		final int[] layersHeadActive;
+		int maxLayerActive;
+
+		private final LinkedListDoubleArrayFixedSize layersInactive;
+		private final int[] layersHeadInactive;
+		private int maxLayerInactive;
 
 		Worker(DiGraph gOrig, FlowNetwork net, int source, int sink) {
 			if (source == sink)
@@ -156,8 +159,10 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 			relabelQueue = new IntArrayFIFOQueue();
 			labelsReComputeThreshold = n;
 
-			layers = LinkedListDoubleArrayFixedSize.newInstance(n);
-			layersHead = new int[n];
+			layersActive = LinkedListDoubleArrayFixedSize.newInstance(n);
+			layersInactive = LinkedListDoubleArrayFixedSize.newInstance(n);
+			layersHeadActive = new int[n];
+			layersHeadInactive = new int[n];
 		}
 
 		void recomputeLabels() {
@@ -165,10 +170,12 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 			// perform backward BFS from sink on edges with flow < capacity (residual)
 			// perform another one from source to init unreachable vertices
 
-			layers.clear();
-			Arrays.fill(layersHead, LinkedListDoubleArrayFixedSize.None);
-			maxLayer = 0;
-			// minLayer = n;
+			layersActive.clear();
+			layersInactive.clear();
+			Arrays.fill(layersHeadActive, LinkedListDoubleArrayFixedSize.None);
+			Arrays.fill(layersHeadInactive, LinkedListDoubleArrayFixedSize.None);
+			maxLayerActive = 0;
+			maxLayerInactive = 0;
 
 			BitSet visited = relabelVisited;
 			IntPriorityQueue queue = relabelQueue;
@@ -205,25 +212,49 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 
 		void onVertexLabelReCompute(int u, int newLabel) {
 			// reset edge iterator
-			edgeIters[u] = new IterPickable.Int(g.edgesOut(u));
-			addToLayer(u, newLabel);
+			edgeIters[u] = new Utils.IterPickableImpl.Int(g.edgesOut(u));
+			if (hasExcess(u))
+				addToLayerActive(u, newLabel);
+			else
+				addToLayerInactive(u, newLabel);
 		}
 
-		void addToLayer(int u, int layer) {
-			if (layersHead[layer] != LinkedListDoubleArrayFixedSize.None)
-				layers.connect(u, layersHead[layer]);
-			layersHead[layer] = u;
+		void addToLayerActive(int u, int layer) {
+			assert u != source && u != sink;
+			if (layersHeadActive[layer] != LinkedListDoubleArrayFixedSize.None)
+				layersActive.connect(u, layersHeadActive[layer]);
+			layersHeadActive[layer] = u;
 
-			if (maxLayer < layer)
-				maxLayer = layer;
-			// if (minLayer > layer)
-			// minLayer = layer;
+			if (maxLayerActive < layer)
+				maxLayerActive = layer;
 		}
 
-		void removeFromLayer(int u, int layer) {
-			if (layersHead[layer] == u)
-				layersHead[layer] = layers.next(u);
-			layers.disconnect(u);
+		void addToLayerInactive(int u, int layer) {
+			assert u != source && u != sink;
+			if (layersHeadInactive[layer] != LinkedListDoubleArrayFixedSize.None)
+				layersInactive.connect(u, layersHeadInactive[layer]);
+			layersHeadInactive[layer] = u;
+
+			if (maxLayerInactive < layer)
+				maxLayerInactive = layer;
+		}
+
+		void removeFromLayerActive(int u, int layer) {
+			if (layersHeadActive[layer] == u)
+				layersHeadActive[layer] = layersActive.next(u);
+			layersActive.disconnect(u);
+		}
+
+		void removeFromLayerInactive(int u, int layer) {
+			if (layersHeadInactive[layer] == u)
+				layersHeadInactive[layer] = layersInactive.next(u);
+			layersInactive.disconnect(u);
+		}
+
+		void activate(int v) {
+			int l = label[v];
+			removeFromLayerInactive(v, l);
+			addToLayerActive(v, l);
 		}
 
 		abstract void pushAsMuchFromSource();
@@ -235,10 +266,11 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 			int oldLabel = label[u];
 			label[u] = newLabel;
 
-			removeFromLayer(u, oldLabel);
-			addToLayer(u, newLabel);
-			if (layersHead[oldLabel] == LinkedListDoubleArrayFixedSize.None)
+			if (layersHeadActive[oldLabel] == LinkedListDoubleArrayFixedSize.None
+					&& layersHeadInactive[oldLabel] == LinkedListDoubleArrayFixedSize.None) {
 				emptyLayerGap(oldLabel);
+				label[u] = n;
+			}
 
 			relabelsSinceLastLabelsRecompute++;
 		}
@@ -246,19 +278,33 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 		void emptyLayerGap(int emptyLayer) {
 			// Gap heuristic
 			// Set labels of all vertices in layers > emptyLayer to infinity (n)
-			int maxLayer = this.maxLayer;
+			int maxLayer = this.maxLayerActive;
 			for (int layer = emptyLayer + 1; layer <= maxLayer; layer++) {
-				int head = layersHead[layer];
+				int head = layersHeadActive[layer];
 				if (head == LinkedListDoubleArrayFixedSize.None)
 					continue;
-				for (IntIterator it = layers.iterator(head); it.hasNext();) {
+				for (IntIterator it = layersActive.iterator(head); it.hasNext();) {
 					int u = it.nextInt();
-					layers.disconnect(u);
+					layersActive.disconnect(u);
 					label[u] = n;
 				}
-				layersHead[layer] = LinkedListDoubleArrayFixedSize.None;
+				layersHeadActive[layer] = LinkedListDoubleArrayFixedSize.None;
 			}
-			this.maxLayer = emptyLayer - 1;
+			this.maxLayerActive = emptyLayer - 1;
+
+			maxLayer = this.maxLayerInactive;
+			for (int layer = emptyLayer + 1; layer <= maxLayer; layer++) {
+				int head = layersHeadInactive[layer];
+				if (head == LinkedListDoubleArrayFixedSize.None)
+					continue;
+				for (IntIterator it = layersInactive.iterator(head); it.hasNext();) {
+					int u = it.nextInt();
+					layersInactive.disconnect(u);
+					label[u] = n;
+				}
+				layersHeadInactive[layer] = LinkedListDoubleArrayFixedSize.None;
+			}
+			this.maxLayerInactive = emptyLayer - 1;
 		}
 
 		abstract void discharge(int u);
@@ -276,7 +322,12 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 				int u = nextVertexToDischarge();
 				if (label[u] >= n)
 					continue;
+				assert hasExcess(u);
+				removeFromLayerActive(u, label[u]);
 				discharge(u);
+				if (label[u] < n)
+					addToLayerInactive(u, label[u]);
+
 				if (relabelsSinceLastLabelsRecompute >= labelsReComputeThreshold)
 					recomputeLabels();
 			}
@@ -292,12 +343,12 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 			int[] parent = label; // reuse array
 
 			// int[] topoNext = new int[n];
-			int[] topoNext = layersHead; // reuse array
+			int[] topoNext = layersHeadActive; // reuse array
 			int topoEnd = -1, topoBegin = -1;
 
 			// reuse edgeIters array
 			for (int u = 0; u < n; u++)
-				edgeIters[u] = new IterPickable.Int(g.edgesOut(u));
+				edgeIters[u] = new Utils.IterPickableImpl.Int(g.edgesOut(u));
 
 			for (int root = 0; root < n; root++) {
 				if (vState[root] != Unvisited || !hasExcess(root) || root == source || root == sink)
@@ -452,9 +503,13 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 		void pushAsMuchFromSource() {
 			for (EdgeIter eit = g.edgesOut(source); eit.hasNext();) {
 				int e = eit.nextInt();
+				int v = eit.v();
 				double f = getResidualCapacity(e);
-				if (f > 0 && label[source] > label[g.edgeTarget(e)])
+				if (f > 0 && label[source] > label[v]) {
+					if (v != sink && !hasExcess(v))
+						activate(v);
 					push(e, f);
+				}
 			}
 		}
 
@@ -478,12 +533,14 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 
 		@Override
 		void discharge(int u) {
-			if (!hasExcess(u))
-				return;
 			for (IterPickable.Int it = edgeIters[u];;) {
 				int e = it.pickNext();
+				int v = g.edgeTarget(e);
 				double eAccess = getResidualCapacity(e);
-				if (eAccess > EPS && label[u] == label[g.edgeTarget(e)] + 1) {
+				if (eAccess > EPS && label[u] == label[v] + 1) {
+					if (v != sink && !hasExcess(v))
+						activate(v);
+
 					// e is admissible, push
 					if (excess[u] > eAccess) {
 						// saturating push
@@ -505,7 +562,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 					relabel(u, label[u] + 1);
 					if (label[u] >= n)
 						break;
-					it = edgeIters[u] = new IterPickable.Int(g.edgesOut(u));
+					it = edgeIters[u] = new Utils.IterPickableImpl.Int(g.edgesOut(u));
 					assert it.hasNext();
 				}
 			}
@@ -616,9 +673,13 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 		void pushAsMuchFromSource() {
 			for (EdgeIter eit = g.edgesOut(source); eit.hasNext();) {
 				int e = eit.nextInt();
+				int v = eit.v();
 				int f = getResidualCapacity(e);
-				if (f > 0 && label[source] > label[g.edgeTarget(e)])
+				if (f > 0 && label[source] > label[v]) {
+					if (v != sink && !hasExcess(v))
+						activate(v);
 					push(e, f);
+				}
 			}
 		}
 
@@ -642,12 +703,14 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 
 		@Override
 		void discharge(int u) {
-			if (!hasExcess(u))
-				return;
 			for (IterPickable.Int it = edgeIters[u];;) {
 				int e = it.pickNext();
+				int v = g.edgeTarget(e);
 				int eAccess = getResidualCapacity(e);
-				if (eAccess > 0 && label[u] == label[g.edgeTarget(e)] + 1) {
+				if (eAccess > 0 && label[u] == label[v] + 1) {
+					if (v != sink && !hasExcess(v))
+						activate(v);
+
 					// e is admissible, push
 					if (excess[u] > eAccess) {
 						// saturating push
@@ -666,7 +729,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 					relabel(u, label[u] + 1);
 					if (label[u] >= n)
 						break;
-					it = edgeIters[u] = new IterPickable.Int(g.edgesOut(u));
+					it = edgeIters[u] = new Utils.IterPickableImpl.Int(g.edgesOut(u));
 					assert it.hasNext();
 				}
 			}
