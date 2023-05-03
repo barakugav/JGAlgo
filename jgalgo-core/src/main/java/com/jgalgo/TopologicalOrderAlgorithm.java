@@ -13,10 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.jgalgo;
-
-import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 /**
  * Algorithm that calculate a topological order of graph vertices.
@@ -30,54 +27,43 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  * @see    <a href= "https://en.wikipedia.org/wiki/Topological_sorting">Wikipedia</a>
  * @author Barak Ugav
  */
-public class TopologicalOrder {
-	private TopologicalOrder() {}
+public interface TopologicalOrderAlgorithm {
 
 	/**
 	 * Compute the topological order of a DAG vertices.
-	 * <p>
-	 * This function runs in linear time.
 	 *
 	 * @param  g                        a directed acyclic graph (DAG).
 	 * @return                          an array of size \(n\) with the vertices of the graph order in the topological
 	 *                                  order.
 	 * @throws IllegalArgumentException if the graph is not DAG
 	 */
-	public static int[] computeTopologicalSortingDAG(Graph g) {
-		if (!g.getCapabilities().directed())
-			throw new IllegalArgumentException("Only directed graphs are supported");
-		int n = g.vertices().size();
-		int[] inDegree = new int[n];
-		IntPriorityQueue queue = new IntArrayFIFOQueue();
-		int[] topolSort = new int[n];
-		int topolSortSize = 0;
+	public int[] computeTopologicalSorting(Graph g);
 
-		// calc in degree of all vertices
-		for (int v = 0; v < n; v++)
-			inDegree[v] = g.degreeIn(v);
+	/**
+	 * Create a new topological order algorithm builder.
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link TopologicalOrderAlgorithm} object.
+	 *
+	 * @return a new builder that can build {@link TopologicalOrderAlgorithm} objects
+	 */
+	static TopologicalOrderAlgorithm.Builder newBuilder() {
+		return TopologicalOrderAlgorithmImpl::new;
+	}
 
-		// Find vertices with zero in degree and insert them to the queue
-		for (int v = 0; v < n; v++)
-			if (inDegree[v] == 0)
-				queue.enqueue(v);
+	/**
+	 * A builder for {@link TopologicalOrderAlgorithm} objects.
+	 *
+	 * @see    TopologicalOrderAlgorithm#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder {
 
-		// Poll vertices from the queue and "remove" each one from the tree and add new
-		// zero in degree vertices to the queue
-		while (!queue.isEmpty()) {
-			int u = queue.dequeueInt();
-			topolSort[topolSortSize++] = u;
-			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
-				eit.nextInt();
-				int v = eit.v();
-				if (--inDegree[v] == 0)
-					queue.enqueue(v);
-			}
-		}
-
-		if (topolSortSize != n)
-			throw new IllegalArgumentException("G is not a directed acyclic graph (DAG)");
-
-		return topolSort;
+		/**
+		 * Create a new algorithm object for topological order computation.
+		 *
+		 * @return a new topological order algorithm
+		 */
+		TopologicalOrderAlgorithm build();
 	}
 
 }

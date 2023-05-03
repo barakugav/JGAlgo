@@ -22,10 +22,12 @@ package com.jgalgo;
  * The algorithm first compute a topological sorting of the vertices in linear time, and then traverse the vertices in
  * that order and determine the distance for each one of them.
  *
- * @see    TopologicalOrder
+ * @see    TopologicalOrderAlgorithm
  * @author Barak Ugav
  */
 public class SSSPDag implements SSSP {
+
+	private final TopologicalOrderAlgorithm topoAlg = TopologicalOrderAlgorithm.newBuilder().build();
 
 	/**
 	 * Construct a new SSSP algorithm object.
@@ -44,7 +46,7 @@ public class SSSPDag implements SSSP {
 		SSSPResultImpl res = new SSSPResultImpl(g, source);
 		res.distances[source] = 0;
 
-		int[] topolSort = TopologicalOrder.computeTopologicalSortingDAG( g);
+		int[] topolSort = topoAlg.computeTopologicalSorting(g);
 		boolean sourceSeen = false;
 		for (int u : topolSort) {
 			if (!sourceSeen) {
