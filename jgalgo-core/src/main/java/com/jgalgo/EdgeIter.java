@@ -29,8 +29,8 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  * int vertex = ...;
  * for (EdgeIter eit = g.edgesOut(vertex); eit.hasNext();) {
  * 	int e = eit.nextInt();
- * 	int u = eit.u();
- * 	int v = eit.v();
+ * 	int u = eit.source();
+ * 	int v = eit.target();
  * 	assert vertex == u;
  * 	System.out.println("Out edge of " + vertex + ": " + e + "(" + u + ", " + v + ")");
  * }

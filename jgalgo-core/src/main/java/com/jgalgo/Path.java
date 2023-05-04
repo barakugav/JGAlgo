@@ -46,7 +46,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
  * System.out.println("The path between u and v consist of the following edges:");
  * for (EdgeIter it = p.edgeIter(); it.hasNext();) {
  * 	int e = it.nextInt();
- * 	int u = it.u(), v = it.v();
+ * 	int u = it.source(), v = it.target();
  * 	System.out.println(" " + e + "(" + u + ", " + v + ")");
  * }
  * }</pre>

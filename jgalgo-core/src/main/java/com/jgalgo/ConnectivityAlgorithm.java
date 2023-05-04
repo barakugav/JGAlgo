@@ -24,13 +24,13 @@ package com.jgalgo;
 public interface ConnectivityAlgorithm {
 
 	/**
-	 * Find all (strongly) connectivity components in a graph.
+	 * Find all (strongly) connected components in a graph.
 	 * <p>
 	 * A (strongly) connected component is a maximal set of vertices for which for any pair of vertices \(u, v\) in the
 	 * set there exist a path from \(u\) to \(v\) and from \(v\) to \(u\).
 	 *
 	 * @param  g a graph
-	 * @return   a result object containing the partition of the vertices into (strongly) connectivity components
+	 * @return   a result object containing the partition of the vertices into (strongly) connected components
 	 */
 	ConnectivityAlgorithm.Result computeConnectivityComponents(Graph g);
 

@@ -836,12 +836,12 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 			int v;
 			Blossom b0, b1, b2;
 			if (mu == u) {
-				// u = m.u();
+				// u = m.source();
 				v = mv;
 				b0 = mData.b0;
 				b1 = mData.b1;
 			} else {
-				// u = m.v();
+				// u = m.target();
 				v = mu;
 				b0 = mData.b1;
 				b1 = mData.b0;
@@ -899,11 +899,11 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 				// int v;
 				Blossom b0, b1 /* , b2 */;
 				if (g.edgeSource(m) == u) {
-					// v = m.v();
+					// v = m.target();
 					b0 = mData.b0;
 					b1 = mData.b1;
 				} else {
-					// v = m.u();
+					// v = m.source();
 					b0 = mData.b1;
 					b1 = mData.b0;
 				}
