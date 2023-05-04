@@ -55,8 +55,8 @@ class BinarySearchTreeTestUtils extends TestUtils {
 
 				for (int i = 0; i < 2; i++) {
 					int x = rand.nextInt();
-					tracker.insert(x);
-					tracker.heap.insert(x);
+					HeapReference<Integer> ref = tracker.heap.insert(x);
+					tracker.insert(x, ref);
 				}
 				int expected = tracker.extractMax();
 				int actual = tracker.tree().extractMax();
@@ -112,8 +112,8 @@ class BinarySearchTreeTestUtils extends TestUtils {
 		for (int i = 0; i < n; i++) {
 			int newElm = rand.nextInt(n);
 			debug.println("Insert(", newElm, ")");
-			tracker.tree().insert(newElm);
-			tracker.insert(newElm);
+			HeapReference<Integer> ref = tracker.tree().insert(newElm);
+			tracker.insert(newElm, ref);
 
 			int searchedElm = rand.nextInt(n);
 
@@ -191,8 +191,8 @@ class BinarySearchTreeTestUtils extends TestUtils {
 		for (int i = 0; i < n; i++) {
 			int newElm = a[i];
 			debug.println("Insert(", newElm, ")");
-			tracker.tree().insert(newElm);
-			tracker.insert(newElm);
+			HeapReference<Integer> ref = tracker.tree().insert(newElm);
+			tracker.insert(newElm,ref);
 
 			Integer searchedElm;
 			do {
@@ -332,7 +332,8 @@ class BinarySearchTreeTestUtils extends TestUtils {
 
 		int extractMax() {
 			Integer x = elms.lastKey();
-			remove(x);
+			HeapReference<Integer> ref = elms.get(x).get(0);
+			remove(x, ref);
 			return x;
 		}
 
