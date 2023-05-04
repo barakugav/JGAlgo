@@ -182,6 +182,8 @@ public class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeig
 	}
 
 	/**
+	 * {@inheritDoc}
+	 *
 	 * @throws UnsupportedOperationException this implementation does not support perfect matching computation
 	 */
 	@Deprecated

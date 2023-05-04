@@ -177,6 +177,12 @@ public class RedBlackTreeExtended<E> extends RedBlackTree<E> {
 			extension.beforeRotateRight((Node<E>) n);
 	}
 
+	void beforeNodeReuse(Node<E> node) {
+		for (RedBlackTreeExtension<E> extension : extensions)
+			extension.initNode(node);
+	}
+
+
 	@Override
 	public void clear() {
 		int s = size();

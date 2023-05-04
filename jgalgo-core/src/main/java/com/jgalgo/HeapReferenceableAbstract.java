@@ -59,4 +59,10 @@ abstract class HeapReferenceableAbstract<E> extends HeapAbstract<E> implements H
 		return val;
 	}
 
+	@Override
+	public void meld(Heap<? extends E> heap) {
+		/* We can't meld using addAll without invalidating the nodes references */
+		throw new UnsupportedOperationException();
+	}
+
 }

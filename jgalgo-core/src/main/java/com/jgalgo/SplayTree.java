@@ -249,14 +249,12 @@ public class SplayTree<E> extends BinarySearchTreeAbstract<E> {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void meld(Heap<? extends E> heap) {
-		if (heap == this || heap.isEmpty())
-			return;
-		SplayTree<E> h;
-		if (!(heap instanceof SplayTree) || (h = (SplayTree<E>) heap).c != c) {
-			super.meld(heap);
-			return;
-		}
+		makeSureNoMeldWithSelf(heap);
+		makeSureMeldWithSameImpl(SplayTree.class, heap);
 		makeSureEqualComparatorBeforeMeld(heap);
+		SplayTree<E> h = (SplayTree<E>) heap;
+		if (h.isEmpty())
+			return;
 		if (isEmpty()) {
 			root = h.root;
 			h.root = null;
@@ -286,8 +284,35 @@ public class SplayTree<E> extends BinarySearchTreeAbstract<E> {
 				hHigh = this.splitGreater(max2);
 			}
 
-			/* there is nothing smarter to do than regular meld for the shared range */
-			super.meld(h);
+			if (h.root != null) {
+				/* there is nothing smarter to do than 'addAll' for the shared range */
+				/* We use 'insertNode' instead of 'insert' to maintain user references to nodes */
+				for (NodeSized<E> node = h.root;;) {
+					for (;;) {
+						while (node.hasLeftChild())
+							node = node.left;
+						if (!node.hasRightChild())
+							break;
+						node = node.right;
+					}
+					node.size = 1;
+					NodeSized<E> parent = node.parent;
+					if (parent == null) {
+						insertNode(node);
+						break;
+					} else {
+						if (parent.right == node) {
+							parent.right = null;
+						} else {
+							assert parent.left == node;
+							parent.left = null;
+						}
+						node.parent = null;
+						insertNode(node);
+						node = parent;
+					}
+				}
+			}
 
 			if (hLow != null) {
 				assert compare(hLow.findMax(), findMin()) < 0;

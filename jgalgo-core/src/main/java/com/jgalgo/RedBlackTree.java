@@ -119,33 +119,90 @@ public class RedBlackTree<E> extends BinarySearchTreeAbstract<E> {
 		size = 0;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void meld(Heap<? extends E> heap) {
-		// TODO
-		super.meld(heap);
+		makeSureNoMeldWithSelf(heap);
+		makeSureMeldWithSameImpl(RedBlackTree.class, heap);
+		makeSureEqualComparatorBeforeMeld(heap);
+		RedBlackTree<E> h = (RedBlackTree<E>) heap;
+		if (h.isEmpty())
+			return;
+		if (isEmpty()) {
+			root = h.root;
+			size = h.size;
+			h.root = null;
+			return;
+		}
+
+		/* there is nothing smarter to do than 'addAll' */
+		/* We use 'insertNode' instead of 'insert' to maintain user references to nodes */
+		for (Node<E> node = h.root;;) {
+			for (;;) {
+				while (node.hasLeftChild())
+					node = node.left;
+				if (!node.hasRightChild())
+					break;
+				node = node.right;
+			}
+			Node<E> parent = node.parent;
+			if (parent == null) {
+				beforeNodeReuse(node);
+				insertNode(node);
+				break;
+			} else {
+				if (parent.right == node) {
+					parent.right = null;
+				} else {
+					assert parent.left == node;
+					parent.left = null;
+				}
+				node.parent = null;
+				beforeNodeReuse(node);
+				insertNode(node);
+				node = parent;
+			}
+		}
 	}
 
+	void beforeNodeReuse(Node<E> node) {}
+
 	/**
+	 * {@inheritDoc}
+	 *
 	 * @throws UnsupportedOperationException the current implementation doesn't support this operation
 	 */
 	@Override
 	public BinarySearchTree<E> splitSmaller(E e) {
+		// we can't perform efficient split because we don't know the size of each sub tree, and we won't be able to
+		// determine the size splits
+		// TODO consider implementing this in O(n)
 		throw new UnsupportedOperationException();
 	}
 
 	/**
+	 * {@inheritDoc}
+	 *
 	 * @throws UnsupportedOperationException the current implementation doesn't support this operation
 	 */
 	@Override
 	public BinarySearchTree<E> splitGreater(E e) {
+		// we can't perform efficient split because we don't know the size of each sub tree, and we won't be able to
+		// determine the size splits
+		// TODO consider implementing this in O(n)
 		throw new UnsupportedOperationException();
 	}
 
 	/**
+	 * {@inheritDoc}
+	 *
 	 * @throws UnsupportedOperationException the current implementation doesn't support this operation
 	 */
 	@Override
 	public RedBlackTree<E> split(HeapReference<E> ref) {
+		// we can't perform efficient split because we don't know the size of each sub tree, and we won't be able to
+		// determine the size splits
+		// TODO consider implementing this in O(n)
 		throw new UnsupportedOperationException();
 	}
 

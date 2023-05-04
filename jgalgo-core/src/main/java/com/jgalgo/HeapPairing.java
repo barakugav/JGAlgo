@@ -22,6 +22,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Set;
+
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
@@ -194,12 +195,8 @@ public class HeapPairing<E> extends HeapReferenceableAbstract<E> {
 
 	@Override
 	public void meld(Heap<? extends E> heap) {
-		if (heap == this || heap.isEmpty())
-			return;
-		if (!(heap instanceof HeapPairing)) {
-			super.meld(heap);
-			return;
-		}
+		makeSureNoMeldWithSelf(heap);
+		makeSureMeldWithSameImpl(HeapPairing.class, heap);
 		makeSureEqualComparatorBeforeMeld(heap);
 		@SuppressWarnings("unchecked")
 		HeapPairing<E> h = (HeapPairing<E>) heap;

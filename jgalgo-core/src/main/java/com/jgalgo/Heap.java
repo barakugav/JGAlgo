@@ -84,8 +84,15 @@ public interface Heap<E> extends Collection<E> {
 	 * <p>
 	 * Melding is performed by adding all elements of the given heap to this heap, and clearing the given heap. Some
 	 * implementations support efficient melding due to internal structures used to maintain the heap elements.
+	 * <p>
+	 * Its only possible to meld with a heap with the same implementation of this heap.
+	 * <p>
+	 * If the heap implementation expose references to its element (see {@link HeapReferenceable}), the references of
+	 * both ({@code this} and the given {@code heap}) remain valid and its possible to use them only in this heap (they
+	 * are no longer valid with respect to the given heap, which will be cleared).
 	 *
-	 * @param heap a heap to meld with. After the operation it will be empty.
+	 * @param  heap                     a heap to meld with. After the operation it will be empty.
+	 * @throws IllegalArgumentException if the given heap is {@code this} heap, or its of another implementation
 	 */
 	public void meld(Heap<? extends E> heap);
 

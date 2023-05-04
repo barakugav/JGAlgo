@@ -20,6 +20,7 @@ import java.util.AbstractSet;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Set;
+
 import com.jgalgo.Trees.TreeNode;
 
 /**
@@ -142,15 +143,13 @@ public class HeapFibonacci<E> extends HeapReferenceableAbstract<E> {
 
 	@Override
 	public void meld(Heap<? extends E> heap) {
-		if (heap == this || heap.isEmpty())
-			return;
-		if (!(heap instanceof HeapFibonacci)) {
-			super.meld(heap);
-			return;
-		}
+		makeSureNoMeldWithSelf(heap);
+		makeSureMeldWithSameImpl(HeapFibonacci.class, heap);
 		makeSureEqualComparatorBeforeMeld(heap);
 		@SuppressWarnings("unchecked")
 		HeapFibonacci<E> h = (HeapFibonacci<E>) heap;
+		if (h.isEmpty())
+			return;
 
 		if (size == 0) {
 			minRoot = h.minRoot;

@@ -46,8 +46,8 @@ abstract class HeapAbstract<E> extends AbstractCollection<E> implements Heap<E> 
 
 	@Override
 	public void meld(Heap<? extends E> heap) {
-		if (heap == this)
-			return;
+		makeSureNoMeldWithSelf(heap);
+		makeSureEqualComparatorBeforeMeld(heap);
 		addAll(heap);
 		heap.clear();
 	}
@@ -63,12 +63,22 @@ abstract class HeapAbstract<E> extends AbstractCollection<E> implements Heap<E> 
 
 	void makeSureDecreaseKeyIsSmaller(E oldVal, E newVal) {
 		if (compare(oldVal, newVal) < 0)
-			throw new IllegalArgumentException("new key is greater than existing one");
+			throw new IllegalArgumentException("New key is greater than existing one");
+	}
+
+	void makeSureNoMeldWithSelf(Heap<? extends E> other) {
+		if (other == this)
+			throw new IllegalArgumentException("A heap can't meld with itself");
+	}
+
+	void makeSureMeldWithSameImpl(Class<? extends Heap> impl, Heap<? extends E> other) {
+		if (!impl.isAssignableFrom(other.getClass()))
+			throw new IllegalArgumentException("Can't meld heaps with different implementations");
 	}
 
 	void makeSureEqualComparatorBeforeMeld(Heap<? extends E> other) {
 		if (!Objects.equals(comparator(), other.comparator()))
-			throw new IllegalArgumentException("Heaps have different comparators");
+			throw new IllegalArgumentException("Can't meld, heaps have different comparators");
 	}
 
 }

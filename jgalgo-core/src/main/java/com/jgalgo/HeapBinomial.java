@@ -333,13 +333,10 @@ public class HeapBinomial<E> extends HeapReferenceableAbstract<E> {
 
 	@Override
 	public void meld(Heap<? extends E> heap) {
-		if (heap == this || heap.isEmpty())
-			return;
-		if (!(heap instanceof HeapBinomial)) {
-			super.meld(heap);
-			return;
-		}
+		makeSureNoMeldWithSelf(heap);
+		makeSureMeldWithSameImpl(HeapBinomial.class, heap);
 		makeSureEqualComparatorBeforeMeld(heap);
+
 		@SuppressWarnings("unchecked")
 		HeapBinomial<E> h = (HeapBinomial<E>) heap;
 		size += meld(h.roots, h.rootsLen);
