@@ -79,8 +79,7 @@ public class MSTBoruvka implements MST {
 	}
 
 	private MSTResult computeMST(Graph g, EdgeWeightFunc w, int numberOfRounds) {
-		if (g.getCapabilities().directed())
-			throw new IllegalArgumentException("directed graphs are not supported");
+		ArgumentCheck.onlyUndirected(g);
 		allocatedMem.allocate(g);
 		int n = g.vertices().size();
 

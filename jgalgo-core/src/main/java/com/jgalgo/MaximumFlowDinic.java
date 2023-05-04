@@ -74,24 +74,19 @@ public class MaximumFlowDinic implements MaximumFlow {
 	 */
 	@Override
 	public double computeMaximumFlow(Graph g, FlowNetwork net, int source, int sink) {
-		if (!g.getCapabilities().directed())
-			throw new IllegalArgumentException("only directed graphs are supported");
-		return computeMaxFlow(g, net, source, sink);
-	}
+		ArgumentCheck.onlyDirected(g);
+		ArgumentCheck.sourceSinkNotTheSame(source, sink);
+		Graph gOrig = g;
 
-	private double computeMaxFlow(Graph g0, FlowNetwork net, int source, int sink) {
-		if (source == sink)
-			throw new IllegalArgumentException("Source and sink can't be the same vertex");
-
-		final int n = g0.vertices().size();
-		Graph g = new GraphArrayDirected(n);
+		final int n = gOrig.vertices().size();
+		g = new GraphArrayDirected(n);
 		Weights.Int edgeRef = g.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
 		Weights.Int twin = g.addEdgesWeights(EdgeRevWeightKey, int.class, Integer.valueOf(-1));
 		Weights.Double flow = g.addEdgesWeights(FlowWeightKey, double.class);
 		Weights.Double capacity = g.addEdgesWeights(CapacityWeightKey, double.class);
-		for (IntIterator it = g0.edges().iterator(); it.hasNext();) {
+		for (IntIterator it = gOrig.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
-			int u = g0.edgeSource(e), v = g0.edgeTarget(e);
+			int u = gOrig.edgeSource(e), v = gOrig.edgeTarget(e);
 			if (u == v)
 				continue;
 			if (u == sink || v == source)
@@ -205,20 +200,20 @@ public class MaximumFlowDinic implements MaximumFlow {
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			int eOrig = edgeRef.getInt(e);
-			if (g.edgeSource(e) == g0.edgeSource(eOrig))
+			if (g.edgeSource(e) == gOrig.edgeSource(eOrig))
 				net.setFlow(eOrig, flow.getDouble(e));
 		}
 		double totalFlow = 0;
 		for (EdgeIter eit = g.edgesOut(source); eit.hasNext();) {
 			int e = eit.nextInt();
 			int eOrig = edgeRef.getInt(e);
-			if (g.edgeSource(e) == g0.edgeSource(eOrig))
+			if (g.edgeSource(e) == gOrig.edgeSource(eOrig))
 				totalFlow += flow.getDouble(e);
 		}
 		for (EdgeIter eit = g.edgesIn(source); eit.hasNext();) {
 			int e = eit.nextInt();
 			int eOrig = edgeRef.getInt(e);
-			if (g.edgeSource(e) == g0.edgeSource(eOrig))
+			if (g.edgeSource(e) == gOrig.edgeSource(eOrig))
 				totalFlow -= flow.getDouble(e);
 		}
 		return totalFlow;

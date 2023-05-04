@@ -41,8 +41,7 @@ public class SSSPDag implements SSSP {
 	 */
 	@Override
 	public SSSPDag.Result computeShortestPaths(Graph g, EdgeWeightFunc w, int source) {
-		if (!g.getCapabilities().directed())
-			throw new IllegalArgumentException("Only DAG graphs are supported");
+		ArgumentCheck.onlyDirected(g);
 		SSSPResultImpl res = new SSSPResultImpl(g, source);
 		res.distances[source] = 0;
 

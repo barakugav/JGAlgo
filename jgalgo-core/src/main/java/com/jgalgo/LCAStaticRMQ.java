@@ -43,11 +43,11 @@ public class LCAStaticRMQ implements LCAStatic {
 	}
 
 	@Override
-	public LCAStatic.DataStructure preProcessTree(Graph t, int r) {
-		if (!Trees.isTree(t, r))
-			throw new IllegalArgumentException();
+	public LCAStatic.DataStructure preProcessTree(Graph tree, int root) {
+		if (!Trees.isTree(tree, root))
+			throw new IllegalArgumentException("The given graph is not a tree rooted at the given root");
 
-		int n = t.vertices().size();
+		int n = tree.vertices().size();
 		int[] depths = new int[n * 2];
 		int[] vs = new int[n * 2];
 		int[] parent = new int[n];
@@ -55,10 +55,10 @@ public class LCAStaticRMQ implements LCAStatic {
 		EdgeIter[] edges = new EdgeIter[n];
 
 		parent[0] = -1;
-		edges[0] = t.edgesOut(r);
+		edges[0] = tree.edgesOut(root);
 
 		int aLen = 0;
-		dfs: for (int u = r, depth = 0;;) {
+		dfs: for (int u = root, depth = 0;;) {
 			depths[aLen] = depth;
 			vs[aLen] = u;
 			aLen++;
@@ -70,7 +70,7 @@ public class LCAStaticRMQ implements LCAStatic {
 					continue;
 				depth++;
 				parent[depth] = u;
-				edges[depth] = t.edgesOut(v);
+				edges[depth] = tree.edgesOut(v);
 				u = v;
 				continue dfs;
 			}

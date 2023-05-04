@@ -85,9 +85,9 @@ public interface Heap<E> extends Collection<E> {
 	 * Melding is performed by adding all elements of the given heap to this heap, and clearing the given heap. Some
 	 * implementations support efficient melding due to internal structures used to maintain the heap elements.
 	 *
-	 * @param h a heap to meld with. After the operation it will be empty.
+	 * @param heap a heap to meld with. After the operation it will be empty.
 	 */
-	public void meld(Heap<? extends E> h);
+	public void meld(Heap<? extends E> heap);
 
 	/**
 	 * Returns the comparator used to order the elements in this heap, or {@code null} if this heap uses the

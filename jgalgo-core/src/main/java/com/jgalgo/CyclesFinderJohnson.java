@@ -48,10 +48,9 @@ public class CyclesFinderJohnson implements CyclesFinder {
 
 	@Override
 	public List<Path> findAllCycles(Graph g) {
-		if (!g.getCapabilities().directed())
-			throw new IllegalArgumentException();
+		ArgumentCheck.onlyDirected(g);
 		if (GraphsUtils.containsParallelEdges(g))
-			throw new IllegalArgumentException("graph with self loops is not supported");
+			throw new IllegalArgumentException("graphs with self loops are not supported");
 		int n = g.vertices().size();
 		Worker worker = new Worker(g);
 		for (int startIdx = 0; startIdx < n; startIdx++) {

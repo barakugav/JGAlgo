@@ -67,16 +67,14 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 
 	@Override
 	public IntCollection computeMaximumMatching(Graph g, EdgeWeightFunc w) {
-		if (g.getCapabilities().directed())
-			throw new IllegalArgumentException("directed graphs are not supported");
+		ArgumentCheck.onlyUndirected(g);
 		return new Worker(g, w, heapBuilder, debugPrintManager).computeMaxMatching(false);
 
 	}
 
 	@Override
 	public IntCollection computeMaximumPerfectMatching(Graph g, EdgeWeightFunc w) {
-		if (g.getCapabilities().directed())
-			throw new IllegalArgumentException("directed graphs are not supported");
+		ArgumentCheck.onlyUndirected(g);
 		return new Worker(g, w, heapBuilder, debugPrintManager).computeMaxMatching(true);
 	}
 

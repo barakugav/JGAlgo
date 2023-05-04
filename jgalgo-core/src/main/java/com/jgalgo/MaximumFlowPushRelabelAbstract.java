@@ -40,8 +40,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 	 */
 	@Override
 	public double computeMaximumFlow(Graph g, FlowNetwork net, int source, int sink) {
-		if (!g.getCapabilities().directed())
-			throw new IllegalArgumentException("only directed graphs are supported");
+		ArgumentCheck.onlyDirected(g);
 		if (net instanceof FlowNetwork.Int) {
 			return newWorkerInt(g, (FlowNetwork.Int) net, source, sink).computeMaxFlow();
 		} else {
@@ -56,8 +55,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 	 */
 	@Override
 	public IntList computeMinimumCut(Graph g, EdgeWeightFunc w, int source, int sink) {
-		if (!g.getCapabilities().directed())
-			throw new IllegalArgumentException("only directed graphs are supported");
+		ArgumentCheck.onlyDirected(g);
 		if (w instanceof EdgeWeightFunc.Int) {
 			EdgeWeightFunc.Int wInt = (EdgeWeightFunc.Int) w;
 			FlowNetwork.Int net = new FlowNetwork.Int() {
@@ -141,8 +139,8 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 		private int maxLayerInactive;
 
 		Worker(Graph gOrig, FlowNetwork net, int source, int sink) {
-			if (source == sink)
-				throw new IllegalArgumentException("Source and sink can't be the same vertex");
+			ArgumentCheck.sourceSinkNotTheSame(source, sink);
+
 			this.gOrig = gOrig;
 			this.net = net;
 			this.source = source;

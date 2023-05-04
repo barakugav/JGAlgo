@@ -37,7 +37,8 @@ abstract class GraphLinkedAbstract extends GraphBaseContinues {
 		} else if (endpoint == n.v) {
 			return n.u;
 		} else {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException(
+					"The given vertex (" + endpoint + ") is not an endpoint of the edge (" + n.u + ", " + n.v + ")");
 		}
 	}
 

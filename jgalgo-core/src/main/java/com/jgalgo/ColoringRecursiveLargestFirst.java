@@ -47,10 +47,8 @@ public class ColoringRecursiveLargestFirst implements Coloring {
 
 	@Override
 	public Result computeColoring(Graph g) {
-		if (g.getCapabilities().directed())
-			throw new IllegalArgumentException("directed graphs are not supported");
-		if (GraphsUtils.containsSelfLoops(g))
-			throw new IllegalArgumentException("no valid coloring in graphs with self loops");
+		ArgumentCheck.onlyUndirected(g);
+		ArgumentCheck.noSelfLoops(g, "no valid coloring in graphs with self loops");
 
 		ColoringResultImpl res = new ColoringResultImpl(g);
 		int n = g.vertices().size();

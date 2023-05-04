@@ -50,8 +50,6 @@ public class UnionFindPtr implements UnionFind {
 	 * @param n the number of initial elements in the data structure
 	 */
 	public UnionFindPtr(int n) {
-		if (n < 0)
-			throw new IllegalArgumentException("n is negative: " + n);
 		elements = new Elm[n == 0 ? 2 : n];
 		for (int i = 0; i < n; i++)
 			elements[i] = new Elm(i);
@@ -74,7 +72,7 @@ public class UnionFindPtr implements UnionFind {
 
 	private Elm find0(int x) {
 		if (x < 0 || x >= size)
-			throw new IllegalArgumentException();
+			throw new IndexOutOfBoundsException(x);
 		Elm e = elements[x];
 
 		/* Find root */

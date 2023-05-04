@@ -79,8 +79,7 @@ public class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumM
 	 */
 	@Override
 	public IntCollection computeMaximumMatching(Graph g, EdgeWeightFunc w) {
-		if (g.getCapabilities().directed())
-			throw new IllegalArgumentException("directed graphs are not supported");
+		ArgumentCheck.onlyUndirected(g);
 		Weights.Bool partition = g.getVerticesWeights(bipartiteVerticesWeightKey);
 		Objects.requireNonNull(partition,
 				"Bipartiteness values weren't found with weight " + bipartiteVerticesWeightKey);
@@ -96,8 +95,7 @@ public class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumM
 	 */
 	@Override
 	public IntCollection computeMaximumPerfectMatching(Graph g, EdgeWeightFunc w) {
-		if (g.getCapabilities().directed())
-			throw new IllegalArgumentException("directed graphs are not supported");
+		ArgumentCheck.onlyUndirected(g);
 		Weights.Bool partition = g.getVerticesWeights(bipartiteVerticesWeightKey);
 		Objects.requireNonNull(partition,
 				"Bipartiteness values weren't found with weight " + bipartiteVerticesWeightKey);
@@ -122,8 +120,7 @@ public class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumM
 
 		@SuppressWarnings("unchecked")
 		Worker(Graph g, Weights.Bool partition, EdgeWeightFunc w) {
-			if (Bipartite.isValidBipartitePartition(g, partition))
-				throw new IllegalArgumentException("the graph is not bipartite");
+			ArgumentCheck.onlyBipartite(g, partition);
 
 			this.g = g;
 			this.partition = partition;

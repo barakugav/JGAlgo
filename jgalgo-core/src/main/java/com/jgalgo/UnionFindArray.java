@@ -53,8 +53,6 @@ public class UnionFindArray implements UnionFind {
 	 * @param n the number of initial elements in the data structure
 	 */
 	public UnionFindArray(int n) {
-		if (n < 0)
-			throw new IllegalArgumentException("n is negative: " + n);
 		int arrSize = n == 0 ? 2 : n;
 		parent = new int[arrSize];
 		rank = new byte[arrSize];
@@ -76,7 +74,7 @@ public class UnionFindArray implements UnionFind {
 	@Override
 	public int find(int x) {
 		if (x < 0 || x >= size)
-			throw new IllegalArgumentException("Illegal identifier " + x);
+			throw new IndexOutOfBoundsException(x);
 		return find0(x);
 	}
 

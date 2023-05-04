@@ -120,9 +120,9 @@ public class RedBlackTree<E> extends BinarySearchTreeAbstract<E> {
 	}
 
 	@Override
-	public void meld(Heap<? extends E> h) {
+	public void meld(Heap<? extends E> heap) {
 		// TODO
-		super.meld(h);
+		super.meld(heap);
 	}
 
 	/**
@@ -171,8 +171,7 @@ public class RedBlackTree<E> extends BinarySearchTreeAbstract<E> {
 	@Override
 	public void decreaseKey(HeapReference<E> ref, E e) {
 		Node<E> n = (Node<E>) ref;
-		if (compare(e, n.data) > 0)
-			throw new IllegalArgumentException("new key is greater than existing one");
+		makeSureDecreaseKeyIsSmaller(n.data, e);
 		removeRef(n);
 		n.data = e;
 		insertNode(n);

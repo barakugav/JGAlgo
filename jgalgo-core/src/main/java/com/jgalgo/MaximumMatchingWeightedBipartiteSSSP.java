@@ -79,13 +79,11 @@ public class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeig
 	 */
 	@Override
 	public IntCollection computeMaximumMatching(Graph g, EdgeWeightFunc w) {
-		if (g.getCapabilities().directed())
-			throw new IllegalArgumentException("directed graphs are not supported");
+		ArgumentCheck.onlyUndirected(g);
 		Weights.Bool partition = g.getVerticesWeights(bipartiteVerticesWeightKey);
 		Objects.requireNonNull(partition,
 				"Bipartiteness values weren't found with weight " + bipartiteVerticesWeightKey);
-		if (Bipartite.isValidBipartitePartition(g, partition))
-			throw new IllegalArgumentException("the graph is not bipartite");
+		ArgumentCheck.onlyBipartite(g, partition);
 		Graph g0 = referenceGraph(g, partition, w);
 		int[] match = computeMaxMatching(g0, w, partition);
 

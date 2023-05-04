@@ -213,6 +213,7 @@ class GraphsUtils {
 			// Do nothing
 		}
 
+		@Override
 		default int degreeIn(int v) {
 			return degreeOut(v);
 		}

@@ -69,8 +69,7 @@ public class TreePathMaximaHagerup implements TreePathMaxima {
 
 	@Override
 	public int[] computeHeaviestEdgeInTreePaths(Graph tree, EdgeWeightFunc w, TreePathMaxima.Queries queries) {
-		if (tree.getCapabilities().directed())
-			throw new IllegalArgumentException("directed graphs are not supported");
+		ArgumentCheck.onlyUndirected(tree);
 		if (!Trees.isTree(tree))
 			throw new IllegalArgumentException("only trees are supported");
 		return new Worker(tree, w, useBitsLookupTables).calcTPM(queries);

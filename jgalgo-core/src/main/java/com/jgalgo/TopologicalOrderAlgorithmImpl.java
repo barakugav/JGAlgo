@@ -26,8 +26,7 @@ class TopologicalOrderAlgorithmImpl implements TopologicalOrderAlgorithm {
 
 	@Override
 	public int[] computeTopologicalSorting(Graph g) {
-		if (!g.getCapabilities().directed())
-			throw new IllegalArgumentException("Only directed graphs are supported");
+		ArgumentCheck.onlyDirected(g);
 		allocatedMemory.allocate(g);
 		int n = g.vertices().size();
 		int[] inDegree = allocatedMemory.inDegree;

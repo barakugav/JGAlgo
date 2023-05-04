@@ -21,9 +21,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.Set;
-
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
@@ -133,8 +131,7 @@ public class HeapPairing<E> extends HeapReferenceableAbstract<E> {
 	@Override
 	public void decreaseKey(HeapReference<E> ref, E e) {
 		Node<E> n = (Node<E>) ref;
-		if (compare(e, n.value) > 0)
-			throw new IllegalArgumentException("new key is greater than existing one");
+		makeSureDecreaseKeyIsSmaller(n.value, e);
 		n.value = e;
 		if (n == minRoot)
 			return;
@@ -196,17 +193,16 @@ public class HeapPairing<E> extends HeapReferenceableAbstract<E> {
 	}
 
 	@Override
-	public void meld(Heap<? extends E> h0) {
-		if (h0 == this || h0.isEmpty())
+	public void meld(Heap<? extends E> heap) {
+		if (heap == this || heap.isEmpty())
 			return;
-		if (!(h0 instanceof HeapPairing)) {
-			super.meld(h0);
+		if (!(heap instanceof HeapPairing)) {
+			super.meld(heap);
 			return;
 		}
+		makeSureEqualComparatorBeforeMeld(heap);
 		@SuppressWarnings("unchecked")
-		HeapPairing<E> h = (HeapPairing<E>) h0;
-		if (!Objects.equals(comparator(), h.comparator()))
-			throw new IllegalArgumentException("Heaps have different comparators");
+		HeapPairing<E> h = (HeapPairing<E>) heap;
 
 		if (size == 0) {
 			assert minRoot == null;

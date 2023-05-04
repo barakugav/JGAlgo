@@ -96,7 +96,8 @@ abstract class GraphArrayAbstract extends GraphBaseContinues {
 		} else if (endpoint == v) {
 			return u;
 		} else {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException(
+					"The given vertex (" + endpoint + ") is not an endpoint of the edge (" + u + ", " + v + ")");
 		}
 	}
 

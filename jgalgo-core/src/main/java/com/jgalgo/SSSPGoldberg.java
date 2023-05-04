@@ -71,8 +71,7 @@ public class SSSPGoldberg implements SSSP {
 	 */
 	@Override
 	public SSSP.Result computeShortestPaths(Graph g, EdgeWeightFunc w, int source) {
-		if (!g.getCapabilities().directed())
-			throw new IllegalArgumentException("Undirected graphs are not supported");
+		ArgumentCheck.onlyDirected(g);
 		if (!(w instanceof EdgeWeightFunc.Int))
 			throw new IllegalArgumentException("Only integer weights are supported");
 		return computeShortestPaths0(g, (EdgeWeightFunc.Int) w, source);

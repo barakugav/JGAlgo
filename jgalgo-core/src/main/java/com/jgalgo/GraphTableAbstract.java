@@ -157,7 +157,8 @@ abstract class GraphTableAbstract extends GraphBaseContinues {
 		} else if (endpoint == v) {
 			return u;
 		} else {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException(
+					"The given vertex (" + endpoint + ") is not an endpoint of the edge (" + u + ", " + v + ")");
 		}
 	}
 
@@ -211,8 +212,7 @@ abstract class GraphTableAbstract extends GraphBaseContinues {
 		private int lastV = -1;
 
 		EdgeIterOut(int u) {
-			if (!(0 <= u && u < vertices().size()))
-				throw new IllegalArgumentException("Illegal vertex: " + u);
+			checkVertexIdx(u);
 			this.u = u;
 
 			advanceUntilNext(0);
@@ -273,8 +273,7 @@ abstract class GraphTableAbstract extends GraphBaseContinues {
 		private int lastU = -1;
 
 		EdgeIterIn(int v) {
-			if (!(0 <= v && v < vertices().size()))
-				throw new IllegalArgumentException("Illegal vertex: " + v);
+			checkVertexIdx(v);
 			this.v = v;
 
 			advanceUntilNext(0);

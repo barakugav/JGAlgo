@@ -21,9 +21,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
-import java.util.Objects;
 import java.util.Set;
-
 import com.jgalgo.Trees.TreeNode;
 
 /**
@@ -146,8 +144,7 @@ public class HeapBinomial<E> extends HeapReferenceableAbstract<E> {
 	@Override
 	public void decreaseKey(HeapReference<E> ref, E e) {
 		Node<E> node = (Node<E>) ref;
-		if (compare(e, node.value) > 0)
-			throw new IllegalArgumentException("new key is greater than existing one");
+		makeSureDecreaseKeyIsSmaller(node.value, e);
 		node.value = e;
 
 		if (c == null) {
@@ -335,17 +332,16 @@ public class HeapBinomial<E> extends HeapReferenceableAbstract<E> {
 	}
 
 	@Override
-	public void meld(Heap<? extends E> h0) {
-		if (h0 == this || h0.isEmpty())
+	public void meld(Heap<? extends E> heap) {
+		if (heap == this || heap.isEmpty())
 			return;
-		if (!(h0 instanceof HeapBinomial)) {
-			super.meld(h0);
+		if (!(heap instanceof HeapBinomial)) {
+			super.meld(heap);
 			return;
 		}
+		makeSureEqualComparatorBeforeMeld(heap);
 		@SuppressWarnings("unchecked")
-		HeapBinomial<E> h = (HeapBinomial<E>) h0;
-		if (!Objects.equals(comparator(), h.comparator()))
-			throw new IllegalArgumentException("Heaps have different comparators");
+		HeapBinomial<E> h = (HeapBinomial<E>) heap;
 		size += meld(h.roots, h.rootsLen);
 	}
 

@@ -19,7 +19,6 @@ package com.jgalgo;
 import java.util.AbstractSet;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -178,8 +177,7 @@ public class SplayTree<E> extends BinarySearchTreeAbstract<E> {
 	@Override
 	public void decreaseKey(HeapReference<E> ref, E e) {
 		NodeSized<E> n = (NodeSized<E>) ref;
-		if (compare(e, n.data) > 0)
-			throw new IllegalArgumentException("new key is greater than existing one");
+		makeSureDecreaseKeyIsSmaller(n.data, e);
 		removeRef(n);
 		n.data = e;
 		insertNode(n);
@@ -250,16 +248,15 @@ public class SplayTree<E> extends BinarySearchTreeAbstract<E> {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void meld(Heap<? extends E> h0) {
-		if (h0 == this || h0.isEmpty())
+	public void meld(Heap<? extends E> heap) {
+		if (heap == this || heap.isEmpty())
 			return;
 		SplayTree<E> h;
-		if (!(h0 instanceof SplayTree) || (h = (SplayTree<E>) h0).c != c) {
-			super.meld(h0);
+		if (!(heap instanceof SplayTree) || (h = (SplayTree<E>) heap).c != c) {
+			super.meld(heap);
 			return;
 		}
-		if (!Objects.equals(comparator(), h.comparator()))
-			throw new IllegalArgumentException("Heaps have different comparators");
+		makeSureEqualComparatorBeforeMeld(heap);
 		if (isEmpty()) {
 			root = h.root;
 			h.root = null;

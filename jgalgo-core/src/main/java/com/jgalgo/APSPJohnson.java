@@ -51,8 +51,7 @@ public class APSPJohnson implements APSP {
 	 */
 	@Override
 	public APSP.Result computeAllShortestPaths(Graph g, EdgeWeightFunc w) {
-		if (!g.getCapabilities().directed())
-			throw new IllegalArgumentException("only directed graphs are supported");
+		ArgumentCheck.onlyDirected(g);
 		int n = g.vertices().size();
 
 		boolean negWeight = false;

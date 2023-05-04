@@ -71,7 +71,7 @@ public abstract class IDStrategy {
 
 		Continues(int initSize) {
 			if (initSize < 0)
-				throw new IllegalArgumentException();
+				throw new IllegalArgumentException("Initial size can not be negative: " + initSize);
 			size = initSize;
 			idSet = new AbstractIntSet() {
 

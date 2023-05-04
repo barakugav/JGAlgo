@@ -54,23 +54,18 @@ public class MaximumFlowDinicDynamicTrees implements MaximumFlow {
 	 */
 	@Override
 	public double computeMaximumFlow(Graph g, FlowNetwork net, int source, int sink) {
-		if (!g.getCapabilities().directed())
-			throw new IllegalArgumentException("only directed graphs are supported");
-		return computeMaxFlow(g, net, source, sink);
-	}
-
-	private double computeMaxFlow(Graph g0, FlowNetwork net, int source, int sink) {
-		if (source == sink)
-			throw new IllegalArgumentException("Source and sink can't be the same vertex");
+		ArgumentCheck.onlyDirected(g);
+		ArgumentCheck.sourceSinkNotTheSame(source, sink);
+		Graph gOrig = g;
 		debug.println("\t", getClass().getSimpleName());
 
 		double maxCapacity = 100;
-		for (IntIterator it = g0.edges().iterator(); it.hasNext();) {
+		for (IntIterator it = gOrig.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			maxCapacity = Math.max(maxCapacity, net.getCapacity(e));
 		}
 
-		Graph g = referenceGraph(g0, net);
+		g = referenceGraph(gOrig, net);
 		Weights<Ref> edgeRef = g.getEdgesWeights(EdgeRefWeightKey);
 		final int n = g.vertices().size();
 		Graph.Builder builder = new GraphBuilderImpl.LinkedDirected();
@@ -203,20 +198,20 @@ public class MaximumFlowDinicDynamicTrees implements MaximumFlow {
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			Ref data = edgeRef.get(e);
-			if (g.edgeSource(e) == g0.edgeSource(data.orig))
+			if (g.edgeSource(e) == gOrig.edgeSource(data.orig))
 				net.setFlow(data.orig, data.flow);
 		}
 		double totalFlow = 0;
 		for (EdgeIter eit = g.edgesOut(source); eit.hasNext();) {
 			int e = eit.nextInt();
 			Ref data = edgeRef.get(e);
-			if (g.edgeSource(e) == g0.edgeSource(data.orig))
+			if (g.edgeSource(e) == gOrig.edgeSource(data.orig))
 				totalFlow += data.flow;
 		}
 		for (EdgeIter eit = g.edgesIn(source); eit.hasNext();) {
 			int e = eit.nextInt();
 			Ref data = edgeRef.get(e);
-			if (g.edgeSource(e) == g0.edgeSource(data.orig))
+			if (g.edgeSource(e) == gOrig.edgeSource(data.orig))
 				totalFlow -= data.flow;
 		}
 		return totalFlow;

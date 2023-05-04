@@ -53,8 +53,8 @@ public class MaximumFlowEdmondsKarp implements MaximumFlow {
 	 */
 	@Override
 	public double computeMaximumFlow(Graph g, FlowNetwork net, int source, int sink) {
-		if (!g.getCapabilities().directed())
-			throw new IllegalArgumentException("only directed graphs are supported");
+		ArgumentCheck.onlyDirected(g);
+		ArgumentCheck.sourceSinkNotTheSame(source, sink);
 		if (net instanceof FlowNetwork.Int) {
 			return new WorkerInt(g, (FlowNetwork.Int) net, source, sink).computeMaxFlow();
 		} else {
@@ -77,9 +77,6 @@ public class MaximumFlowEdmondsKarp implements MaximumFlow {
 		}
 
 		double computeMaxFlow() {
-			if (source == sink)
-				throw new IllegalArgumentException("Source and sink can't be the same vertex");
-
 			int n = gOring.vertices().size();
 			Graph g = new GraphArrayDirected(n);
 			Weights.Int edgeRef = g.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
@@ -194,9 +191,6 @@ public class MaximumFlowEdmondsKarp implements MaximumFlow {
 		}
 
 		double computeMaxFlow() {
-			if (source == sink)
-				throw new IllegalArgumentException("Source and sink can't be the same vertex");
-
 			int n = gOring.vertices().size();
 			Graph g = new GraphArrayDirected(n);
 			Weights.Int edgeRef = g.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));

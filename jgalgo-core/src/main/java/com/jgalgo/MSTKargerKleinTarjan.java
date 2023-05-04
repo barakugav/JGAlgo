@@ -72,8 +72,7 @@ public class MSTKargerKleinTarjan implements MST {
 	 */
 	@Override
 	public IntCollection computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
-		if (g.getCapabilities().directed())
-			throw new IllegalArgumentException("directed graphs are not supported");
+		ArgumentCheck.onlyUndirected(g);
 		return computeMST(g, w);
 	}
 

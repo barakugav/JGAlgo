@@ -48,8 +48,7 @@ public class Trees {
 	 * @throws IllegalArgumentException if {@code g} is a directed graph
 	 */
 	public static boolean isTree(Graph g) {
-		if (g.getCapabilities().directed())
-			throw new IllegalArgumentException("directed graphs are not supported");
+		ArgumentCheck.onlyUndirected(g);
 		return g.vertices().isEmpty() ? true : isTree(g, 0);
 	}
 

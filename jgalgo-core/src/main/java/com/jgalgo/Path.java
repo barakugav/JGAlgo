@@ -122,6 +122,7 @@ public class Path extends AbstractIntList {
 		private int e = -1, v = -1;
 
 		IterUndirected(Graph g, IntList path, int source) {
+			ArgumentCheck.onlyUndirected(g);
 			this.g = g;
 			v = source;
 			it = path.iterator();
@@ -166,8 +167,7 @@ public class Path extends AbstractIntList {
 		private int e = -1;
 
 		IterDirected(Graph g, IntList path) {
-			if (!g.getCapabilities().directed())
-				throw new IllegalArgumentException("Only directed graphs are supported");
+			ArgumentCheck.onlyDirected(g);
 			this.g = g;
 			it = path.iterator();
 		}

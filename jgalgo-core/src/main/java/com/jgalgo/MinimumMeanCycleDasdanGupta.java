@@ -62,8 +62,7 @@ public class MinimumMeanCycleDasdanGupta implements MinimumMeanCycle {
 	 */
 	@Override
 	public Path computeMinimumMeanCycle(Graph g, EdgeWeightFunc w) {
-		if (!g.getCapabilities().directed())
-			throw new IllegalArgumentException("only directed graphs are supported");
+		ArgumentCheck.onlyDirected(g);
 		int n = g.vertices().size();
 
 		/* find all SCC */

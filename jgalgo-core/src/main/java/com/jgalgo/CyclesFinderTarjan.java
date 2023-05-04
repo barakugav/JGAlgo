@@ -41,8 +41,7 @@ public class CyclesFinderTarjan implements CyclesFinder {
 
 	@Override
 	public List<Path> findAllCycles(Graph g) {
-		if (!g.getCapabilities().directed())
-			throw new IllegalArgumentException();
+		ArgumentCheck.onlyDirected(g);
 		Worker worker = new Worker(g);
 		int n = g.vertices().size();
 		for (int s = 0; s < n; s++) {

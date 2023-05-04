@@ -161,7 +161,7 @@ class GraphBuilderImpl {
 		@Override
 		public Graph.Builder setVerticesNum(int n) {
 			if (n < 0)
-				throw new IllegalArgumentException();
+				throw new IllegalArgumentException("Vertices number can not be negative: " + n);
 			verticesNum = n;
 			return this;
 		}
@@ -535,8 +535,7 @@ class GraphBuilderImpl {
 
 		GraphCustomIDStrategiesDirected(GraphBaseContinues g, IDStrategy edgesIDStrategy) {
 			super(g, edgesIDStrategy);
-			if (!g.getCapabilities().directed())
-				throw new IllegalArgumentException();
+			ArgumentCheck.onlyDirected(g);
 		}
 
 		@Override
@@ -552,8 +551,7 @@ class GraphBuilderImpl {
 
 		GraphCustomIDStrategiesUndirected(GraphBaseContinues g, IDStrategy edgesIDStrategy) {
 			super(g, edgesIDStrategy);
-			if (g.getCapabilities().directed())
-				throw new IllegalArgumentException();
+			ArgumentCheck.onlyUndirected(g);
 		}
 
 	}

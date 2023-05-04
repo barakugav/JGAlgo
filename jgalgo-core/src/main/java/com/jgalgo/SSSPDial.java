@@ -82,8 +82,6 @@ public class SSSPDial implements SSSP {
 		EdgeWeightFunc.Int w0 = (EdgeWeightFunc.Int) w;
 
 		int n = g.vertices().size(), m = g.edges().size();
-		if (n <= 0)
-			throw new IllegalArgumentException();
 
 		memAlloc(n, m);
 

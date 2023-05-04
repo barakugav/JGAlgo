@@ -48,8 +48,7 @@ public class MaximumMatchingGabow1976 implements MaximumMatching {
 
 	@Override
 	public IntCollection computeMaximumMatching(Graph g) {
-		if (g.getCapabilities().directed())
-			throw new IllegalArgumentException("directed graphs are not supported");
+		ArgumentCheck.onlyUndirected(g);
 		int n = g.vertices().size();
 
 		IntPriorityQueue queue = new IntArrayFIFOQueue();

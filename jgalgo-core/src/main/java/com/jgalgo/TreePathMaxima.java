@@ -155,8 +155,7 @@ public interface TreePathMaxima {
 	 * @throws IllegalArgumentException if {@code g} is a directed graph
 	 */
 	public static boolean verifyMST(Graph g, EdgeWeightFunc w, IntCollection mstEdges, TreePathMaxima tpmAlgo) {
-		if (g.getCapabilities().directed())
-			throw new IllegalArgumentException("directed graphs are not supported");
+		ArgumentCheck.onlyUndirected(g);
 		int n = g.vertices().size();
 		Graph mst = new GraphArrayUndirected(n);
 		Weights.Int edgeRef = mst.addEdgesWeights("edgeRef", int.class);

@@ -19,9 +19,7 @@ package com.jgalgo;
 import java.util.AbstractSet;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.Objects;
 import java.util.Set;
-
 import com.jgalgo.Trees.TreeNode;
 
 /**
@@ -143,17 +141,16 @@ public class HeapFibonacci<E> extends HeapReferenceableAbstract<E> {
 	}
 
 	@Override
-	public void meld(Heap<? extends E> h0) {
-		if (h0 == this || h0.isEmpty())
+	public void meld(Heap<? extends E> heap) {
+		if (heap == this || heap.isEmpty())
 			return;
-		if (!(h0 instanceof HeapFibonacci)) {
-			super.meld(h0);
+		if (!(heap instanceof HeapFibonacci)) {
+			super.meld(heap);
 			return;
 		}
+		makeSureEqualComparatorBeforeMeld(heap);
 		@SuppressWarnings("unchecked")
-		HeapFibonacci<E> h = (HeapFibonacci<E>) h0;
-		if (!Objects.equals(comparator(), h.comparator()))
-			throw new IllegalArgumentException("Heaps have different comparators");
+		HeapFibonacci<E> h = (HeapFibonacci<E>) heap;
 
 		if (size == 0) {
 			minRoot = h.minRoot;
@@ -225,8 +222,7 @@ public class HeapFibonacci<E> extends HeapReferenceableAbstract<E> {
 	@Override
 	public void decreaseKey(HeapReference<E> ref, E e) {
 		Node<E> parent, n = (Node<E>) ref;
-		if (compare(e, n.value) > 0)
-			throw new IllegalArgumentException("new key is greater than existing one");
+		makeSureDecreaseKeyIsSmaller(n.value, e);
 		n.value = e;
 
 		if ((parent = n.parent) == null)

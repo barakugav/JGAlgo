@@ -18,8 +18,8 @@ package com.jgalgo;
 
 import java.util.BitSet;
 import java.util.NoSuchElementException;
-
 import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntIterators;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 /**
@@ -62,7 +62,7 @@ public class BFSIter implements IntIterator {
 	 * @param source a vertex in the graph from which the search will start from.
 	 */
 	public BFSIter(Graph g, int source) {
-		this(g, new int[] { source });
+		this(g, IntIterators.singleton(source));
 	}
 
 	/**
@@ -70,11 +70,11 @@ public class BFSIter implements IntIterator {
 	 *
 	 * @param  g                        a graph
 	 * @param  sources                  multiple sources vertices in the graph from which the search will start from.
-	 * @throws IllegalArgumentException if the sources array is empty
+	 * @throws IllegalArgumentException if the sources iterator is empty
 	 */
-	public BFSIter(Graph g, int[] sources) {
-		if (sources.length == 0)
-			throw new IllegalArgumentException();
+	private BFSIter(Graph g, IntIterator sources) {
+		if (!sources.hasNext())
+			throw new IllegalArgumentException("no sources provided");
 		this.g = g;
 		int n = g.vertices().size();
 		visited = new BitSet(n);
@@ -82,12 +82,15 @@ public class BFSIter implements IntIterator {
 		inEdge = -1;
 		layer = -1;
 
-		for (int source : sources) {
+		firstVInLayer = -1;
+		while (sources.hasNext()) {
+			int source = sources.nextInt();
 			visited.set(source);
 			queue.enqueue(source);
 			queue.enqueue(-1);
+			if (firstVInLayer == -1)
+				firstVInLayer = source;
 		}
-		firstVInLayer = sources[0];
 	}
 
 	/**

@@ -62,8 +62,7 @@ public class MDSTTarjan implements MDST {
 	 */
 	@Override
 	public IntCollection computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
-		if (!g.getCapabilities().directed())
-			throw new IllegalArgumentException("Only directed graphs are supported");
+		ArgumentCheck.onlyDirected(g);
 		if (g.vertices().size() == 0 || g.edges().size() == 0)
 			return IntLists.emptyList();
 		Graph gRef = GraphsUtils.referenceGraph(g, EdgeRefWeightKey);
@@ -81,8 +80,7 @@ public class MDSTTarjan implements MDST {
 
 	@Override
 	public IntCollection computeMinimumSpanningTree(Graph g, EdgeWeightFunc w, int root) {
-		if (!g.getCapabilities().directed())
-			throw new IllegalArgumentException("Only directed graphs are supported");
+		ArgumentCheck.onlyDirected(g);
 		if (g.vertices().size() == 0 || g.edges().size() == 0)
 			return IntLists.emptyList();
 		Graph gRef = GraphsUtils.referenceGraph(g, EdgeRefWeightKey);

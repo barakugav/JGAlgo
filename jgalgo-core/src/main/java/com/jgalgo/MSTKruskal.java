@@ -67,8 +67,7 @@ public class MSTKruskal implements MST {
 	 */
 	@Override
 	public IntCollection computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
-		if (g.getCapabilities().directed())
-			throw new IllegalArgumentException("directed graphs are not supported");
+		ArgumentCheck.onlyUndirected(g);
 		int n = g.vertices().size();
 		if (n == 0)
 			return IntLists.emptyList();

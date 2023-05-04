@@ -353,7 +353,8 @@ public interface Graph {
 		} else if (endpoint == v) {
 			return u;
 		} else {
-			throw new IllegalArgumentException("Given vertex is not an endpoint of the edge");
+			throw new IllegalArgumentException(
+					"The given vertex (" + endpoint + ") is not an endpoint of the edge (" + u + ", " + v + ")");
 		}
 	}
 

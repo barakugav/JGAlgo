@@ -62,8 +62,7 @@ public class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 	 */
 	@Override
 	public double computeMaximumFlow(Graph g, FlowNetwork net, int source, int sink) {
-		if (!g.getCapabilities().directed())
-			throw new IllegalArgumentException("only directed graphs are supported");
+		ArgumentCheck.onlyDirected(g);
 		if (net instanceof FlowNetwork.Int) {
 			return new WorkerInt(g, (FlowNetwork.Int) net, source, sink).computeMaxFlow();
 		} else {
@@ -94,8 +93,8 @@ public class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 		final IntPriorityQueue toCut = new IntArrayFIFOQueue();
 
 		AbstractWorker(Graph gOrig, FlowNetwork net, int source, int sink) {
-			if (source == sink)
-				throw new IllegalArgumentException("Source and sink can't be the same vertex");
+			ArgumentCheck.sourceSinkNotTheSame(source, sink);
+
 			this.gOrig = gOrig;
 			this.net = net;
 			this.source = source;

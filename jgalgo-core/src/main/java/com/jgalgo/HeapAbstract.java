@@ -19,6 +19,7 @@ package com.jgalgo;
 import java.util.AbstractCollection;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Objects;
 
 abstract class HeapAbstract<E> extends AbstractCollection<E> implements Heap<E> {
 
@@ -44,11 +45,11 @@ abstract class HeapAbstract<E> extends AbstractCollection<E> implements Heap<E> 
 	}
 
 	@Override
-	public void meld(Heap<? extends E> h) {
-		if (h == this)
+	public void meld(Heap<? extends E> heap) {
+		if (heap == this)
 			return;
-		addAll(h);
-		h.clear();
+		addAll(heap);
+		heap.clear();
 	}
 
 	@Override
@@ -58,6 +59,16 @@ abstract class HeapAbstract<E> extends AbstractCollection<E> implements Heap<E> 
 
 	int compare(E e1, E e2) {
 		return c == null ? Utils.cmpDefault(e1, e2) : c.compare(e1, e2);
+	}
+
+	void makeSureDecreaseKeyIsSmaller(E oldVal, E newVal) {
+		if (compare(oldVal, newVal) < 0)
+			throw new IllegalArgumentException("new key is greater than existing one");
+	}
+
+	void makeSureEqualComparatorBeforeMeld(Heap<? extends E> other) {
+		if (!Objects.equals(comparator(), other.comparator()))
+			throw new IllegalArgumentException("Heaps have different comparators");
 	}
 
 }
