@@ -185,12 +185,12 @@ public class GraphArrayUndirected extends GraphArrayAbstract implements Undirect
 <span class="fc" id="L185">		}</span>
 
 		@Override
-		public int u() {
+		public int source() {
 <span class="fc" id="L189">			return u;</span>
 		}
 
 		@Override
-		public int v() {
+		public int target() {
 <span class="fc" id="L194">			int u0 = edgeSource(lastEdge);</span>
 <span class="fc" id="L195">			int v0 = edgeTarget(lastEdge);</span>
 <span class="fc bfc" id="L196" title="All 2 branches covered.">			return u == u0 ? v0 : u0;</span>

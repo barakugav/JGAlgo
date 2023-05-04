@@ -78,7 +78,7 @@ public class AStar {
 <span class="fc" id="L78">		for (int u = source;;) {</span>
 <span class="fc bfc" id="L79" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
 <span class="fc" id="L80">				int e = eit.nextInt();</span>
-<span class="fc" id="L81">				int v = eit.v();</span>
+<span class="fc" id="L81">				int v = eit.target();</span>
 <span class="fc" id="L82">				double ws = w.weight(e);</span>
 <span class="pc bpc" id="L83" title="1 of 2 branches missed.">				if (ws &lt; 0)</span>
 <span class="nc" id="L84">					throw new IllegalArgumentException(&quot;negative weights are not supported&quot;);</span>

@@ -72,7 +72,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L72">						break findCycle;</span>
 <span class="fc" id="L73">					e = iter.nextInt();</span>
 <span class="fc bfc" id="L74" title="All 2 branches covered.">					if (!usedEdges.getBool(e)) {</span>
-<span class="fc" id="L75">						v = iter.v();</span>
+<span class="fc" id="L75">						v = iter.target();</span>
 <span class="fc" id="L76">						break;</span>
 					}
 				}
@@ -101,7 +101,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L101">		int d = 0;</span>
 <span class="fc bfc" id="L102" title="All 2 branches covered.">		for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
 <span class="fc" id="L103">			eit.nextInt();</span>
-<span class="fc bfc" id="L104" title="All 2 branches covered.">			if (eit.v() != u)</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">			if (eit.target() != u)</span>
 <span class="fc" id="L105">				d++;</span>
 		}
 <span class="fc" id="L107">		return d;</span>
@@ -159,7 +159,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L159">						break findCycle;</span>
 <span class="fc" id="L160">					e = iter.nextInt();</span>
 <span class="pc bpc" id="L161" title="1 of 2 branches missed.">					if (!usedEdges.getBool(e)) {</span>
-<span class="fc" id="L162">						v = iter.v();</span>
+<span class="fc" id="L162">						v = iter.target();</span>
 <span class="fc" id="L163">						break;</span>
 					}
 				}

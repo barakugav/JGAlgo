@@ -30,7 +30,7 @@ class GraphsUtils {
 <span class="fc" id="L30">			int v = parent;</span>
 <span class="fc bfc" id="L31" title="All 2 branches covered.">			for (EdgeIter eit = t.edgesOut(u); eit.hasNext();) {</span>
 <span class="fc" id="L32">				eit.nextInt();</span>
-<span class="fc" id="L33">				v = eit.v();</span>
+<span class="fc" id="L33">				v = eit.target();</span>
 <span class="fc bfc" id="L34" title="All 2 branches covered.">				if (v != parent)</span>
 <span class="fc" id="L35">					break;</span>
 			}
@@ -87,7 +87,7 @@ class GraphsUtils {
 <span class="nc bnc" id="L87" title="All 2 branches missed.">		for (int u = 0; u &lt; n; u++) {</span>
 <span class="nc bnc" id="L88" title="All 2 branches missed.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
 <span class="nc" id="L89">				int e = eit.nextInt();</span>
-<span class="nc" id="L90">				strs[u][eit.v()] = formatter.apply(e);</span>
+<span class="nc" id="L90">				strs[u][eit.target()] = formatter.apply(e);</span>
 <span class="nc" id="L91">			}</span>
 		}
 
@@ -158,7 +158,7 @@ class GraphsUtils {
 <span class="fc bfc" id="L158" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
 <span class="fc bfc" id="L159" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
 <span class="fc" id="L160">				eit.nextInt();</span>
-<span class="pc bpc" id="L161" title="1 of 2 branches missed.">				if (u == eit.v())</span>
+<span class="pc bpc" id="L161" title="1 of 2 branches missed.">				if (u == eit.target())</span>
 <span class="nc" id="L162">					return true;</span>
 			}
 		}
@@ -174,7 +174,7 @@ class GraphsUtils {
 <span class="fc" id="L174">			final int visitIdx = u + 1;</span>
 <span class="fc bfc" id="L175" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
 <span class="fc" id="L176">				eit.nextInt();</span>
-<span class="fc" id="L177">				int v = eit.v();</span>
+<span class="fc" id="L177">				int v = eit.target();</span>
 <span class="pc bpc" id="L178" title="1 of 2 branches missed.">				if (lastVisit[v] == visitIdx)</span>
 <span class="nc" id="L179">					return true;</span>
 <span class="fc" id="L180">				lastVisit[v] = visitIdx;</span>
@@ -213,8 +213,9 @@ class GraphsUtils {
 			// Do nothing
 <span class="nc" id="L214">		}</span>
 
+		@Override
 		default int degreeIn(int v) {
-<span class="fc" id="L217">			return degreeOut(v);</span>
+<span class="fc" id="L218">			return degreeOut(v);</span>
 		}
 
 	}

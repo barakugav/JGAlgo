@@ -100,7 +100,7 @@ public class SSSPDijkstra implements SSSP {
 <span class="fc" id="L100">			for (int u = source;;) {</span>
 <span class="fc bfc" id="L101" title="All 2 branches covered.">				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
 <span class="fc" id="L102">					int e = eit.nextInt();</span>
-<span class="fc" id="L103">					int v = eit.v();</span>
+<span class="fc" id="L103">					int v = eit.target();</span>
 <span class="fc bfc" id="L104" title="All 2 branches covered.">					if (res.distances[v] != Double.POSITIVE_INFINITY)</span>
 <span class="fc" id="L105">						continue;</span>
 <span class="fc" id="L106">					double ws = w.weight(e);</span>
@@ -166,7 +166,7 @@ public class SSSPDijkstra implements SSSP {
 <span class="fc" id="L166">			for (int u = source;;) {</span>
 <span class="fc bfc" id="L167" title="All 2 branches covered.">				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
 <span class="fc" id="L168">					int e = eit.nextInt();</span>
-<span class="fc" id="L169">					int v = eit.v();</span>
+<span class="fc" id="L169">					int v = eit.target();</span>
 <span class="fc bfc" id="L170" title="All 2 branches covered.">					if (res.distances[v] != Integer.MAX_VALUE)</span>
 <span class="fc" id="L171">						continue;</span>
 <span class="fc" id="L172">					int ws = w.weightInt(e);</span>

@@ -45,16 +45,16 @@ import it.unimi.dsi.fastutil.ints.IntList;
 <span class="fc bfc" id="L45" title="All 2 branches covered.">		for (EdgeIter it = tour.edgeIter(); it.hasNext();) {</span>
 <span class="fc" id="L46">			int e0 = it.nextInt();</span>
 <span class="fc" id="L47">			int e = edgeRef.getInt(e0);</span>
-<span class="fc" id="L48">			final int u = it.u();</span>
+<span class="fc" id="L48">			final int u = it.source();</span>
 <span class="fc bfc" id="L49" title="All 2 branches covered.">			if (firstVertex == -1)</span>
 <span class="fc" id="L50">				firstVertex = u;</span>
 <span class="fc" id="L51">			visited.set(u);</span>
-<span class="fc bfc" id="L52" title="All 4 branches covered.">			while (visited.get(it.v()) &amp;&amp; it.hasNext()) {</span>
+<span class="fc bfc" id="L52" title="All 4 branches covered.">			while (visited.get(it.target()) &amp;&amp; it.hasNext()) {</span>
 <span class="fc" id="L53">				it.nextInt();</span>
-<span class="fc" id="L54">				e = g.getEdge(u, it.v());</span>
+<span class="fc" id="L54">				e = g.getEdge(u, it.target());</span>
 			}
 <span class="fc" id="L56">			cycle.add(e);</span>
-<span class="fc" id="L57">			lastVertex = it.v();</span>
+<span class="fc" id="L57">			lastVertex = it.target();</span>
 <span class="fc" id="L58">		}</span>
 
 <span class="pc bpc" id="L60" title="1 of 2 branches missed.">		assert firstVertex == lastVertex;</span>
@@ -68,7 +68,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 <span class="fc" id="L68">		IntList res = new IntArrayList();</span>
 <span class="fc bfc" id="L69" title="All 2 branches covered.">		for (EdgeIter it = edges.edgeIter(); it.hasNext();) {</span>
 <span class="fc" id="L70">			it.nextInt();</span>
-<span class="fc" id="L71">			res.add(it.u());</span>
+<span class="fc" id="L71">			res.add(it.source());</span>
 		}
 <span class="fc" id="L73">		return res;</span>
 	}
@@ -76,13 +76,13 @@ import it.unimi.dsi.fastutil.ints.IntList;
 	private static boolean isValidCycle(Graph g, Path path) {
 <span class="fc" id="L77">		EdgeIter it = path.edgeIter();</span>
 <span class="fc" id="L78">		it.nextInt();</span>
-<span class="fc" id="L79">		final int begin = it.u();</span>
+<span class="fc" id="L79">		final int begin = it.source();</span>
 		for (;;) {
 <span class="fc bfc" id="L81" title="All 2 branches covered.">			if (!it.hasNext())</span>
-<span class="pc bpc" id="L82" title="1 of 2 branches missed.">				return it.v() == begin;</span>
-<span class="fc" id="L83">			int lastV = it.v();</span>
+<span class="pc bpc" id="L82" title="1 of 2 branches missed.">				return it.target() == begin;</span>
+<span class="fc" id="L83">			int lastV = it.target();</span>
 <span class="fc" id="L84">			it.nextInt();</span>
-<span class="pc bpc" id="L85" title="1 of 2 branches missed.">			if (lastV != it.u())</span>
+<span class="pc bpc" id="L85" title="1 of 2 branches missed.">			if (lastV != it.source())</span>
 <span class="nc" id="L86">				return false;</span>
 <span class="fc" id="L87">		}</span>
 	}

@@ -161,7 +161,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 		@Override
 		public Graph.Builder setVerticesNum(int n) {
 <span class="pc bpc" id="L163" title="1 of 2 branches missed.">			if (n &lt; 0)</span>
-<span class="nc" id="L164">				throw new IllegalArgumentException();</span>
+<span class="nc" id="L164">				throw new IllegalArgumentException(&quot;Vertices number can not be negative: &quot; + n);</span>
 <span class="fc" id="L165">			verticesNum = n;</span>
 <span class="fc" id="L166">			return this;</span>
 		}
@@ -516,14 +516,14 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 <span class="fc" id="L516">			}</span>
 
 			@Override
-			public int v() {
-<span class="fc" id="L520">				int vIdx = it.v();</span>
+			public int target() {
+<span class="fc" id="L520">				int vIdx = it.target();</span>
 <span class="fc" id="L521">				return verticesIDStrategy.idxToId(vIdx);</span>
 			}
 
 			@Override
-			public int u() {
-<span class="fc" id="L526">				int uIdx = it.u();</span>
+			public int source() {
+<span class="fc" id="L526">				int uIdx = it.source();</span>
 <span class="fc" id="L527">				return verticesIDStrategy.idxToId(uIdx);</span>
 			}
 
@@ -535,15 +535,14 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 
 		GraphCustomIDStrategiesDirected(GraphBaseContinues g, IDStrategy edgesIDStrategy) {
 <span class="fc" id="L537">			super(g, edgesIDStrategy);</span>
-<span class="pc bpc" id="L538" title="1 of 2 branches missed.">			if (!g.getCapabilities().directed())</span>
-<span class="nc" id="L539">				throw new IllegalArgumentException();</span>
-<span class="fc" id="L540">		}</span>
+<span class="fc" id="L538">			ArgumentCheck.onlyDirected(g);</span>
+<span class="fc" id="L539">		}</span>
 
 		@Override
 		public void reverseEdge(int edge) {
-<span class="fc" id="L544">			int eIdx = edgesIDStrategy.idToIdx(edge);</span>
-<span class="fc" id="L545">			g.reverseEdge(eIdx);</span>
-<span class="fc" id="L546">		}</span>
+<span class="fc" id="L543">			int eIdx = edgesIDStrategy.idToIdx(edge);</span>
+<span class="fc" id="L544">			g.reverseEdge(eIdx);</span>
+<span class="fc" id="L545">		}</span>
 
 	}
 
@@ -551,10 +550,9 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 			implements UndirectedGraphImpl {
 
 		GraphCustomIDStrategiesUndirected(GraphBaseContinues g, IDStrategy edgesIDStrategy) {
-<span class="fc" id="L554">			super(g, edgesIDStrategy);</span>
-<span class="pc bpc" id="L555" title="1 of 2 branches missed.">			if (g.getCapabilities().directed())</span>
-<span class="nc" id="L556">				throw new IllegalArgumentException();</span>
-<span class="fc" id="L557">		}</span>
+<span class="fc" id="L553">			super(g, edgesIDStrategy);</span>
+<span class="fc" id="L554">			ArgumentCheck.onlyUndirected(g);</span>
+<span class="fc" id="L555">		}</span>
 
 	}
 

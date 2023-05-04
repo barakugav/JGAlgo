@@ -48,54 +48,53 @@ public class SSSPBellmanFord implements SSSP {
 	 */
 	@Override
 	public SSSP.Result computeShortestPaths(Graph g, EdgeWeightFunc w, int source) {
-<span class="pc bpc" id="L51" title="1 of 2 branches missed.">		if (!g.getCapabilities().directed())</span>
-<span class="nc" id="L52">			throw new IllegalArgumentException(&quot;only directed graphs are supported&quot;);</span>
-<span class="fc" id="L53">		int n = g.vertices().size();</span>
-<span class="fc" id="L54">		Result res = new Result(g, source);</span>
-<span class="fc" id="L55">		res.distances[source] = 0;</span>
+<span class="fc" id="L51">		ArgumentCheck.onlyDirected(g);</span>
+<span class="fc" id="L52">		int n = g.vertices().size();</span>
+<span class="fc" id="L53">		Result res = new Result(g, source);</span>
+<span class="fc" id="L54">		res.distances[source] = 0;</span>
 
-<span class="fc bfc" id="L57" title="All 2 branches covered.">		for (int i = 0; i &lt; n - 1; i++) {</span>
-<span class="fc bfc" id="L58" title="All 2 branches covered.">			for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
-<span class="fc" id="L59">				int e = it.nextInt();</span>
-<span class="fc" id="L60">				int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
-<span class="fc" id="L61">				double d = res.distances[u] + w.weight(e);</span>
-<span class="fc bfc" id="L62" title="All 2 branches covered.">				if (d &lt; res.distances[v]) {</span>
-<span class="fc" id="L63">					res.distances[v] = d;</span>
-<span class="fc" id="L64">					res.backtrack[v] = e;</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">		for (int i = 0; i &lt; n - 1; i++) {</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">			for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
+<span class="fc" id="L58">				int e = it.nextInt();</span>
+<span class="fc" id="L59">				int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+<span class="fc" id="L60">				double d = res.distances[u] + w.weight(e);</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">				if (d &lt; res.distances[v]) {</span>
+<span class="fc" id="L62">					res.distances[v] = d;</span>
+<span class="fc" id="L63">					res.backtrack[v] = e;</span>
 				}
-<span class="fc" id="L66">			}</span>
+<span class="fc" id="L65">			}</span>
 		}
 
-<span class="fc bfc" id="L69" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++) {</span>
-<span class="fc" id="L70">			int e = res.backtrack[v];</span>
-<span class="fc bfc" id="L71" title="All 2 branches covered.">			if (e == -1)</span>
-<span class="fc" id="L72">				continue;</span>
-<span class="fc" id="L73">			int u = g.edgeSource(e);</span>
-<span class="fc" id="L74">			double d = res.distances[u] + w.weight(e);</span>
-<span class="fc bfc" id="L75" title="All 2 branches covered.">			if (d &lt; res.distances[v]) {</span>
-<span class="fc" id="L76">				BitSet visited = new BitSet(n);</span>
-<span class="fc" id="L77">				visited.set(v);</span>
-<span class="fc bfc" id="L78" title="All 2 branches covered.">				while (!visited.get(u)) {</span>
-<span class="fc" id="L79">					visited.set(u);</span>
-<span class="fc" id="L80">					e = res.backtrack[u];</span>
-<span class="fc" id="L81">					u = g.edgeSource(e);</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++) {</span>
+<span class="fc" id="L69">			int e = res.backtrack[v];</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">			if (e == -1)</span>
+<span class="fc" id="L71">				continue;</span>
+<span class="fc" id="L72">			int u = g.edgeSource(e);</span>
+<span class="fc" id="L73">			double d = res.distances[u] + w.weight(e);</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">			if (d &lt; res.distances[v]) {</span>
+<span class="fc" id="L75">				BitSet visited = new BitSet(n);</span>
+<span class="fc" id="L76">				visited.set(v);</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">				while (!visited.get(u)) {</span>
+<span class="fc" id="L78">					visited.set(u);</span>
+<span class="fc" id="L79">					e = res.backtrack[u];</span>
+<span class="fc" id="L80">					u = g.edgeSource(e);</span>
 				}
 
-<span class="fc" id="L84">				IntArrayList negCycle = new IntArrayList();</span>
-<span class="fc" id="L85">				for (int p = u;;) {</span>
-<span class="fc" id="L86">					e = res.backtrack[p];</span>
-<span class="fc" id="L87">					negCycle.add(e);</span>
-<span class="fc" id="L88">					p = g.edgeSource(e);</span>
-<span class="fc bfc" id="L89" title="All 2 branches covered.">					if (p == u)</span>
-<span class="fc" id="L90">						break;</span>
+<span class="fc" id="L83">				IntArrayList negCycle = new IntArrayList();</span>
+<span class="fc" id="L84">				for (int p = u;;) {</span>
+<span class="fc" id="L85">					e = res.backtrack[p];</span>
+<span class="fc" id="L86">					negCycle.add(e);</span>
+<span class="fc" id="L87">					p = g.edgeSource(e);</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">					if (p == u)</span>
+<span class="fc" id="L89">						break;</span>
 				}
-<span class="fc" id="L92">				IntArrays.reverse(negCycle.elements(), 0, negCycle.size());</span>
-<span class="fc" id="L93">				res.negCycle = new Path(g, u, u, negCycle);</span>
-<span class="fc" id="L94">				return res;</span>
+<span class="fc" id="L91">				IntArrays.reverse(negCycle.elements(), 0, negCycle.size());</span>
+<span class="fc" id="L92">				res.negCycle = new Path(g, u, u, negCycle);</span>
+<span class="fc" id="L93">				return res;</span>
 			}
 		}
 
-<span class="fc" id="L98">		return res;</span>
+<span class="fc" id="L97">		return res;</span>
 	}
 
 	private static class Result extends SSSPResultImpl {
@@ -103,38 +102,38 @@ public class SSSPBellmanFord implements SSSP {
 		private Path negCycle;
 
 		private Result(Graph g, int source) {
-<span class="fc" id="L106">			super(g, source);</span>
-<span class="fc" id="L107">		}</span>
+<span class="fc" id="L105">			super(g, source);</span>
+<span class="fc" id="L106">		}</span>
 
 		@Override
 		public double distance(int target) {
-<span class="pc bpc" id="L111" title="1 of 2 branches missed.">			if (foundNegativeCycle())</span>
-<span class="nc" id="L112">				throw new IllegalStateException();</span>
-<span class="fc" id="L113">			return super.distance(target);</span>
+<span class="pc bpc" id="L110" title="1 of 2 branches missed.">			if (foundNegativeCycle())</span>
+<span class="nc" id="L111">				throw new IllegalStateException();</span>
+<span class="fc" id="L112">			return super.distance(target);</span>
 		}
 
 		@Override
 		public Path getPath(int target) {
-<span class="pc bpc" id="L118" title="1 of 2 branches missed.">			if (foundNegativeCycle())</span>
-<span class="nc" id="L119">				throw new IllegalStateException();</span>
-<span class="fc" id="L120">			return super.getPath(target);</span>
+<span class="pc bpc" id="L117" title="1 of 2 branches missed.">			if (foundNegativeCycle())</span>
+<span class="nc" id="L118">				throw new IllegalStateException();</span>
+<span class="fc" id="L119">			return super.getPath(target);</span>
 		}
 
 		@Override
 		public boolean foundNegativeCycle() {
-<span class="fc bfc" id="L125" title="All 2 branches covered.">			return negCycle != null;</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">			return negCycle != null;</span>
 		}
 
 		@Override
 		public Path getNegativeCycle() {
-<span class="pc bpc" id="L130" title="1 of 2 branches missed.">			if (!foundNegativeCycle())</span>
-<span class="nc" id="L131">				throw new IllegalStateException(&quot;no negative cycle found&quot;);</span>
-<span class="fc" id="L132">			return negCycle;</span>
+<span class="pc bpc" id="L129" title="1 of 2 branches missed.">			if (!foundNegativeCycle())</span>
+<span class="nc" id="L130">				throw new IllegalStateException(&quot;no negative cycle found&quot;);</span>
+<span class="fc" id="L131">			return negCycle;</span>
 		}
 
 		@Override
 		public String toString() {
-<span class="nc bnc" id="L137" title="All 2 branches missed.">			return foundNegativeCycle() ? &quot;[NegCycle=&quot; + negCycle + &quot;]&quot; : super.toString();</span>
+<span class="nc bnc" id="L136" title="All 2 branches missed.">			return foundNegativeCycle() ? &quot;[NegCycle=&quot; + negCycle + &quot;]&quot; : super.toString();</span>
 		}
 
 	}

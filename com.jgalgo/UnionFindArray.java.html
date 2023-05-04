@@ -53,83 +53,81 @@ public class UnionFindArray implements UnionFind {
 	 * @param n the number of initial elements in the data structure
 	 */
 <span class="fc" id="L55">	public UnionFindArray(int n) {</span>
-<span class="pc bpc" id="L56" title="1 of 2 branches missed.">		if (n &lt; 0)</span>
-<span class="nc" id="L57">			throw new IllegalArgumentException(&quot;n is negative: &quot; + n);</span>
-<span class="fc bfc" id="L58" title="All 2 branches covered.">		int arrSize = n == 0 ? 2 : n;</span>
-<span class="fc" id="L59">		parent = new int[arrSize];</span>
-<span class="fc" id="L60">		rank = new byte[arrSize];</span>
-<span class="fc" id="L61">		Arrays.fill(parent, NO_PARENT);</span>
-<span class="fc" id="L62">		size = n;</span>
-<span class="fc" id="L63">	}</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">		int arrSize = n == 0 ? 2 : n;</span>
+<span class="fc" id="L57">		parent = new int[arrSize];</span>
+<span class="fc" id="L58">		rank = new byte[arrSize];</span>
+<span class="fc" id="L59">		Arrays.fill(parent, NO_PARENT);</span>
+<span class="fc" id="L60">		size = n;</span>
+<span class="fc" id="L61">	}</span>
 
 	@Override
 	public int make() {
-<span class="fc bfc" id="L67" title="All 2 branches covered.">		if (parent.length &lt;= size) {</span>
-<span class="fc" id="L68">			int oldLength = parent.length;</span>
-<span class="fc" id="L69">			parent = Arrays.copyOf(parent, size * 2);</span>
-<span class="fc" id="L70">			rank = Arrays.copyOf(rank, size * 2);</span>
-<span class="fc" id="L71">			Arrays.fill(parent, oldLength, parent.length, NO_PARENT);</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">		if (parent.length &lt;= size) {</span>
+<span class="fc" id="L66">			int oldLength = parent.length;</span>
+<span class="fc" id="L67">			parent = Arrays.copyOf(parent, size * 2);</span>
+<span class="fc" id="L68">			rank = Arrays.copyOf(rank, size * 2);</span>
+<span class="fc" id="L69">			Arrays.fill(parent, oldLength, parent.length, NO_PARENT);</span>
 		}
-<span class="fc" id="L73">		return size++;</span>
+<span class="fc" id="L71">		return size++;</span>
 	}
 
 	@Override
 	public int find(int x) {
-<span class="pc bpc" id="L78" title="2 of 4 branches missed.">		if (x &lt; 0 || x &gt;= size)</span>
-<span class="nc" id="L79">			throw new IllegalArgumentException(&quot;Illegal identifier &quot; + x);</span>
-<span class="fc" id="L80">		return find0(x);</span>
+<span class="pc bpc" id="L76" title="2 of 4 branches missed.">		if (x &lt; 0 || x &gt;= size)</span>
+<span class="nc" id="L77">			throw new IndexOutOfBoundsException(x);</span>
+<span class="fc" id="L78">		return find0(x);</span>
 	}
 
 	int find0(int x) {
-<span class="fc" id="L84">		int[] p = parent;</span>
+<span class="fc" id="L82">		int[] p = parent;</span>
 
 		/* Find root */
 		int r;
-<span class="fc bfc" id="L88" title="All 2 branches covered.">		for (r = x; p[r] != NO_PARENT; r = p[r]);</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">		for (r = x; p[r] != NO_PARENT; r = p[r]);</span>
 
 		/* path compression */
-<span class="fc bfc" id="L91" title="All 2 branches covered.">		for (; x != r;) {</span>
-<span class="fc" id="L92">			int next = p[x];</span>
-<span class="fc" id="L93">			p[x] = r;</span>
-<span class="fc" id="L94">			x = next;</span>
-<span class="fc" id="L95">		}</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">		for (; x != r;) {</span>
+<span class="fc" id="L90">			int next = p[x];</span>
+<span class="fc" id="L91">			p[x] = r;</span>
+<span class="fc" id="L92">			x = next;</span>
+<span class="fc" id="L93">		}</span>
 
-<span class="fc" id="L97">		return r;</span>
+<span class="fc" id="L95">		return r;</span>
 	}
 
 	@Override
 	public int union(int a, int b) {
-<span class="fc" id="L102">		a = find(a);</span>
-<span class="fc" id="L103">		b = find(b);</span>
-<span class="fc bfc" id="L104" title="All 2 branches covered.">		if (a == b)</span>
-<span class="fc" id="L105">			return a;</span>
-<span class="fc" id="L106">		byte[] r = rank;</span>
+<span class="fc" id="L100">		a = find(a);</span>
+<span class="fc" id="L101">		b = find(b);</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">		if (a == b)</span>
+<span class="fc" id="L103">			return a;</span>
+<span class="fc" id="L104">		byte[] r = rank;</span>
 
-<span class="fc bfc" id="L108" title="All 2 branches covered.">		if (r[a] &lt; r[b]) {</span>
-<span class="fc" id="L109">			int temp = a;</span>
-<span class="fc" id="L110">			a = b;</span>
-<span class="fc" id="L111">			b = temp;</span>
-<span class="fc bfc" id="L112" title="All 2 branches covered.">		} else if (r[a] == r[b])</span>
-<span class="fc" id="L113">			r[a]++;</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">		if (r[a] &lt; r[b]) {</span>
+<span class="fc" id="L107">			int temp = a;</span>
+<span class="fc" id="L108">			a = b;</span>
+<span class="fc" id="L109">			b = temp;</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">		} else if (r[a] == r[b])</span>
+<span class="fc" id="L111">			r[a]++;</span>
 
-<span class="fc" id="L115">		unionSetParent(b, a);</span>
-<span class="fc" id="L116">		return a;</span>
+<span class="fc" id="L113">		unionSetParent(b, a);</span>
+<span class="fc" id="L114">		return a;</span>
 	}
 
 	void unionSetParent(int c, int p) {
-<span class="fc" id="L120">		parent[c] = p;</span>
-<span class="fc" id="L121">	}</span>
+<span class="fc" id="L118">		parent[c] = p;</span>
+<span class="fc" id="L119">	}</span>
 
 	@Override
 	public int size() {
-<span class="fc" id="L125">		return size;</span>
+<span class="fc" id="L123">		return size;</span>
 	}
 
 	@Override
 	public void clear() {
-<span class="fc" id="L130">		Arrays.fill(parent, 0, size, NO_PARENT);</span>
-<span class="fc" id="L131">		size = 0;</span>
-<span class="fc" id="L132">	}</span>
+<span class="fc" id="L128">		Arrays.fill(parent, 0, size, NO_PARENT);</span>
+<span class="fc" id="L129">		size = 0;</span>
+<span class="fc" id="L130">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

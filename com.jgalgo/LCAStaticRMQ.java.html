@@ -43,11 +43,11 @@ public class LCAStaticRMQ implements LCAStatic {
 <span class="fc" id="L43">	}</span>
 
 	@Override
-	public LCAStatic.DataStructure preProcessTree(Graph t, int r) {
-<span class="pc bpc" id="L47" title="1 of 2 branches missed.">		if (!Trees.isTree(t, r))</span>
-<span class="nc" id="L48">			throw new IllegalArgumentException();</span>
+	public LCAStatic.DataStructure preProcessTree(Graph tree, int root) {
+<span class="pc bpc" id="L47" title="1 of 2 branches missed.">		if (!Trees.isTree(tree, root))</span>
+<span class="nc" id="L48">			throw new IllegalArgumentException(&quot;The given graph is not a tree rooted at the given root&quot;);</span>
 
-<span class="fc" id="L50">		int n = t.vertices().size();</span>
+<span class="fc" id="L50">		int n = tree.vertices().size();</span>
 <span class="fc" id="L51">		int[] depths = new int[n * 2];</span>
 <span class="fc" id="L52">		int[] vs = new int[n * 2];</span>
 <span class="fc" id="L53">		int[] parent = new int[n];</span>
@@ -55,22 +55,22 @@ public class LCAStaticRMQ implements LCAStatic {
 <span class="fc" id="L55">		EdgeIter[] edges = new EdgeIter[n];</span>
 
 <span class="fc" id="L57">		parent[0] = -1;</span>
-<span class="fc" id="L58">		edges[0] = t.edgesOut(r);</span>
+<span class="fc" id="L58">		edges[0] = tree.edgesOut(root);</span>
 
 <span class="fc" id="L60">		int aLen = 0;</span>
-<span class="fc" id="L61">		dfs: for (int u = r, depth = 0;;) {</span>
+<span class="fc" id="L61">		dfs: for (int u = root, depth = 0;;) {</span>
 <span class="fc" id="L62">			depths[aLen] = depth;</span>
 <span class="fc" id="L63">			vs[aLen] = u;</span>
 <span class="fc" id="L64">			aLen++;</span>
 
 <span class="fc bfc" id="L66" title="All 2 branches covered.">			for (EdgeIter eit = edges[depth]; eit.hasNext();) {</span>
 <span class="fc" id="L67">				eit.nextInt();</span>
-<span class="fc" id="L68">				int v = eit.v();</span>
+<span class="fc" id="L68">				int v = eit.target();</span>
 <span class="fc bfc" id="L69" title="All 2 branches covered.">				if (v == parent[depth])</span>
 <span class="fc" id="L70">					continue;</span>
 <span class="fc" id="L71">				depth++;</span>
 <span class="fc" id="L72">				parent[depth] = u;</span>
-<span class="fc" id="L73">				edges[depth] = t.edgesOut(v);</span>
+<span class="fc" id="L73">				edges[depth] = tree.edgesOut(v);</span>
 <span class="fc" id="L74">				u = v;</span>
 <span class="fc" id="L75">				continue dfs;</span>
 			}

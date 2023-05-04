@@ -67,31 +67,30 @@ public class MSTKruskal implements MST {
 	 */
 	@Override
 	public IntCollection computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
-<span class="pc bpc" id="L70" title="1 of 2 branches missed.">		if (g.getCapabilities().directed())</span>
-<span class="nc" id="L71">			throw new IllegalArgumentException(&quot;directed graphs are not supported&quot;);</span>
-<span class="fc" id="L72">		int n = g.vertices().size();</span>
-<span class="fc bfc" id="L73" title="All 2 branches covered.">		if (n == 0)</span>
-<span class="fc" id="L74">			return IntLists.emptyList();</span>
+<span class="fc" id="L70">		ArgumentCheck.onlyUndirected(g);</span>
+<span class="fc" id="L71">		int n = g.vertices().size();</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">		if (n == 0)</span>
+<span class="fc" id="L73">			return IntLists.emptyList();</span>
 
 		/* sort edges */
-<span class="fc" id="L77">		int[] edges = g.edges().toIntArray();</span>
-<span class="fc" id="L78">		IntArrays.parallelQuickSort(edges, w);</span>
+<span class="fc" id="L76">		int[] edges = g.edges().toIntArray();</span>
+<span class="fc" id="L77">		IntArrays.parallelQuickSort(edges, w);</span>
 
 		/* create union find data structure for each vertex */
-<span class="fc" id="L81">		UnionFind uf = unionFindBuilder.apply(n);</span>
+<span class="fc" id="L80">		UnionFind uf = unionFindBuilder.apply(n);</span>
 
 		/* iterate over the edges and build the MST */
-<span class="fc" id="L84">		IntCollection mst = new IntArrayList(n - 1);</span>
-<span class="fc bfc" id="L85" title="All 2 branches covered.">		for (int e : edges) {</span>
-<span class="fc" id="L86">			int u = g.edgeSource(e);</span>
-<span class="fc" id="L87">			int v = g.edgeTarget(e);</span>
+<span class="fc" id="L83">		IntCollection mst = new IntArrayList(n - 1);</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">		for (int e : edges) {</span>
+<span class="fc" id="L85">			int u = g.edgeSource(e);</span>
+<span class="fc" id="L86">			int v = g.edgeTarget(e);</span>
 
-<span class="fc bfc" id="L89" title="All 2 branches covered.">			if (uf.find(u) != uf.find(v)) {</span>
-<span class="fc" id="L90">				uf.union(u, v);</span>
-<span class="fc" id="L91">				mst.add(e);</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">			if (uf.find(u) != uf.find(v)) {</span>
+<span class="fc" id="L89">				uf.union(u, v);</span>
+<span class="fc" id="L90">				mst.add(e);</span>
 			}
 		}
-<span class="fc" id="L94">		return mst;</span>
+<span class="fc" id="L93">		return mst;</span>
 	}
 
 }

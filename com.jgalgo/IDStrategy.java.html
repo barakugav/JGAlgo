@@ -71,7 +71,7 @@ public abstract class IDStrategy {
 
 <span class="fc" id="L72">		Continues(int initSize) {</span>
 <span class="pc bpc" id="L73" title="1 of 2 branches missed.">			if (initSize &lt; 0)</span>
-<span class="nc" id="L74">				throw new IllegalArgumentException();</span>
+<span class="nc" id="L74">				throw new IllegalArgumentException(&quot;Initial size can not be negative: &quot; + initSize);</span>
 <span class="fc" id="L75">			size = initSize;</span>
 <span class="fc" id="L76">			idSet = new AbstractIntSet() {</span>
 

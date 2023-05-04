@@ -19,46 +19,57 @@ package com.jgalgo;
 import java.util.AbstractCollection;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Objects;
 
 abstract class HeapAbstract&lt;E&gt; extends AbstractCollection&lt;E&gt; implements Heap&lt;E&gt; {
 
 	final Comparator&lt;? super E&gt; c;
 
-<span class="fc" id="L27">	HeapAbstract(Comparator&lt;? super E&gt; c) {</span>
-<span class="fc" id="L28">		this.c = c;</span>
-<span class="fc" id="L29">	}</span>
+<span class="fc" id="L28">	HeapAbstract(Comparator&lt;? super E&gt; c) {</span>
+<span class="fc" id="L29">		this.c = c;</span>
+<span class="fc" id="L30">	}</span>
 
 	@Override
 	public boolean add(E e) {
-<span class="fc" id="L33">		insert(e);</span>
-<span class="fc" id="L34">		return true;</span>
+<span class="fc" id="L34">		insert(e);</span>
+<span class="fc" id="L35">		return true;</span>
 	}
 
 	@Override
 	public boolean removeAll(Collection&lt;?&gt; c) {
-<span class="nc" id="L39">		boolean modified = false;</span>
-<span class="nc bnc" id="L40" title="All 2 branches missed.">		for (Object e : c)</span>
-<span class="nc bnc" id="L41" title="All 2 branches missed.">			if (remove(e))</span>
-<span class="nc" id="L42">				modified = true;</span>
-<span class="nc" id="L43">		return modified;</span>
+<span class="nc" id="L40">		boolean modified = false;</span>
+<span class="nc bnc" id="L41" title="All 2 branches missed.">		for (Object e : c)</span>
+<span class="nc bnc" id="L42" title="All 2 branches missed.">			if (remove(e))</span>
+<span class="nc" id="L43">				modified = true;</span>
+<span class="nc" id="L44">		return modified;</span>
 	}
 
 	@Override
-	public void meld(Heap&lt;? extends E&gt; h) {
-<span class="pc bpc" id="L48" title="1 of 2 branches missed.">		if (h == this)</span>
-<span class="nc" id="L49">			return;</span>
-<span class="fc" id="L50">		addAll(h);</span>
-<span class="fc" id="L51">		h.clear();</span>
-<span class="fc" id="L52">	}</span>
+	public void meld(Heap&lt;? extends E&gt; heap) {
+<span class="pc bpc" id="L49" title="1 of 2 branches missed.">		if (heap == this)</span>
+<span class="nc" id="L50">			return;</span>
+<span class="fc" id="L51">		addAll(heap);</span>
+<span class="fc" id="L52">		heap.clear();</span>
+<span class="fc" id="L53">	}</span>
 
 	@Override
 	public Comparator&lt;? super E&gt; comparator() {
-<span class="fc" id="L56">		return c;</span>
+<span class="fc" id="L57">		return c;</span>
 	}
 
 	int compare(E e1, E e2) {
-<span class="fc bfc" id="L60" title="All 2 branches covered.">		return c == null ? Utils.cmpDefault(e1, e2) : c.compare(e1, e2);</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">		return c == null ? Utils.cmpDefault(e1, e2) : c.compare(e1, e2);</span>
 	}
+
+	void makeSureDecreaseKeyIsSmaller(E oldVal, E newVal) {
+<span class="pc bpc" id="L65" title="1 of 2 branches missed.">		if (compare(oldVal, newVal) &lt; 0)</span>
+<span class="nc" id="L66">			throw new IllegalArgumentException(&quot;new key is greater than existing one&quot;);</span>
+<span class="fc" id="L67">	}</span>
+
+	void makeSureEqualComparatorBeforeMeld(Heap&lt;? extends E&gt; other) {
+<span class="pc bpc" id="L70" title="1 of 2 branches missed.">		if (!Objects.equals(comparator(), other.comparator()))</span>
+<span class="nc" id="L71">			throw new IllegalArgumentException(&quot;Heaps have different comparators&quot;);</span>
+<span class="fc" id="L72">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

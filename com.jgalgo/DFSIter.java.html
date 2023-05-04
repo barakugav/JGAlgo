@@ -89,7 +89,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 		for (;;) {
 <span class="fc bfc" id="L90" title="All 2 branches covered.">			for (EdgeIter eit = edgeIters.get(edgeIters.size() - 1); eit.hasNext();) {</span>
 <span class="fc" id="L91">				int e = eit.nextInt();</span>
-<span class="fc" id="L92">				int v = eit.v();</span>
+<span class="fc" id="L92">				int v = eit.target();</span>
 <span class="fc bfc" id="L93" title="All 2 branches covered.">				if (visited.get(v))</span>
 <span class="fc" id="L94">					continue;</span>
 <span class="fc" id="L95">				visited.set(v);</span>
@@ -114,7 +114,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 <span class="pc bpc" id="L114" title="1 of 2 branches missed.">		if (!hasNext())</span>
 <span class="nc" id="L115">			throw new NoSuchElementException();</span>
 <span class="fc" id="L116">		isValid = false;</span>
-<span class="fc" id="L117">		return edgeIters.get(edgeIters.size() - 1).u();</span>
+<span class="fc" id="L117">		return edgeIters.get(edgeIters.size() - 1).source();</span>
 	}
 
 	/**

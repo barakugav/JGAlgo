@@ -64,7 +64,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L64">			dfs: for (int depth = 0;;) {</span>
 <span class="fc bfc" id="L65" title="All 2 branches covered.">				for (EdgeIter eit = edges[depth]; eit.hasNext();) {</span>
 <span class="fc" id="L66">					eit.nextInt();</span>
-<span class="fc" id="L67">					int v = eit.v();</span>
+<span class="fc" id="L67">					int v = eit.target();</span>
 <span class="fc bfc" id="L68" title="All 2 branches covered.">					if (c[v] == 0) {</span>
 <span class="fc" id="L69">						c[v] = cNext++;</span>
 <span class="fc" id="L70">						s.push(v);</span>
@@ -119,7 +119,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 
 <span class="fc bfc" id="L120" title="All 2 branches covered.">				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
 <span class="fc" id="L121">					eit.nextInt();</span>
-<span class="fc" id="L122">					int v = eit.v();</span>
+<span class="fc" id="L122">					int v = eit.target();</span>
 <span class="fc bfc" id="L123" title="All 2 branches covered.">					if (comp[v] != -1) {</span>
 <span class="pc bpc" id="L124" title="1 of 2 branches missed.">						assert comp[v] == compIdx;</span>
 						continue;

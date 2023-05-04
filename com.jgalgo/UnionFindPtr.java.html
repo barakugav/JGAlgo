@@ -50,79 +50,77 @@ public class UnionFindPtr implements UnionFind {
 	 * @param n the number of initial elements in the data structure
 	 */
 <span class="fc" id="L52">	public UnionFindPtr(int n) {</span>
-<span class="pc bpc" id="L53" title="1 of 2 branches missed.">		if (n &lt; 0)</span>
-<span class="nc" id="L54">			throw new IllegalArgumentException(&quot;n is negative: &quot; + n);</span>
-<span class="pc bpc" id="L55" title="1 of 2 branches missed.">		elements = new Elm[n == 0 ? 2 : n];</span>
-<span class="pc bpc" id="L56" title="1 of 2 branches missed.">		for (int i = 0; i &lt; n; i++)</span>
-<span class="nc" id="L57">			elements[i] = new Elm(i);</span>
-<span class="fc" id="L58">		size = n;</span>
-<span class="fc" id="L59">	}</span>
+<span class="pc bpc" id="L53" title="1 of 2 branches missed.">		elements = new Elm[n == 0 ? 2 : n];</span>
+<span class="pc bpc" id="L54" title="1 of 2 branches missed.">		for (int i = 0; i &lt; n; i++)</span>
+<span class="nc" id="L55">			elements[i] = new Elm(i);</span>
+<span class="fc" id="L56">		size = n;</span>
+<span class="fc" id="L57">	}</span>
 
 	@Override
 	public int make() {
-<span class="fc bfc" id="L63" title="All 2 branches covered.">		if (elements.length &lt;= size)</span>
-<span class="fc" id="L64">			elements = Arrays.copyOf(elements, size * 2);</span>
-<span class="fc" id="L65">		int x = size++;</span>
-<span class="fc" id="L66">		elements[x] = new Elm(x);</span>
-<span class="fc" id="L67">		return x;</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">		if (elements.length &lt;= size)</span>
+<span class="fc" id="L62">			elements = Arrays.copyOf(elements, size * 2);</span>
+<span class="fc" id="L63">		int x = size++;</span>
+<span class="fc" id="L64">		elements[x] = new Elm(x);</span>
+<span class="fc" id="L65">		return x;</span>
 	}
 
 	@Override
 	public int find(int x) {
-<span class="fc" id="L72">		return find0(x).idx;</span>
+<span class="fc" id="L70">		return find0(x).idx;</span>
 	}
 
 	private Elm find0(int x) {
-<span class="pc bpc" id="L76" title="2 of 4 branches missed.">		if (x &lt; 0 || x &gt;= size)</span>
-<span class="nc" id="L77">			throw new IllegalArgumentException();</span>
-<span class="fc" id="L78">		Elm e = elements[x];</span>
+<span class="pc bpc" id="L74" title="2 of 4 branches missed.">		if (x &lt; 0 || x &gt;= size)</span>
+<span class="nc" id="L75">			throw new IndexOutOfBoundsException(x);</span>
+<span class="fc" id="L76">		Elm e = elements[x];</span>
 
 		/* Find root */
 		Elm r;
-<span class="fc bfc" id="L82" title="All 2 branches covered.">		for (r = e; r.parent != null; r = r.parent);</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">		for (r = e; r.parent != null; r = r.parent);</span>
 
 		/* path compression */
-<span class="fc bfc" id="L85" title="All 2 branches covered.">		for (; e != r;) {</span>
-<span class="fc" id="L86">			Elm next = e.parent;</span>
-<span class="fc" id="L87">			e.parent = r;</span>
-<span class="fc" id="L88">			e = next;</span>
-<span class="fc" id="L89">		}</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">		for (; e != r;) {</span>
+<span class="fc" id="L84">			Elm next = e.parent;</span>
+<span class="fc" id="L85">			e.parent = r;</span>
+<span class="fc" id="L86">			e = next;</span>
+<span class="fc" id="L87">		}</span>
 
-<span class="fc" id="L91">		return r;</span>
+<span class="fc" id="L89">		return r;</span>
 	}
 
 	@Override
 	public int union(int aIdx, int bIdx) {
-<span class="fc" id="L96">		Elm a = find0(aIdx);</span>
-<span class="fc" id="L97">		Elm b = find0(bIdx);</span>
-<span class="fc bfc" id="L98" title="All 2 branches covered.">		if (a == b)</span>
-<span class="fc" id="L99">			return a.idx;</span>
+<span class="fc" id="L94">		Elm a = find0(aIdx);</span>
+<span class="fc" id="L95">		Elm b = find0(bIdx);</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">		if (a == b)</span>
+<span class="fc" id="L97">			return a.idx;</span>
 
-<span class="fc bfc" id="L101" title="All 2 branches covered.">		if (a.rank &lt; b.rank) {</span>
-<span class="fc" id="L102">			Elm temp = a;</span>
-<span class="fc" id="L103">			a = b;</span>
-<span class="fc" id="L104">			b = temp;</span>
-<span class="fc bfc" id="L105" title="All 2 branches covered.">		} else if (a.rank == b.rank)</span>
-<span class="fc" id="L106">			a.rank++;</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">		if (a.rank &lt; b.rank) {</span>
+<span class="fc" id="L100">			Elm temp = a;</span>
+<span class="fc" id="L101">			a = b;</span>
+<span class="fc" id="L102">			b = temp;</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">		} else if (a.rank == b.rank)</span>
+<span class="fc" id="L104">			a.rank++;</span>
 
-<span class="fc" id="L108">		b.parent = a;</span>
-<span class="fc" id="L109">		return a.idx;</span>
+<span class="fc" id="L106">		b.parent = a;</span>
+<span class="fc" id="L107">		return a.idx;</span>
 	}
 
 	@Override
 	public int size() {
-<span class="nc" id="L114">		return size;</span>
+<span class="nc" id="L112">		return size;</span>
 	}
 
 	@Override
 	public void clear() {
-<span class="nc bnc" id="L119" title="All 2 branches missed.">		for (int i = 0; i &lt; size; i++) {</span>
-<span class="nc" id="L120">			Elm e = elements[i];</span>
-<span class="nc" id="L121">			e.parent = null;</span>
-<span class="nc" id="L122">			elements[i] = null;</span>
+<span class="nc bnc" id="L117" title="All 2 branches missed.">		for (int i = 0; i &lt; size; i++) {</span>
+<span class="nc" id="L118">			Elm e = elements[i];</span>
+<span class="nc" id="L119">			e.parent = null;</span>
+<span class="nc" id="L120">			elements[i] = null;</span>
 		}
-<span class="nc" id="L124">		size = 0;</span>
-<span class="nc" id="L125">	}</span>
+<span class="nc" id="L122">		size = 0;</span>
+<span class="nc" id="L123">	}</span>
 
 	private static class Elm {
 
@@ -130,11 +128,11 @@ public class UnionFindPtr implements UnionFind {
 		Elm parent;
 		byte rank;
 
-<span class="fc" id="L133">		Elm(int idx) {</span>
-<span class="fc" id="L134">			this.idx = idx;</span>
-<span class="fc" id="L135">			parent = null;</span>
-<span class="fc" id="L136">			rank = 0;</span>
-<span class="fc" id="L137">		}</span>
+<span class="fc" id="L131">		Elm(int idx) {</span>
+<span class="fc" id="L132">			this.idx = idx;</span>
+<span class="fc" id="L133">			parent = null;</span>
+<span class="fc" id="L134">			rank = 0;</span>
+<span class="fc" id="L135">		}</span>
 
 	}
 

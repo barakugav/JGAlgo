@@ -96,61 +96,62 @@ abstract class GraphArrayAbstract extends GraphBaseContinues {
 <span class="pc bpc" id="L96" title="1 of 2 branches missed.">		} else if (endpoint == v) {</span>
 <span class="fc" id="L97">			return u;</span>
 		} else {
-<span class="nc" id="L99">			throw new IllegalArgumentException();</span>
+<span class="nc" id="L99">			throw new IllegalArgumentException(</span>
+					&quot;The given vertex (&quot; + endpoint + &quot;) is not an endpoint of the edge (&quot; + u + &quot;, &quot; + v + &quot;)&quot;);
 		}
 	}
 
 	@Override
 	public int edgeSource(int edge) {
-<span class="fc" id="L105">		checkEdgeIdx(edge);</span>
-<span class="fc" id="L106">		return endpoints2Source(edgeEndpoints.getLong(edge));</span>
+<span class="fc" id="L106">		checkEdgeIdx(edge);</span>
+<span class="fc" id="L107">		return endpoints2Source(edgeEndpoints.getLong(edge));</span>
 	}
 
 	@Override
 	public int edgeTarget(int edge) {
-<span class="fc" id="L111">		checkEdgeIdx(edge);</span>
-<span class="fc" id="L112">		return endpoints2Target(edgeEndpoints.getLong(edge));</span>
+<span class="fc" id="L112">		checkEdgeIdx(edge);</span>
+<span class="fc" id="L113">		return endpoints2Target(edgeEndpoints.getLong(edge));</span>
 	}
 
 	void replaceEdgeSource(int edge, int newSource) {
-<span class="fc" id="L116">		long endpoints = edgeEndpoints.getLong(edge);</span>
-<span class="fc" id="L117">		int target = endpoints2Target(endpoints);</span>
-<span class="fc" id="L118">		edgeEndpoints.set(edge, sourceTarget2Endpoints(newSource, target));</span>
-<span class="fc" id="L119">	}</span>
+<span class="fc" id="L117">		long endpoints = edgeEndpoints.getLong(edge);</span>
+<span class="fc" id="L118">		int target = endpoints2Target(endpoints);</span>
+<span class="fc" id="L119">		edgeEndpoints.set(edge, sourceTarget2Endpoints(newSource, target));</span>
+<span class="fc" id="L120">	}</span>
 
 	void replaceEdgeTarget(int edge, int newTarget) {
-<span class="fc" id="L122">		long endpoints = edgeEndpoints.getLong(edge);</span>
-<span class="fc" id="L123">		int source = endpoints2Source(endpoints);</span>
-<span class="fc" id="L124">		edgeEndpoints.set(edge, sourceTarget2Endpoints(source, newTarget));</span>
-<span class="fc" id="L125">	}</span>
+<span class="fc" id="L123">		long endpoints = edgeEndpoints.getLong(edge);</span>
+<span class="fc" id="L124">		int source = endpoints2Source(endpoints);</span>
+<span class="fc" id="L125">		edgeEndpoints.set(edge, sourceTarget2Endpoints(source, newTarget));</span>
+<span class="fc" id="L126">	}</span>
 
 	void replaceEdgeEndpoint(int edge, int oldEndpoint, int newEndpoint) {
-<span class="fc" id="L128">		long endpoints = edgeEndpoints.getLong(edge);</span>
-<span class="fc" id="L129">		int source = endpoints2Source(endpoints);</span>
-<span class="fc" id="L130">		int target = endpoints2Target(endpoints);</span>
-<span class="fc bfc" id="L131" title="All 2 branches covered.">		if (source == oldEndpoint)</span>
-<span class="fc" id="L132">			source = newEndpoint;</span>
-<span class="fc bfc" id="L133" title="All 2 branches covered.">		if (target == oldEndpoint)</span>
-<span class="fc" id="L134">			target = newEndpoint;</span>
-<span class="fc" id="L135">		edgeEndpoints.set(edge, sourceTarget2Endpoints(source, target));</span>
-<span class="fc" id="L136">	}</span>
+<span class="fc" id="L129">		long endpoints = edgeEndpoints.getLong(edge);</span>
+<span class="fc" id="L130">		int source = endpoints2Source(endpoints);</span>
+<span class="fc" id="L131">		int target = endpoints2Target(endpoints);</span>
+<span class="fc bfc" id="L132" title="All 2 branches covered.">		if (source == oldEndpoint)</span>
+<span class="fc" id="L133">			source = newEndpoint;</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">		if (target == oldEndpoint)</span>
+<span class="fc" id="L135">			target = newEndpoint;</span>
+<span class="fc" id="L136">		edgeEndpoints.set(edge, sourceTarget2Endpoints(source, target));</span>
+<span class="fc" id="L137">	}</span>
 
 	@Override
 	public void clearEdges() {
-<span class="fc" id="L140">		edgeEndpoints.clear();</span>
-<span class="fc" id="L141">		super.clearEdges();</span>
-<span class="fc" id="L142">	}</span>
+<span class="fc" id="L141">		edgeEndpoints.clear();</span>
+<span class="fc" id="L142">		super.clearEdges();</span>
+<span class="fc" id="L143">	}</span>
 
 	private static long sourceTarget2Endpoints(int u, int v) {
-<span class="fc" id="L145">		return ((u &amp; 0xffffffffL) &lt;&lt; 32) | ((v &amp; 0xffffffffL) &lt;&lt; 0);</span>
+<span class="fc" id="L146">		return ((u &amp; 0xffffffffL) &lt;&lt; 32) | ((v &amp; 0xffffffffL) &lt;&lt; 0);</span>
 	}
 
 	private static int endpoints2Source(long endpoints) {
-<span class="fc" id="L149">		return (int) ((endpoints &gt;&gt; 32) &amp; 0xffffffffL);</span>
+<span class="fc" id="L150">		return (int) ((endpoints &gt;&gt; 32) &amp; 0xffffffffL);</span>
 	}
 
 	private static int endpoints2Target(long endpoints) {
-<span class="fc" id="L153">		return (int) ((endpoints &gt;&gt; 0) &amp; 0xffffffffL);</span>
+<span class="fc" id="L154">		return (int) ((endpoints &gt;&gt; 0) &amp; 0xffffffffL);</span>
 	}
 
 	abstract class EdgeIt implements EdgeIterImpl {
@@ -158,44 +159,44 @@ abstract class GraphArrayAbstract extends GraphBaseContinues {
 		private final int[] edges;
 		private int count;
 		private int idx;
-<span class="fc" id="L161">		int lastEdge = -1;</span>
+<span class="fc" id="L162">		int lastEdge = -1;</span>
 
-<span class="fc" id="L163">		EdgeIt(int[] edges, int count) {</span>
-<span class="fc" id="L164">			this.edges = edges;</span>
-<span class="fc" id="L165">			this.count = count;</span>
-<span class="fc" id="L166">		}</span>
+<span class="fc" id="L164">		EdgeIt(int[] edges, int count) {</span>
+<span class="fc" id="L165">			this.edges = edges;</span>
+<span class="fc" id="L166">			this.count = count;</span>
+<span class="fc" id="L167">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="fc bfc" id="L170" title="All 2 branches covered.">			return idx &lt; count;</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">			return idx &lt; count;</span>
 		}
 
 		@Override
 		public int nextInt() {
-<span class="pc bpc" id="L175" title="1 of 2 branches missed.">			if (!hasNext())</span>
-<span class="nc" id="L176">				throw new NoSuchElementException();</span>
-<span class="fc" id="L177">			return lastEdge = edges[idx++];</span>
+<span class="pc bpc" id="L176" title="1 of 2 branches missed.">			if (!hasNext())</span>
+<span class="nc" id="L177">				throw new NoSuchElementException();</span>
+<span class="fc" id="L178">			return lastEdge = edges[idx++];</span>
 		}
 
 		@Override
 		public int peekNext() {
-<span class="pc bpc" id="L182" title="1 of 2 branches missed.">			if (!hasNext())</span>
-<span class="nc" id="L183">				throw new NoSuchElementException();</span>
-<span class="fc" id="L184">			return edges[idx];</span>
+<span class="pc bpc" id="L183" title="1 of 2 branches missed.">			if (!hasNext())</span>
+<span class="nc" id="L184">				throw new NoSuchElementException();</span>
+<span class="fc" id="L185">			return edges[idx];</span>
 		}
 
 		@Override
 		public void remove() {
-<span class="pc bpc" id="L189" title="1 of 2 branches missed.">			if (lastEdge == -1)</span>
-<span class="nc" id="L190">				throw new IllegalStateException();</span>
-<span class="fc" id="L191">			removeEdge(lastEdge);</span>
+<span class="pc bpc" id="L190" title="1 of 2 branches missed.">			if (lastEdge == -1)</span>
+<span class="nc" id="L191">				throw new IllegalStateException();</span>
+<span class="fc" id="L192">			removeEdge(lastEdge);</span>
 			/**
 			 * The edge will be removed from entry idx-1 in edges[], go back and decrease the edges count.
 			 */
-<span class="fc" id="L195">			count--;</span>
-<span class="fc" id="L196">			idx--;</span>
-<span class="fc" id="L197">			lastEdge = -1;</span>
-<span class="fc" id="L198">		}</span>
+<span class="fc" id="L196">			count--;</span>
+<span class="fc" id="L197">			idx--;</span>
+<span class="fc" id="L198">			lastEdge = -1;</span>
+<span class="fc" id="L199">		}</span>
 
 	}
 

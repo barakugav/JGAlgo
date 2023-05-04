@@ -138,7 +138,7 @@ public interface DynamicTree {
 		 *
 		 * @return the edge source.
 		 */
-		public Node u();
+		public Node source();
 
 		/**
 		 * Get the weight of the edge.

@@ -228,12 +228,12 @@ public class GraphArrayDirected extends GraphArrayAbstract {
 <span class="fc" id="L228">		}</span>
 
 		@Override
-		public int u() {
+		public int source() {
 <span class="fc" id="L232">			return u;</span>
 		}
 
 		@Override
-		public int v() {
+		public int target() {
 <span class="fc" id="L237">			return edgeTarget(lastEdge);</span>
 		}
 
@@ -249,12 +249,12 @@ public class GraphArrayDirected extends GraphArrayAbstract {
 <span class="fc" id="L249">		}</span>
 
 		@Override
-		public int u() {
+		public int source() {
 <span class="fc" id="L253">			return edgeSource(lastEdge);</span>
 		}
 
 		@Override
-		public int v() {
+		public int target() {
 <span class="fc" id="L258">			return v;</span>
 		}
 
