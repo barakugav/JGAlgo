@@ -331,7 +331,7 @@ class GraphImplTestUtils extends TestUtils {
 			int s = 0;
 			for (int i = 0; i < elms.size(); i++) {
 				s += weights.getInt(i);
-				if (v <= s)
+				if (v < s)
 					return elms.get(i);
 			}
 			throw new IllegalStateException();
