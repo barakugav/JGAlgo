@@ -52,20 +52,20 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 
 	@Override
 	public void removeVertices(IntCollection vs) {
-<span class="nc" id="L55">		int[] vsArr = vs.toIntArray();</span>
-<span class="nc" id="L56">		IntArrays.parallelQuickSort(vsArr);</span>
-<span class="nc bnc" id="L57" title="All 2 branches missed.">		for (int i = 0; i &lt; vsArr.length - 1; i++) {</span>
-<span class="nc" id="L58">			int v1 = vsArr[i], v2 = vsArr[i + 1];</span>
-<span class="nc bnc" id="L59" title="All 2 branches missed.">			if (v1 == v2)</span>
+<span class="fc" id="L55">		int[] vsArr = vs.toIntArray();</span>
+<span class="fc" id="L56">		IntArrays.parallelQuickSort(vsArr);</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">		for (int i = 0; i &lt; vsArr.length - 1; i++) {</span>
+<span class="fc" id="L58">			int v1 = vsArr[i], v2 = vsArr[i + 1];</span>
+<span class="pc bpc" id="L59" title="1 of 2 branches missed.">			if (v1 == v2)</span>
 <span class="nc" id="L60">				throw new IllegalArgumentException(&quot;vertex identifier duplication: &quot; + v1);</span>
 		}
 		/*
 		 * When we remove a vertex, a rename may be performed, swapping the removed vertex id with numberOfVertices-1.
 		 * By removing them in decreasing order, the smaller IDs remain valid.
 		 */
-<span class="nc bnc" id="L66" title="All 2 branches missed.">		for (int i = vsArr.length - 1; i &gt;= 0; i--)</span>
-<span class="nc" id="L67">			removeVertex(vsArr[i]);</span>
-<span class="nc" id="L68">	}</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">		for (int i = vsArr.length - 1; i &gt;= 0; i--)</span>
+<span class="fc" id="L67">			removeVertex(vsArr[i]);</span>
+<span class="fc" id="L68">	}</span>
 
 	int vertexSwapBeforeRemove(int v) {
 <span class="fc" id="L71">		int vn = verticesIDStrategy.isSwapNeededBeforeRemove(v);</span>

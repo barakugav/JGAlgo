@@ -57,17 +57,17 @@ public interface HeapReferenceable&lt;E&gt; extends Heap&lt;E&gt; {
 	 * @return   a reference to the element or null if the element was not found
 	 */
 	default HeapReference&lt;E&gt; findRef(E e) {
-<span class="fc" id="L60">		Comparator&lt;? super E&gt; c = comparator();</span>
-<span class="fc bfc" id="L61" title="All 2 branches covered.">		if (c == null) {</span>
-<span class="pc bpc" id="L62" title="1 of 2 branches missed.">			for (HeapReference&lt;E&gt; p : refsSet()) {</span>
-<span class="fc bfc" id="L63" title="All 2 branches covered.">				if (Utils.cmpDefault(e, p.get()) == 0)</span>
-<span class="fc" id="L64">					return p;</span>
-<span class="pc" id="L65">			}</span>
+<span class="nc" id="L60">		Comparator&lt;? super E&gt; c = comparator();</span>
+<span class="nc bnc" id="L61" title="All 2 branches missed.">		if (c == null) {</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">			for (HeapReference&lt;E&gt; p : refsSet()) {</span>
+<span class="nc bnc" id="L63" title="All 2 branches missed.">				if (Utils.cmpDefault(e, p.get()) == 0)</span>
+<span class="nc" id="L64">					return p;</span>
+<span class="nc" id="L65">			}</span>
 		} else {
-<span class="pc bpc" id="L67" title="1 of 2 branches missed.">			for (HeapReference&lt;E&gt; p : refsSet()) {</span>
-<span class="fc bfc" id="L68" title="All 2 branches covered.">				if (c.compare(e, p.get()) == 0)</span>
-<span class="fc" id="L69">					return p;</span>
-<span class="fc" id="L70">			}</span>
+<span class="nc bnc" id="L67" title="All 2 branches missed.">			for (HeapReference&lt;E&gt; p : refsSet()) {</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">				if (c.compare(e, p.get()) == 0)</span>
+<span class="nc" id="L69">					return p;</span>
+<span class="nc" id="L70">			}</span>
 		}
 <span class="nc" id="L72">		return null;</span>
 	}

@@ -44,11 +44,11 @@ abstract class HeapReferenceableAbstract&lt;E&gt; extends HeapAbstract&lt;E&gt; 
 	@Override
 	public boolean remove(Object o) {
 		@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L47">		HeapReference&lt;E&gt; ref = findRef((E) o);</span>
-<span class="pc bpc" id="L48" title="1 of 2 branches missed.">		if (ref == null)</span>
+<span class="nc" id="L47">		HeapReference&lt;E&gt; ref = findRef((E) o);</span>
+<span class="nc bnc" id="L48" title="All 2 branches missed.">		if (ref == null)</span>
 <span class="nc" id="L49">			return false;</span>
-<span class="fc" id="L50">		removeRef(ref);</span>
-<span class="fc" id="L51">		return true;</span>
+<span class="nc" id="L50">		removeRef(ref);</span>
+<span class="nc" id="L51">		return true;</span>
 	}
 
 	@Override
@@ -57,6 +57,12 @@ abstract class HeapReferenceableAbstract&lt;E&gt; extends HeapAbstract&lt;E&gt; 
 <span class="fc" id="L57">		E val = min.get();</span>
 <span class="fc" id="L58">		removeRef(min);</span>
 <span class="fc" id="L59">		return val;</span>
+	}
+
+	@Override
+	public void meld(Heap&lt;? extends E&gt; heap) {
+		/* We can't meld using addAll without invalidating the nodes references */
+<span class="nc" id="L65">		throw new UnsupportedOperationException();</span>
 	}
 
 }

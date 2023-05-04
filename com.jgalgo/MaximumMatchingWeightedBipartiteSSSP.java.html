@@ -182,32 +182,34 @@ public class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeig
 	}
 
 	/**
+	 * {@inheritDoc}
+	 *
 	 * @throws UnsupportedOperationException this implementation does not support perfect matching computation
 	 */
 	@Deprecated
 	@Override
 	public IntCollection computeMaximumPerfectMatching(Graph g, EdgeWeightFunc w) {
-<span class="nc" id="L190">		throw new UnsupportedOperationException();</span>
+<span class="nc" id="L192">		throw new UnsupportedOperationException();</span>
 	}
 
 	private static Graph referenceGraph(Graph g, Weights.Bool partition, EdgeWeightFunc w) {
-<span class="fc" id="L194">		int n = g.vertices().size();</span>
-<span class="fc" id="L195">		Graph g0 = new GraphArrayDirected(g.vertices().size());</span>
-<span class="fc" id="L196">		Weights&lt;Ref&gt; edgeRef = g0.addEdgesWeights(EdgeRefWeightKey, Ref.class);</span>
+<span class="fc" id="L196">		int n = g.vertices().size();</span>
+<span class="fc" id="L197">		Graph g0 = new GraphArrayDirected(g.vertices().size());</span>
+<span class="fc" id="L198">		Weights&lt;Ref&gt; edgeRef = g0.addEdgesWeights(EdgeRefWeightKey, Ref.class);</span>
 
-<span class="fc bfc" id="L198" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc bfc" id="L199" title="All 2 branches covered.">			if (!partition.getBool(u))</span>
-<span class="fc" id="L200">				continue;</span>
-<span class="fc bfc" id="L201" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
-<span class="fc" id="L202">				int e = eit.nextInt();</span>
-<span class="fc" id="L203">				double weight = w.weight(e);</span>
-<span class="fc bfc" id="L204" title="All 2 branches covered.">				if (weight &lt; 0)</span>
-<span class="fc" id="L205">					continue; // no reason to match negative edges</span>
-<span class="fc" id="L206">				int e0 = g0.addEdge(u, eit.target());</span>
-<span class="fc" id="L207">				edgeRef.set(e0, new Ref(e, weight));</span>
-<span class="fc" id="L208">			}</span>
+<span class="fc bfc" id="L200" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc bfc" id="L201" title="All 2 branches covered.">			if (!partition.getBool(u))</span>
+<span class="fc" id="L202">				continue;</span>
+<span class="fc bfc" id="L203" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
+<span class="fc" id="L204">				int e = eit.nextInt();</span>
+<span class="fc" id="L205">				double weight = w.weight(e);</span>
+<span class="fc bfc" id="L206" title="All 2 branches covered.">				if (weight &lt; 0)</span>
+<span class="fc" id="L207">					continue; // no reason to match negative edges</span>
+<span class="fc" id="L208">				int e0 = g0.addEdge(u, eit.target());</span>
+<span class="fc" id="L209">				edgeRef.set(e0, new Ref(e, weight));</span>
+<span class="fc" id="L210">			}</span>
 		}
-<span class="fc" id="L210">		return g0;</span>
+<span class="fc" id="L212">		return g0;</span>
 	}
 
 	private static class Ref {
@@ -215,14 +217,14 @@ public class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeig
 		public final int orig;
 		public double w;
 
-<span class="fc" id="L218">		public Ref(int e, double w) {</span>
-<span class="fc" id="L219">			orig = e;</span>
-<span class="fc" id="L220">			this.w = w;</span>
-<span class="fc" id="L221">		}</span>
+<span class="fc" id="L220">		public Ref(int e, double w) {</span>
+<span class="fc" id="L221">			orig = e;</span>
+<span class="fc" id="L222">			this.w = w;</span>
+<span class="fc" id="L223">		}</span>
 
 		@Override
 		public String toString() {
-<span class="nc bnc" id="L225" title="All 2 branches missed.">			return orig != -1 ? String.valueOf(orig) : Double.toString(w);</span>
+<span class="nc bnc" id="L227" title="All 2 branches missed.">			return orig != -1 ? String.valueOf(orig) : Double.toString(w);</span>
 		}
 
 	}

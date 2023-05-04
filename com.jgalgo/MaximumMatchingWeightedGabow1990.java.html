@@ -836,12 +836,12 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 			int v;
 			Blossom b0, b1, b2;
 <span class="pc bpc" id="L838" title="1 of 2 branches missed.">			if (mu == u) {</span>
-				// u = m.u();
+				// u = m.source();
 <span class="fc" id="L840">				v = mv;</span>
 <span class="fc" id="L841">				b0 = mData.b0;</span>
 <span class="fc" id="L842">				b1 = mData.b1;</span>
 			} else {
-				// u = m.v();
+				// u = m.target();
 <span class="nc" id="L845">				v = mu;</span>
 <span class="nc" id="L846">				b0 = mData.b1;</span>
 <span class="nc" id="L847">				b1 = mData.b0;</span>
@@ -899,11 +899,11 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 				// int v;
 				Blossom b0, b1 /* , b2 */;
 <span class="pc bpc" id="L901" title="1 of 2 branches missed.">				if (g.edgeSource(m) == u) {</span>
-					// v = m.v();
+					// v = m.target();
 <span class="fc" id="L903">					b0 = mData.b0;</span>
 <span class="fc" id="L904">					b1 = mData.b1;</span>
 				} else {
-					// v = m.u();
+					// v = m.source();
 <span class="nc" id="L907">					b0 = mData.b1;</span>
 <span class="nc" id="L908">					b1 = mData.b0;</span>
 				}

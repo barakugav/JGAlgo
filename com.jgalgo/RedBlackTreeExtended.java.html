@@ -177,33 +177,39 @@ public class RedBlackTreeExtended&lt;E&gt; extends RedBlackTree&lt;E&gt; {
 <span class="fc" id="L177">			extension.beforeRotateRight((Node&lt;E&gt;) n);</span>
 <span class="fc" id="L178">	}</span>
 
+	void beforeNodeReuse(Node&lt;E&gt; node) {
+<span class="nc bnc" id="L181" title="All 2 branches missed.">		for (RedBlackTreeExtension&lt;E&gt; extension : extensions)</span>
+<span class="nc" id="L182">			extension.initNode(node);</span>
+<span class="nc" id="L183">	}</span>
+
+
 	@Override
 	public void clear() {
-<span class="nc" id="L182">		int s = size();</span>
-<span class="nc bnc" id="L183" title="All 2 branches missed.">		for (RedBlackTreeExtension&lt;E&gt; extension : extensions)</span>
-<span class="nc" id="L184">			extension.data.clear(s);</span>
-<span class="nc" id="L185">		super.clear();</span>
-<span class="nc" id="L186">	}</span>
+<span class="nc" id="L188">		int s = size();</span>
+<span class="nc bnc" id="L189" title="All 2 branches missed.">		for (RedBlackTreeExtension&lt;E&gt; extension : extensions)</span>
+<span class="nc" id="L190">			extension.data.clear(s);</span>
+<span class="nc" id="L191">		super.clear();</span>
+<span class="nc" id="L192">	}</span>
 
 	static class Node&lt;E&gt; extends RedBlackTree.Node&lt;E&gt; {
 
 		int idx;
 
 		Node(E e, int idx) {
-<span class="fc" id="L193">			super(e);</span>
-<span class="fc" id="L194">			this.idx = idx;</span>
-<span class="fc" id="L195">		}</span>
+<span class="fc" id="L199">			super(e);</span>
+<span class="fc" id="L200">			this.idx = idx;</span>
+<span class="fc" id="L201">		}</span>
 
 		Node&lt;E&gt; parent() {
-<span class="fc" id="L198">			return (Node&lt;E&gt;) parent;</span>
+<span class="fc" id="L204">			return (Node&lt;E&gt;) parent;</span>
 		}
 
 		Node&lt;E&gt; left() {
-<span class="fc" id="L202">			return (Node&lt;E&gt;) left;</span>
+<span class="fc" id="L208">			return (Node&lt;E&gt;) left;</span>
 		}
 
 		Node&lt;E&gt; right() {
-<span class="fc" id="L206">			return (Node&lt;E&gt;) right;</span>
+<span class="fc" id="L212">			return (Node&lt;E&gt;) right;</span>
 		}
 
 	}

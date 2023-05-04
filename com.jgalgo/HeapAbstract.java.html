@@ -46,8 +46,8 @@ abstract class HeapAbstract&lt;E&gt; extends AbstractCollection&lt;E&gt; impleme
 
 	@Override
 	public void meld(Heap&lt;? extends E&gt; heap) {
-<span class="pc bpc" id="L49" title="1 of 2 branches missed.">		if (heap == this)</span>
-<span class="nc" id="L50">			return;</span>
+<span class="fc" id="L49">		makeSureNoMeldWithSelf(heap);</span>
+<span class="fc" id="L50">		makeSureEqualComparatorBeforeMeld(heap);</span>
 <span class="fc" id="L51">		addAll(heap);</span>
 <span class="fc" id="L52">		heap.clear();</span>
 <span class="fc" id="L53">	}</span>
@@ -63,13 +63,23 @@ abstract class HeapAbstract&lt;E&gt; extends AbstractCollection&lt;E&gt; impleme
 
 	void makeSureDecreaseKeyIsSmaller(E oldVal, E newVal) {
 <span class="pc bpc" id="L65" title="1 of 2 branches missed.">		if (compare(oldVal, newVal) &lt; 0)</span>
-<span class="nc" id="L66">			throw new IllegalArgumentException(&quot;new key is greater than existing one&quot;);</span>
+<span class="nc" id="L66">			throw new IllegalArgumentException(&quot;New key is greater than existing one&quot;);</span>
 <span class="fc" id="L67">	}</span>
 
-	void makeSureEqualComparatorBeforeMeld(Heap&lt;? extends E&gt; other) {
-<span class="pc bpc" id="L70" title="1 of 2 branches missed.">		if (!Objects.equals(comparator(), other.comparator()))</span>
-<span class="nc" id="L71">			throw new IllegalArgumentException(&quot;Heaps have different comparators&quot;);</span>
+	void makeSureNoMeldWithSelf(Heap&lt;? extends E&gt; other) {
+<span class="pc bpc" id="L70" title="1 of 2 branches missed.">		if (other == this)</span>
+<span class="nc" id="L71">			throw new IllegalArgumentException(&quot;A heap can't meld with itself&quot;);</span>
 <span class="fc" id="L72">	}</span>
+
+	void makeSureMeldWithSameImpl(Class&lt;? extends Heap&gt; impl, Heap&lt;? extends E&gt; other) {
+<span class="pc bpc" id="L75" title="1 of 2 branches missed.">		if (!impl.isAssignableFrom(other.getClass()))</span>
+<span class="nc" id="L76">			throw new IllegalArgumentException(&quot;Can't meld heaps with different implementations&quot;);</span>
+<span class="fc" id="L77">	}</span>
+
+	void makeSureEqualComparatorBeforeMeld(Heap&lt;? extends E&gt; other) {
+<span class="pc bpc" id="L80" title="1 of 2 branches missed.">		if (!Objects.equals(comparator(), other.comparator()))</span>
+<span class="nc" id="L81">			throw new IllegalArgumentException(&quot;Can't meld, heaps have different comparators&quot;);</span>
+<span class="fc" id="L82">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

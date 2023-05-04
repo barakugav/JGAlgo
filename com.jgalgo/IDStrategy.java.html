@@ -17,11 +17,9 @@
 package com.jgalgo;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
-
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -45,10 +43,10 @@ import it.unimi.dsi.fastutil.ints.IntSets;
  */
 public abstract class IDStrategy {
 
-<span class="fc" id="L48">	private final List&lt;IDSwapListener&gt; idSwapListeners = new CopyOnWriteArrayList&lt;&gt;();</span>
-<span class="fc" id="L49">	private final List&lt;IDAddRemoveListener&gt; idAddRemoveListeners = new CopyOnWriteArrayList&lt;&gt;();</span>
+<span class="fc" id="L46">	private final List&lt;IDSwapListener&gt; idSwapListeners = new CopyOnWriteArrayList&lt;&gt;();</span>
+<span class="fc" id="L47">	private final List&lt;IDAddRemoveListener&gt; idAddRemoveListeners = new CopyOnWriteArrayList&lt;&gt;();</span>
 
-<span class="fc" id="L51">	IDStrategy() {}</span>
+<span class="fc" id="L49">	IDStrategy() {}</span>
 
 	/**
 	 * An ID strategy that ensure the IDs of a graph vertices/edges are always {@code 0,1,..., n-1}.
@@ -64,188 +62,174 @@ public abstract class IDStrategy {
 	 *
 	 * @author Barak Ugav
 	 */
-<span class="fc" id="L67">	public static class Continues extends IDStrategy {</span>
+<span class="fc" id="L65">	public static class Continues extends IDStrategy {</span>
 
 		private int size;
 		private final IntSet idSet;
 
-<span class="fc" id="L72">		Continues(int initSize) {</span>
-<span class="pc bpc" id="L73" title="1 of 2 branches missed.">			if (initSize &lt; 0)</span>
-<span class="nc" id="L74">				throw new IllegalArgumentException(&quot;Initial size can not be negative: &quot; + initSize);</span>
-<span class="fc" id="L75">			size = initSize;</span>
-<span class="fc" id="L76">			idSet = new AbstractIntSet() {</span>
+<span class="fc" id="L70">		Continues(int initSize) {</span>
+<span class="pc bpc" id="L71" title="1 of 2 branches missed.">			if (initSize &lt; 0)</span>
+<span class="nc" id="L72">				throw new IllegalArgumentException(&quot;Initial size can not be negative: &quot; + initSize);</span>
+<span class="fc" id="L73">			size = initSize;</span>
+<span class="fc" id="L74">			idSet = new AbstractIntSet() {</span>
 
 				@Override
 				public int size() {
-<span class="fc" id="L80">					return size;</span>
+<span class="fc" id="L78">					return size;</span>
 				}
 
 				@Override
 				public boolean contains(int key) {
-<span class="pc bpc" id="L85" title="2 of 4 branches missed.">					return key &gt;= 0 &amp;&amp; key &lt; size();</span>
+<span class="pc bpc" id="L83" title="2 of 4 branches missed.">					return key &gt;= 0 &amp;&amp; key &lt; size();</span>
 				}
 
 				@Override
 				public IntIterator iterator() {
-<span class="fc" id="L90">					return new IntIterator() {</span>
-<span class="fc" id="L91">						int u = 0;</span>
-
-						@Override
-						public boolean hasNext() {
-<span class="fc bfc" id="L95" title="All 2 branches covered.">							return u &lt; size();</span>
-						}
-
-						@Override
-						public int nextInt() {
-<span class="pc bpc" id="L100" title="1 of 2 branches missed.">							if (!hasNext())</span>
-<span class="nc" id="L101">								throw new NoSuchElementException();</span>
-<span class="fc" id="L102">							return u++;</span>
-						}
-					};
+<span class="fc" id="L88">					return new Utils.RangeIter(size());</span>
 				}
 			};
-<span class="fc" id="L107">		}</span>
+<span class="fc" id="L91">		}</span>
 
 		@Override
 		int newIdx() {
-<span class="fc" id="L111">			int id = size++;</span>
-<span class="fc" id="L112">			notifyIDAdd(id);</span>
-<span class="fc" id="L113">			return id;</span>
+<span class="fc" id="L95">			int id = size++;</span>
+<span class="fc" id="L96">			notifyIDAdd(id);</span>
+<span class="fc" id="L97">			return id;</span>
 		}
 
 		@Override
 		void removeIdx(int idx) {
-<span class="pc bpc" id="L118" title="1 of 2 branches missed.">			assert idx == size - 1;</span>
-<span class="pc bpc" id="L119" title="1 of 2 branches missed.">			assert size &gt; 0;</span>
-<span class="fc" id="L120">			size--;</span>
-<span class="fc" id="L121">			notifyIDRemove(idx);</span>
-<span class="fc" id="L122">		}</span>
+<span class="pc bpc" id="L102" title="1 of 2 branches missed.">			assert idx == size - 1;</span>
+<span class="pc bpc" id="L103" title="1 of 2 branches missed.">			assert size &gt; 0;</span>
+<span class="fc" id="L104">			size--;</span>
+<span class="fc" id="L105">			notifyIDRemove(idx);</span>
+<span class="fc" id="L106">		}</span>
 
 		@Override
 		int size() {
-<span class="fc" id="L126">			return size;</span>
+<span class="fc" id="L110">			return size;</span>
 		}
 
 		@Override
 		void clear() {
-<span class="fc" id="L131">			size = 0;</span>
-<span class="fc" id="L132">		}</span>
+<span class="fc" id="L115">			size = 0;</span>
+<span class="fc" id="L116">		}</span>
 
 		@Override
 		int idToIdx(int id) {
-<span class="pc bpc" id="L136" title="2 of 4 branches missed.">			if (!(0 &lt;= id &amp;&amp; id &lt; size))</span>
-<span class="nc" id="L137">				throw new IndexOutOfBoundsException(id);</span>
-<span class="fc" id="L138">			return id;</span>
+<span class="pc bpc" id="L120" title="2 of 4 branches missed.">			if (!(0 &lt;= id &amp;&amp; id &lt; size))</span>
+<span class="nc" id="L121">				throw new IndexOutOfBoundsException(id);</span>
+<span class="fc" id="L122">			return id;</span>
 		}
 
 		@Override
 		int idxToId(int idx) {
-<span class="fc" id="L143">			checkIdx(idx);</span>
-<span class="fc" id="L144">			return idx;</span>
+<span class="fc" id="L127">			checkIdx(idx);</span>
+<span class="fc" id="L128">			return idx;</span>
 		}
 
 		@Override
 		IntSet idSet() {
-<span class="fc" id="L149">			return idSet;</span>
+<span class="fc" id="L133">			return idSet;</span>
 		}
 
 		@Override
-<span class="nc" id="L153">		void ensureSize(int n) {}</span>
+<span class="nc" id="L137">		void ensureSize(int n) {}</span>
 
 		@Override
 		void idxSwap(int idx1, int idx2) {
-<span class="fc" id="L157">			int id1 = idxToId(idx1), id2 = idxToId(idx2);</span>
-<span class="fc" id="L158">			notifyIDSwap(id1, id2);</span>
-<span class="fc" id="L159">		}</span>
+<span class="fc" id="L141">			int id1 = idxToId(idx1), id2 = idxToId(idx2);</span>
+<span class="fc" id="L142">			notifyIDSwap(id1, id2);</span>
+<span class="fc" id="L143">		}</span>
 
 		private void checkIdx(int idx) {
-<span class="pc bpc" id="L162" title="2 of 4 branches missed.">			if (!(0 &lt;= idx &amp;&amp; idx &lt; size))</span>
-<span class="nc" id="L163">				throw new IndexOutOfBoundsException(idx);</span>
-<span class="fc" id="L164">		}</span>
+<span class="pc bpc" id="L146" title="2 of 4 branches missed.">			if (!(0 &lt;= idx &amp;&amp; idx &lt; size))</span>
+<span class="nc" id="L147">				throw new IndexOutOfBoundsException(idx);</span>
+<span class="fc" id="L148">		}</span>
 	}
 
-<span class="fc" id="L167">	private abstract static class FixedAbstract extends IDStrategy {</span>
+<span class="fc" id="L151">	private abstract static class FixedAbstract extends IDStrategy {</span>
 
 		private final Int2IntOpenHashMap idToIdx;
 		private final DataContainer.Int idxToId;
 		private final IntSet idsView; // move to graph abstract implementation
 
-<span class="fc" id="L173">		FixedAbstract() {</span>
-<span class="fc" id="L174">			idToIdx = new Int2IntOpenHashMap();</span>
-<span class="fc" id="L175">			idsView = IntSets.unmodifiable(idToIdx.keySet());</span>
-<span class="fc" id="L176">			idxToId = new DataContainer.Int(0, 0);</span>
-<span class="fc" id="L177">		}</span>
+<span class="fc" id="L157">		FixedAbstract() {</span>
+<span class="fc" id="L158">			idToIdx = new Int2IntOpenHashMap();</span>
+<span class="fc" id="L159">			idsView = IntSets.unmodifiable(idToIdx.keySet());</span>
+<span class="fc" id="L160">			idxToId = new DataContainer.Int(0, 0);</span>
+<span class="fc" id="L161">		}</span>
 
 		@Override
 		int newIdx() {
-<span class="fc" id="L181">			int idx = idToIdx.size();</span>
-<span class="fc" id="L182">			int id = nextID();</span>
-<span class="pc bpc" id="L183" title="1 of 2 branches missed.">			assert id &gt;= 0;</span>
-<span class="fc" id="L184">			idToIdx.put(id, idx);</span>
-<span class="fc" id="L185">			idxToId.add(idx);</span>
-<span class="fc" id="L186">			idxToId.set(idx, id);</span>
-<span class="fc" id="L187">			notifyIDAdd(id);</span>
-<span class="fc" id="L188">			return idx;</span>
+<span class="fc" id="L165">			int idx = idToIdx.size();</span>
+<span class="fc" id="L166">			int id = nextID();</span>
+<span class="pc bpc" id="L167" title="1 of 2 branches missed.">			assert id &gt;= 0;</span>
+<span class="fc" id="L168">			idToIdx.put(id, idx);</span>
+<span class="fc" id="L169">			idxToId.add(idx);</span>
+<span class="fc" id="L170">			idxToId.set(idx, id);</span>
+<span class="fc" id="L171">			notifyIDAdd(id);</span>
+<span class="fc" id="L172">			return idx;</span>
 		}
 
 		abstract int nextID();
 
 		@Override
 		void removeIdx(int idx) {
-<span class="pc bpc" id="L195" title="1 of 2 branches missed.">			assert idx == idxToId.size - 1;</span>
-<span class="pc bpc" id="L196" title="1 of 2 branches missed.">			assert idxToId.size &gt; 0;</span>
-<span class="fc" id="L197">			final int id = idxToId.getInt(idx);</span>
-<span class="fc" id="L198">			idxToId.remove(idx);</span>
-<span class="fc" id="L199">			idToIdx.remove(id);</span>
-<span class="fc" id="L200">			notifyIDRemove(id);</span>
-<span class="fc" id="L201">		}</span>
+<span class="pc bpc" id="L179" title="1 of 2 branches missed.">			assert idx == idxToId.size - 1;</span>
+<span class="pc bpc" id="L180" title="1 of 2 branches missed.">			assert idxToId.size &gt; 0;</span>
+<span class="fc" id="L181">			final int id = idxToId.getInt(idx);</span>
+<span class="fc" id="L182">			idxToId.remove(idx);</span>
+<span class="fc" id="L183">			idToIdx.remove(id);</span>
+<span class="fc" id="L184">			notifyIDRemove(id);</span>
+<span class="fc" id="L185">		}</span>
 
 		@Override
 		int size() {
-<span class="fc" id="L205">			return idToIdx.size();</span>
+<span class="fc" id="L189">			return idToIdx.size();</span>
 		}
 
 		@Override
 		void clear() {
-<span class="fc" id="L210">			idToIdx.clear();</span>
-<span class="fc" id="L211">			idxToId.clear();</span>
-<span class="fc" id="L212">		}</span>
+<span class="fc" id="L194">			idToIdx.clear();</span>
+<span class="fc" id="L195">			idxToId.clear();</span>
+<span class="fc" id="L196">		}</span>
 
 		@Override
 		int idToIdx(int id) {
-<span class="pc bpc" id="L216" title="1 of 2 branches missed.">			if (!idToIdx.containsKey(id))</span>
-<span class="nc" id="L217">				throw new IndexOutOfBoundsException(id);</span>
-<span class="fc" id="L218">			return idToIdx.get(id);</span>
+<span class="pc bpc" id="L200" title="1 of 2 branches missed.">			if (!idToIdx.containsKey(id))</span>
+<span class="nc" id="L201">				throw new IndexOutOfBoundsException(id);</span>
+<span class="fc" id="L202">			return idToIdx.get(id);</span>
 		}
 
 		@Override
 		int idxToId(int idx) {
-<span class="fc" id="L223">			return idxToId.getInt(idx);</span>
+<span class="fc" id="L207">			return idxToId.getInt(idx);</span>
 		}
 
 		@Override
 		IntSet idSet() {
-<span class="fc" id="L228">			return idsView;</span>
+<span class="fc" id="L212">			return idsView;</span>
 		}
 
 		@Override
 		void ensureSize(int n) {
-<span class="nc" id="L233">			idToIdx.ensureCapacity(n);</span>
-<span class="nc" id="L234">		}</span>
+<span class="nc" id="L217">			idToIdx.ensureCapacity(n);</span>
+<span class="nc" id="L218">		}</span>
 
 		@Override
 		void idxSwap(int idx1, int idx2) {
-<span class="fc" id="L238">			int id1 = idxToId.getInt(idx1);</span>
-<span class="fc" id="L239">			int id2 = idxToId.getInt(idx2);</span>
-<span class="fc" id="L240">			idxToId.set(idx1, id2);</span>
-<span class="fc" id="L241">			idxToId.set(idx2, id1);</span>
-<span class="fc" id="L242">			int oldIdx1 = idToIdx.put(id1, idx2);</span>
-<span class="fc" id="L243">			int oldIdx2 = idToIdx.put(id2, idx1);</span>
-<span class="pc bpc" id="L244" title="1 of 2 branches missed.">			assert idx1 == oldIdx1;</span>
-<span class="pc bpc" id="L245" title="1 of 2 branches missed.">			assert idx2 == oldIdx2;</span>
+<span class="fc" id="L222">			int id1 = idxToId.getInt(idx1);</span>
+<span class="fc" id="L223">			int id2 = idxToId.getInt(idx2);</span>
+<span class="fc" id="L224">			idxToId.set(idx1, id2);</span>
+<span class="fc" id="L225">			idxToId.set(idx2, id1);</span>
+<span class="fc" id="L226">			int oldIdx1 = idToIdx.put(id1, idx2);</span>
+<span class="fc" id="L227">			int oldIdx2 = idToIdx.put(id2, idx1);</span>
+<span class="pc bpc" id="L228" title="1 of 2 branches missed.">			assert idx1 == oldIdx1;</span>
+<span class="pc bpc" id="L229" title="1 of 2 branches missed.">			assert idx2 == oldIdx2;</span>
 
 			// The user IDs were not changed, no need to call notifyIDSwap
-<span class="fc" id="L248">		}</span>
+<span class="fc" id="L232">		}</span>
 	}
 
 	/**
@@ -262,30 +246,30 @@ public abstract class IDStrategy {
 
 		private int counter;
 
-<span class="fc" id="L265">		Fixed() {</span>
-<span class="fc" id="L266">			counter = 0;</span>
-<span class="fc" id="L267">		}</span>
+<span class="fc" id="L249">		Fixed() {</span>
+<span class="fc" id="L250">			counter = 0;</span>
+<span class="fc" id="L251">		}</span>
 
 		@Override
 		int nextID() {
-<span class="fc" id="L271">			return counter++;</span>
+<span class="fc" id="L255">			return counter++;</span>
 		}
 
 	}
 
 	static class Rand extends FixedAbstract {
 
-<span class="nc" id="L278">		private final Random rand = new Random();</span>
+<span class="nc" id="L262">		private final Random rand = new Random();</span>
 
-<span class="nc" id="L280">		Rand() {}</span>
+<span class="nc" id="L264">		Rand() {}</span>
 
 		@Override
 		int nextID() {
 			for (;;) {
-<span class="nc" id="L285">				int id = rand.nextInt();</span>
-<span class="nc bnc" id="L286" title="All 4 branches missed.">				if (id &gt;= 0 &amp;&amp; !idSet().contains(id))</span>
-<span class="nc" id="L287">					return id;</span>
-<span class="nc" id="L288">			}</span>
+<span class="nc" id="L269">				int id = rand.nextInt();</span>
+<span class="nc bnc" id="L270" title="All 4 branches missed.">				if (id &gt;= 0 &amp;&amp; !idSet().contains(id))</span>
+<span class="nc" id="L271">					return id;</span>
+<span class="nc" id="L272">			}</span>
 		}
 	}
 
@@ -304,28 +288,28 @@ public abstract class IDStrategy {
 	abstract IntSet idSet();
 
 	int isSwapNeededBeforeRemove(int idx) {
-<span class="fc" id="L307">		int size = idSet().size();</span>
-<span class="pc bpc" id="L308" title="2 of 4 branches missed.">		if (!(0 &lt;= idx &amp;&amp; idx &lt; size))</span>
-<span class="nc" id="L309">			throw new IndexOutOfBoundsException(idx);</span>
-<span class="fc" id="L310">		return size - 1;</span>
+<span class="fc" id="L291">		int size = idSet().size();</span>
+<span class="pc bpc" id="L292" title="2 of 4 branches missed.">		if (!(0 &lt;= idx &amp;&amp; idx &lt; size))</span>
+<span class="nc" id="L293">			throw new IndexOutOfBoundsException(idx);</span>
+<span class="fc" id="L294">		return size - 1;</span>
 	}
 
 	abstract void idxSwap(int idx1, int idx2);
 
 	void notifyIDSwap(int id1, int id2) {
-<span class="fc bfc" id="L316" title="All 2 branches covered.">		for (IDSwapListener listener : idSwapListeners)</span>
-<span class="fc" id="L317">			listener.idSwap(id1, id2);</span>
-<span class="fc" id="L318">	}</span>
+<span class="fc bfc" id="L300" title="All 2 branches covered.">		for (IDSwapListener listener : idSwapListeners)</span>
+<span class="fc" id="L301">			listener.idSwap(id1, id2);</span>
+<span class="fc" id="L302">	}</span>
 
 	void notifyIDAdd(int id) {
-<span class="fc bfc" id="L321" title="All 2 branches covered.">		for (IDAddRemoveListener listener : idAddRemoveListeners)</span>
-<span class="fc" id="L322">			listener.idAdd(id);</span>
-<span class="fc" id="L323">	}</span>
+<span class="fc bfc" id="L305" title="All 2 branches covered.">		for (IDAddRemoveListener listener : idAddRemoveListeners)</span>
+<span class="fc" id="L306">			listener.idAdd(id);</span>
+<span class="fc" id="L307">	}</span>
 
 	void notifyIDRemove(int id) {
-<span class="fc bfc" id="L326" title="All 2 branches covered.">		for (IDAddRemoveListener listener : idAddRemoveListeners)</span>
-<span class="fc" id="L327">			listener.idRemove(id);</span>
-<span class="fc" id="L328">	}</span>
+<span class="fc bfc" id="L310" title="All 2 branches covered.">		for (IDAddRemoveListener listener : idAddRemoveListeners)</span>
+<span class="fc" id="L311">			listener.idRemove(id);</span>
+<span class="fc" id="L312">	}</span>
 
 	abstract void ensureSize(int n);
 
@@ -339,8 +323,8 @@ public abstract class IDStrategy {
 	 * @param listener an ID swap listener that will be called each time the strategy wap two IDs.
 	 */
 	public void addIDSwapListener(IDSwapListener listener) {
-<span class="fc" id="L342">		idSwapListeners.add(Objects.requireNonNull(listener));</span>
-<span class="fc" id="L343">	}</span>
+<span class="fc" id="L326">		idSwapListeners.add(Objects.requireNonNull(listener));</span>
+<span class="fc" id="L327">	}</span>
 
 	/**
 	 * Remove an ID swap listener.
@@ -349,8 +333,8 @@ public abstract class IDStrategy {
 	 * @see            #addIDSwapListener(IDSwapListener)
 	 */
 	public void removeIDSwapListener(IDSwapListener listener) {
-<span class="nc" id="L352">		idSwapListeners.remove(listener);</span>
-<span class="nc" id="L353">	}</span>
+<span class="nc" id="L336">		idSwapListeners.remove(listener);</span>
+<span class="nc" id="L337">	}</span>
 
 	/**
 	 * Add a listener that will be notified each time the strategy add or remove an id.
@@ -358,8 +342,8 @@ public abstract class IDStrategy {
 	 * @param listener a listener object that will be called when the strategy add or remove an id
 	 */
 	public void addIDAddRemoveListener(IDAddRemoveListener listener) {
-<span class="fc" id="L361">		idAddRemoveListeners.add(Objects.requireNonNull(listener));</span>
-<span class="fc" id="L362">	}</span>
+<span class="fc" id="L345">		idAddRemoveListeners.add(Objects.requireNonNull(listener));</span>
+<span class="fc" id="L346">	}</span>
 
 	/**
 	 * Remove an ID add/remove listener.
@@ -367,8 +351,8 @@ public abstract class IDStrategy {
 	 * @param listener the listener to remove
 	 */
 	public void removeIDAddRemoveListener(IDAddRemoveListener listener) {
-<span class="nc" id="L370">		idAddRemoveListeners.remove(listener);</span>
-<span class="nc" id="L371">	}</span>
+<span class="nc" id="L354">		idAddRemoveListeners.remove(listener);</span>
+<span class="nc" id="L355">	}</span>
 
 	/**
 	 * A listener that will be notified each time a strategy chooses to swap two IDs.

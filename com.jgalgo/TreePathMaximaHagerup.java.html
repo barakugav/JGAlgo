@@ -64,8 +64,8 @@ public class TreePathMaximaHagerup implements TreePathMaxima {
 	 *                   will be used.
 	 */
 	public void setBitsLookupTablesEnable(boolean enable) {
-<span class="nc" id="L67">		useBitsLookupTables = enable;</span>
-<span class="nc" id="L68">	}</span>
+<span class="fc" id="L67">		useBitsLookupTables = enable;</span>
+<span class="fc" id="L68">	}</span>
 
 	@Override
 	public int[] computeHeaviestEdgeInTreePaths(Graph tree, EdgeWeightFunc w, TreePathMaxima.Queries queries) {
@@ -90,16 +90,16 @@ public class TreePathMaximaHagerup implements TreePathMaxima {
 <span class="fc" id="L90">			this.tOrig = t;</span>
 <span class="fc" id="L91">			this.w = w;</span>
 
-<span class="pc bpc" id="L93" title="1 of 2 branches missed.">			if (useBitsLookupTables) {</span>
-<span class="nc" id="L94">				int n = t.vertices().size();</span>
-<span class="nc bnc" id="L95" title="All 2 branches missed.">				int wordsize = n &gt; 1 ? Utils.log2ceil(n) : 1;</span>
-<span class="nc" id="L96">				BitsLookupTable.Count count = new BitsLookupTable.Count(wordsize);</span>
-<span class="nc" id="L97">				BitsLookupTable.Ith ith = new BitsLookupTable.Ith(wordsize, count);</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">			if (useBitsLookupTables) {</span>
+<span class="fc" id="L94">				int n = t.vertices().size();</span>
+<span class="pc bpc" id="L95" title="1 of 2 branches missed.">				int wordsize = n &gt; 1 ? Utils.log2ceil(n) : 1;</span>
+<span class="fc" id="L96">				BitsLookupTable.Count count = new BitsLookupTable.Count(wordsize);</span>
+<span class="fc" id="L97">				BitsLookupTable.Ith ith = new BitsLookupTable.Ith(wordsize, count);</span>
 
-<span class="nc" id="L99">				getBitCount = count::bitCount;</span>
-<span class="nc" id="L100">				getIthbit = ith::ithBit;</span>
-<span class="nc" id="L101">				getNumberOfTrailingZeros = ith::numberOfTrailingZeros;</span>
-<span class="nc" id="L102">			} else {</span>
+<span class="fc" id="L99">				getBitCount = count::bitCount;</span>
+<span class="fc" id="L100">				getIthbit = ith::ithBit;</span>
+<span class="fc" id="L101">				getNumberOfTrailingZeros = ith::numberOfTrailingZeros;</span>
+<span class="fc" id="L102">			} else {</span>
 <span class="fc" id="L103">				getBitCount = Integer::bitCount;</span>
 <span class="fc" id="L104">				getIthbit = (x, i) -&gt; {</span>
 <span class="pc bpc" id="L105" title="2 of 4 branches missed.">					if (i &lt; 0 || i &gt;= getBitCount.applyAsInt(x))</span>

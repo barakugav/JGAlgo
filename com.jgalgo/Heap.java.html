@@ -84,8 +84,15 @@ public interface Heap&lt;E&gt; extends Collection&lt;E&gt; {
 	 * &lt;p&gt;
 	 * Melding is performed by adding all elements of the given heap to this heap, and clearing the given heap. Some
 	 * implementations support efficient melding due to internal structures used to maintain the heap elements.
+	 * &lt;p&gt;
+	 * Its only possible to meld with a heap with the same implementation of this heap.
+	 * &lt;p&gt;
+	 * If the heap implementation expose references to its element (see {@link HeapReferenceable}), the references of
+	 * both ({@code this} and the given {@code heap}) remain valid and its possible to use them only in this heap (they
+	 * are no longer valid with respect to the given heap, which will be cleared).
 	 *
-	 * @param heap a heap to meld with. After the operation it will be empty.
+	 * @param  heap                     a heap to meld with. After the operation it will be empty.
+	 * @throws IllegalArgumentException if the given heap is {@code this} heap, or its of another implementation
 	 */
 	public void meld(Heap&lt;? extends E&gt; heap);
 
@@ -106,7 +113,7 @@ public interface Heap&lt;E&gt; extends Collection&lt;E&gt; {
 	 * @return a new builder that can build {@link Heap} objects
 	 */
 	static Heap.Builder newBuilder() {
-<span class="nc" id="L109">		return HeapBinary::new;</span>
+<span class="nc" id="L116">		return HeapBinary::new;</span>
 	}
 
 	/**
@@ -134,7 +141,7 @@ public interface Heap&lt;E&gt; extends Collection&lt;E&gt; {
 		 * @return     the newly constructed heap
 		 */
 		default &lt;E&gt; Heap&lt;E&gt; build() {
-<span class="nc" id="L137">			return build(null);</span>
+<span class="nc" id="L144">			return build(null);</span>
 		}
 	}
 

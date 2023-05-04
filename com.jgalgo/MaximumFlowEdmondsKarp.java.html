@@ -55,8 +55,8 @@ public class MaximumFlowEdmondsKarp implements MaximumFlow {
 	public double computeMaximumFlow(Graph g, FlowNetwork net, int source, int sink) {
 <span class="fc" id="L56">		ArgumentCheck.onlyDirected(g);</span>
 <span class="fc" id="L57">		ArgumentCheck.sourceSinkNotTheSame(source, sink);</span>
-<span class="pc bpc" id="L58" title="1 of 2 branches missed.">		if (net instanceof FlowNetwork.Int) {</span>
-<span class="nc" id="L59">			return new WorkerInt(g, (FlowNetwork.Int) net, source, sink).computeMaxFlow();</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">		if (net instanceof FlowNetwork.Int) {</span>
+<span class="fc" id="L59">			return new WorkerInt(g, (FlowNetwork.Int) net, source, sink).computeMaxFlow();</span>
 		} else {
 <span class="fc" id="L61">			return new WorkerDouble(g, net, source, sink).computeMaxFlow();</span>
 		}
@@ -183,110 +183,110 @@ public class MaximumFlowEdmondsKarp implements MaximumFlow {
 		final int source;
 		final int sink;
 
-<span class="nc" id="L186">		WorkerInt(Graph gOring, FlowNetwork.Int net, int source, int sink) {</span>
-<span class="nc" id="L187">			this.gOring = gOring;</span>
-<span class="nc" id="L188">			this.net = net;</span>
-<span class="nc" id="L189">			this.source = source;</span>
-<span class="nc" id="L190">			this.sink = sink;</span>
-<span class="nc" id="L191">		}</span>
+<span class="fc" id="L186">		WorkerInt(Graph gOring, FlowNetwork.Int net, int source, int sink) {</span>
+<span class="fc" id="L187">			this.gOring = gOring;</span>
+<span class="fc" id="L188">			this.net = net;</span>
+<span class="fc" id="L189">			this.source = source;</span>
+<span class="fc" id="L190">			this.sink = sink;</span>
+<span class="fc" id="L191">		}</span>
 
 		double computeMaxFlow() {
-<span class="nc" id="L194">			int n = gOring.vertices().size();</span>
-<span class="nc" id="L195">			Graph g = new GraphArrayDirected(n);</span>
-<span class="nc" id="L196">			Weights.Int edgeRef = g.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));</span>
-<span class="nc" id="L197">			Weights.Int twin = g.addEdgesWeights(EdgeRevWeightKey, int.class, Integer.valueOf(-1));</span>
-<span class="nc" id="L198">			Weights.Int flow = g.addEdgesWeights(FlowWeightKey, int.class);</span>
-<span class="nc" id="L199">			Weights.Int capacity = g.addEdgesWeights(CapacityWeightKey, int.class);</span>
-<span class="nc bnc" id="L200" title="All 2 branches missed.">			for (IntIterator it = gOring.edges().iterator(); it.hasNext();) {</span>
-<span class="nc" id="L201">				int e = it.nextInt();</span>
-<span class="nc" id="L202">				int u = gOring.edgeSource(e), v = gOring.edgeTarget(e);</span>
-<span class="nc bnc" id="L203" title="All 2 branches missed.">				if (u == v)</span>
+<span class="fc" id="L194">			int n = gOring.vertices().size();</span>
+<span class="fc" id="L195">			Graph g = new GraphArrayDirected(n);</span>
+<span class="fc" id="L196">			Weights.Int edgeRef = g.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));</span>
+<span class="fc" id="L197">			Weights.Int twin = g.addEdgesWeights(EdgeRevWeightKey, int.class, Integer.valueOf(-1));</span>
+<span class="fc" id="L198">			Weights.Int flow = g.addEdgesWeights(FlowWeightKey, int.class);</span>
+<span class="fc" id="L199">			Weights.Int capacity = g.addEdgesWeights(CapacityWeightKey, int.class);</span>
+<span class="fc bfc" id="L200" title="All 2 branches covered.">			for (IntIterator it = gOring.edges().iterator(); it.hasNext();) {</span>
+<span class="fc" id="L201">				int e = it.nextInt();</span>
+<span class="fc" id="L202">				int u = gOring.edgeSource(e), v = gOring.edgeTarget(e);</span>
+<span class="pc bpc" id="L203" title="1 of 2 branches missed.">				if (u == v)</span>
 <span class="nc" id="L204">					continue;</span>
-<span class="nc bnc" id="L205" title="All 4 branches missed.">				if (u == sink || v == source)</span>
-<span class="nc" id="L206">					continue;</span>
-<span class="nc" id="L207">				int e1 = g.addEdge(u, v);</span>
-<span class="nc" id="L208">				int e2 = g.addEdge(v, u);</span>
-<span class="nc" id="L209">				edgeRef.set(e1, e);</span>
-<span class="nc" id="L210">				edgeRef.set(e2, e);</span>
-<span class="nc" id="L211">				twin.set(e1, e2);</span>
-<span class="nc" id="L212">				twin.set(e2, e1);</span>
-<span class="nc" id="L213">				int cap = net.getCapacityInt(e);</span>
-<span class="nc" id="L214">				capacity.set(e1, cap);</span>
-<span class="nc" id="L215">				capacity.set(e2, cap);</span>
-<span class="nc" id="L216">				flow.set(e1, 0);</span>
-<span class="nc" id="L217">				flow.set(e2, cap);</span>
-<span class="nc" id="L218">			}</span>
+<span class="fc bfc" id="L205" title="All 4 branches covered.">				if (u == sink || v == source)</span>
+<span class="fc" id="L206">					continue;</span>
+<span class="fc" id="L207">				int e1 = g.addEdge(u, v);</span>
+<span class="fc" id="L208">				int e2 = g.addEdge(v, u);</span>
+<span class="fc" id="L209">				edgeRef.set(e1, e);</span>
+<span class="fc" id="L210">				edgeRef.set(e2, e);</span>
+<span class="fc" id="L211">				twin.set(e1, e2);</span>
+<span class="fc" id="L212">				twin.set(e2, e1);</span>
+<span class="fc" id="L213">				int cap = net.getCapacityInt(e);</span>
+<span class="fc" id="L214">				capacity.set(e1, cap);</span>
+<span class="fc" id="L215">				capacity.set(e2, cap);</span>
+<span class="fc" id="L216">				flow.set(e1, 0);</span>
+<span class="fc" id="L217">				flow.set(e2, cap);</span>
+<span class="fc" id="L218">			}</span>
 
-<span class="nc" id="L220">			int[] backtrack = new int[n];</span>
-<span class="nc" id="L221">			BitSet visited = new BitSet(n);</span>
-<span class="nc" id="L222">			IntPriorityQueue queue = new IntArrayFIFOQueue();</span>
+<span class="fc" id="L220">			int[] backtrack = new int[n];</span>
+<span class="fc" id="L221">			BitSet visited = new BitSet(n);</span>
+<span class="fc" id="L222">			IntPriorityQueue queue = new IntArrayFIFOQueue();</span>
 
 			for (;;) {
-<span class="nc" id="L225">				queue.clear();</span>
-<span class="nc" id="L226">				visited.clear();</span>
-<span class="nc" id="L227">				visited.set(source);</span>
-<span class="nc" id="L228">				backtrack[sink] = -1;</span>
+<span class="fc" id="L225">				queue.clear();</span>
+<span class="fc" id="L226">				visited.clear();</span>
+<span class="fc" id="L227">				visited.set(source);</span>
+<span class="fc" id="L228">				backtrack[sink] = -1;</span>
 
 				// perform BFS and find a path of non saturated edges from source to sink
-<span class="nc" id="L231">				queue.enqueue(source);</span>
-<span class="nc bnc" id="L232" title="All 2 branches missed.">				bfs: while (!queue.isEmpty()) {</span>
-<span class="nc" id="L233">					int u = queue.dequeueInt();</span>
-<span class="nc bnc" id="L234" title="All 2 branches missed.">					for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
-<span class="nc" id="L235">						int e = eit.nextInt();</span>
-<span class="nc" id="L236">						int v = eit.target();</span>
+<span class="fc" id="L231">				queue.enqueue(source);</span>
+<span class="fc bfc" id="L232" title="All 2 branches covered.">				bfs: while (!queue.isEmpty()) {</span>
+<span class="fc" id="L233">					int u = queue.dequeueInt();</span>
+<span class="fc bfc" id="L234" title="All 2 branches covered.">					for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
+<span class="fc" id="L235">						int e = eit.nextInt();</span>
+<span class="fc" id="L236">						int v = eit.target();</span>
 
-<span class="nc bnc" id="L238" title="All 4 branches missed.">						if (visited.get(v) || flow.getInt(e) &gt;= capacity.getInt(e))</span>
-<span class="nc" id="L239">							continue;</span>
-<span class="nc" id="L240">						backtrack[v] = e;</span>
-<span class="nc bnc" id="L241" title="All 2 branches missed.">						if (v == sink)</span>
-<span class="nc" id="L242">							break bfs;</span>
-<span class="nc" id="L243">						visited.set(v);</span>
-<span class="nc" id="L244">						queue.enqueue(v);</span>
-<span class="nc" id="L245">					}</span>
-<span class="nc" id="L246">				}</span>
+<span class="fc bfc" id="L238" title="All 4 branches covered.">						if (visited.get(v) || flow.getInt(e) &gt;= capacity.getInt(e))</span>
+<span class="fc" id="L239">							continue;</span>
+<span class="fc" id="L240">						backtrack[v] = e;</span>
+<span class="fc bfc" id="L241" title="All 2 branches covered.">						if (v == sink)</span>
+<span class="fc" id="L242">							break bfs;</span>
+<span class="fc" id="L243">						visited.set(v);</span>
+<span class="fc" id="L244">						queue.enqueue(v);</span>
+<span class="fc" id="L245">					}</span>
+<span class="fc" id="L246">				}</span>
 
 				// no path to sink
-<span class="nc bnc" id="L249" title="All 2 branches missed.">				if (backtrack[sink] == -1)</span>
-<span class="nc" id="L250">					break;</span>
+<span class="fc bfc" id="L249" title="All 2 branches covered.">				if (backtrack[sink] == -1)</span>
+<span class="fc" id="L250">					break;</span>
 
 				// find out what is the maximum flow we can pass
-<span class="nc" id="L253">				int f = Integer.MAX_VALUE;</span>
-<span class="nc bnc" id="L254" title="All 2 branches missed.">				for (int p = sink; p != source;) {</span>
-<span class="nc" id="L255">					int e = backtrack[p];</span>
-<span class="nc" id="L256">					f = Math.min(f, capacity.getInt(e) - flow.getInt(e));</span>
-<span class="nc" id="L257">					p = g.edgeSource(e);</span>
-<span class="nc" id="L258">				}</span>
+<span class="fc" id="L253">				int f = Integer.MAX_VALUE;</span>
+<span class="fc bfc" id="L254" title="All 2 branches covered.">				for (int p = sink; p != source;) {</span>
+<span class="fc" id="L255">					int e = backtrack[p];</span>
+<span class="fc" id="L256">					f = Math.min(f, capacity.getInt(e) - flow.getInt(e));</span>
+<span class="fc" id="L257">					p = g.edgeSource(e);</span>
+<span class="fc" id="L258">				}</span>
 
 				// update flow of all edges on path
-<span class="nc bnc" id="L261" title="All 2 branches missed.">				for (int p = sink; p != source;) {</span>
-<span class="nc" id="L262">					int e = backtrack[p], rev = twin.getInt(e);</span>
-<span class="nc" id="L263">					flow.set(e, Math.min(capacity.getInt(e), flow.getInt(e) + f));</span>
-<span class="nc" id="L264">					flow.set(rev, Math.max(0, flow.getInt(rev) - f));</span>
-<span class="nc" id="L265">					p = g.edgeSource(e);</span>
-<span class="nc" id="L266">				}</span>
-<span class="nc" id="L267">			}</span>
+<span class="fc bfc" id="L261" title="All 2 branches covered.">				for (int p = sink; p != source;) {</span>
+<span class="fc" id="L262">					int e = backtrack[p], rev = twin.getInt(e);</span>
+<span class="fc" id="L263">					flow.set(e, Math.min(capacity.getInt(e), flow.getInt(e) + f));</span>
+<span class="fc" id="L264">					flow.set(rev, Math.max(0, flow.getInt(rev) - f));</span>
+<span class="fc" id="L265">					p = g.edgeSource(e);</span>
+<span class="fc" id="L266">				}</span>
+<span class="fc" id="L267">			}</span>
 
-<span class="nc bnc" id="L269" title="All 2 branches missed.">			for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
-<span class="nc" id="L270">				int e = it.nextInt();</span>
-<span class="nc" id="L271">				int u = g.edgeSource(e);</span>
-<span class="nc" id="L272">				int orig = edgeRef.getInt(e);</span>
-<span class="nc bnc" id="L273" title="All 2 branches missed.">				if (u == gOring.edgeSource(orig))</span>
-<span class="nc" id="L274">					net.setFlow(orig, flow.getInt(e));</span>
-<span class="nc" id="L275">			}</span>
-<span class="nc" id="L276">			int totalFlow = 0;</span>
-<span class="nc bnc" id="L277" title="All 2 branches missed.">			for (EdgeIter eit = g.edgesOut(source); eit.hasNext();) {</span>
-<span class="nc" id="L278">				int e = eit.nextInt();</span>
-<span class="nc" id="L279">				int orig = edgeRef.getInt(e);</span>
-<span class="nc bnc" id="L280" title="All 2 branches missed.">				if (g.edgeSource(e) == gOring.edgeSource(orig))</span>
-<span class="nc" id="L281">					totalFlow += flow.getInt(e);</span>
-<span class="nc" id="L282">			}</span>
-<span class="nc bnc" id="L283" title="All 2 branches missed.">			for (EdgeIter eit = g.edgesIn(source); eit.hasNext();) {</span>
-<span class="nc" id="L284">				int e = eit.nextInt();</span>
-<span class="nc" id="L285">				int orig = edgeRef.getInt(e);</span>
-<span class="nc bnc" id="L286" title="All 2 branches missed.">				if (g.edgeSource(e) == gOring.edgeSource(orig))</span>
+<span class="fc bfc" id="L269" title="All 2 branches covered.">			for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
+<span class="fc" id="L270">				int e = it.nextInt();</span>
+<span class="fc" id="L271">				int u = g.edgeSource(e);</span>
+<span class="fc" id="L272">				int orig = edgeRef.getInt(e);</span>
+<span class="fc bfc" id="L273" title="All 2 branches covered.">				if (u == gOring.edgeSource(orig))</span>
+<span class="fc" id="L274">					net.setFlow(orig, flow.getInt(e));</span>
+<span class="fc" id="L275">			}</span>
+<span class="fc" id="L276">			int totalFlow = 0;</span>
+<span class="fc bfc" id="L277" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(source); eit.hasNext();) {</span>
+<span class="fc" id="L278">				int e = eit.nextInt();</span>
+<span class="fc" id="L279">				int orig = edgeRef.getInt(e);</span>
+<span class="pc bpc" id="L280" title="1 of 2 branches missed.">				if (g.edgeSource(e) == gOring.edgeSource(orig))</span>
+<span class="fc" id="L281">					totalFlow += flow.getInt(e);</span>
+<span class="fc" id="L282">			}</span>
+<span class="fc bfc" id="L283" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesIn(source); eit.hasNext();) {</span>
+<span class="fc" id="L284">				int e = eit.nextInt();</span>
+<span class="fc" id="L285">				int orig = edgeRef.getInt(e);</span>
+<span class="pc bpc" id="L286" title="1 of 2 branches missed.">				if (g.edgeSource(e) == gOring.edgeSource(orig))</span>
 <span class="nc" id="L287">					totalFlow -= flow.getInt(e);</span>
-<span class="nc" id="L288">			}</span>
-<span class="nc" id="L289">			return totalFlow;</span>
+<span class="fc" id="L288">			}</span>
+<span class="fc" id="L289">			return totalFlow;</span>
 		}
 	}
 

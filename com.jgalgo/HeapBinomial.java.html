@@ -333,41 +333,38 @@ import com.jgalgo.Trees.TreeNode;
 
 	@Override
 	public void meld(Heap&lt;? extends E&gt; heap) {
-<span class="pc bpc" id="L336" title="2 of 4 branches missed.">		if (heap == this || heap.isEmpty())</span>
-<span class="nc" id="L337">			return;</span>
-<span class="pc bpc" id="L338" title="1 of 2 branches missed.">		if (!(heap instanceof HeapBinomial)) {</span>
-<span class="nc" id="L339">			super.meld(heap);</span>
-<span class="nc" id="L340">			return;</span>
-		}
-<span class="fc" id="L342">		makeSureEqualComparatorBeforeMeld(heap);</span>
+<span class="fc" id="L336">		makeSureNoMeldWithSelf(heap);</span>
+<span class="fc" id="L337">		makeSureMeldWithSameImpl(HeapBinomial.class, heap);</span>
+<span class="fc" id="L338">		makeSureEqualComparatorBeforeMeld(heap);</span>
+
 		@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L344">		HeapBinomial&lt;E&gt; h = (HeapBinomial&lt;E&gt;) heap;</span>
-<span class="fc" id="L345">		size += meld(h.roots, h.rootsLen);</span>
-<span class="fc" id="L346">	}</span>
+<span class="fc" id="L341">		HeapBinomial&lt;E&gt; h = (HeapBinomial&lt;E&gt;) heap;</span>
+<span class="fc" id="L342">		size += meld(h.roots, h.rootsLen);</span>
+<span class="fc" id="L343">	}</span>
 
 	@Override
 	public HeapReference&lt;E&gt; findMinRef() {
-<span class="pc bpc" id="L350" title="1 of 2 branches missed.">		if (isEmpty())</span>
-<span class="nc" id="L351">			throw new IllegalStateException();</span>
-<span class="fc" id="L352">		Node&lt;E&gt;[] rs = roots;</span>
-<span class="fc" id="L353">		int rsLen = rootsLen;</span>
-<span class="fc" id="L354">		Node&lt;E&gt; min = null;</span>
+<span class="pc bpc" id="L347" title="1 of 2 branches missed.">		if (isEmpty())</span>
+<span class="nc" id="L348">			throw new IllegalStateException();</span>
+<span class="fc" id="L349">		Node&lt;E&gt;[] rs = roots;</span>
+<span class="fc" id="L350">		int rsLen = rootsLen;</span>
+<span class="fc" id="L351">		Node&lt;E&gt; min = null;</span>
 
-<span class="fc bfc" id="L356" title="All 2 branches covered.">		if (c == null) {</span>
-<span class="fc bfc" id="L357" title="All 2 branches covered.">			for (int i = 0; i &lt; rsLen; i++)</span>
-<span class="fc bfc" id="L358" title="All 6 branches covered.">				if (rs[i] != null &amp;&amp; (min == null || Utils.cmpDefault(min.value, rs[i].value) &gt; 0))</span>
-<span class="fc" id="L359">					min = rs[i];</span>
+<span class="fc bfc" id="L353" title="All 2 branches covered.">		if (c == null) {</span>
+<span class="fc bfc" id="L354" title="All 2 branches covered.">			for (int i = 0; i &lt; rsLen; i++)</span>
+<span class="fc bfc" id="L355" title="All 6 branches covered.">				if (rs[i] != null &amp;&amp; (min == null || Utils.cmpDefault(min.value, rs[i].value) &gt; 0))</span>
+<span class="fc" id="L356">					min = rs[i];</span>
 		} else {
-<span class="fc bfc" id="L361" title="All 2 branches covered.">			for (int i = 0; i &lt; rsLen; i++)</span>
-<span class="fc bfc" id="L362" title="All 6 branches covered.">				if (rs[i] != null &amp;&amp; (min == null || c.compare(min.value, rs[i].value) &gt; 0))</span>
-<span class="fc" id="L363">					min = rs[i];</span>
+<span class="fc bfc" id="L358" title="All 2 branches covered.">			for (int i = 0; i &lt; rsLen; i++)</span>
+<span class="fc bfc" id="L359" title="All 6 branches covered.">				if (rs[i] != null &amp;&amp; (min == null || c.compare(min.value, rs[i].value) &gt; 0))</span>
+<span class="fc" id="L360">					min = rs[i];</span>
 		}
-<span class="fc" id="L365">		return min;</span>
+<span class="fc" id="L362">		return min;</span>
 	}
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	private static &lt;E&gt; Node&lt;E&gt;[] newArr(int n) {
-<span class="fc" id="L370">		return new Node[n];</span>
+<span class="fc" id="L367">		return new Node[n];</span>
 	}
 
 	private static class Node&lt;E&gt; implements HeapReference&lt;E&gt;, TreeNode&lt;Node&lt;E&gt;&gt; {
@@ -378,62 +375,62 @@ import com.jgalgo.Trees.TreeNode;
 		Node&lt;E&gt; child;
 		E value;
 
-<span class="fc" id="L381">		Node(E v) {</span>
-<span class="fc" id="L382">			parent = null;</span>
-<span class="fc" id="L383">			next = null;</span>
-<span class="fc" id="L384">			prev = null;</span>
-<span class="fc" id="L385">			child = null;</span>
-<span class="fc" id="L386">			value = v;</span>
-<span class="fc" id="L387">		}</span>
+<span class="fc" id="L378">		Node(E v) {</span>
+<span class="fc" id="L379">			parent = null;</span>
+<span class="fc" id="L380">			next = null;</span>
+<span class="fc" id="L381">			prev = null;</span>
+<span class="fc" id="L382">			child = null;</span>
+<span class="fc" id="L383">			value = v;</span>
+<span class="fc" id="L384">		}</span>
 
 		@Override
 		public E get() {
-<span class="fc" id="L391">			return value;</span>
+<span class="fc" id="L388">			return value;</span>
 		}
 
 		@Override
 		public Node&lt;E&gt; parent() {
-<span class="fc" id="L396">			return parent;</span>
+<span class="fc" id="L393">			return parent;</span>
 		}
 
 		@Override
 		public Node&lt;E&gt; next() {
-<span class="fc" id="L401">			return next;</span>
+<span class="fc" id="L398">			return next;</span>
 		}
 
 		@Override
 		public Node&lt;E&gt; prev() {
-<span class="nc" id="L406">			return prev;</span>
+<span class="nc" id="L403">			return prev;</span>
 		}
 
 		@Override
 		public Node&lt;E&gt; child() {
-<span class="fc" id="L411">			return child;</span>
+<span class="fc" id="L408">			return child;</span>
 		}
 
 		@Override
 		public void setParent(Node&lt;E&gt; x) {
-<span class="fc" id="L416">			parent = x;</span>
-<span class="fc" id="L417">		}</span>
+<span class="fc" id="L413">			parent = x;</span>
+<span class="fc" id="L414">		}</span>
 
 		@Override
 		public void setNext(Node&lt;E&gt; x) {
-<span class="fc" id="L421">			next = x;</span>
-<span class="fc" id="L422">		}</span>
+<span class="fc" id="L418">			next = x;</span>
+<span class="fc" id="L419">		}</span>
 
 		@Override
 		public void setPrev(Node&lt;E&gt; x) {
-<span class="fc" id="L426">			prev = x;</span>
-<span class="fc" id="L427">		}</span>
+<span class="fc" id="L423">			prev = x;</span>
+<span class="fc" id="L424">		}</span>
 
 		@Override
 		public void setChild(Node&lt;E&gt; x) {
-<span class="fc" id="L431">			child = x;</span>
-<span class="fc" id="L432">		}</span>
+<span class="fc" id="L428">			child = x;</span>
+<span class="fc" id="L429">		}</span>
 
 		@Override
 		public String toString() {
-<span class="nc" id="L436">			return &quot;{&quot; + value + &quot;}&quot;;</span>
+<span class="nc" id="L433">			return &quot;{&quot; + value + &quot;}&quot;;</span>
 		}
 
 	}
@@ -442,26 +439,26 @@ import com.jgalgo.Trees.TreeNode;
 
 		private int nextRootIdx;
 
-<span class="fc" id="L445">		Itr() {</span>
-<span class="fc" id="L446">			super(null);</span>
-<span class="fc" id="L447">			nextRootIdx = 0;</span>
-<span class="fc" id="L448">		}</span>
+<span class="fc" id="L442">		Itr() {</span>
+<span class="fc" id="L443">			super(null);</span>
+<span class="fc" id="L444">			nextRootIdx = 0;</span>
+<span class="fc" id="L445">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="fc bfc" id="L452" title="All 2 branches covered.">			while (!super.hasNext()) {</span>
-<span class="fc bfc" id="L453" title="All 2 branches covered.">				if (nextRootIdx &gt;= rootsLen)</span>
-<span class="fc" id="L454">					return false;</span>
+<span class="fc bfc" id="L449" title="All 2 branches covered.">			while (!super.hasNext()) {</span>
+<span class="fc bfc" id="L450" title="All 2 branches covered.">				if (nextRootIdx &gt;= rootsLen)</span>
+<span class="fc" id="L451">					return false;</span>
 				int i;
-<span class="fc bfc" id="L456" title="All 2 branches covered.">				for (i = nextRootIdx; i &lt; rootsLen; i++) {</span>
-<span class="fc bfc" id="L457" title="All 2 branches covered.">					if (roots[i] != null) {</span>
-<span class="fc" id="L458">						reset(roots[i]);</span>
-<span class="fc" id="L459">						break;</span>
+<span class="fc bfc" id="L453" title="All 2 branches covered.">				for (i = nextRootIdx; i &lt; rootsLen; i++) {</span>
+<span class="fc bfc" id="L454" title="All 2 branches covered.">					if (roots[i] != null) {</span>
+<span class="fc" id="L455">						reset(roots[i]);</span>
+<span class="fc" id="L456">						break;</span>
 					}
 				}
-<span class="fc" id="L462">				nextRootIdx = i + 1;</span>
-<span class="fc" id="L463">			}</span>
-<span class="fc" id="L464">			return true;</span>
+<span class="fc" id="L459">				nextRootIdx = i + 1;</span>
+<span class="fc" id="L460">			}</span>
+<span class="fc" id="L461">			return true;</span>
 		}
 
 	}
