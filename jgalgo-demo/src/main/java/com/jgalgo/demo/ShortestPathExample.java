@@ -22,9 +22,9 @@ import com.jgalgo.Weights;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 
-public class ReadmeExample {
+public class ShortestPathExample {
 
-	public static void readmeExample() {
+	public static void shortestPathExample() {
 		/* Create a directed graph with three vertices and edges between them */
 		Graph g = Graph.newBuilderDirected().build();
 		int v1 = g.addVertex();
@@ -44,20 +44,22 @@ public class ReadmeExample {
 		SSSP ssspAlgo = SSSP.newBuilder().build();
 		SSSP.Result ssspRes = ssspAlgo.computeShortestPaths(g, w, v1);
 
-		/* Print the shortest path from v1 to v3 */
 		assert ssspRes.distance(v3) == 4.3;
 		assert ssspRes.getPath(v3).equals(IntList.of(e1, e2));
 		System.out.println("Distance from v1 to v3 is: " + ssspRes.distance(v3));
+
+		/* Print the shortest path from v1 to v3 */
 		System.out.println("The shortest path from v1 to v3 is:");
 		for (IntIterator it = ssspRes.getPath(v3).iterator(); it.hasNext();) {
 			int e = it.nextInt();
-			int u = g.edgeSource(e), v = g.edgeTarget(e);
+			int u = g.edgeSource(e);
+			int v = g.edgeTarget(e);
 			System.out.println(" " + e + "(" + u + ", " + v + ")");
 		}
 	}
 
 	public static void main(String[] args) {
-		readmeExample();
+		shortestPathExample();
 	}
 
 }

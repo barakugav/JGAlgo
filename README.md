@@ -46,14 +46,16 @@ w.set(e3, 15.1);
 SSSP ssspAlgo = SSSP.newBuilder().build();
 SSSP.Result ssspRes = ssspAlgo.computeShortestPaths(g, w, v1);
 
-/* Print the shortest path from v1 to v3 */
 assert ssspRes.distance(v3) == 4.3;
-assert ssspRes.getPathTo(v3).equals(IntList.of(e1, e2));
+assert ssspRes.getPath(v3).equals(IntList.of(e1, e2));
 System.out.println("Distance from v1 to v3 is: " + ssspRes.distance(v3));
+
+/* Print the shortest path from v1 to v3 */
 System.out.println("The shortest path from v1 to v3 is:");
-for (IntIterator it = ssspRes.getPathTo(v3).iterator(); it.hasNext();) {
+for (IntIterator it = ssspRes.getPath(v3).iterator(); it.hasNext();) {
 	int e = it.nextInt();
-	int u = g.edgeSource(e), v = g.edgeTarget(e);
+	int u = g.edgeSource(e);
+	int v = g.edgeTarget(e);
 	System.out.println(" " + e + "(" + u + ", " + v + ")");
 }
 ```

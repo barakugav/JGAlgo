@@ -22,6 +22,39 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 public class BfsDfsExample {
 
+	public static void BFSExample() {
+		/* Create a graph and choose an arbitrary source vertex */
+		Graph g = createGraph();
+		int source = g.vertices().iterator().nextInt();
+
+		/* Iterate over the graph vertices in a breadth-first search (BFS) order */
+		for (BFSIter iter = new BFSIter(g, source); iter.hasNext();) {
+			/* v is a vertex the iterator didn't visit before */
+			int v = iter.nextInt();
+			/* e is the edge used to reach v */
+			/* In a directed graph, v is the 'target' of e */
+			int e = iter.inEdge();
+			/* the layer is the distance of v from the source vertex */
+			int layer = iter.layer();
+			System.out.println("BFS reached vertex " + v + " at layer " + layer + " using edge " + e);
+		}
+	}
+
+	public static void DFSExample() {
+		/* Create a graph and choose an arbitrary source vertex */
+		Graph g = createGraph();
+		int source = g.vertices().iterator().nextInt();
+
+		/* Iterate over the graph vertices in a depth-first search (DFS) order */
+		for (DFSIter iter = new DFSIter(g, source); iter.hasNext();) {
+			/* v is a vertex the iterator didn't visit before */
+			int v = iter.nextInt();
+			/* edgePath is a list of edges, forming a path from the source to v */
+			IntList edgePath = iter.edgePath();
+			System.out.println("Reached vertex " + v + " using the edges: " + edgePath);
+		}
+	}
+
 	public static Graph createGraph() {
 		Graph g = Graph.newBuilderUndirected().build();
 		int v1 = g.addVertex();
@@ -40,29 +73,6 @@ public class BfsDfsExample {
 		g.addEdge(v3, v4);
 
 		return g;
-	}
-
-	public static void BFSExample() {
-		Graph g = createGraph();
-		int source = g.vertices().iterator().nextInt();
-
-		for (BFSIter iter = new BFSIter(g, source); iter.hasNext();) {
-			int v = iter.nextInt();
-			int e = iter.inEdge();
-			int layer = iter.layer();
-			System.out.println("BFS reached vertex " + v + " at layer " + layer + " using edge " + e);
-		}
-	}
-
-	public static void DFSExample() {
-		Graph g = createGraph();
-		int source = g.vertices().iterator().nextInt();
-
-		for (DFSIter iter = new DFSIter(g, source); iter.hasNext();) {
-			int v = iter.nextInt();
-			IntList edgePath = iter.edgePath();
-			System.out.println("Reached vertex " + v + " using the edges: " + edgePath);
-		}
 	}
 
 	public static void main(String[] args) {

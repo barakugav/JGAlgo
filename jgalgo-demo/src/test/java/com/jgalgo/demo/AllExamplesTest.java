@@ -21,14 +21,40 @@ import org.junit.jupiter.api.Test;
 public class AllExamplesTest {
 
 	@Test
-	public void ReadmeExample() {
-		ReadmeExample.readmeExample();
+	public void ShortestPathExample() {
+		ShortestPathExample.shortestPathExample();
 	}
 
 	@Test
 	public void BfsDfsExample() {
 		BfsDfsExample.BFSExample();
 		BfsDfsExample.DFSExample();
+	}
+
+	@Test
+	public void ColoringExample() {
+		ColoringExample.coloringExample();
+	}
+
+	@Test
+	public void EdgeIterationExample() {
+		EdgeIterationExample.edgeIterationExample();
+	}
+
+	@Test
+	public void MinimumSpanningTreeExample() {
+		MinimumSpanningTreeExample.MSTExample();
+	}
+
+	@Test
+	public void MaximumMatchingExample() {
+		MaximumMatchingExample.maximumMatchingExample();
+	}
+
+	@Test
+	public void LowestCommonAncestorExample() {
+		LowestCommonAncestorExample.staticLCAExample();
+		LowestCommonAncestorExample.dynamicLCAExample();
 	}
 
 }
