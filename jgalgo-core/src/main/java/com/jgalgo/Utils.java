@@ -90,6 +90,28 @@ class Utils {
 		};
 	}
 
+	static class RangeIter implements IntIterator {
+
+		private int idx;
+		private final int size;
+
+		RangeIter(int size) {
+			this.size = size;
+		}
+
+		@Override
+		public boolean hasNext() {
+			return idx < size;
+		}
+
+		@Override
+		public int nextInt() {
+			if (!hasNext())
+				throw new NoSuchElementException();
+			return idx++;
+		}
+	}
+
 	static interface IterPeekable<E> extends Iterator<E> {
 
 		E peekNext();

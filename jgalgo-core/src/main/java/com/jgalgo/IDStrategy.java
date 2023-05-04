@@ -17,11 +17,9 @@
 package com.jgalgo;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
-
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -87,21 +85,7 @@ public abstract class IDStrategy {
 
 				@Override
 				public IntIterator iterator() {
-					return new IntIterator() {
-						int u = 0;
-
-						@Override
-						public boolean hasNext() {
-							return u < size();
-						}
-
-						@Override
-						public int nextInt() {
-							if (!hasNext())
-								throw new NoSuchElementException();
-							return u++;
-						}
-					};
+					return new Utils.RangeIter(size());
 				}
 			};
 		}

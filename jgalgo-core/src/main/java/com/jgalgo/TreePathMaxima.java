@@ -50,6 +50,7 @@ public interface TreePathMaxima {
 	 *                     tree.
 	 * @return         array of edges in the same size as the queries container, where the edge in the {@code i}-th
 	 *                 entry is the heaviest edge in the tree path between the two vertices of the {@code i}'th query.
+	 *                 If there is no such path in the tree, a value of {@code -1} will be used
 	 */
 	public int[] computeHeaviestEdgeInTreePaths(Graph tree, EdgeWeightFunc w, TreePathMaxima.Queries queries);
 
@@ -142,9 +143,9 @@ public interface TreePathMaxima {
 	/**
 	 * Verify that the given edges actually form an MST of a graph.
 	 * <p>
-	 * The verification is done by computing for each original edge in the graph the maximum edge in the given MST. If
-	 * all of the edges which are not in the MST have a greater weight than the maximum one in the path of the MST, the
-	 * MST is valid.
+	 * The verification is done by computing for each original edge \((u, v)\) in the graph the heaviest edge on the
+	 * path from \(u\) to \(v\) in the given spanning tree. If all of the edges which are not in the MST have a greater
+	 * weight than the maximum one in the path of the MST, the MST is valid.
 	 *
 	 * @param  g                        an undirected graph
 	 * @param  w                        an edge weight function
@@ -168,12 +169,12 @@ public interface TreePathMaxima {
 		if (!Trees.isTree(mst))
 			return false;
 
-		EdgeWeightFunc w0 = e -> w.weight(edgeRef.getInt(e));
 		TreePathMaxima.Queries queries = new TreePathMaxima.Queries();
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			queries.addQuery(g.edgeSource(e), g.edgeTarget(e));
 		}
+		EdgeWeightFunc w0 = e -> w.weight(edgeRef.getInt(e));
 		int[] tpmResults = tpmAlgo.computeHeaviestEdgeInTreePaths(mst, w0, queries);
 
 		int i = 0;

@@ -36,9 +36,9 @@ public interface TSPMetric {
 	 * Note that this problem is NP-hard and therefore the result is only the best approximation the implementation
 	 * could find.
 	 *
-	 * @param  distances n x n table of distances between each two points. In the metric world every three vertices
-	 *                       u,v,w should satisfy \(d[u,v] + d[v,w] \leq d[u,w]$
-	 * @return           list of the n vertices ordered by the calculated path
+	 * @param  distances \(n \times n\) table of distances between each two points. In the metric world every three
+	 *                       vertices \(u,v,w\) should satisfy \(d[u,v] + d[v,w] \leq d[u,w]$
+	 * @return           list of the \(n\) vertices ordered by the calculated path
 	 */
 	public int[] computeShortestTour(double[][] distances);
 

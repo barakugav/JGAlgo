@@ -25,6 +25,8 @@ import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntIterators;
 import it.unimi.dsi.fastutil.ints.IntStack;
 
 /**
@@ -66,7 +68,7 @@ public class Trees {
 	 * @return      {@code true} if the graph is a tree rooted at {@code root}, else {@code false}.
 	 */
 	public static boolean isTree(Graph g, int root) {
-		return isForest(g, new int[] { root });
+		return isForest(g, IntIterators.singleton(root));
 	}
 
 	/**
@@ -80,11 +82,7 @@ public class Trees {
 	 * @return   {@code true} if the graph is a forest, else {@code false}
 	 */
 	public static boolean isForest(Graph g) {
-		int n = g.vertices().size();
-		int[] roots = new int[n];
-		for (int u = 0; u < n; u++)
-			roots[u] = u;
-		return isForest(g, roots, true);
+		return isForest(g, g.vertices().iterator(), true);
 	}
 
 	/**
@@ -100,11 +98,11 @@ public class Trees {
 	 * @param  roots a set of roots
 	 * @return       true if the graph is a forest rooted at the given roots.
 	 */
-	public static boolean isForest(Graph g, int[] roots) {
+	private static boolean isForest(Graph g, IntIterator roots) {
 		return isForest(g, roots, false);
 	}
 
-	private static boolean isForest(Graph g, int[] roots, boolean allowVisitedRoot) {
+	private static boolean isForest(Graph g, IntIterator roots, boolean allowVisitedRoot) {
 		int n = g.vertices().size();
 		if (n == 0)
 			return true;
@@ -117,8 +115,8 @@ public class Trees {
 		IntStack stack = new IntArrayList();
 		int visitedCount = 0;
 
-		for (int i = 0; i < roots.length; i++) {
-			int root = roots[i];
+		while (roots.hasNext()) {
+			int root = roots.nextInt();
 			if (visited.get(root)) {
 				if (allowVisitedRoot)
 					continue;
