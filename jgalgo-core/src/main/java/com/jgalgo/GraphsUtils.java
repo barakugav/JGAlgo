@@ -16,8 +16,6 @@
 
 package com.jgalgo;
 
-import java.util.Collections;
-import it.unimi.dsi.fastutil.ints.Int2ObjectFunction;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
@@ -51,83 +49,83 @@ class GraphsUtils {
 		return degree;
 	}
 
-	static String formatAdjacencyMatrix(Graph g) {
-		return formatAdjacencyMatrix(g, e -> e == -1 ? "0" : "1");
-	}
+	// static String formatAdjacencyMatrix(Graph g) {
+	// return formatAdjacencyMatrix(g, e -> e == -1 ? "0" : "1");
+	// }
 
-	static String formatAdjacencyMatrixWeighted(Graph g, EdgeWeightFunc w) {
-		double minWeight = Double.MAX_VALUE;
-		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-			int e = it.nextInt();
-			double ew = w.weight(e);
-			if (ew < minWeight)
-				minWeight = ew;
-		}
+	// static String formatAdjacencyMatrixWeighted(Graph g, EdgeWeightFunc w) {
+	// double minWeight = Double.MAX_VALUE;
+	// for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+	// int e = it.nextInt();
+	// double ew = w.weight(e);
+	// if (ew < minWeight)
+	// minWeight = ew;
+	// }
 
-		int unlimitedPrecision = 64;
-		int precision = minWeight >= 1 ? 2 : Math.min(unlimitedPrecision, (int) -Math.log10(minWeight));
+	// int unlimitedPrecision = 64;
+	// int precision = minWeight >= 1 ? 2 : Math.min(unlimitedPrecision, (int) -Math.log10(minWeight));
 
-		return precision == unlimitedPrecision
-				? formatAdjacencyMatrix(g, e -> e == -1 ? "-" : Double.toString(w.weight(e)))
-				: formatAdjacencyMatrix(g,
-						e -> e == -1 ? "-" : String.format("%." + precision + "f", Double.valueOf(w.weight(e))));
-	}
+	// return precision == unlimitedPrecision
+	// ? formatAdjacencyMatrix(g, e -> e == -1 ? "-" : Double.toString(w.weight(e)))
+	// : formatAdjacencyMatrix(g,
+	// e -> e == -1 ? "-" : String.format("%." + precision + "f", Double.valueOf(w.weight(e))));
+	// }
 
-	static String formatAdjacencyMatrixWeightedInt(Graph g, EdgeWeightFunc.Int w) {
-		return formatAdjacencyMatrix(g, e -> e == -1 ? "-" : Integer.toString(w.weightInt(e)));
-	}
+	// static String formatAdjacencyMatrixWeightedInt(Graph g, EdgeWeightFunc.Int w) {
+	// return formatAdjacencyMatrix(g, e -> e == -1 ? "-" : Integer.toString(w.weightInt(e)));
+	// }
 
-	static String formatAdjacencyMatrix(Graph g, Int2ObjectFunction<String> formatter) {
-		int n = g.vertices().size();
-		if (n == 0)
-			return "[]";
+	// static String formatAdjacencyMatrix(Graph g, Int2ObjectFunction<String> formatter) {
+	// int n = g.vertices().size();
+	// if (n == 0)
+	// return "[]";
 
-		/* format all edges */
-		String[][] strs = new String[n][n];
-		for (int u = 0; u < n; u++) {
-			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
-				int e = eit.nextInt();
-				strs[u][eit.target()] = formatter.apply(e);
-			}
-		}
+	// /* format all edges */
+	// String[][] strs = new String[n][n];
+	// for (int u = 0; u < n; u++) {
+	// for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
+	// int e = eit.nextInt();
+	// strs[u][eit.target()] = formatter.apply(e);
+	// }
+	// }
 
-		/* calculate cell size */
-		int maxStr = 0;
-		for (int u = 0; u < n; u++) {
-			for (int v = 0; v < n; v++) {
-				if (strs[u][v] == null)
-					strs[u][v] = formatter.apply(null);
-				if (strs[u][v].length() > maxStr)
-					maxStr = strs[u][v].length();
-			}
-		}
-		int vertexLabelCellSize = String.valueOf(n - 1).length() + 1;
-		int cellSize = Math.max(maxStr + 1, vertexLabelCellSize);
+	// /* calculate cell size */
+	// int maxStr = 0;
+	// for (int u = 0; u < n; u++) {
+	// for (int v = 0; v < n; v++) {
+	// if (strs[u][v] == null)
+	// strs[u][v] = formatter.apply(null);
+	// if (strs[u][v].length() > maxStr)
+	// maxStr = strs[u][v].length();
+	// }
+	// }
+	// int vertexLabelCellSize = String.valueOf(n - 1).length() + 1;
+	// int cellSize = Math.max(maxStr + 1, vertexLabelCellSize);
 
-		/* format header row */
-		StringBuilder s = new StringBuilder();
-		s.append(strMult(" ", vertexLabelCellSize));
-		for (int v = 0; v < n; v++)
-			s.append(String.format("% " + cellSize + "d", Integer.valueOf(v)));
-		s.append('\n');
+	// /* format header row */
+	// StringBuilder s = new StringBuilder();
+	// s.append(strMult(" ", vertexLabelCellSize));
+	// for (int v = 0; v < n; v++)
+	// s.append(String.format("% " + cellSize + "d", Integer.valueOf(v)));
+	// s.append('\n');
 
-		/* format adjacency matrix */
-		for (int u = 0; u < n; u++) {
-			s.append(String.format("% " + vertexLabelCellSize + "d", Integer.valueOf(u)));
-			for (int v = 0; v < n; v++) {
-				if (strs[u][v].length() < cellSize)
-					s.append(strMult(" ", cellSize - strs[u][v].length()));
-				s.append(strs[u][v]);
-			}
-			s.append('\n');
-		}
+	// /* format adjacency matrix */
+	// for (int u = 0; u < n; u++) {
+	// s.append(String.format("% " + vertexLabelCellSize + "d", Integer.valueOf(u)));
+	// for (int v = 0; v < n; v++) {
+	// if (strs[u][v].length() < cellSize)
+	// s.append(strMult(" ", cellSize - strs[u][v].length()));
+	// s.append(strs[u][v]);
+	// }
+	// s.append('\n');
+	// }
 
-		return s.toString();
-	}
+	// return s.toString();
+	// }
 
-	private static String strMult(String s, int n) {
-		return String.join("", Collections.nCopies(n, s));
-	}
+	// private static String strMult(String s, int n) {
+	// return String.join("", Collections.nCopies(n, s));
+	// }
 
 	static Graph referenceGraph(Graph g, Object refEdgeWeightKey) {
 		if (g.getCapabilities().directed()) {
