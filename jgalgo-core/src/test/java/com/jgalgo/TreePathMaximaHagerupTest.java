@@ -29,7 +29,7 @@ public class TreePathMaximaHagerupTest extends TestBase {
 	@Test
 	public void testTPMWithBitsLookupTable() {
 		final long seed = 0xc45d80515d512726L;
-		TreePathMaximaTestUtils.testTPM(new TreePathMaximaHagerup(), seed);
+		TreePathMaximaTestUtils.testTPM(withBitsLookupTable(), seed);
 	}
 
 	@Test
@@ -41,7 +41,7 @@ public class TreePathMaximaHagerupTest extends TestBase {
 	@Test
 	public void testVerifyMSTPositiveWithBitsLookupTable() {
 		final long seed = 0x3c8c940744e2342dL;
-		TreePathMaximaTestUtils.verifyMSTPositive(new TreePathMaximaHagerup(), seed);
+		TreePathMaximaTestUtils.verifyMSTPositive(withBitsLookupTable(), seed);
 	}
 
 	@Test
@@ -53,7 +53,13 @@ public class TreePathMaximaHagerupTest extends TestBase {
 	@Test
 	public void testVerifyMSTNegativeWithBitsLookupTable() {
 		final long seed = 0x8b0cceccd638a612L;
-		TreePathMaximaTestUtils.verifyMSTNegative(new TreePathMaximaHagerup(), seed);
+		TreePathMaximaTestUtils.verifyMSTNegative(withBitsLookupTable(), seed);
+	}
+
+	private static TreePathMaximaHagerup withBitsLookupTable() {
+		TreePathMaximaHagerup tmp = new TreePathMaximaHagerup();
+		tmp.setBitsLookupTablesEnable(true);
+		return tmp;
 	}
 
 }
