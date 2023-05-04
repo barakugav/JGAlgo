@@ -73,7 +73,7 @@ public class ColoringGreedyRandom implements Coloring {
 			usedColors.clear();
 			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 				eit.nextInt();
-				int v = eit.v();
+				int v = eit.target();
 				int c = res.colorOf(v);
 				if (c != -1)
 					usedColors.add(c);

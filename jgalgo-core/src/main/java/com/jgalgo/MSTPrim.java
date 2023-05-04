@@ -87,7 +87,7 @@ public class MSTPrim implements MST {
 				/* decrease edges keys if a better one is found */
 				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 					int e = eit.nextInt();
-					int v = eit.v();
+					int v = eit.target();
 					if (visited.get(v))
 						continue;
 

@@ -245,12 +245,12 @@ public class GraphLinkedUndirected extends GraphLinkedAbstract implements Undire
 		}
 
 		@Override
-		public int u() {
+		public int source() {
 			return u;
 		}
 
 		@Override
-		public int v() {
+		public int target() {
 			int u0 = last.u, v0 = last.v;
 			return u == u0 ? v0 : u0;
 		}

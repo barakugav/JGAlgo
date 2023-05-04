@@ -203,7 +203,7 @@ public class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeig
 				double weight = w.weight(e);
 				if (weight < 0)
 					continue; // no reason to match negative edges
-				int e0 = g0.addEdge(u, eit.v());
+				int e0 = g0.addEdge(u, eit.target());
 				edgeRef.set(e0, new Ref(e, weight));
 			}
 		}

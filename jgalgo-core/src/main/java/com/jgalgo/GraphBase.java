@@ -58,7 +58,7 @@ abstract class GraphBase implements Graph {
 					return true;
 				while (it.hasNext()) {
 					int eNext = it.nextInt();
-					if (it.v() == v) {
+					if (it.target() == v) {
 						e = eNext;
 						return true;
 					}
@@ -83,12 +83,12 @@ abstract class GraphBase implements Graph {
 			}
 
 			@Override
-			public int u() {
+			public int source() {
 				return u;
 			}
 
 			@Override
-			public int v() {
+			public int target() {
 				return v;
 			}
 		};
@@ -193,7 +193,7 @@ abstract class GraphBase implements Graph {
 			boolean firstEdge = true;
 			for (EdgeIter eit = edgesOut(u); eit.hasNext();) {
 				int e = eit.nextInt();
-				int v = eit.v();
+				int v = eit.target();
 				if (firstEdge)
 					firstEdge = false;
 				else

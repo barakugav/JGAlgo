@@ -222,7 +222,7 @@ class GraphsTestUtils extends TestUtils {
 
 								for (EdgeIter eit = g.edgesOut(p); eit.hasNext();) {
 									eit.nextInt();
-									int pv = eit.v();
+									int pv = eit.target();
 									if (reachableFromRoot.get(pv))
 										continue;
 									reachableFromRoot.set(pv);
@@ -244,13 +244,13 @@ class GraphsTestUtils extends TestUtils {
 	}
 
 	static Graph randTree(int n, long seed) {
-		return new RandomGraphBuilder(seed).n(n).m(n - 1).directed(false).selfEdges(false).cycles(false)
-				.connected(true).build();
+		return new RandomGraphBuilder(seed).n(n).m(n - 1).directed(false).selfEdges(false).cycles(false).connected(true)
+				.build();
 	}
 
 	static Graph randForest(int n, int m, long seed) {
-		return new RandomGraphBuilder(seed).n(n).m(m).directed(false).selfEdges(false).cycles(false)
-				.connected(false).build();
+		return new RandomGraphBuilder(seed).n(n).m(m).directed(false).selfEdges(false).cycles(false).connected(false)
+				.build();
 	}
 
 	static Weights.Double assignRandWeights(Graph g, long seed) {
@@ -299,8 +299,8 @@ class GraphsTestUtils extends TestUtils {
 	}
 
 	static Graph randGraph(int n, int m, long seed) {
-		return new RandomGraphBuilder(seed).n(n).m(m).directed(false).parallelEdges(false).selfEdges(false)
-				.cycles(true).connected(false).build();
+		return new RandomGraphBuilder(seed).n(n).m(m).directed(false).parallelEdges(false).selfEdges(false).cycles(true)
+				.connected(false).build();
 	}
 
 }

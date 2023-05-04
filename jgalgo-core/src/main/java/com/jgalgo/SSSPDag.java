@@ -55,7 +55,7 @@ public class SSSPDag implements SSSP {
 			}
 			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 				int e = eit.nextInt();
-				int v = eit.v();
+				int v = eit.target();
 				double d = res.distances[u] + w.weight(e);
 				if (d < res.distances[v]) {
 					res.distances[v] = d;

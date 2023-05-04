@@ -61,7 +61,7 @@ class MinimumCutSTBuilderImpl {
 
 					for (EdgeIter it = g.edgesOut(u); it.hasNext();) {
 						int e = it.nextInt();
-						int v = it.v();
+						int v = it.target();
 						if (visited.get(v))
 							continue;
 						if (Math.abs(net.getCapacity(e) - net.getFlow(e)) < eps)
@@ -78,7 +78,7 @@ class MinimumCutSTBuilderImpl {
 						 */
 						for (EdgeIter it = g.edgesIn(u); it.hasNext();) {
 							int e = it.nextInt();
-							int v = it.u();
+							int v = it.source();
 							if (visited.get(v))
 								continue;
 							if (net.getFlow(e) < eps)

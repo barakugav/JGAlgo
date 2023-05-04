@@ -72,7 +72,7 @@ class EulerianTourImpl implements EulerianTourAlgorithm {
 						break findCycle;
 					e = iter.nextInt();
 					if (!usedEdges.getBool(e)) {
-						v = iter.v();
+						v = iter.target();
 						break;
 					}
 				}
@@ -101,7 +101,7 @@ class EulerianTourImpl implements EulerianTourAlgorithm {
 		int d = 0;
 		for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 			eit.nextInt();
-			if (eit.v() != u)
+			if (eit.target() != u)
 				d++;
 		}
 		return d;
@@ -159,7 +159,7 @@ class EulerianTourImpl implements EulerianTourAlgorithm {
 						break findCycle;
 					e = iter.nextInt();
 					if (!usedEdges.getBool(e)) {
-						v = iter.v();
+						v = iter.target();
 						break;
 					}
 				}

@@ -352,7 +352,7 @@ class DynamicTreeSplayInt implements DynamicTree {
 		}
 
 		@Override
-		public SplayNode u() {
+		public SplayNode source() {
 			return u;
 		}
 

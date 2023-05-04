@@ -102,12 +102,12 @@ abstract class GraphTableAbstract extends GraphBaseContinues {
 				}
 
 				@Override
-				public int u() {
+				public int source() {
 					return u;
 				}
 
 				@Override
-				public int v() {
+				public int target() {
 					return v;
 				}
 			};
@@ -251,18 +251,18 @@ abstract class GraphTableAbstract extends GraphBaseContinues {
 		}
 
 		@Override
-		public int u() {
+		public int source() {
 			return u;
 		}
 
 		@Override
-		public int v() {
+		public int target() {
 			return lastV;
 		}
 
 		@Override
 		public void remove() {
-			removeEdge(edges[u()][v()]);
+			removeEdge(edges[source()][target()]);
 		}
 	}
 
@@ -312,18 +312,18 @@ abstract class GraphTableAbstract extends GraphBaseContinues {
 		}
 
 		@Override
-		public int u() {
+		public int source() {
 			return lastU;
 		}
 
 		@Override
-		public int v() {
+		public int target() {
 			return v;
 		}
 
 		@Override
 		public void remove() {
-			removeEdge(edges[u()][v()]);
+			removeEdge(edges[source()][target()]);
 		}
 	}
 

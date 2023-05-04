@@ -1073,7 +1073,7 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 			double Yu = delta + dualVal(u);
 			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 				int e = eit.nextInt();
-				int v = eit.v();
+				int v = eit.target();
 				if (isEven(v))
 					continue;
 				double slackBar = Yu + vertexDualValBase[v] - w.weight(e);
@@ -1100,7 +1100,7 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 			double Yu = delta + dualVal(u);
 			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 				final int e = eit.nextInt();
-				int v = eit.v();
+				int v = eit.target();
 				if (!isEven(v))
 					continue;
 				Blossom V = find0(v);

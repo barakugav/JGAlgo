@@ -85,7 +85,7 @@ public class ColoringRecursiveLargestFirst implements Coloring {
 				// update info
 				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 					eit.nextInt();
-					int v = eit.v();
+					int v = eit.target();
 					if (res.colorOf(v) != -1)
 						continue;
 					isAdjacentToS.set(v);
@@ -99,7 +99,7 @@ public class ColoringRecursiveLargestFirst implements Coloring {
 					int numOfNeighborsAdjacentToS = 0;
 					for (EdgeIter eit = g.edgesOut(v); eit.hasNext();) {
 						eit.nextInt();
-						int w = eit.v();
+						int w = eit.target();
 						if (isAdjacentToS.get(w))
 							numOfNeighborsAdjacentToS++;
 					}
@@ -120,7 +120,7 @@ public class ColoringRecursiveLargestFirst implements Coloring {
 				// update degree to include only vertices without color
 				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 					eit.nextInt();
-					degree[eit.v()]--;
+					degree[eit.target()]--;
 				}
 			}
 		}

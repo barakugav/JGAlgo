@@ -44,7 +44,7 @@ public class MDSTTarjanTest extends TestBase {
 			for (int u = 0; u < n; u++) {
 				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 					int e = eit.nextInt();
-					int v = eit.v();
+					int v = eit.target();
 					edgeRef.set(dg.addEdge(u, v), e);
 					edgeRef.set(dg.addEdge(v, u), e);
 				}

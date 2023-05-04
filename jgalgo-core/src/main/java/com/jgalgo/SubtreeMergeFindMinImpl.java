@@ -459,12 +459,12 @@ public class SubtreeMergeFindMinImpl<E> implements SubtreeMergeFindMin<E> {
 		}
 
 		@Override
-		public Node u() {
+		public Node source() {
 			return u;
 		}
 
 		@Override
-		public Node v() {
+		public Node target() {
 			return v;
 		}
 

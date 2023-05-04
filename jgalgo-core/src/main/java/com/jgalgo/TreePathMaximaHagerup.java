@@ -321,7 +321,7 @@ public class TreePathMaximaHagerup implements TreePathMaxima {
 					int U = vNext[u];
 					for (EdgeIter eit = G.edgesOut(u); eit.hasNext();) {
 						int e = eit.nextInt();
-						int V = vNext[eit.v()];
+						int V = vNext[eit.target()];
 						if (U != V) {
 							int E = gNext.addEdge(U, V);
 							gNextData.set(E, GData.getInt(e));

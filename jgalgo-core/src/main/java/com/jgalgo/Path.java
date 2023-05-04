@@ -149,12 +149,12 @@ public class Path extends AbstractIntList {
 		}
 
 		@Override
-		public int u() {
+		public int source() {
 			return g.edgeEndpoint(e, v);
 		}
 
 		@Override
-		public int v() {
+		public int target() {
 			return v;
 		}
 
@@ -193,12 +193,12 @@ public class Path extends AbstractIntList {
 		}
 
 		@Override
-		public int u() {
+		public int source() {
 			return g.edgeSource(e);
 		}
 
 		@Override
-		public int v() {
+		public int target() {
 			return g.edgeTarget(e);
 		}
 

@@ -234,12 +234,12 @@ public class GraphLinkedDirected extends GraphLinkedAbstract {
 		}
 
 		@Override
-		public int u() {
+		public int source() {
 			return last.u;
 		}
 
 		@Override
-		public int v() {
+		public int target() {
 			return last.v;
 		}
 

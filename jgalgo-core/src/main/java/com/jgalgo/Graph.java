@@ -200,7 +200,7 @@ public interface Graph {
 	default int getEdge(int u, int v) {
 		for (EdgeIter it = edgesOut(u); it.hasNext();) {
 			int e = it.nextInt();
-			if (it.v() == v)
+			if (it.target() == v)
 				return e;
 		}
 		return -1;

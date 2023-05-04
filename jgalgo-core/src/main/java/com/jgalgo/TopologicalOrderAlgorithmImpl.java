@@ -52,7 +52,7 @@ class TopologicalOrderAlgorithmImpl implements TopologicalOrderAlgorithm {
 			topolSort[topolSortSize++] = u;
 			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 				eit.nextInt();
-				int v = eit.v();
+				int v = eit.target();
 				if (--inDegree[v] == 0)
 					queue.enqueue(v);
 			}

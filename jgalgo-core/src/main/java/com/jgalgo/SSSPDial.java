@@ -140,7 +140,7 @@ public class SSSPDial implements SSSP {
 		for (int u = source;;) {
 			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 				int e = eit.nextInt();
-				int v = eit.v();
+				int v = eit.target();
 				if (res.distances[v] != Integer.MAX_VALUE)
 					continue;
 				int ws = w.weightInt(e);

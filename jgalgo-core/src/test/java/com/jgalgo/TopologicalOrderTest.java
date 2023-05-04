@@ -52,7 +52,7 @@ public class TopologicalOrderTest extends TestBase {
 				int u = topolSort[i];
 				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 					eit.nextInt();
-					int v = eit.v();
+					int v = eit.target();
 					assertFalse(seenVertices.contains(Integer.valueOf(v)));
 				}
 				seenVertices.add(Integer.valueOf(u));

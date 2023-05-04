@@ -86,7 +86,7 @@ public class ColoringDSatur implements Coloring {
 
 			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 				eit.nextInt();
-				int v = eit.v();
+				int v = eit.target();
 				if (res.colorOf(v) == -1) {/* v is uncolored */
 					if (!usedColors[v].get(color)) {
 						usedColorsNum[v]++;

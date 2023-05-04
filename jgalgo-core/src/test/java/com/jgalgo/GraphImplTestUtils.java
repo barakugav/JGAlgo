@@ -192,8 +192,8 @@ class GraphImplTestUtils extends TestUtils {
 					IntSet uEdges = new IntOpenHashSet();
 					for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 						int e = eit.nextInt();
-						assertEquals(u, eit.u());
-						assertEquals(g.edgeEndpoint(e, u), eit.v());
+						assertEquals(u, eit.source());
+						assertEquals(g.edgeEndpoint(e, u), eit.target());
 						uEdges.add(e);
 					}
 					assertEquals(edgesOut.get(u), uEdges);
@@ -202,8 +202,8 @@ class GraphImplTestUtils extends TestUtils {
 					IntSet vEdges = new IntOpenHashSet();
 					for (EdgeIter eit = g.edgesIn(v); eit.hasNext();) {
 						int e = eit.nextInt();
-						assertEquals(v, eit.v());
-						assertEquals(g.edgeEndpoint(e, v), eit.u());
+						assertEquals(v, eit.target());
+						assertEquals(g.edgeEndpoint(e, v), eit.source());
 						vEdges.add(e);
 					}
 					assertEquals(edgesIn.get(v), vEdges);
@@ -234,17 +234,17 @@ class GraphImplTestUtils extends TestUtils {
 			for (int u = 0; u < n; u++) {
 				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 					int e = eit.nextInt();
-					int v = eit.v();
+					int v = eit.target();
 					if (directed) {
-						assertEquals(edges.get(e), IntList.of(eit.u(), eit.v()));
+						assertEquals(edges.get(e), IntList.of(eit.source(), eit.target()));
 					} else {
-						assertEquals(edges.get(e), intSetOf(eit.u(), eit.v()));
+						assertEquals(edges.get(e), intSetOf(eit.source(), eit.target()));
 					}
-					assertEquals(u, eit.u());
+					assertEquals(u, eit.source());
 					assertEquals(v, g.edgeEndpoint(e, u));
 					if (directed) {
-						assertEquals(g.edgeSource(e), eit.u());
-						assertEquals(g.edgeTarget(e), eit.v());
+						assertEquals(g.edgeSource(e), eit.source());
+						assertEquals(g.edgeTarget(e), eit.target());
 					}
 				}
 			}

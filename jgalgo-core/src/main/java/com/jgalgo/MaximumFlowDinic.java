@@ -126,7 +126,7 @@ public class MaximumFlowDinic implements MaximumFlow {
 				int lvl = level[u];
 				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 					int e = eit.nextInt();
-					int v = eit.v();
+					int v = eit.target();
 					if (flow.getDouble(e) >= capacity.getDouble(e) || level[v] <= lvl)
 						continue;
 					edgeRefL.set(L.addEdge(u, v), e);
@@ -158,7 +158,7 @@ public class MaximumFlowDinic implements MaximumFlow {
 
 					int e = eit.nextInt();
 					path.push(e);
-					if (eit.v() == sink) {
+					if (eit.target() == sink) {
 						// augment
 						break searchAugPath;
 					} else {

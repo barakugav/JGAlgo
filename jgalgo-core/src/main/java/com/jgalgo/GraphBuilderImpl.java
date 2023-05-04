@@ -516,14 +516,14 @@ class GraphBuilderImpl {
 			}
 
 			@Override
-			public int v() {
-				int vIdx = it.v();
+			public int target() {
+				int vIdx = it.target();
 				return verticesIDStrategy.idxToId(vIdx);
 			}
 
 			@Override
-			public int u() {
-				int uIdx = it.u();
+			public int source() {
+				int uIdx = it.source();
 				return verticesIDStrategy.idxToId(uIdx);
 			}
 

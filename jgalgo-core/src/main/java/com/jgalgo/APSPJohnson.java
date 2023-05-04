@@ -100,7 +100,7 @@ public class APSPJohnson implements APSP {
 		for (int u = 0; u < n; u++) {
 			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 				int e = eit.nextInt();
-				int v = eit.v();
+				int v = eit.target();
 				int refE = refG.addEdge(u, v);
 				edgeEef.set(refE, e);
 			}

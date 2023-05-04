@@ -78,7 +78,7 @@ public class AStar {
 		for (int u = source;;) {
 			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 				int e = eit.nextInt();
-				int v = eit.v();
+				int v = eit.target();
 				double ws = w.weight(e);
 				if (ws < 0)
 					throw new IllegalArgumentException("negative weights are not supported");

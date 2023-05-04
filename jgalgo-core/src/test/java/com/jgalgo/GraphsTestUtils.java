@@ -224,7 +224,7 @@ public class GraphsTestUtils extends TestUtils {
 
 								for (EdgeIter eit = g.edgesOut(p); eit.hasNext();) {
 									eit.nextInt();
-									int pv = eit.v();
+									int pv = eit.target();
 									if (reachableFromRoot.get(pv))
 										continue;
 									reachableFromRoot.set(pv);

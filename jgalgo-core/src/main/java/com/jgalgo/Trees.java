@@ -134,7 +134,7 @@ public class Trees {
 
 				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 					eit.nextInt();
-					int v = eit.v();
+					int v = eit.target();
 					if (!directed && v == parent[u])
 						continue;
 					if (visited.get(v))

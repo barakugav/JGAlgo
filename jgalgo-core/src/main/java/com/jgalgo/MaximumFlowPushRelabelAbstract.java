@@ -207,7 +207,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 					int e = eit.nextInt();
 					if (!isResidual(e))
 						continue;
-					int u = eit.u();
+					int u = eit.source();
 					if (visited.get(u))
 						continue;
 					label[u] = vLabel + 1;
@@ -460,7 +460,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 					int e = eit.nextInt();
 					if (!isResidual(e))
 						continue;
-					int u = eit.u();
+					int u = eit.source();
 					if (visited.get(u))
 						continue;
 					visited.set(u);
@@ -514,7 +514,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 		void pushAsMuchFromSource() {
 			for (EdgeIter eit = g.edgesOut(source); eit.hasNext();) {
 				int e = eit.nextInt();
-				int v = eit.v();
+				int v = eit.target();
 				double f = getResidualCapacity(e);
 				if (f > 0 && label[source] > label[v]) {
 					if (v != sink && !hasExcess(v))
@@ -684,7 +684,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 		void pushAsMuchFromSource() {
 			for (EdgeIter eit = g.edgesOut(source); eit.hasNext();) {
 				int e = eit.nextInt();
-				int v = eit.v();
+				int v = eit.target();
 				int f = getResidualCapacity(e);
 				if (f > 0 && label[source] > label[v]) {
 					if (v != sink && !hasExcess(v))

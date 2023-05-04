@@ -232,7 +232,7 @@ public class EulerianTourTest extends TestBase {
 		int d = 0;
 		for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 			eit.nextInt();
-			if (eit.v() != u)
+			if (eit.target() != u)
 				d++;
 		}
 		return d;

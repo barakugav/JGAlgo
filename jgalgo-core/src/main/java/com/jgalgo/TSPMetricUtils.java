@@ -45,16 +45,16 @@ class TSPMetricUtils {
 		for (EdgeIter it = tour.edgeIter(); it.hasNext();) {
 			int e0 = it.nextInt();
 			int e = edgeRef.getInt(e0);
-			final int u = it.u();
+			final int u = it.source();
 			if (firstVertex == -1)
 				firstVertex = u;
 			visited.set(u);
-			while (visited.get(it.v()) && it.hasNext()) {
+			while (visited.get(it.target()) && it.hasNext()) {
 				it.nextInt();
-				e = g.getEdge(u, it.v());
+				e = g.getEdge(u, it.target());
 			}
 			cycle.add(e);
-			lastVertex = it.v();
+			lastVertex = it.target();
 		}
 
 		assert firstVertex == lastVertex;
@@ -68,7 +68,7 @@ class TSPMetricUtils {
 		IntList res = new IntArrayList();
 		for (EdgeIter it = edges.edgeIter(); it.hasNext();) {
 			it.nextInt();
-			res.add(it.u());
+			res.add(it.source());
 		}
 		return res;
 	}
@@ -76,13 +76,13 @@ class TSPMetricUtils {
 	private static boolean isValidCycle(Graph g, Path path) {
 		EdgeIter it = path.edgeIter();
 		it.nextInt();
-		final int begin = it.u();
+		final int begin = it.source();
 		for (;;) {
 			if (!it.hasNext())
-				return it.v() == begin;
-			int lastV = it.v();
+				return it.target() == begin;
+			int lastV = it.target();
 			it.nextInt();
-			if (lastV != it.u())
+			if (lastV != it.source())
 				return false;
 		}
 	}

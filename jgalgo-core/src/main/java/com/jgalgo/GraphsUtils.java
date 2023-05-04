@@ -30,7 +30,7 @@ class GraphsUtils {
 			int v = parent;
 			for (EdgeIter eit = t.edgesOut(u); eit.hasNext();) {
 				eit.nextInt();
-				v = eit.v();
+				v = eit.target();
 				if (v != parent)
 					break;
 			}
@@ -87,7 +87,7 @@ class GraphsUtils {
 		for (int u = 0; u < n; u++) {
 			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 				int e = eit.nextInt();
-				strs[u][eit.v()] = formatter.apply(e);
+				strs[u][eit.target()] = formatter.apply(e);
 			}
 		}
 
@@ -158,7 +158,7 @@ class GraphsUtils {
 		for (int u = 0; u < n; u++) {
 			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 				eit.nextInt();
-				if (u == eit.v())
+				if (u == eit.target())
 					return true;
 			}
 		}
@@ -174,7 +174,7 @@ class GraphsUtils {
 			final int visitIdx = u + 1;
 			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 				eit.nextInt();
-				int v = eit.v();
+				int v = eit.target();
 				if (lastVisit[v] == visitIdx)
 					return true;
 				lastVisit[v] = visitIdx;

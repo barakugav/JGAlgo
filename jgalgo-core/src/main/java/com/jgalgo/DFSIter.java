@@ -89,7 +89,7 @@ public class DFSIter implements IntIterator {
 		for (;;) {
 			for (EdgeIter eit = edgeIters.get(edgeIters.size() - 1); eit.hasNext();) {
 				int e = eit.nextInt();
-				int v = eit.v();
+				int v = eit.target();
 				if (visited.get(v))
 					continue;
 				visited.set(v);
@@ -114,7 +114,7 @@ public class DFSIter implements IntIterator {
 		if (!hasNext())
 			throw new NoSuchElementException();
 		isValid = false;
-		return edgeIters.get(edgeIters.size() - 1).u();
+		return edgeIters.get(edgeIters.size() - 1).source();
 	}
 
 	/**

@@ -104,7 +104,7 @@ public class MSTBoruvka implements MST {
 
 				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 					int e = eit.nextInt();
-					int v = eit.v();
+					int v = eit.target();
 					if (tree == vTree[v])
 						continue;
 

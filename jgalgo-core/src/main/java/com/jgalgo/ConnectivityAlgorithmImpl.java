@@ -64,7 +64,7 @@ class ConnectivityAlgorithmImpl implements ConnectivityAlgorithm {
 			dfs: for (int depth = 0;;) {
 				for (EdgeIter eit = edges[depth]; eit.hasNext();) {
 					eit.nextInt();
-					int v = eit.v();
+					int v = eit.target();
 					if (c[v] == 0) {
 						c[v] = cNext++;
 						s.push(v);
@@ -119,7 +119,7 @@ class ConnectivityAlgorithmImpl implements ConnectivityAlgorithm {
 
 				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 					eit.nextInt();
-					int v = eit.v();
+					int v = eit.target();
 					if (comp[v] != -1) {
 						assert comp[v] == compIdx;
 						continue;

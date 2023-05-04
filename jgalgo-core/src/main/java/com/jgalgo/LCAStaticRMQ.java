@@ -65,7 +65,7 @@ public class LCAStaticRMQ implements LCAStatic {
 
 			for (EdgeIter eit = edges[depth]; eit.hasNext();) {
 				eit.nextInt();
-				int v = eit.v();
+				int v = eit.target();
 				if (v == parent[depth])
 					continue;
 				depth++;

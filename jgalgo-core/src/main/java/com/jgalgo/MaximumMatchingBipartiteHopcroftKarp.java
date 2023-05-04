@@ -112,7 +112,7 @@ public class MaximumMatchingBipartiteHopcroftKarp implements MaximumMatching {
 
 				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 					int e = eit.nextInt();
-					int v = eit.v();
+					int v = eit.target();
 					if (depths[v] < depth)
 						continue;
 					edgeRef.set(f.addEdge(u, v), e);
@@ -149,7 +149,7 @@ public class MaximumMatchingBipartiteHopcroftKarp implements MaximumMatching {
 					EdgeIter eit = edges[depth];
 					if (eit.hasNext()) {
 						int e = eit.nextInt();
-						int v = eit.v();
+						int v = eit.target();
 						if (visited.get(v) || depth >= depths[v])
 							continue;
 						visited.set(v);

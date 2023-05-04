@@ -127,7 +127,7 @@ public class MSTFredmanTarjan implements MST {
 						// for each vertex in the super vertex, iterate over all edges
 						for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 							int e = eit.nextInt();
-							int v = V[eit.v()];
+							int v = V[eit.target()];
 
 							// edge from current tree to itself
 							if (vTree[v] == r)

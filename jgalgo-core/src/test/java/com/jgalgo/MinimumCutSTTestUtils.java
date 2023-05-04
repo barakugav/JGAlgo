@@ -115,7 +115,7 @@ class MinimumCutSTTestUtils extends TestUtils {
 			int u = uit.nextInt();
 			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 				int e = eit.nextInt();
-				int v = eit.v();
+				int v = eit.target();
 				if (!cut.get(v))
 					weight += w.weightInt(e);
 			}

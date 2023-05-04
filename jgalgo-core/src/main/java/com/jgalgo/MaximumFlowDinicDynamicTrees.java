@@ -97,7 +97,7 @@ public class MaximumFlowDinicDynamicTrees implements MaximumFlow {
 				int lvl = level[u];
 				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 					int e = eit.nextInt();
-					int v = eit.v();
+					int v = eit.target();
 					Ref eData = edgeRef.get(e);
 					if (eData.flow >= net.getCapacity(eData.orig) || level[v] <= lvl)
 						continue;
@@ -136,13 +136,13 @@ public class MaximumFlowDinicDynamicTrees implements MaximumFlow {
 					/* Delete all saturated edges */
 					debug.println("Delete");
 					do {
-						int e = edgeToParent[min.u().<Integer>getNodeData().intValue()];
-						assert vToDt[L.edgeSource(e)] == min.u();
+						int e = edgeToParent[min.source().<Integer>getNodeData().intValue()];
+						assert vToDt[L.edgeSource(e)] == min.source();
 						Ref ref = edgeRefL.get(e);
 						L.removeEdge(e);
 
 						updateFlow.accept(ref, 0);
-						dt.cut(min.u());
+						dt.cut(min.source());
 
 						min = dt.findMinEdge(vToDt[source]);
 					} while (min != null && Math.abs(min.weight()) < EPS);
@@ -155,16 +155,16 @@ public class MaximumFlowDinicDynamicTrees implements MaximumFlow {
 						break calcBlockFlow;
 					for (EdgeIter eit = L.edgesIn(v); eit.hasNext();) {
 						int e = eit.nextInt();
-						int u = eit.u();
+						int u = eit.source();
 						if (vToDt[u].getParent() != vToDt[v])
 							continue; /* If the edge is not in the DT, ignore */
 
 						MinEdge m = dt.findMinEdge(vToDt[u]);
-						assert e == edgeToParent[m.u().<Integer>getNodeData().intValue()];
+						assert e == edgeToParent[m.source().<Integer>getNodeData().intValue()];
 						Ref ref = edgeRefL.get(e);
 						updateFlow.accept(ref, m.weight());
 
-						dt.cut(m.u());
+						dt.cut(m.source());
 					}
 					L.removeEdgesInOf(v);
 
@@ -174,8 +174,8 @@ public class MaximumFlowDinicDynamicTrees implements MaximumFlow {
 					EdgeIter eit = L.edgesOut(v);
 					int e = eit.nextInt();
 					Ref eRef = edgeRefL.get(e);
-					dt.link(vToDt[eit.u()], vToDt[eit.v()], net.getCapacity(eRef.orig) - eRef.flow);
-					edgeToParent[eit.u()] = e;
+					dt.link(vToDt[eit.source()], vToDt[eit.target()], net.getCapacity(eRef.orig) - eRef.flow);
+					edgeToParent[eit.source()] = e;
 				}
 			}
 
@@ -187,9 +187,9 @@ public class MaximumFlowDinicDynamicTrees implements MaximumFlow {
 					DynamicTree.Node uDt = cleanupStack.pop();
 					assert uDt.getParent() == dt.findRoot(uDt);
 					MinEdge m = dt.findMinEdge(uDt);
-					Ref ref = edgeRefL.get(edgeToParent[m.u().<Integer>getNodeData().intValue()]);
+					Ref ref = edgeRefL.get(edgeToParent[m.source().<Integer>getNodeData().intValue()]);
 					updateFlow.accept(ref, m.weight());
-					dt.cut(m.u());
+					dt.cut(m.source());
 				}
 			}
 		}

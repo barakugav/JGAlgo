@@ -185,12 +185,12 @@ public class GraphArrayUndirected extends GraphArrayAbstract implements Undirect
 		}
 
 		@Override
-		public int u() {
+		public int source() {
 			return u;
 		}
 
 		@Override
-		public int v() {
+		public int target() {
 			int u0 = edgeSource(lastEdge);
 			int v0 = edgeTarget(lastEdge);
 			return u == u0 ? v0 : u0;

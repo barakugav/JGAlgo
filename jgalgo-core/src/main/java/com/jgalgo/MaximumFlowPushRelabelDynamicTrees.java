@@ -171,7 +171,7 @@ public class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 					int e = eit.nextInt();
 					if (!isResidual(e))
 						continue;
-					int u = eit.u();
+					int u = eit.source();
 					if (visited.get(u))
 						continue;
 					vertexData[u].label = vLabel + 1;
@@ -285,7 +285,7 @@ public class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 
 					/* update flow */
 					MinEdge m = dt.findMinEdge(childData.dtNode);
-					int e = m.u().<Vertex>getNodeData().linkedEdge;
+					int e = m.source().<Vertex>getNodeData().linkedEdge;
 					updateFlow(e, m.weight());
 
 					/* cut child */
@@ -307,9 +307,9 @@ public class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 					DynamicTree.Node uDt = cleanupStack.pop();
 					assert uDt.getParent() == dt.findRoot(uDt);
 					MinEdge m = dt.findMinEdge(uDt);
-					int e = m.u().<Vertex>getNodeData().linkedEdge;
+					int e = m.source().<Vertex>getNodeData().linkedEdge;
 					updateFlow(e, m.weight());
-					dt.cut(m.u());
+					dt.cut(m.source());
 				}
 			}
 		}
@@ -405,7 +405,7 @@ public class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 				double f = capacity.getDouble(e) - flow.getDouble(e);
 				if (f > 0) {
 					pushFlow(e, f);
-					Vertex U = vertexData(eit.u()), V = vertexData(eit.v());
+					Vertex U = vertexData(eit.source()), V = vertexData(eit.target());
 					U.excess -= f;
 					V.excess += f;
 					if (!V.isActive) {
@@ -451,9 +451,9 @@ public class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 				minEdge = dt.findMinEdge(W.dtNode);
 				if (minEdge.weight() > EPS)
 					break;
-				int minEdgeId = minEdge.u().<Vertex>getNodeData().linkedEdge;
+				int minEdgeId = minEdge.source().<Vertex>getNodeData().linkedEdge;
 				updateFlow(minEdgeId, minEdge.weight());
-				cut(minEdge.u().getNodeData());
+				cut(minEdge.source().getNodeData());
 			}
 		}
 
@@ -556,7 +556,7 @@ public class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 				int f = capacity.getInt(e) - flow.getInt(e);
 				if (f > 0) {
 					pushFlow(e, f);
-					Vertex U = vertexData(eit.u()), V = vertexData(eit.v());
+					Vertex U = vertexData(eit.source()), V = vertexData(eit.target());
 					U.excess -= f;
 					V.excess += f;
 					if (!V.isActive) {
@@ -602,9 +602,9 @@ public class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 				minEdge = dt.findMinEdge(W.dtNode);
 				if (minEdge.weight() > 0)
 					break;
-				int minEdgeId = minEdge.u().<Vertex>getNodeData().linkedEdge;
+				int minEdgeId = minEdge.source().<Vertex>getNodeData().linkedEdge;
 				updateFlow(minEdgeId, minEdge.weight());
-				cut(minEdge.u().getNodeData());
+				cut(minEdge.source().getNodeData());
 			}
 		}
 

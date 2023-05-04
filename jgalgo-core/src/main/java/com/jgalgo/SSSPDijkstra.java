@@ -100,7 +100,7 @@ public class SSSPDijkstra implements SSSP {
 			for (int u = source;;) {
 				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 					int e = eit.nextInt();
-					int v = eit.v();
+					int v = eit.target();
 					if (res.distances[v] != Double.POSITIVE_INFINITY)
 						continue;
 					double ws = w.weight(e);
@@ -166,7 +166,7 @@ public class SSSPDijkstra implements SSSP {
 			for (int u = source;;) {
 				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 					int e = eit.nextInt();
-					int v = eit.v();
+					int v = eit.target();
 					if (res.distances[v] != Integer.MAX_VALUE)
 						continue;
 					int ws = w.weightInt(e);

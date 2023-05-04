@@ -101,7 +101,7 @@ public class CyclesFinderJohnson implements CyclesFinder {
 
 			for (EdgeIter it = g.edgesOut(u); it.hasNext();) {
 				int e = it.nextInt();
-				int v = it.v();
+				int v = it.target();
 				if (!scc.contains(v))
 					continue;
 				if (v == startV) {
@@ -121,7 +121,7 @@ public class CyclesFinderJohnson implements CyclesFinder {
 			} else {
 				for (EdgeIter it = g.edgesOut(u); it.hasNext();) {
 					it.nextInt();
-					int v = it.v();
+					int v = it.target();
 					if (!scc.contains(v))
 						continue;
 					blockingSet[v].add(u);
@@ -158,7 +158,7 @@ public class CyclesFinderJohnson implements CyclesFinder {
 			int uFull = uSub + subToFull;
 			for (EdgeIter it = g.edgesOut(uFull); it.hasNext();) {
 				it.nextInt();
-				int vSub = it.v() - subToFull;
+				int vSub = it.target() - subToFull;
 				if (vSub >= 0)
 					gSub.addEdge(uSub, vSub);
 			}
@@ -183,7 +183,7 @@ public class CyclesFinderJohnson implements CyclesFinder {
 	private static boolean hasSelfEdge(Graph g, int u) {
 		for (EdgeIter it = g.edgesOut(u); it.hasNext();) {
 			it.nextInt();
-			if (it.v() == u)
+			if (it.target() == u)
 				return true;
 		}
 		return false;

@@ -142,7 +142,8 @@ public class DynamicTreeSplayTest extends TestBase {
 
 					DynamicTree.MinEdge actual0 = tree.findMinEdge(node.dtNode);
 					Object[] actual =
-							actual0 != null ? new Object[] { actual0.u(), (int) Math.round(actual0.weight()) } : null;
+							actual0 != null ? new Object[] { actual0.source(), (int) Math.round(actual0.weight()) }
+									: null;
 
 					assertTrue(Arrays.equals(expected, actual),
 							"FindMinEdge failure: " + Arrays.toString(expected) + " != " + Arrays.toString(actual));

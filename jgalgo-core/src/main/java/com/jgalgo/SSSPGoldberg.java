@@ -141,7 +141,7 @@ public class SSSPGoldberg implements SSSP {
 					int U = connectivityRes.getVertexCc(u);
 					for (EdgeIter eit = gNeg.edgesOut(u); eit.hasNext();) {
 						int e = eit.nextInt();
-						int v = eit.v();
+						int v = eit.target();
 						int V = connectivityRes.getVertexCc(v);
 						int weight = weight(g, gNegEdgeRefs.getInt(e), w, potential, weightMask);
 						if (U != V) {

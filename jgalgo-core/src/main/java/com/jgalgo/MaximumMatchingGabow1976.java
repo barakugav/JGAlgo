@@ -96,7 +96,7 @@ public class MaximumMatchingGabow1976 implements MaximumMatching {
 
 				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 					final int e = eit.nextInt();
-					final int v = eit.v();
+					final int v = eit.target();
 					int vRoot = root[v];
 
 					if (vRoot == -1) {

@@ -82,7 +82,7 @@ public class ColoringDSaturHeap implements Coloring {
 
 			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 				eit.nextInt();
-				int v = eit.v();
+				int v = eit.target();
 				if (res.colorOf(v) == -1) { /* v is uncolored */
 					HeapReference<HeapElm> vPtr = vPtrs[v];
 					HeapElm vElm = vPtr.get();

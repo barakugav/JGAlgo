@@ -38,12 +38,12 @@ interface EdgeIterImpl extends EdgeIter, Utils.IterPeekable.Int {
 		}
 
 		@Override
-		public int u() {
+		public int source() {
 			throw new NoSuchElementException();
 		}
 
 		@Override
-		public int v() {
+		public int target() {
 			throw new NoSuchElementException();
 		}
 	};

@@ -117,7 +117,7 @@ public class BFSIter implements IntIterator {
 
 		for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 			int e = eit.nextInt();
-			int v = eit.v();
+			int v = eit.target();
 			if (visited.get(v))
 				continue;
 			visited.set(v);

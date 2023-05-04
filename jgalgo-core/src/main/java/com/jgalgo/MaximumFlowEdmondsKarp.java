@@ -119,7 +119,7 @@ public class MaximumFlowEdmondsKarp implements MaximumFlow {
 					int u = queue.dequeueInt();
 					for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 						int e = eit.nextInt();
-						int v = eit.v();
+						int v = eit.target();
 
 						if (visited.get(v) || flow.getDouble(e) >= capacity.getDouble(e))
 							continue;
@@ -233,7 +233,7 @@ public class MaximumFlowEdmondsKarp implements MaximumFlow {
 					int u = queue.dequeueInt();
 					for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 						int e = eit.nextInt();
-						int v = eit.v();
+						int v = eit.target();
 
 						if (visited.get(v) || flow.getInt(e) >= capacity.getInt(e))
 							continue;

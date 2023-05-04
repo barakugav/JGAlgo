@@ -34,8 +34,8 @@ class MatchingBipartiteTestUtils extends TestUtils {
 	private MatchingBipartiteTestUtils() {}
 
 	static Graph randGraphBipartite(int sn, int tn, int m, GraphImpl graphImpl, long seed) {
-		return new RandomGraphBuilder(seed).sn(sn).tn(tn).m(m).directed(false).bipartite(true)
-				.parallelEdges(false).selfEdges(false).cycles(true).connected(false).graphImpl(graphImpl).build();
+		return new RandomGraphBuilder(seed).sn(sn).tn(tn).m(m).directed(false).bipartite(true).parallelEdges(false)
+				.selfEdges(false).cycles(true).connected(false).graphImpl(graphImpl).build();
 	}
 
 	static Graph createGraphBipartiteFromAdjacencyMatrix(int sSize, int[][] m) {
@@ -109,7 +109,7 @@ class MatchingBipartiteTestUtils extends TestUtils {
 			int u = it.nextInt();
 			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 				eit.nextInt();
-				int v = eit.v();
+				int v = eit.target();
 				m[S.get(u)][T.get(v)] = true;
 			}
 		}

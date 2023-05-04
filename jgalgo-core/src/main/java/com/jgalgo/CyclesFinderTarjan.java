@@ -79,7 +79,7 @@ public class CyclesFinderTarjan implements CyclesFinder {
 
 			for (EdgeIter it = g.edgesOut(u); it.hasNext();) {
 				int e = it.nextInt();
-				int v = it.v();
+				int v = it.target();
 				if (v < startV)
 					continue;
 				if (v == startV) {

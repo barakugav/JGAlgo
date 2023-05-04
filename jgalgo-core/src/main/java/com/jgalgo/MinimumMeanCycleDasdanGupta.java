@@ -116,7 +116,7 @@ public class MinimumMeanCycleDasdanGupta implements MinimumMeanCycle {
 					visit[u] = false;
 					for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 						int e = eit.nextInt();
-						int v = eit.v();
+						int v = eit.target();
 						if (cc.getVertexCc(v) != ccIdx)
 							continue;
 						double newDistance = d[k][u] + w.weight(e);
