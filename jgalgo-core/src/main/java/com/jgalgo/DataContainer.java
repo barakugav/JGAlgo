@@ -21,42 +21,49 @@ import java.util.BitSet;
 import java.util.Collection;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-
-import it.unimi.dsi.fastutil.booleans.AbstractBooleanCollection;
+import it.unimi.dsi.fastutil.booleans.AbstractBooleanList;
 import it.unimi.dsi.fastutil.booleans.BooleanCollection;
-import it.unimi.dsi.fastutil.booleans.BooleanIterator;
-import it.unimi.dsi.fastutil.bytes.AbstractByteCollection;
+import it.unimi.dsi.fastutil.booleans.BooleanListIterator;
+import it.unimi.dsi.fastutil.bytes.AbstractByteList;
 import it.unimi.dsi.fastutil.bytes.ByteArrays;
 import it.unimi.dsi.fastutil.bytes.ByteCollection;
-import it.unimi.dsi.fastutil.bytes.ByteIterator;
-import it.unimi.dsi.fastutil.chars.AbstractCharCollection;
+import it.unimi.dsi.fastutil.bytes.ByteIterators;
+import it.unimi.dsi.fastutil.bytes.ByteListIterator;
+import it.unimi.dsi.fastutil.chars.AbstractCharList;
 import it.unimi.dsi.fastutil.chars.CharArrays;
 import it.unimi.dsi.fastutil.chars.CharCollection;
-import it.unimi.dsi.fastutil.chars.CharIterator;
-import it.unimi.dsi.fastutil.doubles.AbstractDoubleCollection;
+import it.unimi.dsi.fastutil.chars.CharIterators;
+import it.unimi.dsi.fastutil.chars.CharListIterator;
+import it.unimi.dsi.fastutil.doubles.AbstractDoubleList;
 import it.unimi.dsi.fastutil.doubles.DoubleArrays;
 import it.unimi.dsi.fastutil.doubles.DoubleCollection;
-import it.unimi.dsi.fastutil.doubles.DoubleIterator;
-import it.unimi.dsi.fastutil.floats.AbstractFloatCollection;
+import it.unimi.dsi.fastutil.doubles.DoubleIterators;
+import it.unimi.dsi.fastutil.doubles.DoubleListIterator;
+import it.unimi.dsi.fastutil.floats.AbstractFloatList;
 import it.unimi.dsi.fastutil.floats.FloatArrays;
 import it.unimi.dsi.fastutil.floats.FloatCollection;
-import it.unimi.dsi.fastutil.floats.FloatIterator;
-import it.unimi.dsi.fastutil.ints.AbstractIntCollection;
+import it.unimi.dsi.fastutil.floats.FloatIterators;
+import it.unimi.dsi.fastutil.floats.FloatListIterator;
+import it.unimi.dsi.fastutil.ints.AbstractIntList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntIterator;
-import it.unimi.dsi.fastutil.longs.AbstractLongCollection;
+import it.unimi.dsi.fastutil.ints.IntIterators;
+import it.unimi.dsi.fastutil.ints.IntListIterator;
+import it.unimi.dsi.fastutil.longs.AbstractLongList;
 import it.unimi.dsi.fastutil.longs.LongArrays;
 import it.unimi.dsi.fastutil.longs.LongCollection;
-import it.unimi.dsi.fastutil.longs.LongIterator;
-import it.unimi.dsi.fastutil.objects.AbstractObjectCollection;
+import it.unimi.dsi.fastutil.longs.LongIterators;
+import it.unimi.dsi.fastutil.longs.LongListIterator;
+import it.unimi.dsi.fastutil.objects.AbstractObjectList;
 import it.unimi.dsi.fastutil.objects.ObjectArrays;
 import it.unimi.dsi.fastutil.objects.ObjectCollection;
-import it.unimi.dsi.fastutil.objects.ObjectIterator;
-import it.unimi.dsi.fastutil.shorts.AbstractShortCollection;
+import it.unimi.dsi.fastutil.objects.ObjectIterators;
+import it.unimi.dsi.fastutil.objects.ObjectListIterator;
+import it.unimi.dsi.fastutil.shorts.AbstractShortList;
 import it.unimi.dsi.fastutil.shorts.ShortArrays;
 import it.unimi.dsi.fastutil.shorts.ShortCollection;
-import it.unimi.dsi.fastutil.shorts.ShortIterator;
+import it.unimi.dsi.fastutil.shorts.ShortIterators;
+import it.unimi.dsi.fastutil.shorts.ShortListIterator;
 
 abstract class DataContainer<E> {
 	int size;
@@ -76,6 +83,16 @@ abstract class DataContainer<E> {
 	abstract Collection<E> values();
 
 	abstract Class<E> getTypeClass();
+
+	@Override
+	public int hashCode() {
+		return values().hashCode();
+	}
+
+	@Override
+	public String toString() {
+		return values().toString();
+	}
 
 	void checkIdx(int idx) {
 		// TODO add some messege of ID strategy choice
@@ -137,31 +154,24 @@ abstract class DataContainer<E> {
 			weights = expectedSize > 0 ? new Object[expectedSize] : ObjectArrays.EMPTY_ARRAY;
 			defaultVal = defVal;
 			this.type = Objects.requireNonNull(type);
-			values = new AbstractObjectCollection<>() {
+			values = new AbstractObjectList<>() {
 
 				@Override
 				public int size() {
 					return size;
 				}
 
+				@SuppressWarnings({ "unchecked", "rawtypes" })
 				@Override
-				public ObjectIterator<E> iterator() {
-					return new ObjectIterator<>() {
-						int idx = 0;
+				public ObjectListIterator<E> iterator() {
+					return (ObjectListIterator) ObjectIterators.wrap(weights, 0, size);
+				}
 
-						@Override
-						public boolean hasNext() {
-							return idx < size;
-						}
-
-						@SuppressWarnings("unchecked")
-						@Override
-						public E next() {
-							if (!hasNext())
-								throw new NoSuchElementException();
-							return (E) weights[idx++];
-						}
-					};
+				@SuppressWarnings("unchecked")
+				@Override
+				public E get(int index) {
+					checkIdx(index);
+					return (E) weights[index];
 				}
 			};
 		}
@@ -239,30 +249,6 @@ abstract class DataContainer<E> {
 			DataContainer.Obj<?> o = (DataContainer.Obj<?>) other;
 			return Arrays.equals(weights, 0, size, o.weights, 0, o.size);
 		}
-
-		@Override
-		public int hashCode() {
-			int h = 1;
-			for (int i = 0; i < size; i++)
-				h = 31 * h + Objects.hashCode(weights[i]);
-			return h;
-		}
-
-		@Override
-		public String toString() {
-			int iMax = size - 1;
-			if (iMax == -1)
-				return "[]";
-
-			StringBuilder b = new StringBuilder();
-			b.append('[');
-			for (int i = 0;; i++) {
-				b.append(String.valueOf(weights[i]));
-				if (i == iMax)
-					return b.append(']').toString();
-				b.append(", ");
-			}
-		}
 	}
 
 	static class Byte extends DataContainer<java.lang.Byte> {
@@ -274,7 +260,7 @@ abstract class DataContainer<E> {
 		Byte(int expectedSize, byte defVal) {
 			weights = expectedSize > 0 ? new byte[expectedSize] : ByteArrays.EMPTY_ARRAY;
 			defaultVal = defVal;
-			values = new AbstractByteCollection() {
+			values = new AbstractByteList() {
 
 				@Override
 				public int size() {
@@ -282,22 +268,14 @@ abstract class DataContainer<E> {
 				}
 
 				@Override
-				public ByteIterator iterator() {
-					return new ByteIterator() {
-						int idx = 0;
+				public ByteListIterator iterator() {
+					return ByteIterators.wrap(weights, 0, size);
+				}
 
-						@Override
-						public boolean hasNext() {
-							return idx < size;
-						}
-
-						@Override
-						public byte nextByte() {
-							if (!hasNext())
-								throw new NoSuchElementException();
-							return weights[idx++];
-						}
-					};
+				@Override
+				public byte getByte(int index) {
+					checkIdx(index);
+					return weights[index];
 				}
 			};
 		}
@@ -367,30 +345,6 @@ abstract class DataContainer<E> {
 			DataContainer.Byte o = (DataContainer.Byte) other;
 			return Arrays.equals(weights, 0, size, o.weights, 0, o.size);
 		}
-
-		@Override
-		public int hashCode() {
-			int h = 1;
-			for (int i = 0; i < size; i++)
-				h = 31 * h + java.lang.Byte.hashCode(weights[i]);
-			return h;
-		}
-
-		@Override
-		public String toString() {
-			int iMax = size - 1;
-			if (iMax == -1)
-				return "[]";
-
-			StringBuilder b = new StringBuilder();
-			b.append('[');
-			for (int i = 0;; i++) {
-				b.append(String.valueOf(weights[i]));
-				if (i == iMax)
-					return b.append(']').toString();
-				b.append(", ");
-			}
-		}
 	}
 
 	static class Short extends DataContainer<java.lang.Short> {
@@ -402,7 +356,7 @@ abstract class DataContainer<E> {
 		Short(int expectedSize, short defVal) {
 			weights = expectedSize > 0 ? new short[expectedSize] : ShortArrays.EMPTY_ARRAY;
 			defaultVal = defVal;
-			values = new AbstractShortCollection() {
+			values = new AbstractShortList() {
 
 				@Override
 				public int size() {
@@ -410,22 +364,14 @@ abstract class DataContainer<E> {
 				}
 
 				@Override
-				public ShortIterator iterator() {
-					return new ShortIterator() {
-						int idx = 0;
+				public ShortListIterator iterator() {
+					return ShortIterators.wrap(weights, 0, size);
+				}
 
-						@Override
-						public boolean hasNext() {
-							return idx < size;
-						}
-
-						@Override
-						public short nextShort() {
-							if (!hasNext())
-								throw new NoSuchElementException();
-							return weights[idx++];
-						}
-					};
+				@Override
+				public short getShort(int index) {
+					checkIdx(index);
+					return weights[index];
 				}
 			};
 		}
@@ -495,30 +441,6 @@ abstract class DataContainer<E> {
 			DataContainer.Short o = (DataContainer.Short) other;
 			return Arrays.equals(weights, 0, size, o.weights, 0, o.size);
 		}
-
-		@Override
-		public int hashCode() {
-			int h = 1;
-			for (int i = 0; i < size; i++)
-				h = 31 * h + java.lang.Short.hashCode(weights[i]);
-			return h;
-		}
-
-		@Override
-		public String toString() {
-			int iMax = size - 1;
-			if (iMax == -1)
-				return "[]";
-
-			StringBuilder b = new StringBuilder();
-			b.append('[');
-			for (int i = 0;; i++) {
-				b.append(String.valueOf(weights[i]));
-				if (i == iMax)
-					return b.append(']').toString();
-				b.append(", ");
-			}
-		}
 	}
 
 	static class Int extends DataContainer<Integer> {
@@ -530,7 +452,7 @@ abstract class DataContainer<E> {
 		Int(int expectedSize, int defVal) {
 			weights = expectedSize > 0 ? new int[expectedSize] : IntArrays.EMPTY_ARRAY;
 			defaultVal = defVal;
-			values = new AbstractIntCollection() {
+			values = new AbstractIntList() {
 
 				@Override
 				public int size() {
@@ -538,22 +460,14 @@ abstract class DataContainer<E> {
 				}
 
 				@Override
-				public IntIterator iterator() {
-					return new IntIterator() {
-						int idx = 0;
+				public IntListIterator iterator() {
+					return IntIterators.wrap(weights, 0, size);
+				}
 
-						@Override
-						public boolean hasNext() {
-							return idx < size;
-						}
-
-						@Override
-						public int nextInt() {
-							if (!hasNext())
-								throw new NoSuchElementException();
-							return weights[idx++];
-						}
-					};
+				@Override
+				public int getInt(int index) {
+					checkIdx(index);
+					return weights[index];
 				}
 			};
 		}
@@ -623,30 +537,6 @@ abstract class DataContainer<E> {
 			DataContainer.Int o = (DataContainer.Int) other;
 			return Arrays.equals(weights, 0, size, o.weights, 0, o.size);
 		}
-
-		@Override
-		public int hashCode() {
-			int h = 1;
-			for (int i = 0; i < size; i++)
-				h = 31 * h + weights[i];
-			return h;
-		}
-
-		@Override
-		public String toString() {
-			int iMax = size - 1;
-			if (iMax == -1)
-				return "[]";
-
-			StringBuilder b = new StringBuilder();
-			b.append('[');
-			for (int i = 0;; i++) {
-				b.append(String.valueOf(weights[i]));
-				if (i == iMax)
-					return b.append(']').toString();
-				b.append(", ");
-			}
-		}
 	}
 
 	static class Long extends DataContainer<java.lang.Long> {
@@ -658,7 +548,7 @@ abstract class DataContainer<E> {
 		Long(int expectedSize, long defVal) {
 			weights = expectedSize > 0 ? new long[expectedSize] : LongArrays.EMPTY_ARRAY;
 			defaultVal = defVal;
-			values = new AbstractLongCollection() {
+			values = new AbstractLongList() {
 
 				@Override
 				public int size() {
@@ -666,22 +556,14 @@ abstract class DataContainer<E> {
 				}
 
 				@Override
-				public LongIterator iterator() {
-					return new LongIterator() {
-						int idx = 0;
+				public LongListIterator iterator() {
+					return LongIterators.wrap(weights, 0, size);
+				}
 
-						@Override
-						public boolean hasNext() {
-							return idx < size;
-						}
-
-						@Override
-						public long nextLong() {
-							if (!hasNext())
-								throw new NoSuchElementException();
-							return weights[idx++];
-						}
-					};
+				@Override
+				public long getLong(int index) {
+					checkIdx(index);
+					return weights[index];
 				}
 			};
 		}
@@ -751,30 +633,6 @@ abstract class DataContainer<E> {
 			DataContainer.Long o = (DataContainer.Long) other;
 			return Arrays.equals(weights, 0, size, o.weights, 0, o.size);
 		}
-
-		@Override
-		public int hashCode() {
-			int h = 1;
-			for (int i = 0; i < size; i++)
-				h = 31 * h + java.lang.Long.hashCode(weights[i]);
-			return h;
-		}
-
-		@Override
-		public String toString() {
-			int iMax = size - 1;
-			if (iMax == -1)
-				return "[]";
-
-			StringBuilder b = new StringBuilder();
-			b.append('[');
-			for (int i = 0;; i++) {
-				b.append(String.valueOf(weights[i]));
-				if (i == iMax)
-					return b.append(']').toString();
-				b.append(", ");
-			}
-		}
 	}
 
 	static class Float extends DataContainer<java.lang.Float> {
@@ -786,7 +644,7 @@ abstract class DataContainer<E> {
 		Float(int expectedSize, float defVal) {
 			weights = expectedSize > 0 ? new float[expectedSize] : FloatArrays.EMPTY_ARRAY;
 			defaultVal = defVal;
-			values = new AbstractFloatCollection() {
+			values = new AbstractFloatList() {
 
 				@Override
 				public int size() {
@@ -794,22 +652,14 @@ abstract class DataContainer<E> {
 				}
 
 				@Override
-				public FloatIterator iterator() {
-					return new FloatIterator() {
-						int idx = 0;
+				public FloatListIterator iterator() {
+					return FloatIterators.wrap(weights, 0, size);
+				}
 
-						@Override
-						public boolean hasNext() {
-							return idx < size;
-						}
-
-						@Override
-						public float nextFloat() {
-							if (!hasNext())
-								throw new NoSuchElementException();
-							return weights[idx++];
-						}
-					};
+				@Override
+				public float getFloat(int index) {
+					checkIdx(index);
+					return weights[index];
 				}
 			};
 		}
@@ -879,30 +729,6 @@ abstract class DataContainer<E> {
 			DataContainer.Float o = (DataContainer.Float) other;
 			return Arrays.equals(weights, 0, size, o.weights, 0, o.size);
 		}
-
-		@Override
-		public int hashCode() {
-			int h = 1;
-			for (int i = 0; i < size; i++)
-				h = 31 * h + java.lang.Float.hashCode(weights[i]);
-			return h;
-		}
-
-		@Override
-		public String toString() {
-			int iMax = size - 1;
-			if (iMax == -1)
-				return "[]";
-
-			StringBuilder b = new StringBuilder();
-			b.append('[');
-			for (int i = 0;; i++) {
-				b.append(String.valueOf(weights[i]));
-				if (i == iMax)
-					return b.append(']').toString();
-				b.append(", ");
-			}
-		}
 	}
 
 	static class Double extends DataContainer<java.lang.Double> {
@@ -914,7 +740,7 @@ abstract class DataContainer<E> {
 		Double(int expectedSize, double defVal) {
 			weights = expectedSize > 0 ? new double[expectedSize] : DoubleArrays.EMPTY_ARRAY;
 			defaultVal = defVal;
-			values = new AbstractDoubleCollection() {
+			values = new AbstractDoubleList() {
 
 				@Override
 				public int size() {
@@ -922,22 +748,14 @@ abstract class DataContainer<E> {
 				}
 
 				@Override
-				public DoubleIterator iterator() {
-					return new DoubleIterator() {
-						int idx = 0;
+				public DoubleListIterator iterator() {
+					return DoubleIterators.wrap(weights, 0, size);
+				}
 
-						@Override
-						public boolean hasNext() {
-							return idx < size;
-						}
-
-						@Override
-						public double nextDouble() {
-							if (!hasNext())
-								throw new NoSuchElementException();
-							return weights[idx++];
-						}
-					};
+				@Override
+				public double getDouble(int index) {
+					checkIdx(index);
+					return weights[index];
 				}
 			};
 		}
@@ -1007,30 +825,6 @@ abstract class DataContainer<E> {
 			DataContainer.Double o = (DataContainer.Double) other;
 			return Arrays.equals(weights, 0, size, o.weights, 0, o.size);
 		}
-
-		@Override
-		public int hashCode() {
-			int h = 1;
-			for (int i = 0; i < size; i++)
-				h = 31 * h + java.lang.Double.hashCode(weights[i]);
-			return h;
-		}
-
-		@Override
-		public String toString() {
-			int iMax = size - 1;
-			if (iMax == -1)
-				return "[]";
-
-			StringBuilder b = new StringBuilder();
-			b.append('[');
-			for (int i = 0;; i++) {
-				b.append(String.valueOf(weights[i]));
-				if (i == iMax)
-					return b.append(']').toString();
-				b.append(", ");
-			}
-		}
 	}
 
 	static class Bool extends DataContainer<Boolean> {
@@ -1044,7 +838,7 @@ abstract class DataContainer<E> {
 			// compatibility
 			weights = new BitSet();
 			defaultVal = defVal;
-			values = new AbstractBooleanCollection() {
+			values = new AbstractBooleanList() {
 
 				@Override
 				public int size() {
@@ -1052,8 +846,8 @@ abstract class DataContainer<E> {
 				}
 
 				@Override
-				public BooleanIterator iterator() {
-					return new BooleanIterator() {
+				public BooleanListIterator iterator() {
+					return new BooleanListIterator() {
 						int idx = 0;
 
 						@Override
@@ -1067,7 +861,35 @@ abstract class DataContainer<E> {
 								throw new NoSuchElementException();
 							return weights.get(idx++);
 						}
+
+						@Override
+						public boolean previousBoolean() {
+							if (!hasPrevious())
+								throw new NoSuchElementException();
+							return weights.get(--idx);
+						}
+
+						@Override
+						public boolean hasPrevious() {
+							return idx > 0;
+						}
+
+						@Override
+						public int nextIndex() {
+							return idx;
+						}
+
+						@Override
+						public int previousIndex() {
+							return idx - 1;
+						}
 					};
+				}
+
+				@Override
+				public boolean getBoolean(int index) {
+					checkIdx(index);
+					return weights.get(index);
 				}
 			};
 		}
@@ -1130,27 +952,6 @@ abstract class DataContainer<E> {
 			DataContainer.Bool o = (DataContainer.Bool) other;
 			return size == o.size && weights.equals(o.weights);
 		}
-
-		@Override
-		public int hashCode() {
-			return size * 1237 ^ weights.hashCode();
-		}
-
-		@Override
-		public String toString() {
-			int iMax = size - 1;
-			if (iMax == -1)
-				return "[]";
-
-			StringBuilder b = new StringBuilder();
-			b.append('[');
-			for (int i = 0;; i++) {
-				b.append(String.valueOf(weights.get(i)));
-				if (i == iMax)
-					return b.append(']').toString();
-				b.append(", ");
-			}
-		}
 	}
 
 	static class Char extends DataContainer<Character> {
@@ -1162,7 +963,7 @@ abstract class DataContainer<E> {
 		Char(int expectedSize, char defVal) {
 			weights = expectedSize > 0 ? new char[expectedSize] : CharArrays.EMPTY_ARRAY;
 			defaultVal = defVal;
-			values = new AbstractCharCollection() {
+			values = new AbstractCharList() {
 
 				@Override
 				public int size() {
@@ -1170,22 +971,14 @@ abstract class DataContainer<E> {
 				}
 
 				@Override
-				public CharIterator iterator() {
-					return new CharIterator() {
-						int idx = 0;
+				public CharListIterator iterator() {
+					return CharIterators.wrap(weights, 0, size);
+				}
 
-						@Override
-						public boolean hasNext() {
-							return idx < size;
-						}
-
-						@Override
-						public char nextChar() {
-							if (!hasNext())
-								throw new NoSuchElementException();
-							return weights[idx++];
-						}
-					};
+				@Override
+				public char getChar(int index) {
+					checkIdx(index);
+					return weights[index];
 				}
 			};
 		}
@@ -1254,30 +1047,6 @@ abstract class DataContainer<E> {
 				return false;
 			DataContainer.Char o = (DataContainer.Char) other;
 			return Arrays.equals(weights, 0, size, o.weights, 0, o.size);
-		}
-
-		@Override
-		public int hashCode() {
-			int h = 1;
-			for (int i = 0; i < size; i++)
-				h = 31 * h + Character.hashCode(weights[i]);
-			return h;
-		}
-
-		@Override
-		public String toString() {
-			int iMax = size - 1;
-			if (iMax == -1)
-				return "[]";
-
-			StringBuilder b = new StringBuilder();
-			b.append('[');
-			for (int i = 0;; i++) {
-				b.append(String.valueOf(weights[i]));
-				if (i == iMax)
-					return b.append(']').toString();
-				b.append(", ");
-			}
 		}
 	}
 

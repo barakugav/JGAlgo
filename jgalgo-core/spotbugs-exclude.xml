@@ -113,4 +113,19 @@
     <Field name="scanIdx" />
     <Bug pattern="SA_FIELD_SELF_ASSIGNMENT" />
   </Match>
+  <Match>
+    <!-- hashCode and toString are defined in super class, equals is defined in per-type sub-class -->
+    <Or>
+      <Class name="com.jgalgo.DataContainer$Obj" />
+      <Class name="com.jgalgo.DataContainer$Byte" />
+      <Class name="com.jgalgo.DataContainer$Short" />
+      <Class name="com.jgalgo.DataContainer$Int" />
+      <Class name="com.jgalgo.DataContainer$Long" />
+      <Class name="com.jgalgo.DataContainer$Float" />
+      <Class name="com.jgalgo.DataContainer$Double" />
+      <Class name="com.jgalgo.DataContainer$Bool" />
+      <Class name="com.jgalgo.DataContainer$Char" />
+    </Or>
+    <Bug pattern="HE_EQUALS_NO_HASHCODE" />
+  </Match>
 </FindBugsFilter>
