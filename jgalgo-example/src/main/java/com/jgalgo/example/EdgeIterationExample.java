@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jgalgo.demo;
+package com.jgalgo.example;
 
 import com.jgalgo.EdgeIter;
 import com.jgalgo.Graph;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.jgalgo.demo;
+package com.jgalgo.example;
 
 import com.jgalgo.Graph;
 import com.jgalgo.SSSP;

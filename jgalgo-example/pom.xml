@@ -8,8 +8,8 @@
         <artifactId>jgalgo</artifactId>
         <version>0.1.0-SNAPSHOT</version>
     </parent>
-    <artifactId>jgalgo-demo</artifactId>
-    <name>JGAlgo - Demo</name>
+    <artifactId>jgalgo-example</artifactId>
+    <name>JGAlgo - Examples</name>
     <packaging>jar</packaging>
 
     <dependencies>

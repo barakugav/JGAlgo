@@ -20,7 +20,7 @@
     <modules>
         <module>jgalgo-core</module>
         <module>jgalgo-bench</module>
-        <module>jgalgo-demo</module>
+        <module>jgalgo-example</module>
     </modules>
 
 </project>
