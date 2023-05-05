@@ -33,6 +33,7 @@ public class TestBenchmarksDemoSuite {
 		 String packageName = TestBenchmarksDemoSuite.class.getPackageName();
 		 Options opt = new OptionsBuilder()
 				 .include(packageName + ".*")
+				 .exclude(packageName + ".HeapBench.*")
 				 .warmupIterations(0)
 				 .warmupTime(TimeValue.seconds(0))
 				 .measurementIterations(1)

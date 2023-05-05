@@ -57,7 +57,6 @@ public class APSPBench {
 
 	@Param({ "|V|=64 |E|=256", "|V|=200 |E|=1200", "|V|=512 |E|=4096" })
 	public String args;
-	private int n, m;
 
 	private List<Pair<Graph, EdgeWeightFunc.Int>> graphs;
 	private final int graphsNum = 31;
@@ -66,8 +65,8 @@ public class APSPBench {
 	@Setup(Level.Iteration)
 	public void setup() {
 		Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
-		n = Integer.parseInt(argsMap.get("|V|"));
-		m = Integer.parseInt(argsMap.get("|E|"));
+		int n = Integer.parseInt(argsMap.get("|V|"));
+		int m = Integer.parseInt(argsMap.get("|E|"));
 
 		final SeedGenerator seedGen = new SeedGenerator(0xe9485d7a86646b18L);
 		graphs = new ArrayList<>(graphsNum);

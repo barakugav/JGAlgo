@@ -61,7 +61,6 @@ public class MSTBench {
 
 	@Param({ "|V|=100 |E|=100", "|V|=200 |E|=1000", "|V|=1600 |E|=10000", "|V|=6000 |E|=25000" })
 	public String args;
-	private int n, m;
 
 	private List<Pair<Graph, EdgeWeightFunc.Int>> graphs;
 	private final int graphsNum = 31;
@@ -70,8 +69,8 @@ public class MSTBench {
 	@Setup(Level.Iteration)
 	public void setup() {
 		Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
-		n = Integer.parseInt(argsMap.get("|V|"));
-		m = Integer.parseInt(argsMap.get("|E|"));
+		int n = Integer.parseInt(argsMap.get("|V|"));
+		int m = Integer.parseInt(argsMap.get("|E|"));
 
 		final SeedGenerator seedGen = new SeedGenerator(0xe75b8a2fb16463ecL);
 		graphs = new ArrayList<>(graphsNum);

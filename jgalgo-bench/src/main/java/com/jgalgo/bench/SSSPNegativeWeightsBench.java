@@ -56,7 +56,6 @@ public class SSSPNegativeWeightsBench {
 
 	@Param({ "|V|=64 |E|=256", "|V|=512 |E|=4096", "|V|=4096 |E|=16384" })
 	public String args;
-	private int n, m;
 
 	private List<GraphArgs> graphs;
 	private final int graphsNum = 31;
@@ -65,8 +64,8 @@ public class SSSPNegativeWeightsBench {
 	@Setup(Level.Iteration)
 	public void setup() {
 		Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
-		n = Integer.parseInt(argsMap.get("|V|"));
-		m = Integer.parseInt(argsMap.get("|E|"));
+		int n = Integer.parseInt(argsMap.get("|V|"));
+		int m = Integer.parseInt(argsMap.get("|E|"));
 
 		final SeedGenerator seedGen = new SeedGenerator(0x9814dcfe5851ab08L);
 		Random rand = new Random(seedGen.nextSeed());

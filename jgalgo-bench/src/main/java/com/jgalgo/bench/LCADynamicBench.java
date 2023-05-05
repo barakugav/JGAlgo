@@ -57,7 +57,7 @@ public class LCADynamicBench {
 
 	@Param({ "|V|=64 M=256", "|V|=512 M=4096", "|V|=4096 M=16384" })
 	public String args;
-	private int n, m;
+	private int n;
 
 	private List<Collection<Op>> lcaOps;
 	private final int graphsNum = 31;
@@ -67,7 +67,7 @@ public class LCADynamicBench {
 	public void setup() {
 		Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
 		n = Integer.parseInt(argsMap.get("|V|"));
-		m = Integer.parseInt(argsMap.get("M"));
+		int m = Integer.parseInt(argsMap.get("M"));
 
 		final SeedGenerator seedGen = new SeedGenerator(0x66fed18e0b594b55L);
 		lcaOps = new ArrayList<>(graphsNum);

@@ -57,7 +57,6 @@ public class UnionFindBench {
 
 	@Param({ "|V|=64 |E|=256", "|V|=512 |E|=4096", "|V|=4096 |E|=16384", "|V|=20000 |E|=50000" })
 	public String args;
-	private int n, m;
 
 	private List<Pair<Graph, int[]>> graphs;
 	private final int graphsNum = 31;
@@ -66,8 +65,8 @@ public class UnionFindBench {
 	@Setup(Level.Iteration)
 	public void setup() {
 		Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
-		n = Integer.parseInt(argsMap.get("|V|"));
-		m = Integer.parseInt(argsMap.get("|E|"));
+		int n = Integer.parseInt(argsMap.get("|V|"));
+		int m = Integer.parseInt(argsMap.get("|E|"));
 
 		final SeedGenerator seedGen = new SeedGenerator(0xecbc984604fcd0afL);
 		graphs = new ArrayList<>(graphsNum);

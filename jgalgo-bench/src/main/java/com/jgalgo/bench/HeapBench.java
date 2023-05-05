@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -36,70 +35,100 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
-
-import com.jgalgo.EdgeWeightFunc;
-import com.jgalgo.Graph;
+import com.jgalgo.Heap;
+import com.jgalgo.HeapBinary;
 import com.jgalgo.HeapBinomial;
 import com.jgalgo.HeapFibonacci;
 import com.jgalgo.HeapPairing;
-import com.jgalgo.HeapReferenceable;
-import com.jgalgo.MSTPrim;
+import com.jgalgo.HeapReference;
 import com.jgalgo.RedBlackTree;
-import com.jgalgo.SSSP;
-import com.jgalgo.SSSPDijkstra;
 import com.jgalgo.SplayTree;
-import com.jgalgo.bench.GraphsTestUtils.RandomGraphBuilder;
 import com.jgalgo.bench.TestUtils.SeedGenerator;
 
-import it.unimi.dsi.fastutil.ints.IntCollection;
-
 @BenchmarkMode(Mode.AverageTime)
-@OutputTimeUnit(TimeUnit.MILLISECONDS)
+@OutputTimeUnit(TimeUnit.MICROSECONDS)
 @Warmup(iterations = 2, time = 5, timeUnit = TimeUnit.SECONDS)
 @Measurement(iterations = 3, time = 5, timeUnit = TimeUnit.SECONDS)
 @Fork(value = 1, warmups = 0)
 @State(Scope.Benchmark)
-public class HeapReferenceableBench {
+public class HeapBench {
 
-	@Param({ "|V|=64 |E|=256", "|V|=512 |E|=4096", "|V|=4096 |E|=16384" })
+	@Param({ "N=64 M=256", "N=512 M=4096", "N=4096 M=16384" })
 	public String args;
-
-	private List<GraphArgs> graphs;
-	private final int graphsNum = 31;
+	private List<List<Op>> sequences;
+	private final int sequencesNum = 31;
 	private final AtomicInteger graphIdx = new AtomicInteger();
 
 	@Setup(Level.Iteration)
 	public void setup() {
 		Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
-		int n = Integer.parseInt(argsMap.get("|V|"));
-		int m = Integer.parseInt(argsMap.get("|E|"));
+		int initialSize = Integer.parseInt(argsMap.get("N"));
+		int opsNum = Integer.parseInt(argsMap.get("M"));
 
 		final SeedGenerator seedGen = new SeedGenerator(0x88da246e71ef3dacL);
 		Random rand = new Random(seedGen.nextSeed());
-		graphs = new ArrayList<>(graphsNum);
-		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
-					.selfEdges(true).cycles(true).connected(false).build();
-			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
-			int source = rand.nextInt(g.vertices().size());
-			graphs.add(new GraphArgs(g, w, source));
+		sequences = new ArrayList<>(sequencesNum);
+		for (int gIdx = 0; gIdx < sequencesNum; gIdx++) {
+			List<Op> sequence = new ArrayList<>(initialSize + opsNum);
+			for (int i = 0; i < initialSize; i++)
+				sequence.add(new Op.Insert(rand.nextInt()));
+			for (int i = 0; i < opsNum; i++) {
+				int r = rand.nextInt(5);
+				if (r < 2)
+					sequence.add(new Op.Insert(rand.nextInt()));
+				else if (r < 4)
+					sequence.add(new Op.FindMin());
+				else
+					sequence.add(new Op.ExtractMin());
+			}
+			sequences.add(sequence);
 		}
 	}
 
-	private void benchHeap(HeapReferenceable.Builder heapBuilder, Blackhole blackhole) {
-		GraphArgs args = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
+	private static class Op {
+		private static class Insert extends Op {
+			final int x;
 
-		/* SSSP */
-		SSSPDijkstra algo = new SSSPDijkstra();
-		algo.setHeapBuilder(heapBuilder);
-		SSSP.Result ssspRes = algo.computeShortestPaths(args.g, args.w, args.source);
-		blackhole.consume(ssspRes);
+			Insert(int x) {
+				this.x = x;
+			}
+		}
+		private static class FindMin extends Op {
+		}
+		private static class ExtractMin extends Op {
+		}
+	}
 
-		/* Prim MST */
-		MSTPrim mstAlgo = new MSTPrim();
-		mstAlgo.setHeapBuilder(heapBuilder);
-		IntCollection mst = mstAlgo.computeMinimumSpanningTree(args.g, args.w);
-		blackhole.consume(mst);
+	private void benchHeap(Heap.Builder heapBuilder, Blackhole blackhole) {
+		Heap<Integer> heap = heapBuilder.build();
+
+		List<Op> sequence = sequences.get(graphIdx.getAndUpdate(i -> (i + 1) % sequencesNum));
+		for (Op op : sequence) {
+			if (op instanceof Op.Insert) {
+				HeapReference<Integer> ref = heap.insert(((Op.Insert) op).x);
+				blackhole.consume(ref);
+
+			} else if (op instanceof Op.FindMin) {
+				if (heap.isEmpty())
+					continue;
+				Integer min = heap.findMin();
+				blackhole.consume(min);
+
+			} else if (op instanceof Op.ExtractMin) {
+				if (heap.isEmpty())
+					continue;
+				Integer min = heap.extractMin();
+				blackhole.consume(min);
+
+			} else {
+				throw new IllegalArgumentException("unknown op: " + op);
+			}
+		}
+	}
+
+	@Benchmark
+	public void Binary(Blackhole blackhole) {
+		benchHeap(HeapBinary::new, blackhole);
 	}
 
 	@Benchmark
@@ -125,18 +154,6 @@ public class HeapReferenceableBench {
 	@Benchmark
 	public void SplayTree(Blackhole blackhole) {
 		benchHeap(SplayTree::new, blackhole);
-	}
-
-	private static class GraphArgs {
-		final Graph g;
-		final EdgeWeightFunc.Int w;
-		final int source;
-
-		GraphArgs(Graph g, EdgeWeightFunc.Int w, int source) {
-			this.g = g;
-			this.w = w;
-			this.source = source;
-		}
 	}
 
 }
