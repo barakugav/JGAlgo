@@ -71,6 +71,7 @@ abstract class HeapAbstract<E> extends AbstractCollection<E> implements Heap<E> 
 			throw new IllegalArgumentException("A heap can't meld with itself");
 	}
 
+	@SuppressWarnings("rawtypes")
 	void makeSureMeldWithSameImpl(Class<? extends Heap> impl, Heap<? extends E> other) {
 		if (!impl.isAssignableFrom(other.getClass()))
 			throw new IllegalArgumentException("Can't meld heaps with different implementations");

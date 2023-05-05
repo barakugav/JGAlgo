@@ -116,18 +116,18 @@ public class TreePathMaximaHagerup implements TreePathMaxima {
 
 		int[] calcTPM(TreePathMaxima.Queries queries) {
 			ObjectIntPair<Graph> r = buildBoruvkaFullyBranchingTree();
-			Graph t = r.first();
+			Graph tree = r.first();
 			int root = r.secondInt();
 
-			int[] lcaQueries = splitQueriesIntoLCAQueries(t, root, queries);
+			int[] lcaQueries = splitQueriesIntoLCAQueries(tree, root, queries);
 
-			Pair<int[], int[]> r2 = getEdgeToParentsAndDepth(t, root);
+			Pair<int[], int[]> r2 = getEdgeToParentsAndDepth(tree, root);
 			int[] edgeToParent = r2.first();
 			int[] depths = r2.second();
 
-			int[] q = calcQueriesPerVertex(t, lcaQueries, depths, edgeToParent);
-			int[][] a = calcAnswersPerVertex(t, root, q, edgeToParent);
-			return extractEdgesFromAnswers(a, q, lcaQueries, depths, t.getEdgesWeights("edgeData"));
+			int[] q = calcQueriesPerVertex(tree, lcaQueries, depths, edgeToParent);
+			int[][] a = calcAnswersPerVertex(tree, root, q, edgeToParent);
+			return extractEdgesFromAnswers(a, q, lcaQueries, depths, tree.getEdgesWeights("edgeData"));
 		}
 
 		private int[] extractEdgesFromAnswers(int[][] a, int[] q, int[] lcaQueries, int[] depths,

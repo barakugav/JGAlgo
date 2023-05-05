@@ -45,15 +45,11 @@ public class SplitFindMinArray<K> implements SplitFindMin<K> {
 	@Override
 	public void init(Collection<K> keys, Comparator<? super K> c) {
 		int elmNum = keys.size();
-		this.keys = (K[]) new Object[elmNum];
+		this.keys = (K[]) keys.toArray();
 		blocks = new Block[elmNum];
 		this.c = c = c != null ? c : Utils.getDefaultComparator();
 		if (elmNum == 0)
 			return;
-
-		int i = 0;
-		for (K key : keys)
-			this.keys[i++] = key;
 
 		Block head = null, tail = null;
 		for (int size = elmNum; size > 0;) {

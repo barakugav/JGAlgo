@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.IntConsumer;
 import java.util.stream.Collectors;
+import com.jgalgo.MaximumMatchingWeightedBlossoms.Evens;
 import com.jgalgo.Utils.NullList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -95,27 +95,14 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 		final Blossom[] blossoms;
 
 		/*
-		 * Union find data structure for even blossoms, used with find0Blossoms: find0Blossoms[find0.find(v)]
+		 * Union find data structure for even blossoms
 		 */
-		final UnionFind find0;
-
-		/* find0 result -> blossom */
-		final Blossom[] find0Blossoms;
+		final Evens<Blossom> evens;
 
 		/*
-		 * Split find data structure for odd and out blossoms, used with vToFind1Idx and find1Blossoms:
-		 * find1Blossoms[find1.find(vToFind1Idx[v])]
+		 * Split find data structure for odd and out blossoms
 		 */
-		final SplitFindMin<EdgeEvent> find1;
-
-		/* vertex -> find1 index */
-		final int[] vToFind1Idx;
-
-		/* used to assign find1 index to each vertex in an odd blossom */
-		int find1IdxNext;
-
-		/* find1 result -> blossom */
-		final Blossom[] find1Blossoms;
+		final Odds odds;
 
 		/*
 		 * index used to check whether a blossom was reached in the current blossom traverse
@@ -161,26 +148,7 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 		/* Manage debug prints */
 		final DebugPrintsManager debug;
 
-		static class Blossom {
-
-			/* base vertex of this blossom */
-			int base;
-
-			/* parent blossom, null if top blossom */
-			Blossom parent;
-
-			/* child blossom, null if trivial blossom (blossom of one vertex) */
-			Blossom child;
-
-			/*
-			 * left brother in current sub blossoms level (share parent), null if top blossom
-			 */
-			Blossom left;
-
-			/*
-			 * right brother in current sub blossoms level (share parent), null if top blossom
-			 */
-			Blossom right;
+		static class Blossom extends MaximumMatchingWeightedBlossoms.Blossom<Blossom> {
 
 			/*
 			 * the edge that connected this blossom and it's left brother, null if left is null
@@ -240,15 +208,8 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 			 */
 			HeapReference<Blossom> expandRef;
 
-			/* field used to keep track which blossoms were visited during traverse */
-			int lastVisitIdx;
-
 			Blossom(int base) {
 				this.base = base;
-			}
-
-			boolean isSingleton() {
-				return child == null;
 			}
 
 			@Override
@@ -308,11 +269,8 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 			Arrays.fill(matched, -1);
 
 			blossoms = new Blossom[n];
-			find0 = new UnionFindArray(n);
-			find0Blossoms = new Blossom[n];
-			find1 = new SplitFindMinArray<>();
-			vToFind1Idx = new int[n];
-			find1Blossoms = new Blossom[n];
+			evens = new Evens<>(n);
+			odds = new Odds(n);
 			blossomVisitIdx = 0;
 
 			delta = 0;
@@ -348,27 +306,20 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 			for (int u = 0; u < n; u++)
 				blossoms[u] = new Blossom(u);
 
-			Comparator<EdgeEvent> edgeSlackBarComparator =
-					(e1, e2) -> (e2 == null ? -1 : e1 == null ? 1 : Double.compare(e1.slack, e2.slack));
-
 			mainLoop: for (;;) {
 
 				// Reset find0 and find1
-				find0.clear();
-				for (int u = 0; u < n; u++)
-					find0.make();
-				Arrays.fill(vToFind1Idx, -1);
-				find1.init(new NullList<>(n), edgeSlackBarComparator);
-				find1IdxNext = 0;
+				evens.init(n);
+				odds.init(n);
 				Arrays.fill(vToSMFId, null);
 				smfRootOfRoots = smf.initTree();
 
 				// Init unmatched blossoms as even and all other as out
-				forEachTopBlossom(b -> {
-					if (matched[b.base] != -1) {
+				for (Blossom b : topBlossoms()) {
+					if (isMatched(b.base)) {
 						// Out blossom
-						find1InitIndexing(b);
-						find1Split(b);
+						odds.initIndexing(b);
+						odds.split(b);
 						b.delta1 = delta;
 
 					} else {
@@ -380,33 +331,36 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 
 						/* Update SMF data structure */
 						SubtreeMergeFindMin.Node baseSMFNode = smfAddLeaf(base, smfRootOfRoots);
-						forEachVertexInBlossom(b, u -> {
+						for (IntIterator uit = b.vertices(); uit.hasNext();) {
+							int u = uit.nextInt();
 							blossoms[u].isEven = true;
-							find0.union(base, u);
+							evens.union(base, u);
 
 							if (u != base) {
 								SubtreeMergeFindMin.Node smfNode = smfAddLeaf(u, baseSMFNode);
 								smf.mergeSubTrees(baseSMFNode, smfNode);
 							}
-						});
-						find0Blossoms[find0.find(base)] = b;
+						}
+						evens.setBlossom(base, b);
 					}
-				});
+				}
 				// Insert grow and blossom events into heaps
-				forEachTopBlossom(U -> {
-					if (matched[U.base] == -1) { /* only root blossoms */
-						forEachVertexInBlossom(U, this::insertGrowEventsFromVertex);
-						forEachVertexInBlossom(U, this::insertBlossomEventsFromVertex);
+				for (Blossom U : topBlossoms()) {
+					if (!isMatched(U.base)) { /* only root blossoms */
+						for (IntIterator uit = U.vertices(); uit.hasNext();) {
+							int u = uit.nextInt();
+							insertGrowEventsFromVertex(u);
+							insertBlossomEventsFromVertex(u);
+						}
 					}
-				});
+				}
 
 				/* [debug] print current roots */
 				debug.printExec(() -> {
 					debug.print("roots:");
-					forEachTopBlossom(b -> {
-						if (matched[b.base] == -1)
+					for (Blossom b : topBlossoms())
+						if (!isMatched(b.base))
 							debug.print(" ", b);
-					});
 					debug.println();
 				});
 
@@ -448,7 +402,7 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 						int u = g.edgeSource(e), v = g.edgeTarget(e);
 						assert isEven(u) && isEven(v);
 
-						if (find0(u).root == find0(v).root)
+						if (evens.findBlossom(u).root == evens.findBlossom(v).root)
 							blossomStep(e);
 						else {
 							augmentStep(e);
@@ -463,16 +417,16 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 				// Update dual values
 				for (int u = 0; u < n; u++)
 					vertexDualValBase[u] = dualVal(u);
-				forEachBlossom(b -> {
+				for (Blossom b : allBlossoms()) {
 					if (!b.isSingleton())
 						b.z0 = dualVal(b);
 					b.delta0 = b.delta1 = b.deltaOdd = 0;
-				});
+				}
 				delta1Threshold -= delta;
 				delta = 0;
 
 				// Reset blossoms search tree
-				forEachBlossom(b -> {
+				for (Blossom b : allBlossoms()) {
 					b.root = -1;
 					b.treeParentEdge = -1;
 					b.isEven = false;
@@ -480,7 +434,7 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 					b.growRef = null;
 					b.expandDelta = 0;
 					b.expandRef = null;
-				});
+				}
 
 				// Reset heaps
 				Arrays.fill(vToGrowEvent, null);
@@ -491,13 +445,14 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 
 			IntList res = new IntArrayList();
 			for (int u = 0; u < n; u++)
-				if (matched[u] != -1 && u < g.edgeEndpoint(matched[u], u))
+				if (isMatched(u) && u < g.edgeEndpoint(matched[u], u))
 					res.add(edgeVal.get(matched[u]).e);
 			return res;
 		}
 
 		private void growStep() {
-			debug.print("growStep (root=", Integer.valueOf(find0(g.edgeSource(growEvents.findMin().e)).root), "): ",
+			debug.print("growStep (root=",
+					Integer.valueOf(evens.findBlossom(g.edgeSource(growEvents.findMin().e)).root), "): ",
 					Integer.valueOf(growEvents.findMin().e));
 
 			// Grow step
@@ -505,7 +460,7 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 			int e = growEvents.extractMin().e;
 			int u = g.edgeSource(e), v = g.edgeTarget(e);
 
-			Blossom U = find0(u), V = find1(v);
+			Blossom U = evens.findBlossom(u), V = odds.findBlossom(v);
 			assert !V.isEven && !isInTree(V);
 
 			// Add odd vertex
@@ -552,7 +507,7 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 			debug.println("blossomStep");
 			int eu = g.edgeSource(e), ev = g.edgeTarget(e);
 			assert isEven(eu) && isEven(ev);
-			Blossom U = find0(eu), V = find0(ev);
+			Blossom U = evens.findBlossom(eu), V = evens.findBlossom(ev);
 			if (U == V)
 				return; // Edge in same blossom, ignore
 
@@ -601,7 +556,8 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 					connectSubBlossoms(b, prev, toPrevEdge, !prevIsRight);
 					SubtreeMergeFindMin.Node smfTopNode = vToSMFId[g.edgeSource(b.treeParentEdge)];
 					smf.mergeSubTrees(vToSMFId[g.edgeTarget(b.treeParentEdge)], smfTopNode);
-					forEachVertexInBlossom(b, v -> {
+					for (IntIterator vit = b.vertices(); vit.hasNext();) {
+						int v = vit.nextInt();
 						blossoms[v].isEven = true;
 
 						SubtreeMergeFindMin.Node smfId = vToSMFId[v];
@@ -617,7 +573,7 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 						}
 						unionQueue.enqueue(v);
 						scanQueue.enqueue(v);
-					});
+					}
 					b.delta0 = delta;
 					if (!b.isSingleton()) {
 						expandEvents.removeRef(b.expandRef);
@@ -632,8 +588,8 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 
 			// Union all sub blossom in find0 data structure
 			while (!unionQueue.isEmpty())
-				find0.union(newb.base, unionQueue.dequeueInt());
-			find0Blossoms[find0.find(newb.base)] = newb;
+				evens.union(newb.base, unionQueue.dequeueInt());
+			evens.setBlossom(newb.base, newb);
 
 			// Scan new edges from all new even vertices
 			while (!scanQueue.isEmpty()) {
@@ -647,11 +603,12 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 			V.isEven = true;
 			V.delta0 = delta;
 			int base = V.base;
-			forEachVertexInBlossom(V, v -> {
+			for (IntIterator vit = V.vertices(); vit.hasNext();) {
+				int v = vit.nextInt();
 				blossoms[v].isEven = true;
-				find0.union(base, v);
-			});
-			find0Blossoms[find0.find(base)] = V;
+				evens.union(base, v);
+			}
+			evens.setBlossom(base, V);
 
 			/*
 			 * If a SMF structure already exists in the blossom, we can't just merge all the vertices with the base, as
@@ -668,7 +625,8 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 				smfId = parentSmf;
 			}
 
-			forEachVertexInBlossom(V, v -> {
+			for (IntIterator vit = V.vertices(); vit.hasNext();) {
+				int v = vit.nextInt();
 				SubtreeMergeFindMin.Node smfNode = vToSMFId[v];
 				if (smfNode == null) {
 					smfNode = smfAddLeaf(v, smfBaseNode);
@@ -680,10 +638,13 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 						smfNode = p;
 					}
 				}
-			});
+			}
 
-			forEachVertexInBlossom(V, this::insertGrowEventsFromVertex);
-			forEachVertexInBlossom(V, this::insertBlossomEventsFromVertex);
+			for (IntIterator vit = V.vertices(); vit.hasNext();) {
+				int v = vit.nextInt();
+				insertGrowEventsFromVertex(v);
+				insertBlossomEventsFromVertex(v);
+			}
 		}
 
 		private void expandStep() {
@@ -694,26 +655,22 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 
 			assert B.root != -1 && !B.isEven && !B.isSingleton() && dualVal(B) <= EPS;
 
-			int baseFind1Idx = vToFind1Idx[B.base];
-			int topFind1Idx = vToFind1Idx[g.edgeSource(B.treeParentEdge)];
+			int baseV = B.base, topV = g.edgeSource(B.treeParentEdge);
 			Blossom base = null;
 			Blossom top = null;
 			// Remove parent pointer from all children, and find the sub blossom containing
 			// the base ('base') and the sub blossom containing the vertex of the edge from
 			// parent in search tree ('top')
-			for (Blossom b = B.child;;) {
-				if (b.find1SeqBegin <= baseFind1Idx && baseFind1Idx < b.find1SeqEnd) {
+			for (Blossom b : B.children()) {
+				if (odds.isInBlossom(b, baseV)) {
 					assert base == null;
 					base = b;
 				}
-				if (b.find1SeqBegin <= topFind1Idx && topFind1Idx < b.find1SeqEnd) {
+				if (odds.isInBlossom(b, topV)) {
 					assert top == null;
 					top = b;
 				}
 				b.parent = null;
-				b = b.right;
-				if (b == B.child)
-					break;
 			}
 			B.deltaOdd += delta - B.delta1;
 			B.delta0 = delta;
@@ -731,7 +688,7 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 				inBlossom.accept(b);
 				b.isEven = false;
 				b.delta1 = delta;
-				find1Split(b);
+				odds.split(b);
 				assert b.expandRef == null;
 				if (!b.isSingleton()) {
 					b.expandDelta = b.z0 / 2 + b.delta1;
@@ -758,10 +715,10 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 				b.root = -1;
 				b.treeParentEdge = -1;
 				b.isEven = false;
-				find1Split(b);
+				odds.split(b);
 				b.deltaOdd = B.deltaOdd;
 				assert b.growRef == null;
-				EdgeEvent inEdgeEvent = find1.getKey(find1.findMin(vToFind1Idx[b.base]));
+				EdgeEvent inEdgeEvent = odds.findMin(b.base);
 				if (inEdgeEvent != null)
 					b.growRef = growEvents.insert(inEdgeEvent);
 			}
@@ -789,10 +746,8 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 			debug.print("augStep:");
 			final int bu = g.edgeSource(bridge), bv = g.edgeTarget(bridge);
 			Blossom U = topBlossom(bu), V = topBlossom(bv);
-			Blossom[] bs = new Blossom[] { U, V };
-			for (Blossom b : bs) {
+			for (Blossom b : new Blossom[] { U, V }) {
 
-				assert b.isEven;
 				int e = -1;
 				for (int u = b == U ? bu : bv;;) {
 					assert b.isEven;
@@ -873,8 +828,8 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 			assert g.edgeSource(matched[xyV]) == xyV;
 			assert g.edgeSource(matched[xyV]) == xyV;
 
-			assert matched[b1.base] != -1;
-			assert matched[b2.base] != -1;
+			assert isMatched(b1.base);
+			assert isMatched(b2.base);
 
 			debug.print(" ", Integer.valueOf(xy));
 			for (Blossom p = b0.parent;; p = p.parent) {
@@ -930,6 +885,10 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 			return blossoms[v].isEven;
 		}
 
+		private boolean isMatched(int v) {
+			return matched[v] != -1;
+		}
+
 		private boolean isInTree(int v) {
 			return topBlossom(v).root != -1;
 		}
@@ -938,110 +897,25 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 			return b.parent != null ? isInTree(b.base) : b.root != -1;
 		}
 
-		private Blossom find0(int v) {
-			return find0Blossoms[find0.find(v)];
-		}
-
-		private Blossom find1(int v) {
-			int idx = vToFind1Idx[v];
-			return idx < 0 ? null : find1Blossoms[find1.find(idx)];
-		}
-
-		/* Init find1 indexing for all vertices contained in the blossomD */
-		private void find1InitIndexing(Blossom b) {
-			b.find1SeqBegin = find1IdxNext;
-			if (b.child == null) {
-				b.isEven = false;
-				vToFind1Idx[b.base] = find1IdxNext++;
-			} else {
-				for (Blossom sub = b.child;;) {
-					find1InitIndexing(sub);
-					sub = sub.right;
-					if (sub == b.child)
-						break;
-				}
-			}
-			b.find1SeqEnd = find1IdxNext;
-		}
-
-		/* Split a blossom from a bigger blossom in the find1 data structure */
-		private void find1Split(Blossom b) {
-			int begin = b.find1SeqBegin, end = b.find1SeqEnd;
-			Blossom b1 = begin > 0 ? find1Blossoms[find1.find(begin - 1)] : null;
-			Blossom b2 = end < find1Blossoms.length ? find1Blossoms[find1.find(end)] : null;
-
-			if (begin > 0) {
-				find1.split(begin);
-				find1Blossoms[find1.find(begin - 1)] = b1;
-			}
-			if (end < find1Blossoms.length) {
-				find1.split(end);
-				find1Blossoms[find1.find(end)] = b2;
-			}
-			find1Blossoms[find1.find(b.find1SeqBegin)] = b;
-		}
-
 		private Blossom topBlossom(int v) {
-			return isEven(v) ? find0(v) : find1(v);
+			return isEven(v) ? evens.findBlossom(v) : odds.findBlossom(v);
 		}
 
 		private Blossom topBlossom(Blossom v) {
 			assert v.isSingleton();
-			return v.isEven ? find0(v.base) : find1(v.base);
+			return v.isEven ? evens.findBlossom(v.base) : odds.findBlossom(v.base);
 		}
 
-		private void forEachBlossom(Consumer<Blossom> f) {
-			int n = g.vertices().size();
-			int visitIdx = ++blossomVisitIdx;
-			for (int v = 0; v < n; v++) {
-				for (Blossom b = blossoms[v]; b.lastVisitIdx != visitIdx; b = b.parent) {
-					b.lastVisitIdx = visitIdx;
-					f.accept(b);
-					if (b.parent == null)
-						break;
-				}
-			}
+		private Iterable<Blossom> allBlossoms() {
+			return () -> MaximumMatchingWeightedBlossoms.allBlossoms(blossoms, ++blossomVisitIdx);
 		}
 
-		private void forEachTopBlossom(Consumer<Blossom> f) {
-			int n = g.vertices().size();
-			int visitIdx = ++blossomVisitIdx;
-			for (int v = 0; v < n; v++) {
-				for (Blossom b = blossoms[v]; b.lastVisitIdx != visitIdx; b = b.parent) {
-					b.lastVisitIdx = visitIdx;
-					if (b.parent == null) {
-						if (b.child != null) {
-							// Mark children as visited in case blossom expand
-							for (Blossom c = b.child;;) {
-								c.lastVisitIdx = visitIdx;
-								c = c.left;
-								if (c == b.child)
-									break;
-							}
-						}
-						f.accept(b);
-						break;
-					}
-				}
-			}
-		}
-
-		private static void forEachVertexInBlossom(Blossom b, IntConsumer op) {
-			if (b.child == null) {
-				op.accept(b.base);
-				return;
-			}
-
-			for (Blossom sub = b.child;;) {
-				forEachVertexInBlossom(sub, op);
-				sub = sub.right;
-				if (sub == b.child)
-					break;
-			}
+		private Iterable<Blossom> topBlossoms() {
+			return () -> MaximumMatchingWeightedBlossoms.topBlossoms(blossoms, ++blossomVisitIdx);
 		}
 
 		private double dualVal(int v) {
-			Blossom b = find1(v);
+			Blossom b = odds.findBlossom(v);
 			double deltaB = b == null ? 0 : b.deltaOdd;
 			double val = vertexDualValBase[v] + deltaB;
 			boolean isEven;
@@ -1066,7 +940,7 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 		private double growEventsKey(EdgeEvent event) {
 			int v = g.edgeTarget(event.e);
 			assert !isEven(v);
-			return find1(v).deltaOdd + event.slack;
+			return odds.findBlossom(v).deltaOdd + event.slack;
 		}
 
 		private void insertGrowEventsFromVertex(int u) {
@@ -1079,11 +953,11 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 				double slackBar = Yu + vertexDualValBase[v] - w.weight(e);
 				if (vToGrowEvent[v] == null || slackBar < vToGrowEvent[v].slack) {
 					EdgeEvent event = vToGrowEvent[v] = new EdgeEvent(e, slackBar);
-					if (!find1.decreaseKey(vToFind1Idx[v], event))
+					if (!odds.decreaseKey(v, event))
 						continue;
-					assert find1.getKey(find1.findMin(vToFind1Idx[v])) == event;
+					assert odds.findMin(v) == event;
 
-					Blossom V = find1(v);
+					Blossom V = odds.findBlossom(v);
 					if (!isInTree(V)) {
 						if (V.growRef == null)
 							V.growRef = growEvents.insert(event);
@@ -1096,14 +970,14 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 
 		private void insertBlossomEventsFromVertex(int u) {
 			assert isEven(u);
-			Blossom U = find0(u);
+			Blossom U = evens.findBlossom(u);
 			double Yu = delta + dualVal(u);
 			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 				final int e = eit.nextInt();
 				int v = eit.target();
 				if (!isEven(v))
 					continue;
-				Blossom V = find0(v);
+				Blossom V = evens.findBlossom(v);
 				if (U == V)
 					continue;
 				double Yv = delta + dualVal(v);
@@ -1160,6 +1034,88 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 					bs[i] = b.treeParentEdge == -1 ? null : topBlossom(g.edgeTarget(b.treeParentEdge));
 				}
 			}
+		}
+
+		static class Odds {
+
+			/*
+			 * Split find data structure for odd and out blossoms, used with vToSf and findToBlossom:
+			 * findToBlossom[df.find(vToSf[v])]
+			 */
+			final SplitFindMin<EdgeEvent> sf;
+
+			/* vertex -> splitFind index */
+			final int[] vToSf;
+
+			/* used to assign splitFind index to each vertex in an odd blossom */
+			int nextIdx;
+
+			/* df.find() result -> blossom */
+			final Blossom[] findToBlossom;
+
+			Odds(int n) {
+				sf = new SplitFindMinArray<>();
+				vToSf = new int[n];
+				findToBlossom = new Blossom[n];
+			}
+
+			void init(int n) {
+				Comparator<EdgeEvent> edgeSlackBarComparator =
+						(e1, e2) -> (e2 == null ? -1 : e1 == null ? 1 : Double.compare(e1.slack, e2.slack));
+
+				Arrays.fill(vToSf, -1);
+				sf.init(new NullList<>(n), edgeSlackBarComparator);
+				nextIdx = 0;
+			}
+
+			private Blossom findBlossom(int v) {
+				int idx = vToSf[v];
+				return idx < 0 ? null : findToBlossom[sf.find(idx)];
+			}
+
+			/* Init find1 indexing for all vertices contained in the blossomD */
+			private void initIndexing(Blossom b) {
+				b.find1SeqBegin = nextIdx;
+				if (b.child == null) {
+					b.isEven = false;
+					vToSf[b.base] = nextIdx++;
+				} else {
+					for (Blossom sub : b.children())
+						initIndexing(sub);
+				}
+				b.find1SeqEnd = nextIdx;
+			}
+
+			/* Split a blossom from a bigger blossom in the find1 data structure */
+			private void split(Blossom b) {
+				int begin = b.find1SeqBegin, end = b.find1SeqEnd;
+				Blossom b1 = begin > 0 ? findToBlossom[sf.find(begin - 1)] : null;
+				Blossom b2 = end < findToBlossom.length ? findToBlossom[sf.find(end)] : null;
+
+				if (begin > 0) {
+					sf.split(begin);
+					findToBlossom[sf.find(begin - 1)] = b1;
+				}
+				if (end < findToBlossom.length) {
+					sf.split(end);
+					findToBlossom[sf.find(end)] = b2;
+				}
+				findToBlossom[sf.find(b.find1SeqBegin)] = b;
+			}
+
+			boolean isInBlossom(Blossom b, int v) {
+				int idx = vToSf[v];
+				return b.find1SeqBegin <= idx && idx < b.find1SeqEnd;
+			}
+
+			EdgeEvent findMin(int v) {
+				return sf.getKey(vToSf[v]);
+			}
+
+			boolean decreaseKey(int v, EdgeEvent newKey) {
+				return sf.decreaseKey(vToSf[v], newKey);
+			}
+
 		}
 
 	}
