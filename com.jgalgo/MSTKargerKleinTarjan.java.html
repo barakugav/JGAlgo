@@ -23,7 +23,6 @@ import it.unimi.dsi.fastutil.ints.Int2DoubleFunction;
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
-import it.unimi.dsi.fastutil.ints.IntBigArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -43,27 +42,27 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 public class MSTKargerKleinTarjan implements MST {
 
 	private final Random rand;
-<span class="fc" id="L46">	private final ConnectivityAlgorithm ccAlg = ConnectivityAlgorithm.newBuilder().build();</span>
-<span class="fc" id="L47">	private final MSTBoruvka boruvka = new MSTBoruvka();</span>
-<span class="fc" id="L48">	private final TreePathMaxima tpm = new TreePathMaximaHagerup();</span>
+<span class="fc" id="L45">	private final ConnectivityAlgorithm ccAlg = ConnectivityAlgorithm.newBuilder().build();</span>
+<span class="fc" id="L46">	private final MSTBoruvka boruvka = new MSTBoruvka();</span>
+<span class="fc" id="L47">	private final TreePathMaxima tpm = new TreePathMaximaHagerup();</span>
 
-<span class="fc" id="L50">	private final AllocatedMemory allocatedMem = new AllocatedMemory();</span>
+<span class="fc" id="L49">	private final AllocatedMemory allocatedMem = new AllocatedMemory();</span>
 
 	/**
 	 * Create a new MST algorithm with random seed.
 	 */
 	public MSTKargerKleinTarjan() {
-<span class="nc" id="L56">		this(System.nanoTime() ^ 0x905a1dad25b30034L);</span>
-<span class="nc" id="L57">	}</span>
+<span class="nc" id="L55">		this(System.nanoTime() ^ 0x905a1dad25b30034L);</span>
+<span class="nc" id="L56">	}</span>
 
 	/**
 	 * Create a new MST algorithm with the given seed.
 	 *
 	 * @param seed a seed used for all random generators
 	 */
-<span class="fc" id="L64">	public MSTKargerKleinTarjan(long seed) {</span>
-<span class="fc" id="L65">		rand = new Random(seed ^ 0x1af7babf9783fd8bL);</span>
-<span class="fc" id="L66">	}</span>
+<span class="fc" id="L63">	public MSTKargerKleinTarjan(long seed) {</span>
+<span class="fc" id="L64">		rand = new Random(seed ^ 0x1af7babf9783fd8bL);</span>
+<span class="fc" id="L65">	}</span>
 
 	/**
 	 * {@inheritDoc}
@@ -71,137 +70,138 @@ public class MSTKargerKleinTarjan implements MST {
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	public IntCollection computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
-<span class="fc" id="L75">		ArgumentCheck.onlyUndirected(g);</span>
-<span class="fc" id="L76">		return computeMST(g, w);</span>
+	public MST.Result computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
+<span class="fc" id="L74">		ArgumentCheck.onlyUndirected(g);</span>
+<span class="fc" id="L75">		return new MSTResultImpl(computeMST(g, w));</span>
 	}
 
 	private IntCollection computeMST(Graph g, EdgeWeightFunc w) {
-<span class="fc bfc" id="L80" title="All 4 branches covered.">		if (g.vertices().size() == 0 || g.edges().size() == 0)</span>
-<span class="fc" id="L81">			return IntLists.emptyList();</span>
+<span class="fc bfc" id="L79" title="All 4 branches covered.">		if (g.vertices().size() == 0 || g.edges().size() == 0)</span>
+<span class="fc" id="L80">			return IntLists.emptyList();</span>
 
 		/* Run Boruvka to reduce the number of vertices by a factor of 4 by contraction */
-<span class="fc" id="L84">		Pair&lt;Graph, IntCollection&gt; r = boruvka.runBoruvka(g, w, 2, &quot;edgeRef_g0&quot;);</span>
-<span class="fc" id="L85">		Graph g0 = r.first();</span>
-<span class="fc" id="L86">		IntCollection f0 = r.second();</span>
-<span class="fc" id="L87">		Weights.Int g0Ref = g0.getEdgesWeights(&quot;edgeRef_g0&quot;);</span>
+<span class="fc" id="L83">		Pair&lt;Graph, IntCollection&gt; r = boruvka.runBoruvka(g, w, 2, &quot;edgeRef_g0&quot;);</span>
+<span class="fc" id="L84">		Graph g0 = r.first();</span>
+<span class="fc" id="L85">		IntCollection f0 = r.second();</span>
+<span class="fc" id="L86">		Weights.Int g0Ref = g0.getEdgesWeights(&quot;edgeRef_g0&quot;);</span>
 
 		/* Find a random subgraph G1 in the contracted graph G0, by choosing each edge with probability 0.5 */
-<span class="fc" id="L90">		Graph g1 = randSubgraph(g0, &quot;edgeRef_g1&quot;, g0Ref);</span>
-<span class="fc" id="L91">		Weights.Int g1Ref = g1.getEdgesWeights(&quot;edgeRef_g1&quot;);</span>
-<span class="fc" id="L92">		Weights.Double g1W = assignWeightsFromEdgeRef(g1, w, &quot;w_g1&quot;, g1Ref);</span>
+<span class="fc" id="L89">		Graph g1 = randSubgraph(g0, &quot;edgeRef_g1&quot;, g0Ref);</span>
+<span class="fc" id="L90">		Weights.Int g1Ref = g1.getEdgesWeights(&quot;edgeRef_g1&quot;);</span>
+<span class="fc" id="L91">		Weights.Double g1W = assignWeightsFromEdgeRef(g1, w, &quot;w_g1&quot;, g1Ref);</span>
 
 		/* Compute an MST (actually a forest) F1 in the random subgraph G1 */
-<span class="fc" id="L95">		IntCollection f1Edges = computeMST(g1, g1W);</span>
-<span class="fc" id="L96">		Graph f1 = subGraph(g1, f1Edges, &quot;edgeRef_f1&quot;, g1Ref);</span>
-<span class="fc" id="L97">		Weights.Int f1Ref = f1.getEdgesWeights(&quot;edgeRef_f1&quot;);</span>
+<span class="fc" id="L94">		IntCollection f1Edges = computeMST(g1, g1W);</span>
+<span class="fc" id="L95">		Graph f1 = subGraph(g1, f1Edges, &quot;edgeRef_f1&quot;, g1Ref);</span>
+<span class="fc" id="L96">		Weights.Int f1Ref = f1.getEdgesWeights(&quot;edgeRef_f1&quot;);</span>
 
 		/* Find all the light edges in G0 with respect to the computed forest F1 */
-<span class="fc" id="L100">		IntCollection e2 = lightEdges(g0, e -&gt; w.weight(g0Ref.getInt(e)), f1, e -&gt; w.weight(f1Ref.getInt(e)));</span>
-<span class="fc" id="L101">		Graph g2 = subGraph(g0, e2, &quot;edgeRef_g2&quot;, g0Ref);</span>
-<span class="fc" id="L102">		Weights.Int g2Ref = g2.getEdgesWeights(&quot;edgeRef_g2&quot;);</span>
-<span class="fc" id="L103">		Weights.Double g2W = assignWeightsFromEdgeRef(g2, w, &quot;w_g2&quot;, g2Ref);</span>
+<span class="fc" id="L99">		IntCollection e2 = lightEdges(g0, e -&gt; w.weight(g0Ref.getInt(e)), f1, e -&gt; w.weight(f1Ref.getInt(e)));</span>
+<span class="fc" id="L100">		Graph g2 = subGraph(g0, e2, &quot;edgeRef_g2&quot;, g0Ref);</span>
+<span class="fc" id="L101">		Weights.Int g2Ref = g2.getEdgesWeights(&quot;edgeRef_g2&quot;);</span>
+<span class="fc" id="L102">		Weights.Double g2W = assignWeightsFromEdgeRef(g2, w, &quot;w_g2&quot;, g2Ref);</span>
 
 		/* The result is F0 and F2 */
-<span class="fc" id="L106">		IntCollection f2 = computeMST(g2, g2W);</span>
-<span class="fc bfc" id="L107" title="All 2 branches covered.">		for (IntIterator it = f2.iterator(); it.hasNext();) {</span>
-<span class="fc" id="L108">			int eRef = it.nextInt();</span>
-<span class="fc" id="L109">			int e = g2Ref.getInt(eRef);</span>
-<span class="fc" id="L110">			f0.add(e);</span>
-<span class="fc" id="L111">		}</span>
-<span class="fc" id="L112">		return f0;</span>
+<span class="fc" id="L105">		IntCollection f2 = computeMST(g2, g2W);</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">		for (IntIterator it = f2.iterator(); it.hasNext();) {</span>
+<span class="fc" id="L107">			int eRef = it.nextInt();</span>
+<span class="fc" id="L108">			int e = g2Ref.getInt(eRef);</span>
+<span class="fc" id="L109">			f0.add(e);</span>
+<span class="fc" id="L110">		}</span>
+<span class="fc" id="L111">		return f0;</span>
 	}
 
 	static Graph subGraph(Graph g, IntCollection edgeSet, Object edgeDataKey, Weights.Int edgeRef) {
-<span class="fc" id="L116">		Graph subG = new GraphArrayUndirected(g.vertices().size());</span>
-<span class="fc" id="L117">		Weights.Int edgeRefSub = subG.addEdgesWeights(edgeDataKey, int.class);</span>
-<span class="fc bfc" id="L118" title="All 2 branches covered.">		for (IntIterator it = edgeSet.iterator(); it.hasNext();) {</span>
-<span class="fc" id="L119">			int e = it.nextInt();</span>
-<span class="fc" id="L120">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
-<span class="fc" id="L121">			int eSub = subG.addEdge(u, v);</span>
-<span class="fc" id="L122">			edgeRefSub.set(eSub, edgeRef.getInt(e));</span>
-<span class="fc" id="L123">		}</span>
-<span class="fc" id="L124">		return subG;</span>
+<span class="fc" id="L115">		Graph subG = new GraphArrayUndirected(g.vertices().size());</span>
+<span class="fc" id="L116">		Weights.Int edgeRefSub = subG.addEdgesWeights(edgeDataKey, int.class);</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">		for (IntIterator it = edgeSet.iterator(); it.hasNext();) {</span>
+<span class="fc" id="L118">			int e = it.nextInt();</span>
+<span class="fc" id="L119">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+<span class="fc" id="L120">			int eSub = subG.addEdge(u, v);</span>
+<span class="fc" id="L121">			edgeRefSub.set(eSub, edgeRef.getInt(e));</span>
+<span class="fc" id="L122">		}</span>
+<span class="fc" id="L123">		return subG;</span>
 	}
 
 	static Weights.Double assignWeightsFromEdgeRef(Graph g, EdgeWeightFunc w, Object weightKey, Weights.Int edgeRef) {
-<span class="fc" id="L128">		Weights.Double w2 = g.addEdgesWeights(weightKey, double.class);</span>
-<span class="fc bfc" id="L129" title="All 2 branches covered.">		for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
-<span class="fc" id="L130">			int e = it.nextInt();</span>
-<span class="fc" id="L131">			w2.set(e, w.weight(edgeRef.getInt(e)));</span>
-<span class="fc" id="L132">		}</span>
-<span class="fc" id="L133">		return w2;</span>
+<span class="fc" id="L127">		Weights.Double w2 = g.addEdgesWeights(weightKey, double.class);</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">		for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
+<span class="fc" id="L129">			int e = it.nextInt();</span>
+<span class="fc" id="L130">			w2.set(e, w.weight(edgeRef.getInt(e)));</span>
+<span class="fc" id="L131">		}</span>
+<span class="fc" id="L132">		return w2;</span>
 	}
 
 	private Graph randSubgraph(Graph g, Object edgeRefKey, Weights.Int edgeRef) {
-<span class="fc" id="L137">		allocatedMem.allocateForRandSubGraph();</span>
-<span class="fc" id="L138">		IntCollection edgeSet = allocatedMem.edgeList;</span>
-<span class="fc" id="L139">		edgeSet.clear();</span>
-<span class="fc bfc" id="L140" title="All 2 branches covered.">		for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
-<span class="fc" id="L141">			int e = it.nextInt();</span>
-<span class="fc bfc" id="L142" title="All 2 branches covered.">			if (rand.nextBoolean())</span>
-<span class="fc" id="L143">				edgeSet.add(e);</span>
-<span class="fc" id="L144">		}</span>
+<span class="fc" id="L136">		allocatedMem.allocateForRandSubGraph();</span>
+<span class="fc" id="L137">		IntCollection edgeSet = allocatedMem.edgeList;</span>
+<span class="fc" id="L138">		edgeSet.clear();</span>
+<span class="fc bfc" id="L139" title="All 2 branches covered.">		for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
+<span class="fc" id="L140">			int e = it.nextInt();</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">			if (rand.nextBoolean())</span>
+<span class="fc" id="L142">				edgeSet.add(e);</span>
+<span class="fc" id="L143">		}</span>
 
-<span class="fc" id="L146">		return subGraph(g, edgeSet, edgeRefKey, edgeRef);</span>
+<span class="fc" id="L145">		return subGraph(g, edgeSet, edgeRefKey, edgeRef);</span>
 	}
 
 	private IntCollection lightEdges(Graph g, Int2DoubleFunction gw, Graph f, Int2DoubleFunction fw) {
-<span class="fc" id="L150">		final int n = f.vertices().size();</span>
+<span class="fc" id="L149">		final int n = f.vertices().size();</span>
 		/* find connectivity components in the forest, each one of them is a tree */
-<span class="fc" id="L152">		ConnectivityAlgorithm.Result connectivityRes = ccAlg.computeConnectivityComponents(f);</span>
-<span class="fc" id="L153">		final int treeCount = connectivityRes.getNumberOfCC();</span>
-<span class="fc" id="L154">		Int2IntFunction vToTree = connectivityRes::getVertexCc;</span>
+<span class="fc" id="L151">		ConnectivityAlgorithm.Result connectivityRes = ccAlg.computeConnectivityComponents(f);</span>
+<span class="fc" id="L152">		final int treeCount = connectivityRes.getNumberOfCC();</span>
+<span class="fc" id="L153">		Int2IntFunction vToTree = connectivityRes::getVertexCc;</span>
 
-<span class="fc" id="L156">		allocatedMem.allocateForLightEdges(n, treeCount);</span>
+<span class="fc" id="L155">		allocatedMem.allocateForLightEdges(n, treeCount);</span>
 
-<span class="fc" id="L158">		Graph[] trees = allocatedMem.trees;</span>
-<span class="fc" id="L159">		Weights.Double[] treeData = allocatedMem.treeData;</span>
-<span class="fc bfc" id="L160" title="All 2 branches covered.">		for (int t = 0; t &lt; treeCount; t++)</span>
-<span class="fc" id="L161">			treeData[t] = trees[t].getEdgesWeights(&quot;weight&quot;);</span>
+<span class="fc" id="L157">		Graph[] trees = allocatedMem.trees;</span>
+<span class="fc" id="L158">		Weights.Double[] treeData = allocatedMem.treeData;</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">		for (int t = 0; t &lt; treeCount; t++)</span>
+<span class="fc" id="L160">			treeData[t] = trees[t].getEdgesWeights(&quot;weight&quot;);</span>
 
-<span class="fc" id="L163">		int[] vToVnew = allocatedMem.vToVnew;</span>
-<span class="fc bfc" id="L164" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc" id="L165">			int ut = vToTree.applyAsInt(u);</span>
-<span class="fc" id="L166">			vToVnew[u] = trees[ut].addVertex();</span>
+<span class="fc" id="L162">		int[] vToVnew = allocatedMem.vToVnew;</span>
+<span class="fc bfc" id="L163" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc" id="L164">			int ut = vToTree.applyAsInt(u);</span>
+<span class="fc" id="L165">			vToVnew[u] = trees[ut].addVertex();</span>
 		}
 
-<span class="fc bfc" id="L169" title="All 2 branches covered.">		for (IntIterator it = f.edges().iterator(); it.hasNext();) {</span>
-<span class="fc" id="L170">			int e = it.nextInt();</span>
-<span class="fc" id="L171">			int u = f.edgeSource(e), v = f.edgeTarget(e);</span>
-<span class="fc" id="L172">			int un = vToVnew[u], vn = vToVnew[v];</span>
-<span class="fc" id="L173">			int treeIdx = vToTree.applyAsInt(u);</span>
-<span class="fc" id="L174">			int en = trees[treeIdx].addEdge(un, vn);</span>
-<span class="fc" id="L175">			treeData[treeIdx].set(en, fw.get(e));</span>
-<span class="fc" id="L176">		}</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">		for (IntIterator it = f.edges().iterator(); it.hasNext();) {</span>
+<span class="fc" id="L169">			int e = it.nextInt();</span>
+<span class="fc" id="L170">			int u = f.edgeSource(e), v = f.edgeTarget(e);</span>
+<span class="fc" id="L171">			int un = vToVnew[u], vn = vToVnew[v];</span>
+<span class="fc" id="L172">			int treeIdx = vToTree.applyAsInt(u);</span>
+<span class="fc" id="L173">			int en = trees[treeIdx].addEdge(un, vn);</span>
+<span class="fc" id="L174">			treeData[treeIdx].set(en, fw.get(e));</span>
+<span class="fc" id="L175">		}</span>
 
 		// use the tree path maxima to find the heaviest edge in the path connecting u v for each edge in g
-<span class="fc" id="L179">		TreePathMaxima.Queries[] tpmQueries = allocatedMem.tpmQueries;</span>
-<span class="fc bfc" id="L180" title="All 2 branches covered.">		for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
-<span class="fc" id="L181">			int e = it.nextInt();</span>
-<span class="fc" id="L182">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
-<span class="fc" id="L183">			int ut = vToTree.applyAsInt(u);</span>
-<span class="pc bpc" id="L184" title="1 of 2 branches missed.">			if (ut != vToTree.applyAsInt(v))</span>
-<span class="nc" id="L185">				continue;</span>
-<span class="fc" id="L186">			tpmQueries[ut].addQuery(vToVnew[u], vToVnew[v]);</span>
-<span class="fc" id="L187">		}</span>
+<span class="fc" id="L178">		TreePathMaxima.Queries[] tpmQueries = allocatedMem.tpmQueries;</span>
+<span class="fc bfc" id="L179" title="All 2 branches covered.">		for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
+<span class="fc" id="L180">			int e = it.nextInt();</span>
+<span class="fc" id="L181">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+<span class="fc" id="L182">			int ut = vToTree.applyAsInt(u);</span>
+<span class="pc bpc" id="L183" title="1 of 2 branches missed.">			if (ut != vToTree.applyAsInt(v))</span>
+<span class="nc" id="L184">				continue;</span>
+<span class="fc" id="L185">			tpmQueries[ut].addQuery(vToVnew[u], vToVnew[v]);</span>
+<span class="fc" id="L186">		}</span>
 
-<span class="fc" id="L189">		int[][] tpmResults = allocatedMem.tpmResults;</span>
-<span class="fc bfc" id="L190" title="All 2 branches covered.">		for (int t = 0; t &lt; treeCount; t++) {</span>
-<span class="fc" id="L191">			tpmResults[t] = tpm.computeHeaviestEdgeInTreePaths(trees[t], treeData[t], tpmQueries[t]);</span>
-<span class="fc" id="L192">			tpmQueries[t].clear();</span>
+<span class="fc" id="L188">		TreePathMaxima.Result[] tpmResults = allocatedMem.tpmResults;</span>
+<span class="fc bfc" id="L189" title="All 2 branches covered.">		for (int t = 0; t &lt; treeCount; t++) {</span>
+<span class="fc" id="L190">			tpmResults[t] = tpm.computeHeaviestEdgeInTreePaths(trees[t], treeData[t], tpmQueries[t]);</span>
+<span class="fc" id="L191">			tpmQueries[t].clear();</span>
 		}
 
 		// Find all light edge by comparing each edge in g to the heaviest edge on the path from u to v in f
-<span class="fc" id="L196">		IntCollection lightEdges = allocatedMem.edgeList;</span>
-<span class="fc" id="L197">		lightEdges.clear();</span>
-<span class="fc" id="L198">		int[] tpmIdx = allocatedMem.vToVnew;</span>
-<span class="fc" id="L199">		Arrays.fill(tpmIdx, 0, treeCount, 0);</span>
-<span class="fc bfc" id="L200" title="All 2 branches covered.">		for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
-<span class="fc" id="L201">			int e = it.nextInt();</span>
-<span class="fc" id="L202">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
-<span class="fc" id="L203">			int ut = vToTree.applyAsInt(u);</span>
-<span class="pc bpc" id="L204" title="1 of 4 branches missed.">			if (ut != vToTree.applyAsInt(v) || gw.get(e) &lt;= treeData[ut].weight(tpmResults[ut][tpmIdx[ut]++]))</span>
+<span class="fc" id="L195">		IntCollection lightEdges = allocatedMem.edgeList;</span>
+<span class="fc" id="L196">		lightEdges.clear();</span>
+<span class="fc" id="L197">		int[] tpmIdx = allocatedMem.vToVnew;</span>
+<span class="fc" id="L198">		Arrays.fill(tpmIdx, 0, treeCount, 0);</span>
+<span class="fc bfc" id="L199" title="All 2 branches covered.">		for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
+<span class="fc" id="L200">			int e = it.nextInt();</span>
+<span class="fc" id="L201">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+<span class="fc" id="L202">			int ut = vToTree.applyAsInt(u);</span>
+<span class="pc bpc" id="L203" title="1 of 2 branches missed.">			if (ut != vToTree.applyAsInt(v)</span>
+<span class="fc bfc" id="L204" title="All 2 branches covered.">					|| gw.get(e) &lt;= treeData[ut].weight(tpmResults[ut].getHeaviestEdge(tpmIdx[ut]++)))</span>
 <span class="fc" id="L205">				lightEdges.add(e);</span>
 <span class="fc" id="L206">		}</span>
 <span class="fc bfc" id="L207" title="All 2 branches covered.">		for (int t = 0; t &lt; treeCount; t++)</span>
@@ -217,7 +217,7 @@ public class MSTKargerKleinTarjan implements MST {
 <span class="fc" id="L217">		Weights.Double[] treeData = MemoryReuse.EmptyWeightsDoubleArr;</span>
 
 <span class="fc" id="L219">		TreePathMaxima.Queries[] tpmQueries = MemoryReuse.EmptyTpmQueriesArr;</span>
-<span class="fc" id="L220">		int[][] tpmResults = IntBigArrays.EMPTY_BIG_ARRAY;</span>
+<span class="fc" id="L220">		TreePathMaxima.Result[] tpmResults = MemoryReuse.EmptyTpmResultArr;</span>
 
 		void allocateForRandSubGraph() {
 <span class="fc" id="L223">			edgeList = MemoryReuse.ensureAllocated(edgeList, IntArrayList::new);</span>

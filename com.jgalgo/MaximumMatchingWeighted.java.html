@@ -13,102 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.jgalgo;
 
-import it.unimi.dsi.fastutil.ints.IntCollection;
-
-/**
- * Maximum weighted matching algorithm.
- * &lt;p&gt;
- * Given a graph \(G=(V,E)\), a matching is a sub set of edges \(M\) such that any vertex in \(V\) have at most one
- * adjacent edge in \(M\). A maximum matching is a matching with the maximum edges weight sum with respect to some
- * weight function. The 'maximum matching' with out weight is referred as 'maximum cardinality matching'.
- * &lt;p&gt;
- * A perfect maximum matching is a matching with the maximum edges weight sum out of all the matching with are maximum
- * cardinality matching. Note that the weight of a perfect maximum matching is smaller or equal to the weight of a
- * maximum weight matching.
- *
- * @see    &lt;a href= &quot;https://en.wikipedia.org/wiki/Maximum_weight_matching&quot;&gt;Wikipedia&lt;/a&gt;
- * @author Barak Ugav
- */
-public interface MaximumMatchingWeighted extends MaximumMatching {
-
-	/**
-	 * Compute the maximum weighted matching of a weighted undirected graph.
-	 *
-	 * @param  g                        an undirected graph
-	 * @param  w                        an edge weight function
-	 * @return                          collection of edges representing the matching
-	 * @throws IllegalArgumentException if {@code g} is a directed graph
-	 */
-	public IntCollection computeMaximumMatching(Graph g, EdgeWeightFunc w);
-
-	/**
-	 * Compute the maximum perfect matching of a weighted undirected graph.
-	 *
-	 * @param  g                        an undirected graph
-	 * @param  w                        an edge weight function
-	 * @return                          collection of edges representing perfect matching, or the maximal one if no
-	 *                                  perfect one found
-	 * @throws IllegalArgumentException if {@code g} is a directed graph
-	 */
-	public IntCollection computeMaximumPerfectMatching(Graph g, EdgeWeightFunc w);
+interface MaximumMatchingWeighted extends MaximumMatching {
 
 	/**
 	 * {@inheritDoc}
 	 * &lt;p&gt;
-	 * Compute the maximum cardinality matching of a weighted undirected graph.
+	 * Compute the maximum cardinality matching of a undirected graph.
 	 */
 	@Override
-	default IntCollection computeMaximumMatching(Graph g) {
-<span class="fc" id="L65">		return computeMaximumMatching(g, e -&gt; 1);</span>
-	}
-
-	/**
-	 * Create a new maximum weighted matching algorithm builder.
-	 * &lt;p&gt;
-	 * This is the recommended way to instantiate a new {@link MaximumMatchingWeighted} object.
-	 *
-	 * @return a new builder that can build {@link MaximumMatchingWeighted} objects
-	 */
-	static MaximumMatchingWeighted.Builder newBuilder() {
-<span class="nc" id="L76">		return new MaximumMatchingWeighted.Builder() {</span>
-
-<span class="nc" id="L78">			boolean isBipartite = false;</span>
-
-			@Override
-			public MaximumMatchingWeighted build() {
-<span class="nc bnc" id="L82" title="All 2 branches missed.">				return isBipartite ? new MaximumMatchingWeightedBipartiteHungarianMethod()</span>
-<span class="nc" id="L83">						: new MaximumMatchingWeightedGabow1990();</span>
-			}
-
-			@Override
-			public Builder setBipartite(boolean bipartite) {
-<span class="nc" id="L88">				isBipartite = bipartite;</span>
-<span class="nc" id="L89">				return this;</span>
-			}
-		};
-	}
-
-	/**
-	 * A builder for {@link MaximumMatchingWeighted} objects.
-	 *
-	 * @see    MaximumMatchingWeighted#newBuilder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends MaximumMatching.Builder {
-
-		/**
-		 * Create a new maximum weighted matching algorithm object.
-		 *
-		 * @return a new maximum weighted matching algorithm
-		 */
-		@Override
-		MaximumMatchingWeighted build();
-
-		@Override
-		MaximumMatchingWeighted.Builder setBipartite(boolean bipartite);
+	default Matching computeMaximumCardinalityMatching(Graph g) {
+<span class="fc" id="L27">		return computeMaximumWeightedMatching(g, e -&gt; 1);</span>
 	}
 
 }

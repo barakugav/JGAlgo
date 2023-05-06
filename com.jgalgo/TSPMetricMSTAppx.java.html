@@ -16,7 +16,6 @@
 
 package com.jgalgo;
 
-import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
@@ -34,53 +33,50 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  */
 public class TSPMetricMSTAppx implements TSPMetric {
 
-	/*
-	 * If true, the algorithm will validate the distance table and check the metric constrain is satisfied. This
-	 * increases the running time to O(n^3)
-	 */
-	private static final boolean VALIDATE_METRIC = true;
-<span class="fc" id="L42">	private static final Object DoubleWeightKey = new Object();</span>
-<span class="fc" id="L43">	private static final Object EdgeRefWeightKey = new Object();</span>
+<span class="fc" id="L36">	private final MST mstAlgo = MST.newBuilder().build();</span>
+	// /*
+	// * If true, the algorithm will validate the distance table and check the metric constrain is satisfied. This
+	// * increases the running time to O(n^3)
+	// */
+	// private static final boolean VALIDATE_METRIC = true;
+<span class="fc" id="L42">	private static final Object EdgeRefWeightKey = new Object();</span>
 
 	/**
 	 * Create a new TSP \(2\)-approximation algorithm.
 	 */
-<span class="fc" id="L48">	public TSPMetricMSTAppx() {}</span>
+<span class="fc" id="L47">	public TSPMetricMSTAppx() {}</span>
 
 	@Override
-	public int[] computeShortestTour(double[][] distances) {
-<span class="fc" id="L52">		int n = distances.length;</span>
-<span class="pc bpc" id="L53" title="1 of 2 branches missed.">		if (n == 0)</span>
-<span class="nc" id="L54">			return IntArrays.EMPTY_ARRAY;</span>
-<span class="fc" id="L55">		TSPMetricUtils.checkArgDistanceTableSymmetric(distances);</span>
-		if (VALIDATE_METRIC)
-<span class="fc" id="L57">			TSPMetricUtils.checkArgDistanceTableIsMetric(distances);</span>
-
-		/* Build graph from the distances table */
-<span class="fc" id="L60">		Graph g = new GraphTableUndirected(n);</span>
-<span class="fc" id="L61">		Weights.Double weights = g.addEdgesWeights(DoubleWeightKey, double.class);</span>
-<span class="fc bfc" id="L62" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
-<span class="fc bfc" id="L63" title="All 2 branches covered.">			for (int v = u + 1; v &lt; n; v++)</span>
-<span class="fc" id="L64">				weights.set(g.addEdge(u, v), distances[u][v]);</span>
+	public Path computeShortestTour(Graph g, EdgeWeightFunc w) {
+<span class="fc" id="L51">		final int n = g.vertices().size();</span>
+<span class="pc bpc" id="L52" title="1 of 2 branches missed.">		if (n == 0)</span>
+<span class="nc" id="L53">			return Path.Empty;</span>
+<span class="fc" id="L54">		ArgumentCheck.onlyUndirected(g);</span>
+<span class="fc" id="L55">		TSPMetricUtils.checkNoParallelEdges(g);</span>
+		// if (VALIDATE_METRIC)
+		// TSPMetricUtils.checkArgDistanceTableIsMetric(distances);
 
 		/* Calculate MST */
-<span class="fc" id="L67">		IntCollection mst = new MSTPrim().computeMinimumSpanningTree(g, weights);</span>
+<span class="fc" id="L60">		IntCollection mst = mstAlgo.computeMinimumSpanningTree(g, w).edges();</span>
+<span class="pc bpc" id="L61" title="1 of 2 branches missed.">		if (mst.size() &lt; n - 1)</span>
+<span class="nc" id="L62">			throw new IllegalArgumentException(&quot;graph is not connected&quot;);</span>
 
 		/* Build a graph with each MST edge duplicated */
-<span class="fc" id="L70">		Graph g1 = new GraphArrayUndirected(n);</span>
-<span class="fc" id="L71">		Weights.Int edgeRef = g1.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));</span>
-<span class="fc bfc" id="L72" title="All 2 branches covered.">		for (IntIterator it = mst.iterator(); it.hasNext();) {</span>
-<span class="fc" id="L73">			int e = it.nextInt();</span>
-<span class="fc" id="L74">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
-<span class="fc" id="L75">			edgeRef.set(g1.addEdge(u, v), e);</span>
-<span class="fc" id="L76">			edgeRef.set(g1.addEdge(u, v), e);</span>
-<span class="fc" id="L77">		}</span>
+<span class="fc" id="L65">		Graph g1 = new GraphArrayUndirected(n);</span>
+<span class="fc" id="L66">		Weights.Int edgeRef = g1.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">		for (IntIterator it = mst.iterator(); it.hasNext();) {</span>
+<span class="fc" id="L68">			int e = it.nextInt();</span>
+<span class="fc" id="L69">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+<span class="fc" id="L70">			edgeRef.set(g1.addEdge(u, v), e);</span>
+<span class="fc" id="L71">			edgeRef.set(g1.addEdge(u, v), e);</span>
+<span class="fc" id="L72">		}</span>
 
-<span class="fc" id="L79">		Path cycle = TSPMetricUtils.calcEulerianTourAndConvertToHamiltonianCycle(g, g1, edgeRef);</span>
-<span class="pc bpc" id="L80" title="1 of 2 branches missed.">		assert cycle.size() == n;</span>
+<span class="fc" id="L74">		Path cycle = TSPMetricUtils.calcEulerianTourAndConvertToHamiltonianCycle(g, g1, edgeRef);</span>
+<span class="pc bpc" id="L75" title="1 of 2 branches missed.">		assert cycle.size() == n;</span>
+<span class="pc bpc" id="L76" title="1 of 2 branches missed.">		assert cycle.isCycle();</span>
 
 		/* Convert cycle of edges to list of vertices */
-<span class="fc" id="L83">		return TSPMetricUtils.pathToVerticesList(cycle).toIntArray();</span>
+<span class="fc" id="L79">		return cycle;</span>
 	}
 
 }

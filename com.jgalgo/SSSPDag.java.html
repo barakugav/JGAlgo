@@ -16,6 +16,8 @@
 
 package com.jgalgo;
 
+import it.unimi.dsi.fastutil.ints.IntIterator;
+
 /**
  * Linear Single Source Shortest Path (SSSP) algorithm for directed acyclic graphs (DAG).
  * &lt;p&gt;
@@ -27,12 +29,12 @@ package com.jgalgo;
  */
 public class SSSPDag implements SSSP {
 
-<span class="fc" id="L30">	private final TopologicalOrderAlgorithm topoAlg = TopologicalOrderAlgorithm.newBuilder().build();</span>
+<span class="fc" id="L32">	private final TopologicalOrderAlgorithm topoAlg = TopologicalOrderAlgorithm.newBuilder().build();</span>
 
 	/**
 	 * Construct a new SSSP algorithm object.
 	 */
-<span class="fc" id="L35">	public SSSPDag() {}</span>
+<span class="fc" id="L37">	public SSSPDag() {}</span>
 
 	/**
 	 * {@inheritDoc}
@@ -41,30 +43,30 @@ public class SSSPDag implements SSSP {
 	 */
 	@Override
 	public SSSPDag.Result computeShortestPaths(Graph g, EdgeWeightFunc w, int source) {
-<span class="fc" id="L44">		ArgumentCheck.onlyDirected(g);</span>
-<span class="fc" id="L45">		SSSPResultImpl res = new SSSPResultImpl(g, source);</span>
-<span class="fc" id="L46">		res.distances[source] = 0;</span>
+<span class="fc" id="L46">		ArgumentCheck.onlyDirected(g);</span>
+<span class="fc" id="L47">		SSSPResultImpl res = new SSSPResultImpl(g, source);</span>
+<span class="fc" id="L48">		res.distances[source] = 0;</span>
 
-<span class="fc" id="L48">		int[] topolSort = topoAlg.computeTopologicalSorting(g);</span>
-<span class="fc" id="L49">		boolean sourceSeen = false;</span>
-<span class="fc bfc" id="L50" title="All 2 branches covered.">		for (int u : topolSort) {</span>
-<span class="fc bfc" id="L51" title="All 2 branches covered.">			if (!sourceSeen) {</span>
-<span class="fc bfc" id="L52" title="All 2 branches covered.">				if (u != source)</span>
-<span class="fc" id="L53">					continue;</span>
-<span class="fc" id="L54">				sourceSeen = true;</span>
+<span class="fc" id="L50">		boolean sourceSeen = false;</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">		for (IntIterator uit = topoAlg.computeTopologicalSorting(g).verticesIterator(); uit.hasNext();) {</span>
+<span class="fc" id="L52">			int u = uit.nextInt();</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">			if (!sourceSeen) {</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">				if (u != source)</span>
+<span class="fc" id="L55">					continue;</span>
+<span class="fc" id="L56">				sourceSeen = true;</span>
 			}
-<span class="fc bfc" id="L56" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
-<span class="fc" id="L57">				int e = eit.nextInt();</span>
-<span class="fc" id="L58">				int v = eit.target();</span>
-<span class="fc" id="L59">				double d = res.distances[u] + w.weight(e);</span>
-<span class="fc bfc" id="L60" title="All 2 branches covered.">				if (d &lt; res.distances[v]) {</span>
-<span class="fc" id="L61">					res.distances[v] = d;</span>
-<span class="fc" id="L62">					res.backtrack[v] = e;</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
+<span class="fc" id="L59">				int e = eit.nextInt();</span>
+<span class="fc" id="L60">				int v = eit.target();</span>
+<span class="fc" id="L61">				double d = res.distances[u] + w.weight(e);</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">				if (d &lt; res.distances[v]) {</span>
+<span class="fc" id="L63">					res.distances[v] = d;</span>
+<span class="fc" id="L64">					res.backtrack[v] = e;</span>
 				}
-<span class="fc" id="L64">			}</span>
-		}
+<span class="fc" id="L66">			}</span>
+<span class="fc" id="L67">		}</span>
 
-<span class="fc" id="L67">		return res;</span>
+<span class="fc" id="L69">		return res;</span>
 	}
 
 }

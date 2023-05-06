@@ -16,8 +16,6 @@
 
 package com.jgalgo;
 
-import it.unimi.dsi.fastutil.ints.IntList;
-
 /**
  * Minimum Cut algorithm with terminal vertices (source-sink, S-T).
  * &lt;p&gt;
@@ -47,11 +45,10 @@ public interface MinimumCutST {
 	 * @param  w                        an edge weight function
 	 * @param  source                   a special vertex that will be in \(C\)
 	 * @param  sink                     a special vertex that will be in \(\bar{C}\)
-	 * @return                          the set C, where the minimum cut is a partition of the vertices \(V\) into two
-	 *                                  sets \(C, \bar{C} = V \setminus C\)
+	 * @return                          the cut that was computed
 	 * @throws IllegalArgumentException if the source and the sink are the same vertex
 	 */
-	IntList computeMinimumCut(Graph g, EdgeWeightFunc w, int source, int sink);
+	Cut computeMinimumCut(Graph g, EdgeWeightFunc w, int source, int sink);
 
 	/**
 	 * Create a new minimum cut algorithm builder.
@@ -61,7 +58,7 @@ public interface MinimumCutST {
 	 * @return a new builder that can build {@link MinimumCutST} objects
 	 */
 	static MinimumCutST.Builder newBuilder() {
-<span class="nc" id="L64">		return new MinimumCutSTBuilderImpl.Default();</span>
+<span class="nc" id="L61">		return new MinimumCutSTBuilderImpl.Default();</span>
 	}
 
 	/**
@@ -74,7 +71,7 @@ public interface MinimumCutST {
 	 * @return            a minimum cut algorithm based on the provided maximum flow algorithm
 	 */
 	static MinimumCutST newFromMaximumFlow(MaximumFlow maxFlowAlg) {
-<span class="fc" id="L77">		return MinimumCutSTBuilderImpl.buildFromMaxFlow(maxFlowAlg);</span>
+<span class="fc" id="L74">		return MinimumCutSTBuilderImpl.buildFromMaxFlow(maxFlowAlg);</span>
 	}
 
 	/**

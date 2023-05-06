@@ -287,29 +287,34 @@ public abstract class IDStrategy {
 
 	abstract IntSet idSet();
 
+	@Override
+	public String toString() {
+<span class="nc" id="L292">		return idSet().toString();</span>
+	}
+
 	int isSwapNeededBeforeRemove(int idx) {
-<span class="fc" id="L291">		int size = idSet().size();</span>
-<span class="pc bpc" id="L292" title="2 of 4 branches missed.">		if (!(0 &lt;= idx &amp;&amp; idx &lt; size))</span>
-<span class="nc" id="L293">			throw new IndexOutOfBoundsException(idx);</span>
-<span class="fc" id="L294">		return size - 1;</span>
+<span class="fc" id="L296">		int size = idSet().size();</span>
+<span class="pc bpc" id="L297" title="2 of 4 branches missed.">		if (!(0 &lt;= idx &amp;&amp; idx &lt; size))</span>
+<span class="nc" id="L298">			throw new IndexOutOfBoundsException(idx);</span>
+<span class="fc" id="L299">		return size - 1;</span>
 	}
 
 	abstract void idxSwap(int idx1, int idx2);
 
 	void notifyIDSwap(int id1, int id2) {
-<span class="fc bfc" id="L300" title="All 2 branches covered.">		for (IDSwapListener listener : idSwapListeners)</span>
-<span class="fc" id="L301">			listener.idSwap(id1, id2);</span>
-<span class="fc" id="L302">	}</span>
-
-	void notifyIDAdd(int id) {
-<span class="fc bfc" id="L305" title="All 2 branches covered.">		for (IDAddRemoveListener listener : idAddRemoveListeners)</span>
-<span class="fc" id="L306">			listener.idAdd(id);</span>
+<span class="fc bfc" id="L305" title="All 2 branches covered.">		for (IDSwapListener listener : idSwapListeners)</span>
+<span class="fc" id="L306">			listener.idSwap(id1, id2);</span>
 <span class="fc" id="L307">	}</span>
 
-	void notifyIDRemove(int id) {
+	void notifyIDAdd(int id) {
 <span class="fc bfc" id="L310" title="All 2 branches covered.">		for (IDAddRemoveListener listener : idAddRemoveListeners)</span>
-<span class="fc" id="L311">			listener.idRemove(id);</span>
+<span class="fc" id="L311">			listener.idAdd(id);</span>
 <span class="fc" id="L312">	}</span>
+
+	void notifyIDRemove(int id) {
+<span class="fc bfc" id="L315" title="All 2 branches covered.">		for (IDAddRemoveListener listener : idAddRemoveListeners)</span>
+<span class="fc" id="L316">			listener.idRemove(id);</span>
+<span class="fc" id="L317">	}</span>
 
 	abstract void ensureSize(int n);
 
@@ -323,8 +328,8 @@ public abstract class IDStrategy {
 	 * @param listener an ID swap listener that will be called each time the strategy wap two IDs.
 	 */
 	public void addIDSwapListener(IDSwapListener listener) {
-<span class="fc" id="L326">		idSwapListeners.add(Objects.requireNonNull(listener));</span>
-<span class="fc" id="L327">	}</span>
+<span class="fc" id="L331">		idSwapListeners.add(Objects.requireNonNull(listener));</span>
+<span class="fc" id="L332">	}</span>
 
 	/**
 	 * Remove an ID swap listener.
@@ -333,8 +338,8 @@ public abstract class IDStrategy {
 	 * @see            #addIDSwapListener(IDSwapListener)
 	 */
 	public void removeIDSwapListener(IDSwapListener listener) {
-<span class="nc" id="L336">		idSwapListeners.remove(listener);</span>
-<span class="nc" id="L337">	}</span>
+<span class="nc" id="L341">		idSwapListeners.remove(listener);</span>
+<span class="nc" id="L342">	}</span>
 
 	/**
 	 * Add a listener that will be notified each time the strategy add or remove an id.
@@ -342,8 +347,8 @@ public abstract class IDStrategy {
 	 * @param listener a listener object that will be called when the strategy add or remove an id
 	 */
 	public void addIDAddRemoveListener(IDAddRemoveListener listener) {
-<span class="fc" id="L345">		idAddRemoveListeners.add(Objects.requireNonNull(listener));</span>
-<span class="fc" id="L346">	}</span>
+<span class="fc" id="L350">		idAddRemoveListeners.add(Objects.requireNonNull(listener));</span>
+<span class="fc" id="L351">	}</span>
 
 	/**
 	 * Remove an ID add/remove listener.
@@ -351,8 +356,8 @@ public abstract class IDStrategy {
 	 * @param listener the listener to remove
 	 */
 	public void removeIDAddRemoveListener(IDAddRemoveListener listener) {
-<span class="nc" id="L354">		idAddRemoveListeners.remove(listener);</span>
-<span class="nc" id="L355">	}</span>
+<span class="nc" id="L359">		idAddRemoveListeners.remove(listener);</span>
+<span class="nc" id="L360">	}</span>
 
 	/**
 	 * A listener that will be notified each time a strategy chooses to swap two IDs.

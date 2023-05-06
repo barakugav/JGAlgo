@@ -54,7 +54,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 	 * @throws IllegalArgumentException if the graph is not directed
 	 */
 	@Override
-	public IntList computeMinimumCut(Graph g, EdgeWeightFunc w, int source, int sink) {
+	public Cut computeMinimumCut(Graph g, EdgeWeightFunc w, int source, int sink) {
 <span class="fc" id="L58">		ArgumentCheck.onlyDirected(g);</span>
 <span class="pc bpc" id="L59" title="1 of 2 branches missed.">		if (w instanceof EdgeWeightFunc.Int) {</span>
 <span class="fc" id="L60">			EdgeWeightFunc.Int wInt = (EdgeWeightFunc.Int) w;</span>
@@ -441,7 +441,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 <span class="fc" id="L441">			return constructResult();</span>
 		}
 
-		IntList computeMinimumCut() {
+		Cut computeMinimumCut() {
 			// first phase
 <span class="fc" id="L446">			calcMaxPreflow();</span>
 			// no need for second phase
@@ -473,7 +473,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 <span class="fc bfc" id="L473" title="All 2 branches covered.">				if (!visited.get(u))</span>
 <span class="fc" id="L474">					cut.add(u);</span>
 <span class="fc" id="L475">			visited.clear();</span>
-<span class="fc" id="L476">			return cut;</span>
+<span class="fc" id="L476">			return new CutImpl(gOrig, cut);</span>
 		}
 
 		abstract boolean hasExcess(int u);

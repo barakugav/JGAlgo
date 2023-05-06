@@ -61,7 +61,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  *
  * &lt;pre&gt; {@code
  * // Create a directed graph with three vertices and edges between them
- * Graph g = Graph.newBuilderDirected().build();
+ * Graph g = GraphBuilder.newDirected().build();
  * int v1 = g.addVertex();
  * int v2 = g.addVertex();
  * int v3 = g.addVertex();
@@ -91,6 +91,8 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * }
  * }&lt;/pre&gt;
  *
+ * @see    GraphBuilder
+ * @see    GraphCapabilities
  * @author Barak Ugav
  */
 public interface Graph {
@@ -198,12 +200,12 @@ public interface Graph {
 	 * @throws IndexOutOfBoundsException if \(u\) or \(v\) are not valid vertices identifiers
 	 */
 	default int getEdge(int u, int v) {
-<span class="fc bfc" id="L201" title="All 2 branches covered.">		for (EdgeIter it = edgesOut(u); it.hasNext();) {</span>
-<span class="fc" id="L202">			int e = it.nextInt();</span>
-<span class="fc bfc" id="L203" title="All 2 branches covered.">			if (it.target() == v)</span>
-<span class="fc" id="L204">				return e;</span>
-<span class="fc" id="L205">		}</span>
-<span class="fc" id="L206">		return -1;</span>
+<span class="fc bfc" id="L203" title="All 2 branches covered.">		for (EdgeIter it = edgesOut(u); it.hasNext();) {</span>
+<span class="fc" id="L204">			int e = it.nextInt();</span>
+<span class="fc bfc" id="L205" title="All 2 branches covered.">			if (it.target() == v)</span>
+<span class="fc" id="L206">				return e;</span>
+<span class="fc" id="L207">		}</span>
+<span class="fc" id="L208">		return -1;</span>
 	}
 
 	/**
@@ -264,9 +266,9 @@ public interface Graph {
 	 * @throws IndexOutOfBoundsException if \(u\) is not a valid vertex identifier
 	 */
 	default void removeEdgesOf(int u) {
-<span class="fc" id="L267">		removeEdgesOutOf(u);</span>
-<span class="fc" id="L268">		removeEdgesInOf(u);</span>
-<span class="fc" id="L269">	}</span>
+<span class="fc" id="L269">		removeEdgesOutOf(u);</span>
+<span class="fc" id="L270">		removeEdgesInOf(u);</span>
+<span class="fc" id="L271">	}</span>
 
 	/**
 	 * Remove all edges whose source is \(u\).
@@ -278,11 +280,11 @@ public interface Graph {
 	 * @throws IndexOutOfBoundsException if \(u\) is not a valid vertex identifier
 	 */
 	default void removeEdgesOutOf(int u) {
-<span class="fc bfc" id="L281" title="All 2 branches covered.">		for (EdgeIter eit = edgesOut(u); eit.hasNext();) {</span>
-<span class="fc" id="L282">			eit.nextInt();</span>
-<span class="fc" id="L283">			eit.remove();</span>
+<span class="fc bfc" id="L283" title="All 2 branches covered.">		for (EdgeIter eit = edgesOut(u); eit.hasNext();) {</span>
+<span class="fc" id="L284">			eit.nextInt();</span>
+<span class="fc" id="L285">			eit.remove();</span>
 		}
-<span class="fc" id="L285">	}</span>
+<span class="fc" id="L287">	}</span>
 
 	/**
 	 * Remove all edges whose target is \(v\).
@@ -294,11 +296,11 @@ public interface Graph {
 	 * @throws IndexOutOfBoundsException if \(v\) is not a valid vertex identifier
 	 */
 	default void removeEdgesInOf(int v) {
-<span class="fc bfc" id="L297" title="All 2 branches covered.">		for (EdgeIter eit = edgesIn(v); eit.hasNext();) {</span>
-<span class="fc" id="L298">			eit.nextInt();</span>
-<span class="fc" id="L299">			eit.remove();</span>
+<span class="fc bfc" id="L299" title="All 2 branches covered.">		for (EdgeIter eit = edgesIn(v); eit.hasNext();) {</span>
+<span class="fc" id="L300">			eit.nextInt();</span>
+<span class="fc" id="L301">			eit.remove();</span>
 		}
-<span class="fc" id="L301">	}</span>
+<span class="fc" id="L303">	}</span>
 
 	/**
 	 * Reverse an edge by switching its source and target.
@@ -346,14 +348,14 @@ public interface Graph {
 	 * @throws IllegalArgumentException  if {@code endpoint} is not an endpoint of the edge
 	 */
 	default int edgeEndpoint(int edge, int endpoint) {
-<span class="nc" id="L349">		int u = edgeSource(edge);</span>
-<span class="nc" id="L350">		int v = edgeTarget(edge);</span>
-<span class="nc bnc" id="L351" title="All 2 branches missed.">		if (endpoint == u) {</span>
-<span class="nc" id="L352">			return v;</span>
-<span class="nc bnc" id="L353" title="All 2 branches missed.">		} else if (endpoint == v) {</span>
-<span class="nc" id="L354">			return u;</span>
+<span class="nc" id="L351">		int u = edgeSource(edge);</span>
+<span class="nc" id="L352">		int v = edgeTarget(edge);</span>
+<span class="nc bnc" id="L353" title="All 2 branches missed.">		if (endpoint == u) {</span>
+<span class="nc" id="L354">			return v;</span>
+<span class="nc bnc" id="L355" title="All 2 branches missed.">		} else if (endpoint == v) {</span>
+<span class="nc" id="L356">			return u;</span>
 		} else {
-<span class="nc" id="L356">			throw new IllegalArgumentException(</span>
+<span class="nc" id="L358">			throw new IllegalArgumentException(</span>
 					&quot;The given vertex (&quot; + endpoint + &quot;) is not an endpoint of the edge (&quot; + u + &quot;, &quot; + v + &quot;)&quot;);
 		}
 	}
@@ -366,12 +368,12 @@ public interface Graph {
 	 * @throws IndexOutOfBoundsException if \(u\) is not a valid vertex identifier
 	 */
 	default int degreeOut(int u) {
-<span class="fc" id="L369">		int count = 0;</span>
-<span class="fc bfc" id="L370" title="All 2 branches covered.">		for (EdgeIter it = edgesOut(u); it.hasNext();) {</span>
-<span class="fc" id="L371">			it.nextInt();</span>
-<span class="fc" id="L372">			count++;</span>
+<span class="fc" id="L371">		int count = 0;</span>
+<span class="fc bfc" id="L372" title="All 2 branches covered.">		for (EdgeIter it = edgesOut(u); it.hasNext();) {</span>
+<span class="fc" id="L373">			it.nextInt();</span>
+<span class="fc" id="L374">			count++;</span>
 		}
-<span class="fc" id="L374">		return count;</span>
+<span class="fc" id="L376">		return count;</span>
 	}
 
 	/**
@@ -382,12 +384,12 @@ public interface Graph {
 	 * @throws IndexOutOfBoundsException if \(v\) is not a valid vertex identifier
 	 */
 	default int degreeIn(int v) {
-<span class="fc" id="L385">		int count = 0;</span>
-<span class="fc bfc" id="L386" title="All 2 branches covered.">		for (EdgeIter it = edgesIn(v); it.hasNext();) {</span>
-<span class="fc" id="L387">			it.nextInt();</span>
-<span class="fc" id="L388">			count++;</span>
+<span class="fc" id="L387">		int count = 0;</span>
+<span class="fc bfc" id="L388" title="All 2 branches covered.">		for (EdgeIter it = edgesIn(v); it.hasNext();) {</span>
+<span class="fc" id="L389">			it.nextInt();</span>
+<span class="fc" id="L390">			count++;</span>
 		}
-<span class="fc" id="L390">		return count;</span>
+<span class="fc" id="L392">		return count;</span>
 	}
 
 	/**
@@ -649,68 +651,6 @@ public interface Graph {
 	 * @see    GraphCapabilities
 	 */
 	public GraphCapabilities getCapabilities();
-
-	/**
-	 * Create an undirected graph builder.
-	 * &lt;p&gt;
-	 * This is the recommended way to instantiate a new undirected graph.
-	 *
-	 * @return a new builder that can build undirected graphs
-	 */
-	public static Graph.Builder newBuilderUndirected() {
-<span class="fc" id="L661">		return new GraphBuilderImpl.ArrayUndirected();</span>
-	}
-
-	/**
-	 * Create a directed graph builder.
-	 * &lt;p&gt;
-	 * This is the recommended way to instantiate a new directed graph.
-	 *
-	 * @return a new builder that can build directed graphs
-	 */
-	public static Graph.Builder newBuilderDirected() {
-<span class="fc" id="L672">		return new GraphBuilderImpl.ArrayDirected();</span>
-	}
-
-	/**
-	 * A builder for {@link Graph} objects.
-	 *
-	 * @author Barak Ugav
-	 */
-	static interface Builder {
-
-		/**
-		 * Create a new graph.
-		 *
-		 * @return a new graph with the builder options
-		 */
-		Graph build();
-
-		/**
-		 * Set the number of initial vertices in the graph.
-		 * &lt;p&gt;
-		 * The default value is zero.
-		 *
-		 * @param  n number of initial vertices in the graph
-		 * @return   this builder
-		 */
-		Graph.Builder setVerticesNum(int n);
-
-		/**
-		 * Set the edges ID strategy of this builder.
-		 * &lt;p&gt;
-		 * The default strategy used by this builder is {@link IDStrategy.Continues}, namely the edges IDs will always
-		 * be {@code [0,1,2,...,edgesNum-1]}. This default strategy may perform some IDs rename to maintain its
-		 * invariant during the lifetime of the graph. A different strategy such as {@link IDStrategy.Fixed} may be used
-		 * to ensure no IDs rename are performed.
-		 *
-		 * @param  edgesIDStrategy          type of edge ID strategy to use, or {@code null} for default strategy
-		 * @return                          this builder
-		 * @throws IllegalArgumentException if the strategy type is not supported
-		 * @see                             IDStrategy
-		 */
-		Graph.Builder setEdgesIDStrategy(Class&lt;? extends IDStrategy&gt; edgesIDStrategy);
-	}
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

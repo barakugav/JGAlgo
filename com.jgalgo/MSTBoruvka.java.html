@@ -55,14 +55,14 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	public IntCollection computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
-<span class="fc" id="L59">		return computeMST(g, w, Integer.MAX_VALUE).mst;</span>
+	public MST.Result computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
+<span class="fc" id="L59">		return new MSTResultImpl(computeMST(g, w, Integer.MAX_VALUE).mst);</span>
 	}
 
 	Pair&lt;Graph, IntCollection&gt; runBoruvka(Graph g, EdgeWeightFunc w, int numberOfRounds, Object edgeRefKey) {
 <span class="pc bpc" id="L63" title="1 of 2 branches missed.">		if (numberOfRounds &lt;= 0)</span>
 <span class="nc" id="L64">			throw new IllegalArgumentException();</span>
-<span class="fc" id="L65">		MSTResult mstRes = computeMST(g, w, numberOfRounds);</span>
+<span class="fc" id="L65">		Res mstRes = computeMST(g, w, numberOfRounds);</span>
 
 <span class="fc" id="L67">		Graph contractedG = new GraphArrayUndirected(mstRes.treeNum);</span>
 <span class="fc" id="L68">		Weights.Int edgeRef = contractedG.addEdgesWeights(edgeRefKey, int.class);</span>
@@ -78,7 +78,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 <span class="fc" id="L78">		return Pair.of(contractedG, mstRes.mst);</span>
 	}
 
-	private MSTResult computeMST(Graph g, EdgeWeightFunc w, int numberOfRounds) {
+	private Res computeMST(Graph g, EdgeWeightFunc w, int numberOfRounds) {
 <span class="fc" id="L82">		ArgumentCheck.onlyUndirected(g);</span>
 <span class="fc" id="L83">		allocatedMem.allocate(g);</span>
 <span class="fc" id="L84">		int n = g.vertices().size();</span>
@@ -180,15 +180,15 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 <span class="fc" id="L180">				vTree[v] = vTreeNext[vTree[v]];</span>
 		}
 
-<span class="fc" id="L183">		return new MSTResult(vTree, treeNum, mst);</span>
+<span class="fc" id="L183">		return new Res(vTree, treeNum, mst);</span>
 	}
 
-	private static class MSTResult {
+	private static class Res {
 		final int[] vToTree;
 		final int treeNum;
 		final IntCollection mst;
 
-<span class="fc" id="L191">		MSTResult(int[] vToTree, int treeNum, IntCollection mst) {</span>
+<span class="fc" id="L191">		Res(int[] vToTree, int treeNum, IntCollection mst) {</span>
 <span class="fc" id="L192">			this.vToTree = vToTree;</span>
 <span class="fc" id="L193">			this.treeNum = treeNum;</span>
 <span class="fc" id="L194">			this.mst = mst;</span>
