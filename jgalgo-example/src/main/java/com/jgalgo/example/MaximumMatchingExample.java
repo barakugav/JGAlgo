@@ -31,7 +31,7 @@ public class MaximumMatchingExample {
 		/* Compute a maximum (cardinality) matching */
 		MaximumMatching matchingAlgo = MaximumMatching.newBuilder().build();
 		/* The returned int collection contains the identifiers of the matched edges */
-		IntCollection matching = matchingAlgo.computeMaximumMatching(g);
+		IntCollection matching = matchingAlgo.computeMaximumCardinalityMatching(g);
 
 		/* Validate the matching is valid */
 		for (IntIterator uit = g.vertices().iterator(); uit.hasNext();) {

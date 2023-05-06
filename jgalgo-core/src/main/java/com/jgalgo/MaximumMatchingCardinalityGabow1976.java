@@ -39,15 +39,15 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  *
  * @author Barak Ugav
  */
-public class MaximumMatchingGabow1976 implements MaximumMatching {
+public class MaximumMatchingCardinalityGabow1976 implements MaximumMatchingCardinality {
 
 	/**
 	 * Create a new maximum matching object.
 	 */
-	public MaximumMatchingGabow1976() {}
+	public MaximumMatchingCardinalityGabow1976() {}
 
 	@Override
-	public IntCollection computeMaximumMatching(Graph g) {
+	public IntCollection computeMaximumCardinalityMatching(Graph g) {
 		ArgumentCheck.onlyUndirected(g);
 		int n = g.vertices().size();
 

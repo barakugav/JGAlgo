@@ -45,7 +45,7 @@ class MatchingUnweightedTestUtils extends TestUtils {
 	}
 
 	private static void testAlgo(MaximumMatching algo, Graph g, int expectedMatchSize) {
-		IntCollection match = algo.computeMaximumMatching(g);
+		IntCollection match = algo.computeMaximumCardinalityMatching(g);
 		validateMatching(g, match);
 		assertEquals(expectedMatchSize, match.size(), "unexpected match size");
 	}

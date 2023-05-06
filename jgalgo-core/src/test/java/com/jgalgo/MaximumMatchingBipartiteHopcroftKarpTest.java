@@ -23,7 +23,7 @@ public class MaximumMatchingBipartiteHopcroftKarpTest extends TestBase {
 	@Test
 	public void testRandBipartiteGraphs() {
 		final long seed = 0x16f0491558fa62f8L;
-		MatchingBipartiteTestUtils.randBipartiteGraphs(new MaximumMatchingBipartiteHopcroftKarp(), seed);
+		MatchingBipartiteTestUtils.randBipartiteGraphs(new MaximumMatchingCardinalityBipartiteHopcroftKarp(), seed);
 	}
 
 }

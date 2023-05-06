@@ -23,7 +23,7 @@ package com.jgalgo;
  * edge (vertex) using the {@link #get(int)} and {@link #set(int, Object)} methods. Such weights are useful for various
  * algorithms such as {@link SSSP} or {@link MaximumMatchingWeighted} to assigned the <i>cost</i> of edges. Another
  * example is boolean weights used to represent the partition of vertices in bipartite graphs, which is used by
- * algorithms such as {@link MaximumMatchingBipartiteHopcroftKarp}.
+ * algorithms such as {@link MaximumMatchingCardinalityBipartiteHopcroftKarp}.
  * <p>
  * An exiting graph expose two methods to add new type of weights associated with its vertices or edges:
  * {@link Graph#addVerticesWeights(Object, Class)} and {@link Graph#addEdgesWeights(Object, Class)}. Weights of

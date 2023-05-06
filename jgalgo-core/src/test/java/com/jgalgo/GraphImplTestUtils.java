@@ -292,7 +292,7 @@ class GraphImplTestUtils extends TestUtils {
 	}
 
 	static void testUndirectedBipartiteMatching(GraphImpl graphImpl, long seed) {
-		MatchingBipartiteTestUtils.randBipartiteGraphs(new MaximumMatchingGabow1976(), graphImpl, seed);
+		MatchingBipartiteTestUtils.randBipartiteGraphs(new MaximumMatchingCardinalityGabow1976(), graphImpl, seed);
 	}
 
 	static void testUndirectedBipartiteMatchingWeighted(GraphImpl graphImpl, long seed) {

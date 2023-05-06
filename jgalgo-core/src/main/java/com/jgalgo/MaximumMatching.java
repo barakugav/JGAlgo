@@ -21,8 +21,12 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 /**
  * Maximum matching algorithm.
  * <p>
- * Given a graph \(G=(V,E)\), a matching is a sub set of edges \(M\) such that any vertex in \(V\) have at most one
- * adjacent edge in \(M\). A maximum matching is a matching with the maximum number of edges in \(M\).
+ * Given a graph \(G=(V,E)\), a matching is a sub set of edges \(M\) such that any vertex in \(V\) has at most one
+ * adjacent edge in \(M\). A maximum cardinality matching is a matching with the maximum <b>number</b> of edges in
+ * \(M\). A maximum weighted matching is a matching with the maximum edges weight sum with respect to some weight
+ * function. A perfect maximum weighted matching is a matching with the maximum edges weight sum out of all the matching
+ * with are maximum cardinality matching. Note that the weight of a perfect maximum matching is smaller or equal to the
+ * weight of a maximum weight matching.
  *
  * @see    <a href= "https://en.wikipedia.org/wiki/Matching_(graph_theory)">Wikipedia</a>
  * @author Barak Ugav
@@ -36,7 +40,28 @@ public interface MaximumMatching {
 	 * @return                          collection of edges representing a maximum matching
 	 * @throws IllegalArgumentException if {@code g} is a directed graph
 	 */
-	public IntCollection computeMaximumMatching(Graph g);
+	public IntCollection computeMaximumCardinalityMatching(Graph g);
+
+	/**
+	 * Compute the maximum weighted matching of a weighted undirected graph.
+	 *
+	 * @param  g                        an undirected graph
+	 * @param  w                        an edge weight function
+	 * @return                          collection of edges representing the matching
+	 * @throws IllegalArgumentException if {@code g} is a directed graph
+	 */
+	public IntCollection computeMaximumWeightedMatching(Graph g, EdgeWeightFunc w);
+
+	/**
+	 * Compute the maximum perfect matching of a weighted undirected graph.
+	 *
+	 * @param  g                        an undirected graph
+	 * @param  w                        an edge weight function
+	 * @return                          collection of edges representing perfect matching, or the maximal one if no
+	 *                                  perfect one found
+	 * @throws IllegalArgumentException if {@code g} is a directed graph
+	 */
+	public IntCollection computeMaximumWeightedPerfectMatching(Graph g, EdgeWeightFunc w);
 
 	/**
 	 * Create a new maximum matching algorithm builder.
@@ -48,16 +73,29 @@ public interface MaximumMatching {
 	static MaximumMatching.Builder newBuilder() {
 		return new MaximumMatching.Builder() {
 
+			boolean cardinality = false;
 			boolean isBipartite = false;
 
 			@Override
 			public MaximumMatching build() {
-				return isBipartite ? new MaximumMatchingBipartiteHopcroftKarp() : new MaximumMatchingGabow1976();
+				if (cardinality) {
+					return isBipartite ? new MaximumMatchingCardinalityBipartiteHopcroftKarp()
+							: new MaximumMatchingCardinalityGabow1976();
+				} else {
+					return isBipartite ? new MaximumMatchingWeightedBipartiteHungarianMethod()
+							: new MaximumMatchingWeightedGabow1990();
+				}
 			}
 
 			@Override
-			public Builder setBipartite(boolean bipartite) {
+			public MaximumMatching.Builder setBipartite(boolean bipartite) {
 				isBipartite = bipartite;
+				return this;
+			}
+
+			@Override
+			public MaximumMatching.Builder setCardinality(boolean cardinality) {
+				this.cardinality = cardinality;
 				return this;
 			}
 		};
@@ -79,14 +117,26 @@ public interface MaximumMatching {
 		MaximumMatching build();
 
 		/**
-		 * Set whether the maximum matching objects should support only bipartite graphs.
+		 * Set whether the maximum matching algorithms built by this builder should support only bipartite graphs.
 		 * <p>
 		 * If the input graphs are known to be bipartite, simpler or more efficient algorithm may exists.
 		 *
-		 * @param  bipartite if {@code true}, the create maximum matching objects will support bipartite graphs only
+		 * @param  bipartite if {@code true}, the created maximum matching algorithms will support bipartite graphs only
 		 * @return           this builder
 		 */
 		MaximumMatching.Builder setBipartite(boolean bipartite);
+
+		/**
+		 * Set whether the maximum matching algorithms built by this builder should support only maximum cardinality
+		 * matching.
+		 * <p>
+		 * For cardinality weights, simpler or more efficient algorithm may exists.
+		 *
+		 * @param  cardinality if {@code true}, the created maximum matching algorithms will support maximum cardinality
+		 *                         matching only
+		 * @return             this builder
+		 */
+		MaximumMatching.Builder setCardinality(boolean cardinality);
 	}
 
 }
