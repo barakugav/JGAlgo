@@ -72,16 +72,16 @@ public class TreePathMaximaTestUtils extends TestUtils {
 		return queries;
 	}
 
-	static void compareActualToExpectedResults(TreePathMaxima.Queries queries, int[] actual, int[] expected,
-			EdgeWeightFunc w) {
-		assertEquals(expected.length, actual.length, "Unexpected result size");
-		for (int i = 0; i < actual.length; i++) {
+	static void compareActualToExpectedResults(TreePathMaxima.Queries queries, TreePathMaxima.Result actual,
+			int[] expected, EdgeWeightFunc w) {
+		assertEquals(expected.length, actual.size(), "Unexpected result size");
+		for (int i = 0; i < actual.size(); i++) {
 			IntIntPair query = queries.getQuery(i);
 			int u = query.firstInt(), v = query.secondInt();
-			double aw = actual[i] != -1 ? w.weight(actual[i]) : Double.MIN_VALUE;
+			double aw = actual.getHeaviestEdge(i) != -1 ? w.weight(actual.getHeaviestEdge(i)) : Double.MIN_VALUE;
 			double ew = expected[i] != -1 ? w.weight(expected[i]) : Double.MIN_VALUE;
-			assertEquals(ew, aw,
-					"Unexpected result for query (" + u + ", " + v + "): " + actual[i] + " != " + expected[i]);
+			assertEquals(ew, aw, "Unexpected result for query (" + u + ", " + v + "): " + actual.getHeaviestEdge(i)
+					+ " != " + expected[i]);
 		}
 	}
 
@@ -102,7 +102,7 @@ public class TreePathMaximaTestUtils extends TestUtils {
 
 		TreePathMaxima.Queries queries = n <= 32 ? generateAllPossibleQueries(n)
 				: generateRandQueries(n, Math.min(n * 16, 1000), seedGen.nextSeed());
-		int[] actual = algo.computeHeaviestEdgeInTreePaths(t, w, queries);
+		TreePathMaxima.Result actual = algo.computeHeaviestEdgeInTreePaths(t, w, queries);
 		int[] expected = calcExpectedTPM(t, w, queries);
 		compareActualToExpectedResults(queries, actual, expected, w);
 	}

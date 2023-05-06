@@ -48,11 +48,9 @@ public interface TreePathMaxima {
 	 * @param  w       an edge weight function
 	 * @param  queries a sequence of queries as pairs of vertices, each corresponding to a unique simple path in the
 	 *                     tree.
-	 * @return         array of edges in the same size as the queries container, where the edge in the {@code i}-th
-	 *                 entry is the heaviest edge in the tree path between the two vertices of the {@code i}'th query.
-	 *                 If there is no such path in the tree, a value of {@code -1} will be used
+	 * @return         a result object, with a corresponding result edge for each query
 	 */
-	public int[] computeHeaviestEdgeInTreePaths(Graph tree, EdgeWeightFunc w, TreePathMaxima.Queries queries);
+	TreePathMaxima.Result computeHeaviestEdgeInTreePaths(Graph tree, EdgeWeightFunc w, TreePathMaxima.Queries queries);
 
 	/**
 	 * Queries container for {@link TreePathMaxima} computations.
@@ -111,6 +109,39 @@ public interface TreePathMaxima {
 			qs.clear();
 		}
 
+	}
+
+	/**
+	 * A result object for {@link TreePathMaxima} algorithm.
+	 *
+	 * @author Barak Ugav
+	 */
+	static interface Result {
+
+		/**
+		 * Get the heaviest edge found for a single query.
+		 * <p>
+		 * This result object was obtained by calling
+		 * {@link TreePathMaxima#computeHeaviestEdgeInTreePaths(Graph, EdgeWeightFunc, Queries)}, which accept a set of
+		 * multiple queries using the {@link Queries} object. This method return the answer to a <b>single</b> queries
+		 * among them, by its index.
+		 *
+		 * @param  queryIdx the index of the query \((u, v)\) in the {@link Queries} object passed to
+		 *                      {@link TreePathMaxima#computeHeaviestEdgeInTreePaths(Graph, EdgeWeightFunc, Queries)}
+		 * @return          the edge identifier of the heaviest on the path from \(u\) to \(v\) (the query vertices) in
+		 *                  the tree passed to the algorithm, or {@code -1} if no such path exists
+		 */
+		int getHeaviestEdge(int queryIdx);
+
+		/**
+		 * Get the number queries results this result object hold.
+		 * <p>
+		 * This number always much the size of the {@link Queries} container passed to the {@link TreePathMaxima}
+		 * algorithm.
+		 *
+		 * @return the number queries results this result object hold
+		 */
+		int size();
 	}
 
 	/**
@@ -175,12 +206,12 @@ public interface TreePathMaxima {
 			queries.addQuery(g.edgeSource(e), g.edgeTarget(e));
 		}
 		EdgeWeightFunc w0 = e -> w.weight(edgeRef.getInt(e));
-		int[] tpmResults = tpmAlgo.computeHeaviestEdgeInTreePaths(mst, w0, queries);
+		TreePathMaxima.Result tpmResults = tpmAlgo.computeHeaviestEdgeInTreePaths(mst, w0, queries);
 
 		int i = 0;
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
-			int mstEdge = tpmResults[i++];
+			int mstEdge = tpmResults.getHeaviestEdge(i++);
 			if (mstEdge == -1 || w.weight(e) < w0.weight(mstEdge))
 				return false;
 		}

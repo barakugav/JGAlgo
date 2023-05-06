@@ -68,7 +68,8 @@ public class TreePathMaximaHagerup implements TreePathMaxima {
 	}
 
 	@Override
-	public int[] computeHeaviestEdgeInTreePaths(Graph tree, EdgeWeightFunc w, TreePathMaxima.Queries queries) {
+	public TreePathMaxima.Result computeHeaviestEdgeInTreePaths(Graph tree, EdgeWeightFunc w,
+			TreePathMaxima.Queries queries) {
 		ArgumentCheck.onlyUndirected(tree);
 		if (!Trees.isTree(tree))
 			throw new IllegalArgumentException("only trees are supported");
@@ -114,7 +115,7 @@ public class TreePathMaximaHagerup implements TreePathMaxima {
 			}
 		}
 
-		int[] calcTPM(TreePathMaxima.Queries queries) {
+		TreePathMaxima.Result calcTPM(TreePathMaxima.Queries queries) {
 			ObjectIntPair<Graph> r = buildBoruvkaFullyBranchingTree();
 			Graph tree = r.first();
 			int root = r.secondInt();
@@ -130,7 +131,7 @@ public class TreePathMaximaHagerup implements TreePathMaxima {
 			return extractEdgesFromAnswers(a, q, lcaQueries, depths, tree.getEdgesWeights("edgeData"));
 		}
 
-		private int[] extractEdgesFromAnswers(int[][] a, int[] q, int[] lcaQueries, int[] depths,
+		private TreePathMaxima.Result extractEdgesFromAnswers(int[][] a, int[] q, int[] lcaQueries, int[] depths,
 				Weights.Int edgeData) {
 			int queriesNum = lcaQueries.length / 4;
 			int[] res = new int[queriesNum];
@@ -163,7 +164,7 @@ public class TreePathMaximaHagerup implements TreePathMaxima {
 						: /* va != -1 */ edgeData.getInt(va);
 			}
 
-			return res;
+			return new Result(res);
 		}
 
 		private int[][] calcAnswersPerVertex(Graph t, int root, int[] q, int[] edgeToParent) {
@@ -416,6 +417,26 @@ public class TreePathMaximaHagerup implements TreePathMaxima {
 			}
 
 			return q;
+		}
+
+	}
+
+	private static class Result implements TreePathMaxima.Result {
+
+		private final int[] res;
+
+		Result(int[] res) {
+			this.res = res;
+		}
+
+		@Override
+		public int getHeaviestEdge(int queryIdx) {
+			return res[queryIdx];
+		}
+
+		@Override
+		public int size() {
+			return res.length;
 		}
 
 	}

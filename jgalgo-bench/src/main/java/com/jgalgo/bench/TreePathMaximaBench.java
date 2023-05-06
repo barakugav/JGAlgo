@@ -79,7 +79,7 @@ public class TreePathMaximaBench {
 	private void benchTPM(Supplier<? extends TreePathMaxima> builder, Blackhole blackhole) {
 		TPMArgs g = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 		TreePathMaxima algo = builder.get();
-		int[] result = algo.computeHeaviestEdgeInTreePaths(g.tree, g.w, g.queries);
+		TreePathMaxima.Result result = algo.computeHeaviestEdgeInTreePaths(g.tree, g.w, g.queries);
 		blackhole.consume(result);
 	}
 

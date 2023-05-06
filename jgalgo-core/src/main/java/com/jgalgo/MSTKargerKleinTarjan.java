@@ -23,7 +23,6 @@ import it.unimi.dsi.fastutil.ints.Int2DoubleFunction;
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
-import it.unimi.dsi.fastutil.ints.IntBigArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -186,7 +185,7 @@ public class MSTKargerKleinTarjan implements MST {
 			tpmQueries[ut].addQuery(vToVnew[u], vToVnew[v]);
 		}
 
-		int[][] tpmResults = allocatedMem.tpmResults;
+		TreePathMaxima.Result[] tpmResults = allocatedMem.tpmResults;
 		for (int t = 0; t < treeCount; t++) {
 			tpmResults[t] = tpm.computeHeaviestEdgeInTreePaths(trees[t], treeData[t], tpmQueries[t]);
 			tpmQueries[t].clear();
@@ -201,7 +200,8 @@ public class MSTKargerKleinTarjan implements MST {
 			int e = it.nextInt();
 			int u = g.edgeSource(e), v = g.edgeTarget(e);
 			int ut = vToTree.applyAsInt(u);
-			if (ut != vToTree.applyAsInt(v) || gw.get(e) <= treeData[ut].weight(tpmResults[ut][tpmIdx[ut]++]))
+			if (ut != vToTree.applyAsInt(v)
+					|| gw.get(e) <= treeData[ut].weight(tpmResults[ut].getHeaviestEdge(tpmIdx[ut]++)))
 				lightEdges.add(e);
 		}
 		for (int t = 0; t < treeCount; t++)
@@ -217,7 +217,7 @@ public class MSTKargerKleinTarjan implements MST {
 		Weights.Double[] treeData = MemoryReuse.EmptyWeightsDoubleArr;
 
 		TreePathMaxima.Queries[] tpmQueries = MemoryReuse.EmptyTpmQueriesArr;
-		int[][] tpmResults = IntBigArrays.EMPTY_BIG_ARRAY;
+		TreePathMaxima.Result[] tpmResults = MemoryReuse.EmptyTpmResultArr;
 
 		void allocateForRandSubGraph() {
 			edgeList = MemoryReuse.ensureAllocated(edgeList, IntArrayList::new);
