@@ -16,8 +16,6 @@
 
 package com.jgalgo;
 
-import it.unimi.dsi.fastutil.ints.IntList;
-
 /**
  * Minimum Cut algorithm with terminal vertices (source-sink, S-T).
  * <p>
@@ -47,11 +45,10 @@ public interface MinimumCutST {
 	 * @param  w                        an edge weight function
 	 * @param  source                   a special vertex that will be in \(C\)
 	 * @param  sink                     a special vertex that will be in \(\bar{C}\)
-	 * @return                          the set C, where the minimum cut is a partition of the vertices \(V\) into two
-	 *                                  sets \(C, \bar{C} = V \setminus C\)
+	 * @return                          the cut that was computed
 	 * @throws IllegalArgumentException if the source and the sink are the same vertex
 	 */
-	IntList computeMinimumCut(Graph g, EdgeWeightFunc w, int source, int sink);
+	Cut computeMinimumCut(Graph g, EdgeWeightFunc w, int source, int sink);
 
 	/**
 	 * Create a new minimum cut algorithm builder.

@@ -424,4 +424,20 @@ class GraphsUtils {
 		}
 	};
 
+	static double edgesWeightSum(IntIterator eit, EdgeWeightFunc w) {
+		if (w instanceof EdgeWeightFunc.Int) {
+			EdgeWeightFunc.Int w0 = (EdgeWeightFunc.Int) w;
+			int sum = 0;
+			while (eit.hasNext())
+				sum += w0.weightInt(eit.nextInt());
+			return sum;
+
+		} else {
+			double sum = 0;
+			while (eit.hasNext())
+				sum += w.weight(eit.nextInt());
+			return sum;
+		}
+	}
+
 }

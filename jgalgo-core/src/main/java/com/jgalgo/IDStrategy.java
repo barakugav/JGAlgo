@@ -287,6 +287,11 @@ public abstract class IDStrategy {
 
 	abstract IntSet idSet();
 
+	@Override
+	public String toString() {
+		return idSet().toString();
+	}
+
 	int isSwapNeededBeforeRemove(int idx) {
 		int size = idSet().size();
 		if (!(0 <= idx && idx < size))

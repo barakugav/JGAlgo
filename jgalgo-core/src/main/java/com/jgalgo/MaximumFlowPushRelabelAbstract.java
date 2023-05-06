@@ -54,7 +54,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 	 * @throws IllegalArgumentException if the graph is not directed
 	 */
 	@Override
-	public IntList computeMinimumCut(Graph g, EdgeWeightFunc w, int source, int sink) {
+	public Cut computeMinimumCut(Graph g, EdgeWeightFunc w, int source, int sink) {
 		ArgumentCheck.onlyDirected(g);
 		if (w instanceof EdgeWeightFunc.Int) {
 			EdgeWeightFunc.Int wInt = (EdgeWeightFunc.Int) w;
@@ -441,7 +441,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 			return constructResult();
 		}
 
-		IntList computeMinimumCut() {
+		Cut computeMinimumCut() {
 			// first phase
 			calcMaxPreflow();
 			// no need for second phase
@@ -473,7 +473,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 				if (!visited.get(u))
 					cut.add(u);
 			visited.clear();
-			return cut;
+			return new CutImpl(gOrig, cut);
 		}
 
 		abstract boolean hasExcess(int u);

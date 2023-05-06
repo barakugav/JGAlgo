@@ -39,7 +39,7 @@ class MinimumCutSTBuilderImpl {
 			private final IntPriorityQueue queue = new IntArrayFIFOQueue();
 
 			@Override
-			public IntList computeMinimumCut(Graph g, EdgeWeightFunc w, int source, int sink) {
+			public Cut computeMinimumCut(Graph g, EdgeWeightFunc w, int source, int sink) {
 				assert visited.isEmpty();
 				assert queue.isEmpty();
 
@@ -90,7 +90,7 @@ class MinimumCutSTBuilderImpl {
 					}
 				}
 				visited.clear();
-				return cut;
+				return new CutImpl(g, cut);
 			}
 
 		};
