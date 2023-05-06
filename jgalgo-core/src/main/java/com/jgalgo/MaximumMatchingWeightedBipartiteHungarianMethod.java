@@ -19,11 +19,8 @@ package com.jgalgo;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Objects;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.ints.IntIterator;
-import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
  * Kuhn's Hungarian method for maximum weighted matching in bipartite graphs.
@@ -78,7 +75,7 @@ public class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumM
 	 * @throws IllegalArgumentException if the graph is no bipartite with respect to the provided partition
 	 */
 	@Override
-	public IntCollection computeMaximumWeightedMatching(Graph g, EdgeWeightFunc w) {
+	public Matching computeMaximumWeightedMatching(Graph g, EdgeWeightFunc w) {
 		ArgumentCheck.onlyUndirected(g);
 		Weights.Bool partition = g.getVerticesWeights(bipartiteVerticesWeightKey);
 		Objects.requireNonNull(partition,
@@ -94,7 +91,7 @@ public class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumM
 	 * @throws IllegalArgumentException if the graph is no bipartite with respect to the provided partition
 	 */
 	@Override
-	public IntCollection computeMaximumWeightedPerfectMatching(Graph g, EdgeWeightFunc w) {
+	public Matching computeMaximumWeightedPerfectMatching(Graph g, EdgeWeightFunc w) {
 		ArgumentCheck.onlyUndirected(g);
 		Weights.Bool partition = g.getVerticesWeights(bipartiteVerticesWeightKey);
 		Objects.requireNonNull(partition,
@@ -137,7 +134,7 @@ public class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumM
 			dualVal0 = new double[n];
 		}
 
-		IntCollection computeMaxMatching(boolean perfect) {
+		Matching computeMaxMatching(boolean perfect) {
 			final int n = g.vertices().size();
 			final int EdgeNone = -1;
 
@@ -238,11 +235,7 @@ public class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumM
 				Arrays.fill(nextTightEdgePerOutV, null);
 			}
 
-			IntList res = new IntArrayList();
-			for (int u = 0; u < n; u++)
-				if (partition.getBool(u) && matched[u] != EdgeNone)
-					res.add(matched[u]);
-			return res;
+			return new MatchingImpl(g, matched);
 		}
 
 		private void nextTightEdgeAdd(int u, int e) {

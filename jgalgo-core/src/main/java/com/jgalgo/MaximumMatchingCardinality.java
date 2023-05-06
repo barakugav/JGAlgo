@@ -15,8 +15,6 @@
  */
 package com.jgalgo;
 
-import it.unimi.dsi.fastutil.ints.IntCollection;
-
 interface MaximumMatchingCardinality extends MaximumMatching {
 
 	/**
@@ -27,7 +25,7 @@ interface MaximumMatchingCardinality extends MaximumMatching {
 	 * @throws IllegalArgumentException if {@code w} is not {@code null}
 	 */
 	@Override
-	default IntCollection computeMaximumWeightedMatching(Graph g, EdgeWeightFunc w) {
+	default Matching computeMaximumWeightedMatching(Graph g, EdgeWeightFunc w) {
 		if (w != null)
 			throw new IllegalArgumentException("Only cardinality matching is supported by this algorithm");
 		return computeMaximumCardinalityMatching(g);
@@ -41,7 +39,7 @@ interface MaximumMatchingCardinality extends MaximumMatching {
 	 * @throws IllegalArgumentException if {@code w} is not {@code null}
 	 */
 	@Override
-	default IntCollection computeMaximumWeightedPerfectMatching(Graph g, EdgeWeightFunc w) {
+	default Matching computeMaximumWeightedPerfectMatching(Graph g, EdgeWeightFunc w) {
 		if (w != null)
 			throw new IllegalArgumentException("Only cardinality matching is supported by this algorithm");
 		return computeMaximumCardinalityMatching(g);

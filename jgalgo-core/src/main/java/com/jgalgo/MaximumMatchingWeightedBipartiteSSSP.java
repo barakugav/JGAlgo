@@ -19,7 +19,6 @@ package com.jgalgo;
 import java.util.Arrays;
 import java.util.Objects;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 
@@ -78,7 +77,7 @@ public class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeig
 	 * @throws IllegalArgumentException if the graph is no bipartite with respect to the provided partition
 	 */
 	@Override
-	public IntCollection computeMaximumWeightedMatching(Graph g, EdgeWeightFunc w) {
+	public Matching computeMaximumWeightedMatching(Graph g, EdgeWeightFunc w) {
 		ArgumentCheck.onlyUndirected(g);
 		Weights.Bool partition = g.getVerticesWeights(bipartiteVerticesWeightKey);
 		Objects.requireNonNull(partition,
@@ -88,13 +87,13 @@ public class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeig
 		int[] match = computeMaxMatching(g0, w, partition);
 
 		int n = g.vertices().size();
-		IntList res = new IntArrayList();
+		IntList matchingEdges = new IntArrayList();
 		for (int u = 0; u < n; u++) {
 			int e = match[u];
 			if (e != -1 && g.edgeSource(e) == u)
-				res.add(e);
+				matchingEdges.add(e);
 		}
-		return res;
+		return new MatchingImpl(g, matchingEdges);
 	}
 
 	private int[] computeMaxMatching(Graph g, EdgeWeightFunc w, Weights.Bool partition) {
@@ -188,7 +187,7 @@ public class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeig
 	 */
 	@Deprecated
 	@Override
-	public IntCollection computeMaximumWeightedPerfectMatching(Graph g, EdgeWeightFunc w) {
+	public Matching computeMaximumWeightedPerfectMatching(Graph g, EdgeWeightFunc w) {
 		throw new UnsupportedOperationException();
 	}
 

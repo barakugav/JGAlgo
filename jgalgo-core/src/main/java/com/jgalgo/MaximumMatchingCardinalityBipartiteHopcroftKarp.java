@@ -19,10 +19,6 @@ package com.jgalgo;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Objects;
-
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 /**
@@ -68,7 +64,7 @@ public class MaximumMatchingCardinalityBipartiteHopcroftKarp implements MaximumM
 	 * @throws IllegalArgumentException if the graph is no bipartite with respect to the provided partition
 	 */
 	@Override
-	public IntCollection computeMaximumCardinalityMatching(Graph g) {
+	public Matching computeMaximumCardinalityMatching(Graph g) {
 		ArgumentCheck.onlyUndirected(g);
 		int n = g.vertices().size();
 
@@ -180,12 +176,7 @@ public class MaximumMatchingCardinalityBipartiteHopcroftKarp implements MaximumM
 			f.clearEdges();
 		}
 		Arrays.fill(edges, null);
-
-		IntList res = new IntArrayList();
-		for (int u = 0; u < n; u++)
-			if (partition.getBool(u) && matched[u] != MatchedNone)
-				res.add(matched[u]);
-		return res;
+		return new MatchingImpl(g, matched);
 	}
 
 }

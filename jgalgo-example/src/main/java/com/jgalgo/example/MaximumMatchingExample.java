@@ -17,8 +17,8 @@ package com.jgalgo.example;
 
 import com.jgalgo.Graph;
 import com.jgalgo.GraphBuilder;
+import com.jgalgo.Matching;
 import com.jgalgo.MaximumMatching;
-import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -31,8 +31,7 @@ public class MaximumMatchingExample {
 
 		/* Compute a maximum (cardinality) matching */
 		MaximumMatching matchingAlgo = MaximumMatching.newBuilder().build();
-		/* The returned int collection contains the identifiers of the matched edges */
-		IntCollection matching = matchingAlgo.computeMaximumCardinalityMatching(g);
+		Matching matching = matchingAlgo.computeMaximumCardinalityMatching(g);
 
 		/* Validate the matching is valid */
 		for (IntIterator uit = g.vertices().iterator(); uit.hasNext();) {
@@ -40,13 +39,13 @@ public class MaximumMatchingExample {
 
 			/* Find the matched edges adjacent to u */
 			IntSet uEdges = new IntOpenHashSet(g.edgesOut(u));
-			uEdges.removeIf(e -> !matching.contains(e));
+			uEdges.removeIf(e -> !matching.containsEdge(e));
 
 			/* No vertex is allowed to have more than one matched edge */
 			assert uEdges.size() <= 1;
 		}
 
-		System.out.println("The maximum matching in the graph has a size of " + matching.size());
+		System.out.println("The maximum matching in the graph has a size of " + matching.edges().size());
 		System.out.println("The maximum matching is: " + matching);
 	}
 

@@ -16,8 +16,6 @@
 
 package com.jgalgo;
 
-import it.unimi.dsi.fastutil.ints.IntCollection;
-
 /**
  * Maximum matching algorithm.
  * <p>
@@ -37,31 +35,30 @@ public interface MaximumMatching {
 	 * Compute the maximum matching of unweighted undirected graph.
 	 *
 	 * @param  g                        an undirected graph
-	 * @return                          collection of edges representing a maximum matching
+	 * @return                          the computed matching
 	 * @throws IllegalArgumentException if {@code g} is a directed graph
 	 */
-	public IntCollection computeMaximumCardinalityMatching(Graph g);
+	public Matching computeMaximumCardinalityMatching(Graph g);
 
 	/**
 	 * Compute the maximum weighted matching of a weighted undirected graph.
 	 *
 	 * @param  g                        an undirected graph
 	 * @param  w                        an edge weight function
-	 * @return                          collection of edges representing the matching
+	 * @return                          the computed matching
 	 * @throws IllegalArgumentException if {@code g} is a directed graph
 	 */
-	public IntCollection computeMaximumWeightedMatching(Graph g, EdgeWeightFunc w);
+	public Matching computeMaximumWeightedMatching(Graph g, EdgeWeightFunc w);
 
 	/**
 	 * Compute the maximum perfect matching of a weighted undirected graph.
 	 *
 	 * @param  g                        an undirected graph
 	 * @param  w                        an edge weight function
-	 * @return                          collection of edges representing perfect matching, or the maximal one if no
-	 *                                  perfect one found
+	 * @return                          the computed perfect matching, or the maximal one if no perfect one found
 	 * @throws IllegalArgumentException if {@code g} is a directed graph
 	 */
-	public IntCollection computeMaximumWeightedPerfectMatching(Graph g, EdgeWeightFunc w);
+	public Matching computeMaximumWeightedPerfectMatching(Graph g, EdgeWeightFunc w);
 
 	/**
 	 * Create a new maximum matching algorithm builder.

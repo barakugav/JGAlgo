@@ -15,8 +15,6 @@
  */
 package com.jgalgo;
 
-import it.unimi.dsi.fastutil.ints.IntCollection;
-
 interface MaximumMatchingWeighted extends MaximumMatching {
 
 	/**
@@ -25,7 +23,7 @@ interface MaximumMatchingWeighted extends MaximumMatching {
 	 * Compute the maximum cardinality matching of a undirected graph.
 	 */
 	@Override
-	default IntCollection computeMaximumCardinalityMatching(Graph g) {
+	default Matching computeMaximumCardinalityMatching(Graph g) {
 		return computeMaximumWeightedMatching(g, e -> 1);
 	}
 

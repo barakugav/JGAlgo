@@ -74,7 +74,7 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 		}
 
 		/* Calculate maximum matching between the odd vertices */
-		IntCollection matching = matchingAlgo.computeMaximumWeightedPerfectMatching(mG, mGWeightsNeg);
+		Matching matching = matchingAlgo.computeMaximumWeightedPerfectMatching(mG, mGWeightsNeg);
 
 		/* Build a graph of the union of the MST and the matching result */
 		Graph g1 = new GraphArrayUndirected(n);
@@ -84,7 +84,7 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 			int g1Edge = g1.addEdge(g.edgeSource(e), g.edgeTarget(e));
 			g1EdgeRef.set(g1Edge, e);
 		}
-		for (IntIterator it = matching.iterator(); it.hasNext();) {
+		for (IntIterator it = matching.edges().iterator(); it.hasNext();) {
 			int mGedge = it.nextInt();
 			int u = mVtoV[mG.edgeSource(mGedge)];
 			int v = mVtoV[mG.edgeTarget(mGedge)];

@@ -17,16 +17,12 @@
 package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.List;
 import java.util.Objects;
-
 import com.jgalgo.GraphImplTestUtils.GraphImpl;
 import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
-
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 class MatchingBipartiteTestUtils extends TestUtils {
@@ -71,22 +67,22 @@ class MatchingBipartiteTestUtils extends TestUtils {
 			int m = args[2];
 			Graph g = randGraphBipartite(sn, tn, m, graphImpl, seedGen.nextSeed());
 
-			int expeced = calcExpectedMaxMatching(g);
-			testBipartiteAlgo(algo, g, expeced);
+			int expected = calcExpectedMaxMatching(g);
+			testBipartiteAlgo(algo, g, expected);
 		});
 	}
 
 	private static void testBipartiteAlgo(MaximumMatching algo, Graph g, int expectedMatchSize) {
-		IntCollection match = algo.computeMaximumCardinalityMatching(g);
+		Matching match = algo.computeMaximumCardinalityMatching(g);
 
 		MatchingUnweightedTestUtils.validateMatching(g, match);
 
-		if (match.size() > expectedMatchSize) {
-			System.err.println(
-					"matching is bigger than validation algo found: " + match.size() + " > " + expectedMatchSize);
+		if (match.edges().size() > expectedMatchSize) {
+			System.err.println("matching is bigger than validation algo found: " + match.edges().size() + " > "
+					+ expectedMatchSize);
 			throw new IllegalStateException();
 		}
-		assertTrue(match.size() == expectedMatchSize, "unexpected match size");
+		assertTrue(match.edges().size() == expectedMatchSize, "unexpected match size");
 	}
 
 	private static int calcExpectedMaxMatching(Graph g) {

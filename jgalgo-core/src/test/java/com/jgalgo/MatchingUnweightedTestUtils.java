@@ -18,14 +18,11 @@ package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 class MatchingUnweightedTestUtils extends TestUtils {
@@ -45,14 +42,14 @@ class MatchingUnweightedTestUtils extends TestUtils {
 	}
 
 	private static void testAlgo(MaximumMatching algo, Graph g, int expectedMatchSize) {
-		IntCollection match = algo.computeMaximumCardinalityMatching(g);
+		Matching match = algo.computeMaximumCardinalityMatching(g);
 		validateMatching(g, match);
-		assertEquals(expectedMatchSize, match.size(), "unexpected match size");
+		assertEquals(expectedMatchSize, match.edges().size(), "unexpected match size");
 	}
 
-	static <E> void validateMatching(Graph g, IntCollection matching) {
+	static <E> void validateMatching(Graph g, Matching matching) {
 		Set<Integer> matched = new HashSet<>();
-		for (IntIterator it = matching.iterator(); it.hasNext();) {
+		for (IntIterator it = matching.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			for (int v : new int[] { g.edgeSource(e), g.edgeTarget(e) }) {
 				boolean dup = matched.contains(Integer.valueOf(v));

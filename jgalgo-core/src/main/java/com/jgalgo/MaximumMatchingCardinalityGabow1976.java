@@ -18,10 +18,6 @@ package com.jgalgo;
 
 import java.util.Arrays;
 import java.util.BitSet;
-
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 /**
@@ -47,7 +43,7 @@ public class MaximumMatchingCardinalityGabow1976 implements MaximumMatchingCardi
 	public MaximumMatchingCardinalityGabow1976() {}
 
 	@Override
-	public IntCollection computeMaximumCardinalityMatching(Graph g) {
+	public Matching computeMaximumCardinalityMatching(Graph g) {
 		ArgumentCheck.onlyUndirected(g);
 		int n = g.vertices().size();
 
@@ -196,11 +192,7 @@ public class MaximumMatchingCardinalityGabow1976 implements MaximumMatchingCardi
 			uf.clear();
 		}
 
-		IntList res = new IntArrayList();
-		for (int u = 0; u < n; u++)
-			if (matched[u] != EdgeNone && u == g.edgeSource(matched[u]))
-				res.add(matched[u]);
-		return res;
+		return new MatchingImpl(g, matched);
 	}
 
 	private static int findPath(Graph g, int s, int t, BitSet isEven, int[] match, int[] parent, int[] bridge,

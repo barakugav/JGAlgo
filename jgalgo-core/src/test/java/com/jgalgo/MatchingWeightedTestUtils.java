@@ -95,12 +95,12 @@ class MatchingWeightedTestUtils extends TestUtils {
 
 	private static void testGraphWeighted(MaximumMatching algo, Graph g, EdgeWeightFunc.Int w,
 			MaximumMatching validationAlgo) {
-		IntCollection actual = algo.computeMaximumWeightedMatching(g, w);
+		Matching actual = algo.computeMaximumWeightedMatching(g, w);
 		MatchingUnweightedTestUtils.validateMatching(g, actual);
-		double actualWeight = calcMatchingWeight(actual, w);
+		double actualWeight = actual.weight(w);
 
-		IntCollection expected = validationAlgo.computeMaximumWeightedMatching(g, w);
-		double expectedWeight = calcMatchingWeight(expected, w);
+		Matching expected = validationAlgo.computeMaximumWeightedMatching(g, w);
+		double expectedWeight = expected.weight(w);
 
 		if (actualWeight > expectedWeight) {
 			System.err
@@ -131,12 +131,12 @@ class MatchingWeightedTestUtils extends TestUtils {
 
 	private static void testGraphWeightedPerfect(MaximumMatching algo, Graph g, EdgeWeightFunc.Int w,
 			MaximumMatching validationUnweightedAlgo, MaximumMatching validationWeightedAlgo) {
-		IntCollection actual = algo.computeMaximumWeightedPerfectMatching(g, w);
+		Matching actual = algo.computeMaximumWeightedPerfectMatching(g, w);
 		MatchingUnweightedTestUtils.validateMatching(g, actual);
-		int actualSize = actual.size();
-		double actualWeight = calcMatchingWeight(actual, w);
+		int actualSize = actual.edges().size();
+		double actualWeight = actual.weight(w);
 
-		int expectedSize = validationUnweightedAlgo.computeMaximumCardinalityMatching(g).size();
+		int expectedSize = validationUnweightedAlgo.computeMaximumCardinalityMatching(g).edges().size();
 		if (actualSize > expectedSize) {
 			System.err.println(
 					"matching size is better than validation algo found: " + actualSize + " > " + expectedSize);
@@ -144,21 +144,13 @@ class MatchingWeightedTestUtils extends TestUtils {
 		}
 		assertEquals(expectedSize, actualSize, "unexpected match size");
 
-		double expectedWeight =
-				calcMatchingWeight(validationWeightedAlgo.computeMaximumWeightedPerfectMatching(g, w), w);
+		double expectedWeight = validationWeightedAlgo.computeMaximumWeightedPerfectMatching(g, w).weight(w);
 		if (actualWeight > expectedWeight) {
 			System.err.println(
 					"matching weight is better than validation algo found: " + actualWeight + " > " + expectedWeight);
 			throw new IllegalStateException();
 		}
 		assertEquals(expectedWeight, actualWeight, "unexpected match weight");
-	}
-
-	private static double calcMatchingWeight(IntCollection matching, EdgeWeightFunc w) {
-		double sum = 0;
-		for (IntIterator it = matching.iterator(); it.hasNext();)
-			sum += w.weight(it.nextInt());
-		return sum;
 	}
 
 	private static class MatchingWeightedShuffled implements MaximumMatchingWeighted {
@@ -172,16 +164,16 @@ class MatchingWeightedTestUtils extends TestUtils {
 		}
 
 		@Override
-		public IntCollection computeMaximumWeightedMatching(Graph g, EdgeWeightFunc w) {
+		public Matching computeMaximumWeightedMatching(Graph g, EdgeWeightFunc w) {
 			return computeMaximumMatchingShuffled(g, w, false);
 		}
 
 		@Override
-		public IntCollection computeMaximumWeightedPerfectMatching(Graph g, EdgeWeightFunc w) {
+		public Matching computeMaximumWeightedPerfectMatching(Graph g, EdgeWeightFunc w) {
 			return computeMaximumMatchingShuffled(g, w, true);
 		}
 
-		private IntCollection computeMaximumMatchingShuffled(Graph g, EdgeWeightFunc w, boolean perfect) {
+		private Matching computeMaximumMatchingShuffled(Graph g, EdgeWeightFunc w, boolean perfect) {
 			int n = g.vertices().size();
 			int[] shuffle = randPermutation(n, seedGen.nextSeed());
 
@@ -210,15 +202,16 @@ class MatchingWeightedTestUtils extends TestUtils {
 
 			EdgeWeightFunc shuffledW = e -> w.weight(edgeRef.getInt(e));
 
-			IntCollection shuffledEdges = perfect ? algo.computeMaximumWeightedPerfectMatching(shuffledG, shuffledW)
+			Matching shuffledMatching = perfect ? algo.computeMaximumWeightedPerfectMatching(shuffledG, shuffledW)
 					: algo.computeMaximumWeightedMatching(shuffledG, shuffledW);
+			IntCollection shuffledEdges = shuffledMatching.edges();
 
 			IntList unshuffledEdges = new IntArrayList(shuffledEdges.size());
 			for (IntIterator it = shuffledEdges.iterator(); it.hasNext();) {
 				int e = it.nextInt();
 				unshuffledEdges.add(edgeRef.getInt(e));
 			}
-			return unshuffledEdges;
+			return new MatchingImpl(g, unshuffledEdges);
 		}
 
 	}

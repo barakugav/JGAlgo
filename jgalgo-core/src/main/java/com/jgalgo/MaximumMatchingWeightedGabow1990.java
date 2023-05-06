@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 import com.jgalgo.MaximumMatchingWeightedBlossoms.Evens;
 import com.jgalgo.Utils.NullList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
@@ -66,19 +65,22 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 	}
 
 	@Override
-	public IntCollection computeMaximumWeightedMatching(Graph g, EdgeWeightFunc w) {
+	public Matching computeMaximumWeightedMatching(Graph g, EdgeWeightFunc w) {
 		ArgumentCheck.onlyUndirected(g);
 		return new Worker(g, w, heapBuilder, debugPrintManager).computeMaxMatching(false);
 
 	}
 
 	@Override
-	public IntCollection computeMaximumWeightedPerfectMatching(Graph g, EdgeWeightFunc w) {
+	public Matching computeMaximumWeightedPerfectMatching(Graph g, EdgeWeightFunc w) {
 		ArgumentCheck.onlyUndirected(g);
 		return new Worker(g, w, heapBuilder, debugPrintManager).computeMaxMatching(true);
 	}
 
 	private static class Worker {
+
+		/* The original graph */
+		final Graph gOrig;
 
 		/* the graph */
 		final Graph g;
@@ -248,15 +250,16 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 
 		private static final Object EdgeValKey = new Object();
 
-		Worker(Graph g0, EdgeWeightFunc w, HeapReferenceable.Builder heapBuilder, DebugPrintsManager debugPrint) {
-			int n = g0.vertices().size();
+		Worker(Graph gOrig, EdgeWeightFunc w, HeapReferenceable.Builder heapBuilder, DebugPrintsManager debugPrint) {
+			int n = gOrig.vertices().size();
+			this.gOrig = gOrig;
 			this.g = new GraphArrayDirected(n);
 			edgeVal = g.addEdgesWeights(EdgeValKey, EdgeVal.class);
 			this.w = e -> w.weight(edgeVal.get(e).e);
 
-			for (IntIterator it = g0.edges().iterator(); it.hasNext();) {
+			for (IntIterator it = gOrig.edges().iterator(); it.hasNext();) {
 				int e = it.nextInt();
-				int u = g0.edgeSource(e), v = g0.edgeTarget(e);
+				int u = gOrig.edgeSource(e), v = gOrig.edgeTarget(e);
 				int e1 = g.addEdge(u, v);
 				int e2 = g.addEdge(v, u);
 				EdgeVal val1 = new EdgeVal(e, e2);
@@ -289,7 +292,7 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 			this.debug = debugPrint;
 		}
 
-		private IntCollection computeMaxMatching(boolean perfect) {
+		private Matching computeMaxMatching(boolean perfect) {
 			int n = g.vertices().size();
 
 			// init dual value of all vertices as maxWeight / 2
@@ -443,11 +446,11 @@ public class MaximumMatchingWeightedGabow1990 implements MaximumMatchingWeighted
 				expandEvents.clear();
 			}
 
-			IntList res = new IntArrayList();
+			IntList matchingEdges = new IntArrayList();
 			for (int u = 0; u < n; u++)
 				if (isMatched(u) && u < g.edgeEndpoint(matched[u], u))
-					res.add(edgeVal.get(matched[u]).e);
-			return res;
+					matchingEdges.add(edgeVal.get(matched[u]).e);
+			return new MatchingImpl(gOrig, matchingEdges);
 		}
 
 		private void growStep() {
