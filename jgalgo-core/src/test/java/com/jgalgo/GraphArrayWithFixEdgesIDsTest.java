@@ -27,10 +27,10 @@ public class GraphArrayWithFixEdgesIDsTest extends TestBase {
 			@Override
 			public Graph newGraph(boolean directed, int vertices) {
 				if (directed) {
-					return Graph.newBuilderDirected().setEdgesIDStrategy(IDStrategy.Fixed.class)
+					return GraphBuilder.newDirected().setEdgesIDStrategy(IDStrategy.Fixed.class)
 							.setVerticesNum(vertices).build();
 				} else {
-					return Graph.newBuilderUndirected().setEdgesIDStrategy(IDStrategy.Fixed.class)
+					return GraphBuilder.newUndirected().setEdgesIDStrategy(IDStrategy.Fixed.class)
 							.setVerticesNum(vertices).build();
 				}
 			}

@@ -16,6 +16,7 @@
 package com.jgalgo.example;
 
 import com.jgalgo.Graph;
+import com.jgalgo.GraphBuilder;
 import com.jgalgo.MaximumMatching;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -50,7 +51,7 @@ public class MaximumMatchingExample {
 	}
 
 	public static Graph createGraph() {
-		Graph g = Graph.newBuilderUndirected().build();
+		Graph g = GraphBuilder.newUndirected().build();
 		int v1 = g.addVertex();
 		int v2 = g.addVertex();
 		int v3 = g.addVertex();

@@ -42,7 +42,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
  */
 public class MaximumFlowDinic implements MaximumFlow {
 
-	private Supplier<? extends Graph.Builder> layerGraphBuilder = GraphBuilderImpl.LinkedDirected::new;
+	private Supplier<? extends GraphBuilder> layerGraphBuilder = GraphBuilderImpl.LinkedDirected::new;
 
 	private static final Object EdgeRefWeightKey = new Object();
 	private static final Object EdgeRevWeightKey = new Object();
@@ -63,7 +63,7 @@ public class MaximumFlowDinic implements MaximumFlow {
 	 *
 	 * @param builder a builder that provide instances of graphs for the layers graph
 	 */
-	public void experimental_setLayerGraphFactory(Supplier<? extends Graph.Builder> builder) {
+	public void experimental_setLayerGraphFactory(Supplier<? extends GraphBuilder> builder) {
 		layerGraphBuilder = Objects.requireNonNull(builder);
 	}
 
@@ -104,7 +104,7 @@ public class MaximumFlowDinic implements MaximumFlow {
 			flow.set(e2, cap);
 		}
 
-		Graph.Builder builder = layerGraphBuilder.get();
+		GraphBuilder builder = layerGraphBuilder.get();
 		Graph L = builder.setVerticesNum(n).setEdgesIDStrategy(Fixed.class).build();
 		Weights.Int edgeRefL = L.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
 		IntPriorityQueue bfsQueue = new IntArrayFIFOQueue();

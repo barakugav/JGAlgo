@@ -17,13 +17,14 @@ package com.jgalgo.example;
 
 import com.jgalgo.EdgeIter;
 import com.jgalgo.Graph;
+import com.jgalgo.GraphBuilder;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 public class EdgeIterationExample {
 
 	public static void edgeIterationExample() {
-		Graph g = Graph.newBuilderUndirected().build();
+		Graph g = GraphBuilder.newUndirected().build();
 		int v1 = g.addVertex();
 		int v2 = g.addVertex();
 		int v3 = g.addVertex();

@@ -28,7 +28,7 @@ The most basic object in the library is a [Graph](https://barakugav.github.io/JG
 
 ```java
 /* Create a directed graph with three vertices and edges between them */
-Graph g = Graph.newBuilderDirected().build();
+Graph g = GraphBuilder.newDirected().build();
 int v1 = g.addVertex();
 int v2 = g.addVertex();
 int v3 = g.addVertex();

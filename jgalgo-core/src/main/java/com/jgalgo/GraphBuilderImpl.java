@@ -35,13 +35,13 @@ class GraphBuilderImpl {
 		}
 
 		@Override
-		public Graph.Builder setVerticesNum(int n) {
+		public GraphBuilder setVerticesNum(int n) {
 			super.setVerticesNum(n);
 			return this;
 		}
 
 		@Override
-		public Graph.Builder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy) {
+		public GraphBuilder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy) {
 			super.setEdgesIDStrategy(edgesIDStrategy);
 			return this;
 		}
@@ -56,13 +56,13 @@ class GraphBuilderImpl {
 		}
 
 		@Override
-		public Graph.Builder setVerticesNum(int n) {
+		public GraphBuilder setVerticesNum(int n) {
 			super.setVerticesNum(n);
 			return this;
 		}
 
 		@Override
-		public Graph.Builder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy) {
+		public GraphBuilder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy) {
 			super.setEdgesIDStrategy(edgesIDStrategy);
 			return this;
 		}
@@ -77,13 +77,13 @@ class GraphBuilderImpl {
 		}
 
 		@Override
-		public Graph.Builder setVerticesNum(int n) {
+		public GraphBuilder setVerticesNum(int n) {
 			super.setVerticesNum(n);
 			return this;
 		}
 
 		@Override
-		public Graph.Builder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy) {
+		public GraphBuilder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy) {
 			super.setEdgesIDStrategy(edgesIDStrategy);
 			return this;
 		}
@@ -98,13 +98,13 @@ class GraphBuilderImpl {
 		}
 
 		@Override
-		public Graph.Builder setVerticesNum(int n) {
+		public GraphBuilder setVerticesNum(int n) {
 			super.setVerticesNum(n);
 			return this;
 		}
 
 		@Override
-		public Graph.Builder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy) {
+		public GraphBuilder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy) {
 			super.setEdgesIDStrategy(edgesIDStrategy);
 			return this;
 		}
@@ -119,13 +119,13 @@ class GraphBuilderImpl {
 		}
 
 		@Override
-		public Graph.Builder setVerticesNum(int n) {
+		public GraphBuilder setVerticesNum(int n) {
 			super.setVerticesNum(n);
 			return this;
 		}
 
 		@Override
-		public Graph.Builder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy) {
+		public GraphBuilder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy) {
 			super.setEdgesIDStrategy(edgesIDStrategy);
 			return this;
 		}
@@ -140,26 +140,26 @@ class GraphBuilderImpl {
 		}
 
 		@Override
-		public Graph.Builder setVerticesNum(int n) {
+		public GraphBuilder setVerticesNum(int n) {
 			super.setVerticesNum(n);
 			return this;
 		}
 
 		@Override
-		public Graph.Builder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy) {
+		public GraphBuilder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy) {
 			super.setEdgesIDStrategy(edgesIDStrategy);
 			return this;
 		}
 
 	}
 
-	private static abstract class Abstract implements Graph.Builder {
+	private static abstract class Abstract implements GraphBuilder {
 
 		int verticesNum;
 		Class<? extends IDStrategy> edgesIDStrategy;
 
 		@Override
-		public Graph.Builder setVerticesNum(int n) {
+		public GraphBuilder setVerticesNum(int n) {
 			if (n < 0)
 				throw new IllegalArgumentException("Vertices number can not be negative: " + n);
 			verticesNum = n;
@@ -167,7 +167,7 @@ class GraphBuilderImpl {
 		}
 
 		@Override
-		public Graph.Builder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy) {
+		public GraphBuilder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy) {
 			if (edgesIDStrategy != null
 					&& !List.of(IDStrategy.Continues.class, IDStrategy.Fixed.class, IDStrategy.Rand.class)
 							.contains(edgesIDStrategy))

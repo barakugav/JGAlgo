@@ -61,7 +61,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  *
  * <pre> {@code
  * // Create a directed graph with three vertices and edges between them
- * Graph g = Graph.newBuilderDirected().build();
+ * Graph g = GraphBuilder.newDirected().build();
  * int v1 = g.addVertex();
  * int v2 = g.addVertex();
  * int v3 = g.addVertex();
@@ -91,6 +91,8 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * }
  * }</pre>
  *
+ * @see    GraphBuilder
+ * @see    GraphCapabilities
  * @author Barak Ugav
  */
 public interface Graph {
@@ -649,67 +651,5 @@ public interface Graph {
 	 * @see    GraphCapabilities
 	 */
 	public GraphCapabilities getCapabilities();
-
-	/**
-	 * Create an undirected graph builder.
-	 * <p>
-	 * This is the recommended way to instantiate a new undirected graph.
-	 *
-	 * @return a new builder that can build undirected graphs
-	 */
-	public static Graph.Builder newBuilderUndirected() {
-		return new GraphBuilderImpl.ArrayUndirected();
-	}
-
-	/**
-	 * Create a directed graph builder.
-	 * <p>
-	 * This is the recommended way to instantiate a new directed graph.
-	 *
-	 * @return a new builder that can build directed graphs
-	 */
-	public static Graph.Builder newBuilderDirected() {
-		return new GraphBuilderImpl.ArrayDirected();
-	}
-
-	/**
-	 * A builder for {@link Graph} objects.
-	 *
-	 * @author Barak Ugav
-	 */
-	static interface Builder {
-
-		/**
-		 * Create a new graph.
-		 *
-		 * @return a new graph with the builder options
-		 */
-		Graph build();
-
-		/**
-		 * Set the number of initial vertices in the graph.
-		 * <p>
-		 * The default value is zero.
-		 *
-		 * @param  n number of initial vertices in the graph
-		 * @return   this builder
-		 */
-		Graph.Builder setVerticesNum(int n);
-
-		/**
-		 * Set the edges ID strategy of this builder.
-		 * <p>
-		 * The default strategy used by this builder is {@link IDStrategy.Continues}, namely the edges IDs will always
-		 * be {@code [0,1,2,...,edgesNum-1]}. This default strategy may perform some IDs rename to maintain its
-		 * invariant during the lifetime of the graph. A different strategy such as {@link IDStrategy.Fixed} may be used
-		 * to ensure no IDs rename are performed.
-		 *
-		 * @param  edgesIDStrategy          type of edge ID strategy to use, or {@code null} for default strategy
-		 * @return                          this builder
-		 * @throws IllegalArgumentException if the strategy type is not supported
-		 * @see                             IDStrategy
-		 */
-		Graph.Builder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy);
-	}
 
 }
