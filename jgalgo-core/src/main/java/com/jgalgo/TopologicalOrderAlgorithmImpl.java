@@ -18,6 +18,7 @@ package com.jgalgo;
 
 import java.util.Arrays;
 import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.ints.IntIterators;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 class TopologicalOrderAlgorithmImpl implements TopologicalOrderAlgorithm {
@@ -25,7 +26,7 @@ class TopologicalOrderAlgorithmImpl implements TopologicalOrderAlgorithm {
 	private final AllocatedMemory allocatedMemory = new AllocatedMemory();
 
 	@Override
-	public int[] computeTopologicalSorting(Graph g) {
+	public TopologicalOrderAlgorithm.Result computeTopologicalSorting(Graph g) {
 		ArgumentCheck.onlyDirected(g);
 		allocatedMemory.allocate(g);
 		int n = g.vertices().size();
@@ -61,7 +62,7 @@ class TopologicalOrderAlgorithmImpl implements TopologicalOrderAlgorithm {
 		if (topolSortSize != n)
 			throw new IllegalArgumentException("G is not a directed acyclic graph (DAG)");
 
-		return topolSort;
+		return () -> IntIterators.wrap(topolSort);
 	}
 
 	private static class AllocatedMemory {

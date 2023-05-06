@@ -15,6 +15,8 @@
  */
 package com.jgalgo;
 
+import it.unimi.dsi.fastutil.ints.IntIterator;
+
 /**
  * Algorithm that calculate a topological order of graph vertices.
  * <p>
@@ -33,11 +35,25 @@ public interface TopologicalOrderAlgorithm {
 	 * Compute the topological order of a DAG vertices.
 	 *
 	 * @param  g                        a directed acyclic graph (DAG).
-	 * @return                          an array of size \(n\) with the vertices of the graph order in the topological
-	 *                                  order.
+	 * @return                          a result object containing the computed order
 	 * @throws IllegalArgumentException if the graph is not DAG
 	 */
-	public int[] computeTopologicalSorting(Graph g);
+	TopologicalOrderAlgorithm.Result computeTopologicalSorting(Graph g);
+
+	/**
+	 * A result object of a {@link TopologicalOrderAlgorithm} algorithm.
+	 *
+	 * @author Barak Ugav
+	 */
+	static interface Result {
+		/**
+		 * Get an iterator that iterate over the vertices of the graph in the order computed by the
+		 * {@link TopologicalOrderAlgorithm}.
+		 *
+		 * @return an iterator that iterate over the vertices of the graph in the order computed
+		 */
+		IntIterator verticesIterator();
+	}
 
 	/**
 	 * Create a new topological order algorithm builder.

@@ -16,6 +16,8 @@
 
 package com.jgalgo;
 
+import it.unimi.dsi.fastutil.ints.IntIterator;
+
 /**
  * Linear Single Source Shortest Path (SSSP) algorithm for directed acyclic graphs (DAG).
  * <p>
@@ -45,9 +47,9 @@ public class SSSPDag implements SSSP {
 		SSSPResultImpl res = new SSSPResultImpl(g, source);
 		res.distances[source] = 0;
 
-		int[] topolSort = topoAlg.computeTopologicalSorting(g);
 		boolean sourceSeen = false;
-		for (int u : topolSort) {
+		for (IntIterator uit = topoAlg.computeTopologicalSorting(g).verticesIterator(); uit.hasNext();) {
+			int u = uit.nextInt();
 			if (!sourceSeen) {
 				if (u != source)
 					continue;

@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
+import it.unimi.dsi.fastutil.ints.IntIterator;
 
 public class TopologicalOrderTest extends TestBase {
 
@@ -45,11 +46,11 @@ public class TopologicalOrderTest extends TestBase {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
 					.selfEdges(false).cycles(false).connected(connected).build();
 
-			int[] topolSort = new TopologicalOrderAlgorithmImpl().computeTopologicalSorting(g);
+			IntIterator topolSort = new TopologicalOrderAlgorithmImpl().computeTopologicalSorting(g).verticesIterator();
 
 			Set<Integer> seenVertices = new HashSet<>(n);
-			for (int i = 0; i < n; i++) {
-				int u = topolSort[i];
+			while (topolSort.hasNext()) {
+				int u = topolSort.nextInt();
 				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 					eit.nextInt();
 					int v = eit.target();
