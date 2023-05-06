@@ -20,8 +20,6 @@ import com.jgalgo.Graph;
 import com.jgalgo.GraphBuilder;
 import com.jgalgo.MST;
 import com.jgalgo.Weights;
-import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 public class MinimumSpanningTreeExample {
@@ -69,19 +67,11 @@ public class MinimumSpanningTreeExample {
 		/* Compute the minimum spanning tree of the graph */
 		EdgeWeightFunc w = weights;
 		MST mstAlgo = MST.newBuilder().build();
-		IntCollection mst = mstAlgo.computeMinimumSpanningTree(g, w);
+		MST.Result mst = mstAlgo.computeMinimumSpanningTree(g, w);
 
-		/* The returned int collection contains all the edges that form the MST */
-		assert IntSet.of(e1, e2, e4, e5, e6, e11).equals(IntSet.of(mst.toIntArray()));
+		assert IntSet.of(e1, e2, e4, e5, e6, e11).equals(IntSet.of(mst.edges().toIntArray()));
 		System.out.println("The minimum spanning tree of the graph has the following edges: " + mst);
-
-		/* Compute the weight of the tree */
-		double totalWeight = 0;
-		for (IntIterator it = mst.iterator(); it.hasNext();) {
-			int e = it.nextInt();
-			totalWeight += w.weight(e);
-		}
-		System.out.println("The minimum spanning tree weight is " + totalWeight);
+		System.out.println("The minimum spanning tree weight is " + mst.weight(w));
 	}
 
 	public static void main(String[] args) {

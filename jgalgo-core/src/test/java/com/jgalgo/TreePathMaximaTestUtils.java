@@ -19,12 +19,10 @@ package com.jgalgo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.List;
 import java.util.Random;
-
 import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
-
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIntPair;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -116,7 +114,7 @@ public class TreePathMaximaTestUtils extends TestUtils {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
 					.selfEdges(false).cycles(true).connected(true).build();
 			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
-			IntCollection mstEdges = new MSTKruskal().computeMinimumSpanningTree(g, w);
+			IntCollection mstEdges = new MSTKruskal().computeMinimumSpanningTree(g, w).edges();
 
 			boolean isMST = TreePathMaxima.verifyMST(g, w, mstEdges, algo);
 			assertTrue(isMST);
@@ -134,7 +132,7 @@ public class TreePathMaximaTestUtils extends TestUtils {
 					.selfEdges(false).cycles(true).connected(true).build();
 			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 
-			IntCollection mstEdges = new MSTKruskal().computeMinimumSpanningTree(g, w);
+			IntCollection mstEdges = new IntArrayList(new MSTKruskal().computeMinimumSpanningTree(g, w).edges());
 			Graph mst = new GraphArrayUndirected(g.vertices().size());
 			Weights.Int edgeRef = mst.addEdgesWeights("edgeRef", int.class, Integer.valueOf(-1));
 			for (IntIterator it = mstEdges.iterator(); it.hasNext();) {

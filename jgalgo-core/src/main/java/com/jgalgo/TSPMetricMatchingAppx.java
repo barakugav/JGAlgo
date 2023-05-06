@@ -28,6 +28,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  */
 public class TSPMetricMatchingAppx implements TSPMetric {
 
+	private final MST mstAlgo = MST.newBuilder().build();
 	private final MaximumMatching matchingAlgo = new MaximumMatchingWeightedGabow1990();
 
 	private static final Object EdgeWeightKey = new Object();
@@ -48,7 +49,7 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 		// TSPMetricUtils.checkArgDistanceTableIsMetric(distances);
 
 		/* Calculate MST */
-		IntCollection mst = new MSTPrim().computeMinimumSpanningTree(g, w);
+		IntCollection mst = mstAlgo.computeMinimumSpanningTree(g, w).edges();
 		if (mst.size() < n - 1)
 			throw new IllegalArgumentException("graph is not connected");
 

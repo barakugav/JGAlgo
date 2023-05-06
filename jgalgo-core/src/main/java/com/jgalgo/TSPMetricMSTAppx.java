@@ -33,6 +33,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  */
 public class TSPMetricMSTAppx implements TSPMetric {
 
+	private final MST mstAlgo = MST.newBuilder().build();
 	// /*
 	// * If true, the algorithm will validate the distance table and check the metric constrain is satisfied. This
 	// * increases the running time to O(n^3)
@@ -56,7 +57,7 @@ public class TSPMetricMSTAppx implements TSPMetric {
 		// TSPMetricUtils.checkArgDistanceTableIsMetric(distances);
 
 		/* Calculate MST */
-		IntCollection mst = new MSTPrim().computeMinimumSpanningTree(g, w);
+		IntCollection mst = mstAlgo.computeMinimumSpanningTree(g, w).edges();
 		if (mst.size() < n - 1)
 			throw new IllegalArgumentException("graph is not connected");
 

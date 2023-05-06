@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
-
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -36,7 +35,6 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
-
 import com.jgalgo.EdgeWeightFunc;
 import com.jgalgo.Graph;
 import com.jgalgo.MST;
@@ -47,9 +45,7 @@ import com.jgalgo.MSTKruskal;
 import com.jgalgo.MSTPrim;
 import com.jgalgo.MSTYao;
 import com.jgalgo.bench.TestUtils.SeedGenerator;
-
 import it.unimi.dsi.fastutil.Pair;
-import it.unimi.dsi.fastutil.ints.IntCollection;
 
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
@@ -86,7 +82,7 @@ public class MSTBench {
 		Graph g = gw.first();
 		EdgeWeightFunc.Int w = gw.second();
 		MST algo = builder.get();
-		IntCollection mst = algo.computeMinimumSpanningTree(g, w);
+		MST.Result mst = algo.computeMinimumSpanningTree(g, w);
 		blackhole.consume(mst);
 	}
 

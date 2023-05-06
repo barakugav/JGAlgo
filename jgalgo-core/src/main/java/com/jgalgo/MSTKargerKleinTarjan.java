@@ -70,9 +70,9 @@ public class MSTKargerKleinTarjan implements MST {
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	public IntCollection computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
+	public MST.Result computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
 		ArgumentCheck.onlyUndirected(g);
-		return computeMST(g, w);
+		return new MSTResultImpl(computeMST(g, w));
 	}
 
 	private IntCollection computeMST(Graph g, EdgeWeightFunc w) {

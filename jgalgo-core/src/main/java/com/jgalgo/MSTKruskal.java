@@ -18,11 +18,9 @@ package com.jgalgo;
 
 import java.util.Objects;
 import java.util.function.IntFunction;
-
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntLists;
 
 /**
  * Kruskal's minimum spanning tree algorithm.
@@ -66,11 +64,11 @@ public class MSTKruskal implements MST {
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	public IntCollection computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
+	public MST.Result computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
 		ArgumentCheck.onlyUndirected(g);
 		int n = g.vertices().size();
 		if (n == 0)
-			return IntLists.emptyList();
+			return MSTResultImpl.Empty;
 
 		/* sort edges */
 		int[] edges = g.edges().toIntArray();
@@ -90,7 +88,7 @@ public class MSTKruskal implements MST {
 				mst.add(e);
 			}
 		}
-		return mst;
+		return new MSTResultImpl(mst);
 	}
 
 }

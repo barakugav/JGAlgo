@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -36,13 +35,13 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
-
 import com.jgalgo.EdgeWeightFunc;
 import com.jgalgo.Graph;
 import com.jgalgo.HeapBinomial;
 import com.jgalgo.HeapFibonacci;
 import com.jgalgo.HeapPairing;
 import com.jgalgo.HeapReferenceable;
+import com.jgalgo.MST;
 import com.jgalgo.MSTPrim;
 import com.jgalgo.RedBlackTree;
 import com.jgalgo.SSSP;
@@ -50,8 +49,6 @@ import com.jgalgo.SSSPDijkstra;
 import com.jgalgo.SplayTree;
 import com.jgalgo.bench.GraphsTestUtils.RandomGraphBuilder;
 import com.jgalgo.bench.TestUtils.SeedGenerator;
-
-import it.unimi.dsi.fastutil.ints.IntCollection;
 
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
@@ -98,7 +95,7 @@ public class HeapReferenceableBench {
 		/* Prim MST */
 		MSTPrim mstAlgo = new MSTPrim();
 		mstAlgo.setHeapBuilder(heapBuilder);
-		IntCollection mst = mstAlgo.computeMinimumSpanningTree(args.g, args.w);
+		MST.Result mst = mstAlgo.computeMinimumSpanningTree(args.g, args.w);
 		blackhole.consume(mst);
 	}
 

@@ -18,10 +18,8 @@ package com.jgalgo;
 
 import java.util.BitSet;
 import java.util.Objects;
-
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntLists;
 
 /**
  * Prim's minimum spanning tree algorithm.
@@ -64,11 +62,11 @@ public class MSTPrim implements MST {
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	public IntCollection computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
+	public MST.Result computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
 		ArgumentCheck.onlyUndirected(g);
 		int n = g.vertices().size();
 		if (n == 0)
-			return IntLists.emptyList();
+			return MSTResultImpl.Empty;
 
 		HeapReferenceable<Integer> heap = heapBuilder.build(w);
 		@SuppressWarnings("unchecked")
@@ -117,7 +115,7 @@ public class MSTPrim implements MST {
 			}
 		}
 
-		return mst;
+		return new MSTResultImpl(mst);
 	}
 
 }

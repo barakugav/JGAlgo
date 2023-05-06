@@ -21,7 +21,6 @@ import java.util.BitSet;
 import java.util.Objects;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntLists;
 import it.unimi.dsi.fastutil.ints.IntStack;
 
 /**
@@ -61,10 +60,10 @@ public class MDSTTarjan implements MDST {
 	 * @throws IllegalArgumentException if the graph is not directed
 	 */
 	@Override
-	public IntCollection computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
+	public MST.Result computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
 		ArgumentCheck.onlyDirected(g);
 		if (g.vertices().size() == 0 || g.edges().size() == 0)
-			return IntLists.emptyList();
+			return MSTResultImpl.Empty;
 		Graph gRef = GraphsUtils.referenceGraph(g, EdgeRefWeightKey);
 		Weights.Int edgeRefs = gRef.getEdgesWeights(EdgeRefWeightKey);
 
@@ -79,17 +78,17 @@ public class MDSTTarjan implements MDST {
 	}
 
 	@Override
-	public IntCollection computeMinimumSpanningTree(Graph g, EdgeWeightFunc w, int root) {
+	public MST.Result computeMinimumSpanningTree(Graph g, EdgeWeightFunc w, int root) {
 		ArgumentCheck.onlyDirected(g);
 		if (g.vertices().size() == 0 || g.edges().size() == 0)
-			return IntLists.emptyList();
+			return MSTResultImpl.Empty;
 		Graph gRef = GraphsUtils.referenceGraph(g, EdgeRefWeightKey);
 
 		ContractedGraph contractedGraph = contract(gRef, w);
 		return expand(gRef, contractedGraph, root);
 	}
 
-	private static IntCollection expand(Graph g, ContractedGraph cg, int root) {
+	private static MST.Result expand(Graph g, ContractedGraph cg, int root) {
 		int[] inEdge = new int[cg.n];
 
 		IntStack roots = new IntArrayList();
@@ -123,7 +122,7 @@ public class MDSTTarjan implements MDST {
 			if (v != root && e != HeavyEdge)
 				mst.add(e);
 		}
-		return mst;
+		return new MSTResultImpl(mst);
 	}
 
 	private void addEdgesUntilStronglyConnected(Graph g) {

@@ -55,14 +55,14 @@ public class MSTBoruvka implements MST {
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	public IntCollection computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
-		return computeMST(g, w, Integer.MAX_VALUE).mst;
+	public MST.Result computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
+		return new MSTResultImpl(computeMST(g, w, Integer.MAX_VALUE).mst);
 	}
 
 	Pair<Graph, IntCollection> runBoruvka(Graph g, EdgeWeightFunc w, int numberOfRounds, Object edgeRefKey) {
 		if (numberOfRounds <= 0)
 			throw new IllegalArgumentException();
-		MSTResult mstRes = computeMST(g, w, numberOfRounds);
+		Res mstRes = computeMST(g, w, numberOfRounds);
 
 		Graph contractedG = new GraphArrayUndirected(mstRes.treeNum);
 		Weights.Int edgeRef = contractedG.addEdgesWeights(edgeRefKey, int.class);
@@ -78,7 +78,7 @@ public class MSTBoruvka implements MST {
 		return Pair.of(contractedG, mstRes.mst);
 	}
 
-	private MSTResult computeMST(Graph g, EdgeWeightFunc w, int numberOfRounds) {
+	private Res computeMST(Graph g, EdgeWeightFunc w, int numberOfRounds) {
 		ArgumentCheck.onlyUndirected(g);
 		allocatedMem.allocate(g);
 		int n = g.vertices().size();
@@ -180,15 +180,15 @@ public class MSTBoruvka implements MST {
 				vTree[v] = vTreeNext[vTree[v]];
 		}
 
-		return new MSTResult(vTree, treeNum, mst);
+		return new Res(vTree, treeNum, mst);
 	}
 
-	private static class MSTResult {
+	private static class Res {
 		final int[] vToTree;
 		final int treeNum;
 		final IntCollection mst;
 
-		MSTResult(int[] vToTree, int treeNum, IntCollection mst) {
+		Res(int[] vToTree, int treeNum, IntCollection mst) {
 			this.vToTree = vToTree;
 			this.treeNum = treeNum;
 			this.mst = mst;

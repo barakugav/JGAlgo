@@ -17,7 +17,6 @@
 package com.jgalgo;
 
 import java.util.Arrays;
-
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -45,7 +44,7 @@ public class MSTYao implements MST {
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	public IntCollection computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
+	public MST.Result computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
 		ArgumentCheck.onlyUndirected(g);
 		int n = g.vertices().size();
 
@@ -157,7 +156,7 @@ public class MSTYao implements MST {
 				vTree[v] = vTreeNext[vTree[v]];
 		}
 
-		return mst;
+		return new MSTResultImpl(mst);
 	}
 
 	private static int[][][] partitionEdgesToBuckets(Graph g, EdgeWeightFunc w) {

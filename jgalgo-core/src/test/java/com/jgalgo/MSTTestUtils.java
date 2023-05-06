@@ -18,13 +18,9 @@ package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.List;
-
 import com.jgalgo.GraphImplTestUtils.GraphImpl;
-
 import it.unimi.dsi.fastutil.ints.IntAVLTreeSet;
-import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -47,7 +43,7 @@ class MSTTestUtils extends TestUtils {
 			Graph g = GraphsTestUtils.randGraph(n, m, graphImpl, seedGen.nextSeed());
 			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 
-			IntCollection mst = algo.computeMinimumSpanningTree(g, w);
+			MST.Result mst = algo.computeMinimumSpanningTree(g, w);
 			verifyMST(g, w, mst);
 		});
 	}
@@ -85,20 +81,20 @@ class MSTTestUtils extends TestUtils {
 
 	}
 
-	private static void verifyMST(Graph g, EdgeWeightFunc w, IntCollection mst) {
+	private static void verifyMST(Graph g, EdgeWeightFunc w, MST.Result mst) {
 		/*
 		 * It's hard to verify MST, we use Kruskal algorithm to verify the others, and assume its implementation is
 		 * correct
 		 */
-		IntCollection expected = new MSTKruskal().computeMinimumSpanningTree(g, w);
+		MST.Result expected = new MSTKruskal().computeMinimumSpanningTree(g, w);
 
 		IntComparator c = new MSTEdgeComparator(g, w);
 		IntSet actualSet = new IntAVLTreeSet(c);
-		actualSet.addAll(mst);
+		actualSet.addAll(mst.edges());
 
-		assertEquals(mst.size(), actualSet.size(), "MST contains duplications");
-		assertEquals(expected.size(), actualSet.size(), "unexpected MST size");
-		for (IntIterator it = expected.iterator(); it.hasNext();) {
+		assertEquals(mst.edges().size(), actualSet.size(), "MST contains duplications");
+		assertEquals(expected.edges().size(), actualSet.size(), "unexpected MST size");
+		for (IntIterator it = expected.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			assertTrue(actualSet.contains(e), "MST doesn't contains edge: " + e);
 		}

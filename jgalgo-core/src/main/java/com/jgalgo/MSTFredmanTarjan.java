@@ -18,10 +18,8 @@ package com.jgalgo;
 
 import java.util.Arrays;
 import java.util.Objects;
-
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntLists;
 
 /**
  * Fredman and Tarjan’s minimum spanning tree algorithm.
@@ -65,11 +63,11 @@ public class MSTFredmanTarjan implements MST {
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	public IntCollection computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
+	public MST.Result computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
 		ArgumentCheck.onlyUndirected(g);
 		int n = g.vertices().size(), m = g.edges().size();
 		if (n == 0)
-			return IntLists.emptyList();
+			return MSTResultImpl.Empty;
 
 		// following variables are used to maintain the super vertices
 
@@ -216,7 +214,7 @@ public class MSTFredmanTarjan implements MST {
 
 		}
 
-		return mst;
+		return new MSTResultImpl(mst);
 	}
 
 }

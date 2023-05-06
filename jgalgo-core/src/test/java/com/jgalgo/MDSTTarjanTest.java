@@ -35,7 +35,7 @@ public class MDSTTarjanTest extends TestBase {
 		}
 
 		@Override
-		public IntCollection computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
+		public MST.Result computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
 			if (g.getCapabilities().directed())
 				return algo.computeMinimumSpanningTree(g, w);
 			int n = g.vertices().size();
@@ -49,11 +49,11 @@ public class MDSTTarjanTest extends TestBase {
 					edgeRef.set(dg.addEdge(v, u), e);
 				}
 			}
-			IntCollection mst0 = algo.computeMinimumSpanningTree(dg, e -> w.weight(edgeRef.getInt(e)));
-			IntCollection mst = new IntArrayList(mst0.size());
-			for (IntIterator it = mst0.iterator(); it.hasNext();)
+			MST.Result mst0 = algo.computeMinimumSpanningTree(dg, e -> w.weight(edgeRef.getInt(e)));
+			IntCollection mst = new IntArrayList(mst0.edges().size());
+			for (IntIterator it = mst0.edges().iterator(); it.hasNext();)
 				mst.add(edgeRef.getInt(it.nextInt()));
-			return mst;
+			return new MSTResultImpl(mst);
 		}
 	}
 
@@ -90,7 +90,7 @@ public class MDSTTarjanTest extends TestBase {
 
 	private static void testRandGraph(MDST algo, Graph g, EdgeWeightFunc w) {
 		@SuppressWarnings("unused")
-		IntCollection mst = algo.computeMinimumSpanningTree(g, w, 0);
+		MST.Result mst = algo.computeMinimumSpanningTree(g, w, 0);
 		// TODO verify the result
 	}
 

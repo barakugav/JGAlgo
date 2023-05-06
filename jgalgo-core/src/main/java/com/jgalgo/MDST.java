@@ -16,8 +16,6 @@
 
 package com.jgalgo;
 
-import it.unimi.dsi.fastutil.ints.IntCollection;
-
 /**
  * Minimum spanning tree algorithm for directed graphs.
  * <p>
@@ -36,7 +34,7 @@ public interface MDST extends MST {
 	 * @throws IllegalArgumentException if the graph is not directed
 	 */
 	@Override
-	public IntCollection computeMinimumSpanningTree(Graph g, EdgeWeightFunc w);
+	public MST.Result computeMinimumSpanningTree(Graph g, EdgeWeightFunc w);
 
 	/**
 	 * Compute a minimum directed spanning tree (MDST) in a directed graph, rooted at the given vertex
@@ -47,7 +45,7 @@ public interface MDST extends MST {
 	 * @return                          all edges composing the spanning tree
 	 * @throws IllegalArgumentException if {@code g} is not directed
 	 */
-	public IntCollection computeMinimumSpanningTree(Graph g, EdgeWeightFunc w, int root);
+	public MST.Result computeMinimumSpanningTree(Graph g, EdgeWeightFunc w, int root);
 
 	/**
 	 * Create a new minimum directed spanning tree algorithm builder.

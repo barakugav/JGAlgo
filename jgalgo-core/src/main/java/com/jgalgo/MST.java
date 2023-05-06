@@ -35,10 +35,33 @@ public interface MST {
 	 *
 	 * @param  g a graph
 	 * @param  w an edge weight function
-	 * @return   all edges that compose the MST, which there are \(n-1\) of them (or less, forming a forest if the graph
-	 *           is not connected)
+	 * @return   a result object containing all the edges of the computed spanning tree, which there are \(n-1\) of them
+	 *           (or less, forming a forest if the graph is not connected)
 	 */
-	IntCollection computeMinimumSpanningTree(Graph g, EdgeWeightFunc w);
+	MST.Result computeMinimumSpanningTree(Graph g, EdgeWeightFunc w);
+
+	/**
+	 * A result object for {@link MST} computation.
+	 *
+	 * @author Barak Ugav
+	 */
+	static interface Result {
+
+		/**
+		 * Get all the edges that form the spanning tree.
+		 *
+		 * @return a collection of the MST edges.
+		 */
+		IntCollection edges();
+
+		/**
+		 * Get the MST weight with respect to a weight function
+		 *
+		 * @param  w a weight function
+		 * @return   the sum of the tree edges weights
+		 */
+		double weight(EdgeWeightFunc w);
+	}
 
 	/**
 	 * Create a new minimum spanning tree algorithm builder.
