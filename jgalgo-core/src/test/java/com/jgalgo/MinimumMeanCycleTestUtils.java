@@ -81,7 +81,7 @@ public class MinimumMeanCycleTestUtils extends TestBase {
 	}
 
 	private static double getMeanWeight(Path cycle, EdgeWeightFunc w) {
-		return SSSPTestUtils.getPathWeight(cycle, w) / cycle.size();
+		return cycle.weight(w) / cycle.size();
 	}
 
 }

@@ -16,7 +16,6 @@
 
 package com.jgalgo;
 
-import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
@@ -29,6 +28,8 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  */
 public class TSPMetricMatchingAppx implements TSPMetric {
 
+	private final MaximumMatching matchingAlgo = new MaximumMatchingWeightedGabow1990();
+
 	private static final Object EdgeWeightKey = new Object();
 	private static final Object EdgeRefWeightKey = new Object();
 
@@ -38,22 +39,18 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 	public TSPMetricMatchingAppx() {}
 
 	@Override
-	public int[] computeShortestTour(double[][] distances) {
-		int n = distances.length;
+	public Path computeShortestTour(Graph g, EdgeWeightFunc w) {
+		final int n = g.vertices().size();
 		if (n == 0)
-			return IntArrays.EMPTY_ARRAY;
-		TSPMetricUtils.checkArgDistanceTableSymmetric(distances);
-		TSPMetricUtils.checkArgDistanceTableIsMetric(distances);
-
-		/* Build graph from the distances table */
-		Graph g = new GraphTableUndirected(n);
-		Weights.Double weights = g.addEdgesWeights(EdgeWeightKey, double.class);
-		for (int u = 0; u < n; u++)
-			for (int v = u + 1; v < n; v++)
-				weights.set(g.addEdge(u, v), distances[u][v]);
+			return Path.Empty;
+		ArgumentCheck.onlyUndirected(g);
+		TSPMetricUtils.checkNoParallelEdges(g);
+		// TSPMetricUtils.checkArgDistanceTableIsMetric(distances);
 
 		/* Calculate MST */
-		IntCollection mst = new MSTPrim().computeMinimumSpanningTree(g, weights);
+		IntCollection mst = new MSTPrim().computeMinimumSpanningTree(g, w);
+		if (mst.size() < n - 1)
+			throw new IllegalArgumentException("graph is not connected");
 
 		/*
 		 * Build graph for the matching calculation, containing only vertices with odd degree from the MST
@@ -71,13 +68,13 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 			for (int v = u + 1; v < mGn; v++) {
 				int e = g.getEdge(mVtoV[u], mVtoV[v]);
 				int en = mG.addEdge(u, v);
-				mGWeightsNeg.set(en, -distances[mVtoV[u]][mVtoV[v]]);
+				mGWeightsNeg.set(en, -w.weight(g.getEdge(mVtoV[u], mVtoV[v])));
 				mGEdgeRef.set(en, e);
 			}
 		}
 
 		/* Calculate maximum matching between the odd vertices */
-		IntCollection matching = new MaximumMatchingWeightedGabow1990().computeMaximumWeightedPerfectMatching(mG, mGWeightsNeg);
+		IntCollection matching = matchingAlgo.computeMaximumWeightedPerfectMatching(mG, mGWeightsNeg);
 
 		/* Build a graph of the union of the MST and the matching result */
 		Graph g1 = new GraphArrayUndirected(n);
@@ -98,11 +95,8 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 		Path cycle = TSPMetricUtils.calcEulerianTourAndConvertToHamiltonianCycle(g, g1, g1EdgeRef);
 
 		/* Convert cycle of edges to list of vertices */
-		int[] res = TSPMetricUtils.pathToVerticesList(cycle).toIntArray();
-
 		mG.clear();
-
-		return res;
+		return cycle;
 	}
 
 }

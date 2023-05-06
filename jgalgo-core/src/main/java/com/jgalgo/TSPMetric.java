@@ -31,15 +31,16 @@ package com.jgalgo;
 public interface TSPMetric {
 
 	/**
-	 * Compute the shortest tour that visit all points.
+	 * Compute the shortest tour that visit all vertices.
 	 * <p>
 	 * Note that this problem is NP-hard and therefore the result is only the best approximation the implementation
 	 * could find.
 	 *
-	 * @param  distances \(n \times n\) table of distances between each two points. In the metric world every three
-	 *                       vertices \(u,v,w\) should satisfy \(d[u,v] + d[v,w] \leq d[u,w]$
-	 * @return           list of the \(n\) vertices ordered by the calculated path
+	 * @param  g a graph containing all the vertices the tour must visit, using its edges
+	 * @param  w an edge weight function. In the metric world every three vertices \(u,v,w\) should satisfy \(w((u,v)) +
+	 *               w((v,w)) \leq w((u,w))$
+	 * @return   a result object containing the list of the \(n\) vertices ordered by the calculated path
 	 */
-	public int[] computeShortestTour(double[][] distances);
+	Path computeShortestTour(Graph g, EdgeWeightFunc w);
 
 }

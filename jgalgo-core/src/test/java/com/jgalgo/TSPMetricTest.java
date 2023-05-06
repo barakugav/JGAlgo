@@ -17,13 +17,10 @@
 package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.BitSet;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Predicate;
-import java.util.function.ToDoubleFunction;
-
 import org.junit.jupiter.api.Test;
 
 public class TSPMetricTest extends TestBase {
@@ -50,21 +47,23 @@ public class TSPMetricTest extends TestBase {
 			locations[u][y] = nextDouble(rand, 1, 100);
 		}
 
-		double[][] distances = new double[n][n];
+		Graph g = new GraphTableUndirected(n);
+		Weights.Double distances = g.addEdgesWeights(g, double.class);
 		for (int u = 0; u < n; u++) {
-			for (int v = 0; v < n; v++) {
+			for (int v = u + 1; v < n; v++) {
 				double xd = locations[u][x] - locations[v][x];
 				double yd = locations[u][y] - locations[v][y];
-				distances[u][v] = distances[v][u] = Math.sqrt(xd * xd + yd * yd);
+				int e = g.addEdge(u, v);
+				distances.set(e, Math.sqrt(xd * xd + yd * yd));
 			}
 		}
 
-		int[] appxMst = new TSPMetricMSTAppx().computeShortestTour(distances);
-		int[] appxMatch = new TSPMetricMatchingAppx().computeShortestTour(distances);
+		Path appxMst = new TSPMetricMSTAppx().computeShortestTour(g, distances);
+		Path appxMatch = new TSPMetricMatchingAppx().computeShortestTour(g, distances);
 
-		Predicate<int[]> isPathVisitAllVertices = path -> {
+		Predicate<Path> isPathVisitAllVertices = path -> {
 			BitSet visited = new BitSet(n);
-			for (int u : path)
+			for (int u : path.toVerticesList())
 				visited.set(u);
 			for (int u = 0; u < n; u++)
 				if (!visited.get(u))
@@ -74,16 +73,8 @@ public class TSPMetricTest extends TestBase {
 		assertTrue(isPathVisitAllVertices.test(appxMst), "MST approximation result doesn't visit every vertex");
 		assertTrue(isPathVisitAllVertices.test(appxMatch), "Matching approximation result doesn't visit every vertex");
 
-		ToDoubleFunction<int[]> pathLength = path -> {
-			double d = 0;
-			for (int i = 0; i < path.length; i++) {
-				int u = path[i], v = path[(i + 1) % path.length];
-				d += distances[u][v];
-			}
-			return d;
-		};
-		double mstAppxLen = pathLength.applyAsDouble(appxMst);
-		double matchAppxLen = pathLength.applyAsDouble(appxMatch);
+		double mstAppxLen = appxMst.weight(distances);
+		double matchAppxLen = appxMatch.weight(distances);
 
 		assertTrue(mstAppxLen * 3 / 2 >= matchAppxLen && matchAppxLen * 2 > mstAppxLen,
 				"Approximations factor doesn't match");

@@ -90,7 +90,7 @@ public class SSSPTestUtils extends TestUtils {
 			} catch (UnsupportedOperationException e) {
 			}
 			if (cycle != null) {
-				double cycleWeight = getPathWeight(cycle, w);
+				double cycleWeight = cycle.weight(w);
 				assertTrue(cycleWeight != Double.NaN, "Invalid cycle: " + cycle);
 				assertTrue(cycleWeight < 0, "Cycle is not negative: " + cycle);
 				if (!expectedRes.foundNegativeCycle())
@@ -109,7 +109,7 @@ public class SSSPTestUtils extends TestUtils {
 			assertEquals(expectedDistance, actualDistance, "Distance to vertex " + v + " is wrong");
 			Path path = result.getPath(v);
 			if (path != null) {
-				double pathWeight = getPathWeight(path, w);
+				double pathWeight = path.weight(w);
 				assertEquals(pathWeight, actualDistance, "Path to vertex " + v + " doesn't match distance ("
 						+ actualDistance + " != " + pathWeight + "): " + path);
 			} else {
@@ -117,13 +117,6 @@ public class SSSPTestUtils extends TestUtils {
 						"Distance to vertex " + v + " is not infinity but path is null");
 			}
 		}
-	}
-
-	static double getPathWeight(Path path, EdgeWeightFunc w) {
-		double totalWeight = 0;
-		for (EdgeIter it = path.edgeIter(); it.hasNext();)
-			totalWeight += w.weight(it.nextInt());
-		return totalWeight;
 	}
 
 }

@@ -20,6 +20,7 @@ import java.util.Arrays;
 import it.unimi.dsi.fastutil.ints.AbstractIntList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntListIterator;
 import it.unimi.dsi.fastutil.ints.IntLists;
@@ -59,6 +60,8 @@ public class Path extends AbstractIntList {
 	private final int source;
 	private final int target;
 	private final IntList edges;
+
+	static final Path Empty = new Path(GraphsUtils.EmptyGraphUndirected, -1, -1, IntLists.emptyList());
 
 	/**
 	 * Construct a new path in a graph from an edge list, a source and a target vertices.
@@ -113,6 +116,68 @@ public class Path extends AbstractIntList {
 	 */
 	public EdgeIter edgeIter() {
 		return g.getCapabilities().directed() ? new IterDirected(g, edges) : new IterUndirected(g, edges, source);
+	}
+
+	/**
+	 * Check whether this path form a cycle.
+	 * <p>
+	 * A cycle is a path which start and ends at the same vertex.
+	 *
+	 * @return {@code true} if this path form a cycle, else {@code false}
+	 */
+	public boolean isCycle() {
+		return source == target;
+	}
+
+	/**
+	 * Get the vertices forming this path.
+	 * <p>
+	 * The path is defined as a list of edges \(e_1,e_2,\ldots\), where each target vertex of edge \(e_i\) is the source
+	 * vertex of the next edge \(e_{i+1}\). The list of <b>vertices</b> of this path is the vertices visited by this
+	 * path, ordered by their visit order. If this path form a cycle, the vertices list size is the same as the edge
+	 * list, otherwise it is greater by one.
+	 *
+	 * @return the vertices visited by this path, by the path order
+	 */
+	public IntList toVerticesList() {
+		if (isEmpty())
+			return IntLists.emptyList();
+		IntList res = new IntArrayList(size() + (isCycle() ? 0 : 1));
+		for (EdgeIter it = edgeIter();;) {
+			it.nextInt();
+			res.add(it.source());
+			if (!it.hasNext()) {
+				if (!isCycle()) {
+					assert it.target() == target;
+					res.add(target);
+				}
+				return res;
+			}
+		}
+	}
+
+	/**
+	 * Get the weight of the path with respect to some weight function.
+	 * <p>
+	 * The weight of a path is defined as the sum of its edges weights.
+	 *
+	 * @param  w an edge weight function
+	 * @return   the sum of this path edges weights
+	 */
+	public double weight(EdgeWeightFunc w) {
+		if (w instanceof EdgeWeightFunc.Int) {
+			EdgeWeightFunc.Int w0 = (EdgeWeightFunc.Int) w;
+			int s = 0;
+			for (IntIterator eit = iterator(); eit.hasNext();)
+				s += w0.weightInt(eit.nextInt());
+			return s;
+
+		} else {
+			double s = 0;
+			for (IntIterator eit = iterator(); eit.hasNext();)
+				s += w.weight(eit.nextInt());
+			return s;
+		}
 	}
 
 	private static class IterUndirected implements EdgeIterImpl {

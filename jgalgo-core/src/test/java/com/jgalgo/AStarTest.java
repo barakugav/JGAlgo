@@ -160,7 +160,7 @@ public class AStarTest extends TestBase {
 					Path path = astart.computeShortestPath(g, w, source, target, vHeuristic);
 					if (path != null) {
 						paths[target] = path;
-						distances[target] = SSSPTestUtils.getPathWeight(path, w);
+						distances[target] = path.weight(w);
 					}
 				}
 

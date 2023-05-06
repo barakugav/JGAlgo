@@ -16,7 +16,6 @@
 
 package com.jgalgo;
 
-import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
@@ -34,12 +33,11 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  */
 public class TSPMetricMSTAppx implements TSPMetric {
 
-	/*
-	 * If true, the algorithm will validate the distance table and check the metric constrain is satisfied. This
-	 * increases the running time to O(n^3)
-	 */
-	private static final boolean VALIDATE_METRIC = true;
-	private static final Object DoubleWeightKey = new Object();
+	// /*
+	// * If true, the algorithm will validate the distance table and check the metric constrain is satisfied. This
+	// * increases the running time to O(n^3)
+	// */
+	// private static final boolean VALIDATE_METRIC = true;
 	private static final Object EdgeRefWeightKey = new Object();
 
 	/**
@@ -48,23 +46,19 @@ public class TSPMetricMSTAppx implements TSPMetric {
 	public TSPMetricMSTAppx() {}
 
 	@Override
-	public int[] computeShortestTour(double[][] distances) {
-		int n = distances.length;
+	public Path computeShortestTour(Graph g, EdgeWeightFunc w) {
+		final int n = g.vertices().size();
 		if (n == 0)
-			return IntArrays.EMPTY_ARRAY;
-		TSPMetricUtils.checkArgDistanceTableSymmetric(distances);
-		if (VALIDATE_METRIC)
-			TSPMetricUtils.checkArgDistanceTableIsMetric(distances);
-
-		/* Build graph from the distances table */
-		Graph g = new GraphTableUndirected(n);
-		Weights.Double weights = g.addEdgesWeights(DoubleWeightKey, double.class);
-		for (int u = 0; u < n; u++)
-			for (int v = u + 1; v < n; v++)
-				weights.set(g.addEdge(u, v), distances[u][v]);
+			return Path.Empty;
+		ArgumentCheck.onlyUndirected(g);
+		TSPMetricUtils.checkNoParallelEdges(g);
+		// if (VALIDATE_METRIC)
+		// TSPMetricUtils.checkArgDistanceTableIsMetric(distances);
 
 		/* Calculate MST */
-		IntCollection mst = new MSTPrim().computeMinimumSpanningTree(g, weights);
+		IntCollection mst = new MSTPrim().computeMinimumSpanningTree(g, w);
+		if (mst.size() < n - 1)
+			throw new IllegalArgumentException("graph is not connected");
 
 		/* Build a graph with each MST edge duplicated */
 		Graph g1 = new GraphArrayUndirected(n);
@@ -78,9 +72,10 @@ public class TSPMetricMSTAppx implements TSPMetric {
 
 		Path cycle = TSPMetricUtils.calcEulerianTourAndConvertToHamiltonianCycle(g, g1, edgeRef);
 		assert cycle.size() == n;
+		assert cycle.isCycle();
 
 		/* Convert cycle of edges to list of vertices */
-		return TSPMetricUtils.pathToVerticesList(cycle).toIntArray();
+		return cycle;
 	}
 
 }

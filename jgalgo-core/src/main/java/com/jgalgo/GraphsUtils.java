@@ -16,8 +16,12 @@
 
 package com.jgalgo;
 
+import java.util.Collections;
+import java.util.Set;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.ints.IntSets;
 
 class GraphsUtils {
 
@@ -217,5 +221,207 @@ class GraphsUtils {
 		}
 
 	}
+
+	private abstract static class EmptyGraph implements Graph {
+
+		@Override
+		public IntSet vertices() {
+			return IntSets.emptySet();
+		}
+
+		@Override
+		public IntSet edges() {
+			return IntSets.emptySet();
+		}
+
+		@Override
+		public int addVertex() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void removeVertex(int v) {
+			throw new IndexOutOfBoundsException(v);
+		}
+
+		@Override
+		public void removeVertices(IntCollection vs) {
+			if (!vs.isEmpty())
+				throw new IndexOutOfBoundsException(vs.iterator().nextInt());
+		}
+
+		@Override
+		public EdgeIter edgesOut(int u) {
+			throw new IndexOutOfBoundsException(u);
+		}
+
+		@Override
+		public EdgeIter edgesIn(int v) {
+			throw new IndexOutOfBoundsException(v);
+		}
+
+		@Override
+		public EdgeIter getEdges(int u, int v) {
+			throw new IndexOutOfBoundsException(u);
+		}
+
+		@Override
+		public int addEdge(int u, int v) {
+			throw new IndexOutOfBoundsException(u);
+		}
+
+		@Override
+		public void removeEdge(int edge) {
+			throw new IndexOutOfBoundsException(edge);
+		}
+
+		@Override
+		public void removeEdges(IntCollection edges) {
+			if (!edges.isEmpty())
+				throw new IndexOutOfBoundsException(edges.iterator().nextInt());
+		}
+
+		@Override
+		public void reverseEdge(int edge) {
+			throw new IndexOutOfBoundsException(edge);
+		}
+
+		@Override
+		public int edgeSource(int edge) {
+			throw new IndexOutOfBoundsException(edge);
+		}
+
+		@Override
+		public int edgeTarget(int edge) {
+			throw new IndexOutOfBoundsException(edge);
+		}
+
+		@Override
+		public void clear() {}
+
+		@Override
+		public void clearEdges() {}
+
+		@Override
+		public <V, WeightsT extends Weights<V>> WeightsT getVerticesWeights(Object key) {
+			return null;
+		}
+
+		@Override
+		public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, Class<? super V> type) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, Class<? super V> type,
+				V defVal) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void removeVerticesWeights(Object key) {}
+
+		@Override
+		public Set<Object> getVerticesWeightKeys() {
+			return Collections.emptySet();
+		}
+
+		@Override
+		public <E, WeightsT extends Weights<E>> WeightsT getEdgesWeights(Object key) {
+			return null;
+		}
+
+		@Override
+		public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, Class<? super E> type) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, Class<? super E> type, E defVal) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void removeEdgesWeights(Object key) {}
+
+		@Override
+		public Set<Object> getEdgesWeightsKeys() {
+			return Collections.emptySet();
+		}
+
+		@Override
+		public IDStrategy.Continues getVerticesIDStrategy() {
+			// TODO Auto-generated method stub
+			throw new UnsupportedOperationException("Unimplemented method 'getVerticesIDStrategy'");
+		}
+
+		@Override
+		public IDStrategy getEdgesIDStrategy() {
+			// TODO Auto-generated method stub
+			throw new UnsupportedOperationException("Unimplemented method 'getEdgesIDStrategy'");
+		}
+
+	}
+
+	static final Graph EmptyGraphUndirected = new EmptyGraph() {
+		@Override
+		public GraphCapabilities getCapabilities() {
+			return EmptyCapabilitiesUndirected;
+		}
+	};
+
+	static final Graph EmptyGraphDirected = new EmptyGraph() {
+		@Override
+		public GraphCapabilities getCapabilities() {
+			return EmptyCapabilitiesDirected;
+		}
+	};
+
+	private abstract static class EmptyCapabilities implements GraphCapabilities {
+
+		@Override
+		public boolean vertexAdd() {
+			return false;
+		}
+
+		@Override
+		public boolean vertexRemove() {
+			return false;
+		}
+
+		@Override
+		public boolean edgeAdd() {
+			return false;
+		}
+
+		@Override
+		public boolean edgeRemove() {
+			return false;
+		}
+
+		@Override
+		public boolean parallelEdges() {
+			return false;
+		}
+
+		@Override
+		public boolean selfEdges() {
+			return false;
+		}
+	}
+
+	static final GraphCapabilities EmptyCapabilitiesUndirected = new EmptyCapabilities() {
+		@Override
+		public boolean directed() {
+			return false;
+		}
+	};
+
+	static final GraphCapabilities EmptyCapabilitiesDirected = new EmptyCapabilities() {
+		@Override
+		public boolean directed() {
+			return true;
+		}
+	};
 
 }
