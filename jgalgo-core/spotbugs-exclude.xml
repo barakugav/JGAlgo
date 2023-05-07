@@ -103,7 +103,7 @@
   </Match>
   <Match>
     <!-- should be fine -->
-    <Class name="com.jgalgo.MaximumMatchingWeightedGabow1990$Worker" />
+    <Class name="com.jgalgo.MaximumMatchingWeightedGabow1990Abstract$Worker" />
     <Bug pattern="FL_FLOATS_AS_LOOP_COUNTERS" />
   </Match>
   <Match>
