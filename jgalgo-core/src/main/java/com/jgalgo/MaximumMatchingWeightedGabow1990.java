@@ -31,12 +31,12 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  *
  * @author Barak Ugav
  */
-public class MaximumMatchingWeightedGabow1990 extends MaximumMatchingWeightedGabow1990Abstract {
+class MaximumMatchingWeightedGabow1990 extends MaximumMatchingWeightedGabow1990Abstract {
 
 	/**
 	 * Create a new maximum weighted matching object.
 	 */
-	public MaximumMatchingWeightedGabow1990() {}
+	MaximumMatchingWeightedGabow1990() {}
 
 	@Override
 	Worker newWorker(Graph gOrig, EdgeWeightFunc w, HeapReferenceable.Builder heapBuilder,

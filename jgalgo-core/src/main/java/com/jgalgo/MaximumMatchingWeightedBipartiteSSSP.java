@@ -31,7 +31,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
  *
  * @author Barak Ugav
  */
-public class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeighted {
+class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeighted {
 
 	private Object bipartiteVerticesWeightKey = Weights.DefaultBipartiteWeightKey;
 	private SSSP ssspAlgo = new SSSPDijkstra();
@@ -40,7 +40,7 @@ public class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeig
 	/**
 	 * Create a new maximum weighted matching object.
 	 */
-	public MaximumMatchingWeightedBipartiteSSSP() {}
+	MaximumMatchingWeightedBipartiteSSSP() {}
 
 	/**
 	 * Set the {@link SSSP} algorithm used by this algorithm.

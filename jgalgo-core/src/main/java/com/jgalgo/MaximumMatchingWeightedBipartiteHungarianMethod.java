@@ -33,7 +33,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  *
  * @author Barak Ugav
  */
-public class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumMatchingWeighted {
+class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumMatchingWeighted {
 
 	private Object bipartiteVerticesWeightKey = Weights.DefaultBipartiteWeightKey;
 	private HeapReferenceable.Builder heapBuilder = HeapPairing::new;
@@ -41,7 +41,7 @@ public class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumM
 	/**
 	 * Create a new maximum weighted matching object.
 	 */
-	public MaximumMatchingWeightedBipartiteHungarianMethod() {}
+	MaximumMatchingWeightedBipartiteHungarianMethod() {}
 
 	/**
 	 * Set the key used to get the bipartiteness property of vertices.

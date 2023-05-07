@@ -38,7 +38,6 @@ import com.jgalgo.EdgeWeightFunc;
 import com.jgalgo.Graph;
 import com.jgalgo.Matching;
 import com.jgalgo.MaximumMatching;
-import com.jgalgo.MaximumMatchingWeightedGabow1990;
 import com.jgalgo.bench.TestUtils.SeedGenerator;
 import it.unimi.dsi.fastutil.Pair;
 
@@ -88,28 +87,31 @@ public class MaximumMatchingWeightedBench {
 		blackhole.consume(matching);
 	}
 
+	private static MaximumMatching getAlgo(String name) {
+		MaximumMatching algo = MaximumMatching.newBuilder().setOption("impl", name).build();
+		if (!algo.getClass().getSimpleName().equals(name))
+			throw new IllegalArgumentException("implementation not found: " + name);
+		return algo;
+	}
+
 	@Benchmark
 	public void MaximumMatchingWeightedGabow1990Simpler(Blackhole blackhole) {
-		MaximumMatching algo =
-				MaximumMatching.newBuilder().setOption("impl", "MaximumMatchingWeightedGabow1990Simpler").build();
-		benchMaximumMatchingWeighted(algo, blackhole);
+		benchMaximumMatchingWeighted(getAlgo("MaximumMatchingWeightedGabow1990Simpler"), blackhole);
 	}
 
 	@Benchmark
 	public void MaximumMatchingWeightedGabow1990(Blackhole blackhole) {
-		benchMaximumMatchingWeighted(new MaximumMatchingWeightedGabow1990(), blackhole);
+		benchMaximumMatchingWeighted(getAlgo("MaximumMatchingWeightedGabow1990"), blackhole);
 	}
 
 	@Benchmark
 	public void MaximumMatchingWeightedGabow1990SimplerPerfect(Blackhole blackhole) {
-		MaximumMatching algo =
-				MaximumMatching.newBuilder().setOption("impl", "MaximumMatchingWeightedGabow1990Simpler").build();
-		benchMaximumMatchingWeightedPerfect(algo, blackhole);
+		benchMaximumMatchingWeightedPerfect(getAlgo("MaximumMatchingWeightedGabow1990Simpler"), blackhole);
 	}
 
 	@Benchmark
 	public void MaximumMatchingWeightedGabow1990Perfect(Blackhole blackhole) {
-		benchMaximumMatchingWeightedPerfect(new MaximumMatchingWeightedGabow1990(), blackhole);
+		benchMaximumMatchingWeightedPerfect(getAlgo("MaximumMatchingWeightedGabow1990"), blackhole);
 	}
 
 }

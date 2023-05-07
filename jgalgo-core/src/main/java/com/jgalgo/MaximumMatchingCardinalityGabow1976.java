@@ -35,12 +35,12 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  *
  * @author Barak Ugav
  */
-public class MaximumMatchingCardinalityGabow1976 implements MaximumMatchingCardinality {
+class MaximumMatchingCardinalityGabow1976 implements MaximumMatchingCardinality {
 
 	/**
 	 * Create a new maximum matching object.
 	 */
-	public MaximumMatchingCardinalityGabow1976() {}
+	MaximumMatchingCardinalityGabow1976() {}
 
 	@Override
 	public Matching computeMaximumCardinalityMatching(Graph g) {
