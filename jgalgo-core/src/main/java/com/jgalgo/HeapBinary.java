@@ -34,6 +34,7 @@ import java.util.NoSuchElementException;
  * If fast {@code remove(...)} or {@code decreaseKey(...)} operations are required, consider using {@link HeapPairing}
  * or {@link HeapFibonacci}.
  *
+ * @param  <E> the elements type
  * @see    <a href="https://en.wikipedia.org/wiki/Binary_heap">Wikipedia</a>
  * @author Barak Ugav
  */
@@ -43,7 +44,7 @@ public class HeapBinary<E> extends HeapAbstract<E> {
 	private int size;
 
 	/**
-	 * Constructs a new, empty binary heap, sorted according to the natural ordering of its elements.
+	 * Constructs a new, empty binary heap, ordered according to the natural ordering of its elements.
 	 * <p>
 	 * All elements inserted into the heap must implement the {@link Comparable} interface. Furthermore, all such
 	 * elements must be <i>mutually comparable</i>: {@code e1.compareTo(e2)} must not throw a {@code ClassCastException}
@@ -56,7 +57,7 @@ public class HeapBinary<E> extends HeapAbstract<E> {
 	}
 
 	/**
-	 * Constructs a new, empty binary heap, sorted according to the specified comparator.
+	 * Constructs a new, empty binary heap, ordered according to the specified comparator.
 	 * <p>
 	 * All elements inserted into the heap must be <i>mutually comparable</i> by the specified comparator:
 	 * {@code comparator.compare(e1, e2)} must not throw a {@code ClassCastException} for any elements {@code e1} and
@@ -84,14 +85,12 @@ public class HeapBinary<E> extends HeapAbstract<E> {
 	}
 
 	@Override
-	public HeapReference<E> insert(E e) {
+	public void insert(E e) {
 		if (arr.length == size)
 			grow();
 
 		moveUp(size, e);
 		size++;
-
-		return null;
 	}
 
 	@Override

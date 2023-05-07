@@ -34,7 +34,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
  */
 public class MDSTTarjan implements MDST {
 
-	private Heap.Builder heapBuilder = HeapPairing::new;
+	private HeapReferenceable.Builder heapBuilder = HeapPairing::new;
 	private final ConnectivityAlgorithm ccAlg = ConnectivityAlgorithm.newBuilder().build();
 	private static final int HeavyEdge = 0xffffffff;
 	private static final double HeavyEdgeWeight = Double.MAX_VALUE;
@@ -50,7 +50,7 @@ public class MDSTTarjan implements MDST {
 	 *
 	 * @param heapBuilder a builder for heaps used by this algorithm
 	 */
-	public void setHeapBuilder(Heap.Builder heapBuilder) {
+	public void setHeapBuilder(HeapReferenceable.Builder heapBuilder) {
 		this.heapBuilder = Objects.requireNonNull(heapBuilder);
 	}
 
@@ -164,12 +164,12 @@ public class MDSTTarjan implements MDST {
 			return (e0 != HeavyEdge ? w0.weight(e0) : HeavyEdgeWeight) + uf.getValue(g.edgeTarget(e));
 		};
 		@SuppressWarnings("unchecked")
-		Heap<Integer>[] heap = new Heap[VMaxNum];
+		HeapReferenceable<Integer, Void>[] heap = new HeapReferenceable[VMaxNum];
 		for (int v = 0; v < n; v++)
 			heap[v] = heapBuilder.build(w);
 		for (int v = 0; v < n; v++)
 			for (EdgeIter eit = g.edgesIn(v); eit.hasNext();)
-				heap[v].add(Integer.valueOf(eit.nextInt()));
+				heap[v].insert(Integer.valueOf(eit.nextInt()));
 
 		int[] parent = new int[VMaxNum];
 		int[] child = new int[VMaxNum];
@@ -190,7 +190,7 @@ public class MDSTTarjan implements MDST {
 				// Assuming the graph is strongly connected, if heap is empty we are done
 				if (heap[a].isEmpty())
 					return new ContractedGraph(n, parent, child, brother, inEdge);
-				e = heap[a].extractMin().intValue();
+				e = heap[a].extractMin().key().intValue();
 				u = ufIdxToV[uf.find(g.edgeSource(e))];
 			} while (a == u);
 
@@ -208,7 +208,7 @@ public class MDSTTarjan implements MDST {
 			} else {
 				// Create new super vertex
 				int c = uf.make();
-				Heap<Integer> cHeap = heap[c] = heapBuilder.build(w);
+				HeapReferenceable<Integer, Void> cHeap = heap[c] = heapBuilder.build(w);
 				brother[c] = brother[u];
 				brother[u] = a;
 				child[c] = a;

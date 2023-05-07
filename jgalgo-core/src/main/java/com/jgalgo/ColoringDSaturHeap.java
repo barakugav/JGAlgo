@@ -64,14 +64,14 @@ public class ColoringDSaturHeap implements Coloring {
 		ColoringResultImpl res = new ColoringResultImpl(g);
 		int n = g.vertices().size();
 
-		HeapReferenceable<HeapElm> heap = heapBuilder.build();
+		HeapReferenceable<HeapElm, Void> heap = heapBuilder.build();
 		@SuppressWarnings("unchecked")
-		HeapReference<HeapElm>[] vPtrs = new HeapReference[n];
+		HeapReference<HeapElm, Void>[] vPtrs = new HeapReference[n];
 		for (int u = 0; u < n; u++)
 			vPtrs[u] = heap.insert(new HeapElm(u, g.degreeOut(u)));
 
 		while (!heap.isEmpty()) {
-			HeapElm elm = heap.extractMin();
+			HeapElm elm = heap.extractMin().key();
 			int u = elm.v;
 
 			int color = 0;
@@ -84,8 +84,8 @@ public class ColoringDSaturHeap implements Coloring {
 				eit.nextInt();
 				int v = eit.target();
 				if (res.colorOf(v) == -1) { /* v is uncolored */
-					HeapReference<HeapElm> vPtr = vPtrs[v];
-					HeapElm vElm = vPtr.get();
+					HeapReference<HeapElm, Void> vPtr = vPtrs[v];
+					HeapElm vElm = vPtr.key();
 					if (!vElm.neighborColors.get(color)) {
 						vElm.neighborColors.set(color);
 						vElm.neighborColorsNum++;

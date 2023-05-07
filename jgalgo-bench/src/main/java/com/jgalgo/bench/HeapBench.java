@@ -17,6 +17,7 @@
 package com.jgalgo.bench;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -40,7 +41,7 @@ import com.jgalgo.HeapBinary;
 import com.jgalgo.HeapBinomial;
 import com.jgalgo.HeapFibonacci;
 import com.jgalgo.HeapPairing;
-import com.jgalgo.HeapReference;
+import com.jgalgo.HeapReferenceable;
 import com.jgalgo.RedBlackTree;
 import com.jgalgo.SplayTree;
 import com.jgalgo.bench.TestUtils.SeedGenerator;
@@ -105,8 +106,7 @@ public class HeapBench {
 		List<Op> sequence = sequences.get(graphIdx.getAndUpdate(i -> (i + 1) % sequencesNum));
 		for (Op op : sequence) {
 			if (op instanceof Op.Insert) {
-				HeapReference<Integer> ref = heap.insert(((Op.Insert) op).x);
-				blackhole.consume(ref);
+				heap.insert(((Op.Insert) op).x);
 
 			} else if (op instanceof Op.FindMin) {
 				if (heap.isEmpty())
@@ -133,27 +133,36 @@ public class HeapBench {
 
 	@Benchmark
 	public void Pairing(Blackhole blackhole) {
-		benchHeap(HeapPairing::new, blackhole);
+		benchHeap(heapBuilder(HeapPairing::new), blackhole);
 	}
 
 	@Benchmark
 	public void Fibonacci(Blackhole blackhole) {
-		benchHeap(HeapFibonacci::new, blackhole);
+		benchHeap(heapBuilder(HeapFibonacci::new), blackhole);
 	}
 
 	@Benchmark
 	public void Binomial(Blackhole blackhole) {
-		benchHeap(HeapBinomial::new, blackhole);
+		benchHeap(heapBuilder(HeapBinomial::new), blackhole);
 	}
 
 	@Benchmark
 	public void RedBlackTree(Blackhole blackhole) {
-		benchHeap(RedBlackTree::new, blackhole);
+		benchHeap(heapBuilder(RedBlackTree::new), blackhole);
 	}
 
 	@Benchmark
 	public void SplayTree(Blackhole blackhole) {
-		benchHeap(SplayTree::new, blackhole);
+		benchHeap(heapBuilder(SplayTree::new), blackhole);
+	}
+
+	private static Heap.Builder heapBuilder(HeapReferenceable.Builder builder) {
+		return new Heap.Builder() {
+			@Override
+			public <E> Heap<E> build(Comparator<? super E> cmp) {
+				return builder.<E, Object>build(cmp).asHeap();
+			}
+		};
 	}
 
 }

@@ -16,10 +16,8 @@
 
 package com.jgalgo;
 
-import java.util.AbstractSet;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.Set;
 
 /**
  * A red black balanced binary search tree.
@@ -27,72 +25,47 @@ import java.util.Set;
  * A red black tree is a balanced binary search tree that its height is always \(O(\log n)\). All operations are
  * performed in \(O(\log n)\) time.
  *
- * @see    <a href= "https://en.wikipedia.org/wiki/Red%E2%80%93black_tree">Wikipedia</a>
- * @author Barak Ugav
+ * @param  <K> the keys type
+ * @param  <V> the values type
+ * @see        <a href= "https://en.wikipedia.org/wiki/Red%E2%80%93black_tree">Wikipedia</a>
+ * @author     Barak Ugav
  */
-public class RedBlackTree<E> extends BinarySearchTreeAbstract<E> {
+public class RedBlackTree<K, V> extends BinarySearchTreeAbstract<K, V> {
 
 	private int size;
-	private Node<E> root;
-	private final Set<HeapReference<E>> refsSet;
+	private Node<K, V> root;
 
 	static final boolean Red = true;
 	static final boolean Black = false;
 
 	/**
-	 * Constructs a new, empty red black tree, sorted according to the natural ordering of its elements.
+	 * Constructs a new, empty red black tree, ordered according to the natural ordering of its keys.
 	 * <p>
-	 * All elements inserted into the tree must implement the {@link Comparable} interface. Furthermore, all such
-	 * elements must be <i>mutually comparable</i>: {@code e1.compareTo(e2)} must not throw a {@code ClassCastException}
-	 * for any elements {@code e1} and {@code e2} in the tree. If the user attempts to insert an element to the tree
-	 * that violates this constraint (for example, the user attempts to insert a string element to a tree whose elements
-	 * are integers), the {@code insert} call will throw a {@code ClassCastException}.
+	 * All keys inserted into the tree must implement the {@link Comparable} interface. Furthermore, all such keys must
+	 * be <i>mutually comparable</i>: {@code k1.compareTo(k2)} must not throw a {@code ClassCastException} for any keys
+	 * {@code k1} and {@code k2} in the tree. If the user attempts to insert a key to the tree that violates this
+	 * constraint (for example, the user attempts to insert a string element to a tree whose keys are integers), the
+	 * {@code insert} call will throw a {@code ClassCastException}.
 	 */
 	public RedBlackTree() {
 		this(null);
 	}
 
 	/**
-	 * Constructs a new, empty red black tree, sorted according to the specified comparator.
+	 * Constructs a new, empty red black tree, with keys ordered according to the specified comparator.
 	 * <p>
-	 * All elements inserted into the tree must be <i>mutually comparable</i> by the specified comparator:
-	 * {@code comparator.compare(e1, e2)} must not throw a {@code ClassCastException} for any elements {@code e1} and
-	 * {@code e2} in the tree. If the user attempts to insert an element to the tree that violates this constraint, the
+	 * All keys inserted into the tree must be <i>mutually comparable</i> by the specified comparator:
+	 * {@code comparator.compare(k1, k2)} must not throw a {@code ClassCastException} for any keys {@code k1} and
+	 * {@code k2} in the tree. If the user attempts to insert a key to the tree that violates this constraint, the
 	 * {@code insert} call will throw a {@code ClassCastException}.
 	 *
 	 * @param comparator the comparator that will be used to order this tree. If {@code null}, the
-	 *                       {@linkplain Comparable natural ordering} of the elements will be used.
+	 *                       {@linkplain Comparable natural ordering} of the keys will be used.
 	 */
-	public RedBlackTree(Comparator<? super E> comparator) {
+	public RedBlackTree(Comparator<? super K> comparator) {
 		super(comparator);
 		root = null;
 		size = 0;
-
-		refsSet = new AbstractSet<>() {
-
-			@Override
-			public int size() {
-				return RedBlackTree.this.size();
-			}
-
-			@SuppressWarnings({ "unchecked", "rawtypes" })
-			@Override
-			public Iterator<HeapReference<E>> iterator() {
-				return (Iterator) new BinarySearchTrees.BSTIterator<>(root);
-			}
-
-			@SuppressWarnings("unchecked")
-			@Override
-			public boolean remove(Object o) {
-				RedBlackTree.this.removeRef((HeapReference<E>) o);
-				return true;
-			}
-
-			@Override
-			public void clear() {
-				RedBlackTree.this.clear();
-			}
-		};
 	}
 
 	@Override
@@ -101,13 +74,14 @@ public class RedBlackTree<E> extends BinarySearchTreeAbstract<E> {
 	}
 
 	@Override
-	public HeapReference<E> insert(E e) {
-		return insertNode(newNode(e));
+	public HeapReference<K, V> insert(K key) {
+		return insertNode(newNode(key));
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public Set<HeapReference<E>> refsSet() {
-		return refsSet;
+	public Iterator<HeapReference<K, V>> iterator() {
+		return (Iterator) new BinarySearchTrees.BSTIterator<>(root);
 	}
 
 	@Override
@@ -121,11 +95,11 @@ public class RedBlackTree<E> extends BinarySearchTreeAbstract<E> {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void meld(Heap<? extends E> heap) {
+	public void meld(HeapReferenceable<? extends K, ? extends V> heap) {
 		makeSureNoMeldWithSelf(heap);
 		makeSureMeldWithSameImpl(RedBlackTree.class, heap);
 		makeSureEqualComparatorBeforeMeld(heap);
-		RedBlackTree<E> h = (RedBlackTree<E>) heap;
+		RedBlackTree<K, V> h = (RedBlackTree<K, V>) heap;
 		if (h.isEmpty())
 			return;
 		if (isEmpty()) {
@@ -137,7 +111,7 @@ public class RedBlackTree<E> extends BinarySearchTreeAbstract<E> {
 
 		/* there is nothing smarter to do than 'addAll' */
 		/* We use 'insertNode' instead of 'insert' to maintain user references to nodes */
-		for (Node<E> node = h.root;;) {
+		for (Node<K, V> node = h.root;;) {
 			for (;;) {
 				while (node.hasLeftChild())
 					node = node.left;
@@ -145,7 +119,7 @@ public class RedBlackTree<E> extends BinarySearchTreeAbstract<E> {
 					break;
 				node = node.right;
 			}
-			Node<E> parent = node.parent;
+			Node<K, V> parent = node.parent;
 			if (parent == null) {
 				beforeNodeReuse(node);
 				insertNode(node);
@@ -165,7 +139,7 @@ public class RedBlackTree<E> extends BinarySearchTreeAbstract<E> {
 		}
 	}
 
-	void beforeNodeReuse(Node<E> node) {}
+	void beforeNodeReuse(Node<K, V> node) {}
 
 	/**
 	 * {@inheritDoc}
@@ -173,7 +147,7 @@ public class RedBlackTree<E> extends BinarySearchTreeAbstract<E> {
 	 * @throws UnsupportedOperationException the current implementation doesn't support this operation
 	 */
 	@Override
-	public BinarySearchTree<E> splitSmaller(E e) {
+	public BinarySearchTree<K, V> splitSmaller(K key) {
 		// we can't perform efficient split because we don't know the size of each sub tree, and we won't be able to
 		// determine the size splits
 		// TODO consider implementing this in O(n)
@@ -186,7 +160,7 @@ public class RedBlackTree<E> extends BinarySearchTreeAbstract<E> {
 	 * @throws UnsupportedOperationException the current implementation doesn't support this operation
 	 */
 	@Override
-	public BinarySearchTree<E> splitGreater(E e) {
+	public BinarySearchTree<K, V> splitGreater(K key) {
 		// we can't perform efficient split because we don't know the size of each sub tree, and we won't be able to
 		// determine the size splits
 		// TODO consider implementing this in O(n)
@@ -199,7 +173,7 @@ public class RedBlackTree<E> extends BinarySearchTreeAbstract<E> {
 	 * @throws UnsupportedOperationException the current implementation doesn't support this operation
 	 */
 	@Override
-	public RedBlackTree<E> split(HeapReference<E> ref) {
+	public RedBlackTree<K, V> split(HeapReference<K, V> ref) {
 		// we can't perform efficient split because we don't know the size of each sub tree, and we won't be able to
 		// determine the size splits
 		// TODO consider implementing this in O(n)
@@ -207,34 +181,34 @@ public class RedBlackTree<E> extends BinarySearchTreeAbstract<E> {
 	}
 
 	@Override
-	public HeapReference<E> findRef(E e) {
-		return BinarySearchTrees.find(root, c, e);
+	public HeapReference<K, V> find(K key) {
+		return BinarySearchTrees.find(root, c, key);
 	}
 
 	@Override
-	public HeapReference<E> findMinRef() {
+	public HeapReference<K, V> findMin() {
 		if (root == null)
 			throw new IllegalStateException();
 		return BinarySearchTrees.findMin(root);
 	}
 
 	@Override
-	public HeapReference<E> findMaxRef() {
+	public HeapReference<K, V> findMax() {
 		if (root == null)
 			throw new IllegalStateException();
 		return BinarySearchTrees.findMax(root);
 	}
 
 	@Override
-	public void decreaseKey(HeapReference<E> ref, E e) {
-		Node<E> n = (Node<E>) ref;
-		makeSureDecreaseKeyIsSmaller(n.data, e);
-		removeRef(n);
-		n.data = e;
+	public void decreaseKey(HeapReference<K, V> ref, K newKey) {
+		Node<K, V> n = (Node<K, V>) ref;
+		makeSureDecreaseKeyIsSmaller(n.key, newKey);
+		remove(n);
+		n.key = newKey;
 		insertNode(n);
 	}
 
-	private Node<E> insertNode(Node<E> n) {
+	private Node<K, V> insertNode(Node<K, V> n) {
 		assert n.parent == null;
 		assert n.left == null;
 		assert n.right == null;
@@ -251,8 +225,8 @@ public class RedBlackTree<E> extends BinarySearchTreeAbstract<E> {
 		return n;
 	}
 
-	private void fixAfterInsert(Node<E> n) {
-		Node<E> parent = n.parent;
+	private void fixAfterInsert(Node<K, V> n) {
+		Node<K, V> parent = n.parent;
 		n.color = Red;
 
 		do {
@@ -266,8 +240,8 @@ public class RedBlackTree<E> extends BinarySearchTreeAbstract<E> {
 				return;
 			}
 
-			Node<E> grandparent = parent.parent;
-			Node<E> uncle = parent == grandparent.left ? grandparent.right : grandparent.left;
+			Node<K, V> grandparent = parent.parent;
+			Node<K, V> uncle = parent == grandparent.left ? grandparent.right : grandparent.left;
 
 			/* Case 5,6: parent is Red, uncle is Black */
 			if (uncle == null || uncle.color == Black) {
@@ -312,9 +286,9 @@ public class RedBlackTree<E> extends BinarySearchTreeAbstract<E> {
 		/* Case 3: we exited the loop through the main condition, n is now a Red root */
 	}
 
-	private void removeNode(Node<E> n, Node<E> replace) {
+	private void removeNode(Node<K, V> n, Node<K, V> replace) {
 		beforeRemove(n);
-		Node<E> parent = n.parent;
+		Node<K, V> parent = n.parent;
 		if (parent != null) {
 			if (n == parent.left) {
 				parent.left = replace;
@@ -327,11 +301,11 @@ public class RedBlackTree<E> extends BinarySearchTreeAbstract<E> {
 		}
 		if (replace != null)
 			replace.parent = parent;
-		n.clear();
+		n.clearWithoutUserData();
 		size--;
 	}
 
-	void removeNode(Node<E> n) {
+	void removeNode(Node<K, V> n) {
 		/* root with no children, just remove */
 		if (n == root && n.left == null && n.right == null) {
 			removeNode(n, null);
@@ -342,7 +316,7 @@ public class RedBlackTree<E> extends BinarySearchTreeAbstract<E> {
 		if (n.left != null && n.right != null)
 			swap(n, BinarySearchTrees.getSuccessor(n));
 		assert n.left == null || n.right == null;
-		Node<E> parent = n.parent;
+		Node<K, V> parent = n.parent;
 
 		/* Red node, just remove */
 		if (n.color == Red) {
@@ -354,7 +328,7 @@ public class RedBlackTree<E> extends BinarySearchTreeAbstract<E> {
 		/* Black node, single red child. Remove and make child black */
 		if (n.left != null || n.right != null) {
 			assert n.left != null ^ n.right != null;
-			Node<E> child = n.left != null ? n.left : n.right;
+			Node<K, V> child = n.left != null ? n.left : n.right;
 			assert child.color = Red;
 			assert child.left == null && child.right == null;
 			child.color = Black;
@@ -369,15 +343,15 @@ public class RedBlackTree<E> extends BinarySearchTreeAbstract<E> {
 	}
 
 	@Override
-	public void removeRef(HeapReference<E> ref) {
+	public void remove(HeapReference<K, V> ref) {
 		if (root == null)
 			throw new IllegalArgumentException("ref is not valid");
-		removeNode((Node<E>) ref);
+		removeNode((Node<K, V>) ref);
 	}
 
-	private void fixAfterRemove(Node<E> parent, boolean leftIsShortSide) {
+	private void fixAfterRemove(Node<K, V> parent, boolean leftIsShortSide) {
 		for (;;) {
-			Node<E> sibling, d, c;
+			Node<K, V> sibling, d, c;
 			if (leftIsShortSide) {
 				sibling = parent.right;
 				d = sibling.right;
@@ -436,7 +410,7 @@ public class RedBlackTree<E> extends BinarySearchTreeAbstract<E> {
 			/* Case 1: sibling, c, d, parent are Black */
 			sibling.color = Red;
 
-			Node<E> grandparent = parent.parent;
+			Node<K, V> grandparent = parent.parent;
 			/* Case 2: reached tree root, decrease the total black height by 1, done */
 			if (grandparent == null)
 				return;
@@ -446,16 +420,16 @@ public class RedBlackTree<E> extends BinarySearchTreeAbstract<E> {
 		}
 	}
 
-	private void rotate(Node<E> n, boolean left) {
+	private void rotate(Node<K, V> n, boolean left) {
 		if (left)
 			rotateLeft(n);
 		else
 			rotateRight(n);
 	}
 
-	private void rotateLeft(Node<E> n) {
+	private void rotateLeft(Node<K, V> n) {
 		beforeRotateLeft(n);
-		Node<E> parent = n.parent, child = n.right, grandchild = child.left;
+		Node<K, V> parent = n.parent, child = n.right, grandchild = child.left;
 
 		n.right = grandchild;
 		if (grandchild != null)
@@ -477,9 +451,9 @@ public class RedBlackTree<E> extends BinarySearchTreeAbstract<E> {
 		}
 	}
 
-	private void rotateRight(Node<E> n) {
+	private void rotateRight(Node<K, V> n) {
 		beforeRotateRight(n);
-		Node<E> parent = n.parent, child = n.left, grandchild = child.right;
+		Node<K, V> parent = n.parent, child = n.left, grandchild = child.right;
 
 		n.left = grandchild;
 		if (grandchild != null)
@@ -501,7 +475,7 @@ public class RedBlackTree<E> extends BinarySearchTreeAbstract<E> {
 		}
 	}
 
-	void swap(Node<E> n1, Node<E> n2) {
+	void swap(Node<K, V> n1, Node<K, V> n2) {
 		BinarySearchTrees.swap(n1, n2);
 		if (n1 == root)
 			root = n2;
@@ -513,33 +487,33 @@ public class RedBlackTree<E> extends BinarySearchTreeAbstract<E> {
 	}
 
 	@Override
-	public HeapReference<E> findOrSmaller(E e) {
-		return BinarySearchTrees.findOrSmaller(root, c, e);
+	public HeapReference<K, V> findOrSmaller(K key) {
+		return BinarySearchTrees.findOrSmaller(root, c, key);
 	}
 
 	@Override
-	public HeapReference<E> findOrGreater(E e) {
-		return BinarySearchTrees.findOrGreater(root, c, e);
+	public HeapReference<K, V> findOrGreater(K key) {
+		return BinarySearchTrees.findOrGreater(root, c, key);
 	}
 
 	@Override
-	public HeapReference<E> findSmaller(E e) {
-		return BinarySearchTrees.findSmaller(root, c, e);
+	public HeapReference<K, V> findSmaller(K key) {
+		return BinarySearchTrees.findSmaller(root, c, key);
 	}
 
 	@Override
-	public HeapReference<E> findGreater(E e) {
-		return BinarySearchTrees.findGreater(root, c, e);
+	public HeapReference<K, V> findGreater(K key) {
+		return BinarySearchTrees.findGreater(root, c, key);
 	}
 
 	@Override
-	public HeapReference<E> getPredecessor(HeapReference<E> ref) {
-		return BinarySearchTrees.getPredecessor((Node<E>) ref);
+	public HeapReference<K, V> getPredecessor(HeapReference<K, V> ref) {
+		return BinarySearchTrees.getPredecessor((Node<K, V>) ref);
 	}
 
 	@Override
-	public HeapReference<E> getSuccessor(HeapReference<E> ref) {
-		return BinarySearchTrees.getSuccessor((Node<E>) ref);
+	public HeapReference<K, V> getSuccessor(HeapReference<K, V> ref) {
+		return BinarySearchTrees.getSuccessor((Node<K, V>) ref);
 	}
 
 	/**
@@ -549,42 +523,54 @@ public class RedBlackTree<E> extends BinarySearchTreeAbstract<E> {
 	 * @return     an iterator that iterate over all the nodes in the node's sub tree
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public Iterator<HeapReference<E>> experimental_subTreeIterator(HeapReference<E> ref) {
-		return (Iterator) (new BinarySearchTrees.BSTIterator<>((Node<E>) ref));
+	public Iterator<HeapReference<K, V>> experimental_subTreeIterator(HeapReference<K, V> ref) {
+		return (Iterator) (new BinarySearchTrees.BSTIterator<>((Node<K, V>) ref));
 	}
 
-	static class Node<E> extends BinarySearchTrees.Node<E, Node<E>> implements HeapReference<E> {
+	static class Node<K, V> extends BinarySearchTrees.INode<K, Node<K, V>> implements HeapReference<K, V> {
 
 		private boolean color;
+		private V value;
 
-		Node(E e) {
-			super(e);
+		Node(K key) {
+			super(key);
 		}
 
 		@Override
-		public E get() {
-			return data;
+		public K key() {
+			return key;
 		}
 
 		@Override
 		public String toString() {
-			return "{" + (color == Red ? 'R' : 'B') + ":" + data + "}";
+			// return "{" + (color == Red ? 'R' : 'B') + ":" + key + "}";
+			return "{" + key + ":" + value + "}";
+		}
+
+		@Override
+		public V value() {
+			return value;
+		}
+
+		@Override
+		public void setValue(V val) {
+			value = val;
 		}
 
 	}
 
 	/* Hooks for extended red black tree sub class */
 
-	Node<E> newNode(E e) {
-		return new Node<>(e);
+	Node<K, V> newNode(K key) {
+		return new Node<>(key);
 	}
 
-	void afterInsert(Node<E> n) {}
+	void afterInsert(Node<K, V> n) {}
 
-	void beforeRemove(Node<E> n) {}
+	void beforeRemove(Node<K, V> n) {}
 
-	void beforeRotateLeft(Node<E> n) {}
+	void beforeRotateLeft(Node<K, V> n) {}
 
-	void beforeRotateRight(Node<E> n) {}
+	void beforeRotateRight(Node<K, V> n) {}
 
 }

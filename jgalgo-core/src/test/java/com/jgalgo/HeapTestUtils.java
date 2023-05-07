@@ -14,26 +14,23 @@
  * limitations under the License.
  */
 
-package com.jgalgo;
+ package com.jgalgo;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+ import static org.junit.jupiter.api.Assertions.assertEquals;
+ import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.NavigableMap;
-import java.util.Random;
-import java.util.Set;
-import java.util.TreeMap;
+ import java.util.ArrayList;
+ import java.util.Comparator;
+ import java.util.HashSet;
+ import java.util.Iterator;
+ import java.util.List;
+ import java.util.Map;
+ import java.util.NavigableMap;
+ import java.util.Random;
+ import java.util.Set;
+ import java.util.TreeMap;
 
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
-
-class HeapTestUtils extends TestUtils {
+ class HeapTestUtils extends TestUtils {
 
 	private HeapTestUtils() {}
 
@@ -140,31 +137,13 @@ class HeapTestUtils extends TestUtils {
 		}
 	}
 
-	static void testDecreaseKeyDefaultCompare(Heap.Builder heapBuilder, long seed) {
-		testDecreaseKey(heapBuilder, null, seed);
-	}
-
-	static void testDecreaseKeyCustomCompare(Heap.Builder heapBuilder, long seed) {
-		testDecreaseKey(heapBuilder, (x1, x2) -> -Integer.compare(x1.intValue(), x2.intValue()), seed);
-	}
-
-	private static void testDecreaseKey(Heap.Builder heapBuilder, Comparator<? super Integer> compare, long seed) {
-		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(256, 16), phase(128, 64), phase(64, 512), phase(16, 4096), phase(2, 16384));
-		runTestMultiple(phases, (testIter, args) -> {
-			int n = args[0];
-			int m = n;
-			Heap<Integer> heap = heapBuilder.build(compare);
-			testHeap(heap, n, m, TestMode.DecreaseKey, compare, seedGen.nextSeed());
-		});
-	}
 
 	static enum TestMode {
-		Normal, InsertFirst, DecreaseKey,
+		Normal, InsertFirst,
 	}
 
 	private static enum HeapOp {
-		Insert, Remove, RemoveRef, FindMin, ExtractMin, DecreaseKey
+		Insert, Remove, FindMin, ExtractMin
 	}
 
 	static class HeapTrackerIdGenerator {
@@ -184,7 +163,7 @@ class HeapTestUtils extends TestUtils {
 
 		private final int id;
 		final Heap<Integer> heap;
-		final NavigableMap<Integer, List<HeapReference<Integer>>> elms;
+		final NavigableMap<Integer, Integer> elms;
 		final Random rand;
 
 		HeapTracker(Heap<Integer> heap, int id, Comparator<? super Integer> compare, long seed) {
@@ -198,28 +177,12 @@ class HeapTestUtils extends TestUtils {
 			return elms.isEmpty();
 		}
 
-		void insert(int x, HeapReference<Integer> ref) {
-			elms.computeIfAbsent(x, dontCare -> new ArrayList<>()).add(ref);
+		void insert(int x) {
+			elms.compute(x, (x0, c) -> c == null ? 1 : c + 1);
 		}
 
 		void remove(int x) {
-			if (heap instanceof HeapReferenceable)
-				throw new IllegalStateException();
-			List<HeapReference<Integer>> l = elms.get(x);
-			HeapReference<Integer> ref = l.remove(0);
-			if (l.isEmpty())
-				elms.remove(x);
-			assert ref == null;
-		}
-
-		void remove(int x, HeapReference<Integer> ref) {
-			if (!(heap instanceof HeapReferenceable))
-				throw new IllegalStateException();
-			List<HeapReference<Integer>> l = elms.get(x);
-			boolean removed = l.remove(ref);
-			if (l.isEmpty())
-				elms.remove(x);
-			assert removed;
+			elms.compute(x, (x0, c) -> c == 1 ? null : c - 1);
 		}
 
 		int findMin() {
@@ -232,44 +195,25 @@ class HeapTestUtils extends TestUtils {
 			return x;
 		}
 
-		void decreaseKey(HeapReference<Integer> ref, int newx) {
-			remove(ref.get(), ref);
-			insert(newx, ref);
-		}
 
 		void meld(HeapTracker other) {
-			for (Map.Entry<Integer, List<HeapReference<Integer>>> e : other.elms.entrySet()) {
-				elms.merge(e.getKey(), e.getValue(), (c1, c2) -> {
-					List<HeapReference<Integer>> l = new ArrayList<>();
-					if (c1 != null)
-						l.addAll(c1);
-					if (c2 != null)
-						l.addAll(c2);
-					return l;
-				});
-			}
+			for (Map.Entry<Integer, Integer> e : other.elms.entrySet())
+				elms.merge(e.getKey(), e.getValue(), (c1, c2) -> c1 != null ? c1 + c2 : c2);
 			other.elms.clear();
 		}
 
 		void split(int x, HeapTracker newTracker) {
-			NavigableMap<Integer, List<HeapReference<Integer>>> newElms = elms.tailMap(x, false);
-			newTracker.elms.putAll(newElms);
-			newElms.clear();
+			NavigableMap<Integer, Integer> newElems = elms.tailMap(x, false);
+			newTracker.elms.putAll(newElems);
+			newElems.clear();
 		}
 
 		int randElement() {
-			IntList elms0 = new IntArrayList();
-			for (Map.Entry<Integer, List<HeapReference<Integer>>> e : elms.entrySet())
-				for (int i = 0; i < e.getValue().size(); i++)
-					elms0.add(e.getKey().intValue());
-			return elms0.getInt(rand.nextInt(elms0.size()));
-		}
-
-		HeapReference<Integer> randRef() {
-			List<HeapReference<Integer>> elms0 = new ArrayList<>();
-			for (Map.Entry<Integer, List<HeapReference<Integer>>> e : elms.entrySet())
-				elms0.addAll(e.getValue());
-			return elms0.get(rand.nextInt(elms0.size()));
+			int[] elmsArr = new int[elms.size()];
+			int i = 0;
+			for (Integer x : elms.keySet())
+				elmsArr[i++] = x.intValue();
+			return elmsArr[rand.nextInt(elmsArr.length)];
 		}
 
 		@Override
@@ -283,9 +227,9 @@ class HeapTestUtils extends TestUtils {
 		}
 
 		@Override
-		public String toString() {
-			return elms.toString();
-		}
+		               public String toString() {
+		                       return elms.toString();
+		               }
 
 		@Override
 		public int compareTo(HeapTracker o) {
@@ -336,14 +280,7 @@ class HeapTestUtils extends TestUtils {
 		Random rand = new Random(seedGen.nextSeed());
 		int insertFirst = mode == TestMode.InsertFirst ? m / 2 : 0;
 
-		List<HeapOp> ops = new ArrayList<>(List.of(HeapOp.Insert, HeapOp.FindMin, HeapOp.ExtractMin));
-		if (mode == TestMode.DecreaseKey)
-			ops.add(HeapOp.DecreaseKey);
-		if (tracker.heap instanceof HeapReferenceable<?>) {
-			ops.add(HeapOp.RemoveRef);
-		} else {
-			ops.add(HeapOp.Remove);
-		}
+		List<HeapOp> ops = new ArrayList<>(List.of(HeapOp.Insert, HeapOp.Remove, HeapOp.FindMin, HeapOp.ExtractMin));
 
 		int[] elmsToInsertIds = randPermutation(values.length, seedGen.nextSeed());
 		int elmsToInsertCursor = 0;
@@ -353,40 +290,29 @@ class HeapTestUtils extends TestUtils {
 		opLoop: for (int opIdx = 0; opIdx < m;) {
 			HeapOp op = opIdx < insertFirst ? HeapOp.Insert : ops.get(rand.nextInt(ops.size()));
 
-			int expected, actual;
+			int x, expected, actual;
 			switch (op) {
-				case Insert: {
+				case Insert:
 					if (elmsToInsertCursor >= elmsToInsertIds.length)
 						continue;
-					int x = values[elmsToInsertIds[elmsToInsertCursor++]];
+					x = values[elmsToInsertIds[elmsToInsertCursor++]];
 					debug.println("Insert(", x, ")");
 
-					HeapReference<Integer> ref = tracker.heap.insert(x);
-					tracker.insert(x, ref);
+					tracker.insert(x);
+					tracker.heap.insert(x);
 					break;
-				}
-				case Remove: {
+
+				case Remove:
 					if (tracker.isEmpty() || rand.nextInt(3) != 0)
 						continue;
-					int x = tracker.randElement();
+					x = tracker.randElement();
 					debug.println("Remove(", x, ")");
 
 					tracker.remove(x);
 					assertTrue(tracker.heap.remove(x), "failed to remove: " + x);
 					break;
-				}
-				case RemoveRef: {
-					if (tracker.isEmpty() || rand.nextInt(3) != 0)
-						continue;
-					HeapReference<Integer> ref = tracker.randRef();
-					debug.println("RemoveRef(", ref, ")");
 
-					tracker.remove(ref.get(), ref);
-					HeapReferenceable<Integer> heap0 = (HeapReferenceable<Integer>) tracker.heap;
-					heap0.removeRef(ref);
-					break;
-				}
-				case FindMin: {
+				case FindMin:
 					if (tracker.isEmpty())
 						continue;
 					debug.println("FindMin");
@@ -395,53 +321,16 @@ class HeapTestUtils extends TestUtils {
 					actual = tracker.heap.findMin();
 					assertEquals(expected, actual, "failed findMin");
 					break;
-				}
-				case ExtractMin: {
+
+				case ExtractMin:
 					if (tracker.isEmpty() || rand.nextInt(3) != 0)
 						continue;
 					debug.println("ExtractMin");
 
-					if (tracker.heap instanceof HeapReferenceable<?>) {
-						HeapReference<Integer> ref = ((HeapReferenceable<Integer>) tracker.heap).findMinRef();
-						expected = tracker.findMin();
-						assertEquals(expected, ref.get(), "failed findMin");
-
-						actual = tracker.heap.extractMin();
-						assertEquals(expected, actual, "failed extractMin");
-						tracker.remove(expected, ref);
-
-					} else {
-						expected = tracker.extractMin();
-						actual = tracker.heap.extractMin();
-						assertEquals(expected, actual, "failed extractMin");
-					}
-
+					expected = tracker.extractMin();
+					actual = tracker.heap.extractMin();
+					assertEquals(expected, actual, "failed extractMin");
 					break;
-				}
-				case DecreaseKey: {
-					if (tracker.isEmpty())
-						continue;
-					HeapReference<Integer> ref;
-					int newVal;
-					for (int retry = 20;; retry--) {
-						if (retry <= 0)
-							continue opLoop;
-						ref = tracker.randRef();
-						int x = ref.get();
-						assert x >= 0;
-						if (x == 0)
-							continue;
-						newVal = rand.nextInt(Math.max(x, x * 2));
-						if (compare(compare, newVal, x) <= 0)
-							break;
-					}
-					HeapReferenceable<Integer> heap0 = (HeapReferenceable<Integer>) tracker.heap;
-
-					debug.println("DecreaseKey(" + ref.get() + ", " + newVal + ")");
-					tracker.decreaseKey(ref, newVal);
-					heap0.decreaseKey(ref, newVal);
-					break;
-				}
 				default:
 					throw new IllegalStateException();
 			}
@@ -464,7 +353,6 @@ class HeapTestUtils extends TestUtils {
 		for (E e : h)
 			actual++;
 		assertEquals(expected, actual, "unexpected size");
-
 	}
 
-}
+ }

@@ -36,7 +36,7 @@ abstract class DynamicTreeSplayExtension implements DynamicTreeExtension {
 		this.dt = Objects.requireNonNull(dt);
 	}
 
-	void splay(SplayTree.Node<?, ?> node) {
+	void splay(SplayTree.BaseNode<?, ?> node) {
 		if (dt instanceof DynamicTreeSplay)
 			((DynamicTreeSplay) dt).splay((DynamicTreeSplay.SplayNode) node);
 		else if (dt instanceof DynamicTreeSplayInt)
@@ -45,13 +45,13 @@ abstract class DynamicTreeSplayExtension implements DynamicTreeExtension {
 			throw new IllegalStateException();
 	}
 
-	abstract void initNode(SplayTree.Node<?, ?> n);
+	abstract void initNode(SplayTree.BaseNode<?, ?> n);
 
-	abstract void beforeCut(SplayTree.Node<?, ?> n);
+	abstract void beforeCut(SplayTree.BaseNode<?, ?> n);
 
-	abstract void afterLink(SplayTree.Node<?, ?> n);
+	abstract void afterLink(SplayTree.BaseNode<?, ?> n);
 
-	abstract void beforeRotate(SplayTree.Node<?, ?> n);
+	abstract void beforeRotate(SplayTree.BaseNode<?, ?> n);
 
 	static class TreeSize extends DynamicTreeSplayExtension.Int implements DynamicTreeExtension.TreeSize {
 
@@ -64,30 +64,31 @@ abstract class DynamicTreeSplayExtension implements DynamicTreeExtension {
 
 		@Override
 		public int getTreeSize(DynamicTree.Node node) {
-			SplayTree.Node<?, ?> n = (SplayTree.Node<?, ?>) node;
+			SplayTree.BaseNode<?, ?> n = (SplayTree.BaseNode<?, ?>) node;
 			splay(n);
 			return getNodeData(n);
 		}
 
 		@Override
-		void initNode(SplayTree.Node<?, ?> n) {
+		void initNode(SplayTree.BaseNode<?, ?> n) {
 			setNodeData(n, 1);
 		}
 
 		@Override
-		void beforeCut(SplayTree.Node<?, ?> n) {
+		void beforeCut(SplayTree.BaseNode<?, ?> n) {
 			setNodeData(n, getNodeData(n) - getNodeData(n.right));
 		}
 
 		@Override
-		void afterLink(SplayTree.Node<?, ?> n) {
-			SplayTree.Node<?, ?> parent = (SplayTree.Node<?, ?>) ((DynamicTree.Node) n).getParent();
+		void afterLink(SplayTree.BaseNode<?, ?> n) {
+			SplayTree.BaseNode<?, ?> parent =
+					(SplayTree.BaseNode<?, ?>) ((DynamicTree.Node) n).getParent();
 			setNodeData(parent, getNodeData(parent) + getNodeData(n));
 		}
 
 		@Override
-		void beforeRotate(SplayTree.Node<?, ?> n) {
-			SplayTree.Node<?, ?> parent = n.parent;
+		void beforeRotate(SplayTree.BaseNode<?, ?> n) {
+			SplayTree.BaseNode<?, ?> parent = n.parent;
 			int nSize = getNodeData(n);
 			int parentOldSize = getNodeData(parent);
 
@@ -115,11 +116,11 @@ abstract class DynamicTreeSplayExtension implements DynamicTreeExtension {
 			return (ExtensionData.Int) data;
 		}
 
-		int getNodeData(SplayTree.Node<?, ?> n) {
+		int getNodeData(SplayTree.BaseNode<?, ?> n) {
 			return data().get(((SplayNodeExtended) n).idx());
 		}
 
-		void setNodeData(SplayTree.Node<?, ?> n, int data) {
+		void setNodeData(SplayTree.BaseNode<?, ?> n, int data) {
 			data().set(((SplayNodeExtended) n).idx(), data);
 		}
 	}

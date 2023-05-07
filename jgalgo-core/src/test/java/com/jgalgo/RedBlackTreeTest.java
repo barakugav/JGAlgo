@@ -17,16 +17,24 @@
 package com.jgalgo;
 
 import java.util.Comparator;
-
 import org.junit.jupiter.api.Test;
 
 public class RedBlackTreeTest extends TestBase {
+
+	private static Heap.Builder heapBuilder() {
+		return new Heap.Builder() {
+			@Override
+			public <E> Heap<E> build(Comparator<? super E> cmp) {
+				return new RedBlackTree<E, Object>(cmp).asHeap();
+			}
+		};
+	}
 
 	private static BinarySearchTree.Builder createBuilder() {
 		return new BinarySearchTree.Builder() {
 
 			@Override
-			public <E> BinarySearchTree<E> build(Comparator<? super E> cmp) {
+			public <K, V> BinarySearchTree<K, V> build(Comparator<? super K> cmp) {
 				return new RedBlackTree<>(cmp);
 			}
 
@@ -45,19 +53,19 @@ public class RedBlackTreeTest extends TestBase {
 	@Test
 	public void testRandOpsDefaultCompare() {
 		final long seed = 0x445a02434b767d0fL;
-		HeapTestUtils.testRandOpsDefaultCompare(createBuilder(), seed);
+		HeapTestUtils.testRandOpsDefaultCompare(heapBuilder(), seed);
 	}
 
 	@Test
 	public void testRandOpsCustomCompare() {
 		final long seed = 0xdf0d20c96b18e76bL;
-		HeapTestUtils.testRandOpsCustomCompare(createBuilder(), seed);
+		HeapTestUtils.testRandOpsCustomCompare(heapBuilder(), seed);
 	}
 
 	@Test
 	public void testRandOpsAfterManyInserts() {
 		final long seed = 0xe00c6e6c7bbdf827L;
-		HeapTestUtils.testRandOpsAfterManyInserts(createBuilder(), seed);
+		HeapTestUtils.testRandOpsAfterManyInserts(heapBuilder(), seed);
 	}
 
 	@Test
@@ -69,49 +77,49 @@ public class RedBlackTreeTest extends TestBase {
 	@Test
 	public void testMeldDefaultCompare() {
 		final long seed = 0x3fbbd70b1c035dedL;
-		HeapTestUtils.testMeldDefaultCompare(createBuilder(), seed);
+		HeapTestUtils.testMeldDefaultCompare(heapBuilder(), seed);
 	}
 
 	@Test
 	public void testMeldCustomCompare() {
 		final long seed = 0xb8f57d62b2818583L;
-		HeapTestUtils.testMeldCustomCompare(createBuilder(), seed);
+		HeapTestUtils.testMeldCustomCompare(heapBuilder(), seed);
 	}
 
 	@Test
 	public void testDecreaseKeyDefaultCompare() {
 		final long seed = 0x3ad0758602c2f656L;
-		HeapTestUtils.testDecreaseKeyDefaultCompare(createBuilder(), seed);
+		HeapReferenceableTestUtils.testDecreaseKeyDefaultCompare(createBuilder(), seed);
 	}
 
 	@Test
 	public void testDecreaseKeyCustomCompare() {
 		final long seed = 0x0edcd3dd97c5f867L;
-		HeapTestUtils.testDecreaseKeyCustomCompare(createBuilder(), seed);
+		HeapReferenceableTestUtils.testDecreaseKeyCustomCompare(createBuilder(), seed);
 	}
 
 	@Test
 	public void testFindSmallersDefaultCompare() {
 		final long seed = 0x4c57d0d410b7e9d6L;
-		BinarySearchTreeTestUtils.testFindSmallersDefaultCompare(createBuilder(), seed);
+		BinarySearchTreeTestUtils.testFindSmallerDefaultCompare(createBuilder(), seed);
 	}
 
 	@Test
 	public void testFindSmallersCustomCompare() {
 		final long seed = 0x73810ca9d38884ecL;
-		BinarySearchTreeTestUtils.testFindSmallersCustomCompare(createBuilder(), seed);
+		BinarySearchTreeTestUtils.testFindSmallerCustomCompare(createBuilder(), seed);
 	}
 
 	@Test
 	public void testFindGreatersDefaultCompare() {
 		final long seed = 0xec49fe38ca3ca19bL;
-		BinarySearchTreeTestUtils.testFindGreatersDefaultCompare(createBuilder(), seed);
+		BinarySearchTreeTestUtils.testFindGreaterDefaultCompare(createBuilder(), seed);
 	}
 
 	@Test
 	public void testFindGreatersCustomCompare() {
 		final long seed = 0x5939e3cdc2c3fb8fL;
-		BinarySearchTreeTestUtils.testFindGreatersCustomCompare(createBuilder(), seed);
+		BinarySearchTreeTestUtils.testFindGreaterCustomCompare(createBuilder(), seed);
 	}
 
 	@Test

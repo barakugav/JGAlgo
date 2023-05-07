@@ -18,23 +18,18 @@ package com.jgalgo;
 
 import java.util.Comparator;
 
-abstract class BinarySearchTreeAbstract<E> extends HeapReferenceableAbstract<E> implements BinarySearchTree<E> {
+abstract class BinarySearchTreeAbstract<K, V> extends HeapReferenceableAbstract<K, V>
+		implements BinarySearchTree<K, V> {
 
-	public BinarySearchTreeAbstract(Comparator<? super E> c) {
+	public BinarySearchTreeAbstract(Comparator<? super K> c) {
 		super(c);
 	}
 
 	@Override
-	public E findMax() {
-		return findMaxRef().get();
-	}
-
-	@Override
-	public E extractMax() {
-		HeapReference<E> max = findMaxRef();
-		E val = max.get();
-		removeRef(max);
-		return val;
+	public HeapReference<K, V> extractMax() {
+		HeapReference<K, V> max = findMax();
+		remove(max);
+		return max;
 	}
 
 }

@@ -32,26 +32,28 @@ import it.unimi.dsi.fastutil.objects.ObjectArrays;
  * be passed to a new one for reuse.
  *
  * <pre> {@code
- * RedBlackTreeExtension.Size<Integer> sizeExt = new RedBlackTreeExtension.Size<>();
- * RedBlackTreeExtension.Max<Integer> maxExt = new RedBlackTreeExtension.Max<>();
+ * RedBlackTreeExtension.Size<Integer, String> sizeExt = new RedBlackTreeExtension.Size<>();
+ * RedBlackTreeExtension.Max<Integer, String> maxExt = new RedBlackTreeExtension.Max<>();
  * RedBlackTreeExtended<Integer> tree = new RedBlackTreeExtended<>(List.of(sizeExt, maxExt));
  *
- * HeapReference<Integer> e1 = tree.insert(15);
- * tree.insert(5);
- * tree.insert(3);
- * tree.insert(1);
+ * HeapReference<Integer, String> e1 = tree.insert(15, "Alice");
+ * tree.insert(5, "Bob");
+ * tree.insert(3, "Charlie");
+ * tree.insert(1, "Door");
  * ...
- * tree.insert(1);
+ * tree.insert(1, "Zebra");
  *
  * int subTreeSize = sizeExt.getSubTreeSize(e1);
- * HeapReference<Integer> subTreeMax = maxExt.getSubTreeMax(e1);
+ * HeapReference<Integer, String> subTreeMax = maxExt.getSubTreeMax(e1);
  * System.out.println("The subtree of " + e1 + " is of size " + subTreeSize);
  * System.out.println("The maximum element in the sub tree of " + e1 + " is " + subTreeMax);
  * }</pre>
  *
- * @author Barak Ugav
+ * @param  <K> the keys type
+ * @param  <V> the values type
+ * @author     Barak Ugav
  */
-public class RedBlackTreeExtension<E> {
+public class RedBlackTreeExtension<K, V> {
 
 	final ExtensionData data;
 
@@ -59,19 +61,19 @@ public class RedBlackTreeExtension<E> {
 		this.data = data;
 	}
 
-	void initNode(RedBlackTreeExtended.Node<E> n) {}
+	void initNode(RedBlackTreeExtended.Node<K, V> n) {}
 
-	void removeNodeData(RedBlackTreeExtended.Node<E> n) {}
+	void removeNodeData(RedBlackTreeExtended.Node<K, V> n) {}
 
-	void afterInsert(RedBlackTreeExtended.Node<E> n) {}
+	void afterInsert(RedBlackTreeExtended.Node<K, V> n) {}
 
-	void beforeRemove(RedBlackTreeExtended.Node<E> n) {}
+	void beforeRemove(RedBlackTreeExtended.Node<K, V> n) {}
 
-	void beforeNodeSwap(RedBlackTreeExtended.Node<E> a, RedBlackTreeExtended.Node<E> b) {}
+	void beforeNodeSwap(RedBlackTreeExtended.Node<K, V> a, RedBlackTreeExtended.Node<K, V> b) {}
 
-	void beforeRotateLeft(RedBlackTreeExtended.Node<E> n) {}
+	void beforeRotateLeft(RedBlackTreeExtended.Node<K, V> n) {}
 
-	void beforeRotateRight(RedBlackTreeExtended.Node<E> n) {}
+	void beforeRotateRight(RedBlackTreeExtended.Node<K, V> n) {}
 
 	/**
 	 * A subtree size extension to a red black tree.
@@ -80,23 +82,25 @@ public class RedBlackTreeExtension<E> {
 	 * increasing the asymptotical running time.
 	 *
 	 * <pre> {@code
-	 * RedBlackTreeExtension.Size<Integer> sizeExt = new RedBlackTreeExtension.Size<>();
-	 * RedBlackTreeExtended<Integer> tree = new RedBlackTreeExtended<>(List.of(sizeExt));
+	 * RedBlackTreeExtension.Size<Integer, String> sizeExt = new RedBlackTreeExtension.Size<>();
+	 * RedBlackTreeExtended<Integer, String> tree = new RedBlackTreeExtended<>(List.of(sizeExt));
 	 *
-	 * HeapReference<Integer> e1 = tree.insert(15);
-	 * HeapReference<Integer> e2 = tree.insert(5);
-	 * tree.insert(3);
-	 * tree.insert(1);
+	 * HeapReference<Integer, String> e1 = tree.insert(15, "Alice");
+	 * HeapReference<Integer, String> e2 = tree.insert(5, "Bob");
+	 * tree.insert(3, "Charlie");
+	 * tree.insert(1, "Dude");
 	 * ...
-	 * tree.insert(1);
+	 * tree.insert(1, "Koala");
 	 *
 	 * System.out.println("The subtree of " + e1 + " is of size " + sizeExt.getSubTreeSize(e1));
 	 * System.out.println("The subtree of " + e2 + " is of size " + sizeExt.getSubTreeSize(e2));
 	 * }</pre>
 	 *
-	 * @author Barak Ugav
+	 * @param  <K> the keys type
+	 * @param  <V> the values type
+	 * @author     Barak Ugav
 	 */
-	public static class Size<E> extends RedBlackTreeExtension.Int<E> {
+	public static class Size<K, V> extends RedBlackTreeExtension.Int<K, V> {
 
 		/**
 		 * Create a new subtree size extension.
@@ -112,39 +116,39 @@ public class RedBlackTreeExtension<E> {
 		 * @return     the number of nodes in the subtree of given red black tree node. The counting include the node
 		 *             itself, therefore the returned value is always greater or equal to one.
 		 */
-		public int getSubTreeSize(HeapReference<E> ref) {
-			return getNodeData((RedBlackTreeExtended.Node<E>) ref);
+		public int getSubTreeSize(HeapReference<K, V> ref) {
+			return getNodeData((RedBlackTreeExtended.Node<K, V>) ref);
 		}
 
 		@Override
-		void initNode(RedBlackTreeExtended.Node<E> n) {
+		void initNode(RedBlackTreeExtended.Node<K, V> n) {
 			setNodeData(n, 1);
 		}
 
 		@Override
-		void afterInsert(RedBlackTreeExtended.Node<E> n) {
+		void afterInsert(RedBlackTreeExtended.Node<K, V> n) {
 			/* for each ancestor, increase sub tree size by 1 */
 			for (; (n = n.parent()) != null;)
 				setNodeData(n, getNodeData(n) + 1);
 		}
 
 		@Override
-		void beforeRemove(RedBlackTreeExtended.Node<E> n) {
+		void beforeRemove(RedBlackTreeExtended.Node<K, V> n) {
 			/* for each ancestor, decrease sub tree size by 1 */
 			for (; (n = n.parent()) != null;)
 				setNodeData(n, getNodeData(n) - 1);
 		}
 
 		@Override
-		void beforeNodeSwap(RedBlackTreeExtended.Node<E> a, RedBlackTreeExtended.Node<E> b) {
+		void beforeNodeSwap(RedBlackTreeExtended.Node<K, V> a, RedBlackTreeExtended.Node<K, V> b) {
 			int s = getNodeData(a);
 			setNodeData(a, getNodeData(b));
 			setNodeData(b, s);
 		}
 
 		@Override
-		void beforeRotateLeft(RedBlackTreeExtended.Node<E> n) {
-			RedBlackTreeExtended.Node<E> child = n.right(), grandchild = child.left();
+		void beforeRotateLeft(RedBlackTreeExtended.Node<K, V> n) {
+			RedBlackTreeExtended.Node<K, V> child = n.right(), grandchild = child.left();
 			int childSize = getNodeData(child), grandchildSize = grandchild != null ? getNodeData(grandchild) : 0;
 
 			setNodeData(n, getNodeData(n) - childSize + grandchildSize);
@@ -152,8 +156,8 @@ public class RedBlackTreeExtension<E> {
 		}
 
 		@Override
-		void beforeRotateRight(RedBlackTreeExtended.Node<E> n) {
-			RedBlackTreeExtended.Node<E> child = n.left(), grandchild = child.right();
+		void beforeRotateRight(RedBlackTreeExtended.Node<K, V> n) {
+			RedBlackTreeExtended.Node<K, V> child = n.left(), grandchild = child.right();
 			int childSize = getNodeData(child), grandchildSize = grandchild != null ? getNodeData(grandchild) : 0;
 
 			setNodeData(n, getNodeData(n) - childSize + grandchildSize);
@@ -165,29 +169,31 @@ public class RedBlackTreeExtension<E> {
 	/**
 	 * A subtree minimum element extension to a red black tree.
 	 * <p>
-	 * The extension will keep track of the minimum element in the subtree of each node in the red black tree. This is
-	 * implemented without increasing the asymptotical running time.
+	 * The extension will keep track of the element with the minimum key in the subtree of each node in the red black
+	 * tree. This is implemented without increasing the asymptotical running time.
 	 *
 	 * <pre> {@code
-	 * RedBlackTreeExtension.Min<Integer> minExt = new RedBlackTreeExtension.Min<>();
-	 * RedBlackTreeExtended<Integer> tree = new RedBlackTreeExtended<>(List.of(minExt));
+	 * RedBlackTreeExtension.Min<Integer, String> minExt = new RedBlackTreeExtension.Min<>();
+	 * RedBlackTreeExtended<Integer, String> tree = new RedBlackTreeExtended<>(List.of(minExt));
 	 *
-	 * HeapReference<Integer> e1 = tree.insert(15);
-	 * HeapReference<Integer> e2 = tree.insert(5);
-	 * tree.insert(3);
-	 * tree.insert(1);
+	 * HeapReference<Integer, String> e1 = tree.insert(15, "Alice");
+	 * HeapReference<Integer, String> e2 = tree.insert(5, "Bob");
+	 * tree.insert(3, "Charlie");
+	 * tree.insert(1, "The Doors");
 	 * ...
-	 * tree.insert(1);
+	 * tree.insert(1, "Led Zeppelin");
 	 *
-	 * HeapReference<Integer> e1SubtreeMin = minExt.getSubTreeMin(e1);
-	 * HeapReference<Integer> e2SubtreeMin = minExt.getSubTreeMin(e2);
+	 * HeapReference<Integer, String> e1SubtreeMin = minExt.getSubTreeMin(e1);
+	 * HeapReference<Integer, String> e2SubtreeMin = minExt.getSubTreeMin(e2);
 	 * System.out.println("The minimum element in the subtree of " + e1 + " is " + e1SubtreeMin);
 	 * System.out.println("The minimum element in the subtree of " + e2 + " is " + e2SubtreeMin);
 	 * }</pre>
 	 *
-	 * @author Barak Ugav
+	 * @param  <K> the keys type
+	 * @param  <V> the values type
+	 * @author     Barak Ugav
 	 */
-	public static class Min<E> extends RedBlackTreeExtension.Obj<E, RedBlackTreeExtended.Node<E>> {
+	public static class Min<K, V> extends RedBlackTreeExtension.Obj<K, V, RedBlackTreeExtended.Node<K, V>> {
 
 		/**
 		 * Create a new subtree minimum extension.
@@ -197,32 +203,32 @@ public class RedBlackTreeExtension<E> {
 		public Min() {}
 
 		/**
-		 * Get a reference to the minimum node in the subtree of given red black tree node.
+		 * Get a reference to the node with the minimum key in the subtree of given red black tree node.
 		 *
 		 * @param  ref a reference to a red black tree node
-		 * @return     a reference to the minimum node in the subtree of given red black tree node. The subtree include
-		 *             the given node itself, therefore the returned element is always smaller or equal to the provided
-		 *             node.
+		 * @return     a reference to the node with the minimum key in the subtree of given red black tree node. The
+		 *             subtree include the given node itself, therefore the returned element is always smaller or equal
+		 *             to the provided node.
 		 */
-		public HeapReference<E> getSubTreeMin(HeapReference<E> ref) {
-			return getNodeData((RedBlackTreeExtended.Node<E>) ref);
+		public HeapReference<K, V> getSubTreeMin(HeapReference<K, V> ref) {
+			return getNodeData((RedBlackTreeExtended.Node<K, V>) ref);
 		}
 
 		@Override
-		void initNode(RedBlackTreeExtended.Node<E> n) {
+		void initNode(RedBlackTreeExtended.Node<K, V> n) {
 			/* minimum node of subtree of the single node is the node itself */
 			setNodeData(n, n);
 		}
 
 		@Override
-		void afterInsert(RedBlackTreeExtended.Node<E> n) {
-			for (RedBlackTreeExtended.Node<E> p = n; p.parent() != null && p == p.parent().left(); p = p.parent())
+		void afterInsert(RedBlackTreeExtended.Node<K, V> n) {
+			for (RedBlackTreeExtended.Node<K, V> p = n; p.parent() != null && p == p.parent().left(); p = p.parent())
 				setNodeData(p.parent(), n);
 		}
 
 		@Override
-		void beforeRemove(RedBlackTreeExtended.Node<E> n) {
-			RedBlackTreeExtended.Node<E> min;
+		void beforeRemove(RedBlackTreeExtended.Node<K, V> n) {
+			RedBlackTreeExtended.Node<K, V> min;
 			if (n.left() != null)
 				min = getNodeData(n.left());
 			else if (n.right() != null)
@@ -230,33 +236,35 @@ public class RedBlackTreeExtension<E> {
 			else
 				min = n.parent();
 
-			for (RedBlackTreeExtended.Node<E> p = n; p.parent() != null && p == p.parent().left(); p = p.parent())
+			for (RedBlackTreeExtended.Node<K, V> p = n; p.parent() != null && p == p.parent().left(); p = p.parent())
 				setNodeData(p.parent(), min);
 		}
 
 		@Override
-		void beforeNodeSwap(RedBlackTreeExtended.Node<E> a, RedBlackTreeExtended.Node<E> b) {
+		void beforeNodeSwap(RedBlackTreeExtended.Node<K, V> a, RedBlackTreeExtended.Node<K, V> b) {
 			if (getNodeData(b) == a) {
-				RedBlackTreeExtended.Node<E> temp = a;
+				RedBlackTreeExtended.Node<K, V> temp = a;
 				a = b;
 				b = temp;
 			}
 			if (getNodeData(a) == b) {
 				assert getNodeData(b) == b;
-				for (RedBlackTreeExtended.Node<E> p = b; p.parent() != null && p == p.parent().left(); p = p.parent())
+				for (RedBlackTreeExtended.Node<K, V> p = b; p.parent() != null && p == p.parent().left(); p =
+						p.parent())
 					setNodeData(p.parent(), a);
 				assert getNodeData(a) == a : "a should be ancestor of b";
 				setNodeData(b, a);
 				return;
 			}
 
-			RedBlackTreeExtended.Node<E> aData, bData;
+			RedBlackTreeExtended.Node<K, V> aData, bData;
 			if (a.hasLeftChild()) {
 				assert getNodeData(a) == getNodeData(a.left());
 				bData = getNodeData(a);
 			} else {
 				assert getNodeData(a) == a;
-				for (RedBlackTreeExtended.Node<E> p = a; p.parent() != null && p == p.parent().left(); p = p.parent()) {
+				for (RedBlackTreeExtended.Node<K, V> p = a; p.parent() != null && p == p.parent().left(); p =
+						p.parent()) {
 					assert p.parent() != b;
 					setNodeData(p.parent(), b);
 				}
@@ -267,7 +275,8 @@ public class RedBlackTreeExtension<E> {
 				aData = getNodeData(b);
 			} else {
 				assert getNodeData(b) == b;
-				for (RedBlackTreeExtended.Node<E> p = b; p.parent() != null && p == p.parent().left(); p = p.parent())
+				for (RedBlackTreeExtended.Node<K, V> p = b; p.parent() != null && p == p.parent().left(); p =
+						p.parent())
 					setNodeData(p.parent(), a);
 				aData = a;
 			}
@@ -276,14 +285,14 @@ public class RedBlackTreeExtension<E> {
 		}
 
 		@Override
-		void beforeRotateLeft(RedBlackTreeExtended.Node<E> n) {
-			RedBlackTreeExtended.Node<E> child = n.right();
+		void beforeRotateLeft(RedBlackTreeExtended.Node<K, V> n) {
+			RedBlackTreeExtended.Node<K, V> child = n.right();
 			setNodeData(child, getNodeData(n));
 		}
 
 		@Override
-		void beforeRotateRight(RedBlackTreeExtended.Node<E> n) {
-			RedBlackTreeExtended.Node<E> grandchild = n.left().right();
+		void beforeRotateRight(RedBlackTreeExtended.Node<K, V> n) {
+			RedBlackTreeExtended.Node<K, V> grandchild = n.left().right();
 			setNodeData(n, grandchild != null ? getNodeData(grandchild) : n);
 		}
 
@@ -292,29 +301,31 @@ public class RedBlackTreeExtension<E> {
 	/**
 	 * A subtree maximum element extension to a red black tree.
 	 * <p>
-	 * The extension will keep track of the maximum element in the subtree of each node in the red black tree. This is
-	 * implemented without increasing the asymptotical running time.
+	 * The extension will keep track of the element with the maximum key in the subtree of each node in the red black
+	 * tree. This is implemented without increasing the asymptotical running time.
 	 *
 	 * <pre> {@code
-	 * RedBlackTreeExtension.Max<Integer> maxExt = new RedBlackTreeExtension.Max<>();
-	 * RedBlackTreeExtended<Integer> tree = new RedBlackTreeExtended<>(List.of(maxExt));
+	 * RedBlackTreeExtension.Max<Integer, String> maxExt = new RedBlackTreeExtension.Max<>();
+	 * RedBlackTreeExtended<Integer, String> tree = new RedBlackTreeExtended<>(List.of(maxExt));
 	 *
-	 * HeapReference<Integer> e1 = tree.insert(15);
-	 * HeapReference<Integer> e2 = tree.insert(5);
-	 * tree.insert(3);
-	 * tree.insert(1);
+	 * HeapReference<Integer, String> e1 = tree.insert(15, "Alice");
+	 * HeapReference<Integer, String> e2 = tree.insert(5, "Bob");
+	 * tree.insert(3, "Charlie");
+	 * tree.insert(1, "Dollar");
 	 * ...
-	 * tree.insert(1);
+	 * tree.insert(1, "Euro");
 	 *
-	 * HeapReference<Integer> e1SubtreeMax = maxExt.getSubTreeMax(e1);
-	 * HeapReference<Integer> e2SubtreeMax = maxExt.getSubTreeMax(e2);
+	 * HeapReference<Integer, String> e1SubtreeMax = maxExt.getSubTreeMax(e1);
+	 * HeapReference<Integer, String> e2SubtreeMax = maxExt.getSubTreeMax(e2);
 	 * System.out.println("The maximum element in the subtree of " + e1 + " is " + e1SubtreeMax);
 	 * System.out.println("The maximum element in the subtree of " + e2 + " is " + e2SubtreeMax);
 	 * }</pre>
 	 *
-	 * @author Barak Ugav
+	 * @param  <K> the keys type
+	 * @param  <V> the values type
+	 * @author     Barak Ugav
 	 */
-	public static class Max<E> extends RedBlackTreeExtension.Obj<E, RedBlackTreeExtended.Node<E>> {
+	public static class Max<K, V> extends RedBlackTreeExtension.Obj<K, V, RedBlackTreeExtended.Node<K, V>> {
 
 		/**
 		 * Create a new subtree maximum extension.
@@ -324,32 +335,32 @@ public class RedBlackTreeExtension<E> {
 		public Max() {}
 
 		/**
-		 * Get a reference to the maximum node in the subtree of given red black tree node.
+		 * Get a reference to the node with maximal key in the subtree of given red black tree node.
 		 *
 		 * @param  ref a reference to a red black tree node
-		 * @return     a reference to the maximum node in the subtree of given red black tree node. The subtree include
-		 *             the given node itself, therefore the returned element is always greater or equal to the provided
-		 *             node.
+		 * @return     a reference to the node with the maximal key in the subtree of given red black tree node. The
+		 *             subtree include the given node itself, therefore the returned element is always greater or equal
+		 *             to the provided node.
 		 */
-		public HeapReference<E> getSubTreeMax(HeapReference<E> ref) {
-			return getNodeData((RedBlackTreeExtended.Node<E>) ref);
+		public HeapReference<K, V> getSubTreeMax(HeapReference<K, V> ref) {
+			return getNodeData((RedBlackTreeExtended.Node<K, V>) ref);
 		}
 
 		@Override
-		void initNode(RedBlackTreeExtended.Node<E> n) {
+		void initNode(RedBlackTreeExtended.Node<K, V> n) {
 			/* maximum node of subtree of the single node is the node itself */
 			setNodeData(n, n);
 		}
 
 		@Override
-		void afterInsert(RedBlackTreeExtended.Node<E> n) {
-			for (RedBlackTreeExtended.Node<E> p = n; p.parent() != null && p == p.parent().right(); p = p.parent())
+		void afterInsert(RedBlackTreeExtended.Node<K, V> n) {
+			for (RedBlackTreeExtended.Node<K, V> p = n; p.parent() != null && p == p.parent().right(); p = p.parent())
 				setNodeData(p.parent(), n);
 		}
 
 		@Override
-		void beforeRemove(RedBlackTreeExtended.Node<E> n) {
-			RedBlackTreeExtended.Node<E> max;
+		void beforeRemove(RedBlackTreeExtended.Node<K, V> n) {
+			RedBlackTreeExtended.Node<K, V> max;
 			if (n.right() != null)
 				max = getNodeData(n.right());
 			else if (n.left() != null)
@@ -357,33 +368,34 @@ public class RedBlackTreeExtension<E> {
 			else
 				max = n.parent();
 
-			for (RedBlackTreeExtended.Node<E> p = n; p.parent() != null && p == p.parent().right(); p = p.parent())
+			for (RedBlackTreeExtended.Node<K, V> p = n; p.parent() != null && p == p.parent().right(); p = p.parent())
 				setNodeData(p.parent(), max);
 		}
 
 		@Override
-		void beforeNodeSwap(RedBlackTreeExtended.Node<E> a, RedBlackTreeExtended.Node<E> b) {
+		void beforeNodeSwap(RedBlackTreeExtended.Node<K, V> a, RedBlackTreeExtended.Node<K, V> b) {
 			if (getNodeData(b) == a) {
-				RedBlackTreeExtended.Node<E> temp = a;
+				RedBlackTreeExtended.Node<K, V> temp = a;
 				a = b;
 				b = temp;
 			}
 			if (getNodeData(a) == b) {
 				assert getNodeData(b) == b;
-				for (RedBlackTreeExtended.Node<E> p = b; p.parent() != null && p == p.parent().right(); p = p.parent())
+				for (RedBlackTreeExtended.Node<K, V> p = b; p.parent() != null && p == p.parent().right(); p =
+						p.parent())
 					setNodeData(p.parent(), a);
 				assert getNodeData(a) == a : "a should be ancestor of b";
 				setNodeData(b, a);
 				return;
 			}
 
-			RedBlackTreeExtended.Node<E> aData, bData;
+			RedBlackTreeExtended.Node<K, V> aData, bData;
 			if (a.hasRightChild()) {
 				assert getNodeData(a) == getNodeData(a.right());
 				bData = getNodeData(a);
 			} else {
 				assert getNodeData(a) == a;
-				for (RedBlackTreeExtended.Node<E> p = a; p.parent() != null && p == p.parent().right(); p =
+				for (RedBlackTreeExtended.Node<K, V> p = a; p.parent() != null && p == p.parent().right(); p =
 						p.parent()) {
 					assert p.parent() != b;
 					setNodeData(p.parent(), b);
@@ -395,7 +407,8 @@ public class RedBlackTreeExtension<E> {
 				aData = getNodeData(b);
 			} else {
 				assert getNodeData(b) == b;
-				for (RedBlackTreeExtended.Node<E> p = b; p.parent() != null && p == p.parent().right(); p = p.parent())
+				for (RedBlackTreeExtended.Node<K, V> p = b; p.parent() != null && p == p.parent().right(); p =
+						p.parent())
 					setNodeData(p.parent(), a);
 				aData = a;
 			}
@@ -404,20 +417,20 @@ public class RedBlackTreeExtension<E> {
 		}
 
 		@Override
-		void beforeRotateLeft(RedBlackTreeExtended.Node<E> n) {
-			RedBlackTreeExtended.Node<E> grandchild = n.right().left();
+		void beforeRotateLeft(RedBlackTreeExtended.Node<K, V> n) {
+			RedBlackTreeExtended.Node<K, V> grandchild = n.right().left();
 			setNodeData(n, grandchild != null ? getNodeData(grandchild) : n);
 		}
 
 		@Override
-		void beforeRotateRight(RedBlackTreeExtended.Node<E> n) {
-			RedBlackTreeExtended.Node<E> child = n.left();
+		void beforeRotateRight(RedBlackTreeExtended.Node<K, V> n) {
+			RedBlackTreeExtended.Node<K, V> child = n.left();
 			setNodeData(child, getNodeData(n));
 		}
 
 	}
 
-	private static abstract class Obj<E, D> extends RedBlackTreeExtension<E> {
+	private static abstract class Obj<K, V, D> extends RedBlackTreeExtension<K, V> {
 
 		Obj() {
 			super(new ExtensionData.Obj<D>());
@@ -428,17 +441,17 @@ public class RedBlackTreeExtension<E> {
 			return (ExtensionData.Obj<D>) data;
 		}
 
-		D getNodeData(RedBlackTreeExtended.Node<E> n) {
+		D getNodeData(RedBlackTreeExtended.Node<K, V> n) {
 			return data().get(n.idx);
 		}
 
-		void setNodeData(RedBlackTreeExtended.Node<E> n, D data) {
+		void setNodeData(RedBlackTreeExtended.Node<K, V> n, D data) {
 			data().set(n.idx, data);
 		}
 
 	}
 
-	private static abstract class Int<E> extends RedBlackTreeExtension<E> {
+	private static abstract class Int<K, V> extends RedBlackTreeExtension<K, V> {
 
 		Int() {
 			super(new ExtensionData.Int());
@@ -448,11 +461,11 @@ public class RedBlackTreeExtension<E> {
 			return (ExtensionData.Int) data;
 		}
 
-		int getNodeData(RedBlackTreeExtended.Node<E> n) {
+		int getNodeData(RedBlackTreeExtended.Node<K, V> n) {
 			return data().get(n.idx);
 		}
 
-		void setNodeData(RedBlackTreeExtended.Node<E> n, int data) {
+		void setNodeData(RedBlackTreeExtended.Node<K, V> n, int data) {
 			data().set(n.idx, data);
 		}
 	}

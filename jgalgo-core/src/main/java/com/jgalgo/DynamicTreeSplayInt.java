@@ -269,7 +269,7 @@ class DynamicTreeSplayInt implements DynamicTree {
 
 	}
 
-	static class SplayNode extends SplayTree.Node<Object, SplayNode> implements Node {
+	static class SplayNode extends SplayTree.BaseNode<Object, SplayNode> implements Node {
 
 		SplayNode userParent;
 
@@ -288,12 +288,12 @@ class DynamicTreeSplayInt implements DynamicTree {
 		@Override
 		@SuppressWarnings("unchecked")
 		public <V> V getNodeData() {
-			return (V) data;
+			return (V) key;
 		}
 
 		@Override
 		public void setNodeData(Object data) {
-			this.data = data;
+			this.key = data;
 		}
 
 		@Override
@@ -329,14 +329,6 @@ class DynamicTreeSplayInt implements DynamicTree {
 
 		int getMinWeight(int parentWeight) {
 			return getWeight(parentWeight) - minWeightDiff;
-		}
-
-		@Override
-		void clear() {
-			super.clear();
-			userParent = null;
-			tparent = null;
-			weightDiff = minWeightDiff = 0;
 		}
 
 	}

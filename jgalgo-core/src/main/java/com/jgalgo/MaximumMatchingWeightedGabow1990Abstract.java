@@ -55,7 +55,8 @@ abstract class MaximumMatchingWeightedGabow1990Abstract implements MaximumMatchi
 		return newWorker(g, w, heapBuilder, debugPrintManager).computeMaxMatching(true);
 	}
 
-	abstract Worker newWorker(Graph gOrig, EdgeWeightFunc w, HeapReferenceable.Builder heapBuilder, DebugPrintsManager debugPrint);
+	abstract Worker newWorker(Graph gOrig, EdgeWeightFunc w, HeapReferenceable.Builder heapBuilder,
+			DebugPrintsManager debugPrint);
 
 	/**
 	 * Set the implementation of the heap used by this algorithm.
@@ -135,15 +136,12 @@ abstract class MaximumMatchingWeightedGabow1990Abstract implements MaximumMatchi
 		/*
 		 * pointer to the grow event for this blossom, relevant only if this blossom is out
 		 */
-		HeapReference<EdgeEvent> growRef;
-
-		/* delta threshold for this blossom to be expanded */
-		double expandDelta;
+		HeapReference<EdgeEvent, Void> growRef;
 
 		/*
 		 * pointer to the expand event for this blossom, relevant only if this blossom is top odd
 		 */
-		HeapReference<Blossom> expandRef;
+		HeapReference<Double, Blossom> expandRef;
 
 		/* field used to keep track which blossoms were visited during traverse */
 		int lastVisitIdx;
@@ -408,10 +406,10 @@ abstract class MaximumMatchingWeightedGabow1990Abstract implements MaximumMatchi
 		final EdgeEvent[] vToGrowEvent;
 
 		/* Heap storing all the grow events */
-		final HeapReferenceable<EdgeEvent> growEvents;
+		final HeapReferenceable<EdgeEvent, Void> growEvents;
 
 		/* Heap storing all expand events for odd vertices */
-		final HeapReferenceable<Blossom> expandEvents;
+		final HeapReferenceable<Double, Blossom> expandEvents;
 
 		/* queue used during blossom creation to union all vertices */
 		final IntPriorityQueue unionQueue;
@@ -482,8 +480,7 @@ abstract class MaximumMatchingWeightedGabow1990Abstract implements MaximumMatchi
 
 			vToGrowEvent = new EdgeEvent[n];
 			growEvents = heapBuilder.build((e1, e2) -> Double.compare(growEventsKey(e1), growEventsKey(e2)));
-			// blossomEvents = new HeapBinary<>((e1, e2) -> Double.compare(e1.slack, e2.slack));
-			expandEvents = heapBuilder.build((b1, b2) -> Double.compare(b1.expandDelta, b2.expandDelta));
+			expandEvents = heapBuilder.build();
 
 			unionQueue = new IntArrayFIFOQueue();
 			scanQueue = new IntArrayFIFOQueue();
@@ -578,11 +575,12 @@ abstract class MaximumMatchingWeightedGabow1990Abstract implements MaximumMatchi
 
 				currentSearch: for (;;) {
 					double delta1 = delta1Threshold;
-					double delta2 = growEvents.isEmpty() ? Double.MAX_VALUE : growEventsKey(growEvents.findMin());
+					double delta2 = growEvents.isEmpty() ? Double.MAX_VALUE : growEventsKey(growEvents.findMin().key());
 
 					double delta3 = computeNextDelta3();
 
-					double delta4 = expandEvents.isEmpty() ? Double.MAX_VALUE : expandEvents.findMin().expandDelta;
+					double delta4 =
+							expandEvents.isEmpty() ? Double.MAX_VALUE : expandEvents.findMin().key().doubleValue();
 
 					double deltaNext = Math.min(delta2, Math.min(delta3, delta4));
 					if (deltaNext == Double.MAX_VALUE || (!perfect && delta1 < deltaNext))
@@ -646,7 +644,6 @@ abstract class MaximumMatchingWeightedGabow1990Abstract implements MaximumMatchi
 					b.isEven = false;
 					b.find1SeqBegin = b.find1SeqEnd = 0;
 					b.growRef = null;
-					b.expandDelta = 0;
 					b.expandRef = null;
 				}
 
@@ -670,8 +667,8 @@ abstract class MaximumMatchingWeightedGabow1990Abstract implements MaximumMatchi
 		void expandStep() {
 			debug.println("expandStep");
 
-			assert Utils.isEqual(delta, expandEvents.findMin().expandDelta);
-			final Blossom B = expandEvents.extractMin();
+			assert Utils.isEqual(delta, expandEvents.findMin().key().doubleValue());
+			final Blossom B = expandEvents.extractMin().value();
 
 			assert B.root != -1 && !B.isEven && !B.isSingleton() && dualVal(B) <= EPS;
 
@@ -710,10 +707,8 @@ abstract class MaximumMatchingWeightedGabow1990Abstract implements MaximumMatchi
 				b.delta1 = delta;
 				odds.split(b);
 				assert b.expandRef == null;
-				if (!b.isSingleton()) {
-					b.expandDelta = b.z0 / 2 + b.delta1;
-					b.expandRef = expandEvents.insert(b);
-				}
+				if (!b.isSingleton())
+					b.expandRef = expandEvents.insert(Double.valueOf(b.z0 / 2 + b.delta1), b);
 				if (b == base)
 					break;
 				b = next.apply(b);

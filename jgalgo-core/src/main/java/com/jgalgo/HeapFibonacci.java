@@ -16,97 +16,69 @@
 
 package com.jgalgo;
 
-import java.util.AbstractSet;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.Set;
-
 import com.jgalgo.Trees.TreeNode;
 
 /**
  * A Fibonacci heap implementation.
  * <p>
  * A pointer based heap implementation that support almost any operation in \(O(1)\) amortized time, except
- * {@link #removeRef(HeapReference)} which takes \(O(\log n)\) time amortized.
+ * {@link #remove(HeapReference)} which takes \(O(\log n)\) time amortized.
  * <p>
  * Using this heap, {@link SSSPDijkstra} can be implemented in time \(O(m + n \log n)\) rather than \(O(m \log n)\) as
  * the {@link #decreaseKey(HeapReference, Object)} operation is performed in \(O(1)\) time amortized.
  * <p>
  * In practice, the Fibonacci heaps are quire complex, and in some cases is better to use {@link HeapPairing}.
  *
- * @see    <a href="https://en.wikipedia.org/wiki/Fibonacci_heap">Wikipedia</a>
- * @see    HeapPairing
- * @author Barak Ugav
+ * @param  <K> the keys type
+ * @param  <V> the values type
+ * @see        <a href="https://en.wikipedia.org/wiki/Fibonacci_heap">Wikipedia</a>
+ * @see        HeapPairing
+ * @author     Barak Ugav
  */
-public class HeapFibonacci<E> extends HeapReferenceableAbstract<E> {
+public class HeapFibonacci<K, V> extends HeapReferenceableAbstract<K, V> {
 
-	private Node<E> minRoot;
-	private Node<E> begin;
-	private Node<E> end;
+	private Node<K, V> minRoot;
+	private Node<K, V> begin;
+	private Node<K, V> end;
 	private int size;
-	private final Set<HeapReference<E>> refsSet;
 
 	/**
-	 * Constructs a new, empty Fibonacci heap, sorted according to the natural ordering of its elements.
+	 * Constructs a new, empty Fibonacci heap, ordered according to the natural ordering of its keys.
 	 * <p>
-	 * All elements inserted into the heap must implement the {@link Comparable} interface. Furthermore, all such
-	 * elements must be <i>mutually comparable</i>: {@code e1.compareTo(e2)} must not throw a {@code ClassCastException}
-	 * for any elements {@code e1} and {@code e2} in the heap. If the user attempts to insert an element to the heap
-	 * that violates this constraint (for example, the user attempts to insert a string element to a heap whose elements
-	 * are integers), the {@code insert} call will throw a {@code ClassCastException}.
+	 * All keys inserted into the heap must implement the {@link Comparable} interface. Furthermore, all such keys must
+	 * be <i>mutually comparable</i>: {@code k1.compareTo(k2)} must not throw a {@code ClassCastException} for any keys
+	 * {@code k1} and {@code k2} in the heap. If the user attempts to insert a key to the heap that violates this
+	 * constraint (for example, the user attempts to insert a string element to a heap whose keys are integers), the
+	 * {@code insert} call will throw a {@code ClassCastException}.
 	 */
 	public HeapFibonacci() {
 		this(null);
 	}
 
 	/**
-	 * Constructs a new, empty Fibonacci heap, sorted according to the specified comparator.
+	 * Constructs a new, empty Fibonacci heap, with keys ordered according to the specified comparator.
 	 * <p>
-	 * All elements inserted into the heap must be <i>mutually comparable</i> by the specified comparator:
-	 * {@code comparator.compare(e1, e2)} must not throw a {@code ClassCastException} for any elements {@code e1} and
-	 * {@code e2} in the heap. If the user attempts to insert an element to the heap that violates this constraint, the
+	 * All keys inserted into the heap must be <i>mutually comparable</i> by the specified comparator:
+	 * {@code comparator.compare(k1, k2)} must not throw a {@code ClassCastException} for any keys {@code k1} and
+	 * {@code k2} in the heap. If the user attempts to insert a key to the heap that violates this constraint, the
 	 * {@code insert} call will throw a {@code ClassCastException}.
 	 *
 	 * @param comparator the comparator that will be used to order this heap. If {@code null}, the
-	 *                       {@linkplain Comparable natural ordering} of the elements will be used.
+	 *                       {@linkplain Comparable natural ordering} of the keys will be used.
 	 */
-	public HeapFibonacci(Comparator<? super E> comparator) {
+	public HeapFibonacci(Comparator<? super K> comparator) {
 		super(comparator);
 		begin = end = minRoot = null;
 		size = 0;
-
-		refsSet = new AbstractSet<>() {
-
-			@Override
-			public int size() {
-				return HeapFibonacci.this.size();
-			}
-
-			@SuppressWarnings({ "unchecked", "rawtypes" })
-			@Override
-			public Iterator<HeapReference<E>> iterator() {
-				return (Iterator) new Trees.PreOrderIter<>(begin);
-			}
-
-			@SuppressWarnings("unchecked")
-			@Override
-			public boolean remove(Object o) {
-				HeapFibonacci.this.removeRef((HeapReference<E>) o);
-				return true;
-			}
-
-			@Override
-			public void clear() {
-				HeapFibonacci.this.clear();
-			}
-		};
 	}
 
 	@Override
 	public void clear() {
-		for (Node<E> p = begin, next; p != null; p = next) {
+		for (Node<K, V> p = begin, next; p != null; p = next) {
 			next = p.next;
-			Trees.clear(p, n -> n.value = null);
+			Trees.clear(p, n -> n.key = null);
 		}
 
 		begin = end = minRoot = null;
@@ -119,13 +91,13 @@ public class HeapFibonacci<E> extends HeapReferenceableAbstract<E> {
 	}
 
 	@Override
-	public HeapReference<E> insert(E e) {
-		Node<E> n = new Node<>(e);
+	public HeapReference<K, V> insert(K key) {
+		Node<K, V> n = new Node<>(key);
 		if (minRoot != null) {
-			Node<E> last = end;
+			Node<K, V> last = end;
 			last.next = n;
 			n.prev = last;
-			if (compare(minRoot.value, e) > 0)
+			if (compare(minRoot.key, key) > 0)
 				minRoot = n;
 		} else {
 			begin = n;
@@ -136,18 +108,19 @@ public class HeapFibonacci<E> extends HeapReferenceableAbstract<E> {
 		return n;
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public Set<HeapReference<E>> refsSet() {
-		return refsSet;
+	public Iterator<HeapReference<K, V>> iterator() {
+		return (Iterator) new Trees.PreOrderIter<>(begin);
 	}
 
 	@Override
-	public void meld(Heap<? extends E> heap) {
+	public void meld(HeapReferenceable<? extends K, ? extends V> heap) {
 		makeSureNoMeldWithSelf(heap);
 		makeSureMeldWithSameImpl(HeapFibonacci.class, heap);
 		makeSureEqualComparatorBeforeMeld(heap);
 		@SuppressWarnings("unchecked")
-		HeapFibonacci<E> h = (HeapFibonacci<E>) heap;
+		HeapFibonacci<K, V> h = (HeapFibonacci<K, V>) heap;
 		if (h.isEmpty())
 			return;
 
@@ -168,15 +141,15 @@ public class HeapFibonacci<E> extends HeapReferenceableAbstract<E> {
 	}
 
 	@Override
-	public Node<E> findMinRef() {
+	public HeapReference<K, V> findMin() {
 		if (isEmpty())
 			throw new IllegalStateException();
 		return minRoot;
 	}
 
-	private void cut(Node<E> p) {
+	private void cut(Node<K, V> p) {
 		assert p.parent != null;
-		Node<E> prev = p.prev;
+		Node<K, V> prev = p.prev;
 		if (prev != null) {
 			prev.next = p.next;
 			p.prev = null;
@@ -193,21 +166,21 @@ public class HeapFibonacci<E> extends HeapReferenceableAbstract<E> {
 		p.marked = false;
 	}
 
-	private void addRoot(Node<E> p) {
-		Node<E> last = end;
+	private void addRoot(Node<K, V> p) {
+		Node<K, V> last = end;
 		last.next = p;
 		p.prev = last;
 		end = p;
 	}
 
-	private void compareToMinRoot(Node<E> p) {
+	private void compareToMinRoot(Node<K, V> p) {
 		assert p.parent == null;
-		if (compare(minRoot.value, p.value) > 0)
+		if (compare(minRoot.key, p.key) > 0)
 			minRoot = p;
 	}
 
-	private void mark(Node<E> p) {
-		for (Node<E> q; p.parent != null; p = q) {
+	private void mark(Node<K, V> p) {
+		for (Node<K, V> q; p.parent != null; p = q) {
 			if (!p.marked) {
 				p.marked = true;
 				break;
@@ -219,14 +192,14 @@ public class HeapFibonacci<E> extends HeapReferenceableAbstract<E> {
 	}
 
 	@Override
-	public void decreaseKey(HeapReference<E> ref, E e) {
-		Node<E> parent, n = (Node<E>) ref;
-		makeSureDecreaseKeyIsSmaller(n.value, e);
-		n.value = e;
+	public void decreaseKey(HeapReference<K, V> ref, K newKey) {
+		Node<K, V> parent, n = (Node<K, V>) ref;
+		makeSureDecreaseKeyIsSmaller(n.key, newKey);
+		n.key = newKey;
 
 		if ((parent = n.parent) == null)
 			compareToMinRoot(n);
-		if (parent != null && compare(e, n.parent.value) < 0) {
+		if (parent != null && compare(newKey, n.parent.key) < 0) {
 			cut(n);
 			addRoot(n);
 			compareToMinRoot(n);
@@ -235,12 +208,12 @@ public class HeapFibonacci<E> extends HeapReferenceableAbstract<E> {
 	}
 
 	@Override
-	public void removeRef(HeapReference<E> ref) {
-		Node<E> prev, n = (Node<E>) ref;
+	public void remove(HeapReference<K, V> ref) {
+		Node<K, V> prev, n = (Node<K, V>) ref;
 
 		boolean isMinRoot = n == minRoot;
 		if (n.parent != null) {
-			Node<E> parent = n.parent;
+			Node<K, V> parent = n.parent;
 			cut(n);
 			mark(parent);
 		} else {
@@ -262,11 +235,11 @@ public class HeapFibonacci<E> extends HeapReferenceableAbstract<E> {
 		}
 
 		// add n children
-		Node<E> first = n.child, last = null;
+		Node<K, V> first = n.child, last = null;
 		if (first != null) {
-			for (Node<E> p = first;;) {
+			for (Node<K, V> p = first;;) {
 				p.parent = null;
-				Node<E> next = p.next;
+				Node<K, V> next = p.next;
 				if (next == null) {
 					last = p;
 					break;
@@ -286,13 +259,13 @@ public class HeapFibonacci<E> extends HeapReferenceableAbstract<E> {
 
 		// union trees
 		@SuppressWarnings("unchecked")
-		Node<E>[] newRoots = new Node[getMaxDegree(size)];
+		Node<K, V>[] newRoots = new Node[getMaxDegree(size)];
 		if (c == null) {
-			for (Node<E> next, p = begin; p != null; p = next) {
+			for (Node<K, V> next, p = begin; p != null; p = next) {
 				next = p.next;
 
 				int degree;
-				for (Node<E> q; (q = newRoots[degree = p.degree]) != null;) {
+				for (Node<K, V> q; (q = newRoots[degree = p.degree]) != null;) {
 					newRoots[degree] = null;
 					p = unionDefaultCmp(p, q);
 				}
@@ -300,11 +273,11 @@ public class HeapFibonacci<E> extends HeapReferenceableAbstract<E> {
 				newRoots[degree] = p;
 			}
 		} else {
-			for (Node<E> next, p = begin; p != null; p = next) {
+			for (Node<K, V> next, p = begin; p != null; p = next) {
 				next = p.next;
 
 				int degree;
-				for (Node<E> q; (q = newRoots[degree = p.degree]) != null;) {
+				for (Node<K, V> q; (q = newRoots[degree = p.degree]) != null;) {
 					newRoots[degree] = null;
 					p = unionCustomCmp(p, q);
 				}
@@ -314,7 +287,7 @@ public class HeapFibonacci<E> extends HeapReferenceableAbstract<E> {
 		}
 		prev = null;
 		begin = null;
-		for (Node<E> p : newRoots) {
+		for (Node<K, V> p : newRoots) {
 			if (p == null)
 				continue;
 			if (prev == null)
@@ -331,19 +304,19 @@ public class HeapFibonacci<E> extends HeapReferenceableAbstract<E> {
 
 		/* Find new minimum */
 		if (isMinRoot) {
-			Node<E> min = null;
+			Node<K, V> min = null;
 			if (c == null) {
-				for (Node<E> p : newRoots) {
+				for (Node<K, V> p : newRoots) {
 					if (p == null)
 						continue;
-					if (min == null || Utils.cmpDefault(min.value, p.value) > 0)
+					if (min == null || Utils.cmpDefault(min.key, p.key) > 0)
 						min = p;
 				}
 			} else {
-				for (Node<E> p : newRoots) {
+				for (Node<K, V> p : newRoots) {
 					if (p == null)
 						continue;
-					if (min == null || c.compare(min.value, p.value) > 0)
+					if (min == null || c.compare(min.key, p.key) > 0)
 						min = p;
 				}
 			}
@@ -351,13 +324,13 @@ public class HeapFibonacci<E> extends HeapReferenceableAbstract<E> {
 		}
 	}
 
-	private Node<E> unionDefaultCmp(Node<E> u, Node<E> v) {
-		if (v == minRoot || Utils.cmpDefault(u.value, v.value) > 0) {
-			Node<E> temp = u;
+	private Node<K, V> unionDefaultCmp(Node<K, V> u, Node<K, V> v) {
+		if (v == minRoot || Utils.cmpDefault(u.key, v.key) > 0) {
+			Node<K, V> temp = u;
 			u = v;
 			v = temp;
 		}
-		assert Utils.cmpDefault(u.value, v.value) <= 0;
+		assert Utils.cmpDefault(u.key, v.key) <= 0;
 
 		v.parent = u;
 		v.prev = null;
@@ -370,13 +343,13 @@ public class HeapFibonacci<E> extends HeapReferenceableAbstract<E> {
 		return u;
 	}
 
-	private Node<E> unionCustomCmp(Node<E> u, Node<E> v) {
-		if (v == minRoot || c.compare(u.value, v.value) > 0) {
-			Node<E> temp = u;
+	private Node<K, V> unionCustomCmp(Node<K, V> u, Node<K, V> v) {
+		if (v == minRoot || c.compare(u.key, v.key) > 0) {
+			Node<K, V> temp = u;
 			u = v;
 			v = temp;
 		}
-		assert c.compare(u.value, v.value) <= 0;
+		assert c.compare(u.key, v.key) <= 0;
 
 		v.parent = u;
 		v.prev = null;
@@ -389,74 +362,85 @@ public class HeapFibonacci<E> extends HeapReferenceableAbstract<E> {
 		return u;
 	}
 
-	private static class Node<E> implements HeapReference<E>, TreeNode<Node<E>> {
+	private static class Node<K, V> implements HeapReference<K, V>, TreeNode<Node<K, V>> {
 
-		Node<E> parent;
-		Node<E> next;
-		Node<E> prev;
-		Node<E> child;
-		E value;
+		Node<K, V> parent;
+		Node<K, V> next;
+		Node<K, V> prev;
+		Node<K, V> child;
+		K key;
+		V value;
 		int degree;
 		boolean marked;
 
-		Node(E v) {
+		Node(K key) {
 			parent = null;
 			next = null;
 			prev = null;
 			child = null;
-			value = v;
+			this.key = key;
 			degree = 0;
 			marked = false;
 		}
 
 		@Override
-		public E get() {
+		public K key() {
+			return key;
+		}
+
+		@Override
+		public V value() {
 			return value;
 		}
 
 		@Override
-		public Node<E> parent() {
+		public void setValue(V val) {
+			value = val;
+		}
+
+		@Override
+		public Node<K, V> parent() {
 			return parent;
 		}
 
 		@Override
-		public Node<E> next() {
+		public Node<K, V> next() {
 			return next;
 		}
 
 		@Override
-		public Node<E> prev() {
+		public Node<K, V> prev() {
 			return prev;
 		}
 
 		@Override
-		public Node<E> child() {
+		public Node<K, V> child() {
 			return child;
 		}
 
 		@Override
-		public void setParent(Node<E> x) {
+		public void setParent(Node<K, V> x) {
 			parent = x;
 		}
 
 		@Override
-		public void setNext(Node<E> x) {
+		public void setNext(Node<K, V> x) {
 			next = x;
 		}
 
 		@Override
-		public void setPrev(Node<E> x) {
+		public void setPrev(Node<K, V> x) {
 			prev = x;
 		}
 
 		@Override
-		public void setChild(Node<E> x) {
+		public void setChild(Node<K, V> x) {
 			child = x;
 		}
 
 		@Override
 		public String toString() {
-			return "{" + value + "}";
+			return "{" + key + ":" + value + "}";
 		}
 
 	}

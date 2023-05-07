@@ -22,11 +22,20 @@ import org.junit.jupiter.api.Test;
 
 public class SplayTreeTest extends TestBase {
 
+	private static Heap.Builder heapBuilder() {
+		return new Heap.Builder() {
+			@Override
+			public <E> Heap<E> build(Comparator<? super E> cmp) {
+				return new SplayTree<E, Object>(cmp).asHeap();
+			}
+		};
+	}
+
 	private static BinarySearchTree.Builder createBuilder() {
 		return new BinarySearchTree.Builder() {
 
 			@Override
-			public <E> BinarySearchTree<E> build(Comparator<? super E> cmp) {
+			public <K, V> BinarySearchTree<K, V> build(Comparator<? super K> cmp) {
 				return new SplayTree<>(cmp);
 			}
 
@@ -45,19 +54,19 @@ public class SplayTreeTest extends TestBase {
 	@Test
 	public void testRandOpsDefaultCompare() {
 		final long seed = 0x29080f5f2aca1605L;
-		HeapTestUtils.testRandOpsDefaultCompare(createBuilder(), seed);
+		HeapTestUtils.testRandOpsDefaultCompare(heapBuilder(), seed);
 	}
 
 	@Test
 	public void testRandOpsCustomCompare() {
 		final long seed = 0xa92d44b8205fbbdeL;
-		HeapTestUtils.testRandOpsCustomCompare(createBuilder(), seed);
+		HeapTestUtils.testRandOpsCustomCompare(heapBuilder(), seed);
 	}
 
 	@Test
 	public void testRandOpsAfterManyInserts() {
 		final long seed = 0x38f7e3242f52e2dcL;
-		HeapTestUtils.testRandOpsAfterManyInserts(createBuilder(), seed);
+		HeapTestUtils.testRandOpsAfterManyInserts(heapBuilder(), seed);
 	}
 
 	@Test
@@ -69,25 +78,25 @@ public class SplayTreeTest extends TestBase {
 	@Test
 	public void testMeldDefaultCompare() {
 		final long seed = 0xe882a11221a54a22L;
-		HeapTestUtils.testMeldDefaultCompare(createBuilder(), seed);
+		HeapTestUtils.testMeldDefaultCompare(heapBuilder(), seed);
 	}
 
 	@Test
 	public void testMeldCustomCompare() {
 		final long seed = 0xfeab1714f2e57cd4L;
-		HeapTestUtils.testMeldCustomCompare(createBuilder(), seed);
+		HeapTestUtils.testMeldCustomCompare(heapBuilder(), seed);
 	}
 
 	@Test
 	public void testMeldWithOrderDefaultCompare() {
 		final long seed = 0x0cb4bf9251d8145bL;
-		HeapTestUtils.testMeldWithOrderedValuesDefaultCompare(createBuilder(), seed);
+		HeapTestUtils.testMeldWithOrderedValuesDefaultCompare(heapBuilder(), seed);
 	}
 
 	@Test
 	public void testMeldWithOrderCustomCompare() {
 		final long seed = 0x24c1f56e5fdbc5acL;
-		HeapTestUtils.testMeldWithOrderedValuesCustomCompare(createBuilder(), seed);
+		HeapTestUtils.testMeldWithOrderedValuesCustomCompare(heapBuilder(), seed);
 	}
 
 	@Test
@@ -105,37 +114,37 @@ public class SplayTreeTest extends TestBase {
 	@Test
 	public void testDecreaseKeyDefaultCompare() {
 		final long seed = 0x2e6a8902f634f8caL;
-		HeapTestUtils.testDecreaseKeyDefaultCompare(createBuilder(), seed);
+		HeapReferenceableTestUtils.testDecreaseKeyDefaultCompare(createBuilder(), seed);
 	}
 
 	@Test
 	public void testDecreaseKeyCustomCompare() {
 		final long seed = 0xb1db9f0001ff6a5aL;
-		HeapTestUtils.testDecreaseKeyCustomCompare(createBuilder(), seed);
+		HeapReferenceableTestUtils.testDecreaseKeyCustomCompare(createBuilder(), seed);
 	}
 
 	@Test
 	public void testFindSmallersDefaultCompare() {
 		final long seed = 0x77f393a0a7508c84L;
-		BinarySearchTreeTestUtils.testFindSmallersDefaultCompare(createBuilder(), seed);
+		BinarySearchTreeTestUtils.testFindSmallerDefaultCompare(createBuilder(), seed);
 	}
 
 	@Test
 	public void testFindSmallersCustomCompare() {
 		final long seed = 0x99a37616f1023b0fL;
-		BinarySearchTreeTestUtils.testFindSmallersCustomCompare(createBuilder(), seed);
+		BinarySearchTreeTestUtils.testFindSmallerCustomCompare(createBuilder(), seed);
 	}
 
 	@Test
 	public void testFindGreatersDefaultCompare() {
 		final long seed = 0xf8ec8ed64600635fL;
-		BinarySearchTreeTestUtils.testFindGreatersDefaultCompare(createBuilder(), seed);
+		BinarySearchTreeTestUtils.testFindGreaterDefaultCompare(createBuilder(), seed);
 	}
 
 	@Test
 	public void testFindGreaterCustomCompare() {
 		final long seed = 0xf890218f3f5420a9L;
-		BinarySearchTreeTestUtils.testFindGreatersCustomCompare(createBuilder(), seed);
+		BinarySearchTreeTestUtils.testFindGreaterCustomCompare(createBuilder(), seed);
 	}
 
 	@Test

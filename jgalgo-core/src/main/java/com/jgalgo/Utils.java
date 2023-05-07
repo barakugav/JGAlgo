@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-
+import java.util.function.Function;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 class Utils {
@@ -218,6 +218,27 @@ class Utils {
 				return peek;
 			}
 
+		}
+
+	}
+
+	static class IterMap<A, B> implements Iterator<B> {
+		private final Iterator<A> it;
+		private final Function<A, B> map;
+
+		IterMap(Iterator<A> it, Function<A, B> map) {
+			this.it = Objects.requireNonNull(it);
+			this.map = Objects.requireNonNull(map);
+		}
+
+		@Override
+		public boolean hasNext() {
+			return it.hasNext();
+		}
+
+		@Override
+		public B next() {
+			return map.apply(it.next());
 		}
 
 	}

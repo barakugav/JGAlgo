@@ -16,95 +16,68 @@
 
 package com.jgalgo;
 
-import java.util.AbstractSet;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
-import java.util.Set;
 import com.jgalgo.Trees.TreeNode;
 
 /**
  * A binomial heap implementation.
  * <p>
  * Pointer based data structure that support user references to the internal nodes, allowing efficient \(O(\log n)\)
- * implementation of the {@link #removeRef(HeapReference)} and {@link #decreaseKey(HeapReference, Object)} operations.
- * The regular operations like {@link #insert(Object)}, {@link #extractMin()} and {@link #findMin()} are also
- * implemented in \(O(\log n)\) time. Another advantage of the binomial heap is its ability to merge with another
- * binomial heap in \(O(\log n)\) time, which is much faster than the required \(O(n)\) time of binary heaps.
+ * implementation of the {@link #remove(HeapReference)} and {@link #decreaseKey(HeapReference, Object)} operations. The
+ * regular operations like {@link #insert(Object)}, {@link #extractMin()} and {@link #findMin()} are also implemented in
+ * \(O(\log n)\) time. Another advantage of the binomial heap is its ability to merge with another binomial heap in
+ * \(O(\log n)\) time, which is much faster than the required \(O(n)\) time of binary heaps.
  * <p>
  * Although it has great complexities bounds, {@link #decreaseKey(HeapReference, Object)} can be implemented faster
  * using {@link HeapPairing} or {@link HeapFibonacci}.
  *
- * @see    <a href="https://en.wikipedia.org/wiki/Binomial_heap">Wikipedia</a>
- * @author Barak Ugav
+ * @param  <K> the keys type
+ * @param  <V> the values type
+ * @see        <a href="https://en.wikipedia.org/wiki/Binomial_heap">Wikipedia</a>
+ * @author     Barak Ugav
  */
-public class HeapBinomial<E> extends HeapReferenceableAbstract<E> {
+public class HeapBinomial<K, V> extends HeapReferenceableAbstract<K, V> {
 
-	private Node<E>[] roots;
+	private Node<K, V>[] roots;
 	private int rootsLen;
 	private int size;
-	private final Set<HeapReference<E>> refsSet;
 
 	/**
-	 * Constructs a new, empty binomial heap, sorted according to the natural ordering of its elements.
+	 * Constructs a new, empty binomial heap, ordered according to the natural ordering of its keys.
 	 * <p>
-	 * All elements inserted into the heap must implement the {@link Comparable} interface. Furthermore, all such
-	 * elements must be <i>mutually comparable</i>: {@code e1.compareTo(e2)} must not throw a {@code ClassCastException}
-	 * for any elements {@code e1} and {@code e2} in the heap. If the user attempts to insert an element to the heap
-	 * that violates this constraint (for example, the user attempts to insert a string element to a heap whose elements
-	 * are integers), the {@code insert} call will throw a {@code ClassCastException}.
+	 * All keys inserted into the heap must implement the {@link Comparable} interface. Furthermore, all such keys must
+	 * be <i>mutually comparable</i>: {@code k1.compareTo(k2)} must not throw a {@code ClassCastException} for any keys
+	 * {@code k1} and {@code k2} in the heap. If the user attempts to insert a key to the heap that violates this
+	 * constraint (for example, the user attempts to insert a string element to a heap whose keys are integers), the
+	 * {@code insert} call will throw a {@code ClassCastException}.
 	 */
 	public HeapBinomial() {
 		this(null);
 	}
 
 	/**
-	 * Constructs a new, empty binomial heap, sorted according to the specified comparator.
+	 * Constructs a new, empty binomial heap, with keys ordered according to the specified comparator.
 	 * <p>
-	 * All elements inserted into the heap must be <i>mutually comparable</i> by the specified comparator:
-	 * {@code comparator.compare(e1, e2)} must not throw a {@code ClassCastException} for any elements {@code e1} and
-	 * {@code e2} in the heap. If the user attempts to insert an element to the heap that violates this constraint, the
+	 * All keys inserted into the heap must be <i>mutually comparable</i> by the specified comparator:
+	 * {@code comparator.compare(k1, k2)} must not throw a {@code ClassCastException} for any keys {@code k1} and
+	 * {@code k2} in the heap. If the user attempts to insert a key to the heap that violates this constraint, the
 	 * {@code insert} call will throw a {@code ClassCastException}.
 	 *
 	 * @param comparator the comparator that will be used to order this heap. If {@code null}, the
-	 *                       {@linkplain Comparable natural ordering} of the elements will be used.
+	 *                       {@linkplain Comparable natural ordering} of the keys will be used.
 	 */
-	public HeapBinomial(Comparator<? super E> comparator) {
+	public HeapBinomial(Comparator<? super K> comparator) {
 		super(comparator);
 		roots = newArr(4);
 		rootsLen = 0;
 		size = 0;
-
-		refsSet = new AbstractSet<>() {
-
-			@Override
-			public int size() {
-				return HeapBinomial.this.size();
-			}
-
-			@SuppressWarnings({ "unchecked", "rawtypes" })
-			@Override
-			public Iterator<HeapReference<E>> iterator() {
-				return (Iterator) new Itr();
-			}
-
-			@SuppressWarnings("unchecked")
-			@Override
-			public boolean remove(Object o) {
-				HeapBinomial.this.removeRef((HeapReference<E>) o);
-				return true;
-			}
-
-			@Override
-			public void clear() {
-				HeapBinomial.this.clear();
-			}
-		};
 	}
 
-	private void swapParentChild(Node<E> parent, Node<E> child) {
-		Node<E> t, pNext = parent.next, pPrev = parent.prev, pParent = parent.parent, pChild = parent.child;
+	private void swapParentChild(Node<K, V> parent, Node<K, V> child) {
+		Node<K, V> t, pNext = parent.next, pPrev = parent.prev, pParent = parent.parent, pChild = parent.child;
 
 		parent.next = (t = child.next);
 		if (t != null)
@@ -113,7 +86,7 @@ public class HeapBinomial<E> extends HeapReferenceableAbstract<E> {
 		if (t != null)
 			t.next = parent;
 		parent.child = child.child;
-		for (Node<E> p = child.child; p != null; p = p.next)
+		for (Node<K, V> p = child.child; p != null; p = p.next)
 			p.parent = parent;
 
 		child.next = pNext;
@@ -123,7 +96,7 @@ public class HeapBinomial<E> extends HeapReferenceableAbstract<E> {
 		if (pPrev != null)
 			pPrev.next = child;
 		child.child = pChild == child ? parent : pChild;
-		for (Node<E> p = child.child; p != null; p = p.next)
+		for (Node<K, V> p = child.child; p != null; p = p.next)
 			p.parent = child;
 		child.parent = pParent;
 		if (pParent != null && pParent.child == parent)
@@ -131,7 +104,7 @@ public class HeapBinomial<E> extends HeapReferenceableAbstract<E> {
 
 		if (pParent == null) {
 			/* Switched a root, fix roots array */
-			Node<E>[] rs = roots;
+			Node<K, V>[] rs = roots;
 			for (int i = 0; i < rootsLen; i++) {
 				if (rs[i] == parent) {
 					rs[i] = child;
@@ -142,20 +115,20 @@ public class HeapBinomial<E> extends HeapReferenceableAbstract<E> {
 	}
 
 	@Override
-	public void decreaseKey(HeapReference<E> ref, E e) {
-		Node<E> node = (Node<E>) ref;
-		makeSureDecreaseKeyIsSmaller(node.value, e);
-		node.value = e;
+	public void decreaseKey(HeapReference<K, V> ref, K newKey) {
+		Node<K, V> node = (Node<K, V>) ref;
+		makeSureDecreaseKeyIsSmaller(node.key, newKey);
+		node.key = newKey;
 
 		if (c == null) {
-			for (Node<E> p; (p = node.parent) != null;) {
-				if (Utils.cmpDefault(p.value, e) <= 0)
+			for (Node<K, V> p; (p = node.parent) != null;) {
+				if (Utils.cmpDefault(p.key, newKey) <= 0)
 					break;
 				swapParentChild(p, node);
 			}
 		} else {
-			for (Node<E> p; (p = node.parent) != null;) {
-				if (c.compare(p.value, e) <= 0)
+			for (Node<K, V> p; (p = node.parent) != null;) {
+				if (c.compare(p.key, newKey) <= 0)
 					break;
 				swapParentChild(p, node);
 			}
@@ -163,14 +136,14 @@ public class HeapBinomial<E> extends HeapReferenceableAbstract<E> {
 	}
 
 	@Override
-	public void removeRef(HeapReference<E> ref) {
-		Node<E> node = (Node<E>) ref;
+	public void remove(HeapReference<K, V> ref) {
+		Node<K, V> node = (Node<K, V>) ref;
 
 		/* propagate to top of the tree */
-		for (Node<E> p; (p = node.parent) != null;)
+		for (Node<K, V> p; (p = node.parent) != null;)
 			swapParentChild(p, node);
 
-		Node<E>[] rs = roots;
+		Node<K, V>[] rs = roots;
 		int rootIdx = -1;
 		for (int i = 0; i < rootsLen; i++) {
 			if (rs[i] == node) {
@@ -182,8 +155,8 @@ public class HeapBinomial<E> extends HeapReferenceableAbstract<E> {
 		if (rootIdx == -1)
 			throw new ConcurrentModificationException();
 
-		Node<E>[] childs = newArr(rootIdx);
-		Node<E> next, p = node.child;
+		Node<K, V>[] childs = newArr(rootIdx);
+		Node<K, V> next, p = node.child;
 		for (int i = 0; i < rootIdx; i++, p = next) {
 			next = p.next;
 			p.parent = null;
@@ -198,12 +171,12 @@ public class HeapBinomial<E> extends HeapReferenceableAbstract<E> {
 
 	@Override
 	public void clear() {
-		Node<E>[] rs = roots;
+		Node<K, V>[] rs = roots;
 		int rslen = rootsLen;
 
 		for (int i = 0; i < rslen; i++) {
 			if (rs[i] != null) {
-				Trees.clear(rs[i], n -> n.value = null);
+				Trees.clear(rs[i], n -> n.key = null);
 				rs[i] = null;
 			}
 		}
@@ -218,30 +191,31 @@ public class HeapBinomial<E> extends HeapReferenceableAbstract<E> {
 	}
 
 	@Override
-	public HeapReference<E> insert(E e) {
-		Node<E> node = new Node<>(e);
-		Node<E>[] h2 = newArr(1);
+	public HeapReference<K, V> insert(K key) {
+		Node<K, V> node = new Node<>(key);
+		Node<K, V>[] h2 = newArr(1);
 		h2[0] = node;
 		size += meld(h2, 1);
 		return node;
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public Set<HeapReference<E>> refsSet() {
-		return refsSet;
+	public Iterator<HeapReference<K, V>> iterator() {
+		return (Iterator) new Itr();
 	}
 
-	private Node<E> mergeTreesDefaultCmp(Node<E> r1, Node<E> r2) {
+	private Node<K, V> mergeTreesDefaultCmp(Node<K, V> r1, Node<K, V> r2) {
 		assert r1 != r2;
 		if (r1 == r2)
 			throw new IllegalStateException();
-		if (Utils.cmpDefault(r1.value, r2.value) > 0) {
-			Node<E> t = r1;
+		if (Utils.cmpDefault(r1.key, r2.key) > 0) {
+			Node<K, V> t = r1;
 			r1 = r2;
 			r2 = t;
 		}
 		r2.next = r1.child;
-		Node<E> next = r1.child;
+		Node<K, V> next = r1.child;
 		if (next != null)
 			next.prev = r2;
 		r1.child = r2;
@@ -250,17 +224,17 @@ public class HeapBinomial<E> extends HeapReferenceableAbstract<E> {
 		return r1;
 	}
 
-	private Node<E> mergeTreesCustomCmp(Node<E> r1, Node<E> r2) {
+	private Node<K, V> mergeTreesCustomCmp(Node<K, V> r1, Node<K, V> r2) {
 		assert r1 != r2;
 		if (r1 == r2)
 			throw new IllegalStateException();
-		if (c.compare(r1.value, r2.value) > 0) {
-			Node<E> t = r1;
+		if (c.compare(r1.key, r2.key) > 0) {
+			Node<K, V> t = r1;
 			r1 = r2;
 			r2 = t;
 		}
 		r2.next = r1.child;
-		Node<E> next = r1.child;
+		Node<K, V> next = r1.child;
 		if (next != null)
 			next.prev = r2;
 		r1.child = r2;
@@ -269,18 +243,18 @@ public class HeapBinomial<E> extends HeapReferenceableAbstract<E> {
 		return r1;
 	}
 
-	private int meld(Node<E>[] rs2, int rs2len) {
-		Node<E>[] rs1 = roots;
-		Node<E>[] rs = rs1.length >= rs2.length ? rs1 : rs2;
+	private int meld(Node<K, V>[] rs2, int rs2len) {
+		Node<K, V>[] rs1 = roots;
+		Node<K, V>[] rs = rs1.length >= rs2.length ? rs1 : rs2;
 		int rs1len = rootsLen;
 		int rslen = rs1len > rs2len ? rs1len : rs2len;
 		int h2size = 0;
 
-		Node<E> carry = null;
+		Node<K, V> carry = null;
 		if (c == null) {
 			for (int i = 0; i < rslen; i++) {
-				Node<E> r1 = i < rs1len ? rs1[i] : null;
-				Node<E> r2 = i < rs2len ? rs2[i] : null;
+				Node<K, V> r1 = i < rs1len ? rs1[i] : null;
+				Node<K, V> r2 = i < rs2len ? rs2[i] : null;
 
 				if (r2 != null)
 					h2size += 1 << i;
@@ -289,7 +263,7 @@ public class HeapBinomial<E> extends HeapReferenceableAbstract<E> {
 					rs[i] = carry;
 					carry = (r1 != null && r2 != null) ? mergeTreesDefaultCmp(r1, r2) : null;
 				} else {
-					Node<E> r = r1 != null ? r1 : r2;
+					Node<K, V> r = r1 != null ? r1 : r2;
 					if (carry == null)
 						rs[i] = r;
 					else {
@@ -300,8 +274,8 @@ public class HeapBinomial<E> extends HeapReferenceableAbstract<E> {
 			}
 		} else {
 			for (int i = 0; i < rslen; i++) {
-				Node<E> r1 = i < rs1len ? rs1[i] : null;
-				Node<E> r2 = i < rs2len ? rs2[i] : null;
+				Node<K, V> r1 = i < rs1len ? rs1[i] : null;
+				Node<K, V> r2 = i < rs2len ? rs2[i] : null;
 
 				if (r2 != null)
 					h2size += 1 << i;
@@ -310,7 +284,7 @@ public class HeapBinomial<E> extends HeapReferenceableAbstract<E> {
 					rs[i] = carry;
 					carry = (r1 != null && r2 != null) ? mergeTreesCustomCmp(r1, r2) : null;
 				} else {
-					Node<E> r = r1 != null ? r1 : r2;
+					Node<K, V> r = r1 != null ? r1 : r2;
 					if (carry == null)
 						rs[i] = r;
 					else {
@@ -332,110 +306,121 @@ public class HeapBinomial<E> extends HeapReferenceableAbstract<E> {
 	}
 
 	@Override
-	public void meld(Heap<? extends E> heap) {
+	public void meld(HeapReferenceable<? extends K, ? extends V> heap) {
 		makeSureNoMeldWithSelf(heap);
 		makeSureMeldWithSameImpl(HeapBinomial.class, heap);
 		makeSureEqualComparatorBeforeMeld(heap);
 
 		@SuppressWarnings("unchecked")
-		HeapBinomial<E> h = (HeapBinomial<E>) heap;
+		HeapBinomial<K, V> h = (HeapBinomial<K, V>) heap;
 		size += meld(h.roots, h.rootsLen);
 	}
 
 	@Override
-	public HeapReference<E> findMinRef() {
+	public HeapReference<K, V> findMin() {
 		if (isEmpty())
 			throw new IllegalStateException();
-		Node<E>[] rs = roots;
+		Node<K, V>[] rs = roots;
 		int rsLen = rootsLen;
-		Node<E> min = null;
+		Node<K, V> min = null;
 
 		if (c == null) {
 			for (int i = 0; i < rsLen; i++)
-				if (rs[i] != null && (min == null || Utils.cmpDefault(min.value, rs[i].value) > 0))
+				if (rs[i] != null && (min == null || Utils.cmpDefault(min.key, rs[i].key) > 0))
 					min = rs[i];
 		} else {
 			for (int i = 0; i < rsLen; i++)
-				if (rs[i] != null && (min == null || c.compare(min.value, rs[i].value) > 0))
+				if (rs[i] != null && (min == null || c.compare(min.key, rs[i].key) > 0))
 					min = rs[i];
 		}
 		return min;
 	}
 
 	@SuppressWarnings("unchecked")
-	private static <E> Node<E>[] newArr(int n) {
+	private static <K, V> Node<K, V>[] newArr(int n) {
 		return new Node[n];
 	}
 
-	private static class Node<E> implements HeapReference<E>, TreeNode<Node<E>> {
+	private static class Node<K, V> implements HeapReference<K, V>, TreeNode<Node<K, V>> {
 
-		Node<E> parent;
-		Node<E> next;
-		Node<E> prev;
-		Node<E> child;
-		E value;
+		Node<K, V> parent;
+		Node<K, V> next;
+		Node<K, V> prev;
+		Node<K, V> child;
+		K key;
+		V value;
 
-		Node(E v) {
+		Node(K key) {
 			parent = null;
 			next = null;
 			prev = null;
 			child = null;
-			value = v;
+			this.key = key;
 		}
 
 		@Override
-		public E get() {
+		public K key() {
+			return key;
+		}
+
+		@Override
+		public V value() {
 			return value;
 		}
 
 		@Override
-		public Node<E> parent() {
+		public void setValue(V val) {
+			value = val;
+		}
+
+		@Override
+		public Node<K, V> parent() {
 			return parent;
 		}
 
 		@Override
-		public Node<E> next() {
+		public Node<K, V> next() {
 			return next;
 		}
 
 		@Override
-		public Node<E> prev() {
+		public Node<K, V> prev() {
 			return prev;
 		}
 
 		@Override
-		public Node<E> child() {
+		public Node<K, V> child() {
 			return child;
 		}
 
 		@Override
-		public void setParent(Node<E> x) {
+		public void setParent(Node<K, V> x) {
 			parent = x;
 		}
 
 		@Override
-		public void setNext(Node<E> x) {
+		public void setNext(Node<K, V> x) {
 			next = x;
 		}
 
 		@Override
-		public void setPrev(Node<E> x) {
+		public void setPrev(Node<K, V> x) {
 			prev = x;
 		}
 
 		@Override
-		public void setChild(Node<E> x) {
+		public void setChild(Node<K, V> x) {
 			child = x;
 		}
 
 		@Override
 		public String toString() {
-			return "{" + value + "}";
+			return "{" + key + ":" + value + "}";
 		}
 
 	}
 
-	private class Itr extends Trees.PreOrderIter<Node<E>> {
+	private class Itr extends Trees.PreOrderIter<Node<K, V>> {
 
 		private int nextRootIdx;
 

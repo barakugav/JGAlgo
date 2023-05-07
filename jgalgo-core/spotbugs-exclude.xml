@@ -5,24 +5,6 @@
     <Bug pattern="SE_COMPARATOR_SHOULD_BE_SERIALIZABLE" />
   </Match>
   <Match>
-    <!-- Heap element in A* implementation is only used in a heap, in which the compareTo() method
-    is used and the equals() is not -->
-    <Class name="com.jgalgo.AStar$HeapElm" />
-    <Bug pattern="EQ_COMPARETO_USE_OBJECT_EQUALS" />
-  </Match>
-  <Match>
-    <!-- Heap element in Dijkstra implementation is only used in a heap, in which the
-    compareTo() method is used and the equals() is not -->
-    <Class name="com.jgalgo.SSSPDijkstra$WorkerDouble$HeapElm" />
-    <Bug pattern="EQ_COMPARETO_USE_OBJECT_EQUALS" />
-  </Match>
-  <Match>
-    <!-- Heap element in Dijkstra implementation is only used in a heap, in which the
-    compareTo() method is used and the equals() is not -->
-    <Class name="com.jgalgo.SSSPDijkstra$WorkerInt$HeapElm" />
-    <Bug pattern="EQ_COMPARETO_USE_OBJECT_EQUALS" />
-  </Match>
-  <Match>
     <!-- Heap element in DSatur coloring implementation is only used in a heap, in which the
     compareTo() method is used and the equals() is not -->
     <Class name="com.jgalgo.ColoringDSaturHeap$HeapElm" />
@@ -98,8 +80,20 @@
   <Match>
     <!-- The return value is reference to the minimum root node, and its desire to expose it -->
     <Class name="com.jgalgo.HeapFibonacci" />
-    <Method name="findMinRef" />
+    <Method name="findMin" />
     <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <!-- The return value is reference to the root node, and its desire to expose it -->
+    <Class name="com.jgalgo.HeapPairing" />
+    <Method name="findMin" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <!-- the provided reference is already internal object -->
+    <Class name="com.jgalgo.HeapPairing" />
+    <Method name="remove" />
+    <Bug pattern="EI_EXPOSE_REP2" />
   </Match>
   <Match>
     <!-- should be fine -->

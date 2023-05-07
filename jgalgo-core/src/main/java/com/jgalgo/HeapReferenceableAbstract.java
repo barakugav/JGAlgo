@@ -16,53 +16,70 @@
 
 package com.jgalgo;
 
+import java.util.AbstractCollection;
 import java.util.Comparator;
-import java.util.Iterator;
+import java.util.Objects;
 
-abstract class HeapReferenceableAbstract<E> extends HeapAbstract<E> implements HeapReferenceable<E> {
+abstract class HeapReferenceableAbstract<K, V> extends AbstractCollection<HeapReference<K, V>>
+		implements HeapReferenceable<K, V> {
 
-	HeapReferenceableAbstract(Comparator<? super E> c) {
-		super(c);
+	final Comparator<? super K> c;
+
+	HeapReferenceableAbstract(Comparator<? super K> c) {
+		this.c = c;
 	}
 
 	@Override
-	public Iterator<E> iterator() {
-		return HeapReferenceable.super.iterator();
+	public Comparator<? super K> comparator() {
+		return c;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean contains(Object o) {
-		return findRef((E) o) != null;
+		if (!(o instanceof HeapReference<?, ?>))
+			return false;
+		return o == find(((HeapReference<K, ?>) o).key());
 	}
 
-	@Override
-	public E findMin() {
-		return findMinRef().get();
-	}
-
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean remove(Object o) {
-		@SuppressWarnings("unchecked")
-		HeapReference<E> ref = findRef((E) o);
-		if (ref == null)
-			return false;
-		removeRef(ref);
+		remove((HeapReference<K, V>) o);
 		return true;
 	}
 
 	@Override
-	public E extractMin() {
-		HeapReference<E> min = findMinRef();
-		E val = min.get();
-		removeRef(min);
-		return val;
+	public HeapReference<K, V> extractMin() {
+		HeapReference<K, V> min = findMin();
+		remove(min);
+		return min;
 	}
 
-	@Override
-	public void meld(Heap<? extends E> heap) {
-		/* We can't meld using addAll without invalidating the nodes references */
-		throw new UnsupportedOperationException();
+	int compare(K k1, K k2) {
+		return c == null ? Utils.cmpDefault(k1, k2) : c.compare(k1, k2);
+	}
+
+	void makeSureDecreaseKeyIsSmaller(K oldKey, K newKey) {
+		if (compare(oldKey, newKey) < 0)
+			throw new IllegalArgumentException("New key is greater than existing one");
+	}
+
+	void makeSureNoMeldWithSelf(HeapReferenceable<? extends K, ? extends V> other) {
+		if (other == this)
+			throw new IllegalArgumentException("A heap can't meld with itself");
+	}
+
+	@SuppressWarnings("rawtypes")
+	void makeSureMeldWithSameImpl(Class<? extends HeapReferenceable> impl,
+			HeapReferenceable<? extends K, ? extends V> other) {
+		if (!impl.isAssignableFrom(other.getClass()))
+			throw new IllegalArgumentException("Can't meld heaps with different implementations");
+	}
+
+	void makeSureEqualComparatorBeforeMeld(HeapReferenceable<? extends K, ? extends V> other) {
+		if (!Objects.equals(comparator(), other.comparator()))
+			throw new IllegalArgumentException("Can't meld, heaps have different comparators");
 	}
 
 }

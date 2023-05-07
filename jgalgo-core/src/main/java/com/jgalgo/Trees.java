@@ -188,15 +188,15 @@ public class Trees {
 		} while (!stack.isEmpty());
 	}
 
-	static class PreOrderIter<N extends TreeNode<N>> implements Iterator<N> {
+	static class PreOrderIter<Node extends TreeNode<Node>> implements Iterator<Node> {
 
-		private N p;
+		private Node p;
 
-		PreOrderIter(N p) {
+		PreOrderIter(Node p) {
 			reset(p);
 		}
 
-		void reset(N p) {
+		void reset(Node p) {
 			this.p = p;
 		}
 
@@ -206,16 +206,16 @@ public class Trees {
 		}
 
 		@Override
-		public N next() {
+		public Node next() {
 			if (!hasNext())
 				throw new NoSuchElementException();
-			final N ret = p;
+			final Node ret = p;
 
-			N next;
+			Node next;
 			if ((next = ret.child()) != null) {
 				p = next;
 			} else {
-				N p0 = ret;
+				Node p0 = ret;
 				do {
 					if ((next = p0.next()) != null) {
 						p0 = next;

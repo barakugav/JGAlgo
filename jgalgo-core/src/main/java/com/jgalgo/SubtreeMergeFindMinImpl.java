@@ -31,7 +31,7 @@ public class SubtreeMergeFindMinImpl<E> implements SubtreeMergeFindMin<E> {
 
 	private NodeImpl<E>[] nodes;
 	private final UnionFind uf;
-	private final HeapReferenceable<SubTree<E>> heap;
+	private final HeapReferenceable<SubTree<E>, Void> heap;
 	private final LCADynamic lca;
 
 	private final Comparator<? super E> weightCmp;
@@ -135,9 +135,9 @@ public class SubtreeMergeFindMinImpl<E> implements SubtreeMergeFindMin<E> {
 		U.edges = Arrays.copyOf(U.edges, maxSet);
 		Arrays.fill(U.edges, null);
 		if (U.heapRef != null)
-			heap.removeRef(U.heapRef);
+			heap.remove(U.heapRef);
 		if (V.heapRef != null)
-			heap.removeRef(V.heapRef);
+			heap.remove(V.heapRef);
 		U.heapRef = V.heapRef = null;
 		U.minEdge = V.minEdge = null;
 
@@ -306,7 +306,7 @@ public class SubtreeMergeFindMinImpl<E> implements SubtreeMergeFindMin<E> {
 
 	@Override
 	public MinEdge<E> findMinNonTreeEdge() {
-		return heap.isEmpty() ? null : heap.findMin().minEdge.data;
+		return heap.isEmpty() ? null : heap.findMin().key().minEdge.data;
 	}
 
 	@Override
@@ -379,7 +379,7 @@ public class SubtreeMergeFindMinImpl<E> implements SubtreeMergeFindMin<E> {
 
 		EdgeList<E>[] edges;
 		EdgeNode<E> minEdge;
-		HeapReference<SubTree<E>> heapRef;
+		HeapReference<SubTree<E>, Void> heapRef;
 
 		/* field used to detect redundant edges during merge */
 		EdgeNode<E> inEdge;

@@ -16,50 +16,60 @@
 
 package com.jgalgo;
 
+import java.util.Comparator;
 import org.junit.jupiter.api.Test;
 
 public class HeapPairingTest extends TestBase {
 
+	private static Heap.Builder heapBuilder() {
+		return new Heap.Builder() {
+			@Override
+			public <E> Heap<E> build(Comparator<? super E> cmp) {
+				return new HeapPairing<E, Object>(cmp).asHeap();
+			}
+		};
+	}
+
 	@Test
 	public void testRandOpsDefaultCompare() {
 		final long seed = 0x7a98aed671bf0c81L;
-		HeapTestUtils.testRandOpsDefaultCompare(HeapPairing::new, seed);
+		HeapTestUtils.testRandOpsDefaultCompare(heapBuilder(), seed);
 	}
 
 	@Test
 	public void testRandOpsCustomCompare() {
 		final long seed = 0x3980b84440c200feL;
-		HeapTestUtils.testRandOpsCustomCompare(HeapPairing::new, seed);
+		HeapTestUtils.testRandOpsCustomCompare(heapBuilder(), seed);
 	}
 
 	@Test
 	public void testRandOpsAfterManyInserts() {
 		final long seed = 0x25467ce9958980c1L;
-		HeapTestUtils.testRandOpsAfterManyInserts(HeapPairing::new, seed);
+		HeapTestUtils.testRandOpsAfterManyInserts(heapBuilder(), seed);
 	}
 
 	@Test
 	public void testMeldDefaultCompare() {
 		final long seed = 0xc3cd155dfa9d97f6L;
-		HeapTestUtils.testMeldDefaultCompare(HeapPairing::new, seed);
+		HeapTestUtils.testMeldDefaultCompare(heapBuilder(), seed);
 	}
 
 	@Test
 	public void testMeldCustomCompare() {
 		final long seed = 0x5d201c45681ae903L;
-		HeapTestUtils.testMeldCustomCompare(HeapPairing::new, seed);
+		HeapTestUtils.testMeldCustomCompare(heapBuilder(), seed);
 	}
 
 	@Test
 	public void testDecreaseKeyDefaultCompare() {
 		final long seed = 0x90a80620c3ef1a43L;
-		HeapTestUtils.testDecreaseKeyDefaultCompare(HeapPairing::new, seed);
+		HeapReferenceableTestUtils.testDecreaseKeyDefaultCompare(HeapPairing::new, seed);
 	}
 
 	@Test
 	public void testDecreaseKeyCustomCompare() {
 		final long seed = 0x4204a31e91374f21L;
-		HeapTestUtils.testDecreaseKeyCustomCompare(HeapPairing::new, seed);
+		HeapReferenceableTestUtils.testDecreaseKeyCustomCompare(HeapPairing::new, seed);
 	}
 
 }

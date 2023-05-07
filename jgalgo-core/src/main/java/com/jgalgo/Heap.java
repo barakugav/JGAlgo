@@ -25,8 +25,7 @@ import java.util.Comparator;
  * Most implementation support insertion of new elements and finding or extracting the minimum in logarithmic or
  * constant time.
  * <p>
- * Some implementation support a direct access to the element in the heap via {@link HeapReference}, which allow more
- * operations like {@code decreaseKey()}.
+ * If {@code decreaseKey()} or fast {@code remove()} operations are required, consider using {@link HeapReferenceable}.
  *
  * <pre> {@code
  * Heap<Integer> h = Heap.newBuilder().build();
@@ -57,11 +56,9 @@ public interface Heap<E> extends Collection<E> {
 	/**
 	 * Insert a new element to the heap.
 	 *
-	 * @param  e new element
-	 * @return   reference to the new element if the implementation support references to its elements or null if it
-	 *           doesn't
+	 * @param e new element
 	 */
-	public HeapReference<E> insert(E e);
+	public void insert(E e);
 
 	/**
 	 * Find the minimum element in the heap.
@@ -73,6 +70,8 @@ public interface Heap<E> extends Collection<E> {
 
 	/**
 	 * Extract the minimum element in the heap.
+	 * <p>
+	 * This method find and <b>remove</b> the minimum element.
 	 *
 	 * @return                       the minimum element in the heap
 	 * @throws IllegalStateException if the heap is empty

@@ -96,10 +96,10 @@ public class MSTFredmanTarjan implements MST {
 		int[] treeVertices = new int[n]; // stack of super vertices in current built tree
 
 		// heap of edges going out of the current tree, one edge in per super vertex
-		HeapReferenceable<Integer> heap = heapBuilder.build(w);
+		HeapReferenceable<Integer, Void> heap = heapBuilder.build(w);
 		// (super vertex -> heap element) for fast decreaseKey
 		@SuppressWarnings("unchecked")
-		HeapReference<Integer>[] vHeapElm = new HeapReference[n];
+		HeapReference<Integer, Void>[] vHeapElm = new HeapReference[n];
 
 		IntCollection mst = new IntArrayList(n - 1);
 		for (int niNext;; ni = niNext) {
@@ -131,12 +131,12 @@ public class MSTFredmanTarjan implements MST {
 							if (vTree[v] == r)
 								continue;
 
-							HeapReference<Integer> heapElm = vHeapElm[v];
+							HeapReference<Integer, Void> heapElm = vHeapElm[v];
 							if (heapElm == null) {
 								heapElm = vHeapElm[v] = heap.insert(Integer.valueOf(e));
 								if (heap.size() > k)
 									break treeLoop;
-							} else if (w.compare(e, heapElm.get().intValue()) < 0)
+							} else if (w.compare(e, heapElm.key().intValue()) < 0)
 								heap.decreaseKey(heapElm, Integer.valueOf(e));
 						}
 					}
@@ -147,7 +147,7 @@ public class MSTFredmanTarjan implements MST {
 						if (heap.isEmpty())
 							// reached all vertices from current root, continue to next tree
 							break treeLoop;
-						e = heap.extractMin().intValue();
+						e = heap.extractMin().key().intValue();
 
 						v = V[g.edgeSource(e)];
 						if ((vt = vTree[v]) != r)

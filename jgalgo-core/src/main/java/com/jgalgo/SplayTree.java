@@ -16,10 +16,8 @@
 
 package com.jgalgo;
 
-import java.util.AbstractSet;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.Set;
 
 /**
  * Splay binary search tree.
@@ -32,68 +30,43 @@ import java.util.Set;
  * <p>
  * Based on 'Self-Adjusting Binary Search Trees' by Sleator and Tarjan (1985).
  *
- * @see    <a href="https://en.wikipedia.org/wiki/Splay_tree">Wikipedia</a>
- * @author Barak Ugav
+ * @param  <K> the keys type
+ * @param  <V> the values type
+ * @see        <a href="https://en.wikipedia.org/wiki/Splay_tree">Wikipedia</a>
+ * @author     Barak Ugav
  */
-public class SplayTree<E> extends BinarySearchTreeAbstract<E> {
+public class SplayTree<K, V> extends BinarySearchTreeAbstract<K, V> {
 
-	private NodeSized<E> root;
-	private final SplayImplWithSize<E> impl = new SplayImplWithSize<>();
-	private final Set<HeapReference<E>> refsSet;
+	private SplayBSTNode<K, V> root;
+	private final SplayImplWithSize<K, V> impl = new SplayImplWithSize<>();
 
 	/**
-	 * Constructs a new, empty splay tree, sorted according to the natural ordering of its elements.
+	 * Constructs a new, empty splay tree, ordered according to the natural ordering of its keys.
 	 * <p>
-	 * All elements inserted into the tree must implement the {@link Comparable} interface. Furthermore, all such
-	 * elements must be <i>mutually comparable</i>: {@code e1.compareTo(e2)} must not throw a {@code ClassCastException}
-	 * for any elements {@code e1} and {@code e2} in the tree. If the user attempts to insert an element to the tree
-	 * that violates this constraint (for example, the user attempts to insert a string element to a tree whose elements
-	 * are integers), the {@code insert} call will throw a {@code ClassCastException}.
+	 * All keys inserted into the tree must implement the {@link Comparable} interface. Furthermore, all such keys must
+	 * be <i>mutually comparable</i>: {@code k1.compareTo(k2)} must not throw a {@code ClassCastException} for any keys
+	 * {@code k1} and {@code k2} in the tree. If the user attempts to insert a key to the tree that violates this
+	 * constraint (for example, the user attempts to insert a string element to a tree whose keys are integers), the
+	 * {@code insert} call will throw a {@code ClassCastException}.
 	 */
 	public SplayTree() {
 		this(null);
 	}
 
 	/**
-	 * Constructs a new, empty splay tree, sorted according to the specified comparator.
+	 * Constructs a new, empty splay tree, with keys ordered according to the specified comparator.
 	 * <p>
-	 * All elements inserted into the tree must be <i>mutually comparable</i> by the specified comparator:
-	 * {@code comparator.compare(e1, e2)} must not throw a {@code ClassCastException} for any elements {@code e1} and
-	 * {@code e2} in the tree. If the user attempts to insert an element to the tree that violates this constraint, the
+	 * All keys inserted into the tree must be <i>mutually comparable</i> by the specified comparator:
+	 * {@code comparator.compare(k1, k2)} must not throw a {@code ClassCastException} for any keys {@code k1} and
+	 * {@code k2} in the tree. If the user attempts to insert a key to the tree that violates this constraint, the
 	 * {@code insert} call will throw a {@code ClassCastException}.
 	 *
 	 * @param comparator the comparator that will be used to order this tree. If {@code null}, the
-	 *                       {@linkplain Comparable natural ordering} of the elements will be used.
+	 *                       {@linkplain Comparable natural ordering} of the keys will be used.
 	 */
-	public SplayTree(Comparator<? super E> comparator) {
+	public SplayTree(Comparator<? super K> comparator) {
 		super(comparator);
 		root = null;
-
-		refsSet = new AbstractSet<>() {
-
-			@Override
-			public int size() {
-				return SplayTree.this.size();
-			}
-
-			@SuppressWarnings({ "unchecked", "rawtypes" })
-			@Override
-			public Iterator<HeapReference<E>> iterator() {
-				return (Iterator) new BinarySearchTrees.BSTIterator<>(root);
-			}
-
-			@SuppressWarnings("unchecked")
-			@Override
-			public boolean remove(Object o) {
-				SplayTree.this.removeRef((HeapReference<E>) o);
-				return true;
-			}
-
-			@Override
-			public void clear() {
-				SplayTree.this.clear();
-			}
-		};
 	}
 
 	@Override
@@ -101,17 +74,18 @@ public class SplayTree<E> extends BinarySearchTreeAbstract<E> {
 		return root != null ? root.size : 0;
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public Set<HeapReference<E>> refsSet() {
-		return refsSet;
+	public Iterator<HeapReference<K, V>> iterator() {
+		return (Iterator) new BinarySearchTrees.BSTIterator<>(root);
 	}
 
 	@Override
-	public HeapReference<E> insert(E e) {
-		return insertNode(new NodeSized<>(e));
+	public HeapReference<K, V> insert(K key) {
+		return insertNode(new SplayBSTNode<>(key));
 	}
 
-	private NodeSized<E> insertNode(NodeSized<E> n) {
+	private SplayBSTNode<K, V> insertNode(SplayBSTNode<K, V> n) {
 		assert n.parent == null;
 		assert n.left == null;
 		assert n.right == null;
@@ -119,20 +93,20 @@ public class SplayTree<E> extends BinarySearchTreeAbstract<E> {
 			return root = n;
 
 		BinarySearchTrees.insert(root, c, n);
-		for (NodeSized<E> p = n.parent; p != null; p = p.parent)
+		for (SplayBSTNode<K, V> p = n.parent; p != null; p = p.parent)
 			p.size++;
 		return root = impl.splay(n);
 	}
 
 	@Override
-	public void removeRef(HeapReference<E> ref) {
-		NodeSized<E> n = (NodeSized<E>) ref;
+	public void remove(HeapReference<K, V> ref) {
+		SplayBSTNode<K, V> n = (SplayBSTNode<K, V>) ref;
 
 		/* If the node has two children, swap with successor */
 		if (n.hasLeftChild() && n.hasRightChild())
 			swap(n, BinarySearchTrees.getSuccessor(n));
 
-		NodeSized<E> child;
+		SplayBSTNode<K, V> child;
 		if (!n.hasLeftChild()) {
 			replace(n, child = n.right);
 		} else {
@@ -141,15 +115,15 @@ public class SplayTree<E> extends BinarySearchTreeAbstract<E> {
 		}
 
 		/* Decrease ancestors size by 1 */
-		for (NodeSized<E> p = n.parent; p != null; p = p.parent)
+		for (SplayBSTNode<K, V> p = n.parent; p != null; p = p.parent)
 			p.size--;
 
-		NodeSized<E> parent = n.parent;
-		n.clear();
+		SplayBSTNode<K, V> parent = n.parent;
+		n.clearWithoutUserData();
 		root = impl.splay(child != null ? child : parent);
 	}
 
-	private void replace(NodeSized<E> u, NodeSized<E> v) {
+	private void replace(SplayBSTNode<K, V> u, SplayBSTNode<K, V> v) {
 		/* replaces u with v */
 		if (u.parent != null) {
 			if (u.isLeftChild()) {
@@ -163,7 +137,7 @@ public class SplayTree<E> extends BinarySearchTreeAbstract<E> {
 			v.parent = u.parent;
 	}
 
-	private void swap(NodeSized<E> n1, NodeSized<E> n2) {
+	private void swap(SplayBSTNode<K, V> n1, SplayBSTNode<K, V> n2) {
 		BinarySearchTrees.swap(n1, n2);
 		if (n1 == root)
 			root = n2;
@@ -175,84 +149,75 @@ public class SplayTree<E> extends BinarySearchTreeAbstract<E> {
 	}
 
 	@Override
-	public void decreaseKey(HeapReference<E> ref, E e) {
-		NodeSized<E> n = (NodeSized<E>) ref;
-		makeSureDecreaseKeyIsSmaller(n.data, e);
-		removeRef(n);
-		n.data = e;
+	public void decreaseKey(HeapReference<K, V> ref, K newKey) {
+		SplayBSTNode<K, V> n = (SplayBSTNode<K, V>) ref;
+		makeSureDecreaseKeyIsSmaller(n.key, newKey);
+		remove(n);
+		n.key = newKey;
 		insertNode(n);
 	}
 
 	@Override
-	public HeapReference<E> findRef(E e) {
-		NodeSized<E> n = BinarySearchTrees.find(root, c, e);
+	public HeapReference<K, V> find(K key) {
+		SplayBSTNode<K, V> n = BinarySearchTrees.find(root, c, key);
 		return n == null ? null : (root = impl.splay(n));
 	}
 
 	@Override
-	public HeapReference<E> findMinRef() {
+	public HeapReference<K, V> findMin() {
 		checkTreeNotEmpty();
 		return root = impl.splay(BinarySearchTrees.findMin(root));
 	}
 
 	@Override
-	public HeapReference<E> findMaxRef() {
+	public HeapReference<K, V> findMax() {
 		checkTreeNotEmpty();
 		return root = impl.splay(BinarySearchTrees.findMax(root));
 	}
 
 	@Override
-	public HeapReference<E> findOrSmaller(E e) {
-		NodeSized<E> n = BinarySearchTrees.findOrSmaller(root, c, e);
+	public HeapReference<K, V> findOrSmaller(K key) {
+		SplayBSTNode<K, V> n = BinarySearchTrees.findOrSmaller(root, c, key);
 		return n == null ? null : (root = impl.splay(n));
 	}
 
 	@Override
-	public HeapReference<E> findOrGreater(E e) {
-		NodeSized<E> n = BinarySearchTrees.findOrGreater(root, c, e);
+	public HeapReference<K, V> findOrGreater(K key) {
+		SplayBSTNode<K, V> n = BinarySearchTrees.findOrGreater(root, c, key);
 		return n == null ? null : (root = impl.splay(n));
 	}
 
 	@Override
-	public HeapReference<E> findSmaller(E e) {
-		NodeSized<E> n = BinarySearchTrees.findSmaller(root, c, e);
+	public HeapReference<K, V> findSmaller(K key) {
+		SplayBSTNode<K, V> n = BinarySearchTrees.findSmaller(root, c, key);
 		return n == null ? null : (root = impl.splay(n));
 	}
 
 	@Override
-	public HeapReference<E> findGreater(E e) {
-		NodeSized<E> n = BinarySearchTrees.findGreater(root, c, e);
+	public HeapReference<K, V> findGreater(K key) {
+		SplayBSTNode<K, V> n = BinarySearchTrees.findGreater(root, c, key);
 		return n == null ? null : (root = impl.splay(n));
 	}
 
 	@Override
-	public HeapReference<E> getPredecessor(HeapReference<E> ref) {
-		NodeSized<E> n = BinarySearchTrees.getPredecessor((NodeSized<E>) ref);
+	public HeapReference<K, V> getPredecessor(HeapReference<K, V> ref) {
+		SplayBSTNode<K, V> n = BinarySearchTrees.getPredecessor((SplayBSTNode<K, V>) ref);
 		return n == null ? null : (root = impl.splay(n));
 	}
 
 	@Override
-	public HeapReference<E> getSuccessor(HeapReference<E> ref) {
-		NodeSized<E> n = BinarySearchTrees.getSuccessor((NodeSized<E>) ref);
+	public HeapReference<K, V> getSuccessor(HeapReference<K, V> ref) {
+		SplayBSTNode<K, V> n = BinarySearchTrees.getSuccessor((SplayBSTNode<K, V>) ref);
 		return n == null ? null : (root = impl.splay(n));
-	}
-
-	@Override
-	public E extractMin() {
-		checkTreeNotEmpty();
-		NodeSized<E> n = BinarySearchTrees.findMin(root);
-		E ret = n.data;
-		removeRef(n);
-		return ret;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void meld(Heap<? extends E> heap) {
+	public void meld(HeapReferenceable<? extends K, ? extends V> heap) {
 		makeSureNoMeldWithSelf(heap);
 		makeSureMeldWithSameImpl(SplayTree.class, heap);
 		makeSureEqualComparatorBeforeMeld(heap);
-		SplayTree<E> h = (SplayTree<E>) heap;
+		SplayTree<K, V> h = (SplayTree<K, V>) heap;
 		if (h.isEmpty())
 			return;
 		if (isEmpty()) {
@@ -261,17 +226,17 @@ public class SplayTree<E> extends BinarySearchTreeAbstract<E> {
 			return;
 		}
 
-		E min1, max1, min2, max2;
-		if (compare(max1 = findMax(), min2 = h.findMin()) <= 0) {
+		K min1, max1, min2, max2;
+		if (compare(max1 = findMax().key(), min2 = h.findMin().key()) <= 0) {
 			/* all elements in this tree are <= than all elements in other tree */
 			root = meld(this, h);
-		} else if (compare(min1 = findMin(), max2 = h.findMax()) >= 0) {
+		} else if (compare(min1 = findMin().key(), max2 = h.findMax().key()) >= 0) {
 			/* all elements in this tree are >= than all elements in other tree */
 			root = meld(h, this);
 		} else {
 			int minCmp = compare(min1, min2);
 			int maxCmp = compare(max1, max2);
-			SplayTree<E> hLow = null, hHigh = null;
+			SplayTree<K, V> hLow = null, hHigh = null;
 
 			if (minCmp < 0) {
 				hLow = this.splitSmaller(min2);
@@ -287,7 +252,7 @@ public class SplayTree<E> extends BinarySearchTreeAbstract<E> {
 			if (h.root != null) {
 				/* there is nothing smarter to do than 'addAll' for the shared range */
 				/* We use 'insertNode' instead of 'insert' to maintain user references to nodes */
-				for (NodeSized<E> node = h.root;;) {
+				for (SplayBSTNode<K, V> node = h.root;;) {
 					for (;;) {
 						while (node.hasLeftChild())
 							node = node.left;
@@ -296,7 +261,7 @@ public class SplayTree<E> extends BinarySearchTreeAbstract<E> {
 						node = node.right;
 					}
 					node.size = 1;
-					NodeSized<E> parent = node.parent;
+					SplayBSTNode<K, V> parent = node.parent;
 					if (parent == null) {
 						insertNode(node);
 						break;
@@ -315,22 +280,22 @@ public class SplayTree<E> extends BinarySearchTreeAbstract<E> {
 			}
 
 			if (hLow != null) {
-				assert compare(hLow.findMax(), findMin()) < 0;
+				assert compare(hLow.findMax().key(), findMin().key()) < 0;
 				root = meld(hLow, this);
 			}
 			if (hHigh != null) {
-				assert compare(hHigh.findMin(), findMax()) > 0;
+				assert compare(hHigh.findMin().key(), findMax().key()) > 0;
 				root = meld(this, hHigh);
 			}
 		}
 		h.root = null;
 	}
 
-	private static <E> NodeSized<E> meld(SplayTree<E> t1, SplayTree<E> t2) {
+	private static <K, V> SplayBSTNode<K, V> meld(SplayTree<K, V> t1, SplayTree<K, V> t2) {
 		/* Assume all nodes in t1 are smaller than all nodes in t2 */
 
 		/* Splay t1 max and t2 min */
-		NodeSized<E> n1 = (NodeSized<E>) t1.findMaxRef();
+		SplayBSTNode<K, V> n1 = (SplayBSTNode<K, V>) t1.findMax();
 		assert n1.isRoot();
 		assert !n1.hasRightChild();
 
@@ -341,9 +306,9 @@ public class SplayTree<E> extends BinarySearchTreeAbstract<E> {
 	}
 
 	@Override
-	public SplayTree<E> splitSmaller(E e) {
-		SplayTree<E> newTree = new SplayTree<>(c);
-		NodeSized<E> pred = (NodeSized<E>) findSmaller(e);
+	public SplayTree<K, V> splitSmaller(K key) {
+		SplayTree<K, V> newTree = new SplayTree<>(c);
+		SplayBSTNode<K, V> pred = (SplayBSTNode<K, V>) findSmaller(key);
 		if (pred == null)
 			return newTree;
 		assert pred.isRoot();
@@ -359,18 +324,18 @@ public class SplayTree<E> extends BinarySearchTreeAbstract<E> {
 	}
 
 	@Override
-	public SplayTree<E> splitGreater(E e) {
-		NodeSized<E> succ = (NodeSized<E>) findGreater(e);
+	public SplayTree<K, V> splitGreater(K key) {
+		SplayBSTNode<K, V> succ = (SplayBSTNode<K, V>) findGreater(key);
 		if (succ == null)
 			return new SplayTree<>(c);
 		return split(succ);
 	}
 
 	@Override
-	public SplayTree<E> split(HeapReference<E> ref) {
-		SplayTree<E> newTree = new SplayTree<>(c);
+	public SplayTree<K, V> split(HeapReference<K, V> ref) {
+		SplayTree<K, V> newTree = new SplayTree<>(c);
 
-		NodeSized<E> n = impl.splay((NodeSized<E>) ref);
+		SplayBSTNode<K, V> n = impl.splay((SplayBSTNode<K, V>) ref);
 		assert n.isRoot();
 
 		if ((root = n.left) != null) {
@@ -391,20 +356,19 @@ public class SplayTree<E> extends BinarySearchTreeAbstract<E> {
 		root = null;
 	}
 
-	static class Node<E, N extends Node<E, N>> extends BinarySearchTrees.Node<E, N> implements HeapReference<E> {
+	static class BaseNode<K, N extends BaseNode<K, N>> extends BinarySearchTrees.INode<K, N> {
 
-		Node(E e) {
-			super(e);
+		BaseNode(K key) {
+			super(key);
 		}
 
-		@Override
-		public E get() {
-			return data;
+		public K key() {
+			return key;
 		}
 
 	}
 
-	static abstract class SplayImpl<E, N extends Node<E, N>> {
+	static abstract class SplayImpl<K, N extends BaseNode<K, N>> {
 
 		SplayImpl() {}
 
@@ -470,30 +434,47 @@ public class SplayTree<E> extends BinarySearchTreeAbstract<E> {
 
 	}
 
-	private static class NodeSized<E> extends Node<E, NodeSized<E>> {
+	private static class SplayBSTNode<K, V> extends BaseNode<K, SplayBSTNode<K, V>> implements HeapReference<K, V> {
 
 		int size;
 
-		NodeSized(E e) {
-			super(e);
+		private V value;
+
+		SplayBSTNode(K key) {
+			super(key);
 			size = 1;
 		}
 
 		@Override
-		void clear() {
-			super.clear();
+		public K key() {
+			return key;
+		}
+
+		@Override
+		public V value() {
+			return value;
+		}
+
+		@Override
+		public void setValue(V val) {
+			value = val;
+		}
+
+		@Override
+		void clearWithoutUserData() {
+			super.clearWithoutUserData();
 			size = 1;
 		}
 
 	}
 
-	private static class SplayImplWithSize<E> extends SplayImpl<E, NodeSized<E>> {
+	private static class SplayImplWithSize<K, V> extends SplayImpl<K, SplayBSTNode<K, V>> {
 
 		@Override
-		void beforeRotate(NodeSized<E> n) {
+		void beforeRotate(SplayBSTNode<K, V> n) {
 			super.beforeRotate(n);
 
-			NodeSized<E> parent = n.parent;
+			SplayBSTNode<K, V> parent = n.parent;
 			int parentOldSize = parent.size;
 
 			if (n.isLeftChild()) {

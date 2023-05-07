@@ -17,134 +17,13 @@
 package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.util.Collection;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
-
 import org.junit.jupiter.api.Test;
-
-import com.jgalgo.HeapTestUtils.TestMode;
+import com.jgalgo.HeapReferenceableTestUtils.TestMode;
 
 @SuppressWarnings("boxing")
 public class RedBlackTreeExtendedTest extends TestBase {
-
-	private static class HeapWrapper<E> implements Heap<E> {
-
-		private final Heap<E> h;
-
-		public HeapWrapper(Heap<E> heap) {
-			h = Objects.requireNonNull(heap);
-		}
-
-		@Override
-		public int size() {
-			return h.size();
-		}
-
-		@Override
-		public boolean isEmpty() {
-			return h.isEmpty();
-		}
-
-		@Override
-		public boolean contains(Object o) {
-			return h.contains(o);
-		}
-
-		@Override
-		public Iterator<E> iterator() {
-			return h.iterator();
-		}
-
-		@Override
-		public Object[] toArray() {
-			return h.toArray();
-		}
-
-		@Override
-		public <T> T[] toArray(T[] a) {
-			return h.toArray(a);
-		}
-
-		@Override
-		public boolean add(E e) {
-			return h.add(e);
-		}
-
-		@Override
-		public boolean remove(Object o) {
-			return h.remove(o);
-		}
-
-		@Override
-		public boolean containsAll(Collection<?> c) {
-			return h.containsAll(c);
-		}
-
-		@Override
-		public boolean addAll(Collection<? extends E> c) {
-			return h.addAll(c);
-		}
-
-		@Override
-		public boolean removeAll(Collection<?> c) {
-			return h.removeAll(c);
-		}
-
-		@Override
-		public boolean retainAll(Collection<?> c) {
-			return h.retainAll(c);
-		}
-
-		@Override
-		public void clear() {
-			h.clear();
-		}
-
-		@Override
-		public HeapReference<E> insert(E e) {
-			return h.insert(e);
-		}
-
-		@Override
-		public E findMin() {
-			return h.findMin();
-		}
-
-		@Override
-		public E extractMin() {
-			return h.extractMin();
-		}
-
-		@Override
-		public void meld(Heap<? extends E> other) {
-			h.meld(other);
-		}
-
-		@Override
-		public Comparator<? super E> comparator() {
-			return h.comparator();
-		}
-
-	}
-
-	private static class SizeValidatorTree<E> extends HeapWrapper<E> {
-
-		private SizeValidatorTree(RedBlackTree<E> tree, RedBlackTreeExtension.Size<E> sizeExt) {
-			super(tree);
-		}
-
-		@SuppressWarnings("unused")
-		static <E> SizeValidatorTree<E> newInstance(Comparator<? super E> c) {
-			RedBlackTreeExtension.Size<E> sizeExt = new RedBlackTreeExtension.Size<>();
-			RedBlackTree<E> tree = new RedBlackTreeExtended<>(c, List.of(sizeExt));
-			return new SizeValidatorTree<>(tree, sizeExt);
-		}
-
-	}
 
 	@Test
 	public void testExtensionSizeRandOps() {
@@ -156,16 +35,16 @@ public class RedBlackTreeExtendedTest extends TestBase {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 
-			RedBlackTreeExtension.Size<Integer> sizeExt = new RedBlackTreeExtension.Size<>();
-			RedBlackTree<Integer> tree = new RedBlackTreeExtended<>(compare, List.of(sizeExt));
+			RedBlackTreeExtension.Size<Integer, Void> sizeExt = new RedBlackTreeExtension.Size<>();
+			RedBlackTree<Integer, Void> tree = new RedBlackTreeExtended<>(compare, List.of(sizeExt));
 
-			HeapTestUtils.testHeap(tree, n, m, TestMode.Normal, false, compare, seedGen.nextSeed());
+			HeapReferenceableTestUtils.testHeap(tree, n, m, TestMode.Normal, false, compare, seedGen.nextSeed());
 
-			for (HeapReference<Integer> node : tree.refsSet()) {
+			for (HeapReference<Integer, Void> node : tree) {
 				int expectedSize = 0;
 
 				for (@SuppressWarnings("unused")
-				HeapReference<Integer> descendant : Utils.iterable(tree.experimental_subTreeIterator(node)))
+				HeapReference<Integer, Void> descendant : Utils.iterable(tree.experimental_subTreeIterator(node)))
 					expectedSize++;
 
 				int actualSize = sizeExt.getSubTreeSize(node);
@@ -184,17 +63,17 @@ public class RedBlackTreeExtendedTest extends TestBase {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 
-			RedBlackTreeExtension.Min<Integer> minExt = new RedBlackTreeExtension.Min<>();
-			RedBlackTree<Integer> tree = new RedBlackTreeExtended<>(compare, List.of(minExt));
+			RedBlackTreeExtension.Min<Integer, Void> minExt = new RedBlackTreeExtension.Min<>();
+			RedBlackTree<Integer, Void> tree = new RedBlackTreeExtended<>(compare, List.of(minExt));
 
-			HeapTestUtils.testHeap(tree, n, m, TestMode.Normal, false, compare, seedGen.nextSeed());
+			HeapReferenceableTestUtils.testHeap(tree, n, m, TestMode.Normal, false, compare, seedGen.nextSeed());
 
-			for (HeapReference<Integer> node : tree.refsSet()) {
+			for (HeapReference<Integer, Void> node : tree) {
 				int expectedMin = Integer.MAX_VALUE;
-				for (HeapReference<Integer> descendant : Utils.iterable(tree.experimental_subTreeIterator(node)))
-					expectedMin = Math.min(expectedMin, descendant.get());
+				for (HeapReference<Integer, Void> descendant : Utils.iterable(tree.experimental_subTreeIterator(node)))
+					expectedMin = Math.min(expectedMin, descendant.key());
 
-				int actualMin = minExt.getSubTreeMin(node).get();
+				int actualMin = minExt.getSubTreeMin(node).key();
 				assertEquals(expectedMin, actualMin, "Min extension reported wrong value");
 			}
 		});
@@ -210,16 +89,16 @@ public class RedBlackTreeExtendedTest extends TestBase {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 
-			RedBlackTreeExtension.Max<Integer> maxExt = new RedBlackTreeExtension.Max<>();
-			RedBlackTree<Integer> tree = new RedBlackTreeExtended<>(compare, List.of(maxExt));
+			RedBlackTreeExtension.Max<Integer, Void> maxExt = new RedBlackTreeExtension.Max<>();
+			RedBlackTree<Integer, Void> tree = new RedBlackTreeExtended<>(compare, List.of(maxExt));
 
-			HeapTestUtils.testHeap(tree, n, m, TestMode.Normal, false, compare, seedGen.nextSeed());
-			for (HeapReference<Integer> node : tree.refsSet()) {
+			HeapReferenceableTestUtils.testHeap(tree, n, m, TestMode.Normal, false, compare, seedGen.nextSeed());
+			for (HeapReference<Integer, Void> node : tree) {
 				int expectedMax = Integer.MIN_VALUE;
-				for (HeapReference<Integer> descendant : Utils.iterable(tree.experimental_subTreeIterator(node)))
-					expectedMax = Math.max(expectedMax, descendant.get());
+				for (HeapReference<Integer, Void> descendant : Utils.iterable(tree.experimental_subTreeIterator(node)))
+					expectedMax = Math.max(expectedMax, descendant.key());
 
-				int actualMax = maxExt.getSubTreeMax(node).get();
+				int actualMax = maxExt.getSubTreeMax(node).key();
 				assertEquals(expectedMax, actualMax, "Max extension reported wrong value");
 			}
 		});

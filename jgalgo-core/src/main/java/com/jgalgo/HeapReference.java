@@ -19,23 +19,41 @@ package com.jgalgo;
 /**
  * A reference to an element in a {@link HeapReferenceable}.
  * <p>
- * When a new element is inserted to a referenceable heap using {@link HeapReferenceable#insert(Object)} a reference to
- * the element is returned. The reference object will valid as long as element is still in the heap. The reference may
- * be used to access the heap element directly using the {@link #get()} method, or for various operations such as
- * {@link HeapReferenceable#decreaseKey(HeapReference, Object)} or {@link HeapReferenceable#removeRef(HeapReference)}
- * which could be implemented efficiently given the reference, as the implementation doesn't need to search for the
- * element in the heap.
+ * When a new element is inserted to a referenceable heap using {@link HeapReferenceable#insert(Object, Object)} a
+ * reference to the element is returned. The reference object will be valid as long as element is still in the heap. The
+ * reference may be used to access the heap element's key and value directly using the {@link #key()} and
+ * {@link #value()}, or for various operations such as {@link HeapReferenceable#decreaseKey(HeapReference, Object)} or
+ * {@link HeapReferenceable#remove(HeapReference)} which could be implemented efficiently given the reference, as the
+ * implementation doesn't need to search for the element in the heap.
  *
- * @param  <E> the elements type
+ * @param  <K> the key type
+ * @param  <V> the value type
  * @see        HeapReferenceable
  * @author     Barak Ugav
  */
-public interface HeapReference<E> {
+public interface HeapReference<K, V> {
 
 	/**
-	 * Get the element this reference is associated with.
+	 * Get the key of this element.
+	 * <p>
+	 * There is no {@code setKey} method, but the key of an element can be changed (decrease only) by
+	 * {@link HeapReferenceable#decreaseKey}.
 	 *
-	 * @return the element value
+	 * @return the element's key
 	 */
-	public E get();
+	K key();
+
+	/**
+	 * Get the value of this element.
+	 *
+	 * @return the element's key
+	 */
+	V value();
+
+	/**
+	 * Set the value of this element.
+	 *
+	 * @param val new value for this element
+	 */
+	void setValue(V val);
 }

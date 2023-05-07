@@ -19,6 +19,7 @@ package com.jgalgo;
 import java.util.AbstractCollection;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.Objects;
 
 abstract class HeapAbstract<E> extends AbstractCollection<E> implements Heap<E> {
@@ -80,6 +81,75 @@ abstract class HeapAbstract<E> extends AbstractCollection<E> implements Heap<E> 
 	void makeSureEqualComparatorBeforeMeld(Heap<? extends E> other) {
 		if (!Objects.equals(comparator(), other.comparator()))
 			throw new IllegalArgumentException("Can't meld, heaps have different comparators");
+	}
+
+	static <K> Heap<K> fromHeapReferenceable(HeapReferenceable<K, ?> h) {
+		return new HeapFromReferenceable<>(h);
+	}
+
+	private static class HeapFromReferenceable<K> extends HeapAbstract<K> {
+
+		private final HeapReferenceable<K, ?> h;
+
+		HeapFromReferenceable(HeapReferenceable<K, ?> h) {
+			super(h.comparator());
+			this.h = Objects.requireNonNull(h);
+		}
+
+		@Override
+		public int size() {
+			return h.size();
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public boolean contains(Object o) {
+			return h.find((K) o) != null;
+		}
+
+		@Override
+		public Iterator<K> iterator() {
+			return new Utils.IterMap<>(h.iterator(), HeapReference::key);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public boolean remove(Object o) {
+			HeapReference<K, ?> ref = h.find((K) o);
+			if (ref == null)
+				return false;
+			h.remove(ref);
+			return true;
+		}
+
+		@Override
+		public void clear() {
+			h.clear();
+		}
+
+		@Override
+		public void insert(K key) {
+			h.insert(key);
+		}
+
+		@Override
+		public K findMin() {
+			return h.findMin().key();
+		}
+
+		@Override
+		public K extractMin() {
+			return h.extractMin().key();
+		}
+
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		@Override
+		public void meld(Heap<? extends K> heap) {
+			if (!(heap instanceof HeapFromReferenceable<?>))
+				throw new IllegalArgumentException();
+			HeapReferenceable<K, ?> oh = ((HeapFromReferenceable<K>) heap).h;
+			h.meld((HeapReferenceable) oh);
+		}
 	}
 
 }

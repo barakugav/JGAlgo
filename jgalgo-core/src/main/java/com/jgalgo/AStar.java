@@ -68,9 +68,9 @@ public class AStar {
 		if (source == target)
 			return new Path(g, source, target, IntLists.emptyList());
 		int n = g.vertices().size();
-		HeapReferenceable<HeapElm> heap = heapBuilder.build();
+		HeapReferenceable<Double, Integer> heap = heapBuilder.build();
 		@SuppressWarnings("unchecked")
-		HeapReference<HeapElm>[] verticesPtrs = new HeapReference[n];
+		HeapReference<Double, Integer>[] verticesPtrs = new HeapReference[n];
 
 		SSSPResultImpl res = new SSSPResultImpl(g, source);
 		res.distances[source] = 0;
@@ -87,46 +87,25 @@ public class AStar {
 					continue;
 				res.distances[v] = distance;
 				res.backtrack[v] = e;
-				double distanceAstimate = distance + vHeuristic.applyAsDouble(v);
+				double distanceEstimate = distance + vHeuristic.applyAsDouble(v);
 
-				HeapReference<HeapElm> vPtr = verticesPtrs[v];
+				HeapReference<Double, Integer> vPtr = verticesPtrs[v];
 				if (vPtr == null) {
-					verticesPtrs[v] = heap.insert(new HeapElm(distanceAstimate, v));
+					verticesPtrs[v] = heap.insert(distanceEstimate, v);
 				} else {
-					HeapElm ptr = vPtr.get();
-					if (distanceAstimate < ptr.distanceAstimate) {
-						ptr.distanceAstimate = distanceAstimate;
-						heap.decreaseKey(vPtr, ptr);
-					}
+					if (distanceEstimate < vPtr.key())
+						heap.decreaseKey(vPtr, distanceEstimate);
 				}
 			}
 
 			if (heap.isEmpty())
 				break;
-			HeapElm next = heap.extractMin();
-			verticesPtrs[next.v] = null;
-			u = next.v;
+			HeapReference<Double, Integer> next = heap.extractMin();
+			verticesPtrs[u = next.value()] = null;
 			if (u == target)
 				return res.getPath(target);
 		}
 		return null;
-	}
-
-	private static class HeapElm implements Comparable<HeapElm> {
-
-		double distanceAstimate;
-		final int v;
-
-		HeapElm(double distanceAstimate, int v) {
-			this.distanceAstimate = distanceAstimate;
-			this.v = v;
-		}
-
-		@Override
-		public int compareTo(HeapElm o) {
-			return Double.compare(distanceAstimate, o.distanceAstimate);
-		}
-
 	}
 
 }

@@ -109,12 +109,12 @@ class MaximumMatchingWeightedGabow1990 extends MaximumMatchingWeightedGabow1990A
 		@Override
 		void growStep() {
 			debug.print("growStep (root=",
-					Integer.valueOf(evens.findBlossom(g.edgeSource(growEvents.findMin().e)).root), "): ",
-					Integer.valueOf(growEvents.findMin().e));
+					Integer.valueOf(evens.findBlossom(g.edgeSource(growEvents.findMin().key().e)).root), "): ",
+					Integer.valueOf(growEvents.findMin().key().e));
 
 			// Grow step
-			assert delta == growEventsKey(growEvents.findMin());
-			int e = growEvents.extractMin().e;
+			assert delta == growEventsKey(growEvents.findMin().key());
+			int e = growEvents.extractMin().key().e;
 			int u = g.edgeSource(e), v = g.edgeTarget(e);
 
 			Blossom U = evens.findBlossom(u), V = odds.findBlossom(v);
@@ -125,12 +125,10 @@ class MaximumMatchingWeightedGabow1990 extends MaximumMatchingWeightedGabow1990A
 			V.treeParentEdge = edgeVal.get(e).twin;
 			V.isEven = false;
 			V.delta1 = delta;
-			assert V.growRef.get().e == e;
+			assert V.growRef.key().e == e;
 			V.growRef = null;
-			if (!V.isSingleton()) {
-				V.expandDelta = V.z0 / 2 + V.delta1;
-				V.expandRef = expandEvents.insert(V);
-			}
+			if (!V.isSingleton())
+				V.expandRef = expandEvents.insert(Double.valueOf(V.z0 / 2 + V.delta1), V);
 			debug.print(" ", V);
 
 			int pathLen = computePath(V, v, oddBlossomPath);
@@ -151,7 +149,7 @@ class MaximumMatchingWeightedGabow1990 extends MaximumMatchingWeightedGabow1990A
 			V.root = U.root;
 			V.treeParentEdge = edgeVal.get(matchedEdge).twin;
 			if (V.growRef != null) {
-				growEvents.removeRef(V.growRef);
+				growEvents.remove(V.growRef);
 				V.growRef = null;
 			}
 			assert vToSMFId[V.base] == null;
@@ -234,7 +232,7 @@ class MaximumMatchingWeightedGabow1990 extends MaximumMatchingWeightedGabow1990A
 					}
 					b.delta0 = delta;
 					if (!b.isSingleton()) {
-						expandEvents.removeRef(b.expandRef);
+						expandEvents.remove(b.expandRef);
 						b.expandRef = null;
 					}
 

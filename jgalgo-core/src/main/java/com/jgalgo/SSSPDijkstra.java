@@ -84,8 +84,8 @@ public class SSSPDijkstra implements SSSP {
 
 	private static class WorkerDouble {
 
-		private final HeapReferenceable<HeapElm> heap;
-		private final HeapReference<HeapElm>[] verticesPtrs;
+		private final HeapReferenceable<Double, Integer> heap;
+		private final HeapReference<Double, Integer>[] verticesPtrs;
 
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		WorkerDouble(HeapReferenceable heap, HeapReference[] verticesPtrs) {
@@ -108,50 +108,32 @@ public class SSSPDijkstra implements SSSP {
 						throw new IllegalArgumentException("negative weights are not supported");
 					double distance = res.distances[u] + ws;
 
-					HeapReference<HeapElm> vPtr = verticesPtrs[v];
+					HeapReference<Double, Integer> vPtr = verticesPtrs[v];
 					if (vPtr == null) {
-						verticesPtrs[v] = heap.insert(new HeapElm(distance, v));
+						verticesPtrs[v] = heap.insert(distance, v);
 						res.backtrack[v] = e;
 					} else {
-						HeapElm ptr = vPtr.get();
-						if (distance < ptr.distance) {
-							ptr.distance = distance;
+						if (distance < vPtr.key()) {
 							res.backtrack[v] = e;
-							heap.decreaseKey(vPtr, ptr);
+							heap.decreaseKey(vPtr, distance);
 						}
 					}
 				}
 
 				if (heap.isEmpty())
 					break;
-				HeapElm next = heap.extractMin();
-				res.distances[next.v] = next.distance;
-				u = next.v;
+				HeapReference<Double, Integer> next = heap.extractMin();
+				res.distances[u = next.value()] = next.key();
 			}
 
 			return res;
-		}
-
-		private static class HeapElm implements Comparable<HeapElm> {
-			double distance;
-			final int v;
-
-			HeapElm(double distance, int v) {
-				this.distance = distance;
-				this.v = v;
-			}
-
-			@Override
-			public int compareTo(HeapElm o) {
-				return Double.compare(distance, o.distance);
-			}
 		}
 	}
 
 	private static class WorkerInt {
 
-		private final HeapReferenceable<HeapElm> heap;
-		private final HeapReference<HeapElm>[] verticesPtrs;
+		private final HeapReferenceable<Integer, Integer> heap;
+		private final HeapReference<Integer, Integer>[] verticesPtrs;
 
 		@SuppressWarnings({ "unchecked", "rawtypes" })
 		WorkerInt(HeapReferenceable heap, HeapReference[] verticesPtrs) {
@@ -174,44 +156,27 @@ public class SSSPDijkstra implements SSSP {
 						throw new IllegalArgumentException("negative weights are not supported");
 					int distance = res.distances[u] + ws;
 
-					HeapReference<HeapElm> vPtr = verticesPtrs[v];
+					HeapReference<Integer, Integer> vPtr = verticesPtrs[v];
 					if (vPtr == null) {
-						verticesPtrs[v] = heap.insert(new HeapElm(distance, v));
+						verticesPtrs[v] = heap.insert(distance, v);
 						res.backtrack[v] = e;
 					} else {
-						HeapElm ptr = vPtr.get();
-						if (distance < ptr.distance) {
-							ptr.distance = distance;
+						if (distance < vPtr.key()) {
 							res.backtrack[v] = e;
-							heap.decreaseKey(vPtr, ptr);
+							heap.decreaseKey(vPtr, distance);
 						}
 					}
 				}
 
 				if (heap.isEmpty())
 					break;
-				HeapElm next = heap.extractMin();
-				res.distances[next.v] = next.distance;
-				u = next.v;
+				HeapReference<Integer, Integer> next = heap.extractMin();
+				res.distances[u = next.value()] = next.key();
 			}
 
 			return res;
 		}
 
-		private static class HeapElm implements Comparable<HeapElm> {
-			int distance;
-			final int v;
-
-			HeapElm(int distance, int v) {
-				this.distance = distance;
-				this.v = v;
-			}
-
-			@Override
-			public int compareTo(HeapElm o) {
-				return Integer.compare(distance, o.distance);
-			}
-		}
 	}
 
 }

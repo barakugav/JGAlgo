@@ -32,42 +32,44 @@ import java.util.Objects;
  * used in this snippet:
  *
  * <pre> {@code
- * RedBlackTreeExtension.Size<Integer> sizeExt = new RedBlackTreeExtension.Size<>();
- * RedBlackTreeExtension.Max<Integer> maxExt = new RedBlackTreeExtension.Max<>();
+ * RedBlackTreeExtension.Size<Integer, String> sizeExt = new RedBlackTreeExtension.Size<>();
+ * RedBlackTreeExtension.Max<Integer, String> maxExt = new RedBlackTreeExtension.Max<>();
  * RedBlackTreeExtended<Integer> tree = new RedBlackTreeExtended<>(List.of(sizeExt, maxExt));
  *
- * HeapReference<Integer> e1 = tree.insert(15);
- * tree.insert(5);
- * tree.insert(3);
- * tree.insert(1);
+ * HeapReference<Integer, String> e1 = tree.insert(15, "Alice");
+ * tree.insert(5, "Bob");
+ * tree.insert(3, "Charlie");
+ * tree.insert(1, "Door");
  * ...
- * tree.insert(1);
+ * tree.insert(1, "Zebra");
  *
  * int subTreeSize = sizeExt.getSubTreeSize(e1);
- * HeapReference<Integer> subTreeMax = maxExt.getSubTreeMax(e1);
+ * HeapReference<Integer, String> subTreeMax = maxExt.getSubTreeMax(e1);
  * System.out.println("The subtree of " + e1 + " is of size " + subTreeSize);
  * System.out.println("The maximum element in the sub tree of " + e1 + " is " + subTreeMax);
  * }</pre>
  *
+ * @param  <K> the keys type
+ * @param  <V> the values type
  * @author Barak Ugav
  */
-public class RedBlackTreeExtended<E> extends RedBlackTree<E> {
+public class RedBlackTreeExtended<K, V> extends RedBlackTree<K, V> {
 
-	private Node<E>[] nodes;
-	private final RedBlackTreeExtension<E>[] extensions;
+	private Node<K, V>[] nodes;
+	private final RedBlackTreeExtension<K, V>[] extensions;
 
 	@SuppressWarnings("rawtypes")
 	private static final Node[] EmptyNodesArray = new Node[0];
 
 	/**
-	 * Constructs a new, empty red black tree, with the given extensions, sorted according to the natural ordering of
-	 * its elements.
+	 * Constructs a new, empty red black tree, with the given extensions, ordered according to the natural ordering of
+	 * its keys.
 	 * <p>
-	 * All elements inserted into the tree must implement the {@link Comparable} interface. Furthermore, all such
-	 * elements must be <i>mutually comparable</i>: {@code e1.compareTo(e2)} must not throw a {@code ClassCastException}
-	 * for any elements {@code e1} and {@code e2} in the tree. If the user attempts to insert an element to the tree
-	 * that violates this constraint (for example, the user attempts to insert a string element to a tree whose elements
-	 * are integers), the {@code insert} call will throw a {@code ClassCastException}.
+	 * All keys inserted into the tree must implement the {@link Comparable} interface. Furthermore, all such keys must
+	 * be <i>mutually comparable</i>: {@code k1.compareTo(k2)} must not throw a {@code ClassCastException} for any keys
+	 * {@code k1} and {@code k2} in the tree. If the user attempts to insert a key to the tree that violates this
+	 * constraint (for example, the user attempts to insert a string element to a tree whose keys are integers), the
+	 * {@code insert} call will throw a {@code ClassCastException}.
 	 * <p>
 	 * The provided extensions must be used souly by this tree. If an extension was used in another tree, it should not
 	 * be passed to a new one for reuse.
@@ -75,69 +77,70 @@ public class RedBlackTreeExtended<E> extends RedBlackTree<E> {
 	 * @param  extensions               a collections of extensions to be used by this red black tree.
 	 * @throws IllegalArgumentException if the extensions collection is empty
 	 */
-	public RedBlackTreeExtended(Collection<? extends RedBlackTreeExtension<E>> extensions) {
+	public RedBlackTreeExtended(Collection<? extends RedBlackTreeExtension<K, V>> extensions) {
 		this(null, extensions);
 	}
 
 	/**
-	 * Constructs a new, empty red black tree, with the given extensions, sorted according to the specified comparator.
+	 * Constructs a new, empty red black tree, with the given extensions, with keys ordered according to the specified
+	 * comparator.
 	 * <p>
-	 * All elements inserted into the tree must be <i>mutually comparable</i> by the specified comparator:
-	 * {@code comparator.compare(e1, e2)} must not throw a {@code ClassCastException} for any elements {@code e1} and
-	 * {@code e2} in the tree. If the user attempts to insert an element to the tree that violates this constraint, the
+	 * All keys inserted into the tree must be <i>mutually comparable</i> by the specified comparator:
+	 * {@code comparator.compare(k1, k2)} must not throw a {@code ClassCastException} for any keys {@code k1} and
+	 * {@code k2} in the tree. If the user attempts to insert a key to the tree that violates this constraint, the
 	 * {@code insert} call will throw a {@code ClassCastException}.
 	 * <p>
 	 * The provided extensions must be used souly by this tree. If an extension was used in another tree, it should not
 	 * be passed to a new one for reuse.
 	 *
 	 * @param  comparator               the comparator that will be used to order this tree. If {@code null}, the
-	 *                                      {@linkplain Comparable natural ordering} of the elements will be used.
+	 *                                      {@linkplain Comparable natural ordering} of the keys will be used.
 	 * @param  extensions               a collections of extensions to be used by this red black tree.
 	 * @throws IllegalArgumentException if the extensions collection is empty
 	 */
 	@SuppressWarnings("unchecked")
-	public RedBlackTreeExtended(Comparator<? super E> comparator,
-			Collection<? extends RedBlackTreeExtension<E>> extensions) {
+	public RedBlackTreeExtended(Comparator<? super K> comparator,
+			Collection<? extends RedBlackTreeExtension<K, V>> extensions) {
 		super(comparator);
 		if (extensions.isEmpty())
 			throw new IllegalArgumentException("No extensions provided. Use the regular Red Black tree.");
 		this.extensions = extensions.toArray(len -> new RedBlackTreeExtension[len]);
-		for (RedBlackTreeExtension<E> extension : extensions)
+		for (RedBlackTreeExtension<K, V> extension : extensions)
 			Objects.requireNonNull(extension);
 		nodes = EmptyNodesArray;
 	}
 
 	@Override
-	Node<E> newNode(E e) {
+	Node<K, V> newNode(K key) {
 		int idx = size();
 		if (idx >= nodes.length) {
 			int newLen = Math.max(2, nodes.length * 2);
 			nodes = Arrays.copyOf(nodes, newLen);
-			for (RedBlackTreeExtension<E> extension : extensions)
+			for (RedBlackTreeExtension<K, V> extension : extensions)
 				extension.data.expand(newLen);
 		}
 		assert nodes[idx] == null;
-		Node<E> n = nodes[idx] = new Node<>(e, idx);
-		for (RedBlackTreeExtension<E> extension : extensions)
+		Node<K, V> n = nodes[idx] = new Node<>(key, idx);
+		for (RedBlackTreeExtension<K, V> extension : extensions)
 			extension.initNode(n);
 		return n;
 	}
 
 	@Override
-	void removeNode(RedBlackTree.Node<E> n0) {
+	void removeNode(RedBlackTree.Node<K, V> n0) {
 		super.removeNode(n0);
-		Node<E> n = (Node<E>) n0;
+		Node<K, V> n = (Node<K, V>) n0;
 		int nIdx = n.idx;
 		assert nodes[nIdx] == n;
 
 		int lastIdx = size();
-		Node<E> last = nodes[lastIdx];
+		Node<K, V> last = nodes[lastIdx];
 		assert last.idx == lastIdx;
 		nodes[nIdx] = last;
 
 		nodes[lastIdx] = null;
 
-		for (RedBlackTreeExtension<E> extension : extensions) {
+		for (RedBlackTreeExtension<K, V> extension : extensions) {
 			extension.data.swap(nIdx, lastIdx);
 			extension.data.clear(lastIdx);
 		}
@@ -146,70 +149,69 @@ public class RedBlackTreeExtended<E> extends RedBlackTree<E> {
 	}
 
 	@Override
-	void swap(RedBlackTree.Node<E> a, RedBlackTree.Node<E> b) {
-		Node<E> n1 = (Node<E>) a, n2 = (Node<E>) b;
-		for (RedBlackTreeExtension<E> extension : extensions)
-			extension.beforeNodeSwap((Node<E>) a, (Node<E>) b);
+	void swap(RedBlackTree.Node<K, V> a, RedBlackTree.Node<K, V> b) {
+		Node<K, V> n1 = (Node<K, V>) a, n2 = (Node<K, V>) b;
+		for (RedBlackTreeExtension<K, V> extension : extensions)
+			extension.beforeNodeSwap((Node<K, V>) a, (Node<K, V>) b);
 		super.swap(n1, n2);
 	}
 
 	@Override
-	void afterInsert(RedBlackTree.Node<E> n) {
-		for (RedBlackTreeExtension<E> extension : extensions)
-			extension.afterInsert((Node<E>) n);
+	void afterInsert(RedBlackTree.Node<K, V> n) {
+		for (RedBlackTreeExtension<K, V> extension : extensions)
+			extension.afterInsert((Node<K, V>) n);
 	}
 
 	@Override
-	void beforeRemove(RedBlackTree.Node<E> n) {
-		for (RedBlackTreeExtension<E> extension : extensions)
-			extension.beforeRemove((Node<E>) n);
+	void beforeRemove(RedBlackTree.Node<K, V> n) {
+		for (RedBlackTreeExtension<K, V> extension : extensions)
+			extension.beforeRemove((Node<K, V>) n);
 	}
 
 	@Override
-	void beforeRotateLeft(RedBlackTree.Node<E> n) {
-		for (RedBlackTreeExtension<E> extension : extensions)
-			extension.beforeRotateLeft((Node<E>) n);
+	void beforeRotateLeft(RedBlackTree.Node<K, V> n) {
+		for (RedBlackTreeExtension<K, V> extension : extensions)
+			extension.beforeRotateLeft((Node<K, V>) n);
 	}
 
 	@Override
-	void beforeRotateRight(RedBlackTree.Node<E> n) {
-		for (RedBlackTreeExtension<E> extension : extensions)
-			extension.beforeRotateRight((Node<E>) n);
+	void beforeRotateRight(RedBlackTree.Node<K, V> n) {
+		for (RedBlackTreeExtension<K, V> extension : extensions)
+			extension.beforeRotateRight((Node<K, V>) n);
 	}
 
-	void beforeNodeReuse(Node<E> node) {
-		for (RedBlackTreeExtension<E> extension : extensions)
+	void beforeNodeReuse(Node<K, V> node) {
+		for (RedBlackTreeExtension<K, V> extension : extensions)
 			extension.initNode(node);
 	}
-
 
 	@Override
 	public void clear() {
 		int s = size();
-		for (RedBlackTreeExtension<E> extension : extensions)
+		for (RedBlackTreeExtension<K, V> extension : extensions)
 			extension.data.clear(s);
 		super.clear();
 	}
 
-	static class Node<E> extends RedBlackTree.Node<E> {
+	static class Node<K, V> extends RedBlackTree.Node<K, V> {
 
 		int idx;
 
-		Node(E e, int idx) {
-			super(e);
+		Node(K key, int idx) {
+			super(key);
 			this.idx = idx;
 		}
 
-		Node<E> parent() {
-			return (Node<E>) parent;
+		Node<K, V> parent() {
+			return (Node<K, V>) parent;
 		}
 
-		Node<E> left() {
-			return (Node<E>) left;
+		Node<K, V> left() {
+			return (Node<K, V>) left;
 		}
 
-		Node<E> right() {
-			return (Node<E>) right;
+		Node<K, V> right() {
+			return (Node<K, V>) right;
 		}
 
 	}

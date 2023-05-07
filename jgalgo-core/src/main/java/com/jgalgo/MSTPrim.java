@@ -43,7 +43,7 @@ public class MSTPrim implements MST {
 
 	private HeapReferenceable.Builder heapBuilder = HeapPairing::new;
 	@SuppressWarnings("unchecked")
-	private HeapReference<Integer>[] verticesPtrs = MemoryReuse.EmptyHeapReferenceArr;
+	private HeapReference<Integer, Void>[] verticesPtrs = MemoryReuse.EmptyHeapReferenceArr;
 	private final BitSet visited = new BitSet();
 
 	/**
@@ -72,8 +72,9 @@ public class MSTPrim implements MST {
 		if (n == 0)
 			return MSTResultImpl.Empty;
 
-		HeapReferenceable<Integer> heap = heapBuilder.build(w);
-		HeapReference<Integer>[] verticesPtrs = this.verticesPtrs = MemoryReuse.ensureLength(this.verticesPtrs, n);
+		HeapReferenceable<Integer, Void> heap = heapBuilder.build(w);
+		HeapReference<Integer, Void>[] verticesPtrs =
+				this.verticesPtrs = MemoryReuse.ensureLength(this.verticesPtrs, n);
 		BitSet visited = this.visited;
 
 		IntCollection mst = new IntArrayList(n - 1);
@@ -92,10 +93,10 @@ public class MSTPrim implements MST {
 					if (visited.get(v))
 						continue;
 
-					HeapReference<Integer> vPtr = verticesPtrs[v];
+					HeapReference<Integer, Void> vPtr = verticesPtrs[v];
 					if (vPtr == null)
 						verticesPtrs[v] = heap.insert(Integer.valueOf(e));
-					else if (w.compare(e, vPtr.get().intValue()) < 0)
+					else if (w.compare(e, vPtr.key().intValue()) < 0)
 						heap.decreaseKey(vPtr, Integer.valueOf(e));
 				}
 
@@ -105,7 +106,7 @@ public class MSTPrim implements MST {
 					if (heap.isEmpty())
 						/* reached all vertices from current root, continue to next tree */
 						break treeLoop;
-					e = heap.extractMin().intValue();
+					e = heap.extractMin().key().intValue();
 					if (!visited.get(v = g.edgeSource(e)))
 						break;
 					if (!visited.get(v = g.edgeTarget(e)))

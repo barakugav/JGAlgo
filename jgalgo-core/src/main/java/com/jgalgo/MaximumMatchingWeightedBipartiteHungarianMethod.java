@@ -108,8 +108,8 @@ class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumMatching
 		private final BitSet inTree;
 
 		private final IntComparator edgeSlackComparator;
-		private final HeapReferenceable<Integer> nextTightEdge;
-		private final HeapReference<Integer>[] nextTightEdgePerOutV;
+		private final HeapReferenceable<Integer, Void> nextTightEdge;
+		private final HeapReference<Integer, Void>[] nextTightEdgePerOutV;
 
 		private double deltaTotal;
 		private final double[] dualValBase;
@@ -168,13 +168,13 @@ class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumMatching
 
 				currentTree: for (;;) {
 					while (!nextTightEdge.isEmpty()) {
-						HeapReference<Integer> minRef = nextTightEdge.findMinRef();
-						int e = minRef.get().intValue();
+						HeapReference<Integer, Void> minRef = nextTightEdge.findMin();
+						int e = minRef.key().intValue();
 						int u0 = g.edgeSource(e), v0 = g.edgeTarget(e);
 
 						if (inTree.get(u0) && inTree.get(v0)) {
 							// Vertex already in tree, edge is irrelevant
-							nextTightEdge.removeRef(minRef);
+							nextTightEdge.remove(minRef);
 							continue;
 						}
 						int v = inTree.get(u0) ? v0 : u0;
@@ -184,7 +184,7 @@ class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumMatching
 							break;
 
 						// Edge is tight, add it to the tree
-						nextTightEdge.removeRef(minRef);
+						nextTightEdge.remove(minRef);
 						parent[v] = e;
 						vertexAddedToTree(v);
 
@@ -215,7 +215,7 @@ class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumMatching
 
 					// Adjust dual values
 					double delta1 = delta1Threshold - deltaTotal;
-					double delta2 = nextTightEdge.isEmpty() ? -1 : edgeSlack(nextTightEdge.findMin().intValue());
+					double delta2 = nextTightEdge.isEmpty() ? -1 : edgeSlack(nextTightEdge.findMin().key().intValue());
 					if ((!perfect && delta1 <= delta2) || delta2 == -1)
 						break mainLoop;
 					deltaTotal += delta2;
@@ -240,10 +240,10 @@ class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumMatching
 
 		private void nextTightEdgeAdd(int u, int e) {
 			int v = g.edgeEndpoint(e, u);
-			HeapReference<Integer> ref = nextTightEdgePerOutV[v];
+			HeapReference<Integer, Void> ref = nextTightEdgePerOutV[v];
 			if (ref == null)
 				nextTightEdgePerOutV[v] = nextTightEdge.insert(Integer.valueOf(e));
-			else if (edgeSlackComparator.compare(e, ref.get().intValue()) < 0)
+			else if (edgeSlackComparator.compare(e, ref.key().intValue()) < 0)
 				nextTightEdge.decreaseKey(ref, Integer.valueOf(e));
 		}
 
