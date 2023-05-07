@@ -72,9 +72,23 @@ public interface MaximumMatching {
 
 			boolean cardinality = false;
 			boolean isBipartite = false;
+			String impl;
 
 			@Override
 			public MaximumMatching build() {
+				if (impl != null) {
+					if (MaximumMatchingCardinalityBipartiteHopcroftKarp.class.getSimpleName().equals(impl))
+						return new MaximumMatchingCardinalityBipartiteHopcroftKarp();
+					if (MaximumMatchingCardinalityGabow1976.class.getSimpleName().equals(impl))
+						return new MaximumMatchingCardinalityGabow1976();
+					if (MaximumMatchingWeightedBipartiteHungarianMethod.class.getSimpleName().equals(impl))
+						return new MaximumMatchingWeightedBipartiteHungarianMethod();
+					if (MaximumMatchingWeightedGabow1990.class.getSimpleName().equals(impl))
+						return new MaximumMatchingWeightedGabow1990();
+					if (MaximumMatchingWeightedGabow1990Simpler.class.getSimpleName().equals(impl))
+						return new MaximumMatchingWeightedGabow1990Simpler();
+					System.err.println("unknown 'impl' value: " + impl);
+				}
 				if (cardinality) {
 					return isBipartite ? new MaximumMatchingCardinalityBipartiteHopcroftKarp()
 							: new MaximumMatchingCardinalityGabow1976();
@@ -93,6 +107,13 @@ public interface MaximumMatching {
 			@Override
 			public MaximumMatching.Builder setCardinality(boolean cardinality) {
 				this.cardinality = cardinality;
+				return this;
+			}
+
+			@Override
+			public MaximumMatching.Builder setOption(String key, Object value) {
+				if ("impl".equals(key))
+					impl = value instanceof String ? (String) value : null;
 				return this;
 			}
 		};
