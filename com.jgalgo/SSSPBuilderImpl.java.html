@@ -16,9 +16,7 @@
 
 package com.jgalgo;
 
-import com.jgalgo.SSSP.Builder;
-
-<span class="nc" id="L21">class SSSPBuilderImpl implements SSSP.Builder {</span>
+<span class="nc" id="L19">class SSSPBuilderImpl implements SSSP.Builder {</span>
 
 	private boolean intWeights;
 	private boolean negativeWeights;
@@ -29,53 +27,53 @@ import com.jgalgo.SSSP.Builder;
 
 	@Override
 	public SSSP build() {
-<span class="nc bnc" id="L32" title="All 2 branches missed.">		if (dagGraphs)</span>
-<span class="nc" id="L33">			return new SSSPDag();</span>
-<span class="nc bnc" id="L34" title="All 2 branches missed.">		if (negativeWeights) {</span>
-<span class="nc bnc" id="L35" title="All 2 branches missed.">			if (intWeights) {</span>
-<span class="nc" id="L36">				return new SSSPGoldberg();</span>
+<span class="nc bnc" id="L30" title="All 2 branches missed.">		if (dagGraphs)</span>
+<span class="nc" id="L31">			return new SSSPDag();</span>
+<span class="nc bnc" id="L32" title="All 2 branches missed.">		if (negativeWeights) {</span>
+<span class="nc bnc" id="L33" title="All 2 branches missed.">			if (intWeights) {</span>
+<span class="nc" id="L34">				return new SSSPGoldberg();</span>
 			} else {
-<span class="nc" id="L38">				return new SSSPBellmanFord();</span>
+<span class="nc" id="L36">				return new SSSPBellmanFord();</span>
 			}
 		} else {
-<span class="nc" id="L41">			return new SSSPDijkstra();</span>
+<span class="nc" id="L39">			return new SSSPDijkstra();</span>
 		}
 	}
 
 	@Override
-	public Builder setIntWeights(boolean enable) {
-<span class="nc" id="L47">		intWeights = enable;</span>
-<span class="nc" id="L48">		return this;</span>
+	public SSSP.Builder setIntWeights(boolean enable) {
+<span class="nc" id="L45">		intWeights = enable;</span>
+<span class="nc" id="L46">		return this;</span>
 	}
 
 	@Override
-	public Builder setNegativeWeights(boolean enable) {
-<span class="nc" id="L53">		negativeWeights = enable;</span>
-<span class="nc" id="L54">		return this;</span>
+	public SSSP.Builder setNegativeWeights(boolean enable) {
+<span class="nc" id="L51">		negativeWeights = enable;</span>
+<span class="nc" id="L52">		return this;</span>
 	}
 
 	@Override
-	public Builder setMinWeight(double minWeight) {
+	public SSSP.Builder setMinWeight(double minWeight) {
 		// this.minWeight = minWeight;
-<span class="nc" id="L60">		return this;</span>
+<span class="nc" id="L58">		return this;</span>
 	}
 
 	@Override
-	public Builder setMaxWeight(double maxWeight) {
+	public SSSP.Builder setMaxWeight(double maxWeight) {
 		// this.maxWeight = maxWeight;
-<span class="nc" id="L66">		return this;</span>
+<span class="nc" id="L64">		return this;</span>
 	}
 
 	@Override
-	public Builder setMaxDistance(double maxDistance) {
+	public SSSP.Builder setMaxDistance(double maxDistance) {
 		// this.maxDistance = maxDistance;
-<span class="nc" id="L72">		return this;</span>
+<span class="nc" id="L70">		return this;</span>
 	}
 
 	@Override
 	public SSSP.Builder setDag(boolean dagGraphs) {
-<span class="nc" id="L77">		this.dagGraphs = dagGraphs;</span>
-<span class="nc" id="L78">		return this;</span>
+<span class="nc" id="L75">		this.dagGraphs = dagGraphs;</span>
+<span class="nc" id="L76">		return this;</span>
 	}
 
 }

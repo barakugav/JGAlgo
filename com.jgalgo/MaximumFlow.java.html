@@ -81,7 +81,7 @@ public interface MaximumFlow {
 	 * @see    MaximumFlow#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder {
+	static interface Builder extends BuilderAbstract&lt;MaximumFlow.Builder&gt; {
 
 		/**
 		 * Create a new algorithm object for maximum flow computation.

@@ -77,7 +77,7 @@ public interface RMQStatic {
 	 * @see    RMQStatic#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder {
+	static interface Builder extends BuilderAbstract&lt;RMQStatic.Builder&gt; {
 
 		/**
 		 * Create a new static range minimum queries algorithm.

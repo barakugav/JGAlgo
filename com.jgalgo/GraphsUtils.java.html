@@ -425,7 +425,7 @@ class GraphsUtils {
 	};
 
 	static double edgesWeightSum(IntIterator eit, EdgeWeightFunc w) {
-<span class="pc bpc" id="L428" title="1 of 2 branches missed.">		if (w instanceof EdgeWeightFunc.Int) {</span>
+<span class="fc bfc" id="L428" title="All 2 branches covered.">		if (w instanceof EdgeWeightFunc.Int) {</span>
 <span class="fc" id="L429">			EdgeWeightFunc.Int w0 = (EdgeWeightFunc.Int) w;</span>
 <span class="fc" id="L430">			int sum = 0;</span>
 <span class="fc bfc" id="L431" title="All 2 branches covered.">			while (eit.hasNext())</span>
@@ -433,10 +433,10 @@ class GraphsUtils {
 <span class="fc" id="L433">			return sum;</span>
 
 		} else {
-<span class="nc" id="L436">			double sum = 0;</span>
-<span class="nc bnc" id="L437" title="All 2 branches missed.">			while (eit.hasNext())</span>
-<span class="nc" id="L438">				sum += w.weight(eit.nextInt());</span>
-<span class="nc" id="L439">			return sum;</span>
+<span class="fc" id="L436">			double sum = 0;</span>
+<span class="fc bfc" id="L437" title="All 2 branches covered.">			while (eit.hasNext())</span>
+<span class="fc" id="L438">				sum += w.weight(eit.nextInt());</span>
+<span class="fc" id="L439">			return sum;</span>
 		}
 	}
 

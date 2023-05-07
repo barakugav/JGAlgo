@@ -154,6 +154,12 @@ public interface HeapReferenceable&lt;E&gt; extends Heap&lt;E&gt; {
 		default &lt;E&gt; HeapReferenceable&lt;E&gt; build() {
 <span class="fc" id="L155">			return build(null);</span>
 		}
+
+		@Override
+		default HeapReferenceable.Builder setOption(String key, Object value) {
+<span class="nc" id="L160">			Heap.Builder.super.setOption(key, value);</span>
+<span class="nc" id="L161">			return this;</span>
+		}
 	}
 
 }

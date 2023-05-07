@@ -17,8 +17,7 @@
 package com.jgalgo;
 
 import java.util.Arrays;
-
-import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntIterators;
 
 /**
  * Dial's algorithm for Single Source Shortest Path for positive integer weights.
@@ -40,10 +39,10 @@ public class SSSPDial implements SSSP {
 	/**
 	 * Construct a new SSSP algorithm object.
 	 */
-<span class="fc" id="L43">	public SSSPDial() {</span>
-<span class="fc" id="L44">		allocSizeN = allocSizeM = 0;</span>
-<span class="fc" id="L45">		heap = new DialHeap();</span>
-<span class="fc" id="L46">	}</span>
+<span class="fc" id="L42">	public SSSPDial() {</span>
+<span class="fc" id="L43">		allocSizeN = allocSizeM = 0;</span>
+<span class="fc" id="L44">		heap = new DialHeap();</span>
+<span class="fc" id="L45">	}</span>
 
 	private int allocSizeN;
 	private int allocSizeM;
@@ -52,22 +51,22 @@ public class SSSPDial implements SSSP {
 	private DialHeap.Node[] verticesPtrs;
 
 	private void memAlloc(int n, int m) {
-<span class="fc bfc" id="L55" title="All 2 branches covered.">		if (allocSizeN &lt; n) {</span>
-<span class="fc" id="L56">			verticesPtrs = new DialHeap.Node[n];</span>
-<span class="fc" id="L57">			allocSizeN = n;</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">		if (allocSizeN &lt; n) {</span>
+<span class="fc" id="L55">			verticesPtrs = new DialHeap.Node[n];</span>
+<span class="fc" id="L56">			allocSizeN = n;</span>
 		}
-<span class="fc" id="L59">		m = Math.max(n, m);</span>
-<span class="fc bfc" id="L60" title="All 2 branches covered.">		if (allocSizeM &lt; m) {</span>
-<span class="fc" id="L61">			edges = new int[m];</span>
-<span class="fc" id="L62">			allocSizeM = m;</span>
+<span class="fc" id="L58">		m = Math.max(n, m);</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">		if (allocSizeM &lt; m) {</span>
+<span class="fc" id="L60">			edges = new int[m];</span>
+<span class="fc" id="L61">			allocSizeM = m;</span>
 		}
-<span class="fc" id="L64">	}</span>
+<span class="fc" id="L63">	}</span>
 
 	private void memClear(int n, int m) {
-<span class="fc" id="L67">		Arrays.fill(edges, 0, Math.max(n, m), -1);</span>
-<span class="fc" id="L68">		heap.clear();</span>
-<span class="fc" id="L69">		Arrays.fill(verticesPtrs, 0, n, null);</span>
-<span class="fc" id="L70">	}</span>
+<span class="fc" id="L66">		Arrays.fill(edges, 0, Math.max(n, m), -1);</span>
+<span class="fc" id="L67">		heap.clear();</span>
+<span class="fc" id="L68">		Arrays.fill(verticesPtrs, 0, n, null);</span>
+<span class="fc" id="L69">	}</span>
 
 	/**
 	 * {@inheritDoc}
@@ -77,34 +76,28 @@ public class SSSPDial implements SSSP {
 	 */
 	@Override
 	public SSSP.Result computeShortestPaths(Graph g, EdgeWeightFunc w, int source) {
-<span class="pc bpc" id="L80" title="1 of 2 branches missed.">		if (!(w instanceof EdgeWeightFunc.Int))</span>
-<span class="nc" id="L81">			throw new IllegalArgumentException(&quot;only int weights are supported&quot;);</span>
-<span class="fc" id="L82">		EdgeWeightFunc.Int w0 = (EdgeWeightFunc.Int) w;</span>
+<span class="pc bpc" id="L79" title="1 of 2 branches missed.">		if (!(w instanceof EdgeWeightFunc.Int))</span>
+<span class="nc" id="L80">			throw new IllegalArgumentException(&quot;only int weights are supported&quot;);</span>
+<span class="fc" id="L81">		EdgeWeightFunc.Int w0 = (EdgeWeightFunc.Int) w;</span>
 
-<span class="fc" id="L84">		int n = g.vertices().size(), m = g.edges().size();</span>
+<span class="fc" id="L83">		int n = g.vertices().size(), m = g.edges().size();</span>
 
-<span class="fc" id="L86">		memAlloc(n, m);</span>
+<span class="fc" id="L85">		memAlloc(n, m);</span>
 
-<span class="fc" id="L88">		int maxDistance = 0;</span>
-<span class="pc bpc" id="L89" title="1 of 2 branches missed.">		if (m &lt;= n - 1) {</span>
-<span class="nc bnc" id="L90" title="All 2 branches missed.">			for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
-<span class="nc" id="L91">				int e = it.nextInt();</span>
-<span class="nc" id="L92">				maxDistance += w0.weightInt(e);</span>
-<span class="nc" id="L93">			}</span>
+<span class="fc" id="L87">		int maxDistance = 0;</span>
+<span class="pc bpc" id="L88" title="1 of 2 branches missed.">		if (m &lt;= n - 1) {</span>
+<span class="nc" id="L89">			maxDistance = (int) GraphsUtils.edgesWeightSum(g.edges().iterator(), w0);</span>
 
 		} else {
-<span class="fc" id="L96">			int[] edges = g.edges().toArray(this.edges);</span>
-<span class="fc" id="L97">			ArraysUtils.getKthElement(edges, 0, g.edges().size(), n - 1,</span>
-<span class="fc" id="L98">					(e1, e2) -&gt; Integer.compare(w0.weightInt(e1), w0.weightInt(e2)), true);</span>
-
 			/* sum the n-1 heaviest weights */
-<span class="fc bfc" id="L101" title="All 2 branches covered.">			for (int i = edges.length - n - 1; i &lt; edges.length; i++)</span>
-<span class="fc" id="L102">				maxDistance += w0.weightInt(edges[i]);</span>
+<span class="fc" id="L93">			int[] edges = g.edges().toArray(this.edges);</span>
+<span class="fc" id="L94">			ArraysUtils.getKthElement(edges, 0, g.edges().size(), n - 1, w0, true);</span>
+<span class="fc" id="L95">			maxDistance = (int) GraphsUtils.edgesWeightSum(IntIterators.wrap(edges, edges.length - n + 1, n - 1), w0);</span>
 		}
 
-<span class="fc" id="L105">		SSSP.Result res = computeShortestPaths(g, w0, source, maxDistance);</span>
-<span class="fc" id="L106">		memClear(n, m);</span>
-<span class="fc" id="L107">		return res;</span>
+<span class="fc" id="L98">		SSSP.Result res = computeShortestPaths(g, w0, source, maxDistance);</span>
+<span class="fc" id="L99">		memClear(n, m);</span>
+<span class="fc" id="L100">		return res;</span>
 	}
 
 	/**
@@ -119,56 +112,56 @@ public class SSSPDial implements SSSP {
 	 * @see                #computeShortestPaths(Graph, EdgeWeightFunc, int)
 	 */
 	public SSSP.Result computeShortestPaths(Graph g, EdgeWeightFunc.Int w, int source, int maxDistance) {
-<span class="fc" id="L122">		int n = g.vertices().size(), m = g.edges().size();</span>
-<span class="pc bpc" id="L123" title="1 of 2 branches missed.">		if (n &lt;= 0)</span>
-<span class="nc" id="L124">			throw new IllegalArgumentException();</span>
+<span class="fc" id="L115">		int n = g.vertices().size(), m = g.edges().size();</span>
+<span class="pc bpc" id="L116" title="1 of 2 branches missed.">		if (n &lt;= 0)</span>
+<span class="nc" id="L117">			throw new IllegalArgumentException();</span>
 
-<span class="fc" id="L126">		memAlloc(n, m);</span>
+<span class="fc" id="L119">		memAlloc(n, m);</span>
 
-<span class="fc" id="L128">		SSSPResultImpl.Int res = new SSSPResultImpl.Int(g, source);</span>
-<span class="fc" id="L129">		DialHeap heap = this.heap;</span>
-<span class="fc" id="L130">		DialHeap.Node[] verticesPtrs = this.verticesPtrs;</span>
+<span class="fc" id="L121">		SSSPResultImpl.Int res = new SSSPResultImpl.Int(g, source);</span>
+<span class="fc" id="L122">		DialHeap heap = this.heap;</span>
+<span class="fc" id="L123">		DialHeap.Node[] verticesPtrs = this.verticesPtrs;</span>
 
-<span class="fc bfc" id="L132" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++) {</span>
-<span class="fc" id="L133">			res.distances[v] = Integer.MAX_VALUE;</span>
-<span class="fc" id="L134">			res.backtrack[v] = -1;</span>
+<span class="fc bfc" id="L125" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++) {</span>
+<span class="fc" id="L126">			res.distances[v] = Integer.MAX_VALUE;</span>
+<span class="fc" id="L127">			res.backtrack[v] = -1;</span>
 		}
-<span class="fc" id="L136">		res.distances[source] = 0;</span>
+<span class="fc" id="L129">		res.distances[source] = 0;</span>
 
-<span class="fc" id="L138">		heap.init(maxDistance);</span>
+<span class="fc" id="L131">		heap.init(maxDistance);</span>
 
-<span class="fc" id="L140">		for (int u = source;;) {</span>
-<span class="fc bfc" id="L141" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
-<span class="fc" id="L142">				int e = eit.nextInt();</span>
-<span class="fc" id="L143">				int v = eit.target();</span>
-<span class="fc bfc" id="L144" title="All 2 branches covered.">				if (res.distances[v] != Integer.MAX_VALUE)</span>
-<span class="fc" id="L145">					continue;</span>
-<span class="fc" id="L146">				int ws = w.weightInt(e);</span>
-<span class="pc bpc" id="L147" title="1 of 2 branches missed.">				if (ws &lt; 0)</span>
-<span class="nc" id="L148">					throw new IllegalArgumentException(&quot;negative weights are not supported&quot;);</span>
-<span class="fc" id="L149">				int distance = res.distances[u] + ws;</span>
+<span class="fc" id="L133">		for (int u = source;;) {</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
+<span class="fc" id="L135">				int e = eit.nextInt();</span>
+<span class="fc" id="L136">				int v = eit.target();</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">				if (res.distances[v] != Integer.MAX_VALUE)</span>
+<span class="fc" id="L138">					continue;</span>
+<span class="fc" id="L139">				int ws = w.weightInt(e);</span>
+<span class="pc bpc" id="L140" title="1 of 2 branches missed.">				if (ws &lt; 0)</span>
+<span class="nc" id="L141">					throw new IllegalArgumentException(&quot;negative weights are not supported&quot;);</span>
+<span class="fc" id="L142">				int distance = res.distances[u] + ws;</span>
 
-<span class="fc" id="L151">				DialHeap.Node vPtr = verticesPtrs[v];</span>
-<span class="fc bfc" id="L152" title="All 2 branches covered.">				if (vPtr == null) {</span>
-<span class="fc" id="L153">					vPtr = verticesPtrs[v] = heap.insert(distance, v);</span>
-<span class="fc" id="L154">					res.backtrack[v] = e;</span>
+<span class="fc" id="L144">				DialHeap.Node vPtr = verticesPtrs[v];</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">				if (vPtr == null) {</span>
+<span class="fc" id="L146">					vPtr = verticesPtrs[v] = heap.insert(distance, v);</span>
+<span class="fc" id="L147">					res.backtrack[v] = e;</span>
 				} else {
-<span class="fc bfc" id="L156" title="All 2 branches covered.">					if (distance &lt; vPtr.distance) {</span>
-<span class="fc" id="L157">						heap.decreaseKey(vPtr, distance);</span>
-<span class="fc" id="L158">						res.backtrack[v] = e;</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">					if (distance &lt; vPtr.distance) {</span>
+<span class="fc" id="L150">						heap.decreaseKey(vPtr, distance);</span>
+<span class="fc" id="L151">						res.backtrack[v] = e;</span>
 					}
 				}
-<span class="fc" id="L161">			}</span>
+<span class="fc" id="L154">			}</span>
 
-<span class="fc" id="L163">			DialHeap.Node next = heap.extractMin();</span>
-<span class="fc bfc" id="L164" title="All 2 branches covered.">			if (next == null)</span>
-<span class="fc" id="L165">				break;</span>
-<span class="fc" id="L166">			res.distances[next.v] = next.distance;</span>
-<span class="fc" id="L167">			u = next.v;</span>
-<span class="fc" id="L168">		}</span>
+<span class="fc" id="L156">			DialHeap.Node next = heap.extractMin();</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">			if (next == null)</span>
+<span class="fc" id="L158">				break;</span>
+<span class="fc" id="L159">			res.distances[next.v] = next.distance;</span>
+<span class="fc" id="L160">			u = next.v;</span>
+<span class="fc" id="L161">		}</span>
 
-<span class="fc" id="L170">		memClear(n, m);</span>
-<span class="fc" id="L171">		return res;</span>
+<span class="fc" id="L163">		memClear(n, m);</span>
+<span class="fc" id="L164">		return res;</span>
 	}
 
 	private static class DialHeap {
@@ -177,83 +170,83 @@ public class SSSPDial implements SSSP {
 		private int maxKey;
 		private int scanIdx;
 
-<span class="fc" id="L180">		DialHeap() {</span>
-<span class="fc" id="L181">			maxKey = -1;</span>
-<span class="fc" id="L182">		}</span>
+<span class="fc" id="L173">		DialHeap() {</span>
+<span class="fc" id="L174">			maxKey = -1;</span>
+<span class="fc" id="L175">		}</span>
 
 		void init(int maxKey) {
-<span class="fc bfc" id="L185" title="All 4 branches covered.">			if (a == null || this.maxKey &lt; maxKey) {</span>
-<span class="fc" id="L186">				a = new Node[maxKey];</span>
-<span class="fc" id="L187">				this.maxKey = maxKey;</span>
+<span class="fc bfc" id="L178" title="All 4 branches covered.">			if (a == null || this.maxKey &lt; maxKey) {</span>
+<span class="fc" id="L179">				a = new Node[maxKey];</span>
+<span class="fc" id="L180">				this.maxKey = maxKey;</span>
 			}
-<span class="fc" id="L189">			scanIdx = 0;</span>
-<span class="fc" id="L190">		}</span>
+<span class="fc" id="L182">			scanIdx = 0;</span>
+<span class="fc" id="L183">		}</span>
 
 		void clear() {
-<span class="fc" id="L193">			Node[] a = this.a;</span>
-<span class="fc" id="L194">			int maxKey = this.maxKey;</span>
-<span class="fc bfc" id="L195" title="All 2 branches covered.">			for (int i = 0; i &lt; maxKey; i++) {</span>
-<span class="pc bpc" id="L196" title="1 of 2 branches missed.">				if (a[i] == null)</span>
-<span class="fc" id="L197">					continue;</span>
-<span class="nc" id="L198">				for (Node p = a[i];;) {</span>
-<span class="nc" id="L199">					Node n = p.next;</span>
-<span class="nc bnc" id="L200" title="All 2 branches missed.">					if (n == null)</span>
-<span class="nc" id="L201">						break;</span>
-<span class="nc" id="L202">					p.next = n.prev = null;</span>
-<span class="nc" id="L203">					n = p;</span>
-<span class="nc" id="L204">				}</span>
-<span class="nc" id="L205">				a[i] = null;</span>
+<span class="fc" id="L186">			Node[] a = this.a;</span>
+<span class="fc" id="L187">			int maxKey = this.maxKey;</span>
+<span class="fc bfc" id="L188" title="All 2 branches covered.">			for (int i = 0; i &lt; maxKey; i++) {</span>
+<span class="pc bpc" id="L189" title="1 of 2 branches missed.">				if (a[i] == null)</span>
+<span class="fc" id="L190">					continue;</span>
+<span class="nc" id="L191">				for (Node p = a[i];;) {</span>
+<span class="nc" id="L192">					Node n = p.next;</span>
+<span class="nc bnc" id="L193" title="All 2 branches missed.">					if (n == null)</span>
+<span class="nc" id="L194">						break;</span>
+<span class="nc" id="L195">					p.next = n.prev = null;</span>
+<span class="nc" id="L196">					n = p;</span>
+<span class="nc" id="L197">				}</span>
+<span class="nc" id="L198">				a[i] = null;</span>
 			}
-<span class="fc" id="L207">		}</span>
+<span class="fc" id="L200">		}</span>
 
 		Node insert(int distance, int v) {
-<span class="fc" id="L210">			Node n = new Node(distance, v);</span>
-<span class="fc" id="L211">			insertNode(n);</span>
-<span class="fc" id="L212">			return n;</span>
+<span class="fc" id="L203">			Node n = new Node(distance, v);</span>
+<span class="fc" id="L204">			insertNode(n);</span>
+<span class="fc" id="L205">			return n;</span>
 		}
 
 		private void insertNode(Node n) {
-<span class="fc" id="L216">			Node[] a = this.a;</span>
-<span class="fc" id="L217">			Node head = a[n.distance];</span>
-<span class="fc bfc" id="L218" title="All 2 branches covered.">			if (head != null) {</span>
-<span class="fc" id="L219">				n.next = head;</span>
-<span class="fc" id="L220">				head.prev = n;</span>
+<span class="fc" id="L209">			Node[] a = this.a;</span>
+<span class="fc" id="L210">			Node head = a[n.distance];</span>
+<span class="fc bfc" id="L211" title="All 2 branches covered.">			if (head != null) {</span>
+<span class="fc" id="L212">				n.next = head;</span>
+<span class="fc" id="L213">				head.prev = n;</span>
 			}
-<span class="fc" id="L222">			a[n.distance] = n;</span>
-<span class="fc" id="L223">		}</span>
+<span class="fc" id="L215">			a[n.distance] = n;</span>
+<span class="fc" id="L216">		}</span>
 
 		void decreaseKey(Node n, int k) {
-<span class="fc" id="L226">			Node next = n.next, prev = n.prev;</span>
-<span class="fc bfc" id="L227" title="All 2 branches covered.">			if (next != null) {</span>
-<span class="fc" id="L228">				next.prev = prev;</span>
-<span class="fc" id="L229">				n.next = null;</span>
+<span class="fc" id="L219">			Node next = n.next, prev = n.prev;</span>
+<span class="fc bfc" id="L220" title="All 2 branches covered.">			if (next != null) {</span>
+<span class="fc" id="L221">				next.prev = prev;</span>
+<span class="fc" id="L222">				n.next = null;</span>
 			}
-<span class="fc bfc" id="L231" title="All 2 branches covered.">			if (prev != null) {</span>
-<span class="fc" id="L232">				prev.next = next;</span>
-<span class="fc" id="L233">				n.prev = null;</span>
+<span class="fc bfc" id="L224" title="All 2 branches covered.">			if (prev != null) {</span>
+<span class="fc" id="L225">				prev.next = next;</span>
+<span class="fc" id="L226">				n.prev = null;</span>
 			} else
-<span class="fc" id="L235">				a[n.distance] = next;</span>
-<span class="fc" id="L236">			n.distance = k;</span>
-<span class="fc" id="L237">			insertNode(n);</span>
-<span class="fc" id="L238">		}</span>
+<span class="fc" id="L228">				a[n.distance] = next;</span>
+<span class="fc" id="L229">			n.distance = k;</span>
+<span class="fc" id="L230">			insertNode(n);</span>
+<span class="fc" id="L231">		}</span>
 
 		Node extractMin() {
-<span class="fc" id="L241">			Node[] a = this.a;</span>
-<span class="fc" id="L242">			Node min = null;</span>
+<span class="fc" id="L234">			Node[] a = this.a;</span>
+<span class="fc" id="L235">			Node min = null;</span>
 			int i;
-<span class="fc bfc" id="L244" title="All 2 branches covered.">			for (i = scanIdx; i &lt; a.length; i++) {</span>
-<span class="fc" id="L245">				Node n = a[i];</span>
-<span class="fc bfc" id="L246" title="All 2 branches covered.">				if (n != null) {</span>
-<span class="fc" id="L247">					Node next = n.next;</span>
-<span class="fc" id="L248">					a[i] = next;</span>
-<span class="fc bfc" id="L249" title="All 2 branches covered.">					if (next != null)</span>
-<span class="fc" id="L250">						n.next = next.prev = null;</span>
-<span class="fc" id="L251">					min = n;</span>
-<span class="fc" id="L252">					break;</span>
+<span class="fc bfc" id="L237" title="All 2 branches covered.">			for (i = scanIdx; i &lt; a.length; i++) {</span>
+<span class="fc" id="L238">				Node n = a[i];</span>
+<span class="fc bfc" id="L239" title="All 2 branches covered.">				if (n != null) {</span>
+<span class="fc" id="L240">					Node next = n.next;</span>
+<span class="fc" id="L241">					a[i] = next;</span>
+<span class="fc bfc" id="L242" title="All 2 branches covered.">					if (next != null)</span>
+<span class="fc" id="L243">						n.next = next.prev = null;</span>
+<span class="fc" id="L244">					min = n;</span>
+<span class="fc" id="L245">					break;</span>
 				}
 			}
-<span class="fc" id="L255">			scanIdx = i;</span>
-<span class="fc" id="L256">			return min;</span>
+<span class="fc" id="L248">			scanIdx = i;</span>
+<span class="fc" id="L249">			return min;</span>
 		}
 
 		static class Node {
@@ -264,10 +257,10 @@ public class SSSPDial implements SSSP {
 			Node next;
 			Node prev;
 
-<span class="fc" id="L267">			Node(int distance, int v) {</span>
-<span class="fc" id="L268">				this.distance = distance;</span>
-<span class="fc" id="L269">				this.v = v;</span>
-<span class="fc" id="L270">			}</span>
+<span class="fc" id="L260">			Node(int distance, int v) {</span>
+<span class="fc" id="L261">				this.distance = distance;</span>
+<span class="fc" id="L262">				this.v = v;</span>
+<span class="fc" id="L263">			}</span>
 		}
 
 	}

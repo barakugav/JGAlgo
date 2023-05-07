@@ -72,28 +72,49 @@ public interface MaximumMatching {
 
 <span class="nc" id="L73">			boolean cardinality = false;</span>
 <span class="nc" id="L74">			boolean isBipartite = false;</span>
+			String impl;
 
 			@Override
 			public MaximumMatching build() {
-<span class="nc bnc" id="L78" title="All 2 branches missed.">				if (cardinality) {</span>
-<span class="nc bnc" id="L79" title="All 2 branches missed.">					return isBipartite ? new MaximumMatchingCardinalityBipartiteHopcroftKarp()</span>
-<span class="nc" id="L80">							: new MaximumMatchingCardinalityGabow1976();</span>
+<span class="nc bnc" id="L79" title="All 2 branches missed.">				if (impl != null) {</span>
+<span class="nc bnc" id="L80" title="All 2 branches missed.">					if (MaximumMatchingCardinalityBipartiteHopcroftKarp.class.getSimpleName().equals(impl))</span>
+<span class="nc" id="L81">						return new MaximumMatchingCardinalityBipartiteHopcroftKarp();</span>
+<span class="nc bnc" id="L82" title="All 2 branches missed.">					if (MaximumMatchingCardinalityGabow1976.class.getSimpleName().equals(impl))</span>
+<span class="nc" id="L83">						return new MaximumMatchingCardinalityGabow1976();</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">					if (MaximumMatchingWeightedBipartiteHungarianMethod.class.getSimpleName().equals(impl))</span>
+<span class="nc" id="L85">						return new MaximumMatchingWeightedBipartiteHungarianMethod();</span>
+<span class="nc bnc" id="L86" title="All 2 branches missed.">					if (MaximumMatchingWeightedGabow1990.class.getSimpleName().equals(impl))</span>
+<span class="nc" id="L87">						return new MaximumMatchingWeightedGabow1990();</span>
+<span class="nc bnc" id="L88" title="All 2 branches missed.">					if (MaximumMatchingWeightedGabow1990Simpler.class.getSimpleName().equals(impl))</span>
+<span class="nc" id="L89">						return new MaximumMatchingWeightedGabow1990Simpler();</span>
+<span class="nc" id="L90">					System.err.println(&quot;unknown 'impl' value: &quot; + impl);</span>
+				}
+<span class="nc bnc" id="L92" title="All 2 branches missed.">				if (cardinality) {</span>
+<span class="nc bnc" id="L93" title="All 2 branches missed.">					return isBipartite ? new MaximumMatchingCardinalityBipartiteHopcroftKarp()</span>
+<span class="nc" id="L94">							: new MaximumMatchingCardinalityGabow1976();</span>
 				} else {
-<span class="nc bnc" id="L82" title="All 2 branches missed.">					return isBipartite ? new MaximumMatchingWeightedBipartiteHungarianMethod()</span>
-<span class="nc" id="L83">							: new MaximumMatchingWeightedGabow1990();</span>
+<span class="nc bnc" id="L96" title="All 2 branches missed.">					return isBipartite ? new MaximumMatchingWeightedBipartiteHungarianMethod()</span>
+<span class="nc" id="L97">							: new MaximumMatchingWeightedGabow1990();</span>
 				}
 			}
 
 			@Override
 			public MaximumMatching.Builder setBipartite(boolean bipartite) {
-<span class="nc" id="L89">				isBipartite = bipartite;</span>
-<span class="nc" id="L90">				return this;</span>
+<span class="nc" id="L103">				isBipartite = bipartite;</span>
+<span class="nc" id="L104">				return this;</span>
 			}
 
 			@Override
 			public MaximumMatching.Builder setCardinality(boolean cardinality) {
-<span class="nc" id="L95">				this.cardinality = cardinality;</span>
-<span class="nc" id="L96">				return this;</span>
+<span class="nc" id="L109">				this.cardinality = cardinality;</span>
+<span class="nc" id="L110">				return this;</span>
+			}
+
+			@Override
+			public MaximumMatching.Builder setOption(String key, Object value) {
+<span class="nc bnc" id="L115" title="All 2 branches missed.">				if (&quot;impl&quot;.equals(key))</span>
+<span class="nc bnc" id="L116" title="All 2 branches missed.">					impl = value instanceof String ? (String) value : null;</span>
+<span class="nc" id="L117">				return this;</span>
 			}
 		};
 	}
@@ -104,7 +125,7 @@ public interface MaximumMatching {
 	 * @see    MaximumMatching#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder {
+	static interface Builder extends BuilderAbstract&lt;MaximumMatching.Builder&gt; {
 
 		/**
 		 * Create a new maximum matching algorithm object.

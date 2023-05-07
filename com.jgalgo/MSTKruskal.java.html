@@ -42,11 +42,13 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 public class MSTKruskal implements MST {
 
 <span class="fc" id="L44">	private IntFunction&lt;? extends UnionFind&gt; unionFindBuilder = UnionFindArray::new;</span>
+<span class="fc" id="L45">	private int[] edges = IntArrays.EMPTY_ARRAY;</span>
+	private UnionFind uf;
 
 	/**
 	 * Construct a new MST algorithm object.
 	 */
-<span class="fc" id="L49">	public MSTKruskal() {}</span>
+<span class="fc" id="L51">	public MSTKruskal() {}</span>
 
 	/**
 	 * [experimental API] Set the implementation of {@link UnionFind} used by this algorithm.
@@ -55,8 +57,9 @@ public class MSTKruskal implements MST {
 	 *                    {@code 0,1,2,...,n-1}.
 	 */
 	public void experimental_setUnionFindBuilder(IntFunction&lt;? extends UnionFind&gt; builder) {
-<span class="nc" id="L58">		unionFindBuilder = Objects.requireNonNull(builder);</span>
-<span class="nc" id="L59">	}</span>
+<span class="nc" id="L60">		unionFindBuilder = Objects.requireNonNull(builder);</span>
+<span class="nc" id="L61">		uf = null;</span>
+<span class="nc" id="L62">	}</span>
 
 	/**
 	 * {@inheritDoc}
@@ -65,30 +68,38 @@ public class MSTKruskal implements MST {
 	 */
 	@Override
 	public MST.Result computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
-<span class="fc" id="L68">		ArgumentCheck.onlyUndirected(g);</span>
-<span class="fc" id="L69">		int n = g.vertices().size();</span>
-<span class="fc bfc" id="L70" title="All 2 branches covered.">		if (n == 0)</span>
-<span class="fc" id="L71">			return MSTResultImpl.Empty;</span>
+<span class="fc" id="L71">		ArgumentCheck.onlyUndirected(g);</span>
+<span class="fc" id="L72">		final int n = g.vertices().size();</span>
+<span class="fc" id="L73">		final int m = g.edges().size();</span>
+<span class="pc bpc" id="L74" title="1 of 4 branches missed.">		if (n == 0 || m == 0)</span>
+<span class="fc" id="L75">			return MSTResultImpl.Empty;</span>
 
 		/* sort edges */
-<span class="fc" id="L74">		int[] edges = g.edges().toIntArray();</span>
-<span class="fc" id="L75">		IntArrays.parallelQuickSort(edges, w);</span>
+<span class="fc" id="L78">		int[] edges = this.edges = g.edges().toArray(this.edges);</span>
+<span class="fc" id="L79">		IntArrays.parallelQuickSort(edges, 0, m, w);</span>
 
 		/* create union find data structure for each vertex */
-<span class="fc" id="L78">		UnionFind uf = unionFindBuilder.apply(n);</span>
+<span class="fc" id="L82">		UnionFind uf = this.uf;</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">		if (uf == null) {</span>
+<span class="fc" id="L84">			uf = this.uf = unionFindBuilder.apply(n);</span>
+		} else {
+<span class="fc bfc" id="L86" title="All 2 branches covered.">			for (int i = 0; i &lt; n; i++)</span>
+<span class="fc" id="L87">				uf.make();</span>
+		}
 
 		/* iterate over the edges and build the MST */
-<span class="fc" id="L81">		IntCollection mst = new IntArrayList(n - 1);</span>
-<span class="fc bfc" id="L82" title="All 2 branches covered.">		for (int e : edges) {</span>
-<span class="fc" id="L83">			int u = g.edgeSource(e);</span>
-<span class="fc" id="L84">			int v = g.edgeTarget(e);</span>
+<span class="fc" id="L91">		IntCollection mst = new IntArrayList(n - 1);</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">		for (int e : edges) {</span>
+<span class="fc" id="L93">			int u = g.edgeSource(e);</span>
+<span class="fc" id="L94">			int v = g.edgeTarget(e);</span>
 
-<span class="fc bfc" id="L86" title="All 2 branches covered.">			if (uf.find(u) != uf.find(v)) {</span>
-<span class="fc" id="L87">				uf.union(u, v);</span>
-<span class="fc" id="L88">				mst.add(e);</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">			if (uf.find(u) != uf.find(v)) {</span>
+<span class="fc" id="L97">				uf.union(u, v);</span>
+<span class="fc" id="L98">				mst.add(e);</span>
 			}
 		}
-<span class="fc" id="L91">		return new MSTResultImpl(mst);</span>
+<span class="fc" id="L101">		uf.clear();</span>
+<span class="fc" id="L102">		return new MSTResultImpl(mst);</span>
 	}
 
 }

@@ -80,7 +80,7 @@ public interface MST {
 	 * @see    MST#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder {
+	static interface Builder extends BuilderAbstract&lt;MST.Builder&gt; {
 
 		/**
 		 * Create a new algorithm object for minimum spanning tree computation.
