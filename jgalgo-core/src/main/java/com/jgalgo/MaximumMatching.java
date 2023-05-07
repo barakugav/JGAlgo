@@ -104,7 +104,7 @@ public interface MaximumMatching {
 	 * @see    MaximumMatching#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder {
+	static interface Builder extends BuilderAbstract<MaximumMatching.Builder> {
 
 		/**
 		 * Create a new maximum matching algorithm object.

@@ -154,6 +154,12 @@ public interface HeapReferenceable<E> extends Heap<E> {
 		default <E> HeapReferenceable<E> build() {
 			return build(null);
 		}
+
+		@Override
+		default HeapReferenceable.Builder setOption(String key, Object value) {
+			Heap.Builder.super.setOption(key, value);
+			return this;
+		}
 	}
 
 }

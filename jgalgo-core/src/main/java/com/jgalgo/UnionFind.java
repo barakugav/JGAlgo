@@ -105,7 +105,7 @@ public interface UnionFind {
 	 * @see    UnionFind#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder {
+	static interface Builder extends BuilderAbstract<UnionFind.Builder> {
 
 		/**
 		 * Create a new union-find data structure

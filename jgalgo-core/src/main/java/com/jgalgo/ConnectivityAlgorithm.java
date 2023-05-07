@@ -69,7 +69,7 @@ public interface ConnectivityAlgorithm {
 	 * @return a new builder that can build {@link ConnectivityAlgorithm} objects
 	 */
 	static ConnectivityAlgorithm.Builder newBuilder() {
-		return new ConnectivityAlgorithmImpl.Builder();
+		return ConnectivityAlgorithmImpl::new;
 	}
 
 	/**
@@ -78,7 +78,7 @@ public interface ConnectivityAlgorithm {
 	 * @see    ConnectivityAlgorithm#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder {
+	static interface Builder extends BuilderAbstract<ConnectivityAlgorithm.Builder> {
 
 		/**
 		 * Create a new algorithm object for connectivity components computation.

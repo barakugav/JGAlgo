@@ -187,7 +187,7 @@ public interface SubtreeMergeFindMin<E> {
 	 * @see    SubtreeMergeFindMin#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder {
+	static interface Builder extends BuilderAbstract<SubtreeMergeFindMin.Builder> {
 		/**
 		 * Build a new subtree-merge-findMin data structure with the given comparator.
 		 *

@@ -128,4 +128,16 @@
     </Or>
     <Bug pattern="HE_EQUALS_NO_HASHCODE" />
   </Match>
+  <Match>
+    <!-- hashCode and toString are defined in super class, equals is defined in per-type sub-class -->
+    <Or>
+      <Class name="com.jgalgo.AStar" />
+      <Class name="com.jgalgo.ColoringDSaturHeap" />
+      <Class name="com.jgalgo.MSTFredmanTarjan" />
+      <Class name="com.jgalgo.MSTPrim" />
+      <Class name="com.jgalgo.MaximumMatchingWeightedBipartiteHungarianMethod" />
+    </Or>
+    <Method name="setHeapBuilder" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
 </FindBugsFilter>

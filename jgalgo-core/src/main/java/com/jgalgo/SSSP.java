@@ -148,7 +148,7 @@ public interface SSSP {
 	 * @see    SSSP#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder {
+	static interface Builder extends BuilderAbstract<SSSP.Builder> {
 
 		/**
 		 * Create a new algorithm object for single source shortest path computation.

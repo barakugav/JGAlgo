@@ -179,11 +179,4 @@ class ConnectivityAlgorithmImpl implements ConnectivityAlgorithm {
 		}
 	}
 
-	static class Builder implements ConnectivityAlgorithm.Builder {
-		@Override
-		public ConnectivityAlgorithm build() {
-			return new ConnectivityAlgorithmImpl();
-		}
-	}
-
 }

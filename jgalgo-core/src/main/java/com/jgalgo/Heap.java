@@ -124,7 +124,7 @@ public interface Heap<E> extends Collection<E> {
 	 * @see    Heap#newBuilder()
 	 * @author Barak Ugav
 	 */
-	public static interface Builder {
+	public static interface Builder extends BuilderAbstract<Heap.Builder> {
 		/**
 		 * Build a new heap with the given comparator.
 		 *

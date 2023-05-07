@@ -100,7 +100,7 @@ public interface APSP {
 	 * @see    APSP#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder {
+	static interface Builder extends BuilderAbstract<APSP.Builder> {
 
 		/**
 		 * Create a new algorithm object for all pairs shortest paths computation.

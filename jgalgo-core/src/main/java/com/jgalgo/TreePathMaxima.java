@@ -161,7 +161,7 @@ public interface TreePathMaxima {
 	 * @see    TreePathMaxima#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder {
+	static interface Builder extends BuilderAbstract<TreePathMaxima.Builder> {
 
 		/**
 		 * Create a new algorithm object for tree path maxima computation.

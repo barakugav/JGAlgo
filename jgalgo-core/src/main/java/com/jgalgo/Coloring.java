@@ -107,7 +107,7 @@ public interface Coloring {
 	 * @see    Coloring#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder {
+	static interface Builder extends BuilderAbstract<Coloring.Builder> {
 
 		/**
 		 * Create a new algorithm object for coloring computation.

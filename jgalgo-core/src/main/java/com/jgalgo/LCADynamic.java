@@ -128,7 +128,7 @@ public interface LCADynamic {
 	 * @see    LCADynamic#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder {
+	static interface Builder extends BuilderAbstract<LCADynamic.Builder> {
 
 		/**
 		 * Create a new dynamic LCA algorithm.

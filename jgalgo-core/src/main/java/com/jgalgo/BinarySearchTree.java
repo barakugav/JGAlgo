@@ -191,13 +191,13 @@ public interface BinarySearchTree<E> extends HeapReferenceable<E> {
 			}
 
 			@Override
-			public Builder setSplits(boolean enable) {
+			public BinarySearchTree.Builder setSplits(boolean enable) {
 				splitRequired = enable;
 				return this;
 			}
 
 			@Override
-			public Builder setMelds(boolean enable) {
+			public BinarySearchTree.Builder setMelds(boolean enable) {
 				meldRequired = enable;
 				return this;
 			}
@@ -240,6 +240,11 @@ public interface BinarySearchTree<E> extends HeapReferenceable<E> {
 		 */
 		BinarySearchTree.Builder setMelds(boolean enable);
 
+		@Override
+		default BinarySearchTree.Builder setOption(String key, Object value) {
+			HeapReferenceable.Builder.super.setOption(key, value);
+			return this;
+		}
 	}
 
 }

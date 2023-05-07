@@ -64,7 +64,7 @@ public interface MDST extends MST {
 	 * @see    MDST#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder {
+	static interface Builder extends BuilderAbstract<MDST.Builder> {
 
 		/**
 		 * Create a new algorithm object for minimum directed spanning tree computation.

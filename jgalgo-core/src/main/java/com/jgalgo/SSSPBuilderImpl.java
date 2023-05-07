@@ -16,8 +16,6 @@
 
 package com.jgalgo;
 
-import com.jgalgo.SSSP.Builder;
-
 class SSSPBuilderImpl implements SSSP.Builder {
 
 	private boolean intWeights;
@@ -43,31 +41,31 @@ class SSSPBuilderImpl implements SSSP.Builder {
 	}
 
 	@Override
-	public Builder setIntWeights(boolean enable) {
+	public SSSP.Builder setIntWeights(boolean enable) {
 		intWeights = enable;
 		return this;
 	}
 
 	@Override
-	public Builder setNegativeWeights(boolean enable) {
+	public SSSP.Builder setNegativeWeights(boolean enable) {
 		negativeWeights = enable;
 		return this;
 	}
 
 	@Override
-	public Builder setMinWeight(double minWeight) {
+	public SSSP.Builder setMinWeight(double minWeight) {
 		// this.minWeight = minWeight;
 		return this;
 	}
 
 	@Override
-	public Builder setMaxWeight(double maxWeight) {
+	public SSSP.Builder setMaxWeight(double maxWeight) {
 		// this.maxWeight = maxWeight;
 		return this;
 	}
 
 	@Override
-	public Builder setMaxDistance(double maxDistance) {
+	public SSSP.Builder setMaxDistance(double maxDistance) {
 		// this.maxDistance = maxDistance;
 		return this;
 	}

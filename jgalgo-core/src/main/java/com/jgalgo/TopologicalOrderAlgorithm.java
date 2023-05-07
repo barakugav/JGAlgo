@@ -72,7 +72,7 @@ public interface TopologicalOrderAlgorithm {
 	 * @see    TopologicalOrderAlgorithm#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder {
+	static interface Builder extends BuilderAbstract<TopologicalOrderAlgorithm.Builder> {
 
 		/**
 		 * Create a new algorithm object for topological order computation.

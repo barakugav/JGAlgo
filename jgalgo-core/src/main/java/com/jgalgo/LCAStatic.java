@@ -96,7 +96,7 @@ public interface LCAStatic {
 	 * @see    LCAStatic#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder {
+	static interface Builder extends BuilderAbstract<LCAStatic.Builder> {
 
 		/**
 		 * Create a new static LCA algorithm.

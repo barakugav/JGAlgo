@@ -198,7 +198,7 @@ public interface DynamicTree {
 	 * @see    DynamicTree#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder {
+	static interface Builder extends BuilderAbstract<DynamicTree.Builder> {
 
 		/**
 		 * Create a new dynamic trees algorithm.

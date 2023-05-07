@@ -99,7 +99,7 @@ public interface UnionFindValue extends UnionFind {
 	 * @see    UnionFindValue#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder {
+	static interface Builder extends BuilderAbstract<UnionFindValue.Builder> {
 
 		/**
 		 * Create a new union-find with values data structure

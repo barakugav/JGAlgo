@@ -80,7 +80,7 @@ public interface MinimumCutST {
 	 * @see    MinimumCutST#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder {
+	static interface Builder extends BuilderAbstract<MinimumCutST.Builder> {
 
 		/**
 		 * Create a new algorithm object for minimum cut computation.

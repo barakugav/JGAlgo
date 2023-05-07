@@ -63,7 +63,7 @@ public interface EulerianTourAlgorithm {
 	 * @see    EulerianTourAlgorithm#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder {
+	static interface Builder extends BuilderAbstract<EulerianTourAlgorithm.Builder> {
 
 		/**
 		 * Create a new algorithm object for Eulerian tours computation.

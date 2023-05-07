@@ -20,7 +20,7 @@ package com.jgalgo;
  *
  * @author Barak Ugav
  */
-public interface GraphBuilder {
+public interface GraphBuilder extends BuilderAbstract<GraphBuilder> {
 
 	/**
 	 * Create a new graph.

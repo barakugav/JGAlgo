@@ -54,7 +54,7 @@ public interface MinimumMeanCycle {
 	 * @see    MinimumMeanCycle#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder {
+	static interface Builder extends BuilderAbstract<MinimumMeanCycle.Builder> {
 
 		/**
 		 * Create a new algorithm object for minimum mean cycle computation.

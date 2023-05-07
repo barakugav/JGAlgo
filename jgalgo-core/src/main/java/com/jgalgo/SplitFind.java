@@ -91,7 +91,7 @@ public interface SplitFind {
 	 * @see    SplitFind#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder {
+	static interface Builder extends BuilderAbstract<SplitFind.Builder> {
 
 		/**
 		 * Create a new split-find data structure
