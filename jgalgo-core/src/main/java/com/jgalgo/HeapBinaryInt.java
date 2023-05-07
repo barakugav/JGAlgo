@@ -19,11 +19,14 @@ package com.jgalgo;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntComparator;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+
 /**
- * A binary heap implementation using an array.
+ * A binary heap implementation using an array specifically for int elements.
  * <p>
  * The binary heap is the most simple implementation of a heap. It does not use some complex pointer based data
  * structure, but rather a simple continue array, to store its elements. Its have very small memory footprint and should
@@ -38,10 +41,11 @@ import java.util.NoSuchElementException;
  * @see        <a href="https://en.wikipedia.org/wiki/Binary_heap">Wikipedia</a>
  * @author     Barak Ugav
  */
-class HeapBinary<E> extends HeapAbstract<E> {
+class HeapBinaryInt extends HeapAbstract<Integer> {
 
-	private E[] arr;
+	private int[] arr;
 	private int size;
+	final IntComparator intCmp;
 
 	/**
 	 * Constructs a new, empty binary heap, ordered according to the natural ordering of its elements.
@@ -52,7 +56,7 @@ class HeapBinary<E> extends HeapAbstract<E> {
 	 * that violates this constraint (for example, the user attempts to insert a string element to a heap whose elements
 	 * are integers), the {@code insert} call will throw a {@code ClassCastException}.
 	 */
-	HeapBinary() {
+	HeapBinaryInt() {
 		this(null);
 	}
 
@@ -67,12 +71,12 @@ class HeapBinary<E> extends HeapAbstract<E> {
 	 * @param comparator the comparator that will be used to order this heap. If {@code null}, the
 	 *                       {@linkplain Comparable natural ordering} of the elements will be used.
 	 */
-	HeapBinary(Comparator<? super E> comparator) {
+	HeapBinaryInt(Comparator<? super Integer> comparator) {
 		super(comparator);
-		@SuppressWarnings("unchecked")
-		E[] arr0 = (E[]) new Object[16];
-		arr = arr0;
+		arr = new int[16];
 		size = 0;
+		intCmp = comparator == null || comparator instanceof IntComparator ? (IntComparator) comparator
+				: (k1, k2) -> comparator.compare(Integer.valueOf(k1), Integer.valueOf(k2));
 	}
 
 	@Override
@@ -85,7 +89,11 @@ class HeapBinary<E> extends HeapAbstract<E> {
 	}
 
 	@Override
-	public void insert(E e) {
+	public void insert(Integer e) {
+		insert(e.intValue());
+	}
+
+	public void insert(int e) {
 		if (arr.length == size)
 			grow();
 
@@ -94,20 +102,19 @@ class HeapBinary<E> extends HeapAbstract<E> {
 	}
 
 	@Override
-	public boolean remove(Object e0) {
-		@SuppressWarnings("unchecked")
-		E e = (E) e0;
+	public boolean remove(Object e) {
+		int eInt = ((Integer) e).intValue();
 		int s = size;
-		E[] a = arr;
+		int[] a = arr;
 
 		int i;
 		if (c == null) {
 			for (i = 0; i < s; i++)
-				if (Utils.cmpDefault(e, a[i]) == 0)
+				if (Integer.compare(eInt, a[i]) == 0)
 					break;
 		} else {
 			for (i = 0; i < s; i++)
-				if (c.compare(e, a[i]) == 0)
+				if (intCmp.compare(eInt, a[i]) == 0)
 					break;
 		}
 		if (i == s)
@@ -119,23 +126,21 @@ class HeapBinary<E> extends HeapAbstract<E> {
 
 	@Override
 	public void clear() {
-		Arrays.fill(arr, 0, size, null);
 		size = 0;
 	}
 
 	@Override
-	public E findMin() {
+	public Integer findMin() {
 		if (size == 0)
 			throw new IllegalStateException();
-		return arr[0];
+		return Integer.valueOf(arr[0]);
 	}
 
 	private void remove(int idx) {
-		E[] a = arr;
+		int[] a = arr;
 
-		E old = a[idx];
-		E e = a[size-- - 1];
-		a[size] = null;
+		int old = a[idx];
+		int e = a[size-- - 1];
 
 		if (compare(e, old) <= 0)
 			moveUp(idx, e);
@@ -144,16 +149,16 @@ class HeapBinary<E> extends HeapAbstract<E> {
 	}
 
 	@Override
-	public E extractMin() {
+	public Integer extractMin() {
 		if (size == 0)
 			throw new IllegalStateException();
-		E min = arr[0];
+		int min = arr[0];
 		remove(0);
-		return min;
+		return Integer.valueOf(min);
 	}
 
 	@Override
-	public boolean addAll(Collection<? extends E> other) {
+	public boolean addAll(Collection<? extends Integer> other) {
 		if (other.isEmpty())
 			return false;
 		int combinedSize = size + other.size();
@@ -163,13 +168,23 @@ class HeapBinary<E> extends HeapAbstract<E> {
 		int reconstructionCost = combinedSize;
 		int addAllCost = other.size() + Utils.log2ceil(combinedSize);
 		if (reconstructionCost >= addAllCost) {
-			for (E e : other)
-				add(e);
+			if (other instanceof IntCollection) {
+				for (IntIterator it = ((IntCollection) other).iterator(); it.hasNext();)
+					insert(it.nextInt());
+			} else {
+				for (Integer e : other)
+					insert(e.intValue());
+			}
 		} else {
-			E[] a = arr;
+			int[] a = arr;
 			int s = size;
-			for (E e : other)
-				a[s++] = e;
+			if (other instanceof IntCollection) {
+				for (IntIterator it = ((IntCollection) other).iterator(); it.hasNext();)
+					a[s++] = it.nextInt();
+			} else {
+				for (Integer e : other)
+					a[s++] = e.intValue();
+			}
 			size = s;
 
 			if (s > 1) {
@@ -184,11 +199,11 @@ class HeapBinary<E> extends HeapAbstract<E> {
 	}
 
 	@Override
-	public Iterator<E> iterator() {
+	public IntIterator iterator() {
 		return new It();
 	}
 
-	private class It implements Iterator<E> {
+	private class It implements IntIterator {
 
 		int i;
 
@@ -202,7 +217,7 @@ class HeapBinary<E> extends HeapAbstract<E> {
 		}
 
 		@Override
-		public E next() {
+		public int nextInt() {
 			if (i >= size)
 				throw new NoSuchElementException();
 			return arr[i++];
@@ -210,13 +225,13 @@ class HeapBinary<E> extends HeapAbstract<E> {
 
 	}
 
-	private void moveUp(int i, E e) {
-		E[] a = arr;
+	private void moveUp(int i, int e) {
+		int[] a = arr;
 
 		if (c == null) {
 			for (;;) {
 				int p;
-				if (i == 0 || Utils.cmpDefault(e, a[p = (i - 1) / 2]) >= 0) { /* reached root or parent is smaller */
+				if (i == 0 || Integer.compare(e, a[p = (i - 1) / 2]) >= 0) { /* reached root or parent is smaller */
 					a[i] = e;
 					return;
 				}
@@ -228,7 +243,7 @@ class HeapBinary<E> extends HeapAbstract<E> {
 		} else {
 			for (;;) {
 				int p;
-				if (i == 0 || c.compare(e, a[p = (i - 1) / 2]) >= 0) { /* reached root or parent is smaller */
+				if (i == 0 || intCmp.compare(e, a[p = (i - 1) / 2]) >= 0) { /* reached root or parent is smaller */
 					a[i] = e;
 					return;
 				}
@@ -240,8 +255,8 @@ class HeapBinary<E> extends HeapAbstract<E> {
 		}
 	}
 
-	private void moveDown(int i, E e) {
-		E[] a = arr;
+	private void moveDown(int i, int e) {
+		int[] a = arr;
 		int s = size;
 
 		if (c == null) {
@@ -250,8 +265,8 @@ class HeapBinary<E> extends HeapAbstract<E> {
 				if (c0i >= s)
 					break;
 
-				E c01, c0 = a[c0i], c1;
-				if (c1i < s && Utils.cmpDefault(c1 = a[c1i], c0) < 0) {
+				int c01, c0 = a[c0i], c1;
+				if (c1i < s && Integer.compare(c1 = a[c1i], c0) < 0) {
 					c01i = c1i;
 					c01 = c1;
 				} else {
@@ -259,7 +274,7 @@ class HeapBinary<E> extends HeapAbstract<E> {
 					c01 = c0;
 				}
 
-				if (Utils.cmpDefault(e, c01) <= 0)
+				if (Integer.compare(e, c01) <= 0)
 					break;
 
 				/* continue down */
@@ -272,8 +287,8 @@ class HeapBinary<E> extends HeapAbstract<E> {
 				if (c0i >= s)
 					break;
 
-				E c01, c0 = a[c0i], c1;
-				if (c1i < s && c.compare(c1 = a[c1i], c0) < 0) {
+				int c01, c0 = a[c0i], c1;
+				if (c1i < s && intCmp.compare(c1 = a[c1i], c0) < 0) {
 					c01i = c1i;
 					c01 = c1;
 				} else {
@@ -281,7 +296,7 @@ class HeapBinary<E> extends HeapAbstract<E> {
 					c01 = c0;
 				}
 
-				if (c.compare(e, c01) <= 0)
+				if (intCmp.compare(e, c01) <= 0)
 					break;
 
 				/* continue down */
@@ -290,6 +305,10 @@ class HeapBinary<E> extends HeapAbstract<E> {
 			}
 		}
 		a[i] = e;
+	}
+
+	int compare(int e1, int e2) {
+		return c == null ? Integer.compare(e1, e2) : intCmp.compare(e1, e2);
 	}
 
 }

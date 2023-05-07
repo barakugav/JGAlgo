@@ -37,7 +37,6 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.Heap;
-import com.jgalgo.HeapBinary;
 import com.jgalgo.HeapBinomial;
 import com.jgalgo.HeapFibonacci;
 import com.jgalgo.HeapPairing;
@@ -100,7 +99,7 @@ public class HeapBench {
 		}
 	}
 
-	private void benchHeap(Heap.Builder heapBuilder, Blackhole blackhole) {
+	private void benchHeap(Heap.Builder<Integer> heapBuilder, Blackhole blackhole) {
 		Heap<Integer> heap = heapBuilder.build();
 
 		List<Op> sequence = sequences.get(graphIdx.getAndUpdate(i -> (i + 1) % sequencesNum));
@@ -128,7 +127,7 @@ public class HeapBench {
 
 	@Benchmark
 	public void Binary(Blackhole blackhole) {
-		benchHeap(HeapBinary::new, blackhole);
+		benchHeap(Heap.newBuilder().primitiveElements(int.class), blackhole);
 	}
 
 	@Benchmark
@@ -156,11 +155,23 @@ public class HeapBench {
 		benchHeap(heapBuilder(SplayTree::new), blackhole);
 	}
 
-	private static Heap.Builder heapBuilder(HeapReferenceable.Builder builder) {
-		return new Heap.Builder() {
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private static Heap.Builder<Integer> heapBuilder(HeapReferenceable.Builder builder) {
+		return new Heap.Builder<>() {
+
 			@Override
-			public <E> Heap<E> build(Comparator<? super E> cmp) {
-				return builder.<E, Object>build(cmp).asHeap();
+			public Heap build(Comparator cmp) {
+				return builder.build(cmp).asHeap();
+			}
+
+			@Override
+			public <OE> Heap.Builder<OE> objElements() {
+				return (Heap.Builder<OE>) this;
+			}
+
+			@Override
+			public <PE> Heap.Builder<PE> primitiveElements(Class<? extends PE> primitiveType) {
+				return (Heap.Builder<PE>) this;
 			}
 		};
 	}

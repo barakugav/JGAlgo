@@ -111,8 +111,35 @@ public interface Heap<E> extends Collection<E> {
 	 *
 	 * @return a new builder that can build {@link Heap} objects
 	 */
-	static Heap.Builder newBuilder() {
-		return HeapBinary::new;
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	static Heap.Builder<Object> newBuilder() {
+		return new Heap.Builder<>() {
+
+			Class<?> type;
+
+			@Override
+			public Heap build(Comparator cmp) {
+				if (type == int.class) {
+					return new HeapBinaryInt(cmp);
+				} else {
+					return new HeapBinary<>(cmp);
+				}
+			}
+
+			@Override
+			public <OE> Heap.Builder<OE> objElements() {
+				type = null;
+				return (Builder<OE>) this;
+			}
+
+			@Override
+			public <PE> Heap.Builder<PE> primitiveElements(Class<? extends PE> primitiveType) {
+				if (!primitiveType.isPrimitive())
+					throw new IllegalArgumentException("type is not primitive: " + primitiveType);
+				type = primitiveType;
+				return (Builder<PE>) this;
+			}
+		};
 	}
 
 	/**
@@ -120,18 +147,18 @@ public interface Heap<E> extends Collection<E> {
 	 * <p>
 	 * Used to change heaps implementations which are used as black box by some algorithms.
 	 *
-	 * @see    Heap#newBuilder()
-	 * @author Barak Ugav
+	 * @param  <E> the heap elements type
+	 * @see        Heap#newBuilder()
+	 * @author     Barak Ugav
 	 */
-	public static interface Builder extends BuilderAbstract<Heap.Builder> {
+	public static interface Builder<E> extends BuilderAbstract<Heap.Builder<E>> {
 		/**
 		 * Build a new heap with the given comparator.
 		 *
-		 * @param  <E> the heap elements type
 		 * @param  cmp the comparator that will be used to order the elements in the heap
 		 * @return     the newly constructed heap
 		 */
-		<E> Heap<E> build(Comparator<? super E> cmp);
+		Heap<E> build(Comparator<? super E> cmp);
 
 		/**
 		 * Build a new heap with {@linkplain Comparable natural ordering}.
@@ -139,9 +166,31 @@ public interface Heap<E> extends Collection<E> {
 		 * @param  <E> the heap elements type
 		 * @return     the newly constructed heap
 		 */
-		default <E> Heap<E> build() {
+		default Heap<E> build() {
 			return build(null);
 		}
+
+		/**
+		 * Change the elements type of the built heaps to a generic object type.
+		 *
+		 * @param  <OE> object type
+		 * @return      this builder
+		 */
+		<OE> Heap.Builder<OE> objElements();
+
+		/**
+		 * Change the elements type of the built heaps to some primitive type.
+		 * <p>
+		 * Some specific type implementation may exists that is more efficient than the boxed general object
+		 * implementation.
+		 *
+		 * @param  <PE>                     elements primitive boxed type
+		 * @param  primitiveType            the class of the primitive type
+		 * @return                          this builder
+		 * @throws IllegalArgumentException if {@code primitiveType} is not a class of a primitive type, a.k.a
+		 *                                      {@code int.class, double.class} ect.
+		 */
+		<PE> Heap.Builder<PE> primitiveElements(Class<? extends PE> primitiveType);
 	}
 
 }

@@ -14,35 +14,35 @@
  * limitations under the License.
  */
 
- package com.jgalgo;
+package com.jgalgo;
 
- import static org.junit.jupiter.api.Assertions.assertEquals;
- import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
- import java.util.ArrayList;
- import java.util.Comparator;
- import java.util.HashSet;
- import java.util.Iterator;
- import java.util.List;
- import java.util.Map;
- import java.util.NavigableMap;
- import java.util.Random;
- import java.util.Set;
- import java.util.TreeMap;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.NavigableMap;
+import java.util.Random;
+import java.util.Set;
+import java.util.TreeMap;
 
- class HeapTestUtils extends TestUtils {
+class HeapTestUtils extends TestUtils {
 
 	private HeapTestUtils() {}
 
-	static void testRandOpsDefaultCompare(Heap.Builder heapBuilder, long seed) {
+	static void testRandOpsDefaultCompare(Heap.Builder<Integer> heapBuilder, long seed) {
 		testRandOps(heapBuilder, null, seed);
 	}
 
-	static void testRandOpsCustomCompare(Heap.Builder heapBuilder, long seed) {
+	static void testRandOpsCustomCompare(Heap.Builder<Integer> heapBuilder, long seed) {
 		testRandOps(heapBuilder, (x1, x2) -> -Integer.compare(x1.intValue(), x2.intValue()), seed);
 	}
 
-	private static void testRandOps(Heap.Builder heapBuilder, Comparator<? super Integer> compare, long seed) {
+	private static void testRandOps(Heap.Builder<Integer> heapBuilder, Comparator<? super Integer> compare, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(128, 16, 16), phase(64, 64, 128), phase(32, 512, 1024), phase(8, 4096, 8096),
 				phase(4, 16384, 32768));
@@ -53,7 +53,7 @@
 		});
 	}
 
-	static void testRandOpsAfterManyInserts(Heap.Builder heapBuilder, long seed) {
+	static void testRandOpsAfterManyInserts(Heap.Builder<Integer> heapBuilder, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		final Comparator<? super Integer> compare = null;
 		List<Phase> phases = List.of(phase(256, 16, 16), phase(128, 64, 128), phase(64, 512, 1024),
@@ -66,24 +66,24 @@
 		});
 	}
 
-	static void testMeldDefaultCompare(Heap.Builder heapBuilder, long seed) {
+	static void testMeldDefaultCompare(Heap.Builder<Integer> heapBuilder, long seed) {
 		testMeld(heapBuilder, false, null, seed);
 	}
 
-	static void testMeldCustomCompare(Heap.Builder heapBuilder, long seed) {
+	static void testMeldCustomCompare(Heap.Builder<Integer> heapBuilder, long seed) {
 		testMeld(heapBuilder, false, (x1, x2) -> -Integer.compare(x1.intValue(), x2.intValue()), seed);
 	}
 
-	static void testMeldWithOrderedValuesDefaultCompare(Heap.Builder heapBuilder, long seed) {
+	static void testMeldWithOrderedValuesDefaultCompare(Heap.Builder<Integer> heapBuilder, long seed) {
 		testMeld(heapBuilder, true, null, seed);
 	}
 
-	static void testMeldWithOrderedValuesCustomCompare(Heap.Builder heapBuilder, long seed) {
+	static void testMeldWithOrderedValuesCustomCompare(Heap.Builder<Integer> heapBuilder, long seed) {
 		testMeld(heapBuilder, true, (x1, x2) -> -Integer.compare(x1.intValue(), x2.intValue()), seed);
 	}
 
-	private static void testMeld(Heap.Builder heapBuilder, boolean orderedValues, Comparator<? super Integer> compare,
-			long seed) {
+	private static void testMeld(Heap.Builder<Integer> heapBuilder, boolean orderedValues,
+			Comparator<? super Integer> compare, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(64, 16), phase(64, 32), phase(8, 256), phase(1, 2048));
 		runTestMultiple(phases, (testIter, args) -> {
@@ -92,7 +92,7 @@
 		});
 	}
 
-	private static void testMeld(Heap.Builder heapBuilder, boolean orderedValues, int hCount,
+	private static void testMeld(Heap.Builder<Integer> heapBuilder, boolean orderedValues, int hCount,
 			Comparator<? super Integer> compare, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Set<HeapTracker> heaps = new HashSet<>();
@@ -136,7 +136,6 @@
 			heaps.addAll(heapsNext);
 		}
 	}
-
 
 	static enum TestMode {
 		Normal, InsertFirst,
@@ -195,7 +194,6 @@
 			return x;
 		}
 
-
 		void meld(HeapTracker other) {
 			for (Map.Entry<Integer, Integer> e : other.elms.entrySet())
 				elms.merge(e.getKey(), e.getValue(), (c1, c2) -> c1 != null ? c1 + c2 : c2);
@@ -227,9 +225,9 @@
 		}
 
 		@Override
-		               public String toString() {
-		                       return elms.toString();
-		               }
+		public String toString() {
+			return elms.toString();
+		}
 
 		@Override
 		public int compareTo(HeapTracker o) {
@@ -268,11 +266,6 @@
 	}
 
 	@SuppressWarnings("boxing")
-	private static int compare(Comparator<? super Integer> c, int e1, int e2) {
-		return c == null ? Integer.compare(e1, e2) : c.compare(e1, e2);
-	}
-
-	@SuppressWarnings("boxing")
 	static void testHeap(HeapTracker tracker, int m, TestMode mode, int[] values, Comparator<? super Integer> compare,
 			long seed) {
 		DebugPrintsManager debug = new DebugPrintsManager(false);
@@ -287,7 +280,7 @@
 
 		debug.println("\t testHeap begin");
 
-		opLoop: for (int opIdx = 0; opIdx < m;) {
+		for (int opIdx = 0; opIdx < m;) {
 			HeapOp op = opIdx < insertFirst ? HeapOp.Insert : ops.get(rand.nextInt(ops.size()));
 
 			int x, expected, actual;
@@ -355,4 +348,4 @@
 		assertEquals(expected, actual, "unexpected size");
 	}
 
- }
+}

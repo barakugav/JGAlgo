@@ -16,38 +16,60 @@
 
 package com.jgalgo;
 
+import java.util.Comparator;
 import org.junit.jupiter.api.Test;
 
 public class HeapBinaryTest extends TestBase {
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private static Heap.Builder<Integer> heapBuilder() {
+		return new Heap.Builder<>() {
+
+			@Override
+			public Heap build(Comparator cmp) {
+				return new HeapBinaryInt(cmp);
+			}
+
+			@Override
+			public <OE> Heap.Builder<OE> objElements() {
+				return (Heap.Builder<OE>) this;
+			}
+
+			@Override
+			public <PE> Heap.Builder<PE> primitiveElements(Class<? extends PE> primitiveType) {
+				return (Heap.Builder<PE>) this;
+			}
+		};
+	}
+
 	@Test
 	public void testRandOpsDefaultCompare() {
 		final long seed = 0xce76e918bde66ee3L;
-		HeapTestUtils.testRandOpsDefaultCompare(HeapBinary::new, seed);
+		HeapTestUtils.testRandOpsDefaultCompare(heapBuilder(), seed);
 	}
 
 	@Test
 	public void testRandOpsCustomCompare() {
 		final long seed = 0xc8c79b6e3d880041L;
-		HeapTestUtils.testRandOpsCustomCompare(HeapBinary::new, seed);
+		HeapTestUtils.testRandOpsCustomCompare(heapBuilder(), seed);
 	}
 
 	@Test
 	public void testRandOpsAfterManyInserts() {
 		final long seed = 0x2c46712aa83d74a2L;
-		HeapTestUtils.testRandOpsAfterManyInserts(HeapBinary::new, seed);
+		HeapTestUtils.testRandOpsAfterManyInserts(heapBuilder(), seed);
 	}
 
 	@Test
 	public void testMeldDefaultCompare() {
 		final long seed = 0xa7e09a00be04a88bL;
-		HeapTestUtils.testMeldDefaultCompare(HeapBinary::new, seed);
+		HeapTestUtils.testMeldDefaultCompare(heapBuilder(), seed);
 	}
 
 	@Test
 	public void testMeldCustomCompare() {
 		final long seed = 0x92cd7f63c8322849L;
-		HeapTestUtils.testMeldCustomCompare(HeapBinary::new, seed);
+		HeapTestUtils.testMeldCustomCompare(heapBuilder(), seed);
 	}
 
 }

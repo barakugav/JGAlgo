@@ -21,11 +21,23 @@ import org.junit.jupiter.api.Test;
 
 public class RedBlackTreeTest extends TestBase {
 
-	private static Heap.Builder heapBuilder() {
-		return new Heap.Builder() {
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private static Heap.Builder<Integer> heapBuilder() {
+		return new Heap.Builder<>() {
+
 			@Override
-			public <E> Heap<E> build(Comparator<? super E> cmp) {
-				return new RedBlackTree<E, Object>(cmp).asHeap();
+			public Heap build(Comparator cmp) {
+				return new RedBlackTree<Integer, Object>(cmp).asHeap();
+			}
+
+			@Override
+			public <OE> Heap.Builder<OE> objElements() {
+				return (Heap.Builder<OE>) this;
+			}
+
+			@Override
+			public <PE> Heap.Builder<PE> primitiveElements(Class<? extends PE> primitiveType) {
+				return (Heap.Builder<PE>) this;
 			}
 		};
 	}
