@@ -42,6 +42,8 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 public class MSTKruskal implements MST {
 
 	private IntFunction<? extends UnionFind> unionFindBuilder = UnionFindArray::new;
+	private int[] edges = IntArrays.EMPTY_ARRAY;
+	private UnionFind uf;
 
 	/**
 	 * Construct a new MST algorithm object.
@@ -56,6 +58,7 @@ public class MSTKruskal implements MST {
 	 */
 	public void experimental_setUnionFindBuilder(IntFunction<? extends UnionFind> builder) {
 		unionFindBuilder = Objects.requireNonNull(builder);
+		uf = null;
 	}
 
 	/**
@@ -66,16 +69,23 @@ public class MSTKruskal implements MST {
 	@Override
 	public MST.Result computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
 		ArgumentCheck.onlyUndirected(g);
-		int n = g.vertices().size();
-		if (n == 0)
+		final int n = g.vertices().size();
+		final int m = g.edges().size();
+		if (n == 0 || m == 0)
 			return MSTResultImpl.Empty;
 
 		/* sort edges */
-		int[] edges = g.edges().toIntArray();
-		IntArrays.parallelQuickSort(edges, w);
+		int[] edges = this.edges = g.edges().toArray(this.edges);
+		IntArrays.parallelQuickSort(edges, 0, m, w);
 
 		/* create union find data structure for each vertex */
-		UnionFind uf = unionFindBuilder.apply(n);
+		UnionFind uf = this.uf;
+		if (uf == null) {
+			uf = this.uf = unionFindBuilder.apply(n);
+		} else {
+			for (int i = 0; i < n; i++)
+				uf.make();
+		}
 
 		/* iterate over the edges and build the MST */
 		IntCollection mst = new IntArrayList(n - 1);
@@ -88,6 +98,7 @@ public class MSTKruskal implements MST {
 				mst.add(e);
 			}
 		}
+		uf.clear();
 		return new MSTResultImpl(mst);
 	}
 

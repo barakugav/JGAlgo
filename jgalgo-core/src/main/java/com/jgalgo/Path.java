@@ -20,7 +20,6 @@ import java.util.Arrays;
 import it.unimi.dsi.fastutil.ints.AbstractIntList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntListIterator;
 import it.unimi.dsi.fastutil.ints.IntLists;
@@ -165,19 +164,7 @@ public class Path extends AbstractIntList {
 	 * @return   the sum of this path edges weights
 	 */
 	public double weight(EdgeWeightFunc w) {
-		if (w instanceof EdgeWeightFunc.Int) {
-			EdgeWeightFunc.Int w0 = (EdgeWeightFunc.Int) w;
-			int s = 0;
-			for (IntIterator eit = iterator(); eit.hasNext();)
-				s += w0.weightInt(eit.nextInt());
-			return s;
-
-		} else {
-			double s = 0;
-			for (IntIterator eit = iterator(); eit.hasNext();)
-				s += w.weight(eit.nextInt());
-			return s;
-		}
+		return GraphsUtils.edgesWeightSum(iterator(), w);
 	}
 
 	private static class IterUndirected implements EdgeIterImpl {

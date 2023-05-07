@@ -97,4 +97,9 @@ class MatchingImpl implements Matching {
 		}
 	}
 
+	@Override
+	public String toString() {
+		return edges().toString();
+	}
+
 }

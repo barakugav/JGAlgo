@@ -88,6 +88,8 @@ class MemoryReuse {
 	static final IntList[] EmptyIntListArr = new IntList[0];
 	static final Graph[] EmptyGraphArr = new Graph[0];
 	static final Weights.Double[] EmptyWeightsDoubleArr = new Weights.Double[0];
+	@SuppressWarnings("rawtypes")
+	static final HeapReference[] EmptyHeapReferenceArr = new HeapReference[0];
 	static final TreePathMaxima.Queries[] EmptyTpmQueriesArr = new TreePathMaxima.Queries[0];
 	static final TreePathMaxima.Result[] EmptyTpmResultArr = new TreePathMaxima.Result[0];
 

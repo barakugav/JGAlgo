@@ -17,8 +17,7 @@
 package com.jgalgo;
 
 import java.util.Arrays;
-
-import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntIterators;
 
 /**
  * Dial's algorithm for Single Source Shortest Path for positive integer weights.
@@ -87,19 +86,13 @@ public class SSSPDial implements SSSP {
 
 		int maxDistance = 0;
 		if (m <= n - 1) {
-			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-				int e = it.nextInt();
-				maxDistance += w0.weightInt(e);
-			}
+			maxDistance = (int) GraphsUtils.edgesWeightSum(g.edges().iterator(), w0);
 
 		} else {
-			int[] edges = g.edges().toArray(this.edges);
-			ArraysUtils.getKthElement(edges, 0, g.edges().size(), n - 1,
-					(e1, e2) -> Integer.compare(w0.weightInt(e1), w0.weightInt(e2)), true);
-
 			/* sum the n-1 heaviest weights */
-			for (int i = edges.length - n - 1; i < edges.length; i++)
-				maxDistance += w0.weightInt(edges[i]);
+			int[] edges = g.edges().toArray(this.edges);
+			ArraysUtils.getKthElement(edges, 0, g.edges().size(), n - 1, w0, true);
+			maxDistance = (int) GraphsUtils.edgesWeightSum(IntIterators.wrap(edges, edges.length - n + 1, n - 1), w0);
 		}
 
 		SSSP.Result res = computeShortestPaths(g, w0, source, maxDistance);

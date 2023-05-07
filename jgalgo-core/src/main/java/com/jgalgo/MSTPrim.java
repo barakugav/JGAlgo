@@ -16,6 +16,7 @@
 
 package com.jgalgo;
 
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Objects;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -41,6 +42,9 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 public class MSTPrim implements MST {
 
 	private HeapReferenceable.Builder heapBuilder = HeapPairing::new;
+	@SuppressWarnings("unchecked")
+	private HeapReference<Integer>[] verticesPtrs = MemoryReuse.EmptyHeapReferenceArr;
+	private final BitSet visited = new BitSet();
 
 	/**
 	 * Construct a new MST algorithm object.
@@ -69,9 +73,8 @@ public class MSTPrim implements MST {
 			return MSTResultImpl.Empty;
 
 		HeapReferenceable<Integer> heap = heapBuilder.build(w);
-		@SuppressWarnings("unchecked")
-		HeapReference<Integer>[] verticesPtrs = new HeapReference[n];
-		BitSet visited = new BitSet(n);
+		HeapReference<Integer>[] verticesPtrs = this.verticesPtrs = MemoryReuse.ensureLength(this.verticesPtrs, n);
+		BitSet visited = this.visited;
 
 		IntCollection mst = new IntArrayList(n - 1);
 		for (int r = 0; r < n; r++) {
@@ -114,6 +117,8 @@ public class MSTPrim implements MST {
 				u = v;
 			}
 		}
+		Arrays.fill(verticesPtrs, 0, n, null);
+		visited.clear();
 
 		return new MSTResultImpl(mst);
 	}
