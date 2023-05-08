@@ -31,7 +31,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
  *
  * @author Barak Ugav
  */
-public class MDSTTarjan implements MDST {
+class MDSTTarjan implements MDST {
 
 	private HeapReferenceable.Builder<Integer, Void> heapBuilder =
 			HeapReferenceable.newBuilder().keysTypePrimitive(int.class).valuesTypeVoid();
@@ -43,14 +43,14 @@ public class MDSTTarjan implements MDST {
 	/**
 	 * Construct a new MDST algorithm object.
 	 */
-	public MDSTTarjan() {}
+	MDSTTarjan() {}
 
 	/**
 	 * Set the implementation of the heap used by this algorithm.
 	 *
 	 * @param heapBuilder a builder for heaps used by this algorithm
 	 */
-	public void setHeapBuilder(HeapReferenceable.Builder<?, ?> heapBuilder) {
+	void setHeapBuilder(HeapReferenceable.Builder<?, ?> heapBuilder) {
 		this.heapBuilder = heapBuilder.keysTypePrimitive(int.class).valuesTypeVoid();
 	}
 
