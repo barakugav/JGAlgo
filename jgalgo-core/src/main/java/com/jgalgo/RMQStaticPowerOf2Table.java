@@ -27,27 +27,33 @@ import java.util.Objects;
  *
  * @author Barak Ugav
  */
-public class RMQStaticPowerOf2Table implements RMQStatic {
+class RMQStaticPowerOf2Table implements RMQStatic {
 
 	/**
 	 * Construct a new static RMQ algorithm object.
 	 */
-	public RMQStaticPowerOf2Table() {}
+	RMQStaticPowerOf2Table() {}
 
 	@Override
 	public RMQStatic.DataStructure preProcessSequence(RMQStaticComparator c, int n) {
 		if (n <= 0)
 			throw new IllegalArgumentException("Invalid length: " + n);
 		Objects.requireNonNull(c);
-		return new DS(c, n);
+		if (n <= DSu08.LIMIT)
+			return new DSu08(c, (byte) n);
+		if (n <= DSu16.LIMIT)
+			return new DSu16(c, (short) n);
+		assert n <= DSu32.LIMIT;
+		return new DSu32(c, n);
 	}
 
-	private static class DS implements RMQStatic.DataStructure {
-		private int n;
-		private int[][] arr;
-		private RMQStaticComparator c;
+	private static class DSu32 implements RMQStatic.DataStructure {
+		private final int n;
+		private final int[][] arr;
+		private final RMQStaticComparator c;
+		private static final int LIMIT = (1 << (Integer.SIZE - 1)) - 1;
 
-		DS(RMQStaticComparator c, int n) {
+		DSu32(RMQStaticComparator c, int n) {
 			this.n = n;
 			arr = new int[Utils.log2ceil(n + 1) - 1][n - 1];
 			this.c = c;
@@ -61,6 +67,92 @@ public class RMQStaticPowerOf2Table implements RMQStatic {
 				for (int i = 0; i < n - kSize + 1; i++) {
 					int idx0 = arr[k - 1][i];
 					int idx1 = arr[k - 1][Math.min(i + pkSize, n - pkSize)];
+					arr[k][i] = c.compare(idx0, idx1) < 0 ? idx0 : idx1;
+				}
+			}
+
+		}
+
+		@Override
+		public int findMinimumInRange(int i, int j) {
+			if (!(0 <= i && i <= j && j < n))
+				throw new IllegalArgumentException("Illegal indices [" + i + "," + j + "]");
+			if (i == j)
+				return i;
+			j++;
+
+			int k = Utils.log2(j - i);
+			int kSize = 1 << k;
+
+			int idx0 = arr[k - 1][i];
+			int idx1 = arr[k - 1][j - kSize];
+			return c.compare(idx0, idx1) < 0 ? idx0 : idx1;
+		}
+	}
+
+	private static class DSu16 implements RMQStatic.DataStructure {
+		private final short n;
+		private final short[][] arr;
+		private final RMQStaticComparator c;
+		private static final int LIMIT = (1 << (Short.SIZE - 1)) - 1;
+
+		DSu16(RMQStaticComparator c, short n) {
+			this.n = n;
+			arr = new short[Utils.log2ceil(n + 1) - 1][n - 1];
+			this.c = c;
+
+			for (short i = 0; i < n - 1; i++)
+				arr[0][i] = c.compare(i, i + 1) < 0 ? i : (short) (i + 1);
+
+			for (int k = 1; k < arr.length; k++) {
+				int pkSize = 1 << k;
+				int kSize = 1 << (k + 1);
+				for (int i = 0; i < n - kSize + 1; i++) {
+					short idx0 = arr[k - 1][i];
+					short idx1 = arr[k - 1][Math.min(i + pkSize, n - pkSize)];
+					arr[k][i] = c.compare(idx0, idx1) < 0 ? idx0 : idx1;
+				}
+			}
+
+		}
+
+		@Override
+		public int findMinimumInRange(int i, int j) {
+			if (!(0 <= i && i <= j && j < n))
+				throw new IllegalArgumentException("Illegal indices [" + i + "," + j + "]");
+			if (i == j)
+				return i;
+			j++;
+
+			int k = Utils.log2(j - i);
+			int kSize = 1 << k;
+
+			int idx0 = arr[k - 1][i];
+			int idx1 = arr[k - 1][j - kSize];
+			return c.compare(idx0, idx1) < 0 ? idx0 : idx1;
+		}
+	}
+
+	private static class DSu08 implements RMQStatic.DataStructure {
+		private final byte n;
+		private final byte[][] arr;
+		private final RMQStaticComparator c;
+		private static final int LIMIT = (1 << (Byte.SIZE - 1)) - 1;
+
+		DSu08(RMQStaticComparator c, byte n) {
+			this.n = n;
+			arr = new byte[Utils.log2ceil(n + 1) - 1][n - 1];
+			this.c = c;
+
+			for (byte i = 0; i < n - 1; i++)
+				arr[0][i] = c.compare(i, i + 1) < 0 ? i : (byte) (i + 1);
+
+			for (int k = 1; k < arr.length; k++) {
+				int pkSize = 1 << k;
+				int kSize = 1 << (k + 1);
+				for (int i = 0; i < n - kSize + 1; i++) {
+					byte idx0 = arr[k - 1][i];
+					byte idx1 = arr[k - 1][Math.min(i + pkSize, n - pkSize)];
 					arr[k][i] = c.compare(idx0, idx1) < 0 ? idx0 : idx1;
 				}
 			}

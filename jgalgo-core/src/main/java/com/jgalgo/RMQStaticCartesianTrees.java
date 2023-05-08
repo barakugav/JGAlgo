@@ -37,12 +37,12 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
  *
  * @author Barak Ugav
  */
-public class RMQStaticCartesianTrees extends RMQStaticLinearAbstract {
+class RMQStaticCartesianTrees extends RMQStaticLinearAbstract {
 
 	/**
 	 * Construct a new static RMQ algorithm object.
 	 */
-	public RMQStaticCartesianTrees() {}
+	RMQStaticCartesianTrees() {}
 
 	@Override
 	public RMQStatic.DataStructure preProcessSequence(RMQStaticComparator c, int n) {

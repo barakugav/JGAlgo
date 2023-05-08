@@ -29,12 +29,12 @@ import java.util.Objects;
  *
  * @author Barak Ugav
  */
-public class RMQStaticLookupTable implements RMQStatic {
+class RMQStaticLookupTable implements RMQStatic {
 
 	/**
 	 * Construct a new static RMQ algorithm object.
 	 */
-	public RMQStaticLookupTable() {}
+	RMQStaticLookupTable() {}
 
 	@Override
 	public RMQStatic.DataStructure preProcessSequence(RMQStaticComparator c, int n) {
@@ -42,12 +42,12 @@ public class RMQStaticLookupTable implements RMQStatic {
 			throw new IllegalArgumentException("Invalid length: " + n);
 		Objects.requireNonNull(c);
 
-		if (n <= DS8.LIMIT)
-			return new DS8(c, (byte) n);
-		else if (n <= DS128.LIMIT)
-			return new DS128(c, (short) n);
-		else if (n <= DS32768.LIMIT)
-			return new DS32768(c, n);
+		if (n <= DSu08.LIMIT)
+			return new DSu08(c, (byte) n);
+		else if (n <= DSu16.LIMIT)
+			return new DSu16(c, (short) n);
+		else if (n <= DSu32.LIMIT)
+			return new DSu32(c, n);
 		else
 			throw new IllegalArgumentException("N too big (" + n + ")");
 	}
@@ -60,13 +60,13 @@ public class RMQStaticLookupTable implements RMQStatic {
 		return (2 * n - i - 1) * i / 2 + j - i - 1;
 	}
 
-	private static class DS8 implements RMQStatic.DataStructure {
+	private static class DSu08 implements RMQStatic.DataStructure {
 
 		private final byte n;
 		private final byte[] arr;
 		private static final int LIMIT = 1 << ((Byte.SIZE - 1) / 2);
 
-		DS8(RMQStaticComparator c, byte n) {
+		DSu08(RMQStaticComparator c, byte n) {
 			arr = new byte[arrSize(n)];
 			this.n = n;
 
@@ -90,14 +90,14 @@ public class RMQStaticLookupTable implements RMQStatic {
 		}
 	}
 
-	private static class DS128 implements RMQStatic.DataStructure {
+	private static class DSu16 implements RMQStatic.DataStructure {
 
 		private final short[] arr;
 		private final short n;
 
 		private static final int LIMIT = 1 << ((Short.SIZE - 1) / 2);
 
-		DS128(RMQStaticComparator c, short n) {
+		DSu16(RMQStaticComparator c, short n) {
 			arr = new short[arrSize(n)];
 			this.n = n;
 
@@ -121,14 +121,14 @@ public class RMQStaticLookupTable implements RMQStatic {
 		}
 	}
 
-	private static class DS32768 implements RMQStatic.DataStructure {
+	private static class DSu32 implements RMQStatic.DataStructure {
 
 		private final int[] arr;
 		private final int n;
 
 		private static final int LIMIT = 1 << ((Integer.SIZE - 1) / 2);
 
-		DS32768(RMQStaticComparator c, int n) {
+		DSu32(RMQStaticComparator c, int n) {
 			arr = new int[arrSize(n)];
 			this.n = n;
 

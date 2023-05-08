@@ -38,12 +38,12 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
  *
  * @author Barak Ugav
  */
-public class RMQStaticPlusMinusOne extends RMQStaticLinearAbstract {
+class RMQStaticPlusMinusOne extends RMQStaticLinearAbstract {
 
 	/**
 	 * Construct a new static RMQ algorithm object.
 	 */
-	public RMQStaticPlusMinusOne() {}
+	RMQStaticPlusMinusOne() {}
 
 	@Override
 	public RMQStatic.DataStructure preProcessSequence(RMQStaticComparator c, int n) {

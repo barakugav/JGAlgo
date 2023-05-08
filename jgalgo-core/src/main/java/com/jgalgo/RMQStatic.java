@@ -68,7 +68,35 @@ public interface RMQStatic {
 	 * @return a new builder that can build {@link RMQStatic} objects
 	 */
 	static RMQStatic.Builder newBuilder() {
-		return RMQStaticCartesianTrees::new;
+		return new RMQStatic.Builder() {
+			String impl;
+
+			@Override
+			public RMQStatic build() {
+				if (impl != null) {
+					if (RMQStaticLookupTable.class.getSimpleName().equals(impl))
+						return new RMQStaticLookupTable();
+					if (RMQStaticPowerOf2Table.class.getSimpleName().equals(impl))
+						return new RMQStaticPowerOf2Table();
+					if (RMQStaticCartesianTrees.class.getSimpleName().equals(impl))
+						return new RMQStaticCartesianTrees();
+					if (RMQStaticPlusMinusOne.class.getSimpleName().equals(impl))
+						return new RMQStaticPlusMinusOne();
+					throw new IllegalArgumentException("unknown 'impl' value: " + impl);
+				}
+				return new RMQStaticPowerOf2Table();
+			}
+
+			@Override
+			public RMQStatic.Builder setOption(String key, Object value) {
+				if ("impl".equals(key)) {
+					impl = (String) value;
+				} else {
+					throw new IllegalArgumentException("unknown option key: " + key);
+				}
+				return this;
+			}
+		};
 	}
 
 	/**

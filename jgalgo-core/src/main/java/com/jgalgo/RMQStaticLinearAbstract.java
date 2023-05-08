@@ -31,11 +31,9 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 	 * \(O(n)\) pre processing time, \(O(n)\) space, \(O(1)\) query.
 	 */
 
-	private final RMQStaticPowerOf2Table xlogxTable;
+	private final RMQStaticPowerOf2Table xlogxTable = new RMQStaticPowerOf2Table();
 
-	RMQStaticLinearAbstract() {
-		xlogxTable = new RMQStaticPowerOf2Table();
-	}
+	RMQStaticLinearAbstract() {}
 
 	abstract class DS implements RMQStatic.DataStructure {
 
