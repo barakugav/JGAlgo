@@ -31,16 +31,14 @@ import java.util.Arrays;
  *
  * @author Barak Ugav
  */
-public class LCAStaticRMQ implements LCAStatic {
+class LCAStaticRMQ implements LCAStatic {
 
-	private final RMQStatic rmq;
+	private final RMQStatic rmq = new RMQStaticPlusMinusOne();
 
 	/**
 	 * Create a new static LCA algorithm object.
 	 */
-	public LCAStaticRMQ() {
-		rmq = new RMQStaticPlusMinusOne();
-	}
+	LCAStaticRMQ() {}
 
 	@Override
 	public LCAStatic.DataStructure preProcessTree(Graph tree, int root) {
