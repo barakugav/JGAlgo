@@ -64,7 +64,7 @@ class MaximumMatchingCardinalityGabow1976 implements MaximumMatchingCardinality 
 <span class="fc" id="L64">		int blossomBaseSearchNotesIndex = 0;</span>
 <span class="fc" id="L65">		int[] blossomVertices = new int[n];</span>
 
-<span class="fc" id="L67">		UnionFind uf = new UnionFindArray();</span>
+<span class="fc" id="L67">		UnionFind uf = UnionFind.newBuilder().build();</span>
 <span class="fc" id="L68">		int[] bases = new int[n];</span>
 
 		for (;;) {

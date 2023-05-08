@@ -27,7 +27,7 @@ import java.util.Comparator;
  *
  * @author Barak Ugav
  */
-<span class="fc" id="L30">public class SubtreeMergeFindMinImpl&lt;E&gt; implements SubtreeMergeFindMin&lt;E&gt; {</span>
+<span class="fc" id="L30">class SubtreeMergeFindMinImpl&lt;E&gt; implements SubtreeMergeFindMin&lt;E&gt; {</span>
 
 	private NodeImpl&lt;E&gt;[] nodes;
 	private final UnionFind uf;
@@ -40,7 +40,7 @@ import java.util.Comparator;
 	/**
 	 * Create a new SMF data structure with the {@linkplain Comparable natural ordering} comparator for edge weights.
 	 */
-	public SubtreeMergeFindMinImpl() {
+	SubtreeMergeFindMinImpl() {
 <span class="fc" id="L44">		this(null);</span>
 <span class="fc" id="L45">	}</span>
 
@@ -49,7 +49,7 @@ import java.util.Comparator;
 	 *
 	 * @param weightCmp comparator used to compare edge weights.
 	 */
-	public SubtreeMergeFindMinImpl(Comparator&lt;? super E&gt; weightCmp) {
+	SubtreeMergeFindMinImpl(Comparator&lt;? super E&gt; weightCmp) {
 <span class="fc" id="L53">		this(weightCmp, HeapReferenceable.newBuilder());</span>
 <span class="fc" id="L54">	}</span>
 
@@ -60,10 +60,10 @@ import java.util.Comparator;
 	 * @param heapBuilder heap builder used to provide a custom heap implementation.
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L63">	public SubtreeMergeFindMinImpl(Comparator&lt;? super E&gt; weightCmp, HeapReferenceable.Builder&lt;?, ?&gt; heapBuilder) {</span>
+<span class="fc" id="L63">	SubtreeMergeFindMinImpl(Comparator&lt;? super E&gt; weightCmp, HeapReferenceable.Builder&lt;?, ?&gt; heapBuilder) {</span>
 <span class="fc" id="L64">		nodes = new NodeImpl[2];</span>
 
-<span class="fc" id="L66">		uf = new UnionFindArray();</span>
+<span class="fc" id="L66">		uf = UnionFind.newBuilder().build();</span>
 <span class="fc" id="L67">		lca = new LCADynamicGabowLinear();</span>
 
 <span class="fc bfc" id="L69" title="All 2 branches covered.">		this.weightCmp = weightCmp != null ? weightCmp : Utils.getDefaultComparator();</span>

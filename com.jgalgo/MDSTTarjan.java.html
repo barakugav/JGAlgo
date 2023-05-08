@@ -31,7 +31,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
  *
  * @author Barak Ugav
  */
-public class MDSTTarjan implements MDST {
+class MDSTTarjan implements MDST {
 
 <span class="fc" id="L36">	private HeapReferenceable.Builder&lt;Integer, Void&gt; heapBuilder =</span>
 <span class="fc" id="L37">			HeapReferenceable.newBuilder().keysTypePrimitive(int.class).valuesTypeVoid();</span>
@@ -43,14 +43,14 @@ public class MDSTTarjan implements MDST {
 	/**
 	 * Construct a new MDST algorithm object.
 	 */
-<span class="fc" id="L46">	public MDSTTarjan() {}</span>
+<span class="fc" id="L46">	MDSTTarjan() {}</span>
 
 	/**
 	 * Set the implementation of the heap used by this algorithm.
 	 *
 	 * @param heapBuilder a builder for heaps used by this algorithm
 	 */
-	public void setHeapBuilder(HeapReferenceable.Builder&lt;?, ?&gt; heapBuilder) {
+	void setHeapBuilder(HeapReferenceable.Builder&lt;?, ?&gt; heapBuilder) {
 <span class="nc" id="L54">		this.heapBuilder = heapBuilder.keysTypePrimitive(int.class).valuesTypeVoid();</span>
 <span class="nc" id="L55">	}</span>
 
@@ -153,7 +153,7 @@ public class MDSTTarjan implements MDST {
 <span class="fc" id="L153">		int n = g.vertices().size();</span>
 <span class="fc" id="L154">		int VMaxNum = n * 2; // max super vertex number</span>
 
-<span class="fc" id="L156">		UnionFindValue uf = new UnionFindValueArray(n);</span>
+<span class="fc" id="L156">		UnionFindValue uf = UnionFindValue.newBuilder().build(n);</span>
 <span class="fc" id="L157">		int[] ufIdxToV = new int[VMaxNum];</span>
 <span class="fc bfc" id="L158" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
 <span class="fc" id="L159">			ufIdxToV[v] = v;</span>

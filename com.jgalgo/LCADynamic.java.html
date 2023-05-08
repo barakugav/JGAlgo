@@ -119,7 +119,31 @@ public interface LCADynamic {
 	 * @return a new builder that can build {@link LCADynamic} objects
 	 */
 	static LCADynamic.Builder newBuilder() {
-<span class="nc" id="L122">		return LCADynamicGabowLinear::new;</span>
+<span class="nc" id="L122">		return new LCADynamic.Builder() {</span>
+			String impl;
+
+			@Override
+			public LCADynamic build() {
+<span class="nc bnc" id="L127" title="All 2 branches missed.">				if (impl != null) {</span>
+<span class="nc bnc" id="L128" title="All 2 branches missed.">					if (LCADynamicGabowLinear.class.getSimpleName().equals(impl))</span>
+<span class="nc" id="L129">						return new LCADynamicGabowLinear();</span>
+<span class="nc bnc" id="L130" title="All 2 branches missed.">					if (LCADynamicGabowSimple.class.getSimpleName().equals(impl))</span>
+<span class="nc" id="L131">						return new LCADynamicGabowSimple();</span>
+<span class="nc" id="L132">					throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+				}
+<span class="nc" id="L134">				return new LCADynamicGabowLinear();</span>
+			}
+
+			@Override
+			public LCADynamic.Builder setOption(String key, Object value) {
+<span class="nc bnc" id="L139" title="All 2 branches missed.">				if (&quot;impl&quot;.equals(key)) {</span>
+<span class="nc" id="L140">					impl = (String) value;</span>
+				} else {
+<span class="nc" id="L142">					throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+				}
+<span class="nc" id="L144">				return this;</span>
+			}
+		};
 	}
 
 	/**

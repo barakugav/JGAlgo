@@ -29,7 +29,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 public class TSPMetricMatchingAppx implements TSPMetric {
 
 <span class="fc" id="L31">	private final MST mstAlgo = MST.newBuilder().build();</span>
-<span class="fc" id="L32">	private final MaximumMatching matchingAlgo = new MaximumMatchingWeightedGabow1990();</span>
+<span class="fc" id="L32">	private final MaximumMatching matchingAlgo = MaximumMatching.newBuilder().build();</span>
 
 <span class="fc" id="L34">	private static final Object EdgeWeightKey = new Object();</span>
 <span class="fc" id="L35">	private static final Object EdgeRefWeightKey = new Object();</span>

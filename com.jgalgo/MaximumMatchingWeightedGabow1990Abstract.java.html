@@ -256,7 +256,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 		final Blossom[] findToBlossoms;
 
 <span class="fc" id="L258">		Evens(int n) {</span>
-<span class="fc" id="L259">			uf = new UnionFindArray(n);</span>
+<span class="fc" id="L259">			uf = UnionFind.newBuilder().build(n);</span>
 <span class="fc" id="L260">			findToBlossoms = new Blossom[n];</span>
 <span class="fc" id="L261">		}</span>
 
@@ -298,7 +298,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 		final Blossom[] findToBlossom;
 
 <span class="fc" id="L300">		Odds(int n) {</span>
-<span class="fc" id="L301">			sf = new SplitFindMinArray&lt;&gt;();</span>
+<span class="fc" id="L301">			sf = SplitFindMin.newBuilder().buildWithFindMin();</span>
 <span class="fc" id="L302">			vToSf = new int[n];</span>
 <span class="fc" id="L303">			findToBlossom = new Blossom[n];</span>
 <span class="fc" id="L304">		}</span>
