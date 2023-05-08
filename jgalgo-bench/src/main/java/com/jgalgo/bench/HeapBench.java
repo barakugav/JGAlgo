@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -37,9 +38,6 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.Heap;
-import com.jgalgo.HeapBinomial;
-import com.jgalgo.HeapFibonacci;
-import com.jgalgo.HeapPairing;
 import com.jgalgo.HeapReferenceable;
 import com.jgalgo.RedBlackTree;
 import com.jgalgo.SplayTree;
@@ -127,51 +125,87 @@ public class HeapBench {
 
 	@Benchmark
 	public void Binary(Blackhole blackhole) {
-		benchHeap(Heap.newBuilder().primitiveElements(int.class), blackhole);
+		benchHeap(Heap.newBuilder().elementsTypePrimitive(int.class), blackhole);
 	}
 
 	@Benchmark
 	public void Pairing(Blackhole blackhole) {
-		benchHeap(heapBuilder(HeapPairing::new), blackhole);
+		benchHeap(heapBuilder(HeapReferenceable.newBuilder().setOption("impl", "HeapPairing")), blackhole);
 	}
 
 	@Benchmark
 	public void Fibonacci(Blackhole blackhole) {
-		benchHeap(heapBuilder(HeapFibonacci::new), blackhole);
+		benchHeap(heapBuilder(HeapReferenceable.newBuilder().setOption("impl", "HeapFibonacci")), blackhole);
 	}
 
 	@Benchmark
 	public void Binomial(Blackhole blackhole) {
-		benchHeap(heapBuilder(HeapBinomial::new), blackhole);
+		benchHeap(heapBuilder(HeapReferenceable.newBuilder().setOption("impl", "HeapBinomial")), blackhole);
 	}
 
 	@Benchmark
 	public void RedBlackTree(Blackhole blackhole) {
-		benchHeap(heapBuilder(RedBlackTree::new), blackhole);
+		benchHeap(heapBuilder(basicRefBuilder(RedBlackTree::new)), blackhole);
 	}
 
 	@Benchmark
 	public void SplayTree(Blackhole blackhole) {
-		benchHeap(heapBuilder(SplayTree::new), blackhole);
+		benchHeap(heapBuilder(basicRefBuilder(SplayTree::new)), blackhole);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private static Heap.Builder<Integer> heapBuilder(HeapReferenceable.Builder builder) {
 		return new Heap.Builder<>() {
-
 			@Override
 			public Heap build(Comparator cmp) {
-				return builder.build(cmp).asHeap();
+				return builder.keysTypePrimitive(int.class).valuesTypeVoid().build(cmp).asHeap();
 			}
 
 			@Override
-			public <OE> Heap.Builder<OE> objElements() {
-				return (Heap.Builder<OE>) this;
+			public Heap.Builder elementsTypeObj() {
+				return this;
 			}
 
 			@Override
-			public <PE> Heap.Builder<PE> primitiveElements(Class<? extends PE> primitiveType) {
-				return (Heap.Builder<PE>) this;
+			public Heap.Builder elementsTypePrimitive(Class primitiveType) {
+				return this;
+			}
+		};
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	static HeapReferenceable.Builder<Integer, Void> basicRefBuilder(
+			Function<Comparator<Object>, ? extends HeapReferenceable<Integer, Void>> builder) {
+		return new HeapReferenceable.Builder<>() {
+
+			@Override
+			public HeapReferenceable build(Comparator cmp) {
+				return builder.apply(cmp);
+			}
+
+			@Override
+			public HeapReferenceable.Builder keysTypeObj() {
+				return this;
+			}
+
+			@Override
+			public HeapReferenceable.Builder keysTypePrimitive(Class primitiveType) {
+				return this;
+			}
+
+			@Override
+			public HeapReferenceable.Builder valuesTypeObj() {
+				return this;
+			}
+
+			@Override
+			public HeapReferenceable.Builder valuesTypePrimitive(Class primitiveType) {
+				return this;
+			}
+
+			@Override
+			public HeapReferenceable.Builder valuesTypeVoid() {
+				return this;
 			}
 		};
 	}

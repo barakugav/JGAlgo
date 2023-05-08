@@ -169,18 +169,27 @@ public interface BinarySearchTree<K, V> extends HeapReferenceable<K, V> {
 	 *
 	 * @return a new builder that can build {@link BinarySearchTree} objects
 	 */
-	static BinarySearchTree.Builder newBuilder() {
-		return new BinarySearchTree.Builder() {
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	static BinarySearchTree.Builder<Object, Object> newBuilder() {
+		return new BinarySearchTree.Builder<>() {
 
 			boolean splitRequired;
 			boolean meldRequired;
+			String impl;
 
 			@Override
-			public <K, V> BinarySearchTree<K, V> build(Comparator<? super K> cmp) {
+			public BinarySearchTree build(Comparator cmp) {
+				if (impl != null) {
+					if (SplayTree.class.getSimpleName().equals(impl))
+						return new SplayTree(cmp);
+					if (RedBlackTree.class.getSimpleName().equals(impl))
+						return new RedBlackTree(cmp);
+					throw new IllegalArgumentException("unknown 'impl' value: " + impl);
+				}
 				if (splitRequired || meldRequired) {
-					return new SplayTree<>(cmp);
+					return new SplayTree(cmp);
 				} else {
-					return new RedBlackTree<>(cmp);
+					return new RedBlackTree(cmp);
 				}
 			}
 
@@ -195,6 +204,41 @@ public interface BinarySearchTree<K, V> extends HeapReferenceable<K, V> {
 				meldRequired = enable;
 				return this;
 			}
+
+			@Override
+			public BinarySearchTree.Builder keysTypeObj() {
+				return this;
+			}
+
+			@Override
+			public BinarySearchTree.Builder keysTypePrimitive(Class primitiveType) {
+				return this;
+			}
+
+			@Override
+			public BinarySearchTree.Builder valuesTypeObj() {
+				return this;
+			}
+
+			@Override
+			public BinarySearchTree.Builder valuesTypePrimitive(Class primitiveType) {
+				return this;
+			}
+
+			@Override
+			public BinarySearchTree.Builder valuesTypeVoid() {
+				return this;
+			}
+
+			@Override
+			public BinarySearchTree.Builder setOption(String key, Object value) {
+				if ("impl".equals(key)) {
+					impl = value instanceof String ? (String) value : null;
+				} else {
+					throw new IllegalArgumentException("unknown option key: " + key);
+				}
+				return this;
+			}
 		};
 	}
 
@@ -204,13 +248,13 @@ public interface BinarySearchTree<K, V> extends HeapReferenceable<K, V> {
 	 * @see    BinarySearchTree#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder extends HeapReferenceable.Builder {
+	static interface Builder<K, V> extends HeapReferenceable.Builder<K, V> {
 
 		@Override
-		<K, V> BinarySearchTree<K, V> build(Comparator<? super K> cmp);
+		BinarySearchTree<K, V> build(Comparator<? super K> cmp);
 
 		@Override
-		default <K, V> BinarySearchTree<K, V> build() {
+		default BinarySearchTree<K, V> build() {
 			return build(null);
 		}
 
@@ -223,7 +267,7 @@ public interface BinarySearchTree<K, V> extends HeapReferenceable<K, V> {
 		 *                    created by this builder
 		 * @return        this builder
 		 */
-		BinarySearchTree.Builder setSplits(boolean enable);
+		BinarySearchTree.Builder<K, V> setSplits(boolean enable);
 
 		/**
 		 * Enable/disable efficient {@link BinarySearchTree#meld} operations.
@@ -232,10 +276,25 @@ public interface BinarySearchTree<K, V> extends HeapReferenceable<K, V> {
 		 *                    the trees created by this builder
 		 * @return        this builder
 		 */
-		BinarySearchTree.Builder setMelds(boolean enable);
+		BinarySearchTree.Builder<K, V> setMelds(boolean enable);
 
 		@Override
-		default BinarySearchTree.Builder setOption(String key, Object value) {
+		<Keys> BinarySearchTree.Builder<Keys, V> keysTypeObj();
+
+		@Override
+		<Keys> BinarySearchTree.Builder<Keys, V> keysTypePrimitive(Class<? extends Keys> primitiveType);
+
+		@Override
+		<Values> BinarySearchTree.Builder<K, Values> valuesTypeObj();
+
+		@Override
+		<Values> BinarySearchTree.Builder<K, Values> valuesTypePrimitive(Class<? extends Values> primitiveType);
+
+		@Override
+		BinarySearchTree.Builder<K, Void> valuesTypeVoid();
+
+		@Override
+		default BinarySearchTree.Builder<K, V> setOption(String key, Object value) {
 			HeapReferenceable.Builder.super.setOption(key, value);
 			return this;
 		}

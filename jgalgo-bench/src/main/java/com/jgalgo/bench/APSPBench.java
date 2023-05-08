@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
-
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -36,7 +35,6 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
-
 import com.jgalgo.APSP;
 import com.jgalgo.APSPFloydWarshall;
 import com.jgalgo.APSPJohnson;
@@ -44,7 +42,6 @@ import com.jgalgo.EdgeWeightFunc;
 import com.jgalgo.Graph;
 import com.jgalgo.bench.GraphsTestUtils.RandomGraphBuilder;
 import com.jgalgo.bench.TestUtils.SeedGenerator;
-
 import it.unimi.dsi.fastutil.Pair;
 
 @BenchmarkMode(Mode.AverageTime)

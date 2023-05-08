@@ -50,7 +50,7 @@ public class SubtreeMergeFindMinImpl<E> implements SubtreeMergeFindMin<E> {
 	 * @param weightCmp comparator used to compare edge weights.
 	 */
 	public SubtreeMergeFindMinImpl(Comparator<? super E> weightCmp) {
-		this(weightCmp, HeapPairing::new);
+		this(weightCmp, HeapReferenceable.newBuilder());
 	}
 
 	/**
@@ -60,7 +60,7 @@ public class SubtreeMergeFindMinImpl<E> implements SubtreeMergeFindMin<E> {
 	 * @param heapBuilder heap builder used to provide a custom heap implementation.
 	 */
 	@SuppressWarnings("unchecked")
-	public SubtreeMergeFindMinImpl(Comparator<? super E> weightCmp, HeapReferenceable.Builder heapBuilder) {
+	public SubtreeMergeFindMinImpl(Comparator<? super E> weightCmp, HeapReferenceable.Builder<?, ?> heapBuilder) {
 		nodes = new NodeImpl[2];
 
 		uf = new UnionFindArray();
@@ -69,7 +69,8 @@ public class SubtreeMergeFindMinImpl<E> implements SubtreeMergeFindMin<E> {
 		this.weightCmp = weightCmp != null ? weightCmp : Utils.getDefaultComparator();
 		timestamp = 0;
 
-		heap = heapBuilder.build((t1, t2) -> this.weightCmp.compare(t1.minEdge.data.data, t2.minEdge.data.data));
+		heap = heapBuilder.<SubTree<E>>keysTypeObj().valuesTypeVoid()
+				.build((t1, t2) -> this.weightCmp.compare(t1.minEdge.data.data, t2.minEdge.data.data));
 	}
 
 	@Override

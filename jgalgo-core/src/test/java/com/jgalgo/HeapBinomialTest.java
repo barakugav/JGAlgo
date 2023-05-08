@@ -31,13 +31,13 @@ public class HeapBinomialTest extends TestBase {
 			}
 
 			@Override
-			public <OE> Heap.Builder<OE> objElements() {
-				return (Heap.Builder<OE>) this;
+			public Heap.Builder elementsTypeObj() {
+				return this;
 			}
 
 			@Override
-			public <PE> Heap.Builder<PE> primitiveElements(Class<? extends PE> primitiveType) {
-				return (Heap.Builder<PE>) this;
+			public Heap.Builder elementsTypePrimitive(Class primitiveType) {
+				return this;
 			}
 		};
 	}
@@ -75,13 +75,18 @@ public class HeapBinomialTest extends TestBase {
 	@Test
 	public void testDecreaseKeyDefaultCompare() {
 		final long seed = 0x553462f097149dc1L;
-		HeapReferenceableTestUtils.testDecreaseKeyDefaultCompare(HeapBinomial::new, seed);
+		HeapReferenceableTestUtils.testDecreaseKeyDefaultCompare(createRefHeapBuilder(), seed);
 	}
 
 	@Test
 	public void testDecreaseKeyCustomCompare() {
 		final long seed = 0xd7d8cf9389480696L;
-		HeapReferenceableTestUtils.testDecreaseKeyCustomCompare(HeapBinomial::new, seed);
+		HeapReferenceableTestUtils.testDecreaseKeyCustomCompare(createRefHeapBuilder(), seed);
+	}
+
+	private static HeapReferenceable.Builder<Integer, Void> createRefHeapBuilder() {
+		return HeapReferenceable.newBuilder().setOption("impl", "HeapBinomial").keysTypePrimitive(int.class)
+				.valuesTypeVoid();
 	}
 
 }

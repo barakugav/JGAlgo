@@ -37,7 +37,7 @@ import com.jgalgo.Trees.TreeNode;
  * @see        HeapPairing
  * @author     Barak Ugav
  */
-public class HeapFibonacci<K, V> extends HeapReferenceableAbstract<K, V> {
+class HeapFibonacci<K, V> extends HeapReferenceableAbstract<K, V> {
 
 	private Node<K, V> minRoot;
 	private Node<K, V> begin;
@@ -53,7 +53,7 @@ public class HeapFibonacci<K, V> extends HeapReferenceableAbstract<K, V> {
 	 * constraint (for example, the user attempts to insert a string element to a heap whose keys are integers), the
 	 * {@code insert} call will throw a {@code ClassCastException}.
 	 */
-	public HeapFibonacci() {
+	HeapFibonacci() {
 		this(null);
 	}
 
@@ -68,7 +68,7 @@ public class HeapFibonacci<K, V> extends HeapReferenceableAbstract<K, V> {
 	 * @param comparator the comparator that will be used to order this heap. If {@code null}, the
 	 *                       {@linkplain Comparable natural ordering} of the keys will be used.
 	 */
-	public HeapFibonacci(Comparator<? super K> comparator) {
+	HeapFibonacci(Comparator<? super K> comparator) {
 		super(comparator);
 		begin = end = minRoot = null;
 		size = 0;

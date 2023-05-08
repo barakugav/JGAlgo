@@ -17,9 +17,7 @@ package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -28,23 +26,23 @@ import java.util.NavigableMap;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeMap;
-
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 public class HeapReferenceableTestUtils extends TestUtils {
 
 	private HeapReferenceableTestUtils() {}
 
-	static void testRandOpsDefaultCompare(HeapReferenceable.Builder heapBuilder, long seed) {
+	static void testRandOpsDefaultCompare(HeapReferenceable.Builder<Integer, Void> heapBuilder, long seed) {
 		testRandOps(heapBuilder, null, seed);
 	}
 
-	static void testRandOpsCustomCompare(HeapReferenceable.Builder heapBuilder, long seed) {
-		testRandOps(heapBuilder, (x1, x2) -> -Integer.compare(x1.intValue(), x2.intValue()), seed);
+	static void testRandOpsCustomCompare(HeapReferenceable.Builder<Integer, Void> heapBuilder, long seed) {
+		testRandOps(heapBuilder, (x1, x2) -> -Integer.compare(x1, x2), seed);
 	}
 
-	private static void testRandOps(HeapReferenceable.Builder heapBuilder, Comparator<? super Integer> compare,
+	private static void testRandOps(HeapReferenceable.Builder<Integer, Void> heapBuilder, IntComparator compare,
 			long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(128, 16, 16), phase(64, 64, 128), phase(32, 512, 1024), phase(8, 4096, 8096),
@@ -56,9 +54,9 @@ public class HeapReferenceableTestUtils extends TestUtils {
 		});
 	}
 
-	static void testRandOpsAfterManyInserts(HeapReferenceable.Builder heapBuilder, long seed) {
+	static void testRandOpsAfterManyInserts(HeapReferenceable.Builder<Integer, Void> heapBuilder, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		final Comparator<? super Integer> compare = null;
+		final IntComparator compare = null;
 		List<Phase> phases = List.of(phase(256, 16, 16), phase(128, 64, 128), phase(64, 512, 1024),
 				phase(16, 4096, 8096), phase(8, 16384, 32768));
 		runTestMultiple(phases, (testIter, args) -> {
@@ -69,24 +67,26 @@ public class HeapReferenceableTestUtils extends TestUtils {
 		});
 	}
 
-	static void testMeldDefaultCompare(HeapReferenceable.Builder heapBuilder, long seed) {
+	static void testMeldDefaultCompare(HeapReferenceable.Builder<Integer, Void> heapBuilder, long seed) {
 		testMeld(heapBuilder, false, null, seed);
 	}
 
-	static void testMeldCustomCompare(HeapReferenceable.Builder heapBuilder, long seed) {
-		testMeld(heapBuilder, false, (x1, x2) -> -Integer.compare(x1.intValue(), x2.intValue()), seed);
+	static void testMeldCustomCompare(HeapReferenceable.Builder<Integer, Void> heapBuilder, long seed) {
+		testMeld(heapBuilder, false, (x1, x2) -> -Integer.compare(x1, x2), seed);
 	}
 
-	static void testMeldWithOrderedValuesDefaultCompare(HeapReferenceable.Builder heapBuilder, long seed) {
+	static void testMeldWithOrderedValuesDefaultCompare(HeapReferenceable.Builder<Integer, Void> heapBuilder,
+			long seed) {
 		testMeld(heapBuilder, true, null, seed);
 	}
 
-	static void testMeldWithOrderedValuesCustomCompare(HeapReferenceable.Builder heapBuilder, long seed) {
-		testMeld(heapBuilder, true, (x1, x2) -> -Integer.compare(x1.intValue(), x2.intValue()), seed);
+	static void testMeldWithOrderedValuesCustomCompare(HeapReferenceable.Builder<Integer, Void> heapBuilder,
+			long seed) {
+		testMeld(heapBuilder, true, (x1, x2) -> -Integer.compare(x1, x2), seed);
 	}
 
-	private static void testMeld(HeapReferenceable.Builder heapBuilder, boolean orderedValues,
-			Comparator<? super Integer> compare, long seed) {
+	private static void testMeld(HeapReferenceable.Builder<Integer, Void> heapBuilder, boolean orderedValues,
+			IntComparator compare, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(64, 16), phase(64, 32), phase(8, 256), phase(1, 2048));
 		runTestMultiple(phases, (testIter, args) -> {
@@ -95,8 +95,8 @@ public class HeapReferenceableTestUtils extends TestUtils {
 		});
 	}
 
-	private static void testMeld(HeapReferenceable.Builder heapBuilder, boolean orderedValues, int hCount,
-			Comparator<? super Integer> compare, long seed) {
+	private static void testMeld(HeapReferenceable.Builder<Integer, Void> heapBuilder, boolean orderedValues,
+			int hCount, IntComparator compare, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Set<HeapReferenceableTracker> heaps = new HashSet<>();
 		HeapTrackerIdGenerator heapTrackerIdGen = new HeapTrackerIdGenerator(seedGen.nextSeed());
@@ -140,15 +140,15 @@ public class HeapReferenceableTestUtils extends TestUtils {
 		}
 	}
 
-	static void testDecreaseKeyDefaultCompare(HeapReferenceable.Builder heapBuilder, long seed) {
+	static void testDecreaseKeyDefaultCompare(HeapReferenceable.Builder<Integer, Void> heapBuilder, long seed) {
 		testDecreaseKey(heapBuilder, null, seed);
 	}
 
-	static void testDecreaseKeyCustomCompare(HeapReferenceable.Builder heapBuilder, long seed) {
-		testDecreaseKey(heapBuilder, (x1, x2) -> -Integer.compare(x1.intValue(), x2.intValue()), seed);
+	static void testDecreaseKeyCustomCompare(HeapReferenceable.Builder<Integer, Void> heapBuilder, long seed) {
+		testDecreaseKey(heapBuilder, (x1, x2) -> -Integer.compare(x1, x2), seed);
 	}
 
-	private static void testDecreaseKey(HeapReferenceable.Builder heapBuilder, Comparator<? super Integer> compare,
+	private static void testDecreaseKey(HeapReferenceable.Builder<Integer, Void> heapBuilder, IntComparator compare,
 			long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(256, 16), phase(128, 64), phase(64, 512), phase(16, 4096), phase(2, 16384));
@@ -188,8 +188,7 @@ public class HeapReferenceableTestUtils extends TestUtils {
 		final NavigableMap<Integer, List<HeapReference<Integer, Void>>> elms;
 		final Random rand;
 
-		HeapReferenceableTracker(HeapReferenceable<Integer, Void> heap, int id, Comparator<? super Integer> compare,
-				long seed) {
+		HeapReferenceableTracker(HeapReferenceable<Integer, Void> heap, int id, IntComparator compare, long seed) {
 			this.id = id;
 			this.heap = heap;
 			elms = new TreeMap<>(compare);
@@ -204,19 +203,7 @@ public class HeapReferenceableTestUtils extends TestUtils {
 			elms.computeIfAbsent(x, dontCare -> new ArrayList<>()).add(ref);
 		}
 
-		void remove(int x) {
-			if (heap instanceof HeapReferenceable)
-				throw new IllegalStateException();
-			List<HeapReference<Integer, Void>> l = elms.get(x);
-			HeapReference<Integer, Void> ref = l.remove(0);
-			if (l.isEmpty())
-				elms.remove(x);
-			assert ref == null;
-		}
-
 		void remove(int x, HeapReference<Integer, Void> ref) {
-			if (!(heap instanceof HeapReferenceable))
-				throw new IllegalStateException();
 			List<HeapReference<Integer, Void>> l = elms.get(x);
 			boolean removed = l.remove(ref);
 			if (l.isEmpty())
@@ -226,12 +213,6 @@ public class HeapReferenceableTestUtils extends TestUtils {
 
 		int findMin() {
 			return elms.firstKey();
-		}
-
-		int extractMin() {
-			Integer x = elms.firstKey();
-			remove(x);
-			return x;
 		}
 
 		void decreaseKey(HeapReference<Integer, Void> ref, int newx) {
@@ -296,13 +277,13 @@ public class HeapReferenceableTestUtils extends TestUtils {
 
 	}
 
-	static void testHeap(HeapReferenceable<Integer, Void> heap, int n, int m, TestMode mode,
-			Comparator<? super Integer> compare, long seed) {
+	static void testHeap(HeapReferenceable<Integer, Void> heap, int n, int m, TestMode mode, IntComparator compare,
+			long seed) {
 		testHeap(heap, n, m, mode, true, compare, seed);
 	}
 
 	static void testHeap(HeapReferenceable<Integer, Void> heap, int n, int m, TestMode mode, boolean clear,
-			Comparator<? super Integer> compare, long seed) {
+			IntComparator compare, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		if (clear) {
 			heap.clear();
@@ -319,20 +300,19 @@ public class HeapReferenceableTestUtils extends TestUtils {
 	}
 
 	private static void testHeap(HeapReferenceableTracker tracker, int n, int m, TestMode mode, int elementsBound,
-			Comparator<? super Integer> compare, long seed) {
+			IntComparator compare, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		int[] elements = randArray(n, 0, elementsBound, seedGen.nextSeed());
 		testHeap(tracker, m, mode, elements, compare, seedGen.nextSeed());
 	}
 
-	@SuppressWarnings("boxing")
-	private static int compare(Comparator<? super Integer> c, int e1, int e2) {
+	private static int compare(IntComparator c, int e1, int e2) {
 		return c == null ? Integer.compare(e1, e2) : c.compare(e1, e2);
 	}
 
 	@SuppressWarnings("boxing")
-	static void testHeap(HeapReferenceableTracker tracker, int m, TestMode mode, int[] values,
-			Comparator<? super Integer> compare, long seed) {
+	static void testHeap(HeapReferenceableTracker tracker, int m, TestMode mode, int[] values, IntComparator compare,
+			long seed) {
 		DebugPrintsManager debug = new DebugPrintsManager(false);
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
@@ -341,7 +321,7 @@ public class HeapReferenceableTestUtils extends TestUtils {
 		List<HeapOp> ops = new ArrayList<>(List.of(HeapOp.Insert, HeapOp.FindMin, HeapOp.ExtractMin));
 		if (mode == TestMode.DecreaseKey)
 			ops.add(HeapOp.DecreaseKey);
-			ops.add(HeapOp.RemoveRef);
+		ops.add(HeapOp.RemoveRef);
 
 		int[] elmsToInsertIds = randPermutation(values.length, seedGen.nextSeed());
 		int elmsToInsertCursor = 0;
@@ -351,7 +331,7 @@ public class HeapReferenceableTestUtils extends TestUtils {
 		opLoop: for (int opIdx = 0; opIdx < m;) {
 			HeapOp op = opIdx < insertFirst ? HeapOp.Insert : ops.get(rand.nextInt(ops.size()));
 
-			debug.println("\t size="+tracker.heap.size());
+			debug.println("\t size=" + tracker.heap.size());
 			int expected, actual;
 			switch (op) {
 				case Insert: {

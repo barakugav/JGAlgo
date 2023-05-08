@@ -17,7 +17,6 @@
 package com.jgalgo;
 
 import java.util.Arrays;
-import java.util.Objects;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
@@ -41,7 +40,8 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  */
 public class MSTFredmanTarjan implements MST {
 
-	private HeapReferenceable.Builder heapBuilder = HeapPairing::new;
+	private HeapReferenceable.Builder<Integer, Void> heapBuilder =
+			HeapReferenceable.newBuilder().keysTypePrimitive(int.class).valuesTypeVoid();
 
 	/**
 	 * Construct a new MST algorithm object.
@@ -53,8 +53,8 @@ public class MSTFredmanTarjan implements MST {
 	 *
 	 * @param heapBuilder a builder for heaps used by this algorithm
 	 */
-	public void setHeapBuilder(HeapReferenceable.Builder heapBuilder) {
-		this.heapBuilder = Objects.requireNonNull(heapBuilder);
+	public void setHeapBuilder(HeapReferenceable.Builder<?, ?> heapBuilder) {
+		this.heapBuilder = heapBuilder.keysTypePrimitive(int.class).valuesTypeVoid();
 	}
 
 	/**

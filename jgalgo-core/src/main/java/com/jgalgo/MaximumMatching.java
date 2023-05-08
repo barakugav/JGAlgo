@@ -87,7 +87,7 @@ public interface MaximumMatching {
 						return new MaximumMatchingWeightedGabow1990();
 					if (MaximumMatchingWeightedGabow1990Simpler.class.getSimpleName().equals(impl))
 						return new MaximumMatchingWeightedGabow1990Simpler();
-					System.err.println("unknown 'impl' value: " + impl);
+					throw new IllegalArgumentException("unknown 'impl' value: " + impl);
 				}
 				if (cardinality) {
 					return isBipartite ? new MaximumMatchingCardinalityBipartiteHopcroftKarp()
@@ -112,8 +112,11 @@ public interface MaximumMatching {
 
 			@Override
 			public MaximumMatching.Builder setOption(String key, Object value) {
-				if ("impl".equals(key))
+				if ("impl".equals(key)) {
 					impl = value instanceof String ? (String) value : null;
+				} else {
+					throw new IllegalArgumentException("unknown option key: " + key);
+				}
 				return this;
 			}
 		};

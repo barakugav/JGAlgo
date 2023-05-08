@@ -27,19 +27,24 @@ public class HeapPairingTest extends TestBase {
 
 			@Override
 			public Heap build(Comparator cmp) {
-				return new HeapPairing<Integer, Object>(cmp).asHeap();
+				return heapReferenceableBuilder().build(cmp).asHeap();
 			}
 
 			@Override
-			public <OE> Heap.Builder<OE> objElements() {
-				return (Heap.Builder<OE>) this;
+			public Heap.Builder elementsTypeObj() {
+				return this;
 			}
 
 			@Override
-			public <PE> Heap.Builder<PE> primitiveElements(Class<? extends PE> primitiveType) {
-				return (Heap.Builder<PE>) this;
+			public Heap.Builder elementsTypePrimitive(Class primitiveType) {
+				return this;
 			}
 		};
+	}
+
+	private static HeapReferenceable.Builder<Integer, Void> heapReferenceableBuilder() {
+		return HeapReferenceable.newBuilder().setOption("impl", "HeapPairing").keysTypePrimitive(int.class)
+				.valuesTypeVoid();
 	}
 
 	@Test
@@ -75,13 +80,13 @@ public class HeapPairingTest extends TestBase {
 	@Test
 	public void testDecreaseKeyDefaultCompare() {
 		final long seed = 0x90a80620c3ef1a43L;
-		HeapReferenceableTestUtils.testDecreaseKeyDefaultCompare(HeapPairing::new, seed);
+		HeapReferenceableTestUtils.testDecreaseKeyDefaultCompare(heapReferenceableBuilder(), seed);
 	}
 
 	@Test
 	public void testDecreaseKeyCustomCompare() {
 		final long seed = 0x4204a31e91374f21L;
-		HeapReferenceableTestUtils.testDecreaseKeyCustomCompare(HeapPairing::new, seed);
+		HeapReferenceableTestUtils.testDecreaseKeyCustomCompare(heapReferenceableBuilder(), seed);
 	}
 
 }

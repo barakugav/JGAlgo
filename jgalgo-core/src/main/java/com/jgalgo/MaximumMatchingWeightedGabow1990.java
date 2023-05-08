@@ -39,7 +39,7 @@ class MaximumMatchingWeightedGabow1990 extends MaximumMatchingWeightedGabow1990A
 	MaximumMatchingWeightedGabow1990() {}
 
 	@Override
-	Worker newWorker(Graph gOrig, EdgeWeightFunc w, HeapReferenceable.Builder heapBuilder,
+	Worker newWorker(Graph gOrig, EdgeWeightFunc w, HeapReferenceable.Builder<Object, Object> heapBuilder,
 			DebugPrintsManager debugPrint) {
 		return new Worker(gOrig, w, heapBuilder, debugPrint);
 	}
@@ -61,7 +61,8 @@ class MaximumMatchingWeightedGabow1990 extends MaximumMatchingWeightedGabow1990A
 		 */
 		final int[] oddBlossomPath;
 
-		Worker(Graph gOrig, EdgeWeightFunc w, HeapReferenceable.Builder heapBuilder, DebugPrintsManager debugPrint) {
+		Worker(Graph gOrig, EdgeWeightFunc w, HeapReferenceable.Builder<Object, Object> heapBuilder,
+				DebugPrintsManager debugPrint) {
 			super(gOrig, w, heapBuilder, debugPrint);
 			int n = gOrig.vertices().size();
 			vToSMFId = new SubtreeMergeFindMin.Node[n];

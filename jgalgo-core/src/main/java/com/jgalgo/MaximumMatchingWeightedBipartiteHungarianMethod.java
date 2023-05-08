@@ -36,7 +36,8 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumMatchingWeighted {
 
 	private Object bipartiteVerticesWeightKey = Weights.DefaultBipartiteWeightKey;
-	private HeapReferenceable.Builder heapBuilder = HeapPairing::new;
+	private HeapReferenceable.Builder<Integer, Void> heapBuilder =
+			HeapReferenceable.newBuilder().keysTypePrimitive(int.class).valuesTypeVoid();
 
 	/**
 	 * Create a new maximum weighted matching object.
@@ -63,8 +64,8 @@ class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumMatching
 	 *
 	 * @param heapBuilder a builder for heaps used by this algorithm
 	 */
-	public void setHeapBuilder(HeapReferenceable.Builder heapBuilder) {
-		this.heapBuilder = Objects.requireNonNull(heapBuilder);
+	public void setHeapBuilder(HeapReferenceable.Builder<?, ?> heapBuilder) {
+		this.heapBuilder = heapBuilder.keysTypePrimitive(int.class).valuesTypeVoid();
 	}
 
 	/**

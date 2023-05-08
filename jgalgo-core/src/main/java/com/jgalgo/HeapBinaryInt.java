@@ -45,7 +45,7 @@ class HeapBinaryInt extends HeapAbstract<Integer> {
 
 	private int[] arr;
 	private int size;
-	final IntComparator intCmp;
+	private final IntComparator intCmp;
 
 	/**
 	 * Constructs a new, empty binary heap, ordered according to the natural ordering of its elements.

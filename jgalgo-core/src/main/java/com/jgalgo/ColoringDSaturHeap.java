@@ -17,7 +17,6 @@
 package com.jgalgo;
 
 import java.util.BitSet;
-import java.util.Objects;
 
 /**
  * The DSatur coloring algorithm implemented with a heap.
@@ -40,7 +39,8 @@ import java.util.Objects;
  */
 public class ColoringDSaturHeap implements Coloring {
 
-	private HeapReferenceable.Builder heapBuilder = HeapPairing::new;
+	private HeapReferenceable.Builder<HeapElm, Void> heapBuilder =
+			HeapReferenceable.newBuilder().<HeapElm>keysTypeObj().valuesTypeVoid();
 
 	/**
 	 * Create a new coloring algorithm object.
@@ -52,8 +52,8 @@ public class ColoringDSaturHeap implements Coloring {
 	 *
 	 * @param heapBuilder a builder for heaps used by this algorithm
 	 */
-	public void setHeapBuilder(HeapReferenceable.Builder heapBuilder) {
-		this.heapBuilder = Objects.requireNonNull(heapBuilder);
+	public void setHeapBuilder(HeapReferenceable.Builder<?, ?> heapBuilder) {
+		this.heapBuilder = heapBuilder.<HeapElm>keysTypeObj().valuesTypeVoid();
 	}
 
 	@Override

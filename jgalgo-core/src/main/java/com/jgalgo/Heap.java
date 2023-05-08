@@ -115,11 +115,11 @@ public interface Heap<E> extends Collection<E> {
 	static Heap.Builder<Object> newBuilder() {
 		return new Heap.Builder<>() {
 
-			Class<?> type;
+			Class<?> elmsType;
 
 			@Override
 			public Heap build(Comparator cmp) {
-				if (type == int.class) {
+				if (elmsType == int.class) {
 					return new HeapBinaryInt(cmp);
 				} else {
 					return new HeapBinary<>(cmp);
@@ -127,25 +127,23 @@ public interface Heap<E> extends Collection<E> {
 			}
 
 			@Override
-			public <OE> Heap.Builder<OE> objElements() {
-				type = null;
-				return (Builder<OE>) this;
+			public Heap.Builder elementsTypeObj() {
+				elmsType = null;
+				return this;
 			}
 
 			@Override
-			public <PE> Heap.Builder<PE> primitiveElements(Class<? extends PE> primitiveType) {
+			public Heap.Builder elementsTypePrimitive(Class primitiveType) {
 				if (!primitiveType.isPrimitive())
 					throw new IllegalArgumentException("type is not primitive: " + primitiveType);
-				type = primitiveType;
-				return (Builder<PE>) this;
+				elmsType = primitiveType;
+				return this;
 			}
 		};
 	}
 
 	/**
 	 * Builder for heaps.
-	 * <p>
-	 * Used to change heaps implementations which are used as black box by some algorithms.
 	 *
 	 * @param  <E> the heap elements type
 	 * @see        Heap#newBuilder()
@@ -154,6 +152,9 @@ public interface Heap<E> extends Collection<E> {
 	public static interface Builder<E> extends BuilderAbstract<Heap.Builder<E>> {
 		/**
 		 * Build a new heap with the given comparator.
+		 * <p>
+		 * If primitive elements are in used, namely {@link #elementsTypePrimitive(Class)}, its recommended to use a
+		 * primitive {@link Comparator} such as {@link it.unimi.dsi.fastutil.ints.IntComparator}, for best performance.
 		 *
 		 * @param  cmp the comparator that will be used to order the elements in the heap
 		 * @return     the newly constructed heap
@@ -163,7 +164,6 @@ public interface Heap<E> extends Collection<E> {
 		/**
 		 * Build a new heap with {@linkplain Comparable natural ordering}.
 		 *
-		 * @param  <E> the heap elements type
 		 * @return     the newly constructed heap
 		 */
 		default Heap<E> build() {
@@ -173,10 +173,10 @@ public interface Heap<E> extends Collection<E> {
 		/**
 		 * Change the elements type of the built heaps to a generic object type.
 		 *
-		 * @param  <OE> object type
-		 * @return      this builder
+		 * @param  <Elements> object type
+		 * @return            this builder
 		 */
-		<OE> Heap.Builder<OE> objElements();
+		<Elements> Heap.Builder<Elements> elementsTypeObj();
 
 		/**
 		 * Change the elements type of the built heaps to some primitive type.
@@ -184,13 +184,13 @@ public interface Heap<E> extends Collection<E> {
 		 * Some specific type implementation may exists that is more efficient than the boxed general object
 		 * implementation.
 		 *
-		 * @param  <PE>                     elements primitive boxed type
+		 * @param  <Elements>               elements primitive boxed type
 		 * @param  primitiveType            the class of the primitive type
 		 * @return                          this builder
 		 * @throws IllegalArgumentException if {@code primitiveType} is not a class of a primitive type, a.k.a
 		 *                                      {@code int.class, double.class} ect.
 		 */
-		<PE> Heap.Builder<PE> primitiveElements(Class<? extends PE> primitiveType);
+		<Elements> Heap.Builder<Elements> elementsTypePrimitive(Class<? extends Elements> primitiveType);
 	}
 
 }

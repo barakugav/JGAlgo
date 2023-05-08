@@ -31,13 +31,13 @@ public class HeapBinaryTest extends TestBase {
 			}
 
 			@Override
-			public <OE> Heap.Builder<OE> objElements() {
-				return (Heap.Builder<OE>) this;
+			public Heap.Builder elementsTypeObj() {
+				return this;
 			}
 
 			@Override
-			public <PE> Heap.Builder<PE> primitiveElements(Class<? extends PE> primitiveType) {
-				return (Heap.Builder<PE>) this;
+			public Heap.Builder elementsTypePrimitive(Class primitiveType) {
+				return this;
 			}
 		};
 	}

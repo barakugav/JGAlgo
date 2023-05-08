@@ -17,6 +17,7 @@
 package com.jgalgo;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * Dijkstra's algorithm for Single Source Shortest Path (SSSP).
@@ -37,8 +38,7 @@ import java.util.Arrays;
  */
 public class SSSPDijkstra implements SSSP {
 
-	@SuppressWarnings("rawtypes")
-	private HeapReferenceable heap;
+	private HeapReferenceable.Builder<?, ?> heapBuilder;
 	@SuppressWarnings("rawtypes")
 	private HeapReference[] verticesPtrs;
 
@@ -46,7 +46,7 @@ public class SSSPDijkstra implements SSSP {
 	 * Construct a new SSSP algorithm object.
 	 */
 	public SSSPDijkstra() {
-		heap = new HeapPairing<>();
+		heapBuilder = HeapReferenceable.newBuilder();
 	}
 
 	/**
@@ -54,8 +54,8 @@ public class SSSPDijkstra implements SSSP {
 	 *
 	 * @param heapBuilder a builder for heaps used by this algorithm
 	 */
-	public void setHeapBuilder(HeapReferenceable.Builder heapBuilder) {
-		heap = heapBuilder.build();
+	public void setHeapBuilder(HeapReferenceable.Builder<?, ?> heapBuilder) {
+		this.heapBuilder = Objects.requireNonNull(heapBuilder);
 	}
 
 	/**
@@ -71,13 +71,11 @@ public class SSSPDijkstra implements SSSP {
 
 		SSSP.Result res;
 		if (w instanceof EdgeWeightFunc.Int) {
-			res = new WorkerInt(heap, verticesPtrs).computeSSSP(g, (EdgeWeightFunc.Int) w, source);
+			res = new WorkerInt(heapBuilder, verticesPtrs).computeSSSP(g, (EdgeWeightFunc.Int) w, source);
 		} else {
-			res = new WorkerDouble(heap, verticesPtrs).computeSSSP(g, w, source);
-			res = new WorkerDouble(new HeapPairing<>(), new HeapReference[n]).computeSSSP(g, w, source);
+			res = new WorkerDouble(heapBuilder, verticesPtrs).computeSSSP(g, w, source);
 		}
 
-		heap.clear();
 		Arrays.fill(verticesPtrs, 0, n, null);
 		return res;
 	}
@@ -88,8 +86,8 @@ public class SSSPDijkstra implements SSSP {
 		private final HeapReference<Double, Integer>[] verticesPtrs;
 
 		@SuppressWarnings({ "unchecked", "rawtypes" })
-		WorkerDouble(HeapReferenceable heap, HeapReference[] verticesPtrs) {
-			this.heap = heap;
+		WorkerDouble(HeapReferenceable.Builder<?, ?> heapBuilder, HeapReference[] verticesPtrs) {
+			this.heap = heapBuilder.keysTypePrimitive(double.class).valuesTypePrimitive(int.class).build();
 			this.verticesPtrs = verticesPtrs;
 		}
 
@@ -110,12 +108,12 @@ public class SSSPDijkstra implements SSSP {
 
 					HeapReference<Double, Integer> vPtr = verticesPtrs[v];
 					if (vPtr == null) {
-						verticesPtrs[v] = heap.insert(distance, v);
+						verticesPtrs[v] = heap.insert(Double.valueOf(distance), Integer.valueOf(v));
 						res.backtrack[v] = e;
 					} else {
-						if (distance < vPtr.key()) {
+						if (distance < vPtr.key().doubleValue()) {
 							res.backtrack[v] = e;
-							heap.decreaseKey(vPtr, distance);
+							heap.decreaseKey(vPtr, Double.valueOf(distance));
 						}
 					}
 				}
@@ -123,7 +121,7 @@ public class SSSPDijkstra implements SSSP {
 				if (heap.isEmpty())
 					break;
 				HeapReference<Double, Integer> next = heap.extractMin();
-				res.distances[u = next.value()] = next.key();
+				res.distances[u = next.value().intValue()] = next.key().doubleValue();
 			}
 
 			return res;
@@ -136,8 +134,8 @@ public class SSSPDijkstra implements SSSP {
 		private final HeapReference<Integer, Integer>[] verticesPtrs;
 
 		@SuppressWarnings({ "unchecked", "rawtypes" })
-		WorkerInt(HeapReferenceable heap, HeapReference[] verticesPtrs) {
-			this.heap = heap;
+		WorkerInt(HeapReferenceable.Builder<?, ?> heapBuilder, HeapReference[] verticesPtrs) {
+			this.heap = heapBuilder.keysTypePrimitive(int.class).valuesTypePrimitive(int.class).build();
 			this.verticesPtrs = verticesPtrs;
 		}
 
@@ -158,12 +156,12 @@ public class SSSPDijkstra implements SSSP {
 
 					HeapReference<Integer, Integer> vPtr = verticesPtrs[v];
 					if (vPtr == null) {
-						verticesPtrs[v] = heap.insert(distance, v);
+						verticesPtrs[v] = heap.insert(Integer.valueOf(distance), Integer.valueOf(v));
 						res.backtrack[v] = e;
 					} else {
-						if (distance < vPtr.key()) {
+						if (distance < vPtr.key().intValue()) {
 							res.backtrack[v] = e;
-							heap.decreaseKey(vPtr, distance);
+							heap.decreaseKey(vPtr, Integer.valueOf(distance));
 						}
 					}
 				}
@@ -171,7 +169,7 @@ public class SSSPDijkstra implements SSSP {
 				if (heap.isEmpty())
 					break;
 				HeapReference<Integer, Integer> next = heap.extractMin();
-				res.distances[u = next.value()] = next.key();
+				res.distances[u = next.value().intValue()] = next.key().intValue();
 			}
 
 			return res;

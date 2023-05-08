@@ -39,7 +39,7 @@ import com.jgalgo.Trees.TreeNode;
  * @see        <a href="https://en.wikipedia.org/wiki/Binomial_heap">Wikipedia</a>
  * @author     Barak Ugav
  */
-public class HeapBinomial<K, V> extends HeapReferenceableAbstract<K, V> {
+class HeapBinomial<K, V> extends HeapReferenceableAbstract<K, V> {
 
 	private Node<K, V>[] roots;
 	private int rootsLen;
@@ -54,7 +54,7 @@ public class HeapBinomial<K, V> extends HeapReferenceableAbstract<K, V> {
 	 * constraint (for example, the user attempts to insert a string element to a heap whose keys are integers), the
 	 * {@code insert} call will throw a {@code ClassCastException}.
 	 */
-	public HeapBinomial() {
+	HeapBinomial() {
 		this(null);
 	}
 
@@ -69,7 +69,7 @@ public class HeapBinomial<K, V> extends HeapReferenceableAbstract<K, V> {
 	 * @param comparator the comparator that will be used to order this heap. If {@code null}, the
 	 *                       {@linkplain Comparable natural ordering} of the keys will be used.
 	 */
-	public HeapBinomial(Comparator<? super K> comparator) {
+	HeapBinomial(Comparator<? super K> comparator) {
 		super(comparator);
 		roots = newArr(4);
 		rootsLen = 0;

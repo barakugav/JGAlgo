@@ -16,9 +16,7 @@
 
 package com.jgalgo;
 
-import java.util.Objects;
 import java.util.function.IntToDoubleFunction;
-
 import it.unimi.dsi.fastutil.ints.IntLists;
 
 /**
@@ -37,7 +35,8 @@ import it.unimi.dsi.fastutil.ints.IntLists;
  */
 public class AStar {
 
-	private HeapReferenceable.Builder heapBuilder = HeapPairing::new;
+	private HeapReferenceable.Builder<Double, Integer> heapBuilder =
+			HeapReferenceable.newBuilder().keysTypePrimitive(double.class).valuesTypePrimitive(int.class);
 
 	/**
 	 * Construct a new AStart algorithm.
@@ -49,8 +48,8 @@ public class AStar {
 	 *
 	 * @param heapBuilder a builder for heaps used by this algorithm
 	 */
-	public void setHeapBuilder(HeapReferenceable.Builder heapBuilder) {
-		this.heapBuilder = Objects.requireNonNull(heapBuilder);
+	public void setHeapBuilder(HeapReferenceable.Builder<?, ?> heapBuilder) {
+		this.heapBuilder = heapBuilder.keysTypePrimitive(double.class).valuesTypePrimitive(int.class);
 	}
 
 	/**
@@ -91,17 +90,17 @@ public class AStar {
 
 				HeapReference<Double, Integer> vPtr = verticesPtrs[v];
 				if (vPtr == null) {
-					verticesPtrs[v] = heap.insert(distanceEstimate, v);
+					verticesPtrs[v] = heap.insert(Double.valueOf(distanceEstimate), Integer.valueOf(v));
 				} else {
-					if (distanceEstimate < vPtr.key())
-						heap.decreaseKey(vPtr, distanceEstimate);
+					if (distanceEstimate < vPtr.key().doubleValue())
+						heap.decreaseKey(vPtr, Double.valueOf(distanceEstimate));
 				}
 			}
 
 			if (heap.isEmpty())
 				break;
 			HeapReference<Double, Integer> next = heap.extractMin();
-			verticesPtrs[u = next.value()] = null;
+			verticesPtrs[u = next.value().intValue()] = null;
 			if (u == target)
 				return res.getPath(target);
 		}

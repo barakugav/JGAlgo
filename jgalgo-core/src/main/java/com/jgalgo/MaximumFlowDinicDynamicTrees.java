@@ -20,9 +20,10 @@ import java.util.Arrays;
 import java.util.function.ObjDoubleConsumer;
 import com.jgalgo.DynamicTree.MinEdge;
 import com.jgalgo.IDStrategy.Fixed;
-import com.jgalgo.Utils.Stack;
+import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
  * Dinic's algorithm for maximum flow using dynamic trees.
@@ -75,7 +76,7 @@ public class MaximumFlowDinicDynamicTrees implements MaximumFlow {
 		int[] level = new int[n];
 		DynamicTree dt = new DynamicTreeSplay(maxCapacity * 10);
 		DynamicTree.Node[] vToDt = new DynamicTree.Node[n];
-		Stack<DynamicTree.Node> cleanupStack = new Stack<>();
+		Stack<DynamicTree.Node> cleanupStack = new ObjectArrayList<>();
 
 		int[] edgeToParent = new int[n];
 		Arrays.fill(edgeToParent, -1);

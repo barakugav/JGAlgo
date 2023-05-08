@@ -39,7 +39,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 abstract class MaximumMatchingWeightedGabow1990Abstract implements MaximumMatchingWeighted {
 
 	final DebugPrintsManager debugPrintManager = new DebugPrintsManager();
-	HeapReferenceable.Builder heapBuilder = HeapPairing::new;
+	HeapReferenceable.Builder<Object, Object> heapBuilder = HeapReferenceable.newBuilder();
 	static final double EPS = 0.00001;
 
 	@Override
@@ -55,7 +55,7 @@ abstract class MaximumMatchingWeightedGabow1990Abstract implements MaximumMatchi
 		return newWorker(g, w, heapBuilder, debugPrintManager).computeMaxMatching(true);
 	}
 
-	abstract Worker newWorker(Graph gOrig, EdgeWeightFunc w, HeapReferenceable.Builder heapBuilder,
+	abstract Worker newWorker(Graph gOrig, EdgeWeightFunc w, HeapReferenceable.Builder<Object, Object> heapBuilder,
 			DebugPrintsManager debugPrint);
 
 	/**
@@ -63,7 +63,7 @@ abstract class MaximumMatchingWeightedGabow1990Abstract implements MaximumMatchi
 	 *
 	 * @param heapBuilder a builder for heaps used by this algorithm
 	 */
-	public void setHeapBuilder(HeapReferenceable.Builder heapBuilder) {
+	public void setHeapBuilder(HeapReferenceable.Builder<Object, Object> heapBuilder) {
 		this.heapBuilder = Objects.requireNonNull(heapBuilder);
 	}
 
@@ -449,7 +449,8 @@ abstract class MaximumMatchingWeightedGabow1990Abstract implements MaximumMatchi
 
 		private static final Object EdgeValKey = new Object();
 
-		Worker(Graph gOrig, EdgeWeightFunc w, HeapReferenceable.Builder heapBuilder, DebugPrintsManager debugPrint) {
+		Worker(Graph gOrig, EdgeWeightFunc w, HeapReferenceable.Builder<Object, Object> heapBuilder,
+				DebugPrintsManager debugPrint) {
 			int n = gOrig.vertices().size();
 			this.gOrig = gOrig;
 			this.g = new GraphArrayDirected(n);
@@ -479,8 +480,9 @@ abstract class MaximumMatchingWeightedGabow1990Abstract implements MaximumMatchi
 			vertexDualValBase = new double[n];
 
 			vToGrowEvent = new EdgeEvent[n];
-			growEvents = heapBuilder.build((e1, e2) -> Double.compare(growEventsKey(e1), growEventsKey(e2)));
-			expandEvents = heapBuilder.build();
+			growEvents = heapBuilder.<EdgeEvent>keysTypeObj().valuesTypeVoid()
+					.build((e1, e2) -> Double.compare(growEventsKey(e1), growEventsKey(e2)));
+			expandEvents = heapBuilder.keysTypePrimitive(double.class).<Blossom>valuesTypeObj().build();
 
 			unionQueue = new IntArrayFIFOQueue();
 			scanQueue = new IntArrayFIFOQueue();

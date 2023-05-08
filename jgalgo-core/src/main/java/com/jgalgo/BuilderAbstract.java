@@ -18,7 +18,7 @@ package com.jgalgo;
 interface BuilderAbstract<BuilderType> {
 
 	/**
-	 * Set an option.
+	 * <b>[TL;DR Don't call me!]</b> Set an option.
 	 * <p>
 	 * The builder might support different options to customize its implementation. These options never change the
 	 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'

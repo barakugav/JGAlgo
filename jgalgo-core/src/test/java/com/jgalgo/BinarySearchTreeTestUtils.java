@@ -18,29 +18,27 @@ package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
-
 import com.jgalgo.HeapReferenceableTestUtils.HeapReferenceableTracker;
 import com.jgalgo.HeapReferenceableTestUtils.HeapTrackerIdGenerator;
 import com.jgalgo.HeapReferenceableTestUtils.TestMode;
+import it.unimi.dsi.fastutil.ints.IntComparator;
 
 class BinarySearchTreeTestUtils extends TestUtils {
 
 	private BinarySearchTreeTestUtils() {}
 
 	@SuppressWarnings("boxing")
-	static void testExtractMax(BinarySearchTree.Builder treeBuilder, long seed) {
+	static void testExtractMax(BinarySearchTree.Builder<Integer, Void> treeBuilder, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
-		Comparator<? super Integer> compare = null;
+		IntComparator compare = null;
 		List<Phase> phases = List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 4096));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
@@ -65,15 +63,15 @@ class BinarySearchTreeTestUtils extends TestUtils {
 		});
 	}
 
-	static void testFindSmallerDefaultCompare(BinarySearchTree.Builder treeBuilder, long seed) {
+	static void testFindSmallerDefaultCompare(BinarySearchTree.Builder<Integer, Void> treeBuilder, long seed) {
 		testFindSmaller(treeBuilder, null, seed);
 	}
 
-	static void testFindSmallerCustomCompare(BinarySearchTree.Builder treeBuilder, long seed) {
-		testFindSmaller(treeBuilder, (x1, x2) -> -Integer.compare(x1.intValue(), x2.intValue()), seed);
+	static void testFindSmallerCustomCompare(BinarySearchTree.Builder<Integer, Void> treeBuilder, long seed) {
+		testFindSmaller(treeBuilder, (x1, x2) -> -Integer.compare(x1, x2), seed);
 	}
 
-	private static void testFindSmaller(BinarySearchTree.Builder treeBuilder, Comparator<? super Integer> compare,
+	private static void testFindSmaller(BinarySearchTree.Builder<Integer, Void> treeBuilder, IntComparator compare,
 			long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 4096));
@@ -83,15 +81,15 @@ class BinarySearchTreeTestUtils extends TestUtils {
 		});
 	}
 
-	static void testFindGreaterDefaultCompare(BinarySearchTree.Builder treeBuilder, long seed) {
+	static void testFindGreaterDefaultCompare(BinarySearchTree.Builder<Integer, Void> treeBuilder, long seed) {
 		testFindGreater(treeBuilder, null, seed);
 	}
 
-	static void testFindGreaterCustomCompare(BinarySearchTree.Builder treeBuilder, long seed) {
-		testFindGreater(treeBuilder, (x1, x2) -> -Integer.compare(x1.intValue(), x2.intValue()), seed);
+	static void testFindGreaterCustomCompare(BinarySearchTree.Builder<Integer, Void> treeBuilder, long seed) {
+		testFindGreater(treeBuilder, (x1, x2) -> -Integer.compare(x1, x2), seed);
 	}
 
-	private static void testFindGreater(BinarySearchTree.Builder treeBuilder, Comparator<? super Integer> compare,
+	private static void testFindGreater(BinarySearchTree.Builder<Integer, Void> treeBuilder, IntComparator compare,
 			long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 4096));
@@ -102,8 +100,8 @@ class BinarySearchTreeTestUtils extends TestUtils {
 	}
 
 	@SuppressWarnings("boxing")
-	private static void testFindSmallerGreater(BinarySearchTree.Builder treeBuilder,
-			Comparator<? super Integer> compare, long seed, int n, boolean smaller) {
+	private static void testFindSmallerGreater(BinarySearchTree.Builder<Integer, Void> treeBuilder,
+			IntComparator compare, long seed, int n, boolean smaller) {
 		DebugPrintsManager debug = new DebugPrintsManager(false);
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
@@ -142,15 +140,15 @@ class BinarySearchTreeTestUtils extends TestUtils {
 		}
 	}
 
-	static void testGetPredecessorsDefaultCompare(BinarySearchTree.Builder treeBuilder, long seed) {
+	static void testGetPredecessorsDefaultCompare(BinarySearchTree.Builder<Integer, Void> treeBuilder, long seed) {
 		testGetPredecessors(treeBuilder, null, seed);
 	}
 
-	static void testGetPredecessorsCustomCompare(BinarySearchTree.Builder treeBuilder, long seed) {
-		testGetPredecessors(treeBuilder, (x1, x2) -> -Integer.compare(x1.intValue(), x2.intValue()), seed);
+	static void testGetPredecessorsCustomCompare(BinarySearchTree.Builder<Integer, Void> treeBuilder, long seed) {
+		testGetPredecessors(treeBuilder, (x1, x2) -> -Integer.compare(x1, x2), seed);
 	}
 
-	private static void testGetPredecessors(BinarySearchTree.Builder treeBuilder, Comparator<? super Integer> compare,
+	private static void testGetPredecessors(BinarySearchTree.Builder<Integer, Void> treeBuilder, IntComparator compare,
 			long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 4096));
@@ -160,15 +158,16 @@ class BinarySearchTreeTestUtils extends TestUtils {
 		});
 	}
 
-	static void testGetSuccessorsDefaultCompare(BinarySearchTree.Builder treeBuilder, long seed) {
+	static void testGetSuccessorsDefaultCompare(BinarySearchTree.Builder<Integer, Void> treeBuilder, long seed) {
 		testGetSuccessors(treeBuilder, null, seed);
 	}
 
-	static void testGetSuccessorsCustomCompare(BinarySearchTree.Builder treeBuilder, long seed) {
-		testGetSuccessors(treeBuilder, (x1, x2) -> -Integer.compare(x1.intValue(), x2.intValue()), seed);
+	static void testGetSuccessorsCustomCompare(BinarySearchTree.Builder<Integer, Void> treeBuilder, long seed) {
+		testGetSuccessors(treeBuilder, (x1, x2) -> -Integer.compare(x1, x2), seed);
 	}
 
-	private static void testGetSuccessors(BinarySearchTree.Builder treeBuilder, Comparator<? super Integer> compare,
+	private static void testGetSuccessors(BinarySearchTree.Builder<Integer, Void> treeBuilder, IntComparator compare,
+
 			long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 4096));
@@ -179,8 +178,8 @@ class BinarySearchTreeTestUtils extends TestUtils {
 	}
 
 	@SuppressWarnings("boxing")
-	private static void testGetPredecessorSuccessor(BinarySearchTree.Builder treeBuilder, int n,
-			Comparator<? super Integer> compare, long seed, boolean predecessor) {
+	private static void testGetPredecessorSuccessor(BinarySearchTree.Builder<Integer, Void> treeBuilder, int n,
+			IntComparator compare, long seed, boolean predecessor) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		DebugPrintsManager debug = new DebugPrintsManager(false);
 		Random rand = new Random(seedGen.nextSeed());
@@ -220,15 +219,15 @@ class BinarySearchTreeTestUtils extends TestUtils {
 		}
 	}
 
-	static void testSplitDefaultCompare(BinarySearchTree.Builder treeBuilder, long seed) {
+	static void testSplitDefaultCompare(BinarySearchTree.Builder<Integer, Void> treeBuilder, long seed) {
 		testSplit(treeBuilder, null, seed);
 	}
 
-	static void testSplitCustomCompare(BinarySearchTree.Builder treeBuilder, long seed) {
-		testSplit(treeBuilder, (x1, x2) -> -Integer.compare(x1.intValue(), x2.intValue()), seed);
+	static void testSplitCustomCompare(BinarySearchTree.Builder<Integer, Void> treeBuilder, long seed) {
+		testSplit(treeBuilder, (x1, x2) -> -Integer.compare(x1, x2), seed);
 	}
 
-	private static void testSplit(BinarySearchTree.Builder treeBuilder, Comparator<? super Integer> compare,
+	private static void testSplit(BinarySearchTree.Builder<Integer, Void> treeBuilder, IntComparator compare,
 			long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(128, 8), phase(64, 32), phase(16, 128), phase(8, 256), phase(4, 1024));
@@ -239,8 +238,8 @@ class BinarySearchTreeTestUtils extends TestUtils {
 	}
 
 	@SuppressWarnings("boxing")
-	private static void testSplit(BinarySearchTree.Builder treeBuilder, int tCount, Comparator<? super Integer> compare,
-			long seed) {
+	private static void testSplit(BinarySearchTree.Builder<Integer, Void> treeBuilder, int tCount,
+			IntComparator compare, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
 		HeapTrackerIdGenerator heapTrackerIdGen = new HeapTrackerIdGenerator(seedGen.nextSeed());
@@ -321,7 +320,7 @@ class BinarySearchTreeTestUtils extends TestUtils {
 	@SuppressWarnings("boxing")
 	static class BSTTracker extends HeapReferenceableTracker {
 
-		BSTTracker(BinarySearchTree<Integer, Void> heap, int id, Comparator<? super Integer> compare, long seed) {
+		BSTTracker(BinarySearchTree<Integer, Void> heap, int id, IntComparator compare, long seed) {
 			super(heap, id, compare, seed);
 		}
 

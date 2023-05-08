@@ -31,35 +31,20 @@ public class RedBlackTreeTest extends TestBase {
 			}
 
 			@Override
-			public <OE> Heap.Builder<OE> objElements() {
-				return (Heap.Builder<OE>) this;
+			public Heap.Builder elementsTypeObj() {
+				return this;
 			}
 
 			@Override
-			public <PE> Heap.Builder<PE> primitiveElements(Class<? extends PE> primitiveType) {
-				return (Heap.Builder<PE>) this;
+			public Heap.Builder elementsTypePrimitive(Class primitiveType) {
+				return this;
 			}
 		};
 	}
 
-	private static BinarySearchTree.Builder createBuilder() {
-		return new BinarySearchTree.Builder() {
-
-			@Override
-			public <K, V> BinarySearchTree<K, V> build(Comparator<? super K> cmp) {
-				return new RedBlackTree<>(cmp);
-			}
-
-			@Override
-			public BinarySearchTree.Builder setSplits(boolean enable) {
-				throw new UnsupportedOperationException("Unimplemented method 'setSplits'");
-			}
-
-			@Override
-			public BinarySearchTree.Builder setMelds(boolean enable) {
-				throw new UnsupportedOperationException("Unimplemented method 'setMelds'");
-			}
-		};
+	private static BinarySearchTree.Builder<Integer, Void> createBuilder() {
+		return BinarySearchTree.newBuilder().setOption("impl", "RedBlackTree").keysTypePrimitive(int.class)
+				.valuesTypeVoid();
 	}
 
 	@Test

@@ -17,6 +17,7 @@
 package com.jgalgo.bench;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -35,18 +36,14 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
+import com.jgalgo.BinarySearchTree;
 import com.jgalgo.EdgeWeightFunc;
 import com.jgalgo.Graph;
-import com.jgalgo.HeapBinomial;
-import com.jgalgo.HeapFibonacci;
-import com.jgalgo.HeapPairing;
 import com.jgalgo.HeapReferenceable;
 import com.jgalgo.MST;
 import com.jgalgo.MSTPrim;
-import com.jgalgo.RedBlackTree;
 import com.jgalgo.SSSP;
 import com.jgalgo.SSSPDijkstra;
-import com.jgalgo.SplayTree;
 import com.jgalgo.bench.GraphsTestUtils.RandomGraphBuilder;
 import com.jgalgo.bench.TestUtils.SeedGenerator;
 
@@ -83,7 +80,7 @@ public class HeapReferenceableBench {
 		}
 	}
 
-	private void benchHeap(HeapReferenceable.Builder heapBuilder, Blackhole blackhole) {
+	private void benchHeap(HeapReferenceable.Builder<?, ?> heapBuilder, Blackhole blackhole) {
 		GraphArgs args = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 
 		/* SSSP */
@@ -100,28 +97,67 @@ public class HeapReferenceableBench {
 	}
 
 	@Benchmark
-	public void Pairing(Blackhole blackhole) {
-		benchHeap(HeapPairing::new, blackhole);
+	public void Pairings(Blackhole blackhole) {
+		benchHeap(HeapReferenceable.newBuilder().setOption("impl", "HeapPairing"), blackhole);
+	}
+
+	@Benchmark
+	public void PairingWithoutPrimitives(Blackhole blackhole) {
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		HeapReferenceable.Builder<Object, Object> heapBuilder = new HeapReferenceable.Builder<>() {
+
+			@Override
+			public HeapReferenceable<Object, Object> build(Comparator<? super Object> cmp) {
+				return HeapReferenceable.newBuilder().setOption("impl", "HeapPairing").keysTypeObj().valuesTypeObj()
+						.build(cmp);
+			}
+
+			@Override
+			public HeapReferenceable.Builder keysTypeObj() {
+				return this;
+			}
+
+			@Override
+			public HeapReferenceable.Builder keysTypePrimitive(Class primitiveType) {
+				return this;
+			}
+
+			@Override
+			public HeapReferenceable.Builder valuesTypeObj() {
+				return this;
+			}
+
+			@Override
+			public HeapReferenceable.Builder valuesTypePrimitive(Class primitiveType) {
+				return this;
+			}
+
+			@Override
+			public HeapReferenceable.Builder valuesTypeVoid() {
+				return this;
+			}
+		};
+		benchHeap(heapBuilder, blackhole);
 	}
 
 	@Benchmark
 	public void Fibonacci(Blackhole blackhole) {
-		benchHeap(HeapFibonacci::new, blackhole);
+		benchHeap(HeapReferenceable.newBuilder().setOption("impl", "HeapFibonacci"), blackhole);
 	}
 
 	@Benchmark
 	public void Binomial(Blackhole blackhole) {
-		benchHeap(HeapBinomial::new, blackhole);
+		benchHeap(HeapReferenceable.newBuilder().setOption("impl", "HeapBinomial"), blackhole);
 	}
 
 	@Benchmark
 	public void RedBlackTree(Blackhole blackhole) {
-		benchHeap(RedBlackTree::new, blackhole);
+		benchHeap(BinarySearchTree.newBuilder().setOption("impl", "RedBlackTree"), blackhole);
 	}
 
 	@Benchmark
 	public void SplayTree(Blackhole blackhole) {
-		benchHeap(SplayTree::new, blackhole);
+		benchHeap(BinarySearchTree.newBuilder().setOption("impl", "SplayTree"), blackhole);
 	}
 
 	private static class GraphArgs {

@@ -18,7 +18,6 @@ package com.jgalgo;
 
 import java.util.Arrays;
 import java.util.BitSet;
-import java.util.Objects;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntStack;
@@ -34,7 +33,8 @@ import it.unimi.dsi.fastutil.ints.IntStack;
  */
 public class MDSTTarjan implements MDST {
 
-	private HeapReferenceable.Builder heapBuilder = HeapPairing::new;
+	private HeapReferenceable.Builder<Integer, Void> heapBuilder =
+			HeapReferenceable.newBuilder().keysTypePrimitive(int.class).valuesTypeVoid();
 	private final ConnectivityAlgorithm ccAlg = ConnectivityAlgorithm.newBuilder().build();
 	private static final int HeavyEdge = 0xffffffff;
 	private static final double HeavyEdgeWeight = Double.MAX_VALUE;
@@ -50,8 +50,8 @@ public class MDSTTarjan implements MDST {
 	 *
 	 * @param heapBuilder a builder for heaps used by this algorithm
 	 */
-	public void setHeapBuilder(HeapReferenceable.Builder heapBuilder) {
-		this.heapBuilder = Objects.requireNonNull(heapBuilder);
+	public void setHeapBuilder(HeapReferenceable.Builder<?, ?> heapBuilder) {
+		this.heapBuilder = heapBuilder.keysTypePrimitive(int.class).valuesTypeVoid();
 	}
 
 	/**

@@ -31,13 +31,13 @@ public class HeapFibonacciTest extends TestBase {
 			}
 
 			@Override
-			public <OE> Heap.Builder<OE> objElements() {
-				return (Heap.Builder<OE>) this;
+			public Heap.Builder elementsTypeObj() {
+				return this;
 			}
 
 			@Override
-			public <PE> Heap.Builder<PE> primitiveElements(Class<? extends PE> primitiveType) {
-				return (Heap.Builder<PE>) this;
+			public Heap.Builder elementsTypePrimitive(Class primitiveType) {
+				return this;
 			}
 		};
 	}
@@ -75,13 +75,18 @@ public class HeapFibonacciTest extends TestBase {
 	@Test
 	public void testDecreaseKeyDefaultCompare() {
 		final long seed = 0xcadbabb0e01d6ea5L;
-		HeapReferenceableTestUtils.testDecreaseKeyDefaultCompare(HeapFibonacci::new, seed);
+		HeapReferenceableTestUtils.testDecreaseKeyDefaultCompare(createRefHeapBuilder(), seed);
 	}
 
 	@Test
 	public void testDecreaseKeyCustomCompare() {
 		final long seed = 0x0a7f3203577b4cefL;
-		HeapReferenceableTestUtils.testDecreaseKeyCustomCompare(HeapFibonacci::new, seed);
+		HeapReferenceableTestUtils.testDecreaseKeyCustomCompare(createRefHeapBuilder(), seed);
+	}
+
+	private static HeapReferenceable.Builder<Integer, Void> createRefHeapBuilder() {
+		return HeapReferenceable.newBuilder().setOption("impl", "HeapFibonacci").keysTypePrimitive(int.class)
+				.valuesTypeVoid();
 	}
 
 }

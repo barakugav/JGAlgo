@@ -17,10 +17,10 @@
 package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import java.util.Comparator;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.HeapReferenceableTestUtils.TestMode;
+import it.unimi.dsi.fastutil.ints.IntComparator;
 
 @SuppressWarnings("boxing")
 public class RedBlackTreeExtendedTest extends TestBase {
@@ -29,7 +29,7 @@ public class RedBlackTreeExtendedTest extends TestBase {
 	public void testExtensionSizeRandOps() {
 		final long seed = 0xe5136a0085e719d1L;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		final Comparator<Integer> compare = null;
+		final IntComparator compare = null;
 		List<Phase> phases = List.of(phase(256, 16, 16), phase(128, 64, 128), phase(64, 512, 1024),
 				phase(16, 4096, 8096), phase(8, 16384, 32768));
 		runTestMultiple(phases, (testIter, args) -> {
@@ -57,7 +57,7 @@ public class RedBlackTreeExtendedTest extends TestBase {
 	public void testExtensionMinRandOps() {
 		final long seed = 0xe5136a0085e719d1L;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		final Comparator<Integer> compare = null;
+		final IntComparator compare = null;
 		List<Phase> phases = List.of(phase(64, 16, 16), phase(64, 64, 128), phase(32, 512, 1024), phase(8, 4096, 8096),
 				phase(4, 16384, 32768));
 		runTestMultiple(phases, (testIter, args) -> {
@@ -83,7 +83,7 @@ public class RedBlackTreeExtendedTest extends TestBase {
 	public void testExtensionMaxRandOps() {
 		final long seed = 0x7674bddef0a0863bL;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		final Comparator<Integer> compare = null;
+		final IntComparator compare = null;
 		List<Phase> phases = List.of(phase(64, 16, 16), phase(64, 64, 128), phase(32, 512, 1024), phase(8, 4096, 8096),
 				phase(4, 16384, 32768));
 		runTestMultiple(phases, (testIter, args) -> {

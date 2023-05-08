@@ -116,11 +116,11 @@ public interface HeapReferenceable<K, V> extends Collection<HeapReference<K, V>>
 	public void meld(HeapReferenceable<? extends K, ? extends V> heap);
 
 	/**
-	 * Returns the comparator used to order the elements in this heap, or {@code null} if this heap uses the
-	 * {@linkplain Comparable natural ordering} of its elements.
+	 * Returns the comparator used to order the element's keys in this heap, or {@code null} if this heap uses the
+	 * {@linkplain Comparable natural ordering} of its keys.
 	 *
-	 * @return the comparator used to order the elements in this heap, or {@code null} if this heap uses the natural
-	 *         ordering of its elements
+	 * @return the comparator used to order the element's keys in this heap, or {@code null} if this heap uses the
+	 *         natural ordering of its keys
 	 */
 	public Comparator<? super K> comparator();
 
@@ -193,41 +193,150 @@ public interface HeapReferenceable<K, V> extends Collection<HeapReference<K, V>>
 	 *
 	 * @return a new builder that can build {@link HeapReferenceable} objects
 	 */
-	static HeapReferenceable.Builder newBuilder() {
-		return HeapPairing::new;
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	static HeapReferenceable.Builder<Object, Object> newBuilder() {
+		return new HeapReferenceable.Builder<>() {
+
+			Class<?> keysType;
+			Class<?> valuesType;
+			String impl;
+
+			@Override
+			public HeapReferenceable build(Comparator cmp) {
+				if (impl != null && !"HeapPairing".equals(impl)) {
+					if (HeapBinomial.class.getSimpleName().equals(impl))
+						return new HeapBinomial(cmp);
+					if (HeapFibonacci.class.getSimpleName().equals(impl))
+						return new HeapFibonacci(cmp);
+					throw new IllegalArgumentException("unknown 'impl' value: " + impl);
+				}
+				return HeapPairing.newHeap(keysType, valuesType, cmp);
+			}
+
+			@Override
+			public HeapReferenceable.Builder keysTypeObj() {
+				keysType = null;
+				return this;
+			}
+
+			@Override
+			public HeapReferenceable.Builder keysTypePrimitive(Class primitiveType) {
+				if (!primitiveType.isPrimitive())
+					throw new IllegalArgumentException("type is not primitive: " + primitiveType);
+				keysType = primitiveType;
+				return this;
+			}
+
+			@Override
+			public HeapReferenceable.Builder valuesTypeObj() {
+				valuesType = null;
+				return this;
+			}
+
+			@Override
+			public HeapReferenceable.Builder valuesTypePrimitive(Class primitiveType) {
+				if (!primitiveType.isPrimitive())
+					throw new IllegalArgumentException("type is not primitive: " + primitiveType);
+				valuesType = primitiveType;
+				return this;
+			}
+
+			@Override
+			public HeapReferenceable.Builder valuesTypeVoid() {
+				valuesType = void.class;
+				return this;
+			}
+
+			@Override
+			public HeapReferenceable.Builder setOption(String key, Object value) {
+				if ("impl".equals(key)) {
+					impl = value instanceof String ? (String) value : null;
+				} else {
+					throw new IllegalArgumentException("unknown option key: " + key);
+				}
+				return this;
+			}
+		};
 	}
 
 	/**
 	 * Builder for referenceable heaps.
-	 * <p>
-	 * Used to change heaps implementations which are used as black box by some algorithms.
 	 *
-	 * @see    HeapReferenceable#newBuilder()
-	 * @author Barak Ugav
+	 * @param  <K> the heap keys type
+	 * @param  <V> the heap values type
+	 * @see        HeapReferenceable#newBuilder()
+	 * @author     Barak Ugav
 	 */
-	@FunctionalInterface
-	public static interface Builder extends BuilderAbstract<HeapReferenceable.Builder> {
+	public static interface Builder<K, V> extends BuilderAbstract<HeapReferenceable.Builder<K, V>> {
 
 		/**
 		 * Build a new heap with the given comparator.
+		 * <p>
+		 * If primitive keys are in used, namely {@link #keysTypePrimitive(Class)}, its recommended to use a primitive
+		 * {@link Comparator} such as {@link it.unimi.dsi.fastutil.ints.IntComparator}, for best performance.
 		 *
-		 * @param  <K> the heap keys type
-		 * @param  <V> the heap values type
 		 * @param  cmp the comparator that will be used to order the keys in the heap
 		 * @return     the newly constructed heap
 		 */
-		<K, V> HeapReferenceable<K, V> build(Comparator<? super K> cmp);
+		HeapReferenceable<K, V> build(Comparator<? super K> cmp);
 
 		/**
 		 * Build a new heap with {@linkplain Comparable natural ordering}.
 		 *
-		 * @param  <K> the heap keys type
-		 * @param  <V> the heap values type
-		 * @return     the newly constructed heap
+		 * @return the newly constructed heap
 		 */
-		default <K, V> HeapReferenceable<K, V> build() {
+		default HeapReferenceable<K, V> build() {
 			return build(null);
 		}
+
+		/**
+		 * Set the keys type to an object type.
+		 *
+		 * @param  <Keys> the keys type
+		 * @return        this builder
+		 */
+		<Keys> HeapReferenceable.Builder<Keys, V> keysTypeObj();
+
+		/**
+		 * Set the keys type to a primitive type.
+		 * <p>
+		 * Specific implementations may exists for some primitive keys types, which are more efficient.
+		 *
+		 * @param  <Keys>                   the keys type
+		 * @param  primitiveType            the primitive class, for example {@code int.class}
+		 * @return                          this builder
+		 * @throws IllegalArgumentException if the provided class is not primitive
+		 */
+		<Keys> HeapReferenceable.Builder<Keys, V> keysTypePrimitive(Class<? extends Keys> primitiveType);
+
+		/**
+		 * Set the values type to an object type.
+		 *
+		 * @param  <Values> the values type
+		 * @return          this builder
+		 */
+		<Values> HeapReferenceable.Builder<K, Values> valuesTypeObj();
+
+		/**
+		 * Set the values type to a primitive type.
+		 * <p>
+		 * Specific implementations may exists for some primitive keys types, which are more efficient.
+		 *
+		 * @param  <Values>                 the values type
+		 * @param  primitiveType            the primitive class, for example {@code int.class}
+		 * @return                          this builder
+		 * @throws IllegalArgumentException if the provided class is not primitive
+		 */
+		<Values> HeapReferenceable.Builder<K, Values> valuesTypePrimitive(Class<? extends Values> primitiveType);
+
+		/**
+		 * Set the values type to {@code void}.
+		 * <p>
+		 * Specific implementations without values fields may exists, which are more efficient.
+		 *
+		 * @return this builder
+		 */
+		HeapReferenceable.Builder<K, Void> valuesTypeVoid();
 
 	}
 

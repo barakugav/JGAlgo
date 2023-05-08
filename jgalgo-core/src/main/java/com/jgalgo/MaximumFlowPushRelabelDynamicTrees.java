@@ -19,9 +19,10 @@ package com.jgalgo;
 import java.util.BitSet;
 import com.jgalgo.DynamicTree.MinEdge;
 import com.jgalgo.Utils.QueueFixSize;
-import com.jgalgo.Utils.Stack;
+import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
  * The push relabel algorithm for maximum flow using dynamic trees.
@@ -299,7 +300,7 @@ public class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 		void cleanAllDTEdges() {
 			/* Cleanup all the edges that stayed in the DT */
 			int n = g.vertices().size();
-			Stack<DynamicTree.Node> cleanupStack = new Stack<>();
+			Stack<DynamicTree.Node> cleanupStack = new ObjectArrayList<>();
 			for (int u = 0; u < n; u++) {
 				for (DynamicTree.Node uDt = vertexData(u).dtNode, pDt; (pDt = uDt.getParent()) != null; uDt = pDt)
 					cleanupStack.push(uDt);
