@@ -27,7 +27,7 @@ import java.util.Comparator;
  *
  * @author Barak Ugav
  */
-public class SubtreeMergeFindMinImpl<E> implements SubtreeMergeFindMin<E> {
+class SubtreeMergeFindMinImpl<E> implements SubtreeMergeFindMin<E> {
 
 	private NodeImpl<E>[] nodes;
 	private final UnionFind uf;
@@ -40,7 +40,7 @@ public class SubtreeMergeFindMinImpl<E> implements SubtreeMergeFindMin<E> {
 	/**
 	 * Create a new SMF data structure with the {@linkplain Comparable natural ordering} comparator for edge weights.
 	 */
-	public SubtreeMergeFindMinImpl() {
+	SubtreeMergeFindMinImpl() {
 		this(null);
 	}
 
@@ -49,7 +49,7 @@ public class SubtreeMergeFindMinImpl<E> implements SubtreeMergeFindMin<E> {
 	 *
 	 * @param weightCmp comparator used to compare edge weights.
 	 */
-	public SubtreeMergeFindMinImpl(Comparator<? super E> weightCmp) {
+	SubtreeMergeFindMinImpl(Comparator<? super E> weightCmp) {
 		this(weightCmp, HeapReferenceable.newBuilder());
 	}
 
@@ -60,7 +60,7 @@ public class SubtreeMergeFindMinImpl<E> implements SubtreeMergeFindMin<E> {
 	 * @param heapBuilder heap builder used to provide a custom heap implementation.
 	 */
 	@SuppressWarnings("unchecked")
-	public SubtreeMergeFindMinImpl(Comparator<? super E> weightCmp, HeapReferenceable.Builder<?, ?> heapBuilder) {
+	SubtreeMergeFindMinImpl(Comparator<? super E> weightCmp, HeapReferenceable.Builder<?, ?> heapBuilder) {
 		nodes = new NodeImpl[2];
 
 		uf = UnionFind.newBuilder().build();
