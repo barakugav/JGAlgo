@@ -263,7 +263,7 @@ package com.jgalgo;
 
 	}
 
-<span class="fc" id="L266">	static class SplayNode extends SplayTree.Node&lt;Object, SplayNode&gt; implements Node {</span>
+<span class="fc" id="L266">	static class SplayNode extends SplayTree.BaseNode&lt;Object, SplayNode&gt; implements Node {</span>
 
 		SplayNode userParent;
 
@@ -282,12 +282,12 @@ package com.jgalgo;
 		@SuppressWarnings(&quot;unchecked&quot;)
 		@Override
 		public &lt;V&gt; V getNodeData() {
-<span class="fc" id="L285">			return (V) data;</span>
+<span class="fc" id="L285">			return (V) key;</span>
 		}
 
 		@Override
 		public void setNodeData(Object data) {
-<span class="fc" id="L290">			this.data = data;</span>
+<span class="fc" id="L290">			this.key = data;</span>
 <span class="fc" id="L291">		}</span>
 
 		@Override
@@ -325,14 +325,6 @@ package com.jgalgo;
 <span class="fc" id="L325">			return getWeight(parentWeight) - minWeightDiff;</span>
 		}
 
-		@Override
-		void clear() {
-<span class="nc" id="L330">			super.clear();</span>
-<span class="nc" id="L331">			userParent = null;</span>
-<span class="nc" id="L332">			tparent = null;</span>
-<span class="nc" id="L333">			weightDiff = minWeightDiff = 0;</span>
-<span class="nc" id="L334">		}</span>
-
 	}
 
 	private static class MinEdgeRes implements MinEdge {
@@ -340,26 +332,26 @@ package com.jgalgo;
 		final SplayNode u;
 		final double w;
 
-<span class="fc" id="L343">		MinEdgeRes(SplayNode u, double w) {</span>
-<span class="fc" id="L344">			this.u = u;</span>
-<span class="fc" id="L345">			this.w = w;</span>
-<span class="fc" id="L346">		}</span>
+<span class="fc" id="L335">		MinEdgeRes(SplayNode u, double w) {</span>
+<span class="fc" id="L336">			this.u = u;</span>
+<span class="fc" id="L337">			this.w = w;</span>
+<span class="fc" id="L338">		}</span>
 
 		@Override
 		public SplayNode source() {
-<span class="fc" id="L350">			return u;</span>
+<span class="fc" id="L342">			return u;</span>
 		}
 
 		@Override
 		public double weight() {
-<span class="fc" id="L355">			return w;</span>
+<span class="fc" id="L347">			return w;</span>
 		}
 
 	}
 
 	@Override
 	public &lt;Ext extends DynamicTreeExtension&gt; Ext getExtension(Class&lt;Ext&gt; extensionType) {
-<span class="nc" id="L362">		return null;</span>
+<span class="nc" id="L354">		return null;</span>
 	}
 
 }

@@ -16,9 +16,8 @@
 
 package com.jgalgo;
 
+import java.util.Collection;
 import java.util.Comparator;
-import java.util.Iterator;
-import java.util.Set;
 
 /**
  * A a collection which maintains elements in order and support efficient retrieval of the minimum value, and expose
@@ -27,102 +26,164 @@ import java.util.Set;
  * In addition to the regular {@link Heap} operations, the user can obtain a {@linkplain HeapReference reference} to
  * each inserted element via the return value of the {@link #insert(Object)} function. The reference will be valid as
  * long as the element is still in the heap. By passing the reference to the heap implementation to functions such as
- * {@link #decreaseKey(HeapReference, Object)} or {@link #removeRef(HeapReference)} the heap implementation can perform
- * the operations efficiently as is does not need to search for the element.
+ * {@link #decreaseKey(HeapReference, Object)} or {@link #remove(HeapReference)} the heap implementation can perform the
+ * operations efficiently as is does not need to search for the element.
+ * &lt;p&gt;
+ * Another difference from the regular {@link Heap}, is the existent of both keys and values, rather than just
+ * 'elements'. A key may be changed using {@link #decreaseKey} while the &lt;b&gt;value&lt;/b&gt; is the same. This matches the
+ * common use case of these heaps.
  *
  * &lt;pre&gt; {@code
- * HeapReferenceable&lt;Integer&gt; heap = HeapReferenceable.newBuilder().build();
- * HeapReference&lt;Integer&gt; r1 = heap.insert(5);
- * HeapReference&lt;Integer&gt; r2 = heap.insert(10);
- * HeapReference&lt;Integer&gt; r3 = heap.insert(3);
+ * HeapReferenceable&lt;Integer, String&gt; heap = HeapReferenceable.newBuilder().build();
+ * HeapReference&lt;Integer, String&gt; r1 = heap.insert(5, &quot;Alice&quot;);
+ * HeapReference&lt;Integer, String&gt; r2 = heap.insert(10, &quot;Bob&quot;);
+ * HeapReference&lt;Integer, String&gt; r3 = heap.insert(3, &quot;Charlie&quot;);
  *
- * assert heap.findMin() == 3;
- * assert r2.get() == 10;
+ * assert heap.findMin() == r3;
+ * assert r2.key() == 10;
  * heap.decreaseKey(r2, 2);
- * assert r2.get() == 2;
- * assert heap.findMinRef() == r2;
+ * assert r2.key() == 2;
+ * assert r2.value().equals(&quot;Bob&quot;);
+ * assert heap.findMin() == r2;
  *
- * heap.removeRef(r1);
+ * heap.remove(r1);
  * assert heap.size() == 2;
  * }&lt;/pre&gt;
  *
- * @see HeapReference
+ * @param  &lt;K&gt; the keys type
+ * @param  &lt;V&gt; the values type
+ * @see        HeapReference
+ * @author     Barak Ugav
  */
-public interface HeapReferenceable&lt;E&gt; extends Heap&lt;E&gt; {
+public interface HeapReferenceable&lt;K, V&gt; extends Collection&lt;HeapReference&lt;K, V&gt;&gt; {
 
 	/**
-	 * Find an element in the heap and get a reference to it.
+	 * Insert a new element to the heap with {@code null} value.
+	 * &lt;p&gt;
+	 * Only a key is passed to this method, and a {@code null} value will be used. To insert a new element with both a
+	 * key and a value use {@link #insert(Object, Object)}.
 	 *
-	 * @param  e an element
-	 * @return   a reference to the element or null if the element was not found
+	 * @param  key the key of the new element
+	 * @return     reference to the new element
 	 */
-	default HeapReference&lt;E&gt; findRef(E e) {
-<span class="nc" id="L60">		Comparator&lt;? super E&gt; c = comparator();</span>
-<span class="nc bnc" id="L61" title="All 2 branches missed.">		if (c == null) {</span>
-<span class="nc bnc" id="L62" title="All 2 branches missed.">			for (HeapReference&lt;E&gt; p : refsSet()) {</span>
-<span class="nc bnc" id="L63" title="All 2 branches missed.">				if (Utils.cmpDefault(e, p.get()) == 0)</span>
-<span class="nc" id="L64">					return p;</span>
-<span class="nc" id="L65">			}</span>
-		} else {
-<span class="nc bnc" id="L67" title="All 2 branches missed.">			for (HeapReference&lt;E&gt; p : refsSet()) {</span>
-<span class="nc bnc" id="L68" title="All 2 branches missed.">				if (c.compare(e, p.get()) == 0)</span>
-<span class="nc" id="L69">					return p;</span>
-<span class="nc" id="L70">			}</span>
-		}
-<span class="nc" id="L72">		return null;</span>
+	public HeapReference&lt;K, V&gt; insert(K key);
+
+	/**
+	 * Insert a new element to the heap with both key and value.
+	 *
+	 * @param  key   the key of the new element
+	 * @param  value the value of the new element
+	 * @return       reference to the new element
+	 */
+	default HeapReference&lt;K, V&gt; insert(K key, V value) {
+<span class="fc" id="L79">		HeapReference&lt;K, V&gt; ref = insert(key);</span>
+<span class="fc" id="L80">		ref.setValue(value);</span>
+<span class="fc" id="L81">		return ref;</span>
 	}
 
 	/**
-	 * Find minimal element in the heap and return a reference to it.
+	 * Find the element with the minimal key in the heap and return a reference to it.
 	 *
-	 * @return                       a reference to the minimal element in the heap
+	 * @return                       a reference to the element with the minimal key in the heap
 	 * @throws IllegalStateException if the heap is empty
 	 */
-	public HeapReference&lt;E&gt; findMinRef();
+	public HeapReference&lt;K, V&gt; findMin();
+
+	/**
+	 * Extract the element with the minimal key in the heap.
+	 * &lt;p&gt;
+	 * This method find and &lt;b&gt;remove&lt;/b&gt; the element with the minimal key.
+	 *
+	 * @return                       the element with the minimal key in the heap
+	 * @throws IllegalStateException if the heap is empty
+	 */
+	public HeapReference&lt;K, V&gt; extractMin();
+
+	/**
+	 * Meld with another heap.
+	 * &lt;p&gt;
+	 * Melding is performed by adding all elements of the given heap to this heap, and clearing the given heap. Some
+	 * implementations support efficient melding due to internal structures used to maintain the heap elements.
+	 * &lt;p&gt;
+	 * Its only possible to meld with a heap with the same implementation of this heap.
+	 * &lt;p&gt;
+	 * After the melding, the references of both ({@code this} and the given {@code heap}) remain valid and its possible
+	 * to use them only in this heap (they are no longer valid with respect to the given heap, which will be cleared).
+	 *
+	 * @param  heap                     a heap to meld with. After the operation it will be empty.
+	 * @throws IllegalArgumentException if the given heap is {@code this} heap, or its of another implementation
+	 */
+	public void meld(HeapReferenceable&lt;? extends K, ? extends V&gt; heap);
+
+	/**
+	 * Returns the comparator used to order the element's keys in this heap, or {@code null} if this heap uses the
+	 * {@linkplain Comparable natural ordering} of its keys.
+	 *
+	 * @return the comparator used to order the element's keys in this heap, or {@code null} if this heap uses the
+	 *         natural ordering of its keys
+	 */
+	public Comparator&lt;? super K&gt; comparator();
+
+	/**
+	 * Find an element by its key in the heap and get a reference to it.
+	 * &lt;p&gt;
+	 * Note that this method uses the comparator of the heap to determine if two keys are equal, rather than
+	 * {@link Object#equals}.
+	 *
+	 * @param  key a key
+	 * @return     a reference to an element with the given key or {@code null} if such element was not found
+	 */
+	default HeapReference&lt;K, V&gt; find(K key) {
+<span class="fc" id="L137">		Comparator&lt;? super K&gt; c = comparator();</span>
+<span class="fc bfc" id="L138" title="All 2 branches covered.">		if (c == null) {</span>
+<span class="pc bpc" id="L139" title="1 of 2 branches missed.">			for (HeapReference&lt;K, V&gt; p : this) {</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">				if (Utils.cmpDefault(key, p.key()) == 0)</span>
+<span class="fc" id="L141">					return p;</span>
+<span class="pc" id="L142">			}</span>
+		} else {
+<span class="pc bpc" id="L144" title="1 of 2 branches missed.">			for (HeapReference&lt;K, V&gt; p : this) {</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">				if (c.compare(key, p.key()) == 0)</span>
+<span class="fc" id="L146">					return p;</span>
+<span class="fc" id="L147">			}</span>
+		}
+<span class="nc" id="L149">		return null;</span>
+	}
 
 	/**
 	 * Decrease the key of an element in the heap.
 	 * &lt;p&gt;
-	 * This method behavior is undefined if the reference is not valid, namely it reference to an element already
+	 * This method behavior is undefined if the reference is not valid, namely if it refer to an element already
 	 * removed, or to an element in another heap.
 	 *
-	 * @param ref reference to an inserted element
-	 * @param e   new value
+	 * @param  ref                      reference to an inserted element
+	 * @param  newKey                   a new key
+	 * @throws IllegalArgumentException if the new key is greater than the previous key
 	 */
-	public void decreaseKey(HeapReference&lt;E&gt; ref, E e);
+	public void decreaseKey(HeapReference&lt;K, V&gt; ref, K newKey);
 
 	/**
 	 * Remove an element from the heap by its reference.
 	 * &lt;p&gt;
-	 * This method behavior is undefined if the reference is not valid, namely it reference to an element already
+	 * This method behavior is undefined if the reference is not valid, namely if it refer to an element already
 	 * removed, or to an element in another heap.
 	 *
-	 * @param ref reference to an inserted element
+	 * @param ref a reference to an inserted element
 	 */
-	public void removeRef(HeapReference&lt;E&gt; ref);
+	public void remove(HeapReference&lt;K, V&gt; ref);
 
 	/**
-	 * Get a collection view of references to the all elements of the heap.
+	 * Create a {@link Heap} view on this referenceable heap.
+	 * &lt;p&gt;
+	 * A referenceable heap has both keys and values, regular heaps contain only keys (called plain 'elements'). A
+	 * {@link Heap} can be built on this referenceable heap by using only {@code null} values and treating the keys as a
+	 * regular heap elements.
+	 * &lt;p&gt;
+	 * Note that the return heap object will alter {@code this} referenceable heap.
 	 *
-	 * @return view of references of the elements of the heap
+	 * @return a {@link Heap} view of this referenceable heap
 	 */
-	public Set&lt;HeapReference&lt;E&gt;&gt; refsSet();
-
-	@Override
-	default Iterator&lt;E&gt; iterator() {
-<span class="fc" id="L113">		return new Iterator&lt;&gt;() {</span>
-<span class="fc" id="L114">			final Iterator&lt;HeapReference&lt;E&gt;&gt; it = refsSet().iterator();</span>
-
-			@Override
-			public boolean hasNext() {
-<span class="fc" id="L118">				return it.hasNext();</span>
-			}
-
-			@Override
-			public E next() {
-<span class="fc" id="L123">				return it.next().get();</span>
-			}
-		};
+	default Heap&lt;K&gt; asHeap() {
+<span class="fc" id="L186">		return HeapAbstract.fromHeapReferenceable(this);</span>
 	}
 
 	/**
@@ -132,34 +193,151 @@ public interface HeapReferenceable&lt;E&gt; extends Heap&lt;E&gt; {
 	 *
 	 * @return a new builder that can build {@link HeapReferenceable} objects
 	 */
-	static HeapReferenceable.Builder newBuilder() {
-<span class="nc" id="L136">		return HeapPairing::new;</span>
+	@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
+	static HeapReferenceable.Builder&lt;Object, Object&gt; newBuilder() {
+<span class="fc" id="L198">		return new HeapReferenceable.Builder&lt;&gt;() {</span>
+
+			Class&lt;?&gt; keysType;
+			Class&lt;?&gt; valuesType;
+			String impl;
+
+			@Override
+			public HeapReferenceable build(Comparator cmp) {
+<span class="fc bfc" id="L206" title="All 4 branches covered.">				if (impl != null &amp;&amp; !&quot;HeapPairing&quot;.equals(impl)) {</span>
+<span class="fc bfc" id="L207" title="All 2 branches covered.">					if (HeapBinomial.class.getSimpleName().equals(impl))</span>
+<span class="fc" id="L208">						return new HeapBinomial(cmp);</span>
+<span class="pc bpc" id="L209" title="1 of 2 branches missed.">					if (HeapFibonacci.class.getSimpleName().equals(impl))</span>
+<span class="fc" id="L210">						return new HeapFibonacci(cmp);</span>
+<span class="nc" id="L211">					throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+				}
+<span class="fc" id="L213">				return HeapPairing.newHeap(keysType, valuesType, cmp);</span>
+			}
+
+			@Override
+			public HeapReferenceable.Builder keysTypeObj() {
+<span class="fc" id="L218">				keysType = null;</span>
+<span class="fc" id="L219">				return this;</span>
+			}
+
+			@Override
+			public HeapReferenceable.Builder keysTypePrimitive(Class primitiveType) {
+<span class="pc bpc" id="L224" title="1 of 2 branches missed.">				if (!primitiveType.isPrimitive())</span>
+<span class="nc" id="L225">					throw new IllegalArgumentException(&quot;type is not primitive: &quot; + primitiveType);</span>
+<span class="fc" id="L226">				keysType = primitiveType;</span>
+<span class="fc" id="L227">				return this;</span>
+			}
+
+			@Override
+			public HeapReferenceable.Builder valuesTypeObj() {
+<span class="fc" id="L232">				valuesType = null;</span>
+<span class="fc" id="L233">				return this;</span>
+			}
+
+			@Override
+			public HeapReferenceable.Builder valuesTypePrimitive(Class primitiveType) {
+<span class="pc bpc" id="L238" title="1 of 2 branches missed.">				if (!primitiveType.isPrimitive())</span>
+<span class="nc" id="L239">					throw new IllegalArgumentException(&quot;type is not primitive: &quot; + primitiveType);</span>
+<span class="fc" id="L240">				valuesType = primitiveType;</span>
+<span class="fc" id="L241">				return this;</span>
+			}
+
+			@Override
+			public HeapReferenceable.Builder valuesTypeVoid() {
+<span class="fc" id="L246">				valuesType = void.class;</span>
+<span class="fc" id="L247">				return this;</span>
+			}
+
+			@Override
+			public HeapReferenceable.Builder setOption(String key, Object value) {
+<span class="pc bpc" id="L252" title="1 of 2 branches missed.">				if (&quot;impl&quot;.equals(key)) {</span>
+<span class="pc bpc" id="L253" title="1 of 2 branches missed.">					impl = value instanceof String ? (String) value : null;</span>
+				} else {
+<span class="nc" id="L255">					throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+				}
+<span class="fc" id="L257">				return this;</span>
+			}
+		};
 	}
 
 	/**
 	 * Builder for referenceable heaps.
-	 * &lt;p&gt;
-	 * Used to change heaps implementations which are used as black box by some algorithms.
 	 *
-	 * @see    HeapReferenceable#newBuilder()
-	 * @author Barak Ugav
+	 * @param  &lt;K&gt; the heap keys type
+	 * @param  &lt;V&gt; the heap values type
+	 * @see        HeapReferenceable#newBuilder()
+	 * @author     Barak Ugav
 	 */
-	@FunctionalInterface
-	public static interface Builder extends Heap.Builder {
+	public static interface Builder&lt;K, V&gt; extends BuilderAbstract&lt;HeapReferenceable.Builder&lt;K, V&gt;&gt; {
 
-		@Override
-		&lt;E&gt; HeapReferenceable&lt;E&gt; build(Comparator&lt;? super E&gt; cmp);
+		/**
+		 * Build a new heap with the given comparator.
+		 * &lt;p&gt;
+		 * If primitive keys are in used, namely {@link #keysTypePrimitive(Class)}, its recommended to use a primitive
+		 * {@link Comparator} such as {@link it.unimi.dsi.fastutil.ints.IntComparator}, for best performance.
+		 *
+		 * @param  cmp the comparator that will be used to order the keys in the heap
+		 * @return     the newly constructed heap
+		 */
+		HeapReferenceable&lt;K, V&gt; build(Comparator&lt;? super K&gt; cmp);
 
-		@Override
-		default &lt;E&gt; HeapReferenceable&lt;E&gt; build() {
-<span class="fc" id="L155">			return build(null);</span>
+		/**
+		 * Build a new heap with {@linkplain Comparable natural ordering}.
+		 *
+		 * @return the newly constructed heap
+		 */
+		default HeapReferenceable&lt;K, V&gt; build() {
+<span class="fc" id="L289">			return build(null);</span>
 		}
 
-		@Override
-		default HeapReferenceable.Builder setOption(String key, Object value) {
-<span class="nc" id="L160">			Heap.Builder.super.setOption(key, value);</span>
-<span class="nc" id="L161">			return this;</span>
-		}
+		/**
+		 * Set the keys type to an object type.
+		 *
+		 * @param  &lt;Keys&gt; the keys type
+		 * @return        this builder
+		 */
+		&lt;Keys&gt; HeapReferenceable.Builder&lt;Keys, V&gt; keysTypeObj();
+
+		/**
+		 * Set the keys type to a primitive type.
+		 * &lt;p&gt;
+		 * Specific implementations may exists for some primitive keys types, which are more efficient.
+		 *
+		 * @param  &lt;Keys&gt;                   the keys type
+		 * @param  primitiveType            the primitive class, for example {@code int.class}
+		 * @return                          this builder
+		 * @throws IllegalArgumentException if the provided class is not primitive
+		 */
+		&lt;Keys&gt; HeapReferenceable.Builder&lt;Keys, V&gt; keysTypePrimitive(Class&lt;? extends Keys&gt; primitiveType);
+
+		/**
+		 * Set the values type to an object type.
+		 *
+		 * @param  &lt;Values&gt; the values type
+		 * @return          this builder
+		 */
+		&lt;Values&gt; HeapReferenceable.Builder&lt;K, Values&gt; valuesTypeObj();
+
+		/**
+		 * Set the values type to a primitive type.
+		 * &lt;p&gt;
+		 * Specific implementations may exists for some primitive keys types, which are more efficient.
+		 *
+		 * @param  &lt;Values&gt;                 the values type
+		 * @param  primitiveType            the primitive class, for example {@code int.class}
+		 * @return                          this builder
+		 * @throws IllegalArgumentException if the provided class is not primitive
+		 */
+		&lt;Values&gt; HeapReferenceable.Builder&lt;K, Values&gt; valuesTypePrimitive(Class&lt;? extends Values&gt; primitiveType);
+
+		/**
+		 * Set the values type to {@code void}.
+		 * &lt;p&gt;
+		 * Specific implementations without values fields may exists, which are more efficient.
+		 *
+		 * @return this builder
+		 */
+		HeapReferenceable.Builder&lt;K, Void&gt; valuesTypeVoid();
+
 	}
 
 }

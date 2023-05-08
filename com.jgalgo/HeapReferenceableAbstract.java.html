@@ -16,54 +16,71 @@
 
 package com.jgalgo;
 
+import java.util.AbstractCollection;
 import java.util.Comparator;
-import java.util.Iterator;
+import java.util.Objects;
 
-abstract class HeapReferenceableAbstract&lt;E&gt; extends HeapAbstract&lt;E&gt; implements HeapReferenceable&lt;E&gt; {
+abstract class HeapReferenceableAbstract&lt;K, V&gt; extends AbstractCollection&lt;HeapReference&lt;K, V&gt;&gt;
+		implements HeapReferenceable&lt;K, V&gt; {
 
-	HeapReferenceableAbstract(Comparator&lt;? super E&gt; c) {
-<span class="fc" id="L25">		super(c);</span>
-<span class="fc" id="L26">	}</span>
+	final Comparator&lt;? super K&gt; c;
+
+<span class="fc" id="L28">	HeapReferenceableAbstract(Comparator&lt;? super K&gt; c) {</span>
+<span class="fc" id="L29">		this.c = c;</span>
+<span class="fc" id="L30">	}</span>
 
 	@Override
-	public Iterator&lt;E&gt; iterator() {
-<span class="fc" id="L30">		return HeapReferenceable.super.iterator();</span>
+	public Comparator&lt;? super K&gt; comparator() {
+<span class="fc" id="L34">		return c;</span>
 	}
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	@Override
 	public boolean contains(Object o) {
-<span class="nc bnc" id="L36" title="All 2 branches missed.">		return findRef((E) o) != null;</span>
+<span class="nc bnc" id="L40" title="All 2 branches missed.">		if (!(o instanceof HeapReference&lt;?, ?&gt;))</span>
+<span class="nc" id="L41">			return false;</span>
+<span class="nc bnc" id="L42" title="All 2 branches missed.">		return o == find(((HeapReference&lt;K, ?&gt;) o).key());</span>
 	}
 
-	@Override
-	public E findMin() {
-<span class="fc" id="L41">		return findMinRef().get();</span>
-	}
-
+	@SuppressWarnings(&quot;unchecked&quot;)
 	@Override
 	public boolean remove(Object o) {
-		@SuppressWarnings(&quot;unchecked&quot;)
-<span class="nc" id="L47">		HeapReference&lt;E&gt; ref = findRef((E) o);</span>
-<span class="nc bnc" id="L48" title="All 2 branches missed.">		if (ref == null)</span>
-<span class="nc" id="L49">			return false;</span>
-<span class="nc" id="L50">		removeRef(ref);</span>
-<span class="nc" id="L51">		return true;</span>
+<span class="fc" id="L48">		remove((HeapReference&lt;K, V&gt;) o);</span>
+<span class="fc" id="L49">		return true;</span>
 	}
 
 	@Override
-	public E extractMin() {
-<span class="fc" id="L56">		HeapReference&lt;E&gt; min = findMinRef();</span>
-<span class="fc" id="L57">		E val = min.get();</span>
-<span class="fc" id="L58">		removeRef(min);</span>
-<span class="fc" id="L59">		return val;</span>
+	public HeapReference&lt;K, V&gt; extractMin() {
+<span class="fc" id="L54">		HeapReference&lt;K, V&gt; min = findMin();</span>
+<span class="fc" id="L55">		remove(min);</span>
+<span class="fc" id="L56">		return min;</span>
 	}
 
-	@Override
-	public void meld(Heap&lt;? extends E&gt; heap) {
-		/* We can't meld using addAll without invalidating the nodes references */
-<span class="nc" id="L65">		throw new UnsupportedOperationException();</span>
+	int compare(K k1, K k2) {
+<span class="fc bfc" id="L60" title="All 2 branches covered.">		return c == null ? Utils.cmpDefault(k1, k2) : c.compare(k1, k2);</span>
 	}
+
+	void makeSureDecreaseKeyIsSmaller(K oldKey, K newKey) {
+<span class="pc bpc" id="L64" title="1 of 2 branches missed.">		if (compare(oldKey, newKey) &lt; 0)</span>
+<span class="nc" id="L65">			throw new IllegalArgumentException(&quot;New key is greater than existing one&quot;);</span>
+<span class="fc" id="L66">	}</span>
+
+	void makeSureNoMeldWithSelf(HeapReferenceable&lt;? extends K, ? extends V&gt; other) {
+<span class="pc bpc" id="L69" title="1 of 2 branches missed.">		if (other == this)</span>
+<span class="nc" id="L70">			throw new IllegalArgumentException(&quot;A heap can't meld with itself&quot;);</span>
+<span class="fc" id="L71">	}</span>
+
+	@SuppressWarnings(&quot;rawtypes&quot;)
+	void makeSureMeldWithSameImpl(Class&lt;? extends HeapReferenceable&gt; impl,
+			HeapReferenceable&lt;? extends K, ? extends V&gt; other) {
+<span class="pc bpc" id="L76" title="1 of 2 branches missed.">		if (!impl.isAssignableFrom(other.getClass()))</span>
+<span class="nc" id="L77">			throw new IllegalArgumentException(&quot;Can't meld heaps with different implementations&quot;);</span>
+<span class="fc" id="L78">	}</span>
+
+	void makeSureEqualComparatorBeforeMeld(HeapReferenceable&lt;? extends K, ? extends V&gt; other) {
+<span class="pc bpc" id="L81" title="1 of 2 branches missed.">		if (!Objects.equals(comparator(), other.comparator()))</span>
+<span class="nc" id="L82">			throw new IllegalArgumentException(&quot;Can't meld, heaps have different comparators&quot;);</span>
+<span class="fc" id="L83">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

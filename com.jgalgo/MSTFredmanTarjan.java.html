@@ -17,7 +17,6 @@
 package com.jgalgo;
 
 import java.util.Arrays;
-import java.util.Objects;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
@@ -41,7 +40,8 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  */
 public class MSTFredmanTarjan implements MST {
 
-<span class="fc" id="L44">	private HeapReferenceable.Builder heapBuilder = HeapPairing::new;</span>
+<span class="fc" id="L43">	private HeapReferenceable.Builder&lt;Integer, Void&gt; heapBuilder =</span>
+<span class="fc" id="L44">			HeapReferenceable.newBuilder().keysTypePrimitive(int.class).valuesTypeVoid();</span>
 
 	/**
 	 * Construct a new MST algorithm object.
@@ -53,8 +53,8 @@ public class MSTFredmanTarjan implements MST {
 	 *
 	 * @param heapBuilder a builder for heaps used by this algorithm
 	 */
-	public void setHeapBuilder(HeapReferenceable.Builder heapBuilder) {
-<span class="nc" id="L57">		this.heapBuilder = Objects.requireNonNull(heapBuilder);</span>
+	public void setHeapBuilder(HeapReferenceable.Builder&lt;?, ?&gt; heapBuilder) {
+<span class="nc" id="L57">		this.heapBuilder = heapBuilder.keysTypePrimitive(int.class).valuesTypeVoid();</span>
 <span class="nc" id="L58">	}</span>
 
 	/**
@@ -96,10 +96,10 @@ public class MSTFredmanTarjan implements MST {
 <span class="fc" id="L96">		int[] treeVertices = new int[n]; // stack of super vertices in current built tree</span>
 
 		// heap of edges going out of the current tree, one edge in per super vertex
-<span class="fc" id="L99">		HeapReferenceable&lt;Integer&gt; heap = heapBuilder.build(w);</span>
+<span class="fc" id="L99">		HeapReferenceable&lt;Integer, Void&gt; heap = heapBuilder.build(w);</span>
 		// (super vertex -&gt; heap element) for fast decreaseKey
 		@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L102">		HeapReference&lt;Integer&gt;[] vHeapElm = new HeapReference[n];</span>
+<span class="fc" id="L102">		HeapReference&lt;Integer, Void&gt;[] vHeapElm = new HeapReference[n];</span>
 
 <span class="fc" id="L104">		IntCollection mst = new IntArrayList(n - 1);</span>
 <span class="fc" id="L105">		for (int niNext;; ni = niNext) {</span>
@@ -131,12 +131,12 @@ public class MSTFredmanTarjan implements MST {
 <span class="fc bfc" id="L131" title="All 2 branches covered.">							if (vTree[v] == r)</span>
 <span class="fc" id="L132">								continue;</span>
 
-<span class="fc" id="L134">							HeapReference&lt;Integer&gt; heapElm = vHeapElm[v];</span>
+<span class="fc" id="L134">							HeapReference&lt;Integer, Void&gt; heapElm = vHeapElm[v];</span>
 <span class="fc bfc" id="L135" title="All 2 branches covered.">							if (heapElm == null) {</span>
 <span class="fc" id="L136">								heapElm = vHeapElm[v] = heap.insert(Integer.valueOf(e));</span>
 <span class="fc bfc" id="L137" title="All 2 branches covered.">								if (heap.size() &gt; k)</span>
 <span class="fc" id="L138">									break treeLoop;</span>
-<span class="fc bfc" id="L139" title="All 2 branches covered.">							} else if (w.compare(e, heapElm.get().intValue()) &lt; 0)</span>
+<span class="fc bfc" id="L139" title="All 2 branches covered.">							} else if (w.compare(e, heapElm.key().intValue()) &lt; 0)</span>
 <span class="fc" id="L140">								heap.decreaseKey(heapElm, Integer.valueOf(e));</span>
 <span class="fc" id="L141">						}</span>
 					}
@@ -147,7 +147,7 @@ public class MSTFredmanTarjan implements MST {
 <span class="fc bfc" id="L147" title="All 2 branches covered.">						if (heap.isEmpty())</span>
 							// reached all vertices from current root, continue to next tree
 <span class="fc" id="L149">							break treeLoop;</span>
-<span class="fc" id="L150">						e = heap.extractMin().intValue();</span>
+<span class="fc" id="L150">						e = heap.extractMin().key().intValue();</span>
 
 <span class="fc" id="L152">						v = V[g.edgeSource(e)];</span>
 <span class="fc bfc" id="L153" title="All 2 branches covered.">						if ((vt = vTree[v]) != r)</span>

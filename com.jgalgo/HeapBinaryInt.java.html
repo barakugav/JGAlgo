@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HeapBinaryInt.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">HeapBinaryInt.java</span></div><h1>HeapBinaryInt.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.NoSuchElementException;
+
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntComparator;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+
+/**
+ * A binary heap implementation using an array specifically for int elements.
+ * &lt;p&gt;
+ * The binary heap is the most simple implementation of a heap. It does not use some complex pointer based data
+ * structure, but rather a simple continue array, to store its elements. Its have very small memory footprint and should
+ * be used as default implementation in use cases where only {@link #insert(Object)} and {@link #extractMin()}
+ * operations are required, both implemented in \(O(\log n) time. If the minimum is only peeked without extraction using
+ * {@link #findMin()}, constant number of operations are performed.
+ * &lt;p&gt;
+ * If fast {@code remove(...)} or {@code decreaseKey(...)} operations are required, consider using {@link HeapPairing}
+ * or {@link HeapFibonacci}.
+ *
+ * @param  &lt;E&gt; the elements type
+ * @see        &lt;a href=&quot;https://en.wikipedia.org/wiki/Binary_heap&quot;&gt;Wikipedia&lt;/a&gt;
+ * @author     Barak Ugav
+ */
+class HeapBinaryInt extends HeapAbstract&lt;Integer&gt; {
+
+	private int[] arr;
+	private int size;
+	private final IntComparator intCmp;
+
+	/**
+	 * Constructs a new, empty binary heap, ordered according to the natural ordering of its elements.
+	 * &lt;p&gt;
+	 * All elements inserted into the heap must implement the {@link Comparable} interface. Furthermore, all such
+	 * elements must be &lt;i&gt;mutually comparable&lt;/i&gt;: {@code e1.compareTo(e2)} must not throw a {@code ClassCastException}
+	 * for any elements {@code e1} and {@code e2} in the heap. If the user attempts to insert an element to the heap
+	 * that violates this constraint (for example, the user attempts to insert a string element to a heap whose elements
+	 * are integers), the {@code insert} call will throw a {@code ClassCastException}.
+	 */
+	HeapBinaryInt() {
+<span class="nc" id="L60">		this(null);</span>
+<span class="nc" id="L61">	}</span>
+
+	/**
+	 * Constructs a new, empty binary heap, ordered according to the specified comparator.
+	 * &lt;p&gt;
+	 * All elements inserted into the heap must be &lt;i&gt;mutually comparable&lt;/i&gt; by the specified comparator:
+	 * {@code comparator.compare(e1, e2)} must not throw a {@code ClassCastException} for any elements {@code e1} and
+	 * {@code e2} in the heap. If the user attempts to insert an element to the heap that violates this constraint, the
+	 * {@code insert} call will throw a {@code ClassCastException}.
+	 *
+	 * @param comparator the comparator that will be used to order this heap. If {@code null}, the
+	 *                       {@linkplain Comparable natural ordering} of the elements will be used.
+	 */
+	HeapBinaryInt(Comparator&lt;? super Integer&gt; comparator) {
+<span class="fc" id="L75">		super(comparator);</span>
+<span class="fc" id="L76">		arr = new int[16];</span>
+<span class="fc" id="L77">		size = 0;</span>
+<span class="pc bpc" id="L78" title="1 of 4 branches missed.">		intCmp = comparator == null || comparator instanceof IntComparator ? (IntComparator) comparator</span>
+<span class="fc" id="L79">				: (k1, k2) -&gt; comparator.compare(Integer.valueOf(k1), Integer.valueOf(k2));</span>
+<span class="fc" id="L80">	}</span>
+
+	@Override
+	public int size() {
+<span class="fc" id="L84">		return size;</span>
+	}
+
+	private void grow() {
+<span class="fc" id="L88">		arr = Arrays.copyOf(arr, arr.length * 2);</span>
+<span class="fc" id="L89">	}</span>
+
+	@Override
+	public void insert(Integer e) {
+<span class="fc" id="L93">		insert(e.intValue());</span>
+<span class="fc" id="L94">	}</span>
+
+	public void insert(int e) {
+<span class="fc bfc" id="L97" title="All 2 branches covered.">		if (arr.length == size)</span>
+<span class="fc" id="L98">			grow();</span>
+
+<span class="fc" id="L100">		moveUp(size, e);</span>
+<span class="fc" id="L101">		size++;</span>
+<span class="fc" id="L102">	}</span>
+
+	@Override
+	public boolean remove(Object e) {
+<span class="fc" id="L106">		int eInt = ((Integer) e).intValue();</span>
+<span class="fc" id="L107">		int s = size;</span>
+<span class="fc" id="L108">		int[] a = arr;</span>
+
+		int i;
+<span class="fc bfc" id="L111" title="All 2 branches covered.">		if (c == null) {</span>
+<span class="pc bpc" id="L112" title="1 of 2 branches missed.">			for (i = 0; i &lt; s; i++)</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">				if (Integer.compare(eInt, a[i]) == 0)</span>
+<span class="fc" id="L114">					break;</span>
+		} else {
+<span class="pc bpc" id="L116" title="1 of 2 branches missed.">			for (i = 0; i &lt; s; i++)</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">				if (intCmp.compare(eInt, a[i]) == 0)</span>
+<span class="fc" id="L118">					break;</span>
+		}
+<span class="pc bpc" id="L120" title="1 of 2 branches missed.">		if (i == s)</span>
+<span class="nc" id="L121">			return false; /* not found */</span>
+
+<span class="fc" id="L123">		remove(i);</span>
+<span class="fc" id="L124">		return true;</span>
+	}
+
+	@Override
+	public void clear() {
+<span class="fc" id="L129">		size = 0;</span>
+<span class="fc" id="L130">	}</span>
+
+	@Override
+	public Integer findMin() {
+<span class="pc bpc" id="L134" title="1 of 2 branches missed.">		if (size == 0)</span>
+<span class="nc" id="L135">			throw new IllegalStateException();</span>
+<span class="fc" id="L136">		return Integer.valueOf(arr[0]);</span>
+	}
+
+	private void remove(int idx) {
+<span class="fc" id="L140">		int[] a = arr;</span>
+
+<span class="fc" id="L142">		int old = a[idx];</span>
+<span class="fc" id="L143">		int e = a[size-- - 1];</span>
+
+<span class="fc bfc" id="L145" title="All 2 branches covered.">		if (compare(e, old) &lt;= 0)</span>
+<span class="fc" id="L146">			moveUp(idx, e);</span>
+		else
+<span class="fc" id="L148">			moveDown(idx, e);</span>
+<span class="fc" id="L149">	}</span>
+
+	@Override
+	public Integer extractMin() {
+<span class="pc bpc" id="L153" title="1 of 2 branches missed.">		if (size == 0)</span>
+<span class="nc" id="L154">			throw new IllegalStateException();</span>
+<span class="fc" id="L155">		int min = arr[0];</span>
+<span class="fc" id="L156">		remove(0);</span>
+<span class="fc" id="L157">		return Integer.valueOf(min);</span>
+	}
+
+	@Override
+	public boolean addAll(Collection&lt;? extends Integer&gt; other) {
+<span class="pc bpc" id="L162" title="1 of 2 branches missed.">		if (other.isEmpty())</span>
+<span class="nc" id="L163">			return false;</span>
+<span class="fc" id="L164">		int combinedSize = size + other.size();</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">		if (arr.length &lt;= combinedSize)</span>
+<span class="fc" id="L166">			arr = Arrays.copyOf(arr, Math.max(arr.length * 2, combinedSize * 3 / 2));</span>
+
+<span class="fc" id="L168">		int reconstructionCost = combinedSize;</span>
+<span class="fc" id="L169">		int addAllCost = other.size() + Utils.log2ceil(combinedSize);</span>
+<span class="fc bfc" id="L170" title="All 2 branches covered.">		if (reconstructionCost &gt;= addAllCost) {</span>
+<span class="pc bpc" id="L171" title="1 of 2 branches missed.">			if (other instanceof IntCollection) {</span>
+<span class="nc bnc" id="L172" title="All 2 branches missed.">				for (IntIterator it = ((IntCollection) other).iterator(); it.hasNext();)</span>
+<span class="nc" id="L173">					insert(it.nextInt());</span>
+			} else {
+<span class="fc bfc" id="L175" title="All 2 branches covered.">				for (Integer e : other)</span>
+<span class="fc" id="L176">					insert(e.intValue());</span>
+			}
+		} else {
+<span class="fc" id="L179">			int[] a = arr;</span>
+<span class="fc" id="L180">			int s = size;</span>
+<span class="pc bpc" id="L181" title="1 of 2 branches missed.">			if (other instanceof IntCollection) {</span>
+<span class="nc bnc" id="L182" title="All 2 branches missed.">				for (IntIterator it = ((IntCollection) other).iterator(); it.hasNext();)</span>
+<span class="nc" id="L183">					a[s++] = it.nextInt();</span>
+			} else {
+<span class="fc bfc" id="L185" title="All 2 branches covered.">				for (Integer e : other)</span>
+<span class="fc" id="L186">					a[s++] = e.intValue();</span>
+			}
+<span class="fc" id="L188">			size = s;</span>
+
+<span class="pc bpc" id="L190" title="1 of 2 branches missed.">			if (s &gt; 1) {</span>
+<span class="fc" id="L191">				int lastLayer = Utils.log2ceil(s + 1) - 1;</span>
+<span class="fc" id="L192">				int lastParent = (1 &lt;&lt; lastLayer) - 2;</span>
+<span class="fc bfc" id="L193" title="All 2 branches covered.">				for (int parent = lastParent; parent &gt;= 0; parent--)</span>
+<span class="fc" id="L194">					moveDown(parent, a[parent]);</span>
+			}
+		}
+
+<span class="fc" id="L198">		return true;</span>
+	}
+
+	@Override
+	public IntIterator iterator() {
+<span class="fc" id="L203">		return new It();</span>
+	}
+
+	private class It implements IntIterator {
+
+		int i;
+
+<span class="fc" id="L210">		It() {</span>
+<span class="fc" id="L211">			i = 0;</span>
+<span class="fc" id="L212">		}</span>
+
+		@Override
+		public boolean hasNext() {
+<span class="fc bfc" id="L216" title="All 2 branches covered.">			return i &lt; size;</span>
+		}
+
+		@Override
+		public int nextInt() {
+<span class="pc bpc" id="L221" title="1 of 2 branches missed.">			if (i &gt;= size)</span>
+<span class="nc" id="L222">				throw new NoSuchElementException();</span>
+<span class="fc" id="L223">			return arr[i++];</span>
+		}
+
+	}
+
+	private void moveUp(int i, int e) {
+<span class="fc" id="L229">		int[] a = arr;</span>
+
+<span class="fc bfc" id="L231" title="All 2 branches covered.">		if (c == null) {</span>
+			for (;;) {
+				int p;
+<span class="fc bfc" id="L234" title="All 4 branches covered.">				if (i == 0 || Integer.compare(e, a[p = (i - 1) / 2]) &gt;= 0) { /* reached root or parent is smaller */</span>
+<span class="fc" id="L235">					a[i] = e;</span>
+<span class="fc" id="L236">					return;</span>
+				}
+
+				/* e is smaller than parent, continue up */
+<span class="fc" id="L240">				a[i] = a[p];</span>
+<span class="fc" id="L241">				i = p;</span>
+<span class="fc" id="L242">			}</span>
+		} else {
+			for (;;) {
+				int p;
+<span class="fc bfc" id="L246" title="All 4 branches covered.">				if (i == 0 || intCmp.compare(e, a[p = (i - 1) / 2]) &gt;= 0) { /* reached root or parent is smaller */</span>
+<span class="fc" id="L247">					a[i] = e;</span>
+<span class="fc" id="L248">					return;</span>
+				}
+
+				/* e is smaller than parent, continue up */
+<span class="fc" id="L252">				a[i] = a[p];</span>
+<span class="fc" id="L253">				i = p;</span>
+<span class="fc" id="L254">			}</span>
+		}
+	}
+
+	private void moveDown(int i, int e) {
+<span class="fc" id="L259">		int[] a = arr;</span>
+<span class="fc" id="L260">		int s = size;</span>
+
+<span class="fc bfc" id="L262" title="All 2 branches covered.">		if (c == null) {</span>
+			for (;;) {
+<span class="fc" id="L264">				int c01i, c0i = i * 2 + 1, c1i = i * 2 + 2;</span>
+<span class="fc bfc" id="L265" title="All 2 branches covered.">				if (c0i &gt;= s)</span>
+<span class="fc" id="L266">					break;</span>
+
+<span class="fc" id="L268">				int c01, c0 = a[c0i], c1;</span>
+<span class="fc bfc" id="L269" title="All 4 branches covered.">				if (c1i &lt; s &amp;&amp; Integer.compare(c1 = a[c1i], c0) &lt; 0) {</span>
+<span class="fc" id="L270">					c01i = c1i;</span>
+<span class="fc" id="L271">					c01 = c1;</span>
+				} else {
+<span class="fc" id="L273">					c01i = c0i;</span>
+<span class="fc" id="L274">					c01 = c0;</span>
+				}
+
+<span class="fc bfc" id="L277" title="All 2 branches covered.">				if (Integer.compare(e, c01) &lt;= 0)</span>
+<span class="fc" id="L278">					break;</span>
+
+				/* continue down */
+<span class="fc" id="L281">				a[i] = c01;</span>
+<span class="fc" id="L282">				i = c01i;</span>
+<span class="fc" id="L283">			}</span>
+		} else {
+			for (;;) {
+<span class="fc" id="L286">				int c01i, c0i = i * 2 + 1, c1i = i * 2 + 2;</span>
+<span class="fc bfc" id="L287" title="All 2 branches covered.">				if (c0i &gt;= s)</span>
+<span class="fc" id="L288">					break;</span>
+
+<span class="fc" id="L290">				int c01, c0 = a[c0i], c1;</span>
+<span class="fc bfc" id="L291" title="All 4 branches covered.">				if (c1i &lt; s &amp;&amp; intCmp.compare(c1 = a[c1i], c0) &lt; 0) {</span>
+<span class="fc" id="L292">					c01i = c1i;</span>
+<span class="fc" id="L293">					c01 = c1;</span>
+				} else {
+<span class="fc" id="L295">					c01i = c0i;</span>
+<span class="fc" id="L296">					c01 = c0;</span>
+				}
+
+<span class="fc bfc" id="L299" title="All 2 branches covered.">				if (intCmp.compare(e, c01) &lt;= 0)</span>
+<span class="fc" id="L300">					break;</span>
+
+				/* continue down */
+<span class="fc" id="L303">				a[i] = c01;</span>
+<span class="fc" id="L304">				i = c01i;</span>
+<span class="fc" id="L305">			}</span>
+		}
+<span class="fc" id="L307">		a[i] = e;</span>
+<span class="fc" id="L308">	}</span>
+
+	int compare(int e1, int e2) {
+<span class="fc bfc" id="L311" title="All 2 branches covered.">		return c == null ? Integer.compare(e1, e2) : intCmp.compare(e1, e2);</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

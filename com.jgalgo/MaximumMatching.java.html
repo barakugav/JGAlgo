@@ -87,7 +87,7 @@ public interface MaximumMatching {
 <span class="nc" id="L87">						return new MaximumMatchingWeightedGabow1990();</span>
 <span class="nc bnc" id="L88" title="All 2 branches missed.">					if (MaximumMatchingWeightedGabow1990Simpler.class.getSimpleName().equals(impl))</span>
 <span class="nc" id="L89">						return new MaximumMatchingWeightedGabow1990Simpler();</span>
-<span class="nc" id="L90">					System.err.println(&quot;unknown 'impl' value: &quot; + impl);</span>
+<span class="nc" id="L90">					throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
 				}
 <span class="nc bnc" id="L92" title="All 2 branches missed.">				if (cardinality) {</span>
 <span class="nc bnc" id="L93" title="All 2 branches missed.">					return isBipartite ? new MaximumMatchingCardinalityBipartiteHopcroftKarp()</span>
@@ -112,9 +112,12 @@ public interface MaximumMatching {
 
 			@Override
 			public MaximumMatching.Builder setOption(String key, Object value) {
-<span class="nc bnc" id="L115" title="All 2 branches missed.">				if (&quot;impl&quot;.equals(key))</span>
+<span class="nc bnc" id="L115" title="All 2 branches missed.">				if (&quot;impl&quot;.equals(key)) {</span>
 <span class="nc bnc" id="L116" title="All 2 branches missed.">					impl = value instanceof String ? (String) value : null;</span>
-<span class="nc" id="L117">				return this;</span>
+				} else {
+<span class="nc" id="L118">					throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+				}
+<span class="nc" id="L120">				return this;</span>
 			}
 		};
 	}

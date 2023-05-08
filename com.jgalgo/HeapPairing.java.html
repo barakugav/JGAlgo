@@ -16,21 +16,23 @@
 
 package com.jgalgo;
 
-import java.util.AbstractSet;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.Set;
-
+import java.util.function.DoubleFunction;
+import java.util.function.Function;
+import java.util.function.IntFunction;
 import it.unimi.dsi.fastutil.Stack;
+import it.unimi.dsi.fastutil.doubles.DoubleComparator;
+import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
  * A Pairing heap implementation.
  * &lt;p&gt;
  * A pointer based heap implementation that support almost any operation in \(O(1)\) amortized time, except
- * {@link #removeRef(HeapReference)} and {@link #decreaseKey(HeapReference, Object)} which takes \(O(\log n)\) time
+ * {@link #remove(HeapReference)} and {@link #decreaseKey(HeapReference, Object)} which takes \(O(\log n)\) time
  * amortized.
  * &lt;p&gt;
  * Using this heap, {@link SSSPDijkstra} can be implemented in time \(O(m + n \log n)\) rather than \(O(m \log n)\) as
@@ -42,361 +44,750 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * @see    &lt;a href=&quot;https://en.wikipedia.org/wiki/Pairing_heap&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
  */
-<span class="fc" id="L45">public class HeapPairing&lt;E&gt; extends HeapReferenceableAbstract&lt;E&gt; {</span>
+class HeapPairing {
 
-	private Node&lt;E&gt; minRoot;
-	private int size;
-	private final Set&lt;HeapReference&lt;E&gt;&gt; refsSet;
-<span class="fc" id="L50">	@SuppressWarnings(&quot;unchecked&quot;)</span>
-	private Node&lt;E&gt;[] tempHeapArray = new Node[4];
+	// /**
+	// * Constructs a new, empty Pairing heap, ordered according to the natural ordering of its keys.
+	// * &lt;p&gt;
+	// * All keys inserted into the heap must implement the {@link Comparable} interface. Furthermore, all such keys
+	// must
+	// * be &lt;i&gt;mutually comparable&lt;/i&gt;: {@code k1.compareTo(k2)} must not throw a {@code ClassCastException} for any
+	// keys
+	// * {@code k1} and {@code k2} in the heap. If the user attempts to insert a key to the heap that violates this
+	// * constraint (for example, the user attempts to insert a string element to a heap whose keys are integers), the
+	// * {@code insert} call will throw a {@code ClassCastException}.
+	// */
+	// HeapPairing() {
+	// this(null);
+	// }
 
-	/**
-	 * Constructs a new, empty Pairing heap, sorted according to the natural ordering of its elements.
-	 * &lt;p&gt;
-	 * All elements inserted into the heap must implement the {@link Comparable} interface. Furthermore, all such
-	 * elements must be &lt;i&gt;mutually comparable&lt;/i&gt;: {@code e1.compareTo(e2)} must not throw a {@code ClassCastException}
-	 * for any elements {@code e1} and {@code e2} in the heap. If the user attempts to insert an element to the heap
-	 * that violates this constraint (for example, the user attempts to insert a string element to a heap whose elements
-	 * are integers), the {@code insert} call will throw a {@code ClassCastException}.
-	 */
-	public HeapPairing() {
-<span class="fc" id="L63">		this(null);</span>
-<span class="fc" id="L64">	}</span>
+	// /**
+	// * Constructs a new, empty Pairing heap, with keys ordered according to the specified comparator.
+	// * &lt;p&gt;
+	// * All keys inserted into the heap must be &lt;i&gt;mutually comparable&lt;/i&gt; by the specified comparator:
+	// * {@code comparator.compare(k1, k2)} must not throw a {@code ClassCastException} for any keys {@code k1} and
+	// * {@code k2} in the heap. If the user attempts to insert a key to the heap that violates this constraint, the
+	// * {@code insert} call will throw a {@code ClassCastException}.
+	// *
+	// * @param comparator the comparator that will be used to order this heap. If {@code null}, the
+	// * {@linkplain Comparable natural ordering} of the keys will be used.
+	// */
+	// HeapPairing(Comparator&lt;? super K&gt; comparator) {
+	// this(comparator, null);
+	// }
 
-	/**
-	 * Constructs a new, empty Pairing heap, sorted according to the specified comparator.
-	 * &lt;p&gt;
-	 * All elements inserted into the heap must be &lt;i&gt;mutually comparable&lt;/i&gt; by the specified comparator:
-	 * {@code comparator.compare(e1, e2)} must not throw a {@code ClassCastException} for any elements {@code e1} and
-	 * {@code e2} in the heap. If the user attempts to insert an element to the heap that violates this constraint, the
-	 * {@code insert} call will throw a {@code ClassCastException}.
-	 *
-	 * @param comparator the comparator that will be used to order this heap. If {@code null}, the
-	 *                       {@linkplain Comparable natural ordering} of the elements will be used.
-	 */
-	public HeapPairing(Comparator&lt;? super E&gt; comparator) {
-<span class="fc" id="L78">		super(comparator);</span>
-<span class="fc" id="L79">		refsSet = new AbstractSet&lt;&gt;() {</span>
+	private HeapPairing() {}
 
-			@Override
-			public int size() {
-<span class="nc" id="L83">				return size;</span>
+	@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
+	static &lt;K, V&gt; HeapReferenceable&lt;K, V&gt; newHeap(Class&lt;? extends K&gt; keysType, Class&lt;? extends V&gt; valuesType,
+			Comparator&lt;? super K&gt; comparator) {
+<span class="fc bfc" id="L84" title="All 2 branches covered.">		if (keysType == int.class) {</span>
+<span class="fc" id="L85">			return new HeapPairing.WithIntKeys(valuesType, comparator);</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">		} else if (keysType == double.class) {</span>
+<span class="fc" id="L87">			return new HeapPairing.WithDoubleKeys(valuesType, comparator);</span>
+		} else {
+<span class="fc" id="L89">			return new HeapPairing.WithObjKeys(valuesType, comparator);</span>
+		}
+	}
+
+<span class="fc" id="L93">	private static abstract class Abstract&lt;K, V, Node extends Abstract.INode&lt;K, V, Node&gt;&gt;</span>
+			extends HeapReferenceableAbstract&lt;K, V&gt; {
+
+		Node minRoot;
+		int size;
+<span class="fc" id="L98">		@SuppressWarnings(&quot;unchecked&quot;)</span>
+		private Node[] tempHeapArray = (Node[]) new HeapPairing.Abstract.INode[4];
+		private final Class&lt;? extends V&gt; valueType;
+
+		Abstract(Class&lt;? extends V&gt; valueType, Comparator&lt;? super K&gt; c) {
+<span class="fc" id="L103">			super(c);</span>
+<span class="fc" id="L104">			this.valueType = valueType;</span>
+<span class="fc" id="L105">		}</span>
+
+		@Override
+		public HeapReference&lt;K, V&gt; findMin() {
+<span class="pc bpc" id="L109" title="1 of 2 branches missed.">			if (isEmpty())</span>
+<span class="nc" id="L110">				throw new IllegalStateException();</span>
+<span class="fc" id="L111">			return minRoot;</span>
+		}
+
+		@Override
+		public int size() {
+<span class="fc" id="L116">			return size;</span>
+		}
+
+		private static &lt;K, V, Node extends HeapPairing.Abstract.INode&lt;K, V, Node&gt;&gt; void cut(Node n) {
+<span class="fc" id="L120">			Node next = n.next;</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">			if (next != null) {</span>
+<span class="fc" id="L122">				next.prevOrParent = n.prevOrParent;</span>
+<span class="fc" id="L123">				n.next = null;</span>
 			}
-
-			@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
-			@Override
-			public Iterator&lt;HeapReference&lt;E&gt;&gt; iterator() {
-<span class="fc" id="L89">				return (Iterator) new PreOrderIter&lt;&gt;(minRoot);</span>
+<span class="fc bfc" id="L125" title="All 2 branches covered.">			if (n.prevOrParent.child == n) { /* n.parent.child == n */</span>
+<span class="fc" id="L126">				n.prevOrParent.child = next;</span>
+			} else {
+<span class="fc" id="L128">				n.prevOrParent.next = next;</span>
 			}
+<span class="fc" id="L130">			n.prevOrParent = null;</span>
+<span class="fc" id="L131">		}</span>
 
+		static &lt;K, V, Node extends HeapPairing.Abstract.INode&lt;K, V, Node&gt;&gt; void addChild(Node parent, Node newChild) {
+<span class="pc bpc" id="L134" title="1 of 2 branches missed.">			assert newChild.prevOrParent == null;</span>
+<span class="pc bpc" id="L135" title="1 of 2 branches missed.">			assert newChild.next == null;</span>
+<span class="fc" id="L136">			Node oldChild = parent.child;</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">			if (oldChild != null) {</span>
+<span class="fc" id="L138">				oldChild.prevOrParent = newChild;</span>
+<span class="fc" id="L139">				newChild.next = oldChild;</span>
+			}
+<span class="fc" id="L141">			parent.child = newChild;</span>
+<span class="fc" id="L142">			newChild.prevOrParent = parent;</span>
+<span class="fc" id="L143">		}</span>
+
+		void insertNode(Node n) {
+<span class="fc bfc" id="L146" title="All 2 branches covered.">			if (minRoot == null) {</span>
+<span class="fc" id="L147">				minRoot = n;</span>
+<span class="pc bpc" id="L148" title="1 of 2 branches missed.">				assert size == 0;</span>
+			} else {
+<span class="fc" id="L150">				minRoot = meld(minRoot, n);</span>
+			}
+<span class="fc" id="L152">			size++;</span>
+<span class="fc" id="L153">		}</span>
+
+		void afterKeyDecrease(Node n) {
+<span class="fc bfc" id="L156" title="All 2 branches covered.">			if (n == minRoot)</span>
+<span class="fc" id="L157">				return;</span>
+<span class="fc" id="L158">			cut(n);</span>
+<span class="fc" id="L159">			minRoot = meld(minRoot, n);</span>
+<span class="fc" id="L160">		}</span>
+
+		@Override
+		public void remove(HeapReference&lt;K, V&gt; ref) {
 			@SuppressWarnings(&quot;unchecked&quot;)
-			@Override
-			public boolean remove(Object o) {
-<span class="nc" id="L95">				removeRef((HeapReference&lt;E&gt;) o);</span>
-<span class="nc" id="L96">				return true;</span>
+<span class="fc" id="L165">			Node n = (Node) ref;</span>
+<span class="pc bpc" id="L166" title="1 of 2 branches missed.">			assert minRoot != null;</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">			if (n != minRoot) {</span>
+<span class="fc" id="L168">				cut(n);</span>
+<span class="fc" id="L169">				addChild(n, minRoot);</span>
+<span class="fc" id="L170">				minRoot = n;</span>
+			}
+<span class="fc" id="L172">			removeRoot();</span>
+<span class="fc" id="L173">			size--;</span>
+<span class="fc" id="L174">		}</span>
+
+		private void removeRoot() {
+<span class="fc bfc" id="L177" title="All 2 branches covered.">			if (minRoot.child == null) {</span>
+<span class="fc" id="L178">				minRoot = null;</span>
+<span class="fc" id="L179">				return;</span>
 			}
 
-			@Override
-			public void clear() {
-<span class="nc" id="L101">				HeapPairing.this.clear();</span>
-<span class="nc" id="L102">			}</span>
+			/* disassemble children */
+<span class="fc" id="L183">			Node[] heaps = tempHeapArray;</span>
+<span class="fc" id="L184">			int heapsNum = 0;</span>
+<span class="fc" id="L185">			for (Node p = minRoot.child, next;; p = next) {</span>
+<span class="fc bfc" id="L186" title="All 2 branches covered.">				if (heapsNum == heaps.length)</span>
+<span class="fc" id="L187">					tempHeapArray = heaps = Arrays.copyOf(heaps, heaps.length * 2);</span>
+<span class="fc" id="L188">				heaps[heapsNum++] = p;</span>
 
-		};
-<span class="fc" id="L105">	}</span>
-
-	@Override
-	public HeapReference&lt;E&gt; findMinRef() {
-<span class="pc bpc" id="L109" title="1 of 2 branches missed.">		if (isEmpty())</span>
-<span class="nc" id="L110">			throw new IllegalStateException();</span>
-<span class="fc" id="L111">		return minRoot;</span>
-	}
-
-	@Override
-	public int size() {
-<span class="fc" id="L116">		return size;</span>
-	}
-
-	@Override
-	public HeapReference&lt;E&gt; insert(E e) {
-<span class="fc" id="L121">		Node&lt;E&gt; n = new Node&lt;&gt;(e);</span>
-<span class="fc bfc" id="L122" title="All 2 branches covered.">		if (minRoot == null) {</span>
-<span class="fc" id="L123">			minRoot = n;</span>
-<span class="pc bpc" id="L124" title="1 of 2 branches missed.">			assert size == 0;</span>
-		} else {
-<span class="fc" id="L126">			minRoot = meld(minRoot, n);</span>
-		}
-<span class="fc" id="L128">		size++;</span>
-<span class="fc" id="L129">		return n;</span>
-	}
-
-	@Override
-	public void decreaseKey(HeapReference&lt;E&gt; ref, E e) {
-<span class="fc" id="L134">		Node&lt;E&gt; n = (Node&lt;E&gt;) ref;</span>
-<span class="fc" id="L135">		makeSureDecreaseKeyIsSmaller(n.value, e);</span>
-<span class="fc" id="L136">		n.value = e;</span>
-<span class="fc bfc" id="L137" title="All 2 branches covered.">		if (n == minRoot)</span>
-<span class="fc" id="L138">			return;</span>
-<span class="fc" id="L139">		cut(n);</span>
-<span class="fc" id="L140">		minRoot = meld(minRoot, n);</span>
-<span class="fc" id="L141">	}</span>
-
-	private static &lt;E&gt; void cut(Node&lt;E&gt; n) {
-<span class="fc" id="L144">		Node&lt;E&gt; next = n.next;</span>
-<span class="fc bfc" id="L145" title="All 2 branches covered.">		if (next != null) {</span>
-<span class="fc" id="L146">			next.prevOrParent = n.prevOrParent;</span>
-<span class="fc" id="L147">			n.next = null;</span>
-		}
-<span class="fc bfc" id="L149" title="All 2 branches covered.">		if (n.prevOrParent.child == n) { /* n.parent.child == n */</span>
-<span class="fc" id="L150">			n.prevOrParent.child = next;</span>
-		} else {
-<span class="fc" id="L152">			n.prevOrParent.next = next;</span>
-		}
-<span class="fc" id="L154">		n.prevOrParent = null;</span>
-<span class="fc" id="L155">	}</span>
-
-	@Override
-	public void removeRef(HeapReference&lt;E&gt; ref) {
-<span class="fc" id="L159">		Node&lt;E&gt; n = (Node&lt;E&gt;) ref;</span>
-<span class="pc bpc" id="L160" title="1 of 2 branches missed.">		assert minRoot != null;</span>
-<span class="fc bfc" id="L161" title="All 2 branches covered.">		if (n != minRoot) {</span>
-<span class="fc" id="L162">			cut(n);</span>
-<span class="fc" id="L163">			addChild(n, minRoot);</span>
-<span class="fc" id="L164">			minRoot = n;</span>
-		}
-<span class="fc" id="L166">		removeRoot();</span>
-<span class="fc" id="L167">		size--;</span>
-<span class="fc" id="L168">	}</span>
-
-	private void removeRoot() {
-<span class="fc bfc" id="L171" title="All 2 branches covered.">		if (minRoot.child == null) {</span>
-<span class="fc" id="L172">			minRoot = null;</span>
-<span class="fc" id="L173">			return;</span>
-		}
-
-		/* disassemble children */
-<span class="fc" id="L177">		Node&lt;E&gt;[] heaps = tempHeapArray;</span>
-<span class="fc" id="L178">		int heapsNum = 0;</span>
-<span class="fc" id="L179">		for (Node&lt;E&gt; p = minRoot.child, next;; p = next) {</span>
-<span class="fc bfc" id="L180" title="All 2 branches covered.">			if (heapsNum == heaps.length)</span>
-<span class="fc" id="L181">				tempHeapArray = heaps = Arrays.copyOf(heaps, heaps.length * 2);</span>
-<span class="fc" id="L182">			heaps[heapsNum++] = p;</span>
-
-<span class="fc" id="L184">			p.prevOrParent = null;</span>
-<span class="fc" id="L185">			next = p.next;</span>
-<span class="fc bfc" id="L186" title="All 2 branches covered.">			if (next == null)</span>
-<span class="fc" id="L187">				break;</span>
-<span class="fc" id="L188">			p.next = null;</span>
-		}
-<span class="fc" id="L190">		minRoot.child = null;</span>
-
-		/* meld all sub heaps */
-<span class="fc" id="L193">		minRoot = meld(heaps, heapsNum);</span>
-<span class="fc" id="L194">	}</span>
-
-	@Override
-	public void meld(Heap&lt;? extends E&gt; heap) {
-<span class="fc" id="L198">		makeSureNoMeldWithSelf(heap);</span>
-<span class="fc" id="L199">		makeSureMeldWithSameImpl(HeapPairing.class, heap);</span>
-<span class="fc" id="L200">		makeSureEqualComparatorBeforeMeld(heap);</span>
-		@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L202">		HeapPairing&lt;E&gt; h = (HeapPairing&lt;E&gt;) heap;</span>
-
-<span class="fc bfc" id="L204" title="All 2 branches covered.">		if (size == 0) {</span>
-<span class="pc bpc" id="L205" title="1 of 2 branches missed.">			assert minRoot == null;</span>
-<span class="fc" id="L206">			minRoot = h.minRoot;</span>
-<span class="fc bfc" id="L207" title="All 2 branches covered.">		} else if (h.minRoot != null) {</span>
-<span class="fc" id="L208">			minRoot = meld(minRoot, h.minRoot);</span>
-		}
-<span class="fc" id="L210">		size += h.size;</span>
-
-<span class="fc" id="L212">		h.minRoot = null;</span>
-<span class="fc" id="L213">		h.size = 0;</span>
-<span class="fc" id="L214">	}</span>
-
-	private void addChild(Node&lt;E&gt; parent, Node&lt;E&gt; newChild) {
-<span class="pc bpc" id="L217" title="1 of 2 branches missed.">		assert newChild.prevOrParent == null;</span>
-<span class="pc bpc" id="L218" title="1 of 2 branches missed.">		assert newChild.next == null;</span>
-<span class="fc" id="L219">		Node&lt;E&gt; oldChild = parent.child;</span>
-<span class="fc bfc" id="L220" title="All 2 branches covered.">		if (oldChild != null) {</span>
-<span class="fc" id="L221">			oldChild.prevOrParent = newChild;</span>
-<span class="fc" id="L222">			newChild.next = oldChild;</span>
-		}
-<span class="fc" id="L224">		parent.child = newChild;</span>
-<span class="fc" id="L225">		newChild.prevOrParent = parent;</span>
-<span class="fc" id="L226">	}</span>
-
-	private Node&lt;E&gt; meld(Node&lt;E&gt; n1, Node&lt;E&gt; n2) {
-<span class="fc bfc" id="L229" title="All 2 branches covered.">		return c == null ? meldDefaultCmp(n1, n2) : meldCustomCmp(n1, n2);</span>
-	}
-
-	private Node&lt;E&gt; meldDefaultCmp(Node&lt;E&gt; n1, Node&lt;E&gt; n2) {
-<span class="pc bpc" id="L233" title="1 of 2 branches missed.">		assert n1.prevOrParent == null;</span>
-<span class="pc bpc" id="L234" title="1 of 2 branches missed.">		assert n1.next == null;</span>
-<span class="pc bpc" id="L235" title="1 of 2 branches missed.">		assert n2.prevOrParent == null;</span>
-<span class="pc bpc" id="L236" title="1 of 2 branches missed.">		assert n2.next == null;</span>
-
-		/* assume n1 has smaller key than n2 */
-<span class="fc bfc" id="L239" title="All 2 branches covered.">		if (Utils.cmpDefault(n1.value, n2.value) &gt; 0) {</span>
-<span class="fc" id="L240">			Node&lt;E&gt; temp = n1;</span>
-<span class="fc" id="L241">			n1 = n2;</span>
-<span class="fc" id="L242">			n2 = temp;</span>
-		}
-
-<span class="fc" id="L245">		addChild(n1, n2);</span>
-<span class="fc" id="L246">		return n1;</span>
-	}
-
-	private Node&lt;E&gt; meldCustomCmp(Node&lt;E&gt; n1, Node&lt;E&gt; n2) {
-<span class="pc bpc" id="L250" title="1 of 2 branches missed.">		assert n1.prevOrParent == null;</span>
-<span class="pc bpc" id="L251" title="1 of 2 branches missed.">		assert n1.next == null;</span>
-<span class="pc bpc" id="L252" title="1 of 2 branches missed.">		assert n2.prevOrParent == null;</span>
-<span class="pc bpc" id="L253" title="1 of 2 branches missed.">		assert n2.next == null;</span>
-
-		/* assume n1 has smaller key than n2 */
-<span class="fc bfc" id="L256" title="All 2 branches covered.">		if (c.compare(n1.value, n2.value) &gt; 0) {</span>
-<span class="fc" id="L257">			Node&lt;E&gt; temp = n1;</span>
-<span class="fc" id="L258">			n1 = n2;</span>
-<span class="fc" id="L259">			n2 = temp;</span>
-		}
-
-<span class="fc" id="L262">		addChild(n1, n2);</span>
-<span class="fc" id="L263">		return n1;</span>
-	}
-
-	private Node&lt;E&gt; meld(Node&lt;E&gt;[] heaps, int heapsNum) {
-<span class="fc bfc" id="L267" title="All 2 branches covered.">		if (c == null) {</span>
-			/* meld pairs from left to right */
-<span class="fc bfc" id="L269" title="All 2 branches covered.">			for (int i = 0; i &lt; heapsNum / 2; i++) {</span>
-<span class="fc" id="L270">				Node&lt;E&gt; n1 = heaps[i * 2 + 0];</span>
-<span class="fc" id="L271">				Node&lt;E&gt; n2 = heaps[i * 2 + 1];</span>
-<span class="fc" id="L272">				heaps[i] = meldDefaultCmp(n1, n2);</span>
+<span class="fc" id="L190">				p.prevOrParent = null;</span>
+<span class="fc" id="L191">				next = p.next;</span>
+<span class="fc bfc" id="L192" title="All 2 branches covered.">				if (next == null)</span>
+<span class="fc" id="L193">					break;</span>
+<span class="fc" id="L194">				p.next = null;</span>
 			}
-			/* handle last heap in case heapNum is odd */
-<span class="fc bfc" id="L275" title="All 2 branches covered.">			if (heapsNum % 2 != 0)</span>
-<span class="fc" id="L276">				heaps[heapsNum / 2] = heaps[heapsNum - 1];</span>
-			/* div by two ceil */
-<span class="fc" id="L278">			heapsNum = (heapsNum + 1) / 2;</span>
+<span class="fc" id="L196">			minRoot.child = null;</span>
 
-			/* meld all from right to left */
-<span class="fc" id="L281">			Node&lt;E&gt; root = heaps[--heapsNum];</span>
-<span class="fc bfc" id="L282" title="All 2 branches covered.">			for (; heapsNum &gt; 0; heapsNum--)</span>
-<span class="fc" id="L283">				root = meldDefaultCmp(heaps[heapsNum - 1], root);</span>
-<span class="fc" id="L284">			return root;</span>
-		} else {
-			/* meld pairs from left to right */
-<span class="fc bfc" id="L287" title="All 2 branches covered.">			for (int i = 0; i &lt; heapsNum / 2; i++) {</span>
-<span class="fc" id="L288">				Node&lt;E&gt; n1 = heaps[i * 2 + 0];</span>
-<span class="fc" id="L289">				Node&lt;E&gt; n2 = heaps[i * 2 + 1];</span>
-<span class="fc" id="L290">				heaps[i] = meldCustomCmp(n1, n2);</span>
+			/* meld all sub heaps */
+<span class="fc" id="L199">			minRoot = meld(heaps, heapsNum);</span>
+<span class="fc" id="L200">		}</span>
+
+		@Override
+		public void meld(HeapReferenceable&lt;? extends K, ? extends V&gt; heap) {
+<span class="fc" id="L204">			makeSureNoMeldWithSelf(heap);</span>
+<span class="fc" id="L205">			makeSureMeldWithSameImpl(getClass(), heap);</span>
+<span class="fc" id="L206">			makeSureEqualComparatorBeforeMeld(heap);</span>
+			@SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L208">			HeapPairing.Abstract&lt;K, V, Node&gt; h = (HeapPairing.Abstract&lt;K, V, Node&gt;) heap;</span>
+<span class="pc bpc" id="L209" title="1 of 2 branches missed.">			if (valueType != h.valueType)</span>
+<span class="nc" id="L210">				throw new IllegalArgumentException(&quot;Can't meld heaps with different implementations&quot;);</span>
+
+<span class="fc bfc" id="L212" title="All 2 branches covered.">			if (size == 0) {</span>
+<span class="pc bpc" id="L213" title="1 of 2 branches missed.">				assert minRoot == null;</span>
+<span class="fc" id="L214">				minRoot = h.minRoot;</span>
+<span class="fc bfc" id="L215" title="All 2 branches covered.">			} else if (h.minRoot != null) {</span>
+<span class="fc" id="L216">				minRoot = meld(minRoot, h.minRoot);</span>
 			}
-			/* handle last heap in case heapNum is odd */
-<span class="fc bfc" id="L293" title="All 2 branches covered.">			if (heapsNum % 2 != 0)</span>
-<span class="fc" id="L294">				heaps[heapsNum / 2] = heaps[heapsNum - 1];</span>
-			/* div by two ceil */
-<span class="fc" id="L296">			heapsNum = (heapsNum + 1) / 2;</span>
+<span class="fc" id="L218">			size += h.size;</span>
 
-			/* meld all from right to left */
-<span class="fc" id="L299">			Node&lt;E&gt; root = heaps[--heapsNum];</span>
-<span class="fc bfc" id="L300" title="All 2 branches covered.">			for (; heapsNum &gt; 0; heapsNum--)</span>
-<span class="fc" id="L301">				root = meldCustomCmp(heaps[heapsNum - 1], root);</span>
-<span class="fc" id="L302">			return root;</span>
-		}
-	}
+<span class="fc" id="L220">			h.minRoot = null;</span>
+<span class="fc" id="L221">			h.size = 0;</span>
+<span class="fc" id="L222">		}</span>
 
-	@Override
-	public void clear() {
-<span class="fc" id="L308">		Arrays.fill(tempHeapArray, null); // help GC</span>
-<span class="fc bfc" id="L309" title="All 2 branches covered.">		if (minRoot == null) {</span>
-<span class="pc bpc" id="L310" title="1 of 2 branches missed.">			assert size == 0;</span>
-<span class="fc" id="L311">			return;</span>
+		private Node meld(Node n1, Node n2) {
+<span class="fc bfc" id="L225" title="All 2 branches covered.">			return c == null ? meldDefaultCmp(n1, n2) : meldCustomCmp(n1, n2);</span>
 		}
 
-<span class="fc" id="L314">		for (Node&lt;E&gt; p = minRoot;;) {</span>
-<span class="fc bfc" id="L315" title="All 2 branches covered.">			while (p.child != null) {</span>
-<span class="fc" id="L316">				p = p.child;</span>
-<span class="fc bfc" id="L317" title="All 2 branches covered.">				while (p.next != null)</span>
-<span class="fc" id="L318">					p = p.next;</span>
-			}
-<span class="fc" id="L320">			p.value = null;</span>
-<span class="fc" id="L321">			Node&lt;E&gt; prev = p.prevOrParent;</span>
-<span class="fc bfc" id="L322" title="All 2 branches covered.">			if (prev == null)</span>
-<span class="fc" id="L323">				break;</span>
-<span class="fc" id="L324">			p.prevOrParent = null;</span>
-<span class="fc bfc" id="L325" title="All 2 branches covered.">			if (prev.next == p) {</span>
-<span class="fc" id="L326">				prev.next = null;</span>
+		abstract Node meldDefaultCmp(Node n1, Node n2);
+
+		abstract Node meldCustomCmp(Node n1, Node n2);
+
+		private Node meld(Node[] heaps, int heapsNum) {
+<span class="fc bfc" id="L233" title="All 2 branches covered.">			if (c == null) {</span>
+				/* meld pairs from left to right */
+<span class="fc bfc" id="L235" title="All 2 branches covered.">				for (int i = 0; i &lt; heapsNum / 2; i++) {</span>
+<span class="fc" id="L236">					Node n1 = heaps[i * 2 + 0];</span>
+<span class="fc" id="L237">					Node n2 = heaps[i * 2 + 1];</span>
+<span class="fc" id="L238">					heaps[i] = meldDefaultCmp(n1, n2);</span>
+				}
+				/* handle last heap in case heapNum is odd */
+<span class="fc bfc" id="L241" title="All 2 branches covered.">				if (heapsNum % 2 != 0)</span>
+<span class="fc" id="L242">					heaps[heapsNum / 2] = heaps[heapsNum - 1];</span>
+				/* div by two ceil */
+<span class="fc" id="L244">				heapsNum = (heapsNum + 1) / 2;</span>
+
+				/* meld all from right to left */
+<span class="fc" id="L247">				Node root = heaps[--heapsNum];</span>
+<span class="fc bfc" id="L248" title="All 2 branches covered.">				for (; heapsNum &gt; 0; heapsNum--)</span>
+<span class="fc" id="L249">					root = meldDefaultCmp(heaps[heapsNum - 1], root);</span>
+<span class="fc" id="L250">				return root;</span>
 			} else {
-<span class="fc" id="L328">				prev.child = null;</span>
+				/* meld pairs from left to right */
+<span class="fc bfc" id="L253" title="All 2 branches covered.">				for (int i = 0; i &lt; heapsNum / 2; i++) {</span>
+<span class="fc" id="L254">					Node n1 = heaps[i * 2 + 0];</span>
+<span class="fc" id="L255">					Node n2 = heaps[i * 2 + 1];</span>
+<span class="fc" id="L256">					heaps[i] = meldCustomCmp(n1, n2);</span>
+				}
+				/* handle last heap in case heapNum is odd */
+<span class="fc bfc" id="L259" title="All 2 branches covered.">				if (heapsNum % 2 != 0)</span>
+<span class="fc" id="L260">					heaps[heapsNum / 2] = heaps[heapsNum - 1];</span>
+				/* div by two ceil */
+<span class="fc" id="L262">				heapsNum = (heapsNum + 1) / 2;</span>
+
+				/* meld all from right to left */
+<span class="fc" id="L265">				Node root = heaps[--heapsNum];</span>
+<span class="fc bfc" id="L266" title="All 2 branches covered.">				for (; heapsNum &gt; 0; heapsNum--)</span>
+<span class="fc" id="L267">					root = meldCustomCmp(heaps[heapsNum - 1], root);</span>
+<span class="fc" id="L268">				return root;</span>
 			}
-<span class="fc" id="L330">			p = prev;</span>
-<span class="fc" id="L331">		}</span>
+		}
 
-<span class="fc" id="L333">		minRoot = null;</span>
-<span class="fc" id="L334">		size = 0;</span>
-<span class="fc" id="L335">	}</span>
+		@Override
+		public void clear() {
+<span class="fc" id="L274">			Arrays.fill(tempHeapArray, null); // help GC</span>
+<span class="fc bfc" id="L275" title="All 2 branches covered.">			if (minRoot == null) {</span>
+<span class="pc bpc" id="L276" title="1 of 2 branches missed.">				assert size == 0;</span>
+<span class="fc" id="L277">				return;</span>
+			}
 
-	@Override
-	public Set&lt;HeapReference&lt;E&gt;&gt; refsSet() {
-<span class="fc" id="L339">		return refsSet;</span>
+<span class="fc" id="L280">			for (Node p = minRoot;;) {</span>
+<span class="fc bfc" id="L281" title="All 2 branches covered.">				while (p.child != null) {</span>
+<span class="fc" id="L282">					p = p.child;</span>
+<span class="fc bfc" id="L283" title="All 2 branches covered.">					while (p.next != null)</span>
+<span class="fc" id="L284">						p = p.next;</span>
+				}
+<span class="fc" id="L286">				p.clearUserData();</span>
+<span class="fc" id="L287">				Node prev = p.prevOrParent;</span>
+<span class="fc bfc" id="L288" title="All 2 branches covered.">				if (prev == null)</span>
+<span class="fc" id="L289">					break;</span>
+<span class="fc" id="L290">				p.prevOrParent = null;</span>
+<span class="fc bfc" id="L291" title="All 2 branches covered.">				if (prev.next == p) {</span>
+<span class="fc" id="L292">					prev.next = null;</span>
+				} else {
+<span class="fc" id="L294">					prev.child = null;</span>
+				}
+<span class="fc" id="L296">				p = prev;</span>
+<span class="fc" id="L297">			}</span>
+
+<span class="fc" id="L299">			minRoot = null;</span>
+<span class="fc" id="L300">			size = 0;</span>
+<span class="fc" id="L301">		}</span>
+
+		@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
+		@Override
+		public Iterator&lt;HeapReference&lt;K, V&gt;&gt; iterator() {
+<span class="fc" id="L306">			return (Iterator) new HeapPairing.Abstract.PreOrderIter&lt;&gt;(minRoot);</span>
+		}
+
+<span class="fc" id="L309">		static abstract class INode&lt;K, V, Node extends INode&lt;K, V, Node&gt;&gt; implements HeapReference&lt;K, V&gt; {</span>
+
+			Node prevOrParent;
+			Node next;
+			Node child;
+
+			@Override
+			public String toString() {
+<span class="nc" id="L317">				return &quot;{&quot; + key() + &quot;:&quot; + value() + &quot;}&quot;;</span>
+			}
+
+			abstract void clearUserData();
+		}
+
+<span class="pc bpc" id="L323" title="1 of 2 branches missed.">		private static interface NodeVoidVal&lt;K&gt; extends HeapReference&lt;K, Void&gt; {</span>
+			@Override
+			default Void value() {
+<span class="nc" id="L326">				return null;</span>
+			}
+
+			@Override
+			default void setValue(Void val) {
+<span class="nc bnc" id="L331" title="All 4 branches missed.">				assert val == null;</span>
+<span class="nc" id="L332">			}</span>
+		}
+
+		static class PreOrderIter&lt;K, V, Node extends INode&lt;K, V, Node&gt;&gt; implements Iterator&lt;Node&gt; {
+
+<span class="fc" id="L337">			private final Stack&lt;Node&gt; path = new ObjectArrayList&lt;&gt;();</span>
+
+<span class="fc" id="L339">			PreOrderIter(Node p) {</span>
+<span class="fc bfc" id="L340" title="All 2 branches covered.">				if (p != null)</span>
+<span class="fc" id="L341">					path.push(p);</span>
+<span class="fc" id="L342">			}</span>
+
+			@Override
+			public boolean hasNext() {
+<span class="fc bfc" id="L346" title="All 2 branches covered.">				return !path.isEmpty();</span>
+			}
+
+			@Override
+			public Node next() {
+<span class="pc bpc" id="L351" title="1 of 2 branches missed.">				if (!hasNext())</span>
+<span class="nc" id="L352">					throw new NoSuchElementException();</span>
+<span class="fc" id="L353">				final Node ret = path.top();</span>
+
+				Node next;
+<span class="fc bfc" id="L356" title="All 2 branches covered.">				if ((next = ret.child) != null) {</span>
+<span class="fc" id="L357">					path.push(next);</span>
+				} else {
+					Node p0;
+					do {
+<span class="fc" id="L361">						p0 = path.pop();</span>
+<span class="fc bfc" id="L362" title="All 2 branches covered.">						if ((next = p0.next) != null) {</span>
+<span class="fc" id="L363">							path.push(next);</span>
+<span class="fc" id="L364">							break;</span>
+						}
+<span class="fc bfc" id="L366" title="All 2 branches covered.">					} while (!path.isEmpty());</span>
+				}
+
+<span class="fc" id="L369">				return ret;</span>
+			}
+
+		}
+
 	}
 
-	private static class Node&lt;E&gt; implements HeapReference&lt;E&gt; {
+<span class="fc" id="L376">	private static class WithObjKeys&lt;K, V&gt; extends HeapPairing.Abstract&lt;K, V, HeapPairing.WithObjKeys.Node&lt;K, V&gt;&gt; {</span>
 
-		Node&lt;E&gt; prevOrParent;
-		Node&lt;E&gt; next;
-		Node&lt;E&gt; child;
-		E value;
+		private final Function&lt;K, Node&lt;K, V&gt;&gt; nodesFactory;
 
-<span class="fc" id="L349">		Node(E v) {</span>
-<span class="fc" id="L350">			value = v;</span>
-<span class="fc" id="L351">		}</span>
-
-		@Override
-		public E get() {
-<span class="fc" id="L355">			return value;</span>
-		}
-
-		@Override
-		public String toString() {
-<span class="nc" id="L360">			return &quot;{&quot; + value + &quot;}&quot;;</span>
-		}
-
-	}
-
-	private static class PreOrderIter&lt;E&gt; implements Iterator&lt;Node&lt;E&gt;&gt; {
-
-<span class="fc" id="L367">		private final Stack&lt;Node&lt;E&gt;&gt; path = new ObjectArrayList&lt;&gt;();</span>
-
-<span class="fc" id="L369">		PreOrderIter(Node&lt;E&gt; p) {</span>
-<span class="fc bfc" id="L370" title="All 2 branches covered.">			if (p != null)</span>
-<span class="fc" id="L371">				path.push(p);</span>
-<span class="fc" id="L372">		}</span>
-
-		@Override
-		public boolean hasNext() {
-<span class="fc bfc" id="L376" title="All 2 branches covered.">			return !path.isEmpty();</span>
-		}
-
-		@Override
-		public Node&lt;E&gt; next() {
-<span class="pc bpc" id="L381" title="1 of 2 branches missed.">			if (!hasNext())</span>
-<span class="nc" id="L382">				throw new NoSuchElementException();</span>
-<span class="fc" id="L383">			final Node&lt;E&gt; ret = path.top();</span>
-
-			Node&lt;E&gt; next;
-<span class="fc bfc" id="L386" title="All 2 branches covered.">			if ((next = ret.child) != null) {</span>
-<span class="fc" id="L387">				path.push(next);</span>
+		@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
+		WithObjKeys(Class&lt;? extends V&gt; valueType, Comparator&lt;? super K&gt; comparator) {
+<span class="fc" id="L382">			super(valueType, comparator);</span>
+<span class="pc bpc" id="L383" title="1 of 2 branches missed.">			if (valueType == int.class) {</span>
+<span class="nc" id="L384">				nodesFactory = (Function) NodeObjInt::new;</span>
+<span class="pc bpc" id="L385" title="1 of 2 branches missed.">			} else if (valueType == void.class) {</span>
+<span class="fc" id="L386">				nodesFactory = (Function) NodeObjVoid::new;</span>
 			} else {
-				Node&lt;E&gt; p0;
-				do {
-<span class="fc" id="L391">					p0 = path.pop();</span>
-<span class="fc bfc" id="L392" title="All 2 branches covered.">					if ((next = p0.next) != null) {</span>
-<span class="fc" id="L393">						path.push(next);</span>
-<span class="fc" id="L394">						break;</span>
-					}
-<span class="fc bfc" id="L396" title="All 2 branches covered.">				} while (!path.isEmpty());</span>
+<span class="nc" id="L388">				nodesFactory = (Function) NodeObjObj::new;</span>
+			}
+<span class="fc" id="L390">		}</span>
+
+		@Override
+		public HeapReference&lt;K, V&gt; insert(K key) {
+<span class="fc" id="L394">			Node&lt;K, V&gt; n = nodesFactory.apply(key);</span>
+<span class="fc" id="L395">			insertNode(n);</span>
+<span class="fc" id="L396">			return n;</span>
+		}
+
+		@Override
+		public void decreaseKey(HeapReference&lt;K, V&gt; ref, K newKey) {
+<span class="fc" id="L401">			Node&lt;K, V&gt; n = (Node&lt;K, V&gt;) ref;</span>
+<span class="fc" id="L402">			makeSureDecreaseKeyIsSmaller(n.key, newKey);</span>
+<span class="fc" id="L403">			n.key = newKey;</span>
+<span class="fc" id="L404">			afterKeyDecrease(n);</span>
+<span class="fc" id="L405">		}</span>
+
+		@Override
+		Node&lt;K, V&gt; meldDefaultCmp(Node&lt;K, V&gt; n1, Node&lt;K, V&gt; n2) {
+<span class="pc bpc" id="L409" title="1 of 2 branches missed.">			assert n1.prevOrParent == null;</span>
+<span class="pc bpc" id="L410" title="1 of 2 branches missed.">			assert n1.next == null;</span>
+<span class="pc bpc" id="L411" title="1 of 2 branches missed.">			assert n2.prevOrParent == null;</span>
+<span class="pc bpc" id="L412" title="1 of 2 branches missed.">			assert n2.next == null;</span>
+
+			/* assume n1 has smaller key than n2 */
+<span class="fc bfc" id="L415" title="All 2 branches covered.">			if (Utils.cmpDefault(n1.key, n2.key) &gt; 0) {</span>
+<span class="fc" id="L416">				Node&lt;K, V&gt; temp = n1;</span>
+<span class="fc" id="L417">				n1 = n2;</span>
+<span class="fc" id="L418">				n2 = temp;</span>
 			}
 
-<span class="fc" id="L399">			return ret;</span>
+<span class="fc" id="L421">			addChild(n1, n2);</span>
+<span class="fc" id="L422">			return n1;</span>
+		}
+
+		@Override
+		Node&lt;K, V&gt; meldCustomCmp(Node&lt;K, V&gt; n1, Node&lt;K, V&gt; n2) {
+<span class="pc bpc" id="L427" title="1 of 2 branches missed.">			assert n1.prevOrParent == null;</span>
+<span class="pc bpc" id="L428" title="1 of 2 branches missed.">			assert n1.next == null;</span>
+<span class="pc bpc" id="L429" title="1 of 2 branches missed.">			assert n2.prevOrParent == null;</span>
+<span class="pc bpc" id="L430" title="1 of 2 branches missed.">			assert n2.next == null;</span>
+
+			/* assume n1 has smaller key than n2 */
+<span class="fc bfc" id="L433" title="All 2 branches covered.">			if (c.compare(n1.key, n2.key) &gt; 0) {</span>
+<span class="fc" id="L434">				Node&lt;K, V&gt; temp = n1;</span>
+<span class="fc" id="L435">				n1 = n2;</span>
+<span class="fc" id="L436">				n2 = temp;</span>
+			}
+
+<span class="fc" id="L439">			addChild(n1, n2);</span>
+<span class="fc" id="L440">			return n1;</span>
+		}
+
+		static abstract class Node&lt;K, V&gt; extends HeapPairing.Abstract.INode&lt;K, V, Node&lt;K, V&gt;&gt; {
+			K key;
+
+<span class="fc" id="L446">			Node(K key) {</span>
+<span class="fc" id="L447">				this.key = key;</span>
+<span class="fc" id="L448">			}</span>
+
+			@Override
+			public K key() {
+<span class="fc" id="L452">				return key;</span>
+			}
+
+			@Override
+			void clearUserData() {
+<span class="fc" id="L457">				key = null;</span>
+<span class="fc" id="L458">			}</span>
+		}
+
+		private static class NodeObjObj&lt;K, V&gt; extends Node&lt;K, V&gt; {
+			private V value;
+
+			NodeObjObj(K key) {
+<span class="nc" id="L465">				super(key);</span>
+<span class="nc" id="L466">			}</span>
+
+			@Override
+			public V value() {
+<span class="nc" id="L470">				return value;</span>
+			}
+
+			@Override
+			public void setValue(V val) {
+<span class="nc" id="L475">				value = val;</span>
+<span class="nc" id="L476">			}</span>
+
+			@Override
+			void clearUserData() {
+<span class="nc" id="L480">				super.clearUserData();</span>
+<span class="nc" id="L481">				value = null;</span>
+<span class="nc" id="L482">			}</span>
+		}
+
+		private static class NodeObjInt&lt;K&gt; extends Node&lt;K, Integer&gt; {
+			private int value;
+
+			NodeObjInt(K key) {
+<span class="nc" id="L489">				super(key);</span>
+<span class="nc" id="L490">			}</span>
+
+			@Override
+			public Integer value() {
+<span class="nc" id="L494">				return Integer.valueOf(value);</span>
+			}
+
+			@Override
+			public void setValue(Integer val) {
+<span class="nc" id="L499">				value = val.intValue();</span>
+<span class="nc" id="L500">			}</span>
+		}
+
+		private static class NodeObjVoid&lt;K&gt; extends Node&lt;K, Void&gt; implements HeapPairing.Abstract.NodeVoidVal&lt;K&gt; {
+			NodeObjVoid(K key) {
+<span class="fc" id="L505">				super(key);</span>
+<span class="fc" id="L506">			}</span>
+		}
+
+	}
+
+<span class="fc" id="L511">	private static class WithDoubleKeys&lt;V&gt; extends HeapPairing.Abstract&lt;Double, V, HeapPairing.WithDoubleKeys.Node&lt;V&gt;&gt; {</span>
+
+		private final DoubleFunction&lt;Node&lt;V&gt;&gt; nodesFactory;
+		private final DoubleComparator doubleCmp;
+
+		@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
+		WithDoubleKeys(Class&lt;? extends V&gt; valueType, Comparator&lt;? super Double&gt; comparator) {
+<span class="fc" id="L518">			super(valueType, comparator);</span>
+<span class="pc bpc" id="L519" title="3 of 4 branches missed.">			doubleCmp = comparator == null || comparator instanceof DoubleComparator ? (DoubleComparator) comparator</span>
+<span class="pc" id="L520">					: (k1, k2) -&gt; comparator.compare(Double.valueOf(k1), Double.valueOf(k2));</span>
+<span class="fc bfc" id="L521" title="All 2 branches covered.">			if (valueType == int.class) {</span>
+<span class="fc" id="L522">				nodesFactory = (DoubleFunction) NodeDoubleInt::new;</span>
+<span class="pc bpc" id="L523" title="1 of 2 branches missed.">			} else if (valueType == void.class) {</span>
+<span class="nc" id="L524">				nodesFactory = (DoubleFunction) NodeDoubleVoid::new;</span>
+			} else {
+<span class="fc" id="L526">				nodesFactory = NodeDoubleObj::new;</span>
+			}
+<span class="fc" id="L528">		}</span>
+
+		int compare(double k1, double k2) {
+<span class="pc bpc" id="L531" title="1 of 2 branches missed.">			return c == null ? Double.compare(k1, k2) : doubleCmp.compare(k1, k2);</span>
+		}
+
+		@Override
+		public HeapReference&lt;Double, V&gt; insert(Double key) {
+<span class="fc" id="L536">			Node&lt;V&gt; n = nodesFactory.apply(key.doubleValue());</span>
+<span class="fc" id="L537">			insertNode(n);</span>
+<span class="fc" id="L538">			return n;</span>
+		}
+
+		@Override
+		public void decreaseKey(HeapReference&lt;Double, V&gt; ref, Double newKey) {
+<span class="fc" id="L543">			double newKeyDouble = newKey.doubleValue();</span>
+<span class="fc" id="L544">			Node&lt;V&gt; n = (Node&lt;V&gt;) ref;</span>
+<span class="pc bpc" id="L545" title="1 of 2 branches missed.">			if (compare(n.key, newKeyDouble) &lt; 0)</span>
+<span class="nc" id="L546">				throw new IllegalArgumentException(&quot;New key is greater than existing one&quot;);</span>
+<span class="fc" id="L547">			n.key = newKeyDouble;</span>
+<span class="fc" id="L548">			afterKeyDecrease(n);</span>
+<span class="fc" id="L549">		}</span>
+
+		@Override
+		Node&lt;V&gt; meldDefaultCmp(Node&lt;V&gt; n1, Node&lt;V&gt; n2) {
+<span class="pc bpc" id="L553" title="1 of 2 branches missed.">			assert n1.prevOrParent == null;</span>
+<span class="pc bpc" id="L554" title="1 of 2 branches missed.">			assert n1.next == null;</span>
+<span class="pc bpc" id="L555" title="1 of 2 branches missed.">			assert n2.prevOrParent == null;</span>
+<span class="pc bpc" id="L556" title="1 of 2 branches missed.">			assert n2.next == null;</span>
+
+			/* assume n1 has smaller key than n2 */
+<span class="fc bfc" id="L559" title="All 2 branches covered.">			if (Double.compare(n1.key, n2.key) &gt; 0) {</span>
+<span class="fc" id="L560">				Node&lt;V&gt; temp = n1;</span>
+<span class="fc" id="L561">				n1 = n2;</span>
+<span class="fc" id="L562">				n2 = temp;</span>
+			}
+
+<span class="fc" id="L565">			addChild(n1, n2);</span>
+<span class="fc" id="L566">			return n1;</span>
+		}
+
+		@Override
+		Node&lt;V&gt; meldCustomCmp(Node&lt;V&gt; n1, Node&lt;V&gt; n2) {
+<span class="nc bnc" id="L571" title="All 2 branches missed.">			assert n1.prevOrParent == null;</span>
+<span class="nc bnc" id="L572" title="All 2 branches missed.">			assert n1.next == null;</span>
+<span class="nc bnc" id="L573" title="All 2 branches missed.">			assert n2.prevOrParent == null;</span>
+<span class="nc bnc" id="L574" title="All 2 branches missed.">			assert n2.next == null;</span>
+
+			/* assume n1 has smaller key than n2 */
+<span class="nc bnc" id="L577" title="All 2 branches missed.">			if (doubleCmp.compare(n1.key, n2.key) &gt; 0) {</span>
+<span class="nc" id="L578">				Node&lt;V&gt; temp = n1;</span>
+<span class="nc" id="L579">				n1 = n2;</span>
+<span class="nc" id="L580">				n2 = temp;</span>
+			}
+
+<span class="nc" id="L583">			addChild(n1, n2);</span>
+<span class="nc" id="L584">			return n1;</span>
+		}
+
+		static abstract class Node&lt;V&gt; extends HeapPairing.Abstract.INode&lt;Double, V, Node&lt;V&gt;&gt; {
+			double key;
+
+<span class="fc" id="L590">			Node(double key) {</span>
+<span class="fc" id="L591">				this.key = key;</span>
+<span class="fc" id="L592">			}</span>
+
+			@Override
+			public Double key() {
+<span class="fc" id="L596">				return Double.valueOf(key);</span>
+			}
+
+			@Override
+<span class="fc" id="L600">			void clearUserData() {}</span>
+		}
+
+		private static class NodeDoubleObj&lt;V&gt; extends Node&lt;V&gt; {
+			private V value;
+
+			NodeDoubleObj(double key) {
+<span class="fc" id="L607">				super(key);</span>
+<span class="fc" id="L608">			}</span>
+
+			@Override
+			public V value() {
+<span class="fc" id="L612">				return value;</span>
+			}
+
+			@Override
+			public void setValue(V val) {
+<span class="fc" id="L617">				value = val;</span>
+<span class="fc" id="L618">			}</span>
+
+			@Override
+			void clearUserData() {
+<span class="fc" id="L622">				super.clearUserData();</span>
+<span class="fc" id="L623">				value = null;</span>
+<span class="fc" id="L624">			}</span>
+		}
+
+		private static class NodeDoubleInt extends Node&lt;Integer&gt; {
+			private int value;
+
+			NodeDoubleInt(double key) {
+<span class="fc" id="L631">				super(key);</span>
+<span class="fc" id="L632">			}</span>
+
+			@Override
+			public Integer value() {
+<span class="fc" id="L636">				return Integer.valueOf(value);</span>
+			}
+
+			@Override
+			public void setValue(Integer val) {
+<span class="fc" id="L641">				value = val.intValue();</span>
+<span class="fc" id="L642">			}</span>
+		}
+
+		private static class NodeDoubleVoid extends Node&lt;Void&gt; implements HeapPairing.Abstract.NodeVoidVal&lt;Double&gt; {
+			NodeDoubleVoid(double key) {
+<span class="nc" id="L647">				super(key);</span>
+<span class="nc" id="L648">			}</span>
+		}
+
+	}
+
+<span class="fc" id="L653">	private static class WithIntKeys&lt;V&gt; extends HeapPairing.Abstract&lt;Integer, V, HeapPairing.WithIntKeys.Node&lt;V&gt;&gt; {</span>
+
+		private final IntFunction&lt;Node&lt;V&gt;&gt; nodesFactory;
+		private final IntComparator intCmp;
+
+		@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
+		WithIntKeys(Class&lt;? extends V&gt; valueType, Comparator&lt;? super Integer&gt; comparator) {
+<span class="fc" id="L660">			super(valueType, comparator);</span>
+<span class="fc bfc" id="L661" title="All 4 branches covered.">			intCmp = comparator == null || comparator instanceof IntComparator ? (IntComparator) comparator</span>
+<span class="fc" id="L662">					: (k1, k2) -&gt; comparator.compare(Integer.valueOf(k1), Integer.valueOf(k2));</span>
+<span class="fc bfc" id="L663" title="All 2 branches covered.">			if (valueType == int.class) {</span>
+<span class="fc" id="L664">				nodesFactory = (IntFunction) NodeIntegerInt::new;</span>
+<span class="pc bpc" id="L665" title="1 of 2 branches missed.">			} else if (valueType == void.class) {</span>
+<span class="fc" id="L666">				nodesFactory = (IntFunction) NodeIntegerVoid::new;</span>
+			} else {
+<span class="nc" id="L668">				nodesFactory = NodeIntegerObj::new;</span>
+			}
+<span class="fc" id="L670">		}</span>
+
+		int compare(int k1, int k2) {
+<span class="fc bfc" id="L673" title="All 2 branches covered.">			return c == null ? Integer.compare(k1, k2) : intCmp.compare(k1, k2);</span>
+		}
+
+		@Override
+		public HeapReference&lt;Integer, V&gt; insert(Integer key) {
+<span class="fc" id="L678">			Node&lt;V&gt; n = nodesFactory.apply(key.intValue());</span>
+<span class="fc" id="L679">			insertNode(n);</span>
+<span class="fc" id="L680">			return n;</span>
+		}
+
+		@Override
+		public void decreaseKey(HeapReference&lt;Integer, V&gt; ref, Integer newKey) {
+<span class="fc" id="L685">			int newKeyInteger = newKey.intValue();</span>
+<span class="fc" id="L686">			Node&lt;V&gt; n = (Node&lt;V&gt;) ref;</span>
+<span class="pc bpc" id="L687" title="1 of 2 branches missed.">			if (compare(n.key, newKeyInteger) &lt; 0)</span>
+<span class="nc" id="L688">				throw new IllegalArgumentException(&quot;New key is greater than existing one&quot;);</span>
+<span class="fc" id="L689">			n.key = newKeyInteger;</span>
+<span class="fc" id="L690">			afterKeyDecrease(n);</span>
+<span class="fc" id="L691">		}</span>
+
+		@Override
+		Node&lt;V&gt; meldDefaultCmp(Node&lt;V&gt; n1, Node&lt;V&gt; n2) {
+<span class="pc bpc" id="L695" title="1 of 2 branches missed.">			assert n1.prevOrParent == null;</span>
+<span class="pc bpc" id="L696" title="1 of 2 branches missed.">			assert n1.next == null;</span>
+<span class="pc bpc" id="L697" title="1 of 2 branches missed.">			assert n2.prevOrParent == null;</span>
+<span class="pc bpc" id="L698" title="1 of 2 branches missed.">			assert n2.next == null;</span>
+
+			/* assume n1 has smaller key than n2 */
+<span class="fc bfc" id="L701" title="All 2 branches covered.">			if (Integer.compare(n1.key, n2.key) &gt; 0) {</span>
+<span class="fc" id="L702">				Node&lt;V&gt; temp = n1;</span>
+<span class="fc" id="L703">				n1 = n2;</span>
+<span class="fc" id="L704">				n2 = temp;</span>
+			}
+
+<span class="fc" id="L707">			addChild(n1, n2);</span>
+<span class="fc" id="L708">			return n1;</span>
+		}
+
+		@Override
+		Node&lt;V&gt; meldCustomCmp(Node&lt;V&gt; n1, Node&lt;V&gt; n2) {
+<span class="pc bpc" id="L713" title="1 of 2 branches missed.">			assert n1.prevOrParent == null;</span>
+<span class="pc bpc" id="L714" title="1 of 2 branches missed.">			assert n1.next == null;</span>
+<span class="pc bpc" id="L715" title="1 of 2 branches missed.">			assert n2.prevOrParent == null;</span>
+<span class="pc bpc" id="L716" title="1 of 2 branches missed.">			assert n2.next == null;</span>
+
+			/* assume n1 has smaller key than n2 */
+<span class="fc bfc" id="L719" title="All 2 branches covered.">			if (intCmp.compare(n1.key, n2.key) &gt; 0) {</span>
+<span class="fc" id="L720">				Node&lt;V&gt; temp = n1;</span>
+<span class="fc" id="L721">				n1 = n2;</span>
+<span class="fc" id="L722">				n2 = temp;</span>
+			}
+
+<span class="fc" id="L725">			addChild(n1, n2);</span>
+<span class="fc" id="L726">			return n1;</span>
+		}
+
+		static abstract class Node&lt;V&gt; extends HeapPairing.Abstract.INode&lt;Integer, V, Node&lt;V&gt;&gt; {
+			int key;
+
+<span class="fc" id="L732">			Node(int key) {</span>
+<span class="fc" id="L733">				this.key = key;</span>
+<span class="fc" id="L734">			}</span>
+
+			@Override
+			public Integer key() {
+<span class="fc" id="L738">				return Integer.valueOf(key);</span>
+			}
+
+			@Override
+<span class="fc" id="L742">			void clearUserData() {}</span>
+		}
+
+		private static class NodeIntegerObj&lt;V&gt; extends Node&lt;V&gt; {
+			private V value;
+
+			NodeIntegerObj(int key) {
+<span class="nc" id="L749">				super(key);</span>
+<span class="nc" id="L750">			}</span>
+
+			@Override
+			public V value() {
+<span class="nc" id="L754">				return value;</span>
+			}
+
+			@Override
+			public void setValue(V val) {
+<span class="nc" id="L759">				value = val;</span>
+<span class="nc" id="L760">			}</span>
+
+			@Override
+			void clearUserData() {
+<span class="nc" id="L764">				super.clearUserData();</span>
+<span class="nc" id="L765">				value = null;</span>
+<span class="nc" id="L766">			}</span>
+		}
+
+		private static class NodeIntegerInt extends Node&lt;Integer&gt; {
+			private int value;
+
+			NodeIntegerInt(int key) {
+<span class="fc" id="L773">				super(key);</span>
+<span class="fc" id="L774">			}</span>
+
+			@Override
+			public Integer value() {
+<span class="fc" id="L778">				return Integer.valueOf(value);</span>
+			}
+
+			@Override
+			public void setValue(Integer val) {
+<span class="fc" id="L783">				value = val.intValue();</span>
+<span class="fc" id="L784">			}</span>
+		}
+
+		private static class NodeIntegerVoid extends Node&lt;Void&gt; implements HeapPairing.Abstract.NodeVoidVal&lt;Integer&gt; {
+			NodeIntegerVoid(int key) {
+<span class="fc" id="L789">				super(key);</span>
+<span class="fc" id="L790">			}</span>
 		}
 
 	}

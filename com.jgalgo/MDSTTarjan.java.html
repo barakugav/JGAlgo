@@ -18,7 +18,6 @@ package com.jgalgo;
 
 import java.util.Arrays;
 import java.util.BitSet;
-import java.util.Objects;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntStack;
@@ -34,7 +33,8 @@ import it.unimi.dsi.fastutil.ints.IntStack;
  */
 public class MDSTTarjan implements MDST {
 
-<span class="fc" id="L37">	private Heap.Builder heapBuilder = HeapPairing::new;</span>
+<span class="fc" id="L36">	private HeapReferenceable.Builder&lt;Integer, Void&gt; heapBuilder =</span>
+<span class="fc" id="L37">			HeapReferenceable.newBuilder().keysTypePrimitive(int.class).valuesTypeVoid();</span>
 <span class="fc" id="L38">	private final ConnectivityAlgorithm ccAlg = ConnectivityAlgorithm.newBuilder().build();</span>
 	private static final int HeavyEdge = 0xffffffff;
 	private static final double HeavyEdgeWeight = Double.MAX_VALUE;
@@ -50,8 +50,8 @@ public class MDSTTarjan implements MDST {
 	 *
 	 * @param heapBuilder a builder for heaps used by this algorithm
 	 */
-	public void setHeapBuilder(Heap.Builder heapBuilder) {
-<span class="nc" id="L54">		this.heapBuilder = Objects.requireNonNull(heapBuilder);</span>
+	public void setHeapBuilder(HeapReferenceable.Builder&lt;?, ?&gt; heapBuilder) {
+<span class="nc" id="L54">		this.heapBuilder = heapBuilder.keysTypePrimitive(int.class).valuesTypeVoid();</span>
 <span class="nc" id="L55">	}</span>
 
 	/**
@@ -164,12 +164,12 @@ public class MDSTTarjan implements MDST {
 <span class="fc bfc" id="L164" title="All 2 branches covered.">			return (e0 != HeavyEdge ? w0.weight(e0) : HeavyEdgeWeight) + uf.getValue(g.edgeTarget(e));</span>
 		};
 		@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L167">		Heap&lt;Integer&gt;[] heap = new Heap[VMaxNum];</span>
+<span class="fc" id="L167">		HeapReferenceable&lt;Integer, Void&gt;[] heap = new HeapReferenceable[VMaxNum];</span>
 <span class="fc bfc" id="L168" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
 <span class="fc" id="L169">			heap[v] = heapBuilder.build(w);</span>
 <span class="fc bfc" id="L170" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
 <span class="fc bfc" id="L171" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesIn(v); eit.hasNext();)</span>
-<span class="fc" id="L172">				heap[v].add(Integer.valueOf(eit.nextInt()));</span>
+<span class="fc" id="L172">				heap[v].insert(Integer.valueOf(eit.nextInt()));</span>
 
 <span class="fc" id="L174">		int[] parent = new int[VMaxNum];</span>
 <span class="fc" id="L175">		int[] child = new int[VMaxNum];</span>
@@ -190,7 +190,7 @@ public class MDSTTarjan implements MDST {
 				// Assuming the graph is strongly connected, if heap is empty we are done
 <span class="fc bfc" id="L191" title="All 2 branches covered.">				if (heap[a].isEmpty())</span>
 <span class="fc" id="L192">					return new ContractedGraph(n, parent, child, brother, inEdge);</span>
-<span class="fc" id="L193">				e = heap[a].extractMin().intValue();</span>
+<span class="fc" id="L193">				e = heap[a].extractMin().key().intValue();</span>
 <span class="fc" id="L194">				u = ufIdxToV[uf.find(g.edgeSource(e))];</span>
 <span class="fc bfc" id="L195" title="All 2 branches covered.">			} while (a == u);</span>
 
@@ -208,7 +208,7 @@ public class MDSTTarjan implements MDST {
 			} else {
 				// Create new super vertex
 <span class="fc" id="L210">				int c = uf.make();</span>
-<span class="fc" id="L211">				Heap&lt;Integer&gt; cHeap = heap[c] = heapBuilder.build(w);</span>
+<span class="fc" id="L211">				HeapReferenceable&lt;Integer, Void&gt; cHeap = heap[c] = heapBuilder.build(w);</span>
 <span class="fc" id="L212">				brother[c] = brother[u];</span>
 <span class="fc" id="L213">				brother[u] = a;</span>
 <span class="fc" id="L214">				child[c] = a;</span>

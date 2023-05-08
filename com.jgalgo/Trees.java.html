@@ -188,15 +188,15 @@ public class Trees {
 <span class="fc bfc" id="L188" title="All 2 branches covered.">		} while (!stack.isEmpty());</span>
 <span class="fc" id="L189">	}</span>
 
-	static class PreOrderIter&lt;N extends TreeNode&lt;N&gt;&gt; implements Iterator&lt;N&gt; {
+	static class PreOrderIter&lt;Node extends TreeNode&lt;Node&gt;&gt; implements Iterator&lt;Node&gt; {
 
-		private N p;
+		private Node p;
 
-<span class="fc" id="L195">		PreOrderIter(N p) {</span>
+<span class="fc" id="L195">		PreOrderIter(Node p) {</span>
 <span class="fc" id="L196">			reset(p);</span>
 <span class="fc" id="L197">		}</span>
 
-		void reset(N p) {
+		void reset(Node p) {
 <span class="fc" id="L200">			this.p = p;</span>
 <span class="fc" id="L201">		}</span>
 
@@ -206,16 +206,16 @@ public class Trees {
 		}
 
 		@Override
-		public N next() {
+		public Node next() {
 <span class="pc bpc" id="L210" title="1 of 2 branches missed.">			if (!hasNext())</span>
 <span class="nc" id="L211">				throw new NoSuchElementException();</span>
-<span class="fc" id="L212">			final N ret = p;</span>
+<span class="fc" id="L212">			final Node ret = p;</span>
 
-			N next;
+			Node next;
 <span class="fc bfc" id="L215" title="All 2 branches covered.">			if ((next = ret.child()) != null) {</span>
 <span class="fc" id="L216">				p = next;</span>
 			} else {
-<span class="fc" id="L218">				N p0 = ret;</span>
+<span class="fc" id="L218">				Node p0 = ret;</span>
 				do {
 <span class="fc bfc" id="L220" title="All 2 branches covered.">					if ((next = p0.next()) != null) {</span>
 <span class="fc" id="L221">						p0 = next;</span>

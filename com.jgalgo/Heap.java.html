@@ -25,8 +25,7 @@ import java.util.Comparator;
  * Most implementation support insertion of new elements and finding or extracting the minimum in logarithmic or
  * constant time.
  * &lt;p&gt;
- * Some implementation support a direct access to the element in the heap via {@link HeapReference}, which allow more
- * operations like {@code decreaseKey()}.
+ * If {@code decreaseKey()} or fast {@code remove()} operations are required, consider using {@link HeapReferenceable}.
  *
  * &lt;pre&gt; {@code
  * Heap&lt;Integer&gt; h = Heap.newBuilder().build();
@@ -57,11 +56,9 @@ public interface Heap&lt;E&gt; extends Collection&lt;E&gt; {
 	/**
 	 * Insert a new element to the heap.
 	 *
-	 * @param  e new element
-	 * @return   reference to the new element if the implementation support references to its elements or null if it
-	 *           doesn't
+	 * @param e new element
 	 */
-	public HeapReference&lt;E&gt; insert(E e);
+	public void insert(E e);
 
 	/**
 	 * Find the minimum element in the heap.
@@ -73,6 +70,8 @@ public interface Heap&lt;E&gt; extends Collection&lt;E&gt; {
 
 	/**
 	 * Extract the minimum element in the heap.
+	 * &lt;p&gt;
+	 * This method find and &lt;b&gt;remove&lt;/b&gt; the minimum element.
 	 *
 	 * @return                       the minimum element in the heap
 	 * @throws IllegalStateException if the heap is empty
@@ -112,37 +111,86 @@ public interface Heap&lt;E&gt; extends Collection&lt;E&gt; {
 	 *
 	 * @return a new builder that can build {@link Heap} objects
 	 */
-	static Heap.Builder newBuilder() {
-<span class="nc" id="L116">		return HeapBinary::new;</span>
+	@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
+	static Heap.Builder&lt;Object&gt; newBuilder() {
+<span class="nc" id="L116">		return new Heap.Builder&lt;&gt;() {</span>
+
+			Class&lt;?&gt; elmsType;
+
+			@Override
+			public Heap build(Comparator cmp) {
+<span class="nc bnc" id="L122" title="All 2 branches missed.">				if (elmsType == int.class) {</span>
+<span class="nc" id="L123">					return new HeapBinaryInt(cmp);</span>
+				} else {
+<span class="nc" id="L125">					return new HeapBinary&lt;&gt;(cmp);</span>
+				}
+			}
+
+			@Override
+			public Heap.Builder elementsTypeObj() {
+<span class="nc" id="L131">				elmsType = null;</span>
+<span class="nc" id="L132">				return this;</span>
+			}
+
+			@Override
+			public Heap.Builder elementsTypePrimitive(Class primitiveType) {
+<span class="nc bnc" id="L137" title="All 2 branches missed.">				if (!primitiveType.isPrimitive())</span>
+<span class="nc" id="L138">					throw new IllegalArgumentException(&quot;type is not primitive: &quot; + primitiveType);</span>
+<span class="nc" id="L139">				elmsType = primitiveType;</span>
+<span class="nc" id="L140">				return this;</span>
+			}
+		};
 	}
 
 	/**
 	 * Builder for heaps.
-	 * &lt;p&gt;
-	 * Used to change heaps implementations which are used as black box by some algorithms.
 	 *
-	 * @see    Heap#newBuilder()
-	 * @author Barak Ugav
+	 * @param  &lt;E&gt; the heap elements type
+	 * @see        Heap#newBuilder()
+	 * @author     Barak Ugav
 	 */
-	public static interface Builder extends BuilderAbstract&lt;Heap.Builder&gt; {
+	public static interface Builder&lt;E&gt; extends BuilderAbstract&lt;Heap.Builder&lt;E&gt;&gt; {
 		/**
 		 * Build a new heap with the given comparator.
+		 * &lt;p&gt;
+		 * If primitive elements are in used, namely {@link #elementsTypePrimitive(Class)}, its recommended to use a
+		 * primitive {@link Comparator} such as {@link it.unimi.dsi.fastutil.ints.IntComparator}, for best performance.
 		 *
-		 * @param  &lt;E&gt; the heap elements type
 		 * @param  cmp the comparator that will be used to order the elements in the heap
 		 * @return     the newly constructed heap
 		 */
-		&lt;E&gt; Heap&lt;E&gt; build(Comparator&lt;? super E&gt; cmp);
+		Heap&lt;E&gt; build(Comparator&lt;? super E&gt; cmp);
 
 		/**
 		 * Build a new heap with {@linkplain Comparable natural ordering}.
 		 *
-		 * @param  &lt;E&gt; the heap elements type
 		 * @return     the newly constructed heap
 		 */
-		default &lt;E&gt; Heap&lt;E&gt; build() {
-<span class="nc" id="L144">			return build(null);</span>
+		default Heap&lt;E&gt; build() {
+<span class="nc" id="L170">			return build(null);</span>
 		}
+
+		/**
+		 * Change the elements type of the built heaps to a generic object type.
+		 *
+		 * @param  &lt;Elements&gt; object type
+		 * @return            this builder
+		 */
+		&lt;Elements&gt; Heap.Builder&lt;Elements&gt; elementsTypeObj();
+
+		/**
+		 * Change the elements type of the built heaps to some primitive type.
+		 * &lt;p&gt;
+		 * Some specific type implementation may exists that is more efficient than the boxed general object
+		 * implementation.
+		 *
+		 * @param  &lt;Elements&gt;               elements primitive boxed type
+		 * @param  primitiveType            the class of the primitive type
+		 * @return                          this builder
+		 * @throws IllegalArgumentException if {@code primitiveType} is not a class of a primitive type, a.k.a
+		 *                                      {@code int.class, double.class} ect.
+		 */
+		&lt;Elements&gt; Heap.Builder&lt;Elements&gt; elementsTypePrimitive(Class&lt;? extends Elements&gt; primitiveType);
 	}
 
 }
