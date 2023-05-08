@@ -30,7 +30,7 @@ import java.util.Comparator;
  *
  * @author Barak Ugav
  */
-public class SplitFindMinArray<K> implements SplitFindMin<K> {
+class SplitFindMinArray<K> implements SplitFindMin<K> {
 
 	private K[] keys;
 	private Block[] blocks;
@@ -39,7 +39,7 @@ public class SplitFindMinArray<K> implements SplitFindMin<K> {
 	/**
 	 * Create an empty Split-Find-Min data structure.
 	 */
-	public SplitFindMinArray() {}
+	SplitFindMinArray() {}
 
 	@SuppressWarnings("unchecked")
 	@Override

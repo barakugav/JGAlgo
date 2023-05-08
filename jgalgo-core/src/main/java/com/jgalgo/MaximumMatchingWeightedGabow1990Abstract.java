@@ -298,7 +298,7 @@ abstract class MaximumMatchingWeightedGabow1990Abstract implements MaximumMatchi
 		final Blossom[] findToBlossom;
 
 		Odds(int n) {
-			sf = new SplitFindMinArray<>();
+			sf = SplitFindMin.newBuilder().buildWithFindMin();
 			vToSf = new int[n];
 			findToBlossom = new Blossom[n];
 		}
