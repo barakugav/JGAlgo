@@ -24,8 +24,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Supplier;
-
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -39,12 +37,8 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
-
 import com.jgalgo.LCADynamic;
-import com.jgalgo.LCADynamicGabowLinear;
-import com.jgalgo.LCADynamicGabowSimple;
 import com.jgalgo.bench.TestUtils.SeedGenerator;
-
 import it.unimi.dsi.fastutil.ints.IntArrays;
 
 @BenchmarkMode(Mode.AverageTime)
@@ -77,9 +71,9 @@ public class LCADynamicBench {
 		}
 	}
 
-	private void benchLCA(Supplier<? extends LCADynamic> builder, Blackhole blackhole) {
+	private void benchLCA(LCADynamic.Builder builder, Blackhole blackhole) {
 		Collection<Op> ops = lcaOps.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
-		LCADynamic lca = builder.get();
+		LCADynamic lca = builder.build();
 		LCADynamic.Node[] nodes = new LCADynamic.Node[n];
 		int nodesNum = 0;
 		for (Op op0 : ops) {
@@ -107,12 +101,12 @@ public class LCADynamicBench {
 
 	@Benchmark
 	public void GabowLinear(Blackhole blackhole) {
-		benchLCA(LCADynamicGabowLinear::new, blackhole);
+		benchLCA(LCADynamic.newBuilder().setOption("impl", "LCADynamicGabowLinear"), blackhole);
 	}
 
 	@Benchmark
 	public void GabowSimple(Blackhole blackhole) {
-		benchLCA(LCADynamicGabowSimple::new, blackhole);
+		benchLCA(LCADynamic.newBuilder().setOption("impl", "LCADynamicGabowSimple"), blackhole);
 	}
 
 	private static Collection<Op> generateRandOps(int n, int m, long seed) {

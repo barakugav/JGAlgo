@@ -36,7 +36,7 @@ import com.jgalgo.LCADynamicGabowSimple.CharacteristicAncestors;
  *
  * @author Barak Ugav
  */
-public class LCADynamicGabowLinear implements LCADynamic {
+class LCADynamicGabowLinear implements LCADynamic {
 
 	/*
 	 * implementation note: in the original paper, Gabow stated to use look tables for the bit tricks (lsb, msb). It's
@@ -52,7 +52,7 @@ public class LCADynamicGabowLinear implements LCADynamic {
 	/**
 	 * Create a new dynamic LCA data structure that contains zero nodes.
 	 */
-	public LCADynamicGabowLinear() {
+	LCADynamicGabowLinear() {
 		lca0 = new LCADynamicGabowSimple();
 	}
 

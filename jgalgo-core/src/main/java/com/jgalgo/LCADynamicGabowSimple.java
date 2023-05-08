@@ -34,7 +34,7 @@ import java.util.Arrays;
  *
  * @author Barak Ugav
  */
-public class LCADynamicGabowSimple implements LCADynamic {
+class LCADynamicGabowSimple implements LCADynamic {
 
 	private int nodesNum;
 
@@ -49,7 +49,7 @@ public class LCADynamicGabowSimple implements LCADynamic {
 	/**
 	 * Create a new dynamic LCA data structure that contains zero nodes.
 	 */
-	public LCADynamicGabowSimple() {
+	LCADynamicGabowSimple() {
 		nodesNum = 0;
 	}
 

@@ -119,7 +119,31 @@ public interface LCADynamic {
 	 * @return a new builder that can build {@link LCADynamic} objects
 	 */
 	static LCADynamic.Builder newBuilder() {
-		return LCADynamicGabowLinear::new;
+		return new LCADynamic.Builder() {
+			String impl;
+
+			@Override
+			public LCADynamic build() {
+				if (impl != null) {
+					if (LCADynamicGabowLinear.class.getSimpleName().equals(impl))
+						return new LCADynamicGabowLinear();
+					if (LCADynamicGabowSimple.class.getSimpleName().equals(impl))
+						return new LCADynamicGabowSimple();
+					throw new IllegalArgumentException("unknown 'impl' value: " + impl);
+				}
+				return new LCADynamicGabowLinear();
+			}
+
+			@Override
+			public LCADynamic.Builder setOption(String key, Object value) {
+				if ("impl".equals(key)) {
+					impl = value instanceof String ? (String) value : null;
+				} else {
+					throw new IllegalArgumentException("unknown option key: " + key);
+				}
+				return this;
+			}
+		};
 	}
 
 	/**
