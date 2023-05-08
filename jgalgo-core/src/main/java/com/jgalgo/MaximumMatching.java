@@ -94,7 +94,7 @@ public interface MaximumMatching {
 							: new MaximumMatchingCardinalityGabow1976();
 				} else {
 					return isBipartite ? new MaximumMatchingWeightedBipartiteHungarianMethod()
-							: new MaximumMatchingWeightedGabow1990();
+							: new MaximumMatchingWeightedGabow1990Simpler();
 				}
 			}
 
