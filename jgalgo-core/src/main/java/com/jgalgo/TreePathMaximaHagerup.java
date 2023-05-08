@@ -38,7 +38,7 @@ import it.unimi.dsi.fastutil.objects.ObjectIntPair;
  *
  * @author Barak Ugav
  */
-public class TreePathMaximaHagerup implements TreePathMaxima {
+class TreePathMaximaHagerup implements TreePathMaxima {
 
 	private boolean useBitsLookupTables = false;
 
@@ -47,7 +47,7 @@ public class TreePathMaximaHagerup implements TreePathMaxima {
 	/**
 	 * Create a new TPM object.
 	 */
-	public TreePathMaximaHagerup() {}
+	TreePathMaximaHagerup() {}
 
 	/**
 	 * Enable/disable the use of bits lookup tables.
@@ -63,7 +63,7 @@ public class TreePathMaximaHagerup implements TreePathMaxima {
 	 * @param enable if {@code true} bits lookup table will be constructed and used, else methods from {@link Integer}
 	 *                   will be used.
 	 */
-	public void setBitsLookupTablesEnable(boolean enable) {
+	void setBitsLookupTablesEnable(boolean enable) {
 		useBitsLookupTables = enable;
 	}
 

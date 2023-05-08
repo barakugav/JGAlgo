@@ -113,7 +113,7 @@ public interface MaximumMatching {
 			@Override
 			public MaximumMatching.Builder setOption(String key, Object value) {
 				if ("impl".equals(key)) {
-					impl = value instanceof String ? (String) value : null;
+					impl = (String) value;
 				} else {
 					throw new IllegalArgumentException("unknown option key: " + key);
 				}

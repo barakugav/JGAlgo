@@ -22,8 +22,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Supplier;
-
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -37,11 +35,9 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
-
 import com.jgalgo.EdgeWeightFunc;
 import com.jgalgo.Graph;
 import com.jgalgo.TreePathMaxima;
-import com.jgalgo.TreePathMaximaHagerup;
 import com.jgalgo.bench.TestUtils.SeedGenerator;
 
 @BenchmarkMode(Mode.AverageTime)
@@ -76,29 +72,21 @@ public class TreePathMaximaBench {
 		}
 	}
 
-	private void benchTPM(Supplier<? extends TreePathMaxima> builder, Blackhole blackhole) {
+	private void benchTPM(TreePathMaxima.Builder builder, Blackhole blackhole) {
 		TPMArgs g = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
-		TreePathMaxima algo = builder.get();
+		TreePathMaxima algo = builder.build();
 		TreePathMaxima.Result result = algo.computeHeaviestEdgeInTreePaths(g.tree, g.w, g.queries);
 		blackhole.consume(result);
 	}
 
 	@Benchmark
 	public void TPMHagerup(Blackhole blackhole) {
-		benchTPM(() -> {
-			TreePathMaximaHagerup algo = new TreePathMaximaHagerup();
-			algo.setBitsLookupTablesEnable(false);
-			return algo;
-		}, blackhole);
+		benchTPM(TreePathMaxima.newBuilder().setOption("bitsLookupTablesEnable", Boolean.FALSE), blackhole);
 	}
 
 	@Benchmark
 	public void TPMHagerupWithBitsLookupTable(Blackhole blackhole) {
-		benchTPM(() -> {
-			TreePathMaximaHagerup algo = new TreePathMaximaHagerup();
-			algo.setBitsLookupTablesEnable(true);
-			return algo;
-		}, blackhole);
+		benchTPM(TreePathMaxima.newBuilder().setOption("bitsLookupTablesEnable", Boolean.TRUE), blackhole);
 	}
 
 	private static class TPMArgs {

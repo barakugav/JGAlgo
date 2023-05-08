@@ -152,7 +152,28 @@ public interface TreePathMaxima {
 	 * @return a new builder that can build {@link TreePathMaxima} objects
 	 */
 	static TreePathMaxima.Builder newBuilder() {
-		return TreePathMaximaHagerup::new;
+		return new TreePathMaxima.Builder() {
+
+			boolean bitsLookupTablesEnable;
+
+			@Override
+			public TreePathMaxima build() {
+				TreePathMaximaHagerup tpm = new TreePathMaximaHagerup();
+				tpm.setBitsLookupTablesEnable(bitsLookupTablesEnable);
+				return tpm;
+			}
+
+			@Override
+			public TreePathMaxima.Builder setOption(String key, Object value) {
+				if ("bitsLookupTablesEnable".equals(key)) {
+					bitsLookupTablesEnable = ((Boolean) value).booleanValue();
+				} else {
+					throw new IllegalArgumentException("unknown option key: " + key);
+				}
+				return this;
+			}
+
+		};
 	}
 
 	/**

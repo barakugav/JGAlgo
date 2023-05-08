@@ -250,7 +250,7 @@ public interface HeapReferenceable<K, V> extends Collection<HeapReference<K, V>>
 			@Override
 			public HeapReferenceable.Builder setOption(String key, Object value) {
 				if ("impl".equals(key)) {
-					impl = value instanceof String ? (String) value : null;
+					impl = (String) value;
 				} else {
 					throw new IllegalArgumentException("unknown option key: " + key);
 				}
