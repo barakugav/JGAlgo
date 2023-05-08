@@ -96,7 +96,32 @@ public interface UnionFind {
 	 * @return a new builder that can build {@link UnionFind} objects
 	 */
 	static UnionFind.Builder newBuilder() {
-		return UnionFindArray::new;
+		return new UnionFind.Builder() {
+			String impl;
+
+			@Override
+			public UnionFind build(int n) {
+				if (impl != null) {
+					if (UnionFindArray.class.getSimpleName().equals(impl))
+						return new UnionFindArray(n);
+					if (UnionFindPtr.class.getSimpleName().equals(impl))
+						return new UnionFindPtr(n);
+					throw new IllegalArgumentException("unknown 'impl' value: " + impl);
+				}
+				return new UnionFindArray(n);
+
+			}
+
+			@Override
+			public UnionFind.Builder setOption(String key, Object value) {
+				if ("impl".equals(key)) {
+					impl = value instanceof String ? (String) value : null;
+				} else {
+					throw new IllegalArgumentException("unknown option key: " + key);
+				}
+				return this;
+			}
+		};
 	}
 
 	/**
@@ -108,11 +133,20 @@ public interface UnionFind {
 	static interface Builder extends BuilderAbstract<UnionFind.Builder> {
 
 		/**
-		 * Create a new union-find data structure
+		 * Create a new empty union-find data structure
 		 *
-		 * @return a new union-find data structure
+		 * @return a new empty union-find data structure
 		 */
-		UnionFind build();
+		default UnionFind build() {
+			return build(0);
+		}
+
+		/**
+		 * Create a new union-find data structure with {@code n} elements
+		 *
+		 * @return a new empty union-find data structure with initial elements {@code 0,1,2,...,n-1}
+		 */
+		UnionFind build(int n);
 	}
 
 }

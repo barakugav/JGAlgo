@@ -31,7 +31,7 @@ import java.util.Arrays;
  *
  * @author Barak Ugav
  */
-public class UnionFindArray implements UnionFind {
+class UnionFindArray implements UnionFind {
 
 	int[] parent;
 	byte[] rank;
@@ -42,7 +42,7 @@ public class UnionFindArray implements UnionFind {
 	/**
 	 * Create an empty Union Find data structure with no elements.
 	 */
-	public UnionFindArray() {
+	UnionFindArray() {
 		this(0);
 	}
 
@@ -52,7 +52,7 @@ public class UnionFindArray implements UnionFind {
 	 *
 	 * @param n the number of initial elements in the data structure
 	 */
-	public UnionFindArray(int n) {
+	UnionFindArray(int n) {
 		int arrSize = n == 0 ? 2 : n;
 		parent = new int[arrSize];
 		rank = new byte[arrSize];

@@ -31,7 +31,7 @@ import java.util.Arrays;
  * @see    UnionFindArray
  * @author Barak Ugav
  */
-public class UnionFindPtr implements UnionFind {
+class UnionFindPtr implements UnionFind {
 
 	private Elm[] elements;
 	private int size;
@@ -39,7 +39,7 @@ public class UnionFindPtr implements UnionFind {
 	/**
 	 * Create an empty Union Find data structure with no elements.
 	 */
-	public UnionFindPtr() {
+	UnionFindPtr() {
 		this(0);
 	}
 
@@ -49,7 +49,7 @@ public class UnionFindPtr implements UnionFind {
 	 *
 	 * @param n the number of initial elements in the data structure
 	 */
-	public UnionFindPtr(int n) {
+	UnionFindPtr(int n) {
 		elements = new Elm[n == 0 ? 2 : n];
 		for (int i = 0; i < n; i++)
 			elements[i] = new Elm(i);

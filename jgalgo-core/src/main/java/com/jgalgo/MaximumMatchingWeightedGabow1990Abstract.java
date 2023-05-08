@@ -256,7 +256,7 @@ abstract class MaximumMatchingWeightedGabow1990Abstract implements MaximumMatchi
 		final Blossom[] findToBlossoms;
 
 		Evens(int n) {
-			uf = new UnionFindArray(n);
+			uf = UnionFind.newBuilder().build(n);
 			findToBlossoms = new Blossom[n];
 		}
 

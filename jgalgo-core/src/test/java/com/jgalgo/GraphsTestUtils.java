@@ -148,7 +148,7 @@ public class GraphsTestUtils extends TestUtils {
 			}
 
 			Set<IntList> existingEdges = new HashSet<>();
-			UnionFind uf = new UnionFindArray(n);
+			UnionFind uf = UnionFind.newBuilder().build(n);
 			int componentsNum = n;
 			Random rand = new Random(seedGen.nextSeed());
 			BitSet reachableFromRoot = new BitSet(n);

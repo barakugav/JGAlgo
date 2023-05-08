@@ -153,7 +153,7 @@ public class MDSTTarjan implements MDST {
 		int n = g.vertices().size();
 		int VMaxNum = n * 2; // max super vertex number
 
-		UnionFindValue uf = new UnionFindValueArray(n);
+		UnionFindValue uf = UnionFindValue.newBuilder().build(n);
 		int[] ufIdxToV = new int[VMaxNum];
 		for (int v = 0; v < n; v++)
 			ufIdxToV[v] = v;

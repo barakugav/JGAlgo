@@ -64,7 +64,7 @@ class MaximumMatchingCardinalityGabow1976 implements MaximumMatchingCardinality 
 		int blossomBaseSearchNotesIndex = 0;
 		int[] blossomVertices = new int[n];
 
-		UnionFind uf = new UnionFindArray();
+		UnionFind uf = UnionFind.newBuilder().build();
 		int[] bases = new int[n];
 
 		for (;;) {

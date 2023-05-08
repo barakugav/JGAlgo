@@ -25,7 +25,6 @@ import com.jgalgo.Graph;
 import com.jgalgo.GraphArrayDirected;
 import com.jgalgo.GraphArrayUndirected;
 import com.jgalgo.UnionFind;
-import com.jgalgo.UnionFindArray;
 import com.jgalgo.Weights;
 import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -146,7 +145,7 @@ class GraphsTestUtils extends TestUtils {
 			}
 
 			Set<IntList> existingEdges = new HashSet<>();
-			UnionFind uf = new UnionFindArray(n);
+			UnionFind uf = UnionFind.newBuilder().build(n);
 			int componentsNum = n;
 			Random rand = new Random(seedGen.nextSeed());
 			BitSet reachableFromRoot = new BitSet(n);

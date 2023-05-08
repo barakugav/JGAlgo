@@ -21,8 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.IntFunction;
-
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -36,14 +34,10 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
-
 import com.jgalgo.EdgeWeightFunc;
 import com.jgalgo.Graph;
 import com.jgalgo.UnionFind;
-import com.jgalgo.UnionFindArray;
-import com.jgalgo.UnionFindPtr;
 import com.jgalgo.bench.TestUtils.SeedGenerator;
-
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 
@@ -95,18 +89,18 @@ public class UnionFindBench {
 		}
 	}
 
-	private void benchUnionFindByRunningMSTKruskal(IntFunction<? extends UnionFind> builder, Blackhole blackhole) {
+	private void benchUnionFindByRunningMSTKruskal(UnionFind.Builder builder, Blackhole blackhole) {
 		Pair<Graph, int[]> graph = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 		int[] mst = calcMSTKruskal(graph.first(), graph.second(), builder);
 		blackhole.consume(mst);
 	}
 
-	private static int[] calcMSTKruskal(Graph g, int[] edges, IntFunction<? extends UnionFind> ufBuilder) {
+	private static int[] calcMSTKruskal(Graph g, int[] edges, UnionFind.Builder ufBuilder) {
 		/* !! assume the edge array is sorted by weight !! */
 		int n = g.vertices().size();
 
 		/* create union find data structure for each vertex */
-		UnionFind uf = ufBuilder.apply(n);
+		UnionFind uf = ufBuilder.build(n);
 
 		/* iterate over the edges and build the MST */
 		int[] mst = new int[n - 1];
@@ -126,12 +120,12 @@ public class UnionFindBench {
 
 	@Benchmark
 	public void UnionFindArrayMSTKruskal(Blackhole blackhole) {
-		benchUnionFindByRunningMSTKruskal(UnionFindArray::new, blackhole);
+		benchUnionFindByRunningMSTKruskal(UnionFind.newBuilder().setOption("impl", "UnionFindArray"), blackhole);
 	}
 
 	@Benchmark
 	public void UnionFindPtrMSTKruskal(Blackhole blackhole) {
-		benchUnionFindByRunningMSTKruskal(UnionFindPtr::new, blackhole);
+		benchUnionFindByRunningMSTKruskal(UnionFind.newBuilder().setOption("impl", "UnionFindPtr"), blackhole);
 	}
 
 }

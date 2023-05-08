@@ -63,7 +63,7 @@ public class SubtreeMergeFindMinImpl<E> implements SubtreeMergeFindMin<E> {
 	public SubtreeMergeFindMinImpl(Comparator<? super E> weightCmp, HeapReferenceable.Builder<?, ?> heapBuilder) {
 		nodes = new NodeImpl[2];
 
-		uf = new UnionFindArray();
+		uf = UnionFind.newBuilder().build();
 		lca = new LCADynamicGabowLinear();
 
 		this.weightCmp = weightCmp != null ? weightCmp : Utils.getDefaultComparator();

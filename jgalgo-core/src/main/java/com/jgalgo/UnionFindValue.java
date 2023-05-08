@@ -99,14 +99,21 @@ public interface UnionFindValue extends UnionFind {
 	 * @see    UnionFindValue#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder extends BuilderAbstract<UnionFindValue.Builder> {
+	static interface Builder extends UnionFind.Builder {
 
-		/**
-		 * Create a new union-find with values data structure
-		 *
-		 * @return a new union-find with values data structure
-		 */
-		UnionFindValue build();
+		@Override
+		default UnionFindValue build() {
+			return build(0);
+		}
+
+		@Override
+		UnionFindValue build(int n);
+
+		@Override
+		default UnionFindValue.Builder setOption(String key, Object value) {
+			UnionFind.Builder.super.setOption(key, value);
+			return this;
+		}
 	}
 
 }

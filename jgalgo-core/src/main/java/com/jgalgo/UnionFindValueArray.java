@@ -30,14 +30,14 @@ import java.util.Arrays;
  *
  * @author Barak Ugav
  */
-public class UnionFindValueArray extends UnionFindArray implements UnionFindValue {
+class UnionFindValueArray extends UnionFindArray implements UnionFindValue {
 
 	private double[] deltas;
 
 	/**
 	 * Create an empty Union Find data structure with no elements.
 	 */
-	public UnionFindValueArray() {
+	UnionFindValueArray() {
 		this(0);
 	}
 
@@ -47,7 +47,7 @@ public class UnionFindValueArray extends UnionFindArray implements UnionFindValu
 	 *
 	 * @param n the number of initial elements in the data structure
 	 */
-	public UnionFindValueArray(int n) {
+	UnionFindValueArray(int n) {
 		super(n);
 		int arrSize = n == 0 ? 2 : n;
 		deltas = new double[arrSize];

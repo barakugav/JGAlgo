@@ -84,7 +84,7 @@ public class SubtreeMergeFindminTest extends TestBase {
 		ops = ops2;
 
 		List<SubtreeMergeFindMin.Node> nodes = new ArrayList<>();
-		UnionFind uf = new UnionFindArray();
+		UnionFind uf = UnionFind.newBuilder().build();
 		List<int[]>[] subtreeEdges = new List[n];
 		int[] edgeInsertWeights = randPermutation(ops.length, seedGen.nextSeed());
 		int edgeInsertWeightsIdx = 0;
