@@ -46,7 +46,7 @@ package com.jgalgo;
  *
  * @author Barak Ugav
  */
-public interface UnionFindValue extends UnionFind {
+interface UnionFindValue extends UnionFind {
 
 	/**
 	 * Create a new element with a given value.
@@ -54,7 +54,7 @@ public interface UnionFindValue extends UnionFind {
 	 * @param  value the value of the new element
 	 * @return       identifier of the new element in the union find data structure
 	 */
-	public int make(double value);
+	int make(double value);
 
 	/**
 	 * {@inheritDoc}
@@ -72,7 +72,7 @@ public interface UnionFindValue extends UnionFind {
 	 * @param  x an element in the data structure
 	 * @return   value of the element
 	 */
-	public double getValue(int x);
+	double getValue(int x);
 
 	/**
 	 * Add value to ALL elements in the set of a given element.
@@ -80,7 +80,7 @@ public interface UnionFindValue extends UnionFind {
 	 * @param x     an element in the data structure
 	 * @param value value to add to all elements of the set of {@code x}
 	 */
-	public void addValue(int x, double value);
+	void addValue(int x, double value);
 
 	/**
 	 * Create a new union-find with values data structure builder.

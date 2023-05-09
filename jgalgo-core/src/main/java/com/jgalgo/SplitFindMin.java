@@ -32,7 +32,7 @@ import com.jgalgo.Utils.NullList;
  * @param  <K> the keys type
  * @author     Barak Ugav
  */
-public interface SplitFindMin<K> extends SplitFind {
+interface SplitFindMin<K> extends SplitFind {
 
 	/**
 	 * Init the data structure with a sequence {@code [0, keys.size())} with the given keys.
@@ -42,7 +42,7 @@ public interface SplitFindMin<K> extends SplitFind {
 	 * @param comparator a comparator to compare the keys of the elements, if {@code null} the default comparator will
 	 *                       be used (Comparable interface)
 	 */
-	public void init(Collection<K> keys, Comparator<? super K> comparator);
+	void init(Collection<K> keys, Comparator<? super K> comparator);
 
 	@Override
 	default void init(int size) {
@@ -55,7 +55,7 @@ public interface SplitFindMin<K> extends SplitFind {
 	 * @param  x an element in the data structure
 	 * @return   the key associated with the element
 	 */
-	public K getKey(int x);
+	K getKey(int x);
 
 	/**
 	 * Find the element with the minimum key in the sequence of {@code x}
@@ -63,7 +63,7 @@ public interface SplitFindMin<K> extends SplitFind {
 	 * @param  x an element in the data structure
 	 * @return   the element with the minimum key in the sequence of {@code x}
 	 */
-	public int findMin(int x);
+	int findMin(int x);
 
 	/**
 	 * Decrease the key of an element.
@@ -72,7 +72,7 @@ public interface SplitFindMin<K> extends SplitFind {
 	 * @param  newKey new key for the element
 	 * @return        {@code true} if the decreased key is the minimum key in the element's sequence
 	 */
-	public boolean decreaseKey(int x, K newKey);
+	boolean decreaseKey(int x, K newKey);
 
 	/**
 	 * Create a new split-find-min data structure builder.

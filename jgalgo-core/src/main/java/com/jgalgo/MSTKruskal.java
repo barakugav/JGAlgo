@@ -56,7 +56,7 @@ public class MSTKruskal implements MST {
 	 * @param builder a builder function that accept a number of elements \(n\) and create a {@link UnionFind} with IDs
 	 *                    {@code 0,1,2,...,n-1}.
 	 */
-	public void experimental_setUnionFindBuilder(IntFunction<? extends UnionFind> builder) {
+	void setUnionFindBuilder(IntFunction<? extends UnionFind> builder) {
 		unionFindBuilder = Objects.requireNonNull(builder);
 		uf = null;
 	}

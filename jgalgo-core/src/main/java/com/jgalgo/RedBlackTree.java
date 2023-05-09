@@ -523,7 +523,7 @@ class RedBlackTree<K, V> extends BinarySearchTreeAbstract<K, V> {
 	 * @return     an iterator that iterate over all the nodes in the node's sub tree
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public Iterator<HeapReference<K, V>> experimental_subTreeIterator(HeapReference<K, V> ref) {
+	Iterator<HeapReference<K, V>> subTreeIterator(HeapReference<K, V> ref) {
 		return (Iterator) (new BinarySearchTrees.BSTIterator<>((Node<K, V>) ref));
 	}
 

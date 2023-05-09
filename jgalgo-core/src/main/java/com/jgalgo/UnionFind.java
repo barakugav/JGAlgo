@@ -46,14 +46,14 @@ package com.jgalgo;
  * @see    <a href= "https://en.wikipedia.org/wiki/Disjoint-set_data_structure">Wikipedia</a>
  * @author Barak Ugav
  */
-public interface UnionFind {
+interface UnionFind {
 
 	/**
 	 * Create a new element in a singleton set.
 	 *
 	 * @return identifier of the new element
 	 */
-	public int make();
+	int make();
 
 	/**
 	 * Find the set of an element and get an arbitrary element from it.
@@ -63,7 +63,7 @@ public interface UnionFind {
 	 * @param  x element in the data structure
 	 * @return   arbitrary element from the set of x
 	 */
-	public int find(int x);
+	int find(int x);
 
 	/**
 	 * Union the two sets of {@code a} and {@code b}.
@@ -72,21 +72,21 @@ public interface UnionFind {
 	 * @param  b the second element
 	 * @return   arbitrary element from the union of sets of {@code a} and {@code b}.
 	 */
-	public int union(int a, int b);
+	int union(int a, int b);
 
 	/**
 	 * Get the number of elements in all the sets in the union find data structure.
 	 *
 	 * @return number of elements in the data structure
 	 */
-	public int size();
+	int size();
 
 	/**
 	 * Clear the data structure by removing all elements from all sets.
 	 * <p>
 	 * This method can be used to reuse allocated memory of the data structure.
 	 */
-	public void clear();
+	void clear();
 
 	/**
 	 * Create a new union-find data structure builder.

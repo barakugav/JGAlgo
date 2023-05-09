@@ -44,7 +44,7 @@ public class RedBlackTreeExtendedTest extends TestBase {
 				int expectedSize = 0;
 
 				for (@SuppressWarnings("unused")
-				HeapReference<Integer, Void> descendant : Utils.iterable(tree.experimental_subTreeIterator(node)))
+				HeapReference<Integer, Void> descendant : Utils.iterable(tree.subTreeIterator(node)))
 					expectedSize++;
 
 				int actualSize = sizeExt.getSubTreeSize(node);
@@ -70,7 +70,7 @@ public class RedBlackTreeExtendedTest extends TestBase {
 
 			for (HeapReference<Integer, Void> node : tree) {
 				int expectedMin = Integer.MAX_VALUE;
-				for (HeapReference<Integer, Void> descendant : Utils.iterable(tree.experimental_subTreeIterator(node)))
+				for (HeapReference<Integer, Void> descendant : Utils.iterable(tree.subTreeIterator(node)))
 					expectedMin = Math.min(expectedMin, descendant.key());
 
 				int actualMin = minExt.getSubTreeMin(node).key();
@@ -95,7 +95,7 @@ public class RedBlackTreeExtendedTest extends TestBase {
 			HeapReferenceableTestUtils.testHeap(tree, n, m, TestMode.Normal, false, compare, seedGen.nextSeed());
 			for (HeapReference<Integer, Void> node : tree) {
 				int expectedMax = Integer.MIN_VALUE;
-				for (HeapReference<Integer, Void> descendant : Utils.iterable(tree.experimental_subTreeIterator(node)))
+				for (HeapReference<Integer, Void> descendant : Utils.iterable(tree.subTreeIterator(node)))
 					expectedMax = Math.max(expectedMax, descendant.key());
 
 				int actualMax = maxExt.getSubTreeMax(node).key();
