@@ -18,9 +18,6 @@ package com.jgalgo;
 
 import java.util.Objects;
 
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-
 /**
  * Static RMQ for sequences for which the different between any pair of consecutive elements is \(\pm 1\).
  * <p>
@@ -55,29 +52,25 @@ class RMQStaticPlusMinusOne extends RMQStaticLinearAbstract {
 
 	private class DS extends RMQStaticLinearAbstract.DS {
 
-		private RMQStatic.DataStructure[] interBlocksDs;
-
 		DS(RMQStaticComparator c, int n) {
-			interBlocksDs = new RMQStatic.DataStructure[calcBlockNum(n, getBlockSize(n))];
-			preProcessRMQOuterBlocks(c, n);
-			preProcessRMQInnerBlocks();
+			super(c, n);
 		}
 
-		private void preProcessRMQInnerBlocks() {
-			RMQStatic innerRMQ = new RMQStaticLookupTable();
-			Int2ObjectMap<RMQStatic.DataStructure> tables = new Int2ObjectOpenHashMap<>();
-
-			for (int b = 0; b < blockNum; b++) {
-				int key = calcBlockKey(b);
-
-				interBlocksDs[b] = tables.computeIfAbsent(key, k -> {
-					int[] demoBlock = calcDemoBlock(k);
-					return innerRMQ.preProcessSequence(RMQStaticComparator.ofIntArray(demoBlock), demoBlock.length);
-				});
-			}
+		@Override
+		byte getBlockSize(int n) {
+			int s = n <= 1 ? 1 : (int) Math.ceil(Utils.log2((double) n) * 2 / 3);
+			/* choose block size of at least 4, as the 2^(5-1) is 16 (small) */
+			return (byte) Math.min(Math.max(s, 5), n);
 		}
 
-		private int calcBlockKey(int b) {
+		@Override
+		int getBlockKeySize() {
+			return blockSize - 1;
+		}
+
+		@Override
+		int calcBlockKey(int b) {
+			RMQStaticComparator c = b < blockNum - 1 ? cmpOrig : cmpPadded;
 			int key = 0;
 
 			int base = b * blockSize;
@@ -90,19 +83,15 @@ class RMQStaticPlusMinusOne extends RMQStaticLinearAbstract {
 			return key;
 		}
 
-		private int[] calcDemoBlock(int key) {
-			int[] demoBlock = new int[blockSize];
+		@Override
+		byte[] calcDemoBlock(int key) {
+			byte[] demoBlock = new byte[blockSize];
 
 			demoBlock[0] = 0;
 			for (int i = 1; i < demoBlock.length; i++)
-				demoBlock[i] = demoBlock[i - 1] + ((key & (1 << (i - 1))) != 0 ? -1 : 1);
+				demoBlock[i] = (byte) (demoBlock[i - 1] + ((key & (1 << (i - 1))) != 0 ? -1 : 1));
 
 			return demoBlock;
-		}
-
-		@Override
-		int getBlockSize(int n) {
-			return n <= 1 ? 1 : (int) Math.ceil(Utils.log2((double) n) / 2);
 		}
 
 		@Override

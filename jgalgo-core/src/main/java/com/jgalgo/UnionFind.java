@@ -144,7 +144,8 @@ public interface UnionFind {
 		/**
 		 * Create a new union-find data structure with {@code n} elements
 		 *
-		 * @return a new empty union-find data structure with initial elements {@code 0,1,2,...,n-1}
+		 * @param  n the initial number of elements
+		 * @return   a new empty union-find data structure with initial elements {@code 0,1,2,...,n-1}
 		 */
 		UnionFind build(int n);
 	}

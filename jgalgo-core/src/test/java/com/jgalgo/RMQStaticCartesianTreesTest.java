@@ -30,7 +30,7 @@ public class RMQStaticCartesianTreesTest extends TestBase {
 	public void testRegularNRange64to256() {
 		final long seed = 0xf9013e7f87cc151bL;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		for (int n = 64; n <= 256; n++)
+		for (int n = 1; n <= 256; n++)
 			RMQStaticUtils.testRMQ(new RMQStaticCartesianTrees(), n, 1024, seedGen.nextSeed());
 	}
 

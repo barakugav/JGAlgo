@@ -43,7 +43,6 @@ class RMQStaticPowerOf2Table implements RMQStatic {
 			return new DSu08(c, (byte) n);
 		if (n <= DSu16.LIMIT)
 			return new DSu16(c, (short) n);
-		assert n <= DSu32.LIMIT;
 		return new DSu32(c, n);
 	}
 
@@ -51,7 +50,6 @@ class RMQStaticPowerOf2Table implements RMQStatic {
 		private final int n;
 		private final int[][] arr;
 		private final RMQStaticComparator c;
-		private static final int LIMIT = (1 << (Integer.SIZE - 1)) - 1;
 
 		DSu32(RMQStaticComparator c, int n) {
 			this.n = n;

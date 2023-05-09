@@ -74,6 +74,17 @@ public interface RMQStaticComparator {
 	}
 
 	/**
+	 * Create an RMQ comparator from an {@code byte} array.
+	 *
+	 * @param  arr an array
+	 * @return     an RMQ comparator that will compare elements in the array using {@code Byte.compare()}.
+	 */
+	public static RMQStaticComparator ofByteArray(byte[] arr) {
+		Objects.requireNonNull(arr);
+		return (i, j) -> Byte.compare(arr[i], arr[j]);
+	}
+
+	/**
 	 * Create an RMQ comparator from an {@code int} array.
 	 *
 	 * @param  arr an array

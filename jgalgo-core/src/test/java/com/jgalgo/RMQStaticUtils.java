@@ -69,7 +69,7 @@ class RMQStaticUtils extends TestUtils {
 		Random rand = new Random(seed);
 		for (int q = 0; q < queries.length;) {
 			int i = rand.nextInt(a.length);
-			if (i % blockSize == blockSize - 1)
+			if (i % blockSize == blockSize - 1 && a.length != blockSize)
 				continue;
 			int blockBase = (i / blockSize) * blockSize;
 			int blockEnd = blockBase + blockSize;

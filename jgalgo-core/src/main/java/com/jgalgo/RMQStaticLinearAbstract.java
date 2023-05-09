@@ -16,6 +16,13 @@
 
 package com.jgalgo;
 
+import it.unimi.dsi.fastutil.bytes.Byte2ObjectMap;
+import it.unimi.dsi.fastutil.bytes.Byte2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.shorts.Short2ObjectMap;
+import it.unimi.dsi.fastutil.shorts.Short2ObjectOpenHashMap;
+
 abstract class RMQStaticLinearAbstract implements RMQStatic {
 
 	/*
@@ -37,52 +44,99 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 
 	abstract class DS implements RMQStatic.DataStructure {
 
-		int n;
-		int blockSize;
-		int blockNum;
-		RMQStaticComparator c;
+		final RMQStaticComparator cmpOrig;
+		final RMQStaticComparator cmpPadded;
+		final int n;
+		final byte blockSize;
+		final int blockNum;
 
-		private int[][] blocksRightMinimum;
-		private int[][] blocksLeftMinimum;
-		private RMQStatic.DataStructure xlogxTableDS;
+		private final byte[][] blocksRightMinimum;
+		private final byte[][] blocksLeftMinimum;
+		private final RMQStatic.DataStructure xlogxTableDS;
 
-		void preProcessRMQOuterBlocks(RMQStaticComparator c, int n) {
-			blockSize = getBlockSize(n);
-			blockNum = calcBlockNum(n, blockSize);
+		final RMQStatic.DataStructure[] interBlocksDs;
 
+		DS(RMQStaticComparator c, int n) {
 			this.n = n;
-			this.c = c = n < blockNum * blockSize ? new PadderComparator(n, c) : c;
-
-			blocksRightMinimum = new int[blockNum][blockSize - 1];
-			blocksLeftMinimum = new int[blockNum][blockSize - 1];
+			blockSize = getBlockSize(n);
+			blockNum = (int) Math.ceil((double) n / blockSize);
+			this.cmpOrig = c;
+			this.cmpPadded = n < blockNum * blockSize ? new PaddedComparator(n, c) : c;
+			blocksRightMinimum = new byte[blockNum][blockSize - 1];
+			blocksLeftMinimum = new byte[blockNum][blockSize - 1];
 
 			for (int b = 0; b < blockNum; b++) {
+				c = b < blockNum - 1 ? cmpOrig : cmpPadded;
 				int base = b * blockSize;
 
-				int min = 0;
-				for (int i = 0; i < blockSize - 1; i++) {
+				byte min = 0;
+				for (byte i = 0; i < blockSize - 1; i++) {
 					if (c.compare(base + i + 1, base + min) < 0)
-						min = i + 1;
-					blocksLeftMinimum[b][i] = base + min;
+						min = (byte) (i + 1);
+					blocksLeftMinimum[b][i] = min;
 				}
 
-				min = blockSize - 1;
-				for (int i = blockSize - 2; i >= 0; i--) {
+				min = (byte) (blockSize - 1);
+				for (byte i = (byte) (blockSize - 2); i >= 0; i--) {
 					if (c.compare(base + i, base + min) < 0)
 						min = i;
-					blocksRightMinimum[b][i] = base + min;
+					blocksRightMinimum[b][i] = min;
 				}
 			}
 
-			xlogxTableDS = xlogxTable.preProcessSequence(
-					(i, j) -> this.c.compare(blocksRightMinimum[i][0], blocksRightMinimum[j][0]), blockNum);
+			xlogxTableDS =
+					xlogxTable.preProcessSequence((i, j) -> cmpOrig.compare(i * blockSize + blocksRightMinimum[i][0],
+							j * blockSize + blocksRightMinimum[j][0]), blockNum);
+
+			interBlocksDs = new RMQStatic.DataStructure[blockNum];
+
+			RMQStatic innerRMQ = new RMQStaticPowerOf2Table();
+			int keySize = getBlockKeySize();
+			if (keySize < Byte.SIZE) {
+				Byte2ObjectMap<RMQStatic.DataStructure> tables = new Byte2ObjectOpenHashMap<>();
+				for (int b = 0; b < blockNum; b++) {
+					byte key = (byte) calcBlockKey(b);
+
+					interBlocksDs[b] = tables.computeIfAbsent(key, k -> {
+						byte[] demoBlock = calcDemoBlock(k & 0xff);
+						return innerRMQ.preProcessSequence(RMQStaticComparator.ofByteArray(demoBlock),
+								demoBlock.length);
+					});
+				}
+
+			} else if (keySize < Short.SIZE) {
+				Short2ObjectMap<RMQStatic.DataStructure> tables = new Short2ObjectOpenHashMap<>();
+				for (int b = 0; b < blockNum; b++) {
+					short key = (short) calcBlockKey(b);
+
+					interBlocksDs[b] = tables.computeIfAbsent(key, k -> {
+						byte[] demoBlock = calcDemoBlock(k & 0xffff);
+						return innerRMQ.preProcessSequence(RMQStaticComparator.ofByteArray(demoBlock),
+								demoBlock.length);
+					});
+				}
+
+			} else {
+				Int2ObjectMap<RMQStatic.DataStructure> tables = new Int2ObjectOpenHashMap<>();
+				for (int b = 0; b < blockNum; b++) {
+					int key = calcBlockKey(b);
+
+					interBlocksDs[b] = tables.computeIfAbsent(key, k -> {
+						byte[] demoBlock = calcDemoBlock(k);
+						return innerRMQ.preProcessSequence(RMQStaticComparator.ofByteArray(demoBlock),
+								demoBlock.length);
+					});
+				}
+			}
 		}
 
-		abstract int getBlockSize(int n);
+		abstract byte getBlockSize(int n);
 
-		int calcBlockNum(int n, int blockSize) {
-			return (int) Math.ceil((double) n / blockSize);
-		}
+		abstract int getBlockKeySize();
+
+		abstract int calcBlockKey(int b);
+
+		abstract byte[] calcDemoBlock(int key);
 
 		@Override
 		public int findMinimumInRange(int i, int j) {
@@ -97,14 +151,14 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 			int innerJ = j % blockSize;
 
 			if (blk0 != blk1) {
-				int blk0min = innerI == blockSize - 1 ? blk0 * blockSize + innerI : blocksRightMinimum[blk0][innerI];
-				int blk1min = innerJ == 0 ? blk1 * blockSize + innerJ : blocksLeftMinimum[blk1][innerJ - 1];
-				int min = c.compare(blk0min, blk1min) < 0 ? blk0min : blk1min;
+				int blk0min = blk0 * blockSize + (innerI == blockSize - 1 ? innerI : blocksRightMinimum[blk0][innerI]);
+				int blk1min = blk1 * blockSize + (innerJ == 0 ? innerJ : blocksLeftMinimum[blk1][innerJ - 1]);
+				int min = cmpOrig.compare(blk0min, blk1min) < 0 ? blk0min : blk1min;
 
 				if (blk0 + 1 != blk1) {
 					int middleBlk = xlogxTableDS.findMinimumInRange(blk0 + 1, blk1 - 1);
-					int middleMin = blocksRightMinimum[middleBlk][0];
-					min = c.compare(min, middleMin) < 0 ? min : middleMin;
+					int middleMin = middleBlk * blockSize + blocksRightMinimum[middleBlk][0];
+					min = cmpOrig.compare(min, middleMin) < 0 ? min : middleMin;
 				}
 
 				return min;
@@ -116,19 +170,21 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 		abstract int calcRMQInnerBlock(int block, int i, int j);
 	}
 
-	private static class PadderComparator implements RMQStaticComparator {
+	private static class PaddedComparator implements RMQStaticComparator {
 
 		final int n;
 		final RMQStaticComparator c;
 
-		PadderComparator(int n, RMQStaticComparator c) {
+		PaddedComparator(int n, RMQStaticComparator c) {
 			this.n = n;
 			this.c = c;
 		}
 
 		@Override
 		public int compare(int i, int j) {
-			return i >= n ? i : c.compare(i, Math.min(j, n - 1));
+			if (i < n && j < n)
+				return c.compare(i, j);
+			return i >= n ? 1 : -1;
 		}
 
 	}

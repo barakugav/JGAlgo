@@ -18,9 +18,6 @@ package com.jgalgo;
 
 import java.util.Objects;
 
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-
 /**
  * Static RMQ which uses Cartesian trees answering a query in constant time and requiring linear preprocessing time.
  * <p>
@@ -54,29 +51,25 @@ class RMQStaticCartesianTrees extends RMQStaticLinearAbstract {
 
 	private class DS extends RMQStaticLinearAbstract.DS {
 
-		private RMQStatic.DataStructure[] interBlocksDs;
-
 		DS(RMQStaticComparator c, int n) {
-			interBlocksDs = new RMQStatic.DataStructure[calcBlockNum(n, getBlockSize(n))];
-			preProcessRMQOuterBlocks(c, n);
-			preProcessRMQInnerBlocks();
+			super(c, n);
 		}
 
-		private void preProcessRMQInnerBlocks() {
-			RMQStatic innerRMQ = new RMQStaticLookupTable();
-			Int2ObjectMap<RMQStatic.DataStructure> tables = new Int2ObjectOpenHashMap<>();
-
-			for (int b = 0; b < blockNum; b++) {
-				int key = calcBlockKey(b);
-
-				interBlocksDs[b] = tables.computeIfAbsent(key, k -> {
-					int[] demoBlock = calcDemoBlock(k, blockSize);
-					return innerRMQ.preProcessSequence(RMQStaticComparator.ofIntArray(demoBlock), demoBlock.length);
-				});
-			}
+		@Override
+		byte getBlockSize(int n) {
+			int s = (int) Math.ceil(Utils.log2((double) n) / 3);
+			/* choose block size of at least 4, as the Catalan number of 4 is 14 (small) */
+			return (byte) Math.min(Math.max(s, 4), n);
 		}
 
-		private int calcBlockKey(int b) {
+		@Override
+		int getBlockKeySize() {
+			return blockSize * 2;
+		}
+
+		@Override
+		int calcBlockKey(int b) {
+			RMQStaticComparator c = b < blockNum - 1 ? cmpOrig : cmpPadded;
 			int[] nodes = new int[blockSize];
 			int nodesCount = 0;
 
@@ -97,18 +90,19 @@ class RMQStaticCartesianTrees extends RMQStaticLinearAbstract {
 			return key;
 		}
 
-		private int[] calcDemoBlock(int key, int blockSize) {
-			int[] demoBlock = new int[blockSize];
+		@Override
+		byte[] calcDemoBlock(int key) {
+			byte[] demoBlock = new byte[blockSize];
 
-			int[] nodes = new int[blockSize];
+			byte[] nodes = new byte[blockSize];
 			int nodesCount = 0;
 
 			int keyIdx = 0;
 
 			for (int i = 0; i < demoBlock.length; i++) {
-				int x = nodesCount > 0 ? nodes[nodesCount - 1] + blockSize : 0;
+				byte x = (byte) (nodesCount > 0 ? nodes[nodesCount - 1] + blockSize : 0);
 				while ((key & (1 << keyIdx)) != 0) {
-					x = nodes[nodesCount-- - 1] - 1;
+					x = (byte) (nodes[nodesCount-- - 1] - 1);
 					keyIdx++;
 				}
 				nodes[nodesCount++] = x;
@@ -118,11 +112,6 @@ class RMQStaticCartesianTrees extends RMQStaticLinearAbstract {
 			}
 
 			return demoBlock;
-		}
-
-		@Override
-		int getBlockSize(int n) {
-			return (int) Math.ceil(Utils.log2((double) n) / 4);
 		}
 
 		@Override
