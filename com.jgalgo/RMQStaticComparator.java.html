@@ -74,14 +74,25 @@ public interface RMQStaticComparator {
 	}
 
 	/**
+	 * Create an RMQ comparator from an {@code byte} array.
+	 *
+	 * @param  arr an array
+	 * @return     an RMQ comparator that will compare elements in the array using {@code Byte.compare()}.
+	 */
+	public static RMQStaticComparator ofByteArray(byte[] arr) {
+<span class="fc" id="L83">		Objects.requireNonNull(arr);</span>
+<span class="fc" id="L84">		return (i, j) -&gt; Byte.compare(arr[i], arr[j]);</span>
+	}
+
+	/**
 	 * Create an RMQ comparator from an {@code int} array.
 	 *
 	 * @param  arr an array
 	 * @return     an RMQ comparator that will compare elements in the array using {@code Integer.compare()}.
 	 */
 	public static RMQStaticComparator ofIntArray(int[] arr) {
-<span class="fc" id="L83">		Objects.requireNonNull(arr);</span>
-<span class="fc" id="L84">		return (i, j) -&gt; Integer.compare(arr[i], arr[j]);</span>
+<span class="fc" id="L94">		Objects.requireNonNull(arr);</span>
+<span class="fc" id="L95">		return (i, j) -&gt; Integer.compare(arr[i], arr[j]);</span>
 	}
 
 }

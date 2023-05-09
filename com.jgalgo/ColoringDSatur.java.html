@@ -18,84 +18,118 @@ package com.jgalgo;
 
 import java.util.BitSet;
 
-import it.unimi.dsi.fastutil.ints.IntIterator;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
+import com.jgalgo.Utils.BiInt2IntFunction;
+
+import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 
 /**
- * The DSatur coloring algorithm.
+ * The DSatur coloring algorithm implemented.
  * &lt;p&gt;
  * The Saturation Degree (DSatur) coloring algorithm is a greedy algorithm, namely it examine the vertices in some order
  * and assign for each vertex the minimum (integer) color which is not used by its neighbors. It differ from other
  * greedy coloring algorithm by the order of the vertices: the next vertex to be colored is the vertex with the highest
  * number of colors in its neighborhood (called saturation degree).
  * &lt;p&gt;
- * The algorithm runs in time \(O(n m)\), and it could be implemented faster using a heap with {@code decreaseKey}
- * operation, see {@link ColoringDSaturHeap}.
+ * The algorithm runs in \(O(m \log n)\) time assuming the number of colors is constant.
  * &lt;p&gt;
  * Note that the result is an approximate for the minimum number of colors, as finding an optimal coloring is an NP-hard
  * problem.
  *
  * @see    &lt;a href=&quot;https://en.wikipedia.org/wiki/DSatur&quot;&gt;Wikipedia&lt;/a&gt;
- * @see    ColoringDSaturHeap
  * @author Barak Ugav
  */
 public class ColoringDSatur implements Coloring {
 
+<span class="fc" id="L43">	private HeapReferenceable.Builder&lt;Integer, Integer&gt; heapBuilder =</span>
+<span class="fc" id="L44">			HeapReferenceable.newBuilder().keysTypePrimitive(int.class).valuesTypePrimitive(int.class);</span>
+
 	/**
 	 * Create a new coloring algorithm object.
 	 */
-<span class="fc" id="L48">	public ColoringDSatur() {}</span>
+<span class="fc" id="L49">	public ColoringDSatur() {}</span>
+
+	/**
+	 * Set the implementation of the heap used by this algorithm.
+	 *
+	 * @param heapBuilder a builder for heaps used by this algorithm
+	 */
+	public void setHeapBuilder(HeapReferenceable.Builder&lt;?, ?&gt; heapBuilder) {
+<span class="nc" id="L57">		this.heapBuilder = heapBuilder.keysTypePrimitive(int.class).valuesTypePrimitive(int.class);</span>
+<span class="nc" id="L58">	}</span>
 
 	@Override
 	public Coloring.Result computeColoring(Graph g) {
-<span class="fc" id="L52">		ArgumentCheck.onlyUndirected(g);</span>
-<span class="fc" id="L53">		ArgumentCheck.noSelfLoops(g, &quot;no valid coloring in graphs with self loops&quot;);</span>
+<span class="fc" id="L62">		ArgumentCheck.onlyUndirected(g);</span>
+<span class="fc" id="L63">		ArgumentCheck.noSelfLoops(g, &quot;no valid coloring in graphs with self loops&quot;);</span>
 
-<span class="fc" id="L55">		ColoringResultImpl res = new ColoringResultImpl(g);</span>
-<span class="fc" id="L56">		int n = g.vertices().size();</span>
+<span class="fc" id="L65">		ColoringResultImpl res = new ColoringResultImpl(g);</span>
+<span class="fc" id="L66">		int n = g.vertices().size();</span>
+<span class="fc" id="L67">		BitSet[] neighborColors = new BitSet[n];</span>
 
-<span class="fc" id="L58">		IntSet uncolored = new IntOpenHashSet(n);</span>
-<span class="fc" id="L59">		BitSet[] usedColors = new BitSet[n];</span>
-<span class="fc" id="L60">		int[] usedColorsNum = new int[n];</span>
-<span class="fc" id="L61">		int[] degree = new int[n];</span>
-<span class="fc bfc" id="L62" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc" id="L63">			uncolored.add(u);</span>
-<span class="fc" id="L64">			usedColors[u] = new BitSet();</span>
-<span class="fc" id="L65">			degree[u] = g.degreeOut(u);</span>
+		/* We want to compose both the saturationDegree and uncoloredDegree in a key int key, using 'toKey' func */
+<span class="fc" id="L70">		int maxDegree = 0;</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
+<span class="fc" id="L72">			maxDegree = Math.max(maxDegree, g.degreeOut(u));</span>
+<span class="fc" id="L73">		final int maxDegreeFactor = maxDegree + 1;</span>
+		/* negate saturationDegree, more neighbor colors should be extracted from the heap first */
+<span class="fc" id="L75">		BiInt2IntFunction createKey =</span>
+<span class="fc" id="L76">				(saturationDegree, uncoloredDegree) -&gt; -(saturationDegree * maxDegreeFactor + uncoloredDegree);</span>
+<span class="fc" id="L77">		Int2IntFunction keyToSaturationDegree = key -&gt; (-key) / maxDegreeFactor;</span>
+<span class="fc" id="L78">		Int2IntFunction keyToUncoloredDegree = key -&gt; (-key) % maxDegreeFactor;</span>
+
+<span class="fc" id="L80">		HeapReferenceable&lt;Integer, Integer&gt; heap = heapBuilder.build();</span>
+		@SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L82">		HeapReference&lt;Integer, Integer&gt;[] refs = new HeapReference[n];</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc" id="L84">			int key = createKey.apply(/* saturationDegree= */0, g.degreeOut(u));</span>
+<span class="fc" id="L85">			refs[u] = heap.insert(Integer.valueOf(key), Integer.valueOf(u));</span>
+<span class="fc" id="L86">			neighborColors[u] = new BitSet();</span>
 		}
 
-<span class="fc bfc" id="L68" title="All 2 branches covered.">		while (!uncolored.isEmpty()) {</span>
-<span class="fc" id="L69">			int u = uncolored.iterator().nextInt();</span>
-<span class="fc bfc" id="L70" title="All 2 branches covered.">			for (IntIterator it = uncolored.iterator(); it.hasNext();) {</span>
-<span class="fc" id="L71">				int u1 = it.nextInt();</span>
-<span class="fc" id="L72">				int s1 = usedColorsNum[u], s2 = usedColorsNum[u1];</span>
-<span class="fc bfc" id="L73" title="All 6 branches covered.">				if (s1 &gt; s2 || (s1 == s2 &amp;&amp; degree[u] &gt; degree[u1]))</span>
-<span class="fc" id="L74">					u = u1;</span>
-<span class="fc" id="L75">			}</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">		while (!heap.isEmpty()) {</span>
+<span class="fc" id="L90">			int u = heap.extractMin().value().intValue();</span>
 
-<span class="fc" id="L77">			int color = 0;</span>
-<span class="fc bfc" id="L78" title="All 2 branches covered.">			while (usedColors[u].get(color))</span>
-<span class="fc" id="L79">				color++;</span>
-<span class="fc" id="L80">			res.colors[u] = color;</span>
-<span class="fc" id="L81">			res.colorsNum = Math.max(res.colorsNum, color + 1);</span>
-<span class="fc" id="L82">			uncolored.remove(u);</span>
-<span class="fc" id="L83">			usedColors[u].clear();</span>
-<span class="fc" id="L84">			usedColorsNum[u] = 0;</span>
-<span class="fc" id="L85">			usedColors[u] = null;</span>
+<span class="fc" id="L92">			int color = 0;</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">			while (neighborColors[u].get(color))</span>
+<span class="fc" id="L94">				color++;</span>
+<span class="fc" id="L95">			res.colors[u] = color;</span>
+<span class="fc" id="L96">			res.colorsNum = Math.max(res.colorsNum, color + 1);</span>
 
-<span class="fc bfc" id="L87" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
-<span class="fc" id="L88">				eit.nextInt();</span>
-<span class="fc" id="L89">				int v = eit.target();</span>
-<span class="fc bfc" id="L90" title="All 2 branches covered.">				if (res.colorOf(v) == -1) {/* v is uncolored */</span>
-<span class="fc bfc" id="L91" title="All 2 branches covered.">					if (!usedColors[v].get(color)) {</span>
-<span class="fc" id="L92">						usedColorsNum[v]++;</span>
-<span class="fc" id="L93">						usedColors[v].set(color);</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
+<span class="fc" id="L99">				eit.nextInt();</span>
+<span class="fc" id="L100">				int v = eit.target();</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">				if (res.colorOf(v) == -1) { /* v is uncolored */</span>
+<span class="fc" id="L102">					HeapReference&lt;Integer, Integer&gt; ref = refs[v];</span>
+<span class="fc" id="L103">					int key = ref.key().intValue();</span>
+<span class="fc" id="L104">					int saturationDegree = keyToSaturationDegree.applyAsInt(key);</span>
+<span class="fc" id="L105">					int uncoloredDegree = keyToUncoloredDegree.applyAsInt(key);</span>
+
+					/* we colored u, v has one less uncolored neighbor */
+<span class="fc" id="L108">					uncoloredDegree--;</span>
+
+<span class="fc bfc" id="L110" title="All 2 branches covered.">					if (!neighborColors[v].get(color)) {</span>
+						/* v has one more unique color in its neighborhood */
+<span class="fc" id="L112">						neighborColors[v].set(color);</span>
+<span class="fc" id="L113">						saturationDegree++;</span>
+
+<span class="fc" id="L115">						key = createKey.apply(saturationDegree, uncoloredDegree);</span>
+<span class="fc" id="L116">						heap.decreaseKey(ref, Integer.valueOf(key));</span>
+					} else {
+
+<span class="fc" id="L119">						key = createKey.apply(saturationDegree, uncoloredDegree);</span>
+						/*
+						 * we would prefer to use decreaseKey, but we only decrease the uncolored degree, which is
+						 * 'increaseKey' with respect to the heap ordering. Remove and insert a new element to the heap,
+						 * and pay \(O(\log n)\) instead of \(O(1)\)
+						 */
+<span class="fc" id="L125">						heap.remove(ref);</span>
+<span class="fc" id="L126">						refs[v] = heap.insert(Integer.valueOf(key), ref.value());</span>
 					}
+
 				}
-<span class="fc" id="L96">			}</span>
-<span class="fc" id="L97">		}</span>
-<span class="fc" id="L98">		return res;</span>
+<span class="fc" id="L130">			}</span>
+<span class="fc" id="L131">		}</span>
+<span class="fc" id="L132">		return res;</span>
 	}
 
 }

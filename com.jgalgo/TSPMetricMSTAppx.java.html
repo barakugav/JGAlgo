@@ -50,7 +50,7 @@ public class TSPMetricMSTAppx implements TSPMetric {
 	public Path computeShortestTour(Graph g, EdgeWeightFunc w) {
 <span class="fc" id="L51">		final int n = g.vertices().size();</span>
 <span class="pc bpc" id="L52" title="1 of 2 branches missed.">		if (n == 0)</span>
-<span class="nc" id="L53">			return Path.Empty;</span>
+<span class="nc" id="L53">			return null;</span>
 <span class="fc" id="L54">		ArgumentCheck.onlyUndirected(g);</span>
 <span class="fc" id="L55">		TSPMetricUtils.checkNoParallelEdges(g);</span>
 		// if (VALIDATE_METRIC)

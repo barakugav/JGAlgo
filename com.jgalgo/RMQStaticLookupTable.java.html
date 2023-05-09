@@ -29,12 +29,12 @@ import java.util.Objects;
  *
  * @author Barak Ugav
  */
-public class RMQStaticLookupTable implements RMQStatic {
+class RMQStaticLookupTable implements RMQStatic {
 
 	/**
 	 * Construct a new static RMQ algorithm object.
 	 */
-<span class="fc" id="L37">	public RMQStaticLookupTable() {}</span>
+<span class="fc" id="L37">	RMQStaticLookupTable() {}</span>
 
 	@Override
 	public RMQStatic.DataStructure preProcessSequence(RMQStaticComparator c, int n) {
@@ -42,12 +42,12 @@ public class RMQStaticLookupTable implements RMQStatic {
 <span class="nc" id="L42">			throw new IllegalArgumentException(&quot;Invalid length: &quot; + n);</span>
 <span class="fc" id="L43">		Objects.requireNonNull(c);</span>
 
-<span class="fc bfc" id="L45" title="All 2 branches covered.">		if (n &lt;= DS8.LIMIT)</span>
-<span class="fc" id="L46">			return new DS8(c, (byte) n);</span>
-<span class="fc bfc" id="L47" title="All 2 branches covered.">		else if (n &lt;= DS128.LIMIT)</span>
-<span class="fc" id="L48">			return new DS128(c, (short) n);</span>
-<span class="pc bpc" id="L49" title="1 of 2 branches missed.">		else if (n &lt;= DS32768.LIMIT)</span>
-<span class="fc" id="L50">			return new DS32768(c, n);</span>
+<span class="pc bpc" id="L45" title="1 of 2 branches missed.">		if (n &lt;= DSu08.LIMIT)</span>
+<span class="nc" id="L46">			return new DSu08(c, (byte) n);</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">		else if (n &lt;= DSu16.LIMIT)</span>
+<span class="fc" id="L48">			return new DSu16(c, (short) n);</span>
+<span class="pc bpc" id="L49" title="1 of 2 branches missed.">		else if (n &lt;= DSu32.LIMIT)</span>
+<span class="fc" id="L50">			return new DSu32(c, n);</span>
 		else
 <span class="nc" id="L52">			throw new IllegalArgumentException(&quot;N too big (&quot; + n + &quot;)&quot;);</span>
 	}
@@ -60,44 +60,44 @@ public class RMQStaticLookupTable implements RMQStatic {
 <span class="fc" id="L60">		return (2 * n - i - 1) * i / 2 + j - i - 1;</span>
 	}
 
-	private static class DS8 implements RMQStatic.DataStructure {
+	private static class DSu08 implements RMQStatic.DataStructure {
 
 		private final byte n;
 		private final byte[] arr;
 		private static final int LIMIT = 1 &lt;&lt; ((Byte.SIZE - 1) / 2);
 
-<span class="fc" id="L69">		DS8(RMQStaticComparator c, byte n) {</span>
-<span class="fc" id="L70">			arr = new byte[arrSize(n)];</span>
-<span class="fc" id="L71">			this.n = n;</span>
+<span class="nc" id="L69">		DSu08(RMQStaticComparator c, byte n) {</span>
+<span class="nc" id="L70">			arr = new byte[arrSize(n)];</span>
+<span class="nc" id="L71">			this.n = n;</span>
 
-<span class="fc bfc" id="L73" title="All 2 branches covered.">			for (byte i = 0; i &lt; n - 1; i++)</span>
-<span class="fc bfc" id="L74" title="All 2 branches covered.">				arr[indexOf(n, i, i + 1)] = c.compare(i, i + 1) &lt; 0 ? i : (byte) (i + 1);</span>
-<span class="fc bfc" id="L75" title="All 2 branches covered.">			for (byte i = 0; i &lt; n - 2; i++) {</span>
-<span class="fc bfc" id="L76" title="All 2 branches covered.">				for (byte j = (byte) (i + 2); j &lt; n; j++) {</span>
-<span class="fc" id="L77">					byte m = arr[indexOf(n, i, j - 1)];</span>
-<span class="fc bfc" id="L78" title="All 2 branches covered.">					arr[indexOf(n, i, j)] = c.compare(m, j) &lt; 0 ? m : j;</span>
+<span class="nc bnc" id="L73" title="All 2 branches missed.">			for (byte i = 0; i &lt; n - 1; i++)</span>
+<span class="nc bnc" id="L74" title="All 2 branches missed.">				arr[indexOf(n, i, i + 1)] = c.compare(i, i + 1) &lt; 0 ? i : (byte) (i + 1);</span>
+<span class="nc bnc" id="L75" title="All 2 branches missed.">			for (byte i = 0; i &lt; n - 2; i++) {</span>
+<span class="nc bnc" id="L76" title="All 2 branches missed.">				for (byte j = (byte) (i + 2); j &lt; n; j++) {</span>
+<span class="nc" id="L77">					byte m = arr[indexOf(n, i, j - 1)];</span>
+<span class="nc bnc" id="L78" title="All 2 branches missed.">					arr[indexOf(n, i, j)] = c.compare(m, j) &lt; 0 ? m : j;</span>
 				}
 			}
-<span class="fc" id="L81">		}</span>
+<span class="nc" id="L81">		}</span>
 
 		@Override
 		public int findMinimumInRange(int i, int j) {
-<span class="pc bpc" id="L85" title="3 of 6 branches missed.">			if (!(0 &lt;= i &amp;&amp; i &lt;= j &amp;&amp; j &lt; n))</span>
+<span class="nc bnc" id="L85" title="All 6 branches missed.">			if (!(0 &lt;= i &amp;&amp; i &lt;= j &amp;&amp; j &lt; n))</span>
 <span class="nc" id="L86">				throw new IllegalArgumentException(&quot;Illegal indices [&quot; + i + &quot;,&quot; + j + &quot;]&quot;);</span>
-<span class="pc bpc" id="L87" title="1 of 2 branches missed.">			if (i == j)</span>
+<span class="nc bnc" id="L87" title="All 2 branches missed.">			if (i == j)</span>
 <span class="nc" id="L88">				return i;</span>
-<span class="fc" id="L89">			return arr[indexOf(n, i, j)];</span>
+<span class="nc" id="L89">			return arr[indexOf(n, i, j)];</span>
 		}
 	}
 
-	private static class DS128 implements RMQStatic.DataStructure {
+	private static class DSu16 implements RMQStatic.DataStructure {
 
 		private final short[] arr;
 		private final short n;
 
 		private static final int LIMIT = 1 &lt;&lt; ((Short.SIZE - 1) / 2);
 
-<span class="fc" id="L100">		DS128(RMQStaticComparator c, short n) {</span>
+<span class="fc" id="L100">		DSu16(RMQStaticComparator c, short n) {</span>
 <span class="fc" id="L101">			arr = new short[arrSize(n)];</span>
 <span class="fc" id="L102">			this.n = n;</span>
 
@@ -121,14 +121,14 @@ public class RMQStaticLookupTable implements RMQStatic {
 		}
 	}
 
-	private static class DS32768 implements RMQStatic.DataStructure {
+	private static class DSu32 implements RMQStatic.DataStructure {
 
 		private final int[] arr;
 		private final int n;
 
 		private static final int LIMIT = 1 &lt;&lt; ((Integer.SIZE - 1) / 2);
 
-<span class="fc" id="L131">		DS32768(RMQStaticComparator c, int n) {</span>
+<span class="fc" id="L131">		DSu32(RMQStaticComparator c, int n) {</span>
 <span class="fc" id="L132">			arr = new int[arrSize(n)];</span>
 <span class="fc" id="L133">			this.n = n;</span>
 

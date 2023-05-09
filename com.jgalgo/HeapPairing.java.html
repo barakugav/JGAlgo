@@ -406,20 +406,20 @@ class HeapPairing {
 
 		@Override
 		Node&lt;K, V&gt; meldDefaultCmp(Node&lt;K, V&gt; n1, Node&lt;K, V&gt; n2) {
-<span class="pc bpc" id="L409" title="1 of 2 branches missed.">			assert n1.prevOrParent == null;</span>
-<span class="pc bpc" id="L410" title="1 of 2 branches missed.">			assert n1.next == null;</span>
-<span class="pc bpc" id="L411" title="1 of 2 branches missed.">			assert n2.prevOrParent == null;</span>
-<span class="pc bpc" id="L412" title="1 of 2 branches missed.">			assert n2.next == null;</span>
+<span class="nc bnc" id="L409" title="All 2 branches missed.">			assert n1.prevOrParent == null;</span>
+<span class="nc bnc" id="L410" title="All 2 branches missed.">			assert n1.next == null;</span>
+<span class="nc bnc" id="L411" title="All 2 branches missed.">			assert n2.prevOrParent == null;</span>
+<span class="nc bnc" id="L412" title="All 2 branches missed.">			assert n2.next == null;</span>
 
 			/* assume n1 has smaller key than n2 */
-<span class="fc bfc" id="L415" title="All 2 branches covered.">			if (Utils.cmpDefault(n1.key, n2.key) &gt; 0) {</span>
-<span class="fc" id="L416">				Node&lt;K, V&gt; temp = n1;</span>
-<span class="fc" id="L417">				n1 = n2;</span>
-<span class="fc" id="L418">				n2 = temp;</span>
+<span class="nc bnc" id="L415" title="All 2 branches missed.">			if (Utils.cmpDefault(n1.key, n2.key) &gt; 0) {</span>
+<span class="nc" id="L416">				Node&lt;K, V&gt; temp = n1;</span>
+<span class="nc" id="L417">				n1 = n2;</span>
+<span class="nc" id="L418">				n2 = temp;</span>
 			}
 
-<span class="fc" id="L421">			addChild(n1, n2);</span>
-<span class="fc" id="L422">			return n1;</span>
+<span class="nc" id="L421">			addChild(n1, n2);</span>
+<span class="nc" id="L422">			return n1;</span>
 		}
 
 		@Override

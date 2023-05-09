@@ -32,7 +32,7 @@ package com.jgalgo;
  *
  * @author Barak Ugav
  */
-public class BitsLookupTable {
+class BitsLookupTable {
 
 	private BitsLookupTable() {}
 
@@ -58,7 +58,7 @@ public class BitsLookupTable {
 	 *
 	 * @author Barak Ugav
 	 */
-	public static class Count {
+	static class Count {
 
 		private final int wordsize;
 		private final byte[] bitCountTable;
@@ -68,7 +68,7 @@ public class BitsLookupTable {
 		 *
 		 * @param wordsize maximum number of bits needed to represent an integer
 		 */
-<span class="fc" id="L71">		public Count(int wordsize) {</span>
+<span class="fc" id="L71">		Count(int wordsize) {</span>
 <span class="pc bpc" id="L72" title="2 of 4 branches missed.">			if (!(0 &lt; wordsize &amp;&amp; wordsize &lt; Integer.SIZE - 1))</span>
 <span class="nc" id="L73">				throw new IllegalArgumentException(&quot;unsupported word size: &quot; + wordsize);</span>
 <span class="fc" id="L74">			this.wordsize = wordsize;</span>
@@ -92,7 +92,7 @@ public class BitsLookupTable {
 		 * @param  x an integer
 		 * @return   the number of 1 bits in the given integer
 		 */
-		public int bitCount(int x) {
+		int bitCount(int x) {
 <span class="fc" id="L96">			return bitCountTable[x];</span>
 		}
 
@@ -128,7 +128,7 @@ public class BitsLookupTable {
 	 *
 	 * @author Barak Ugav
 	 */
-	public static class Ith {
+	static class Ith {
 
 		private final int wordsize;
 		private final BitsLookupTable.Count count;
@@ -140,7 +140,7 @@ public class BitsLookupTable {
 		 * @param wordsize maximum number of bits needed to represent an integer
 		 * @param count    a lookup table for the bitCount (popcount) operation
 		 */
-<span class="fc" id="L143">		public Ith(int wordsize, BitsLookupTable.Count count) {</span>
+<span class="fc" id="L143">		Ith(int wordsize, BitsLookupTable.Count count) {</span>
 <span class="pc bpc" id="L144" title="2 of 4 branches missed.">			if (!(0 &lt; wordsize &amp;&amp; wordsize &lt; Integer.SIZE - 1))</span>
 <span class="nc" id="L145">				throw new IllegalArgumentException(&quot;unsupported word size: &quot; + wordsize);</span>
 <span class="pc bpc" id="L146" title="1 of 2 branches missed.">			if (count.wordsize &lt; wordsize)</span>
@@ -173,7 +173,7 @@ public class BitsLookupTable {
 		 * @return                           the index of the i-th one bit on the given integer
 		 * @throws IndexOutOfBoundsException if {@code i &lt; 0} or {@code i &gt;= bitCount(x)}.
 		 */
-		public int ithBit(int x, int i) {
+		int ithBit(int x, int i) {
 
 			/*
 			 * the ithBitTable is of size [2^halfwordsize][halfwordsize] and we answer a query by 2 lookup tables. Using
@@ -202,7 +202,7 @@ public class BitsLookupTable {
 		 * @return   the number of trailing zeros of an integer.
 		 * @see      Integer#numberOfTrailingZeros(int)
 		 */
-		public int numberOfTrailingZeros(int x) {
+		int numberOfTrailingZeros(int x) {
 <span class="pc bpc" id="L206" title="1 of 2 branches missed.">			return x == 0 ? Integer.SIZE : ithBit(x, 0);</span>
 		}
 
