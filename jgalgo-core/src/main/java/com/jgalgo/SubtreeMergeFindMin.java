@@ -32,7 +32,7 @@ import java.util.NoSuchElementException;
  * @param  <E> the edges element type
  * @author     Barak Ugav
  */
-public interface SubtreeMergeFindMin<E> {
+interface SubtreeMergeFindMin<E> {
 
 	/**
 	 * Init the tree and create the root node.
@@ -40,7 +40,7 @@ public interface SubtreeMergeFindMin<E> {
 	 * @return                       the root node
 	 * @throws IllegalStateException if the tree is not empty
 	 */
-	public Node initTree();
+	Node initTree();
 
 	/**
 	 * Add a new node to the tree as leaf.
@@ -48,7 +48,7 @@ public interface SubtreeMergeFindMin<E> {
 	 * @param  parent the parent node
 	 * @return        the new node
 	 */
-	public Node addLeaf(Node parent);
+	Node addLeaf(Node parent);
 
 	/**
 	 * Check if two nodes are in the same sub tree.
@@ -57,7 +57,7 @@ public interface SubtreeMergeFindMin<E> {
 	 * @param  v the second node
 	 * @return   {@code true} if both of the nodes are in the same sub tree
 	 */
-	public boolean isSameSubTree(Node u, Node v);
+	boolean isSameSubTree(Node u, Node v);
 
 	/**
 	 * Merge two adjacent sub tree.
@@ -68,7 +68,7 @@ public interface SubtreeMergeFindMin<E> {
 	 * @param  v                        a node from the second subtree
 	 * @throws IllegalArgumentException if the two nodes are from different subtrees which are not adjacent
 	 */
-	public void mergeSubTrees(Node u, Node v);
+	void mergeSubTrees(Node u, Node v);
 
 	/**
 	 * Add a non tree edge to the data structure.
@@ -77,14 +77,14 @@ public interface SubtreeMergeFindMin<E> {
 	 * @param v        target node
 	 * @param edgeData data of the new edge
 	 */
-	public void addNonTreeEdge(Node u, Node v, E edgeData);
+	void addNonTreeEdge(Node u, Node v, E edgeData);
 
 	/**
 	 * Check if the data structure contains any edge between two different sub trees.
 	 *
 	 * @return {@code true} if an edge exists between two different sub tress
 	 */
-	public boolean hasNonTreeEdge();
+	boolean hasNonTreeEdge();
 
 	/**
 	 * Get the edge between two different sub trees with minimum weight.
@@ -92,19 +92,19 @@ public interface SubtreeMergeFindMin<E> {
 	 * @return                        minimum weight edge between two different sub trees
 	 * @throws NoSuchElementException if there is no such edge
 	 */
-	public MinEdge<E> findMinNonTreeEdge();
+	MinEdge<E> findMinNonTreeEdge();
 
 	/**
 	 * Get the number of nodes in the tree.
 	 *
 	 * @return number of nodes
 	 */
-	public int size();
+	int size();
 
 	/**
 	 * Clear the data structure.
 	 */
-	public void clear();
+	void clear();
 
 	/**
 	 * A result of {@link SubtreeMergeFindMin#findMinNonTreeEdge()} query.
@@ -112,28 +112,28 @@ public interface SubtreeMergeFindMin<E> {
 	 * @param  <E> the edge element type
 	 * @author     Barak Ugav
 	 */
-	public static interface MinEdge<E> {
+	static interface MinEdge<E> {
 
 		/**
 		 * The source node of the edge.
 		 *
 		 * @return the edge source node
 		 */
-		public Node source();
+		Node source();
 
 		/**
 		 * The target node of the edge.
 		 *
 		 * @return the edge target node
 		 */
-		public Node target();
+		Node target();
 
 		/**
 		 * Get the edge data.
 		 *
 		 * @return the edge data
 		 */
-		public E edgeData();
+		E edgeData();
 
 	}
 
@@ -142,14 +142,14 @@ public interface SubtreeMergeFindMin<E> {
 	 *
 	 * @author Barak Ugav
 	 */
-	public static interface Node {
+	static interface Node {
 
 		/**
 		 * Get the parent node of this node.
 		 *
 		 * @return the parent of this node or {@code null} if this node is the root of the tree.
 		 */
-		public Node getParent();
+		Node getParent();
 
 		/**
 		 * Get the user data of this node.
@@ -159,14 +159,14 @@ public interface SubtreeMergeFindMin<E> {
 		 * @param  <V> the data type
 		 * @return     the user data of this node
 		 */
-		public <V> V getNodeData();
+		<V> V getNodeData();
 
 		/**
 		 * Set the user data of this node.
 		 *
 		 * @param data new value for this node
 		 */
-		public void setNodeData(Object data);
+		void setNodeData(Object data);
 
 	}
 
