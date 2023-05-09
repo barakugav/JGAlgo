@@ -39,7 +39,7 @@ package com.jgalgo;
  * @see    DynamicTreeSplayIntExtended
  * @author Barak Ugav
  */
-public interface DynamicTreeExtension {
+interface DynamicTreeExtension {
 
 	/**
 	 * An extension to {@link DynamicTree} that keep track on the number of nodes in each tree.

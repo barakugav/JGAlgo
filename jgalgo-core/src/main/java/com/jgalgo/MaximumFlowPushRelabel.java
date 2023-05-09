@@ -33,8 +33,8 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  * Heuristics are crucial for the practical running time of push-relabel algorithm, and this implementation uses the
  * 'global relabeling' and 'gap' heuristics.
  * <p>
- * This algorithm can be implemented with better time theoretical bound using {@link DynamicTree}, but in practice it
- * has little to non advantages. See {@link MaximumFlowPushRelabelDynamicTrees}.
+ * This algorithm can be implemented with better time theoretical bound using dynamic trees, but in practice it has
+ * little to non advantages. See {@link MaximumFlowPushRelabelDynamicTrees}.
  *
  * @see    <a href= "https://en.wikipedia.org/wiki/Push%E2%80%93relabel_maximum_flow_algorithm">Wikipedia</a>
  * @see    MaximumFlowPushRelabelToFront
