@@ -29,7 +29,7 @@ package com.jgalgo;
  *
  * @author Barak Ugav
  */
-public interface RMQStatic {
+interface RMQStatic {
 
 	/**
 	 * Perform a static pre processing of a sequence of elements for future RMQ (Range minimum query) queries.

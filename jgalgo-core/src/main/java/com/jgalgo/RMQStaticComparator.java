@@ -29,7 +29,7 @@ import java.util.Objects;
  * @author Barak Ugav
  */
 @FunctionalInterface
-public interface RMQStaticComparator {
+interface RMQStaticComparator {
 
 	/**
 	 * Compare the i'th and j'th elements in the sequence.
@@ -39,7 +39,7 @@ public interface RMQStaticComparator {
 	 * @return   value less than zero if the i'th element is smaller than the j'th element, value greater than zero if
 	 *           the j'th is smaller than the i'th and zero if they are equal
 	 */
-	public int compare(int i, int j);
+	int compare(int i, int j);
 
 	/**
 	 * Create an RMQ comparator from an object array.
@@ -50,7 +50,7 @@ public interface RMQStaticComparator {
 	 *             ordering}.
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static <E> RMQStaticComparator ofObjArray(E[] arr) {
+	static <E> RMQStaticComparator ofObjArray(E[] arr) {
 		Objects.requireNonNull(arr);
 		return (i, j) -> ((Comparable) arr[i]).compareTo(arr[j]);
 	}
@@ -64,7 +64,7 @@ public interface RMQStaticComparator {
 	 *                 {@linkplain Comparable natural ordering} of the elements will be used.
 	 * @return     an RMQ comparator that will compare elements in the array using the given comparator
 	 */
-	public static <E> RMQStaticComparator ofObjArray(E[] arr, Comparator<? super E> c) {
+	static <E> RMQStaticComparator ofObjArray(E[] arr, Comparator<? super E> c) {
 		if (c == null) {
 			return ofObjArray(arr);
 		} else {
@@ -79,7 +79,7 @@ public interface RMQStaticComparator {
 	 * @param  arr an array
 	 * @return     an RMQ comparator that will compare elements in the array using {@code Byte.compare()}.
 	 */
-	public static RMQStaticComparator ofByteArray(byte[] arr) {
+	static RMQStaticComparator ofByteArray(byte[] arr) {
 		Objects.requireNonNull(arr);
 		return (i, j) -> Byte.compare(arr[i], arr[j]);
 	}
@@ -90,7 +90,7 @@ public interface RMQStaticComparator {
 	 * @param  arr an array
 	 * @return     an RMQ comparator that will compare elements in the array using {@code Integer.compare()}.
 	 */
-	public static RMQStaticComparator ofIntArray(int[] arr) {
+	static RMQStaticComparator ofIntArray(int[] arr) {
 		Objects.requireNonNull(arr);
 		return (i, j) -> Integer.compare(arr[i], arr[j]);
 	}
