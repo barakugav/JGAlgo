@@ -30,7 +30,7 @@ import java.util.Iterator;
  * @see        <a href= "https://en.wikipedia.org/wiki/Red%E2%80%93black_tree">Wikipedia</a>
  * @author     Barak Ugav
  */
-public class RedBlackTree<K, V> extends BinarySearchTreeAbstract<K, V> {
+class RedBlackTree<K, V> extends BinarySearchTreeAbstract<K, V> {
 
 	private int size;
 	private Node<K, V> root;
@@ -47,7 +47,7 @@ public class RedBlackTree<K, V> extends BinarySearchTreeAbstract<K, V> {
 	 * constraint (for example, the user attempts to insert a string element to a tree whose keys are integers), the
 	 * {@code insert} call will throw a {@code ClassCastException}.
 	 */
-	public RedBlackTree() {
+	RedBlackTree() {
 		this(null);
 	}
 
@@ -62,7 +62,7 @@ public class RedBlackTree<K, V> extends BinarySearchTreeAbstract<K, V> {
 	 * @param comparator the comparator that will be used to order this tree. If {@code null}, the
 	 *                       {@linkplain Comparable natural ordering} of the keys will be used.
 	 */
-	public RedBlackTree(Comparator<? super K> comparator) {
+	RedBlackTree(Comparator<? super K> comparator) {
 		super(comparator);
 		root = null;
 		size = 0;

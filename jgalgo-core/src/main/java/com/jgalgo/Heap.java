@@ -51,14 +51,14 @@ import java.util.Comparator;
  * @see        HeapReferenceable
  * @author     Barak Ugav
  */
-public interface Heap<E> extends Collection<E> {
+interface Heap<E> extends Collection<E> {
 
 	/**
 	 * Insert a new element to the heap.
 	 *
 	 * @param e new element
 	 */
-	public void insert(E e);
+	void insert(E e);
 
 	/**
 	 * Find the minimum element in the heap.
@@ -66,7 +66,7 @@ public interface Heap<E> extends Collection<E> {
 	 * @return                       the minimum element in the heap
 	 * @throws IllegalStateException if the heap is empty
 	 */
-	public E findMin();
+	E findMin();
 
 	/**
 	 * Extract the minimum element in the heap.
@@ -76,7 +76,7 @@ public interface Heap<E> extends Collection<E> {
 	 * @return                       the minimum element in the heap
 	 * @throws IllegalStateException if the heap is empty
 	 */
-	public E extractMin();
+	E extractMin();
 
 	/**
 	 * Meld with another heap.
@@ -93,7 +93,7 @@ public interface Heap<E> extends Collection<E> {
 	 * @param  heap                     a heap to meld with. After the operation it will be empty.
 	 * @throws IllegalArgumentException if the given heap is {@code this} heap, or its of another implementation
 	 */
-	public void meld(Heap<? extends E> heap);
+	void meld(Heap<? extends E> heap);
 
 	/**
 	 * Returns the comparator used to order the elements in this heap, or {@code null} if this heap uses the
@@ -102,7 +102,7 @@ public interface Heap<E> extends Collection<E> {
 	 * @return the comparator used to order the elements in this heap, or {@code null} if this heap uses the natural
 	 *         ordering of its elements
 	 */
-	public Comparator<? super E> comparator();
+	Comparator<? super E> comparator();
 
 	/**
 	 * Create a new heaps builder.
@@ -149,7 +149,7 @@ public interface Heap<E> extends Collection<E> {
 	 * @see        Heap#newBuilder()
 	 * @author     Barak Ugav
 	 */
-	public static interface Builder<E> extends BuilderAbstract<Heap.Builder<E>> {
+	static interface Builder<E> extends BuilderAbstract<Heap.Builder<E>> {
 		/**
 		 * Build a new heap with the given comparator.
 		 * <p>
@@ -164,7 +164,7 @@ public interface Heap<E> extends Collection<E> {
 		/**
 		 * Build a new heap with {@linkplain Comparable natural ordering}.
 		 *
-		 * @return     the newly constructed heap
+		 * @return the newly constructed heap
 		 */
 		default Heap<E> build() {
 			return build(null);

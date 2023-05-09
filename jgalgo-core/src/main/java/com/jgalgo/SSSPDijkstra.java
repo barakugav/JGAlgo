@@ -22,9 +22,8 @@ import java.util.Objects;
 /**
  * Dijkstra's algorithm for Single Source Shortest Path (SSSP).
  * <p>
- * Compute the shortest paths from a single source to all other vertices in \(O(m + n \log n)\) time, using
- * {@link HeapReferenceable} with \(O(1)\) time for {@link HeapReferenceable#decreaseKey(HeapReference, Object)}
- * operations.
+ * Compute the shortest paths from a single source to all other vertices in \(O(m + n \log n)\) time, using a heap with
+ * \(O(1)\) time for {@code decreaseKey()} operations.
  * <p>
  * Only positive edge weights are supported. This implementation should be the first choice for {@link SSSP} with
  * positive weights. For negative weights use {@link SSSPBellmanFord} for floating points or {@link SSSPGoldberg} for
@@ -54,7 +53,7 @@ public class SSSPDijkstra implements SSSP {
 	 *
 	 * @param heapBuilder a builder for heaps used by this algorithm
 	 */
-	public void setHeapBuilder(HeapReferenceable.Builder<?, ?> heapBuilder) {
+	void setHeapBuilder(HeapReferenceable.Builder<?, ?> heapBuilder) {
 		this.heapBuilder = Objects.requireNonNull(heapBuilder);
 	}
 

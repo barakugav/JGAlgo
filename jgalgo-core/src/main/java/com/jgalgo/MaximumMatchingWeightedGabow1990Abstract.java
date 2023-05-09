@@ -63,7 +63,7 @@ abstract class MaximumMatchingWeightedGabow1990Abstract implements MaximumMatchi
 	 *
 	 * @param heapBuilder a builder for heaps used by this algorithm
 	 */
-	public void setHeapBuilder(HeapReferenceable.Builder<Object, Object> heapBuilder) {
+	void setHeapBuilder(HeapReferenceable.Builder<Object, Object> heapBuilder) {
 		this.heapBuilder = Objects.requireNonNull(heapBuilder);
 	}
 

@@ -35,7 +35,7 @@ import java.util.Iterator;
  * @see        <a href="https://en.wikipedia.org/wiki/Splay_tree">Wikipedia</a>
  * @author     Barak Ugav
  */
-public class SplayTree<K, V> extends BinarySearchTreeAbstract<K, V> {
+class SplayTree<K, V> extends BinarySearchTreeAbstract<K, V> {
 
 	private SplayBSTNode<K, V> root;
 	private final SplayImplWithSize<K, V> impl = new SplayImplWithSize<>();
@@ -49,7 +49,7 @@ public class SplayTree<K, V> extends BinarySearchTreeAbstract<K, V> {
 	 * constraint (for example, the user attempts to insert a string element to a tree whose keys are integers), the
 	 * {@code insert} call will throw a {@code ClassCastException}.
 	 */
-	public SplayTree() {
+	SplayTree() {
 		this(null);
 	}
 
@@ -64,7 +64,7 @@ public class SplayTree<K, V> extends BinarySearchTreeAbstract<K, V> {
 	 * @param comparator the comparator that will be used to order this tree. If {@code null}, the
 	 *                       {@linkplain Comparable natural ordering} of the keys will be used.
 	 */
-	public SplayTree(Comparator<? super K> comparator) {
+	SplayTree(Comparator<? super K> comparator) {
 		super(comparator);
 		root = null;
 	}

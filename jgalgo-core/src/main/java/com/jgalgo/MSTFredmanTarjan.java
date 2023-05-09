@@ -53,7 +53,7 @@ public class MSTFredmanTarjan implements MST {
 	 *
 	 * @param heapBuilder a builder for heaps used by this algorithm
 	 */
-	public void setHeapBuilder(HeapReferenceable.Builder<?, ?> heapBuilder) {
+	void setHeapBuilder(HeapReferenceable.Builder<?, ?> heapBuilder) {
 		this.heapBuilder = heapBuilder.keysTypePrimitive(int.class).valuesTypeVoid();
 	}
 

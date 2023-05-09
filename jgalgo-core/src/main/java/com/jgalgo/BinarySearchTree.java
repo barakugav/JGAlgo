@@ -30,7 +30,7 @@ import java.util.Comparator;
  * @param  <V> the values type
  * @author     Barak Ugav
  */
-public interface BinarySearchTree<K, V> extends HeapReferenceable<K, V> {
+interface BinarySearchTree<K, V> extends HeapReferenceable<K, V> {
 
 	/**
 	 * Find the element with the maximal key in the tree and return a reference to it.
@@ -38,7 +38,7 @@ public interface BinarySearchTree<K, V> extends HeapReferenceable<K, V> {
 	 * @return                       a reference to the element with the maximal key in the tree
 	 * @throws IllegalStateException if the tree is empty
 	 */
-	public HeapReference<K, V> findMax();
+	HeapReference<K, V> findMax();
 
 	/**
 	 * Extract the element with the maximal key in the tree.
@@ -48,7 +48,7 @@ public interface BinarySearchTree<K, V> extends HeapReferenceable<K, V> {
 	 * @return                       the element with the maximal key in the tree
 	 * @throws IllegalStateException if the tree is empty
 	 */
-	public HeapReference<K, V> extractMax();
+	HeapReference<K, V> extractMax();
 
 	/**
 	 * Find an element in the tree by its key, or the element with the greatest strictly smaller (predecessor) key than
@@ -58,7 +58,7 @@ public interface BinarySearchTree<K, V> extends HeapReferenceable<K, V> {
 	 * @return     reference to an element with the searched key or it's predecessor if is not found, or {@code null} if
 	 *             there is no predecessor
 	 */
-	public HeapReference<K, V> findOrSmaller(K key);
+	HeapReference<K, V> findOrSmaller(K key);
 
 	/**
 	 * Find an element in the tree by its key, or the element with the smallest strictly greater (successor) key than it
@@ -68,7 +68,7 @@ public interface BinarySearchTree<K, V> extends HeapReferenceable<K, V> {
 	 * @return     reference to an element with the searched key or it's successor if it is not found, or {@code null}
 	 *             if there is no successor
 	 */
-	public HeapReference<K, V> findOrGreater(K key);
+	HeapReference<K, V> findOrGreater(K key);
 
 	/**
 	 * Find the element with the greatest strictly smaller key than a given key.
@@ -76,7 +76,7 @@ public interface BinarySearchTree<K, V> extends HeapReferenceable<K, V> {
 	 * @param  key a key
 	 * @return     reference to the predecessor element with strictly smaller key or {@code null} if no such exists
 	 */
-	public HeapReference<K, V> findSmaller(K key);
+	HeapReference<K, V> findSmaller(K key);
 
 	/**
 	 * Find the element with the smallest strictly greater key than a given key.
@@ -84,7 +84,7 @@ public interface BinarySearchTree<K, V> extends HeapReferenceable<K, V> {
 	 * @param  key a key
 	 * @return     reference to the successor element with strictly greater key or {@code null} if no such exists
 	 */
-	public HeapReference<K, V> findGreater(K key);
+	HeapReference<K, V> findGreater(K key);
 
 	/**
 	 * Get the predecessor of a node in the tree.
@@ -100,7 +100,7 @@ public interface BinarySearchTree<K, V> extends HeapReferenceable<K, V> {
 	 * @return     reference to the predecessor element in the tree, that is an element with smaller or equal key to the
 	 *             given referenced element's key, or {@code null} if no such predecessor exists
 	 */
-	public HeapReference<K, V> getPredecessor(HeapReference<K, V> ref);
+	HeapReference<K, V> getPredecessor(HeapReference<K, V> ref);
 
 	/**
 	 * Finds the successor of an element in the tree.
@@ -116,7 +116,7 @@ public interface BinarySearchTree<K, V> extends HeapReferenceable<K, V> {
 	 * @return     reference to the successor element in the tree, that is an element with greater or equal key to the
 	 *             given referenced element's key, or {@code null} if no such successor exists
 	 */
-	public HeapReference<K, V> getSuccessor(HeapReference<K, V> ref);
+	HeapReference<K, V> getSuccessor(HeapReference<K, V> ref);
 
 	/**
 	 * Split the current BST into two different BSTs with keys strictly smaller and greater or equal than a key.
@@ -128,7 +128,7 @@ public interface BinarySearchTree<K, V> extends HeapReferenceable<K, V> {
 	 * @param  key a pivot key
 	 * @return     new tree with elements with keys strictly smaller than the given key
 	 */
-	public BinarySearchTree<K, V> splitSmaller(K key);
+	BinarySearchTree<K, V> splitSmaller(K key);
 
 	/**
 	 * Split the current BST into two different BSTs with keys smaller or equal and strictly greater than a key.
@@ -140,7 +140,7 @@ public interface BinarySearchTree<K, V> extends HeapReferenceable<K, V> {
 	 * @param  key a pivot key
 	 * @return     new tree with elements with keys strictly greater than the given key
 	 */
-	public BinarySearchTree<K, V> splitGreater(K key);
+	BinarySearchTree<K, V> splitGreater(K key);
 
 	/**
 	 * Split the current BST into two different BSTs with elements smaller and greater than an element's key.
@@ -160,7 +160,7 @@ public interface BinarySearchTree<K, V> extends HeapReferenceable<K, V> {
 	 * @return     new tree with elements with keys greater (greater or equal if duplicate keys of the given element's
 	 *             key exists) than the given key
 	 */
-	public BinarySearchTree<K, V> split(HeapReference<K, V> ref);
+	BinarySearchTree<K, V> split(HeapReference<K, V> ref);
 
 	/**
 	 * Create a new binary search tree algorithm builder.

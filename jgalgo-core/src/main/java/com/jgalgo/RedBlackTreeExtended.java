@@ -51,9 +51,9 @@ import java.util.Objects;
  *
  * @param  <K> the keys type
  * @param  <V> the values type
- * @author Barak Ugav
+ * @author     Barak Ugav
  */
-public class RedBlackTreeExtended<K, V> extends RedBlackTree<K, V> {
+class RedBlackTreeExtended<K, V> extends RedBlackTree<K, V> {
 
 	private Node<K, V>[] nodes;
 	private final RedBlackTreeExtension<K, V>[] extensions;
@@ -77,7 +77,7 @@ public class RedBlackTreeExtended<K, V> extends RedBlackTree<K, V> {
 	 * @param  extensions               a collections of extensions to be used by this red black tree.
 	 * @throws IllegalArgumentException if the extensions collection is empty
 	 */
-	public RedBlackTreeExtended(Collection<? extends RedBlackTreeExtension<K, V>> extensions) {
+	RedBlackTreeExtended(Collection<? extends RedBlackTreeExtension<K, V>> extensions) {
 		this(null, extensions);
 	}
 
@@ -99,7 +99,7 @@ public class RedBlackTreeExtended<K, V> extends RedBlackTree<K, V> {
 	 * @throws IllegalArgumentException if the extensions collection is empty
 	 */
 	@SuppressWarnings("unchecked")
-	public RedBlackTreeExtended(Comparator<? super K> comparator,
+	RedBlackTreeExtended(Comparator<? super K> comparator,
 			Collection<? extends RedBlackTreeExtension<K, V>> extensions) {
 		super(comparator);
 		if (extensions.isEmpty())

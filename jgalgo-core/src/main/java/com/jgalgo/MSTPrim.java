@@ -25,9 +25,8 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * Prim's minimum spanning tree algorithm.
  * <p>
  * The algorithm maintain a tree and repeatedly adds the lightest edge that connect a vertex from tree to the reset of
- * the vertices. The algorithm is similar to {@link SSSPDijkstra} in its idea, and it also uses a
- * {@link HeapReferenceable} and updated its elements using
- * {@link HeapReferenceable#decreaseKey(HeapReference, Object)}.
+ * the vertices. The algorithm is similar to {@link SSSPDijkstra} in its idea, and it also uses a heap that is updated
+ * using {@code decreaseKey()}.
  * <p>
  * The running time of Prim's algorithm is \(O(m + n \log n)\) and it uses linear space. It's running time is very good
  * it practice and can be used as a first choice for {@link MST} algorithm. Note that only undirected graphs are
@@ -56,7 +55,7 @@ public class MSTPrim implements MST {
 	 *
 	 * @param heapBuilder a builder for heaps used by this algorithm
 	 */
-	public void setHeapBuilder(HeapReferenceable.Builder<?, ?> heapBuilder) {
+	void setHeapBuilder(HeapReferenceable.Builder<?, ?> heapBuilder) {
 		this.heapBuilder = heapBuilder.keysTypePrimitive(int.class).valuesTypeVoid();
 	}
 

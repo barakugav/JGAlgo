@@ -53,7 +53,7 @@ public class ColoringDSatur implements Coloring {
 	 *
 	 * @param heapBuilder a builder for heaps used by this algorithm
 	 */
-	public void setHeapBuilder(HeapReferenceable.Builder<?, ?> heapBuilder) {
+	void setHeapBuilder(HeapReferenceable.Builder<?, ?> heapBuilder) {
 		this.heapBuilder = heapBuilder.keysTypePrimitive(int.class).valuesTypePrimitive(int.class);
 	}
 

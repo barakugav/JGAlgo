@@ -17,7 +17,6 @@
 package com.jgalgo;
 
 import java.util.Arrays;
-
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.objects.ObjectArrays;
 
@@ -53,7 +52,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrays;
  * @param  <V> the values type
  * @author     Barak Ugav
  */
-public class RedBlackTreeExtension<K, V> {
+class RedBlackTreeExtension<K, V> {
 
 	final ExtensionData data;
 
@@ -100,14 +99,14 @@ public class RedBlackTreeExtension<K, V> {
 	 * @param  <V> the values type
 	 * @author     Barak Ugav
 	 */
-	public static class Size<K, V> extends RedBlackTreeExtension.Int<K, V> {
+	static class Size<K, V> extends RedBlackTreeExtension.Int<K, V> {
 
 		/**
 		 * Create a new subtree size extension.
 		 * <p>
 		 * A new extension should be used for each red black tree individually.
 		 */
-		public Size() {}
+		Size() {}
 
 		/**
 		 * Get the number of nodes in the subtree of given red black tree node.
@@ -116,7 +115,7 @@ public class RedBlackTreeExtension<K, V> {
 		 * @return     the number of nodes in the subtree of given red black tree node. The counting include the node
 		 *             itself, therefore the returned value is always greater or equal to one.
 		 */
-		public int getSubTreeSize(HeapReference<K, V> ref) {
+		int getSubTreeSize(HeapReference<K, V> ref) {
 			return getNodeData((RedBlackTreeExtended.Node<K, V>) ref);
 		}
 
@@ -193,14 +192,14 @@ public class RedBlackTreeExtension<K, V> {
 	 * @param  <V> the values type
 	 * @author     Barak Ugav
 	 */
-	public static class Min<K, V> extends RedBlackTreeExtension.Obj<K, V, RedBlackTreeExtended.Node<K, V>> {
+	static class Min<K, V> extends RedBlackTreeExtension.Obj<K, V, RedBlackTreeExtended.Node<K, V>> {
 
 		/**
 		 * Create a new subtree minimum extension.
 		 * <p>
 		 * A new extension should be used for each red black tree individually.
 		 */
-		public Min() {}
+		Min() {}
 
 		/**
 		 * Get a reference to the node with the minimum key in the subtree of given red black tree node.
@@ -210,7 +209,7 @@ public class RedBlackTreeExtension<K, V> {
 		 *             subtree include the given node itself, therefore the returned element is always smaller or equal
 		 *             to the provided node.
 		 */
-		public HeapReference<K, V> getSubTreeMin(HeapReference<K, V> ref) {
+		HeapReference<K, V> getSubTreeMin(HeapReference<K, V> ref) {
 			return getNodeData((RedBlackTreeExtended.Node<K, V>) ref);
 		}
 
@@ -325,14 +324,14 @@ public class RedBlackTreeExtension<K, V> {
 	 * @param  <V> the values type
 	 * @author     Barak Ugav
 	 */
-	public static class Max<K, V> extends RedBlackTreeExtension.Obj<K, V, RedBlackTreeExtended.Node<K, V>> {
+	static class Max<K, V> extends RedBlackTreeExtension.Obj<K, V, RedBlackTreeExtended.Node<K, V>> {
 
 		/**
 		 * Create a new subtree maximum extension.
 		 * <p>
 		 * A new extension should be used for each red black tree individually.
 		 */
-		public Max() {}
+		Max() {}
 
 		/**
 		 * Get a reference to the node with maximal key in the subtree of given red black tree node.
@@ -342,7 +341,7 @@ public class RedBlackTreeExtension<K, V> {
 		 *             subtree include the given node itself, therefore the returned element is always greater or equal
 		 *             to the provided node.
 		 */
-		public HeapReference<K, V> getSubTreeMax(HeapReference<K, V> ref) {
+		HeapReference<K, V> getSubTreeMax(HeapReference<K, V> ref) {
 			return getNodeData((RedBlackTreeExtended.Node<K, V>) ref);
 		}
 

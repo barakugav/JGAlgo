@@ -31,7 +31,7 @@ package com.jgalgo;
  * @see        HeapReferenceable
  * @author     Barak Ugav
  */
-public interface HeapReference<K, V> {
+interface HeapReference<K, V> {
 
 	/**
 	 * Get the key of this element.
