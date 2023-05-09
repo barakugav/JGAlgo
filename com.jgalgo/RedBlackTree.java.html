@@ -30,7 +30,7 @@ import java.util.Iterator;
  * @see        &lt;a href= &quot;https://en.wikipedia.org/wiki/Red%E2%80%93black_tree&quot;&gt;Wikipedia&lt;/a&gt;
  * @author     Barak Ugav
  */
-<span class="fc" id="L33">public class RedBlackTree&lt;K, V&gt; extends BinarySearchTreeAbstract&lt;K, V&gt; {</span>
+<span class="fc" id="L33">class RedBlackTree&lt;K, V&gt; extends BinarySearchTreeAbstract&lt;K, V&gt; {</span>
 
 	private int size;
 	private Node&lt;K, V&gt; root;
@@ -47,7 +47,7 @@ import java.util.Iterator;
 	 * constraint (for example, the user attempts to insert a string element to a tree whose keys are integers), the
 	 * {@code insert} call will throw a {@code ClassCastException}.
 	 */
-	public RedBlackTree() {
+	RedBlackTree() {
 <span class="nc" id="L51">		this(null);</span>
 <span class="nc" id="L52">	}</span>
 
@@ -62,7 +62,7 @@ import java.util.Iterator;
 	 * @param comparator the comparator that will be used to order this tree. If {@code null}, the
 	 *                       {@linkplain Comparable natural ordering} of the keys will be used.
 	 */
-	public RedBlackTree(Comparator&lt;? super K&gt; comparator) {
+	RedBlackTree(Comparator&lt;? super K&gt; comparator) {
 <span class="fc" id="L66">		super(comparator);</span>
 <span class="fc" id="L67">		root = null;</span>
 <span class="fc" id="L68">		size = 0;</span>
@@ -523,7 +523,7 @@ import java.util.Iterator;
 	 * @return     an iterator that iterate over all the nodes in the node's sub tree
 	 */
 	@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
-	public Iterator&lt;HeapReference&lt;K, V&gt;&gt; experimental_subTreeIterator(HeapReference&lt;K, V&gt; ref) {
+	Iterator&lt;HeapReference&lt;K, V&gt;&gt; subTreeIterator(HeapReference&lt;K, V&gt; ref) {
 <span class="fc" id="L527">		return (Iterator) (new BinarySearchTrees.BSTIterator&lt;&gt;((Node&lt;K, V&gt;) ref));</span>
 	}
 

@@ -55,7 +55,7 @@ import java.util.Comparator;
  * @see        HeapReference
  * @author     Barak Ugav
  */
-public interface HeapReferenceable&lt;K, V&gt; extends Collection&lt;HeapReference&lt;K, V&gt;&gt; {
+interface HeapReferenceable&lt;K, V&gt; extends Collection&lt;HeapReference&lt;K, V&gt;&gt; {
 
 	/**
 	 * Insert a new element to the heap with {@code null} value.
@@ -66,7 +66,7 @@ public interface HeapReferenceable&lt;K, V&gt; extends Collection&lt;HeapReferen
 	 * @param  key the key of the new element
 	 * @return     reference to the new element
 	 */
-	public HeapReference&lt;K, V&gt; insert(K key);
+	HeapReference&lt;K, V&gt; insert(K key);
 
 	/**
 	 * Insert a new element to the heap with both key and value.
@@ -87,7 +87,7 @@ public interface HeapReferenceable&lt;K, V&gt; extends Collection&lt;HeapReferen
 	 * @return                       a reference to the element with the minimal key in the heap
 	 * @throws IllegalStateException if the heap is empty
 	 */
-	public HeapReference&lt;K, V&gt; findMin();
+	HeapReference&lt;K, V&gt; findMin();
 
 	/**
 	 * Extract the element with the minimal key in the heap.
@@ -97,7 +97,7 @@ public interface HeapReferenceable&lt;K, V&gt; extends Collection&lt;HeapReferen
 	 * @return                       the element with the minimal key in the heap
 	 * @throws IllegalStateException if the heap is empty
 	 */
-	public HeapReference&lt;K, V&gt; extractMin();
+	HeapReference&lt;K, V&gt; extractMin();
 
 	/**
 	 * Meld with another heap.
@@ -113,7 +113,7 @@ public interface HeapReferenceable&lt;K, V&gt; extends Collection&lt;HeapReferen
 	 * @param  heap                     a heap to meld with. After the operation it will be empty.
 	 * @throws IllegalArgumentException if the given heap is {@code this} heap, or its of another implementation
 	 */
-	public void meld(HeapReferenceable&lt;? extends K, ? extends V&gt; heap);
+	void meld(HeapReferenceable&lt;? extends K, ? extends V&gt; heap);
 
 	/**
 	 * Returns the comparator used to order the element's keys in this heap, or {@code null} if this heap uses the
@@ -122,7 +122,7 @@ public interface HeapReferenceable&lt;K, V&gt; extends Collection&lt;HeapReferen
 	 * @return the comparator used to order the element's keys in this heap, or {@code null} if this heap uses the
 	 *         natural ordering of its keys
 	 */
-	public Comparator&lt;? super K&gt; comparator();
+	Comparator&lt;? super K&gt; comparator();
 
 	/**
 	 * Find an element by its key in the heap and get a reference to it.
@@ -159,7 +159,7 @@ public interface HeapReferenceable&lt;K, V&gt; extends Collection&lt;HeapReferen
 	 * @param  newKey                   a new key
 	 * @throws IllegalArgumentException if the new key is greater than the previous key
 	 */
-	public void decreaseKey(HeapReference&lt;K, V&gt; ref, K newKey);
+	void decreaseKey(HeapReference&lt;K, V&gt; ref, K newKey);
 
 	/**
 	 * Remove an element from the heap by its reference.
@@ -169,7 +169,7 @@ public interface HeapReferenceable&lt;K, V&gt; extends Collection&lt;HeapReferen
 	 *
 	 * @param ref a reference to an inserted element
 	 */
-	public void remove(HeapReference&lt;K, V&gt; ref);
+	void remove(HeapReference&lt;K, V&gt; ref);
 
 	/**
 	 * Create a {@link Heap} view on this referenceable heap.
@@ -267,7 +267,7 @@ public interface HeapReferenceable&lt;K, V&gt; extends Collection&lt;HeapReferen
 	 * @see        HeapReferenceable#newBuilder()
 	 * @author     Barak Ugav
 	 */
-	public static interface Builder&lt;K, V&gt; extends BuilderAbstract&lt;HeapReferenceable.Builder&lt;K, V&gt;&gt; {
+	static interface Builder&lt;K, V&gt; extends BuilderAbstract&lt;HeapReferenceable.Builder&lt;K, V&gt;&gt; {
 
 		/**
 		 * Build a new heap with the given comparator.

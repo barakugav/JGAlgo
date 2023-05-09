@@ -35,14 +35,14 @@ package com.jgalgo;
  * @see    &lt;a href=&quot;https://en.wikipedia.org/wiki/Link/cut_tree&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
  */
-public interface DynamicTree {
+interface DynamicTree {
 
 	/**
 	 * Create a new tree in the forest with a single node.
 	 *
 	 * @return the new node
 	 */
-	public Node makeTree();
+	Node makeTree();
 
 	/**
 	 * Find the root of the tree containing \(v\).
@@ -50,7 +50,7 @@ public interface DynamicTree {
 	 * @param  v a node
 	 * @return   the root of the tree containing \(v\)
 	 */
-	public Node findRoot(Node v);
+	Node findRoot(Node v);
 
 	/**
 	 * Find the minimum edge on the path from a node to it's tree root.
@@ -58,7 +58,7 @@ public interface DynamicTree {
 	 * @param  v a node
 	 * @return   the minimum edge from \(v\) to it's tree root, or {@code null} if no such edge exists
 	 */
-	public MinEdge findMinEdge(Node v);
+	MinEdge findMinEdge(Node v);
 
 	/**
 	 * Add a weight to all of the edges from \(v\) to it's tree root.
@@ -66,7 +66,7 @@ public interface DynamicTree {
 	 * @param v a node
 	 * @param w a weight to add
 	 */
-	public void addWeight(Node v, double w);
+	void addWeight(Node v, double w);
 
 	/**
 	 * Link a root to be a child of some other node of another tree.
@@ -77,26 +77,26 @@ public interface DynamicTree {
 	 * @throws IllegalArgumentException if {@code child} is not a root or if {@code child} and {@code root} are in the
 	 *                                      same tree.
 	 */
-	public void link(Node child, Node parent, double w);
+	void link(Node child, Node parent, double w);
 
 	/**
 	 * Remove the edge from a node to it's parent.
 	 *
 	 * @param v a node
 	 */
-	public void cut(Node v);
+	void cut(Node v);
 
 	/**
 	 * Clear the whole data structure
 	 */
-	public void clear();
+	void clear();
 
 	/**
 	 * A node in the forest of {@link DynamicTree} data structure.
 	 *
 	 * @author Barak Ugav
 	 */
-	public static interface Node {
+	static interface Node {
 
 		/**
 		 * Get the user data of this node.
@@ -104,21 +104,21 @@ public interface DynamicTree {
 		 * @param  &lt;V&gt; the data type
 		 * @return     the user data or {@code null} if it was not set
 		 */
-		public &lt;V&gt; V getNodeData();
+		&lt;V&gt; V getNodeData();
 
 		/**
 		 * Set the user data of this node.
 		 *
 		 * @param data new data for the node
 		 */
-		public void setNodeData(Object data);
+		void setNodeData(Object data);
 
 		/**
 		 * Get the parent node of this node.
 		 *
 		 * @return the parent node of this node
 		 */
-		public Node getParent();
+		Node getParent();
 
 	};
 
@@ -128,7 +128,7 @@ public interface DynamicTree {
 	 *
 	 * @author Barak Ugav
 	 */
-	public static interface MinEdge {
+	static interface MinEdge {
 
 		/**
 		 * Get the source of this edge.
@@ -138,7 +138,7 @@ public interface DynamicTree {
 		 *
 		 * @return the edge source.
 		 */
-		public Node source();
+		Node source();
 
 		/**
 		 * Get the weight of the edge.
@@ -149,7 +149,7 @@ public interface DynamicTree {
 		 *
 		 * @return the weight of the edge.
 		 */
-		public double weight();
+		double weight();
 
 	}
 
@@ -179,7 +179,7 @@ public interface DynamicTree {
 	 * @see                  DynamicTreeExtension
 	 * @see                  DynamicTree.Builder#addExtension(Class)
 	 */
-	public &lt;Ext extends DynamicTreeExtension&gt; Ext getExtension(Class&lt;Ext&gt; extensionType);
+	&lt;Ext extends DynamicTreeExtension&gt; Ext getExtension(Class&lt;Ext&gt; extensionType);
 
 	/**
 	 * Create a new dynamic trees algorithm builder.

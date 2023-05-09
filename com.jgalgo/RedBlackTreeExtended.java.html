@@ -51,9 +51,9 @@ import java.util.Objects;
  *
  * @param  &lt;K&gt; the keys type
  * @param  &lt;V&gt; the values type
- * @author Barak Ugav
+ * @author     Barak Ugav
  */
-public class RedBlackTreeExtended&lt;K, V&gt; extends RedBlackTree&lt;K, V&gt; {
+class RedBlackTreeExtended&lt;K, V&gt; extends RedBlackTree&lt;K, V&gt; {
 
 	private Node&lt;K, V&gt;[] nodes;
 	private final RedBlackTreeExtension&lt;K, V&gt;[] extensions;
@@ -77,7 +77,7 @@ public class RedBlackTreeExtended&lt;K, V&gt; extends RedBlackTree&lt;K, V&gt; {
 	 * @param  extensions               a collections of extensions to be used by this red black tree.
 	 * @throws IllegalArgumentException if the extensions collection is empty
 	 */
-	public RedBlackTreeExtended(Collection&lt;? extends RedBlackTreeExtension&lt;K, V&gt;&gt; extensions) {
+	RedBlackTreeExtended(Collection&lt;? extends RedBlackTreeExtension&lt;K, V&gt;&gt; extensions) {
 <span class="nc" id="L81">		this(null, extensions);</span>
 <span class="nc" id="L82">	}</span>
 
@@ -99,7 +99,7 @@ public class RedBlackTreeExtended&lt;K, V&gt; extends RedBlackTree&lt;K, V&gt; {
 	 * @throws IllegalArgumentException if the extensions collection is empty
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
-	public RedBlackTreeExtended(Comparator&lt;? super K&gt; comparator,
+	RedBlackTreeExtended(Comparator&lt;? super K&gt; comparator,
 			Collection&lt;? extends RedBlackTreeExtension&lt;K, V&gt;&gt; extensions) {
 <span class="fc" id="L104">		super(comparator);</span>
 <span class="pc bpc" id="L105" title="1 of 2 branches missed.">		if (extensions.isEmpty())</span>

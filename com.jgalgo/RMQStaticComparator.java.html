@@ -29,7 +29,7 @@ import java.util.Objects;
  * @author Barak Ugav
  */
 @FunctionalInterface
-public interface RMQStaticComparator {
+interface RMQStaticComparator {
 
 	/**
 	 * Compare the i'th and j'th elements in the sequence.
@@ -39,7 +39,7 @@ public interface RMQStaticComparator {
 	 * @return   value less than zero if the i'th element is smaller than the j'th element, value greater than zero if
 	 *           the j'th is smaller than the i'th and zero if they are equal
 	 */
-	public int compare(int i, int j);
+	int compare(int i, int j);
 
 	/**
 	 * Create an RMQ comparator from an object array.
@@ -50,7 +50,7 @@ public interface RMQStaticComparator {
 	 *             ordering}.
 	 */
 	@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
-	public static &lt;E&gt; RMQStaticComparator ofObjArray(E[] arr) {
+	static &lt;E&gt; RMQStaticComparator ofObjArray(E[] arr) {
 <span class="nc" id="L54">		Objects.requireNonNull(arr);</span>
 <span class="nc" id="L55">		return (i, j) -&gt; ((Comparable) arr[i]).compareTo(arr[j]);</span>
 	}
@@ -64,7 +64,7 @@ public interface RMQStaticComparator {
 	 *                 {@linkplain Comparable natural ordering} of the elements will be used.
 	 * @return     an RMQ comparator that will compare elements in the array using the given comparator
 	 */
-	public static &lt;E&gt; RMQStaticComparator ofObjArray(E[] arr, Comparator&lt;? super E&gt; c) {
+	static &lt;E&gt; RMQStaticComparator ofObjArray(E[] arr, Comparator&lt;? super E&gt; c) {
 <span class="nc bnc" id="L68" title="All 2 branches missed.">		if (c == null) {</span>
 <span class="nc" id="L69">			return ofObjArray(arr);</span>
 		} else {
@@ -79,7 +79,7 @@ public interface RMQStaticComparator {
 	 * @param  arr an array
 	 * @return     an RMQ comparator that will compare elements in the array using {@code Byte.compare()}.
 	 */
-	public static RMQStaticComparator ofByteArray(byte[] arr) {
+	static RMQStaticComparator ofByteArray(byte[] arr) {
 <span class="fc" id="L83">		Objects.requireNonNull(arr);</span>
 <span class="fc" id="L84">		return (i, j) -&gt; Byte.compare(arr[i], arr[j]);</span>
 	}
@@ -90,7 +90,7 @@ public interface RMQStaticComparator {
 	 * @param  arr an array
 	 * @return     an RMQ comparator that will compare elements in the array using {@code Integer.compare()}.
 	 */
-	public static RMQStaticComparator ofIntArray(int[] arr) {
+	static RMQStaticComparator ofIntArray(int[] arr) {
 <span class="fc" id="L94">		Objects.requireNonNull(arr);</span>
 <span class="fc" id="L95">		return (i, j) -&gt; Integer.compare(arr[i], arr[j]);</span>
 	}

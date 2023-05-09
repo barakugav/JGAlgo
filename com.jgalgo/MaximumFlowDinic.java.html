@@ -63,7 +63,7 @@ public class MaximumFlowDinic implements MaximumFlow {
 	 *
 	 * @param builder a builder that provide instances of graphs for the layers graph
 	 */
-	public void experimental_setLayerGraphFactory(Supplier&lt;? extends GraphBuilder&gt; builder) {
+	void setLayerGraphFactory(Supplier&lt;? extends GraphBuilder&gt; builder) {
 <span class="nc" id="L67">		layerGraphBuilder = Objects.requireNonNull(builder);</span>
 <span class="nc" id="L68">	}</span>
 

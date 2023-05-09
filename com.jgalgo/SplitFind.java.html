@@ -46,14 +46,14 @@ package com.jgalgo;
  *
  * @author Barak Ugav
  */
-public interface SplitFind {
+interface SplitFind {
 
 	/**
 	 * Init the data structure with a sequence {@code [0, size)}.
 	 *
 	 * @param size the size of the sequence
 	 */
-	public void init(int size);
+	void init(int size);
 
 	/**
 	 * Find the set an element belongs to
@@ -62,7 +62,7 @@ public interface SplitFind {
 	 * @return   some element in the set {@code x} belongs to. {@code find(x1)==find(x2)} for two elements {@code x1,x2}
 	 *           if and only if they are in the same set.
 	 */
-	public int find(int x);
+	int find(int x);
 
 	/**
 	 * Split an element's sequence into two separate sequences relative to the given element
@@ -72,7 +72,7 @@ public interface SplitFind {
 	 *
 	 * @param x an element in the data structure. The element itself will be included in the greater sequence
 	 */
-	public void split(int x);
+	void split(int x);
 
 	/**
 	 * Create a new split-find data structure builder.

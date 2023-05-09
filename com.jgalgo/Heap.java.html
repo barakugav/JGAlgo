@@ -51,14 +51,14 @@ import java.util.Comparator;
  * @see        HeapReferenceable
  * @author     Barak Ugav
  */
-public interface Heap&lt;E&gt; extends Collection&lt;E&gt; {
+interface Heap&lt;E&gt; extends Collection&lt;E&gt; {
 
 	/**
 	 * Insert a new element to the heap.
 	 *
 	 * @param e new element
 	 */
-	public void insert(E e);
+	void insert(E e);
 
 	/**
 	 * Find the minimum element in the heap.
@@ -66,7 +66,7 @@ public interface Heap&lt;E&gt; extends Collection&lt;E&gt; {
 	 * @return                       the minimum element in the heap
 	 * @throws IllegalStateException if the heap is empty
 	 */
-	public E findMin();
+	E findMin();
 
 	/**
 	 * Extract the minimum element in the heap.
@@ -76,7 +76,7 @@ public interface Heap&lt;E&gt; extends Collection&lt;E&gt; {
 	 * @return                       the minimum element in the heap
 	 * @throws IllegalStateException if the heap is empty
 	 */
-	public E extractMin();
+	E extractMin();
 
 	/**
 	 * Meld with another heap.
@@ -93,7 +93,7 @@ public interface Heap&lt;E&gt; extends Collection&lt;E&gt; {
 	 * @param  heap                     a heap to meld with. After the operation it will be empty.
 	 * @throws IllegalArgumentException if the given heap is {@code this} heap, or its of another implementation
 	 */
-	public void meld(Heap&lt;? extends E&gt; heap);
+	void meld(Heap&lt;? extends E&gt; heap);
 
 	/**
 	 * Returns the comparator used to order the elements in this heap, or {@code null} if this heap uses the
@@ -102,7 +102,7 @@ public interface Heap&lt;E&gt; extends Collection&lt;E&gt; {
 	 * @return the comparator used to order the elements in this heap, or {@code null} if this heap uses the natural
 	 *         ordering of its elements
 	 */
-	public Comparator&lt;? super E&gt; comparator();
+	Comparator&lt;? super E&gt; comparator();
 
 	/**
 	 * Create a new heaps builder.
@@ -149,7 +149,7 @@ public interface Heap&lt;E&gt; extends Collection&lt;E&gt; {
 	 * @see        Heap#newBuilder()
 	 * @author     Barak Ugav
 	 */
-	public static interface Builder&lt;E&gt; extends BuilderAbstract&lt;Heap.Builder&lt;E&gt;&gt; {
+	static interface Builder&lt;E&gt; extends BuilderAbstract&lt;Heap.Builder&lt;E&gt;&gt; {
 		/**
 		 * Build a new heap with the given comparator.
 		 * &lt;p&gt;
@@ -164,7 +164,7 @@ public interface Heap&lt;E&gt; extends Collection&lt;E&gt; {
 		/**
 		 * Build a new heap with {@linkplain Comparable natural ordering}.
 		 *
-		 * @return     the newly constructed heap
+		 * @return the newly constructed heap
 		 */
 		default Heap&lt;E&gt; build() {
 <span class="nc" id="L170">			return build(null);</span>

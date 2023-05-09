@@ -64,7 +64,7 @@ class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumMatching
 	 *
 	 * @param heapBuilder a builder for heaps used by this algorithm
 	 */
-	public void setHeapBuilder(HeapReferenceable.Builder&lt;?, ?&gt; heapBuilder) {
+	void setHeapBuilder(HeapReferenceable.Builder&lt;?, ?&gt; heapBuilder) {
 <span class="nc" id="L68">		this.heapBuilder = heapBuilder.keysTypePrimitive(int.class).valuesTypeVoid();</span>
 <span class="nc" id="L69">	}</span>
 
