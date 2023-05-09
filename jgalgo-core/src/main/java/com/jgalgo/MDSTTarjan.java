@@ -54,13 +54,7 @@ class MDSTTarjan implements MDST {
 		this.heapBuilder = heapBuilder.keysTypePrimitive(int.class).valuesTypeVoid();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @throws IllegalArgumentException if the graph is not directed
-	 */
-	@Override
-	public MST.Result computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
+	MST.Result computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
 		ArgumentCheck.onlyDirected(g);
 		if (g.vertices().size() == 0 || g.edges().size() == 0)
 			return MSTResultImpl.Empty;

@@ -37,7 +37,7 @@ public class MDSTTarjanTest extends TestBase {
 		@Override
 		public MST.Result computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
 			if (g.getCapabilities().directed())
-				return algo.computeMinimumSpanningTree(g, w);
+				return algo.computeMinimumSpanningTree(g, w, 0);
 			int n = g.vertices().size();
 			Graph dg = new GraphArrayDirected(n);
 			Weights.Int edgeRef = dg.addEdgesWeights("edgeRef", int.class, Integer.valueOf(-1));
@@ -49,7 +49,7 @@ public class MDSTTarjanTest extends TestBase {
 					edgeRef.set(dg.addEdge(v, u), e);
 				}
 			}
-			MST.Result mst0 = algo.computeMinimumSpanningTree(dg, e -> w.weight(edgeRef.getInt(e)));
+			MST.Result mst0 = algo.computeMinimumSpanningTree(dg, e -> w.weight(edgeRef.getInt(e)), 0);
 			IntCollection mst = new IntArrayList(mst0.edges().size());
 			for (IntIterator it = mst0.edges().iterator(); it.hasNext();)
 				mst.add(edgeRef.getInt(it.nextInt()));

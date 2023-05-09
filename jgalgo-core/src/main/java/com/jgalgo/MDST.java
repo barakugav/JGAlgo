@@ -24,20 +24,10 @@ package com.jgalgo;
  *
  * @author Barak Ugav
  */
-public interface MDST extends MST {
+public interface MDST {
 
 	/**
-	 * {@inheritDoc}
-	 * <p>
-	 * The result tree will be rooted at some vertex chosen by the algorithm.
-	 *
-	 * @throws IllegalArgumentException if the graph is not directed
-	 */
-	@Override
-	public MST.Result computeMinimumSpanningTree(Graph g, EdgeWeightFunc w);
-
-	/**
-	 * Compute a minimum directed spanning tree (MDST) in a directed graph, rooted at the given vertex
+	 * Compute a minimum directed spanning tree (MDST) in a directed graph, rooted at the given vertex.
 	 *
 	 * @param  g                        a directed graph
 	 * @param  w                        an edge weight function
