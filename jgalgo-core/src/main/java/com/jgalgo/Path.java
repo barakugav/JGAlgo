@@ -60,8 +60,6 @@ public class Path extends AbstractIntList {
 	private final int target;
 	private final IntList edges;
 
-	static final Path Empty = new Path(GraphsUtils.EmptyGraphUndirected, -1, -1, IntLists.emptyList());
-
 	/**
 	 * Construct a new path in a graph from an edge list, a source and a target vertices.
 	 *

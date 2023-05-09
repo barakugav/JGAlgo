@@ -32,7 +32,7 @@ package com.jgalgo;
  *
  * @author Barak Ugav
  */
-public class BitsLookupTable {
+class BitsLookupTable {
 
 	private BitsLookupTable() {}
 
@@ -58,7 +58,7 @@ public class BitsLookupTable {
 	 *
 	 * @author Barak Ugav
 	 */
-	public static class Count {
+	static class Count {
 
 		private final int wordsize;
 		private final byte[] bitCountTable;
@@ -68,7 +68,7 @@ public class BitsLookupTable {
 		 *
 		 * @param wordsize maximum number of bits needed to represent an integer
 		 */
-		public Count(int wordsize) {
+		Count(int wordsize) {
 			if (!(0 < wordsize && wordsize < Integer.SIZE - 1))
 				throw new IllegalArgumentException("unsupported word size: " + wordsize);
 			this.wordsize = wordsize;
@@ -92,7 +92,7 @@ public class BitsLookupTable {
 		 * @param  x an integer
 		 * @return   the number of 1 bits in the given integer
 		 */
-		public int bitCount(int x) {
+		int bitCount(int x) {
 			return bitCountTable[x];
 		}
 
@@ -128,7 +128,7 @@ public class BitsLookupTable {
 	 *
 	 * @author Barak Ugav
 	 */
-	public static class Ith {
+	static class Ith {
 
 		private final int wordsize;
 		private final BitsLookupTable.Count count;
@@ -140,7 +140,7 @@ public class BitsLookupTable {
 		 * @param wordsize maximum number of bits needed to represent an integer
 		 * @param count    a lookup table for the bitCount (popcount) operation
 		 */
-		public Ith(int wordsize, BitsLookupTable.Count count) {
+		Ith(int wordsize, BitsLookupTable.Count count) {
 			if (!(0 < wordsize && wordsize < Integer.SIZE - 1))
 				throw new IllegalArgumentException("unsupported word size: " + wordsize);
 			if (count.wordsize < wordsize)
@@ -173,7 +173,7 @@ public class BitsLookupTable {
 		 * @return                           the index of the i-th one bit on the given integer
 		 * @throws IndexOutOfBoundsException if {@code i < 0} or {@code i >= bitCount(x)}.
 		 */
-		public int ithBit(int x, int i) {
+		int ithBit(int x, int i) {
 
 			/*
 			 * the ithBitTable is of size [2^halfwordsize][halfwordsize] and we answer a query by 2 lookup tables. Using
@@ -202,7 +202,7 @@ public class BitsLookupTable {
 		 * @return   the number of trailing zeros of an integer.
 		 * @see      Integer#numberOfTrailingZeros(int)
 		 */
-		public int numberOfTrailingZeros(int x) {
+		int numberOfTrailingZeros(int x) {
 			return x == 0 ? Integer.SIZE : ithBit(x, 0);
 		}
 

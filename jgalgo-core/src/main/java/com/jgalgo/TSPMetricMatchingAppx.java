@@ -43,7 +43,7 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 	public Path computeShortestTour(Graph g, EdgeWeightFunc w) {
 		final int n = g.vertices().size();
 		if (n == 0)
-			return Path.Empty;
+			return null;
 		ArgumentCheck.onlyUndirected(g);
 		TSPMetricUtils.checkNoParallelEdges(g);
 		// TSPMetricUtils.checkArgDistanceTableIsMetric(distances);
