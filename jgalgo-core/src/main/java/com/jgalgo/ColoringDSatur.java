@@ -18,34 +18,44 @@ package com.jgalgo;
 
 import java.util.BitSet;
 
-import it.unimi.dsi.fastutil.ints.IntIterator;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
+import com.jgalgo.Utils.BiInt2IntFunction;
+
+import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 
 /**
- * The DSatur coloring algorithm.
+ * The DSatur coloring algorithm implemented.
  * <p>
  * The Saturation Degree (DSatur) coloring algorithm is a greedy algorithm, namely it examine the vertices in some order
  * and assign for each vertex the minimum (integer) color which is not used by its neighbors. It differ from other
  * greedy coloring algorithm by the order of the vertices: the next vertex to be colored is the vertex with the highest
  * number of colors in its neighborhood (called saturation degree).
  * <p>
- * The algorithm runs in time \(O(n m)\), and it could be implemented faster using a heap with {@code decreaseKey}
- * operation, see {@link ColoringDSaturHeap}.
+ * The algorithm runs in \(O(m \log n)\) time assuming the number of colors is constant.
  * <p>
  * Note that the result is an approximate for the minimum number of colors, as finding an optimal coloring is an NP-hard
  * problem.
  *
  * @see    <a href="https://en.wikipedia.org/wiki/DSatur">Wikipedia</a>
- * @see    ColoringDSaturHeap
  * @author Barak Ugav
  */
 public class ColoringDSatur implements Coloring {
+
+	private HeapReferenceable.Builder<Integer, Integer> heapBuilder =
+			HeapReferenceable.newBuilder().keysTypePrimitive(int.class).valuesTypePrimitive(int.class);
 
 	/**
 	 * Create a new coloring algorithm object.
 	 */
 	public ColoringDSatur() {}
+
+	/**
+	 * Set the implementation of the heap used by this algorithm.
+	 *
+	 * @param heapBuilder a builder for heaps used by this algorithm
+	 */
+	public void setHeapBuilder(HeapReferenceable.Builder<?, ?> heapBuilder) {
+		this.heapBuilder = heapBuilder.keysTypePrimitive(int.class).valuesTypePrimitive(int.class);
+	}
 
 	@Override
 	public Coloring.Result computeColoring(Graph g) {
@@ -54,44 +64,68 @@ public class ColoringDSatur implements Coloring {
 
 		ColoringResultImpl res = new ColoringResultImpl(g);
 		int n = g.vertices().size();
+		BitSet[] neighborColors = new BitSet[n];
 
-		IntSet uncolored = new IntOpenHashSet(n);
-		BitSet[] usedColors = new BitSet[n];
-		int[] usedColorsNum = new int[n];
-		int[] degree = new int[n];
+		/* We want to compose both the saturationDegree and uncoloredDegree in a key int key, using 'toKey' func */
+		int maxDegree = 0;
+		for (int u = 0; u < n; u++)
+			maxDegree = Math.max(maxDegree, g.degreeOut(u));
+		final int maxDegreeFactor = maxDegree + 1;
+		/* negate saturationDegree, more neighbor colors should be extracted from the heap first */
+		BiInt2IntFunction createKey =
+				(saturationDegree, uncoloredDegree) -> -(saturationDegree * maxDegreeFactor + uncoloredDegree);
+		Int2IntFunction keyToSaturationDegree = key -> (-key) / maxDegreeFactor;
+		Int2IntFunction keyToUncoloredDegree = key -> (-key) % maxDegreeFactor;
+
+		HeapReferenceable<Integer, Integer> heap = heapBuilder.build();
+		@SuppressWarnings("unchecked")
+		HeapReference<Integer, Integer>[] refs = new HeapReference[n];
 		for (int u = 0; u < n; u++) {
-			uncolored.add(u);
-			usedColors[u] = new BitSet();
-			degree[u] = g.degreeOut(u);
+			int key = createKey.apply(/* saturationDegree= */0, g.degreeOut(u));
+			refs[u] = heap.insert(Integer.valueOf(key), Integer.valueOf(u));
+			neighborColors[u] = new BitSet();
 		}
 
-		while (!uncolored.isEmpty()) {
-			int u = uncolored.iterator().nextInt();
-			for (IntIterator it = uncolored.iterator(); it.hasNext();) {
-				int u1 = it.nextInt();
-				int s1 = usedColorsNum[u], s2 = usedColorsNum[u1];
-				if (s1 > s2 || (s1 == s2 && degree[u] > degree[u1]))
-					u = u1;
-			}
+		while (!heap.isEmpty()) {
+			int u = heap.extractMin().value().intValue();
 
 			int color = 0;
-			while (usedColors[u].get(color))
+			while (neighborColors[u].get(color))
 				color++;
 			res.colors[u] = color;
 			res.colorsNum = Math.max(res.colorsNum, color + 1);
-			uncolored.remove(u);
-			usedColors[u].clear();
-			usedColorsNum[u] = 0;
-			usedColors[u] = null;
 
 			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 				eit.nextInt();
 				int v = eit.target();
-				if (res.colorOf(v) == -1) {/* v is uncolored */
-					if (!usedColors[v].get(color)) {
-						usedColorsNum[v]++;
-						usedColors[v].set(color);
+				if (res.colorOf(v) == -1) { /* v is uncolored */
+					HeapReference<Integer, Integer> ref = refs[v];
+					int key = ref.key().intValue();
+					int saturationDegree = keyToSaturationDegree.applyAsInt(key);
+					int uncoloredDegree = keyToUncoloredDegree.applyAsInt(key);
+
+					/* we colored u, v has one less uncolored neighbor */
+					uncoloredDegree--;
+
+					if (!neighborColors[v].get(color)) {
+						/* v has one more unique color in its neighborhood */
+						neighborColors[v].set(color);
+						saturationDegree++;
+
+						key = createKey.apply(saturationDegree, uncoloredDegree);
+						heap.decreaseKey(ref, Integer.valueOf(key));
+					} else {
+
+						key = createKey.apply(saturationDegree, uncoloredDegree);
+						/*
+						 * we would prefer to use decreaseKey, but we only decrease the uncolored degree, which is
+						 * 'increaseKey' with respect to the heap ordering. Remove and insert a new element to the heap,
+						 * and pay \(O(\log n)\) instead of \(O(1)\)
+						 */
+						heap.remove(ref);
+						refs[v] = heap.insert(Integer.valueOf(key), ref.value());
 					}
+
 				}
 			}
 		}

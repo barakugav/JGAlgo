@@ -22,7 +22,7 @@ public class ColoringDSaturTest extends TestBase {
 
 	@Test
 	public void testRandGraphs() {
-		final long seed = 0xaf95beb0ce86b8f2L;
+		final long seed = 0x899cb1808437b167L;
 		ColoringTestUtils.testRandGraphs(new ColoringDSatur(), seed);
 	}
 

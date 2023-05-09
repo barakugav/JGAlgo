@@ -112,8 +112,7 @@ for (IntIterator it = ssspRes.getPath(v3).iterator(); it.hasNext();) {
 | Traveling Salesman Problem (TSP) $3/2$-appx using maximum matching | $O(n^3)$ |
 | Vertex Coloring Greedy arbitrary vertices order | $O(n + m)$ assuming the number of colors is constant |
 | Vertex Coloring Greedy random vertices order | $O(n + m)$ assuming the number of colors is constant |
-| Vertex Coloring DSatur | $O(m n)$ |
-| Vertex Coloring DSatur with Heap | $O(m + n \log n)$ assuming the number of colors is constant |
+| Vertex Coloring DSatur | $O(m \log n)$ assuming the number of colors is constant |
 | Vertex Coloring Recursive Largest First | $O(m n)$ |
 | Tarjan Cycles Finder | $O((m + n) (c + 1))$ where $c$ is the number of simple cycles |
 | Johnson Cycles Finder | $O((m + n) (c + 1))$ where $c$ is the number of simple cycles |

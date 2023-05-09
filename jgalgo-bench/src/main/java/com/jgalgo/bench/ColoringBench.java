@@ -37,7 +37,6 @@ import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.Coloring;
 import com.jgalgo.ColoringDSatur;
-import com.jgalgo.ColoringDSaturHeap;
 import com.jgalgo.ColoringGreedy;
 import com.jgalgo.ColoringGreedyRandom;
 import com.jgalgo.ColoringRecursiveLargestFirst;
@@ -94,11 +93,6 @@ public class ColoringBench {
 	@Benchmark
 	public void DSatur(Blackhole blackhole) {
 		benchColoring(ColoringDSatur::new, blackhole);
-	}
-
-	@Benchmark
-	public void DSaturHeap(Blackhole blackhole) {
-		benchColoring(ColoringDSaturHeap::new, blackhole);
 	}
 
 	@Benchmark

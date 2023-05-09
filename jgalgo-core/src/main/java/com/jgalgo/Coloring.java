@@ -98,7 +98,7 @@ public interface Coloring {
 	 * @return a new builder that can build {@link Coloring} objects
 	 */
 	static Coloring.Builder newBuilder() {
-		return ColoringDSaturHeap::new;
+		return ColoringDSatur::new;
 	}
 
 	/**
