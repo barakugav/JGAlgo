@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.jgalgo.bench;
+package com.jgalgo;
 
 import org.junit.jupiter.api.Test;
 import org.openjdk.jmh.runner.Runner;

@@ -14,18 +14,12 @@
  * limitations under the License.
  */
 
-package com.jgalgo.bench;
+package com.jgalgo;
 
 import java.util.BitSet;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
-import com.jgalgo.EdgeIter;
-import com.jgalgo.Graph;
-import com.jgalgo.GraphArrayDirected;
-import com.jgalgo.GraphArrayUndirected;
-import com.jgalgo.UnionFind;
-import com.jgalgo.Weights;
 import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;

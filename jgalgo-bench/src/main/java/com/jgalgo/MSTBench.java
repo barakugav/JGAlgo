@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.jgalgo.bench;
+package com.jgalgo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,14 +35,7 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
-import com.jgalgo.EdgeWeightFunc;
-import com.jgalgo.Graph;
-import com.jgalgo.MinimumMeanCycle;
-import com.jgalgo.MinimumMeanCycleDasdanGupta;
-import com.jgalgo.MinimumMeanCycleHoward;
-import com.jgalgo.Path;
-import com.jgalgo.bench.GraphsTestUtils.RandomGraphBuilder;
-import com.jgalgo.bench.TestUtils.SeedGenerator;
+import com.jgalgo.TestUtils.SeedGenerator;
 import it.unimi.dsi.fastutil.Pair;
 
 @BenchmarkMode(Mode.AverageTime)
@@ -51,16 +44,16 @@ import it.unimi.dsi.fastutil.Pair;
 @Measurement(iterations = 3, time = 5, timeUnit = TimeUnit.SECONDS)
 @Fork(value = 1, warmups = 0)
 @State(Scope.Benchmark)
-public class MinimumMeanCycleBench {
+public class MSTBench {
 
-	@Param({ "|V|=30 |E|=300", "|V|=200 |E|=1500", "|V|=800 |E|=10000" })
+	@Param({ "|V|=100 |E|=100", "|V|=200 |E|=1000", "|V|=1600 |E|=10000", "|V|=6000 |E|=25000" })
 	public String args;
 
 	private List<Pair<Graph, EdgeWeightFunc.Int>> graphs;
 	private final int graphsNum = 31;
 	private final AtomicInteger graphIdx = new AtomicInteger();
 
-	@Setup(Level.Trial)
+	@Setup(Level.Iteration)
 	public void setup() {
 		Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
 		int n = Integer.parseInt(argsMap.get("|V|"));
@@ -69,30 +62,49 @@ public class MinimumMeanCycleBench {
 		final SeedGenerator seedGen = new SeedGenerator(0xe75b8a2fb16463ecL);
 		graphs = new ArrayList<>(graphsNum);
 		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
-					.selfEdges(false).cycles(true).connected(false).build();
+			Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
 			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			graphs.add(Pair.of(g, w));
 		}
 	}
 
-	private void benchMaxFlow(Supplier<? extends MinimumMeanCycle> builder, Blackhole blackhole) {
+	private void benchMST(Supplier<? extends MST> builder, Blackhole blackhole) {
 		Pair<Graph, EdgeWeightFunc.Int> gw = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 		Graph g = gw.first();
 		EdgeWeightFunc.Int w = gw.second();
-		MinimumMeanCycle algo = builder.get();
-		Path cycle = algo.computeMinimumMeanCycle(g, w);
-		blackhole.consume(cycle);
+		MST algo = builder.get();
+		MST.Result mst = algo.computeMinimumSpanningTree(g, w);
+		blackhole.consume(mst);
 	}
 
 	@Benchmark
-	public void Howard(Blackhole blackhole) {
-		benchMaxFlow(MinimumMeanCycleHoward::new, blackhole);
+	public void Boruvka(Blackhole blackhole) {
+		benchMST(MSTBoruvka::new, blackhole);
 	}
 
 	@Benchmark
-	public void DasdanGupta(Blackhole blackhole) {
-		benchMaxFlow(MinimumMeanCycleDasdanGupta::new, blackhole);
+	public void FredmanTarjan(Blackhole blackhole) {
+		benchMST(MSTFredmanTarjan::new, blackhole);
+	}
+
+	@Benchmark
+	public void Kruskal(Blackhole blackhole) {
+		benchMST(MSTKruskal::new, blackhole);
+	}
+
+	@Benchmark
+	public void Prim(Blackhole blackhole) {
+		benchMST(MSTPrim::new, blackhole);
+	}
+
+	@Benchmark
+	public void Yao(Blackhole blackhole) {
+		benchMST(MSTYao::new, blackhole);
+	}
+
+	@Benchmark
+	public void KargerKleinTarjan(Blackhole blackhole) {
+		benchMST(MSTKargerKleinTarjan::new, blackhole);
 	}
 
 }

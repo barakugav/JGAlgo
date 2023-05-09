@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.jgalgo.bench;
+package com.jgalgo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,20 +36,8 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
-import com.jgalgo.FlowNetwork;
-import com.jgalgo.Graph;
-import com.jgalgo.MaximumFlow;
-import com.jgalgo.MaximumFlowDinic;
-import com.jgalgo.MaximumFlowDinicDynamicTrees;
-import com.jgalgo.MaximumFlowEdmondsKarp;
-import com.jgalgo.MaximumFlowPushRelabel;
-import com.jgalgo.MaximumFlowPushRelabelDynamicTrees;
-import com.jgalgo.MaximumFlowPushRelabelHighestFirst;
-import com.jgalgo.MaximumFlowPushRelabelLowestFirst;
-import com.jgalgo.MaximumFlowPushRelabelToFront;
-import com.jgalgo.Path;
-import com.jgalgo.bench.GraphsTestUtils.RandomGraphBuilder;
-import com.jgalgo.bench.TestUtils.SeedGenerator;
+import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
+import com.jgalgo.TestUtils.SeedGenerator;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 @BenchmarkMode(Mode.AverageTime)

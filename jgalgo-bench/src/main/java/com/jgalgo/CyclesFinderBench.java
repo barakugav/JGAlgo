@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.jgalgo.bench;
+package com.jgalgo;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -35,10 +35,8 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
-import com.jgalgo.EdgeWeightFunc;
-import com.jgalgo.Graph;
-import com.jgalgo.TreePathMaxima;
-import com.jgalgo.bench.TestUtils.SeedGenerator;
+import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
+import com.jgalgo.TestUtils.SeedGenerator;
 
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
@@ -46,67 +44,45 @@ import com.jgalgo.bench.TestUtils.SeedGenerator;
 @Measurement(iterations = 3, time = 5, timeUnit = TimeUnit.SECONDS)
 @Fork(value = 1, warmups = 0)
 @State(Scope.Benchmark)
-public class TreePathMaximaBench {
+public class CyclesFinderBench {
 
-	@Param({ "N=128 M=128", "N=2500 M=2500", "N=15000 M=15000" })
+	@Param({ "|V|=32 |E|=64", "|V|=64 |E|=140" })
 	public String args;
-	public int n, m;
 
-	private List<TPMArgs> graphs;
+	private List<Graph> graphs;
 	private final int graphsNum = 31;
 	private final AtomicInteger graphIdx = new AtomicInteger();
 
 	@Setup(Level.Iteration)
 	public void setup() {
 		Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
-		n = Integer.parseInt(argsMap.get("N"));
-		m = Integer.parseInt(argsMap.get("M"));
+		int n = Integer.parseInt(argsMap.get("|V|"));
+		int m = Integer.parseInt(argsMap.get("|E|"));
 
-		final SeedGenerator seedGen = new SeedGenerator(0x28ddf3f2d9c5c873L);
+		final SeedGenerator seedGen = new SeedGenerator(0x29b0e6d2a833e386L);
 		graphs = new ArrayList<>(graphsNum);
 		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-			Graph t = GraphsTestUtils.randTree(n, seedGen.nextSeed());
-			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(t, seedGen.nextSeed());
-			TreePathMaxima.Queries queries = generateRandQueries(n, m, seedGen.nextSeed());
-			graphs.add(new TPMArgs(t, w, queries));
+			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(false)
+					.selfEdges(false).cycles(true).connected(false).build();
+			graphs.add(g);
 		}
 	}
 
-	private void benchTPM(TreePathMaxima.Builder builder, Blackhole blackhole) {
-		TPMArgs g = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
-		TreePathMaxima algo = builder.build();
-		TreePathMaxima.Result result = algo.computeHeaviestEdgeInTreePaths(g.tree, g.w, g.queries);
-		blackhole.consume(result);
+	private void benchMST(Supplier<? extends CyclesFinder> builder, Blackhole blackhole) {
+		Graph g = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
+		CyclesFinder algo = builder.get();
+		List<Path> cycles = algo.findAllCycles(g);
+		blackhole.consume(cycles);
 	}
 
 	@Benchmark
-	public void TPMHagerup(Blackhole blackhole) {
-		benchTPM(TreePathMaxima.newBuilder().setOption("bitsLookupTablesEnable", Boolean.FALSE), blackhole);
+	public void Johnson(Blackhole blackhole) {
+		benchMST(CyclesFinderJohnson::new, blackhole);
 	}
 
 	@Benchmark
-	public void TPMHagerupWithBitsLookupTable(Blackhole blackhole) {
-		benchTPM(TreePathMaxima.newBuilder().setOption("bitsLookupTablesEnable", Boolean.TRUE), blackhole);
-	}
-
-	private static class TPMArgs {
-		final Graph tree;
-		final EdgeWeightFunc w;
-		final TreePathMaxima.Queries queries;
-
-		TPMArgs(Graph tree, EdgeWeightFunc w, TreePathMaxima.Queries queries) {
-			this.tree = tree;
-			this.w = w;
-			this.queries = queries;
-		}
-	}
-
-	private static TreePathMaxima.Queries generateRandQueries(int n, int m, long seed) {
-		Random rand = new Random(seed);
-		TreePathMaxima.Queries queries = new TreePathMaxima.Queries();
-		for (int q = 0; q < m; q++)
-			queries.addQuery(rand.nextInt(n), rand.nextInt(n));
-		return queries;
+	public void Tarjan(Blackhole blackhole) {
+		benchMST(CyclesFinderTarjan::new, blackhole);
 	}
 
 }

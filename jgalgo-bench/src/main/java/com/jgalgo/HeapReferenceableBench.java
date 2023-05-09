@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.jgalgo.bench;
+package com.jgalgo;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -36,16 +36,8 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
-import com.jgalgo.BinarySearchTree;
-import com.jgalgo.EdgeWeightFunc;
-import com.jgalgo.Graph;
-import com.jgalgo.HeapReferenceable;
-import com.jgalgo.MST;
-import com.jgalgo.MSTPrim;
-import com.jgalgo.SSSP;
-import com.jgalgo.SSSPDijkstra;
-import com.jgalgo.bench.GraphsTestUtils.RandomGraphBuilder;
-import com.jgalgo.bench.TestUtils.SeedGenerator;
+import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
+import com.jgalgo.TestUtils.SeedGenerator;
 
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.jgalgo.bench;
+package com.jgalgo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,8 +22,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Supplier;
-
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -37,15 +35,7 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
-
-import com.jgalgo.EdgeWeightFunc;
-import com.jgalgo.Graph;
-import com.jgalgo.SSSP;
-import com.jgalgo.SSSPBellmanFord;
-import com.jgalgo.SSSPDial;
-import com.jgalgo.SSSPDijkstra;
-import com.jgalgo.bench.GraphsTestUtils.RandomGraphBuilder;
-import com.jgalgo.bench.TestUtils.SeedGenerator;
+import com.jgalgo.TestUtils.SeedGenerator;
 
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
@@ -53,64 +43,67 @@ import com.jgalgo.bench.TestUtils.SeedGenerator;
 @Measurement(iterations = 3, time = 5, timeUnit = TimeUnit.SECONDS)
 @Fork(value = 1, warmups = 0)
 @State(Scope.Benchmark)
-public class SSSPPositiveWeightsBench {
+public class TreePathMaximaBench {
 
-	@Param({ "|V|=64 |E|=256", "|V|=512 |E|=4096", "|V|=4096 |E|=16384" })
+	@Param({ "N=128 M=128", "N=2500 M=2500", "N=15000 M=15000" })
 	public String args;
+	public int n, m;
 
-	private List<GraphArgs> graphs;
+	private List<TPMArgs> graphs;
 	private final int graphsNum = 31;
 	private final AtomicInteger graphIdx = new AtomicInteger();
 
 	@Setup(Level.Iteration)
 	public void setup() {
 		Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
-		int n = Integer.parseInt(argsMap.get("|V|"));
-		int m = Integer.parseInt(argsMap.get("|E|"));
+		n = Integer.parseInt(argsMap.get("N"));
+		m = Integer.parseInt(argsMap.get("M"));
 
-		final SeedGenerator seedGen = new SeedGenerator(0x88da246e71ef3dacL);
-		Random rand = new Random(seedGen.nextSeed());
+		final SeedGenerator seedGen = new SeedGenerator(0x28ddf3f2d9c5c873L);
 		graphs = new ArrayList<>(graphsNum);
 		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
-					.selfEdges(true).cycles(true).connected(false).build();
-			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
-			int source = rand.nextInt(g.vertices().size());
-			graphs.add(new GraphArgs(g, w, source));
+			Graph t = GraphsTestUtils.randTree(n, seedGen.nextSeed());
+			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(t, seedGen.nextSeed());
+			TreePathMaxima.Queries queries = generateRandQueries(n, m, seedGen.nextSeed());
+			graphs.add(new TPMArgs(t, w, queries));
 		}
 	}
 
-	private void benchSSSP(Supplier<? extends SSSP> builder, Blackhole blackhole) {
-		GraphArgs args = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
-		SSSP algo = builder.get();
-		SSSP.Result result = algo.computeShortestPaths(args.g, args.w, args.source);
+	private void benchTPM(TreePathMaxima.Builder builder, Blackhole blackhole) {
+		TPMArgs g = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
+		TreePathMaxima algo = builder.build();
+		TreePathMaxima.Result result = algo.computeHeaviestEdgeInTreePaths(g.tree, g.w, g.queries);
 		blackhole.consume(result);
 	}
 
 	@Benchmark
-	public void Dijkstra(Blackhole blackhole) {
-		benchSSSP(SSSPDijkstra::new, blackhole);
+	public void TPMHagerup(Blackhole blackhole) {
+		benchTPM(TreePathMaxima.newBuilder().setOption("bitsLookupTablesEnable", Boolean.FALSE), blackhole);
 	}
 
 	@Benchmark
-	public void Dial(Blackhole blackhole) {
-		benchSSSP(SSSPDial::new, blackhole);
+	public void TPMHagerupWithBitsLookupTable(Blackhole blackhole) {
+		benchTPM(TreePathMaxima.newBuilder().setOption("bitsLookupTablesEnable", Boolean.TRUE), blackhole);
 	}
 
-	@Benchmark
-	public void BellmanFord(Blackhole blackhole) {
-		benchSSSP(SSSPBellmanFord::new, blackhole);
-	}
+	private static class TPMArgs {
+		final Graph tree;
+		final EdgeWeightFunc w;
+		final TreePathMaxima.Queries queries;
 
-	private static class GraphArgs {
-		final Graph g;
-		final EdgeWeightFunc.Int w;
-		final int source;
-
-		GraphArgs(Graph g, EdgeWeightFunc.Int w, int source) {
-			this.g = g;
+		TPMArgs(Graph tree, EdgeWeightFunc w, TreePathMaxima.Queries queries) {
+			this.tree = tree;
 			this.w = w;
-			this.source = source;
+			this.queries = queries;
 		}
 	}
+
+	private static TreePathMaxima.Queries generateRandQueries(int n, int m, long seed) {
+		Random rand = new Random(seed);
+		TreePathMaxima.Queries queries = new TreePathMaxima.Queries();
+		for (int q = 0; q < m; q++)
+			queries.addQuery(rand.nextInt(n), rand.nextInt(n));
+		return queries;
+	}
+
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.jgalgo.bench;
+package com.jgalgo;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -37,11 +37,7 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
-import com.jgalgo.Heap;
-import com.jgalgo.HeapReferenceable;
-import com.jgalgo.RedBlackTree;
-import com.jgalgo.SplayTree;
-import com.jgalgo.bench.TestUtils.SeedGenerator;
+import com.jgalgo.TestUtils.SeedGenerator;
 
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MICROSECONDS)

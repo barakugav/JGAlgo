@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package com.jgalgo.bench;
+package com.jgalgo;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
@@ -35,17 +36,8 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
-import com.jgalgo.EdgeWeightFunc;
-import com.jgalgo.Graph;
-import com.jgalgo.MST;
-import com.jgalgo.MSTBoruvka;
-import com.jgalgo.MSTFredmanTarjan;
-import com.jgalgo.MSTKargerKleinTarjan;
-import com.jgalgo.MSTKruskal;
-import com.jgalgo.MSTPrim;
-import com.jgalgo.MSTYao;
-import com.jgalgo.bench.TestUtils.SeedGenerator;
-import it.unimi.dsi.fastutil.Pair;
+import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
+import com.jgalgo.TestUtils.SeedGenerator;
 
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
@@ -53,12 +45,12 @@ import it.unimi.dsi.fastutil.Pair;
 @Measurement(iterations = 3, time = 5, timeUnit = TimeUnit.SECONDS)
 @Fork(value = 1, warmups = 0)
 @State(Scope.Benchmark)
-public class MSTBench {
+public class SSSPPositiveWeightsBench {
 
-	@Param({ "|V|=100 |E|=100", "|V|=200 |E|=1000", "|V|=1600 |E|=10000", "|V|=6000 |E|=25000" })
+	@Param({ "|V|=64 |E|=256", "|V|=512 |E|=4096", "|V|=4096 |E|=16384" })
 	public String args;
 
-	private List<Pair<Graph, EdgeWeightFunc.Int>> graphs;
+	private List<GraphArgs> graphs;
 	private final int graphsNum = 31;
 	private final AtomicInteger graphIdx = new AtomicInteger();
 
@@ -68,52 +60,49 @@ public class MSTBench {
 		int n = Integer.parseInt(argsMap.get("|V|"));
 		int m = Integer.parseInt(argsMap.get("|E|"));
 
-		final SeedGenerator seedGen = new SeedGenerator(0xe75b8a2fb16463ecL);
+		final SeedGenerator seedGen = new SeedGenerator(0x88da246e71ef3dacL);
+		Random rand = new Random(seedGen.nextSeed());
 		graphs = new ArrayList<>(graphsNum);
 		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-			Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
+			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
+					.selfEdges(true).cycles(true).connected(false).build();
 			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
-			graphs.add(Pair.of(g, w));
+			int source = rand.nextInt(g.vertices().size());
+			graphs.add(new GraphArgs(g, w, source));
 		}
 	}
 
-	private void benchMST(Supplier<? extends MST> builder, Blackhole blackhole) {
-		Pair<Graph, EdgeWeightFunc.Int> gw = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
-		Graph g = gw.first();
-		EdgeWeightFunc.Int w = gw.second();
-		MST algo = builder.get();
-		MST.Result mst = algo.computeMinimumSpanningTree(g, w);
-		blackhole.consume(mst);
+	private void benchSSSP(Supplier<? extends SSSP> builder, Blackhole blackhole) {
+		GraphArgs args = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
+		SSSP algo = builder.get();
+		SSSP.Result result = algo.computeShortestPaths(args.g, args.w, args.source);
+		blackhole.consume(result);
 	}
 
 	@Benchmark
-	public void Boruvka(Blackhole blackhole) {
-		benchMST(MSTBoruvka::new, blackhole);
+	public void Dijkstra(Blackhole blackhole) {
+		benchSSSP(SSSPDijkstra::new, blackhole);
 	}
 
 	@Benchmark
-	public void FredmanTarjan(Blackhole blackhole) {
-		benchMST(MSTFredmanTarjan::new, blackhole);
+	public void Dial(Blackhole blackhole) {
+		benchSSSP(SSSPDial::new, blackhole);
 	}
 
 	@Benchmark
-	public void Kruskal(Blackhole blackhole) {
-		benchMST(MSTKruskal::new, blackhole);
+	public void BellmanFord(Blackhole blackhole) {
+		benchSSSP(SSSPBellmanFord::new, blackhole);
 	}
 
-	@Benchmark
-	public void Prim(Blackhole blackhole) {
-		benchMST(MSTPrim::new, blackhole);
-	}
+	private static class GraphArgs {
+		final Graph g;
+		final EdgeWeightFunc.Int w;
+		final int source;
 
-	@Benchmark
-	public void Yao(Blackhole blackhole) {
-		benchMST(MSTYao::new, blackhole);
+		GraphArgs(Graph g, EdgeWeightFunc.Int w, int source) {
+			this.g = g;
+			this.w = w;
+			this.source = source;
+		}
 	}
-
-	@Benchmark
-	public void KargerKleinTarjan(Blackhole blackhole) {
-		benchMST(MSTKargerKleinTarjan::new, blackhole);
-	}
-
 }

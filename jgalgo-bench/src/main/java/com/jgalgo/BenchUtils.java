@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package com.jgalgo.bench;
+package com.jgalgo;
 
 import java.util.Map;
-
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 
 public class BenchUtils {

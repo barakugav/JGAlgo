@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.jgalgo.bench;
+package com.jgalgo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,9 +35,7 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
-import com.jgalgo.RMQStatic;
-import com.jgalgo.RMQStaticComparator;
-import com.jgalgo.bench.TestUtils.SeedGenerator;
+import com.jgalgo.TestUtils.SeedGenerator;
 import it.unimi.dsi.fastutil.Pair;
 
 public class RMQStaticBench {

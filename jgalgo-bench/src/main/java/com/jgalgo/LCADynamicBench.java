@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.jgalgo.bench;
+package com.jgalgo;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,8 +37,7 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
-import com.jgalgo.LCADynamic;
-import com.jgalgo.bench.TestUtils.SeedGenerator;
+import com.jgalgo.TestUtils.SeedGenerator;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 
 @BenchmarkMode(Mode.AverageTime)
