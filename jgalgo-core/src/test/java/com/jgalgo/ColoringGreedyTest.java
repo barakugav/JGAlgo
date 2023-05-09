@@ -22,8 +22,9 @@ public class ColoringGreedyTest extends TestBase {
 
 	@Test
 	public void testRandGraphs() {
-		final long seed = 0xe57268894020f1d1L;
-		ColoringTestUtils.testRandGraphs(new ColoringGreedy(), seed);
+		final long seed = 0xc09142094f9b1e04L;
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		ColoringTestUtils.testRandGraphs(new ColoringGreedy(seedGen.nextSeed()), seedGen.nextSeed());
 	}
 
 }

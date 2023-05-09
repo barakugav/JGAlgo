@@ -38,7 +38,6 @@ import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.Coloring;
 import com.jgalgo.ColoringDSatur;
 import com.jgalgo.ColoringGreedy;
-import com.jgalgo.ColoringGreedyRandom;
 import com.jgalgo.ColoringRecursiveLargestFirst;
 import com.jgalgo.Graph;
 import com.jgalgo.bench.TestUtils.SeedGenerator;
@@ -81,13 +80,8 @@ public class ColoringBench {
 
 	@Benchmark
 	public void Greedy(Blackhole blackhole) {
-		benchColoring(ColoringGreedy::new, blackhole);
-	}
-
-	@Benchmark
-	public void GreedyRandom(Blackhole blackhole) {
 		final SeedGenerator seedGen = new SeedGenerator(0xefeae78aba502d4aL);
-		benchColoring(() -> new ColoringGreedyRandom(seedGen.nextSeed()), blackhole);
+		benchColoring(() -> new ColoringGreedy(seedGen.nextSeed()), blackhole);
 	}
 
 	@Benchmark

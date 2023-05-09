@@ -16,14 +16,15 @@
 
 package com.jgalgo;
 
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
+import java.util.BitSet;
+import java.util.Random;
+import it.unimi.dsi.fastutil.ints.IntArrays;
 
 /**
- * A greedy coloring algorithm.
+ * A greedy coloring algorithm with random vertices order.
  * <p>
- * The algorithm examine the vertices in an arbitrary order and assign for each vertex the minimum (integer) color which
- * is not used by its neighbors.
+ * The algorithm examine the vertices in random order and assign for each vertex the minimum (integer) color which is
+ * not used by its neighbors.
  * <p>
  * The algorithm runs in linear time, assuming the number of colors is constant.
  * <p>
@@ -35,10 +36,23 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  */
 public class ColoringGreedy implements Coloring {
 
+	private final Random rand;
+
 	/**
-	 * Create a new coloring algorithm object.
+	 * Create a new coloring algorithm object with random seed.
 	 */
-	public ColoringGreedy() {}
+	public ColoringGreedy() {
+		rand = new Random();
+	}
+
+	/**
+	 * Create a new coloring algorithm object with the provided seed.
+	 *
+	 * @param seed the seed to use for all random operations
+	 */
+	public ColoringGreedy(long seed) {
+		rand = new Random(seed);
+	}
 
 	@Override
 	public Coloring.Result computeColoring(Graph g) {
@@ -47,18 +61,23 @@ public class ColoringGreedy implements Coloring {
 
 		ColoringResultImpl res = new ColoringResultImpl(g);
 		int n = g.vertices().size();
-		IntSet usedColors = new IntOpenHashSet();
-		for (int u = 0; u < n; u++) {
+		int[] order = new int[n];
+		for (int u = 0; u < n; u++)
+			order[u] = u;
+		IntArrays.shuffle(order, rand);
+
+		BitSet usedColors = new BitSet();
+		for (int u : order) {
 			usedColors.clear();
 			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 				eit.nextInt();
 				int v = eit.target();
 				int c = res.colorOf(v);
 				if (c != -1)
-					usedColors.add(c);
+					usedColors.set(c);
 			}
 			int color = 0;
-			while (usedColors.contains(color))
+			while (usedColors.get(color))
 				color++;
 			res.colors[u] = color;
 			res.colorsNum = Math.max(res.colorsNum, color + 1);

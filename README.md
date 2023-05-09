@@ -110,8 +110,7 @@ for (IntIterator it = ssspRes.getPath(v3).iterator(); it.hasNext();) {
 | Maximum matching general weighted Gabow1990 implementation with dynamic LCA | $O(m n + n^2 \log n)$ |
 | Traveling Salesman Problem (TSP) $2$-appx using MST | $O(n^2)$ |
 | Traveling Salesman Problem (TSP) $3/2$-appx using maximum matching | $O(n^3)$ |
-| Vertex Coloring Greedy arbitrary vertices order | $O(n + m)$ assuming the number of colors is constant |
-| Vertex Coloring Greedy random vertices order | $O(n + m)$ assuming the number of colors is constant |
+| Vertex Coloring Greedy (random vertices order) | $O(n + m)$ assuming the number of colors is constant |
 | Vertex Coloring DSatur | $O(m \log n)$ assuming the number of colors is constant |
 | Vertex Coloring Recursive Largest First | $O(m n)$ |
 | Tarjan Cycles Finder | $O((m + n) (c + 1))$ where $c$ is the number of simple cycles |
