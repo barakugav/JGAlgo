@@ -21,15 +21,15 @@ import org.junit.jupiter.api.Test;
 public class MaximumFlowPushRelabelToFrontTest extends TestBase {
 
 	@Test
-	public void testRandGraphsDoubleFlow() {
+	public void testRandDiGraphsDoubleFlow() {
 		final long seed = 0x8fb191d57a090f45L;
-		MaximumFlowTestUtils.testRandGraphs(new MaximumFlowPushRelabelToFront(), seed);
+		MaximumFlowTestUtils.testRandGraphs(new MaximumFlowPushRelabelToFront(), seed, /*directed=*/ true);
 	}
 
 	@Test
-	public void testRandGraphsIntFlow() {
+	public void testRandDiGraphsIntFlow() {
 		final long seed = 0x3d296bd5e39fbefbL;
-		MaximumFlowTestUtils.testRandGraphsInt(new MaximumFlowPushRelabelToFront(), seed);
+		MaximumFlowTestUtils.testRandGraphsInt(new MaximumFlowPushRelabelToFront(), seed, /*directed=*/ true);
 	}
 
 	@Test

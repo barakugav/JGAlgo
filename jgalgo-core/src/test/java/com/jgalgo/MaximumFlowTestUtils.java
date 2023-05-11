@@ -31,9 +31,9 @@ public class MaximumFlowTestUtils extends TestUtils {
 
 	private MaximumFlowTestUtils() {}
 
-	private static Graph randGraph(int n, int m, GraphImpl graphImpl, long seed) {
-		return new RandomGraphBuilder(seed).n(n).m(m).directed(true).parallelEdges(false).selfEdges(false).cycles(true)
-				.connected(false).graphImpl(graphImpl).build();
+	private static Graph randGraph(int n, int m, GraphImpl graphImpl, long seed, boolean directed) {
+		return new RandomGraphBuilder(seed).n(n).m(m).directed(directed).parallelEdges(false).selfEdges(false)
+				.cycles(true).connected(false).graphImpl(graphImpl).build();
 	}
 
 	static FlowNetwork randNetwork(Graph g, long seed) {
@@ -74,22 +74,22 @@ public class MaximumFlowTestUtils extends TestUtils {
 		return flow;
 	}
 
-	static void testRandGraphs(MaximumFlow algo, long seed) {
-		testRandGraphs(algo, GraphImplTestUtils.GRAPH_IMPL_DEFAULT, seed);
+	static void testRandGraphs(MaximumFlow algo, long seed, boolean directed) {
+		testRandGraphs(algo, GraphImplTestUtils.GRAPH_IMPL_DEFAULT, seed, directed);
 	}
 
-	static void testRandGraphsInt(MaximumFlow algo, long seed) {
-		testRandGraphsInt(algo, GraphImplTestUtils.GRAPH_IMPL_DEFAULT, seed);
+	static void testRandGraphsInt(MaximumFlow algo, long seed, boolean directed) {
+		testRandGraphsInt(algo, GraphImplTestUtils.GRAPH_IMPL_DEFAULT, seed, directed);
 	}
 
-	static void testRandGraphs(MaximumFlow algo, GraphImpl graphImpl, long seed) {
+	static void testRandGraphs(MaximumFlow algo, GraphImpl graphImpl, long seed, boolean directed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
 		List<Phase> phases = List.of(phase(256, 6, 6), phase(64, 16, 16), phase(64, 16, 32), phase(32, 64, 64),
 				phase(32, 64, 128), phase(4, 512, 512), phase(2, 512, 1324), phase(1, 1025, 2016));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
-			Graph g = randGraph(n, m, graphImpl, seedGen.nextSeed());
+			Graph g = randGraph(n, m, graphImpl, seedGen.nextSeed(), directed);
 			FlowNetwork net = randNetwork(g, seedGen.nextSeed());
 			int source, sink;
 			for (;;) {
@@ -103,14 +103,14 @@ public class MaximumFlowTestUtils extends TestUtils {
 		});
 	}
 
-	static void testRandGraphsInt(MaximumFlow algo, GraphImpl graphImpl, long seed) {
+	static void testRandGraphsInt(MaximumFlow algo, GraphImpl graphImpl, long seed, boolean directed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
-		List<Phase> phases = List.of(phase(256, 6, 6), phase(64, 16, 16), phase(64, 16, 32), phase(32, 64, 64),
-				phase(16, 64, 128), phase(2, 512, 512), phase(1, 512, 1324));
+		List<Phase> phases = List.of(phase(256, 3, 3), phase(256, 6, 6), phase(64, 16, 16), phase(64, 16, 32),
+				phase(32, 64, 64), phase(16, 64, 128), phase(2, 512, 512), phase(1, 512, 1324));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
-			Graph g = randGraph(n, m, graphImpl, seedGen.nextSeed());
+			Graph g = randGraph(n, m, graphImpl, seedGen.nextSeed(), directed);
 			FlowNetwork.Int net = randNetworkInt(g, seedGen.nextSeed());
 			int source, sink;
 			for (;;) {
@@ -175,10 +175,11 @@ public class MaximumFlowTestUtils extends TestUtils {
 	private static double calcExpectedFlow(Graph g, FlowNetwork net, int source, int sink) {
 		int n = g.vertices().size();
 		double[][] capacities = new double[n][n];
-		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-			int e = it.nextInt();
-			int u = g.edgeSource(e), v = g.edgeTarget(e);
-			capacities[u][v] += net.getCapacity(e);
+		for (int u = 0; u < n; u++) {
+			for (EdgeIter it = g.edgesOut(u); it.hasNext();) {
+				int e = it.nextInt();
+				capacities[u][it.target()] += net.getCapacity(e);
+			}
 		}
 
 		return fordFulkerson(capacities, source, sink);

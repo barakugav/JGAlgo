@@ -21,14 +21,22 @@ package com.jgalgo;
  * <p>
  * A flow network on graph edges is defined as two functions: the capacity function \(C:E \rightarrow R\) and flow
  * function \( F:E \rightarrow R\). The capacity function define how many units of flow an edge can transfer from its
- * source to its target. The flow function is the number of units of flow that are currently transferred along the edge.
- * For each edge, the flow must be smaller or equal to its capacity.
+ * source to its target. The flow function define the number of units of flow that are currently transferred along each
+ * edge. The capacity of any edge must be non negative, and the edge's flow must be smaller or equal to its capacity.
  * <p>
  * Problems formulated using flow networks involve a source and a sink vertices. The source is a vertex from which the
  * flow is originated, and every flow going along its edges must reach the sink vertex using the edges of the graphs
  * while not violating the capacities of the network. For each vertex except the source and sink the sum of flow units
  * going along {@link Graph#edgesIn(int)} must be equal to the sum of flow units going along
  * {@link Graph#edgesOut(int)}.
+ * <p>
+ * A flow is most intuitively defined on directed graphs, as the flow on an edge is transferred from one vertex to
+ * another in some direction, but we can define and solve flow problem on undirected graphs as well. Technically, the
+ * flows values returned by {@link #getFlow(int)} can either be positive or negative for undirected edges, with values
+ * absolutely smaller than the capacity of the edge. A positive flow \(+f\) value assigned to edge {@code e} means a
+ * flow directed from {@code edgeSource(e)} to {@code edgeTarget(e)} with \(f\) units of flow. A negative flow \(-f\)
+ * value assigned to edge {@code e} means a flow directed from {@code edgeTarget(e)} to {@code edgeSource(e)} (opposite
+ * direction) with \(|-f|\) units of flow (see {@link #getFlow(int)}).
  *
  * <pre> {@code
  * Graph g = ...;
@@ -70,11 +78,20 @@ public interface FlowNetwork {
      * @param  edge                      an edge identifier in the graph
      * @param  capacity                  the new capacity of the edge
      * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
+     * @throws IllegalArgumentException  if {@code capacity} is negative
      */
     void setCapacity(int edge, double capacity);
 
     /**
      * Get the amount of flow units going along an edge.
+     * <p>
+     * If the graph is directed, a flow of \(f\) units on {@code e}, for \(0 \leq f \leq cap(e)\), means a flow of \(f\)
+     * units of flow from {@code edgeSource(e)} to {@code edgeTarget(e)}.
+     * <p>
+     * If the graph is undirected, a flow of \(+f\) units on {@code e}, for \(0 \leq f \leq cap(e)\), means a flow of
+     * \(f\) units of flow from {@code edgeSource(e)} to {@code edgeTarget(e)}, while a flow of \(-f\) units on
+     * {@code e}, for \(-cap(e) \leq -f &lt; 0\), means a flow of \(|-f|\) units of flow from {@code edgeTarget(e)} to
+     * {@code edgeSource(e)} (opposite direction).
      *
      * @param  edge                      an edge identifier in the graph
      * @return                           the amount of flow units going along an edge
@@ -114,6 +131,8 @@ public interface FlowNetwork {
 
             @Override
             public void setCapacity(int edge, double capacity) {
+                if (capacity < 0)
+                    throw new IllegalArgumentException("capacity can't be negative");
                 capacityWeights.set(edge, capacity);
             }
 
@@ -164,6 +183,7 @@ public interface FlowNetwork {
          * @param  edge                      an edge identifier in the graph
          * @param  capacity                  the new capacity of the edge
          * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
+         * @throws IllegalArgumentException  if {@code capacity} is negative
          */
         public void setCapacity(int edge, int capacity);
 
@@ -175,6 +195,14 @@ public interface FlowNetwork {
 
         /**
          * Get the integer amount of flow units going along an edge.
+         * <p>
+         * If the graph is directed, a flow of \(f\) units on {@code e}, for \(0 \leq f \leq cap(e)\), means a flow of
+         * \(f\) units of flow from {@code edgeSource(e)} to {@code edgeTarget(e)}.
+         * <p>
+         * If the graph is undirected, a flow of \(+f\) units on {@code e}, for \(0 \leq f \leq cap(e)\), means a flow
+         * of \(f\) units of flow from {@code edgeSource(e)} to {@code edgeTarget(e)}, while a flow of \(-f\) units on
+         * {@code e}, for \(-cap(e) \leq -f &lt; 0\), means a flow of \(|-f|\) units of flow from {@code edgeTarget(e)}
+         * to {@code edgeSource(e)} (opposite direction).
          *
          * @param  edge                      an edge identifier in the graph
          * @return                           the amount of flow units going along an edge
@@ -224,6 +252,8 @@ public interface FlowNetwork {
 
                 @Override
                 public void setCapacity(int edge, int capacity) {
+                    if (capacity < 0)
+                        throw new IllegalArgumentException("capacity can't be negative");
                     capacityWeights.set(edge, capacity);
                 }
 

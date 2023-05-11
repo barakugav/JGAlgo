@@ -21,15 +21,21 @@ import org.junit.jupiter.api.Test;
 public class MaximumFlowEdmondsKarpTest extends TestBase {
 
 	@Test
-	public void testRandGraphsDoubleFlow() {
+	public void testRandDiGraphsDoubleFlow() {
 		final long seed = 0x398eea4097bc0600L;
-		MaximumFlowTestUtils.testRandGraphs(new MaximumFlowEdmondsKarp(), seed);
+		MaximumFlowTestUtils.testRandGraphs(new MaximumFlowEdmondsKarp(), seed, /* directed= */ true);
 	}
 
 	@Test
-	public void testRandGraphsIntFlow() {
+	public void testRandDiGraphsIntFlow() {
 		final long seed = 0xa180ffaa75a62d0cL;
-		MaximumFlowTestUtils.testRandGraphsInt(new MaximumFlowEdmondsKarp(), seed);
+		MaximumFlowTestUtils.testRandGraphsInt(new MaximumFlowEdmondsKarp(), seed, /* directed= */ true);
+	}
+
+	@Test
+	public void testRandUGraphsIntFlow() {
+		final long seed = 0xc65e0a6775182badL;
+		MaximumFlowTestUtils.testRandGraphsInt(new MaximumFlowEdmondsKarp(), seed, /* directed= */ false);
 	}
 
 	@Test

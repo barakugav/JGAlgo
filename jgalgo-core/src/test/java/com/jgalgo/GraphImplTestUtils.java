@@ -288,7 +288,7 @@ class GraphImplTestUtils extends TestUtils {
 	}
 
 	static void testDirectedMaxFlow(GraphImpl graphImpl, long seed) {
-		MaximumFlowTestUtils.testRandGraphs(new MaximumFlowEdmondsKarp(), graphImpl, seed);
+		MaximumFlowTestUtils.testRandGraphs(new MaximumFlowEdmondsKarp(), graphImpl, seed, /* directed= */ true);
 	}
 
 	static void testUndirectedBipartiteMatching(GraphImpl graphImpl, long seed) {

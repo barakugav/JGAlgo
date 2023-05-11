@@ -17,6 +17,7 @@
 package com.jgalgo;
 
 import java.util.BitSet;
+import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
@@ -36,8 +37,8 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  */
 public class MaximumFlowEdmondsKarp implements MaximumFlow {
 
-	private static final Object EdgeRefWeightKey = new Object();
-	private static final Object EdgeRevWeightKey = new Object();
+	private final AllocatedMemory allocatedMemory = new AllocatedMemory();
+
 	private static final Object FlowWeightKey = new Object();
 	private static final Object CapacityWeightKey = new Object();
 
@@ -46,15 +47,10 @@ public class MaximumFlowEdmondsKarp implements MaximumFlow {
 	 */
 	public MaximumFlowEdmondsKarp() {}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @throws IllegalArgumentException if the graph is not directed
-	 */
 	@Override
 	public double computeMaximumFlow(Graph g, FlowNetwork net, int source, int sink) {
-		ArgumentCheck.onlyDirected(g);
 		ArgumentCheck.sourceSinkNotTheSame(source, sink);
+		allocatedMemory.allocate(g.vertices().size());
 		if (net instanceof FlowNetwork.Int) {
 			return new WorkerInt(g, (FlowNetwork.Int) net, source, sink).computeMaxFlow();
 		} else {
@@ -62,50 +58,16 @@ public class MaximumFlowEdmondsKarp implements MaximumFlow {
 		}
 	}
 
-	private static class WorkerDouble {
+	private abstract class Worker extends MaximumFlowAbstract.Worker {
 
-		final Graph gOring;
-		final FlowNetwork net;
-		final int source;
-		final int sink;
-
-		WorkerDouble(Graph gOring, FlowNetwork net, int source, int sink) {
-			this.gOring = gOring;
-			this.net = net;
-			this.source = source;
-			this.sink = sink;
+		Worker(Graph gOrig, FlowNetwork net, int source, int sink) {
+			super(gOrig, net, source, sink);
 		}
 
-		double computeMaxFlow() {
-			int n = gOring.vertices().size();
-			Graph g = new GraphArrayDirected(n);
-			Weights.Int edgeRef = g.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
-			Weights.Int twin = g.addEdgesWeights(EdgeRevWeightKey, int.class, Integer.valueOf(-1));
-			Weights.Double flow = g.addEdgesWeights(FlowWeightKey, double.class);
-			Weights.Double capacity = g.addEdgesWeights(CapacityWeightKey, double.class);
-			for (IntIterator it = gOring.edges().iterator(); it.hasNext();) {
-				int e = it.nextInt();
-				int u = gOring.edgeSource(e), v = gOring.edgeTarget(e);
-				if (u == v)
-					continue;
-				if (u == sink || v == source)
-					continue;
-				int e1 = g.addEdge(u, v);
-				int e2 = g.addEdge(v, u);
-				edgeRef.set(e1, e);
-				edgeRef.set(e2, e);
-				twin.set(e1, e2);
-				twin.set(e2, e1);
-				double cap = net.getCapacity(e);
-				capacity.set(e1, cap);
-				capacity.set(e2, cap);
-				flow.set(e1, 0);
-				flow.set(e2, cap);
-			}
-
-			int[] backtrack = new int[n];
-			BitSet visited = new BitSet(n);
-			IntPriorityQueue queue = new IntArrayFIFOQueue();
+		void computeMaxFlow0() {
+			int[] backtrack = allocatedMemory.backtrack;
+			BitSet visited = allocatedMemory.visited;
+			IntPriorityQueue queue = allocatedMemory.queue;
 
 			for (;;) {
 				queue.clear();
@@ -121,7 +83,7 @@ public class MaximumFlowEdmondsKarp implements MaximumFlow {
 						int e = eit.nextInt();
 						int v = eit.target();
 
-						if (visited.get(v) || flow.getDouble(e) >= capacity.getDouble(e))
+						if (visited.get(v) || isSaturated(e))
 							continue;
 						backtrack[v] = e;
 						if (v == sink)
@@ -134,159 +96,147 @@ public class MaximumFlowEdmondsKarp implements MaximumFlow {
 				// no path to sink
 				if (backtrack[sink] == -1)
 					break;
+				pushAlongPath(backtrack);
+			}
+		}
 
-				// find out what is the maximum flow we can pass
-				double f = Double.MAX_VALUE;
-				for (int p = sink; p != source;) {
-					int e = backtrack[p];
-					f = Math.min(f, capacity.getDouble(e) - flow.getDouble(e));
-					p = g.edgeSource(e);
+		abstract void pushAlongPath(int[] backtrack);
+
+		abstract boolean isSaturated(int e);
+
+	}
+
+	private class WorkerDouble extends Worker {
+
+		final Weights.Double flow;
+		final Weights.Double capacity;
+
+		private static final double EPS = 0.0001;
+
+		WorkerDouble(Graph gOrig, FlowNetwork net, int source, int sink) {
+			super(gOrig, net, source, sink);
+
+			flow = g.addEdgesWeights(FlowWeightKey, double.class);
+			capacity = g.addEdgesWeights(CapacityWeightKey, double.class);
+
+			if (gOrig.getCapabilities().directed()) {
+				for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+					int e = it.nextInt();
+					capacity.set(e, isOriginalEdge(e) ? net.getCapacity(edgeRef.getInt(e)) : 0);
+					flow.set(e, 0);
 				}
-
-				// update flow of all edges on path
-				for (int p = sink; p != source;) {
-					int e = backtrack[p], rev = twin.getInt(e);
-					flow.set(e, Math.min(capacity.getDouble(e), flow.getDouble(e) + f));
-					flow.set(rev, Math.max(0, flow.getDouble(rev) - f));
-					p = g.edgeSource(e);
+			} else {
+				for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+					int e = it.nextInt();
+					capacity.set(e, net.getCapacity(edgeRef.getInt(e)));
+					flow.set(e, 0);
 				}
 			}
+		}
 
-			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-				int e = it.nextInt();
-				int u = g.edgeSource(e);
-				int orig = edgeRef.getInt(e);
-				if (u == gOring.edgeSource(orig))
-					net.setFlow(orig, flow.getDouble(e));
+		double computeMaxFlow() {
+			computeMaxFlow0();
+			return constructResult(flow);
+		}
+
+		@Override
+		void pushAlongPath(int[] backtrack) {
+			// find out what is the maximum flow we can pass
+			double f = Double.MAX_VALUE;
+			for (int p = sink; p != source;) {
+				int e = backtrack[p];
+				f = Math.min(f, getResidualCapacity(e));
+				p = g.edgeSource(e);
 			}
-			double totalFlow = 0;
-			for (EdgeIter eit = g.edgesOut(source); eit.hasNext();) {
-				int e = eit.nextInt();
-				int orig = edgeRef.getInt(e);
-				if (g.edgeSource(e) == gOring.edgeSource(orig))
-					totalFlow += flow.getDouble(e);
+
+			// update flow of all edges on path
+			for (int p = sink; p != source;) {
+				int e = backtrack[p], rev = twin.getInt(e);
+				flow.set(e, flow.getDouble(e) + f);
+				flow.set(rev, flow.getDouble(rev) - f);
+				p = g.edgeSource(e);
 			}
-			for (EdgeIter eit = g.edgesIn(source); eit.hasNext();) {
-				int e = eit.nextInt();
-				int orig = edgeRef.getInt(e);
-				if (g.edgeSource(e) == gOring.edgeSource(orig))
-					totalFlow -= flow.getDouble(e);
-			}
-			return totalFlow;
+		}
+
+		double getResidualCapacity(int e) {
+			return capacity.getDouble(e) - flow.getDouble(e);
+		}
+
+		@Override
+		boolean isSaturated(int e) {
+			return getResidualCapacity(e) <= EPS;
 		}
 	}
 
-	private static class WorkerInt {
+	private class WorkerInt extends Worker {
 
-		final Graph gOring;
-		final FlowNetwork.Int net;
-		final int source;
-		final int sink;
+		final Weights.Int flow;
+		final Weights.Int capacity;
 
-		WorkerInt(Graph gOring, FlowNetwork.Int net, int source, int sink) {
-			this.gOring = gOring;
-			this.net = net;
-			this.source = source;
-			this.sink = sink;
+		WorkerInt(Graph gOrig, FlowNetwork.Int net, int source, int sink) {
+			super(gOrig, net, source, sink);
+
+			flow = g.addEdgesWeights(FlowWeightKey, int.class);
+			capacity = g.addEdgesWeights(CapacityWeightKey, int.class);
+
+			if (gOrig.getCapabilities().directed()) {
+				for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+					int e = it.nextInt();
+					capacity.set(e, isOriginalEdge(e) ? net.getCapacityInt(edgeRef.getInt(e)) : 0);
+					flow.set(e, 0);
+				}
+			} else {
+				for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+					int e = it.nextInt();
+					capacity.set(e, net.getCapacityInt(edgeRef.getInt(e)));
+					flow.set(e, 0);
+				}
+			}
 		}
 
-		double computeMaxFlow() {
-			int n = gOring.vertices().size();
-			Graph g = new GraphArrayDirected(n);
-			Weights.Int edgeRef = g.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
-			Weights.Int twin = g.addEdgesWeights(EdgeRevWeightKey, int.class, Integer.valueOf(-1));
-			Weights.Int flow = g.addEdgesWeights(FlowWeightKey, int.class);
-			Weights.Int capacity = g.addEdgesWeights(CapacityWeightKey, int.class);
-			for (IntIterator it = gOring.edges().iterator(); it.hasNext();) {
-				int e = it.nextInt();
-				int u = gOring.edgeSource(e), v = gOring.edgeTarget(e);
-				if (u == v)
-					continue;
-				if (u == sink || v == source)
-					continue;
-				int e1 = g.addEdge(u, v);
-				int e2 = g.addEdge(v, u);
-				edgeRef.set(e1, e);
-				edgeRef.set(e2, e);
-				twin.set(e1, e2);
-				twin.set(e2, e1);
-				int cap = net.getCapacityInt(e);
-				capacity.set(e1, cap);
-				capacity.set(e2, cap);
-				flow.set(e1, 0);
-				flow.set(e2, cap);
+		int computeMaxFlow() {
+			computeMaxFlow0();
+			return constructResult(flow);
+		}
+
+		@Override
+		void pushAlongPath(int[] backtrack) {
+			// find out what is the maximum flow we can pass
+			int f = Integer.MAX_VALUE;
+			for (int p = sink; p != source;) {
+				int e = backtrack[p];
+				f = Math.min(f, getResidualCapacity(e));
+				p = g.edgeSource(e);
 			}
 
-			int[] backtrack = new int[n];
-			BitSet visited = new BitSet(n);
-			IntPriorityQueue queue = new IntArrayFIFOQueue();
-
-			for (;;) {
-				queue.clear();
-				visited.clear();
-				visited.set(source);
-				backtrack[sink] = -1;
-
-				// perform BFS and find a path of non saturated edges from source to sink
-				queue.enqueue(source);
-				bfs: while (!queue.isEmpty()) {
-					int u = queue.dequeueInt();
-					for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
-						int e = eit.nextInt();
-						int v = eit.target();
-
-						if (visited.get(v) || flow.getInt(e) >= capacity.getInt(e))
-							continue;
-						backtrack[v] = e;
-						if (v == sink)
-							break bfs;
-						visited.set(v);
-						queue.enqueue(v);
-					}
-				}
-
-				// no path to sink
-				if (backtrack[sink] == -1)
-					break;
-
-				// find out what is the maximum flow we can pass
-				int f = Integer.MAX_VALUE;
-				for (int p = sink; p != source;) {
-					int e = backtrack[p];
-					f = Math.min(f, capacity.getInt(e) - flow.getInt(e));
-					p = g.edgeSource(e);
-				}
-
-				// update flow of all edges on path
-				for (int p = sink; p != source;) {
-					int e = backtrack[p], rev = twin.getInt(e);
-					flow.set(e, Math.min(capacity.getInt(e), flow.getInt(e) + f));
-					flow.set(rev, Math.max(0, flow.getInt(rev) - f));
-					p = g.edgeSource(e);
-				}
+			// update flow of all edges on path
+			for (int p = sink; p != source;) {
+				int e = backtrack[p], rev = twin.getInt(e);
+				flow.set(e, flow.getInt(e) + f);
+				flow.set(rev, flow.getInt(rev) - f);
+				p = g.edgeSource(e);
 			}
+		}
 
-			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-				int e = it.nextInt();
-				int u = g.edgeSource(e);
-				int orig = edgeRef.getInt(e);
-				if (u == gOring.edgeSource(orig))
-					net.setFlow(orig, flow.getInt(e));
-			}
-			int totalFlow = 0;
-			for (EdgeIter eit = g.edgesOut(source); eit.hasNext();) {
-				int e = eit.nextInt();
-				int orig = edgeRef.getInt(e);
-				if (g.edgeSource(e) == gOring.edgeSource(orig))
-					totalFlow += flow.getInt(e);
-			}
-			for (EdgeIter eit = g.edgesIn(source); eit.hasNext();) {
-				int e = eit.nextInt();
-				int orig = edgeRef.getInt(e);
-				if (g.edgeSource(e) == gOring.edgeSource(orig))
-					totalFlow -= flow.getInt(e);
-			}
-			return totalFlow;
+		int getResidualCapacity(int e) {
+			return capacity.getInt(e) - flow.getInt(e);
+		}
+
+		@Override
+		boolean isSaturated(int e) {
+			return getResidualCapacity(e) <= 0;
+		}
+	}
+
+	private static class AllocatedMemory {
+		int[] backtrack = IntArrays.EMPTY_ARRAY;
+		BitSet visited;
+		IntPriorityQueue queue;
+
+		void allocate(int n) {
+			backtrack = MemoryReuse.ensureLength(backtrack, n);
+			visited = MemoryReuse.ensureAllocated(visited, BitSet::new);
+			queue = MemoryReuse.ensureAllocated(queue, IntArrayFIFOQueue::new);
 		}
 	}
 
