@@ -23,13 +23,19 @@ public class MaximumFlowPushRelabelDynamicTreesTest extends TestBase {
 	@Test
 	public void testRandDiGraphs() {
 		final long seed = 0xdb81d5dd5fe0d5b3L;
-		MaximumFlowTestUtils.testRandGraphs(new MaximumFlowPushRelabelDynamicTrees(), seed, /*directed=*/ true);
+		MaximumFlowTestUtils.testRandGraphs(new MaximumFlowPushRelabelDynamicTrees(), seed, /* directed= */ true);
 	}
 
 	@Test
 	public void testRandDiGraphsInt() {
 		final long seed = 0x00dd5c7d6b25fe3bL;
-		MaximumFlowTestUtils.testRandGraphsInt(new MaximumFlowPushRelabelDynamicTrees(), seed, /*directed=*/ true);
+		MaximumFlowTestUtils.testRandGraphsInt(new MaximumFlowPushRelabelDynamicTrees(), seed, /* directed= */ true);
+	}
+
+	@Test
+	public void testRandUGraphsIntFlow() {
+		final long seed = 0xccb7183a5b05b6a1L;
+		MaximumFlowTestUtils.testRandGraphsInt(new MaximumFlowPushRelabelDynamicTrees(), seed, /* directed= */ false);
 	}
 
 	@Test

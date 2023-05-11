@@ -23,7 +23,13 @@ public class MaximumFlowDinicDynamicTreesTest extends TestBase {
 	@Test
 	public void testRandDiGraphs() {
 		final long seed = 0x67b60b1ffd6fee78L;
-		MaximumFlowTestUtils.testRandGraphs(new MaximumFlowDinicDynamicTrees(), seed, /*directed=*/ true);
+		MaximumFlowTestUtils.testRandGraphs(new MaximumFlowDinicDynamicTrees(), seed, /* directed= */ true);
+	}
+
+	@Test
+	public void testRandUGraphsIntFlow() {
+		final long seed = 0x38831cada35583c6L;
+		MaximumFlowTestUtils.testRandGraphsInt(new MaximumFlowDinicDynamicTrees(), seed, /* directed= */ false);
 	}
 
 	@Test

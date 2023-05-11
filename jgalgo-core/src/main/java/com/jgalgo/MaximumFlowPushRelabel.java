@@ -16,7 +16,6 @@
 
 package com.jgalgo;
 
-import java.util.BitSet;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 /**
@@ -61,97 +60,54 @@ public class MaximumFlowPushRelabel extends MaximumFlowPushRelabelAbstract {
 
 	private static class WorkerDouble extends MaximumFlowPushRelabelAbstract.WorkerDouble {
 
-		final ActiveQueue active;
+		final IntPriorityQueue activeQueue = new IntArrayFIFOQueue();
 
 		WorkerDouble(Graph gOrig, FlowNetwork net, int source, int sink) {
 			super(gOrig, net, source, sink);
-			active = new ActiveQueue(this);
 		}
 
 		@Override
-		void push(int e, double f) {
-			super.push(e, f);
-			active.afterPush(e);
-		};
-
-		@Override
-		void discharge(int u) {
-			super.discharge(u);
-			active.afterDischarge(u);
+		void activate(int v) {
+			super.activate(v);
+			if (v != source && v != sink)
+				activeQueue.enqueue(v);
 		}
 
 		@Override
 		boolean hasMoreVerticesToDischarge() {
-			return !active.queue.isEmpty();
+			return !activeQueue.isEmpty();
 		}
 
 		@Override
 		int nextVertexToDischarge() {
-			return active.queue.dequeueInt();
+			return activeQueue.dequeueInt();
 		}
 	}
 
 	private static class WorkerInt extends MaximumFlowPushRelabelAbstract.WorkerInt {
 
-		final ActiveQueue active;
+		final IntPriorityQueue activeQueue = new IntArrayFIFOQueue();
 
 		WorkerInt(Graph gOrig, FlowNetwork.Int net, int source, int sink) {
 			super(gOrig, net, source, sink);
-			active = new ActiveQueue(this);
 		}
 
 		@Override
-		void push(int e, int f) {
-			super.push(e, f);
-			active.afterPush(e);
-		};
-
-		@Override
-		void discharge(int u) {
-			super.discharge(u);
-			active.afterDischarge(u);
+		void activate(int v) {
+			super.activate(v);
+			if (v != source && v != sink)
+				activeQueue.enqueue(v);
 		}
 
 		@Override
 		boolean hasMoreVerticesToDischarge() {
-			return !active.queue.isEmpty();
+			return !activeQueue.isEmpty();
 		}
 
 		@Override
 		int nextVertexToDischarge() {
-			return active.queue.dequeueInt();
+			return activeQueue.dequeueInt();
 		}
 	}
 
-	private static class ActiveQueue {
-
-		private final Graph g;
-		final BitSet isActive;
-		final IntPriorityQueue queue;
-
-		ActiveQueue(MaximumFlowPushRelabelAbstract.Worker worker) {
-			g = worker.g;
-			int n = g.vertices().size();
-			isActive = new BitSet(n);
-			queue = new IntArrayFIFOQueue();
-
-			// set source and sink as 'active' to prevent them from entering the active
-			// queue
-			isActive.set(worker.source);
-			isActive.set(worker.sink);
-		}
-
-		void afterPush(int e) {
-			int v = g.edgeTarget(e);
-			if (!isActive.get(v)) {
-				isActive.set(v);
-				queue.enqueue(v);
-			}
-		}
-
-		void afterDischarge(int u) {
-			isActive.clear(u);
-		}
-
-	}
 }

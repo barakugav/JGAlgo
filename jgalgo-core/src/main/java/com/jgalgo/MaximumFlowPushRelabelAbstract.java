@@ -38,7 +38,6 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 	 */
 	@Override
 	public double computeMaximumFlow(Graph g, FlowNetwork net, int source, int sink) {
-		ArgumentCheck.onlyDirected(g);
 		if (net instanceof FlowNetwork.Int) {
 			return newWorkerInt(g, (FlowNetwork.Int) net, source, sink).computeMaxFlow();
 		} else {
@@ -334,14 +333,14 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 				dfs: for (int u = root;;) {
 					edgeIteration: for (; edgeIters[u].hasNext(); edgeIters[u].nextInt()) {
 						int e = edgeIters[u].peekNext();
-						if (isOriginalEdge(e) || !isResidual(e))
+						if (!hasNegativeFlow(e))
 							continue;
 						int v = g.edgeTarget(e);
 						if (vState[v] == Unvisited) {
 							vState[v] = OnPath;
 							parent[v] = u;
 							u = v;
-							break edgeIteration;
+							continue dfs;
 						}
 						if (vState[v] == OnPath) {
 							// cycle found, find the minimum flow on it
@@ -352,7 +351,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 							int backOutTo = u;
 							for (v = g.edgeTarget(edgeIters[u].peekNext()); v != u; v = g.edgeTarget(e)) {
 								e = edgeIters[v].peekNext();
-								if (vState[v] != Unvisited && !isSaturated(e))
+								if (vState[v] != Unvisited && hasNegativeFlow(e))
 									continue;
 								vState[g.edgeTarget(e)] = Unvisited;
 								if (vState[v] != Unvisited)
@@ -448,6 +447,8 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 
 		abstract boolean isSaturated(int e);
 
+		abstract boolean hasNegativeFlow(int e);
+
 	}
 
 	static abstract class WorkerDouble extends Worker {
@@ -463,11 +464,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 
 			flow = g.addEdgesWeights(FlowWeightKey, double.class);
 			capacity = g.addEdgesWeights(CapacityWeightKey, double.class);
-			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-				int e = it.nextInt();
-				flow.set(e, 0);
-				capacity.set(e, isOriginalEdge(e) ? net.getCapacity(edgeRef.getInt(e)) : 0);
-			}
+			initCapacitiesAndFlows(flow, capacity);
 
 			excess = new double[n];
 		}
@@ -486,7 +483,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 			}
 		}
 
-		private void push0(int e, double f) {
+		private void push(int e, double f) {
 			assert f > 0;
 
 			int rev = twin.getInt(e);
@@ -499,10 +496,6 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 			excess[u] -= f;
 			excess[v] += f;
 		};
-
-		void push(int e, double f) {
-			push0(e, f);
-		}
 
 		@Override
 		void discharge(int u) {
@@ -545,10 +538,12 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 		void eliminateCycle(int e) {
 			int u = g.edgeSource(e);
 			int v = g.edgeTarget(e);
-			double delta = getResidualCapacity(e);
+			assert hasNegativeFlow(e);
+			double delta = -flow.getDouble(e);
 			for (;;) {
 				e = edgeIters[v].peekNext();
-				delta = Math.min(delta, getResidualCapacity(e));
+				assert hasNegativeFlow(e);
+				delta = Math.min(delta, -flow.getDouble(e));
 				if (v == u)
 					break;
 				v = g.edgeTarget(e);
@@ -571,10 +566,9 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 			for (int u = topoBegin;; u = topoNext[u]) {
 				for (EdgeIter eit = g.edgesOut(u); hasExcess(u) && eit.hasNext();) {
 					int e = eit.nextInt();
-					if (!isOriginalEdge(e) && isResidual(e)) {
-						double f = Math.min(excess[u], getResidualCapacity(e));
-						push0(e, f);
-					}
+					double f = flow.getDouble(e);
+					if (f < 0)
+						push(e, Math.min(excess[u], -f));
 				}
 				if (u == topoEnd)
 					break;
@@ -604,6 +598,11 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 		boolean isSaturated(int e) {
 			return getResidualCapacity(e) <= EPS;
 		}
+
+		@Override
+		boolean hasNegativeFlow(int e) {
+			return flow.getDouble(e) < 0;
+		}
 	}
 
 	static abstract class WorkerInt extends Worker {
@@ -617,11 +616,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 
 			flow = g.addEdgesWeights(FlowWeightKey, int.class);
 			capacity = g.addEdgesWeights(CapacityWeightKey, int.class);
-			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-				int e = it.nextInt();
-				flow.set(e, 0);
-				capacity.set(e, isOriginalEdge(e) ? net.getCapacityInt(edgeRef.getInt(e)) : 0);
-			}
+			initCapacitiesAndFlows(flow, capacity);
 
 			excess = new int[n];
 		}
@@ -640,7 +635,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 			}
 		}
 
-		private void push0(int e, int f) {
+		private void push(int e, int f) {
 			assert f > 0;
 
 			int rev = twin.getInt(e);
@@ -653,10 +648,6 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 			excess[u] -= f;
 			excess[v] += f;
 		}
-
-		void push(int e, int f) {
-			push0(e, f);
-		};
 
 		@Override
 		void discharge(int u) {
@@ -696,10 +687,12 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 		void eliminateCycle(int e) {
 			int u = g.edgeSource(e);
 			int v = g.edgeTarget(e);
-			int delta = getResidualCapacity(e);
+			assert hasNegativeFlow(e);
+			int delta = -flow.getInt(e);
 			for (;;) {
 				e = edgeIters[v].peekNext();
-				delta = Math.min(delta, getResidualCapacity(e));
+				assert hasNegativeFlow(e);
+				delta = Math.min(delta, -flow.getInt(e));
 				if (v == u)
 					break;
 				v = g.edgeTarget(e);
@@ -722,10 +715,9 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 			for (int u = topoBegin;; u = topoNext[u]) {
 				for (EdgeIter eit = g.edgesOut(u); hasExcess(u) && eit.hasNext();) {
 					int e = eit.nextInt();
-					if (!isOriginalEdge(e) && isResidual(e)) {
-						int f = Math.min(excess[u], getResidualCapacity(e));
-						push0(e, f);
-					}
+					int f = flow.getInt(e);
+					if (f < 0)
+						push(e, Math.min(excess[u], -f));
 				}
 				if (u == topoEnd)
 					break;
@@ -754,6 +746,11 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 		@Override
 		boolean isSaturated(int e) {
 			return getResidualCapacity(e) == 0;
+		}
+
+		@Override
+		boolean hasNegativeFlow(int e) {
+			return flow.getInt(e) < 0;
 		}
 	}
 

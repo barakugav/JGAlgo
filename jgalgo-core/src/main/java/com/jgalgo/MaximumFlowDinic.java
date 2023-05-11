@@ -70,7 +70,6 @@ public class MaximumFlowDinic implements MaximumFlow {
 	 */
 	@Override
 	public double computeMaximumFlow(Graph g, FlowNetwork net, int source, int sink) {
-		ArgumentCheck.onlyDirected(g);
 		return new Worker(g, net, source, sink).computeMaximumFlow();
 	}
 
@@ -81,15 +80,10 @@ public class MaximumFlowDinic implements MaximumFlow {
 
 		Worker(Graph gOrig, FlowNetwork net, int source, int sink) {
 			super(gOrig, net, source, sink);
+
 			flow = g.addEdgesWeights(FlowWeightKey, double.class);
 			capacity = g.addEdgesWeights(CapacityWeightKey, double.class);
-
-			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-				int e = it.nextInt();
-				double cap = net.getCapacity(edgeRef.getInt(e));
-				capacity.set(e, cap);
-				flow.set(e, isOriginalEdge(e) ? 0 : cap);
-			}
+			initCapacitiesAndFlows(flow, capacity);
 		}
 
 		double computeMaximumFlow() {
@@ -180,7 +174,7 @@ public class MaximumFlowDinic implements MaximumFlow {
 							flow.set(e, cap);
 							L.removeEdge(eL);
 						}
-						flow.set(rev, Math.max(0, flow.getDouble(rev) - f));
+						flow.set(rev, flow.getDouble(rev) - f);
 					}
 				}
 			}

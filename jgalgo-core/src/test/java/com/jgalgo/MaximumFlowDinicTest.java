@@ -23,7 +23,13 @@ public class MaximumFlowDinicTest extends TestBase {
 	@Test
 	public void testRandDiGraphs() {
 		final long seed = 0xa79b303ec46fd984L;
-		MaximumFlowTestUtils.testRandGraphs(new MaximumFlowDinic(), seed, /*directed=*/ true);
+		MaximumFlowTestUtils.testRandGraphs(new MaximumFlowDinic(), seed, /* directed= */ true);
+	}
+
+	@Test
+	public void testRandUGraphsIntFlow() {
+		final long seed = 0x6be26a022c1cd652L;
+		MaximumFlowTestUtils.testRandGraphsInt(new MaximumFlowDinic(), seed, /* directed= */ false);
 	}
 
 	@Test

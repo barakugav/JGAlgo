@@ -68,13 +68,11 @@ public class MaximumFlowPushRelabelLowestFirst extends MaximumFlowPushRelabelAbs
 		}
 
 		@Override
-		void push(int e, double f) {
-			int v = g.edgeTarget(e);
-			if (v != sink && !hasExcess(v))
-				if (minLayerActive > label[v])
-					minLayerActive = label[v];
-			super.push(e, f);
-		};
+		void activate(int v) {
+			super.activate(v);
+			if (minLayerActive > label[v])
+				minLayerActive = label[v];
+		}
 
 		@Override
 		boolean hasMoreVerticesToDischarge() {
@@ -108,13 +106,11 @@ public class MaximumFlowPushRelabelLowestFirst extends MaximumFlowPushRelabelAbs
 		}
 
 		@Override
-		void push(int e, int f) {
-			int v = g.edgeTarget(e);
-			if (v != sink && !hasExcess(v))
-				if (minLayerActive > label[v])
-					minLayerActive = label[v];
-			super.push(e, f);
-		};
+		void activate(int v) {
+			super.activate(v);
+			if (minLayerActive > label[v])
+				minLayerActive = label[v];
+		}
 
 		@Override
 		boolean hasMoreVerticesToDischarge() {

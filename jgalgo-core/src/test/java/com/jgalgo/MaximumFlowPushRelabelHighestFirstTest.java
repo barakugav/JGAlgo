@@ -33,6 +33,12 @@ public class MaximumFlowPushRelabelHighestFirstTest extends TestBase {
 	}
 
 	@Test
+	public void testRandUGraphsIntFlow() {
+		final long seed = 0xa965568176b59253L;
+		MaximumFlowTestUtils.testRandGraphsInt(new MaximumFlowPushRelabelHighestFirst(), seed, /* directed= */ false);
+	}
+
+	@Test
 	public void testMinimumCutRandGraphs() {
 		final long seed = 0xe70353b8637b68d2L;
 		MinimumCutSTTestUtils.testRandGraphs(new MaximumFlowPushRelabelHighestFirst(), seed);

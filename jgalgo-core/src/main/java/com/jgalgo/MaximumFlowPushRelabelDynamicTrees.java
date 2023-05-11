@@ -61,7 +61,6 @@ public class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 	 */
 	@Override
 	public double computeMaximumFlow(Graph g, FlowNetwork net, int source, int sink) {
-		ArgumentCheck.onlyDirected(g);
 		if (net instanceof FlowNetwork.Int) {
 			return new WorkerInt(g, (FlowNetwork.Int) net, source, sink).computeMaxFlow();
 		} else {
@@ -326,11 +325,7 @@ public class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 
 			flow = g.addEdgesWeights(FlowWeightKey, double.class);
 			capacity = g.addEdgesWeights(CapacityWeightKey, double.class);
-			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-				int e = it.nextInt();
-				flow.set(e, 0);
-				capacity.set(e, isOriginalEdge(e) ? net.getCapacity(edgeRef.getInt(e)) : 0);
-			}
+			initCapacitiesAndFlows(flow, capacity);
 		}
 
 		@Override
@@ -460,11 +455,7 @@ public class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 
 			flow = g.addEdgesWeights(FlowWeightKey, int.class);
 			capacity = g.addEdgesWeights(CapacityWeightKey, int.class);
-			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-				int e = it.nextInt();
-				flow.set(e, 0);
-				capacity.set(e, isOriginalEdge(e) ? net.getCapacityInt(edgeRef.getInt(e)) : 0);
-			}
+			initCapacitiesAndFlows(flow, capacity);
 		}
 
 		@Override

@@ -57,7 +57,6 @@ public class MaximumFlowDinicDynamicTrees implements MaximumFlow {
 	 */
 	@Override
 	public double computeMaximumFlow(Graph g, FlowNetwork net, int source, int sink) {
-		ArgumentCheck.onlyDirected(g);
 		return new Worker(g, net, source, sink).computeMaximumFlow();
 	}
 
@@ -71,13 +70,7 @@ public class MaximumFlowDinicDynamicTrees implements MaximumFlow {
 
 			flow = g.addEdgesWeights(FlowWeightKey, double.class);
 			capacity = g.addEdgesWeights(CapacityWeightKey, double.class);
-
-			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-				int e = it.nextInt();
-				double cap = net.getCapacity(edgeRef.getInt(e));
-				capacity.set(e, cap);
-				flow.set(e, isOriginalEdge(e) ? 0 : cap);
-			}
+			initCapacitiesAndFlows(flow, capacity);
 		}
 
 		double computeMaximumFlow() {
@@ -142,8 +135,6 @@ public class MaximumFlowDinicDynamicTrees implements MaximumFlow {
 					int eTwin = twin.getInt(e);
 					flow.set(e, currentFlow + f);
 					flow.set(eTwin, flow.getDouble(eTwin) - f);
-					assert flow.getDouble(e) <= capacity.getDouble(e) + EPS;
-					assert flow.getDouble(eTwin) >= 0 - EPS;
 				};
 
 				calcBlockFlow: for (;;) {

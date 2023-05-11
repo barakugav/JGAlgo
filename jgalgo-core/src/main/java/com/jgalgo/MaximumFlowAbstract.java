@@ -37,10 +37,11 @@ class MaximumFlowAbstract {
 
 		Worker(Graph gOrig, FlowNetwork net, int source, int sink) {
 			ArgumentCheck.sourceSinkNotTheSame(source, sink);
+			positiveCapacitiesOrThrow(gOrig, net);
 			this.gOrig = gOrig;
 			this.source = source;
 			this.sink = sink;
-			n = gOrig.vertices().size();
+			this.n = gOrig.vertices().size();
 			this.net = net;
 
 			g = new GraphArrayDirected(n);
@@ -61,6 +62,45 @@ class MaximumFlowAbstract {
 				edgeRef.set(e2, e);
 				twin.set(e1, e2);
 				twin.set(e2, e1);
+			}
+		}
+
+		void initCapacitiesAndFlows(Weights.Double flow, Weights.Double capacity) {
+			if (gOrig.getCapabilities().directed()) {
+				for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+					int e = it.nextInt();
+					capacity.set(e, isOriginalEdge(e) ? net.getCapacity(edgeRef.getInt(e)) : 0);
+					flow.set(e, 0);
+				}
+			} else {
+				for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+					int e = it.nextInt();
+					double cap =
+							(g.edgeTarget(e) != source && g.edgeSource(e) != sink) ? net.getCapacity(edgeRef.getInt(e))
+									: 0;
+					capacity.set(e, cap);
+					flow.set(e, 0);
+				}
+			}
+		}
+
+		void initCapacitiesAndFlows(Weights.Int flow, Weights.Int capacity) {
+			FlowNetwork.Int net = (FlowNetwork.Int) this.net;
+			if (gOrig.getCapabilities().directed()) {
+				for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+					int e = it.nextInt();
+					capacity.set(e, isOriginalEdge(e) ? net.getCapacityInt(edgeRef.getInt(e)) : 0);
+					flow.set(e, 0);
+				}
+			} else {
+				for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+					int e = it.nextInt();
+					int cap = (g.edgeTarget(e) != source && g.edgeSource(e) != sink)
+							? net.getCapacityInt(edgeRef.getInt(e))
+							: 0;
+					capacity.set(e, cap);
+					flow.set(e, 0);
+				}
 			}
 		}
 
@@ -110,6 +150,25 @@ class MaximumFlowAbstract {
 		boolean isOriginalEdge(int e) {
 			return g.edgeSource(e) == gOrig.edgeSource(edgeRef.getInt(e));
 		}
-	}
 
+		private static void positiveCapacitiesOrThrow(Graph g, FlowNetwork net) {
+			if (net instanceof FlowNetwork.Int) {
+				FlowNetwork.Int netInt = (FlowNetwork.Int) net;
+				for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+					int e = it.nextInt();
+					int cap = netInt.getCapacityInt(e);
+					if (cap < 0)
+						throw new IllegalArgumentException("negative capacity of edge (" + e + "): " + cap);
+				}
+			} else {
+				for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+					int e = it.nextInt();
+					double cap = net.getCapacity(e);
+					if (cap < 0)
+						throw new IllegalArgumentException("negative capacity of edge (" + e + "): " + cap);
+				}
+			}
+		}
+
+	}
 }

@@ -23,13 +23,19 @@ public class MaximumFlowPushRelabelToFrontTest extends TestBase {
 	@Test
 	public void testRandDiGraphsDoubleFlow() {
 		final long seed = 0x8fb191d57a090f45L;
-		MaximumFlowTestUtils.testRandGraphs(new MaximumFlowPushRelabelToFront(), seed, /*directed=*/ true);
+		MaximumFlowTestUtils.testRandGraphs(new MaximumFlowPushRelabelToFront(), seed, /* directed= */ true);
 	}
 
 	@Test
 	public void testRandDiGraphsIntFlow() {
 		final long seed = 0x3d296bd5e39fbefbL;
-		MaximumFlowTestUtils.testRandGraphsInt(new MaximumFlowPushRelabelToFront(), seed, /*directed=*/ true);
+		MaximumFlowTestUtils.testRandGraphsInt(new MaximumFlowPushRelabelToFront(), seed, /* directed= */ true);
+	}
+
+	@Test
+	public void testRandUGraphsIntFlow() {
+		final long seed = 0x76f63550330a6958L;
+		MaximumFlowTestUtils.testRandGraphsInt(new MaximumFlowPushRelabelToFront(), seed, /* directed= */ false);
 	}
 
 	@Test

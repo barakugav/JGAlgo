@@ -18,7 +18,6 @@ package com.jgalgo;
 
 import java.util.BitSet;
 import it.unimi.dsi.fastutil.ints.IntArrays;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 /**
@@ -117,20 +116,7 @@ public class MaximumFlowEdmondsKarp implements MaximumFlow {
 
 			flow = g.addEdgesWeights(FlowWeightKey, double.class);
 			capacity = g.addEdgesWeights(CapacityWeightKey, double.class);
-
-			if (gOrig.getCapabilities().directed()) {
-				for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-					int e = it.nextInt();
-					capacity.set(e, isOriginalEdge(e) ? net.getCapacity(edgeRef.getInt(e)) : 0);
-					flow.set(e, 0);
-				}
-			} else {
-				for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-					int e = it.nextInt();
-					capacity.set(e, net.getCapacity(edgeRef.getInt(e)));
-					flow.set(e, 0);
-				}
-			}
+			initCapacitiesAndFlows(flow, capacity);
 		}
 
 		double computeMaxFlow() {
@@ -177,20 +163,7 @@ public class MaximumFlowEdmondsKarp implements MaximumFlow {
 
 			flow = g.addEdgesWeights(FlowWeightKey, int.class);
 			capacity = g.addEdgesWeights(CapacityWeightKey, int.class);
-
-			if (gOrig.getCapabilities().directed()) {
-				for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-					int e = it.nextInt();
-					capacity.set(e, isOriginalEdge(e) ? net.getCapacityInt(edgeRef.getInt(e)) : 0);
-					flow.set(e, 0);
-				}
-			} else {
-				for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-					int e = it.nextInt();
-					capacity.set(e, net.getCapacityInt(edgeRef.getInt(e)));
-					flow.set(e, 0);
-				}
-			}
+			initCapacitiesAndFlows(flow, capacity);
 		}
 
 		int computeMaxFlow() {
