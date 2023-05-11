@@ -19,9 +19,7 @@ package com.jgalgo;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Supplier;
-
 import com.jgalgo.IDStrategy.Fixed;
-
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -44,8 +42,6 @@ public class MaximumFlowDinic implements MaximumFlow {
 
 	private Supplier<? extends GraphBuilder> layerGraphBuilder = GraphBuilderImpl.LinkedDirected::new;
 
-	private static final Object EdgeRefWeightKey = new Object();
-	private static final Object EdgeRevWeightKey = new Object();
 	private static final Object FlowWeightKey = new Object();
 	private static final Object CapacityWeightKey = new Object();
 
@@ -75,148 +71,123 @@ public class MaximumFlowDinic implements MaximumFlow {
 	@Override
 	public double computeMaximumFlow(Graph g, FlowNetwork net, int source, int sink) {
 		ArgumentCheck.onlyDirected(g);
-		ArgumentCheck.sourceSinkNotTheSame(source, sink);
-		Graph gOrig = g;
+		return new Worker(g, net, source, sink).computeMaximumFlow();
+	}
 
-		final int n = gOrig.vertices().size();
-		g = new GraphArrayDirected(n);
-		Weights.Int edgeRef = g.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
-		Weights.Int twin = g.addEdgesWeights(EdgeRevWeightKey, int.class, Integer.valueOf(-1));
-		Weights.Double flow = g.addEdgesWeights(FlowWeightKey, double.class);
-		Weights.Double capacity = g.addEdgesWeights(CapacityWeightKey, double.class);
-		for (IntIterator it = gOrig.edges().iterator(); it.hasNext();) {
-			int e = it.nextInt();
-			int u = gOrig.edgeSource(e), v = gOrig.edgeTarget(e);
-			if (u == v)
-				continue;
-			if (u == sink || v == source)
-				continue;
-			int e1 = g.addEdge(u, v);
-			int e2 = g.addEdge(v, u);
-			edgeRef.set(e1, e);
-			edgeRef.set(e2, e);
-			twin.set(e1, e2);
-			twin.set(e2, e1);
-			double cap = net.getCapacity(e);
-			capacity.set(e1, cap);
-			capacity.set(e2, cap);
-			flow.set(e1, 0);
-			flow.set(e2, cap);
+	private class Worker extends MaximumFlowAbstract.Worker {
+
+		final Weights.Double flow;
+		final Weights.Double capacity;
+
+		Worker(Graph gOrig, FlowNetwork net, int source, int sink) {
+			super(gOrig, net, source, sink);
+			flow = g.addEdgesWeights(FlowWeightKey, double.class);
+			capacity = g.addEdgesWeights(CapacityWeightKey, double.class);
+
+			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+				int e = it.nextInt();
+				double cap = net.getCapacity(edgeRef.getInt(e));
+				capacity.set(e, cap);
+				flow.set(e, isOriginalEdge(e) ? 0 : cap);
+			}
 		}
 
-		GraphBuilder builder = layerGraphBuilder.get();
-		Graph L = builder.setVerticesNum(n).setEdgesIDStrategy(Fixed.class).build();
-		Weights.Int edgeRefL = L.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
-		IntPriorityQueue bfsQueue = new IntArrayFIFOQueue();
-		int[] level = new int[n];
+		double computeMaximumFlow() {
+			GraphBuilder builder = layerGraphBuilder.get();
+			Graph L = builder.setVerticesNum(n).setEdgesIDStrategy(Fixed.class).build();
+			Weights.Int edgeRefL = L.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
+			IntPriorityQueue bfsQueue = new IntArrayFIFOQueue();
+			int[] level = new int[n];
 
-		for (;;) {
-			L.clearEdges();
+			for (;;) {
+				L.clearEdges();
 
-			/* Calc the sub graph non saturated edges from source to sink using BFS */
-			final int unvisited = Integer.MAX_VALUE;
-			Arrays.fill(level, unvisited);
-			bfsQueue.clear();
-			level[source] = 0;
-			bfsQueue.enqueue(source);
-			bfs: while (!bfsQueue.isEmpty()) {
-				int u = bfsQueue.dequeueInt();
-				if (u == sink)
-					break bfs;
-				int lvl = level[u];
-				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
-					int e = eit.nextInt();
-					int v = eit.target();
-					if (flow.getDouble(e) >= capacity.getDouble(e) || level[v] <= lvl)
-						continue;
-					edgeRefL.set(L.addEdge(u, v), e);
-					if (level[v] != unvisited)
-						continue;
-					level[v] = lvl + 1;
-					bfsQueue.enqueue(v);
+				/* Calc the sub graph non saturated edges from source to sink using BFS */
+				final int unvisited = Integer.MAX_VALUE;
+				Arrays.fill(level, unvisited);
+				bfsQueue.clear();
+				level[source] = 0;
+				bfsQueue.enqueue(source);
+				bfs: while (!bfsQueue.isEmpty()) {
+					int u = bfsQueue.dequeueInt();
+					if (u == sink)
+						break bfs;
+					int lvl = level[u];
+					for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
+						int e = eit.nextInt();
+						int v = eit.target();
+						if (flow.getDouble(e) >= capacity.getDouble(e) || level[v] <= lvl)
+							continue;
+						edgeRefL.set(L.addEdge(u, v), e);
+						if (level[v] != unvisited)
+							continue;
+						level[v] = lvl + 1;
+						bfsQueue.enqueue(v);
+					}
 				}
-			}
-			if (level[sink] == unvisited)
-				break; /* All paths to sink are saturated */
+				if (level[sink] == unvisited)
+					break; /* All paths to sink are saturated */
 
-			searchBlockingFlow: for (;;) {
-				IntStack path = new IntArrayList();
-				searchAugPath: for (;;) {
-					int u = path.isEmpty() ? source : L.edgeTarget(path.topInt());
-					EdgeIter eit = L.edgesOut(u);
-					if (!eit.hasNext()) {
-						if (path.isEmpty()) {
-							// no path from source to sink
-							break searchBlockingFlow;
+				searchBlockingFlow: for (;;) {
+					IntStack path = new IntArrayList();
+					searchAugPath: for (;;) {
+						int u = path.isEmpty() ? source : L.edgeTarget(path.topInt());
+						EdgeIter eit = L.edgesOut(u);
+						if (!eit.hasNext()) {
+							if (path.isEmpty()) {
+								// no path from source to sink
+								break searchBlockingFlow;
+							} else {
+								// retreat
+								int e = path.popInt();
+								L.removeEdge(e);
+								continue searchAugPath;
+							}
+						}
+
+						int e = eit.nextInt();
+						path.push(e);
+						if (eit.target() == sink) {
+							// augment
+							break searchAugPath;
 						} else {
-							// retreat
-							int e = path.popInt();
-							L.removeEdge(e);
-							continue searchAugPath;
+							// advance
 						}
 					}
 
-					int e = eit.nextInt();
-					path.push(e);
-					if (eit.target() == sink) {
-						// augment
-						break searchAugPath;
-					} else {
-						// advance
+					// augment the path we found
+					IntList pathList = (IntList) path;
+					assert pathList.size() > 0;
+
+					// find out what is the maximum flow we can pass
+					double f = Double.MAX_VALUE;
+					for (IntIterator it = pathList.iterator(); it.hasNext();) {
+						int e = edgeRefL.getInt(it.nextInt());
+						f = Math.min(f, capacity.getDouble(e) - flow.getDouble(e));
 					}
-				}
 
-				// augment the path we found
-				IntList pathList = (IntList) path;
-				assert pathList.size() > 0;
-
-				// find out what is the maximum flow we can pass
-				double f = Double.MAX_VALUE;
-				for (IntIterator it = pathList.iterator(); it.hasNext();) {
-					int e = edgeRefL.getInt(it.nextInt());
-					f = Math.min(f, capacity.getDouble(e) - flow.getDouble(e));
-				}
-
-				// update flow of all edges on path
-				for (IntIterator it = pathList.iterator(); it.hasNext();) {
-					int eL = it.nextInt();
-					int e = edgeRefL.getInt(eL);
-					int rev = twin.getInt(e);
-					double newFlow = flow.getDouble(e) + f;
-					double cap = capacity.getDouble(e);
-					if (newFlow < cap) {
-						flow.set(e, newFlow);
-					} else {
-						/* saturated, remove edge */
-						flow.set(e, cap);
-						L.removeEdge(eL);
+					// update flow of all edges on path
+					for (IntIterator it = pathList.iterator(); it.hasNext();) {
+						int eL = it.nextInt();
+						int e = edgeRefL.getInt(eL);
+						int rev = twin.getInt(e);
+						double newFlow = flow.getDouble(e) + f;
+						double cap = capacity.getDouble(e);
+						if (newFlow < cap) {
+							flow.set(e, newFlow);
+						} else {
+							/* saturated, remove edge */
+							flow.set(e, cap);
+							L.removeEdge(eL);
+						}
+						flow.set(rev, Math.max(0, flow.getDouble(rev) - f));
 					}
-					flow.set(rev, Math.max(0, flow.getDouble(rev) - f));
 				}
 			}
+
+			return constructResult(flow);
 		}
 
-		/* Construct result */
-		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-			int e = it.nextInt();
-			int eOrig = edgeRef.getInt(e);
-			if (g.edgeSource(e) == gOrig.edgeSource(eOrig))
-				net.setFlow(eOrig, flow.getDouble(e));
-		}
-		double totalFlow = 0;
-		for (EdgeIter eit = g.edgesOut(source); eit.hasNext();) {
-			int e = eit.nextInt();
-			int eOrig = edgeRef.getInt(e);
-			if (g.edgeSource(e) == gOrig.edgeSource(eOrig))
-				totalFlow += flow.getDouble(e);
-		}
-		for (EdgeIter eit = g.edgesIn(source); eit.hasNext();) {
-			int e = eit.nextInt();
-			int eOrig = edgeRef.getInt(e);
-			if (g.edgeSource(e) == gOrig.edgeSource(eOrig))
-				totalFlow -= flow.getDouble(e);
-		}
-		return totalFlow;
 	}
 
 }

@@ -46,8 +46,6 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  */
 public class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 
-	private static final Object EdgeRefWeightKey = new Object();
-	private static final Object EdgeRevWeightKey = new Object();
 	private static final Object FlowWeightKey = new Object();
 	private static final Object CapacityWeightKey = new Object();
 
@@ -71,16 +69,7 @@ public class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 		}
 	}
 
-	private static abstract class AbstractWorker {
-
-		final FlowNetwork net;
-		final Graph gOrig;
-		final int source;
-		final int sink;
-
-		final Graph g;
-		final Weights.Int edgeRef;
-		final Weights.Int twin;
+	private static abstract class AbstractWorker extends MaximumFlowAbstract.Worker {
 
 		final DynamicTree dt;
 		final DynamicTreeExtension.TreeSize dtTreeSize;
@@ -94,31 +83,8 @@ public class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 		final IntPriorityQueue toCut = new IntArrayFIFOQueue();
 
 		AbstractWorker(Graph gOrig, FlowNetwork net, int source, int sink) {
-			ArgumentCheck.sourceSinkNotTheSame(source, sink);
+			super(gOrig, net, source, sink);
 
-			this.gOrig = gOrig;
-			this.net = net;
-			this.source = source;
-			this.sink = sink;
-
-			g = new GraphArrayDirected(gOrig.vertices().size());
-			edgeRef = g.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
-			twin = g.addEdgesWeights(EdgeRevWeightKey, int.class, Integer.valueOf(-1));
-			for (IntIterator it = gOrig.edges().iterator(); it.hasNext();) {
-				int e = it.nextInt();
-				int u = gOrig.edgeSource(e), v = gOrig.edgeTarget(e);
-				if (u == v || u == sink || v == source)
-					continue;
-
-				int e1 = g.addEdge(u, v);
-				int e2 = g.addEdge(v, u);
-				edgeRef.set(e1, e);
-				edgeRef.set(e2, e);
-				twin.set(e1, e2);
-				twin.set(e2, e1);
-			}
-
-			int n = g.vertices().size();
 			double maxWeight = getMaxWeight();
 			dt = DynamicTree.newBuilder().setMaxWeight(maxWeight * 10).setIntWeights(this instanceof WorkerInt)
 					.addExtension(DynamicTreeExtension.TreeSize.class).build();
@@ -321,10 +287,6 @@ public class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 
 		abstract boolean isResidual(int e);
 
-		boolean isOriginalEdge(int e) {
-			return g.edgeSource(e) == gOrig.edgeSource(edgeRef.getInt(e));
-		}
-
 		@SuppressWarnings("unchecked")
 		<V extends Vertex> V vertexData(int v) {
 			return (V) vertexData[v];
@@ -460,23 +422,7 @@ public class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 
 		@Override
 		double constructResult() {
-			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-				int e = it.nextInt();
-				if (isOriginalEdge(e))
-					net.setFlow(edgeRef.getInt(e), flow.getDouble(e));
-			}
-			double totalFlow = 0;
-			for (EdgeIter eit = g.edgesOut(source); eit.hasNext();) {
-				int e = eit.nextInt();
-				if (isOriginalEdge(e))
-					totalFlow += flow.getDouble(e);
-			}
-			for (EdgeIter eit = g.edgesIn(source); eit.hasNext();) {
-				int e = eit.nextInt();
-				if (isOriginalEdge(e))
-					totalFlow -= flow.getDouble(e);
-			}
-			return totalFlow;
+			return constructResult(flow);
 		}
 
 		@Override
@@ -611,23 +557,7 @@ public class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 
 		@Override
 		double constructResult() {
-			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-				int e = it.nextInt();
-				if (isOriginalEdge(e))
-					((FlowNetwork.Int) net).setFlow(edgeRef.getInt(e), flow.getInt(e));
-			}
-			int totalFlow = 0;
-			for (EdgeIter eit = g.edgesOut(source); eit.hasNext();) {
-				int e = eit.nextInt();
-				if (isOriginalEdge(e))
-					totalFlow += flow.getInt(e);
-			}
-			for (EdgeIter eit = g.edgesIn(source); eit.hasNext();) {
-				int e = eit.nextInt();
-				if (isOriginalEdge(e))
-					totalFlow -= flow.getInt(e);
-			}
-			return totalFlow;
+			return constructResult(flow);
 		}
 
 		@Override

@@ -24,8 +24,6 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCutST {
-	private static final Object EdgeRefWeightKey = new Object();
-	private static final Object EdgeRevWeightKey = new Object();
 	private static final Object FlowWeightKey = new Object();
 	private static final Object CapacityWeightKey = new Object();
 
@@ -110,17 +108,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 		}
 	}
 
-	static abstract class Worker {
-		final Graph g;
-		final Graph gOrig;
-		final int n;
-
-		final FlowNetwork net;
-		final int source;
-		final int sink;
-
-		final Weights.Int edgeRef;
-		final Weights.Int twin;
+	static abstract class Worker extends MaximumFlowAbstract.Worker {
 
 		final int[] label;
 		final EdgeIterImpl[] edgeIters;
@@ -139,29 +127,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 		private int maxLayerInactive;
 
 		Worker(Graph gOrig, FlowNetwork net, int source, int sink) {
-			ArgumentCheck.sourceSinkNotTheSame(source, sink);
-
-			this.gOrig = gOrig;
-			this.net = net;
-			this.source = source;
-			this.sink = sink;
-
-			n = gOrig.vertices().size();
-			g = new GraphArrayDirected(n);
-			edgeRef = g.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
-			twin = g.addEdgesWeights(EdgeRevWeightKey, int.class, Integer.valueOf(-1));
-			for (IntIterator it = gOrig.edges().iterator(); it.hasNext();) {
-				int e = it.nextInt();
-				int u = gOrig.edgeSource(e), v = gOrig.edgeTarget(e);
-				if (u == v || u == sink || v == source)
-					continue;
-				int e1 = g.addEdge(u, v);
-				int e2 = g.addEdge(v, u);
-				edgeRef.set(e1, e);
-				edgeRef.set(e2, e);
-				twin.set(e1, e2);
-				twin.set(e2, e1);
-			}
+			super(gOrig, net, source, sink);
 
 			label = new int[n];
 			edgeIters = new EdgeIterImpl[n];
@@ -482,10 +448,6 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 
 		abstract boolean isSaturated(int e);
 
-		boolean isOriginalEdge(int e) {
-			return g.edgeSource(e) == gOrig.edgeSource(edgeRef.getInt(e));
-		}
-
 	}
 
 	static abstract class WorkerDouble extends Worker {
@@ -621,23 +583,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 
 		@Override
 		double constructResult() {
-			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-				int e = it.nextInt();
-				if (isOriginalEdge(e))
-					net.setFlow(edgeRef.getInt(e), flow.getDouble(e));
-			}
-			double totalFlow = 0;
-			for (EdgeIter eit = g.edgesOut(source); eit.hasNext();) {
-				int e = eit.nextInt();
-				if (isOriginalEdge(e))
-					totalFlow += flow.getDouble(e);
-			}
-			for (EdgeIter eit = g.edgesIn(source); eit.hasNext();) {
-				int e = eit.nextInt();
-				if (isOriginalEdge(e))
-					totalFlow -= flow.getDouble(e);
-			}
-			return totalFlow;
+			return constructResult(flow);
 		}
 
 		@Override
@@ -788,24 +734,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 
 		@Override
 		double constructResult() {
-			FlowNetwork.Int net = (FlowNetwork.Int) this.net;
-			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-				int e = it.nextInt();
-				if (isOriginalEdge(e))
-					net.setFlow(edgeRef.getInt(e), flow.getInt(e));
-			}
-			int totalFlow = 0;
-			for (EdgeIter eit = g.edgesOut(source); eit.hasNext();) {
-				int e = eit.nextInt();
-				if (isOriginalEdge(e))
-					totalFlow += flow.getInt(e);
-			}
-			for (EdgeIter eit = g.edgesIn(source); eit.hasNext();) {
-				int e = eit.nextInt();
-				if (isOriginalEdge(e))
-					totalFlow -= flow.getInt(e);
-			}
-			return totalFlow;
+			return constructResult(flow);
 		}
 
 		@Override

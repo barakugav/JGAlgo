@@ -551,4 +551,9 @@ class Utils {
 		int apply(int a1, int a2);
 	}
 
+	@FunctionalInterface
+	static interface IntDoubleConsumer {
+		void accept(int a1, double a2);
+	}
+
 }

@@ -17,9 +17,9 @@
 package com.jgalgo;
 
 import java.util.Arrays;
-import java.util.function.ObjDoubleConsumer;
 import com.jgalgo.DynamicTree.MinEdge;
 import com.jgalgo.IDStrategy.Fixed;
+import com.jgalgo.Utils.IntDoubleConsumer;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
@@ -40,7 +40,10 @@ public class MaximumFlowDinicDynamicTrees implements MaximumFlow {
 
 	private final DebugPrintsManager debug = new DebugPrintsManager(false);
 	private static final double EPS = 0.0001;
-	private static final Object EdgeRefWeightKey = new Object();
+	static final Object EdgeRefWeightKey = new Object();
+	static final Object EdgeRevWeightKey = new Object();
+	private static final Object FlowWeightKey = new Object();
+	private static final Object CapacityWeightKey = new Object();
 
 	/**
 	 * Create a new maximum flow algorithm object.
@@ -55,200 +58,166 @@ public class MaximumFlowDinicDynamicTrees implements MaximumFlow {
 	@Override
 	public double computeMaximumFlow(Graph g, FlowNetwork net, int source, int sink) {
 		ArgumentCheck.onlyDirected(g);
-		ArgumentCheck.sourceSinkNotTheSame(source, sink);
-		Graph gOrig = g;
-		debug.println("\t", getClass().getSimpleName());
+		return new Worker(g, net, source, sink).computeMaximumFlow();
+	}
 
-		double maxCapacity = 100;
-		for (IntIterator it = gOrig.edges().iterator(); it.hasNext();) {
-			int e = it.nextInt();
-			maxCapacity = Math.max(maxCapacity, net.getCapacity(e));
+	private class Worker extends MaximumFlowAbstract.Worker {
+
+		final Weights.Double capacity;
+		final Weights.Double flow;
+
+		Worker(Graph gOrig, FlowNetwork net, int source, int sink) {
+			super(gOrig, net, source, sink);
+
+			flow = g.addEdgesWeights(FlowWeightKey, double.class);
+			capacity = g.addEdgesWeights(CapacityWeightKey, double.class);
+
+			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+				int e = it.nextInt();
+				double cap = net.getCapacity(edgeRef.getInt(e));
+				capacity.set(e, cap);
+				flow.set(e, isOriginalEdge(e) ? 0 : cap);
+			}
 		}
 
-		g = referenceGraph(gOrig, net);
-		Weights<Ref> edgeRef = g.getEdgesWeights(EdgeRefWeightKey);
-		final int n = g.vertices().size();
-		GraphBuilder builder = new GraphBuilderImpl.LinkedDirected();
-		Graph L = builder.setVerticesNum(n).setEdgesIDStrategy(Fixed.class).build();
-		Weights<Ref> edgeRefL = L.addEdgesWeights(EdgeRefWeightKey, Ref.class);
-		IntPriorityQueue bfsQueue = new IntArrayFIFOQueue();
-		int[] level = new int[n];
-		DynamicTree dt = new DynamicTreeSplay(maxCapacity * 10);
-		DynamicTree.Node[] vToDt = new DynamicTree.Node[n];
-		Stack<DynamicTree.Node> cleanupStack = new ObjectArrayList<>();
+		double computeMaximumFlow() {
+			debug.println("\t", getClass().getSimpleName());
 
-		int[] edgeToParent = new int[n];
-		Arrays.fill(edgeToParent, -1);
-
-		for (;;) {
-			debug.println("calculating residual network");
-			L.clearEdges();
-
-			/* Calc the sub graph non saturated edges from source to sink using BFS */
-			final int unvisited = Integer.MAX_VALUE;
-			Arrays.fill(level, unvisited);
-			bfsQueue.clear();
-			level[source] = 0;
-			bfsQueue.enqueue(source);
-			bfs: while (!bfsQueue.isEmpty()) {
-				int u = bfsQueue.dequeueInt();
-				if (u == sink)
-					break bfs;
-				int lvl = level[u];
-				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
-					int e = eit.nextInt();
-					int v = eit.target();
-					Ref eData = edgeRef.get(e);
-					if (eData.flow >= net.getCapacity(eData.orig) || level[v] <= lvl)
-						continue;
-					edgeRefL.set(L.addEdge(u, v), eData);
-					if (level[v] != unvisited)
-						continue;
-					level[v] = lvl + 1;
-					bfsQueue.enqueue(v);
-				}
+			double maxCapacity = 100;
+			for (IntIterator it = gOrig.edges().iterator(); it.hasNext();) {
+				int e = it.nextInt();
+				maxCapacity = Math.max(maxCapacity, net.getCapacity(e));
 			}
-			if (level[sink] == unvisited)
-				break; /* All paths to sink are saturated */
-			debug.println("sink level: " + level[sink]);
 
-			dt.clear();
-			for (int u = 0; u < n; u++)
-				(vToDt[u] = dt.makeTree()).setNodeData(Integer.valueOf(u));
+			GraphBuilder builder = new GraphBuilderImpl.LinkedDirected();
+			Graph L = builder.setVerticesNum(n).setEdgesIDStrategy(Fixed.class).build();
+			Weights.Int edgeRefL = L.addEdgesWeights(EdgeRefWeightKey, int.class);
+			IntPriorityQueue bfsQueue = new IntArrayFIFOQueue();
+			int[] level = new int[n];
+			DynamicTree dt = new DynamicTreeSplay(maxCapacity * 10);
+			DynamicTree.Node[] vToDt = new DynamicTree.Node[n];
+			Stack<DynamicTree.Node> cleanupStack = new ObjectArrayList<>();
 
-			ObjDoubleConsumer<Ref> updateFlow = (e, weight) -> {
-				double f = net.getCapacity(e.orig) - e.flow - weight;
-				e.flow += f;
-				e.rev.flow -= f;
-				assert e.flow <= net.getCapacity(e.orig) + EPS;
-				assert e.rev.flow >= 0 - EPS;
-			};
+			int[] edgeToParent = new int[n];
+			Arrays.fill(edgeToParent, -1);
 
-			calcBlockFlow: for (;;) {
-				int v = dt.findRoot(vToDt[source]).<Integer>getNodeData().intValue();
-				if (v == sink) {
+			for (;;) {
+				debug.println("calculating residual network");
+				L.clearEdges();
 
-					/* Augment */
-					debug.println("Augment");
-					MinEdge min = dt.findMinEdge(vToDt[source]);
-					dt.addWeight(vToDt[source], -min.weight());
-
-					/* Delete all saturated edges */
-					debug.println("Delete");
-					do {
-						int e = edgeToParent[min.source().<Integer>getNodeData().intValue()];
-						assert vToDt[L.edgeSource(e)] == min.source();
-						Ref ref = edgeRefL.get(e);
-						L.removeEdge(e);
-
-						updateFlow.accept(ref, 0);
-						dt.cut(min.source());
-
-						min = dt.findMinEdge(vToDt[source]);
-					} while (min != null && Math.abs(min.weight()) < EPS);
-
-				} else if (!L.edgesOut(v).hasNext()) {
-
-					/* Retreat */
-					debug.println("Retreat");
-					if (v == source)
-						break calcBlockFlow;
-					for (EdgeIter eit = L.edgesIn(v); eit.hasNext();) {
+				/* Calc the sub graph non saturated edges from source to sink using BFS */
+				final int unvisited = Integer.MAX_VALUE;
+				Arrays.fill(level, unvisited);
+				bfsQueue.clear();
+				level[source] = 0;
+				bfsQueue.enqueue(source);
+				bfs: while (!bfsQueue.isEmpty()) {
+					int u = bfsQueue.dequeueInt();
+					if (u == sink)
+						break bfs;
+					int lvl = level[u];
+					for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 						int e = eit.nextInt();
-						int u = eit.source();
-						if (vToDt[u].getParent() != vToDt[v])
-							continue; /* If the edge is not in the DT, ignore */
+						int v = eit.target();
+						if (flow.getDouble(e) >= capacity.getDouble(e) || level[v] <= lvl)
+							continue;
+						edgeRefL.set(L.addEdge(u, v), e);
+						if (level[v] != unvisited)
+							continue;
+						level[v] = lvl + 1;
+						bfsQueue.enqueue(v);
+					}
+				}
+				if (level[sink] == unvisited)
+					break; /* All paths to sink are saturated */
+				debug.println("sink level: " + level[sink]);
 
-						MinEdge m = dt.findMinEdge(vToDt[u]);
-						assert e == edgeToParent[m.source().<Integer>getNodeData().intValue()];
-						Ref ref = edgeRefL.get(e);
-						updateFlow.accept(ref, m.weight());
+				dt.clear();
+				for (int u = 0; u < n; u++)
+					(vToDt[u] = dt.makeTree()).setNodeData(Integer.valueOf(u));
 
+				IntDoubleConsumer updateFlow = (e, weight) -> {
+					double currentFlow = flow.getDouble(e);
+					double f = capacity.getDouble(e) - currentFlow - weight;
+					int eTwin = twin.getInt(e);
+					flow.set(e, currentFlow + f);
+					flow.set(eTwin, flow.getDouble(eTwin) - f);
+					assert flow.getDouble(e) <= capacity.getDouble(e) + EPS;
+					assert flow.getDouble(eTwin) >= 0 - EPS;
+				};
+
+				calcBlockFlow: for (;;) {
+					int v = dt.findRoot(vToDt[source]).<Integer>getNodeData().intValue();
+					if (v == sink) {
+
+						/* Augment */
+						debug.println("Augment");
+						MinEdge min = dt.findMinEdge(vToDt[source]);
+						dt.addWeight(vToDt[source], -min.weight());
+
+						/* Delete all saturated edges */
+						debug.println("Delete");
+						do {
+							int e = edgeToParent[min.source().<Integer>getNodeData().intValue()];
+							assert vToDt[L.edgeSource(e)] == min.source();
+							int gEdge = edgeRefL.getInt(e);
+							L.removeEdge(e);
+
+							updateFlow.accept(gEdge, 0);
+							dt.cut(min.source());
+
+							min = dt.findMinEdge(vToDt[source]);
+						} while (min != null && Math.abs(min.weight()) < EPS);
+
+					} else if (!L.edgesOut(v).hasNext()) {
+
+						/* Retreat */
+						debug.println("Retreat");
+						if (v == source)
+							break calcBlockFlow;
+						for (EdgeIter eit = L.edgesIn(v); eit.hasNext();) {
+							int e = eit.nextInt();
+							int u = eit.source();
+							if (vToDt[u].getParent() != vToDt[v])
+								continue; /* If the edge is not in the DT, ignore */
+
+							MinEdge m = dt.findMinEdge(vToDt[u]);
+							assert e == edgeToParent[m.source().<Integer>getNodeData().intValue()];
+							int gEdge = edgeRefL.getInt(e);
+							updateFlow.accept(gEdge, m.weight());
+
+							dt.cut(m.source());
+						}
+						L.removeEdgesInOf(v);
+
+					} else {
+						/* Advance */
+						debug.println("Advance");
+						EdgeIter eit = L.edgesOut(v);
+						int e = eit.nextInt();
+						int gEdge = edgeRefL.getInt(e);
+						dt.link(vToDt[eit.source()], vToDt[eit.target()],
+								capacity.getDouble(gEdge) - flow.getDouble(gEdge));
+						edgeToParent[eit.source()] = e;
+					}
+				}
+
+				/* Cleanup all the edges that stayed in the DT */
+				for (int u = 0; u < n; u++) {
+					for (DynamicTree.Node uDt = vToDt[u], pDt; (pDt = uDt.getParent()) != null; uDt = pDt)
+						cleanupStack.push(uDt);
+					while (!cleanupStack.isEmpty()) {
+						DynamicTree.Node uDt = cleanupStack.pop();
+						assert uDt.getParent() == dt.findRoot(uDt);
+						MinEdge m = dt.findMinEdge(uDt);
+						int gEdge = edgeRefL.getInt(edgeToParent[m.source().<Integer>getNodeData().intValue()]);
+						updateFlow.accept(gEdge, m.weight());
 						dt.cut(m.source());
 					}
-					L.removeEdgesInOf(v);
-
-				} else {
-					/* Advance */
-					debug.println("Advance");
-					EdgeIter eit = L.edgesOut(v);
-					int e = eit.nextInt();
-					Ref eRef = edgeRefL.get(e);
-					dt.link(vToDt[eit.source()], vToDt[eit.target()], net.getCapacity(eRef.orig) - eRef.flow);
-					edgeToParent[eit.source()] = e;
 				}
 			}
 
-			/* Cleanup all the edges that stayed in the DT */
-			for (int u = 0; u < n; u++) {
-				for (DynamicTree.Node uDt = vToDt[u], pDt; (pDt = uDt.getParent()) != null; uDt = pDt)
-					cleanupStack.push(uDt);
-				while (!cleanupStack.isEmpty()) {
-					DynamicTree.Node uDt = cleanupStack.pop();
-					assert uDt.getParent() == dt.findRoot(uDt);
-					MinEdge m = dt.findMinEdge(uDt);
-					Ref ref = edgeRefL.get(edgeToParent[m.source().<Integer>getNodeData().intValue()]);
-					updateFlow.accept(ref, m.weight());
-					dt.cut(m.source());
-				}
-			}
-		}
-
-		/* Construct result */
-		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-			int e = it.nextInt();
-			Ref data = edgeRef.get(e);
-			if (g.edgeSource(e) == gOrig.edgeSource(data.orig))
-				net.setFlow(data.orig, data.flow);
-		}
-		double totalFlow = 0;
-		for (EdgeIter eit = g.edgesOut(source); eit.hasNext();) {
-			int e = eit.nextInt();
-			Ref data = edgeRef.get(e);
-			if (g.edgeSource(e) == gOrig.edgeSource(data.orig))
-				totalFlow += data.flow;
-		}
-		for (EdgeIter eit = g.edgesIn(source); eit.hasNext();) {
-			int e = eit.nextInt();
-			Ref data = edgeRef.get(e);
-			if (g.edgeSource(e) == gOrig.edgeSource(data.orig))
-				totalFlow -= data.flow;
-		}
-		return totalFlow;
-	}
-
-	private static Graph referenceGraph(Graph g0, FlowNetwork net) {
-		Graph g = new GraphArrayDirected(g0.vertices().size());
-		Weights<Ref> edgeRef = g.addEdgesWeights(EdgeRefWeightKey, Ref.class);
-		for (IntIterator it = g0.edges().iterator(); it.hasNext();) {
-			int e = it.nextInt();
-			int u = g0.edgeSource(e), v = g0.edgeTarget(e);
-			Ref ref = new Ref(e, 0), refRev = new Ref(e, net.getCapacity(e));
-			int e1 = g.addEdge(u, v);
-			int e2 = g.addEdge(v, u);
-			edgeRef.set(e1, ref);
-			edgeRef.set(e2, refRev);
-			refRev.rev = ref;
-			ref.rev = refRev;
-		}
-		return g;
-	}
-
-	private static class Ref {
-
-		final int orig;
-		Ref rev;
-		double flow;
-
-		Ref(int e, double flow) {
-			orig = e;
-			rev = null;
-			this.flow = flow;
-		}
-
-		@Override
-		public String toString() {
-			return "R(" + orig + ")";
+			return constructResult(flow);
 		}
 
 	}

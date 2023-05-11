@@ -49,7 +49,6 @@ public class MaximumFlowEdmondsKarp implements MaximumFlow {
 
 	@Override
 	public double computeMaximumFlow(Graph g, FlowNetwork net, int source, int sink) {
-		ArgumentCheck.sourceSinkNotTheSame(source, sink);
 		allocatedMemory.allocate(g.vertices().size());
 		if (net instanceof FlowNetwork.Int) {
 			return new WorkerInt(g, (FlowNetwork.Int) net, source, sink).computeMaxFlow();

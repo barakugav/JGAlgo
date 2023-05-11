@@ -21,9 +21,6 @@ class MaximumFlowAbstract {
 
 	private MaximumFlowAbstract() {}
 
-	private static final Object EdgeRefWeightKey = new Object();
-	private static final Object EdgeRevWeightKey = new Object();
-
 	static class Worker {
 		final Graph gOrig;
 		final int source;
@@ -35,7 +32,11 @@ class MaximumFlowAbstract {
 		final Weights.Int edgeRef;
 		final Weights.Int twin;
 
+		static final Object EdgeRefWeightKey = new Object();
+		static final Object EdgeRevWeightKey = new Object();
+
 		Worker(Graph gOrig, FlowNetwork net, int source, int sink) {
+			ArgumentCheck.sourceSinkNotTheSame(source, sink);
 			this.gOrig = gOrig;
 			this.source = source;
 			this.sink = sink;
