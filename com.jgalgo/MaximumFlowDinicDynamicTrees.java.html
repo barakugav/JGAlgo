@@ -17,9 +17,9 @@
 package com.jgalgo;
 
 import java.util.Arrays;
-import java.util.function.ObjDoubleConsumer;
 import com.jgalgo.DynamicTree.MinEdge;
 import com.jgalgo.IDStrategy.Fixed;
+import com.jgalgo.Utils.IntDoubleConsumer;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
@@ -40,12 +40,15 @@ public class MaximumFlowDinicDynamicTrees implements MaximumFlow {
 
 <span class="fc" id="L41">	private final DebugPrintsManager debug = new DebugPrintsManager(false);</span>
 	private static final double EPS = 0.0001;
-<span class="fc" id="L43">	private static final Object EdgeRefWeightKey = new Object();</span>
+<span class="fc" id="L43">	static final Object EdgeRefWeightKey = new Object();</span>
+<span class="fc" id="L44">	static final Object EdgeRevWeightKey = new Object();</span>
+<span class="fc" id="L45">	private static final Object FlowWeightKey = new Object();</span>
+<span class="fc" id="L46">	private static final Object CapacityWeightKey = new Object();</span>
 
 	/**
 	 * Create a new maximum flow algorithm object.
 	 */
-<span class="fc" id="L48">	public MaximumFlowDinicDynamicTrees() {}</span>
+<span class="fc" id="L51">	public MaximumFlowDinicDynamicTrees() {}</span>
 
 	/**
 	 * {@inheritDoc}
@@ -54,201 +57,158 @@ public class MaximumFlowDinicDynamicTrees implements MaximumFlow {
 	 */
 	@Override
 	public double computeMaximumFlow(Graph g, FlowNetwork net, int source, int sink) {
-<span class="fc" id="L57">		ArgumentCheck.onlyDirected(g);</span>
-<span class="fc" id="L58">		ArgumentCheck.sourceSinkNotTheSame(source, sink);</span>
-<span class="fc" id="L59">		Graph gOrig = g;</span>
-<span class="fc" id="L60">		debug.println(&quot;\t&quot;, getClass().getSimpleName());</span>
+<span class="fc" id="L60">		return new Worker(g, net, source, sink).computeMaximumFlow();</span>
+	}
 
-<span class="fc" id="L62">		double maxCapacity = 100;</span>
-<span class="fc bfc" id="L63" title="All 2 branches covered.">		for (IntIterator it = gOrig.edges().iterator(); it.hasNext();) {</span>
-<span class="fc" id="L64">			int e = it.nextInt();</span>
-<span class="fc" id="L65">			maxCapacity = Math.max(maxCapacity, net.getCapacity(e));</span>
-<span class="fc" id="L66">		}</span>
+<span class="fc" id="L63">	private class Worker extends MaximumFlowAbstract.Worker {</span>
 
-<span class="fc" id="L68">		g = referenceGraph(gOrig, net);</span>
-<span class="fc" id="L69">		Weights&lt;Ref&gt; edgeRef = g.getEdgesWeights(EdgeRefWeightKey);</span>
-<span class="fc" id="L70">		final int n = g.vertices().size();</span>
-<span class="fc" id="L71">		GraphBuilder builder = new GraphBuilderImpl.LinkedDirected();</span>
-<span class="fc" id="L72">		Graph L = builder.setVerticesNum(n).setEdgesIDStrategy(Fixed.class).build();</span>
-<span class="fc" id="L73">		Weights&lt;Ref&gt; edgeRefL = L.addEdgesWeights(EdgeRefWeightKey, Ref.class);</span>
-<span class="fc" id="L74">		IntPriorityQueue bfsQueue = new IntArrayFIFOQueue();</span>
-<span class="fc" id="L75">		int[] level = new int[n];</span>
-<span class="fc" id="L76">		DynamicTree dt = new DynamicTreeSplay(maxCapacity * 10);</span>
-<span class="fc" id="L77">		DynamicTree.Node[] vToDt = new DynamicTree.Node[n];</span>
-<span class="fc" id="L78">		Stack&lt;DynamicTree.Node&gt; cleanupStack = new ObjectArrayList&lt;&gt;();</span>
+		final Weights.Double capacity;
+		final Weights.Double flow;
 
-<span class="fc" id="L80">		int[] edgeToParent = new int[n];</span>
-<span class="fc" id="L81">		Arrays.fill(edgeToParent, -1);</span>
+<span class="fc" id="L68">		Worker(Graph gOrig, FlowNetwork net, int source, int sink) {</span>
+<span class="fc" id="L69">			super(gOrig, net, source, sink);</span>
 
-		for (;;) {
-<span class="fc" id="L84">			debug.println(&quot;calculating residual network&quot;);</span>
-<span class="fc" id="L85">			L.clearEdges();</span>
+<span class="fc" id="L71">			flow = g.addEdgesWeights(FlowWeightKey, double.class);</span>
+<span class="fc" id="L72">			capacity = g.addEdgesWeights(CapacityWeightKey, double.class);</span>
+<span class="fc" id="L73">			initCapacitiesAndFlows(flow, capacity);</span>
+<span class="fc" id="L74">		}</span>
 
-			/* Calc the sub graph non saturated edges from source to sink using BFS */
-<span class="fc" id="L88">			final int unvisited = Integer.MAX_VALUE;</span>
-<span class="fc" id="L89">			Arrays.fill(level, unvisited);</span>
-<span class="fc" id="L90">			bfsQueue.clear();</span>
-<span class="fc" id="L91">			level[source] = 0;</span>
-<span class="fc" id="L92">			bfsQueue.enqueue(source);</span>
-<span class="fc bfc" id="L93" title="All 2 branches covered.">			bfs: while (!bfsQueue.isEmpty()) {</span>
-<span class="fc" id="L94">				int u = bfsQueue.dequeueInt();</span>
-<span class="fc bfc" id="L95" title="All 2 branches covered.">				if (u == sink)</span>
-<span class="fc" id="L96">					break bfs;</span>
-<span class="fc" id="L97">				int lvl = level[u];</span>
-<span class="fc bfc" id="L98" title="All 2 branches covered.">				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
-<span class="fc" id="L99">					int e = eit.nextInt();</span>
-<span class="fc" id="L100">					int v = eit.target();</span>
-<span class="fc" id="L101">					Ref eData = edgeRef.get(e);</span>
-<span class="fc bfc" id="L102" title="All 4 branches covered.">					if (eData.flow &gt;= net.getCapacity(eData.orig) || level[v] &lt;= lvl)</span>
-<span class="fc" id="L103">						continue;</span>
-<span class="fc" id="L104">					edgeRefL.set(L.addEdge(u, v), eData);</span>
-<span class="fc bfc" id="L105" title="All 2 branches covered.">					if (level[v] != unvisited)</span>
-<span class="fc" id="L106">						continue;</span>
-<span class="fc" id="L107">					level[v] = lvl + 1;</span>
-<span class="fc" id="L108">					bfsQueue.enqueue(v);</span>
-<span class="fc" id="L109">				}</span>
-<span class="fc" id="L110">			}</span>
-<span class="fc bfc" id="L111" title="All 2 branches covered.">			if (level[sink] == unvisited)</span>
-<span class="fc" id="L112">				break; /* All paths to sink are saturated */</span>
-<span class="fc" id="L113">			debug.println(&quot;sink level: &quot; + level[sink]);</span>
+		double computeMaximumFlow() {
+<span class="fc" id="L77">			debug.println(&quot;\t&quot;, getClass().getSimpleName());</span>
 
-<span class="fc" id="L115">			dt.clear();</span>
-<span class="fc bfc" id="L116" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
-<span class="fc" id="L117">				(vToDt[u] = dt.makeTree()).setNodeData(Integer.valueOf(u));</span>
+<span class="fc" id="L79">			double maxCapacity = 100;</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">			for (IntIterator it = gOrig.edges().iterator(); it.hasNext();) {</span>
+<span class="fc" id="L81">				int e = it.nextInt();</span>
+<span class="fc" id="L82">				maxCapacity = Math.max(maxCapacity, net.getCapacity(e));</span>
+<span class="fc" id="L83">			}</span>
 
-<span class="fc" id="L119">			ObjDoubleConsumer&lt;Ref&gt; updateFlow = (e, weight) -&gt; {</span>
-<span class="fc" id="L120">				double f = net.getCapacity(e.orig) - e.flow - weight;</span>
-<span class="fc" id="L121">				e.flow += f;</span>
-<span class="fc" id="L122">				e.rev.flow -= f;</span>
-<span class="pc bpc" id="L123" title="1 of 2 branches missed.">				assert e.flow &lt;= net.getCapacity(e.orig) + EPS;</span>
-<span class="pc bpc" id="L124" title="1 of 2 branches missed.">				assert e.rev.flow &gt;= 0 - EPS;</span>
-<span class="fc" id="L125">			};</span>
+<span class="fc" id="L85">			GraphBuilder builder = new GraphBuilderImpl.LinkedDirected();</span>
+<span class="fc" id="L86">			Graph L = builder.setVerticesNum(n).setEdgesIDStrategy(Fixed.class).build();</span>
+<span class="fc" id="L87">			Weights.Int edgeRefL = L.addEdgesWeights(EdgeRefWeightKey, int.class);</span>
+<span class="fc" id="L88">			IntPriorityQueue bfsQueue = new IntArrayFIFOQueue();</span>
+<span class="fc" id="L89">			int[] level = new int[n];</span>
+<span class="fc" id="L90">			DynamicTree dt = new DynamicTreeSplay(maxCapacity * 10);</span>
+<span class="fc" id="L91">			DynamicTree.Node[] vToDt = new DynamicTree.Node[n];</span>
+<span class="fc" id="L92">			Stack&lt;DynamicTree.Node&gt; cleanupStack = new ObjectArrayList&lt;&gt;();</span>
 
-			calcBlockFlow: for (;;) {
-<span class="fc" id="L128">				int v = dt.findRoot(vToDt[source]).&lt;Integer&gt;getNodeData().intValue();</span>
-<span class="fc bfc" id="L129" title="All 2 branches covered.">				if (v == sink) {</span>
+<span class="fc" id="L94">			int[] edgeToParent = new int[n];</span>
+<span class="fc" id="L95">			Arrays.fill(edgeToParent, -1);</span>
 
-					/* Augment */
-<span class="fc" id="L132">					debug.println(&quot;Augment&quot;);</span>
-<span class="fc" id="L133">					MinEdge min = dt.findMinEdge(vToDt[source]);</span>
-<span class="fc" id="L134">					dt.addWeight(vToDt[source], -min.weight());</span>
+			for (;;) {
+<span class="fc" id="L98">				debug.println(&quot;calculating residual network&quot;);</span>
+<span class="fc" id="L99">				L.clearEdges();</span>
 
-					/* Delete all saturated edges */
-<span class="fc" id="L137">					debug.println(&quot;Delete&quot;);</span>
-					do {
-<span class="fc" id="L139">						int e = edgeToParent[min.source().&lt;Integer&gt;getNodeData().intValue()];</span>
-<span class="pc bpc" id="L140" title="1 of 2 branches missed.">						assert vToDt[L.edgeSource(e)] == min.source();</span>
-<span class="fc" id="L141">						Ref ref = edgeRefL.get(e);</span>
-<span class="fc" id="L142">						L.removeEdge(e);</span>
+				/* Calc the sub graph non saturated edges from source to sink using BFS */
+<span class="fc" id="L102">				final int unvisited = Integer.MAX_VALUE;</span>
+<span class="fc" id="L103">				Arrays.fill(level, unvisited);</span>
+<span class="fc" id="L104">				bfsQueue.clear();</span>
+<span class="fc" id="L105">				level[source] = 0;</span>
+<span class="fc" id="L106">				bfsQueue.enqueue(source);</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">				bfs: while (!bfsQueue.isEmpty()) {</span>
+<span class="fc" id="L108">					int u = bfsQueue.dequeueInt();</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">					if (u == sink)</span>
+<span class="fc" id="L110">						break bfs;</span>
+<span class="fc" id="L111">					int lvl = level[u];</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">					for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
+<span class="fc" id="L113">						int e = eit.nextInt();</span>
+<span class="fc" id="L114">						int v = eit.target();</span>
+<span class="fc bfc" id="L115" title="All 4 branches covered.">						if (flow.getDouble(e) &gt;= capacity.getDouble(e) || level[v] &lt;= lvl)</span>
+<span class="fc" id="L116">							continue;</span>
+<span class="fc" id="L117">						edgeRefL.set(L.addEdge(u, v), e);</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">						if (level[v] != unvisited)</span>
+<span class="fc" id="L119">							continue;</span>
+<span class="fc" id="L120">						level[v] = lvl + 1;</span>
+<span class="fc" id="L121">						bfsQueue.enqueue(v);</span>
+<span class="fc" id="L122">					}</span>
+<span class="fc" id="L123">				}</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">				if (level[sink] == unvisited)</span>
+<span class="fc" id="L125">					break; /* All paths to sink are saturated */</span>
+<span class="fc" id="L126">				debug.println(&quot;sink level: &quot; + level[sink]);</span>
 
-<span class="fc" id="L144">						updateFlow.accept(ref, 0);</span>
-<span class="fc" id="L145">						dt.cut(min.source());</span>
+<span class="fc" id="L128">				dt.clear();</span>
+<span class="fc bfc" id="L129" title="All 2 branches covered.">				for (int u = 0; u &lt; n; u++)</span>
+<span class="fc" id="L130">					(vToDt[u] = dt.makeTree()).setNodeData(Integer.valueOf(u));</span>
 
-<span class="fc" id="L147">						min = dt.findMinEdge(vToDt[source]);</span>
-<span class="pc bpc" id="L148" title="1 of 4 branches missed.">					} while (min != null &amp;&amp; Math.abs(min.weight()) &lt; EPS);</span>
+<span class="fc" id="L132">				IntDoubleConsumer updateFlow = (e, weight) -&gt; {</span>
+<span class="fc" id="L133">					double currentFlow = flow.getDouble(e);</span>
+<span class="fc" id="L134">					double f = capacity.getDouble(e) - currentFlow - weight;</span>
+<span class="fc" id="L135">					int eTwin = twin.getInt(e);</span>
+<span class="fc" id="L136">					flow.set(e, currentFlow + f);</span>
+<span class="fc" id="L137">					flow.set(eTwin, flow.getDouble(eTwin) - f);</span>
+<span class="fc" id="L138">				};</span>
 
-<span class="fc bfc" id="L150" title="All 2 branches covered.">				} else if (!L.edgesOut(v).hasNext()) {</span>
+				calcBlockFlow: for (;;) {
+<span class="fc" id="L141">					int v = dt.findRoot(vToDt[source]).&lt;Integer&gt;getNodeData().intValue();</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">					if (v == sink) {</span>
 
-					/* Retreat */
-<span class="fc" id="L153">					debug.println(&quot;Retreat&quot;);</span>
-<span class="fc bfc" id="L154" title="All 2 branches covered.">					if (v == source)</span>
-<span class="fc" id="L155">						break calcBlockFlow;</span>
-<span class="fc bfc" id="L156" title="All 2 branches covered.">					for (EdgeIter eit = L.edgesIn(v); eit.hasNext();) {</span>
-<span class="fc" id="L157">						int e = eit.nextInt();</span>
-<span class="fc" id="L158">						int u = eit.source();</span>
-<span class="fc bfc" id="L159" title="All 2 branches covered.">						if (vToDt[u].getParent() != vToDt[v])</span>
-<span class="fc" id="L160">							continue; /* If the edge is not in the DT, ignore */</span>
+						/* Augment */
+<span class="fc" id="L145">						debug.println(&quot;Augment&quot;);</span>
+<span class="fc" id="L146">						MinEdge min = dt.findMinEdge(vToDt[source]);</span>
+<span class="fc" id="L147">						dt.addWeight(vToDt[source], -min.weight());</span>
 
-<span class="fc" id="L162">						MinEdge m = dt.findMinEdge(vToDt[u]);</span>
-<span class="pc bpc" id="L163" title="1 of 2 branches missed.">						assert e == edgeToParent[m.source().&lt;Integer&gt;getNodeData().intValue()];</span>
-<span class="fc" id="L164">						Ref ref = edgeRefL.get(e);</span>
-<span class="fc" id="L165">						updateFlow.accept(ref, m.weight());</span>
+						/* Delete all saturated edges */
+<span class="fc" id="L150">						debug.println(&quot;Delete&quot;);</span>
+						do {
+<span class="fc" id="L152">							int e = edgeToParent[min.source().&lt;Integer&gt;getNodeData().intValue()];</span>
+<span class="pc bpc" id="L153" title="1 of 2 branches missed.">							assert vToDt[L.edgeSource(e)] == min.source();</span>
+<span class="fc" id="L154">							int gEdge = edgeRefL.getInt(e);</span>
+<span class="fc" id="L155">							L.removeEdge(e);</span>
 
-<span class="fc" id="L167">						dt.cut(m.source());</span>
-<span class="fc" id="L168">					}</span>
-<span class="fc" id="L169">					L.removeEdgesInOf(v);</span>
+<span class="fc" id="L157">							updateFlow.accept(gEdge, 0);</span>
+<span class="fc" id="L158">							dt.cut(min.source());</span>
 
-				} else {
-					/* Advance */
-<span class="fc" id="L173">					debug.println(&quot;Advance&quot;);</span>
-<span class="fc" id="L174">					EdgeIter eit = L.edgesOut(v);</span>
-<span class="fc" id="L175">					int e = eit.nextInt();</span>
-<span class="fc" id="L176">					Ref eRef = edgeRefL.get(e);</span>
-<span class="fc" id="L177">					dt.link(vToDt[eit.source()], vToDt[eit.target()], net.getCapacity(eRef.orig) - eRef.flow);</span>
-<span class="fc" id="L178">					edgeToParent[eit.source()] = e;</span>
+<span class="fc" id="L160">							min = dt.findMinEdge(vToDt[source]);</span>
+<span class="pc bpc" id="L161" title="1 of 4 branches missed.">						} while (min != null &amp;&amp; Math.abs(min.weight()) &lt; EPS);</span>
+
+<span class="fc bfc" id="L163" title="All 2 branches covered.">					} else if (!L.edgesOut(v).hasNext()) {</span>
+
+						/* Retreat */
+<span class="fc" id="L166">						debug.println(&quot;Retreat&quot;);</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">						if (v == source)</span>
+<span class="fc" id="L168">							break calcBlockFlow;</span>
+<span class="fc bfc" id="L169" title="All 2 branches covered.">						for (EdgeIter eit = L.edgesIn(v); eit.hasNext();) {</span>
+<span class="fc" id="L170">							int e = eit.nextInt();</span>
+<span class="fc" id="L171">							int u = eit.source();</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">							if (vToDt[u].getParent() != vToDt[v])</span>
+<span class="fc" id="L173">								continue; /* If the edge is not in the DT, ignore */</span>
+
+<span class="fc" id="L175">							MinEdge m = dt.findMinEdge(vToDt[u]);</span>
+<span class="pc bpc" id="L176" title="1 of 2 branches missed.">							assert e == edgeToParent[m.source().&lt;Integer&gt;getNodeData().intValue()];</span>
+<span class="fc" id="L177">							int gEdge = edgeRefL.getInt(e);</span>
+<span class="fc" id="L178">							updateFlow.accept(gEdge, m.weight());</span>
+
+<span class="fc" id="L180">							dt.cut(m.source());</span>
+<span class="fc" id="L181">						}</span>
+<span class="fc" id="L182">						L.removeEdgesInOf(v);</span>
+
+					} else {
+						/* Advance */
+<span class="fc" id="L186">						debug.println(&quot;Advance&quot;);</span>
+<span class="fc" id="L187">						EdgeIter eit = L.edgesOut(v);</span>
+<span class="fc" id="L188">						int e = eit.nextInt();</span>
+<span class="fc" id="L189">						int gEdge = edgeRefL.getInt(e);</span>
+<span class="fc" id="L190">						dt.link(vToDt[eit.source()], vToDt[eit.target()],</span>
+<span class="fc" id="L191">								capacity.getDouble(gEdge) - flow.getDouble(gEdge));</span>
+<span class="fc" id="L192">						edgeToParent[eit.source()] = e;</span>
+					}
+<span class="fc" id="L194">				}</span>
+
+				/* Cleanup all the edges that stayed in the DT */
+<span class="fc bfc" id="L197" title="All 2 branches covered.">				for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc bfc" id="L198" title="All 2 branches covered.">					for (DynamicTree.Node uDt = vToDt[u], pDt; (pDt = uDt.getParent()) != null; uDt = pDt)</span>
+<span class="fc" id="L199">						cleanupStack.push(uDt);</span>
+<span class="fc bfc" id="L200" title="All 2 branches covered.">					while (!cleanupStack.isEmpty()) {</span>
+<span class="fc" id="L201">						DynamicTree.Node uDt = cleanupStack.pop();</span>
+<span class="pc bpc" id="L202" title="1 of 2 branches missed.">						assert uDt.getParent() == dt.findRoot(uDt);</span>
+<span class="fc" id="L203">						MinEdge m = dt.findMinEdge(uDt);</span>
+<span class="fc" id="L204">						int gEdge = edgeRefL.getInt(edgeToParent[m.source().&lt;Integer&gt;getNodeData().intValue()]);</span>
+<span class="fc" id="L205">						updateFlow.accept(gEdge, m.weight());</span>
+<span class="fc" id="L206">						dt.cut(m.source());</span>
+<span class="fc" id="L207">					}</span>
 				}
-<span class="fc" id="L180">			}</span>
+<span class="fc" id="L209">			}</span>
 
-			/* Cleanup all the edges that stayed in the DT */
-<span class="fc bfc" id="L183" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc bfc" id="L184" title="All 2 branches covered.">				for (DynamicTree.Node uDt = vToDt[u], pDt; (pDt = uDt.getParent()) != null; uDt = pDt)</span>
-<span class="fc" id="L185">					cleanupStack.push(uDt);</span>
-<span class="fc bfc" id="L186" title="All 2 branches covered.">				while (!cleanupStack.isEmpty()) {</span>
-<span class="fc" id="L187">					DynamicTree.Node uDt = cleanupStack.pop();</span>
-<span class="pc bpc" id="L188" title="1 of 2 branches missed.">					assert uDt.getParent() == dt.findRoot(uDt);</span>
-<span class="fc" id="L189">					MinEdge m = dt.findMinEdge(uDt);</span>
-<span class="fc" id="L190">					Ref ref = edgeRefL.get(edgeToParent[m.source().&lt;Integer&gt;getNodeData().intValue()]);</span>
-<span class="fc" id="L191">					updateFlow.accept(ref, m.weight());</span>
-<span class="fc" id="L192">					dt.cut(m.source());</span>
-<span class="fc" id="L193">				}</span>
-			}
-<span class="fc" id="L195">		}</span>
-
-		/* Construct result */
-<span class="fc bfc" id="L198" title="All 2 branches covered.">		for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
-<span class="fc" id="L199">			int e = it.nextInt();</span>
-<span class="fc" id="L200">			Ref data = edgeRef.get(e);</span>
-<span class="fc bfc" id="L201" title="All 2 branches covered.">			if (g.edgeSource(e) == gOrig.edgeSource(data.orig))</span>
-<span class="fc" id="L202">				net.setFlow(data.orig, data.flow);</span>
-<span class="fc" id="L203">		}</span>
-<span class="fc" id="L204">		double totalFlow = 0;</span>
-<span class="fc bfc" id="L205" title="All 2 branches covered.">		for (EdgeIter eit = g.edgesOut(source); eit.hasNext();) {</span>
-<span class="fc" id="L206">			int e = eit.nextInt();</span>
-<span class="fc" id="L207">			Ref data = edgeRef.get(e);</span>
-<span class="fc bfc" id="L208" title="All 2 branches covered.">			if (g.edgeSource(e) == gOrig.edgeSource(data.orig))</span>
-<span class="fc" id="L209">				totalFlow += data.flow;</span>
-<span class="fc" id="L210">		}</span>
-<span class="fc bfc" id="L211" title="All 2 branches covered.">		for (EdgeIter eit = g.edgesIn(source); eit.hasNext();) {</span>
-<span class="fc" id="L212">			int e = eit.nextInt();</span>
-<span class="fc" id="L213">			Ref data = edgeRef.get(e);</span>
-<span class="fc bfc" id="L214" title="All 2 branches covered.">			if (g.edgeSource(e) == gOrig.edgeSource(data.orig))</span>
-<span class="fc" id="L215">				totalFlow -= data.flow;</span>
-<span class="fc" id="L216">		}</span>
-<span class="fc" id="L217">		return totalFlow;</span>
-	}
-
-	private static Graph referenceGraph(Graph g0, FlowNetwork net) {
-<span class="fc" id="L221">		Graph g = new GraphArrayDirected(g0.vertices().size());</span>
-<span class="fc" id="L222">		Weights&lt;Ref&gt; edgeRef = g.addEdgesWeights(EdgeRefWeightKey, Ref.class);</span>
-<span class="fc bfc" id="L223" title="All 2 branches covered.">		for (IntIterator it = g0.edges().iterator(); it.hasNext();) {</span>
-<span class="fc" id="L224">			int e = it.nextInt();</span>
-<span class="fc" id="L225">			int u = g0.edgeSource(e), v = g0.edgeTarget(e);</span>
-<span class="fc" id="L226">			Ref ref = new Ref(e, 0), refRev = new Ref(e, net.getCapacity(e));</span>
-<span class="fc" id="L227">			int e1 = g.addEdge(u, v);</span>
-<span class="fc" id="L228">			int e2 = g.addEdge(v, u);</span>
-<span class="fc" id="L229">			edgeRef.set(e1, ref);</span>
-<span class="fc" id="L230">			edgeRef.set(e2, refRev);</span>
-<span class="fc" id="L231">			refRev.rev = ref;</span>
-<span class="fc" id="L232">			ref.rev = refRev;</span>
-<span class="fc" id="L233">		}</span>
-<span class="fc" id="L234">		return g;</span>
-	}
-
-	private static class Ref {
-
-		final int orig;
-		Ref rev;
-		double flow;
-
-<span class="fc" id="L243">		Ref(int e, double flow) {</span>
-<span class="fc" id="L244">			orig = e;</span>
-<span class="fc" id="L245">			rev = null;</span>
-<span class="fc" id="L246">			this.flow = flow;</span>
-<span class="fc" id="L247">		}</span>
-
-		@Override
-		public String toString() {
-<span class="nc" id="L251">			return &quot;R(&quot; + orig + &quot;)&quot;;</span>
+<span class="fc" id="L211">			return constructResult(flow);</span>
 		}
 
 	}
