@@ -17,6 +17,8 @@
 package com.jgalgo;
 
 import java.util.Arrays;
+import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.ints.IntIntPair;
 import it.unimi.dsi.fastutil.ints.IntIterators;
 
 /**
@@ -36,37 +38,12 @@ import it.unimi.dsi.fastutil.ints.IntIterators;
  */
 public class SSSPDial implements SSSP {
 
+	private final AllocatedMemory allocatedMemory = new AllocatedMemory();
+
 	/**
 	 * Construct a new SSSP algorithm object.
 	 */
-	public SSSPDial() {
-		allocSizeN = allocSizeM = 0;
-		heap = new DialHeap();
-	}
-
-	private int allocSizeN;
-	private int allocSizeM;
-	private int[] edges;
-	private final DialHeap heap;
-	private DialHeap.Node[] verticesPtrs;
-
-	private void memAlloc(int n, int m) {
-		if (allocSizeN < n) {
-			verticesPtrs = new DialHeap.Node[n];
-			allocSizeN = n;
-		}
-		m = Math.max(n, m);
-		if (allocSizeM < m) {
-			edges = new int[m];
-			allocSizeM = m;
-		}
-	}
-
-	private void memClear(int n, int m) {
-		Arrays.fill(edges, 0, Math.max(n, m), -1);
-		heap.clear();
-		Arrays.fill(verticesPtrs, 0, n, null);
-	}
+	public SSSPDial() {}
 
 	/**
 	 * {@inheritDoc}
@@ -82,21 +59,18 @@ public class SSSPDial implements SSSP {
 
 		int n = g.vertices().size(), m = g.edges().size();
 
-		memAlloc(n, m);
-
 		int maxDistance = 0;
 		if (m <= n - 1) {
 			maxDistance = (int) GraphsUtils.edgesWeightSum(g.edges().iterator(), w0);
 
 		} else {
 			/* sum the n-1 heaviest weights */
-			int[] edges = g.edges().toArray(this.edges);
+			int[] edges = allocatedMemory.edges = g.edges().toArray(allocatedMemory.edges);
 			ArraysUtils.getKthElement(edges, 0, g.edges().size(), n - 1, w0, true);
-			maxDistance = (int) GraphsUtils.edgesWeightSum(IntIterators.wrap(edges, edges.length - n + 1, n - 1), w0);
+			maxDistance = (int) GraphsUtils.edgesWeightSum(IntIterators.wrap(edges, m - n + 1, n - 1), w0);
 		}
 
 		SSSP.Result res = computeShortestPaths(g, w0, source, maxDistance);
-		memClear(n, m);
 		return res;
 	}
 
@@ -113,154 +87,117 @@ public class SSSPDial implements SSSP {
 	 */
 	public SSSP.Result computeShortestPaths(Graph g, EdgeWeightFunc.Int w, int source, int maxDistance) {
 		ArgumentCheck.onlyPositiveWeights(g, w);
-		int n = g.vertices().size(), m = g.edges().size();
-		if (n <= 0)
-			throw new IllegalArgumentException();
-
-		memAlloc(n, m);
-
-		SSSPResultImpl.Int res = new SSSPResultImpl.Int(g, source);
-		DialHeap heap = this.heap;
-		DialHeap.Node[] verticesPtrs = this.verticesPtrs;
-
-		for (int v = 0; v < n; v++) {
-			res.distances[v] = Integer.MAX_VALUE;
-			res.backtrack[v] = -1;
-		}
-		res.distances[source] = 0;
-
-		heap.init(maxDistance);
-
-		for (int u = source;;) {
-			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
-				int e = eit.nextInt();
-				int v = eit.target();
-				if (res.distances[v] != Integer.MAX_VALUE)
-					continue;
-				int distance = res.distances[u] + w.weightInt(e);
-
-				DialHeap.Node vPtr = verticesPtrs[v];
-				if (vPtr == null) {
-					vPtr = verticesPtrs[v] = heap.insert(distance, v);
-					res.backtrack[v] = e;
-				} else {
-					if (distance < vPtr.distance) {
-						heap.decreaseKey(vPtr, distance);
-						res.backtrack[v] = e;
-					}
-				}
-			}
-
-			DialHeap.Node next = heap.extractMin();
-			if (next == null)
-				break;
-			res.distances[next.v] = next.distance;
-			u = next.v;
-		}
-
-		memClear(n, m);
-		return res;
+		allocatedMemory.allocate(g.vertices().size(), maxDistance);
+		return new Worker(g, maxDistance, allocatedMemory).computeShortestPaths(w, source);
 	}
 
-	private static class DialHeap {
+	private static class Worker {
 
-		private Node[] a;
-		private int maxKey;
-		private int scanIdx;
+		private final Graph g;
+		private final LinkedListFixedSize.Doubly heapBucketsNodes;
+		private final int[] heapBucketsHead;
+		private final int[] heapDistances;
+		private final int heapMaxKey;
+		private int heapScanIdx;
 
-		DialHeap() {
-			maxKey = -1;
+		Worker(Graph g, int maxDistance, AllocatedMemory allocatedMemory) {
+			this.g = g;
+
+			int n = g.vertices().size();
+			heapBucketsHead = allocatedMemory.edges; // reuse array
+			Arrays.fill(heapBucketsHead, 0, maxDistance, LinkedListFixedSize.None);
+			heapBucketsNodes = new LinkedListFixedSize.Doubly(n);
+			heapDistances = allocatedMemory.heapDistances;
+			Arrays.fill(heapDistances, 0, n, -1);
+
+			heapMaxKey = maxDistance;
+			heapScanIdx = 0;
 		}
 
-		void init(int maxKey) {
-			if (a == null || this.maxKey < maxKey) {
-				a = new Node[maxKey];
-				this.maxKey = maxKey;
-			}
-			scanIdx = 0;
+		void heapInsert(int v, int distance) {
+			heapDistances[v] = distance;
+			int h = heapBucketsHead[distance];
+			heapBucketsHead[distance] = v;
+			if (h != LinkedListFixedSize.None)
+				heapBucketsNodes.connect(v, h);
 		}
 
-		void clear() {
-			Node[] a = this.a;
-			int maxKey = this.maxKey;
-			for (int i = 0; i < maxKey; i++) {
-				if (a[i] == null)
-					continue;
-				for (Node p = a[i];;) {
-					Node n = p.next;
-					if (n == null)
-						break;
-					p.next = n.prev = null;
-					n = p;
-				}
-				a[i] = null;
-			}
+		void heapDecreaseKey(int v, int distance) {
+			int oldDistance = heapDistances[v];
+			if (v == heapBucketsHead[oldDistance])
+				heapBucketsHead[oldDistance] = heapBucketsNodes.next(v);
+			heapBucketsNodes.disconnect(v);
+
+			heapInsert(v, distance);
 		}
 
-		Node insert(int distance, int v) {
-			Node n = new Node(distance, v);
-			insertNode(n);
-			return n;
-		}
-
-		private void insertNode(Node n) {
-			Node[] a = this.a;
-			Node head = a[n.distance];
-			if (head != null) {
-				n.next = head;
-				head.prev = n;
-			}
-			a[n.distance] = n;
-		}
-
-		void decreaseKey(Node n, int k) {
-			Node next = n.next, prev = n.prev;
-			if (next != null) {
-				next.prev = prev;
-				n.next = null;
-			}
-			if (prev != null) {
-				prev.next = next;
-				n.prev = null;
-			} else
-				a[n.distance] = next;
-			n.distance = k;
-			insertNode(n);
-		}
-
-		Node extractMin() {
-			Node[] a = this.a;
-			Node min = null;
-			int i;
-			for (i = scanIdx; i < a.length; i++) {
-				Node n = a[i];
-				if (n != null) {
-					Node next = n.next;
-					a[i] = next;
-					if (next != null)
-						n.next = next.prev = null;
-					min = n;
-					break;
-				}
-			}
-			scanIdx = i;
-			return min;
-		}
-
-		static class Node {
-
+		IntIntPair heapExtractMin() {
 			int distance;
-			final int v;
-
-			Node next;
-			Node prev;
-
-			Node(int distance, int v) {
-				this.distance = distance;
-				this.v = v;
+			for (distance = heapScanIdx; distance < heapMaxKey; distance++) {
+				int v = heapBucketsHead[distance];
+				if (v != LinkedListFixedSize.None) {
+					heapBucketsHead[distance] = heapBucketsNodes.next(v);
+					heapBucketsNodes.disconnect(v);
+					heapScanIdx = distance;
+					return IntIntPair.of(v, distance);
+				}
 			}
+			heapScanIdx = heapMaxKey;
+			return null;
 		}
 
+		boolean heapContainsVertex(int v) {
+			return heapDistances[v] != -1;
+		}
+
+		int heapGetCurrentDistance(int v) {
+			return heapDistances[v];
+		}
+
+		SSSP.Result computeShortestPaths(EdgeWeightFunc.Int w, int source) {
+			SSSPResultImpl.Int res = new SSSPResultImpl.Int(g, source);
+			res.distances[source] = 0;
+
+			for (int u = source;;) {
+				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
+					int e = eit.nextInt();
+					int v = eit.target();
+					if (res.distances[v] != Integer.MAX_VALUE)
+						continue;
+					int distance = res.distances[u] + w.weightInt(e);
+
+					if (!heapContainsVertex(v)) {
+						heapInsert(v, distance);
+						res.backtrack[v] = e;
+					} else {
+						if (distance < heapGetCurrentDistance(v)) {
+							res.backtrack[v] = e;
+							heapDecreaseKey(v, distance);
+						}
+					}
+				}
+
+				IntIntPair next = heapExtractMin();
+				if (next == null)
+					break;
+				u = next.firstInt();
+				assert res.distances[u] == Integer.MAX_VALUE;
+				res.distances[u] = next.secondInt();
+			}
+
+			return res;
+		}
+
+	}
+
+	private static class AllocatedMemory {
+		int[] edges = IntArrays.EMPTY_ARRAY;
+		int[] heapDistances = IntArrays.EMPTY_ARRAY;
+
+		void allocate(int n, int maxDistance) {
+			edges = MemoryReuse.ensureLength(edges, maxDistance); // reuse array
+			heapDistances = MemoryReuse.ensureLength(heapDistances, n);
+		}
 	}
 
 }
