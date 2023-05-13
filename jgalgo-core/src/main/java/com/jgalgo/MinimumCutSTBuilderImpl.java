@@ -18,6 +18,7 @@ package com.jgalgo;
 
 import java.util.BitSet;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
@@ -52,28 +53,28 @@ class MinimumCutSTBuilderImpl {
 				/* perform a BFS from source and use only non saturated edges */
 				IntList cut = new IntArrayList();
 				final double eps = 0.00001;
-				final boolean directed = g.getCapabilities().directed();
 				cut.add(source);
 				visited.set(source);
 				queue.enqueue(source);
-				while (!queue.isEmpty()) {
-					int u = queue.dequeueInt();
 
-					for (EdgeIter it = g.edgesOut(u); it.hasNext();) {
-						int e = it.nextInt();
-						int v = it.target();
-						if (visited.get(v))
-							continue;
-						if (Math.abs(net.getCapacity(e) - net.getFlow(e)) < eps)
-							continue; // saturated edge
-						cut.add(v);
-						visited.set(v);
-						queue.enqueue(v);
-					}
-					if (directed) {
+				if (g.getCapabilities().directed()) {
+					while (!queue.isEmpty()) {
+						int u = queue.dequeueInt();
+
+						for (EdgeIter it = g.edgesOut(u); it.hasNext();) {
+							int e = it.nextInt();
+							int v = it.target();
+							if (visited.get(v))
+								continue;
+							if (Math.abs(net.getCapacity(e) - net.getFlow(e)) < eps)
+								continue; // saturated edge
+							cut.add(v);
+							visited.set(v);
+							queue.enqueue(v);
+						}
 						/*
 						 * We don't have any guarantee that the graph has a twin edge for each edge, so we iterate over
-						 * the in edges and search for edges with non zero flow which imply an existent of an out edge
+						 * the in-edges and search for edges with non zero flow which imply an existent of an out edge
 						 * in the residual network
 						 */
 						for (EdgeIter it = g.edgesIn(u); it.hasNext();) {
@@ -88,7 +89,25 @@ class MinimumCutSTBuilderImpl {
 							queue.enqueue(v);
 						}
 					}
+				} else {
+					while (!queue.isEmpty()) {
+						int u = queue.dequeueInt();
+
+						for (EdgeIter it = g.edgesOut(u); it.hasNext();) {
+							int e = it.nextInt();
+							int v = it.target();
+							if (visited.get(v))
+								continue;
+							double directedFlow = net.getFlow(e) * (g.edgeSource(e) == u ? +1 : -1);
+							if (Math.abs(net.getCapacity(e) - directedFlow) < eps)
+								continue; // saturated edge
+							cut.add(v);
+							visited.set(v);
+							queue.enqueue(v);
+						}
+					}
 				}
+
 				visited.clear();
 				return new CutImpl(g, cut);
 			}
@@ -97,6 +116,11 @@ class MinimumCutSTBuilderImpl {
 	}
 
 	static FlowNetwork createFlowNetworkFromEdgeWeightFunc(Graph g, EdgeWeightFunc w) {
+		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+			int e = it.nextInt();
+			if (w.weight(e) < 0)
+				throw new IllegalArgumentException("negative weight for edge " + e);
+		}
 		Weights.Double flow = Weights.createExternalEdgesWeights(g, double.class);
 		FlowNetwork net = new FlowNetwork() {
 			@Override

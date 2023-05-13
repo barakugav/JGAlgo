@@ -39,10 +39,17 @@ public class MaximumFlowPushRelabelDynamicTreesTest extends TestBase {
 	}
 
 	@Test
-	public void testMinimumCutRandGraphs() {
+	public void testMinimumCutRandDןGraphs() {
 		final long seed = 0x43cc9ff1b0dd495bL;
 		MinimumCutST algo = MinimumCutST.newFromMaximumFlow(new MaximumFlowPushRelabelDynamicTrees());
-		MinimumCutSTTestUtils.testRandGraphs(algo, seed);
+		MinimumCutSTTestUtils.testRandGraphs(algo, seed, /* directed= */ true);
+	}
+
+	@Test
+	public void testMinimumCutRandUGraphs() {
+		final long seed = 0x8630dc3d63d2ac22L;
+		MinimumCutST algo = MinimumCutST.newFromMaximumFlow(new MaximumFlowPushRelabelDynamicTrees());
+		MinimumCutSTTestUtils.testRandGraphs(algo, seed, /* directed= */ false);
 	}
 
 }

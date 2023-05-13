@@ -39,16 +39,29 @@ public class MaximumFlowPushRelabelHighestFirstTest extends TestBase {
 	}
 
 	@Test
-	public void testMinimumCutRandGraphs() {
+	public void testMinimumCutRandDiGraphs() {
 		final long seed = 0xe70353b8637b68d2L;
-		MinimumCutSTTestUtils.testRandGraphs(new MaximumFlowPushRelabelHighestFirst(), seed);
+		MinimumCutSTTestUtils.testRandGraphs(new MaximumFlowPushRelabelHighestFirst(), seed, /* directed= */ true);
 	}
 
 	@Test
-	public void testMinimumCutRandGraphsUsingGenericMinCutFromMaxFlow() {
+	public void testMinimumCutRandUGraphs() {
+		final long seed = 0xe2d73e1680bc3e5dL;
+		MinimumCutSTTestUtils.testRandGraphs(new MaximumFlowPushRelabelHighestFirst(), seed, /* directed= */ false);
+	}
+
+	@Test
+	public void testMinimumCutRandDiGraphsUsingGenericMinCutFromMaxFlow() {
 		final long seed = 0x8f2b92e482d65052L;
 		MinimumCutST algo = MinimumCutST.newFromMaximumFlow(new MaximumFlowPushRelabelHighestFirst());
-		MinimumCutSTTestUtils.testRandGraphs(algo, seed);
+		MinimumCutSTTestUtils.testRandGraphs(algo, seed, /* directed= */ true);
+	}
+
+	@Test
+	public void testMinimumCutRandUGraphsUsingGenericMinCutFromMaxFlow() {
+		final long seed = 0x7b5377f4bdac989cL;
+		MinimumCutST algo = MinimumCutST.newFromMaximumFlow(new MaximumFlowPushRelabelHighestFirst());
+		MinimumCutSTTestUtils.testRandGraphs(algo, seed, /* directed= */ false);
 	}
 
 }

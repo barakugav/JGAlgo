@@ -33,10 +33,17 @@ public class MaximumFlowDinicTest extends TestBase {
 	}
 
 	@Test
-	public void testMinimumCutRandGraphs() {
+	public void testMinimumCutRandDiGraphs() {
 		final long seed = 0xb49154497703863bL;
 		MinimumCutST algo = MinimumCutST.newFromMaximumFlow(new MaximumFlowDinic());
-		MinimumCutSTTestUtils.testRandGraphs(algo, seed);
+		MinimumCutSTTestUtils.testRandGraphs(algo, seed, /* directed= */ true);
+	}
+
+	@Test
+	public void testMinimumCutRandUGraphs() {
+		final long seed = 0xc8bfc54fab5f4cc7L;
+		MinimumCutST algo = MinimumCutST.newFromMaximumFlow(new MaximumFlowDinic());
+		MinimumCutSTTestUtils.testRandGraphs(algo, seed, /* directed= */ false);
 	}
 
 }

@@ -24,6 +24,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCutST {
+
 	private static final Object FlowWeightKey = new Object();
 	private static final Object CapacityWeightKey = new Object();
 
@@ -45,14 +46,8 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @throws IllegalArgumentException if the graph is not directed
-	 */
 	@Override
 	public Cut computeMinimumCut(Graph g, EdgeWeightFunc w, int source, int sink) {
-		ArgumentCheck.onlyDirected(g);
 		if (w instanceof EdgeWeightFunc.Int) {
 			EdgeWeightFunc.Int wInt = (EdgeWeightFunc.Int) w;
 			FlowNetwork.Int net = new FlowNetwork.Int() {

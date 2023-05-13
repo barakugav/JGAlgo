@@ -39,10 +39,17 @@ public class MaximumFlowEdmondsKarpTest extends TestBase {
 	}
 
 	@Test
-	public void testMinimumCutRandGraphs() {
+	public void testMinimumCutRandDiGraphs() {
 		final long seed = 0xaa7eab04a9b554cbL;
 		MinimumCutST algo = MinimumCutST.newFromMaximumFlow(new MaximumFlowEdmondsKarp());
-		MinimumCutSTTestUtils.testRandGraphs(algo, seed);
+		MinimumCutSTTestUtils.testRandGraphs(algo, seed, /* directed= */ true);
+	}
+
+	@Test
+	public void testMinimumCutRandUGraphs() {
+		final long seed = 0xae19d36885e91694L;
+		MinimumCutST algo = MinimumCutST.newFromMaximumFlow(new MaximumFlowEdmondsKarp());
+		MinimumCutSTTestUtils.testRandGraphs(algo, seed, /* directed= */ false);
 	}
 
 }

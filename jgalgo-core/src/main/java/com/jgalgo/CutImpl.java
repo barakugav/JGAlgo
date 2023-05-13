@@ -102,4 +102,10 @@ class CutImpl implements Cut {
 		crossEdges = IntLists.unmodifiable(crossEdges0);
 	}
 
+	@Override
+	public String toString() {
+		computeCutBitmap();
+		return cutBitmap.toString();
+	}
+
 }

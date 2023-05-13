@@ -25,7 +25,7 @@ package com.jgalgo;
  * vertices, and (2) without terminal vertices. In the variant with terminal vertices, we are given two special vertices
  * {@code source (S)} and {@code sink (T)} and we need to find the minimum cut \((C,\bar{C})\) such that the
  * {@code source} is in \(C\) and the {@code sink} is in \(\bar{C}\). In the variant without terminal vertices we need
- * to find the global cut, and \(C,\bar{C}\) just must not be empty.
+ * to find the global cut, and \(C,\bar{C}\) simply must not be empty.
  * <p>
  * Algorithm implementing this interface compute the minimum cut given two terminal vertices, {@code source (S)} and
  * {@code sink (T)}.
