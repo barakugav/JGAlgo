@@ -144,43 +144,47 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 <span class="fc" id="L144">			int treeNumNext = 0;</span>
 <span class="fc bfc" id="L145" title="All 2 branches covered.">			for (int t = 0; t &lt; treeNum; t++) {</span>
 <span class="fc" id="L146">				int pathLength = 0;</span>
-				/* find all reachable trees from t */
-<span class="fc" id="L148">				for (int tPtr = t;;) {</span>
-<span class="fc bfc" id="L149" title="All 2 branches covered.">					if (vTreeNext[tPtr] == UNVISITED) {</span>
-						/* another vertex on the path, continue */
-<span class="fc" id="L151">						path[pathLength++] = tPtr;</span>
-<span class="fc" id="L152">						vTreeNext[tPtr] = IN_PATH;</span>
 
-<span class="fc bfc" id="L154" title="All 2 branches covered.">						if (minEdges[tPtr] != -1) {</span>
-							int nextTPtr;
-<span class="fc bfc" id="L156" title="All 2 branches covered.">							if ((nextTPtr = vTree[g.edgeSource(minEdges[tPtr])]) == tPtr)</span>
-<span class="fc" id="L157">								nextTPtr = vTree[g.edgeTarget(minEdges[tPtr])];</span>
-<span class="pc bpc" id="L158" title="1 of 2 branches missed.">							assert nextTPtr != tPtr;</span>
-<span class="fc" id="L159">							tPtr = nextTPtr;</span>
-<span class="fc" id="L160">							continue;</span>
-						}
+				/* find all reachable trees from t */
+				int deepestTree;
+<span class="fc" id="L150">				for (int tPtr = t;;) {</span>
+<span class="fc bfc" id="L151" title="All 2 branches covered.">					if (vTreeNext[tPtr] != UNVISITED) {</span>
+<span class="fc" id="L152">						deepestTree = tPtr;</span>
+<span class="fc" id="L153">						break;</span>
+					}
+					/* another vertex on the path, continue */
+<span class="fc" id="L156">					path[pathLength++] = tPtr;</span>
+<span class="fc" id="L157">					vTreeNext[tPtr] = IN_PATH;</span>
+<span class="fc bfc" id="L158" title="All 2 branches covered.">					if (minEdges[tPtr] == -1) {</span>
+<span class="fc" id="L159">						deepestTree = tPtr;</span>
+<span class="fc" id="L160">						break;</span>
 					}
 
-					/* if found label tree use it label, else - add new label */
-<span class="fc bfc" id="L165" title="All 2 branches covered.">					int newTree = vTreeNext[tPtr] &gt;= 0 ? vTreeNext[tPtr] : treeNumNext++;</span>
-					/* assign the new label to all trees on path */
-<span class="fc bfc" id="L167" title="All 2 branches covered.">					while (pathLength-- &gt; 0)</span>
-<span class="fc" id="L168">						vTreeNext[path[pathLength]] = newTree;</span>
-					break;
-				}
+					int nextTPtr;
+<span class="fc bfc" id="L164" title="All 2 branches covered.">					if ((nextTPtr = vTree[g.edgeSource(minEdges[tPtr])]) == tPtr)</span>
+<span class="fc" id="L165">						nextTPtr = vTree[g.edgeTarget(minEdges[tPtr])];</span>
+<span class="pc bpc" id="L166" title="1 of 2 branches missed.">					assert nextTPtr != tPtr;</span>
+<span class="fc" id="L167">					tPtr = nextTPtr;</span>
+<span class="fc" id="L168">				}</span>
+
+				/* if found labeled tree use it label, else - add new label */
+<span class="fc bfc" id="L171" title="All 2 branches covered.">				int newTree = vTreeNext[deepestTree] &gt;= 0 ? vTreeNext[deepestTree] : treeNumNext++;</span>
+				/* assign the new label to all trees on path */
+<span class="fc bfc" id="L173" title="All 2 branches covered.">				while (pathLength-- &gt; 0)</span>
+<span class="fc" id="L174">					vTreeNext[path[pathLength]] = newTree;</span>
 			}
 
-<span class="fc bfc" id="L173" title="All 2 branches covered.">			if (treeNum == treeNumNext)</span>
-<span class="fc" id="L174">				break;</span>
-<span class="fc" id="L175">			treeNum = treeNumNext;</span>
-<span class="fc" id="L176">			Arrays.fill(minEdges, 0, treeNum, -1);</span>
+<span class="fc bfc" id="L177" title="All 2 branches covered.">			if (treeNum == treeNumNext)</span>
+<span class="fc" id="L178">				break;</span>
+<span class="fc" id="L179">			treeNum = treeNumNext;</span>
+<span class="fc" id="L180">			Arrays.fill(minEdges, 0, treeNum, -1);</span>
 
 			/* assign new tree indices to G's vertices */
-<span class="fc bfc" id="L179" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L180">				vTree[v] = vTreeNext[vTree[v]];</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++)</span>
+<span class="fc" id="L184">				vTree[v] = vTreeNext[vTree[v]];</span>
 		}
 
-<span class="fc" id="L183">		return new Res(vTree, treeNum, mst);</span>
+<span class="fc" id="L187">		return new Res(vTree, treeNum, mst);</span>
 	}
 
 	private static class Res {
@@ -188,28 +192,28 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 		final int treeNum;
 		final IntCollection mst;
 
-<span class="fc" id="L191">		Res(int[] vToTree, int treeNum, IntCollection mst) {</span>
-<span class="fc" id="L192">			this.vToTree = vToTree;</span>
-<span class="fc" id="L193">			this.treeNum = treeNum;</span>
-<span class="fc" id="L194">			this.mst = mst;</span>
-<span class="fc" id="L195">		}</span>
+<span class="fc" id="L195">		Res(int[] vToTree, int treeNum, IntCollection mst) {</span>
+<span class="fc" id="L196">			this.vToTree = vToTree;</span>
+<span class="fc" id="L197">			this.treeNum = treeNum;</span>
+<span class="fc" id="L198">			this.mst = mst;</span>
+<span class="fc" id="L199">		}</span>
 	}
 
-<span class="fc" id="L198">	private static class AllocatedMemory {</span>
-<span class="fc" id="L199">		int[] vTree = IntArrays.EMPTY_ARRAY;</span>
-<span class="fc" id="L200">		int[] vTreeNext = IntArrays.EMPTY_ARRAY;</span>
-<span class="fc" id="L201">		int[] minEdges = IntArrays.EMPTY_ARRAY;</span>
-<span class="fc" id="L202">		double[] minGraphWeights = DoubleArrays.EMPTY_ARRAY;</span>
-<span class="fc" id="L203">		int[] path = IntArrays.EMPTY_ARRAY;</span>
+<span class="fc" id="L202">	private static class AllocatedMemory {</span>
+<span class="fc" id="L203">		int[] vTree = IntArrays.EMPTY_ARRAY;</span>
+<span class="fc" id="L204">		int[] vTreeNext = IntArrays.EMPTY_ARRAY;</span>
+<span class="fc" id="L205">		int[] minEdges = IntArrays.EMPTY_ARRAY;</span>
+<span class="fc" id="L206">		double[] minGraphWeights = DoubleArrays.EMPTY_ARRAY;</span>
+<span class="fc" id="L207">		int[] path = IntArrays.EMPTY_ARRAY;</span>
 
 		void allocate(Graph g) {
-<span class="fc" id="L206">			int n = g.vertices().size();</span>
-<span class="fc" id="L207">			vTree = MemoryReuse.ensureLength(vTree, n);</span>
-<span class="fc" id="L208">			vTreeNext = MemoryReuse.ensureLength(vTreeNext, n);</span>
-<span class="fc" id="L209">			minEdges = MemoryReuse.ensureLength(minEdges, n);</span>
-<span class="fc" id="L210">			minGraphWeights = MemoryReuse.ensureLength(minGraphWeights, n);</span>
-<span class="fc" id="L211">			path = MemoryReuse.ensureLength(path, n);</span>
-<span class="fc" id="L212">		}</span>
+<span class="fc" id="L210">			int n = g.vertices().size();</span>
+<span class="fc" id="L211">			vTree = MemoryReuse.ensureLength(vTree, n);</span>
+<span class="fc" id="L212">			vTreeNext = MemoryReuse.ensureLength(vTreeNext, n);</span>
+<span class="fc" id="L213">			minEdges = MemoryReuse.ensureLength(minEdges, n);</span>
+<span class="fc" id="L214">			minGraphWeights = MemoryReuse.ensureLength(minGraphWeights, n);</span>
+<span class="fc" id="L215">			path = MemoryReuse.ensureLength(path, n);</span>
+<span class="fc" id="L216">		}</span>
 	}
 
 }

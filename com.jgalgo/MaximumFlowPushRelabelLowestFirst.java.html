@@ -77,7 +77,7 @@ public class MaximumFlowPushRelabelLowestFirst extends MaximumFlowPushRelabelAbs
 		@Override
 		boolean hasMoreVerticesToDischarge() {
 <span class="fc bfc" id="L79" title="All 2 branches covered.">			for (; minLayerActive &lt; n; minLayerActive++)</span>
-<span class="fc bfc" id="L80" title="All 2 branches covered.">				if (layersHeadActive[minLayerActive] != LinkedListDoubleArrayFixedSize.None)</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">				if (layersHeadActive[minLayerActive] != LinkedListFixedSize.None)</span>
 <span class="fc" id="L81">					return true;</span>
 <span class="fc" id="L82">			return false;</span>
 		}
@@ -85,7 +85,7 @@ public class MaximumFlowPushRelabelLowestFirst extends MaximumFlowPushRelabelAbs
 		@Override
 		int nextVertexToDischarge() {
 <span class="pc bpc" id="L87" title="1 of 2 branches missed.">			for (; minLayerActive &lt; n; minLayerActive++)</span>
-<span class="pc bpc" id="L88" title="1 of 2 branches missed.">				if (layersHeadActive[minLayerActive] != LinkedListDoubleArrayFixedSize.None)</span>
+<span class="pc bpc" id="L88" title="1 of 2 branches missed.">				if (layersHeadActive[minLayerActive] != LinkedListFixedSize.None)</span>
 <span class="fc" id="L89">					return layersHeadActive[minLayerActive];</span>
 <span class="nc" id="L90">			throw new IllegalStateException();</span>
 		}
@@ -115,7 +115,7 @@ public class MaximumFlowPushRelabelLowestFirst extends MaximumFlowPushRelabelAbs
 		@Override
 		boolean hasMoreVerticesToDischarge() {
 <span class="fc bfc" id="L117" title="All 2 branches covered.">			for (; minLayerActive &lt; n; minLayerActive++)</span>
-<span class="fc bfc" id="L118" title="All 2 branches covered.">				if (layersHeadActive[minLayerActive] != LinkedListDoubleArrayFixedSize.None)</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">				if (layersHeadActive[minLayerActive] != LinkedListFixedSize.None)</span>
 <span class="fc" id="L119">					return true;</span>
 <span class="fc" id="L120">			return false;</span>
 		}
@@ -123,7 +123,7 @@ public class MaximumFlowPushRelabelLowestFirst extends MaximumFlowPushRelabelAbs
 		@Override
 		int nextVertexToDischarge() {
 <span class="pc bpc" id="L125" title="1 of 2 branches missed.">			for (; minLayerActive &lt; n; minLayerActive++)</span>
-<span class="pc bpc" id="L126" title="1 of 2 branches missed.">				if (layersHeadActive[minLayerActive] != LinkedListDoubleArrayFixedSize.None)</span>
+<span class="pc bpc" id="L126" title="1 of 2 branches missed.">				if (layersHeadActive[minLayerActive] != LinkedListFixedSize.None)</span>
 <span class="fc" id="L127">					return layersHeadActive[minLayerActive];</span>
 <span class="nc" id="L128">			throw new IllegalStateException();</span>
 		}
