@@ -83,7 +83,8 @@ for (IntIterator it = ssspRes.getPath(v3).iterator(); it.hasNext();) {
 | Max flow Push/Relabel using Dynamic Trees | $O\left(m n \log \left(\frac{n^2}{m}\right)\right)$ | |
 | Max flow Dinic | $O(m n^2)$ | |
 | Max flow Dinic using Dynamic Trees | $O(m n \log n)$ | |
-| Minimum Cut using any maximum flow algorithm | $O(MF)$ | where $MF$ is the running time of the maximum flow algorithm |
+| Minimum Cut S-T using any maximum flow algorithm | $O(MF)$ | where $MF$ is the running time of the maximum flow algorithm |
+| Minimum Cut Global Stoer-Wagner | $O(m n + n^2 \log n)$ | |
 | MST Boruvka | $O(m \log n)$ | |
 | MST Kruskal | $O(m \log n)$ | |
 | MST Prim | $O(m + n \log n)$ | |

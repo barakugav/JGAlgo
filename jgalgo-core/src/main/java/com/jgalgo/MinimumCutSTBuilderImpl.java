@@ -146,4 +146,29 @@ class MinimumCutSTBuilderImpl {
 		return net;
 	}
 
+	static MinimumCutGlobal globalMinCutFromStMinCut(MinimumCutST stMinCut) {
+		return new MinimumCutGlobal() {
+
+			@Override
+			public Cut computeMinimumCut(Graph g, EdgeWeightFunc w) {
+				final int n = g.vertices().size();
+				if (n < 2)
+					throw new IllegalArgumentException("no valid cut in graphs with less than two vertices");
+				Cut bestCut = null;
+				double bestCutWeight = Double.MAX_VALUE;
+				final int source = 0;
+				for (int sink = 1; sink < n; sink++) {
+					Cut cut = stMinCut.computeMinimumCut(g, w, source, sink);
+					double cutWeight = cut.weight(w);
+					if (bestCutWeight > cutWeight) {
+						bestCutWeight = cutWeight;
+						bestCut = cut;
+					}
+				}
+				assert bestCut != null;
+				return bestCut;
+			}
+		};
+	}
+
 }

@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.jgalgo;
 
 /**
- * Minimum Cut algorithm with terminal vertices (source-sink, S-T).
+ * Global Minimum Cut algorithm without terminal vertices.
  * <p>
  * Given a graph \(G=(V,E)\), a cut is a partition of \(V\) into two sets \(C, \bar{C} = V \setminus C\). Given a weight
  * function, the weight of a cut \((C,\bar{C})\) is the weight sum of all edges \((u,v)\) such that \(u\) is in \(C\)
@@ -27,67 +26,50 @@ package com.jgalgo;
  * {@code source} is in \(C\) and the {@code sink} is in \(\bar{C}\). In the variant without terminal vertices we need
  * to find the global cut, and \(C,\bar{C}\) simply must not be empty.
  * <p>
- * Algorithms implementing this interface compute the minimum cut given two terminal vertices, {@code source (S)} and
- * {@code sink (T)}.
+ * Algorithms implementing this interface compute the global minimum cut without terminal vertices.
  *
  * @see    <a href="https://en.wikipedia.org/wiki/Minimum_cut">Wikipedia</a>
  * @author Barak Ugav
  */
-public interface MinimumCutST {
+public interface MinimumCutGlobal {
 
 	/**
-	 * Compute the minimum cut in a graph and a weight function with two terminal vertices.
+	 * Compute the global minimum cut in a graph.
 	 * <p>
 	 * Given a graph \(G=(V,E)\), a cut is a partition of \(V\) into twos sets \(C, \bar{C} = V \setminus C\). The
 	 * return value of this function is the set \(C\), and \(\bar{C}\) can be computed easily by the caller if needed.
 	 *
 	 * @param  g                        a graph
 	 * @param  w                        an edge weight function
-	 * @param  source                   a special vertex that will be in \(C\)
-	 * @param  sink                     a special vertex that will be in \(\bar{C}\)
 	 * @return                          the cut that was computed
-	 * @throws IllegalArgumentException if the source and the sink are the same vertex
+	 * @throws IllegalArgumentException if the graph has less than two vertices
 	 */
-	Cut computeMinimumCut(Graph g, EdgeWeightFunc w, int source, int sink);
+	Cut computeMinimumCut(Graph g, EdgeWeightFunc w);
 
 	/**
-	 * Create a new minimum cut algorithm builder.
+	 * Create a new global minimum cut algorithm builder.
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link MinimumCutST} object.
+	 * This is the recommended way to instantiate a new {@link MinimumCutGlobal} object.
 	 *
-	 * @return a new builder that can build {@link MinimumCutST} objects
+	 * @return a new builder that can build {@link MinimumCutGlobal} objects
 	 */
-	static MinimumCutST.Builder newBuilder() {
-		return new MinimumCutSTBuilderImpl.Default();
+	static MinimumCutGlobal.Builder newBuilder() {
+		return MinimumCutGlobalStoerWagner::new;
 	}
 
 	/**
-	 * Create a new minimum cut algorithm using a maximum flow algorithm.
-	 * <p>
-	 * By first computing a maximum flow between the source and the sink, the minimum cut can be realized from the
-	 * maximum flow without increasing the asymptotical running time of the maximum flow algorithm running time.
+	 * A builder for {@link MinimumCutGlobal} objects.
 	 *
-	 * @param  maxFlowAlg a maximum flow algorithm
-	 * @return            a minimum cut algorithm based on the provided maximum flow algorithm
-	 */
-	static MinimumCutST newFromMaximumFlow(MaximumFlow maxFlowAlg) {
-		return MinimumCutSTBuilderImpl.buildFromMaxFlow(maxFlowAlg);
-	}
-
-	/**
-	 * A builder for {@link MinimumCutST} objects.
-	 *
-	 * @see    MinimumCutST#newBuilder()
+	 * @see    MinimumCutGlobal#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder extends BuilderAbstract<MinimumCutST.Builder> {
+	static interface Builder extends BuilderAbstract<MinimumCutGlobal.Builder> {
 
 		/**
-		 * Create a new algorithm object for minimum cut computation.
+		 * Create a new algorithm object for global minimum cut computation.
 		 *
 		 * @return a new minimum cut algorithm
 		 */
-		MinimumCutST build();
+		MinimumCutGlobal build();
 	}
-
 }

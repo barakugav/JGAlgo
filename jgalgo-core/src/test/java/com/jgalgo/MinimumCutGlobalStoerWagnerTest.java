@@ -18,24 +18,28 @@ package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.BitSet;
 import java.util.List;
 import java.util.Random;
-
+import org.junit.jupiter.api.Test;
 import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
-
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 
-class MinimumCutSTTestUtils extends TestUtils {
+class MinimumCutGlobalStoerWagnerTest extends TestBase {
 
-	static void testRandGraphs(MinimumCutST algo, long seed, boolean directed) {
+	@Test
+	public void testMinimumCutRandUGraphs() {
+		final long seed = 0x34199fd52891f95aL;
+		testRandGraphs(new MinimumCutGlobalStoerWagner(), seed, /* directed= */ false);
+	}
+
+	static void testRandGraphs(MinimumCutGlobal algo, long seed, boolean directed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
-		List<Phase> phases = List.of(phase(256, 6, 6), phase(64, 16, 16), phase(64, 16, 32), phase(32, 64, 64),
-				phase(16, 64, 128), phase(2, 512, 512), phase(1, 512, 1324));
+		List<Phase> phases = List.of(phase(256, 6, 6), phase(16, 16, 16), phase(16, 16, 32), phase(16, 64, 64),
+				phase(16, 64, 128), phase(2, 200, 800));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
@@ -48,50 +52,38 @@ class MinimumCutSTTestUtils extends TestUtils {
 				w.set(e, cap);
 			}
 
-			int source, sink;
-			for (;;) {
-				source = rand.nextInt(g.vertices().size());
-				sink = rand.nextInt(g.vertices().size());
-				if (source != sink && Path.findPath(g, source, sink) != null)
-					break;
-			}
-
-			testMinCut(g, w, source, sink, algo);
+			testMinCut(g, w, algo);
 		});
 	}
 
-	private static void testMinCut(Graph g, EdgeWeightFunc.Int w, int source, int sink, MinimumCutST alg) {
-		Cut minCut = alg.computeMinimumCut(g, w, source, sink);
+	private static void testMinCut(Graph g, EdgeWeightFunc.Int w, MinimumCutGlobal alg) {
+		Cut minCut = alg.computeMinimumCut(g, w);
 		int minCutWeight = (int) minCut.weight(w);
 
 		final int n = g.vertices().size();
-		if (n == 2) {
-			assertEquals(minCut, IntList.of(source));
-			return;
-		}
 
 		if (n <= 16) {
 			/* check all cuts */
 			IntList vertices = new IntArrayList(g.vertices());
-			vertices.rem(source);
-			vertices.rem(sink);
+			vertices.rem(0);
 
 			BitSet cut = new BitSet(n);
-			for (int bitmap = 0; bitmap < 1 << (n - 2); bitmap++) {
-				cut.set(source);
-				for (int i = 0; i < n - 2; i++)
+			for (int bitmap = 0; bitmap < 1 << (n - 1); bitmap++) {
+				cut.set(0);
+				for (int i = 0; i < n - 1; i++)
 					if ((bitmap & (1 << i)) != 0)
 						cut.set(vertices.getInt(i));
-				int cutWeight = (int) new CutImpl(g, cut).weight(w);
-				assertTrue(minCutWeight <= cutWeight, "failed to find minimum cut: " + cut);
+				if (cut.cardinality() != n) {
+					int cutWeight = (int) new CutImpl(g, cut).weight(w);
+					assertTrue(minCutWeight <= cutWeight, "failed to find minimum cut: " + cut);
+				}
 				cut.clear();
 			}
 
 		} else {
-			MinimumCutST validationAlgo = alg instanceof MaximumFlowPushRelabelAbstract
-					? MinimumCutST.newFromMaximumFlow(new MaximumFlowEdmondsKarp())
-					: new MaximumFlowPushRelabel();
-			Cut minCutExpected = validationAlgo.computeMinimumCut(g, w, source, sink);
+			MinimumCutGlobal validationAlgo = MinimumCutSTBuilderImpl
+					.globalMinCutFromStMinCut(MinimumCutST.newFromMaximumFlow(new MaximumFlowEdmondsKarp()));
+			Cut minCutExpected = validationAlgo.computeMinimumCut(g, w);
 			int minCutWeightExpected = (int) minCutExpected.weight(w);
 
 			assertEquals(minCutWeightExpected, minCutWeight, "failed to find minimum cut");
