@@ -64,6 +64,7 @@ public class AStar {
 	 * @return            the short path found from {@code source} to {@code target}
 	 */
 	public Path computeShortestPath(Graph g, EdgeWeightFunc w, int source, int target, IntToDoubleFunction vHeuristic) {
+		ArgumentCheck.onlyPositiveWeights(g, w);
 		if (source == target)
 			return new Path(g, source, target, IntLists.emptyList());
 		int n = g.vertices().size();
@@ -78,10 +79,7 @@ public class AStar {
 			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = eit.target();
-				double ws = w.weight(e);
-				if (ws < 0)
-					throw new IllegalArgumentException("negative weights are not supported");
-				double distance = res.distances[u] + ws;
+				double distance = res.distances[u] + w.weight(e);
 				if (distance >= res.distances[v])
 					continue;
 				res.distances[v] = distance;

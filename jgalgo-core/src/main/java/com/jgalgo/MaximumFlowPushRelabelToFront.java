@@ -76,14 +76,14 @@ public class MaximumFlowPushRelabelToFront extends MaximumFlowPushRelabelAbstrac
 		void recomputeLabels() {
 			list.clear();
 			super.recomputeLabels();
-			list.listIter = list.listHead != LinkedListDoubleArrayFixedSize.None ? list.vertices.iterator(list.listHead)
+			list.listIter = list.listHead != LinkedListFixedSize.None ? list.vertices.iterator(list.listHead)
 					: Utils.IterPeekable.Int.Empty;
 		}
 
 		@Override
 		void onVertexLabelReCompute(int u, int newLabel) {
 			super.onVertexLabelReCompute(u, newLabel);
-			if (list.listHead != LinkedListDoubleArrayFixedSize.None)
+			if (list.listHead != LinkedListFixedSize.None)
 				list.vertices.connect(u, list.listHead);
 			list.listHead = u;
 		}
@@ -125,14 +125,14 @@ public class MaximumFlowPushRelabelToFront extends MaximumFlowPushRelabelAbstrac
 		void recomputeLabels() {
 			list.clear();
 			super.recomputeLabels();
-			list.listIter = list.listHead != LinkedListDoubleArrayFixedSize.None ? list.vertices.iterator(list.listHead)
+			list.listIter = list.listHead != LinkedListFixedSize.None ? list.vertices.iterator(list.listHead)
 					: Utils.IterPeekable.Int.Empty;
 		}
 
 		@Override
 		void onVertexLabelReCompute(int u, int newLabel) {
 			super.onVertexLabelReCompute(u, newLabel);
-			if (list.listHead != LinkedListDoubleArrayFixedSize.None)
+			if (list.listHead != LinkedListFixedSize.None)
 				list.vertices.connect(u, list.listHead);
 			list.listHead = u;
 		}
@@ -157,18 +157,18 @@ public class MaximumFlowPushRelabelToFront extends MaximumFlowPushRelabelAbstrac
 
 	private static class VertexList {
 
-		final LinkedListDoubleArrayFixedSize vertices;
-		int listHead = LinkedListDoubleArrayFixedSize.None;
+		final LinkedListFixedSize.Doubly vertices;
+		int listHead = LinkedListFixedSize.None;
 		Utils.IterPeekable.Int listIter;
 
 		VertexList(MaximumFlowPushRelabelAbstract.Worker worker) {
 			int n = worker.g.vertices().size();
-			vertices = LinkedListDoubleArrayFixedSize.newInstance(n);
+			vertices = new LinkedListFixedSize.Doubly(n);
 		}
 
 		void clear() {
 			vertices.clear();
-			listHead = LinkedListDoubleArrayFixedSize.None;
+			listHead = LinkedListFixedSize.None;
 			listIter = null;
 		}
 
@@ -184,7 +184,7 @@ public class MaximumFlowPushRelabelToFront extends MaximumFlowPushRelabelAbstrac
 
 		@Override
 		public String toString() {
-			if (listHead == LinkedListDoubleArrayFixedSize.None)
+			if (listHead == LinkedListFixedSize.None)
 				return "[]";
 			StringBuilder s = new StringBuilder().append('[');
 			for (IntIterator it = vertices.iterator(listHead);;) {

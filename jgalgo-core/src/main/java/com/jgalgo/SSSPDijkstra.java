@@ -64,6 +64,8 @@ public class SSSPDijkstra implements SSSP {
 	 */
 	@Override
 	public SSSP.Result computeShortestPaths(Graph g, EdgeWeightFunc w, int source) {
+		ArgumentCheck.onlyPositiveWeights(g, w);
+
 		int n = g.vertices().size();
 		if (verticesPtrs == null || verticesPtrs.length < n)
 			verticesPtrs = new HeapReference[n];
@@ -100,10 +102,7 @@ public class SSSPDijkstra implements SSSP {
 					int v = eit.target();
 					if (res.distances[v] != Double.POSITIVE_INFINITY)
 						continue;
-					double ws = w.weight(e);
-					if (ws < 0)
-						throw new IllegalArgumentException("negative weights are not supported");
-					double distance = res.distances[u] + ws;
+					double distance = res.distances[u] + w.weight(e);
 
 					HeapReference<Double, Integer> vPtr = verticesPtrs[v];
 					if (vPtr == null) {
@@ -148,10 +147,7 @@ public class SSSPDijkstra implements SSSP {
 					int v = eit.target();
 					if (res.distances[v] != Integer.MAX_VALUE)
 						continue;
-					int ws = w.weightInt(e);
-					if (ws < 0)
-						throw new IllegalArgumentException("negative weights are not supported");
-					int distance = res.distances[u] + ws;
+					int distance = res.distances[u] + w.weightInt(e);
 
 					HeapReference<Integer, Integer> vPtr = verticesPtrs[v];
 					if (vPtr == null) {

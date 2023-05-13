@@ -77,7 +77,7 @@ public class MaximumFlowPushRelabelLowestFirst extends MaximumFlowPushRelabelAbs
 		@Override
 		boolean hasMoreVerticesToDischarge() {
 			for (; minLayerActive < n; minLayerActive++)
-				if (layersHeadActive[minLayerActive] != LinkedListDoubleArrayFixedSize.None)
+				if (layersHeadActive[minLayerActive] != LinkedListFixedSize.None)
 					return true;
 			return false;
 		}
@@ -85,7 +85,7 @@ public class MaximumFlowPushRelabelLowestFirst extends MaximumFlowPushRelabelAbs
 		@Override
 		int nextVertexToDischarge() {
 			for (; minLayerActive < n; minLayerActive++)
-				if (layersHeadActive[minLayerActive] != LinkedListDoubleArrayFixedSize.None)
+				if (layersHeadActive[minLayerActive] != LinkedListFixedSize.None)
 					return layersHeadActive[minLayerActive];
 			throw new IllegalStateException();
 		}
@@ -115,7 +115,7 @@ public class MaximumFlowPushRelabelLowestFirst extends MaximumFlowPushRelabelAbs
 		@Override
 		boolean hasMoreVerticesToDischarge() {
 			for (; minLayerActive < n; minLayerActive++)
-				if (layersHeadActive[minLayerActive] != LinkedListDoubleArrayFixedSize.None)
+				if (layersHeadActive[minLayerActive] != LinkedListFixedSize.None)
 					return true;
 			return false;
 		}
@@ -123,7 +123,7 @@ public class MaximumFlowPushRelabelLowestFirst extends MaximumFlowPushRelabelAbs
 		@Override
 		int nextVertexToDischarge() {
 			for (; minLayerActive < n; minLayerActive++)
-				if (layersHeadActive[minLayerActive] != LinkedListDoubleArrayFixedSize.None)
+				if (layersHeadActive[minLayerActive] != LinkedListFixedSize.None)
 					return layersHeadActive[minLayerActive];
 			throw new IllegalStateException();
 		}

@@ -78,7 +78,7 @@ public class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 		final Vertex[] vertexData;
 
 		/* Data structure maintaining the children of each node in the DT */
-		final LinkedListDoubleArrayFixedSize children;
+		final LinkedListFixedSize.Doubly children;
 		final IntPriorityQueue toCut = new IntArrayFIFOQueue();
 
 		AbstractWorker(Graph gOrig, FlowNetwork net, int source, int sink) {
@@ -100,7 +100,7 @@ public class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 			vertexData[source].isActive = true;
 			vertexData[sink].isActive = true;
 
-			children = LinkedListDoubleArrayFixedSize.newInstance(n);
+			children = new LinkedListFixedSize.Doubly(n);
 
 			/* Init all vertices iterators */
 			for (int u = 0; u < n; u++)

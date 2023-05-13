@@ -62,7 +62,7 @@ public class MaximumFlowPushRelabelHighestFirst extends MaximumFlowPushRelabelAb
 		@Override
 		boolean hasMoreVerticesToDischarge() {
 			for (; maxLayerActive > 0; maxLayerActive--)
-				if (layersHeadActive[maxLayerActive] != LinkedListDoubleArrayFixedSize.None)
+				if (layersHeadActive[maxLayerActive] != LinkedListFixedSize.None)
 					return true;
 			return false;
 		}
@@ -70,7 +70,7 @@ public class MaximumFlowPushRelabelHighestFirst extends MaximumFlowPushRelabelAb
 		@Override
 		int nextVertexToDischarge() {
 			for (; maxLayerActive > 0; maxLayerActive--)
-				if (layersHeadActive[maxLayerActive] != LinkedListDoubleArrayFixedSize.None)
+				if (layersHeadActive[maxLayerActive] != LinkedListFixedSize.None)
 					return layersHeadActive[maxLayerActive];
 			throw new IllegalStateException();
 		}
@@ -85,7 +85,7 @@ public class MaximumFlowPushRelabelHighestFirst extends MaximumFlowPushRelabelAb
 		@Override
 		boolean hasMoreVerticesToDischarge() {
 			for (; maxLayerActive > 0; maxLayerActive--)
-				if (layersHeadActive[maxLayerActive] != LinkedListDoubleArrayFixedSize.None)
+				if (layersHeadActive[maxLayerActive] != LinkedListFixedSize.None)
 					return true;
 			return false;
 		}
@@ -93,7 +93,7 @@ public class MaximumFlowPushRelabelHighestFirst extends MaximumFlowPushRelabelAb
 		@Override
 		int nextVertexToDischarge() {
 			for (; maxLayerActive > 0; maxLayerActive--)
-				if (layersHeadActive[maxLayerActive] != LinkedListDoubleArrayFixedSize.None)
+				if (layersHeadActive[maxLayerActive] != LinkedListFixedSize.None)
 					return layersHeadActive[maxLayerActive];
 			throw new IllegalStateException();
 		}

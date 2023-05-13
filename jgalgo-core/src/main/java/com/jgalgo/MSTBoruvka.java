@@ -144,30 +144,34 @@ public class MSTBoruvka implements MST {
 			int treeNumNext = 0;
 			for (int t = 0; t < treeNum; t++) {
 				int pathLength = 0;
-				/* find all reachable trees from t */
-				for (int tPtr = t;;) {
-					if (vTreeNext[tPtr] == UNVISITED) {
-						/* another vertex on the path, continue */
-						path[pathLength++] = tPtr;
-						vTreeNext[tPtr] = IN_PATH;
 
-						if (minEdges[tPtr] != -1) {
-							int nextTPtr;
-							if ((nextTPtr = vTree[g.edgeSource(minEdges[tPtr])]) == tPtr)
-								nextTPtr = vTree[g.edgeTarget(minEdges[tPtr])];
-							assert nextTPtr != tPtr;
-							tPtr = nextTPtr;
-							continue;
-						}
+				/* find all reachable trees from t */
+				int deepestTree;
+				for (int tPtr = t;;) {
+					if (vTreeNext[tPtr] != UNVISITED) {
+						deepestTree = tPtr;
+						break;
+					}
+					/* another vertex on the path, continue */
+					path[pathLength++] = tPtr;
+					vTreeNext[tPtr] = IN_PATH;
+					if (minEdges[tPtr] == -1) {
+						deepestTree = tPtr;
+						break;
 					}
 
-					/* if found label tree use it label, else - add new label */
-					int newTree = vTreeNext[tPtr] >= 0 ? vTreeNext[tPtr] : treeNumNext++;
-					/* assign the new label to all trees on path */
-					while (pathLength-- > 0)
-						vTreeNext[path[pathLength]] = newTree;
-					break;
+					int nextTPtr;
+					if ((nextTPtr = vTree[g.edgeSource(minEdges[tPtr])]) == tPtr)
+						nextTPtr = vTree[g.edgeTarget(minEdges[tPtr])];
+					assert nextTPtr != tPtr;
+					tPtr = nextTPtr;
 				}
+
+				/* if found labeled tree use it label, else - add new label */
+				int newTree = vTreeNext[deepestTree] >= 0 ? vTreeNext[deepestTree] : treeNumNext++;
+				/* assign the new label to all trees on path */
+				while (pathLength-- > 0)
+					vTreeNext[path[pathLength]] = newTree;
 			}
 
 			if (treeNum == treeNumNext)

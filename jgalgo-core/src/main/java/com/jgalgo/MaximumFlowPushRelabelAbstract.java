@@ -112,11 +112,11 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 		private int relabelsSinceLastLabelsRecompute;
 		private final int labelsReComputeThreshold;
 
-		final LinkedListDoubleArrayFixedSize layersActive;
+		final LinkedListFixedSize.Doubly layersActive;
 		final int[] layersHeadActive;
 		int maxLayerActive;
 
-		private final LinkedListDoubleArrayFixedSize layersInactive;
+		private final LinkedListFixedSize.Doubly layersInactive;
 		private final int[] layersHeadInactive;
 		private int maxLayerInactive;
 
@@ -130,8 +130,8 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 			relabelQueue = new IntArrayFIFOQueue();
 			labelsReComputeThreshold = n;
 
-			layersActive = LinkedListDoubleArrayFixedSize.newInstance(n);
-			layersInactive = LinkedListDoubleArrayFixedSize.newInstance(n);
+			layersActive = new LinkedListFixedSize.Doubly(n);
+			layersInactive = new LinkedListFixedSize.Doubly(n);
 			layersHeadActive = new int[n];
 			layersHeadInactive = new int[n];
 		}
@@ -143,8 +143,8 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 
 			layersActive.clear();
 			layersInactive.clear();
-			Arrays.fill(layersHeadActive, LinkedListDoubleArrayFixedSize.None);
-			Arrays.fill(layersHeadInactive, LinkedListDoubleArrayFixedSize.None);
+			Arrays.fill(layersHeadActive, LinkedListFixedSize.None);
+			Arrays.fill(layersHeadInactive, LinkedListFixedSize.None);
 			maxLayerActive = 0;
 			maxLayerInactive = 0;
 
@@ -192,7 +192,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 
 		void addToLayerActive(int u, int layer) {
 			assert u != source && u != sink;
-			if (layersHeadActive[layer] != LinkedListDoubleArrayFixedSize.None)
+			if (layersHeadActive[layer] != LinkedListFixedSize.None)
 				layersActive.connect(u, layersHeadActive[layer]);
 			layersHeadActive[layer] = u;
 
@@ -202,7 +202,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 
 		void addToLayerInactive(int u, int layer) {
 			assert u != source && u != sink;
-			if (layersHeadInactive[layer] != LinkedListDoubleArrayFixedSize.None)
+			if (layersHeadInactive[layer] != LinkedListFixedSize.None)
 				layersInactive.connect(u, layersHeadInactive[layer]);
 			layersHeadInactive[layer] = u;
 
@@ -237,8 +237,8 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 			int oldLabel = label[u];
 			label[u] = newLabel;
 
-			if (layersHeadActive[oldLabel] == LinkedListDoubleArrayFixedSize.None
-					&& layersHeadInactive[oldLabel] == LinkedListDoubleArrayFixedSize.None) {
+			if (layersHeadActive[oldLabel] == LinkedListFixedSize.None
+					&& layersHeadInactive[oldLabel] == LinkedListFixedSize.None) {
 				emptyLayerGap(oldLabel);
 				label[u] = n;
 			}
@@ -252,28 +252,28 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 			int maxLayer = this.maxLayerActive;
 			for (int layer = emptyLayer + 1; layer <= maxLayer; layer++) {
 				int head = layersHeadActive[layer];
-				if (head == LinkedListDoubleArrayFixedSize.None)
+				if (head == LinkedListFixedSize.None)
 					continue;
 				for (IntIterator it = layersActive.iterator(head); it.hasNext();) {
 					int u = it.nextInt();
 					layersActive.disconnect(u);
 					label[u] = n;
 				}
-				layersHeadActive[layer] = LinkedListDoubleArrayFixedSize.None;
+				layersHeadActive[layer] = LinkedListFixedSize.None;
 			}
 			this.maxLayerActive = emptyLayer - 1;
 
 			maxLayer = this.maxLayerInactive;
 			for (int layer = emptyLayer + 1; layer <= maxLayer; layer++) {
 				int head = layersHeadInactive[layer];
-				if (head == LinkedListDoubleArrayFixedSize.None)
+				if (head == LinkedListFixedSize.None)
 					continue;
 				for (IntIterator it = layersInactive.iterator(head); it.hasNext();) {
 					int u = it.nextInt();
 					layersInactive.disconnect(u);
 					label[u] = n;
 				}
-				layersHeadInactive[layer] = LinkedListDoubleArrayFixedSize.None;
+				layersHeadInactive[layer] = LinkedListFixedSize.None;
 			}
 			this.maxLayerInactive = emptyLayer - 1;
 		}

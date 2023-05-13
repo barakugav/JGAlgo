@@ -112,6 +112,7 @@ public class SSSPDial implements SSSP {
 	 * @see                #computeShortestPaths(Graph, EdgeWeightFunc, int)
 	 */
 	public SSSP.Result computeShortestPaths(Graph g, EdgeWeightFunc.Int w, int source, int maxDistance) {
+		ArgumentCheck.onlyPositiveWeights(g, w);
 		int n = g.vertices().size(), m = g.edges().size();
 		if (n <= 0)
 			throw new IllegalArgumentException();
@@ -136,10 +137,7 @@ public class SSSPDial implements SSSP {
 				int v = eit.target();
 				if (res.distances[v] != Integer.MAX_VALUE)
 					continue;
-				int ws = w.weightInt(e);
-				if (ws < 0)
-					throw new IllegalArgumentException("negative weights are not supported");
-				int distance = res.distances[u] + ws;
+				int distance = res.distances[u] + w.weightInt(e);
 
 				DialHeap.Node vPtr = verticesPtrs[v];
 				if (vPtr == null) {

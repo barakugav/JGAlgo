@@ -15,6 +15,8 @@
  */
 package com.jgalgo;
 
+import it.unimi.dsi.fastutil.ints.IntIterator;
+
 class ArgumentCheck {
 	private ArgumentCheck() {}
 
@@ -36,6 +38,23 @@ class ArgumentCheck {
 	static void noSelfLoops(Graph g, String msg) {
 		if (GraphsUtils.containsSelfLoops(g))
 			throw new IllegalArgumentException(msg);
+	}
+
+	static void onlyPositiveWeights(Graph g, EdgeWeightFunc w) {
+		if (w instanceof EdgeWeightFunc.Int) {
+			EdgeWeightFunc.Int wUbt = (EdgeWeightFunc.Int) w;
+			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+				int e = it.nextInt();
+				if (wUbt.weightInt(e) < 0)
+					throw new IllegalArgumentException("only positive weights are supported");
+			}
+		} else {
+			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+				int e = it.nextInt();
+				if (w.weight(e) < 0)
+					throw new IllegalArgumentException("only positive weights are supported");
+			}
+		}
 	}
 
 	static void sourceSinkNotTheSame(int source, int sink) {
