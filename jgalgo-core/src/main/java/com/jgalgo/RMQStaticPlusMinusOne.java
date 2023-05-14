@@ -54,12 +54,13 @@ class RMQStaticPlusMinusOne extends RMQStaticLinearAbstract {
 
 		DS(RMQStaticComparator c, int n) {
 			super(c, n);
+			preProcessInnerBlocks();
 		}
 
 		@Override
 		byte getBlockSize(int n) {
 			int s = n <= 1 ? 1 : (int) Math.ceil(Utils.log2((double) n) * 2 / 3);
-			/* choose block size of at least 4, as the 2^(5-1) is 16 (small) */
+			/* choose block size of at least 5, as 2^(5-1) is 16 (small) */
 			return (byte) Math.min(Math.max(s, 5), n);
 		}
 

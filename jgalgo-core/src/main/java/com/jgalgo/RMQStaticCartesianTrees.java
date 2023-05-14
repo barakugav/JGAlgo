@@ -51,8 +51,12 @@ class RMQStaticCartesianTrees extends RMQStaticLinearAbstract {
 
 	private class DS extends RMQStaticLinearAbstract.DS {
 
+		private final byte[] tempNodesArray;
+
 		DS(RMQStaticComparator c, int n) {
 			super(c, n);
+			tempNodesArray = new byte[blockSize];
+			preProcessInnerBlocks();
 		}
 
 		@Override
@@ -70,16 +74,16 @@ class RMQStaticCartesianTrees extends RMQStaticLinearAbstract {
 		@Override
 		int calcBlockKey(int b) {
 			RMQStaticComparator c = b < blockNum - 1 ? cmpOrig : cmpPadded;
-			int[] nodes = new int[blockSize];
+			byte[] nodes = tempNodesArray;
 			int nodesCount = 0;
 
 			int key = 0;
 			int keyIdx = 0;
 
 			int base = b * blockSize;
-			for (int i = 0; i < blockSize; i++) {
-				int x = base + i;
-				while (nodesCount > 0 && c.compare(x, nodes[nodesCount - 1]) < 0) {
+			for (byte i = 0; i < blockSize; i++) {
+				byte x = i;
+				while (nodesCount > 0 && c.compare(base + x, base + nodes[nodesCount - 1]) < 0) {
 					nodesCount--;
 					key |= 1 << (keyIdx++);
 				}
@@ -94,7 +98,7 @@ class RMQStaticCartesianTrees extends RMQStaticLinearAbstract {
 		byte[] calcDemoBlock(int key) {
 			byte[] demoBlock = new byte[blockSize];
 
-			byte[] nodes = new byte[blockSize];
+			byte[] nodes = tempNodesArray;
 			int nodesCount = 0;
 
 			int keyIdx = 0;

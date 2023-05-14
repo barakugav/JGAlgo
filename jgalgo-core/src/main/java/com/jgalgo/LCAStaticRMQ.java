@@ -17,6 +17,7 @@
 package com.jgalgo;
 
 import java.util.Arrays;
+import it.unimi.dsi.fastutil.ints.IntArrays;
 
 /**
  * Static LCA implementation using RMQ.
@@ -34,6 +35,7 @@ import java.util.Arrays;
 class LCAStaticRMQ implements LCAStatic {
 
 	private final RMQStatic rmq = new RMQStaticPlusMinusOne();
+	private final AllocatedMemory allocatedMemory = new AllocatedMemory();
 
 	/**
 	 * Create a new static LCA algorithm object.
@@ -45,30 +47,30 @@ class LCAStaticRMQ implements LCAStatic {
 		if (!Trees.isTree(tree, root))
 			throw new IllegalArgumentException("The given graph is not a tree rooted at the given root");
 
-		int n = tree.vertices().size();
-		int[] depths = new int[n * 2];
-		int[] vs = new int[n * 2];
-		int[] parent = new int[n];
-
-		EdgeIter[] edges = new EdgeIter[n];
+		final int n = tree.vertices().size();
+		allocatedMemory.allocate(n);
+		int[] depths = allocatedMemory.depths;
+		int[] vs = allocatedMemory.vs;
+		int[] parent = allocatedMemory.parent;
+		EdgeIter[] edgeIters = allocatedMemory.edgeIters;
 
 		parent[0] = -1;
-		edges[0] = tree.edgesOut(root);
+		edgeIters[0] = tree.edgesOut(root);
 
-		int aLen = 0;
+		int sequenceLength = 0;
 		dfs: for (int u = root, depth = 0;;) {
-			depths[aLen] = depth;
-			vs[aLen] = u;
-			aLen++;
+			depths[sequenceLength] = depth;
+			vs[sequenceLength] = u;
+			sequenceLength++;
 
-			for (EdgeIter eit = edges[depth]; eit.hasNext();) {
+			for (EdgeIter eit = edgeIters[depth]; eit.hasNext();) {
 				eit.nextInt();
 				int v = eit.target();
 				if (v == parent[depth])
 					continue;
 				depth++;
 				parent[depth] = u;
-				edges[depth] = tree.edgesOut(v);
+				edgeIters[depth] = tree.edgesOut(v);
 				u = v;
 				continue dfs;
 			}
@@ -76,29 +78,32 @@ class LCAStaticRMQ implements LCAStatic {
 			if (--depth < 0)
 				break;
 		}
+		Arrays.fill(edgeIters, 0, n, null);
 
-		depths = Arrays.copyOf(depths, aLen);
-		vs = Arrays.copyOf(vs, aLen);
+		depths = Arrays.copyOf(depths, sequenceLength);
+		vs = Arrays.copyOf(vs, sequenceLength);
 
 		int[] vToDepthsIdx = new int[n];
 		Arrays.fill(vToDepthsIdx, -1);
-		for (int i = 0; i < aLen; i++) {
+		for (int i = 0; i < sequenceLength; i++) {
 			int v = vs[i];
 			if (vToDepthsIdx[v] == -1)
 				vToDepthsIdx[v] = i;
 		}
 
 		RMQStatic.DataStructure rmqDS = rmq.preProcessSequence(RMQStaticComparator.ofIntArray(depths), depths.length);
-		return new DS(vs, vToDepthsIdx, rmqDS);
+		return new DS(n, vs, vToDepthsIdx, rmqDS);
 	}
 
 	private static class DS implements LCAStatic.DataStructure {
 
+		private final int n;
 		private final int[] vs;
 		private final int[] vToDepthsIdx;
 		private final RMQStatic.DataStructure rmqDS;
 
-		DS(int[] vs, int[] vToDepthsIdx, RMQStatic.DataStructure rmqDS) {
+		DS(int n, int[] vs, int[] vToDepthsIdx, RMQStatic.DataStructure rmqDS) {
+			this.n = n;
 			this.vs = vs;
 			this.vToDepthsIdx = vToDepthsIdx;
 			this.rmqDS = rmqDS;
@@ -106,6 +111,10 @@ class LCAStaticRMQ implements LCAStatic {
 
 		@Override
 		public int findLowestCommonAncestor(int u, int v) {
+			if (u >= n)
+				throw new IndexOutOfBoundsException(u);
+			if (v >= n)
+				throw new IndexOutOfBoundsException(v);
 			int uIdx = vToDepthsIdx[u];
 			int vIdx = vToDepthsIdx[v];
 			if (uIdx > vIdx) {
@@ -115,6 +124,20 @@ class LCAStaticRMQ implements LCAStatic {
 			}
 			int lcaIdx = rmqDS.findMinimumInRange(uIdx, vIdx);
 			return vs[lcaIdx];
+		}
+	}
+
+	private static class AllocatedMemory {
+		int[] depths = IntArrays.EMPTY_ARRAY;
+		int[] vs = IntArrays.EMPTY_ARRAY;
+		int[] parent = IntArrays.EMPTY_ARRAY;
+		EdgeIter[] edgeIters = MemoryReuse.EmptyEdgeIterArr;
+
+		void allocate(int n) {
+			depths = MemoryReuse.ensureLength(depths, 2 * n);
+			vs = MemoryReuse.ensureLength(vs, 2 * n);
+			parent = MemoryReuse.ensureLength(parent, n);
+			edgeIters = MemoryReuse.ensureLength(edgeIters, n);
 		}
 	}
 

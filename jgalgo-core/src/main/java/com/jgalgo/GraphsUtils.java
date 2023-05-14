@@ -27,22 +27,6 @@ class GraphsUtils {
 
 	private GraphsUtils() {}
 
-	static int getFullyBranchingTreeDepth(Graph t, int root) {
-		for (int parent = -1, u = root, depth = 0;; depth++) {
-			int v = parent;
-			for (EdgeIter eit = t.edgesOut(u); eit.hasNext();) {
-				eit.nextInt();
-				v = eit.target();
-				if (v != parent)
-					break;
-			}
-			if (v == parent)
-				return depth;
-			parent = u;
-			u = v;
-		}
-	}
-
 	static int[] calcDegree(Graph g, IntCollection edges) {
 		int[] degree = new int[g.vertices().size()];
 		for (IntIterator eit = edges.iterator(); eit.hasNext();) {

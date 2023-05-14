@@ -19,12 +19,12 @@ package com.jgalgo;
 import java.util.Arrays;
 import java.util.BitSet;
 import com.jgalgo.Utils.BiInt2IntFunction;
-import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIntPair;
+import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
-import it.unimi.dsi.fastutil.objects.ObjectIntPair;
 
 /**
  * Hagerup's Tree Path Maxima (TPM) linear time algorithm.
@@ -41,8 +41,6 @@ import it.unimi.dsi.fastutil.objects.ObjectIntPair;
 class TreePathMaximaHagerup implements TreePathMaxima {
 
 	private boolean useBitsLookupTables = false;
-
-	private static final Object EdgeRefWeightKey = new Object();
 
 	/**
 	 * Create a new TPM object.
@@ -78,21 +76,31 @@ class TreePathMaximaHagerup implements TreePathMaxima {
 
 	private static class Worker {
 
-		/*
-		 * Original tree, in other functions 't' refers to the Boruvka fully branching tree
-		 */
-		final Graph tOrig;
-		final EdgeWeightFunc w;
+		private final Graph tOrig;
+		private final EdgeWeightFunc w;
+
+		/* The tree we operate on, actually the Boruvka fully branching tree */
+		private final Graph tree = GraphBuilder.newUndirected().build();
+		private int[] parents;
+		private int[] depths;
+		private int treeHeight;
+		/* Map an edge it 'tree' to an edge in 'tOrig' */
+		private final Weights.Int edgeRef = tree.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
+		private static final Object EdgeRefWeightKey = new Object();
+
+		private final LCAStatic lcaAlgo = new LCAStaticRMQ();
+		private int root;
+
 		private final Int2IntFunction getBitCount;
 		private final BiInt2IntFunction getIthbit;
 		private final Int2IntFunction getNumberOfTrailingZeros;
 
-		Worker(Graph t, EdgeWeightFunc w, boolean useBitsLookupTables) {
-			this.tOrig = t;
+		Worker(Graph tOrig, EdgeWeightFunc w, boolean useBitsLookupTables) {
+			this.tOrig = tOrig;
 			this.w = w;
 
 			if (useBitsLookupTables) {
-				int n = t.vertices().size();
+				int n = tOrig.vertices().size();
 				int wordsize = n > 1 ? Utils.log2ceil(n) : 1;
 				BitsLookupTable.Count count = new BitsLookupTable.Count(wordsize);
 				BitsLookupTable.Ith ith = new BitsLookupTable.Ith(wordsize, count);
@@ -116,23 +124,16 @@ class TreePathMaximaHagerup implements TreePathMaxima {
 		}
 
 		TreePathMaxima.Result calcTPM(TreePathMaxima.Queries queries) {
-			ObjectIntPair<Graph> r = buildBoruvkaFullyBranchingTree();
-			Graph tree = r.first();
-			int root = r.secondInt();
+			buildBoruvkaFullyBranchingTree();
 
-			int[] lcaQueries = splitQueriesIntoLCAQueries(tree, root, queries);
+			int[] lcaQueries = splitQueriesIntoLCAQueries(queries);
 
-			Pair<int[], int[]> r2 = getEdgeToParentsAndDepth(tree, root);
-			int[] edgeToParent = r2.first();
-			int[] depths = r2.second();
-
-			int[] q = calcQueriesPerVertex(tree, lcaQueries, depths, edgeToParent);
-			int[][] a = calcAnswersPerVertex(tree, root, q, edgeToParent);
-			return extractEdgesFromAnswers(a, q, lcaQueries, depths, tree.getEdgesWeights("edgeData"));
+			int[] q = calcQueriesPerVertex(lcaQueries);
+			int[][] a = calcAnswersPerVertex(q);
+			return extractEdgesFromAnswers(a, q, lcaQueries);
 		}
 
-		private TreePathMaxima.Result extractEdgesFromAnswers(int[][] a, int[] q, int[] lcaQueries, int[] depths,
-				Weights.Int edgeData) {
+		private TreePathMaxima.Result extractEdgesFromAnswers(int[][] a, int[] q, int[] lcaQueries) {
 			int queriesNum = lcaQueries.length / 4;
 			int[] res = new int[queriesNum];
 
@@ -159,37 +160,33 @@ class TreePathMaximaHagerup implements TreePathMaxima {
 					}
 				}
 
-				res[i] = (va == -1 || (ua != -1 && w.weight(edgeData.getInt(ua)) >= w.weight(edgeData.getInt(va))))
-						? (ua != -1 ? edgeData.getInt(ua) : -1)
-						: /* va != -1 */ edgeData.getInt(va);
+				res[i] = (va == -1 || (ua != -1 && w.weight(edgeRef.getInt(ua)) >= w.weight(edgeRef.getInt(va))))
+						? (ua != -1 ? edgeRef.getInt(ua) : -1)
+						: /* va != -1 */ edgeRef.getInt(va);
 			}
 
 			return new Result(res);
 		}
 
-		private int[][] calcAnswersPerVertex(Graph t, int root, int[] q, int[] edgeToParent) {
-			int n = t.vertices().size();
+		private int[][] calcAnswersPerVertex(int[] q) {
+			int n = tree.vertices().size();
 			int[] a = new int[n];
-
-			int leavesDepth = GraphsUtils.getFullyBranchingTreeDepth(t, root);
-
-			Weights.Int tData = t.getEdgesWeights("edgeData");
 			int[][] res = new int[tOrig.vertices().size()][];
 
-			for (DFSIter it = new DFSIter(t, root); it.hasNext();) {
+			for (DFSIter it = new DFSIter(tree, root); it.hasNext();) {
 				int v = it.nextInt();
 				IntList edgesFromRoot = it.edgePath();
 				if (edgesFromRoot.isEmpty())
 					continue;
 				int depth = edgesFromRoot.size();
 				int edgeToChild = edgesFromRoot.getInt(depth - 1);
-				int u = t.edgeEndpoint(edgeToChild, v);
+				int u = tree.edgeEndpoint(edgeToChild, v);
 
 				a[v] = subseq(a[u], q[u], q[v]);
-				int j = binarySearch(a[v], w.weight(tData.getInt(edgeToChild)), edgesFromRoot, tData);
+				int j = binarySearch(a[v], w.weight(edgeRef.getInt(edgeToChild)), edgesFromRoot, edgeRef);
 				a[v] = repSuf(a[v], depth, j);
 
-				if (depth == leavesDepth) {
+				if (depth == treeHeight - 1) {
 					int qvsize = getBitCount.applyAsInt(q[v]);
 					int[] resv = new int[qvsize];
 					for (int i = 0; i < qvsize; i++) {
@@ -246,102 +243,168 @@ class TreePathMaximaHagerup implements TreePathMaxima {
 			return av;
 		}
 
-		private ObjectIntPair<Graph> buildBoruvkaFullyBranchingTree() {
+		private void buildBoruvkaFullyBranchingTree() {
 			int n = tOrig.vertices().size();
-			int[] minEdges = new int[n];
-			double[] minGraphWeights = new double[n];
+			int[] minEdges = new int[n * 2];
+			double[] minEdgesWeight = new double[n];
 			int[] vNext = new int[n];
 			int[] path = new int[n];
 			int[] vTv = new int[n];
 			int[] vTvNext = new int[n];
 
-			for (int v = 0; v < n; v++)
-				vTv[v] = v;
+			IntArrayList parents = new IntArrayList();
+			IntArrayList depths = new IntArrayList();
 
-			Graph t = GraphBuilder.newUndirected().setVerticesNum(n).build();
-			Weights.Int tData = t.addEdgesWeights("edgeData", int.class, Integer.valueOf(-1));
-			for (Graph G = GraphsUtils.referenceGraph(tOrig, EdgeRefWeightKey); (n = G.vertices().size()) > 1;) {
-				Weights.Int GData = G.getEdgesWeights(EdgeRefWeightKey);
+			/* Create the deepest n vertices of the full Boruvka tree, each corresponding to an original vertex */
+			assert tree.vertices().isEmpty();
+			depths.ensureCapacity(depths.size() + n);
+			parents.ensureCapacity(parents.size() + n);
+			for (int v = 0; v < n; v++) {
+				vTv[v] = tree.addVertex();
+				depths.add(0);
+				parents.add(-1);
+			}
 
-				// Find minimum edge of each vertex
-				Arrays.fill(minEdges, 0, n, -1);
-				Arrays.fill(minGraphWeights, 0, n, Double.MAX_VALUE);
-				for (int u = 0; u < n; u++) {
-					for (EdgeIter eit = G.edgesOut(u); eit.hasNext();) {
-						int e = eit.nextInt();
-						double eWeight = w.weight(GData.getInt(e));
-						if (eWeight < minGraphWeights[u]) {
-							minEdges[u] = e;
-							minGraphWeights[u] = eWeight;
-						}
+			/*
+			 * During the iterations of Boruvka, we don't create an actual Graph object to represent the contracted
+			 * graph of each iteration. Rather, we just maintain the number of vertices (n) and a list of edges (n-1 of
+			 * them). Each edge is stored as a triple (e,u,v), where e is the original edge of tOrig, and u and v are
+			 * super vertices in the current iteration. Note that tOrig.edgeSource(e) will not return u or v (only in
+			 * the first iteration).
+			 */
+			assert tOrig.edges().size() == n - 1;
+			int[] edges = new int[(n - 1) * 3];
+			int[] edgesNext = new int[(n / 2 * 1) * 3];
+			int edgesNum = 0;
+			for (IntIterator it = tOrig.edges().iterator(); it.hasNext(); edgesNum++) {
+				int e = it.nextInt();
+				int u = tOrig.edgeSource(e);
+				int v = tOrig.edgeTarget(e);
+				edges[edgesNum * 3 + 0] = e;
+				edges[edgesNum * 3 + 1] = u;
+				edges[edgesNum * 3 + 2] = v;
+			}
+
+			for (int height = 1;; height++) {
+				if (n <= 1) {
+					treeHeight = height;
+					break;
+				}
+				/* Find the minimum edge of each (super) vertex */
+				// Arrays.fill(minEdges, 0, n * 2, -1);
+				Arrays.fill(minEdgesWeight, 0, n, Double.MAX_VALUE);
+				for (int eIdx = 0; eIdx < edgesNum; eIdx++) {
+					int e = edges[eIdx * 3 + 0];
+					int u = edges[eIdx * 3 + 1];
+					int v = edges[eIdx * 3 + 2];
+					double eWeight = w.weight(e);
+					if (eWeight < minEdgesWeight[u]) {
+						minEdges[u * 2 + 0] = e;
+						minEdges[u * 2 + 1] = v;
+						minEdgesWeight[u] = eWeight;
+					}
+					if (eWeight < minEdgesWeight[v]) {
+						minEdges[v * 2 + 0] = e;
+						minEdges[v * 2 + 1] = u;
+						minEdgesWeight[v] = eWeight;
 					}
 				}
 
-				// find connectivity components, and label each vertex with new super vertex
+				/* find connectivity components, and label each vertex with new super vertex */
 				final int UNVISITED = -1;
 				final int IN_PATH = -2;
 				Arrays.fill(vNext, 0, n, UNVISITED);
 				int nNext = 0;
 				for (int u = 0; u < n; u++) {
-					int pathLength = 0;
-					// find all reachable vertices from u
-					for (int p = u;;) {
-						if (vNext[p] == UNVISITED) {
-							// another vertex on the path, continue
-							path[pathLength++] = p;
-							vNext[p] = IN_PATH;
-
-							p = G.edgeEndpoint(minEdges[p], p);
-							continue;
+					/* find all reachable vertices from u */
+					for (int w = u, pathLength = 0;;) {
+						if (vNext[w] != UNVISITED) {
+							/* if found labeled vertex, use it label, else, add a new label */
+							int V = vNext[w] >= 0 ? vNext[w] : nNext++;
+							/* assign the new label to all vertices on path */
+							while (pathLength-- > 0)
+								vNext[path[pathLength]] = V;
+							break;
 						}
 
-						// if found label use it label, else - add new label
-						int V = vNext[p] >= 0 ? vNext[p] : nNext++;
-						// assign the new label to all trees on path
-						while (pathLength-- > 0)
-							vNext[path[pathLength]] = V;
-						break;
+						/* another vertex on the path, continue */
+						path[pathLength++] = w;
+						vNext[w] = IN_PATH;
+						w = minEdges[w * 2 + 1];
 					}
 				}
 
-				// construct new layer in the output tree graph
-				for (int V = 0; V < nNext; V++)
-					vTvNext[V] = t.addVertex();
+				/* Construct new layer in the output tree graph */
+				depths.ensureCapacity(depths.size() + nNext);
+				parents.ensureCapacity(parents.size() + nNext);
+				for (int V = 0; V < nNext; V++) {
+					int nextV = tree.addVertex();
+					vTvNext[V] = nextV;
+
+					/*
+					 * We assign height here instead of depth because we build the tree from bottom to up and we don't
+					 * know our current depth. After the whole tree will be built, we will update the depths of the
+					 * vertices by depth=(treeHeight-height-1).
+					 */
+					assert depths.size() == nextV;
+					depths.add(height);
+
+					/* Will be set in the next iteration (or not, for root) */
+					parents.add(-1);
+				}
 				for (int u = 0; u < n; u++) {
-					int e = t.addEdge(vTv[u], vTvNext[vNext[u]]);
-					tData.set(e, GData.getInt(minEdges[u]));
+					int child = vTv[u];
+					int parent = vTvNext[vNext[u]];
+					int e = tree.addEdge(child, parent);
+					int eOrig = minEdges[u * 2 + 0];
+					edgeRef.set(e, eOrig);
+
+					parents.set(child, parent);
 				}
 				int[] temp = vTv;
 				vTv = vTvNext;
 				vTvNext = temp;
 
-				// contract G to new graph with the super vertices
-				Graph gNext = GraphBuilder.newUndirected().setVerticesNum(nNext).build();
-				Weights.Int gNextData = gNext.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
-				for (int u = 0; u < n; u++) {
-					int U = vNext[u];
-					for (EdgeIter eit = G.edgesOut(u); eit.hasNext();) {
-						int e = eit.nextInt();
-						int V = vNext[eit.target()];
-						if (U != V) {
-							int E = gNext.addEdge(U, V);
-							gNextData.set(E, GData.getInt(e));
-						}
+				/* Construct the contracted graph of the next iteration (we just create an edges list) */
+				int edgesNumNext = 0;
+				for (int eIdx = 0; eIdx < edgesNum; eIdx++) {
+					int u = edges[eIdx * 3 + 1];
+					int v = edges[eIdx * 3 + 2];
+					int U = vNext[u], V = vNext[v];
+					if (U != V) {
+						int e = edges[eIdx * 3 + 0];
+						edgesNext[edgesNumNext * 3 + 0] = e;
+						edgesNext[edgesNumNext * 3 + 1] = U;
+						edgesNext[edgesNumNext * 3 + 2] = V;
+						edgesNumNext++;
 					}
 				}
+				temp = edges;
+				edges = edgesNext;
+				edgesNext = temp;
 
-				G.clear();
-				G = gNext;
+				edgesNum = edgesNumNext;
+
+				n = nNext;
 			}
-			return ObjectIntPair.of(t, vTv[0]);
+			root = vTv[0];
+
+			/*
+			 * We wrote the HEIGHT to the depths container because we didn't know the depth at the time. 'Reverse'
+			 * height to depth:
+			 */
+			this.parents = parents.elements();
+			this.depths = depths.elements();
+			n = tree.vertices().size();
+			for (int u = 0; u < n; u++)
+				this.depths[u] = treeHeight - this.depths[u] - 1;
 		}
 
-		private static int[] splitQueriesIntoLCAQueries(Graph t, int root, TreePathMaxima.Queries queries) {
+		private int[] splitQueriesIntoLCAQueries(TreePathMaxima.Queries queries) {
 			int queriesNum = queries.size();
 			int[] lcaQueries = new int[queriesNum * 4];
 
-			LCAStatic lcaAlgo = new LCAStaticRMQ();
-			LCAStatic.DataStructure lcaDS = lcaAlgo.preProcessTree(t, root);
+			LCAStatic.DataStructure lcaDS = lcaAlgo.preProcessTree(tree, root);
 			for (int q = 0; q < queriesNum; q++) {
 				IntIntPair query = queries.getQuery(q);
 				int u = query.firstInt(), v = query.secondInt();
@@ -354,26 +417,8 @@ class TreePathMaximaHagerup implements TreePathMaxima {
 			return lcaQueries;
 		}
 
-		private static Pair<int[], int[]> getEdgeToParentsAndDepth(Graph t, int root) {
-			int n = t.vertices().size();
-			int[] edgeToParent = new int[n];
-			Arrays.fill(edgeToParent, -1);
-			int[] depths = new int[n];
-
-			for (BFSIter it = new BFSIter(t, root); it.hasNext();) {
-				int v = it.nextInt();
-				int e = it.inEdge();
-				if (e != -1) {
-					edgeToParent[v] = e;
-					depths[v] = depths[t.edgeEndpoint(e, v)] + 1;
-				}
-			}
-
-			return Pair.of(edgeToParent, depths);
-		}
-
-		private static int[] calcQueriesPerVertex(Graph g, int[] lcaQueries, int[] depths, int[] edgeToParent) {
-			final int n = g.vertices().size();
+		private int[] calcQueriesPerVertex(int[] lcaQueries) {
+			final int n = tree.vertices().size();
 
 			int[] q = new int[n];
 			Arrays.fill(q, 0);
@@ -388,14 +433,10 @@ class TreePathMaximaHagerup implements TreePathMaxima {
 			}
 
 			/* Start traversing the full branching tree from the leaves upwards */
-			int maxDepth = -1;
-			for (int u = 0; u < n; u++)
-				if (depths[u] > maxDepth)
-					maxDepth = depths[u];
 			IntPriorityQueue queue = new IntArrayFIFOQueue();
 			BitSet queued = new BitSet(n);
 			for (int u = 0; u < n; u++) {
-				if (depths[u] == maxDepth) {
+				if (depths[u] == treeHeight - 1) {
 					queue.enqueue(u);
 					queued.set(u);
 				}
@@ -404,10 +445,9 @@ class TreePathMaximaHagerup implements TreePathMaxima {
 			while (!queue.isEmpty()) {
 				int u = queue.dequeueInt();
 
-				int ep = edgeToParent[u];
-				if (ep == -1)
+				int parent = parents[u];
+				if (parent == -1)
 					continue;
-				int parent = g.edgeEndpoint(ep, u);
 				q[parent] |= q[u] & ~(1 << depths[parent]);
 
 				if (queued.get(parent))

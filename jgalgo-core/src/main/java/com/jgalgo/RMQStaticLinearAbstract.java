@@ -38,7 +38,7 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 	 * \(O(n)\) pre processing time, \(O(n)\) space, \(O(1)\) query.
 	 */
 
-	private final RMQStaticPowerOf2Table xlogxTable = new RMQStaticPowerOf2Table();
+	private final AllocatedMemory allocatedMemory = new AllocatedMemory();
 
 	RMQStaticLinearAbstract() {}
 
@@ -55,6 +55,8 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 		private final RMQStatic.DataStructure xlogxTableDS;
 
 		final RMQStatic.DataStructure[] interBlocksDs;
+		private final RMQStatic outerRMQ;
+		private final RMQStatic innerRMQ;
 
 		DS(RMQStaticComparator c, int n) {
 			this.n = n;
@@ -64,6 +66,11 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 			this.cmpPadded = n < blockNum * blockSize ? new PaddedComparator(n, c) : c;
 			blocksRightMinimum = new byte[blockNum][blockSize - 1];
 			blocksLeftMinimum = new byte[blockNum][blockSize - 1];
+
+			outerRMQ = allocatedMemory.outerRMQ =
+					MemoryReuse.ensureAllocated(allocatedMemory.outerRMQ, RMQStaticPowerOf2Table::new);
+			innerRMQ = allocatedMemory.innerRMQ = // TODO probably better to use a simple lookup table, need to measure
+					MemoryReuse.ensureAllocated(allocatedMemory.innerRMQ, RMQStaticPowerOf2Table::new);
 
 			for (int b = 0; b < blockNum; b++) {
 				c = b < blockNum - 1 ? cmpOrig : cmpPadded;
@@ -85,15 +92,17 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 			}
 
 			xlogxTableDS =
-					xlogxTable.preProcessSequence((i, j) -> cmpOrig.compare(i * blockSize + blocksRightMinimum[i][0],
+					outerRMQ.preProcessSequence((i, j) -> cmpOrig.compare(i * blockSize + blocksRightMinimum[i][0],
 							j * blockSize + blocksRightMinimum[j][0]), blockNum);
 
 			interBlocksDs = new RMQStatic.DataStructure[blockNum];
+		}
 
-			RMQStatic innerRMQ = new RMQStaticPowerOf2Table();
+		void preProcessInnerBlocks() {
 			int keySize = getBlockKeySize();
 			if (keySize < Byte.SIZE) {
-				Byte2ObjectMap<RMQStatic.DataStructure> tables = new Byte2ObjectOpenHashMap<>();
+				Byte2ObjectMap<RMQStatic.DataStructure> tables = allocatedMemory.innerRmqMapByte =
+						MemoryReuse.ensureAllocated(allocatedMemory.innerRmqMapByte, Byte2ObjectOpenHashMap::new);
 				for (int b = 0; b < blockNum; b++) {
 					byte key = (byte) calcBlockKey(b);
 
@@ -103,9 +112,11 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 								demoBlock.length);
 					});
 				}
+				tables.clear();
 
 			} else if (keySize < Short.SIZE) {
-				Short2ObjectMap<RMQStatic.DataStructure> tables = new Short2ObjectOpenHashMap<>();
+				Short2ObjectMap<RMQStatic.DataStructure> tables = allocatedMemory.innerRmqMapShort =
+						MemoryReuse.ensureAllocated(allocatedMemory.innerRmqMapShort, Short2ObjectOpenHashMap::new);
 				for (int b = 0; b < blockNum; b++) {
 					short key = (short) calcBlockKey(b);
 
@@ -115,9 +126,11 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 								demoBlock.length);
 					});
 				}
+				tables.clear();
 
 			} else {
-				Int2ObjectMap<RMQStatic.DataStructure> tables = new Int2ObjectOpenHashMap<>();
+				Int2ObjectMap<RMQStatic.DataStructure> tables = allocatedMemory.innerRmqMapInt =
+						MemoryReuse.ensureAllocated(allocatedMemory.innerRmqMapInt, Int2ObjectOpenHashMap::new);
 				for (int b = 0; b < blockNum; b++) {
 					int key = calcBlockKey(b);
 
@@ -127,6 +140,7 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 								demoBlock.length);
 					});
 				}
+				tables.clear();
 			}
 		}
 
@@ -187,6 +201,14 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 			return i >= n ? 1 : -1;
 		}
 
+	}
+
+	private static class AllocatedMemory {
+		private RMQStatic outerRMQ;
+		private RMQStatic innerRMQ;
+		private Byte2ObjectMap<RMQStatic.DataStructure> innerRmqMapByte;
+		private Short2ObjectMap<RMQStatic.DataStructure> innerRmqMapShort;
+		private Int2ObjectMap<RMQStatic.DataStructure> innerRmqMapInt;
 	}
 
 }

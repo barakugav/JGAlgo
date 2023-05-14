@@ -90,15 +90,15 @@ public class MSTBoruvka implements MST {
 			vTree[v] = v;
 
 		int[] minEdges = allocatedMem.minEdges;
-		Arrays.fill(minEdges, 0, n, -1);
 		double[] minGraphWeights = allocatedMem.minGraphWeights;
 		int[] path = allocatedMem.path;
 
 		IntCollection mst = new IntArrayList();
 		for (int i = 0; i < numberOfRounds; i++) {
-			Arrays.fill(minGraphWeights, 0, treeNum, Double.MAX_VALUE);
 
 			/* find minimum edge going out of each tree */
+			Arrays.fill(minEdges, 0, treeNum, -1);
+			Arrays.fill(minGraphWeights, 0, treeNum, Double.MAX_VALUE);
 			for (int u = 0; u < n; u++) {
 				int tree = vTree[u];
 
@@ -142,32 +142,34 @@ public class MSTBoruvka implements MST {
 			final int IN_PATH = -2;
 			Arrays.fill(vTreeNext, 0, treeNum, UNVISITED);
 			int treeNumNext = 0;
-			for (int t = 0; t < treeNum; t++) {
-				int pathLength = 0;
 
+			for (int t = 0; t < treeNum; t++) {
 				/* find all reachable trees from t */
+				int pathLength = 0;
 				int deepestTree;
 				for (int tPtr = t;;) {
 					if (vTreeNext[tPtr] != UNVISITED) {
 						deepestTree = tPtr;
 						break;
 					}
-					/* another vertex on the path, continue */
+
+					/* another tree on the path, continue */
 					path[pathLength++] = tPtr;
 					vTreeNext[tPtr] = IN_PATH;
-					if (minEdges[tPtr] == -1) {
+					int minEdge = minEdges[tPtr];
+					if (minEdge == -1) {
 						deepestTree = tPtr;
 						break;
 					}
 
 					int nextTPtr;
-					if ((nextTPtr = vTree[g.edgeSource(minEdges[tPtr])]) == tPtr)
-						nextTPtr = vTree[g.edgeTarget(minEdges[tPtr])];
+					if ((nextTPtr = vTree[g.edgeSource(minEdge)]) == tPtr)
+						nextTPtr = vTree[g.edgeTarget(minEdge)];
 					assert nextTPtr != tPtr;
 					tPtr = nextTPtr;
 				}
 
-				/* if found labeled tree use it label, else - add new label */
+				/* if found labeled tree, use it label, else, add a new label */
 				int newTree = vTreeNext[deepestTree] >= 0 ? vTreeNext[deepestTree] : treeNumNext++;
 				/* assign the new label to all trees on path */
 				while (pathLength-- > 0)
@@ -177,7 +179,6 @@ public class MSTBoruvka implements MST {
 			if (treeNum == treeNumNext)
 				break;
 			treeNum = treeNumNext;
-			Arrays.fill(minEdges, 0, treeNum, -1);
 
 			/* assign new tree indices to G's vertices */
 			for (int v = 0; v < n; v++)
