@@ -258,7 +258,7 @@ class TreePathMaximaHagerup implements TreePathMaxima {
 			for (int v = 0; v < n; v++)
 				vTv[v] = v;
 
-			Graph t = new GraphArrayUndirected(n);
+			Graph t = GraphBuilder.newUndirected().setVerticesNum(n).build();
 			Weights.Int tData = t.addEdgesWeights("edgeData", int.class, Integer.valueOf(-1));
 			for (Graph G = GraphsUtils.referenceGraph(tOrig, EdgeRefWeightKey); (n = G.vertices().size()) > 1;) {
 				Weights.Int GData = G.getEdgesWeights(EdgeRefWeightKey);
@@ -316,7 +316,7 @@ class TreePathMaximaHagerup implements TreePathMaxima {
 				vTvNext = temp;
 
 				// contract G to new graph with the super vertices
-				Graph gNext = new GraphArrayUndirected(nNext);
+				Graph gNext = GraphBuilder.newUndirected().setVerticesNum(nNext).build();
 				Weights.Int gNextData = gNext.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
 				for (int u = 0; u < n; u++) {
 					int U = vNext[u];

@@ -31,7 +31,7 @@ import com.jgalgo.GraphsUtils.UndirectedGraphImpl;
  * @see    GraphTableDirected
  * @author Barak Ugav
  */
-public class GraphTableUndirected extends GraphTableAbstract implements UndirectedGraphImpl {
+class GraphTableUndirected extends GraphTableAbstract implements UndirectedGraphImpl {
 
 	/**
 	 * Create a new graph with no edges and {@code n} vertices numbered {@code 0,1,2,..,n-1}.
@@ -40,7 +40,7 @@ public class GraphTableUndirected extends GraphTableAbstract implements Undirect
 	 *
 	 * @param n the number of initial vertices number
 	 */
-	public GraphTableUndirected(int n) {
+	GraphTableUndirected(int n) {
 		super(n, Capabilities);
 	}
 

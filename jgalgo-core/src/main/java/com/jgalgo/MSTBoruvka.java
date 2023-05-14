@@ -64,7 +64,7 @@ public class MSTBoruvka implements MST {
 			throw new IllegalArgumentException();
 		Res mstRes = computeMST(g, w, numberOfRounds);
 
-		Graph contractedG = new GraphArrayUndirected(mstRes.treeNum);
+		Graph contractedG = GraphBuilder.newUndirected().setVerticesNum(mstRes.treeNum).build();
 		Weights.Int edgeRef = contractedG.addEdgesWeights(edgeRefKey, int.class);
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();

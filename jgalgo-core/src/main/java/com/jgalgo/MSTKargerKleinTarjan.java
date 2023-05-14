@@ -112,7 +112,7 @@ public class MSTKargerKleinTarjan implements MST {
 	}
 
 	static Graph subGraph(Graph g, IntCollection edgeSet, Object edgeDataKey, Weights.Int edgeRef) {
-		Graph subG = new GraphArrayUndirected(g.vertices().size());
+		Graph subG = GraphBuilder.newUndirected().setVerticesNum(g.vertices().size()).build();
 		Weights.Int edgeRefSub = subG.addEdgesWeights(edgeDataKey, int.class);
 		for (IntIterator it = edgeSet.iterator(); it.hasNext();) {
 			int e = it.nextInt();
@@ -235,7 +235,8 @@ public class MSTKargerKleinTarjan implements MST {
 			tpmResults = MemoryReuse.ensureLength(tpmResults, treeCount);
 
 			for (int tIdx = 0; tIdx < treeCount; tIdx++) {
-				Graph tree = trees[tIdx] = MemoryReuse.ensureAllocated(trees[tIdx], () -> new GraphArrayUndirected());
+				Graph tree = trees[tIdx] =
+						MemoryReuse.ensureAllocated(trees[tIdx], () -> GraphBuilder.newUndirected().build());
 				treeData[tIdx] =
 						MemoryReuse.ensureAllocated(treeData[tIdx], () -> tree.addEdgesWeights("weight", double.class));
 

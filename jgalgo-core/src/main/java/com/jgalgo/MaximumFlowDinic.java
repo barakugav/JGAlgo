@@ -18,7 +18,6 @@ package com.jgalgo;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.function.Supplier;
 import com.jgalgo.IDStrategy.Fixed;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -40,7 +39,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
  */
 public class MaximumFlowDinic implements MaximumFlow {
 
-	private Supplier<? extends GraphBuilder> layerGraphBuilder = GraphBuilderImpl.LinkedDirected::new;
+	private GraphBuilder layerGraphBuilder = GraphBuilder.newDirected().setOption("impl", "GraphLinked");
 
 	private static final Object FlowWeightKey = new Object();
 	private static final Object CapacityWeightKey = new Object();
@@ -51,7 +50,7 @@ public class MaximumFlowDinic implements MaximumFlow {
 	public MaximumFlowDinic() {}
 
 	/**
-	 * [experimental API] Set the graph implementation used by this algorithm for the layers graph.
+	 * Set the graph implementation used by this algorithm for the layers graph.
 	 * <p>
 	 * Multiple {@code remove} operations are performed on the layers graph, therefore its non trivial that an array
 	 * graph implementation should be used, as linked graph implementation perform {@code remove} operations more
@@ -59,7 +58,7 @@ public class MaximumFlowDinic implements MaximumFlow {
 	 *
 	 * @param builder a builder that provide instances of graphs for the layers graph
 	 */
-	void setLayerGraphFactory(Supplier<? extends GraphBuilder> builder) {
+	void setLayerGraphFactory(GraphBuilder builder) {
 		layerGraphBuilder = Objects.requireNonNull(builder);
 	}
 
@@ -87,8 +86,7 @@ public class MaximumFlowDinic implements MaximumFlow {
 		}
 
 		double computeMaximumFlow() {
-			GraphBuilder builder = layerGraphBuilder.get();
-			Graph L = builder.setVerticesNum(n).setEdgesIDStrategy(Fixed.class).build();
+			Graph L = layerGraphBuilder.setDirected(true).setVerticesNum(n).setEdgesIDStrategy(Fixed.class).build();
 			Weights.Int edgeRefL = L.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
 			IntPriorityQueue bfsQueue = new IntArrayFIFOQueue();
 			int[] level = new int[n];

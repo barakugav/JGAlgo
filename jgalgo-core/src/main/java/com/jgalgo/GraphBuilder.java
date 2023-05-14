@@ -30,6 +30,36 @@ public interface GraphBuilder extends BuilderAbstract<GraphBuilder> {
 	Graph build();
 
 	/**
+	 * Create an undirected graph builder.
+	 * <p>
+	 * This is the recommended way to instantiate a new undirected graph.
+	 *
+	 * @return a new builder that can build undirected graphs
+	 */
+	static GraphBuilder newUndirected() {
+		return new GraphBuilderImpl(false);
+	}
+
+	/**
+	 * Create a directed graph builder.
+	 * <p>
+	 * This is the recommended way to instantiate a new directed graph.
+	 *
+	 * @return a new builder that can build directed graphs
+	 */
+	static GraphBuilder newDirected() {
+		return new GraphBuilderImpl(true);
+	}
+
+	/**
+	 * Determine if graphs built by this builder should be directed or not.
+	 *
+	 * @param  directed if {@code true}, graphs built by this builder will be directed
+	 * @return          this builder
+	 */
+	GraphBuilder setDirected(boolean directed);
+
+	/**
 	 * Set the number of initial vertices in the graph.
 	 * <p>
 	 * The default value is zero.
@@ -55,25 +85,37 @@ public interface GraphBuilder extends BuilderAbstract<GraphBuilder> {
 	GraphBuilder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy);
 
 	/**
-	 * Create an undirected graph builder.
+	 * Add a hint to this builder.
 	 * <p>
-	 * This is the recommended way to instantiate a new undirected graph.
+	 * Hints do not change the behavior of the graphs built by this builder, by may affect performance.
 	 *
-	 * @return a new builder that can build undirected graphs
+	 * @param  hint the hint to add
+	 * @return      this builder
 	 */
-	static GraphBuilder newUndirected() {
-		return new GraphBuilderImpl.ArrayUndirected();
-	}
+	GraphBuilder addHint(GraphBuilder.Hint hint);
 
 	/**
-	 * Create a directed graph builder.
+	 * Remove a hint from this builder.
 	 * <p>
-	 * This is the recommended way to instantiate a new directed graph.
+	 * Hints do not change the behavior of the graphs built by this builder, by may affect performance.
 	 *
-	 * @return a new builder that can build directed graphs
+	 * @param  hint the hint to remove
+	 * @return      this builder
 	 */
-	static GraphBuilder newDirected() {
-		return new GraphBuilderImpl.ArrayDirected();
+	GraphBuilder removeHint(GraphBuilder.Hint hint);
+
+	/**
+	 * Hints for a graph builder.
+	 * <p>
+	 * Hints do not change the behavior of the graphs built by this builder, by may affect performance.
+	 *
+	 * @author Barak Ugav
+	 */
+	static enum Hint {
+		/** The graph should support fast edge removal via {@link Graph#removeEdge(int)} */
+		FastEdgeRemoval,
+		/** The graph should support fast edge lookup via {@link Graph#getEdge(int, int)} */
+		FastEdgeLookup,
 	}
 
 }

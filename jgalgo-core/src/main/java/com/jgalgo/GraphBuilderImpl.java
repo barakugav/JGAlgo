@@ -16,190 +16,130 @@
 
 package com.jgalgo;
 
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.IntFunction;
 import com.jgalgo.GraphsUtils.UndirectedGraphImpl;
 import com.jgalgo.IDStrategy.IDAddRemoveListener;
 import it.unimi.dsi.fastutil.ints.AbstractIntCollection;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
-class GraphBuilderImpl {
+class GraphBuilderImpl implements GraphBuilder {
 
-	static class ArrayUndirected extends GraphBuilderImpl.Abstract {
+	private boolean directed;
+	private Class<? extends IDStrategy> edgesIDStrategy;
+	private final EnumSet<GraphBuilder.Hint> hints = EnumSet.noneOf(GraphBuilder.Hint.class);
+	private int verticesNum;
+	private String impl;
 
-		@Override
-		public Graph build() {
-			return wrapWithCustomIDStrategies(new GraphArrayUndirected(verticesNum));
-		}
-
-		@Override
-		public GraphBuilder setVerticesNum(int n) {
-			super.setVerticesNum(n);
-			return this;
-		}
-
-		@Override
-		public GraphBuilder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy) {
-			super.setEdgesIDStrategy(edgesIDStrategy);
-			return this;
-		}
-
+	GraphBuilderImpl(boolean directed) {
+		this.directed = directed;
 	}
 
-	static class ArrayDirected extends GraphBuilderImpl.Abstract {
+	@Override
+	public Graph build() {
+		IntFunction<? extends GraphBaseContinues> baseBuilderArray =
+				directed ? GraphArrayDirected::new : GraphArrayUndirected::new;
+		IntFunction<? extends GraphBaseContinues> baseBuilderLinked =
+				directed ? GraphLinkedDirected::new : GraphLinkedUndirected::new;
+		IntFunction<? extends GraphBaseContinues> baseBuilderTable =
+				directed ? GraphTableDirected::new : GraphTableUndirected::new;
 
-		@Override
-		public Graph build() {
-			return wrapWithCustomIDStrategies(new GraphArrayDirected(verticesNum));
+		IntFunction<? extends GraphBaseContinues> baseBuilder;
+		if (impl != null && !"GraphArray".equals(impl)) {
+			if ("GraphArray".equals(impl))
+				baseBuilder = baseBuilderArray;
+			else if ("GraphLinked".equals(impl))
+				baseBuilder = baseBuilderLinked;
+			else if ("GraphTable".equals(impl))
+				baseBuilder = baseBuilderTable;
+			else
+				throw new IllegalArgumentException("unknown 'impl' value: " + impl);
+		} else {
+			if (hints.contains(GraphBuilder.Hint.FastEdgeLookup))
+				baseBuilder = baseBuilderTable;
+			else if (hints.contains(GraphBuilder.Hint.FastEdgeLookup))
+				baseBuilder = baseBuilderLinked;
+			else
+				baseBuilder = baseBuilderArray;
 		}
+		GraphBaseContinues base = baseBuilder.apply(verticesNum);
 
-		@Override
-		public GraphBuilder setVerticesNum(int n) {
-			super.setVerticesNum(n);
-			return this;
-		}
-
-		@Override
-		public GraphBuilder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy) {
-			super.setEdgesIDStrategy(edgesIDStrategy);
-			return this;
-		}
-
-	}
-
-	static class LinkedUndirected extends GraphBuilderImpl.Abstract {
-
-		@Override
-		public Graph build() {
-			return wrapWithCustomIDStrategies(new GraphLinkedUndirected(verticesNum));
-		}
-
-		@Override
-		public GraphBuilder setVerticesNum(int n) {
-			super.setVerticesNum(n);
-			return this;
-		}
-
-		@Override
-		public GraphBuilder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy) {
-			super.setEdgesIDStrategy(edgesIDStrategy);
-			return this;
-		}
-
-	}
-
-	static class LinkedDirected extends GraphBuilderImpl.Abstract {
-
-		@Override
-		public Graph build() {
-			return wrapWithCustomIDStrategies(new GraphLinkedDirected(verticesNum));
-		}
-
-		@Override
-		public GraphBuilder setVerticesNum(int n) {
-			super.setVerticesNum(n);
-			return this;
-		}
-
-		@Override
-		public GraphBuilder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy) {
-			super.setEdgesIDStrategy(edgesIDStrategy);
-			return this;
-		}
-
-	}
-
-	static class TableUndirected extends GraphBuilderImpl.Abstract {
-
-		@Override
-		public Graph build() {
-			return wrapWithCustomIDStrategies(new GraphTableUndirected(verticesNum));
-		}
-
-		@Override
-		public GraphBuilder setVerticesNum(int n) {
-			super.setVerticesNum(n);
-			return this;
-		}
-
-		@Override
-		public GraphBuilder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy) {
-			super.setEdgesIDStrategy(edgesIDStrategy);
-			return this;
-		}
-
-	}
-
-	static class TableDirected extends GraphBuilderImpl.Abstract {
-
-		@Override
-		public Graph build() {
-			return wrapWithCustomIDStrategies(new GraphTableDirected(verticesNum));
-		}
-
-		@Override
-		public GraphBuilder setVerticesNum(int n) {
-			super.setVerticesNum(n);
-			return this;
-		}
-
-		@Override
-		public GraphBuilder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy) {
-			super.setEdgesIDStrategy(edgesIDStrategy);
-			return this;
-		}
-
-	}
-
-	private static abstract class Abstract implements GraphBuilder {
-
-		int verticesNum;
-		Class<? extends IDStrategy> edgesIDStrategy;
-
-		@Override
-		public GraphBuilder setVerticesNum(int n) {
-			if (n < 0)
-				throw new IllegalArgumentException("Vertices number can not be negative: " + n);
-			verticesNum = n;
-			return this;
-		}
-
-		@Override
-		public GraphBuilder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy) {
-			if (edgesIDStrategy != null
-					&& !List.of(IDStrategy.Continues.class, IDStrategy.Fixed.class, IDStrategy.Rand.class)
-							.contains(edgesIDStrategy))
-				throw new IllegalArgumentException("unknown ID strategy: " + edgesIDStrategy.toString());
-			this.edgesIDStrategy = edgesIDStrategy;
-			return this;
-		}
-
-		Graph wrapWithCustomIDStrategies(GraphBaseContinues g) {
-			IDStrategy eIDStrat = createIDStrategy(edgesIDStrategy);
-			if (eIDStrat == null)
-				return g;
-			if (g.getCapabilities().directed()) {
-				return new GraphCustomIDStrategiesDirected(g, eIDStrat);
+		Graph g;
+		IDStrategy eIDStrat = createIDStrategy(edgesIDStrategy);
+		if (eIDStrat == null) {
+			g = base;
+		} else {
+			if (directed) {
+				g = new GraphCustomIDStrategiesDirected(base, eIDStrat);
 			} else {
-				return new GraphCustomIDStrategiesUndirected(g, eIDStrat);
+				g = new GraphCustomIDStrategiesUndirected(base, eIDStrat);
 			}
 		}
+		return g;
+	}
 
-		private static IDStrategy createIDStrategy(Class<? extends IDStrategy> strategyClass) {
-			if (strategyClass == null)
-				return null;
-			if (strategyClass == IDStrategy.Continues.class) {
-				return null; /* Use default */
-			} else if (strategyClass == IDStrategy.Fixed.class) {
-				return new IDStrategy.Fixed();
-			} else if (strategyClass == IDStrategy.Rand.class) {
-				return new IDStrategy.Rand();
-			} else {
-				throw new IllegalArgumentException(strategyClass.toString());
-			}
+	@Override
+	public GraphBuilder setDirected(boolean directed) {
+		this.directed = directed;
+		return this;
+	}
+
+	@Override
+	public GraphBuilder setVerticesNum(int n) {
+		if (n < 0)
+			throw new IllegalArgumentException("Vertices number can not be negative: " + n);
+		verticesNum = n;
+		return this;
+	}
+
+	@Override
+	public GraphBuilder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy) {
+		if (edgesIDStrategy != null
+				&& !List.of(IDStrategy.Continues.class, IDStrategy.Fixed.class, IDStrategy.Rand.class)
+						.contains(edgesIDStrategy))
+			throw new IllegalArgumentException("unknown ID strategy: " + edgesIDStrategy.toString());
+		this.edgesIDStrategy = edgesIDStrategy;
+		return this;
+	}
+
+	private static IDStrategy createIDStrategy(Class<? extends IDStrategy> strategyClass) {
+		if (strategyClass == null)
+			return null;
+		if (strategyClass == IDStrategy.Continues.class) {
+			return null; /* Use default */
+		} else if (strategyClass == IDStrategy.Fixed.class) {
+			return new IDStrategy.Fixed();
+		} else if (strategyClass == IDStrategy.Rand.class) {
+			return new IDStrategy.Rand();
+		} else {
+			throw new IllegalArgumentException(strategyClass.toString());
 		}
+	}
+
+	@Override
+	public GraphBuilder addHint(GraphBuilder.Hint hint) {
+		hints.add(hint);
+		return this;
+	}
+
+	@Override
+	public GraphBuilder removeHint(GraphBuilder.Hint hint) {
+		hints.remove(hint);
+		return this;
+	}
+
+	@Override
+	public GraphBuilder setOption(String key, Object value) {
+		if ("impl".equals(key)) {
+			impl = (String) value;
+		} else {
+			throw new IllegalArgumentException("unknown option key: " + key);
+		}
+		return this;
 	}
 
 	private abstract static class GraphCustomIDStrategies extends GraphBase {

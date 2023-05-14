@@ -29,7 +29,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 class CyclesFinderTestUtils extends TestUtils {
 
 	static void testSimpleGraph(CyclesFinder cyclesFinder) {
-		Graph g = new GraphArrayDirected(16);
+		Graph g = GraphBuilder.newDirected().setVerticesNum(16).build();
 		int e0 = g.addEdge(0, 1);
 		int e1 = g.addEdge(1, 2);
 		int e2 = g.addEdge(2, 1);

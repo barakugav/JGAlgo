@@ -82,7 +82,7 @@ public class MaximumFlowDinicDynamicTrees implements MaximumFlow {
 				maxCapacity = Math.max(maxCapacity, net.getCapacity(e));
 			}
 
-			GraphBuilder builder = new GraphBuilderImpl.LinkedDirected();
+			GraphBuilder builder = GraphBuilder.newDirected().setOption("impl", "GraphLinked");
 			Graph L = builder.setVerticesNum(n).setEdgesIDStrategy(Fixed.class).build();
 			Weights.Int edgeRefL = L.addEdgesWeights(EdgeRefWeightKey, int.class);
 			IntPriorityQueue bfsQueue = new IntArrayFIFOQueue();

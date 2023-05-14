@@ -193,7 +193,7 @@ class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeighted {
 
 	private static Graph referenceGraph(Graph g, Weights.Bool partition, EdgeWeightFunc w) {
 		int n = g.vertices().size();
-		Graph g0 = new GraphArrayDirected(g.vertices().size());
+		Graph g0 = GraphBuilder.newDirected().setVerticesNum(n).build();
 		Weights<Ref> edgeRef = g0.addEdgesWeights(EdgeRefWeightKey, Ref.class);
 
 		for (int u = 0; u < n; u++) {

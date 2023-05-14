@@ -338,7 +338,7 @@ public class GraphsTestUtils extends TestUtils {
 	static Graph parseGraphFromAdjacencyMatrix01(String s) {
 		String[] lines = s.split("\r\n");
 		int n = lines.length;
-		Graph g = new GraphArrayUndirected(n);
+		Graph g = GraphBuilder.newUndirected().setVerticesNum(n).build();
 		for (int u = 0; u < n; u++) {
 			String[] chars = lines[u].split(" ");
 			for (int v = u + 1; v < n; v++)
@@ -351,7 +351,7 @@ public class GraphsTestUtils extends TestUtils {
 	static Graph parseGraphWeighted(String s) {
 		String[] lines = s.split("\r\n");
 		int n = lines.length;
-		Graph g = new GraphArrayUndirected(n);
+		Graph g = GraphBuilder.newUndirected().setVerticesNum(n).build();
 		for (int u = 0; u < n; u++) {
 			String[] chars = lines[u].split(" ");
 			for (int v = u + 1; v < n; v++)

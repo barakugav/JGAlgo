@@ -132,25 +132,15 @@ class GraphsUtils {
 	// }
 
 	static Graph referenceGraph(Graph g, Object refEdgeWeightKey) {
-		if (g.getCapabilities().directed()) {
-			Graph g0 = new GraphArrayDirected(g.vertices().size());
-			Weights.Int edgeRef = g0.addEdgesWeights(refEdgeWeightKey, int.class);
-			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-				int e = it.nextInt();
-				int e0 = g0.addEdge(g.edgeSource(e), g.edgeTarget(e));
-				edgeRef.set(e0, e);
-			}
-			return g0;
-		} else {
-			Graph g0 = new GraphArrayUndirected(g.vertices().size());
-			Weights.Int edgeRef = g0.addEdgesWeights(refEdgeWeightKey, int.class);
-			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-				int e = it.nextInt();
-				int e0 = g0.addEdge(g.edgeSource(e), g.edgeTarget(e));
-				edgeRef.set(e0, e);
-			}
-			return g0;
+		Graph gRef = GraphBuilder.newDirected().setDirected(g.getCapabilities().directed())
+				.setVerticesNum(g.vertices().size()).build();
+		Weights.Int edgeRef = gRef.addEdgesWeights(refEdgeWeightKey, int.class);
+		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+			int e = it.nextInt();
+			int eRef = gRef.addEdge(g.edgeSource(e), g.edgeTarget(e));
+			edgeRef.set(eRef, e);
 		}
+		return gRef;
 	}
 
 	static boolean containsSelfLoops(Graph g) {
