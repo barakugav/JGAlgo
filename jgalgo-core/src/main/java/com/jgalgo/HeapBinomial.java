@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
-import com.jgalgo.Trees.TreeNode;
 
 /**
  * A binomial heap implementation.
@@ -341,12 +340,8 @@ class HeapBinomial<K, V> extends HeapReferenceableAbstract<K, V> {
 		return new Node[n];
 	}
 
-	private static class Node<K, V> implements HeapReference<K, V>, TreeNode<Node<K, V>> {
+	private static class Node<K, V> extends Trees.TreeNodeImpl<Node<K, V>> implements HeapReference<K, V> {
 
-		Node<K, V> parent;
-		Node<K, V> next;
-		Node<K, V> prev;
-		Node<K, V> child;
 		K key;
 		V value;
 
@@ -371,46 +366,6 @@ class HeapBinomial<K, V> extends HeapReferenceableAbstract<K, V> {
 		@Override
 		public void setValue(V val) {
 			value = val;
-		}
-
-		@Override
-		public Node<K, V> parent() {
-			return parent;
-		}
-
-		@Override
-		public Node<K, V> next() {
-			return next;
-		}
-
-		@Override
-		public Node<K, V> prev() {
-			return prev;
-		}
-
-		@Override
-		public Node<K, V> child() {
-			return child;
-		}
-
-		@Override
-		public void setParent(Node<K, V> x) {
-			parent = x;
-		}
-
-		@Override
-		public void setNext(Node<K, V> x) {
-			next = x;
-		}
-
-		@Override
-		public void setPrev(Node<K, V> x) {
-			prev = x;
-		}
-
-		@Override
-		public void setChild(Node<K, V> x) {
-			child = x;
 		}
 
 		@Override

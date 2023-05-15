@@ -21,12 +21,10 @@ import java.util.BitSet;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
-import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntIterators;
 import it.unimi.dsi.fastutil.ints.IntStack;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
  * A utilities class containing graph trees related methods.
@@ -166,23 +164,80 @@ public class Trees {
 
 	}
 
+	static class TreeNodeImpl<Node extends TreeNodeImpl<Node>> implements TreeNode<Node> {
+
+		Node parent;
+		Node next;
+		Node prev;
+		Node child;
+
+		@Override
+		public Node parent() {
+			return parent;
+		}
+
+		@Override
+		public Node next() {
+			return next;
+		}
+
+		@Override
+		public Node prev() {
+			return prev;
+		}
+
+		@Override
+		public Node child() {
+			return child;
+		}
+
+		@Override
+		public void setParent(Node x) {
+			parent = x;
+		}
+
+		@Override
+		public void setNext(Node x) {
+			next = x;
+		}
+
+		@Override
+		public void setPrev(Node x) {
+			prev = x;
+		}
+
+		@Override
+		public void setChild(Node x) {
+			child = x;
+		}
+	}
+
 	static <Node extends TreeNode<Node>> void clear(Node root, Consumer<? super Node> finalizer) {
-		Stack<Node> stack = new ObjectArrayList<>();
+		for (Node p = root;;) {
+			while (p.child() != null) {
+				p = p.child();
+				while (p.next() != null)
+					p = p.next();
+			}
 
-		stack.push(root);
+			Node prev;
+			if (p.prev() != null) {
+				prev = p.prev();
+				prev.setNext(null);
+				p.setPrev(null);
+			} else if (p.parent() != null) {
+				prev = p.parent();
+				prev.setChild(null);
+				p.setParent(null);
+			} else {
+				prev = null;
+			}
 
-		do {
-			Node n = stack.pop();
-
-			for (Node p = n.child(); p != null; p = p.next())
-				stack.push(p);
-
-			n.setParent(null);
-			n.setNext(null);
-			n.setPrev(null);
-			n.setChild(null);
-			finalizer.accept(n);
-		} while (!stack.isEmpty());
+			finalizer.accept(p);
+			if (prev == null)
+				break;
+			p = prev;
+		}
 	}
 
 	static class PreOrderIter<Node extends TreeNode<Node>> implements Iterator<Node> {
