@@ -54,49 +54,50 @@ class RMQStaticPlusMinusOne extends RMQStaticLinearAbstract {
 
 <span class="fc" id="L55">		DS(RMQStaticComparator c, int n) {</span>
 <span class="fc" id="L56">			super(c, n);</span>
-<span class="fc" id="L57">		}</span>
+<span class="fc" id="L57">			preProcessInnerBlocks();</span>
+<span class="fc" id="L58">		}</span>
 
 		@Override
 		byte getBlockSize(int n) {
-<span class="fc bfc" id="L61" title="All 2 branches covered.">			int s = n &lt;= 1 ? 1 : (int) Math.ceil(Utils.log2((double) n) * 2 / 3);</span>
-			/* choose block size of at least 4, as the 2^(5-1) is 16 (small) */
-<span class="fc" id="L63">			return (byte) Math.min(Math.max(s, 5), n);</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">			int s = n &lt;= 1 ? 1 : (int) Math.ceil(Utils.log2((double) n) * 2 / 3);</span>
+			/* choose block size of at least 5, as 2^(5-1) is 16 (small) */
+<span class="fc" id="L64">			return (byte) Math.min(Math.max(s, 5), n);</span>
 		}
 
 		@Override
 		int getBlockKeySize() {
-<span class="fc" id="L68">			return blockSize - 1;</span>
+<span class="fc" id="L69">			return blockSize - 1;</span>
 		}
 
 		@Override
 		int calcBlockKey(int b) {
-<span class="fc bfc" id="L73" title="All 2 branches covered.">			RMQStaticComparator c = b &lt; blockNum - 1 ? cmpOrig : cmpPadded;</span>
-<span class="fc" id="L74">			int key = 0;</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">			RMQStaticComparator c = b &lt; blockNum - 1 ? cmpOrig : cmpPadded;</span>
+<span class="fc" id="L75">			int key = 0;</span>
 
-<span class="fc" id="L76">			int base = b * blockSize;</span>
-<span class="fc bfc" id="L77" title="All 2 branches covered.">			for (int i = blockSize - 2; i &gt;= 0; i--) {</span>
-<span class="fc" id="L78">				key &lt;&lt;= 1;</span>
-<span class="fc bfc" id="L79" title="All 2 branches covered.">				if (c.compare(base + i + 1, base + i) &lt; 0)</span>
-<span class="fc" id="L80">					key |= 1;</span>
+<span class="fc" id="L77">			int base = b * blockSize;</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">			for (int i = blockSize - 2; i &gt;= 0; i--) {</span>
+<span class="fc" id="L79">				key &lt;&lt;= 1;</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">				if (c.compare(base + i + 1, base + i) &lt; 0)</span>
+<span class="fc" id="L81">					key |= 1;</span>
 			}
 
-<span class="fc" id="L83">			return key;</span>
+<span class="fc" id="L84">			return key;</span>
 		}
 
 		@Override
 		byte[] calcDemoBlock(int key) {
-<span class="fc" id="L88">			byte[] demoBlock = new byte[blockSize];</span>
+<span class="fc" id="L89">			byte[] demoBlock = new byte[blockSize];</span>
 
-<span class="fc" id="L90">			demoBlock[0] = 0;</span>
-<span class="fc bfc" id="L91" title="All 2 branches covered.">			for (int i = 1; i &lt; demoBlock.length; i++)</span>
-<span class="fc bfc" id="L92" title="All 2 branches covered.">				demoBlock[i] = (byte) (demoBlock[i - 1] + ((key &amp; (1 &lt;&lt; (i - 1))) != 0 ? -1 : 1));</span>
+<span class="fc" id="L91">			demoBlock[0] = 0;</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">			for (int i = 1; i &lt; demoBlock.length; i++)</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">				demoBlock[i] = (byte) (demoBlock[i - 1] + ((key &amp; (1 &lt;&lt; (i - 1))) != 0 ? -1 : 1));</span>
 
-<span class="fc" id="L94">			return demoBlock;</span>
+<span class="fc" id="L95">			return demoBlock;</span>
 		}
 
 		@Override
 		int calcRMQInnerBlock(int block, int i, int j) {
-<span class="fc" id="L99">			return block * blockSize + interBlocksDs[block].findMinimumInRange(i, j);</span>
+<span class="fc" id="L100">			return block * blockSize + interBlocksDs[block].findMinimumInRange(i, j);</span>
 		}
 
 	}

@@ -106,9 +106,9 @@ public class SSSPGoldberg implements SSSP {
 <span class="fc" id="L106">		SSSPDial ssspDial = new SSSPDial();</span>
 <span class="fc" id="L107">		SSSP dagSssp = new SSSPDag();</span>
 
-<span class="fc" id="L109">		Graph gNeg = new GraphArrayDirected(n);</span>
+<span class="fc" id="L109">		Graph gNeg = GraphBuilder.newDirected().setVerticesNum(n).build();</span>
 <span class="fc" id="L110">		Weights.Int gNegEdgeRefs = gNeg.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));</span>
-<span class="fc" id="L111">		Graph G = new GraphArrayDirected(n);</span>
+<span class="fc" id="L111">		Graph G = GraphBuilder.newDirected().setVerticesNum(n).build();</span>
 <span class="fc" id="L112">		Weights.Int GWeights = G.addEdgesWeights(&quot;weights&quot;, int.class, Integer.valueOf(-1));</span>
 <span class="fc" id="L113">		int fakeS1 = G.addVertex(), fakeS2 = G.addVertex();</span>
 

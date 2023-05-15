@@ -26,7 +26,7 @@ package com.jgalgo;
  * @see    GraphArrayDirected
  * @author Barak Ugav
  */
-public class GraphLinkedDirected extends GraphLinkedAbstract {
+class GraphLinkedDirected extends GraphLinkedAbstract {
 
 	private final DataContainer.Obj&lt;Node&gt; edgesIn;
 	private final DataContainer.Obj&lt;Node&gt; edgesOut;
@@ -34,7 +34,7 @@ public class GraphLinkedDirected extends GraphLinkedAbstract {
 	/**
 	 * Create a new graph with no vertices and edges.
 	 */
-	public GraphLinkedDirected() {
+	GraphLinkedDirected() {
 <span class="fc" id="L38">		this(0);</span>
 <span class="fc" id="L39">	}</span>
 
@@ -43,7 +43,7 @@ public class GraphLinkedDirected extends GraphLinkedAbstract {
 	 *
 	 * @param n the number of initial vertices number
 	 */
-	public GraphLinkedDirected(int n) {
+	GraphLinkedDirected(int n) {
 <span class="fc" id="L47">		super(n, Capabilities);</span>
 
 <span class="fc" id="L49">		edgesIn = new DataContainer.Obj&lt;&gt;(n, null, Node.class);</span>

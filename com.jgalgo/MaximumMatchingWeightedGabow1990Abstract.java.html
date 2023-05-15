@@ -453,7 +453,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L453">				DebugPrintsManager debugPrint) {</span>
 <span class="fc" id="L454">			int n = gOrig.vertices().size();</span>
 <span class="fc" id="L455">			this.gOrig = gOrig;</span>
-<span class="fc" id="L456">			this.g = new GraphArrayDirected(n);</span>
+<span class="fc" id="L456">			this.g = GraphBuilder.newDirected().setVerticesNum(n).build();</span>
 <span class="fc" id="L457">			edgeVal = g.addEdgesWeights(EdgeValKey, EdgeVal.class);</span>
 <span class="fc" id="L458">			this.w = e -&gt; w.weight(edgeVal.get(e).e);</span>
 

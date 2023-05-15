@@ -28,14 +28,14 @@ import com.jgalgo.GraphsUtils.UndirectedGraphImpl;
  * @see    GraphArrayUndirected
  * @author Barak Ugav
  */
-public class GraphLinkedUndirected extends GraphLinkedAbstract implements UndirectedGraphImpl {
+class GraphLinkedUndirected extends GraphLinkedAbstract implements UndirectedGraphImpl {
 
 	private final DataContainer.Obj&lt;Node&gt; edges;
 
 	/**
 	 * Create a new graph with no vertices and edges.
 	 */
-	public GraphLinkedUndirected() {
+	GraphLinkedUndirected() {
 <span class="fc" id="L39">		this(0);</span>
 <span class="fc" id="L40">	}</span>
 
@@ -44,7 +44,7 @@ public class GraphLinkedUndirected extends GraphLinkedAbstract implements Undire
 	 *
 	 * @param n the number of initial vertices number
 	 */
-	public GraphLinkedUndirected(int n) {
+	GraphLinkedUndirected(int n) {
 <span class="fc" id="L48">		super(n, Capabilities);</span>
 <span class="fc" id="L49">		edges = new DataContainer.Obj&lt;&gt;(n, null, Node.class);</span>
 <span class="fc" id="L50">		addInternalVerticesDataContainer(edges);</span>

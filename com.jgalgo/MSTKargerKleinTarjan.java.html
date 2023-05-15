@@ -112,7 +112,7 @@ public class MSTKargerKleinTarjan implements MST {
 	}
 
 	static Graph subGraph(Graph g, IntCollection edgeSet, Object edgeDataKey, Weights.Int edgeRef) {
-<span class="fc" id="L115">		Graph subG = new GraphArrayUndirected(g.vertices().size());</span>
+<span class="fc" id="L115">		Graph subG = GraphBuilder.newUndirected().setVerticesNum(g.vertices().size()).build();</span>
 <span class="fc" id="L116">		Weights.Int edgeRefSub = subG.addEdgesWeights(edgeDataKey, int.class);</span>
 <span class="fc bfc" id="L117" title="All 2 branches covered.">		for (IntIterator it = edgeSet.iterator(); it.hasNext();) {</span>
 <span class="fc" id="L118">			int e = it.nextInt();</span>
@@ -235,13 +235,14 @@ public class MSTKargerKleinTarjan implements MST {
 <span class="fc" id="L235">			tpmResults = MemoryReuse.ensureLength(tpmResults, treeCount);</span>
 
 <span class="fc bfc" id="L237" title="All 2 branches covered.">			for (int tIdx = 0; tIdx &lt; treeCount; tIdx++) {</span>
-<span class="fc" id="L238">				Graph tree = trees[tIdx] = MemoryReuse.ensureAllocated(trees[tIdx], () -&gt; new GraphArrayUndirected());</span>
-<span class="fc" id="L239">				treeData[tIdx] =</span>
-<span class="fc" id="L240">						MemoryReuse.ensureAllocated(treeData[tIdx], () -&gt; tree.addEdgesWeights(&quot;weight&quot;, double.class));</span>
+<span class="fc" id="L238">				Graph tree = trees[tIdx] =</span>
+<span class="fc" id="L239">						MemoryReuse.ensureAllocated(trees[tIdx], () -&gt; GraphBuilder.newUndirected().build());</span>
+<span class="fc" id="L240">				treeData[tIdx] =</span>
+<span class="fc" id="L241">						MemoryReuse.ensureAllocated(treeData[tIdx], () -&gt; tree.addEdgesWeights(&quot;weight&quot;, double.class));</span>
 
-<span class="fc" id="L242">				tpmQueries[tIdx] = MemoryReuse.ensureAllocated(tpmQueries[tIdx], () -&gt; new TreePathMaxima.Queries());</span>
+<span class="fc" id="L243">				tpmQueries[tIdx] = MemoryReuse.ensureAllocated(tpmQueries[tIdx], () -&gt; new TreePathMaxima.Queries());</span>
 			}
-<span class="fc" id="L244">		}</span>
+<span class="fc" id="L245">		}</span>
 	}
 
 }

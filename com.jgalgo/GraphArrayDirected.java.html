@@ -29,7 +29,7 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
  * @see    GraphArrayUndirected
  * @author Barak Ugav
  */
-public class GraphArrayDirected extends GraphArrayAbstract {
+class GraphArrayDirected extends GraphArrayAbstract {
 
 	private final DataContainer.Obj&lt;int[]&gt; edgesOut;
 	private final DataContainer.Int edgesOutNum;
@@ -39,7 +39,7 @@ public class GraphArrayDirected extends GraphArrayAbstract {
 	/**
 	 * Create a new graph with no vertices and edges.
 	 */
-	public GraphArrayDirected() {
+	GraphArrayDirected() {
 <span class="fc" id="L43">		this(0);</span>
 <span class="fc" id="L44">	}</span>
 
@@ -48,7 +48,7 @@ public class GraphArrayDirected extends GraphArrayAbstract {
 	 *
 	 * @param n the number of initial vertices number
 	 */
-	public GraphArrayDirected(int n) {
+	GraphArrayDirected(int n) {
 <span class="fc" id="L52">		super(n, Capabilities);</span>
 <span class="fc" id="L53">		edgesOut = new DataContainer.Obj&lt;&gt;(n, IntArrays.EMPTY_ARRAY, int[].class);</span>
 <span class="fc" id="L54">		edgesOutNum = new DataContainer.Int(n, 0);</span>
