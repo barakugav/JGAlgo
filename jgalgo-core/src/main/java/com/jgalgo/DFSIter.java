@@ -16,15 +16,14 @@
 
 package com.jgalgo;
 
-import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.List;
 import java.util.NoSuchElementException;
-
+import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntLists;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
  * Depth first search (DFS) iterator.
@@ -53,8 +52,8 @@ public class DFSIter implements IntIterator {
 
 	private final Graph g;
 	private final BitSet visited;
-	private final List<EdgeIter> edgeIters;
-	private final IntList edgePath;
+	private final Stack<EdgeIter> edgeIters;
+	private final IntArrayList edgePath;
 	private final IntList edgePathView;
 	private boolean isValid;
 
@@ -68,12 +67,12 @@ public class DFSIter implements IntIterator {
 		int n = g.vertices().size();
 		this.g = g;
 		visited = new BitSet(n);
-		edgeIters = new ArrayList<>();
+		edgeIters = new ObjectArrayList<>();
 		edgePath = new IntArrayList();
 		edgePathView = IntLists.unmodifiable(edgePath);
 
 		visited.set(source);
-		edgeIters.add(g.edgesOut(source));
+		edgeIters.push(g.edgesOut(source));
 		isValid = true;
 	}
 
@@ -87,22 +86,22 @@ public class DFSIter implements IntIterator {
 		if (edgeIters.isEmpty())
 			return false;
 		for (;;) {
-			for (EdgeIter eit = edgeIters.get(edgeIters.size() - 1); eit.hasNext();) {
+			for (EdgeIter eit = edgeIters.top(); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = eit.target();
 				if (visited.get(v))
 					continue;
 				visited.set(v);
-				edgeIters.add(g.edgesOut(v));
+				edgeIters.push(g.edgesOut(v));
 				edgePath.add(e);
 				return isValid = true;
 			}
-			edgeIters.remove(edgeIters.size() - 1);
+			edgeIters.pop();
 			if (edgeIters.isEmpty()) {
 				assert edgePath.isEmpty();
 				return false;
 			}
-			edgePath.removeInt(edgePath.size() - 1);
+			edgePath.popInt();
 		}
 	}
 
@@ -113,8 +112,9 @@ public class DFSIter implements IntIterator {
 	public int nextInt() {
 		if (!hasNext())
 			throw new NoSuchElementException();
+		int ret = edgeIters.top().source();
 		isValid = false;
-		return edgeIters.get(edgeIters.size() - 1).source();
+		return ret;
 	}
 
 	/**

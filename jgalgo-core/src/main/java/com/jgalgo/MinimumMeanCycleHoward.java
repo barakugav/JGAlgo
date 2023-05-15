@@ -18,10 +18,7 @@ package com.jgalgo;
 
 import java.util.Arrays;
 import java.util.function.IntPredicate;
-
-import it.unimi.dsi.fastutil.doubles.DoubleArrays;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
@@ -43,12 +40,6 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 public class MinimumMeanCycleHoward implements MinimumMeanCycle {
 
 	private final ConnectivityAlgorithm ccAlg = ConnectivityAlgorithm.newBuilder().build();
-	private IntList[] ccVertices = MemoryReuse.EmptyIntListArr;
-	private IntList[] ccEdges = MemoryReuse.EmptyIntListArr;
-	private double[] d = DoubleArrays.EMPTY_ARRAY;
-	private int[] policy = IntArrays.EMPTY_ARRAY;
-	private IntPriorityQueue queue;
-	private int[] visitIdx = IntArrays.EMPTY_ARRAY;
 
 	private static final double EPS = 0.0001;
 
@@ -70,13 +61,11 @@ public class MinimumMeanCycleHoward implements MinimumMeanCycle {
 		/* find all SCC */
 		ConnectivityAlgorithm.Result cc = ccAlg.computeConnectivityComponents(g);
 		int ccNum = cc.getNumberOfCC();
-		IntList[] ccVertices = this.ccVertices = MemoryReuse.ensureLength(this.ccVertices, ccNum);
-		IntList[] ccEdges = this.ccEdges = MemoryReuse.ensureLength(this.ccEdges, ccNum);
+		IntList[] ccVertices = new IntList[ccNum];
+		IntList[] ccEdges = new IntList[ccNum];
 		for (int c = 0; c < ccNum; c++) {
-			ccVertices[c] = MemoryReuse.ensureAllocated(ccVertices[c], IntArrayList::new);
-			ccEdges[c] = MemoryReuse.ensureAllocated(ccEdges[c], IntArrayList::new);
-			assert ccVertices[c].isEmpty();
-			assert ccEdges[c].isEmpty();
+			ccVertices[c] = new IntArrayList();
+			ccEdges[c] = new IntArrayList();
 		}
 		for (int u = 0; u < n; u++)
 			ccVertices[cc.getVertexCc(u)].add(u);
@@ -89,9 +78,9 @@ public class MinimumMeanCycleHoward implements MinimumMeanCycle {
 		}
 
 		/* init distances and policy */
-		double[] d = this.d = MemoryReuse.ensureLength(this.d, n);
+		double[] d = new double[n];
 		Arrays.fill(d, 0, n, Double.POSITIVE_INFINITY);
-		int[] policy = this.policy = MemoryReuse.ensureLength(this.policy, n);
+		int[] policy = new int[n];
 		Arrays.fill(policy, 0, n, -1);
 		for (int c = 0; c < ccNum; c++) {
 			for (IntIterator it = ccEdges[c].iterator(); it.hasNext();) {
@@ -105,12 +94,12 @@ public class MinimumMeanCycleHoward implements MinimumMeanCycle {
 			}
 		}
 
-		IntPriorityQueue queue = this.queue = MemoryReuse.ensureAllocated(this.queue, IntArrayFIFOQueue::new);
+		IntPriorityQueue queue = new IntArrayFIFOQueue();
 
 		double overallBestCycleMeanWeight = Double.POSITIVE_INFINITY;
 		int overallBestCycleVertex = -1;
 		int nextSearchIdx = 1;
-		int[] visitIdx = this.visitIdx = MemoryReuse.ensureLength(this.visitIdx, n);
+		int[] visitIdx = new int[n];
 		Arrays.fill(visitIdx, 0, n, 0);
 		/* operate on each SCC separately */
 		for (int ccIdx = 0; ccIdx < ccNum; ccIdx++) {
@@ -212,23 +201,17 @@ public class MinimumMeanCycleHoward implements MinimumMeanCycle {
 			}
 		}
 
-		Path result = null;
-		if (overallBestCycleVertex != -1) {
-			IntList cycle = new IntArrayList();
-			for (int v = overallBestCycleVertex;;) {
-				int e = policy[v];
-				cycle.add(e);
-				v = g.edgeTarget(e);
-				if (v == overallBestCycleVertex)
-					break;
-			}
-			result = new Path(g, overallBestCycleVertex, overallBestCycleVertex, cycle);
+		if (overallBestCycleVertex == -1)
+			return null;
+		IntList cycle = new IntArrayList();
+		for (int v = overallBestCycleVertex;;) {
+			int e = policy[v];
+			cycle.add(e);
+			v = g.edgeTarget(e);
+			if (v == overallBestCycleVertex)
+				break;
 		}
-		for (int c = 0; c < ccNum; c++) {
-			ccVertices[c].clear();
-			ccEdges[c].clear();
-		}
-		return result;
+		return new Path(g, overallBestCycleVertex, overallBestCycleVertex, cycle);
 	}
 
 }

@@ -17,13 +17,7 @@
 package com.jgalgo;
 
 import java.util.Arrays;
-
-import it.unimi.dsi.fastutil.booleans.BooleanArrays;
-import it.unimi.dsi.fastutil.doubles.DoubleArrays;
-import it.unimi.dsi.fastutil.doubles.DoubleBigArrays;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntArrays;
-import it.unimi.dsi.fastutil.ints.IntBigArrays;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 
@@ -41,13 +35,6 @@ import it.unimi.dsi.fastutil.ints.IntList;
 public class MinimumMeanCycleDasdanGupta implements MinimumMeanCycle {
 
 	private final ConnectivityAlgorithm ccAlg = ConnectivityAlgorithm.newBuilder().build();
-	private IntList[] ccVertices = MemoryReuse.EmptyIntListArr;
-	private double[][] d = DoubleBigArrays.EMPTY_BIG_ARRAY;
-	private int[][] policy = IntBigArrays.EMPTY_BIG_ARRAY;
-	private boolean[] visit1 = BooleanArrays.EMPTY_ARRAY;
-	private boolean[] visit2 = BooleanArrays.EMPTY_ARRAY;
-	private double[] pathWeights = DoubleArrays.EMPTY_ARRAY;
-	private int[] path = IntArrays.EMPTY_ARRAY;
 	private static final double EPS = 0.00001;
 
 	/**
@@ -68,11 +55,9 @@ public class MinimumMeanCycleDasdanGupta implements MinimumMeanCycle {
 		/* find all SCC */
 		ConnectivityAlgorithm.Result cc = ccAlg.computeConnectivityComponents(g);
 		int ccNum = cc.getNumberOfCC();
-		IntList[] ccVertices = this.ccVertices = MemoryReuse.ensureLength(this.ccVertices, ccNum);
-		for (int c = 0; c < ccNum; c++) {
-			ccVertices[c] = MemoryReuse.ensureAllocated(ccVertices[c], IntArrayList::new);
-			assert ccVertices[c].isEmpty();
-		}
+		IntList[] ccVertices = new IntList[ccNum];
+		for (int c = 0; c < ccNum; c++)
+			ccVertices[c] = new IntArrayList();
 		for (int u = 0; u < n; u++)
 			ccVertices[cc.getVertexCc(u)].add(u);
 
@@ -80,16 +65,14 @@ public class MinimumMeanCycleDasdanGupta implements MinimumMeanCycle {
 		int maxCcSize = -1;
 		for (int c = 0; c < ccNum; c++)
 			maxCcSize = Math.max(maxCcSize, ccVertices[c].size());
-		double[][] d = this.d = MemoryReuse.ensureLength(this.d, maxCcSize + 1, n);
-		int[][] policy = this.policy = MemoryReuse.ensureLength(this.policy, maxCcSize + 1, n);
+		double[][] d = new double[maxCcSize + 1][n];
+		int[][] policy = new int[maxCcSize + 1][n];
 		for (int k = 0; k < maxCcSize + 1; k++) {
 			Arrays.fill(d[k], 0, n, Double.POSITIVE_INFINITY);
 			Arrays.fill(policy[k], 0, n, -1);
 		}
-		boolean[] visit1 = this.visit1 = MemoryReuse.ensureLength(this.visit1, n);
-		boolean[] visit2 = this.visit2 = MemoryReuse.ensureLength(this.visit2, n);
-		Arrays.fill(visit1, 0, n, false);
-		Arrays.fill(visit2, 0, n, false);
+		boolean[] visit1 = new boolean[n];
+		boolean[] visit2 = new boolean[n];;
 
 		/* operate on each SCC separately */
 		double bestCycleMeanWeight = Double.POSITIVE_INFINITY;
@@ -151,37 +134,31 @@ public class MinimumMeanCycleDasdanGupta implements MinimumMeanCycle {
 			}
 		}
 
-		Path cycle = null;
-		if (bestCycleMeanWeightVertex != -1) {
-			final int ccIdx = cc.getVertexCc(bestCycleMeanWeightVertex);
-			final int ccSize = ccVertices[ccIdx].size();
-			int[] path = this.path = MemoryReuse.ensureLength(this.path, ccSize);
-			for (int k = ccSize, v = bestCycleMeanWeightVertex; k > 0; k--) {
-				int e = path[k - 1] = policy[k][v];
-				v = g.edgeSource(e);
-			}
-			double[] pathWeights = this.pathWeights = MemoryReuse.ensureLength(this.pathWeights, ccSize + 1);
-			pathWeights[0] = 0;
-			for (int k = 1; k < ccSize + 1; k++)
-				pathWeights[k] = pathWeights[k - 1] + w.weight(path[k - 1]);
-
-			int len = bestCycleLength;
-			for (int k = 0; k <= ccSize - bestCycleLength; k++) {
-				if (g.edgeSource(path[k]) != g.edgeTarget(path[k + len - 1]))
-					continue;
-				if (Math.abs((pathWeights[k + len] - pathWeights[k]) - bestCycleMeanWeight * len) < EPS) {
-					IntList cycleList = new IntArrayList(path, k, len);
-					int cycleVertex = g.edgeSource(cycleList.getInt(0));
-					cycle = new Path(g, cycleVertex, cycleVertex, cycleList);
-					break;
-				}
-			}
-			assert cycle != null;
+		if (bestCycleMeanWeightVertex == -1)
+			return null;
+		final int ccIdx = cc.getVertexCc(bestCycleMeanWeightVertex);
+		final int ccSize = ccVertices[ccIdx].size();
+		int[] path = new int[ccSize];
+		for (int k = ccSize, v = bestCycleMeanWeightVertex; k > 0; k--) {
+			int e = path[k - 1] = policy[k][v];
+			v = g.edgeSource(e);
 		}
+		double[] pathWeights = new double[ccSize + 1];
+		pathWeights[0] = 0;
+		for (int k = 1; k < ccSize + 1; k++)
+			pathWeights[k] = pathWeights[k - 1] + w.weight(path[k - 1]);
 
-		for (int c = 0; c < ccNum; c++)
-			ccVertices[c].clear();
-		return cycle;
+		int len = bestCycleLength;
+		for (int k = 0; k <= ccSize - bestCycleLength; k++) {
+			if (g.edgeSource(path[k]) != g.edgeTarget(path[k + len - 1]))
+				continue;
+			if (Math.abs((pathWeights[k + len] - pathWeights[k]) - bestCycleMeanWeight * len) < EPS) {
+				IntList cycleList = new IntArrayList(path, k, len);
+				int cycleVertex = g.edgeSource(cycleList.getInt(0));
+				return new Path(g, cycleVertex, cycleVertex, cycleList);
+			}
+		}
+		throw new IllegalStateException();
 	}
 
 }

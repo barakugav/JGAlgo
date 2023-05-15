@@ -17,21 +17,17 @@
 package com.jgalgo;
 
 import java.util.Arrays;
-import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntIterators;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 class TopologicalOrderAlgorithmImpl implements TopologicalOrderAlgorithm {
 
-	private final AllocatedMemory allocatedMemory = new AllocatedMemory();
-
 	@Override
 	public TopologicalOrderAlgorithm.Result computeTopologicalSorting(Graph g) {
 		ArgumentCheck.onlyDirected(g);
-		allocatedMemory.allocate(g);
 		int n = g.vertices().size();
-		int[] inDegree = allocatedMemory.inDegree;
-		IntPriorityQueue queue = allocatedMemory.queue;
+		int[] inDegree = new int[n];
+		IntPriorityQueue queue = new IntArrayFIFOQueue();
 		int[] topolSort = new int[n];
 		int topolSortSize = 0;
 
@@ -63,17 +59,6 @@ class TopologicalOrderAlgorithmImpl implements TopologicalOrderAlgorithm {
 			throw new IllegalArgumentException("G is not a directed acyclic graph (DAG)");
 
 		return () -> IntIterators.wrap(topolSort);
-	}
-
-	private static class AllocatedMemory {
-		private int[] inDegree = IntArrays.EMPTY_ARRAY;
-		private IntPriorityQueue queue;
-
-		void allocate(Graph g) {
-			int n = g.vertices().size();
-			inDegree = MemoryReuse.ensureLength(inDegree, n);
-			queue = MemoryReuse.ensureAllocated(queue, IntArrayFIFOQueue::new);
-		}
 	}
 
 }

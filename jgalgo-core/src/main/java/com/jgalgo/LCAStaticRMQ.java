@@ -17,7 +17,6 @@
 package com.jgalgo;
 
 import java.util.Arrays;
-import it.unimi.dsi.fastutil.ints.IntArrays;
 
 /**
  * Static LCA implementation using RMQ.
@@ -35,7 +34,6 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
 class LCAStaticRMQ implements LCAStatic {
 
 	private final RMQStatic rmq = new RMQStaticPlusMinusOne();
-	private final AllocatedMemory allocatedMemory = new AllocatedMemory();
 
 	/**
 	 * Create a new static LCA algorithm object.
@@ -48,11 +46,11 @@ class LCAStaticRMQ implements LCAStatic {
 			throw new IllegalArgumentException("The given graph is not a tree rooted at the given root");
 
 		final int n = tree.vertices().size();
-		allocatedMemory.allocate(n);
-		int[] depths = allocatedMemory.depths;
-		int[] vs = allocatedMemory.vs;
-		int[] parent = allocatedMemory.parent;
-		EdgeIter[] edgeIters = allocatedMemory.edgeIters;
+		int[] depths = new int[n * 2];
+		int[] vs = new int[n * 2];
+		int[] parent = new int[n];
+		EdgeIter[] edgeIters = new EdgeIter[n];
+		// TODO DFS stack class
 
 		parent[0] = -1;
 		edgeIters[0] = tree.edgesOut(root);
@@ -124,20 +122,6 @@ class LCAStaticRMQ implements LCAStatic {
 			}
 			int lcaIdx = rmqDS.findMinimumInRange(uIdx, vIdx);
 			return vs[lcaIdx];
-		}
-	}
-
-	private static class AllocatedMemory {
-		int[] depths = IntArrays.EMPTY_ARRAY;
-		int[] vs = IntArrays.EMPTY_ARRAY;
-		int[] parent = IntArrays.EMPTY_ARRAY;
-		EdgeIter[] edgeIters = MemoryReuse.EmptyEdgeIterArr;
-
-		void allocate(int n) {
-			depths = MemoryReuse.ensureLength(depths, 2 * n);
-			vs = MemoryReuse.ensureLength(vs, 2 * n);
-			parent = MemoryReuse.ensureLength(parent, n);
-			edgeIters = MemoryReuse.ensureLength(edgeIters, n);
 		}
 	}
 

@@ -17,7 +17,6 @@
 package com.jgalgo;
 
 import java.util.Objects;
-import java.util.function.IntFunction;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -41,9 +40,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  */
 public class MSTKruskal implements MST {
 
-	private IntFunction<? extends UnionFind> unionFindBuilder = UnionFindArray::new;
-	private int[] edges = IntArrays.EMPTY_ARRAY;
-	private UnionFind uf;
+	private UnionFind.Builder unionFindBuilder = UnionFindArray::new;
 
 	/**
 	 * Construct a new MST algorithm object.
@@ -56,9 +53,8 @@ public class MSTKruskal implements MST {
 	 * @param builder a builder function that accept a number of elements \(n\) and create a {@link UnionFind} with IDs
 	 *                    {@code 0,1,2,...,n-1}.
 	 */
-	void setUnionFindBuilder(IntFunction<? extends UnionFind> builder) {
+	void setUnionFindBuilder(UnionFind.Builder builder) {
 		unionFindBuilder = Objects.requireNonNull(builder);
-		uf = null;
 	}
 
 	/**
@@ -75,17 +71,11 @@ public class MSTKruskal implements MST {
 			return MSTResultImpl.Empty;
 
 		/* sort edges */
-		int[] edges = this.edges = g.edges().toArray(this.edges);
+		int[] edges = g.edges().toIntArray();
 		IntArrays.parallelQuickSort(edges, 0, m, w);
 
 		/* create union find data structure for each vertex */
-		UnionFind uf = this.uf;
-		if (uf == null) {
-			uf = this.uf = unionFindBuilder.apply(n);
-		} else {
-			for (int i = 0; i < n; i++)
-				uf.make();
-		}
+		UnionFind uf = unionFindBuilder.build(n);
 
 		/* iterate over the edges and build the MST */
 		IntCollection mst = new IntArrayList(n - 1);

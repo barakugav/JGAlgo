@@ -16,18 +16,17 @@
 
 package com.jgalgo;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
-
+import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntIterators;
 import it.unimi.dsi.fastutil.ints.IntStack;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
  * A utilities class containing graph trees related methods.
@@ -147,38 +146,36 @@ public class Trees {
 		return visitedCount == n;
 	}
 
-	interface TreeNode<N extends TreeNode<N>> {
+	interface TreeNode<Node extends TreeNode<Node>> {
 
-		N parent();
+		Node parent();
 
-		N next();
+		Node next();
 
-		N prev();
+		Node prev();
 
-		N child();
+		Node child();
 
-		void setParent(N x);
+		void setParent(Node x);
 
-		void setNext(N x);
+		void setNext(Node x);
 
-		void setPrev(N x);
+		void setPrev(Node x);
 
-		void setChild(N x);
+		void setChild(Node x);
 
 	}
 
-	static <N extends TreeNode<N>> void clear(N root, Consumer<? super N> finalizer) {
-		List<N> stack = new ArrayList<>();
+	static <Node extends TreeNode<Node>> void clear(Node root, Consumer<? super Node> finalizer) {
+		Stack<Node> stack = new ObjectArrayList<>();
 
-		stack.add(root);
+		stack.push(root);
 
 		do {
-			int idx = stack.size() - 1;
-			N n = stack.get(idx);
-			stack.remove(idx);
+			Node n = stack.pop();
 
-			for (N p = n.child(); p != null; p = p.next())
-				stack.add(p);
+			for (Node p = n.child(); p != null; p = p.next())
+				stack.push(p);
 
 			n.setParent(null);
 			n.setNext(null);

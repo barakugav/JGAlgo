@@ -36,13 +36,11 @@ class MinimumCutSTBuilderImpl {
 	static MinimumCutST buildFromMaxFlow(MaximumFlow maxFlowAlg) {
 		return new MinimumCutST() {
 
-			private final BitSet visited = new BitSet();
-			private final IntPriorityQueue queue = new IntArrayFIFOQueue();
-
 			@Override
 			public Cut computeMinimumCut(Graph g, EdgeWeightFunc w, int source, int sink) {
-				assert visited.isEmpty();
-				assert queue.isEmpty();
+				final int n = g.vertices().size();
+				BitSet visited = new BitSet(n);
+				IntPriorityQueue queue = new IntArrayFIFOQueue();
 
 				/* create a flow network with weights as capacities */
 				FlowNetwork net = createFlowNetworkFromEdgeWeightFunc(g, w);
@@ -108,7 +106,6 @@ class MinimumCutSTBuilderImpl {
 					}
 				}
 
-				visited.clear();
 				return new CutImpl(g, cut);
 			}
 

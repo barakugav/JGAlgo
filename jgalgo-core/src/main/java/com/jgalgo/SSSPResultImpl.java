@@ -59,7 +59,6 @@ class SSSPResultImpl implements Result {
 				v = g.edgeSource(e);
 			}
 		} else {
-			Graph g = this.g;
 			for (int v = target;;) {
 				int e = backtrack[v];
 				if (e == -1)

@@ -18,9 +18,7 @@ package com.jgalgo;
 
 import java.util.Arrays;
 import it.unimi.dsi.fastutil.Pair;
-import it.unimi.dsi.fastutil.doubles.DoubleArrays;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
@@ -41,8 +39,6 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  * @author Barak Ugav
  */
 public class MSTBoruvka implements MST {
-
-	private final AllocatedMemory allocatedMem = new AllocatedMemory();
 
 	/**
 	 * Construct a new MST algorithm object.
@@ -78,27 +74,26 @@ public class MSTBoruvka implements MST {
 		return Pair.of(contractedG, mstRes.mst);
 	}
 
-	private Res computeMST(Graph g, EdgeWeightFunc w, int numberOfRounds) {
+	private static Res computeMST(Graph g, EdgeWeightFunc w, int numberOfRounds) {
 		ArgumentCheck.onlyUndirected(g);
-		allocatedMem.allocate(g);
-		int n = g.vertices().size();
+		final int n = g.vertices().size();
 
-		int treeNum = n;
-		int[] vTree = allocatedMem.vTree;
-		int[] vTreeNext = allocatedMem.vTreeNext;
+		int[] vTree = new int[n];
+		int[] vTreeNext = new int[n];
 		for (int v = 0; v < n; v++)
 			vTree[v] = v;
 
-		int[] minEdges = allocatedMem.minEdges;
-		double[] minGraphWeights = allocatedMem.minGraphWeights;
-		int[] path = allocatedMem.path;
+		int[] minEdges = new int[n];
+		double[] minEdgesWeights = new double[n];
+		int[] path = new int[n];
 
+		int treeNum = n;
 		IntCollection mst = new IntArrayList();
 		for (int i = 0; i < numberOfRounds; i++) {
 
 			/* find minimum edge going out of each tree */
 			Arrays.fill(minEdges, 0, treeNum, -1);
-			Arrays.fill(minGraphWeights, 0, treeNum, Double.MAX_VALUE);
+			Arrays.fill(minEdgesWeights, 0, treeNum, Double.MAX_VALUE);
 			for (int u = 0; u < n; u++) {
 				int tree = vTree[u];
 
@@ -109,9 +104,9 @@ public class MSTBoruvka implements MST {
 						continue;
 
 					double eWeight = w.weight(e);
-					if (eWeight < minGraphWeights[tree]) {
+					if (eWeight < minEdgesWeights[tree]) {
 						minEdges[tree] = e;
-						minGraphWeights[tree] = eWeight;
+						minEdgesWeights[tree] = eWeight;
 					}
 				}
 			}
@@ -197,23 +192,6 @@ public class MSTBoruvka implements MST {
 			this.vToTree = vToTree;
 			this.treeNum = treeNum;
 			this.mst = mst;
-		}
-	}
-
-	private static class AllocatedMemory {
-		int[] vTree = IntArrays.EMPTY_ARRAY;
-		int[] vTreeNext = IntArrays.EMPTY_ARRAY;
-		int[] minEdges = IntArrays.EMPTY_ARRAY;
-		double[] minGraphWeights = DoubleArrays.EMPTY_ARRAY;
-		int[] path = IntArrays.EMPTY_ARRAY;
-
-		void allocate(Graph g) {
-			int n = g.vertices().size();
-			vTree = MemoryReuse.ensureLength(vTree, n);
-			vTreeNext = MemoryReuse.ensureLength(vTreeNext, n);
-			minEdges = MemoryReuse.ensureLength(minEdges, n);
-			minGraphWeights = MemoryReuse.ensureLength(minGraphWeights, n);
-			path = MemoryReuse.ensureLength(path, n);
 		}
 	}
 

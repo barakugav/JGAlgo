@@ -17,7 +17,6 @@
 package com.jgalgo;
 
 import java.util.BitSet;
-import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 /**
@@ -36,8 +35,6 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  */
 public class MaximumFlowEdmondsKarp implements MaximumFlow {
 
-	private final AllocatedMemory allocatedMemory = new AllocatedMemory();
-
 	private static final Object FlowWeightKey = new Object();
 	private static final Object CapacityWeightKey = new Object();
 
@@ -48,7 +45,6 @@ public class MaximumFlowEdmondsKarp implements MaximumFlow {
 
 	@Override
 	public double computeMaximumFlow(Graph g, FlowNetwork net, int source, int sink) {
-		allocatedMemory.allocate(g.vertices().size());
 		if (net instanceof FlowNetwork.Int) {
 			return new WorkerInt(g, (FlowNetwork.Int) net, source, sink).computeMaxFlow();
 		} else {
@@ -63,9 +59,10 @@ public class MaximumFlowEdmondsKarp implements MaximumFlow {
 		}
 
 		void computeMaxFlow0() {
-			int[] backtrack = allocatedMemory.backtrack;
-			BitSet visited = allocatedMemory.visited;
-			IntPriorityQueue queue = allocatedMemory.queue;
+			final int n = g.vertices().size();
+			int[] backtrack = new int[n];
+			BitSet visited = new BitSet(n);
+			IntPriorityQueue queue = new IntArrayFIFOQueue();
 
 			for (;;) {
 				queue.clear();
@@ -197,18 +194,6 @@ public class MaximumFlowEdmondsKarp implements MaximumFlow {
 		@Override
 		boolean isSaturated(int e) {
 			return getResidualCapacity(e) <= 0;
-		}
-	}
-
-	private static class AllocatedMemory {
-		int[] backtrack = IntArrays.EMPTY_ARRAY;
-		BitSet visited;
-		IntPriorityQueue queue;
-
-		void allocate(int n) {
-			backtrack = MemoryReuse.ensureLength(backtrack, n);
-			visited = MemoryReuse.ensureAllocated(visited, BitSet::new);
-			queue = MemoryReuse.ensureAllocated(queue, IntArrayFIFOQueue::new);
 		}
 	}
 

@@ -17,7 +17,6 @@
 package com.jgalgo;
 
 import java.util.Arrays;
-import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntIntPair;
 import it.unimi.dsi.fastutil.ints.IntIterators;
 
@@ -37,8 +36,6 @@ import it.unimi.dsi.fastutil.ints.IntIterators;
  * @author Barak Ugav
  */
 public class SSSPDial implements SSSP {
-
-	private final AllocatedMemory allocatedMemory = new AllocatedMemory();
 
 	/**
 	 * Construct a new SSSP algorithm object.
@@ -65,7 +62,7 @@ public class SSSPDial implements SSSP {
 
 		} else {
 			/* sum the n-1 heaviest weights */
-			int[] edges = allocatedMemory.edges = g.edges().toArray(allocatedMemory.edges);
+			int[] edges = g.edges().toIntArray();
 			ArraysUtils.getKthElement(edges, 0, g.edges().size(), n - 1, w0, true);
 			maxDistance = (int) GraphsUtils.edgesWeightSum(IntIterators.wrap(edges, m - n + 1, n - 1), w0);
 		}
@@ -87,34 +84,63 @@ public class SSSPDial implements SSSP {
 	 */
 	public SSSP.Result computeShortestPaths(Graph g, EdgeWeightFunc.Int w, int source, int maxDistance) {
 		ArgumentCheck.onlyPositiveWeights(g, w);
-		allocatedMemory.allocate(g.vertices().size(), maxDistance);
-		return new Worker(g, maxDistance, allocatedMemory).computeShortestPaths(w, source);
+
+		SSSPResultImpl.Int res = new SSSPResultImpl.Int(g, source);
+		res.distances[source] = 0;
+
+		DialHeap heap = new DialHeap(g.vertices().size(), maxDistance);
+
+		for (int u = source;;) {
+			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
+				int e = eit.nextInt();
+				int v = eit.target();
+				if (res.distances[v] != Integer.MAX_VALUE)
+					continue;
+				int distance = res.distances[u] + w.weightInt(e);
+
+				if (!heap.containsVertex(v)) {
+					heap.insert(v, distance);
+					res.backtrack[v] = e;
+				} else {
+					if (distance < heap.getCurrentDistance(v)) {
+						res.backtrack[v] = e;
+						heap.decreaseKey(v, distance);
+					}
+				}
+			}
+
+			IntIntPair next = heap.extractMin();
+			if (next == null)
+				break;
+			u = next.firstInt();
+			assert res.distances[u] == Integer.MAX_VALUE;
+			res.distances[u] = next.secondInt();
+		}
+
+		return res;
 	}
 
-	private static class Worker {
+	private static class DialHeap {
 
-		private final Graph g;
 		private final LinkedListFixedSize.Doubly heapBucketsNodes;
 		private final int[] heapBucketsHead;
 		private final int[] heapDistances;
 		private final int heapMaxKey;
 		private int heapScanIdx;
 
-		Worker(Graph g, int maxDistance, AllocatedMemory allocatedMemory) {
-			this.g = g;
+		DialHeap(int n, int maxDistance) {
 
-			int n = g.vertices().size();
-			heapBucketsHead = allocatedMemory.edges; // reuse array
+			heapBucketsHead = new int[maxDistance];
 			Arrays.fill(heapBucketsHead, 0, maxDistance, LinkedListFixedSize.None);
 			heapBucketsNodes = new LinkedListFixedSize.Doubly(n);
-			heapDistances = allocatedMemory.heapDistances;
+			heapDistances = new int[n];
 			Arrays.fill(heapDistances, 0, n, -1);
 
 			heapMaxKey = maxDistance;
 			heapScanIdx = 0;
 		}
 
-		void heapInsert(int v, int distance) {
+		void insert(int v, int distance) {
 			heapDistances[v] = distance;
 			int h = heapBucketsHead[distance];
 			heapBucketsHead[distance] = v;
@@ -122,16 +148,16 @@ public class SSSPDial implements SSSP {
 				heapBucketsNodes.connect(v, h);
 		}
 
-		void heapDecreaseKey(int v, int distance) {
+		void decreaseKey(int v, int distance) {
 			int oldDistance = heapDistances[v];
 			if (v == heapBucketsHead[oldDistance])
 				heapBucketsHead[oldDistance] = heapBucketsNodes.next(v);
 			heapBucketsNodes.disconnect(v);
 
-			heapInsert(v, distance);
+			insert(v, distance);
 		}
 
-		IntIntPair heapExtractMin() {
+		IntIntPair extractMin() {
 			int distance;
 			for (distance = heapScanIdx; distance < heapMaxKey; distance++) {
 				int v = heapBucketsHead[distance];
@@ -146,58 +172,14 @@ public class SSSPDial implements SSSP {
 			return null;
 		}
 
-		boolean heapContainsVertex(int v) {
+		boolean containsVertex(int v) {
 			return heapDistances[v] != -1;
 		}
 
-		int heapGetCurrentDistance(int v) {
+		int getCurrentDistance(int v) {
 			return heapDistances[v];
 		}
 
-		SSSP.Result computeShortestPaths(EdgeWeightFunc.Int w, int source) {
-			SSSPResultImpl.Int res = new SSSPResultImpl.Int(g, source);
-			res.distances[source] = 0;
-
-			for (int u = source;;) {
-				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
-					int e = eit.nextInt();
-					int v = eit.target();
-					if (res.distances[v] != Integer.MAX_VALUE)
-						continue;
-					int distance = res.distances[u] + w.weightInt(e);
-
-					if (!heapContainsVertex(v)) {
-						heapInsert(v, distance);
-						res.backtrack[v] = e;
-					} else {
-						if (distance < heapGetCurrentDistance(v)) {
-							res.backtrack[v] = e;
-							heapDecreaseKey(v, distance);
-						}
-					}
-				}
-
-				IntIntPair next = heapExtractMin();
-				if (next == null)
-					break;
-				u = next.firstInt();
-				assert res.distances[u] == Integer.MAX_VALUE;
-				res.distances[u] = next.secondInt();
-			}
-
-			return res;
-		}
-
-	}
-
-	private static class AllocatedMemory {
-		int[] edges = IntArrays.EMPTY_ARRAY;
-		int[] heapDistances = IntArrays.EMPTY_ARRAY;
-
-		void allocate(int n, int maxDistance) {
-			edges = MemoryReuse.ensureLength(edges, maxDistance); // reuse array
-			heapDistances = MemoryReuse.ensureLength(heapDistances, n);
-		}
 	}
 
 }

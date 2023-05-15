@@ -16,7 +16,6 @@
 
 package com.jgalgo;
 
-import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -38,8 +37,6 @@ import java.util.Objects;
 public class SSSPDijkstra implements SSSP {
 
 	private HeapReferenceable.Builder<?, ?> heapBuilder;
-	@SuppressWarnings("rawtypes")
-	private HeapReference[] verticesPtrs;
 
 	/**
 	 * Construct a new SSSP algorithm object.
@@ -65,111 +62,89 @@ public class SSSPDijkstra implements SSSP {
 	@Override
 	public SSSP.Result computeShortestPaths(Graph g, EdgeWeightFunc w, int source) {
 		ArgumentCheck.onlyPositiveWeights(g, w);
-
-		int n = g.vertices().size();
-		if (verticesPtrs == null || verticesPtrs.length < n)
-			verticesPtrs = new HeapReference[n];
-
-		SSSP.Result res;
 		if (w instanceof EdgeWeightFunc.Int) {
-			res = new WorkerInt(heapBuilder, verticesPtrs).computeSSSP(g, (EdgeWeightFunc.Int) w, source);
+			return computeSsspInts(g, (EdgeWeightFunc.Int) w, source);
 		} else {
-			res = new WorkerDouble(heapBuilder, verticesPtrs).computeSSSP(g, w, source);
+			return computeSsspDoubles(g, w, source);
+		}
+	}
+
+	private SSSP.Result computeSsspDoubles(Graph g, EdgeWeightFunc w, int source) {
+		final int n = g.vertices().size();
+		HeapReferenceable<Double, Integer> heap =
+				heapBuilder.keysTypePrimitive(double.class).valuesTypePrimitive(int.class).build();
+		@SuppressWarnings("unchecked")
+		HeapReference<Double, Integer>[] verticesPtrs = new HeapReference[n];
+
+		SSSPResultImpl res = new SSSPResultImpl(g, source);
+		res.distances[source] = 0;
+
+		for (int u = source;;) {
+			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
+				int e = eit.nextInt();
+				int v = eit.target();
+				if (res.distances[v] != Double.POSITIVE_INFINITY)
+					continue;
+				double distance = res.distances[u] + w.weight(e);
+
+				HeapReference<Double, Integer> vPtr = verticesPtrs[v];
+				if (vPtr == null) {
+					verticesPtrs[v] = heap.insert(Double.valueOf(distance), Integer.valueOf(v));
+					res.backtrack[v] = e;
+				} else {
+					if (distance < vPtr.key().doubleValue()) {
+						res.backtrack[v] = e;
+						heap.decreaseKey(vPtr, Double.valueOf(distance));
+					}
+				}
+			}
+
+			if (heap.isEmpty())
+				break;
+			HeapReference<Double, Integer> next = heap.extractMin();
+			res.distances[u = next.value().intValue()] = next.key().doubleValue();
 		}
 
-		Arrays.fill(verticesPtrs, 0, n, null);
 		return res;
 	}
 
-	private static class WorkerDouble {
+	private SSSP.Result computeSsspInts(Graph g, EdgeWeightFunc.Int w, int source) {
+		final int n = g.vertices().size();
+		HeapReferenceable<Integer, Integer> heap =
+				heapBuilder.keysTypePrimitive(int.class).valuesTypePrimitive(int.class).build();
+		@SuppressWarnings("unchecked")
+		HeapReference<Integer, Integer>[] verticesPtrs = new HeapReference[n];
 
-		private final HeapReferenceable<Double, Integer> heap;
-		private final HeapReference<Double, Integer>[] verticesPtrs;
+		SSSPResultImpl.Int res = new SSSPResultImpl.Int(g, source);
+		res.distances[source] = 0;
 
-		@SuppressWarnings({ "unchecked", "rawtypes" })
-		WorkerDouble(HeapReferenceable.Builder<?, ?> heapBuilder, HeapReference[] verticesPtrs) {
-			this.heap = heapBuilder.keysTypePrimitive(double.class).valuesTypePrimitive(int.class).build();
-			this.verticesPtrs = verticesPtrs;
-		}
+		for (int u = source;;) {
+			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
+				int e = eit.nextInt();
+				int v = eit.target();
+				if (res.distances[v] != Integer.MAX_VALUE)
+					continue;
+				int distance = res.distances[u] + w.weightInt(e);
 
-		SSSP.Result computeSSSP(Graph g, EdgeWeightFunc w, int source) {
-			SSSPResultImpl res = new SSSPResultImpl(g, source);
-			res.distances[source] = 0;
-
-			for (int u = source;;) {
-				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
-					int e = eit.nextInt();
-					int v = eit.target();
-					if (res.distances[v] != Double.POSITIVE_INFINITY)
-						continue;
-					double distance = res.distances[u] + w.weight(e);
-
-					HeapReference<Double, Integer> vPtr = verticesPtrs[v];
-					if (vPtr == null) {
-						verticesPtrs[v] = heap.insert(Double.valueOf(distance), Integer.valueOf(v));
+				HeapReference<Integer, Integer> vPtr = verticesPtrs[v];
+				if (vPtr == null) {
+					verticesPtrs[v] = heap.insert(Integer.valueOf(distance), Integer.valueOf(v));
+					res.backtrack[v] = e;
+				} else {
+					if (distance < vPtr.key().intValue()) {
 						res.backtrack[v] = e;
-					} else {
-						if (distance < vPtr.key().doubleValue()) {
-							res.backtrack[v] = e;
-							heap.decreaseKey(vPtr, Double.valueOf(distance));
-						}
+						heap.decreaseKey(vPtr, Integer.valueOf(distance));
 					}
 				}
-
-				if (heap.isEmpty())
-					break;
-				HeapReference<Double, Integer> next = heap.extractMin();
-				res.distances[u = next.value().intValue()] = next.key().doubleValue();
 			}
 
-			return res;
-		}
-	}
-
-	private static class WorkerInt {
-
-		private final HeapReferenceable<Integer, Integer> heap;
-		private final HeapReference<Integer, Integer>[] verticesPtrs;
-
-		@SuppressWarnings({ "unchecked", "rawtypes" })
-		WorkerInt(HeapReferenceable.Builder<?, ?> heapBuilder, HeapReference[] verticesPtrs) {
-			this.heap = heapBuilder.keysTypePrimitive(int.class).valuesTypePrimitive(int.class).build();
-			this.verticesPtrs = verticesPtrs;
+			if (heap.isEmpty())
+				break;
+			HeapReference<Integer, Integer> next = heap.extractMin();
+			res.distances[u = next.value().intValue()] = next.key().intValue();
 		}
 
-		SSSP.Result computeSSSP(Graph g, EdgeWeightFunc.Int w, int source) {
-			SSSPResultImpl.Int res = new SSSPResultImpl.Int(g, source);
-			res.distances[source] = 0;
-
-			for (int u = source;;) {
-				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
-					int e = eit.nextInt();
-					int v = eit.target();
-					if (res.distances[v] != Integer.MAX_VALUE)
-						continue;
-					int distance = res.distances[u] + w.weightInt(e);
-
-					HeapReference<Integer, Integer> vPtr = verticesPtrs[v];
-					if (vPtr == null) {
-						verticesPtrs[v] = heap.insert(Integer.valueOf(distance), Integer.valueOf(v));
-						res.backtrack[v] = e;
-					} else {
-						if (distance < vPtr.key().intValue()) {
-							res.backtrack[v] = e;
-							heap.decreaseKey(vPtr, Integer.valueOf(distance));
-						}
-					}
-				}
-
-				if (heap.isEmpty())
-					break;
-				HeapReference<Integer, Integer> next = heap.extractMin();
-				res.distances[u = next.value().intValue()] = next.key().intValue();
-			}
-
-			return res;
-		}
-
+		return res;
 	}
 
 }

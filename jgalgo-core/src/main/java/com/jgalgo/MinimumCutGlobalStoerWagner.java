@@ -46,7 +46,7 @@ class MinimumCutGlobalStoerWagner implements MinimumCutGlobal {
 		@SuppressWarnings("unchecked")
 		HeapReference<Double, Integer>[] vRefs = new HeapReference[n];
 
-		BitSet minimumCut = new BitSet();
+		BitSet minimumCut = new BitSet(n);
 		double minimumCutWeight = Double.MAX_VALUE;
 
 		while (cg.numberOfSuperVertices() > 1) {

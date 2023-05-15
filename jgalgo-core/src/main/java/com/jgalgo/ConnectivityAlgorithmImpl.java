@@ -17,34 +17,28 @@
 package com.jgalgo;
 
 import java.util.Arrays;
-
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntStack;
 
 class ConnectivityAlgorithmImpl implements ConnectivityAlgorithm {
-
-	private final AllocatedMemory allocatedMemory = new AllocatedMemory();
 
 	@Override
 	public ConnectivityAlgorithm.Result computeConnectivityComponents(Graph g) {
 		return g.getCapabilities().directed() ? computeSCCDirected(g) : computeSCCUndirected(g);
 	}
 
-	private ConnectivityAlgorithm.Result computeSCCDirected(Graph g) {
-		allocatedMemory.allocatedDirected(g);
-		IntStack s = allocatedMemory.stack1;
-		IntStack p = allocatedMemory.stack2;
-		assert s.isEmpty();
-		assert p.isEmpty();
-		int[] dfsPath = allocatedMemory.dfsPath;
-		int[] c = allocatedMemory.c;
-		EdgeIter[] edges = allocatedMemory.edges;
+	private static ConnectivityAlgorithm.Result computeSCCDirected(Graph g) {
+		final int n = g.vertices().size();
+		IntStack s = new IntArrayList();
+		IntStack p = new IntArrayList();
+		int[] dfsPath = new int[n];
+		int[] c = new int[n];
+		EdgeIter[] edges = new EdgeIter[n];
+		 // TODO DFS stack class
 
 		// implementation of Tarjan's strongly connected components algorithm
 		// https://en.wikipedia.org/wiki/Tarjan%27s_strongly_connected_components_algorithm
 
-		int n = g.vertices().size();
 		int[] comp = new int[n];
 		Arrays.fill(comp, -1);
 		int compNum = 0;
@@ -96,9 +90,8 @@ class ConnectivityAlgorithmImpl implements ConnectivityAlgorithm {
 		return new Result(compNum, comp);
 	}
 
-	private ConnectivityAlgorithm.Result computeSCCUndirected(Graph g) {
-		allocatedMemory.allocatedUndirected(g);
-		IntStack stack = allocatedMemory.stack1;
+	private static ConnectivityAlgorithm.Result computeSCCUndirected(Graph g) {
+		IntStack stack = new IntArrayList();
 		assert stack.isEmpty();
 
 		int n = g.vertices().size();
@@ -154,28 +147,6 @@ class ConnectivityAlgorithmImpl implements ConnectivityAlgorithm {
 		@Override
 		public String toString() {
 			return Arrays.toString(vertexToCC);
-		}
-	}
-
-	private static class AllocatedMemory {
-		private IntStack stack1;
-		private IntStack stack2;
-		private int[] dfsPath = IntArrays.EMPTY_ARRAY;
-		private int[] c = IntArrays.EMPTY_ARRAY;
-		private EdgeIter[] edges = MemoryReuse.EmptyEdgeIterArr;
-
-		void allocatedDirected(Graph g) {
-			int n = g.vertices().size();
-			stack1 = MemoryReuse.ensureAllocated(stack1, IntArrayList::new);
-			stack2 = MemoryReuse.ensureAllocated(stack2, IntArrayList::new);
-			dfsPath = MemoryReuse.ensureLength(dfsPath, n);
-			c = MemoryReuse.ensureLength(c, n);
-			edges = MemoryReuse.ensureLength(edges, n);
-
-		}
-
-		void allocatedUndirected(Graph g) {
-			stack1 = MemoryReuse.ensureAllocated(stack1, IntArrayList::new);
 		}
 	}
 

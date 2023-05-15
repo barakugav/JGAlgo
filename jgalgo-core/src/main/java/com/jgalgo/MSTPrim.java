@@ -41,9 +41,6 @@ public class MSTPrim implements MST {
 
 	private HeapReferenceable.Builder<Integer, Void> heapBuilder =
 			HeapReferenceable.newBuilder().keysTypePrimitive(int.class).valuesTypeVoid();
-	@SuppressWarnings("unchecked")
-	private HeapReference<Integer, Void>[] verticesPtrs = MemoryReuse.EmptyHeapReferenceArr;
-	private final BitSet visited = new BitSet();
 
 	/**
 	 * Construct a new MST algorithm object.
@@ -72,9 +69,9 @@ public class MSTPrim implements MST {
 			return MSTResultImpl.Empty;
 
 		HeapReferenceable<Integer, Void> heap = heapBuilder.build(w);
-		HeapReference<Integer, Void>[] verticesPtrs =
-				this.verticesPtrs = MemoryReuse.ensureLength(this.verticesPtrs, n);
-		BitSet visited = this.visited;
+		@SuppressWarnings("unchecked")
+		HeapReference<Integer, Void>[] verticesPtrs = new HeapReference[n];
+		BitSet visited = new BitSet(n);
 
 		IntCollection mst = new IntArrayList(n - 1);
 		for (int r = 0; r < n; r++) {
