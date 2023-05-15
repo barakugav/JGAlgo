@@ -105,38 +105,38 @@ class RedBlackTree<K, V> extends BinarySearchTreeAbstract<K, V> {
 		if (isEmpty()) {
 			root = h.root;
 			size = h.size;
-			h.root = null;
-			return;
-		}
-
-		/* there is nothing smarter to do than 'addAll' */
-		/* We use 'insertNode' instead of 'insert' to maintain user references to nodes */
-		for (Node<K, V> node = h.root;;) {
-			for (;;) {
-				while (node.hasLeftChild())
-					node = node.left;
-				if (!node.hasRightChild())
-					break;
-				node = node.right;
-			}
-			Node<K, V> parent = node.parent;
-			if (parent == null) {
-				beforeNodeReuse(node);
-				insertNode(node);
-				break;
-			} else {
-				if (parent.right == node) {
-					parent.right = null;
-				} else {
-					assert parent.left == node;
-					parent.left = null;
+		} else {
+			/* there is nothing smarter to do than 'addAll' */
+			/* We use 'insertNode' instead of 'insert' to maintain user references to nodes */
+			for (Node<K, V> node = h.root;;) {
+				for (;;) {
+					while (node.hasLeftChild())
+						node = node.left;
+					if (!node.hasRightChild())
+						break;
+					node = node.right;
 				}
-				node.parent = null;
-				beforeNodeReuse(node);
-				insertNode(node);
-				node = parent;
+				Node<K, V> parent = node.parent;
+				if (parent == null) {
+					beforeNodeReuse(node);
+					insertNode(node);
+					break;
+				} else {
+					if (parent.right == node) {
+						parent.right = null;
+					} else {
+						assert parent.left == node;
+						parent.left = null;
+					}
+					node.parent = null;
+					beforeNodeReuse(node);
+					insertNode(node);
+					node = parent;
+				}
 			}
 		}
+		h.root = null;
+		h.size = 0;
 	}
 
 	void beforeNodeReuse(Node<K, V> node) {}

@@ -124,6 +124,7 @@ class HeapTestUtils extends TestUtils {
 				HeapTracker h2 = heapsSuffled.get(i * 2 + 1);
 
 				h1.heap.meld(h2.heap);
+				assertTrue(h2.heap.isEmpty());
 				h1.meld(h2);
 				heapsNext.add(h1);
 

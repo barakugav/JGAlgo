@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import it.unimi.dsi.fastutil.objects.ObjectArrays;
 
 /**
  * A binary heap implementation using an array.
@@ -70,7 +71,7 @@ class HeapBinary<E> extends HeapAbstract<E> {
 	HeapBinary(Comparator<? super E> comparator) {
 		super(comparator);
 		@SuppressWarnings("unchecked")
-		E[] arr0 = (E[]) new Object[16];
+		E[] arr0 = (E[]) ObjectArrays.EMPTY_ARRAY;
 		arr = arr0;
 		size = 0;
 	}
@@ -80,14 +81,10 @@ class HeapBinary<E> extends HeapAbstract<E> {
 		return size;
 	}
 
-	private void grow() {
-		arr = Arrays.copyOf(arr, arr.length * 2);
-	}
-
 	@Override
 	public void insert(E e) {
 		if (arr.length == size)
-			grow();
+			arr = Arrays.copyOf(arr, Math.max(2, arr.length * 2));
 
 		moveUp(size, e);
 		size++;

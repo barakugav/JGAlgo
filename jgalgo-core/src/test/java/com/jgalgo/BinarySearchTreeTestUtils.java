@@ -18,6 +18,7 @@ package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -265,6 +266,7 @@ class BinarySearchTreeTestUtils extends TestUtils {
 				BSTTracker h1 = heapsSuffled.get(i * 2);
 				BSTTracker h2 = heapsSuffled.get(i * 2 + 1);
 				h1.tree().meld(h2.tree());
+				assertTrue(h2.tree().isEmpty());
 				h1.meld(h2);
 				treesNext.add(h1);
 			}

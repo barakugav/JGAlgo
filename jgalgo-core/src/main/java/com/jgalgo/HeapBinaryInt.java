@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.NoSuchElementException;
-
+import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -73,7 +73,7 @@ class HeapBinaryInt extends HeapAbstract<Integer> {
 	 */
 	HeapBinaryInt(Comparator<? super Integer> comparator) {
 		super(comparator);
-		arr = new int[16];
+		arr = IntArrays.EMPTY_ARRAY;
 		size = 0;
 		intCmp = comparator == null || comparator instanceof IntComparator ? (IntComparator) comparator
 				: (k1, k2) -> comparator.compare(Integer.valueOf(k1), Integer.valueOf(k2));
@@ -84,10 +84,6 @@ class HeapBinaryInt extends HeapAbstract<Integer> {
 		return size;
 	}
 
-	private void grow() {
-		arr = Arrays.copyOf(arr, arr.length * 2);
-	}
-
 	@Override
 	public void insert(Integer e) {
 		insert(e.intValue());
@@ -95,7 +91,7 @@ class HeapBinaryInt extends HeapAbstract<Integer> {
 
 	public void insert(int e) {
 		if (arr.length == size)
-			grow();
+			arr = Arrays.copyOf(arr, Math.max(2, arr.length * 2));
 
 		moveUp(size, e);
 		size++;

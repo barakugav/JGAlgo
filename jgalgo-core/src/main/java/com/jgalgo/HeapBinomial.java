@@ -44,6 +44,9 @@ class HeapBinomial<K, V> extends HeapReferenceableAbstract<K, V> {
 	private int rootsLen;
 	private int size;
 
+	@SuppressWarnings("rawtypes")
+	private static final Node[] EmptyNodeArr = new Node[0];
+
 	/**
 	 * Constructs a new, empty binomial heap, ordered according to the natural ordering of its keys.
 	 * <p>
@@ -68,9 +71,10 @@ class HeapBinomial<K, V> extends HeapReferenceableAbstract<K, V> {
 	 * @param comparator the comparator that will be used to order this heap. If {@code null}, the
 	 *                       {@linkplain Comparable natural ordering} of the keys will be used.
 	 */
+	@SuppressWarnings("unchecked")
 	HeapBinomial(Comparator<? super K> comparator) {
 		super(comparator);
-		roots = newArr(4);
+		roots = (Node<K, V>[]) EmptyNodeArr;
 		rootsLen = 0;
 		size = 0;
 	}
@@ -304,15 +308,19 @@ class HeapBinomial<K, V> extends HeapReferenceableAbstract<K, V> {
 		return h2size;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void meld(HeapReferenceable<? extends K, ? extends V> heap) {
 		makeSureNoMeldWithSelf(heap);
 		makeSureMeldWithSameImpl(HeapBinomial.class, heap);
 		makeSureEqualComparatorBeforeMeld(heap);
 
-		@SuppressWarnings("unchecked")
 		HeapBinomial<K, V> h = (HeapBinomial<K, V>) heap;
 		size += meld(h.roots, h.rootsLen);
+
+		h.roots = (Node<K, V>[]) EmptyNodeArr;
+		h.rootsLen = 0;
+		h.size = 0;
 	}
 
 	@Override
