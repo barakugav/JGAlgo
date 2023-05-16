@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
-import com.jgalgo.Trees.TreeNode;
 
 /**
  * A binomial heap implementation.
@@ -39,11 +38,14 @@ import com.jgalgo.Trees.TreeNode;
  * @see        &lt;a href=&quot;https://en.wikipedia.org/wiki/Binomial_heap&quot;&gt;Wikipedia&lt;/a&gt;
  * @author     Barak Ugav
  */
-<span class="fc" id="L42">class HeapBinomial&lt;K, V&gt; extends HeapReferenceableAbstract&lt;K, V&gt; {</span>
+class HeapBinomial&lt;K, V&gt; extends HeapReferenceableAbstract&lt;K, V&gt; {
 
 	private Node&lt;K, V&gt;[] roots;
 	private int rootsLen;
 	private int size;
+
+	@SuppressWarnings(&quot;rawtypes&quot;)
+<span class="fc" id="L48">	private static final Node[] EmptyNodeArr = new Node[0];</span>
 
 	/**
 	 * Constructs a new, empty binomial heap, ordered according to the natural ordering of its keys.
@@ -55,8 +57,8 @@ import com.jgalgo.Trees.TreeNode;
 	 * {@code insert} call will throw a {@code ClassCastException}.
 	 */
 	HeapBinomial() {
-<span class="nc" id="L58">		this(null);</span>
-<span class="nc" id="L59">	}</span>
+<span class="nc" id="L60">		this(null);</span>
+<span class="nc" id="L61">	}</span>
 
 	/**
 	 * Constructs a new, empty binomial heap, with keys ordered according to the specified comparator.
@@ -69,353 +71,314 @@ import com.jgalgo.Trees.TreeNode;
 	 * @param comparator the comparator that will be used to order this heap. If {@code null}, the
 	 *                       {@linkplain Comparable natural ordering} of the keys will be used.
 	 */
+	@SuppressWarnings(&quot;unchecked&quot;)
 	HeapBinomial(Comparator&lt;? super K&gt; comparator) {
-<span class="fc" id="L73">		super(comparator);</span>
-<span class="fc" id="L74">		roots = newArr(4);</span>
-<span class="fc" id="L75">		rootsLen = 0;</span>
-<span class="fc" id="L76">		size = 0;</span>
-<span class="fc" id="L77">	}</span>
+<span class="fc" id="L76">		super(comparator);</span>
+<span class="fc" id="L77">		roots = (Node&lt;K, V&gt;[]) EmptyNodeArr;</span>
+<span class="fc" id="L78">		rootsLen = 0;</span>
+<span class="fc" id="L79">		size = 0;</span>
+<span class="fc" id="L80">	}</span>
 
 	private void swapParentChild(Node&lt;K, V&gt; parent, Node&lt;K, V&gt; child) {
-<span class="fc" id="L80">		Node&lt;K, V&gt; t, pNext = parent.next, pPrev = parent.prev, pParent = parent.parent, pChild = parent.child;</span>
+<span class="fc" id="L83">		Node&lt;K, V&gt; t, pNext = parent.next, pPrev = parent.prev, pParent = parent.parent, pChild = parent.child;</span>
 
-<span class="fc" id="L82">		parent.next = (t = child.next);</span>
-<span class="fc bfc" id="L83" title="All 2 branches covered.">		if (t != null)</span>
-<span class="fc" id="L84">			t.prev = parent;</span>
-<span class="fc" id="L85">		parent.prev = (t = child.prev);</span>
+<span class="fc" id="L85">		parent.next = (t = child.next);</span>
 <span class="fc bfc" id="L86" title="All 2 branches covered.">		if (t != null)</span>
-<span class="fc" id="L87">			t.next = parent;</span>
-<span class="fc" id="L88">		parent.child = child.child;</span>
-<span class="fc bfc" id="L89" title="All 2 branches covered.">		for (Node&lt;K, V&gt; p = child.child; p != null; p = p.next)</span>
-<span class="fc" id="L90">			p.parent = parent;</span>
+<span class="fc" id="L87">			t.prev = parent;</span>
+<span class="fc" id="L88">		parent.prev = (t = child.prev);</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">		if (t != null)</span>
+<span class="fc" id="L90">			t.next = parent;</span>
+<span class="fc" id="L91">		parent.child = child.child;</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">		for (Node&lt;K, V&gt; p = child.child; p != null; p = p.next)</span>
+<span class="fc" id="L93">			p.parent = parent;</span>
 
-<span class="fc" id="L92">		child.next = pNext;</span>
-<span class="fc bfc" id="L93" title="All 2 branches covered.">		if (pNext != null)</span>
-<span class="fc" id="L94">			pNext.prev = child;</span>
-<span class="fc" id="L95">		child.prev = pPrev;</span>
-<span class="fc bfc" id="L96" title="All 2 branches covered.">		if (pPrev != null)</span>
-<span class="fc" id="L97">			pPrev.next = child;</span>
-<span class="fc bfc" id="L98" title="All 2 branches covered.">		child.child = pChild == child ? parent : pChild;</span>
-<span class="fc bfc" id="L99" title="All 2 branches covered.">		for (Node&lt;K, V&gt; p = child.child; p != null; p = p.next)</span>
-<span class="fc" id="L100">			p.parent = child;</span>
-<span class="fc" id="L101">		child.parent = pParent;</span>
-<span class="fc bfc" id="L102" title="All 4 branches covered.">		if (pParent != null &amp;&amp; pParent.child == parent)</span>
-<span class="fc" id="L103">			pParent.child = child;</span>
+<span class="fc" id="L95">		child.next = pNext;</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">		if (pNext != null)</span>
+<span class="fc" id="L97">			pNext.prev = child;</span>
+<span class="fc" id="L98">		child.prev = pPrev;</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">		if (pPrev != null)</span>
+<span class="fc" id="L100">			pPrev.next = child;</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">		child.child = pChild == child ? parent : pChild;</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">		for (Node&lt;K, V&gt; p = child.child; p != null; p = p.next)</span>
+<span class="fc" id="L103">			p.parent = child;</span>
+<span class="fc" id="L104">		child.parent = pParent;</span>
+<span class="fc bfc" id="L105" title="All 4 branches covered.">		if (pParent != null &amp;&amp; pParent.child == parent)</span>
+<span class="fc" id="L106">			pParent.child = child;</span>
 
-<span class="fc bfc" id="L105" title="All 2 branches covered.">		if (pParent == null) {</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">		if (pParent == null) {</span>
 			/* Switched a root, fix roots array */
-<span class="fc" id="L107">			Node&lt;K, V&gt;[] rs = roots;</span>
-<span class="pc bpc" id="L108" title="1 of 2 branches missed.">			for (int i = 0; i &lt; rootsLen; i++) {</span>
-<span class="fc bfc" id="L109" title="All 2 branches covered.">				if (rs[i] == parent) {</span>
-<span class="fc" id="L110">					rs[i] = child;</span>
-<span class="fc" id="L111">					break;</span>
+<span class="fc" id="L110">			Node&lt;K, V&gt;[] rs = roots;</span>
+<span class="pc bpc" id="L111" title="1 of 2 branches missed.">			for (int i = 0; i &lt; rootsLen; i++) {</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">				if (rs[i] == parent) {</span>
+<span class="fc" id="L113">					rs[i] = child;</span>
+<span class="fc" id="L114">					break;</span>
 				}
 			}
 		}
-<span class="fc" id="L115">	}</span>
+<span class="fc" id="L118">	}</span>
 
 	@Override
 	public void decreaseKey(HeapReference&lt;K, V&gt; ref, K newKey) {
-<span class="fc" id="L119">		Node&lt;K, V&gt; node = (Node&lt;K, V&gt;) ref;</span>
-<span class="fc" id="L120">		makeSureDecreaseKeyIsSmaller(node.key, newKey);</span>
-<span class="fc" id="L121">		node.key = newKey;</span>
+<span class="fc" id="L122">		Node&lt;K, V&gt; node = (Node&lt;K, V&gt;) ref;</span>
+<span class="fc" id="L123">		makeSureDecreaseKeyIsSmaller(node.key, newKey);</span>
+<span class="fc" id="L124">		node.key = newKey;</span>
 
-<span class="fc bfc" id="L123" title="All 2 branches covered.">		if (c == null) {</span>
-<span class="fc bfc" id="L124" title="All 2 branches covered.">			for (Node&lt;K, V&gt; p; (p = node.parent) != null;) {</span>
-<span class="fc bfc" id="L125" title="All 2 branches covered.">				if (Utils.cmpDefault(p.key, newKey) &lt;= 0)</span>
-<span class="fc" id="L126">					break;</span>
-<span class="fc" id="L127">				swapParentChild(p, node);</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">		if (c == null) {</span>
+<span class="fc bfc" id="L127" title="All 2 branches covered.">			for (Node&lt;K, V&gt; p; (p = node.parent) != null;) {</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">				if (Utils.cmpDefault(p.key, newKey) &lt;= 0)</span>
+<span class="fc" id="L129">					break;</span>
+<span class="fc" id="L130">				swapParentChild(p, node);</span>
 			}
 		} else {
-<span class="fc bfc" id="L130" title="All 2 branches covered.">			for (Node&lt;K, V&gt; p; (p = node.parent) != null;) {</span>
-<span class="fc bfc" id="L131" title="All 2 branches covered.">				if (c.compare(p.key, newKey) &lt;= 0)</span>
-<span class="fc" id="L132">					break;</span>
-<span class="fc" id="L133">				swapParentChild(p, node);</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">			for (Node&lt;K, V&gt; p; (p = node.parent) != null;) {</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">				if (c.compare(p.key, newKey) &lt;= 0)</span>
+<span class="fc" id="L135">					break;</span>
+<span class="fc" id="L136">				swapParentChild(p, node);</span>
 			}
 		}
-<span class="fc" id="L136">	}</span>
+<span class="fc" id="L139">	}</span>
 
 	@Override
 	public void remove(HeapReference&lt;K, V&gt; ref) {
-<span class="fc" id="L140">		Node&lt;K, V&gt; node = (Node&lt;K, V&gt;) ref;</span>
+<span class="fc" id="L143">		Node&lt;K, V&gt; node = (Node&lt;K, V&gt;) ref;</span>
 
 		/* propagate to top of the tree */
-<span class="fc bfc" id="L143" title="All 2 branches covered.">		for (Node&lt;K, V&gt; p; (p = node.parent) != null;)</span>
-<span class="fc" id="L144">			swapParentChild(p, node);</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">		for (Node&lt;K, V&gt; p; (p = node.parent) != null;)</span>
+<span class="fc" id="L147">			swapParentChild(p, node);</span>
 
-<span class="fc" id="L146">		Node&lt;K, V&gt;[] rs = roots;</span>
-<span class="fc" id="L147">		int rootIdx = -1;</span>
-<span class="pc bpc" id="L148" title="1 of 2 branches missed.">		for (int i = 0; i &lt; rootsLen; i++) {</span>
-<span class="fc bfc" id="L149" title="All 2 branches covered.">			if (rs[i] == node) {</span>
-<span class="fc" id="L150">				rs[i] = null;</span>
-<span class="fc" id="L151">				rootIdx = i;</span>
-<span class="fc" id="L152">				break;</span>
+<span class="fc" id="L149">		Node&lt;K, V&gt;[] rs = roots;</span>
+<span class="fc" id="L150">		int rootIdx = -1;</span>
+<span class="pc bpc" id="L151" title="1 of 2 branches missed.">		for (int i = 0; i &lt; rootsLen; i++) {</span>
+<span class="fc bfc" id="L152" title="All 2 branches covered.">			if (rs[i] == node) {</span>
+<span class="fc" id="L153">				rs[i] = null;</span>
+<span class="fc" id="L154">				rootIdx = i;</span>
+<span class="fc" id="L155">				break;</span>
 			}
 		}
-<span class="pc bpc" id="L155" title="1 of 2 branches missed.">		if (rootIdx == -1)</span>
-<span class="nc" id="L156">			throw new ConcurrentModificationException();</span>
+<span class="pc bpc" id="L158" title="1 of 2 branches missed.">		if (rootIdx == -1)</span>
+<span class="nc" id="L159">			throw new ConcurrentModificationException();</span>
 
-<span class="fc" id="L158">		Node&lt;K, V&gt;[] childs = newArr(rootIdx);</span>
-<span class="fc" id="L159">		Node&lt;K, V&gt; next, p = node.child;</span>
-<span class="fc bfc" id="L160" title="All 2 branches covered.">		for (int i = 0; i &lt; rootIdx; i++, p = next) {</span>
-<span class="fc" id="L161">			next = p.next;</span>
-<span class="fc" id="L162">			p.parent = null;</span>
-<span class="fc" id="L163">			p.next = null;</span>
-<span class="fc" id="L164">			p.prev = null;</span>
-<span class="fc" id="L165">			childs[rootIdx - i - 1] = p;</span>
+<span class="fc" id="L161">		Node&lt;K, V&gt;[] childs = newArr(rootIdx);</span>
+<span class="fc" id="L162">		Node&lt;K, V&gt; next, p = node.child;</span>
+<span class="fc bfc" id="L163" title="All 2 branches covered.">		for (int i = 0; i &lt; rootIdx; i++, p = next) {</span>
+<span class="fc" id="L164">			next = p.next;</span>
+<span class="fc" id="L165">			p.parent = null;</span>
+<span class="fc" id="L166">			p.next = null;</span>
+<span class="fc" id="L167">			p.prev = null;</span>
+<span class="fc" id="L168">			childs[rootIdx - i - 1] = p;</span>
 		}
 
-<span class="fc" id="L168">		meld(childs, childs.length);</span>
-<span class="fc" id="L169">		size--;</span>
-<span class="fc" id="L170">	}</span>
+<span class="fc" id="L171">		meld(childs, childs.length);</span>
+<span class="fc" id="L172">		size--;</span>
+<span class="fc" id="L173">	}</span>
 
 	@Override
 	public void clear() {
-<span class="fc" id="L174">		Node&lt;K, V&gt;[] rs = roots;</span>
-<span class="fc" id="L175">		int rslen = rootsLen;</span>
+<span class="fc" id="L177">		Node&lt;K, V&gt;[] rs = roots;</span>
+<span class="fc" id="L178">		int rslen = rootsLen;</span>
 
-<span class="fc bfc" id="L177" title="All 2 branches covered.">		for (int i = 0; i &lt; rslen; i++) {</span>
-<span class="fc bfc" id="L178" title="All 2 branches covered.">			if (rs[i] != null) {</span>
-<span class="fc" id="L179">				Trees.clear(rs[i], n -&gt; n.key = null);</span>
-<span class="fc" id="L180">				rs[i] = null;</span>
+<span class="fc bfc" id="L180" title="All 2 branches covered.">		for (int i = 0; i &lt; rslen; i++) {</span>
+<span class="fc bfc" id="L181" title="All 2 branches covered.">			if (rs[i] != null) {</span>
+<span class="fc" id="L182">				Trees.clear(rs[i], n -&gt; n.key = null);</span>
+<span class="fc" id="L183">				rs[i] = null;</span>
 			}
 		}
 
-<span class="fc" id="L184">		size = 0;</span>
-<span class="fc" id="L185">		rootsLen = 0;</span>
-<span class="fc" id="L186">	}</span>
+<span class="fc" id="L187">		size = 0;</span>
+<span class="fc" id="L188">		rootsLen = 0;</span>
+<span class="fc" id="L189">	}</span>
 
 	@Override
 	public int size() {
-<span class="fc" id="L190">		return size;</span>
+<span class="fc" id="L193">		return size;</span>
 	}
 
 	@Override
 	public HeapReference&lt;K, V&gt; insert(K key) {
-<span class="fc" id="L195">		Node&lt;K, V&gt; node = new Node&lt;&gt;(key);</span>
-<span class="fc" id="L196">		Node&lt;K, V&gt;[] h2 = newArr(1);</span>
-<span class="fc" id="L197">		h2[0] = node;</span>
-<span class="fc" id="L198">		size += meld(h2, 1);</span>
-<span class="fc" id="L199">		return node;</span>
+<span class="fc" id="L198">		Node&lt;K, V&gt; node = new Node&lt;&gt;(key);</span>
+<span class="fc" id="L199">		Node&lt;K, V&gt;[] h2 = newArr(1);</span>
+<span class="fc" id="L200">		h2[0] = node;</span>
+<span class="fc" id="L201">		size += meld(h2, 1);</span>
+<span class="fc" id="L202">		return node;</span>
 	}
 
 	@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
 	@Override
 	public Iterator&lt;HeapReference&lt;K, V&gt;&gt; iterator() {
-<span class="fc" id="L205">		return (Iterator) new Itr();</span>
+<span class="fc" id="L208">		return (Iterator) new Itr();</span>
 	}
 
 	private Node&lt;K, V&gt; mergeTreesDefaultCmp(Node&lt;K, V&gt; r1, Node&lt;K, V&gt; r2) {
-<span class="pc bpc" id="L209" title="1 of 2 branches missed.">		assert r1 != r2;</span>
-<span class="pc bpc" id="L210" title="1 of 2 branches missed.">		if (r1 == r2)</span>
-<span class="nc" id="L211">			throw new IllegalStateException();</span>
-<span class="fc bfc" id="L212" title="All 2 branches covered.">		if (Utils.cmpDefault(r1.key, r2.key) &gt; 0) {</span>
-<span class="fc" id="L213">			Node&lt;K, V&gt; t = r1;</span>
-<span class="fc" id="L214">			r1 = r2;</span>
-<span class="fc" id="L215">			r2 = t;</span>
+<span class="pc bpc" id="L212" title="1 of 2 branches missed.">		assert r1 != r2;</span>
+<span class="pc bpc" id="L213" title="1 of 2 branches missed.">		if (r1 == r2)</span>
+<span class="nc" id="L214">			throw new IllegalStateException();</span>
+<span class="fc bfc" id="L215" title="All 2 branches covered.">		if (Utils.cmpDefault(r1.key, r2.key) &gt; 0) {</span>
+<span class="fc" id="L216">			Node&lt;K, V&gt; t = r1;</span>
+<span class="fc" id="L217">			r1 = r2;</span>
+<span class="fc" id="L218">			r2 = t;</span>
 		}
-<span class="fc" id="L217">		r2.next = r1.child;</span>
-<span class="fc" id="L218">		Node&lt;K, V&gt; next = r1.child;</span>
-<span class="fc bfc" id="L219" title="All 2 branches covered.">		if (next != null)</span>
-<span class="fc" id="L220">			next.prev = r2;</span>
-<span class="fc" id="L221">		r1.child = r2;</span>
-<span class="fc" id="L222">		r2.parent = r1;</span>
+<span class="fc" id="L220">		r2.next = r1.child;</span>
+<span class="fc" id="L221">		Node&lt;K, V&gt; next = r1.child;</span>
+<span class="fc bfc" id="L222" title="All 2 branches covered.">		if (next != null)</span>
+<span class="fc" id="L223">			next.prev = r2;</span>
+<span class="fc" id="L224">		r1.child = r2;</span>
+<span class="fc" id="L225">		r2.parent = r1;</span>
 
-<span class="fc" id="L224">		return r1;</span>
+<span class="fc" id="L227">		return r1;</span>
 	}
 
 	private Node&lt;K, V&gt; mergeTreesCustomCmp(Node&lt;K, V&gt; r1, Node&lt;K, V&gt; r2) {
-<span class="pc bpc" id="L228" title="1 of 2 branches missed.">		assert r1 != r2;</span>
-<span class="pc bpc" id="L229" title="1 of 2 branches missed.">		if (r1 == r2)</span>
-<span class="nc" id="L230">			throw new IllegalStateException();</span>
-<span class="fc bfc" id="L231" title="All 2 branches covered.">		if (c.compare(r1.key, r2.key) &gt; 0) {</span>
-<span class="fc" id="L232">			Node&lt;K, V&gt; t = r1;</span>
-<span class="fc" id="L233">			r1 = r2;</span>
-<span class="fc" id="L234">			r2 = t;</span>
+<span class="pc bpc" id="L231" title="1 of 2 branches missed.">		assert r1 != r2;</span>
+<span class="pc bpc" id="L232" title="1 of 2 branches missed.">		if (r1 == r2)</span>
+<span class="nc" id="L233">			throw new IllegalStateException();</span>
+<span class="fc bfc" id="L234" title="All 2 branches covered.">		if (c.compare(r1.key, r2.key) &gt; 0) {</span>
+<span class="fc" id="L235">			Node&lt;K, V&gt; t = r1;</span>
+<span class="fc" id="L236">			r1 = r2;</span>
+<span class="fc" id="L237">			r2 = t;</span>
 		}
-<span class="fc" id="L236">		r2.next = r1.child;</span>
-<span class="fc" id="L237">		Node&lt;K, V&gt; next = r1.child;</span>
-<span class="fc bfc" id="L238" title="All 2 branches covered.">		if (next != null)</span>
-<span class="fc" id="L239">			next.prev = r2;</span>
-<span class="fc" id="L240">		r1.child = r2;</span>
-<span class="fc" id="L241">		r2.parent = r1;</span>
+<span class="fc" id="L239">		r2.next = r1.child;</span>
+<span class="fc" id="L240">		Node&lt;K, V&gt; next = r1.child;</span>
+<span class="fc bfc" id="L241" title="All 2 branches covered.">		if (next != null)</span>
+<span class="fc" id="L242">			next.prev = r2;</span>
+<span class="fc" id="L243">		r1.child = r2;</span>
+<span class="fc" id="L244">		r2.parent = r1;</span>
 
-<span class="fc" id="L243">		return r1;</span>
+<span class="fc" id="L246">		return r1;</span>
 	}
 
 	private int meld(Node&lt;K, V&gt;[] rs2, int rs2len) {
-<span class="fc" id="L247">		Node&lt;K, V&gt;[] rs1 = roots;</span>
-<span class="fc bfc" id="L248" title="All 2 branches covered.">		Node&lt;K, V&gt;[] rs = rs1.length &gt;= rs2.length ? rs1 : rs2;</span>
-<span class="fc" id="L249">		int rs1len = rootsLen;</span>
-<span class="fc bfc" id="L250" title="All 2 branches covered.">		int rslen = rs1len &gt; rs2len ? rs1len : rs2len;</span>
-<span class="fc" id="L251">		int h2size = 0;</span>
+<span class="fc" id="L250">		Node&lt;K, V&gt;[] rs1 = roots;</span>
+<span class="fc bfc" id="L251" title="All 2 branches covered.">		Node&lt;K, V&gt;[] rs = rs1.length &gt;= rs2.length ? rs1 : rs2;</span>
+<span class="fc" id="L252">		int rs1len = rootsLen;</span>
+<span class="fc bfc" id="L253" title="All 2 branches covered.">		int rslen = rs1len &gt; rs2len ? rs1len : rs2len;</span>
+<span class="fc" id="L254">		int h2size = 0;</span>
 
-<span class="fc" id="L253">		Node&lt;K, V&gt; carry = null;</span>
-<span class="fc bfc" id="L254" title="All 2 branches covered.">		if (c == null) {</span>
-<span class="fc bfc" id="L255" title="All 2 branches covered.">			for (int i = 0; i &lt; rslen; i++) {</span>
-<span class="fc bfc" id="L256" title="All 2 branches covered.">				Node&lt;K, V&gt; r1 = i &lt; rs1len ? rs1[i] : null;</span>
-<span class="fc bfc" id="L257" title="All 2 branches covered.">				Node&lt;K, V&gt; r2 = i &lt; rs2len ? rs2[i] : null;</span>
+<span class="fc" id="L256">		Node&lt;K, V&gt; carry = null;</span>
+<span class="fc bfc" id="L257" title="All 2 branches covered.">		if (c == null) {</span>
+<span class="fc bfc" id="L258" title="All 2 branches covered.">			for (int i = 0; i &lt; rslen; i++) {</span>
+<span class="fc bfc" id="L259" title="All 2 branches covered.">				Node&lt;K, V&gt; r1 = i &lt; rs1len ? rs1[i] : null;</span>
+<span class="fc bfc" id="L260" title="All 2 branches covered.">				Node&lt;K, V&gt; r2 = i &lt; rs2len ? rs2[i] : null;</span>
 
-<span class="fc bfc" id="L259" title="All 2 branches covered.">				if (r2 != null)</span>
-<span class="fc" id="L260">					h2size += 1 &lt;&lt; i;</span>
+<span class="fc bfc" id="L262" title="All 2 branches covered.">				if (r2 != null)</span>
+<span class="fc" id="L263">					h2size += 1 &lt;&lt; i;</span>
 
-<span class="fc bfc" id="L262" title="All 8 branches covered.">				if ((r1 == null &amp;&amp; r2 == null) || (r1 != null &amp;&amp; r2 != null)) {</span>
-<span class="fc" id="L263">					rs[i] = carry;</span>
-<span class="pc bpc" id="L264" title="1 of 4 branches missed.">					carry = (r1 != null &amp;&amp; r2 != null) ? mergeTreesDefaultCmp(r1, r2) : null;</span>
+<span class="fc bfc" id="L265" title="All 8 branches covered.">				if ((r1 == null &amp;&amp; r2 == null) || (r1 != null &amp;&amp; r2 != null)) {</span>
+<span class="fc" id="L266">					rs[i] = carry;</span>
+<span class="pc bpc" id="L267" title="1 of 4 branches missed.">					carry = (r1 != null &amp;&amp; r2 != null) ? mergeTreesDefaultCmp(r1, r2) : null;</span>
 				} else {
-<span class="fc bfc" id="L266" title="All 2 branches covered.">					Node&lt;K, V&gt; r = r1 != null ? r1 : r2;</span>
-<span class="fc bfc" id="L267" title="All 2 branches covered.">					if (carry == null)</span>
-<span class="fc" id="L268">						rs[i] = r;</span>
+<span class="fc bfc" id="L269" title="All 2 branches covered.">					Node&lt;K, V&gt; r = r1 != null ? r1 : r2;</span>
+<span class="fc bfc" id="L270" title="All 2 branches covered.">					if (carry == null)</span>
+<span class="fc" id="L271">						rs[i] = r;</span>
 					else {
-<span class="fc" id="L270">						rs[i] = null;</span>
-<span class="fc" id="L271">						carry = mergeTreesDefaultCmp(carry, r);</span>
+<span class="fc" id="L273">						rs[i] = null;</span>
+<span class="fc" id="L274">						carry = mergeTreesDefaultCmp(carry, r);</span>
 					}
 				}
 			}
 		} else {
-<span class="fc bfc" id="L276" title="All 2 branches covered.">			for (int i = 0; i &lt; rslen; i++) {</span>
-<span class="fc bfc" id="L277" title="All 2 branches covered.">				Node&lt;K, V&gt; r1 = i &lt; rs1len ? rs1[i] : null;</span>
-<span class="fc bfc" id="L278" title="All 2 branches covered.">				Node&lt;K, V&gt; r2 = i &lt; rs2len ? rs2[i] : null;</span>
+<span class="fc bfc" id="L279" title="All 2 branches covered.">			for (int i = 0; i &lt; rslen; i++) {</span>
+<span class="fc bfc" id="L280" title="All 2 branches covered.">				Node&lt;K, V&gt; r1 = i &lt; rs1len ? rs1[i] : null;</span>
+<span class="fc bfc" id="L281" title="All 2 branches covered.">				Node&lt;K, V&gt; r2 = i &lt; rs2len ? rs2[i] : null;</span>
 
-<span class="fc bfc" id="L280" title="All 2 branches covered.">				if (r2 != null)</span>
-<span class="fc" id="L281">					h2size += 1 &lt;&lt; i;</span>
+<span class="fc bfc" id="L283" title="All 2 branches covered.">				if (r2 != null)</span>
+<span class="fc" id="L284">					h2size += 1 &lt;&lt; i;</span>
 
-<span class="fc bfc" id="L283" title="All 8 branches covered.">				if ((r1 == null &amp;&amp; r2 == null) || (r1 != null &amp;&amp; r2 != null)) {</span>
-<span class="fc" id="L284">					rs[i] = carry;</span>
-<span class="pc bpc" id="L285" title="1 of 4 branches missed.">					carry = (r1 != null &amp;&amp; r2 != null) ? mergeTreesCustomCmp(r1, r2) : null;</span>
+<span class="fc bfc" id="L286" title="All 8 branches covered.">				if ((r1 == null &amp;&amp; r2 == null) || (r1 != null &amp;&amp; r2 != null)) {</span>
+<span class="fc" id="L287">					rs[i] = carry;</span>
+<span class="pc bpc" id="L288" title="1 of 4 branches missed.">					carry = (r1 != null &amp;&amp; r2 != null) ? mergeTreesCustomCmp(r1, r2) : null;</span>
 				} else {
-<span class="fc bfc" id="L287" title="All 2 branches covered.">					Node&lt;K, V&gt; r = r1 != null ? r1 : r2;</span>
-<span class="fc bfc" id="L288" title="All 2 branches covered.">					if (carry == null)</span>
-<span class="fc" id="L289">						rs[i] = r;</span>
+<span class="fc bfc" id="L290" title="All 2 branches covered.">					Node&lt;K, V&gt; r = r1 != null ? r1 : r2;</span>
+<span class="fc bfc" id="L291" title="All 2 branches covered.">					if (carry == null)</span>
+<span class="fc" id="L292">						rs[i] = r;</span>
 					else {
-<span class="fc" id="L291">						rs[i] = null;</span>
-<span class="fc" id="L292">						carry = mergeTreesCustomCmp(carry, r);</span>
+<span class="fc" id="L294">						rs[i] = null;</span>
+<span class="fc" id="L295">						carry = mergeTreesCustomCmp(carry, r);</span>
 					}
 				}
 			}
 		}
-<span class="fc bfc" id="L297" title="All 2 branches covered.">		if (carry != null) {</span>
-<span class="fc bfc" id="L298" title="All 2 branches covered.">			if (rslen + 1 &gt;= rs.length)</span>
-<span class="fc" id="L299">				rs = Arrays.copyOf(rs, rs.length * 2);</span>
-<span class="fc" id="L300">			rs[rslen++] = carry;</span>
+<span class="fc bfc" id="L300" title="All 2 branches covered.">		if (carry != null) {</span>
+<span class="fc bfc" id="L301" title="All 2 branches covered.">			if (rslen + 1 &gt;= rs.length)</span>
+<span class="fc" id="L302">				rs = Arrays.copyOf(rs, rs.length * 2);</span>
+<span class="fc" id="L303">			rs[rslen++] = carry;</span>
 		}
 
-<span class="fc" id="L303">		roots = rs;</span>
-<span class="fc" id="L304">		rootsLen = rslen;</span>
-<span class="fc" id="L305">		return h2size;</span>
+<span class="fc" id="L306">		roots = rs;</span>
+<span class="fc" id="L307">		rootsLen = rslen;</span>
+<span class="fc" id="L308">		return h2size;</span>
 	}
 
+	@SuppressWarnings(&quot;unchecked&quot;)
 	@Override
 	public void meld(HeapReferenceable&lt;? extends K, ? extends V&gt; heap) {
-<span class="fc" id="L310">		makeSureNoMeldWithSelf(heap);</span>
-<span class="fc" id="L311">		makeSureMeldWithSameImpl(HeapBinomial.class, heap);</span>
-<span class="fc" id="L312">		makeSureEqualComparatorBeforeMeld(heap);</span>
+<span class="fc" id="L314">		makeSureNoMeldWithSelf(heap);</span>
+<span class="fc" id="L315">		makeSureMeldWithSameImpl(HeapBinomial.class, heap);</span>
+<span class="fc" id="L316">		makeSureEqualComparatorBeforeMeld(heap);</span>
 
-		@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L315">		HeapBinomial&lt;K, V&gt; h = (HeapBinomial&lt;K, V&gt;) heap;</span>
-<span class="fc" id="L316">		size += meld(h.roots, h.rootsLen);</span>
-<span class="fc" id="L317">	}</span>
+<span class="fc" id="L318">		HeapBinomial&lt;K, V&gt; h = (HeapBinomial&lt;K, V&gt;) heap;</span>
+<span class="fc" id="L319">		size += meld(h.roots, h.rootsLen);</span>
+
+<span class="fc" id="L321">		h.roots = (Node&lt;K, V&gt;[]) EmptyNodeArr;</span>
+<span class="fc" id="L322">		h.rootsLen = 0;</span>
+<span class="fc" id="L323">		h.size = 0;</span>
+<span class="fc" id="L324">	}</span>
 
 	@Override
 	public HeapReference&lt;K, V&gt; findMin() {
-<span class="pc bpc" id="L321" title="1 of 2 branches missed.">		if (isEmpty())</span>
-<span class="nc" id="L322">			throw new IllegalStateException();</span>
-<span class="fc" id="L323">		Node&lt;K, V&gt;[] rs = roots;</span>
-<span class="fc" id="L324">		int rsLen = rootsLen;</span>
-<span class="fc" id="L325">		Node&lt;K, V&gt; min = null;</span>
+<span class="pc bpc" id="L328" title="1 of 2 branches missed.">		if (isEmpty())</span>
+<span class="nc" id="L329">			throw new IllegalStateException();</span>
+<span class="fc" id="L330">		Node&lt;K, V&gt;[] rs = roots;</span>
+<span class="fc" id="L331">		int rsLen = rootsLen;</span>
+<span class="fc" id="L332">		Node&lt;K, V&gt; min = null;</span>
 
-<span class="fc bfc" id="L327" title="All 2 branches covered.">		if (c == null) {</span>
-<span class="fc bfc" id="L328" title="All 2 branches covered.">			for (int i = 0; i &lt; rsLen; i++)</span>
-<span class="fc bfc" id="L329" title="All 6 branches covered.">				if (rs[i] != null &amp;&amp; (min == null || Utils.cmpDefault(min.key, rs[i].key) &gt; 0))</span>
-<span class="fc" id="L330">					min = rs[i];</span>
+<span class="fc bfc" id="L334" title="All 2 branches covered.">		if (c == null) {</span>
+<span class="fc bfc" id="L335" title="All 2 branches covered.">			for (int i = 0; i &lt; rsLen; i++)</span>
+<span class="fc bfc" id="L336" title="All 6 branches covered.">				if (rs[i] != null &amp;&amp; (min == null || Utils.cmpDefault(min.key, rs[i].key) &gt; 0))</span>
+<span class="fc" id="L337">					min = rs[i];</span>
 		} else {
-<span class="fc bfc" id="L332" title="All 2 branches covered.">			for (int i = 0; i &lt; rsLen; i++)</span>
-<span class="fc bfc" id="L333" title="All 6 branches covered.">				if (rs[i] != null &amp;&amp; (min == null || c.compare(min.key, rs[i].key) &gt; 0))</span>
-<span class="fc" id="L334">					min = rs[i];</span>
+<span class="fc bfc" id="L339" title="All 2 branches covered.">			for (int i = 0; i &lt; rsLen; i++)</span>
+<span class="fc bfc" id="L340" title="All 6 branches covered.">				if (rs[i] != null &amp;&amp; (min == null || c.compare(min.key, rs[i].key) &gt; 0))</span>
+<span class="fc" id="L341">					min = rs[i];</span>
 		}
-<span class="fc" id="L336">		return min;</span>
+<span class="fc" id="L343">		return min;</span>
 	}
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	private static &lt;K, V&gt; Node&lt;K, V&gt;[] newArr(int n) {
-<span class="fc" id="L341">		return new Node[n];</span>
+<span class="fc" id="L348">		return new Node[n];</span>
 	}
 
-	private static class Node&lt;K, V&gt; implements HeapReference&lt;K, V&gt;, TreeNode&lt;Node&lt;K, V&gt;&gt; {
+	private static class Node&lt;K, V&gt; extends Trees.TreeNodeImpl&lt;Node&lt;K, V&gt;&gt; implements HeapReference&lt;K, V&gt; {
 
-		Node&lt;K, V&gt; parent;
-		Node&lt;K, V&gt; next;
-		Node&lt;K, V&gt; prev;
-		Node&lt;K, V&gt; child;
 		K key;
 		V value;
 
-<span class="fc" id="L353">		Node(K key) {</span>
-<span class="fc" id="L354">			parent = null;</span>
-<span class="fc" id="L355">			next = null;</span>
-<span class="fc" id="L356">			prev = null;</span>
-<span class="fc" id="L357">			child = null;</span>
-<span class="fc" id="L358">			this.key = key;</span>
-<span class="fc" id="L359">		}</span>
+<span class="fc" id="L356">		Node(K key) {</span>
+<span class="fc" id="L357">			parent = null;</span>
+<span class="fc" id="L358">			next = null;</span>
+<span class="fc" id="L359">			prev = null;</span>
+<span class="fc" id="L360">			child = null;</span>
+<span class="fc" id="L361">			this.key = key;</span>
+<span class="fc" id="L362">		}</span>
 
 		@Override
 		public K key() {
-<span class="fc" id="L363">			return key;</span>
+<span class="fc" id="L366">			return key;</span>
 		}
 
 		@Override
 		public V value() {
-<span class="nc" id="L368">			return value;</span>
+<span class="nc" id="L371">			return value;</span>
 		}
 
 		@Override
 		public void setValue(V val) {
-<span class="nc" id="L373">			value = val;</span>
-<span class="nc" id="L374">		}</span>
-
-		@Override
-		public Node&lt;K, V&gt; parent() {
-<span class="fc" id="L378">			return parent;</span>
-		}
-
-		@Override
-		public Node&lt;K, V&gt; next() {
-<span class="fc" id="L383">			return next;</span>
-		}
-
-		@Override
-		public Node&lt;K, V&gt; prev() {
-<span class="nc" id="L388">			return prev;</span>
-		}
-
-		@Override
-		public Node&lt;K, V&gt; child() {
-<span class="fc" id="L393">			return child;</span>
-		}
-
-		@Override
-		public void setParent(Node&lt;K, V&gt; x) {
-<span class="fc" id="L398">			parent = x;</span>
-<span class="fc" id="L399">		}</span>
-
-		@Override
-		public void setNext(Node&lt;K, V&gt; x) {
-<span class="fc" id="L403">			next = x;</span>
-<span class="fc" id="L404">		}</span>
-
-		@Override
-		public void setPrev(Node&lt;K, V&gt; x) {
-<span class="fc" id="L408">			prev = x;</span>
-<span class="fc" id="L409">		}</span>
-
-		@Override
-		public void setChild(Node&lt;K, V&gt; x) {
-<span class="fc" id="L413">			child = x;</span>
-<span class="fc" id="L414">		}</span>
+<span class="nc" id="L376">			value = val;</span>
+<span class="nc" id="L377">		}</span>
 
 		@Override
 		public String toString() {
-<span class="nc" id="L418">			return &quot;{&quot; + key + &quot;:&quot; + value + &quot;}&quot;;</span>
+<span class="nc" id="L381">			return &quot;{&quot; + key + &quot;:&quot; + value + &quot;}&quot;;</span>
 		}
 
 	}
@@ -424,26 +387,26 @@ import com.jgalgo.Trees.TreeNode;
 
 		private int nextRootIdx;
 
-<span class="fc" id="L427">		Itr() {</span>
-<span class="fc" id="L428">			super(null);</span>
-<span class="fc" id="L429">			nextRootIdx = 0;</span>
-<span class="fc" id="L430">		}</span>
+<span class="fc" id="L390">		Itr() {</span>
+<span class="fc" id="L391">			super(null);</span>
+<span class="fc" id="L392">			nextRootIdx = 0;</span>
+<span class="fc" id="L393">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="fc bfc" id="L434" title="All 2 branches covered.">			while (!super.hasNext()) {</span>
-<span class="fc bfc" id="L435" title="All 2 branches covered.">				if (nextRootIdx &gt;= rootsLen)</span>
-<span class="fc" id="L436">					return false;</span>
+<span class="fc bfc" id="L397" title="All 2 branches covered.">			while (!super.hasNext()) {</span>
+<span class="fc bfc" id="L398" title="All 2 branches covered.">				if (nextRootIdx &gt;= rootsLen)</span>
+<span class="fc" id="L399">					return false;</span>
 				int i;
-<span class="fc bfc" id="L438" title="All 2 branches covered.">				for (i = nextRootIdx; i &lt; rootsLen; i++) {</span>
-<span class="fc bfc" id="L439" title="All 2 branches covered.">					if (roots[i] != null) {</span>
-<span class="fc" id="L440">						reset(roots[i]);</span>
-<span class="fc" id="L441">						break;</span>
+<span class="fc bfc" id="L401" title="All 2 branches covered.">				for (i = nextRootIdx; i &lt; rootsLen; i++) {</span>
+<span class="fc bfc" id="L402" title="All 2 branches covered.">					if (roots[i] != null) {</span>
+<span class="fc" id="L403">						reset(roots[i]);</span>
+<span class="fc" id="L404">						break;</span>
 					}
 				}
-<span class="fc" id="L444">				nextRootIdx = i + 1;</span>
-<span class="fc" id="L445">			}</span>
-<span class="fc" id="L446">			return true;</span>
+<span class="fc" id="L407">				nextRootIdx = i + 1;</span>
+<span class="fc" id="L408">			}</span>
+<span class="fc" id="L409">			return true;</span>
 		}
 
 	}

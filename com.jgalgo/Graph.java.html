@@ -17,7 +17,6 @@
 package com.jgalgo;
 
 import java.util.Set;
-import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
@@ -138,26 +137,10 @@ public interface Graph {
 	 * instead of actually removing it and dealing with IDs renames, but that depends on the specific use case.
 	 *
 	 * @see                              IDStrategy
-	 * @param  v                         the vertex identifier to remove
+	 * @param  vertex                    the vertex identifier to remove
 	 * @throws IndexOutOfBoundsException if \(v\) is not a valid vertex identifier
 	 */
-	void removeVertex(int v);
-
-	/**
-	 * Remove multiple vertices.
-	 * &lt;p&gt;
-	 * After removing a vertex, the vertices ID strategy may rename other vertices identifiers to maintain its
-	 * invariants, see {@link #getVerticesIDStrategy()}. Theses renames can be subscribed using
-	 * {@link IDStrategy#addIDSwapListener}.
-	 * &lt;p&gt;
-	 * This function may be useful in case a user want to remove a collection of vertices, and does not want to update
-	 * IDs within the collection due to IDs renames.
-	 *
-	 * @param  vs                        a collection of vertices to remove
-	 * @throws IndexOutOfBoundsException if one of the edges is not a valid edge identifier
-	 * @throws IllegalArgumentException  if the vertices collection to remove contains duplications
-	 */
-	void removeVertices(IntCollection vs);
+	void removeVertex(int vertex);
 
 	/**
 	 * Get the edges whose source is \(u\).
@@ -166,11 +149,11 @@ public interface Graph {
 	 * Get an edge iterator that iterate over all edges whose source is \(u\). In case the graph is undirected, the
 	 * iterator will iterate over edges whose \(u\) is one of their end points.
 	 *
-	 * @param  u                         a source vertex
+	 * @param  source                    a source vertex
 	 * @return                           an iterator of all the edges whose source is u
 	 * @throws IndexOutOfBoundsException if \(u\) is not a valid vertex identifier
 	 */
-	EdgeIter edgesOut(int u);
+	EdgeIter edgesOut(int source);
 
 	/**
 	 * Get the edges whose target is \(v\).
@@ -179,11 +162,11 @@ public interface Graph {
 	 * Get an edge iterator that iterate over all edges whose target is \(v\). In case the graph is undirected, the
 	 * iterator will iterate over edges whose \(v\) is one of their end points.
 	 *
-	 * @param  v                         a target vertex
+	 * @param  target                    a target vertex
 	 * @return                           an iterator of all the edges whose target is \(v\)
 	 * @throws IndexOutOfBoundsException if \(v\) is not a valid vertex identifier
 	 */
-	EdgeIter edgesIn(int v);
+	EdgeIter edgesIn(int target);
 
 	/**
 	 * Get the edge whose source is \(u\) and target is \(v\).
@@ -194,39 +177,39 @@ public interface Graph {
 	 * &lt;p&gt;
 	 * In case there are multiple (parallel) edges between \(u\) and \(v\), a single arbitrary one is returned.
 	 *
-	 * @param  u                         a source vertex
-	 * @param  v                         a target vertex
+	 * @param  source                    a source vertex
+	 * @param  target                    a target vertex
 	 * @return                           id of the edge or {@code -1} if no such edge exists
 	 * @throws IndexOutOfBoundsException if \(u\) or \(v\) are not valid vertices identifiers
 	 */
-	default int getEdge(int u, int v) {
-<span class="fc bfc" id="L203" title="All 2 branches covered.">		for (EdgeIter it = edgesOut(u); it.hasNext();) {</span>
-<span class="fc" id="L204">			int e = it.nextInt();</span>
-<span class="fc bfc" id="L205" title="All 2 branches covered.">			if (it.target() == v)</span>
-<span class="fc" id="L206">				return e;</span>
-<span class="fc" id="L207">		}</span>
-<span class="fc" id="L208">		return -1;</span>
+	default int getEdge(int source, int target) {
+<span class="fc bfc" id="L186" title="All 2 branches covered.">		for (EdgeIter it = edgesOut(source); it.hasNext();) {</span>
+<span class="fc" id="L187">			int e = it.nextInt();</span>
+<span class="fc bfc" id="L188" title="All 2 branches covered.">			if (it.target() == target)</span>
+<span class="fc" id="L189">				return e;</span>
+<span class="fc" id="L190">		}</span>
+<span class="fc" id="L191">		return -1;</span>
 	}
 
 	/**
 	 * Get the edges whose source is \(u\) and target is \(v\).
 	 *
-	 * @param  u                         a source vertex
-	 * @param  v                         a target vertex
+	 * @param  source                    a source vertex
+	 * @param  target                    a target vertex
 	 * @return                           an iterator of all the edges whose source is \(u\) and target is \(v\)
 	 * @throws IndexOutOfBoundsException if \(u\) or \(v\) are not valid vertices identifiers
 	 */
-	EdgeIter getEdges(int u, int v);
+	EdgeIter getEdges(int source, int target);
 
 	/**
 	 * Add a new edge to the graph.
 	 *
-	 * @param  u                         a source vertex
-	 * @param  v                         a target vertex
+	 * @param  source                    a source vertex
+	 * @param  target                    a target vertex
 	 * @return                           the new edge identifier
 	 * @throws IndexOutOfBoundsException if \(u\) or \(v\) are not valid vertices identifiers
 	 */
-	int addEdge(int u, int v);
+	int addEdge(int source, int target);
 
 	/**
 	 * Remove an edge from the graph.
@@ -241,34 +224,19 @@ public interface Graph {
 	void removeEdge(int edge);
 
 	/**
-	 * Remove multiple edges.
-	 * &lt;p&gt;
-	 * After removing an edge, the edges ID strategy may rename other edges identifiers to maintain its invariants, see
-	 * {@link #getEdgesIDStrategy()}. Theses renames can be subscribed using {@link IDStrategy#addIDSwapListener}.
-	 * &lt;p&gt;
-	 * This function may be useful in case a user want to remove a collection of edges, and does not want to update IDs
-	 * within the collection due to IDs renames.
-	 *
-	 * @param  edges                     a collection of edges to remove
-	 * @throws IndexOutOfBoundsException if one of the edges is not a valid edge identifier
-	 * @throws IllegalArgumentException  if the edges collection to remove contains duplications
-	 */
-	void removeEdges(IntCollection edges);
-
-	/**
 	 * Remove all the edges of a vertex.
 	 *
 	 * &lt;p&gt;
 	 * After removing an edge, the edges ID strategy may rename other edges identifiers to maintain its invariants, see
 	 * {@link #getEdgesIDStrategy()}. Theses renames can be subscribed using {@link IDStrategy#addIDSwapListener}.
 	 *
-	 * @param  u                         a vertex in the graph
+	 * @param  vertex                    a vertex in the graph
 	 * @throws IndexOutOfBoundsException if \(u\) is not a valid vertex identifier
 	 */
-	default void removeEdgesOf(int u) {
-<span class="fc" id="L269">		removeEdgesOutOf(u);</span>
-<span class="fc" id="L270">		removeEdgesInOf(u);</span>
-<span class="fc" id="L271">	}</span>
+	default void removeEdgesOf(int vertex) {
+<span class="fc" id="L237">		removeEdgesOutOf(vertex);</span>
+<span class="fc" id="L238">		removeEdgesInOf(vertex);</span>
+<span class="fc" id="L239">	}</span>
 
 	/**
 	 * Remove all edges whose source is \(u\).
@@ -276,15 +244,15 @@ public interface Graph {
 	 * After removing an edge, the edges ID strategy may rename other edges identifiers to maintain its invariants, see
 	 * {@link #getEdgesIDStrategy()}. Theses renames can be subscribed using {@link IDStrategy#addIDSwapListener}.
 	 *
-	 * @param  u                         a vertex in the graph
+	 * @param  source                    a vertex in the graph
 	 * @throws IndexOutOfBoundsException if \(u\) is not a valid vertex identifier
 	 */
-	default void removeEdgesOutOf(int u) {
-<span class="fc bfc" id="L283" title="All 2 branches covered.">		for (EdgeIter eit = edgesOut(u); eit.hasNext();) {</span>
-<span class="fc" id="L284">			eit.nextInt();</span>
-<span class="fc" id="L285">			eit.remove();</span>
+	default void removeEdgesOutOf(int source) {
+<span class="fc bfc" id="L251" title="All 2 branches covered.">		for (EdgeIter eit = edgesOut(source); eit.hasNext();) {</span>
+<span class="fc" id="L252">			eit.nextInt();</span>
+<span class="fc" id="L253">			eit.remove();</span>
 		}
-<span class="fc" id="L287">	}</span>
+<span class="fc" id="L255">	}</span>
 
 	/**
 	 * Remove all edges whose target is \(v\).
@@ -292,15 +260,15 @@ public interface Graph {
 	 * After removing an edge, the edges ID strategy may rename other edges identifiers to maintain its invariants, see
 	 * {@link #getEdgesIDStrategy()}. Theses renames can be subscribed using {@link IDStrategy#addIDSwapListener}.
 	 *
-	 * @param  v                         a vertex in the graph
+	 * @param  target                    a vertex in the graph
 	 * @throws IndexOutOfBoundsException if \(v\) is not a valid vertex identifier
 	 */
-	default void removeEdgesInOf(int v) {
-<span class="fc bfc" id="L299" title="All 2 branches covered.">		for (EdgeIter eit = edgesIn(v); eit.hasNext();) {</span>
-<span class="fc" id="L300">			eit.nextInt();</span>
-<span class="fc" id="L301">			eit.remove();</span>
+	default void removeEdgesInOf(int target) {
+<span class="fc bfc" id="L267" title="All 2 branches covered.">		for (EdgeIter eit = edgesIn(target); eit.hasNext();) {</span>
+<span class="fc" id="L268">			eit.nextInt();</span>
+<span class="fc" id="L269">			eit.remove();</span>
 		}
-<span class="fc" id="L303">	}</span>
+<span class="fc" id="L271">	}</span>
 
 	/**
 	 * Reverse an edge by switching its source and target.
@@ -348,14 +316,14 @@ public interface Graph {
 	 * @throws IllegalArgumentException  if {@code endpoint} is not an endpoint of the edge
 	 */
 	default int edgeEndpoint(int edge, int endpoint) {
-<span class="nc" id="L351">		int u = edgeSource(edge);</span>
-<span class="nc" id="L352">		int v = edgeTarget(edge);</span>
-<span class="nc bnc" id="L353" title="All 2 branches missed.">		if (endpoint == u) {</span>
-<span class="nc" id="L354">			return v;</span>
-<span class="nc bnc" id="L355" title="All 2 branches missed.">		} else if (endpoint == v) {</span>
-<span class="nc" id="L356">			return u;</span>
+<span class="nc" id="L319">		int u = edgeSource(edge);</span>
+<span class="nc" id="L320">		int v = edgeTarget(edge);</span>
+<span class="nc bnc" id="L321" title="All 2 branches missed.">		if (endpoint == u) {</span>
+<span class="nc" id="L322">			return v;</span>
+<span class="nc bnc" id="L323" title="All 2 branches missed.">		} else if (endpoint == v) {</span>
+<span class="nc" id="L324">			return u;</span>
 		} else {
-<span class="nc" id="L358">			throw new IllegalArgumentException(</span>
+<span class="nc" id="L326">			throw new IllegalArgumentException(</span>
 					&quot;The given vertex (&quot; + endpoint + &quot;) is not an endpoint of the edge (&quot; + u + &quot;, &quot; + v + &quot;)&quot;);
 		}
 	}
@@ -363,33 +331,33 @@ public interface Graph {
 	/**
 	 * Get the out degree of a source vertex.
 	 *
-	 * @param  u                         a source vertex
+	 * @param  source                    a source vertex
 	 * @return                           the number of edges whose source is u
 	 * @throws IndexOutOfBoundsException if \(u\) is not a valid vertex identifier
 	 */
-	default int degreeOut(int u) {
-<span class="fc" id="L371">		int count = 0;</span>
-<span class="fc bfc" id="L372" title="All 2 branches covered.">		for (EdgeIter it = edgesOut(u); it.hasNext();) {</span>
-<span class="fc" id="L373">			it.nextInt();</span>
-<span class="fc" id="L374">			count++;</span>
+	default int degreeOut(int source) {
+<span class="fc" id="L339">		int count = 0;</span>
+<span class="fc bfc" id="L340" title="All 2 branches covered.">		for (EdgeIter it = edgesOut(source); it.hasNext();) {</span>
+<span class="fc" id="L341">			it.nextInt();</span>
+<span class="fc" id="L342">			count++;</span>
 		}
-<span class="fc" id="L376">		return count;</span>
+<span class="fc" id="L344">		return count;</span>
 	}
 
 	/**
 	 * Get the in degree of a target vertex.
 	 *
-	 * @param  v                         a target vertex
+	 * @param  target                    a target vertex
 	 * @return                           the number of edges whose target is v
 	 * @throws IndexOutOfBoundsException if \(v\) is not a valid vertex identifier
 	 */
-	default int degreeIn(int v) {
-<span class="fc" id="L387">		int count = 0;</span>
-<span class="fc bfc" id="L388" title="All 2 branches covered.">		for (EdgeIter it = edgesIn(v); it.hasNext();) {</span>
-<span class="fc" id="L389">			it.nextInt();</span>
-<span class="fc" id="L390">			count++;</span>
+	default int degreeIn(int target) {
+<span class="fc" id="L355">		int count = 0;</span>
+<span class="fc bfc" id="L356" title="All 2 branches covered.">		for (EdgeIter it = edgesIn(target); it.hasNext();) {</span>
+<span class="fc" id="L357">			it.nextInt();</span>
+<span class="fc" id="L358">			count++;</span>
 		}
-<span class="fc" id="L392">		return count;</span>
+<span class="fc" id="L360">		return count;</span>
 	}
 
 	/**

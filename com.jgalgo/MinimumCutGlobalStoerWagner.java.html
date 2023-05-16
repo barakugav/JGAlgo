@@ -46,7 +46,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 		@SuppressWarnings(&quot;unchecked&quot;)
 <span class="fc" id="L47">		HeapReference&lt;Double, Integer&gt;[] vRefs = new HeapReference[n];</span>
 
-<span class="fc" id="L49">		BitSet minimumCut = new BitSet();</span>
+<span class="fc" id="L49">		BitSet minimumCut = new BitSet(n);</span>
 <span class="fc" id="L50">		double minimumCutWeight = Double.MAX_VALUE;</span>
 
 <span class="fc bfc" id="L52" title="All 2 branches covered.">		while (cg.numberOfSuperVertices() &gt; 1) {</span>

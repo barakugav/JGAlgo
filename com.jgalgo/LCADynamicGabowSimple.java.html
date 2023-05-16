@@ -172,9 +172,9 @@ class LCADynamicGabowSimple implements LCADynamic {
 <span class="fc" id="L172">		return (int) x;</span>
 	}
 
-	private static CharacteristicAncestors0 calcCACompressed(NodeImpl x, NodeImpl y) {
+	private static CharacteristicAncestors calcCACompressed(NodeImpl x, NodeImpl y) {
 <span class="pc bpc" id="L176" title="1 of 2 branches missed.">		if (x == y)</span>
-<span class="nc" id="L177">			return new CharacteristicAncestors0(x, x, x);</span>
+<span class="nc" id="L177">			return new CharacteristicAncestors(x, x, x);</span>
 <span class="fc" id="L178">		int i = logBetaFloor(Math.abs(x.idxLower - y.idxLower));</span>
 
 <span class="fc" id="L180">		NodeImpl[] a = new NodeImpl[2];</span>
@@ -208,56 +208,52 @@ class LCADynamicGabowSimple implements LCADynamic {
 <span class="pc bpc" id="L208" title="1 of 2 branches missed.">		assert a[0] == a[1];</span>
 <span class="pc bpc" id="L209" title="1 of 4 branches missed.">		assert ax == a[0] || ax.cParent == a[0];</span>
 <span class="pc bpc" id="L210" title="1 of 4 branches missed.">		assert ay == a[0] || ay.cParent == a[0];</span>
-<span class="fc" id="L211">		return new CharacteristicAncestors0(a[0], ax, ay);</span>
+<span class="fc" id="L211">		return new CharacteristicAncestors(a[0], ax, ay);</span>
 	}
 
-	private static CharacteristicAncestors0 calcCA0(NodeImpl x, NodeImpl y) {
-<span class="fc bfc" id="L215" title="All 2 branches covered.">		if (x == y)</span>
-<span class="fc" id="L216">			return new CharacteristicAncestors0(x, x, x);</span>
-<span class="fc" id="L217">		CharacteristicAncestors0 cac = calcCACompressed(x, y);</span>
+	CharacteristicAncestors calcCA(Node x0, Node y0) {
+<span class="fc" id="L215">		NodeImpl x = (NodeImpl) x0, y = (NodeImpl) y0;</span>
+<span class="fc bfc" id="L216" title="All 2 branches covered.">		if (x == y)</span>
+<span class="fc" id="L217">			return new CharacteristicAncestors(x, x, x);</span>
+<span class="fc" id="L218">		CharacteristicAncestors cac = calcCACompressed(x, y);</span>
 
 		/* c is an apex of path P */
-<span class="fc" id="L220">		NodeImpl c = cac.a, cx = cac.ax, cy = cac.ay;</span>
-<span class="pc bpc" id="L221" title="1 of 2 branches missed.">		assert c == c.getPathApex();</span>
+<span class="fc" id="L221">		NodeImpl c = (NodeImpl) cac.a, cx = (NodeImpl) cac.ax, cy = (NodeImpl) cac.ay;</span>
+<span class="pc bpc" id="L222" title="1 of 2 branches missed.">		assert c == c.getPathApex();</span>
 
 		/* bz is the first ancestor of cz on P */
-<span class="fc bfc" id="L224" title="All 4 branches covered.">		NodeImpl bx = cx != c &amp;&amp; cx.isApex ? cx.parent : cx;</span>
-<span class="fc bfc" id="L225" title="All 4 branches covered.">		NodeImpl by = cy != c &amp;&amp; cy.isApex ? cy.parent : cy;</span>
-<span class="pc bpc" id="L226" title="1 of 2 branches missed.">		assert c == bx.getPathApex();</span>
-<span class="pc bpc" id="L227" title="1 of 2 branches missed.">		assert c == by.getPathApex();</span>
+<span class="fc bfc" id="L225" title="All 4 branches covered.">		NodeImpl bx = cx != c &amp;&amp; cx.isApex ? cx.parent : cx;</span>
+<span class="fc bfc" id="L226" title="All 4 branches covered.">		NodeImpl by = cy != c &amp;&amp; cy.isApex ? cy.parent : cy;</span>
+<span class="pc bpc" id="L227" title="1 of 2 branches missed.">		assert c == bx.getPathApex();</span>
+<span class="pc bpc" id="L228" title="1 of 2 branches missed.">		assert c == by.getPathApex();</span>
 
 		/* a is the shallower vertex of bx and by */
-<span class="fc bfc" id="L230" title="All 2 branches covered.">		NodeImpl a = bx.pathIdx &lt; by.pathIdx ? bx : by;</span>
+<span class="fc bfc" id="L231" title="All 2 branches covered.">		NodeImpl a = bx.pathIdx &lt; by.pathIdx ? bx : by;</span>
 
-<span class="fc bfc" id="L232" title="All 2 branches covered.">		NodeImpl ax = a != bx ? a.getPathApex().path[a.pathIdx + 1] : cx;</span>
-<span class="fc bfc" id="L233" title="All 2 branches covered.">		NodeImpl ay = a != by ? a.getPathApex().path[a.pathIdx + 1] : cy;</span>
+<span class="fc bfc" id="L233" title="All 2 branches covered.">		NodeImpl ax = a != bx ? a.getPathApex().path[a.pathIdx + 1] : cx;</span>
+<span class="fc bfc" id="L234" title="All 2 branches covered.">		NodeImpl ay = a != by ? a.getPathApex().path[a.pathIdx + 1] : cy;</span>
 
-<span class="pc bpc" id="L235" title="1 of 4 branches missed.">		assert ax == a || ax.parent == a;</span>
-<span class="pc bpc" id="L236" title="1 of 4 branches missed.">		assert ay == a || ay.parent == a;</span>
-<span class="fc" id="L237">		return new CharacteristicAncestors0(a, ax, ay);</span>
+<span class="pc bpc" id="L236" title="1 of 4 branches missed.">		assert ax == a || ax.parent == a;</span>
+<span class="pc bpc" id="L237" title="1 of 4 branches missed.">		assert ay == a || ay.parent == a;</span>
+<span class="fc" id="L238">		return new CharacteristicAncestors(a, ax, ay);</span>
 	}
 
 	@Override
 	public Node findLowestCommonAncestor(Node x, Node y) {
-<span class="fc" id="L242">		return calcCA0((NodeImpl) x, (NodeImpl) y).a;</span>
-	}
-
-	CharacteristicAncestors calcCA(Node x, Node y) {
-<span class="fc" id="L246">		CharacteristicAncestors0 ca = calcCA0((NodeImpl) x, (NodeImpl) y);</span>
-<span class="fc" id="L247">		return new CharacteristicAncestors(ca.a, ca.ax, ca.ay);</span>
+<span class="fc" id="L243">		return calcCA((NodeImpl) x, (NodeImpl) y).a;</span>
 	}
 
 	@Override
 	public int size() {
-<span class="fc" id="L252">		return nodesNum;</span>
+<span class="fc" id="L248">		return nodesNum;</span>
 	}
 
 	@Override
 	public void clear() {
-<span class="fc" id="L257">		nodesNum = 0;</span>
-<span class="fc" id="L258">	}</span>
+<span class="fc" id="L253">		nodesNum = 0;</span>
+<span class="fc" id="L254">	}</span>
 
-<span class="fc" id="L260">	private static class NodeImpl implements Node {</span>
+<span class="fc" id="L256">	private static class NodeImpl implements Node {</span>
 		/* --- user tree data --- */
 		Object nodeData;
 		/* tree parent */
@@ -293,62 +289,62 @@ class LCADynamicGabowSimple implements LCADynamic {
 		/* ancestor table */
 		NodeImpl[] ancestorTable;
 
-<span class="fc" id="L296">		NodeImpl(NodeImpl parent) {</span>
-<span class="fc" id="L297">			this.parent = parent;</span>
-<span class="fc" id="L298">			children = EMPTY_NODE_ARR;</span>
-<span class="fc" id="L299">		}</span>
+<span class="fc" id="L292">		NodeImpl(NodeImpl parent) {</span>
+<span class="fc" id="L293">			this.parent = parent;</span>
+<span class="fc" id="L294">			children = EMPTY_NODE_ARR;</span>
+<span class="fc" id="L295">		}</span>
 
 		@Override
 		@SuppressWarnings(&quot;unchecked&quot;)
 		public &lt;D&gt; D getNodeData() {
-<span class="fc" id="L304">			return (D) nodeData;</span>
+<span class="fc" id="L300">			return (D) nodeData;</span>
 		}
 
 		@Override
 		public void setNodeData(Object data) {
-<span class="fc" id="L309">			nodeData = data;</span>
-<span class="fc" id="L310">		}</span>
+<span class="fc" id="L305">			nodeData = data;</span>
+<span class="fc" id="L306">		}</span>
 
 		@Override
 		public Node getParent() {
-<span class="fc" id="L314">			return parent;</span>
+<span class="fc" id="L310">			return parent;</span>
 		}
 
 		boolean isRoot() {
-<span class="pc bpc" id="L318" title="1 of 6 branches missed.">			assert !(parent == null ^ cParent == null);</span>
-<span class="fc bfc" id="L319" title="All 2 branches covered.">			return parent == null;</span>
+<span class="pc bpc" id="L314" title="1 of 6 branches missed.">			assert !(parent == null ^ cParent == null);</span>
+<span class="fc bfc" id="L315" title="All 2 branches covered.">			return parent == null;</span>
 		}
 
 		void addChild(NodeImpl c) {
-<span class="fc bfc" id="L323" title="All 2 branches covered.">			if (childrenNum &gt;= children.length)</span>
-<span class="fc" id="L324">				children = Arrays.copyOf(children, Math.max(children.length * 2, 2));</span>
-<span class="fc" id="L325">			children[childrenNum++] = c;</span>
-<span class="fc" id="L326">		}</span>
+<span class="fc bfc" id="L319" title="All 2 branches covered.">			if (childrenNum &gt;= children.length)</span>
+<span class="fc" id="L320">				children = Arrays.copyOf(children, Math.max(children.length * 2, 2));</span>
+<span class="fc" id="L321">			children[childrenNum++] = c;</span>
+<span class="fc" id="L322">		}</span>
 
 		NodeImpl getPathApex() {
-<span class="fc bfc" id="L329" title="All 2 branches covered.">			return isApex ? this : cParent;</span>
+<span class="fc bfc" id="L325" title="All 2 branches covered.">			return isApex ? this : cParent;</span>
 		}
 
 		void addToPath(NodeImpl c) {
-<span class="fc bfc" id="L333" title="All 2 branches covered.">			if (pathSize &gt;= path.length)</span>
-<span class="fc" id="L334">				path = Arrays.copyOf(path, Math.max(path.length * 2, 2));</span>
-<span class="fc" id="L335">			path[pathSize++] = c;</span>
-<span class="fc" id="L336">		}</span>
+<span class="fc bfc" id="L329" title="All 2 branches covered.">			if (pathSize &gt;= path.length)</span>
+<span class="fc" id="L330">				path = Arrays.copyOf(path, Math.max(path.length * 2, 2));</span>
+<span class="fc" id="L331">			path[pathSize++] = c;</span>
+<span class="fc" id="L332">		}</span>
 
 		boolean isRequireRecompress() {
-<span class="fc bfc" id="L339" title="All 2 branches covered.">			return size &gt;= alpha * sigma;</span>
+<span class="fc bfc" id="L335" title="All 2 branches covered.">			return size &gt;= alpha * sigma;</span>
 		}
 
 		void ancestorTableInit(int size) {
-<span class="fc bfc" id="L343" title="All 4 branches covered.">			if (ancestorTable != null &amp;&amp; ancestorTable.length &gt;= size)</span>
-<span class="fc" id="L344">				Arrays.fill(ancestorTable, null);</span>
+<span class="fc bfc" id="L339" title="All 4 branches covered.">			if (ancestorTable != null &amp;&amp; ancestorTable.length &gt;= size)</span>
+<span class="fc" id="L340">				Arrays.fill(ancestorTable, null);</span>
 			else
-<span class="fc" id="L346">				ancestorTable = new NodeImpl[size];</span>
-<span class="fc" id="L347">		}</span>
+<span class="fc" id="L342">				ancestorTable = new NodeImpl[size];</span>
+<span class="fc" id="L343">		}</span>
 
 		@Override
 		public String toString() {
-<span class="nc bnc" id="L351" title="All 2 branches missed.">			return &quot;V&quot; + (isApex ? &quot;*&quot; : &quot;&quot;) + &quot;&lt;&quot; + getNodeData() + &quot;&gt;&quot;;</span>
+<span class="nc bnc" id="L347" title="All 2 branches missed.">			return &quot;V&quot; + (isApex ? &quot;*&quot; : &quot;&quot;) + &quot;&lt;&quot; + getNodeData() + &quot;&gt;&quot;;</span>
 		}
 
 		// void clear() {
@@ -361,24 +357,14 @@ class LCADynamicGabowSimple implements LCADynamic {
 
 	}
 
-	private static class CharacteristicAncestors0 {
-		NodeImpl a, ax, ay;
-
-<span class="fc" id="L367">		CharacteristicAncestors0(NodeImpl a, NodeImpl ax, NodeImpl ay) {</span>
-<span class="fc" id="L368">			this.a = a;</span>
-<span class="fc" id="L369">			this.ax = ax;</span>
-<span class="fc" id="L370">			this.ay = ay;</span>
-<span class="fc" id="L371">		}</span>
-	}
-
 	static class CharacteristicAncestors {
 		final Node a, ax, ay;
 
-<span class="fc" id="L377">		CharacteristicAncestors(Node a, Node ax, Node ay) {</span>
-<span class="fc" id="L378">			this.a = a;</span>
-<span class="fc" id="L379">			this.ax = ax;</span>
-<span class="fc" id="L380">			this.ay = ay;</span>
-<span class="fc" id="L381">		}</span>
+<span class="fc" id="L363">		CharacteristicAncestors(Node a, Node ax, Node ay) {</span>
+<span class="fc" id="L364">			this.a = a;</span>
+<span class="fc" id="L365">			this.ax = ax;</span>
+<span class="fc" id="L366">			this.ay = ay;</span>
+<span class="fc" id="L367">		}</span>
 	}
 
 }

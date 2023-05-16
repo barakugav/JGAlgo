@@ -17,7 +17,6 @@
 package com.jgalgo;
 
 import java.util.Arrays;
-import it.unimi.dsi.fastutil.ints.IntArrays;
 
 /**
  * Static LCA implementation using RMQ.
@@ -34,65 +33,64 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
  */
 class LCAStaticRMQ implements LCAStatic {
 
-<span class="fc" id="L37">	private final RMQStatic rmq = new RMQStaticPlusMinusOne();</span>
-<span class="fc" id="L38">	private final AllocatedMemory allocatedMemory = new AllocatedMemory();</span>
+<span class="fc" id="L36">	private final RMQStatic rmq = new RMQStaticPlusMinusOne();</span>
 
 	/**
 	 * Create a new static LCA algorithm object.
 	 */
-<span class="fc" id="L43">	LCAStaticRMQ() {}</span>
+<span class="fc" id="L41">	LCAStaticRMQ() {}</span>
 
 	@Override
 	public LCAStatic.DataStructure preProcessTree(Graph tree, int root) {
-<span class="pc bpc" id="L47" title="1 of 2 branches missed.">		if (!Trees.isTree(tree, root))</span>
-<span class="nc" id="L48">			throw new IllegalArgumentException(&quot;The given graph is not a tree rooted at the given root&quot;);</span>
+<span class="pc bpc" id="L45" title="1 of 2 branches missed.">		if (!Trees.isTree(tree, root))</span>
+<span class="nc" id="L46">			throw new IllegalArgumentException(&quot;The given graph is not a tree rooted at the given root&quot;);</span>
 
-<span class="fc" id="L50">		final int n = tree.vertices().size();</span>
-<span class="fc" id="L51">		allocatedMemory.allocate(n);</span>
-<span class="fc" id="L52">		int[] depths = allocatedMemory.depths;</span>
-<span class="fc" id="L53">		int[] vs = allocatedMemory.vs;</span>
-<span class="fc" id="L54">		int[] parent = allocatedMemory.parent;</span>
-<span class="fc" id="L55">		EdgeIter[] edgeIters = allocatedMemory.edgeIters;</span>
+<span class="fc" id="L48">		final int n = tree.vertices().size();</span>
+<span class="fc" id="L49">		int[] depths = new int[n * 2];</span>
+<span class="fc" id="L50">		int[] vs = new int[n * 2];</span>
+<span class="fc" id="L51">		int[] parent = new int[n];</span>
+<span class="fc" id="L52">		EdgeIter[] edgeIters = new EdgeIter[n];</span>
+		// TODO DFS stack class
 
-<span class="fc" id="L57">		parent[0] = -1;</span>
-<span class="fc" id="L58">		edgeIters[0] = tree.edgesOut(root);</span>
+<span class="fc" id="L55">		parent[0] = -1;</span>
+<span class="fc" id="L56">		edgeIters[0] = tree.edgesOut(root);</span>
 
-<span class="fc" id="L60">		int sequenceLength = 0;</span>
-<span class="fc" id="L61">		dfs: for (int u = root, depth = 0;;) {</span>
-<span class="fc" id="L62">			depths[sequenceLength] = depth;</span>
-<span class="fc" id="L63">			vs[sequenceLength] = u;</span>
-<span class="fc" id="L64">			sequenceLength++;</span>
+<span class="fc" id="L58">		int sequenceLength = 0;</span>
+<span class="fc" id="L59">		dfs: for (int u = root, depth = 0;;) {</span>
+<span class="fc" id="L60">			depths[sequenceLength] = depth;</span>
+<span class="fc" id="L61">			vs[sequenceLength] = u;</span>
+<span class="fc" id="L62">			sequenceLength++;</span>
 
-<span class="fc bfc" id="L66" title="All 2 branches covered.">			for (EdgeIter eit = edgeIters[depth]; eit.hasNext();) {</span>
-<span class="fc" id="L67">				eit.nextInt();</span>
-<span class="fc" id="L68">				int v = eit.target();</span>
-<span class="fc bfc" id="L69" title="All 2 branches covered.">				if (v == parent[depth])</span>
-<span class="fc" id="L70">					continue;</span>
-<span class="fc" id="L71">				depth++;</span>
-<span class="fc" id="L72">				parent[depth] = u;</span>
-<span class="fc" id="L73">				edgeIters[depth] = tree.edgesOut(v);</span>
-<span class="fc" id="L74">				u = v;</span>
-<span class="fc" id="L75">				continue dfs;</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">			for (EdgeIter eit = edgeIters[depth]; eit.hasNext();) {</span>
+<span class="fc" id="L65">				eit.nextInt();</span>
+<span class="fc" id="L66">				int v = eit.target();</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">				if (v == parent[depth])</span>
+<span class="fc" id="L68">					continue;</span>
+<span class="fc" id="L69">				depth++;</span>
+<span class="fc" id="L70">				parent[depth] = u;</span>
+<span class="fc" id="L71">				edgeIters[depth] = tree.edgesOut(v);</span>
+<span class="fc" id="L72">				u = v;</span>
+<span class="fc" id="L73">				continue dfs;</span>
 			}
-<span class="fc" id="L77">			u = parent[depth];</span>
-<span class="fc bfc" id="L78" title="All 2 branches covered.">			if (--depth &lt; 0)</span>
-<span class="fc" id="L79">				break;</span>
+<span class="fc" id="L75">			u = parent[depth];</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">			if (--depth &lt; 0)</span>
+<span class="fc" id="L77">				break;</span>
 		}
-<span class="fc" id="L81">		Arrays.fill(edgeIters, 0, n, null);</span>
+<span class="fc" id="L79">		Arrays.fill(edgeIters, 0, n, null);</span>
 
-<span class="fc" id="L83">		depths = Arrays.copyOf(depths, sequenceLength);</span>
-<span class="fc" id="L84">		vs = Arrays.copyOf(vs, sequenceLength);</span>
+<span class="fc" id="L81">		depths = Arrays.copyOf(depths, sequenceLength);</span>
+<span class="fc" id="L82">		vs = Arrays.copyOf(vs, sequenceLength);</span>
 
-<span class="fc" id="L86">		int[] vToDepthsIdx = new int[n];</span>
-<span class="fc" id="L87">		Arrays.fill(vToDepthsIdx, -1);</span>
-<span class="fc bfc" id="L88" title="All 2 branches covered.">		for (int i = 0; i &lt; sequenceLength; i++) {</span>
-<span class="fc" id="L89">			int v = vs[i];</span>
-<span class="fc bfc" id="L90" title="All 2 branches covered.">			if (vToDepthsIdx[v] == -1)</span>
-<span class="fc" id="L91">				vToDepthsIdx[v] = i;</span>
+<span class="fc" id="L84">		int[] vToDepthsIdx = new int[n];</span>
+<span class="fc" id="L85">		Arrays.fill(vToDepthsIdx, -1);</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">		for (int i = 0; i &lt; sequenceLength; i++) {</span>
+<span class="fc" id="L87">			int v = vs[i];</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">			if (vToDepthsIdx[v] == -1)</span>
+<span class="fc" id="L89">				vToDepthsIdx[v] = i;</span>
 		}
 
-<span class="fc" id="L94">		RMQStatic.DataStructure rmqDS = rmq.preProcessSequence(RMQStaticComparator.ofIntArray(depths), depths.length);</span>
-<span class="fc" id="L95">		return new DS(n, vs, vToDepthsIdx, rmqDS);</span>
+<span class="fc" id="L92">		RMQStatic.DataStructure rmqDS = rmq.preProcessSequence(RMQStaticComparator.ofIntArray(depths), depths.length);</span>
+<span class="fc" id="L93">		return new DS(n, vs, vToDepthsIdx, rmqDS);</span>
 	}
 
 	private static class DS implements LCAStatic.DataStructure {
@@ -102,43 +100,29 @@ class LCAStaticRMQ implements LCAStatic {
 		private final int[] vToDepthsIdx;
 		private final RMQStatic.DataStructure rmqDS;
 
-<span class="fc" id="L105">		DS(int n, int[] vs, int[] vToDepthsIdx, RMQStatic.DataStructure rmqDS) {</span>
-<span class="fc" id="L106">			this.n = n;</span>
-<span class="fc" id="L107">			this.vs = vs;</span>
-<span class="fc" id="L108">			this.vToDepthsIdx = vToDepthsIdx;</span>
-<span class="fc" id="L109">			this.rmqDS = rmqDS;</span>
-<span class="fc" id="L110">		}</span>
+<span class="fc" id="L103">		DS(int n, int[] vs, int[] vToDepthsIdx, RMQStatic.DataStructure rmqDS) {</span>
+<span class="fc" id="L104">			this.n = n;</span>
+<span class="fc" id="L105">			this.vs = vs;</span>
+<span class="fc" id="L106">			this.vToDepthsIdx = vToDepthsIdx;</span>
+<span class="fc" id="L107">			this.rmqDS = rmqDS;</span>
+<span class="fc" id="L108">		}</span>
 
 		@Override
 		public int findLowestCommonAncestor(int u, int v) {
-<span class="pc bpc" id="L114" title="1 of 2 branches missed.">			if (u &gt;= n)</span>
-<span class="nc" id="L115">				throw new IndexOutOfBoundsException(u);</span>
-<span class="pc bpc" id="L116" title="1 of 2 branches missed.">			if (v &gt;= n)</span>
-<span class="nc" id="L117">				throw new IndexOutOfBoundsException(v);</span>
-<span class="fc" id="L118">			int uIdx = vToDepthsIdx[u];</span>
-<span class="fc" id="L119">			int vIdx = vToDepthsIdx[v];</span>
-<span class="fc bfc" id="L120" title="All 2 branches covered.">			if (uIdx &gt; vIdx) {</span>
-<span class="fc" id="L121">				int temp = uIdx;</span>
-<span class="fc" id="L122">				uIdx = vIdx;</span>
-<span class="fc" id="L123">				vIdx = temp;</span>
+<span class="pc bpc" id="L112" title="1 of 2 branches missed.">			if (u &gt;= n)</span>
+<span class="nc" id="L113">				throw new IndexOutOfBoundsException(u);</span>
+<span class="pc bpc" id="L114" title="1 of 2 branches missed.">			if (v &gt;= n)</span>
+<span class="nc" id="L115">				throw new IndexOutOfBoundsException(v);</span>
+<span class="fc" id="L116">			int uIdx = vToDepthsIdx[u];</span>
+<span class="fc" id="L117">			int vIdx = vToDepthsIdx[v];</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">			if (uIdx &gt; vIdx) {</span>
+<span class="fc" id="L119">				int temp = uIdx;</span>
+<span class="fc" id="L120">				uIdx = vIdx;</span>
+<span class="fc" id="L121">				vIdx = temp;</span>
 			}
-<span class="fc" id="L125">			int lcaIdx = rmqDS.findMinimumInRange(uIdx, vIdx);</span>
-<span class="fc" id="L126">			return vs[lcaIdx];</span>
+<span class="fc" id="L123">			int lcaIdx = rmqDS.findMinimumInRange(uIdx, vIdx);</span>
+<span class="fc" id="L124">			return vs[lcaIdx];</span>
 		}
-	}
-
-<span class="fc" id="L130">	private static class AllocatedMemory {</span>
-<span class="fc" id="L131">		int[] depths = IntArrays.EMPTY_ARRAY;</span>
-<span class="fc" id="L132">		int[] vs = IntArrays.EMPTY_ARRAY;</span>
-<span class="fc" id="L133">		int[] parent = IntArrays.EMPTY_ARRAY;</span>
-<span class="fc" id="L134">		EdgeIter[] edgeIters = MemoryReuse.EmptyEdgeIterArr;</span>
-
-		void allocate(int n) {
-<span class="fc" id="L137">			depths = MemoryReuse.ensureLength(depths, 2 * n);</span>
-<span class="fc" id="L138">			vs = MemoryReuse.ensureLength(vs, 2 * n);</span>
-<span class="fc" id="L139">			parent = MemoryReuse.ensureLength(parent, n);</span>
-<span class="fc" id="L140">			edgeIters = MemoryReuse.ensureLength(edgeIters, n);</span>
-<span class="fc" id="L141">		}</span>
 	}
 
 }

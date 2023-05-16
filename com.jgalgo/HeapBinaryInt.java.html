@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.NoSuchElementException;
-
+import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -73,7 +73,7 @@ class HeapBinaryInt extends HeapAbstract&lt;Integer&gt; {
 	 */
 	HeapBinaryInt(Comparator&lt;? super Integer&gt; comparator) {
 <span class="fc" id="L75">		super(comparator);</span>
-<span class="fc" id="L76">		arr = new int[16];</span>
+<span class="fc" id="L76">		arr = IntArrays.EMPTY_ARRAY;</span>
 <span class="fc" id="L77">		size = 0;</span>
 <span class="pc bpc" id="L78" title="1 of 4 branches missed.">		intCmp = comparator == null || comparator instanceof IntComparator ? (IntComparator) comparator</span>
 <span class="fc" id="L79">				: (k1, k2) -&gt; comparator.compare(Integer.valueOf(k1), Integer.valueOf(k2));</span>
@@ -84,231 +84,227 @@ class HeapBinaryInt extends HeapAbstract&lt;Integer&gt; {
 <span class="fc" id="L84">		return size;</span>
 	}
 
-	private void grow() {
-<span class="fc" id="L88">		arr = Arrays.copyOf(arr, arr.length * 2);</span>
-<span class="fc" id="L89">	}</span>
-
 	@Override
 	public void insert(Integer e) {
-<span class="fc" id="L93">		insert(e.intValue());</span>
-<span class="fc" id="L94">	}</span>
+<span class="fc" id="L89">		insert(e.intValue());</span>
+<span class="fc" id="L90">	}</span>
 
 	public void insert(int e) {
-<span class="fc bfc" id="L97" title="All 2 branches covered.">		if (arr.length == size)</span>
-<span class="fc" id="L98">			grow();</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">		if (arr.length == size)</span>
+<span class="fc" id="L94">			arr = Arrays.copyOf(arr, Math.max(2, arr.length * 2));</span>
 
-<span class="fc" id="L100">		moveUp(size, e);</span>
-<span class="fc" id="L101">		size++;</span>
-<span class="fc" id="L102">	}</span>
+<span class="fc" id="L96">		moveUp(size, e);</span>
+<span class="fc" id="L97">		size++;</span>
+<span class="fc" id="L98">	}</span>
 
 	@Override
 	public boolean remove(Object e) {
-<span class="fc" id="L106">		int eInt = ((Integer) e).intValue();</span>
-<span class="fc" id="L107">		int s = size;</span>
-<span class="fc" id="L108">		int[] a = arr;</span>
+<span class="fc" id="L102">		int eInt = ((Integer) e).intValue();</span>
+<span class="fc" id="L103">		int s = size;</span>
+<span class="fc" id="L104">		int[] a = arr;</span>
 
 		int i;
-<span class="fc bfc" id="L111" title="All 2 branches covered.">		if (c == null) {</span>
-<span class="pc bpc" id="L112" title="1 of 2 branches missed.">			for (i = 0; i &lt; s; i++)</span>
-<span class="fc bfc" id="L113" title="All 2 branches covered.">				if (Integer.compare(eInt, a[i]) == 0)</span>
-<span class="fc" id="L114">					break;</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">		if (c == null) {</span>
+<span class="pc bpc" id="L108" title="1 of 2 branches missed.">			for (i = 0; i &lt; s; i++)</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">				if (Integer.compare(eInt, a[i]) == 0)</span>
+<span class="fc" id="L110">					break;</span>
 		} else {
-<span class="pc bpc" id="L116" title="1 of 2 branches missed.">			for (i = 0; i &lt; s; i++)</span>
-<span class="fc bfc" id="L117" title="All 2 branches covered.">				if (intCmp.compare(eInt, a[i]) == 0)</span>
-<span class="fc" id="L118">					break;</span>
+<span class="pc bpc" id="L112" title="1 of 2 branches missed.">			for (i = 0; i &lt; s; i++)</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">				if (intCmp.compare(eInt, a[i]) == 0)</span>
+<span class="fc" id="L114">					break;</span>
 		}
-<span class="pc bpc" id="L120" title="1 of 2 branches missed.">		if (i == s)</span>
-<span class="nc" id="L121">			return false; /* not found */</span>
+<span class="pc bpc" id="L116" title="1 of 2 branches missed.">		if (i == s)</span>
+<span class="nc" id="L117">			return false; /* not found */</span>
 
-<span class="fc" id="L123">		remove(i);</span>
-<span class="fc" id="L124">		return true;</span>
+<span class="fc" id="L119">		remove(i);</span>
+<span class="fc" id="L120">		return true;</span>
 	}
 
 	@Override
 	public void clear() {
-<span class="fc" id="L129">		size = 0;</span>
-<span class="fc" id="L130">	}</span>
+<span class="fc" id="L125">		size = 0;</span>
+<span class="fc" id="L126">	}</span>
 
 	@Override
 	public Integer findMin() {
-<span class="pc bpc" id="L134" title="1 of 2 branches missed.">		if (size == 0)</span>
-<span class="nc" id="L135">			throw new IllegalStateException();</span>
-<span class="fc" id="L136">		return Integer.valueOf(arr[0]);</span>
+<span class="pc bpc" id="L130" title="1 of 2 branches missed.">		if (size == 0)</span>
+<span class="nc" id="L131">			throw new IllegalStateException();</span>
+<span class="fc" id="L132">		return Integer.valueOf(arr[0]);</span>
 	}
 
 	private void remove(int idx) {
-<span class="fc" id="L140">		int[] a = arr;</span>
+<span class="fc" id="L136">		int[] a = arr;</span>
 
-<span class="fc" id="L142">		int old = a[idx];</span>
-<span class="fc" id="L143">		int e = a[size-- - 1];</span>
+<span class="fc" id="L138">		int old = a[idx];</span>
+<span class="fc" id="L139">		int e = a[size-- - 1];</span>
 
-<span class="fc bfc" id="L145" title="All 2 branches covered.">		if (compare(e, old) &lt;= 0)</span>
-<span class="fc" id="L146">			moveUp(idx, e);</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">		if (compare(e, old) &lt;= 0)</span>
+<span class="fc" id="L142">			moveUp(idx, e);</span>
 		else
-<span class="fc" id="L148">			moveDown(idx, e);</span>
-<span class="fc" id="L149">	}</span>
+<span class="fc" id="L144">			moveDown(idx, e);</span>
+<span class="fc" id="L145">	}</span>
 
 	@Override
 	public Integer extractMin() {
-<span class="pc bpc" id="L153" title="1 of 2 branches missed.">		if (size == 0)</span>
-<span class="nc" id="L154">			throw new IllegalStateException();</span>
-<span class="fc" id="L155">		int min = arr[0];</span>
-<span class="fc" id="L156">		remove(0);</span>
-<span class="fc" id="L157">		return Integer.valueOf(min);</span>
+<span class="pc bpc" id="L149" title="1 of 2 branches missed.">		if (size == 0)</span>
+<span class="nc" id="L150">			throw new IllegalStateException();</span>
+<span class="fc" id="L151">		int min = arr[0];</span>
+<span class="fc" id="L152">		remove(0);</span>
+<span class="fc" id="L153">		return Integer.valueOf(min);</span>
 	}
 
 	@Override
 	public boolean addAll(Collection&lt;? extends Integer&gt; other) {
-<span class="pc bpc" id="L162" title="1 of 2 branches missed.">		if (other.isEmpty())</span>
-<span class="nc" id="L163">			return false;</span>
-<span class="fc" id="L164">		int combinedSize = size + other.size();</span>
-<span class="fc bfc" id="L165" title="All 2 branches covered.">		if (arr.length &lt;= combinedSize)</span>
-<span class="fc" id="L166">			arr = Arrays.copyOf(arr, Math.max(arr.length * 2, combinedSize * 3 / 2));</span>
+<span class="pc bpc" id="L158" title="1 of 2 branches missed.">		if (other.isEmpty())</span>
+<span class="nc" id="L159">			return false;</span>
+<span class="fc" id="L160">		int combinedSize = size + other.size();</span>
+<span class="fc bfc" id="L161" title="All 2 branches covered.">		if (arr.length &lt;= combinedSize)</span>
+<span class="fc" id="L162">			arr = Arrays.copyOf(arr, Math.max(arr.length * 2, combinedSize * 3 / 2));</span>
 
-<span class="fc" id="L168">		int reconstructionCost = combinedSize;</span>
-<span class="fc" id="L169">		int addAllCost = other.size() + Utils.log2ceil(combinedSize);</span>
-<span class="fc bfc" id="L170" title="All 2 branches covered.">		if (reconstructionCost &gt;= addAllCost) {</span>
-<span class="pc bpc" id="L171" title="1 of 2 branches missed.">			if (other instanceof IntCollection) {</span>
-<span class="nc bnc" id="L172" title="All 2 branches missed.">				for (IntIterator it = ((IntCollection) other).iterator(); it.hasNext();)</span>
-<span class="nc" id="L173">					insert(it.nextInt());</span>
+<span class="fc" id="L164">		int reconstructionCost = combinedSize;</span>
+<span class="fc" id="L165">		int addAllCost = other.size() + Utils.log2ceil(combinedSize);</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">		if (reconstructionCost &gt;= addAllCost) {</span>
+<span class="pc bpc" id="L167" title="1 of 2 branches missed.">			if (other instanceof IntCollection) {</span>
+<span class="nc bnc" id="L168" title="All 2 branches missed.">				for (IntIterator it = ((IntCollection) other).iterator(); it.hasNext();)</span>
+<span class="nc" id="L169">					insert(it.nextInt());</span>
 			} else {
-<span class="fc bfc" id="L175" title="All 2 branches covered.">				for (Integer e : other)</span>
-<span class="fc" id="L176">					insert(e.intValue());</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">				for (Integer e : other)</span>
+<span class="fc" id="L172">					insert(e.intValue());</span>
 			}
 		} else {
-<span class="fc" id="L179">			int[] a = arr;</span>
-<span class="fc" id="L180">			int s = size;</span>
-<span class="pc bpc" id="L181" title="1 of 2 branches missed.">			if (other instanceof IntCollection) {</span>
-<span class="nc bnc" id="L182" title="All 2 branches missed.">				for (IntIterator it = ((IntCollection) other).iterator(); it.hasNext();)</span>
-<span class="nc" id="L183">					a[s++] = it.nextInt();</span>
+<span class="fc" id="L175">			int[] a = arr;</span>
+<span class="fc" id="L176">			int s = size;</span>
+<span class="pc bpc" id="L177" title="1 of 2 branches missed.">			if (other instanceof IntCollection) {</span>
+<span class="nc bnc" id="L178" title="All 2 branches missed.">				for (IntIterator it = ((IntCollection) other).iterator(); it.hasNext();)</span>
+<span class="nc" id="L179">					a[s++] = it.nextInt();</span>
 			} else {
-<span class="fc bfc" id="L185" title="All 2 branches covered.">				for (Integer e : other)</span>
-<span class="fc" id="L186">					a[s++] = e.intValue();</span>
+<span class="fc bfc" id="L181" title="All 2 branches covered.">				for (Integer e : other)</span>
+<span class="fc" id="L182">					a[s++] = e.intValue();</span>
 			}
-<span class="fc" id="L188">			size = s;</span>
+<span class="fc" id="L184">			size = s;</span>
 
-<span class="pc bpc" id="L190" title="1 of 2 branches missed.">			if (s &gt; 1) {</span>
-<span class="fc" id="L191">				int lastLayer = Utils.log2ceil(s + 1) - 1;</span>
-<span class="fc" id="L192">				int lastParent = (1 &lt;&lt; lastLayer) - 2;</span>
-<span class="fc bfc" id="L193" title="All 2 branches covered.">				for (int parent = lastParent; parent &gt;= 0; parent--)</span>
-<span class="fc" id="L194">					moveDown(parent, a[parent]);</span>
+<span class="pc bpc" id="L186" title="1 of 2 branches missed.">			if (s &gt; 1) {</span>
+<span class="fc" id="L187">				int lastLayer = Utils.log2ceil(s + 1) - 1;</span>
+<span class="fc" id="L188">				int lastParent = (1 &lt;&lt; lastLayer) - 2;</span>
+<span class="fc bfc" id="L189" title="All 2 branches covered.">				for (int parent = lastParent; parent &gt;= 0; parent--)</span>
+<span class="fc" id="L190">					moveDown(parent, a[parent]);</span>
 			}
 		}
 
-<span class="fc" id="L198">		return true;</span>
+<span class="fc" id="L194">		return true;</span>
 	}
 
 	@Override
 	public IntIterator iterator() {
-<span class="fc" id="L203">		return new It();</span>
+<span class="fc" id="L199">		return new It();</span>
 	}
 
 	private class It implements IntIterator {
 
 		int i;
 
-<span class="fc" id="L210">		It() {</span>
-<span class="fc" id="L211">			i = 0;</span>
-<span class="fc" id="L212">		}</span>
+<span class="fc" id="L206">		It() {</span>
+<span class="fc" id="L207">			i = 0;</span>
+<span class="fc" id="L208">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="fc bfc" id="L216" title="All 2 branches covered.">			return i &lt; size;</span>
+<span class="fc bfc" id="L212" title="All 2 branches covered.">			return i &lt; size;</span>
 		}
 
 		@Override
 		public int nextInt() {
-<span class="pc bpc" id="L221" title="1 of 2 branches missed.">			if (i &gt;= size)</span>
-<span class="nc" id="L222">				throw new NoSuchElementException();</span>
-<span class="fc" id="L223">			return arr[i++];</span>
+<span class="pc bpc" id="L217" title="1 of 2 branches missed.">			if (i &gt;= size)</span>
+<span class="nc" id="L218">				throw new NoSuchElementException();</span>
+<span class="fc" id="L219">			return arr[i++];</span>
 		}
 
 	}
 
 	private void moveUp(int i, int e) {
-<span class="fc" id="L229">		int[] a = arr;</span>
+<span class="fc" id="L225">		int[] a = arr;</span>
 
-<span class="fc bfc" id="L231" title="All 2 branches covered.">		if (c == null) {</span>
+<span class="fc bfc" id="L227" title="All 2 branches covered.">		if (c == null) {</span>
 			for (;;) {
 				int p;
-<span class="fc bfc" id="L234" title="All 4 branches covered.">				if (i == 0 || Integer.compare(e, a[p = (i - 1) / 2]) &gt;= 0) { /* reached root or parent is smaller */</span>
-<span class="fc" id="L235">					a[i] = e;</span>
-<span class="fc" id="L236">					return;</span>
+<span class="fc bfc" id="L230" title="All 4 branches covered.">				if (i == 0 || Integer.compare(e, a[p = (i - 1) / 2]) &gt;= 0) { /* reached root or parent is smaller */</span>
+<span class="fc" id="L231">					a[i] = e;</span>
+<span class="fc" id="L232">					return;</span>
 				}
 
 				/* e is smaller than parent, continue up */
-<span class="fc" id="L240">				a[i] = a[p];</span>
-<span class="fc" id="L241">				i = p;</span>
-<span class="fc" id="L242">			}</span>
+<span class="fc" id="L236">				a[i] = a[p];</span>
+<span class="fc" id="L237">				i = p;</span>
+<span class="fc" id="L238">			}</span>
 		} else {
 			for (;;) {
 				int p;
-<span class="fc bfc" id="L246" title="All 4 branches covered.">				if (i == 0 || intCmp.compare(e, a[p = (i - 1) / 2]) &gt;= 0) { /* reached root or parent is smaller */</span>
-<span class="fc" id="L247">					a[i] = e;</span>
-<span class="fc" id="L248">					return;</span>
+<span class="fc bfc" id="L242" title="All 4 branches covered.">				if (i == 0 || intCmp.compare(e, a[p = (i - 1) / 2]) &gt;= 0) { /* reached root or parent is smaller */</span>
+<span class="fc" id="L243">					a[i] = e;</span>
+<span class="fc" id="L244">					return;</span>
 				}
 
 				/* e is smaller than parent, continue up */
-<span class="fc" id="L252">				a[i] = a[p];</span>
-<span class="fc" id="L253">				i = p;</span>
-<span class="fc" id="L254">			}</span>
+<span class="fc" id="L248">				a[i] = a[p];</span>
+<span class="fc" id="L249">				i = p;</span>
+<span class="fc" id="L250">			}</span>
 		}
 	}
 
 	private void moveDown(int i, int e) {
-<span class="fc" id="L259">		int[] a = arr;</span>
-<span class="fc" id="L260">		int s = size;</span>
+<span class="fc" id="L255">		int[] a = arr;</span>
+<span class="fc" id="L256">		int s = size;</span>
 
-<span class="fc bfc" id="L262" title="All 2 branches covered.">		if (c == null) {</span>
+<span class="fc bfc" id="L258" title="All 2 branches covered.">		if (c == null) {</span>
 			for (;;) {
-<span class="fc" id="L264">				int c01i, c0i = i * 2 + 1, c1i = i * 2 + 2;</span>
-<span class="fc bfc" id="L265" title="All 2 branches covered.">				if (c0i &gt;= s)</span>
-<span class="fc" id="L266">					break;</span>
+<span class="fc" id="L260">				int c01i, c0i = i * 2 + 1, c1i = i * 2 + 2;</span>
+<span class="fc bfc" id="L261" title="All 2 branches covered.">				if (c0i &gt;= s)</span>
+<span class="fc" id="L262">					break;</span>
 
-<span class="fc" id="L268">				int c01, c0 = a[c0i], c1;</span>
-<span class="fc bfc" id="L269" title="All 4 branches covered.">				if (c1i &lt; s &amp;&amp; Integer.compare(c1 = a[c1i], c0) &lt; 0) {</span>
-<span class="fc" id="L270">					c01i = c1i;</span>
-<span class="fc" id="L271">					c01 = c1;</span>
+<span class="fc" id="L264">				int c01, c0 = a[c0i], c1;</span>
+<span class="fc bfc" id="L265" title="All 4 branches covered.">				if (c1i &lt; s &amp;&amp; Integer.compare(c1 = a[c1i], c0) &lt; 0) {</span>
+<span class="fc" id="L266">					c01i = c1i;</span>
+<span class="fc" id="L267">					c01 = c1;</span>
 				} else {
-<span class="fc" id="L273">					c01i = c0i;</span>
-<span class="fc" id="L274">					c01 = c0;</span>
+<span class="fc" id="L269">					c01i = c0i;</span>
+<span class="fc" id="L270">					c01 = c0;</span>
 				}
 
-<span class="fc bfc" id="L277" title="All 2 branches covered.">				if (Integer.compare(e, c01) &lt;= 0)</span>
-<span class="fc" id="L278">					break;</span>
+<span class="fc bfc" id="L273" title="All 2 branches covered.">				if (Integer.compare(e, c01) &lt;= 0)</span>
+<span class="fc" id="L274">					break;</span>
 
 				/* continue down */
-<span class="fc" id="L281">				a[i] = c01;</span>
-<span class="fc" id="L282">				i = c01i;</span>
-<span class="fc" id="L283">			}</span>
+<span class="fc" id="L277">				a[i] = c01;</span>
+<span class="fc" id="L278">				i = c01i;</span>
+<span class="fc" id="L279">			}</span>
 		} else {
 			for (;;) {
-<span class="fc" id="L286">				int c01i, c0i = i * 2 + 1, c1i = i * 2 + 2;</span>
-<span class="fc bfc" id="L287" title="All 2 branches covered.">				if (c0i &gt;= s)</span>
-<span class="fc" id="L288">					break;</span>
+<span class="fc" id="L282">				int c01i, c0i = i * 2 + 1, c1i = i * 2 + 2;</span>
+<span class="fc bfc" id="L283" title="All 2 branches covered.">				if (c0i &gt;= s)</span>
+<span class="fc" id="L284">					break;</span>
 
-<span class="fc" id="L290">				int c01, c0 = a[c0i], c1;</span>
-<span class="fc bfc" id="L291" title="All 4 branches covered.">				if (c1i &lt; s &amp;&amp; intCmp.compare(c1 = a[c1i], c0) &lt; 0) {</span>
-<span class="fc" id="L292">					c01i = c1i;</span>
-<span class="fc" id="L293">					c01 = c1;</span>
+<span class="fc" id="L286">				int c01, c0 = a[c0i], c1;</span>
+<span class="fc bfc" id="L287" title="All 4 branches covered.">				if (c1i &lt; s &amp;&amp; intCmp.compare(c1 = a[c1i], c0) &lt; 0) {</span>
+<span class="fc" id="L288">					c01i = c1i;</span>
+<span class="fc" id="L289">					c01 = c1;</span>
 				} else {
-<span class="fc" id="L295">					c01i = c0i;</span>
-<span class="fc" id="L296">					c01 = c0;</span>
+<span class="fc" id="L291">					c01i = c0i;</span>
+<span class="fc" id="L292">					c01 = c0;</span>
 				}
 
-<span class="fc bfc" id="L299" title="All 2 branches covered.">				if (intCmp.compare(e, c01) &lt;= 0)</span>
-<span class="fc" id="L300">					break;</span>
+<span class="fc bfc" id="L295" title="All 2 branches covered.">				if (intCmp.compare(e, c01) &lt;= 0)</span>
+<span class="fc" id="L296">					break;</span>
 
 				/* continue down */
-<span class="fc" id="L303">				a[i] = c01;</span>
-<span class="fc" id="L304">				i = c01i;</span>
-<span class="fc" id="L305">			}</span>
+<span class="fc" id="L299">				a[i] = c01;</span>
+<span class="fc" id="L300">				i = c01i;</span>
+<span class="fc" id="L301">			}</span>
 		}
-<span class="fc" id="L307">		a[i] = e;</span>
-<span class="fc" id="L308">	}</span>
+<span class="fc" id="L303">		a[i] = e;</span>
+<span class="fc" id="L304">	}</span>
 
 	int compare(int e1, int e2) {
-<span class="fc bfc" id="L311" title="All 2 branches covered.">		return c == null ? Integer.compare(e1, e2) : intCmp.compare(e1, e2);</span>
+<span class="fc bfc" id="L307" title="All 2 branches covered.">		return c == null ? Integer.compare(e1, e2) : intCmp.compare(e1, e2);</span>
 	}
 
 }

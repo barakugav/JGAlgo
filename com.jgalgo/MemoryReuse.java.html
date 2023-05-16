@@ -29,35 +29,35 @@ import it.unimi.dsi.fastutil.ints.IntList;
 	}
 
 	static int[][] ensureLength(int[][] a, int rows, int columns) {
-<span class="fc bfc" id="L32" title="All 2 branches covered.">		if (a.length &lt; rows) {</span>
-<span class="fc" id="L33">			int oldLen = a.length;</span>
-<span class="fc" id="L34">			a = Arrays.copyOf(a, newLength(a, rows));</span>
-<span class="fc" id="L35">			Arrays.fill(a, oldLen, a.length, IntArrays.EMPTY_ARRAY);</span>
+<span class="nc bnc" id="L32" title="All 2 branches missed.">		if (a.length &lt; rows) {</span>
+<span class="nc" id="L33">			int oldLen = a.length;</span>
+<span class="nc" id="L34">			a = Arrays.copyOf(a, newLength(a, rows));</span>
+<span class="nc" id="L35">			Arrays.fill(a, oldLen, a.length, IntArrays.EMPTY_ARRAY);</span>
 		}
-<span class="fc bfc" id="L37" title="All 2 branches covered.">		for (int r = 0; r &lt; rows; r++)</span>
-<span class="fc bfc" id="L38" title="All 2 branches covered.">			if (a[r].length &lt; columns)</span>
-<span class="fc" id="L39">				a[r] = Arrays.copyOf(a[r], newLength(a[r], columns));</span>
-<span class="fc" id="L40">		return a;</span>
+<span class="nc bnc" id="L37" title="All 2 branches missed.">		for (int r = 0; r &lt; rows; r++)</span>
+<span class="nc bnc" id="L38" title="All 2 branches missed.">			if (a[r].length &lt; columns)</span>
+<span class="nc" id="L39">				a[r] = Arrays.copyOf(a[r], newLength(a[r], columns));</span>
+<span class="nc" id="L40">		return a;</span>
 	}
 
 	static double[] ensureLength(double[] a, int len) {
-<span class="fc bfc" id="L44" title="All 2 branches covered.">		return a.length &gt;= len ? a : new double[newLength(a, len)];</span>
+<span class="nc bnc" id="L44" title="All 2 branches missed.">		return a.length &gt;= len ? a : new double[newLength(a, len)];</span>
 	}
 
 	static double[][] ensureLength(double[][] a, int rows, int columns) {
-<span class="fc bfc" id="L48" title="All 2 branches covered.">		if (a.length &lt; rows) {</span>
-<span class="fc" id="L49">			int oldLen = a.length;</span>
-<span class="fc" id="L50">			a = Arrays.copyOf(a, newLength(a, rows));</span>
-<span class="fc" id="L51">			Arrays.fill(a, oldLen, a.length, DoubleArrays.EMPTY_ARRAY);</span>
+<span class="nc bnc" id="L48" title="All 2 branches missed.">		if (a.length &lt; rows) {</span>
+<span class="nc" id="L49">			int oldLen = a.length;</span>
+<span class="nc" id="L50">			a = Arrays.copyOf(a, newLength(a, rows));</span>
+<span class="nc" id="L51">			Arrays.fill(a, oldLen, a.length, DoubleArrays.EMPTY_ARRAY);</span>
 		}
-<span class="fc bfc" id="L53" title="All 2 branches covered.">		for (int r = 0; r &lt; rows; r++)</span>
-<span class="fc bfc" id="L54" title="All 2 branches covered.">			if (a[r].length &lt; columns)</span>
-<span class="fc" id="L55">				a[r] = Arrays.copyOf(a[r], newLength(a[r], columns));</span>
-<span class="fc" id="L56">		return a;</span>
+<span class="nc bnc" id="L53" title="All 2 branches missed.">		for (int r = 0; r &lt; rows; r++)</span>
+<span class="nc bnc" id="L54" title="All 2 branches missed.">			if (a[r].length &lt; columns)</span>
+<span class="nc" id="L55">				a[r] = Arrays.copyOf(a[r], newLength(a[r], columns));</span>
+<span class="nc" id="L56">		return a;</span>
 	}
 
 	static boolean[] ensureLength(boolean[] a, int len) {
-<span class="fc bfc" id="L60" title="All 2 branches covered.">		return a.length &gt;= len ? a : new boolean[newLength(a, len)];</span>
+<span class="nc bnc" id="L60" title="All 2 branches missed.">		return a.length &gt;= len ? a : new boolean[newLength(a, len)];</span>
 	}
 
 	static &lt;T&gt; T[] ensureLength(T[] a, int len) {
@@ -73,11 +73,11 @@ import it.unimi.dsi.fastutil.ints.IntList;
 	}
 
 	private static int newLength(double[] a, int len) {
-<span class="fc" id="L76">		return Math.max(a.length * 2, len);</span>
+<span class="nc" id="L76">		return Math.max(a.length * 2, len);</span>
 	}
 
 	private static int newLength(boolean[] a, int len) {
-<span class="fc" id="L80">		return Math.max(a.length * 2, len);</span>
+<span class="nc" id="L80">		return Math.max(a.length * 2, len);</span>
 	}
 
 	private static &lt;T&gt; int newLength(T[] a, int len) {

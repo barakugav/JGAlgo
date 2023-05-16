@@ -218,11 +218,11 @@ class GraphsUtils {
 <span class="nc" id="L218">			throw new IndexOutOfBoundsException(v);</span>
 		}
 
-		@Override
-		public void removeVertices(IntCollection vs) {
-<span class="nc bnc" id="L223" title="All 2 branches missed.">			if (!vs.isEmpty())</span>
-<span class="nc" id="L224">				throw new IndexOutOfBoundsException(vs.iterator().nextInt());</span>
-<span class="nc" id="L225">		}</span>
+		// @Override
+		// public void removeVertices(IntCollection vs) {
+		// if (!vs.isEmpty())
+		// throw new IndexOutOfBoundsException(vs.iterator().nextInt());
+		// }
 
 		@Override
 		public EdgeIter edgesOut(int u) {
@@ -249,11 +249,11 @@ class GraphsUtils {
 <span class="nc" id="L249">			throw new IndexOutOfBoundsException(edge);</span>
 		}
 
-		@Override
-		public void removeEdges(IntCollection edges) {
-<span class="nc bnc" id="L254" title="All 2 branches missed.">			if (!edges.isEmpty())</span>
-<span class="nc" id="L255">				throw new IndexOutOfBoundsException(edges.iterator().nextInt());</span>
-<span class="nc" id="L256">		}</span>
+		// @Override
+		// public void removeEdges(IntCollection edges) {
+		// if (!edges.isEmpty())
+		// throw new IndexOutOfBoundsException(edges.iterator().nextInt());
+		// }
 
 		@Override
 		public void reverseEdge(int edge) {

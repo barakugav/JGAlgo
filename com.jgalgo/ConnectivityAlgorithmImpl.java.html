@@ -17,166 +17,137 @@
 package com.jgalgo;
 
 import java.util.Arrays;
-
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntStack;
 
-<span class="fc" id="L25">class ConnectivityAlgorithmImpl implements ConnectivityAlgorithm {</span>
-
-<span class="fc" id="L27">	private final AllocatedMemory allocatedMemory = new AllocatedMemory();</span>
+<span class="fc" id="L23">class ConnectivityAlgorithmImpl implements ConnectivityAlgorithm {</span>
 
 	@Override
 	public ConnectivityAlgorithm.Result computeConnectivityComponents(Graph g) {
-<span class="fc bfc" id="L31" title="All 2 branches covered.">		return g.getCapabilities().directed() ? computeSCCDirected(g) : computeSCCUndirected(g);</span>
+<span class="fc bfc" id="L27" title="All 2 branches covered.">		return g.getCapabilities().directed() ? computeSCCDirected(g) : computeSCCUndirected(g);</span>
 	}
 
-	private ConnectivityAlgorithm.Result computeSCCDirected(Graph g) {
-<span class="fc" id="L35">		allocatedMemory.allocatedDirected(g);</span>
-<span class="fc" id="L36">		IntStack s = allocatedMemory.stack1;</span>
-<span class="fc" id="L37">		IntStack p = allocatedMemory.stack2;</span>
-<span class="pc bpc" id="L38" title="1 of 2 branches missed.">		assert s.isEmpty();</span>
-<span class="pc bpc" id="L39" title="1 of 2 branches missed.">		assert p.isEmpty();</span>
-<span class="fc" id="L40">		int[] dfsPath = allocatedMemory.dfsPath;</span>
-<span class="fc" id="L41">		int[] c = allocatedMemory.c;</span>
-<span class="fc" id="L42">		EdgeIter[] edges = allocatedMemory.edges;</span>
+	private static ConnectivityAlgorithm.Result computeSCCDirected(Graph g) {
+<span class="fc" id="L31">		final int n = g.vertices().size();</span>
+<span class="fc" id="L32">		IntStack s = new IntArrayList();</span>
+<span class="fc" id="L33">		IntStack p = new IntArrayList();</span>
+<span class="fc" id="L34">		int[] dfsPath = new int[n];</span>
+<span class="fc" id="L35">		int[] c = new int[n];</span>
+<span class="fc" id="L36">		EdgeIter[] edges = new EdgeIter[n];</span>
+		 // TODO DFS stack class
 
 		// implementation of Tarjan's strongly connected components algorithm
 		// https://en.wikipedia.org/wiki/Tarjan%27s_strongly_connected_components_algorithm
 
-<span class="fc" id="L47">		int n = g.vertices().size();</span>
-<span class="fc" id="L48">		int[] comp = new int[n];</span>
-<span class="fc" id="L49">		Arrays.fill(comp, -1);</span>
-<span class="fc" id="L50">		int compNum = 0;</span>
+<span class="fc" id="L42">		int[] comp = new int[n];</span>
+<span class="fc" id="L43">		Arrays.fill(comp, -1);</span>
+<span class="fc" id="L44">		int compNum = 0;</span>
 
-<span class="fc" id="L52">		Arrays.fill(c, 0);</span>
-<span class="fc" id="L53">		int cNext = 1;</span>
+<span class="fc" id="L46">		Arrays.fill(c, 0);</span>
+<span class="fc" id="L47">		int cNext = 1;</span>
 
-<span class="fc bfc" id="L55" title="All 2 branches covered.">		for (int root = 0; root &lt; n; root++) {</span>
-<span class="fc bfc" id="L56" title="All 2 branches covered.">			if (comp[root] != -1)</span>
-<span class="fc" id="L57">				continue;</span>
-<span class="fc" id="L58">			dfsPath[0] = root;</span>
-<span class="fc" id="L59">			edges[0] = g.edgesOut(root);</span>
-<span class="fc" id="L60">			c[root] = cNext++;</span>
-<span class="fc" id="L61">			s.push(root);</span>
-<span class="fc" id="L62">			p.push(root);</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">		for (int root = 0; root &lt; n; root++) {</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">			if (comp[root] != -1)</span>
+<span class="fc" id="L51">				continue;</span>
+<span class="fc" id="L52">			dfsPath[0] = root;</span>
+<span class="fc" id="L53">			edges[0] = g.edgesOut(root);</span>
+<span class="fc" id="L54">			c[root] = cNext++;</span>
+<span class="fc" id="L55">			s.push(root);</span>
+<span class="fc" id="L56">			p.push(root);</span>
 
-<span class="fc" id="L64">			dfs: for (int depth = 0;;) {</span>
-<span class="fc bfc" id="L65" title="All 2 branches covered.">				for (EdgeIter eit = edges[depth]; eit.hasNext();) {</span>
-<span class="fc" id="L66">					eit.nextInt();</span>
-<span class="fc" id="L67">					int v = eit.target();</span>
-<span class="fc bfc" id="L68" title="All 2 branches covered.">					if (c[v] == 0) {</span>
-<span class="fc" id="L69">						c[v] = cNext++;</span>
-<span class="fc" id="L70">						s.push(v);</span>
-<span class="fc" id="L71">						p.push(v);</span>
+<span class="fc" id="L58">			dfs: for (int depth = 0;;) {</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">				for (EdgeIter eit = edges[depth]; eit.hasNext();) {</span>
+<span class="fc" id="L60">					eit.nextInt();</span>
+<span class="fc" id="L61">					int v = eit.target();</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">					if (c[v] == 0) {</span>
+<span class="fc" id="L63">						c[v] = cNext++;</span>
+<span class="fc" id="L64">						s.push(v);</span>
+<span class="fc" id="L65">						p.push(v);</span>
 
-<span class="fc" id="L73">						dfsPath[++depth] = v;</span>
-<span class="fc" id="L74">						edges[depth] = g.edgesOut(v);</span>
-<span class="fc" id="L75">						continue dfs;</span>
-<span class="fc bfc" id="L76" title="All 2 branches covered.">					} else if (comp[v] == -1)</span>
-<span class="fc bfc" id="L77" title="All 2 branches covered.">						while (c[p.topInt()] &gt; c[v])</span>
-<span class="fc" id="L78">							p.popInt();</span>
-<span class="fc" id="L79">				}</span>
-<span class="fc" id="L80">				int u = dfsPath[depth];</span>
-<span class="fc bfc" id="L81" title="All 2 branches covered.">				if (p.topInt() == u) {</span>
+<span class="fc" id="L67">						dfsPath[++depth] = v;</span>
+<span class="fc" id="L68">						edges[depth] = g.edgesOut(v);</span>
+<span class="fc" id="L69">						continue dfs;</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">					} else if (comp[v] == -1)</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">						while (c[p.topInt()] &gt; c[v])</span>
+<span class="fc" id="L72">							p.popInt();</span>
+<span class="fc" id="L73">				}</span>
+<span class="fc" id="L74">				int u = dfsPath[depth];</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">				if (p.topInt() == u) {</span>
 					int v;
 					do {
-<span class="fc" id="L84">						v = s.popInt();</span>
-<span class="fc" id="L85">						comp[v] = compNum;</span>
-<span class="fc bfc" id="L86" title="All 2 branches covered.">					} while (v != u);</span>
-<span class="fc" id="L87">					compNum++;</span>
-<span class="fc" id="L88">					p.popInt();</span>
+<span class="fc" id="L78">						v = s.popInt();</span>
+<span class="fc" id="L79">						comp[v] = compNum;</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">					} while (v != u);</span>
+<span class="fc" id="L81">					compNum++;</span>
+<span class="fc" id="L82">					p.popInt();</span>
 				}
 
-<span class="fc" id="L91">				edges[depth] = null;</span>
-<span class="fc bfc" id="L92" title="All 2 branches covered.">				if (depth-- == 0)</span>
-<span class="fc" id="L93">					break;</span>
-<span class="fc" id="L94">			}</span>
+<span class="fc" id="L85">				edges[depth] = null;</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">				if (depth-- == 0)</span>
+<span class="fc" id="L87">					break;</span>
+<span class="fc" id="L88">			}</span>
 		}
-<span class="fc" id="L96">		return new Result(compNum, comp);</span>
+<span class="fc" id="L90">		return new Result(compNum, comp);</span>
 	}
 
-	private ConnectivityAlgorithm.Result computeSCCUndirected(Graph g) {
-<span class="fc" id="L100">		allocatedMemory.allocatedUndirected(g);</span>
-<span class="fc" id="L101">		IntStack stack = allocatedMemory.stack1;</span>
-<span class="pc bpc" id="L102" title="1 of 2 branches missed.">		assert stack.isEmpty();</span>
+	private static ConnectivityAlgorithm.Result computeSCCUndirected(Graph g) {
+<span class="fc" id="L94">		IntStack stack = new IntArrayList();</span>
+<span class="pc bpc" id="L95" title="1 of 2 branches missed.">		assert stack.isEmpty();</span>
 
-<span class="fc" id="L104">		int n = g.vertices().size();</span>
-<span class="fc" id="L105">		int[] comp = new int[n];</span>
-<span class="fc" id="L106">		Arrays.fill(comp, -1);</span>
-<span class="fc" id="L107">		int compNum = 0;</span>
+<span class="fc" id="L97">		int n = g.vertices().size();</span>
+<span class="fc" id="L98">		int[] comp = new int[n];</span>
+<span class="fc" id="L99">		Arrays.fill(comp, -1);</span>
+<span class="fc" id="L100">		int compNum = 0;</span>
 
-<span class="fc bfc" id="L109" title="All 2 branches covered.">		for (int root = 0; root &lt; n; root++) {</span>
-<span class="fc bfc" id="L110" title="All 2 branches covered.">			if (comp[root] != -1)</span>
-<span class="fc" id="L111">				continue;</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">		for (int root = 0; root &lt; n; root++) {</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">			if (comp[root] != -1)</span>
+<span class="fc" id="L104">				continue;</span>
 
-<span class="fc" id="L113">			final int compIdx = compNum++;</span>
-<span class="fc" id="L114">			stack.push(root);</span>
-<span class="fc" id="L115">			comp[root] = compIdx;</span>
+<span class="fc" id="L106">			final int compIdx = compNum++;</span>
+<span class="fc" id="L107">			stack.push(root);</span>
+<span class="fc" id="L108">			comp[root] = compIdx;</span>
 
-<span class="fc bfc" id="L117" title="All 2 branches covered.">			while (!stack.isEmpty()) {</span>
-<span class="fc" id="L118">				int u = stack.popInt();</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">			while (!stack.isEmpty()) {</span>
+<span class="fc" id="L111">				int u = stack.popInt();</span>
 
-<span class="fc bfc" id="L120" title="All 2 branches covered.">				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
-<span class="fc" id="L121">					eit.nextInt();</span>
-<span class="fc" id="L122">					int v = eit.target();</span>
-<span class="fc bfc" id="L123" title="All 2 branches covered.">					if (comp[v] != -1) {</span>
-<span class="pc bpc" id="L124" title="1 of 2 branches missed.">						assert comp[v] == compIdx;</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
+<span class="fc" id="L114">					eit.nextInt();</span>
+<span class="fc" id="L115">					int v = eit.target();</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">					if (comp[v] != -1) {</span>
+<span class="pc bpc" id="L117" title="1 of 2 branches missed.">						assert comp[v] == compIdx;</span>
 						continue;
 					}
-<span class="fc" id="L127">					comp[v] = compIdx;</span>
-<span class="fc" id="L128">					stack.push(v);</span>
-<span class="fc" id="L129">				}</span>
-<span class="fc" id="L130">			}</span>
+<span class="fc" id="L120">					comp[v] = compIdx;</span>
+<span class="fc" id="L121">					stack.push(v);</span>
+<span class="fc" id="L122">				}</span>
+<span class="fc" id="L123">			}</span>
 		}
-<span class="fc" id="L132">		return new Result(compNum, comp);</span>
+<span class="fc" id="L125">		return new Result(compNum, comp);</span>
 	}
 
 	private static class Result implements ConnectivityAlgorithm.Result {
 		private final int ccNum;
 		private final int[] vertexToCC;
 
-<span class="fc" id="L139">		private Result(int ccNum, int[] vertexToCC) {</span>
-<span class="fc" id="L140">			this.ccNum = ccNum;</span>
-<span class="fc" id="L141">			this.vertexToCC = vertexToCC;</span>
-<span class="fc" id="L142">		}</span>
+<span class="fc" id="L132">		private Result(int ccNum, int[] vertexToCC) {</span>
+<span class="fc" id="L133">			this.ccNum = ccNum;</span>
+<span class="fc" id="L134">			this.vertexToCC = vertexToCC;</span>
+<span class="fc" id="L135">		}</span>
 
 		@Override
 		public int getVertexCc(int v) {
-<span class="fc" id="L146">			return vertexToCC[v];</span>
+<span class="fc" id="L139">			return vertexToCC[v];</span>
 		}
 
 		@Override
 		public int getNumberOfCC() {
-<span class="fc" id="L151">			return ccNum;</span>
+<span class="fc" id="L144">			return ccNum;</span>
 		}
 
 		@Override
 		public String toString() {
-<span class="nc" id="L156">			return Arrays.toString(vertexToCC);</span>
+<span class="nc" id="L149">			return Arrays.toString(vertexToCC);</span>
 		}
-	}
-
-<span class="fc" id="L160">	private static class AllocatedMemory {</span>
-		private IntStack stack1;
-		private IntStack stack2;
-<span class="fc" id="L163">		private int[] dfsPath = IntArrays.EMPTY_ARRAY;</span>
-<span class="fc" id="L164">		private int[] c = IntArrays.EMPTY_ARRAY;</span>
-<span class="fc" id="L165">		private EdgeIter[] edges = MemoryReuse.EmptyEdgeIterArr;</span>
-
-		void allocatedDirected(Graph g) {
-<span class="fc" id="L168">			int n = g.vertices().size();</span>
-<span class="fc" id="L169">			stack1 = MemoryReuse.ensureAllocated(stack1, IntArrayList::new);</span>
-<span class="fc" id="L170">			stack2 = MemoryReuse.ensureAllocated(stack2, IntArrayList::new);</span>
-<span class="fc" id="L171">			dfsPath = MemoryReuse.ensureLength(dfsPath, n);</span>
-<span class="fc" id="L172">			c = MemoryReuse.ensureLength(c, n);</span>
-<span class="fc" id="L173">			edges = MemoryReuse.ensureLength(edges, n);</span>
-
-<span class="fc" id="L175">		}</span>
-
-		void allocatedUndirected(Graph g) {
-<span class="fc" id="L178">			stack1 = MemoryReuse.ensureAllocated(stack1, IntArrayList::new);</span>
-<span class="fc" id="L179">		}</span>
 	}
 
 }

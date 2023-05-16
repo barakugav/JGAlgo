@@ -116,7 +116,7 @@ public class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 			// perform backward BFS from sink on edges with flow &lt; capacity (residual)
 			// perform another one from source to init unreachable vertices
 
-<span class="fc" id="L119">			BitSet visited = new BitSet();</span>
+<span class="fc" id="L119">			BitSet visited = new BitSet(n);</span>
 <span class="fc" id="L120">			IntPriorityQueue queue = new IntArrayFIFOQueue();</span>
 <span class="pc bpc" id="L121" title="1 of 2 branches missed.">			assert visited.isEmpty();</span>
 <span class="pc bpc" id="L122" title="1 of 2 branches missed.">			assert queue.isEmpty();</span>
