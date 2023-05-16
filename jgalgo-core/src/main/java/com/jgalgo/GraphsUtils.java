@@ -218,11 +218,11 @@ class GraphsUtils {
 			throw new IndexOutOfBoundsException(v);
 		}
 
-		@Override
-		public void removeVertices(IntCollection vs) {
-			if (!vs.isEmpty())
-				throw new IndexOutOfBoundsException(vs.iterator().nextInt());
-		}
+		// @Override
+		// public void removeVertices(IntCollection vs) {
+		// if (!vs.isEmpty())
+		// throw new IndexOutOfBoundsException(vs.iterator().nextInt());
+		// }
 
 		@Override
 		public EdgeIter edgesOut(int u) {
@@ -249,11 +249,11 @@ class GraphsUtils {
 			throw new IndexOutOfBoundsException(edge);
 		}
 
-		@Override
-		public void removeEdges(IntCollection edges) {
-			if (!edges.isEmpty())
-				throw new IndexOutOfBoundsException(edges.iterator().nextInt());
-		}
+		// @Override
+		// public void removeEdges(IntCollection edges) {
+		// if (!edges.isEmpty())
+		// throw new IndexOutOfBoundsException(edges.iterator().nextInt());
+		// }
 
 		@Override
 		public void reverseEdge(int edge) {

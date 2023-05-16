@@ -50,8 +50,22 @@ abstract class GraphBaseContinues extends GraphBase {
 			((WeightsImpl<?>) weight).container.remove(v);
 	}
 
-	@Override
-	public void removeVertices(IntCollection vs) {
+	/**
+	 * Remove multiple vertices.
+	 * <p>
+	 * After removing a vertex, the vertices ID strategy may rename other vertices identifiers to maintain its
+	 * invariants, see {@link #getVerticesIDStrategy()}. Theses renames can be subscribed using
+	 * {@link IDStrategy#addIDSwapListener}.
+	 * <p>
+	 * This function may be useful in case a user want to remove a collection of vertices, and does not want to update
+	 * IDs within the collection due to IDs renames.
+	 *
+	 * @param  vs                        a collection of vertices to remove
+	 * @throws IndexOutOfBoundsException if one of the edges is not a valid edge identifier
+	 * @throws IllegalArgumentException  if the vertices collection to remove contains duplications
+	 */
+	// @Override public
+	void removeVertices(IntCollection vs) {
 		int[] vsArr = vs.toIntArray();
 		IntArrays.parallelQuickSort(vsArr);
 		for (int i = 0; i < vsArr.length - 1; i++) {
@@ -101,8 +115,21 @@ abstract class GraphBaseContinues extends GraphBase {
 			((WeightsImpl<?>) weight).container.remove(e);
 	}
 
-	@Override
-	public void removeEdges(IntCollection edges) {
+	/**
+	 * Remove multiple edges.
+	 * <p>
+	 * After removing an edge, the edges ID strategy may rename other edges identifiers to maintain its invariants, see
+	 * {@link #getEdgesIDStrategy()}. Theses renames can be subscribed using {@link IDStrategy#addIDSwapListener}.
+	 * <p>
+	 * This function may be useful in case a user want to remove a collection of edges, and does not want to update IDs
+	 * within the collection due to IDs renames.
+	 *
+	 * @param  edges                     a collection of edges to remove
+	 * @throws IndexOutOfBoundsException if one of the edges is not a valid edge identifier
+	 * @throws IllegalArgumentException  if the edges collection to remove contains duplications
+	 */
+	// @Override public
+	void removeEdges(IntCollection edges) {
 		int[] edgesArr = edges.toIntArray();
 		IntArrays.parallelQuickSort(edgesArr);
 		for (int i = 0; i < edgesArr.length - 1; i++) {

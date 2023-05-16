@@ -23,9 +23,6 @@ import java.util.Set;
 import java.util.function.IntFunction;
 import com.jgalgo.GraphsUtils.UndirectedGraphImpl;
 import com.jgalgo.IDStrategy.IDAddRemoveListener;
-import it.unimi.dsi.fastutil.ints.AbstractIntCollection;
-import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 
 class GraphBuilderImpl implements GraphBuilder {
 
@@ -204,39 +201,39 @@ class GraphBuilderImpl implements GraphBuilder {
 			g.removeVertex(vIdx);
 		}
 
-		@Override
-		public void removeVertices(IntCollection vs) {
-			g.removeVertices(new AbstractIntCollection() {
+		// @Override
+		// public void removeVertices(IntCollection vs) {
+		// g.removeVertices(new AbstractIntCollection() {
 
-				@Override
-				public int size() {
-					return vs.size();
-				}
+		// @Override
+		// public int size() {
+		// return vs.size();
+		// }
 
-				@Override
-				public IntIterator iterator() {
-					return new IntIterator() {
-						final IntIterator it = vs.iterator();
+		// @Override
+		// public IntIterator iterator() {
+		// return new IntIterator() {
+		// final IntIterator it = vs.iterator();
 
-						@Override
-						public boolean hasNext() {
-							return it.hasNext();
-						}
+		// @Override
+		// public boolean hasNext() {
+		// return it.hasNext();
+		// }
 
-						@Override
-						public int nextInt() {
-							return verticesIDStrategy.idToIdx(it.nextInt());
-						}
-					};
-				}
+		// @Override
+		// public int nextInt() {
+		// return verticesIDStrategy.idToIdx(it.nextInt());
+		// }
+		// };
+		// }
 
-				@Override
-				public boolean contains(int uIdx) {
-					return vs.contains(verticesIDStrategy.idxToId(uIdx));
-				}
+		// @Override
+		// public boolean contains(int uIdx) {
+		// return vs.contains(verticesIDStrategy.idxToId(uIdx));
+		// }
 
-			});
-		}
+		// });
+		// }
 
 		@Override
 		public EdgeIter edgesOut(int u) {
@@ -280,39 +277,39 @@ class GraphBuilderImpl implements GraphBuilder {
 			g.removeEdge(eIdx);
 		}
 
-		@Override
-		public void removeEdges(IntCollection edges) {
-			g.removeEdges(new AbstractIntCollection() {
+		// @Override
+		// public void removeEdges(IntCollection edges) {
+		// g.removeEdges(new AbstractIntCollection() {
 
-				@Override
-				public int size() {
-					return edges.size();
-				}
+		// @Override
+		// public int size() {
+		// return edges.size();
+		// }
 
-				@Override
-				public IntIterator iterator() {
-					return new IntIterator() {
-						final IntIterator it = edges.iterator();
+		// @Override
+		// public IntIterator iterator() {
+		// return new IntIterator() {
+		// final IntIterator it = edges.iterator();
 
-						@Override
-						public boolean hasNext() {
-							return it.hasNext();
-						}
+		// @Override
+		// public boolean hasNext() {
+		// return it.hasNext();
+		// }
 
-						@Override
-						public int nextInt() {
-							return edgesIDStrategy.idToIdx(it.nextInt());
-						}
-					};
-				}
+		// @Override
+		// public int nextInt() {
+		// return edgesIDStrategy.idToIdx(it.nextInt());
+		// }
+		// };
+		// }
 
-				@Override
-				public boolean contains(int eIdx) {
-					return edges.contains(edgesIDStrategy.idxToId(eIdx));
-				}
+		// @Override
+		// public boolean contains(int eIdx) {
+		// return edges.contains(edgesIDStrategy.idxToId(eIdx));
+		// }
 
-			});
-		}
+		// });
+		// }
 
 		@Override
 		public void removeEdgesOf(int u) {

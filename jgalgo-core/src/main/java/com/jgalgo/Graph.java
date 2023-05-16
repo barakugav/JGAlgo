@@ -17,7 +17,6 @@
 package com.jgalgo;
 
 import java.util.Set;
-import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
@@ -138,26 +137,10 @@ public interface Graph {
 	 * instead of actually removing it and dealing with IDs renames, but that depends on the specific use case.
 	 *
 	 * @see                              IDStrategy
-	 * @param  v                         the vertex identifier to remove
+	 * @param  vertex                    the vertex identifier to remove
 	 * @throws IndexOutOfBoundsException if \(v\) is not a valid vertex identifier
 	 */
-	void removeVertex(int v);
-
-	/**
-	 * Remove multiple vertices.
-	 * <p>
-	 * After removing a vertex, the vertices ID strategy may rename other vertices identifiers to maintain its
-	 * invariants, see {@link #getVerticesIDStrategy()}. Theses renames can be subscribed using
-	 * {@link IDStrategy#addIDSwapListener}.
-	 * <p>
-	 * This function may be useful in case a user want to remove a collection of vertices, and does not want to update
-	 * IDs within the collection due to IDs renames.
-	 *
-	 * @param  vs                        a collection of vertices to remove
-	 * @throws IndexOutOfBoundsException if one of the edges is not a valid edge identifier
-	 * @throws IllegalArgumentException  if the vertices collection to remove contains duplications
-	 */
-	void removeVertices(IntCollection vs);
+	void removeVertex(int vertex);
 
 	/**
 	 * Get the edges whose source is \(u\).
@@ -166,11 +149,11 @@ public interface Graph {
 	 * Get an edge iterator that iterate over all edges whose source is \(u\). In case the graph is undirected, the
 	 * iterator will iterate over edges whose \(u\) is one of their end points.
 	 *
-	 * @param  u                         a source vertex
+	 * @param  source                    a source vertex
 	 * @return                           an iterator of all the edges whose source is u
 	 * @throws IndexOutOfBoundsException if \(u\) is not a valid vertex identifier
 	 */
-	EdgeIter edgesOut(int u);
+	EdgeIter edgesOut(int source);
 
 	/**
 	 * Get the edges whose target is \(v\).
@@ -179,11 +162,11 @@ public interface Graph {
 	 * Get an edge iterator that iterate over all edges whose target is \(v\). In case the graph is undirected, the
 	 * iterator will iterate over edges whose \(v\) is one of their end points.
 	 *
-	 * @param  v                         a target vertex
+	 * @param  target                    a target vertex
 	 * @return                           an iterator of all the edges whose target is \(v\)
 	 * @throws IndexOutOfBoundsException if \(v\) is not a valid vertex identifier
 	 */
-	EdgeIter edgesIn(int v);
+	EdgeIter edgesIn(int target);
 
 	/**
 	 * Get the edge whose source is \(u\) and target is \(v\).
@@ -194,15 +177,15 @@ public interface Graph {
 	 * <p>
 	 * In case there are multiple (parallel) edges between \(u\) and \(v\), a single arbitrary one is returned.
 	 *
-	 * @param  u                         a source vertex
-	 * @param  v                         a target vertex
+	 * @param  source                    a source vertex
+	 * @param  target                    a target vertex
 	 * @return                           id of the edge or {@code -1} if no such edge exists
 	 * @throws IndexOutOfBoundsException if \(u\) or \(v\) are not valid vertices identifiers
 	 */
-	default int getEdge(int u, int v) {
-		for (EdgeIter it = edgesOut(u); it.hasNext();) {
+	default int getEdge(int source, int target) {
+		for (EdgeIter it = edgesOut(source); it.hasNext();) {
 			int e = it.nextInt();
-			if (it.target() == v)
+			if (it.target() == target)
 				return e;
 		}
 		return -1;
@@ -211,22 +194,22 @@ public interface Graph {
 	/**
 	 * Get the edges whose source is \(u\) and target is \(v\).
 	 *
-	 * @param  u                         a source vertex
-	 * @param  v                         a target vertex
+	 * @param  source                    a source vertex
+	 * @param  target                    a target vertex
 	 * @return                           an iterator of all the edges whose source is \(u\) and target is \(v\)
 	 * @throws IndexOutOfBoundsException if \(u\) or \(v\) are not valid vertices identifiers
 	 */
-	EdgeIter getEdges(int u, int v);
+	EdgeIter getEdges(int source, int target);
 
 	/**
 	 * Add a new edge to the graph.
 	 *
-	 * @param  u                         a source vertex
-	 * @param  v                         a target vertex
+	 * @param  source                    a source vertex
+	 * @param  target                    a target vertex
 	 * @return                           the new edge identifier
 	 * @throws IndexOutOfBoundsException if \(u\) or \(v\) are not valid vertices identifiers
 	 */
-	int addEdge(int u, int v);
+	int addEdge(int source, int target);
 
 	/**
 	 * Remove an edge from the graph.
@@ -241,33 +224,18 @@ public interface Graph {
 	void removeEdge(int edge);
 
 	/**
-	 * Remove multiple edges.
-	 * <p>
-	 * After removing an edge, the edges ID strategy may rename other edges identifiers to maintain its invariants, see
-	 * {@link #getEdgesIDStrategy()}. Theses renames can be subscribed using {@link IDStrategy#addIDSwapListener}.
-	 * <p>
-	 * This function may be useful in case a user want to remove a collection of edges, and does not want to update IDs
-	 * within the collection due to IDs renames.
-	 *
-	 * @param  edges                     a collection of edges to remove
-	 * @throws IndexOutOfBoundsException if one of the edges is not a valid edge identifier
-	 * @throws IllegalArgumentException  if the edges collection to remove contains duplications
-	 */
-	void removeEdges(IntCollection edges);
-
-	/**
 	 * Remove all the edges of a vertex.
 	 *
 	 * <p>
 	 * After removing an edge, the edges ID strategy may rename other edges identifiers to maintain its invariants, see
 	 * {@link #getEdgesIDStrategy()}. Theses renames can be subscribed using {@link IDStrategy#addIDSwapListener}.
 	 *
-	 * @param  u                         a vertex in the graph
+	 * @param  vertex                    a vertex in the graph
 	 * @throws IndexOutOfBoundsException if \(u\) is not a valid vertex identifier
 	 */
-	default void removeEdgesOf(int u) {
-		removeEdgesOutOf(u);
-		removeEdgesInOf(u);
+	default void removeEdgesOf(int vertex) {
+		removeEdgesOutOf(vertex);
+		removeEdgesInOf(vertex);
 	}
 
 	/**
@@ -276,11 +244,11 @@ public interface Graph {
 	 * After removing an edge, the edges ID strategy may rename other edges identifiers to maintain its invariants, see
 	 * {@link #getEdgesIDStrategy()}. Theses renames can be subscribed using {@link IDStrategy#addIDSwapListener}.
 	 *
-	 * @param  u                         a vertex in the graph
+	 * @param  source                    a vertex in the graph
 	 * @throws IndexOutOfBoundsException if \(u\) is not a valid vertex identifier
 	 */
-	default void removeEdgesOutOf(int u) {
-		for (EdgeIter eit = edgesOut(u); eit.hasNext();) {
+	default void removeEdgesOutOf(int source) {
+		for (EdgeIter eit = edgesOut(source); eit.hasNext();) {
 			eit.nextInt();
 			eit.remove();
 		}
@@ -292,11 +260,11 @@ public interface Graph {
 	 * After removing an edge, the edges ID strategy may rename other edges identifiers to maintain its invariants, see
 	 * {@link #getEdgesIDStrategy()}. Theses renames can be subscribed using {@link IDStrategy#addIDSwapListener}.
 	 *
-	 * @param  v                         a vertex in the graph
+	 * @param  target                    a vertex in the graph
 	 * @throws IndexOutOfBoundsException if \(v\) is not a valid vertex identifier
 	 */
-	default void removeEdgesInOf(int v) {
-		for (EdgeIter eit = edgesIn(v); eit.hasNext();) {
+	default void removeEdgesInOf(int target) {
+		for (EdgeIter eit = edgesIn(target); eit.hasNext();) {
 			eit.nextInt();
 			eit.remove();
 		}
@@ -363,13 +331,13 @@ public interface Graph {
 	/**
 	 * Get the out degree of a source vertex.
 	 *
-	 * @param  u                         a source vertex
+	 * @param  source                    a source vertex
 	 * @return                           the number of edges whose source is u
 	 * @throws IndexOutOfBoundsException if \(u\) is not a valid vertex identifier
 	 */
-	default int degreeOut(int u) {
+	default int degreeOut(int source) {
 		int count = 0;
-		for (EdgeIter it = edgesOut(u); it.hasNext();) {
+		for (EdgeIter it = edgesOut(source); it.hasNext();) {
 			it.nextInt();
 			count++;
 		}
@@ -379,13 +347,13 @@ public interface Graph {
 	/**
 	 * Get the in degree of a target vertex.
 	 *
-	 * @param  v                         a target vertex
+	 * @param  target                    a target vertex
 	 * @return                           the number of edges whose target is v
 	 * @throws IndexOutOfBoundsException if \(v\) is not a valid vertex identifier
 	 */
-	default int degreeIn(int v) {
+	default int degreeIn(int target) {
 		int count = 0;
-		for (EdgeIter it = edgesIn(v); it.hasNext();) {
+		for (EdgeIter it = edgesIn(target); it.hasNext();) {
 			it.nextInt();
 			count++;
 		}
