@@ -200,9 +200,6 @@ class GraphArrayDirected extends GraphArrayAbstract {
 	public void clearEdges() {
 		int n = vertices().size();
 		for (int u = 0; u < n; u++) {
-			// TODO do some sort of 'addKey' instead of set, no need
-			edgesOut.set(u, IntArrays.EMPTY_ARRAY);
-			edgesIn.set(u, IntArrays.EMPTY_ARRAY);
 			edgesOutNum.set(u, 0);
 			edgesInNum.set(u, 0);
 		}
@@ -212,9 +209,9 @@ class GraphArrayDirected extends GraphArrayAbstract {
 	@Override
 	public void clear() {
 		super.clear();
-		edgesOut.clear();
+		edgesOut.clearWithoutDeallocation();
 		edgesOutNum.clear();
-		edgesIn.clear();
+		edgesIn.clearWithoutDeallocation();
 		edgesInNum.clear();
 	}
 

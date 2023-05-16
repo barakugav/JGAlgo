@@ -72,6 +72,10 @@ abstract class DataContainer<E> {
 		size = 0;
 	}
 
+	void clearWithoutDeallocation() {
+		size = 0;
+	}
+
 	abstract void add(int idx);
 
 	abstract void remove(int idx);

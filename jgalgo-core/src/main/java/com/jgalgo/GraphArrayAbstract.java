@@ -80,8 +80,6 @@ abstract class GraphArrayAbstract extends GraphBaseContinues {
 		long endpoints = edgeEndpoints.getLong(edge);
 		int u = endpoints2Source(endpoints);
 		int v = endpoints2Target(endpoints);
-		if (u == v)
-			return;
 		endpoints = sourceTarget2Endpoints(v, u);
 		edgeEndpoints.set(edge, endpoints);
 	}
