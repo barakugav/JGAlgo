@@ -16,49 +16,65 @@
 
 package com.jgalgo;
 
-import java.util.Arrays;
 import java.util.NoSuchElementException;
+import com.jgalgo.EdgeEndpointsContainer.GraphWithEdgeEndpointsContainer;
 
-import it.unimi.dsi.fastutil.ints.IntBigArrays;
+abstract class GraphTableAbstract extends GraphBaseContinues implements GraphWithEdgeEndpointsContainer {
 
-abstract class GraphTableAbstract extends GraphBaseContinues {
-
-	final int[][] edges;
-	private final DataContainer.Long edgeEndpoints;
+	final DataContainer.Obj<DataContainer.Int> edges;
+	private final EdgeEndpointsContainer edgeEndpoints;
 
 	static final int EdgeNone = -1;
 
 	GraphTableAbstract(int n, GraphCapabilities capabilities) {
 		super(n, capabilities);
-		edges = n > 0 ? new int[n][n] : IntBigArrays.EMPTY_BIG_ARRAY;
-		for (int u = 0; u < n; u++)
-			Arrays.fill(edges[u], EdgeNone);
 
-		edgeEndpoints = new DataContainer.Long(n, sourceTarget2Endpoints(-1, -1));
+		edges = new DataContainer.Obj<>(n, null, DataContainer.Int.class);
+		addInternalVerticesDataContainer(edges);
+		for (int u = 0; u < n; u++) {
+			DataContainer.Int uEdges = new DataContainer.Int(n, EdgeNone);
+			edges.set(u, uEdges);
+			addInternalVerticesDataContainer(uEdges);
+		}
+
+		edgeEndpoints = new EdgeEndpointsContainer(n);
 		addInternalEdgesDataContainer(edgeEndpoints);
 	}
 
-	/**
-	 * Vertex addition is not support. The number of vertices is fixed and should be specified in the constructor.
-	 */
-	@Deprecated
 	@Override
-	public final int addVertex() {
-		throw new UnsupportedOperationException();
+	public int addVertex() {
+		int u = super.addVertex();
+		final int n = vertices().size();
+
+		DataContainer.Int uEdges = new DataContainer.Int(n, EdgeNone);
+		addInternalVerticesDataContainer(uEdges);
+		edges.add(u);
+		edges.set(u, uEdges);
+
+		for (int v = 0; v < n - 1; v++)
+			edges.get(v).add(u);
+
+		return u;
 	}
 
-	/**
-	 * Vertex removal is not support. The number of vertices is fixed and should be specified in the constructor.
-	 */
-	@Deprecated
 	@Override
-	public final void removeVertex(int v) {
-		throw new UnsupportedOperationException();
+	public void removeVertex(int v) {
+		v = vertexSwapBeforeRemove(v);
+		super.removeVertex(v);
+		edges.remove(v);
+
+		final int n = vertices().size();
+		for (int u = 0; u < n; u++)
+			edges.get(u).remove(v);
 	}
 
 	@Override
-	final void vertexSwap(int v1, int v2) {
-		throw new UnsupportedOperationException();
+	void vertexSwap(int v1, int v2) {
+		final int n = vertices().size();
+		edges.swap(v1, v2);
+		for (int u = 0; u < n; u++)
+			edges.get(u).swap(v1, v2);
+		super.vertexSwap(v1, v2);
 	}
 
 	@Override
@@ -68,12 +84,12 @@ abstract class GraphTableAbstract extends GraphBaseContinues {
 
 	@Override
 	public int getEdge(int u, int v) {
-		return edges[u][v];
+		return edges.get(u).getInt(v);
 	}
 
 	@Override
 	public EdgeIter getEdges(int u, int v) {
-		int e = edges[u][v];
+		int e = edges.get(u).getInt(v);
 		if (e == EdgeNone) {
 			return EdgeIterImpl.Empty;
 		} else {
@@ -116,11 +132,11 @@ abstract class GraphTableAbstract extends GraphBaseContinues {
 
 	@Override
 	public int addEdge(int u, int v) {
-		if (edges[u][v] != EdgeNone)
+		if (edges.get(u).getInt(v) != EdgeNone)
 			throw new IllegalArgumentException("parallel edges are not supported");
 		int e = super.addEdge(u, v);
 		edgeEndpoints.add(e);
-		edgeEndpoints.set(e, sourceTarget2Endpoints(u, v));
+		edgeEndpoints.setEndpoints(e, u, v);
 		return e;
 	}
 
@@ -138,71 +154,28 @@ abstract class GraphTableAbstract extends GraphBaseContinues {
 	}
 
 	void reverseEdge0(int edge) {
-		long endpoints = edgeEndpoints.getLong(edge);
-		int u = endpoints2Source(endpoints);
-		int v = endpoints2Target(endpoints);
-		if (u == v)
-			return;
-		endpoints = sourceTarget2Endpoints(v, u);
-		edgeEndpoints.set(edge, endpoints);
+		edgeEndpoints.reverseEdge(edge);
 	}
 
 	@Override
-	public int edgeEndpoint(int edge, int endpoint) {
-		long endpoints = edgeEndpoints.getLong(edge);
-		int u = endpoints2Source(endpoints);
-		int v = endpoints2Target(endpoints);
-		if (endpoint == u) {
-			return v;
-		} else if (endpoint == v) {
-			return u;
-		} else {
-			throw new IllegalArgumentException(
-					"The given vertex (" + endpoint + ") is not an endpoint of the edge (" + u + ", " + v + ")");
-		}
+	public EdgeEndpointsContainer edgeEndpoints() {
+		return edgeEndpoints;
 	}
 
-	@Override
-	public int edgeSource(int edge) {
-		checkEdgeIdx(edge);
-		return endpoints2Source(edgeEndpoints.getLong(edge));
-	}
-
-	@Override
-	public int edgeTarget(int edge) {
-		checkEdgeIdx(edge);
-		return endpoints2Target(edgeEndpoints.getLong(edge));
-	}
-
-	/**
-	 * Clearing is not supported, as vertices removal are not supported. The number of vertices is fixed and should be
-	 * specified in the constructor.
-	 */
-	@Deprecated
 	@Override
 	public void clear() {
-		throw new UnsupportedOperationException();
+		clearEdges();
+		final int n = vertices().size();
+		for (int u = 0; u < n; u++)
+			edges.get(u).clear();
+		edges.clear();
+		super.clear();
 	}
 
 	@Override
 	public void clearEdges() {
-		int n = vertices().size();
-		for (int u = 0; u < n; u++)
-			Arrays.fill(edges[u], EdgeNone);
 		edgeEndpoints.clear();
 		super.clearEdges();
-	}
-
-	private static long sourceTarget2Endpoints(int u, int v) {
-		return ((u & 0xffffffffL) << 32) | ((v & 0xffffffffL) << 0);
-	}
-
-	private static int endpoints2Source(long endpoints) {
-		return (int) ((endpoints >> 32) & 0xffffffffL);
-	}
-
-	private static int endpoints2Target(long endpoints) {
-		return (int) ((endpoints >> 0) & 0xffffffffL);
 	}
 
 	class EdgeIterOut implements EdgeIterImpl {
@@ -210,10 +183,12 @@ abstract class GraphTableAbstract extends GraphBaseContinues {
 		private final int u;
 		private int v;
 		private int lastV = -1;
+		private final DataContainer.Int uEdges;
 
 		EdgeIterOut(int u) {
 			checkVertexIdx(u);
 			this.u = u;
+			uEdges = edges.get(u);
 
 			advanceUntilNext(0);
 		}
@@ -227,7 +202,7 @@ abstract class GraphTableAbstract extends GraphBaseContinues {
 		public int nextInt() {
 			if (!hasNext())
 				throw new NoSuchElementException();
-			int e = edges[u][lastV = v];
+			int e = uEdges.getInt(lastV = v);
 			advanceUntilNext(v + 1);
 			return e;
 		}
@@ -236,13 +211,13 @@ abstract class GraphTableAbstract extends GraphBaseContinues {
 		public int peekNext() {
 			if (!hasNext())
 				throw new NoSuchElementException();
-			return edges[u][v];
+			return uEdges.getInt(v);
 		}
 
 		void advanceUntilNext(int next) {
 			int n = vertices().size();
 			for (; next < n; next++) {
-				if (edges[u][next] != EdgeNone) {
+				if (uEdges.getInt(next) != EdgeNone) {
 					v = next;
 					return;
 				}
@@ -262,7 +237,7 @@ abstract class GraphTableAbstract extends GraphBaseContinues {
 
 		@Override
 		public void remove() {
-			removeEdge(edges[source()][target()]);
+			removeEdge(uEdges.getInt(target()));
 		}
 	}
 
@@ -288,7 +263,7 @@ abstract class GraphTableAbstract extends GraphBaseContinues {
 		public int nextInt() {
 			if (!hasNext())
 				throw new NoSuchElementException();
-			int e = edges[lastU = u][v];
+			int e = edges.get(lastU = u).getInt(v);
 			advanceUntilNext(u + 1);
 			return e;
 		}
@@ -297,13 +272,13 @@ abstract class GraphTableAbstract extends GraphBaseContinues {
 		public int peekNext() {
 			if (!hasNext())
 				throw new NoSuchElementException();
-			return edges[u][v];
+			return edges.get(u).getInt(v);
 		}
 
 		private void advanceUntilNext(int next) {
 			int n = vertices().size();
 			for (; next < n; next++) {
-				if (edges[next][v] != EdgeNone) {
+				if (edges.get(next).getInt(v) != EdgeNone) {
 					u = next;
 					return;
 				}
@@ -323,7 +298,7 @@ abstract class GraphTableAbstract extends GraphBaseContinues {
 
 		@Override
 		public void remove() {
-			removeEdge(edges[source()][target()]);
+			removeEdge(edges.get(source()).getInt(target()));
 		}
 	}
 

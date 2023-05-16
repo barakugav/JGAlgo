@@ -17,13 +17,13 @@
 package com.jgalgo;
 
 import com.jgalgo.GraphsUtils.UndirectedGraphImpl;
+import it.unimi.dsi.fastutil.ints.IntIterator;
 
 /**
  * A undirected graph implementation using a two dimensional table to store all edges.
  * <p>
- * The graph is initialized with a fixed number of vertices, \(n\), and does not support addition or removals of
- * vertices. A fixed sized table of size {@code [n][n]} stores the edges of the graph. The implementation does not
- * support multiple edges with identical source and target.
+ * If the graph contains \(n\) vertices, table of size {@code [n][n]} stores the edges of the graph. The implementation
+ * does not support multiple edges with identical source and target.
  * <p>
  * This implementation is efficient for use cases where fast lookups of edge \((u,v)\) are required, as they can be
  * answered in \(O(1)\) time, but it should not be the default choice for an undirected graph.
@@ -35,8 +35,6 @@ class GraphTableUndirected extends GraphTableAbstract implements UndirectedGraph
 
 	/**
 	 * Create a new graph with no edges and {@code n} vertices numbered {@code 0,1,2,..,n-1}.
-	 * <p>
-	 * Vertices can not be added or removed after the graph was created.
 	 *
 	 * @param n the number of initial vertices number
 	 */
@@ -47,7 +45,8 @@ class GraphTableUndirected extends GraphTableAbstract implements UndirectedGraph
 	@Override
 	public int addEdge(int u, int v) {
 		int e = super.addEdge(u, v);
-		edges[u][v] = edges[v][u] = e;
+		edges.get(u).set(v, e);
+		edges.get(v).set(u, e);
 		return e;
 	}
 
@@ -55,28 +54,54 @@ class GraphTableUndirected extends GraphTableAbstract implements UndirectedGraph
 	public void removeEdge(int e) {
 		e = edgeSwapBeforeRemove(e);
 		int u = edgeSource(e), v = edgeTarget(e);
-		edges[u][v] = edges[v][u] = EdgeNone;
+		edges.get(u).set(v, EdgeNone);
+		edges.get(v).set(u, EdgeNone);
 		super.removeEdge(e);
+	}
+
+	@Override
+	public void clearEdges() {
+		final int m = edges().size();
+		for (int e = 0; e < m; e++) {
+			int u = edgeSource(e), v = edgeTarget(e);
+			edges.get(u).set(v, EdgeNone);
+			edges.get(v).set(u, EdgeNone);
+		}
+		super.clearEdges();
 	}
 
 	@Override
 	void edgeSwap(int e1, int e2) {
 		int u1 = edgeSource(e1), v1 = edgeTarget(e1);
 		int u2 = edgeSource(e2), v2 = edgeTarget(e2);
-		edges[u1][v1] = edges[v1][u1] = e2;
-		edges[u2][v2] = edges[v2][u2] = e1;
+		edges.get(u1).set(v1, e2);
+		edges.get(v1).set(u1, e2);
+		edges.get(u2).set(v2, e1);
+		edges.get(v2).set(u2, e1);
 		super.edgeSwap(e1, e2);
+	}
+
+	@Override
+	void vertexSwap(int v1, int v2) {
+		final int tempV = -2;
+		for (IntIterator eit1 = edgesOut(v1); eit1.hasNext();)
+			replaceEdgeEndpoint(eit1.nextInt(), v1, tempV);
+		for (IntIterator eit1 = edgesOut(v2); eit1.hasNext();)
+			replaceEdgeEndpoint(eit1.nextInt(), v2, v1);
+		for (IntIterator eit1 = edgesOut(v1); eit1.hasNext();)
+			replaceEdgeEndpoint(eit1.nextInt(), tempV, v2);
+		super.vertexSwap(v1, v2);
 	}
 
 	private static final GraphCapabilities Capabilities = new GraphCapabilities() {
 		@Override
 		public boolean vertexAdd() {
-			return false;
+			return true;
 		}
 
 		@Override
 		public boolean vertexRemove() {
-			return false;
+			return true;
 		}
 
 		@Override

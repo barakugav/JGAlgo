@@ -18,14 +18,15 @@ package com.jgalgo;
 
 import java.util.Arrays;
 import java.util.NoSuchElementException;
+import com.jgalgo.EdgeEndpointsContainer.GraphWithEdgeEndpointsContainer;
 
-abstract class GraphArrayAbstract extends GraphBaseContinues {
+abstract class GraphArrayAbstract extends GraphBaseContinues implements GraphWithEdgeEndpointsContainer {
 
-	private final DataContainer.Long edgeEndpoints;
+	private final EdgeEndpointsContainer edgeEndpoints;
 
 	public GraphArrayAbstract(int n, GraphCapabilities capabilities) {
 		super(n, capabilities);
-		edgeEndpoints = new DataContainer.Long(0, sourceTarget2Endpoints(-1, -1));
+		edgeEndpoints = new EdgeEndpointsContainer(0);
 		addInternalEdgesDataContainer(edgeEndpoints);
 	}
 
@@ -33,7 +34,7 @@ abstract class GraphArrayAbstract extends GraphBaseContinues {
 	public int addEdge(int u, int v) {
 		int e = super.addEdge(u, v);
 		edgeEndpoints.add(e);
-		edgeEndpoints.set(e, sourceTarget2Endpoints(u, v));
+		edgeEndpoints.setEndpoints(e, u, v);
 		return e;
 	}
 
@@ -76,80 +77,19 @@ abstract class GraphArrayAbstract extends GraphBaseContinues {
 		edgesNum.set(w, num - 1);
 	}
 
+	@Override
+	public EdgeEndpointsContainer edgeEndpoints() {
+		return edgeEndpoints;
+	}
+
 	void reverseEdge0(int edge) {
-		long endpoints = edgeEndpoints.getLong(edge);
-		int u = endpoints2Source(endpoints);
-		int v = endpoints2Target(endpoints);
-		endpoints = sourceTarget2Endpoints(v, u);
-		edgeEndpoints.set(edge, endpoints);
-	}
-
-	@Override
-	public int edgeEndpoint(int edge, int endpoint) {
-		long endpoints = edgeEndpoints.getLong(edge);
-		int u = endpoints2Source(endpoints);
-		int v = endpoints2Target(endpoints);
-		if (endpoint == u) {
-			return v;
-		} else if (endpoint == v) {
-			return u;
-		} else {
-			throw new IllegalArgumentException(
-					"The given vertex (" + endpoint + ") is not an endpoint of the edge (" + u + ", " + v + ")");
-		}
-	}
-
-	@Override
-	public int edgeSource(int edge) {
-		checkEdgeIdx(edge);
-		return endpoints2Source(edgeEndpoints.getLong(edge));
-	}
-
-	@Override
-	public int edgeTarget(int edge) {
-		checkEdgeIdx(edge);
-		return endpoints2Target(edgeEndpoints.getLong(edge));
-	}
-
-	void replaceEdgeSource(int edge, int newSource) {
-		long endpoints = edgeEndpoints.getLong(edge);
-		int target = endpoints2Target(endpoints);
-		edgeEndpoints.set(edge, sourceTarget2Endpoints(newSource, target));
-	}
-
-	void replaceEdgeTarget(int edge, int newTarget) {
-		long endpoints = edgeEndpoints.getLong(edge);
-		int source = endpoints2Source(endpoints);
-		edgeEndpoints.set(edge, sourceTarget2Endpoints(source, newTarget));
-	}
-
-	void replaceEdgeEndpoint(int edge, int oldEndpoint, int newEndpoint) {
-		long endpoints = edgeEndpoints.getLong(edge);
-		int source = endpoints2Source(endpoints);
-		int target = endpoints2Target(endpoints);
-		if (source == oldEndpoint)
-			source = newEndpoint;
-		if (target == oldEndpoint)
-			target = newEndpoint;
-		edgeEndpoints.set(edge, sourceTarget2Endpoints(source, target));
+		edgeEndpoints.reverseEdge(edge);
 	}
 
 	@Override
 	public void clearEdges() {
 		edgeEndpoints.clear();
 		super.clearEdges();
-	}
-
-	private static long sourceTarget2Endpoints(int u, int v) {
-		return ((u & 0xffffffffL) << 32) | ((v & 0xffffffffL) << 0);
-	}
-
-	private static int endpoints2Source(long endpoints) {
-		return (int) ((endpoints >> 32) & 0xffffffffL);
-	}
-
-	private static int endpoints2Target(long endpoints) {
-		return (int) ((endpoints >> 0) & 0xffffffffL);
 	}
 
 	abstract class EdgeIt implements EdgeIterImpl {

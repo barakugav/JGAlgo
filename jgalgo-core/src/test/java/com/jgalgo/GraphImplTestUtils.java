@@ -248,7 +248,7 @@ class GraphImplTestUtils extends TestUtils {
 		}
 	}
 
-	static void testDgree(GraphImpl graphImpl) {
+	static void testDegree(GraphImpl graphImpl) {
 		for (boolean directed : new boolean[] { true, false }) {
 			final int n = 100;
 			Graph g = graphImpl.newGraph(directed, n);
@@ -272,6 +272,102 @@ class GraphImplTestUtils extends TestUtils {
 			for (int u = 0; u < n; u++) {
 				assertEquals(degreeOut.get(u), g.degreeOut(u), "u=" + u);
 				assertEquals(degreeIn.get(u), g.degreeIn(u), "u=" + u);
+			}
+		}
+	}
+
+	static void testClear(GraphImpl graphImpl, long seed) {
+		Random rand = new Random(seed);
+		for (boolean directed : new boolean[] { true, false }) {
+			Graph g = graphImpl.newGraph(directed, 0);
+			boolean parallelEdges = g.getCapabilities().parallelEdges();
+
+			int totalOpNum = 1000;
+			while (totalOpNum > 0) {
+				int ops = rand.nextInt(100);
+				totalOpNum -= ops;
+
+				int expectedN = 0;
+				int expectedM = 0;
+
+				for (int i = 0; i < 2; i++) {
+					g.addVertex();
+					expectedN++;
+				}
+				opsLoop: while (ops-- > 0) {
+					if (rand.nextInt(5) == 0) {
+						g.addVertex();
+						expectedN++;
+					} else {
+						int u, v;
+						for (int retry = 20;;) {
+							if (retry-- > 0)
+								continue opsLoop;
+							u = rand.nextInt(g.vertices().size());
+							v = rand.nextInt(g.vertices().size());
+							if (u == v)
+								continue;
+							if (!parallelEdges && g.getEdge(u, v) != -1)
+								continue;
+							break;
+						}
+						g.addEdge(u, v);
+						expectedM++;
+					}
+					assertEquals(expectedN, g.vertices().size());
+					assertEquals(expectedM, g.edges().size());
+				}
+				g.clear();
+				assertEquals(0, g.vertices().size());
+				assertEquals(0, g.edges().size());
+			}
+		}
+	}
+
+	static void testClearEdges(GraphImpl graphImpl, long seed) {
+		Random rand = new Random(seed);
+		for (boolean directed : new boolean[] { true, false }) {
+			Graph g = graphImpl.newGraph(directed, 0);
+			boolean parallelEdges = g.getCapabilities().parallelEdges();
+
+			int totalOpNum = 1000;
+			int expectedN = 0;
+			while (totalOpNum > 0) {
+				int ops = rand.nextInt(100);
+				totalOpNum -= ops;
+
+				int expectedM = 0;
+
+				for (int i = 0; i < 2; i++) {
+					g.addVertex();
+					expectedN++;
+				}
+				opsLoop: while (ops-- > 0) {
+					if (rand.nextInt(5) == 0) {
+						g.addVertex();
+						expectedN++;
+					} else {
+						int u, v;
+						for (int retry = 20;;) {
+							if (retry-- > 0)
+								continue opsLoop;
+							u = rand.nextInt(g.vertices().size());
+							v = rand.nextInt(g.vertices().size());
+							if (u == v)
+								continue;
+							if (!parallelEdges && g.getEdge(u, v) != -1)
+								continue;
+							break;
+						}
+						g.addEdge(u, v);
+						expectedM++;
+					}
+					assertEquals(expectedN, g.vertices().size());
+					assertEquals(expectedM, g.edges().size());
+				}
+				g.clearEdges();
+				assertEquals(expectedN, g.vertices().size());
+				assertEquals(0, g.edges().size());
 			}
 		}
 	}
@@ -368,14 +464,14 @@ class GraphImplTestUtils extends TestUtils {
 
 		void addVertex(int v) {
 			if (debugPrints)
-				System.out.println("newVertex()");
+				System.out.println("newVertex(" + v + ")");
 			vertices.add(new Vertex(v));
 		}
 
 		void removeVertex(Vertex v) {
-			if (debugPrints)
-				System.out.println("removeVertex()");
 			removeEdgesOf(v);
+			if (debugPrints)
+				System.out.println("removeVertex(" + v + ")");
 
 			boolean removed = vertices.remove(v);
 			assertTrue(removed);

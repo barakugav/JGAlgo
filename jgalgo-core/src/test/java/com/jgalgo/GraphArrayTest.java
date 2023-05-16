@@ -67,8 +67,20 @@ public class GraphArrayTest extends TestBase {
 	}
 
 	@Test
-	public void testDgree() {
-		GraphImplTestUtils.testDgree(graphImpl());
+	public void testDegree() {
+		GraphImplTestUtils.testDegree(graphImpl());
+	}
+
+	@Test
+	public void testClear() {
+		final long seed = 0;
+		GraphImplTestUtils.testClear(graphImpl(), seed);
+	}
+
+	@Test
+	public void testClearEdges() {
+		final long seed = 0;
+		GraphImplTestUtils.testClearEdges(graphImpl(), seed);
 	}
 
 	@Test
