@@ -172,9 +172,9 @@ class LCADynamicGabowSimple implements LCADynamic {
 		return (int) x;
 	}
 
-	private static CharacteristicAncestors0 calcCACompressed(NodeImpl x, NodeImpl y) {
+	private static CharacteristicAncestors calcCACompressed(NodeImpl x, NodeImpl y) {
 		if (x == y)
-			return new CharacteristicAncestors0(x, x, x);
+			return new CharacteristicAncestors(x, x, x);
 		int i = logBetaFloor(Math.abs(x.idxLower - y.idxLower));
 
 		NodeImpl[] a = new NodeImpl[2];
@@ -208,16 +208,17 @@ class LCADynamicGabowSimple implements LCADynamic {
 		assert a[0] == a[1];
 		assert ax == a[0] || ax.cParent == a[0];
 		assert ay == a[0] || ay.cParent == a[0];
-		return new CharacteristicAncestors0(a[0], ax, ay);
+		return new CharacteristicAncestors(a[0], ax, ay);
 	}
 
-	private static CharacteristicAncestors0 calcCA0(NodeImpl x, NodeImpl y) {
+	CharacteristicAncestors calcCA(Node x0, Node y0) {
+		NodeImpl x = (NodeImpl) x0, y = (NodeImpl) y0;
 		if (x == y)
-			return new CharacteristicAncestors0(x, x, x);
-		CharacteristicAncestors0 cac = calcCACompressed(x, y);
+			return new CharacteristicAncestors(x, x, x);
+		CharacteristicAncestors cac = calcCACompressed(x, y);
 
 		/* c is an apex of path P */
-		NodeImpl c = cac.a, cx = cac.ax, cy = cac.ay;
+		NodeImpl c = (NodeImpl) cac.a, cx = (NodeImpl) cac.ax, cy = (NodeImpl) cac.ay;
 		assert c == c.getPathApex();
 
 		/* bz is the first ancestor of cz on P */
@@ -234,17 +235,12 @@ class LCADynamicGabowSimple implements LCADynamic {
 
 		assert ax == a || ax.parent == a;
 		assert ay == a || ay.parent == a;
-		return new CharacteristicAncestors0(a, ax, ay);
+		return new CharacteristicAncestors(a, ax, ay);
 	}
 
 	@Override
 	public Node findLowestCommonAncestor(Node x, Node y) {
-		return calcCA0((NodeImpl) x, (NodeImpl) y).a;
-	}
-
-	CharacteristicAncestors calcCA(Node x, Node y) {
-		CharacteristicAncestors0 ca = calcCA0((NodeImpl) x, (NodeImpl) y);
-		return new CharacteristicAncestors(ca.a, ca.ax, ca.ay);
+		return calcCA((NodeImpl) x, (NodeImpl) y).a;
 	}
 
 	@Override
@@ -359,16 +355,6 @@ class LCADynamicGabowSimple implements LCADynamic {
 		// children = path = ancestorTable = null;
 		// }
 
-	}
-
-	private static class CharacteristicAncestors0 {
-		NodeImpl a, ax, ay;
-
-		CharacteristicAncestors0(NodeImpl a, NodeImpl ax, NodeImpl ay) {
-			this.a = a;
-			this.ax = ax;
-			this.ay = ay;
-		}
 	}
 
 	static class CharacteristicAncestors {
