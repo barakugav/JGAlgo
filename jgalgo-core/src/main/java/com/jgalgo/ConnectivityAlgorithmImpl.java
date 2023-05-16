@@ -34,7 +34,7 @@ class ConnectivityAlgorithmImpl implements ConnectivityAlgorithm {
 		int[] dfsPath = new int[n];
 		int[] c = new int[n];
 		EdgeIter[] edges = new EdgeIter[n];
-		 // TODO DFS stack class
+		// TODO DFS stack class
 
 		// implementation of Tarjan's strongly connected components algorithm
 		// https://en.wikipedia.org/wiki/Tarjan%27s_strongly_connected_components_algorithm
@@ -91,10 +91,7 @@ class ConnectivityAlgorithmImpl implements ConnectivityAlgorithm {
 	}
 
 	private static ConnectivityAlgorithm.Result computeSCCUndirected(Graph g) {
-		IntStack stack = new IntArrayList();
-		assert stack.isEmpty();
-
-		int n = g.vertices().size();
+		final int n = g.vertices().size();
 		int[] comp = new int[n];
 		Arrays.fill(comp, -1);
 		int compNum = 0;
@@ -102,25 +99,9 @@ class ConnectivityAlgorithmImpl implements ConnectivityAlgorithm {
 		for (int root = 0; root < n; root++) {
 			if (comp[root] != -1)
 				continue;
-
 			final int compIdx = compNum++;
-			stack.push(root);
-			comp[root] = compIdx;
-
-			while (!stack.isEmpty()) {
-				int u = stack.popInt();
-
-				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
-					eit.nextInt();
-					int v = eit.target();
-					if (comp[v] != -1) {
-						assert comp[v] == compIdx;
-						continue;
-					}
-					comp[v] = compIdx;
-					stack.push(v);
-				}
-			}
+			for (BFSIter vit = new BFSIter(g, root); vit.hasNext();)
+				comp[vit.nextInt()] = compIdx;
 		}
 		return new Result(compNum, comp);
 	}
