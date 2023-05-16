@@ -44,6 +44,11 @@ public class SSSPDag implements SSSP {
 	@Override
 	public SSSPDag.Result computeShortestPaths(Graph g, EdgeWeightFunc w, int source) {
 		ArgumentCheck.onlyDirected(g);
+		return w instanceof EdgeWeightFunc.Int ? computeSsspInt(g, (EdgeWeightFunc.Int) w, source)
+				: computeSsspDouble(g, w, source);
+	}
+
+	private SSSPDag.Result computeSsspDouble(Graph g, EdgeWeightFunc w, int source) {
 		SSSPResultImpl res = new SSSPResultImpl(g, source);
 		res.distances[source] = 0;
 
@@ -55,17 +60,47 @@ public class SSSPDag implements SSSP {
 					continue;
 				sourceSeen = true;
 			}
+			double uDisntace = res.distances[u];
+			if (uDisntace == Double.POSITIVE_INFINITY)
+				continue;
 			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = eit.target();
-				double d = res.distances[u] + w.weight(e);
+				double d = uDisntace + w.weight(e);
 				if (d < res.distances[v]) {
 					res.distances[v] = d;
 					res.backtrack[v] = e;
 				}
 			}
 		}
+		return res;
+	}
 
+	private SSSPDag.Result computeSsspInt(Graph g, EdgeWeightFunc.Int w, int source) {
+		SSSPResultImpl.Int res = new SSSPResultImpl.Int(g, source);
+		res.distances[source] = 0;
+
+		boolean sourceSeen = false;
+		for (IntIterator uit = topoAlg.computeTopologicalSorting(g).verticesIterator(); uit.hasNext();) {
+			int u = uit.nextInt();
+			if (!sourceSeen) {
+				if (u != source)
+					continue;
+				sourceSeen = true;
+			}
+			int uDisntace = res.distances[u];
+			if (uDisntace == Integer.MAX_VALUE)
+				continue;
+			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
+				int e = eit.nextInt();
+				int v = eit.target();
+				int d = uDisntace + w.weightInt(e);
+				if (d < res.distances[v]) {
+					res.distances[v] = d;
+					res.backtrack[v] = e;
+				}
+			}
+		}
 		return res;
 	}
 

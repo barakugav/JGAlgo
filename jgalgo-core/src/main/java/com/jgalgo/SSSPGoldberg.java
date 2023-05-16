@@ -43,8 +43,9 @@ import it.unimi.dsi.fastutil.ints.IntList;
 public class SSSPGoldberg implements SSSP {
 
 	private SSSP positiveSsspAlgo = new SSSPDijkstra();
+	private final SSSPDial ssspDial = new SSSPDial();
+	private final SSSP dagSssp = new SSSPDag();
 	private final ConnectivityAlgorithm ccAlg = ConnectivityAlgorithm.newBuilder().build();
-	private static final Object EdgeRefWeightKey = new Object();
 
 	/**
 	 * Construct a new SSSP algorithm object.
@@ -87,52 +88,76 @@ public class SSSPGoldberg implements SSSP {
 			// All weights are positive, use Dijkstra
 			return positiveSsspAlgo.computeShortestPaths(g, w, source);
 
+		/* calculate a potential function (or find a negative cycle) */
 		Pair<int[], Path> p = calcPotential(g, w, minWeight);
 		if (p.second() != null)
 			return Result.ofNegCycle(source, p.second());
+
+		/* create a (positive) weight function using the potential */
 		int[] potential = p.first();
-		PotentialWeightFunction pw = new PotentialWeightFunction(g, w, potential);
+		EdgeWeightFunc.Int pw = e -> w.weightInt(e) + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];
+
+		/* run positive SSSP */
 		SSSP.Result res = positiveSsspAlgo.computeShortestPaths(g, pw, source);
 		return Result.ofSuccess(source, potential, res);
 	}
 
-	private Pair<int[], Path> calcPotential(Graph g, EdgeWeightFunc.Int w, int minWeight) {
-		int n = g.vertices().size();
+	private Pair<int[], Path> calcPotential(Graph g, EdgeWeightFunc.Int w0, int minWeight) {
+		final int n = g.vertices().size();
 		int[] potential = new int[n];
 
 		BitSet connected = new BitSet(n);
 		int[] layerSize = new int[n + 1];
 
-		SSSPDial ssspDial = new SSSPDial();
-		SSSP dagSssp = new SSSPDag();
+		/* updated weight function including the potential */
+		Weights.Int w = Weights.createExternalEdgesWeights(g, int.class);
 
+		/* gNeg is the graph g with only 0,-1 edges */
 		Graph gNeg = GraphBuilder.newDirected().setVerticesNum(n).build();
-		Weights.Int gNegEdgeRefs = gNeg.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
+		Weights.Int gNegEdgeRefs = gNeg.addEdgesWeights("edgeRef", int.class, Integer.valueOf(-1));
+
+		/* G is the graph of strong connectivity components of gNeg, each vertex is a super vertex of gNeg */
 		Graph G = GraphBuilder.newDirected().setVerticesNum(n).build();
 		Weights.Int GWeights = G.addEdgesWeights("weights", int.class, Integer.valueOf(-1));
+		/* Two fake vertices used to add 0-edges and (r-i)-edges to all other (super) vertices */
 		int fakeS1 = G.addVertex(), fakeS2 = G.addVertex();
 
-		int minWeightWordsize = Utils.log2(-minWeight);
+		/**
+		 * In sparse (random) graphs, the running time seems very slow, as the algorithm require a lot of iterations to
+		 * find the potential values, and most of the time is spent in the long-path flow. In these cases, we prefer the
+		 * big-layer flow.
+		 */
+		final double density = (double) g.edges().size() / n * (n + 1) / 2;
+		final double alpha = Math.max(0.25, Math.min(3 / -Math.log(density), 2));
+
+		/* Run log(-minWeight) scaling iterations */
+		final int minWeightWordsize = Utils.log2(-minWeight);
 		for (int weightMask = minWeightWordsize; weightMask >= 0; weightMask--) {
 			if (weightMask != minWeightWordsize)
 				for (int v = 0; v < n; v++)
 					potential[v] *= 2;
 
-			// updated potential function until there are no more negative vertices with
-			// current weight function
+			/* updated potential function until there are no more negative vertices with current weight function */
+			/* we do at most \sqrt{n} such iterations */
 			for (;;) {
-				// Create a graph with edges with weight <= 0
+				/* update current weight function according to latest potential */
+				for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+					int e = it.nextInt();
+					w.set(e, calcWeightWithPotential(g, e, w0, potential, weightMask));
+				}
+
+				/* populate gNeg with all 0,-1 edges */
 				gNeg.clearEdges();
 				for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 					int e = it.nextInt();
 					int u = g.edgeSource(e), v = g.edgeTarget(e);
-					if (weight(g, e, w, potential, weightMask) <= 0)
+					if (w.weightInt(e) <= 0)
 						gNegEdgeRefs.set(gNeg.addEdge(u, v), e);
 				}
 
-				// Find all strong connectivity components in the graph
+				/* Find all strong connectivity components in the graph */
 				ConnectivityAlgorithm.Result connectivityRes = ccAlg.computeConnectivityComponents(gNeg);
-				int N = connectivityRes.getNumberOfCC();
+				final int N = connectivityRes.getNumberOfCC();
 
 				// Contract each strong connectivity component and search for a negative edge
 				// within it, if found - negative cycle found
@@ -143,7 +168,7 @@ public class SSSPGoldberg implements SSSP {
 						int e = eit.nextInt();
 						int v = eit.target();
 						int V = connectivityRes.getVertexCc(v);
-						int weight = weight(g, gNegEdgeRefs.getInt(e), w, potential, weightMask);
+						int weight = w.weightInt(gNegEdgeRefs.getInt(e));
 						if (U != V) {
 							GWeights.set(G.addEdge(U, V), weight);
 
@@ -167,7 +192,7 @@ public class SSSPGoldberg implements SSSP {
 				// Divide super vertices into layers by distance
 				int layerNum = 0;
 				int vertexInMaxLayer = -1;
-				Arrays.fill(layerSize, 0);
+				Arrays.fill(layerSize, 0, N, 0);
 				for (int V = 0; V < N; V++) {
 					int l = -(int) ssspRes.distance(V);
 					if (l + 1 > layerNum) {
@@ -184,7 +209,7 @@ public class SSSPGoldberg implements SSSP {
 				for (int l = layerNum - 1; l > 0; l--)
 					if (biggestLayer == -1 || layerSize[l] > layerSize[biggestLayer])
 						biggestLayer = l;
-				if (layerSize[biggestLayer] >= Math.sqrt(N)) {
+				if (layerSize[biggestLayer] >= Math.sqrt(N) * alpha) {
 					// A layer with sqrt(|V|) was found, decrease potential of layers l,l+1,l+2,...
 					for (int v = 0; v < n; v++) {
 						int V = connectivityRes.getVertexCc(v), l = -(int) ssspRes.distance(V);
@@ -192,16 +217,16 @@ public class SSSPGoldberg implements SSSP {
 							potential[v]--;
 					}
 				} else {
-					// No big layer is found, use path which has at least sqrt(|V|) vetices.
-					// Connected a fake vertex to all vertices, with edge r-i to negative vertex vi
+					// No big layer is found, use path which has at least sqrt(|V|) vertices.
+					// Connect a fake vertex to all vertices, with edge r-i to negative vertex v_i
 					// on the path and with edge r to all other vertices
 					connected.clear();
 					int assignedWeight = layerNum - 2;
-					for (IntIterator it = ssspRes.getPath(vertexInMaxLayer).iterator(); it.hasNext();) {
+					for (EdgeIter it = ssspRes.getPath(vertexInMaxLayer).edgeIter(); it.hasNext();) {
 						int e = it.nextInt();
-						int ew = GWeights.getInt(e);
+						int ew = GWeights.weightInt(e);
 						if (ew < 0) {
-							int V = G.edgeTarget(e);
+							int V = it.target();
 							GWeights.set(G.addEdge(fakeS2, V), assignedWeight--);
 							connected.set(V);
 						}
@@ -213,15 +238,21 @@ public class SSSPGoldberg implements SSSP {
 					// Add the remaining edges to the graph, not only 0,-1 edges
 					for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 						int e = it.nextInt();
-						int u = g.edgeSource(e), v = g.edgeTarget(e);
-						int weight = weight(g, e, w, potential, weightMask);
-						if (weight > 0)
-							GWeights.set(G.addEdge(connectivityRes.getVertexCc(u), connectivityRes.getVertexCc(v)),
-									weight);
+						int weight = w.weightInt(e);
+						if (weight > 0) {
+							int U = connectivityRes.getVertexCc(g.edgeSource(e));
+							int V = connectivityRes.getVertexCc(g.edgeTarget(e));
+							if (U != V)
+								GWeights.set(G.addEdge(U, V), weight);
+						}
 					}
 
 					// Calc distance with abs weight function to update potential function
-					ssspRes = ssspDial.computeShortestPaths(G, e -> Math.abs(GWeights.getInt(e)), fakeS2, layerNum);
+					for (IntIterator it = G.edges().iterator(); it.hasNext();) {
+						int e = it.nextInt();
+						GWeights.set(e, Math.abs(GWeights.getInt(e)));
+					}
+					ssspRes = ssspDial.computeShortestPaths(G, GWeights, fakeS2, layerNum);
 					for (int v = 0; v < n; v++)
 						potential[v] += ssspRes.distance(connectivityRes.getVertexCc(v));
 				}
@@ -231,7 +262,7 @@ public class SSSPGoldberg implements SSSP {
 		return Pair.of(potential, null);
 	}
 
-	private static int weight(Graph g, int e, EdgeWeightFunc.Int w, int[] potential, int weightMask) {
+	private static int calcWeightWithPotential(Graph g, int e, EdgeWeightFunc.Int w, int[] potential, int weightMask) {
 		int weight = w.weightInt(e);
 		// weight = ceil(weight / 2^weightMask)
 		if (weightMask != 0) {
@@ -298,25 +329,6 @@ public class SSSPGoldberg implements SSSP {
 		@Override
 		public String toString() {
 			return foundNegativeCycle() ? "[NegCycle=" + cycle + "]" : dijkstraRes.toString();
-		}
-
-	}
-
-	private static class PotentialWeightFunction implements EdgeWeightFunc.Int {
-
-		private final Graph g;
-		private final EdgeWeightFunc.Int w;
-		private final int[] potential;
-
-		PotentialWeightFunction(Graph g, EdgeWeightFunc.Int w, int[] potential) {
-			this.g = g;
-			this.w = w;
-			this.potential = potential;
-		}
-
-		@Override
-		public int weightInt(int e) {
-			return w.weightInt(e) + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];
 		}
 
 	}
