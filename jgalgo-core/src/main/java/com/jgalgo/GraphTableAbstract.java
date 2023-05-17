@@ -43,18 +43,21 @@ abstract class GraphTableAbstract extends GraphBaseContinues implements GraphWit
 
 	@Override
 	public int addVertex() {
-		int u = super.addVertex();
+		int v = super.addVertex();
 		final int n = vertices().size();
 
-		DataContainer.Int uEdges = new DataContainer.Int(n, EdgeNone);
-		addInternalVerticesDataContainer(uEdges);
-		edges.add(u);
-		edges.set(u, uEdges);
+		edges.addWithoutSettingDefaultVal(v); // if we already allocated an edge array for v, use it
+		DataContainer.Int vEdges = edges.get(v);
+		if (vEdges == null) {
+			vEdges = new DataContainer.Int(n, EdgeNone);
+			edges.set(v, vEdges);
+		}
+		addInternalVerticesDataContainer(vEdges);
 
-		for (int v = 0; v < n - 1; v++)
-			edges.get(v).add(u);
+		for (int u = 0; u < n - 1; u++)
+			edges.get(u).add(v);
 
-		return u;
+		return v;
 	}
 
 	@Override
@@ -168,7 +171,7 @@ abstract class GraphTableAbstract extends GraphBaseContinues implements GraphWit
 		final int n = vertices().size();
 		for (int u = 0; u < n; u++)
 			edges.get(u).clear();
-		edges.clear();
+		edges.clearWithoutDeallocation();
 		super.clear();
 	}
 

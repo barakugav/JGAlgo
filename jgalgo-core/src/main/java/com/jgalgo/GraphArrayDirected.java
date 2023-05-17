@@ -64,9 +64,9 @@ class GraphArrayDirected extends GraphArrayAbstract {
 	@Override
 	public int addVertex() {
 		int v = super.addVertex();
-		edgesOut.add(v);
+		edgesOut.addWithoutSettingDefaultVal(v); // if we already allocated an edge array for v, use it
 		edgesOutNum.add(v);
-		edgesIn.add(v);
+		edgesIn.addWithoutSettingDefaultVal(v); // if we already allocated an edge array for v, use it
 		edgesInNum.add(v);
 		return v;
 	}

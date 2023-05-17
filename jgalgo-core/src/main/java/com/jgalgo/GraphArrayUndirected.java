@@ -59,7 +59,7 @@ class GraphArrayUndirected extends GraphArrayAbstract implements UndirectedGraph
 	@Override
 	public int addVertex() {
 		int v = super.addVertex();
-		edges.add(v);
+		edges.addWithoutSettingDefaultVal(v); // if we already allocated an edge array for v, use it
 		edgesNum.add(v);
 		return v;
 	}

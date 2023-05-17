@@ -226,17 +226,15 @@ abstract class GraphBaseContinues extends GraphBase {
 	}
 
 	void addInternalVerticesDataContainer(DataContainer<?> container) {
+		assert container.size == 0;
 		int n = vertices().size();
-		container.ensureCapacity(n);
-		for (int u = 0; u < n; u++)
-			container.add(u);
+		container.addUpTo(n);
 	}
 
 	void addInternalEdgesDataContainer(DataContainer<?> container) {
+		assert container.size == 0;
 		int m = edges().size();
-		container.ensureCapacity(m);
-		for (int e = 0; e < m; e++)
-			container.add(e);
+		container.addUpTo(m);
 	}
 
 	void checkVertexIdx(int u) {

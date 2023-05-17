@@ -32,10 +32,7 @@ abstract class WeightsImpl<E> implements Weights<E> {
 			E defVal) {
 		int size = idStrategy.size();
 		DataContainer<E> container = DataContainer.newInstance(type, defVal, size);
-		// TODO should be done in constructor
-		container.ensureCapacity(size);
-		for (int idx = 0; idx < size; idx++)
-			container.add(idx);
+		container.addUpTo(size);
 		return wrapContainer(container, idStrategy);
 	}
 

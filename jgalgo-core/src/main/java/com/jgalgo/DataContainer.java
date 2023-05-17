@@ -72,15 +72,11 @@ abstract class DataContainer<E> {
 		size = 0;
 	}
 
-	void clearWithoutDeallocation() {
-		size = 0;
-	}
-
 	abstract void add(int idx);
 
-	abstract void remove(int idx);
+	abstract void addUpTo(int endIdx);
 
-	abstract void ensureCapacity(int size);
+	abstract void remove(int idx);
 
 	abstract void swap(int i1, int i2);
 
@@ -195,12 +191,22 @@ abstract class DataContainer<E> {
 			return defaultVal;
 		}
 
-		@Override
-		void add(int idx) {
+		private void add0(int idx) {
 			assert idx == size : "only continues idxs are supported";
 			ensureCapacity(size + 1);
-			weights[idx] = defaultVal;
 			size++;
+		}
+
+		@Override
+		void add(int idx) {
+			add0(idx);
+			weights[idx] = defaultVal;
+		}
+
+		void addWithoutSettingDefaultVal(int idx) {
+			add0(idx);
+			if (weights[idx] == null)
+				weights[idx] = defaultVal;
 		}
 
 		@Override
@@ -211,7 +217,15 @@ abstract class DataContainer<E> {
 		}
 
 		@Override
-		void ensureCapacity(int capacity) {
+		void addUpTo(int endIdx) {
+			if (endIdx < size)
+				throw new IllegalArgumentException();
+			ensureCapacity(endIdx);
+			Arrays.fill(weights, size, endIdx, defaultVal);
+			size = endIdx;
+		}
+
+		private void ensureCapacity(int capacity) {
 			if (capacity < weights.length)
 				return;
 			int newLen = Math.max(2, weights.length * 2);
@@ -228,8 +242,12 @@ abstract class DataContainer<E> {
 			weights[k2] = temp;
 		}
 
+		void clearWithoutDeallocation() {
+			super.clear();
+		}
+
 		@Override
-		public void clear() {
+		void clear() {
 			Arrays.fill(weights, 0, size, null);
 			super.clear();
 		}
@@ -313,7 +331,15 @@ abstract class DataContainer<E> {
 		}
 
 		@Override
-		void ensureCapacity(int capacity) {
+		void addUpTo(int endIdx) {
+			if (endIdx < size)
+				throw new IllegalArgumentException();
+			ensureCapacity(endIdx);
+			Arrays.fill(weights, size, endIdx, defaultVal);
+			size = endIdx;
+		}
+
+		private void ensureCapacity(int capacity) {
 			if (capacity < weights.length)
 				return;
 			int newLen = Math.max(2, weights.length * 2);
@@ -409,7 +435,15 @@ abstract class DataContainer<E> {
 		}
 
 		@Override
-		void ensureCapacity(int capacity) {
+		void addUpTo(int endIdx) {
+			if (endIdx < size)
+				throw new IllegalArgumentException();
+			ensureCapacity(endIdx);
+			Arrays.fill(weights, size, endIdx, defaultVal);
+			size = endIdx;
+		}
+
+		private void ensureCapacity(int capacity) {
 			if (capacity < weights.length)
 				return;
 			int newLen = Math.max(2, weights.length * 2);
@@ -505,7 +539,15 @@ abstract class DataContainer<E> {
 		}
 
 		@Override
-		void ensureCapacity(int capacity) {
+		void addUpTo(int endIdx) {
+			if (endIdx < size)
+				throw new IllegalArgumentException();
+			ensureCapacity(endIdx);
+			Arrays.fill(weights, size, endIdx, defaultVal);
+			size = endIdx;
+		}
+
+		private void ensureCapacity(int capacity) {
 			if (capacity < weights.length)
 				return;
 			int newLen = Math.max(2, weights.length * 2);
@@ -601,7 +643,15 @@ abstract class DataContainer<E> {
 		}
 
 		@Override
-		void ensureCapacity(int capacity) {
+		void addUpTo(int endIdx) {
+			if (endIdx < size)
+				throw new IllegalArgumentException();
+			ensureCapacity(endIdx);
+			Arrays.fill(weights, size, endIdx, defaultVal);
+			size = endIdx;
+		}
+
+		private void ensureCapacity(int capacity) {
 			if (capacity < weights.length)
 				return;
 			int newLen = Math.max(2, weights.length * 2);
@@ -697,7 +747,15 @@ abstract class DataContainer<E> {
 		}
 
 		@Override
-		void ensureCapacity(int capacity) {
+		void addUpTo(int endIdx) {
+			if (endIdx < size)
+				throw new IllegalArgumentException();
+			ensureCapacity(endIdx);
+			Arrays.fill(weights, size, endIdx, defaultVal);
+			size = endIdx;
+		}
+
+		private void ensureCapacity(int capacity) {
 			if (capacity < weights.length)
 				return;
 			int newLen = Math.max(2, weights.length * 2);
@@ -793,7 +851,15 @@ abstract class DataContainer<E> {
 		}
 
 		@Override
-		void ensureCapacity(int capacity) {
+		void addUpTo(int endIdx) {
+			if (endIdx < size)
+				throw new IllegalArgumentException();
+			ensureCapacity(endIdx);
+			Arrays.fill(weights, size, endIdx, defaultVal);
+			size = endIdx;
+		}
+
+		private void ensureCapacity(int capacity) {
 			if (capacity < weights.length)
 				return;
 			int newLen = Math.max(2, weights.length * 2);
@@ -926,7 +992,12 @@ abstract class DataContainer<E> {
 		}
 
 		@Override
-		void ensureCapacity(int capacity) {}
+		void addUpTo(int endIdx) {
+			if (endIdx < size)
+				throw new IllegalArgumentException();
+			weights.set(size, endIdx, defaultVal);
+			size = endIdx;
+		}
 
 		@Override
 		void swap(int k1, int k2) {
@@ -1016,7 +1087,15 @@ abstract class DataContainer<E> {
 		}
 
 		@Override
-		void ensureCapacity(int capacity) {
+		void addUpTo(int endIdx) {
+			if (endIdx < size)
+				throw new IllegalArgumentException();
+			ensureCapacity(endIdx);
+			Arrays.fill(weights, size, endIdx, defaultVal);
+			size = endIdx;
+		}
+
+		private void ensureCapacity(int capacity) {
 			if (capacity < weights.length)
 				return;
 			int newLen = Math.max(2, weights.length * 2);
