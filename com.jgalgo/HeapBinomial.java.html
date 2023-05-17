@@ -74,7 +74,7 @@ class HeapBinomial&lt;K, V&gt; extends HeapReferenceableAbstract&lt;K, V&gt; {
 	@SuppressWarnings(&quot;unchecked&quot;)
 	HeapBinomial(Comparator&lt;? super K&gt; comparator) {
 <span class="fc" id="L76">		super(comparator);</span>
-<span class="fc" id="L77">		roots = (Node&lt;K, V&gt;[]) EmptyNodeArr;</span>
+<span class="fc" id="L77">		roots = EmptyNodeArr;</span>
 <span class="fc" id="L78">		rootsLen = 0;</span>
 <span class="fc" id="L79">		size = 0;</span>
 <span class="fc" id="L80">	}</span>
@@ -318,7 +318,7 @@ class HeapBinomial&lt;K, V&gt; extends HeapReferenceableAbstract&lt;K, V&gt; {
 <span class="fc" id="L318">		HeapBinomial&lt;K, V&gt; h = (HeapBinomial&lt;K, V&gt;) heap;</span>
 <span class="fc" id="L319">		size += meld(h.roots, h.rootsLen);</span>
 
-<span class="fc" id="L321">		h.roots = (Node&lt;K, V&gt;[]) EmptyNodeArr;</span>
+<span class="fc" id="L321">		h.roots = EmptyNodeArr;</span>
 <span class="fc" id="L322">		h.rootsLen = 0;</span>
 <span class="fc" id="L323">		h.size = 0;</span>
 <span class="fc" id="L324">	}</span>

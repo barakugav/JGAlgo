@@ -39,8 +39,8 @@ class GraphArrayUndirected extends GraphArrayAbstract implements UndirectedGraph
 	 * Create a new graph with no vertices and edges.
 	 */
 	GraphArrayUndirected() {
-<span class="fc" id="L42">		this(0);</span>
-<span class="fc" id="L43">	}</span>
+<span class="nc" id="L42">		this(0);</span>
+<span class="nc" id="L43">	}</span>
 
 	/**
 	 * Create a new graph with no edges and {@code n} vertices numbered {@code 0,1,2,..,n-1}.
@@ -59,7 +59,7 @@ class GraphArrayUndirected extends GraphArrayAbstract implements UndirectedGraph
 	@Override
 	public int addVertex() {
 <span class="fc" id="L61">		int v = super.addVertex();</span>
-<span class="fc" id="L62">		edges.add(v);</span>
+<span class="fc" id="L62">		edges.addWithoutSettingDefaultVal(v); // if we already allocated an edge array for v, use it</span>
 <span class="fc" id="L63">		edgesNum.add(v);</span>
 <span class="fc" id="L64">		return v;</span>
 	}

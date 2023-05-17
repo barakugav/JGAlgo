@@ -35,8 +35,8 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	 * Create a new graph with no vertices and edges.
 	 */
 	GraphLinkedDirected() {
-<span class="fc" id="L38">		this(0);</span>
-<span class="fc" id="L39">	}</span>
+<span class="nc" id="L38">		this(0);</span>
+<span class="nc" id="L39">	}</span>
 
 	/**
 	 * Create a new graph with no edges and {@code n} vertices numbered {@code 0,1,2,..,n-1}.
@@ -222,10 +222,10 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 
 	@Override
 	public void clear() {
-<span class="nc" id="L225">		super.clear();</span>
-<span class="nc" id="L226">		edgesOut.clear();</span>
-<span class="nc" id="L227">		edgesIn.clear();</span>
-<span class="nc" id="L228">	}</span>
+<span class="fc" id="L225">		super.clear();</span>
+<span class="fc" id="L226">		edgesOut.clear();</span>
+<span class="fc" id="L227">		edgesIn.clear();</span>
+<span class="fc" id="L228">	}</span>
 
 	private abstract class EdgeIterImpl extends GraphLinkedAbstract.EdgeItr {
 

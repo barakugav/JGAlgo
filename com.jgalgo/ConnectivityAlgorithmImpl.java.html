@@ -34,7 +34,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L34">		int[] dfsPath = new int[n];</span>
 <span class="fc" id="L35">		int[] c = new int[n];</span>
 <span class="fc" id="L36">		EdgeIter[] edges = new EdgeIter[n];</span>
-		 // TODO DFS stack class
+		// TODO DFS stack class
 
 		// implementation of Tarjan's strongly connected components algorithm
 		// https://en.wikipedia.org/wiki/Tarjan%27s_strongly_connected_components_algorithm
@@ -91,62 +91,43 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 	}
 
 	private static ConnectivityAlgorithm.Result computeSCCUndirected(Graph g) {
-<span class="fc" id="L94">		IntStack stack = new IntArrayList();</span>
-<span class="pc bpc" id="L95" title="1 of 2 branches missed.">		assert stack.isEmpty();</span>
+<span class="fc" id="L94">		final int n = g.vertices().size();</span>
+<span class="fc" id="L95">		int[] comp = new int[n];</span>
+<span class="fc" id="L96">		Arrays.fill(comp, -1);</span>
+<span class="fc" id="L97">		int compNum = 0;</span>
 
-<span class="fc" id="L97">		int n = g.vertices().size();</span>
-<span class="fc" id="L98">		int[] comp = new int[n];</span>
-<span class="fc" id="L99">		Arrays.fill(comp, -1);</span>
-<span class="fc" id="L100">		int compNum = 0;</span>
-
-<span class="fc bfc" id="L102" title="All 2 branches covered.">		for (int root = 0; root &lt; n; root++) {</span>
-<span class="fc bfc" id="L103" title="All 2 branches covered.">			if (comp[root] != -1)</span>
-<span class="fc" id="L104">				continue;</span>
-
-<span class="fc" id="L106">			final int compIdx = compNum++;</span>
-<span class="fc" id="L107">			stack.push(root);</span>
-<span class="fc" id="L108">			comp[root] = compIdx;</span>
-
-<span class="fc bfc" id="L110" title="All 2 branches covered.">			while (!stack.isEmpty()) {</span>
-<span class="fc" id="L111">				int u = stack.popInt();</span>
-
-<span class="fc bfc" id="L113" title="All 2 branches covered.">				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
-<span class="fc" id="L114">					eit.nextInt();</span>
-<span class="fc" id="L115">					int v = eit.target();</span>
-<span class="fc bfc" id="L116" title="All 2 branches covered.">					if (comp[v] != -1) {</span>
-<span class="pc bpc" id="L117" title="1 of 2 branches missed.">						assert comp[v] == compIdx;</span>
-						continue;
-					}
-<span class="fc" id="L120">					comp[v] = compIdx;</span>
-<span class="fc" id="L121">					stack.push(v);</span>
-<span class="fc" id="L122">				}</span>
-<span class="fc" id="L123">			}</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">		for (int root = 0; root &lt; n; root++) {</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">			if (comp[root] != -1)</span>
+<span class="fc" id="L101">				continue;</span>
+<span class="fc" id="L102">			final int compIdx = compNum++;</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">			for (BFSIter vit = new BFSIter(g, root); vit.hasNext();)</span>
+<span class="fc" id="L104">				comp[vit.nextInt()] = compIdx;</span>
 		}
-<span class="fc" id="L125">		return new Result(compNum, comp);</span>
+<span class="fc" id="L106">		return new Result(compNum, comp);</span>
 	}
 
 	private static class Result implements ConnectivityAlgorithm.Result {
 		private final int ccNum;
 		private final int[] vertexToCC;
 
-<span class="fc" id="L132">		private Result(int ccNum, int[] vertexToCC) {</span>
-<span class="fc" id="L133">			this.ccNum = ccNum;</span>
-<span class="fc" id="L134">			this.vertexToCC = vertexToCC;</span>
-<span class="fc" id="L135">		}</span>
+<span class="fc" id="L113">		private Result(int ccNum, int[] vertexToCC) {</span>
+<span class="fc" id="L114">			this.ccNum = ccNum;</span>
+<span class="fc" id="L115">			this.vertexToCC = vertexToCC;</span>
+<span class="fc" id="L116">		}</span>
 
 		@Override
 		public int getVertexCc(int v) {
-<span class="fc" id="L139">			return vertexToCC[v];</span>
+<span class="fc" id="L120">			return vertexToCC[v];</span>
 		}
 
 		@Override
 		public int getNumberOfCC() {
-<span class="fc" id="L144">			return ccNum;</span>
+<span class="fc" id="L125">			return ccNum;</span>
 		}
 
 		@Override
 		public String toString() {
-<span class="nc" id="L149">			return Arrays.toString(vertexToCC);</span>
+<span class="nc" id="L130">			return Arrays.toString(vertexToCC);</span>
 		}
 	}
 

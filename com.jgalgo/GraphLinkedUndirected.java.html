@@ -36,8 +36,8 @@ class GraphLinkedUndirected extends GraphLinkedAbstract implements UndirectedGra
 	 * Create a new graph with no vertices and edges.
 	 */
 	GraphLinkedUndirected() {
-<span class="fc" id="L39">		this(0);</span>
-<span class="fc" id="L40">	}</span>
+<span class="nc" id="L39">		this(0);</span>
+<span class="nc" id="L40">	}</span>
 
 	/**
 	 * Create a new graph with no edges and {@code n} vertices numbered {@code 0,1,2,..,n-1}.
@@ -170,23 +170,23 @@ class GraphLinkedUndirected extends GraphLinkedAbstract implements UndirectedGra
 
 	@Override
 	public void clearEdges() {
-<span class="nc bnc" id="L173" title="All 2 branches missed.">		for (GraphLinkedAbstract.Node p0 : nodes()) {</span>
+<span class="pc bpc" id="L173" title="1 of 2 branches missed.">		for (GraphLinkedAbstract.Node p0 : nodes()) {</span>
 <span class="nc" id="L174">			Node p = (Node) p0;</span>
 <span class="nc" id="L175">			p.nextu = p.nextv = p.prevu = p.prevv = null;</span>
 <span class="nc" id="L176">		}</span>
-<span class="nc" id="L177">		int n = vertices().size();</span>
-<span class="nc bnc" id="L178" title="All 2 branches missed.">		for (int uIdx = 0; uIdx &lt; n; uIdx++) {</span>
+<span class="fc" id="L177">		int n = vertices().size();</span>
+<span class="fc bfc" id="L178" title="All 2 branches covered.">		for (int uIdx = 0; uIdx &lt; n; uIdx++) {</span>
 			// TODO do some sort of 'addKey' instead of set, no need
-<span class="nc" id="L180">			edges.set(uIdx, null);</span>
+<span class="fc" id="L180">			edges.set(uIdx, null);</span>
 		}
-<span class="nc" id="L182">		super.clearEdges();</span>
-<span class="nc" id="L183">	}</span>
+<span class="fc" id="L182">		super.clearEdges();</span>
+<span class="fc" id="L183">	}</span>
 
 	@Override
 	public void clear() {
-<span class="nc" id="L187">		super.clear();</span>
-<span class="nc" id="L188">		edges.clear();</span>
-<span class="nc" id="L189">	}</span>
+<span class="fc" id="L187">		super.clear();</span>
+<span class="fc" id="L188">		edges.clear();</span>
+<span class="fc" id="L189">	}</span>
 
 <span class="fc" id="L191">	private static class Node extends GraphLinkedAbstract.Node {</span>
 

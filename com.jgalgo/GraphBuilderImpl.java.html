@@ -46,13 +46,13 @@ class GraphBuilderImpl implements GraphBuilder {
 <span class="fc bfc" id="L46" title="All 2 branches covered.">				directed ? GraphTableDirected::new : GraphTableUndirected::new;</span>
 
 		IntFunction&lt;? extends GraphBaseContinues&gt; baseBuilder;
-<span class="pc bpc" id="L49" title="1 of 4 branches missed.">		if (impl != null &amp;&amp; !&quot;GraphArray&quot;.equals(impl)) {</span>
+<span class="fc bfc" id="L49" title="All 4 branches covered.">		if (impl != null &amp;&amp; !&quot;GraphArray&quot;.equals(impl)) {</span>
 <span class="pc bpc" id="L50" title="1 of 2 branches missed.">			if (&quot;GraphArray&quot;.equals(impl))</span>
 <span class="nc" id="L51">				baseBuilder = baseBuilderArray;</span>
-<span class="pc bpc" id="L52" title="1 of 2 branches missed.">			else if (&quot;GraphLinked&quot;.equals(impl))</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">			else if (&quot;GraphLinked&quot;.equals(impl))</span>
 <span class="fc" id="L53">				baseBuilder = baseBuilderLinked;</span>
-<span class="nc bnc" id="L54" title="All 2 branches missed.">			else if (&quot;GraphTable&quot;.equals(impl))</span>
-<span class="nc" id="L55">				baseBuilder = baseBuilderTable;</span>
+<span class="pc bpc" id="L54" title="1 of 2 branches missed.">			else if (&quot;GraphTable&quot;.equals(impl))</span>
+<span class="fc" id="L55">				baseBuilder = baseBuilderTable;</span>
 			else
 <span class="nc" id="L57">				throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
 		} else {
@@ -361,10 +361,10 @@ class GraphBuilderImpl implements GraphBuilder {
 
 		@Override
 		public void clear() {
-<span class="nc" id="L364">			g.clear();</span>
-<span class="nc" id="L365">			verticesIDStrategy.clear();</span>
-<span class="nc" id="L366">			edgesIDStrategy.clear();</span>
-<span class="nc" id="L367">		}</span>
+<span class="fc" id="L364">			g.clear();</span>
+<span class="fc" id="L365">			verticesIDStrategy.clear();</span>
+<span class="fc" id="L366">			edgesIDStrategy.clear();</span>
+<span class="fc" id="L367">		}</span>
 
 		@Override
 		public void clearEdges() {

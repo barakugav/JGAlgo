@@ -17,13 +17,13 @@
 package com.jgalgo;
 
 import com.jgalgo.GraphsUtils.UndirectedGraphImpl;
+import it.unimi.dsi.fastutil.ints.IntIterator;
 
 /**
  * A undirected graph implementation using a two dimensional table to store all edges.
  * &lt;p&gt;
- * The graph is initialized with a fixed number of vertices, \(n\), and does not support addition or removals of
- * vertices. A fixed sized table of size {@code [n][n]} stores the edges of the graph. The implementation does not
- * support multiple edges with identical source and target.
+ * If the graph contains \(n\) vertices, table of size {@code [n][n]} stores the edges of the graph. The implementation
+ * does not support multiple edges with identical source and target.
  * &lt;p&gt;
  * This implementation is efficient for use cases where fast lookups of edge \((u,v)\) are required, as they can be
  * answered in \(O(1)\) time, but it should not be the default choice for an undirected graph.
@@ -35,73 +35,98 @@ class GraphTableUndirected extends GraphTableAbstract implements UndirectedGraph
 
 	/**
 	 * Create a new graph with no edges and {@code n} vertices numbered {@code 0,1,2,..,n-1}.
-	 * &lt;p&gt;
-	 * Vertices can not be added or removed after the graph was created.
 	 *
 	 * @param n the number of initial vertices number
 	 */
 	GraphTableUndirected(int n) {
-<span class="fc" id="L44">		super(n, Capabilities);</span>
-<span class="fc" id="L45">	}</span>
+<span class="fc" id="L42">		super(n, Capabilities);</span>
+<span class="fc" id="L43">	}</span>
 
 	@Override
 	public int addEdge(int u, int v) {
-<span class="fc" id="L49">		int e = super.addEdge(u, v);</span>
-<span class="fc" id="L50">		edges[u][v] = edges[v][u] = e;</span>
-<span class="fc" id="L51">		return e;</span>
+<span class="fc" id="L47">		int e = super.addEdge(u, v);</span>
+<span class="fc" id="L48">		edges.get(u).set(v, e);</span>
+<span class="fc" id="L49">		edges.get(v).set(u, e);</span>
+<span class="fc" id="L50">		return e;</span>
 	}
 
 	@Override
 	public void removeEdge(int e) {
-<span class="fc" id="L56">		e = edgeSwapBeforeRemove(e);</span>
-<span class="fc" id="L57">		int u = edgeSource(e), v = edgeTarget(e);</span>
-<span class="fc" id="L58">		edges[u][v] = edges[v][u] = EdgeNone;</span>
+<span class="fc" id="L55">		e = edgeSwapBeforeRemove(e);</span>
+<span class="fc" id="L56">		int u = edgeSource(e), v = edgeTarget(e);</span>
+<span class="fc" id="L57">		edges.get(u).set(v, EdgeNone);</span>
+<span class="fc" id="L58">		edges.get(v).set(u, EdgeNone);</span>
 <span class="fc" id="L59">		super.removeEdge(e);</span>
 <span class="fc" id="L60">	}</span>
 
 	@Override
-	void edgeSwap(int e1, int e2) {
-<span class="fc" id="L64">		int u1 = edgeSource(e1), v1 = edgeTarget(e1);</span>
-<span class="fc" id="L65">		int u2 = edgeSource(e2), v2 = edgeTarget(e2);</span>
-<span class="fc" id="L66">		edges[u1][v1] = edges[v1][u1] = e2;</span>
-<span class="fc" id="L67">		edges[u2][v2] = edges[v2][u2] = e1;</span>
-<span class="fc" id="L68">		super.edgeSwap(e1, e2);</span>
-<span class="fc" id="L69">	}</span>
+	public void clearEdges() {
+<span class="fc" id="L64">		final int m = edges().size();</span>
+<span class="pc bpc" id="L65" title="1 of 2 branches missed.">		for (int e = 0; e &lt; m; e++) {</span>
+<span class="nc" id="L66">			int u = edgeSource(e), v = edgeTarget(e);</span>
+<span class="nc" id="L67">			edges.get(u).set(v, EdgeNone);</span>
+<span class="nc" id="L68">			edges.get(v).set(u, EdgeNone);</span>
+		}
+<span class="fc" id="L70">		super.clearEdges();</span>
+<span class="fc" id="L71">	}</span>
 
-<span class="fc" id="L71">	private static final GraphCapabilities Capabilities = new GraphCapabilities() {</span>
+	@Override
+	void edgeSwap(int e1, int e2) {
+<span class="fc" id="L75">		int u1 = edgeSource(e1), v1 = edgeTarget(e1);</span>
+<span class="fc" id="L76">		int u2 = edgeSource(e2), v2 = edgeTarget(e2);</span>
+<span class="fc" id="L77">		edges.get(u1).set(v1, e2);</span>
+<span class="fc" id="L78">		edges.get(v1).set(u1, e2);</span>
+<span class="fc" id="L79">		edges.get(u2).set(v2, e1);</span>
+<span class="fc" id="L80">		edges.get(v2).set(u2, e1);</span>
+<span class="fc" id="L81">		super.edgeSwap(e1, e2);</span>
+<span class="fc" id="L82">	}</span>
+
+	@Override
+	void vertexSwap(int v1, int v2) {
+<span class="fc" id="L86">		final int tempV = -2;</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">		for (IntIterator eit1 = edgesOut(v1); eit1.hasNext();)</span>
+<span class="fc" id="L88">			replaceEdgeEndpoint(eit1.nextInt(), v1, tempV);</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">		for (IntIterator eit1 = edgesOut(v2); eit1.hasNext();)</span>
+<span class="fc" id="L90">			replaceEdgeEndpoint(eit1.nextInt(), v2, v1);</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">		for (IntIterator eit1 = edgesOut(v1); eit1.hasNext();)</span>
+<span class="fc" id="L92">			replaceEdgeEndpoint(eit1.nextInt(), tempV, v2);</span>
+<span class="fc" id="L93">		super.vertexSwap(v1, v2);</span>
+<span class="fc" id="L94">	}</span>
+
+<span class="fc" id="L96">	private static final GraphCapabilities Capabilities = new GraphCapabilities() {</span>
 		@Override
 		public boolean vertexAdd() {
-<span class="fc" id="L74">			return false;</span>
-		}
-
-		@Override
-		public boolean vertexRemove() {
-<span class="fc" id="L79">			return false;</span>
-		}
-
-		@Override
-		public boolean edgeAdd() {
-<span class="fc" id="L84">			return true;</span>
-		}
-
-		@Override
-		public boolean edgeRemove() {
-<span class="fc" id="L89">			return true;</span>
-		}
-
-		@Override
-		public boolean parallelEdges() {
-<span class="fc" id="L94">			return false;</span>
-		}
-
-		@Override
-		public boolean selfEdges() {
 <span class="fc" id="L99">			return true;</span>
 		}
 
 		@Override
+		public boolean vertexRemove() {
+<span class="fc" id="L104">			return true;</span>
+		}
+
+		@Override
+		public boolean edgeAdd() {
+<span class="fc" id="L109">			return true;</span>
+		}
+
+		@Override
+		public boolean edgeRemove() {
+<span class="fc" id="L114">			return true;</span>
+		}
+
+		@Override
+		public boolean parallelEdges() {
+<span class="fc" id="L119">			return false;</span>
+		}
+
+		@Override
+		public boolean selfEdges() {
+<span class="fc" id="L124">			return true;</span>
+		}
+
+		@Override
 		public boolean directed() {
-<span class="fc" id="L104">			return false;</span>
+<span class="fc" id="L129">			return false;</span>
 		}
 	};
 

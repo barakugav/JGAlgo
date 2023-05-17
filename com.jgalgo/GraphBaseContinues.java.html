@@ -226,28 +226,26 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 <span class="nc" id="L226">	}</span>
 
 	void addInternalVerticesDataContainer(DataContainer&lt;?&gt; container) {
-<span class="fc" id="L229">		int n = vertices().size();</span>
-<span class="fc" id="L230">		container.ensureCapacity(n);</span>
-<span class="fc bfc" id="L231" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
-<span class="fc" id="L232">			container.add(u);</span>
-<span class="fc" id="L233">	}</span>
+<span class="pc bpc" id="L229" title="1 of 2 branches missed.">		assert container.size == 0;</span>
+<span class="fc" id="L230">		int n = vertices().size();</span>
+<span class="fc" id="L231">		container.addUpTo(n);</span>
+<span class="fc" id="L232">	}</span>
 
 	void addInternalEdgesDataContainer(DataContainer&lt;?&gt; container) {
+<span class="pc bpc" id="L235" title="1 of 2 branches missed.">		assert container.size == 0;</span>
 <span class="fc" id="L236">		int m = edges().size();</span>
-<span class="fc" id="L237">		container.ensureCapacity(m);</span>
-<span class="pc bpc" id="L238" title="1 of 2 branches missed.">		for (int e = 0; e &lt; m; e++)</span>
-<span class="nc" id="L239">			container.add(e);</span>
-<span class="fc" id="L240">	}</span>
+<span class="fc" id="L237">		container.addUpTo(m);</span>
+<span class="fc" id="L238">	}</span>
 
 	void checkVertexIdx(int u) {
-<span class="pc bpc" id="L243" title="1 of 2 branches missed.">		if (!vertices().contains(u))</span>
-<span class="nc" id="L244">			throw new IndexOutOfBoundsException(u);</span>
-<span class="fc" id="L245">	}</span>
+<span class="pc bpc" id="L241" title="1 of 2 branches missed.">		if (!vertices().contains(u))</span>
+<span class="nc" id="L242">			throw new IndexOutOfBoundsException(u);</span>
+<span class="fc" id="L243">	}</span>
 
 	void checkEdgeIdx(int e) {
-<span class="pc bpc" id="L248" title="1 of 2 branches missed.">		if (!edges().contains(e))</span>
-<span class="nc" id="L249">			throw new IndexOutOfBoundsException(e);</span>
-<span class="fc" id="L250">	}</span>
+<span class="pc bpc" id="L246" title="1 of 2 branches missed.">		if (!edges().contains(e))</span>
+<span class="nc" id="L247">			throw new IndexOutOfBoundsException(e);</span>
+<span class="fc" id="L248">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
