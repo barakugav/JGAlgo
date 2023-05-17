@@ -18,22 +18,10 @@ package com.jgalgo;
 
 import org.junit.jupiter.api.Test;
 
-import com.jgalgo.GraphImplTestUtils.GraphImpl;
-
 public class GraphArrayTest extends TestBase {
 
-	private static GraphImpl graphImpl() {
-		return new GraphImpl() {
-
-			@Override
-			public Graph newGraph(boolean directed, int vertices) {
-				if (directed) {
-					return vertices == 0 ? new GraphArrayDirected() : new GraphArrayDirected(vertices);
-				} else {
-					return vertices == 0 ? new GraphArrayUndirected() : new GraphArrayUndirected(vertices);
-				}
-			}
-		};
+	private static GraphBuilder graphImpl() {
+		return GraphBuilder.newUndirected().setOption("impl", "GraphArray");
 	}
 
 	@Test

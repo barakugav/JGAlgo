@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.NavigableSet;
 import java.util.Random;
 import java.util.TreeSet;
-import com.jgalgo.GraphImplTestUtils.GraphImpl;
 import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
@@ -31,7 +30,7 @@ public class MaximumFlowTestUtils extends TestUtils {
 
 	private MaximumFlowTestUtils() {}
 
-	private static Graph randGraph(int n, int m, GraphImpl graphImpl, long seed, boolean directed) {
+	private static Graph randGraph(int n, int m, GraphBuilder graphImpl, long seed, boolean directed) {
 		return new RandomGraphBuilder(seed).n(n).m(m).directed(directed).parallelEdges(false).selfEdges(false)
 				.cycles(true).connected(false).graphImpl(graphImpl).build();
 	}
@@ -75,14 +74,14 @@ public class MaximumFlowTestUtils extends TestUtils {
 	}
 
 	static void testRandGraphs(MaximumFlow algo, long seed, boolean directed) {
-		testRandGraphs(algo, GraphImplTestUtils.GRAPH_IMPL_DEFAULT, seed, directed);
+		testRandGraphs(algo, GraphBuilder.newUndirected(), seed, directed);
 	}
 
 	static void testRandGraphsInt(MaximumFlow algo, long seed, boolean directed) {
-		testRandGraphsInt(algo, GraphImplTestUtils.GRAPH_IMPL_DEFAULT, seed, directed);
+		testRandGraphsInt(algo, GraphBuilder.newUndirected(), seed, directed);
 	}
 
-	static void testRandGraphs(MaximumFlow algo, GraphImpl graphImpl, long seed, boolean directed) {
+	static void testRandGraphs(MaximumFlow algo, GraphBuilder graphImpl, long seed, boolean directed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
 		List<Phase> phases = List.of(phase(256, 6, 6), phase(64, 16, 16), phase(64, 16, 32), phase(32, 64, 64),
@@ -103,7 +102,7 @@ public class MaximumFlowTestUtils extends TestUtils {
 		});
 	}
 
-	static void testRandGraphsInt(MaximumFlow algo, GraphImpl graphImpl, long seed, boolean directed) {
+	static void testRandGraphsInt(MaximumFlow algo, GraphBuilder graphImpl, long seed, boolean directed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
 		List<Phase> phases = List.of(phase(256, 3, 3), phase(256, 6, 6), phase(64, 16, 16), phase(64, 16, 32),

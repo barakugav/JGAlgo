@@ -17,21 +17,18 @@
 package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
-import java.util.function.Supplier;
-
 import it.unimi.dsi.fastutil.ints.IntArrays;
 
 public class LCADynamicTestUtils extends TestUtils {
 
 	private LCADynamicTestUtils() {}
 
-	static void fullBinaryTreesRandOps(Supplier<? extends LCADynamic> builder, long seed) {
+	static void fullBinaryTreesRandOps(LCADynamic.Builder builder, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(64, 16, 16), phase(64, 16, 32), phase(32, 64, 64), phase(32, 64, 128),
 				phase(4, 512, 512), phase(4, 512, 2048), phase(1, 1000, 4096));
@@ -42,7 +39,7 @@ public class LCADynamicTestUtils extends TestUtils {
 		});
 	}
 
-	static void randTrees(Supplier<? extends LCADynamic> builder, long seed) {
+	static void randTrees(LCADynamic.Builder builder, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(128, 16, 16), phase(128, 16, 32), phase(64, 64, 64), phase(64, 64, 128),
 				phase(4, 512, 512), phase(4, 512, 2048), phase(1, 1000, 4096), phase(1, 4100, 8000));
@@ -140,9 +137,9 @@ public class LCADynamicTestUtils extends TestUtils {
 	}
 
 	@SuppressWarnings("boxing")
-	static void testLCA(Supplier<? extends LCADynamic> builder, int n, Collection<Op> ops) {
+	static void testLCA(LCADynamic.Builder builder, int n, Collection<Op> ops) {
 		List<LCADynamic.Node> nodes = new ArrayList<>();
-		LCADynamic lca = builder.get();
+		LCADynamic lca = builder.build();
 
 		for (Op op0 : ops) {
 			if (op0 instanceof OpInitTree) {

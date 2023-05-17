@@ -18,22 +18,10 @@ package com.jgalgo;
 
 import org.junit.jupiter.api.Test;
 
-import com.jgalgo.GraphImplTestUtils.GraphImpl;
-
 public class GraphLinkedTest extends TestBase {
 
-	private static GraphImpl graphImpl() {
-		return new GraphImpl() {
-
-			@Override
-			public Graph newGraph(boolean directed, int vertices) {
-				if (directed) {
-					return vertices == 0 ? new GraphLinkedDirected() : new GraphLinkedDirected(vertices);
-				} else {
-					return vertices == 0 ? new GraphLinkedUndirected() : new GraphLinkedUndirected(vertices);
-				}
-			}
-		};
+	private static GraphBuilder graphImpl() {
+		return GraphBuilder.newUndirected().setOption("impl", "GraphLinked");
 	}
 
 	@Test

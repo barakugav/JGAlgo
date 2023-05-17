@@ -74,7 +74,7 @@ class HeapBinomial<K, V> extends HeapReferenceableAbstract<K, V> {
 	@SuppressWarnings("unchecked")
 	HeapBinomial(Comparator<? super K> comparator) {
 		super(comparator);
-		roots = (Node<K, V>[]) EmptyNodeArr;
+		roots = EmptyNodeArr;
 		rootsLen = 0;
 		size = 0;
 	}
@@ -318,7 +318,7 @@ class HeapBinomial<K, V> extends HeapReferenceableAbstract<K, V> {
 		HeapBinomial<K, V> h = (HeapBinomial<K, V>) heap;
 		size += meld(h.roots, h.rootsLen);
 
-		h.roots = (Node<K, V>[]) EmptyNodeArr;
+		h.roots = EmptyNodeArr;
 		h.rootsLen = 0;
 		h.size = 0;
 	}

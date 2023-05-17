@@ -19,7 +19,6 @@ package com.jgalgo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
-import com.jgalgo.GraphImplTestUtils.GraphImpl;
 import it.unimi.dsi.fastutil.ints.IntAVLTreeSet;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -30,10 +29,10 @@ class MSTTestUtils extends TestUtils {
 	private MSTTestUtils() {}
 
 	static void testRandGraph(MST algo, long seed) {
-		testRandGraph(algo, GraphImplTestUtils.GRAPH_IMPL_DEFAULT, seed);
+		testRandGraph(algo, GraphBuilder.newUndirected(), seed);
 	}
 
-	static void testRandGraph(MST algo, GraphImpl graphImpl, long seed) {
+	static void testRandGraph(MST algo, GraphBuilder graphImpl, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(1, 0, 0), phase(128, 16, 32), phase(64, 64, 128), phase(32, 128, 256),
 				phase(8, 1024, 4096), phase(2, 4096, 16384));

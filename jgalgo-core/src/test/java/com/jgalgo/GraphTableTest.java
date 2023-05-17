@@ -18,18 +18,10 @@ package com.jgalgo;
 
 import org.junit.jupiter.api.Test;
 
-import com.jgalgo.GraphImplTestUtils.GraphImpl;
-
 public class GraphTableTest extends TestBase {
 
-	private static GraphImpl graphImpl() {
-		return new GraphImpl() {
-
-			@Override
-			public Graph newGraph(boolean directed, int vertices) {
-				return directed ? new GraphTableDirected(vertices) : new GraphTableUndirected(vertices);
-			}
-		};
+	private static GraphBuilder graphImpl() {
+		return GraphBuilder.newUndirected().setOption("impl", "GraphTable");
 	}
 
 	@Test

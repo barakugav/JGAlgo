@@ -240,7 +240,7 @@ class LCADynamicGabowSimple implements LCADynamic {
 
 	@Override
 	public Node findLowestCommonAncestor(Node x, Node y) {
-		return calcCA((NodeImpl) x, (NodeImpl) y).a;
+		return calcCA(x, y).a;
 	}
 
 	@Override

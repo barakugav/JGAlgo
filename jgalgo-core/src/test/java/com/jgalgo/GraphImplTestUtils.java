@@ -44,23 +44,6 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 class GraphImplTestUtils extends TestUtils {
 
-	@FunctionalInterface
-	static interface GraphImpl {
-		Graph newGraph(boolean directed, int vertices);
-	}
-
-	static final GraphImpl GRAPH_IMPL_DEFAULT = new GraphImpl() {
-
-		@Override
-		public Graph newGraph(boolean directed, int vertices) {
-			if (directed) {
-				return vertices == 0 ? new GraphArrayDirected() : new GraphArrayDirected(vertices);
-			} else {
-				return vertices == 0 ? new GraphArrayUndirected() : new GraphArrayUndirected(vertices);
-			}
-		}
-	};
-
 	static IntSet intSetOf(int... elms) {
 		IntSet set = new IntOpenHashSet();
 		for (int e : elms)
@@ -68,9 +51,9 @@ class GraphImplTestUtils extends TestUtils {
 		return IntSets.unmodifiable(set);
 	}
 
-	static void testVertexAdd(GraphImpl graphImpl) {
+	static void testVertexAdd(GraphBuilder graphImpl) {
 		for (boolean directed : new boolean[] { true, false }) {
-			Graph g = graphImpl.newGraph(directed, 0);
+			Graph g = graphImpl.setDirected(directed).setVerticesNum(0).build();
 			final int n = 100;
 			IntSet verticesSet = new IntOpenHashSet();
 			for (int i = 0; i < n; i++) {
@@ -82,10 +65,10 @@ class GraphImplTestUtils extends TestUtils {
 		}
 	}
 
-	static void testCreateWithNVertices(GraphImpl graphImpl) {
+	static void testCreateWithNVertices(GraphBuilder graphImpl) {
 		for (boolean directed : new boolean[] { true, false }) {
 			final int n = 100;
-			Graph g = graphImpl.newGraph(directed, n);
+			Graph g = graphImpl.setDirected(directed).setVerticesNum(n).build();
 			IntSet verticesSet = new IntOpenHashSet();
 			for (int v = 0; v < n; v++)
 				verticesSet.add(v);
@@ -94,10 +77,10 @@ class GraphImplTestUtils extends TestUtils {
 		}
 	}
 
-	static void testAddEdge(GraphImpl graphImpl) {
+	static void testAddEdge(GraphBuilder graphImpl) {
 		for (boolean directed : new boolean[] { true, false }) {
 			final int n = 100;
-			Graph g = graphImpl.newGraph(directed, n);
+			Graph g = graphImpl.setDirected(directed).setVerticesNum(n).build();
 
 			Int2ObjectMap<int[]> edges = new Int2ObjectOpenHashMap<>();
 			for (int u = 0; u < n; u++) {
@@ -126,10 +109,10 @@ class GraphImplTestUtils extends TestUtils {
 		assertEquals(v, g.edgeEndpoint(e, u));
 	}
 
-	static void testGetEdge(GraphImpl graphImpl) {
+	static void testGetEdge(GraphBuilder graphImpl) {
 		for (boolean directed : new boolean[] { true, false }) {
 			final int n = 100;
-			Graph g = graphImpl.newGraph(directed, n);
+			Graph g = graphImpl.setDirected(directed).setVerticesNum(n).build();
 
 			Object2IntMap<IntCollection> edges = new Object2IntOpenHashMap<>();
 			for (int u = 0; u < n; u++) {
@@ -155,10 +138,10 @@ class GraphImplTestUtils extends TestUtils {
 		}
 	}
 
-	static void testGetEdges(GraphImpl graphImpl) {
+	static void testGetEdges(GraphBuilder graphImpl) {
 		for (boolean directed : new boolean[] { true, false }) {
 			final int n = 100;
-			Graph g = graphImpl.newGraph(directed, n);
+			Graph g = graphImpl.setDirected(directed).setVerticesNum(n).build();
 
 			Int2ObjectMap<IntSet> edgesOut = new Int2ObjectOpenHashMap<>();
 			Int2ObjectMap<IntSet> edgesIn = new Int2ObjectOpenHashMap<>();
@@ -209,10 +192,10 @@ class GraphImplTestUtils extends TestUtils {
 		}
 	}
 
-	static void testEdgeIter(GraphImpl graphImpl) {
+	static void testEdgeIter(GraphBuilder graphImpl) {
 		for (boolean directed : new boolean[] { true, false }) {
 			final int n = 100;
-			Graph g = graphImpl.newGraph(directed, n);
+			Graph g = graphImpl.setDirected(directed).setVerticesNum(n).build();
 
 			Int2ObjectMap<IntCollection> edges = new Int2ObjectOpenHashMap<>();
 			for (int u = 0; u < n; u++) {
@@ -248,10 +231,10 @@ class GraphImplTestUtils extends TestUtils {
 		}
 	}
 
-	static void testDegree(GraphImpl graphImpl) {
+	static void testDegree(GraphBuilder graphImpl) {
 		for (boolean directed : new boolean[] { true, false }) {
 			final int n = 100;
-			Graph g = graphImpl.newGraph(directed, n);
+			Graph g = graphImpl.setDirected(directed).setVerticesNum(n).build();
 
 			Int2IntMap degreeOut = new Int2IntOpenHashMap();
 			Int2IntMap degreeIn = new Int2IntOpenHashMap();
@@ -276,10 +259,10 @@ class GraphImplTestUtils extends TestUtils {
 		}
 	}
 
-	static void testClear(GraphImpl graphImpl, long seed) {
+	static void testClear(GraphBuilder graphImpl, long seed) {
 		Random rand = new Random(seed);
 		for (boolean directed : new boolean[] { true, false }) {
-			Graph g = graphImpl.newGraph(directed, 0);
+			Graph g = graphImpl.setDirected(directed).setVerticesNum(0).build();
 			boolean parallelEdges = g.getCapabilities().parallelEdges();
 
 			int totalOpNum = 1000;
@@ -324,10 +307,10 @@ class GraphImplTestUtils extends TestUtils {
 		}
 	}
 
-	static void testClearEdges(GraphImpl graphImpl, long seed) {
+	static void testClearEdges(GraphBuilder graphImpl, long seed) {
 		Random rand = new Random(seed);
 		for (boolean directed : new boolean[] { true, false }) {
-			Graph g = graphImpl.newGraph(directed, 0);
+			Graph g = graphImpl.setDirected(directed).setVerticesNum(0).build();
 			boolean parallelEdges = g.getCapabilities().parallelEdges();
 
 			int totalOpNum = 1000;
@@ -372,28 +355,28 @@ class GraphImplTestUtils extends TestUtils {
 		}
 	}
 
-	static void testUndirectedMST(GraphImpl graphImpl, long seed) {
+	static void testUndirectedMST(GraphBuilder graphImpl, long seed) {
 		MSTTestUtils.testRandGraph(new MSTKruskal(), graphImpl, seed);
 	}
 
-	static void testDirectedMDST(GraphImpl graphImpl, long seed) {
+	static void testDirectedMDST(GraphBuilder graphImpl, long seed) {
 		MDSTTarjanTest.testRandGraph(new MDSTTarjan(), graphImpl, seed);
 	}
 
-	static void testDirectedMaxFlow(GraphImpl graphImpl, long seed) {
+	static void testDirectedMaxFlow(GraphBuilder graphImpl, long seed) {
 		MaximumFlowTestUtils.testRandGraphs(new MaximumFlowEdmondsKarp(), graphImpl, seed, /* directed= */ true);
 	}
 
-	static void testUndirectedBipartiteMatching(GraphImpl graphImpl, long seed) {
+	static void testUndirectedBipartiteMatching(GraphBuilder graphImpl, long seed) {
 		MatchingBipartiteTestUtils.randBipartiteGraphs(new MaximumMatchingCardinalityGabow1976(), graphImpl, seed);
 	}
 
-	static void testUndirectedBipartiteMatchingWeighted(GraphImpl graphImpl, long seed) {
+	static void testUndirectedBipartiteMatchingWeighted(GraphBuilder graphImpl, long seed) {
 		MatchingWeightedTestUtils.randGraphsBipartiteWeighted(new MaximumMatchingWeightedBipartiteHungarianMethod(),
 				graphImpl, seed);
 	}
 
-	static void testRandOps(GraphImpl graphImpl, boolean directed, long seed) {
+	static void testRandOps(GraphBuilder graphImpl, boolean directed, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(2056, 6, 6), phase(32, 16, 16), phase(32, 16, 32), phase(16, 64, 64),
 				phase(16, 64, 128), phase(4, 512, 512), phase(2, 512, 1324), phase(1, 1025, 2016));

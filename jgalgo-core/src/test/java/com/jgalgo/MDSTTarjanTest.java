@@ -18,7 +18,6 @@ package com.jgalgo;
 
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.GraphImplTestUtils.GraphImpl;
 import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -70,10 +69,10 @@ public class MDSTTarjanTest extends TestBase {
 	}
 
 	private static void testRandGraph(MDST algo, long seed) {
-		testRandGraph(algo, GraphImplTestUtils.GRAPH_IMPL_DEFAULT, seed);
+		testRandGraph(algo, GraphBuilder.newUndirected(), seed);
 	}
 
-	static void testRandGraph(MDST algo, GraphImpl graphImpl, long seed) {
+	static void testRandGraph(MDST algo, GraphBuilder graphImpl, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(1, 0, 0), phase(256, 6, 5), phase(128, 16, 32), phase(64, 64, 128),
 				phase(32, 128, 256), phase(8, 1024, 4096), phase(2, 4096, 16384));

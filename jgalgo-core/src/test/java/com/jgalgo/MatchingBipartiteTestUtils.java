@@ -19,7 +19,6 @@ package com.jgalgo;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
 import java.util.Objects;
-import com.jgalgo.GraphImplTestUtils.GraphImpl;
 import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
@@ -29,7 +28,7 @@ class MatchingBipartiteTestUtils extends TestUtils {
 
 	private MatchingBipartiteTestUtils() {}
 
-	static Graph randGraphBipartite(int sn, int tn, int m, GraphImpl graphImpl, long seed) {
+	static Graph randGraphBipartite(int sn, int tn, int m, GraphBuilder graphImpl, long seed) {
 		return new RandomGraphBuilder(seed).sn(sn).tn(tn).m(m).directed(false).bipartite(true).parallelEdges(false)
 				.selfEdges(false).cycles(true).connected(false).graphImpl(graphImpl).build();
 	}
@@ -54,10 +53,10 @@ class MatchingBipartiteTestUtils extends TestUtils {
 	}
 
 	static void randBipartiteGraphs(MaximumMatching algo, long seed) {
-		randBipartiteGraphs(algo, GraphImplTestUtils.GRAPH_IMPL_DEFAULT, seed);
+		randBipartiteGraphs(algo, GraphBuilder.newUndirected(), seed);
 	}
 
-	static void randBipartiteGraphs(MaximumMatching algo, GraphImpl graphImpl, long seed) {
+	static void randBipartiteGraphs(MaximumMatching algo, GraphBuilder graphImpl, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(128, 4, 4, 4), phase(64, 16, 16, 64), phase(8, 128, 128, 128),
 				phase(8, 128, 128, 512), phase(1, 300, 300, 1100));

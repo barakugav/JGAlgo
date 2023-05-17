@@ -20,9 +20,6 @@ import java.util.BitSet;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
-
-import com.jgalgo.GraphImplTestUtils.GraphImpl;
-
 import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -45,7 +42,7 @@ public class GraphsTestUtils extends TestUtils {
 		private boolean selfEdges;
 		private boolean cycles;
 		private boolean connected;
-		private GraphImpl impl = GraphImplTestUtils.GRAPH_IMPL_DEFAULT;
+		private GraphBuilder impl = GraphBuilder.newUndirected();
 
 		public RandomGraphBuilder(long seed) {
 			seedGen = new SeedGenerator(seed);
@@ -107,7 +104,7 @@ public class GraphsTestUtils extends TestUtils {
 			return this;
 		}
 
-		public RandomGraphBuilder graphImpl(GraphImpl impl) {
+		public RandomGraphBuilder graphImpl(GraphBuilder impl) {
 			this.impl = impl;
 			return this;
 		}
@@ -117,14 +114,14 @@ public class GraphsTestUtils extends TestUtils {
 			if (!bipartite) {
 				if (n < 0 || m < 0)
 					throw new IllegalStateException();
-				g = impl.newGraph(directed, n);
+				g = impl.setDirected(directed).setVerticesNum(n).build();
 			} else {
 				if (sn < 0 || tn < 0)
 					throw new IllegalStateException();
 				if ((sn == 0 || tn == 0) && m != 0)
 					throw new IllegalStateException();
 				n = sn + tn;
-				g = impl.newGraph(directed, n);
+				g = impl.setDirected(directed).setVerticesNum(n).build();
 				Weights.Bool partition = g.addVerticesWeights(Weights.DefaultBipartiteWeightKey, boolean.class);
 				for (int u = 0; u < sn; u++)
 					partition.set(u, true);
@@ -301,10 +298,10 @@ public class GraphsTestUtils extends TestUtils {
 	}
 
 	public static Graph randGraph(int n, int m, long seed) {
-		return randGraph(n, m, GraphImplTestUtils.GRAPH_IMPL_DEFAULT, seed);
+		return randGraph(n, m, GraphBuilder.newUndirected(), seed);
 	}
 
-	static Graph randGraph(int n, int m, GraphImpl graphImpl, long seed) {
+	static Graph randGraph(int n, int m, GraphBuilder graphImpl, long seed) {
 		return new RandomGraphBuilder(seed).graphImpl(graphImpl).n(n).m(m).directed(false).parallelEdges(false)
 				.selfEdges(false).cycles(true).connected(false).build();
 	}
