@@ -40,12 +40,14 @@ import it.unimi.dsi.fastutil.ints.IntList;
  *
  * @author Barak Ugav
  */
-public class SSSPGoldberg implements SSSP {
+public class SSSPGoldberg implements SSSP, AlgorithmWithDiagnostics {
 
 	private SSSP positiveSsspAlgo = new SSSPDijkstra();
 	private final SSSPDial ssspDial = new SSSPDial();
 	private final SSSP dagSssp = new SSSPDag();
 	private final ConnectivityAlgorithm ccAlg = ConnectivityAlgorithm.newBuilder().build();
+
+	private final Diagnostics diagnostics = new Diagnostics();
 
 	/**
 	 * Construct a new SSSP algorithm object.
@@ -103,6 +105,7 @@ public class SSSPGoldberg implements SSSP {
 	}
 
 	private Pair<int[], Path> calcPotential(Graph g, EdgeWeightFunc.Int w0, int minWeight) {
+		diagnostics.runBegin();
 		final int n = g.vertices().size();
 		int[] potential = new int[n];
 
@@ -136,10 +139,12 @@ public class SSSPGoldberg implements SSSP {
 			if (weightMask != minWeightWordsize)
 				for (int v = 0; v < n; v++)
 					potential[v] *= 2;
+			diagnostics.scalingIteration();
 
 			/* updated potential function until there are no more negative vertices with current weight function */
 			/* we do at most \sqrt{n} such iterations */
 			for (;;) {
+				diagnostics.potentialIteration();
 				/* update current weight function according to latest potential */
 				for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 					int e = it.nextInt();
@@ -210,6 +215,7 @@ public class SSSPGoldberg implements SSSP {
 					if (biggestLayer == -1 || layerSize[l] > layerSize[biggestLayer])
 						biggestLayer = l;
 				if (layerSize[biggestLayer] >= Math.sqrt(N) * alpha) {
+					diagnostics.bigLayer();
 					// A layer with sqrt(|V|) was found, decrease potential of layers l,l+1,l+2,...
 					for (int v = 0; v < n; v++) {
 						int V = connectivityRes.getVertexCc(v), l = -(int) ssspRes.distance(V);
@@ -217,6 +223,7 @@ public class SSSPGoldberg implements SSSP {
 							potential[v]--;
 					}
 				} else {
+					diagnostics.longPath();
 					// No big layer is found, use path which has at least sqrt(|V|) vertices.
 					// Connect a fake vertex to all vertices, with edge r-i to negative vertex v_i
 					// on the path and with edge r to all other vertices
@@ -329,6 +336,62 @@ public class SSSPGoldberg implements SSSP {
 		@Override
 		public String toString() {
 			return foundNegativeCycle() ? "[NegCycle=" + cycle + "]" : dijkstraRes.toString();
+		}
+
+	}
+
+	@Override
+	public Object getDiagnostic(String key) {
+		return Long.valueOf(diagnostics.get(key));
+	}
+
+	private static class Diagnostics {
+
+		private static final boolean Enable = false;
+
+		private long runCount;
+		private long scalingIterations;
+		private long potentialIterations;
+		private long bigLayer;
+		private long longPath;
+
+		void runBegin() {
+			if (Enable)
+				runCount++;
+		}
+
+		void scalingIteration() {
+			if (Enable)
+				scalingIterations++;
+		}
+
+		void potentialIteration() {
+			if (Enable)
+				potentialIterations++;
+		}
+
+		void bigLayer() {
+			if (Enable)
+				bigLayer++;
+		}
+
+		void longPath() {
+			if (Enable)
+				longPath++;
+		}
+
+		long get(String key) {
+			if ("runCount".equals(key))
+				return runCount;
+			if ("scalingIterations".equals(key))
+				return scalingIterations;
+			if ("potentialIterations".equals(key))
+				return potentialIterations;
+			if ("bigLayer".equals(key))
+				return bigLayer;
+			if ("longPath".equals(key))
+				return longPath;
+			throw new IllegalArgumentException("unknown diagnostic key: " + key);
 		}
 
 	}
