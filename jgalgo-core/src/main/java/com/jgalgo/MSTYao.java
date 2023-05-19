@@ -18,7 +18,6 @@ package com.jgalgo;
 
 import java.util.Arrays;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
@@ -32,6 +31,8 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * @author Barak Ugav
  */
 public class MSTYao implements MST {
+
+	private boolean parallel = Config.parallelByDefault;
 
 	/**
 	 * Construct a new MST algorithm object.
@@ -159,7 +160,7 @@ public class MSTYao implements MST {
 		return new MSTResultImpl(mst);
 	}
 
-	private static int[][][] partitionEdgesToBuckets(Graph g, EdgeWeightFunc w) {
+	private int[][][] partitionEdgesToBuckets(Graph g, EdgeWeightFunc w) {
 		int n = g.vertices().size(), k = Utils.log2ceil(n);
 
 		int[][][] edges = new int[n][][];
@@ -171,7 +172,7 @@ public class MSTYao implements MST {
 				edgesTemp[edgesCount++] = eit.nextInt();
 
 			if (edgesCount <= k) {
-				IntArrays.parallelQuickSort(edgesTemp, 0, edgesCount, w);
+				Utils.sort(edgesTemp, 0, edgesCount, w, parallel);
 				edges[u] = new int[edgesCount][];
 				for (int i = 0; i < edgesCount; i++)
 					edges[u][i] = new int[] { edgesTemp[i] };

@@ -26,6 +26,8 @@ import java.util.ListIterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Function;
+import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 class Utils {
@@ -554,6 +556,14 @@ class Utils {
 	@FunctionalInterface
 	static interface IntDoubleConsumer {
 		void accept(int a1, double a2);
+	}
+
+	static void sort(int[] arr, int from, int to, IntComparator cmp, boolean parallel) {
+		if (parallel) {
+			IntArrays.parallelQuickSort(arr, from, to, cmp);
+		} else {
+			IntArrays.quickSort(arr, from, to, cmp);
+		}
 	}
 
 }
