@@ -149,20 +149,18 @@ abstract class DynamicTreeSplayExtension implements DynamicTreeExtension {
 
 			@Override
 			void swap(int idx1, int idx2) {
-<span class="nc" id="L152">				int temp = data[idx1];</span>
-<span class="nc" id="L153">				data[idx1] = data[idx2];</span>
-<span class="nc" id="L154">				data[idx2] = temp;</span>
-<span class="nc" id="L155">			}</span>
+<span class="nc" id="L152">				IntArrays.swap(data, idx1, idx2);</span>
+<span class="nc" id="L153">			}</span>
 
 			@Override
 			void clear(int idx) {
-<span class="nc" id="L159">				data[idx] = 0;</span>
-<span class="nc" id="L160">			}</span>
+<span class="nc" id="L157">				data[idx] = 0;</span>
+<span class="nc" id="L158">			}</span>
 
 			@Override
 			void expand(int newCapacity) {
-<span class="fc" id="L164">				data = Arrays.copyOf(data, newCapacity);</span>
-<span class="fc" id="L165">			}</span>
+<span class="fc" id="L162">				data = Arrays.copyOf(data, newCapacity);</span>
+<span class="fc" id="L163">			}</span>
 		}
 	}
 

@@ -17,235 +17,259 @@
 package com.jgalgo;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import it.unimi.dsi.fastutil.ints.IntArrays;
-import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 <span class="fc" id="L26">abstract class GraphBaseContinues extends GraphBase {</span>
 
-<span class="fc" id="L28">	private final Map&lt;Object, Weights&lt;?&gt;&gt; eWeights = new Object2ObjectArrayMap&lt;&gt;();</span>
-<span class="fc" id="L29">	private final Map&lt;Object, Weights&lt;?&gt;&gt; vWeights = new Object2ObjectArrayMap&lt;&gt;();</span>
+<span class="fc" id="L28">	private final Map&lt;Object, Weights&lt;?&gt;&gt; verticesWeights = new Object2ObjectArrayMap&lt;&gt;();</span>
+<span class="fc" id="L29">	private final Map&lt;Object, Weights&lt;?&gt;&gt; edgesWeights = new Object2ObjectArrayMap&lt;&gt;();</span>
+<span class="fc" id="L30">	private final List&lt;DataContainer&lt;?&gt;&gt; verticesWeightsInternal = new ObjectArrayList&lt;&gt;();</span>
+<span class="fc" id="L31">	private final List&lt;DataContainer&lt;?&gt;&gt; edgesWeightsInternal = new ObjectArrayList&lt;&gt;();</span>
+	private int edgesWeightsCapacity;
+	private int verticesWeightsCapacity;
 
 	GraphBaseContinues(int n, GraphCapabilities capabilities) {
-<span class="fc" id="L32">		super(new IDStrategy.Continues(n), new IDStrategy.Continues(0), capabilities);</span>
-<span class="fc" id="L33">	}</span>
+<span class="fc" id="L36">		super(new IDStrategy.Continues(n), new IDStrategy.Continues(0), capabilities);</span>
+<span class="fc" id="L37">		edgesWeightsCapacity = n;</span>
+<span class="fc" id="L38">		verticesWeightsCapacity = n;</span>
+<span class="fc" id="L39">	}</span>
 
 	@Override
 	public int addVertex() {
-<span class="fc" id="L37">		int u = verticesIDStrategy.newIdx();</span>
-<span class="pc bpc" id="L38" title="1 of 2 branches missed.">		assert u &gt;= 0;</span>
-<span class="pc bpc" id="L39" title="1 of 2 branches missed.">		for (Weights&lt;?&gt; weight : vWeights.values())</span>
-<span class="nc" id="L40">			((WeightsImpl&lt;?&gt;) weight).container.add(u);</span>
-<span class="fc" id="L41">		return u;</span>
+<span class="fc" id="L43">		int u = verticesIDStrategy.newIdx();</span>
+<span class="pc bpc" id="L44" title="1 of 2 branches missed.">		assert u &gt;= 0;</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">		if (u == verticesWeightsCapacity) {</span>
+<span class="fc" id="L46">			int newCapacity = Math.max(2, 2 * verticesWeightsCapacity);</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">			for (DataContainer&lt;?&gt; container : verticesWeightsInternal)</span>
+<span class="fc" id="L48">				container.expand(newCapacity);</span>
+<span class="pc bpc" id="L49" title="1 of 2 branches missed.">			for (Weights&lt;?&gt; weight : verticesWeights.values())</span>
+<span class="nc" id="L50">				((WeightsImpl&lt;?&gt;) weight).container.expand(newCapacity);</span>
+<span class="fc" id="L51">			verticesWeightsCapacity = newCapacity;</span>
+		}
+<span class="fc" id="L53">		return u;</span>
 	}
 
 	@Override
 	public void removeVertex(int v) {
-<span class="fc" id="L46">		removeEdgesOf(v);</span>
-<span class="fc" id="L47">		v = vertexSwapBeforeRemove(v);</span>
-<span class="fc" id="L48">		verticesIDStrategy.removeIdx(v);</span>
-<span class="pc bpc" id="L49" title="1 of 2 branches missed.">		for (Weights&lt;?&gt; weight : vWeights.values())</span>
-<span class="nc" id="L50">			((WeightsImpl&lt;?&gt;) weight).container.remove(v);</span>
-<span class="fc" id="L51">	}</span>
+<span class="fc" id="L58">		removeEdgesOf(v);</span>
+<span class="fc" id="L59">		v = vertexSwapBeforeRemove(v);</span>
+<span class="fc" id="L60">		verticesIDStrategy.removeIdx(v);</span>
+<span class="pc bpc" id="L61" title="1 of 2 branches missed.">		for (Weights&lt;?&gt; weight : verticesWeights.values())</span>
+<span class="nc" id="L62">			((WeightsImpl&lt;?&gt;) weight).container.clear(v);</span>
+<span class="fc" id="L63">	}</span>
 
-	/**
-	 * Remove multiple vertices.
-	 * &lt;p&gt;
-	 * After removing a vertex, the vertices ID strategy may rename other vertices identifiers to maintain its
-	 * invariants, see {@link #getVerticesIDStrategy()}. Theses renames can be subscribed using
-	 * {@link IDStrategy#addIDSwapListener}.
-	 * &lt;p&gt;
-	 * This function may be useful in case a user want to remove a collection of vertices, and does not want to update
-	 * IDs within the collection due to IDs renames.
-	 *
-	 * @param  vs                        a collection of vertices to remove
-	 * @throws IndexOutOfBoundsException if one of the edges is not a valid edge identifier
-	 * @throws IllegalArgumentException  if the vertices collection to remove contains duplications
-	 */
+	// /**
+	// * Remove multiple vertices.
+	// * &lt;p&gt;
+	// * After removing a vertex, the vertices ID strategy may rename other vertices identifiers to maintain its
+	// * invariants, see {@link #getVerticesIDStrategy()}. Theses renames can be subscribed using
+	// * {@link IDStrategy#addIDSwapListener}.
+	// * &lt;p&gt;
+	// * This function may be useful in case a user want to remove a collection of vertices, and does not want to update
+	// * IDs within the collection due to IDs renames.
+	// *
+	// * @param vs a collection of vertices to remove
+	// * @throws IndexOutOfBoundsException if one of the edges is not a valid edge identifier
+	// * @throws IllegalArgumentException if the vertices collection to remove contains duplications
+	// */
 	// @Override public
-	void removeVertices(IntCollection vs) {
-<span class="nc" id="L69">		int[] vsArr = vs.toIntArray();</span>
-<span class="nc" id="L70">		IntArrays.parallelQuickSort(vsArr);</span>
-<span class="nc bnc" id="L71" title="All 2 branches missed.">		for (int i = 0; i &lt; vsArr.length - 1; i++) {</span>
-<span class="nc" id="L72">			int v1 = vsArr[i], v2 = vsArr[i + 1];</span>
-<span class="nc bnc" id="L73" title="All 2 branches missed.">			if (v1 == v2)</span>
-<span class="nc" id="L74">				throw new IllegalArgumentException(&quot;vertex identifier duplication: &quot; + v1);</span>
-		}
-		/*
-		 * When we remove a vertex, a rename may be performed, swapping the removed vertex id with numberOfVertices-1.
-		 * By removing them in decreasing order, the smaller IDs remain valid.
-		 */
-<span class="nc bnc" id="L80" title="All 2 branches missed.">		for (int i = vsArr.length - 1; i &gt;= 0; i--)</span>
-<span class="nc" id="L81">			removeVertex(vsArr[i]);</span>
-<span class="nc" id="L82">	}</span>
+	// void removeVertices(IntCollection vs) {
+	// int[] vsArr = vs.toIntArray();
+	// IntArrays.parallelQuickSort(vsArr);
+	// for (int i = 0; i &lt; vsArr.length - 1; i++) {
+	// int v1 = vsArr[i], v2 = vsArr[i + 1];
+	// if (v1 == v2)
+	// throw new IllegalArgumentException(&quot;vertex identifier duplication: &quot; + v1);
+	// }
+	// /*
+	// * When we remove a vertex, a rename may be performed, swapping the removed vertex id with numberOfVertices-1.
+	// * By removing them in decreasing order, the smaller IDs remain valid.
+	// */
+	// for (int i = vsArr.length - 1; i &gt;= 0; i--)
+	// removeVertex(vsArr[i]);
+	// }
 
 	int vertexSwapBeforeRemove(int v) {
-<span class="fc" id="L85">		int vn = verticesIDStrategy.isSwapNeededBeforeRemove(v);</span>
-<span class="fc bfc" id="L86" title="All 2 branches covered.">		if (v != vn) {</span>
-<span class="fc" id="L87">			vertexSwap(v, vn);</span>
-<span class="fc" id="L88">			v = vn;</span>
+<span class="fc" id="L97">		int vn = verticesIDStrategy.isSwapNeededBeforeRemove(v);</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">		if (v != vn) {</span>
+<span class="fc" id="L99">			vertexSwap(v, vn);</span>
+<span class="fc" id="L100">			v = vn;</span>
 		}
-<span class="fc" id="L90">		return v;</span>
+<span class="fc" id="L102">		return v;</span>
 	}
 
 	void vertexSwap(int v1, int v2) {
-<span class="fc" id="L94">		verticesIDStrategy.idxSwap(v1, v2);</span>
-<span class="pc bpc" id="L95" title="1 of 2 branches missed.">		for (Weights&lt;?&gt; weight : vWeights.values())</span>
-<span class="nc" id="L96">			((WeightsImpl&lt;?&gt;) weight).container.swap(v1, v2);</span>
-<span class="fc" id="L97">	}</span>
+<span class="fc" id="L106">		verticesIDStrategy.idxSwap(v1, v2);</span>
+<span class="pc bpc" id="L107" title="1 of 2 branches missed.">		for (Weights&lt;?&gt; weight : verticesWeights.values())</span>
+<span class="nc" id="L108">			((WeightsImpl&lt;?&gt;) weight).container.swap(v1, v2);</span>
+<span class="fc" id="L109">	}</span>
 
 	@Override
 	public int addEdge(int u, int v) {
-<span class="fc" id="L101">		checkVertexIdx(u);</span>
-<span class="fc" id="L102">		checkVertexIdx(v);</span>
-<span class="fc" id="L103">		int e = edgesIDStrategy.newIdx();</span>
-<span class="pc bpc" id="L104" title="1 of 2 branches missed.">		assert e &gt;= 0;</span>
-<span class="fc bfc" id="L105" title="All 2 branches covered.">		for (Weights&lt;?&gt; weight : eWeights.values())</span>
-<span class="fc" id="L106">			((WeightsImpl&lt;?&gt;) weight).container.add(e);</span>
-<span class="fc" id="L107">		return e;</span>
+<span class="fc" id="L113">		checkVertexIdx(u);</span>
+<span class="fc" id="L114">		checkVertexIdx(v);</span>
+<span class="fc" id="L115">		int e = edgesIDStrategy.newIdx();</span>
+<span class="pc bpc" id="L116" title="1 of 2 branches missed.">		assert e &gt;= 0;</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">		if (e == edgesWeightsCapacity) {</span>
+<span class="fc" id="L118">			int newCapacity = Math.max(2, 2 * edgesWeightsCapacity);</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">			for (DataContainer&lt;?&gt; container : edgesWeightsInternal)</span>
+<span class="fc" id="L120">				container.expand(newCapacity);</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">			for (Weights&lt;?&gt; weight : edgesWeights.values())</span>
+<span class="fc" id="L122">				((WeightsImpl&lt;?&gt;) weight).container.expand(newCapacity);</span>
+<span class="fc" id="L123">			edgesWeightsCapacity = newCapacity;</span>
+		}
+<span class="fc" id="L125">		return e;</span>
 	}
 
 	@Override
 	public void removeEdge(int e) {
-<span class="fc" id="L112">		e = edgeSwapBeforeRemove(e);</span>
-<span class="fc" id="L113">		edgesIDStrategy.removeIdx(e);</span>
-<span class="fc bfc" id="L114" title="All 2 branches covered.">		for (Weights&lt;?&gt; weight : eWeights.values())</span>
-<span class="fc" id="L115">			((WeightsImpl&lt;?&gt;) weight).container.remove(e);</span>
-<span class="fc" id="L116">	}</span>
+<span class="fc" id="L130">		e = edgeSwapBeforeRemove(e);</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">		for (Weights&lt;?&gt; weight : edgesWeights.values())</span>
+<span class="fc" id="L132">			((WeightsImpl&lt;?&gt;) weight).container.clear(e);</span>
+<span class="fc" id="L133">		edgesIDStrategy.removeIdx(e);</span>
+<span class="fc" id="L134">	}</span>
 
-	/**
-	 * Remove multiple edges.
-	 * &lt;p&gt;
-	 * After removing an edge, the edges ID strategy may rename other edges identifiers to maintain its invariants, see
-	 * {@link #getEdgesIDStrategy()}. Theses renames can be subscribed using {@link IDStrategy#addIDSwapListener}.
-	 * &lt;p&gt;
-	 * This function may be useful in case a user want to remove a collection of edges, and does not want to update IDs
-	 * within the collection due to IDs renames.
-	 *
-	 * @param  edges                     a collection of edges to remove
-	 * @throws IndexOutOfBoundsException if one of the edges is not a valid edge identifier
-	 * @throws IllegalArgumentException  if the edges collection to remove contains duplications
-	 */
+	// /**
+	// * Remove multiple edges.
+	// * &lt;p&gt;
+	// * After removing an edge, the edges ID strategy may rename other edges identifiers to maintain its invariants,
+	// see
+	// * {@link #getEdgesIDStrategy()}. Theses renames can be subscribed using {@link IDStrategy#addIDSwapListener}.
+	// * &lt;p&gt;
+	// * This function may be useful in case a user want to remove a collection of edges, and does not want to update
+	// IDs
+	// * within the collection due to IDs renames.
+	// *
+	// * @param edges a collection of edges to remove
+	// * @throws IndexOutOfBoundsException if one of the edges is not a valid edge identifier
+	// * @throws IllegalArgumentException if the edges collection to remove contains duplications
+	// */
 	// @Override public
-	void removeEdges(IntCollection edges) {
-<span class="nc" id="L133">		int[] edgesArr = edges.toIntArray();</span>
-<span class="nc" id="L134">		IntArrays.parallelQuickSort(edgesArr);</span>
-<span class="nc bnc" id="L135" title="All 2 branches missed.">		for (int i = 0; i &lt; edgesArr.length - 1; i++) {</span>
-<span class="nc" id="L136">			int e1 = edgesArr[i], e2 = edgesArr[i + 1];</span>
-<span class="nc bnc" id="L137" title="All 2 branches missed.">			if (e1 == e2)</span>
-<span class="nc" id="L138">				throw new IllegalArgumentException(&quot;edge identifier duplication: &quot; + e1);</span>
-		}
-		/*
-		 * When we remove an edge, a rename may be performed, swapping the removed edge id with numberOfEdges-1. By
-		 * removing them in decreasing order, the smaller IDs remain valid.
-		 */
-<span class="nc bnc" id="L144" title="All 2 branches missed.">		for (int i = edgesArr.length - 1; i &gt;= 0; i--)</span>
-<span class="nc" id="L145">			removeEdge(edgesArr[i]);</span>
-<span class="nc" id="L146">	}</span>
+	// void removeEdges(IntCollection edges) {
+	// int[] edgesArr = edges.toIntArray();
+	// IntArrays.parallelQuickSort(edgesArr);
+	// for (int i = 0; i &lt; edgesArr.length - 1; i++) {
+	// int e1 = edgesArr[i], e2 = edgesArr[i + 1];
+	// if (e1 == e2)
+	// throw new IllegalArgumentException(&quot;edge identifier duplication: &quot; + e1);
+	// }
+	// /*
+	// * When we remove an edge, a rename may be performed, swapping the removed edge id with numberOfEdges-1. By
+	// * removing them in decreasing order, the smaller IDs remain valid.
+	// */
+	// for (int i = edgesArr.length - 1; i &gt;= 0; i--)
+	// removeEdge(edgesArr[i]);
+	// }
 
 	int edgeSwapBeforeRemove(int e) {
-<span class="fc" id="L149">		int en = edgesIDStrategy.isSwapNeededBeforeRemove(e);</span>
-<span class="fc bfc" id="L150" title="All 2 branches covered.">		if (e != en) {</span>
-<span class="fc" id="L151">			edgeSwap(e, en);</span>
-<span class="fc" id="L152">			e = en;</span>
+<span class="fc" id="L169">		int en = edgesIDStrategy.isSwapNeededBeforeRemove(e);</span>
+<span class="fc bfc" id="L170" title="All 2 branches covered.">		if (e != en) {</span>
+<span class="fc" id="L171">			edgeSwap(e, en);</span>
+<span class="fc" id="L172">			e = en;</span>
 		}
-<span class="fc" id="L154">		return e;</span>
+<span class="fc" id="L174">		return e;</span>
 	}
 
 	void edgeSwap(int e1, int e2) {
-<span class="fc" id="L158">		edgesIDStrategy.idxSwap(e1, e2);</span>
-<span class="fc bfc" id="L159" title="All 2 branches covered.">		for (Weights&lt;?&gt; weight : eWeights.values())</span>
-<span class="fc" id="L160">			((WeightsImpl&lt;?&gt;) weight).container.swap(e1, e2);</span>
-<span class="fc" id="L161">	}</span>
+<span class="fc" id="L178">		edgesIDStrategy.idxSwap(e1, e2);</span>
+<span class="fc bfc" id="L179" title="All 2 branches covered.">		for (Weights&lt;?&gt; weight : edgesWeights.values())</span>
+<span class="fc" id="L180">			((WeightsImpl&lt;?&gt;) weight).container.swap(e1, e2);</span>
+<span class="fc" id="L181">	}</span>
 
 	@Override
 	public void clear() {
-<span class="fc" id="L165">		super.clear();</span>
-<span class="pc bpc" id="L166" title="1 of 2 branches missed.">		for (Weights&lt;?&gt; weight : vWeights.values())</span>
-<span class="nc" id="L167">			((WeightsImpl&lt;?&gt;) weight).container.clear();</span>
-<span class="fc" id="L168">	}</span>
+<span class="fc" id="L185">		super.clear();</span>
+<span class="pc bpc" id="L186" title="1 of 2 branches missed.">		for (Weights&lt;?&gt; weight : verticesWeights.values())</span>
+<span class="nc" id="L187">			((WeightsImpl&lt;?&gt;) weight).container.clear();</span>
+<span class="fc" id="L188">	}</span>
 
 	@Override
 	public void clearEdges() {
-<span class="fc" id="L172">		super.clearEdges();</span>
-<span class="fc bfc" id="L173" title="All 2 branches covered.">		for (Weights&lt;?&gt; weight : eWeights.values())</span>
-<span class="fc" id="L174">			((WeightsImpl&lt;?&gt;) weight).container.clear();</span>
-<span class="fc" id="L175">	}</span>
+<span class="fc" id="L192">		super.clearEdges();</span>
+<span class="fc bfc" id="L193" title="All 2 branches covered.">		for (Weights&lt;?&gt; weight : edgesWeights.values())</span>
+<span class="fc" id="L194">			((WeightsImpl&lt;?&gt;) weight).container.clear();</span>
+<span class="fc" id="L195">	}</span>
 
 	@Override
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public &lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT getVerticesWeights(Object key) {
-<span class="fc" id="L180">		return (WeightsT) vWeights.get(key);</span>
+<span class="fc" id="L200">		return (WeightsT) verticesWeights.get(key);</span>
 	}
 
 	@Override
 	public Set&lt;Object&gt; getVerticesWeightKeys() {
-<span class="fc" id="L185">		return Collections.unmodifiableSet(vWeights.keySet());</span>
+<span class="fc" id="L205">		return Collections.unmodifiableSet(verticesWeights.keySet());</span>
 	}
 
 	@Override
 	public void removeVerticesWeights(Object key) {
-<span class="nc" id="L190">		vWeights.remove(key);</span>
-<span class="nc" id="L191">	}</span>
+<span class="nc" id="L210">		verticesWeights.remove(key);</span>
+<span class="nc" id="L211">	}</span>
 
 	@Override
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT getEdgesWeights(Object key) {
-<span class="fc" id="L196">		return (WeightsT) eWeights.get(key);</span>
+<span class="fc" id="L216">		return (WeightsT) edgesWeights.get(key);</span>
 	}
 
 	@Override
 	public IDStrategy.Continues getEdgesIDStrategy() {
-<span class="fc" id="L201">		return (IDStrategy.Continues) super.getEdgesIDStrategy();</span>
+<span class="fc" id="L221">		return (IDStrategy.Continues) super.getEdgesIDStrategy();</span>
 	}
 
 	@Override
 	void addVerticesWeightsContainer(Object key, Weights&lt;?&gt; weights) {
-<span class="fc" id="L206">		Weights&lt;?&gt; oldWeights = vWeights.put(key, weights);</span>
-<span class="pc bpc" id="L207" title="1 of 2 branches missed.">		if (oldWeights != null)</span>
-<span class="nc" id="L208">			throw new IllegalArgumentException(&quot;Two weights types with the same key: &quot; + key);</span>
-<span class="fc" id="L209">	}</span>
+<span class="fc" id="L226">		Weights&lt;?&gt; oldWeights = verticesWeights.put(key, weights);</span>
+<span class="pc bpc" id="L227" title="1 of 2 branches missed.">		if (oldWeights != null)</span>
+<span class="nc" id="L228">			throw new IllegalArgumentException(&quot;Two weights types with the same key: &quot; + key);</span>
+<span class="pc bpc" id="L229" title="1 of 2 branches missed.">		if (verticesWeightsCapacity &gt; 0)</span>
+<span class="fc" id="L230">			((WeightsImpl&lt;?&gt;) weights).container.expand(verticesWeightsCapacity);</span>
+<span class="fc" id="L231">	}</span>
 
 	@Override
 	void addEdgesWeightsContainer(Object key, Weights&lt;?&gt; weights) {
-<span class="fc" id="L213">		Weights&lt;?&gt; oldWeights = eWeights.put(key, weights);</span>
-<span class="pc bpc" id="L214" title="1 of 2 branches missed.">		if (oldWeights != null)</span>
-<span class="nc" id="L215">			throw new IllegalArgumentException(&quot;Two weights types with the same key: &quot; + key);</span>
-<span class="fc" id="L216">	}</span>
+<span class="fc" id="L235">		Weights&lt;?&gt; oldWeights = edgesWeights.put(key, weights);</span>
+<span class="pc bpc" id="L236" title="1 of 2 branches missed.">		if (oldWeights != null)</span>
+<span class="nc" id="L237">			throw new IllegalArgumentException(&quot;Two weights types with the same key: &quot; + key);</span>
+<span class="fc bfc" id="L238" title="All 2 branches covered.">		if (edgesWeightsCapacity &gt; 0)</span>
+<span class="fc" id="L239">			((WeightsImpl&lt;?&gt;) weights).container.expand(edgesWeightsCapacity);</span>
+<span class="fc" id="L240">	}</span>
 
 	@Override
 	public Set&lt;Object&gt; getEdgesWeightsKeys() {
-<span class="fc" id="L220">		return Collections.unmodifiableSet(eWeights.keySet());</span>
+<span class="fc" id="L244">		return Collections.unmodifiableSet(edgesWeights.keySet());</span>
 	}
 
 	@Override
 	public void removeEdgesWeights(Object key) {
-<span class="nc" id="L225">		eWeights.remove(key);</span>
-<span class="nc" id="L226">	}</span>
+<span class="nc" id="L249">		edgesWeights.remove(key);</span>
+<span class="nc" id="L250">	}</span>
 
 	void addInternalVerticesDataContainer(DataContainer&lt;?&gt; container) {
-<span class="pc bpc" id="L229" title="1 of 2 branches missed.">		assert container.size == 0;</span>
-<span class="fc" id="L230">		int n = vertices().size();</span>
-<span class="fc" id="L231">		container.addUpTo(n);</span>
-<span class="fc" id="L232">	}</span>
+<span class="fc" id="L253">		verticesWeightsInternal.add(container);</span>
+<span class="fc bfc" id="L254" title="All 2 branches covered.">		if (verticesWeightsCapacity &gt; 0)</span>
+<span class="fc" id="L255">			container.expand(verticesWeightsCapacity);</span>
+<span class="fc" id="L256">	}</span>
 
 	void addInternalEdgesDataContainer(DataContainer&lt;?&gt; container) {
-<span class="pc bpc" id="L235" title="1 of 2 branches missed.">		assert container.size == 0;</span>
-<span class="fc" id="L236">		int m = edges().size();</span>
-<span class="fc" id="L237">		container.addUpTo(m);</span>
-<span class="fc" id="L238">	}</span>
+<span class="fc" id="L259">		edgesWeightsInternal.add(container);</span>
+<span class="fc bfc" id="L260" title="All 2 branches covered.">		if (edgesWeightsCapacity &gt; 0)</span>
+<span class="fc" id="L261">			container.expand(edgesWeightsCapacity);</span>
+<span class="fc" id="L262">	}</span>
 
 	void checkVertexIdx(int u) {
-<span class="pc bpc" id="L241" title="1 of 2 branches missed.">		if (!vertices().contains(u))</span>
-<span class="nc" id="L242">			throw new IndexOutOfBoundsException(u);</span>
-<span class="fc" id="L243">	}</span>
+<span class="pc bpc" id="L265" title="1 of 2 branches missed.">		if (!vertices().contains(u))</span>
+<span class="nc" id="L266">			throw new IndexOutOfBoundsException(u);</span>
+<span class="fc" id="L267">	}</span>
 
 	void checkEdgeIdx(int e) {
-<span class="pc bpc" id="L246" title="1 of 2 branches missed.">		if (!edges().contains(e))</span>
-<span class="nc" id="L247">			throw new IndexOutOfBoundsException(e);</span>
-<span class="fc" id="L248">	}</span>
+<span class="pc bpc" id="L270" title="1 of 2 branches missed.">		if (!edges().contains(e))</span>
+<span class="nc" id="L271">			throw new IndexOutOfBoundsException(e);</span>
+<span class="fc" id="L272">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -610,7 +610,10 @@ public interface Weights&lt;W&gt; {
 	 */
 	public static &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT createExternalVerticesWeights(Graph g,
 			Class&lt;? super E&gt; type, E defVal) {
-<span class="nc" id="L613">		return WeightsImpl.newInstance(g.getVerticesIDStrategy(), type, defVal);</span>
+<span class="nc" id="L613">		IDStrategy idStrat = g.getVerticesIDStrategy();</span>
+<span class="nc" id="L614">		WeightsT weights = WeightsImpl.newInstance(idStrat, type, defVal);</span>
+<span class="nc" id="L615">		((WeightsImpl&lt;?&gt;) weights).container.expand(idStrat.size());</span>
+<span class="nc" id="L616">		return weights;</span>
 	}
 
 	/**
@@ -626,7 +629,7 @@ public interface Weights&lt;W&gt; {
 	 * @param  &lt;WeightsT&gt; the weights container, used to avoid casts of containers of primitive types
 	 */
 	public static &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT createExternalEdgesWeights(Graph g, Class&lt;? super E&gt; type) {
-<span class="fc" id="L629">		return createExternalEdgesWeights(g, type, null);</span>
+<span class="fc" id="L632">		return createExternalEdgesWeights(g, type, null);</span>
 	}
 
 	/**
@@ -644,7 +647,10 @@ public interface Weights&lt;W&gt; {
 	 */
 	public static &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT createExternalEdgesWeights(Graph g, Class&lt;? super E&gt; type,
 			E defVal) {
-<span class="fc" id="L647">		return WeightsImpl.newInstance(g.getEdgesIDStrategy(), type, defVal);</span>
+<span class="fc" id="L650">		IDStrategy idStrat = g.getEdgesIDStrategy();</span>
+<span class="fc" id="L651">		WeightsT weights = WeightsImpl.newInstance(idStrat, type, defVal);</span>
+<span class="fc" id="L652">		((WeightsImpl&lt;?&gt;) weights).container.expand(idStrat.size());</span>
+<span class="fc" id="L653">		return weights;</span>
 	}
 
 	/**
@@ -656,10 +662,10 @@ public interface Weights&lt;W&gt; {
 	 * {@link #DefaultBipartiteWeightKey}. To use a different key, the algorithms expose a
 	 * {@code setBipartiteVerticesWeightKey(Object)} function.
 	 */
-<span class="fc" id="L659">	public static final Object DefaultBipartiteWeightKey = new Object() {</span>
+<span class="fc" id="L665">	public static final Object DefaultBipartiteWeightKey = new Object() {</span>
 		@Override
 		public String toString() {
-<span class="fc" id="L662">			return &quot;DefaultBipartiteVerticesWeightKey&quot;;</span>
+<span class="fc" id="L668">			return &quot;DefaultBipartiteVerticesWeightKey&quot;;</span>
 		}
 	};
 

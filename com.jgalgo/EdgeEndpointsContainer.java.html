@@ -19,8 +19,8 @@ class EdgeEndpointsContainer extends DataContainer.Long {
 
 	private static final int None = -1;
 
-	EdgeEndpointsContainer(int expectedSize) {
-<span class="fc" id="L23">		super(expectedSize, sourceTarget2Endpoints(None, None));</span>
+	EdgeEndpointsContainer(IDStrategy idStrat) {
+<span class="fc" id="L23">		super(idStrat, sourceTarget2Endpoints(None, None));</span>
 <span class="fc" id="L24">	}</span>
 
 	void setEndpoints(int edge, int source, int target) {

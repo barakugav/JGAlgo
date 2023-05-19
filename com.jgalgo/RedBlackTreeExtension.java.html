@@ -494,53 +494,49 @@ class RedBlackTreeExtension&lt;K, V&gt; {
 
 			@Override
 			void swap(int idx1, int idx2) {
-<span class="fc" id="L497">				Object temp = data[idx1];</span>
-<span class="fc" id="L498">				data[idx1] = data[idx2];</span>
-<span class="fc" id="L499">				data[idx2] = temp;</span>
-<span class="fc" id="L500">			}</span>
+<span class="fc" id="L497">				ObjectArrays.swap(data, idx1, idx2);</span>
+<span class="fc" id="L498">			}</span>
 
 			@Override
 			void clear(int idx) {
-<span class="fc" id="L504">				data[idx] = null;</span>
-<span class="fc" id="L505">			}</span>
+<span class="fc" id="L502">				data[idx] = null;</span>
+<span class="fc" id="L503">			}</span>
 
 			@Override
 			void expand(int newCapacity) {
-<span class="fc" id="L509">				data = Arrays.copyOf(data, newCapacity);</span>
-<span class="fc" id="L510">			}</span>
+<span class="fc" id="L507">				data = Arrays.copyOf(data, newCapacity);</span>
+<span class="fc" id="L508">			}</span>
 		}
 
 		static class Int extends ExtensionData {
 			private int[] data;
 
-<span class="fc" id="L516">			Int() {</span>
-<span class="fc" id="L517">				data = IntArrays.EMPTY_ARRAY;</span>
-<span class="fc" id="L518">			}</span>
+<span class="fc" id="L514">			Int() {</span>
+<span class="fc" id="L515">				data = IntArrays.EMPTY_ARRAY;</span>
+<span class="fc" id="L516">			}</span>
 
 			int get(int idx) {
-<span class="fc" id="L521">				return data[idx];</span>
+<span class="fc" id="L519">				return data[idx];</span>
 			}
 
 			void set(int idx, int d) {
-<span class="fc" id="L525">				data[idx] = d;</span>
-<span class="fc" id="L526">			}</span>
+<span class="fc" id="L523">				data[idx] = d;</span>
+<span class="fc" id="L524">			}</span>
 
 			@Override
 			void swap(int idx1, int idx2) {
-<span class="fc" id="L530">				int temp = data[idx1];</span>
-<span class="fc" id="L531">				data[idx1] = data[idx2];</span>
-<span class="fc" id="L532">				data[idx2] = temp;</span>
-<span class="fc" id="L533">			}</span>
+<span class="fc" id="L528">				IntArrays.swap(data, idx1, idx2);</span>
+<span class="fc" id="L529">			}</span>
 
 			@Override
 			void clear(int idx) {
-<span class="fc" id="L537">				data[idx] = 0;</span>
-<span class="fc" id="L538">			}</span>
+<span class="fc" id="L533">				data[idx] = 0;</span>
+<span class="fc" id="L534">			}</span>
 
 			@Override
 			void expand(int newCapacity) {
-<span class="fc" id="L542">				data = Arrays.copyOf(data, newCapacity);</span>
-<span class="fc" id="L543">			}</span>
+<span class="fc" id="L538">				data = Arrays.copyOf(data, newCapacity);</span>
+<span class="fc" id="L539">			}</span>
 		}
 	}
 

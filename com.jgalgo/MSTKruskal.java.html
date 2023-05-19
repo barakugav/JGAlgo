@@ -18,7 +18,6 @@ package com.jgalgo;
 
 import java.util.Objects;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
@@ -40,7 +39,8 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  */
 public class MSTKruskal implements MST {
 
-<span class="fc" id="L43">	private UnionFind.Builder unionFindBuilder = UnionFindArray::new;</span>
+<span class="fc" id="L42">	private UnionFind.Builder unionFindBuilder = UnionFindArray::new;</span>
+<span class="fc" id="L43">	private boolean parallelEnable = Config.parallelByDefault;</span>
 
 	/**
 	 * Construct a new MST algorithm object.
@@ -72,7 +72,7 @@ public class MSTKruskal implements MST {
 
 		/* sort edges */
 <span class="fc" id="L74">		int[] edges = g.edges().toIntArray();</span>
-<span class="fc" id="L75">		IntArrays.parallelQuickSort(edges, 0, m, w);</span>
+<span class="fc" id="L75">		Utils.sort(edges, 0, m, w, parallelEnable);</span>
 
 		/* create union find data structure for each vertex */
 <span class="fc" id="L78">		UnionFind uf = unionFindBuilder.build(n);</span>
