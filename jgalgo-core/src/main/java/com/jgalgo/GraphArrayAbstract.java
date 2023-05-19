@@ -26,14 +26,13 @@ abstract class GraphArrayAbstract extends GraphBaseContinues implements GraphWit
 
 	public GraphArrayAbstract(int n, GraphCapabilities capabilities) {
 		super(n, capabilities);
-		edgeEndpoints = new EdgeEndpointsContainer(0);
+		edgeEndpoints = new EdgeEndpointsContainer(edgesIDStrategy);
 		addInternalEdgesDataContainer(edgeEndpoints);
 	}
 
 	@Override
 	public int addEdge(int u, int v) {
 		int e = super.addEdge(u, v);
-		edgeEndpoints.add(e);
 		edgeEndpoints.setEndpoints(e, u, v);
 		return e;
 	}
@@ -41,7 +40,7 @@ abstract class GraphArrayAbstract extends GraphBaseContinues implements GraphWit
 	@Override
 	public void removeEdge(int e) {
 		e = edgeSwapBeforeRemove(e);
-		edgeEndpoints.remove(e);
+		edgeEndpoints.clear(e);
 		super.removeEdge(e);
 	}
 

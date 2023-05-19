@@ -49,27 +49,20 @@ class GraphArrayUndirected extends GraphArrayAbstract implements UndirectedGraph
 	 */
 	GraphArrayUndirected(int n) {
 		super(n, Capabilities);
-		edges = new DataContainer.Obj<>(n, IntArrays.EMPTY_ARRAY, int[].class);
-		edgesNum = new DataContainer.Int(n, 0);
+		edges = new DataContainer.Obj<>(verticesIDStrategy, IntArrays.EMPTY_ARRAY, int[].class);
+		edgesNum = new DataContainer.Int(verticesIDStrategy, 0);
 
 		addInternalVerticesDataContainer(edges);
 		addInternalVerticesDataContainer(edgesNum);
 	}
 
 	@Override
-	public int addVertex() {
-		int v = super.addVertex();
-		edges.addWithoutSettingDefaultVal(v); // if we already allocated an edge array for v, use it
-		edgesNum.add(v);
-		return v;
-	}
-
-	@Override
 	public void removeVertex(int v) {
 		v = vertexSwapBeforeRemove(v);
 		super.removeVertex(v);
-		edges.remove(v);
-		edgesNum.remove(v);
+		edgesNum.clear(v);
+		// Reuse allocated edges array for v
+		// edges.clear(v);
 	}
 
 	@Override
@@ -169,8 +162,9 @@ class GraphArrayUndirected extends GraphArrayAbstract implements UndirectedGraph
 	@Override
 	public void clear() {
 		super.clear();
-		edges.clearWithoutDeallocation();
 		edgesNum.clear();
+		// Don't clear allocated edges arrays
+		// edges.clear();
 	}
 
 	private class EdgeIt extends GraphArrayAbstract.EdgeIt {

@@ -46,22 +46,15 @@ class GraphLinkedUndirected extends GraphLinkedAbstract implements UndirectedGra
 	 */
 	GraphLinkedUndirected(int n) {
 		super(n, Capabilities);
-		edges = new DataContainer.Obj<>(n, null, Node.class);
+		edges = new DataContainer.Obj<>(verticesIDStrategy, null, Node.class);
 		addInternalVerticesDataContainer(edges);
-	}
-
-	@Override
-	public int addVertex() {
-		int v = super.addVertex();
-		edges.add(v);
-		return v;
 	}
 
 	@Override
 	public void removeVertex(int v) {
 		v = vertexSwapBeforeRemove(v);
 		super.removeVertex(v);
-		edges.remove(v);
+		edges.clear(v);
 	}
 
 	@Override
@@ -174,18 +167,8 @@ class GraphLinkedUndirected extends GraphLinkedAbstract implements UndirectedGra
 			Node p = (Node) p0;
 			p.nextu = p.nextv = p.prevu = p.prevv = null;
 		}
-		int n = vertices().size();
-		for (int uIdx = 0; uIdx < n; uIdx++) {
-			// TODO do some sort of 'addKey' instead of set, no need
-			edges.set(uIdx, null);
-		}
-		super.clearEdges();
-	}
-
-	@Override
-	public void clear() {
-		super.clear();
 		edges.clear();
+		super.clearEdges();
 	}
 
 	private static class Node extends GraphLinkedAbstract.Node {

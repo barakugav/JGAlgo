@@ -17,25 +17,39 @@
 package com.jgalgo;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 abstract class GraphBaseContinues extends GraphBase {
 
-	private final Map<Object, Weights<?>> eWeights = new Object2ObjectArrayMap<>();
-	private final Map<Object, Weights<?>> vWeights = new Object2ObjectArrayMap<>();
+	private final Map<Object, Weights<?>> verticesWeights = new Object2ObjectArrayMap<>();
+	private final Map<Object, Weights<?>> edgesWeights = new Object2ObjectArrayMap<>();
+	private final List<DataContainer<?>> verticesWeightsInternal = new ObjectArrayList<>();
+	private final List<DataContainer<?>> edgesWeightsInternal = new ObjectArrayList<>();
+	private int edgesWeightsCapacity;
+	private int verticesWeightsCapacity;
 
 	GraphBaseContinues(int n, GraphCapabilities capabilities) {
 		super(new IDStrategy.Continues(n), new IDStrategy.Continues(0), capabilities);
+		edgesWeightsCapacity = n;
+		verticesWeightsCapacity = n;
 	}
 
 	@Override
 	public int addVertex() {
 		int u = verticesIDStrategy.newIdx();
 		assert u >= 0;
-		for (Weights<?> weight : vWeights.values())
-			((WeightsImpl<?>) weight).container.add(u);
+		if (u == verticesWeightsCapacity) {
+			int newCapacity = Math.max(2, 2 * verticesWeightsCapacity);
+			for (DataContainer<?> container : verticesWeightsInternal)
+				container.expand(newCapacity);
+			for (Weights<?> weight : verticesWeights.values())
+				((WeightsImpl<?>) weight).container.expand(newCapacity);
+			verticesWeightsCapacity = newCapacity;
+		}
 		return u;
 	}
 
@@ -44,24 +58,24 @@ abstract class GraphBaseContinues extends GraphBase {
 		removeEdgesOf(v);
 		v = vertexSwapBeforeRemove(v);
 		verticesIDStrategy.removeIdx(v);
-		for (Weights<?> weight : vWeights.values())
-			((WeightsImpl<?>) weight).container.remove(v);
+		for (Weights<?> weight : verticesWeights.values())
+			((WeightsImpl<?>) weight).container.clear(v);
 	}
 
-	/**
-	 * Remove multiple vertices.
-	 * <p>
-	 * After removing a vertex, the vertices ID strategy may rename other vertices identifiers to maintain its
-	 * invariants, see {@link #getVerticesIDStrategy()}. Theses renames can be subscribed using
-	 * {@link IDStrategy#addIDSwapListener}.
-	 * <p>
-	 * This function may be useful in case a user want to remove a collection of vertices, and does not want to update
-	 * IDs within the collection due to IDs renames.
-	 *
-	 * @param  vs                        a collection of vertices to remove
-	 * @throws IndexOutOfBoundsException if one of the edges is not a valid edge identifier
-	 * @throws IllegalArgumentException  if the vertices collection to remove contains duplications
-	 */
+	// /**
+	// * Remove multiple vertices.
+	// * <p>
+	// * After removing a vertex, the vertices ID strategy may rename other vertices identifiers to maintain its
+	// * invariants, see {@link #getVerticesIDStrategy()}. Theses renames can be subscribed using
+	// * {@link IDStrategy#addIDSwapListener}.
+	// * <p>
+	// * This function may be useful in case a user want to remove a collection of vertices, and does not want to update
+	// * IDs within the collection due to IDs renames.
+	// *
+	// * @param vs a collection of vertices to remove
+	// * @throws IndexOutOfBoundsException if one of the edges is not a valid edge identifier
+	// * @throws IllegalArgumentException if the vertices collection to remove contains duplications
+	// */
 	// @Override public
 	// void removeVertices(IntCollection vs) {
 	// int[] vsArr = vs.toIntArray();
@@ -90,7 +104,7 @@ abstract class GraphBaseContinues extends GraphBase {
 
 	void vertexSwap(int v1, int v2) {
 		verticesIDStrategy.idxSwap(v1, v2);
-		for (Weights<?> weight : vWeights.values())
+		for (Weights<?> weight : verticesWeights.values())
 			((WeightsImpl<?>) weight).container.swap(v1, v2);
 	}
 
@@ -100,32 +114,40 @@ abstract class GraphBaseContinues extends GraphBase {
 		checkVertexIdx(v);
 		int e = edgesIDStrategy.newIdx();
 		assert e >= 0;
-		for (Weights<?> weight : eWeights.values())
-			((WeightsImpl<?>) weight).container.add(e);
+		if (e == edgesWeightsCapacity) {
+			int newCapacity = Math.max(2, 2 * edgesWeightsCapacity);
+			for (DataContainer<?> container : edgesWeightsInternal)
+				container.expand(newCapacity);
+			for (Weights<?> weight : edgesWeights.values())
+				((WeightsImpl<?>) weight).container.expand(newCapacity);
+			edgesWeightsCapacity = newCapacity;
+		}
 		return e;
 	}
 
 	@Override
 	public void removeEdge(int e) {
 		e = edgeSwapBeforeRemove(e);
+		for (Weights<?> weight : edgesWeights.values())
+			((WeightsImpl<?>) weight).container.clear(e);
 		edgesIDStrategy.removeIdx(e);
-		for (Weights<?> weight : eWeights.values())
-			((WeightsImpl<?>) weight).container.remove(e);
 	}
 
-	/**
-	 * Remove multiple edges.
-	 * <p>
-	 * After removing an edge, the edges ID strategy may rename other edges identifiers to maintain its invariants, see
-	 * {@link #getEdgesIDStrategy()}. Theses renames can be subscribed using {@link IDStrategy#addIDSwapListener}.
-	 * <p>
-	 * This function may be useful in case a user want to remove a collection of edges, and does not want to update IDs
-	 * within the collection due to IDs renames.
-	 *
-	 * @param  edges                     a collection of edges to remove
-	 * @throws IndexOutOfBoundsException if one of the edges is not a valid edge identifier
-	 * @throws IllegalArgumentException  if the edges collection to remove contains duplications
-	 */
+	// /**
+	// * Remove multiple edges.
+	// * <p>
+	// * After removing an edge, the edges ID strategy may rename other edges identifiers to maintain its invariants,
+	// see
+	// * {@link #getEdgesIDStrategy()}. Theses renames can be subscribed using {@link IDStrategy#addIDSwapListener}.
+	// * <p>
+	// * This function may be useful in case a user want to remove a collection of edges, and does not want to update
+	// IDs
+	// * within the collection due to IDs renames.
+	// *
+	// * @param edges a collection of edges to remove
+	// * @throws IndexOutOfBoundsException if one of the edges is not a valid edge identifier
+	// * @throws IllegalArgumentException if the edges collection to remove contains duplications
+	// */
 	// @Override public
 	// void removeEdges(IntCollection edges) {
 	// int[] edgesArr = edges.toIntArray();
@@ -154,44 +176,44 @@ abstract class GraphBaseContinues extends GraphBase {
 
 	void edgeSwap(int e1, int e2) {
 		edgesIDStrategy.idxSwap(e1, e2);
-		for (Weights<?> weight : eWeights.values())
+		for (Weights<?> weight : edgesWeights.values())
 			((WeightsImpl<?>) weight).container.swap(e1, e2);
 	}
 
 	@Override
 	public void clear() {
 		super.clear();
-		for (Weights<?> weight : vWeights.values())
+		for (Weights<?> weight : verticesWeights.values())
 			((WeightsImpl<?>) weight).container.clear();
 	}
 
 	@Override
 	public void clearEdges() {
 		super.clearEdges();
-		for (Weights<?> weight : eWeights.values())
+		for (Weights<?> weight : edgesWeights.values())
 			((WeightsImpl<?>) weight).container.clear();
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public <V, WeightsT extends Weights<V>> WeightsT getVerticesWeights(Object key) {
-		return (WeightsT) vWeights.get(key);
+		return (WeightsT) verticesWeights.get(key);
 	}
 
 	@Override
 	public Set<Object> getVerticesWeightKeys() {
-		return Collections.unmodifiableSet(vWeights.keySet());
+		return Collections.unmodifiableSet(verticesWeights.keySet());
 	}
 
 	@Override
 	public void removeVerticesWeights(Object key) {
-		vWeights.remove(key);
+		verticesWeights.remove(key);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public <E, WeightsT extends Weights<E>> WeightsT getEdgesWeights(Object key) {
-		return (WeightsT) eWeights.get(key);
+		return (WeightsT) edgesWeights.get(key);
 	}
 
 	@Override
@@ -201,38 +223,42 @@ abstract class GraphBaseContinues extends GraphBase {
 
 	@Override
 	void addVerticesWeightsContainer(Object key, Weights<?> weights) {
-		Weights<?> oldWeights = vWeights.put(key, weights);
+		Weights<?> oldWeights = verticesWeights.put(key, weights);
 		if (oldWeights != null)
 			throw new IllegalArgumentException("Two weights types with the same key: " + key);
+		if (verticesWeightsCapacity > 0)
+			((WeightsImpl<?>) weights).container.expand(verticesWeightsCapacity);
 	}
 
 	@Override
 	void addEdgesWeightsContainer(Object key, Weights<?> weights) {
-		Weights<?> oldWeights = eWeights.put(key, weights);
+		Weights<?> oldWeights = edgesWeights.put(key, weights);
 		if (oldWeights != null)
 			throw new IllegalArgumentException("Two weights types with the same key: " + key);
+		if (edgesWeightsCapacity > 0)
+			((WeightsImpl<?>) weights).container.expand(edgesWeightsCapacity);
 	}
 
 	@Override
 	public Set<Object> getEdgesWeightsKeys() {
-		return Collections.unmodifiableSet(eWeights.keySet());
+		return Collections.unmodifiableSet(edgesWeights.keySet());
 	}
 
 	@Override
 	public void removeEdgesWeights(Object key) {
-		eWeights.remove(key);
+		edgesWeights.remove(key);
 	}
 
 	void addInternalVerticesDataContainer(DataContainer<?> container) {
-		assert container.size == 0;
-		int n = vertices().size();
-		container.addUpTo(n);
+		verticesWeightsInternal.add(container);
+		if (verticesWeightsCapacity > 0)
+			container.expand(verticesWeightsCapacity);
 	}
 
 	void addInternalEdgesDataContainer(DataContainer<?> container) {
-		assert container.size == 0;
-		int m = edges().size();
-		container.addUpTo(m);
+		edgesWeightsInternal.add(container);
+		if (edgesWeightsCapacity > 0)
+			container.expand(edgesWeightsCapacity);
 	}
 
 	void checkVertexIdx(int u) {

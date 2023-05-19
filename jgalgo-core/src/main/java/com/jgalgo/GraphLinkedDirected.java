@@ -46,27 +46,19 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	GraphLinkedDirected(int n) {
 		super(n, Capabilities);
 
-		edgesIn = new DataContainer.Obj<>(n, null, Node.class);
-		edgesOut = new DataContainer.Obj<>(n, null, Node.class);
+		edgesIn = new DataContainer.Obj<>(verticesIDStrategy, null, Node.class);
+		edgesOut = new DataContainer.Obj<>(verticesIDStrategy, null, Node.class);
 
 		addInternalVerticesDataContainer(edgesIn);
 		addInternalVerticesDataContainer(edgesOut);
 	}
 
 	@Override
-	public int addVertex() {
-		int v = super.addVertex();
-		edgesOut.add(v);
-		edgesIn.add(v);
-		return v;
-	}
-
-	@Override
 	public void removeVertex(int v) {
 		v = vertexSwapBeforeRemove(v);
 		super.removeVertex(v);
-		edgesOut.remove(v);
-		edgesIn.remove(v);
+		edgesOut.clear(v);
+		edgesIn.clear(v);
 	}
 
 	@Override
@@ -211,20 +203,9 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 			Node p = (Node) p0;
 			p.nextOut = p.prevOut = p.nextIn = p.prevIn = null;
 		}
-		int n = vertices().size();
-		for (int uIdx = 0; uIdx < n; uIdx++) {
-			// TODO do some sort of 'addKey' instead of set, no need
-			edgesOut.set(uIdx, null);
-			edgesIn.set(uIdx, null);
-		}
-		super.clearEdges();
-	}
-
-	@Override
-	public void clear() {
-		super.clear();
 		edgesOut.clear();
 		edgesIn.clear();
+		super.clearEdges();
 	}
 
 	private abstract class EdgeIterImpl extends GraphLinkedAbstract.EdgeItr {

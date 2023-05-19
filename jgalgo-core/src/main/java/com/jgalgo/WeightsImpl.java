@@ -30,9 +30,7 @@ abstract class WeightsImpl<E> implements Weights<E> {
 
 	static <E, WeightsT extends Weights<E>> WeightsT newInstance(IDStrategy idStrategy, Class<? super E> type,
 			E defVal) {
-		int size = idStrategy.size();
-		DataContainer<E> container = DataContainer.newInstance(type, defVal, size);
-		container.addUpTo(size);
+		DataContainer<E> container = DataContainer.newInstance(idStrategy, type, defVal);
 		return wrapContainer(container, idStrategy);
 	}
 

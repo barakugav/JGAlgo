@@ -29,15 +29,14 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 /**
  * A strategy that determine for each new graph vertex/edge its unique identifier, and maintain its invariants on
  * removals.
- *
  * <p>
- * Each vertex/edges in the graph is identified by a unique int ID, which is determined by a strategy. For example,
- * {@link com.jgalgo.IDStrategy.Continues} ensure that at all times the vertices IDs are {@code 0,1,..., verticesNum-1},
- * and it might rename some vertices when a vertex is removed to maintain this invariant. This rename can be subscribed
- * using {@link com.jgalgo.IDStrategy#addIDSwapListener}. Another option for an ID strategy is
- * {@link com.jgalgo.IDStrategy.Fixed} which ensure once a vertex is assigned an ID, it will not change. All the stated
- * above about vertices hold for edges as well. There might be some performance differences between different ID
- * strategies.
+ * Each vertex/edges in the graph is identified by a unique {@code int} ID, which is determined by a strategy. For
+ * example, {@link com.jgalgo.IDStrategy.Continues} ensure that at all times the vertices IDs are
+ * {@code 0,1,..., verticesNum-1}, and it might rename some vertices when a vertex is removed to maintain this
+ * invariant. This rename can be subscribed using {@link com.jgalgo.IDStrategy#addIDSwapListener}. Another option for an
+ * ID strategy is {@link com.jgalgo.IDStrategy.Fixed} which ensure once a vertex is assigned an ID, it will not change.
+ * All the stated above about vertices hold for edges as well. There might be some performance differences between
+ * different ID strategies.
  *
  * @author Barak Ugav
  */
@@ -151,13 +150,15 @@ public abstract class IDStrategy {
 	private abstract static class FixedAbstract extends IDStrategy {
 
 		private final Int2IntOpenHashMap idToIdx;
-		private final DataContainer.Int idxToId;
 		private final IntSet idsView; // move to graph abstract implementation
+		private final DataContainer.Int idxToId;
+		private int idxToIdCapacity;
 
 		FixedAbstract() {
 			idToIdx = new Int2IntOpenHashMap();
 			idsView = IntSets.unmodifiable(idToIdx.keySet());
-			idxToId = new DataContainer.Int(0, 0);
+			idxToId = new DataContainer.Int(this, 0);
+			idxToIdCapacity = 0;
 		}
 
 		@Override
@@ -166,7 +167,11 @@ public abstract class IDStrategy {
 			int id = nextID();
 			assert id >= 0;
 			idToIdx.put(id, idx);
-			idxToId.add(idx);
+			if (idx == idxToIdCapacity) {
+				int newCapacity = Math.max(2, 2 * idxToIdCapacity);
+				idxToId.expand(newCapacity);
+				idxToIdCapacity = newCapacity;
+			}
 			idxToId.set(idx, id);
 			notifyIDAdd(id);
 			return idx;
@@ -176,10 +181,8 @@ public abstract class IDStrategy {
 
 		@Override
 		void removeIdx(int idx) {
-			assert idx == idxToId.size - 1;
-			assert idxToId.size > 0;
 			final int id = idxToId.getInt(idx);
-			idxToId.remove(idx);
+			idxToId.clear(idx);
 			idToIdx.remove(id);
 			notifyIDRemove(id);
 		}

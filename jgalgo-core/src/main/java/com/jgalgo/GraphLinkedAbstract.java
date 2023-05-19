@@ -25,7 +25,7 @@ abstract class GraphLinkedAbstract extends GraphBaseContinues {
 
 	GraphLinkedAbstract(int n, GraphCapabilities capabilities) {
 		super(n, capabilities);
-		edges = new DataContainer.Obj<>(n, null, Node.class);
+		edges = new DataContainer.Obj<>(edgesIDStrategy, null, Node.class);
 		addInternalEdgesDataContainer(edges);
 	}
 
@@ -55,7 +55,7 @@ abstract class GraphLinkedAbstract extends GraphBaseContinues {
 
 	private void removeEdge0(int e) {
 		e = edgeSwapBeforeRemove(e);
-		edges.remove(e);
+		edges.clear(e);
 		super.removeEdge(e);
 	}
 
@@ -65,7 +65,6 @@ abstract class GraphLinkedAbstract extends GraphBaseContinues {
 
 	Node addEdgeNode(int u, int v) {
 		int e = super.addEdge(u, v);
-		edges.add(e);
 		Node n = allocNode(e, u, v);
 		edges.set(e, n);
 		return n;

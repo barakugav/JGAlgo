@@ -19,8 +19,8 @@ class EdgeEndpointsContainer extends DataContainer.Long {
 
 	private static final int None = -1;
 
-	EdgeEndpointsContainer(int expectedSize) {
-		super(expectedSize, sourceTarget2Endpoints(None, None));
+	EdgeEndpointsContainer(IDStrategy idStrat) {
+		super(idStrat, sourceTarget2Endpoints(None, None));
 	}
 
 	void setEndpoints(int edge, int source, int target) {

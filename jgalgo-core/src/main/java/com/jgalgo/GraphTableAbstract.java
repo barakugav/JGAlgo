@@ -29,46 +29,42 @@ abstract class GraphTableAbstract extends GraphBaseContinues implements GraphWit
 	GraphTableAbstract(int n, GraphCapabilities capabilities) {
 		super(n, capabilities);
 
-		edges = new DataContainer.Obj<>(n, null, DataContainer.Int.class);
+		edges = new DataContainer.Obj<>(verticesIDStrategy, null, DataContainer.Int.class);
 		addInternalVerticesDataContainer(edges);
 		for (int u = 0; u < n; u++) {
-			DataContainer.Int uEdges = new DataContainer.Int(n, EdgeNone);
+			DataContainer.Int uEdges = new DataContainer.Int(verticesIDStrategy, EdgeNone);
 			edges.set(u, uEdges);
 			addInternalVerticesDataContainer(uEdges);
 		}
 
-		edgeEndpoints = new EdgeEndpointsContainer(n);
+		edgeEndpoints = new EdgeEndpointsContainer(edgesIDStrategy);
 		addInternalEdgesDataContainer(edgeEndpoints);
 	}
 
 	@Override
 	public int addVertex() {
 		int v = super.addVertex();
-		final int n = vertices().size();
-
-		edges.addWithoutSettingDefaultVal(v); // if we already allocated an edge array for v, use it
 		DataContainer.Int vEdges = edges.get(v);
 		if (vEdges == null) {
-			vEdges = new DataContainer.Int(n, EdgeNone);
+			vEdges = new DataContainer.Int(verticesIDStrategy, EdgeNone);
+			addInternalVerticesDataContainer(vEdges);
 			edges.set(v, vEdges);
 		}
-		addInternalVerticesDataContainer(vEdges);
-
-		for (int u = 0; u < n - 1; u++)
-			edges.get(u).add(v);
-
 		return v;
 	}
 
 	@Override
 	public void removeVertex(int v) {
 		v = vertexSwapBeforeRemove(v);
+		DataContainer.Int edgesV = edges.get(v);
 		super.removeVertex(v);
-		edges.remove(v);
+		edgesV.clear();
+		// Don't deallocate v array
+		// edges.clear(v);
 
 		final int n = vertices().size();
 		for (int u = 0; u < n; u++)
-			edges.get(u).remove(v);
+			edges.get(u).clear(v);
 	}
 
 	@Override
@@ -138,7 +134,6 @@ abstract class GraphTableAbstract extends GraphBaseContinues implements GraphWit
 		if (edges.get(u).getInt(v) != EdgeNone)
 			throw new IllegalArgumentException("parallel edges are not supported");
 		int e = super.addEdge(u, v);
-		edgeEndpoints.add(e);
 		edgeEndpoints.setEndpoints(e, u, v);
 		return e;
 	}
@@ -146,7 +141,7 @@ abstract class GraphTableAbstract extends GraphBaseContinues implements GraphWit
 	@Override
 	public void removeEdge(int e) {
 		e = edgeSwapBeforeRemove(e);
-		edgeEndpoints.remove(e);
+		edgeEndpoints.clear(e);
 		super.removeEdge(e);
 	}
 
@@ -171,7 +166,8 @@ abstract class GraphTableAbstract extends GraphBaseContinues implements GraphWit
 		final int n = vertices().size();
 		for (int u = 0; u < n; u++)
 			edges.get(u).clear();
-		edges.clearWithoutDeallocation();
+		// Don't deallocate edges containers
+		// edges.clear();
 		super.clear();
 	}
 

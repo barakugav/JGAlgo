@@ -50,10 +50,10 @@ class GraphArrayDirected extends GraphArrayAbstract {
 	 */
 	GraphArrayDirected(int n) {
 		super(n, Capabilities);
-		edgesOut = new DataContainer.Obj<>(n, IntArrays.EMPTY_ARRAY, int[].class);
-		edgesOutNum = new DataContainer.Int(n, 0);
-		edgesIn = new DataContainer.Obj<>(n, IntArrays.EMPTY_ARRAY, int[].class);
-		edgesInNum = new DataContainer.Int(n, 0);
+		edgesOut = new DataContainer.Obj<>(verticesIDStrategy, IntArrays.EMPTY_ARRAY, int[].class);
+		edgesOutNum = new DataContainer.Int(verticesIDStrategy, 0);
+		edgesIn = new DataContainer.Obj<>(verticesIDStrategy, IntArrays.EMPTY_ARRAY, int[].class);
+		edgesInNum = new DataContainer.Int(verticesIDStrategy, 0);
 
 		addInternalVerticesDataContainer(edgesOut);
 		addInternalVerticesDataContainer(edgesOutNum);
@@ -62,23 +62,14 @@ class GraphArrayDirected extends GraphArrayAbstract {
 	}
 
 	@Override
-	public int addVertex() {
-		int v = super.addVertex();
-		edgesOut.addWithoutSettingDefaultVal(v); // if we already allocated an edge array for v, use it
-		edgesOutNum.add(v);
-		edgesIn.addWithoutSettingDefaultVal(v); // if we already allocated an edge array for v, use it
-		edgesInNum.add(v);
-		return v;
-	}
-
-	@Override
 	public void removeVertex(int v) {
 		v = vertexSwapBeforeRemove(v);
 		super.removeVertex(v);
-		edgesOut.remove(v);
-		edgesOutNum.remove(v);
-		edgesIn.remove(v);
-		edgesInNum.remove(v);
+		edgesOutNum.clear(v);
+		edgesInNum.clear(v);
+		// Reuse allocated edges arrays for v
+		// edgesOut.clear(v);
+		// edgesIn.clear(v);
 	}
 
 	@Override
@@ -209,10 +200,11 @@ class GraphArrayDirected extends GraphArrayAbstract {
 	@Override
 	public void clear() {
 		super.clear();
-		edgesOut.clearWithoutDeallocation();
 		edgesOutNum.clear();
-		edgesIn.clearWithoutDeallocation();
 		edgesInNum.clear();
+		// Don't clear allocated edges arrays
+		// edgesOut.clear();
+		// edgesIn.clear();
 	}
 
 	private class EdgeOutIt extends EdgeIt {
