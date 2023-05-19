@@ -19,8 +19,6 @@ package com.jgalgo;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
-import it.unimi.dsi.fastutil.ints.IntArrays;
-import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 
 abstract class GraphBaseContinues extends GraphBase {
@@ -65,21 +63,21 @@ abstract class GraphBaseContinues extends GraphBase {
 	 * @throws IllegalArgumentException  if the vertices collection to remove contains duplications
 	 */
 	// @Override public
-	void removeVertices(IntCollection vs) {
-		int[] vsArr = vs.toIntArray();
-		IntArrays.parallelQuickSort(vsArr);
-		for (int i = 0; i < vsArr.length - 1; i++) {
-			int v1 = vsArr[i], v2 = vsArr[i + 1];
-			if (v1 == v2)
-				throw new IllegalArgumentException("vertex identifier duplication: " + v1);
-		}
-		/*
-		 * When we remove a vertex, a rename may be performed, swapping the removed vertex id with numberOfVertices-1.
-		 * By removing them in decreasing order, the smaller IDs remain valid.
-		 */
-		for (int i = vsArr.length - 1; i >= 0; i--)
-			removeVertex(vsArr[i]);
-	}
+	// void removeVertices(IntCollection vs) {
+	// int[] vsArr = vs.toIntArray();
+	// IntArrays.parallelQuickSort(vsArr);
+	// for (int i = 0; i < vsArr.length - 1; i++) {
+	// int v1 = vsArr[i], v2 = vsArr[i + 1];
+	// if (v1 == v2)
+	// throw new IllegalArgumentException("vertex identifier duplication: " + v1);
+	// }
+	// /*
+	// * When we remove a vertex, a rename may be performed, swapping the removed vertex id with numberOfVertices-1.
+	// * By removing them in decreasing order, the smaller IDs remain valid.
+	// */
+	// for (int i = vsArr.length - 1; i >= 0; i--)
+	// removeVertex(vsArr[i]);
+	// }
 
 	int vertexSwapBeforeRemove(int v) {
 		int vn = verticesIDStrategy.isSwapNeededBeforeRemove(v);
@@ -129,21 +127,21 @@ abstract class GraphBaseContinues extends GraphBase {
 	 * @throws IllegalArgumentException  if the edges collection to remove contains duplications
 	 */
 	// @Override public
-	void removeEdges(IntCollection edges) {
-		int[] edgesArr = edges.toIntArray();
-		IntArrays.parallelQuickSort(edgesArr);
-		for (int i = 0; i < edgesArr.length - 1; i++) {
-			int e1 = edgesArr[i], e2 = edgesArr[i + 1];
-			if (e1 == e2)
-				throw new IllegalArgumentException("edge identifier duplication: " + e1);
-		}
-		/*
-		 * When we remove an edge, a rename may be performed, swapping the removed edge id with numberOfEdges-1. By
-		 * removing them in decreasing order, the smaller IDs remain valid.
-		 */
-		for (int i = edgesArr.length - 1; i >= 0; i--)
-			removeEdge(edgesArr[i]);
-	}
+	// void removeEdges(IntCollection edges) {
+	// int[] edgesArr = edges.toIntArray();
+	// IntArrays.parallelQuickSort(edgesArr);
+	// for (int i = 0; i < edgesArr.length - 1; i++) {
+	// int e1 = edgesArr[i], e2 = edgesArr[i + 1];
+	// if (e1 == e2)
+	// throw new IllegalArgumentException("edge identifier duplication: " + e1);
+	// }
+	// /*
+	// * When we remove an edge, a rename may be performed, swapping the removed edge id with numberOfEdges-1. By
+	// * removing them in decreasing order, the smaller IDs remain valid.
+	// */
+	// for (int i = edgesArr.length - 1; i >= 0; i--)
+	// removeEdge(edgesArr[i]);
+	// }
 
 	int edgeSwapBeforeRemove(int e) {
 		int en = edgesIDStrategy.isSwapNeededBeforeRemove(e);

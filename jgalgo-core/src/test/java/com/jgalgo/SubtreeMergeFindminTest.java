@@ -17,7 +17,6 @@
 package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
@@ -26,9 +25,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
-
 import org.junit.jupiter.api.Test;
-
+import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.objects.ObjectArrays;
 
 public class SubtreeMergeFindminTest extends TestBase {
@@ -179,9 +177,7 @@ public class SubtreeMergeFindminTest extends TestBase {
 							: new int[] { getNodeId(actual0.source()), getNodeId(actual0.target()),
 									actual0.edgeData() };
 					if (expected != null && actual != null && expected[0] != actual[0]) {
-						int temp = expected[0];
-						expected[0] = expected[1];
-						expected[1] = temp;
+						IntArrays.swap(expected, 0, 1);
 					}
 					assertTrue(Arrays.equals(expected, actual), "Algo found unexpected edge: "
 							+ Arrays.toString(expected) + " != " + Arrays.toString(actual));

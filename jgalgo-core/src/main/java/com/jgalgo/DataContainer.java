@@ -234,12 +234,10 @@ abstract class DataContainer<E> {
 		}
 
 		@Override
-		void swap(int k1, int k2) {
-			checkIdx(k1);
-			checkIdx(k2);
-			Object temp = weights[k1];
-			weights[k1] = weights[k2];
-			weights[k2] = temp;
+		void swap(int i1, int i2) {
+			checkIdx(i1);
+			checkIdx(i2);
+			ObjectArrays.swap(weights, i1, i2);
 		}
 
 		void clearWithoutDeallocation() {
@@ -348,12 +346,10 @@ abstract class DataContainer<E> {
 		}
 
 		@Override
-		void swap(int k1, int k2) {
-			checkIdx(k1);
-			checkIdx(k2);
-			byte temp = weights[k1];
-			weights[k1] = weights[k2];
-			weights[k2] = temp;
+		void swap(int i1, int i2) {
+			checkIdx(i1);
+			checkIdx(i2);
+			ByteArrays.swap(weights, i1, i2);
 		}
 
 		@Override
@@ -452,12 +448,10 @@ abstract class DataContainer<E> {
 		}
 
 		@Override
-		void swap(int k1, int k2) {
-			checkIdx(k1);
-			checkIdx(k2);
-			short temp = weights[k1];
-			weights[k1] = weights[k2];
-			weights[k2] = temp;
+		void swap(int i1, int i2) {
+			checkIdx(i1);
+			checkIdx(i2);
+			ShortArrays.swap(weights, i1, i2);
 		}
 
 		@Override
@@ -559,9 +553,7 @@ abstract class DataContainer<E> {
 		void swap(int i1, int i2) {
 			checkIdx(i1);
 			checkIdx(i2);
-			int temp = weights[i1];
-			weights[i1] = weights[i2];
-			weights[i2] = temp;
+			IntArrays.swap(weights, i1, i2);
 		}
 
 		@Override
@@ -660,12 +652,10 @@ abstract class DataContainer<E> {
 		}
 
 		@Override
-		void swap(int k1, int k2) {
-			checkIdx(k1);
-			checkIdx(k2);
-			long temp = weights[k1];
-			weights[k1] = weights[k2];
-			weights[k2] = temp;
+		void swap(int i1, int i2) {
+			checkIdx(i1);
+			checkIdx(i2);
+			LongArrays.swap(weights, i1, i2);
 		}
 
 		@Override
@@ -764,12 +754,10 @@ abstract class DataContainer<E> {
 		}
 
 		@Override
-		void swap(int k1, int k2) {
-			checkIdx(k1);
-			checkIdx(k2);
-			float temp = weights[k1];
-			weights[k1] = weights[k2];
-			weights[k2] = temp;
+		void swap(int i1, int i2) {
+			checkIdx(i1);
+			checkIdx(i2);
+			FloatArrays.swap(weights, i1, i2);
 		}
 
 		@Override
@@ -868,12 +856,10 @@ abstract class DataContainer<E> {
 		}
 
 		@Override
-		void swap(int k1, int k2) {
-			checkIdx(k1);
-			checkIdx(k2);
-			double temp = weights[k1];
-			weights[k1] = weights[k2];
-			weights[k2] = temp;
+		void swap(int i1, int i2) {
+			checkIdx(i1);
+			checkIdx(i2);
+			DoubleArrays.swap(weights, i1, i2);
 		}
 
 		@Override
@@ -1000,12 +986,12 @@ abstract class DataContainer<E> {
 		}
 
 		@Override
-		void swap(int k1, int k2) {
-			checkIdx(k1);
-			checkIdx(k2);
-			boolean temp = weights.get(k1);
-			weights.set(k1, weights.get(k2));
-			weights.set(k2, temp);
+		void swap(int i1, int i2) {
+			checkIdx(i1);
+			checkIdx(i2);
+			boolean temp = weights.get(i1);
+			weights.set(i1, weights.get(i2));
+			weights.set(i2, temp);
 		}
 
 		@Override
@@ -1104,12 +1090,10 @@ abstract class DataContainer<E> {
 		}
 
 		@Override
-		void swap(int k1, int k2) {
-			checkIdx(k1);
-			checkIdx(k2);
-			char temp = weights[k1];
-			weights[k1] = weights[k2];
-			weights[k2] = temp;
+		void swap(int i1, int i2) {
+			checkIdx(i1);
+			checkIdx(i2);
+			CharArrays.swap(weights, i1, i2);
 		}
 
 		@Override

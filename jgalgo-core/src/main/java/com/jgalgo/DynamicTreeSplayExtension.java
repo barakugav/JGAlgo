@@ -149,9 +149,7 @@ abstract class DynamicTreeSplayExtension implements DynamicTreeExtension {
 
 			@Override
 			void swap(int idx1, int idx2) {
-				int temp = data[idx1];
-				data[idx1] = data[idx2];
-				data[idx2] = temp;
+				IntArrays.swap(data, idx1, idx2);
 			}
 
 			@Override

@@ -18,8 +18,9 @@ package com.jgalgo;
 
 import java.util.Arrays;
 import java.util.Comparator;
-
+import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntComparator;
+import it.unimi.dsi.fastutil.objects.ObjectArrays;
 
 class ArraysUtils {
 
@@ -194,10 +195,10 @@ class ArraysUtils {
 		int insertIdx = from;
 		for (int i = from; i < to; i++)
 			if (c.compare(a[i], pivot) < 0)
-				swap(a, i, insertIdx++);
+				ObjectArrays.swap(a, i, insertIdx++);
 		for (int i = insertIdx; i < to; i++)
 			if (c.compare(a[i], pivot) == 0)
-				swap(a, i, insertIdx++);
+				ObjectArrays.swap(a, i, insertIdx++);
 		return insertIdx - 1;
 	}
 
@@ -206,10 +207,10 @@ class ArraysUtils {
 		int insertIdx = from;
 		for (int i = from; i < to; i++)
 			if (c.compare(a[i], pivot) < 0)
-				swap(a, i, insertIdx++);
+				IntArrays.swap(a, i, insertIdx++);
 		for (int i = insertIdx; i < to; i++)
 			if (c.compare(a[i], pivot) == 0)
-				swap(a, i, insertIdx++);
+				IntArrays.swap(a, i, insertIdx++);
 		return insertIdx - 1;
 	}
 
@@ -223,7 +224,7 @@ class ArraysUtils {
 			if (subTo > to)
 				subTo = to;
 			int median5 = partition5(a, subFrom, subTo, c);
-			swap(a, median5, from + i);
+			ObjectArrays.swap(a, median5, from + i);
 		}
 
 		int mid = from + blockNum / 2;
@@ -241,7 +242,7 @@ class ArraysUtils {
 			if (subTo > to)
 				subTo = to;
 			int median5 = partition5(a, subFrom, subTo, c);
-			swap(a, median5, from + i);
+			IntArrays.swap(a, median5, from + i);
 		}
 
 		int mid = from + blockNum / 2;
@@ -252,27 +253,15 @@ class ArraysUtils {
 	private static <E> int partition5(E[] a, int from, int to, Comparator<? super E> c) {
 		for (int i = from + 1; i < to; i++)
 			for (int j = i; j > from && c.compare(a[j], a[j - 1]) < 0; j--)
-				swap(a, j, j - 1);
+				ObjectArrays.swap(a, j, j - 1);
 		return from + (to - from) / 2;
 	}
 
 	private static int partition5(int[] a, int from, int to, IntComparator c) {
 		for (int i = from + 1; i < to; i++)
 			for (int j = i; j > from && c.compare(a[j], a[j - 1]) < 0; j--)
-				swap(a, j, j - 1);
+				IntArrays.swap(a, j, j - 1);
 		return from + (to - from) / 2;
-	}
-
-	private static <E> void swap(E a[], int i, int j) {
-		E temp = a[i];
-		a[i] = a[j];
-		a[j] = temp;
-	}
-
-	private static void swap(int[] a, int i, int j) {
-		int temp = a[i];
-		a[i] = a[j];
-		a[j] = temp;
 	}
 
 	/**
