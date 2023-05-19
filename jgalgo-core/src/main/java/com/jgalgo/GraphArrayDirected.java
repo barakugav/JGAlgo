@@ -189,19 +189,14 @@ class GraphArrayDirected extends GraphArrayAbstract {
 
 	@Override
 	public void clearEdges() {
-		int n = vertices().size();
-		for (int u = 0; u < n; u++) {
-			edgesOutNum.set(u, 0);
-			edgesInNum.set(u, 0);
-		}
+		edgesOutNum.clear();
+		edgesInNum.clear();
 		super.clearEdges();
 	}
 
 	@Override
 	public void clear() {
 		super.clear();
-		edgesOutNum.clear();
-		edgesInNum.clear();
 		// Don't clear allocated edges arrays
 		// edgesOut.clear();
 		// edgesIn.clear();

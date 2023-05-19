@@ -153,16 +153,13 @@ class GraphArrayUndirected extends GraphArrayAbstract implements UndirectedGraph
 
 	@Override
 	public void clearEdges() {
-		int n = vertices().size();
-		for (int u = 0; u < n; u++)
-			edgesNum.set(u, 0);
+		edgesNum.clear();
 		super.clearEdges();
 	}
 
 	@Override
 	public void clear() {
 		super.clear();
-		edgesNum.clear();
 		// Don't clear allocated edges arrays
 		// edges.clear();
 	}

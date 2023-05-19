@@ -120,10 +120,9 @@ public class SSSPGoldberg implements SSSP, AlgorithmWithDiagnostics {
 		Weights.Int gNegEdgeRefs = gNeg.addEdgesWeights("edgeRef", int.class, Integer.valueOf(-1));
 
 		/* G is the graph of strong connectivity components of gNeg, each vertex is a super vertex of gNeg */
-		Graph G = GraphBuilder.newDirected().setVerticesNum(n).build();
+		Graph G = GraphBuilder.newDirected().setVerticesNum(n + 2).build();
 		Weights.Int GWeights = G.addEdgesWeights("weights", int.class, Integer.valueOf(-1));
 		/* Two fake vertices used to add 0-edges and (r-i)-edges to all other (super) vertices */
-		int fakeS1 = G.addVertex(), fakeS2 = G.addVertex();
 
 		/**
 		 * In sparse (random) graphs, the running time seems very slow, as the algorithm require a lot of iterations to
@@ -164,9 +163,13 @@ public class SSSPGoldberg implements SSSP, AlgorithmWithDiagnostics {
 				ConnectivityAlgorithm.Result connectivityRes = ccAlg.computeConnectivityComponents(gNeg);
 				final int N = connectivityRes.getNumberOfCC();
 
-				// Contract each strong connectivity component and search for a negative edge
-				// within it, if found - negative cycle found
-				G.clearEdges();
+				/*
+				 * Contract each strong connectivity component and search for a negative edge within it, if found -
+				 * negative cycle found
+				 */
+				G.clear();
+				for (int U = 0; U < N; U++)
+					G.addVertex();
 				for (int u = 0; u < n; u++) {
 					int U = connectivityRes.getVertexCc(u);
 					for (EdgeIter eit = gNeg.edgesOut(u); eit.hasNext();) {
@@ -190,6 +193,7 @@ public class SSSPGoldberg implements SSSP, AlgorithmWithDiagnostics {
 				}
 
 				// Create a fake vertex S, connect with 0 edges to all and calc distances
+				int fakeS1 = G.addVertex();
 				for (int U = 0; U < N; U++)
 					GWeights.set(G.addEdge(fakeS1, U), 0);
 				SSSP.Result ssspRes = dagSssp.computeShortestPaths(G, GWeights, fakeS1);
@@ -224,9 +228,12 @@ public class SSSPGoldberg implements SSSP, AlgorithmWithDiagnostics {
 					}
 				} else {
 					diagnostics.longPath();
-					// No big layer is found, use path which has at least sqrt(|V|) vertices.
-					// Connect a fake vertex to all vertices, with edge r-i to negative vertex v_i
-					// on the path and with edge r to all other vertices
+					/*
+					 * No big layer is found, use path which has at least sqrt(|V|) vertices. Connect a fake vertex to
+					 * all vertices, with edge r-i to negative vertex v_i on the path and with edge r to all other
+					 * vertices
+					 */
+					int fakeS2 = G.addVertex();
 					connected.clear();
 					int assignedWeight = layerNum - 2;
 					for (EdgeIter it = ssspRes.getPath(vertexInMaxLayer).edgeIter(); it.hasNext();) {
