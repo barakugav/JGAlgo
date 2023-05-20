@@ -96,12 +96,28 @@ class ConnectivityAlgorithmImpl implements ConnectivityAlgorithm {
 		Arrays.fill(comp, -1);
 		int compNum = 0;
 
+		IntStack stack = new IntArrayList();
 		for (int root = 0; root < n; root++) {
 			if (comp[root] != -1)
 				continue;
 			final int compIdx = compNum++;
-			for (BFSIter vit = new BFSIter(g, root); vit.hasNext();)
-				comp[vit.nextInt()] = compIdx;
+			stack.push(root);
+			comp[root] = compIdx;
+
+			while (!stack.isEmpty()) {
+				int u = stack.popInt();
+
+				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
+					eit.nextInt();
+					int v = eit.target();
+					if (comp[v] != -1) {
+						assert comp[v] == compIdx;
+						continue;
+					}
+					comp[v] = compIdx;
+					stack.push(v);
+				}
+			}
 		}
 		return new Result(compNum, comp);
 	}
