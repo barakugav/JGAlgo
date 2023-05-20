@@ -153,77 +153,74 @@ class GraphArrayUndirected extends GraphArrayAbstract implements UndirectedGraph
 
 	@Override
 	public void clearEdges() {
-<span class="fc" id="L156">		int n = vertices().size();</span>
-<span class="fc bfc" id="L157" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
-<span class="fc" id="L158">			edgesNum.set(u, 0);</span>
-<span class="fc" id="L159">		super.clearEdges();</span>
-<span class="fc" id="L160">	}</span>
+<span class="fc" id="L156">		edgesNum.clear();</span>
+<span class="fc" id="L157">		super.clearEdges();</span>
+<span class="fc" id="L158">	}</span>
 
 	@Override
 	public void clear() {
-<span class="fc" id="L164">		super.clear();</span>
-<span class="fc" id="L165">		edgesNum.clear();</span>
+<span class="fc" id="L162">		super.clear();</span>
 		// Don't clear allocated edges arrays
 		// edges.clear();
-<span class="fc" id="L168">	}</span>
+<span class="fc" id="L165">	}</span>
 
 	private class EdgeIt extends GraphArrayAbstract.EdgeIt {
 
 		private final int u;
 
-<span class="fc" id="L174">		EdgeIt(int u, int[] edges, int count) {</span>
-<span class="fc" id="L175">			super(edges, count);</span>
-<span class="fc" id="L176">			this.u = u;</span>
-<span class="fc" id="L177">		}</span>
+<span class="fc" id="L171">		EdgeIt(int u, int[] edges, int count) {</span>
+<span class="fc" id="L172">			super(edges, count);</span>
+<span class="fc" id="L173">			this.u = u;</span>
+<span class="fc" id="L174">		}</span>
 
 		@Override
 		public int source() {
-<span class="fc" id="L181">			return u;</span>
+<span class="fc" id="L178">			return u;</span>
 		}
 
 		@Override
 		public int target() {
-<span class="fc" id="L186">			int u0 = edgeSource(lastEdge);</span>
-<span class="fc" id="L187">			int v0 = edgeTarget(lastEdge);</span>
-<span class="fc bfc" id="L188" title="All 2 branches covered.">			return u == u0 ? v0 : u0;</span>
+<span class="fc" id="L183">			int u0 = edgeSource(lastEdge);</span>
+<span class="fc" id="L184">			int v0 = edgeTarget(lastEdge);</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">			return u == u0 ? v0 : u0;</span>
 		}
 
 	}
 
-<span class="fc" id="L193">	private static final GraphCapabilities Capabilities = new GraphCapabilities() {</span>
+<span class="fc" id="L190">	private static final GraphCapabilities Capabilities = new GraphCapabilities() {</span>
 		@Override
 		public boolean vertexAdd() {
-<span class="fc" id="L196">			return true;</span>
+<span class="fc" id="L193">			return true;</span>
 		}
 
 		@Override
 		public boolean vertexRemove() {
-<span class="fc" id="L201">			return true;</span>
+<span class="fc" id="L198">			return true;</span>
 		}
 
 		@Override
 		public boolean edgeAdd() {
-<span class="fc" id="L206">			return true;</span>
+<span class="fc" id="L203">			return true;</span>
 		}
 
 		@Override
 		public boolean edgeRemove() {
-<span class="fc" id="L211">			return true;</span>
+<span class="fc" id="L208">			return true;</span>
 		}
 
 		@Override
 		public boolean parallelEdges() {
-<span class="fc" id="L216">			return true;</span>
+<span class="fc" id="L213">			return true;</span>
 		}
 
 		@Override
 		public boolean selfEdges() {
-<span class="fc" id="L221">			return true;</span>
+<span class="fc" id="L218">			return true;</span>
 		}
 
 		@Override
 		public boolean directed() {
-<span class="fc" id="L226">			return false;</span>
+<span class="fc" id="L223">			return false;</span>
 		}
 	};
 

@@ -96,38 +96,54 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L96">		Arrays.fill(comp, -1);</span>
 <span class="fc" id="L97">		int compNum = 0;</span>
 
-<span class="fc bfc" id="L99" title="All 2 branches covered.">		for (int root = 0; root &lt; n; root++) {</span>
-<span class="fc bfc" id="L100" title="All 2 branches covered.">			if (comp[root] != -1)</span>
-<span class="fc" id="L101">				continue;</span>
-<span class="fc" id="L102">			final int compIdx = compNum++;</span>
-<span class="fc bfc" id="L103" title="All 2 branches covered.">			for (BFSIter vit = new BFSIter(g, root); vit.hasNext();)</span>
-<span class="fc" id="L104">				comp[vit.nextInt()] = compIdx;</span>
+<span class="fc" id="L99">		IntStack stack = new IntArrayList();</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">		for (int root = 0; root &lt; n; root++) {</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">			if (comp[root] != -1)</span>
+<span class="fc" id="L102">				continue;</span>
+<span class="fc" id="L103">			final int compIdx = compNum++;</span>
+<span class="fc" id="L104">			stack.push(root);</span>
+<span class="fc" id="L105">			comp[root] = compIdx;</span>
+
+<span class="fc bfc" id="L107" title="All 2 branches covered.">			while (!stack.isEmpty()) {</span>
+<span class="fc" id="L108">				int u = stack.popInt();</span>
+
+<span class="fc bfc" id="L110" title="All 2 branches covered.">				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
+<span class="fc" id="L111">					eit.nextInt();</span>
+<span class="fc" id="L112">					int v = eit.target();</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">					if (comp[v] != -1) {</span>
+<span class="pc bpc" id="L114" title="1 of 2 branches missed.">						assert comp[v] == compIdx;</span>
+						continue;
+					}
+<span class="fc" id="L117">					comp[v] = compIdx;</span>
+<span class="fc" id="L118">					stack.push(v);</span>
+<span class="fc" id="L119">				}</span>
+<span class="fc" id="L120">			}</span>
 		}
-<span class="fc" id="L106">		return new Result(compNum, comp);</span>
+<span class="fc" id="L122">		return new Result(compNum, comp);</span>
 	}
 
 	private static class Result implements ConnectivityAlgorithm.Result {
 		private final int ccNum;
 		private final int[] vertexToCC;
 
-<span class="fc" id="L113">		private Result(int ccNum, int[] vertexToCC) {</span>
-<span class="fc" id="L114">			this.ccNum = ccNum;</span>
-<span class="fc" id="L115">			this.vertexToCC = vertexToCC;</span>
-<span class="fc" id="L116">		}</span>
+<span class="fc" id="L129">		private Result(int ccNum, int[] vertexToCC) {</span>
+<span class="fc" id="L130">			this.ccNum = ccNum;</span>
+<span class="fc" id="L131">			this.vertexToCC = vertexToCC;</span>
+<span class="fc" id="L132">		}</span>
 
 		@Override
 		public int getVertexCc(int v) {
-<span class="fc" id="L120">			return vertexToCC[v];</span>
+<span class="fc" id="L136">			return vertexToCC[v];</span>
 		}
 
 		@Override
 		public int getNumberOfCC() {
-<span class="fc" id="L125">			return ccNum;</span>
+<span class="fc" id="L141">			return ccNum;</span>
 		}
 
 		@Override
 		public String toString() {
-<span class="nc" id="L130">			return Arrays.toString(vertexToCC);</span>
+<span class="nc" id="L146">			return Arrays.toString(vertexToCC);</span>
 		}
 	}
 
