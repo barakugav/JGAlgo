@@ -17,6 +17,8 @@
 package com.jgalgo;
 
 import java.util.Objects;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.RecursiveAction;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -36,8 +38,9 @@ import it.unimi.dsi.fastutil.ints.IntList;
  */
 public class APSPJohnson implements APSP {
 
-	private SSSP negativeSsssp = new SSSPBellmanFord();
-	private SSSP positiveSssp = new SSSPDijkstra();
+	private SSSP negativeSssp = new SSSPBellmanFord();
+	private boolean parallel = Config.parallelByDefault;
+	private static final int PARALLEL_VERTICES_THRESHOLD = 32;
 
 	/**
 	 * Create a new APSP algorithm object.
@@ -75,21 +78,44 @@ public class APSPJohnson implements APSP {
 			return new NegCycleRes(potential0.second());
 		double[] potential = potential0.first();
 
-		EdgeWeightFunc wPotential = e -> {
-			double up = potential[g.edgeSource(e)];
-			double vp = potential[g.edgeTarget(e)];
-			return w.weight(e) + up - vp;
-		};
+		EdgeWeightFunc wPotential;
+		if (w instanceof EdgeWeightFunc.Int) {
+			EdgeWeightFunc.Int wInt = (EdgeWeightFunc.Int) w;
+			EdgeWeightFunc.Int wPotentialInt =
+					e -> wInt.weightInt(e) + (int) potential[g.edgeSource(e)] - (int) potential[g.edgeTarget(e)];
+			wPotential = wPotentialInt;
+		} else {
+			wPotential = e -> w.weight(e) + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];
+		}
 		SuccessRes res = computeAPSPPositive(g, wPotential);
 		res.potential = potential;
 		return res;
 	}
 
 	private SuccessRes computeAPSPPositive(Graph g, EdgeWeightFunc w) {
-		int n = g.vertices().size();
+		final int n = g.vertices().size();
 		SuccessRes res = new SuccessRes(n);
-		for (int source = 0; source < n; source++)
-			res.ssspResults[source] = positiveSssp.computeShortestPaths(g, w, source);
+
+		RecursiveAction[] tasks = new RecursiveAction[n];
+		for (int source = 0; source < n; source++) {
+			final int source0 = source;
+			tasks[source] = Utils.recursiveAction(
+					() -> res.ssspResults[source0] = new SSSPDijkstra().computeShortestPaths(g, w, source0));
+		}
+
+		ForkJoinPool pool = Utils.getPool();
+		if (n < PARALLEL_VERTICES_THRESHOLD || !parallel || pool.getParallelism() <= 1) {
+			/* sequential */
+			for (int source = 0; source < n; source++)
+				tasks[source].invoke();
+
+		} else {
+			/* parallel */
+			for (RecursiveAction task : tasks)
+				pool.execute(task);
+			for (int source = 0; source < n; source++)
+				tasks[source].join();
+		}
 		return res;
 	}
 
@@ -116,7 +142,7 @@ public class APSPJohnson implements APSP {
 			int ref = edgeEef.getInt(e);
 			return ref != fakeEdge ? w.weight(ref) : 0;
 		};
-		SSSP.Result res = negativeSsssp.computeShortestPaths(refG, refW, fakeV);
+		SSSP.Result res = negativeSssp.computeShortestPaths(refG, refW, fakeV);
 		if (!res.foundNegativeCycle()) {
 			double[] potential = new double[n];
 			for (int v = 0; v < n; v++)
@@ -132,19 +158,6 @@ public class APSPJohnson implements APSP {
 	}
 
 	/**
-	 * Set the algorithm used for positive weights graphs.
-	 * <p>
-	 * The algorithm first calculate a potential for each vertex using an SSSP algorithm for negative weights, than
-	 * construct an equivalent positive weight function which is used by an SSSP algorithm for positive weights to
-	 * compute all shortest paths.
-	 *
-	 * @param algo a SSSP implementation for graphs with positive weight function
-	 */
-	public void setPositiveSsspAlgo(SSSP algo) {
-		positiveSssp = Objects.requireNonNull(algo);
-	}
-
-	/**
 	 * Set the algorithm used for negative weights graphs.
 	 * <p>
 	 * The algorithm first calculate a potential for each vertex using an SSSP algorithm for negative weights, than
@@ -153,8 +166,8 @@ public class APSPJohnson implements APSP {
 	 *
 	 * @param algo a SSSP implementation for graphs with negative weight function
 	 */
-	public void setNegativeSsspAlgo(SSSP algo) {
-		negativeSsssp = Objects.requireNonNull(algo);
+	void setNegativeSsspAlgo(SSSP algo) {
+		negativeSssp = Objects.requireNonNull(algo);
 	}
 
 	private static class NegCycleRes implements APSP.Result {

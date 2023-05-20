@@ -16,6 +16,7 @@
 
 package com.jgalgo;
 
+import java.io.Serializable;
 import java.util.AbstractList;
 import java.util.BitSet;
 import java.util.Collection;
@@ -25,7 +26,12 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinTask;
+import java.util.concurrent.RecursiveAction;
+import java.util.concurrent.RecursiveTask;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -563,6 +569,48 @@ class Utils {
 			IntArrays.parallelQuickSort(arr, from, to, cmp);
 		} else {
 			IntArrays.quickSort(arr, from, to, cmp);
+		}
+	}
+
+	static ForkJoinPool getPool() {
+		ForkJoinPool current = ForkJoinTask.getPool();
+		return current == null ? ForkJoinPool.commonPool() : current;
+	}
+
+	static <Exec extends Runnable & Serializable> RecursiveAction recursiveAction(Exec exec) {
+		return new RecursiveActionFromRunnable<>(exec);
+	}
+
+	static <V, Exec extends Supplier<? extends V> & Serializable> RecursiveTask<V> recursiveTask(Exec exec) {
+		return new RecursiveTaskFromSupplier<>(exec);
+	}
+
+	private static class RecursiveActionFromRunnable<Exec extends Runnable & Serializable> extends RecursiveAction {
+		private Exec exec;
+		private static final long serialVersionUID = 1L;
+
+		RecursiveActionFromRunnable(Exec exec) {
+			this.exec = exec;
+		}
+
+		@Override
+		protected void compute() {
+			exec.run();
+		}
+	}
+
+	private static class RecursiveTaskFromSupplier<V, Exec extends Supplier<? extends V> & Serializable>
+			extends RecursiveTask<V> {
+		private Exec exec;
+		private static final long serialVersionUID = 1L;
+
+		RecursiveTaskFromSupplier(Exec exec) {
+			this.exec = exec;
+		}
+
+		@Override
+		protected V compute() {
+			return exec.get();
 		}
 	}
 

@@ -62,7 +62,7 @@ public class SSSPGoldberg implements SSSP, AlgorithmWithDiagnostics {
 	 *
 	 * @param algo a SSSP implementation for graphs with positive weight function
 	 */
-	public void setPositiveSsspAlgo(SSSP algo) {
+	void setPositiveSsspAlgo(SSSP algo) {
 		positiveSsspAlgo = Objects.requireNonNull(algo);
 	}
 
