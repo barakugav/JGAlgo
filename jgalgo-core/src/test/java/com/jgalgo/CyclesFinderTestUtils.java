@@ -17,6 +17,7 @@
 package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -35,13 +36,13 @@ class CyclesFinderTestUtils extends TestUtils {
 		int e2 = g.addEdge(2, 1);
 		int e3 = g.addEdge(2, 0);
 
-		List<Path> actual = cyclesFinder.findAllCycles(g);
+		Iterator<Path> actual = cyclesFinder.findAllCycles(g);
 
 		Path c1 = new Path(g, 0, 0, IntList.of(e0, e1, e3));
 		Path c2 = new Path(g, 1, 1, IntList.of(e1, e2));
 		List<Path> expected = List.of(c1, c2);
 
-		assertEquals(transformCyclesToCanonical(expected), transformCyclesToCanonical(actual));
+		assertEquals(transformCyclesToCanonical(expected.iterator()), transformCyclesToCanonical(actual));
 	}
 
 	static void testRandGraphs(CyclesFinder cyclesFinder, long seed) {
@@ -60,19 +61,21 @@ class CyclesFinderTestUtils extends TestUtils {
 	private static void testGraph(Graph g, CyclesFinder cyclesFinder) {
 		CyclesFinder validationAlgo =
 				cyclesFinder instanceof CyclesFinderTarjan ? new CyclesFinderJohnson() : new CyclesFinderTarjan();
-		List<Path> actual = cyclesFinder.findAllCycles(g);
-		List<Path> expected = validationAlgo.findAllCycles(g);
+		Iterator<Path> actual = cyclesFinder.findAllCycles(g);
+		Iterator<Path> expected = validationAlgo.findAllCycles(g);
 		assertEquals(transformCyclesToCanonical(expected), transformCyclesToCanonical(actual), g.toString());
 	}
 
-	private static Set<IntList> transformCyclesToCanonical(List<Path> cycles) {
+	private static Set<IntList> transformCyclesToCanonical(Iterator<Path> cycles) {
+		int expectedCount = 0;
 		Set<IntList> cycles0 = new TreeSet<>();
-		for (Path cycle : cycles) {
+		for (Path cycle : Utils.iterable(cycles)) {
 			IntArrayList cycle0 = new IntArrayList(cycle);
 			transformCycleToCanonical(cycle0);
 			cycles0.add(cycle0);
+			expectedCount++;
 		}
-		if (cycles0.size() != cycles.size())
+		if (cycles0.size() != expectedCount)
 			throw new IllegalArgumentException("cycles list contains duplications");
 		return cycles0;
 	}

@@ -18,6 +18,7 @@ package com.jgalgo;
 
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Iterator;
 import java.util.List;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -47,14 +48,14 @@ public class CyclesFinderJohnson implements CyclesFinder {
 	public CyclesFinderJohnson() {}
 
 	@Override
-	public List<Path> findAllCycles(Graph g) {
+	public Iterator<Path> findAllCycles(Graph g) {
 		ArgumentCheck.onlyDirected(g);
 		if (GraphsUtils.containsParallelEdges(g))
 			throw new IllegalArgumentException("graphs with self loops are not supported");
 		int n = g.vertices().size();
 		Worker worker = new Worker(g);
 		for (int startIdx = 0; startIdx < n; startIdx++) {
-			var p = chooseSCCInSubGraph(g, startIdx);
+			ObjectIntPair<StronglyConnectedComponent> p = chooseSCCInSubGraph(g, startIdx);
 			if (p == null)
 				break;
 			StronglyConnectedComponent scc = p.first();
@@ -62,7 +63,8 @@ public class CyclesFinderJohnson implements CyclesFinder {
 			worker.findAllCycles(startIdx, scc);
 			worker.reset();
 		}
-		return worker.cycles;
+		/* TODO: the intention of returning an iterator is to avoid storing all cycles in memory */
+		return worker.cycles.iterator();
 	}
 
 	private static class Worker {

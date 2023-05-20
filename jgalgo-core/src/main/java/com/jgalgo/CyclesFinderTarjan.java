@@ -18,6 +18,7 @@ package com.jgalgo;
 
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Iterator;
 import java.util.List;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntStack;
@@ -40,7 +41,7 @@ public class CyclesFinderTarjan implements CyclesFinder {
 	public CyclesFinderTarjan() {}
 
 	@Override
-	public List<Path> findAllCycles(Graph g) {
+	public Iterator<Path> findAllCycles(Graph g) {
 		ArgumentCheck.onlyDirected(g);
 		Worker worker = new Worker(g);
 		int n = g.vertices().size();
@@ -48,7 +49,8 @@ public class CyclesFinderTarjan implements CyclesFinder {
 			worker.findAllCycles(s);
 			worker.reset();
 		}
-		return worker.cycles;
+		/* TODO: the intention of returning an iterator is to avoid storing all cycles in memory */
+		return worker.cycles.iterator();
 	}
 
 	private static class Worker {

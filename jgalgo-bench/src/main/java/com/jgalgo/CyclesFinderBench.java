@@ -37,6 +37,7 @@ import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
 import com.jgalgo.TestUtils.SeedGenerator;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
@@ -71,7 +72,7 @@ public class CyclesFinderBench {
 	private void benchMST(Supplier<? extends CyclesFinder> builder, Blackhole blackhole) {
 		Graph g = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 		CyclesFinder algo = builder.get();
-		List<Path> cycles = algo.findAllCycles(g);
+		List<Path> cycles = new ObjectArrayList<>(algo.findAllCycles(g));
 		blackhole.consume(cycles);
 	}
 

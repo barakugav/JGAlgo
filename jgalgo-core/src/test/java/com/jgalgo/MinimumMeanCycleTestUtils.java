@@ -17,11 +17,11 @@
 package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import java.util.Iterator;
 import java.util.List;
-
 import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
 
 public class MinimumMeanCycleTestUtils extends TestBase {
@@ -45,14 +45,14 @@ public class MinimumMeanCycleTestUtils extends TestBase {
 	private static void verifyMinimumMeanCycle(MinimumMeanCycle algo, Graph g, EdgeWeightFunc w) {
 		Path cycle = algo.computeMinimumMeanCycle(g, w);
 		if (cycle == null) {
-			List<Path> cycles = new CyclesFinderTarjan().findAllCycles(g);
-			assertTrue(cycles.isEmpty(), "failed to find a cycle");
+			Iterator<Path> cycles = new CyclesFinderTarjan().findAllCycles(g);
+			assertFalse(cycles.hasNext(), "failed to find a cycle");
 			return;
 		}
 		double cycleMeanWeight = getMeanWeight(cycle, w);
 
 		if (g.vertices().size() <= 32 && g.edges().size() <= 32) {
-			List<Path> cycles = new CyclesFinderTarjan().findAllCycles(g);
+			Iterator<Path> cycles = new CyclesFinderTarjan().findAllCycles(g);
 			assertEquals(cycle.source(), cycle.target());
 			int prevV = cycle.source();
 			for (EdgeIter eit = cycle.edgeIter();;) {
@@ -65,7 +65,7 @@ public class MinimumMeanCycleTestUtils extends TestBase {
 				}
 			}
 
-			for (Path c : cycles) {
+			for (Path c : Utils.iterable(cycles)) {
 				double cMeanWeight = getMeanWeight(c, w);
 				assertTrue(cMeanWeight >= cycleMeanWeight, "found a cycle with smaller mean weight: " + c);
 			}

@@ -16,7 +16,7 @@
 
 package com.jgalgo;
 
-import java.util.List;
+import java.util.Iterator;
 
 /**
  * An algorithm that finds all cycles in a graph.
@@ -29,9 +29,9 @@ public interface CyclesFinder {
 	 * Find all cycles in the given graph.
 	 *
 	 * @param  g a graph
-	 * @return   a list of all cycles in the graph
+	 * @return   an iterator that iteration over all cycles in the graph
 	 */
-	public List<Path> findAllCycles(Graph g);
+	public Iterator<Path> findAllCycles(Graph g);
 
 	/**
 	 * Create a new cycles finder algorithm builder.

@@ -16,6 +16,8 @@
 
 package com.jgalgo;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveAction;
@@ -96,25 +98,25 @@ public class APSPJohnson implements APSP {
 		final int n = g.vertices().size();
 		SuccessRes res = new SuccessRes(n);
 
-		RecursiveAction[] tasks = new RecursiveAction[n];
-		for (int source = 0; source < n; source++) {
-			final int source0 = source;
-			tasks[source] = Utils.recursiveAction(
-					() -> res.ssspResults[source0] = new SSSPDijkstra().computeShortestPaths(g, w, source0));
-		}
-
 		ForkJoinPool pool = Utils.getPool();
 		if (n < PARALLEL_VERTICES_THRESHOLD || !parallel || pool.getParallelism() <= 1) {
 			/* sequential */
+			SSSP sssp = new SSSPDijkstra();
 			for (int source = 0; source < n; source++)
-				tasks[source].invoke();
+				res.ssspResults[source] = sssp.computeShortestPaths(g, w, source);
 
 		} else {
 			/* parallel */
+			List<RecursiveAction> tasks = new ArrayList<>(n);
+			for (int source = 0; source < n; source++) {
+				final int source0 = source;
+				tasks.add(Utils.recursiveAction(
+						() -> res.ssspResults[source0] = new SSSPDijkstra().computeShortestPaths(g, w, source0)));
+			}
 			for (RecursiveAction task : tasks)
 				pool.execute(task);
-			for (int source = 0; source < n; source++)
-				tasks[source].join();
+			for (RecursiveAction task : tasks)
+				task.join();
 		}
 		return res;
 	}
@@ -138,10 +140,20 @@ public class APSPJohnson implements APSP {
 		for (int v = 0; v < n; v++)
 			edgeEef.set(refG.addEdge(fakeV, v), fakeEdge);
 
-		EdgeWeightFunc refW = e -> {
-			int ref = edgeEef.getInt(e);
-			return ref != fakeEdge ? w.weight(ref) : 0;
-		};
+		EdgeWeightFunc refW;
+		if (w instanceof EdgeWeightFunc.Int) {
+			EdgeWeightFunc.Int wInt = (EdgeWeightFunc.Int) w;
+			EdgeWeightFunc.Int refWInt = e -> {
+				int ref = edgeEef.getInt(e);
+				return ref != fakeEdge ? wInt.weightInt(ref) : 0;
+			};
+			refW = refWInt;
+		} else {
+			refW = e -> {
+				int ref = edgeEef.getInt(e);
+				return ref != fakeEdge ? w.weight(ref) : 0;
+			};
+		}
 		SSSP.Result res = negativeSssp.computeShortestPaths(refG, refW, fakeV);
 		if (!res.foundNegativeCycle()) {
 			double[] potential = new double[n];
