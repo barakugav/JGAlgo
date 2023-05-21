@@ -23,11 +23,22 @@ package com.jgalgo;
 public interface GraphBuilder extends BuilderAbstract<GraphBuilder> {
 
 	/**
-	 * Create a new graph.
+	 * Create a new empty graph.
 	 *
 	 * @return a new graph with the builder options
 	 */
-	Graph build();
+	default Graph build() {
+		return build(0);
+	}
+
+	/**
+	 * Create a new graph with {@code verticesNum} vertices.
+	 *
+	 * @param  verticesNum the initial number of vertices in the graph. The vertices will be numbered
+	 *                         {@code 0,1,2,...,verticesNum-1}.
+	 * @return             a new graph with the builder options
+	 */
+	Graph build(int verticesNum);
 
 	/**
 	 * Create an undirected graph builder.
@@ -58,16 +69,6 @@ public interface GraphBuilder extends BuilderAbstract<GraphBuilder> {
 	 * @return          this builder
 	 */
 	GraphBuilder setDirected(boolean directed);
-
-	/**
-	 * Set the number of initial vertices in the graph.
-	 * <p>
-	 * The default value is zero.
-	 *
-	 * @param  n number of initial vertices in the graph
-	 * @return   this builder
-	 */
-	GraphBuilder setVerticesNum(int n);
 
 	/**
 	 * Set the edges ID strategy of this builder.

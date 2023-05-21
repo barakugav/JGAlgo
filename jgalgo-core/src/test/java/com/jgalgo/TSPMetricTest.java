@@ -47,7 +47,7 @@ public class TSPMetricTest extends TestBase {
 			locations[u][y] = nextDouble(rand, 1, 100);
 		}
 
-		Graph g = GraphBuilder.newUndirected().setVerticesNum(n).addHint(GraphBuilder.Hint.FastEdgeLookup).build();
+		Graph g = GraphBuilder.newUndirected().addHint(GraphBuilder.Hint.FastEdgeLookup).build(n);
 		Weights.Double distances = g.addEdgesWeights(g, double.class);
 		for (int u = 0; u < n; u++) {
 			for (int v = u + 1; v < n; v++) {

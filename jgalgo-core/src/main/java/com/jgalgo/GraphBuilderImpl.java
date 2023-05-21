@@ -29,7 +29,6 @@ class GraphBuilderImpl implements GraphBuilder {
 	private boolean directed;
 	private Class<? extends IDStrategy> edgesIDStrategy;
 	private final EnumSet<GraphBuilder.Hint> hints = EnumSet.noneOf(GraphBuilder.Hint.class);
-	private int verticesNum;
 	private String impl;
 
 	GraphBuilderImpl(boolean directed) {
@@ -37,7 +36,7 @@ class GraphBuilderImpl implements GraphBuilder {
 	}
 
 	@Override
-	public Graph build() {
+	public Graph build(int verticesNum) {
 		IntFunction<? extends GraphBaseContinues> baseBuilderArray =
 				directed ? GraphArrayDirected::new : GraphArrayUndirected::new;
 		IntFunction<? extends GraphBaseContinues> baseBuilderLinked =
@@ -82,14 +81,6 @@ class GraphBuilderImpl implements GraphBuilder {
 	@Override
 	public GraphBuilder setDirected(boolean directed) {
 		this.directed = directed;
-		return this;
-	}
-
-	@Override
-	public GraphBuilder setVerticesNum(int n) {
-		if (n < 0)
-			throw new IllegalArgumentException("Vertices number can not be negative: " + n);
-		verticesNum = n;
 		return this;
 	}
 

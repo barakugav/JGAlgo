@@ -112,7 +112,7 @@ public class MSTKargerKleinTarjan implements MST {
 	}
 
 	static Graph subGraph(Graph g, IntCollection edgeSet, Object edgeDataKey, Weights.Int edgeRef) {
-		Graph subG = GraphBuilder.newUndirected().setVerticesNum(g.vertices().size()).build();
+		Graph subG = GraphBuilder.newUndirected().build(g.vertices().size());
 		Weights.Int edgeRefSub = subG.addEdgesWeights(edgeDataKey, int.class);
 		for (IntIterator it = edgeSet.iterator(); it.hasNext();) {
 			int e = it.nextInt();

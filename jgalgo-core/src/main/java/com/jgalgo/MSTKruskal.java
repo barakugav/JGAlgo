@@ -80,11 +80,11 @@ public class MSTKruskal implements MST {
 		/* iterate over the edges and build the MST */
 		IntCollection mst = new IntArrayList(n - 1);
 		for (int e : edges) {
-			int u = g.edgeSource(e);
-			int v = g.edgeTarget(e);
+			int U = uf.find(g.edgeSource(e));
+			int V = uf.find(g.edgeTarget(e));
 
-			if (uf.find(u) != uf.find(v)) {
-				uf.union(u, v);
+			if (U != V) {
+				uf.union(U, V);
 				mst.add(e);
 			}
 		}

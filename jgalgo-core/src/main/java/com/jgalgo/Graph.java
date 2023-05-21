@@ -492,7 +492,7 @@ public interface Graph {
 	 * Add a new weights container associated with the edges of this graph.
 	 * <p>
 	 * The created weights will be bounded to this graph, and will be updated when the graph is updated. To create an
-	 * external weights container, for example in cases the graph is a user input we are not allowed to modify it, use
+	 * external weights container, for example in cases the graph is a user input you are not allowed to modify it, use
 	 * {@link Weights#createExternalEdgesWeights(Graph, Class)}.
 	 *
 	 * <pre> {@code
@@ -504,12 +504,12 @@ public interface Graph {
 	 * int e2 = g.addEdge(v2, v3);
 	 *
 	 * Weights<String> roadTypes = g.addEdgesWeights("roadType", String.class);
-	 * roadType.set(e1, "Asphalt");
-	 * roadType.set(e2, "Gravel");
+	 * roadTypes.set(e1, "Asphalt");
+	 * roadTypes.set(e2, "Gravel");
 	 *
 	 * Weights.Double roadLengths = g.addEdgesWeights("roadLength", double.class);
-	 * lengths.set(e1, 42);
-	 * lengths.set(e2, 35);
+	 * roadLengths.set(e1, 42);
+	 * roadLengths.set(e2, 35);
 	 * }</pre>
 	 *
 	 * <p>
@@ -541,8 +541,8 @@ public interface Graph {
 	 * int e3 = g.addEdge(v1, v3);
 	 *
 	 * Weights<String> roadTypes = g.addEdgesWeights("roadType", String.class, "Unknown");
-	 * roadType.set(e1, "Asphalt");
-	 * roadType.set(e2, "Gravel");
+	 * roadTypes.set(e1, "Asphalt");
+	 * roadTypes.set(e2, "Gravel");
 	 *
 	 * assert "Asphalt".equals(names.get(e1))
 	 * assert "Gravel".equals(names.get(e2))

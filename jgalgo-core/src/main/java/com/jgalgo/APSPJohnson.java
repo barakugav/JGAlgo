@@ -123,7 +123,7 @@ public class APSPJohnson implements APSP {
 
 	private Pair<double[], Path> calcPotential(Graph g, EdgeWeightFunc w) {
 		int n = g.vertices().size();
-		Graph refG = GraphBuilder.newDirected().setVerticesNum(n + 1).build();
+		Graph refG = GraphBuilder.newDirected().build(n + 1);
 		Weights.Int edgeEef = refG.addEdgesWeights("edgeEef", int.class, Integer.valueOf(-1));
 		for (int u = 0; u < n; u++) {
 			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {

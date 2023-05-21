@@ -453,7 +453,7 @@ abstract class MaximumMatchingWeightedGabow1990Abstract implements MaximumMatchi
 				DebugPrintsManager debugPrint) {
 			int n = gOrig.vertices().size();
 			this.gOrig = gOrig;
-			this.g = GraphBuilder.newDirected().setVerticesNum(n).build();
+			this.g = GraphBuilder.newDirected().build(n);
 			edgeVal = g.addEdgesWeights(EdgeValKey, EdgeVal.class);
 			this.w = e -> w.weight(edgeVal.get(e).e);
 

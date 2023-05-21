@@ -114,14 +114,14 @@ public class GraphsTestUtils extends TestUtils {
 			if (!bipartite) {
 				if (n < 0 || m < 0)
 					throw new IllegalStateException();
-				g = impl.setDirected(directed).setVerticesNum(n).build();
+				g = impl.setDirected(directed).build(n);
 			} else {
 				if (sn < 0 || tn < 0)
 					throw new IllegalStateException();
 				if ((sn == 0 || tn == 0) && m != 0)
 					throw new IllegalStateException();
 				n = sn + tn;
-				g = impl.setDirected(directed).setVerticesNum(n).build();
+				g = impl.setDirected(directed).build(n);
 				Weights.Bool partition = g.addVerticesWeights(Weights.DefaultBipartiteWeightKey, boolean.class);
 				for (int u = 0; u < sn; u++)
 					partition.set(u, true);
@@ -335,7 +335,7 @@ public class GraphsTestUtils extends TestUtils {
 	static Graph parseGraphFromAdjacencyMatrix01(String s) {
 		String[] lines = s.split("\r\n");
 		int n = lines.length;
-		Graph g = GraphBuilder.newUndirected().setVerticesNum(n).build();
+		Graph g = GraphBuilder.newUndirected().build(n);
 		for (int u = 0; u < n; u++) {
 			String[] chars = lines[u].split(" ");
 			for (int v = u + 1; v < n; v++)
@@ -348,7 +348,7 @@ public class GraphsTestUtils extends TestUtils {
 	static Graph parseGraphWeighted(String s) {
 		String[] lines = s.split("\r\n");
 		int n = lines.length;
-		Graph g = GraphBuilder.newUndirected().setVerticesNum(n).build();
+		Graph g = GraphBuilder.newUndirected().build(n);
 		for (int u = 0; u < n; u++) {
 			String[] chars = lines[u].split(" ");
 			for (int v = u + 1; v < n; v++)

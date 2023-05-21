@@ -116,11 +116,11 @@ public class SSSPGoldberg implements SSSP, AlgorithmWithDiagnostics {
 		Weights.Int w = Weights.createExternalEdgesWeights(g, int.class);
 
 		/* gNeg is the graph g with only 0,-1 edges */
-		Graph gNeg = GraphBuilder.newDirected().setVerticesNum(n).build();
+		Graph gNeg = GraphBuilder.newDirected().build(n);
 		Weights.Int gNegEdgeRefs = gNeg.addEdgesWeights("edgeRef", int.class, Integer.valueOf(-1));
 
 		/* G is the graph of strong connectivity components of gNeg, each vertex is a super vertex of gNeg */
-		Graph G = GraphBuilder.newDirected().setVerticesNum(n + 2).build();
+		Graph G = GraphBuilder.newDirected().build(n + 2);
 		Weights.Int GWeights = G.addEdgesWeights("weights", int.class, Integer.valueOf(-1));
 		/* Two fake vertices used to add 0-edges and (r-i)-edges to all other (super) vertices */
 
