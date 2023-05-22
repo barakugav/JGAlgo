@@ -83,10 +83,10 @@ public interface Coloring {
 		/**
 		 * Get the color assigned to a vertex.
 		 *
-		 * @param  v a vertex identifier in the graph
-		 * @return   a color of the vertex, represented as integer
+		 * @param  vertex a vertex identifier in the graph
+		 * @return        a color of the vertex, represented as integer
 		 */
-		int colorOf(int v);
+		int colorOf(int vertex);
 
 	}
 

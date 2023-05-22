@@ -41,9 +41,9 @@ class MatchingImpl implements Matching {
 	}
 
 	@Override
-	public boolean isVertexMatched(int v) {
+	public boolean isVertexMatched(int vertex) {
 		computeMatchedArray();
-		return matched[v] != -1;
+		return matched[vertex] != -1;
 	}
 
 	@Override

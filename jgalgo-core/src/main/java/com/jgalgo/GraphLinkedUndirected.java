@@ -51,10 +51,10 @@ class GraphLinkedUndirected extends GraphLinkedAbstract implements UndirectedGra
 	}
 
 	@Override
-	public void removeVertex(int v) {
-		v = vertexSwapBeforeRemove(v);
-		super.removeVertex(v);
-		edges.clear(v);
+	public void removeVertex(int vertex) {
+		vertex = vertexSwapBeforeRemove(vertex);
+		super.removeVertex(vertex);
+		edges.clear(vertex);
 	}
 
 	@Override
@@ -62,22 +62,22 @@ class GraphLinkedUndirected extends GraphLinkedAbstract implements UndirectedGra
 		final int tempV = -2;
 		for (Node p = edges.get(v1), next; p != null; p = next) {
 			next = p.next(v1);
-			if (p.u == v1)
-				p.u = tempV;
+			if (p.source == v1)
+				p.source = tempV;
 			if (p.v == v1)
 				p.v = tempV;
 		}
 		for (Node p = edges.get(v2), next; p != null; p = next) {
 			next = p.next(v2);
-			if (p.u == v2)
-				p.u = v1;
+			if (p.source == v2)
+				p.source = v1;
 			if (p.v == v2)
 				p.v = v1;
 		}
 		for (Node p = edges.get(v1), next; p != null; p = next) {
 			next = p.next(tempV);
-			if (p.u == tempV)
-				p.u = v2;
+			if (p.source == tempV)
+				p.source = v2;
 			if (p.v == tempV)
 				p.v = v2;
 		}
@@ -88,32 +88,32 @@ class GraphLinkedUndirected extends GraphLinkedAbstract implements UndirectedGra
 	}
 
 	@Override
-	public EdgeIter edgesOut(int u) {
-		checkVertexIdx(u);
-		return new EdgeVertexItr(u, edges.get(u));
+	public EdgeIter edgesOut(int source) {
+		checkVertex(source);
+		return new EdgeVertexItr(source, edges.get(source));
 	}
 
 	@Override
-	public int addEdge(int u, int v) {
-		if (u == v)
+	public int addEdge(int source, int target) {
+		if (source == target)
 			throw new IllegalArgumentException("self edges are not supported");
-		Node e = (Node) addEdgeNode(u, v), next;
-		if ((next = edges.get(u)) != null) {
-			e.nextSet(u, next);
-			next.prevSet(u, e);
+		Node e = (Node) addEdgeNode(source, target), next;
+		if ((next = edges.get(source)) != null) {
+			e.nextSet(source, next);
+			next.prevSet(source, e);
 		}
-		edges.set(u, e);
-		if ((next = edges.get(v)) != null) {
-			e.nextSet(v, next);
-			next.prevSet(v, e);
+		edges.set(source, e);
+		if ((next = edges.get(target)) != null) {
+			e.nextSet(target, next);
+			next.prevSet(target, e);
 		}
-		edges.set(v, e);
+		edges.set(target, e);
 		return e.id;
 	}
 
 	@Override
-	Node allocNode(int id, int u, int v) {
-		return new Node(id, u, v);
+	Node allocNode(int id, int source, int target) {
+		return new Node(id, source, target);
 	}
 
 	@Override
@@ -124,27 +124,27 @@ class GraphLinkedUndirected extends GraphLinkedAbstract implements UndirectedGra
 	@Override
 	void removeEdge(GraphLinkedAbstract.Node node) {
 		Node n = (Node) node;
-		removeEdge0(n, n.u);
+		removeEdge0(n, n.source);
 		removeEdge0(n, n.v);
 		super.removeEdge(node);
 	}
 
 	@Override
-	public void removeEdgesOf(int u) {
-		checkVertexIdx(u);
-		for (Node p = edges.get(u), next; p != null; p = next) {
+	public void removeEdgesOf(int source) {
+		checkVertex(source);
+		for (Node p = edges.get(source), next; p != null; p = next) {
 			// update u list
-			next = p.next(u);
-			p.nextSet(u, null);
-			p.prevSet(u, null);
+			next = p.next(source);
+			p.nextSet(source, null);
+			p.prevSet(source, null);
 
 			// update v list
-			int v = p.getEndpoint(u);
+			int v = p.getEndpoint(source);
 			removeEdge0(p, v);
 
 			super.removeEdge(p.id);
 		}
-		edges.set(u, null);
+		edges.set(source, null);
 	}
 
 	void removeEdge0(Node e, int w) {
@@ -176,66 +176,66 @@ class GraphLinkedUndirected extends GraphLinkedAbstract implements UndirectedGra
 		private Node nextu, nextv;
 		private Node prevu, prevv;
 
-		Node(int id, int u, int v) {
-			super(id, u, v);
+		Node(int id, int source, int target) {
+			super(id, source, target);
 		}
 
 		Node next(int w) {
-			assert w == u || w == v;
-			return w == u ? nextu : nextv;
+			assert w == source || w == v;
+			return w == source ? nextu : nextv;
 		}
 
 		void nextSet(int w, Node n) {
-			assert w == u || w == v;
-			if (w == u)
+			assert w == source || w == v;
+			if (w == source)
 				nextu = n;
 			else
 				nextv = n;
 		}
 
 		Node prev(int w) {
-			assert w == u || w == v;
-			return w == u ? prevu : prevv;
+			assert w == source || w == v;
+			return w == source ? prevu : prevv;
 		}
 
 		void prevSet(int w, Node n) {
-			assert w == u || w == v;
-			if (w == u)
+			assert w == source || w == v;
+			if (w == source)
 				prevu = n;
 			else
 				prevv = n;
 		}
 
 		int getEndpoint(int w) {
-			assert w == u || w == v;
-			return w == u ? v : u;
+			assert w == source || w == v;
+			return w == source ? v : source;
 		}
 
 	}
 
 	private class EdgeVertexItr extends GraphLinkedAbstract.EdgeItr {
 
-		private final int u;
+		private final int source;
 
-		EdgeVertexItr(int u, Node p) {
+		EdgeVertexItr(int source, Node p) {
 			super(p);
-			this.u = u;
+			this.source = source;
 		}
 
 		@Override
 		Node nextNode(GraphLinkedAbstract.Node n) {
-			return ((Node) n).next(u);
+			return ((Node) n).next(source);
 		}
 
 		@Override
 		public int source() {
-			return u;
+			return source;
 		}
 
 		@Override
 		public int target() {
-			int u0 = last.u, v0 = last.v;
-			return u == u0 ? v0 : u0;
+			int u0 = last.source, v0 = last.v;
+			return source == u0 ? v0 : u0;
 		}
 
 	}

@@ -38,10 +38,10 @@ public interface Matching {
 	 * A vertex \(v\) is said to be <i>matched</i> if the matching contains an edge \((v,w)\) for some other vertex
 	 * \(w\).
 	 *
-	 * @param  v a vertex
-	 * @return   {@code true} if {@code v} has an adjacent edge in the matching, else {@code false}
+	 * @param  vertex a vertex
+	 * @return        {@code true} if {@code v} has an adjacent edge in the matching, else {@code false}
 	 */
-	boolean isVertexMatched(int v);
+	boolean isVertexMatched(int vertex);
 
 	/**
 	 * Check whether an edge is part of the matching.

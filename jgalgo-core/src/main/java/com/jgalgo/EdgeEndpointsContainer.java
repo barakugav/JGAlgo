@@ -80,8 +80,8 @@ class EdgeEndpointsContainer extends DataContainer.Long {
 		set(edge, sourceTarget2Endpoints(source, target));
 	}
 
-	private static long sourceTarget2Endpoints(int u, int v) {
-		return ((u & 0xffffffffL) << 32) | ((v & 0xffffffffL) << 0);
+	private static long sourceTarget2Endpoints(int source, int target) {
+		return ((source & 0xffffffffL) << 32) | ((target & 0xffffffffL) << 0);
 	}
 
 	private static int endpoints2Source(long endpoints) {

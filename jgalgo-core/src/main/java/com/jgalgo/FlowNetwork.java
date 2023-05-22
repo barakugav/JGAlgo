@@ -137,8 +137,8 @@ public interface FlowNetwork {
             }
 
             @Override
-            public double getFlow(int e) {
-                return flowWeights.getDouble(e);
+            public double getFlow(int edge) {
+                return flowWeights.getDouble(edge);
             }
 
             @Override
@@ -258,8 +258,8 @@ public interface FlowNetwork {
                 }
 
                 @Override
-                public int getFlowInt(int e) {
-                    return flowWeights.getInt(e);
+                public int getFlowInt(int edge) {
+                    return flowWeights.getInt(edge);
                 }
 
                 @Override

@@ -161,26 +161,26 @@ class GraphsUtils {
 	static interface UndirectedGraphImpl extends Graph {
 
 		@Override
-		default EdgeIter edgesIn(int v) {
-			return edgesOut(v);
+		default EdgeIter edgesIn(int target) {
+			return edgesOut(target);
 		}
 
 		@Override
-		default void removeEdgesOf(int u) {
-			for (EdgeIter eit = edgesOut(u); eit.hasNext();) {
+		default void removeEdgesOf(int source) {
+			for (EdgeIter eit = edgesOut(source); eit.hasNext();) {
 				eit.nextInt();
 				eit.remove();
 			}
 		}
 
 		@Override
-		default void removeEdgesOutOf(int u) {
-			removeEdgesOf(u);
+		default void removeEdgesOutOf(int source) {
+			removeEdgesOf(source);
 		}
 
 		@Override
-		default void removeEdgesInOf(int v) {
-			removeEdgesOf(v);
+		default void removeEdgesInOf(int target) {
+			removeEdgesOf(target);
 		}
 
 		@Override
@@ -189,8 +189,8 @@ class GraphsUtils {
 		}
 
 		@Override
-		default int degreeIn(int v) {
-			return degreeOut(v);
+		default int degreeIn(int target) {
+			return degreeOut(target);
 		}
 
 	}
@@ -213,8 +213,8 @@ class GraphsUtils {
 		}
 
 		@Override
-		public void removeVertex(int v) {
-			throw new IndexOutOfBoundsException(v);
+		public void removeVertex(int vertex) {
+			throw new IndexOutOfBoundsException(vertex);
 		}
 
 		// @Override
@@ -224,23 +224,23 @@ class GraphsUtils {
 		// }
 
 		@Override
-		public EdgeIter edgesOut(int u) {
-			throw new IndexOutOfBoundsException(u);
+		public EdgeIter edgesOut(int source) {
+			throw new IndexOutOfBoundsException(source);
 		}
 
 		@Override
-		public EdgeIter edgesIn(int v) {
-			throw new IndexOutOfBoundsException(v);
+		public EdgeIter edgesIn(int target) {
+			throw new IndexOutOfBoundsException(target);
 		}
 
 		@Override
-		public EdgeIter getEdges(int u, int v) {
-			throw new IndexOutOfBoundsException(u);
+		public EdgeIter getEdges(int source, int target) {
+			throw new IndexOutOfBoundsException(source);
 		}
 
 		@Override
-		public int addEdge(int u, int v) {
-			throw new IndexOutOfBoundsException(u);
+		public int addEdge(int source, int target) {
+			throw new IndexOutOfBoundsException(source);
 		}
 
 		@Override

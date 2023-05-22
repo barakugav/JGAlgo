@@ -98,15 +98,15 @@ class GraphImplTestUtils extends TestUtils {
 		}
 	}
 
-	private static void assertEndpoints(Graph g, int e, int u, int v) {
+	private static void assertEndpoints(Graph g, int e, int source, int target) {
 		if (g.getCapabilities().directed()) {
-			assertEquals(u, g.edgeSource(e));
-			assertEquals(v, g.edgeTarget(e));
+			assertEquals(source, g.edgeSource(e));
+			assertEquals(target, g.edgeTarget(e));
 		} else {
-			assertEquals(intSetOf(u, v), intSetOf(g.edgeSource(e), g.edgeTarget(e)));
+			assertEquals(intSetOf(source, target), intSetOf(g.edgeSource(e), g.edgeTarget(e)));
 		}
-		assertEquals(u, g.edgeEndpoint(e, v));
-		assertEquals(v, g.edgeEndpoint(e, u));
+		assertEquals(source, g.edgeEndpoint(e, target));
+		assertEquals(target, g.edgeEndpoint(e, source));
 	}
 
 	static void testGetEdge(GraphBuilder graphImpl) {

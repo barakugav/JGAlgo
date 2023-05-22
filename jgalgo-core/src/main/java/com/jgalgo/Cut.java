@@ -35,10 +35,10 @@ public interface Cut {
 	 * When we say 'the cut' we mean the first set \(C\) out of the cut partition into two sets \(C, \bar{C} = V
 	 * \setminus C\).
 	 *
-	 * @param  v a vertex identifier
-	 * @return   {@code true} if {@code v} is in the first set of the partition, \(C\)
+	 * @param  vertex a vertex identifier
+	 * @return        {@code true} if {@code v} is in the first set of the partition, \(C\)
 	 */
-	boolean containsVertex(int v);
+	boolean containsVertex(int vertex);
 
 	/**
 	 * Get the collection of all the vertices in the cut.

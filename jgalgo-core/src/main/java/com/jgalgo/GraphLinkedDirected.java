@@ -54,21 +54,21 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	}
 
 	@Override
-	public void removeVertex(int v) {
-		v = vertexSwapBeforeRemove(v);
-		super.removeVertex(v);
-		edgesOut.clear(v);
-		edgesIn.clear(v);
+	public void removeVertex(int vertex) {
+		vertex = vertexSwapBeforeRemove(vertex);
+		super.removeVertex(vertex);
+		edgesOut.clear(vertex);
+		edgesIn.clear(vertex);
 	}
 
 	@Override
 	void vertexSwap(int v1, int v2) {
 		for (Node p = edgesOut.get(v1); p != null; p = p.nextOut)
-			p.u = v2;
+			p.source = v2;
 		for (Node p = edgesIn.get(v1); p != null; p = p.nextIn)
 			p.v = v2;
 		for (Node p = edgesOut.get(v2); p != null; p = p.nextOut)
-			p.u = v1;
+			p.source = v1;
 		for (Node p = edgesIn.get(v2); p != null; p = p.nextIn)
 			p.v = v1;
 
@@ -79,26 +79,26 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	}
 
 	@Override
-	public EdgeIter edgesOut(int u) {
-		checkVertexIdx(u);
-		return new EdgeIterOut(edgesOut.get(u));
+	public EdgeIter edgesOut(int source) {
+		checkVertex(source);
+		return new EdgeIterOut(edgesOut.get(source));
 	}
 
 	@Override
-	public EdgeIter edgesIn(int v) {
-		checkVertexIdx(v);
-		return new EdgeIterIn(edgesIn.get(v));
+	public EdgeIter edgesIn(int target) {
+		checkVertex(target);
+		return new EdgeIterIn(edgesIn.get(target));
 	}
 
 	@Override
-	public int addEdge(int u, int v) {
-		Node e = (Node) addEdgeNode(u, v);
+	public int addEdge(int source, int target) {
+		Node e = (Node) addEdgeNode(source, target);
 		addEdgeToLists(e);
 		return e.id;
 	}
 
 	private void addEdgeToLists(Node e) {
-		int u = e.u, v = e.v;
+		int u = e.source, v = e.v;
 		Node next;
 		next = edgesOut.get(u);
 		if (next != null) {
@@ -115,8 +115,8 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	}
 
 	@Override
-	Node allocNode(int id, int u, int v) {
-		return new Node(id, u, v);
+	Node allocNode(int id, int source, int target) {
+		return new Node(id, source, target);
 	}
 
 	@Override
@@ -133,33 +133,33 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	}
 
 	@Override
-	public void removeEdgesOutOf(int u) {
-		checkVertexIdx(u);
-		for (Node p = edgesOut.get(u), next; p != null; p = next) {
+	public void removeEdgesOutOf(int source) {
+		checkVertex(source);
+		for (Node p = edgesOut.get(source), next; p != null; p = next) {
 			next = p.nextOut;
 			p.nextOut = p.prevOut = null;
 			removeEdgeInNode(p);
 			super.removeEdge(p.id);
 		}
-		edgesOut.set(u, null);
+		edgesOut.set(source, null);
 	}
 
 	@Override
-	public void removeEdgesInOf(int v) {
-		checkVertexIdx(v);
-		for (Node p = edgesIn.get(v), next; p != null; p = next) {
+	public void removeEdgesInOf(int target) {
+		checkVertex(target);
+		for (Node p = edgesIn.get(target), next; p != null; p = next) {
 			next = p.nextIn;
 			p.nextIn = p.prevIn = null;
 			removeEdgeOutNode(p);
 			super.removeEdge(p.id);
 		}
-		edgesIn.set(v, null);
+		edgesIn.set(target, null);
 	}
 
 	private void removeEdgeOutNode(Node e) {
 		Node next = e.nextOut, prev = e.prevOut;
 		if (prev == null) {
-			edgesOut.set(e.u, next);
+			edgesOut.set(e.source, next);
 		} else {
 			prev.nextOut = next;
 			e.prevOut = null;
@@ -185,14 +185,14 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	}
 
 	@Override
-	public void reverseEdge(int e) {
-		Node n = (Node) getNode(e);
-		if (n.u == n.v)
+	public void reverseEdge(int edge) {
+		Node n = (Node) getNode(edge);
+		if (n.source == n.v)
 			return;
 		removeEdgeOutNode(n);
 		removeEdgeInNode(n);
-		int w = n.u;
-		n.u = n.v;
+		int w = n.source;
+		n.source = n.v;
 		n.v = w;
 		addEdgeToLists(n);
 	}
@@ -216,7 +216,7 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 
 		@Override
 		public int source() {
-			return last.u;
+			return last.source;
 		}
 
 		@Override
@@ -259,8 +259,8 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 		private Node prevOut;
 		private Node prevIn;
 
-		Node(int id, int u, int v) {
-			super(id, u, v);
+		Node(int id, int source, int target) {
+			super(id, source, target);
 		}
 
 	}

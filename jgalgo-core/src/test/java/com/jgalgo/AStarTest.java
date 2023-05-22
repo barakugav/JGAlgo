@@ -167,13 +167,13 @@ public class AStarTest extends TestBase {
 				return new SSSP.Result() {
 
 					@Override
-					public double distance(int v) {
-						return distances[v];
+					public double distance(int target) {
+						return distances[target];
 					}
 
 					@Override
-					public Path getPath(int v) {
-						return paths[v];
+					public Path getPath(int target) {
+						return paths[target];
 					}
 
 					@Override

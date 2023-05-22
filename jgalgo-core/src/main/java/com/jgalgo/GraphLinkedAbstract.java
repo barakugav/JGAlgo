@@ -32,45 +32,45 @@ abstract class GraphLinkedAbstract extends GraphBaseContinues {
 	@Override
 	public int edgeEndpoint(int edge, int endpoint) {
 		Node n = getNode(edge);
-		if (endpoint == n.u) {
+		if (endpoint == n.source) {
 			return n.v;
 		} else if (endpoint == n.v) {
-			return n.u;
+			return n.source;
 		} else {
-			throw new IllegalArgumentException(
-					"The given vertex (" + endpoint + ") is not an endpoint of the edge (" + n.u + ", " + n.v + ")");
+			throw new IllegalArgumentException("The given vertex (" + endpoint + ") is not an endpoint of the edge ("
+					+ n.source + ", " + n.v + ")");
 		}
 	}
 
-	Node getNode(int e) {
-		Node n = edges.get(e);
-		assert n.id == e;
+	Node getNode(int edge) {
+		Node n = edges.get(edge);
+		assert n.id == edge;
 		return n;
 	}
 
 	@Override
-	public void removeEdge(int e) {
-		removeEdge0(e);
+	public void removeEdge(int edge) {
+		removeEdge0(edge);
 	}
 
-	private void removeEdge0(int e) {
-		e = edgeSwapBeforeRemove(e);
-		edges.clear(e);
-		super.removeEdge(e);
+	private void removeEdge0(int edge) {
+		edge = edgeSwapBeforeRemove(edge);
+		edges.clear(edge);
+		super.removeEdge(edge);
 	}
 
 	void removeEdge(Node node) {
 		removeEdge0(node.id);
 	}
 
-	Node addEdgeNode(int u, int v) {
-		int e = super.addEdge(u, v);
-		Node n = allocNode(e, u, v);
+	Node addEdgeNode(int source, int target) {
+		int e = super.addEdge(source, target);
+		Node n = allocNode(e, source, target);
 		edges.set(e, n);
 		return n;
 	}
 
-	abstract Node allocNode(int id, int u, int v);
+	abstract Node allocNode(int id, int source, int target);
 
 	@Override
 	void edgeSwap(int e1, int e2) {
@@ -82,15 +82,15 @@ abstract class GraphLinkedAbstract extends GraphBaseContinues {
 	}
 
 	@Override
-	public int edgeSource(int e) {
-		checkEdgeIdx(e);
-		return getNode(e).u;
+	public int edgeSource(int edge) {
+		checkEdge(edge);
+		return getNode(edge).source;
 	}
 
 	@Override
-	public int edgeTarget(int e) {
-		checkEdgeIdx(e);
-		return getNode(e).v;
+	public int edgeTarget(int edge) {
+		checkEdge(edge);
+		return getNode(edge).v;
 	}
 
 	Collection<Node> nodes() {
@@ -146,12 +146,12 @@ abstract class GraphLinkedAbstract extends GraphBaseContinues {
 	abstract static class Node {
 
 		int id;
-		int u, v;
+		int source, v;
 
-		Node(int id, int u, int v) {
+		Node(int id, int source, int target) {
 			this.id = id;
-			this.u = u;
-			this.v = v;
+			this.source = source;
+			this.v = target;
 		}
 
 	}

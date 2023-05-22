@@ -279,19 +279,19 @@ public class Path extends AbstractIntList {
 	 * <p>
 	 * This function uses BFS, which will result in the shortest path in the number of edges.
 	 *
-	 * @param  g a graph
-	 * @param  u source vertex
-	 * @param  v target vertex
-	 * @return   a path from \(u\) to \(v\), or {@code null} if no such path was found
+	 * @param  g      a graph
+	 * @param  source source vertex
+	 * @param  target target vertex
+	 * @return        a path from \(u\) to \(v\), or {@code null} if no such path was found
 	 */
-	public static Path findPath(Graph g, final int u, final int v) {
-		if (u == v)
-			return new Path(g, u, v, IntLists.emptyList());
+	public static Path findPath(Graph g, final int source, final int target) {
+		if (source == target)
+			return new Path(g, source, target, IntLists.emptyList());
 		boolean reverse = true;
-		int u0 = u, v0 = v;
+		int u0 = source, v0 = target;
 		if (!g.getCapabilities().directed()) {
-			u0 = v;
-			v0 = u;
+			u0 = target;
+			v0 = source;
 			reverse = false;
 		}
 		int n = g.vertices().size();
@@ -317,7 +317,7 @@ public class Path extends AbstractIntList {
 
 		if (reverse)
 			IntArrays.reverse(path.elements(), 0, path.size());
-		return new Path(g, u, v, path);
+		return new Path(g, source, target, path);
 	}
 
 }

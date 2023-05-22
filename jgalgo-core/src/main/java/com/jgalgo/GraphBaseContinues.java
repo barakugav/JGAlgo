@@ -54,12 +54,12 @@ abstract class GraphBaseContinues extends GraphBase {
 	}
 
 	@Override
-	public void removeVertex(int v) {
-		removeEdgesOf(v);
-		v = vertexSwapBeforeRemove(v);
-		verticesIDStrategy.removeIdx(v);
+	public void removeVertex(int vertex) {
+		removeEdgesOf(vertex);
+		vertex = vertexSwapBeforeRemove(vertex);
+		verticesIDStrategy.removeIdx(vertex);
 		for (Weights<?> weight : verticesWeights.values())
-			((WeightsImpl<?>) weight).container.clear(v);
+			((WeightsImpl<?>) weight).container.clear(vertex);
 	}
 
 	// /**
@@ -109,9 +109,9 @@ abstract class GraphBaseContinues extends GraphBase {
 	}
 
 	@Override
-	public int addEdge(int u, int v) {
-		checkVertexIdx(u);
-		checkVertexIdx(v);
+	public int addEdge(int source, int target) {
+		checkVertex(source);
+		checkVertex(target);
 		int e = edgesIDStrategy.newIdx();
 		assert e >= 0;
 		if (e == edgesWeightsCapacity) {
@@ -261,14 +261,14 @@ abstract class GraphBaseContinues extends GraphBase {
 			container.expand(edgesWeightsCapacity);
 	}
 
-	void checkVertexIdx(int u) {
-		if (!vertices().contains(u))
-			throw new IndexOutOfBoundsException(u);
+	void checkVertex(int vertex) {
+		if (!vertices().contains(vertex))
+			throw new IndexOutOfBoundsException(vertex);
 	}
 
-	void checkEdgeIdx(int e) {
-		if (!edges().contains(e))
-			throw new IndexOutOfBoundsException(e);
+	void checkEdge(int edge) {
+		if (!edges().contains(edge))
+			throw new IndexOutOfBoundsException(edge);
 	}
 
 }

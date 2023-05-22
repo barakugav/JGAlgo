@@ -43,20 +43,20 @@ class GraphTableUndirected extends GraphTableAbstract implements UndirectedGraph
 	}
 
 	@Override
-	public int addEdge(int u, int v) {
-		int e = super.addEdge(u, v);
-		edges.get(u).set(v, e);
-		edges.get(v).set(u, e);
+	public int addEdge(int source, int target) {
+		int e = super.addEdge(source, target);
+		edges.get(source).set(target, e);
+		edges.get(target).set(source, e);
 		return e;
 	}
 
 	@Override
-	public void removeEdge(int e) {
-		e = edgeSwapBeforeRemove(e);
-		int u = edgeSource(e), v = edgeTarget(e);
+	public void removeEdge(int edge) {
+		edge = edgeSwapBeforeRemove(edge);
+		int u = edgeSource(edge), v = edgeTarget(edge);
 		edges.get(u).set(v, EdgeNone);
 		edges.get(v).set(u, EdgeNone);
-		super.removeEdge(e);
+		super.removeEdge(edge);
 	}
 
 	@Override

@@ -31,17 +31,17 @@ abstract class GraphArrayAbstract extends GraphBaseContinues implements GraphWit
 	}
 
 	@Override
-	public int addEdge(int u, int v) {
-		int e = super.addEdge(u, v);
-		edgeEndpoints.setEndpoints(e, u, v);
+	public int addEdge(int source, int target) {
+		int e = super.addEdge(source, target);
+		edgeEndpoints.setEndpoints(e, source, target);
 		return e;
 	}
 
 	@Override
-	public void removeEdge(int e) {
-		e = edgeSwapBeforeRemove(e);
-		edgeEndpoints.clear(e);
-		super.removeEdge(e);
+	public void removeEdge(int edge) {
+		edge = edgeSwapBeforeRemove(edge);
+		edgeEndpoints.clear(edge);
+		super.removeEdge(edge);
 	}
 
 	@Override

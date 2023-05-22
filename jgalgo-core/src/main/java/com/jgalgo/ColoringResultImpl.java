@@ -34,8 +34,8 @@ class ColoringResultImpl implements Coloring.Result {
 	}
 
 	@Override
-	public int colorOf(int v) {
-		return colors[v];
+	public int colorOf(int vertex) {
+		return colors[vertex];
 	}
 
 }

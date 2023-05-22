@@ -42,28 +42,28 @@ class GraphTableDirected extends GraphTableAbstract {
 	}
 
 	@Override
-	public EdgeIter edgesOut(int u) {
-		return new EdgeIterOut(u);
+	public EdgeIter edgesOut(int source) {
+		return new EdgeIterOut(source);
 	}
 
 	@Override
-	public EdgeIter edgesIn(int v) {
-		return new EdgeIterIn(v);
+	public EdgeIter edgesIn(int target) {
+		return new EdgeIterIn(target);
 	}
 
 	@Override
-	public int addEdge(int u, int v) {
-		int e = super.addEdge(u, v);
-		edges.get(u).set(v, e);
+	public int addEdge(int source, int target) {
+		int e = super.addEdge(source, target);
+		edges.get(source).set(target, e);
 		return e;
 	}
 
 	@Override
-	public void removeEdge(int e) {
-		e = edgeSwapBeforeRemove(e);
-		int u = edgeSource(e), v = edgeTarget(e);
+	public void removeEdge(int edge) {
+		edge = edgeSwapBeforeRemove(edge);
+		int u = edgeSource(edge), v = edgeTarget(edge);
 		edges.get(u).set(v, EdgeNone);
-		super.removeEdge(e);
+		super.removeEdge(edge);
 	}
 
 	@Override
@@ -86,13 +86,13 @@ class GraphTableDirected extends GraphTableAbstract {
 	}
 
 	@Override
-	public void reverseEdge(int e) {
-		int u = edgeSource(e), v = edgeTarget(e);
+	public void reverseEdge(int edge) {
+		int u = edgeSource(edge), v = edgeTarget(edge);
 		if (edges.get(v).getInt(u) != EdgeNone && u != v)
 			throw new IllegalArgumentException("parallel edges are not supported");
 		edges.get(u).set(v, EdgeNone);
-		edges.get(v).set(u, e);
-		super.reverseEdge0(e);
+		edges.get(v).set(u, edge);
+		super.reverseEdge0(edge);
 	}
 
 	@Override

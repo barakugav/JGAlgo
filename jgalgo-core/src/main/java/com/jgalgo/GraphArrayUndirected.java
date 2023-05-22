@@ -57,10 +57,10 @@ class GraphArrayUndirected extends GraphArrayAbstract implements UndirectedGraph
 	}
 
 	@Override
-	public void removeVertex(int v) {
-		v = vertexSwapBeforeRemove(v);
-		super.removeVertex(v);
-		edgesNum.clear(v);
+	public void removeVertex(int vertex) {
+		vertex = vertexSwapBeforeRemove(vertex);
+		super.removeVertex(vertex);
+		edgesNum.clear(vertex);
 		// Reuse allocated edges array for v
 		// edges.clear(v);
 	}
@@ -87,28 +87,28 @@ class GraphArrayUndirected extends GraphArrayAbstract implements UndirectedGraph
 	}
 
 	@Override
-	public EdgeIter edgesOut(int u) {
-		checkVertexIdx(u);
-		return new EdgeIt(u, edges.get(u), edgesNum.getInt(u));
+	public EdgeIter edgesOut(int source) {
+		checkVertex(source);
+		return new EdgeIt(source, edges.get(source), edgesNum.getInt(source));
 	}
 
 	@Override
-	public int addEdge(int u, int v) {
-		int e = super.addEdge(u, v);
-		addEdgeToList(edges, edgesNum, u, e);
-		if (u != v)
-			addEdgeToList(edges, edgesNum, v, e);
+	public int addEdge(int source, int target) {
+		int e = super.addEdge(source, target);
+		addEdgeToList(edges, edgesNum, source, e);
+		if (source != target)
+			addEdgeToList(edges, edgesNum, target, e);
 		return e;
 	}
 
 	@Override
-	public void removeEdge(int e) {
-		e = edgeSwapBeforeRemove(e);
-		int u = edgeSource(e), v = edgeTarget(e);
-		removeEdgeFromList(edges, edgesNum, u, e);
+	public void removeEdge(int edge) {
+		edge = edgeSwapBeforeRemove(edge);
+		int u = edgeSource(edge), v = edgeTarget(edge);
+		removeEdgeFromList(edges, edgesNum, u, edge);
 		if (u != v)
-			removeEdgeFromList(edges, edgesNum, v, e);
-		super.removeEdge(e);
+			removeEdgeFromList(edges, edgesNum, v, edge);
+		super.removeEdge(edge);
 	}
 
 	@Override
@@ -139,16 +139,16 @@ class GraphArrayUndirected extends GraphArrayAbstract implements UndirectedGraph
 	}
 
 	@Override
-	public void removeEdgesOf(int u) {
-		checkVertexIdx(u);
-		while (edgesNum.getInt(u) > 0)
-			removeEdge(edges.get(u)[0]);
+	public void removeEdgesOf(int source) {
+		checkVertex(source);
+		while (edgesNum.getInt(source) > 0)
+			removeEdge(edges.get(source)[0]);
 	}
 
 	@Override
-	public int degreeOut(int u) {
-		checkVertexIdx(u);
-		return edgesNum.getInt(u);
+	public int degreeOut(int source) {
+		checkVertex(source);
+		return edgesNum.getInt(source);
 	}
 
 	@Override
@@ -166,23 +166,23 @@ class GraphArrayUndirected extends GraphArrayAbstract implements UndirectedGraph
 
 	private class EdgeIt extends GraphArrayAbstract.EdgeIt {
 
-		private final int u;
+		private final int source;
 
-		EdgeIt(int u, int[] edges, int count) {
+		EdgeIt(int source, int[] edges, int count) {
 			super(edges, count);
-			this.u = u;
+			this.source = source;
 		}
 
 		@Override
 		public int source() {
-			return u;
+			return source;
 		}
 
 		@Override
 		public int target() {
 			int u0 = edgeSource(lastEdge);
 			int v0 = edgeTarget(lastEdge);
-			return u == u0 ? v0 : u0;
+			return source == u0 ? v0 : u0;
 		}
 
 	}

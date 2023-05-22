@@ -41,9 +41,9 @@ class CutImpl implements Cut {
 	}
 
 	@Override
-	public boolean containsVertex(int v) {
+	public boolean containsVertex(int vertex) {
 		computeCutBitmap();
-		return cutBitmap.get(v);
+		return cutBitmap.get(vertex);
 	}
 
 	@Override

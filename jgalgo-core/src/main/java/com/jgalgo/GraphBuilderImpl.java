@@ -187,8 +187,8 @@ class GraphBuilderImpl implements GraphBuilder {
 		}
 
 		@Override
-		public void removeVertex(int v) {
-			int vIdx = verticesIDStrategy.idToIdx(v);
+		public void removeVertex(int vertex) {
+			int vIdx = verticesIDStrategy.idToIdx(vertex);
 			g.removeVertex(vIdx);
 		}
 
@@ -227,37 +227,37 @@ class GraphBuilderImpl implements GraphBuilder {
 		// }
 
 		@Override
-		public EdgeIter edgesOut(int u) {
-			EdgeIter it = g.edgesOut(verticesIDStrategy.idToIdx(u));
+		public EdgeIter edgesOut(int source) {
+			EdgeIter it = g.edgesOut(verticesIDStrategy.idToIdx(source));
 			return new EdgeItr(it);
 		}
 
 		@Override
-		public EdgeIter edgesIn(int v) {
-			EdgeIter it = g.edgesIn(verticesIDStrategy.idToIdx(v));
+		public EdgeIter edgesIn(int target) {
+			EdgeIter it = g.edgesIn(verticesIDStrategy.idToIdx(target));
 			return new EdgeItr(it);
 		}
 
 		@Override
-		public int getEdge(int u, int v) {
-			int uIdx = verticesIDStrategy.idToIdx(u);
-			int vIdx = verticesIDStrategy.idToIdx(v);
+		public int getEdge(int source, int target) {
+			int uIdx = verticesIDStrategy.idToIdx(source);
+			int vIdx = verticesIDStrategy.idToIdx(target);
 			int eIdx = g.getEdge(uIdx, vIdx);
 			return eIdx == -1 ? -1 : edgesIDStrategy.idxToId(eIdx);
 		}
 
 		@Override
-		public EdgeIter getEdges(int u, int v) {
-			int uIdx = verticesIDStrategy.idToIdx(u);
-			int vIdx = verticesIDStrategy.idToIdx(v);
+		public EdgeIter getEdges(int source, int target) {
+			int uIdx = verticesIDStrategy.idToIdx(source);
+			int vIdx = verticesIDStrategy.idToIdx(target);
 			EdgeIter it = g.getEdges(uIdx, vIdx);
 			return new EdgeItr(it);
 		}
 
 		@Override
-		public int addEdge(int u, int v) {
-			int uIdx = verticesIDStrategy.idToIdx(u);
-			int vIdx = verticesIDStrategy.idToIdx(v);
+		public int addEdge(int source, int target) {
+			int uIdx = verticesIDStrategy.idToIdx(source);
+			int vIdx = verticesIDStrategy.idToIdx(target);
 			int eIdx = g.addEdge(uIdx, vIdx);
 			return edgesIDStrategy.idxToId(eIdx);
 		}
@@ -303,19 +303,19 @@ class GraphBuilderImpl implements GraphBuilder {
 		// }
 
 		@Override
-		public void removeEdgesOf(int u) {
-			int uIdx = verticesIDStrategy.idToIdx(u);
+		public void removeEdgesOf(int source) {
+			int uIdx = verticesIDStrategy.idToIdx(source);
 			g.removeEdgesOf(uIdx);
 		}
 
 		@Override
-		public void removeEdgesOutOf(int u) {
-			g.removeEdgesOutOf(verticesIDStrategy.idToIdx(u));
+		public void removeEdgesOutOf(int source) {
+			g.removeEdgesOutOf(verticesIDStrategy.idToIdx(source));
 		}
 
 		@Override
-		public void removeEdgesInOf(int v) {
-			g.removeEdgesInOf(verticesIDStrategy.idToIdx(v));
+		public void removeEdgesInOf(int target) {
+			g.removeEdgesInOf(verticesIDStrategy.idToIdx(target));
 		}
 
 		@Override
@@ -339,14 +339,14 @@ class GraphBuilderImpl implements GraphBuilder {
 		}
 
 		@Override
-		public int degreeOut(int u) {
-			int uIdx = verticesIDStrategy.idToIdx(u);
+		public int degreeOut(int source) {
+			int uIdx = verticesIDStrategy.idToIdx(source);
 			return g.degreeOut(uIdx);
 		}
 
 		@Override
-		public int degreeIn(int u) {
-			int uIdx = verticesIDStrategy.idToIdx(u);
+		public int degreeIn(int source) {
+			int uIdx = verticesIDStrategy.idToIdx(source);
 			return g.degreeIn(uIdx);
 		}
 

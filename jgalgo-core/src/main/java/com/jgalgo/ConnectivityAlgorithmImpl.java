@@ -132,8 +132,8 @@ class ConnectivityAlgorithmImpl implements ConnectivityAlgorithm {
 		}
 
 		@Override
-		public int getVertexCc(int v) {
-			return vertexToCC[v];
+		public int getVertexCc(int vertex) {
+			return vertexToCC[vertex];
 		}
 
 		@Override
