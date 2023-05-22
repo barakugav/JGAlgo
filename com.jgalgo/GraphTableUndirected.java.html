@@ -43,20 +43,20 @@ class GraphTableUndirected extends GraphTableAbstract implements UndirectedGraph
 <span class="fc" id="L43">	}</span>
 
 	@Override
-	public int addEdge(int u, int v) {
-<span class="fc" id="L47">		int e = super.addEdge(u, v);</span>
-<span class="fc" id="L48">		edges.get(u).set(v, e);</span>
-<span class="fc" id="L49">		edges.get(v).set(u, e);</span>
+	public int addEdge(int source, int target) {
+<span class="fc" id="L47">		int e = super.addEdge(source, target);</span>
+<span class="fc" id="L48">		edges.get(source).set(target, e);</span>
+<span class="fc" id="L49">		edges.get(target).set(source, e);</span>
 <span class="fc" id="L50">		return e;</span>
 	}
 
 	@Override
-	public void removeEdge(int e) {
-<span class="fc" id="L55">		e = edgeSwapBeforeRemove(e);</span>
-<span class="fc" id="L56">		int u = edgeSource(e), v = edgeTarget(e);</span>
+	public void removeEdge(int edge) {
+<span class="fc" id="L55">		edge = edgeSwapBeforeRemove(edge);</span>
+<span class="fc" id="L56">		int u = edgeSource(edge), v = edgeTarget(edge);</span>
 <span class="fc" id="L57">		edges.get(u).set(v, EdgeNone);</span>
 <span class="fc" id="L58">		edges.get(v).set(u, EdgeNone);</span>
-<span class="fc" id="L59">		super.removeEdge(e);</span>
+<span class="fc" id="L59">		super.removeEdge(edge);</span>
 <span class="fc" id="L60">	}</span>
 
 	@Override

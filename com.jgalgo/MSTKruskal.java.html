@@ -80,11 +80,11 @@ public class MSTKruskal implements MST {
 		/* iterate over the edges and build the MST */
 <span class="fc" id="L81">		IntCollection mst = new IntArrayList(n - 1);</span>
 <span class="fc bfc" id="L82" title="All 2 branches covered.">		for (int e : edges) {</span>
-<span class="fc" id="L83">			int u = g.edgeSource(e);</span>
-<span class="fc" id="L84">			int v = g.edgeTarget(e);</span>
+<span class="fc" id="L83">			int U = uf.find(g.edgeSource(e));</span>
+<span class="fc" id="L84">			int V = uf.find(g.edgeTarget(e));</span>
 
-<span class="fc bfc" id="L86" title="All 2 branches covered.">			if (uf.find(u) != uf.find(v)) {</span>
-<span class="fc" id="L87">				uf.union(u, v);</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">			if (U != V) {</span>
+<span class="fc" id="L87">				uf.union(U, V);</span>
 <span class="fc" id="L88">				mst.add(e);</span>
 			}
 		}

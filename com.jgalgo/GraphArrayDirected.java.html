@@ -62,11 +62,11 @@ class GraphArrayDirected extends GraphArrayAbstract {
 <span class="fc" id="L62">	}</span>
 
 	@Override
-	public void removeVertex(int v) {
-<span class="fc" id="L66">		v = vertexSwapBeforeRemove(v);</span>
-<span class="fc" id="L67">		super.removeVertex(v);</span>
-<span class="fc" id="L68">		edgesOutNum.clear(v);</span>
-<span class="fc" id="L69">		edgesInNum.clear(v);</span>
+	public void removeVertex(int vertex) {
+<span class="fc" id="L66">		vertex = vertexSwapBeforeRemove(vertex);</span>
+<span class="fc" id="L67">		super.removeVertex(vertex);</span>
+<span class="fc" id="L68">		edgesOutNum.clear(vertex);</span>
+<span class="fc" id="L69">		edgesInNum.clear(vertex);</span>
 		// Reuse allocated edges arrays for v
 		// edgesOut.clear(v);
 		// edgesIn.clear(v);
@@ -103,32 +103,32 @@ class GraphArrayDirected extends GraphArrayAbstract {
 <span class="fc" id="L103">	}</span>
 
 	@Override
-	public EdgeIter edgesOut(int u) {
-<span class="fc" id="L107">		checkVertexIdx(u);</span>
-<span class="fc" id="L108">		return new EdgeOutIt(u, edgesOut.get(u), edgesOutNum.getInt(u));</span>
+	public EdgeIter edgesOut(int source) {
+<span class="fc" id="L107">		checkVertex(source);</span>
+<span class="fc" id="L108">		return new EdgeOutIt(source, edgesOut.get(source), edgesOutNum.getInt(source));</span>
 	}
 
 	@Override
-	public EdgeIter edgesIn(int v) {
-<span class="fc" id="L113">		checkVertexIdx(v);</span>
-<span class="fc" id="L114">		return new EdgeInIt(v, edgesIn.get(v), edgesInNum.getInt(v));</span>
+	public EdgeIter edgesIn(int target) {
+<span class="fc" id="L113">		checkVertex(target);</span>
+<span class="fc" id="L114">		return new EdgeInIt(target, edgesIn.get(target), edgesInNum.getInt(target));</span>
 	}
 
 	@Override
-	public int addEdge(int u, int v) {
-<span class="fc" id="L119">		int e = super.addEdge(u, v);</span>
-<span class="fc" id="L120">		addEdgeToList(edgesOut, edgesOutNum, u, e);</span>
-<span class="fc" id="L121">		addEdgeToList(edgesIn, edgesInNum, v, e);</span>
+	public int addEdge(int source, int target) {
+<span class="fc" id="L119">		int e = super.addEdge(source, target);</span>
+<span class="fc" id="L120">		addEdgeToList(edgesOut, edgesOutNum, source, e);</span>
+<span class="fc" id="L121">		addEdgeToList(edgesIn, edgesInNum, target, e);</span>
 <span class="fc" id="L122">		return e;</span>
 	}
 
 	@Override
-	public void removeEdge(int e) {
-<span class="fc" id="L127">		e = edgeSwapBeforeRemove(e);</span>
-<span class="fc" id="L128">		int u = edgeSource(e), v = edgeTarget(e);</span>
-<span class="fc" id="L129">		removeEdgeFromList(edgesOut, edgesOutNum, u, e);</span>
-<span class="fc" id="L130">		removeEdgeFromList(edgesIn, edgesInNum, v, e);</span>
-<span class="fc" id="L131">		super.removeEdge(e);</span>
+	public void removeEdge(int edge) {
+<span class="fc" id="L127">		edge = edgeSwapBeforeRemove(edge);</span>
+<span class="fc" id="L128">		int u = edgeSource(edge), v = edgeTarget(edge);</span>
+<span class="fc" id="L129">		removeEdgeFromList(edgesOut, edgesOutNum, u, edge);</span>
+<span class="fc" id="L130">		removeEdgeFromList(edgesIn, edgesInNum, v, edge);</span>
+<span class="fc" id="L131">		super.removeEdge(edge);</span>
 <span class="fc" id="L132">	}</span>
 
 	@Override
@@ -150,41 +150,41 @@ class GraphArrayDirected extends GraphArrayAbstract {
 <span class="fc" id="L150">	}</span>
 
 	@Override
-	public void removeEdgesOutOf(int u) {
-<span class="fc" id="L154">		checkVertexIdx(u);</span>
-<span class="fc bfc" id="L155" title="All 2 branches covered.">		while (edgesOutNum.getInt(u) &gt; 0)</span>
-<span class="fc" id="L156">			removeEdge(edgesOut.get(u)[0]);</span>
+	public void removeEdgesOutOf(int source) {
+<span class="fc" id="L154">		checkVertex(source);</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">		while (edgesOutNum.getInt(source) &gt; 0)</span>
+<span class="fc" id="L156">			removeEdge(edgesOut.get(source)[0]);</span>
 <span class="fc" id="L157">	}</span>
 
 	@Override
-	public void removeEdgesInOf(int v) {
-<span class="fc" id="L161">		checkVertexIdx(v);</span>
-<span class="fc bfc" id="L162" title="All 2 branches covered.">		while (edgesInNum.getInt(v) &gt; 0)</span>
-<span class="fc" id="L163">			removeEdge(edgesIn.get(v)[0]);</span>
+	public void removeEdgesInOf(int target) {
+<span class="fc" id="L161">		checkVertex(target);</span>
+<span class="fc bfc" id="L162" title="All 2 branches covered.">		while (edgesInNum.getInt(target) &gt; 0)</span>
+<span class="fc" id="L163">			removeEdge(edgesIn.get(target)[0]);</span>
 <span class="fc" id="L164">	}</span>
 
 	@Override
-	public void reverseEdge(int e) {
-<span class="fc" id="L168">		int u = edgeSource(e), v = edgeTarget(e);</span>
+	public void reverseEdge(int edge) {
+<span class="fc" id="L168">		int u = edgeSource(edge), v = edgeTarget(edge);</span>
 <span class="fc bfc" id="L169" title="All 2 branches covered.">		if (u == v)</span>
 <span class="fc" id="L170">			return;</span>
-<span class="fc" id="L171">		removeEdgeFromList(edgesOut, edgesOutNum, u, e);</span>
-<span class="fc" id="L172">		removeEdgeFromList(edgesIn, edgesInNum, v, e);</span>
-<span class="fc" id="L173">		addEdgeToList(edgesOut, edgesOutNum, v, e);</span>
-<span class="fc" id="L174">		addEdgeToList(edgesIn, edgesInNum, u, e);</span>
-<span class="fc" id="L175">		super.reverseEdge0(e);</span>
+<span class="fc" id="L171">		removeEdgeFromList(edgesOut, edgesOutNum, u, edge);</span>
+<span class="fc" id="L172">		removeEdgeFromList(edgesIn, edgesInNum, v, edge);</span>
+<span class="fc" id="L173">		addEdgeToList(edgesOut, edgesOutNum, v, edge);</span>
+<span class="fc" id="L174">		addEdgeToList(edgesIn, edgesInNum, u, edge);</span>
+<span class="fc" id="L175">		super.reverseEdge0(edge);</span>
 <span class="fc" id="L176">	}</span>
 
 	@Override
-	public int degreeOut(int u) {
-<span class="fc" id="L180">		checkVertexIdx(u);</span>
-<span class="fc" id="L181">		return edgesOutNum.getInt(u);</span>
+	public int degreeOut(int source) {
+<span class="fc" id="L180">		checkVertex(source);</span>
+<span class="fc" id="L181">		return edgesOutNum.getInt(source);</span>
 	}
 
 	@Override
-	public int degreeIn(int v) {
-<span class="fc" id="L186">		checkVertexIdx(v);</span>
-<span class="fc" id="L187">		return edgesInNum.getInt(v);</span>
+	public int degreeIn(int target) {
+<span class="fc" id="L186">		checkVertex(target);</span>
+<span class="fc" id="L187">		return edgesInNum.getInt(target);</span>
 	}
 
 	@Override
@@ -206,9 +206,9 @@ class GraphArrayDirected extends GraphArrayAbstract {
 
 		private final int u;
 
-<span class="fc" id="L209">		EdgeOutIt(int u, int[] edges, int count) {</span>
+<span class="fc" id="L209">		EdgeOutIt(int source, int[] edges, int count) {</span>
 <span class="fc" id="L210">			super(edges, count);</span>
-<span class="fc" id="L211">			this.u = u;</span>
+<span class="fc" id="L211">			this.u = source;</span>
 <span class="fc" id="L212">		}</span>
 
 		@Override
@@ -225,11 +225,11 @@ class GraphArrayDirected extends GraphArrayAbstract {
 
 	private class EdgeInIt extends EdgeIt {
 
-		private final int v;
+		private final int target;
 
-<span class="fc" id="L230">		EdgeInIt(int v, int[] edges, int count) {</span>
+<span class="fc" id="L230">		EdgeInIt(int target, int[] edges, int count) {</span>
 <span class="fc" id="L231">			super(edges, count);</span>
-<span class="fc" id="L232">			this.v = v;</span>
+<span class="fc" id="L232">			this.target = target;</span>
 <span class="fc" id="L233">		}</span>
 
 		@Override
@@ -239,7 +239,7 @@ class GraphArrayDirected extends GraphArrayAbstract {
 
 		@Override
 		public int target() {
-<span class="fc" id="L242">			return v;</span>
+<span class="fc" id="L242">			return target;</span>
 		}
 
 	}

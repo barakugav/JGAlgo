@@ -32,45 +32,45 @@ import java.util.NoSuchElementException;
 	@Override
 	public int edgeEndpoint(int edge, int endpoint) {
 <span class="fc" id="L34">		Node n = getNode(edge);</span>
-<span class="fc bfc" id="L35" title="All 2 branches covered.">		if (endpoint == n.u) {</span>
+<span class="fc bfc" id="L35" title="All 2 branches covered.">		if (endpoint == n.source) {</span>
 <span class="fc" id="L36">			return n.v;</span>
 <span class="pc bpc" id="L37" title="1 of 2 branches missed.">		} else if (endpoint == n.v) {</span>
-<span class="fc" id="L38">			return n.u;</span>
+<span class="fc" id="L38">			return n.source;</span>
 		} else {
-<span class="nc" id="L40">			throw new IllegalArgumentException(</span>
-					&quot;The given vertex (&quot; + endpoint + &quot;) is not an endpoint of the edge (&quot; + n.u + &quot;, &quot; + n.v + &quot;)&quot;);
+<span class="nc" id="L40">			throw new IllegalArgumentException(&quot;The given vertex (&quot; + endpoint + &quot;) is not an endpoint of the edge (&quot;</span>
+					+ n.source + &quot;, &quot; + n.v + &quot;)&quot;);
 		}
 	}
 
-	Node getNode(int e) {
-<span class="fc" id="L46">		Node n = edges.get(e);</span>
-<span class="pc bpc" id="L47" title="1 of 2 branches missed.">		assert n.id == e;</span>
+	Node getNode(int edge) {
+<span class="fc" id="L46">		Node n = edges.get(edge);</span>
+<span class="pc bpc" id="L47" title="1 of 2 branches missed.">		assert n.id == edge;</span>
 <span class="fc" id="L48">		return n;</span>
 	}
 
 	@Override
-	public void removeEdge(int e) {
-<span class="fc" id="L53">		removeEdge0(e);</span>
+	public void removeEdge(int edge) {
+<span class="fc" id="L53">		removeEdge0(edge);</span>
 <span class="fc" id="L54">	}</span>
 
-	private void removeEdge0(int e) {
-<span class="fc" id="L57">		e = edgeSwapBeforeRemove(e);</span>
-<span class="fc" id="L58">		edges.clear(e);</span>
-<span class="fc" id="L59">		super.removeEdge(e);</span>
+	private void removeEdge0(int edge) {
+<span class="fc" id="L57">		edge = edgeSwapBeforeRemove(edge);</span>
+<span class="fc" id="L58">		edges.clear(edge);</span>
+<span class="fc" id="L59">		super.removeEdge(edge);</span>
 <span class="fc" id="L60">	}</span>
 
 	void removeEdge(Node node) {
 <span class="fc" id="L63">		removeEdge0(node.id);</span>
 <span class="fc" id="L64">	}</span>
 
-	Node addEdgeNode(int u, int v) {
-<span class="fc" id="L67">		int e = super.addEdge(u, v);</span>
-<span class="fc" id="L68">		Node n = allocNode(e, u, v);</span>
+	Node addEdgeNode(int source, int target) {
+<span class="fc" id="L67">		int e = super.addEdge(source, target);</span>
+<span class="fc" id="L68">		Node n = allocNode(e, source, target);</span>
 <span class="fc" id="L69">		edges.set(e, n);</span>
 <span class="fc" id="L70">		return n;</span>
 	}
 
-	abstract Node allocNode(int id, int u, int v);
+	abstract Node allocNode(int id, int source, int target);
 
 	@Override
 	void edgeSwap(int e1, int e2) {
@@ -82,15 +82,15 @@ import java.util.NoSuchElementException;
 <span class="fc" id="L82">	}</span>
 
 	@Override
-	public int edgeSource(int e) {
-<span class="fc" id="L86">		checkEdgeIdx(e);</span>
-<span class="fc" id="L87">		return getNode(e).u;</span>
+	public int edgeSource(int edge) {
+<span class="fc" id="L86">		checkEdge(edge);</span>
+<span class="fc" id="L87">		return getNode(edge).source;</span>
 	}
 
 	@Override
-	public int edgeTarget(int e) {
-<span class="fc" id="L92">		checkEdgeIdx(e);</span>
-<span class="fc" id="L93">		return getNode(e).v;</span>
+	public int edgeTarget(int edge) {
+<span class="fc" id="L92">		checkEdge(edge);</span>
+<span class="fc" id="L93">		return getNode(edge).v;</span>
 	}
 
 	Collection&lt;Node&gt; nodes() {
@@ -146,12 +146,12 @@ import java.util.NoSuchElementException;
 	abstract static class Node {
 
 		int id;
-		int u, v;
+		int source, v;
 
-<span class="fc" id="L151">		Node(int id, int u, int v) {</span>
+<span class="fc" id="L151">		Node(int id, int source, int target) {</span>
 <span class="fc" id="L152">			this.id = id;</span>
-<span class="fc" id="L153">			this.u = u;</span>
-<span class="fc" id="L154">			this.v = v;</span>
+<span class="fc" id="L153">			this.source = source;</span>
+<span class="fc" id="L154">			this.v = target;</span>
 <span class="fc" id="L155">		}</span>
 
 	}

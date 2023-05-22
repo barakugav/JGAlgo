@@ -42,28 +42,28 @@ class GraphTableDirected extends GraphTableAbstract {
 <span class="fc" id="L42">	}</span>
 
 	@Override
-	public EdgeIter edgesOut(int u) {
-<span class="fc" id="L46">		return new EdgeIterOut(u);</span>
+	public EdgeIter edgesOut(int source) {
+<span class="fc" id="L46">		return new EdgeIterOut(source);</span>
 	}
 
 	@Override
-	public EdgeIter edgesIn(int v) {
-<span class="fc" id="L51">		return new EdgeIterIn(v);</span>
+	public EdgeIter edgesIn(int target) {
+<span class="fc" id="L51">		return new EdgeIterIn(target);</span>
 	}
 
 	@Override
-	public int addEdge(int u, int v) {
-<span class="fc" id="L56">		int e = super.addEdge(u, v);</span>
-<span class="fc" id="L57">		edges.get(u).set(v, e);</span>
+	public int addEdge(int source, int target) {
+<span class="fc" id="L56">		int e = super.addEdge(source, target);</span>
+<span class="fc" id="L57">		edges.get(source).set(target, e);</span>
 <span class="fc" id="L58">		return e;</span>
 	}
 
 	@Override
-	public void removeEdge(int e) {
-<span class="fc" id="L63">		e = edgeSwapBeforeRemove(e);</span>
-<span class="fc" id="L64">		int u = edgeSource(e), v = edgeTarget(e);</span>
+	public void removeEdge(int edge) {
+<span class="fc" id="L63">		edge = edgeSwapBeforeRemove(edge);</span>
+<span class="fc" id="L64">		int u = edgeSource(edge), v = edgeTarget(edge);</span>
 <span class="fc" id="L65">		edges.get(u).set(v, EdgeNone);</span>
-<span class="fc" id="L66">		super.removeEdge(e);</span>
+<span class="fc" id="L66">		super.removeEdge(edge);</span>
 <span class="fc" id="L67">	}</span>
 
 	@Override
@@ -86,13 +86,13 @@ class GraphTableDirected extends GraphTableAbstract {
 <span class="fc" id="L86">	}</span>
 
 	@Override
-	public void reverseEdge(int e) {
-<span class="fc" id="L90">		int u = edgeSource(e), v = edgeTarget(e);</span>
+	public void reverseEdge(int edge) {
+<span class="fc" id="L90">		int u = edgeSource(edge), v = edgeTarget(edge);</span>
 <span class="pc bpc" id="L91" title="1 of 4 branches missed.">		if (edges.get(v).getInt(u) != EdgeNone &amp;&amp; u != v)</span>
 <span class="nc" id="L92">			throw new IllegalArgumentException(&quot;parallel edges are not supported&quot;);</span>
 <span class="fc" id="L93">		edges.get(u).set(v, EdgeNone);</span>
-<span class="fc" id="L94">		edges.get(v).set(u, e);</span>
-<span class="fc" id="L95">		super.reverseEdge0(e);</span>
+<span class="fc" id="L94">		edges.get(v).set(u, edge);</span>
+<span class="fc" id="L95">		super.reverseEdge0(edge);</span>
 <span class="fc" id="L96">	}</span>
 
 	@Override

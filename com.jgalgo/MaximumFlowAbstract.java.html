@@ -44,7 +44,7 @@ class MaximumFlowAbstract {
 <span class="fc" id="L44">			this.n = gOrig.vertices().size();</span>
 <span class="fc" id="L45">			this.net = net;</span>
 
-<span class="fc" id="L47">			g = GraphBuilder.newDirected().setVerticesNum(n).build();</span>
+<span class="fc" id="L47">			g = GraphBuilder.newDirected().build(n);</span>
 <span class="fc" id="L48">			edgeRef = g.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));</span>
 <span class="fc" id="L49">			twin = g.addEdgesWeights(EdgeRevWeightKey, int.class, Integer.valueOf(-1));</span>
 

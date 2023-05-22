@@ -47,9 +47,9 @@ abstract class GraphBase implements Graph {
 	}
 
 	@Override
-	public EdgeIter getEdges(int u, int v) {
+	public EdgeIter getEdges(int source, int target) {
 <span class="fc" id="L51">		return new EdgeIterImpl() {</span>
-<span class="fc" id="L52">			EdgeIter it = edgesOut(u);</span>
+<span class="fc" id="L52">			EdgeIter it = edgesOut(source);</span>
 <span class="fc" id="L53">			int e = -1;</span>
 
 			@Override
@@ -58,7 +58,7 @@ abstract class GraphBase implements Graph {
 <span class="fc" id="L58">					return true;</span>
 <span class="pc bpc" id="L59" title="1 of 2 branches missed.">				while (it.hasNext()) {</span>
 <span class="fc" id="L60">					int eNext = it.nextInt();</span>
-<span class="fc bfc" id="L61" title="All 2 branches covered.">					if (it.target() == v) {</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">					if (it.target() == target) {</span>
 <span class="fc" id="L62">						e = eNext;</span>
 <span class="fc" id="L63">						return true;</span>
 					}
@@ -84,12 +84,12 @@ abstract class GraphBase implements Graph {
 
 			@Override
 			public int source() {
-<span class="nc" id="L87">				return u;</span>
+<span class="nc" id="L87">				return source;</span>
 			}
 
 			@Override
 			public int target() {
-<span class="nc" id="L92">				return v;</span>
+<span class="nc" id="L92">				return target;</span>
 			}
 		};
 	}

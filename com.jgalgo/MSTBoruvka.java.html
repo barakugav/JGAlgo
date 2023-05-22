@@ -60,7 +60,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 <span class="nc" id="L60">			throw new IllegalArgumentException();</span>
 <span class="fc" id="L61">		Res mstRes = computeMST(g, w, numberOfRounds);</span>
 
-<span class="fc" id="L63">		Graph contractedG = GraphBuilder.newUndirected().setVerticesNum(mstRes.treeNum).build();</span>
+<span class="fc" id="L63">		Graph contractedG = GraphBuilder.newUndirected().build(mstRes.treeNum);</span>
 <span class="fc" id="L64">		Weights.Int edgeRef = contractedG.addEdgesWeights(edgeRefKey, int.class);</span>
 <span class="fc bfc" id="L65" title="All 2 branches covered.">		for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
 <span class="fc" id="L66">			int e = it.nextInt();</span>

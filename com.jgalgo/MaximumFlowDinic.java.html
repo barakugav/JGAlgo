@@ -86,7 +86,7 @@ public class MaximumFlowDinic implements MaximumFlow {
 <span class="fc" id="L86">		}</span>
 
 		double computeMaximumFlow() {
-<span class="fc" id="L89">			Graph L = layerGraphBuilder.setDirected(true).setVerticesNum(n).setEdgesIDStrategy(Fixed.class).build();</span>
+<span class="fc" id="L89">			Graph L = layerGraphBuilder.setDirected(true).setEdgesIDStrategy(Fixed.class).build(n);</span>
 <span class="fc" id="L90">			Weights.Int edgeRefL = L.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));</span>
 <span class="fc" id="L91">			IntPriorityQueue bfsQueue = new IntArrayFIFOQueue();</span>
 <span class="fc" id="L92">			int[] level = new int[n];</span>

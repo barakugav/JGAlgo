@@ -41,9 +41,9 @@ class CutImpl implements Cut {
 <span class="fc" id="L41">	}</span>
 
 	@Override
-	public boolean containsVertex(int v) {
+	public boolean containsVertex(int vertex) {
 <span class="nc" id="L45">		computeCutBitmap();</span>
-<span class="nc" id="L46">		return cutBitmap.get(v);</span>
+<span class="nc" id="L46">		return cutBitmap.get(vertex);</span>
 	}
 
 	@Override

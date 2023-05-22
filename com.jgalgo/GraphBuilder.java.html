@@ -23,11 +23,22 @@ package com.jgalgo;
 public interface GraphBuilder extends BuilderAbstract&lt;GraphBuilder&gt; {
 
 	/**
-	 * Create a new graph.
+	 * Create a new empty graph.
 	 *
 	 * @return a new graph with the builder options
 	 */
-	Graph build();
+	default Graph build() {
+<span class="fc" id="L31">		return build(0);</span>
+	}
+
+	/**
+	 * Create a new graph with {@code verticesNum} vertices.
+	 *
+	 * @param  verticesNum the initial number of vertices in the graph. The vertices will be numbered
+	 *                         {@code 0,1,2,...,verticesNum-1}.
+	 * @return             a new graph with the builder options
+	 */
+	Graph build(int verticesNum);
 
 	/**
 	 * Create an undirected graph builder.
@@ -37,7 +48,7 @@ public interface GraphBuilder extends BuilderAbstract&lt;GraphBuilder&gt; {
 	 * @return a new builder that can build undirected graphs
 	 */
 	static GraphBuilder newUndirected() {
-<span class="fc" id="L40">		return new GraphBuilderImpl(false);</span>
+<span class="fc" id="L51">		return new GraphBuilderImpl(false);</span>
 	}
 
 	/**
@@ -48,7 +59,7 @@ public interface GraphBuilder extends BuilderAbstract&lt;GraphBuilder&gt; {
 	 * @return a new builder that can build directed graphs
 	 */
 	static GraphBuilder newDirected() {
-<span class="fc" id="L51">		return new GraphBuilderImpl(true);</span>
+<span class="fc" id="L62">		return new GraphBuilderImpl(true);</span>
 	}
 
 	/**
@@ -58,16 +69,6 @@ public interface GraphBuilder extends BuilderAbstract&lt;GraphBuilder&gt; {
 	 * @return          this builder
 	 */
 	GraphBuilder setDirected(boolean directed);
-
-	/**
-	 * Set the number of initial vertices in the graph.
-	 * &lt;p&gt;
-	 * The default value is zero.
-	 *
-	 * @param  n number of initial vertices in the graph
-	 * @return   this builder
-	 */
-	GraphBuilder setVerticesNum(int n);
 
 	/**
 	 * Set the edges ID strategy of this builder.
@@ -111,11 +112,11 @@ public interface GraphBuilder extends BuilderAbstract&lt;GraphBuilder&gt; {
 	 *
 	 * @author Barak Ugav
 	 */
-<span class="fc" id="L114">	static enum Hint {</span>
+<span class="fc" id="L115">	static enum Hint {</span>
 		/** The graph should support fast edge removal via {@link Graph#removeEdge(int)} */
-<span class="fc" id="L116">		FastEdgeRemoval,</span>
+<span class="fc" id="L117">		FastEdgeRemoval,</span>
 		/** The graph should support fast edge lookup via {@link Graph#getEdge(int, int)} */
-<span class="fc" id="L118">		FastEdgeLookup,</span>
+<span class="fc" id="L119">		FastEdgeLookup,</span>
 	}
 
 }

@@ -279,19 +279,19 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 	 * &lt;p&gt;
 	 * This function uses BFS, which will result in the shortest path in the number of edges.
 	 *
-	 * @param  g a graph
-	 * @param  u source vertex
-	 * @param  v target vertex
-	 * @return   a path from \(u\) to \(v\), or {@code null} if no such path was found
+	 * @param  g      a graph
+	 * @param  source source vertex
+	 * @param  target target vertex
+	 * @return        a path from \(u\) to \(v\), or {@code null} if no such path was found
 	 */
-	public static Path findPath(Graph g, final int u, final int v) {
-<span class="fc bfc" id="L288" title="All 2 branches covered.">		if (u == v)</span>
-<span class="fc" id="L289">			return new Path(g, u, v, IntLists.emptyList());</span>
+	public static Path findPath(Graph g, final int source, final int target) {
+<span class="fc bfc" id="L288" title="All 2 branches covered.">		if (source == target)</span>
+<span class="fc" id="L289">			return new Path(g, source, target, IntLists.emptyList());</span>
 <span class="fc" id="L290">		boolean reverse = true;</span>
-<span class="fc" id="L291">		int u0 = u, v0 = v;</span>
+<span class="fc" id="L291">		int u0 = source, v0 = target;</span>
 <span class="fc bfc" id="L292" title="All 2 branches covered.">		if (!g.getCapabilities().directed()) {</span>
-<span class="fc" id="L293">			u0 = v;</span>
-<span class="fc" id="L294">			v0 = u;</span>
+<span class="fc" id="L293">			u0 = target;</span>
+<span class="fc" id="L294">			v0 = source;</span>
 <span class="fc" id="L295">			reverse = false;</span>
 		}
 <span class="fc" id="L297">		int n = g.vertices().size();</span>
@@ -317,7 +317,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 
 <span class="fc bfc" id="L318" title="All 2 branches covered.">		if (reverse)</span>
 <span class="fc" id="L319">			IntArrays.reverse(path.elements(), 0, path.size());</span>
-<span class="fc" id="L320">		return new Path(g, u, v, path);</span>
+<span class="fc" id="L320">		return new Path(g, source, target, path);</span>
 	}
 
 }

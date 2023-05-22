@@ -57,10 +57,10 @@ class GraphArrayUndirected extends GraphArrayAbstract implements UndirectedGraph
 <span class="fc" id="L57">	}</span>
 
 	@Override
-	public void removeVertex(int v) {
-<span class="fc" id="L61">		v = vertexSwapBeforeRemove(v);</span>
-<span class="fc" id="L62">		super.removeVertex(v);</span>
-<span class="fc" id="L63">		edgesNum.clear(v);</span>
+	public void removeVertex(int vertex) {
+<span class="fc" id="L61">		vertex = vertexSwapBeforeRemove(vertex);</span>
+<span class="fc" id="L62">		super.removeVertex(vertex);</span>
+<span class="fc" id="L63">		edgesNum.clear(vertex);</span>
 		// Reuse allocated edges array for v
 		// edges.clear(v);
 <span class="fc" id="L66">	}</span>
@@ -87,28 +87,28 @@ class GraphArrayUndirected extends GraphArrayAbstract implements UndirectedGraph
 <span class="fc" id="L87">	}</span>
 
 	@Override
-	public EdgeIter edgesOut(int u) {
-<span class="fc" id="L91">		checkVertexIdx(u);</span>
-<span class="fc" id="L92">		return new EdgeIt(u, edges.get(u), edgesNum.getInt(u));</span>
+	public EdgeIter edgesOut(int source) {
+<span class="fc" id="L91">		checkVertex(source);</span>
+<span class="fc" id="L92">		return new EdgeIt(source, edges.get(source), edgesNum.getInt(source));</span>
 	}
 
 	@Override
-	public int addEdge(int u, int v) {
-<span class="fc" id="L97">		int e = super.addEdge(u, v);</span>
-<span class="fc" id="L98">		addEdgeToList(edges, edgesNum, u, e);</span>
-<span class="fc bfc" id="L99" title="All 2 branches covered.">		if (u != v)</span>
-<span class="fc" id="L100">			addEdgeToList(edges, edgesNum, v, e);</span>
+	public int addEdge(int source, int target) {
+<span class="fc" id="L97">		int e = super.addEdge(source, target);</span>
+<span class="fc" id="L98">		addEdgeToList(edges, edgesNum, source, e);</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">		if (source != target)</span>
+<span class="fc" id="L100">			addEdgeToList(edges, edgesNum, target, e);</span>
 <span class="fc" id="L101">		return e;</span>
 	}
 
 	@Override
-	public void removeEdge(int e) {
-<span class="fc" id="L106">		e = edgeSwapBeforeRemove(e);</span>
-<span class="fc" id="L107">		int u = edgeSource(e), v = edgeTarget(e);</span>
-<span class="fc" id="L108">		removeEdgeFromList(edges, edgesNum, u, e);</span>
+	public void removeEdge(int edge) {
+<span class="fc" id="L106">		edge = edgeSwapBeforeRemove(edge);</span>
+<span class="fc" id="L107">		int u = edgeSource(edge), v = edgeTarget(edge);</span>
+<span class="fc" id="L108">		removeEdgeFromList(edges, edgesNum, u, edge);</span>
 <span class="fc bfc" id="L109" title="All 2 branches covered.">		if (u != v)</span>
-<span class="fc" id="L110">			removeEdgeFromList(edges, edgesNum, v, e);</span>
-<span class="fc" id="L111">		super.removeEdge(e);</span>
+<span class="fc" id="L110">			removeEdgeFromList(edges, edgesNum, v, edge);</span>
+<span class="fc" id="L111">		super.removeEdge(edge);</span>
 <span class="fc" id="L112">	}</span>
 
 	@Override
@@ -139,16 +139,16 @@ class GraphArrayUndirected extends GraphArrayAbstract implements UndirectedGraph
 <span class="fc" id="L139">	}</span>
 
 	@Override
-	public void removeEdgesOf(int u) {
-<span class="fc" id="L143">		checkVertexIdx(u);</span>
-<span class="fc bfc" id="L144" title="All 2 branches covered.">		while (edgesNum.getInt(u) &gt; 0)</span>
-<span class="fc" id="L145">			removeEdge(edges.get(u)[0]);</span>
+	public void removeEdgesOf(int source) {
+<span class="fc" id="L143">		checkVertex(source);</span>
+<span class="fc bfc" id="L144" title="All 2 branches covered.">		while (edgesNum.getInt(source) &gt; 0)</span>
+<span class="fc" id="L145">			removeEdge(edges.get(source)[0]);</span>
 <span class="fc" id="L146">	}</span>
 
 	@Override
-	public int degreeOut(int u) {
-<span class="fc" id="L150">		checkVertexIdx(u);</span>
-<span class="fc" id="L151">		return edgesNum.getInt(u);</span>
+	public int degreeOut(int source) {
+<span class="fc" id="L150">		checkVertex(source);</span>
+<span class="fc" id="L151">		return edgesNum.getInt(source);</span>
 	}
 
 	@Override
@@ -166,23 +166,23 @@ class GraphArrayUndirected extends GraphArrayAbstract implements UndirectedGraph
 
 	private class EdgeIt extends GraphArrayAbstract.EdgeIt {
 
-		private final int u;
+		private final int source;
 
-<span class="fc" id="L171">		EdgeIt(int u, int[] edges, int count) {</span>
+<span class="fc" id="L171">		EdgeIt(int source, int[] edges, int count) {</span>
 <span class="fc" id="L172">			super(edges, count);</span>
-<span class="fc" id="L173">			this.u = u;</span>
+<span class="fc" id="L173">			this.source = source;</span>
 <span class="fc" id="L174">		}</span>
 
 		@Override
 		public int source() {
-<span class="fc" id="L178">			return u;</span>
+<span class="fc" id="L178">			return source;</span>
 		}
 
 		@Override
 		public int target() {
 <span class="fc" id="L183">			int u0 = edgeSource(lastEdge);</span>
 <span class="fc" id="L184">			int v0 = edgeTarget(lastEdge);</span>
-<span class="fc bfc" id="L185" title="All 2 branches covered.">			return u == u0 ? v0 : u0;</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">			return source == u0 ? v0 : u0;</span>
 		}
 
 	}

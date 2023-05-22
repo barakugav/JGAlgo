@@ -578,7 +578,7 @@ class Utils {
 	}
 
 	static &lt;Exec extends Runnable &amp; Serializable&gt; RecursiveAction recursiveAction(Exec exec) {
-<span class="fc" id="L581">		return new RecursiveActionFromRunnable&lt;&gt;(exec);</span>
+<span class="nc" id="L581">		return new RecursiveActionFromRunnable&lt;&gt;(exec);</span>
 	}
 
 	static &lt;V, Exec extends Supplier&lt;? extends V&gt; &amp; Serializable&gt; RecursiveTask&lt;V&gt; recursiveTask(Exec exec) {
@@ -589,14 +589,14 @@ class Utils {
 		private Exec exec;
 		private static final long serialVersionUID = 1L;
 
-<span class="fc" id="L592">		RecursiveActionFromRunnable(Exec exec) {</span>
-<span class="fc" id="L593">			this.exec = exec;</span>
-<span class="fc" id="L594">		}</span>
+<span class="nc" id="L592">		RecursiveActionFromRunnable(Exec exec) {</span>
+<span class="nc" id="L593">			this.exec = exec;</span>
+<span class="nc" id="L594">		}</span>
 
 		@Override
 		protected void compute() {
-<span class="fc" id="L598">			exec.run();</span>
-<span class="fc" id="L599">		}</span>
+<span class="nc" id="L598">			exec.run();</span>
+<span class="nc" id="L599">		}</span>
 	}
 
 	private static class RecursiveTaskFromSupplier&lt;V, Exec extends Supplier&lt;? extends V&gt; &amp; Serializable&gt;

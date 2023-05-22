@@ -210,7 +210,7 @@ public interface TreePathMaxima {
 	public static boolean verifyMST(Graph g, EdgeWeightFunc w, IntCollection mstEdges, TreePathMaxima tpmAlgo) {
 <span class="fc" id="L211">		ArgumentCheck.onlyUndirected(g);</span>
 <span class="fc" id="L212">		int n = g.vertices().size();</span>
-<span class="fc" id="L213">		Graph mst = GraphBuilder.newUndirected().setVerticesNum(n).build();</span>
+<span class="fc" id="L213">		Graph mst = GraphBuilder.newUndirected().build(n);</span>
 <span class="fc" id="L214">		Weights.Int edgeRef = mst.addEdgesWeights(&quot;edgeRef&quot;, int.class);</span>
 <span class="fc bfc" id="L215" title="All 2 branches covered.">		for (IntIterator it = mstEdges.iterator(); it.hasNext();) {</span>
 <span class="fc" id="L216">			int e = it.nextInt();</span>

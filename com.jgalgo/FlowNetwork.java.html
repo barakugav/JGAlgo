@@ -137,8 +137,8 @@ public interface FlowNetwork {
 <span class="fc" id="L137">            }</span>
 
             @Override
-            public double getFlow(int e) {
-<span class="fc" id="L141">                return flowWeights.getDouble(e);</span>
+            public double getFlow(int edge) {
+<span class="fc" id="L141">                return flowWeights.getDouble(edge);</span>
             }
 
             @Override
@@ -258,8 +258,8 @@ public interface FlowNetwork {
 <span class="fc" id="L258">                }</span>
 
                 @Override
-                public int getFlowInt(int e) {
-<span class="fc" id="L262">                    return flowWeights.getInt(e);</span>
+                public int getFlowInt(int edge) {
+<span class="fc" id="L262">                    return flowWeights.getInt(edge);</span>
                 }
 
                 @Override

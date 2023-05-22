@@ -80,8 +80,8 @@ class EdgeEndpointsContainer extends DataContainer.Long {
 <span class="fc" id="L80">		set(edge, sourceTarget2Endpoints(source, target));</span>
 <span class="fc" id="L81">	}</span>
 
-	private static long sourceTarget2Endpoints(int u, int v) {
-<span class="fc" id="L84">		return ((u &amp; 0xffffffffL) &lt;&lt; 32) | ((v &amp; 0xffffffffL) &lt;&lt; 0);</span>
+	private static long sourceTarget2Endpoints(int source, int target) {
+<span class="fc" id="L84">		return ((source &amp; 0xffffffffL) &lt;&lt; 32) | ((target &amp; 0xffffffffL) &lt;&lt; 0);</span>
 	}
 
 	private static int endpoints2Source(long endpoints) {

@@ -48,10 +48,10 @@ public interface ConnectivityAlgorithm {
 		/**
 		 * Get the connectivity component containing a vertex.
 		 *
-		 * @param  v a vertex in the graph
-		 * @return   index of the connectivity component containing the vertex, in range [0, ccNum)
+		 * @param  vertex a vertex in the graph
+		 * @return        index of the connectivity component containing the vertex, in range [0, ccNum)
 		 */
-		public int getVertexCc(int v);
+		public int getVertexCc(int vertex);
 
 		/**
 		 * Get the number of connectivity components in the graph.

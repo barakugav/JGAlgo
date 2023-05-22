@@ -66,11 +66,11 @@ public interface EdgeWeightFunc extends IntComparator {
 	/**
 	 * Get the weight of an edge.
 	 *
-	 * @param  e                         an edge identifier
+	 * @param  edge                      an edge identifier
 	 * @return                           the weight of the edge
 	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
 	 */
-	public double weight(int e);
+	public double weight(int edge);
 
 	/**
 	 * Compare two edges by their weights.
@@ -128,18 +128,18 @@ public interface EdgeWeightFunc extends IntComparator {
 
 		@Deprecated
 		@Override
-		default double weight(int e) {
-<span class="fc" id="L132">			return weightInt(e);</span>
+		default double weight(int edge) {
+<span class="fc" id="L132">			return weightInt(edge);</span>
 		}
 
 		/**
 		 * Get the integer weight of an edge.
 		 *
-		 * @param  e                         an edge identifier
+		 * @param  edge                      an edge identifier
 		 * @return                           the integer weight of the edge
 		 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
 		 */
-		public int weightInt(int e);
+		public int weightInt(int edge);
 
 		@Override
 		default int compare(int e1, int e2) {
