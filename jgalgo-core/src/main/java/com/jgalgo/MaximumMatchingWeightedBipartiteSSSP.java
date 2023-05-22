@@ -18,9 +18,9 @@ package com.jgalgo;
 
 import java.util.Arrays;
 import java.util.Objects;
+
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
-import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
  * Maximum weighted matching algorithm using {@link SSSP} for bipartite graphs.
@@ -36,6 +36,7 @@ class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeighted {
 	private Object bipartiteVerticesWeightKey = Weights.DefaultBipartiteWeightKey;
 	private SSSP ssspAlgo = new SSSPDijkstra();
 	private static final Object EdgeRefWeightKey = new Object();
+	private static final Object EdgeWeightKey = new Object();
 
 	/**
 	 * Create a new maximum weighted matching object.
@@ -83,24 +84,32 @@ class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeighted {
 		Objects.requireNonNull(partition,
 				"Bipartiteness values weren't found with weight " + bipartiteVerticesWeightKey);
 		ArgumentCheck.onlyBipartite(g, partition);
-		Graph g0 = referenceGraph(g, partition, w);
-		int[] match = computeMaxMatching(g0, w, partition);
 
-		int n = g.vertices().size();
-		IntList matchingEdges = new IntArrayList();
-		for (int u = 0; u < n; u++) {
-			int e = match[u];
-			if (e != -1 && g.edgeSource(e) == u)
-				matchingEdges.add(e);
-		}
-		return new MatchingImpl(g, matchingEdges);
+		int[] match = computeMaxMatching(g, w, partition);
+		return new MatchingImpl(g, match);
 	}
 
-	private int[] computeMaxMatching(Graph g, EdgeWeightFunc w, Weights.Bool partition) {
-		Weights<Ref> edgeRef = g.getEdgesWeights(EdgeRefWeightKey);
+	private int[] computeMaxMatching(Graph gOrig, EdgeWeightFunc w0, Weights.Bool partition) {
+		final int n = gOrig.vertices().size();
+		Graph g = GraphBuilder.newDirected().build(n + 2);
+		Weights.Int edgeRef = g.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
+		Weights.Double w = g.addEdgesWeights(EdgeWeightKey, double.class);
 
-		int n = g.vertices().size();
-		int s = g.addVertex(), t = g.addVertex();
+		for (int u = 0; u < n; u++) {
+			if (!partition.getBool(u))
+				continue;
+			for (EdgeIter eit = gOrig.edgesOut(u); eit.hasNext();) {
+				int e = eit.nextInt();
+				double weight = w0.weight(e);
+				if (weight < 0)
+					continue; // no reason to match negative edges
+				int e0 = g.addEdge(u, eit.target());
+				edgeRef.set(e0, e);
+				w.set(e0, weight);
+			}
+		}
+
+		final int s = n, t = n + 1;
 
 		int[] match = new int[n];
 		Arrays.fill(match, -1);
@@ -108,7 +117,7 @@ class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeighted {
 		double maxWeight = 1;
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
-			maxWeight = Math.max(maxWeight, edgeRef.get(e).w);
+			maxWeight = Math.max(maxWeight, w.weight(e));
 		}
 		if (!Double.isFinite(maxWeight))
 			throw new IllegalArgumentException("non finite weights");
@@ -117,24 +126,23 @@ class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeighted {
 		// Negate unmatched edges
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
-			Ref r = edgeRef.get(e);
-			r.w = -r.w;
+			w.set(e, -w.weight(e));
 		}
 		// Connected unmatched vertices to fake vertices s,t
 		for (int u = 0; u < n; u++) {
 			if (partition.getBool(u)) {
-				edgeRef.set(g.addEdge(s, u), new Ref(-1, 0));
+				w.set(g.addEdge(s, u), 0);
 			} else {
-				edgeRef.set(g.addEdge(u, t), new Ref(-1, 0));
+				w.set(g.addEdge(u, t), 0);
 			}
 		}
 
 		double[] potential = new double[n + 2];
-		EdgeWeightFunc spWeightFunc = e -> edgeRef.get(e).w + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];
+		EdgeWeightFunc spWeightFunc = e -> w.weight(e) + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];
 
 		// Init state may include negative distances, use Bellman Ford to calculate
 		// first potential values
-		SSSP.Result sp = new SSSPBellmanFord().computeShortestPaths(g, e -> edgeRef.get(e).w, s);
+		SSSP.Result sp = new SSSPBellmanFord().computeShortestPaths(g, w, s);
 		for (int v = 0; v < n + 2; v++)
 			potential[v] = sp.distance(v);
 
@@ -148,28 +156,27 @@ class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeighted {
 			// avoid using augPath.iterator() as we modify the graph during iteration
 			IntIterator it = new IntArrayList(augPath).iterator();
 			// 'remove' edge from S to new matched vertex
-			edgeRef.get(it.nextInt()).w = RemovedEdgeWeight;
+			w.set(it.nextInt(), RemovedEdgeWeight);
 			for (;;) {
 				int matchedEdge = it.nextInt();
 
 				// Reverse newly matched edge
 				g.reverseEdge(matchedEdge);
-				Ref r = edgeRef.get(matchedEdge);
-				match[g.edgeSource(matchedEdge)] = match[g.edgeTarget(matchedEdge)] = r.orig;
-				r.w = -r.w;
+				int eOrig = edgeRef.getInt(matchedEdge);
+				match[g.edgeSource(matchedEdge)] = match[g.edgeTarget(matchedEdge)] = eOrig;
+				w.set(matchedEdge, -w.weight(matchedEdge));
 
 				int unmatchedEdge = it.nextInt();
 
 				if (!it.hasNext()) {
 					// 'remove' edge from new matched vertex to T
-					edgeRef.get(unmatchedEdge).w = RemovedEdgeWeight;
+					w.set(unmatchedEdge, RemovedEdgeWeight);
 					break;
 				}
 
 				// Reverse newly unmatched edge
 				g.reverseEdge(unmatchedEdge);
-				r = edgeRef.get(unmatchedEdge);
-				r.w = -r.w;
+				w.set(unmatchedEdge, -w.weight(unmatchedEdge));
 			}
 
 			// Update potential based on the distances
@@ -189,43 +196,6 @@ class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeighted {
 	@Override
 	public Matching computeMaximumWeightedPerfectMatching(Graph g, EdgeWeightFunc w) {
 		throw new UnsupportedOperationException();
-	}
-
-	private static Graph referenceGraph(Graph g, Weights.Bool partition, EdgeWeightFunc w) {
-		int n = g.vertices().size();
-		Graph g0 = GraphBuilder.newDirected().build(n);
-		Weights<Ref> edgeRef = g0.addEdgesWeights(EdgeRefWeightKey, Ref.class);
-
-		for (int u = 0; u < n; u++) {
-			if (!partition.getBool(u))
-				continue;
-			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
-				int e = eit.nextInt();
-				double weight = w.weight(e);
-				if (weight < 0)
-					continue; // no reason to match negative edges
-				int e0 = g0.addEdge(u, eit.target());
-				edgeRef.set(e0, new Ref(e, weight));
-			}
-		}
-		return g0;
-	}
-
-	private static class Ref {
-
-		public final int orig;
-		public double w;
-
-		public Ref(int e, double w) {
-			orig = e;
-			this.w = w;
-		}
-
-		@Override
-		public String toString() {
-			return orig != -1 ? String.valueOf(orig) : Double.toString(w);
-		}
-
 	}
 
 }
