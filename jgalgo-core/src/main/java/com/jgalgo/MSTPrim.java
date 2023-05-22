@@ -18,6 +18,7 @@ package com.jgalgo;
 
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.Objects;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
@@ -39,8 +40,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  */
 public class MSTPrim implements MST {
 
-	private HeapReferenceable.Builder<Integer, Void> heapBuilder =
-			HeapReferenceable.newBuilder().keysTypePrimitive(int.class).valuesTypeVoid();
+	private HeapReferenceable.Builder<?, ?> heapBuilder = HeapReferenceable.newBuilder();
 
 	/**
 	 * Construct a new MST algorithm object.
@@ -53,7 +53,7 @@ public class MSTPrim implements MST {
 	 * @param heapBuilder a builder for heaps used by this algorithm
 	 */
 	void setHeapBuilder(HeapReferenceable.Builder<?, ?> heapBuilder) {
-		this.heapBuilder = heapBuilder.keysTypePrimitive(int.class).valuesTypeVoid();
+		this.heapBuilder = Objects.requireNonNull(heapBuilder);
 	}
 
 	/**
@@ -67,10 +67,19 @@ public class MSTPrim implements MST {
 		int n = g.vertices().size();
 		if (n == 0)
 			return MSTResultImpl.Empty;
+		if (w instanceof EdgeWeightFunc.Int) {
+			return computeMSTInt(g, (EdgeWeightFunc.Int) w);
+		} else {
+			return computeMSTDouble(g, w);
+		}
+	}
 
-		HeapReferenceable<Integer, Void> heap = heapBuilder.build(w);
+	private MST.Result computeMSTDouble(Graph g, EdgeWeightFunc w) {
+		final int n = g.vertices().size();
+		HeapReferenceable<Double, Integer> heap =
+				heapBuilder.keysTypePrimitive(double.class).valuesTypePrimitive(int.class).build();
 		@SuppressWarnings("unchecked")
-		HeapReference<Integer, Void>[] verticesPtrs = new HeapReference[n];
+		HeapReference<Double, Integer>[] verticesPtrs = new HeapReference[n];
 		BitSet visited = new BitSet(n);
 
 		IntCollection mst = new IntArrayList(n - 1);
@@ -89,11 +98,14 @@ public class MSTPrim implements MST {
 					if (visited.get(v))
 						continue;
 
-					HeapReference<Integer, Void> vPtr = verticesPtrs[v];
+					double ew = w.weight(e);
+					HeapReference<Double, Integer> vPtr = verticesPtrs[v];
 					if (vPtr == null)
-						verticesPtrs[v] = heap.insert(Integer.valueOf(e));
-					else if (w.compare(e, vPtr.key().intValue()) < 0)
-						heap.decreaseKey(vPtr, Integer.valueOf(e));
+						verticesPtrs[v] = heap.insert(Double.valueOf(ew), Integer.valueOf(e));
+					else if (ew < vPtr.key().doubleValue()) {
+						heap.decreaseKey(vPtr, Double.valueOf(ew));
+						vPtr.setValue(Integer.valueOf(e));
+					}
 				}
 
 				/* find next lightest edge */
@@ -102,7 +114,7 @@ public class MSTPrim implements MST {
 					if (heap.isEmpty())
 						/* reached all vertices from current root, continue to next tree */
 						break treeLoop;
-					e = heap.extractMin().key().intValue();
+					e = heap.extractMin().value().intValue();
 					if (!visited.get(v = g.edgeSource(e)))
 						break;
 					if (!visited.get(v = g.edgeTarget(e)))
@@ -114,9 +126,65 @@ public class MSTPrim implements MST {
 				u = v;
 			}
 		}
+		// Help GC
 		Arrays.fill(verticesPtrs, 0, n, null);
-		visited.clear();
+		return new MSTResultImpl(mst);
+	}
 
+	private MST.Result computeMSTInt(Graph g, EdgeWeightFunc.Int w) {
+		final int n = g.vertices().size();
+		HeapReferenceable<Integer, Integer> heap =
+				heapBuilder.keysTypePrimitive(int.class).valuesTypePrimitive(int.class).build();
+		@SuppressWarnings("unchecked")
+		HeapReference<Integer, Integer>[] verticesPtrs = new HeapReference[n];
+		BitSet visited = new BitSet(n);
+
+		IntCollection mst = new IntArrayList(n - 1);
+		for (int r = 0; r < n; r++) {
+			if (visited.get(r))
+				continue;
+
+			treeLoop: for (int u = r;;) {
+				visited.set(u);
+				verticesPtrs[u] = null;
+
+				/* decrease edges keys if a better one is found */
+				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
+					int e = eit.nextInt();
+					int v = eit.target();
+					if (visited.get(v))
+						continue;
+
+					int ew = w.weightInt(e);
+					HeapReference<Integer, Integer> vPtr = verticesPtrs[v];
+					if (vPtr == null)
+						verticesPtrs[v] = heap.insert(Integer.valueOf(ew), Integer.valueOf(e));
+					else if (ew < vPtr.key().intValue()) {
+						heap.decreaseKey(vPtr, Integer.valueOf(ew));
+						vPtr.setValue(Integer.valueOf(e));
+					}
+				}
+
+				/* find next lightest edge */
+				int e, v;
+				for (;;) {
+					if (heap.isEmpty())
+						/* reached all vertices from current root, continue to next tree */
+						break treeLoop;
+					e = heap.extractMin().value().intValue();
+					if (!visited.get(v = g.edgeSource(e)))
+						break;
+					if (!visited.get(v = g.edgeTarget(e)))
+						break;
+				}
+
+				/* add lightest edge to MST */
+				mst.add(e);
+				u = v;
+			}
+		}
+		// Help GC
+		Arrays.fill(verticesPtrs, 0, n, null);
 		return new MSTResultImpl(mst);
 	}
 

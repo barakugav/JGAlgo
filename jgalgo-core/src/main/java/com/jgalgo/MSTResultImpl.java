@@ -39,4 +39,9 @@ class MSTResultImpl implements MST.Result {
 		return GraphsUtils.edgesWeightSum(edges.iterator(), w);
 	}
 
+	@Override
+	public String toString() {
+		return edges().toString();
+	}
+
 }
