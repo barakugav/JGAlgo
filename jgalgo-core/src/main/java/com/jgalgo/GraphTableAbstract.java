@@ -26,8 +26,8 @@ abstract class GraphTableAbstract extends GraphBaseContinues implements GraphWit
 
 	static final int EdgeNone = -1;
 
-	GraphTableAbstract(int n, GraphCapabilities capabilities) {
-		super(n, capabilities);
+	GraphTableAbstract(int n) {
+		super(n);
 
 		edges = new DataContainer.Obj<>(verticesIDStrategy, null, DataContainer.Int.class);
 		addInternalVerticesDataContainer(edges);

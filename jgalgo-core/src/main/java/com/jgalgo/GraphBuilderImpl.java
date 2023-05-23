@@ -135,7 +135,7 @@ class GraphBuilderImpl implements GraphBuilder {
 		final GraphBaseContinues g;
 
 		GraphCustomIDStrategies(GraphBaseContinues g, IDStrategy edgesIDStrategy) {
-			super(new IDStrategy.Continues(g.vertices().size()), edgesIDStrategy, g.getCapabilities());
+			super(new IDStrategy.Continues(g.vertices().size()), edgesIDStrategy);
 			this.g = Objects.requireNonNull(g);
 
 			g.getVerticesIDStrategy().addIDSwapListener((vIdx1, vIdx2) -> verticesIDStrategy.idxSwap(vIdx1, vIdx2));
@@ -455,6 +455,11 @@ class GraphBuilderImpl implements GraphBuilder {
 				return verticesIDStrategy.idxToId(uIdx);
 			}
 
+		}
+
+		@Override
+		public GraphCapabilities getCapabilities() {
+			return g.getCapabilities();
 		}
 
 	}

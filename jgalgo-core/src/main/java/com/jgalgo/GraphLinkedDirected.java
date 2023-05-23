@@ -16,6 +16,8 @@
 
 package com.jgalgo;
 
+import com.jgalgo.GraphsUtils.GraphCapabilitiesBuilder;
+
 /**
  * A directed graph implementation using linked lists to store edge lists.
  * <p>
@@ -44,7 +46,7 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	 * @param n the number of initial vertices number
 	 */
 	GraphLinkedDirected(int n) {
-		super(n, Capabilities);
+		super(n);
 
 		edgesIn = new DataContainer.Obj<>(verticesIDStrategy, null, Node.class);
 		edgesOut = new DataContainer.Obj<>(verticesIDStrategy, null, Node.class);
@@ -265,41 +267,12 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 
 	}
 
-	private static final GraphCapabilities Capabilities = new GraphCapabilities() {
-		@Override
-		public boolean vertexAdd() {
-			return true;
-		}
+	@Override
+	public GraphCapabilities getCapabilities() {
+		return Capabilities;
+	}
 
-		@Override
-		public boolean vertexRemove() {
-			return true;
-		}
-
-		@Override
-		public boolean edgeAdd() {
-			return true;
-		}
-
-		@Override
-		public boolean edgeRemove() {
-			return true;
-		}
-
-		@Override
-		public boolean parallelEdges() {
-			return true;
-		}
-
-		@Override
-		public boolean selfEdges() {
-			return true;
-		}
-
-		@Override
-		public boolean directed() {
-			return true;
-		}
-	};
+	private static final GraphCapabilities Capabilities = GraphCapabilitiesBuilder.newDirected().vertexAdd(true)
+			.vertexRemove(true).edgeAdd(true).edgeRemove(true).parallelEdges(true).selfEdges(true).build();
 
 }

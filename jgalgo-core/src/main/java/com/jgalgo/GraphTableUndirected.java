@@ -16,6 +16,7 @@
 
 package com.jgalgo;
 
+import com.jgalgo.GraphsUtils.GraphCapabilitiesBuilder;
 import com.jgalgo.GraphsUtils.UndirectedGraphImpl;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
@@ -39,7 +40,7 @@ class GraphTableUndirected extends GraphTableAbstract implements UndirectedGraph
 	 * @param n the number of initial vertices number
 	 */
 	GraphTableUndirected(int n) {
-		super(n, Capabilities);
+		super(n);
 	}
 
 	@Override
@@ -93,41 +94,12 @@ class GraphTableUndirected extends GraphTableAbstract implements UndirectedGraph
 		super.vertexSwap(v1, v2);
 	}
 
-	private static final GraphCapabilities Capabilities = new GraphCapabilities() {
-		@Override
-		public boolean vertexAdd() {
-			return true;
-		}
+	@Override
+	public GraphCapabilities getCapabilities() {
+		return Capabilities;
+	}
 
-		@Override
-		public boolean vertexRemove() {
-			return true;
-		}
-
-		@Override
-		public boolean edgeAdd() {
-			return true;
-		}
-
-		@Override
-		public boolean edgeRemove() {
-			return true;
-		}
-
-		@Override
-		public boolean parallelEdges() {
-			return false;
-		}
-
-		@Override
-		public boolean selfEdges() {
-			return true;
-		}
-
-		@Override
-		public boolean directed() {
-			return false;
-		}
-	};
+	private static final GraphCapabilities Capabilities = GraphCapabilitiesBuilder.newUndirected().vertexAdd(true)
+			.vertexRemove(true).edgeAdd(true).edgeRemove(true).parallelEdges(false).selfEdges(false).build();
 
 }

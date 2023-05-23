@@ -32,8 +32,8 @@ abstract class GraphBaseContinues extends GraphBase {
 	private int edgesWeightsCapacity;
 	private int verticesWeightsCapacity;
 
-	GraphBaseContinues(int n, GraphCapabilities capabilities) {
-		super(new IDStrategy.Continues(n), new IDStrategy.Continues(0), capabilities);
+	GraphBaseContinues(int n) {
+		super(new IDStrategy.Continues(n), new IDStrategy.Continues(0));
 		edgesWeightsCapacity = n;
 		verticesWeightsCapacity = n;
 	}

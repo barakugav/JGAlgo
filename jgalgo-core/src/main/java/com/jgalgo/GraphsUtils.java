@@ -397,6 +397,145 @@ class GraphsUtils {
 		}
 	};
 
+	static class GraphCapabilitiesBuilder {
+
+		private boolean vertexAdd;
+		private boolean vertexAddValid;
+		private boolean vertexRemove;
+		private boolean vertexRemoveValid;
+		private boolean edgeAdd;
+		private boolean edgeAddValid;
+		private boolean edgeRemove;
+		private boolean edgeRemoveValid;
+		private boolean parallelEdges;
+		private boolean parallelEdgesValid;
+		private boolean selfEdges;
+		private boolean selfEdgesValid;
+		private boolean directed;
+		private boolean directedValid;
+
+		private GraphCapabilitiesBuilder(boolean directed) {
+			this.directed = directed;
+			directedValid = true;
+		}
+
+		static GraphCapabilitiesBuilder newUndirected() {
+			return new GraphCapabilitiesBuilder(false);
+		}
+
+		static GraphCapabilitiesBuilder newDirected() {
+			return new GraphCapabilitiesBuilder(true);
+		}
+
+		GraphCapabilities build() {
+			if (!vertexAddValid || !vertexRemoveValid || !edgeAddValid || !edgeRemoveValid || !parallelEdgesValid
+					|| !selfEdgesValid || !directedValid)
+				throw new IllegalStateException();
+			return new GraphCapabilitiesImpl(vertexAdd, vertexRemove, edgeAdd, edgeRemove, parallelEdges, selfEdges,
+					directed);
+		}
+
+		GraphCapabilitiesBuilder vertexAdd(boolean enable) {
+			vertexAdd = enable;
+			vertexAddValid = true;
+			return this;
+		}
+
+		GraphCapabilitiesBuilder vertexRemove(boolean enable) {
+			vertexRemove = enable;
+			vertexRemoveValid = true;
+			return this;
+		}
+
+		GraphCapabilitiesBuilder edgeAdd(boolean enable) {
+			edgeAdd = enable;
+			edgeAddValid = true;
+			return this;
+		}
+
+		GraphCapabilitiesBuilder edgeRemove(boolean enable) {
+			edgeRemove = enable;
+			edgeRemoveValid = true;
+			return this;
+		}
+
+		GraphCapabilitiesBuilder parallelEdges(boolean enable) {
+			parallelEdges = enable;
+			parallelEdgesValid = true;
+			return this;
+		}
+
+		GraphCapabilitiesBuilder selfEdges(boolean enable) {
+			selfEdges = enable;
+			selfEdgesValid = true;
+			return this;
+		}
+
+		GraphCapabilitiesBuilder directed(boolean enable) {
+			directed = enable;
+			directedValid = true;
+			return this;
+		}
+
+	}
+
+	private static class GraphCapabilitiesImpl implements GraphCapabilities {
+
+		private final boolean vertexAdd;
+		private final boolean vertexRemove;
+		private final boolean edgeAdd;
+		private final boolean edgeRemove;
+		private final boolean parallelEdges;
+		private final boolean selfEdges;
+		private final boolean directed;
+
+		GraphCapabilitiesImpl(boolean vertexAdd, boolean vertexRemove, boolean edgeAdd, boolean edgeRemove,
+				boolean parallelEdges, boolean selfEdges, boolean directed) {
+			this.vertexAdd = vertexAdd;
+			this.vertexRemove = vertexRemove;
+			this.edgeAdd = edgeAdd;
+			this.edgeRemove = edgeRemove;
+			this.parallelEdges = parallelEdges;
+			this.selfEdges = selfEdges;
+			this.directed = directed;
+		}
+
+		@Override
+		public boolean vertexAdd() {
+			return vertexAdd;
+		}
+
+		@Override
+		public boolean vertexRemove() {
+			return vertexRemove;
+		}
+
+		@Override
+		public boolean edgeAdd() {
+			return edgeAdd;
+		}
+
+		@Override
+		public boolean edgeRemove() {
+			return edgeRemove;
+		}
+
+		@Override
+		public boolean parallelEdges() {
+			return parallelEdges;
+		}
+
+		@Override
+		public boolean selfEdges() {
+			return selfEdges;
+		}
+
+		@Override
+		public boolean directed() {
+			return directed;
+		}
+	}
+
 	static double edgesWeightSum(IntIterator eit, EdgeWeightFunc w) {
 		if (w instanceof EdgeWeightFunc.Int) {
 			EdgeWeightFunc.Int w0 = (EdgeWeightFunc.Int) w;
