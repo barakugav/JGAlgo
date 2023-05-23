@@ -42,7 +42,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 public class MSTKargerKleinTarjan implements MST {
 
 	private final Random rand;
-	private final ConnectivityAlgorithm ccAlg = ConnectivityAlgorithm.newBuilder().build();
+	private final ConnectedComponentsAlgo ccAlg = ConnectedComponentsAlgo.newBuilder().build();
 	private final MSTBoruvka boruvka = new MSTBoruvka();
 	private final TreePathMaxima tpm = new TreePathMaximaHagerup();
 
@@ -148,8 +148,8 @@ public class MSTKargerKleinTarjan implements MST {
 	private IntCollection lightEdges(Graph g, Int2DoubleFunction gw, Graph f, Int2DoubleFunction fw) {
 		final int n = f.vertices().size();
 		/* find connectivity components in the forest, each one of them is a tree */
-		ConnectivityAlgorithm.Result connectivityRes = ccAlg.computeConnectivityComponents(f);
-		final int treeCount = connectivityRes.getNumberOfCC();
+		ConnectedComponentsAlgo.Result connectivityRes = ccAlg.computeConnectivityComponents(f);
+		final int treeCount = connectivityRes.getNumberOfCcs();
 		Int2IntFunction vToTree = connectivityRes::getVertexCc;
 
 		allocatedMem.allocateForLightEdges(n, treeCount);

@@ -17,17 +17,22 @@
 package com.jgalgo;
 
 import java.util.Arrays;
+import java.util.Objects;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntLists;
 import it.unimi.dsi.fastutil.ints.IntStack;
 
-class ConnectivityAlgorithmImpl implements ConnectivityAlgorithm {
+class ConnectedComponentsAlgoImpl implements ConnectedComponentsAlgo {
 
 	@Override
-	public ConnectivityAlgorithm.Result computeConnectivityComponents(Graph g) {
+	public ConnectedComponentsAlgo.Result computeConnectivityComponents(Graph g) {
 		return g.getCapabilities().directed() ? computeSCCDirected(g) : computeSCCUndirected(g);
 	}
 
-	private static ConnectivityAlgorithm.Result computeSCCDirected(Graph g) {
+	private static ConnectedComponentsAlgo.Result computeSCCDirected(Graph g) {
 		final int n = g.vertices().size();
 		IntStack s = new IntArrayList();
 		IntStack p = new IntArrayList();
@@ -87,10 +92,10 @@ class ConnectivityAlgorithmImpl implements ConnectivityAlgorithm {
 					break;
 			}
 		}
-		return new Result(compNum, comp);
+		return new Result(g, compNum, comp);
 	}
 
-	private static ConnectivityAlgorithm.Result computeSCCUndirected(Graph g) {
+	private static ConnectedComponentsAlgo.Result computeSCCUndirected(Graph g) {
 		final int n = g.vertices().size();
 		int[] comp = new int[n];
 		Arrays.fill(comp, -1);
@@ -119,32 +124,71 @@ class ConnectivityAlgorithmImpl implements ConnectivityAlgorithm {
 				}
 			}
 		}
-		return new Result(compNum, comp);
+		return new Result(g, compNum, comp);
 	}
 
-	private static class Result implements ConnectivityAlgorithm.Result {
+	private static class Result implements ConnectedComponentsAlgo.Result {
+		private final Graph g;
 		private final int ccNum;
-		private final int[] vertexToCC;
+		private final int[] vertexToCc;
+		private IntList[] ccVertices;
+		private IntList[] ccEdges;
 
-		private Result(int ccNum, int[] vertexToCC) {
+		private Result(Graph g, int ccNum, int[] vertexToCc) {
+			this.g = Objects.requireNonNull(g);
 			this.ccNum = ccNum;
-			this.vertexToCC = vertexToCC;
+			this.vertexToCc = Objects.requireNonNull(vertexToCc);
 		}
 
 		@Override
 		public int getVertexCc(int vertex) {
-			return vertexToCC[vertex];
+			return vertexToCc[vertex];
 		}
 
 		@Override
-		public int getNumberOfCC() {
+		public int getNumberOfCcs() {
 			return ccNum;
 		}
 
 		@Override
 		public String toString() {
-			return Arrays.toString(vertexToCC);
+			return Arrays.toString(vertexToCc);
 		}
+
+		@Override
+		public IntCollection getCcVertices(int ccIdx) {
+			if (ccVertices == null) {
+				ccVertices = new IntList[ccNum];
+				for (int c = 0; c < ccNum; c++)
+					ccVertices[c] = new IntArrayList();
+				final int n = vertexToCc.length;
+				for (int u = 0; u < n; u++)
+					ccVertices[vertexToCc[u]].add(u);
+				for (int c = 0; c < ccNum; c++)
+					ccVertices[c] = IntLists.unmodifiable(ccVertices[c]);
+			}
+			return ccVertices[ccIdx];
+		}
+
+		@Override
+		public IntCollection getCcEdges(int ccIdx) {
+			if (ccEdges == null) {
+				ccEdges = new IntList[ccNum];
+				for (int c = 0; c < ccNum; c++)
+					ccEdges[c] = new IntArrayList();
+				for (IntIterator it = g.edges().iterator(); it.hasNext();) {
+					int e = it.nextInt();
+					int cc1 = vertexToCc[g.edgeSource(e)];
+					int cc2 = vertexToCc[g.edgeTarget(e)];
+					if (cc1 == cc2)
+						ccEdges[cc1].add(e);
+				}
+				for (int c = 0; c < ccNum; c++)
+					ccEdges[c] = IntLists.unmodifiable(ccEdges[c]);
+			}
+			return ccEdges[ccIdx];
+		}
+
 	}
 
 }

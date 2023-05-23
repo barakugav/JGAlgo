@@ -16,12 +16,14 @@
 
 package com.jgalgo;
 
+import it.unimi.dsi.fastutil.ints.IntCollection;
+
 /**
  * Connectivity components algorithm.
  *
  * @author Barak Ugav
  */
-public interface ConnectivityAlgorithm {
+public interface ConnectedComponentsAlgo {
 
 	/**
 	 * Find all (strongly) connected components in a graph.
@@ -32,7 +34,7 @@ public interface ConnectivityAlgorithm {
 	 * @param  g a graph
 	 * @return   a result object containing the partition of the vertices into (strongly) connected components
 	 */
-	ConnectivityAlgorithm.Result computeConnectivityComponents(Graph g);
+	ConnectedComponentsAlgo.Result computeConnectivityComponents(Graph g);
 
 	/**
 	 * Result object for connectivity components calculation.
@@ -51,41 +53,65 @@ public interface ConnectivityAlgorithm {
 		 * @param  vertex a vertex in the graph
 		 * @return        index of the connectivity component containing the vertex, in range [0, ccNum)
 		 */
-		public int getVertexCc(int vertex);
+		int getVertexCc(int vertex);
 
 		/**
 		 * Get the number of connectivity components in the graph.
 		 *
 		 * @return the number of connectivity components in the graph, non negative number
 		 */
-		public int getNumberOfCC();
+		int getNumberOfCcs();
+
+		/**
+		 * Get all the vertices that are part of a connectivity component.
+		 *
+		 * @param  ccIdx                     index of a connectivity component
+		 * @return                           the vertices that are part of the connectivity components
+		 * @throws IndexOutOfBoundsException if {@code ccIdx} is negative or greater than the number of connectivity
+		 *                                       components
+		 */
+		IntCollection getCcVertices(int ccIdx);
+
+		/**
+		 * Get all the edges that are part of a connectivity component.
+		 * <p>
+		 * An edge \((u,v)\) is part of a connectivity component if both \(u\) and \(v\) are part of the connectivity
+		 * component.
+		 *
+		 * @param  ccIdx                     index of a connectivity component
+		 * @return                           the edges that are part of the connectivity components
+		 * @throws IndexOutOfBoundsException if {@code ccIdx} is negative or greater than the number of connectivity
+		 *                                       components
+		 */
+		IntCollection getCcEdges(int ccIdx);
+
 	}
 
 	/**
 	 * Create a new connectivity algorithm builder.
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link ConnectivityAlgorithm} object.
+	 * This is the recommended way to instantiate a new {@link ConnectedComponentsAlgo} object.
 	 *
-	 * @return a new builder that can build {@link ConnectivityAlgorithm} objects
+	 * @return a new builder that can build {@link ConnectedComponentsAlgo} objects
 	 */
-	static ConnectivityAlgorithm.Builder newBuilder() {
-		return ConnectivityAlgorithmImpl::new;
+	static ConnectedComponentsAlgo.Builder newBuilder() {
+		return ConnectedComponentsAlgoImpl::new;
 	}
 
 	/**
-	 * A builder for {@link ConnectivityAlgorithm} objects.
+	 * A builder for {@link ConnectedComponentsAlgo} objects.
 	 *
-	 * @see    ConnectivityAlgorithm#newBuilder()
+	 * @see    ConnectedComponentsAlgo#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder extends BuilderAbstract<ConnectivityAlgorithm.Builder> {
+	static interface Builder extends BuilderAbstract<ConnectedComponentsAlgo.Builder> {
 
 		/**
 		 * Create a new algorithm object for connectivity components computation.
 		 *
 		 * @return a new connectivity components algorithm
 		 */
-		ConnectivityAlgorithm build();
+		ConnectedComponentsAlgo build();
 	}
 
 }

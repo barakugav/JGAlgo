@@ -45,7 +45,7 @@ public class SSSPGoldberg implements SSSP, AlgorithmWithDiagnostics {
 	private SSSP positiveSsspAlgo = new SSSPDijkstra();
 	private final SSSPDial ssspDial = new SSSPDial();
 	private final SSSP dagSssp = new SSSPDag();
-	private final ConnectivityAlgorithm ccAlg = ConnectivityAlgorithm.newBuilder().build();
+	private final ConnectedComponentsAlgo ccAlg = ConnectedComponentsAlgo.newBuilder().build();
 
 	private final Diagnostics diagnostics = new Diagnostics();
 
@@ -160,8 +160,8 @@ public class SSSPGoldberg implements SSSP, AlgorithmWithDiagnostics {
 				}
 
 				/* Find all strong connectivity components in the graph */
-				ConnectivityAlgorithm.Result connectivityRes = ccAlg.computeConnectivityComponents(gNeg);
-				final int N = connectivityRes.getNumberOfCC();
+				ConnectedComponentsAlgo.Result connectivityRes = ccAlg.computeConnectivityComponents(gNeg);
+				final int N = connectivityRes.getNumberOfCcs();
 
 				/*
 				 * Contract each strong connectivity component and search for a negative edge within it, if found -

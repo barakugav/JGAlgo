@@ -39,7 +39,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  */
 public class MinimumMeanCycleHoward implements MinimumMeanCycle {
 
-	private final ConnectivityAlgorithm ccAlg = ConnectivityAlgorithm.newBuilder().build();
+	private final ConnectedComponentsAlgo ccAlg = ConnectedComponentsAlgo.newBuilder().build();
 
 	private static final double EPS = 0.0001;
 
@@ -59,23 +59,8 @@ public class MinimumMeanCycleHoward implements MinimumMeanCycle {
 		int n = g.vertices().size();
 
 		/* find all SCC */
-		ConnectivityAlgorithm.Result cc = ccAlg.computeConnectivityComponents(g);
-		int ccNum = cc.getNumberOfCC();
-		IntList[] ccVertices = new IntList[ccNum];
-		IntList[] ccEdges = new IntList[ccNum];
-		for (int c = 0; c < ccNum; c++) {
-			ccVertices[c] = new IntArrayList();
-			ccEdges[c] = new IntArrayList();
-		}
-		for (int u = 0; u < n; u++)
-			ccVertices[cc.getVertexCc(u)].add(u);
-		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-			int e = it.nextInt();
-			int u = cc.getVertexCc(g.edgeSource(e));
-			int v = cc.getVertexCc(g.edgeTarget(e));
-			if (u == v)
-				ccEdges[u].add(e);
-		}
+		ConnectedComponentsAlgo.Result cc = ccAlg.computeConnectivityComponents(g);
+		final int ccNum = cc.getNumberOfCcs();
 
 		/* init distances and policy */
 		double[] d = new double[n];
@@ -83,7 +68,7 @@ public class MinimumMeanCycleHoward implements MinimumMeanCycle {
 		int[] policy = new int[n];
 		Arrays.fill(policy, 0, n, -1);
 		for (int c = 0; c < ccNum; c++) {
-			for (IntIterator it = ccEdges[c].iterator(); it.hasNext();) {
+			for (IntIterator it = cc.getCcEdges(c).iterator(); it.hasNext();) {
 				int e = it.nextInt();
 				double ew = w.weight(e);
 				int u = g.edgeSource(e);
@@ -103,7 +88,7 @@ public class MinimumMeanCycleHoward implements MinimumMeanCycle {
 		Arrays.fill(visitIdx, 0, n, 0);
 		/* operate on each SCC separately */
 		for (int ccIdx = 0; ccIdx < ccNum; ccIdx++) {
-			if (ccVertices[ccIdx].size() < 2)
+			if (cc.getCcVertices(ccIdx).size() < 2)
 				continue;
 			/* run in iteration as long as we find improvements */
 			sccLoop: for (;;) {
@@ -113,7 +98,7 @@ public class MinimumMeanCycleHoward implements MinimumMeanCycle {
 				final int iterationFirstSearchIdx = nextSearchIdx;
 				IntPredicate visited = v -> visitIdx[v] >= iterationFirstSearchIdx;
 				/* DFS root loop */
-				for (IntIterator rootIt = ccVertices[ccIdx].iterator(); rootIt.hasNext();) {
+				for (IntIterator rootIt = cc.getCcVertices(ccIdx).iterator(); rootIt.hasNext();) {
 					final int root = rootIt.nextInt();
 					if (visited.test(root))
 						continue;
@@ -183,7 +168,7 @@ public class MinimumMeanCycleHoward implements MinimumMeanCycle {
 
 				/* check for improvements */
 				boolean improved = false;
-				for (IntIterator eit = ccEdges[ccIdx].iterator(); eit.hasNext();) {
+				for (IntIterator eit = cc.getCcEdges(ccIdx).iterator(); eit.hasNext();) {
 					int e = eit.nextInt();
 					int u = g.edgeSource(e);
 					int v = g.edgeTarget(e);

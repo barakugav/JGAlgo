@@ -28,7 +28,7 @@ import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
-public class ConnectivityTest extends TestBase {
+public class ConnectedComponentsAlgoTest extends TestBase {
 
 	@Test
 	public void randGraphUndirected() {
@@ -39,8 +39,8 @@ public class ConnectivityTest extends TestBase {
 			int n = args[0], m = args[1];
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
-			ConnectivityAlgorithm.Result actual =
-					ConnectivityAlgorithm.newBuilder().build().computeConnectivityComponents(g);
+			ConnectedComponentsAlgo.Result actual =
+					ConnectedComponentsAlgo.newBuilder().build().computeConnectivityComponents(g);
 			validateConnectivityResult(g, actual);
 			Pair<Integer, int[]> expected = calcUndirectedConnectivity(g);
 			assertConnectivityResultsEqual(g, expected, actual);
@@ -72,8 +72,8 @@ public class ConnectivityTest extends TestBase {
 			int n = args[0], m = args[1];
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
-			ConnectivityAlgorithm.Result actual =
-					ConnectivityAlgorithm.newBuilder().build().computeConnectivityComponents(g);
+			ConnectedComponentsAlgo.Result actual =
+					ConnectedComponentsAlgo.newBuilder().build().computeConnectivityComponents(g);
 			validateConnectivityResult(g, actual);
 			Pair<Integer, int[]> expected = calcDirectedConnectivity(g);
 			assertConnectivityResultsEqual(g, expected, actual);
@@ -108,9 +108,9 @@ public class ConnectivityTest extends TestBase {
 	}
 
 	private static void assertConnectivityResultsEqual(Graph g, Pair<Integer, int[]> r1,
-			ConnectivityAlgorithm.Result r2) {
-		assertEquals(r1.first(), r2.getNumberOfCC());
-		Int2IntMap cc1To2Map = new Int2IntOpenHashMap(r2.getNumberOfCC());
+			ConnectedComponentsAlgo.Result r2) {
+		assertEquals(r1.first(), r2.getNumberOfCcs());
+		Int2IntMap cc1To2Map = new Int2IntOpenHashMap(r2.getNumberOfCcs());
 		int n = g.vertices().size();
 		for (int u = 0; u < n; u++) {
 			int cc1 = r1.second()[u];
@@ -124,13 +124,13 @@ public class ConnectivityTest extends TestBase {
 		}
 	}
 
-	private static void validateConnectivityResult(Graph g, ConnectivityAlgorithm.Result res) {
+	private static void validateConnectivityResult(Graph g, ConnectedComponentsAlgo.Result res) {
 		BitSet ccs = new BitSet();
 		int n = g.vertices().size();
 		for (int v = 0; v < n; v++)
 			ccs.set(res.getVertexCc(v));
-		assertEquals(ccs.cardinality(), res.getNumberOfCC());
-		for (int cc = 0; cc < res.getNumberOfCC(); cc++)
+		assertEquals(ccs.cardinality(), res.getNumberOfCcs());
+		for (int cc = 0; cc < res.getNumberOfCcs(); cc++)
 			assertTrue(ccs.get(cc));
 	}
 

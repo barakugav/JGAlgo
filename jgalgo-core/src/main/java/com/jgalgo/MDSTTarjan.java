@@ -35,7 +35,7 @@ class MDSTTarjan implements MDST {
 
 	private HeapReferenceable.Builder<Integer, Void> heapBuilder =
 			HeapReferenceable.newBuilder().keysTypePrimitive(int.class).valuesTypeVoid();
-	private final ConnectivityAlgorithm ccAlg = ConnectivityAlgorithm.newBuilder().build();
+	private final ConnectedComponentsAlgo ccAlg = ConnectedComponentsAlgo.newBuilder().build();
 	private static final int HeavyEdge = 0xffffffff;
 	private static final double HeavyEdgeWeight = Double.MAX_VALUE;
 	private static final Object EdgeRefWeightKey = new Object();
@@ -120,8 +120,8 @@ class MDSTTarjan implements MDST {
 	}
 
 	private void addEdgesUntilStronglyConnected(Graph g) {
-		ConnectivityAlgorithm.Result connectivityRes = ccAlg.computeConnectivityComponents(g);
-		int N = connectivityRes.getNumberOfCC();
+		ConnectedComponentsAlgo.Result connectivityRes = ccAlg.computeConnectivityComponents(g);
+		int N = connectivityRes.getNumberOfCcs();
 		if (N <= 1)
 			return;
 

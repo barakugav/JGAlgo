@@ -34,7 +34,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
  */
 public class MinimumMeanCycleDasdanGupta implements MinimumMeanCycle {
 
-	private final ConnectivityAlgorithm ccAlg = ConnectivityAlgorithm.newBuilder().build();
+	private final ConnectedComponentsAlgo ccAlg = ConnectedComponentsAlgo.newBuilder().build();
 	private static final double EPS = 0.00001;
 
 	/**
@@ -53,18 +53,13 @@ public class MinimumMeanCycleDasdanGupta implements MinimumMeanCycle {
 		int n = g.vertices().size();
 
 		/* find all SCC */
-		ConnectivityAlgorithm.Result cc = ccAlg.computeConnectivityComponents(g);
-		int ccNum = cc.getNumberOfCC();
-		IntList[] ccVertices = new IntList[ccNum];
-		for (int c = 0; c < ccNum; c++)
-			ccVertices[c] = new IntArrayList();
-		for (int u = 0; u < n; u++)
-			ccVertices[cc.getVertexCc(u)].add(u);
+		ConnectedComponentsAlgo.Result cc = ccAlg.computeConnectivityComponents(g);
+		final int ccNum = cc.getNumberOfCcs();
 
 		/* init distances and policy */
 		int maxCcSize = -1;
 		for (int c = 0; c < ccNum; c++)
-			maxCcSize = Math.max(maxCcSize, ccVertices[c].size());
+			maxCcSize = Math.max(maxCcSize, cc.getCcVertices(c).size());
 		double[][] d = new double[maxCcSize + 1][n];
 		int[][] policy = new int[maxCcSize + 1][n];
 		for (int k = 0; k < maxCcSize + 1; k++) {
@@ -79,11 +74,11 @@ public class MinimumMeanCycleDasdanGupta implements MinimumMeanCycle {
 		int bestCycleMeanWeightVertex = -1;
 		int bestCycleLength = -1;
 		for (int ccIdx = 0; ccIdx < ccNum; ccIdx++) {
-			final int ccSize = ccVertices[ccIdx].size();
+			final int ccSize = cc.getCcVertices(ccIdx).size();
 			if (ccSize < 2)
 				continue;
 
-			int source = ccVertices[ccIdx].iterator().nextInt();
+			int source = cc.getCcVertices(ccIdx).iterator().nextInt();
 			boolean[] firstVisit = visit1;
 			d[0][source] = 0;
 			policy[0][source] = -1;
@@ -92,7 +87,7 @@ public class MinimumMeanCycleDasdanGupta implements MinimumMeanCycle {
 			for (int k = 0; k < ccSize; k++) {
 				boolean[] visit = k % 2 == 0 ? visit1 : visit2;
 				boolean[] visitNext = k % 2 == 0 ? visit2 : visit1;
-				for (IntIterator uit = ccVertices[ccIdx].iterator(); uit.hasNext();) {
+				for (IntIterator uit = cc.getCcVertices(ccIdx).iterator(); uit.hasNext();) {
 					int u = uit.nextInt();
 					if (!visit[u])
 						continue;
@@ -113,7 +108,7 @@ public class MinimumMeanCycleDasdanGupta implements MinimumMeanCycle {
 			}
 
 			boolean[] lastVisit = ccSize % 2 == 0 ? visit1 : visit2;
-			for (IntIterator uit = ccVertices[ccIdx].iterator(); uit.hasNext();) {
+			for (IntIterator uit = cc.getCcVertices(ccIdx).iterator(); uit.hasNext();) {
 				int u = uit.nextInt();
 				if (!lastVisit[u])
 					continue;
@@ -137,7 +132,7 @@ public class MinimumMeanCycleDasdanGupta implements MinimumMeanCycle {
 		if (bestCycleMeanWeightVertex == -1)
 			return null;
 		final int ccIdx = cc.getVertexCc(bestCycleMeanWeightVertex);
-		final int ccSize = ccVertices[ccIdx].size();
+		final int ccSize = cc.getCcVertices(ccIdx).size();
 		int[] path = new int[ccSize];
 		for (int k = ccSize, v = bestCycleMeanWeightVertex; k > 0; k--) {
 			int e = path[k - 1] = policy[k][v];

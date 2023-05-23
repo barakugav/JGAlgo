@@ -40,7 +40,7 @@ import it.unimi.dsi.fastutil.objects.ObjectIntPair;
  */
 public class CyclesFinderJohnson implements CyclesFinder {
 
-	private final ConnectivityAlgorithm ccAlg = ConnectivityAlgorithm.newBuilder().build();
+	private final ConnectedComponentsAlgo ccAlg = ConnectedComponentsAlgo.newBuilder().build();
 
 	/**
 	 * Create a new cycles finder algorithm object.
@@ -166,14 +166,12 @@ public class CyclesFinderJohnson implements CyclesFinder {
 			}
 		}
 
-		ConnectivityAlgorithm.Result connectivityResult = ccAlg.computeConnectivityComponents(gSub);
-		int[] ccSize = new int[connectivityResult.getNumberOfCC()];
-		for (int uSub = 0; uSub < nSub; uSub++)
-			ccSize[connectivityResult.getVertexCc(uSub)]++;
+		ConnectedComponentsAlgo.Result connectivityResult = ccAlg.computeConnectivityComponents(gSub);
 
 		for (; startIdx < nFull; startIdx++) {
 			int uSub = startIdx - subToFull;
-			if (ccSize[connectivityResult.getVertexCc(uSub)] > 1 || hasSelfEdge(gSub, uSub))
+			int ccIdx = connectivityResult.getVertexCc(uSub);
+			if (connectivityResult.getCcVertices(ccIdx).size() > 1 || hasSelfEdge(gSub, uSub))
 				break;
 		}
 		if (startIdx >= nFull)
@@ -194,10 +192,10 @@ public class CyclesFinderJohnson implements CyclesFinder {
 	private static class StronglyConnectedComponent {
 
 		private final int subToFull;
-		private final ConnectivityAlgorithm.Result connectivityResult;
+		private final ConnectedComponentsAlgo.Result connectivityResult;
 		private final int ccIdx;
 
-		StronglyConnectedComponent(int subToFull, ConnectivityAlgorithm.Result connectivityResult, int ccIdx) {
+		StronglyConnectedComponent(int subToFull, ConnectedComponentsAlgo.Result connectivityResult, int ccIdx) {
 			this.subToFull = subToFull;
 			this.connectivityResult = connectivityResult;
 			this.ccIdx = ccIdx;
