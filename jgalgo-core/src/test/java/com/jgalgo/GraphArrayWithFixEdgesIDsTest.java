@@ -61,14 +61,20 @@ public class GraphArrayWithFixEdgesIDsTest extends TestBase {
 
 	@Test
 	public void testClear() {
-		final long seed = 0;
+		final long seed = 0x03af02c1eb2cf014L;
 		GraphImplTestUtils.testClear(graphImpl(), seed);
 	}
 
 	@Test
 	public void testClearEdges() {
-		final long seed = 0;
+		final long seed = 0xdf8fe47a0d7c622dL;
 		GraphImplTestUtils.testClearEdges(graphImpl(), seed);
+	}
+
+	@Test
+	public void testCopy() {
+		final long seed = 0x1b3449753f1f6e2dL;
+		GraphImplTestUtils.testCopy(graphImpl(), seed);
 	}
 
 	@Test

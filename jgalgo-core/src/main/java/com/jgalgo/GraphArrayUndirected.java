@@ -16,6 +16,7 @@
 
 package com.jgalgo;
 
+import java.util.Arrays;
 import com.jgalgo.GraphsUtils.GraphCapabilitiesBuilder;
 import com.jgalgo.GraphsUtils.UndirectedGraphImpl;
 import it.unimi.dsi.fastutil.ints.IntArrays;
@@ -58,6 +59,19 @@ class GraphArrayUndirected extends GraphArrayAbstract implements UndirectedGraph
 
 		addInternalVerticesDataContainer(DataContainerKeyEdges, edges);
 		addInternalVerticesDataContainer(DataContainerKeyEdgesNum, edgesNum);
+	}
+
+	GraphArrayUndirected(GraphArrayUndirected g) {
+		super(g);
+		final int n = g.vertices().size();
+
+		edges = g.edges.copy(verticesIDStrategy);
+		edgesNum = g.edgesNum.copy(verticesIDStrategy);
+		addInternalVerticesDataContainer(DataContainerKeyEdges, edges);
+		addInternalVerticesDataContainer(DataContainerKeyEdgesNum, edgesNum);
+
+		for (int v = 0; v < n; v++)
+			edges.set(v, Arrays.copyOf(edges.get(v), edgesNum.getInt(v)));
 	}
 
 	@Override
@@ -198,5 +212,10 @@ class GraphArrayUndirected extends GraphArrayAbstract implements UndirectedGraph
 
 	private static final GraphCapabilities Capabilities = GraphCapabilitiesBuilder.newUndirected().vertexAdd(true)
 			.vertexRemove(true).edgeAdd(true).edgeRemove(true).parallelEdges(true).selfEdges(true).build();
+
+	@Override
+	public Graph copy() {
+		return new GraphArrayUndirected(this);
+	}
 
 }

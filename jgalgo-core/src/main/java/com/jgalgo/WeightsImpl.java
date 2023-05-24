@@ -33,6 +33,8 @@ abstract class WeightsImpl<E> implements Weights<E> {
 		return container;
 	}
 
+	abstract WeightsImpl<E> copy(IDStrategy idStrat);
+
 	@SuppressWarnings("unchecked")
 	static <E, WeightsT extends Weights<E>> WeightsT newInstance(IDStrategy idStrat, Class<? super E> type, E defVal) {
 		DataContainer<E> container = DataContainer.newInstance(idStrat, type, defVal);
@@ -117,6 +119,11 @@ abstract class WeightsImpl<E> implements Weights<E> {
 			public E defaultWeight() {
 				return container().defaultVal();
 			}
+
+			@Override
+			WeightsImpl.Direct.Obj<E> copy(IDStrategy idStrat) {
+				return new WeightsImpl.Direct.Obj<>(container().copy(idStrat));
+			}
 		}
 
 		static class Byte extends Direct<java.lang.Byte> implements Weights.Byte {
@@ -142,6 +149,11 @@ abstract class WeightsImpl<E> implements Weights<E> {
 			@Override
 			public byte defaultWeightByte() {
 				return container().defaultValByte();
+			}
+
+			@Override
+			WeightsImpl.Direct.Byte copy(IDStrategy idStrat) {
+				return new WeightsImpl.Direct.Byte(container().copy(idStrat));
 			}
 		}
 
@@ -169,6 +181,11 @@ abstract class WeightsImpl<E> implements Weights<E> {
 			public short defaultWeightShort() {
 				return container().defaultValShort();
 			}
+
+			@Override
+			WeightsImpl.Direct.Short copy(IDStrategy idStrat) {
+				return new WeightsImpl.Direct.Short(container().copy(idStrat));
+			}
 		}
 
 		static class Int extends Direct<Integer> implements Weights.Int {
@@ -194,6 +211,11 @@ abstract class WeightsImpl<E> implements Weights<E> {
 			@Override
 			public int defaultWeightInt() {
 				return container().defaultValInt();
+			}
+
+			@Override
+			WeightsImpl.Direct.Int copy(IDStrategy idStrat) {
+				return new WeightsImpl.Direct.Int(container().copy(idStrat));
 			}
 		}
 
@@ -221,6 +243,11 @@ abstract class WeightsImpl<E> implements Weights<E> {
 			public long defaultWeightLong() {
 				return container().defaultValLong();
 			}
+
+			@Override
+			WeightsImpl.Direct.Long copy(IDStrategy idStrat) {
+				return new WeightsImpl.Direct.Long(container().copy(idStrat));
+			}
 		}
 
 		static class Float extends Direct<java.lang.Float> implements Weights.Float {
@@ -246,6 +273,11 @@ abstract class WeightsImpl<E> implements Weights<E> {
 			@Override
 			public float defaultWeightFloat() {
 				return container().defaultValFloat();
+			}
+
+			@Override
+			WeightsImpl.Direct.Float copy(IDStrategy idStrat) {
+				return new WeightsImpl.Direct.Float(container().copy(idStrat));
 			}
 		}
 
@@ -273,6 +305,11 @@ abstract class WeightsImpl<E> implements Weights<E> {
 			public double defaultWeightDouble() {
 				return container().defaultValDouble();
 			}
+
+			@Override
+			WeightsImpl.Direct.Double copy(IDStrategy idStrat) {
+				return new WeightsImpl.Direct.Double(container().copy(idStrat));
+			}
 		}
 
 		static class Bool extends Direct<Boolean> implements Weights.Bool {
@@ -299,6 +336,11 @@ abstract class WeightsImpl<E> implements Weights<E> {
 			public boolean defaultWeightBool() {
 				return container().defaultValBool();
 			}
+
+			@Override
+			WeightsImpl.Direct.Bool copy(IDStrategy idStrat) {
+				return new WeightsImpl.Direct.Bool(container().copy(idStrat));
+			}
 		}
 
 		static class Char extends Direct<Character> implements Weights.Char {
@@ -324,6 +366,11 @@ abstract class WeightsImpl<E> implements Weights<E> {
 			@Override
 			public char defaultWeightChar() {
 				return container().defaultValChar();
+			}
+
+			@Override
+			WeightsImpl.Direct.Char copy(IDStrategy idStrat) {
+				return new WeightsImpl.Direct.Char(container().copy(idStrat));
 			}
 		}
 	}
@@ -361,6 +408,11 @@ abstract class WeightsImpl<E> implements Weights<E> {
 			public E defaultWeight() {
 				return container().defaultVal();
 			}
+
+			@Override
+			WeightsImpl.Mapped.Obj<E> copy(IDStrategy idStrat) {
+				return new WeightsImpl.Mapped.Obj<E>(container().copy(idStrat), idStrat);
+			}
 		}
 
 		static class Byte extends Mapped<java.lang.Byte> implements Weights.Byte {
@@ -386,6 +438,11 @@ abstract class WeightsImpl<E> implements Weights<E> {
 			@Override
 			public byte defaultWeightByte() {
 				return container().defaultValByte();
+			}
+
+			@Override
+			WeightsImpl.Mapped.Byte copy(IDStrategy idStrat) {
+				return new WeightsImpl.Mapped.Byte(container().copy(idStrat), idStrat);
 			}
 		}
 
@@ -413,6 +470,11 @@ abstract class WeightsImpl<E> implements Weights<E> {
 			public short defaultWeightShort() {
 				return container().defaultValShort();
 			}
+
+			@Override
+			WeightsImpl.Mapped.Short copy(IDStrategy idStrat) {
+				return new WeightsImpl.Mapped.Short(container().copy(idStrat), idStrat);
+			}
 		}
 
 		static class Int extends Mapped<Integer> implements Weights.Int {
@@ -438,6 +500,11 @@ abstract class WeightsImpl<E> implements Weights<E> {
 			@Override
 			public int defaultWeightInt() {
 				return container().defaultValInt();
+			}
+
+			@Override
+			WeightsImpl.Mapped.Int copy(IDStrategy idStrat) {
+				return new WeightsImpl.Mapped.Int(container().copy(idStrat), idStrat);
 			}
 		}
 
@@ -465,6 +532,11 @@ abstract class WeightsImpl<E> implements Weights<E> {
 			public long defaultWeightLong() {
 				return container().defaultValLong();
 			}
+
+			@Override
+			WeightsImpl.Mapped.Long copy(IDStrategy idStrat) {
+				return new WeightsImpl.Mapped.Long(container().copy(idStrat), idStrat);
+			}
 		}
 
 		static class Float extends Mapped<java.lang.Float> implements Weights.Float {
@@ -490,6 +562,11 @@ abstract class WeightsImpl<E> implements Weights<E> {
 			@Override
 			public float defaultWeightFloat() {
 				return container().defaultValFloat();
+			}
+
+			@Override
+			WeightsImpl.Mapped.Float copy(IDStrategy idStrat) {
+				return new WeightsImpl.Mapped.Float(container().copy(idStrat), idStrat);
 			}
 		}
 
@@ -517,6 +594,11 @@ abstract class WeightsImpl<E> implements Weights<E> {
 			public double defaultWeightDouble() {
 				return container().defaultValDouble();
 			}
+
+			@Override
+			WeightsImpl.Mapped.Double copy(IDStrategy idStrat) {
+				return new WeightsImpl.Mapped.Double(container().copy(idStrat), idStrat);
+			}
 		}
 
 		static class Bool extends Mapped<Boolean> implements Weights.Bool {
@@ -542,6 +624,11 @@ abstract class WeightsImpl<E> implements Weights<E> {
 			@Override
 			public boolean defaultWeightBool() {
 				return container().defaultValBool();
+			}
+
+			@Override
+			WeightsImpl.Mapped.Bool copy(IDStrategy idStrat) {
+				return new WeightsImpl.Mapped.Bool(container().copy(idStrat), idStrat);
 			}
 		}
 
@@ -569,6 +656,11 @@ abstract class WeightsImpl<E> implements Weights<E> {
 			public char defaultWeightChar() {
 				return container().defaultValChar();
 			}
+
+			@Override
+			WeightsImpl.Mapped.Char copy(IDStrategy idStrat) {
+				return new WeightsImpl.Mapped.Char(container().copy(idStrat), idStrat);
+			}
 		}
 	}
 
@@ -580,13 +672,29 @@ abstract class WeightsImpl<E> implements Weights<E> {
 			super(initialCapacity);
 		}
 
+		Manager(Manager orig, IDStrategy idStrat) {
+			this(idStrat.size());
+			for (var entry : orig.weights.entrySet())
+				addWeights(entry.getKey(), entry.getValue().copy(idStrat));
+		}
+
+		@Override
+		Manager copy(IDStrategy idStrat) {
+			return new Manager(this, idStrat);
+		}
+
 		@SuppressWarnings("unchecked")
 		<E, WeightsT extends Weights<E>> WeightsT getWeights(Object key) {
 			return (WeightsT) weights.get(key);
 		}
 
+		@Override
+		final void addContainer(Object key, DataContainer<?> container) {
+			throw new UnsupportedOperationException();
+		}
+
 		void addWeights(Object key, Weights<?> weights) {
-			addContainer(key, ((WeightsImpl<?>) weights).container);
+			super.addContainer(key, ((WeightsImpl<?>) weights).container);
 			Object o = this.weights.put(key, (WeightsImpl<?>) weights);
 			assert o == null;
 		}

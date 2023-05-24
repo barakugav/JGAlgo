@@ -31,16 +31,25 @@ abstract class GraphLinkedAbstract extends GraphBaseContinues {
 		addInternalEdgesDataContainer(DataContainerKeyEdgeEndpoints, edges);
 	}
 
+	GraphLinkedAbstract(GraphLinkedAbstract g) {
+		super(g);
+		edges = new DataContainer.Obj<>(edgesIDStrategy, null, Node.class);
+		addInternalEdgesDataContainer(DataContainerKeyEdgeEndpoints, edges);
+		final int m = g.edges().size();
+		for (int e = 0; e < m; e++)
+			edges.set(e, allocNode(e, g.edgeSource(e), g.edgeTarget(e)));
+	}
+
 	@Override
 	public int edgeEndpoint(int edge, int endpoint) {
 		Node n = getNode(edge);
 		if (endpoint == n.source) {
-			return n.v;
-		} else if (endpoint == n.v) {
+			return n.target;
+		} else if (endpoint == n.target) {
 			return n.source;
 		} else {
 			throw new IllegalArgumentException("The given vertex (" + endpoint + ") is not an endpoint of the edge ("
-					+ n.source + ", " + n.v + ")");
+					+ n.source + ", " + n.target + ")");
 		}
 	}
 
@@ -92,7 +101,7 @@ abstract class GraphLinkedAbstract extends GraphBaseContinues {
 	@Override
 	public int edgeTarget(int edge) {
 		checkEdge(edge);
-		return getNode(edge).v;
+		return getNode(edge).target;
 	}
 
 	Collection<Node> nodes() {
@@ -148,12 +157,12 @@ abstract class GraphLinkedAbstract extends GraphBaseContinues {
 	abstract static class Node {
 
 		int id;
-		int source, v;
+		int source, target;
 
 		Node(int id, int source, int target) {
 			this.id = id;
 			this.source = source;
-			this.v = target;
+			this.target = target;
 		}
 
 	}

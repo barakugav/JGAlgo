@@ -56,14 +56,20 @@ public class GraphTableTest extends TestBase {
 
 	@Test
 	public void testClear() {
-		final long seed = 0;
+		final long seed = 0x25824e374104beceL;
 		GraphImplTestUtils.testClear(graphImpl(), seed);
 	}
 
 	@Test
 	public void testClearEdges() {
-		final long seed = 0;
+		final long seed = 0x79550c17b3a2bb6eL;
 		GraphImplTestUtils.testClearEdges(graphImpl(), seed);
+	}
+
+	@Test
+	public void testCopy() {
+		final long seed = 0xd400f44f753a56b6L;
+		GraphImplTestUtils.testCopy(graphImpl(), seed);
 	}
 
 	@Test

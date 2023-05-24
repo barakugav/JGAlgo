@@ -23,6 +23,10 @@ class EdgeEndpointsContainer extends DataContainer.Long {
 		super(idStrat, sourceTarget2Endpoints(None, None));
 	}
 
+	EdgeEndpointsContainer(EdgeEndpointsContainer orig, IDStrategy idStrat) {
+		super(orig, idStrat);
+	}
+
 	void setEndpoints(int edge, int source, int target) {
 		set(edge, sourceTarget2Endpoints(source, target));
 	}
@@ -78,6 +82,11 @@ class EdgeEndpointsContainer extends DataContainer.Long {
 		if (target == oldEndpoint)
 			target = newEndpoint;
 		set(edge, sourceTarget2Endpoints(source, target));
+	}
+
+	@Override
+	EdgeEndpointsContainer copy(IDStrategy idStrat) {
+		return new EdgeEndpointsContainer(this, idStrat);
 	}
 
 	private static long sourceTarget2Endpoints(int source, int target) {

@@ -197,6 +197,9 @@ class GraphsUtils {
 
 	private abstract static class EmptyGraph implements Graph {
 
+		private final IDStrategy.Continues verticesIDStrat = new IDStrategy.Continues(0);
+		private final IDStrategy.Continues edgesIDStrat = new IDStrategy.Continues(0);
+
 		@Override
 		public IntSet vertices() {
 			return IntSets.emptySet();
@@ -216,12 +219,6 @@ class GraphsUtils {
 		public void removeVertex(int vertex) {
 			throw new IndexOutOfBoundsException(vertex);
 		}
-
-		// @Override
-		// public void removeVertices(IntCollection vs) {
-		// if (!vs.isEmpty())
-		// throw new IndexOutOfBoundsException(vs.iterator().nextInt());
-		// }
 
 		@Override
 		public EdgeIter edgesOut(int source) {
@@ -247,12 +244,6 @@ class GraphsUtils {
 		public void removeEdge(int edge) {
 			throw new IndexOutOfBoundsException(edge);
 		}
-
-		// @Override
-		// public void removeEdges(IntCollection edges) {
-		// if (!edges.isEmpty())
-		// throw new IndexOutOfBoundsException(edges.iterator().nextInt());
-		// }
 
 		@Override
 		public void reverseEdge(int edge) {
@@ -324,16 +315,18 @@ class GraphsUtils {
 
 		@Override
 		public IDStrategy.Continues getVerticesIDStrategy() {
-			// TODO Auto-generated method stub
-			throw new UnsupportedOperationException("Unimplemented method 'getVerticesIDStrategy'");
+			return verticesIDStrat;
 		}
 
 		@Override
 		public IDStrategy getEdgesIDStrategy() {
-			// TODO Auto-generated method stub
-			throw new UnsupportedOperationException("Unimplemented method 'getEdgesIDStrategy'");
+			return edgesIDStrat;
 		}
 
+		@Override
+		public Graph copy() {
+			return this;
+		}
 	}
 
 	static final Graph EmptyGraphUndirected = new EmptyGraph() {

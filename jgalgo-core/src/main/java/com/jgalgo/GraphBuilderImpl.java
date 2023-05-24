@@ -142,6 +142,19 @@ class GraphBuilderImpl implements GraphBuilder {
 			verticesWeights = new WeightsImpl.Manager(verticesIDStrategy.size());
 			edgesWeights = new WeightsImpl.Manager(edgesIDStrategy.size());
 
+			initListenersToUnderlyingGraph();
+		}
+
+		GraphCustomIDStrategies(GraphCustomIDStrategies orig) {
+			super(orig.verticesIDStrategy.copy(), orig.edgesIDStrategy.copy());
+			this.g = (GraphBaseContinues) orig.g.copy();
+			verticesWeights = orig.verticesWeights.copy(verticesIDStrategy);
+			edgesWeights = orig.edgesWeights.copy(edgesIDStrategy);
+
+			initListenersToUnderlyingGraph();
+		}
+
+		private void initListenersToUnderlyingGraph() {
 			g.getVerticesIDStrategy().addIDSwapListener((vIdx1, vIdx2) -> {
 				verticesIDStrategy.idxSwap(vIdx1, vIdx2);
 				verticesWeights.swapElements(vIdx1, vIdx2);
@@ -419,10 +432,19 @@ class GraphBuilderImpl implements GraphBuilder {
 			ArgumentCheck.onlyDirected(g);
 		}
 
+		GraphCustomIDStrategiesDirected(GraphCustomIDStrategiesDirected g) {
+			super(g);
+		}
+
 		@Override
 		public void reverseEdge(int edge) {
 			int eIdx = edgesIDStrategy.idToIdx(edge);
 			g.reverseEdge(eIdx);
+		}
+
+		@Override
+		public Graph copy() {
+			return new GraphCustomIDStrategiesDirected(this);
 		}
 
 	}
@@ -433,6 +455,15 @@ class GraphBuilderImpl implements GraphBuilder {
 		GraphCustomIDStrategiesUndirected(GraphBaseContinues g, IDStrategy edgesIDStrategy) {
 			super(g, edgesIDStrategy);
 			ArgumentCheck.onlyUndirected(g);
+		}
+
+		GraphCustomIDStrategiesUndirected(GraphCustomIDStrategiesUndirected g) {
+			super(g);
+		}
+
+		@Override
+		public Graph copy() {
+			return new GraphCustomIDStrategiesUndirected(this);
 		}
 
 	}

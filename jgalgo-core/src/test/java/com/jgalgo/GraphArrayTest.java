@@ -61,14 +61,20 @@ public class GraphArrayTest extends TestBase {
 
 	@Test
 	public void testClear() {
-		final long seed = 0;
+		final long seed = 0x23321e37dfd99637L;
 		GraphImplTestUtils.testClear(graphImpl(), seed);
 	}
 
 	@Test
 	public void testClearEdges() {
-		final long seed = 0;
+		final long seed = 0xad0005187cebcd83L;
 		GraphImplTestUtils.testClearEdges(graphImpl(), seed);
+	}
+
+	@Test
+	public void testCopy() {
+		final long seed = 0xf26cb0540a4874e8L;
+		GraphImplTestUtils.testCopy(graphImpl(), seed);
 	}
 
 	@Test

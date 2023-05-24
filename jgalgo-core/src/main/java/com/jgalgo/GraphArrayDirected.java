@@ -16,6 +16,7 @@
 
 package com.jgalgo;
 
+import java.util.Arrays;
 import com.jgalgo.GraphsUtils.GraphCapabilitiesBuilder;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 
@@ -65,6 +66,25 @@ class GraphArrayDirected extends GraphArrayAbstract {
 		addInternalVerticesDataContainer(DataContainerKeyEdgesOutNum, edgesOutNum);
 		addInternalVerticesDataContainer(DataContainerKeyEdgesIn, edgesIn);
 		addInternalVerticesDataContainer(DataContainerKeyEdgesInNum, edgesInNum);
+	}
+
+	GraphArrayDirected(GraphArrayDirected g) {
+		super(g);
+		final int n = g.vertices().size();
+
+		edgesOut = g.edgesOut.copy(verticesIDStrategy);
+		edgesOutNum = g.edgesOutNum.copy(verticesIDStrategy);
+		edgesIn = g.edgesIn.copy(verticesIDStrategy);
+		edgesInNum = g.edgesInNum.copy(verticesIDStrategy);
+		addInternalVerticesDataContainer(DataContainerKeyEdgesOut, edgesOut);
+		addInternalVerticesDataContainer(DataContainerKeyEdgesOutNum, edgesOutNum);
+		addInternalVerticesDataContainer(DataContainerKeyEdgesIn, edgesIn);
+		addInternalVerticesDataContainer(DataContainerKeyEdgesInNum, edgesInNum);
+
+		for (int v = 0; v < n; v++) {
+			edgesOut.set(v, Arrays.copyOf(edgesOut.get(v), edgesOutNum.getInt(v)));
+			edgesIn.set(v, Arrays.copyOf(edgesIn.get(v), edgesInNum.getInt(v)));
+		}
 	}
 
 	@Override
@@ -257,5 +277,10 @@ class GraphArrayDirected extends GraphArrayAbstract {
 
 	private static final GraphCapabilities Capabilities = GraphCapabilitiesBuilder.newDirected().vertexAdd(true)
 			.vertexRemove(true).edgeAdd(true).edgeRemove(true).parallelEdges(true).selfEdges(true).build();
+
+	@Override
+	public Graph copy() {
+		return new GraphArrayDirected(this);
+	}
 
 }

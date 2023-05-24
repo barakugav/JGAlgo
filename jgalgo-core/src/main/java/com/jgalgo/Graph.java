@@ -620,4 +620,13 @@ public interface Graph {
 	 */
 	public GraphCapabilities getCapabilities();
 
+	/**
+	 * Create a copy of this graph.
+	 * <p>
+	 * An identical copy of this graph will be created, with the same vertices, edges, weights and capabilities.
+	 *
+	 * @return an identical copy of this graph
+	 */
+	public Graph copy();
+
 }

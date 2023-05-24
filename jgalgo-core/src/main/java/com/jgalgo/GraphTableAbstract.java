@@ -44,6 +44,22 @@ abstract class GraphTableAbstract extends GraphBaseContinues implements GraphWit
 		addInternalEdgesDataContainer(DataContainerKeyEdgeEndpoints, edgeEndpoints);
 	}
 
+	GraphTableAbstract(GraphTableAbstract g) {
+		super(g);
+
+		final int n = g.vertices().size();
+		edges = g.edges.copy(verticesIDStrategy);
+		addInternalVerticesDataContainer(DataContainerKeyEdges, edges);
+		for (int u = 0; u < n; u++) {
+			DataContainer.Int uEdges = edges.get(u).copy(verticesIDStrategy);
+			edges.set(u, uEdges);
+			addInternalVerticesDataContainer(new Utils.Obj("perVertexEdges"), uEdges);
+		}
+
+		edgeEndpoints = g.edgeEndpoints.copy(edgesIDStrategy);
+		addInternalEdgesDataContainer(DataContainerKeyEdgeEndpoints, edgeEndpoints);
+	}
+
 	@Override
 	public int addVertex() {
 		int v = super.addVertex();

@@ -18,6 +18,7 @@ package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import java.util.ArrayList;
@@ -351,6 +352,114 @@ class GraphImplTestUtils extends TestUtils {
 				g.clearEdges();
 				assertEquals(expectedN, g.vertices().size());
 				assertEquals(0, g.edges().size());
+			}
+		}
+	}
+
+	private static IntSet setOf(IntIterator it) {
+		return new IntOpenHashSet(it);
+	}
+
+	static void testCopy(GraphBuilder graphImpl, long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		final Random rand = new Random(seedGen.nextSeed());
+		for (boolean directed : new boolean[] { true, false }) {
+			/* Create a random graph g */
+			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(100).m(300).directed(directed).parallelEdges(false)
+					.selfEdges(false).cycles(true).connected(false).graphImpl(graphImpl).build();
+
+			/* assign some weights to the vertices of g */
+			final Object gVDataKey = new Utils.Obj("vData");
+			Weights<Object> gVData = g.addVerticesWeights(gVDataKey, Object.class);
+			Int2ObjectMap<Object> gVDataMap = new Int2ObjectOpenHashMap<>();
+			for (IntIterator uit = g.vertices().iterator(); uit.hasNext();) {
+				int u = uit.nextInt();
+				Object data = new Utils.Obj("data" + u);
+				gVData.set(u, data);
+				gVDataMap.put(u, data);
+			}
+
+			/* assign some weights to the edges of g */
+			final Object gEDataKey = new Utils.Obj("eData");
+			Weights<Object> gEData = g.addEdgesWeights(gEDataKey, Object.class);
+			Int2ObjectMap<Object> gEDataMap = new Int2ObjectOpenHashMap<>();
+			for (IntIterator eit = g.edges().iterator(); eit.hasNext();) {
+				int e = eit.nextInt();
+				Object data = new Utils.Obj("data" + e);
+				gEData.set(e, data);
+				gEDataMap.put(e, data);
+			}
+
+			/* Copy g */
+			Graph copy = g.copy();
+
+			/* Assert vertices and edges are the same */
+			assertEquals(g.vertices().size(), copy.vertices().size());
+			assertEquals(g.vertices(), copy.vertices());
+			assertEquals(g.edges().size(), copy.edges().size());
+			assertEquals(g.edges(), copy.edges());
+			for (IntIterator uit = g.vertices().iterator(); uit.hasNext();) {
+				int u = uit.nextInt();
+				assertEquals(setOf(g.edgesOut(u)), setOf(copy.edgesOut(u)));
+				assertEquals(setOf(g.edgesIn(u)), setOf(copy.edgesIn(u)));
+			}
+
+			/* Assert weights were copied */
+			Weights<Object> copyVData = copy.getVerticesWeights(gVDataKey);
+			Weights<Object> copyEData = copy.getEdgesWeights(gEDataKey);
+			assertNotNull(copyVData);
+			assertNotNull(copyEData);
+			Int2ObjectMap<Object> copyVDataMap = new Int2ObjectOpenHashMap<>(gVDataMap);
+			Int2ObjectMap<Object> copyEDataMap = new Int2ObjectOpenHashMap<>(gEDataMap);
+			for (IntIterator uit = g.vertices().iterator(); uit.hasNext();) {
+				int u = uit.nextInt();
+				assertEquals(gVDataMap.get(u), gVData.get(u));
+				assertEquals(copyVDataMap.get(u), copyVData.get(u));
+			}
+			for (IntIterator eit = g.edges().iterator(); eit.hasNext();) {
+				int e = eit.nextInt();
+				assertEquals(gEDataMap.get(e), gEData.get(e));
+				assertEquals(copyEDataMap.get(e), copyEData.get(e));
+			}
+
+			/* Reassign some weights to both g and copy, and assert they are updated independently */
+			for (int ops = 0; ops < g.vertices().size() / 4; ops++) {
+				int u = rand.nextInt(g.vertices().size());
+				Object data = new Utils.Obj("data" + u + "new");
+				g.getVerticesWeights(gVDataKey).set(u, data);
+				gVDataMap.put(u, data);
+			}
+			for (int ops = 0; ops < copy.vertices().size() / 4; ops++) {
+				int u = rand.nextInt(copy.vertices().size());
+				Object data = new Utils.Obj("data" + u + "new");
+				copy.getVerticesWeights(gVDataKey).set(u, data);
+				copyVDataMap.put(u, data);
+			}
+			int[] gEdges = g.edges().toIntArray();
+			for (int ops = 0; ops < g.edges().size() / 4; ops++) {
+				int e = gEdges[rand.nextInt(g.edges().size())];
+				Object data = new Utils.Obj("data" + e + "new");
+				g.getEdgesWeights(gEDataKey).set(e, data);
+				gEDataMap.put(e, data);
+			}
+			int[] copyEdges = copy.edges().toIntArray();
+			for (int ops = 0; ops < copy.edges().size() / 4; ops++) {
+				int e = copyEdges[rand.nextInt(copy.edges().size())];
+				Object data = new Utils.Obj("data" + e + "new");
+				copy.getEdgesWeights(gEDataKey).set(e, data);
+				copyEDataMap.put(e, data);
+			}
+
+			/* Assert the weights were updated independently */
+			for (IntIterator uit = g.vertices().iterator(); uit.hasNext();) {
+				int u = uit.nextInt();
+				assertEquals(gVDataMap.get(u), gVData.get(u));
+				assertEquals(copyVDataMap.get(u), copyVData.get(u));
+			}
+			for (IntIterator eit = g.edges().iterator(); eit.hasNext();) {
+				int e = eit.nextInt();
+				assertEquals(gEDataMap.get(e), gEData.get(e));
+				assertEquals(copyEDataMap.get(e), copyEData.get(e));
 			}
 		}
 	}

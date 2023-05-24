@@ -32,6 +32,12 @@ abstract class GraphArrayAbstract extends GraphBaseContinues implements GraphWit
 		addInternalEdgesDataContainer(DataContainerKeyEdgeEndpoints, edgeEndpoints);
 	}
 
+	GraphArrayAbstract(GraphArrayAbstract g) {
+		super(g);
+		edgeEndpoints = g.edgeEndpoints.copy(edgesIDStrategy);
+		addInternalEdgesDataContainer(DataContainerKeyEdgeEndpoints, edgeEndpoints);
+	}
+
 	@Override
 	public int addEdge(int source, int target) {
 		int e = super.addEdge(source, target);

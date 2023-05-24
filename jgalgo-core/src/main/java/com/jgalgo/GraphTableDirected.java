@@ -42,6 +42,10 @@ class GraphTableDirected extends GraphTableAbstract {
 		super(n);
 	}
 
+	GraphTableDirected(GraphTableDirected g) {
+		super(g);
+	}
+
 	@Override
 	public EdgeIter edgesOut(int source) {
 		return new EdgeIterOut(source);
@@ -116,5 +120,10 @@ class GraphTableDirected extends GraphTableAbstract {
 
 	private static final GraphCapabilities Capabilities = GraphCapabilitiesBuilder.newDirected().vertexAdd(true)
 			.vertexRemove(true).edgeAdd(true).edgeRemove(true).parallelEdges(false).selfEdges(false).build();
+
+	@Override
+	public Graph copy() {
+		return new GraphTableDirected(this);
+	}
 
 }

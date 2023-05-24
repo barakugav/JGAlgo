@@ -53,6 +53,17 @@ class GraphLinkedUndirected extends GraphLinkedAbstract implements UndirectedGra
 		addInternalVerticesDataContainer(DataContainerKeyEdges, edges);
 	}
 
+	GraphLinkedUndirected(GraphLinkedUndirected g) {
+		super(g);
+
+		edges = new DataContainer.Obj<>(verticesIDStrategy, null, Node.class);
+		addInternalVerticesDataContainer(DataContainerKeyEdges, edges);
+
+		final int m = g.edges().size();
+		for (int e = 0; e < m; e++)
+			addEdgeToLists((Node) getNode(e));
+	}
+
 	@Override
 	public void removeVertex(int vertex) {
 		vertex = vertexSwapBeforeRemove(vertex);
@@ -67,22 +78,22 @@ class GraphLinkedUndirected extends GraphLinkedAbstract implements UndirectedGra
 			next = p.next(v1);
 			if (p.source == v1)
 				p.source = tempV;
-			if (p.v == v1)
-				p.v = tempV;
+			if (p.target == v1)
+				p.target = tempV;
 		}
 		for (Node p = edges.get(v2), next; p != null; p = next) {
 			next = p.next(v2);
 			if (p.source == v2)
 				p.source = v1;
-			if (p.v == v2)
-				p.v = v1;
+			if (p.target == v2)
+				p.target = v1;
 		}
 		for (Node p = edges.get(v1), next; p != null; p = next) {
 			next = p.next(tempV);
 			if (p.source == tempV)
 				p.source = v2;
-			if (p.v == tempV)
-				p.v = v2;
+			if (p.target == tempV)
+				p.target = v2;
 		}
 
 		edges.swap(v1, v2);
@@ -100,7 +111,14 @@ class GraphLinkedUndirected extends GraphLinkedAbstract implements UndirectedGra
 	public int addEdge(int source, int target) {
 		if (source == target)
 			throw new IllegalArgumentException("self edges are not supported");
-		Node e = (Node) addEdgeNode(source, target), next;
+		Node e = (Node) addEdgeNode(source, target);
+		addEdgeToLists(e);
+		return e.id;
+	}
+
+	private void addEdgeToLists(Node e) {
+		int source = e.source, target = e.target;
+		Node next;
 		if ((next = edges.get(source)) != null) {
 			e.nextSet(source, next);
 			next.prevSet(source, e);
@@ -111,7 +129,6 @@ class GraphLinkedUndirected extends GraphLinkedAbstract implements UndirectedGra
 			next.prevSet(target, e);
 		}
 		edges.set(target, e);
-		return e.id;
 	}
 
 	@Override
@@ -128,7 +145,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract implements UndirectedGra
 	void removeEdge(GraphLinkedAbstract.Node node) {
 		Node n = (Node) node;
 		removeEdge0(n, n.source);
-		removeEdge0(n, n.v);
+		removeEdge0(n, n.target);
 		super.removeEdge(node);
 	}
 
@@ -184,12 +201,12 @@ class GraphLinkedUndirected extends GraphLinkedAbstract implements UndirectedGra
 		}
 
 		Node next(int w) {
-			assert w == source || w == v;
+			assert w == source || w == target;
 			return w == source ? nextu : nextv;
 		}
 
 		void nextSet(int w, Node n) {
-			assert w == source || w == v;
+			assert w == source || w == target;
 			if (w == source)
 				nextu = n;
 			else
@@ -197,12 +214,12 @@ class GraphLinkedUndirected extends GraphLinkedAbstract implements UndirectedGra
 		}
 
 		Node prev(int w) {
-			assert w == source || w == v;
+			assert w == source || w == target;
 			return w == source ? prevu : prevv;
 		}
 
 		void prevSet(int w, Node n) {
-			assert w == source || w == v;
+			assert w == source || w == target;
 			if (w == source)
 				prevu = n;
 			else
@@ -210,8 +227,8 @@ class GraphLinkedUndirected extends GraphLinkedAbstract implements UndirectedGra
 		}
 
 		int getEndpoint(int w) {
-			assert w == source || w == v;
-			return w == source ? v : source;
+			assert w == source || w == target;
+			return w == source ? target : source;
 		}
 
 	}
@@ -237,7 +254,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract implements UndirectedGra
 
 		@Override
 		public int target() {
-			int u0 = last.source, v0 = last.v;
+			int u0 = last.source, v0 = last.target;
 			return source == u0 ? v0 : u0;
 		}
 
@@ -250,5 +267,10 @@ class GraphLinkedUndirected extends GraphLinkedAbstract implements UndirectedGra
 
 	private static final GraphCapabilities Capabilities = GraphCapabilitiesBuilder.newUndirected().vertexAdd(true)
 			.vertexRemove(true).edgeAdd(true).edgeRemove(true).parallelEdges(true).selfEdges(false).build();
+
+	@Override
+	public Graph copy() {
+		return new GraphLinkedUndirected(this);
+	}
 
 }

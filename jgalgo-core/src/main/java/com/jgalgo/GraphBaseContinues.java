@@ -33,6 +33,19 @@ abstract class GraphBaseContinues extends GraphBase {
 		edgesUserData = new WeightsImpl.Manager(0);
 	}
 
+	GraphBaseContinues(GraphBaseContinues g) {
+		super(new IDStrategy.Continues(g.vertices().size()), new IDStrategy.Continues(g.edges().size()));
+
+		/* internal data containers should be copied manually */
+		// verticesInternalData = g.verticesInternalData.copy(verticesIDStrategy);
+		// edgesInternalData = g.edgesInternalData.copy(edgesIDStrategy);
+		verticesInternalData = new DataContainer.Manager(verticesIDStrategy.size());
+		edgesInternalData = new DataContainer.Manager(edgesIDStrategy.size());
+
+		verticesUserData = g.verticesUserData.copy(verticesIDStrategy);
+		edgesUserData = g.edgesUserData.copy(edgesIDStrategy);
+	}
+
 	@Override
 	public int addVertex() {
 		int u = verticesIDStrategy.newIdx();

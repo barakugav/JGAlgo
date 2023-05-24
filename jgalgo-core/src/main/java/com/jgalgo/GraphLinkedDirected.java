@@ -57,6 +57,19 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 		addInternalVerticesDataContainer(DataContainerKeyEdgesIn, edgesIn);
 	}
 
+	GraphLinkedDirected(GraphLinkedDirected g) {
+		super(g);
+
+		edgesOut = new DataContainer.Obj<>(verticesIDStrategy, null, Node.class);
+		edgesIn = new DataContainer.Obj<>(verticesIDStrategy, null, Node.class);
+		addInternalVerticesDataContainer(DataContainerKeyEdgesOut, edgesOut);
+		addInternalVerticesDataContainer(DataContainerKeyEdgesIn, edgesIn);
+
+		final int m = g.edges().size();
+		for (int e = 0; e < m; e++)
+			addEdgeToLists((Node) getNode(e));
+	}
+
 	@Override
 	public void removeVertex(int vertex) {
 		vertex = vertexSwapBeforeRemove(vertex);
@@ -70,11 +83,11 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 		for (Node p = edgesOut.get(v1); p != null; p = p.nextOut)
 			p.source = v2;
 		for (Node p = edgesIn.get(v1); p != null; p = p.nextIn)
-			p.v = v2;
+			p.target = v2;
 		for (Node p = edgesOut.get(v2); p != null; p = p.nextOut)
 			p.source = v1;
 		for (Node p = edgesIn.get(v2); p != null; p = p.nextIn)
-			p.v = v1;
+			p.target = v1;
 
 		edgesOut.swap(v1, v2);
 		edgesIn.swap(v1, v2);
@@ -102,7 +115,7 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	}
 
 	private void addEdgeToLists(Node e) {
-		int u = e.source, v = e.v;
+		int u = e.source, v = e.target;
 		Node next;
 		next = edgesOut.get(u);
 		if (next != null) {
@@ -177,7 +190,7 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	private void removeEdgeInNode(Node e) {
 		Node next = e.nextIn, prev = e.prevIn;
 		if (prev == null) {
-			edgesIn.set(e.v, next);
+			edgesIn.set(e.target, next);
 		} else {
 			prev.nextIn = next;
 			e.prevIn = null;
@@ -191,13 +204,13 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	@Override
 	public void reverseEdge(int edge) {
 		Node n = (Node) getNode(edge);
-		if (n.source == n.v)
+		if (n.source == n.target)
 			return;
 		removeEdgeOutNode(n);
 		removeEdgeInNode(n);
 		int w = n.source;
-		n.source = n.v;
-		n.v = w;
+		n.source = n.target;
+		n.target = w;
 		addEdgeToLists(n);
 	}
 
@@ -225,7 +238,7 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 
 		@Override
 		public int target() {
-			return last.v;
+			return last.target;
 		}
 
 	}
@@ -276,5 +289,10 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 
 	private static final GraphCapabilities Capabilities = GraphCapabilitiesBuilder.newDirected().vertexAdd(true)
 			.vertexRemove(true).edgeAdd(true).edgeRemove(true).parallelEdges(true).selfEdges(true).build();
+
+	@Override
+	public Graph copy() {
+		return new GraphLinkedDirected(this);
+	}
 
 }

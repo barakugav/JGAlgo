@@ -141,6 +141,11 @@ public abstract class IDStrategy {
 			notifyIDSwap(id1, id2);
 		}
 
+		@Override
+		IDStrategy.Continues copy() {
+			return new IDStrategy.Continues(size);
+		}
+
 		private void checkIdx(int idx) {
 			if (!(0 <= idx && idx < size))
 				throw new IndexOutOfBoundsException(idx);
@@ -152,13 +157,17 @@ public abstract class IDStrategy {
 		private final Int2IntOpenHashMap idToIdx;
 		private final IntSet idsView; // move to graph abstract implementation
 		private final DataContainer.Int idxToId;
-		private int idxToIdCapacity;
 
 		FixedAbstract() {
 			idToIdx = new Int2IntOpenHashMap();
 			idsView = IntSets.unmodifiable(idToIdx.keySet());
 			idxToId = new DataContainer.Int(this, 0);
-			idxToIdCapacity = 0;
+		}
+
+		FixedAbstract(FixedAbstract orig) {
+			idToIdx = new Int2IntOpenHashMap(orig.idToIdx);
+			idsView = IntSets.unmodifiable(idToIdx.keySet());
+			idxToId = orig.idxToId.copy(this);
 		}
 
 		@Override
@@ -167,11 +176,8 @@ public abstract class IDStrategy {
 			int id = nextID();
 			assert id >= 0;
 			idToIdx.put(id, idx);
-			if (idx == idxToIdCapacity) {
-				int newCapacity = Math.max(2, 2 * idxToIdCapacity);
-				idxToId.expand(newCapacity);
-				idxToIdCapacity = newCapacity;
-			}
+			if (idx == idxToId.capacity())
+				idxToId.expand(Math.max(2, 2 * idxToId.capacity()));
 			idxToId.set(idx, id);
 			notifyIDAdd(id);
 			return idx;
@@ -253,11 +259,20 @@ public abstract class IDStrategy {
 			counter = 0;
 		}
 
+		Fixed(Fixed orig) {
+			super(orig);
+			this.counter = orig.counter;
+		}
+
 		@Override
 		int nextID() {
 			return counter++;
 		}
 
+		@Override
+		IDStrategy.Fixed copy() {
+			return new IDStrategy.Fixed(this);
+		}
 	}
 
 	static class Rand extends FixedAbstract {
@@ -266,6 +281,10 @@ public abstract class IDStrategy {
 
 		Rand() {}
 
+		Rand(Rand orig) {
+			super(orig);
+		}
+
 		@Override
 		int nextID() {
 			for (;;) {
@@ -273,6 +292,11 @@ public abstract class IDStrategy {
 				if (id >= 0 && !idSet().contains(id))
 					return id;
 			}
+		}
+
+		@Override
+		IDStrategy.Rand copy() {
+			return new IDStrategy.Rand(this);
 		}
 	}
 
@@ -320,6 +344,8 @@ public abstract class IDStrategy {
 	}
 
 	abstract void ensureSize(int n);
+
+	abstract IDStrategy copy();
 
 	/**
 	 * Add a listener that will be notified each time the strategy chooses to swap two IDs.

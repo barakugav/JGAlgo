@@ -61,14 +61,20 @@ public class GraphLinkedTest extends TestBase {
 
 	@Test
 	public void testClear() {
-		final long seed = 0;
+		final long seed = 0x100115652062b424L;
 		GraphImplTestUtils.testClear(graphImpl(), seed);
 	}
 
 	@Test
 	public void testClearEdges() {
-		final long seed = 0;
+		final long seed = 0x914bb2f87efda719L;
 		GraphImplTestUtils.testClearEdges(graphImpl(), seed);
+	}
+
+	@Test
+	public void testCopy() {
+		final long seed = 0x6f2eabc8e7cd3a70L;
+		GraphImplTestUtils.testCopy(graphImpl(), seed);
 	}
 
 	@Test

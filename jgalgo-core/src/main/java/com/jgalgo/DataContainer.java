@@ -88,6 +88,8 @@ abstract class DataContainer<E> {
 
 	abstract Class<E> getTypeClass();
 
+	abstract DataContainer<E> copy(IDStrategy idStrat);
+
 	int size() {
 		return idStrat.size();
 	}
@@ -243,6 +245,15 @@ abstract class DataContainer<E> {
 		}
 
 		@Override
+		DataContainer.Obj<E> copy(IDStrategy idStrat) {
+			if (idStrat.size() != this.idStrat.size())
+				throw new IllegalArgumentException();
+			DataContainer.Obj<E> copy = new DataContainer.Obj<>(idStrat, defaultVal, type);
+			copy.weights = Arrays.copyOf(weights, idStrat.size());
+			return copy;
+		}
+
+		@Override
 		public boolean equals(Object other) {
 			if (other == this)
 				return true;
@@ -337,6 +348,15 @@ abstract class DataContainer<E> {
 		@Override
 		Class<java.lang.Byte> getTypeClass() {
 			return byte.class;
+		}
+
+		@Override
+		DataContainer.Byte copy(IDStrategy idStrat) {
+			if (idStrat.size() != this.idStrat.size())
+				throw new IllegalArgumentException();
+			DataContainer.Byte copy = new DataContainer.Byte(idStrat, defaultVal);
+			copy.weights = Arrays.copyOf(weights, idStrat.size());
+			return copy;
 		}
 
 		@Override
@@ -437,6 +457,15 @@ abstract class DataContainer<E> {
 		}
 
 		@Override
+		DataContainer.Short copy(IDStrategy idStrat) {
+			if (idStrat.size() != this.idStrat.size())
+				throw new IllegalArgumentException();
+			DataContainer.Short copy = new DataContainer.Short(idStrat, defaultVal);
+			copy.weights = Arrays.copyOf(weights, idStrat.size());
+			return copy;
+		}
+
+		@Override
 		public boolean equals(Object other) {
 			if (this == other)
 				return true;
@@ -534,6 +563,15 @@ abstract class DataContainer<E> {
 		}
 
 		@Override
+		DataContainer.Int copy(IDStrategy idStrat) {
+			if (idStrat.size() != this.idStrat.size())
+				throw new IllegalArgumentException();
+			DataContainer.Int copy = new DataContainer.Int(idStrat, defaultVal);
+			copy.weights = Arrays.copyOf(weights, idStrat.size());
+			return copy;
+		}
+
+		@Override
 		public boolean equals(Object other) {
 			if (this == other)
 				return true;
@@ -548,31 +586,39 @@ abstract class DataContainer<E> {
 
 		private long[] weights;
 		private final long defaultVal;
-		private final LongCollection values;
+		private final LongCollection values = new AbstractLongList() {
+
+			@Override
+			public int size() {
+				return DataContainer.Long.super.size();
+			}
+
+			@Override
+			public LongListIterator iterator() {
+				return LongIterators.wrap(weights, 0, size());
+			}
+
+			@Override
+			public long getLong(int index) {
+				checkIdx(index);
+				return weights[index];
+			}
+		};
 
 		Long(IDStrategy idStrat, long defVal) {
 			super(idStrat);
 
 			weights = LongArrays.EMPTY_ARRAY;
 			defaultVal = defVal;
-			values = new AbstractLongList() {
+		}
 
-				@Override
-				public int size() {
-					return DataContainer.Long.super.size();
-				}
+		Long(DataContainer.Long orig, IDStrategy idStrat) {
+			super(idStrat);
+			if (idStrat.size() != this.idStrat.size())
+				throw new IllegalArgumentException();
 
-				@Override
-				public LongListIterator iterator() {
-					return LongIterators.wrap(weights, 0, size());
-				}
-
-				@Override
-				public long getLong(int index) {
-					checkIdx(index);
-					return weights[index];
-				}
-			};
+			weights = Arrays.copyOf(orig.weights, idStrat.size());
+			defaultVal = orig.defaultVal;
 		}
 
 		long getLong(int idx) {
@@ -628,6 +674,11 @@ abstract class DataContainer<E> {
 		@Override
 		Class<java.lang.Long> getTypeClass() {
 			return long.class;
+		}
+
+		@Override
+		DataContainer.Long copy(IDStrategy idStrat) {
+			return new DataContainer.Long(this, idStrat);
 		}
 
 		@Override
@@ -728,6 +779,15 @@ abstract class DataContainer<E> {
 		}
 
 		@Override
+		DataContainer.Float copy(IDStrategy idStrat) {
+			if (idStrat.size() != this.idStrat.size())
+				throw new IllegalArgumentException();
+			DataContainer.Float copy = new DataContainer.Float(idStrat, defaultVal);
+			copy.weights = Arrays.copyOf(weights, idStrat.size());
+			return copy;
+		}
+
+		@Override
 		public boolean equals(Object other) {
 			if (this == other)
 				return true;
@@ -825,6 +885,15 @@ abstract class DataContainer<E> {
 		}
 
 		@Override
+		DataContainer.Double copy(IDStrategy idStrat) {
+			if (idStrat.size() != this.idStrat.size())
+				throw new IllegalArgumentException();
+			DataContainer.Double copy = new DataContainer.Double(idStrat, defaultVal);
+			copy.weights = Arrays.copyOf(weights, idStrat.size());
+			return copy;
+		}
+
+		@Override
 		public boolean equals(Object other) {
 			if (this == other)
 				return true;
@@ -840,68 +909,72 @@ abstract class DataContainer<E> {
 		private final BitSet weights;
 		private int capacity;
 		private final boolean defaultVal;
-		private final BooleanCollection values;
+		private final BooleanCollection values = new AbstractBooleanList() {
+
+			@Override
+			public int size() {
+				return DataContainer.Bool.super.size();
+			}
+
+			@Override
+			public BooleanListIterator iterator() {
+				return new BooleanListIterator() {
+					int idx = 0;
+
+					@Override
+					public boolean hasNext() {
+						return idx < size();
+					}
+
+					@Override
+					public boolean nextBoolean() {
+						if (!hasNext())
+							throw new NoSuchElementException();
+						return weights.get(idx++);
+					}
+
+					@Override
+					public boolean previousBoolean() {
+						if (!hasPrevious())
+							throw new NoSuchElementException();
+						return weights.get(--idx);
+					}
+
+					@Override
+					public boolean hasPrevious() {
+						return idx > 0;
+					}
+
+					@Override
+					public int nextIndex() {
+						return idx;
+					}
+
+					@Override
+					public int previousIndex() {
+						return idx - 1;
+					}
+				};
+			}
+
+			@Override
+			public boolean getBoolean(int index) {
+				checkIdx(index);
+				return weights.get(index);
+			}
+		};
+
+		Bool(DataContainer.Bool orig, IDStrategy idStrat) {
+			super(idStrat);
+			defaultVal = orig.defaultVal;
+			weights = (BitSet) orig.weights.clone();
+		}
 
 		Bool(IDStrategy idStrat, boolean defVal) {
 			super(idStrat);
 
 			defaultVal = defVal;
 			weights = new BitSet();
-			capacity = 0;
-			values = new AbstractBooleanList() {
-
-				@Override
-				public int size() {
-					return DataContainer.Bool.super.size();
-				}
-
-				@Override
-				public BooleanListIterator iterator() {
-					return new BooleanListIterator() {
-						int idx = 0;
-
-						@Override
-						public boolean hasNext() {
-							return idx < size();
-						}
-
-						@Override
-						public boolean nextBoolean() {
-							if (!hasNext())
-								throw new NoSuchElementException();
-							return weights.get(idx++);
-						}
-
-						@Override
-						public boolean previousBoolean() {
-							if (!hasPrevious())
-								throw new NoSuchElementException();
-							return weights.get(--idx);
-						}
-
-						@Override
-						public boolean hasPrevious() {
-							return idx > 0;
-						}
-
-						@Override
-						public int nextIndex() {
-							return idx;
-						}
-
-						@Override
-						public int previousIndex() {
-							return idx - 1;
-						}
-					};
-				}
-
-				@Override
-				public boolean getBoolean(int index) {
-					checkIdx(index);
-					return weights.get(index);
-				}
-			};
 		}
 
 		boolean getBool(int idx) {
@@ -960,6 +1033,13 @@ abstract class DataContainer<E> {
 		@Override
 		Class<Boolean> getTypeClass() {
 			return boolean.class;
+		}
+
+		@Override
+		DataContainer.Bool copy(IDStrategy idStrat) {
+			if (idStrat.size() != this.idStrat.size())
+				throw new IllegalArgumentException();
+			return new DataContainer.Bool(this, idStrat);
 		}
 
 		@Override
@@ -1060,6 +1140,15 @@ abstract class DataContainer<E> {
 		}
 
 		@Override
+		DataContainer.Char copy(IDStrategy idStrat) {
+			if (idStrat.size() != this.idStrat.size())
+				throw new IllegalArgumentException();
+			DataContainer.Char copy = new DataContainer.Char(idStrat, defaultVal);
+			copy.weights = Arrays.copyOf(weights, idStrat.size());
+			return copy;
+		}
+
+		@Override
 		public boolean equals(Object other) {
 			if (this == other)
 				return true;
@@ -1079,12 +1168,22 @@ abstract class DataContainer<E> {
 			containersCapacity = initCapacity;
 		}
 
-		void addContainer(Object key, DataContainer<?> weight) {
-			DataContainer<?> oldWeights = containers.put(key, weight);
-			if (oldWeights != null)
+		Manager(Manager orig, IDStrategy idStrat) {
+			this(idStrat.size());
+			for (var entry : orig.containers.entrySet())
+				containers.put(entry.getKey(), entry.getValue().copy(idStrat));
+		}
+
+		Manager copy(IDStrategy idStrat) {
+			return new Manager(this, idStrat);
+		}
+
+		void addContainer(Object key, DataContainer<?> container) {
+			DataContainer<?> oldContainer = containers.put(key, container);
+			if (oldContainer != null)
 				throw new IllegalArgumentException("Two weights types with the same key: " + key);
-			if (containersCapacity > weight.capacity())
-				weight.expand(containersCapacity);
+			if (containersCapacity > container.capacity())
+				container.expand(containersCapacity);
 		}
 
 		void ensureCapacity(int capacity) {

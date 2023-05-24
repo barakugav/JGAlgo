@@ -43,6 +43,10 @@ class GraphTableUndirected extends GraphTableAbstract implements UndirectedGraph
 		super(n);
 	}
 
+	GraphTableUndirected(GraphTableUndirected g) {
+		super(g);
+	}
+
 	@Override
 	public int addEdge(int source, int target) {
 		int e = super.addEdge(source, target);
@@ -101,5 +105,10 @@ class GraphTableUndirected extends GraphTableAbstract implements UndirectedGraph
 
 	private static final GraphCapabilities Capabilities = GraphCapabilitiesBuilder.newUndirected().vertexAdd(true)
 			.vertexRemove(true).edgeAdd(true).edgeRemove(true).parallelEdges(false).selfEdges(false).build();
+
+	@Override
+	public Graph copy() {
+		return new GraphTableUndirected(this);
+	}
 
 }
