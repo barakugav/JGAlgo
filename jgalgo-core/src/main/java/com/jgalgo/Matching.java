@@ -39,7 +39,7 @@ public interface Matching {
 	 * \(w\).
 	 *
 	 * @param  vertex a vertex
-	 * @return        {@code true} if {@code v} has an adjacent edge in the matching, else {@code false}
+	 * @return        {@code true} if {@code vertex} has an adjacent edge in the matching, else {@code false}
 	 */
 	boolean isVertexMatched(int vertex);
 

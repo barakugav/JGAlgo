@@ -36,7 +36,7 @@ public interface Cut {
 	 * \setminus C\).
 	 *
 	 * @param  vertex a vertex identifier
-	 * @return        {@code true} if {@code v} is in the first set of the partition, \(C\)
+	 * @return        {@code true} if {@code vertex} is in the first set of the partition, \(C\)
 	 */
 	boolean containsVertex(int vertex);
 

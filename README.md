@@ -107,7 +107,8 @@ for (IntIterator it = ssspRes.getPath(v3).iterator(); it.hasNext();) {
 | Johnson Cycles Finder | $O((m + n) (c + 1))$ | where $c$ is the number of simple cycles |
 | Minimum Mean Cycle Howard | $O(m N)$ | where $N$ is product of the out-degrees of all the vertices. Perform well in practice |
 | Minimum Mean Cycle Dasdan-Gupta | $O(m n)$ | |
-| Connectivity components calculation (undirected), strongly connected (directed) | $O(n + m)$ | |
+| Connected components calculation (undirected), strongly connected (directed) | $O(n + m)$ | |
+| Bi-Connected components calculation (undirected) | $O(n + m)$ | |
 | Topological sort calculation (DAG) | $O(n + m)$ |
 | Euler Tour calculation | $O(n + m)$ |
 
