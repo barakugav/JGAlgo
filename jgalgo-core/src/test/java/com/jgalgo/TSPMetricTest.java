@@ -47,18 +47,14 @@ public class TSPMetricTest extends TestBase {
 			locations[u][y] = nextDouble(rand, 1, 100);
 		}
 
-		Graph g = GraphBuilder.newUndirected().addHint(GraphBuilder.Hint.FastEdgeLookup).build();
-		for (int u = 0; u < n; u++)
-			g.addVertex();
-		Weights.Double distances = g.addEdgesWeights(g, double.class);
-		for (int u = 0; u < n; u++) {
-			for (int v = u + 1; v < n; v++) {
-				double xd = locations[u][x] - locations[v][x];
-				double yd = locations[u][y] - locations[v][y];
-				int e = g.addEdge(u, v);
-				distances.set(e, Math.sqrt(xd * xd + yd * yd));
-			}
-		}
+		Graph g = Graphs.newCompleteGraphUndirected(n);
+		EdgeWeightFunc distances = e -> {
+			int u = g.edgeSource(e);
+			int v = g.edgeTarget(e);
+			double xd = locations[u][x] - locations[v][x];
+			double yd = locations[u][y] - locations[v][y];
+			return Math.sqrt(xd * xd + yd * yd);
+		};
 
 		Path appxMst = new TSPMetricMSTAppx().computeShortestTour(g, distances);
 		Path appxMatch = new TSPMetricMatchingAppx().computeShortestTour(g, distances);
