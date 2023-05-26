@@ -693,7 +693,7 @@ class GraphImplTestUtils extends TestUtils {
 			// opRand.add(GraphOp.RemoveVertices, 1);
 		}
 
-		final Object dataKey = new Object();
+		final Object dataKey = new Utils.Obj("data");
 		Weights.Int edgeData = g.addEdgesWeights(dataKey, int.class);
 		UniqueGenerator dataGen = new UniqueGenerator(seedGen.nextSeed());
 

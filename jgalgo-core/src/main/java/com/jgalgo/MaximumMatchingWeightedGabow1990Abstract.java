@@ -447,7 +447,7 @@ abstract class MaximumMatchingWeightedGabow1990Abstract implements MaximumMatchi
 			}
 		}
 
-		private static final Object EdgeValKey = new Object();
+		private static final Object EdgeValKey = new Utils.Obj("edgeVal");
 
 		Worker(Graph gOrig, EdgeWeightFunc w, HeapReferenceable.Builder<Object, Object> heapBuilder,
 				DebugPrintsManager debugPrint) {

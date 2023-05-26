@@ -39,7 +39,7 @@ public class TSPMetricMSTAppx implements TSPMetric {
 	// * increases the running time to O(n^3)
 	// */
 	// private static final boolean VALIDATE_METRIC = true;
-	private static final Object EdgeRefWeightKey = new Object();
+	private static final Object EdgeRefWeightKey = new Utils.Obj("refToOrig");
 
 	/**
 	 * Create a new TSP \(2\)-approximation algorithm.

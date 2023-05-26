@@ -35,8 +35,8 @@ class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeighted {
 
 	private Object bipartiteVerticesWeightKey = Weights.DefaultBipartiteWeightKey;
 	private SSSP ssspAlgo = new SSSPDijkstra();
-	private static final Object EdgeRefWeightKey = new Object();
-	private static final Object EdgeWeightKey = new Object();
+	private static final Object EdgeRefWeightKey = new Utils.Obj("refToOrig");
+	private static final Object EdgeWeightKey = new Utils.Obj("weight");
 
 	/**
 	 * Create a new maximum weighted matching object.

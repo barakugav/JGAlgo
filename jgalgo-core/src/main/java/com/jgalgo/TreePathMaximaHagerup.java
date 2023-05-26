@@ -86,7 +86,7 @@ class TreePathMaximaHagerup implements TreePathMaxima {
 		private int treeHeight;
 		/* Map an edge it 'tree' to an edge in 'tOrig' */
 		private final Weights.Int edgeRef = tree.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
-		private static final Object EdgeRefWeightKey = new Object();
+		private static final Object EdgeRefWeightKey = new Utils.Obj("refToOrig");
 
 		private final LCAStatic lcaAlgo = new LCAStaticRMQ();
 		private int root;

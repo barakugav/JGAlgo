@@ -40,10 +40,9 @@ public class MaximumFlowDinicDynamicTrees implements MaximumFlow {
 
 	private final DebugPrintsManager debug = new DebugPrintsManager(false);
 	private static final double EPS = 0.0001;
-	static final Object EdgeRefWeightKey = new Object();
-	static final Object EdgeRevWeightKey = new Object();
-	private static final Object FlowWeightKey = new Object();
-	private static final Object CapacityWeightKey = new Object();
+	static final Object EdgeRefWeightKey = new Utils.Obj("refToOrig");
+	private static final Object FlowWeightKey = new Utils.Obj("flow");
+	private static final Object CapacityWeightKey = new Utils.Obj("capacity");
 
 	/**
 	 * Create a new maximum flow algorithm object.

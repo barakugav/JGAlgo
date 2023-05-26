@@ -32,8 +32,8 @@ class MaximumFlowAbstract {
 		final Weights.Int edgeRef;
 		final Weights.Int twin;
 
-		static final Object EdgeRefWeightKey = new Object();
-		static final Object EdgeRevWeightKey = new Object();
+		static final Object EdgeRefWeightKey = new Utils.Obj("refToOrig");
+		static final Object EdgeTwinWeightKey = new Utils.Obj("twin");
 
 		Worker(Graph gOrig, FlowNetwork net, int source, int sink) {
 			ArgumentCheck.sourceSinkNotTheSame(source, sink);
@@ -46,7 +46,7 @@ class MaximumFlowAbstract {
 
 			g = GraphBuilder.newDirected().build(n);
 			edgeRef = g.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
-			twin = g.addEdgesWeights(EdgeRevWeightKey, int.class, Integer.valueOf(-1));
+			twin = g.addEdgesWeights(EdgeTwinWeightKey, int.class, Integer.valueOf(-1));
 
 			boolean directed = gOrig.getCapabilities().directed();
 			for (IntIterator it = gOrig.edges().iterator(); it.hasNext();) {

@@ -662,11 +662,6 @@ public interface Weights<W> {
 	 * {@link #DefaultBipartiteWeightKey}. To use a different key, the algorithms expose a
 	 * {@code setBipartiteVerticesWeightKey(Object)} function.
 	 */
-	public static final Object DefaultBipartiteWeightKey = new Object() {
-		@Override
-		public String toString() {
-			return "DefaultBipartiteVerticesWeightKey";
-		}
-	};
+	public static final Object DefaultBipartiteWeightKey = new Utils.Obj("DefaultBipartiteVerticesWeightKey");
 
 }

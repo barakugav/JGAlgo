@@ -34,7 +34,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 class MaximumMatchingCardinalityBipartiteHopcroftKarp implements MaximumMatchingCardinality {
 
 	private Object bipartiteVerticesWeightKey = Weights.DefaultBipartiteWeightKey;
-	private static final Object EdgeRefWeightKey = new Object();
+	private static final Object EdgeRefWeightKey = new Utils.Obj("refToOrig");
 
 	/**
 	 * Create a new maximum matching object.

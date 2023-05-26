@@ -38,7 +38,7 @@ class MDSTTarjan implements MDST {
 	private final ConnectedComponentsAlgo ccAlg = ConnectedComponentsAlgo.newBuilder().build();
 	private static final int HeavyEdge = 0xffffffff;
 	private static final double HeavyEdgeWeight = Double.MAX_VALUE;
-	private static final Object EdgeRefWeightKey = new Object();
+	private static final Object EdgeRefWeightKey = new Utils.Obj("refToOrig");
 
 	/**
 	 * Construct a new MDST algorithm object.

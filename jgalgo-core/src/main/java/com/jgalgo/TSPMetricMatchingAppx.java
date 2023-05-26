@@ -31,8 +31,8 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 	private final MST mstAlgo = MST.newBuilder().build();
 	private final MaximumMatching matchingAlgo = MaximumMatching.newBuilder().build();
 
-	private static final Object EdgeWeightKey = new Object();
-	private static final Object EdgeRefWeightKey = new Object();
+	private static final Object EdgeWeightKey = new Utils.Obj("weight");
+	private static final Object EdgeRefWeightKey = new Utils.Obj("refToOrig");
 
 	/**
 	 * Create a new TSP \(3/2\)-approximation algorithm.

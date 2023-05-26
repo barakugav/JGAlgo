@@ -153,7 +153,7 @@ class Utils {
 
 		private final Iterator<? super E> it;
 		private Object peek;
-		private static final Object PeekNone = new Object();
+		private static final Object PeekNone = new Utils.Obj("None");
 
 		IterPeekableImpl(Iterator<? super E> it) {
 			this.it = Objects.requireNonNull(it);
@@ -611,6 +611,19 @@ class Utils {
 		@Override
 		protected V compute() {
 			return exec.get();
+		}
+	}
+
+	static class Obj {
+		private final String s;
+
+		Obj(String s) {
+			this.s = Objects.requireNonNull(s);
+		}
+
+		@Override
+		public String toString() {
+			return s;
 		}
 	}
 
