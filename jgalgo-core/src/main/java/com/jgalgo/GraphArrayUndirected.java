@@ -36,6 +36,9 @@ class GraphArrayUndirected extends GraphArrayAbstract implements UndirectedGraph
 	private final DataContainer.Obj<int[]> edges;
 	private final DataContainer.Int edgesNum;
 
+	private static final Object DataContainerKeyEdges = new Utils.Obj("edges");
+	private static final Object DataContainerKeyEdgesNum = new Utils.Obj("edgesNum");
+
 	/**
 	 * Create a new graph with no vertices and edges.
 	 */
@@ -53,8 +56,8 @@ class GraphArrayUndirected extends GraphArrayAbstract implements UndirectedGraph
 		edges = new DataContainer.Obj<>(verticesIDStrategy, IntArrays.EMPTY_ARRAY, int[].class);
 		edgesNum = new DataContainer.Int(verticesIDStrategy, 0);
 
-		addInternalVerticesDataContainer(edges);
-		addInternalVerticesDataContainer(edgesNum);
+		addInternalVerticesDataContainer(DataContainerKeyEdges, edges);
+		addInternalVerticesDataContainer(DataContainerKeyEdgesNum, edgesNum);
 	}
 
 	@Override

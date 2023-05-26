@@ -19,6 +19,7 @@ package com.jgalgo;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collection;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import it.unimi.dsi.fastutil.booleans.AbstractBooleanList;
@@ -55,6 +56,7 @@ import it.unimi.dsi.fastutil.longs.LongCollection;
 import it.unimi.dsi.fastutil.longs.LongIterators;
 import it.unimi.dsi.fastutil.longs.LongListIterator;
 import it.unimi.dsi.fastutil.objects.AbstractObjectList;
+import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrays;
 import it.unimi.dsi.fastutil.objects.ObjectCollection;
 import it.unimi.dsi.fastutil.objects.ObjectIterators;
@@ -71,6 +73,8 @@ abstract class DataContainer<E> {
 	DataContainer(IDStrategy idStrat) {
 		this.idStrat = Objects.requireNonNull(idStrat);
 	}
+
+	abstract int capacity();
 
 	abstract void expand(int newCapacity);
 
@@ -198,6 +202,11 @@ abstract class DataContainer<E> {
 		}
 
 		@Override
+		int capacity() {
+			return weights.length;
+		}
+
+		@Override
 		void expand(int newCapacity) {
 			int oldCapacity = weights.length;
 			assert oldCapacity < newCapacity;
@@ -287,6 +296,11 @@ abstract class DataContainer<E> {
 
 		byte defaultValByte() {
 			return defaultVal;
+		}
+
+		@Override
+		int capacity() {
+			return weights.length;
 		}
 
 		@Override
@@ -382,6 +396,11 @@ abstract class DataContainer<E> {
 		}
 
 		@Override
+		int capacity() {
+			return weights.length;
+		}
+
+		@Override
 		void expand(int newCapacity) {
 			int oldCapacity = weights.length;
 			assert oldCapacity < newCapacity;
@@ -471,6 +490,11 @@ abstract class DataContainer<E> {
 
 		int defaultValInt() {
 			return defaultVal;
+		}
+
+		@Override
+		int capacity() {
+			return weights.length;
 		}
 
 		@Override
@@ -566,6 +590,11 @@ abstract class DataContainer<E> {
 		}
 
 		@Override
+		int capacity() {
+			return weights.length;
+		}
+
+		@Override
 		void expand(int newCapacity) {
 			int oldCapacity = weights.length;
 			assert oldCapacity < newCapacity;
@@ -658,6 +687,11 @@ abstract class DataContainer<E> {
 		}
 
 		@Override
+		int capacity() {
+			return weights.length;
+		}
+
+		@Override
 		void expand(int newCapacity) {
 			int oldCapacity = weights.length;
 			assert oldCapacity < newCapacity;
@@ -747,6 +781,11 @@ abstract class DataContainer<E> {
 
 		double defaultValDouble() {
 			return defaultVal;
+		}
+
+		@Override
+		int capacity() {
+			return weights.length;
 		}
 
 		@Override
@@ -880,6 +919,11 @@ abstract class DataContainer<E> {
 		}
 
 		@Override
+		int capacity() {
+			return capacity;
+		}
+
+		@Override
 		void expand(int newCapacity) {
 			int oldCapacity = capacity;
 			assert oldCapacity < newCapacity;
@@ -975,6 +1019,11 @@ abstract class DataContainer<E> {
 		}
 
 		@Override
+		int capacity() {
+			return weights.length;
+		}
+
+		@Override
 		void expand(int newCapacity) {
 			int oldCapacity = weights.length;
 			assert oldCapacity < newCapacity;
@@ -1019,6 +1068,49 @@ abstract class DataContainer<E> {
 			DataContainer.Char o = (DataContainer.Char) other;
 			return Arrays.equals(weights, 0, size(), o.weights, 0, o.size());
 		}
+	}
+
+	static class Manager {
+
+		final Map<Object, DataContainer<?>> containers = new Object2ObjectArrayMap<>();
+		private int containersCapacity;
+
+		Manager(int initCapacity) {
+			containersCapacity = initCapacity;
+		}
+
+		void addContainer(Object key, DataContainer<?> weight) {
+			DataContainer<?> oldWeights = containers.put(key, weight);
+			if (oldWeights != null)
+				throw new IllegalArgumentException("Two weights types with the same key: " + key);
+			if (containersCapacity > weight.capacity())
+				weight.expand(containersCapacity);
+		}
+
+		void ensureCapacity(int capacity) {
+			if (capacity <= containersCapacity)
+				return;
+			int newCapacity = Math.max(Math.max(2, 2 * containersCapacity), capacity);
+			for (DataContainer<?> container : containers.values())
+				container.expand(newCapacity);
+			containersCapacity = newCapacity;
+		}
+
+		void swapElements(int idx1, int idx2) {
+			for (DataContainer<?> container : containers.values())
+				container.swap(idx1, idx2);
+		}
+
+		void clearElement(int idx) {
+			for (DataContainer<?> container : containers.values())
+				container.clear(idx);
+		}
+
+		void clearContainers() {
+			for (DataContainer<?> container : containers.values())
+				container.clear();
+		}
+
 	}
 
 }

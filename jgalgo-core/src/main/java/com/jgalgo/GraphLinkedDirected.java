@@ -33,6 +33,9 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	private final DataContainer.Obj<Node> edgesIn;
 	private final DataContainer.Obj<Node> edgesOut;
 
+	private static final Object DataContainerKeyEdgesOut = new Utils.Obj("edgesOut");
+	private static final Object DataContainerKeyEdgesIn = new Utils.Obj("edgesIn");
+
 	/**
 	 * Create a new graph with no vertices and edges.
 	 */
@@ -48,11 +51,10 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	GraphLinkedDirected(int n) {
 		super(n);
 
-		edgesIn = new DataContainer.Obj<>(verticesIDStrategy, null, Node.class);
 		edgesOut = new DataContainer.Obj<>(verticesIDStrategy, null, Node.class);
-
-		addInternalVerticesDataContainer(edgesIn);
-		addInternalVerticesDataContainer(edgesOut);
+		edgesIn = new DataContainer.Obj<>(verticesIDStrategy, null, Node.class);
+		addInternalVerticesDataContainer(DataContainerKeyEdgesOut, edgesOut);
+		addInternalVerticesDataContainer(DataContainerKeyEdgesIn, edgesIn);
 	}
 
 	@Override

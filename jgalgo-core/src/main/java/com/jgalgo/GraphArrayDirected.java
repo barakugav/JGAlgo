@@ -37,6 +37,11 @@ class GraphArrayDirected extends GraphArrayAbstract {
 	private final DataContainer.Obj<int[]> edgesIn;
 	private final DataContainer.Int edgesInNum;
 
+	private static final Object DataContainerKeyEdgesOut = new Utils.Obj("edgesOut");
+	private static final Object DataContainerKeyEdgesOutNum = new Utils.Obj("edgesOutNum");
+	private static final Object DataContainerKeyEdgesIn = new Utils.Obj("edgesIn");
+	private static final Object DataContainerKeyEdgesInNum = new Utils.Obj("edgesInNum");
+
 	/**
 	 * Create a new graph with no vertices and edges.
 	 */
@@ -56,10 +61,10 @@ class GraphArrayDirected extends GraphArrayAbstract {
 		edgesIn = new DataContainer.Obj<>(verticesIDStrategy, IntArrays.EMPTY_ARRAY, int[].class);
 		edgesInNum = new DataContainer.Int(verticesIDStrategy, 0);
 
-		addInternalVerticesDataContainer(edgesOut);
-		addInternalVerticesDataContainer(edgesOutNum);
-		addInternalVerticesDataContainer(edgesIn);
-		addInternalVerticesDataContainer(edgesInNum);
+		addInternalVerticesDataContainer(DataContainerKeyEdgesOut, edgesOut);
+		addInternalVerticesDataContainer(DataContainerKeyEdgesOutNum, edgesOutNum);
+		addInternalVerticesDataContainer(DataContainerKeyEdgesIn, edgesIn);
+		addInternalVerticesDataContainer(DataContainerKeyEdgesInNum, edgesInNum);
 	}
 
 	@Override

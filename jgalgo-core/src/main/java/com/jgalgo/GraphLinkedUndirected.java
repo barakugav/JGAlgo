@@ -33,6 +33,8 @@ class GraphLinkedUndirected extends GraphLinkedAbstract implements UndirectedGra
 
 	private final DataContainer.Obj<Node> edges;
 
+	private static final Object DataContainerKeyEdges = new Utils.Obj("edges");
+
 	/**
 	 * Create a new graph with no vertices and edges.
 	 */
@@ -48,7 +50,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract implements UndirectedGra
 	GraphLinkedUndirected(int n) {
 		super(n);
 		edges = new DataContainer.Obj<>(verticesIDStrategy, null, Node.class);
-		addInternalVerticesDataContainer(edges);
+		addInternalVerticesDataContainer(DataContainerKeyEdges, edges);
 	}
 
 	@Override

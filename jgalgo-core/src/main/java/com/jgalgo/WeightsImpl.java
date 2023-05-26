@@ -16,6 +16,11 @@
 
 package com.jgalgo;
 
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
+import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
+
 abstract class WeightsImpl<E> implements Weights<E> {
 
 	final DataContainer<E> container;
@@ -28,81 +33,58 @@ abstract class WeightsImpl<E> implements Weights<E> {
 		return container;
 	}
 
-	static <E, WeightsT extends Weights<E>> WeightsT newInstance(IDStrategy idStrategy, Class<? super E> type,
-			E defVal) {
-		DataContainer<E> container = DataContainer.newInstance(idStrategy, type, defVal);
-		return wrapContainer(container, idStrategy);
+	@SuppressWarnings("unchecked")
+	static <E, WeightsT extends Weights<E>> WeightsT newInstance(IDStrategy idStrat, Class<? super E> type, E defVal) {
+		DataContainer<E> container = DataContainer.newInstance(idStrat, type, defVal);
+		boolean isContinues = idStrat instanceof IDStrategy.Continues;
+		return (WeightsT) (isContinues ? wrapContainerDirected(container) : wrapContainerMapped(container, idStrat));
 	}
 
-	@SuppressWarnings("unchecked")
-	private static <E, WeightsT extends Weights<E>> WeightsT wrapContainer(DataContainer<E> container0,
-			IDStrategy idStrat) {
-		boolean isContinues = idStrat instanceof IDStrategy.Continues;
-		if (container0 instanceof DataContainer.Obj<?>) {
-			DataContainer.Obj<E> container = (DataContainer.Obj<E>) container0;
-			if (isContinues) {
-				return (WeightsT) new WeightsImpl.Direct.Obj<>(container);
-			} else {
-				return (WeightsT) new WeightsImpl.Mapped.Obj<>(container, idStrat);
-			}
-		} else if (container0 instanceof DataContainer.Byte) {
-			DataContainer.Byte container = (DataContainer.Byte) container0;
-			if (isContinues) {
-				return (WeightsT) new WeightsImpl.Direct.Byte(container);
-			} else {
-				return (WeightsT) new WeightsImpl.Mapped.Byte(container, idStrat);
-			}
-		} else if (container0 instanceof DataContainer.Short) {
-			DataContainer.Short container = (DataContainer.Short) container0;
-			if (isContinues) {
-				return (WeightsT) new WeightsImpl.Direct.Short(container);
-			} else {
-				return (WeightsT) new WeightsImpl.Mapped.Short(container, idStrat);
-			}
-		} else if (container0 instanceof DataContainer.Int) {
-			DataContainer.Int container = (DataContainer.Int) container0;
-			if (isContinues) {
-				return (WeightsT) new WeightsImpl.Direct.Int(container);
-			} else {
-				return (WeightsT) new WeightsImpl.Mapped.Int(container, idStrat);
-			}
-		} else if (container0 instanceof DataContainer.Long) {
-			DataContainer.Long container = (DataContainer.Long) container0;
-			if (isContinues) {
-				return (WeightsT) new WeightsImpl.Direct.Long(container);
-			} else {
-				return (WeightsT) new WeightsImpl.Mapped.Long(container, idStrat);
-			}
-		} else if (container0 instanceof DataContainer.Float) {
-			DataContainer.Float container = (DataContainer.Float) container0;
-			if (isContinues) {
-				return (WeightsT) new WeightsImpl.Direct.Float(container);
-			} else {
-				return (WeightsT) new WeightsImpl.Mapped.Float(container, idStrat);
-			}
-		} else if (container0 instanceof DataContainer.Double) {
-			DataContainer.Double container = (DataContainer.Double) container0;
-			if (isContinues) {
-				return (WeightsT) new WeightsImpl.Direct.Double(container);
-			} else {
-				return (WeightsT) new WeightsImpl.Mapped.Double(container, idStrat);
-			}
-		} else if (container0 instanceof DataContainer.Bool) {
-			DataContainer.Bool container = (DataContainer.Bool) container0;
-			if (isContinues) {
-				return (WeightsT) new WeightsImpl.Direct.Bool(container);
-			} else {
-				return (WeightsT) new WeightsImpl.Mapped.Bool(container, idStrat);
-			}
-		} else if (container0 instanceof DataContainer.Char) {
-			DataContainer.Char container = (DataContainer.Char) container0;
-			if (isContinues) {
-				return (WeightsT) new WeightsImpl.Direct.Char(container);
-			} else {
-				return (WeightsT) new WeightsImpl.Mapped.Char(container, idStrat);
-			}
+	private static Weights<?> wrapContainerDirected(DataContainer<?> container) {
+		if (container instanceof DataContainer.Obj<?>) {
+			return new WeightsImpl.Direct.Obj<>((DataContainer.Obj<?>) container);
+		} else if (container instanceof DataContainer.Byte) {
+			return new WeightsImpl.Direct.Byte((DataContainer.Byte) container);
+		} else if (container instanceof DataContainer.Short) {
+			return new WeightsImpl.Direct.Short((DataContainer.Short) container);
+		} else if (container instanceof DataContainer.Int) {
+			return new WeightsImpl.Direct.Int((DataContainer.Int) container);
+		} else if (container instanceof DataContainer.Long) {
+			return new WeightsImpl.Direct.Long((DataContainer.Long) container);
+		} else if (container instanceof DataContainer.Float) {
+			return new WeightsImpl.Direct.Float((DataContainer.Float) container);
+		} else if (container instanceof DataContainer.Double) {
+			return new WeightsImpl.Direct.Double((DataContainer.Double) container);
+		} else if (container instanceof DataContainer.Bool) {
+			return new WeightsImpl.Direct.Bool((DataContainer.Bool) container);
+		} else if (container instanceof DataContainer.Char) {
+			return new WeightsImpl.Direct.Char((DataContainer.Char) container);
 		} else {
-			throw new IllegalArgumentException(container0.getClass().toString());
+			throw new IllegalArgumentException(container.getClass().toString());
+		}
+	}
+
+	private static Weights<?> wrapContainerMapped(DataContainer<?> container, IDStrategy idStrat) {
+		if (container instanceof DataContainer.Obj<?>) {
+			return new WeightsImpl.Mapped.Obj<>((DataContainer.Obj<?>) container, idStrat);
+		} else if (container instanceof DataContainer.Byte) {
+			return new WeightsImpl.Mapped.Byte((DataContainer.Byte) container, idStrat);
+		} else if (container instanceof DataContainer.Short) {
+			return new WeightsImpl.Mapped.Short((DataContainer.Short) container, idStrat);
+		} else if (container instanceof DataContainer.Int) {
+			return new WeightsImpl.Mapped.Int((DataContainer.Int) container, idStrat);
+		} else if (container instanceof DataContainer.Long) {
+			return new WeightsImpl.Mapped.Long((DataContainer.Long) container, idStrat);
+		} else if (container instanceof DataContainer.Float) {
+			return new WeightsImpl.Mapped.Float((DataContainer.Float) container, idStrat);
+		} else if (container instanceof DataContainer.Double) {
+			return new WeightsImpl.Mapped.Double((DataContainer.Double) container, idStrat);
+		} else if (container instanceof DataContainer.Bool) {
+			return new WeightsImpl.Mapped.Bool((DataContainer.Bool) container, idStrat);
+		} else if (container instanceof DataContainer.Char) {
+			return new WeightsImpl.Mapped.Char((DataContainer.Char) container, idStrat);
+		} else {
+			throw new IllegalArgumentException(container.getClass().toString());
 		}
 	}
 
@@ -588,6 +570,39 @@ abstract class WeightsImpl<E> implements Weights<E> {
 				return container().defaultValChar();
 			}
 		}
+	}
+
+	static class Manager extends DataContainer.Manager {
+
+		private final Map<Object, WeightsImpl<?>> weights = new Object2ObjectArrayMap<>();
+
+		Manager(int initialCapacity) {
+			super(initialCapacity);
+		}
+
+		@SuppressWarnings("unchecked")
+		<E, WeightsT extends Weights<E>> WeightsT getWeights(Object key) {
+			return (WeightsT) weights.get(key);
+		}
+
+		void addWeights(Object key, Weights<?> weights) {
+			addContainer(key, ((WeightsImpl<?>) weights).container);
+			Object o = this.weights.put(key, (WeightsImpl<?>) weights);
+			assert o == null;
+		}
+
+		void removeWeights(Object key) {
+			Object o1 = weights.remove(key);
+			if (o1 == null)
+				return;
+			Object o2 = containers.remove(key);
+			assert o2 != null;
+		}
+
+		Set<Object> weightsKeys() {
+			return Collections.unmodifiableSet(weights.keySet());
+		}
+
 	}
 
 }

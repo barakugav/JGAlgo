@@ -24,10 +24,12 @@ abstract class GraphArrayAbstract extends GraphBaseContinues implements GraphWit
 
 	private final EdgeEndpointsContainer edgeEndpoints;
 
-	public GraphArrayAbstract(int n) {
+	private static final Object DataContainerKeyEdgeEndpoints = new Utils.Obj("edgeEndpoints");
+
+	GraphArrayAbstract(int n) {
 		super(n);
 		edgeEndpoints = new EdgeEndpointsContainer(edgesIDStrategy);
-		addInternalEdgesDataContainer(edgeEndpoints);
+		addInternalEdgesDataContainer(DataContainerKeyEdgeEndpoints, edgeEndpoints);
 	}
 
 	@Override

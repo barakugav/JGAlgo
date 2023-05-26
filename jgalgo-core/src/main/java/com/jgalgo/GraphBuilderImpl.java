@@ -133,17 +133,25 @@ class GraphBuilderImpl implements GraphBuilder {
 	private abstract static class GraphCustomIDStrategies extends GraphBase {
 
 		final GraphBaseContinues g;
+		private final WeightsImpl.Manager verticesWeights;
+		private final WeightsImpl.Manager edgesWeights;
 
 		GraphCustomIDStrategies(GraphBaseContinues g, IDStrategy edgesIDStrategy) {
 			super(new IDStrategy.Continues(g.vertices().size()), edgesIDStrategy);
 			this.g = Objects.requireNonNull(g);
+			verticesWeights = new WeightsImpl.Manager(verticesIDStrategy.size());
+			edgesWeights = new WeightsImpl.Manager(edgesIDStrategy.size());
 
-			g.getVerticesIDStrategy().addIDSwapListener((vIdx1, vIdx2) -> verticesIDStrategy.idxSwap(vIdx1, vIdx2));
+			g.getVerticesIDStrategy().addIDSwapListener((vIdx1, vIdx2) -> {
+				verticesIDStrategy.idxSwap(vIdx1, vIdx2);
+				verticesWeights.swapElements(vIdx1, vIdx2);
+			});
 			g.getVerticesIDStrategy().addIDAddRemoveListener(new IDAddRemoveListener() {
 
 				@Override
 				public void idRemove(int id) {
 					verticesIDStrategy.removeIdx(id);
+					verticesWeights.clearElement(id);
 				}
 
 				@Override
@@ -151,19 +159,25 @@ class GraphBuilderImpl implements GraphBuilder {
 					int idx = verticesIDStrategy.newIdx();
 					if (idx != id)
 						throw new IllegalStateException();
+					verticesWeights.ensureCapacity(idx + 1);
 				}
 
 				@Override
 				public void idsClear() {
 					verticesIDStrategy.clear();
+					verticesWeights.clearContainers();;
 				}
 			});
-			g.getEdgesIDStrategy().addIDSwapListener((eIdx1, eIdx2) -> edgesIDStrategy.idxSwap(eIdx1, eIdx2));
+			g.getEdgesIDStrategy().addIDSwapListener((eIdx1, eIdx2) -> {
+				edgesIDStrategy.idxSwap(eIdx1, eIdx2);
+				edgesWeights.swapElements(eIdx1, eIdx2);
+			});
 			g.getEdgesIDStrategy().addIDAddRemoveListener(new IDAddRemoveListener() {
 
 				@Override
 				public void idRemove(int id) {
 					edgesIDStrategy.removeIdx(id);
+					edgesWeights.clearElement(id);
 				}
 
 				@Override
@@ -171,11 +185,13 @@ class GraphBuilderImpl implements GraphBuilder {
 					int idx = edgesIDStrategy.newIdx();
 					if (idx != id)
 						throw new IllegalStateException();
+					edgesWeights.ensureCapacity(idx + 1);
 				}
 
 				@Override
 				public void idsClear() {
 					edgesIDStrategy.clear();
+					edgesWeights.clearContainers();
 				}
 			});
 		}
@@ -191,40 +207,6 @@ class GraphBuilderImpl implements GraphBuilder {
 			int vIdx = verticesIDStrategy.idToIdx(vertex);
 			g.removeVertex(vIdx);
 		}
-
-		// @Override
-		// public void removeVertices(IntCollection vs) {
-		// g.removeVertices(new AbstractIntCollection() {
-
-		// @Override
-		// public int size() {
-		// return vs.size();
-		// }
-
-		// @Override
-		// public IntIterator iterator() {
-		// return new IntIterator() {
-		// final IntIterator it = vs.iterator();
-
-		// @Override
-		// public boolean hasNext() {
-		// return it.hasNext();
-		// }
-
-		// @Override
-		// public int nextInt() {
-		// return verticesIDStrategy.idToIdx(it.nextInt());
-		// }
-		// };
-		// }
-
-		// @Override
-		// public boolean contains(int uIdx) {
-		// return vs.contains(verticesIDStrategy.idxToId(uIdx));
-		// }
-
-		// });
-		// }
 
 		@Override
 		public EdgeIter edgesOut(int source) {
@@ -267,40 +249,6 @@ class GraphBuilderImpl implements GraphBuilder {
 			int eIdx = edgesIDStrategy.idToIdx(edge);
 			g.removeEdge(eIdx);
 		}
-
-		// @Override
-		// public void removeEdges(IntCollection edges) {
-		// g.removeEdges(new AbstractIntCollection() {
-
-		// @Override
-		// public int size() {
-		// return edges.size();
-		// }
-
-		// @Override
-		// public IntIterator iterator() {
-		// return new IntIterator() {
-		// final IntIterator it = edges.iterator();
-
-		// @Override
-		// public boolean hasNext() {
-		// return it.hasNext();
-		// }
-
-		// @Override
-		// public int nextInt() {
-		// return edgesIDStrategy.idToIdx(it.nextInt());
-		// }
-		// };
-		// }
-
-		// @Override
-		// public boolean contains(int eIdx) {
-		// return edges.contains(edgesIDStrategy.idxToId(eIdx));
-		// }
-
-		// });
-		// }
 
 		@Override
 		public void removeEdgesOf(int source) {
@@ -365,32 +313,32 @@ class GraphBuilderImpl implements GraphBuilder {
 
 		@Override
 		public <V, WeightsT extends Weights<V>> WeightsT getVerticesWeights(Object key) {
-			return g.getVerticesWeights(key);
+			return verticesWeights.getWeights(key);
 		}
 
 		@Override
 		public Set<Object> getVerticesWeightKeys() {
-			return g.getVerticesWeightKeys();
+			return verticesWeights.weightsKeys();
 		}
 
 		@Override
 		public void removeVerticesWeights(Object key) {
-			g.removeVerticesWeights(key);
+			verticesWeights.removeWeights(key);
 		}
 
 		@Override
 		public <E, WeightsT extends Weights<E>> WeightsT getEdgesWeights(Object key) {
-			return g.getEdgesWeights(key);
+			return edgesWeights.getWeights(key);
 		}
 
 		@Override
 		public Set<Object> getEdgesWeightsKeys() {
-			return g.getEdgesWeightsKeys();
+			return edgesWeights.weightsKeys();
 		}
 
 		@Override
 		public void removeEdgesWeights(Object key) {
-			g.removeEdgesWeights(key);
+			edgesWeights.removeWeights(key);
 		}
 
 		@Override
@@ -405,12 +353,12 @@ class GraphBuilderImpl implements GraphBuilder {
 
 		@Override
 		void addVerticesWeightsContainer(Object key, Weights<?> weights) {
-			g.addVerticesWeightsContainer(key, weights);
+			verticesWeights.addWeights(key, weights);
 		}
 
 		@Override
 		void addEdgesWeightsContainer(Object key, Weights<?> weights) {
-			g.addEdgesWeightsContainer(key, weights);
+			edgesWeights.addWeights(key, weights);
 		}
 
 		class EdgeItr implements EdgeIterImpl {

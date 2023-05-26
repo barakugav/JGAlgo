@@ -16,40 +16,29 @@
 
 package com.jgalgo;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 abstract class GraphBaseContinues extends GraphBase {
 
-	private final Map<Object, Weights<?>> verticesWeights = new Object2ObjectArrayMap<>();
-	private final Map<Object, Weights<?>> edgesWeights = new Object2ObjectArrayMap<>();
-	private final List<DataContainer<?>> verticesWeightsInternal = new ObjectArrayList<>();
-	private final List<DataContainer<?>> edgesWeightsInternal = new ObjectArrayList<>();
-	private int edgesWeightsCapacity;
-	private int verticesWeightsCapacity;
+	private final DataContainer.Manager verticesInternalData;
+	private final DataContainer.Manager edgesInternalData;
+	private final WeightsImpl.Manager verticesUserData;
+	private final WeightsImpl.Manager edgesUserData;
 
 	GraphBaseContinues(int n) {
 		super(new IDStrategy.Continues(n), new IDStrategy.Continues(0));
-		edgesWeightsCapacity = n;
-		verticesWeightsCapacity = n;
+		verticesInternalData = new DataContainer.Manager(n);
+		edgesInternalData = new DataContainer.Manager(0);
+		verticesUserData = new WeightsImpl.Manager(n);
+		edgesUserData = new WeightsImpl.Manager(0);
 	}
 
 	@Override
 	public int addVertex() {
 		int u = verticesIDStrategy.newIdx();
 		assert u >= 0;
-		if (u == verticesWeightsCapacity) {
-			int newCapacity = Math.max(2, 2 * verticesWeightsCapacity);
-			for (DataContainer<?> container : verticesWeightsInternal)
-				container.expand(newCapacity);
-			for (Weights<?> weight : verticesWeights.values())
-				((WeightsImpl<?>) weight).container.expand(newCapacity);
-			verticesWeightsCapacity = newCapacity;
-		}
+		verticesInternalData.ensureCapacity(u + 1);
+		verticesUserData.ensureCapacity(u + 1);
 		return u;
 	}
 
@@ -57,9 +46,10 @@ abstract class GraphBaseContinues extends GraphBase {
 	public void removeVertex(int vertex) {
 		removeEdgesOf(vertex);
 		vertex = vertexSwapBeforeRemove(vertex);
+		// internal weights are handled manually
+		// verticesWeightsInternal.clearElement(vertex);
+		verticesUserData.clearElement(vertex);
 		verticesIDStrategy.removeIdx(vertex);
-		for (Weights<?> weight : verticesWeights.values())
-			((WeightsImpl<?>) weight).container.clear(vertex);
 	}
 
 	// /**
@@ -104,8 +94,9 @@ abstract class GraphBaseContinues extends GraphBase {
 
 	void vertexSwap(int v1, int v2) {
 		verticesIDStrategy.idxSwap(v1, v2);
-		for (Weights<?> weight : verticesWeights.values())
-			((WeightsImpl<?>) weight).container.swap(v1, v2);
+		// internal weights are handled manually
+		// verticesWeightsInternal.swapElements(v1, v2);
+		verticesUserData.swapElements(v1, v2);
 	}
 
 	@Override
@@ -114,23 +105,18 @@ abstract class GraphBaseContinues extends GraphBase {
 		checkVertex(target);
 		int e = edgesIDStrategy.newIdx();
 		assert e >= 0;
-		if (e == edgesWeightsCapacity) {
-			int newCapacity = Math.max(2, 2 * edgesWeightsCapacity);
-			for (DataContainer<?> container : edgesWeightsInternal)
-				container.expand(newCapacity);
-			for (Weights<?> weight : edgesWeights.values())
-				((WeightsImpl<?>) weight).container.expand(newCapacity);
-			edgesWeightsCapacity = newCapacity;
-		}
+		edgesInternalData.ensureCapacity(e + 1);
+		edgesUserData.ensureCapacity(e + 1);
 		return e;
 	}
 
 	@Override
-	public void removeEdge(int e) {
-		e = edgeSwapBeforeRemove(e);
-		for (Weights<?> weight : edgesWeights.values())
-			((WeightsImpl<?>) weight).container.clear(e);
-		edgesIDStrategy.removeIdx(e);
+	public void removeEdge(int edge) {
+		edge = edgeSwapBeforeRemove(edge);
+		// internal weights are handled manually
+		// edgesWeightsInternal.clearElement(edge);
+		edgesUserData.clearElement(edge);
+		edgesIDStrategy.removeIdx(edge);
 	}
 
 	// /**
@@ -176,44 +162,25 @@ abstract class GraphBaseContinues extends GraphBase {
 
 	void edgeSwap(int e1, int e2) {
 		edgesIDStrategy.idxSwap(e1, e2);
-		for (Weights<?> weight : edgesWeights.values())
-			((WeightsImpl<?>) weight).container.swap(e1, e2);
+		// internal weights are handled manually
+		// edgesWeightsInternal.swapElements(e1, e2);
+		edgesUserData.swapElements(e1, e2);
 	}
 
 	@Override
 	public void clear() {
 		super.clear();
-		for (Weights<?> weight : verticesWeights.values())
-			((WeightsImpl<?>) weight).container.clear();
+		// internal weights are handled manually
+		// verticesWeightsInternal.clearContainers();
+		verticesUserData.clearContainers();
 	}
 
 	@Override
 	public void clearEdges() {
 		super.clearEdges();
-		for (Weights<?> weight : edgesWeights.values())
-			((WeightsImpl<?>) weight).container.clear();
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public <V, WeightsT extends Weights<V>> WeightsT getVerticesWeights(Object key) {
-		return (WeightsT) verticesWeights.get(key);
-	}
-
-	@Override
-	public Set<Object> getVerticesWeightKeys() {
-		return Collections.unmodifiableSet(verticesWeights.keySet());
-	}
-
-	@Override
-	public void removeVerticesWeights(Object key) {
-		verticesWeights.remove(key);
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public <E, WeightsT extends Weights<E>> WeightsT getEdgesWeights(Object key) {
-		return (WeightsT) edgesWeights.get(key);
+		// internal weights are handled manually
+		// edgesWeightsInternal.clearContainers();
+		edgesUserData.clearContainers();
 	}
 
 	@Override
@@ -222,43 +189,52 @@ abstract class GraphBaseContinues extends GraphBase {
 	}
 
 	@Override
-	void addVerticesWeightsContainer(Object key, Weights<?> weights) {
-		Weights<?> oldWeights = verticesWeights.put(key, weights);
-		if (oldWeights != null)
-			throw new IllegalArgumentException("Two weights types with the same key: " + key);
-		if (verticesWeightsCapacity > 0)
-			((WeightsImpl<?>) weights).container.expand(verticesWeightsCapacity);
+	public <V, WeightsT extends Weights<V>> WeightsT getVerticesWeights(Object key) {
+		return verticesUserData.getWeights(key);
 	}
 
 	@Override
-	void addEdgesWeightsContainer(Object key, Weights<?> weights) {
-		Weights<?> oldWeights = edgesWeights.put(key, weights);
-		if (oldWeights != null)
-			throw new IllegalArgumentException("Two weights types with the same key: " + key);
-		if (edgesWeightsCapacity > 0)
-			((WeightsImpl<?>) weights).container.expand(edgesWeightsCapacity);
+	public Set<Object> getVerticesWeightKeys() {
+		return verticesUserData.weightsKeys();
+	}
+
+	@Override
+	public void removeVerticesWeights(Object key) {
+		verticesUserData.removeWeights(key);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public <E, WeightsT extends Weights<E>> WeightsT getEdgesWeights(Object key) {
+		return (WeightsT) edgesUserData.getWeights(key);
 	}
 
 	@Override
 	public Set<Object> getEdgesWeightsKeys() {
-		return Collections.unmodifiableSet(edgesWeights.keySet());
+		return edgesUserData.weightsKeys();
 	}
 
 	@Override
 	public void removeEdgesWeights(Object key) {
-		edgesWeights.remove(key);
+		edgesUserData.removeWeights(key);
 	}
 
-	void addInternalVerticesDataContainer(DataContainer<?> container) {
-		verticesWeightsInternal.add(container);
-		if (verticesWeightsCapacity > 0)
-			container.expand(verticesWeightsCapacity);
+	void addInternalVerticesDataContainer(Object key, DataContainer<?> container) {
+		verticesInternalData.addContainer(key, container);
 	}
 
-	void addInternalEdgesDataContainer(DataContainer<?> container) {
-		edgesWeightsInternal.add(container);
-		if (edgesWeightsCapacity > 0)
-			container.expand(edgesWeightsCapacity);
+	void addInternalEdgesDataContainer(Object key, DataContainer<?> container) {
+		edgesInternalData.addContainer(key, container);
+	}
+
+	@Override
+	void addVerticesWeightsContainer(Object key, Weights<?> weights) {
+		verticesUserData.addWeights(key, weights);
+	}
+
+	@Override
+	void addEdgesWeightsContainer(Object key, Weights<?> weights) {
+		edgesUserData.addWeights(key, weights);
 	}
 
 	void checkVertex(int vertex) {
