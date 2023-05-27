@@ -23,73 +23,82 @@ class EdgeEndpointsContainer extends DataContainer.Long {
 <span class="fc" id="L23">		super(idStrat, sourceTarget2Endpoints(None, None));</span>
 <span class="fc" id="L24">	}</span>
 
-	void setEndpoints(int edge, int source, int target) {
-<span class="fc" id="L27">		set(edge, sourceTarget2Endpoints(source, target));</span>
+	EdgeEndpointsContainer(EdgeEndpointsContainer orig, IDStrategy idStrat) {
+<span class="fc" id="L27">		super(orig, idStrat);</span>
 <span class="fc" id="L28">	}</span>
 
+	void setEndpoints(int edge, int source, int target) {
+<span class="fc" id="L31">		set(edge, sourceTarget2Endpoints(source, target));</span>
+<span class="fc" id="L32">	}</span>
+
 	int edgeSource(int edge) {
-<span class="fc" id="L31">		return endpoints2Source(getLong(edge));</span>
+<span class="fc" id="L35">		return endpoints2Source(getLong(edge));</span>
 	}
 
 	int edgeTarget(int edge) {
-<span class="fc" id="L35">		return endpoints2Target(getLong(edge));</span>
+<span class="fc" id="L39">		return endpoints2Target(getLong(edge));</span>
 	}
 
 	int edgeEndpoint(int edge, int endpoint) {
-<span class="fc" id="L39">		long endpoints = getLong(edge);</span>
-<span class="fc" id="L40">		int u = endpoints2Source(endpoints);</span>
-<span class="fc" id="L41">		int v = endpoints2Target(endpoints);</span>
-<span class="fc bfc" id="L42" title="All 2 branches covered.">		if (endpoint == u) {</span>
-<span class="fc" id="L43">			return v;</span>
-<span class="pc bpc" id="L44" title="1 of 2 branches missed.">		} else if (endpoint == v) {</span>
-<span class="fc" id="L45">			return u;</span>
+<span class="fc" id="L43">		long endpoints = getLong(edge);</span>
+<span class="fc" id="L44">		int u = endpoints2Source(endpoints);</span>
+<span class="fc" id="L45">		int v = endpoints2Target(endpoints);</span>
+<span class="fc bfc" id="L46" title="All 2 branches covered.">		if (endpoint == u) {</span>
+<span class="fc" id="L47">			return v;</span>
+<span class="pc bpc" id="L48" title="1 of 2 branches missed.">		} else if (endpoint == v) {</span>
+<span class="fc" id="L49">			return u;</span>
 		} else {
-<span class="nc" id="L47">			throw new IllegalArgumentException(</span>
+<span class="nc" id="L51">			throw new IllegalArgumentException(</span>
 					&quot;The given vertex (&quot; + endpoint + &quot;) is not an endpoint of the edge (&quot; + u + &quot;, &quot; + v + &quot;)&quot;);
 		}
 	}
 
 	void reverseEdge(int edge) {
-<span class="fc" id="L53">		long endpoints = getLong(edge);</span>
-<span class="fc" id="L54">		int u = endpoints2Source(endpoints);</span>
-<span class="fc" id="L55">		int v = endpoints2Target(endpoints);</span>
-<span class="fc" id="L56">		endpoints = sourceTarget2Endpoints(v, u);</span>
-<span class="fc" id="L57">		set(edge, endpoints);</span>
-<span class="fc" id="L58">	}</span>
+<span class="fc" id="L57">		long endpoints = getLong(edge);</span>
+<span class="fc" id="L58">		int u = endpoints2Source(endpoints);</span>
+<span class="fc" id="L59">		int v = endpoints2Target(endpoints);</span>
+<span class="fc" id="L60">		endpoints = sourceTarget2Endpoints(v, u);</span>
+<span class="fc" id="L61">		set(edge, endpoints);</span>
+<span class="fc" id="L62">	}</span>
 
 	void replaceEdgeSource(int edge, int newSource) {
-<span class="fc" id="L61">		long endpoints = getLong(edge);</span>
-<span class="fc" id="L62">		int target = endpoints2Target(endpoints);</span>
-<span class="fc" id="L63">		set(edge, sourceTarget2Endpoints(newSource, target));</span>
-<span class="fc" id="L64">	}</span>
+<span class="fc" id="L65">		long endpoints = getLong(edge);</span>
+<span class="fc" id="L66">		int target = endpoints2Target(endpoints);</span>
+<span class="fc" id="L67">		set(edge, sourceTarget2Endpoints(newSource, target));</span>
+<span class="fc" id="L68">	}</span>
 
 	void replaceEdgeTarget(int edge, int newTarget) {
-<span class="fc" id="L67">		long endpoints = getLong(edge);</span>
-<span class="fc" id="L68">		int source = endpoints2Source(endpoints);</span>
-<span class="fc" id="L69">		set(edge, sourceTarget2Endpoints(source, newTarget));</span>
-<span class="fc" id="L70">	}</span>
+<span class="fc" id="L71">		long endpoints = getLong(edge);</span>
+<span class="fc" id="L72">		int source = endpoints2Source(endpoints);</span>
+<span class="fc" id="L73">		set(edge, sourceTarget2Endpoints(source, newTarget));</span>
+<span class="fc" id="L74">	}</span>
 
 	void replaceEdgeEndpoint(int edge, int oldEndpoint, int newEndpoint) {
-<span class="fc" id="L73">		long endpoints = getLong(edge);</span>
-<span class="fc" id="L74">		int source = endpoints2Source(endpoints);</span>
-<span class="fc" id="L75">		int target = endpoints2Target(endpoints);</span>
-<span class="fc bfc" id="L76" title="All 2 branches covered.">		if (source == oldEndpoint)</span>
-<span class="fc" id="L77">			source = newEndpoint;</span>
-<span class="fc bfc" id="L78" title="All 2 branches covered.">		if (target == oldEndpoint)</span>
-<span class="fc" id="L79">			target = newEndpoint;</span>
-<span class="fc" id="L80">		set(edge, sourceTarget2Endpoints(source, target));</span>
-<span class="fc" id="L81">	}</span>
+<span class="fc" id="L77">		long endpoints = getLong(edge);</span>
+<span class="fc" id="L78">		int source = endpoints2Source(endpoints);</span>
+<span class="fc" id="L79">		int target = endpoints2Target(endpoints);</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">		if (source == oldEndpoint)</span>
+<span class="fc" id="L81">			source = newEndpoint;</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">		if (target == oldEndpoint)</span>
+<span class="fc" id="L83">			target = newEndpoint;</span>
+<span class="fc" id="L84">		set(edge, sourceTarget2Endpoints(source, target));</span>
+<span class="fc" id="L85">	}</span>
+
+	@Override
+	EdgeEndpointsContainer copy(IDStrategy idStrat) {
+<span class="fc" id="L89">		return new EdgeEndpointsContainer(this, idStrat);</span>
+	}
 
 	private static long sourceTarget2Endpoints(int source, int target) {
-<span class="fc" id="L84">		return ((source &amp; 0xffffffffL) &lt;&lt; 32) | ((target &amp; 0xffffffffL) &lt;&lt; 0);</span>
+<span class="fc" id="L93">		return ((source &amp; 0xffffffffL) &lt;&lt; 32) | ((target &amp; 0xffffffffL) &lt;&lt; 0);</span>
 	}
 
 	private static int endpoints2Source(long endpoints) {
-<span class="fc" id="L88">		return (int) ((endpoints &gt;&gt; 32) &amp; 0xffffffffL);</span>
+<span class="fc" id="L97">		return (int) ((endpoints &gt;&gt; 32) &amp; 0xffffffffL);</span>
 	}
 
 	private static int endpoints2Target(long endpoints) {
-<span class="fc" id="L92">		return (int) ((endpoints &gt;&gt; 0) &amp; 0xffffffffL);</span>
+<span class="fc" id="L101">		return (int) ((endpoints &gt;&gt; 0) &amp; 0xffffffffL);</span>
 	}
 
 	static interface GraphWithEdgeEndpointsContainer extends Graph {
@@ -98,30 +107,30 @@ class EdgeEndpointsContainer extends DataContainer.Long {
 
 		@Override
 		default int edgeEndpoint(int edge, int endpoint) {
-<span class="fc" id="L101">			return edgeEndpoints().edgeEndpoint(edge, endpoint);</span>
+<span class="fc" id="L110">			return edgeEndpoints().edgeEndpoint(edge, endpoint);</span>
 		}
 
 		@Override
 		default int edgeSource(int edge) {
-<span class="fc" id="L106">			return edgeEndpoints().edgeSource(edge);</span>
+<span class="fc" id="L115">			return edgeEndpoints().edgeSource(edge);</span>
 		}
 
 		@Override
 		default int edgeTarget(int edge) {
-<span class="fc" id="L111">			return edgeEndpoints().edgeTarget(edge);</span>
+<span class="fc" id="L120">			return edgeEndpoints().edgeTarget(edge);</span>
 		}
 
 		default void replaceEdgeSource(int edge, int newSource) {
-<span class="fc" id="L115">			edgeEndpoints().replaceEdgeSource(edge, newSource);</span>
-<span class="fc" id="L116">		}</span>
+<span class="fc" id="L124">			edgeEndpoints().replaceEdgeSource(edge, newSource);</span>
+<span class="fc" id="L125">		}</span>
 
 		default void replaceEdgeTarget(int edge, int newTarget) {
-<span class="fc" id="L119">			edgeEndpoints().replaceEdgeTarget(edge, newTarget);</span>
-<span class="fc" id="L120">		}</span>
+<span class="fc" id="L128">			edgeEndpoints().replaceEdgeTarget(edge, newTarget);</span>
+<span class="fc" id="L129">		}</span>
 
 		default void replaceEdgeEndpoint(int edge, int oldEndpoint, int newEndpoint) {
-<span class="fc" id="L123">			edgeEndpoints().replaceEdgeEndpoint(edge, oldEndpoint, newEndpoint);</span>
-<span class="fc" id="L124">		}</span>
+<span class="fc" id="L132">			edgeEndpoints().replaceEdgeEndpoint(edge, oldEndpoint, newEndpoint);</span>
+<span class="fc" id="L133">		}</span>
 
 	}
 

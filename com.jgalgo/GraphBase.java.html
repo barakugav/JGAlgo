@@ -28,105 +28,103 @@ abstract class GraphBase implements Graph {
 
 	final IDStrategy.Continues verticesIDStrategy;
 	final IDStrategy edgesIDStrategy;
-	private final GraphCapabilities capabilities;
 
-<span class="fc" id="L33">	GraphBase(IDStrategy.Continues verticesIDStrategy, IDStrategy edgesIDStrategy, GraphCapabilities capabilities) {</span>
-<span class="fc" id="L34">		this.verticesIDStrategy = Objects.requireNonNull(verticesIDStrategy);</span>
-<span class="fc" id="L35">		this.edgesIDStrategy = Objects.requireNonNull(edgesIDStrategy);</span>
-<span class="fc" id="L36">		this.capabilities = Objects.requireNonNull(capabilities);</span>
-<span class="fc" id="L37">	}</span>
+<span class="fc" id="L32">	GraphBase(IDStrategy.Continues verticesIDStrategy, IDStrategy edgesIDStrategy) {</span>
+<span class="fc" id="L33">		this.verticesIDStrategy = Objects.requireNonNull(verticesIDStrategy);</span>
+<span class="fc" id="L34">		this.edgesIDStrategy = Objects.requireNonNull(edgesIDStrategy);</span>
+<span class="fc" id="L35">	}</span>
 
 	@Override
 	public final IntSet vertices() {
-<span class="fc" id="L41">		return verticesIDStrategy.idSet();</span>
+<span class="fc" id="L39">		return verticesIDStrategy.idSet();</span>
 	}
 
 	@Override
 	public final IntSet edges() {
-<span class="fc" id="L46">		return edgesIDStrategy.idSet();</span>
+<span class="fc" id="L44">		return edgesIDStrategy.idSet();</span>
 	}
 
 	@Override
 	public EdgeIter getEdges(int source, int target) {
-<span class="fc" id="L51">		return new EdgeIterImpl() {</span>
-<span class="fc" id="L52">			EdgeIter it = edgesOut(source);</span>
-<span class="fc" id="L53">			int e = -1;</span>
+<span class="fc" id="L49">		return new EdgeIterImpl() {</span>
+<span class="fc" id="L50">			EdgeIter it = edgesOut(source);</span>
+<span class="fc" id="L51">			int e = -1;</span>
 
 			@Override
 			public boolean hasNext() {
-<span class="fc bfc" id="L57" title="All 2 branches covered.">				if (e != -1)</span>
-<span class="fc" id="L58">					return true;</span>
-<span class="pc bpc" id="L59" title="1 of 2 branches missed.">				while (it.hasNext()) {</span>
-<span class="fc" id="L60">					int eNext = it.nextInt();</span>
-<span class="fc bfc" id="L61" title="All 2 branches covered.">					if (it.target() == target) {</span>
-<span class="fc" id="L62">						e = eNext;</span>
-<span class="fc" id="L63">						return true;</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">				if (e != -1)</span>
+<span class="fc" id="L56">					return true;</span>
+<span class="pc bpc" id="L57" title="1 of 2 branches missed.">				while (it.hasNext()) {</span>
+<span class="fc" id="L58">					int eNext = it.nextInt();</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">					if (it.target() == target) {</span>
+<span class="fc" id="L60">						e = eNext;</span>
+<span class="fc" id="L61">						return true;</span>
 					}
-<span class="fc" id="L65">				}</span>
-<span class="nc" id="L66">				return false;</span>
+<span class="fc" id="L63">				}</span>
+<span class="nc" id="L64">				return false;</span>
 			}
 
 			@Override
 			public int nextInt() {
-<span class="pc bpc" id="L71" title="1 of 2 branches missed.">				if (!hasNext())</span>
-<span class="nc" id="L72">					throw new NoSuchElementException();</span>
-<span class="fc" id="L73">				int ret = e;</span>
-<span class="fc" id="L74">				e = -1;</span>
-<span class="fc" id="L75">				return ret;</span>
+<span class="pc bpc" id="L69" title="1 of 2 branches missed.">				if (!hasNext())</span>
+<span class="nc" id="L70">					throw new NoSuchElementException();</span>
+<span class="fc" id="L71">				int ret = e;</span>
+<span class="fc" id="L72">				e = -1;</span>
+<span class="fc" id="L73">				return ret;</span>
 			}
 
 			@Override
 			public int peekNext() {
-<span class="nc bnc" id="L80" title="All 2 branches missed.">				if (!hasNext())</span>
-<span class="nc" id="L81">					throw new NoSuchElementException();</span>
-<span class="nc" id="L82">				return e;</span>
+<span class="nc bnc" id="L78" title="All 2 branches missed.">				if (!hasNext())</span>
+<span class="nc" id="L79">					throw new NoSuchElementException();</span>
+<span class="nc" id="L80">				return e;</span>
 			}
 
 			@Override
 			public int source() {
-<span class="nc" id="L87">				return source;</span>
+<span class="nc" id="L85">				return source;</span>
 			}
 
 			@Override
 			public int target() {
-<span class="nc" id="L92">				return target;</span>
+<span class="nc" id="L90">				return target;</span>
 			}
 		};
 	}
 
 	@Override
 	public void clear() {
-<span class="fc" id="L99">		clearEdges();</span>
-<span class="fc" id="L100">		verticesIDStrategy.clear();</span>
-<span class="fc" id="L101">	}</span>
+<span class="fc" id="L97">		clearEdges();</span>
+<span class="fc" id="L98">		verticesIDStrategy.clear();</span>
+<span class="fc" id="L99">	}</span>
 
 	@Override
 	public void clearEdges() {
-<span class="fc" id="L105">		edgesIDStrategy.clear();</span>
-<span class="fc" id="L106">	}</span>
+<span class="fc" id="L103">		edgesIDStrategy.clear();</span>
+<span class="fc" id="L104">	}</span>
 
 	@Override
 	public &lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT addVerticesWeights(Object key, Class&lt;? super V&gt; type) {
-<span class="fc" id="L110">		return addVerticesWeights(key, type, null);</span>
+<span class="fc" id="L108">		return addVerticesWeights(key, type, null);</span>
 	}
 
 	@Override
 	public &lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT addVerticesWeights(Object key, Class&lt;? super V&gt; type, V defVal) {
-<span class="fc" id="L115">		WeightsT weights = WeightsImpl.newInstance(getVerticesIDStrategy(), type, defVal);</span>
-<span class="fc" id="L116">		addVerticesWeightsContainer(key, weights);</span>
-<span class="fc" id="L117">		return weights;</span>
+<span class="fc" id="L113">		WeightsT weights = WeightsImpl.newInstance(getVerticesIDStrategy(), type, defVal);</span>
+<span class="fc" id="L114">		addVerticesWeightsContainer(key, weights);</span>
+<span class="fc" id="L115">		return weights;</span>
 	}
 
 	@Override
 	public &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT addEdgesWeights(Object key, Class&lt;? super E&gt; type) {
-<span class="fc" id="L122">		return addEdgesWeights(key, type, null);</span>
+<span class="fc" id="L120">		return addEdgesWeights(key, type, null);</span>
 	}
 
 	@Override
 	public &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT addEdgesWeights(Object key, Class&lt;? super E&gt; type, E defVal) {
-<span class="fc" id="L127">		WeightsT weights = WeightsImpl.newInstance(getEdgesIDStrategy(), type, defVal);</span>
-<span class="fc" id="L128">		addEdgesWeightsContainer(key, weights);</span>
-<span class="fc" id="L129">		return weights;</span>
+<span class="fc" id="L125">		WeightsT weights = WeightsImpl.newInstance(getEdgesIDStrategy(), type, defVal);</span>
+<span class="fc" id="L126">		addEdgesWeightsContainer(key, weights);</span>
+<span class="fc" id="L127">		return weights;</span>
 	}
 
 	abstract void addVerticesWeightsContainer(Object key, Weights&lt;?&gt; weights);
@@ -135,80 +133,75 @@ abstract class GraphBase implements Graph {
 
 	@Override
 	public IDStrategy.Continues getVerticesIDStrategy() {
-<span class="fc" id="L138">		return verticesIDStrategy;</span>
+<span class="fc" id="L136">		return verticesIDStrategy;</span>
 	}
 
 	@Override
 	public IDStrategy getEdgesIDStrategy() {
-<span class="fc" id="L143">		return edgesIDStrategy;</span>
-	}
-
-	@Override
-	public GraphCapabilities getCapabilities() {
-<span class="fc" id="L148">		return capabilities;</span>
+<span class="fc" id="L141">		return edgesIDStrategy;</span>
 	}
 
 	@Override
 	public String toString() {
-<span class="fc" id="L153">		StringBuilder s = new StringBuilder();</span>
-<span class="fc" id="L154">		s.append('{');</span>
-<span class="fc" id="L155">		int n = vertices().size();</span>
+<span class="fc" id="L146">		StringBuilder s = new StringBuilder();</span>
+<span class="fc" id="L147">		s.append('{');</span>
+<span class="fc" id="L148">		int n = vertices().size();</span>
 
-<span class="fc" id="L157">		Set&lt;Object&gt; verticesWeightsKeys = getVerticesWeightKeys();</span>
-<span class="fc" id="L158">		Collection&lt;Weights&lt;?&gt;&gt; verticesWeights = new ArrayList&lt;&gt;(verticesWeightsKeys.size());</span>
-<span class="pc bpc" id="L159" title="1 of 2 branches missed.">		for (Object key : verticesWeightsKeys)</span>
-<span class="nc" id="L160">			verticesWeights.add(getVerticesWeights(key));</span>
+<span class="fc" id="L150">		Set&lt;Object&gt; verticesWeightsKeys = getVerticesWeightKeys();</span>
+<span class="fc" id="L151">		Collection&lt;Weights&lt;?&gt;&gt; verticesWeights = new ArrayList&lt;&gt;(verticesWeightsKeys.size());</span>
+<span class="pc bpc" id="L152" title="1 of 2 branches missed.">		for (Object key : verticesWeightsKeys)</span>
+<span class="nc" id="L153">			verticesWeights.add(getVerticesWeights(key));</span>
 
-<span class="fc" id="L162">		Set&lt;Object&gt; edgesWeightsKeys = getEdgesWeightsKeys();</span>
-<span class="fc" id="L163">		Collection&lt;Weights&lt;?&gt;&gt; edgesWeights = new ArrayList&lt;&gt;(edgesWeightsKeys.size());</span>
-<span class="pc bpc" id="L164" title="1 of 2 branches missed.">		for (Object key : edgesWeightsKeys)</span>
-<span class="nc" id="L165">			edgesWeights.add(getEdgesWeights(key));</span>
+<span class="fc" id="L155">		Set&lt;Object&gt; edgesWeightsKeys = getEdgesWeightsKeys();</span>
+<span class="fc" id="L156">		Collection&lt;Weights&lt;?&gt;&gt; edgesWeights = new ArrayList&lt;&gt;(edgesWeightsKeys.size());</span>
+<span class="pc bpc" id="L157" title="1 of 2 branches missed.">		for (Object key : edgesWeightsKeys)</span>
+<span class="nc" id="L158">			edgesWeights.add(getEdgesWeights(key));</span>
 
-<span class="fc" id="L167">		ObjIntConsumer&lt;Collection&lt;Weights&lt;?&gt;&gt;&gt; appendWeights = (weights, key) -&gt; {</span>
-<span class="nc" id="L168">			s.append('[');</span>
-<span class="nc" id="L169">			boolean firstData = true;</span>
-<span class="nc bnc" id="L170" title="All 2 branches missed.">			for (Weights&lt;?&gt; weight : weights) {</span>
-<span class="nc bnc" id="L171" title="All 2 branches missed.">				if (firstData) {</span>
-<span class="nc" id="L172">					firstData = false;</span>
+<span class="fc" id="L160">		ObjIntConsumer&lt;Collection&lt;Weights&lt;?&gt;&gt;&gt; appendWeights = (weights, key) -&gt; {</span>
+<span class="nc" id="L161">			s.append('[');</span>
+<span class="nc" id="L162">			boolean firstData = true;</span>
+<span class="nc bnc" id="L163" title="All 2 branches missed.">			for (Weights&lt;?&gt; weight : weights) {</span>
+<span class="nc bnc" id="L164" title="All 2 branches missed.">				if (firstData) {</span>
+<span class="nc" id="L165">					firstData = false;</span>
 				} else {
-<span class="nc" id="L174">					s.append(&quot;, &quot;);</span>
+<span class="nc" id="L167">					s.append(&quot;, &quot;);</span>
 				}
-<span class="nc" id="L176">				s.append(weight.get(key));</span>
-<span class="nc" id="L177">			}</span>
-<span class="nc" id="L178">			s.append(']');</span>
-<span class="nc" id="L179">		};</span>
+<span class="nc" id="L169">				s.append(weight.get(key));</span>
+<span class="nc" id="L170">			}</span>
+<span class="nc" id="L171">			s.append(']');</span>
+<span class="nc" id="L172">		};</span>
 
-<span class="fc" id="L181">		boolean firstVertex = true;</span>
-<span class="fc bfc" id="L182" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc bfc" id="L183" title="All 2 branches covered.">			if (firstVertex) {</span>
-<span class="fc" id="L184">				firstVertex = false;</span>
+<span class="fc" id="L174">		boolean firstVertex = true;</span>
+<span class="fc bfc" id="L175" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc bfc" id="L176" title="All 2 branches covered.">			if (firstVertex) {</span>
+<span class="fc" id="L177">				firstVertex = false;</span>
 			} else {
-<span class="fc" id="L186">				s.append(&quot;, &quot;);</span>
+<span class="fc" id="L179">				s.append(&quot;, &quot;);</span>
 			}
-<span class="fc" id="L188">			s.append('v').append(u);</span>
-<span class="pc bpc" id="L189" title="1 of 2 branches missed.">			if (!verticesWeights.isEmpty())</span>
-<span class="nc" id="L190">				appendWeights.accept(verticesWeights, u);</span>
+<span class="fc" id="L181">			s.append('v').append(u);</span>
+<span class="pc bpc" id="L182" title="1 of 2 branches missed.">			if (!verticesWeights.isEmpty())</span>
+<span class="nc" id="L183">				appendWeights.accept(verticesWeights, u);</span>
 
-<span class="fc" id="L192">			s.append(&quot;: [&quot;);</span>
-<span class="fc" id="L193">			boolean firstEdge = true;</span>
-<span class="fc bfc" id="L194" title="All 2 branches covered.">			for (EdgeIter eit = edgesOut(u); eit.hasNext();) {</span>
-<span class="fc" id="L195">				int e = eit.nextInt();</span>
-<span class="fc" id="L196">				int v = eit.target();</span>
-<span class="fc bfc" id="L197" title="All 2 branches covered.">				if (firstEdge)</span>
-<span class="fc" id="L198">					firstEdge = false;</span>
+<span class="fc" id="L185">			s.append(&quot;: [&quot;);</span>
+<span class="fc" id="L186">			boolean firstEdge = true;</span>
+<span class="fc bfc" id="L187" title="All 2 branches covered.">			for (EdgeIter eit = edgesOut(u); eit.hasNext();) {</span>
+<span class="fc" id="L188">				int e = eit.nextInt();</span>
+<span class="fc" id="L189">				int v = eit.target();</span>
+<span class="fc bfc" id="L190" title="All 2 branches covered.">				if (firstEdge)</span>
+<span class="fc" id="L191">					firstEdge = false;</span>
 				else
-<span class="fc" id="L200">					s.append(&quot;, &quot;);</span>
-<span class="fc" id="L201">				s.append(e).append('(').append(u).append(&quot;, &quot;).append(v);</span>
-<span class="pc bpc" id="L202" title="1 of 2 branches missed.">				if (!edgesWeights.isEmpty()) {</span>
-<span class="nc" id="L203">					s.append(&quot;, &quot;);</span>
-<span class="nc" id="L204">					appendWeights.accept(edgesWeights, e);</span>
+<span class="fc" id="L193">					s.append(&quot;, &quot;);</span>
+<span class="fc" id="L194">				s.append(e).append('(').append(u).append(&quot;, &quot;).append(v);</span>
+<span class="pc bpc" id="L195" title="1 of 2 branches missed.">				if (!edgesWeights.isEmpty()) {</span>
+<span class="nc" id="L196">					s.append(&quot;, &quot;);</span>
+<span class="nc" id="L197">					appendWeights.accept(edgesWeights, e);</span>
 				}
-<span class="fc" id="L206">				s.append(')');</span>
-<span class="fc" id="L207">			}</span>
-<span class="fc" id="L208">			s.append(']');</span>
+<span class="fc" id="L199">				s.append(')');</span>
+<span class="fc" id="L200">			}</span>
+<span class="fc" id="L201">			s.append(']');</span>
 		}
-<span class="fc" id="L210">		s.append('}');</span>
-<span class="fc" id="L211">		return s.toString();</span>
+<span class="fc" id="L203">		s.append('}');</span>
+<span class="fc" id="L204">		return s.toString();</span>
 	}
 
 }

@@ -662,12 +662,7 @@ public interface Weights&lt;W&gt; {
 	 * {@link #DefaultBipartiteWeightKey}. To use a different key, the algorithms expose a
 	 * {@code setBipartiteVerticesWeightKey(Object)} function.
 	 */
-<span class="fc" id="L665">	public static final Object DefaultBipartiteWeightKey = new Object() {</span>
-		@Override
-		public String toString() {
-<span class="fc" id="L668">			return &quot;DefaultBipartiteVerticesWeightKey&quot;;</span>
-		}
-	};
+<span class="fc" id="L665">	public static final Object DefaultBipartiteWeightKey = new Utils.Obj(&quot;DefaultBipartiteVerticesWeightKey&quot;);</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

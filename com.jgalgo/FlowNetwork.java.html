@@ -118,8 +118,8 @@ public interface FlowNetwork {
      * @return   a flow network implemented as edge weights
      */
     static FlowNetwork createAsEdgeWeight(Graph g) {
-<span class="fc" id="L121">        Weights.Double capacityWeights = g.addEdgesWeights(new Object(), double.class);</span>
-<span class="fc" id="L122">        Weights.Double flowWeights = g.addEdgesWeights(new Object(), double.class);</span>
+<span class="fc" id="L121">        Weights.Double capacityWeights = g.addEdgesWeights(new Utils.Obj(&quot;capacity&quot;), double.class);</span>
+<span class="fc" id="L122">        Weights.Double flowWeights = g.addEdgesWeights(new Utils.Obj(&quot;flow&quot;), double.class);</span>
 <span class="fc" id="L123">        return new FlowNetwork() {</span>
 
             private static final double EPS = 0.0001;
@@ -241,8 +241,8 @@ public interface FlowNetwork {
          * @return   a flow network implemented as edge weights
          */
         static FlowNetwork.Int createAsEdgeWeight(Graph g) {
-<span class="fc" id="L244">            Weights.Int capacityWeights = g.addEdgesWeights(new Object(), int.class);</span>
-<span class="fc" id="L245">            Weights.Int flowWeights = g.addEdgesWeights(new Object(), int.class);</span>
+<span class="fc" id="L244">            Weights.Int capacityWeights = g.addEdgesWeights(new Utils.Obj(&quot;capacity&quot;), int.class);</span>
+<span class="fc" id="L245">            Weights.Int flowWeights = g.addEdgesWeights(new Utils.Obj(&quot;flow&quot;), int.class);</span>
 <span class="fc" id="L246">            return new FlowNetwork.Int() {</span>
 
                 @Override

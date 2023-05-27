@@ -41,15 +41,15 @@ class UnionFindValueArray extends UnionFindArray implements UnionFindValue {
 <span class="fc" id="L41">		this(0);</span>
 <span class="fc" id="L42">	}</span>
 
+
 	/**
-	 * Create a new Union Find data structure with \(n\) elements with ids {@code 0,1,2,...,n-1}, all with value
-	 * {@code 0}.
+	 * Create a new empty Union Find data structure with expected number of elements.
 	 *
-	 * @param n the number of initial elements in the data structure
+	 * @param expectedSize the expended number of elements in the data structure
 	 */
-	UnionFindValueArray(int n) {
-<span class="fc" id="L51">		super(n);</span>
-<span class="fc bfc" id="L52" title="All 2 branches covered.">		int arrSize = n == 0 ? 2 : n;</span>
+	UnionFindValueArray(int expectedSize) {
+<span class="fc" id="L51">		super(expectedSize);</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">		int arrSize = expectedSize == 0 ? 2 : expectedSize;</span>
 <span class="fc" id="L53">		deltas = new double[arrSize];</span>
 <span class="fc" id="L54">	}</span>
 

@@ -97,29 +97,37 @@ interface UnionFind {
 	 */
 	static UnionFind.Builder newBuilder() {
 <span class="fc" id="L99">		return new UnionFind.Builder() {</span>
+			int expectedSize;
 			String impl;
 
 			@Override
-			public UnionFind build(int n) {
-<span class="pc bpc" id="L104" title="1 of 2 branches missed.">				if (impl != null) {</span>
-<span class="nc bnc" id="L105" title="All 2 branches missed.">					if (UnionFindArray.class.getSimpleName().equals(impl))</span>
-<span class="nc" id="L106">						return new UnionFindArray(n);</span>
-<span class="nc bnc" id="L107" title="All 2 branches missed.">					if (UnionFindPtr.class.getSimpleName().equals(impl))</span>
-<span class="nc" id="L108">						return new UnionFindPtr(n);</span>
-<span class="nc" id="L109">					throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+			public UnionFind build() {
+<span class="pc bpc" id="L105" title="1 of 2 branches missed.">				if (impl != null) {</span>
+<span class="nc bnc" id="L106" title="All 2 branches missed.">					if (UnionFindArray.class.getSimpleName().equals(impl))</span>
+<span class="nc" id="L107">						return new UnionFindArray(expectedSize);</span>
+<span class="nc bnc" id="L108" title="All 2 branches missed.">					if (UnionFindPtr.class.getSimpleName().equals(impl))</span>
+<span class="nc" id="L109">						return new UnionFindPtr(expectedSize);</span>
+<span class="nc" id="L110">					throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
 				}
-<span class="fc" id="L111">				return new UnionFindArray(n);</span>
+<span class="fc" id="L112">				return new UnionFindArray(expectedSize);</span>
+			}
 
+			@Override
+			public UnionFind.Builder expectedSize(int expectedSize) {
+<span class="pc bpc" id="L117" title="1 of 2 branches missed.">				if (expectedSize &lt; 0)</span>
+<span class="nc" id="L118">					throw new IllegalArgumentException(&quot;negative expected size: &quot; + expectedSize);</span>
+<span class="fc" id="L119">				this.expectedSize = expectedSize;</span>
+<span class="fc" id="L120">				return this;</span>
 			}
 
 			@Override
 			public UnionFind.Builder setOption(String key, Object value) {
-<span class="nc bnc" id="L117" title="All 2 branches missed.">				if (&quot;impl&quot;.equals(key)) {</span>
-<span class="nc" id="L118">					impl = (String) value;</span>
+<span class="nc bnc" id="L125" title="All 2 branches missed.">				if (&quot;impl&quot;.equals(key)) {</span>
+<span class="nc" id="L126">					impl = (String) value;</span>
 				} else {
-<span class="nc" id="L120">					throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L128">					throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 				}
-<span class="nc" id="L122">				return this;</span>
+<span class="nc" id="L130">				return this;</span>
 			}
 		};
 	}
@@ -137,17 +145,15 @@ interface UnionFind {
 		 *
 		 * @return a new empty union-find data structure
 		 */
-		default UnionFind build() {
-<span class="fc" id="L141">			return build(0);</span>
-		}
+		UnionFind build();
 
 		/**
-		 * Create a new union-find data structure with {@code n} elements
+		 * Hint the implementation the number of elements that will exists in the union-find data structure.
 		 *
-		 * @param  n the initial number of elements
-		 * @return   a new empty union-find data structure with initial elements {@code 0,1,2,...,n-1}
+		 * @param  expectedSize the expected number of elements that will be in the data structure
+		 * @return              this builder
 		 */
-		UnionFind build(int n);
+		UnionFind.Builder expectedSize(int expectedSize);
 	}
 
 }

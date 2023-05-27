@@ -39,7 +39,7 @@ public class TSPMetricMSTAppx implements TSPMetric {
 	// * increases the running time to O(n^3)
 	// */
 	// private static final boolean VALIDATE_METRIC = true;
-<span class="fc" id="L42">	private static final Object EdgeRefWeightKey = new Object();</span>
+<span class="fc" id="L42">	private static final Object EdgeRefWeightKey = new Utils.Obj(&quot;refToOrig&quot;);</span>
 
 	/**
 	 * Create a new TSP \(2\)-approximation algorithm.
@@ -62,21 +62,23 @@ public class TSPMetricMSTAppx implements TSPMetric {
 <span class="nc" id="L62">			throw new IllegalArgumentException(&quot;graph is not connected&quot;);</span>
 
 		/* Build a graph with each MST edge duplicated */
-<span class="fc" id="L65">		Graph g1 = GraphBuilder.newUndirected().build(n);</span>
-<span class="fc" id="L66">		Weights.Int edgeRef = g1.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));</span>
-<span class="fc bfc" id="L67" title="All 2 branches covered.">		for (IntIterator it = mst.iterator(); it.hasNext();) {</span>
-<span class="fc" id="L68">			int e = it.nextInt();</span>
-<span class="fc" id="L69">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
-<span class="fc" id="L70">			edgeRef.set(g1.addEdge(u, v), e);</span>
-<span class="fc" id="L71">			edgeRef.set(g1.addEdge(u, v), e);</span>
-<span class="fc" id="L72">		}</span>
+<span class="fc" id="L65">		Graph g1 = GraphBuilder.newUndirected().expectedVerticesNum(n).expectedEdgesNum(mst.size()).build();</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
+<span class="fc" id="L67">			g1.addVertex();</span>
+<span class="fc" id="L68">		Weights.Int edgeRef = g1.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">		for (IntIterator it = mst.iterator(); it.hasNext();) {</span>
+<span class="fc" id="L70">			int e = it.nextInt();</span>
+<span class="fc" id="L71">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+<span class="fc" id="L72">			edgeRef.set(g1.addEdge(u, v), e);</span>
+<span class="fc" id="L73">			edgeRef.set(g1.addEdge(u, v), e);</span>
+<span class="fc" id="L74">		}</span>
 
-<span class="fc" id="L74">		Path cycle = TSPMetricUtils.calcEulerianTourAndConvertToHamiltonianCycle(g, g1, edgeRef);</span>
-<span class="pc bpc" id="L75" title="1 of 2 branches missed.">		assert cycle.size() == n;</span>
-<span class="pc bpc" id="L76" title="1 of 2 branches missed.">		assert cycle.isCycle();</span>
+<span class="fc" id="L76">		Path cycle = TSPMetricUtils.calcEulerianTourAndConvertToHamiltonianCycle(g, g1, edgeRef);</span>
+<span class="pc bpc" id="L77" title="1 of 2 branches missed.">		assert cycle.size() == n;</span>
+<span class="pc bpc" id="L78" title="1 of 2 branches missed.">		assert cycle.isCycle();</span>
 
 		/* Convert cycle of edges to list of vertices */
-<span class="fc" id="L79">		return cycle;</span>
+<span class="fc" id="L81">		return cycle;</span>
 	}
 
 }

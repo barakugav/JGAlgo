@@ -25,8 +25,8 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 <span class="fc" id="L26">abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCutST {</span>
 
-<span class="fc" id="L28">	private static final Object FlowWeightKey = new Object();</span>
-<span class="fc" id="L29">	private static final Object CapacityWeightKey = new Object();</span>
+<span class="fc" id="L28">	private static final Object FlowWeightKey = new Utils.Obj(&quot;flow&quot;);</span>
+<span class="fc" id="L29">	private static final Object CapacityWeightKey = new Utils.Obj(&quot;capacity&quot;);</span>
 
 	abstract WorkerDouble newWorkerDouble(Graph gOrig, FlowNetwork net, int source, int sink);
 

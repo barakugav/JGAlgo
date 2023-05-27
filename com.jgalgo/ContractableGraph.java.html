@@ -32,13 +32,13 @@ class ContractableGraph {
 <span class="fc" id="L32">		ArgumentCheck.onlyUndirected(g);</span>
 <span class="fc" id="L33">		this.g = g;</span>
 <span class="fc" id="L34">		int n = g.vertices().size();</span>
-<span class="fc" id="L35">		uf = UnionFind.newBuilder().build(n);</span>
+<span class="fc" id="L35">		uf = UnionFind.newBuilder().expectedSize(n).build();</span>
 <span class="fc" id="L36">		vs = new LinkedListFixedSize.Singly(n);</span>
 <span class="fc" id="L37">		findToSuperV = new int[n];</span>
 <span class="fc" id="L38">		head = new int[n];</span>
 <span class="fc" id="L39">		tail = new int[n];</span>
 <span class="fc bfc" id="L40" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L41">			findToSuperV[v] = head[v] = tail[v] = v;</span>
+<span class="fc" id="L41">			findToSuperV[uf.make()] = head[v] = tail[v] = v;</span>
 <span class="fc" id="L42">		numV = n;</span>
 <span class="fc" id="L43">	}</span>
 

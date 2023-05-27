@@ -18,7 +18,6 @@ package com.jgalgo;
 
 import java.util.Arrays;
 import com.jgalgo.DynamicTree.MinEdge;
-import com.jgalgo.IDStrategy.Fixed;
 import com.jgalgo.Utils.IntDoubleConsumer;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -38,17 +37,16 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  */
 public class MaximumFlowDinicDynamicTrees implements MaximumFlow {
 
-<span class="fc" id="L41">	private final DebugPrintsManager debug = new DebugPrintsManager(false);</span>
+<span class="fc" id="L40">	private final DebugPrintsManager debug = new DebugPrintsManager(false);</span>
 	private static final double EPS = 0.0001;
-<span class="fc" id="L43">	static final Object EdgeRefWeightKey = new Object();</span>
-<span class="fc" id="L44">	static final Object EdgeRevWeightKey = new Object();</span>
-<span class="fc" id="L45">	private static final Object FlowWeightKey = new Object();</span>
-<span class="fc" id="L46">	private static final Object CapacityWeightKey = new Object();</span>
+<span class="fc" id="L42">	static final Object EdgeRefWeightKey = new Utils.Obj(&quot;refToOrig&quot;);</span>
+<span class="fc" id="L43">	private static final Object FlowWeightKey = new Utils.Obj(&quot;flow&quot;);</span>
+<span class="fc" id="L44">	private static final Object CapacityWeightKey = new Utils.Obj(&quot;capacity&quot;);</span>
 
 	/**
 	 * Create a new maximum flow algorithm object.
 	 */
-<span class="fc" id="L51">	public MaximumFlowDinicDynamicTrees() {}</span>
+<span class="fc" id="L49">	public MaximumFlowDinicDynamicTrees() {}</span>
 
 	/**
 	 * {@inheritDoc}
@@ -57,33 +55,35 @@ public class MaximumFlowDinicDynamicTrees implements MaximumFlow {
 	 */
 	@Override
 	public double computeMaximumFlow(Graph g, FlowNetwork net, int source, int sink) {
-<span class="fc" id="L60">		return new Worker(g, net, source, sink).computeMaximumFlow();</span>
+<span class="fc" id="L58">		return new Worker(g, net, source, sink).computeMaximumFlow();</span>
 	}
 
-<span class="fc" id="L63">	private class Worker extends MaximumFlowAbstract.Worker {</span>
+<span class="fc" id="L61">	private class Worker extends MaximumFlowAbstract.Worker {</span>
 
 		final Weights.Double capacity;
 		final Weights.Double flow;
 
-<span class="fc" id="L68">		Worker(Graph gOrig, FlowNetwork net, int source, int sink) {</span>
-<span class="fc" id="L69">			super(gOrig, net, source, sink);</span>
+<span class="fc" id="L66">		Worker(Graph gOrig, FlowNetwork net, int source, int sink) {</span>
+<span class="fc" id="L67">			super(gOrig, net, source, sink);</span>
 
-<span class="fc" id="L71">			flow = g.addEdgesWeights(FlowWeightKey, double.class);</span>
-<span class="fc" id="L72">			capacity = g.addEdgesWeights(CapacityWeightKey, double.class);</span>
-<span class="fc" id="L73">			initCapacitiesAndFlows(flow, capacity);</span>
-<span class="fc" id="L74">		}</span>
+<span class="fc" id="L69">			flow = g.addEdgesWeights(FlowWeightKey, double.class);</span>
+<span class="fc" id="L70">			capacity = g.addEdgesWeights(CapacityWeightKey, double.class);</span>
+<span class="fc" id="L71">			initCapacitiesAndFlows(flow, capacity);</span>
+<span class="fc" id="L72">		}</span>
 
 		double computeMaximumFlow() {
-<span class="fc" id="L77">			debug.println(&quot;\t&quot;, getClass().getSimpleName());</span>
+<span class="fc" id="L75">			debug.println(&quot;\t&quot;, getClass().getSimpleName());</span>
 
-<span class="fc" id="L79">			double maxCapacity = 100;</span>
-<span class="fc bfc" id="L80" title="All 2 branches covered.">			for (IntIterator it = gOrig.edges().iterator(); it.hasNext();) {</span>
-<span class="fc" id="L81">				int e = it.nextInt();</span>
-<span class="fc" id="L82">				maxCapacity = Math.max(maxCapacity, net.getCapacity(e));</span>
-<span class="fc" id="L83">			}</span>
+<span class="fc" id="L77">			double maxCapacity = 100;</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">			for (IntIterator it = gOrig.edges().iterator(); it.hasNext();) {</span>
+<span class="fc" id="L79">				int e = it.nextInt();</span>
+<span class="fc" id="L80">				maxCapacity = Math.max(maxCapacity, net.getCapacity(e));</span>
+<span class="fc" id="L81">			}</span>
 
-<span class="fc" id="L85">			GraphBuilder builder = GraphBuilder.newDirected().setOption(&quot;impl&quot;, &quot;GraphLinked&quot;);</span>
-<span class="fc" id="L86">			Graph L = builder.setEdgesIDStrategy(Fixed.class).build(n);</span>
+<span class="fc" id="L83">			GraphBuilder builder = GraphBuilder.newDirected().setOption(&quot;impl&quot;, &quot;GraphLinked&quot;);</span>
+<span class="fc" id="L84">			Graph L = builder.useFixedEdgesIDs(true).expectedVerticesNum(n).build();</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++)</span>
+<span class="fc" id="L86">				L.addVertex();</span>
 <span class="fc" id="L87">			Weights.Int edgeRefL = L.addEdgesWeights(EdgeRefWeightKey, int.class);</span>
 <span class="fc" id="L88">			IntPriorityQueue bfsQueue = new IntArrayFIFOQueue();</span>
 <span class="fc" id="L89">			int[] level = new int[n];</span>

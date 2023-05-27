@@ -40,7 +40,7 @@ import it.unimi.dsi.fastutil.objects.ObjectIntPair;
  */
 public class CyclesFinderJohnson implements CyclesFinder {
 
-<span class="fc" id="L43">	private final ConnectivityAlgorithm ccAlg = ConnectivityAlgorithm.newBuilder().build();</span>
+<span class="fc" id="L43">	private final ConnectedComponentsAlgo ccAlg = ConnectedComponentsAlgo.newBuilder().build();</span>
 
 	/**
 	 * Create a new cycles finder algorithm object.
@@ -155,25 +155,25 @@ public class CyclesFinderJohnson implements CyclesFinder {
 <span class="fc" id="L155">		int nFull = g.vertices().size();</span>
 <span class="fc" id="L156">		int subToFull = startIdx;</span>
 <span class="fc" id="L157">		int nSub = nFull - subToFull;</span>
-<span class="fc" id="L158">		Graph gSub = GraphBuilder.newDirected().build(nSub);</span>
-<span class="fc bfc" id="L159" title="All 2 branches covered.">		for (int uSub = 0; uSub &lt; nSub; uSub++) {</span>
-<span class="fc" id="L160">			int uFull = uSub + subToFull;</span>
-<span class="fc bfc" id="L161" title="All 2 branches covered.">			for (EdgeIter it = g.edgesOut(uFull); it.hasNext();) {</span>
-<span class="fc" id="L162">				it.nextInt();</span>
-<span class="fc" id="L163">				int vSub = it.target() - subToFull;</span>
-<span class="fc bfc" id="L164" title="All 2 branches covered.">				if (vSub &gt;= 0)</span>
-<span class="fc" id="L165">					gSub.addEdge(uSub, vSub);</span>
-<span class="fc" id="L166">			}</span>
+<span class="fc" id="L158">		Graph gSub = GraphBuilder.newDirected().expectedVerticesNum(nSub).build();</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">		for (int i = 0; i &lt; nSub; i++)</span>
+<span class="fc" id="L160">			gSub.addVertex();</span>
+<span class="fc bfc" id="L161" title="All 2 branches covered.">		for (int uSub = 0; uSub &lt; nSub; uSub++) {</span>
+<span class="fc" id="L162">			int uFull = uSub + subToFull;</span>
+<span class="fc bfc" id="L163" title="All 2 branches covered.">			for (EdgeIter it = g.edgesOut(uFull); it.hasNext();) {</span>
+<span class="fc" id="L164">				it.nextInt();</span>
+<span class="fc" id="L165">				int vSub = it.target() - subToFull;</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">				if (vSub &gt;= 0)</span>
+<span class="fc" id="L167">					gSub.addEdge(uSub, vSub);</span>
+<span class="fc" id="L168">			}</span>
 		}
 
-<span class="fc" id="L169">		ConnectivityAlgorithm.Result connectivityResult = ccAlg.computeConnectivityComponents(gSub);</span>
-<span class="fc" id="L170">		int[] ccSize = new int[connectivityResult.getNumberOfCC()];</span>
-<span class="fc bfc" id="L171" title="All 2 branches covered.">		for (int uSub = 0; uSub &lt; nSub; uSub++)</span>
-<span class="fc" id="L172">			ccSize[connectivityResult.getVertexCc(uSub)]++;</span>
+<span class="fc" id="L171">		ConnectedComponentsAlgo.Result connectivityResult = ccAlg.computeConnectivityComponents(gSub);</span>
 
-<span class="fc bfc" id="L174" title="All 2 branches covered.">		for (; startIdx &lt; nFull; startIdx++) {</span>
-<span class="fc" id="L175">			int uSub = startIdx - subToFull;</span>
-<span class="fc bfc" id="L176" title="All 4 branches covered.">			if (ccSize[connectivityResult.getVertexCc(uSub)] &gt; 1 || hasSelfEdge(gSub, uSub))</span>
+<span class="fc bfc" id="L173" title="All 2 branches covered.">		for (; startIdx &lt; nFull; startIdx++) {</span>
+<span class="fc" id="L174">			int uSub = startIdx - subToFull;</span>
+<span class="fc" id="L175">			int ccIdx = connectivityResult.getVertexCc(uSub);</span>
+<span class="fc bfc" id="L176" title="All 4 branches covered.">			if (connectivityResult.getCcVertices(ccIdx).size() &gt; 1 || hasSelfEdge(gSub, uSub))</span>
 <span class="fc" id="L177">				break;</span>
 		}
 <span class="fc bfc" id="L179" title="All 2 branches covered.">		if (startIdx &gt;= nFull)</span>
@@ -194,10 +194,10 @@ public class CyclesFinderJohnson implements CyclesFinder {
 	private static class StronglyConnectedComponent {
 
 		private final int subToFull;
-		private final ConnectivityAlgorithm.Result connectivityResult;
+		private final ConnectedComponentsAlgo.Result connectivityResult;
 		private final int ccIdx;
 
-<span class="fc" id="L200">		StronglyConnectedComponent(int subToFull, ConnectivityAlgorithm.Result connectivityResult, int ccIdx) {</span>
+<span class="fc" id="L200">		StronglyConnectedComponent(int subToFull, ConnectedComponentsAlgo.Result connectivityResult, int ccIdx) {</span>
 <span class="fc" id="L201">			this.subToFull = subToFull;</span>
 <span class="fc" id="L202">			this.connectivityResult = connectivityResult;</span>
 <span class="fc" id="L203">			this.ccIdx = ccIdx;</span>

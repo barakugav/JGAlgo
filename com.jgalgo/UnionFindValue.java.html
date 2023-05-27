@@ -90,7 +90,22 @@ interface UnionFindValue extends UnionFind {
 	 * @return a new builder that can build {@link UnionFindValue} objects
 	 */
 	static UnionFindValue.Builder newBuilder() {
-<span class="fc" id="L93">		return UnionFindValueArray::new;</span>
+<span class="fc" id="L93">		return new UnionFindValue.Builder() {</span>
+			int expectedSize;
+
+			@Override
+			public UnionFindValue build() {
+<span class="fc" id="L98">				return new UnionFindValueArray(expectedSize);</span>
+			}
+
+			@Override
+			public UnionFindValue.Builder expectedSize(int expectedSize) {
+<span class="pc bpc" id="L103" title="1 of 2 branches missed.">				if (expectedSize &lt; 0)</span>
+<span class="nc" id="L104">					throw new IllegalArgumentException(&quot;negative expected size: &quot; + expectedSize);</span>
+<span class="fc" id="L105">				this.expectedSize = expectedSize;</span>
+<span class="fc" id="L106">				return this;</span>
+			}
+		};
 	}
 
 	/**
@@ -102,17 +117,15 @@ interface UnionFindValue extends UnionFind {
 	static interface Builder extends UnionFind.Builder {
 
 		@Override
-		default UnionFindValue build() {
-<span class="fc" id="L106">			return build(0);</span>
-		}
+		UnionFindValue build();
 
 		@Override
-		UnionFindValue build(int n);
+		UnionFindValue.Builder expectedSize(int expectedSize);
 
 		@Override
 		default UnionFindValue.Builder setOption(String key, Object value) {
-<span class="nc" id="L114">			UnionFind.Builder.super.setOption(key, value);</span>
-<span class="nc" id="L115">			return this;</span>
+<span class="nc" id="L127">			UnionFind.Builder.super.setOption(key, value);</span>
+<span class="nc" id="L128">			return this;</span>
 		}
 	}
 

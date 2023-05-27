@@ -27,18 +27,7 @@ public interface GraphBuilder extends BuilderAbstract&lt;GraphBuilder&gt; {
 	 *
 	 * @return a new graph with the builder options
 	 */
-	default Graph build() {
-<span class="fc" id="L31">		return build(0);</span>
-	}
-
-	/**
-	 * Create a new graph with {@code verticesNum} vertices.
-	 *
-	 * @param  verticesNum the initial number of vertices in the graph. The vertices will be numbered
-	 *                         {@code 0,1,2,...,verticesNum-1}.
-	 * @return             a new graph with the builder options
-	 */
-	Graph build(int verticesNum);
+	Graph build();
 
 	/**
 	 * Create an undirected graph builder.
@@ -48,7 +37,7 @@ public interface GraphBuilder extends BuilderAbstract&lt;GraphBuilder&gt; {
 	 * @return a new builder that can build undirected graphs
 	 */
 	static GraphBuilder newUndirected() {
-<span class="fc" id="L51">		return new GraphBuilderImpl(false);</span>
+<span class="fc" id="L40">		return new GraphBuilderImpl(false);</span>
 	}
 
 	/**
@@ -59,7 +48,7 @@ public interface GraphBuilder extends BuilderAbstract&lt;GraphBuilder&gt; {
 	 * @return a new builder that can build directed graphs
 	 */
 	static GraphBuilder newDirected() {
-<span class="fc" id="L62">		return new GraphBuilderImpl(true);</span>
+<span class="fc" id="L51">		return new GraphBuilderImpl(true);</span>
 	}
 
 	/**
@@ -71,19 +60,36 @@ public interface GraphBuilder extends BuilderAbstract&lt;GraphBuilder&gt; {
 	GraphBuilder setDirected(boolean directed);
 
 	/**
-	 * Set the edges ID strategy of this builder.
-	 * &lt;p&gt;
-	 * The default strategy used by this builder is {@link IDStrategy.Continues}, namely the edges IDs will always be
-	 * {@code [0,1,2,...,edgesNum-1]}. This default strategy may perform some IDs rename to maintain its invariant
-	 * during the lifetime of the graph. A different strategy such as {@link IDStrategy.Fixed} may be used to ensure no
-	 * IDs rename are performed.
+	 * Set the expected number of vertices that will exist in the graph.
 	 *
-	 * @param  edgesIDStrategy          type of edge ID strategy to use, or {@code null} for default strategy
-	 * @return                          this builder
-	 * @throws IllegalArgumentException if the strategy type is not supported
-	 * @see                             IDStrategy
+	 * @param  expectedVerticesNum the expected number of vertices in the graph
+	 * @return                     this builder
 	 */
-	GraphBuilder setEdgesIDStrategy(Class&lt;? extends IDStrategy&gt; edgesIDStrategy);
+	GraphBuilder expectedVerticesNum(int expectedVerticesNum);
+
+	/**
+	 * Set the expected number of edges that will exist in the graph.
+	 *
+	 * @param  expectedEdgesNum the expected number of edges in the graph
+	 * @return                     this builder
+	 */
+	GraphBuilder expectedEdgesNum(int expectedEdgesNum);
+
+	/**
+	 * Enable/disable fixed edges IDs for graphs built by this builder.
+	 * &lt;p&gt;
+	 * By default, IDs of both vertices and edges are always {@code 0,1,2,...,verticesNum-1} (and
+	 * {@code 0,1,2,...edgesNum-1}). To maintain this invariant, graphs must rename vertices/edges when an vertex/edge
+	 * is removed. The IDs of the edges can be fixed, namely once an edge is assigned an ID, it will never change. If
+	 * such option is chosen, the edges IDs will not always be {@code 0,1,2,...,edgesNum-1}.
+	 * &lt;p&gt;
+	 * Note that by using fixed IDs, some map is required, and therefore its slightly less efficient.
+	 *
+	 * @param  enable if {@code true}, graphs built by this builder will have fixed IDs for edges
+	 * @return        this builder
+	 * @see           IDStrategy
+	 */
+	GraphBuilder useFixedEdgesIDs(boolean enable);
 
 	/**
 	 * Add a hint to this builder.
@@ -112,11 +118,11 @@ public interface GraphBuilder extends BuilderAbstract&lt;GraphBuilder&gt; {
 	 *
 	 * @author Barak Ugav
 	 */
-<span class="fc" id="L115">	static enum Hint {</span>
+<span class="fc" id="L121">	static enum Hint {</span>
 		/** The graph should support fast edge removal via {@link Graph#removeEdge(int)} */
-<span class="fc" id="L117">		FastEdgeRemoval,</span>
+<span class="fc" id="L123">		FastEdgeRemoval,</span>
 		/** The graph should support fast edge lookup via {@link Graph#getEdge(int, int)} */
-<span class="fc" id="L119">		FastEdgeLookup,</span>
+<span class="fc" id="L125">		FastEdgeLookup,</span>
 	}
 
 }

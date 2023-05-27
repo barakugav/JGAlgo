@@ -35,8 +35,8 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  */
 public class MaximumFlowEdmondsKarp implements MaximumFlow {
 
-<span class="fc" id="L38">	private static final Object FlowWeightKey = new Object();</span>
-<span class="fc" id="L39">	private static final Object CapacityWeightKey = new Object();</span>
+<span class="fc" id="L38">	private static final Object FlowWeightKey = new Utils.Obj(&quot;flow&quot;);</span>
+<span class="fc" id="L39">	private static final Object CapacityWeightKey = new Utils.Obj(&quot;capacity&quot;);</span>
 
 	/**
 	 * Create a new maximum flow algorithm object.

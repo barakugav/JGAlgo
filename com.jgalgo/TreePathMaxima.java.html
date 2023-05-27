@@ -210,33 +210,35 @@ public interface TreePathMaxima {
 	public static boolean verifyMST(Graph g, EdgeWeightFunc w, IntCollection mstEdges, TreePathMaxima tpmAlgo) {
 <span class="fc" id="L211">		ArgumentCheck.onlyUndirected(g);</span>
 <span class="fc" id="L212">		int n = g.vertices().size();</span>
-<span class="fc" id="L213">		Graph mst = GraphBuilder.newUndirected().build(n);</span>
-<span class="fc" id="L214">		Weights.Int edgeRef = mst.addEdgesWeights(&quot;edgeRef&quot;, int.class);</span>
-<span class="fc bfc" id="L215" title="All 2 branches covered.">		for (IntIterator it = mstEdges.iterator(); it.hasNext();) {</span>
-<span class="fc" id="L216">			int e = it.nextInt();</span>
-<span class="fc" id="L217">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
-<span class="fc" id="L218">			int ne = mst.addEdge(u, v);</span>
-<span class="fc" id="L219">			edgeRef.set(ne, e);</span>
-<span class="fc" id="L220">		}</span>
-<span class="fc bfc" id="L221" title="All 2 branches covered.">		if (!Trees.isTree(mst))</span>
-<span class="fc" id="L222">			return false;</span>
+<span class="fc" id="L213">		Graph mst = GraphBuilder.newUndirected().expectedVerticesNum(n).expectedEdgesNum(mstEdges.size()).build();</span>
+<span class="fc bfc" id="L214" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
+<span class="fc" id="L215">			mst.addVertex();</span>
+<span class="fc" id="L216">		Weights.Int edgeRef = mst.addEdgesWeights(&quot;edgeRef&quot;, int.class);</span>
+<span class="fc bfc" id="L217" title="All 2 branches covered.">		for (IntIterator it = mstEdges.iterator(); it.hasNext();) {</span>
+<span class="fc" id="L218">			int e = it.nextInt();</span>
+<span class="fc" id="L219">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+<span class="fc" id="L220">			int ne = mst.addEdge(u, v);</span>
+<span class="fc" id="L221">			edgeRef.set(ne, e);</span>
+<span class="fc" id="L222">		}</span>
+<span class="fc bfc" id="L223" title="All 2 branches covered.">		if (!Trees.isTree(mst))</span>
+<span class="fc" id="L224">			return false;</span>
 
-<span class="fc" id="L224">		TreePathMaxima.Queries queries = new TreePathMaxima.Queries();</span>
-<span class="fc bfc" id="L225" title="All 2 branches covered.">		for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
-<span class="fc" id="L226">			int e = it.nextInt();</span>
-<span class="fc" id="L227">			queries.addQuery(g.edgeSource(e), g.edgeTarget(e));</span>
-<span class="fc" id="L228">		}</span>
-<span class="fc" id="L229">		EdgeWeightFunc w0 = e -&gt; w.weight(edgeRef.getInt(e));</span>
-<span class="fc" id="L230">		TreePathMaxima.Result tpmResults = tpmAlgo.computeHeaviestEdgeInTreePaths(mst, w0, queries);</span>
+<span class="fc" id="L226">		TreePathMaxima.Queries queries = new TreePathMaxima.Queries();</span>
+<span class="fc bfc" id="L227" title="All 2 branches covered.">		for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
+<span class="fc" id="L228">			int e = it.nextInt();</span>
+<span class="fc" id="L229">			queries.addQuery(g.edgeSource(e), g.edgeTarget(e));</span>
+<span class="fc" id="L230">		}</span>
+<span class="fc" id="L231">		EdgeWeightFunc w0 = e -&gt; w.weight(edgeRef.getInt(e));</span>
+<span class="fc" id="L232">		TreePathMaxima.Result tpmResults = tpmAlgo.computeHeaviestEdgeInTreePaths(mst, w0, queries);</span>
 
-<span class="fc" id="L232">		int i = 0;</span>
-<span class="fc bfc" id="L233" title="All 2 branches covered.">		for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
-<span class="fc" id="L234">			int e = it.nextInt();</span>
-<span class="fc" id="L235">			int mstEdge = tpmResults.getHeaviestEdge(i++);</span>
-<span class="pc bpc" id="L236" title="1 of 4 branches missed.">			if (mstEdge == -1 || w.weight(e) &lt; w0.weight(mstEdge))</span>
-<span class="fc" id="L237">				return false;</span>
-<span class="fc" id="L238">		}</span>
-<span class="fc" id="L239">		return true;</span>
+<span class="fc" id="L234">		int i = 0;</span>
+<span class="fc bfc" id="L235" title="All 2 branches covered.">		for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
+<span class="fc" id="L236">			int e = it.nextInt();</span>
+<span class="fc" id="L237">			int mstEdge = tpmResults.getHeaviestEdge(i++);</span>
+<span class="pc bpc" id="L238" title="1 of 4 branches missed.">			if (mstEdge == -1 || w.weight(e) &lt; w0.weight(mstEdge))</span>
+<span class="fc" id="L239">				return false;</span>
+<span class="fc" id="L240">		}</span>
+<span class="fc" id="L241">		return true;</span>
 	}
 
 }
