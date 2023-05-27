@@ -18,7 +18,6 @@ package com.jgalgo;
 
 import java.util.Arrays;
 import com.jgalgo.DynamicTree.MinEdge;
-import com.jgalgo.IDStrategy.Fixed;
 import com.jgalgo.Utils.IntDoubleConsumer;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -82,7 +81,7 @@ public class MaximumFlowDinicDynamicTrees implements MaximumFlow {
 			}
 
 			GraphBuilder builder = GraphBuilder.newDirected().setOption("impl", "GraphLinked");
-			Graph L = builder.setEdgesIDStrategy(Fixed.class).build(n);
+			Graph L = builder.useFixedEdgesIDs(true).build(n);
 			Weights.Int edgeRefL = L.addEdgesWeights(EdgeRefWeightKey, int.class);
 			IntPriorityQueue bfsQueue = new IntArrayFIFOQueue();
 			int[] level = new int[n];

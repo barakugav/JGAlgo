@@ -18,7 +18,6 @@ package com.jgalgo;
 
 import java.util.Arrays;
 import java.util.Objects;
-import com.jgalgo.IDStrategy.Fixed;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -86,7 +85,7 @@ public class MaximumFlowDinic implements MaximumFlow {
 		}
 
 		double computeMaximumFlow() {
-			Graph L = layerGraphBuilder.setDirected(true).setEdgesIDStrategy(Fixed.class).build(n);
+			Graph L = layerGraphBuilder.setDirected(true).useFixedEdgesIDs(true).build(n);
 			Weights.Int edgeRefL = L.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
 			IntPriorityQueue bfsQueue = new IntArrayFIFOQueue();
 			int[] level = new int[n];

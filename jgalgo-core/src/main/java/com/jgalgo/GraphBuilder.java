@@ -71,19 +71,20 @@ public interface GraphBuilder extends BuilderAbstract<GraphBuilder> {
 	GraphBuilder setDirected(boolean directed);
 
 	/**
-	 * Set the edges ID strategy of this builder.
+	 * Enable/disable fixed edges IDs for graphs built by this builder.
 	 * <p>
-	 * The default strategy used by this builder is {@link IDStrategy.Continues}, namely the edges IDs will always be
-	 * {@code [0,1,2,...,edgesNum-1]}. This default strategy may perform some IDs rename to maintain its invariant
-	 * during the lifetime of the graph. A different strategy such as {@link IDStrategy.Fixed} may be used to ensure no
-	 * IDs rename are performed.
+	 * By default, IDs of both vertices and edges are always {@code 0,1,2,...,verticesNum-1} (and
+	 * {@code 0,1,2,...edgesNum-1}). To maintain this invariant, graphs must rename vertices/edges when an vertex/edge
+	 * is removed. The IDs of the edges can be fixed, namely once an edge is assigned an ID, it will never change. If
+	 * such option is chosen, the edges IDs will not always be {@code 0,1,2,...,edgesNum-1}.
+	 * <p>
+	 * Note that by using fixed IDs, some map is required, and therefore its slightly less efficient.
 	 *
-	 * @param  edgesIDStrategy          type of edge ID strategy to use, or {@code null} for default strategy
-	 * @return                          this builder
-	 * @throws IllegalArgumentException if the strategy type is not supported
-	 * @see                             IDStrategy
+	 * @param  enable if {@code true}, graphs built by this builder will have fixed IDs for edges
+	 * @return        this builder
+	 * @see           IDStrategy
 	 */
-	GraphBuilder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy);
+	GraphBuilder useFixedEdgesIDs(boolean enable);
 
 	/**
 	 * Add a hint to this builder.

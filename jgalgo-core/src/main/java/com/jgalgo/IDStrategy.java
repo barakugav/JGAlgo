@@ -152,6 +152,44 @@ public abstract class IDStrategy {
 		}
 	}
 
+	static class ContinuesEmpty extends Continues {
+
+		ContinuesEmpty() {
+			super(0);
+		}
+
+		@Override
+		final int newIdx() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		void removeIdx(int idx) {
+			throw new IndexOutOfBoundsException(idx);
+		}
+
+		@Override
+		final void clear() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		int idToIdx(int id) {
+			throw new IndexOutOfBoundsException(id);
+		}
+
+		@Override
+		int idxToId(int idx) {
+			throw new IndexOutOfBoundsException(idx);
+		}
+
+		@Override
+		IDStrategy.ContinuesEmpty copy() {
+			return new IDStrategy.ContinuesEmpty();
+		}
+
+	}
+
 	private abstract static class FixedAbstract extends IDStrategy {
 
 		private final Int2IntOpenHashMap idToIdx;

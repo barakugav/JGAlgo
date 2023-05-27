@@ -197,8 +197,8 @@ class GraphsUtils {
 
 	private abstract static class EmptyGraph implements Graph {
 
-		private final IDStrategy.Continues verticesIDStrat = new IDStrategy.Continues(0);
-		private final IDStrategy.Continues edgesIDStrat = new IDStrategy.Continues(0);
+		private final IDStrategy.Continues verticesIDStrat = new IDStrategy.ContinuesEmpty();
+		private final IDStrategy.Continues edgesIDStrat = new IDStrategy.ContinuesEmpty();
 
 		@Override
 		public IntSet vertices() {

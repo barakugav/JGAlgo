@@ -411,7 +411,7 @@ abstract class WeightsImpl<E> implements Weights<E> {
 
 			@Override
 			WeightsImpl.Mapped.Obj<E> copy(IDStrategy idStrat) {
-				return new WeightsImpl.Mapped.Obj<E>(container().copy(idStrat), idStrat);
+				return new WeightsImpl.Mapped.Obj<>(container().copy(idStrat), idStrat);
 			}
 		}
 

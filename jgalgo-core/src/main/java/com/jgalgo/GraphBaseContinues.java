@@ -34,7 +34,7 @@ abstract class GraphBaseContinues extends GraphBase {
 	}
 
 	GraphBaseContinues(GraphBaseContinues g) {
-		super(new IDStrategy.Continues(g.vertices().size()), new IDStrategy.Continues(g.edges().size()));
+		super(g.verticesIDStrategy.copy(), g.edgesIDStrategy.copy());
 
 		/* internal data containers should be copied manually */
 		// verticesInternalData = g.verticesInternalData.copy(verticesIDStrategy);

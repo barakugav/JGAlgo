@@ -17,7 +17,6 @@
 package com.jgalgo;
 
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.IntFunction;
@@ -27,7 +26,7 @@ import com.jgalgo.IDStrategy.IDAddRemoveListener;
 class GraphBuilderImpl implements GraphBuilder {
 
 	private boolean directed;
-	private Class<? extends IDStrategy> edgesIDStrategy;
+	private boolean fixedEdgesIDs;
 	private final EnumSet<GraphBuilder.Hint> hints = EnumSet.noneOf(GraphBuilder.Hint.class);
 	private String impl;
 
@@ -65,14 +64,13 @@ class GraphBuilderImpl implements GraphBuilder {
 		GraphBaseContinues base = baseBuilder.apply(verticesNum);
 
 		Graph g;
-		IDStrategy eIDStrat = createIDStrategy(edgesIDStrategy);
-		if (eIDStrat == null) {
+		if (!fixedEdgesIDs) {
 			g = base;
 		} else {
 			if (directed) {
-				g = new GraphCustomIDStrategiesDirected(base, eIDStrat);
+				g = new GraphCustomIDStrategiesDirected(base, new IDStrategy.Fixed());
 			} else {
-				g = new GraphCustomIDStrategiesUndirected(base, eIDStrat);
+				g = new GraphCustomIDStrategiesUndirected(base, new IDStrategy.Fixed());
 			}
 		}
 		return g;
@@ -85,27 +83,9 @@ class GraphBuilderImpl implements GraphBuilder {
 	}
 
 	@Override
-	public GraphBuilder setEdgesIDStrategy(Class<? extends IDStrategy> edgesIDStrategy) {
-		if (edgesIDStrategy != null
-				&& !List.of(IDStrategy.Continues.class, IDStrategy.Fixed.class, IDStrategy.Rand.class)
-						.contains(edgesIDStrategy))
-			throw new IllegalArgumentException("unknown ID strategy: " + edgesIDStrategy.toString());
-		this.edgesIDStrategy = edgesIDStrategy;
+	public GraphBuilder useFixedEdgesIDs(boolean enable) {
+		fixedEdgesIDs = enable;
 		return this;
-	}
-
-	private static IDStrategy createIDStrategy(Class<? extends IDStrategy> strategyClass) {
-		if (strategyClass == null)
-			return null;
-		if (strategyClass == IDStrategy.Continues.class) {
-			return null; /* Use default */
-		} else if (strategyClass == IDStrategy.Fixed.class) {
-			return new IDStrategy.Fixed();
-		} else if (strategyClass == IDStrategy.Rand.class) {
-			return new IDStrategy.Rand();
-		} else {
-			throw new IllegalArgumentException(strategyClass.toString());
-		}
 	}
 
 	@Override
@@ -137,7 +117,7 @@ class GraphBuilderImpl implements GraphBuilder {
 		private final WeightsImpl.Manager edgesWeights;
 
 		GraphCustomIDStrategies(GraphBaseContinues g, IDStrategy edgesIDStrategy) {
-			super(new IDStrategy.Continues(g.vertices().size()), edgesIDStrategy);
+			super(g.verticesIDStrategy.copy(), edgesIDStrategy);
 			this.g = Objects.requireNonNull(g);
 			verticesWeights = new WeightsImpl.Manager(verticesIDStrategy.size());
 			edgesWeights = new WeightsImpl.Manager(edgesIDStrategy.size());
