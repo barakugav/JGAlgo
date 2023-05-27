@@ -361,7 +361,7 @@ public class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 <span class="fc bfc" id="L361" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(source); eit.hasNext();) {</span>
 <span class="fc" id="L362">				int e = eit.nextInt();</span>
 <span class="fc" id="L363">				double f = capacity.getDouble(e) - flow.getDouble(e);</span>
-<span class="fc bfc" id="L364" title="All 2 branches covered.">				if (f &gt; 0) {</span>
+<span class="pc bpc" id="L364" title="1 of 2 branches missed.">				if (f &gt; 0) {</span>
 <span class="fc" id="L365">					pushFlow(e, f);</span>
 <span class="fc" id="L366">					Vertex U = vertexData(eit.source()), V = vertexData(eit.target());</span>
 <span class="fc" id="L367">					U.excess -= f;</span>

@@ -316,12 +316,12 @@ public interface Graph {
 	 * @throws IllegalArgumentException  if {@code endpoint} is not an endpoint of the edge
 	 */
 	default int edgeEndpoint(int edge, int endpoint) {
-<span class="nc" id="L319">		int u = edgeSource(edge);</span>
-<span class="nc" id="L320">		int v = edgeTarget(edge);</span>
-<span class="nc bnc" id="L321" title="All 2 branches missed.">		if (endpoint == u) {</span>
-<span class="nc" id="L322">			return v;</span>
-<span class="nc bnc" id="L323" title="All 2 branches missed.">		} else if (endpoint == v) {</span>
-<span class="nc" id="L324">			return u;</span>
+<span class="fc" id="L319">		int u = edgeSource(edge);</span>
+<span class="fc" id="L320">		int v = edgeTarget(edge);</span>
+<span class="fc bfc" id="L321" title="All 2 branches covered.">		if (endpoint == u) {</span>
+<span class="fc" id="L322">			return v;</span>
+<span class="pc bpc" id="L323" title="1 of 2 branches missed.">		} else if (endpoint == v) {</span>
+<span class="fc" id="L324">			return u;</span>
 		} else {
 <span class="nc" id="L326">			throw new IllegalArgumentException(</span>
 					&quot;The given vertex (&quot; + endpoint + &quot;) is not an endpoint of the edge (&quot; + u + &quot;, &quot; + v + &quot;)&quot;);
