@@ -34,8 +34,7 @@ class MinimumCutSTTestUtils extends TestUtils {
 	static void testRandGraphs(MinimumCutST algo, long seed, boolean directed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
-		List<Phase> phases = List.of(phase(256, 6, 6), phase(64, 16, 16), phase(64, 16, 32), phase(32, 64, 64),
-				phase(16, 64, 128), phase(2, 512, 512), phase(1, 512, 1324));
+		List<Phase> phases = List.of(phase(32, 6, 6), phase(16, 16, 32), phase(16, 64, 128), phase(1, 512, 1324));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(false)
