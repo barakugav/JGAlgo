@@ -38,7 +38,9 @@ public class MDSTTarjanTest extends TestBase {
 			if (g.getCapabilities().directed())
 				return algo.computeMinimumSpanningTree(g, w, 0);
 			int n = g.vertices().size();
-			Graph dg = GraphBuilder.newDirected().build(n);
+			Graph dg = GraphBuilder.newDirected().expectedVerticesNum(n).build();
+			for (int i = 0; i < n; i++)
+				dg.addVertex();
 			Weights.Int edgeRef = dg.addEdgesWeights("edgeRef", int.class, Integer.valueOf(-1));
 			for (int u = 0; u < n; u++) {
 				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {

@@ -97,19 +97,27 @@ interface UnionFind {
 	 */
 	static UnionFind.Builder newBuilder() {
 		return new UnionFind.Builder() {
+			int expectedSize;
 			String impl;
 
 			@Override
-			public UnionFind build(int n) {
+			public UnionFind build() {
 				if (impl != null) {
 					if (UnionFindArray.class.getSimpleName().equals(impl))
-						return new UnionFindArray(n);
+						return new UnionFindArray(expectedSize);
 					if (UnionFindPtr.class.getSimpleName().equals(impl))
-						return new UnionFindPtr(n);
+						return new UnionFindPtr(expectedSize);
 					throw new IllegalArgumentException("unknown 'impl' value: " + impl);
 				}
-				return new UnionFindArray(n);
+				return new UnionFindArray(expectedSize);
+			}
 
+			@Override
+			public UnionFind.Builder expectedSize(int expectedSize) {
+				if (expectedSize < 0)
+					throw new IllegalArgumentException("negative expected size: " + expectedSize);
+				this.expectedSize = expectedSize;
+				return this;
 			}
 
 			@Override
@@ -137,17 +145,15 @@ interface UnionFind {
 		 *
 		 * @return a new empty union-find data structure
 		 */
-		default UnionFind build() {
-			return build(0);
-		}
+		UnionFind build();
 
 		/**
-		 * Create a new union-find data structure with {@code n} elements
+		 * Hint the implementation the number of elements that will exists in the union-find data structure.
 		 *
-		 * @param  n the initial number of elements
-		 * @return   a new empty union-find data structure with initial elements {@code 0,1,2,...,n-1}
+		 * @param  expectedSize the expected number of elements that will be in the data structure
+		 * @return              this builder
 		 */
-		UnionFind build(int n);
+		UnionFind.Builder expectedSize(int expectedSize);
 	}
 
 }

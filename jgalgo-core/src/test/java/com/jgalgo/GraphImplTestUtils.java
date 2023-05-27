@@ -66,22 +66,12 @@ class GraphImplTestUtils extends TestUtils {
 		}
 	}
 
-	static void testCreateWithNVertices(GraphBuilder graphImpl) {
-		for (boolean directed : new boolean[] { true, false }) {
-			final int n = 100;
-			Graph g = graphImpl.setDirected(directed).build(n);
-			IntSet verticesSet = new IntOpenHashSet();
-			for (int v = 0; v < n; v++)
-				verticesSet.add(v);
-			assertEquals(verticesSet, g.vertices());
-			assertEquals(IntSets.emptySet(), g.edges());
-		}
-	}
-
 	static void testAddEdge(GraphBuilder graphImpl) {
 		for (boolean directed : new boolean[] { true, false }) {
 			final int n = 100;
-			Graph g = graphImpl.setDirected(directed).build(n);
+			Graph g = graphImpl.setDirected(directed).build();
+			for (int i = 0; i < n; i++)
+				g.addVertex();
 
 			Int2ObjectMap<int[]> edges = new Int2ObjectOpenHashMap<>();
 			for (int u = 0; u < n; u++) {
@@ -113,7 +103,9 @@ class GraphImplTestUtils extends TestUtils {
 	static void testGetEdge(GraphBuilder graphImpl) {
 		for (boolean directed : new boolean[] { true, false }) {
 			final int n = 100;
-			Graph g = graphImpl.setDirected(directed).build(n);
+			Graph g = graphImpl.setDirected(directed).build();
+			for (int i = 0; i < n; i++)
+				g.addVertex();
 
 			Object2IntMap<IntCollection> edges = new Object2IntOpenHashMap<>();
 			for (int u = 0; u < n; u++) {
@@ -137,12 +129,15 @@ class GraphImplTestUtils extends TestUtils {
 				assertEquals(e, g.getEdge(u, v));
 			}
 		}
+
 	}
 
 	static void testGetEdges(GraphBuilder graphImpl) {
 		for (boolean directed : new boolean[] { true, false }) {
 			final int n = 100;
-			Graph g = graphImpl.setDirected(directed).build(n);
+			Graph g = graphImpl.setDirected(directed).build();
+			for (int i = 0; i < n; i++)
+				g.addVertex();
 
 			Int2ObjectMap<IntSet> edgesOut = new Int2ObjectOpenHashMap<>();
 			Int2ObjectMap<IntSet> edgesIn = new Int2ObjectOpenHashMap<>();
@@ -191,12 +186,15 @@ class GraphImplTestUtils extends TestUtils {
 				}
 			}
 		}
+
 	}
 
 	static void testEdgeIter(GraphBuilder graphImpl) {
 		for (boolean directed : new boolean[] { true, false }) {
 			final int n = 100;
-			Graph g = graphImpl.setDirected(directed).build(n);
+			Graph g = graphImpl.setDirected(directed).build();
+			for (int i = 0; i < n; i++)
+				g.addVertex();
 
 			Int2ObjectMap<IntCollection> edges = new Int2ObjectOpenHashMap<>();
 			for (int u = 0; u < n; u++) {
@@ -235,7 +233,9 @@ class GraphImplTestUtils extends TestUtils {
 	static void testDegree(GraphBuilder graphImpl) {
 		for (boolean directed : new boolean[] { true, false }) {
 			final int n = 100;
-			Graph g = graphImpl.setDirected(directed).build(n);
+			Graph g = graphImpl.setDirected(directed).build();
+			for (int i = 0; i < n; i++)
+				g.addVertex();
 
 			Int2IntMap degreeOut = new Int2IntOpenHashMap();
 			Int2IntMap degreeIn = new Int2IntOpenHashMap();

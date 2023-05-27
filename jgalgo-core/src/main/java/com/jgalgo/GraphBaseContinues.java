@@ -25,12 +25,12 @@ abstract class GraphBaseContinues extends GraphBase {
 	private final WeightsImpl.Manager verticesUserData;
 	private final WeightsImpl.Manager edgesUserData;
 
-	GraphBaseContinues(int n) {
-		super(new IDStrategy.Continues(n), new IDStrategy.Continues(0));
-		verticesInternalData = new DataContainer.Manager(n);
-		edgesInternalData = new DataContainer.Manager(0);
-		verticesUserData = new WeightsImpl.Manager(n);
-		edgesUserData = new WeightsImpl.Manager(0);
+	GraphBaseContinues(int expectedVerticesNum, int expectedEdgesNum) {
+		super(new IDStrategy.Continues(0), new IDStrategy.Continues(0));
+		verticesInternalData = new DataContainer.Manager(expectedVerticesNum);
+		edgesInternalData = new DataContainer.Manager(expectedEdgesNum);
+		verticesUserData = new WeightsImpl.Manager(expectedVerticesNum);
+		edgesUserData = new WeightsImpl.Manager(expectedEdgesNum);
 	}
 
 	GraphBaseContinues(GraphBaseContinues g) {

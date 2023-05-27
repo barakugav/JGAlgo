@@ -91,7 +91,9 @@ class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeighted {
 
 	private int[] computeMaxMatching(Graph gOrig, EdgeWeightFunc w0, Weights.Bool partition) {
 		final int n = gOrig.vertices().size();
-		Graph g = GraphBuilder.newDirected().build(n + 2);
+		Graph g = GraphBuilder.newDirected().expectedVerticesNum(n + 2).build();
+		for (int v = 0; v < n; v++)
+			g.addVertex();
 		Weights.Int edgeRef = g.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
 		Weights.Double w = g.addEdgesWeights(EdgeWeightKey, double.class);
 
@@ -109,7 +111,7 @@ class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeighted {
 			}
 		}
 
-		final int s = n, t = n + 1;
+		final int s = g.addVertex(), t = g.addVertex();
 
 		int[] match = new int[n];
 		Arrays.fill(match, -1);

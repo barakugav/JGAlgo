@@ -39,7 +39,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  */
 public class MSTKruskal implements MST {
 
-	private UnionFind.Builder unionFindBuilder = UnionFindArray::new;
+	private UnionFind.Builder unionFindBuilder = UnionFind.newBuilder();
 	private boolean parallelEnable = Config.parallelByDefault;
 
 	/**
@@ -75,7 +75,9 @@ public class MSTKruskal implements MST {
 		Utils.sort(edges, 0, m, w, parallelEnable);
 
 		/* create union find data structure for each vertex */
-		UnionFind uf = unionFindBuilder.build(n);
+		UnionFind uf = unionFindBuilder.expectedSize(n).build();
+		for (int i = 0; i < n; i++)
+			uf.make();
 
 		/* iterate over the edges and build the MST */
 		IntCollection mst = new IntArrayList(n - 1);

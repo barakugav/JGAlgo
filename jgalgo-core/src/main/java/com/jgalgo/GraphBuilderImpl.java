@@ -19,13 +19,15 @@ package com.jgalgo;
 import java.util.EnumSet;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.IntFunction;
+import java.util.function.BiFunction;
 import com.jgalgo.GraphsUtils.UndirectedGraphImpl;
 import com.jgalgo.IDStrategy.IDAddRemoveListener;
 
 class GraphBuilderImpl implements GraphBuilder {
 
 	private boolean directed;
+	private int expectedVerticesNum;
+	private int expectedEdgesNum;
 	private boolean fixedEdgesIDs;
 	private final EnumSet<GraphBuilder.Hint> hints = EnumSet.noneOf(GraphBuilder.Hint.class);
 	private String impl;
@@ -35,15 +37,15 @@ class GraphBuilderImpl implements GraphBuilder {
 	}
 
 	@Override
-	public Graph build(int verticesNum) {
-		IntFunction<? extends GraphBaseContinues> baseBuilderArray =
+	public Graph build() {
+		BiFunction<Integer, Integer, ? extends GraphBaseContinues> baseBuilderArray =
 				directed ? GraphArrayDirected::new : GraphArrayUndirected::new;
-		IntFunction<? extends GraphBaseContinues> baseBuilderLinked =
+		BiFunction<Integer, Integer, ? extends GraphBaseContinues> baseBuilderLinked =
 				directed ? GraphLinkedDirected::new : GraphLinkedUndirected::new;
-		IntFunction<? extends GraphBaseContinues> baseBuilderTable =
+		BiFunction<Integer, Integer, ? extends GraphBaseContinues> baseBuilderTable =
 				directed ? GraphTableDirected::new : GraphTableUndirected::new;
 
-		IntFunction<? extends GraphBaseContinues> baseBuilder;
+		BiFunction<Integer, Integer, ? extends GraphBaseContinues> baseBuilder;
 		if (impl != null && !"GraphArray".equals(impl)) {
 			if ("GraphArray".equals(impl))
 				baseBuilder = baseBuilderArray;
@@ -61,7 +63,8 @@ class GraphBuilderImpl implements GraphBuilder {
 			else
 				baseBuilder = baseBuilderArray;
 		}
-		GraphBaseContinues base = baseBuilder.apply(verticesNum);
+		@SuppressWarnings("boxing")
+		GraphBaseContinues base = baseBuilder.apply(expectedVerticesNum, expectedEdgesNum);
 
 		Graph g;
 		if (!fixedEdgesIDs) {
@@ -79,6 +82,22 @@ class GraphBuilderImpl implements GraphBuilder {
 	@Override
 	public GraphBuilder setDirected(boolean directed) {
 		this.directed = directed;
+		return this;
+	}
+
+	@Override
+	public GraphBuilder expectedVerticesNum(int expectedVerticesNum) {
+		if (expectedVerticesNum < 0)
+			throw new IllegalArgumentException("invalid expected size: " + expectedVerticesNum);
+		this.expectedVerticesNum = expectedVerticesNum;
+		return this;
+	}
+
+	@Override
+	public GraphBuilder expectedEdgesNum(int expectedEdgesNum) {
+		if (expectedEdgesNum < 0)
+			throw new IllegalArgumentException("invalid expected size: " + expectedEdgesNum);
+		this.expectedEdgesNum = expectedEdgesNum;
 		return this;
 	}
 

@@ -30,11 +30,6 @@ public class GraphArrayTest extends TestBase {
 	}
 
 	@Test
-	public void testCreateWithNVertices() {
-		GraphImplTestUtils.testCreateWithNVertices(graphImpl());
-	}
-
-	@Test
 	public void testAddEdge() {
 		GraphImplTestUtils.testAddEdge(graphImpl());
 	}

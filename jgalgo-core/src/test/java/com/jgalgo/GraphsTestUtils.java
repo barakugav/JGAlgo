@@ -114,14 +114,18 @@ public class GraphsTestUtils extends TestUtils {
 			if (!bipartite) {
 				if (n < 0 || m < 0)
 					throw new IllegalStateException();
-				g = impl.setDirected(directed).build(n);
+				g = impl.setDirected(directed).expectedVerticesNum(n).expectedEdgesNum(m).build();
+				for (int i = 0; i < n; i++)
+					g.addVertex();
 			} else {
 				if (sn < 0 || tn < 0)
 					throw new IllegalStateException();
 				if ((sn == 0 || tn == 0) && m != 0)
 					throw new IllegalStateException();
 				n = sn + tn;
-				g = impl.setDirected(directed).build(n);
+				g = impl.setDirected(directed).expectedVerticesNum(n).expectedEdgesNum(m).build();
+				for (int i = 0; i < n; i++)
+					g.addVertex();
 				Weights.Bool partition = g.addVerticesWeights(Weights.DefaultBipartiteWeightKey, boolean.class);
 				for (int u = 0; u < sn; u++)
 					partition.set(u, true);
@@ -145,7 +149,9 @@ public class GraphsTestUtils extends TestUtils {
 			}
 
 			Set<IntList> existingEdges = new HashSet<>();
-			UnionFind uf = UnionFind.newBuilder().build(n);
+			UnionFind uf = UnionFind.newBuilder().expectedSize(n).build();
+			for (int i = 0; i < n; i++)
+				uf.make();
 			int componentsNum = n;
 			Random rand = new Random(seedGen.nextSeed());
 			BitSet reachableFromRoot = new BitSet(n);
@@ -335,8 +341,9 @@ public class GraphsTestUtils extends TestUtils {
 	static Graph parseGraphFromAdjacencyMatrix01(String s) {
 		String[] lines = s.split("\r\n");
 		int n = lines.length;
-		Graph g = GraphBuilder.newUndirected().build(n);
+		Graph g = GraphBuilder.newUndirected().build();
 		for (int u = 0; u < n; u++) {
+			g.addVertex();
 			String[] chars = lines[u].split(" ");
 			for (int v = u + 1; v < n; v++)
 				if (chars[v].equals("1"))
@@ -348,8 +355,9 @@ public class GraphsTestUtils extends TestUtils {
 	static Graph parseGraphWeighted(String s) {
 		String[] lines = s.split("\r\n");
 		int n = lines.length;
-		Graph g = GraphBuilder.newUndirected().build(n);
+		Graph g = GraphBuilder.newUndirected().build();
 		for (int u = 0; u < n; u++) {
+			g.addVertex();
 			String[] chars = lines[u].split(" ");
 			for (int v = u + 1; v < n; v++)
 				if (chars[v].equals("1"))

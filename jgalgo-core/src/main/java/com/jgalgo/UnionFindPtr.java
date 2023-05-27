@@ -44,16 +44,15 @@ class UnionFindPtr implements UnionFind {
 	}
 
 	/**
-	 * Create a new Union Find data structure with \(n\) elements with ids {@code 0,1,2,...,n-1}, each of them form a
-	 * set of a single element.
+	 * Create a new empty Union Find data structure with expected number of elements.
 	 *
-	 * @param n the number of initial elements in the data structure
+	 * @param expectedSize the expended number of elements in the data structure
 	 */
-	UnionFindPtr(int n) {
-		elements = new Elm[n == 0 ? 2 : n];
-		for (int i = 0; i < n; i++)
-			elements[i] = new Elm(i);
-		size = n;
+	UnionFindPtr(int expectedSize) {
+		if (expectedSize < 0)
+			throw new IllegalArgumentException("negative expected size: " + expectedSize);
+		elements = new Elm[expectedSize == 0 ? 2 : expectedSize];
+		size = 0;
 	}
 
 	@Override

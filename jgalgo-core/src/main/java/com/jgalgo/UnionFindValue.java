@@ -90,7 +90,22 @@ interface UnionFindValue extends UnionFind {
 	 * @return a new builder that can build {@link UnionFindValue} objects
 	 */
 	static UnionFindValue.Builder newBuilder() {
-		return UnionFindValueArray::new;
+		return new UnionFindValue.Builder() {
+			int expectedSize;
+
+			@Override
+			public UnionFindValue build() {
+				return new UnionFindValueArray(expectedSize);
+			}
+
+			@Override
+			public UnionFindValue.Builder expectedSize(int expectedSize) {
+				if (expectedSize < 0)
+					throw new IllegalArgumentException("negative expected size: " + expectedSize);
+				this.expectedSize = expectedSize;
+				return this;
+			}
+		};
 	}
 
 	/**
@@ -102,12 +117,10 @@ interface UnionFindValue extends UnionFind {
 	static interface Builder extends UnionFind.Builder {
 
 		@Override
-		default UnionFindValue build() {
-			return build(0);
-		}
+		UnionFindValue build();
 
 		@Override
-		UnionFindValue build(int n);
+		UnionFindValue.Builder expectedSize(int expectedSize);
 
 		@Override
 		default UnionFindValue.Builder setOption(String key, Object value) {

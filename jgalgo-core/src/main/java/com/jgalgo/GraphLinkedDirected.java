@@ -40,16 +40,17 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	 * Create a new graph with no vertices and edges.
 	 */
 	GraphLinkedDirected() {
-		this(0);
+		this(0, 0);
 	}
 
 	/**
-	 * Create a new graph with no edges and {@code n} vertices numbered {@code 0,1,2,..,n-1}.
+	 * Create a new graph with no vertices and edges, with expected number of vertices and edges.
 	 *
-	 * @param n the number of initial vertices number
+	 * @param expectedVerticesNum the expected number of vertices that will be in the graph
+	 * @param expectedEdgesNum    the expected number of edges that will be in the graph
 	 */
-	GraphLinkedDirected(int n) {
-		super(n);
+	GraphLinkedDirected(int expectedVerticesNum, int expectedEdgesNum) {
+		super(expectedVerticesNum, expectedEdgesNum);
 
 		edgesOut = new DataContainer.Obj<>(verticesIDStrategy, null, Node.class);
 		edgesIn = new DataContainer.Obj<>(verticesIDStrategy, null, Node.class);

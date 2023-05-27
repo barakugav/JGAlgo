@@ -97,7 +97,9 @@ public class UnionFindBench {
 		int n = g.vertices().size();
 
 		/* create union find data structure for each vertex */
-		UnionFind uf = ufBuilder.build(n);
+		UnionFind uf = ufBuilder.expectedSize(n).build();
+		for (int i = 0; i < n; i++)
+			uf.make();
 
 		/* iterate over the edges and build the MST */
 		int[] mst = new int[n - 1];

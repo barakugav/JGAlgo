@@ -78,7 +78,9 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 		Matching matching = matchingAlgo.computeMaximumWeightedPerfectMatching(mG, mGWeightsNeg);
 
 		/* Build a graph of the union of the MST and the matching result */
-		Graph g1 = GraphBuilder.newUndirected().build(n);
+		Graph g1 = GraphBuilder.newUndirected().expectedVerticesNum(n).expectedEdgesNum(mst.size()).build();
+		for (int v = 0; v < n; v++)
+			g1.addVertex();
 		Weights.Int g1EdgeRef = g1.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
 		for (IntIterator it = mst.iterator(); it.hasNext();) {
 			int e = it.nextInt();

@@ -25,8 +25,8 @@ public class GraphTableTest extends TestBase {
 	}
 
 	@Test
-	public void testCreateWithNVertices() {
-		GraphImplTestUtils.testCreateWithNVertices(graphImpl());
+	public void testVertexAdd() {
+		GraphImplTestUtils.testVertexAdd(graphImpl());
 	}
 
 	@Test

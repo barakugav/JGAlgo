@@ -62,7 +62,9 @@ public class TSPMetricMSTAppx implements TSPMetric {
 			throw new IllegalArgumentException("graph is not connected");
 
 		/* Build a graph with each MST edge duplicated */
-		Graph g1 = GraphBuilder.newUndirected().build(n);
+		Graph g1 = GraphBuilder.newUndirected().expectedVerticesNum(n).expectedEdgesNum(mst.size()).build();
+		for (int v = 0; v < n; v++)
+			g1.addVertex();
 		Weights.Int edgeRef = g1.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
 		for (IntIterator it = mst.iterator(); it.hasNext();) {
 			int e = it.nextInt();

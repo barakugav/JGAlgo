@@ -27,18 +27,7 @@ public interface GraphBuilder extends BuilderAbstract<GraphBuilder> {
 	 *
 	 * @return a new graph with the builder options
 	 */
-	default Graph build() {
-		return build(0);
-	}
-
-	/**
-	 * Create a new graph with {@code verticesNum} vertices.
-	 *
-	 * @param  verticesNum the initial number of vertices in the graph. The vertices will be numbered
-	 *                         {@code 0,1,2,...,verticesNum-1}.
-	 * @return             a new graph with the builder options
-	 */
-	Graph build(int verticesNum);
+	Graph build();
 
 	/**
 	 * Create an undirected graph builder.
@@ -69,6 +58,22 @@ public interface GraphBuilder extends BuilderAbstract<GraphBuilder> {
 	 * @return          this builder
 	 */
 	GraphBuilder setDirected(boolean directed);
+
+	/**
+	 * Set the expected number of vertices that will exist in the graph.
+	 *
+	 * @param  expectedVerticesNum the expected number of vertices in the graph
+	 * @return                     this builder
+	 */
+	GraphBuilder expectedVerticesNum(int expectedVerticesNum);
+
+	/**
+	 * Set the expected number of edges that will exist in the graph.
+	 *
+	 * @param  expectedEdgesNum the expected number of edges in the graph
+	 * @return                     this builder
+	 */
+	GraphBuilder expectedEdgesNum(int expectedEdgesNum);
 
 	/**
 	 * Enable/disable fixed edges IDs for graphs built by this builder.

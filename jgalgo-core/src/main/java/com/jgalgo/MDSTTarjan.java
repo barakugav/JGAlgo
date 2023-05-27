@@ -147,10 +147,10 @@ class MDSTTarjan implements MDST {
 		int n = g.vertices().size();
 		int VMaxNum = n * 2; // max super vertex number
 
-		UnionFindValue uf = UnionFindValue.newBuilder().build(n);
+		UnionFindValue uf = UnionFindValue.newBuilder().expectedSize(n).build();
 		int[] ufIdxToV = new int[VMaxNum];
 		for (int v = 0; v < n; v++)
-			ufIdxToV[v] = v;
+			ufIdxToV[uf.make()] = v;
 
 		Weights.Int edgeRefs = g.getEdgesWeights(EdgeRefWeightKey);
 		EdgeWeightFunc w = e -> {

@@ -29,16 +29,11 @@ abstract class GraphTableAbstract extends GraphBaseContinues implements GraphWit
 	private static final Object DataContainerKeyEdges = new Utils.Obj("edges");
 	private static final Object DataContainerKeyEdgeEndpoints = new Utils.Obj("edgeEndpoints");
 
-	GraphTableAbstract(int n) {
-		super(n);
+	GraphTableAbstract(int expectedVerticesNum, int expectedEdgesNum) {
+		super(expectedVerticesNum, expectedEdgesNum);
 
 		edges = new DataContainer.Obj<>(verticesIDStrategy, null, DataContainer.Int.class);
 		addInternalVerticesDataContainer(DataContainerKeyEdges, edges);
-		for (int u = 0; u < n; u++) {
-			DataContainer.Int uEdges = new DataContainer.Int(verticesIDStrategy, EdgeNone);
-			edges.set(u, uEdges);
-			addInternalVerticesDataContainer(new Utils.Obj("perVertexEdges"), uEdges);
-		}
 
 		edgeEndpoints = new EdgeEndpointsContainer(edgesIDStrategy);
 		addInternalEdgesDataContainer(DataContainerKeyEdgeEndpoints, edgeEndpoints);

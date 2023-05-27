@@ -33,13 +33,18 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  */
 class GraphTableDirected extends GraphTableAbstract {
 
+	GraphTableDirected() {
+		this(0, 0);
+	}
+
 	/**
-	 * Create a new graph with no edges and {@code n} vertices numbered {@code 0,1,2,..,n-1}.
+	 * Create a new graph with no vertices and edges, with expected number of vertices and edges.
 	 *
-	 * @param n the number of initial vertices number
+	 * @param expectedVerticesNum the expected number of vertices that will be in the graph
+	 * @param expectedEdgesNum    the expected number of edges that will be in the graph
 	 */
-	GraphTableDirected(int n) {
-		super(n);
+	GraphTableDirected(int expectedVerticesNum, int expectedEdgesNum) {
+		super(expectedVerticesNum, expectedEdgesNum);
 	}
 
 	GraphTableDirected(GraphTableDirected g) {

@@ -47,16 +47,17 @@ class GraphArrayDirected extends GraphArrayAbstract {
 	 * Create a new graph with no vertices and edges.
 	 */
 	GraphArrayDirected() {
-		this(0);
+		this(0, 0);
 	}
 
 	/**
-	 * Create a new graph with no edges and {@code n} vertices numbered {@code 0,1,2,..,n-1}.
+	 * Create a new graph with no vertices and edges, with expected number of vertices and edges.
 	 *
-	 * @param n the number of initial vertices number
+	 * @param expectedVerticesNum the expected number of vertices that will be in the graph
+	 * @param expectedEdgesNum    the expected number of edges that will be in the graph
 	 */
-	GraphArrayDirected(int n) {
-		super(n);
+	GraphArrayDirected(int expectedVerticesNum, int expectedEdgesNum) {
+		super(expectedVerticesNum, expectedEdgesNum);
 		edgesOut = new DataContainer.Obj<>(verticesIDStrategy, IntArrays.EMPTY_ARRAY, int[].class);
 		edgesOutNum = new DataContainer.Int(verticesIDStrategy, 0);
 		edgesIn = new DataContainer.Obj<>(verticesIDStrategy, IntArrays.EMPTY_ARRAY, int[].class);

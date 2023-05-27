@@ -30,16 +30,19 @@ import it.unimi.dsi.fastutil.ints.IntList;
 class CyclesFinderTestUtils extends TestUtils {
 
 	static void testSimpleGraph(CyclesFinder cyclesFinder) {
-		Graph g = GraphBuilder.newDirected().build(16);
-		int e0 = g.addEdge(0, 1);
-		int e1 = g.addEdge(1, 2);
-		int e2 = g.addEdge(2, 1);
-		int e3 = g.addEdge(2, 0);
+		Graph g = GraphBuilder.newDirected().build();
+		int v0 = g.addVertex();
+		int v1 = g.addVertex();
+		int v2 = g.addVertex();
+		int e0 = g.addEdge(v0, v1);
+		int e1 = g.addEdge(v1, v2);
+		int e2 = g.addEdge(v2, v1);
+		int e3 = g.addEdge(v2, v0);
 
 		Iterator<Path> actual = cyclesFinder.findAllCycles(g);
 
-		Path c1 = new Path(g, 0, 0, IntList.of(e0, e1, e3));
-		Path c2 = new Path(g, 1, 1, IntList.of(e1, e2));
+		Path c1 = new Path(g, v0, v0, IntList.of(e0, e1, e3));
+		Path c2 = new Path(g, v1, v1, IntList.of(e1, e2));
 		List<Path> expected = List.of(c1, c2);
 
 		assertEquals(transformCyclesToCanonical(expected.iterator()), transformCyclesToCanonical(actual));

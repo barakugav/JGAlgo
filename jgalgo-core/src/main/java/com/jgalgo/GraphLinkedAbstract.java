@@ -25,8 +25,8 @@ abstract class GraphLinkedAbstract extends GraphBaseContinues {
 
 	private static final Object DataContainerKeyEdgeEndpoints = new Utils.Obj("edgeEndpoints");
 
-	GraphLinkedAbstract(int n) {
-		super(n);
+	GraphLinkedAbstract(int expectedVerticesNum, int expectedEdgesNum) {
+		super(expectedVerticesNum, expectedEdgesNum);
 		edges = new DataContainer.Obj<>(edgesIDStrategy, null, Node.class);
 		addInternalEdgesDataContainer(DataContainerKeyEdgeEndpoints, edges);
 	}

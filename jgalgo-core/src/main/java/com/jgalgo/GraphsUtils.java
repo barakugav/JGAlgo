@@ -116,8 +116,13 @@ class GraphsUtils {
 	// }
 
 	static Graph referenceGraph(Graph g, Object refEdgeWeightKey) {
-		Graph gRef = GraphBuilder.newDirected().setDirected(g.getCapabilities().directed()).build(g.vertices().size());
+		final int n = g.vertices().size(), m = g.edges().size();
+		Graph gRef = GraphBuilder.newDirected().setDirected(g.getCapabilities().directed()).expectedVerticesNum(n)
+				.expectedEdgesNum(m).build();
 		Weights.Int edgeRef = gRef.addEdgesWeights(refEdgeWeightKey, int.class);
+
+		for (int v = 0; v < n; v++)
+			gRef.addVertex();
 		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
 			int e = it.nextInt();
 			int eRef = gRef.addEdge(g.edgeSource(e), g.edgeTarget(e));

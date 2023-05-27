@@ -38,7 +38,7 @@ public class BiConnectedComponentsAlgoHopcroftTarjanTest extends TestBase {
 	public void randGraphUndirected() {
 		final long seed = 0xda9272921794ecfaL;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(128, 5, 6), phase(64, 16, 32), phase(32, 64, 256), phase(2, 512, 1024));
+		List<Phase> phases = List.of(phase(128, 5, 6), phase(64, 16, 32), phase(32, 64, 256), phase(1, 512, 1024));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)

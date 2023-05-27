@@ -176,7 +176,9 @@ class MatchingWeightedTestUtils extends TestUtils {
 			int n = g.vertices().size();
 			int[] shuffle = randPermutation(n, seedGen.nextSeed());
 
-			Graph shuffledG = GraphBuilder.newUndirected().build(n);
+			Graph shuffledG = GraphBuilder.newUndirected().build();
+			for (int i = 0; i < n; i++)
+				shuffledG.addVertex();
 
 			Weights.Bool partition = g.getVerticesWeights(Weights.DefaultBipartiteWeightKey);
 			if (partition != null) {

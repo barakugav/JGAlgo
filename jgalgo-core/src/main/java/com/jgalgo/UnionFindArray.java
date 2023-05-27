@@ -47,17 +47,18 @@ class UnionFindArray implements UnionFind {
 	}
 
 	/**
-	 * Create a new Union Find data structure with \(n\) elements with ids {@code 0,1,2,...,n-1}, each of them form a
-	 * set of a single element.
+	 * Create a new empty Union Find data structure with expected number of elements.
 	 *
-	 * @param n the number of initial elements in the data structure
+	 * @param expectedSize the expended number of elements in the data structure
 	 */
-	UnionFindArray(int n) {
-		int arrSize = n == 0 ? 2 : n;
+	UnionFindArray(int expectedSize) {
+		if (expectedSize < 0)
+			throw new IllegalArgumentException("negative expected size: " + expectedSize);
+		int arrSize = expectedSize == 0 ? 2 : expectedSize;
 		parent = new int[arrSize];
 		rank = new byte[arrSize];
 		Arrays.fill(parent, NO_PARENT);
-		size = n;
+		size = 0;
 	}
 
 	@Override

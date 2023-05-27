@@ -108,14 +108,18 @@ class GraphsTestUtils extends TestUtils {
 			if (!bipartite) {
 				if (n < 0 || m < 0)
 					throw new IllegalStateException();
-				g = directed ? new GraphArrayDirected(n) : new GraphArrayUndirected(n);
+				g = GraphBuilder.newDirected().setDirected(directed).expectedVerticesNum(n).expectedEdgesNum(m).build();
+				for (int i = 0; i < n; i++)
+					g.addVertex();
 			} else {
 				if (sn < 0 || tn < 0)
 					throw new IllegalStateException();
 				if ((sn == 0 || tn == 0) && m != 0)
 					throw new IllegalStateException();
 				n = sn + tn;
-				g = directed ? new GraphArrayDirected(n) : new GraphArrayUndirected(n);
+				g = GraphBuilder.newDirected().setDirected(directed).expectedVerticesNum(n).expectedEdgesNum(m).build();
+				for (int i = 0; i < n; i++)
+					g.addVertex();
 				Weights.Bool partition = g.addVerticesWeights(Weights.DefaultBipartiteWeightKey, boolean.class);
 				for (int u = 0; u < sn; u++)
 					partition.set(u, true);
@@ -139,7 +143,9 @@ class GraphsTestUtils extends TestUtils {
 			}
 
 			Set<IntList> existingEdges = new HashSet<>();
-			UnionFind uf = UnionFind.newBuilder().build(n);
+			UnionFind uf = UnionFind.newBuilder().expectedSize(n).build();
+			for (int i = 0; i < n; i++)
+				uf.make();
 			int componentsNum = n;
 			Random rand = new Random(seedGen.nextSeed());
 			BitSet reachableFromRoot = new BitSet(n);

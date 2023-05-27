@@ -256,7 +256,7 @@ abstract class MaximumMatchingWeightedGabow1990Abstract implements MaximumMatchi
 		final Blossom[] findToBlossoms;
 
 		Evens(int n) {
-			uf = UnionFind.newBuilder().build(n);
+			uf = UnionFind.newBuilder().expectedSize(n).build();
 			findToBlossoms = new Blossom[n];
 		}
 
@@ -453,7 +453,9 @@ abstract class MaximumMatchingWeightedGabow1990Abstract implements MaximumMatchi
 				DebugPrintsManager debugPrint) {
 			int n = gOrig.vertices().size();
 			this.gOrig = gOrig;
-			this.g = GraphBuilder.newDirected().build(n);
+			this.g = GraphBuilder.newDirected().expectedVerticesNum(n).build();
+			for (int v = 0; v < n; v++)
+				g.addVertex();
 			edgeVal = g.addEdgesWeights(EdgeValKey, EdgeVal.class);
 			this.w = e -> w.weight(edgeVal.get(e).e);
 
