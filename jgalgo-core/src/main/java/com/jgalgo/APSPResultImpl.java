@@ -176,4 +176,34 @@ abstract class APSPResultImpl implements APSP.Result {
 
 	}
 
+	 static class ResFromSSSP implements APSP.Result {
+
+		final SSSP.Result[] ssspResults;
+
+		ResFromSSSP(int n) {
+			ssspResults = new SSSP.Result[n];
+		}
+
+		@Override
+		public double distance(int source, int target) {
+			return ssspResults[source].distance(target);
+		}
+
+		@Override
+		public Path getPath(int source, int target) {
+			return ssspResults[source].getPath(target);
+		}
+
+		@Override
+		public boolean foundNegativeCycle() {
+			return false;
+		}
+
+		@Override
+		public Path getNegativeCycle() {
+			throw new IllegalStateException();
+		}
+
+	}
+
 }

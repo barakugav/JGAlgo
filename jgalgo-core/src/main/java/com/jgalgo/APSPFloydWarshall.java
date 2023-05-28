@@ -37,6 +37,8 @@ public class APSPFloydWarshall implements APSP {
 
 	@Override
 	public APSP.Result computeAllShortestPaths(Graph g, EdgeWeightFunc w) {
+		if (w == null)
+			w = EdgeWeightFunc.CardinalityEdgeWeightFunction;
 		return g.getCapabilities().directed() ? computeAPSPDirected(g, w) : computeAPSPUndirected(g, w);
 	}
 

@@ -13,28 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.jgalgo;
 
 import org.junit.jupiter.api.Test;
 
-public class SSSPGoldbergTest extends TestBase {
+public class APSPCardinalityTest extends TestBase {
 
 	@Test
-	public void testRandGraphPositiveInt() {
-		final long seed = 0x502218b82d4ab25aL;
-		SSSPTestUtils.testSSSPDirectedPositiveInt(new SSSPGoldberg(), seed);
+	public void testRandGraphDirectedCardinality() {
+		final long seed = 0xd44bfe45a5769997L;
+		APSPTestUtils.testAPSPCardinality(new APSPCardinality(), true, seed);
 	}
 
 	@Test
-	public void testRandGraphNegativeInt() {
-		final long seed = 0x15f829173b4f088bL;
-		SSSPTestUtils.testSSSPDirectedNegativeInt(new SSSPGoldberg(), seed);
+	public void testRandGraphUndirectedCardinality() {
+		final long seed = 0x59723abb525e643dL;
+		APSPTestUtils.testAPSPCardinality(new APSPCardinality(), false, seed);
 	}
 
-	@Test
-	public void testSSSPDirectedCardinality() {
-		final long seed = 0x30a5e66dc18d88b3L;
-		SSSPTestUtils.testSSSPCardinality(new SSSPGoldberg(), true, seed);
-	}
 }

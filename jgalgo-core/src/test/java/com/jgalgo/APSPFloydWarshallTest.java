@@ -38,4 +38,16 @@ class APSPFloydWarshallTest extends TestBase {
 		APSPTestUtils.testAPSPDirectedNegativeInt(new APSPFloydWarshall(), seed);
 	}
 
+	@Test
+	public void testRandGraphDirectedCardinality() {
+		final long seed = 0xefc29ae984ef7a07L;
+		APSPTestUtils.testAPSPCardinality(new APSPFloydWarshall(), true, seed);
+	}
+
+	@Test
+	public void testRandGraphUndirectedCardinality() {
+		final long seed = 0xf301a8a350bea7c9L;
+		APSPTestUtils.testAPSPCardinality(new APSPFloydWarshall(), false, seed);
+	}
+
 }

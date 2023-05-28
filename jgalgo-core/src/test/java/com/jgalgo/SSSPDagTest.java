@@ -51,4 +51,30 @@ public class SSSPDagTest extends TestBase {
 		});
 	}
 
+	@Test
+	public void testDistancesDAGUnconnectedCardinality() {
+		final long seed = 0xcc9a05cd6148c76bL;
+		distancesDAGCardinality(false, seed);
+	}
+
+	@Test
+	public void testDistancesDAGConnectedCardinality() {
+		final long seed = 0x16aace466ac8c336L;
+		distancesDAGCardinality(true, seed);
+	}
+
+	private static void distancesDAGCardinality(boolean connected, long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		SSSP ssspAlgo = new SSSPDag();
+		List<Phase> phases = List.of(phase(256, 16, 16), phase(128, 32, 64), phase(16, 512, 1024));
+		runTestMultiple(phases, (testIter, args) -> {
+			int n = args[0], m = args[1];
+			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
+					.selfEdges(false).cycles(false).connected(connected).build();
+			int source = 0;
+
+			SSSPTestUtils.testAlgo(g, null, source, ssspAlgo, new SSSPDijkstra());
+		});
+	}
+
 }

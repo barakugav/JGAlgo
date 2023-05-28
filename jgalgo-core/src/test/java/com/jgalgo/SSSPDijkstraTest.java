@@ -32,4 +32,16 @@ public class SSSPDijkstraTest extends TestBase {
 		SSSPTestUtils.testSSSPUndirectedPositiveInt(new SSSPDijkstra(), seed);
 	}
 
+	@Test
+	public void testSSSPUndirectedCardinality() {
+		final long seed = 0x72e22f78446fa4f2L;
+		SSSPTestUtils.testSSSPCardinality(new SSSPDijkstra(), false, seed);
+	}
+
+	@Test
+	public void testSSSPDirectedCardinality() {
+		final long seed = 0x1dbbeb00978a3c46L;
+		SSSPTestUtils.testSSSPCardinality(new SSSPDijkstra(), true, seed);
+	}
+
 }

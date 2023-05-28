@@ -44,6 +44,8 @@ public class SSSPDag implements SSSP {
 	@Override
 	public SSSPDag.Result computeShortestPaths(Graph g, EdgeWeightFunc w, int source) {
 		ArgumentCheck.onlyDirected(g);
+		if (w == null)
+			w = EdgeWeightFunc.CardinalityEdgeWeightFunction;
 		return w instanceof EdgeWeightFunc.Int ? computeSsspInt(g, (EdgeWeightFunc.Int) w, source)
 				: computeSsspDouble(g, w, source);
 	}

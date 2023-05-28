@@ -61,6 +61,8 @@ public class SSSPDijkstra implements SSSP {
 	 */
 	@Override
 	public SSSP.Result computeShortestPaths(Graph g, EdgeWeightFunc w, int source) {
+		if (w == null)
+			w = EdgeWeightFunc.CardinalityEdgeWeightFunction;
 		ArgumentCheck.onlyPositiveWeights(g, w);
 		if (w instanceof EdgeWeightFunc.Int) {
 			return computeSsspInts(g, (EdgeWeightFunc.Int) w, source);

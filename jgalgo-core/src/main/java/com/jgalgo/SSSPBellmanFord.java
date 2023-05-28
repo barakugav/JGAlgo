@@ -49,6 +49,8 @@ public class SSSPBellmanFord implements SSSP {
 	@Override
 	public SSSP.Result computeShortestPaths(Graph g, EdgeWeightFunc w, int source) {
 		ArgumentCheck.onlyDirected(g);
+		if (w == null)
+			w = EdgeWeightFunc.CardinalityEdgeWeightFunction;
 		int n = g.vertices().size();
 		Result res = new Result(g, source);
 		res.distances[source] = 0;

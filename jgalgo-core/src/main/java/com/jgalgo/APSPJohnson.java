@@ -56,6 +56,8 @@ public class APSPJohnson implements APSP {
 	 */
 	@Override
 	public APSP.Result computeAllShortestPaths(Graph g, EdgeWeightFunc w) {
+		if (w == null)
+			w = EdgeWeightFunc.CardinalityEdgeWeightFunction;
 		ArgumentCheck.onlyDirected(g);
 		int n = g.vertices().size();
 
@@ -87,7 +89,8 @@ public class APSPJohnson implements APSP {
 					e -> wInt.weightInt(e) + (int) potential[g.edgeSource(e)] - (int) potential[g.edgeTarget(e)];
 			wPotential = wPotentialInt;
 		} else {
-			wPotential = e -> w.weight(e) + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];
+			EdgeWeightFunc w0 = w;
+			wPotential = e -> w0.weight(e) + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];
 		}
 		SuccessRes res = computeAPSPPositive(g, wPotential);
 		res.potential = potential;
@@ -108,10 +111,11 @@ public class APSPJohnson implements APSP {
 		} else {
 			/* parallel */
 			List<RecursiveAction> tasks = new ArrayList<>(n);
+			ThreadLocal<SSSP> sssp = ThreadLocal.withInitial(SSSPDijkstra::new);
 			for (int source = 0; source < n; source++) {
 				final int source0 = source;
 				tasks.add(Utils.recursiveAction(
-						() -> res.ssspResults[source0] = new SSSPDijkstra().computeShortestPaths(g, w, source0)));
+						() -> res.ssspResults[source0] = sssp.get().computeShortestPaths(g, w, source0)));
 			}
 			for (RecursiveAction task : tasks)
 				pool.execute(task);

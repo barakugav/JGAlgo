@@ -32,4 +32,10 @@ class APSPJohnsonTest extends TestBase {
 		APSPTestUtils.testAPSPDirectedNegativeInt(new APSPJohnson(), seed);
 	}
 
+	@Test
+	public void testRandGraphDirectedCardinality() {
+		final long seed = 0x9500f9de0d664ee6L;
+		APSPTestUtils.testAPSPCardinality(new APSPJohnson(), true, seed);
+	}
+
 }

@@ -50,6 +50,8 @@ public class SSSPDial implements SSSP {
 	 */
 	@Override
 	public SSSP.Result computeShortestPaths(Graph g, EdgeWeightFunc w, int source) {
+		if (w == null)
+			w = EdgeWeightFunc.CardinalityEdgeWeightFunction;
 		if (!(w instanceof EdgeWeightFunc.Int))
 			throw new IllegalArgumentException("only int weights are supported");
 		EdgeWeightFunc.Int w0 = (EdgeWeightFunc.Int) w;

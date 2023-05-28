@@ -258,6 +258,13 @@ class GraphsUtils {
 	}
 
 	static double edgesWeightSum(IntIterator eit, EdgeWeightFunc w) {
+		if (w == null || w == EdgeWeightFunc.CardinalityEdgeWeightFunction) {
+			int cardinality = 0;
+			for (; eit.hasNext(); eit.nextInt())
+				cardinality++;
+			return cardinality;
+		}
+
 		if (w instanceof EdgeWeightFunc.Int) {
 			EdgeWeightFunc.Int w0 = (EdgeWeightFunc.Int) w;
 			int sum = 0;

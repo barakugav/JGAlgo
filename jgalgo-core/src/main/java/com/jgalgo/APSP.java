@@ -27,13 +27,29 @@ package com.jgalgo;
 public interface APSP {
 
 	/**
-	 * Compute all shortest paths between all pairs of vertices in a graph.
+	 * Compute the shortest path between each pair of vertices in a graph.
+	 * <p>
+	 * Given an edge weight function, the length of a path is the weight sum of all edges of the path. The shortest path
+	 * from a source vertex to some other vertex is the path with the minimum weight.
 	 *
 	 * @param  g a graph
 	 * @param  w an edge weight function
-	 * @return   a result object containing information on the shortest path between each two pair of vertices
+	 * @return   a result object containing information on the shortest path between each pair of vertices
 	 */
 	public APSP.Result computeAllShortestPaths(Graph g, EdgeWeightFunc w);
+
+	/**
+	 * Compute the cardinality shortest path between each pair of vertices in a graph.
+	 * <p>
+	 * The cardinality length of a path is the number of edges in it. The cardinality shortest path from a source vertex
+	 * to some other vertex is the path with the minimum number of edges.
+	 *
+	 * @param  g a graph
+	 * @return   a result object containing information on the cardinality shortest path between each pair of vertices
+	 */
+	default APSP.Result computeAllCardinalityShortestPaths(Graph g) {
+		return computeAllShortestPaths(g, EdgeWeightFunc.CardinalityEdgeWeightFunction);
+	}
 
 	/**
 	 * A result object for an {@link APSP} algorithm.

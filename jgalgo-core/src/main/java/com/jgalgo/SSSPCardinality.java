@@ -19,29 +19,22 @@ package com.jgalgo;
 /**
  * Single Source Shortest Path for cardinality weight function.
  * <p>
- * Similar to a {@link SSSP}, but with weights of \(1\) to all edges. A simple BFS is performed from the source vertex
+ * The cardinality length of a path is the number of edges in it. The cardinality shortest path from a source vertex to
+ * some other vertex is the path with the minimum number of edges. A simple BFS is performed from the source vertex
  * until all vertices that can be reached are reached. The algorithm runs in linear time.
  *
- * @see    SSSP
  * @see    BFSIter
  * @author Barak Ugav
  */
-public class SSSPCardinality {
+public class SSSPCardinality implements SSSP {
 
 	/**
 	 * Construct a new cardinality SSSP algorithm object.
 	 */
 	public SSSPCardinality() {}
 
-	/**
-	 * Compute the shortest paths from a source to all other vertices with cardinality weight function.
-	 *
-	 * @param  g      a graph
-	 * @param  source a source vertex
-	 * @return        a result object containing the distances and shortest paths from the source to any other vertex
-	 * @see           SSSP#computeShortestPaths(Graph, EdgeWeightFunc, int)
-	 */
-	public SSSP.Result computeShortestPaths(Graph g, int source) {
+	@Override
+	public SSSP.Result computeCardinalityShortestPaths(Graph g, int source) {
 		SSSPResultImpl.Int res = new SSSPResultImpl.Int(g, source);
 		for (BFSIter it = new BFSIter(g, source); it.hasNext();) {
 			int v = it.nextInt();
@@ -49,6 +42,19 @@ public class SSSPCardinality {
 			res.backtrack[v] = it.inEdge();
 		}
 		return res;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @throws IllegalArgumentException if the weight function {@code w} is not {@code null} or
+	 *                                      {@link EdgeWeightFunc#CardinalityEdgeWeightFunction}
+	 */
+	@Override
+	public SSSP.Result computeShortestPaths(Graph g, EdgeWeightFunc w, int source) {
+		if (!(w == null || w == EdgeWeightFunc.CardinalityEdgeWeightFunction))
+			throw new IllegalArgumentException("only cardinality shortest paths are supported");
+		return computeCardinalityShortestPaths(g, source);
 	}
 
 }

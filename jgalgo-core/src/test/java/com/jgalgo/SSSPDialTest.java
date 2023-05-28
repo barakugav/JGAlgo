@@ -32,4 +32,16 @@ public class SSSPDialTest extends TestBase {
 		SSSPTestUtils.testSSSPUndirectedPositiveInt(new SSSPDial(), seed);
 	}
 
+	@Test
+	public void testSSSPUndirectedCardinality() {
+		final long seed = 0xaf3606c2a17e51f6L;
+		SSSPTestUtils.testSSSPCardinality(new SSSPDial(), false, seed);
+	}
+
+	@Test
+	public void testSSSPDirectedCardinality() {
+		final long seed = 0x248003d317888444L;
+		SSSPTestUtils.testSSSPCardinality(new SSSPDial(), true, seed);
+	}
+
 }
