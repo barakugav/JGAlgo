@@ -32,7 +32,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
  *
  * @author Barak Ugav
  */
-public class MinimumMeanCycleDasdanGupta implements MinimumMeanCycle {
+class MinimumMeanCycleDasdanGupta implements MinimumMeanCycle {
 
 	private final ConnectedComponentsAlgo ccAlg = ConnectedComponentsAlgo.newBuilder().build();
 	private static final double EPS = 0.00001;
@@ -40,7 +40,7 @@ public class MinimumMeanCycleDasdanGupta implements MinimumMeanCycle {
 	/**
 	 * Create a new minimum mean cycle algorithm.
 	 */
-	public MinimumMeanCycleDasdanGupta() {}
+	MinimumMeanCycleDasdanGupta() {}
 
 	/**
 	 * {@inheritDoc}

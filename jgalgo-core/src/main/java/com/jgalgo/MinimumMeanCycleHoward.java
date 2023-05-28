@@ -37,7 +37,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  *
  * @author Barak Ugav
  */
-public class MinimumMeanCycleHoward implements MinimumMeanCycle {
+class MinimumMeanCycleHoward implements MinimumMeanCycle {
 
 	private final ConnectedComponentsAlgo ccAlg = ConnectedComponentsAlgo.newBuilder().build();
 
@@ -46,7 +46,7 @@ public class MinimumMeanCycleHoward implements MinimumMeanCycle {
 	/**
 	 * Create a new minimum mean cycle algorithm.
 	 */
-	public MinimumMeanCycleHoward() {}
+	MinimumMeanCycleHoward() {}
 
 	/**
 	 * {@inheritDoc}
