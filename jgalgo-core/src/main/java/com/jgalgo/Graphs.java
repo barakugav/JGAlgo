@@ -17,6 +17,7 @@ package com.jgalgo;
 
 import java.util.Collections;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Set;
 import com.jgalgo.GraphsUtils.GraphCapabilitiesBuilder;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -662,6 +663,195 @@ public class Graphs {
 	 */
 	public static Graph newCompleteGraphDirected(int numberOfVertices) {
 		return new CompleteGraphDirected(numberOfVertices);
+	}
+
+	private static class UnmodifiableGraph implements Graph {
+
+		private final Graph g;
+
+		UnmodifiableGraph(Graph g) {
+			this.g = Objects.requireNonNull(g);
+		}
+
+		@Override
+		public IntSet vertices() {
+			return g.vertices();
+		}
+
+		@Override
+		public IntSet edges() {
+			return g.edges();
+		}
+
+		@Override
+		public int addVertex() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void removeVertex(int vertex) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public EdgeIter edgesOut(int source) {
+			return new UnmodifiableEdgeIter(g.edgesOut(source));
+		}
+
+		@Override
+		public EdgeIter edgesIn(int target) {
+			return new UnmodifiableEdgeIter(g.edgesIn(target));
+		}
+
+		@Override
+		public EdgeIter getEdges(int source, int target) {
+			return new UnmodifiableEdgeIter(g.getEdges(source, target));
+		}
+
+		@Override
+		public int addEdge(int source, int target) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void removeEdge(int edge) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void reverseEdge(int edge) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public int edgeSource(int edge) {
+			return g.edgeSource(edge);
+		}
+
+		@Override
+		public int edgeTarget(int edge) {
+			return g.edgeTarget(edge);
+		}
+
+		@Override
+		public void clear() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void clearEdges() {
+			throw new UnsupportedOperationException();
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <V, WeightsT extends Weights<V>> WeightsT getVerticesWeights(Object key) {
+			return (WeightsT) ((WeightsImpl<V>) g.getVerticesWeights(key)).unmodifiable();
+		}
+
+		@Override
+		public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, Class<? super V> type) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, Class<? super V> type,
+				V defVal) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void removeVerticesWeights(Object key) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public Set<Object> getVerticesWeightKeys() {
+			return g.getVerticesWeightKeys();
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <E, WeightsT extends Weights<E>> WeightsT getEdgesWeights(Object key) {
+			return (WeightsT) ((WeightsImpl<E>) g.getEdgesWeights(key)).unmodifiable();
+		}
+
+		@Override
+		public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, Class<? super E> type) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, Class<? super E> type, E defVal) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void removeEdgesWeights(Object key) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public Set<Object> getEdgesWeightsKeys() {
+			return g.getEdgesWeightsKeys();
+		}
+
+		@Override
+		public IDStrategy.Continues getVerticesIDStrategy() {
+			return g.getVerticesIDStrategy();
+		}
+
+		@Override
+		public IDStrategy getEdgesIDStrategy() {
+			return g.getEdgesIDStrategy();
+		}
+
+		@Override
+		public GraphCapabilities getCapabilities() {
+			return g.getCapabilities();
+		}
+
+		@Override
+		public Graph copy() {
+			return g.copy();
+		}
+	}
+
+	private static class UnmodifiableEdgeIter implements EdgeIterImpl {
+		private final EdgeIterImpl it;
+
+		UnmodifiableEdgeIter(EdgeIter it) {
+			this.it = (EdgeIterImpl) Objects.requireNonNull(it);
+		}
+
+		@Override
+		public int source() {
+			return it.source();
+		}
+
+		@Override
+		public int target() {
+			return it.target();
+		}
+
+		@Override
+		public int nextInt() {
+			return it.nextInt();
+		}
+
+		@Override
+		public boolean hasNext() {
+			return it.hasNext();
+		}
+
+		@Override
+		public int peekNext() {
+			return it.peekNext();
+		}
+	}
+
+	static Graph unmodifiableView(Graph g) {
+		return g instanceof UnmodifiableGraph ? (UnmodifiableGraph) g : new UnmodifiableGraph(g);
 	}
 
 }

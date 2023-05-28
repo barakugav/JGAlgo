@@ -18,6 +18,7 @@ package com.jgalgo;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 
@@ -34,6 +35,263 @@ abstract class WeightsImpl<E> implements Weights<E> {
 	}
 
 	abstract WeightsImpl<E> copy(IDStrategy idStrat);
+
+	@SuppressWarnings("unchecked")
+	Weights<E> unmodifiable() {
+		if (this instanceof Weights.Byte)
+			return (Weights<E>) new UnmodifiableWeights.Byte((Weights.Byte) this);
+		if (this instanceof Weights.Short)
+			return (Weights<E>) new UnmodifiableWeights.Short((Weights.Short) this);
+		if (this instanceof Weights.Int)
+			return (Weights<E>) new UnmodifiableWeights.Int((Weights.Int) this);
+		if (this instanceof Weights.Long)
+			return (Weights<E>) new UnmodifiableWeights.Long((Weights.Long) this);
+		if (this instanceof Weights.Float)
+			return (Weights<E>) new UnmodifiableWeights.Float((Weights.Float) this);
+		if (this instanceof Weights.Double)
+			return (Weights<E>) new UnmodifiableWeights.Double((Weights.Double) this);
+		if (this instanceof Weights.Bool)
+			return (Weights<E>) new UnmodifiableWeights.Bool((Weights.Bool) this);
+		if (this instanceof Weights.Char)
+			return (Weights<E>) new UnmodifiableWeights.Char((Weights.Char) this);
+		return new UnmodifiableWeights<>(this);
+	}
+
+	private static class UnmodifiableWeights<E> implements Weights<E> {
+
+		private final Weights<E> weights;
+
+		UnmodifiableWeights(Weights<E> w) {
+			this.weights = Objects.requireNonNull(w);
+		}
+
+		Weights<E> weights() {
+			return weights;
+		}
+
+		@Override
+		public E get(int id) {
+			return weights.get(id);
+		}
+
+		@Override
+		public void set(int id, E weight) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public E defaultWeight() {
+			return weights.defaultWeight();
+		}
+
+		static class Byte extends UnmodifiableWeights<java.lang.Byte> implements Weights.Byte {
+			Byte(Weights.Byte w) {
+				super(w);
+			}
+
+			@Override
+			Weights.Byte weights() {
+				return (Weights.Byte) super.weights();
+			}
+
+			@Override
+			public byte getByte(int id) {
+				return weights().getByte(id);
+			}
+
+			@Override
+			public void set(int id, byte weight) {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public byte defaultWeightByte() {
+				return weights().defaultWeightByte();
+			}
+		}
+
+		static class Short extends UnmodifiableWeights<java.lang.Short> implements Weights.Short {
+			Short(Weights.Short w) {
+				super(w);
+			}
+
+			@Override
+			Weights.Short weights() {
+				return (Weights.Short) super.weights();
+			}
+
+			@Override
+			public short getShort(int id) {
+				return weights().getShort(id);
+			}
+
+			@Override
+			public void set(int id, short weight) {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public short defaultWeightShort() {
+				return weights().defaultWeightShort();
+			}
+		}
+
+		static class Int extends UnmodifiableWeights<Integer> implements Weights.Int {
+			Int(Weights.Int w) {
+				super(w);
+			}
+
+			@Override
+			Weights.Int weights() {
+				return (Weights.Int) super.weights();
+			}
+
+			@Override
+			public int getInt(int id) {
+				return weights().getInt(id);
+			}
+
+			@Override
+			public void set(int id, int weight) {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public int defaultWeightInt() {
+				return weights().defaultWeightInt();
+			}
+		}
+
+		static class Long extends UnmodifiableWeights<java.lang.Long> implements Weights.Long {
+			Long(Weights.Long w) {
+				super(w);
+			}
+
+			@Override
+			Weights.Long weights() {
+				return (Weights.Long) super.weights();
+			}
+
+			@Override
+			public long getLong(int id) {
+				return weights().getLong(id);
+			}
+
+			@Override
+			public void set(int id, long weight) {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public long defaultWeightLong() {
+				return weights().defaultWeightLong();
+			}
+		}
+
+		static class Float extends UnmodifiableWeights<java.lang.Float> implements Weights.Float {
+			Float(Weights.Float w) {
+				super(w);
+			}
+
+			@Override
+			Weights.Float weights() {
+				return (Weights.Float) super.weights();
+			}
+
+			@Override
+			public float getFloat(int id) {
+				return weights().getFloat(id);
+			}
+
+			@Override
+			public void set(int id, float weight) {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public float defaultWeightFloat() {
+				return weights().defaultWeightFloat();
+			}
+		}
+
+		static class Double extends UnmodifiableWeights<java.lang.Double> implements Weights.Double {
+			Double(Weights.Double w) {
+				super(w);
+			}
+
+			@Override
+			Weights.Double weights() {
+				return (Weights.Double) super.weights();
+			}
+
+			@Override
+			public double getDouble(int id) {
+				return weights().getDouble(id);
+			}
+
+			@Override
+			public void set(int id, double weight) {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public double defaultWeightDouble() {
+				return weights().defaultWeightDouble();
+			}
+		}
+
+		static class Bool extends UnmodifiableWeights<Boolean> implements Weights.Bool {
+			Bool(Weights.Bool w) {
+				super(w);
+			}
+
+			@Override
+			Weights.Bool weights() {
+				return (Weights.Bool) super.weights();
+			}
+
+			@Override
+			public boolean getBool(int id) {
+				return weights().getBool(id);
+			}
+
+			@Override
+			public void set(int id, boolean weight) {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public boolean defaultWeightBool() {
+				return weights().defaultWeightBool();
+			}
+		}
+
+		static class Char extends UnmodifiableWeights<Character> implements Weights.Char {
+			Char(Weights.Char w) {
+				super(w);
+			}
+
+			@Override
+			Weights.Char weights() {
+				return (Weights.Char) super.weights();
+			}
+
+			@Override
+			public char getChar(int id) {
+				return weights().getChar(id);
+			}
+
+			@Override
+			public void set(int id, char weight) {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public char defaultWeightChar() {
+				return weights().defaultWeightChar();
+			}
+		}
+	}
 
 	@SuppressWarnings("unchecked")
 	static <E, WeightsT extends Weights<E>> WeightsT newInstance(IDStrategy idStrat, Class<? super E> type, E defVal) {
