@@ -148,5 +148,10 @@ public interface EdgeWeightFunc extends IntComparator {
 
 	}
 
+	/**
+	 * A weight function that assign a weight of {@code 1} to any edge.
+	 */
+<span class="fc" id="L154">	public static EdgeWeightFunc.Int CardinalityEdgeWeightFunction = e -&gt; 1;</span>
+
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

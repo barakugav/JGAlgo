@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntComparator;
+import it.unimi.dsi.fastutil.ints.IntIntPair;
 import it.unimi.dsi.fastutil.objects.ObjectArrays;
 
 class ArraysUtils {
@@ -27,11 +28,11 @@ class ArraysUtils {
 	private ArraysUtils() {}
 
 	static &lt;E&gt; E getKthElement(E[] a, int k, Comparator&lt;? super E&gt; c) {
-<span class="fc" id="L30">		return getKthElement(a, 0, a.length, k, c, false);</span>
+<span class="fc" id="L31">		return getKthElement(a, 0, a.length, k, c, false);</span>
 	}
 
 	static int getKthElement(int[] a, int k, IntComparator c) {
-<span class="nc" id="L34">		return getKthElement(a, 0, a.length, k, c, false);</span>
+<span class="nc" id="L35">		return getKthElement(a, 0, a.length, k, c, false);</span>
 	}
 
 	/**
@@ -52,17 +53,17 @@ class ArraysUtils {
 	 * @return         the Kth element
 	 */
 	static &lt;E&gt; E getKthElement(E[] a, int from, int to, int k, Comparator&lt;? super E&gt; c, boolean inPlace) {
-<span class="pc bpc" id="L55" title="4 of 8 branches missed.">		if (from &lt; 0 || from &gt;= to || to &gt; a.length || k &gt;= to - from)</span>
-<span class="nc" id="L56">			throw new IndexOutOfBoundsException(&quot;a(&quot; + a.length + &quot;)[&quot; + from + &quot;, &quot; + to + &quot;][&quot; + k + &quot;]&quot;);</span>
-<span class="pc bpc" id="L57" title="1 of 2 branches missed.">		if (!inPlace) {</span>
-<span class="fc" id="L58">			a = Arrays.copyOfRange(a, from, to);</span>
-<span class="fc" id="L59">			from = 0;</span>
-<span class="fc" id="L60">			to = a.length;</span>
+<span class="pc bpc" id="L56" title="4 of 8 branches missed.">		if (from &lt; 0 || from &gt;= to || to &gt; a.length || k &gt;= to - from)</span>
+<span class="nc" id="L57">			throw new IndexOutOfBoundsException(&quot;a(&quot; + a.length + &quot;)[&quot; + from + &quot;, &quot; + to + &quot;][&quot; + k + &quot;]&quot;);</span>
+<span class="pc bpc" id="L58" title="1 of 2 branches missed.">		if (!inPlace) {</span>
+<span class="fc" id="L59">			a = Arrays.copyOfRange(a, from, to);</span>
+<span class="fc" id="L60">			from = 0;</span>
+<span class="fc" id="L61">			to = a.length;</span>
 		}
-<span class="pc bpc" id="L62" title="1 of 2 branches missed.">		c = c != null ? c : Utils.getDefaultComparator();</span>
+<span class="pc bpc" id="L63" title="1 of 2 branches missed.">		c = c != null ? c : Utils.getDefaultComparator();</span>
 
-<span class="fc" id="L64">		getKthElement0(a, from, to, k, c);</span>
-<span class="fc" id="L65">		return a[k];</span>
+<span class="fc" id="L65">		getKthElement0(a, from, to, k, c);</span>
+<span class="fc" id="L66">		return a[k];</span>
 	}
 
 	/**
@@ -82,47 +83,55 @@ class ArraysUtils {
 	 * @return         the Kth element
 	 */
 	static int getKthElement(int[] a, int from, int to, int k, IntComparator c, boolean inPlace) {
-<span class="pc bpc" id="L85" title="4 of 8 branches missed.">		if (from &lt; 0 || from &gt;= to || to &gt; a.length || k &gt;= to - from)</span>
-<span class="nc" id="L86">			throw new IndexOutOfBoundsException(&quot;a(&quot; + a.length + &quot;)[&quot; + from + &quot;, &quot; + to + &quot;][&quot; + k + &quot;]&quot;);</span>
-<span class="pc bpc" id="L87" title="1 of 2 branches missed.">		if (!inPlace) {</span>
-<span class="nc" id="L88">			a = Arrays.copyOfRange(a, from, to);</span>
-<span class="nc" id="L89">			from = 0;</span>
-<span class="nc" id="L90">			to = a.length;</span>
+<span class="pc bpc" id="L86" title="4 of 8 branches missed.">		if (from &lt; 0 || from &gt;= to || to &gt; a.length || k &gt;= to - from)</span>
+<span class="nc" id="L87">			throw new IndexOutOfBoundsException(&quot;a(&quot; + a.length + &quot;)[&quot; + from + &quot;, &quot; + to + &quot;][&quot; + k + &quot;]&quot;);</span>
+<span class="pc bpc" id="L88" title="1 of 2 branches missed.">		if (!inPlace) {</span>
+<span class="nc" id="L89">			a = Arrays.copyOfRange(a, from, to);</span>
+<span class="nc" id="L90">			from = 0;</span>
+<span class="nc" id="L91">			to = a.length;</span>
 		}
-<span class="pc bpc" id="L92" title="1 of 2 branches missed.">		c = c != null ? c : Integer::compare;</span>
+<span class="pc bpc" id="L93" title="1 of 2 branches missed.">		c = c != null ? c : Integer::compare;</span>
 
-<span class="fc" id="L94">		getKthElement0(a, from, to, k, c);</span>
-<span class="fc" id="L95">		return a[k];</span>
+<span class="fc" id="L95">		getKthElement0(a, from, to, k, c);</span>
+<span class="fc" id="L96">		return a[k];</span>
 	}
 
 	private static &lt;E&gt; void getKthElement0(E[] a, int from, int to, int k, Comparator&lt;? super E&gt; c) {
 		for (;;) {
-<span class="pc bpc" id="L100" title="1 of 2 branches missed.">			if (from == to + 1)</span>
-<span class="nc" id="L101">				return;</span>
-<span class="fc" id="L102">			int pivotIdx = calcPivot(a, from, to, c);</span>
-<span class="fc" id="L103">			pivotIdx = pivotPartition0(a, from, to, pivotIdx, c);</span>
-<span class="fc bfc" id="L104" title="All 2 branches covered.">			if (pivotIdx == k)</span>
-<span class="fc" id="L105">				return;</span>
-<span class="fc bfc" id="L106" title="All 2 branches covered.">			if (pivotIdx &gt; k)</span>
-<span class="fc" id="L107">				to = pivotIdx;</span>
-			else
-<span class="fc" id="L109">				from = pivotIdx + 1;</span>
-<span class="fc" id="L110">		}</span>
+<span class="pc bpc" id="L101" title="1 of 2 branches missed.">			if (from == to + 1)</span>
+<span class="nc" id="L102">				return;</span>
+<span class="fc" id="L103">			int pivotIdx = calcPivot(a, from, to, c);</span>
+<span class="fc" id="L104">			IntIntPair p = pivotPartition0(a, from, to, pivotIdx, c);</span>
+<span class="fc" id="L105">			int lastSmaller = p.firstInt();</span>
+<span class="fc" id="L106">			int firstGreater = p.secondInt();</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">			if (k &lt;= lastSmaller) {</span>
+<span class="fc" id="L108">				to = lastSmaller + 1;</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">			} else if (k &gt;= firstGreater) {</span>
+<span class="fc" id="L110">				from = firstGreater;</span>
+			} else {
+				/* k in range (lastSmaller, firstGreater) , namely the kth element is the pivot */
+<span class="fc" id="L113">				return;</span>
+			}
+<span class="fc" id="L115">		}</span>
 	}
 
 	private static void getKthElement0(int[] a, int from, int to, int k, IntComparator c) {
 		for (;;) {
-<span class="pc bpc" id="L115" title="1 of 2 branches missed.">			if (from == to + 1)</span>
-<span class="nc" id="L116">				return;</span>
-<span class="fc" id="L117">			int pivotIdx = calcPivot(a, from, to, c);</span>
-<span class="fc" id="L118">			pivotIdx = pivotPartition0(a, from, to, pivotIdx, c);</span>
-<span class="fc bfc" id="L119" title="All 2 branches covered.">			if (pivotIdx == k)</span>
-<span class="fc" id="L120">				return;</span>
-<span class="fc bfc" id="L121" title="All 2 branches covered.">			if (pivotIdx &gt; k)</span>
-<span class="fc" id="L122">				to = pivotIdx;</span>
-			else
-<span class="fc" id="L124">				from = pivotIdx + 1;</span>
-<span class="fc" id="L125">		}</span>
+<span class="pc bpc" id="L120" title="1 of 2 branches missed.">			if (from == to + 1)</span>
+<span class="nc" id="L121">				return;</span>
+<span class="fc" id="L122">			int pivotIdx = calcPivot(a, from, to, c);</span>
+<span class="fc" id="L123">			IntIntPair p = pivotPartition0(a, from, to, pivotIdx, c);</span>
+<span class="fc" id="L124">			int lastSmaller = p.firstInt();</span>
+<span class="fc" id="L125">			int firstGreater = p.secondInt();</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">			if (k &lt;= lastSmaller) {</span>
+<span class="fc" id="L127">				to = lastSmaller + 1;</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">			} else if (k &gt;= firstGreater) {</span>
+<span class="fc" id="L129">				from = firstGreater;</span>
+			} else {
+				/* k in range (lastSmaller, firstGreater) , namely the kth element is the pivot */
+<span class="fc" id="L132">				return;</span>
+			}
+<span class="fc" id="L134">		}</span>
 	}
 
 	/**
@@ -143,19 +152,19 @@ class ArraysUtils {
 	 * @return       the last index of element smaller or equal to the pivot (exclusive)
 	 */
 	static &lt;E&gt; int pivotPartition(E[] a, int from, int to, E pivot, Comparator&lt;? super E&gt; c) {
-<span class="nc bnc" id="L146" title="All 6 branches missed.">		if (from &lt; 0 || from &gt;= to || to &gt; a.length)</span>
-<span class="nc" id="L147">			throw new IndexOutOfBoundsException(&quot;a(&quot; + a.length + &quot;)[&quot; + from + &quot;, &quot; + to + &quot;]&quot;);</span>
-<span class="nc bnc" id="L148" title="All 2 branches missed.">		c = c != null ? c : Utils.getDefaultComparator();</span>
+<span class="nc bnc" id="L155" title="All 6 branches missed.">		if (from &lt; 0 || from &gt;= to || to &gt; a.length)</span>
+<span class="nc" id="L156">			throw new IndexOutOfBoundsException(&quot;a(&quot; + a.length + &quot;)[&quot; + from + &quot;, &quot; + to + &quot;]&quot;);</span>
+<span class="nc bnc" id="L157" title="All 2 branches missed.">		c = c != null ? c : Utils.getDefaultComparator();</span>
 
 		// Find greatest element smaller than the pivot
-<span class="nc" id="L151">		int pivotIdx = -1;</span>
-<span class="nc bnc" id="L152" title="All 2 branches missed.">		for (int i = from; i &lt; to; i++)</span>
-<span class="nc bnc" id="L153" title="All 6 branches missed.">			if (c.compare(pivot, a[i]) &gt;= 0 &amp;&amp; (pivotIdx == -1 || c.compare(a[pivotIdx], a[i]) &lt; 0))</span>
-<span class="nc" id="L154">				pivotIdx = i;</span>
-<span class="nc bnc" id="L155" title="All 2 branches missed.">		if (pivotIdx == -1)</span>
-<span class="nc" id="L156">			return 0; // all elements are greater than the pivot</span>
+<span class="nc" id="L160">		int pivotIdx = -1;</span>
+<span class="nc bnc" id="L161" title="All 2 branches missed.">		for (int i = from; i &lt; to; i++)</span>
+<span class="nc bnc" id="L162" title="All 6 branches missed.">			if (c.compare(pivot, a[i]) &gt;= 0 &amp;&amp; (pivotIdx == -1 || c.compare(a[pivotIdx], a[i]) &lt; 0))</span>
+<span class="nc" id="L163">				pivotIdx = i;</span>
+<span class="nc bnc" id="L164" title="All 2 branches missed.">		if (pivotIdx == -1)</span>
+<span class="nc" id="L165">			return 0; // all elements are greater than the pivot</span>
 
-<span class="nc" id="L158">		return pivotPartition0(a, from, to, pivotIdx, c) + 1;</span>
+<span class="nc" id="L167">		return pivotPartition0(a, from, to, pivotIdx, c).secondInt();</span>
 	}
 
 	/**
@@ -175,93 +184,97 @@ class ArraysUtils {
 	 * @return       the last index of element smaller or equal to the pivot (exclusive)
 	 */
 	static int pivotPartition(int[] a, int from, int to, int pivot, IntComparator c) {
-<span class="nc bnc" id="L178" title="All 6 branches missed.">		if (from &lt; 0 || from &gt;= to || to &gt; a.length)</span>
-<span class="nc" id="L179">			throw new IndexOutOfBoundsException(&quot;a(&quot; + a.length + &quot;)[&quot; + from + &quot;, &quot; + to + &quot;]&quot;);</span>
-<span class="nc bnc" id="L180" title="All 2 branches missed.">		c = c != null ? c : Integer::compare;</span>
+<span class="nc bnc" id="L187" title="All 6 branches missed.">		if (from &lt; 0 || from &gt;= to || to &gt; a.length)</span>
+<span class="nc" id="L188">			throw new IndexOutOfBoundsException(&quot;a(&quot; + a.length + &quot;)[&quot; + from + &quot;, &quot; + to + &quot;]&quot;);</span>
+<span class="nc bnc" id="L189" title="All 2 branches missed.">		c = c != null ? c : Integer::compare;</span>
 
 		// Find greatest element smaller than the pivot
-<span class="nc" id="L183">		int pivotIdx = -1;</span>
-<span class="nc bnc" id="L184" title="All 2 branches missed.">		for (int i = from; i &lt; to; i++)</span>
-<span class="nc bnc" id="L185" title="All 6 branches missed.">			if (c.compare(pivot, a[i]) &gt;= 0 &amp;&amp; (pivotIdx == -1 || c.compare(a[pivotIdx], a[i]) &lt; 0))</span>
-<span class="nc" id="L186">				pivotIdx = i;</span>
-<span class="nc bnc" id="L187" title="All 2 branches missed.">		if (pivotIdx == -1)</span>
-<span class="nc" id="L188">			return 0; // all elements are greater than the pivot</span>
+<span class="nc" id="L192">		int pivotIdx = -1;</span>
+<span class="nc bnc" id="L193" title="All 2 branches missed.">		for (int i = from; i &lt; to; i++)</span>
+<span class="nc bnc" id="L194" title="All 6 branches missed.">			if (c.compare(pivot, a[i]) &gt;= 0 &amp;&amp; (pivotIdx == -1 || c.compare(a[pivotIdx], a[i]) &lt; 0))</span>
+<span class="nc" id="L195">				pivotIdx = i;</span>
+<span class="nc bnc" id="L196" title="All 2 branches missed.">		if (pivotIdx == -1)</span>
+<span class="nc" id="L197">			return 0; // all elements are greater than the pivot</span>
 
-<span class="nc" id="L190">		return pivotPartition0(a, from, to, pivotIdx, c) + 1;</span>
+<span class="nc" id="L199">		return pivotPartition0(a, from, to, pivotIdx, c).secondInt();</span>
 	}
 
-	private static &lt;E&gt; int pivotPartition0(E[] a, int from, int to, int pivotIdx, Comparator&lt;? super E&gt; c) {
-<span class="fc" id="L194">		E pivot = a[pivotIdx];</span>
-<span class="fc" id="L195">		int insertIdx = from;</span>
-<span class="fc bfc" id="L196" title="All 2 branches covered.">		for (int i = from; i &lt; to; i++)</span>
-<span class="fc bfc" id="L197" title="All 2 branches covered.">			if (c.compare(a[i], pivot) &lt; 0)</span>
-<span class="fc" id="L198">				ObjectArrays.swap(a, i, insertIdx++);</span>
-<span class="fc bfc" id="L199" title="All 2 branches covered.">		for (int i = insertIdx; i &lt; to; i++)</span>
-<span class="fc bfc" id="L200" title="All 2 branches covered.">			if (c.compare(a[i], pivot) == 0)</span>
-<span class="fc" id="L201">				ObjectArrays.swap(a, i, insertIdx++);</span>
-<span class="fc" id="L202">		return insertIdx - 1;</span>
+	private static &lt;E&gt; IntIntPair pivotPartition0(E[] a, int from, int to, int pivotIdx, Comparator&lt;? super E&gt; c) {
+<span class="fc" id="L203">		E pivot = a[pivotIdx];</span>
+<span class="fc" id="L204">		int insertIdx = from;</span>
+<span class="fc bfc" id="L205" title="All 2 branches covered.">		for (int i = from; i &lt; to; i++)</span>
+<span class="fc bfc" id="L206" title="All 2 branches covered.">			if (c.compare(a[i], pivot) &lt; 0)</span>
+<span class="fc" id="L207">				ObjectArrays.swap(a, i, insertIdx++);</span>
+<span class="fc" id="L208">		final int lastSmaller = insertIdx - 1;</span>
+<span class="fc bfc" id="L209" title="All 2 branches covered.">		for (int i = insertIdx; i &lt; to; i++)</span>
+<span class="fc bfc" id="L210" title="All 2 branches covered.">			if (c.compare(a[i], pivot) == 0)</span>
+<span class="fc" id="L211">				ObjectArrays.swap(a, i, insertIdx++);</span>
+<span class="fc" id="L212">		final int firstGreater = insertIdx;</span>
+<span class="fc" id="L213">		return IntIntPair.of(lastSmaller, firstGreater);</span>
 	}
 
-	private static int pivotPartition0(int[] a, int from, int to, int pivotIdx, IntComparator c) {
-<span class="fc" id="L206">		int pivot = a[pivotIdx];</span>
-<span class="fc" id="L207">		int insertIdx = from;</span>
-<span class="fc bfc" id="L208" title="All 2 branches covered.">		for (int i = from; i &lt; to; i++)</span>
-<span class="fc bfc" id="L209" title="All 2 branches covered.">			if (c.compare(a[i], pivot) &lt; 0)</span>
-<span class="fc" id="L210">				IntArrays.swap(a, i, insertIdx++);</span>
-<span class="fc bfc" id="L211" title="All 2 branches covered.">		for (int i = insertIdx; i &lt; to; i++)</span>
-<span class="fc bfc" id="L212" title="All 2 branches covered.">			if (c.compare(a[i], pivot) == 0)</span>
-<span class="fc" id="L213">				IntArrays.swap(a, i, insertIdx++);</span>
-<span class="fc" id="L214">		return insertIdx - 1;</span>
+	private static IntIntPair pivotPartition0(int[] a, int from, int to, int pivotIdx, IntComparator c) {
+<span class="fc" id="L217">		int pivot = a[pivotIdx];</span>
+<span class="fc" id="L218">		int insertIdx = from;</span>
+<span class="fc bfc" id="L219" title="All 2 branches covered.">		for (int i = from; i &lt; to; i++)</span>
+<span class="fc bfc" id="L220" title="All 2 branches covered.">			if (c.compare(a[i], pivot) &lt; 0)</span>
+<span class="fc" id="L221">				IntArrays.swap(a, i, insertIdx++);</span>
+<span class="fc" id="L222">		final int lastSmaller = insertIdx - 1;</span>
+<span class="fc bfc" id="L223" title="All 2 branches covered.">		for (int i = insertIdx; i &lt; to; i++)</span>
+<span class="fc bfc" id="L224" title="All 2 branches covered.">			if (c.compare(a[i], pivot) == 0)</span>
+<span class="fc" id="L225">				IntArrays.swap(a, i, insertIdx++);</span>
+<span class="fc" id="L226">		final int firstGreater = insertIdx;</span>
+<span class="fc" id="L227">		return IntIntPair.of(lastSmaller, firstGreater);</span>
 	}
 
 	private static &lt;E&gt; int calcPivot(E[] a, int from, int to, Comparator&lt;? super E&gt; c) {
-<span class="fc bfc" id="L218" title="All 2 branches covered.">		if (to - from &lt;= 5)</span>
-<span class="fc" id="L219">			return partition5(a, from, to, c);</span>
-<span class="fc" id="L220">		int blockNum = (to - from - 1) / 5 + 1;</span>
-<span class="fc bfc" id="L221" title="All 2 branches covered.">		for (int i = 0; i &lt; blockNum; i++) {</span>
-<span class="fc" id="L222">			int subFrom = from + i * 5;</span>
-<span class="fc" id="L223">			int subTo = subFrom + 5;</span>
-<span class="fc bfc" id="L224" title="All 2 branches covered.">			if (subTo &gt; to)</span>
-<span class="fc" id="L225">				subTo = to;</span>
-<span class="fc" id="L226">			int median5 = partition5(a, subFrom, subTo, c);</span>
-<span class="fc" id="L227">			ObjectArrays.swap(a, median5, from + i);</span>
+<span class="fc bfc" id="L231" title="All 2 branches covered.">		if (to - from &lt;= 5)</span>
+<span class="fc" id="L232">			return partition5(a, from, to, c);</span>
+<span class="fc" id="L233">		int blockNum = (to - from - 1) / 5 + 1;</span>
+<span class="fc bfc" id="L234" title="All 2 branches covered.">		for (int i = 0; i &lt; blockNum; i++) {</span>
+<span class="fc" id="L235">			int subFrom = from + i * 5;</span>
+<span class="fc" id="L236">			int subTo = subFrom + 5;</span>
+<span class="fc bfc" id="L237" title="All 2 branches covered.">			if (subTo &gt; to)</span>
+<span class="fc" id="L238">				subTo = to;</span>
+<span class="fc" id="L239">			int median5 = partition5(a, subFrom, subTo, c);</span>
+<span class="fc" id="L240">			ObjectArrays.swap(a, median5, from + i);</span>
 		}
 
-<span class="fc" id="L230">		int mid = from + blockNum / 2;</span>
-<span class="fc" id="L231">		getKthElement0(a, from, from + blockNum, mid, c);</span>
-<span class="fc" id="L232">		return mid;</span>
+<span class="fc" id="L243">		int mid = from + blockNum / 2;</span>
+<span class="fc" id="L244">		getKthElement0(a, from, from + blockNum, mid, c);</span>
+<span class="fc" id="L245">		return mid;</span>
 	}
 
 	private static int calcPivot(int[] a, int from, int to, IntComparator c) {
-<span class="fc bfc" id="L236" title="All 2 branches covered.">		if (to - from &lt;= 5)</span>
-<span class="fc" id="L237">			return partition5(a, from, to, c);</span>
-<span class="fc" id="L238">		int blockNum = (to - from - 1) / 5 + 1;</span>
-<span class="fc bfc" id="L239" title="All 2 branches covered.">		for (int i = 0; i &lt; blockNum; i++) {</span>
-<span class="fc" id="L240">			int subFrom = from + i * 5;</span>
-<span class="fc" id="L241">			int subTo = subFrom + 5;</span>
-<span class="fc bfc" id="L242" title="All 2 branches covered.">			if (subTo &gt; to)</span>
-<span class="fc" id="L243">				subTo = to;</span>
-<span class="fc" id="L244">			int median5 = partition5(a, subFrom, subTo, c);</span>
-<span class="fc" id="L245">			IntArrays.swap(a, median5, from + i);</span>
+<span class="fc bfc" id="L249" title="All 2 branches covered.">		if (to - from &lt;= 5)</span>
+<span class="fc" id="L250">			return partition5(a, from, to, c);</span>
+<span class="fc" id="L251">		int blockNum = (to - from - 1) / 5 + 1;</span>
+<span class="fc bfc" id="L252" title="All 2 branches covered.">		for (int i = 0; i &lt; blockNum; i++) {</span>
+<span class="fc" id="L253">			int subFrom = from + i * 5;</span>
+<span class="fc" id="L254">			int subTo = subFrom + 5;</span>
+<span class="fc bfc" id="L255" title="All 2 branches covered.">			if (subTo &gt; to)</span>
+<span class="fc" id="L256">				subTo = to;</span>
+<span class="fc" id="L257">			int median5 = partition5(a, subFrom, subTo, c);</span>
+<span class="fc" id="L258">			IntArrays.swap(a, median5, from + i);</span>
 		}
 
-<span class="fc" id="L248">		int mid = from + blockNum / 2;</span>
-<span class="fc" id="L249">		getKthElement0(a, from, from + blockNum, mid, c);</span>
-<span class="fc" id="L250">		return mid;</span>
+<span class="fc" id="L261">		int mid = from + blockNum / 2;</span>
+<span class="fc" id="L262">		getKthElement0(a, from, from + blockNum, mid, c);</span>
+<span class="fc" id="L263">		return mid;</span>
 	}
 
 	private static &lt;E&gt; int partition5(E[] a, int from, int to, Comparator&lt;? super E&gt; c) {
-<span class="fc bfc" id="L254" title="All 2 branches covered.">		for (int i = from + 1; i &lt; to; i++)</span>
-<span class="fc bfc" id="L255" title="All 4 branches covered.">			for (int j = i; j &gt; from &amp;&amp; c.compare(a[j], a[j - 1]) &lt; 0; j--)</span>
-<span class="fc" id="L256">				ObjectArrays.swap(a, j, j - 1);</span>
-<span class="fc" id="L257">		return from + (to - from) / 2;</span>
+<span class="fc bfc" id="L267" title="All 2 branches covered.">		for (int i = from + 1; i &lt; to; i++)</span>
+<span class="fc bfc" id="L268" title="All 4 branches covered.">			for (int j = i; j &gt; from &amp;&amp; c.compare(a[j], a[j - 1]) &lt; 0; j--)</span>
+<span class="fc" id="L269">				ObjectArrays.swap(a, j, j - 1);</span>
+<span class="fc" id="L270">		return from + (to - from) / 2;</span>
 	}
 
 	private static int partition5(int[] a, int from, int to, IntComparator c) {
-<span class="fc bfc" id="L261" title="All 2 branches covered.">		for (int i = from + 1; i &lt; to; i++)</span>
-<span class="fc bfc" id="L262" title="All 4 branches covered.">			for (int j = i; j &gt; from &amp;&amp; c.compare(a[j], a[j - 1]) &lt; 0; j--)</span>
-<span class="fc" id="L263">				IntArrays.swap(a, j, j - 1);</span>
-<span class="fc" id="L264">		return from + (to - from) / 2;</span>
+<span class="fc bfc" id="L274" title="All 2 branches covered.">		for (int i = from + 1; i &lt; to; i++)</span>
+<span class="fc bfc" id="L275" title="All 4 branches covered.">			for (int j = i; j &gt; from &amp;&amp; c.compare(a[j], a[j - 1]) &lt; 0; j--)</span>
+<span class="fc" id="L276">				IntArrays.swap(a, j, j - 1);</span>
+<span class="fc" id="L277">		return from + (to - from) / 2;</span>
 	}
 
 	/**
@@ -277,11 +290,11 @@ class ArraysUtils {
 	 * @param bucketSize the size of the bucket. Last bucket may be smaller than the specified value.
 	 */
 	static &lt;E&gt; void bucketPartition(E[] a, int from, int to, Comparator&lt;? super E&gt; c, int bucketSize) {
-<span class="pc bpc" id="L280" title="4 of 8 branches missed.">		if (from &lt; 0 || from &gt;= to || to &gt; a.length || bucketSize &lt;= 0)</span>
-<span class="nc" id="L281">			throw new IndexOutOfBoundsException(&quot;a(&quot; + a.length + &quot;)[&quot; + from + &quot;, &quot; + to + &quot;][&quot; + bucketSize + &quot;]&quot;);</span>
-<span class="pc bpc" id="L282" title="1 of 2 branches missed.">		c = c != null ? c : Utils.getDefaultComparator();</span>
-<span class="fc" id="L283">		bucketPartition0(a, from, to, c, bucketSize);</span>
-<span class="fc" id="L284">	}</span>
+<span class="pc bpc" id="L293" title="4 of 8 branches missed.">		if (from &lt; 0 || from &gt;= to || to &gt; a.length || bucketSize &lt;= 0)</span>
+<span class="nc" id="L294">			throw new IndexOutOfBoundsException(&quot;a(&quot; + a.length + &quot;)[&quot; + from + &quot;, &quot; + to + &quot;][&quot; + bucketSize + &quot;]&quot;);</span>
+<span class="pc bpc" id="L295" title="1 of 2 branches missed.">		c = c != null ? c : Utils.getDefaultComparator();</span>
+<span class="fc" id="L296">		bucketPartition0(a, from, to, c, bucketSize);</span>
+<span class="fc" id="L297">	}</span>
 
 	/**
 	 * Partition an array to buckets where each element in bucket i is smaller than all elements in bucket i+1.
@@ -295,29 +308,29 @@ class ArraysUtils {
 	 * @param bucketSize the size of the bucket. Last bucket may be smaller than the specified value.
 	 */
 	static void bucketPartition(int[] a, int from, int to, IntComparator c, int bucketSize) {
-<span class="pc bpc" id="L298" title="4 of 8 branches missed.">		if (from &lt; 0 || from &gt;= to || to &gt; a.length || bucketSize &lt;= 0)</span>
-<span class="nc" id="L299">			throw new IndexOutOfBoundsException(&quot;a(&quot; + a.length + &quot;)[&quot; + from + &quot;, &quot; + to + &quot;][&quot; + bucketSize + &quot;]&quot;);</span>
-<span class="pc bpc" id="L300" title="1 of 2 branches missed.">		c = c != null ? c : Integer::compare;</span>
-<span class="fc" id="L301">		bucketPartition0(a, from, to, c, bucketSize);</span>
-<span class="fc" id="L302">	}</span>
+<span class="pc bpc" id="L311" title="4 of 8 branches missed.">		if (from &lt; 0 || from &gt;= to || to &gt; a.length || bucketSize &lt;= 0)</span>
+<span class="nc" id="L312">			throw new IndexOutOfBoundsException(&quot;a(&quot; + a.length + &quot;)[&quot; + from + &quot;, &quot; + to + &quot;][&quot; + bucketSize + &quot;]&quot;);</span>
+<span class="pc bpc" id="L313" title="1 of 2 branches missed.">		c = c != null ? c : Integer::compare;</span>
+<span class="fc" id="L314">		bucketPartition0(a, from, to, c, bucketSize);</span>
+<span class="fc" id="L315">	}</span>
 
 	private static &lt;E&gt; void bucketPartition0(E[] a, int from, int to, Comparator&lt;? super E&gt; c, int bucketSize) {
-<span class="fc bfc" id="L305" title="All 2 branches covered.">		if (to - from &lt;= bucketSize)</span>
-<span class="fc" id="L306">			return;</span>
-<span class="fc" id="L307">		int idx = from + (((to - from) / 2 - 1) / bucketSize + 1) * bucketSize;</span>
-<span class="fc" id="L308">		getKthElement0(a, from, to, idx, c);</span>
-<span class="fc" id="L309">		bucketPartition0(a, from, idx, c, bucketSize);</span>
-<span class="fc" id="L310">		bucketPartition0(a, idx, to, c, bucketSize);</span>
-<span class="fc" id="L311">	}</span>
+<span class="fc bfc" id="L318" title="All 2 branches covered.">		if (to - from &lt;= bucketSize)</span>
+<span class="fc" id="L319">			return;</span>
+<span class="fc" id="L320">		int idx = from + (((to - from) / 2 - 1) / bucketSize + 1) * bucketSize;</span>
+<span class="fc" id="L321">		getKthElement0(a, from, to, idx, c);</span>
+<span class="fc" id="L322">		bucketPartition0(a, from, idx, c, bucketSize);</span>
+<span class="fc" id="L323">		bucketPartition0(a, idx, to, c, bucketSize);</span>
+<span class="fc" id="L324">	}</span>
 
 	private static void bucketPartition0(int[] a, int from, int to, IntComparator c, int bucketSize) {
-<span class="fc bfc" id="L314" title="All 2 branches covered.">		if (to - from &lt;= bucketSize)</span>
-<span class="fc" id="L315">			return;</span>
-<span class="fc" id="L316">		int idx = from + (((to - from) / 2 - 1) / bucketSize + 1) * bucketSize;</span>
-<span class="fc" id="L317">		getKthElement0(a, from, to, idx, c);</span>
-<span class="fc" id="L318">		bucketPartition0(a, from, idx, c, bucketSize);</span>
-<span class="fc" id="L319">		bucketPartition0(a, idx, to, c, bucketSize);</span>
-<span class="fc" id="L320">	}</span>
+<span class="fc bfc" id="L327" title="All 2 branches covered.">		if (to - from &lt;= bucketSize)</span>
+<span class="fc" id="L328">			return;</span>
+<span class="fc" id="L329">		int idx = from + (((to - from) / 2 - 1) / bucketSize + 1) * bucketSize;</span>
+<span class="fc" id="L330">		getKthElement0(a, from, to, idx, c);</span>
+<span class="fc" id="L331">		bucketPartition0(a, from, idx, c, bucketSize);</span>
+<span class="fc" id="L332">		bucketPartition0(a, idx, to, c, bucketSize);</span>
+<span class="fc" id="L333">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

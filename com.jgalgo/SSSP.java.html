@@ -73,6 +73,9 @@ public interface SSSP {
 
 	/**
 	 * Compute the shortest paths from a source to any other vertex in a graph.
+	 * &lt;p&gt;
+	 * Given an edge weight function, the length of a path is the weight sum of all edges of the path. The shortest path
+	 * from a source vertex to some other vertex is the path with the minimum weight.
 	 *
 	 * @param  g      a graph
 	 * @param  w      an edge weight function
@@ -80,6 +83,21 @@ public interface SSSP {
 	 * @return        a result object containing the distances and shortest paths from the source to any other vertex
 	 */
 	public SSSP.Result computeShortestPaths(Graph g, EdgeWeightFunc w, int source);
+
+	/**
+	 * Compute the cardinality shortest paths from a source to any other vertex in a graph.
+	 * &lt;p&gt;
+	 * The cardinality length of a path is the number of edges in it. The cardinality shortest path from a source vertex
+	 * to some other vertex is the path with the minimum number of edges.
+	 *
+	 * @param  g      a graph
+	 * @param  source a source vertex
+	 * @return        a result object containing the distances and cardinality shortest paths from the source to any
+	 *                other vertex
+	 */
+	default SSSP.Result computeCardinalityShortestPaths(Graph g, int source) {
+<span class="fc" id="L99">		return computeShortestPaths(g, EdgeWeightFunc.CardinalityEdgeWeightFunction, source);</span>
+	}
 
 	/**
 	 * A result object for the {@link SSSP} problem.
@@ -139,7 +157,7 @@ public interface SSSP {
 	 * @return a new builder that can build {@link SSSP} objects
 	 */
 	static SSSP.Builder newBuilder() {
-<span class="nc" id="L142">		return new SSSPBuilderImpl();</span>
+<span class="nc" id="L160">		return new SSSPBuilderImpl();</span>
 	}
 
 	/**

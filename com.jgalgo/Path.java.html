@@ -299,7 +299,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 <span class="fc" id="L299">		Arrays.fill(backtrack, -1);</span>
 
 <span class="fc" id="L301">		IntArrayList path = new IntArrayList();</span>
-<span class="fc bfc" id="L302" title="All 2 branches covered.">		for (BFSIter it = new BFSIter(g, u0); it.hasNext();) {</span>
+<span class="fc bfc" id="L302" title="All 2 branches covered.">		for (BFSIter it = BFSIter.newInstance(g, u0); it.hasNext();) {</span>
 <span class="fc" id="L303">			int p = it.nextInt();</span>
 <span class="fc" id="L304">			backtrack[p] = it.inEdge();</span>
 <span class="fc bfc" id="L305" title="All 2 branches covered.">			if (p == v0)</span>

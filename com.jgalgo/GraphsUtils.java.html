@@ -258,18 +258,25 @@ class GraphsUtils {
 	}
 
 	static double edgesWeightSum(IntIterator eit, EdgeWeightFunc w) {
-<span class="fc bfc" id="L261" title="All 2 branches covered.">		if (w instanceof EdgeWeightFunc.Int) {</span>
-<span class="fc" id="L262">			EdgeWeightFunc.Int w0 = (EdgeWeightFunc.Int) w;</span>
-<span class="fc" id="L263">			int sum = 0;</span>
-<span class="fc bfc" id="L264" title="All 2 branches covered.">			while (eit.hasNext())</span>
-<span class="fc" id="L265">				sum += w0.weightInt(eit.nextInt());</span>
-<span class="fc" id="L266">			return sum;</span>
+<span class="fc bfc" id="L261" title="All 4 branches covered.">		if (w == null || w == EdgeWeightFunc.CardinalityEdgeWeightFunction) {</span>
+<span class="fc" id="L262">			int cardinality = 0;</span>
+<span class="fc bfc" id="L263" title="All 2 branches covered.">			for (; eit.hasNext(); eit.nextInt())</span>
+<span class="fc" id="L264">				cardinality++;</span>
+<span class="fc" id="L265">			return cardinality;</span>
+		}
+
+<span class="fc bfc" id="L268" title="All 2 branches covered.">		if (w instanceof EdgeWeightFunc.Int) {</span>
+<span class="fc" id="L269">			EdgeWeightFunc.Int w0 = (EdgeWeightFunc.Int) w;</span>
+<span class="fc" id="L270">			int sum = 0;</span>
+<span class="fc bfc" id="L271" title="All 2 branches covered.">			while (eit.hasNext())</span>
+<span class="fc" id="L272">				sum += w0.weightInt(eit.nextInt());</span>
+<span class="fc" id="L273">			return sum;</span>
 
 		} else {
-<span class="fc" id="L269">			double sum = 0;</span>
-<span class="fc bfc" id="L270" title="All 2 branches covered.">			while (eit.hasNext())</span>
-<span class="fc" id="L271">				sum += w.weight(eit.nextInt());</span>
-<span class="fc" id="L272">			return sum;</span>
+<span class="fc" id="L276">			double sum = 0;</span>
+<span class="fc bfc" id="L277" title="All 2 branches covered.">			while (eit.hasNext())</span>
+<span class="fc" id="L278">				sum += w.weight(eit.nextInt());</span>
+<span class="fc" id="L279">			return sum;</span>
 		}
 	}
 

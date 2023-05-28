@@ -173,7 +173,7 @@ class TreePathMaximaHagerup implements TreePathMaxima {
 <span class="fc" id="L173">			int[] a = new int[n];</span>
 <span class="fc" id="L174">			int[][] res = new int[tOrig.vertices().size()][];</span>
 
-<span class="fc bfc" id="L176" title="All 2 branches covered.">			for (DFSIter it = new DFSIter(tree, root); it.hasNext();) {</span>
+<span class="fc bfc" id="L176" title="All 2 branches covered.">			for (DFSIter it = DFSIter.newInstance(tree, root); it.hasNext();) {</span>
 <span class="fc" id="L177">				int v = it.nextInt();</span>
 <span class="fc" id="L178">				IntList edgesFromRoot = it.edgePath();</span>
 <span class="fc bfc" id="L179" title="All 2 branches covered.">				if (edgesFromRoot.isEmpty())</span>

@@ -19,36 +19,42 @@ package com.jgalgo;
 /**
  * Single Source Shortest Path for cardinality weight function.
  * &lt;p&gt;
- * Similar to a {@link SSSP}, but with weights of \(1\) to all edges. A simple BFS is performed from the source vertex
+ * The cardinality length of a path is the number of edges in it. The cardinality shortest path from a source vertex to
+ * some other vertex is the path with the minimum number of edges. A simple BFS is performed from the source vertex
  * until all vertices that can be reached are reached. The algorithm runs in linear time.
  *
- * @see    SSSP
  * @see    BFSIter
  * @author Barak Ugav
  */
-public class SSSPCardinality {
+public class SSSPCardinality implements SSSP {
 
 	/**
 	 * Construct a new cardinality SSSP algorithm object.
 	 */
 <span class="fc" id="L34">	public SSSPCardinality() {}</span>
 
+	@Override
+	public SSSP.Result computeCardinalityShortestPaths(Graph g, int source) {
+<span class="fc" id="L38">		SSSPResultImpl.Int res = new SSSPResultImpl.Int(g, source);</span>
+<span class="fc bfc" id="L39" title="All 2 branches covered.">		for (BFSIter it = BFSIter.newInstance(g, source); it.hasNext();) {</span>
+<span class="fc" id="L40">			int v = it.nextInt();</span>
+<span class="fc" id="L41">			res.distances[v] = it.layer();</span>
+<span class="fc" id="L42">			res.backtrack[v] = it.inEdge();</span>
+<span class="fc" id="L43">		}</span>
+<span class="fc" id="L44">		return res;</span>
+	}
+
 	/**
-	 * Compute the shortest paths from a source to all other vertices with cardinality weight function.
+	 * {@inheritDoc}
 	 *
-	 * @param  g      a graph
-	 * @param  source a source vertex
-	 * @return        a result object containing the distances and shortest paths from the source to any other vertex
-	 * @see           SSSP#computeShortestPaths(Graph, EdgeWeightFunc, int)
+	 * @throws IllegalArgumentException if the weight function {@code w} is not {@code null} or
+	 *                                      {@link EdgeWeightFunc#CardinalityEdgeWeightFunction}
 	 */
-	public SSSP.Result computeShortestPaths(Graph g, int source) {
-<span class="fc" id="L45">		SSSPResultImpl.Int res = new SSSPResultImpl.Int(g, source);</span>
-<span class="fc bfc" id="L46" title="All 2 branches covered.">		for (BFSIter it = new BFSIter(g, source); it.hasNext();) {</span>
-<span class="fc" id="L47">			int v = it.nextInt();</span>
-<span class="fc" id="L48">			res.distances[v] = it.layer();</span>
-<span class="fc" id="L49">			res.backtrack[v] = it.inEdge();</span>
-<span class="fc" id="L50">		}</span>
-<span class="fc" id="L51">		return res;</span>
+	@Override
+	public SSSP.Result computeShortestPaths(Graph g, EdgeWeightFunc w, int source) {
+<span class="pc bpc" id="L55" title="3 of 4 branches missed.">		if (!(w == null || w == EdgeWeightFunc.CardinalityEdgeWeightFunction))</span>
+<span class="nc" id="L56">			throw new IllegalArgumentException(&quot;only cardinality shortest paths are supported&quot;);</span>
+<span class="fc" id="L57">		return computeCardinalityShortestPaths(g, source);</span>
 	}
 
 }

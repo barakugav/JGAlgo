@@ -176,5 +176,35 @@ abstract class APSPResultImpl implements APSP.Result {
 
 	}
 
+	 static class ResFromSSSP implements APSP.Result {
+
+		final SSSP.Result[] ssspResults;
+
+<span class="fc" id="L183">		ResFromSSSP(int n) {</span>
+<span class="fc" id="L184">			ssspResults = new SSSP.Result[n];</span>
+<span class="fc" id="L185">		}</span>
+
+		@Override
+		public double distance(int source, int target) {
+<span class="fc" id="L189">			return ssspResults[source].distance(target);</span>
+		}
+
+		@Override
+		public Path getPath(int source, int target) {
+<span class="fc" id="L194">			return ssspResults[source].getPath(target);</span>
+		}
+
+		@Override
+		public boolean foundNegativeCycle() {
+<span class="fc" id="L199">			return false;</span>
+		}
+
+		@Override
+		public Path getNegativeCycle() {
+<span class="nc" id="L204">			throw new IllegalStateException();</span>
+		}
+
+	}
+
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
