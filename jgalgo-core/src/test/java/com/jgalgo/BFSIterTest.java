@@ -42,7 +42,7 @@ public class BFSIterTest extends TestBase {
 			int source = rand.nextInt(n);
 
 			BitSet visited = new BitSet(n);
-			for (BFSIter it = new BFSIter(g, source); it.hasNext();) {
+			for (BFSIter it = BFSIter.newInstance(g, source); it.hasNext();) {
 				int v = it.nextInt();
 				int e = it.inEdge();
 				assertFalse(visited.get(v), "already visited vertex " + v);

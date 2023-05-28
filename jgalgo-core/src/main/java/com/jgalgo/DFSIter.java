@@ -16,14 +16,8 @@
 
 package com.jgalgo;
 
-import java.util.BitSet;
-import java.util.NoSuchElementException;
-import it.unimi.dsi.fastutil.Stack;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.ints.IntLists;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
  * Depth first search (DFS) iterator.
@@ -37,7 +31,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * <pre> {@code
  * Graph g = ...;
  * int sourceVertex = ...;
- * for (DFSIter iter = new DFSIter(g, sourceVertex); iter.hasNext();) {
+ * for (DFSIter iter = DFSIter.newInstance(g, sourceVertex); iter.hasNext();) {
  *     int v = iter.nextInt();
  *     IntList edgePath = iter.edgePath();
  *     System.out.println("Reached vertex " + v + " using the edges: " + edgePath);
@@ -48,74 +42,30 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * @see    <a href="https://en.wikipedia.org/wiki/Depth-first_search">Wikipedia</a>
  * @author Barak Ugav
  */
-public class DFSIter implements IntIterator {
-
-	private final Graph g;
-	private final BitSet visited;
-	private final Stack<EdgeIter> edgeIters;
-	private final IntArrayList edgePath;
-	private final IntList edgePathView;
-	private boolean isValid;
+public interface DFSIter extends IntIterator {
 
 	/**
 	 * Create a DFS iterator rooted at some source vertex.
 	 *
-	 * @param g      a graph
-	 * @param source a vertex in the graph from which the search will start from.
+	 * @param  g      a graph
+	 * @param  source a vertex in the graph from which the search will start from
+	 * @return        a DFS iterator that iterate over the vertices of the graph
 	 */
-	public DFSIter(Graph g, int source) {
-		int n = g.vertices().size();
-		this.g = g;
-		visited = new BitSet(n);
-		edgeIters = new ObjectArrayList<>();
-		edgePath = new IntArrayList();
-		edgePathView = IntLists.unmodifiable(edgePath);
-
-		visited.set(source);
-		edgeIters.push(g.edgesOut(source));
-		isValid = true;
+	static DFSIter newInstance(Graph g, int source) {
+		return new DFSIterImpl(g, source);
 	}
 
 	/**
 	 * Check whether there is more vertices to iterate over.
 	 */
 	@Override
-	public boolean hasNext() {
-		if (isValid)
-			return true;
-		if (edgeIters.isEmpty())
-			return false;
-		for (;;) {
-			for (EdgeIter eit = edgeIters.top(); eit.hasNext();) {
-				int e = eit.nextInt();
-				int v = eit.target();
-				if (visited.get(v))
-					continue;
-				visited.set(v);
-				edgeIters.push(g.edgesOut(v));
-				edgePath.add(e);
-				return isValid = true;
-			}
-			edgeIters.pop();
-			if (edgeIters.isEmpty()) {
-				assert edgePath.isEmpty();
-				return false;
-			}
-			edgePath.popInt();
-		}
-	}
+	public boolean hasNext();
 
 	/**
 	 * Advance the iterator and return a vertex that was not visited by the iterator yet.
 	 */
 	@Override
-	public int nextInt() {
-		if (!hasNext())
-			throw new NoSuchElementException();
-		int ret = edgeIters.top().source();
-		isValid = false;
-		return ret;
-	}
+	public int nextInt();
 
 	/**
 	 * Get the path from the source to the last vertex returned by {@link nextInt}.
@@ -125,7 +75,5 @@ public class DFSIter implements IntIterator {
 	 * @return list of edges forming a path from the source to the last vertex returned by {@link nextInt}. The returned
 	 *         list should not be modified by the user.
 	 */
-	public IntList edgePath() {
-		return edgePathView;
-	}
+	public IntList edgePath();
 }

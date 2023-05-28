@@ -57,7 +57,7 @@ public class ConnectedComponentsAlgoTest extends TestBase {
 			if (vertexToCC[start] != -1)
 				continue;
 			int ccIdx = ccNum++;
-			for (BFSIter it = new BFSIter(g, start); it.hasNext();)
+			for (BFSIter it = BFSIter.newInstance(g, start); it.hasNext();)
 				vertexToCC[it.nextInt()] = ccIdx;
 		}
 		return Pair.of(Integer.valueOf(ccNum), vertexToCC);
@@ -85,7 +85,7 @@ public class ConnectedComponentsAlgoTest extends TestBase {
 		BitSet[] reach = new BitSet[n];
 		for (int start = 0; start < n; start++) {
 			reach[start] = new BitSet(n);
-			for (BFSIter it = new BFSIter(g, start); it.hasNext();)
+			for (BFSIter it = BFSIter.newInstance(g, start); it.hasNext();)
 				reach[start].set(it.nextInt());
 		}
 

@@ -34,7 +34,7 @@ public class LCAStaticRMQTest extends TestBase {
 		int[] parent = new int[n];
 		int[] depth = new int[n];
 
-		for (BFSIter it = new BFSIter(g, r); it.hasNext();) {
+		for (BFSIter it = BFSIter.newInstance(g, r); it.hasNext();) {
 			int v = it.nextInt();
 			int e = it.inEdge();
 			if (e == -1) {

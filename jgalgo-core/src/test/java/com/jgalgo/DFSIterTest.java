@@ -44,7 +44,7 @@ public class DFSIterTest extends TestBase {
 			int source = rand.nextInt(n);
 
 			BitSet visited = new BitSet(n);
-			for (DFSIter it = new DFSIter(g, source); it.hasNext();) {
+			for (DFSIter it = DFSIter.newInstance(g, source); it.hasNext();) {
 				int v = it.nextInt();
 				IntList pathFromSource = it.edgePath();
 				int e = v == source ? -1 : pathFromSource.getInt(pathFromSource.size() - 1);

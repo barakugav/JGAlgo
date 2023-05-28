@@ -16,11 +16,7 @@
 
 package com.jgalgo;
 
-import java.util.BitSet;
-import java.util.NoSuchElementException;
 import it.unimi.dsi.fastutil.ints.IntIterator;
-import it.unimi.dsi.fastutil.ints.IntIterators;
-import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 /**
  * Bread first search (BFS) iterator.
@@ -34,7 +30,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  * <pre> {@code
  * Graph g = ...;
  * int sourceVertex = ...;
- * for (BFSIter iter = new BFSIter(g, sourceVertex); iter.hasNext();) {
+ * for (BFSIter iter = BFSIter.newInstance(g, sourceVertex); iter.hasNext();) {
  *     int v = iter.nextInt();
  *     int e = iter.inEdge();
  *     int layer = iter.layer();
@@ -46,89 +42,30 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  * @see    <a href= "https://en.wikipedia.org/wiki/Breadth-first_search">Wikipedia</a>
  * @author Barak Ugav
  */
-public class BFSIter implements IntIterator {
-
-	private final Graph g;
-	private final BitSet visited;
-	private final IntPriorityQueue queue;
-	private int inEdge;
-	private int layer;
-	private int firstVInLayer;
+public interface BFSIter extends IntIterator {
 
 	/**
 	 * Create a BFS iterator rooted at a single source vertex.
 	 *
-	 * @param g      a graph
-	 * @param source a vertex in the graph from which the search will start from.
+	 * @param  g      a graph
+	 * @param  source a vertex in the graph from which the search will start from
+	 * @return        a BFS iterator that iterate over the vertices of the graph
 	 */
-	public BFSIter(Graph g, int source) {
-		this(g, IntIterators.singleton(source));
-	}
-
-	/**
-	 * Create a BFS iterator rooted at multiple sources vertices.
-	 *
-	 * @param  g                        a graph
-	 * @param  sources                  multiple sources vertices in the graph from which the search will start from.
-	 * @throws IllegalArgumentException if the sources iterator is empty
-	 */
-	private BFSIter(Graph g, IntIterator sources) {
-		if (!sources.hasNext())
-			throw new IllegalArgumentException("no sources provided");
-		this.g = g;
-		int n = g.vertices().size();
-		visited = new BitSet(n);
-		queue = new IntArrayFIFOQueue();
-		inEdge = -1;
-		layer = -1;
-
-		firstVInLayer = -1;
-		while (sources.hasNext()) {
-			int source = sources.nextInt();
-			visited.set(source);
-			queue.enqueue(source);
-			queue.enqueue(-1);
-			if (firstVInLayer == -1)
-				firstVInLayer = source;
-		}
+	public static BFSIter newInstance(Graph g, int source) {
+		return new BFSIterImpl(g, source);
 	}
 
 	/**
 	 * Check whether there is more vertices to iterate over.
 	 */
 	@Override
-	public boolean hasNext() {
-		return !queue.isEmpty();
-	}
+	public boolean hasNext();
 
 	/**
 	 * Advance the iterator and return a vertex that was not visited by the iterator yet.
 	 */
 	@Override
-	public int nextInt() {
-		if (!hasNext())
-			throw new NoSuchElementException();
-		final int u = queue.dequeueInt();
-		inEdge = queue.dequeueInt();
-		if (u == firstVInLayer) {
-			layer++;
-			firstVInLayer = -1;
-		}
-
-		for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
-			int e = eit.nextInt();
-			int v = eit.target();
-			if (visited.get(v))
-				continue;
-			visited.set(v);
-			queue.enqueue(v);
-			queue.enqueue(e);
-			if (firstVInLayer == -1)
-				firstVInLayer = v;
-		}
-
-		return u;
-	}
+	public int nextInt();
 
 	/**
 	 * Get the edge that led to the last vertex returned by {@link nextInt}.
@@ -137,9 +74,7 @@ public class BFSIter implements IntIterator {
 	 *
 	 * @return the edge that led to the last vertex returned by {@link nextInt}
 	 */
-	public int inEdge() {
-		return inEdge;
-	}
+	public int inEdge();
 
 	/**
 	 * Get the layer of the last vertex returned by {@link nextInt}.
@@ -151,7 +86,5 @@ public class BFSIter implements IntIterator {
 	 *
 	 * @return the layer of the last vertex returned by {@link nextInt}.
 	 */
-	public int layer() {
-		return layer;
-	}
+	public int layer();
 }

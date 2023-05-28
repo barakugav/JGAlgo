@@ -299,7 +299,7 @@ public class Path extends AbstractIntList {
 		Arrays.fill(backtrack, -1);
 
 		IntArrayList path = new IntArrayList();
-		for (BFSIter it = new BFSIter(g, u0); it.hasNext();) {
+		for (BFSIter it = BFSIter.newInstance(g, u0); it.hasNext();) {
 			int p = it.nextInt();
 			backtrack[p] = it.inEdge();
 			if (p == v0)

@@ -36,7 +36,7 @@ public class SSSPCardinality implements SSSP {
 	@Override
 	public SSSP.Result computeCardinalityShortestPaths(Graph g, int source) {
 		SSSPResultImpl.Int res = new SSSPResultImpl.Int(g, source);
-		for (BFSIter it = new BFSIter(g, source); it.hasNext();) {
+		for (BFSIter it = BFSIter.newInstance(g, source); it.hasNext();) {
 			int v = it.nextInt();
 			res.distances[v] = it.layer();
 			res.backtrack[v] = it.inEdge();
