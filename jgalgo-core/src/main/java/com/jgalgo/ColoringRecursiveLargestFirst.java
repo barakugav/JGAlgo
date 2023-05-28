@@ -38,12 +38,12 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  * @see    <a href= "https://en.wikipedia.org/wiki/Recursive_largest_first_algorithm">Wikipedia</a>
  * @author Barak Ugav
  */
-public class ColoringRecursiveLargestFirst implements Coloring {
+class ColoringRecursiveLargestFirst implements Coloring {
 
 	/**
 	 * Create a new coloring algorithm object.
 	 */
-	public ColoringRecursiveLargestFirst() {}
+	ColoringRecursiveLargestFirst() {}
 
 	@Override
 	public Result computeColoring(Graph g) {

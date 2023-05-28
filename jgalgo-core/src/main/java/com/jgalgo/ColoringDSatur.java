@@ -38,7 +38,7 @@ import it.unimi.dsi.fastutil.ints.Int2IntFunction;
  * @see    <a href="https://en.wikipedia.org/wiki/DSatur">Wikipedia</a>
  * @author Barak Ugav
  */
-public class ColoringDSatur implements Coloring {
+class ColoringDSatur implements Coloring {
 
 	private HeapReferenceable.Builder<Integer, Integer> heapBuilder =
 			HeapReferenceable.newBuilder().keysTypePrimitive(int.class).valuesTypePrimitive(int.class);
@@ -46,7 +46,7 @@ public class ColoringDSatur implements Coloring {
 	/**
 	 * Create a new coloring algorithm object.
 	 */
-	public ColoringDSatur() {}
+	ColoringDSatur() {}
 
 	/**
 	 * Set the implementation of the heap used by this algorithm.

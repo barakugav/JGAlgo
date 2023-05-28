@@ -34,14 +34,14 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
  * @see    <a href="https://en.wikipedia.org/wiki/Greedy_coloring">Wikipedia</a>
  * @author Barak Ugav
  */
-public class ColoringGreedy implements Coloring {
+class ColoringGreedy implements Coloring {
 
 	private final Random rand;
 
 	/**
 	 * Create a new coloring algorithm object with random seed.
 	 */
-	public ColoringGreedy() {
+	ColoringGreedy() {
 		rand = new Random();
 	}
 
