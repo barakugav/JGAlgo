@@ -18,8 +18,7 @@ package com.jgalgo;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
- *
- * Maximum matching algorithm.
+ * A matching in a graph.
  * <p>
  * Given a graph \(G=(V,E)\), a matching is a sub set of edges \(M\) such that any vertex in \(V\) has at most one
  * adjacent edge in \(M\). Its a common problem to compute the maximum (cardinality) matching, namely the matching with
@@ -27,6 +26,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * function.
  *
  * @see    MaximumMatching
+ * @see    MaximumMatchingWeighted
  * @see    <a href= "https://en.wikipedia.org/wiki/Matching_(graph_theory)">Wikipedia</a>
  * @author Barak Ugav
  */
