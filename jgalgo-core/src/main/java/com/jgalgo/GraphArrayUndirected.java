@@ -108,7 +108,13 @@ class GraphArrayUndirected extends GraphArrayAbstract implements UndirectedGraph
 	@Override
 	public EdgeIter edgesOut(int source) {
 		checkVertex(source);
-		return new EdgeIt(source, edges.get(source), edgesNum.getInt(source));
+		return new EdgeOutIt(source, edges.get(source), edgesNum.getInt(source));
+	}
+
+	@Override
+	public EdgeIter edgesIn(int target) {
+		checkVertex(target);
+		return new EdgeInIt(target, edges.get(target), edgesNum.getInt(target));
 	}
 
 	@Override
@@ -183,11 +189,24 @@ class GraphArrayUndirected extends GraphArrayAbstract implements UndirectedGraph
 		// edges.clear();
 	}
 
-	private class EdgeIt extends GraphArrayAbstract.EdgeIt {
+	@Override
+	public GraphCapabilities getCapabilities() {
+		return Capabilities;
+	}
+
+	private static final GraphCapabilities Capabilities = GraphCapabilitiesBuilder.newUndirected().vertexAdd(true)
+			.vertexRemove(true).edgeAdd(true).edgeRemove(true).parallelEdges(true).selfEdges(true).build();
+
+	@Override
+	public Graph copy() {
+		return new GraphArrayUndirected(this);
+	}
+
+	private class EdgeOutIt extends GraphArrayAbstract.EdgeIt {
 
 		private final int source;
 
-		EdgeIt(int source, int[] edges, int count) {
+		EdgeOutIt(int source, int[] edges, int count) {
 			super(edges, count);
 			this.source = source;
 		}
@@ -203,20 +222,26 @@ class GraphArrayUndirected extends GraphArrayAbstract implements UndirectedGraph
 			int v0 = edgeTarget(lastEdge);
 			return source == u0 ? v0 : u0;
 		}
-
 	}
 
-	@Override
-	public GraphCapabilities getCapabilities() {
-		return Capabilities;
-	}
+	private class EdgeInIt extends GraphArrayAbstract.EdgeIt {
 
-	private static final GraphCapabilities Capabilities = GraphCapabilitiesBuilder.newUndirected().vertexAdd(true)
-			.vertexRemove(true).edgeAdd(true).edgeRemove(true).parallelEdges(true).selfEdges(true).build();
+		private final int target;
 
-	@Override
-	public Graph copy() {
-		return new GraphArrayUndirected(this);
+		EdgeInIt(int target, int[] edges, int count) {
+			super(edges, count);
+			this.target = target;
+		}
+
+		@Override
+		public int source() {
+			return edgeEndpoint(lastEdge, target);
+		}
+
+		@Override
+		public int target() {
+			return target;
+		}
 	}
 
 }

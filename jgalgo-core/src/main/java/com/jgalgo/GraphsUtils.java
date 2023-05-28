@@ -84,11 +84,6 @@ class GraphsUtils {
 	static interface UndirectedGraphImpl extends Graph {
 
 		@Override
-		default EdgeIter edgesIn(int target) {
-			return edgesOut(target);
-		}
-
-		@Override
 		default void removeEdgesOf(int source) {
 			for (EdgeIter eit = edgesOut(source); eit.hasNext();) {
 				eit.nextInt();

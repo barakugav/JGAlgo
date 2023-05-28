@@ -227,6 +227,23 @@ class GraphImplTestUtils extends TestUtils {
 					}
 				}
 			}
+			for (int v = 0; v < n; v++) {
+				for (EdgeIter eit = g.edgesIn(v); eit.hasNext();) {
+					int e = eit.nextInt();
+					int u = eit.source();
+					if (directed) {
+						assertEquals(edges.get(e), IntList.of(eit.source(), eit.target()));
+					} else {
+						assertEquals(edges.get(e), intSetOf(eit.source(), eit.target()));
+					}
+					assertEquals(v, eit.target());
+					assertEquals(v, g.edgeEndpoint(e, u));
+					if (directed) {
+						assertEquals(g.edgeSource(e), eit.source());
+						assertEquals(g.edgeTarget(e), eit.target());
+					}
+				}
+			}
 		}
 	}
 

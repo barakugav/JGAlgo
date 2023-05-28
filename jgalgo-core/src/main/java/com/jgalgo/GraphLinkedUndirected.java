@@ -105,7 +105,13 @@ class GraphLinkedUndirected extends GraphLinkedAbstract implements UndirectedGra
 	@Override
 	public EdgeIter edgesOut(int source) {
 		checkVertex(source);
-		return new EdgeVertexItr(source, edges.get(source));
+		return new EdgeOutItr(source, edges.get(source));
+	}
+
+	@Override
+	public EdgeIter edgesIn(int target) {
+		checkVertex(target);
+		return new EdgeInItr(target, edges.get(target));
 	}
 
 	@Override
@@ -192,6 +198,19 @@ class GraphLinkedUndirected extends GraphLinkedAbstract implements UndirectedGra
 		super.clearEdges();
 	}
 
+	@Override
+	public GraphCapabilities getCapabilities() {
+		return Capabilities;
+	}
+
+	private static final GraphCapabilities Capabilities = GraphCapabilitiesBuilder.newUndirected().vertexAdd(true)
+			.vertexRemove(true).edgeAdd(true).edgeRemove(true).parallelEdges(true).selfEdges(false).build();
+
+	@Override
+	public Graph copy() {
+		return new GraphLinkedUndirected(this);
+	}
+
 	private static class Node extends GraphLinkedAbstract.Node {
 
 		private Node nextu, nextv;
@@ -231,14 +250,13 @@ class GraphLinkedUndirected extends GraphLinkedAbstract implements UndirectedGra
 			assert w == source || w == target;
 			return w == source ? target : source;
 		}
-
 	}
 
-	private class EdgeVertexItr extends GraphLinkedAbstract.EdgeItr {
+	private class EdgeOutItr extends GraphLinkedAbstract.EdgeItr {
 
 		private final int source;
 
-		EdgeVertexItr(int source, Node p) {
+		EdgeOutItr(int source, Node p) {
 			super(p);
 			this.source = source;
 		}
@@ -258,20 +276,31 @@ class GraphLinkedUndirected extends GraphLinkedAbstract implements UndirectedGra
 			int u0 = last.source, v0 = last.target;
 			return source == u0 ? v0 : u0;
 		}
-
 	}
 
-	@Override
-	public GraphCapabilities getCapabilities() {
-		return Capabilities;
+	private class EdgeInItr extends GraphLinkedAbstract.EdgeItr {
+
+		private final int target;
+
+		EdgeInItr(int target, Node p) {
+			super(p);
+			this.target = target;
+		}
+
+		@Override
+		Node nextNode(GraphLinkedAbstract.Node n) {
+			return ((Node) n).next(target);
+		}
+
+		@Override
+		public int source() {
+			int u0 = last.source, v0 = last.target;
+			return target == u0 ? v0 : u0;
+		}
+
+		@Override
+		public int target() {
+			return target;
+		}
 	}
-
-	private static final GraphCapabilities Capabilities = GraphCapabilitiesBuilder.newUndirected().vertexAdd(true)
-			.vertexRemove(true).edgeAdd(true).edgeRemove(true).parallelEdges(true).selfEdges(false).build();
-
-	@Override
-	public Graph copy() {
-		return new GraphLinkedUndirected(this);
-	}
-
 }

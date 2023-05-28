@@ -204,29 +204,29 @@ abstract class GraphTableAbstract extends GraphBaseContinues implements GraphWit
 	class EdgeIterOut implements EdgeIterImpl {
 
 		private final int source;
-		private int v;
-		private int lastV = -1;
-		private final DataContainer.Int uEdges;
+		private int target;
+		private int lastTarget = -1;
+		private final DataContainer.Int sourceEdges;
 
 		EdgeIterOut(int source) {
 			checkVertex(source);
 			this.source = source;
-			uEdges = edges.get(source);
+			sourceEdges = edges.get(source);
 
 			advanceUntilNext(0);
 		}
 
 		@Override
 		public boolean hasNext() {
-			return v >= 0;
+			return target >= 0;
 		}
 
 		@Override
 		public int nextInt() {
 			if (!hasNext())
 				throw new NoSuchElementException();
-			int e = uEdges.getInt(lastV = v);
-			advanceUntilNext(v + 1);
+			int e = sourceEdges.getInt(lastTarget = target);
+			advanceUntilNext(target + 1);
 			return e;
 		}
 
@@ -234,18 +234,18 @@ abstract class GraphTableAbstract extends GraphBaseContinues implements GraphWit
 		public int peekNext() {
 			if (!hasNext())
 				throw new NoSuchElementException();
-			return uEdges.getInt(v);
+			return sourceEdges.getInt(target);
 		}
 
 		void advanceUntilNext(int next) {
 			int n = vertices().size();
 			for (; next < n; next++) {
-				if (uEdges.getInt(next) != EdgeNone) {
-					v = next;
+				if (sourceEdges.getInt(next) != EdgeNone) {
+					target = next;
 					return;
 				}
 			}
-			v = -1;
+			target = -1;
 		}
 
 		@Override
@@ -255,22 +255,85 @@ abstract class GraphTableAbstract extends GraphBaseContinues implements GraphWit
 
 		@Override
 		public int target() {
-			return lastV;
+			return lastTarget;
 		}
 
 		@Override
 		public void remove() {
-			removeEdge(uEdges.getInt(target()));
+			removeEdge(sourceEdges.getInt(target()));
 		}
 	}
 
-	class EdgeIterIn implements EdgeIterImpl {
+	class EdgeIterInUndirected implements EdgeIterImpl {
 
 		private int source;
 		private final int target;
-		private int lastU = -1;
+		private int lastSource = -1;
+		private final DataContainer.Int targetEdges;
 
-		EdgeIterIn(int target) {
+		EdgeIterInUndirected(int target) {
+			checkVertex(target);
+			this.target = target;
+			targetEdges = edges.get(target);
+
+			advanceUntilNext(0);
+		}
+
+		@Override
+		public boolean hasNext() {
+			return source != -1;
+		}
+
+		@Override
+		public int nextInt() {
+			if (!hasNext())
+				throw new NoSuchElementException();
+			int e = targetEdges.getInt(lastSource = source);
+			advanceUntilNext(source + 1);
+			return e;
+		}
+
+		@Override
+		public int peekNext() {
+			if (!hasNext())
+				throw new NoSuchElementException();
+			return targetEdges.getInt(source);
+		}
+
+		private void advanceUntilNext(int next) {
+			int n = vertices().size();
+			for (; next < n; next++) {
+				if (targetEdges.getInt(next) != EdgeNone) {
+					source = next;
+					return;
+				}
+			}
+			source = -1;
+		}
+
+		@Override
+		public int source() {
+			return lastSource;
+		}
+
+		@Override
+		public int target() {
+			return target;
+		}
+
+		@Override
+		public void remove() {
+			removeEdge(targetEdges.getInt(source()));
+		}
+	}
+
+	class EdgeIterInDirected implements EdgeIterImpl {
+
+		private int source;
+		private final int target;
+		private int lastSource = -1;
+
+		EdgeIterInDirected(int target) {
 			checkVertex(target);
 			this.target = target;
 
@@ -286,7 +349,7 @@ abstract class GraphTableAbstract extends GraphBaseContinues implements GraphWit
 		public int nextInt() {
 			if (!hasNext())
 				throw new NoSuchElementException();
-			int e = edges.get(lastU = source).getInt(target);
+			int e = edges.get(lastSource = source).getInt(target);
 			advanceUntilNext(source + 1);
 			return e;
 		}
@@ -311,7 +374,7 @@ abstract class GraphTableAbstract extends GraphBaseContinues implements GraphWit
 
 		@Override
 		public int source() {
-			return lastU;
+			return lastSource;
 		}
 
 		@Override

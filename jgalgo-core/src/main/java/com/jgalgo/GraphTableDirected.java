@@ -58,7 +58,7 @@ class GraphTableDirected extends GraphTableAbstract {
 
 	@Override
 	public EdgeIter edgesIn(int target) {
-		return new EdgeIterIn(target);
+		return new EdgeIterInDirected(target);
 	}
 
 	@Override

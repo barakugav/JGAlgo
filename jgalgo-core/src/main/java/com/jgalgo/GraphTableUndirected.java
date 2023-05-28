@@ -70,6 +70,11 @@ class GraphTableUndirected extends GraphTableAbstract implements UndirectedGraph
 	}
 
 	@Override
+	public EdgeIter edgesIn(int target) {
+		return new EdgeIterInUndirected(target);
+	}
+
+	@Override
 	public void clearEdges() {
 		final int m = edges().size();
 		for (int e = 0; e < m; e++) {
