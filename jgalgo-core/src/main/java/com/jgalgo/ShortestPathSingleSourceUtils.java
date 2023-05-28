@@ -45,11 +45,13 @@ class ShortestPathSingleSourceUtils {
 				if (intWeights && maxDistance < Integer.MAX_VALUE) {
 					return new ShortestPathSingleSource() {
 						private final ShortestPathSingleSourceDial ssspDial = new ShortestPathSingleSourceDial();
-						private final ShortestPathSingleSourceDijkstra ssspDijkstra = new ShortestPathSingleSourceDijkstra();
+						private final ShortestPathSingleSourceDijkstra ssspDijkstra =
+								new ShortestPathSingleSourceDijkstra();
 						private final int maxDistance = (int) BuilderImpl.this.maxDistance;
 
 						@Override
-						public ShortestPathSingleSource.Result computeShortestPaths(Graph g, EdgeWeightFunc w, int source) {
+						public ShortestPathSingleSource.Result computeShortestPaths(Graph g, EdgeWeightFunc w,
+								int source) {
 							final int n = g.vertices().size(), m = g.edges().size();
 							int dialWork = n + m + maxDistance;
 							int dijkstraWork = m + n * Utils.log2ceil(n);
@@ -127,16 +129,20 @@ class ShortestPathSingleSourceUtils {
 			if (g.getCapabilities().directed()) {
 				for (int v = target;;) {
 					int e = backtrack[v];
-					if (e == -1)
+					if (e == -1) {
+						assert v == source;
 						break;
+					}
 					path.add(e);
 					v = g.edgeSource(e);
 				}
 			} else {
 				for (int v = target;;) {
 					int e = backtrack[v];
-					if (e == -1)
+					if (e == -1) {
+						assert v == source;
 						break;
+					}
 					path.add(e);
 					v = g.edgeEndpoint(e, v);
 				}
@@ -190,8 +196,10 @@ class ShortestPathSingleSourceUtils {
 				IntArrayList path = new IntArrayList();
 				for (int v = target;;) {
 					int e = backtrack[v];
-					if (e == -1)
+					if (e == -1) {
+						assert v == source;
 						break;
+					}
 					path.add(e);
 					v = g.edgeEndpoint(e, v);
 				}

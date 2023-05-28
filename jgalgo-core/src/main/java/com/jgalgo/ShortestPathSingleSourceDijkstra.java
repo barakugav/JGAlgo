@@ -24,8 +24,9 @@ import java.util.Objects;
  * Compute the shortest paths from a single source to all other vertices in \(O(m + n \log n)\) time, using a heap with
  * \(O(1)\) time for {@code decreaseKey()} operations.
  * <p>
- * Only positive edge weights are supported. This implementation should be the first choice for {@link ShortestPathSingleSource} with
- * positive weights. For negative weights use {@link ShortestPathSingleSourceBellmanFord} for floating points or {@link ShortestPathSingleSourceGoldberg} for
+ * Only positive edge weights are supported. This implementation should be the first choice for
+ * {@link ShortestPathSingleSource} with positive weights. For negative weights use
+ * {@link ShortestPathSingleSourceBellmanFord} for floating points or {@link ShortestPathSingleSourceGoldberg} for
  * integers.
  * <p>
  * Based on 'A note on two problems in connexion with graphs' by E. W. Dijkstra (1959). A 'note'??!! this guy changed
@@ -82,12 +83,13 @@ class ShortestPathSingleSourceDijkstra implements ShortestPathSingleSource {
 		res.distances[source] = 0;
 
 		for (int u = source;;) {
+			final double uDisntace = res.distances[u];
 			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = eit.target();
 				if (res.distances[v] != Double.POSITIVE_INFINITY)
 					continue;
-				double distance = res.distances[u] + w.weight(e);
+				double distance = uDisntace + w.weight(e);
 
 				HeapReference<Double, Integer> vPtr = verticesPtrs[v];
 				if (vPtr == null) {
@@ -121,12 +123,13 @@ class ShortestPathSingleSourceDijkstra implements ShortestPathSingleSource {
 		res.distances[source] = 0;
 
 		for (int u = source;;) {
+			final int uDisntace = res.distances[u];
 			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = eit.target();
 				if (res.distances[v] != Integer.MAX_VALUE)
 					continue;
-				int distance = res.distances[u] + w.weightInt(e);
+				int distance = uDisntace + w.weightInt(e);
 
 				HeapReference<Integer, Integer> vPtr = verticesPtrs[v];
 				if (vPtr == null) {

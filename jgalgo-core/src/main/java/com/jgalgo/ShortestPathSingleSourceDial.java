@@ -93,12 +93,13 @@ class ShortestPathSingleSourceDial implements ShortestPathSingleSource {
 		DialHeap heap = new DialHeap(g.vertices().size(), maxDistance);
 
 		for (int u = source;;) {
+			final int uDisntace = res.distances[u];
 			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = eit.target();
 				if (res.distances[v] != Integer.MAX_VALUE)
 					continue;
-				int distance = res.distances[u] + w.weightInt(e);
+				int distance = uDisntace + w.weightInt(e);
 
 				if (!heap.containsVertex(v)) {
 					heap.insert(v, distance);

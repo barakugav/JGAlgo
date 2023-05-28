@@ -17,6 +17,14 @@
 package com.jgalgo;
 
 import java.util.function.IntToDoubleFunction;
+import it.unimi.dsi.fastutil.ints.Int2DoubleMap;
+import it.unimi.dsi.fastutil.ints.Int2DoubleOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntLists;
 
 /**
@@ -25,15 +33,16 @@ import it.unimi.dsi.fastutil.ints.IntLists;
  * The A star (\(A^*\)) algorithm try to find the shortest path from a source to target vertex. It uses a heuristic that
  * map a vertex to an estimation of its distance from the target position.
  * <p>
- * An advantage of the \(A^*\) algorithm over other {@link ShortestPathSingleSource} algorithm, is that it can terminate much faster for the
- * specific source and target, especially if the heuristic is good.
+ * An advantage of the \(A^*\) algorithm over other {@link ShortestPathSingleSource} algorithm, is that it can terminate
+ * much faster for the specific source and target, especially if the heuristic is good.
  * <p>
- * The running time of this algorithm is \(O(m + n \log n)\) in the worse case, and it uses linear space.
+ * The algorithm runs in \(O(m + n \log n)\) and uses linear space in the worse case. If the heuristic is good, smaller
+ * running time and space (!) will be used.
  *
  * @see    <a href= "https://en.wikipedia.org/wiki/A*_search_algorithm">Wikipedia</a>
  * @author Barak Ugav
  */
-public class AStar {
+class AStar implements ShortestPathWithHeuristic {
 
 	private HeapReferenceable.Builder<Double, Integer> heapBuilder =
 			HeapReferenceable.newBuilder().keysTypePrimitive(double.class).valuesTypePrimitive(int.class);
@@ -41,7 +50,7 @@ public class AStar {
 	/**
 	 * Construct a new AStart algorithm.
 	 */
-	public AStar() {}
+	AStar() {}
 
 	/**
 	 * Set the implementation of the heap used by this algorithm.
@@ -52,43 +61,40 @@ public class AStar {
 		this.heapBuilder = heapBuilder.keysTypePrimitive(double.class).valuesTypePrimitive(int.class);
 	}
 
-	/**
-	 * Compute the shortest path between two vertices in a graph.
-	 *
-	 * @param  g          a graph
-	 * @param  w          an edge weight function
-	 * @param  source     a source vertex
-	 * @param  target     a target vertex
-	 * @param  vHeuristic a heuristic function that map each vertex to {@code double}. The heuristic should be close to
-	 *                        the real distance of each vertex to the target.
-	 * @return            the short path found from {@code source} to {@code target}
-	 */
+	@Override
 	public Path computeShortestPath(Graph g, EdgeWeightFunc w, int source, int target, IntToDoubleFunction vHeuristic) {
 		ArgumentCheck.onlyPositiveWeights(g, w);
 		if (source == target)
 			return new Path(g, source, target, IntLists.emptyList());
-		int n = g.vertices().size();
 		HeapReferenceable<Double, Integer> heap = heapBuilder.build();
-		@SuppressWarnings("unchecked")
-		HeapReference<Double, Integer>[] verticesPtrs = new HeapReference[n];
 
-		ShortestPathSingleSourceUtils.ResultImpl res = new ShortestPathSingleSourceUtils.ResultImpl(g, source);
-		res.distances[source] = 0;
+		Int2ObjectMap<HeapReference<Double, Integer>> verticesPtrs = new Int2ObjectOpenHashMap<>();
+
+		Int2DoubleMap distances = new Int2DoubleOpenHashMap();
+		distances.defaultReturnValue(Double.POSITIVE_INFINITY);
+		distances.put(source, 0);
+
+		Int2IntMap backtrack = new Int2IntOpenHashMap();
+		backtrack.defaultReturnValue(-1);
 
 		for (int u = source;;) {
+			final double uDistance = distances.get(u);
+			assert uDistance != Double.POSITIVE_INFINITY;
+
 			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = eit.target();
-				double distance = res.distances[u] + w.weight(e);
-				if (distance >= res.distances[v])
+				double distance = uDistance + w.weight(e);
+				if (distance >= distances.get(v))
 					continue;
-				res.distances[v] = distance;
-				res.backtrack[v] = e;
+				distances.put(v, distance);
+				backtrack.put(v, e);
 				double distanceEstimate = distance + vHeuristic.applyAsDouble(v);
 
-				HeapReference<Double, Integer> vPtr = verticesPtrs[v];
+				HeapReference<Double, Integer> vPtr = verticesPtrs.get(v);
 				if (vPtr == null) {
-					verticesPtrs[v] = heap.insert(Double.valueOf(distanceEstimate), Integer.valueOf(v));
+					vPtr = heap.insert(Double.valueOf(distanceEstimate), Integer.valueOf(v));
+					verticesPtrs.put(v, vPtr);
 				} else {
 					if (distanceEstimate < vPtr.key().doubleValue())
 						heap.decreaseKey(vPtr, Double.valueOf(distanceEstimate));
@@ -98,11 +104,38 @@ public class AStar {
 			if (heap.isEmpty())
 				break;
 			HeapReference<Double, Integer> next = heap.extractMin();
-			verticesPtrs[u = next.value().intValue()] = null;
+			verticesPtrs.remove(u = next.value().intValue());
 			if (u == target)
-				return res.getPath(target);
+				return computePath(g, source, target, backtrack);
 		}
 		return null;
+	}
+
+	private static Path computePath(Graph g, int source, int target, Int2IntMap backtrack) {
+		IntArrayList path = new IntArrayList();
+		if (g.getCapabilities().directed()) {
+			for (int v = target;;) {
+				int e = backtrack.get(v);
+				if (e == -1) {
+					assert v == source;
+					break;
+				}
+				path.add(e);
+				v = g.edgeSource(e);
+			}
+		} else {
+			for (int v = target;;) {
+				int e = backtrack.get(v);
+				if (e == -1) {
+					assert v == source;
+					break;
+				}
+				path.add(e);
+				v = g.edgeEndpoint(e, v);
+			}
+		}
+		IntArrays.reverse(path.elements(), 0, path.size());
+		return new Path(g, source, target, path);
 	}
 
 }
