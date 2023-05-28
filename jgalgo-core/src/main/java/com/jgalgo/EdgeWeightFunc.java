@@ -21,7 +21,7 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
 /**
  * Weight function that maps a graph edge to a weight.
  * <p>
- * Many algorithms such as {@link SSSP}, {@link MST}, {@link MaximumMatchingWeighted}, and more, try to find a set of
+ * Many algorithms such as {@link ShortestPathSingleSource}, {@link MinimumSpanningTree}, {@link MaximumMatchingWeighted}, and more, try to find a set of
  * edges satisfying some constraint while minimizing/maximizing some objective function based on the weights of the
  * edges. This interface is the API by which the user specify the weights of the edges.
  *
@@ -43,8 +43,8 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
  * EdgeWeightFunc weightFunc = weights;
  *
  * // Calculate the shortest paths from v1 to all other vertices
- * SSSP ssspAlgo = SSSP.newBuilder().build();
- * SSSP.Result ssspRes = ssspAlgo.computeShortestPaths(g, weightFunc, v1);
+ * ShortestPathSingleSource ssspAlgo = ShortestPathSingleSource.newBuilder().build();
+ * ShortestPathSingleSource.Result ssspRes = ssspAlgo.computeShortestPaths(g, weightFunc, v1);
  *
  * // Print the shortest path from v1 to v3
  * assert ssspRes.distance(v3) == 4.3;
@@ -104,8 +104,8 @@ public interface EdgeWeightFunc extends IntComparator {
 	 * EdgeWeightFunc.Int weightFunc = weights;
 	 *
 	 * // Calculate the shortest paths from v1 to all other vertices
-	 * SSSP ssspAlgo = new SSSPDial();
-	 * SSSP.Result ssspRes = ssspAlgo.computeShortestPaths(g, weightFunc, v1);
+	 * ShortestPathSingleSource ssspAlgo = ShortestPathSingleSource.newBuilder().setIntWeights(true).build();
+	 * ShortestPathSingleSource.Result ssspRes = ssspAlgo.computeShortestPaths(g, weightFunc, v1);
 	 *
 	 * // Print the shortest path from v1 to v3
 	 * assert ssspRes.distance(v3) == 4;
@@ -119,8 +119,8 @@ public interface EdgeWeightFunc extends IntComparator {
 	 * }
 	 * }</pre>
 	 *
-	 * @see    SSSPDial
-	 * @see    SSSPGoldberg
+	 * @see    ShortestPathSingleSourceDial
+	 * @see    ShortestPathSingleSourceGoldberg
 	 * @author Barak Ugav
 	 */
 	@FunctionalInterface

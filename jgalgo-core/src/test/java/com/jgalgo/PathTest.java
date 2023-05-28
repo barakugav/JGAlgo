@@ -34,7 +34,7 @@ public class PathTest extends TestBase {
 		final long seed = 0x03afc698ec4c71ccL;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
-		SSSP validationAlgo = new SSSPDijkstra();
+		ShortestPathSingleSource validationAlgo = new ShortestPathSingleSourceDijkstra();
 		List<Phase> phases = List.of(phase(256, 16, 8), phase(128, 32, 64), phase(4, 2048, 8192));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];

@@ -70,20 +70,20 @@ public class APSPBench {
 		}
 	}
 
-	private void benchAPSPPositiveWeights(Supplier<? extends APSP> builder, Blackhole blackhole) {
+	private void benchAPSPPositiveWeights(Supplier<? extends ShortestPathAllPairs> builder, Blackhole blackhole) {
 		Pair<Graph, EdgeWeightFunc.Int> graph = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
-		APSP algo = builder.get();
-		APSP.Result result = algo.computeAllShortestPaths(graph.first(), graph.second());
+		ShortestPathAllPairs algo = builder.get();
+		ShortestPathAllPairs.Result result = algo.computeAllShortestPaths(graph.first(), graph.second());
 		blackhole.consume(result);
 	}
 
 	@Benchmark
 	public void FloydWarshall(Blackhole blackhole) {
-		benchAPSPPositiveWeights(APSPFloydWarshall::new, blackhole);
+		benchAPSPPositiveWeights(ShortestPathAllPairsFloydWarshall::new, blackhole);
 	}
 
 	@Benchmark
 	public void Johnson(Blackhole blackhole) {
-		benchAPSPPositiveWeights(APSPJohnson::new, blackhole);
+		benchAPSPPositiveWeights(ShortestPathAllPairsJohnson::new, blackhole);
 	}
 }

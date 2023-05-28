@@ -88,7 +88,7 @@ class TreePathMaximaHagerup implements TreePathMaxima {
 		private final Weights.Int edgeRef = tree.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
 		private static final Object EdgeRefWeightKey = new Utils.Obj("refToOrig");
 
-		private final LCAStatic lcaAlgo = new LCAStaticRMQ();
+		private final LowestCommonAncestorStatic lcaAlgo = new LowestCommonAncestorStaticRMQ();
 		private int root;
 
 		private final Int2IntFunction getBitCount;
@@ -404,7 +404,7 @@ class TreePathMaximaHagerup implements TreePathMaxima {
 			int queriesNum = queries.size();
 			int[] lcaQueries = new int[queriesNum * 4];
 
-			LCAStatic.DataStructure lcaDS = lcaAlgo.preProcessTree(tree, root);
+			LowestCommonAncestorStatic.DataStructure lcaDS = lcaAlgo.preProcessTree(tree, root);
 			for (int q = 0; q < queriesNum; q++) {
 				IntIntPair query = queries.getQuery(q);
 				int u = query.firstInt(), v = query.secondInt();

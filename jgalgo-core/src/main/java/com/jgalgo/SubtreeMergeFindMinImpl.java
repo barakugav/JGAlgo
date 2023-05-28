@@ -32,7 +32,7 @@ class SubtreeMergeFindMinImpl<E> implements SubtreeMergeFindMin<E> {
 	private NodeImpl<E>[] nodes;
 	private final UnionFind uf;
 	private final HeapReferenceable<SubTree<E>, Void> heap;
-	private final LCADynamic lca;
+	private final LowestCommonAncestorDynamic lca;
 
 	private final Comparator<? super E> weightCmp;
 	private int timestamp;
@@ -64,7 +64,7 @@ class SubtreeMergeFindMinImpl<E> implements SubtreeMergeFindMin<E> {
 		nodes = new NodeImpl[2];
 
 		uf = UnionFind.newBuilder().build();
-		lca = new LCADynamicGabowLinear();
+		lca = new LowestCommonAncestorDynamicGabowLinear();
 
 		this.weightCmp = weightCmp != null ? weightCmp : Utils.getDefaultComparator();
 		timestamp = 0;
@@ -233,7 +233,7 @@ class SubtreeMergeFindMinImpl<E> implements SubtreeMergeFindMin<E> {
 		Edge<E> edge = new Edge<>(u, v, edgedata);
 
 		/* split edge into two edges (u, lca(u,v)), (v, lca(u,v)) */
-		LCADynamic.Node l = lca.findLowestCommonAncestor(u.lcaNode, v.lcaNode);
+		LowestCommonAncestorDynamic.Node l = lca.findLowestCommonAncestor(u.lcaNode, v.lcaNode);
 		if (u.lcaNode != l) {
 			addEdgeNode(new EdgeNode<>(u, l.getNodeData(), edge));
 			addEdgeNode(new EdgeNode<>(v, l.getNodeData(), edge));
@@ -338,7 +338,7 @@ class SubtreeMergeFindMinImpl<E> implements SubtreeMergeFindMin<E> {
 		private final NodeImpl<E> parent;
 		private final int depth;
 		private int ufIdx;
-		private LCADynamic.Node lcaNode;
+		private LowestCommonAncestorDynamic.Node lcaNode;
 		private SubTree<E> subtree;
 
 		NodeImpl(NodeImpl<E> parent) {

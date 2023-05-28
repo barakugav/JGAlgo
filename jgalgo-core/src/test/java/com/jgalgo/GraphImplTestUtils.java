@@ -465,11 +465,11 @@ class GraphImplTestUtils extends TestUtils {
 	}
 
 	static void testUndirectedMST(GraphBuilder graphImpl, long seed) {
-		MSTTestUtils.testRandGraph(new MSTKruskal(), graphImpl, seed);
+		MinimumSpanningTreeTestUtils.testRandGraph(new MinimumSpanningTreeKruskal(), graphImpl, seed);
 	}
 
 	static void testDirectedMDST(GraphBuilder graphImpl, long seed) {
-		MDSTTarjanTest.testRandGraph(new MDSTTarjan(), graphImpl, seed);
+		MinimumDirectedSpanningTreeTarjanTest.testRandGraph(new MinimumDirectedSpanningTreeTarjan(), graphImpl, seed);
 	}
 
 	static void testDirectedMaxFlow(GraphBuilder graphImpl, long seed) {

@@ -23,10 +23,10 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 /**
- * Maximum weighted matching algorithm using {@link SSSP} for bipartite graphs.
+ * Maximum weighted matching algorithm using {@link ShortestPathSingleSource} for bipartite graphs.
  * <p>
- * The running time of this algorithm is \(O(m n + n^2 \log n)\) and it uses linear space. If a different {@link SSSP}
- * algorithm is provided using {@link #setSsspAlgo(SSSP)} the running time will be \(O(n)\) times the running time of
+ * The running time of this algorithm is \(O(m n + n^2 \log n)\) and it uses linear space. If a different {@link ShortestPathSingleSource}
+ * algorithm is provided using {@link #setSsspAlgo(ShortestPathSingleSource)} the running time will be \(O(n)\) times the running time of
  * the shortest path algorithm on a graph of size \(O(n)\).
  *
  * @author Barak Ugav
@@ -34,7 +34,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeighted {
 
 	private Object bipartiteVerticesWeightKey = Weights.DefaultBipartiteWeightKey;
-	private SSSP ssspAlgo = new SSSPDijkstra();
+	private ShortestPathSingleSource ssspAlgo = new ShortestPathSingleSourceDijkstra();
 	private static final Object EdgeRefWeightKey = new Utils.Obj("refToOrig");
 	private static final Object EdgeWeightKey = new Utils.Obj("weight");
 
@@ -44,14 +44,14 @@ class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeighted {
 	MaximumMatchingWeightedBipartiteSSSP() {}
 
 	/**
-	 * Set the {@link SSSP} algorithm used by this algorithm.
+	 * Set the {@link ShortestPathSingleSource} algorithm used by this algorithm.
 	 * <p>
 	 * The shortest path algorithm should support non negative floating points weights. The default implementation uses
-	 * {@link SSSPDijkstra}.
+	 * {@link ShortestPathSingleSourceDijkstra}.
 	 *
 	 * @param algo an shortest path algorithm
 	 */
-	public void setSsspAlgo(SSSP algo) {
+	public void setSsspAlgo(ShortestPathSingleSource algo) {
 		ssspAlgo = Objects.requireNonNull(algo);
 	}
 
@@ -144,7 +144,7 @@ class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeighted {
 
 		// Init state may include negative distances, use Bellman Ford to calculate
 		// first potential values
-		SSSP.Result sp = new SSSPBellmanFord().computeShortestPaths(g, w, s);
+		ShortestPathSingleSource.Result sp = new ShortestPathSingleSourceBellmanFord().computeShortestPaths(g, w, s);
 		for (int v = 0; v < n + 2; v++)
 			potential[v] = sp.distance(v);
 

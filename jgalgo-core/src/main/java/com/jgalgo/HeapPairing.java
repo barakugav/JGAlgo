@@ -35,7 +35,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * {@link #remove(HeapReference)} and {@link #decreaseKey(HeapReference, Object)} which takes \(O(\log n)\) time
  * amortized.
  * <p>
- * Using this heap, {@link SSSPDijkstra} can be implemented in time \(O(m + n \log n)\) rather than \(O(m \log n)\) as
+ * Using this heap, {@link ShortestPathSingleSourceDijkstra} can be implemented in time \(O(m + n \log n)\) rather than \(O(m \log n)\) as
  * the {@link #decreaseKey(HeapReference, Object)} operation is performed in \(O(1)\) time amortized.
  * <p>
  * Pairing heaps are one of the best pointer based heaps implementations in practice, and should be used as a default

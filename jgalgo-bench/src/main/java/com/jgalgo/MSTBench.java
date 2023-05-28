@@ -68,43 +68,43 @@ public class MSTBench {
 		}
 	}
 
-	private void benchMST(Supplier<? extends MST> builder, Blackhole blackhole) {
+	private void benchMST(Supplier<? extends MinimumSpanningTree> builder, Blackhole blackhole) {
 		Pair<Graph, EdgeWeightFunc.Int> gw = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 		Graph g = gw.first();
 		EdgeWeightFunc.Int w = gw.second();
-		MST algo = builder.get();
-		MST.Result mst = algo.computeMinimumSpanningTree(g, w);
+		MinimumSpanningTree algo = builder.get();
+		MinimumSpanningTree.Result mst = algo.computeMinimumSpanningTree(g, w);
 		blackhole.consume(mst);
 	}
 
 	@Benchmark
 	public void Boruvka(Blackhole blackhole) {
-		benchMST(MSTBoruvka::new, blackhole);
+		benchMST(MinimumSpanningTreeBoruvka::new, blackhole);
 	}
 
 	@Benchmark
 	public void FredmanTarjan(Blackhole blackhole) {
-		benchMST(MSTFredmanTarjan::new, blackhole);
+		benchMST(MinimumSpanningTreeFredmanTarjan::new, blackhole);
 	}
 
 	@Benchmark
 	public void Kruskal(Blackhole blackhole) {
-		benchMST(MSTKruskal::new, blackhole);
+		benchMST(MinimumSpanningTreeKruskal::new, blackhole);
 	}
 
 	@Benchmark
 	public void Prim(Blackhole blackhole) {
-		benchMST(MSTPrim::new, blackhole);
+		benchMST(MinimumSpanningTreePrim::new, blackhole);
 	}
 
 	@Benchmark
 	public void Yao(Blackhole blackhole) {
-		benchMST(MSTYao::new, blackhole);
+		benchMST(MinimumSpanningTreeYao::new, blackhole);
 	}
 
 	@Benchmark
 	public void KargerKleinTarjan(Blackhole blackhole) {
-		benchMST(MSTKargerKleinTarjan::new, blackhole);
+		benchMST(MinimumSpanningTreeKargerKleinTarjan::new, blackhole);
 	}
 
 }

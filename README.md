@@ -24,7 +24,7 @@ A large variety of algorithm are still needed for the library. If you are passio
 
 ## Graph API
 
-The most basic object in the library is a [Graph](https://barakugav.github.io/JGAlgo/com/jgalgo/Graph.html). A graph consist of vertices and edges (directed or undirected) connecting between pairs of vertices, all represented by `int` primitive IDs. Algorithms such as [shortest path algorithm](https://barakugav.github.io/JGAlgo/com/jgalgo/SSSP.html) accept a graph as an input and perform some computation on it. Here is a snippet creating a directed graph with three vertices and edges with real values weights, and computing the shortest paths from a source vertex:
+The most basic object in the library is a [Graph](https://barakugav.github.io/JGAlgo/com/jgalgo/Graph.html). A graph consist of vertices and edges (directed or undirected) connecting between pairs of vertices, all represented by `int` primitive IDs. Algorithms such as [shortest path algorithm](https://barakugav.github.io/JGAlgo/com/jgalgo/ShortestPathSingleSource.html) accept a graph as an input and perform some computation on it. Here is a snippet creating a directed graph with three vertices and edges with real values weights, and computing the shortest paths from a source vertex:
 
 ```java
 /* Create a directed graph with three vertices and edges between them */
@@ -43,8 +43,8 @@ w.set(e2, 3.1);
 w.set(e3, 15.1);
 
 /* Calculate the shortest paths from v1 to all other vertices */
-SSSP ssspAlgo = SSSP.newBuilder().build();
-SSSP.Result ssspRes = ssspAlgo.computeShortestPaths(g, w, v1);
+ShortestPathSingleSource ssspAlgo = ShortestPathSingleSource.newBuilder().build();
+ShortestPathSingleSource.Result ssspRes = ssspAlgo.computeShortestPaths(g, w, v1);
 
 assert ssspRes.distance(v3) == 4.3;
 assert ssspRes.getPath(v3).equals(IntList.of(e1, e2));

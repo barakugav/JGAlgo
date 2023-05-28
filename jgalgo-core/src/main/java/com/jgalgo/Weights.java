@@ -21,14 +21,14 @@ package com.jgalgo;
  * <p>
  * A weights object associated with the edges (vertices) of a graph support getting and setting a weight value for each
  * edge (vertex) using the {@link #get(int)} and {@link #set(int, Object)} methods. Such weights are useful for various
- * algorithms such as {@link SSSP} or {@link MaximumMatchingWeighted} to assigned the <i>cost</i> of edges. Another
+ * algorithms such as {@link ShortestPathSingleSource} or {@link MaximumMatchingWeighted} to assigned the <i>cost</i> of edges. Another
  * example is boolean weights used to represent the partition of vertices in bipartite graphs, which is used by
  * algorithms such as Hopcroft-Karp algorithm for cardinality maximum matching in bipartite graphs.
  * <p>
  * An exiting graph expose two methods to add new type of weights associated with its vertices or edges:
  * {@link Graph#addVerticesWeights(Object, Class)} and {@link Graph#addEdgesWeights(Object, Class)}. Weights of
  * primitive types can be created by passing a primitive class to these methods, for example this snippet demonstrate
- * how a {@code double} weights type can be added to a graph, and then passed to {@link SSSP} algorithm:
+ * how a {@code double} weights type can be added to a graph, and then passed to {@link ShortestPathSingleSource} algorithm:
  *
  * <pre> {@code
  * // Create a directed graph with three vertices and edges between them
@@ -47,8 +47,8 @@ package com.jgalgo;
  * w.set(e3, 15.1);
  *
  * // Calculate the shortest paths from v1 to all other vertices
- * SSSP ssspAlgo = SSSP.newBuilder().build();
- * SSSP.Result ssspRes = ssspAlgo.computeShortestPaths(g, w, v1);
+ * ShortestPathSingleSource ssspAlgo = ShortestPathSingleSource.newBuilder().build();
+ * ShortestPathSingleSource.Result ssspRes = ssspAlgo.computeShortestPaths(g, w, v1);
  *
  * // Print the shortest path from v1 to v3
  * assert ssspRes.distance(v3) == 4.3;

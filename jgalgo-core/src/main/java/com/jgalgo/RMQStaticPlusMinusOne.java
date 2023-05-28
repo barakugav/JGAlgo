@@ -29,7 +29,7 @@ import java.util.Objects;
  * {@link RMQStaticPowerOf2Table} is used on the \(O(n / \log n)\) elements, which is linear in total.
  * <p>
  * This algorithm is used for the static implementation of the lowest common ancestor algorithm, see
- * {@link LCAStaticRMQ}.
+ * {@link LowestCommonAncestorStaticRMQ}.
  * <p>
  * Based on 'Fast Algorithms for Finding Nearest Common Ancestors' by D. Harel, R. Tarjan (1984).
  *

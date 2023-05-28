@@ -75,8 +75,8 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * w.set(e3, 15.1);
  *
  * // Calculate the shortest paths from v1 to all other vertices
- * SSSP ssspAlgo = SSSP.newBuilder().build();
- * SSSP.Result ssspRes = ssspAlgo.computeShortestPaths(g, w, v1);
+ * ShortestPathSingleSource ssspAlgo = ShortestPathSingleSource.newBuilder().build();
+ * ShortestPathSingleSource.Result ssspRes = ssspAlgo.computeShortestPaths(g, w, v1);
  *
  * // Print the shortest path from v1 to v3
  * assert ssspRes.distance(v3) == 4.3;

@@ -25,7 +25,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
  * The A star (\(A^*\)) algorithm try to find the shortest path from a source to target vertex. It uses a heuristic that
  * map a vertex to an estimation of its distance from the target position.
  * <p>
- * An advantage of the \(A^*\) algorithm over other {@link SSSP} algorithm, is that it can terminate much faster for the
+ * An advantage of the \(A^*\) algorithm over other {@link ShortestPathSingleSource} algorithm, is that it can terminate much faster for the
  * specific source and target, especially if the heuristic is good.
  * <p>
  * The running time of this algorithm is \(O(m + n \log n)\) in the worse case, and it uses linear space.
@@ -72,7 +72,7 @@ public class AStar {
 		@SuppressWarnings("unchecked")
 		HeapReference<Double, Integer>[] verticesPtrs = new HeapReference[n];
 
-		SSSPUtils.ResultImpl res = new SSSPUtils.ResultImpl(g, source);
+		ShortestPathSingleSourceUtils.ResultImpl res = new ShortestPathSingleSourceUtils.ResultImpl(g, source);
 		res.distances[source] = 0;
 
 		for (int u = source;;) {

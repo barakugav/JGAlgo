@@ -17,8 +17,8 @@ package com.jgalgo.example;
 
 import com.jgalgo.Graph;
 import com.jgalgo.GraphBuilder;
-import com.jgalgo.LCADynamic;
-import com.jgalgo.LCAStatic;
+import com.jgalgo.LowestCommonAncestorDynamic;
+import com.jgalgo.LowestCommonAncestorStatic;
 
 public class LowestCommonAncestorExample {
 
@@ -40,8 +40,8 @@ public class LowestCommonAncestorExample {
 		tree.addEdge(v2, v6);
 
 		/* Pre process the tree for LCA queries */
-		LCAStatic lcaAlgo = LCAStatic.newBuilder().build();
-		LCAStatic.DataStructure lcaDs = lcaAlgo.preProcessTree(tree, rt);
+		LowestCommonAncestorStatic lcaAlgo = LowestCommonAncestorStatic.newBuilder().build();
+		LowestCommonAncestorStatic.DataStructure lcaDs = lcaAlgo.preProcessTree(tree, rt);
 
 		/* Find the lowest common ancestor of any pair of vertices in the tree */
 		assert lcaDs.findLowestCommonAncestor(v1, v2) == rt;
@@ -53,21 +53,21 @@ public class LowestCommonAncestorExample {
 
 	public static void dynamicLCAExample() {
 		/* Create a full binary tree of height 3 and perform LCA queries during the construction */
-		LCADynamic lcaAlgo = LCADynamic.newBuilder().build();
-		LCADynamic.Node rt = lcaAlgo.initTree();
+		LowestCommonAncestorDynamic lcaAlgo = LowestCommonAncestorDynamic.newBuilder().build();
+		LowestCommonAncestorDynamic.Node rt = lcaAlgo.initTree();
 
-		LCADynamic.Node v1 = lcaAlgo.addLeaf(rt);
-		LCADynamic.Node v2 = lcaAlgo.addLeaf(rt);
+		LowestCommonAncestorDynamic.Node v1 = lcaAlgo.addLeaf(rt);
+		LowestCommonAncestorDynamic.Node v2 = lcaAlgo.addLeaf(rt);
 		assert lcaAlgo.findLowestCommonAncestor(v1, v2) == rt;
 
-		LCADynamic.Node v3 = lcaAlgo.addLeaf(v1);
+		LowestCommonAncestorDynamic.Node v3 = lcaAlgo.addLeaf(v1);
 		assert lcaAlgo.findLowestCommonAncestor(v1, v3) == v1;
 
-		LCADynamic.Node v4 = lcaAlgo.addLeaf(v1);
+		LowestCommonAncestorDynamic.Node v4 = lcaAlgo.addLeaf(v1);
 		assert lcaAlgo.findLowestCommonAncestor(v3, v4) == v1;
 
-		LCADynamic.Node v5 = lcaAlgo.addLeaf(v2);
-		LCADynamic.Node v6 = lcaAlgo.addLeaf(v2);
+		LowestCommonAncestorDynamic.Node v5 = lcaAlgo.addLeaf(v2);
+		LowestCommonAncestorDynamic.Node v6 = lcaAlgo.addLeaf(v2);
 		assert lcaAlgo.findLowestCommonAncestor(v5, v6) == v2;
 		assert lcaAlgo.findLowestCommonAncestor(v3, v6) == rt;
 	}

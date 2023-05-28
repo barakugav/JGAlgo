@@ -18,7 +18,7 @@ package com.jgalgo.example;
 
 import com.jgalgo.Graph;
 import com.jgalgo.GraphBuilder;
-import com.jgalgo.SSSP;
+import com.jgalgo.ShortestPathSingleSource;
 import com.jgalgo.Weights;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -42,8 +42,8 @@ public class ShortestPathExample {
 		w.set(e3, 15.1);
 
 		/* Calculate the shortest paths from v1 to all other vertices */
-		SSSP ssspAlgo = SSSP.newBuilder().build();
-		SSSP.Result ssspRes = ssspAlgo.computeShortestPaths(g, w, v1);
+		ShortestPathSingleSource ssspAlgo = ShortestPathSingleSource.newBuilder().build();
+		ShortestPathSingleSource.Result ssspRes = ssspAlgo.computeShortestPaths(g, w, v1);
 
 		assert ssspRes.distance(v3) == 4.3;
 		assert ssspRes.getPath(v3).equals(IntList.of(e1, e2));

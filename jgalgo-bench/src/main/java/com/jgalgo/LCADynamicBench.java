@@ -70,10 +70,10 @@ public class LCADynamicBench {
 		}
 	}
 
-	private void benchLCA(LCADynamic.Builder builder, Blackhole blackhole) {
+	private void benchLCA(LowestCommonAncestorDynamic.Builder builder, Blackhole blackhole) {
 		Collection<Op> ops = lcaOps.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
-		LCADynamic lca = builder.build();
-		LCADynamic.Node[] nodes = new LCADynamic.Node[n];
+		LowestCommonAncestorDynamic lca = builder.build();
+		LowestCommonAncestorDynamic.Node[] nodes = new LowestCommonAncestorDynamic.Node[n];
 		int nodesNum = 0;
 		for (Op op0 : ops) {
 			if (op0 instanceof OpInitTree) {
@@ -81,13 +81,13 @@ public class LCADynamicBench {
 
 			} else if (op0 instanceof OpAddLeaf) {
 				OpAddLeaf op = (OpAddLeaf) op0;
-				LCADynamic.Node parent = nodes[op.parent];
+				LowestCommonAncestorDynamic.Node parent = nodes[op.parent];
 				nodes[nodesNum++] = lca.addLeaf(parent);
 
 			} else if (op0 instanceof OpLCAQuery) {
 				OpLCAQuery op = (OpLCAQuery) op0;
-				LCADynamic.Node x = nodes[op.x], y = nodes[op.y];
-				LCADynamic.Node lcaRes = lca.findLowestCommonAncestor(x, y);
+				LowestCommonAncestorDynamic.Node x = nodes[op.x], y = nodes[op.y];
+				LowestCommonAncestorDynamic.Node lcaRes = lca.findLowestCommonAncestor(x, y);
 				blackhole.consume(lcaRes);
 
 			} else {
@@ -100,12 +100,14 @@ public class LCADynamicBench {
 
 	@Benchmark
 	public void GabowLinear(Blackhole blackhole) {
-		benchLCA(LCADynamic.newBuilder().setOption("impl", "LCADynamicGabowLinear"), blackhole);
+		benchLCA(LowestCommonAncestorDynamic.newBuilder().setOption("impl", "LowestCommonAncestorDynamicGabowLinear"),
+				blackhole);
 	}
 
 	@Benchmark
 	public void GabowSimple(Blackhole blackhole) {
-		benchLCA(LCADynamic.newBuilder().setOption("impl", "LCADynamicGabowSimple"), blackhole);
+		benchLCA(LowestCommonAncestorDynamic.newBuilder().setOption("impl", "LowestCommonAncestorDynamicGabowSimple"),
+				blackhole);
 	}
 
 	private static Collection<Op> generateRandOps(int n, int m, long seed) {

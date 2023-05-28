@@ -28,7 +28,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  */
 public class TSPMetricMatchingAppx implements TSPMetric {
 
-	private final MST mstAlgo = MST.newBuilder().build();
+	private final MinimumSpanningTree mstAlgo = MinimumSpanningTree.newBuilder().build();
 	private final MaximumMatching matchingAlgo = MaximumMatching.newBuilder().build();
 
 	private static final Object EdgeWeightKey = new Utils.Obj("weight");

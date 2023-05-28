@@ -76,15 +76,15 @@ public class HeapReferenceableBench {
 		GraphArgs args = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 
 		/* SSSP */
-		SSSPDijkstra algo = new SSSPDijkstra();
+		ShortestPathSingleSourceDijkstra algo = new ShortestPathSingleSourceDijkstra();
 		algo.setHeapBuilder(heapBuilder);
-		SSSP.Result ssspRes = algo.computeShortestPaths(args.g, args.w, args.source);
+		ShortestPathSingleSource.Result ssspRes = algo.computeShortestPaths(args.g, args.w, args.source);
 		blackhole.consume(ssspRes);
 
 		/* Prim MST */
-		MSTPrim mstAlgo = new MSTPrim();
+		MinimumSpanningTreePrim mstAlgo = new MinimumSpanningTreePrim();
 		mstAlgo.setHeapBuilder(heapBuilder);
-		MST.Result mst = mstAlgo.computeMinimumSpanningTree(args.g, args.w);
+		MinimumSpanningTree.Result mst = mstAlgo.computeMinimumSpanningTree(args.g, args.w);
 		blackhole.consume(mst);
 	}
 
