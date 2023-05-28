@@ -72,7 +72,7 @@ public class AStar {
 		@SuppressWarnings("unchecked")
 		HeapReference<Double, Integer>[] verticesPtrs = new HeapReference[n];
 
-		SSSPResultImpl res = new SSSPResultImpl(g, source);
+		SSSPUtils.ResultImpl res = new SSSPUtils.ResultImpl(g, source);
 		res.distances[source] = 0;
 
 		for (int u = source;;) {

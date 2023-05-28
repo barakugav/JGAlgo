@@ -26,16 +26,16 @@ package com.jgalgo;
  * @see    BFSIter
  * @author Barak Ugav
  */
-public class SSSPCardinality implements SSSP {
+class SSSPCardinality implements SSSP {
 
 	/**
 	 * Construct a new cardinality SSSP algorithm object.
 	 */
-	public SSSPCardinality() {}
+	SSSPCardinality() {}
 
 	@Override
 	public SSSP.Result computeCardinalityShortestPaths(Graph g, int source) {
-		SSSPResultImpl.Int res = new SSSPResultImpl.Int(g, source);
+		SSSPUtils.ResultImpl.Int res = new SSSPUtils.ResultImpl.Int(g, source);
 		for (BFSIter it = BFSIter.newInstance(g, source); it.hasNext();) {
 			int v = it.nextInt();
 			res.distances[v] = it.layer();

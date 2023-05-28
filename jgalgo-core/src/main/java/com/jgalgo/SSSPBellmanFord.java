@@ -17,7 +17,6 @@
 package com.jgalgo;
 
 import java.util.BitSet;
-
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -34,12 +33,12 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  * @see    <a href= "https://en.wikipedia.org/wiki/Bellman%E2%80%93Ford_algorithm">Wikipedia</a>
  * @author Barak Ugav
  */
-public class SSSPBellmanFord implements SSSP {
+class SSSPBellmanFord implements SSSP {
 
 	/**
 	 * Construct a new SSSP algorithm object.
 	 */
-	public SSSPBellmanFord() {}
+	SSSPBellmanFord() {}
 
 	/**
 	 * {@inheritDoc}
@@ -99,7 +98,7 @@ public class SSSPBellmanFord implements SSSP {
 		return res;
 	}
 
-	private static class Result extends SSSPResultImpl {
+	private static class Result extends SSSPUtils.ResultImpl {
 
 		private Path negCycle;
 

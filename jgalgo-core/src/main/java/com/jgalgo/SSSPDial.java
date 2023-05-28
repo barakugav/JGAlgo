@@ -35,12 +35,12 @@ import it.unimi.dsi.fastutil.ints.IntIterators;
  *
  * @author Barak Ugav
  */
-public class SSSPDial implements SSSP {
+class SSSPDial implements SSSP {
 
 	/**
 	 * Construct a new SSSP algorithm object.
 	 */
-	public SSSPDial() {}
+	SSSPDial() {}
 
 	/**
 	 * {@inheritDoc}
@@ -84,10 +84,10 @@ public class SSSPDial implements SSSP {
 	 *                     vertex
 	 * @see                #computeShortestPaths(Graph, EdgeWeightFunc, int)
 	 */
-	public SSSP.Result computeShortestPaths(Graph g, EdgeWeightFunc.Int w, int source, int maxDistance) {
+	SSSP.Result computeShortestPaths(Graph g, EdgeWeightFunc.Int w, int source, int maxDistance) {
 		ArgumentCheck.onlyPositiveWeights(g, w);
 
-		SSSPResultImpl.Int res = new SSSPResultImpl.Int(g, source);
+		SSSPUtils.ResultImpl.Int res = new SSSPUtils.ResultImpl.Int(g, source);
 		res.distances[source] = 0;
 
 		DialHeap heap = new DialHeap(g.vertices().size(), maxDistance);
@@ -131,7 +131,6 @@ public class SSSPDial implements SSSP {
 		private int heapScanIdx;
 
 		DialHeap(int n, int maxDistance) {
-
 			heapBucketsHead = new int[maxDistance];
 			Arrays.fill(heapBucketsHead, 0, maxDistance, LinkedListFixedSize.None);
 			heapBucketsNodes = new LinkedListFixedSize.Doubly(n);
@@ -144,6 +143,8 @@ public class SSSPDial implements SSSP {
 
 		void insert(int v, int distance) {
 			heapDistances[v] = distance;
+			if (distance >= heapBucketsHead.length)
+				throw new IllegalStateException("distance too great");
 			int h = heapBucketsHead[distance];
 			heapBucketsHead[distance] = v;
 			if (h != LinkedListFixedSize.None)

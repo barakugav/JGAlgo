@@ -34,14 +34,14 @@ import java.util.Objects;
  * @see    <a href= "https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm">Wikipedia</a>
  * @author Barak Ugav
  */
-public class SSSPDijkstra implements SSSP {
+class SSSPDijkstra implements SSSP {
 
 	private HeapReferenceable.Builder<?, ?> heapBuilder;
 
 	/**
 	 * Construct a new SSSP algorithm object.
 	 */
-	public SSSPDijkstra() {
+	SSSPDijkstra() {
 		heapBuilder = HeapReferenceable.newBuilder();
 	}
 
@@ -78,7 +78,7 @@ public class SSSPDijkstra implements SSSP {
 		@SuppressWarnings("unchecked")
 		HeapReference<Double, Integer>[] verticesPtrs = new HeapReference[n];
 
-		SSSPResultImpl res = new SSSPResultImpl(g, source);
+		SSSPUtils.ResultImpl res = new SSSPUtils.ResultImpl(g, source);
 		res.distances[source] = 0;
 
 		for (int u = source;;) {
@@ -117,7 +117,7 @@ public class SSSPDijkstra implements SSSP {
 		@SuppressWarnings("unchecked")
 		HeapReference<Integer, Integer>[] verticesPtrs = new HeapReference[n];
 
-		SSSPResultImpl.Int res = new SSSPResultImpl.Int(g, source);
+		SSSPUtils.ResultImpl.Int res = new SSSPUtils.ResultImpl.Int(g, source);
 		res.distances[source] = 0;
 
 		for (int u = source;;) {

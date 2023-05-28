@@ -40,7 +40,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
  *
  * @author Barak Ugav
  */
-public class SSSPGoldberg implements SSSP, AlgorithmWithDiagnostics {
+class SSSPGoldberg implements SSSP, AlgorithmWithDiagnostics {
 
 	private SSSP positiveSsspAlgo = new SSSPDijkstra();
 	private final SSSPDial ssspDial = new SSSPDial();
@@ -52,7 +52,7 @@ public class SSSPGoldberg implements SSSP, AlgorithmWithDiagnostics {
 	/**
 	 * Construct a new SSSP algorithm object.
 	 */
-	public SSSPGoldberg() {}
+	SSSPGoldberg() {}
 
 	/**
 	 * Set the algorithm used for positive weights graphs.

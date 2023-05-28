@@ -27,14 +27,14 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  * @see    TopologicalOrderAlgorithm
  * @author Barak Ugav
  */
-public class SSSPDag implements SSSP {
+class SSSPDag implements SSSP {
 
 	private final TopologicalOrderAlgorithm topoAlg = TopologicalOrderAlgorithm.newBuilder().build();
 
 	/**
 	 * Construct a new SSSP algorithm object.
 	 */
-	public SSSPDag() {}
+	SSSPDag() {}
 
 	/**
 	 * {@inheritDoc}
@@ -51,7 +51,7 @@ public class SSSPDag implements SSSP {
 	}
 
 	private SSSPDag.Result computeSsspDouble(Graph g, EdgeWeightFunc w, int source) {
-		SSSPResultImpl res = new SSSPResultImpl(g, source);
+		SSSPUtils.ResultImpl res = new SSSPUtils.ResultImpl(g, source);
 		res.distances[source] = 0;
 
 		boolean sourceSeen = false;
@@ -79,7 +79,7 @@ public class SSSPDag implements SSSP {
 	}
 
 	private SSSPDag.Result computeSsspInt(Graph g, EdgeWeightFunc.Int w, int source) {
-		SSSPResultImpl.Int res = new SSSPResultImpl.Int(g, source);
+		SSSPUtils.ResultImpl.Int res = new SSSPUtils.ResultImpl.Int(g, source);
 		res.distances[source] = 0;
 
 		boolean sourceSeen = false;

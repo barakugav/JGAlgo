@@ -26,8 +26,8 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * Prim's minimum spanning tree algorithm.
  * <p>
  * The algorithm maintain a tree and repeatedly adds the lightest edge that connect a vertex from tree to the reset of
- * the vertices. The algorithm is similar to {@link SSSPDijkstra} in its idea, and it also uses a heap that is updated
- * using {@code decreaseKey()}.
+ * the vertices. The algorithm is similar to Dijkstra shortest paths algorithm in its idea, and it also uses a heap that
+ * is updated using {@code decreaseKey()}.
  * <p>
  * The running time of Prim's algorithm is \(O(m + n \log n)\) and it uses linear space. It's running time is very good
  * it practice and can be used as a first choice for {@link MST} algorithm. Note that only undirected graphs are

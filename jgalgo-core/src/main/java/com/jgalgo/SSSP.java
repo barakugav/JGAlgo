@@ -25,13 +25,15 @@ package com.jgalgo;
  * any other vertex, along with the distances, which are the shortest paths lengths (weights).
  * <p>
  * The most basic SSSP algorithms work on graphs with non negative weights, and they are the most efficient, such as
- * {@link SSSPDijkstra}. Negative weights are supported by some implementations of SSSP, and the 'shortest path' is well
+ * Dijkstra algorithm. Negative weights are supported by some implementations of SSSP, and the 'shortest path' is well
  * defined as long as there are no negative cycle in the graph as a path can loop in the cycle and achieve arbitrary
- * small 'length'.
+ * small 'length'. See {@link SSSP.Builder#setNegativeWeights(boolean)}.
  * <p>
  * A special case of the SSSP problem is on directed graphs that does not contain any cycles, and it could be solved in
- * linear time for any weights types using {@link SSSPDag}. Another special case arise when the weight function assign
- * \(1\) to any edges, and the shortest paths could be computed again in linear time using {@link SSSPCardinality}.
+ * linear time for any weights types by calculating the topological order of the vertices (see
+ * {@link SSSP.Builder#setDag(boolean)}). Another special case arise when the weight function assign \(1\) to any edges,
+ * and the shortest paths could be computed again in linear time using a BFS (see
+ * {@link SSSP.Builder#setCardinality(boolean)}).
  *
  * <pre> {@code
  * // Create a directed graph with three vertices and edges between them
@@ -157,7 +159,7 @@ public interface SSSP {
 	 * @return a new builder that can build {@link SSSP} objects
 	 */
 	static SSSP.Builder newBuilder() {
-		return new SSSPBuilderImpl();
+		return new SSSPUtils.BuilderImpl();
 	}
 
 	/**
@@ -198,26 +200,6 @@ public interface SSSP {
 		SSSP.Builder setNegativeWeights(boolean enable);
 
 		/**
-		 * Set the minimum weight that should be supported.
-		 * <p>
-		 * This method may be used as a hint to choose an {@link SSSP} implementation.
-		 *
-		 * @param  minWeight a minimum weight lower bound on all edge weights
-		 * @return           this builder
-		 */
-		SSSP.Builder setMinWeight(double minWeight);
-
-		/**
-		 * Set the maximum weight that should be supported.
-		 * <p>
-		 * This method may be used as a hint to choose an {@link SSSP} implementation.
-		 *
-		 * @param  maxWeight a maximum weight upper bound on all edge weights
-		 * @return           this builder
-		 */
-		SSSP.Builder setMaxWeight(double maxWeight);
-
-		/**
 		 * Set the maximum distance that should be supported.
 		 * <p>
 		 * This method may be used as a hint to choose an {@link SSSP} implementation.
@@ -237,6 +219,18 @@ public interface SSSP {
 		 * @return           this builder
 		 */
 		SSSP.Builder setDag(boolean dagGraphs);
+
+		/**
+		 * Enable/disable the support for cardinality shortest paths only.
+		 * <p>
+		 * More efficient algorithm may exists for cardinality shortest paths. Note that if this option is enabled, ONLY
+		 * cardinality shortest paths will be supported.
+		 *
+		 * @param  cardinalityWeight if {@code true}, only cardinality shortest paths will be supported by algorithms
+		 *                               built by this builder
+		 * @return                   this builder
+		 */
+		SSSP.Builder setCardinality(boolean cardinalityWeight);
 
 	}
 
