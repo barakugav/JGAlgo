@@ -38,14 +38,14 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * @see    <a href="https://en.wikipedia.org/wiki/Prim%27s_algorithm">Wikipedia</a>
  * @author Barak Ugav
  */
-public class MSTPrim implements MST {
+class MSTPrim implements MST {
 
 	private HeapReferenceable.Builder<?, ?> heapBuilder = HeapReferenceable.newBuilder();
 
 	/**
 	 * Construct a new MST algorithm object.
 	 */
-	public MSTPrim() {}
+	MSTPrim() {}
 
 	/**
 	 * Set the implementation of the heap used by this algorithm.

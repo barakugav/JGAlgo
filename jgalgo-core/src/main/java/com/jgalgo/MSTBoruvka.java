@@ -38,12 +38,12 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  * @see    <a href= "https://en.wikipedia.org/wiki/Bor%C5%AFvka%27s_algorithm">Wikipedia</a>
  * @author Barak Ugav
  */
-public class MSTBoruvka implements MST {
+class MSTBoruvka implements MST {
 
 	/**
 	 * Construct a new MST algorithm object.
 	 */
-	public MSTBoruvka() {}
+	MSTBoruvka() {}
 
 	/**
 	 * {@inheritDoc}

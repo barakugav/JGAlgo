@@ -38,7 +38,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  *
  * @author Barak Ugav
  */
-public class MSTFredmanTarjan implements MST {
+class MSTFredmanTarjan implements MST {
 
 	private HeapReferenceable.Builder<Integer, Void> heapBuilder =
 			HeapReferenceable.newBuilder().keysTypePrimitive(int.class).valuesTypeVoid();
@@ -46,7 +46,7 @@ public class MSTFredmanTarjan implements MST {
 	/**
 	 * Construct a new MST algorithm object.
 	 */
-	public MSTFredmanTarjan() {}
+	MSTFredmanTarjan() {}
 
 	/**
 	 * Set the implementation of the heap used by this algorithm.

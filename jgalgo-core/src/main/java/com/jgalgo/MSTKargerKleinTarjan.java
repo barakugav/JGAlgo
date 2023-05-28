@@ -39,7 +39,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
  *
  * @author Barak Ugav
  */
-public class MSTKargerKleinTarjan implements MST {
+class MSTKargerKleinTarjan implements MST {
 
 	private final Random rand;
 	private final ConnectedComponentsAlgo ccAlg = ConnectedComponentsAlgo.newBuilder().build();
@@ -51,7 +51,7 @@ public class MSTKargerKleinTarjan implements MST {
 	/**
 	 * Create a new MST algorithm with random seed.
 	 */
-	public MSTKargerKleinTarjan() {
+	MSTKargerKleinTarjan() {
 		this(System.nanoTime() ^ 0x905a1dad25b30034L);
 	}
 

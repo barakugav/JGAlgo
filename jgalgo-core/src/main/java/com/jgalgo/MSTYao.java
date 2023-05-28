@@ -30,14 +30,14 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  *
  * @author Barak Ugav
  */
-public class MSTYao implements MST {
+class MSTYao implements MST {
 
 	private boolean parallel = Config.parallelByDefault;
 
 	/**
 	 * Construct a new MST algorithm object.
 	 */
-	public MSTYao() {}
+	MSTYao() {}
 
 	/**
 	 * {@inheritDoc}

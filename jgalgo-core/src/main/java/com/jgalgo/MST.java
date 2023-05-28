@@ -71,6 +71,7 @@ public interface MST {
 	 * @return a new builder that can build {@link MST} objects
 	 */
 	static MST.Builder newBuilder() {
+		// TODO check for which graphs sizes Kruskal is faster
 		return MSTPrim::new;
 	}
 

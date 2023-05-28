@@ -37,7 +37,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * @see    <a href= "https://en.wikipedia.org/wiki/Kruskal%27s_algorithm">Wikipedia</a>
  * @author Barak Ugav
  */
-public class MSTKruskal implements MST {
+class MSTKruskal implements MST {
 
 	private UnionFind.Builder unionFindBuilder = UnionFind.newBuilder();
 	private boolean parallelEnable = Config.parallelByDefault;
@@ -45,7 +45,7 @@ public class MSTKruskal implements MST {
 	/**
 	 * Construct a new MST algorithm object.
 	 */
-	public MSTKruskal() {}
+	MSTKruskal() {}
 
 	/**
 	 * [experimental API] Set the implementation of {@link UnionFind} used by this algorithm.
