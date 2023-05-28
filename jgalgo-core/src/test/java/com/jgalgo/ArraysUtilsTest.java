@@ -18,15 +18,19 @@ package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+
 import org.junit.jupiter.api.Test;
 
 public class ArraysUtilsTest extends TestBase {
 
 	@Test
 	public void testGetKthElementRandArrayUnique() {
-		final SeedGenerator seedGen = new SeedGenerator(0xedf92ed1b59ae1e1L);
+		final long seed = 0xedf92ed1b59ae1e1L;
+		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases =
 				List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 1024), phase(2, 4096));
 		runTestMultiple(phases, (testIter, args) -> {
@@ -37,13 +41,28 @@ public class ArraysUtilsTest extends TestBase {
 	}
 
 	@Test
-	public void testGetKthElementRandArrayNonunique() {
-		final SeedGenerator seedGen = new SeedGenerator(0x97e45458f8daefd2L);
+	public void testGetKthElementRandArrayNonUnique() {
+		final long seed = 0x97e45458f8daefd2L;
+		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases =
 				List.of(phase(256, 8), phase(128, 32), phase(32, 128), phase(16, 256), phase(8, 1024), phase(2, 4096));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0];
 			int[] a = randArray(n, 0, n / 4, seedGen.nextSeed());
+			testGetKthElement(a, seedGen.nextSeed());
+		});
+	}
+
+	@Test
+	public void testGetKthElementRandArraySameElm() {
+		final long seed = 0x77b8bdd802380333L;
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		List<Phase> phases =
+				List.of(phase(1, 8), phase(1, 32), phase(1, 128), phase(1, 256), phase(1, 1024), phase(1, 3849));
+		runTestMultiple(phases, (testIter, args) -> {
+			int n = args[0];
+			int[] a = new int[n];
+			Arrays.fill(a, 6);
 			testGetKthElement(a, seedGen.nextSeed());
 		});
 	}

@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntComparator;
+import it.unimi.dsi.fastutil.ints.IntIntPair;
 import it.unimi.dsi.fastutil.objects.ObjectArrays;
 
 class ArraysUtils {
@@ -100,13 +101,17 @@ class ArraysUtils {
 			if (from == to + 1)
 				return;
 			int pivotIdx = calcPivot(a, from, to, c);
-			pivotIdx = pivotPartition0(a, from, to, pivotIdx, c);
-			if (pivotIdx == k)
+			IntIntPair p = pivotPartition0(a, from, to, pivotIdx, c);
+			int lastSmaller = p.firstInt();
+			int firstGreater = p.secondInt();
+			if (k <= lastSmaller) {
+				to = lastSmaller + 1;
+			} else if (k >= firstGreater) {
+				from = firstGreater;
+			} else {
+				/* k in range (lastSmaller, firstGreater) , namely the kth element is the pivot */
 				return;
-			if (pivotIdx > k)
-				to = pivotIdx;
-			else
-				from = pivotIdx + 1;
+			}
 		}
 	}
 
@@ -115,13 +120,17 @@ class ArraysUtils {
 			if (from == to + 1)
 				return;
 			int pivotIdx = calcPivot(a, from, to, c);
-			pivotIdx = pivotPartition0(a, from, to, pivotIdx, c);
-			if (pivotIdx == k)
+			IntIntPair p = pivotPartition0(a, from, to, pivotIdx, c);
+			int lastSmaller = p.firstInt();
+			int firstGreater = p.secondInt();
+			if (k <= lastSmaller) {
+				to = lastSmaller + 1;
+			} else if (k >= firstGreater) {
+				from = firstGreater;
+			} else {
+				/* k in range (lastSmaller, firstGreater) , namely the kth element is the pivot */
 				return;
-			if (pivotIdx > k)
-				to = pivotIdx;
-			else
-				from = pivotIdx + 1;
+			}
 		}
 	}
 
@@ -155,7 +164,7 @@ class ArraysUtils {
 		if (pivotIdx == -1)
 			return 0; // all elements are greater than the pivot
 
-		return pivotPartition0(a, from, to, pivotIdx, c) + 1;
+		return pivotPartition0(a, from, to, pivotIdx, c).secondInt();
 	}
 
 	/**
@@ -187,31 +196,35 @@ class ArraysUtils {
 		if (pivotIdx == -1)
 			return 0; // all elements are greater than the pivot
 
-		return pivotPartition0(a, from, to, pivotIdx, c) + 1;
+		return pivotPartition0(a, from, to, pivotIdx, c).secondInt();
 	}
 
-	private static <E> int pivotPartition0(E[] a, int from, int to, int pivotIdx, Comparator<? super E> c) {
+	private static <E> IntIntPair pivotPartition0(E[] a, int from, int to, int pivotIdx, Comparator<? super E> c) {
 		E pivot = a[pivotIdx];
 		int insertIdx = from;
 		for (int i = from; i < to; i++)
 			if (c.compare(a[i], pivot) < 0)
 				ObjectArrays.swap(a, i, insertIdx++);
+		final int lastSmaller = insertIdx - 1;
 		for (int i = insertIdx; i < to; i++)
 			if (c.compare(a[i], pivot) == 0)
 				ObjectArrays.swap(a, i, insertIdx++);
-		return insertIdx - 1;
+		final int firstGreater = insertIdx;
+		return IntIntPair.of(lastSmaller, firstGreater);
 	}
 
-	private static int pivotPartition0(int[] a, int from, int to, int pivotIdx, IntComparator c) {
+	private static IntIntPair pivotPartition0(int[] a, int from, int to, int pivotIdx, IntComparator c) {
 		int pivot = a[pivotIdx];
 		int insertIdx = from;
 		for (int i = from; i < to; i++)
 			if (c.compare(a[i], pivot) < 0)
 				IntArrays.swap(a, i, insertIdx++);
+		final int lastSmaller = insertIdx - 1;
 		for (int i = insertIdx; i < to; i++)
 			if (c.compare(a[i], pivot) == 0)
 				IntArrays.swap(a, i, insertIdx++);
-		return insertIdx - 1;
+		final int firstGreater = insertIdx;
+		return IntIntPair.of(lastSmaller, firstGreater);
 	}
 
 	private static <E> int calcPivot(E[] a, int from, int to, Comparator<? super E> c) {
