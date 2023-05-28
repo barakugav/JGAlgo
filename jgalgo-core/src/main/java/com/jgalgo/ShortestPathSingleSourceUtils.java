@@ -148,7 +148,7 @@ class ShortestPathSingleSourceUtils {
 				}
 			}
 			IntArrays.reverse(path.elements(), 0, path.size());
-			return new Path(g, source, target, path);
+			return new PathImpl(g, source, target, path);
 		}
 
 		@Override
@@ -204,7 +204,7 @@ class ShortestPathSingleSourceUtils {
 					v = g.edgeEndpoint(e, v);
 				}
 				IntArrays.reverse(path.elements(), 0, path.size());
-				return new Path(g, source, target, path);
+				return new PathImpl(g, source, target, path);
 			}
 
 			@Override

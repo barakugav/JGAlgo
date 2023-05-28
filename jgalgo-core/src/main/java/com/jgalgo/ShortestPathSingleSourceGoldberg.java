@@ -191,7 +191,7 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSource, Algo
 							for (IntIterator it = negCycle0.iterator(); it.hasNext();)
 								negCycle.add(gNegEdgeRefs.getInt(it.nextInt()));
 							negCycle.add(gNegEdgeRefs.getInt(e));
-							return Pair.of(null, new Path(g, v, v, negCycle));
+							return Pair.of(null, new PathImpl(g, v, v, negCycle));
 						}
 					}
 				}

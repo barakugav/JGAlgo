@@ -51,7 +51,7 @@ class ShortestPathAllPairsFloydWarshall implements ShortestPathAllPairs {
 			double ew = w.weight(e);
 			if (u == v) {
 				if (ew < 0) {
-					res.setNegCycle(new Path(g, u, u, IntList.of(e)));
+					res.setNegCycle(new PathImpl(g, u, u, IntList.of(e)));
 					return res;
 				}
 				continue;
@@ -98,7 +98,7 @@ class ShortestPathAllPairsFloydWarshall implements ShortestPathAllPairs {
 			double ew = w.weight(e);
 			if (u == v) {
 				if (ew < 0) {
-					res.setNegCycle(new Path(g, u, u, IntList.of(e)));
+					res.setNegCycle(new PathImpl(g, u, u, IntList.of(e)));
 					return res;
 				}
 				continue;
@@ -142,7 +142,7 @@ class ShortestPathAllPairsFloydWarshall implements ShortestPathAllPairs {
 				IntList negCycle = new IntArrayList();
 				negCycle.addAll(res.getPath(u, k));
 				negCycle.addAll(res.getPath(k, u));
-				res.setNegCycle(new Path(res.graph(), u, u, negCycle));
+				res.setNegCycle(new PathImpl(res.graph(), u, u, negCycle));
 				return true;
 			}
 		}

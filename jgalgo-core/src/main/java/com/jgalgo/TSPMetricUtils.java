@@ -57,7 +57,7 @@ class TSPMetricUtils {
 		}
 
 		assert firstVertex == lastVertex;
-		Path cycle0 = new Path(g, firstVertex, lastVertex, cycle);
+		Path cycle0 = new PathImpl(g, firstVertex, lastVertex, cycle);
 		assert isValidCycle(g, cycle0);
 		assert isPathVisitEvery(g, cycle0);
 		return cycle0;

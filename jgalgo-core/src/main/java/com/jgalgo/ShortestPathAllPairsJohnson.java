@@ -171,7 +171,7 @@ class ShortestPathAllPairsJohnson implements ShortestPathAllPairs {
 			IntList negCycle = new IntArrayList(negCycleRef.size());
 			for (IntIterator it = negCycleRef.iterator(); it.hasNext();)
 				negCycle.add(edgeEef.getInt(it.nextInt()));
-			return Pair.of(null, new Path(g, negCycleRef.source(), negCycleRef.target(), negCycle));
+			return Pair.of(null, new PathImpl(g, negCycleRef.source(), negCycleRef.target(), negCycle));
 		}
 	}
 

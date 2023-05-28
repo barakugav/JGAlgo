@@ -27,7 +27,7 @@ import it.unimi.dsi.fastutil.ints.IntIterators;
 import it.unimi.dsi.fastutil.ints.IntStack;
 
 /**
- * A utilities class containing graph trees related methods.
+ * Static methods class for tree graphs.
  *
  * @author Barak Ugav
  */

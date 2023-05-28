@@ -86,7 +86,7 @@ class CyclesFinderTarjan implements CyclesFinder {
 					continue;
 				if (v == startV) {
 					path.push(e);
-					cycles.add(new Path(g, startV, startV, new IntArrayList((IntArrayList) path)));
+					cycles.add(new PathImpl(g, startV, startV, new IntArrayList((IntArrayList) path)));
 					path.popInt();
 					cycleFound = true;
 				} else if (!isMarked.get(v)) {

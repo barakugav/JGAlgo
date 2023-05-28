@@ -17,7 +17,6 @@
 package com.jgalgo;
 
 import java.util.Arrays;
-import it.unimi.dsi.fastutil.ints.AbstractIntList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -53,28 +52,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
  *
  * @author Barak Ugav
  */
-public class Path extends AbstractIntList {
-
-	private final Graph g;
-	private final int source;
-	private final int target;
-	private final IntList edges;
-
-	/**
-	 * Construct a new path in a graph from an edge list, a source and a target vertices.
-	 *
-	 * @param g      a graph
-	 * @param source a source vertex
-	 * @param target a target vertex
-	 * @param edges  a list of edges that form a path from the {@code source} to the {@code target} vertices in the
-	 *                   graph.
-	 */
-	public Path(Graph g, int source, int target, IntList edges) {
-		this.g = g;
-		this.source = source;
-		this.target = target;
-		this.edges = edges instanceof IntLists.UnmodifiableList ? edges : IntLists.unmodifiable(edges);
-	}
+public interface Path extends IntList {
 
 	/**
 	 * Get the source vertex of the path.
@@ -83,9 +61,7 @@ public class Path extends AbstractIntList {
 	 *
 	 * @return the source vertex of the path.
 	 */
-	public int source() {
-		return source;
-	}
+	int source();
 
 	/**
 	 * Get the target vertex of the path.
@@ -94,26 +70,20 @@ public class Path extends AbstractIntList {
 	 *
 	 * @return the target vertex of the path.
 	 */
-	public int target() {
-		return target;
-	}
+	int target();
 
 	/**
 	 * Get an iterator that iterate over the edges of the path.
 	 */
 	@Override
-	public IntListIterator iterator() {
-		return edges.iterator();
-	}
+	IntListIterator iterator();
 
 	/**
 	 * Get an {@link EdgeIter} that iterate over the edges of the path.
 	 *
 	 * @return an {@link EdgeIter} that iterate over the edges of the path.
 	 */
-	public EdgeIter edgeIter() {
-		return g.getCapabilities().directed() ? new IterDirected(g, edges) : new IterUndirected(g, edges, source);
-	}
+	EdgeIter edgeIter();
 
 	/**
 	 * Check whether this path form a cycle.
@@ -122,8 +92,8 @@ public class Path extends AbstractIntList {
 	 *
 	 * @return {@code true} if this path form a cycle, else {@code false}
 	 */
-	public boolean isCycle() {
-		return source == target;
+	default boolean isCycle() {
+		return source() == target();
 	}
 
 	/**
@@ -136,7 +106,7 @@ public class Path extends AbstractIntList {
 	 *
 	 * @return the vertices visited by this path, by the path order
 	 */
-	public IntList toVerticesList() {
+	default IntList toVerticesList() {
 		if (isEmpty())
 			return IntLists.emptyList();
 		IntList res = new IntArrayList(size() + (isCycle() ? 0 : 1));
@@ -145,8 +115,8 @@ public class Path extends AbstractIntList {
 			res.add(it.source());
 			if (!it.hasNext()) {
 				if (!isCycle()) {
-					assert it.target() == target;
-					res.add(target);
+					assert it.target() == target();
+					res.add(target());
 				}
 				return res;
 			}
@@ -161,117 +131,8 @@ public class Path extends AbstractIntList {
 	 * @param  w an edge weight function
 	 * @return   the sum of this path edges weights
 	 */
-	public double weight(EdgeWeightFunc w) {
+	default double weight(EdgeWeightFunc w) {
 		return GraphsUtils.edgesWeightSum(iterator(), w);
-	}
-
-	private static class IterUndirected implements EdgeIterImpl {
-
-		private final Graph g;
-		private final IntListIterator it;
-		private int e = -1, v = -1;
-
-		IterUndirected(Graph g, IntList path, int source) {
-			ArgumentCheck.onlyUndirected(g);
-			this.g = g;
-			v = source;
-			it = path.iterator();
-		}
-
-		@Override
-		public boolean hasNext() {
-			return it.hasNext();
-		}
-
-		@Override
-		public int nextInt() {
-			e = it.nextInt();
-			assert v == g.edgeSource(e) || v == g.edgeTarget(e);
-			v = g.edgeEndpoint(e, v);
-			return e;
-		}
-
-		@Override
-		public int peekNext() {
-			int peek = it.nextInt();
-			it.previousInt(); /* go back */
-			return peek;
-		}
-
-		@Override
-		public int source() {
-			return g.edgeEndpoint(e, v);
-		}
-
-		@Override
-		public int target() {
-			return v;
-		}
-
-	}
-
-	private static class IterDirected implements EdgeIterImpl {
-
-		private final Graph g;
-		private final IntListIterator it;
-		private int e = -1;
-
-		IterDirected(Graph g, IntList path) {
-			ArgumentCheck.onlyDirected(g);
-			this.g = g;
-			it = path.iterator();
-		}
-
-		@Override
-		public boolean hasNext() {
-			return it.hasNext();
-		}
-
-		@Override
-		public int nextInt() {
-			int eNext = it.nextInt();
-			if (e != -1)
-				assert g.edgeTarget(e) == g.edgeSource(eNext);
-			return e = eNext;
-		}
-
-		@Override
-		public int peekNext() {
-			int peek = it.nextInt();
-			it.previousInt(); /* go back */
-			return peek;
-		}
-
-		@Override
-		public int source() {
-			return g.edgeSource(e);
-		}
-
-		@Override
-		public int target() {
-			return g.edgeTarget(e);
-		}
-
-	}
-
-	@Override
-	public int size() {
-		return edges.size();
-	}
-
-	@Override
-	public int getInt(int index) {
-		return edges.getInt(index);
-	}
-
-	@Override
-	public int indexOf(int k) {
-		return edges.indexOf(k);
-	}
-
-	@Override
-	public int lastIndexOf(int k) {
-		return edges.lastIndexOf(k);
 	}
 
 	/**
@@ -286,7 +147,7 @@ public class Path extends AbstractIntList {
 	 */
 	public static Path findPath(Graph g, final int source, final int target) {
 		if (source == target)
-			return new Path(g, source, target, IntLists.emptyList());
+			return new PathImpl(g, source, target, IntLists.emptyList());
 		boolean reverse = true;
 		int u0 = source, v0 = target;
 		if (!g.getCapabilities().directed()) {
@@ -317,7 +178,7 @@ public class Path extends AbstractIntList {
 
 		if (reverse)
 			IntArrays.reverse(path.elements(), 0, path.size());
-		return new Path(g, source, target, path);
+		return new PathImpl(g, source, target, path);
 	}
 
 }

@@ -127,7 +127,7 @@ abstract class ShortestPathAllPairsResultImpl implements ShortestPathAllPairs.Re
 				path.add(e);
 				v = graph().edgeEndpoint(e, v);
 			}
-			return new Path(graph(), source, target, path);
+			return new PathImpl(graph(), source, target, path);
 		}
 
 	}
@@ -171,7 +171,7 @@ abstract class ShortestPathAllPairsResultImpl implements ShortestPathAllPairs.Re
 				path.add(e);
 				v = graph().edgeTarget(e);
 			}
-			return new Path(graph(), source, target, path);
+			return new PathImpl(graph(), source, target, path);
 		}
 
 	}

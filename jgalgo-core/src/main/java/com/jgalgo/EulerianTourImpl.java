@@ -94,7 +94,7 @@ class EulerianTourImpl implements EulerianTourAlgorithm {
 			if (!usedEdges.getBool(e))
 				throw new IllegalArgumentException("Graph is not connected");
 		}
-		return new Path(g, start, end, tour);
+		return new PathImpl(g, start, end, tour);
 	}
 
 	private static int degreeWithoutSelfLoops(Graph g, int u) {
@@ -183,7 +183,7 @@ class EulerianTourImpl implements EulerianTourAlgorithm {
 				throw new IllegalArgumentException("Graph is not connected");
 		}
 		IntArrays.reverse(tour.elements(), 0, tour.size());
-		return new Path(g, start, end, tour);
+		return new PathImpl(g, start, end, tour);
 	}
 
 }

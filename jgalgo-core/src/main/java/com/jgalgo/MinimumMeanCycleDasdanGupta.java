@@ -150,7 +150,7 @@ class MinimumMeanCycleDasdanGupta implements MinimumMeanCycle {
 			if (Math.abs((pathWeights[k + len] - pathWeights[k]) - bestCycleMeanWeight * len) < EPS) {
 				IntList cycleList = new IntArrayList(path, k, len);
 				int cycleVertex = g.edgeSource(cycleList.getInt(0));
-				return new Path(g, cycleVertex, cycleVertex, cycleList);
+				return new PathImpl(g, cycleVertex, cycleVertex, cycleList);
 			}
 		}
 		throw new IllegalStateException();

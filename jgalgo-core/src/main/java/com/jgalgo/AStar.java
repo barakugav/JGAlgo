@@ -65,7 +65,7 @@ class AStar implements ShortestPathWithHeuristic {
 	public Path computeShortestPath(Graph g, EdgeWeightFunc w, int source, int target, IntToDoubleFunction vHeuristic) {
 		ArgumentCheck.onlyPositiveWeights(g, w);
 		if (source == target)
-			return new Path(g, source, target, IntLists.emptyList());
+			return new PathImpl(g, source, target, IntLists.emptyList());
 		HeapReferenceable<Double, Integer> heap = heapBuilder.build();
 
 		Int2ObjectMap<HeapReference<Double, Integer>> verticesPtrs = new Int2ObjectOpenHashMap<>();
@@ -135,7 +135,7 @@ class AStar implements ShortestPathWithHeuristic {
 			}
 		}
 		IntArrays.reverse(path.elements(), 0, path.size());
-		return new Path(g, source, target, path);
+		return new PathImpl(g, source, target, path);
 	}
 
 }

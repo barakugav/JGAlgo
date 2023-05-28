@@ -196,7 +196,7 @@ class MinimumMeanCycleHoward implements MinimumMeanCycle {
 			if (v == overallBestCycleVertex)
 				break;
 		}
-		return new Path(g, overallBestCycleVertex, overallBestCycleVertex, cycle);
+		return new PathImpl(g, overallBestCycleVertex, overallBestCycleVertex, cycle);
 	}
 
 }

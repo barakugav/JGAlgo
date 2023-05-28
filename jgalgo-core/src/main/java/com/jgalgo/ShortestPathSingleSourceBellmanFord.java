@@ -90,7 +90,7 @@ class ShortestPathSingleSourceBellmanFord implements ShortestPathSingleSource {
 						break;
 				}
 				IntArrays.reverse(negCycle.elements(), 0, negCycle.size());
-				res.negCycle = new Path(g, u, u, negCycle);
+				res.negCycle = new PathImpl(g, u, u, negCycle);
 				return res;
 			}
 		}

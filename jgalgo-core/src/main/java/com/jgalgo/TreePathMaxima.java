@@ -55,9 +55,8 @@ public interface TreePathMaxima {
 	/**
 	 * Queries container for {@link TreePathMaxima} computations.
 	 * <p>
-	 * Queries are added one by one to this container, and than the Queries object is passed to the
-	 * {@link TreePathMaxima} algorithm using
-	 * {@link TreePathMaxima#computeHeaviestEdgeInTreePaths(Graph, EdgeWeightFunc, Queries)}.
+	 * Queries are added one by one to this container, and than the Queries object is passed to a {@link TreePathMaxima}
+	 * algorithm using {@link TreePathMaxima#computeHeaviestEdgeInTreePaths(Graph, EdgeWeightFunc, Queries)}.
 	 *
 	 * @author Barak Ugav
 	 */

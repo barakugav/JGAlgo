@@ -108,7 +108,7 @@ class CyclesFinderJohnson implements CyclesFinder {
 					continue;
 				if (v == startV) {
 					path.push(e);
-					cycles.add(new Path(g, startV, startV, new IntArrayList((IntList) path)));
+					cycles.add(new PathImpl(g, startV, startV, new IntArrayList((IntList) path)));
 					path.popInt();
 					cycleFound = true;
 				} else if (!isBlocked.get(v)) {
