@@ -646,8 +646,10 @@ public interface Graph {
 	 * Get a reversed view of this graph.
 	 * <p>
 	 * This method return a view of this graph, namely a Graph that contains the same vertices, edges and weights, that
-	 * is automatically updated when the original graph is updated. The view is reversed, namely each source and target
-	 * vertices of each edge are swapped.
+	 * is automatically updated when the original graph is updated and visa versa. The view is reversed, namely each
+	 * source and target vertices of each edge are swapped.
+	 * <p>
+	 * Note that modifying the returned view will change the original graph.
 	 *
 	 * @return a reversed view of this graph
 	 */

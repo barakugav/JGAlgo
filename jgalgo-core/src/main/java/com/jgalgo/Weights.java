@@ -21,14 +21,15 @@ package com.jgalgo;
  * <p>
  * A weights object associated with the edges (vertices) of a graph support getting and setting a weight value for each
  * edge (vertex) using the {@link #get(int)} and {@link #set(int, Object)} methods. Such weights are useful for various
- * algorithms such as {@link ShortestPathSingleSource} or {@link MaximumMatchingWeighted} to assigned the <i>cost</i> of edges. Another
- * example is boolean weights used to represent the partition of vertices in bipartite graphs, which is used by
- * algorithms such as Hopcroft-Karp algorithm for cardinality maximum matching in bipartite graphs.
+ * algorithms such as {@link ShortestPathSingleSource} or {@link MaximumMatchingWeighted} to assigned the <i>cost</i> of
+ * edges. Another example is boolean weights used to represent the partition of vertices in bipartite graphs, which is
+ * used by algorithms such as Hopcroft-Karp algorithm for cardinality maximum matching in bipartite graphs.
  * <p>
  * An exiting graph expose two methods to add new type of weights associated with its vertices or edges:
  * {@link Graph#addVerticesWeights(Object, Class)} and {@link Graph#addEdgesWeights(Object, Class)}. Weights of
  * primitive types can be created by passing a primitive class to these methods, for example this snippet demonstrate
- * how a {@code double} weights type can be added to a graph, and then passed to {@link ShortestPathSingleSource} algorithm:
+ * how a {@code double} weights type can be added to a graph, and then passed to {@link ShortestPathSingleSource}
+ * algorithm:
  *
  * <pre> {@code
  * // Create a directed graph with three vertices and edges between them
@@ -612,7 +613,7 @@ public interface Weights<W> {
 			Class<? super E> type, E defVal) {
 		IDStrategyImpl idStrat = (IDStrategyImpl) g.getVerticesIDStrategy();
 		WeightsT weights = WeightsImpl.newInstance(idStrat, type, defVal);
-		((WeightsImpl<?>) weights).container.expand(idStrat.size());
+		((WeightsImpl<?>) weights).container().expand(idStrat.size());
 		return weights;
 	}
 
@@ -649,7 +650,7 @@ public interface Weights<W> {
 			E defVal) {
 		IDStrategyImpl idStrat = (IDStrategyImpl) g.getEdgesIDStrategy();
 		WeightsT weights = WeightsImpl.newInstance(idStrat, type, defVal);
-		((WeightsImpl<?>) weights).container.expand(idStrat.size());
+		((WeightsImpl<?>) weights).container().expand(idStrat.size());
 		return weights;
 	}
 

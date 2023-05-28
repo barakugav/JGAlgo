@@ -123,6 +123,12 @@
     <Bug pattern="HE_EQUALS_NO_HASHCODE" />
   </Match>
   <Match>
+    <!-- this is internal API, its ok to expose it -->
+    <Class name="com.jgalgo.WeightsImpl$Abstract" />
+    <Method name="container" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
     <!-- hashCode and toString are defined in super class, equals is defined in per-type sub-class -->
     <Or>
       <Class name="com.jgalgo.AStar" />
