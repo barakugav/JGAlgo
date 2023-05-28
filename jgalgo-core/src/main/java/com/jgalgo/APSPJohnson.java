@@ -38,7 +38,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
  *
  * @author Barak Ugav
  */
-public class APSPJohnson implements APSP {
+class APSPJohnson implements APSP {
 
 	private SSSP negativeSssp = new SSSPBellmanFord();
 	private boolean parallel = Config.parallelByDefault;
@@ -47,7 +47,7 @@ public class APSPJohnson implements APSP {
 	/**
 	 * Create a new APSP algorithm object.
 	 */
-	public APSPJohnson() {}
+	APSPJohnson() {}
 
 	/**
 	 * {@inheritDoc}

@@ -107,7 +107,20 @@ public interface APSP {
 	 * @return a new builder that can build {@link APSP} objects
 	 */
 	static APSP.Builder newBuilder() {
-		return APSPJohnson::new;
+		return new APSP.Builder() {
+			private boolean cardinalityWeight;
+
+			@Override
+			public APSP build() {
+				return cardinalityWeight ? new APSPCardinality() : new APSPJohnson();
+			}
+
+			@Override
+			public APSP.Builder setCardinality(boolean cardinalityWeight) {
+				this.cardinalityWeight = cardinalityWeight;
+				return this;
+			}
+		};
 	}
 
 	/**
@@ -124,6 +137,18 @@ public interface APSP {
 		 * @return a new all pairs shortest paths algorithm
 		 */
 		APSP build();
+
+		/**
+		 * Enable/disable the support for cardinality shortest paths only.
+		 * <p>
+		 * More efficient algorithm may exists for cardinality shortest paths. Note that if this option is enabled, ONLY
+		 * cardinality shortest paths will be supported.
+		 *
+		 * @param  cardinalityWeight if {@code true}, only cardinality shortest paths will be supported by algorithms
+		 *                               built by this builder
+		 * @return                   this builder
+		 */
+		APSP.Builder setCardinality(boolean cardinalityWeight);
 	}
 
 }

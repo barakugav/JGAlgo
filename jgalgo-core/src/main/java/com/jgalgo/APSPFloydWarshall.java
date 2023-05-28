@@ -28,12 +28,12 @@ import it.unimi.dsi.fastutil.ints.IntList;
  *
  * @author Barak Ugav
  */
-public class APSPFloydWarshall implements APSP {
+class APSPFloydWarshall implements APSP {
 
 	/**
 	 * Create a new APSP algorithm object.
 	 */
-	public APSPFloydWarshall() {}
+	APSPFloydWarshall() {}
 
 	@Override
 	public APSP.Result computeAllShortestPaths(Graph g, EdgeWeightFunc w) {

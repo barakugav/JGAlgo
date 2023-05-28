@@ -33,7 +33,7 @@ import com.jgalgo.APSPResultImpl.ResFromSSSP;
  * @see    SSSPCardinality
  * @author Barak Ugav
  */
-public class APSPCardinality implements APSP {
+class APSPCardinality implements APSP {
 
 	private boolean parallel = Config.parallelByDefault;
 	private static final int PARALLEL_VERTICES_THRESHOLD = 32;
@@ -41,7 +41,7 @@ public class APSPCardinality implements APSP {
 	/**
 	 * Create a new APSP algorithm object.
 	 */
-	public APSPCardinality() {}
+	APSPCardinality() {}
 
 	@Override
 	public APSP.Result computeAllCardinalityShortestPaths(Graph g) {

@@ -230,7 +230,8 @@ public interface SSSP {
 		/**
 		 * Enable/disable the support for directed acyclic graphs (DAG) only.
 		 * <p>
-		 * More efficient algorithm may exists if we know in advance all input graphs will be DAG.
+		 * More efficient algorithm may exists if we know in advance all input graphs will be DAG. Note that if this
+		 * option is enabled, ONLY directed acyclic graphs will be supported.
 		 *
 		 * @param  dagGraphs if {@code true}, the built {@link SSSP} objects will support only directed acyclic graphs
 		 * @return           this builder
