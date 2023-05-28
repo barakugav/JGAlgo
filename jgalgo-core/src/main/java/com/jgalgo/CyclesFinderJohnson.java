@@ -38,14 +38,14 @@ import it.unimi.dsi.fastutil.objects.ObjectIntPair;
  *
  * @author Barak Ugav
  */
-public class CyclesFinderJohnson implements CyclesFinder {
+class CyclesFinderJohnson implements CyclesFinder {
 
 	private final ConnectedComponentsAlgo ccAlg = ConnectedComponentsAlgo.newBuilder().build();
 
 	/**
 	 * Create a new cycles finder algorithm object.
 	 */
-	public CyclesFinderJohnson() {}
+	CyclesFinderJohnson() {}
 
 	@Override
 	public Iterator<Path> findAllCycles(Graph g) {

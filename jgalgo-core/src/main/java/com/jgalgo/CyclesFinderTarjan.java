@@ -33,12 +33,12 @@ import it.unimi.dsi.fastutil.ints.IntStack;
  *
  * @author Barak Ugav
  */
-public class CyclesFinderTarjan implements CyclesFinder {
+class CyclesFinderTarjan implements CyclesFinder {
 
 	/**
 	 * Create a new cycles finder algorithm object.
 	 */
-	public CyclesFinderTarjan() {}
+	CyclesFinderTarjan() {}
 
 	@Override
 	public Iterator<Path> findAllCycles(Graph g) {
