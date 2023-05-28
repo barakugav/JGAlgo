@@ -36,7 +36,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
  * @see    <a href= "https://en.wikipedia.org/wiki/Dinic%27s_algorithm">Wikipedia</a>
  * @author Barak Ugav
  */
-public class MaximumFlowDinic implements MaximumFlow {
+class MaximumFlowDinic implements MaximumFlow {
 
 	private GraphBuilder layerGraphBuilder = GraphBuilder.newDirected().setOption("impl", "GraphLinked");
 
@@ -46,7 +46,7 @@ public class MaximumFlowDinic implements MaximumFlow {
 	/**
 	 * Create a new maximum flow algorithm object.
 	 */
-	public MaximumFlowDinic() {}
+	MaximumFlowDinic() {}
 
 	/**
 	 * Set the graph implementation used by this algorithm for the layers graph.

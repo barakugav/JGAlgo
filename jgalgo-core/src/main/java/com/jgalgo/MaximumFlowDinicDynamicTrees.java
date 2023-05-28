@@ -35,7 +35,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * @see    MaximumFlowDinic
  * @author Barak Ugav
  */
-public class MaximumFlowDinicDynamicTrees implements MaximumFlow {
+class MaximumFlowDinicDynamicTrees implements MaximumFlow {
 
 	private final DebugPrintsManager debug = new DebugPrintsManager(false);
 	private static final double EPS = 0.0001;
@@ -46,7 +46,7 @@ public class MaximumFlowDinicDynamicTrees implements MaximumFlow {
 	/**
 	 * Create a new maximum flow algorithm object.
 	 */
-	public MaximumFlowDinicDynamicTrees() {}
+	MaximumFlowDinicDynamicTrees() {}
 
 	/**
 	 * {@inheritDoc}

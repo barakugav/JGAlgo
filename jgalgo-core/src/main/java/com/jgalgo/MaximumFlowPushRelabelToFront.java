@@ -40,12 +40,12 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  * @see    MaximumFlowPushRelabelLowestFirst
  * @author Barak Ugav
  */
-public class MaximumFlowPushRelabelToFront extends MaximumFlowPushRelabelAbstract {
+class MaximumFlowPushRelabelToFront extends MaximumFlowPushRelabelAbstract {
 
 	/**
 	 * Create a new maximum flow algorithm object.
 	 */
-	public MaximumFlowPushRelabelToFront() {}
+	MaximumFlowPushRelabelToFront() {}
 
 	@Override
 	WorkerDouble newWorkerDouble(Graph gOrig, FlowNetwork net, int source, int sink) {

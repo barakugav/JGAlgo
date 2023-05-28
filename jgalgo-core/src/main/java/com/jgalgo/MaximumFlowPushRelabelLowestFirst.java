@@ -36,12 +36,12 @@ package com.jgalgo;
  * @see    MaximumFlowPushRelabelHighestFirst
  * @author Barak Ugav
  */
-public class MaximumFlowPushRelabelLowestFirst extends MaximumFlowPushRelabelAbstract {
+class MaximumFlowPushRelabelLowestFirst extends MaximumFlowPushRelabelAbstract {
 
 	/**
 	 * Create a new maximum flow algorithm object.
 	 */
-	public MaximumFlowPushRelabelLowestFirst() {}
+	MaximumFlowPushRelabelLowestFirst() {}
 
 	@Override
 	WorkerDouble newWorkerDouble(Graph gOrig, FlowNetwork net, int source, int sink) {

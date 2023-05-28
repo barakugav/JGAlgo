@@ -44,7 +44,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * @see    MaximumFlowPushRelabel
  * @author Barak Ugav
  */
-public class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
+class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 
 	private static final Object FlowWeightKey = new Utils.Obj("flow");
 	private static final Object CapacityWeightKey = new Utils.Obj("capacity");
@@ -52,7 +52,7 @@ public class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 	/**
 	 * Create a new maximum flow algorithm object.
 	 */
-	public MaximumFlowPushRelabelDynamicTrees() {}
+	MaximumFlowPushRelabelDynamicTrees() {}
 
 	/**
 	 * {@inheritDoc}

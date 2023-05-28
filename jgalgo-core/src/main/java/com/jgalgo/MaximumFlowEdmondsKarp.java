@@ -33,7 +33,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  * @see    <a href= "https://en.wikipedia.org/wiki/Edmonds%E2%80%93Karp_algorithm">Wikipedia</a>
  * @author Barak Ugav
  */
-public class MaximumFlowEdmondsKarp implements MaximumFlow {
+class MaximumFlowEdmondsKarp implements MaximumFlow {
 
 	private static final Object FlowWeightKey = new Utils.Obj("flow");
 	private static final Object CapacityWeightKey = new Utils.Obj("capacity");
@@ -41,7 +41,7 @@ public class MaximumFlowEdmondsKarp implements MaximumFlow {
 	/**
 	 * Create a new maximum flow algorithm object.
 	 */
-	public MaximumFlowEdmondsKarp() {}
+	MaximumFlowEdmondsKarp() {}
 
 	@Override
 	public double computeMaximumFlow(Graph g, FlowNetwork net, int source, int sink) {
