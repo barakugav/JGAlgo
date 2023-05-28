@@ -56,9 +56,19 @@ interface Heap<E> extends Collection<E> {
 	/**
 	 * Insert a new element to the heap.
 	 *
-	 * @param e new element
+	 * @param elm new element
 	 */
-	void insert(E e);
+	void insert(E elm);
+
+	/**
+	 * Insert multiple elements.
+	 * <p>
+	 * Implementations may be more efficient if multiple elements are added to the heap using this method, rather than
+	 * calling {@link #insert(Object)} repetitively.
+	 *
+	 * @param elms a collection containing all the elements to insert
+	 */
+	void insertAll(Collection<? extends E> elms);
 
 	/**
 	 * Find the minimum element in the heap.

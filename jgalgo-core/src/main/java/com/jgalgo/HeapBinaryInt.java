@@ -154,31 +154,29 @@ class HeapBinaryInt extends HeapAbstract<Integer> {
 	}
 
 	@Override
-	public boolean addAll(Collection<? extends Integer> other) {
-		if (other.isEmpty())
-			return false;
-		int combinedSize = size + other.size();
+	public void insertAll(Collection<? extends Integer> elms) {
+		int combinedSize = size + elms.size();
 		if (arr.length <= combinedSize)
 			arr = Arrays.copyOf(arr, Math.max(arr.length * 2, combinedSize * 3 / 2));
 
 		int reconstructionCost = combinedSize;
-		int addAllCost = other.size() + Utils.log2ceil(combinedSize);
+		int addAllCost = elms.size() * Utils.log2ceil(combinedSize);
 		if (reconstructionCost >= addAllCost) {
-			if (other instanceof IntCollection) {
-				for (IntIterator it = ((IntCollection) other).iterator(); it.hasNext();)
+			if (elms instanceof IntCollection) {
+				for (IntIterator it = ((IntCollection) elms).iterator(); it.hasNext();)
 					insert(it.nextInt());
 			} else {
-				for (Integer e : other)
+				for (Integer e : elms)
 					insert(e.intValue());
 			}
 		} else {
 			int[] a = arr;
 			int s = size;
-			if (other instanceof IntCollection) {
-				for (IntIterator it = ((IntCollection) other).iterator(); it.hasNext();)
+			if (elms instanceof IntCollection) {
+				for (IntIterator it = ((IntCollection) elms).iterator(); it.hasNext();)
 					a[s++] = it.nextInt();
 			} else {
-				for (Integer e : other)
+				for (Integer e : elms)
 					a[s++] = e.intValue();
 			}
 			size = s;
@@ -190,7 +188,13 @@ class HeapBinaryInt extends HeapAbstract<Integer> {
 					moveDown(parent, a[parent]);
 			}
 		}
+	}
 
+	@Override
+	public boolean addAll(Collection<? extends Integer> other) {
+		if (other.isEmpty())
+			return false;
+		insertAll(other);
 		return true;
 	}
 

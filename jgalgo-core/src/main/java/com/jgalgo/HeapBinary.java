@@ -82,11 +82,11 @@ class HeapBinary<E> extends HeapAbstract<E> {
 	}
 
 	@Override
-	public void insert(E e) {
+	public void insert(E elm) {
 		if (arr.length == size)
 			arr = Arrays.copyOf(arr, Math.max(2, arr.length * 2));
 
-		moveUp(size, e);
+		moveUp(size, elm);
 		size++;
 	}
 
@@ -150,22 +150,20 @@ class HeapBinary<E> extends HeapAbstract<E> {
 	}
 
 	@Override
-	public boolean addAll(Collection<? extends E> other) {
-		if (other.isEmpty())
-			return false;
-		int combinedSize = size + other.size();
+	public void insertAll(Collection<? extends E> elms) {
+		int combinedSize = size + elms.size();
 		if (arr.length <= combinedSize)
 			arr = Arrays.copyOf(arr, Math.max(arr.length * 2, combinedSize * 3 / 2));
 
 		int reconstructionCost = combinedSize;
-		int addAllCost = other.size() + Utils.log2ceil(combinedSize);
+		int addAllCost = elms.size() * Utils.log2ceil(combinedSize);
 		if (reconstructionCost >= addAllCost) {
-			for (E e : other)
+			for (E e : elms)
 				add(e);
 		} else {
 			E[] a = arr;
 			int s = size;
-			for (E e : other)
+			for (E e : elms)
 				a[s++] = e;
 			size = s;
 
@@ -176,7 +174,13 @@ class HeapBinary<E> extends HeapAbstract<E> {
 					moveDown(parent, a[parent]);
 			}
 		}
+	}
 
+	@Override
+	public boolean addAll(Collection<? extends E> other) {
+		if (other.isEmpty())
+			return false;
+		insertAll(other);
 		return true;
 	}
 

@@ -54,7 +54,8 @@ class MaximumMatchingWeightedGabow1990Simpler extends MaximumMatchingWeightedGab
 		Worker(Graph gOrig, EdgeWeightFunc w, HeapReferenceable.Builder<Object, Object> heapBuilder,
 				DebugPrintsManager debugPrint) {
 			super(gOrig, w, heapBuilder, debugPrint);
-			blossomEvents = new HeapBinary<>((e1, e2) -> Double.compare(e1.slack, e2.slack));
+			blossomEvents = Heap.newBuilder().<EdgeEvent>elementsTypeObj()
+					.build((e1, e2) -> Double.compare(e1.slack, e2.slack));
 		}
 
 		@Override

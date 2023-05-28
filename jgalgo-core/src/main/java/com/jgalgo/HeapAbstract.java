@@ -133,6 +133,12 @@ abstract class HeapAbstract<E> extends AbstractCollection<E> implements Heap<E> 
 		}
 
 		@Override
+		public void insertAll(Collection<? extends K> elms) {
+			for (K elm : elms)
+				h.insert(elm);
+		}
+
+		@Override
 		public K findMin() {
 			return h.findMin().key();
 		}
