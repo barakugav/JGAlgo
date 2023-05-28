@@ -74,6 +74,58 @@ public class GraphViewsTest extends TestBase {
 		checkGraphs.run();
 	}
 
+	@Test
+	public void reversedView() {
+		final long seed = 0xe472d90a46061b2fL;
+		final Random rand = new Random(seed);
+		Graph orig = new RandomGraphBuilder(seed).n(1005).m(8465).directed(true).parallelEdges(true).selfEdges(true)
+				.cycles(true).connected(false).build();
+		Graph rev = orig.reverseView();
+
+		Runnable checkGraphs = () -> {
+			assertEquals(orig.vertices(), rev.vertices());
+			assertEquals(orig.edges(), rev.edges());
+			for (IntIterator eit = orig.edges().iterator(); eit.hasNext();) {
+				int e = eit.nextInt();
+				assertEquals(orig.edgeSource(e), rev.edgeTarget(e));
+				assertEquals(orig.edgeTarget(e), rev.edgeSource(e));
+			}
+			for (IntIterator uit = orig.vertices().iterator(); uit.hasNext();) {
+				int u = uit.nextInt();
+				assertEquals(setOf(orig.edgesOut(u)), setOf(rev.edgesIn(u)));
+				assertEquals(setOf(orig.edgesIn(u)), setOf(rev.edgesOut(u)));
+
+				for (EdgeIter eit = rev.edgesOut(u); eit.hasNext();) {
+					int e = eit.nextInt();
+					assertEquals(u, eit.source());
+					assertEquals(orig.edgeEndpoint(e, u), eit.target());
+				}
+			}
+		};
+
+		Consumer<Graph> modifyGraph = g -> {
+			int v1 = g.addVertex();
+			int v2 = g.addVertex();
+			int v3 = g.addVertex();
+			g.addEdge(v1, v2);
+			g.addEdge(v2, v3);
+			g.addEdge(v3, v1);
+			int[] vs = g.vertices().toIntArray();
+			g.removeVertex(vs[rand.nextInt(vs.length)]);
+		};
+
+		/* Check the graph */
+		checkGraphs.run();
+
+		/* Modify the original graph and check the view is updating */
+		modifyGraph.accept(orig);
+		checkGraphs.run();
+
+		/* Modify the view graph and check the original graph is updating */
+		modifyGraph.accept(rev);
+		checkGraphs.run();
+	}
+
 	private static IntSet setOf(IntIterator it) {
 		return new IntOpenHashSet(it);
 	}

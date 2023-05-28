@@ -854,4 +854,197 @@ public class Graphs {
 		return g instanceof UnmodifiableGraph ? (UnmodifiableGraph) g : new UnmodifiableGraph(g);
 	}
 
+	private static class ReverseGraph implements Graph {
+
+		private final Graph g;
+
+		ReverseGraph(Graph g) {
+			this.g = Objects.requireNonNull(g);
+		}
+
+		@Override
+		public IntSet vertices() {
+			return g.vertices();
+		}
+
+		@Override
+		public IntSet edges() {
+			return g.edges();
+		}
+
+		@Override
+		public int addVertex() {
+			return g.addVertex();
+		}
+
+		@Override
+		public void removeVertex(int vertex) {
+			g.removeVertex(vertex);
+		}
+
+		@Override
+		public EdgeIter edgesOut(int source) {
+			return new ReversedEdgeIter(g.edgesIn(source));
+		}
+
+		@Override
+		public EdgeIter edgesIn(int target) {
+			return new ReversedEdgeIter(g.edgesOut(target));
+		}
+
+		@Override
+		public EdgeIter getEdges(int source, int target) {
+			return new ReversedEdgeIter(g.getEdges(target, source));
+		}
+
+		@Override
+		public int addEdge(int source, int target) {
+			return g.addEdge(target, source);
+		}
+
+		@Override
+		public void removeEdge(int edge) {
+			g.removeEdge(edge);
+		}
+
+		@Override
+		public int edgeSource(int edge) {
+			return g.edgeTarget(edge);
+		}
+
+		@Override
+		public int edgeTarget(int edge) {
+			return g.edgeSource(edge);
+		}
+
+		@Override
+		public void clear() {
+			g.clear();
+		}
+
+		@Override
+		public void clearEdges() {
+			g.clearEdges();
+		}
+
+		@Override
+		public <V, WeightsT extends Weights<V>> WeightsT getVerticesWeights(Object key) {
+			return g.getVerticesWeights(key);
+		}
+
+		@Override
+		public Set<Object> getVerticesWeightKeys() {
+			return g.getVerticesWeightKeys();
+		}
+
+		@Override
+		public void removeVerticesWeights(Object key) {
+			g.removeVerticesWeights(key);
+		}
+
+		@Override
+		public <E, WeightsT extends Weights<E>> WeightsT getEdgesWeights(Object key) {
+			return g.getEdgesWeights(key);
+		}
+
+		@Override
+		public Set<Object> getEdgesWeightsKeys() {
+			return g.getEdgesWeightsKeys();
+		}
+
+		@Override
+		public void removeEdgesWeights(Object key) {
+			g.removeEdgesWeights(key);
+		}
+
+		@Override
+		public IDStrategy.Continues getVerticesIDStrategy() {
+			return g.getVerticesIDStrategy();
+		}
+
+		@Override
+		public IDStrategy getEdgesIDStrategy() {
+			return g.getEdgesIDStrategy();
+		}
+
+		@Override
+		public GraphCapabilities getCapabilities() {
+			return g.getCapabilities();
+		}
+
+		@Override
+		public void reverseEdge(int edge) {
+			g.reverseEdge(edge);
+		}
+
+		@Override
+		public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, Class<? super V> type) {
+			return g.addVerticesWeights(key, type);
+		}
+
+		@Override
+		public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, Class<? super V> type,
+				V defVal) {
+			return g.addVerticesWeights(key, type, defVal);
+		}
+
+		@Override
+		public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, Class<? super E> type) {
+			return g.addEdgesWeights(key, type);
+		}
+
+		@Override
+		public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, Class<? super E> type, E defVal) {
+			return g.addEdgesWeights(key, type, defVal);
+		}
+
+		@Override
+		public Graph copy() {
+			return new ReverseGraph(g.copy());
+		}
+
+	}
+
+	private static class ReversedEdgeIter implements EdgeIterImpl {
+		final EdgeIterImpl it;
+
+		ReversedEdgeIter(EdgeIter it) {
+			this.it = (EdgeIterImpl) it;
+		}
+
+		@Override
+		public boolean hasNext() {
+			return it.hasNext();
+		}
+
+		@Override
+		public int nextInt() {
+			return it.nextInt();
+		}
+
+		@Override
+		public int peekNext() {
+			return it.peekNext();
+		}
+
+		@Override
+		public int source() {
+			return it.target();
+		}
+
+		@Override
+		public int target() {
+			return it.source();
+		}
+
+		@Override
+		public void remove() {
+			it.remove();
+		}
+	}
+
+	static Graph reverseView(Graph g) {
+		return g instanceof ReverseGraph ? ((ReverseGraph) g).g : new ReverseGraph(g);
+	}
+
 }
