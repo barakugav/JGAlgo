@@ -19,11 +19,11 @@ class EdgeEndpointsContainer extends DataContainer.Long {
 
 	private static final int None = -1;
 
-	EdgeEndpointsContainer(IDStrategy idStrat) {
+	EdgeEndpointsContainer(IDStrategyImpl idStrat) {
 		super(idStrat, sourceTarget2Endpoints(None, None));
 	}
 
-	EdgeEndpointsContainer(EdgeEndpointsContainer orig, IDStrategy idStrat) {
+	EdgeEndpointsContainer(EdgeEndpointsContainer orig, IDStrategyImpl idStrat) {
 		super(orig, idStrat);
 	}
 
@@ -85,7 +85,7 @@ class EdgeEndpointsContainer extends DataContainer.Long {
 	}
 
 	@Override
-	EdgeEndpointsContainer copy(IDStrategy idStrat) {
+	EdgeEndpointsContainer copy(IDStrategyImpl idStrat) {
 		return new EdgeEndpointsContainer(this, idStrat);
 	}
 

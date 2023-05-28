@@ -68,9 +68,9 @@ import it.unimi.dsi.fastutil.shorts.ShortIterators;
 import it.unimi.dsi.fastutil.shorts.ShortListIterator;
 
 abstract class DataContainer<E> {
-	final IDStrategy idStrat;
+	final IDStrategyImpl idStrat;
 
-	DataContainer(IDStrategy idStrat) {
+	DataContainer(IDStrategyImpl idStrat) {
 		this.idStrat = Objects.requireNonNull(idStrat);
 	}
 
@@ -88,7 +88,7 @@ abstract class DataContainer<E> {
 
 	abstract Class<E> getTypeClass();
 
-	abstract DataContainer<E> copy(IDStrategy idStrat);
+	abstract DataContainer<E> copy(IDStrategyImpl idStrat);
 
 	int size() {
 		return idStrat.size();
@@ -109,7 +109,7 @@ abstract class DataContainer<E> {
 			throw new IndexOutOfBoundsException(idx);
 	}
 
-	static <D> DataContainer<D> newInstance(IDStrategy idStart, Class<? super D> type, D defVal) {
+	static <D> DataContainer<D> newInstance(IDStrategyImpl idStart, Class<? super D> type, D defVal) {
 		@SuppressWarnings("rawtypes")
 		DataContainer container;
 		if (type == byte.class) {
@@ -159,7 +159,7 @@ abstract class DataContainer<E> {
 		private final ObjectCollection<E> values;
 		private final Class<E> type;
 
-		Obj(IDStrategy idStrat, E defVal, Class<E> type) {
+		Obj(IDStrategyImpl idStrat, E defVal, Class<E> type) {
 			super(idStrat);
 
 			defaultVal = defVal;
@@ -245,7 +245,7 @@ abstract class DataContainer<E> {
 		}
 
 		@Override
-		DataContainer.Obj<E> copy(IDStrategy idStrat) {
+		DataContainer.Obj<E> copy(IDStrategyImpl idStrat) {
 			if (idStrat.size() != this.idStrat.size())
 				throw new IllegalArgumentException();
 			DataContainer.Obj<E> copy = new DataContainer.Obj<>(idStrat, defaultVal, type);
@@ -270,7 +270,7 @@ abstract class DataContainer<E> {
 		private final byte defaultVal;
 		private final ByteCollection values;
 
-		Byte(IDStrategy idStrat, byte defVal) {
+		Byte(IDStrategyImpl idStrat, byte defVal) {
 			super(idStrat);
 
 			weights = ByteArrays.EMPTY_ARRAY;
@@ -351,7 +351,7 @@ abstract class DataContainer<E> {
 		}
 
 		@Override
-		DataContainer.Byte copy(IDStrategy idStrat) {
+		DataContainer.Byte copy(IDStrategyImpl idStrat) {
 			if (idStrat.size() != this.idStrat.size())
 				throw new IllegalArgumentException();
 			DataContainer.Byte copy = new DataContainer.Byte(idStrat, defaultVal);
@@ -376,7 +376,7 @@ abstract class DataContainer<E> {
 		private final short defaultVal;
 		private final ShortCollection values;
 
-		Short(IDStrategy idStrat, short defVal) {
+		Short(IDStrategyImpl idStrat, short defVal) {
 			super(idStrat);
 
 			weights = ShortArrays.EMPTY_ARRAY;
@@ -457,7 +457,7 @@ abstract class DataContainer<E> {
 		}
 
 		@Override
-		DataContainer.Short copy(IDStrategy idStrat) {
+		DataContainer.Short copy(IDStrategyImpl idStrat) {
 			if (idStrat.size() != this.idStrat.size())
 				throw new IllegalArgumentException();
 			DataContainer.Short copy = new DataContainer.Short(idStrat, defaultVal);
@@ -482,7 +482,7 @@ abstract class DataContainer<E> {
 		private final int defaultVal;
 		private final IntCollection values;
 
-		Int(IDStrategy idStrat, int defVal) {
+		Int(IDStrategyImpl idStrat, int defVal) {
 			super(idStrat);
 
 			weights = IntArrays.EMPTY_ARRAY;
@@ -563,7 +563,7 @@ abstract class DataContainer<E> {
 		}
 
 		@Override
-		DataContainer.Int copy(IDStrategy idStrat) {
+		DataContainer.Int copy(IDStrategyImpl idStrat) {
 			if (idStrat.size() != this.idStrat.size())
 				throw new IllegalArgumentException();
 			DataContainer.Int copy = new DataContainer.Int(idStrat, defaultVal);
@@ -605,14 +605,14 @@ abstract class DataContainer<E> {
 			}
 		};
 
-		Long(IDStrategy idStrat, long defVal) {
+		Long(IDStrategyImpl idStrat, long defVal) {
 			super(idStrat);
 
 			weights = LongArrays.EMPTY_ARRAY;
 			defaultVal = defVal;
 		}
 
-		Long(DataContainer.Long orig, IDStrategy idStrat) {
+		Long(DataContainer.Long orig, IDStrategyImpl idStrat) {
 			super(idStrat);
 			if (idStrat.size() != this.idStrat.size())
 				throw new IllegalArgumentException();
@@ -677,7 +677,7 @@ abstract class DataContainer<E> {
 		}
 
 		@Override
-		DataContainer.Long copy(IDStrategy idStrat) {
+		DataContainer.Long copy(IDStrategyImpl idStrat) {
 			return new DataContainer.Long(this, idStrat);
 		}
 
@@ -698,7 +698,7 @@ abstract class DataContainer<E> {
 		private final float defaultVal;
 		private final FloatCollection values;
 
-		Float(IDStrategy idStrat, float defVal) {
+		Float(IDStrategyImpl idStrat, float defVal) {
 			super(idStrat);
 
 			weights = FloatArrays.EMPTY_ARRAY;
@@ -779,7 +779,7 @@ abstract class DataContainer<E> {
 		}
 
 		@Override
-		DataContainer.Float copy(IDStrategy idStrat) {
+		DataContainer.Float copy(IDStrategyImpl idStrat) {
 			if (idStrat.size() != this.idStrat.size())
 				throw new IllegalArgumentException();
 			DataContainer.Float copy = new DataContainer.Float(idStrat, defaultVal);
@@ -804,7 +804,7 @@ abstract class DataContainer<E> {
 		private final double defaultVal;
 		private final DoubleCollection values;
 
-		Double(IDStrategy idStrat, double defVal) {
+		Double(IDStrategyImpl idStrat, double defVal) {
 			super(idStrat);
 
 			weights = DoubleArrays.EMPTY_ARRAY;
@@ -885,7 +885,7 @@ abstract class DataContainer<E> {
 		}
 
 		@Override
-		DataContainer.Double copy(IDStrategy idStrat) {
+		DataContainer.Double copy(IDStrategyImpl idStrat) {
 			if (idStrat.size() != this.idStrat.size())
 				throw new IllegalArgumentException();
 			DataContainer.Double copy = new DataContainer.Double(idStrat, defaultVal);
@@ -964,13 +964,13 @@ abstract class DataContainer<E> {
 			}
 		};
 
-		Bool(DataContainer.Bool orig, IDStrategy idStrat) {
+		Bool(DataContainer.Bool orig, IDStrategyImpl idStrat) {
 			super(idStrat);
 			defaultVal = orig.defaultVal;
 			weights = (BitSet) orig.weights.clone();
 		}
 
-		Bool(IDStrategy idStrat, boolean defVal) {
+		Bool(IDStrategyImpl idStrat, boolean defVal) {
 			super(idStrat);
 
 			defaultVal = defVal;
@@ -1036,7 +1036,7 @@ abstract class DataContainer<E> {
 		}
 
 		@Override
-		DataContainer.Bool copy(IDStrategy idStrat) {
+		DataContainer.Bool copy(IDStrategyImpl idStrat) {
 			if (idStrat.size() != this.idStrat.size())
 				throw new IllegalArgumentException();
 			return new DataContainer.Bool(this, idStrat);
@@ -1059,7 +1059,7 @@ abstract class DataContainer<E> {
 		private final char defaultVal;
 		private final CharCollection values;
 
-		Char(IDStrategy idStrat, char defVal) {
+		Char(IDStrategyImpl idStrat, char defVal) {
 			super(idStrat);
 
 			weights = CharArrays.EMPTY_ARRAY;
@@ -1140,7 +1140,7 @@ abstract class DataContainer<E> {
 		}
 
 		@Override
-		DataContainer.Char copy(IDStrategy idStrat) {
+		DataContainer.Char copy(IDStrategyImpl idStrat) {
 			if (idStrat.size() != this.idStrat.size())
 				throw new IllegalArgumentException();
 			DataContainer.Char copy = new DataContainer.Char(idStrat, defaultVal);
@@ -1168,13 +1168,13 @@ abstract class DataContainer<E> {
 			containersCapacity = initCapacity;
 		}
 
-		Manager(Manager orig, IDStrategy idStrat) {
+		Manager(Manager orig, IDStrategyImpl idStrat) {
 			this(idStrat.size());
 			for (var entry : orig.containers.entrySet())
 				containers.put(entry.getKey(), entry.getValue().copy(idStrat));
 		}
 
-		Manager copy(IDStrategy idStrat) {
+		Manager copy(IDStrategyImpl idStrat) {
 			return new Manager(this, idStrat);
 		}
 

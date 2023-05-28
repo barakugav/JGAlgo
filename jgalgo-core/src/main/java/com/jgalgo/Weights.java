@@ -610,7 +610,7 @@ public interface Weights<W> {
 	 */
 	public static <E, WeightsT extends Weights<E>> WeightsT createExternalVerticesWeights(Graph g,
 			Class<? super E> type, E defVal) {
-		IDStrategy idStrat = g.getVerticesIDStrategy();
+		IDStrategyImpl idStrat = (IDStrategyImpl) g.getVerticesIDStrategy();
 		WeightsT weights = WeightsImpl.newInstance(idStrat, type, defVal);
 		((WeightsImpl<?>) weights).container.expand(idStrat.size());
 		return weights;
@@ -647,7 +647,7 @@ public interface Weights<W> {
 	 */
 	public static <E, WeightsT extends Weights<E>> WeightsT createExternalEdgesWeights(Graph g, Class<? super E> type,
 			E defVal) {
-		IDStrategy idStrat = g.getEdgesIDStrategy();
+		IDStrategyImpl idStrat = (IDStrategyImpl) g.getEdgesIDStrategy();
 		WeightsT weights = WeightsImpl.newInstance(idStrat, type, defVal);
 		((WeightsImpl<?>) weights).container.expand(idStrat.size());
 		return weights;

@@ -26,22 +26,22 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 abstract class GraphBase implements Graph {
 
-	final IDStrategy.Continues verticesIDStrategy;
-	final IDStrategy edgesIDStrategy;
+	final IDStrategyImpl.Continues verticesIDStrat;
+	final IDStrategyImpl edgesIDStrat;
 
-	GraphBase(IDStrategy.Continues verticesIDStrategy, IDStrategy edgesIDStrategy) {
-		this.verticesIDStrategy = Objects.requireNonNull(verticesIDStrategy);
-		this.edgesIDStrategy = Objects.requireNonNull(edgesIDStrategy);
+	GraphBase(IDStrategy.Continues verticesIDStrat, IDStrategy edgesIDStrat) {
+		this.verticesIDStrat = (IDStrategyImpl.Continues) Objects.requireNonNull(verticesIDStrat);
+		this.edgesIDStrat = (IDStrategyImpl) Objects.requireNonNull(edgesIDStrat);
 	}
 
 	@Override
 	public final IntSet vertices() {
-		return verticesIDStrategy.idSet();
+		return verticesIDStrat.idSet();
 	}
 
 	@Override
 	public final IntSet edges() {
-		return edgesIDStrategy.idSet();
+		return edgesIDStrat.idSet();
 	}
 
 	@Override
@@ -95,12 +95,12 @@ abstract class GraphBase implements Graph {
 	@Override
 	public void clear() {
 		clearEdges();
-		verticesIDStrategy.clear();
+		verticesIDStrat.clear();
 	}
 
 	@Override
 	public void clearEdges() {
-		edgesIDStrategy.clear();
+		edgesIDStrat.clear();
 	}
 
 	@Override
@@ -110,7 +110,7 @@ abstract class GraphBase implements Graph {
 
 	@Override
 	public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, Class<? super V> type, V defVal) {
-		WeightsT weights = WeightsImpl.newInstance(getVerticesIDStrategy(), type, defVal);
+		WeightsT weights = WeightsImpl.newInstance((IDStrategyImpl) getVerticesIDStrategy(), type, defVal);
 		addVerticesWeightsContainer(key, weights);
 		return weights;
 	}
@@ -122,7 +122,7 @@ abstract class GraphBase implements Graph {
 
 	@Override
 	public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, Class<? super E> type, E defVal) {
-		WeightsT weights = WeightsImpl.newInstance(getEdgesIDStrategy(), type, defVal);
+		WeightsT weights = WeightsImpl.newInstance((IDStrategyImpl) getEdgesIDStrategy(), type, defVal);
 		addEdgesWeightsContainer(key, weights);
 		return weights;
 	}
@@ -133,12 +133,12 @@ abstract class GraphBase implements Graph {
 
 	@Override
 	public IDStrategy.Continues getVerticesIDStrategy() {
-		return verticesIDStrategy;
+		return verticesIDStrat;
 	}
 
 	@Override
 	public IDStrategy getEdgesIDStrategy() {
-		return edgesIDStrategy;
+		return edgesIDStrat;
 	}
 
 	@Override

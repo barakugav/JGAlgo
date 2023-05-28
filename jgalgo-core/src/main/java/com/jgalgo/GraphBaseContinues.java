@@ -26,7 +26,7 @@ abstract class GraphBaseContinues extends GraphBase {
 	private final WeightsImpl.Manager edgesUserData;
 
 	GraphBaseContinues(int expectedVerticesNum, int expectedEdgesNum) {
-		super(new IDStrategy.Continues(0), new IDStrategy.Continues(0));
+		super(new IDStrategyImpl.Continues(0), new IDStrategyImpl.Continues(0));
 		verticesInternalData = new DataContainer.Manager(expectedVerticesNum);
 		edgesInternalData = new DataContainer.Manager(expectedEdgesNum);
 		verticesUserData = new WeightsImpl.Manager(expectedVerticesNum);
@@ -34,21 +34,21 @@ abstract class GraphBaseContinues extends GraphBase {
 	}
 
 	GraphBaseContinues(GraphBaseContinues g) {
-		super(g.verticesIDStrategy.copy(), g.edgesIDStrategy.copy());
+		super(g.verticesIDStrat.copy(), g.edgesIDStrat.copy());
 
 		/* internal data containers should be copied manually */
 		// verticesInternalData = g.verticesInternalData.copy(verticesIDStrategy);
 		// edgesInternalData = g.edgesInternalData.copy(edgesIDStrategy);
-		verticesInternalData = new DataContainer.Manager(verticesIDStrategy.size());
-		edgesInternalData = new DataContainer.Manager(edgesIDStrategy.size());
+		verticesInternalData = new DataContainer.Manager(verticesIDStrat.size());
+		edgesInternalData = new DataContainer.Manager(edgesIDStrat.size());
 
-		verticesUserData = g.verticesUserData.copy(verticesIDStrategy);
-		edgesUserData = g.edgesUserData.copy(edgesIDStrategy);
+		verticesUserData = g.verticesUserData.copy(verticesIDStrat);
+		edgesUserData = g.edgesUserData.copy(edgesIDStrat);
 	}
 
 	@Override
 	public int addVertex() {
-		int u = verticesIDStrategy.newIdx();
+		int u = verticesIDStrat.newIdx();
 		assert u >= 0;
 		verticesInternalData.ensureCapacity(u + 1);
 		verticesUserData.ensureCapacity(u + 1);
@@ -62,7 +62,7 @@ abstract class GraphBaseContinues extends GraphBase {
 		// internal weights are handled manually
 		// verticesWeightsInternal.clearElement(vertex);
 		verticesUserData.clearElement(vertex);
-		verticesIDStrategy.removeIdx(vertex);
+		verticesIDStrat.removeIdx(vertex);
 	}
 
 	// /**
@@ -97,7 +97,7 @@ abstract class GraphBaseContinues extends GraphBase {
 	// }
 
 	int vertexSwapBeforeRemove(int v) {
-		int vn = verticesIDStrategy.isSwapNeededBeforeRemove(v);
+		int vn = verticesIDStrat.isSwapNeededBeforeRemove(v);
 		if (v != vn) {
 			vertexSwap(v, vn);
 			v = vn;
@@ -106,7 +106,7 @@ abstract class GraphBaseContinues extends GraphBase {
 	}
 
 	void vertexSwap(int v1, int v2) {
-		verticesIDStrategy.idxSwap(v1, v2);
+		verticesIDStrat.idxSwap(v1, v2);
 		// internal weights are handled manually
 		// verticesWeightsInternal.swapElements(v1, v2);
 		verticesUserData.swapElements(v1, v2);
@@ -116,7 +116,7 @@ abstract class GraphBaseContinues extends GraphBase {
 	public int addEdge(int source, int target) {
 		checkVertex(source);
 		checkVertex(target);
-		int e = edgesIDStrategy.newIdx();
+		int e = edgesIDStrat.newIdx();
 		assert e >= 0;
 		edgesInternalData.ensureCapacity(e + 1);
 		edgesUserData.ensureCapacity(e + 1);
@@ -129,7 +129,7 @@ abstract class GraphBaseContinues extends GraphBase {
 		// internal weights are handled manually
 		// edgesWeightsInternal.clearElement(edge);
 		edgesUserData.clearElement(edge);
-		edgesIDStrategy.removeIdx(edge);
+		edgesIDStrat.removeIdx(edge);
 	}
 
 	// /**
@@ -165,7 +165,7 @@ abstract class GraphBaseContinues extends GraphBase {
 	// }
 
 	int edgeSwapBeforeRemove(int e) {
-		int en = edgesIDStrategy.isSwapNeededBeforeRemove(e);
+		int en = edgesIDStrat.isSwapNeededBeforeRemove(e);
 		if (e != en) {
 			edgeSwap(e, en);
 			e = en;
@@ -174,7 +174,7 @@ abstract class GraphBaseContinues extends GraphBase {
 	}
 
 	void edgeSwap(int e1, int e2) {
-		edgesIDStrategy.idxSwap(e1, e2);
+		edgesIDStrat.idxSwap(e1, e2);
 		// internal weights are handled manually
 		// edgesWeightsInternal.swapElements(e1, e2);
 		edgesUserData.swapElements(e1, e2);

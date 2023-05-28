@@ -58,10 +58,10 @@ class GraphArrayDirected extends GraphArrayAbstract {
 	 */
 	GraphArrayDirected(int expectedVerticesNum, int expectedEdgesNum) {
 		super(expectedVerticesNum, expectedEdgesNum);
-		edgesOut = new DataContainer.Obj<>(verticesIDStrategy, IntArrays.EMPTY_ARRAY, int[].class);
-		edgesOutNum = new DataContainer.Int(verticesIDStrategy, 0);
-		edgesIn = new DataContainer.Obj<>(verticesIDStrategy, IntArrays.EMPTY_ARRAY, int[].class);
-		edgesInNum = new DataContainer.Int(verticesIDStrategy, 0);
+		edgesOut = new DataContainer.Obj<>(verticesIDStrat, IntArrays.EMPTY_ARRAY, int[].class);
+		edgesOutNum = new DataContainer.Int(verticesIDStrat, 0);
+		edgesIn = new DataContainer.Obj<>(verticesIDStrat, IntArrays.EMPTY_ARRAY, int[].class);
+		edgesInNum = new DataContainer.Int(verticesIDStrat, 0);
 
 		addInternalVerticesDataContainer(DataContainerKeyEdgesOut, edgesOut);
 		addInternalVerticesDataContainer(DataContainerKeyEdgesOutNum, edgesOutNum);
@@ -73,10 +73,10 @@ class GraphArrayDirected extends GraphArrayAbstract {
 		super(g);
 		final int n = g.vertices().size();
 
-		edgesOut = g.edgesOut.copy(verticesIDStrategy);
-		edgesOutNum = g.edgesOutNum.copy(verticesIDStrategy);
-		edgesIn = g.edgesIn.copy(verticesIDStrategy);
-		edgesInNum = g.edgesInNum.copy(verticesIDStrategy);
+		edgesOut = g.edgesOut.copy(verticesIDStrat);
+		edgesOutNum = g.edgesOutNum.copy(verticesIDStrat);
+		edgesIn = g.edgesIn.copy(verticesIDStrat);
+		edgesInNum = g.edgesInNum.copy(verticesIDStrat);
 		addInternalVerticesDataContainer(DataContainerKeyEdgesOut, edgesOut);
 		addInternalVerticesDataContainer(DataContainerKeyEdgesOutNum, edgesOutNum);
 		addInternalVerticesDataContainer(DataContainerKeyEdgesIn, edgesIn);

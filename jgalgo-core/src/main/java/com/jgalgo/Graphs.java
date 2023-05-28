@@ -33,8 +33,8 @@ public class Graphs {
 
 	private abstract static class EmptyGraph implements Graph {
 
-		private final IDStrategy.Continues verticesIDStrat = new IDStrategy.ContinuesEmpty();
-		private final IDStrategy.Continues edgesIDStrat = new IDStrategy.ContinuesEmpty();
+		private final IDStrategy.Continues verticesIDStrat = new IDStrategyImpl.ContinuesEmpty();
+		private final IDStrategy.Continues edgesIDStrat = new IDStrategyImpl.ContinuesEmpty();
 
 		@Override
 		public IntSet vertices() {
@@ -399,7 +399,7 @@ public class Graphs {
 		private final WeightsImpl.Manager edgesWeights;
 
 		CompleteGraph(int n, int m) {
-			super(new IDStrategy.Continues(n), new IDStrategy.Continues(m));
+			super(new IDStrategyImpl.Continues(n), new IDStrategyImpl.Continues(m));
 			if (n < 0 || m < 0)
 				throw new IllegalArgumentException();
 			this.n = n;
@@ -409,11 +409,11 @@ public class Graphs {
 		}
 
 		CompleteGraph(CompleteGraph g) {
-			super(new IDStrategy.Continues(g.n), new IDStrategy.Continues(g.m));
+			super(new IDStrategyImpl.Continues(g.n), new IDStrategyImpl.Continues(g.m));
 			this.n = g.n;
 			this.m = g.m;
-			verticesWeights = g.verticesWeights.copy(verticesIDStrategy);
-			edgesWeights = g.edgesWeights.copy(edgesIDStrategy);
+			verticesWeights = g.verticesWeights.copy(verticesIDStrat);
+			edgesWeights = g.edgesWeights.copy(edgesIDStrat);
 		}
 
 		void checkVertex(int vertex) {

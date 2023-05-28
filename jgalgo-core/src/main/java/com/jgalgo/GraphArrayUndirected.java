@@ -55,8 +55,8 @@ class GraphArrayUndirected extends GraphArrayAbstract implements UndirectedGraph
 	 */
 	GraphArrayUndirected(int expectedVerticesNum, int expectedEdgesNum) {
 		super(expectedVerticesNum, expectedEdgesNum);
-		edges = new DataContainer.Obj<>(verticesIDStrategy, IntArrays.EMPTY_ARRAY, int[].class);
-		edgesNum = new DataContainer.Int(verticesIDStrategy, 0);
+		edges = new DataContainer.Obj<>(verticesIDStrat, IntArrays.EMPTY_ARRAY, int[].class);
+		edgesNum = new DataContainer.Int(verticesIDStrat, 0);
 
 		addInternalVerticesDataContainer(DataContainerKeyEdges, edges);
 		addInternalVerticesDataContainer(DataContainerKeyEdgesNum, edgesNum);
@@ -66,8 +66,8 @@ class GraphArrayUndirected extends GraphArrayAbstract implements UndirectedGraph
 		super(g);
 		final int n = g.vertices().size();
 
-		edges = g.edges.copy(verticesIDStrategy);
-		edgesNum = g.edgesNum.copy(verticesIDStrategy);
+		edges = g.edges.copy(verticesIDStrat);
+		edgesNum = g.edgesNum.copy(verticesIDStrat);
 		addInternalVerticesDataContainer(DataContainerKeyEdges, edges);
 		addInternalVerticesDataContainer(DataContainerKeyEdgesNum, edgesNum);
 

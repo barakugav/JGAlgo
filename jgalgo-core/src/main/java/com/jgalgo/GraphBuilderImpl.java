@@ -71,9 +71,9 @@ class GraphBuilderImpl implements GraphBuilder {
 			g = base;
 		} else {
 			if (directed) {
-				g = new GraphCustomIDStrategiesDirected(base, new IDStrategy.Fixed());
+				g = new GraphCustomIDStrategiesDirected(base, new IDStrategyImpl.Fixed());
 			} else {
-				g = new GraphCustomIDStrategiesUndirected(base, new IDStrategy.Fixed());
+				g = new GraphCustomIDStrategiesUndirected(base, new IDStrategyImpl.Fixed());
 			}
 		}
 		return g;
@@ -135,40 +135,40 @@ class GraphBuilderImpl implements GraphBuilder {
 		private final WeightsImpl.Manager verticesWeights;
 		private final WeightsImpl.Manager edgesWeights;
 
-		GraphCustomIDStrategies(GraphBaseContinues g, IDStrategy edgesIDStrategy) {
-			super(g.verticesIDStrategy.copy(), edgesIDStrategy);
+		GraphCustomIDStrategies(GraphBaseContinues g, IDStrategyImpl edgesIDStrategy) {
+			super(g.verticesIDStrat.copy(), edgesIDStrategy);
 			this.g = Objects.requireNonNull(g);
-			verticesWeights = new WeightsImpl.Manager(verticesIDStrategy.size());
+			verticesWeights = new WeightsImpl.Manager(verticesIDStrat.size());
 			edgesWeights = new WeightsImpl.Manager(edgesIDStrategy.size());
 
 			initListenersToUnderlyingGraph();
 		}
 
 		GraphCustomIDStrategies(GraphCustomIDStrategies orig) {
-			super(orig.verticesIDStrategy.copy(), orig.edgesIDStrategy.copy());
+			super(orig.verticesIDStrat.copy(), orig.edgesIDStrat.copy());
 			this.g = (GraphBaseContinues) orig.g.copy();
-			verticesWeights = orig.verticesWeights.copy(verticesIDStrategy);
-			edgesWeights = orig.edgesWeights.copy(edgesIDStrategy);
+			verticesWeights = orig.verticesWeights.copy(verticesIDStrat);
+			edgesWeights = orig.edgesWeights.copy(edgesIDStrat);
 
 			initListenersToUnderlyingGraph();
 		}
 
 		private void initListenersToUnderlyingGraph() {
 			g.getVerticesIDStrategy().addIDSwapListener((vIdx1, vIdx2) -> {
-				verticesIDStrategy.idxSwap(vIdx1, vIdx2);
+				verticesIDStrat.idxSwap(vIdx1, vIdx2);
 				verticesWeights.swapElements(vIdx1, vIdx2);
 			});
 			g.getVerticesIDStrategy().addIDAddRemoveListener(new IDAddRemoveListener() {
 
 				@Override
 				public void idRemove(int id) {
-					verticesIDStrategy.removeIdx(id);
+					verticesIDStrat.removeIdx(id);
 					verticesWeights.clearElement(id);
 				}
 
 				@Override
 				public void idAdd(int id) {
-					int idx = verticesIDStrategy.newIdx();
+					int idx = verticesIDStrat.newIdx();
 					if (idx != id)
 						throw new IllegalStateException();
 					verticesWeights.ensureCapacity(idx + 1);
@@ -176,25 +176,25 @@ class GraphBuilderImpl implements GraphBuilder {
 
 				@Override
 				public void idsClear() {
-					verticesIDStrategy.clear();
+					verticesIDStrat.clear();
 					verticesWeights.clearContainers();;
 				}
 			});
 			g.getEdgesIDStrategy().addIDSwapListener((eIdx1, eIdx2) -> {
-				edgesIDStrategy.idxSwap(eIdx1, eIdx2);
+				edgesIDStrat.idxSwap(eIdx1, eIdx2);
 				edgesWeights.swapElements(eIdx1, eIdx2);
 			});
 			g.getEdgesIDStrategy().addIDAddRemoveListener(new IDAddRemoveListener() {
 
 				@Override
 				public void idRemove(int id) {
-					edgesIDStrategy.removeIdx(id);
+					edgesIDStrat.removeIdx(id);
 					edgesWeights.clearElement(id);
 				}
 
 				@Override
 				public void idAdd(int id) {
-					int idx = edgesIDStrategy.newIdx();
+					int idx = edgesIDStrat.newIdx();
 					if (idx != id)
 						throw new IllegalStateException();
 					edgesWeights.ensureCapacity(idx + 1);
@@ -202,7 +202,7 @@ class GraphBuilderImpl implements GraphBuilder {
 
 				@Override
 				public void idsClear() {
-					edgesIDStrategy.clear();
+					edgesIDStrat.clear();
 					edgesWeights.clearContainers();
 				}
 			});
@@ -211,116 +211,116 @@ class GraphBuilderImpl implements GraphBuilder {
 		@Override
 		public int addVertex() {
 			int uIdx = g.addVertex();
-			return verticesIDStrategy.idxToId(uIdx);
+			return verticesIDStrat.idxToId(uIdx);
 		}
 
 		@Override
 		public void removeVertex(int vertex) {
-			int vIdx = verticesIDStrategy.idToIdx(vertex);
+			int vIdx = verticesIDStrat.idToIdx(vertex);
 			g.removeVertex(vIdx);
 		}
 
 		@Override
 		public EdgeIter edgesOut(int source) {
-			EdgeIter it = g.edgesOut(verticesIDStrategy.idToIdx(source));
+			EdgeIter it = g.edgesOut(verticesIDStrat.idToIdx(source));
 			return new EdgeItr(it);
 		}
 
 		@Override
 		public EdgeIter edgesIn(int target) {
-			EdgeIter it = g.edgesIn(verticesIDStrategy.idToIdx(target));
+			EdgeIter it = g.edgesIn(verticesIDStrat.idToIdx(target));
 			return new EdgeItr(it);
 		}
 
 		@Override
 		public int getEdge(int source, int target) {
-			int uIdx = verticesIDStrategy.idToIdx(source);
-			int vIdx = verticesIDStrategy.idToIdx(target);
+			int uIdx = verticesIDStrat.idToIdx(source);
+			int vIdx = verticesIDStrat.idToIdx(target);
 			int eIdx = g.getEdge(uIdx, vIdx);
-			return eIdx == -1 ? -1 : edgesIDStrategy.idxToId(eIdx);
+			return eIdx == -1 ? -1 : edgesIDStrat.idxToId(eIdx);
 		}
 
 		@Override
 		public EdgeIter getEdges(int source, int target) {
-			int uIdx = verticesIDStrategy.idToIdx(source);
-			int vIdx = verticesIDStrategy.idToIdx(target);
+			int uIdx = verticesIDStrat.idToIdx(source);
+			int vIdx = verticesIDStrat.idToIdx(target);
 			EdgeIter it = g.getEdges(uIdx, vIdx);
 			return new EdgeItr(it);
 		}
 
 		@Override
 		public int addEdge(int source, int target) {
-			int uIdx = verticesIDStrategy.idToIdx(source);
-			int vIdx = verticesIDStrategy.idToIdx(target);
+			int uIdx = verticesIDStrat.idToIdx(source);
+			int vIdx = verticesIDStrat.idToIdx(target);
 			int eIdx = g.addEdge(uIdx, vIdx);
-			return edgesIDStrategy.idxToId(eIdx);
+			return edgesIDStrat.idxToId(eIdx);
 		}
 
 		@Override
 		public void removeEdge(int edge) {
-			int eIdx = edgesIDStrategy.idToIdx(edge);
+			int eIdx = edgesIDStrat.idToIdx(edge);
 			g.removeEdge(eIdx);
 		}
 
 		@Override
 		public void removeEdgesOf(int source) {
-			int uIdx = verticesIDStrategy.idToIdx(source);
+			int uIdx = verticesIDStrat.idToIdx(source);
 			g.removeEdgesOf(uIdx);
 		}
 
 		@Override
 		public void removeEdgesOutOf(int source) {
-			g.removeEdgesOutOf(verticesIDStrategy.idToIdx(source));
+			g.removeEdgesOutOf(verticesIDStrat.idToIdx(source));
 		}
 
 		@Override
 		public void removeEdgesInOf(int target) {
-			g.removeEdgesInOf(verticesIDStrategy.idToIdx(target));
+			g.removeEdgesInOf(verticesIDStrat.idToIdx(target));
 		}
 
 		@Override
 		public int edgeSource(int edge) {
-			int eIdx = edgesIDStrategy.idToIdx(edge);
+			int eIdx = edgesIDStrat.idToIdx(edge);
 			return g.edgeSource(eIdx);
 		}
 
 		@Override
 		public int edgeTarget(int edge) {
-			int eIdx = edgesIDStrategy.idToIdx(edge);
+			int eIdx = edgesIDStrat.idToIdx(edge);
 			return g.edgeTarget(eIdx);
 		}
 
 		@Override
 		public int edgeEndpoint(int edge, int endpoint) {
-			int eIdx = edgesIDStrategy.idToIdx(edge);
-			int endpointIdx = verticesIDStrategy.idToIdx(endpoint);
+			int eIdx = edgesIDStrat.idToIdx(edge);
+			int endpointIdx = verticesIDStrat.idToIdx(endpoint);
 			int resIdx = g.edgeEndpoint(eIdx, endpointIdx);
-			return verticesIDStrategy.idxToId(resIdx);
+			return verticesIDStrat.idxToId(resIdx);
 		}
 
 		@Override
 		public int degreeOut(int source) {
-			int uIdx = verticesIDStrategy.idToIdx(source);
+			int uIdx = verticesIDStrat.idToIdx(source);
 			return g.degreeOut(uIdx);
 		}
 
 		@Override
 		public int degreeIn(int source) {
-			int uIdx = verticesIDStrategy.idToIdx(source);
+			int uIdx = verticesIDStrat.idToIdx(source);
 			return g.degreeIn(uIdx);
 		}
 
 		@Override
 		public void clear() {
 			g.clear();
-			verticesIDStrategy.clear();
-			edgesIDStrategy.clear();
+			verticesIDStrat.clear();
+			edgesIDStrat.clear();
 		}
 
 		@Override
 		public void clearEdges() {
 			g.clearEdges();
-			edgesIDStrategy.clear();
+			edgesIDStrat.clear();
 		}
 
 		@Override
@@ -355,12 +355,12 @@ class GraphBuilderImpl implements GraphBuilder {
 
 		@Override
 		public IDStrategy.Continues getVerticesIDStrategy() {
-			return verticesIDStrategy;
+			return verticesIDStrat;
 		}
 
 		@Override
 		public IDStrategy getEdgesIDStrategy() {
-			return edgesIDStrategy;
+			return edgesIDStrat;
 		}
 
 		@Override
@@ -389,13 +389,13 @@ class GraphBuilderImpl implements GraphBuilder {
 			@Override
 			public int nextInt() {
 				int eIdx = it.nextInt();
-				return edgesIDStrategy.idxToId(eIdx);
+				return edgesIDStrat.idxToId(eIdx);
 			}
 
 			@Override
 			public int peekNext() {
 				int eIdx = it.peekNext();
-				return edgesIDStrategy.idxToId(eIdx);
+				return edgesIDStrat.idxToId(eIdx);
 			}
 
 			@Override
@@ -406,13 +406,13 @@ class GraphBuilderImpl implements GraphBuilder {
 			@Override
 			public int target() {
 				int vIdx = it.target();
-				return verticesIDStrategy.idxToId(vIdx);
+				return verticesIDStrat.idxToId(vIdx);
 			}
 
 			@Override
 			public int source() {
 				int uIdx = it.source();
-				return verticesIDStrategy.idxToId(uIdx);
+				return verticesIDStrat.idxToId(uIdx);
 			}
 
 		}
@@ -426,7 +426,7 @@ class GraphBuilderImpl implements GraphBuilder {
 
 	private static class GraphCustomIDStrategiesDirected extends GraphCustomIDStrategies {
 
-		GraphCustomIDStrategiesDirected(GraphBaseContinues g, IDStrategy edgesIDStrategy) {
+		GraphCustomIDStrategiesDirected(GraphBaseContinues g, IDStrategyImpl edgesIDStrategy) {
 			super(g, edgesIDStrategy);
 			ArgumentCheck.onlyDirected(g);
 		}
@@ -437,7 +437,7 @@ class GraphBuilderImpl implements GraphBuilder {
 
 		@Override
 		public void reverseEdge(int edge) {
-			int eIdx = edgesIDStrategy.idToIdx(edge);
+			int eIdx = edgesIDStrat.idToIdx(edge);
 			g.reverseEdge(eIdx);
 		}
 
@@ -451,7 +451,7 @@ class GraphBuilderImpl implements GraphBuilder {
 	private static class GraphCustomIDStrategiesUndirected extends GraphCustomIDStrategies
 			implements UndirectedGraphImpl {
 
-		GraphCustomIDStrategiesUndirected(GraphBaseContinues g, IDStrategy edgesIDStrategy) {
+		GraphCustomIDStrategiesUndirected(GraphBaseContinues g, IDStrategyImpl edgesIDStrategy) {
 			super(g, edgesIDStrategy);
 			ArgumentCheck.onlyUndirected(g);
 		}

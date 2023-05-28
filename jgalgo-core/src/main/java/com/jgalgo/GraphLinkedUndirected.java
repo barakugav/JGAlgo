@@ -50,14 +50,14 @@ class GraphLinkedUndirected extends GraphLinkedAbstract implements UndirectedGra
 	 */
 	GraphLinkedUndirected(int expectedVerticesNum, int expectedEdgesNum) {
 		super(expectedVerticesNum, expectedEdgesNum);
-		edges = new DataContainer.Obj<>(verticesIDStrategy, null, Node.class);
+		edges = new DataContainer.Obj<>(verticesIDStrat, null, Node.class);
 		addInternalVerticesDataContainer(DataContainerKeyEdges, edges);
 	}
 
 	GraphLinkedUndirected(GraphLinkedUndirected g) {
 		super(g);
 
-		edges = new DataContainer.Obj<>(verticesIDStrategy, null, Node.class);
+		edges = new DataContainer.Obj<>(verticesIDStrat, null, Node.class);
 		addInternalVerticesDataContainer(DataContainerKeyEdges, edges);
 
 		final int m = g.edges().size();

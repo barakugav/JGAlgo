@@ -32,10 +32,10 @@ abstract class GraphTableAbstract extends GraphBaseContinues implements GraphWit
 	GraphTableAbstract(int expectedVerticesNum, int expectedEdgesNum) {
 		super(expectedVerticesNum, expectedEdgesNum);
 
-		edges = new DataContainer.Obj<>(verticesIDStrategy, null, DataContainer.Int.class);
+		edges = new DataContainer.Obj<>(verticesIDStrat, null, DataContainer.Int.class);
 		addInternalVerticesDataContainer(DataContainerKeyEdges, edges);
 
-		edgeEndpoints = new EdgeEndpointsContainer(edgesIDStrategy);
+		edgeEndpoints = new EdgeEndpointsContainer(edgesIDStrat);
 		addInternalEdgesDataContainer(DataContainerKeyEdgeEndpoints, edgeEndpoints);
 	}
 
@@ -43,15 +43,15 @@ abstract class GraphTableAbstract extends GraphBaseContinues implements GraphWit
 		super(g);
 
 		final int n = g.vertices().size();
-		edges = g.edges.copy(verticesIDStrategy);
+		edges = g.edges.copy(verticesIDStrat);
 		addInternalVerticesDataContainer(DataContainerKeyEdges, edges);
 		for (int u = 0; u < n; u++) {
-			DataContainer.Int uEdges = edges.get(u).copy(verticesIDStrategy);
+			DataContainer.Int uEdges = edges.get(u).copy(verticesIDStrat);
 			edges.set(u, uEdges);
 			addInternalVerticesDataContainer(new Utils.Obj("perVertexEdges"), uEdges);
 		}
 
-		edgeEndpoints = g.edgeEndpoints.copy(edgesIDStrategy);
+		edgeEndpoints = g.edgeEndpoints.copy(edgesIDStrat);
 		addInternalEdgesDataContainer(DataContainerKeyEdgeEndpoints, edgeEndpoints);
 	}
 
@@ -60,7 +60,7 @@ abstract class GraphTableAbstract extends GraphBaseContinues implements GraphWit
 		int v = super.addVertex();
 		DataContainer.Int vEdges = edges.get(v);
 		if (vEdges == null) {
-			vEdges = new DataContainer.Int(verticesIDStrategy, EdgeNone);
+			vEdges = new DataContainer.Int(verticesIDStrat, EdgeNone);
 			addInternalVerticesDataContainer(new Utils.Obj("perVertexEdges"), vEdges);
 			edges.set(v, vEdges);
 		}
