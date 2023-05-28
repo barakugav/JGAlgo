@@ -56,9 +56,19 @@ interface Heap&lt;E&gt; extends Collection&lt;E&gt; {
 	/**
 	 * Insert a new element to the heap.
 	 *
-	 * @param e new element
+	 * @param elm new element
 	 */
-	void insert(E e);
+	void insert(E elm);
+
+	/**
+	 * Insert multiple elements.
+	 * &lt;p&gt;
+	 * Implementations may be more efficient if multiple elements are added to the heap using this method, rather than
+	 * calling {@link #insert(Object)} repetitively.
+	 *
+	 * @param elms a collection containing all the elements to insert
+	 */
+	void insertAll(Collection&lt;? extends E&gt; elms);
 
 	/**
 	 * Find the minimum element in the heap.
@@ -113,31 +123,31 @@ interface Heap&lt;E&gt; extends Collection&lt;E&gt; {
 	 */
 	@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
 	static Heap.Builder&lt;Object&gt; newBuilder() {
-<span class="nc" id="L116">		return new Heap.Builder&lt;&gt;() {</span>
+<span class="fc" id="L126">		return new Heap.Builder&lt;&gt;() {</span>
 
 			Class&lt;?&gt; elmsType;
 
 			@Override
 			public Heap build(Comparator cmp) {
-<span class="nc bnc" id="L122" title="All 2 branches missed.">				if (elmsType == int.class) {</span>
-<span class="nc" id="L123">					return new HeapBinaryInt(cmp);</span>
+<span class="pc bpc" id="L132" title="1 of 2 branches missed.">				if (elmsType == int.class) {</span>
+<span class="nc" id="L133">					return new HeapBinaryInt(cmp);</span>
 				} else {
-<span class="nc" id="L125">					return new HeapBinary&lt;&gt;(cmp);</span>
+<span class="fc" id="L135">					return new HeapBinary&lt;&gt;(cmp);</span>
 				}
 			}
 
 			@Override
 			public Heap.Builder elementsTypeObj() {
-<span class="nc" id="L131">				elmsType = null;</span>
-<span class="nc" id="L132">				return this;</span>
+<span class="fc" id="L141">				elmsType = null;</span>
+<span class="fc" id="L142">				return this;</span>
 			}
 
 			@Override
 			public Heap.Builder elementsTypePrimitive(Class primitiveType) {
-<span class="nc bnc" id="L137" title="All 2 branches missed.">				if (!primitiveType.isPrimitive())</span>
-<span class="nc" id="L138">					throw new IllegalArgumentException(&quot;type is not primitive: &quot; + primitiveType);</span>
-<span class="nc" id="L139">				elmsType = primitiveType;</span>
-<span class="nc" id="L140">				return this;</span>
+<span class="nc bnc" id="L147" title="All 2 branches missed.">				if (!primitiveType.isPrimitive())</span>
+<span class="nc" id="L148">					throw new IllegalArgumentException(&quot;type is not primitive: &quot; + primitiveType);</span>
+<span class="nc" id="L149">				elmsType = primitiveType;</span>
+<span class="nc" id="L150">				return this;</span>
 			}
 		};
 	}
@@ -167,7 +177,7 @@ interface Heap&lt;E&gt; extends Collection&lt;E&gt; {
 		 * @return the newly constructed heap
 		 */
 		default Heap&lt;E&gt; build() {
-<span class="nc" id="L170">			return build(null);</span>
+<span class="nc" id="L180">			return build(null);</span>
 		}
 
 		/**

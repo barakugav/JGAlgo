@@ -133,23 +133,29 @@ abstract class HeapAbstract&lt;E&gt; extends AbstractCollection&lt;E&gt; impleme
 <span class="fc" id="L133">		}</span>
 
 		@Override
+		public void insertAll(Collection&lt;? extends K&gt; elms) {
+<span class="nc bnc" id="L137" title="All 2 branches missed.">			for (K elm : elms)</span>
+<span class="nc" id="L138">				h.insert(elm);</span>
+<span class="nc" id="L139">		}</span>
+
+		@Override
 		public K findMin() {
-<span class="fc" id="L137">			return h.findMin().key();</span>
+<span class="fc" id="L143">			return h.findMin().key();</span>
 		}
 
 		@Override
 		public K extractMin() {
-<span class="fc" id="L142">			return h.extractMin().key();</span>
+<span class="fc" id="L148">			return h.extractMin().key();</span>
 		}
 
 		@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
 		@Override
 		public void meld(Heap&lt;? extends K&gt; heap) {
-<span class="pc bpc" id="L148" title="1 of 2 branches missed.">			if (!(heap instanceof HeapFromReferenceable&lt;?&gt;))</span>
-<span class="nc" id="L149">				throw new IllegalArgumentException();</span>
-<span class="fc" id="L150">			HeapReferenceable&lt;K, ?&gt; oh = ((HeapFromReferenceable&lt;K&gt;) heap).h;</span>
-<span class="fc" id="L151">			h.meld((HeapReferenceable) oh);</span>
-<span class="fc" id="L152">		}</span>
+<span class="pc bpc" id="L154" title="1 of 2 branches missed.">			if (!(heap instanceof HeapFromReferenceable&lt;?&gt;))</span>
+<span class="nc" id="L155">				throw new IllegalArgumentException();</span>
+<span class="fc" id="L156">			HeapReferenceable&lt;K, ?&gt; oh = ((HeapFromReferenceable&lt;K&gt;) heap).h;</span>
+<span class="fc" id="L157">			h.meld((HeapReferenceable) oh);</span>
+<span class="fc" id="L158">		}</span>
 	}
 
 }

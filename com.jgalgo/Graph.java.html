@@ -629,5 +629,31 @@ public interface Graph {
 	 */
 	public Graph copy();
 
+	/**
+	 * Get an unmodifiable view of this graph.
+	 * &lt;p&gt;
+	 * This method return a view of this graph, namely a Graph that contains the same vertices, edges and weights, that
+	 * is automatically updated when the original graph is updated. The view is unmodifiable, namely all operations that
+	 * modify the graph will throw {@link UnsupportedOperationException}.
+	 *
+	 * @return an unmodifiable view of this graph
+	 */
+	default Graph unmodifiableView() {
+<span class="fc" id="L642">		return Graphs.unmodifiableView(this);</span>
+	}
+
+	/**
+	 * Get a reversed view of this graph.
+	 * &lt;p&gt;
+	 * This method return a view of this graph, namely a Graph that contains the same vertices, edges and weights, that
+	 * is automatically updated when the original graph is updated. The view is reversed, namely each source and target
+	 * vertices of each edge are swapped.
+	 *
+	 * @return a reversed view of this graph
+	 */
+	default Graph reverseView() {
+<span class="fc" id="L655">		return Graphs.reverseView(this);</span>
+	}
+
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
