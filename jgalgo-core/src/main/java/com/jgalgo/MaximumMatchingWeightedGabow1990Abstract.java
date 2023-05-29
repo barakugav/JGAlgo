@@ -981,7 +981,7 @@ abstract class MaximumMatchingWeightedGabow1990Abstract implements MaximumMatchi
 
 		void insertGrowEventsFromVertex(int u) {
 			double Yu = delta + dualVal(u);
-			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
+			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = eit.target();
 				if (isEven(v))
@@ -1008,7 +1008,7 @@ abstract class MaximumMatchingWeightedGabow1990Abstract implements MaximumMatchi
 			assert isEven(u);
 			Blossom U = evens.findBlossom(u);
 			double Yu = delta + dualVal(u);
-			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
+			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
 				final int e = eit.nextInt();
 				int v = eit.target();
 				if (!isEven(v))

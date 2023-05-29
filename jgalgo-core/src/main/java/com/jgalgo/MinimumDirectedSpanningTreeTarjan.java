@@ -162,7 +162,7 @@ class MinimumDirectedSpanningTreeTarjan implements MinimumDirectedSpanningTree {
 		for (int v = 0; v < n; v++)
 			heap[v] = heapBuilder.build(w);
 		for (int v = 0; v < n; v++)
-			for (EdgeIter eit = g.edgesIn(v); eit.hasNext();)
+			for (EdgeIter eit = g.edgesIn(v).iterator(); eit.hasNext();)
 				heap[v].insert(Integer.valueOf(eit.nextInt()));
 
 		int[] parent = new int[VMaxNum];

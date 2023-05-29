@@ -85,7 +85,7 @@ class BiConnectedComponentsAlgoHopcroftTarjan implements BiConnectedComponentsAl
 			int depth = 0;
 			depths[root] = depth;
 			lowpoint[depth] = depth;
-			edgeIters[depth] = g.edgesOut(root);
+			edgeIters[depth] = g.edgesOut(root).iterator();
 
 			int rootChildrenCount = 0;
 
@@ -103,7 +103,7 @@ class BiConnectedComponentsAlgoHopcroftTarjan implements BiConnectedComponentsAl
 						depth++;
 						depths[v] = depth;
 						lowpoint[depth] = depth;
-						edgeIters[depth] = g.edgesOut(v);
+						edgeIters[depth] = g.edgesOut(v).iterator();
 						u = v;
 						continue dfs;
 

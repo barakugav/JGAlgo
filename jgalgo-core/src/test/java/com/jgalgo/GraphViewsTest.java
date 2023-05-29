@@ -21,8 +21,6 @@ import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
 import it.unimi.dsi.fastutil.ints.IntIterator;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
 
 public class GraphViewsTest extends TestBase {
 
@@ -44,10 +42,10 @@ public class GraphViewsTest extends TestBase {
 			}
 			for (IntIterator uit = orig.vertices().iterator(); uit.hasNext();) {
 				int u = uit.nextInt();
-				assertEquals(setOf(orig.edgesOut(u)), setOf(unmodifiable.edgesOut(u)));
-				assertEquals(setOf(orig.edgesIn(u)), setOf(unmodifiable.edgesIn(u)));
+				assertEquals(orig.edgesOut(u), unmodifiable.edgesOut(u));
+				assertEquals(orig.edgesIn(u), unmodifiable.edgesIn(u));
 
-				for (EdgeIter eit = unmodifiable.edgesOut(u); eit.hasNext();) {
+				for (EdgeIter eit = unmodifiable.edgesOut(u).iterator(); eit.hasNext();) {
 					int e = eit.nextInt();
 					assertEquals(u, eit.source());
 					assertEquals(orig.edgeEndpoint(e, u), eit.target());
@@ -92,10 +90,10 @@ public class GraphViewsTest extends TestBase {
 			}
 			for (IntIterator uit = orig.vertices().iterator(); uit.hasNext();) {
 				int u = uit.nextInt();
-				assertEquals(setOf(orig.edgesOut(u)), setOf(rev.edgesIn(u)));
-				assertEquals(setOf(orig.edgesIn(u)), setOf(rev.edgesOut(u)));
+				assertEquals(orig.edgesOut(u), rev.edgesIn(u));
+				assertEquals(orig.edgesIn(u), rev.edgesOut(u));
 
-				for (EdgeIter eit = rev.edgesOut(u); eit.hasNext();) {
+				for (EdgeIter eit = rev.edgesOut(u).iterator(); eit.hasNext();) {
 					int e = eit.nextInt();
 					assertEquals(u, eit.source());
 					assertEquals(orig.edgeEndpoint(e, u), eit.target());
@@ -124,10 +122,6 @@ public class GraphViewsTest extends TestBase {
 		/* Modify the view graph and check the original graph is updating */
 		modifyGraph.accept(rev);
 		checkGraphs.run();
-	}
-
-	private static IntSet setOf(IntIterator it) {
-		return new IntOpenHashSet(it);
 	}
 
 }

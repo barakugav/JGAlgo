@@ -70,8 +70,13 @@ class GraphTableUndirected extends GraphTableAbstract implements UndirectedGraph
 	}
 
 	@Override
-	public EdgeIter edgesIn(int target) {
-		return new EdgeIterInUndirected(target);
+	public EdgeSet edgesOut(int source) {
+		return new EdgeSetOut(source);
+	}
+
+	@Override
+	public EdgeSet edgesIn(int target) {
+		return new EdgeSetIn(target);
 	}
 
 	@Override
@@ -99,11 +104,11 @@ class GraphTableUndirected extends GraphTableAbstract implements UndirectedGraph
 	@Override
 	void vertexSwap(int v1, int v2) {
 		final int tempV = -2;
-		for (IntIterator eit1 = edgesOut(v1); eit1.hasNext();)
+		for (IntIterator eit1 = edgesOut(v1).iterator(); eit1.hasNext();)
 			replaceEdgeEndpoint(eit1.nextInt(), v1, tempV);
-		for (IntIterator eit1 = edgesOut(v2); eit1.hasNext();)
+		for (IntIterator eit1 = edgesOut(v2).iterator(); eit1.hasNext();)
 			replaceEdgeEndpoint(eit1.nextInt(), v2, v1);
-		for (IntIterator eit1 = edgesOut(v1); eit1.hasNext();)
+		for (IntIterator eit1 = edgesOut(v1).iterator(); eit1.hasNext();)
 			replaceEdgeEndpoint(eit1.nextInt(), tempV, v2);
 		super.vertexSwap(v1, v2);
 	}
@@ -119,6 +124,28 @@ class GraphTableUndirected extends GraphTableAbstract implements UndirectedGraph
 	@Override
 	public Graph copy() {
 		return new GraphTableUndirected(this);
+	}
+
+	private class EdgeSetOut extends GraphBase.EdgeSetOutUndirected {
+		EdgeSetOut(int source) {
+			super(source);
+		}
+
+		@Override
+		public EdgeIter iterator() {
+			return new EdgeIterOut(source);
+		}
+	}
+
+	private class EdgeSetIn extends GraphBase.EdgeSetInUndirected {
+		EdgeSetIn(int target) {
+			super(target);
+		}
+
+		@Override
+		public EdgeIter iterator() {
+			return new EdgeIterInUndirected(target);
+		}
 	}
 
 }

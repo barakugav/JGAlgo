@@ -168,7 +168,7 @@ class MinimumSpanningTreeYao implements MinimumSpanningTree {
 
 		for (int u = 0; u < n; u++) {
 			int edgesCount = 0;
-			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();)
+			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();)
 				edgesTemp[edgesCount++] = eit.nextInt();
 
 			if (edgesCount <= k) {

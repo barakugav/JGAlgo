@@ -65,7 +65,7 @@ class ShortestPathSingleSourceDag implements ShortestPathSingleSource {
 			double uDisntace = res.distances[u];
 			if (uDisntace == Double.POSITIVE_INFINITY)
 				continue;
-			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
+			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = eit.target();
 				double d = uDisntace + w.weight(e);
@@ -93,7 +93,7 @@ class ShortestPathSingleSourceDag implements ShortestPathSingleSource {
 			int uDisntace = res.distances[u];
 			if (uDisntace == Integer.MAX_VALUE)
 				continue;
-			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
+			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = eit.target();
 				int d = uDisntace + w.weightInt(e);

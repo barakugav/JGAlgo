@@ -219,7 +219,7 @@ class GraphsTestUtils extends TestUtils {
 							while (!queue.isEmpty()) {
 								int p = queue.dequeueInt();
 
-								for (EdgeIter eit = g.edgesOut(p); eit.hasNext();) {
+								for (EdgeIter eit = g.edgesOut(p).iterator(); eit.hasNext();) {
 									eit.nextInt();
 									int pv = eit.target();
 									if (reachableFromRoot.get(pv))

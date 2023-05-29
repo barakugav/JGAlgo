@@ -103,15 +103,15 @@ class GraphLinkedUndirected extends GraphLinkedAbstract implements UndirectedGra
 	}
 
 	@Override
-	public EdgeIter edgesOut(int source) {
+	public EdgeSet edgesOut(int source) {
 		checkVertex(source);
-		return new EdgeOutItr(source, edges.get(source));
+		return new EdgeSetOut(source);
 	}
 
 	@Override
-	public EdgeIter edgesIn(int target) {
+	public EdgeSet edgesIn(int target) {
 		checkVertex(target);
-		return new EdgeInItr(target, edges.get(target));
+		return new EdgeSetIn(target);
 	}
 
 	@Override
@@ -252,11 +252,33 @@ class GraphLinkedUndirected extends GraphLinkedAbstract implements UndirectedGra
 		}
 	}
 
-	private class EdgeOutItr extends GraphLinkedAbstract.EdgeItr {
+	private class EdgeSetOut extends GraphBase.EdgeSetOutUndirected {
+		EdgeSetOut(int source) {
+			super(source);
+		}
+
+		@Override
+		public EdgeIter iterator() {
+			return new EdgeIterOut(source, edges.get(source));
+		}
+	}
+
+	private class EdgeSetIn extends GraphBase.EdgeSetInUndirected {
+		EdgeSetIn(int target) {
+			super(target);
+		}
+
+		@Override
+		public EdgeIter iterator() {
+			return new EdgeIterIn(target, edges.get(target));
+		}
+	}
+
+	private class EdgeIterOut extends GraphLinkedAbstract.EdgeItr {
 
 		private final int source;
 
-		EdgeOutItr(int source, Node p) {
+		EdgeIterOut(int source, Node p) {
 			super(p);
 			this.source = source;
 		}
@@ -278,11 +300,11 @@ class GraphLinkedUndirected extends GraphLinkedAbstract implements UndirectedGra
 		}
 	}
 
-	private class EdgeInItr extends GraphLinkedAbstract.EdgeItr {
+	private class EdgeIterIn extends GraphLinkedAbstract.EdgeItr {
 
 		private final int target;
 
-		EdgeInItr(int target, Node p) {
+		EdgeIterIn(int target, Node p) {
 			super(p);
 			this.target = target;
 		}

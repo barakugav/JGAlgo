@@ -52,13 +52,13 @@ class GraphTableDirected extends GraphTableAbstract {
 	}
 
 	@Override
-	public EdgeIter edgesOut(int source) {
-		return new EdgeIterOut(source);
+	public EdgeSet edgesOut(int source) {
+		return new EdgeSetOut(source);
 	}
 
 	@Override
-	public EdgeIter edgesIn(int target) {
-		return new EdgeIterInDirected(target);
+	public EdgeSet edgesIn(int target) {
+		return new EdgeSetIn(target);
 	}
 
 	@Override
@@ -107,13 +107,13 @@ class GraphTableDirected extends GraphTableAbstract {
 
 	@Override
 	void vertexSwap(int v1, int v2) {
-		for (IntIterator eit1 = edgesOut(v1); eit1.hasNext();)
+		for (IntIterator eit1 = edgesOut(v1).iterator(); eit1.hasNext();)
 			replaceEdgeSource(eit1.nextInt(), v2);
-		for (IntIterator eit1 = edgesOut(v2); eit1.hasNext();)
+		for (IntIterator eit1 = edgesOut(v2).iterator(); eit1.hasNext();)
 			replaceEdgeSource(eit1.nextInt(), v1);
-		for (IntIterator eit1 = edgesIn(v1); eit1.hasNext();)
+		for (IntIterator eit1 = edgesIn(v1).iterator(); eit1.hasNext();)
 			replaceEdgeTarget(eit1.nextInt(), v2);
-		for (IntIterator eit1 = edgesIn(v2); eit1.hasNext();)
+		for (IntIterator eit1 = edgesIn(v2).iterator(); eit1.hasNext();)
 			replaceEdgeTarget(eit1.nextInt(), v1);
 		super.vertexSwap(v1, v2);
 	}
@@ -129,6 +129,28 @@ class GraphTableDirected extends GraphTableAbstract {
 	@Override
 	public Graph copy() {
 		return new GraphTableDirected(this);
+	}
+
+	private class EdgeSetOut extends GraphBase.EdgeSetOutDirected {
+		EdgeSetOut(int source) {
+			super(source);
+		}
+
+		@Override
+		public EdgeIter iterator() {
+			return new EdgeIterOut(source);
+		}
+	}
+
+	private class EdgeSetIn extends GraphBase.EdgeSetInDirected {
+		EdgeSetIn(int target) {
+			super(target);
+		}
+
+		@Override
+		public EdgeIter iterator() {
+			return new EdgeIterInDirected(target);
+		}
 	}
 
 }

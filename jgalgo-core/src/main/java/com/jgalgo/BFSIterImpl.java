@@ -84,7 +84,7 @@ class BFSIterImpl implements BFSIter {
 			firstVInLayer = -1;
 		}
 
-		for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
+		for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
 			int e = eit.nextInt();
 			int v = eit.target();
 			if (visited.get(v))

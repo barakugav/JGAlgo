@@ -116,12 +116,12 @@ class MaximumFlowAbstract {
 
 			double totalFlow = 0;
 			if (gOrig.getCapabilities().directed()) {
-				for (EdgeIter eit = gOrig.edgesOut(source); eit.hasNext();)
+				for (EdgeIter eit = gOrig.edgesOut(source).iterator(); eit.hasNext();)
 					totalFlow += net.getFlow(eit.nextInt());
-				for (EdgeIter eit = gOrig.edgesIn(source); eit.hasNext();)
+				for (EdgeIter eit = gOrig.edgesIn(source).iterator(); eit.hasNext();)
 					totalFlow -= net.getFlow(eit.nextInt());
 			} else {
-				for (EdgeIter eit = g.edgesOut(source); eit.hasNext();)
+				for (EdgeIter eit = g.edgesOut(source).iterator(); eit.hasNext();)
 					totalFlow += flow.getDouble(eit.nextInt());
 			}
 			return totalFlow;
@@ -138,12 +138,12 @@ class MaximumFlowAbstract {
 
 			int totalFlow = 0;
 			if (gOrig.getCapabilities().directed()) {
-				for (EdgeIter eit = gOrig.edgesOut(source); eit.hasNext();)
+				for (EdgeIter eit = gOrig.edgesOut(source).iterator(); eit.hasNext();)
 					totalFlow += net.getFlowInt(eit.nextInt());
-				for (EdgeIter eit = gOrig.edgesIn(source); eit.hasNext();)
+				for (EdgeIter eit = gOrig.edgesIn(source).iterator(); eit.hasNext();)
 					totalFlow -= net.getFlowInt(eit.nextInt());
 			} else {
-				for (EdgeIter eit = g.edgesOut(source); eit.hasNext();)
+				for (EdgeIter eit = g.edgesOut(source).iterator(); eit.hasNext();)
 					totalFlow += flow.getInt(eit.nextInt());
 			}
 			return totalFlow;

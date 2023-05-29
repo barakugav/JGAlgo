@@ -175,7 +175,7 @@ public class MaximumFlowTestUtils extends TestUtils {
 		int n = g.vertices().size();
 		double[][] capacities = new double[n][n];
 		for (int u = 0; u < n; u++) {
-			for (EdgeIter it = g.edgesOut(u); it.hasNext();) {
+			for (EdgeIter it = g.edgesOut(u).iterator(); it.hasNext();) {
 				int e = it.nextInt();
 				capacities[u][it.target()] += net.getCapacity(e);
 			}

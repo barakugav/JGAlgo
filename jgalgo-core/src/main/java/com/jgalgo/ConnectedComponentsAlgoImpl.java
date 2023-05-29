@@ -55,7 +55,7 @@ class ConnectedComponentsAlgoImpl implements ConnectedComponentsAlgo {
 			if (comp[root] != -1)
 				continue;
 			dfsPath[0] = root;
-			edges[0] = g.edgesOut(root);
+			edges[0] = g.edgesOut(root).iterator();
 			c[root] = cNext++;
 			s.push(root);
 			p.push(root);
@@ -70,7 +70,7 @@ class ConnectedComponentsAlgoImpl implements ConnectedComponentsAlgo {
 						p.push(v);
 
 						dfsPath[++depth] = v;
-						edges[depth] = g.edgesOut(v);
+						edges[depth] = g.edgesOut(v).iterator();
 						continue dfs;
 					} else if (comp[v] == -1)
 						while (c[p.topInt()] > c[v])
@@ -112,7 +112,7 @@ class ConnectedComponentsAlgoImpl implements ConnectedComponentsAlgo {
 			while (!stack.isEmpty()) {
 				int u = stack.popInt();
 
-				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
+				for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
 					eit.nextInt();
 					int v = eit.target();
 					if (comp[v] != -1) {

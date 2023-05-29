@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.function.BiFunction;
 import com.jgalgo.GraphsUtils.UndirectedGraphImpl;
 import com.jgalgo.IDStrategy.IDAddRemoveListener;
+import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 
 class GraphBuilderImpl implements GraphBuilder {
 
@@ -221,15 +222,13 @@ class GraphBuilderImpl implements GraphBuilder {
 		}
 
 		@Override
-		public EdgeIter edgesOut(int source) {
-			EdgeIter it = g.edgesOut(verticesIDStrat.idToIdx(source));
-			return new EdgeItr(it);
+		public EdgeSet edgesOut(int source) {
+			return new EdgeSetMapped(g.edgesOut(verticesIDStrat.idToIdx(source)));
 		}
 
 		@Override
-		public EdgeIter edgesIn(int target) {
-			EdgeIter it = g.edgesIn(verticesIDStrat.idToIdx(target));
-			return new EdgeItr(it);
+		public EdgeSet edgesIn(int target) {
+			return new EdgeSetMapped(g.edgesIn(verticesIDStrat.idToIdx(target)));
 		}
 
 		@Override
@@ -245,7 +244,7 @@ class GraphBuilderImpl implements GraphBuilder {
 			int uIdx = verticesIDStrat.idToIdx(source);
 			int vIdx = verticesIDStrat.idToIdx(target);
 			EdgeIter it = g.getEdges(uIdx, vIdx);
-			return new EdgeItr(it);
+			return new EdgeIterMapped(it);
 		}
 
 		@Override
@@ -296,18 +295,6 @@ class GraphBuilderImpl implements GraphBuilder {
 			int endpointIdx = verticesIDStrat.idToIdx(endpoint);
 			int resIdx = g.edgeEndpoint(eIdx, endpointIdx);
 			return verticesIDStrat.idxToId(resIdx);
-		}
-
-		@Override
-		public int degreeOut(int source) {
-			int uIdx = verticesIDStrat.idToIdx(source);
-			return g.degreeOut(uIdx);
-		}
-
-		@Override
-		public int degreeIn(int source) {
-			int uIdx = verticesIDStrat.idToIdx(source);
-			return g.degreeIn(uIdx);
 		}
 
 		@Override
@@ -373,11 +360,48 @@ class GraphBuilderImpl implements GraphBuilder {
 			edgesWeights.addWeights(key, weights);
 		}
 
-		class EdgeItr implements EdgeIterImpl {
+		class EdgeSetMapped extends AbstractIntSet implements EdgeSet {
+
+			private final EdgeSet set;
+
+			EdgeSetMapped(EdgeSet set) {
+				this.set = Objects.requireNonNull(set);
+			}
+
+			@Override
+			public boolean remove(int edge) {
+				int eIdx = edgesIDStrat.idToIdx(edge);
+				return set.remove(eIdx);
+			}
+
+			@Override
+			public boolean contains(int edge) {
+				int eIdx = edgesIDStrat.idToIdx(edge);
+				return set.contains(eIdx);
+			}
+
+			@Override
+			public int size() {
+				return set.size();
+			}
+
+			@Override
+			public void clear() {
+				set.clear();
+			}
+
+			@Override
+			public EdgeIter iterator() {
+				return new EdgeIterMapped(set.iterator());
+			}
+
+		}
+
+		class EdgeIterMapped implements EdgeIterImpl {
 
 			private final EdgeIterImpl it;
 
-			EdgeItr(EdgeIter it) {
+			EdgeIterMapped(EdgeIter it) {
 				this.it = (EdgeIterImpl) it;
 			}
 

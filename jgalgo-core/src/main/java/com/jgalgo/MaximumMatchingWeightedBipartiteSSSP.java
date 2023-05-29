@@ -100,7 +100,7 @@ class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeighted {
 		for (int u = 0; u < n; u++) {
 			if (!partition.getBool(u))
 				continue;
-			for (EdgeIter eit = gOrig.edgesOut(u); eit.hasNext();) {
+			for (EdgeIter eit = gOrig.edgesOut(u).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
 				double weight = w0.weight(e);
 				if (weight < 0)

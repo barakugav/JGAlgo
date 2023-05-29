@@ -130,15 +130,15 @@ class GraphArrayDirected extends GraphArrayAbstract {
 	}
 
 	@Override
-	public EdgeIter edgesOut(int source) {
+	public EdgeSet edgesOut(int source) {
 		checkVertex(source);
-		return new EdgeOutIt(source, edgesOut.get(source), edgesOutNum.getInt(source));
+		return new EdgeSetOut(source);
 	}
 
 	@Override
-	public EdgeIter edgesIn(int target) {
+	public EdgeSet edgesIn(int target) {
 		checkVertex(target);
-		return new EdgeInIt(target, edgesIn.get(target), edgesInNum.getInt(target));
+		return new EdgeSetIn(target);
 	}
 
 	@Override
@@ -203,18 +203,6 @@ class GraphArrayDirected extends GraphArrayAbstract {
 	}
 
 	@Override
-	public int degreeOut(int source) {
-		checkVertex(source);
-		return edgesOutNum.getInt(source);
-	}
-
-	@Override
-	public int degreeIn(int target) {
-		checkVertex(target);
-		return edgesInNum.getInt(target);
-	}
-
-	@Override
 	public void clearEdges() {
 		edgesOutNum.clear();
 		edgesInNum.clear();
@@ -229,11 +217,56 @@ class GraphArrayDirected extends GraphArrayAbstract {
 		// edgesIn.clear();
 	}
 
-	private class EdgeOutIt extends EdgeIt {
+	@Override
+	public GraphCapabilities getCapabilities() {
+		return Capabilities;
+	}
+
+	private static final GraphCapabilities Capabilities = GraphCapabilitiesBuilder.newDirected().vertexAdd(true)
+			.vertexRemove(true).edgeAdd(true).edgeRemove(true).parallelEdges(true).selfEdges(true).build();
+
+	@Override
+	public Graph copy() {
+		return new GraphArrayDirected(this);
+	}
+
+	private class EdgeSetOut extends GraphBase.EdgeSetOutDirected {
+		EdgeSetOut(int source) {
+			super(source);
+		}
+
+		@Override
+		public int size() {
+			return edgesOutNum.getInt(source);
+		}
+
+		@Override
+		public EdgeIter iterator() {
+			return new EdgeIterOut(source, edgesOut.get(source), edgesOutNum.getInt(source));
+		}
+	}
+
+	private class EdgeSetIn extends GraphBase.EdgeSetInDirected {
+		EdgeSetIn(int target) {
+			super(target);
+		}
+
+		@Override
+		public int size() {
+			return edgesInNum.getInt(target);
+		}
+
+		@Override
+		public EdgeIter iterator() {
+			return new EdgeIterIn(target, edgesIn.get(target), edgesInNum.getInt(target));
+		}
+	}
+
+	private class EdgeIterOut extends EdgeIt {
 
 		private final int u;
 
-		EdgeOutIt(int source, int[] edges, int count) {
+		EdgeIterOut(int source, int[] edges, int count) {
 			super(edges, count);
 			this.u = source;
 		}
@@ -247,14 +280,13 @@ class GraphArrayDirected extends GraphArrayAbstract {
 		public int target() {
 			return edgeTarget(lastEdge);
 		}
-
 	}
 
-	private class EdgeInIt extends EdgeIt {
+	private class EdgeIterIn extends EdgeIt {
 
 		private final int target;
 
-		EdgeInIt(int target, int[] edges, int count) {
+		EdgeIterIn(int target, int[] edges, int count) {
 			super(edges, count);
 			this.target = target;
 		}
@@ -268,20 +300,6 @@ class GraphArrayDirected extends GraphArrayAbstract {
 		public int target() {
 			return target;
 		}
-
-	}
-
-	@Override
-	public GraphCapabilities getCapabilities() {
-		return Capabilities;
-	}
-
-	private static final GraphCapabilities Capabilities = GraphCapabilitiesBuilder.newDirected().vertexAdd(true)
-			.vertexRemove(true).edgeAdd(true).edgeRemove(true).parallelEdges(true).selfEdges(true).build();
-
-	@Override
-	public Graph copy() {
-		return new GraphArrayDirected(this);
 	}
 
 }

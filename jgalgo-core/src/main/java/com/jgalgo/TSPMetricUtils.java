@@ -30,7 +30,7 @@ class TSPMetricUtils {
 
 		/* Assert degree is actually even in the new graph */
 		for (int u = 0; u < n; u++)
-			assert g1.degreeOut(u) % 2 == 0;
+			assert g1.edgesOut(u).size() % 2 == 0;
 
 		/* Calculate Eulerian tour in the new graph */
 		Path tour = EulerianTourAlgorithm.newBuilder().build().computeEulerianTour(g1);

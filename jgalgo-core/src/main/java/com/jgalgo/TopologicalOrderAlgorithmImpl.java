@@ -34,7 +34,7 @@ class TopologicalOrderAlgorithmImpl implements TopologicalOrderAlgorithm {
 		// calc in degree of all vertices
 		Arrays.fill(inDegree, 0, n, 0);
 		for (int v = 0; v < n; v++)
-			inDegree[v] = g.degreeIn(v);
+			inDegree[v] = g.edgesIn(v).size();
 
 		// Find vertices with zero in degree and insert them to the queue
 		assert queue.isEmpty();
@@ -47,7 +47,7 @@ class TopologicalOrderAlgorithmImpl implements TopologicalOrderAlgorithm {
 		while (!queue.isEmpty()) {
 			int u = queue.dequeueInt();
 			topolSort[topolSortSize++] = u;
-			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
+			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
 				eit.nextInt();
 				int v = eit.target();
 				if (--inDegree[v] == 0)

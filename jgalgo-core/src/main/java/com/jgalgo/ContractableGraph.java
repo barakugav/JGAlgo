@@ -93,7 +93,7 @@ class ContractableGraph {
 				if (eit.hasNext())
 					return true;
 				for (; vit.hasNext();) {
-					eit = (com.jgalgo.EdgeIterImpl) g.edgesOut(vit.nextInt());
+					eit = (com.jgalgo.EdgeIterImpl) g.edgesOut(vit.nextInt()).iterator();
 					if (eitAdvance())
 						return true;
 				}

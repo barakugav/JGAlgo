@@ -159,8 +159,8 @@ public class EulerianTourTest extends TestBase {
 		IntList lackingOutEdgesNum = new IntArrayList();
 		IntList lackingInEdgesNum = new IntArrayList();
 		for (int u = 0; u < n; u++) {
-			int outD = g.degreeOut(u);
-			int inD = g.degreeIn(u);
+			int outD = g.edgesOut(u).size();
+			int inD = g.edgesIn(u).size();
 			if (outD == inD)
 				continue;
 			if (outD > inD) {
@@ -189,26 +189,26 @@ public class EulerianTourTest extends TestBase {
 			/* assume uIdx > vIdx */
 			int uLackingOutNum = lackingOutEdgesNum.getInt(uIdx);
 			if (--uLackingOutNum > 0) {
-				assert g.degreeIn(u) - g.degreeOut(u) == uLackingOutNum;
+				assert g.edgesIn(u).size() - g.edgesOut(u).size() == uLackingOutNum;
 				lackingOutEdgesNum.set(uIdx, uLackingOutNum);
 			} else {
-				assert g.degreeIn(u) - g.degreeOut(u) == uLackingOutNum;
+				assert g.edgesIn(u).size() - g.edgesOut(u).size() == uLackingOutNum;
 				swapAndRemove(lackingOutEdgesNum, uIdx);
 				swapAndRemove(lackingOutEdgesVertices, uIdx);
 			}
 			int vLackingInNum = lackingInEdgesNum.getInt(vIdx);
 			if (--vLackingInNum > 0) {
-				assert g.degreeOut(v) - g.degreeIn(v) == vLackingInNum;
+				assert g.edgesOut(v).size() - g.edgesIn(v).size() == vLackingInNum;
 				lackingInEdgesNum.set(vIdx, vLackingInNum);
 			} else {
-				assert g.degreeOut(v) - g.degreeIn(v) == vLackingInNum;
+				assert g.edgesOut(v).size() - g.edgesIn(v).size() == vLackingInNum;
 				swapAndRemove(lackingInEdgesNum, vIdx);
 				swapAndRemove(lackingInEdgesVertices, vIdx);
 			}
 		}
 
 		for (int u = 0; u < n; u++)
-			assert g.degreeOut(u) == g.degreeIn(u);
+			assert g.edgesOut(u).size() == g.edgesIn(u).size();
 		if (!allEqualInOutDegree) {
 			/*
 			 * Add another edge resulting in one vertex with extra out degree, and one vertex with extra in degree
@@ -230,7 +230,7 @@ public class EulerianTourTest extends TestBase {
 
 	private static int degreeWithoutSelfLoops(Graph g, int u) {
 		int d = 0;
-		for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
+		for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
 			eit.nextInt();
 			if (eit.target() != u)
 				d++;

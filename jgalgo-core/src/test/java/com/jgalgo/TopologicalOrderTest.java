@@ -51,7 +51,7 @@ public class TopologicalOrderTest extends TestBase {
 			Set<Integer> seenVertices = new HashSet<>(n);
 			while (topolSort.hasNext()) {
 				int u = topolSort.nextInt();
-				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
+				for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
 					eit.nextInt();
 					int v = eit.target();
 					assertFalse(seenVertices.contains(Integer.valueOf(v)));

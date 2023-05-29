@@ -104,7 +104,7 @@ class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 
 			/* Init all vertices iterators */
 			for (int u = 0; u < n; u++)
-				vertexData(u).edgeIter = (EdgeIterImpl) g.edgesOut(u);
+				vertexData(u).edgeIter = (EdgeIterImpl) g.edgesOut(u).iterator();
 		}
 
 		abstract Vertex newVertex(int v, DynamicTree.Node dtNode);
@@ -133,7 +133,7 @@ class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 			while (!queue.isEmpty()) {
 				int v = queue.dequeueInt();
 				int vLabel = vertexData[v].label;
-				for (EdgeIter eit = g.edgesIn(v); eit.hasNext();) {
+				for (EdgeIter eit = g.edgesIn(v).iterator(); eit.hasNext();) {
 					int e = eit.nextInt();
 					if (!isResidual(e))
 						continue;
@@ -206,7 +206,7 @@ class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 				/* Finished iterating over all vertex edges */
 				if (!it.hasNext()) {
 					U.label++;
-					U.edgeIter = (EdgeIterImpl) g.edgesOut(U.v);
+					U.edgeIter = (EdgeIterImpl) g.edgesOut(U.v).iterator();
 					cutAllChildren(U);
 				}
 
@@ -358,7 +358,7 @@ class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 
 		@Override
 		void pushAsMuchFromSource() {
-			for (EdgeIter eit = g.edgesOut(source); eit.hasNext();) {
+			for (EdgeIter eit = g.edgesOut(source).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
 				double f = capacity.getDouble(e) - flow.getDouble(e);
 				if (f > 0) {
@@ -489,7 +489,7 @@ class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 
 		@Override
 		void pushAsMuchFromSource() {
-			for (EdgeIter eit = g.edgesOut(source); eit.hasNext();) {
+			for (EdgeIter eit = g.edgesOut(source).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
 				int f = capacity.getInt(e) - flow.getInt(e);
 				if (f > 0) {

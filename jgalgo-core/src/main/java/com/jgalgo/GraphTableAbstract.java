@@ -91,11 +91,6 @@ abstract class GraphTableAbstract extends GraphBaseContinues implements GraphWit
 	}
 
 	@Override
-	public EdgeIter edgesOut(int source) {
-		return new EdgeIterOut(source);
-	}
-
-	@Override
 	public int getEdge(int source, int target) {
 		return edges.get(source).getInt(target);
 	}

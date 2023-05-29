@@ -22,6 +22,8 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.ObjIntConsumer;
+import it.unimi.dsi.fastutil.ints.AbstractIntSet;
+import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 abstract class GraphBase implements Graph {
@@ -47,7 +49,7 @@ abstract class GraphBase implements Graph {
 	@Override
 	public EdgeIter getEdges(int source, int target) {
 		return new EdgeIterImpl() {
-			EdgeIter it = edgesOut(source);
+			EdgeIter it = edgesOut(source).iterator();
 			int e = -1;
 
 			@Override
@@ -184,7 +186,7 @@ abstract class GraphBase implements Graph {
 
 			s.append(": [");
 			boolean firstEdge = true;
-			for (EdgeIter eit = edgesOut(u); eit.hasNext();) {
+			for (EdgeIter eit = edgesOut(u).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = eit.target();
 				if (firstEdge)
@@ -202,6 +204,114 @@ abstract class GraphBase implements Graph {
 		}
 		s.append('}');
 		return s.toString();
+	}
+
+	abstract class EdgeSetOutUndirected extends AbstractIntSet implements EdgeSet {
+
+		final int source;
+
+		EdgeSetOutUndirected(int source) {
+			this.source = source;
+		}
+
+		@Override
+		public boolean contains(int edge) {
+			return source == edgeSource(edge) || source == edgeTarget(edge);
+		}
+
+		@Override
+		public int size() {
+			int count = 0;
+			for (IntIterator it = iterator(); it.hasNext(); it.nextInt())
+				count++;
+			return count;
+		}
+
+		@Override
+		public void clear() {
+			removeEdgesOutOf(source);
+		}
+	}
+
+	abstract class EdgeSetInUndirected extends AbstractIntSet implements EdgeSet {
+
+		final int target;
+
+		EdgeSetInUndirected(int target) {
+			this.target = target;
+		}
+
+		@Override
+		public boolean contains(int edge) {
+			return target == edgeSource(edge) || target == edgeTarget(edge);
+		}
+
+		@Override
+		public int size() {
+			int count = 0;
+			for (IntIterator it = iterator(); it.hasNext(); it.nextInt())
+				count++;
+			return count;
+		}
+
+		@Override
+		public void clear() {
+			removeEdgesInOf(target);
+		}
+	}
+
+	abstract class EdgeSetOutDirected extends AbstractIntSet implements EdgeSet {
+
+		final int source;
+
+		EdgeSetOutDirected(int source) {
+			this.source = source;
+		}
+
+		@Override
+		public boolean contains(int edge) {
+			return source == edgeSource(edge);
+		}
+
+		@Override
+		public int size() {
+			int count = 0;
+			for (IntIterator it = iterator(); it.hasNext(); it.nextInt())
+				count++;
+			return count;
+		}
+
+		@Override
+		public void clear() {
+			removeEdgesOutOf(source);
+		}
+	}
+
+	abstract class EdgeSetInDirected extends AbstractIntSet implements EdgeSet {
+
+		final int target;
+
+		EdgeSetInDirected(int target) {
+			this.target = target;
+		}
+
+		@Override
+		public boolean contains(int edge) {
+			return target == edgeTarget(edge);
+		}
+
+		@Override
+		public int size() {
+			int count = 0;
+			for (IntIterator it = iterator(); it.hasNext(); it.nextInt())
+				count++;
+			return count;
+		}
+
+		@Override
+		public void clear() {
+			removeEdgesInOf(target);
+		}
 	}
 
 }

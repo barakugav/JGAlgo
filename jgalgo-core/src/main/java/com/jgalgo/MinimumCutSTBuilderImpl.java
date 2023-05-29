@@ -59,7 +59,7 @@ class MinimumCutSTBuilderImpl {
 					while (!queue.isEmpty()) {
 						int u = queue.dequeueInt();
 
-						for (EdgeIter it = g.edgesOut(u); it.hasNext();) {
+						for (EdgeIter it = g.edgesOut(u).iterator(); it.hasNext();) {
 							int e = it.nextInt();
 							int v = it.target();
 							if (visited.get(v))
@@ -75,7 +75,7 @@ class MinimumCutSTBuilderImpl {
 						 * the in-edges and search for edges with non zero flow which imply an existent of an out edge
 						 * in the residual network
 						 */
-						for (EdgeIter it = g.edgesIn(u); it.hasNext();) {
+						for (EdgeIter it = g.edgesIn(u).iterator(); it.hasNext();) {
 							int e = it.nextInt();
 							int v = it.source();
 							if (visited.get(v))
@@ -91,7 +91,7 @@ class MinimumCutSTBuilderImpl {
 					while (!queue.isEmpty()) {
 						int u = queue.dequeueInt();
 
-						for (EdgeIter it = g.edgesOut(u); it.hasNext();) {
+						for (EdgeIter it = g.edgesOut(u).iterator(); it.hasNext();) {
 							int e = it.nextInt();
 							int v = it.target();
 							if (visited.get(v))

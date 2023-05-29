@@ -91,7 +91,7 @@ class CutImpl implements Cut {
 		IntArrayList crossEdges0 = new IntArrayList();
 		for (IntIterator uit = Utils.bitSetIterator(cutBitmap); uit.hasNext();) {
 			int u = uit.nextInt();
-			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
+			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = eit.target();
 				if (!cutBitmap.get(v))

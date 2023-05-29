@@ -13,16 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.jgalgo;
 
-import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
- * Iterator used to iterate over edges of a vertex.
+ * Set of graph edges.
  * <p>
- * Each {@code int} returned by {@link #nextInt()} is an ID of an edge iterated by the iterator. The source and target
- * of the last iterated edge are available by {@link #source()} and {@link #target()}.
+ * A set of integers, each represent an edge ID in a graph
  *
  * <pre> {@code
  * Graph g = ...;
@@ -36,27 +34,23 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  * }
  * }</pre>
  *
- * @see EdgeSet
+ * @see    EdgeIter
  * @author Barak Ugav
  */
-public interface EdgeIter extends IntIterator {
+public interface EdgeSet extends IntSet {
 
 	/**
-	 * Get the source vertex of the last returned edge.
-	 * <p>
-	 * The behavior is undefined if {@link nextInt} was not called yet.
-	 *
-	 * @return the source vertex of the last returned edge
+	 * Return an edge iterator that iterate over the edges in this set
 	 */
-	int source();
+	@Override
+	EdgeIter iterator();
 
 	/**
-	 * Get the target vertex of the last returned edge.
-	 * <p>
-	 * The behavior is undefined if {@link nextInt} was not called yet.
-	 *
-	 * @return the target vertex of the last returned edge
+	 * Return an edge iterator that iterate over the edges in this set
 	 */
-	int target();
+	@Override
+	default EdgeIter intIterator() {
+		return iterator();
+	}
 
 }

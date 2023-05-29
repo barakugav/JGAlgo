@@ -97,15 +97,15 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	}
 
 	@Override
-	public EdgeIter edgesOut(int source) {
+	public EdgeSet edgesOut(int source) {
 		checkVertex(source);
-		return new EdgeIterOut(edgesOut.get(source));
+		return new EdgeSetOut(source);
 	}
 
 	@Override
-	public EdgeIter edgesIn(int target) {
+	public EdgeSet edgesIn(int target) {
 		checkVertex(target);
-		return new EdgeIterIn(edgesIn.get(target));
+		return new EdgeSetIn(target);
 	}
 
 	@Override
@@ -226,8 +226,42 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 		super.clearEdges();
 	}
 
-	private abstract class EdgeIterImpl extends GraphLinkedAbstract.EdgeItr {
+	@Override
+	public GraphCapabilities getCapabilities() {
+		return Capabilities;
+	}
 
+	private static final GraphCapabilities Capabilities = GraphCapabilitiesBuilder.newDirected().vertexAdd(true)
+			.vertexRemove(true).edgeAdd(true).edgeRemove(true).parallelEdges(true).selfEdges(true).build();
+
+	@Override
+	public Graph copy() {
+		return new GraphLinkedDirected(this);
+	}
+
+	private class EdgeSetOut extends GraphBase.EdgeSetOutDirected {
+		EdgeSetOut(int source) {
+			super(source);
+		}
+
+		@Override
+		public EdgeIter iterator() {
+			return new EdgeIterOut(edgesOut.get(source));
+		}
+	}
+
+	private class EdgeSetIn extends GraphBase.EdgeSetInDirected {
+		EdgeSetIn(int target) {
+			super(target);
+		}
+
+		@Override
+		public EdgeIter iterator() {
+			return new EdgeIterIn(edgesIn.get(target));
+		}
+	}
+
+	private abstract class EdgeIterImpl extends GraphLinkedAbstract.EdgeItr {
 		EdgeIterImpl(Node p) {
 			super(p);
 		}
@@ -241,11 +275,9 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 		public int target() {
 			return last.target;
 		}
-
 	}
 
 	private class EdgeIterOut extends EdgeIterImpl {
-
 		EdgeIterOut(Node p) {
 			super(p);
 		}
@@ -254,11 +286,9 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 		Node nextNode(GraphLinkedAbstract.Node n) {
 			return ((Node) n).nextOut;
 		}
-
 	}
 
 	private class EdgeIterIn extends EdgeIterImpl {
-
 		EdgeIterIn(Node p) {
 			super(p);
 		}
@@ -267,7 +297,6 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 		Node nextNode(GraphLinkedAbstract.Node n) {
 			return ((Node) n).nextIn;
 		}
-
 	}
 
 	private static class Node extends GraphLinkedAbstract.Node {
@@ -280,20 +309,6 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 		Node(int id, int source, int target) {
 			super(id, source, target);
 		}
-
-	}
-
-	@Override
-	public GraphCapabilities getCapabilities() {
-		return Capabilities;
-	}
-
-	private static final GraphCapabilities Capabilities = GraphCapabilitiesBuilder.newDirected().vertexAdd(true)
-			.vertexRemove(true).edgeAdd(true).edgeRemove(true).parallelEdges(true).selfEdges(true).build();
-
-	@Override
-	public Graph copy() {
-		return new GraphLinkedDirected(this);
 	}
 
 }

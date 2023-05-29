@@ -54,19 +54,18 @@ public class EdgeIterationExample {
 
 		/* Print the out-edges of v5 */
 		System.out.println("The edges of v5:");
-		for (EdgeIter eit = g.edgesOut(v5); eit.hasNext();) {
+		for (EdgeIter eit = g.edgesOut(v5).iterator(); eit.hasNext();) {
 			int e = eit.nextInt();
 			/* EdgeIter.source() and EdgeIter.target() can be used to get the endpoints of the last returned edge */
 			int u = eit.source();
 			int v = eit.target();
 
-			/* If the iterator was created using g.edgesOut(u), EdgeIter.source() will always be u */
-			/* If the iterator was created using g.edgesIn(v), EdgeIter.target() will always be v */
+			/* If the iterator was created using g.edgesOut(u).iterator(), EdgeIter.source() will always be u */
+			/* If the iterator was created using g.edgesIn(v).iterator(), EdgeIter.target() will always be v */
 			assert u == v5;
 			assert IntSet.of(e4, e7).contains(e);
 			System.out.println("\t" + e + "=(" + u + ", " + v + ")");
 		}
-
 	}
 
 	public static void main(String[] args) {

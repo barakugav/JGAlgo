@@ -54,7 +54,7 @@ class GraphsUtils {
 			return false;
 		int n = g.vertices().size();
 		for (int u = 0; u < n; u++) {
-			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
+			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
 				eit.nextInt();
 				if (u == eit.target())
 					return true;
@@ -70,7 +70,7 @@ class GraphsUtils {
 		int[] lastVisit = new int[n];
 		for (int u = 0; u < n; u++) {
 			final int visitIdx = u + 1;
-			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
+			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
 				eit.nextInt();
 				int v = eit.target();
 				if (lastVisit[v] == visitIdx)
@@ -85,7 +85,7 @@ class GraphsUtils {
 
 		@Override
 		default void removeEdgesOf(int source) {
-			for (EdgeIter eit = edgesOut(source); eit.hasNext();) {
+			for (EdgeIter eit = edgesOut(source).iterator(); eit.hasNext();) {
 				eit.nextInt();
 				eit.remove();
 			}
@@ -105,12 +105,6 @@ class GraphsUtils {
 		default void reverseEdge(int edge) {
 			// Do nothing
 		}
-
-		@Override
-		default int degreeIn(int target) {
-			return degreeOut(target);
-		}
-
 	}
 
 	static class GraphCapabilitiesBuilder {

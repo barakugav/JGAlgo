@@ -161,7 +161,7 @@ class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumMatching
 					if (!partition.getBool(u) || matched[u] != EdgeNone)
 						continue;
 					vertexAddedToTree(u);
-					for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
+					for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
 						int e = eit.nextInt();
 						nextTightEdgeAdd(u, e);
 					}
@@ -208,7 +208,7 @@ class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumMatching
 						parent[v] = matchedEdge;
 						vertexAddedToTree(v);
 
-						for (EdgeIter eit = g.edgesOut(v); eit.hasNext();) {
+						for (EdgeIter eit = g.edgesOut(v).iterator(); eit.hasNext();) {
 							int e1 = eit.nextInt();
 							nextTightEdgeAdd(v, e1);
 						}

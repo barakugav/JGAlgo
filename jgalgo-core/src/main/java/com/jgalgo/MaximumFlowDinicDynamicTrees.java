@@ -109,7 +109,7 @@ class MaximumFlowDinicDynamicTrees implements MaximumFlow {
 					if (u == sink)
 						break bfs;
 					int lvl = level[u];
-					for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
+					for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
 						int e = eit.nextInt();
 						int v = eit.target();
 						if (flow.getDouble(e) >= capacity.getDouble(e) || level[v] <= lvl)
@@ -160,13 +160,13 @@ class MaximumFlowDinicDynamicTrees implements MaximumFlow {
 							min = dt.findMinEdge(vToDt[source]);
 						} while (min != null && Math.abs(min.weight()) < EPS);
 
-					} else if (!L.edgesOut(v).hasNext()) {
+					} else if (L.edgesOut(v).isEmpty()) {
 
 						/* Retreat */
 						debug.println("Retreat");
 						if (v == source)
 							break calcBlockFlow;
-						for (EdgeIter eit = L.edgesIn(v); eit.hasNext();) {
+						for (EdgeIter eit = L.edgesIn(v).iterator(); eit.hasNext();) {
 							int e = eit.nextInt();
 							int u = eit.source();
 							if (vToDt[u].getParent() != vToDt[v])
@@ -184,7 +184,7 @@ class MaximumFlowDinicDynamicTrees implements MaximumFlow {
 					} else {
 						/* Advance */
 						debug.println("Advance");
-						EdgeIter eit = L.edgesOut(v);
+						EdgeIter eit = L.edgesOut(v).iterator();
 						int e = eit.nextInt();
 						int gEdge = edgeRefL.getInt(e);
 						dt.link(vToDt[eit.source()], vToDt[eit.target()],

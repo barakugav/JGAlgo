@@ -123,7 +123,7 @@ class MinimumSpanningTreeFredmanTarjan implements MinimumSpanningTree {
 					// decrease edges keys if a better one is found
 					for (int u = vListBegin[U]; u != -1; u = vListNext[u]) {
 						// for each vertex in the super vertex, iterate over all edges
-						for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
+						for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
 							int e = eit.nextInt();
 							int v = V[eit.target()];
 

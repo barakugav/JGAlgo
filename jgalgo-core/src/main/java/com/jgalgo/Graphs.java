@@ -20,6 +20,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
 import com.jgalgo.GraphsUtils.GraphCapabilitiesBuilder;
+import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
 
@@ -57,12 +58,12 @@ public class Graphs {
 		}
 
 		@Override
-		public EdgeIter edgesOut(int source) {
+		public EdgeSet edgesOut(int source) {
 			throw new IndexOutOfBoundsException(source);
 		}
 
 		@Override
-		public EdgeIter edgesIn(int target) {
+		public EdgeSet edgesIn(int target) {
 			throw new IndexOutOfBoundsException(target);
 		}
 
@@ -333,6 +334,36 @@ public class Graphs {
 			return new CompleteGraphUndirected(this);
 		}
 
+		@Override
+		public EdgeSet edgesOut(int source) {
+			return new GraphBase.EdgeSetOutUndirected(source) {
+				@Override
+				public EdgeIter iterator() {
+					return edgesOutIter(source);
+				}
+
+				@Override
+				public int size() {
+					return n - 1;
+				}
+			};
+		}
+
+		@Override
+		public EdgeSet edgesIn(int target) {
+			return new GraphBase.EdgeSetInUndirected(target) {
+				@Override
+				public EdgeIter iterator() {
+					return edgesInIter(target);
+				}
+
+				@Override
+				public int size() {
+					return n - 1;
+				}
+			};
+		}
+
 	}
 
 	private static class CompleteGraphDirected extends CompleteGraph {
@@ -390,6 +421,36 @@ public class Graphs {
 			return new CompleteGraphDirected(this);
 		}
 
+		@Override
+		public EdgeSet edgesOut(int source) {
+			return new GraphBase.EdgeSetOutDirected(source) {
+				@Override
+				public EdgeIter iterator() {
+					return edgesOutIter(source);
+				}
+
+				@Override
+				public int size() {
+					return n - 1;
+				}
+			};
+		}
+
+		@Override
+		public EdgeSet edgesIn(int target) {
+			return new GraphBase.EdgeSetInDirected(target) {
+				@Override
+				public EdgeIter iterator() {
+					return edgesInIter(target);
+				}
+
+				@Override
+				public int size() {
+					return n - 1;
+				}
+			};
+		}
+
 	}
 
 	private static abstract class CompleteGraph extends GraphBase {
@@ -437,8 +498,7 @@ public class Graphs {
 			throw new UnsupportedOperationException();
 		}
 
-		@Override
-		public EdgeIter edgesOut(int source) {
+		EdgeIter edgesOutIter(int source) {
 			checkVertex(source);
 			return new EdgeIterImpl() {
 				int nextTarget = 0;
@@ -480,8 +540,7 @@ public class Graphs {
 			};
 		}
 
-		@Override
-		public EdgeIter edgesIn(int target) {
+		EdgeIter edgesInIter(int target) {
 			checkVertex(target);
 			return new EdgeIterImpl() {
 				int nextSource = 0;
@@ -694,13 +753,13 @@ public class Graphs {
 		}
 
 		@Override
-		public EdgeIter edgesOut(int source) {
-			return new UnmodifiableEdgeIter(g.edgesOut(source));
+		public EdgeSet edgesOut(int source) {
+			return new UnmodifiableEdgeSet(g.edgesOut(source));
 		}
 
 		@Override
-		public EdgeIter edgesIn(int target) {
-			return new UnmodifiableEdgeIter(g.edgesIn(target));
+		public EdgeSet edgesIn(int target) {
+			return new UnmodifiableEdgeSet(g.edgesIn(target));
 		}
 
 		@Override
@@ -817,6 +876,31 @@ public class Graphs {
 		}
 	}
 
+	private static class UnmodifiableEdgeSet extends AbstractIntSet implements EdgeSet {
+
+		private final EdgeSet set;
+
+		UnmodifiableEdgeSet(EdgeSet set) {
+			this.set = Objects.requireNonNull(set);
+		}
+
+		@Override
+		public boolean contains(int edge) {
+			return set.contains(edge);
+		}
+
+		@Override
+		public int size() {
+			return set.size();
+		}
+
+		@Override
+		public EdgeIter iterator() {
+			return new UnmodifiableEdgeIter(set.iterator());
+		}
+
+	}
+
 	private static class UnmodifiableEdgeIter implements EdgeIterImpl {
 		private final EdgeIterImpl it;
 
@@ -883,13 +967,13 @@ public class Graphs {
 		}
 
 		@Override
-		public EdgeIter edgesOut(int source) {
-			return new ReversedEdgeIter(g.edgesIn(source));
+		public EdgeSet edgesOut(int source) {
+			return new ReversedEdgeSet(g.edgesIn(source));
 		}
 
 		@Override
-		public EdgeIter edgesIn(int target) {
-			return new ReversedEdgeIter(g.edgesOut(target));
+		public EdgeSet edgesIn(int target) {
+			return new ReversedEdgeSet(g.edgesOut(target));
 		}
 
 		@Override
@@ -1001,6 +1085,41 @@ public class Graphs {
 		@Override
 		public Graph copy() {
 			return new ReverseGraph(g.copy());
+		}
+
+	}
+
+	private static class ReversedEdgeSet extends AbstractIntSet implements EdgeSet {
+
+		private final EdgeSet set;
+
+		ReversedEdgeSet(EdgeSet set) {
+			this.set = Objects.requireNonNull(set);
+		}
+
+		@Override
+		public boolean contains(int edge) {
+			return set.contains(edge);
+		}
+
+		@Override
+		public int size() {
+			return set.size();
+		}
+
+		@Override
+		public boolean remove(int edge) {
+			return set.remove(edge);
+		}
+
+		@Override
+		public void clear() {
+			set.clear();
+		}
+
+		@Override
+		public EdgeIter iterator() {
+			return new ReversedEdgeIter(set.iterator());
 		}
 
 	}

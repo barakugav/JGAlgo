@@ -163,7 +163,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 			while (!queue.isEmpty()) {
 				int v = queue.dequeueInt();
 				int vLabel = label[v];
-				for (EdgeIter eit = g.edgesIn(v); eit.hasNext();) {
+				for (EdgeIter eit = g.edgesIn(v).iterator(); eit.hasNext();) {
 					int e = eit.nextInt();
 					if (!isResidual(e))
 						continue;
@@ -183,7 +183,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 
 		void onVertexLabelReCompute(int u, int newLabel) {
 			// reset edge iterator
-			edgeIters[u] = (EdgeIterImpl) g.edgesOut(u);
+			edgeIters[u] = (EdgeIterImpl) g.edgesOut(u).iterator();
 			if (hasExcess(u))
 				addToLayerActive(u, newLabel);
 			else
@@ -319,7 +319,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 
 			// reuse edgeIters array
 			for (int u = 0; u < n; u++)
-				edgeIters[u] = (EdgeIterImpl) g.edgesOut(u);
+				edgeIters[u] = (EdgeIterImpl) g.edgesOut(u).iterator();
 
 			for (int root = 0; root < n; root++) {
 				if (vState[root] != Unvisited || !hasExcess(root) || root == source || root == sink)
@@ -416,7 +416,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 			queue.enqueue(sink);
 			while (!queue.isEmpty()) {
 				int v = queue.dequeueInt();
-				for (EdgeIter eit = g.edgesIn(v); eit.hasNext();) {
+				for (EdgeIter eit = g.edgesIn(v).iterator(); eit.hasNext();) {
 					int e = eit.nextInt();
 					if (!isResidual(e))
 						continue;
@@ -466,7 +466,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 
 		@Override
 		void pushAsMuchFromSource() {
-			for (EdgeIter eit = g.edgesOut(source); eit.hasNext();) {
+			for (EdgeIter eit = g.edgesOut(source).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = eit.target();
 				double f = getResidualCapacity(e);
@@ -523,7 +523,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 					relabel(u, label[u] + 1);
 					if (label[u] >= n)
 						break;
-					it = edgeIters[u] = (EdgeIterImpl) g.edgesOut(u);
+					it = edgeIters[u] = (EdgeIterImpl) g.edgesOut(u).iterator();
 					assert it.hasNext();
 				}
 			}
@@ -559,7 +559,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 		@Override
 		void eliminateExcessWithTopologicalOrder(int topoBegin, int topoEnd, int[] topoNext) {
 			for (int u = topoBegin;; u = topoNext[u]) {
-				for (EdgeIter eit = g.edgesOut(u); hasExcess(u) && eit.hasNext();) {
+				for (EdgeIter eit = g.edgesOut(u).iterator(); hasExcess(u) && eit.hasNext();) {
 					int e = eit.nextInt();
 					double f = flow.getDouble(e);
 					if (f < 0)
@@ -618,7 +618,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 
 		@Override
 		void pushAsMuchFromSource() {
-			for (EdgeIter eit = g.edgesOut(source); eit.hasNext();) {
+			for (EdgeIter eit = g.edgesOut(source).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = eit.target();
 				int f = getResidualCapacity(e);
@@ -672,7 +672,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 					relabel(u, label[u] + 1);
 					if (label[u] >= n)
 						break;
-					it = edgeIters[u] = (EdgeIterImpl) g.edgesOut(u);
+					it = edgeIters[u] = (EdgeIterImpl) g.edgesOut(u).iterator();
 					assert it.hasNext();
 				}
 			}
@@ -708,7 +708,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 		@Override
 		void eliminateExcessWithTopologicalOrder(int topoBegin, int topoEnd, int[] topoNext) {
 			for (int u = topoBegin;; u = topoNext[u]) {
-				for (EdgeIter eit = g.edgesOut(u); hasExcess(u) && eit.hasNext();) {
+				for (EdgeIter eit = g.edgesOut(u).iterator(); hasExcess(u) && eit.hasNext();) {
 					int e = eit.nextInt();
 					int f = flow.getInt(e);
 					if (f < 0)

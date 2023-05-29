@@ -104,7 +104,7 @@ class MatchingBipartiteTestUtils extends TestUtils {
 		boolean[][] m = new boolean[S.size()][T.size()];
 		for (IntIterator it = S.keySet().iterator(); it.hasNext();) {
 			int u = it.nextInt();
-			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
+			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
 				eit.nextInt();
 				int v = eit.target();
 				m[S.get(u)][T.get(v)] = true;

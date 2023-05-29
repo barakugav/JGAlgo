@@ -92,7 +92,7 @@ class MinimumMeanCycleDasdanGupta implements MinimumMeanCycle {
 					if (!visit[u])
 						continue;
 					visit[u] = false;
-					for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
+					for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
 						int e = eit.nextInt();
 						int v = eit.target();
 						if (cc.getVertexCc(v) != ccIdx)

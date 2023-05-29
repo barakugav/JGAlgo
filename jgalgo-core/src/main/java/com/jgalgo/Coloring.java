@@ -44,7 +44,7 @@ package com.jgalgo;
  * for (IntIterator uit = g.vertices().iterator(); uit.hasNext();) {
  * 	int u = uit.nextInt();
  * 	System.out.println("The color of vertex " + u + " is " + colors.colorOf(u));
- * 	for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
+ * 	for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
  * 		eit.nextInt();
  * 		int v = eit.target();
  * 		assert colors.colorOf(u) != colors.colorOf(v);

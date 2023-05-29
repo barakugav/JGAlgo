@@ -84,7 +84,7 @@ class ShortestPathSingleSourceDijkstra implements ShortestPathSingleSource {
 
 		for (int u = source;;) {
 			final double uDisntace = res.distances[u];
-			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
+			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = eit.target();
 				if (res.distances[v] != Double.POSITIVE_INFINITY)
@@ -124,7 +124,7 @@ class ShortestPathSingleSourceDijkstra implements ShortestPathSingleSource {
 
 		for (int u = source;;) {
 			final int uDisntace = res.distances[u];
-			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
+			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = eit.target();
 				if (res.distances[v] != Integer.MAX_VALUE)

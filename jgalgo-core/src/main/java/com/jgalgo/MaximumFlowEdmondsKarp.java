@@ -74,7 +74,7 @@ class MaximumFlowEdmondsKarp implements MaximumFlow {
 				queue.enqueue(source);
 				bfs: while (!queue.isEmpty()) {
 					int u = queue.dequeueInt();
-					for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
+					for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
 						int e = eit.nextInt();
 						int v = eit.target();
 

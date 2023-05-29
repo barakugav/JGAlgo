@@ -69,7 +69,7 @@ class ColoringGreedy implements Coloring {
 		BitSet usedColors = new BitSet();
 		for (int u : order) {
 			usedColors.clear();
-			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
+			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
 				eit.nextInt();
 				int v = eit.target();
 				int c = res.colorOf(v);

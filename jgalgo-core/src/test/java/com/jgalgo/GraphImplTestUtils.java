@@ -156,27 +156,22 @@ class GraphImplTestUtils extends TestUtils {
 				}
 			}
 			for (int u = 0; u < n; u++) {
-				IntSet uEdges = new IntOpenHashSet();
-				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
-					int e = eit.nextInt();
-					uEdges.add(e);
-				}
-				assertEquals(edgesOut.get(u), uEdges);
+				assertEquals(edgesOut.get(u), new IntOpenHashSet(g.edgesOut(u)));
+				assertEquals(edgesOut.get(u), g.edgesOut(u));
 			}
 			if (directed) {
 				for (int u = 0; u < n; u++) {
-					IntSet uEdges = new IntOpenHashSet();
-					for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
+					for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
 						int e = eit.nextInt();
 						assertEquals(u, eit.source());
 						assertEquals(g.edgeEndpoint(e, u), eit.target());
-						uEdges.add(e);
 					}
-					assertEquals(edgesOut.get(u), uEdges);
+					assertEquals(edgesOut.get(u), new IntOpenHashSet(g.edgesOut(u)));
+					assertEquals(edgesOut.get(u), g.edgesOut(u));
 				}
 				for (int v = 0; v < n; v++) {
 					IntSet vEdges = new IntOpenHashSet();
-					for (EdgeIter eit = g.edgesIn(v); eit.hasNext();) {
+					for (EdgeIter eit = g.edgesIn(v).iterator(); eit.hasNext();) {
 						int e = eit.nextInt();
 						assertEquals(v, eit.target());
 						assertEquals(g.edgeEndpoint(e, v), eit.source());
@@ -211,7 +206,7 @@ class GraphImplTestUtils extends TestUtils {
 				}
 			}
 			for (int u = 0; u < n; u++) {
-				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
+				for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
 					int e = eit.nextInt();
 					int v = eit.target();
 					if (directed) {
@@ -228,7 +223,7 @@ class GraphImplTestUtils extends TestUtils {
 				}
 			}
 			for (int v = 0; v < n; v++) {
-				for (EdgeIter eit = g.edgesIn(v); eit.hasNext();) {
+				for (EdgeIter eit = g.edgesIn(v).iterator(); eit.hasNext();) {
 					int e = eit.nextInt();
 					int u = eit.source();
 					if (directed) {
@@ -271,8 +266,8 @@ class GraphImplTestUtils extends TestUtils {
 				}
 			}
 			for (int u = 0; u < n; u++) {
-				assertEquals(degreeOut.get(u), g.degreeOut(u), "u=" + u);
-				assertEquals(degreeIn.get(u), g.degreeIn(u), "u=" + u);
+				assertEquals(degreeOut.get(u), g.edgesOut(u).size(), "u=" + u);
+				assertEquals(degreeIn.get(u), g.edgesIn(u).size(), "u=" + u);
 			}
 		}
 	}
@@ -373,10 +368,6 @@ class GraphImplTestUtils extends TestUtils {
 		}
 	}
 
-	private static IntSet setOf(IntIterator it) {
-		return new IntOpenHashSet(it);
-	}
-
 	static void testCopy(GraphBuilder graphImpl, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		final Random rand = new Random(seedGen.nextSeed());
@@ -417,8 +408,8 @@ class GraphImplTestUtils extends TestUtils {
 			assertEquals(g.edges(), copy.edges());
 			for (IntIterator uit = g.vertices().iterator(); uit.hasNext();) {
 				int u = uit.nextInt();
-				assertEquals(setOf(g.edgesOut(u)), setOf(copy.edgesOut(u)));
-				assertEquals(setOf(g.edgesIn(u)), setOf(copy.edgesIn(u)));
+				assertEquals(g.edgesOut(u), copy.edgesOut(u));
+				assertEquals(g.edgesIn(u), copy.edgesIn(u));
 			}
 
 			/* Assert weights were copied */
@@ -894,7 +885,7 @@ class GraphImplTestUtils extends TestUtils {
 					GraphTracker.Vertex source = edge.u;
 
 					Set<GraphTracker.Edge> iterationExpected = new HashSet<>();
-					for (EdgeIter it = g.edgesOut(source.id); it.hasNext();) {
+					for (EdgeIter it = g.edgesOut(source.id).iterator(); it.hasNext();) {
 						int eOther = it.nextInt();
 						if (edgeData.getInt(eOther) != edge.data) {
 							GraphTracker.Edge edgeOther = tracker.getEdge(edgeData.getInt(eOther));
@@ -904,7 +895,7 @@ class GraphImplTestUtils extends TestUtils {
 					}
 					boolean removed = false;
 					Set<GraphTracker.Edge> iterationActual = new HashSet<>();
-					for (EdgeIter it = g.edgesOut(source.id); it.hasNext();) {
+					for (EdgeIter it = g.edgesOut(source.id).iterator(); it.hasNext();) {
 						int eOther = it.nextInt();
 						if (edgeData.getInt(eOther) != edge.data) {
 							GraphTracker.Edge edgeOther = tracker.getEdge(edgeData.getInt(eOther));
@@ -928,7 +919,7 @@ class GraphImplTestUtils extends TestUtils {
 					GraphTracker.Vertex target = edge.v;
 
 					Set<GraphTracker.Edge> iterationExpected = new HashSet<>();
-					for (EdgeIter it = g.edgesIn(target.id); it.hasNext();) {
+					for (EdgeIter it = g.edgesIn(target.id).iterator(); it.hasNext();) {
 						int eOther = it.nextInt();
 						if (edgeData.getInt(eOther) != edge.data) {
 							GraphTracker.Edge edgeOther = tracker.getEdge(edgeData.getInt(eOther));
@@ -938,7 +929,7 @@ class GraphImplTestUtils extends TestUtils {
 					}
 					boolean removed = false;
 					Set<GraphTracker.Edge> iterationActual = new HashSet<>();
-					for (EdgeIter it = g.edgesIn(target.id); it.hasNext();) {
+					for (EdgeIter it = g.edgesIn(target.id).iterator(); it.hasNext();) {
 						int eOther = it.nextInt();
 						if (edgeData.getInt(eOther) != edge.data) {
 							GraphTracker.Edge edgeOther = tracker.getEdge(edgeData.getInt(eOther));
@@ -981,11 +972,11 @@ class GraphImplTestUtils extends TestUtils {
 					if (tracker.verticesNum() == 0)
 						continue;
 					GraphTracker.Vertex u = tracker.getRandVertex(rand);
-					for (EdgeIter it = g.edgesOut(u.id); it.hasNext();) {
+					for (EdgeIter it = g.edgesOut(u.id).iterator(); it.hasNext();) {
 						it.nextInt();
 						it.remove();
 					}
-					for (EdgeIter it = g.edgesIn(u.id); it.hasNext();) {
+					for (EdgeIter it = g.edgesIn(u.id).iterator(); it.hasNext();) {
 						it.nextInt();
 						it.remove();
 					}
@@ -1004,7 +995,7 @@ class GraphImplTestUtils extends TestUtils {
 					if (tracker.verticesNum() == 0)
 						continue;
 					GraphTracker.Vertex u = tracker.getRandVertex(rand);
-					for (EdgeIter it = g.edgesIn(u.id); it.hasNext();) {
+					for (EdgeIter it = g.edgesIn(u.id).iterator(); it.hasNext();) {
 						it.nextInt();
 						it.remove();
 					}
@@ -1023,7 +1014,7 @@ class GraphImplTestUtils extends TestUtils {
 					if (tracker.verticesNum() == 0)
 						continue;
 					GraphTracker.Vertex u = tracker.getRandVertex(rand);
-					for (EdgeIter it = g.edgesOut(u.id); it.hasNext();) {
+					for (EdgeIter it = g.edgesOut(u.id).iterator(); it.hasNext();) {
 						it.nextInt();
 						it.remove();
 					}

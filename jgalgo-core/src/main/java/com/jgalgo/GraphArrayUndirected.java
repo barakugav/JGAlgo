@@ -106,15 +106,15 @@ class GraphArrayUndirected extends GraphArrayAbstract implements UndirectedGraph
 	}
 
 	@Override
-	public EdgeIter edgesOut(int source) {
+	public EdgeSet edgesOut(int source) {
 		checkVertex(source);
-		return new EdgeOutIt(source, edges.get(source), edgesNum.getInt(source));
+		return new EdgeSetOut(source);
 	}
 
 	@Override
-	public EdgeIter edgesIn(int target) {
+	public EdgeSet edgesIn(int target) {
 		checkVertex(target);
-		return new EdgeInIt(target, edges.get(target), edgesNum.getInt(target));
+		return new EdgeSetIn(target);
 	}
 
 	@Override
@@ -171,12 +171,6 @@ class GraphArrayUndirected extends GraphArrayAbstract implements UndirectedGraph
 	}
 
 	@Override
-	public int degreeOut(int source) {
-		checkVertex(source);
-		return edgesNum.getInt(source);
-	}
-
-	@Override
 	public void clearEdges() {
 		edgesNum.clear();
 		super.clearEdges();
@@ -202,11 +196,43 @@ class GraphArrayUndirected extends GraphArrayAbstract implements UndirectedGraph
 		return new GraphArrayUndirected(this);
 	}
 
-	private class EdgeOutIt extends GraphArrayAbstract.EdgeIt {
+	private class EdgeSetOut extends GraphBase.EdgeSetOutUndirected {
+		EdgeSetOut(int source) {
+			super(source);
+		}
+
+		@Override
+		public int size() {
+			return edgesNum.getInt(source);
+		}
+
+		@Override
+		public EdgeIter iterator() {
+			return new EdgeIterOut(source, edges.get(source), edgesNum.getInt(source));
+		}
+	}
+
+	private class EdgeSetIn extends GraphBase.EdgeSetInUndirected {
+		EdgeSetIn(int target) {
+			super(target);
+		}
+
+		@Override
+		public int size() {
+			return edgesNum.getInt(target);
+		}
+
+		@Override
+		public EdgeIter iterator() {
+			return new EdgeIterIn(target, edges.get(target), edgesNum.getInt(target));
+		}
+	}
+
+	private class EdgeIterOut extends GraphArrayAbstract.EdgeIt {
 
 		private final int source;
 
-		EdgeOutIt(int source, int[] edges, int count) {
+		EdgeIterOut(int source, int[] edges, int count) {
 			super(edges, count);
 			this.source = source;
 		}
@@ -224,11 +250,11 @@ class GraphArrayUndirected extends GraphArrayAbstract implements UndirectedGraph
 		}
 	}
 
-	private class EdgeInIt extends GraphArrayAbstract.EdgeIt {
+	private class EdgeIterIn extends GraphArrayAbstract.EdgeIt {
 
 		private final int target;
 
-		EdgeInIt(int target, int[] edges, int count) {
+		EdgeIterIn(int target, int[] edges, int count) {
 			super(edges, count);
 			this.target = target;
 		}

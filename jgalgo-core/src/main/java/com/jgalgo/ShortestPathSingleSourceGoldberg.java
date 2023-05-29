@@ -176,7 +176,7 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSource, Algo
 					G.addVertex();
 				for (int u = 0; u < n; u++) {
 					int U = connectivityRes.getVertexCc(u);
-					for (EdgeIter eit = gNeg.edgesOut(u); eit.hasNext();) {
+					for (EdgeIter eit = gNeg.edgesOut(u).iterator(); eit.hasNext();) {
 						int e = eit.nextInt();
 						int v = eit.target();
 						int V = connectivityRes.getVertexCc(v);

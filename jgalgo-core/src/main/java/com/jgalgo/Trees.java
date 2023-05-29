@@ -127,7 +127,7 @@ public class Trees {
 				int u = stack.popInt();
 				visitedCount++;
 
-				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
+				for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
 					eit.nextInt();
 					int v = eit.target();
 					if (!directed && v == parent[u])
