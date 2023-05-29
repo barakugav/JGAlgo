@@ -63,7 +63,7 @@ public class UnionFindBench {
 		graphs = new ArrayList<>(graphsNum);
 		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
 			Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
-			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 
 			/*
 			 * sort the edges in setup instead of using standard Kruskal MST implementation during benchmark to isolate

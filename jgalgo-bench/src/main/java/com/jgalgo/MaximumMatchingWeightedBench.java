@@ -48,7 +48,7 @@ public class MaximumMatchingWeightedBench {
 	@Param({ "|V|=200 |E|=1500", "|V|=800 |E|=10000", "|V|=1500 |E|=3000" })
 	public String args;
 
-	private List<Pair<Graph, EdgeWeightFunc>> graphs;
+	private List<Pair<Graph, WeightFunction>> graphs;
 	private final int graphsNum = 31;
 	private final AtomicInteger graphIdx = new AtomicInteger();
 
@@ -62,23 +62,23 @@ public class MaximumMatchingWeightedBench {
 		graphs = new ArrayList<>(graphsNum);
 		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
 			Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
-			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
+			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
 			graphs.add(Pair.of(g, w));
 		}
 	}
 
 	private void benchMaximumMatchingWeighted(MaximumMatching algo, Blackhole blackhole) {
-		Pair<Graph, EdgeWeightFunc> gw = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
+		Pair<Graph, WeightFunction> gw = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 		Graph g = gw.first();
-		EdgeWeightFunc w = gw.second();
+		WeightFunction w = gw.second();
 		Matching matching = algo.computeMaximumWeightedMatching(g, w);
 		blackhole.consume(matching);
 	}
 
 	private void benchMaximumMatchingWeightedPerfect(MaximumMatching algo, Blackhole blackhole) {
-		Pair<Graph, EdgeWeightFunc> gw = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
+		Pair<Graph, WeightFunction> gw = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 		Graph g = gw.first();
-		EdgeWeightFunc w = gw.second();
+		WeightFunction w = gw.second();
 		Matching matching = algo.computeMaximumWeightedPerfectMatching(g, w);
 		blackhole.consume(matching);
 	}

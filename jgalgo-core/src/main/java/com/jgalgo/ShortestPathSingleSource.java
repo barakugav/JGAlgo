@@ -83,7 +83,7 @@ public interface ShortestPathSingleSource {
 	 * @param  source a source vertex
 	 * @return        a result object containing the distances and shortest paths from the source to any other vertex
 	 */
-	public ShortestPathSingleSource.Result computeShortestPaths(Graph g, EdgeWeightFunc w, int source);
+	public ShortestPathSingleSource.Result computeShortestPaths(Graph g, WeightFunction w, int source);
 
 	/**
 	 * Compute the cardinality shortest paths from a source to any other vertex in a graph.
@@ -97,7 +97,7 @@ public interface ShortestPathSingleSource {
 	 *                other vertex
 	 */
 	default ShortestPathSingleSource.Result computeCardinalityShortestPaths(Graph g, int source) {
-		return computeShortestPaths(g, EdgeWeightFunc.CardinalityEdgeWeightFunction, source);
+		return computeShortestPaths(g, WeightFunction.CardinalityWeightFunction, source);
 	}
 
 	/**

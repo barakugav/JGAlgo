@@ -69,6 +69,6 @@ public interface Cut {
 	 * @param  w an edge weight function
 	 * @return   the sum of edge weights \((u,v)\) such that \(u\) is in \(C\) and \(v\) is in \(\bar{C}\)
 	 */
-	double weight(EdgeWeightFunc w);
+	double weight(WeightFunction w);
 
 }

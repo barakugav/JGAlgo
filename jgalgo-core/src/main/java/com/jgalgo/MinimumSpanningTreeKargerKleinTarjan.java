@@ -69,12 +69,12 @@ class MinimumSpanningTreeKargerKleinTarjan implements MinimumSpanningTree {
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	public MinimumSpanningTree.Result computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
+	public MinimumSpanningTree.Result computeMinimumSpanningTree(Graph g, WeightFunction w) {
 		ArgumentCheck.onlyUndirected(g);
 		return new MinimumSpanningTreeResultImpl(computeMST(g, w));
 	}
 
-	private IntCollection computeMST(Graph g, EdgeWeightFunc w) {
+	private IntCollection computeMST(Graph g, WeightFunction w) {
 		if (g.vertices().size() == 0 || g.edges().size() == 0)
 			return IntLists.emptyList();
 
@@ -123,7 +123,7 @@ class MinimumSpanningTreeKargerKleinTarjan implements MinimumSpanningTree {
 		return subG;
 	}
 
-	static Weights.Double assignWeightsFromEdgeRef(Graph g, EdgeWeightFunc w, Object weightKey, Weights.Int edgeRef) {
+	static Weights.Double assignWeightsFromEdgeRef(Graph g, WeightFunction w, Object weightKey, Weights.Int edgeRef) {
 		Weights.Double w2 = g.addEdgesWeights(weightKey, double.class);
 		for (int e : g.edges())
 			w2.set(e, w.weight(edgeRef.getInt(e)));

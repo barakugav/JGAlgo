@@ -30,7 +30,7 @@ public class TreePathMaximaTestUtils extends TestUtils {
 
 	private TreePathMaximaTestUtils() {}
 
-	private static int[] calcExpectedTPM(Graph t, EdgeWeightFunc w, TreePathMaxima.Queries queries) {
+	private static int[] calcExpectedTPM(Graph t, WeightFunction w, TreePathMaxima.Queries queries) {
 		int queriesNum = queries.size();
 		int[] res = new int[queriesNum];
 		for (int q = 0; q < queriesNum; q++) {
@@ -69,7 +69,7 @@ public class TreePathMaximaTestUtils extends TestUtils {
 	}
 
 	static void compareActualToExpectedResults(TreePathMaxima.Queries queries, TreePathMaxima.Result actual,
-			int[] expected, EdgeWeightFunc w) {
+			int[] expected, WeightFunction w) {
 		assertEquals(expected.length, actual.size(), "Unexpected result size");
 		for (int i = 0; i < actual.size(); i++) {
 			IntIntPair query = queries.getQuery(i);
@@ -94,7 +94,7 @@ public class TreePathMaximaTestUtils extends TestUtils {
 	private static void testTPM(TreePathMaxima algo, int n, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Graph t = GraphsTestUtils.randTree(n, seedGen.nextSeed());
-		EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(t, seedGen.nextSeed());
+		WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntPos(t, seedGen.nextSeed());
 
 		TreePathMaxima.Queries queries = n <= 32 ? generateAllPossibleQueries(n)
 				: generateRandQueries(n, Math.min(n * 16, 1000), seedGen.nextSeed());
@@ -111,7 +111,7 @@ public class TreePathMaximaTestUtils extends TestUtils {
 			int n = args[0], m = args[1];
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
 					.selfEdges(false).cycles(true).connected(true).build();
-			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			IntCollection mstEdges = new MinimumSpanningTreeKruskal().computeMinimumSpanningTree(g, w).edges();
 
 			boolean isMST = TreePathMaxima.verifyMST(g, w, mstEdges, algo);
@@ -128,7 +128,7 @@ public class TreePathMaximaTestUtils extends TestUtils {
 
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
 					.selfEdges(false).cycles(true).connected(true).build();
-			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 
 			IntCollection mstEdges =
 					new IntArrayList(new MinimumSpanningTreeKruskal().computeMinimumSpanningTree(g, w).edges());

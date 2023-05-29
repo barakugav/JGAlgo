@@ -78,7 +78,7 @@ public class AStarTest extends TestBase {
 	private static ShortestPathSingleSource AStarAsSSSPWithPerfectHeuristic() {
 		return AStarAsSSSP(params -> {
 			Graph g = params.g;
-			EdgeWeightFunc w = params.w;
+			WeightFunction w = params.w;
 			if (params.g.getCapabilities().directed()) {
 				GraphReverseResult rev = reverseGraph(params.g, params.w);
 				g = rev.g;
@@ -95,7 +95,7 @@ public class AStarTest extends TestBase {
 		Random rand = new Random(seed);
 		return AStarAsSSSP(params -> {
 			Graph g = params.g;
-			EdgeWeightFunc w = params.w;
+			WeightFunction w = params.w;
 			if (params.g.getCapabilities().directed()) {
 				GraphReverseResult rev = reverseGraph(params.g, params.w);
 				g = rev.g;
@@ -111,7 +111,7 @@ public class AStarTest extends TestBase {
 		});
 	}
 
-	private static GraphReverseResult reverseGraph(Graph g, EdgeWeightFunc w) {
+	private static GraphReverseResult reverseGraph(Graph g, WeightFunction w) {
 		final int n = g.vertices().size(), m = g.edges().size();
 		Graph revG = GraphBuilder.newDirected().expectedVerticesNum(n).expectedEdgesNum(m).build();
 		for (int v = 0; v < n; v++)
@@ -130,16 +130,16 @@ public class AStarTest extends TestBase {
 
 	private static class GraphReverseResult {
 		Graph g;
-		EdgeWeightFunc w;
+		WeightFunction w;
 	}
 
 	private static class HeuristicParams {
 		final Graph g;
-		final EdgeWeightFunc w;
+		final WeightFunction w;
 		@SuppressWarnings("unused")
 		final int source, target;
 
-		HeuristicParams(Graph g, EdgeWeightFunc w, int source, int target) {
+		HeuristicParams(Graph g, WeightFunction w, int source, int target) {
 			this.g = g;
 			this.w = w;
 			this.source = source;
@@ -151,7 +151,7 @@ public class AStarTest extends TestBase {
 			Function<HeuristicParams, IntToDoubleFunction> vHeuristicBuilder) {
 		return new ShortestPathSingleSource() {
 			@Override
-			public ShortestPathSingleSource.Result computeShortestPaths(Graph g, EdgeWeightFunc w, int source) {
+			public ShortestPathSingleSource.Result computeShortestPaths(Graph g, WeightFunction w, int source) {
 				int n = g.vertices().size();
 				Path[] paths = new Path[n];
 				double[] distances = new double[n];

@@ -47,9 +47,9 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 	}
 
 	@Override
-	public Cut computeMinimumCut(Graph g, EdgeWeightFunc w, int source, int sink) {
-		if (w instanceof EdgeWeightFunc.Int) {
-			EdgeWeightFunc.Int wInt = (EdgeWeightFunc.Int) w;
+	public Cut computeMinimumCut(Graph g, WeightFunction w, int source, int sink) {
+		if (w instanceof WeightFunction.Int) {
+			WeightFunction.Int wInt = (WeightFunction.Int) w;
 			FlowNetwork.Int net = new FlowNetwork.Int() {
 
 				@Override

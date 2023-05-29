@@ -69,19 +69,19 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSource, Algo
 	 * {@inheritDoc}
 	 *
 	 * @throws IllegalArgumentException if the graph is not directed or the edge weights function is not of type
-	 *                                      {@link EdgeWeightFunc.Int}
+	 *                                      {@link WeightFunction.Int}
 	 */
 	@Override
-	public ShortestPathSingleSource.Result computeShortestPaths(Graph g, EdgeWeightFunc w, int source) {
+	public ShortestPathSingleSource.Result computeShortestPaths(Graph g, WeightFunction w, int source) {
 		ArgumentCheck.onlyDirected(g);
 		if (w == null)
-			w = EdgeWeightFunc.CardinalityEdgeWeightFunction;
-		if (!(w instanceof EdgeWeightFunc.Int))
+			w = WeightFunction.CardinalityWeightFunction;
+		if (!(w instanceof WeightFunction.Int))
 			throw new IllegalArgumentException("Only integer weights are supported");
-		return computeShortestPaths0(g, (EdgeWeightFunc.Int) w, source);
+		return computeShortestPaths0(g, (WeightFunction.Int) w, source);
 	}
 
-	private ShortestPathSingleSource.Result computeShortestPaths0(Graph g, EdgeWeightFunc.Int w, int source) {
+	private ShortestPathSingleSource.Result computeShortestPaths0(Graph g, WeightFunction.Int w, int source) {
 		int minWeight = Integer.MAX_VALUE;
 		for (int e : g.edges())
 			minWeight = Math.min(minWeight, w.weightInt(e));
@@ -96,14 +96,14 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSource, Algo
 
 		/* create a (positive) weight function using the potential */
 		int[] potential = p.first();
-		EdgeWeightFunc.Int pw = e -> w.weightInt(e) + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];
+		WeightFunction.Int pw = e -> w.weightInt(e) + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];
 
 		/* run positive SSSP */
 		ShortestPathSingleSource.Result res = positiveSsspAlgo.computeShortestPaths(g, pw, source);
 		return Result.ofSuccess(source, potential, res);
 	}
 
-	private Pair<int[], Path> calcPotential(Graph g, EdgeWeightFunc.Int w0, int minWeight) {
+	private Pair<int[], Path> calcPotential(Graph g, WeightFunction.Int w0, int minWeight) {
 		diagnostics.runBegin();
 		final int n = g.vertices().size();
 		int[] potential = new int[n];
@@ -271,7 +271,7 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSource, Algo
 		return Pair.of(potential, null);
 	}
 
-	private static int calcWeightWithPotential(Graph g, int e, EdgeWeightFunc.Int w, int[] potential, int weightMask) {
+	private static int calcWeightWithPotential(Graph g, int e, WeightFunction.Int w, int[] potential, int weightMask) {
 		int weight = w.weightInt(e);
 		// weight = ceil(weight / 2^weightMask)
 		if (weightMask != 0) {

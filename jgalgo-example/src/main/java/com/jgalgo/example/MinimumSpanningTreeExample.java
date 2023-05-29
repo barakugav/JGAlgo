@@ -15,7 +15,7 @@
  */
 package com.jgalgo.example;
 
-import com.jgalgo.EdgeWeightFunc;
+import com.jgalgo.WeightFunction;
 import com.jgalgo.Graph;
 import com.jgalgo.GraphBuilder;
 import com.jgalgo.MinimumSpanningTree;
@@ -65,7 +65,7 @@ public class MinimumSpanningTreeExample {
 		weights.set(e12, 5.5);
 
 		/* Compute the minimum spanning tree of the graph */
-		EdgeWeightFunc w = weights;
+		WeightFunction w = weights;
 		MinimumSpanningTree mstAlgo = MinimumSpanningTree.newBuilder().build();
 		MinimumSpanningTree.Result mst = mstAlgo.computeMinimumSpanningTree(g, w);
 

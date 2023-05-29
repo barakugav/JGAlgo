@@ -131,8 +131,8 @@ public interface Path extends IntList {
 	 * @param  w an edge weight function
 	 * @return   the sum of this path edges weights
 	 */
-	default double weight(EdgeWeightFunc w) {
-		return GraphsUtils.edgesWeightSum(iterator(), w);
+	default double weight(WeightFunction w) {
+		return GraphsUtils.weightSum(this, w);
 	}
 
 	/**

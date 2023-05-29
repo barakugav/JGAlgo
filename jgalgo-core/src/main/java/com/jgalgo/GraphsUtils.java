@@ -17,6 +17,7 @@
 package com.jgalgo;
 
 import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntIterable;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 class GraphsUtils {
@@ -244,25 +245,29 @@ class GraphsUtils {
 		}
 	}
 
-	static double edgesWeightSum(IntIterator eit, EdgeWeightFunc w) {
-		if (w == null || w == EdgeWeightFunc.CardinalityEdgeWeightFunction) {
+	static double weightSum(IntIterable collection, WeightFunction w) {
+		return weightSum(collection.iterator(), w);
+	}
+
+	static double weightSum(IntIterator it, WeightFunction w) {
+		if (w == null || w == WeightFunction.CardinalityWeightFunction) {
 			int cardinality = 0;
-			for (; eit.hasNext(); eit.nextInt())
+			for (; it.hasNext(); it.nextInt())
 				cardinality++;
 			return cardinality;
 		}
 
-		if (w instanceof EdgeWeightFunc.Int) {
-			EdgeWeightFunc.Int w0 = (EdgeWeightFunc.Int) w;
+		if (w instanceof WeightFunction.Int) {
+			WeightFunction.Int w0 = (WeightFunction.Int) w;
 			int sum = 0;
-			while (eit.hasNext())
-				sum += w0.weightInt(eit.nextInt());
+			while (it.hasNext())
+				sum += w0.weightInt(it.nextInt());
 			return sum;
 
 		} else {
 			double sum = 0;
-			while (eit.hasNext())
-				sum += w.weight(eit.nextInt());
+			while (it.hasNext())
+				sum += w.weight(it.nextInt());
 			return sum;
 		}
 	}

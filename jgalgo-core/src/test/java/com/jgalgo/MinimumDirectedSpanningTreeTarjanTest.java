@@ -33,7 +33,7 @@ public class MinimumDirectedSpanningTreeTarjanTest extends TestBase {
 		}
 
 		@Override
-		public MinimumSpanningTree.Result computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
+		public MinimumSpanningTree.Result computeMinimumSpanningTree(Graph g, WeightFunction w) {
 			if (g.getCapabilities().directed())
 				return algo.computeMinimumSpanningTree(g, w, 0);
 			int n = g.vertices().size();
@@ -83,13 +83,13 @@ public class MinimumDirectedSpanningTreeTarjanTest extends TestBase {
 
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(false)
 					.selfEdges(false).cycles(true).connected(false).graphImpl(graphImpl).build();
-			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 
 			testRandGraph(algo, g, w);
 		});
 	}
 
-	private static void testRandGraph(MinimumDirectedSpanningTree algo, Graph g, EdgeWeightFunc w) {
+	private static void testRandGraph(MinimumDirectedSpanningTree algo, Graph g, WeightFunction w) {
 		@SuppressWarnings("unused")
 		MinimumSpanningTree.Result mst = algo.computeMinimumSpanningTree(g, w, 0);
 		// TODO verify the result

@@ -35,8 +35,8 @@ class MinimumSpanningTreeResultImpl implements MinimumSpanningTree.Result {
 	}
 
 	@Override
-	public double weight(EdgeWeightFunc w) {
-		return GraphsUtils.edgesWeightSum(edges.iterator(), w);
+	public double weight(WeightFunction w) {
+		return GraphsUtils.weightSum(edges, w);
 	}
 
 	@Override

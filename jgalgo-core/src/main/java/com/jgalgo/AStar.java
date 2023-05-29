@@ -62,7 +62,7 @@ class AStar implements ShortestPathWithHeuristic {
 	}
 
 	@Override
-	public Path computeShortestPath(Graph g, EdgeWeightFunc w, int source, int target, IntToDoubleFunction vHeuristic) {
+	public Path computeShortestPath(Graph g, WeightFunction w, int source, int target, IntToDoubleFunction vHeuristic) {
 		ArgumentCheck.onlyPositiveWeights(g, w);
 		if (source == target)
 			return new PathImpl(g, source, target, IntLists.emptyList());

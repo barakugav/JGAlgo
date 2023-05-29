@@ -48,7 +48,7 @@ public interface MinimumCutST {
 	 * @return                          the cut that was computed
 	 * @throws IllegalArgumentException if the source and the sink are the same vertex
 	 */
-	Cut computeMinimumCut(Graph g, EdgeWeightFunc w, int source, int sink);
+	Cut computeMinimumCut(Graph g, WeightFunction w, int source, int sink);
 
 	/**
 	 * Create a new minimum cut algorithm builder.

@@ -43,7 +43,7 @@ class ShortestPathAllPairsTestUtils extends TestUtils {
 			int n = args[0], m = args[1];
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
-			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			testAPSP(g, w, algo, new ShortestPathSingleSourceDijkstra());
 		});
 	}
@@ -66,12 +66,12 @@ class ShortestPathAllPairsTestUtils extends TestUtils {
 			int n = args[0], m = args[1];
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
-			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
+			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
 			testAPSP(g, w, algo, new ShortestPathSingleSourceGoldberg());
 		});
 	}
 
-	static void testAPSP(Graph g, EdgeWeightFunc w, ShortestPathAllPairs algo, ShortestPathSingleSource validationAlgo) {
+	static void testAPSP(Graph g, WeightFunction w, ShortestPathAllPairs algo, ShortestPathSingleSource validationAlgo) {
 		ShortestPathAllPairs.Result result = algo.computeAllShortestPaths(g, w);
 
 		int n = g.vertices().size();

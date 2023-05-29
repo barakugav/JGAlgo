@@ -54,9 +54,9 @@ class ShortestPathAllPairsJohnson implements ShortestPathAllPairs {
 	 * @throws IllegalArgumentException if the graph is not directed
 	 */
 	@Override
-	public ShortestPathAllPairs.Result computeAllShortestPaths(Graph g, EdgeWeightFunc w) {
+	public ShortestPathAllPairs.Result computeAllShortestPaths(Graph g, WeightFunction w) {
 		if (w == null)
-			w = EdgeWeightFunc.CardinalityEdgeWeightFunction;
+			w = WeightFunction.CardinalityWeightFunction;
 		ArgumentCheck.onlyDirected(g);
 		int n = g.vertices().size();
 
@@ -80,14 +80,14 @@ class ShortestPathAllPairsJohnson implements ShortestPathAllPairs {
 			return new NegCycleRes(potential0.second());
 		double[] potential = potential0.first();
 
-		EdgeWeightFunc wPotential;
-		if (w instanceof EdgeWeightFunc.Int) {
-			EdgeWeightFunc.Int wInt = (EdgeWeightFunc.Int) w;
-			EdgeWeightFunc.Int wPotentialInt =
+		WeightFunction wPotential;
+		if (w instanceof WeightFunction.Int) {
+			WeightFunction.Int wInt = (WeightFunction.Int) w;
+			WeightFunction.Int wPotentialInt =
 					e -> wInt.weightInt(e) + (int) potential[g.edgeSource(e)] - (int) potential[g.edgeTarget(e)];
 			wPotential = wPotentialInt;
 		} else {
-			EdgeWeightFunc w0 = w;
+			WeightFunction w0 = w;
 			wPotential = e -> w0.weight(e) + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];
 		}
 		SuccessRes res = computeAPSPPositive(g, wPotential);
@@ -95,7 +95,7 @@ class ShortestPathAllPairsJohnson implements ShortestPathAllPairs {
 		return res;
 	}
 
-	private SuccessRes computeAPSPPositive(Graph g, EdgeWeightFunc w) {
+	private SuccessRes computeAPSPPositive(Graph g, WeightFunction w) {
 		final int n = g.vertices().size();
 		SuccessRes res = new SuccessRes(n);
 
@@ -123,7 +123,7 @@ class ShortestPathAllPairsJohnson implements ShortestPathAllPairs {
 		return res;
 	}
 
-	private Pair<double[], Path> calcPotential(Graph g, EdgeWeightFunc w) {
+	private Pair<double[], Path> calcPotential(Graph g, WeightFunction w) {
 		int n = g.vertices().size();
 		Graph refG = GraphBuilder.newDirected().expectedVerticesNum(n + 1).build();
 		for (int u = 0; u < n; u++)
@@ -144,10 +144,10 @@ class ShortestPathAllPairsJohnson implements ShortestPathAllPairs {
 		for (int v = 0; v < n; v++)
 			edgeEef.set(refG.addEdge(fakeV, v), fakeEdge);
 
-		EdgeWeightFunc refW;
-		if (w instanceof EdgeWeightFunc.Int) {
-			EdgeWeightFunc.Int wInt = (EdgeWeightFunc.Int) w;
-			EdgeWeightFunc.Int refWInt = e -> {
+		WeightFunction refW;
+		if (w instanceof WeightFunction.Int) {
+			WeightFunction.Int wInt = (WeightFunction.Int) w;
+			WeightFunction.Int refWInt = e -> {
 				int ref = edgeEef.getInt(e);
 				return ref != fakeEdge ? wInt.weightInt(ref) : 0;
 			};

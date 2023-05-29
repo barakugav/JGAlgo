@@ -50,13 +50,13 @@ class ShortestPathSingleSourceUtils {
 						private final int maxDistance = (int) BuilderImpl.this.maxDistance;
 
 						@Override
-						public ShortestPathSingleSource.Result computeShortestPaths(Graph g, EdgeWeightFunc w,
+						public ShortestPathSingleSource.Result computeShortestPaths(Graph g, WeightFunction w,
 								int source) {
 							final int n = g.vertices().size(), m = g.edges().size();
 							int dialWork = n + m + maxDistance;
 							int dijkstraWork = m + n * Utils.log2ceil(n);
 							if (dialWork < dijkstraWork) {
-								return ssspDial.computeShortestPaths(g, (EdgeWeightFunc.Int) w, source, maxDistance);
+								return ssspDial.computeShortestPaths(g, (WeightFunction.Int) w, source, maxDistance);
 							} else {
 								return ssspDijkstra.computeShortestPaths(g, w, source);
 							}

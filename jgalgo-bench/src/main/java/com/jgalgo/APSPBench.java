@@ -50,7 +50,7 @@ public class APSPBench {
 	@Param({ "|V|=64 |E|=256", "|V|=200 |E|=1200", "|V|=512 |E|=4096" })
 	public String args;
 
-	private List<Pair<Graph, EdgeWeightFunc.Int>> graphs;
+	private List<Pair<Graph, WeightFunction.Int>> graphs;
 	private final int graphsNum = 31;
 	private final AtomicInteger graphIdx = new AtomicInteger();
 
@@ -65,13 +65,13 @@ public class APSPBench {
 		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
-			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			graphs.add(Pair.of(g, w));
 		}
 	}
 
 	private void benchAPSPPositiveWeights(Supplier<? extends ShortestPathAllPairs> builder, Blackhole blackhole) {
-		Pair<Graph, EdgeWeightFunc.Int> graph = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
+		Pair<Graph, WeightFunction.Int> graph = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 		ShortestPathAllPairs algo = builder.get();
 		ShortestPathAllPairs.Result result = algo.computeAllShortestPaths(graph.first(), graph.second());
 		blackhole.consume(result);

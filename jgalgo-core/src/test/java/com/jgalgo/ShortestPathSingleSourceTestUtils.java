@@ -51,7 +51,7 @@ public class ShortestPathSingleSourceTestUtils extends TestUtils {
 			int n = args[0], m = args[1];
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
-			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			int source = rand.nextInt(g.vertices().size());
 
 			ShortestPathSingleSource validationAlgo = algo instanceof ShortestPathSingleSourceDijkstra ? new ShortestPathSingleSourceDial() : new ShortestPathSingleSourceDijkstra();
@@ -83,7 +83,7 @@ public class ShortestPathSingleSourceTestUtils extends TestUtils {
 			int n = args[0], m = args[1];
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(true).build();
-			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
+			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
 			int source = 0;
 
 			ShortestPathSingleSource validationAlgo = algo instanceof ShortestPathSingleSourceBellmanFord ? new ShortestPathSingleSourceGoldberg() : new ShortestPathSingleSourceBellmanFord();
@@ -91,12 +91,12 @@ public class ShortestPathSingleSourceTestUtils extends TestUtils {
 		});
 	}
 
-	static void testAlgo(Graph g, EdgeWeightFunc w, int source, ShortestPathSingleSource algo, ShortestPathSingleSource validationAlgo) {
+	static void testAlgo(Graph g, WeightFunction w, int source, ShortestPathSingleSource algo, ShortestPathSingleSource validationAlgo) {
 		ShortestPathSingleSource.Result result = algo.computeShortestPaths(g, w, source);
 		validateResult(g, w, source, result, validationAlgo);
 	}
 
-	static void validateResult(Graph g, EdgeWeightFunc w, int source, ShortestPathSingleSource.Result result, ShortestPathSingleSource validationAlgo) {
+	static void validateResult(Graph g, WeightFunction w, int source, ShortestPathSingleSource.Result result, ShortestPathSingleSource validationAlgo) {
 		ShortestPathSingleSource.Result expectedRes = validationAlgo.computeShortestPaths(g, w, source);
 
 		if (result.foundNegativeCycle()) {

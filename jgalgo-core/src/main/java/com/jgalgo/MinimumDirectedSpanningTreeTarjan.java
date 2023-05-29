@@ -54,7 +54,7 @@ class MinimumDirectedSpanningTreeTarjan implements MinimumDirectedSpanningTree {
 		this.heapBuilder = heapBuilder.keysTypePrimitive(int.class).valuesTypeVoid();
 	}
 
-	MinimumSpanningTree.Result computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
+	MinimumSpanningTree.Result computeMinimumSpanningTree(Graph g, WeightFunction w) {
 		ArgumentCheck.onlyDirected(g);
 		if (g.vertices().size() == 0 || g.edges().size() == 0)
 			return MinimumSpanningTreeResultImpl.Empty;
@@ -72,7 +72,7 @@ class MinimumDirectedSpanningTreeTarjan implements MinimumDirectedSpanningTree {
 	}
 
 	@Override
-	public MinimumSpanningTree.Result computeMinimumSpanningTree(Graph g, EdgeWeightFunc w, int root) {
+	public MinimumSpanningTree.Result computeMinimumSpanningTree(Graph g, WeightFunction w, int root) {
 		ArgumentCheck.onlyDirected(g);
 		if (g.vertices().size() == 0 || g.edges().size() == 0)
 			return MinimumSpanningTreeResultImpl.Empty;
@@ -141,7 +141,7 @@ class MinimumDirectedSpanningTreeTarjan implements MinimumDirectedSpanningTree {
 		}
 	}
 
-	private ContractedGraph contract(Graph g, EdgeWeightFunc w0) {
+	private ContractedGraph contract(Graph g, WeightFunction w0) {
 		addEdgesUntilStronglyConnected(g);
 
 		int n = g.vertices().size();
@@ -153,7 +153,7 @@ class MinimumDirectedSpanningTreeTarjan implements MinimumDirectedSpanningTree {
 			ufIdxToV[uf.make()] = v;
 
 		Weights.Int edgeRefs = g.getEdgesWeights(EdgeRefWeightKey);
-		EdgeWeightFunc w = e -> {
+		WeightFunction w = e -> {
 			int e0 = edgeRefs.getInt(e);
 			return (e0 != HeavyEdge ? w0.weight(e0) : HeavyEdgeWeight) + uf.getValue(g.edgeTarget(e));
 		};

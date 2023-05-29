@@ -58,9 +58,9 @@ class MatchingImpl implements Matching {
 	}
 
 	@Override
-	public double weight(EdgeWeightFunc w) {
+	public double weight(WeightFunction w) {
 		computeEdgesCollection();
-		return GraphsUtils.edgesWeightSum(edges.iterator(), w);
+		return GraphsUtils.weightSum(edges, w);
 	}
 
 	private void computeEdgesCollection() {

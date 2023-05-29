@@ -63,7 +63,7 @@ class MinimumSpanningTreeFredmanTarjan implements MinimumSpanningTree {
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	public MinimumSpanningTree.Result computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
+	public MinimumSpanningTree.Result computeMinimumSpanningTree(Graph g, WeightFunction w) {
 		ArgumentCheck.onlyUndirected(g);
 		int n = g.vertices().size(), m = g.edges().size();
 		if (n == 0)

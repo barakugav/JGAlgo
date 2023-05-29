@@ -42,15 +42,15 @@ class ShortestPathSingleSourceDag implements ShortestPathSingleSource {
 	 * @throws IllegalArgumentException if graph is not directed or contains cycles
 	 */
 	@Override
-	public ShortestPathSingleSourceDag.Result computeShortestPaths(Graph g, EdgeWeightFunc w, int source) {
+	public ShortestPathSingleSourceDag.Result computeShortestPaths(Graph g, WeightFunction w, int source) {
 		ArgumentCheck.onlyDirected(g);
 		if (w == null)
-			w = EdgeWeightFunc.CardinalityEdgeWeightFunction;
-		return w instanceof EdgeWeightFunc.Int ? computeSsspInt(g, (EdgeWeightFunc.Int) w, source)
+			w = WeightFunction.CardinalityWeightFunction;
+		return w instanceof WeightFunction.Int ? computeSsspInt(g, (WeightFunction.Int) w, source)
 				: computeSsspDouble(g, w, source);
 	}
 
-	private ShortestPathSingleSourceDag.Result computeSsspDouble(Graph g, EdgeWeightFunc w, int source) {
+	private ShortestPathSingleSourceDag.Result computeSsspDouble(Graph g, WeightFunction w, int source) {
 		ShortestPathSingleSourceUtils.ResultImpl res = new ShortestPathSingleSourceUtils.ResultImpl(g, source);
 		res.distances[source] = 0;
 
@@ -78,7 +78,7 @@ class ShortestPathSingleSourceDag implements ShortestPathSingleSource {
 		return res;
 	}
 
-	private ShortestPathSingleSourceDag.Result computeSsspInt(Graph g, EdgeWeightFunc.Int w, int source) {
+	private ShortestPathSingleSourceDag.Result computeSsspInt(Graph g, WeightFunction.Int w, int source) {
 		ShortestPathSingleSourceUtils.ResultImpl.Int res = new ShortestPathSingleSourceUtils.ResultImpl.Int(g, source);
 		res.distances[source] = 0;
 

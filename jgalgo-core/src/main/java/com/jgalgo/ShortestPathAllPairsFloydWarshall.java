@@ -35,13 +35,13 @@ class ShortestPathAllPairsFloydWarshall implements ShortestPathAllPairs {
 	ShortestPathAllPairsFloydWarshall() {}
 
 	@Override
-	public ShortestPathAllPairs.Result computeAllShortestPaths(Graph g, EdgeWeightFunc w) {
+	public ShortestPathAllPairs.Result computeAllShortestPaths(Graph g, WeightFunction w) {
 		if (w == null)
-			w = EdgeWeightFunc.CardinalityEdgeWeightFunction;
+			w = WeightFunction.CardinalityWeightFunction;
 		return g.getCapabilities().directed() ? computeAPSPDirected(g, w) : computeAPSPUndirected(g, w);
 	}
 
-	private static ShortestPathAllPairs.Result computeAPSPUndirected(Graph g, EdgeWeightFunc w) {
+	private static ShortestPathAllPairs.Result computeAPSPUndirected(Graph g, WeightFunction w) {
 		ShortestPathAllPairsResultImpl.Abstract res = new ShortestPathAllPairsResultImpl.Undirected(g);
 		for (int e : g.edges()) {
 			int u = g.edgeSource(e);
@@ -87,7 +87,7 @@ class ShortestPathAllPairsFloydWarshall implements ShortestPathAllPairs {
 		return res;
 	}
 
-	private static ShortestPathAllPairs.Result computeAPSPDirected(Graph g, EdgeWeightFunc w) {
+	private static ShortestPathAllPairs.Result computeAPSPDirected(Graph g, WeightFunction w) {
 		ShortestPathAllPairsResultImpl.Abstract res = new ShortestPathAllPairsResultImpl.Directed(g);
 		for (int e : g.edges()) {
 			int u = g.edgeSource(e);

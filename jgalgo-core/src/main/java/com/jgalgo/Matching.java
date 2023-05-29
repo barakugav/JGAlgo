@@ -69,6 +69,6 @@ public interface Matching {
 	 * @param  w an edge weight function
 	 * @return   the sum of this matching edges weights
 	 */
-	double weight(EdgeWeightFunc w);
+	double weight(WeightFunction w);
 
 }

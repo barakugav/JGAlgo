@@ -62,19 +62,19 @@ class MinimumSpanningTreePrim implements MinimumSpanningTree {
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	public MinimumSpanningTree.Result computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
+	public MinimumSpanningTree.Result computeMinimumSpanningTree(Graph g, WeightFunction w) {
 		ArgumentCheck.onlyUndirected(g);
 		int n = g.vertices().size();
 		if (n == 0)
 			return MinimumSpanningTreeResultImpl.Empty;
-		if (w instanceof EdgeWeightFunc.Int) {
-			return computeMSTInt(g, (EdgeWeightFunc.Int) w);
+		if (w instanceof WeightFunction.Int) {
+			return computeMSTInt(g, (WeightFunction.Int) w);
 		} else {
 			return computeMSTDouble(g, w);
 		}
 	}
 
-	private MinimumSpanningTree.Result computeMSTDouble(Graph g, EdgeWeightFunc w) {
+	private MinimumSpanningTree.Result computeMSTDouble(Graph g, WeightFunction w) {
 		final int n = g.vertices().size();
 		HeapReferenceable<Double, Integer> heap =
 				heapBuilder.keysTypePrimitive(double.class).valuesTypePrimitive(int.class).build();
@@ -131,7 +131,7 @@ class MinimumSpanningTreePrim implements MinimumSpanningTree {
 		return new MinimumSpanningTreeResultImpl(mst);
 	}
 
-	private MinimumSpanningTree.Result computeMSTInt(Graph g, EdgeWeightFunc.Int w) {
+	private MinimumSpanningTree.Result computeMSTInt(Graph g, WeightFunction.Int w) {
 		final int n = g.vertices().size();
 		HeapReferenceable<Integer, Integer> heap =
 				heapBuilder.keysTypePrimitive(int.class).valuesTypePrimitive(int.class).build();

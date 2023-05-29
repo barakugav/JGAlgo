@@ -36,7 +36,7 @@ class MinimumCutSTBuilderImpl {
 		return new MinimumCutST() {
 
 			@Override
-			public Cut computeMinimumCut(Graph g, EdgeWeightFunc w, int source, int sink) {
+			public Cut computeMinimumCut(Graph g, WeightFunction w, int source, int sink) {
 				final int n = g.vertices().size();
 				BitSet visited = new BitSet(n);
 				IntPriorityQueue queue = new IntArrayFIFOQueue();
@@ -111,7 +111,7 @@ class MinimumCutSTBuilderImpl {
 		};
 	}
 
-	static FlowNetwork createFlowNetworkFromEdgeWeightFunc(Graph g, EdgeWeightFunc w) {
+	static FlowNetwork createFlowNetworkFromEdgeWeightFunc(Graph g, WeightFunction w) {
 		ArgumentCheck.onlyPositiveWeights(g, w);
 		Weights.Double flow = Weights.createExternalEdgesWeights(g, double.class);
 		FlowNetwork net = new FlowNetwork() {
@@ -142,7 +142,7 @@ class MinimumCutSTBuilderImpl {
 		return new MinimumCutGlobal() {
 
 			@Override
-			public Cut computeMinimumCut(Graph g, EdgeWeightFunc w) {
+			public Cut computeMinimumCut(Graph g, WeightFunction w) {
 				final int n = g.vertices().size();
 				if (n < 2)
 					throw new IllegalArgumentException("no valid cut in graphs with less than two vertices");

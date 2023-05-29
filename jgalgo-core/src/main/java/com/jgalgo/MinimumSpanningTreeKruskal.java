@@ -63,7 +63,7 @@ class MinimumSpanningTreeKruskal implements MinimumSpanningTree {
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	public MinimumSpanningTree.Result computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
+	public MinimumSpanningTree.Result computeMinimumSpanningTree(Graph g, WeightFunction w) {
 		ArgumentCheck.onlyUndirected(g);
 		final int n = g.vertices().size();
 		final int m = g.edges().size();

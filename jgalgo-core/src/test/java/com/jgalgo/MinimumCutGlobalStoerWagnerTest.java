@@ -53,7 +53,7 @@ class MinimumCutGlobalStoerWagnerTest extends TestBase {
 
 	}
 
-	private static void testMinCut(Graph g, EdgeWeightFunc.Int w, MinimumCutGlobal alg) {
+	private static void testMinCut(Graph g, WeightFunction.Int w, MinimumCutGlobal alg) {
 		Cut minCut = alg.computeMinimumCut(g, w);
 		int minCutWeight = (int) minCut.weight(w);
 

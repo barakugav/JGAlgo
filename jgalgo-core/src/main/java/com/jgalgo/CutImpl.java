@@ -59,9 +59,9 @@ class CutImpl implements Cut {
 	}
 
 	@Override
-	public double weight(EdgeWeightFunc w) {
+	public double weight(WeightFunction w) {
 		computeCrossEdgesCollection();
-		return GraphsUtils.edgesWeightSum(crossEdges.iterator(), w);
+		return GraphsUtils.weightSum(crossEdges, w);
 	}
 
 	private void computeVerticesCollection() {

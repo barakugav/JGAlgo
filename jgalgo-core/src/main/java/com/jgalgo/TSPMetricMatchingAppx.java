@@ -39,7 +39,7 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 	public TSPMetricMatchingAppx() {}
 
 	@Override
-	public Path computeShortestTour(Graph g, EdgeWeightFunc w) {
+	public Path computeShortestTour(Graph g, WeightFunction w) {
 		final int n = g.vertices().size();
 		if (n == 0)
 			return null;

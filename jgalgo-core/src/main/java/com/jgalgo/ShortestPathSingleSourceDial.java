@@ -46,27 +46,27 @@ class ShortestPathSingleSourceDial implements ShortestPathSingleSource {
 	 * {@inheritDoc}
 	 *
 	 * @throws IllegalArgumentException if one of the edge weights is negative or the weight function is not of type
-	 *                                      {@link EdgeWeightFunc.Int}
+	 *                                      {@link WeightFunction.Int}
 	 */
 	@Override
-	public ShortestPathSingleSource.Result computeShortestPaths(Graph g, EdgeWeightFunc w, int source) {
+	public ShortestPathSingleSource.Result computeShortestPaths(Graph g, WeightFunction w, int source) {
 		if (w == null)
-			w = EdgeWeightFunc.CardinalityEdgeWeightFunction;
-		if (!(w instanceof EdgeWeightFunc.Int))
+			w = WeightFunction.CardinalityWeightFunction;
+		if (!(w instanceof WeightFunction.Int))
 			throw new IllegalArgumentException("only int weights are supported");
-		EdgeWeightFunc.Int w0 = (EdgeWeightFunc.Int) w;
+		WeightFunction.Int w0 = (WeightFunction.Int) w;
 
 		int n = g.vertices().size(), m = g.edges().size();
 
 		int maxDistance = 0;
 		if (m <= n - 1) {
-			maxDistance = (int) GraphsUtils.edgesWeightSum(g.edges().iterator(), w0);
+			maxDistance = (int) GraphsUtils.weightSum(g.edges(), w0);
 
 		} else {
 			/* sum the n-1 heaviest weights */
 			int[] edges = g.edges().toIntArray();
 			ArraysUtils.getKthElement(edges, 0, g.edges().size(), n - 1, w0, true);
-			maxDistance = (int) GraphsUtils.edgesWeightSum(IntIterators.wrap(edges, m - n + 1, n - 1), w0);
+			maxDistance = (int) GraphsUtils.weightSum(IntIterators.wrap(edges, m - n + 1, n - 1), w0);
 		}
 
 		ShortestPathSingleSource.Result res = computeShortestPaths(g, w0, source, maxDistance);
@@ -82,9 +82,9 @@ class ShortestPathSingleSourceDial implements ShortestPathSingleSource {
 	 * @param  maxDistance a bound on the maximal distance to any vertex in the graph
 	 * @return             a result object containing the distances and shortest paths from the source to any other
 	 *                     vertex
-	 * @see                #computeShortestPaths(Graph, EdgeWeightFunc, int)
+	 * @see                #computeShortestPaths(Graph, WeightFunction, int)
 	 */
-	ShortestPathSingleSource.Result computeShortestPaths(Graph g, EdgeWeightFunc.Int w, int source, int maxDistance) {
+	ShortestPathSingleSource.Result computeShortestPaths(Graph g, WeightFunction.Int w, int source, int maxDistance) {
 		ArgumentCheck.onlyPositiveWeights(g, w);
 
 		ShortestPathSingleSourceUtils.ResultImpl.Int res = new ShortestPathSingleSourceUtils.ResultImpl.Int(g, source);

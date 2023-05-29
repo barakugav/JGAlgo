@@ -78,7 +78,7 @@ class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeighted {
 	 * @throws IllegalArgumentException if the graph is no bipartite with respect to the provided partition
 	 */
 	@Override
-	public Matching computeMaximumWeightedMatching(Graph g, EdgeWeightFunc w) {
+	public Matching computeMaximumWeightedMatching(Graph g, WeightFunction w) {
 		ArgumentCheck.onlyUndirected(g);
 		Weights.Bool partition = g.getVerticesWeights(bipartiteVerticesWeightKey);
 		Objects.requireNonNull(partition,
@@ -89,7 +89,7 @@ class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeighted {
 		return new MatchingImpl(g, match);
 	}
 
-	private int[] computeMaxMatching(Graph gOrig, EdgeWeightFunc w0, Weights.Bool partition) {
+	private int[] computeMaxMatching(Graph gOrig, WeightFunction w0, Weights.Bool partition) {
 		final int n = gOrig.vertices().size();
 		Graph g = GraphBuilder.newDirected().expectedVerticesNum(n + 2).build();
 		for (int v = 0; v < n; v++)
@@ -136,7 +136,7 @@ class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeighted {
 		}
 
 		double[] potential = new double[n + 2];
-		EdgeWeightFunc spWeightFunc = e -> w.weight(e) + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];
+		WeightFunction spWeightFunc = e -> w.weight(e) + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];
 
 		// Init state may include negative distances, use Bellman Ford to calculate
 		// first potential values
@@ -192,7 +192,7 @@ class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeighted {
 	 */
 	@Deprecated
 	@Override
-	public Matching computeMaximumWeightedPerfectMatching(Graph g, EdgeWeightFunc w) {
+	public Matching computeMaximumWeightedPerfectMatching(Graph g, WeightFunction w) {
 		throw new UnsupportedOperationException();
 	}
 

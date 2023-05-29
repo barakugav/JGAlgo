@@ -24,7 +24,7 @@ interface MaximumMatchingWeighted extends MaximumMatching {
 	 */
 	@Override
 	default Matching computeMaximumCardinalityMatching(Graph g) {
-		return computeMaximumWeightedMatching(g, EdgeWeightFunc.CardinalityEdgeWeightFunction);
+		return computeMaximumWeightedMatching(g, WeightFunction.CardinalityWeightFunction);
 	}
 
 }

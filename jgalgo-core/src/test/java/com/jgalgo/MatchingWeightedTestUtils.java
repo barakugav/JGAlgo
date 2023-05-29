@@ -40,7 +40,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 			int m = args[2];
 
 			Graph g = MatchingBipartiteTestUtils.randGraphBipartite(sn, tn, m, graphImpl, seedGen.nextSeed());
-			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
+			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
 
 			MaximumMatching validationAlgo = algo instanceof MaximumMatchingWeightedBipartiteSSSP
 					? new MaximumMatchingWeightedBipartiteHungarianMethod()
@@ -61,7 +61,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 			Graph g = MatchingBipartiteTestUtils.randGraphBipartite(sn, tn, m, GraphBuilder.newUndirected(),
 					seedGen.nextSeed());
 			int maxWeight = m < 50 ? 100 : m * 2 + 2;
-			EdgeWeightFunc.Int w =
+			WeightFunction.Int w =
 					GraphsTestUtils.assignRandWeightsInt(g, -maxWeight, maxWeight / 4, seedGen.nextSeed());
 
 			MaximumMatching validationUnweightedAlgo = new MaximumMatchingCardinalityBipartiteHopcroftKarp();
@@ -80,7 +80,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 			int n = args[0], m = args[1];
 
 			Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
-			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
+			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
 
 			// have nothing other than MaximumMatchingWeightedGabow1990, at least shuffle
 			// the graph
@@ -91,7 +91,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 		});
 	}
 
-	private static void testGraphWeighted(MaximumMatching algo, Graph g, EdgeWeightFunc.Int w,
+	private static void testGraphWeighted(MaximumMatching algo, Graph g, WeightFunction.Int w,
 			MaximumMatching validationAlgo) {
 		Matching actual = algo.computeMaximumWeightedMatching(g, w);
 		MatchingUnweightedTestUtils.validateMatching(g, actual);
@@ -117,7 +117,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 
 			Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
 			int maxWeight = m < 50 ? 100 : m * 2 + 2;
-			EdgeWeightFunc.Int w =
+			WeightFunction.Int w =
 					GraphsTestUtils.assignRandWeightsInt(g, -maxWeight, maxWeight / 4, seedGen.nextSeed());
 
 			MaximumMatching validationUnweightedAlgo = new MaximumMatchingCardinalityGabow1976();
@@ -127,7 +127,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 		});
 	}
 
-	private static void testGraphWeightedPerfect(MaximumMatching algo, Graph g, EdgeWeightFunc.Int w,
+	private static void testGraphWeightedPerfect(MaximumMatching algo, Graph g, WeightFunction.Int w,
 			MaximumMatching validationUnweightedAlgo, MaximumMatching validationWeightedAlgo) {
 		Matching actual = algo.computeMaximumWeightedPerfectMatching(g, w);
 		MatchingUnweightedTestUtils.validateMatching(g, actual);
@@ -162,16 +162,16 @@ class MatchingWeightedTestUtils extends TestUtils {
 		}
 
 		@Override
-		public Matching computeMaximumWeightedMatching(Graph g, EdgeWeightFunc w) {
+		public Matching computeMaximumWeightedMatching(Graph g, WeightFunction w) {
 			return computeMaximumMatchingShuffled(g, w, false);
 		}
 
 		@Override
-		public Matching computeMaximumWeightedPerfectMatching(Graph g, EdgeWeightFunc w) {
+		public Matching computeMaximumWeightedPerfectMatching(Graph g, WeightFunction w) {
 			return computeMaximumMatchingShuffled(g, w, true);
 		}
 
-		private Matching computeMaximumMatchingShuffled(Graph g, EdgeWeightFunc w, boolean perfect) {
+		private Matching computeMaximumMatchingShuffled(Graph g, WeightFunction w, boolean perfect) {
 			int n = g.vertices().size();
 			int[] shuffle = randPermutation(n, seedGen.nextSeed());
 
@@ -199,7 +199,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 				edgeRef.set(e0, e);
 			}
 
-			EdgeWeightFunc shuffledW = e -> w.weight(edgeRef.getInt(e));
+			WeightFunction shuffledW = e -> w.weight(edgeRef.getInt(e));
 
 			Matching shuffledMatching = perfect ? algo.computeMaximumWeightedPerfectMatching(shuffledG, shuffledW)
 					: algo.computeMaximumWeightedMatching(shuffledG, shuffledW);

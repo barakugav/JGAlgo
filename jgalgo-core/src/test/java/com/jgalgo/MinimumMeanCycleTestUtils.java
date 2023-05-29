@@ -36,13 +36,13 @@ public class MinimumMeanCycleTestUtils extends TestBase {
 			// .selfEdges(true).cycles(true).connected(false).build();
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(false)
 					.selfEdges(false).cycles(true).connected(false).build();
-			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 
 			verifyMinimumMeanCycle(algo, g, w);
 		});
 	}
 
-	private static void verifyMinimumMeanCycle(MinimumMeanCycle algo, Graph g, EdgeWeightFunc w) {
+	private static void verifyMinimumMeanCycle(MinimumMeanCycle algo, Graph g, WeightFunction w) {
 		Path cycle = algo.computeMinimumMeanCycle(g, w);
 		if (cycle == null) {
 			Iterator<Path> cycles = new CyclesFinderTarjan().findAllCycles(g);
@@ -80,7 +80,7 @@ public class MinimumMeanCycleTestUtils extends TestBase {
 		}
 	}
 
-	private static double getMeanWeight(Path cycle, EdgeWeightFunc w) {
+	private static double getMeanWeight(Path cycle, WeightFunction w) {
 		return cycle.weight(w) / cycle.size();
 	}
 

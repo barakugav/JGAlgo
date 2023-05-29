@@ -53,7 +53,7 @@ class MinimumMeanCycleHoward implements MinimumMeanCycle {
 	 * @throws IllegalArgumentException if the graph is not directed
 	 */
 	@Override
-	public Path computeMinimumMeanCycle(Graph g, EdgeWeightFunc w) {
+	public Path computeMinimumMeanCycle(Graph g, WeightFunction w) {
 		ArgumentCheck.onlyDirected(g);
 		int n = g.vertices().size();
 

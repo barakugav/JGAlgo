@@ -46,7 +46,7 @@ class MinimumSpanningTreeYao implements MinimumSpanningTree {
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	public MinimumSpanningTree.Result computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
+	public MinimumSpanningTree.Result computeMinimumSpanningTree(Graph g, WeightFunction w) {
 		ArgumentCheck.onlyUndirected(g);
 		int n = g.vertices().size();
 
@@ -161,7 +161,7 @@ class MinimumSpanningTreeYao implements MinimumSpanningTree {
 		return new MinimumSpanningTreeResultImpl(mst);
 	}
 
-	private int[][][] partitionEdgesToBuckets(Graph g, EdgeWeightFunc w) {
+	private int[][][] partitionEdgesToBuckets(Graph g, WeightFunction w) {
 		int n = g.vertices().size(), k = Utils.log2ceil(n);
 
 		int[][][] edges = new int[n][][];

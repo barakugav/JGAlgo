@@ -49,13 +49,13 @@ public interface TreePathMaxima {
 	 *                     tree.
 	 * @return         a result object, with a corresponding result edge for each query
 	 */
-	TreePathMaxima.Result computeHeaviestEdgeInTreePaths(Graph tree, EdgeWeightFunc w, TreePathMaxima.Queries queries);
+	TreePathMaxima.Result computeHeaviestEdgeInTreePaths(Graph tree, WeightFunction w, TreePathMaxima.Queries queries);
 
 	/**
 	 * Queries container for {@link TreePathMaxima} computations.
 	 * <p>
 	 * Queries are added one by one to this container, and than the Queries object is passed to a {@link TreePathMaxima}
-	 * algorithm using {@link TreePathMaxima#computeHeaviestEdgeInTreePaths(Graph, EdgeWeightFunc, Queries)}.
+	 * algorithm using {@link TreePathMaxima#computeHeaviestEdgeInTreePaths(Graph, WeightFunction, Queries)}.
 	 *
 	 * @author Barak Ugav
 	 */
@@ -120,12 +120,12 @@ public interface TreePathMaxima {
 		 * Get the heaviest edge found for a single query.
 		 * <p>
 		 * This result object was obtained by calling
-		 * {@link TreePathMaxima#computeHeaviestEdgeInTreePaths(Graph, EdgeWeightFunc, Queries)}, which accept a set of
+		 * {@link TreePathMaxima#computeHeaviestEdgeInTreePaths(Graph, WeightFunction, Queries)}, which accept a set of
 		 * multiple queries using the {@link Queries} object. This method return the answer to a <b>single</b> queries
 		 * among them, by its index.
 		 *
 		 * @param  queryIdx the index of the query \((u, v)\) in the {@link Queries} object passed to
-		 *                      {@link TreePathMaxima#computeHeaviestEdgeInTreePaths(Graph, EdgeWeightFunc, Queries)}
+		 *                      {@link TreePathMaxima#computeHeaviestEdgeInTreePaths(Graph, WeightFunction, Queries)}
 		 * @return          the edge identifier of the heaviest on the path from \(u\) to \(v\) (the query vertices) in
 		 *                  the tree passed to the algorithm, or {@code -1} if no such path exists
 		 */
@@ -205,7 +205,7 @@ public interface TreePathMaxima {
 	 *                                  {@code false}
 	 * @throws IllegalArgumentException if {@code g} is a directed graph
 	 */
-	public static boolean verifyMST(Graph g, EdgeWeightFunc w, IntCollection mstEdges, TreePathMaxima tpmAlgo) {
+	public static boolean verifyMST(Graph g, WeightFunction w, IntCollection mstEdges, TreePathMaxima tpmAlgo) {
 		ArgumentCheck.onlyUndirected(g);
 		int n = g.vertices().size();
 		Graph mst = GraphBuilder.newUndirected().expectedVerticesNum(n).expectedEdgesNum(mstEdges.size()).build();
@@ -223,7 +223,7 @@ public interface TreePathMaxima {
 		TreePathMaxima.Queries queries = new TreePathMaxima.Queries();
 		for (int e : g.edges())
 			queries.addQuery(g.edgeSource(e), g.edgeTarget(e));
-		EdgeWeightFunc w0 = e -> w.weight(edgeRef.getInt(e));
+		WeightFunction w0 = e -> w.weight(edgeRef.getInt(e));
 		TreePathMaxima.Result tpmResults = tpmAlgo.computeHeaviestEdgeInTreePaths(mst, w0, queries);
 
 		int i = 0;

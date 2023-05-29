@@ -45,10 +45,10 @@ class ShortestPathSingleSourceBellmanFord implements ShortestPathSingleSource {
 	 * @throws IllegalArgumentException if the graph is not directed
 	 */
 	@Override
-	public ShortestPathSingleSource.Result computeShortestPaths(Graph g, EdgeWeightFunc w, int source) {
+	public ShortestPathSingleSource.Result computeShortestPaths(Graph g, WeightFunction w, int source) {
 		ArgumentCheck.onlyDirected(g);
 		if (w == null)
-			w = EdgeWeightFunc.CardinalityEdgeWeightFunction;
+			w = WeightFunction.CardinalityWeightFunction;
 		int n = g.vertices().size();
 		Result res = new Result(g, source);
 		res.distances[source] = 0;

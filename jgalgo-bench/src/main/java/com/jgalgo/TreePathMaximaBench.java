@@ -63,7 +63,7 @@ public class TreePathMaximaBench {
 		graphs = new ArrayList<>(graphsNum);
 		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
 			Graph t = GraphsTestUtils.randTree(n, seedGen.nextSeed());
-			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(t, seedGen.nextSeed());
+			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntPos(t, seedGen.nextSeed());
 			TreePathMaxima.Queries queries = generateRandQueries(n, m, seedGen.nextSeed());
 			graphs.add(new TPMArgs(t, w, queries));
 		}
@@ -88,10 +88,10 @@ public class TreePathMaximaBench {
 
 	private static class TPMArgs {
 		final Graph tree;
-		final EdgeWeightFunc w;
+		final WeightFunction w;
 		final TreePathMaxima.Queries queries;
 
-		TPMArgs(Graph tree, EdgeWeightFunc w, TreePathMaxima.Queries queries) {
+		TPMArgs(Graph tree, WeightFunction w, TreePathMaxima.Queries queries) {
 			this.tree = tree;
 			this.w = w;
 			this.queries = queries;

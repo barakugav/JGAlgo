@@ -44,7 +44,7 @@ public class ShortestPathSingleSourceDagTest extends TestBase {
 			int n = args[0], m = args[1];
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
 					.selfEdges(false).cycles(false).connected(connected).build();
-			EdgeWeightFunc w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+			WeightFunction w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			int source = 0;
 
 			ShortestPathSingleSourceTestUtils.testAlgo(g, w, source, ssspAlgo, new ShortestPathSingleSourceDijkstra());

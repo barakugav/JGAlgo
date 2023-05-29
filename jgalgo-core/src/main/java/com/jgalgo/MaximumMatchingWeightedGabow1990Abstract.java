@@ -43,19 +43,19 @@ abstract class MaximumMatchingWeightedGabow1990Abstract implements MaximumMatchi
 	static final double EPS = 0.00001;
 
 	@Override
-	public Matching computeMaximumWeightedMatching(Graph g, EdgeWeightFunc w) {
+	public Matching computeMaximumWeightedMatching(Graph g, WeightFunction w) {
 		ArgumentCheck.onlyUndirected(g);
 		return newWorker(g, w, heapBuilder, debugPrintManager).computeMaxMatching(false);
 
 	}
 
 	@Override
-	public Matching computeMaximumWeightedPerfectMatching(Graph g, EdgeWeightFunc w) {
+	public Matching computeMaximumWeightedPerfectMatching(Graph g, WeightFunction w) {
 		ArgumentCheck.onlyUndirected(g);
 		return newWorker(g, w, heapBuilder, debugPrintManager).computeMaxMatching(true);
 	}
 
-	abstract Worker newWorker(Graph gOrig, EdgeWeightFunc w, HeapReferenceable.Builder<Object, Object> heapBuilder,
+	abstract Worker newWorker(Graph gOrig, WeightFunction w, HeapReferenceable.Builder<Object, Object> heapBuilder,
 			DebugPrintsManager debugPrint);
 
 	/**
@@ -373,7 +373,7 @@ abstract class MaximumMatchingWeightedGabow1990Abstract implements MaximumMatchi
 		final Weights<EdgeVal> edgeVal;
 
 		/* the weight function */
-		final EdgeWeightFunc w;
+		final WeightFunction w;
 
 		/* vertex -> matched edge */
 		final int[] matched;
@@ -449,7 +449,7 @@ abstract class MaximumMatchingWeightedGabow1990Abstract implements MaximumMatchi
 
 		private static final Object EdgeValKey = new Utils.Obj("edgeVal");
 
-		Worker(Graph gOrig, EdgeWeightFunc w, HeapReferenceable.Builder<Object, Object> heapBuilder,
+		Worker(Graph gOrig, WeightFunction w, HeapReferenceable.Builder<Object, Object> heapBuilder,
 				DebugPrintsManager debugPrint) {
 			int n = gOrig.vertices().size();
 			this.gOrig = gOrig;

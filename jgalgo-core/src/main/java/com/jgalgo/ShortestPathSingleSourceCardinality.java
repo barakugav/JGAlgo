@@ -48,11 +48,11 @@ class ShortestPathSingleSourceCardinality implements ShortestPathSingleSource {
 	 * {@inheritDoc}
 	 *
 	 * @throws IllegalArgumentException if the weight function {@code w} is not {@code null} or
-	 *                                      {@link EdgeWeightFunc#CardinalityEdgeWeightFunction}
+	 *                                      {@link WeightFunction#CardinalityWeightFunction}
 	 */
 	@Override
-	public ShortestPathSingleSource.Result computeShortestPaths(Graph g, EdgeWeightFunc w, int source) {
-		if (!(w == null || w == EdgeWeightFunc.CardinalityEdgeWeightFunction))
+	public ShortestPathSingleSource.Result computeShortestPaths(Graph g, WeightFunction w, int source) {
+		if (!(w == null || w == WeightFunction.CardinalityWeightFunction))
 			throw new IllegalArgumentException("only cardinality shortest paths are supported");
 		return computeCardinalityShortestPaths(g, source);
 	}

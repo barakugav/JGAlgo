@@ -61,18 +61,18 @@ class ShortestPathSingleSourceDijkstra implements ShortestPathSingleSource {
 	 * @throws IllegalArgumentException if one of the edge weights is negative
 	 */
 	@Override
-	public ShortestPathSingleSource.Result computeShortestPaths(Graph g, EdgeWeightFunc w, int source) {
+	public ShortestPathSingleSource.Result computeShortestPaths(Graph g, WeightFunction w, int source) {
 		if (w == null)
-			w = EdgeWeightFunc.CardinalityEdgeWeightFunction;
+			w = WeightFunction.CardinalityWeightFunction;
 		ArgumentCheck.onlyPositiveWeights(g, w);
-		if (w instanceof EdgeWeightFunc.Int) {
-			return computeSsspInts(g, (EdgeWeightFunc.Int) w, source);
+		if (w instanceof WeightFunction.Int) {
+			return computeSsspInts(g, (WeightFunction.Int) w, source);
 		} else {
 			return computeSsspDoubles(g, w, source);
 		}
 	}
 
-	private ShortestPathSingleSource.Result computeSsspDoubles(Graph g, EdgeWeightFunc w, int source) {
+	private ShortestPathSingleSource.Result computeSsspDoubles(Graph g, WeightFunction w, int source) {
 		final int n = g.vertices().size();
 		HeapReferenceable<Double, Integer> heap =
 				heapBuilder.keysTypePrimitive(double.class).valuesTypePrimitive(int.class).build();
@@ -112,7 +112,7 @@ class ShortestPathSingleSourceDijkstra implements ShortestPathSingleSource {
 		return res;
 	}
 
-	private ShortestPathSingleSource.Result computeSsspInts(Graph g, EdgeWeightFunc.Int w, int source) {
+	private ShortestPathSingleSource.Result computeSsspInts(Graph g, WeightFunction.Int w, int source) {
 		final int n = g.vertices().size();
 		HeapReferenceable<Integer, Integer> heap =
 				heapBuilder.keysTypePrimitive(int.class).valuesTypePrimitive(int.class).build();

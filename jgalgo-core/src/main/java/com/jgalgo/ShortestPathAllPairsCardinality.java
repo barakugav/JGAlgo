@@ -75,11 +75,11 @@ class ShortestPathAllPairsCardinality implements ShortestPathAllPairs {
 	 * {@inheritDoc}
 	 *
 	 * @throws IllegalArgumentException if the weight function {@code w} is not {@code null} or
-	 *                                      {@link EdgeWeightFunc#CardinalityEdgeWeightFunction}
+	 *                                      {@link WeightFunction#CardinalityWeightFunction}
 	 */
 	@Override
-	public Result computeAllShortestPaths(Graph g, EdgeWeightFunc w) {
-		if (!(w == null || w == EdgeWeightFunc.CardinalityEdgeWeightFunction))
+	public Result computeAllShortestPaths(Graph g, WeightFunction w) {
+		if (!(w == null || w == WeightFunction.CardinalityWeightFunction))
 			throw new IllegalArgumentException("only cardinality shortest paths are supported");
 		return computeAllCardinalityShortestPaths(g);
 	}

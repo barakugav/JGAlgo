@@ -41,6 +41,6 @@ public interface TSPMetric {
 	 *               w((v,w)) \leq w((u,w))$
 	 * @return   a result object containing the list of the \(n\) vertices ordered by the calculated path
 	 */
-	Path computeShortestTour(Graph g, EdgeWeightFunc w);
+	Path computeShortestTour(Graph g, WeightFunction w);
 
 }

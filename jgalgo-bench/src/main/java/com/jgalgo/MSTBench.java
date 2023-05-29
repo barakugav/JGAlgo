@@ -49,7 +49,7 @@ public class MSTBench {
 	@Param({ "|V|=200 |E|=1000", "|V|=1600 |E|=10000", "|V|=6000 |E|=25000" })
 	public String args;
 
-	private List<Pair<Graph, EdgeWeightFunc.Int>> graphs;
+	private List<Pair<Graph, WeightFunction.Int>> graphs;
 	private final int graphsNum = 31;
 	private final AtomicInteger graphIdx = new AtomicInteger();
 
@@ -63,15 +63,15 @@ public class MSTBench {
 		graphs = new ArrayList<>(graphsNum);
 		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
 			Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
-			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			graphs.add(Pair.of(g, w));
 		}
 	}
 
 	private void benchMST(Supplier<? extends MinimumSpanningTree> builder, Blackhole blackhole) {
-		Pair<Graph, EdgeWeightFunc.Int> gw = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
+		Pair<Graph, WeightFunction.Int> gw = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 		Graph g = gw.first();
-		EdgeWeightFunc.Int w = gw.second();
+		WeightFunction.Int w = gw.second();
 		MinimumSpanningTree algo = builder.get();
 		MinimumSpanningTree.Result mst = algo.computeMinimumSpanningTree(g, w);
 		blackhole.consume(mst);

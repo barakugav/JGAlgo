@@ -46,7 +46,7 @@ public interface ShortestPathWithHeuristic {
 	 *                        the real distance of each vertex to the target.
 	 * @return            the short path found from {@code source} to {@code target}
 	 */
-	Path computeShortestPath(Graph g, EdgeWeightFunc w, int source, int target, IntToDoubleFunction vHeuristic);
+	Path computeShortestPath(Graph g, WeightFunction w, int source, int target, IntToDoubleFunction vHeuristic);
 
 	/**
 	 * Create a new heuristic shortest path algorithm builder.

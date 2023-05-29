@@ -36,7 +36,7 @@ public interface ShortestPathAllPairs {
 	 * @param  w an edge weight function
 	 * @return   a result object containing information on the shortest path between each pair of vertices
 	 */
-	public ShortestPathAllPairs.Result computeAllShortestPaths(Graph g, EdgeWeightFunc w);
+	public ShortestPathAllPairs.Result computeAllShortestPaths(Graph g, WeightFunction w);
 
 	/**
 	 * Compute the cardinality shortest path between each pair of vertices in a graph.
@@ -48,7 +48,7 @@ public interface ShortestPathAllPairs {
 	 * @return   a result object containing information on the cardinality shortest path between each pair of vertices
 	 */
 	default ShortestPathAllPairs.Result computeAllCardinalityShortestPaths(Graph g) {
-		return computeAllShortestPaths(g, EdgeWeightFunc.CardinalityEdgeWeightFunction);
+		return computeAllShortestPaths(g, WeightFunction.CardinalityWeightFunction);
 	}
 
 	/**

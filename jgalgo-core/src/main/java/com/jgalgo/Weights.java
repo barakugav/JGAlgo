@@ -107,7 +107,7 @@ public interface Weights<W> {
 	 *
 	 * @author Barak Ugav
 	 */
-	public static interface Byte extends Weights<java.lang.Byte>, EdgeWeightFunc.Int {
+	public static interface Byte extends Weights<java.lang.Byte>, WeightFunction.Int {
 
 		/**
 		 * Get the weight associated with the given id.
@@ -156,7 +156,7 @@ public interface Weights<W> {
 		/**
 		 * {@inheritDoc}
 		 * <p>
-		 * Implement the {@link EdgeWeightFunc.Int} interface by using the weights of the container.
+		 * Implement the {@link WeightFunction.Int} interface by using the weights of the container.
 		 */
 		@Override
 		default int weightInt(int id) {
@@ -169,7 +169,7 @@ public interface Weights<W> {
 	 *
 	 * @author Barak Ugav
 	 */
-	public static interface Short extends Weights<java.lang.Short>, EdgeWeightFunc.Int {
+	public static interface Short extends Weights<java.lang.Short>, WeightFunction.Int {
 
 		/**
 		 * Get the weight associated with the given id.
@@ -218,7 +218,7 @@ public interface Weights<W> {
 		/**
 		 * {@inheritDoc}
 		 * <p>
-		 * Implement the {@link EdgeWeightFunc.Int} interface by using the weights of the container.
+		 * Implement the {@link WeightFunction.Int} interface by using the weights of the container.
 		 */
 		@Override
 		default int weightInt(int id) {
@@ -231,7 +231,7 @@ public interface Weights<W> {
 	 *
 	 * @author Barak Ugav
 	 */
-	public static interface Int extends Weights<Integer>, EdgeWeightFunc.Int {
+	public static interface Int extends Weights<Integer>, WeightFunction.Int {
 
 		/**
 		 * Get the weight associated with the given id.
@@ -280,7 +280,7 @@ public interface Weights<W> {
 		/**
 		 * {@inheritDoc}
 		 * <p>
-		 * Implement the {@link EdgeWeightFunc.Int} interface by using the weights of the container.
+		 * Implement the {@link WeightFunction.Int} interface by using the weights of the container.
 		 */
 		@Override
 		default int weightInt(int id) {
@@ -293,7 +293,7 @@ public interface Weights<W> {
 	 *
 	 * @author Barak Ugav
 	 */
-	public static interface Long extends Weights<java.lang.Long>, EdgeWeightFunc {
+	public static interface Long extends Weights<java.lang.Long>, WeightFunction {
 
 		/**
 		 * Get the weight associated with the given id.
@@ -342,7 +342,7 @@ public interface Weights<W> {
 		/**
 		 * {@inheritDoc}
 		 * <p>
-		 * Implement the {@link EdgeWeightFunc} interface by using the weights of the container.
+		 * Implement the {@link WeightFunction} interface by using the weights of the container.
 		 */
 		@Override
 		default double weight(int id) {
@@ -355,7 +355,7 @@ public interface Weights<W> {
 	 *
 	 * @author Barak Ugav
 	 */
-	public static interface Float extends Weights<java.lang.Float>, EdgeWeightFunc {
+	public static interface Float extends Weights<java.lang.Float>, WeightFunction {
 
 		/**
 		 * Get the weight associated with the given id.
@@ -404,7 +404,7 @@ public interface Weights<W> {
 		/**
 		 * {@inheritDoc}
 		 * <p>
-		 * Implement the {@link EdgeWeightFunc} interface by using the weights of the container.
+		 * Implement the {@link WeightFunction} interface by using the weights of the container.
 		 */
 		@Override
 		default double weight(int id) {
@@ -417,7 +417,7 @@ public interface Weights<W> {
 	 *
 	 * @author Barak Ugav
 	 */
-	public static interface Double extends Weights<java.lang.Double>, EdgeWeightFunc {
+	public static interface Double extends Weights<java.lang.Double>, WeightFunction {
 
 		/**
 		 * Get the weight associated with the given id.
@@ -466,7 +466,7 @@ public interface Weights<W> {
 		/**
 		 * {@inheritDoc}
 		 * <p>
-		 * Implement the {@link EdgeWeightFunc} interface by using the weights of the container.
+		 * Implement the {@link WeightFunction} interface by using the weights of the container.
 		 */
 		@Override
 		default double weight(int id) {

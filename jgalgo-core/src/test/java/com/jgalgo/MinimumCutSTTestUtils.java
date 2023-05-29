@@ -52,7 +52,7 @@ class MinimumCutSTTestUtils extends TestUtils {
 		});
 	}
 
-	private static void testMinCut(Graph g, EdgeWeightFunc.Int w, int source, int sink, MinimumCutST alg) {
+	private static void testMinCut(Graph g, WeightFunction.Int w, int source, int sink, MinimumCutST alg) {
 		Cut minCut = alg.computeMinimumCut(g, w, source, sink);
 		int minCutWeight = (int) minCut.weight(w);
 

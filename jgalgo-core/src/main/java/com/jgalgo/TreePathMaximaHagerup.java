@@ -65,7 +65,7 @@ class TreePathMaximaHagerup implements TreePathMaxima {
 	}
 
 	@Override
-	public TreePathMaxima.Result computeHeaviestEdgeInTreePaths(Graph tree, EdgeWeightFunc w,
+	public TreePathMaxima.Result computeHeaviestEdgeInTreePaths(Graph tree, WeightFunction w,
 			TreePathMaxima.Queries queries) {
 		ArgumentCheck.onlyUndirected(tree);
 		if (!Trees.isTree(tree))
@@ -76,7 +76,7 @@ class TreePathMaximaHagerup implements TreePathMaxima {
 	private static class Worker {
 
 		private final Graph tOrig;
-		private final EdgeWeightFunc w;
+		private final WeightFunction w;
 
 		/* The tree we operate on, actually the Boruvka fully branching tree */
 		private final Graph tree = GraphBuilder.newUndirected().build();
@@ -94,7 +94,7 @@ class TreePathMaximaHagerup implements TreePathMaxima {
 		private final BiInt2IntFunction getIthbit;
 		private final Int2IntFunction getNumberOfTrailingZeros;
 
-		Worker(Graph tOrig, EdgeWeightFunc w, boolean useBitsLookupTables) {
+		Worker(Graph tOrig, WeightFunction w, boolean useBitsLookupTables) {
 			this.tOrig = tOrig;
 			this.w = w;
 

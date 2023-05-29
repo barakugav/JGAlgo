@@ -50,11 +50,11 @@ class MinimumSpanningTreeBoruvka implements MinimumSpanningTree {
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	public MinimumSpanningTree.Result computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
+	public MinimumSpanningTree.Result computeMinimumSpanningTree(Graph g, WeightFunction w) {
 		return new MinimumSpanningTreeResultImpl(computeMST(g, w, Integer.MAX_VALUE).mst);
 	}
 
-	Pair<Graph, IntCollection> runBoruvka(Graph g, EdgeWeightFunc w, int numberOfRounds, Object edgeRefKey) {
+	Pair<Graph, IntCollection> runBoruvka(Graph g, WeightFunction w, int numberOfRounds, Object edgeRefKey) {
 		if (numberOfRounds <= 0)
 			throw new IllegalArgumentException();
 		Res mstRes = computeMST(g, w, numberOfRounds);
@@ -74,7 +74,7 @@ class MinimumSpanningTreeBoruvka implements MinimumSpanningTree {
 		return Pair.of(contractedG, mstRes.mst);
 	}
 
-	private static Res computeMST(Graph g, EdgeWeightFunc w, int numberOfRounds) {
+	private static Res computeMST(Graph g, WeightFunction w, int numberOfRounds) {
 		ArgumentCheck.onlyUndirected(g);
 		final int n = g.vertices().size();
 

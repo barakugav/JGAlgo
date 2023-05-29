@@ -39,7 +39,7 @@ class MinimumSpanningTreeTestUtils extends TestUtils {
 			int n = args[0], m = args[1];
 
 			Graph g = GraphsTestUtils.randGraph(n, m, graphImpl, seedGen.nextSeed());
-			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 
 			MinimumSpanningTree.Result mst = algo.computeMinimumSpanningTree(g, w);
 			verifyMST(g, w, mst);
@@ -49,9 +49,9 @@ class MinimumSpanningTreeTestUtils extends TestUtils {
 	private static class MSTEdgeComparator implements IntComparator {
 
 		private final Graph g;
-		private final EdgeWeightFunc w;
+		private final WeightFunction w;
 
-		MSTEdgeComparator(Graph g, EdgeWeightFunc w) {
+		MSTEdgeComparator(Graph g, WeightFunction w) {
 			this.g = g;
 			this.w = w;
 		}
@@ -79,7 +79,7 @@ class MinimumSpanningTreeTestUtils extends TestUtils {
 
 	}
 
-	private static void verifyMST(Graph g, EdgeWeightFunc w, MinimumSpanningTree.Result mst) {
+	private static void verifyMST(Graph g, WeightFunction w, MinimumSpanningTree.Result mst) {
 		/*
 		 * It's hard to verify MST, we use Kruskal algorithm to verify the others, and assume its implementation is
 		 * correct

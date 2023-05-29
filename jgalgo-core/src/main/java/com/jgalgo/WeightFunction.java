@@ -19,11 +19,15 @@ package com.jgalgo;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 
 /**
- * Weight function that maps a graph edge to a weight.
+ * Weight function that maps graph edges (or vertices) to weights.
  * <p>
- * Many algorithms such as {@link ShortestPathSingleSource}, {@link MinimumSpanningTree}, {@link MaximumMatchingWeighted}, and more, try to find a set of
- * edges satisfying some constraint while minimizing/maximizing some objective function based on the weights of the
- * edges. This interface is the API by which the user specify the weights of the edges.
+ * This interface is usually used as weight function of edges, for example in algorithms such as
+ * {@link ShortestPathSingleSource}, {@link MinimumSpanningTree} and {@link MaximumMatchingWeighted} try to find a set
+ * of edges satisfying some constraint while minimizing/maximizing some objective function based on the weights of the
+ * edges. But it can represent weights assigned to vertices, in algorithms such as vertex cover.
+ * <p>
+ * An instance of this interface represent weights of edges only or vertices only, and never both. As this function
+ * represent weights for either edges or vertex, the documentation refer to these edges/vertices as <i>elements</i>.
  *
  * <pre> {@code
  * // Create a directed graph with three vertices and edges between them
@@ -60,19 +64,19 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
  * @author Barak Ugav
  */
 @FunctionalInterface
-public interface EdgeWeightFunc extends IntComparator {
+public interface WeightFunction extends IntComparator {
 
 	/**
-	 * Get the weight of an edge.
+	 * Get the weight of an element.
 	 *
-	 * @param  edge                      an edge identifier
-	 * @return                           the weight of the edge
-	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
+	 * @param  element                   an element identifier
+	 * @return                           the weight of the element
+	 * @throws IndexOutOfBoundsException if {@code element} is not a valid element identifier in the graph
 	 */
-	public double weight(int edge);
+	public double weight(int element);
 
 	/**
-	 * Compare two edges by their weights.
+	 * Compare two elements by their weights.
 	 */
 	@Override
 	default int compare(int e1, int e2) {
@@ -80,10 +84,10 @@ public interface EdgeWeightFunc extends IntComparator {
 	}
 
 	/**
-	 * Weight function that maps a graph edge to an integer weight.
+	 * Weight function that maps graph edges (or vertices) to integer weights.
 	 * <p>
 	 * Some algorithms implementations support only integers weights, or run faster in such a case. This interface is
-	 * the API for these algorithms for the edges integer weights.
+	 * the API for these algorithms for the edges (or vertices) integer weights.
 	 *
 	 * <pre> {@code
 	 * // Create a directed graph with three vertices and edges between them
@@ -117,27 +121,25 @@ public interface EdgeWeightFunc extends IntComparator {
 	 * }
 	 * }</pre>
 	 *
-	 * @see    ShortestPathSingleSourceDial
-	 * @see    ShortestPathSingleSourceGoldberg
 	 * @author Barak Ugav
 	 */
 	@FunctionalInterface
-	public static interface Int extends EdgeWeightFunc {
+	public static interface Int extends WeightFunction {
 
 		@Deprecated
 		@Override
-		default double weight(int edge) {
-			return weightInt(edge);
+		default double weight(int element) {
+			return weightInt(element);
 		}
 
 		/**
-		 * Get the integer weight of an edge.
+		 * Get the integer weight of an element.
 		 *
-		 * @param  edge                      an edge identifier
-		 * @return                           the integer weight of the edge
-		 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
+		 * @param  element                   an element identifier
+		 * @return                           the integer weight of the element
+		 * @throws IndexOutOfBoundsException if {@code element} is not a valid element identifier
 		 */
-		public int weightInt(int edge);
+		public int weightInt(int element);
 
 		@Override
 		default int compare(int e1, int e2) {
@@ -147,8 +149,8 @@ public interface EdgeWeightFunc extends IntComparator {
 	}
 
 	/**
-	 * A weight function that assign a weight of {@code 1} to any edge.
+	 * A weight function that assign a weight of {@code 1} to any element.
 	 */
-	public static EdgeWeightFunc.Int CardinalityEdgeWeightFunction = e -> 1;
+	public static WeightFunction.Int CardinalityWeightFunction = e -> 1;
 
 }

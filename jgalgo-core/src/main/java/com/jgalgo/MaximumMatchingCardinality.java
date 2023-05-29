@@ -25,7 +25,7 @@ interface MaximumMatchingCardinality extends MaximumMatching {
 	 * @throws IllegalArgumentException if {@code w} is not {@code null}
 	 */
 	@Override
-	default Matching computeMaximumWeightedMatching(Graph g, EdgeWeightFunc w) {
+	default Matching computeMaximumWeightedMatching(Graph g, WeightFunction w) {
 		if (w != null)
 			throw new IllegalArgumentException("Only cardinality matching is supported by this algorithm");
 		return computeMaximumCardinalityMatching(g);
@@ -39,7 +39,7 @@ interface MaximumMatchingCardinality extends MaximumMatching {
 	 * @throws IllegalArgumentException if {@code w} is not {@code null}
 	 */
 	@Override
-	default Matching computeMaximumWeightedPerfectMatching(Graph g, EdgeWeightFunc w) {
+	default Matching computeMaximumWeightedPerfectMatching(Graph g, WeightFunction w) {
 		if (w != null)
 			throw new IllegalArgumentException("Only cardinality matching is supported by this algorithm");
 		return computeMaximumCardinalityMatching(g);

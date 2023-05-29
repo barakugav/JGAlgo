@@ -75,7 +75,7 @@ class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumMatching
 	 * @throws IllegalArgumentException if the graph is no bipartite with respect to the provided partition
 	 */
 	@Override
-	public Matching computeMaximumWeightedMatching(Graph g, EdgeWeightFunc w) {
+	public Matching computeMaximumWeightedMatching(Graph g, WeightFunction w) {
 		ArgumentCheck.onlyUndirected(g);
 		Weights.Bool partition = g.getVerticesWeights(bipartiteVerticesWeightKey);
 		Objects.requireNonNull(partition,
@@ -91,7 +91,7 @@ class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumMatching
 	 * @throws IllegalArgumentException if the graph is no bipartite with respect to the provided partition
 	 */
 	@Override
-	public Matching computeMaximumWeightedPerfectMatching(Graph g, EdgeWeightFunc w) {
+	public Matching computeMaximumWeightedPerfectMatching(Graph g, WeightFunction w) {
 		ArgumentCheck.onlyUndirected(g);
 		Weights.Bool partition = g.getVerticesWeights(bipartiteVerticesWeightKey);
 		Objects.requireNonNull(partition,
@@ -103,7 +103,7 @@ class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumMatching
 
 		private final Graph g;
 		private final Weights.Bool partition;
-		private final EdgeWeightFunc w;
+		private final WeightFunction w;
 
 		private final BitSet inTree;
 
@@ -116,7 +116,7 @@ class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumMatching
 		private final double[] dualVal0;
 
 		@SuppressWarnings("unchecked")
-		Worker(Graph g, Weights.Bool partition, EdgeWeightFunc w) {
+		Worker(Graph g, Weights.Bool partition, WeightFunction w) {
 			ArgumentCheck.onlyBipartite(g, partition);
 
 			this.g = g;
