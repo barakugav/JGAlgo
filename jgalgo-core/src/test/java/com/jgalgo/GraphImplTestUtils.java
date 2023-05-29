@@ -380,8 +380,7 @@ class GraphImplTestUtils extends TestUtils {
 			final Object gVDataKey = new Utils.Obj("vData");
 			Weights<Object> gVData = g.addVerticesWeights(gVDataKey, Object.class);
 			Int2ObjectMap<Object> gVDataMap = new Int2ObjectOpenHashMap<>();
-			for (IntIterator uit = g.vertices().iterator(); uit.hasNext();) {
-				int u = uit.nextInt();
+			for (int u : g.vertices()) {
 				Object data = new Utils.Obj("data" + u);
 				gVData.set(u, data);
 				gVDataMap.put(u, data);
@@ -391,8 +390,7 @@ class GraphImplTestUtils extends TestUtils {
 			final Object gEDataKey = new Utils.Obj("eData");
 			Weights<Object> gEData = g.addEdgesWeights(gEDataKey, Object.class);
 			Int2ObjectMap<Object> gEDataMap = new Int2ObjectOpenHashMap<>();
-			for (IntIterator eit = g.edges().iterator(); eit.hasNext();) {
-				int e = eit.nextInt();
+			for (int e : g.edges()) {
 				Object data = new Utils.Obj("data" + e);
 				gEData.set(e, data);
 				gEDataMap.put(e, data);
@@ -406,8 +404,7 @@ class GraphImplTestUtils extends TestUtils {
 			assertEquals(g.vertices(), copy.vertices());
 			assertEquals(g.edges().size(), copy.edges().size());
 			assertEquals(g.edges(), copy.edges());
-			for (IntIterator uit = g.vertices().iterator(); uit.hasNext();) {
-				int u = uit.nextInt();
+			for (int u : g.vertices()) {
 				assertEquals(g.edgesOut(u), copy.edgesOut(u));
 				assertEquals(g.edgesIn(u), copy.edgesIn(u));
 			}
@@ -419,13 +416,11 @@ class GraphImplTestUtils extends TestUtils {
 			assertNotNull(copyEData);
 			Int2ObjectMap<Object> copyVDataMap = new Int2ObjectOpenHashMap<>(gVDataMap);
 			Int2ObjectMap<Object> copyEDataMap = new Int2ObjectOpenHashMap<>(gEDataMap);
-			for (IntIterator uit = g.vertices().iterator(); uit.hasNext();) {
-				int u = uit.nextInt();
+			for (int u : g.vertices()) {
 				assertEquals(gVDataMap.get(u), gVData.get(u));
 				assertEquals(copyVDataMap.get(u), copyVData.get(u));
 			}
-			for (IntIterator eit = g.edges().iterator(); eit.hasNext();) {
-				int e = eit.nextInt();
+			for (int e : g.edges()) {
 				assertEquals(gEDataMap.get(e), gEData.get(e));
 				assertEquals(copyEDataMap.get(e), copyEData.get(e));
 			}
@@ -459,13 +454,11 @@ class GraphImplTestUtils extends TestUtils {
 			}
 
 			/* Assert the weights were updated independently */
-			for (IntIterator uit = g.vertices().iterator(); uit.hasNext();) {
-				int u = uit.nextInt();
+			for (int u : g.vertices()) {
 				assertEquals(gVDataMap.get(u), gVData.get(u));
 				assertEquals(copyVDataMap.get(u), copyVData.get(u));
 			}
-			for (IntIterator eit = g.edges().iterator(); eit.hasNext();) {
-				int e = eit.nextInt();
+			for (int e : g.edges()) {
 				assertEquals(gEDataMap.get(e), gEData.get(e));
 				assertEquals(copyEDataMap.get(e), copyEData.get(e));
 			}
@@ -670,8 +663,7 @@ class GraphImplTestUtils extends TestUtils {
 			List<IntList> actual = new ArrayList<>();
 			List<IntList> expected = new ArrayList<>();
 
-			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-				int e = it.nextInt();
+			for (int e : g.edges()) {
 				int u = g.edgeSource(e), v = g.edgeTarget(e);
 				if (!directed && u > v) {
 					int temp = u;
@@ -821,8 +813,7 @@ class GraphImplTestUtils extends TestUtils {
 			// edgeData.set(e, data);
 			tracker.addVertex(v);
 		}
-		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-			int e = it.nextInt();
+		for (int e : g.edges()) {
 			int u = g.edgeSource(e), v = g.edgeTarget(e);
 			final int data = dataGen.next();
 			edgeData.set(e, data);
@@ -885,8 +876,7 @@ class GraphImplTestUtils extends TestUtils {
 					GraphTracker.Vertex source = edge.u;
 
 					Set<GraphTracker.Edge> iterationExpected = new HashSet<>();
-					for (EdgeIter it = g.edgesOut(source.id).iterator(); it.hasNext();) {
-						int eOther = it.nextInt();
+					for (int eOther : g.edgesOut(source.id)) {
 						if (edgeData.getInt(eOther) != edge.data) {
 							GraphTracker.Edge edgeOther = tracker.getEdge(edgeData.getInt(eOther));
 							boolean duplication = !iterationExpected.add(edgeOther);
@@ -919,8 +909,7 @@ class GraphImplTestUtils extends TestUtils {
 					GraphTracker.Vertex target = edge.v;
 
 					Set<GraphTracker.Edge> iterationExpected = new HashSet<>();
-					for (EdgeIter it = g.edgesIn(target.id).iterator(); it.hasNext();) {
-						int eOther = it.nextInt();
+					for (int eOther : g.edgesIn(target.id)) {
 						if (edgeData.getInt(eOther) != edge.data) {
 							GraphTracker.Edge edgeOther = tracker.getEdge(edgeData.getInt(eOther));
 							boolean duplication = !iterationExpected.add(edgeOther);

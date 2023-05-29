@@ -19,13 +19,9 @@ package com.jgalgo;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-
 import java.util.List;
-
 import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
-
 import it.unimi.dsi.fastutil.ints.IntArrays;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -60,8 +56,7 @@ class ColoringTestUtils extends TestUtils {
 
 		assertEquals(seenColorsArr.length, coloring.colorsNum(), "wrong colors num");
 
-		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-			int e = it.nextInt();
+		for (int e : g.edges()) {
 			int u = g.edgeSource(e);
 			int v = g.edgeTarget(e);
 			int c1 = coloring.colorOf(u);

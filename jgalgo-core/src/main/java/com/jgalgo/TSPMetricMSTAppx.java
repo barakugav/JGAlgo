@@ -17,7 +17,6 @@
 package com.jgalgo;
 
 import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 
 /**
  * TSP \(2\)-approximation using MST.
@@ -66,8 +65,7 @@ public class TSPMetricMSTAppx implements TSPMetric {
 		for (int v = 0; v < n; v++)
 			g1.addVertex();
 		Weights.Int edgeRef = g1.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
-		for (IntIterator it = mst.iterator(); it.hasNext();) {
-			int e = it.nextInt();
+		for (int e : mst) {
 			int u = g.edgeSource(e), v = g.edgeTarget(e);
 			edgeRef.set(g1.addEdge(u, v), e);
 			edgeRef.set(g1.addEdge(u, v), e);

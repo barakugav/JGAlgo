@@ -25,8 +25,7 @@ class GraphsUtils {
 
 	static int[] calcDegree(Graph g, IntCollection edges) {
 		int[] degree = new int[g.vertices().size()];
-		for (IntIterator eit = edges.iterator(); eit.hasNext();) {
-			int e = eit.nextInt();
+		for (int e : edges) {
 			degree[g.edgeSource(e)]++;
 			degree[g.edgeTarget(e)]++;
 		}
@@ -41,8 +40,7 @@ class GraphsUtils {
 
 		for (int v = 0; v < n; v++)
 			gRef.addVertex();
-		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-			int e = it.nextInt();
+		for (int e : g.edges()) {
 			int eRef = gRef.addEdge(g.edgeSource(e), g.edgeTarget(e));
 			edgeRef.set(eRef, e);
 		}

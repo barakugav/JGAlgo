@@ -24,7 +24,6 @@ import java.util.Random;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 class MinimumCutGlobalStoerWagnerTest extends TestBase {
@@ -46,14 +45,12 @@ class MinimumCutGlobalStoerWagnerTest extends TestBase {
 					.selfEdges(false).cycles(true).connected(false).build();
 
 			Weights.Int w = g.addEdgesWeights("weight", int.class);
-			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-				int e = it.nextInt();
-				int cap = rand.nextInt(16384);
-				w.set(e, cap);
-			}
+			for (int e : g.edges())
+				w.set(e, rand.nextInt(16384));
 
 			testMinCut(g, w, algo);
 		});
+
 	}
 
 	private static void testMinCut(Graph g, EdgeWeightFunc.Int w, MinimumCutGlobal alg) {

@@ -19,7 +19,6 @@ import com.jgalgo.Coloring;
 import com.jgalgo.EdgeIter;
 import com.jgalgo.Graph;
 import com.jgalgo.GraphBuilder;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 
 public class ColoringExample {
 
@@ -31,8 +30,7 @@ public class ColoringExample {
 		Coloring coloringAlgo = Coloring.newBuilder().build();
 		Coloring.Result colors = coloringAlgo.computeColoring(g);
 
-		for (IntIterator uit = g.vertices().iterator(); uit.hasNext();) {
-			int u = uit.nextInt();
+		for (int u : g.vertices()) {
 			int uColor = colors.colorOf(u);
 			System.out.println("The color of " + u + " is " + uColor);
 

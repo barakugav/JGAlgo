@@ -19,7 +19,6 @@ package com.jgalgo;
 import java.util.Arrays;
 import java.util.function.IntPredicate;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
@@ -68,8 +67,7 @@ class MinimumMeanCycleHoward implements MinimumMeanCycle {
 		int[] policy = new int[n];
 		Arrays.fill(policy, 0, n, -1);
 		for (int c = 0; c < ccNum; c++) {
-			for (IntIterator it = cc.getCcEdges(c).iterator(); it.hasNext();) {
-				int e = it.nextInt();
+			for (int e : cc.getCcEdges(c)) {
 				double ew = w.weight(e);
 				int u = g.edgeSource(e);
 				if (ew < d[u]) {
@@ -98,8 +96,7 @@ class MinimumMeanCycleHoward implements MinimumMeanCycle {
 				final int iterationFirstSearchIdx = nextSearchIdx;
 				IntPredicate visited = v -> visitIdx[v] >= iterationFirstSearchIdx;
 				/* DFS root loop */
-				for (IntIterator rootIt = cc.getCcVertices(ccIdx).iterator(); rootIt.hasNext();) {
-					final int root = rootIt.nextInt();
+				for (final int root : cc.getCcVertices(ccIdx)) {
 					if (visited.test(root))
 						continue;
 					final int searchIdx = nextSearchIdx++;
@@ -168,8 +165,7 @@ class MinimumMeanCycleHoward implements MinimumMeanCycle {
 
 				/* check for improvements */
 				boolean improved = false;
-				for (IntIterator eit = cc.getCcEdges(ccIdx).iterator(); eit.hasNext();) {
-					int e = eit.nextInt();
+				for (int e : cc.getCcEdges(ccIdx)) {
 					int u = g.edgeSource(e);
 					int v = g.edgeTarget(e);
 					double newDistance = d[v] + w.weight(e) - bestCycleMeanWeight;

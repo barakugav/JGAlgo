@@ -46,7 +46,7 @@ import it.unimi.dsi.fastutil.Pair;
 @State(Scope.Benchmark)
 public class MSTBench {
 
-	@Param({ "|V|=100 |E|=100", "|V|=200 |E|=1000", "|V|=1600 |E|=10000", "|V|=6000 |E|=25000" })
+	@Param({ "|V|=200 |E|=1000", "|V|=1600 |E|=10000", "|V|=6000 |E|=25000" })
 	public String args;
 
 	private List<Pair<Graph, EdgeWeightFunc.Int>> graphs;

@@ -18,7 +18,6 @@ package com.jgalgo;
 
 import java.util.BitSet;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
@@ -113,11 +112,7 @@ class MinimumCutSTBuilderImpl {
 	}
 
 	static FlowNetwork createFlowNetworkFromEdgeWeightFunc(Graph g, EdgeWeightFunc w) {
-		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-			int e = it.nextInt();
-			if (w.weight(e) < 0)
-				throw new IllegalArgumentException("negative weight for edge " + e);
-		}
+		ArgumentCheck.onlyPositiveWeights(g, w);
 		Weights.Double flow = Weights.createExternalEdgesWeights(g, double.class);
 		FlowNetwork net = new FlowNetwork() {
 			@Override

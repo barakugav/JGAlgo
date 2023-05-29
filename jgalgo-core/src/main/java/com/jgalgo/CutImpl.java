@@ -80,8 +80,8 @@ class CutImpl implements Cut {
 		if (cutBitmap != null)
 			return;
 		cutBitmap = new BitSet(g.vertices().size());
-		for (IntIterator it = cutVertices.iterator(); it.hasNext();)
-			cutBitmap.set(it.nextInt());
+		for (int v : cutVertices)
+			cutBitmap.set(v);
 	}
 
 	private void computeCrossEdgesCollection() {

@@ -23,7 +23,6 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveAction;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
@@ -32,9 +31,9 @@ import it.unimi.dsi.fastutil.ints.IntList;
  * Calculate the shortest path between each pair of vertices in a graph in \(O(n m + n^2 \log n)\) time using \(O(n^2)\)
  * space. Negative weights are supported.
  * <p>
- * The algorithm is faster than using {@link ShortestPathSingleSourceBellmanFord} \(n\) times, as it uses {@link ShortestPathSingleSourceBellmanFord} once to
- * compute a potential for each vertex, resulting in an equivalent positive weight function, allowing us to use
- * {@link ShortestPathSingleSourceDijkstra} from each vertex as a source.
+ * The algorithm is faster than using {@link ShortestPathSingleSourceBellmanFord} \(n\) times, as it uses
+ * {@link ShortestPathSingleSourceBellmanFord} once to compute a potential for each vertex, resulting in an equivalent
+ * positive weight function, allowing us to use {@link ShortestPathSingleSourceDijkstra} from each vertex as a source.
  *
  * @author Barak Ugav
  */
@@ -62,8 +61,7 @@ class ShortestPathAllPairsJohnson implements ShortestPathAllPairs {
 		int n = g.vertices().size();
 
 		boolean negWeight = false;
-		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-			int e = it.nextInt();
+		for (int e : g.edges()) {
 			if (w.weight(e) < 0) {
 				negWeight = true;
 				break;
@@ -169,8 +167,8 @@ class ShortestPathAllPairsJohnson implements ShortestPathAllPairs {
 		} else {
 			Path negCycleRef = res.getNegativeCycle();
 			IntList negCycle = new IntArrayList(negCycleRef.size());
-			for (IntIterator it = negCycleRef.iterator(); it.hasNext();)
-				negCycle.add(edgeEef.getInt(it.nextInt()));
+			for (int e : negCycleRef)
+				negCycle.add(edgeEef.getInt(e));
 			return Pair.of(null, new PathImpl(g, negCycleRef.source(), negCycleRef.target(), negCycle));
 		}
 	}

@@ -336,10 +336,8 @@ class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 		@Override
 		double getMaxWeight() {
 			double maxCapacity = 100;
-			for (IntIterator it = gOrig.edges().iterator(); it.hasNext();) {
-				int e = it.nextInt();
+			for (int e : gOrig.edges())
 				maxCapacity = Math.max(maxCapacity, net.getCapacity(e));
-			}
 			return maxCapacity;
 		}
 
@@ -467,10 +465,8 @@ class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 		double getMaxWeight() {
 			FlowNetwork.Int net = (FlowNetwork.Int) this.net;
 			int maxCapacity = 100;
-			for (IntIterator it = gOrig.edges().iterator(); it.hasNext();) {
-				int e = it.nextInt();
+			for (int e : gOrig.edges())
 				maxCapacity = Math.max(maxCapacity, net.getCapacityInt(e));
-			}
 			return maxCapacity;
 		}
 

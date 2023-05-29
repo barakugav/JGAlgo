@@ -19,7 +19,6 @@ import com.jgalgo.Graph;
 import com.jgalgo.GraphBuilder;
 import com.jgalgo.Matching;
 import com.jgalgo.MaximumMatching;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -34,8 +33,7 @@ public class MaximumMatchingExample {
 		Matching matching = matchingAlgo.computeMaximumCardinalityMatching(g);
 
 		/* Validate the matching is valid */
-		for (IntIterator uit = g.vertices().iterator(); uit.hasNext();) {
-			int u = uit.nextInt();
+		for (int u : g.vertices()) {
 
 			/* Find the matched edges adjacent to u */
 			IntSet uEdges = new IntOpenHashSet(g.edgesOut(u));

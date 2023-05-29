@@ -19,7 +19,6 @@ package com.jgalgo;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIntPair;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
@@ -213,8 +212,7 @@ public interface TreePathMaxima {
 		for (int v = 0; v < n; v++)
 			mst.addVertex();
 		Weights.Int edgeRef = mst.addEdgesWeights("edgeRef", int.class);
-		for (IntIterator it = mstEdges.iterator(); it.hasNext();) {
-			int e = it.nextInt();
+		for (int e : mstEdges) {
 			int u = g.edgeSource(e), v = g.edgeTarget(e);
 			int ne = mst.addEdge(u, v);
 			edgeRef.set(ne, e);
@@ -223,16 +221,13 @@ public interface TreePathMaxima {
 			return false;
 
 		TreePathMaxima.Queries queries = new TreePathMaxima.Queries();
-		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-			int e = it.nextInt();
+		for (int e : g.edges())
 			queries.addQuery(g.edgeSource(e), g.edgeTarget(e));
-		}
 		EdgeWeightFunc w0 = e -> w.weight(edgeRef.getInt(e));
 		TreePathMaxima.Result tpmResults = tpmAlgo.computeHeaviestEdgeInTreePaths(mst, w0, queries);
 
 		int i = 0;
-		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-			int e = it.nextInt();
+		for (int e : g.edges()) {
 			int mstEdge = tpmResults.getHeaviestEdge(i++);
 			if (mstEdge == -1 || w.weight(e) < w0.weight(mstEdge))
 				return false;

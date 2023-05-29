@@ -15,8 +15,6 @@
  */
 package com.jgalgo;
 
-import it.unimi.dsi.fastutil.ints.IntIterator;
-
 class MaximumFlowAbstract {
 
 	private MaximumFlowAbstract() {}
@@ -51,8 +49,7 @@ class MaximumFlowAbstract {
 			twin = g.addEdgesWeights(EdgeTwinWeightKey, int.class, Integer.valueOf(-1));
 
 			boolean directed = gOrig.getCapabilities().directed();
-			for (IntIterator it = gOrig.edges().iterator(); it.hasNext();) {
-				int e = it.nextInt();
+			for (int e : gOrig.edges()) {
 				int u = gOrig.edgeSource(e), v = gOrig.edgeTarget(e);
 				if (u == v)
 					continue;
@@ -69,14 +66,12 @@ class MaximumFlowAbstract {
 
 		void initCapacitiesAndFlows(Weights.Double flow, Weights.Double capacity) {
 			if (gOrig.getCapabilities().directed()) {
-				for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-					int e = it.nextInt();
+				for (int e : g.edges()) {
 					capacity.set(e, isOriginalEdge(e) ? net.getCapacity(edgeRef.getInt(e)) : 0);
 					flow.set(e, 0);
 				}
 			} else {
-				for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-					int e = it.nextInt();
+				for (int e : g.edges()) {
 					double cap =
 							(g.edgeTarget(e) != source && g.edgeSource(e) != sink) ? net.getCapacity(edgeRef.getInt(e))
 									: 0;
@@ -89,14 +84,12 @@ class MaximumFlowAbstract {
 		void initCapacitiesAndFlows(Weights.Int flow, Weights.Int capacity) {
 			FlowNetwork.Int net = (FlowNetwork.Int) this.net;
 			if (gOrig.getCapabilities().directed()) {
-				for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-					int e = it.nextInt();
+				for (int e : g.edges()) {
 					capacity.set(e, isOriginalEdge(e) ? net.getCapacityInt(edgeRef.getInt(e)) : 0);
 					flow.set(e, 0);
 				}
 			} else {
-				for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-					int e = it.nextInt();
+				for (int e : g.edges()) {
 					int cap = (g.edgeTarget(e) != source && g.edgeSource(e) != sink)
 							? net.getCapacityInt(edgeRef.getInt(e))
 							: 0;
@@ -107,8 +100,7 @@ class MaximumFlowAbstract {
 		}
 
 		double constructResult(Weights.Double flow) {
-			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-				int e = it.nextInt();
+			for (int e : g.edges()) {
 				if (isOriginalEdge(e))
 					/* The flow of e might be negative if the original graph is undirected, which is fine */
 					net.setFlow(edgeRef.getInt(e), flow.getDouble(e));
@@ -116,21 +108,20 @@ class MaximumFlowAbstract {
 
 			double totalFlow = 0;
 			if (gOrig.getCapabilities().directed()) {
-				for (EdgeIter eit = gOrig.edgesOut(source).iterator(); eit.hasNext();)
-					totalFlow += net.getFlow(eit.nextInt());
-				for (EdgeIter eit = gOrig.edgesIn(source).iterator(); eit.hasNext();)
-					totalFlow -= net.getFlow(eit.nextInt());
+				for (int e : gOrig.edgesOut(source))
+					totalFlow += net.getFlow(e);
+				for (int e : gOrig.edgesIn(source))
+					totalFlow -= net.getFlow(e);
 			} else {
-				for (EdgeIter eit = g.edgesOut(source).iterator(); eit.hasNext();)
-					totalFlow += flow.getDouble(eit.nextInt());
+				for (int e : g.edgesOut(source))
+					totalFlow += flow.getDouble(e);
 			}
 			return totalFlow;
 		}
 
 		int constructResult(Weights.Int flow) {
 			FlowNetwork.Int net = (FlowNetwork.Int) this.net;
-			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-				int e = it.nextInt();
+			for (int e : g.edges()) {
 				if (isOriginalEdge(e))
 					/* The flow of e might be negative if the original graph is undirected, which is fine */
 					net.setFlow(edgeRef.getInt(e), flow.getInt(e));
@@ -138,13 +129,13 @@ class MaximumFlowAbstract {
 
 			int totalFlow = 0;
 			if (gOrig.getCapabilities().directed()) {
-				for (EdgeIter eit = gOrig.edgesOut(source).iterator(); eit.hasNext();)
-					totalFlow += net.getFlowInt(eit.nextInt());
-				for (EdgeIter eit = gOrig.edgesIn(source).iterator(); eit.hasNext();)
-					totalFlow -= net.getFlowInt(eit.nextInt());
+				for (int e : gOrig.edgesOut(source))
+					totalFlow += net.getFlowInt(e);
+				for (int e : gOrig.edgesIn(source))
+					totalFlow -= net.getFlowInt(e);
 			} else {
-				for (EdgeIter eit = g.edgesOut(source).iterator(); eit.hasNext();)
-					totalFlow += flow.getInt(eit.nextInt());
+				for (int e : g.edgesOut(source))
+					totalFlow += flow.getInt(e);
 			}
 			return totalFlow;
 		}
@@ -156,15 +147,13 @@ class MaximumFlowAbstract {
 		private static void positiveCapacitiesOrThrow(Graph g, FlowNetwork net) {
 			if (net instanceof FlowNetwork.Int) {
 				FlowNetwork.Int netInt = (FlowNetwork.Int) net;
-				for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-					int e = it.nextInt();
+				for (int e : g.edges()) {
 					int cap = netInt.getCapacityInt(e);
 					if (cap < 0)
 						throw new IllegalArgumentException("negative capacity of edge (" + e + "): " + cap);
 				}
 			} else {
-				for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-					int e = it.nextInt();
+				for (int e : g.edges()) {
 					double cap = net.getCapacity(e);
 					if (cap < 0)
 						throw new IllegalArgumentException("negative capacity of edge (" + e + "): " + cap);

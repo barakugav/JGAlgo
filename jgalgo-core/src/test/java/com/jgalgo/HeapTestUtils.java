@@ -18,11 +18,9 @@ package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
@@ -333,10 +331,9 @@ class HeapTestUtils extends TestUtils {
 
 		int expectedSize = tracker.heap.size();
 		int actualSize = 0;
-		for (Iterator<Integer> it = tracker.heap.iterator(); it.hasNext();) {
-			it.next();
+		for (@SuppressWarnings("unused")
+		Integer elm : tracker.heap)
 			actualSize++;
-		}
 		assertEquals(expectedSize, actualSize, "size() is different than counted size using iterator");
 	}
 

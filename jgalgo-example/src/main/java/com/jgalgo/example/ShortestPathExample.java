@@ -20,7 +20,6 @@ import com.jgalgo.Graph;
 import com.jgalgo.GraphBuilder;
 import com.jgalgo.ShortestPathSingleSource;
 import com.jgalgo.Weights;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 public class ShortestPathExample {
@@ -51,8 +50,7 @@ public class ShortestPathExample {
 
 		/* Print the shortest path from v1 to v3 */
 		System.out.println("The shortest path from v1 to v3 is:");
-		for (IntIterator it = ssspRes.getPath(v3).iterator(); it.hasNext();) {
-			int e = it.nextInt();
+		for (int e : ssspRes.getPath(v3)) {
 			int u = g.edgeSource(e);
 			int v = g.edgeTarget(e);
 			System.out.println(" " + e + "(" + u + ", " + v + ")");

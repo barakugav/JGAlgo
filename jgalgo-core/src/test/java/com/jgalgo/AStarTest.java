@@ -24,7 +24,6 @@ import java.util.function.IntToDoubleFunction;
 import org.junit.jupiter.api.Test;
 import it.unimi.dsi.fastutil.ints.Int2DoubleMap;
 import it.unimi.dsi.fastutil.ints.Int2DoubleOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 
 public class AStarTest extends TestBase {
 
@@ -45,29 +44,31 @@ public class AStarTest extends TestBase {
 	@Test
 	public void testRandGraphDirectedPerfectHeuristic() {
 		final long seed = 0xf84561a561971620L;
-		ShortestPathSingleSourceTestUtils.testSSSPPositiveInt(AStarAsSSSPWithPerfectHeuristic(), true, seed, SsspPhases);
+		ShortestPathSingleSourceTestUtils.testSSSPPositiveInt(AStarAsSSSPWithPerfectHeuristic(), true, seed,
+				SsspPhases);
 	}
 
 	@Test
 	public void testSSSPUndirectedPerfectHeuristic() {
 		final long seed = 0xf33456751c101f3bL;
-		ShortestPathSingleSourceTestUtils.testSSSPPositiveInt(AStarAsSSSPWithPerfectHeuristic(), false, seed, SsspPhases);
+		ShortestPathSingleSourceTestUtils.testSSSPPositiveInt(AStarAsSSSPWithPerfectHeuristic(), false, seed,
+				SsspPhases);
 	}
 
 	@Test
 	public void testRandGraphDirectedRandAdmissibleHeuristic() {
 		final long seed = 0xb5366e9088af7540L;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		ShortestPathSingleSourceTestUtils.testSSSPPositiveInt(AStarAsSSSPWithRandAdmissibleHeuristic(seedGen.nextSeed()), true,
-				seedGen.nextSeed(), SsspPhases);
+		ShortestPathSingleSourceTestUtils.testSSSPPositiveInt(
+				AStarAsSSSPWithRandAdmissibleHeuristic(seedGen.nextSeed()), true, seedGen.nextSeed(), SsspPhases);
 	}
 
 	@Test
 	public void testSSSPUndirectedRandAdmissibleHeuristic() {
 		final long seed = 0x7a8fb412a411ca7bL;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		ShortestPathSingleSourceTestUtils.testSSSPPositiveInt(AStarAsSSSPWithRandAdmissibleHeuristic(seedGen.nextSeed()), false,
-				seedGen.nextSeed(), SsspPhases);
+		ShortestPathSingleSourceTestUtils.testSSSPPositiveInt(
+				AStarAsSSSPWithRandAdmissibleHeuristic(seedGen.nextSeed()), false, seedGen.nextSeed(), SsspPhases);
 	}
 
 	private static ShortestPathSingleSource AStarAsSSSPWithNoHeuristic() {
@@ -84,7 +85,8 @@ public class AStarTest extends TestBase {
 				w = rev.w;
 			}
 
-			ShortestPathSingleSource.Result ssspRes = new ShortestPathSingleSourceDijkstra().computeShortestPaths(g, w, params.target);
+			ShortestPathSingleSource.Result ssspRes =
+					new ShortestPathSingleSourceDijkstra().computeShortestPaths(g, w, params.target);
 			return v -> ssspRes.distance(v);
 		});
 	}
@@ -100,12 +102,11 @@ public class AStarTest extends TestBase {
 				w = rev.w;
 			}
 			Int2DoubleMap w0 = new Int2DoubleOpenHashMap(g.edges().size());
-			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-				int e = it.nextInt();
+			for (int e : g.edges())
 				w0.put(e, w.weight(e) * rand.nextDouble());
-			}
 
-			ShortestPathSingleSource.Result ssspRes = new ShortestPathSingleSourceDijkstra().computeShortestPaths(g, e -> w0.get(e), params.target);
+			ShortestPathSingleSource.Result ssspRes =
+					new ShortestPathSingleSourceDijkstra().computeShortestPaths(g, e -> w0.get(e), params.target);
 			return v -> ssspRes.distance(v);
 		});
 	}
@@ -116,8 +117,7 @@ public class AStarTest extends TestBase {
 		for (int v = 0; v < n; v++)
 			revG.addVertex();
 		Weights.Double revW = revG.addEdgesWeights("w", double.class);
-		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-			int e = it.nextInt();
+		for (int e : g.edges()) {
 			int u = g.edgeSource(e);
 			int v = g.edgeTarget(e);
 			revW.set(revG.addEdge(v, u), w.weight(e));
@@ -147,7 +147,8 @@ public class AStarTest extends TestBase {
 		}
 	}
 
-	private static ShortestPathSingleSource AStarAsSSSP(Function<HeuristicParams, IntToDoubleFunction> vHeuristicBuilder) {
+	private static ShortestPathSingleSource AStarAsSSSP(
+			Function<HeuristicParams, IntToDoubleFunction> vHeuristicBuilder) {
 		return new ShortestPathSingleSource() {
 			@Override
 			public ShortestPathSingleSource.Result computeShortestPaths(Graph g, EdgeWeightFunc w, int source) {

@@ -20,7 +20,6 @@ import java.util.Arrays;
 import com.jgalgo.DynamicTree.MinEdge;
 import com.jgalgo.Utils.IntDoubleConsumer;
 import it.unimi.dsi.fastutil.Stack;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
@@ -75,10 +74,8 @@ class MaximumFlowDinicDynamicTrees implements MaximumFlow {
 			debug.println("\t", getClass().getSimpleName());
 
 			double maxCapacity = 100;
-			for (IntIterator it = gOrig.edges().iterator(); it.hasNext();) {
-				int e = it.nextInt();
+			for (int e : gOrig.edges())
 				maxCapacity = Math.max(maxCapacity, net.getCapacity(e));
-			}
 
 			GraphBuilder builder = GraphBuilder.newDirected().setOption("impl", "GraphLinked");
 			Graph L = builder.useFixedEdgesIDs(true).expectedVerticesNum(n).build();

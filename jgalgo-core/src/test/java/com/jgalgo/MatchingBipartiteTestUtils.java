@@ -22,7 +22,6 @@ import java.util.Objects;
 import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 
 class MatchingBipartiteTestUtils extends TestUtils {
 
@@ -102,8 +101,7 @@ class MatchingBipartiteTestUtils extends TestUtils {
 		}
 
 		boolean[][] m = new boolean[S.size()][T.size()];
-		for (IntIterator it = S.keySet().iterator(); it.hasNext();) {
-			int u = it.nextInt();
+		for (int u : S.keySet()) {
 			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
 				eit.nextInt();
 				int v = eit.target();

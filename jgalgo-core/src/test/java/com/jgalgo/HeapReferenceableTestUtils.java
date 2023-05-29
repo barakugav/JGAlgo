@@ -19,7 +19,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
@@ -412,10 +411,9 @@ public class HeapReferenceableTestUtils extends TestUtils {
 
 		int heapSize = tracker.heap.size();
 		int countedSize = 0;
-		for (Iterator<HeapReference<Integer, Void>> it = tracker.heap.iterator(); it.hasNext();) {
-			it.next();
+		for (@SuppressWarnings("unused")
+		HeapReference<Integer, Void> ref : tracker.heap)
 			countedSize++;
-		}
 		assertEquals(countedSize, heapSize, "size() is different than counted size using iterator");
 	}
 

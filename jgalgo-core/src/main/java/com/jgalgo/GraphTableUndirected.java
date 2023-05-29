@@ -18,7 +18,6 @@ package com.jgalgo;
 
 import com.jgalgo.GraphsUtils.GraphCapabilitiesBuilder;
 import com.jgalgo.GraphsUtils.UndirectedGraphImpl;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 
 /**
  * A undirected graph implementation using a two dimensional table to store all edges.
@@ -104,12 +103,12 @@ class GraphTableUndirected extends GraphTableAbstract implements UndirectedGraph
 	@Override
 	void vertexSwap(int v1, int v2) {
 		final int tempV = -2;
-		for (IntIterator eit1 = edgesOut(v1).iterator(); eit1.hasNext();)
-			replaceEdgeEndpoint(eit1.nextInt(), v1, tempV);
-		for (IntIterator eit1 = edgesOut(v2).iterator(); eit1.hasNext();)
-			replaceEdgeEndpoint(eit1.nextInt(), v2, v1);
-		for (IntIterator eit1 = edgesOut(v1).iterator(); eit1.hasNext();)
-			replaceEdgeEndpoint(eit1.nextInt(), tempV, v2);
+		for (int e : edgesOut(v1))
+			replaceEdgeEndpoint(e, v1, tempV);
+		for (int e : edgesOut(v2))
+			replaceEdgeEndpoint(e, v2, v1);
+		for (int e : edgesOut(v1))
+			replaceEdgeEndpoint(e, tempV, v2);
 		super.vertexSwap(v1, v2);
 	}
 

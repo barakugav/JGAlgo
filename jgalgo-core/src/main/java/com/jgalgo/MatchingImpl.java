@@ -20,7 +20,6 @@ import java.util.Objects;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntCollections;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntLists;
 
 class MatchingImpl implements Matching {
@@ -84,8 +83,7 @@ class MatchingImpl implements Matching {
 			return;
 		matched = new int[g.vertices().size()];
 		Arrays.fill(matched, -1);
-		for (IntIterator it = edges.iterator(); it.hasNext();) {
-			int e = it.nextInt();
+		for (int e : edges) {
 			int u = g.edgeSource(e);
 			int v = g.edgeTarget(e);
 			if (matched[u] != -1)

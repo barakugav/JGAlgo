@@ -19,7 +19,6 @@ package com.jgalgo;
 import java.util.BitSet;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 
 /**
  * Bellman–Ford algorithm for Single Source Shortest Path (SSSP) with negative weights in directed graphs.
@@ -27,8 +26,8 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  * Compute the shortest paths from a single source to all other vertices with weight function of arbitrary values. The
  * algorithm runs in \(O(n m)\) time and uses linear space.
  * <p>
- * In case there are only positive weights, use {@link ShortestPathSingleSourceDijkstra}. In case the weights are integers, use
- * {@link ShortestPathSingleSourceGoldberg}.
+ * In case there are only positive weights, use {@link ShortestPathSingleSourceDijkstra}. In case the weights are
+ * integers, use {@link ShortestPathSingleSourceGoldberg}.
  *
  * @see    <a href= "https://en.wikipedia.org/wiki/Bellman%E2%80%93Ford_algorithm">Wikipedia</a>
  * @author Barak Ugav
@@ -55,8 +54,7 @@ class ShortestPathSingleSourceBellmanFord implements ShortestPathSingleSource {
 		res.distances[source] = 0;
 
 		for (int i = 0; i < n - 1; i++) {
-			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-				int e = it.nextInt();
+			for (int e : g.edges()) {
 				int u = g.edgeSource(e), v = g.edgeTarget(e);
 				double d = res.distances[u] + w.weight(e);
 				if (d < res.distances[v]) {

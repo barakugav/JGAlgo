@@ -18,15 +18,11 @@ package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.BitSet;
 import java.util.List;
 import java.util.Random;
-
 import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
-
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 class MinimumCutSTTestUtils extends TestUtils {
@@ -41,11 +37,8 @@ class MinimumCutSTTestUtils extends TestUtils {
 					.selfEdges(false).cycles(true).connected(false).build();
 
 			Weights.Int w = g.addEdgesWeights("weight", int.class);
-			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-				int e = it.nextInt();
-				int cap = rand.nextInt(16384);
-				w.set(e, cap);
-			}
+			for (int e : g.edges())
+				w.set(e, rand.nextInt(16384));
 
 			int source, sink;
 			for (;;) {

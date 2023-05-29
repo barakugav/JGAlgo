@@ -21,7 +21,6 @@ import org.junit.jupiter.api.Test;
 import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 
 public class MinimumDirectedSpanningTreeTarjanTest extends TestBase {
 
@@ -52,8 +51,8 @@ public class MinimumDirectedSpanningTreeTarjanTest extends TestBase {
 			}
 			MinimumSpanningTree.Result mst0 = algo.computeMinimumSpanningTree(dg, e -> w.weight(edgeRef.getInt(e)), 0);
 			IntCollection mst = new IntArrayList(mst0.edges().size());
-			for (IntIterator it = mst0.edges().iterator(); it.hasNext();)
-				mst.add(edgeRef.getInt(it.nextInt()));
+			for (int e : mst0.edges())
+				mst.add(edgeRef.getInt(e));
 			return new MinimumSpanningTreeResultImpl(mst);
 		}
 	}
@@ -61,7 +60,8 @@ public class MinimumDirectedSpanningTreeTarjanTest extends TestBase {
 	@Test
 	public void testRandGraphUndirected() {
 		final long seed = 0x9234356819f0ea1dL;
-		MinimumSpanningTreeTestUtils.testRandGraph(new MDSTUndirectedWrapper(new MinimumDirectedSpanningTreeTarjan()), seed);
+		MinimumSpanningTreeTestUtils.testRandGraph(new MDSTUndirectedWrapper(new MinimumDirectedSpanningTreeTarjan()),
+				seed);
 	}
 
 	@Test

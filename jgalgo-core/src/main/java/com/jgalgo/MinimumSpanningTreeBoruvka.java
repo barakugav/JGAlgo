@@ -20,7 +20,6 @@ import java.util.Arrays;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 
 /**
  * Boruvka minimum spanning tree algorithm.
@@ -64,8 +63,7 @@ class MinimumSpanningTreeBoruvka implements MinimumSpanningTree {
 		for (int v = 0; v < mstRes.treeNum; v++)
 			contractedG.addVertex();
 		Weights.Int edgeRef = contractedG.addEdgesWeights(edgeRefKey, int.class);
-		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-			int e = it.nextInt();
+		for (int e : g.edges()) {
 			int u = mstRes.vToTree[g.edgeSource(e)];
 			int v = mstRes.vToTree[g.edgeTarget(e)];
 			if (u == v)

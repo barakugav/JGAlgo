@@ -19,13 +19,9 @@ package com.jgalgo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
-
 import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
-
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntIterators;
@@ -63,8 +59,7 @@ public class BiConnectedComponentsAlgoHopcroftTarjanTest extends TestBase {
 		Weights<IntSet> edgeToBiccs = Weights.createExternalEdgesWeights(g, IntSet.class, null);
 		for (int bccIdx = 0; bccIdx < res.getNumberOfBiCcs(); bccIdx++) {
 			IntCollection biccEdges = res.getBiCcEdges(bccIdx);
-			for (IntIterator eit = biccEdges.iterator(); eit.hasNext();) {
-				int e = eit.nextInt();
+			for (int e : biccEdges) {
 				IntSet eBiccs = edgeToBiccs.get(e);
 				if (eBiccs == null)
 					edgeToBiccs.set(e, eBiccs = new IntOpenHashSet());
@@ -73,8 +68,7 @@ public class BiConnectedComponentsAlgoHopcroftTarjanTest extends TestBase {
 			assertEquals(new IntOpenHashSet(biccEdges).size(), biccEdges.size(),
 					"BiCc edges list contains duplications" + biccEdges);
 		}
-		for (IntIterator eit = g.edges().iterator(); eit.hasNext();) {
-			int e = eit.nextInt();
+		for (int e : g.edges()) {
 			int u = g.edgeSource(e), v = g.edgeTarget(e);
 			IntSet eBiccs = edgeToBiccs.get(e);
 			if (u != v) {
@@ -98,22 +92,19 @@ public class BiConnectedComponentsAlgoHopcroftTarjanTest extends TestBase {
 				continue;
 
 			IntSet ccIdxs = new IntOpenHashSet();
-			for (IntIterator it = vertices.iterator(); it.hasNext();)
-				ccIdxs.add(gCcs.getVertexCc(it.nextInt()));
+			for (int v : vertices)
+				ccIdxs.add(gCcs.getVertexCc(v));
 			assertTrue(ccIdxs.size() == 1, "BiConnected component vertices are not in a the connected component");
 
-			for (IntIterator vit = vertices.iterator(); vit.hasNext();) {
-				final int vToRemove = vit.nextInt();
+			for (final int vToRemove : vertices) {
 				Graph gWithoutV = g.copy();
 				gWithoutV.removeEdgesOf(vToRemove);
 
 				ConnectedComponentsAlgo.Result ccsWithoutV = ccAlgo.computeConnectivityComponents(gWithoutV);
 				ccIdxs.clear();
-				for (IntIterator uit = vertices.iterator(); uit.hasNext();) {
-					int u = uit.nextInt();
+				for (int u : vertices)
 					if (u != vToRemove)
 						ccIdxs.add(ccsWithoutV.getVertexCc(u));
-				}
 				assertEquals(1, ccIdxs.size(),
 						"BiConnected component vertices are not in a the connected component after remove a single vertex: "
 								+ vToRemove);

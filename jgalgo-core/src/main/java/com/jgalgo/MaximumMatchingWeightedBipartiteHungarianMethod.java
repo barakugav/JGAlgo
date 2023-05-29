@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Objects;
 import it.unimi.dsi.fastutil.ints.IntComparator;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 
 /**
  * Kuhn's Hungarian method for maximum weighted matching in bipartite graphs.
@@ -144,10 +143,8 @@ class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumMatching
 			Arrays.fill(matched, EdgeNone);
 
 			double maxWeight = Double.MIN_VALUE;
-			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-				int e = it.nextInt();
+			for (int e : g.edges())
 				maxWeight = Math.max(maxWeight, w.weight(e));
-			}
 			final double delta1Threshold = maxWeight;
 			for (int u = 0; u < n; u++)
 				if (partition.getBool(u))
@@ -161,10 +158,8 @@ class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumMatching
 					if (!partition.getBool(u) || matched[u] != EdgeNone)
 						continue;
 					vertexAddedToTree(u);
-					for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
-						int e = eit.nextInt();
+					for (int e : g.edgesOut(u))
 						nextTightEdgeAdd(u, e);
-					}
 				}
 
 				currentTree: for (;;) {
@@ -208,10 +203,8 @@ class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumMatching
 						parent[v] = matchedEdge;
 						vertexAddedToTree(v);
 
-						for (EdgeIter eit = g.edgesOut(v).iterator(); eit.hasNext();) {
-							int e1 = eit.nextInt();
+						for (int e1 : g.edgesOut(v))
 							nextTightEdgeAdd(v, e1);
-						}
 					}
 
 					// Adjust dual values

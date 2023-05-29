@@ -18,7 +18,6 @@ package com.jgalgo;
 
 import java.util.Arrays;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
@@ -87,8 +86,7 @@ class MinimumMeanCycleDasdanGupta implements MinimumMeanCycle {
 			for (int k = 0; k < ccSize; k++) {
 				boolean[] visit = k % 2 == 0 ? visit1 : visit2;
 				boolean[] visitNext = k % 2 == 0 ? visit2 : visit1;
-				for (IntIterator uit = cc.getCcVertices(ccIdx).iterator(); uit.hasNext();) {
-					int u = uit.nextInt();
+				for (int u : cc.getCcVertices(ccIdx)) {
 					if (!visit[u])
 						continue;
 					visit[u] = false;
@@ -108,8 +106,7 @@ class MinimumMeanCycleDasdanGupta implements MinimumMeanCycle {
 			}
 
 			boolean[] lastVisit = ccSize % 2 == 0 ? visit1 : visit2;
-			for (IntIterator uit = cc.getCcVertices(ccIdx).iterator(); uit.hasNext();) {
-				int u = uit.nextInt();
+			for (int u : cc.getCcVertices(ccIdx)) {
 				if (!lastVisit[u])
 					continue;
 				double bestVertexCycleMeanWeight = Double.NEGATIVE_INFINITY;

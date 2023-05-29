@@ -21,7 +21,6 @@ import java.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -135,8 +134,7 @@ class CyclesFinderJohnson implements CyclesFinder {
 		private void unblock(int v) {
 			isBlocked.clear(v);
 			for (;;) {
-				for (IntIterator it = blockingSet[v].iterator(); it.hasNext();) {
-					int u = it.nextInt();
+				for (int u : blockingSet[v]) {
 					if (isBlocked.get(u)) {
 						isBlocked.clear(u);
 						unblockStack.push(u);
@@ -183,12 +181,7 @@ class CyclesFinderJohnson implements CyclesFinder {
 	}
 
 	private static boolean hasSelfEdge(Graph g, int u) {
-		for (EdgeIter it = g.edgesOut(u).iterator(); it.hasNext();) {
-			it.nextInt();
-			if (it.target() == u)
-				return true;
-		}
-		return false;
+		return g.getEdge(u, u) != -1;
 	}
 
 	private static class StronglyConnectedComponent {

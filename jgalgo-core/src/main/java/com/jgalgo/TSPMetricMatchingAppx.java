@@ -17,7 +17,6 @@
 package com.jgalgo;
 
 import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 
 /**
  * TSP \(3/2\)-approximation using maximum matching.
@@ -82,13 +81,11 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 		for (int v = 0; v < n; v++)
 			g1.addVertex();
 		Weights.Int g1EdgeRef = g1.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
-		for (IntIterator it = mst.iterator(); it.hasNext();) {
-			int e = it.nextInt();
+		for (int e : mst) {
 			int g1Edge = g1.addEdge(g.edgeSource(e), g.edgeTarget(e));
 			g1EdgeRef.set(g1Edge, e);
 		}
-		for (IntIterator it = matching.edges().iterator(); it.hasNext();) {
-			int mGedge = it.nextInt();
+		for (int mGedge : matching.edges()) {
 			int u = mVtoV[mG.edgeSource(mGedge)];
 			int v = mVtoV[mG.edgeTarget(mGedge)];
 			int g1Edge = g1.addEdge(u, v);

@@ -52,8 +52,7 @@ System.out.println("Distance from v1 to v3 is: " + ssspRes.distance(v3));
 
 /* Print the shortest path from v1 to v3 */
 System.out.println("The shortest path from v1 to v3 is:");
-for (IntIterator it = ssspRes.getPath(v3).iterator(); it.hasNext();) {
-	int e = it.nextInt();
+for (int e : ssspRes.getPath(v3)) {
 	int u = g.edgeSource(e);
 	int v = g.edgeTarget(e);
 	System.out.println(" " + e + "(" + u + ", " + v + ")");

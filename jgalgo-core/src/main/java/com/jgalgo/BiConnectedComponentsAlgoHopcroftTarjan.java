@@ -63,8 +63,7 @@ class BiConnectedComponentsAlgoHopcroftTarjan implements BiConnectedComponentsAl
 			IntList biccVertices = new IntArrayList();
 			int[] visited = biccVerticesFromBiccEdgesState.visited;
 			final int visitIdx = biccVerticesFromBiccEdgesState.nextVisitIdx++;
-			for (IntIterator eit = biccsEdges.iterator(); eit.hasNext();) {
-				int e = eit.nextInt();
+			for (int e : biccsEdges) {
 				for (int w : new int[] { g.edgeSource(e), g.edgeTarget(e) }) {
 					if (visited[w] != visitIdx) {
 						visited[w] = visitIdx;
@@ -188,8 +187,8 @@ class BiConnectedComponentsAlgoHopcroftTarjan implements BiConnectedComponentsAl
 					vertexBiCcs[v] = new IntArrayList();
 
 				for (int biccIdx = 0; biccIdx < biccsVertices.length; biccIdx++)
-					for (IntIterator vit = biccsVertices[biccIdx].iterator(); vit.hasNext();)
-						vertexBiCcs[vit.nextInt()].add(biccIdx);
+					for (int v : biccsVertices[biccIdx])
+						vertexBiCcs[v].add(biccIdx);
 
 				for (int v = 0; v < n; v++)
 					vertexBiCcs[v] = IntLists.unmodifiable(vertexBiCcs[v]);
@@ -214,8 +213,7 @@ class BiConnectedComponentsAlgoHopcroftTarjan implements BiConnectedComponentsAl
 				biccsEdges = new IntList[getNumberOfBiCcs()];
 				for (int idx = 0; idx < biccsVertices.length; idx++)
 					biccsEdges[idx] = new IntArrayList();
-				for (IntIterator eit = g.edges().iterator(); eit.hasNext();) {
-					int e = eit.nextInt();
+				for (int e : g.edges()) {
 					int u = g.edgeSource(e);
 					int v = g.edgeTarget(e);
 					/* Both getVertexBiCcs(u) and getVertexBiCcs(v) are sorted */

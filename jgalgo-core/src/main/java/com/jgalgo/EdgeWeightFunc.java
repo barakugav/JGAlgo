@@ -51,8 +51,7 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
  * assert ssspRes.getPath(v3).equals(IntList.of(e1, e2));
  * System.out.println("Distance from v1 to v3 is: " + ssspRes.distance(v3));
  * System.out.println("The shortest path from v1 to v3 is:");
- * for (IntIterator it = ssspRes.getPath(v3).iterator(); it.hasNext();) {
- * 	int e = it.nextInt();
+ * for (int e : ssspRes.getPath(v3)) {
  * 	int u = g.edgeSource(e), v = g.edgeTarget(e);
  * 	System.out.println(" " + e + "(" + u + ", " + v + ")");
  * }
@@ -112,8 +111,7 @@ public interface EdgeWeightFunc extends IntComparator {
 	 * assert ssspRes.getPath(v3).equals(IntList.of(e1, e2));
 	 * System.out.println("Distance from v1 to v3 is: " + ssspRes.distance(v3));
 	 * System.out.println("The shortest path from v1 to v3 is:");
-	 * for (IntIterator it = ssspRes.getPath(v3).iterator(); it.hasNext();) {
-	 * 	int e = it.nextInt();
+	 * for (int e : ssspRes.getPath(v3)) {
 	 * 	int u = g.edgeSource(e), v = g.edgeTarget(e);
 	 * 	System.out.println(" " + e + "(" + u + ", " + v + ")");
 	 * }

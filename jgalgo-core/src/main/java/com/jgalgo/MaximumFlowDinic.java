@@ -19,7 +19,6 @@ package com.jgalgo;
 import java.util.Arrays;
 import java.util.Objects;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 import it.unimi.dsi.fastutil.ints.IntStack;
@@ -154,14 +153,13 @@ class MaximumFlowDinic implements MaximumFlow {
 
 					// find out what is the maximum flow we can pass
 					double f = Double.MAX_VALUE;
-					for (IntIterator it = pathList.iterator(); it.hasNext();) {
-						int e = edgeRefL.getInt(it.nextInt());
+					for (int eL : pathList) {
+						int e = edgeRefL.getInt(eL);
 						f = Math.min(f, capacity.getDouble(e) - flow.getDouble(e));
 					}
 
 					// update flow of all edges on path
-					for (IntIterator it = pathList.iterator(); it.hasNext();) {
-						int eL = it.nextInt();
+					for (int eL : pathList) {
 						int e = edgeRefL.getInt(eL);
 						int rev = twin.getInt(e);
 						double newFlow = flow.getDouble(e) + f;

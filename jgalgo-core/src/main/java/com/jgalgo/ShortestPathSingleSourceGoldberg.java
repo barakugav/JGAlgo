@@ -21,7 +21,6 @@ import java.util.BitSet;
 import java.util.Objects;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
@@ -84,10 +83,8 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSource, Algo
 
 	private ShortestPathSingleSource.Result computeShortestPaths0(Graph g, EdgeWeightFunc.Int w, int source) {
 		int minWeight = Integer.MAX_VALUE;
-		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-			int e = it.nextInt();
+		for (int e : g.edges())
 			minWeight = Math.min(minWeight, w.weightInt(e));
-		}
 		if (minWeight >= 0)
 			// All weights are positive, use Dijkstra
 			return positiveSsspAlgo.computeShortestPaths(g, w, source);
@@ -149,15 +146,12 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSource, Algo
 			for (;;) {
 				diagnostics.potentialIteration();
 				/* update current weight function according to latest potential */
-				for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-					int e = it.nextInt();
+				for (int e : g.edges())
 					w.set(e, calcWeightWithPotential(g, e, w0, potential, weightMask));
-				}
 
 				/* populate gNeg with all 0,-1 edges */
 				gNeg.clearEdges();
-				for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-					int e = it.nextInt();
+				for (int e : g.edges()) {
 					int u = g.edgeSource(e), v = g.edgeTarget(e);
 					if (w.weightInt(e) <= 0)
 						gNegEdgeRefs.set(gNeg.addEdge(u, v), e);
@@ -188,8 +182,8 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSource, Algo
 							// negative cycle
 							Path negCycle0 = Path.findPath(gNeg, v, u);
 							IntList negCycle = new IntArrayList(negCycle0.size() + 1);
-							for (IntIterator it = negCycle0.iterator(); it.hasNext();)
-								negCycle.add(gNegEdgeRefs.getInt(it.nextInt()));
+							for (int e2 : negCycle0)
+								negCycle.add(gNegEdgeRefs.getInt(e2));
 							negCycle.add(gNegEdgeRefs.getInt(e));
 							return Pair.of(null, new PathImpl(g, v, v, negCycle));
 						}
@@ -254,8 +248,7 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSource, Algo
 							GWeights.set(G.addEdge(fakeS2, V), layerNum - 1);
 
 					// Add the remaining edges to the graph, not only 0,-1 edges
-					for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-						int e = it.nextInt();
+					for (int e : g.edges()) {
 						int weight = w.weightInt(e);
 						if (weight > 0) {
 							int U = connectivityRes.getVertexCc(g.edgeSource(e));
@@ -266,10 +259,8 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSource, Algo
 					}
 
 					// Calc distance with abs weight function to update potential function
-					for (IntIterator it = G.edges().iterator(); it.hasNext();) {
-						int e = it.nextInt();
+					for (int e : G.edges())
 						GWeights.set(e, Math.abs(GWeights.getInt(e)));
-					}
 					ssspRes = ssspDial.computeShortestPaths(G, GWeights, fakeS2, layerNum);
 					for (int v = 0; v < n; v++)
 						potential[v] += ssspRes.distance(connectivityRes.getVertexCc(v));

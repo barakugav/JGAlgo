@@ -23,7 +23,6 @@ import java.util.NavigableSet;
 import java.util.Random;
 import java.util.TreeSet;
 import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 
 @SuppressWarnings("boxing")
 public class MaximumFlowTestUtils extends TestUtils {
@@ -41,8 +40,7 @@ public class MaximumFlowTestUtils extends TestUtils {
 
 		Random rand = new Random(seed);
 		FlowNetwork flow = FlowNetwork.createAsEdgeWeight(g);
-		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-			int e = it.nextInt();
+		for (int e : g.edges()) {
 			double cap;
 			for (;;) {
 				cap = nextDouble(rand, 1, 100);
@@ -65,11 +63,8 @@ public class MaximumFlowTestUtils extends TestUtils {
 	static FlowNetwork.Int randNetworkInt(Graph g, long seed) {
 		Random rand = new Random(seed);
 		FlowNetwork.Int flow = FlowNetwork.Int.createAsEdgeWeight(g);
-		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-			int e = it.nextInt();
-			int cap = rand.nextInt(16384);
-			flow.setCapacity(e, cap);
-		}
+		for (int e : g.edges())
+			flow.setCapacity(e, rand.nextInt(16384));
 		return flow;
 	}
 
@@ -128,8 +123,7 @@ public class MaximumFlowTestUtils extends TestUtils {
 
 		int n = g.vertices().size();
 		double[] vertexFlowOut = new double[n];
-		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-			int e = it.nextInt();
+		for (int e : g.edges()) {
 			int u = g.edgeSource(e), v = g.edgeTarget(e);
 			vertexFlowOut[u] += net.getFlow(e);
 			vertexFlowOut[v] -= net.getFlow(e);
@@ -145,8 +139,8 @@ public class MaximumFlowTestUtils extends TestUtils {
 
 	private static void testNetworkInt(Graph g, FlowNetwork.Int net, int source, int sink, MaximumFlow algo) {
 		// Clear net, for debug 'drop to frame'
-		// for (IntIterator it = g.edges().iterator(); it.hasNext();)
-		// net.setFlow(it.nextInt(), 0);
+		// for (int e : g.edges())
+		// 	net.setFlow(e, 0);
 
 		double actualMaxFlow0 = algo.computeMaximumFlow(g, net, source, sink);
 		int actualMaxFlow = (int) actualMaxFlow0;
@@ -154,8 +148,7 @@ public class MaximumFlowTestUtils extends TestUtils {
 
 		int n = g.vertices().size();
 		int[] vertexFlowOut = new int[n];
-		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-			int e = it.nextInt();
+		for (int e : g.edges()) {
 			int u = g.edgeSource(e), v = g.edgeTarget(e);
 			vertexFlowOut[u] += net.getFlowInt(e);
 			vertexFlowOut[v] -= net.getFlowInt(e);

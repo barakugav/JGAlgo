@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.Objects;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntLists;
 import it.unimi.dsi.fastutil.ints.IntStack;
@@ -176,8 +175,7 @@ class ConnectedComponentsAlgoImpl implements ConnectedComponentsAlgo {
 				ccEdges = new IntList[ccNum];
 				for (int c = 0; c < ccNum; c++)
 					ccEdges[c] = new IntArrayList();
-				for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-					int e = it.nextInt();
+				for (int e : g.edges()) {
 					int cc1 = vertexToCc[g.edgeSource(e)];
 					int cc2 = vertexToCc[g.edgeTarget(e)];
 					if (cc1 == cc2)

@@ -163,8 +163,8 @@ class HeapBinaryInt extends HeapAbstract<Integer> {
 		int addAllCost = elms.size() * Utils.log2ceil(combinedSize);
 		if (reconstructionCost >= addAllCost) {
 			if (elms instanceof IntCollection) {
-				for (IntIterator it = ((IntCollection) elms).iterator(); it.hasNext();)
-					insert(it.nextInt());
+				for (int e : (IntCollection) elms)
+					insert(e);
 			} else {
 				for (Integer e : elms)
 					insert(e.intValue());
@@ -173,8 +173,8 @@ class HeapBinaryInt extends HeapAbstract<Integer> {
 			int[] a = arr;
 			int s = size;
 			if (elms instanceof IntCollection) {
-				for (IntIterator it = ((IntCollection) elms).iterator(); it.hasNext();)
-					a[s++] = it.nextInt();
+				for (int e : (IntCollection) elms)
+					a[s++] = e;
 			} else {
 				for (Integer e : elms)
 					a[s++] = e.intValue();

@@ -23,7 +23,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 
 class MatchingUnweightedTestUtils extends TestUtils {
 
@@ -49,8 +48,7 @@ class MatchingUnweightedTestUtils extends TestUtils {
 
 	static <E> void validateMatching(Graph g, Matching matching) {
 		Set<Integer> matched = new HashSet<>();
-		for (IntIterator it = matching.edges().iterator(); it.hasNext();) {
-			int e = it.nextInt();
+		for (int e : matching.edges()) {
 			for (int v : new int[] { g.edgeSource(e), g.edgeTarget(e) }) {
 				boolean dup = matched.contains(Integer.valueOf(v));
 				assertFalse(dup, "Invalid matching, clash: " + v + " " + e);

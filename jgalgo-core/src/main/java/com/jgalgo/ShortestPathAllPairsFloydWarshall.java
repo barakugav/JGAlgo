@@ -17,7 +17,6 @@
 package com.jgalgo;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
@@ -44,8 +43,7 @@ class ShortestPathAllPairsFloydWarshall implements ShortestPathAllPairs {
 
 	private static ShortestPathAllPairs.Result computeAPSPUndirected(Graph g, EdgeWeightFunc w) {
 		ShortestPathAllPairsResultImpl.Abstract res = new ShortestPathAllPairsResultImpl.Undirected(g);
-		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-			int e = it.nextInt();
+		for (int e : g.edges()) {
 			int u = g.edgeSource(e);
 			int v = g.edgeTarget(e);
 			double ew = w.weight(e);
@@ -91,8 +89,7 @@ class ShortestPathAllPairsFloydWarshall implements ShortestPathAllPairs {
 
 	private static ShortestPathAllPairs.Result computeAPSPDirected(Graph g, EdgeWeightFunc w) {
 		ShortestPathAllPairsResultImpl.Abstract res = new ShortestPathAllPairsResultImpl.Directed(g);
-		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-			int e = it.nextInt();
+		for (int e : g.edges()) {
 			int u = g.edgeSource(e);
 			int v = g.edgeTarget(e);
 			double ew = w.weight(e);

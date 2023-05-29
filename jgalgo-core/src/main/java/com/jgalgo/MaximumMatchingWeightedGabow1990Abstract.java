@@ -459,8 +459,7 @@ abstract class MaximumMatchingWeightedGabow1990Abstract implements MaximumMatchi
 			edgeVal = g.addEdgesWeights(EdgeValKey, EdgeVal.class);
 			this.w = e -> w.weight(edgeVal.get(e).e);
 
-			for (IntIterator it = gOrig.edges().iterator(); it.hasNext();) {
-				int e = it.nextInt();
+			for (int e : gOrig.edges()) {
 				int u = gOrig.edgeSource(e), v = gOrig.edgeTarget(e);
 				int e1 = g.addEdge(u, v);
 				int e2 = g.addEdge(v, u);
@@ -529,10 +528,8 @@ abstract class MaximumMatchingWeightedGabow1990Abstract implements MaximumMatchi
 
 			// init dual value of all vertices as maxWeight / 2
 			double maxWeight = Double.MIN_VALUE;
-			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-				int e = it.nextInt();
+			for (int e : g.edges())
 				maxWeight = Math.max(maxWeight, w.weight(e));
-			}
 			double delta1Threshold = maxWeight / 2;
 			for (int u = 0; u < n; u++)
 				vertexDualValBase[u] = delta1Threshold;

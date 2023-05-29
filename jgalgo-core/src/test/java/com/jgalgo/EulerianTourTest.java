@@ -24,7 +24,6 @@ import java.util.Random;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -85,10 +84,8 @@ public class EulerianTourTest extends TestBase {
 			assertFalse(alreadyUsed, "edge appear twice in tour: " + e);
 		}
 
-		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-			int e = it.nextInt();
+		for (int e : g.edges())
 			assertTrue(usedEdges.contains(e), "edge was not used: " + e);
-		}
 	}
 
 	private static Graph randUGraph(int n, int m, boolean allEvenVertices, long seed) {

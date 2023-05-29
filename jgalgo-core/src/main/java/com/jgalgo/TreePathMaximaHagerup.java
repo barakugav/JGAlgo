@@ -22,7 +22,6 @@ import com.jgalgo.Utils.BiInt2IntFunction;
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIntPair;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
@@ -276,13 +275,13 @@ class TreePathMaximaHagerup implements TreePathMaxima {
 			int[] edges = new int[(n - 1) * 3];
 			int[] edgesNext = new int[(n / 2 * 1) * 3];
 			int edgesNum = 0;
-			for (IntIterator it = tOrig.edges().iterator(); it.hasNext(); edgesNum++) {
-				int e = it.nextInt();
+			for (int e : tOrig.edges()) {
 				int u = tOrig.edgeSource(e);
 				int v = tOrig.edgeTarget(e);
 				edges[edgesNum * 3 + 0] = e;
 				edges[edgesNum * 3 + 1] = u;
 				edges[edgesNum * 3 + 2] = v;
+				edgesNum++;
 			}
 
 			for (int height = 1;; height++) {

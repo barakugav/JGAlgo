@@ -38,7 +38,6 @@ import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
 import com.jgalgo.TestUtils.SeedGenerator;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
@@ -83,10 +82,8 @@ public class MaximumFlowBench {
 	@Setup(Level.Invocation)
 	public void resetFlow() {
 		for (MaxFlowTask graph : graphs) {
-			for (IntIterator it = graph.g.edges().iterator(); it.hasNext();) {
-				int edge = it.nextInt();
-				graph.flow.setFlow(edge, 0);
-			}
+			for (int e : graph.g.edges())
+				graph.flow.setFlow(e, 0);
 		}
 	}
 
@@ -154,11 +151,8 @@ public class MaximumFlowBench {
 	private static FlowNetwork.Int randNetworkInt(Graph g, long seed) {
 		Random rand = new Random(seed);
 		FlowNetwork.Int flow = FlowNetwork.Int.createAsEdgeWeight(g);
-		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-			int e = it.nextInt();
-			int cap = rand.nextInt(16384);
-			flow.setCapacity(e, cap);
-		}
+		for (int e : g.edges())
+			flow.setCapacity(e, rand.nextInt(16384));
 		return flow;
 	}
 

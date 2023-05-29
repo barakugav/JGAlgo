@@ -24,7 +24,6 @@ import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntLists;
 
@@ -103,8 +102,7 @@ class MinimumSpanningTreeKargerKleinTarjan implements MinimumSpanningTree {
 
 		/* The result is F0 and F2 */
 		IntCollection f2 = computeMST(g2, g2W);
-		for (IntIterator it = f2.iterator(); it.hasNext();) {
-			int eRef = it.nextInt();
+		for (int eRef : f2) {
 			int e = g2Ref.getInt(eRef);
 			f0.add(e);
 		}
@@ -117,8 +115,7 @@ class MinimumSpanningTreeKargerKleinTarjan implements MinimumSpanningTree {
 		for (int v = 0; v < n; v++)
 			subG.addVertex();
 		Weights.Int edgeRefSub = subG.addEdgesWeights(edgeDataKey, int.class);
-		for (IntIterator it = edgeSet.iterator(); it.hasNext();) {
-			int e = it.nextInt();
+		for (int e : edgeSet) {
 			int u = g.edgeSource(e), v = g.edgeTarget(e);
 			int eSub = subG.addEdge(u, v);
 			edgeRefSub.set(eSub, edgeRef.getInt(e));
@@ -128,10 +125,8 @@ class MinimumSpanningTreeKargerKleinTarjan implements MinimumSpanningTree {
 
 	static Weights.Double assignWeightsFromEdgeRef(Graph g, EdgeWeightFunc w, Object weightKey, Weights.Int edgeRef) {
 		Weights.Double w2 = g.addEdgesWeights(weightKey, double.class);
-		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-			int e = it.nextInt();
+		for (int e : g.edges())
 			w2.set(e, w.weight(edgeRef.getInt(e)));
-		}
 		return w2;
 	}
 
@@ -139,12 +134,9 @@ class MinimumSpanningTreeKargerKleinTarjan implements MinimumSpanningTree {
 		allocatedMem.allocateForRandSubGraph();
 		IntCollection edgeSet = allocatedMem.edgeList;
 		edgeSet.clear();
-		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-			int e = it.nextInt();
+		for (int e : g.edges())
 			if (rand.nextBoolean())
 				edgeSet.add(e);
-		}
-
 		return subGraph(g, edgeSet, edgeRefKey, edgeRef);
 	}
 
@@ -168,8 +160,7 @@ class MinimumSpanningTreeKargerKleinTarjan implements MinimumSpanningTree {
 			vToVnew[u] = trees[ut].addVertex();
 		}
 
-		for (IntIterator it = f.edges().iterator(); it.hasNext();) {
-			int e = it.nextInt();
+		for (int e : f.edges()) {
 			int u = f.edgeSource(e), v = f.edgeTarget(e);
 			int un = vToVnew[u], vn = vToVnew[v];
 			int treeIdx = vToTree.applyAsInt(u);
@@ -179,8 +170,7 @@ class MinimumSpanningTreeKargerKleinTarjan implements MinimumSpanningTree {
 
 		// use the tree path maxima to find the heaviest edge in the path connecting u v for each edge in g
 		TreePathMaxima.Queries[] tpmQueries = allocatedMem.tpmQueries;
-		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-			int e = it.nextInt();
+		for (int e : g.edges()) {
 			int u = g.edgeSource(e), v = g.edgeTarget(e);
 			int ut = vToTree.applyAsInt(u);
 			if (ut != vToTree.applyAsInt(v))
@@ -199,8 +189,7 @@ class MinimumSpanningTreeKargerKleinTarjan implements MinimumSpanningTree {
 		lightEdges.clear();
 		int[] tpmIdx = allocatedMem.vToVnew;
 		Arrays.fill(tpmIdx, 0, treeCount, 0);
-		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-			int e = it.nextInt();
+		for (int e : g.edges()) {
 			int u = g.edgeSource(e), v = g.edgeTarget(e);
 			int ut = vToTree.applyAsInt(u);
 			if (ut != vToTree.applyAsInt(v)

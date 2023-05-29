@@ -28,8 +28,8 @@ package com.jgalgo;
  * <pre> {@code
  * Graph g = ...;
  * FlowNetwork net = FlowNetwork.createAsEdgeWeight(g);
- * for (IntIterator edgeIter = g.edges().iterator(); edgeIter.hasNext();)
- *  f.setCapacity(edgeIter.nextInt(), 1);
+ * for (int e : g.edges())
+ *  f.setCapacity(e, 1);
  *
  * int sourceVertex = ...;
  * int targetVertex = ...;
@@ -37,8 +37,7 @@ package com.jgalgo;
  *
  * double totalFlow = maxFlowAlg.computeMaximumFlow(g, net, sourceVertex, targetVertex);
  * System.out.println("The maximum flow that can be pushed in the network is " + totalFlow);
- * for (IntIterator it = g.edges().iterator(); it.hasNext();) {
- * 	int e = it.nextInt();
+ * for (int e : g.edges()) {
  * 	double capacity = net.getCapacity(e);
  * 	double flow = net.getFlow(e);
  * 	System.out.println("flow on edge " + e + ": " + flow + "/" + capacity);

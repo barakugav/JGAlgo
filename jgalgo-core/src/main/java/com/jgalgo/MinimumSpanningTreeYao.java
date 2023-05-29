@@ -24,7 +24,8 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * Yao's buckets minimum spanning tree algorithm.
  * <p>
  * The algorithm runs in \(O(m \log \log n + n \log n)\) and uses linear space. Its running time in practice is not the
- * best compared to {@link MinimumSpanningTreeKruskal} and {@link MinimumSpanningTreePrim}. Note that only undirected graphs are supported.
+ * best compared to {@link MinimumSpanningTreeKruskal} and {@link MinimumSpanningTreePrim}. Note that only undirected
+ * graphs are supported.
  * <p>
  * Based on "An 0(|E|loglog|V|) algorithm for finding minimum spanning trees" by Andrew Chi-chih Yao (1976).
  *
@@ -168,8 +169,8 @@ class MinimumSpanningTreeYao implements MinimumSpanningTree {
 
 		for (int u = 0; u < n; u++) {
 			int edgesCount = 0;
-			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();)
-				edgesTemp[edgesCount++] = eit.nextInt();
+			for (int e : g.edgesOut(u))
+				edgesTemp[edgesCount++] = e;
 
 			if (edgesCount <= k) {
 				Utils.sort(edgesTemp, 0, edgesCount, w, parallel);

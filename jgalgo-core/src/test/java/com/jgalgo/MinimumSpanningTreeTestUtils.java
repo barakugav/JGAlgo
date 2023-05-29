@@ -21,7 +21,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
 import it.unimi.dsi.fastutil.ints.IntAVLTreeSet;
 import it.unimi.dsi.fastutil.ints.IntComparator;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 class MinimumSpanningTreeTestUtils extends TestUtils {
@@ -93,10 +92,8 @@ class MinimumSpanningTreeTestUtils extends TestUtils {
 
 		assertEquals(mst.edges().size(), actualSet.size(), "MST contains duplications");
 		assertEquals(expected.edges().size(), actualSet.size(), "unexpected MST size");
-		for (IntIterator it = expected.edges().iterator(); it.hasNext();) {
-			int e = it.nextInt();
+		for (int e : expected.edges())
 			assertTrue(actualSet.contains(e), "MST doesn't contains edge: " + e);
-		}
 	}
 
 }

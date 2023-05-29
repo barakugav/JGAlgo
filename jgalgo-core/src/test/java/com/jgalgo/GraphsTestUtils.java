@@ -21,7 +21,6 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
@@ -268,10 +267,8 @@ public class GraphsTestUtils extends TestUtils {
 
 		Random rand = new Random(seed);
 		Weights.Double weight = g.addEdgesWeights("weight", double.class);
-		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-			int e = it.nextInt();
+		for (int e : g.edges())
 			weight.set(e, nextDouble(rand, minWeight, maxWeight));
-		}
 		return weight;
 	}
 
@@ -296,10 +293,8 @@ public class GraphsTestUtils extends TestUtils {
 
 		RandomIntUnique rand = new RandomIntUnique(minWeight, maxWeight, seed);
 		Weights.Int weight = g.addEdgesWeights("weight", int.class);
-		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-			int e = it.nextInt();
+		for (int e : g.edges())
 			weight.set(e, rand.next());
-		}
 		return weight;
 	}
 

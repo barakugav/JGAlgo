@@ -25,7 +25,6 @@ import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIntPair;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 
 public class TreePathMaximaTestUtils extends TestUtils {
 
@@ -42,8 +41,7 @@ public class TreePathMaximaTestUtils extends TestUtils {
 
 			int maxEdge = -1;
 			double maxEdgeWeight = 0;
-			for (IntIterator it = path.iterator(); it.hasNext();) {
-				int e = it.nextInt();
+			for (int e : path) {
 				if (maxEdge == -1 || w.weight(e) > maxEdgeWeight) {
 					maxEdge = e;
 					maxEdgeWeight = w.weight(e);
@@ -132,13 +130,13 @@ public class TreePathMaximaTestUtils extends TestUtils {
 					.selfEdges(false).cycles(true).connected(true).build();
 			EdgeWeightFunc.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 
-			IntCollection mstEdges = new IntArrayList(new MinimumSpanningTreeKruskal().computeMinimumSpanningTree(g, w).edges());
+			IntCollection mstEdges =
+					new IntArrayList(new MinimumSpanningTreeKruskal().computeMinimumSpanningTree(g, w).edges());
 			Graph mst = GraphBuilder.newUndirected().build();
 			for (int i = 0; i < g.vertices().size(); i++)
 				mst.addVertex();
 			Weights.Int edgeRef = mst.addEdgesWeights("edgeRef", int.class, Integer.valueOf(-1));
-			for (IntIterator it = mstEdges.iterator(); it.hasNext();) {
-				int e = it.nextInt();
+			for (int e : mstEdges) {
 				int u = g.edgeSource(e), v = g.edgeTarget(e);
 				int e0 = mst.addEdge(u, v);
 				edgeRef.set(e0, e);

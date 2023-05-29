@@ -15,8 +15,6 @@
  */
 package com.jgalgo;
 
-import it.unimi.dsi.fastutil.ints.IntIterator;
-
 class ArgumentCheck {
 	private ArgumentCheck() {}
 
@@ -43,17 +41,13 @@ class ArgumentCheck {
 	static void onlyPositiveWeights(Graph g, EdgeWeightFunc w) {
 		if (w instanceof EdgeWeightFunc.Int) {
 			EdgeWeightFunc.Int wUbt = (EdgeWeightFunc.Int) w;
-			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-				int e = it.nextInt();
+			for (int e : g.edges())
 				if (wUbt.weightInt(e) < 0)
 					throw new IllegalArgumentException("only positive weights are supported");
-			}
 		} else {
-			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-				int e = it.nextInt();
+			for (int e : g.edges())
 				if (w.weight(e) < 0)
 					throw new IllegalArgumentException("only positive weights are supported");
-			}
 		}
 	}
 

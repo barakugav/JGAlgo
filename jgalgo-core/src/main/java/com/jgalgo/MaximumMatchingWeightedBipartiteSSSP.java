@@ -117,19 +117,15 @@ class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeighted {
 		Arrays.fill(match, -1);
 
 		double maxWeight = 1;
-		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-			int e = it.nextInt();
+		for (int e : g.edges())
 			maxWeight = Math.max(maxWeight, w.weight(e));
-		}
 		if (!Double.isFinite(maxWeight))
 			throw new IllegalArgumentException("non finite weights");
 		final double RemovedEdgeWeight = maxWeight * n;
 
 		// Negate unmatched edges
-		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-			int e = it.nextInt();
+		for (int e : g.edges())
 			w.set(e, -w.weight(e));
-		}
 		// Connected unmatched vertices to fake vertices s,t
 		for (int u = 0; u < n; u++) {
 			if (partition.getBool(u)) {

@@ -18,7 +18,6 @@ package com.jgalgo;
 
 import java.util.BitSet;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 class TSPMetricUtils {
@@ -80,8 +79,7 @@ class TSPMetricUtils {
 	private static boolean isPathVisitEvery(Graph g, Path path) {
 		final int n = g.vertices().size();
 		BitSet visited = new BitSet(n);
-		for (IntIterator it = path.iterator(); it.hasNext();) {
-			int e = it.nextInt();
+		for (int e : path) {
 			int u = g.edgeSource(e), v = g.edgeTarget(e);
 			visited.set(u);
 			visited.set(v);

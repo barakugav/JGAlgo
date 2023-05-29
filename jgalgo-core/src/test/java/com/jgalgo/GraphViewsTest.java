@@ -20,7 +20,6 @@ import java.util.Random;
 import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 
 public class GraphViewsTest extends TestBase {
 
@@ -35,13 +34,11 @@ public class GraphViewsTest extends TestBase {
 		Runnable checkGraphs = () -> {
 			assertEquals(orig.vertices(), unmodifiable.vertices());
 			assertEquals(orig.edges(), unmodifiable.edges());
-			for (IntIterator eit = orig.edges().iterator(); eit.hasNext();) {
-				int e = eit.nextInt();
+			for (int e : orig.edges()) {
 				assertEquals(orig.edgeSource(e), unmodifiable.edgeSource(e));
 				assertEquals(orig.edgeTarget(e), unmodifiable.edgeTarget(e));
 			}
-			for (IntIterator uit = orig.vertices().iterator(); uit.hasNext();) {
-				int u = uit.nextInt();
+			for (int u : orig.vertices()) {
 				assertEquals(orig.edgesOut(u), unmodifiable.edgesOut(u));
 				assertEquals(orig.edgesIn(u), unmodifiable.edgesIn(u));
 
@@ -83,13 +80,11 @@ public class GraphViewsTest extends TestBase {
 		Runnable checkGraphs = () -> {
 			assertEquals(orig.vertices(), rev.vertices());
 			assertEquals(orig.edges(), rev.edges());
-			for (IntIterator eit = orig.edges().iterator(); eit.hasNext();) {
-				int e = eit.nextInt();
+			for (int e : orig.edges()) {
 				assertEquals(orig.edgeSource(e), rev.edgeTarget(e));
 				assertEquals(orig.edgeTarget(e), rev.edgeSource(e));
 			}
-			for (IntIterator uit = orig.vertices().iterator(); uit.hasNext();) {
-				int u = uit.nextInt();
+			for (int u : orig.vertices()) {
 				assertEquals(orig.edgesOut(u), rev.edgesIn(u));
 				assertEquals(orig.edgesIn(u), rev.edgesOut(u));
 

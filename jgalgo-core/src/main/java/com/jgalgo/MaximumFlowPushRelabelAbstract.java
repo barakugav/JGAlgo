@@ -559,8 +559,9 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 		@Override
 		void eliminateExcessWithTopologicalOrder(int topoBegin, int topoEnd, int[] topoNext) {
 			for (int u = topoBegin;; u = topoNext[u]) {
-				for (EdgeIter eit = g.edgesOut(u).iterator(); hasExcess(u) && eit.hasNext();) {
-					int e = eit.nextInt();
+				for (int e : g.edgesOut(u)) {
+					if (!hasExcess(u))
+						break;
 					double f = flow.getDouble(e);
 					if (f < 0)
 						push(e, Math.min(excess[u], -f));
@@ -708,8 +709,9 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 		@Override
 		void eliminateExcessWithTopologicalOrder(int topoBegin, int topoEnd, int[] topoNext) {
 			for (int u = topoBegin;; u = topoNext[u]) {
-				for (EdgeIter eit = g.edgesOut(u).iterator(); hasExcess(u) && eit.hasNext();) {
-					int e = eit.nextInt();
+				for (int e : g.edgesOut(u)) {
+					if (!hasExcess(u))
+						break;
 					int f = flow.getInt(e);
 					if (f < 0)
 						push(e, Math.min(excess[u], -f));

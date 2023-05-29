@@ -18,7 +18,6 @@ package com.jgalgo;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntStack;
 
 class EulerianTourImpl implements EulerianTourAlgorithm {
@@ -89,11 +88,9 @@ class EulerianTourImpl implements EulerianTourAlgorithm {
 			u = g.edgeEndpoint(e, u);
 		}
 
-		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-			int e = it.nextInt();
+		for (int e : g.edges())
 			if (!usedEdges.getBool(e))
 				throw new IllegalArgumentException("Graph is not connected");
-		}
 		return new PathImpl(g, start, end, tour);
 	}
 
@@ -177,11 +174,9 @@ class EulerianTourImpl implements EulerianTourAlgorithm {
 			u = g.edgeSource(e);
 		}
 
-		for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-			int e = it.nextInt();
+		for (int e : g.edges())
 			if (!usedEdges.getBool(e))
 				throw new IllegalArgumentException("Graph is not connected");
-		}
 		IntArrays.reverse(tour.elements(), 0, tour.size());
 		return new PathImpl(g, start, end, tour);
 	}

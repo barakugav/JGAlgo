@@ -41,8 +41,7 @@ package com.jgalgo;
  * Coloring coloringAlg = Coloring.newBuilder().build();
  * Coloring.Result colors = coloringAlg.computeColoring(g);
  * System.out.println("A valid coloring with " + colors.colorsNum() + " colors was found");
- * for (IntIterator uit = g.vertices().iterator(); uit.hasNext();) {
- * 	int u = uit.nextInt();
+ * for (int u : g.vertices()) {
  * 	System.out.println("The color of vertex " + u + " is " + colors.colorOf(u));
  * 	for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
  * 		eit.nextInt();

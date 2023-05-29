@@ -20,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.List;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 class MatchingWeightedTestUtils extends TestUtils {
@@ -194,8 +193,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 			}
 
 			Weights.Int edgeRef = shuffledG.addEdgesWeights("edgeRef", int.class, Integer.valueOf(-1));
-			for (IntIterator it = g.edges().iterator(); it.hasNext();) {
-				int e = it.nextInt();
+			for (int e : g.edges()) {
 				int u = g.edgeSource(e), v = g.edgeTarget(e);
 				int e0 = shuffledG.addEdge(shuffle[u], shuffle[v]);
 				edgeRef.set(e0, e);
@@ -208,10 +206,8 @@ class MatchingWeightedTestUtils extends TestUtils {
 			IntCollection shuffledEdges = shuffledMatching.edges();
 
 			IntList unshuffledEdges = new IntArrayList(shuffledEdges.size());
-			for (IntIterator it = shuffledEdges.iterator(); it.hasNext();) {
-				int e = it.nextInt();
+			for (int e : shuffledEdges)
 				unshuffledEdges.add(edgeRef.getInt(e));
-			}
 			return new MatchingImpl(g, unshuffledEdges);
 		}
 

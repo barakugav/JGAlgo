@@ -17,7 +17,6 @@
 package com.jgalgo;
 
 import com.jgalgo.GraphsUtils.GraphCapabilitiesBuilder;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 
 /**
  * A directed graph implementation using a two dimensional table to store all edges.
@@ -107,14 +106,14 @@ class GraphTableDirected extends GraphTableAbstract {
 
 	@Override
 	void vertexSwap(int v1, int v2) {
-		for (IntIterator eit1 = edgesOut(v1).iterator(); eit1.hasNext();)
-			replaceEdgeSource(eit1.nextInt(), v2);
-		for (IntIterator eit1 = edgesOut(v2).iterator(); eit1.hasNext();)
-			replaceEdgeSource(eit1.nextInt(), v1);
-		for (IntIterator eit1 = edgesIn(v1).iterator(); eit1.hasNext();)
-			replaceEdgeTarget(eit1.nextInt(), v2);
-		for (IntIterator eit1 = edgesIn(v2).iterator(); eit1.hasNext();)
-			replaceEdgeTarget(eit1.nextInt(), v1);
+		for (int e : edgesOut(v1))
+			replaceEdgeSource(e, v2);
+		for (int e : edgesOut(v2))
+			replaceEdgeSource(e, v1);
+		for (int e : edgesIn(v1))
+			replaceEdgeTarget(e, v2);
+		for (int e : edgesIn(v2))
+			replaceEdgeTarget(e, v1);
 		super.vertexSwap(v1, v2);
 	}
 
