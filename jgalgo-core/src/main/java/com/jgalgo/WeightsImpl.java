@@ -48,7 +48,7 @@ interface WeightsImpl<E> extends Weights<E> {
 			return (WeightsImpl<E>) new UnmodifiableWeights.Bool((Weights.Bool) this);
 		if (this instanceof Weights.Char)
 			return (WeightsImpl<E>) new UnmodifiableWeights.Char((Weights.Char) this);
-		return new UnmodifiableWeights<>(this);
+		return new UnmodifiableWeights.Obj<>(this);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -744,7 +744,7 @@ interface WeightsImpl<E> extends Weights<E> {
 
 	}
 
-	static class UnmodifiableWeights<E> implements WeightsImpl<E> {
+	static abstract class UnmodifiableWeights<E> implements WeightsImpl<E> {
 
 		private final WeightsImpl<E> weights;
 
@@ -766,19 +766,27 @@ interface WeightsImpl<E> extends Weights<E> {
 			return weights;
 		}
 
-		@Override
-		public E get(int id) {
-			return weights.get(id);
-		}
+		static class Obj<E> extends UnmodifiableWeights<E> {
 
-		@Override
-		public void set(int id, E weight) {
-			throw new UnsupportedOperationException();
-		}
+			Obj(Weights<E> w) {
+				super(w);
+			}
 
-		@Override
-		public E defaultWeight() {
-			return weights.defaultWeight();
+			@Override
+			public E get(int id) {
+				return weights().get(id);
+			}
+
+			@Override
+			public void set(int id, E weight) {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public E defaultWeight() {
+				return weights().defaultWeight();
+			}
+
 		}
 
 		static class Byte extends UnmodifiableWeights<java.lang.Byte> implements Weights.Byte {
