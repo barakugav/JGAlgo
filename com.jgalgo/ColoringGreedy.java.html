@@ -34,14 +34,14 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
  * @see    &lt;a href=&quot;https://en.wikipedia.org/wiki/Greedy_coloring&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
  */
-public class ColoringGreedy implements Coloring {
+class ColoringGreedy implements Coloring {
 
 	private final Random rand;
 
 	/**
 	 * Create a new coloring algorithm object with random seed.
 	 */
-<span class="nc" id="L44">	public ColoringGreedy() {</span>
+<span class="nc" id="L44">	ColoringGreedy() {</span>
 <span class="nc" id="L45">		rand = new Random();</span>
 <span class="nc" id="L46">	}</span>
 
@@ -69,7 +69,7 @@ public class ColoringGreedy implements Coloring {
 <span class="fc" id="L69">		BitSet usedColors = new BitSet();</span>
 <span class="fc bfc" id="L70" title="All 2 branches covered.">		for (int u : order) {</span>
 <span class="fc" id="L71">			usedColors.clear();</span>
-<span class="fc bfc" id="L72" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L73">				eit.nextInt();</span>
 <span class="fc" id="L74">				int v = eit.target();</span>
 <span class="fc" id="L75">				int c = res.colorOf(v);</span>

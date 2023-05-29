@@ -163,8 +163,8 @@ class HeapBinaryInt extends HeapAbstract&lt;Integer&gt; {
 <span class="fc" id="L163">		int addAllCost = elms.size() * Utils.log2ceil(combinedSize);</span>
 <span class="fc bfc" id="L164" title="All 2 branches covered.">		if (reconstructionCost &gt;= addAllCost) {</span>
 <span class="pc bpc" id="L165" title="1 of 2 branches missed.">			if (elms instanceof IntCollection) {</span>
-<span class="nc bnc" id="L166" title="All 2 branches missed.">				for (IntIterator it = ((IntCollection) elms).iterator(); it.hasNext();)</span>
-<span class="nc" id="L167">					insert(it.nextInt());</span>
+<span class="nc bnc" id="L166" title="All 2 branches missed.">				for (int e : (IntCollection) elms)</span>
+<span class="nc" id="L167">					insert(e);</span>
 			} else {
 <span class="fc bfc" id="L169" title="All 2 branches covered.">				for (Integer e : elms)</span>
 <span class="fc" id="L170">					insert(e.intValue());</span>
@@ -173,8 +173,8 @@ class HeapBinaryInt extends HeapAbstract&lt;Integer&gt; {
 <span class="fc" id="L173">			int[] a = arr;</span>
 <span class="fc" id="L174">			int s = size;</span>
 <span class="pc bpc" id="L175" title="1 of 2 branches missed.">			if (elms instanceof IntCollection) {</span>
-<span class="nc bnc" id="L176" title="All 2 branches missed.">				for (IntIterator it = ((IntCollection) elms).iterator(); it.hasNext();)</span>
-<span class="nc" id="L177">					a[s++] = it.nextInt();</span>
+<span class="nc bnc" id="L176" title="All 2 branches missed.">				for (int e : (IntCollection) elms)</span>
+<span class="nc" id="L177">					a[s++] = e;</span>
 			} else {
 <span class="fc bfc" id="L179" title="All 2 branches covered.">				for (Integer e : elms)</span>
 <span class="fc" id="L180">					a[s++] = e.intValue();</span>

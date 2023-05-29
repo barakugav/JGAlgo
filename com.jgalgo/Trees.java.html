@@ -27,7 +27,7 @@ import it.unimi.dsi.fastutil.ints.IntIterators;
 import it.unimi.dsi.fastutil.ints.IntStack;
 
 /**
- * A utilities class containing graph trees related methods.
+ * Static methods class for tree graphs.
  *
  * @author Barak Ugav
  */
@@ -127,7 +127,7 @@ public class Trees {
 <span class="fc" id="L127">				int u = stack.popInt();</span>
 <span class="fc" id="L128">				visitedCount++;</span>
 
-<span class="fc bfc" id="L130" title="All 2 branches covered.">				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
+<span class="fc bfc" id="L130" title="All 2 branches covered.">				for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L131">					eit.nextInt();</span>
 <span class="fc" id="L132">					int v = eit.target();</span>
 <span class="pc bpc" id="L133" title="1 of 4 branches missed.">					if (!directed &amp;&amp; v == parent[u])</span>

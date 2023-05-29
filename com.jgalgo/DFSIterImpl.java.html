@@ -47,7 +47,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L47">		edgePathView = IntLists.unmodifiable(edgePath);</span>
 
 <span class="fc" id="L49">		visited.set(source);</span>
-<span class="fc" id="L50">		edgeIters.push(g.edgesOut(source));</span>
+<span class="fc" id="L50">		edgeIters.push(g.edgesOut(source).iterator());</span>
 <span class="fc" id="L51">		isValid = true;</span>
 <span class="fc" id="L52">	}</span>
 
@@ -64,7 +64,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc bfc" id="L64" title="All 2 branches covered.">				if (visited.get(v))</span>
 <span class="fc" id="L65">					continue;</span>
 <span class="fc" id="L66">				visited.set(v);</span>
-<span class="fc" id="L67">				edgeIters.push(g.edgesOut(v));</span>
+<span class="fc" id="L67">				edgeIters.push(g.edgesOut(v).iterator());</span>
 <span class="fc" id="L68">				edgePath.add(e);</span>
 <span class="fc" id="L69">				return isValid = true;</span>
 			}

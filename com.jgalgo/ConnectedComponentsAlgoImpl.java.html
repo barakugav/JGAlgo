@@ -20,111 +20,110 @@ import java.util.Arrays;
 import java.util.Objects;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntLists;
 import it.unimi.dsi.fastutil.ints.IntStack;
 
-<span class="fc" id="L28">class ConnectedComponentsAlgoImpl implements ConnectedComponentsAlgo {</span>
+<span class="fc" id="L27">class ConnectedComponentsAlgoImpl implements ConnectedComponentsAlgo {</span>
 
 	@Override
 	public ConnectedComponentsAlgo.Result computeConnectivityComponents(Graph g) {
-<span class="fc bfc" id="L32" title="All 2 branches covered.">		return g.getCapabilities().directed() ? computeSCCDirected(g) : computeSCCUndirected(g);</span>
+<span class="fc bfc" id="L31" title="All 2 branches covered.">		return g.getCapabilities().directed() ? computeSCCDirected(g) : computeSCCUndirected(g);</span>
 	}
 
 	private static ConnectedComponentsAlgo.Result computeSCCDirected(Graph g) {
-<span class="fc" id="L36">		final int n = g.vertices().size();</span>
-<span class="fc" id="L37">		IntStack s = new IntArrayList();</span>
-<span class="fc" id="L38">		IntStack p = new IntArrayList();</span>
-<span class="fc" id="L39">		int[] dfsPath = new int[n];</span>
-<span class="fc" id="L40">		int[] c = new int[n];</span>
-<span class="fc" id="L41">		EdgeIter[] edges = new EdgeIter[n];</span>
+<span class="fc" id="L35">		final int n = g.vertices().size();</span>
+<span class="fc" id="L36">		IntStack s = new IntArrayList();</span>
+<span class="fc" id="L37">		IntStack p = new IntArrayList();</span>
+<span class="fc" id="L38">		int[] dfsPath = new int[n];</span>
+<span class="fc" id="L39">		int[] c = new int[n];</span>
+<span class="fc" id="L40">		EdgeIter[] edges = new EdgeIter[n];</span>
 		// TODO DFS stack class
 
 		// implementation of Tarjan's strongly connected components algorithm
 		// https://en.wikipedia.org/wiki/Tarjan%27s_strongly_connected_components_algorithm
 
-<span class="fc" id="L47">		int[] comp = new int[n];</span>
-<span class="fc" id="L48">		Arrays.fill(comp, -1);</span>
-<span class="fc" id="L49">		int compNum = 0;</span>
+<span class="fc" id="L46">		int[] comp = new int[n];</span>
+<span class="fc" id="L47">		Arrays.fill(comp, -1);</span>
+<span class="fc" id="L48">		int compNum = 0;</span>
 
-<span class="fc" id="L51">		Arrays.fill(c, 0);</span>
-<span class="fc" id="L52">		int cNext = 1;</span>
+<span class="fc" id="L50">		Arrays.fill(c, 0);</span>
+<span class="fc" id="L51">		int cNext = 1;</span>
 
-<span class="fc bfc" id="L54" title="All 2 branches covered.">		for (int root = 0; root &lt; n; root++) {</span>
-<span class="fc bfc" id="L55" title="All 2 branches covered.">			if (comp[root] != -1)</span>
-<span class="fc" id="L56">				continue;</span>
-<span class="fc" id="L57">			dfsPath[0] = root;</span>
-<span class="fc" id="L58">			edges[0] = g.edgesOut(root);</span>
-<span class="fc" id="L59">			c[root] = cNext++;</span>
-<span class="fc" id="L60">			s.push(root);</span>
-<span class="fc" id="L61">			p.push(root);</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">		for (int root = 0; root &lt; n; root++) {</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">			if (comp[root] != -1)</span>
+<span class="fc" id="L55">				continue;</span>
+<span class="fc" id="L56">			dfsPath[0] = root;</span>
+<span class="fc" id="L57">			edges[0] = g.edgesOut(root).iterator();</span>
+<span class="fc" id="L58">			c[root] = cNext++;</span>
+<span class="fc" id="L59">			s.push(root);</span>
+<span class="fc" id="L60">			p.push(root);</span>
 
-<span class="fc" id="L63">			dfs: for (int depth = 0;;) {</span>
-<span class="fc bfc" id="L64" title="All 2 branches covered.">				for (EdgeIter eit = edges[depth]; eit.hasNext();) {</span>
-<span class="fc" id="L65">					eit.nextInt();</span>
-<span class="fc" id="L66">					int v = eit.target();</span>
-<span class="fc bfc" id="L67" title="All 2 branches covered.">					if (c[v] == 0) {</span>
-<span class="fc" id="L68">						c[v] = cNext++;</span>
-<span class="fc" id="L69">						s.push(v);</span>
-<span class="fc" id="L70">						p.push(v);</span>
+<span class="fc" id="L62">			dfs: for (int depth = 0;;) {</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">				for (EdgeIter eit = edges[depth]; eit.hasNext();) {</span>
+<span class="fc" id="L64">					eit.nextInt();</span>
+<span class="fc" id="L65">					int v = eit.target();</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">					if (c[v] == 0) {</span>
+<span class="fc" id="L67">						c[v] = cNext++;</span>
+<span class="fc" id="L68">						s.push(v);</span>
+<span class="fc" id="L69">						p.push(v);</span>
 
-<span class="fc" id="L72">						dfsPath[++depth] = v;</span>
-<span class="fc" id="L73">						edges[depth] = g.edgesOut(v);</span>
-<span class="fc" id="L74">						continue dfs;</span>
-<span class="fc bfc" id="L75" title="All 2 branches covered.">					} else if (comp[v] == -1)</span>
-<span class="fc bfc" id="L76" title="All 2 branches covered.">						while (c[p.topInt()] &gt; c[v])</span>
-<span class="fc" id="L77">							p.popInt();</span>
-<span class="fc" id="L78">				}</span>
-<span class="fc" id="L79">				int u = dfsPath[depth];</span>
-<span class="fc bfc" id="L80" title="All 2 branches covered.">				if (p.topInt() == u) {</span>
+<span class="fc" id="L71">						dfsPath[++depth] = v;</span>
+<span class="fc" id="L72">						edges[depth] = g.edgesOut(v).iterator();</span>
+<span class="fc" id="L73">						continue dfs;</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">					} else if (comp[v] == -1)</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">						while (c[p.topInt()] &gt; c[v])</span>
+<span class="fc" id="L76">							p.popInt();</span>
+<span class="fc" id="L77">				}</span>
+<span class="fc" id="L78">				int u = dfsPath[depth];</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">				if (p.topInt() == u) {</span>
 					int v;
 					do {
-<span class="fc" id="L83">						v = s.popInt();</span>
-<span class="fc" id="L84">						comp[v] = compNum;</span>
-<span class="fc bfc" id="L85" title="All 2 branches covered.">					} while (v != u);</span>
-<span class="fc" id="L86">					compNum++;</span>
-<span class="fc" id="L87">					p.popInt();</span>
+<span class="fc" id="L82">						v = s.popInt();</span>
+<span class="fc" id="L83">						comp[v] = compNum;</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">					} while (v != u);</span>
+<span class="fc" id="L85">					compNum++;</span>
+<span class="fc" id="L86">					p.popInt();</span>
 				}
 
-<span class="fc" id="L90">				edges[depth] = null;</span>
-<span class="fc bfc" id="L91" title="All 2 branches covered.">				if (depth-- == 0)</span>
-<span class="fc" id="L92">					break;</span>
-<span class="fc" id="L93">			}</span>
+<span class="fc" id="L89">				edges[depth] = null;</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">				if (depth-- == 0)</span>
+<span class="fc" id="L91">					break;</span>
+<span class="fc" id="L92">			}</span>
 		}
-<span class="fc" id="L95">		return new Result(g, compNum, comp);</span>
+<span class="fc" id="L94">		return new Result(g, compNum, comp);</span>
 	}
 
 	private static ConnectedComponentsAlgo.Result computeSCCUndirected(Graph g) {
-<span class="fc" id="L99">		final int n = g.vertices().size();</span>
-<span class="fc" id="L100">		int[] comp = new int[n];</span>
-<span class="fc" id="L101">		Arrays.fill(comp, -1);</span>
-<span class="fc" id="L102">		int compNum = 0;</span>
+<span class="fc" id="L98">		final int n = g.vertices().size();</span>
+<span class="fc" id="L99">		int[] comp = new int[n];</span>
+<span class="fc" id="L100">		Arrays.fill(comp, -1);</span>
+<span class="fc" id="L101">		int compNum = 0;</span>
 
-<span class="fc" id="L104">		IntStack stack = new IntArrayList();</span>
-<span class="fc bfc" id="L105" title="All 2 branches covered.">		for (int root = 0; root &lt; n; root++) {</span>
-<span class="fc bfc" id="L106" title="All 2 branches covered.">			if (comp[root] != -1)</span>
-<span class="fc" id="L107">				continue;</span>
-<span class="fc" id="L108">			final int compIdx = compNum++;</span>
-<span class="fc" id="L109">			stack.push(root);</span>
-<span class="fc" id="L110">			comp[root] = compIdx;</span>
+<span class="fc" id="L103">		IntStack stack = new IntArrayList();</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">		for (int root = 0; root &lt; n; root++) {</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">			if (comp[root] != -1)</span>
+<span class="fc" id="L106">				continue;</span>
+<span class="fc" id="L107">			final int compIdx = compNum++;</span>
+<span class="fc" id="L108">			stack.push(root);</span>
+<span class="fc" id="L109">			comp[root] = compIdx;</span>
 
-<span class="fc bfc" id="L112" title="All 2 branches covered.">			while (!stack.isEmpty()) {</span>
-<span class="fc" id="L113">				int u = stack.popInt();</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">			while (!stack.isEmpty()) {</span>
+<span class="fc" id="L112">				int u = stack.popInt();</span>
 
-<span class="fc bfc" id="L115" title="All 2 branches covered.">				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
-<span class="fc" id="L116">					eit.nextInt();</span>
-<span class="fc" id="L117">					int v = eit.target();</span>
-<span class="fc bfc" id="L118" title="All 2 branches covered.">					if (comp[v] != -1) {</span>
-<span class="pc bpc" id="L119" title="1 of 2 branches missed.">						assert comp[v] == compIdx;</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">				for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L115">					eit.nextInt();</span>
+<span class="fc" id="L116">					int v = eit.target();</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">					if (comp[v] != -1) {</span>
+<span class="pc bpc" id="L118" title="1 of 2 branches missed.">						assert comp[v] == compIdx;</span>
 						continue;
 					}
-<span class="fc" id="L122">					comp[v] = compIdx;</span>
-<span class="fc" id="L123">					stack.push(v);</span>
-<span class="fc" id="L124">				}</span>
-<span class="fc" id="L125">			}</span>
+<span class="fc" id="L121">					comp[v] = compIdx;</span>
+<span class="fc" id="L122">					stack.push(v);</span>
+<span class="fc" id="L123">				}</span>
+<span class="fc" id="L124">			}</span>
 		}
-<span class="fc" id="L127">		return new Result(g, compNum, comp);</span>
+<span class="fc" id="L126">		return new Result(g, compNum, comp);</span>
 	}
 
 	private static class Result implements ConnectedComponentsAlgo.Result {
@@ -134,59 +133,58 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 		private IntList[] ccVertices;
 		private IntList[] ccEdges;
 
-<span class="fc" id="L137">		private Result(Graph g, int ccNum, int[] vertexToCc) {</span>
-<span class="fc" id="L138">			this.g = Objects.requireNonNull(g);</span>
-<span class="fc" id="L139">			this.ccNum = ccNum;</span>
-<span class="fc" id="L140">			this.vertexToCc = Objects.requireNonNull(vertexToCc);</span>
-<span class="fc" id="L141">		}</span>
+<span class="fc" id="L136">		private Result(Graph g, int ccNum, int[] vertexToCc) {</span>
+<span class="fc" id="L137">			this.g = Objects.requireNonNull(g);</span>
+<span class="fc" id="L138">			this.ccNum = ccNum;</span>
+<span class="fc" id="L139">			this.vertexToCc = Objects.requireNonNull(vertexToCc);</span>
+<span class="fc" id="L140">		}</span>
 
 		@Override
 		public int getVertexCc(int vertex) {
-<span class="fc" id="L145">			return vertexToCc[vertex];</span>
+<span class="fc" id="L144">			return vertexToCc[vertex];</span>
 		}
 
 		@Override
 		public int getNumberOfCcs() {
-<span class="fc" id="L150">			return ccNum;</span>
+<span class="fc" id="L149">			return ccNum;</span>
 		}
 
 		@Override
 		public String toString() {
-<span class="nc" id="L155">			return Arrays.toString(vertexToCc);</span>
+<span class="nc" id="L154">			return Arrays.toString(vertexToCc);</span>
 		}
 
 		@Override
 		public IntCollection getCcVertices(int ccIdx) {
-<span class="fc bfc" id="L160" title="All 2 branches covered.">			if (ccVertices == null) {</span>
-<span class="fc" id="L161">				ccVertices = new IntList[ccNum];</span>
-<span class="fc bfc" id="L162" title="All 2 branches covered.">				for (int c = 0; c &lt; ccNum; c++)</span>
-<span class="fc" id="L163">					ccVertices[c] = new IntArrayList();</span>
-<span class="fc" id="L164">				final int n = vertexToCc.length;</span>
-<span class="fc bfc" id="L165" title="All 2 branches covered.">				for (int u = 0; u &lt; n; u++)</span>
-<span class="fc" id="L166">					ccVertices[vertexToCc[u]].add(u);</span>
-<span class="fc bfc" id="L167" title="All 2 branches covered.">				for (int c = 0; c &lt; ccNum; c++)</span>
-<span class="fc" id="L168">					ccVertices[c] = IntLists.unmodifiable(ccVertices[c]);</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">			if (ccVertices == null) {</span>
+<span class="fc" id="L160">				ccVertices = new IntList[ccNum];</span>
+<span class="fc bfc" id="L161" title="All 2 branches covered.">				for (int c = 0; c &lt; ccNum; c++)</span>
+<span class="fc" id="L162">					ccVertices[c] = new IntArrayList();</span>
+<span class="fc" id="L163">				final int n = vertexToCc.length;</span>
+<span class="fc bfc" id="L164" title="All 2 branches covered.">				for (int u = 0; u &lt; n; u++)</span>
+<span class="fc" id="L165">					ccVertices[vertexToCc[u]].add(u);</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">				for (int c = 0; c &lt; ccNum; c++)</span>
+<span class="fc" id="L167">					ccVertices[c] = IntLists.unmodifiable(ccVertices[c]);</span>
 			}
-<span class="fc" id="L170">			return ccVertices[ccIdx];</span>
+<span class="fc" id="L169">			return ccVertices[ccIdx];</span>
 		}
 
 		@Override
 		public IntCollection getCcEdges(int ccIdx) {
-<span class="fc bfc" id="L175" title="All 2 branches covered.">			if (ccEdges == null) {</span>
-<span class="fc" id="L176">				ccEdges = new IntList[ccNum];</span>
-<span class="fc bfc" id="L177" title="All 2 branches covered.">				for (int c = 0; c &lt; ccNum; c++)</span>
-<span class="fc" id="L178">					ccEdges[c] = new IntArrayList();</span>
-<span class="fc bfc" id="L179" title="All 2 branches covered.">				for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
-<span class="fc" id="L180">					int e = it.nextInt();</span>
-<span class="fc" id="L181">					int cc1 = vertexToCc[g.edgeSource(e)];</span>
-<span class="fc" id="L182">					int cc2 = vertexToCc[g.edgeTarget(e)];</span>
-<span class="fc bfc" id="L183" title="All 2 branches covered.">					if (cc1 == cc2)</span>
-<span class="fc" id="L184">						ccEdges[cc1].add(e);</span>
-<span class="fc" id="L185">				}</span>
-<span class="fc bfc" id="L186" title="All 2 branches covered.">				for (int c = 0; c &lt; ccNum; c++)</span>
-<span class="fc" id="L187">					ccEdges[c] = IntLists.unmodifiable(ccEdges[c]);</span>
+<span class="fc bfc" id="L174" title="All 2 branches covered.">			if (ccEdges == null) {</span>
+<span class="fc" id="L175">				ccEdges = new IntList[ccNum];</span>
+<span class="fc bfc" id="L176" title="All 2 branches covered.">				for (int c = 0; c &lt; ccNum; c++)</span>
+<span class="fc" id="L177">					ccEdges[c] = new IntArrayList();</span>
+<span class="fc bfc" id="L178" title="All 2 branches covered.">				for (int e : g.edges()) {</span>
+<span class="fc" id="L179">					int cc1 = vertexToCc[g.edgeSource(e)];</span>
+<span class="fc" id="L180">					int cc2 = vertexToCc[g.edgeTarget(e)];</span>
+<span class="fc bfc" id="L181" title="All 2 branches covered.">					if (cc1 == cc2)</span>
+<span class="fc" id="L182">						ccEdges[cc1].add(e);</span>
+<span class="fc" id="L183">				}</span>
+<span class="fc bfc" id="L184" title="All 2 branches covered.">				for (int c = 0; c &lt; ccNum; c++)</span>
+<span class="fc" id="L185">					ccEdges[c] = IntLists.unmodifiable(ccEdges[c]);</span>
 			}
-<span class="fc" id="L189">			return ccEdges[ccIdx];</span>
+<span class="fc" id="L187">			return ccEdges[ccIdx];</span>
 		}
 
 	}

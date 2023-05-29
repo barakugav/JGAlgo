@@ -84,7 +84,7 @@ class BFSIterImpl implements BFSIter {
 <span class="fc" id="L84">			firstVInLayer = -1;</span>
 		}
 
-<span class="fc bfc" id="L87" title="All 2 branches covered.">		for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">		for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L88">			int e = eit.nextInt();</span>
 <span class="fc" id="L89">			int v = eit.target();</span>
 <span class="fc bfc" id="L90" title="All 2 branches covered.">			if (visited.get(v))</span>

@@ -25,97 +25,84 @@ class GraphsUtils {
 
 	static int[] calcDegree(Graph g, IntCollection edges) {
 <span class="fc" id="L27">		int[] degree = new int[g.vertices().size()];</span>
-<span class="fc bfc" id="L28" title="All 2 branches covered.">		for (IntIterator eit = edges.iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L29">			int e = eit.nextInt();</span>
-<span class="fc" id="L30">			degree[g.edgeSource(e)]++;</span>
-<span class="fc" id="L31">			degree[g.edgeTarget(e)]++;</span>
-<span class="fc" id="L32">		}</span>
-<span class="fc" id="L33">		return degree;</span>
+<span class="fc bfc" id="L28" title="All 2 branches covered.">		for (int e : edges) {</span>
+<span class="fc" id="L29">			degree[g.edgeSource(e)]++;</span>
+<span class="fc" id="L30">			degree[g.edgeTarget(e)]++;</span>
+<span class="fc" id="L31">		}</span>
+<span class="fc" id="L32">		return degree;</span>
 	}
 
 	static Graph referenceGraph(Graph g, Object refEdgeWeightKey) {
-<span class="fc" id="L37">		final int n = g.vertices().size(), m = g.edges().size();</span>
-<span class="fc" id="L38">		Graph gRef = GraphBuilder.newDirected().setDirected(g.getCapabilities().directed()).expectedVerticesNum(n)</span>
-<span class="fc" id="L39">				.expectedEdgesNum(m).build();</span>
-<span class="fc" id="L40">		Weights.Int edgeRef = gRef.addEdgesWeights(refEdgeWeightKey, int.class);</span>
+<span class="fc" id="L36">		final int n = g.vertices().size(), m = g.edges().size();</span>
+<span class="fc" id="L37">		Graph gRef = GraphBuilder.newDirected().setDirected(g.getCapabilities().directed()).expectedVerticesNum(n)</span>
+<span class="fc" id="L38">				.expectedEdgesNum(m).build();</span>
+<span class="fc" id="L39">		Weights.Int edgeRef = gRef.addEdgesWeights(refEdgeWeightKey, int.class);</span>
 
-<span class="fc bfc" id="L42" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L43">			gRef.addVertex();</span>
-<span class="fc bfc" id="L44" title="All 2 branches covered.">		for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
-<span class="fc" id="L45">			int e = it.nextInt();</span>
-<span class="fc" id="L46">			int eRef = gRef.addEdge(g.edgeSource(e), g.edgeTarget(e));</span>
-<span class="fc" id="L47">			edgeRef.set(eRef, e);</span>
-<span class="fc" id="L48">		}</span>
-<span class="fc" id="L49">		return gRef;</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
+<span class="fc" id="L42">			gRef.addVertex();</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">		for (int e : g.edges()) {</span>
+<span class="fc" id="L44">			int eRef = gRef.addEdge(g.edgeSource(e), g.edgeTarget(e));</span>
+<span class="fc" id="L45">			edgeRef.set(eRef, e);</span>
+<span class="fc" id="L46">		}</span>
+<span class="fc" id="L47">		return gRef;</span>
 	}
 
 	static boolean containsSelfLoops(Graph g) {
-<span class="pc bpc" id="L53" title="1 of 2 branches missed.">		if (!g.getCapabilities().selfEdges())</span>
-<span class="nc" id="L54">			return false;</span>
-<span class="fc" id="L55">		int n = g.vertices().size();</span>
-<span class="fc bfc" id="L56" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc bfc" id="L57" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
-<span class="fc" id="L58">				eit.nextInt();</span>
-<span class="pc bpc" id="L59" title="1 of 2 branches missed.">				if (u == eit.target())</span>
-<span class="nc" id="L60">					return true;</span>
+<span class="pc bpc" id="L51" title="1 of 2 branches missed.">		if (!g.getCapabilities().selfEdges())</span>
+<span class="nc" id="L52">			return false;</span>
+<span class="fc" id="L53">		int n = g.vertices().size();</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L56">				eit.nextInt();</span>
+<span class="pc bpc" id="L57" title="1 of 2 branches missed.">				if (u == eit.target())</span>
+<span class="nc" id="L58">					return true;</span>
 			}
 		}
-<span class="fc" id="L63">		return false;</span>
+<span class="fc" id="L61">		return false;</span>
 	}
 
 	static boolean containsParallelEdges(Graph g) {
-<span class="fc bfc" id="L67" title="All 2 branches covered.">		if (!g.getCapabilities().parallelEdges())</span>
-<span class="fc" id="L68">			return false;</span>
-<span class="fc" id="L69">		int n = g.vertices().size();</span>
-<span class="fc" id="L70">		int[] lastVisit = new int[n];</span>
-<span class="fc bfc" id="L71" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc" id="L72">			final int visitIdx = u + 1;</span>
-<span class="fc bfc" id="L73" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
-<span class="fc" id="L74">				eit.nextInt();</span>
-<span class="fc" id="L75">				int v = eit.target();</span>
-<span class="pc bpc" id="L76" title="1 of 2 branches missed.">				if (lastVisit[v] == visitIdx)</span>
-<span class="nc" id="L77">					return true;</span>
-<span class="fc" id="L78">				lastVisit[v] = visitIdx;</span>
-<span class="fc" id="L79">			}</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">		if (!g.getCapabilities().parallelEdges())</span>
+<span class="fc" id="L66">			return false;</span>
+<span class="fc" id="L67">		int n = g.vertices().size();</span>
+<span class="fc" id="L68">		int[] lastVisit = new int[n];</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc" id="L70">			final int visitIdx = u + 1;</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L72">				eit.nextInt();</span>
+<span class="fc" id="L73">				int v = eit.target();</span>
+<span class="pc bpc" id="L74" title="1 of 2 branches missed.">				if (lastVisit[v] == visitIdx)</span>
+<span class="nc" id="L75">					return true;</span>
+<span class="fc" id="L76">				lastVisit[v] = visitIdx;</span>
+<span class="fc" id="L77">			}</span>
 		}
-<span class="fc" id="L81">		return false;</span>
+<span class="fc" id="L79">		return false;</span>
 	}
 
 	static interface UndirectedGraphImpl extends Graph {
 
 		@Override
-		default EdgeIter edgesIn(int target) {
-<span class="fc" id="L88">			return edgesOut(target);</span>
-		}
-
-		@Override
 		default void removeEdgesOf(int source) {
-<span class="fc bfc" id="L93" title="All 2 branches covered.">			for (EdgeIter eit = edgesOut(source); eit.hasNext();) {</span>
-<span class="fc" id="L94">				eit.nextInt();</span>
-<span class="fc" id="L95">				eit.remove();</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">			for (EdgeIter eit = edgesOut(source).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L87">				eit.nextInt();</span>
+<span class="fc" id="L88">				eit.remove();</span>
 			}
-<span class="fc" id="L97">		}</span>
+<span class="fc" id="L90">		}</span>
 
 		@Override
 		default void removeEdgesOutOf(int source) {
-<span class="nc" id="L101">			removeEdgesOf(source);</span>
-<span class="nc" id="L102">		}</span>
+<span class="nc" id="L94">			removeEdgesOf(source);</span>
+<span class="nc" id="L95">		}</span>
 
 		@Override
 		default void removeEdgesInOf(int target) {
-<span class="nc" id="L106">			removeEdgesOf(target);</span>
-<span class="nc" id="L107">		}</span>
+<span class="nc" id="L99">			removeEdgesOf(target);</span>
+<span class="nc" id="L100">		}</span>
 
 		@Override
 		default void reverseEdge(int edge) {
 			// Do nothing
-<span class="nc" id="L112">		}</span>
-
-		@Override
-		default int degreeIn(int target) {
-<span class="fc" id="L116">			return degreeOut(target);</span>
-		}
-
+<span class="nc" id="L105">		}</span>
 	}
 
 	static class GraphCapabilitiesBuilder {
@@ -135,67 +122,67 @@ class GraphsUtils {
 		private boolean directed;
 		private boolean directedValid;
 
-<span class="fc" id="L138">		private GraphCapabilitiesBuilder(boolean directed) {</span>
-<span class="fc" id="L139">			this.directed = directed;</span>
-<span class="fc" id="L140">			directedValid = true;</span>
-<span class="fc" id="L141">		}</span>
+<span class="fc" id="L125">		private GraphCapabilitiesBuilder(boolean directed) {</span>
+<span class="fc" id="L126">			this.directed = directed;</span>
+<span class="fc" id="L127">			directedValid = true;</span>
+<span class="fc" id="L128">		}</span>
 
 		static GraphCapabilitiesBuilder newUndirected() {
-<span class="fc" id="L144">			return new GraphCapabilitiesBuilder(false);</span>
+<span class="fc" id="L131">			return new GraphCapabilitiesBuilder(false);</span>
 		}
 
 		static GraphCapabilitiesBuilder newDirected() {
-<span class="fc" id="L148">			return new GraphCapabilitiesBuilder(true);</span>
+<span class="fc" id="L135">			return new GraphCapabilitiesBuilder(true);</span>
 		}
 
 		GraphCapabilities build() {
-<span class="pc bpc" id="L152" title="7 of 14 branches missed.">			if (!vertexAddValid || !vertexRemoveValid || !edgeAddValid || !edgeRemoveValid || !parallelEdgesValid</span>
+<span class="pc bpc" id="L139" title="7 of 14 branches missed.">			if (!vertexAddValid || !vertexRemoveValid || !edgeAddValid || !edgeRemoveValid || !parallelEdgesValid</span>
 					|| !selfEdgesValid || !directedValid)
-<span class="nc" id="L154">				throw new IllegalStateException();</span>
-<span class="fc" id="L155">			return new GraphCapabilitiesImpl(vertexAdd, vertexRemove, edgeAdd, edgeRemove, parallelEdges, selfEdges,</span>
+<span class="nc" id="L141">				throw new IllegalStateException();</span>
+<span class="fc" id="L142">			return new GraphCapabilitiesImpl(vertexAdd, vertexRemove, edgeAdd, edgeRemove, parallelEdges, selfEdges,</span>
 					directed);
 		}
 
 		GraphCapabilitiesBuilder vertexAdd(boolean enable) {
-<span class="fc" id="L160">			vertexAdd = enable;</span>
-<span class="fc" id="L161">			vertexAddValid = true;</span>
-<span class="fc" id="L162">			return this;</span>
+<span class="fc" id="L147">			vertexAdd = enable;</span>
+<span class="fc" id="L148">			vertexAddValid = true;</span>
+<span class="fc" id="L149">			return this;</span>
 		}
 
 		GraphCapabilitiesBuilder vertexRemove(boolean enable) {
-<span class="fc" id="L166">			vertexRemove = enable;</span>
-<span class="fc" id="L167">			vertexRemoveValid = true;</span>
-<span class="fc" id="L168">			return this;</span>
+<span class="fc" id="L153">			vertexRemove = enable;</span>
+<span class="fc" id="L154">			vertexRemoveValid = true;</span>
+<span class="fc" id="L155">			return this;</span>
 		}
 
 		GraphCapabilitiesBuilder edgeAdd(boolean enable) {
-<span class="fc" id="L172">			edgeAdd = enable;</span>
-<span class="fc" id="L173">			edgeAddValid = true;</span>
-<span class="fc" id="L174">			return this;</span>
+<span class="fc" id="L159">			edgeAdd = enable;</span>
+<span class="fc" id="L160">			edgeAddValid = true;</span>
+<span class="fc" id="L161">			return this;</span>
 		}
 
 		GraphCapabilitiesBuilder edgeRemove(boolean enable) {
-<span class="fc" id="L178">			edgeRemove = enable;</span>
-<span class="fc" id="L179">			edgeRemoveValid = true;</span>
-<span class="fc" id="L180">			return this;</span>
+<span class="fc" id="L165">			edgeRemove = enable;</span>
+<span class="fc" id="L166">			edgeRemoveValid = true;</span>
+<span class="fc" id="L167">			return this;</span>
 		}
 
 		GraphCapabilitiesBuilder parallelEdges(boolean enable) {
-<span class="fc" id="L184">			parallelEdges = enable;</span>
-<span class="fc" id="L185">			parallelEdgesValid = true;</span>
-<span class="fc" id="L186">			return this;</span>
+<span class="fc" id="L171">			parallelEdges = enable;</span>
+<span class="fc" id="L172">			parallelEdgesValid = true;</span>
+<span class="fc" id="L173">			return this;</span>
 		}
 
 		GraphCapabilitiesBuilder selfEdges(boolean enable) {
-<span class="fc" id="L190">			selfEdges = enable;</span>
-<span class="fc" id="L191">			selfEdgesValid = true;</span>
-<span class="fc" id="L192">			return this;</span>
+<span class="fc" id="L177">			selfEdges = enable;</span>
+<span class="fc" id="L178">			selfEdgesValid = true;</span>
+<span class="fc" id="L179">			return this;</span>
 		}
 
 		GraphCapabilitiesBuilder directed(boolean enable) {
-<span class="nc" id="L196">			directed = enable;</span>
-<span class="nc" id="L197">			directedValid = true;</span>
-<span class="nc" id="L198">			return this;</span>
+<span class="nc" id="L183">			directed = enable;</span>
+<span class="nc" id="L184">			directedValid = true;</span>
+<span class="nc" id="L185">			return this;</span>
 		}
 
 	}
@@ -211,72 +198,72 @@ class GraphsUtils {
 		private final boolean directed;
 
 		GraphCapabilitiesImpl(boolean vertexAdd, boolean vertexRemove, boolean edgeAdd, boolean edgeRemove,
-<span class="fc" id="L214">				boolean parallelEdges, boolean selfEdges, boolean directed) {</span>
-<span class="fc" id="L215">			this.vertexAdd = vertexAdd;</span>
-<span class="fc" id="L216">			this.vertexRemove = vertexRemove;</span>
-<span class="fc" id="L217">			this.edgeAdd = edgeAdd;</span>
-<span class="fc" id="L218">			this.edgeRemove = edgeRemove;</span>
-<span class="fc" id="L219">			this.parallelEdges = parallelEdges;</span>
-<span class="fc" id="L220">			this.selfEdges = selfEdges;</span>
-<span class="fc" id="L221">			this.directed = directed;</span>
-<span class="fc" id="L222">		}</span>
+<span class="fc" id="L201">				boolean parallelEdges, boolean selfEdges, boolean directed) {</span>
+<span class="fc" id="L202">			this.vertexAdd = vertexAdd;</span>
+<span class="fc" id="L203">			this.vertexRemove = vertexRemove;</span>
+<span class="fc" id="L204">			this.edgeAdd = edgeAdd;</span>
+<span class="fc" id="L205">			this.edgeRemove = edgeRemove;</span>
+<span class="fc" id="L206">			this.parallelEdges = parallelEdges;</span>
+<span class="fc" id="L207">			this.selfEdges = selfEdges;</span>
+<span class="fc" id="L208">			this.directed = directed;</span>
+<span class="fc" id="L209">		}</span>
 
 		@Override
 		public boolean vertexAdd() {
-<span class="fc" id="L226">			return vertexAdd;</span>
+<span class="fc" id="L213">			return vertexAdd;</span>
 		}
 
 		@Override
 		public boolean vertexRemove() {
-<span class="fc" id="L231">			return vertexRemove;</span>
+<span class="fc" id="L218">			return vertexRemove;</span>
 		}
 
 		@Override
 		public boolean edgeAdd() {
-<span class="fc" id="L236">			return edgeAdd;</span>
+<span class="fc" id="L223">			return edgeAdd;</span>
 		}
 
 		@Override
 		public boolean edgeRemove() {
-<span class="fc" id="L241">			return edgeRemove;</span>
+<span class="fc" id="L228">			return edgeRemove;</span>
 		}
 
 		@Override
 		public boolean parallelEdges() {
-<span class="fc" id="L246">			return parallelEdges;</span>
+<span class="fc" id="L233">			return parallelEdges;</span>
 		}
 
 		@Override
 		public boolean selfEdges() {
-<span class="fc" id="L251">			return selfEdges;</span>
+<span class="fc" id="L238">			return selfEdges;</span>
 		}
 
 		@Override
 		public boolean directed() {
-<span class="fc" id="L256">			return directed;</span>
+<span class="fc" id="L243">			return directed;</span>
 		}
 	}
 
 	static double edgesWeightSum(IntIterator eit, EdgeWeightFunc w) {
-<span class="fc bfc" id="L261" title="All 4 branches covered.">		if (w == null || w == EdgeWeightFunc.CardinalityEdgeWeightFunction) {</span>
-<span class="fc" id="L262">			int cardinality = 0;</span>
-<span class="fc bfc" id="L263" title="All 2 branches covered.">			for (; eit.hasNext(); eit.nextInt())</span>
-<span class="fc" id="L264">				cardinality++;</span>
-<span class="fc" id="L265">			return cardinality;</span>
+<span class="fc bfc" id="L248" title="All 4 branches covered.">		if (w == null || w == EdgeWeightFunc.CardinalityEdgeWeightFunction) {</span>
+<span class="fc" id="L249">			int cardinality = 0;</span>
+<span class="fc bfc" id="L250" title="All 2 branches covered.">			for (; eit.hasNext(); eit.nextInt())</span>
+<span class="fc" id="L251">				cardinality++;</span>
+<span class="fc" id="L252">			return cardinality;</span>
 		}
 
-<span class="fc bfc" id="L268" title="All 2 branches covered.">		if (w instanceof EdgeWeightFunc.Int) {</span>
-<span class="fc" id="L269">			EdgeWeightFunc.Int w0 = (EdgeWeightFunc.Int) w;</span>
-<span class="fc" id="L270">			int sum = 0;</span>
-<span class="fc bfc" id="L271" title="All 2 branches covered.">			while (eit.hasNext())</span>
-<span class="fc" id="L272">				sum += w0.weightInt(eit.nextInt());</span>
-<span class="fc" id="L273">			return sum;</span>
+<span class="fc bfc" id="L255" title="All 2 branches covered.">		if (w instanceof EdgeWeightFunc.Int) {</span>
+<span class="fc" id="L256">			EdgeWeightFunc.Int w0 = (EdgeWeightFunc.Int) w;</span>
+<span class="fc" id="L257">			int sum = 0;</span>
+<span class="fc bfc" id="L258" title="All 2 branches covered.">			while (eit.hasNext())</span>
+<span class="fc" id="L259">				sum += w0.weightInt(eit.nextInt());</span>
+<span class="fc" id="L260">			return sum;</span>
 
 		} else {
-<span class="fc" id="L276">			double sum = 0;</span>
-<span class="fc bfc" id="L277" title="All 2 branches covered.">			while (eit.hasNext())</span>
-<span class="fc" id="L278">				sum += w.weight(eit.nextInt());</span>
-<span class="fc" id="L279">			return sum;</span>
+<span class="fc" id="L263">			double sum = 0;</span>
+<span class="fc bfc" id="L264" title="All 2 branches covered.">			while (eit.hasNext())</span>
+<span class="fc" id="L265">				sum += w.weight(eit.nextInt());</span>
+<span class="fc" id="L266">			return sum;</span>
 		}
 	}
 

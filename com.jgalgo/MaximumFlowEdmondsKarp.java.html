@@ -33,7 +33,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  * @see    &lt;a href= &quot;https://en.wikipedia.org/wiki/Edmonds%E2%80%93Karp_algorithm&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
  */
-public class MaximumFlowEdmondsKarp implements MaximumFlow {
+class MaximumFlowEdmondsKarp implements MaximumFlow {
 
 <span class="fc" id="L38">	private static final Object FlowWeightKey = new Utils.Obj(&quot;flow&quot;);</span>
 <span class="fc" id="L39">	private static final Object CapacityWeightKey = new Utils.Obj(&quot;capacity&quot;);</span>
@@ -41,7 +41,7 @@ public class MaximumFlowEdmondsKarp implements MaximumFlow {
 	/**
 	 * Create a new maximum flow algorithm object.
 	 */
-<span class="fc" id="L44">	public MaximumFlowEdmondsKarp() {}</span>
+<span class="fc" id="L44">	MaximumFlowEdmondsKarp() {}</span>
 
 	@Override
 	public double computeMaximumFlow(Graph g, FlowNetwork net, int source, int sink) {
@@ -74,7 +74,7 @@ public class MaximumFlowEdmondsKarp implements MaximumFlow {
 <span class="fc" id="L74">				queue.enqueue(source);</span>
 <span class="fc bfc" id="L75" title="All 2 branches covered.">				bfs: while (!queue.isEmpty()) {</span>
 <span class="fc" id="L76">					int u = queue.dequeueInt();</span>
-<span class="fc bfc" id="L77" title="All 2 branches covered.">					for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">					for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L78">						int e = eit.nextInt();</span>
 <span class="fc" id="L79">						int v = eit.target();</span>
 

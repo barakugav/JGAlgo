@@ -93,7 +93,7 @@ class ContractableGraph {
 <span class="fc bfc" id="L93" title="All 2 branches covered.">				if (eit.hasNext())</span>
 <span class="fc" id="L94">					return true;</span>
 <span class="fc bfc" id="L95" title="All 2 branches covered.">				for (; vit.hasNext();) {</span>
-<span class="fc" id="L96">					eit = (com.jgalgo.EdgeIterImpl) g.edgesOut(vit.nextInt());</span>
+<span class="fc" id="L96">					eit = (com.jgalgo.EdgeIterImpl) g.edgesOut(vit.nextInt()).iterator();</span>
 <span class="fc bfc" id="L97" title="All 2 branches covered.">					if (eitAdvance())</span>
 <span class="fc" id="L98">						return true;</span>
 				}

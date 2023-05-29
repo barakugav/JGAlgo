@@ -28,13 +28,13 @@ abstract class GraphArrayAbstract extends GraphBaseContinues implements GraphWit
 
 	GraphArrayAbstract(int expectedVerticesNum, int expectedEdgesNum) {
 <span class="fc" id="L30">		super(expectedVerticesNum, expectedEdgesNum);</span>
-<span class="fc" id="L31">		edgeEndpoints = new EdgeEndpointsContainer(edgesIDStrategy);</span>
+<span class="fc" id="L31">		edgeEndpoints = new EdgeEndpointsContainer(edgesIDStrat);</span>
 <span class="fc" id="L32">		addInternalEdgesDataContainer(DataContainerKeyEdgeEndpoints, edgeEndpoints);</span>
 <span class="fc" id="L33">	}</span>
 
 	GraphArrayAbstract(GraphArrayAbstract g) {
 <span class="fc" id="L36">		super(g);</span>
-<span class="fc" id="L37">		edgeEndpoints = g.edgeEndpoints.copy(edgesIDStrategy);</span>
+<span class="fc" id="L37">		edgeEndpoints = g.edgeEndpoints.copy(edgesIDStrat);</span>
 <span class="fc" id="L38">		addInternalEdgesDataContainer(DataContainerKeyEdgeEndpoints, edgeEndpoints);</span>
 <span class="fc" id="L39">	}</span>
 

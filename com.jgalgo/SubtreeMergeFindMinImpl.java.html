@@ -32,7 +32,7 @@ import java.util.Comparator;
 	private NodeImpl&lt;E&gt;[] nodes;
 	private final UnionFind uf;
 	private final HeapReferenceable&lt;SubTree&lt;E&gt;, Void&gt; heap;
-	private final LCADynamic lca;
+	private final LowestCommonAncestorDynamic lca;
 
 	private final Comparator&lt;? super E&gt; weightCmp;
 	private int timestamp;
@@ -64,7 +64,7 @@ import java.util.Comparator;
 <span class="fc" id="L64">		nodes = new NodeImpl[2];</span>
 
 <span class="fc" id="L66">		uf = UnionFind.newBuilder().build();</span>
-<span class="fc" id="L67">		lca = new LCADynamicGabowLinear();</span>
+<span class="fc" id="L67">		lca = new LowestCommonAncestorDynamicGabowLinear();</span>
 
 <span class="fc bfc" id="L69" title="All 2 branches covered.">		this.weightCmp = weightCmp != null ? weightCmp : Utils.getDefaultComparator();</span>
 <span class="fc" id="L70">		timestamp = 0;</span>
@@ -233,7 +233,7 @@ import java.util.Comparator;
 <span class="fc" id="L233">		Edge&lt;E&gt; edge = new Edge&lt;&gt;(u, v, edgedata);</span>
 
 		/* split edge into two edges (u, lca(u,v)), (v, lca(u,v)) */
-<span class="fc" id="L236">		LCADynamic.Node l = lca.findLowestCommonAncestor(u.lcaNode, v.lcaNode);</span>
+<span class="fc" id="L236">		LowestCommonAncestorDynamic.Node l = lca.findLowestCommonAncestor(u.lcaNode, v.lcaNode);</span>
 <span class="fc bfc" id="L237" title="All 2 branches covered.">		if (u.lcaNode != l) {</span>
 <span class="fc" id="L238">			addEdgeNode(new EdgeNode&lt;&gt;(u, l.getNodeData(), edge));</span>
 <span class="fc" id="L239">			addEdgeNode(new EdgeNode&lt;&gt;(v, l.getNodeData(), edge));</span>
@@ -338,7 +338,7 @@ import java.util.Comparator;
 		private final NodeImpl&lt;E&gt; parent;
 		private final int depth;
 		private int ufIdx;
-		private LCADynamic.Node lcaNode;
+		private LowestCommonAncestorDynamic.Node lcaNode;
 		private SubTree&lt;E&gt; subtree;
 
 <span class="fc" id="L344">		NodeImpl(NodeImpl&lt;E&gt; parent) {</span>

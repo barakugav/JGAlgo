@@ -27,13 +27,13 @@ abstract class GraphLinkedAbstract extends GraphBaseContinues {
 
 	GraphLinkedAbstract(int expectedVerticesNum, int expectedEdgesNum) {
 <span class="fc" id="L29">		super(expectedVerticesNum, expectedEdgesNum);</span>
-<span class="fc" id="L30">		edges = new DataContainer.Obj&lt;&gt;(edgesIDStrategy, null, Node.class);</span>
+<span class="fc" id="L30">		edges = new DataContainer.Obj&lt;&gt;(edgesIDStrat, null, Node.class);</span>
 <span class="fc" id="L31">		addInternalEdgesDataContainer(DataContainerKeyEdgeEndpoints, edges);</span>
 <span class="fc" id="L32">	}</span>
 
 	GraphLinkedAbstract(GraphLinkedAbstract g) {
 <span class="fc" id="L35">		super(g);</span>
-<span class="fc" id="L36">		edges = new DataContainer.Obj&lt;&gt;(edgesIDStrategy, null, Node.class);</span>
+<span class="fc" id="L36">		edges = new DataContainer.Obj&lt;&gt;(edgesIDStrat, null, Node.class);</span>
 <span class="fc" id="L37">		addInternalEdgesDataContainer(DataContainerKeyEdgeEndpoints, edges);</span>
 <span class="fc" id="L38">		final int m = g.edges().size();</span>
 <span class="fc bfc" id="L39" title="All 2 branches covered.">		for (int e = 0; e &lt; m; e++)</span>

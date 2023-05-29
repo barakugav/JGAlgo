@@ -34,7 +34,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 		// calc in degree of all vertices
 <span class="fc" id="L35">		Arrays.fill(inDegree, 0, n, 0);</span>
 <span class="fc bfc" id="L36" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L37">			inDegree[v] = g.degreeIn(v);</span>
+<span class="fc" id="L37">			inDegree[v] = g.edgesIn(v).size();</span>
 
 		// Find vertices with zero in degree and insert them to the queue
 <span class="pc bpc" id="L40" title="1 of 2 branches missed.">		assert queue.isEmpty();</span>
@@ -47,7 +47,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 <span class="fc bfc" id="L47" title="All 2 branches covered.">		while (!queue.isEmpty()) {</span>
 <span class="fc" id="L48">			int u = queue.dequeueInt();</span>
 <span class="fc" id="L49">			topolSort[topolSortSize++] = u;</span>
-<span class="fc bfc" id="L50" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L51">				eit.nextInt();</span>
 <span class="fc" id="L52">				int v = eit.target();</span>
 <span class="fc bfc" id="L53" title="All 2 branches covered.">				if (--inDegree[v] == 0)</span>

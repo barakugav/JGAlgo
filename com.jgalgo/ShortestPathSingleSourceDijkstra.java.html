@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ShortestPathSingleSourceDijkstra.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">ShortestPathSingleSourceDijkstra.java</span></div><h1>ShortestPathSingleSourceDijkstra.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo;
+
+import java.util.Objects;
+
+/**
+ * Dijkstra's algorithm for Single Source Shortest Path (SSSP).
+ * &lt;p&gt;
+ * Compute the shortest paths from a single source to all other vertices in \(O(m + n \log n)\) time, using a heap with
+ * \(O(1)\) time for {@code decreaseKey()} operations.
+ * &lt;p&gt;
+ * Only positive edge weights are supported. This implementation should be the first choice for
+ * {@link ShortestPathSingleSource} with positive weights. For negative weights use
+ * {@link ShortestPathSingleSourceBellmanFord} for floating points or {@link ShortestPathSingleSourceGoldberg} for
+ * integers.
+ * &lt;p&gt;
+ * Based on 'A note on two problems in connexion with graphs' by E. W. Dijkstra (1959). A 'note'??!! this guy changed
+ * the world, and he publish it as a 'note'.
+ *
+ * @see    &lt;a href= &quot;https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm&quot;&gt;Wikipedia&lt;/a&gt;
+ * @author Barak Ugav
+ */
+class ShortestPathSingleSourceDijkstra implements ShortestPathSingleSource {
+
+	private HeapReferenceable.Builder&lt;?, ?&gt; heapBuilder;
+
+	/**
+	 * Construct a new SSSP algorithm.
+	 */
+<span class="fc" id="L45">	ShortestPathSingleSourceDijkstra() {</span>
+<span class="fc" id="L46">		heapBuilder = HeapReferenceable.newBuilder();</span>
+<span class="fc" id="L47">	}</span>
+
+	/**
+	 * Set the implementation of the heap used by this algorithm.
+	 *
+	 * @param heapBuilder a builder for heaps used by this algorithm
+	 */
+	void setHeapBuilder(HeapReferenceable.Builder&lt;?, ?&gt; heapBuilder) {
+<span class="nc" id="L55">		this.heapBuilder = Objects.requireNonNull(heapBuilder);</span>
+<span class="nc" id="L56">	}</span>
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @throws IllegalArgumentException if one of the edge weights is negative
+	 */
+	@Override
+	public ShortestPathSingleSource.Result computeShortestPaths(Graph g, EdgeWeightFunc w, int source) {
+<span class="fc bfc" id="L65" title="All 2 branches covered.">		if (w == null)</span>
+<span class="fc" id="L66">			w = EdgeWeightFunc.CardinalityEdgeWeightFunction;</span>
+<span class="fc" id="L67">		ArgumentCheck.onlyPositiveWeights(g, w);</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">		if (w instanceof EdgeWeightFunc.Int) {</span>
+<span class="fc" id="L69">			return computeSsspInts(g, (EdgeWeightFunc.Int) w, source);</span>
+		} else {
+<span class="fc" id="L71">			return computeSsspDoubles(g, w, source);</span>
+		}
+	}
+
+	private ShortestPathSingleSource.Result computeSsspDoubles(Graph g, EdgeWeightFunc w, int source) {
+<span class="fc" id="L76">		final int n = g.vertices().size();</span>
+<span class="fc" id="L77">		HeapReferenceable&lt;Double, Integer&gt; heap =</span>
+<span class="fc" id="L78">				heapBuilder.keysTypePrimitive(double.class).valuesTypePrimitive(int.class).build();</span>
+		@SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L80">		HeapReference&lt;Double, Integer&gt;[] verticesPtrs = new HeapReference[n];</span>
+
+<span class="fc" id="L82">		ShortestPathSingleSourceUtils.ResultImpl res = new ShortestPathSingleSourceUtils.ResultImpl(g, source);</span>
+<span class="fc" id="L83">		res.distances[source] = 0;</span>
+
+<span class="fc" id="L85">		for (int u = source;;) {</span>
+<span class="fc" id="L86">			final double uDisntace = res.distances[u];</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L88">				int e = eit.nextInt();</span>
+<span class="fc" id="L89">				int v = eit.target();</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">				if (res.distances[v] != Double.POSITIVE_INFINITY)</span>
+<span class="fc" id="L91">					continue;</span>
+<span class="fc" id="L92">				double distance = uDisntace + w.weight(e);</span>
+
+<span class="fc" id="L94">				HeapReference&lt;Double, Integer&gt; vPtr = verticesPtrs[v];</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">				if (vPtr == null) {</span>
+<span class="fc" id="L96">					verticesPtrs[v] = heap.insert(Double.valueOf(distance), Integer.valueOf(v));</span>
+<span class="fc" id="L97">					res.backtrack[v] = e;</span>
+				} else {
+<span class="fc bfc" id="L99" title="All 2 branches covered.">					if (distance &lt; vPtr.key().doubleValue()) {</span>
+<span class="fc" id="L100">						res.backtrack[v] = e;</span>
+<span class="fc" id="L101">						heap.decreaseKey(vPtr, Double.valueOf(distance));</span>
+					}
+				}
+<span class="fc" id="L104">			}</span>
+
+<span class="fc bfc" id="L106" title="All 2 branches covered.">			if (heap.isEmpty())</span>
+<span class="fc" id="L107">				break;</span>
+<span class="fc" id="L108">			HeapReference&lt;Double, Integer&gt; next = heap.extractMin();</span>
+<span class="fc" id="L109">			res.distances[u = next.value().intValue()] = next.key().doubleValue();</span>
+<span class="fc" id="L110">		}</span>
+
+<span class="fc" id="L112">		return res;</span>
+	}
+
+	private ShortestPathSingleSource.Result computeSsspInts(Graph g, EdgeWeightFunc.Int w, int source) {
+<span class="fc" id="L116">		final int n = g.vertices().size();</span>
+<span class="fc" id="L117">		HeapReferenceable&lt;Integer, Integer&gt; heap =</span>
+<span class="fc" id="L118">				heapBuilder.keysTypePrimitive(int.class).valuesTypePrimitive(int.class).build();</span>
+		@SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L120">		HeapReference&lt;Integer, Integer&gt;[] verticesPtrs = new HeapReference[n];</span>
+
+<span class="fc" id="L122">		ShortestPathSingleSourceUtils.ResultImpl.Int res = new ShortestPathSingleSourceUtils.ResultImpl.Int(g, source);</span>
+<span class="fc" id="L123">		res.distances[source] = 0;</span>
+
+<span class="fc" id="L125">		for (int u = source;;) {</span>
+<span class="fc" id="L126">			final int uDisntace = res.distances[u];</span>
+<span class="fc bfc" id="L127" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L128">				int e = eit.nextInt();</span>
+<span class="fc" id="L129">				int v = eit.target();</span>
+<span class="fc bfc" id="L130" title="All 2 branches covered.">				if (res.distances[v] != Integer.MAX_VALUE)</span>
+<span class="fc" id="L131">					continue;</span>
+<span class="fc" id="L132">				int distance = uDisntace + w.weightInt(e);</span>
+
+<span class="fc" id="L134">				HeapReference&lt;Integer, Integer&gt; vPtr = verticesPtrs[v];</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">				if (vPtr == null) {</span>
+<span class="fc" id="L136">					verticesPtrs[v] = heap.insert(Integer.valueOf(distance), Integer.valueOf(v));</span>
+<span class="fc" id="L137">					res.backtrack[v] = e;</span>
+				} else {
+<span class="fc bfc" id="L139" title="All 2 branches covered.">					if (distance &lt; vPtr.key().intValue()) {</span>
+<span class="fc" id="L140">						res.backtrack[v] = e;</span>
+<span class="fc" id="L141">						heap.decreaseKey(vPtr, Integer.valueOf(distance));</span>
+					}
+				}
+<span class="fc" id="L144">			}</span>
+
+<span class="fc bfc" id="L146" title="All 2 branches covered.">			if (heap.isEmpty())</span>
+<span class="fc" id="L147">				break;</span>
+<span class="fc" id="L148">			HeapReference&lt;Integer, Integer&gt; next = heap.extractMin();</span>
+<span class="fc" id="L149">			res.distances[u = next.value().intValue()] = next.key().intValue();</span>
+<span class="fc" id="L150">		}</span>
+
+<span class="fc" id="L152">		return res;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

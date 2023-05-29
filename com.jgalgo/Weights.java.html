@@ -21,14 +21,15 @@ package com.jgalgo;
  * &lt;p&gt;
  * A weights object associated with the edges (vertices) of a graph support getting and setting a weight value for each
  * edge (vertex) using the {@link #get(int)} and {@link #set(int, Object)} methods. Such weights are useful for various
- * algorithms such as {@link SSSP} or {@link MaximumMatchingWeighted} to assigned the &lt;i&gt;cost&lt;/i&gt; of edges. Another
- * example is boolean weights used to represent the partition of vertices in bipartite graphs, which is used by
- * algorithms such as {@link MaximumMatchingCardinalityBipartiteHopcroftKarp}.
+ * algorithms such as {@link ShortestPathSingleSource} or {@link MaximumMatchingWeighted} to assigned the &lt;i&gt;cost&lt;/i&gt; of
+ * edges. Another example is boolean weights used to represent the partition of vertices in bipartite graphs, which is
+ * used by algorithms such as Hopcroft-Karp algorithm for cardinality maximum matching in bipartite graphs.
  * &lt;p&gt;
  * An exiting graph expose two methods to add new type of weights associated with its vertices or edges:
  * {@link Graph#addVerticesWeights(Object, Class)} and {@link Graph#addEdgesWeights(Object, Class)}. Weights of
  * primitive types can be created by passing a primitive class to these methods, for example this snippet demonstrate
- * how a {@code double} weights type can be added to a graph, and then passed to {@link SSSPDijkstra}:
+ * how a {@code double} weights type can be added to a graph, and then passed to {@link ShortestPathSingleSource}
+ * algorithm:
  *
  * &lt;pre&gt; {@code
  * // Create a directed graph with three vertices and edges between them
@@ -47,16 +48,15 @@ package com.jgalgo;
  * w.set(e3, 15.1);
  *
  * // Calculate the shortest paths from v1 to all other vertices
- * SSSP ssspAlgo = SSSP.newBuilder().build();
- * SSSP.Result ssspRes = ssspAlgo.computeShortestPaths(g, w, v1);
+ * ShortestPathSingleSource ssspAlgo = ShortestPathSingleSource.newBuilder().build();
+ * ShortestPathSingleSource.Result ssspRes = ssspAlgo.computeShortestPaths(g, w, v1);
  *
  * // Print the shortest path from v1 to v3
  * assert ssspRes.distance(v3) == 4.3;
  * assert ssspRes.getPath(v3).equals(IntList.of(e1, e2));
  * System.out.println(&quot;Distance from v1 to v3 is: &quot; + ssspRes.distance(v3));
  * System.out.println(&quot;The shortest path from v1 to v3 is:&quot;);
- * for (IntIterator it = ssspRes.getPath(v3).iterator(); it.hasNext();) {
- * 	int e = it.nextInt();
+ * for (int e : ssspRes.getPath(v3)) {
  * 	int u = g.edgeSource(e), v = g.edgeTarget(e);
  * 	System.out.println(&quot; &quot; + e + &quot;(&quot; + u + &quot;, &quot; + v + &quot;)&quot;);
  * }
@@ -610,9 +610,9 @@ public interface Weights&lt;W&gt; {
 	 */
 	public static &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT createExternalVerticesWeights(Graph g,
 			Class&lt;? super E&gt; type, E defVal) {
-<span class="nc" id="L613">		IDStrategy idStrat = g.getVerticesIDStrategy();</span>
+<span class="nc" id="L613">		IDStrategyImpl idStrat = (IDStrategyImpl) g.getVerticesIDStrategy();</span>
 <span class="nc" id="L614">		WeightsT weights = WeightsImpl.newInstance(idStrat, type, defVal);</span>
-<span class="nc" id="L615">		((WeightsImpl&lt;?&gt;) weights).container.expand(idStrat.size());</span>
+<span class="nc" id="L615">		((WeightsImpl&lt;?&gt;) weights).container().expand(idStrat.size());</span>
 <span class="nc" id="L616">		return weights;</span>
 	}
 
@@ -647,9 +647,9 @@ public interface Weights&lt;W&gt; {
 	 */
 	public static &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT createExternalEdgesWeights(Graph g, Class&lt;? super E&gt; type,
 			E defVal) {
-<span class="fc" id="L650">		IDStrategy idStrat = g.getEdgesIDStrategy();</span>
+<span class="fc" id="L650">		IDStrategyImpl idStrat = (IDStrategyImpl) g.getEdgesIDStrategy();</span>
 <span class="fc" id="L651">		WeightsT weights = WeightsImpl.newInstance(idStrat, type, defVal);</span>
-<span class="fc" id="L652">		((WeightsImpl&lt;?&gt;) weights).container.expand(idStrat.size());</span>
+<span class="fc" id="L652">		((WeightsImpl&lt;?&gt;) weights).container().expand(idStrat.size());</span>
 <span class="fc" id="L653">		return weights;</span>
 	}
 

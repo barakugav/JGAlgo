@@ -18,7 +18,6 @@ package com.jgalgo;
 
 import java.util.BitSet;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
@@ -26,144 +25,140 @@ class MinimumCutSTBuilderImpl {
 
 	private MinimumCutSTBuilderImpl() {}
 
-<span class="nc" id="L29">	static class Default implements MinimumCutST.Builder {</span>
+<span class="nc" id="L28">	static class Default implements MinimumCutST.Builder {</span>
 		@Override
 		public MinimumCutST build() {
-<span class="nc" id="L32">			return new MaximumFlowPushRelabel();</span>
+<span class="nc" id="L31">			return new MaximumFlowPushRelabel();</span>
 		}
 	}
 
 	static MinimumCutST buildFromMaxFlow(MaximumFlow maxFlowAlg) {
-<span class="fc" id="L37">		return new MinimumCutST() {</span>
+<span class="fc" id="L36">		return new MinimumCutST() {</span>
 
 			@Override
 			public Cut computeMinimumCut(Graph g, EdgeWeightFunc w, int source, int sink) {
-<span class="fc" id="L41">				final int n = g.vertices().size();</span>
-<span class="fc" id="L42">				BitSet visited = new BitSet(n);</span>
-<span class="fc" id="L43">				IntPriorityQueue queue = new IntArrayFIFOQueue();</span>
+<span class="fc" id="L40">				final int n = g.vertices().size();</span>
+<span class="fc" id="L41">				BitSet visited = new BitSet(n);</span>
+<span class="fc" id="L42">				IntPriorityQueue queue = new IntArrayFIFOQueue();</span>
 
 				/* create a flow network with weights as capacities */
-<span class="fc" id="L46">				FlowNetwork net = createFlowNetworkFromEdgeWeightFunc(g, w);</span>
+<span class="fc" id="L45">				FlowNetwork net = createFlowNetworkFromEdgeWeightFunc(g, w);</span>
 
 				/* compute max flow */
-<span class="fc" id="L49">				maxFlowAlg.computeMaximumFlow(g, net, source, sink);</span>
+<span class="fc" id="L48">				maxFlowAlg.computeMaximumFlow(g, net, source, sink);</span>
 
 				/* perform a BFS from source and use only non saturated edges */
-<span class="fc" id="L52">				IntList cut = new IntArrayList();</span>
-<span class="fc" id="L53">				final double eps = 0.00001;</span>
-<span class="fc" id="L54">				cut.add(source);</span>
-<span class="fc" id="L55">				visited.set(source);</span>
-<span class="fc" id="L56">				queue.enqueue(source);</span>
+<span class="fc" id="L51">				IntList cut = new IntArrayList();</span>
+<span class="fc" id="L52">				final double eps = 0.00001;</span>
+<span class="fc" id="L53">				cut.add(source);</span>
+<span class="fc" id="L54">				visited.set(source);</span>
+<span class="fc" id="L55">				queue.enqueue(source);</span>
 
-<span class="fc bfc" id="L58" title="All 2 branches covered.">				if (g.getCapabilities().directed()) {</span>
-<span class="fc bfc" id="L59" title="All 2 branches covered.">					while (!queue.isEmpty()) {</span>
-<span class="fc" id="L60">						int u = queue.dequeueInt();</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">				if (g.getCapabilities().directed()) {</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">					while (!queue.isEmpty()) {</span>
+<span class="fc" id="L59">						int u = queue.dequeueInt();</span>
 
-<span class="fc bfc" id="L62" title="All 2 branches covered.">						for (EdgeIter it = g.edgesOut(u); it.hasNext();) {</span>
-<span class="fc" id="L63">							int e = it.nextInt();</span>
-<span class="fc" id="L64">							int v = it.target();</span>
-<span class="fc bfc" id="L65" title="All 2 branches covered.">							if (visited.get(v))</span>
-<span class="fc" id="L66">								continue;</span>
-<span class="fc bfc" id="L67" title="All 2 branches covered.">							if (Math.abs(net.getCapacity(e) - net.getFlow(e)) &lt; eps)</span>
-<span class="fc" id="L68">								continue; // saturated edge</span>
-<span class="fc" id="L69">							cut.add(v);</span>
-<span class="fc" id="L70">							visited.set(v);</span>
-<span class="fc" id="L71">							queue.enqueue(v);</span>
-<span class="fc" id="L72">						}</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">						for (EdgeIter it = g.edgesOut(u).iterator(); it.hasNext();) {</span>
+<span class="fc" id="L62">							int e = it.nextInt();</span>
+<span class="fc" id="L63">							int v = it.target();</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">							if (visited.get(v))</span>
+<span class="fc" id="L65">								continue;</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">							if (Math.abs(net.getCapacity(e) - net.getFlow(e)) &lt; eps)</span>
+<span class="fc" id="L67">								continue; // saturated edge</span>
+<span class="fc" id="L68">							cut.add(v);</span>
+<span class="fc" id="L69">							visited.set(v);</span>
+<span class="fc" id="L70">							queue.enqueue(v);</span>
+<span class="fc" id="L71">						}</span>
 						/*
 						 * We don't have any guarantee that the graph has a twin edge for each edge, so we iterate over
 						 * the in-edges and search for edges with non zero flow which imply an existent of an out edge
 						 * in the residual network
 						 */
-<span class="fc bfc" id="L78" title="All 2 branches covered.">						for (EdgeIter it = g.edgesIn(u); it.hasNext();) {</span>
-<span class="fc" id="L79">							int e = it.nextInt();</span>
-<span class="fc" id="L80">							int v = it.source();</span>
-<span class="fc bfc" id="L81" title="All 2 branches covered.">							if (visited.get(v))</span>
-<span class="fc" id="L82">								continue;</span>
-<span class="fc bfc" id="L83" title="All 2 branches covered.">							if (net.getFlow(e) &lt; eps)</span>
-<span class="fc" id="L84">								continue; // saturated edge</span>
-<span class="fc" id="L85">							cut.add(v);</span>
-<span class="fc" id="L86">							visited.set(v);</span>
-<span class="fc" id="L87">							queue.enqueue(v);</span>
-<span class="fc" id="L88">						}</span>
-<span class="fc" id="L89">					}</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">						for (EdgeIter it = g.edgesIn(u).iterator(); it.hasNext();) {</span>
+<span class="fc" id="L78">							int e = it.nextInt();</span>
+<span class="fc" id="L79">							int v = it.source();</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">							if (visited.get(v))</span>
+<span class="fc" id="L81">								continue;</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">							if (net.getFlow(e) &lt; eps)</span>
+<span class="fc" id="L83">								continue; // saturated edge</span>
+<span class="fc" id="L84">							cut.add(v);</span>
+<span class="fc" id="L85">							visited.set(v);</span>
+<span class="fc" id="L86">							queue.enqueue(v);</span>
+<span class="fc" id="L87">						}</span>
+<span class="fc" id="L88">					}</span>
 				} else {
-<span class="fc bfc" id="L91" title="All 2 branches covered.">					while (!queue.isEmpty()) {</span>
-<span class="fc" id="L92">						int u = queue.dequeueInt();</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">					while (!queue.isEmpty()) {</span>
+<span class="fc" id="L91">						int u = queue.dequeueInt();</span>
 
-<span class="fc bfc" id="L94" title="All 2 branches covered.">						for (EdgeIter it = g.edgesOut(u); it.hasNext();) {</span>
-<span class="fc" id="L95">							int e = it.nextInt();</span>
-<span class="fc" id="L96">							int v = it.target();</span>
-<span class="fc bfc" id="L97" title="All 2 branches covered.">							if (visited.get(v))</span>
-<span class="fc" id="L98">								continue;</span>
-<span class="fc bfc" id="L99" title="All 2 branches covered.">							double directedFlow = net.getFlow(e) * (g.edgeSource(e) == u ? +1 : -1);</span>
-<span class="fc bfc" id="L100" title="All 2 branches covered.">							if (Math.abs(net.getCapacity(e) - directedFlow) &lt; eps)</span>
-<span class="fc" id="L101">								continue; // saturated edge</span>
-<span class="fc" id="L102">							cut.add(v);</span>
-<span class="fc" id="L103">							visited.set(v);</span>
-<span class="fc" id="L104">							queue.enqueue(v);</span>
-<span class="fc" id="L105">						}</span>
-<span class="fc" id="L106">					}</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">						for (EdgeIter it = g.edgesOut(u).iterator(); it.hasNext();) {</span>
+<span class="fc" id="L94">							int e = it.nextInt();</span>
+<span class="fc" id="L95">							int v = it.target();</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">							if (visited.get(v))</span>
+<span class="fc" id="L97">								continue;</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">							double directedFlow = net.getFlow(e) * (g.edgeSource(e) == u ? +1 : -1);</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">							if (Math.abs(net.getCapacity(e) - directedFlow) &lt; eps)</span>
+<span class="fc" id="L100">								continue; // saturated edge</span>
+<span class="fc" id="L101">							cut.add(v);</span>
+<span class="fc" id="L102">							visited.set(v);</span>
+<span class="fc" id="L103">							queue.enqueue(v);</span>
+<span class="fc" id="L104">						}</span>
+<span class="fc" id="L105">					}</span>
 				}
 
-<span class="fc" id="L109">				return new CutImpl(g, cut);</span>
+<span class="fc" id="L108">				return new CutImpl(g, cut);</span>
 			}
 
 		};
 	}
 
 	static FlowNetwork createFlowNetworkFromEdgeWeightFunc(Graph g, EdgeWeightFunc w) {
-<span class="fc bfc" id="L116" title="All 2 branches covered.">		for (IntIterator it = g.edges().iterator(); it.hasNext();) {</span>
-<span class="fc" id="L117">			int e = it.nextInt();</span>
-<span class="pc bpc" id="L118" title="1 of 2 branches missed.">			if (w.weight(e) &lt; 0)</span>
-<span class="nc" id="L119">				throw new IllegalArgumentException(&quot;negative weight for edge &quot; + e);</span>
-<span class="fc" id="L120">		}</span>
-<span class="fc" id="L121">		Weights.Double flow = Weights.createExternalEdgesWeights(g, double.class);</span>
-<span class="fc" id="L122">		FlowNetwork net = new FlowNetwork() {</span>
+<span class="fc" id="L115">		ArgumentCheck.onlyPositiveWeights(g, w);</span>
+<span class="fc" id="L116">		Weights.Double flow = Weights.createExternalEdgesWeights(g, double.class);</span>
+<span class="fc" id="L117">		FlowNetwork net = new FlowNetwork() {</span>
 			@Override
 			public double getCapacity(int edge) {
-<span class="fc" id="L125">				return w.weight(edge);</span>
+<span class="fc" id="L120">				return w.weight(edge);</span>
 			}
 
 			@Override
 			public void setCapacity(int edge, double cap) {
-<span class="nc" id="L130">				throw new UnsupportedOperationException();</span>
+<span class="nc" id="L125">				throw new UnsupportedOperationException();</span>
 			}
 
 			@Override
 			public double getFlow(int edge) {
-<span class="fc" id="L135">				return flow.getDouble(edge);</span>
+<span class="fc" id="L130">				return flow.getDouble(edge);</span>
 			}
 
 			@Override
 			public void setFlow(int edge, double f) {
-<span class="fc" id="L140">				flow.set(edge, f);</span>
-<span class="fc" id="L141">			}</span>
+<span class="fc" id="L135">				flow.set(edge, f);</span>
+<span class="fc" id="L136">			}</span>
 		};
-<span class="fc" id="L143">		return net;</span>
+<span class="fc" id="L138">		return net;</span>
 	}
 
 	static MinimumCutGlobal globalMinCutFromStMinCut(MinimumCutST stMinCut) {
-<span class="fc" id="L147">		return new MinimumCutGlobal() {</span>
+<span class="fc" id="L142">		return new MinimumCutGlobal() {</span>
 
 			@Override
 			public Cut computeMinimumCut(Graph g, EdgeWeightFunc w) {
-<span class="fc" id="L151">				final int n = g.vertices().size();</span>
-<span class="pc bpc" id="L152" title="1 of 2 branches missed.">				if (n &lt; 2)</span>
-<span class="nc" id="L153">					throw new IllegalArgumentException(&quot;no valid cut in graphs with less than two vertices&quot;);</span>
-<span class="fc" id="L154">				Cut bestCut = null;</span>
-<span class="fc" id="L155">				double bestCutWeight = Double.MAX_VALUE;</span>
-<span class="fc" id="L156">				final int source = 0;</span>
-<span class="fc bfc" id="L157" title="All 2 branches covered.">				for (int sink = 1; sink &lt; n; sink++) {</span>
-<span class="fc" id="L158">					Cut cut = stMinCut.computeMinimumCut(g, w, source, sink);</span>
-<span class="fc" id="L159">					double cutWeight = cut.weight(w);</span>
-<span class="fc bfc" id="L160" title="All 2 branches covered.">					if (bestCutWeight &gt; cutWeight) {</span>
-<span class="fc" id="L161">						bestCutWeight = cutWeight;</span>
-<span class="fc" id="L162">						bestCut = cut;</span>
+<span class="fc" id="L146">				final int n = g.vertices().size();</span>
+<span class="pc bpc" id="L147" title="1 of 2 branches missed.">				if (n &lt; 2)</span>
+<span class="nc" id="L148">					throw new IllegalArgumentException(&quot;no valid cut in graphs with less than two vertices&quot;);</span>
+<span class="fc" id="L149">				Cut bestCut = null;</span>
+<span class="fc" id="L150">				double bestCutWeight = Double.MAX_VALUE;</span>
+<span class="fc" id="L151">				final int source = 0;</span>
+<span class="fc bfc" id="L152" title="All 2 branches covered.">				for (int sink = 1; sink &lt; n; sink++) {</span>
+<span class="fc" id="L153">					Cut cut = stMinCut.computeMinimumCut(g, w, source, sink);</span>
+<span class="fc" id="L154">					double cutWeight = cut.weight(w);</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">					if (bestCutWeight &gt; cutWeight) {</span>
+<span class="fc" id="L156">						bestCutWeight = cutWeight;</span>
+<span class="fc" id="L157">						bestCut = cut;</span>
 					}
 				}
-<span class="pc bpc" id="L165" title="1 of 2 branches missed.">				assert bestCut != null;</span>
-<span class="fc" id="L166">				return bestCut;</span>
+<span class="pc bpc" id="L160" title="1 of 2 branches missed.">				assert bestCut != null;</span>
+<span class="fc" id="L161">				return bestCut;</span>
 			}
 		};
 	}

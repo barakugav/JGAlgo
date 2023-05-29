@@ -38,12 +38,12 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  * @see    &lt;a href= &quot;https://en.wikipedia.org/wiki/Recursive_largest_first_algorithm&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
  */
-public class ColoringRecursiveLargestFirst implements Coloring {
+class ColoringRecursiveLargestFirst implements Coloring {
 
 	/**
 	 * Create a new coloring algorithm object.
 	 */
-<span class="fc" id="L46">	public ColoringRecursiveLargestFirst() {}</span>
+<span class="fc" id="L46">	ColoringRecursiveLargestFirst() {}</span>
 
 	@Override
 	public Result computeColoring(Graph g) {
@@ -54,7 +54,7 @@ public class ColoringRecursiveLargestFirst implements Coloring {
 <span class="fc" id="L54">		int n = g.vertices().size();</span>
 <span class="fc" id="L55">		int[] degree = new int[n];</span>
 <span class="fc bfc" id="L56" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
-<span class="fc" id="L57">			degree[u] = g.degreeOut(u);</span>
+<span class="fc" id="L57">			degree[u] = g.edgesOut(u).size();</span>
 
 <span class="fc" id="L59">		BitSet S = new BitSet(n);</span>
 <span class="fc" id="L60">		BitSet isAdjacentToS = new BitSet(n);</span>
@@ -83,7 +83,7 @@ public class ColoringRecursiveLargestFirst implements Coloring {
 <span class="fc" id="L83">				S.set(u);</span>
 
 				// update info
-<span class="fc bfc" id="L86" title="All 2 branches covered.">				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">				for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L87">					eit.nextInt();</span>
 <span class="fc" id="L88">					int v = eit.target();</span>
 <span class="fc bfc" id="L89" title="All 2 branches covered.">					if (res.colorOf(v) != -1)</span>
@@ -97,7 +97,7 @@ public class ColoringRecursiveLargestFirst implements Coloring {
 <span class="fc bfc" id="L97" title="All 6 branches covered.">					if (res.colorOf(v) != -1 || S.get(v) || isAdjacentToS.get(v))</span>
 <span class="fc" id="L98">						continue;</span>
 <span class="fc" id="L99">					int numOfNeighborsAdjacentToS = 0;</span>
-<span class="fc bfc" id="L100" title="All 2 branches covered.">					for (EdgeIter eit = g.edgesOut(v); eit.hasNext();) {</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">					for (EdgeIter eit = g.edgesOut(v).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L101">						eit.nextInt();</span>
 <span class="fc" id="L102">						int w = eit.target();</span>
 <span class="fc bfc" id="L103" title="All 2 branches covered.">						if (isAdjacentToS.get(w))</span>
@@ -118,7 +118,7 @@ public class ColoringRecursiveLargestFirst implements Coloring {
 <span class="fc" id="L118">				res.colors[u] = color;</span>
 
 				// update degree to include only vertices without color
-<span class="fc bfc" id="L121" title="All 2 branches covered.">				for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">				for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L122">					eit.nextInt();</span>
 <span class="fc" id="L123">					degree[eit.target()]--;</span>
 				}

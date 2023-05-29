@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LowestCommonAncestorDynamicGabowLinear.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">LowestCommonAncestorDynamicGabowLinear.java</span></div><h1>LowestCommonAncestorDynamicGabowLinear.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo;
+
+import java.util.Arrays;
+
+import com.jgalgo.LowestCommonAncestorDynamicGabowSimple.CharacteristicAncestors;
+
+/**
+ * Gabow linear dynamic LCA data structure.
+ * &lt;p&gt;
+ * The algorithm use {@link LowestCommonAncestorDynamicGabowSimple} as a base, but uses two layers of bit tricks to remove the \(O(\log^2
+ * n)\) factor of the simpler data structure. Each layer have less nodes than the previous one by a factor of \(O(\log
+ * n)\), until the simpler data structure is used on \(O(n / \log^2 n)\) nodes. This implementation is much faster in
+ * practice and always should be used over the simpler one.
+ * &lt;p&gt;
+ * The running time of this algorithm for \(m\) operations is \(O(n + m)\) and it uses linear space. More specifically,
+ * the {@link #addLeaf(LowestCommonAncestorDynamic.Node)} operation is perform in \(O(1)\) amortized time and
+ * {@link #findLowestCommonAncestor(LowestCommonAncestorDynamic.Node, LowestCommonAncestorDynamic.Node)} is perform in
+ * constant time.
+ * &lt;p&gt;
+ * Based on 'Data Structures for Weighted Matching and Nearest Common Ancestors with Linking' by Harold N. Gabow (1990).
+ *
+ * @author Barak Ugav
+ */
+<span class="fc" id="L40">class LowestCommonAncestorDynamicGabowLinear implements LowestCommonAncestorDynamic {</span>
+
+	/*
+	 * implementation note: in the original paper, Gabow stated to use look tables for the bit tricks (lsb, msb). It's
+	 * possible to do so, using BitsLookupTable, but the standard Java implementation already perform these operations
+	 * in constant time (less than 10 operations).
+	 */
+
+	private int nodes2Num;
+	private final LowestCommonAncestorDynamicGabowSimple lca0;
+
+	private static final int SUB_TREE_MAX_SIZE = Integer.SIZE;
+
+	/**
+	 * Create a new dynamic LCA data structure that contains zero nodes.
+	 */
+<span class="fc" id="L56">	LowestCommonAncestorDynamicGabowLinear() {</span>
+<span class="fc" id="L57">		lca0 = new LowestCommonAncestorDynamicGabowSimple();</span>
+<span class="fc" id="L58">	}</span>
+
+	@Override
+	public Node initTree() {
+<span class="pc bpc" id="L62" title="1 of 2 branches missed.">		if (size() != 0)</span>
+<span class="nc" id="L63">			throw new IllegalStateException();</span>
+<span class="fc" id="L64">		return newNode2(null);</span>
+	}
+
+	@Override
+	public Node addLeaf(Node parent) {
+<span class="fc" id="L69">		return newNode2((Node2) parent);</span>
+	}
+
+	private Node2 newNode2(Node2 parent) {
+<span class="fc" id="L73">		Node2 node = new Node2(parent);</span>
+
+<span class="fc bfc" id="L75" title="All 4 branches covered.">		if (parent == null || parent.subTree.isFull()) {</span>
+			/* make the new node a root of a new sub tree */
+<span class="fc" id="L77">			node.subTree = new Node1(node);</span>
+		} else {
+			/* add new node to the parent sub tree */
+<span class="fc" id="L80">			node.subTree = parent.subTree;</span>
+<span class="fc" id="L81">			node.ancestorsBitmap = parent.ancestorsBitmap;</span>
+		}
+
+<span class="fc" id="L84">		node.subTree.addNode(node);</span>
+<span class="fc" id="L85">		node.ancestorsBitmap |= ithBit(node.idWithinSubTree);</span>
+
+<span class="fc bfc" id="L87" title="All 2 branches covered.">		if (node.subTree.isFull()) {</span>
+			/* new full sub tree, add to next level tree */
+<span class="fc" id="L89">			Node2 topParent = node.subTree.top.parent;</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">			Node1 tparent = topParent != null ? topParent.subTree : null;</span>
+<span class="fc" id="L91">			addFullNode1(node.subTree, tparent);</span>
+		}
+
+<span class="fc" id="L94">		return node;</span>
+	}
+
+	private void addFullNode1(Node1 node, Node1 parent) {
+<span class="fc bfc" id="L98" title="All 4 branches covered.">		if (parent == null || parent.subTree.isFull()) {</span>
+			/* make the new node a root of a new sub tree */
+<span class="fc" id="L100">			node.subTree = new Node0(node);</span>
+		} else {
+			/* add new node to the parent sub tree */
+<span class="fc" id="L103">			node.subTree = parent.subTree;</span>
+<span class="fc" id="L104">			node.ancestorsBitmap = parent.ancestorsBitmap;</span>
+		}
+
+<span class="fc" id="L107">		node.subTree.addNode(node);</span>
+<span class="fc" id="L108">		node.ancestorsBitmap |= ithBit(node.idWithinSubTree);</span>
+
+<span class="fc bfc" id="L110" title="All 2 branches covered.">		if (node.subTree.isFull()) {</span>
+			/* new full sub tree, add to next level tree */
+<span class="fc" id="L112">			Node1 topParent = node.subTree.top.getParent();</span>
+<span class="pc bpc" id="L113" title="1 of 2 branches missed.">			Node0 tparent = topParent != null ? topParent.subTree : null;</span>
+<span class="fc" id="L114">			addFullNode0(node.subTree, tparent);</span>
+		}
+<span class="fc" id="L116">	}</span>
+
+	private void addFullNode0(Node0 node, Node0 parent) {
+<span class="pc bpc" id="L119" title="1 of 2 branches missed.">		if (parent == null) {</span>
+<span class="fc" id="L120">			(node.lcaId = lca0.initTree()).setNodeData(node);</span>
+		} else {
+<span class="nc" id="L122">			(node.lcaId = lca0.addLeaf(parent.lcaId)).setNodeData(node);</span>
+		}
+<span class="fc" id="L124">	}</span>
+
+	private Node2 calcLCA(Node2 x2, Node2 y2) {
+<span class="fc bfc" id="L127" title="All 2 branches covered.">		if (x2.subTree != y2.subTree) {</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">			if (!x2.subTree.isFull())</span>
+<span class="fc" id="L129">				x2 = x2.subTree.top.parent;</span>
+<span class="fc bfc" id="L130" title="All 2 branches covered.">			if (!y2.subTree.isFull())</span>
+<span class="fc" id="L131">				y2 = y2.subTree.top.parent;</span>
+
+			/* Calculate CAs in the next level tree */
+<span class="fc" id="L134">			Node1 x1 = x2.subTree, y1 = y2.subTree;</span>
+<span class="fc" id="L135">			Node1 ax1 = null, ay1 = null;</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">			if (x1.subTree != y1.subTree) {</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">				if (!x1.subTree.isFull()) {</span>
+<span class="fc" id="L138">					ax1 = x1.subTree.top;</span>
+<span class="fc" id="L139">					x1 = x1.subTree.top.getParent();</span>
+				}
+<span class="fc bfc" id="L141" title="All 2 branches covered.">				if (!y1.subTree.isFull()) {</span>
+<span class="fc" id="L142">					ay1 = y1.subTree.top;</span>
+<span class="fc" id="L143">					y1 = y1.subTree.top.getParent();</span>
+				}
+
+				/* Calculate CAs in the next level tree */
+<span class="fc" id="L147">				Node0 x0 = x1.subTree, y0 = y1.subTree;</span>
+<span class="fc" id="L148">				CharacteristicAncestors ca0 = lca0.calcCA(x0.lcaId, y0.lcaId);</span>
+<span class="fc" id="L149">				Node0 a0 = ca0.a.getNodeData(), ax0 = ca0.ax.getNodeData(), ay0 = ca0.ay.getNodeData();</span>
+
+<span class="pc bpc" id="L151" title="1 of 2 branches missed.">				if (a0 != ax0) {</span>
+<span class="nc" id="L152">					ax1 = ax0.top;</span>
+<span class="nc" id="L153">					x1 = ax0.top.getParent();</span>
+				}
+<span class="pc bpc" id="L155" title="1 of 2 branches missed.">				if (a0 != ay0) {</span>
+<span class="nc" id="L156">					ay1 = ay0.top;</span>
+<span class="nc" id="L157">					y1 = ay0.top.getParent();</span>
+				}
+			}
+
+<span class="pc bpc" id="L161" title="1 of 2 branches missed.">			assert x1.subTree == y1.subTree;</span>
+			/* calculate LCA within sub tree */
+<span class="fc" id="L163">			int commonAncestors1 = x1.ancestorsBitmap &amp; y1.ancestorsBitmap;</span>
+<span class="fc" id="L164">			Node1 a1 = x1.subTree.nodes[31 - Integer.numberOfLeadingZeros(commonAncestors1)];</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">			if (a1 != x1) {</span>
+<span class="fc" id="L166">				int x1UncommonAncestors = x1.ancestorsBitmap &amp; ~y1.ancestorsBitmap;</span>
+<span class="fc" id="L167">				ax1 = x1.subTree.nodes[Integer.numberOfTrailingZeros(x1UncommonAncestors)];</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">			} else if (ax1 == null) {</span>
+<span class="fc" id="L169">				ax1 = x1;</span>
+			}
+<span class="fc bfc" id="L171" title="All 2 branches covered.">			if (a1 != y1) {</span>
+<span class="fc" id="L172">				int x1UncommonAncestors = ~x1.ancestorsBitmap &amp; y1.ancestorsBitmap;</span>
+<span class="fc" id="L173">				ay1 = x1.subTree.nodes[Integer.numberOfTrailingZeros(x1UncommonAncestors)];</span>
+<span class="fc bfc" id="L174" title="All 2 branches covered.">			} else if (ay1 == null) {</span>
+<span class="fc" id="L175">				ay1 = y1;</span>
+			}
+
+<span class="fc bfc" id="L178" title="All 2 branches covered.">			if (a1 != ax1)</span>
+<span class="fc" id="L179">				x2 = ax1.top.parent;</span>
+<span class="fc bfc" id="L180" title="All 2 branches covered.">			if (a1 != ay1)</span>
+<span class="fc" id="L181">				y2 = ay1.top.parent;</span>
+		}
+
+<span class="pc bpc" id="L184" title="1 of 2 branches missed.">		assert x2.subTree == y2.subTree;</span>
+		/* calculate LCA within sub tree */
+<span class="fc" id="L186">		int commonAncestors = x2.ancestorsBitmap &amp; y2.ancestorsBitmap;</span>
+<span class="fc" id="L187">		return x2.subTree.nodes[31 - Integer.numberOfLeadingZeros(commonAncestors)];</span>
+	}
+
+	@Override
+	public Node findLowestCommonAncestor(Node x, Node y) {
+<span class="fc" id="L192">		return calcLCA((Node2) x, (Node2) y);</span>
+	}
+
+	@Override
+	public int size() {
+<span class="fc" id="L197">		return nodes2Num;</span>
+	}
+
+	@Override
+	public void clear() {
+<span class="fc" id="L202">		lca0.clear();</span>
+<span class="fc" id="L203">	}</span>
+
+	private static class Node2 implements LowestCommonAncestorDynamic.Node {
+		Object nodeData;
+
+		/* level 2 info */
+		final Node2 parent;
+		Node1 subTree;
+		int idWithinSubTree;
+		int ancestorsBitmap;
+
+<span class="fc" id="L214">		Node2(Node2 parent) {</span>
+<span class="fc" id="L215">			this.parent = parent;</span>
+<span class="fc" id="L216">		}</span>
+
+		@Override
+		@SuppressWarnings(&quot;unchecked&quot;)
+		public &lt;D&gt; D getNodeData() {
+<span class="fc" id="L221">			return (D) nodeData;</span>
+		}
+
+		@Override
+		public void setNodeData(Object data) {
+<span class="fc" id="L226">			nodeData = data;</span>
+<span class="fc" id="L227">		}</span>
+
+		@Override
+		public Node getParent() {
+<span class="fc" id="L231">			return parent;</span>
+		}
+
+		// void clear() {
+		// subTree = null;
+		// }
+	}
+
+<span class="fc" id="L239">	private static class Node1 {</span>
+		/* level 2 info */
+		final Node2 top;
+		Node2[] nodes;
+		int size;
+
+		/* level 1 info */
+		Node0 subTree;
+		int idWithinSubTree;
+		int ancestorsBitmap;
+
+<span class="fc" id="L250">		Node1(Node2 top) {</span>
+<span class="fc" id="L251">			this.top = top;</span>
+<span class="fc" id="L252">			nodes = new Node2[4];</span>
+<span class="fc" id="L253">		}</span>
+
+		Node1 getParent() {
+<span class="fc bfc" id="L256" title="All 2 branches covered.">			return top.parent != null ? top.parent.subTree : null;</span>
+		}
+
+		void addNode(Node2 node) {
+<span class="pc bpc" id="L260" title="1 of 2 branches missed.">			assert size &lt; SUB_TREE_MAX_SIZE;</span>
+<span class="fc" id="L261">			node.idWithinSubTree = size++;</span>
+<span class="fc bfc" id="L262" title="All 2 branches covered.">			if (node.idWithinSubTree &gt;= nodes.length)</span>
+<span class="fc" id="L263">				nodes = Arrays.copyOf(nodes, Math.max(nodes.length * 2, 2));</span>
+<span class="fc" id="L264">			nodes[node.idWithinSubTree] = node;</span>
+<span class="fc" id="L265">		}</span>
+
+		boolean isFull() {
+<span class="fc bfc" id="L268" title="All 2 branches covered.">			return size == SUB_TREE_MAX_SIZE;</span>
+		}
+
+		// void clear() {
+		// nodes = null;
+		// subTree = null;
+		// }
+	}
+
+<span class="fc" id="L277">	private static class Node0 {</span>
+		/* level 1 info */
+		final Node1 top;
+		Node1[] nodes;
+		int size;
+
+		/* level 0 info */
+		LowestCommonAncestorDynamic.Node lcaId;
+
+<span class="fc" id="L286">		Node0(Node1 top) {</span>
+<span class="fc" id="L287">			this.top = top;</span>
+<span class="fc" id="L288">			nodes = new Node1[4];</span>
+<span class="fc" id="L289">		}</span>
+
+		void addNode(Node1 node) {
+<span class="pc bpc" id="L292" title="1 of 2 branches missed.">			assert size &lt; SUB_TREE_MAX_SIZE;</span>
+<span class="fc" id="L293">			node.idWithinSubTree = size++;</span>
+<span class="fc bfc" id="L294" title="All 2 branches covered.">			if (node.idWithinSubTree &gt;= nodes.length)</span>
+<span class="fc" id="L295">				nodes = Arrays.copyOf(nodes, Math.max(nodes.length * 2, 2));</span>
+<span class="fc" id="L296">			nodes[node.idWithinSubTree] = node;</span>
+<span class="fc" id="L297">		}</span>
+
+		boolean isFull() {
+<span class="fc bfc" id="L300" title="All 2 branches covered.">			return size == SUB_TREE_MAX_SIZE;</span>
+		}
+
+		// void clear() {
+		// nodes = null;
+		// }
+	}
+
+	private static int ithBit(int b) {
+<span class="pc bpc" id="L309" title="2 of 4 branches missed.">		assert 0 &lt;= b &amp;&amp; b &lt; Integer.SIZE;</span>
+<span class="fc" id="L310">		return 1 &lt;&lt; b;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

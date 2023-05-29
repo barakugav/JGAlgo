@@ -58,10 +58,10 @@ class GraphArrayDirected extends GraphArrayAbstract {
 	 */
 	GraphArrayDirected(int expectedVerticesNum, int expectedEdgesNum) {
 <span class="fc" id="L60">		super(expectedVerticesNum, expectedEdgesNum);</span>
-<span class="fc" id="L61">		edgesOut = new DataContainer.Obj&lt;&gt;(verticesIDStrategy, IntArrays.EMPTY_ARRAY, int[].class);</span>
-<span class="fc" id="L62">		edgesOutNum = new DataContainer.Int(verticesIDStrategy, 0);</span>
-<span class="fc" id="L63">		edgesIn = new DataContainer.Obj&lt;&gt;(verticesIDStrategy, IntArrays.EMPTY_ARRAY, int[].class);</span>
-<span class="fc" id="L64">		edgesInNum = new DataContainer.Int(verticesIDStrategy, 0);</span>
+<span class="fc" id="L61">		edgesOut = new DataContainer.Obj&lt;&gt;(verticesIDStrat, IntArrays.EMPTY_ARRAY, int[].class);</span>
+<span class="fc" id="L62">		edgesOutNum = new DataContainer.Int(verticesIDStrat, 0);</span>
+<span class="fc" id="L63">		edgesIn = new DataContainer.Obj&lt;&gt;(verticesIDStrat, IntArrays.EMPTY_ARRAY, int[].class);</span>
+<span class="fc" id="L64">		edgesInNum = new DataContainer.Int(verticesIDStrat, 0);</span>
 
 <span class="fc" id="L66">		addInternalVerticesDataContainer(DataContainerKeyEdgesOut, edgesOut);</span>
 <span class="fc" id="L67">		addInternalVerticesDataContainer(DataContainerKeyEdgesOutNum, edgesOutNum);</span>
@@ -73,10 +73,10 @@ class GraphArrayDirected extends GraphArrayAbstract {
 <span class="fc" id="L73">		super(g);</span>
 <span class="fc" id="L74">		final int n = g.vertices().size();</span>
 
-<span class="fc" id="L76">		edgesOut = g.edgesOut.copy(verticesIDStrategy);</span>
-<span class="fc" id="L77">		edgesOutNum = g.edgesOutNum.copy(verticesIDStrategy);</span>
-<span class="fc" id="L78">		edgesIn = g.edgesIn.copy(verticesIDStrategy);</span>
-<span class="fc" id="L79">		edgesInNum = g.edgesInNum.copy(verticesIDStrategy);</span>
+<span class="fc" id="L76">		edgesOut = g.edgesOut.copy(verticesIDStrat);</span>
+<span class="fc" id="L77">		edgesOutNum = g.edgesOutNum.copy(verticesIDStrat);</span>
+<span class="fc" id="L78">		edgesIn = g.edgesIn.copy(verticesIDStrat);</span>
+<span class="fc" id="L79">		edgesInNum = g.edgesInNum.copy(verticesIDStrat);</span>
 <span class="fc" id="L80">		addInternalVerticesDataContainer(DataContainerKeyEdgesOut, edgesOut);</span>
 <span class="fc" id="L81">		addInternalVerticesDataContainer(DataContainerKeyEdgesOutNum, edgesOutNum);</span>
 <span class="fc" id="L82">		addInternalVerticesDataContainer(DataContainerKeyEdgesIn, edgesIn);</span>
@@ -130,15 +130,15 @@ class GraphArrayDirected extends GraphArrayAbstract {
 <span class="fc" id="L130">	}</span>
 
 	@Override
-	public EdgeIter edgesOut(int source) {
+	public EdgeSet edgesOut(int source) {
 <span class="fc" id="L134">		checkVertex(source);</span>
-<span class="fc" id="L135">		return new EdgeOutIt(source, edgesOut.get(source), edgesOutNum.getInt(source));</span>
+<span class="fc" id="L135">		return new EdgeSetOut(source);</span>
 	}
 
 	@Override
-	public EdgeIter edgesIn(int target) {
+	public EdgeSet edgesIn(int target) {
 <span class="fc" id="L140">		checkVertex(target);</span>
-<span class="fc" id="L141">		return new EdgeInIt(target, edgesIn.get(target), edgesInNum.getInt(target));</span>
+<span class="fc" id="L141">		return new EdgeSetIn(target);</span>
 	}
 
 	@Override
@@ -203,85 +203,103 @@ class GraphArrayDirected extends GraphArrayAbstract {
 <span class="fc" id="L203">	}</span>
 
 	@Override
-	public int degreeOut(int source) {
-<span class="fc" id="L207">		checkVertex(source);</span>
-<span class="fc" id="L208">		return edgesOutNum.getInt(source);</span>
-	}
-
-	@Override
-	public int degreeIn(int target) {
-<span class="fc" id="L213">		checkVertex(target);</span>
-<span class="fc" id="L214">		return edgesInNum.getInt(target);</span>
-	}
-
-	@Override
 	public void clearEdges() {
-<span class="fc" id="L219">		edgesOutNum.clear();</span>
-<span class="fc" id="L220">		edgesInNum.clear();</span>
-<span class="fc" id="L221">		super.clearEdges();</span>
-<span class="fc" id="L222">	}</span>
+<span class="fc" id="L207">		edgesOutNum.clear();</span>
+<span class="fc" id="L208">		edgesInNum.clear();</span>
+<span class="fc" id="L209">		super.clearEdges();</span>
+<span class="fc" id="L210">	}</span>
 
 	@Override
 	public void clear() {
-<span class="fc" id="L226">		super.clear();</span>
+<span class="fc" id="L214">		super.clear();</span>
 		// Don't clear allocated edges arrays
 		// edgesOut.clear();
 		// edgesIn.clear();
-<span class="fc" id="L230">	}</span>
-
-	private class EdgeOutIt extends EdgeIt {
-
-		private final int u;
-
-<span class="fc" id="L236">		EdgeOutIt(int source, int[] edges, int count) {</span>
-<span class="fc" id="L237">			super(edges, count);</span>
-<span class="fc" id="L238">			this.u = source;</span>
-<span class="fc" id="L239">		}</span>
-
-		@Override
-		public int source() {
-<span class="fc" id="L243">			return u;</span>
-		}
-
-		@Override
-		public int target() {
-<span class="fc" id="L248">			return edgeTarget(lastEdge);</span>
-		}
-
-	}
-
-	private class EdgeInIt extends EdgeIt {
-
-		private final int target;
-
-<span class="fc" id="L257">		EdgeInIt(int target, int[] edges, int count) {</span>
-<span class="fc" id="L258">			super(edges, count);</span>
-<span class="fc" id="L259">			this.target = target;</span>
-<span class="fc" id="L260">		}</span>
-
-		@Override
-		public int source() {
-<span class="fc" id="L264">			return edgeSource(lastEdge);</span>
-		}
-
-		@Override
-		public int target() {
-<span class="fc" id="L269">			return target;</span>
-		}
-
-	}
+<span class="fc" id="L218">	}</span>
 
 	@Override
 	public GraphCapabilities getCapabilities() {
-<span class="fc" id="L276">		return Capabilities;</span>
+<span class="fc" id="L222">		return Capabilities;</span>
 	}
 
-<span class="fc" id="L279">	private static final GraphCapabilities Capabilities = GraphCapabilitiesBuilder.newDirected().vertexAdd(true)</span>
-<span class="fc" id="L280">			.vertexRemove(true).edgeAdd(true).edgeRemove(true).parallelEdges(true).selfEdges(true).build();</span>
+<span class="fc" id="L225">	private static final GraphCapabilities Capabilities = GraphCapabilitiesBuilder.newDirected().vertexAdd(true)</span>
+<span class="fc" id="L226">			.vertexRemove(true).edgeAdd(true).edgeRemove(true).parallelEdges(true).selfEdges(true).build();</span>
 
 	@Override
 	public Graph copy() {
-<span class="fc" id="L284">		return new GraphArrayDirected(this);</span>
+<span class="fc" id="L230">		return new GraphArrayDirected(this);</span>
+	}
+
+	private class EdgeSetOut extends GraphBase.EdgeSetOutDirected {
+<span class="fc" id="L234">		EdgeSetOut(int source) {</span>
+<span class="fc" id="L235">			super(source);</span>
+<span class="fc" id="L236">		}</span>
+
+		@Override
+		public int size() {
+<span class="fc" id="L240">			return edgesOutNum.getInt(source);</span>
+		}
+
+		@Override
+		public EdgeIter iterator() {
+<span class="fc" id="L245">			return new EdgeIterOut(source, edgesOut.get(source), edgesOutNum.getInt(source));</span>
+		}
+	}
+
+	private class EdgeSetIn extends GraphBase.EdgeSetInDirected {
+<span class="fc" id="L250">		EdgeSetIn(int target) {</span>
+<span class="fc" id="L251">			super(target);</span>
+<span class="fc" id="L252">		}</span>
+
+		@Override
+		public int size() {
+<span class="fc" id="L256">			return edgesInNum.getInt(target);</span>
+		}
+
+		@Override
+		public EdgeIter iterator() {
+<span class="fc" id="L261">			return new EdgeIterIn(target, edgesIn.get(target), edgesInNum.getInt(target));</span>
+		}
+	}
+
+	private class EdgeIterOut extends EdgeIt {
+
+		private final int u;
+
+<span class="fc" id="L269">		EdgeIterOut(int source, int[] edges, int count) {</span>
+<span class="fc" id="L270">			super(edges, count);</span>
+<span class="fc" id="L271">			this.u = source;</span>
+<span class="fc" id="L272">		}</span>
+
+		@Override
+		public int source() {
+<span class="fc" id="L276">			return u;</span>
+		}
+
+		@Override
+		public int target() {
+<span class="fc" id="L281">			return edgeTarget(lastEdge);</span>
+		}
+	}
+
+	private class EdgeIterIn extends EdgeIt {
+
+		private final int target;
+
+<span class="fc" id="L289">		EdgeIterIn(int target, int[] edges, int count) {</span>
+<span class="fc" id="L290">			super(edges, count);</span>
+<span class="fc" id="L291">			this.target = target;</span>
+<span class="fc" id="L292">		}</span>
+
+		@Override
+		public int source() {
+<span class="fc" id="L296">			return edgeSource(lastEdge);</span>
+		}
+
+		@Override
+		public int target() {
+<span class="fc" id="L301">			return target;</span>
+		}
 	}
 
 }

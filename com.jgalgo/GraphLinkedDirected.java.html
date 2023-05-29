@@ -52,8 +52,8 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	GraphLinkedDirected(int expectedVerticesNum, int expectedEdgesNum) {
 <span class="fc" id="L53">		super(expectedVerticesNum, expectedEdgesNum);</span>
 
-<span class="fc" id="L55">		edgesOut = new DataContainer.Obj&lt;&gt;(verticesIDStrategy, null, Node.class);</span>
-<span class="fc" id="L56">		edgesIn = new DataContainer.Obj&lt;&gt;(verticesIDStrategy, null, Node.class);</span>
+<span class="fc" id="L55">		edgesOut = new DataContainer.Obj&lt;&gt;(verticesIDStrat, null, Node.class);</span>
+<span class="fc" id="L56">		edgesIn = new DataContainer.Obj&lt;&gt;(verticesIDStrat, null, Node.class);</span>
 <span class="fc" id="L57">		addInternalVerticesDataContainer(DataContainerKeyEdgesOut, edgesOut);</span>
 <span class="fc" id="L58">		addInternalVerticesDataContainer(DataContainerKeyEdgesIn, edgesIn);</span>
 <span class="fc" id="L59">	}</span>
@@ -61,8 +61,8 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	GraphLinkedDirected(GraphLinkedDirected g) {
 <span class="fc" id="L62">		super(g);</span>
 
-<span class="fc" id="L64">		edgesOut = new DataContainer.Obj&lt;&gt;(verticesIDStrategy, null, Node.class);</span>
-<span class="fc" id="L65">		edgesIn = new DataContainer.Obj&lt;&gt;(verticesIDStrategy, null, Node.class);</span>
+<span class="fc" id="L64">		edgesOut = new DataContainer.Obj&lt;&gt;(verticesIDStrat, null, Node.class);</span>
+<span class="fc" id="L65">		edgesIn = new DataContainer.Obj&lt;&gt;(verticesIDStrat, null, Node.class);</span>
 <span class="fc" id="L66">		addInternalVerticesDataContainer(DataContainerKeyEdgesOut, edgesOut);</span>
 <span class="fc" id="L67">		addInternalVerticesDataContainer(DataContainerKeyEdgesIn, edgesIn);</span>
 
@@ -97,15 +97,15 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 <span class="fc" id="L97">	}</span>
 
 	@Override
-	public EdgeIter edgesOut(int source) {
+	public EdgeSet edgesOut(int source) {
 <span class="fc" id="L101">		checkVertex(source);</span>
-<span class="fc" id="L102">		return new EdgeIterOut(edgesOut.get(source));</span>
+<span class="fc" id="L102">		return new EdgeSetOut(source);</span>
 	}
 
 	@Override
-	public EdgeIter edgesIn(int target) {
+	public EdgeSet edgesIn(int target) {
 <span class="fc" id="L107">		checkVertex(target);</span>
-<span class="fc" id="L108">		return new EdgeIterIn(edgesIn.get(target));</span>
+<span class="fc" id="L108">		return new EdgeSetIn(target);</span>
 	}
 
 	@Override
@@ -226,48 +226,77 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 <span class="fc" id="L226">		super.clearEdges();</span>
 <span class="fc" id="L227">	}</span>
 
-	private abstract class EdgeIterImpl extends GraphLinkedAbstract.EdgeItr {
+	@Override
+	public GraphCapabilities getCapabilities() {
+<span class="fc" id="L231">		return Capabilities;</span>
+	}
 
-<span class="fc" id="L231">		EdgeIterImpl(Node p) {</span>
-<span class="fc" id="L232">			super(p);</span>
-<span class="fc" id="L233">		}</span>
+<span class="fc" id="L234">	private static final GraphCapabilities Capabilities = GraphCapabilitiesBuilder.newDirected().vertexAdd(true)</span>
+<span class="fc" id="L235">			.vertexRemove(true).edgeAdd(true).edgeRemove(true).parallelEdges(true).selfEdges(true).build();</span>
+
+	@Override
+	public Graph copy() {
+<span class="fc" id="L239">		return new GraphLinkedDirected(this);</span>
+	}
+
+	private class EdgeSetOut extends GraphBase.EdgeSetOutDirected {
+<span class="fc" id="L243">		EdgeSetOut(int source) {</span>
+<span class="fc" id="L244">			super(source);</span>
+<span class="fc" id="L245">		}</span>
+
+		@Override
+		public EdgeIter iterator() {
+<span class="fc" id="L249">			return new EdgeIterOut(edgesOut.get(source));</span>
+		}
+	}
+
+	private class EdgeSetIn extends GraphBase.EdgeSetInDirected {
+<span class="fc" id="L254">		EdgeSetIn(int target) {</span>
+<span class="fc" id="L255">			super(target);</span>
+<span class="fc" id="L256">		}</span>
+
+		@Override
+		public EdgeIter iterator() {
+<span class="fc" id="L260">			return new EdgeIterIn(edgesIn.get(target));</span>
+		}
+	}
+
+	private abstract class EdgeIterImpl extends GraphLinkedAbstract.EdgeItr {
+<span class="fc" id="L265">		EdgeIterImpl(Node p) {</span>
+<span class="fc" id="L266">			super(p);</span>
+<span class="fc" id="L267">		}</span>
 
 		@Override
 		public int source() {
-<span class="fc" id="L237">			return last.source;</span>
+<span class="fc" id="L271">			return last.source;</span>
 		}
 
 		@Override
 		public int target() {
-<span class="fc" id="L242">			return last.target;</span>
+<span class="fc" id="L276">			return last.target;</span>
 		}
-
 	}
 
 	private class EdgeIterOut extends EdgeIterImpl {
-
-<span class="fc" id="L249">		EdgeIterOut(Node p) {</span>
-<span class="fc" id="L250">			super(p);</span>
-<span class="fc" id="L251">		}</span>
+<span class="fc" id="L281">		EdgeIterOut(Node p) {</span>
+<span class="fc" id="L282">			super(p);</span>
+<span class="fc" id="L283">		}</span>
 
 		@Override
 		Node nextNode(GraphLinkedAbstract.Node n) {
-<span class="fc" id="L255">			return ((Node) n).nextOut;</span>
+<span class="fc" id="L287">			return ((Node) n).nextOut;</span>
 		}
-
 	}
 
 	private class EdgeIterIn extends EdgeIterImpl {
-
-<span class="fc" id="L262">		EdgeIterIn(Node p) {</span>
-<span class="fc" id="L263">			super(p);</span>
-<span class="fc" id="L264">		}</span>
+<span class="fc" id="L292">		EdgeIterIn(Node p) {</span>
+<span class="fc" id="L293">			super(p);</span>
+<span class="fc" id="L294">		}</span>
 
 		@Override
 		Node nextNode(GraphLinkedAbstract.Node n) {
-<span class="fc" id="L268">			return ((Node) n).nextIn;</span>
+<span class="fc" id="L298">			return ((Node) n).nextIn;</span>
 		}
-
 	}
 
 	private static class Node extends GraphLinkedAbstract.Node {
@@ -278,22 +307,8 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 		private Node prevIn;
 
 		Node(int id, int source, int target) {
-<span class="fc" id="L281">			super(id, source, target);</span>
-<span class="fc" id="L282">		}</span>
-
-	}
-
-	@Override
-	public GraphCapabilities getCapabilities() {
-<span class="fc" id="L288">		return Capabilities;</span>
-	}
-
-<span class="fc" id="L291">	private static final GraphCapabilities Capabilities = GraphCapabilitiesBuilder.newDirected().vertexAdd(true)</span>
-<span class="fc" id="L292">			.vertexRemove(true).edgeAdd(true).edgeRemove(true).parallelEdges(true).selfEdges(true).build();</span>
-
-	@Override
-	public Graph copy() {
-<span class="fc" id="L296">		return new GraphLinkedDirected(this);</span>
+<span class="fc" id="L310">			super(id, source, target);</span>
+<span class="fc" id="L311">		}</span>
 	}
 
 }

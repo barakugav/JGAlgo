@@ -17,6 +17,14 @@
 package com.jgalgo;
 
 import java.util.function.IntToDoubleFunction;
+import it.unimi.dsi.fastutil.ints.Int2DoubleMap;
+import it.unimi.dsi.fastutil.ints.Int2DoubleOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntLists;
 
 /**
@@ -25,23 +33,24 @@ import it.unimi.dsi.fastutil.ints.IntLists;
  * The A star (\(A^*\)) algorithm try to find the shortest path from a source to target vertex. It uses a heuristic that
  * map a vertex to an estimation of its distance from the target position.
  * &lt;p&gt;
- * An advantage of the \(A^*\) algorithm over other {@link SSSP} algorithm, is that it can terminate much faster for the
- * specific source and target, especially if the heuristic is good.
+ * An advantage of the \(A^*\) algorithm over other {@link ShortestPathSingleSource} algorithm, is that it can terminate
+ * much faster for the specific source and target, especially if the heuristic is good.
  * &lt;p&gt;
- * The running time of this algorithm is \(O(m + n \log n)\) in the worse case, and it uses linear space.
+ * The algorithm runs in \(O(m + n \log n)\) and uses linear space in the worse case. If the heuristic is good, smaller
+ * running time and space (!) will be used.
  *
  * @see    &lt;a href= &quot;https://en.wikipedia.org/wiki/A*_search_algorithm&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
  */
-public class AStar {
+<span class="fc" id="L45">class AStar implements ShortestPathWithHeuristic {</span>
 
-<span class="fc" id="L38">	private HeapReferenceable.Builder&lt;Double, Integer&gt; heapBuilder =</span>
-<span class="fc" id="L39">			HeapReferenceable.newBuilder().keysTypePrimitive(double.class).valuesTypePrimitive(int.class);</span>
+<span class="fc" id="L47">	private HeapReferenceable.Builder&lt;Double, Integer&gt; heapBuilder =</span>
+<span class="fc" id="L48">			HeapReferenceable.newBuilder().keysTypePrimitive(double.class).valuesTypePrimitive(int.class);</span>
 
 	/**
 	 * Construct a new AStart algorithm.
 	 */
-<span class="fc" id="L44">	public AStar() {}</span>
+<span class="fc" id="L53">	AStar() {}</span>
 
 	/**
 	 * Set the implementation of the heap used by this algorithm.
@@ -49,60 +58,84 @@ public class AStar {
 	 * @param heapBuilder a builder for heaps used by this algorithm
 	 */
 	void setHeapBuilder(HeapReferenceable.Builder&lt;?, ?&gt; heapBuilder) {
-<span class="nc" id="L52">		this.heapBuilder = heapBuilder.keysTypePrimitive(double.class).valuesTypePrimitive(int.class);</span>
-<span class="nc" id="L53">	}</span>
+<span class="nc" id="L61">		this.heapBuilder = heapBuilder.keysTypePrimitive(double.class).valuesTypePrimitive(int.class);</span>
+<span class="nc" id="L62">	}</span>
 
-	/**
-	 * Compute the shortest path between two vertices in a graph.
-	 *
-	 * @param  g          a graph
-	 * @param  w          an edge weight function
-	 * @param  source     a source vertex
-	 * @param  target     a target vertex
-	 * @param  vHeuristic a heuristic function that map each vertex to {@code double}. The heuristic should be close to
-	 *                        the real distance of each vertex to the target.
-	 * @return            the short path found from {@code source} to {@code target}
-	 */
+	@Override
 	public Path computeShortestPath(Graph g, EdgeWeightFunc w, int source, int target, IntToDoubleFunction vHeuristic) {
-<span class="fc" id="L67">		ArgumentCheck.onlyPositiveWeights(g, w);</span>
-<span class="fc bfc" id="L68" title="All 2 branches covered.">		if (source == target)</span>
-<span class="fc" id="L69">			return new Path(g, source, target, IntLists.emptyList());</span>
-<span class="fc" id="L70">		int n = g.vertices().size();</span>
-<span class="fc" id="L71">		HeapReferenceable&lt;Double, Integer&gt; heap = heapBuilder.build();</span>
-		@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L73">		HeapReference&lt;Double, Integer&gt;[] verticesPtrs = new HeapReference[n];</span>
+<span class="fc" id="L66">		ArgumentCheck.onlyPositiveWeights(g, w);</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">		if (source == target)</span>
+<span class="fc" id="L68">			return new PathImpl(g, source, target, IntLists.emptyList());</span>
+<span class="fc" id="L69">		HeapReferenceable&lt;Double, Integer&gt; heap = heapBuilder.build();</span>
 
-<span class="fc" id="L75">		SSSPResultImpl res = new SSSPResultImpl(g, source);</span>
-<span class="fc" id="L76">		res.distances[source] = 0;</span>
+<span class="fc" id="L71">		Int2ObjectMap&lt;HeapReference&lt;Double, Integer&gt;&gt; verticesPtrs = new Int2ObjectOpenHashMap&lt;&gt;();</span>
 
-<span class="fc" id="L78">		for (int u = source;;) {</span>
-<span class="fc bfc" id="L79" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {</span>
-<span class="fc" id="L80">				int e = eit.nextInt();</span>
-<span class="fc" id="L81">				int v = eit.target();</span>
-<span class="fc" id="L82">				double distance = res.distances[u] + w.weight(e);</span>
-<span class="fc bfc" id="L83" title="All 2 branches covered.">				if (distance &gt;= res.distances[v])</span>
-<span class="fc" id="L84">					continue;</span>
-<span class="fc" id="L85">				res.distances[v] = distance;</span>
-<span class="fc" id="L86">				res.backtrack[v] = e;</span>
-<span class="fc" id="L87">				double distanceEstimate = distance + vHeuristic.applyAsDouble(v);</span>
+<span class="fc" id="L73">		Int2DoubleMap distances = new Int2DoubleOpenHashMap();</span>
+<span class="fc" id="L74">		distances.defaultReturnValue(Double.POSITIVE_INFINITY);</span>
+<span class="fc" id="L75">		distances.put(source, 0);</span>
 
-<span class="fc" id="L89">				HeapReference&lt;Double, Integer&gt; vPtr = verticesPtrs[v];</span>
-<span class="fc bfc" id="L90" title="All 2 branches covered.">				if (vPtr == null) {</span>
-<span class="fc" id="L91">					verticesPtrs[v] = heap.insert(Double.valueOf(distanceEstimate), Integer.valueOf(v));</span>
+<span class="fc" id="L77">		Int2IntMap backtrack = new Int2IntOpenHashMap();</span>
+<span class="fc" id="L78">		backtrack.defaultReturnValue(-1);</span>
+
+<span class="fc" id="L80">		for (int u = source;;) {</span>
+<span class="fc" id="L81">			final double uDistance = distances.get(u);</span>
+<span class="pc bpc" id="L82" title="1 of 2 branches missed.">			assert uDistance != Double.POSITIVE_INFINITY;</span>
+
+<span class="fc bfc" id="L84" title="All 2 branches covered.">			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L85">				int e = eit.nextInt();</span>
+<span class="fc" id="L86">				int v = eit.target();</span>
+<span class="fc" id="L87">				double distance = uDistance + w.weight(e);</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">				if (distance &gt;= distances.get(v))</span>
+<span class="fc" id="L89">					continue;</span>
+<span class="fc" id="L90">				distances.put(v, distance);</span>
+<span class="fc" id="L91">				backtrack.put(v, e);</span>
+<span class="fc" id="L92">				double distanceEstimate = distance + vHeuristic.applyAsDouble(v);</span>
+
+<span class="fc" id="L94">				HeapReference&lt;Double, Integer&gt; vPtr = verticesPtrs.get(v);</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">				if (vPtr == null) {</span>
+<span class="fc" id="L96">					vPtr = heap.insert(Double.valueOf(distanceEstimate), Integer.valueOf(v));</span>
+<span class="fc" id="L97">					verticesPtrs.put(v, vPtr);</span>
 				} else {
-<span class="fc bfc" id="L93" title="All 2 branches covered.">					if (distanceEstimate &lt; vPtr.key().doubleValue())</span>
-<span class="fc" id="L94">						heap.decreaseKey(vPtr, Double.valueOf(distanceEstimate));</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">					if (distanceEstimate &lt; vPtr.key().doubleValue())</span>
+<span class="fc" id="L100">						heap.decreaseKey(vPtr, Double.valueOf(distanceEstimate));</span>
 				}
-<span class="fc" id="L96">			}</span>
+<span class="fc" id="L102">			}</span>
 
-<span class="fc bfc" id="L98" title="All 2 branches covered.">			if (heap.isEmpty())</span>
-<span class="fc" id="L99">				break;</span>
-<span class="fc" id="L100">			HeapReference&lt;Double, Integer&gt; next = heap.extractMin();</span>
-<span class="fc" id="L101">			verticesPtrs[u = next.value().intValue()] = null;</span>
-<span class="fc bfc" id="L102" title="All 2 branches covered.">			if (u == target)</span>
-<span class="fc" id="L103">				return res.getPath(target);</span>
-<span class="fc" id="L104">		}</span>
-<span class="fc" id="L105">		return null;</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">			if (heap.isEmpty())</span>
+<span class="fc" id="L105">				break;</span>
+<span class="fc" id="L106">			HeapReference&lt;Double, Integer&gt; next = heap.extractMin();</span>
+<span class="fc" id="L107">			verticesPtrs.remove(u = next.value().intValue());</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">			if (u == target)</span>
+<span class="fc" id="L109">				return computePath(g, source, target, backtrack);</span>
+<span class="fc" id="L110">		}</span>
+<span class="fc" id="L111">		return null;</span>
+	}
+
+	private static Path computePath(Graph g, int source, int target, Int2IntMap backtrack) {
+<span class="fc" id="L115">		IntArrayList path = new IntArrayList();</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">		if (g.getCapabilities().directed()) {</span>
+<span class="fc" id="L117">			for (int v = target;;) {</span>
+<span class="fc" id="L118">				int e = backtrack.get(v);</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">				if (e == -1) {</span>
+<span class="pc bpc" id="L120" title="1 of 2 branches missed.">					assert v == source;</span>
+					break;
+				}
+<span class="fc" id="L123">				path.add(e);</span>
+<span class="fc" id="L124">				v = g.edgeSource(e);</span>
+<span class="fc" id="L125">			}</span>
+		} else {
+<span class="fc" id="L127">			for (int v = target;;) {</span>
+<span class="fc" id="L128">				int e = backtrack.get(v);</span>
+<span class="fc bfc" id="L129" title="All 2 branches covered.">				if (e == -1) {</span>
+<span class="pc bpc" id="L130" title="1 of 2 branches missed.">					assert v == source;</span>
+					break;
+				}
+<span class="fc" id="L133">				path.add(e);</span>
+<span class="fc" id="L134">				v = g.edgeEndpoint(e, v);</span>
+<span class="fc" id="L135">			}</span>
+		}
+<span class="fc" id="L137">		IntArrays.reverse(path.elements(), 0, path.size());</span>
+<span class="fc" id="L138">		return new PathImpl(g, source, target, path);</span>
 	}
 
 }

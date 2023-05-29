@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ShortestPathAllPairsFloydWarshall.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">ShortestPathAllPairsFloydWarshall.java</span></div><h1>ShortestPathAllPairsFloydWarshall.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo;
+
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+
+/**
+ * The Floyd Warshall algorithm for all pairs shortest path.
+ * &lt;p&gt;
+ * Calculate the shortest path between each pair of vertices in a graph in \(O(n^3)\) time using \(O(n^2)\) space.
+ * Negative weights are supported.
+ *
+ * @author Barak Ugav
+ */
+class ShortestPathAllPairsFloydWarshall implements ShortestPathAllPairs {
+
+	/**
+	 * Create a new APSP algorithm object.
+	 */
+<span class="fc" id="L35">	ShortestPathAllPairsFloydWarshall() {}</span>
+
+	@Override
+	public ShortestPathAllPairs.Result computeAllShortestPaths(Graph g, EdgeWeightFunc w) {
+<span class="fc bfc" id="L39" title="All 2 branches covered.">		if (w == null)</span>
+<span class="fc" id="L40">			w = EdgeWeightFunc.CardinalityEdgeWeightFunction;</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">		return g.getCapabilities().directed() ? computeAPSPDirected(g, w) : computeAPSPUndirected(g, w);</span>
+	}
+
+	private static ShortestPathAllPairs.Result computeAPSPUndirected(Graph g, EdgeWeightFunc w) {
+<span class="fc" id="L45">		ShortestPathAllPairsResultImpl.Abstract res = new ShortestPathAllPairsResultImpl.Undirected(g);</span>
+<span class="fc bfc" id="L46" title="All 2 branches covered.">		for (int e : g.edges()) {</span>
+<span class="fc" id="L47">			int u = g.edgeSource(e);</span>
+<span class="fc" id="L48">			int v = g.edgeTarget(e);</span>
+<span class="fc" id="L49">			double ew = w.weight(e);</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">			if (u == v) {</span>
+<span class="pc bpc" id="L51" title="1 of 2 branches missed.">				if (ew &lt; 0) {</span>
+<span class="nc" id="L52">					res.setNegCycle(new PathImpl(g, u, u, IntList.of(e)));</span>
+<span class="nc" id="L53">					return res;</span>
+				}
+				continue;
+			}
+<span class="fc bfc" id="L57" title="All 2 branches covered.">			if (ew &lt; res.distance(u, v)) {</span>
+<span class="fc" id="L58">				res.setDistance(u, v, ew);</span>
+<span class="fc" id="L59">				res.setEdgeTo(u, v, e);</span>
+<span class="fc" id="L60">				res.setEdgeTo(v, u, e);</span>
+			}
+<span class="fc" id="L62">		}</span>
+<span class="fc" id="L63">		int n = g.vertices().size();</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">		for (int k = 0; k &lt; n; k++) {</span>
+			/* Calc shortest path between each pair (u,v) by using vertices 1,2,..,k */
+<span class="fc bfc" id="L66" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">				for (int v = u + 1; v &lt; n; v++) {</span>
+<span class="fc" id="L68">					double duk = res.distance(u, k);</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">					if (duk == Double.POSITIVE_INFINITY)</span>
+<span class="fc" id="L70">						continue;</span>
+
+<span class="fc" id="L72">					double dkv = res.distance(k, v);</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">					if (dkv == Double.POSITIVE_INFINITY)</span>
+<span class="fc" id="L74">						continue;</span>
+
+<span class="fc" id="L76">					double dis = duk + dkv;</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">					if (dis &lt; res.distance(u, v)) {</span>
+<span class="fc" id="L78">						res.setDistance(u, v, dis);</span>
+<span class="fc" id="L79">						res.setEdgeTo(u, v, res.getEdgeTo(u, k));</span>
+<span class="fc" id="L80">						res.setEdgeTo(v, u, res.getEdgeTo(v, k));</span>
+					}
+				}
+			}
+<span class="pc bpc" id="L84" title="1 of 2 branches missed.">			if (detectNegCycle(res, n, k))</span>
+<span class="nc" id="L85">				return res;</span>
+		}
+<span class="fc" id="L87">		return res;</span>
+	}
+
+	private static ShortestPathAllPairs.Result computeAPSPDirected(Graph g, EdgeWeightFunc w) {
+<span class="fc" id="L91">		ShortestPathAllPairsResultImpl.Abstract res = new ShortestPathAllPairsResultImpl.Directed(g);</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">		for (int e : g.edges()) {</span>
+<span class="fc" id="L93">			int u = g.edgeSource(e);</span>
+<span class="fc" id="L94">			int v = g.edgeTarget(e);</span>
+<span class="fc" id="L95">			double ew = w.weight(e);</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">			if (u == v) {</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">				if (ew &lt; 0) {</span>
+<span class="fc" id="L98">					res.setNegCycle(new PathImpl(g, u, u, IntList.of(e)));</span>
+<span class="fc" id="L99">					return res;</span>
+				}
+				continue;
+			}
+<span class="fc bfc" id="L103" title="All 2 branches covered.">			if (ew &lt; res.distance(u, v)) {</span>
+<span class="fc" id="L104">				res.setDistance(u, v, ew);</span>
+<span class="fc" id="L105">				res.setEdgeTo(u, v, e);</span>
+			}
+<span class="fc" id="L107">		}</span>
+<span class="fc" id="L108">		int n = g.vertices().size();</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">		for (int k = 0; k &lt; n; k++) {</span>
+			/* Calc shortest path between each pair (u,v) by using vertices 1,2,..,k */
+<span class="fc bfc" id="L111" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">				for (int v = 0; v &lt; n; v++) {</span>
+<span class="fc" id="L113">					double duk = res.distance(u, k);</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">					if (duk == Double.POSITIVE_INFINITY)</span>
+<span class="fc" id="L115">						continue;</span>
+<span class="fc" id="L116">					double dkv = res.distance(k, v);</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">					if (dkv == Double.POSITIVE_INFINITY)</span>
+<span class="fc" id="L118">						continue;</span>
+<span class="fc" id="L119">					double dis = duk + dkv;</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">					if (dis &lt; res.distance(u, v)) {</span>
+<span class="fc" id="L121">						res.setDistance(u, v, dis);</span>
+<span class="fc" id="L122">						res.setEdgeTo(u, v, res.getEdgeTo(u, k));</span>
+					}
+				}
+			}
+<span class="fc bfc" id="L126" title="All 2 branches covered.">			if (detectNegCycle(res, n, k))</span>
+<span class="fc" id="L127">				return res;</span>
+		}
+<span class="fc" id="L129">		return res;</span>
+	}
+
+	private static boolean detectNegCycle(ShortestPathAllPairsResultImpl.Abstract res, int n, int k) {
+<span class="fc bfc" id="L133" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc" id="L134">			double d1 = res.distance(u, k);</span>
+<span class="fc" id="L135">			double d2 = res.distance(k, u);</span>
+<span class="fc bfc" id="L136" title="All 4 branches covered.">			if (d1 == Double.POSITIVE_INFINITY || d2 == Double.POSITIVE_INFINITY)</span>
+<span class="fc" id="L137">				continue;</span>
+<span class="fc bfc" id="L138" title="All 2 branches covered.">			if (d1 + d2 &lt; 0) {</span>
+<span class="fc" id="L139">				IntList negCycle = new IntArrayList();</span>
+<span class="fc" id="L140">				negCycle.addAll(res.getPath(u, k));</span>
+<span class="fc" id="L141">				negCycle.addAll(res.getPath(k, u));</span>
+<span class="fc" id="L142">				res.setNegCycle(new PathImpl(res.graph(), u, u, negCycle));</span>
+<span class="fc" id="L143">				return true;</span>
+			}
+		}
+<span class="fc" id="L146">		return false;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

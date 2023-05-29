@@ -20,86 +20,84 @@ import java.util.Objects;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntCollections;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntLists;
 
-<span class="fc" id="L26">class MatchingImpl implements Matching {</span>
+<span class="fc" id="L25">class MatchingImpl implements Matching {</span>
 
 	private final Graph g;
 	private IntCollection edges;
 	private int[] matched;
 
-<span class="fc" id="L32">	MatchingImpl(Graph g, IntCollection edges) {</span>
-<span class="fc" id="L33">		this.g = Objects.requireNonNull(g);</span>
-<span class="fc" id="L34">		this.edges = IntCollections.unmodifiable(Objects.requireNonNull(edges));</span>
-<span class="fc" id="L35">	}</span>
+<span class="fc" id="L31">	MatchingImpl(Graph g, IntCollection edges) {</span>
+<span class="fc" id="L32">		this.g = Objects.requireNonNull(g);</span>
+<span class="fc" id="L33">		this.edges = IntCollections.unmodifiable(Objects.requireNonNull(edges));</span>
+<span class="fc" id="L34">	}</span>
 
-<span class="fc" id="L37">	MatchingImpl(Graph g, int[] matched) {</span>
-<span class="pc bpc" id="L38" title="1 of 2 branches missed.">		assert matched.length == g.vertices().size();</span>
-<span class="fc" id="L39">		this.g = Objects.requireNonNull(g);</span>
-<span class="fc" id="L40">		this.matched = Objects.requireNonNull(matched);</span>
-<span class="fc" id="L41">	}</span>
+<span class="fc" id="L36">	MatchingImpl(Graph g, int[] matched) {</span>
+<span class="pc bpc" id="L37" title="1 of 2 branches missed.">		assert matched.length == g.vertices().size();</span>
+<span class="fc" id="L38">		this.g = Objects.requireNonNull(g);</span>
+<span class="fc" id="L39">		this.matched = Objects.requireNonNull(matched);</span>
+<span class="fc" id="L40">	}</span>
 
 	@Override
 	public boolean isVertexMatched(int vertex) {
-<span class="nc" id="L45">		computeMatchedArray();</span>
-<span class="nc bnc" id="L46" title="All 2 branches missed.">		return matched[vertex] != -1;</span>
+<span class="nc" id="L44">		computeMatchedArray();</span>
+<span class="nc bnc" id="L45" title="All 2 branches missed.">		return matched[vertex] != -1;</span>
 	}
 
 	@Override
 	public boolean containsEdge(int edge) {
-<span class="nc" id="L51">		computeMatchedArray();</span>
-<span class="nc bnc" id="L52" title="All 2 branches missed.">		return matched[g.edgeSource(edge)] == edge;</span>
+<span class="nc" id="L50">		computeMatchedArray();</span>
+<span class="nc bnc" id="L51" title="All 2 branches missed.">		return matched[g.edgeSource(edge)] == edge;</span>
 	}
 
 	@Override
 	public IntCollection edges() {
-<span class="fc" id="L57">		computeEdgesCollection();</span>
-<span class="fc" id="L58">		return edges;</span>
+<span class="fc" id="L56">		computeEdgesCollection();</span>
+<span class="fc" id="L57">		return edges;</span>
 	}
 
 	@Override
 	public double weight(EdgeWeightFunc w) {
-<span class="fc" id="L63">		computeEdgesCollection();</span>
-<span class="fc" id="L64">		return GraphsUtils.edgesWeightSum(edges.iterator(), w);</span>
+<span class="fc" id="L62">		computeEdgesCollection();</span>
+<span class="fc" id="L63">		return GraphsUtils.edgesWeightSum(edges.iterator(), w);</span>
 	}
 
 	private void computeEdgesCollection() {
-<span class="fc bfc" id="L68" title="All 2 branches covered.">		if (edges != null)</span>
-<span class="fc" id="L69">			return;</span>
-<span class="fc" id="L70">		IntArrayList edges0 = new IntArrayList();</span>
-<span class="fc" id="L71">		int n = g.vertices().size();</span>
-<span class="fc bfc" id="L72" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++) {</span>
-<span class="fc" id="L73">			int e = matched[v];</span>
-<span class="fc bfc" id="L74" title="All 2 branches covered.">			if (e == -1)</span>
-<span class="fc" id="L75">				continue;</span>
-<span class="fc bfc" id="L76" title="All 2 branches covered.">			if (v &lt;= g.edgeEndpoint(e, v))</span>
-<span class="fc" id="L77">				edges0.add(e);</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">		if (edges != null)</span>
+<span class="fc" id="L68">			return;</span>
+<span class="fc" id="L69">		IntArrayList edges0 = new IntArrayList();</span>
+<span class="fc" id="L70">		int n = g.vertices().size();</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++) {</span>
+<span class="fc" id="L72">			int e = matched[v];</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">			if (e == -1)</span>
+<span class="fc" id="L74">				continue;</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">			if (v &lt;= g.edgeEndpoint(e, v))</span>
+<span class="fc" id="L76">				edges0.add(e);</span>
 		}
-<span class="fc" id="L79">		edges = IntLists.unmodifiable(edges0);</span>
-<span class="fc" id="L80">	}</span>
+<span class="fc" id="L78">		edges = IntLists.unmodifiable(edges0);</span>
+<span class="fc" id="L79">	}</span>
 
 	private void computeMatchedArray() {
-<span class="nc bnc" id="L83" title="All 2 branches missed.">		if (matched != null)</span>
-<span class="nc" id="L84">			return;</span>
-<span class="nc" id="L85">		matched = new int[g.vertices().size()];</span>
-<span class="nc" id="L86">		Arrays.fill(matched, -1);</span>
-<span class="nc bnc" id="L87" title="All 2 branches missed.">		for (IntIterator it = edges.iterator(); it.hasNext();) {</span>
-<span class="nc" id="L88">			int e = it.nextInt();</span>
-<span class="nc" id="L89">			int u = g.edgeSource(e);</span>
-<span class="nc" id="L90">			int v = g.edgeTarget(e);</span>
-<span class="nc bnc" id="L91" title="All 2 branches missed.">			if (matched[u] != -1)</span>
-<span class="nc" id="L92">				throw new IllegalArgumentException(&quot;vertex is matched twice: &quot; + u);</span>
-<span class="nc" id="L93">			matched[u] = e;</span>
-<span class="nc bnc" id="L94" title="All 2 branches missed.">			if (matched[v] != -1)</span>
-<span class="nc" id="L95">				throw new IllegalArgumentException(&quot;vertex is matched twice: &quot; + v);</span>
-<span class="nc" id="L96">			matched[v] = e;</span>
-<span class="nc" id="L97">		}</span>
-<span class="nc" id="L98">	}</span>
+<span class="nc bnc" id="L82" title="All 2 branches missed.">		if (matched != null)</span>
+<span class="nc" id="L83">			return;</span>
+<span class="nc" id="L84">		matched = new int[g.vertices().size()];</span>
+<span class="nc" id="L85">		Arrays.fill(matched, -1);</span>
+<span class="nc bnc" id="L86" title="All 2 branches missed.">		for (int e : edges) {</span>
+<span class="nc" id="L87">			int u = g.edgeSource(e);</span>
+<span class="nc" id="L88">			int v = g.edgeTarget(e);</span>
+<span class="nc bnc" id="L89" title="All 2 branches missed.">			if (matched[u] != -1)</span>
+<span class="nc" id="L90">				throw new IllegalArgumentException(&quot;vertex is matched twice: &quot; + u);</span>
+<span class="nc" id="L91">			matched[u] = e;</span>
+<span class="nc bnc" id="L92" title="All 2 branches missed.">			if (matched[v] != -1)</span>
+<span class="nc" id="L93">				throw new IllegalArgumentException(&quot;vertex is matched twice: &quot; + v);</span>
+<span class="nc" id="L94">			matched[v] = e;</span>
+<span class="nc" id="L95">		}</span>
+<span class="nc" id="L96">	}</span>
 
 	@Override
 	public String toString() {
-<span class="nc" id="L102">		return edges().toString();</span>
+<span class="nc" id="L100">		return edges().toString();</span>
 	}
 
 }

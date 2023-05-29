@@ -15,15 +15,25 @@
  */
 package com.jgalgo;
 
-class Config {
+/**
+ * A global configuration class.
+ *
+ * @author Barak Ugav
+ */
+public class Config {
 
 	private Config() {}
 
-<span class="fc" id="L22">	static boolean parallelByDefault = true;</span>
+<span class="fc" id="L27">	static boolean parallelByDefault = true;</span>
 
-	static void setParallelByDefault(boolean enable) {
-<span class="nc" id="L25">		parallelByDefault = enable;</span>
-<span class="nc" id="L26">	}</span>
+	/**
+	 * Enable/disable default parallel computations in all algorithms.
+	 *
+	 * @param enable if {@code true}, some algorithm will use parallel computations by default
+	 */
+	public static void setParallelByDefault(boolean enable) {
+<span class="nc" id="L35">		parallelByDefault = enable;</span>
+<span class="nc" id="L36">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -41,10 +41,9 @@ package com.jgalgo;
  * Coloring coloringAlg = Coloring.newBuilder().build();
  * Coloring.Result colors = coloringAlg.computeColoring(g);
  * System.out.println(&quot;A valid coloring with &quot; + colors.colorsNum() + &quot; colors was found&quot;);
- * for (IntIterator uit = g.vertices().iterator(); uit.hasNext();) {
- * 	int u = uit.nextInt();
+ * for (int u : g.vertices()) {
  * 	System.out.println(&quot;The color of vertex &quot; + u + &quot; is &quot; + colors.colorOf(u));
- * 	for (EdgeIter eit = g.edgesOut(u); eit.hasNext();) {
+ * 	for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
  * 		eit.nextInt();
  * 		int v = eit.target();
  * 		assert colors.colorOf(u) != colors.colorOf(v);
@@ -98,7 +97,7 @@ public interface Coloring {
 	 * @return a new builder that can build {@link Coloring} objects
 	 */
 	static Coloring.Builder newBuilder() {
-<span class="nc" id="L101">		return ColoringDSatur::new;</span>
+<span class="nc" id="L100">		return ColoringDSatur::new;</span>
 	}
 
 	/**
