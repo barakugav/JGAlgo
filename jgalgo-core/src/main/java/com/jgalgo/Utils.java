@@ -34,6 +34,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntComparator;
+import it.unimi.dsi.fastutil.ints.IntIterable;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 class Utils {
@@ -89,9 +90,18 @@ class Utils {
 	/* syntax sugar to iterator for loops */
 	static <E> Iterable<E> iterable(Iterator<E> it) {
 		return new Iterable<>() {
-
 			@Override
 			public Iterator<E> iterator() {
+				return it;
+			}
+		};
+	}
+
+	/* syntax sugar to iterator for loops */
+	static IntIterable iterable(IntIterator it) {
+		return new IntIterable() {
+			@Override
+			public IntIterator iterator() {
 				return it;
 			}
 		};
@@ -550,6 +560,15 @@ class Utils {
 				int ret = bit;
 				bit = bitSet.nextSetBit(bit + 1);
 				return ret;
+			}
+		};
+	}
+
+	static IntIterable iterable(BitSet bitSet) {
+		return new IntIterable() {
+			@Override
+			public IntIterator iterator() {
+				return bitSetIterator(bitSet);
 			}
 		};
 	}

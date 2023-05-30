@@ -228,6 +228,11 @@ abstract class GraphBase implements Graph {
 		}
 
 		@Override
+		public boolean isEmpty() {
+			return !iterator().hasNext();
+		}
+
+		@Override
 		public void clear() {
 			removeEdgesOutOf(source);
 		}
@@ -252,6 +257,11 @@ abstract class GraphBase implements Graph {
 			for (IntIterator it = iterator(); it.hasNext(); it.nextInt())
 				count++;
 			return count;
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return !iterator().hasNext();
 		}
 
 		@Override
@@ -282,6 +292,11 @@ abstract class GraphBase implements Graph {
 		}
 
 		@Override
+		public boolean isEmpty() {
+			return !iterator().hasNext();
+		}
+
+		@Override
 		public void clear() {
 			removeEdgesOutOf(source);
 		}
@@ -306,6 +321,11 @@ abstract class GraphBase implements Graph {
 			for (IntIterator it = iterator(); it.hasNext(); it.nextInt())
 				count++;
 			return count;
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return !iterator().hasNext();
 		}
 
 		@Override

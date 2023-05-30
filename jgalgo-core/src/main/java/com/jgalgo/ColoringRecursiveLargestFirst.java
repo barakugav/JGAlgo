@@ -18,8 +18,6 @@ package com.jgalgo;
 
 import java.util.BitSet;
 
-import it.unimi.dsi.fastutil.ints.IntIterator;
-
 /**
  * The Recursive Largest First coloring algorithm.
  * <p>
@@ -113,8 +111,7 @@ class ColoringRecursiveLargestFirst implements Coloring {
 				u = nextU;
 			}
 
-			for (IntIterator it = Utils.bitSetIterator(S); it.hasNext();) {
-				int u = it.nextInt();
+			for (int u : Utils.iterable(S)) {
 				res.colors[u] = color;
 
 				// update degree to include only vertices without color

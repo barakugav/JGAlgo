@@ -26,7 +26,6 @@ import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 
 public class ConnectedComponentsAlgoTest extends TestBase {
 
@@ -98,11 +97,9 @@ public class ConnectedComponentsAlgoTest extends TestBase {
 				continue;
 			int ccIdx = ccNum++;
 			vertexToCC[u] = ccIdx;
-			for (IntIterator it = Utils.bitSetIterator(reach[u]); it.hasNext();) {
-				int v = it.nextInt();
+			for (int v : Utils.iterable(reach[u]))
 				if (reach[v].get(u))
 					vertexToCC[v] = ccIdx;
-			}
 		}
 		return Pair.of(Integer.valueOf(ccNum), vertexToCC);
 	}

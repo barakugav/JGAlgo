@@ -244,8 +244,8 @@ class BiConnectedComponentsAlgoHopcroftTarjan implements BiConnectedComponentsAl
 		// public IntCollection separatingVertices() {
 		// if (separatingVertices == null) {
 		// separatingVertices = new IntArrayList(separatingVerticesBitmap.cardinality());
-		// for (IntIterator it = Utils.bitSetIterator(separatingVerticesBitmap); it.hasNext();)
-		// separatingVertices.add(it.nextInt());
+		// for (int v : Utils.iterable(separatingVerticesBitmap))
+		// separatingVertices.add(v);
 		// separatingVertices = IntLists.unmodifiable(separatingVertices);
 		// }
 		// return separatingVertices;

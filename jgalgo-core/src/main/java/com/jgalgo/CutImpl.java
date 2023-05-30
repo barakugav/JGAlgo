@@ -20,7 +20,6 @@ import java.util.Objects;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntCollections;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntLists;
 
 class CutImpl implements Cut {
@@ -89,8 +88,7 @@ class CutImpl implements Cut {
 			return;
 		computeCutBitmap();
 		IntArrayList crossEdges0 = new IntArrayList();
-		for (IntIterator uit = Utils.bitSetIterator(cutBitmap); uit.hasNext();) {
-			int u = uit.nextInt();
+		for (int u : Utils.iterable(cutBitmap)) {
 			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = eit.target();
