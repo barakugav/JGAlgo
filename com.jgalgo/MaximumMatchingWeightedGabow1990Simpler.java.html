@@ -41,7 +41,7 @@ class MaximumMatchingWeightedGabow1990Simpler extends MaximumMatchingWeightedGab
 <span class="fc" id="L41">	MaximumMatchingWeightedGabow1990Simpler() {}</span>
 
 	@Override
-	Worker newWorker(Graph gOrig, EdgeWeightFunc w, HeapReferenceable.Builder&lt;Object, Object&gt; heapBuilder,
+	Worker newWorker(Graph gOrig, WeightFunction w, HeapReferenceable.Builder&lt;Object, Object&gt; heapBuilder,
 			DebugPrintsManager debugPrint) {
 <span class="fc" id="L46">		return new Worker(gOrig, w, heapBuilder, debugPrint);</span>
 	}
@@ -51,7 +51,7 @@ class MaximumMatchingWeightedGabow1990Simpler extends MaximumMatchingWeightedGab
 		/* Heap storing all the blossom and augmenting events */
 		final Heap&lt;EdgeEvent&gt; blossomEvents;
 
-		Worker(Graph gOrig, EdgeWeightFunc w, HeapReferenceable.Builder&lt;Object, Object&gt; heapBuilder,
+		Worker(Graph gOrig, WeightFunction w, HeapReferenceable.Builder&lt;Object, Object&gt; heapBuilder,
 				DebugPrintsManager debugPrint) {
 <span class="fc" id="L56">			super(gOrig, w, heapBuilder, debugPrint);</span>
 <span class="fc" id="L57">			blossomEvents = Heap.newBuilder().&lt;EdgeEvent&gt;elementsTypeObj()</span>

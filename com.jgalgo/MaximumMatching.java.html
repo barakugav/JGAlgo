@@ -48,7 +48,7 @@ public interface MaximumMatching {
 	 * @return                          the computed matching
 	 * @throws IllegalArgumentException if {@code g} is a directed graph
 	 */
-	public Matching computeMaximumWeightedMatching(Graph g, EdgeWeightFunc w);
+	public Matching computeMaximumWeightedMatching(Graph g, WeightFunction w);
 
 	/**
 	 * Compute the maximum perfect matching of a weighted undirected graph.
@@ -58,7 +58,7 @@ public interface MaximumMatching {
 	 * @return                          the computed perfect matching, or the maximal one if no perfect one found
 	 * @throws IllegalArgumentException if {@code g} is a directed graph
 	 */
-	public Matching computeMaximumWeightedPerfectMatching(Graph g, EdgeWeightFunc w);
+	public Matching computeMaximumWeightedPerfectMatching(Graph g, WeightFunction w);
 
 	/**
 	 * Create a new maximum matching algorithm builder.

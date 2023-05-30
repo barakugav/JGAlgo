@@ -39,7 +39,7 @@ class MaximumMatchingWeightedGabow1990 extends MaximumMatchingWeightedGabow1990A
 <span class="fc" id="L39">	MaximumMatchingWeightedGabow1990() {}</span>
 
 	@Override
-	Worker newWorker(Graph gOrig, EdgeWeightFunc w, HeapReferenceable.Builder&lt;Object, Object&gt; heapBuilder,
+	Worker newWorker(Graph gOrig, WeightFunction w, HeapReferenceable.Builder&lt;Object, Object&gt; heapBuilder,
 			DebugPrintsManager debugPrint) {
 <span class="fc" id="L44">		return new Worker(gOrig, w, heapBuilder, debugPrint);</span>
 	}
@@ -61,7 +61,7 @@ class MaximumMatchingWeightedGabow1990 extends MaximumMatchingWeightedGabow1990A
 		 */
 		final int[] oddBlossomPath;
 
-		Worker(Graph gOrig, EdgeWeightFunc w, HeapReferenceable.Builder&lt;Object, Object&gt; heapBuilder,
+		Worker(Graph gOrig, WeightFunction w, HeapReferenceable.Builder&lt;Object, Object&gt; heapBuilder,
 				DebugPrintsManager debugPrint) {
 <span class="fc" id="L66">			super(gOrig, w, heapBuilder, debugPrint);</span>
 <span class="fc" id="L67">			int n = gOrig.vertices().size();</span>

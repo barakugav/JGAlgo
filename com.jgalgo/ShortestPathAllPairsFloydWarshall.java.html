@@ -35,13 +35,13 @@ class ShortestPathAllPairsFloydWarshall implements ShortestPathAllPairs {
 <span class="fc" id="L35">	ShortestPathAllPairsFloydWarshall() {}</span>
 
 	@Override
-	public ShortestPathAllPairs.Result computeAllShortestPaths(Graph g, EdgeWeightFunc w) {
+	public ShortestPathAllPairs.Result computeAllShortestPaths(Graph g, WeightFunction w) {
 <span class="fc bfc" id="L39" title="All 2 branches covered.">		if (w == null)</span>
-<span class="fc" id="L40">			w = EdgeWeightFunc.CardinalityEdgeWeightFunction;</span>
+<span class="fc" id="L40">			w = WeightFunction.CardinalityWeightFunction;</span>
 <span class="fc bfc" id="L41" title="All 2 branches covered.">		return g.getCapabilities().directed() ? computeAPSPDirected(g, w) : computeAPSPUndirected(g, w);</span>
 	}
 
-	private static ShortestPathAllPairs.Result computeAPSPUndirected(Graph g, EdgeWeightFunc w) {
+	private static ShortestPathAllPairs.Result computeAPSPUndirected(Graph g, WeightFunction w) {
 <span class="fc" id="L45">		ShortestPathAllPairsResultImpl.Abstract res = new ShortestPathAllPairsResultImpl.Undirected(g);</span>
 <span class="fc bfc" id="L46" title="All 2 branches covered.">		for (int e : g.edges()) {</span>
 <span class="fc" id="L47">			int u = g.edgeSource(e);</span>
@@ -87,7 +87,7 @@ class ShortestPathAllPairsFloydWarshall implements ShortestPathAllPairs {
 <span class="fc" id="L87">		return res;</span>
 	}
 
-	private static ShortestPathAllPairs.Result computeAPSPDirected(Graph g, EdgeWeightFunc w) {
+	private static ShortestPathAllPairs.Result computeAPSPDirected(Graph g, WeightFunction w) {
 <span class="fc" id="L91">		ShortestPathAllPairsResultImpl.Abstract res = new ShortestPathAllPairsResultImpl.Directed(g);</span>
 <span class="fc bfc" id="L92" title="All 2 branches covered.">		for (int e : g.edges()) {</span>
 <span class="fc" id="L93">			int u = g.edgeSource(e);</span>

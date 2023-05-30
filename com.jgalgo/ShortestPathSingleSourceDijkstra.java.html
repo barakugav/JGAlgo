@@ -61,18 +61,18 @@ class ShortestPathSingleSourceDijkstra implements ShortestPathSingleSource {
 	 * @throws IllegalArgumentException if one of the edge weights is negative
 	 */
 	@Override
-	public ShortestPathSingleSource.Result computeShortestPaths(Graph g, EdgeWeightFunc w, int source) {
+	public ShortestPathSingleSource.Result computeShortestPaths(Graph g, WeightFunction w, int source) {
 <span class="fc bfc" id="L65" title="All 2 branches covered.">		if (w == null)</span>
-<span class="fc" id="L66">			w = EdgeWeightFunc.CardinalityEdgeWeightFunction;</span>
+<span class="fc" id="L66">			w = WeightFunction.CardinalityWeightFunction;</span>
 <span class="fc" id="L67">		ArgumentCheck.onlyPositiveWeights(g, w);</span>
-<span class="fc bfc" id="L68" title="All 2 branches covered.">		if (w instanceof EdgeWeightFunc.Int) {</span>
-<span class="fc" id="L69">			return computeSsspInts(g, (EdgeWeightFunc.Int) w, source);</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">		if (w instanceof WeightFunction.Int) {</span>
+<span class="fc" id="L69">			return computeSsspInts(g, (WeightFunction.Int) w, source);</span>
 		} else {
 <span class="fc" id="L71">			return computeSsspDoubles(g, w, source);</span>
 		}
 	}
 
-	private ShortestPathSingleSource.Result computeSsspDoubles(Graph g, EdgeWeightFunc w, int source) {
+	private ShortestPathSingleSource.Result computeSsspDoubles(Graph g, WeightFunction w, int source) {
 <span class="fc" id="L76">		final int n = g.vertices().size();</span>
 <span class="fc" id="L77">		HeapReferenceable&lt;Double, Integer&gt; heap =</span>
 <span class="fc" id="L78">				heapBuilder.keysTypePrimitive(double.class).valuesTypePrimitive(int.class).build();</span>
@@ -112,7 +112,7 @@ class ShortestPathSingleSourceDijkstra implements ShortestPathSingleSource {
 <span class="fc" id="L112">		return res;</span>
 	}
 
-	private ShortestPathSingleSource.Result computeSsspInts(Graph g, EdgeWeightFunc.Int w, int source) {
+	private ShortestPathSingleSource.Result computeSsspInts(Graph g, WeightFunction.Int w, int source) {
 <span class="fc" id="L116">		final int n = g.vertices().size();</span>
 <span class="fc" id="L117">		HeapReferenceable&lt;Integer, Integer&gt; heap =</span>
 <span class="fc" id="L118">				heapBuilder.keysTypePrimitive(int.class).valuesTypePrimitive(int.class).build();</span>

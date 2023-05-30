@@ -44,7 +44,7 @@ public interface MinimumCutGlobal {
 	 * @return                          the cut that was computed
 	 * @throws IllegalArgumentException if the graph has less than two vertices
 	 */
-	Cut computeMinimumCut(Graph g, EdgeWeightFunc w);
+	Cut computeMinimumCut(Graph g, WeightFunction w);
 
 	/**
 	 * Create a new global minimum cut algorithm builder.

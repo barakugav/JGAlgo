@@ -75,7 +75,7 @@ class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumMatching
 	 * @throws IllegalArgumentException if the graph is no bipartite with respect to the provided partition
 	 */
 	@Override
-	public Matching computeMaximumWeightedMatching(Graph g, EdgeWeightFunc w) {
+	public Matching computeMaximumWeightedMatching(Graph g, WeightFunction w) {
 <span class="fc" id="L79">		ArgumentCheck.onlyUndirected(g);</span>
 <span class="fc" id="L80">		Weights.Bool partition = g.getVerticesWeights(bipartiteVerticesWeightKey);</span>
 <span class="fc" id="L81">		Objects.requireNonNull(partition,</span>
@@ -91,7 +91,7 @@ class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumMatching
 	 * @throws IllegalArgumentException if the graph is no bipartite with respect to the provided partition
 	 */
 	@Override
-	public Matching computeMaximumWeightedPerfectMatching(Graph g, EdgeWeightFunc w) {
+	public Matching computeMaximumWeightedPerfectMatching(Graph g, WeightFunction w) {
 <span class="fc" id="L95">		ArgumentCheck.onlyUndirected(g);</span>
 <span class="fc" id="L96">		Weights.Bool partition = g.getVerticesWeights(bipartiteVerticesWeightKey);</span>
 <span class="fc" id="L97">		Objects.requireNonNull(partition,</span>
@@ -103,7 +103,7 @@ class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumMatching
 
 		private final Graph g;
 		private final Weights.Bool partition;
-		private final EdgeWeightFunc w;
+		private final WeightFunction w;
 
 		private final BitSet inTree;
 
@@ -116,7 +116,7 @@ class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumMatching
 		private final double[] dualVal0;
 
 		@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L119">		Worker(Graph g, Weights.Bool partition, EdgeWeightFunc w) {</span>
+<span class="fc" id="L119">		Worker(Graph g, Weights.Bool partition, WeightFunction w) {</span>
 <span class="fc" id="L120">			ArgumentCheck.onlyBipartite(g, partition);</span>
 
 <span class="fc" id="L122">			this.g = g;</span>

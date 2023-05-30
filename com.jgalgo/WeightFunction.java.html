@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EdgeWeightFunc.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">EdgeWeightFunc.java</span></div><h1>EdgeWeightFunc.java</h1><pre class="source lang-java linenums">/*-
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WeightFunction.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">WeightFunction.java</span></div><h1>WeightFunction.java</h1><pre class="source lang-java linenums">/*-
  * Copyright 2023 Barak Ugav
  *
  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
@@ -19,11 +19,15 @@ package com.jgalgo;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 
 /**
- * Weight function that maps a graph edge to a weight.
+ * Weight function that maps graph edges (or vertices) to weights.
  * &lt;p&gt;
- * Many algorithms such as {@link ShortestPathSingleSource}, {@link MinimumSpanningTree}, {@link MaximumMatchingWeighted}, and more, try to find a set of
- * edges satisfying some constraint while minimizing/maximizing some objective function based on the weights of the
- * edges. This interface is the API by which the user specify the weights of the edges.
+ * This interface is usually used as weight function of edges, for example in algorithms such as
+ * {@link ShortestPathSingleSource}, {@link MinimumSpanningTree} and {@link MaximumMatchingWeighted} try to find a set
+ * of edges satisfying some constraint while minimizing/maximizing some objective function based on the weights of the
+ * edges. But it can represent weights assigned to vertices, in algorithms such as vertex cover.
+ * &lt;p&gt;
+ * An instance of this interface represent weights of edges only or vertices only, and never both. As this function
+ * represent weights for either edges or vertex, the documentation refer to these edges/vertices as &lt;i&gt;elements&lt;/i&gt;.
  *
  * &lt;pre&gt; {@code
  * // Create a directed graph with three vertices and edges between them
@@ -60,30 +64,30 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
  * @author Barak Ugav
  */
 @FunctionalInterface
-public interface EdgeWeightFunc extends IntComparator {
+public interface WeightFunction extends IntComparator {
 
 	/**
-	 * Get the weight of an edge.
+	 * Get the weight of an element.
 	 *
-	 * @param  edge                      an edge identifier
-	 * @return                           the weight of the edge
-	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
+	 * @param  element                   an element identifier
+	 * @return                           the weight of the element
+	 * @throws IndexOutOfBoundsException if {@code element} is not a valid element identifier in the graph
 	 */
-	public double weight(int edge);
+	public double weight(int element);
 
 	/**
-	 * Compare two edges by their weights.
+	 * Compare two elements by their weights.
 	 */
 	@Override
 	default int compare(int e1, int e2) {
-<span class="fc" id="L79">		return Double.compare(weight(e1), weight(e2));</span>
+<span class="fc" id="L83">		return Double.compare(weight(e1), weight(e2));</span>
 	}
 
 	/**
-	 * Weight function that maps a graph edge to an integer weight.
+	 * Weight function that maps graph edges (or vertices) to integer weights.
 	 * &lt;p&gt;
 	 * Some algorithms implementations support only integers weights, or run faster in such a case. This interface is
-	 * the API for these algorithms for the edges integer weights.
+	 * the API for these algorithms for the edges (or vertices) integer weights.
 	 *
 	 * &lt;pre&gt; {@code
 	 * // Create a directed graph with three vertices and edges between them
@@ -117,39 +121,37 @@ public interface EdgeWeightFunc extends IntComparator {
 	 * }
 	 * }&lt;/pre&gt;
 	 *
-	 * @see    ShortestPathSingleSourceDial
-	 * @see    ShortestPathSingleSourceGoldberg
 	 * @author Barak Ugav
 	 */
 	@FunctionalInterface
-	public static interface Int extends EdgeWeightFunc {
+	public static interface Int extends WeightFunction {
 
 		@Deprecated
 		@Override
-		default double weight(int edge) {
-<span class="fc" id="L130">			return weightInt(edge);</span>
+		default double weight(int element) {
+<span class="fc" id="L132">			return weightInt(element);</span>
 		}
 
 		/**
-		 * Get the integer weight of an edge.
+		 * Get the integer weight of an element.
 		 *
-		 * @param  edge                      an edge identifier
-		 * @return                           the integer weight of the edge
-		 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
+		 * @param  element                   an element identifier
+		 * @return                           the integer weight of the element
+		 * @throws IndexOutOfBoundsException if {@code element} is not a valid element identifier
 		 */
-		public int weightInt(int edge);
+		public int weightInt(int element);
 
 		@Override
 		default int compare(int e1, int e2) {
-<span class="fc" id="L144">			return Integer.compare(weightInt(e1), weightInt(e2));</span>
+<span class="fc" id="L146">			return Integer.compare(weightInt(e1), weightInt(e2));</span>
 		}
 
 	}
 
 	/**
-	 * A weight function that assign a weight of {@code 1} to any edge.
+	 * A weight function that assign a weight of {@code 1} to any element.
 	 */
-<span class="fc" id="L152">	public static EdgeWeightFunc.Int CardinalityEdgeWeightFunction = e -&gt; 1;</span>
+<span class="fc" id="L154">	public static WeightFunction.Int CardinalityWeightFunction = e -&gt; 1;</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

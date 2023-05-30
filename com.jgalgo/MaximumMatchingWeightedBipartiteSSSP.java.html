@@ -78,7 +78,7 @@ class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeighted {
 	 * @throws IllegalArgumentException if the graph is no bipartite with respect to the provided partition
 	 */
 	@Override
-	public Matching computeMaximumWeightedMatching(Graph g, EdgeWeightFunc w) {
+	public Matching computeMaximumWeightedMatching(Graph g, WeightFunction w) {
 <span class="fc" id="L82">		ArgumentCheck.onlyUndirected(g);</span>
 <span class="fc" id="L83">		Weights.Bool partition = g.getVerticesWeights(bipartiteVerticesWeightKey);</span>
 <span class="fc" id="L84">		Objects.requireNonNull(partition,</span>
@@ -89,7 +89,7 @@ class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeighted {
 <span class="fc" id="L89">		return new MatchingImpl(g, match);</span>
 	}
 
-	private int[] computeMaxMatching(Graph gOrig, EdgeWeightFunc w0, Weights.Bool partition) {
+	private int[] computeMaxMatching(Graph gOrig, WeightFunction w0, Weights.Bool partition) {
 <span class="fc" id="L93">		final int n = gOrig.vertices().size();</span>
 <span class="fc" id="L94">		Graph g = GraphBuilder.newDirected().expectedVerticesNum(n + 2).build();</span>
 <span class="fc bfc" id="L95" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
@@ -136,7 +136,7 @@ class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeighted {
 		}
 
 <span class="fc" id="L138">		double[] potential = new double[n + 2];</span>
-<span class="fc" id="L139">		EdgeWeightFunc spWeightFunc = e -&gt; w.weight(e) + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];</span>
+<span class="fc" id="L139">		WeightFunction spWeightFunc = e -&gt; w.weight(e) + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];</span>
 
 		// Init state may include negative distances, use Bellman Ford to calculate
 		// first potential values
@@ -192,7 +192,7 @@ class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeighted {
 	 */
 	@Deprecated
 	@Override
-	public Matching computeMaximumWeightedPerfectMatching(Graph g, EdgeWeightFunc w) {
+	public Matching computeMaximumWeightedPerfectMatching(Graph g, WeightFunction w) {
 <span class="nc" id="L196">		throw new UnsupportedOperationException();</span>
 	}
 

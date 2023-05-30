@@ -62,19 +62,19 @@ class MinimumSpanningTreePrim implements MinimumSpanningTree {
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	public MinimumSpanningTree.Result computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
+	public MinimumSpanningTree.Result computeMinimumSpanningTree(Graph g, WeightFunction w) {
 <span class="fc" id="L66">		ArgumentCheck.onlyUndirected(g);</span>
 <span class="fc" id="L67">		int n = g.vertices().size();</span>
 <span class="fc bfc" id="L68" title="All 2 branches covered.">		if (n == 0)</span>
 <span class="fc" id="L69">			return MinimumSpanningTreeResultImpl.Empty;</span>
-<span class="fc bfc" id="L70" title="All 2 branches covered.">		if (w instanceof EdgeWeightFunc.Int) {</span>
-<span class="fc" id="L71">			return computeMSTInt(g, (EdgeWeightFunc.Int) w);</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">		if (w instanceof WeightFunction.Int) {</span>
+<span class="fc" id="L71">			return computeMSTInt(g, (WeightFunction.Int) w);</span>
 		} else {
 <span class="fc" id="L73">			return computeMSTDouble(g, w);</span>
 		}
 	}
 
-	private MinimumSpanningTree.Result computeMSTDouble(Graph g, EdgeWeightFunc w) {
+	private MinimumSpanningTree.Result computeMSTDouble(Graph g, WeightFunction w) {
 <span class="fc" id="L78">		final int n = g.vertices().size();</span>
 <span class="fc" id="L79">		HeapReferenceable&lt;Double, Integer&gt; heap =</span>
 <span class="fc" id="L80">				heapBuilder.keysTypePrimitive(double.class).valuesTypePrimitive(int.class).build();</span>
@@ -131,7 +131,7 @@ class MinimumSpanningTreePrim implements MinimumSpanningTree {
 <span class="fc" id="L131">		return new MinimumSpanningTreeResultImpl(mst);</span>
 	}
 
-	private MinimumSpanningTree.Result computeMSTInt(Graph g, EdgeWeightFunc.Int w) {
+	private MinimumSpanningTree.Result computeMSTInt(Graph g, WeightFunction.Int w) {
 <span class="fc" id="L135">		final int n = g.vertices().size();</span>
 <span class="fc" id="L136">		HeapReferenceable&lt;Integer, Integer&gt; heap =</span>
 <span class="fc" id="L137">				heapBuilder.keysTypePrimitive(int.class).valuesTypePrimitive(int.class).build();</span>

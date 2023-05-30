@@ -31,7 +31,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 <span class="fc" id="L31">class MinimumCutGlobalStoerWagner implements MinimumCutGlobal {</span>
 
 	@Override
-	public Cut computeMinimumCut(Graph g, EdgeWeightFunc w) {
+	public Cut computeMinimumCut(Graph g, WeightFunction w) {
 <span class="fc" id="L35">		ArgumentCheck.onlyUndirected(g);</span>
 <span class="fc" id="L36">		ArgumentCheck.onlyPositiveWeights(g, w);</span>
 <span class="fc" id="L37">		final int n = g.vertices().size();</span>

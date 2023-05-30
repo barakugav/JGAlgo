@@ -46,27 +46,27 @@ import it.unimi.dsi.fastutil.ints.IntIterators;
 	 * {@inheritDoc}
 	 *
 	 * @throws IllegalArgumentException if one of the edge weights is negative or the weight function is not of type
-	 *                                      {@link EdgeWeightFunc.Int}
+	 *                                      {@link WeightFunction.Int}
 	 */
 	@Override
-	public ShortestPathSingleSource.Result computeShortestPaths(Graph g, EdgeWeightFunc w, int source) {
+	public ShortestPathSingleSource.Result computeShortestPaths(Graph g, WeightFunction w, int source) {
 <span class="fc bfc" id="L53" title="All 2 branches covered.">		if (w == null)</span>
-<span class="fc" id="L54">			w = EdgeWeightFunc.CardinalityEdgeWeightFunction;</span>
-<span class="pc bpc" id="L55" title="1 of 2 branches missed.">		if (!(w instanceof EdgeWeightFunc.Int))</span>
+<span class="fc" id="L54">			w = WeightFunction.CardinalityWeightFunction;</span>
+<span class="pc bpc" id="L55" title="1 of 2 branches missed.">		if (!(w instanceof WeightFunction.Int))</span>
 <span class="nc" id="L56">			throw new IllegalArgumentException(&quot;only int weights are supported&quot;);</span>
-<span class="fc" id="L57">		EdgeWeightFunc.Int w0 = (EdgeWeightFunc.Int) w;</span>
+<span class="fc" id="L57">		WeightFunction.Int w0 = (WeightFunction.Int) w;</span>
 
 <span class="fc" id="L59">		int n = g.vertices().size(), m = g.edges().size();</span>
 
 <span class="fc" id="L61">		int maxDistance = 0;</span>
 <span class="pc bpc" id="L62" title="1 of 2 branches missed.">		if (m &lt;= n - 1) {</span>
-<span class="nc" id="L63">			maxDistance = (int) GraphsUtils.edgesWeightSum(g.edges().iterator(), w0);</span>
+<span class="nc" id="L63">			maxDistance = (int) GraphsUtils.weightSum(g.edges(), w0);</span>
 
 		} else {
 			/* sum the n-1 heaviest weights */
 <span class="fc" id="L67">			int[] edges = g.edges().toIntArray();</span>
 <span class="fc" id="L68">			ArraysUtils.getKthElement(edges, 0, g.edges().size(), n - 1, w0, true);</span>
-<span class="fc" id="L69">			maxDistance = (int) GraphsUtils.edgesWeightSum(IntIterators.wrap(edges, m - n + 1, n - 1), w0);</span>
+<span class="fc" id="L69">			maxDistance = (int) GraphsUtils.weightSum(IntIterators.wrap(edges, m - n + 1, n - 1), w0);</span>
 		}
 
 <span class="fc" id="L72">		ShortestPathSingleSource.Result res = computeShortestPaths(g, w0, source, maxDistance);</span>
@@ -82,9 +82,9 @@ import it.unimi.dsi.fastutil.ints.IntIterators;
 	 * @param  maxDistance a bound on the maximal distance to any vertex in the graph
 	 * @return             a result object containing the distances and shortest paths from the source to any other
 	 *                     vertex
-	 * @see                #computeShortestPaths(Graph, EdgeWeightFunc, int)
+	 * @see                #computeShortestPaths(Graph, WeightFunction, int)
 	 */
-	ShortestPathSingleSource.Result computeShortestPaths(Graph g, EdgeWeightFunc.Int w, int source, int maxDistance) {
+	ShortestPathSingleSource.Result computeShortestPaths(Graph g, WeightFunction.Int w, int source, int maxDistance) {
 <span class="fc" id="L88">		ArgumentCheck.onlyPositiveWeights(g, w);</span>
 
 <span class="fc" id="L90">		ShortestPathSingleSourceUtils.ResultImpl.Int res = new ShortestPathSingleSourceUtils.ResultImpl.Int(g, source);</span>

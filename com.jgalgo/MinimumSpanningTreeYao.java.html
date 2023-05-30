@@ -46,7 +46,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	public MinimumSpanningTree.Result computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
+	public MinimumSpanningTree.Result computeMinimumSpanningTree(Graph g, WeightFunction w) {
 <span class="fc" id="L50">		ArgumentCheck.onlyUndirected(g);</span>
 <span class="fc" id="L51">		int n = g.vertices().size();</span>
 
@@ -161,7 +161,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 <span class="fc" id="L161">		return new MinimumSpanningTreeResultImpl(mst);</span>
 	}
 
-	private int[][][] partitionEdgesToBuckets(Graph g, EdgeWeightFunc w) {
+	private int[][][] partitionEdgesToBuckets(Graph g, WeightFunction w) {
 <span class="fc" id="L165">		int n = g.vertices().size(), k = Utils.log2ceil(n);</span>
 
 <span class="fc" id="L167">		int[][][] edges = new int[n][][];</span>

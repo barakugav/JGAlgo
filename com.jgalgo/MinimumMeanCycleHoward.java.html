@@ -53,7 +53,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 	 * @throws IllegalArgumentException if the graph is not directed
 	 */
 	@Override
-	public Path computeMinimumMeanCycle(Graph g, EdgeWeightFunc w) {
+	public Path computeMinimumMeanCycle(Graph g, WeightFunction w) {
 <span class="fc" id="L57">		ArgumentCheck.onlyDirected(g);</span>
 <span class="fc" id="L58">		int n = g.vertices().size();</span>
 

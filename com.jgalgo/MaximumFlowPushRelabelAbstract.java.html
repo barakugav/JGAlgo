@@ -47,9 +47,9 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 	}
 
 	@Override
-	public Cut computeMinimumCut(Graph g, EdgeWeightFunc w, int source, int sink) {
-<span class="pc bpc" id="L51" title="1 of 2 branches missed.">		if (w instanceof EdgeWeightFunc.Int) {</span>
-<span class="fc" id="L52">			EdgeWeightFunc.Int wInt = (EdgeWeightFunc.Int) w;</span>
+	public Cut computeMinimumCut(Graph g, WeightFunction w, int source, int sink) {
+<span class="pc bpc" id="L51" title="1 of 2 branches missed.">		if (w instanceof WeightFunction.Int) {</span>
+<span class="fc" id="L52">			WeightFunction.Int wInt = (WeightFunction.Int) w;</span>
 <span class="fc" id="L53">			FlowNetwork.Int net = new FlowNetwork.Int() {</span>
 
 				@Override

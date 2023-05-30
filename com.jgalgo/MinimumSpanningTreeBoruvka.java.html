@@ -50,11 +50,11 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	public MinimumSpanningTree.Result computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
+	public MinimumSpanningTree.Result computeMinimumSpanningTree(Graph g, WeightFunction w) {
 <span class="fc" id="L54">		return new MinimumSpanningTreeResultImpl(computeMST(g, w, Integer.MAX_VALUE).mst);</span>
 	}
 
-	Pair&lt;Graph, IntCollection&gt; runBoruvka(Graph g, EdgeWeightFunc w, int numberOfRounds, Object edgeRefKey) {
+	Pair&lt;Graph, IntCollection&gt; runBoruvka(Graph g, WeightFunction w, int numberOfRounds, Object edgeRefKey) {
 <span class="pc bpc" id="L58" title="1 of 2 branches missed.">		if (numberOfRounds &lt;= 0)</span>
 <span class="nc" id="L59">			throw new IllegalArgumentException();</span>
 <span class="fc" id="L60">		Res mstRes = computeMST(g, w, numberOfRounds);</span>
@@ -74,7 +74,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 <span class="fc" id="L74">		return Pair.of(contractedG, mstRes.mst);</span>
 	}
 
-	private static Res computeMST(Graph g, EdgeWeightFunc w, int numberOfRounds) {
+	private static Res computeMST(Graph g, WeightFunction w, int numberOfRounds) {
 <span class="fc" id="L78">		ArgumentCheck.onlyUndirected(g);</span>
 <span class="fc" id="L79">		final int n = g.vertices().size();</span>
 

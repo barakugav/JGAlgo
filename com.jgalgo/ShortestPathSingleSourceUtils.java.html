@@ -50,13 +50,13 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
 <span class="nc" id="L50">						private final int maxDistance = (int) BuilderImpl.this.maxDistance;</span>
 
 						@Override
-						public ShortestPathSingleSource.Result computeShortestPaths(Graph g, EdgeWeightFunc w,
+						public ShortestPathSingleSource.Result computeShortestPaths(Graph g, WeightFunction w,
 								int source) {
 <span class="nc" id="L55">							final int n = g.vertices().size(), m = g.edges().size();</span>
 <span class="nc" id="L56">							int dialWork = n + m + maxDistance;</span>
 <span class="nc" id="L57">							int dijkstraWork = m + n * Utils.log2ceil(n);</span>
 <span class="nc bnc" id="L58" title="All 2 branches missed.">							if (dialWork &lt; dijkstraWork) {</span>
-<span class="nc" id="L59">								return ssspDial.computeShortestPaths(g, (EdgeWeightFunc.Int) w, source, maxDistance);</span>
+<span class="nc" id="L59">								return ssspDial.computeShortestPaths(g, (WeightFunction.Int) w, source, maxDistance);</span>
 							} else {
 <span class="nc" id="L61">								return ssspDijkstra.computeShortestPaths(g, w, source);</span>
 							}

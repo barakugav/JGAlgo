@@ -228,90 +228,110 @@ abstract class GraphBase implements Graph {
 		}
 
 		@Override
+		public boolean isEmpty() {
+<span class="nc bnc" id="L232" title="All 2 branches missed.">			return !iterator().hasNext();</span>
+		}
+
+		@Override
 		public void clear() {
-<span class="nc" id="L232">			removeEdgesOutOf(source);</span>
-<span class="nc" id="L233">		}</span>
+<span class="nc" id="L237">			removeEdgesOutOf(source);</span>
+<span class="nc" id="L238">		}</span>
 	}
 
 	abstract class EdgeSetInUndirected extends AbstractIntSet implements EdgeSet {
 
 		final int target;
 
-<span class="fc" id="L240">		EdgeSetInUndirected(int target) {</span>
-<span class="fc" id="L241">			this.target = target;</span>
-<span class="fc" id="L242">		}</span>
+<span class="fc" id="L245">		EdgeSetInUndirected(int target) {</span>
+<span class="fc" id="L246">			this.target = target;</span>
+<span class="fc" id="L247">		}</span>
 
 		@Override
 		public boolean contains(int edge) {
-<span class="pc bpc" id="L246" title="1 of 4 branches missed.">			return target == edgeSource(edge) || target == edgeTarget(edge);</span>
+<span class="pc bpc" id="L251" title="1 of 4 branches missed.">			return target == edgeSource(edge) || target == edgeTarget(edge);</span>
 		}
 
 		@Override
 		public int size() {
-<span class="fc" id="L251">			int count = 0;</span>
-<span class="fc bfc" id="L252" title="All 2 branches covered.">			for (IntIterator it = iterator(); it.hasNext(); it.nextInt())</span>
-<span class="fc" id="L253">				count++;</span>
-<span class="fc" id="L254">			return count;</span>
+<span class="fc" id="L256">			int count = 0;</span>
+<span class="fc bfc" id="L257" title="All 2 branches covered.">			for (IntIterator it = iterator(); it.hasNext(); it.nextInt())</span>
+<span class="fc" id="L258">				count++;</span>
+<span class="fc" id="L259">			return count;</span>
+		}
+
+		@Override
+		public boolean isEmpty() {
+<span class="nc bnc" id="L264" title="All 2 branches missed.">			return !iterator().hasNext();</span>
 		}
 
 		@Override
 		public void clear() {
-<span class="nc" id="L259">			removeEdgesInOf(target);</span>
-<span class="nc" id="L260">		}</span>
+<span class="nc" id="L269">			removeEdgesInOf(target);</span>
+<span class="nc" id="L270">		}</span>
 	}
 
 	abstract class EdgeSetOutDirected extends AbstractIntSet implements EdgeSet {
 
 		final int source;
 
-<span class="fc" id="L267">		EdgeSetOutDirected(int source) {</span>
-<span class="fc" id="L268">			this.source = source;</span>
-<span class="fc" id="L269">		}</span>
+<span class="fc" id="L277">		EdgeSetOutDirected(int source) {</span>
+<span class="fc" id="L278">			this.source = source;</span>
+<span class="fc" id="L279">		}</span>
 
 		@Override
 		public boolean contains(int edge) {
-<span class="pc bpc" id="L273" title="1 of 2 branches missed.">			return source == edgeSource(edge);</span>
+<span class="pc bpc" id="L283" title="1 of 2 branches missed.">			return source == edgeSource(edge);</span>
 		}
 
 		@Override
 		public int size() {
-<span class="fc" id="L278">			int count = 0;</span>
-<span class="fc bfc" id="L279" title="All 2 branches covered.">			for (IntIterator it = iterator(); it.hasNext(); it.nextInt())</span>
-<span class="fc" id="L280">				count++;</span>
-<span class="fc" id="L281">			return count;</span>
+<span class="fc" id="L288">			int count = 0;</span>
+<span class="fc bfc" id="L289" title="All 2 branches covered.">			for (IntIterator it = iterator(); it.hasNext(); it.nextInt())</span>
+<span class="fc" id="L290">				count++;</span>
+<span class="fc" id="L291">			return count;</span>
+		}
+
+		@Override
+		public boolean isEmpty() {
+<span class="nc bnc" id="L296" title="All 2 branches missed.">			return !iterator().hasNext();</span>
 		}
 
 		@Override
 		public void clear() {
-<span class="nc" id="L286">			removeEdgesOutOf(source);</span>
-<span class="nc" id="L287">		}</span>
+<span class="nc" id="L301">			removeEdgesOutOf(source);</span>
+<span class="nc" id="L302">		}</span>
 	}
 
 	abstract class EdgeSetInDirected extends AbstractIntSet implements EdgeSet {
 
 		final int target;
 
-<span class="fc" id="L294">		EdgeSetInDirected(int target) {</span>
-<span class="fc" id="L295">			this.target = target;</span>
-<span class="fc" id="L296">		}</span>
+<span class="fc" id="L309">		EdgeSetInDirected(int target) {</span>
+<span class="fc" id="L310">			this.target = target;</span>
+<span class="fc" id="L311">		}</span>
 
 		@Override
 		public boolean contains(int edge) {
-<span class="pc bpc" id="L300" title="1 of 2 branches missed.">			return target == edgeTarget(edge);</span>
+<span class="pc bpc" id="L315" title="1 of 2 branches missed.">			return target == edgeTarget(edge);</span>
 		}
 
 		@Override
 		public int size() {
-<span class="fc" id="L305">			int count = 0;</span>
-<span class="fc bfc" id="L306" title="All 2 branches covered.">			for (IntIterator it = iterator(); it.hasNext(); it.nextInt())</span>
-<span class="fc" id="L307">				count++;</span>
-<span class="fc" id="L308">			return count;</span>
+<span class="fc" id="L320">			int count = 0;</span>
+<span class="fc bfc" id="L321" title="All 2 branches covered.">			for (IntIterator it = iterator(); it.hasNext(); it.nextInt())</span>
+<span class="fc" id="L322">				count++;</span>
+<span class="fc" id="L323">			return count;</span>
+		}
+
+		@Override
+		public boolean isEmpty() {
+<span class="nc bnc" id="L328" title="All 2 branches missed.">			return !iterator().hasNext();</span>
 		}
 
 		@Override
 		public void clear() {
-<span class="nc" id="L313">			removeEdgesInOf(target);</span>
-<span class="nc" id="L314">		}</span>
+<span class="nc" id="L333">			removeEdgesInOf(target);</span>
+<span class="nc" id="L334">		}</span>
 	}
 
 }

@@ -42,15 +42,15 @@ class ShortestPathSingleSourceDag implements ShortestPathSingleSource {
 	 * @throws IllegalArgumentException if graph is not directed or contains cycles
 	 */
 	@Override
-	public ShortestPathSingleSourceDag.Result computeShortestPaths(Graph g, EdgeWeightFunc w, int source) {
+	public ShortestPathSingleSourceDag.Result computeShortestPaths(Graph g, WeightFunction w, int source) {
 <span class="fc" id="L46">		ArgumentCheck.onlyDirected(g);</span>
 <span class="fc bfc" id="L47" title="All 2 branches covered.">		if (w == null)</span>
-<span class="fc" id="L48">			w = EdgeWeightFunc.CardinalityEdgeWeightFunction;</span>
-<span class="pc bpc" id="L49" title="1 of 2 branches missed.">		return w instanceof EdgeWeightFunc.Int ? computeSsspInt(g, (EdgeWeightFunc.Int) w, source)</span>
+<span class="fc" id="L48">			w = WeightFunction.CardinalityWeightFunction;</span>
+<span class="pc bpc" id="L49" title="1 of 2 branches missed.">		return w instanceof WeightFunction.Int ? computeSsspInt(g, (WeightFunction.Int) w, source)</span>
 <span class="nc" id="L50">				: computeSsspDouble(g, w, source);</span>
 	}
 
-	private ShortestPathSingleSourceDag.Result computeSsspDouble(Graph g, EdgeWeightFunc w, int source) {
+	private ShortestPathSingleSourceDag.Result computeSsspDouble(Graph g, WeightFunction w, int source) {
 <span class="nc" id="L54">		ShortestPathSingleSourceUtils.ResultImpl res = new ShortestPathSingleSourceUtils.ResultImpl(g, source);</span>
 <span class="nc" id="L55">		res.distances[source] = 0;</span>
 
@@ -78,7 +78,7 @@ class ShortestPathSingleSourceDag implements ShortestPathSingleSource {
 <span class="nc" id="L78">		return res;</span>
 	}
 
-	private ShortestPathSingleSourceDag.Result computeSsspInt(Graph g, EdgeWeightFunc.Int w, int source) {
+	private ShortestPathSingleSourceDag.Result computeSsspInt(Graph g, WeightFunction.Int w, int source) {
 <span class="fc" id="L82">		ShortestPathSingleSourceUtils.ResultImpl.Int res = new ShortestPathSingleSourceUtils.ResultImpl.Int(g, source);</span>
 <span class="fc" id="L83">		res.distances[source] = 0;</span>
 

@@ -69,12 +69,12 @@ class MinimumSpanningTreeKargerKleinTarjan implements MinimumSpanningTree {
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	public MinimumSpanningTree.Result computeMinimumSpanningTree(Graph g, EdgeWeightFunc w) {
+	public MinimumSpanningTree.Result computeMinimumSpanningTree(Graph g, WeightFunction w) {
 <span class="fc" id="L73">		ArgumentCheck.onlyUndirected(g);</span>
 <span class="fc" id="L74">		return new MinimumSpanningTreeResultImpl(computeMST(g, w));</span>
 	}
 
-	private IntCollection computeMST(Graph g, EdgeWeightFunc w) {
+	private IntCollection computeMST(Graph g, WeightFunction w) {
 <span class="fc bfc" id="L78" title="All 4 branches covered.">		if (g.vertices().size() == 0 || g.edges().size() == 0)</span>
 <span class="fc" id="L79">			return IntLists.emptyList();</span>
 
@@ -123,7 +123,7 @@ class MinimumSpanningTreeKargerKleinTarjan implements MinimumSpanningTree {
 <span class="fc" id="L123">		return subG;</span>
 	}
 
-	static Weights.Double assignWeightsFromEdgeRef(Graph g, EdgeWeightFunc w, Object weightKey, Weights.Int edgeRef) {
+	static Weights.Double assignWeightsFromEdgeRef(Graph g, WeightFunction w, Object weightKey, Weights.Int edgeRef) {
 <span class="fc" id="L127">		Weights.Double w2 = g.addEdgesWeights(weightKey, double.class);</span>
 <span class="fc bfc" id="L128" title="All 2 branches covered.">		for (int e : g.edges())</span>
 <span class="fc" id="L129">			w2.set(e, w.weight(edgeRef.getInt(e)));</span>

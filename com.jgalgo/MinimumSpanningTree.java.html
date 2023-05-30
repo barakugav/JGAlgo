@@ -38,7 +38,7 @@ public interface MinimumSpanningTree {
 	 * @return   a result object containing all the edges of the computed spanning tree, which there are \(n-1\) of them
 	 *           (or less, forming a forest if the graph is not connected)
 	 */
-	MinimumSpanningTree.Result computeMinimumSpanningTree(Graph g, EdgeWeightFunc w);
+	MinimumSpanningTree.Result computeMinimumSpanningTree(Graph g, WeightFunction w);
 
 	/**
 	 * A result object for {@link MinimumSpanningTree} computation.
@@ -60,7 +60,7 @@ public interface MinimumSpanningTree {
 		 * @param  w a weight function
 		 * @return   the sum of the tree edges weights
 		 */
-		double weight(EdgeWeightFunc w);
+		double weight(WeightFunction w);
 	}
 
 	/**

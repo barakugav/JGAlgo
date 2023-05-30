@@ -46,7 +46,7 @@ public class TSPMetricMSTAppx implements TSPMetric {
 <span class="fc" id="L46">	public TSPMetricMSTAppx() {}</span>
 
 	@Override
-	public Path computeShortestTour(Graph g, EdgeWeightFunc w) {
+	public Path computeShortestTour(Graph g, WeightFunction w) {
 <span class="fc" id="L50">		final int n = g.vertices().size();</span>
 <span class="pc bpc" id="L51" title="1 of 2 branches missed.">		if (n == 0)</span>
 <span class="nc" id="L52">			return null;</span>

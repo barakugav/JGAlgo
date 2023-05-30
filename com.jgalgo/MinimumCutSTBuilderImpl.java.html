@@ -36,7 +36,7 @@ class MinimumCutSTBuilderImpl {
 <span class="fc" id="L36">		return new MinimumCutST() {</span>
 
 			@Override
-			public Cut computeMinimumCut(Graph g, EdgeWeightFunc w, int source, int sink) {
+			public Cut computeMinimumCut(Graph g, WeightFunction w, int source, int sink) {
 <span class="fc" id="L40">				final int n = g.vertices().size();</span>
 <span class="fc" id="L41">				BitSet visited = new BitSet(n);</span>
 <span class="fc" id="L42">				IntPriorityQueue queue = new IntArrayFIFOQueue();</span>
@@ -111,7 +111,7 @@ class MinimumCutSTBuilderImpl {
 		};
 	}
 
-	static FlowNetwork createFlowNetworkFromEdgeWeightFunc(Graph g, EdgeWeightFunc w) {
+	static FlowNetwork createFlowNetworkFromEdgeWeightFunc(Graph g, WeightFunction w) {
 <span class="fc" id="L115">		ArgumentCheck.onlyPositiveWeights(g, w);</span>
 <span class="fc" id="L116">		Weights.Double flow = Weights.createExternalEdgesWeights(g, double.class);</span>
 <span class="fc" id="L117">		FlowNetwork net = new FlowNetwork() {</span>
@@ -142,7 +142,7 @@ class MinimumCutSTBuilderImpl {
 <span class="fc" id="L142">		return new MinimumCutGlobal() {</span>
 
 			@Override
-			public Cut computeMinimumCut(Graph g, EdgeWeightFunc w) {
+			public Cut computeMinimumCut(Graph g, WeightFunction w) {
 <span class="fc" id="L146">				final int n = g.vertices().size();</span>
 <span class="pc bpc" id="L147" title="1 of 2 branches missed.">				if (n &lt; 2)</span>
 <span class="nc" id="L148">					throw new IllegalArgumentException(&quot;no valid cut in graphs with less than two vertices&quot;);</span>

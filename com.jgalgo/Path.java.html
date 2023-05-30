@@ -131,8 +131,8 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 	 * @param  w an edge weight function
 	 * @return   the sum of this path edges weights
 	 */
-	default double weight(EdgeWeightFunc w) {
-<span class="fc" id="L135">		return GraphsUtils.edgesWeightSum(iterator(), w);</span>
+	default double weight(WeightFunction w) {
+<span class="fc" id="L135">		return GraphsUtils.weightSum(this, w);</span>
 	}
 
 	/**

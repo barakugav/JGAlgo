@@ -38,9 +38,9 @@ class ArgumentCheck {
 <span class="nc" id="L38">			throw new IllegalArgumentException(msg);</span>
 <span class="fc" id="L39">	}</span>
 
-	static void onlyPositiveWeights(Graph g, EdgeWeightFunc w) {
-<span class="fc bfc" id="L42" title="All 2 branches covered.">		if (w instanceof EdgeWeightFunc.Int) {</span>
-<span class="fc" id="L43">			EdgeWeightFunc.Int wUbt = (EdgeWeightFunc.Int) w;</span>
+	static void onlyPositiveWeights(Graph g, WeightFunction w) {
+<span class="fc bfc" id="L42" title="All 2 branches covered.">		if (w instanceof WeightFunction.Int) {</span>
+<span class="fc" id="L43">			WeightFunction.Int wUbt = (WeightFunction.Int) w;</span>
 <span class="fc bfc" id="L44" title="All 2 branches covered.">			for (int e : g.edges())</span>
 <span class="pc bpc" id="L45" title="1 of 2 branches missed.">				if (wUbt.weightInt(e) &lt; 0)</span>
 <span class="nc" id="L46">					throw new IllegalArgumentException(&quot;only positive weights are supported&quot;);</span>

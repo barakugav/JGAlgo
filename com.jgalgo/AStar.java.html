@@ -62,7 +62,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 <span class="nc" id="L62">	}</span>
 
 	@Override
-	public Path computeShortestPath(Graph g, EdgeWeightFunc w, int source, int target, IntToDoubleFunction vHeuristic) {
+	public Path computeShortestPath(Graph g, WeightFunction w, int source, int target, IntToDoubleFunction vHeuristic) {
 <span class="fc" id="L66">		ArgumentCheck.onlyPositiveWeights(g, w);</span>
 <span class="fc bfc" id="L67" title="All 2 branches covered.">		if (source == target)</span>
 <span class="fc" id="L68">			return new PathImpl(g, source, target, IntLists.emptyList());</span>

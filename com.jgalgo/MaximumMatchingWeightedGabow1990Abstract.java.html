@@ -43,19 +43,19 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	static final double EPS = 0.00001;
 
 	@Override
-	public Matching computeMaximumWeightedMatching(Graph g, EdgeWeightFunc w) {
+	public Matching computeMaximumWeightedMatching(Graph g, WeightFunction w) {
 <span class="fc" id="L47">		ArgumentCheck.onlyUndirected(g);</span>
 <span class="fc" id="L48">		return newWorker(g, w, heapBuilder, debugPrintManager).computeMaxMatching(false);</span>
 
 	}
 
 	@Override
-	public Matching computeMaximumWeightedPerfectMatching(Graph g, EdgeWeightFunc w) {
+	public Matching computeMaximumWeightedPerfectMatching(Graph g, WeightFunction w) {
 <span class="fc" id="L54">		ArgumentCheck.onlyUndirected(g);</span>
 <span class="fc" id="L55">		return newWorker(g, w, heapBuilder, debugPrintManager).computeMaxMatching(true);</span>
 	}
 
-	abstract Worker newWorker(Graph gOrig, EdgeWeightFunc w, HeapReferenceable.Builder&lt;Object, Object&gt; heapBuilder,
+	abstract Worker newWorker(Graph gOrig, WeightFunction w, HeapReferenceable.Builder&lt;Object, Object&gt; heapBuilder,
 			DebugPrintsManager debugPrint);
 
 	/**
@@ -373,7 +373,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 		final Weights&lt;EdgeVal&gt; edgeVal;
 
 		/* the weight function */
-		final EdgeWeightFunc w;
+		final WeightFunction w;
 
 		/* vertex -&gt; matched edge */
 		final int[] matched;
@@ -449,7 +449,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 <span class="fc" id="L450">		private static final Object EdgeValKey = new Utils.Obj(&quot;edgeVal&quot;);</span>
 
-		Worker(Graph gOrig, EdgeWeightFunc w, HeapReferenceable.Builder&lt;Object, Object&gt; heapBuilder,
+		Worker(Graph gOrig, WeightFunction w, HeapReferenceable.Builder&lt;Object, Object&gt; heapBuilder,
 <span class="fc" id="L453">				DebugPrintsManager debugPrint) {</span>
 <span class="fc" id="L454">			int n = gOrig.vertices().size();</span>
 <span class="fc" id="L455">			this.gOrig = gOrig;</span>
