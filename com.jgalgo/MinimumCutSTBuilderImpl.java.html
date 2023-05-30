@@ -28,7 +28,7 @@ class MinimumCutSTBuilderImpl {
 <span class="nc" id="L28">	static class Default implements MinimumCutST.Builder {</span>
 		@Override
 		public MinimumCutST build() {
-<span class="nc" id="L31">			return new MaximumFlowPushRelabel();</span>
+<span class="nc" id="L31">			return new MaximumFlowPushRelabelHighestFirst();</span>
 		}
 	}
 

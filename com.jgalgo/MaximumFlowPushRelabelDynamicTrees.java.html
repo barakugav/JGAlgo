@@ -41,7 +41,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * out preformed in practice by simpler variants of the push-relabel algorithm, such as
  * {@link MaximumFlowPushRelabelHighestFirst}.
  *
- * @see    MaximumFlowPushRelabel
+ * @see    MaximumFlowPushRelabelFifo
  * @author Barak Ugav
  */
 class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
