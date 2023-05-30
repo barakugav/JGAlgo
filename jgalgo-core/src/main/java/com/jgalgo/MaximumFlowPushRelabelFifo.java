@@ -41,12 +41,12 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  * @see    MaximumFlowPushRelabelLowestFirst
  * @author Barak Ugav
  */
-class MaximumFlowPushRelabel extends MaximumFlowPushRelabelAbstract {
+class MaximumFlowPushRelabelFifo extends MaximumFlowPushRelabelAbstract {
 
 	/**
 	 * Create a new maximum flow algorithm object.
 	 */
-	MaximumFlowPushRelabel() {}
+	MaximumFlowPushRelabelFifo() {}
 
 	@Override
 	WorkerDouble newWorkerDouble(Graph gOrig, FlowNetwork net, int source, int sink) {

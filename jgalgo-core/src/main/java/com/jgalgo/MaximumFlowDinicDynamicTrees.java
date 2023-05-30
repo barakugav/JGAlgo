@@ -28,7 +28,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * <p>
  * Using dynamic trees, the algorithm of Dinic to maximum flow problem is implemented in time \(O(m n \log n)\) and
  * linear space. In practice, the (relative) complicated implementation of dynamic trees have little gain in the overall
- * performance, and its probably better to use some variant of the {@link MaximumFlowPushRelabel}, which has worse
+ * performance, and its probably better to use some variant of the {@link MaximumFlowPushRelabelFifo}, which has worse
  * theoretically bounds, but runs faster in practice.
  *
  * @see    MaximumFlowDinic

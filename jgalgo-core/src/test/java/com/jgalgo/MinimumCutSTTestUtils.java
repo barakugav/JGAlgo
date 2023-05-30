@@ -82,7 +82,7 @@ class MinimumCutSTTestUtils extends TestUtils {
 		} else {
 			MinimumCutST validationAlgo = alg instanceof MaximumFlowPushRelabelAbstract
 					? MinimumCutST.newFromMaximumFlow(new MaximumFlowEdmondsKarp())
-					: new MaximumFlowPushRelabel();
+					: new MaximumFlowPushRelabelHighestFirst();
 			Cut minCutExpected = validationAlgo.computeMinimumCut(g, w, source, sink);
 			int minCutWeightExpected = (int) minCutExpected.weight(w);
 

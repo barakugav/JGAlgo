@@ -111,7 +111,7 @@ public class MaximumFlowBench {
 
 	@Benchmark
 	public void PushRelabel(Blackhole blackhole) {
-		benchMaxFlow(MaximumFlowPushRelabel::new, blackhole);
+		benchMaxFlow(MaximumFlowPushRelabelFifo::new, blackhole);
 	}
 
 	@Benchmark

@@ -31,7 +31,7 @@ package com.jgalgo;
  * 'global relabeling' and 'gap' heuristics.
  *
  * @see    <a href= "https://en.wikipedia.org/wiki/Push%E2%80%93relabel_maximum_flow_algorithm">Wikipedia</a>
- * @see    MaximumFlowPushRelabel
+ * @see    MaximumFlowPushRelabelFifo
  * @see    MaximumFlowPushRelabelToFront
  * @see    MaximumFlowPushRelabelLowestFirst
  * @author Barak Ugav

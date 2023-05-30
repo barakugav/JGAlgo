@@ -28,7 +28,7 @@ class MinimumCutSTBuilderImpl {
 	static class Default implements MinimumCutST.Builder {
 		@Override
 		public MinimumCutST build() {
-			return new MaximumFlowPushRelabel();
+			return new MaximumFlowPushRelabelHighestFirst();
 		}
 	}
 
