@@ -17,10 +17,11 @@
 package com.jgalgo;
 
 import java.util.NoSuchElementException;
+import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 
 interface EdgeIterImpl extends EdgeIter, Utils.IterPeekable.Int {
 
-	static final EdgeIterImpl Empty = new EdgeIterImpl() {
+	static final EdgeIterImpl EmptyEdgeIter = new EdgeIterImpl() {
 
 		@Override
 		public boolean hasNext() {
@@ -47,5 +48,28 @@ interface EdgeIterImpl extends EdgeIter, Utils.IterPeekable.Int {
 			throw new NoSuchElementException();
 		}
 	};
+
+	static final EdgeSet EmptyEdgeSet = new EmptyEdgeSet();
+
+	static class EmptyEdgeSet extends AbstractIntSet implements EdgeSet {
+
+		private EmptyEdgeSet() {}
+
+		@Override
+		public boolean contains(int key) {
+			return false;
+		}
+
+		@Override
+		public int size() {
+			return 0;
+		}
+
+		@Override
+		public EdgeIter iterator() {
+			return EmptyEdgeIter;
+		}
+
+	}
 
 }

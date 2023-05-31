@@ -240,11 +240,11 @@ class GraphBuilderImpl implements GraphBuilder {
 		}
 
 		@Override
-		public EdgeIter getEdges(int source, int target) {
+		public EdgeSet getEdges(int source, int target) {
 			int uIdx = verticesIDStrat.idToIdx(source);
 			int vIdx = verticesIDStrat.idToIdx(target);
-			EdgeIter it = g.getEdges(uIdx, vIdx);
-			return new EdgeIterMapped(it);
+			EdgeSet s = g.getEdges(uIdx, vIdx);
+			return new EdgeSetMapped(s);
 		}
 
 		@Override
@@ -280,13 +280,15 @@ class GraphBuilderImpl implements GraphBuilder {
 		@Override
 		public int edgeSource(int edge) {
 			int eIdx = edgesIDStrat.idToIdx(edge);
-			return g.edgeSource(eIdx);
+			int uIdx = g.edgeSource(eIdx);
+			return verticesIDStrat.idxToId(uIdx);
 		}
 
 		@Override
 		public int edgeTarget(int edge) {
 			int eIdx = edgesIDStrat.idToIdx(edge);
-			return g.edgeTarget(eIdx);
+			int vIdx = g.edgeTarget(eIdx);
+			return verticesIDStrat.idxToId(vIdx);
 		}
 
 		@Override

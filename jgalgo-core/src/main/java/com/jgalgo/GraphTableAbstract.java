@@ -18,6 +18,7 @@ package com.jgalgo;
 
 import java.util.NoSuchElementException;
 import com.jgalgo.EdgeEndpointsContainer.GraphWithEdgeEndpointsContainer;
+import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 
 abstract class GraphTableAbstract extends GraphBaseContinues implements GraphWithEdgeEndpointsContainer {
 
@@ -96,55 +97,12 @@ abstract class GraphTableAbstract extends GraphBaseContinues implements GraphWit
 	}
 
 	@Override
-	public EdgeIter getEdges(int source, int target) {
-		int e = edges.get(source).getInt(target);
-		if (e == EdgeNone) {
-			return EdgeIterImpl.Empty;
+	public EdgeSet getEdges(int source, int target) {
+		int edge = edges.get(source).getInt(target);
+		if (edge == EdgeNone) {
+			return EdgeIterImpl.EmptyEdgeSet;
 		} else {
-			return new EdgeIterImpl() {
-
-				boolean beforeNext = true;
-
-				@Override
-				public boolean hasNext() {
-					return beforeNext;
-				}
-
-				@Override
-				public int nextInt() {
-					if (!hasNext())
-						throw new NoSuchElementException();
-					beforeNext = false;
-					return e;
-				}
-
-				@Override
-				public int peekNext() {
-					if (!hasNext())
-						throw new NoSuchElementException();
-					return e;
-				}
-
-				@Override
-				public int source() {
-					return source;
-				}
-
-				@Override
-				public int target() {
-					return target;
-				}
-
-				@Override
-				public void remove() {
-					if (beforeNext)
-						throw new IllegalStateException();
-					int e = edges.get(source).getInt(target);
-					if (e == EdgeNone)
-						throw new IllegalStateException();
-					removeEdge(e);
-				}
-			};
+			return new EdgeSetSourceTarget(source, target, edge);
 		}
 	}
 
@@ -380,6 +338,93 @@ abstract class GraphTableAbstract extends GraphBaseContinues implements GraphWit
 		@Override
 		public void remove() {
 			removeEdge(edges.get(source()).getInt(target()));
+		}
+	}
+
+	private class EdgeSetSourceTarget extends AbstractIntSet implements EdgeSet {
+
+		private final int source, target;
+		private int edge;
+
+		EdgeSetSourceTarget(int source, int target, int edge) {
+			this.source = source;
+			this.target = target;
+			this.edge = edge;
+		}
+
+		@Override
+		public boolean remove(int edge) {
+			if (this.edge != edge)
+				return false;
+			removeEdge(edge);
+			this.edge = EdgeNone;
+			return true;
+		}
+
+		@Override
+		public boolean contains(int edge) {
+			return this.edge != EdgeNone && this.edge == edge;
+		}
+
+		@Override
+		public int size() {
+			return edge != EdgeNone ? 1 : 0;
+		}
+
+		@Override
+		public void clear() {
+			if (edge != EdgeNone) {
+				removeEdge(edge);
+				edge = EdgeNone;
+			}
+		}
+
+		@Override
+		public EdgeIter iterator() {
+			if (edge == EdgeNone)
+				return EdgeIterImpl.EmptyEdgeIter;
+			return new EdgeIterImpl() {
+
+				boolean beforeNext = true;
+
+				@Override
+				public boolean hasNext() {
+					return beforeNext;
+				}
+
+				@Override
+				public int nextInt() {
+					if (!hasNext())
+						throw new NoSuchElementException();
+					beforeNext = false;
+					return edge;
+				}
+
+				@Override
+				public int peekNext() {
+					if (!hasNext())
+						throw new NoSuchElementException();
+					return edge;
+				}
+
+				@Override
+				public int source() {
+					return source;
+				}
+
+				@Override
+				public int target() {
+					return target;
+				}
+
+				@Override
+				public void remove() {
+					if (beforeNext)
+						throw new IllegalStateException();
+					removeEdge(edge);
+					edge = EdgeNone;
+				}
+			};
 		}
 	}
 

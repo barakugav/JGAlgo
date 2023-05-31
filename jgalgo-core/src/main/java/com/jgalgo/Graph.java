@@ -150,7 +150,7 @@ public interface Graph {
 	 * using this method by {@code g.edgesOut(vertex).size()}.
 	 *
 	 * @param  source                    a source vertex
-	 * @return                           an iterator of all the edges whose source is u
+	 * @return                           all the edges whose source is {@code source}
 	 * @throws IndexOutOfBoundsException if {@code source} is not a valid vertex identifier
 	 */
 	EdgeSet edgesOut(int source);
@@ -164,7 +164,7 @@ public interface Graph {
 	 * this method by {@code g.edgesOut(vertex).size()}.
 	 *
 	 * @param  target                    a target vertex
-	 * @return                           an iterator of all the edges whose target is {@code target}
+	 * @return                           all the edges whose target is {@code target}
 	 * @throws IndexOutOfBoundsException if {@code target} is not a valid vertex identifier
 	 */
 	EdgeSet edgesIn(int target);
@@ -199,11 +199,10 @@ public interface Graph {
 	 *
 	 * @param  source                    a source vertex
 	 * @param  target                    a target vertex
-	 * @return                           an iterator of all the edges whose source is {@code source} and target is
-	 *                                   {@code target}
+	 * @return                           all the edges whose source is {@code source} and target is {@code target}
 	 * @throws IndexOutOfBoundsException if {@code source} or {@code target} are not valid vertices identifiers
 	 */
-	EdgeIter getEdges(int source, int target);
+	EdgeSet getEdges(int source, int target);
 
 	/**
 	 * Add a new edge to the graph.

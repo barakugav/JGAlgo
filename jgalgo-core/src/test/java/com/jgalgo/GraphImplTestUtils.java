@@ -822,7 +822,7 @@ class GraphImplTestUtils extends TestUtils {
 
 		ToIntFunction<GraphTracker.Edge> getEdge = edge -> {
 			int e = -1;
-			for (EdgeIter eit = g.getEdges(edge.u.id, edge.v.id); eit.hasNext();) {
+			for (EdgeIter eit = g.getEdges(edge.u.id, edge.v.id).iterator(); eit.hasNext();) {
 				int e0 = eit.nextInt();
 				if (edge.data == edgeData.getInt(e0)) {
 					e = e0;

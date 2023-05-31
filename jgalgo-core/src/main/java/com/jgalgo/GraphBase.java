@@ -23,7 +23,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.ObjIntConsumer;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 abstract class GraphBase implements Graph {
@@ -47,51 +46,9 @@ abstract class GraphBase implements Graph {
 	}
 
 	@Override
-	public EdgeIter getEdges(int source, int target) {
-		return new EdgeIterImpl() {
-			EdgeIter it = edgesOut(source).iterator();
-			int e = -1;
-
-			@Override
-			public boolean hasNext() {
-				if (e != -1)
-					return true;
-				while (it.hasNext()) {
-					int eNext = it.nextInt();
-					if (it.target() == target) {
-						e = eNext;
-						return true;
-					}
-				}
-				return false;
-			}
-
-			@Override
-			public int nextInt() {
-				if (!hasNext())
-					throw new NoSuchElementException();
-				int ret = e;
-				e = -1;
-				return ret;
-			}
-
-			@Override
-			public int peekNext() {
-				if (!hasNext())
-					throw new NoSuchElementException();
-				return e;
-			}
-
-			@Override
-			public int source() {
-				return source;
-			}
-
-			@Override
-			public int target() {
-				return target;
-			}
-		};
+	public EdgeSet getEdges(int source, int target) {
+		return getCapabilities().directed() ? new EdgeSetSourceTargetDirected(source, target)
+				: new EdgeSetSourceTargetUndirected(source, target);
 	}
 
 	@Override
@@ -206,7 +163,29 @@ abstract class GraphBase implements Graph {
 		return s.toString();
 	}
 
-	abstract class EdgeSetOutUndirected extends AbstractIntSet implements EdgeSet {
+	private abstract class EdgeSetAbstract extends AbstractIntSet implements EdgeSet {
+
+		@Override
+		public boolean remove(int edge) {
+			if (!contains(edge))
+				return false;
+			removeEdge(edge);
+			return true;
+		}
+
+		@Override
+		public int size() {
+			return Utils.size(this);
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return !iterator().hasNext();
+		}
+
+	}
+
+	abstract class EdgeSetOutUndirected extends EdgeSetAbstract {
 
 		final int source;
 
@@ -220,25 +199,12 @@ abstract class GraphBase implements Graph {
 		}
 
 		@Override
-		public int size() {
-			int count = 0;
-			for (IntIterator it = iterator(); it.hasNext(); it.nextInt())
-				count++;
-			return count;
-		}
-
-		@Override
-		public boolean isEmpty() {
-			return !iterator().hasNext();
-		}
-
-		@Override
 		public void clear() {
 			removeEdgesOutOf(source);
 		}
 	}
 
-	abstract class EdgeSetInUndirected extends AbstractIntSet implements EdgeSet {
+	abstract class EdgeSetInUndirected extends EdgeSetAbstract {
 
 		final int target;
 
@@ -252,25 +218,12 @@ abstract class GraphBase implements Graph {
 		}
 
 		@Override
-		public int size() {
-			int count = 0;
-			for (IntIterator it = iterator(); it.hasNext(); it.nextInt())
-				count++;
-			return count;
-		}
-
-		@Override
-		public boolean isEmpty() {
-			return !iterator().hasNext();
-		}
-
-		@Override
 		public void clear() {
 			removeEdgesInOf(target);
 		}
 	}
 
-	abstract class EdgeSetOutDirected extends AbstractIntSet implements EdgeSet {
+	abstract class EdgeSetOutDirected extends EdgeSetAbstract {
 
 		final int source;
 
@@ -284,25 +237,12 @@ abstract class GraphBase implements Graph {
 		}
 
 		@Override
-		public int size() {
-			int count = 0;
-			for (IntIterator it = iterator(); it.hasNext(); it.nextInt())
-				count++;
-			return count;
-		}
-
-		@Override
-		public boolean isEmpty() {
-			return !iterator().hasNext();
-		}
-
-		@Override
 		public void clear() {
 			removeEdgesOutOf(source);
 		}
 	}
 
-	abstract class EdgeSetInDirected extends AbstractIntSet implements EdgeSet {
+	abstract class EdgeSetInDirected extends EdgeSetAbstract {
 
 		final int target;
 
@@ -316,21 +256,107 @@ abstract class GraphBase implements Graph {
 		}
 
 		@Override
-		public int size() {
-			int count = 0;
-			for (IntIterator it = iterator(); it.hasNext(); it.nextInt())
-				count++;
-			return count;
+		public void clear() {
+			removeEdgesInOf(target);
 		}
+	}
 
-		@Override
-		public boolean isEmpty() {
-			return !iterator().hasNext();
+	private abstract class EdgeSetSourceTarget extends EdgeSetAbstract {
+
+		final int source, target;
+
+		EdgeSetSourceTarget(int source, int target) {
+			this.source = source;
+			this.target = target;
 		}
 
 		@Override
 		public void clear() {
-			removeEdgesInOf(target);
+			for (EdgeIter it = iterator(); it.hasNext();) {
+				it.nextInt();
+				it.remove();
+			}
+		}
+
+		@Override
+		public EdgeIter iterator() {
+			return new EdgeIterSourceTarget(source, target);
+		}
+	}
+
+	private class EdgeSetSourceTargetUndirected extends EdgeSetSourceTarget {
+		EdgeSetSourceTargetUndirected(int source, int target) {
+			super(source, target);
+		}
+
+		@Override
+		public boolean contains(int edge) {
+			int s = edgeSource(edge), t = edgeTarget(edge);
+			return (source == s && target == t) || (source == t && target == s);
+		}
+	}
+
+	private class EdgeSetSourceTargetDirected extends EdgeSetSourceTarget {
+		EdgeSetSourceTargetDirected(int source, int target) {
+			super(source, target);
+		}
+
+		@Override
+		public boolean contains(int edge) {
+			return source == edgeSource(edge) && target == edgeTarget(edge);
+		}
+	}
+
+	private class EdgeIterSourceTarget implements EdgeIterImpl {
+
+		private final int source, target;
+		private final EdgeIter it;
+		private int e = -1;
+
+		EdgeIterSourceTarget(int source, int target) {
+			this.source = source;
+			this.target = target;
+			it = edgesOut(source).iterator();
+		}
+
+		@Override
+		public boolean hasNext() {
+			if (e != -1)
+				return true;
+			while (it.hasNext()) {
+				int eNext = it.nextInt();
+				if (it.target() == target) {
+					e = eNext;
+					return true;
+				}
+			}
+			return false;
+		}
+
+		@Override
+		public int nextInt() {
+			if (!hasNext())
+				throw new NoSuchElementException();
+			int ret = e;
+			e = -1;
+			return ret;
+		}
+
+		@Override
+		public int peekNext() {
+			if (!hasNext())
+				throw new NoSuchElementException();
+			return e;
+		}
+
+		@Override
+		public int source() {
+			return source;
+		}
+
+		@Override
+		public int target() {
+			return target;
 		}
 	}
 

@@ -76,7 +76,7 @@ class ContractableGraph {
 		return new ContractableGraph.EdgeIter() {
 
 			final IntIterator vit = superVertexVertices(U);
-			com.jgalgo.EdgeIterImpl eit = com.jgalgo.EdgeIterImpl.Empty;
+			com.jgalgo.EdgeIterImpl eit = com.jgalgo.EdgeIterImpl.EmptyEdgeIter;
 			int source = -1, target = -1;
 
 			boolean eitAdvance() {

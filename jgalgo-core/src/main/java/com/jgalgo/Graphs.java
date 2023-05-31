@@ -68,7 +68,7 @@ public class Graphs {
 		}
 
 		@Override
-		public EdgeIter getEdges(int source, int target) {
+		public EdgeSet getEdges(int source, int target) {
 			throw new IndexOutOfBoundsException(source);
 		}
 
@@ -582,44 +582,70 @@ public class Graphs {
 			};
 		}
 
+		private class EdgeSetSourceTarget extends AbstractIntSet implements EdgeSet {
+
+			private final int source, target;
+
+			EdgeSetSourceTarget(int source, int target) {
+				this.source = source;
+				this.target = target;
+			}
+
+			@Override
+			public boolean contains(int edge) {
+				return getEdge(source, target) == edge;
+			}
+
+			@Override
+			public int size() {
+				return 1;
+			}
+
+			@Override
+			public EdgeIter iterator() {
+				return new EdgeIterImpl() {
+
+					boolean beforeNext = true;
+
+					@Override
+					public boolean hasNext() {
+						return beforeNext;
+					}
+
+					@Override
+					public int nextInt() {
+						if (!hasNext())
+							throw new NoSuchElementException();
+						beforeNext = false;
+						return getEdge(source, target);
+					}
+
+					@Override
+					public int peekNext() {
+						if (!hasNext())
+							throw new NoSuchElementException();
+						return getEdge(source, target);
+					}
+
+					@Override
+					public int source() {
+						return source;
+					}
+
+					@Override
+					public int target() {
+						return target;
+					}
+				};
+			}
+
+		}
+
 		@Override
-		public EdgeIter getEdges(int source, int target) {
+		public EdgeSet getEdges(int source, int target) {
 			checkVertex(source);
 			checkVertex(target);
-			return new EdgeIterImpl() {
-
-				boolean beforeNext = true;
-
-				@Override
-				public boolean hasNext() {
-					return beforeNext;
-				}
-
-				@Override
-				public int nextInt() {
-					if (!hasNext())
-						throw new NoSuchElementException();
-					beforeNext = false;
-					return getEdge(source, target);
-				}
-
-				@Override
-				public int peekNext() {
-					if (!hasNext())
-						throw new NoSuchElementException();
-					return getEdge(source, target);
-				}
-
-				@Override
-				public int source() {
-					return source;
-				}
-
-				@Override
-				public int target() {
-					return target;
-				}
-			};
+			return new EdgeSetSourceTarget(source, target);
 		}
 
 		@Override
@@ -763,8 +789,8 @@ public class Graphs {
 		}
 
 		@Override
-		public EdgeIter getEdges(int source, int target) {
-			return new UnmodifiableEdgeIter(g.getEdges(source, target));
+		public EdgeSet getEdges(int source, int target) {
+			return new UnmodifiableEdgeSet(g.getEdges(source, target));
 		}
 
 		@Override
@@ -977,8 +1003,8 @@ public class Graphs {
 		}
 
 		@Override
-		public EdgeIter getEdges(int source, int target) {
-			return new ReversedEdgeIter(g.getEdges(target, source));
+		public EdgeSet getEdges(int source, int target) {
+			return new ReversedEdgeSet(g.getEdges(target, source));
 		}
 
 		@Override
