@@ -18,12 +18,9 @@ package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.List;
 import java.util.Random;
-
 import org.junit.jupiter.api.Test;
-
 import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
 
 public class TreesTest extends TestBase {
@@ -71,9 +68,10 @@ public class TreesTest extends TestBase {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(false)
 					.selfEdges(false).cycles(false).connected(true).build();
 			int u, v;
+			int[] vs = g.vertices().toIntArray();
 			do {
-				u = rand.nextInt(n);
-				v = rand.nextInt(n);
+				u = vs[rand.nextInt(n)];
+				v = vs[rand.nextInt(n)];
 			} while (u == v);
 			g.addEdge(u, v);
 
@@ -91,7 +89,8 @@ public class TreesTest extends TestBase {
 			int n = args[0], m = n - 1;
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(false)
 					.selfEdges(false).cycles(false).connected(true).build();
-			int root = rand.nextInt(n);
+			int[] vs = g.vertices().toIntArray();
+			int root = vs[rand.nextInt(n)];
 
 			assertTrue(Trees.isTree(g, root));
 		});
@@ -107,7 +106,8 @@ public class TreesTest extends TestBase {
 			int n = args[0], m = n - 1;
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(false)
 					.selfEdges(false).cycles(false).connected(true).build();
-			int root = rand.nextInt(n);
+			int[] vs = g.vertices().toIntArray();
+			int root = vs[rand.nextInt(n)];
 			int[] edges = g.edges().toIntArray();
 			int e = edges[rand.nextInt(edges.length)];
 			g.removeEdge(e);
@@ -126,11 +126,12 @@ public class TreesTest extends TestBase {
 			int n = args[0], m = n - 1;
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(false)
 					.selfEdges(false).cycles(false).connected(true).build();
-			int root = rand.nextInt(n);
+			int[] vs = g.vertices().toIntArray();
+			int root = vs[rand.nextInt(n)];
 			int u, v;
 			do {
-				u = rand.nextInt(n);
-				v = rand.nextInt(n);
+				u = vs[rand.nextInt(n)];
+				v = vs[rand.nextInt(n)];
 			} while (u == v);
 			g.addEdge(u, v);
 
@@ -175,9 +176,9 @@ public class TreesTest extends TestBase {
 				g.removeEdge(e);
 			}
 			// close a random cycle
-			for (;;) {
-				int u = rand.nextInt(n);
-				int v = rand.nextInt(n);
+			for (int[] vs = g.vertices().toIntArray();;) {
+				int u = vs[rand.nextInt(n)];
+				int v = vs[rand.nextInt(n)];
 				if (u != v && Path.findPath(g, u, v) != null) {
 					g.addEdge(u, v);
 					break;

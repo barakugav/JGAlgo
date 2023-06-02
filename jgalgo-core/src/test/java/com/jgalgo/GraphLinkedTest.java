@@ -17,11 +17,13 @@
 package com.jgalgo;
 
 import org.junit.jupiter.api.Test;
+import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 
 public class GraphLinkedTest extends TestBase {
 
-	private static Graph.Builder graphImpl() {
-		return Graph.newBuilderUndirected().setOption("impl", "GraphLinked");
+	private static Boolean2ObjectFunction<Graph> graphImpl() {
+		return directed -> IndexGraph.newBuilderUndirected().setOption("impl", "GraphLinked").setDirected(directed)
+				.build();
 	}
 
 	@Test

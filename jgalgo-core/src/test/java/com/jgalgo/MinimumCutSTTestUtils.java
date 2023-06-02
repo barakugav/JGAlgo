@@ -18,12 +18,13 @@ package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.util.BitSet;
 import java.util.List;
 import java.util.Random;
 import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 class MinimumCutSTTestUtils extends TestUtils {
 
@@ -41,9 +42,9 @@ class MinimumCutSTTestUtils extends TestUtils {
 				w.set(e, rand.nextInt(16384));
 
 			int source, sink;
-			for (;;) {
-				source = rand.nextInt(g.vertices().size());
-				sink = rand.nextInt(g.vertices().size());
+			for (int[] vs = g.vertices().toIntArray();;) {
+				source = vs[rand.nextInt(vs.length)];
+				sink = vs[rand.nextInt(vs.length)];
 				if (source != sink && Path.findPath(g, source, sink) != null)
 					break;
 			}
@@ -68,13 +69,21 @@ class MinimumCutSTTestUtils extends TestUtils {
 			vertices.rem(source);
 			vertices.rem(sink);
 
-			BitSet cut = new BitSet(n);
+			IntSet cut = new IntOpenHashSet(n);
 			for (int bitmap = 0; bitmap < 1 << (n - 2); bitmap++) {
-				cut.set(source);
+				cut.add(source);
 				for (int i = 0; i < n - 2; i++)
 					if ((bitmap & (1 << i)) != 0)
-						cut.set(vertices.getInt(i));
-				int cutWeight = (int) new CutImpl(g, cut).weight(w);
+						cut.add(vertices.getInt(i));
+				int cutWeight = 0;
+				for (int u : cut) {
+					for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
+						int e = eit.nextInt();
+						int v = eit.target();
+						if (!cut.contains(v))
+							cutWeight += w.weightInt(e);
+					}
+				}
 				assertTrue(minCutWeight <= cutWeight, "failed to find minimum cut: " + cut);
 				cut.clear();
 			}

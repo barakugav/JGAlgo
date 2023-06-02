@@ -25,14 +25,15 @@ import java.util.concurrent.RecursiveAction;
  * <p>
  * The cardinality length of a path is the number of edges in it. The cardinality shortest path from a source vertex to
  * some other vertex is the path with the minimum number of edges. This algorithm compute the cardinality shortest path
- * between each pair of vertices in a graph. The algorithm simple perform {@link ShortestPathSingleSourceCardinality} \(n\) times.
+ * between each pair of vertices in a graph. The algorithm simple perform {@link ShortestPathSingleSourceCardinality}
+ * \(n\) times.
  * <p>
  * This algorithm runs in \(O(n(n+m))\).
  *
  * @see    ShortestPathSingleSourceCardinality
  * @author Barak Ugav
  */
-class ShortestPathAllPairsCardinality implements ShortestPathAllPairs {
+class ShortestPathAllPairsCardinality extends ShortestPathAllPairsUtils.AbstractImpl {
 
 	private boolean parallel = Config.parallelByDefault;
 	private static final int PARALLEL_VERTICES_THRESHOLD = 32;
@@ -43,9 +44,9 @@ class ShortestPathAllPairsCardinality implements ShortestPathAllPairs {
 	ShortestPathAllPairsCardinality() {}
 
 	@Override
-	public ShortestPathAllPairs.Result computeAllCardinalityShortestPaths(Graph g) {
+	ShortestPathAllPairs.Result computeAllCardinalityShortestPaths(IndexGraph g) {
 		final int n = g.vertices().size();
-		ShortestPathAllPairsResultImpl.ResFromSSSP res = new ShortestPathAllPairsResultImpl.ResFromSSSP(n);
+		ShortestPathAllPairsUtils.ResFromSSSP res = new ShortestPathAllPairsUtils.ResFromSSSP(n);
 
 		ForkJoinPool pool = Utils.getPool();
 		if (n < PARALLEL_VERTICES_THRESHOLD || !parallel || pool.getParallelism() <= 1) {
@@ -57,7 +58,8 @@ class ShortestPathAllPairsCardinality implements ShortestPathAllPairs {
 		} else {
 			/* parallel */
 			List<RecursiveAction> tasks = new ArrayList<>(n);
-			ThreadLocal<ShortestPathSingleSource> sssp = ThreadLocal.withInitial(ShortestPathSingleSourceCardinality::new);
+			ThreadLocal<ShortestPathSingleSource> sssp =
+					ThreadLocal.withInitial(ShortestPathSingleSourceCardinality::new);
 			for (int source = 0; source < n; source++) {
 				final int source0 = source;
 				tasks.add(Utils.recursiveAction(
@@ -78,7 +80,7 @@ class ShortestPathAllPairsCardinality implements ShortestPathAllPairs {
 	 *                                      {@link WeightFunction#CardinalityWeightFunction}
 	 */
 	@Override
-	public Result computeAllShortestPaths(Graph g, WeightFunction w) {
+	ShortestPathAllPairs.Result computeAllShortestPaths(IndexGraph g, WeightFunction w) {
 		if (!(w == null || w == WeightFunction.CardinalityWeightFunction))
 			throw new IllegalArgumentException("only cardinality shortest paths are supported");
 		return computeAllCardinalityShortestPaths(g);

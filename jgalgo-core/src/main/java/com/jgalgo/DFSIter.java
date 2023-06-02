@@ -52,7 +52,16 @@ public interface DFSIter extends IntIterator {
 	 * @return        a DFS iterator that iterate over the vertices of the graph
 	 */
 	static DFSIter newInstance(Graph g, int source) {
-		return new DFSIterImpl(g, source);
+		if (g instanceof IndexGraph)
+			return new DFSIterImpl((IndexGraph) g, source);
+
+		IndexGraph iGraph = g.indexGraph();
+		IndexGraphMap viMap = g.indexGraphVerticesMap();
+		IndexGraphMap eiMap = g.indexGraphEdgesMap();
+
+		int iSource = viMap.idToIndex(source);
+		DFSIter indexIter = new DFSIterImpl(iGraph, iSource);
+		return new DFSIterImpl.DFSFromIndexDFS(indexIter, viMap, eiMap);
 	}
 
 	/**

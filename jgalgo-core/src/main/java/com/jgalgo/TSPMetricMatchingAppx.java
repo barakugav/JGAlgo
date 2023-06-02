@@ -25,7 +25,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  *
  * @author Barak Ugav
  */
-public class TSPMetricMatchingAppx implements TSPMetric {
+public class TSPMetricMatchingAppx extends TSPMetricUtils.AbstractImpl {
 
 	private final MinimumSpanningTree mstAlgo = MinimumSpanningTree.newBuilder().build();
 	private final MaximumMatching matchingAlgo = MaximumMatching.newBuilder().build();
@@ -39,7 +39,7 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 	public TSPMetricMatchingAppx() {}
 
 	@Override
-	public Path computeShortestTour(Graph g, WeightFunction w) {
+	Path computeShortestTour(IndexGraph g, WeightFunction w) {
 		final int n = g.vertices().size();
 		if (n == 0)
 			return null;
@@ -56,7 +56,7 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 		 * Build graph for the matching calculation, containing only vertices with odd degree from the MST
 		 */
 		int[] degree = GraphsUtils.calcDegree(g, mst);
-		Graph mG = Graph.newBuilderUndirected().build();
+		IndexGraph mG = IndexGraph.newBuilderUndirected().build();
 		int[] mVtoV = new int[n];
 		for (int u = 0; u < n; u++)
 			if (degree[u] % 2 != 0)
@@ -77,7 +77,7 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 		Matching matching = matchingAlgo.computeMaximumWeightedPerfectMatching(mG, mGWeightsNeg);
 
 		/* Build a graph of the union of the MST and the matching result */
-		Graph g1 = Graph.newBuilderUndirected().expectedVerticesNum(n).expectedEdgesNum(mst.size()).build();
+		IndexGraph g1 = IndexGraph.newBuilderUndirected().expectedVerticesNum(n).expectedEdgesNum(mst.size()).build();
 		for (int v = 0; v < n; v++)
 			g1.addVertex();
 		Weights.Int g1EdgeRef = g1.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));

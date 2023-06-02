@@ -15,7 +15,7 @@
  */
 package com.jgalgo;
 
-interface MaximumMatchingCardinality extends MaximumMatching {
+abstract class MaximumMatchingCardinality extends MaximumMatchingAbstract {
 
 	/**
 	 * {@inheritDoc}
@@ -25,8 +25,8 @@ interface MaximumMatchingCardinality extends MaximumMatching {
 	 * @throws IllegalArgumentException if {@code w} is not {@code null}
 	 */
 	@Override
-	default Matching computeMaximumWeightedMatching(Graph g, WeightFunction w) {
-		if (w != null)
+	Matching computeMaximumWeightedMatching(IndexGraph g, WeightFunction w) {
+		if (w != null && w != WeightFunction.CardinalityWeightFunction)
 			throw new IllegalArgumentException("Only cardinality matching is supported by this algorithm");
 		return computeMaximumCardinalityMatching(g);
 	}
@@ -39,8 +39,8 @@ interface MaximumMatchingCardinality extends MaximumMatching {
 	 * @throws IllegalArgumentException if {@code w} is not {@code null}
 	 */
 	@Override
-	default Matching computeMaximumWeightedPerfectMatching(Graph g, WeightFunction w) {
-		if (w != null)
+	Matching computeMaximumWeightedPerfectMatching(IndexGraph g, WeightFunction w) {
+		if (w != null && w != WeightFunction.CardinalityWeightFunction)
 			throw new IllegalArgumentException("Only cardinality matching is supported by this algorithm");
 		return computeMaximumCardinalityMatching(g);
 	}

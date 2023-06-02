@@ -101,7 +101,7 @@ class EdgeEndpointsContainer extends DataContainer.Long {
 		return (int) ((endpoints >> 0) & 0xffffffffL);
 	}
 
-	static interface GraphWithEdgeEndpointsContainer extends Graph {
+	static interface GraphWithEdgeEndpointsContainer extends IndexGraph {
 
 		EdgeEndpointsContainer edgeEndpoints();
 

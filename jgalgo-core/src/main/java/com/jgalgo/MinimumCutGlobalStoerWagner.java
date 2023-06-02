@@ -16,7 +16,6 @@
 package com.jgalgo;
 
 import java.util.BitSet;
-
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 /**
@@ -28,10 +27,10 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  *
  * @author Barak Ugav
  */
-class MinimumCutGlobalStoerWagner implements MinimumCutGlobal {
+class MinimumCutGlobalStoerWagner extends MinimumCutGlobalAbstract {
 
 	@Override
-	public Cut computeMinimumCut(Graph g, WeightFunction w) {
+	Cut computeMinimumCut(IndexGraph g, WeightFunction w) {
 		ArgumentCheck.onlyUndirected(g);
 		ArgumentCheck.onlyPositiveWeights(g, w);
 		final int n = g.vertices().size();

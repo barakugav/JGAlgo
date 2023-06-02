@@ -17,15 +17,13 @@ package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.BitSet;
 import java.util.List;
 import java.util.function.ToDoubleFunction;
-
 import org.junit.jupiter.api.Test;
-
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 public class VertexCoverBarYehudaTest extends TestBase {
 
@@ -63,19 +61,19 @@ public class VertexCoverBarYehudaTest extends TestBase {
 		if (n < 16) {
 
 			/* check all covers */
-			BitSet bestCover = null;
+			IntSet bestCover = null;
 			IntList vertices = new IntArrayList(g.vertices());
-			BitSet cover = new BitSet(n);
-			ToDoubleFunction<BitSet> coverWeight = c -> GraphsUtils.weightSum(Utils.bitSetIterator(c), w);
+			IntSet cover = new IntOpenHashSet(n);
+			ToDoubleFunction<IntSet> coverWeight = c -> GraphsUtils.weightSum(c, w);
 			coverLoop: for (int bitmap = 0; bitmap < 1 << n; bitmap++) {
 				for (int i = 0; i < n; i++)
 					if ((bitmap & (1 << i)) != 0)
-						cover.set(vertices.getInt(i));
+						cover.add(vertices.getInt(i));
 				for (int e : g.edges())
-					if (!cover.get(g.edgeSource(e)) && !cover.get(g.edgeTarget(e)))
+					if (!cover.contains(g.edgeSource(e)) && !cover.contains(g.edgeTarget(e)))
 						continue coverLoop; /* don't cover all edges */
 				if (bestCover == null || coverWeight.applyAsDouble(bestCover) > coverWeight.applyAsDouble(cover))
-					bestCover = (BitSet) cover.clone();
+					bestCover = new IntOpenHashSet(cover);
 				cover.clear();
 			}
 

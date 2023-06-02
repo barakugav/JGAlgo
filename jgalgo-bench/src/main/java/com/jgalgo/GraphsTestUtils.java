@@ -16,19 +16,28 @@
 
 package com.jgalgo;
 
-import java.util.BitSet;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
+import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntLists;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 class GraphsTestUtils extends TestUtils {
 
 	private GraphsTestUtils() {}
 
-	static class RandomGraphBuilder {
+	static Boolean2ObjectFunction<Graph> defaultGraphImpl() {
+		return direct -> Graph.newBuilderUndirected().setDirected(direct).build();
+	}
+
+	public static class RandomGraphBuilder {
 
 		private final SeedGenerator seedGen;
 		private int n;
@@ -41,8 +50,9 @@ class GraphsTestUtils extends TestUtils {
 		private boolean selfEdges;
 		private boolean cycles;
 		private boolean connected;
+		private Boolean2ObjectFunction<Graph> impl = defaultGraphImpl();
 
-		RandomGraphBuilder(long seed) {
+		public RandomGraphBuilder(long seed) {
 			seedGen = new SeedGenerator(seed);
 			n = sn = tn = m = 0;
 			bipartite = false;
@@ -52,78 +62,87 @@ class GraphsTestUtils extends TestUtils {
 			connected = false;
 		}
 
-		RandomGraphBuilder n(int n) {
+		public RandomGraphBuilder n(int n) {
 			this.n = n;
 			return this;
 		}
 
-		RandomGraphBuilder sn(int sn) {
+		public RandomGraphBuilder sn(int sn) {
 			this.sn = sn;
 			return this;
 		}
 
-		RandomGraphBuilder tn(int tn) {
+		public RandomGraphBuilder tn(int tn) {
 			this.tn = tn;
 			return this;
 		}
 
-		RandomGraphBuilder m(int m) {
+		public RandomGraphBuilder m(int m) {
 			this.m = m;
 			return this;
 		}
 
-		RandomGraphBuilder bipartite(boolean bipartite) {
+		public RandomGraphBuilder bipartite(boolean bipartite) {
 			this.bipartite = bipartite;
 			return this;
 		}
 
-		RandomGraphBuilder directed(boolean directed) {
+		public RandomGraphBuilder directed(boolean directed) {
 			this.directed = directed;
 			return this;
 		}
 
-		RandomGraphBuilder parallelEdges(boolean parallelEdges) {
+		public RandomGraphBuilder parallelEdges(boolean parallelEdges) {
 			this.parallelEdges = parallelEdges;
 			return this;
 		}
 
-		RandomGraphBuilder selfEdges(boolean selfEdges) {
+		public RandomGraphBuilder selfEdges(boolean selfEdges) {
 			this.selfEdges = selfEdges;
 			return this;
 		}
 
-		RandomGraphBuilder cycles(boolean cycles) {
+		public RandomGraphBuilder cycles(boolean cycles) {
 			this.cycles = cycles;
 			return this;
 		}
 
-		RandomGraphBuilder connected(boolean connected) {
+		public RandomGraphBuilder connected(boolean connected) {
 			this.connected = connected;
 			return this;
 		}
 
-		Graph build() {
+		public RandomGraphBuilder graphImpl(Boolean2ObjectFunction<Graph> impl) {
+			this.impl = impl;
+			return this;
+		}
+
+		public Graph build() {
+			IntList vertices = new IntArrayList();
 			final Graph g;
+			Weights.Bool partition = null;
 			if (!bipartite) {
 				if (n < 0 || m < 0)
 					throw new IllegalStateException();
-				g = Graph.newBuilderDirected().setDirected(directed).expectedVerticesNum(n).expectedEdgesNum(m).build();
+				g = impl.get(directed);
 				for (int i = 0; i < n; i++)
-					g.addVertex();
+					vertices.add(g.addVertex());
 			} else {
 				if (sn < 0 || tn < 0)
 					throw new IllegalStateException();
 				if ((sn == 0 || tn == 0) && m != 0)
 					throw new IllegalStateException();
 				n = sn + tn;
-				g = Graph.newBuilderDirected().setDirected(directed).expectedVerticesNum(n).expectedEdgesNum(m).build();
+				g = impl.get(directed);
 				for (int i = 0; i < n; i++)
-					g.addVertex();
-				Weights.Bool partition = g.addVerticesWeights(Weights.DefaultBipartiteWeightKey, boolean.class);
+					vertices.add(g.addVertex());
+				partition = g.addVerticesWeights(Weights.DefaultBipartiteWeightKey, boolean.class);
+
+				IntIterator vit = vertices.iterator();
 				for (int u = 0; u < sn; u++)
-					partition.set(u, true);
+					partition.set(vit.nextInt(), true);
 				for (int u = 0; u < tn; u++)
-					partition.set(sn + u, false);
+					partition.set(vit.nextInt(), false);
 			}
 			if (n == 0)
 				return g;
@@ -138,19 +157,31 @@ class GraphsTestUtils extends TestUtils {
 				else
 					limit = n <= 16 ? (n - 1) * n / 2 : ((long) n) * n / 3;
 				if (m > limit)
-					throw new IllegalArgumentException("too much edges for random sampling");
+					throw new IllegalArgumentException("too much edges for random sampling (limit=" + limit + ")");
 			}
 
 			Set<IntList> existingEdges = new HashSet<>();
 			UnionFind uf = UnionFind.newBuilder().expectedSize(n).build();
-			for (int i = 0; i < n; i++)
-				uf.make();
+			Weights.Int vertexToUf = Weights.createExternalVerticesWeights(g, int.class, Integer.valueOf(-1));
+			for (int v : g.vertices()) {
+				int ufIdx = uf.make();
+				vertexToUf.set(v, ufIdx);
+			}
 			int componentsNum = n;
 			Random rand = new Random(seedGen.nextSeed());
-			BitSet reachableFromRoot = new BitSet(n);
-			reachableFromRoot.set(0);
+			Weights.Bool reachableFromRoot = Weights.createExternalVerticesWeights(g, boolean.class);
+			reachableFromRoot.set(g.vertices().iterator().nextInt(), true);
 			int reachableFromRootCount = 1;
 			IntPriorityQueue queue = new IntArrayFIFOQueue();
+
+			int dagRoot = g.vertices().iterator().nextInt();
+			IntList dagOrder = new IntArrayList(g.vertices());
+			dagOrder.rem(dagRoot);
+			IntLists.shuffle(dagOrder, rand);
+			dagOrder.add(0, dagRoot);
+			Int2IntMap vToDagIdx = new Int2IntOpenHashMap(n);
+			for (int i = 0; i < n; i++)
+				vToDagIdx.put(dagOrder.getInt(i), i);
 
 			while (true) {
 				boolean done = true;
@@ -168,16 +199,22 @@ class GraphsTestUtils extends TestUtils {
 				int u, v;
 
 				if (!bipartite) {
-					u = rand.nextInt(n);
-					v = rand.nextInt(n);
-					if (directed && !cycles && u > v) {
-						int temp = u;
-						u = v;
-						v = temp;
+					u = vertices.getInt(rand.nextInt(n));
+					v = vertices.getInt(rand.nextInt(n));
+					if (directed && !cycles) {
+						int uDagIdx = vToDagIdx.get(u);
+						int vDagIdx = vToDagIdx.get(v);
+						if (uDagIdx > vDagIdx) {
+							int temp = u;
+							u = v;
+							v = temp;
+						}
 					}
 				} else {
-					u = rand.nextInt(sn);
-					v = sn + rand.nextInt(tn);
+					do {
+						u = vertices.getInt(rand.nextInt(n));
+						v = vertices.getInt(rand.nextInt(n));
+					} while (partition.getBool(u) == partition.getBool(v));
 				}
 
 				// avoid self edges
@@ -199,8 +236,8 @@ class GraphsTestUtils extends TestUtils {
 				// keep track of number of connectivity components
 				if (!cycles || connected) {
 					if (!directed) {
-						int uComp = uf.find(u);
-						int vComp = uf.find(v);
+						int uComp = uf.find(vertexToUf.getInt(u));
+						int vComp = uf.find(vertexToUf.getInt(v));
 
 						// avoid cycles
 						if (!cycles && uComp == vComp)
@@ -210,8 +247,8 @@ class GraphsTestUtils extends TestUtils {
 							componentsNum--;
 						uf.union(uComp, vComp);
 					} else if (connected) {
-						if (reachableFromRoot.get(u) && !reachableFromRoot.get(v)) {
-							reachableFromRoot.set(v);
+						if (reachableFromRoot.getBool(u) && !reachableFromRoot.getBool(v)) {
+							reachableFromRoot.set(v, true);
 							reachableFromRootCount++;
 
 							queue.enqueue(v);
@@ -221,9 +258,9 @@ class GraphsTestUtils extends TestUtils {
 								for (EdgeIter eit = g.edgesOut(p).iterator(); eit.hasNext();) {
 									eit.nextInt();
 									int pv = eit.target();
-									if (reachableFromRoot.get(pv))
+									if (reachableFromRoot.getBool(pv))
 										continue;
-									reachableFromRoot.set(pv);
+									reachableFromRoot.set(pv, true);
 									reachableFromRootCount++;
 									queue.enqueue(pv);
 								}
@@ -232,10 +269,8 @@ class GraphsTestUtils extends TestUtils {
 						}
 					}
 				}
-
 				g.addEdge(u, v);
 			}
-
 			return g;
 		}
 

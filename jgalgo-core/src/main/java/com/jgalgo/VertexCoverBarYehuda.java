@@ -16,11 +16,6 @@
 package com.jgalgo;
 
 import java.util.BitSet;
-import java.util.Objects;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.ints.IntLists;
 
 /**
  * Bar Yehuda's vertex cover algorithm.
@@ -31,10 +26,10 @@ import it.unimi.dsi.fastutil.ints.IntLists;
  *
  * @author Barak Ugav
  */
-class VertexCoverBarYehuda implements VertexCover {
+class VertexCoverBarYehuda extends VertexCoverUtils.AbstractImpl {
 
 	@Override
-	public Result computeMinimumVertexCover(Graph g, WeightFunction w) {
+	public VertexCover.Result computeMinimumVertexCover(IndexGraph g, WeightFunction w) {
 		final int n = g.vertices().size();
 		double[] sw = new double[n];
 		for (int v = 0; v < n; v++)
@@ -57,43 +52,7 @@ class VertexCoverBarYehuda implements VertexCover {
 			}
 		}
 
-		return new Result(g, cover);
-	}
-
-	private static class Result implements VertexCover.Result {
-
-		private final Graph g;
-		private final BitSet cover;
-		private IntCollection vertices;
-
-		Result(Graph g, BitSet cover) {
-			this.g = Objects.requireNonNull(g);
-			this.cover = Objects.requireNonNull(cover);
-		}
-
-		@Override
-		public IntCollection vertices() {
-			if (this.vertices == null) {
-				IntList vertices = new IntArrayList(cover.cardinality());
-				for (int v : Utils.iterable(cover))
-					vertices.add(v);
-				this.vertices = IntLists.unmodifiable(vertices);
-			}
-			return this.vertices;
-		}
-
-		@Override
-		public boolean isInCover(int vertex) {
-			if (!g.vertices().contains(vertex))
-				throw new IndexOutOfBoundsException(vertex);
-			return cover.get(vertex);
-		}
-
-		@Override
-		public double weight(WeightFunction w) {
-			return GraphsUtils.weightSum(vertices(), w);
-		}
-
+		return new VertexCoverUtils.ResultImpl(g, cover);
 	}
 
 }

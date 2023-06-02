@@ -126,7 +126,7 @@ class GraphTableDirected extends GraphTableAbstract {
 			.vertexRemove(true).edgeAdd(true).edgeRemove(true).parallelEdges(false).selfEdges(false).build();
 
 	@Override
-	public Graph copy() {
+	public IndexGraph copy() {
 		return new GraphTableDirected(this);
 	}
 

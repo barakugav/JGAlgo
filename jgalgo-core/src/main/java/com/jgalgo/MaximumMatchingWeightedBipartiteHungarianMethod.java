@@ -32,7 +32,7 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
  *
  * @author Barak Ugav
  */
-class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumMatchingWeighted {
+class MaximumMatchingWeightedBipartiteHungarianMethod extends MaximumMatchingWeighted {
 
 	private Object bipartiteVerticesWeightKey = Weights.DefaultBipartiteWeightKey;
 	private HeapReferenceable.Builder<Integer, Void> heapBuilder =
@@ -75,7 +75,7 @@ class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumMatching
 	 * @throws IllegalArgumentException if the graph is no bipartite with respect to the provided partition
 	 */
 	@Override
-	public Matching computeMaximumWeightedMatching(Graph g, WeightFunction w) {
+	Matching computeMaximumWeightedMatching(IndexGraph g, WeightFunction w) {
 		ArgumentCheck.onlyUndirected(g);
 		Weights.Bool partition = g.getVerticesWeights(bipartiteVerticesWeightKey);
 		Objects.requireNonNull(partition,
@@ -91,7 +91,7 @@ class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumMatching
 	 * @throws IllegalArgumentException if the graph is no bipartite with respect to the provided partition
 	 */
 	@Override
-	public Matching computeMaximumWeightedPerfectMatching(Graph g, WeightFunction w) {
+	 Matching computeMaximumWeightedPerfectMatching(IndexGraph g, WeightFunction w) {
 		ArgumentCheck.onlyUndirected(g);
 		Weights.Bool partition = g.getVerticesWeights(bipartiteVerticesWeightKey);
 		Objects.requireNonNull(partition,
@@ -101,7 +101,7 @@ class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumMatching
 
 	private class Worker {
 
-		private final Graph g;
+		private final IndexGraph g;
 		private final Weights.Bool partition;
 		private final WeightFunction w;
 
@@ -116,7 +116,7 @@ class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumMatching
 		private final double[] dualVal0;
 
 		@SuppressWarnings("unchecked")
-		Worker(Graph g, Weights.Bool partition, WeightFunction w) {
+		Worker(IndexGraph g, Weights.Bool partition, WeightFunction w) {
 			ArgumentCheck.onlyBipartite(g, partition);
 
 			this.g = g;

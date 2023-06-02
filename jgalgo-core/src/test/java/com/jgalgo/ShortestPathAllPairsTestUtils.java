@@ -19,9 +19,7 @@ package com.jgalgo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.List;
-
 import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
 
 class ShortestPathAllPairsTestUtils extends TestUtils {
@@ -71,11 +69,11 @@ class ShortestPathAllPairsTestUtils extends TestUtils {
 		});
 	}
 
-	static void testAPSP(Graph g, WeightFunction w, ShortestPathAllPairs algo, ShortestPathSingleSource validationAlgo) {
+	static void testAPSP(Graph g, WeightFunction w, ShortestPathAllPairs algo,
+			ShortestPathSingleSource validationAlgo) {
 		ShortestPathAllPairs.Result result = algo.computeAllShortestPaths(g, w);
 
-		int n = g.vertices().size();
-		for (int source = 0; source < n; source++) {
+		for (int source : g.vertices()) {
 			ShortestPathSingleSource.Result expectedRes = validationAlgo.computeShortestPaths(g, w, source);
 
 			if (result.foundNegativeCycle()) {
@@ -97,7 +95,7 @@ class ShortestPathAllPairsTestUtils extends TestUtils {
 			}
 			assertFalse(expectedRes.foundNegativeCycle(), "failed to found negative cycle");
 
-			for (int target = 0; target < n; target++) {
+			for (int target : g.vertices()) {
 				double expectedDistance = expectedRes.distance(target);
 				double actualDistance = result.distance(source, target);
 				assertEquals(expectedDistance, actualDistance, "Distance to vertex " + target + " is wrong");

@@ -24,14 +24,14 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntLists;
 import it.unimi.dsi.fastutil.ints.IntStack;
 
-class ConnectedComponentsAlgoImpl implements ConnectedComponentsAlgo {
+class ConnectedComponentsAlgoImpl extends ConnectedComponentsAlgoAbstract {
 
 	@Override
-	public ConnectedComponentsAlgo.Result computeConnectivityComponents(Graph g) {
+	ConnectedComponentsAlgo.Result computeConnectivityComponents(IndexGraph g) {
 		return g.getCapabilities().directed() ? computeSCCDirected(g) : computeSCCUndirected(g);
 	}
 
-	private static ConnectedComponentsAlgo.Result computeSCCDirected(Graph g) {
+	private static ConnectedComponentsAlgo.Result computeSCCDirected(IndexGraph g) {
 		final int n = g.vertices().size();
 		IntStack s = new IntArrayList();
 		IntStack p = new IntArrayList();
@@ -94,7 +94,7 @@ class ConnectedComponentsAlgoImpl implements ConnectedComponentsAlgo {
 		return new Result(g, compNum, comp);
 	}
 
-	private static ConnectedComponentsAlgo.Result computeSCCUndirected(Graph g) {
+	private static ConnectedComponentsAlgo.Result computeSCCUndirected(IndexGraph g) {
 		final int n = g.vertices().size();
 		int[] comp = new int[n];
 		Arrays.fill(comp, -1);
@@ -127,13 +127,13 @@ class ConnectedComponentsAlgoImpl implements ConnectedComponentsAlgo {
 	}
 
 	private static class Result implements ConnectedComponentsAlgo.Result {
-		private final Graph g;
+		private final IndexGraph g;
 		private final int ccNum;
 		private final int[] vertexToCc;
 		private IntList[] ccVertices;
 		private IntList[] ccEdges;
 
-		private Result(Graph g, int ccNum, int[] vertexToCc) {
+		private Result(IndexGraph g, int ccNum, int[] vertexToCc) {
 			this.g = Objects.requireNonNull(g);
 			this.ccNum = ccNum;
 			this.vertexToCc = Objects.requireNonNull(vertexToCc);

@@ -44,7 +44,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * @see    MaximumFlowPushRelabelFifo
  * @author Barak Ugav
  */
-class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
+class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract {
 
 	private static final Object FlowWeightKey = new Utils.Obj("flow");
 	private static final Object CapacityWeightKey = new Utils.Obj("capacity");
@@ -60,7 +60,7 @@ class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 	 * @throws IllegalArgumentException if the graph is not directed
 	 */
 	@Override
-	public double computeMaximumFlow(Graph g, FlowNetwork net, int source, int sink) {
+	double computeMaximumFlow(IndexGraph g, FlowNetwork net, int source, int sink) {
 		if (net instanceof FlowNetwork.Int) {
 			return new WorkerInt(g, (FlowNetwork.Int) net, source, sink).computeMaxFlow();
 		} else {
@@ -81,7 +81,7 @@ class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 		final LinkedListFixedSize.Doubly children;
 		final IntPriorityQueue toCut = new IntArrayFIFOQueue();
 
-		AbstractWorker(Graph gOrig, FlowNetwork net, int source, int sink) {
+		AbstractWorker(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
 			super(gOrig, net, source, sink);
 
 			double maxWeight = getMaxWeight();
@@ -320,7 +320,7 @@ class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 
 		private static final double EPS = 0.0001;
 
-		WorkerDouble(Graph gOrig, FlowNetwork net, int source, int sink) {
+		WorkerDouble(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
 			super(gOrig, net, source, sink);
 
 			flow = g.addEdgesWeights(FlowWeightKey, double.class);
@@ -448,7 +448,7 @@ class MaximumFlowPushRelabelDynamicTrees implements MaximumFlow {
 		final Weights.Int capacity;
 		final Weights.Int flow;
 
-		WorkerInt(Graph gOrig, FlowNetwork.Int net, int source, int sink) {
+		WorkerInt(IndexGraph gOrig, FlowNetwork.Int net, int source, int sink) {
 			super(gOrig, net, source, sink);
 
 			flow = g.addEdgesWeights(FlowWeightKey, int.class);

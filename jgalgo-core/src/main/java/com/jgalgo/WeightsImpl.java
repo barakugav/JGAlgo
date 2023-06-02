@@ -26,7 +26,7 @@ interface WeightsImpl<E> extends Weights<E> {
 
 	DataContainer<E> container();
 
-	WeightsImpl<E> copy(IDStrategyImpl idStrat);
+	WeightsImpl<E> copy(IDStrategyImpl indexIdStrat, IndexGraphMap indexMap);
 
 	@SuppressWarnings("unchecked")
 	default WeightsImpl<E> unmodifiable() {
@@ -51,15 +51,7 @@ interface WeightsImpl<E> extends Weights<E> {
 		return new UnmodifiableWeights.Obj<>(this);
 	}
 
-	@SuppressWarnings("unchecked")
-	static <E, WeightsT extends Weights<E>> WeightsT newInstance(IDStrategyImpl idStrat, Class<? super E> type,
-			E defVal) {
-		DataContainer<E> container = DataContainer.newInstance(idStrat, type, defVal);
-		boolean isContinues = idStrat instanceof IDStrategyImpl.Continues;
-		return (WeightsT) (isContinues ? wrapContainerDirected(container) : wrapContainerMapped(container, idStrat));
-	}
-
-	private static Weights<?> wrapContainerDirected(DataContainer<?> container) {
+	static Weights<?> wrapContainerDirected(DataContainer<?> container) {
 		if (container instanceof DataContainer.Obj<?>) {
 			return new WeightsImpl.Direct.Obj<>((DataContainer.Obj<?>) container);
 		} else if (container instanceof DataContainer.Byte) {
@@ -83,27 +75,25 @@ interface WeightsImpl<E> extends Weights<E> {
 		}
 	}
 
-	private static Weights<?> wrapContainerMapped(DataContainer<?> container, IDStrategyImpl idStrat) {
-		if (container instanceof DataContainer.Obj<?>) {
-			return new WeightsImpl.Mapped.Obj<>((DataContainer.Obj<?>) container, idStrat);
-		} else if (container instanceof DataContainer.Byte) {
-			return new WeightsImpl.Mapped.Byte((DataContainer.Byte) container, idStrat);
-		} else if (container instanceof DataContainer.Short) {
-			return new WeightsImpl.Mapped.Short((DataContainer.Short) container, idStrat);
-		} else if (container instanceof DataContainer.Int) {
-			return new WeightsImpl.Mapped.Int((DataContainer.Int) container, idStrat);
-		} else if (container instanceof DataContainer.Long) {
-			return new WeightsImpl.Mapped.Long((DataContainer.Long) container, idStrat);
-		} else if (container instanceof DataContainer.Float) {
-			return new WeightsImpl.Mapped.Float((DataContainer.Float) container, idStrat);
-		} else if (container instanceof DataContainer.Double) {
-			return new WeightsImpl.Mapped.Double((DataContainer.Double) container, idStrat);
-		} else if (container instanceof DataContainer.Bool) {
-			return new WeightsImpl.Mapped.Bool((DataContainer.Bool) container, idStrat);
-		} else if (container instanceof DataContainer.Char) {
-			return new WeightsImpl.Mapped.Char((DataContainer.Char) container, idStrat);
+	static Weights<?> wrapContainerMapped(Weights<?> weights, IndexGraphMap indexMap) {
+		if (weights instanceof Weights.Byte) {
+			return new WeightsImpl.Mapped.Byte((Weights.Byte) weights, indexMap);
+		} else if (weights instanceof Weights.Short) {
+			return new WeightsImpl.Mapped.Short((Weights.Short) weights, indexMap);
+		} else if (weights instanceof Weights.Int) {
+			return new WeightsImpl.Mapped.Int((Weights.Int) weights, indexMap);
+		} else if (weights instanceof Weights.Long) {
+			return new WeightsImpl.Mapped.Long((Weights.Long) weights, indexMap);
+		} else if (weights instanceof Weights.Float) {
+			return new WeightsImpl.Mapped.Float((Weights.Float) weights, indexMap);
+		} else if (weights instanceof Weights.Double) {
+			return new WeightsImpl.Mapped.Double((Weights.Double) weights, indexMap);
+		} else if (weights instanceof Weights.Bool) {
+			return new WeightsImpl.Mapped.Bool((Weights.Bool) weights, indexMap);
+		} else if (weights instanceof Weights.Char) {
+			return new WeightsImpl.Mapped.Char((Weights.Char) weights, indexMap);
 		} else {
-			throw new IllegalArgumentException(container.getClass().toString());
+			return new WeightsImpl.Mapped.Obj<>(weights, indexMap);
 		}
 	}
 
@@ -152,8 +142,8 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public WeightsImpl.Direct.Obj<E> copy(IDStrategyImpl idStrat) {
-				return new WeightsImpl.Direct.Obj<>(container().copy(idStrat));
+			public WeightsImpl.Direct.Obj<E> copy(IDStrategyImpl indexIdStrat, IndexGraphMap indexMap) {
+				return new WeightsImpl.Direct.Obj<>(container().copy(indexIdStrat));
 			}
 		}
 
@@ -183,8 +173,8 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public WeightsImpl.Direct.Byte copy(IDStrategyImpl idStrat) {
-				return new WeightsImpl.Direct.Byte(container().copy(idStrat));
+			public WeightsImpl.Direct.Byte copy(IDStrategyImpl indexIdStrat, IndexGraphMap indexMap) {
+				return new WeightsImpl.Direct.Byte(container().copy(indexIdStrat));
 			}
 		}
 
@@ -214,8 +204,8 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public WeightsImpl.Direct.Short copy(IDStrategyImpl idStrat) {
-				return new WeightsImpl.Direct.Short(container().copy(idStrat));
+			public WeightsImpl.Direct.Short copy(IDStrategyImpl indexIdStrat, IndexGraphMap indexMap) {
+				return new WeightsImpl.Direct.Short(container().copy(indexIdStrat));
 			}
 		}
 
@@ -245,8 +235,8 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public WeightsImpl.Direct.Int copy(IDStrategyImpl idStrat) {
-				return new WeightsImpl.Direct.Int(container().copy(idStrat));
+			public WeightsImpl.Direct.Int copy(IDStrategyImpl indexIdStrat, IndexGraphMap indexMap) {
+				return new WeightsImpl.Direct.Int(container().copy(indexIdStrat));
 			}
 		}
 
@@ -276,8 +266,8 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public WeightsImpl.Direct.Long copy(IDStrategyImpl idStrat) {
-				return new WeightsImpl.Direct.Long(container().copy(idStrat));
+			public WeightsImpl.Direct.Long copy(IDStrategyImpl indexIdStrat, IndexGraphMap indexMap) {
+				return new WeightsImpl.Direct.Long(container().copy(indexIdStrat));
 			}
 		}
 
@@ -307,8 +297,8 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public WeightsImpl.Direct.Float copy(IDStrategyImpl idStrat) {
-				return new WeightsImpl.Direct.Float(container().copy(idStrat));
+			public WeightsImpl.Direct.Float copy(IDStrategyImpl indexIdStrat, IndexGraphMap indexMap) {
+				return new WeightsImpl.Direct.Float(container().copy(indexIdStrat));
 			}
 		}
 
@@ -338,8 +328,8 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public WeightsImpl.Direct.Double copy(IDStrategyImpl idStrat) {
-				return new WeightsImpl.Direct.Double(container().copy(idStrat));
+			public WeightsImpl.Direct.Double copy(IDStrategyImpl indexIdStrat, IndexGraphMap indexMap) {
+				return new WeightsImpl.Direct.Double(container().copy(indexIdStrat));
 			}
 		}
 
@@ -369,8 +359,8 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public WeightsImpl.Direct.Bool copy(IDStrategyImpl idStrat) {
-				return new WeightsImpl.Direct.Bool(container().copy(idStrat));
+			public WeightsImpl.Direct.Bool copy(IDStrategyImpl indexIdStrat, IndexGraphMap indexMap) {
+				return new WeightsImpl.Direct.Bool(container().copy(indexIdStrat));
 			}
 		}
 
@@ -400,297 +390,252 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public WeightsImpl.Direct.Char copy(IDStrategyImpl idStrat) {
-				return new WeightsImpl.Direct.Char(container().copy(idStrat));
+			public WeightsImpl.Direct.Char copy(IDStrategyImpl indexIdStrat, IndexGraphMap indexMap) {
+				return new WeightsImpl.Direct.Char(container().copy(indexIdStrat));
 			}
 		}
 	}
 
-	static abstract class Mapped<E> extends WeightsImpl.Abstract<E> {
+	static abstract class Mapped<E> implements Weights<E> {
 
-		final IDStrategyImpl idStrategy;
+		private final Weights<E> weights;
+		final IndexGraphMap indexMap;
 
-		private Mapped(DataContainer<E> data, IDStrategyImpl idStrategy) {
-			super(data);
-			this.idStrategy = idStrategy;
+		private Mapped(Weights<E> weights, IndexGraphMap indexMap) {
+			this.weights = Objects.requireNonNull(weights);
+			this.indexMap = indexMap;
+		}
+
+		Weights<E> weights() {
+			return weights;
 		}
 
 		static class Obj<E> extends Mapped<E> {
-			Obj(DataContainer.Obj<E> container, IDStrategyImpl idStrategy) {
-				super(container, idStrategy);
-			}
-
-			@Override
-			public DataContainer.Obj<E> container() {
-				return (DataContainer.Obj<E>) super.container();
+			Obj(Weights<E> weights, IndexGraphMap indexMap) {
+				super(weights, indexMap);
 			}
 
 			@Override
 			public E get(int id) {
-				return container().get(idStrategy.idToIdx(id));
+				return weights().get(indexMap.idToIndex(id));
 			}
 
 			@Override
 			public void set(int id, E val) {
-				container().set(idStrategy.idToIdx(id), val);
+				weights().set(indexMap.idToIndex(id), val);
 			}
 
 			@Override
 			public E defaultWeight() {
-				return container().defaultVal();
-			}
-
-			@Override
-			public WeightsImpl.Mapped.Obj<E> copy(IDStrategyImpl idStrat) {
-				return new WeightsImpl.Mapped.Obj<>(container().copy(idStrat), idStrat);
+				return weights().defaultWeight();
 			}
 		}
 
 		static class Byte extends Mapped<java.lang.Byte> implements Weights.Byte {
-			Byte(DataContainer.Byte container, IDStrategyImpl idStrategy) {
-				super(container, idStrategy);
+			Byte(Weights.Byte weights, IndexGraphMap indexMap) {
+				super(weights, indexMap);
 			}
 
 			@Override
-			public DataContainer.Byte container() {
-				return (DataContainer.Byte) super.container();
+			public Weights.Byte weights() {
+				return (Weights.Byte) super.weights();
 			}
 
 			@Override
 			public byte getByte(int id) {
-				return container().getByte(idStrategy.idToIdx(id));
+				return weights().getByte(indexMap.idToIndex(id));
 			}
 
 			@Override
 			public void set(int id, byte weight) {
-				container().set(idStrategy.idToIdx(id), weight);
+				weights().set(indexMap.idToIndex(id), weight);
 			}
 
 			@Override
 			public byte defaultWeightByte() {
-				return container().defaultValByte();
-			}
-
-			@Override
-			public WeightsImpl.Mapped.Byte copy(IDStrategyImpl idStrat) {
-				return new WeightsImpl.Mapped.Byte(container().copy(idStrat), idStrat);
+				return weights().defaultWeightByte();
 			}
 		}
 
 		static class Short extends Mapped<java.lang.Short> implements Weights.Short {
-			Short(DataContainer.Short container, IDStrategyImpl idStrategy) {
-				super(container, idStrategy);
+			Short(Weights.Short container, IndexGraphMap indexMap) {
+				super(container, indexMap);
 			}
 
 			@Override
-			public DataContainer.Short container() {
-				return (DataContainer.Short) super.container();
+			public Weights.Short weights() {
+				return (Weights.Short) super.weights();
 			}
 
 			@Override
 			public short getShort(int id) {
-				return container().getShort(idStrategy.idToIdx(id));
+				return weights().getShort(indexMap.idToIndex(id));
 			}
 
 			@Override
 			public void set(int id, short weight) {
-				container().set(idStrategy.idToIdx(id), weight);
+				weights().set(indexMap.idToIndex(id), weight);
 			}
 
 			@Override
 			public short defaultWeightShort() {
-				return container().defaultValShort();
-			}
-
-			@Override
-			public WeightsImpl.Mapped.Short copy(IDStrategyImpl idStrat) {
-				return new WeightsImpl.Mapped.Short(container().copy(idStrat), idStrat);
+				return weights().defaultWeightShort();
 			}
 		}
 
 		static class Int extends Mapped<Integer> implements Weights.Int {
-			Int(DataContainer.Int container, IDStrategyImpl idStrategy) {
-				super(container, idStrategy);
+			Int(Weights.Int container, IndexGraphMap indexMap) {
+				super(container, indexMap);
 			}
 
 			@Override
-			public DataContainer.Int container() {
-				return (DataContainer.Int) super.container();
+			public Weights.Int weights() {
+				return (Weights.Int) super.weights();
 			}
 
 			@Override
 			public int getInt(int id) {
-				return container().getInt(idStrategy.idToIdx(id));
+				return weights().getInt(indexMap.idToIndex(id));
 			}
 
 			@Override
 			public void set(int id, int weight) {
-				container().set(idStrategy.idToIdx(id), weight);
+				weights().set(indexMap.idToIndex(id), weight);
 			}
 
 			@Override
 			public int defaultWeightInt() {
-				return container().defaultValInt();
-			}
-
-			@Override
-			public WeightsImpl.Mapped.Int copy(IDStrategyImpl idStrat) {
-				return new WeightsImpl.Mapped.Int(container().copy(idStrat), idStrat);
+				return weights().defaultWeightInt();
 			}
 		}
 
 		static class Long extends Mapped<java.lang.Long> implements Weights.Long {
-			Long(DataContainer.Long container, IDStrategyImpl idStrategy) {
-				super(container, idStrategy);
+			Long(Weights.Long container, IndexGraphMap indexMap) {
+				super(container, indexMap);
 			}
 
 			@Override
-			public DataContainer.Long container() {
-				return (DataContainer.Long) super.container();
+			public Weights.Long weights() {
+				return (Weights.Long) super.weights();
 			}
 
 			@Override
 			public long getLong(int id) {
-				return container().getLong(idStrategy.idToIdx(id));
+				return weights().getLong(indexMap.idToIndex(id));
 			}
 
 			@Override
 			public void set(int id, long weight) {
-				container().set(idStrategy.idToIdx(id), weight);
+				weights().set(indexMap.idToIndex(id), weight);
 			}
 
 			@Override
 			public long defaultWeightLong() {
-				return container().defaultValLong();
-			}
-
-			@Override
-			public WeightsImpl.Mapped.Long copy(IDStrategyImpl idStrat) {
-				return new WeightsImpl.Mapped.Long(container().copy(idStrat), idStrat);
+				return weights().defaultWeightLong();
 			}
 		}
 
 		static class Float extends Mapped<java.lang.Float> implements Weights.Float {
-			Float(DataContainer.Float container, IDStrategyImpl idStrategy) {
-				super(container, idStrategy);
+			Float(Weights.Float container, IndexGraphMap indexMap) {
+				super(container, indexMap);
 			}
 
 			@Override
-			public DataContainer.Float container() {
-				return (DataContainer.Float) super.container();
+			public Weights.Float weights() {
+				return (Weights.Float) super.weights();
 			}
 
 			@Override
 			public float getFloat(int id) {
-				return container().getFloat(idStrategy.idToIdx(id));
+				return weights().getFloat(indexMap.idToIndex(id));
 			}
 
 			@Override
 			public void set(int id, float weight) {
-				container().set(idStrategy.idToIdx(id), weight);
+				weights().set(indexMap.idToIndex(id), weight);
 			}
 
 			@Override
 			public float defaultWeightFloat() {
-				return container().defaultValFloat();
-			}
-
-			@Override
-			public WeightsImpl.Mapped.Float copy(IDStrategyImpl idStrat) {
-				return new WeightsImpl.Mapped.Float(container().copy(idStrat), idStrat);
+				return weights().defaultWeightFloat();
 			}
 		}
 
 		static class Double extends Mapped<java.lang.Double> implements Weights.Double {
-			Double(DataContainer.Double container, IDStrategyImpl idStrategy) {
-				super(container, idStrategy);
+			Double(Weights.Double container, IndexGraphMap indexMap) {
+				super(container, indexMap);
 			}
 
 			@Override
-			public DataContainer.Double container() {
-				return (DataContainer.Double) super.container();
+			public Weights.Double weights() {
+				return (Weights.Double) super.weights();
 			}
 
 			@Override
 			public double getDouble(int id) {
-				return container().getDouble(idStrategy.idToIdx(id));
+				return weights().getDouble(indexMap.idToIndex(id));
 			}
 
 			@Override
 			public void set(int id, double weight) {
-				container().set(idStrategy.idToIdx(id), weight);
+				weights().set(indexMap.idToIndex(id), weight);
 			}
 
 			@Override
 			public double defaultWeightDouble() {
-				return container().defaultValDouble();
-			}
-
-			@Override
-			public WeightsImpl.Mapped.Double copy(IDStrategyImpl idStrat) {
-				return new WeightsImpl.Mapped.Double(container().copy(idStrat), idStrat);
+				return weights().defaultWeightDouble();
 			}
 		}
 
 		static class Bool extends Mapped<Boolean> implements Weights.Bool {
-			Bool(DataContainer.Bool container, IDStrategyImpl idStrategy) {
-				super(container, idStrategy);
+			Bool(Weights.Bool container, IndexGraphMap indexMap) {
+				super(container, indexMap);
 			}
 
 			@Override
-			public DataContainer.Bool container() {
-				return (DataContainer.Bool) super.container();
+			public Weights.Bool weights() {
+				return (Weights.Bool) super.weights();
 			}
 
 			@Override
 			public boolean getBool(int id) {
-				return container().getBool(idStrategy.idToIdx(id));
+				return weights().getBool(indexMap.idToIndex(id));
 			}
 
 			@Override
 			public void set(int id, boolean weight) {
-				container().set(idStrategy.idToIdx(id), weight);
+				weights().set(indexMap.idToIndex(id), weight);
 			}
 
 			@Override
 			public boolean defaultWeightBool() {
-				return container().defaultValBool();
-			}
-
-			@Override
-			public WeightsImpl.Mapped.Bool copy(IDStrategyImpl idStrat) {
-				return new WeightsImpl.Mapped.Bool(container().copy(idStrat), idStrat);
+				return weights().defaultWeightBool();
 			}
 		}
 
 		static class Char extends Mapped<Character> implements Weights.Char {
-			Char(DataContainer.Char container, IDStrategyImpl idStrategy) {
-				super(container, idStrategy);
+			Char(Weights.Char container, IndexGraphMap indexMap) {
+				super(container, indexMap);
 			}
 
 			@Override
-			public DataContainer.Char container() {
-				return (DataContainer.Char) super.container();
+			public Weights.Char weights() {
+				return (Weights.Char) super.weights();
 			}
 
 			@Override
 			public char getChar(int id) {
-				return container().getChar(idStrategy.idToIdx(id));
+				return weights().getChar(indexMap.idToIndex(id));
 			}
 
 			@Override
 			public void set(int id, char weight) {
-				container().set(idStrategy.idToIdx(id), weight);
+				weights().set(indexMap.idToIndex(id), weight);
 			}
 
 			@Override
 			public char defaultWeightChar() {
-				return container().defaultValChar();
-			}
-
-			@Override
-			public WeightsImpl.Mapped.Char copy(IDStrategyImpl idStrat) {
-				return new WeightsImpl.Mapped.Char(container().copy(idStrat), idStrat);
+				return weights().defaultWeightChar();
 			}
 		}
 	}
@@ -703,15 +648,10 @@ interface WeightsImpl<E> extends Weights<E> {
 			super(initialCapacity);
 		}
 
-		Manager(Manager orig, IDStrategyImpl idStrat) {
-			this(idStrat.size());
+		Manager(Manager orig, IDStrategyImpl indexIdStrat, IndexGraphMap indexMap) {
+			this(indexIdStrat.size());
 			for (var entry : orig.weights.entrySet())
-				addWeights(entry.getKey(), entry.getValue().copy(idStrat));
-		}
-
-		@Override
-		Manager copy(IDStrategyImpl idStrat) {
-			return new Manager(this, idStrat);
+				addWeights(entry.getKey(), entry.getValue().copy(indexIdStrat, indexMap));
 		}
 
 		@SuppressWarnings("unchecked")
@@ -758,8 +698,8 @@ interface WeightsImpl<E> extends Weights<E> {
 		}
 
 		@Override
-		public WeightsImpl<E> copy(IDStrategyImpl idStrat) {
-			return weights.copy(idStrat);
+		public WeightsImpl<E> copy(IDStrategyImpl indexIdStrat, IndexGraphMap indexMap) {
+			return weights.copy(indexIdStrat, indexMap);
 		}
 
 		Weights<E> weights() {
@@ -996,6 +936,17 @@ interface WeightsImpl<E> extends Weights<E> {
 				return weights().defaultWeightChar();
 			}
 		}
+	}
+
+	static WeightFunction indexWeightFuncFromIdWeightFunc(WeightFunction w, IndexGraphMap map) {
+		if (w == null || w == WeightFunction.CardinalityWeightFunction)
+			return w;
+		if (w instanceof WeightFunction.Int) {
+			WeightFunction.Int wInt = (WeightFunction.Int) w;
+			WeightFunction.Int r = idx -> wInt.weightInt(map.indexToId(idx)); // TODO.
+			return r;
+		}
+		return idx -> w.weight(map.indexToId(idx)); // TODO
 	}
 
 }

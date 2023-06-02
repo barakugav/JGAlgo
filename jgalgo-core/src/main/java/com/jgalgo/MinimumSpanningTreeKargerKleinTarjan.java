@@ -38,7 +38,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
  *
  * @author Barak Ugav
  */
-class MinimumSpanningTreeKargerKleinTarjan implements MinimumSpanningTree {
+class MinimumSpanningTreeKargerKleinTarjan extends MinimumSpanningTreeUtils.AbstractUndirected {
 
 	private final Random rand;
 	private final ConnectedComponentsAlgo ccAlg = ConnectedComponentsAlgo.newBuilder().build();
@@ -69,34 +69,34 @@ class MinimumSpanningTreeKargerKleinTarjan implements MinimumSpanningTree {
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	public MinimumSpanningTree.Result computeMinimumSpanningTree(Graph g, WeightFunction w) {
+	MinimumSpanningTree.Result computeMinimumSpanningTree(IndexGraph g, WeightFunction w) {
 		ArgumentCheck.onlyUndirected(g);
-		return new MinimumSpanningTreeResultImpl(computeMST(g, w));
+		return new MinimumSpanningTreeUtils.ResultImpl(computeMST(g, w));
 	}
 
-	private IntCollection computeMST(Graph g, WeightFunction w) {
+	private IntCollection computeMST(IndexGraph g, WeightFunction w) {
 		if (g.vertices().size() == 0 || g.edges().size() == 0)
 			return IntLists.emptyList();
 
 		/* Run Boruvka to reduce the number of vertices by a factor of 4 by contraction */
-		Pair<Graph, IntCollection> r = boruvka.runBoruvka(g, w, 2, "edgeRef_g0");
-		Graph g0 = r.first();
+		Pair<IndexGraph, IntCollection> r = boruvka.runBoruvka(g, w, 2, "edgeRef_g0");
+		IndexGraph g0 = r.first();
 		IntCollection f0 = r.second();
 		Weights.Int g0Ref = g0.getEdgesWeights("edgeRef_g0");
 
 		/* Find a random subgraph G1 in the contracted graph G0, by choosing each edge with probability 0.5 */
-		Graph g1 = randSubgraph(g0, "edgeRef_g1", g0Ref);
+		IndexGraph g1 = randSubgraph(g0, "edgeRef_g1", g0Ref);
 		Weights.Int g1Ref = g1.getEdgesWeights("edgeRef_g1");
 		Weights.Double g1W = assignWeightsFromEdgeRef(g1, w, "w_g1", g1Ref);
 
 		/* Compute an MST (actually a forest) F1 in the random subgraph G1 */
 		IntCollection f1Edges = computeMST(g1, g1W);
-		Graph f1 = subGraph(g1, f1Edges, "edgeRef_f1", g1Ref);
+		IndexGraph f1 = subGraph(g1, f1Edges, "edgeRef_f1", g1Ref);
 		Weights.Int f1Ref = f1.getEdgesWeights("edgeRef_f1");
 
 		/* Find all the light edges in G0 with respect to the computed forest F1 */
 		IntCollection e2 = lightEdges(g0, e -> w.weight(g0Ref.getInt(e)), f1, e -> w.weight(f1Ref.getInt(e)));
-		Graph g2 = subGraph(g0, e2, "edgeRef_g2", g0Ref);
+		IndexGraph g2 = subGraph(g0, e2, "edgeRef_g2", g0Ref);
 		Weights.Int g2Ref = g2.getEdgesWeights("edgeRef_g2");
 		Weights.Double g2W = assignWeightsFromEdgeRef(g2, w, "w_g2", g2Ref);
 
@@ -109,9 +109,10 @@ class MinimumSpanningTreeKargerKleinTarjan implements MinimumSpanningTree {
 		return f0;
 	}
 
-	static Graph subGraph(Graph g, IntCollection edgeSet, Object edgeDataKey, Weights.Int edgeRef) {
+	static IndexGraph subGraph(IndexGraph g, IntCollection edgeSet, Object edgeDataKey, Weights.Int edgeRef) {
 		final int n = g.vertices().size();
-		Graph subG = Graph.newBuilderUndirected().expectedVerticesNum(n).expectedEdgesNum(edgeSet.size()).build();
+		IndexGraph subG =
+				IndexGraph.newBuilderUndirected().expectedVerticesNum(n).expectedEdgesNum(edgeSet.size()).build();
 		for (int v = 0; v < n; v++)
 			subG.addVertex();
 		Weights.Int edgeRefSub = subG.addEdgesWeights(edgeDataKey, int.class);
@@ -123,14 +124,15 @@ class MinimumSpanningTreeKargerKleinTarjan implements MinimumSpanningTree {
 		return subG;
 	}
 
-	static Weights.Double assignWeightsFromEdgeRef(Graph g, WeightFunction w, Object weightKey, Weights.Int edgeRef) {
+	static Weights.Double assignWeightsFromEdgeRef(IndexGraph g, WeightFunction w, Object weightKey,
+			Weights.Int edgeRef) {
 		Weights.Double w2 = g.addEdgesWeights(weightKey, double.class);
 		for (int e : g.edges())
 			w2.set(e, w.weight(edgeRef.getInt(e)));
 		return w2;
 	}
 
-	private Graph randSubgraph(Graph g, Object edgeRefKey, Weights.Int edgeRef) {
+	private IndexGraph randSubgraph(IndexGraph g, Object edgeRefKey, Weights.Int edgeRef) {
 		allocatedMem.allocateForRandSubGraph();
 		IntCollection edgeSet = allocatedMem.edgeList;
 		edgeSet.clear();
@@ -140,7 +142,7 @@ class MinimumSpanningTreeKargerKleinTarjan implements MinimumSpanningTree {
 		return subGraph(g, edgeSet, edgeRefKey, edgeRef);
 	}
 
-	private IntCollection lightEdges(Graph g, Int2DoubleFunction gw, Graph f, Int2DoubleFunction fw) {
+	private IntCollection lightEdges(IndexGraph g, Int2DoubleFunction gw, IndexGraph f, Int2DoubleFunction fw) {
 		final int n = f.vertices().size();
 		/* find connectivity components in the forest, each one of them is a tree */
 		ConnectedComponentsAlgo.Result connectivityRes = ccAlg.computeConnectivityComponents(f);
@@ -149,7 +151,7 @@ class MinimumSpanningTreeKargerKleinTarjan implements MinimumSpanningTree {
 
 		allocatedMem.allocateForLightEdges(n, treeCount);
 
-		Graph[] trees = allocatedMem.trees;
+		IndexGraph[] trees = allocatedMem.trees;
 		Weights.Double[] treeData = allocatedMem.treeData;
 		for (int t = 0; t < treeCount; t++)
 			treeData[t] = trees[t].getEdgesWeights("weight");
@@ -204,7 +206,7 @@ class MinimumSpanningTreeKargerKleinTarjan implements MinimumSpanningTree {
 	private static class AllocatedMemory {
 		IntList edgeList;
 
-		Graph[] trees = MemoryReuse.EmptyGraphArr;
+		IndexGraph[] trees = MemoryReuse.EmptyGraphArr;
 		int[] vToVnew = IntArrays.EMPTY_ARRAY;
 		Weights.Double[] treeData = MemoryReuse.EmptyWeightsDoubleArr;
 
@@ -227,8 +229,8 @@ class MinimumSpanningTreeKargerKleinTarjan implements MinimumSpanningTree {
 			tpmResults = MemoryReuse.ensureLength(tpmResults, treeCount);
 
 			for (int tIdx = 0; tIdx < treeCount; tIdx++) {
-				Graph tree = trees[tIdx] =
-						MemoryReuse.ensureAllocated(trees[tIdx], () -> Graph.newBuilderUndirected().build());
+				IndexGraph tree = trees[tIdx] =
+						MemoryReuse.ensureAllocated(trees[tIdx], () -> IndexGraph.newBuilderUndirected().build());
 				treeData[tIdx] =
 						MemoryReuse.ensureAllocated(treeData[tIdx], () -> tree.addEdgesWeights("weight", double.class));
 				tpmQueries[tIdx] =

@@ -46,7 +46,7 @@ class MatchingUnweightedTestUtils extends TestUtils {
 		assertEquals(expectedMatchSize, match.edges().size(), "unexpected match size");
 	}
 
-	static <E> void validateMatching(Graph g, Matching matching) {
+	static void validateMatching(Graph g, Matching matching) {
 		Set<Integer> matched = new HashSet<>();
 		for (int e : matching.edges()) {
 			for (int v : new int[] { g.edgeSource(e), g.edgeTarget(e) }) {
@@ -57,22 +57,23 @@ class MatchingUnweightedTestUtils extends TestUtils {
 		}
 	}
 
-	private static <E> int calcExpectedMaxMatching(Graph g) {
+	/* implementation of general graphs maximum matching from the Internet */
+
+	private static int calcExpectedMaxMatching(Graph g) {
 		int n = g.vertices().size();
 		@SuppressWarnings("unchecked")
 		List<Integer>[] graph = new List[n];
-		for (int u = 0; u < n; u++) {
-			graph[u] = new ArrayList<>();
+		IndexGraphMap vToIdx = g.indexGraphVerticesMap();
+		for (int u : g.vertices()) {
+			graph[vToIdx.idToIndex(u)] = new ArrayList<>();
 			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
 				eit.nextInt();
 				int v = eit.target();
-				graph[u].add(Integer.valueOf(v));
+				graph[vToIdx.idToIndex(u)].add(Integer.valueOf(vToIdx.idToIndex(v)));
 			}
 		}
 		return EdmondsMaximumCardinalityMatching.maxMatching(graph);
 	}
-
-	/* implementation of general graphs maximum matching from the Internet */
 
 	private static class EdmondsMaximumCardinalityMatching {
 		private static int lca(int[] match, int[] base, int[] p, int a, int b) {

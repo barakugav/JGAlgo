@@ -37,7 +37,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * @see    <a href= "https://en.wikipedia.org/wiki/Bor%C5%AFvka%27s_algorithm">Wikipedia</a>
  * @author Barak Ugav
  */
-class MinimumSpanningTreeBoruvka implements MinimumSpanningTree {
+class MinimumSpanningTreeBoruvka extends MinimumSpanningTreeUtils.AbstractUndirected {
 
 	/**
 	 * Construct a new MST algorithm object.
@@ -50,16 +50,16 @@ class MinimumSpanningTreeBoruvka implements MinimumSpanningTree {
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	public MinimumSpanningTree.Result computeMinimumSpanningTree(Graph g, WeightFunction w) {
-		return new MinimumSpanningTreeResultImpl(computeMST(g, w, Integer.MAX_VALUE).mst);
+	MinimumSpanningTree.Result computeMinimumSpanningTree(IndexGraph g, WeightFunction w) {
+		return new MinimumSpanningTreeUtils.ResultImpl(computeMST(g, w, Integer.MAX_VALUE).mst);
 	}
 
-	Pair<Graph, IntCollection> runBoruvka(Graph g, WeightFunction w, int numberOfRounds, Object edgeRefKey) {
+	Pair<IndexGraph, IntCollection> runBoruvka(IndexGraph g, WeightFunction w, int numberOfRounds, Object edgeRefKey) {
 		if (numberOfRounds <= 0)
 			throw new IllegalArgumentException();
 		Res mstRes = computeMST(g, w, numberOfRounds);
 
-		Graph contractedG = Graph.newBuilderUndirected().expectedVerticesNum(mstRes.treeNum).build();
+		IndexGraph contractedG = IndexGraph.newBuilderUndirected().expectedVerticesNum(mstRes.treeNum).build();
 		for (int v = 0; v < mstRes.treeNum; v++)
 			contractedG.addVertex();
 		Weights.Int edgeRef = contractedG.addEdgesWeights(edgeRefKey, int.class);
@@ -74,7 +74,7 @@ class MinimumSpanningTreeBoruvka implements MinimumSpanningTree {
 		return Pair.of(contractedG, mstRes.mst);
 	}
 
-	private static Res computeMST(Graph g, WeightFunction w, int numberOfRounds) {
+	private static Res computeMST(IndexGraph g, WeightFunction w, int numberOfRounds) {
 		ArgumentCheck.onlyUndirected(g);
 		final int n = g.vertices().size();
 

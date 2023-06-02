@@ -49,7 +49,7 @@ public class UnionFindBench {
 	@Param({ "|V|=64 |E|=256", "|V|=512 |E|=4096", "|V|=4096 |E|=16384", "|V|=20000 |E|=50000" })
 	public String args;
 
-	private List<Pair<Graph, int[]>> graphs;
+	private List<Pair<IndexGraph, int[]>> graphs;
 	private final int graphsNum = 31;
 	private final AtomicInteger graphIdx = new AtomicInteger();
 
@@ -62,7 +62,7 @@ public class UnionFindBench {
 		final SeedGenerator seedGen = new SeedGenerator(0xecbc984604fcd0afL);
 		graphs = new ArrayList<>(graphsNum);
 		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-			Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
+			IndexGraph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed()).indexGraph();
 			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 
 			/*
@@ -87,12 +87,12 @@ public class UnionFindBench {
 	}
 
 	private void benchUnionFindByRunningMSTKruskal(UnionFind.Builder builder, Blackhole blackhole) {
-		Pair<Graph, int[]> graph = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
+		Pair<IndexGraph, int[]> graph = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 		int[] mst = calcMSTKruskal(graph.first(), graph.second(), builder);
 		blackhole.consume(mst);
 	}
 
-	private static int[] calcMSTKruskal(Graph g, int[] edges, UnionFind.Builder ufBuilder) {
+	private static int[] calcMSTKruskal(IndexGraph g, int[] edges, UnionFind.Builder ufBuilder) {
 		/* !! assume the edge array is sorted by weight !! */
 		int n = g.vertices().size();
 

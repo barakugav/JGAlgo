@@ -33,7 +33,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
  *
  * @author Barak Ugav
  */
-class CyclesFinderTarjan implements CyclesFinder {
+class CyclesFinderTarjan extends CyclesFinderAbstract {
 
 	/**
 	 * Create a new cycles finder algorithm object.
@@ -41,7 +41,7 @@ class CyclesFinderTarjan implements CyclesFinder {
 	CyclesFinderTarjan() {}
 
 	@Override
-	public Iterator<Path> findAllCycles(Graph g) {
+	Iterator<Path> findAllCycles(IndexGraph g) {
 		ArgumentCheck.onlyDirected(g);
 		Worker worker = new Worker(g);
 		int n = g.vertices().size();
@@ -54,13 +54,13 @@ class CyclesFinderTarjan implements CyclesFinder {
 	}
 
 	private static class Worker {
-		private final Graph g;
+		private final IndexGraph g;
 		private final IntStack path = new IntArrayList();
 		private final IntStack markedStack = new IntArrayList();
 		private final BitSet isMarked;
 		private final List<Path> cycles = new ArrayList<>();
 
-		Worker(Graph g) {
+		Worker(IndexGraph g) {
 			this.g = g;
 			int n = g.vertices().size();
 			isMarked = new BitSet(n);

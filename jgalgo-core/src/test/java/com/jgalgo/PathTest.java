@@ -40,8 +40,9 @@ public class PathTest extends TestBase {
 			int n = args[0], m = args[1];
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(true).build();
-			int source = rand.nextInt(n);
-			int target = rand.nextInt(n);
+			int[] vs = g.vertices().toIntArray();
+			int source = vs[rand.nextInt(vs.length)];
+			int target = vs[rand.nextInt(vs.length)];
 
 			Path actual = Path.findPath(g, source, target);
 			Path expected = validationAlgo.computeCardinalityShortestPaths(g, source).getPath(target);

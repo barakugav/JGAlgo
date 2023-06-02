@@ -15,14 +15,18 @@
  */
 package com.jgalgo;
 
+import java.util.Arrays;
+import java.util.Objects;
 import it.unimi.dsi.fastutil.ints.AbstractIntList;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntListIterator;
 import it.unimi.dsi.fastutil.ints.IntLists;
 
 class PathImpl extends AbstractIntList implements Path {
 
-	private final Graph g;
+	private final IndexGraph g;
 	private final int source;
 	private final int target;
 	private final IntList edges;
@@ -36,32 +40,18 @@ class PathImpl extends AbstractIntList implements Path {
 	 * @param edges  a list of edges that form a path from the {@code source} to the {@code target} vertices in the
 	 *                   graph.
 	 */
-	PathImpl(Graph g, int source, int target, IntList edges) {
+	PathImpl(IndexGraph g, int source, int target, IntList edges) {
 		this.g = g;
 		this.source = source;
 		this.target = target;
 		this.edges = edges instanceof IntLists.UnmodifiableList ? edges : IntLists.unmodifiable(edges);
 	}
 
-	/**
-	 * Get the source vertex of the path.
-	 * <p>
-	 * If the returned vertex is the same as {@link #target()}, the represented path is actually a cycle.
-	 *
-	 * @return the source vertex of the path.
-	 */
 	@Override
 	public int source() {
 		return source;
 	}
 
-	/**
-	 * Get the target vertex of the path.
-	 * <p>
-	 * If the returned vertex is the same as {@link #source()}, the represented path is actually a cycle.
-	 *
-	 * @return the target vertex of the path.
-	 */
 	@Override
 	public int target() {
 		return target;
@@ -79,11 +69,11 @@ class PathImpl extends AbstractIntList implements Path {
 
 	private static class IterUndirected implements EdgeIterImpl {
 
-		private final Graph g;
+		private final IndexGraph g;
 		private final IntListIterator it;
 		private int e = -1, v = -1;
 
-		IterUndirected(Graph g, IntList path, int source) {
+		IterUndirected(IndexGraph g, IntList path, int source) {
 			ArgumentCheck.onlyUndirected(g);
 			this.g = g;
 			v = source;
@@ -124,11 +114,11 @@ class PathImpl extends AbstractIntList implements Path {
 
 	private static class IterDirected implements EdgeIterImpl {
 
-		private final Graph g;
+		private final IndexGraph g;
 		private final IntListIterator it;
 		private int e = -1;
 
-		IterDirected(Graph g, IntList path) {
+		IterDirected(IndexGraph g, IntList path) {
 			ArgumentCheck.onlyDirected(g);
 			this.g = g;
 			it = path.iterator();
@@ -184,6 +174,85 @@ class PathImpl extends AbstractIntList implements Path {
 	@Override
 	public int lastIndexOf(int k) {
 		return edges.lastIndexOf(k);
+	}
+
+	static Path pathFromIndexPath(Path path, IndexGraphMap viMap, IndexGraphMap eiMap) {
+		return path == null ? null : new PathFromIndexPath(path, viMap, eiMap);
+	}
+
+	static Path findPath(IndexGraph g, final int source, final int target) {
+		if (source == target)
+			return new PathImpl(g, source, target, IntLists.emptyList());
+		boolean reverse = true;
+		int u0 = source, v0 = target;
+		if (!g.getCapabilities().directed()) {
+			u0 = target;
+			v0 = source;
+			reverse = false;
+		}
+		int n = g.vertices().size();
+		int[] backtrack = new int[n];
+		Arrays.fill(backtrack, -1);
+
+		IntArrayList path = new IntArrayList();
+		for (BFSIter it = BFSIter.newInstance(g, u0); it.hasNext();) {
+			int p = it.nextInt();
+			backtrack[p] = it.inEdge();
+			if (p == v0)
+				break;
+		}
+
+		if (backtrack[v0] == -1)
+			return null;
+
+		for (int p = v0; p != u0;) {
+			int e = backtrack[p];
+			path.add(e);
+			p = g.edgeEndpoint(e, p);
+		}
+
+		// TODO use backward BFS iterator to avoid reversing
+		if (reverse)
+			IntArrays.reverse(path.elements(), 0, path.size());
+		return new PathImpl(g, source, target, path);
+	}
+
+	private static class PathFromIndexPath extends AbstractIntList implements Path {
+
+		private final Path path;
+		private final IndexGraphMap viMap;
+		private final IndexGraphMap eiMap;
+
+		PathFromIndexPath(Path path, IndexGraphMap viMap, IndexGraphMap eiMap) {
+			this.path = Objects.requireNonNull(path);
+			this.viMap = Objects.requireNonNull(viMap);
+			this.eiMap = Objects.requireNonNull(eiMap);
+		}
+
+		@Override
+		public int source() {
+			return viMap.indexToId(path.source());
+		}
+
+		@Override
+		public int target() {
+			return viMap.indexToId(path.target());
+		}
+
+		@Override
+		public int getInt(int index) {
+			return eiMap.indexToId(path.getInt(index));
+		}
+
+		@Override
+		public int size() {
+			return path.size();
+		}
+
+		@Override
+		public EdgeIter edgeIter() {
+			return new EdgeIterImpl.EdgeIterFromIndexEdgeIter(path.edgeIter(), viMap, eiMap);
+		}
 	}
 
 }

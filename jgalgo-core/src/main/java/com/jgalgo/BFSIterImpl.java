@@ -17,13 +17,15 @@ package com.jgalgo;
 
 import java.util.BitSet;
 import java.util.NoSuchElementException;
+import java.util.Objects;
+
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntIterators;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 class BFSIterImpl implements BFSIter {
 
-	private final Graph g;
+	private final IndexGraph g;
 	private final BitSet visited;
 	private final IntPriorityQueue queue;
 	private int inEdge;
@@ -36,7 +38,7 @@ class BFSIterImpl implements BFSIter {
 	 * @param g      a graph
 	 * @param source a vertex in the graph from which the search will start from
 	 */
-	public BFSIterImpl(Graph g, int source) {
+	BFSIterImpl(IndexGraph g, int source) {
 		this(g, IntIterators.singleton(source));
 	}
 
@@ -47,7 +49,7 @@ class BFSIterImpl implements BFSIter {
 	 * @param  sources                  multiple sources vertices in the graph from which the search will start from
 	 * @throws IllegalArgumentException if the sources iterator is empty
 	 */
-	private BFSIterImpl(Graph g, IntIterator sources) {
+	private BFSIterImpl(IndexGraph g, IntIterator sources) {
 		if (!sources.hasNext())
 			throw new IllegalArgumentException("no sources provided");
 		this.g = g;
@@ -107,5 +109,40 @@ class BFSIterImpl implements BFSIter {
 	@Override
 	public int layer() {
 		return layer;
+	}
+
+	static class BFSFromIndexBFS implements BFSIter {
+
+		private final BFSIter it;
+		private final IndexGraphMap viMap;
+		private final IndexGraphMap eiMap;
+
+		BFSFromIndexBFS(BFSIter it, IndexGraphMap viMap, IndexGraphMap eiMap) {
+			this.it = Objects.requireNonNull(it);
+			this.viMap = Objects.requireNonNull(viMap);
+			this.eiMap = Objects.requireNonNull(eiMap);
+		}
+
+		@Override
+		public boolean hasNext() {
+			return it.hasNext();
+		}
+
+		@Override
+		public int nextInt() {
+			return viMap.indexToId(it.nextInt());
+		}
+
+		@Override
+		public int inEdge() {
+			int e = it.inEdge();
+			return e == -1 ? -1 : eiMap.indexToId(e);
+		}
+
+		@Override
+		public int layer() {
+			return it.layer();
+		}
+
 	}
 }

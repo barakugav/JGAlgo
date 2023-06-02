@@ -47,7 +47,7 @@ public class TSPMetricTest extends TestBase {
 			locations[u][y] = nextDouble(rand, 1, 100);
 		}
 
-		Graph g = Graphs.newCompleteGraphUndirected(n);
+		IndexGraph g = Graphs.newCompleteGraphUndirected(n);
 		WeightFunction distances = e -> {
 			int u = g.edgeSource(e);
 			int v = g.edgeTarget(e);

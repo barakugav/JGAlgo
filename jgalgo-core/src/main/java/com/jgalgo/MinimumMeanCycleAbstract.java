@@ -16,26 +16,22 @@
 
 package com.jgalgo;
 
-import java.util.Arrays;
-
-class ColoringResultImpl implements Coloring.Result {
-
-	int colorsNum;
-	final int[] colors;
-
-	ColoringResultImpl(Graph g) {
-		colors = new int[g.vertices().size()];
-		Arrays.fill(colors, -1);
-	}
+abstract class MinimumMeanCycleAbstract implements MinimumMeanCycle {
 
 	@Override
-	public int colorsNum() {
-		return colorsNum;
+	public Path computeMinimumMeanCycle(Graph g, WeightFunction w) {
+		if (g instanceof IndexGraph)
+			return computeMinimumMeanCycle((IndexGraph) g, w);
+
+		IndexGraph iGraph = g.indexGraph();
+		IndexGraphMap viMap = g.indexGraphVerticesMap();
+		IndexGraphMap eiMap = g.indexGraphEdgesMap();
+		w = WeightsImpl.indexWeightFuncFromIdWeightFunc(w, eiMap);
+
+		Path indexPath = computeMinimumMeanCycle(iGraph, w);
+		return PathImpl.pathFromIndexPath(indexPath, viMap, eiMap);
 	}
 
-	@Override
-	public int colorOf(int vertex) {
-		return colors[vertex];
-	}
+	abstract Path computeMinimumMeanCycle(IndexGraph g, WeightFunction w);
 
 }

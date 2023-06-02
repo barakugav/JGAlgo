@@ -27,7 +27,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
  *
  * @author Barak Ugav
  */
-class ShortestPathAllPairsFloydWarshall implements ShortestPathAllPairs {
+class ShortestPathAllPairsFloydWarshall extends ShortestPathAllPairsUtils.AbstractImpl {
 
 	/**
 	 * Create a new APSP algorithm object.
@@ -35,14 +35,14 @@ class ShortestPathAllPairsFloydWarshall implements ShortestPathAllPairs {
 	ShortestPathAllPairsFloydWarshall() {}
 
 	@Override
-	public ShortestPathAllPairs.Result computeAllShortestPaths(Graph g, WeightFunction w) {
+	ShortestPathAllPairs.Result computeAllShortestPaths(IndexGraph g, WeightFunction w) {
 		if (w == null)
 			w = WeightFunction.CardinalityWeightFunction;
 		return g.getCapabilities().directed() ? computeAPSPDirected(g, w) : computeAPSPUndirected(g, w);
 	}
 
-	private static ShortestPathAllPairs.Result computeAPSPUndirected(Graph g, WeightFunction w) {
-		ShortestPathAllPairsResultImpl.Abstract res = new ShortestPathAllPairsResultImpl.Undirected(g);
+	private static ShortestPathAllPairs.Result computeAPSPUndirected(IndexGraph g, WeightFunction w) {
+		ShortestPathAllPairsUtils.ResultImpl.Abstract res = new ShortestPathAllPairsUtils.ResultImpl.Undirected(g);
 		for (int e : g.edges()) {
 			int u = g.edgeSource(e);
 			int v = g.edgeTarget(e);
@@ -87,8 +87,8 @@ class ShortestPathAllPairsFloydWarshall implements ShortestPathAllPairs {
 		return res;
 	}
 
-	private static ShortestPathAllPairs.Result computeAPSPDirected(Graph g, WeightFunction w) {
-		ShortestPathAllPairsResultImpl.Abstract res = new ShortestPathAllPairsResultImpl.Directed(g);
+	private static ShortestPathAllPairs.Result computeAPSPDirected(IndexGraph g, WeightFunction w) {
+		ShortestPathAllPairsUtils.ResultImpl.Abstract res = new ShortestPathAllPairsUtils.ResultImpl.Directed(g);
 		for (int e : g.edges()) {
 			int u = g.edgeSource(e);
 			int v = g.edgeTarget(e);
@@ -129,7 +129,7 @@ class ShortestPathAllPairsFloydWarshall implements ShortestPathAllPairs {
 		return res;
 	}
 
-	private static boolean detectNegCycle(ShortestPathAllPairsResultImpl.Abstract res, int n, int k) {
+	private static boolean detectNegCycle(ShortestPathAllPairsUtils.ResultImpl.Abstract res, int n, int k) {
 		for (int u = 0; u < n; u++) {
 			double d1 = res.distance(u, k);
 			double d2 = res.distance(k, u);

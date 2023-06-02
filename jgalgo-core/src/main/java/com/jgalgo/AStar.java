@@ -63,6 +63,25 @@ class AStar implements ShortestPathWithHeuristic {
 
 	@Override
 	public Path computeShortestPath(Graph g, WeightFunction w, int source, int target, IntToDoubleFunction vHeuristic) {
+		if (g instanceof IndexGraph)
+			return computeShortestPath((IndexGraph) g, w, source, target, vHeuristic);
+
+		IndexGraph iGraph = g.indexGraph();
+		IndexGraphMap viMap = g.indexGraphVerticesMap();
+		IndexGraphMap eiMap = g.indexGraphEdgesMap();
+
+		w = WeightsImpl.indexWeightFuncFromIdWeightFunc(w, eiMap);
+		int iSource = viMap.idToIndex(source);
+		int iTarget = viMap.idToIndex(target);
+
+		IntToDoubleFunction indexVHeuristic = vIdx -> vHeuristic.applyAsDouble(viMap.indexToId(vIdx));
+
+		Path indexPath = computeShortestPath(iGraph, w, iSource, iTarget, indexVHeuristic);
+		return PathImpl.pathFromIndexPath(indexPath, viMap, eiMap);
+	}
+
+	Path computeShortestPath(IndexGraph g, WeightFunction w, int source, int target, IntToDoubleFunction vHeuristic) {
+
 		ArgumentCheck.onlyPositiveWeights(g, w);
 		if (source == target)
 			return new PathImpl(g, source, target, IntLists.emptyList());
@@ -111,7 +130,7 @@ class AStar implements ShortestPathWithHeuristic {
 		return null;
 	}
 
-	private static Path computePath(Graph g, int source, int target, Int2IntMap backtrack) {
+	private static Path computePath(IndexGraph g, int source, int target, Int2IntMap backtrack) {
 		IntArrayList path = new IntArrayList();
 		if (g.getCapabilities().directed()) {
 			for (int v = target;;) {

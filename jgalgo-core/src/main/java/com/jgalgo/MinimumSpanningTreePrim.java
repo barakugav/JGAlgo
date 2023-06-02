@@ -30,15 +30,15 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * is updated using {@code decreaseKey()}.
  * <p>
  * The running time of Prim's algorithm is \(O(m + n \log n)\) and it uses linear space. It's running time is very good
- * it practice and can be used as a first choice for {@link MinimumSpanningTree} algorithm. Note that only undirected graphs are
- * supported.
+ * it practice and can be used as a first choice for {@link MinimumSpanningTree} algorithm. Note that only undirected
+ * graphs are supported.
  * <p>
  * Based on "Shortest connection networks And some generalizations" by Prim, R. C. (1957).
  *
  * @see    <a href="https://en.wikipedia.org/wiki/Prim%27s_algorithm">Wikipedia</a>
  * @author Barak Ugav
  */
-class MinimumSpanningTreePrim implements MinimumSpanningTree {
+class MinimumSpanningTreePrim extends MinimumSpanningTreeUtils.AbstractUndirected {
 
 	private HeapReferenceable.Builder<?, ?> heapBuilder = HeapReferenceable.newBuilder();
 
@@ -62,11 +62,11 @@ class MinimumSpanningTreePrim implements MinimumSpanningTree {
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	public MinimumSpanningTree.Result computeMinimumSpanningTree(Graph g, WeightFunction w) {
+	MinimumSpanningTree.Result computeMinimumSpanningTree(IndexGraph g, WeightFunction w) {
 		ArgumentCheck.onlyUndirected(g);
 		int n = g.vertices().size();
 		if (n == 0)
-			return MinimumSpanningTreeResultImpl.Empty;
+			return MinimumSpanningTreeUtils.ResultImpl.Empty;
 		if (w instanceof WeightFunction.Int) {
 			return computeMSTInt(g, (WeightFunction.Int) w);
 		} else {
@@ -74,7 +74,7 @@ class MinimumSpanningTreePrim implements MinimumSpanningTree {
 		}
 	}
 
-	private MinimumSpanningTree.Result computeMSTDouble(Graph g, WeightFunction w) {
+	private MinimumSpanningTree.Result computeMSTDouble(IndexGraph g, WeightFunction w) {
 		final int n = g.vertices().size();
 		HeapReferenceable<Double, Integer> heap =
 				heapBuilder.keysTypePrimitive(double.class).valuesTypePrimitive(int.class).build();
@@ -128,10 +128,10 @@ class MinimumSpanningTreePrim implements MinimumSpanningTree {
 		}
 		// Help GC
 		Arrays.fill(verticesPtrs, 0, n, null);
-		return new MinimumSpanningTreeResultImpl(mst);
+		return new MinimumSpanningTreeUtils.ResultImpl(mst);
 	}
 
-	private MinimumSpanningTree.Result computeMSTInt(Graph g, WeightFunction.Int w) {
+	private MinimumSpanningTree.Result computeMSTInt(IndexGraph g, WeightFunction.Int w) {
 		final int n = g.vertices().size();
 		HeapReferenceable<Integer, Integer> heap =
 				heapBuilder.keysTypePrimitive(int.class).valuesTypePrimitive(int.class).build();
@@ -185,7 +185,7 @@ class MinimumSpanningTreePrim implements MinimumSpanningTree {
 		}
 		// Help GC
 		Arrays.fill(verticesPtrs, 0, n, null);
-		return new MinimumSpanningTreeResultImpl(mst);
+		return new MinimumSpanningTreeUtils.ResultImpl(mst);
 	}
 
 }

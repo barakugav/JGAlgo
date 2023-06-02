@@ -18,7 +18,7 @@ package com.jgalgo;
 
 import java.util.Set;
 
-abstract class GraphBaseContinues extends GraphBase {
+abstract class GraphBaseContinues extends GraphBase implements IndexGraph {
 
 	private final DataContainer.Manager verticesInternalData;
 	private final DataContainer.Manager edgesInternalData;
@@ -42,8 +42,8 @@ abstract class GraphBaseContinues extends GraphBase {
 		verticesInternalData = new DataContainer.Manager(verticesIDStrat.size());
 		edgesInternalData = new DataContainer.Manager(edgesIDStrat.size());
 
-		verticesUserData = g.verticesUserData.copy(verticesIDStrat);
-		edgesUserData = g.edgesUserData.copy(edgesIDStrat);
+		verticesUserData = new WeightsImpl.Manager(g.verticesUserData, verticesIDStrat, null);
+		edgesUserData = new WeightsImpl.Manager(g.edgesUserData, edgesIDStrat, null);
 	}
 
 	@Override
@@ -197,6 +197,11 @@ abstract class GraphBaseContinues extends GraphBase {
 	}
 
 	@Override
+	public IDStrategy.Continues getVerticesIDStrategy() {
+		return (IDStrategy.Continues) super.getVerticesIDStrategy();
+	}
+
+	@Override
 	public IDStrategy.Continues getEdgesIDStrategy() {
 		return (IDStrategy.Continues) super.getEdgesIDStrategy();
 	}
@@ -241,13 +246,40 @@ abstract class GraphBaseContinues extends GraphBase {
 	}
 
 	@Override
-	void addVerticesWeightsContainer(Object key, Weights<?> weights) {
+	public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, Class<? super V> type, V defVal) {
+		IDStrategyImpl idStrat = (IDStrategyImpl) getVerticesIDStrategy();
+		DataContainer<V> container = DataContainer.newInstance(idStrat, type, defVal);
+		Weights<?> weights = WeightsImpl.wrapContainerDirected(container);
 		verticesUserData.addWeights(key, weights);
+		@SuppressWarnings("unchecked")
+		WeightsT weights0 = (WeightsT) weights;
+		return weights0;
 	}
 
 	@Override
-	void addEdgesWeightsContainer(Object key, Weights<?> weights) {
+	public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, Class<? super E> type, E defVal) {
+		IDStrategyImpl idStrat = (IDStrategyImpl) getEdgesIDStrategy();
+		DataContainer<E> container = DataContainer.newInstance(idStrat, type, defVal);
+		Weights<?> weights = WeightsImpl.wrapContainerDirected(container);
 		edgesUserData.addWeights(key, weights);
+		@SuppressWarnings("unchecked")
+		WeightsT weights0 = (WeightsT) weights;
+		return weights0;
+	}
+
+	@Override
+	public IndexGraph indexGraph() {
+		return this;
+	}
+
+	@Override
+	public IndexGraphMap indexGraphVerticesMap() {
+		return GraphsUtils.IndexGraphMapIdentify;
+	}
+
+	@Override
+	public IndexGraphMap indexGraphEdgesMap() {
+		return GraphsUtils.IndexGraphMapIdentify;
 	}
 
 	void checkVertex(int vertex) {

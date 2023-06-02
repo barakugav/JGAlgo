@@ -25,13 +25,13 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 /**
  * Maximum weighted matching algorithm using {@link ShortestPathSingleSource} for bipartite graphs.
  * <p>
- * The running time of this algorithm is \(O(m n + n^2 \log n)\) and it uses linear space. If a different {@link ShortestPathSingleSource}
- * algorithm is provided using {@link #setSsspAlgo(ShortestPathSingleSource)} the running time will be \(O(n)\) times the running time of
- * the shortest path algorithm on a graph of size \(O(n)\).
+ * The running time of this algorithm is \(O(m n + n^2 \log n)\) and it uses linear space. If a different
+ * {@link ShortestPathSingleSource} algorithm is provided using {@link #setSsspAlgo(ShortestPathSingleSource)} the
+ * running time will be \(O(n)\) times the running time of the shortest path algorithm on a graph of size \(O(n)\).
  *
  * @author Barak Ugav
  */
-class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeighted {
+class MaximumMatchingWeightedBipartiteSSSP extends MaximumMatchingWeighted {
 
 	private Object bipartiteVerticesWeightKey = Weights.DefaultBipartiteWeightKey;
 	private ShortestPathSingleSource ssspAlgo = new ShortestPathSingleSourceDijkstra();
@@ -78,7 +78,7 @@ class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeighted {
 	 * @throws IllegalArgumentException if the graph is no bipartite with respect to the provided partition
 	 */
 	@Override
-	public Matching computeMaximumWeightedMatching(Graph g, WeightFunction w) {
+	Matching computeMaximumWeightedMatching(IndexGraph g, WeightFunction w) {
 		ArgumentCheck.onlyUndirected(g);
 		Weights.Bool partition = g.getVerticesWeights(bipartiteVerticesWeightKey);
 		Objects.requireNonNull(partition,
@@ -89,9 +89,9 @@ class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeighted {
 		return new MatchingImpl(g, match);
 	}
 
-	private int[] computeMaxMatching(Graph gOrig, WeightFunction w0, Weights.Bool partition) {
+	private int[] computeMaxMatching(IndexGraph gOrig, WeightFunction w0, Weights.Bool partition) {
 		final int n = gOrig.vertices().size();
-		Graph g = Graph.newBuilderDirected().expectedVerticesNum(n + 2).build();
+		IndexGraph g = IndexGraph.newBuilderDirected().expectedVerticesNum(n + 2).build();
 		for (int v = 0; v < n; v++)
 			g.addVertex();
 		Weights.Int edgeRef = g.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
@@ -192,7 +192,7 @@ class MaximumMatchingWeightedBipartiteSSSP implements MaximumMatchingWeighted {
 	 */
 	@Deprecated
 	@Override
-	public Matching computeMaximumWeightedPerfectMatching(Graph g, WeightFunction w) {
+	Matching computeMaximumWeightedPerfectMatching(IndexGraph g, WeightFunction w) {
 		throw new UnsupportedOperationException();
 	}
 

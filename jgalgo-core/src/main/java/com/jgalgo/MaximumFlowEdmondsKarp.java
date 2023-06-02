@@ -33,7 +33,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  * @see    <a href= "https://en.wikipedia.org/wiki/Edmonds%E2%80%93Karp_algorithm">Wikipedia</a>
  * @author Barak Ugav
  */
-class MaximumFlowEdmondsKarp implements MaximumFlow {
+class MaximumFlowEdmondsKarp extends MaximumFlowAbstract {
 
 	private static final Object FlowWeightKey = new Utils.Obj("flow");
 	private static final Object CapacityWeightKey = new Utils.Obj("capacity");
@@ -44,7 +44,7 @@ class MaximumFlowEdmondsKarp implements MaximumFlow {
 	MaximumFlowEdmondsKarp() {}
 
 	@Override
-	public double computeMaximumFlow(Graph g, FlowNetwork net, int source, int sink) {
+	 double computeMaximumFlow(IndexGraph g, FlowNetwork net, int source, int sink) {
 		if (net instanceof FlowNetwork.Int) {
 			return new WorkerInt(g, (FlowNetwork.Int) net, source, sink).computeMaxFlow();
 		} else {
@@ -54,7 +54,7 @@ class MaximumFlowEdmondsKarp implements MaximumFlow {
 
 	private abstract class Worker extends MaximumFlowAbstract.Worker {
 
-		Worker(Graph gOrig, FlowNetwork net, int source, int sink) {
+		Worker(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
 			super(gOrig, net, source, sink);
 		}
 
@@ -108,7 +108,7 @@ class MaximumFlowEdmondsKarp implements MaximumFlow {
 
 		private static final double EPS = 0.0001;
 
-		WorkerDouble(Graph gOrig, FlowNetwork net, int source, int sink) {
+		WorkerDouble(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
 			super(gOrig, net, source, sink);
 
 			flow = g.addEdgesWeights(FlowWeightKey, double.class);
@@ -155,7 +155,7 @@ class MaximumFlowEdmondsKarp implements MaximumFlow {
 		final Weights.Int flow;
 		final Weights.Int capacity;
 
-		WorkerInt(Graph gOrig, FlowNetwork.Int net, int source, int sink) {
+		WorkerInt(IndexGraph gOrig, FlowNetwork.Int net, int source, int sink) {
 			super(gOrig, net, source, sink);
 
 			flow = g.addEdgesWeights(FlowWeightKey, int.class);

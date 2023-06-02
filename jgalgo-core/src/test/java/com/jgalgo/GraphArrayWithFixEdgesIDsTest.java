@@ -17,11 +17,12 @@
 package com.jgalgo;
 
 import org.junit.jupiter.api.Test;
+import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 
 public class GraphArrayWithFixEdgesIDsTest extends TestBase {
 
-	static Graph.Builder graphImpl() {
-		return Graph.newBuilderUndirected().setOption("impl", "GraphArray").useFixedEdgesIDs(true);
+	static Boolean2ObjectFunction<Graph> graphImpl() {
+		return directed -> Graph.newBuilderUndirected().setOption("impl", "GraphArray").setDirected(directed).build();
 	}
 
 	@Test

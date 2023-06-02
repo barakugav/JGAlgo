@@ -121,7 +121,7 @@ class GraphTableUndirected extends GraphTableAbstract implements UndirectedGraph
 			.vertexRemove(true).edgeAdd(true).edgeRemove(true).parallelEdges(false).selfEdges(false).build();
 
 	@Override
-	public Graph copy() {
+	public IndexGraph copy() {
 		return new GraphTableUndirected(this);
 	}
 

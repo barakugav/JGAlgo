@@ -34,7 +34,7 @@ public class BiConnectedComponentsAlgoHopcroftTarjanTest extends TestBase {
 	public void randGraphUndirected() {
 		final long seed = 0xda9272921794ecfaL;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(128, 5, 6), phase(64, 16, 32), phase(32, 64, 256), phase(1, 512, 1024));
+		List<Phase> phases = List.of(phase(128, 5, 6), phase(64, 16, 32), phase(32, 64, 256), phase(1, 165, 666));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
@@ -47,8 +47,7 @@ public class BiConnectedComponentsAlgoHopcroftTarjanTest extends TestBase {
 		BiConnectedComponentsAlgo.Result res = algo.computeBiConnectivityComponents(g);
 
 		/* Check that each vertex is contained in some BiCc */
-		final int n = g.vertices().size();
-		for (int v = 0; v < n; v++) {
+		for (int v : g.vertices()) {
 			IntCollection vBiccs = res.getVertexBiCcs(v);
 			assertFalse(vBiccs.isEmpty(), "a vertex is not contained in any BiConnected component: " + v);
 			assertEquals(new IntOpenHashSet(vBiccs).size(), vBiccs.size(),

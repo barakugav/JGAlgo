@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
 import java.util.Objects;
 import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
+import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 
@@ -27,37 +28,16 @@ class MatchingBipartiteTestUtils extends TestUtils {
 
 	private MatchingBipartiteTestUtils() {}
 
-	static Graph randGraphBipartite(int sn, int tn, int m, Graph.Builder graphImpl, long seed) {
+	static Graph randGraphBipartite(int sn, int tn, int m, Boolean2ObjectFunction<Graph> graphImpl, long seed) {
 		return new RandomGraphBuilder(seed).sn(sn).tn(tn).m(m).directed(false).bipartite(true).parallelEdges(false)
 				.selfEdges(false).cycles(true).connected(false).graphImpl(graphImpl).build();
 	}
 
-	static Graph createGraphBipartiteFromAdjacencyMatrix(int sSize, int[][] m) {
-		int n = m.length;
-		Graph g = Graph.newBuilderUndirected().build();
-		for (int i = 0; i < n; i++)
-			g.addVertex();
-		Weights.Bool partition = g.addVerticesWeights(Weights.DefaultBipartiteWeightKey, boolean.class);
-		for (int u = 0; u < sSize; u++)
-			partition.set(u, true);
-		for (int v = sSize; v < n; v++)
-			partition.set(v, false);
-
-		for (int u = 0; u < n; u++) {
-			for (int v = u + 1; v < n; v++) {
-				if (m[u][v] == 0)
-					continue;
-				g.addEdge(u, v);
-			}
-		}
-		return g;
-	}
-
 	static void randBipartiteGraphs(MaximumMatching algo, long seed) {
-		randBipartiteGraphs(algo, Graph.newBuilderUndirected(), seed);
+		randBipartiteGraphs(algo, GraphsTestUtils.defaultGraphImpl(), seed);
 	}
 
-	static void randBipartiteGraphs(MaximumMatching algo, Graph.Builder graphImpl, long seed) {
+	static void randBipartiteGraphs(MaximumMatching algo, Boolean2ObjectFunction<Graph> graphImpl, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(128, 4, 4, 4), phase(64, 16, 16, 64), phase(8, 128, 128, 128),
 				phase(8, 128, 128, 512), phase(1, 300, 300, 1100));
@@ -92,7 +72,7 @@ class MatchingBipartiteTestUtils extends TestUtils {
 
 		Int2IntMap S = new Int2IntOpenHashMap();
 		Int2IntMap T = new Int2IntOpenHashMap();
-		for (int u = 0; u < g.vertices().size(); u++) {
+		for (int u : g.vertices()) {
 			if (partition.getBool(u)) {
 				S.put(u, S.size());
 			} else {

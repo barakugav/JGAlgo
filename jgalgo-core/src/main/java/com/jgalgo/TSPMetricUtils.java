@@ -24,7 +24,7 @@ class TSPMetricUtils {
 
 	private TSPMetricUtils() {}
 
-	static Path calcEulerianTourAndConvertToHamiltonianCycle(Graph g, Graph g1, Weights.Int edgeRef) {
+	static Path calcEulerianTourAndConvertToHamiltonianCycle(IndexGraph g, IndexGraph g1, Weights.Int edgeRef) {
 		int n = g.vertices().size();
 
 		/* Assert degree is actually even in the new graph */
@@ -62,7 +62,7 @@ class TSPMetricUtils {
 		return cycle0;
 	}
 
-	private static boolean isValidCycle(Graph g, Path path) {
+	private static boolean isValidCycle(IndexGraph g, Path path) {
 		EdgeIter it = path.edgeIter();
 		it.nextInt();
 		final int begin = it.source();
@@ -76,7 +76,7 @@ class TSPMetricUtils {
 		}
 	}
 
-	private static boolean isPathVisitEvery(Graph g, Path path) {
+	private static boolean isPathVisitEvery(IndexGraph g, Path path) {
 		final int n = g.vertices().size();
 		BitSet visited = new BitSet(n);
 		for (int e : path) {
@@ -90,23 +90,29 @@ class TSPMetricUtils {
 		return true;
 	}
 
-	static void checkNoParallelEdges(Graph g) {
+	static void checkNoParallelEdges(IndexGraph g) {
 		if (GraphsUtils.containsParallelEdges(g))
 			throw new IllegalArgumentException("Graph contains parallel edges");
 	}
 
-	// static void checkArgDistanceTableIsMetric(double[][] distances) {
-	// final double eps = 0.001;
-	// int n = distances.length;
-	// for (int u = 0; u < n; u++)
-	// if (distances[u].length != n)
-	// throw new IllegalArgumentException("Distances table is not full");
-	// for (int u = 0; u < n; u++)
-	// for (int v = u + 1; v < n; v++)
-	// for (int w = v + 1; w < n; w++)
-	// if (distances[u][v] + distances[v][w] + eps < distances[u][w])
-	// throw new IllegalArgumentException("Distance table is not metric: (" + u + ", " + v + ", " + w
-	// + ") " + distances[u][v] + " + " + distances[v][w] + " < " + distances[u][w]);
-	// }
+	static abstract class AbstractImpl implements TSPMetric {
+
+		@Override
+		public Path computeShortestTour(Graph g, WeightFunction w) {
+			if (g instanceof IndexGraph)
+				return computeShortestTour((IndexGraph) g, w);
+
+			IndexGraph iGraph = g.indexGraph();
+			IndexGraphMap viMap = g.indexGraphVerticesMap();
+			IndexGraphMap eiMap = g.indexGraphEdgesMap();
+			w = WeightsImpl.indexWeightFuncFromIdWeightFunc(w, eiMap);
+
+			Path indexPath = computeShortestTour(iGraph, w);
+			return PathImpl.pathFromIndexPath(indexPath, viMap, eiMap);
+		}
+
+		abstract Path computeShortestTour(IndexGraph g, WeightFunction w);
+
+	}
 
 }

@@ -31,7 +31,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  * @see    <a href= "https://en.wikipedia.org/wiki/Hopcroft%E2%80%93Karp_algorithm">Wikipedia</a>
  * @author Barak Ugav
  */
-class MaximumMatchingCardinalityBipartiteHopcroftKarp implements MaximumMatchingCardinality {
+class MaximumMatchingCardinalityBipartiteHopcroftKarp extends MaximumMatchingCardinality {
 
 	private Object bipartiteVerticesWeightKey = Weights.DefaultBipartiteWeightKey;
 	private static final Object EdgeRefWeightKey = new Utils.Obj("refToOrig");
@@ -64,7 +64,7 @@ class MaximumMatchingCardinalityBipartiteHopcroftKarp implements MaximumMatching
 	 * @throws IllegalArgumentException if the graph is no bipartite with respect to the provided partition
 	 */
 	@Override
-	public Matching computeMaximumCardinalityMatching(Graph g) {
+	Matching computeMaximumCardinalityMatching(IndexGraph g) {
 		ArgumentCheck.onlyUndirected(g);
 		int n = g.vertices().size();
 
@@ -86,7 +86,7 @@ class MaximumMatchingCardinalityBipartiteHopcroftKarp implements MaximumMatching
 		int[] matched = new int[n];
 		final int MatchedNone = -1;
 		Arrays.fill(matched, MatchedNone);
-		Graph f = Graph.newBuilderUndirected().expectedVerticesNum(n).build();
+		IndexGraph f = IndexGraph.newBuilderUndirected().expectedVerticesNum(n).build();
 		for (int v = 0; v < n; v++)
 			f.addVertex();
 		Weights.Int edgeRef = f.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));

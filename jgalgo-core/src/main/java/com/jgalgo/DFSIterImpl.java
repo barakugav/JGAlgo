@@ -17,6 +17,7 @@ package com.jgalgo;
 
 import java.util.BitSet;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -25,7 +26,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 class DFSIterImpl implements DFSIter {
 
-	private final Graph g;
+	private final IndexGraph g;
 	private final BitSet visited;
 	private final Stack<EdgeIter> edgeIters;
 	private final IntArrayList edgePath;
@@ -38,7 +39,7 @@ class DFSIterImpl implements DFSIter {
 	 * @param g      a graph
 	 * @param source a vertex in the graph from which the search will start from
 	 */
-	public DFSIterImpl(Graph g, int source) {
+	public DFSIterImpl(IndexGraph g, int source) {
 		int n = g.vertices().size();
 		this.g = g;
 		visited = new BitSet(n);
@@ -89,5 +90,34 @@ class DFSIterImpl implements DFSIter {
 	@Override
 	public IntList edgePath() {
 		return edgePathView;
+	}
+
+	static class DFSFromIndexDFS implements DFSIter {
+
+		private final DFSIter it;
+		private final IndexGraphMap viMap;
+		private final IndexGraphMap eiMap;
+
+		DFSFromIndexDFS(DFSIter it, IndexGraphMap viMap, IndexGraphMap eiMap) {
+			this.it = Objects.requireNonNull(it);
+			this.viMap = Objects.requireNonNull(viMap);
+			this.eiMap = Objects.requireNonNull(eiMap);
+		}
+
+		@Override
+		public boolean hasNext() {
+			return it.hasNext();
+		}
+
+		@Override
+		public int nextInt() {
+			return viMap.indexToId(it.nextInt());
+		}
+
+		@Override
+		public IntList edgePath() {
+			return new IndexGraphMapUtils.ListFromIndexList(it.edgePath(), eiMap);
+		}
+
 	}
 }

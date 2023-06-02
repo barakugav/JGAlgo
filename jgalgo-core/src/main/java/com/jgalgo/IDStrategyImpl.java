@@ -184,12 +184,14 @@ abstract class IDStrategyImpl implements IDStrategy {
 
 		FixedAbstract() {
 			idToIdx = new Int2IntOpenHashMap();
+			idToIdx.defaultReturnValue(-1);
 			idsView = IntSets.unmodifiable(idToIdx.keySet());
-			idxToId = new DataContainer.Int(this, 0);
+			idxToId = new DataContainer.Int(this, -1);
 		}
 
 		FixedAbstract(FixedAbstract orig) {
 			idToIdx = new Int2IntOpenHashMap(orig.idToIdx);
+			idToIdx.defaultReturnValue(-1);
 			idsView = IntSets.unmodifiable(idToIdx.keySet());
 			idxToId = orig.idxToId.copy(this);
 		}
@@ -230,9 +232,10 @@ abstract class IDStrategyImpl implements IDStrategy {
 
 		@Override
 		int idToIdx(int id) {
-			if (!idToIdx.containsKey(id))
+			int idx = idToIdx.get(id);
+			if (idx < 0)
 				throw new IndexOutOfBoundsException(id);
-			return idToIdx.get(id);
+			return idx;
 		}
 
 		@Override
@@ -303,7 +306,8 @@ abstract class IDStrategyImpl implements IDStrategy {
 		int nextID() {
 			for (;;) {
 				int id = rand.nextInt();
-				if (id >= 0 && !idSet().contains(id))
+				if (id >= 1 && !idSet().contains(id))
+					// We prefer non zero IDs because fastutil handle zero (null) separately
 					return id;
 			}
 		}

@@ -68,9 +68,9 @@ public class MaximumFlowBench {
 					.selfEdges(false).cycles(true).connected(false).build();
 			FlowNetwork.Int flow = randNetworkInt(g, seedGen.nextSeed());
 			int source, sink;
-			for (;;) {
-				source = rand.nextInt(g.vertices().size());
-				sink = rand.nextInt(g.vertices().size());
+			for (int[] vs = g.vertices().toIntArray();;) {
+				source = vs[rand.nextInt(vs.length)];
+				sink = vs[rand.nextInt(vs.length)];
 				if (source != sink && Path.findPath(g, source, sink) != null)
 					break;
 			}

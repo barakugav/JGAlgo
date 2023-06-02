@@ -17,41 +17,42 @@
 package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
-
 import org.junit.jupiter.api.Test;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 
 public class LowestCommonAncestorStaticRMQTest extends TestBase {
 
-	private static int[][] randLCAQueries(Graph g, int r, int queriesNum, long seed) {
+	private static int[][] randLCAQueries(Graph g, int root, int queriesNum, long seed) {
 		Random rand = new Random(seed);
 		int[][] queries = new int[queriesNum][3];
 
 		int n = g.vertices().size();
-		int[] parent = new int[n];
-		int[] depth = new int[n];
+		Int2IntMap parent = new Int2IntOpenHashMap(n);
+		Int2IntMap depth = new Int2IntOpenHashMap(n);
 
-		for (BFSIter it = BFSIter.newInstance(g, r); it.hasNext();) {
+		for (BFSIter it = BFSIter.newInstance(g, root); it.hasNext();) {
 			int v = it.nextInt();
 			int e = it.inEdge();
 			if (e == -1) {
-				parent[v] = -1;
-				depth[v] = 0;
+				parent.put(v, -1);
+				depth.put(v, 0);
 			} else {
 				int p = g.edgeEndpoint(e, v);
-				parent[v] = p;
-				depth[v] = depth[p] + 1;
+				parent.put(v, p);
+				depth.put(v, depth.get(p) + 1);
 			}
 		}
 
+		int[] vs = g.vertices().toIntArray();
 		for (int query = 0; query < queriesNum; query++) {
-			int u = rand.nextInt(n);
-			int v = rand.nextInt(n);
+			int u = vs[rand.nextInt(vs.length)];
+			int v = vs[rand.nextInt(vs.length)];
 
-			int uDepth = depth[u], vDepth = depth[v];
+			int uDepth = depth.get(u), vDepth = depth.get(v);
 			/* assume v is deeper */
 			int up = u, vp = v;
 			if (uDepth > vDepth) {
@@ -63,10 +64,10 @@ public class LowestCommonAncestorStaticRMQTest extends TestBase {
 			}
 			/* iterate up to equal level */
 			for (; uDepth < vDepth; vDepth--)
-				vp = parent[vp];
+				vp = parent.get(vp);
 			while (up != vp) {
-				up = parent[up];
-				vp = parent[vp];
+				up = parent.get(up);
+				vp = parent.get(vp);
 			}
 			int lca = up;
 
@@ -79,7 +80,7 @@ public class LowestCommonAncestorStaticRMQTest extends TestBase {
 
 	private static void testLCA(Graph g, Supplier<? extends LowestCommonAncestorStatic> builder, int[][] queries) {
 		LowestCommonAncestorStatic lca = builder.get();
-		LowestCommonAncestorStatic.DataStructure lcaDS = lca.preProcessTree(g, 0);
+		LowestCommonAncestorStatic.DataStructure lcaDS = lca.preProcessTree(g, g.vertices().iterator().nextInt());
 
 		for (int[] query : queries) {
 			int u = query[0];
@@ -99,7 +100,8 @@ public class LowestCommonAncestorStaticRMQTest extends TestBase {
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
 			Graph g = GraphsTestUtils.randTree(n, seedGen.nextSeed());
-			int[][] queries = randLCAQueries(g, 0, m, seedGen.nextSeed());
+			int root = g.vertices().iterator().nextInt();
+			int[][] queries = randLCAQueries(g, root, m, seedGen.nextSeed());
 			testLCA(g, LowestCommonAncestorStaticRMQ::new, queries);
 		});
 	}

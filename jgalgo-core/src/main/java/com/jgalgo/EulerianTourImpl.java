@@ -20,7 +20,7 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntStack;
 
-class EulerianTourImpl implements EulerianTourAlgo {
+class EulerianTourImpl extends EulerianTourAlgoAbstract {
 
 	/**
 	 * {@inheritDoc}
@@ -28,11 +28,11 @@ class EulerianTourImpl implements EulerianTourAlgo {
 	 * The running time and space of this function is \(O(n + m)\).
 	 */
 	@Override
-	public Path computeEulerianTour(Graph g) {
+	Path computeEulerianTour(IndexGraph g) {
 		return g.getCapabilities().directed() ? computeTourDirected(g) : computeTourUndirected(g);
 	}
 
-	private static Path computeTourUndirected(Graph g) {
+	private static Path computeTourUndirected(IndexGraph g) {
 		int n = g.vertices().size();
 
 		int start = -1, end = -1;
@@ -94,7 +94,7 @@ class EulerianTourImpl implements EulerianTourAlgo {
 		return new PathImpl(g, start, end, tour);
 	}
 
-	private static int degreeWithoutSelfLoops(Graph g, int u) {
+	private static int degreeWithoutSelfLoops(IndexGraph g, int u) {
 		int d = 0;
 		for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
 			eit.nextInt();
@@ -104,7 +104,7 @@ class EulerianTourImpl implements EulerianTourAlgo {
 		return d;
 	}
 
-	private static Path computeTourDirected(Graph g) {
+	private static Path computeTourDirected(IndexGraph g) {
 		int n = g.vertices().size();
 
 		int start = -1, end = -1;

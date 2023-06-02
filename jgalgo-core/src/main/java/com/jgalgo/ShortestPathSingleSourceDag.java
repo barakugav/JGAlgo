@@ -27,7 +27,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  * @see    TopologicalOrderAlgo
  * @author Barak Ugav
  */
-class ShortestPathSingleSourceDag implements ShortestPathSingleSource {
+class ShortestPathSingleSourceDag extends ShortestPathSingleSourceUtils.AbstractImpl {
 
 	private final TopologicalOrderAlgo topoAlg = TopologicalOrderAlgo.newBuilder().build();
 
@@ -42,7 +42,7 @@ class ShortestPathSingleSourceDag implements ShortestPathSingleSource {
 	 * @throws IllegalArgumentException if graph is not directed or contains cycles
 	 */
 	@Override
-	public ShortestPathSingleSourceDag.Result computeShortestPaths(Graph g, WeightFunction w, int source) {
+	ShortestPathSingleSourceDag.Result computeShortestPaths(IndexGraph g, WeightFunction w, int source) {
 		ArgumentCheck.onlyDirected(g);
 		if (w == null)
 			w = WeightFunction.CardinalityWeightFunction;
@@ -50,7 +50,7 @@ class ShortestPathSingleSourceDag implements ShortestPathSingleSource {
 				: computeSsspDouble(g, w, source);
 	}
 
-	private ShortestPathSingleSourceDag.Result computeSsspDouble(Graph g, WeightFunction w, int source) {
+	private ShortestPathSingleSourceDag.Result computeSsspDouble(IndexGraph g, WeightFunction w, int source) {
 		ShortestPathSingleSourceUtils.ResultImpl res = new ShortestPathSingleSourceUtils.ResultImpl(g, source);
 		res.distances[source] = 0;
 
@@ -78,7 +78,7 @@ class ShortestPathSingleSourceDag implements ShortestPathSingleSource {
 		return res;
 	}
 
-	private ShortestPathSingleSourceDag.Result computeSsspInt(Graph g, WeightFunction.Int w, int source) {
+	private ShortestPathSingleSourceDag.Result computeSsspInt(IndexGraph g, WeightFunction.Int w, int source) {
 		ShortestPathSingleSourceUtils.ResultImpl.Int res = new ShortestPathSingleSourceUtils.ResultImpl.Int(g, source);
 		res.distances[source] = 0;
 

@@ -24,16 +24,16 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 
 class MatchingImpl implements Matching {
 
-	private final Graph g;
+	private final IndexGraph g;
 	private IntCollection edges;
 	private int[] matched;
 
-	MatchingImpl(Graph g, IntCollection edges) {
+	MatchingImpl(IndexGraph g, IntCollection edges) {
 		this.g = Objects.requireNonNull(g);
 		this.edges = IntCollections.unmodifiable(Objects.requireNonNull(edges));
 	}
 
-	MatchingImpl(Graph g, int[] matched) {
+	MatchingImpl(IndexGraph g, int[] matched) {
 		assert matched.length == g.vertices().size();
 		this.g = Objects.requireNonNull(g);
 		this.matched = Objects.requireNonNull(matched);

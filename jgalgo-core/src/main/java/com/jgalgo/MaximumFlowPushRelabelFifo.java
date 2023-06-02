@@ -49,12 +49,12 @@ class MaximumFlowPushRelabelFifo extends MaximumFlowPushRelabelAbstract {
 	MaximumFlowPushRelabelFifo() {}
 
 	@Override
-	WorkerDouble newWorkerDouble(Graph gOrig, FlowNetwork net, int source, int sink) {
+	WorkerDouble newWorkerDouble(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
 		return new WorkerDouble(gOrig, net, source, sink);
 	}
 
 	@Override
-	WorkerInt newWorkerInt(Graph gOrig, FlowNetwork.Int net, int source, int sink) {
+	WorkerInt newWorkerInt(IndexGraph gOrig, FlowNetwork.Int net, int source, int sink) {
 		return new WorkerInt(gOrig, net, source, sink);
 	}
 
@@ -62,7 +62,7 @@ class MaximumFlowPushRelabelFifo extends MaximumFlowPushRelabelAbstract {
 
 		final IntPriorityQueue activeQueue = new IntArrayFIFOQueue();
 
-		WorkerDouble(Graph gOrig, FlowNetwork net, int source, int sink) {
+		WorkerDouble(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
 			super(gOrig, net, source, sink);
 		}
 
@@ -88,7 +88,7 @@ class MaximumFlowPushRelabelFifo extends MaximumFlowPushRelabelAbstract {
 
 		final IntPriorityQueue activeQueue = new IntArrayFIFOQueue();
 
-		WorkerInt(Graph gOrig, FlowNetwork.Int net, int source, int sink) {
+		WorkerInt(IndexGraph gOrig, FlowNetwork.Int net, int source, int sink) {
 			super(gOrig, net, source, sink);
 		}
 

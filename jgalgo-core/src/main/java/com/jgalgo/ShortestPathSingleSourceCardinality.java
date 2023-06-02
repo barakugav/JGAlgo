@@ -26,7 +26,7 @@ package com.jgalgo;
  * @see    BFSIter
  * @author Barak Ugav
  */
-class ShortestPathSingleSourceCardinality implements ShortestPathSingleSource {
+class ShortestPathSingleSourceCardinality extends ShortestPathSingleSourceUtils.AbstractImpl {
 
 	/**
 	 * Construct a new cardinality SSSP algorithm.
@@ -34,7 +34,7 @@ class ShortestPathSingleSourceCardinality implements ShortestPathSingleSource {
 	ShortestPathSingleSourceCardinality() {}
 
 	@Override
-	public ShortestPathSingleSource.Result computeCardinalityShortestPaths(Graph g, int source) {
+	ShortestPathSingleSource.Result computeCardinalityShortestPaths(IndexGraph g, int source) {
 		ShortestPathSingleSourceUtils.ResultImpl.Int res = new ShortestPathSingleSourceUtils.ResultImpl.Int(g, source);
 		for (BFSIter it = BFSIter.newInstance(g, source); it.hasNext();) {
 			int v = it.nextInt();
@@ -51,7 +51,7 @@ class ShortestPathSingleSourceCardinality implements ShortestPathSingleSource {
 	 *                                      {@link WeightFunction#CardinalityWeightFunction}
 	 */
 	@Override
-	public ShortestPathSingleSource.Result computeShortestPaths(Graph g, WeightFunction w, int source) {
+	ShortestPathSingleSource.Result computeShortestPaths(IndexGraph g, WeightFunction w, int source) {
 		if (!(w == null || w == WeightFunction.CardinalityWeightFunction))
 			throw new IllegalArgumentException("only cardinality shortest paths are supported");
 		return computeCardinalityShortestPaths(g, source);

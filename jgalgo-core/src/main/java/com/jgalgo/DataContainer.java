@@ -1174,10 +1174,6 @@ abstract class DataContainer<E> {
 				containers.put(entry.getKey(), entry.getValue().copy(idStrat));
 		}
 
-		Manager copy(IDStrategyImpl idStrat) {
-			return new Manager(this, idStrat);
-		}
-
 		void addContainer(Object key, DataContainer<?> container) {
 			DataContainer<?> oldContainer = containers.put(key, container);
 			if (oldContainer != null)

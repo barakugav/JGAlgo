@@ -45,7 +45,7 @@ class ColoringTestUtils extends TestUtils {
 			return;
 
 		IntSet seenColors = new IntOpenHashSet();
-		for (int v = 0; v < n; v++)
+		for (int v : g.vertices())
 			seenColors.add(coloring.colorOf(v));
 		int[] seenColorsArr = seenColors.toIntArray();
 		IntArrays.parallelQuickSort(seenColorsArr);

@@ -207,7 +207,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract implements UndirectedGra
 			.vertexRemove(true).edgeAdd(true).edgeRemove(true).parallelEdges(true).selfEdges(false).build();
 
 	@Override
-	public Graph copy() {
+	public IndexGraph copy() {
 		return new GraphLinkedUndirected(this);
 	}
 

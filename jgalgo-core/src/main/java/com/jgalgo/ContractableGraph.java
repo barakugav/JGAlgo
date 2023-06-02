@@ -20,7 +20,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 
 class ContractableGraph {
 
-	private final Graph g;
+	private final IndexGraph g;
 	private final UnionFind uf;
 	private final int[] findToSuperV;
 	private final LinkedListFixedSize.Singly vs;
@@ -28,7 +28,7 @@ class ContractableGraph {
 	private final int[] tail;
 	private int numV;
 
-	ContractableGraph(Graph g) {
+	ContractableGraph(IndexGraph g) {
 		ArgumentCheck.onlyUndirected(g);
 		this.g = g;
 		int n = g.vertices().size();

@@ -192,7 +192,7 @@ class GraphArrayUndirected extends GraphArrayAbstract implements UndirectedGraph
 			.vertexRemove(true).edgeAdd(true).edgeRemove(true).parallelEdges(true).selfEdges(true).build();
 
 	@Override
-	public Graph copy() {
+	public IndexGraph copy() {
 		return new GraphArrayUndirected(this);
 	}
 

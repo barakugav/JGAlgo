@@ -31,7 +31,7 @@ import java.util.Arrays;
  *
  * @author Barak Ugav
  */
-class LowestCommonAncestorStaticRMQ implements LowestCommonAncestorStatic {
+class LowestCommonAncestorStaticRMQ extends LowestCommonAncestorStaticAbstract {
 
 	private final RMQStatic rmq = new RMQStaticPlusMinusOne();
 
@@ -41,7 +41,7 @@ class LowestCommonAncestorStaticRMQ implements LowestCommonAncestorStatic {
 	LowestCommonAncestorStaticRMQ() {}
 
 	@Override
-	public LowestCommonAncestorStatic.DataStructure preProcessTree(Graph tree, int root) {
+	LowestCommonAncestorStatic.DataStructure preProcessTree(IndexGraph tree, int root) {
 		if (!Trees.isTree(tree, root))
 			throw new IllegalArgumentException("The given graph is not a tree rooted at the given root");
 

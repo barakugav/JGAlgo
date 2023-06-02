@@ -62,10 +62,10 @@ public class TreePathMaximaBench {
 		final SeedGenerator seedGen = new SeedGenerator(0x28ddf3f2d9c5c873L);
 		graphs = new ArrayList<>(graphsNum);
 		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-			Graph t = GraphsTestUtils.randTree(n, seedGen.nextSeed());
-			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntPos(t, seedGen.nextSeed());
-			TreePathMaxima.Queries queries = generateRandQueries(n, m, seedGen.nextSeed());
-			graphs.add(new TPMArgs(t, w, queries));
+			Graph tree = GraphsTestUtils.randTree(n, seedGen.nextSeed());
+			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntPos(tree, seedGen.nextSeed());
+			TreePathMaxima.Queries queries = generateRandQueries(tree, m, seedGen.nextSeed());
+			graphs.add(new TPMArgs(tree, w, queries));
 		}
 	}
 
@@ -98,11 +98,12 @@ public class TreePathMaximaBench {
 		}
 	}
 
-	private static TreePathMaxima.Queries generateRandQueries(int n, int m, long seed) {
+	private static TreePathMaxima.Queries generateRandQueries(Graph tree, int m, long seed) {
 		Random rand = new Random(seed);
 		TreePathMaxima.Queries queries = TreePathMaxima.Queries.newInstance();
+		int[] vs = tree.vertices().toIntArray();
 		for (int q = 0; q < m; q++)
-			queries.addQuery(rand.nextInt(n), rand.nextInt(n));
+			queries.addQuery(vs[rand.nextInt(vs.length)], vs[rand.nextInt(vs.length)]);
 		return queries;
 	}
 

@@ -608,12 +608,18 @@ public interface Weights<W> {
 	 * @param  <E>        the weights type
 	 * @param  <WeightsT> the weights container, used to avoid casts of containers of primitive types
 	 */
+	@SuppressWarnings("unchecked")
 	public static <E, WeightsT extends Weights<E>> WeightsT createExternalVerticesWeights(Graph g,
 			Class<? super E> type, E defVal) {
-		IDStrategyImpl idStrat = (IDStrategyImpl) g.getVerticesIDStrategy();
-		WeightsT weights = WeightsImpl.newInstance(idStrat, type, defVal);
-		((WeightsImpl<?>) weights).container().expand(idStrat.size());
-		return weights;
+		IDStrategyImpl idStrat = (IDStrategyImpl) g.indexGraph().getVerticesIDStrategy();
+		DataContainer<E> container = DataContainer.newInstance(idStrat, type, defVal);
+		container.expand(idStrat.size());
+		WeightsT weights = (WeightsT) WeightsImpl.wrapContainerDirected(container);
+		if (g instanceof IndexGraph) {
+			return weights;
+		} else {
+			return (WeightsT) WeightsImpl.wrapContainerMapped(weights, g.indexGraphVerticesMap());
+		}
 	}
 
 	/**
@@ -645,12 +651,18 @@ public interface Weights<W> {
 	 * @param  <E>        the weights type
 	 * @param  <WeightsT> the weights container, used to avoid casts of containers of primitive types
 	 */
+	@SuppressWarnings("unchecked")
 	public static <E, WeightsT extends Weights<E>> WeightsT createExternalEdgesWeights(Graph g, Class<? super E> type,
 			E defVal) {
-		IDStrategyImpl idStrat = (IDStrategyImpl) g.getEdgesIDStrategy();
-		WeightsT weights = WeightsImpl.newInstance(idStrat, type, defVal);
-		((WeightsImpl<?>) weights).container().expand(idStrat.size());
-		return weights;
+		IDStrategyImpl idStrat = (IDStrategyImpl) g.indexGraph().getEdgesIDStrategy();
+		DataContainer<E> container = DataContainer.newInstance(idStrat, type, defVal);
+		container.expand(idStrat.size());
+		WeightsT weights = (WeightsT) WeightsImpl.wrapContainerDirected(container);
+		if (g instanceof IndexGraph) {
+			return weights;
+		} else {
+			return (WeightsT) WeightsImpl.wrapContainerMapped(weights, g.indexGraphEdgesMap());
+		}
 	}
 
 	/**

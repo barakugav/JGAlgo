@@ -235,7 +235,7 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 			.vertexRemove(true).edgeAdd(true).edgeRemove(true).parallelEdges(true).selfEdges(true).build();
 
 	@Override
-	public Graph copy() {
+	public IndexGraph copy() {
 		return new GraphLinkedDirected(this);
 	}
 

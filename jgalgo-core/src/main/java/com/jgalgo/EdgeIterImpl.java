@@ -17,6 +17,7 @@
 package com.jgalgo;
 
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 
 interface EdgeIterImpl extends EdgeIter, Utils.IterPeekable.Int {
@@ -70,6 +71,43 @@ interface EdgeIterImpl extends EdgeIter, Utils.IterPeekable.Int {
 			return EmptyEdgeIter;
 		}
 
+	}
+
+	static class EdgeIterFromIndexEdgeIter implements EdgeIterImpl {
+		private final EdgeIterImpl it;
+		private final IndexGraphMap viMap;
+		private final IndexGraphMap eiMap;
+
+		EdgeIterFromIndexEdgeIter(EdgeIter it, IndexGraphMap viMap, IndexGraphMap eiMap) {
+			this.it = (EdgeIterImpl) Objects.requireNonNull(it);
+			this.viMap = Objects.requireNonNull(viMap);
+			this.eiMap = Objects.requireNonNull(eiMap);
+		}
+
+		@Override
+		public boolean hasNext() {
+			return it.hasNext();
+		}
+
+		@Override
+		public int nextInt() {
+			return eiMap.indexToId(it.nextInt());
+		}
+
+		@Override
+		public int peekNext() {
+			return eiMap.indexToId(it.peekNext());
+		}
+
+		@Override
+		public int source() {
+			return viMap.indexToId(it.source());
+		}
+
+		@Override
+		public int target() {
+			return viMap.indexToId(it.target());
+		}
 	}
 
 }

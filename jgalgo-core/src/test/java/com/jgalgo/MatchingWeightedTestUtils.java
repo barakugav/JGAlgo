@@ -18,19 +18,23 @@ package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.List;
+import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntLists;
 
 class MatchingWeightedTestUtils extends TestUtils {
 
 	private MatchingWeightedTestUtils() {}
 
 	static void randGraphsBipartiteWeighted(MaximumMatching algo, long seed) {
-		randGraphsBipartiteWeighted(algo, Graph.newBuilderUndirected(), seed);
+		randGraphsBipartiteWeighted(algo, GraphsTestUtils.defaultGraphImpl(), seed);
 	}
 
-	static void randGraphsBipartiteWeighted(MaximumMatching algo, Graph.Builder graphImpl, long seed) {
+	static void randGraphsBipartiteWeighted(MaximumMatching algo, Boolean2ObjectFunction<Graph> graphImpl, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(256, 8, 8, 8), phase(128, 16, 16, 64), phase(12, 128, 128, 128),
 				phase(2, 256, 256, 1200));
@@ -58,7 +62,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 			int tn = args[1];
 			int m = args[2];
 
-			Graph g = MatchingBipartiteTestUtils.randGraphBipartite(sn, tn, m, Graph.newBuilderUndirected(),
+			Graph g = MatchingBipartiteTestUtils.randGraphBipartite(sn, tn, m, GraphsTestUtils.defaultGraphImpl(),
 					seedGen.nextSeed());
 			int maxWeight = m < 50 ? 100 : m * 2 + 2;
 			WeightFunction.Int w =
@@ -151,7 +155,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 		assertEquals(expectedWeight, actualWeight, "unexpected match weight");
 	}
 
-	private static class MatchingWeightedShuffled implements MaximumMatchingWeighted {
+	private static class MatchingWeightedShuffled implements MaximumMatching {
 
 		private final MaximumMatching algo;
 		private final SeedGenerator seedGen;
@@ -172,30 +176,37 @@ class MatchingWeightedTestUtils extends TestUtils {
 		}
 
 		private Matching computeMaximumMatchingShuffled(Graph g, WeightFunction w, boolean perfect) {
-			int n = g.vertices().size();
-			int[] shuffle = randPermutation(n, seedGen.nextSeed());
-
+			final int n = g.vertices().size();
 			Graph shuffledG = Graph.newBuilderUndirected().build();
 			for (int i = 0; i < n; i++)
 				shuffledG.addVertex();
 
+			int[] vs1 = g.vertices().toIntArray();
+			int[] vs2 = shuffledG.vertices().toIntArray();
+			int[] shuffleArr = randPermutation(n, seedGen.nextSeed());
+			Int2IntMap shuffle = new Int2IntOpenHashMap();
+			Int2IntMap shuffleInv = new Int2IntOpenHashMap();
+			for (int i = 0; i < n; i++) {
+				int v = vs1[i];
+				int vShuffle = vs2[shuffleArr[i]];
+				shuffle.put(v, vShuffle);
+				shuffleInv.put(vShuffle, v);
+			}
+
 			Weights.Bool partition = g.getVerticesWeights(Weights.DefaultBipartiteWeightKey);
 			if (partition != null) {
 				/* bipartite graph */
-				Weights.Bool partitionSuffled = g.addVerticesWeights(Weights.DefaultBipartiteWeightKey, boolean.class);
+				Weights.Bool partitionShuffled =
+						shuffledG.addVerticesWeights(Weights.DefaultBipartiteWeightKey, boolean.class);
 
-				int[] shuffleInv = new int[n];
-				for (int v = 0; v < n; v++)
-					shuffleInv[shuffle[v]] = v;
-
-				for (int v = 0; v < n; v++)
-					partitionSuffled.set(v, partition.getBool(shuffleInv[v]));
+				for (int v : shuffledG.vertices())
+					partitionShuffled.set(v, partition.getBool(shuffleInv.get(v)));
 			}
 
 			Weights.Int edgeRef = shuffledG.addEdgesWeights("edgeRef", int.class, Integer.valueOf(-1));
 			for (int e : g.edges()) {
 				int u = g.edgeSource(e), v = g.edgeTarget(e);
-				int e0 = shuffledG.addEdge(shuffle[u], shuffle[v]);
+				int e0 = shuffledG.addEdge(shuffle.get(u), shuffle.get(v));
 				edgeRef.set(e0, e);
 			}
 
@@ -208,7 +219,38 @@ class MatchingWeightedTestUtils extends TestUtils {
 			IntList unshuffledEdges = new IntArrayList(shuffledEdges.size());
 			for (int e : shuffledEdges)
 				unshuffledEdges.add(edgeRef.getInt(e));
-			return new MatchingImpl(g, unshuffledEdges);
+			IntList matchedEdgesRes = IntLists.unmodifiable(unshuffledEdges);
+			return new Matching() {
+
+				@Override
+				public boolean isVertexMatched(int vertex) {
+					for (int e : matchedEdgesRes)
+						if (vertex == g.edgeSource(e) || vertex == g.edgeTarget(e))
+							return true;
+					return false;
+				}
+
+				@Override
+				public boolean containsEdge(int edge) {
+					return matchedEdgesRes.contains(edge);
+				}
+
+				@Override
+				public IntCollection edges() {
+					return matchedEdgesRes;
+				}
+
+				@Override
+				public double weight(WeightFunction w) {
+					return GraphsUtils.weightSum(edges(), w);
+				}
+
+			};
+		}
+
+		@Override
+		public Matching computeMaximumCardinalityMatching(Graph g) {
+			return computeMaximumWeightedMatching(g, WeightFunction.CardinalityWeightFunction);
 		}
 
 	}

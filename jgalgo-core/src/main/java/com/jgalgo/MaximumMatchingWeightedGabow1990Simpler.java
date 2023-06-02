@@ -24,7 +24,8 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  * <p>
  * This algorithm runs in \(O(m n \log n)\) time and uses linear space. The asymptotically running time is lower than
  * the regular {@link MaximumMatchingWeightedGabow1990} implementation, but it runs faster in practice. Instead of using
- * {@link SubtreeMergeFindMin} and {@link LowestCommonAncestorDynamic}, a simple heap is used to tracker 'blossom' steps.
+ * {@link SubtreeMergeFindMin} and {@link LowestCommonAncestorDynamic}, a simple heap is used to tracker 'blossom'
+ * steps.
  * <p>
  * Based on the original paper 'Paths, Trees, and Flowers' by Jack Edmonds (1965), later improved by 'An Efficient
  * Implementation of Edmonds Algorithm for Maximum Matching on Graphs' by Harold N. Gabow (1976), and using the
@@ -41,7 +42,7 @@ class MaximumMatchingWeightedGabow1990Simpler extends MaximumMatchingWeightedGab
 	MaximumMatchingWeightedGabow1990Simpler() {}
 
 	@Override
-	Worker newWorker(Graph gOrig, WeightFunction w, HeapReferenceable.Builder<Object, Object> heapBuilder,
+	Worker newWorker(IndexGraph gOrig, WeightFunction w, HeapReferenceable.Builder<Object, Object> heapBuilder,
 			DebugPrintsManager debugPrint) {
 		return new Worker(gOrig, w, heapBuilder, debugPrint);
 	}
@@ -51,7 +52,7 @@ class MaximumMatchingWeightedGabow1990Simpler extends MaximumMatchingWeightedGab
 		/* Heap storing all the blossom and augmenting events */
 		final Heap<EdgeEvent> blossomEvents;
 
-		Worker(Graph gOrig, WeightFunction w, HeapReferenceable.Builder<Object, Object> heapBuilder,
+		Worker(IndexGraph gOrig, WeightFunction w, HeapReferenceable.Builder<Object, Object> heapBuilder,
 				DebugPrintsManager debugPrint) {
 			super(gOrig, w, heapBuilder, debugPrint);
 			blossomEvents = Heap.newBuilder().<EdgeEvent>elementsTypeObj()

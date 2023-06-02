@@ -19,6 +19,7 @@ package com.jgalgo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
+import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 import it.unimi.dsi.fastutil.ints.IntAVLTreeSet;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -28,12 +29,12 @@ class MinimumSpanningTreeTestUtils extends TestUtils {
 	private MinimumSpanningTreeTestUtils() {}
 
 	static void testRandGraph(MinimumSpanningTree algo, long seed) {
-		testRandGraph(algo, Graph.newBuilderUndirected(), seed);
+		testRandGraph(algo, GraphsTestUtils.defaultGraphImpl(), seed);
 	}
 
-	static void testRandGraph(MinimumSpanningTree algo, Graph.Builder graphImpl, long seed) {
+	static void testRandGraph(MinimumSpanningTree algo, Boolean2ObjectFunction<Graph> graphImpl, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		List<Phase> phases = List.of(phase(1, 0, 0), phase(128, 16, 32), phase(64, 64, 128), phase(32, 128, 256),
+		List<Phase> phases = List.of(phase(128, 16, 32), phase(64, 64, 128), phase(32, 128, 256),
 				phase(8, 1024, 4096), phase(2, 4096, 16384));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];

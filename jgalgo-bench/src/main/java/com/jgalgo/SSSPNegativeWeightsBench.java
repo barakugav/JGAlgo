@@ -67,7 +67,8 @@ public class SSSPNegativeWeightsBench {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
 			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
-			int source = rand.nextInt(g.vertices().size());
+			int[] vs = g.vertices().toIntArray();
+			int source = vs[rand.nextInt(vs.length)];
 			graphs.add(new GraphArgs(g, w, source));
 		}
 	}

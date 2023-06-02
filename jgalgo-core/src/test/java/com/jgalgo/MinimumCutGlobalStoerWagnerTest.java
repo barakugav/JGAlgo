@@ -18,13 +18,14 @@ package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.util.BitSet;
 import java.util.List;
 import java.util.Random;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 class MinimumCutGlobalStoerWagnerTest extends TestBase {
 
@@ -62,23 +63,32 @@ class MinimumCutGlobalStoerWagnerTest extends TestBase {
 		if (n <= 16) {
 			/* check all cuts */
 			IntList vertices = new IntArrayList(g.vertices());
-			vertices.rem(0);
+			final int firstVertex = g.vertices().iterator().nextInt();
+			vertices.rem(firstVertex);
 
-			BitSet cut = new BitSet(n);
+			IntSet cut = new IntOpenHashSet(n);
 			for (int bitmap = 0; bitmap < 1 << (n - 1); bitmap++) {
-				cut.set(0);
+				cut.add(firstVertex);
 				for (int i = 0; i < n - 1; i++)
 					if ((bitmap & (1 << i)) != 0)
-						cut.set(vertices.getInt(i));
-				if (cut.cardinality() != n) {
-					int cutWeight = (int) new CutImpl(g, cut).weight(w);
+						cut.add(vertices.getInt(i));
+				if (cut.size() != n) {
+					int cutWeight = 0;
+					for (int u : cut) {
+						for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
+							int e = eit.nextInt();
+							int v = eit.target();
+							if (!cut.contains(v))
+								cutWeight += w.weightInt(e);
+						}
+					}
 					assertTrue(minCutWeight <= cutWeight, "failed to find minimum cut: " + cut);
 				}
 				cut.clear();
 			}
 
 		} else {
-			MinimumCutGlobal validationAlgo = MinimumCutSTBuilderImpl
+			MinimumCutGlobal validationAlgo = MinimumCutSTUtils
 					.globalMinCutFromStMinCut(MinimumCutST.newFromMaximumFlow(new MaximumFlowEdmondsKarp()));
 			Cut minCutExpected = validationAlgo.computeMinimumCut(g, w);
 			int minCutWeightExpected = (int) minCutExpected.weight(w);

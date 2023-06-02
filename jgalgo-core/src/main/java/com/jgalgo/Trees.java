@@ -48,7 +48,7 @@ public class Trees {
 	 */
 	public static boolean isTree(Graph g) {
 		ArgumentCheck.onlyUndirected(g);
-		return g.vertices().isEmpty() ? true : isTree(g, 0);
+		return g.vertices().isEmpty() ? true : isTree(g, g.vertices().iterator().nextInt());
 	}
 
 	/**
@@ -100,6 +100,15 @@ public class Trees {
 	}
 
 	private static boolean isForest(Graph g, IntIterator roots, boolean allowVisitedRoot) {
+		if (g instanceof IndexGraph)
+			return isForest((IndexGraph) g, roots, allowVisitedRoot);
+		IndexGraph iGraph = g.indexGraph();
+		IndexGraphMap viMap = g.indexGraphVerticesMap();
+		roots = new IndexGraphMapUtils.IndexIteratorFromIterator(roots, viMap);
+		return isForest(iGraph, roots, allowVisitedRoot);
+	}
+
+	private static boolean isForest(IndexGraph g, IntIterator roots, boolean allowVisitedRoot) {
 		int n = g.vertices().size();
 		if (n == 0)
 			return true;

@@ -28,8 +28,8 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * edge is added to the forest. The algorithm terminate after all edges were examined.
  * <p>
  * The running time of the algorithm is \(O(m \log n)\) and it uses linear time. This algorithm perform good in practice
- * and its running time compete with other algorithms such as {@link MinimumSpanningTreePrim}, which have better time bounds in theory.
- * Note that only undirected graphs are supported.
+ * and its running time compete with other algorithms such as {@link MinimumSpanningTreePrim}, which have better time
+ * bounds in theory. Note that only undirected graphs are supported.
  * <p>
  * Based on "On the shortest spanning subtree of a graph and the traveling salesman problem" by Kruskal, J. B. (1956) in
  * the book "Proceedings of the American Mathematical Society".
@@ -37,7 +37,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * @see    <a href= "https://en.wikipedia.org/wiki/Kruskal%27s_algorithm">Wikipedia</a>
  * @author Barak Ugav
  */
-class MinimumSpanningTreeKruskal implements MinimumSpanningTree {
+class MinimumSpanningTreeKruskal extends MinimumSpanningTreeUtils.AbstractUndirected {
 
 	private UnionFind.Builder unionFindBuilder = UnionFind.newBuilder();
 	private boolean parallelEnable = Config.parallelByDefault;
@@ -63,12 +63,12 @@ class MinimumSpanningTreeKruskal implements MinimumSpanningTree {
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	public MinimumSpanningTree.Result computeMinimumSpanningTree(Graph g, WeightFunction w) {
+	MinimumSpanningTree.Result computeMinimumSpanningTree(IndexGraph g, WeightFunction w) {
 		ArgumentCheck.onlyUndirected(g);
 		final int n = g.vertices().size();
 		final int m = g.edges().size();
 		if (n == 0 || m == 0)
-			return MinimumSpanningTreeResultImpl.Empty;
+			return MinimumSpanningTreeUtils.ResultImpl.Empty;
 
 		/* sort edges */
 		int[] edges = g.edges().toIntArray();
@@ -91,7 +91,7 @@ class MinimumSpanningTreeKruskal implements MinimumSpanningTree {
 			}
 		}
 		uf.clear();
-		return new MinimumSpanningTreeResultImpl(mst);
+		return new MinimumSpanningTreeUtils.ResultImpl(mst);
 	}
 
 }

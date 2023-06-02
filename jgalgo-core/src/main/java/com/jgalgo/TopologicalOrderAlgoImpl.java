@@ -20,10 +20,10 @@ import java.util.Arrays;
 import it.unimi.dsi.fastutil.ints.IntIterators;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
-class TopologicalOrderAlgoImpl implements TopologicalOrderAlgo {
+class TopologicalOrderAlgoImpl extends TopologicalOrderAlgoAbstract {
 
 	@Override
-	public TopologicalOrderAlgo.Result computeTopologicalSorting(Graph g) {
+	TopologicalOrderAlgo.Result computeTopologicalSorting(IndexGraph g) {
 		ArgumentCheck.onlyDirected(g);
 		int n = g.vertices().size();
 		int[] inDegree = new int[n];

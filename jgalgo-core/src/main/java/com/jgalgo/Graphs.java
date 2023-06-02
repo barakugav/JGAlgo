@@ -32,7 +32,7 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 public class Graphs {
 	private Graphs() {}
 
-	private abstract static class EmptyGraph implements Graph {
+	private abstract static class EmptyGraph implements IndexGraph {
 
 		private final IDStrategy.Continues verticesIDStrat = new IDStrategyImpl.ContinuesEmpty();
 		private final IDStrategy.Continues edgesIDStrat = new IDStrategyImpl.ContinuesEmpty();
@@ -156,12 +156,27 @@ public class Graphs {
 		}
 
 		@Override
-		public IDStrategy getEdgesIDStrategy() {
+		public IDStrategy.Continues getEdgesIDStrategy() {
 			return edgesIDStrat;
 		}
 
 		@Override
-		public Graph copy() {
+		public IndexGraph indexGraph() {
+			return this;
+		}
+
+		@Override
+		public IndexGraphMap indexGraphVerticesMap() {
+			return GraphsUtils.IndexGraphMapIdentify;
+		}
+
+		@Override
+		public IndexGraphMap indexGraphEdgesMap() {
+			return GraphsUtils.IndexGraphMapIdentify;
+		}
+
+		@Override
+		public IndexGraph copy() {
 			return this;
 		}
 	}
@@ -193,12 +208,12 @@ public class Graphs {
 	/**
 	 * An undirected graphs with no vertices and no edges
 	 */
-	public static final Graph EmptyGraphUndirected = new EmptyGraphUndirected();
+	public static final IndexGraph EmptyGraphUndirected = new EmptyGraphUndirected();
 
 	/**
 	 * A directed graphs with no vertices and no edges
 	 */
-	public static final Graph EmptyGraphDirected = new EmptyGraphDirected();
+	public static final IndexGraph EmptyGraphDirected = new EmptyGraphDirected();
 
 	private static class CompleteGraphUndirected extends CompleteGraph {
 
@@ -330,7 +345,7 @@ public class Graphs {
 				.vertexRemove(false).edgeAdd(false).edgeRemove(false).parallelEdges(false).selfEdges(false).build();
 
 		@Override
-		public Graph copy() {
+		public IndexGraph copy() {
 			return new CompleteGraphUndirected(this);
 		}
 
@@ -417,7 +432,7 @@ public class Graphs {
 				.vertexRemove(false).edgeAdd(false).edgeRemove(false).parallelEdges(false).selfEdges(false).build();
 
 		@Override
-		public Graph copy() {
+		public IndexGraph copy() {
 			return new CompleteGraphDirected(this);
 		}
 
@@ -453,7 +468,7 @@ public class Graphs {
 
 	}
 
-	private static abstract class CompleteGraph extends GraphBase {
+	private static abstract class CompleteGraph extends GraphBase implements IndexGraph {
 
 		final int n, m;
 		private final WeightsImpl.Manager verticesWeights;
@@ -473,8 +488,8 @@ public class Graphs {
 			super(new IDStrategyImpl.Continues(g.n), new IDStrategyImpl.Continues(g.m));
 			this.n = g.n;
 			this.m = g.m;
-			verticesWeights = g.verticesWeights.copy(verticesIDStrat);
-			edgesWeights = g.edgesWeights.copy(edgesIDStrat);
+			verticesWeights = new WeightsImpl.Manager(g.verticesWeights, verticesIDStrat, null);
+			edgesWeights = new WeightsImpl.Manager(g.edgesWeights, edgesIDStrat, null);
 		}
 
 		void checkVertex(int vertex) {
@@ -692,13 +707,26 @@ public class Graphs {
 		}
 
 		@Override
-		void addVerticesWeightsContainer(Object key, Weights<?> weights) {
+		public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, Class<? super V> type,
+				V defVal) {
+			IDStrategyImpl idStrat = (IDStrategyImpl) getVerticesIDStrategy();
+			DataContainer<V> container = DataContainer.newInstance(idStrat, type, defVal);
+			Weights<?> weights = WeightsImpl.wrapContainerDirected(container);
 			verticesWeights.addWeights(key, weights);
+			@SuppressWarnings("unchecked")
+			WeightsT weights0 = (WeightsT) weights;
+			return weights0;
 		}
 
 		@Override
-		void addEdgesWeightsContainer(Object key, Weights<?> weights) {
+		public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, Class<? super E> type, E defVal) {
+			IDStrategyImpl idStrat = (IDStrategyImpl) getEdgesIDStrategy();
+			DataContainer<E> container = DataContainer.newInstance(idStrat, type, defVal);
+			Weights<?> weights = WeightsImpl.wrapContainerDirected(container);
 			edgesWeights.addWeights(key, weights);
+			@SuppressWarnings("unchecked")
+			WeightsT weights0 = (WeightsT) weights;
+			return weights0;
 		}
 
 		@Override
@@ -711,6 +739,30 @@ public class Graphs {
 			edgesWeights.removeWeights(key);
 		}
 
+		@Override
+		public IDStrategy.Continues getVerticesIDStrategy() {
+			return (IDStrategy.Continues) super.getVerticesIDStrategy();
+		}
+
+		@Override
+		public IDStrategy.Continues getEdgesIDStrategy() {
+			return (IDStrategy.Continues) super.getEdgesIDStrategy();
+		}
+
+		@Override
+		public IndexGraph indexGraph() {
+			return this;
+		}
+
+		@Override
+		public IndexGraphMap indexGraphVerticesMap() {
+			return GraphsUtils.IndexGraphMapIdentify;
+		}
+
+		@Override
+		public IndexGraphMap indexGraphEdgesMap() {
+			return GraphsUtils.IndexGraphMapIdentify;
+		}
 	}
 
 	/**
@@ -727,7 +779,7 @@ public class Graphs {
 	 *                              vertices after the graph was created.
 	 * @return                  a new undirected complete graph
 	 */
-	public static Graph newCompleteGraphUndirected(int numberOfVertices) {
+	public static IndexGraph newCompleteGraphUndirected(int numberOfVertices) {
 		return new CompleteGraphUndirected(numberOfVertices);
 	}
 
@@ -746,7 +798,7 @@ public class Graphs {
 	 *                              vertices after the graph was created.
 	 * @return                  a new directed complete graph
 	 */
-	public static Graph newCompleteGraphDirected(int numberOfVertices) {
+	public static IndexGraph newCompleteGraphDirected(int numberOfVertices) {
 		return new CompleteGraphDirected(numberOfVertices);
 	}
 
@@ -882,16 +934,6 @@ public class Graphs {
 		}
 
 		@Override
-		public IDStrategy.Continues getVerticesIDStrategy() {
-			return g.getVerticesIDStrategy();
-		}
-
-		@Override
-		public IDStrategy getEdgesIDStrategy() {
-			return g.getEdgesIDStrategy();
-		}
-
-		@Override
 		public GraphCapabilities getCapabilities() {
 			return g.getCapabilities();
 		}
@@ -900,6 +942,53 @@ public class Graphs {
 		public Graph copy() {
 			return g.copy();
 		}
+
+		@Override
+		public IndexGraph indexGraph() {
+			return this instanceof IndexGraph ? (IndexGraph) this : Graphs.unmodifiableView(g.indexGraph());
+		}
+
+		@Override
+		public IndexGraphMap indexGraphVerticesMap() {
+			return g.indexGraphVerticesMap();
+		}
+
+		@Override
+		public IndexGraphMap indexGraphEdgesMap() {
+			return g.indexGraphEdgesMap();
+		}
+
+		Graph g() {
+			return g;
+		}
+	}
+
+	private static class UnmodifiableIndexGraph extends UnmodifiableGraph implements IndexGraph {
+
+		UnmodifiableIndexGraph(IndexGraph g) {
+			super(g);
+		}
+
+		@Override
+		IndexGraph g() { // TOOD rename
+			return (IndexGraph) super.g();
+		}
+
+		@Override
+		public IndexGraph copy() {
+			return g().copy();
+		}
+
+		@Override
+		public IDStrategy.Continues getVerticesIDStrategy() {
+			return g().getVerticesIDStrategy();
+		}
+
+		@Override
+		public IDStrategy.Continues getEdgesIDStrategy() {
+			return g().getEdgesIDStrategy();
+		}
+
 	}
 
 	private static class UnmodifiableEdgeSet extends AbstractIntSet implements EdgeSet {
@@ -961,15 +1050,25 @@ public class Graphs {
 	}
 
 	static Graph unmodifiableView(Graph g) {
+		if (g instanceof IndexGraph)
+			return unmodifiableView((IndexGraph) g);
 		return g instanceof UnmodifiableGraph ? (UnmodifiableGraph) g : new UnmodifiableGraph(g);
+	}
+
+	static IndexGraph unmodifiableView(IndexGraph g) {
+		return g instanceof UnmodifiableIndexGraph ? (UnmodifiableIndexGraph) g : new UnmodifiableIndexGraph(g);
 	}
 
 	private static class ReverseGraph implements Graph {
 
-		private final Graph g;
+		private final Graph g; // TODO rename
 
 		ReverseGraph(Graph g) {
 			this.g = Objects.requireNonNull(g);
+		}
+
+		Graph graph() {
+			return g;
 		}
 
 		@Override
@@ -1068,16 +1167,6 @@ public class Graphs {
 		}
 
 		@Override
-		public IDStrategy.Continues getVerticesIDStrategy() {
-			return g.getVerticesIDStrategy();
-		}
-
-		@Override
-		public IDStrategy getEdgesIDStrategy() {
-			return g.getEdgesIDStrategy();
-		}
-
-		@Override
 		public GraphCapabilities getCapabilities() {
 			return g.getCapabilities();
 		}
@@ -1109,8 +1198,51 @@ public class Graphs {
 		}
 
 		@Override
+		public IndexGraph indexGraph() {
+			return this instanceof IndexGraph ? (IndexGraph) this : Graphs.reverseView(g.indexGraph());
+		}
+
+		@Override
+		public IndexGraphMap indexGraphVerticesMap() {
+			return g.indexGraphVerticesMap();
+		}
+
+		@Override
+		public IndexGraphMap indexGraphEdgesMap() {
+			return g.indexGraphEdgesMap();
+		}
+
+		@Override
 		public Graph copy() {
 			return new ReverseGraph(g.copy());
+		}
+
+	}
+
+	private static class ReverseIndexGraph extends ReverseGraph implements IndexGraph {
+
+		ReverseIndexGraph(IndexGraph g) {
+			super(g);
+		}
+
+		@Override
+		IndexGraph graph() {
+			return (IndexGraph) super.graph();
+		}
+
+		@Override
+		public IDStrategy.Continues getVerticesIDStrategy() {
+			return graph().getVerticesIDStrategy();
+		}
+
+		@Override
+		public IDStrategy.Continues getEdgesIDStrategy() {
+			return graph().getEdgesIDStrategy();
+		}
+
+		@Override
+		public IndexGraph copy() {
+			return new ReverseIndexGraph(graph().copy());
 		}
 
 	}
@@ -1189,7 +1321,13 @@ public class Graphs {
 	}
 
 	static Graph reverseView(Graph g) {
+		if (g instanceof IndexGraph)
+			return reverseView((IndexGraph) g);
 		return g instanceof ReverseGraph ? ((ReverseGraph) g).g : new ReverseGraph(g);
+	}
+
+	static IndexGraph reverseView(IndexGraph g) {
+		return g instanceof ReverseGraph ? ((ReverseGraph) g).g.indexGraph() : new ReverseIndexGraph(g);
 	}
 
 }

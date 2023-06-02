@@ -96,7 +96,7 @@ public class EulerianTourTest extends TestBase {
 				.selfEdges(true).cycles(true).connected(true).build();
 
 		IntList oddVertices = new IntArrayList();
-		for (int u = 0; u < n; u++)
+		for (int u : g.vertices())
 			if (degreeWithoutSelfLoops(g, u) % 2 != 0)
 				oddVertices.add(u);
 		assert oddVertices.size() % 2 == 0;
@@ -124,15 +124,16 @@ public class EulerianTourTest extends TestBase {
 			swapAndRemove(oddVertices, vIdx);
 		}
 
-		for (int u = 0; u < n; u++)
+		for (int u : g.vertices())
 			assert degreeWithoutSelfLoops(g, u) % 2 == 0;
 		if (!allEvenVertices) {
 			/* Add another edge resulting in two vertices with odd degree */
 			if (n <= 1)
 				throw new IllegalArgumentException();
+			int[] vs = g.vertices().toIntArray();
 			for (;;) {
-				int u = rand.nextInt(n);
-				int v = rand.nextInt(n);
+				int u = vs[rand.nextInt(vs.length)];
+				int v = vs[rand.nextInt(vs.length)];
 				if (u == v)
 					continue;
 				g.addEdge(u, v);
@@ -155,7 +156,7 @@ public class EulerianTourTest extends TestBase {
 		IntList lackingInEdgesVertices = new IntArrayList();
 		IntList lackingOutEdgesNum = new IntArrayList();
 		IntList lackingInEdgesNum = new IntArrayList();
-		for (int u = 0; u < n; u++) {
+		for (int u : g.vertices()) {
 			int outD = g.edgesOut(u).size();
 			int inD = g.edgesIn(u).size();
 			if (outD == inD)
@@ -204,7 +205,7 @@ public class EulerianTourTest extends TestBase {
 			}
 		}
 
-		for (int u = 0; u < n; u++)
+		for (int u : g.vertices())
 			assert g.edgesOut(u).size() == g.edgesIn(u).size();
 		if (!allEqualInOutDegree) {
 			/*
@@ -212,9 +213,10 @@ public class EulerianTourTest extends TestBase {
 			 */
 			if (n <= 1)
 				throw new IllegalArgumentException();
+			int[] vs = g.vertices().toIntArray();
 			for (;;) {
-				int u = rand.nextInt(n);
-				int v = rand.nextInt(n);
+				int u = vs[rand.nextInt(vs.length)];
+				int v = vs[rand.nextInt(vs.length)];
 				if (u == v)
 					continue;
 				g.addEdge(u, v);
@@ -249,8 +251,7 @@ public class EulerianTourTest extends TestBase {
 
 		int[] V2v = new int[N];
 		Arrays.fill(V2v, -1);
-		int n = g.vertices().size();
-		for (int v = 0; v < n; v++) {
+		for (int v : g.vertices()) {
 			int V = connectivityRes.getVertexCc(v);
 			if (V2v[V] == -1)
 				V2v[V] = v;

@@ -226,7 +226,7 @@ class GraphArrayDirected extends GraphArrayAbstract {
 			.vertexRemove(true).edgeAdd(true).edgeRemove(true).parallelEdges(true).selfEdges(true).build();
 
 	@Override
-	public Graph copy() {
+	public IndexGraph copy() {
 		return new GraphArrayDirected(this);
 	}
 

@@ -24,17 +24,17 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 
 class CutImpl implements Cut {
 
-	private final Graph g;
+	private final IndexGraph g;
 	private BitSet cutBitmap;
 	private IntCollection cutVertices;
 	private IntCollection crossEdges;
 
-	CutImpl(Graph g, IntCollection cutVertices) {
+	CutImpl(IndexGraph g, IntCollection cutVertices) {
 		this.g = Objects.requireNonNull(g);
 		this.cutVertices = IntCollections.unmodifiable(Objects.requireNonNull(cutVertices));
 	}
 
-	CutImpl(Graph g, BitSet cutBitmap) {
+	CutImpl(IndexGraph g, BitSet cutBitmap) {
 		this.g = Objects.requireNonNull(g);
 		this.cutBitmap = Objects.requireNonNull(cutBitmap);
 	}
@@ -104,6 +104,40 @@ class CutImpl implements Cut {
 	public String toString() {
 		computeCutBitmap();
 		return cutBitmap.toString();
+	}
+
+	static class CutFromIndexCut implements Cut {
+
+		private final Cut cut;
+		private final IndexGraphMap viMap;
+		private final IndexGraphMap eiMap;
+
+		CutFromIndexCut(Cut cut, IndexGraphMap viMap, IndexGraphMap eiMap) {
+			this.cut = Objects.requireNonNull(cut);
+			this.viMap = Objects.requireNonNull(viMap);
+			this.eiMap = Objects.requireNonNull(eiMap);
+		}
+
+		@Override
+		public boolean containsVertex(int vertex) {
+			return cut.containsVertex(viMap.idToIndex(vertex));
+		}
+
+		@Override
+		public IntCollection vertices() {
+			return new IndexGraphMapUtils.CollectionFromIndexCollection(cut.vertices(), viMap);
+		}
+
+		@Override
+		public IntCollection edges() {
+			return new IndexGraphMapUtils.CollectionFromIndexCollection(cut.edges(), eiMap);
+		}
+
+		@Override
+		public double weight(WeightFunction w) {
+			return cut.weight(WeightsImpl.indexWeightFuncFromIdWeightFunc(w, eiMap));
+		}
+
 	}
 
 }

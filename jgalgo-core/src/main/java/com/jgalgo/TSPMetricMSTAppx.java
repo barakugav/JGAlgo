@@ -30,7 +30,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  *
  * @author Barak Ugav
  */
-public class TSPMetricMSTAppx implements TSPMetric {
+public class TSPMetricMSTAppx extends TSPMetricUtils.AbstractImpl {
 
 	private final MinimumSpanningTree mstAlgo = MinimumSpanningTree.newBuilder().build();
 	// /*
@@ -46,7 +46,7 @@ public class TSPMetricMSTAppx implements TSPMetric {
 	public TSPMetricMSTAppx() {}
 
 	@Override
-	public Path computeShortestTour(Graph g, WeightFunction w) {
+	Path computeShortestTour(IndexGraph g, WeightFunction w) {
 		final int n = g.vertices().size();
 		if (n == 0)
 			return null;
@@ -61,7 +61,7 @@ public class TSPMetricMSTAppx implements TSPMetric {
 			throw new IllegalArgumentException("graph is not connected");
 
 		/* Build a graph with each MST edge duplicated */
-		Graph g1 = Graph.newBuilderUndirected().expectedVerticesNum(n).expectedEdgesNum(mst.size()).build();
+		IndexGraph g1 = IndexGraph.newBuilderUndirected().expectedVerticesNum(n).expectedEdgesNum(mst.size()).build();
 		for (int v = 0; v < n; v++)
 			g1.addVertex();
 		Weights.Int edgeRef = g1.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));

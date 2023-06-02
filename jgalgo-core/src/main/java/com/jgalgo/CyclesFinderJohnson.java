@@ -37,7 +37,7 @@ import it.unimi.dsi.fastutil.objects.ObjectIntPair;
  *
  * @author Barak Ugav
  */
-class CyclesFinderJohnson implements CyclesFinder {
+class CyclesFinderJohnson extends CyclesFinderAbstract {
 
 	private final ConnectedComponentsAlgo ccAlg = ConnectedComponentsAlgo.newBuilder().build();
 
@@ -47,7 +47,7 @@ class CyclesFinderJohnson implements CyclesFinder {
 	CyclesFinderJohnson() {}
 
 	@Override
-	public Iterator<Path> findAllCycles(Graph g) {
+	Iterator<Path> findAllCycles(IndexGraph g) {
 		ArgumentCheck.onlyDirected(g);
 		if (GraphsUtils.containsParallelEdges(g))
 			throw new IllegalArgumentException("graphs with self loops are not supported");
@@ -68,14 +68,14 @@ class CyclesFinderJohnson implements CyclesFinder {
 
 	private static class Worker {
 
-		private final Graph g;
+		private final IndexGraph g;
 		private final BitSet isBlocked;
 		private final IntSet[] blockingSet;
 		private final IntStack unblockStack = new IntArrayList();
 		private final IntStack path = new IntArrayList();
 		private final List<Path> cycles = new ArrayList<>();
 
-		Worker(Graph g) {
+		Worker(IndexGraph g) {
 			this.g = g;
 			int n = g.vertices().size();
 			isBlocked = new BitSet(n);
@@ -149,11 +149,11 @@ class CyclesFinderJohnson implements CyclesFinder {
 		}
 	}
 
-	private ObjectIntPair<StronglyConnectedComponent> chooseSCCInSubGraph(Graph g, int startIdx) {
+	private ObjectIntPair<StronglyConnectedComponent> chooseSCCInSubGraph(IndexGraph g, int startIdx) {
 		int nFull = g.vertices().size();
 		int subToFull = startIdx;
 		int nSub = nFull - subToFull;
-		Graph gSub = Graph.newBuilderDirected().expectedVerticesNum(nSub).build();
+		IndexGraph gSub = IndexGraph.newBuilderDirected().expectedVerticesNum(nSub).build();
 		for (int i = 0; i < nSub; i++)
 			gSub.addVertex();
 		for (int uSub = 0; uSub < nSub; uSub++) {
@@ -180,7 +180,7 @@ class CyclesFinderJohnson implements CyclesFinder {
 		return ObjectIntPair.of(new StronglyConnectedComponent(subToFull, connectivityResult, ccIdx), startIdx);
 	}
 
-	private static boolean hasSelfEdge(Graph g, int u) {
+	private static boolean hasSelfEdge(IndexGraph g, int u) {
 		return g.getEdge(u, u) != -1;
 	}
 

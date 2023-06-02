@@ -23,14 +23,14 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
-abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCutST {
+abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implements MinimumCutSTUtils.AbstractImpl {
 
 	private static final Object FlowWeightKey = new Utils.Obj("flow");
 	private static final Object CapacityWeightKey = new Utils.Obj("capacity");
 
-	abstract WorkerDouble newWorkerDouble(Graph gOrig, FlowNetwork net, int source, int sink);
+	abstract WorkerDouble newWorkerDouble(IndexGraph gOrig, FlowNetwork net, int source, int sink);
 
-	abstract WorkerInt newWorkerInt(Graph gOrig, FlowNetwork.Int net, int source, int sink);
+	abstract WorkerInt newWorkerInt(IndexGraph gOrig, FlowNetwork.Int net, int source, int sink);
 
 	/**
 	 * {@inheritDoc}
@@ -38,7 +38,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 	 * @throws IllegalArgumentException if the graph is not directed
 	 */
 	@Override
-	public double computeMaximumFlow(Graph g, FlowNetwork net, int source, int sink) {
+	double computeMaximumFlow(IndexGraph g, FlowNetwork net, int source, int sink) {
 		if (net instanceof FlowNetwork.Int) {
 			return newWorkerInt(g, (FlowNetwork.Int) net, source, sink).computeMaxFlow();
 		} else {
@@ -47,7 +47,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 	}
 
 	@Override
-	public Cut computeMinimumCut(Graph g, WeightFunction w, int source, int sink) {
+	public Cut computeMinimumCut(IndexGraph g, WeightFunction w, int source, int sink) {
 		if (w instanceof WeightFunction.Int) {
 			WeightFunction.Int wInt = (WeightFunction.Int) w;
 			FlowNetwork.Int net = new FlowNetwork.Int() {
@@ -120,7 +120,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 		private final int[] layersHeadInactive;
 		private int maxLayerInactive;
 
-		Worker(Graph gOrig, FlowNetwork net, int source, int sink) {
+		Worker(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
 			super(gOrig, net, source, sink);
 
 			label = new int[n];
@@ -454,7 +454,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 
 		private static final double EPS = 0.0001;
 
-		WorkerDouble(Graph gOrig, FlowNetwork net, int source, int sink) {
+		WorkerDouble(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
 			super(gOrig, net, source, sink);
 
 			flow = g.addEdgesWeights(FlowWeightKey, double.class);
@@ -607,7 +607,7 @@ abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCut
 
 		final int[] excess;
 
-		WorkerInt(Graph gOrig, FlowNetwork.Int net, int source, int sink) {
+		WorkerInt(IndexGraph gOrig, FlowNetwork.Int net, int source, int sink) {
 			super(gOrig, net, source, sink);
 
 			flow = g.addEdgesWeights(FlowWeightKey, int.class);

@@ -36,26 +36,26 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
-abstract class MaximumMatchingWeightedGabow1990Abstract implements MaximumMatchingWeighted {
+abstract class MaximumMatchingWeightedGabow1990Abstract extends MaximumMatchingWeighted {
 
 	final DebugPrintsManager debugPrintManager = new DebugPrintsManager();
 	HeapReferenceable.Builder<Object, Object> heapBuilder = HeapReferenceable.newBuilder();
 	static final double EPS = 0.00001;
 
 	@Override
-	public Matching computeMaximumWeightedMatching(Graph g, WeightFunction w) {
+	Matching computeMaximumWeightedMatching(IndexGraph g, WeightFunction w) {
 		ArgumentCheck.onlyUndirected(g);
 		return newWorker(g, w, heapBuilder, debugPrintManager).computeMaxMatching(false);
 
 	}
 
 	@Override
-	public Matching computeMaximumWeightedPerfectMatching(Graph g, WeightFunction w) {
+	Matching computeMaximumWeightedPerfectMatching(IndexGraph g, WeightFunction w) {
 		ArgumentCheck.onlyUndirected(g);
 		return newWorker(g, w, heapBuilder, debugPrintManager).computeMaxMatching(true);
 	}
 
-	abstract Worker newWorker(Graph gOrig, WeightFunction w, HeapReferenceable.Builder<Object, Object> heapBuilder,
+	abstract Worker newWorker(IndexGraph gOrig, WeightFunction w, HeapReferenceable.Builder<Object, Object> heapBuilder,
 			DebugPrintsManager debugPrint);
 
 	/**
@@ -365,10 +365,10 @@ abstract class MaximumMatchingWeightedGabow1990Abstract implements MaximumMatchi
 	static abstract class Worker {
 
 		/* The original graph */
-		final Graph gOrig;
+		final IndexGraph gOrig;
 
 		/* the graph */
-		final Graph g;
+		final IndexGraph g;
 
 		final Weights<EdgeVal> edgeVal;
 
@@ -449,11 +449,11 @@ abstract class MaximumMatchingWeightedGabow1990Abstract implements MaximumMatchi
 
 		private static final Object EdgeValKey = new Utils.Obj("edgeVal");
 
-		Worker(Graph gOrig, WeightFunction w, HeapReferenceable.Builder<Object, Object> heapBuilder,
+		Worker(IndexGraph gOrig, WeightFunction w, HeapReferenceable.Builder<Object, Object> heapBuilder,
 				DebugPrintsManager debugPrint) {
 			int n = gOrig.vertices().size();
 			this.gOrig = gOrig;
-			this.g = Graph.newBuilderDirected().expectedVerticesNum(n).build();
+			this.g = IndexGraph.newBuilderDirected().expectedVerticesNum(n).build();
 			for (int v = 0; v < n; v++)
 				g.addVertex();
 			edgeVal = g.addEdgesWeights(EdgeValKey, EdgeVal.class);

@@ -35,7 +35,7 @@ import it.unimi.dsi.fastutil.ints.IntIterators;
  *
  * @author Barak Ugav
  */
-class ShortestPathSingleSourceDial implements ShortestPathSingleSource {
+class ShortestPathSingleSourceDial extends ShortestPathSingleSourceUtils.AbstractImpl {
 
 	/**
 	 * Construct a new SSSP algorithm.
@@ -49,7 +49,7 @@ class ShortestPathSingleSourceDial implements ShortestPathSingleSource {
 	 *                                      {@link WeightFunction.Int}
 	 */
 	@Override
-	public ShortestPathSingleSource.Result computeShortestPaths(Graph g, WeightFunction w, int source) {
+	 ShortestPathSingleSource.Result computeShortestPaths(IndexGraph g, WeightFunction w, int source) {
 		if (w == null)
 			w = WeightFunction.CardinalityWeightFunction;
 		if (!(w instanceof WeightFunction.Int))
@@ -84,7 +84,7 @@ class ShortestPathSingleSourceDial implements ShortestPathSingleSource {
 	 *                     vertex
 	 * @see                #computeShortestPaths(Graph, WeightFunction, int)
 	 */
-	ShortestPathSingleSource.Result computeShortestPaths(Graph g, WeightFunction.Int w, int source, int maxDistance) {
+	ShortestPathSingleSource.Result computeShortestPaths(IndexGraph g, WeightFunction.Int w, int source, int maxDistance) {
 		ArgumentCheck.onlyPositiveWeights(g, w);
 
 		ShortestPathSingleSourceUtils.ResultImpl.Int res = new ShortestPathSingleSourceUtils.ResultImpl.Int(g, source);

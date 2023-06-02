@@ -17,9 +17,7 @@
 package com.jgalgo;
 
 import java.util.BitSet;
-
 import com.jgalgo.Utils.BiInt2IntFunction;
-
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 
 /**
@@ -38,7 +36,7 @@ import it.unimi.dsi.fastutil.ints.Int2IntFunction;
  * @see    <a href="https://en.wikipedia.org/wiki/DSatur">Wikipedia</a>
  * @author Barak Ugav
  */
-class ColoringDSatur implements Coloring {
+class ColoringDSatur extends ColoringUtils.AbstractImpl {
 
 	private HeapReferenceable.Builder<Integer, Integer> heapBuilder =
 			HeapReferenceable.newBuilder().keysTypePrimitive(int.class).valuesTypePrimitive(int.class);
@@ -58,11 +56,11 @@ class ColoringDSatur implements Coloring {
 	}
 
 	@Override
-	public Coloring.Result computeColoring(Graph g) {
+	Coloring.Result computeColoring(IndexGraph g) {
 		ArgumentCheck.onlyUndirected(g);
 		ArgumentCheck.noSelfLoops(g, "no valid coloring in graphs with self loops");
 
-		ColoringResultImpl res = new ColoringResultImpl(g);
+		ColoringUtils.ResultImpl res = new ColoringUtils.ResultImpl(g);
 		int n = g.vertices().size();
 		BitSet[] neighborColors = new BitSet[n];
 

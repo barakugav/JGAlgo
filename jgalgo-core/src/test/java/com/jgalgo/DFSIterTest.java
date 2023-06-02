@@ -18,16 +18,13 @@ package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.BitSet;
 import java.util.List;
 import java.util.Random;
-
 import org.junit.jupiter.api.Test;
-
 import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
-
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 public class DFSIterTest extends TestBase {
 
@@ -41,18 +38,22 @@ public class DFSIterTest extends TestBase {
 			int n = args[0], m = args[1];
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(true).build();
-			int source = rand.nextInt(n);
+			int[] vs = g.vertices().toIntArray();
+			int source = vs[rand.nextInt(vs.length)];
 
-			BitSet visited = new BitSet(n);
+			IntSet visited = new IntOpenHashSet();
 			for (DFSIter it = DFSIter.newInstance(g, source); it.hasNext();) {
 				int v = it.nextInt();
 				IntList pathFromSource = it.edgePath();
 				int e = v == source ? -1 : pathFromSource.getInt(pathFromSource.size() - 1);
-				assertFalse(visited.get(v), "already visited vertex " + v);
+				assertFalse(visited.contains(v), "already visited vertex " + v);
 				if (v != source)
 					assertTrue(g.edgeEndpoint(e, g.edgeEndpoint(e, v)) == v, "v is not an endpoint of inEdge");
-				visited.set(v);
+				visited.add(v);
 			}
+
+			for (int v : g.vertices())
+				assertTrue(visited.contains(v));
 		});
 	}
 

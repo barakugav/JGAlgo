@@ -552,44 +552,17 @@ public interface Graph {
 	public Set<Object> getEdgesWeightsKeys();
 
 	/**
-	 * Get the ID strategy of the vertices of the graph.
-	 *
-	 * <p>
-	 * Each vertex in the graph is identified by a unique non negative int ID, which is determined by some strategy.
-	 * Only {@link IDStrategy.Continues} is supported for vertices, which ensure that at all times the vertices IDs are
-	 * {@code 0,1,..., verticesNum-1}, and it might rename some vertices when a vertex is removed to maintain this
-	 * invariant. This rename can be subscribed using {@link IDStrategy#addIDSwapListener}.
-	 *
-	 * @see    IDStrategy
-	 *
-	 * @return the vertices IDs strategy
-	 */
-	public IDStrategy.Continues getVerticesIDStrategy();
-
-	/**
-	 * Get the ID strategy of the edges of the graph.
-	 *
-	 * <p>
-	 * Each edge in the graph is identified by a unique non negative int ID, which is determined by some strategy. For
-	 * example, {@link IDStrategy.Continues} ensure that at all times the edges IDs are {@code 0,1,..., edgesNum-1}, and
-	 * it might rename some edges when an edge is removed to maintain this invariant. This rename can be subscribed
-	 * using {@link IDStrategy#addIDSwapListener}. Another option for an ID strategy is {@link IDStrategy.Fixed} which
-	 * ensure once an edge is assigned an ID, it will not change. There might be some performance differences between
-	 * different ID strategies.
-	 *
-	 * @see    IDStrategy
-	 *
-	 * @return the edges IDs strategy
-	 */
-	public IDStrategy getEdgesIDStrategy();
-
-	/**
 	 * Get the {@linkplain GraphCapabilities capabilities} of this graph.
 	 *
 	 * @return a {@link GraphCapabilities} object describing what this graph support and what not.
 	 * @see    GraphCapabilities
 	 */
 	public GraphCapabilities getCapabilities();
+
+	public IndexGraph indexGraph();
+
+	public IndexGraphMap indexGraphVerticesMap();
+	public IndexGraphMap indexGraphEdgesMap();
 
 	/**
 	 * Create a copy of this graph.
@@ -689,22 +662,6 @@ public interface Graph {
 		 * @return                  this builder
 		 */
 		Graph.Builder expectedEdgesNum(int expectedEdgesNum);
-
-		/**
-		 * Enable/disable fixed edges IDs for graphs built by this builder.
-		 * <p>
-		 * By default, IDs of both vertices and edges are always {@code 0,1,2,...,verticesNum1} (and
-		 * {@code 0,1,2,...edgesNum-1}). To maintain this invariant, graphs must rename vertices/edges when an
-		 * vertex/edge is removed. The IDs of the edges can be fixed, namely once an edge is assigned an ID, it will
-		 * never change. If such option is chosen, the edges IDs will not always be {@code 0,1,2,...,edgesNum-1}.
-		 * <p>
-		 * Note that by using fixed IDs, some map is required, and therefore its slightly less efficient.
-		 *
-		 * @param  enable if {@code true}, graphs built by this builder will have fixed IDs for edges
-		 * @return        this builder
-		 * @see           IDStrategy
-		 */
-		Graph.Builder useFixedEdgesIDs(boolean enable);
 
 		/**
 		 * Add a hint to this builder.

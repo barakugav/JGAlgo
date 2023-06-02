@@ -15,11 +15,36 @@
  */
 package com.jgalgo;
 
+import java.util.Objects;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIntPair;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 class TreePathMaximaUtils {
+
+	static abstract class AbstractImpl implements TreePathMaxima {
+
+		@Override
+		public TreePathMaxima.Result computeHeaviestEdgeInTreePaths(Graph tree, WeightFunction w,
+				TreePathMaxima.Queries queries) {
+			if (tree instanceof IndexGraph)
+				return computeHeaviestEdgeInTreePaths((IndexGraph) tree, w, queries);
+
+			IndexGraph iGraph = tree.indexGraph();
+			IndexGraphMap viMap = tree.indexGraphVerticesMap();
+			IndexGraphMap eiMap = tree.indexGraphEdgesMap();
+			w = WeightsImpl.indexWeightFuncFromIdWeightFunc(w, eiMap);
+			queries = new IndexQueriesFromQueries(queries, viMap);
+
+			TreePathMaxima.Result indexResult = computeHeaviestEdgeInTreePaths(iGraph, w, queries);
+			return new ResultFromIndexResult(indexResult, eiMap);
+		}
+
+		abstract TreePathMaxima.Result computeHeaviestEdgeInTreePaths(IndexGraph tree, WeightFunction w,
+				TreePathMaxima.Queries queries);
+
+	}
 
 	static class QueriesImpl implements TreePathMaxima.Queries {
 		private final IntList qs;
@@ -68,6 +93,90 @@ class TreePathMaximaUtils {
 			return res.length;
 		}
 
+	}
+
+	static class IndexQueriesFromQueries implements TreePathMaxima.Queries {
+		private final TreePathMaxima.Queries qs;
+		private final IndexGraphMap viMap;
+
+		IndexQueriesFromQueries(TreePathMaxima.Queries qs, IndexGraphMap viMap) {
+			this.qs = Objects.requireNonNull(qs);
+			this.viMap = Objects.requireNonNull(viMap);
+		}
+
+		@Override
+		public void addQuery(int u, int v) {
+			qs.addQuery(viMap.indexToId(u), viMap.indexToId(v));
+		}
+
+		@Override
+		public IntIntPair getQuery(int idx) {
+			IntIntPair idQuery = qs.getQuery(idx);
+			return IntIntPair.of(viMap.idToIndex(idQuery.firstInt()), viMap.idToIndex(idQuery.secondInt()));
+		}
+
+		@Override
+		public int size() {
+			return qs.size();
+		}
+
+		@Override
+		public void clear() {
+			qs.clear();
+		}
+	}
+
+	private static class ResultFromIndexResult implements TreePathMaxima.Result {
+
+		private final TreePathMaxima.Result res;
+		private final IndexGraphMap eiMap;
+
+		ResultFromIndexResult(TreePathMaxima.Result res, IndexGraphMap eiMap) {
+			this.res = Objects.requireNonNull(res);
+			this.eiMap = Objects.requireNonNull(eiMap);
+		}
+
+		@Override
+		public int getHeaviestEdge(int queryIdx) {
+			int eIdx = res.getHeaviestEdge(queryIdx);
+			return eIdx == -1 ? -1 : eiMap.indexToId(eIdx);
+		}
+
+		@Override
+		public int size() {
+			return res.size();
+		}
+	}
+
+	static boolean verifyMST(IndexGraph g, WeightFunction w, IntCollection mstEdges, TreePathMaxima tpmAlgo) {
+		ArgumentCheck.onlyUndirected(g);
+		int n = g.vertices().size();
+		IndexGraph mst =
+				IndexGraph.newBuilderUndirected().expectedVerticesNum(n).expectedEdgesNum(mstEdges.size()).build();
+		for (int v = 0; v < n; v++)
+			mst.addVertex();
+		Weights.Int edgeRef = mst.addEdgesWeights("edgeRef", int.class);
+		for (int e : mstEdges) {
+			int u = g.edgeSource(e), v = g.edgeTarget(e);
+			int ne = mst.addEdge(u, v);
+			edgeRef.set(ne, e);
+		}
+		if (!Trees.isTree(mst))
+			return false;
+
+		TreePathMaxima.Queries queries = TreePathMaxima.Queries.newInstance();
+		for (int e : g.edges())
+			queries.addQuery(g.edgeSource(e), g.edgeTarget(e));
+		WeightFunction w0 = e -> w.weight(edgeRef.getInt(e));
+		TreePathMaxima.Result tpmResults = tpmAlgo.computeHeaviestEdgeInTreePaths(mst, w0, queries);
+
+		int i = 0;
+		for (int e : g.edges()) {
+			int mstEdge = tpmResults.getHeaviestEdge(i++);
+			if (mstEdge == -1 || w.weight(e) < w0.weight(mstEdge))
+				return false;
+		}
+		return true;
 	}
 
 }

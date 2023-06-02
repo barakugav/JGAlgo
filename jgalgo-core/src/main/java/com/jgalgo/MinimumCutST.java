@@ -58,7 +58,7 @@ public interface MinimumCutST {
 	 * @return a new builder that can build {@link MinimumCutST} objects
 	 */
 	static MinimumCutST.Builder newBuilder() {
-		return new MinimumCutSTBuilderImpl.Default();
+		return MaximumFlowPushRelabelHighestFirst::new;
 	}
 
 	/**
@@ -71,7 +71,7 @@ public interface MinimumCutST {
 	 * @return            a minimum cut algorithm based on the provided maximum flow algorithm
 	 */
 	static MinimumCutST newFromMaximumFlow(MaximumFlow maxFlowAlg) {
-		return MinimumCutSTBuilderImpl.buildFromMaxFlow(maxFlowAlg);
+		return MinimumCutSTUtils.buildFromMaxFlow(maxFlowAlg);
 	}
 
 	/**

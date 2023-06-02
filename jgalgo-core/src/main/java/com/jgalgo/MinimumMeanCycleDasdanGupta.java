@@ -26,12 +26,12 @@ import it.unimi.dsi.fastutil.ints.IntList;
  * The algorithm runs in \(O(n m)\) time and uses \(O(n^2)\) space. Although this algorithm have a strong polynomial
  * bound, {@link MinimumMeanCycleHoward} is usually faster.
  * <p>
- * Based on 'Efficient algorithms for optimum cycle mean and optimum cost to time ratio problems' by Ali Dasdan, Sandy
- * S. Irani, Rajesh K. Gupta (1999).
+ * Based on 'Faster Maximum and Minimum Mean Cycle Algorithms for System Performance Analysis' by Ali Dasdan, Rajesh K.
+ * Gupta (1997).
  *
  * @author Barak Ugav
  */
-class MinimumMeanCycleDasdanGupta implements MinimumMeanCycle {
+class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 
 	private final ConnectedComponentsAlgo ccAlg = ConnectedComponentsAlgo.newBuilder().build();
 	private static final double EPS = 0.00001;
@@ -47,7 +47,7 @@ class MinimumMeanCycleDasdanGupta implements MinimumMeanCycle {
 	 * @throws IllegalArgumentException if the graph is not directed
 	 */
 	@Override
-	public Path computeMinimumMeanCycle(Graph g, WeightFunction w) {
+	Path computeMinimumMeanCycle(IndexGraph g, WeightFunction w) {
 		ArgumentCheck.onlyDirected(g);
 		int n = g.vertices().size();
 
@@ -75,8 +75,9 @@ class MinimumMeanCycleDasdanGupta implements MinimumMeanCycle {
 		for (int ccIdx = 0; ccIdx < ccNum; ccIdx++) {
 			final int ccSize = cc.getCcVertices(ccIdx).size();
 			if (ccSize < 2)
-				continue;
+				continue; // TODO consider self loops
 
+			// TODO better source choice
 			int source = cc.getCcVertices(ccIdx).iterator().nextInt();
 			boolean[] firstVisit = visit1;
 			d[0][source] = 0;
@@ -155,7 +156,7 @@ class MinimumMeanCycleDasdanGupta implements MinimumMeanCycle {
 				}
 			}
 		}
-		throw new IllegalStateException();
+		throw new IllegalStateException("shouldn't happend! implementation bug");
 	}
 
 }

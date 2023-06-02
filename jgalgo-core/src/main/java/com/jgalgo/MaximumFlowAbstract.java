@@ -15,25 +15,94 @@
  */
 package com.jgalgo;
 
-class MaximumFlowAbstract {
+abstract class MaximumFlowAbstract implements MaximumFlow {
 
-	private MaximumFlowAbstract() {}
+	@Override
+	public double computeMaximumFlow(Graph g, FlowNetwork net, int source, int sink) {
+		if (g instanceof IndexGraph)
+			return computeMaximumFlow((IndexGraph) g, net, source, sink);
+
+		IndexGraph iGraph = g.indexGraph();
+		IndexGraphMap viMap = g.indexGraphVerticesMap();
+		IndexGraphMap eiMap = g.indexGraphEdgesMap();
+
+		net = indexFlowFromFlow(net, eiMap);
+		int iSource = viMap.idToIndex(source);
+		int iSink = viMap.idToIndex(sink);
+		return computeMaximumFlow(iGraph, net, iSource, iSink);
+	}
+
+	abstract double computeMaximumFlow(IndexGraph g, FlowNetwork net, int source, int sink);
+
+	private static FlowNetwork indexFlowFromFlow(FlowNetwork net, IndexGraphMap eiMap) {
+		// TODO
+		if (net instanceof FlowNetwork.Int) {
+			FlowNetwork.Int netInt = (FlowNetwork.Int) net;
+			return new FlowNetwork.Int() {
+
+				@Override
+				public int getCapacityInt(int edge) {
+					return netInt.getCapacityInt(eiMap.indexToId(edge));
+				}
+
+				@Override
+				public void setCapacity(int edge, int capacity) {
+					netInt.setCapacity(eiMap.indexToId(edge), capacity);
+				}
+
+				@Override
+				public int getFlowInt(int edge) {
+					return netInt.getFlowInt(eiMap.indexToId(edge));
+				}
+
+				@Override
+				public void setFlow(int edge, int flow) {
+					netInt.setFlow(eiMap.indexToId(edge), flow);
+				}
+
+			};
+		} else {
+			return new FlowNetwork() {
+
+				@Override
+				public double getCapacity(int edge) {
+					return net.getCapacity(eiMap.indexToId(edge));
+				}
+
+				@Override
+				public void setCapacity(int edge, double capacity) {
+					net.setCapacity(eiMap.indexToId(edge), capacity);
+				}
+
+				@Override
+				public double getFlow(int edge) {
+					return net.getFlow(eiMap.indexToId(edge));
+				}
+
+				@Override
+				public void setFlow(int edge, double flow) {
+					net.setFlow(eiMap.indexToId(edge), flow);
+				}
+			};
+		}
+	}
 
 	static class Worker {
-		final Graph gOrig;
+		final IndexGraph gOrig;
 		final int source;
 		final int sink;
 		final int n;
 		final FlowNetwork net;
 
-		final Graph g;
+		final IndexGraph g;
 		final Weights.Int edgeRef;
 		final Weights.Int twin;
 
+		static final Object VertexRefWeightKey = new Utils.Obj("refToOrig");
 		static final Object EdgeRefWeightKey = new Utils.Obj("refToOrig");
 		static final Object EdgeTwinWeightKey = new Utils.Obj("twin");
 
-		Worker(Graph gOrig, FlowNetwork net, int source, int sink) {
+		Worker(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
 			ArgumentCheck.sourceSinkNotTheSame(source, sink);
 			positiveCapacitiesOrThrow(gOrig, net);
 			this.gOrig = gOrig;
@@ -42,7 +111,7 @@ class MaximumFlowAbstract {
 			this.n = gOrig.vertices().size();
 			this.net = net;
 
-			g = Graph.newBuilderDirected().expectedVerticesNum(n).build();
+			g = IndexGraph.newBuilderDirected().expectedVerticesNum(n).build();
 			for (int v = 0; v < n; v++)
 				g.addVertex();
 			edgeRef = g.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));

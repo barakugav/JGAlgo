@@ -31,7 +31,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
  *
  * @author Barak Ugav
  */
-class MinimumDirectedSpanningTreeTarjan implements MinimumDirectedSpanningTree {
+class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.AbstractDirected {
 
 	private HeapReferenceable.Builder<Integer, Void> heapBuilder =
 			HeapReferenceable.newBuilder().keysTypePrimitive(int.class).valuesTypeVoid();
@@ -54,11 +54,11 @@ class MinimumDirectedSpanningTreeTarjan implements MinimumDirectedSpanningTree {
 		this.heapBuilder = heapBuilder.keysTypePrimitive(int.class).valuesTypeVoid();
 	}
 
-	MinimumSpanningTree.Result computeMinimumSpanningTree(Graph g, WeightFunction w) {
+	MinimumSpanningTree.Result computeMinimumSpanningTree(IndexGraph g, WeightFunction w) {
 		ArgumentCheck.onlyDirected(g);
 		if (g.vertices().size() == 0 || g.edges().size() == 0)
-			return MinimumSpanningTreeResultImpl.Empty;
-		Graph gRef = GraphsUtils.referenceGraph(g, EdgeRefWeightKey);
+			return MinimumSpanningTreeUtils.ResultImpl.Empty;
+		IndexGraph gRef = GraphsUtils.referenceGraph(g, EdgeRefWeightKey);
 		Weights.Int edgeRefs = gRef.getEdgesWeights(EdgeRefWeightKey);
 
 		// Connect new root to all vertices
@@ -72,17 +72,17 @@ class MinimumDirectedSpanningTreeTarjan implements MinimumDirectedSpanningTree {
 	}
 
 	@Override
-	public MinimumSpanningTree.Result computeMinimumSpanningTree(Graph g, WeightFunction w, int root) {
+	MinimumSpanningTree.Result computeMinimumDirectedSpanningTree(IndexGraph g, WeightFunction w, int root) {
 		ArgumentCheck.onlyDirected(g);
 		if (g.vertices().size() == 0 || g.edges().size() == 0)
-			return MinimumSpanningTreeResultImpl.Empty;
-		Graph gRef = GraphsUtils.referenceGraph(g, EdgeRefWeightKey);
+			return MinimumSpanningTreeUtils.ResultImpl.Empty;
+		IndexGraph gRef = GraphsUtils.referenceGraph(g, EdgeRefWeightKey);
 
 		ContractedGraph contractedGraph = contract(gRef, w);
 		return expand(gRef, contractedGraph, root);
 	}
 
-	private static MinimumSpanningTree.Result expand(Graph g, ContractedGraph cg, int root) {
+	private static MinimumSpanningTree.Result expand(IndexGraph g, ContractedGraph cg, int root) {
 		int[] inEdge = new int[cg.n];
 
 		IntStack roots = new IntArrayList();
@@ -116,10 +116,10 @@ class MinimumDirectedSpanningTreeTarjan implements MinimumDirectedSpanningTree {
 			if (v != root && e != HeavyEdge)
 				mst.add(e);
 		}
-		return new MinimumSpanningTreeResultImpl(mst);
+		return new MinimumSpanningTreeUtils.ResultImpl(mst);
 	}
 
-	private void addEdgesUntilStronglyConnected(Graph g) {
+	private void addEdgesUntilStronglyConnected(IndexGraph g) {
 		ConnectedComponentsAlgo.Result connectivityRes = ccAlg.computeConnectivityComponents(g);
 		int N = connectivityRes.getNumberOfCcs();
 		if (N <= 1)
@@ -141,7 +141,7 @@ class MinimumDirectedSpanningTreeTarjan implements MinimumDirectedSpanningTree {
 		}
 	}
 
-	private ContractedGraph contract(Graph g, WeightFunction w0) {
+	private ContractedGraph contract(IndexGraph g, WeightFunction w0) {
 		addEdgesUntilStronglyConnected(g);
 
 		int n = g.vertices().size();

@@ -37,7 +37,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
  *
  * @author Barak Ugav
  */
-class ShortestPathAllPairsJohnson implements ShortestPathAllPairs {
+class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl {
 
 	private ShortestPathSingleSource negativeSssp = new ShortestPathSingleSourceBellmanFord();
 	private boolean parallel = Config.parallelByDefault;
@@ -54,7 +54,7 @@ class ShortestPathAllPairsJohnson implements ShortestPathAllPairs {
 	 * @throws IllegalArgumentException if the graph is not directed
 	 */
 	@Override
-	public ShortestPathAllPairs.Result computeAllShortestPaths(Graph g, WeightFunction w) {
+	ShortestPathAllPairs.Result computeAllShortestPaths(IndexGraph g, WeightFunction w) {
 		if (w == null)
 			w = WeightFunction.CardinalityWeightFunction;
 		ArgumentCheck.onlyDirected(g);
@@ -95,7 +95,7 @@ class ShortestPathAllPairsJohnson implements ShortestPathAllPairs {
 		return res;
 	}
 
-	private SuccessRes computeAPSPPositive(Graph g, WeightFunction w) {
+	private SuccessRes computeAPSPPositive(IndexGraph g, WeightFunction w) {
 		final int n = g.vertices().size();
 		SuccessRes res = new SuccessRes(n);
 
@@ -123,9 +123,9 @@ class ShortestPathAllPairsJohnson implements ShortestPathAllPairs {
 		return res;
 	}
 
-	private Pair<double[], Path> calcPotential(Graph g, WeightFunction w) {
+	private Pair<double[], Path> calcPotential(IndexGraph g, WeightFunction w) {
 		int n = g.vertices().size();
-		Graph refG = Graph.newBuilderDirected().expectedVerticesNum(n + 1).build();
+		IndexGraph refG = IndexGraph.newBuilderDirected().expectedVerticesNum(n + 1).build();
 		for (int u = 0; u < n; u++)
 			refG.addVertex();
 		Weights.Int edgeEef = refG.addEdgesWeights("edgeEef", int.class, Integer.valueOf(-1));

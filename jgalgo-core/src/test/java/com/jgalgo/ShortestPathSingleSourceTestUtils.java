@@ -52,7 +52,8 @@ public class ShortestPathSingleSourceTestUtils extends TestUtils {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
 			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
-			int source = rand.nextInt(g.vertices().size());
+			int[] vs = g.vertices().toIntArray();
+			int source = vs[rand.nextInt(vs.length)];
 
 			ShortestPathSingleSource validationAlgo = algo instanceof ShortestPathSingleSourceDijkstra ? new ShortestPathSingleSourceDial() : new ShortestPathSingleSourceDijkstra();
 			testAlgo(g, w, source, algo, validationAlgo);
@@ -68,7 +69,8 @@ public class ShortestPathSingleSourceTestUtils extends TestUtils {
 			int n = args[0], m = args[1];
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(false).build();
-			int source = rand.nextInt(g.vertices().size());
+			int[] vs = g.vertices().toIntArray();
+			int source = vs[rand.nextInt(vs.length)];
 
 			ShortestPathSingleSource validationAlgo = algo instanceof ShortestPathSingleSourceDijkstra ? new ShortestPathSingleSourceDial() : new ShortestPathSingleSourceDijkstra();
 			testAlgo(g, null, source, algo, validationAlgo);
@@ -84,7 +86,7 @@ public class ShortestPathSingleSourceTestUtils extends TestUtils {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
 					.selfEdges(true).cycles(true).connected(true).build();
 			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
-			int source = 0;
+			int source = g.vertices().iterator().nextInt();
 
 			ShortestPathSingleSource validationAlgo = algo instanceof ShortestPathSingleSourceBellmanFord ? new ShortestPathSingleSourceGoldberg() : new ShortestPathSingleSourceBellmanFord();
 			testAlgo(g, w, source, algo, validationAlgo);
@@ -118,8 +120,7 @@ public class ShortestPathSingleSourceTestUtils extends TestUtils {
 		}
 		assertFalse(expectedRes.foundNegativeCycle(), "failed to found negative cycle");
 
-		int n = g.vertices().size();
-		for (int v = 0; v < n; v++) {
+		for (int v : g.vertices()) {
 			double expectedDistance = expectedRes.distance(v);
 			double actualDistance = result.distance(v);
 			assertEquals(expectedDistance, actualDistance, "Distance to vertex " + v + " is wrong");

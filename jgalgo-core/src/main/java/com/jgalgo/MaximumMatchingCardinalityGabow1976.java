@@ -35,7 +35,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  *
  * @author Barak Ugav
  */
-class MaximumMatchingCardinalityGabow1976 implements MaximumMatchingCardinality {
+class MaximumMatchingCardinalityGabow1976 extends MaximumMatchingCardinality {
 
 	/**
 	 * Create a new maximum matching object.
@@ -43,7 +43,7 @@ class MaximumMatchingCardinalityGabow1976 implements MaximumMatchingCardinality 
 	MaximumMatchingCardinalityGabow1976() {}
 
 	@Override
-	public Matching computeMaximumCardinalityMatching(Graph g) {
+	Matching computeMaximumCardinalityMatching(IndexGraph g) {
 		ArgumentCheck.onlyUndirected(g);
 		int n = g.vertices().size();
 
@@ -195,7 +195,7 @@ class MaximumMatchingCardinalityGabow1976 implements MaximumMatchingCardinality 
 		return new MatchingImpl(g, matched);
 	}
 
-	private static int findPath(Graph g, int s, int t, BitSet isEven, int[] match, int[] parent, int[] bridge,
+	private static int findPath(IndexGraph g, int s, int t, BitSet isEven, int[] match, int[] parent, int[] bridge,
 			int[] path, int pathSize) {
 		if (s == t)
 			return pathSize;

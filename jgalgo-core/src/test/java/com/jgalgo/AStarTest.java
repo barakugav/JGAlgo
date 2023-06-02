@@ -16,7 +16,6 @@
 
 package com.jgalgo;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
@@ -24,6 +23,8 @@ import java.util.function.IntToDoubleFunction;
 import org.junit.jupiter.api.Test;
 import it.unimi.dsi.fastutil.ints.Int2DoubleMap;
 import it.unimi.dsi.fastutil.ints.Int2DoubleOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
 public class AStarTest extends TestBase {
 
@@ -79,12 +80,8 @@ public class AStarTest extends TestBase {
 		return AStarAsSSSP(params -> {
 			Graph g = params.g;
 			WeightFunction w = params.w;
-			if (params.g.getCapabilities().directed()) {
-				GraphReverseResult rev = reverseGraph(params.g, params.w);
-				g = rev.g;
-				w = rev.w;
-			}
-
+			if (params.g.getCapabilities().directed())
+				g = g.reverseView();
 			ShortestPathSingleSource.Result ssspRes =
 					new ShortestPathSingleSourceDijkstra().computeShortestPaths(g, w, params.target);
 			return v -> ssspRes.distance(v);
@@ -96,11 +93,9 @@ public class AStarTest extends TestBase {
 		return AStarAsSSSP(params -> {
 			Graph g = params.g;
 			WeightFunction w = params.w;
-			if (params.g.getCapabilities().directed()) {
-				GraphReverseResult rev = reverseGraph(params.g, params.w);
-				g = rev.g;
-				w = rev.w;
-			}
+			if (params.g.getCapabilities().directed())
+				g = g.reverseView();
+
 			Int2DoubleMap w0 = new Int2DoubleOpenHashMap(g.edges().size());
 			for (int e : g.edges())
 				w0.put(e, w.weight(e) * rand.nextDouble());
@@ -109,28 +104,6 @@ public class AStarTest extends TestBase {
 					new ShortestPathSingleSourceDijkstra().computeShortestPaths(g, e -> w0.get(e), params.target);
 			return v -> ssspRes.distance(v);
 		});
-	}
-
-	private static GraphReverseResult reverseGraph(Graph g, WeightFunction w) {
-		final int n = g.vertices().size(), m = g.edges().size();
-		Graph revG = Graph.newBuilderDirected().expectedVerticesNum(n).expectedEdgesNum(m).build();
-		for (int v = 0; v < n; v++)
-			revG.addVertex();
-		Weights.Double revW = revG.addEdgesWeights("w", double.class);
-		for (int e : g.edges()) {
-			int u = g.edgeSource(e);
-			int v = g.edgeTarget(e);
-			revW.set(revG.addEdge(v, u), w.weight(e));
-		}
-		GraphReverseResult res = new GraphReverseResult();
-		res.g = revG;
-		res.w = revW;
-		return res;
-	}
-
-	private static class GraphReverseResult {
-		Graph g;
-		WeightFunction w;
 	}
 
 	private static class HeuristicParams {
@@ -152,18 +125,18 @@ public class AStarTest extends TestBase {
 		return new ShortestPathSingleSource() {
 			@Override
 			public ShortestPathSingleSource.Result computeShortestPaths(Graph g, WeightFunction w, int source) {
-				int n = g.vertices().size();
-				Path[] paths = new Path[n];
-				double[] distances = new double[n];
-				Arrays.fill(distances, Double.POSITIVE_INFINITY);
+				final int n = g.vertices().size();
+				Int2ObjectMap<Path> paths = new Int2ObjectOpenHashMap<>(n);
+				Int2DoubleMap distances = new Int2DoubleOpenHashMap(n);
+				distances.defaultReturnValue(Double.POSITIVE_INFINITY);
 
-				AStar astart = new AStar();
-				for (int target = 0; target < n; target++) {
+				AStar aStar = new AStar();
+				for (int target : g.vertices()) {
 					IntToDoubleFunction vHeuristic = vHeuristicBuilder.apply(new HeuristicParams(g, w, source, target));
-					Path path = astart.computeShortestPath(g, w, source, target, vHeuristic);
+					Path path = aStar.computeShortestPath(g, w, source, target, vHeuristic);
 					if (path != null) {
-						paths[target] = path;
-						distances[target] = path.weight(w);
+						paths.put(target, path);
+						distances.put(target, path.weight(w));
 					}
 				}
 
@@ -171,12 +144,12 @@ public class AStarTest extends TestBase {
 
 					@Override
 					public double distance(int target) {
-						return distances[target];
+						return distances.get(target);
 					}
 
 					@Override
 					public Path getPath(int target) {
-						return paths[target];
+						return paths.get(target);
 					}
 
 					@Override

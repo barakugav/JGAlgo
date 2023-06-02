@@ -31,7 +31,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  *
  * @author Barak Ugav
  */
-class MinimumSpanningTreeYao implements MinimumSpanningTree {
+class MinimumSpanningTreeYao extends MinimumSpanningTreeUtils.AbstractUndirected {
 
 	private boolean parallel = Config.parallelByDefault;
 
@@ -46,7 +46,7 @@ class MinimumSpanningTreeYao implements MinimumSpanningTree {
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	public MinimumSpanningTree.Result computeMinimumSpanningTree(Graph g, WeightFunction w) {
+	MinimumSpanningTree.Result computeMinimumSpanningTree(IndexGraph g, WeightFunction w) {
 		ArgumentCheck.onlyUndirected(g);
 		int n = g.vertices().size();
 
@@ -61,12 +61,12 @@ class MinimumSpanningTreeYao implements MinimumSpanningTree {
 
 		int[] minEdges = new int[n];
 		Arrays.fill(minEdges, -1);
-		double[] minGraphWeights = new double[n];
+		double[] minEdgeWeights = new double[n];
 		int[] path = new int[n];
 
 		IntCollection mst = new IntArrayList();
 		for (;;) {
-			Arrays.fill(minGraphWeights, 0, treeNum, Double.MAX_VALUE);
+			Arrays.fill(minEdgeWeights, 0, treeNum, Double.MAX_VALUE);
 
 			/* find minimum edge going out of each tree */
 			for (int u = 0; u < n; u++) {
@@ -83,9 +83,9 @@ class MinimumSpanningTreeYao implements MinimumSpanningTree {
 						foundEdge = true;
 
 						double eWeight = w.weight(e);
-						if (eWeight < minGraphWeights[tree]) {
+						if (eWeight < minEdgeWeights[tree]) {
 							minEdges[tree] = e;
-							minGraphWeights[tree] = eWeight;
+							minEdgeWeights[tree] = eWeight;
 						}
 					}
 					if (foundEdge)
@@ -158,10 +158,10 @@ class MinimumSpanningTreeYao implements MinimumSpanningTree {
 				vTree[v] = vTreeNext[vTree[v]];
 		}
 
-		return new MinimumSpanningTreeResultImpl(mst);
+		return new MinimumSpanningTreeUtils.ResultImpl(mst);
 	}
 
-	private int[][][] partitionEdgesToBuckets(Graph g, WeightFunction w) {
+	private int[][][] partitionEdgesToBuckets(IndexGraph g, WeightFunction w) {
 		int n = g.vertices().size(), k = Utils.log2ceil(n);
 
 		int[][][] edges = new int[n][][];

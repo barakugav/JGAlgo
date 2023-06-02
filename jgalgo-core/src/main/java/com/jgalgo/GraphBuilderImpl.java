@@ -16,131 +16,75 @@
 
 package com.jgalgo;
 
-import java.util.EnumSet;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.BiFunction;
 import com.jgalgo.GraphsUtils.UndirectedGraphImpl;
 import com.jgalgo.IDStrategy.IDAddRemoveListener;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 
 class GraphBuilderImpl implements Graph.Builder {
 
-	private boolean directed;
-	private int expectedVerticesNum;
-	private int expectedEdgesNum;
-	private boolean fixedEdgesIDs;
-	private final EnumSet<Graph.Builder.Hint> hints = EnumSet.noneOf(Graph.Builder.Hint.class);
-	private String impl;
+	private final IndexGraph.Builder builder;
 
 	GraphBuilderImpl(boolean directed) {
-		this.directed = directed;
+		this.builder = new IndexGraphBuilderImpl(directed);
 	}
 
 	@Override
 	public Graph build() {
-		BiFunction<Integer, Integer, ? extends GraphBaseContinues> baseBuilderArray =
-				directed ? GraphArrayDirected::new : GraphArrayUndirected::new;
-		BiFunction<Integer, Integer, ? extends GraphBaseContinues> baseBuilderLinked =
-				directed ? GraphLinkedDirected::new : GraphLinkedUndirected::new;
-		BiFunction<Integer, Integer, ? extends GraphBaseContinues> baseBuilderTable =
-				directed ? GraphTableDirected::new : GraphTableUndirected::new;
-
-		BiFunction<Integer, Integer, ? extends GraphBaseContinues> baseBuilder;
-		if (impl != null && !"GraphArray".equals(impl)) {
-			if ("GraphArray".equals(impl))
-				baseBuilder = baseBuilderArray;
-			else if ("GraphLinked".equals(impl))
-				baseBuilder = baseBuilderLinked;
-			else if ("GraphTable".equals(impl))
-				baseBuilder = baseBuilderTable;
-			else
-				throw new IllegalArgumentException("unknown 'impl' value: " + impl);
+		GraphBaseContinues base = (GraphBaseContinues) builder.build();
+		if (base.getCapabilities().directed()) {
+			return new GraphCustomIDStrategiesDirected(base, new IDStrategyImpl.Rand(), new IDStrategyImpl.Rand()); // TODO
 		} else {
-			if (hints.contains(Graph.Builder.Hint.FastEdgeLookup))
-				baseBuilder = baseBuilderTable;
-			else if (hints.contains(Graph.Builder.Hint.FastEdgeLookup))
-				baseBuilder = baseBuilderLinked;
-			else
-				baseBuilder = baseBuilderArray;
+			return new GraphCustomIDStrategiesUndirected(base, new IDStrategyImpl.Rand(), new IDStrategyImpl.Rand()); // TODO
 		}
-		@SuppressWarnings("boxing")
-		GraphBaseContinues base = baseBuilder.apply(expectedVerticesNum, expectedEdgesNum);
-
-		Graph g;
-		if (!fixedEdgesIDs) {
-			g = base;
-		} else {
-			if (directed) {
-				g = new GraphCustomIDStrategiesDirected(base, new IDStrategyImpl.Fixed());
-			} else {
-				g = new GraphCustomIDStrategiesUndirected(base, new IDStrategyImpl.Fixed());
-			}
-		}
-		return g;
 	}
 
 	@Override
 	public Graph.Builder setDirected(boolean directed) {
-		this.directed = directed;
+		builder.setDirected(directed);
 		return this;
 	}
 
 	@Override
 	public Graph.Builder expectedVerticesNum(int expectedVerticesNum) {
-		if (expectedVerticesNum < 0)
-			throw new IllegalArgumentException("invalid expected size: " + expectedVerticesNum);
-		this.expectedVerticesNum = expectedVerticesNum;
+		builder.expectedVerticesNum(expectedVerticesNum);
 		return this;
 	}
 
 	@Override
 	public Graph.Builder expectedEdgesNum(int expectedEdgesNum) {
-		if (expectedEdgesNum < 0)
-			throw new IllegalArgumentException("invalid expected size: " + expectedEdgesNum);
-		this.expectedEdgesNum = expectedEdgesNum;
-		return this;
-	}
-
-	@Override
-	public Graph.Builder useFixedEdgesIDs(boolean enable) {
-		fixedEdgesIDs = enable;
+		builder.expectedEdgesNum(expectedEdgesNum);
 		return this;
 	}
 
 	@Override
 	public Graph.Builder addHint(Graph.Builder.Hint hint) {
-		hints.add(hint);
+		builder.addHint(hint);
 		return this;
 	}
 
 	@Override
 	public Graph.Builder removeHint(Graph.Builder.Hint hint) {
-		hints.remove(hint);
+		builder.removeHint(hint);
 		return this;
 	}
 
 	@Override
 	public Graph.Builder setOption(String key, Object value) {
-		if ("impl".equals(key)) {
-			impl = (String) value;
-		} else {
-			throw new IllegalArgumentException("unknown option key: " + key);
-		}
+		builder.setOption(key, value);
 		return this;
 	}
 
 	private abstract static class GraphCustomIDStrategies extends GraphBase {
 
 		final GraphBaseContinues g;
-		private final WeightsImpl.Manager verticesWeights;
-		private final WeightsImpl.Manager edgesWeights;
+		private final WeakIdentityHashMap<Weights<?>, Weights<?>> verticesWeights = new WeakIdentityHashMap<>();
+		private final WeakIdentityHashMap<Weights<?>, Weights<?>> edgesWeights = new WeakIdentityHashMap<>();
 
-		GraphCustomIDStrategies(GraphBaseContinues g, IDStrategyImpl edgesIDStrategy) {
-			super(g.verticesIDStrat.copy(), edgesIDStrategy);
+		GraphCustomIDStrategies(GraphBaseContinues g, IDStrategyImpl verticesIDStrat, IDStrategyImpl edgesIDStrategy) {
+			super(verticesIDStrat, edgesIDStrategy);
 			this.g = Objects.requireNonNull(g);
-			verticesWeights = new WeightsImpl.Manager(verticesIDStrat.size());
-			edgesWeights = new WeightsImpl.Manager(edgesIDStrategy.size());
 
 			initListenersToUnderlyingGraph();
 		}
@@ -148,23 +92,17 @@ class GraphBuilderImpl implements Graph.Builder {
 		GraphCustomIDStrategies(GraphCustomIDStrategies orig) {
 			super(orig.verticesIDStrat.copy(), orig.edgesIDStrat.copy());
 			this.g = (GraphBaseContinues) orig.g.copy();
-			verticesWeights = orig.verticesWeights.copy(verticesIDStrat);
-			edgesWeights = orig.edgesWeights.copy(edgesIDStrat);
 
 			initListenersToUnderlyingGraph();
 		}
 
 		private void initListenersToUnderlyingGraph() {
-			g.getVerticesIDStrategy().addIDSwapListener((vIdx1, vIdx2) -> {
-				verticesIDStrat.idxSwap(vIdx1, vIdx2);
-				verticesWeights.swapElements(vIdx1, vIdx2);
-			});
+			g.getVerticesIDStrategy().addIDSwapListener((vIdx1, vIdx2) -> verticesIDStrat.idxSwap(vIdx1, vIdx2));
 			g.getVerticesIDStrategy().addIDAddRemoveListener(new IDAddRemoveListener() {
 
 				@Override
 				public void idRemove(int id) {
 					verticesIDStrat.removeIdx(id);
-					verticesWeights.clearElement(id);
 				}
 
 				@Override
@@ -172,25 +110,19 @@ class GraphBuilderImpl implements Graph.Builder {
 					int idx = verticesIDStrat.newIdx();
 					if (idx != id)
 						throw new IllegalStateException();
-					verticesWeights.ensureCapacity(idx + 1);
 				}
 
 				@Override
 				public void idsClear() {
 					verticesIDStrat.clear();
-					verticesWeights.clearContainers();;
 				}
 			});
-			g.getEdgesIDStrategy().addIDSwapListener((eIdx1, eIdx2) -> {
-				edgesIDStrat.idxSwap(eIdx1, eIdx2);
-				edgesWeights.swapElements(eIdx1, eIdx2);
-			});
+			g.getEdgesIDStrategy().addIDSwapListener((eIdx1, eIdx2) -> edgesIDStrat.idxSwap(eIdx1, eIdx2));
 			g.getEdgesIDStrategy().addIDAddRemoveListener(new IDAddRemoveListener() {
 
 				@Override
 				public void idRemove(int id) {
 					edgesIDStrat.removeIdx(id);
-					edgesWeights.clearElement(id);
 				}
 
 				@Override
@@ -198,15 +130,56 @@ class GraphBuilderImpl implements Graph.Builder {
 					int idx = edgesIDStrat.newIdx();
 					if (idx != id)
 						throw new IllegalStateException();
-					edgesWeights.ensureCapacity(idx + 1);
 				}
 
 				@Override
 				public void idsClear() {
 					edgesIDStrat.clear();
-					edgesWeights.clearContainers();
 				}
 			});
+		}
+
+		@Override
+		public IndexGraph indexGraph() {
+			return g;
+		}
+
+		private final IndexGraphMap indexGraphVerticesMap = new IndexGraphMap() {
+
+			@Override
+			public int indexToId(int index) {
+				return verticesIDStrat.idxToId(index);
+			}
+
+			@Override
+			public int idToIndex(int id) {
+				return verticesIDStrat.idToIdx(id);
+			}
+
+		};
+
+		private final IndexGraphMap indexGraphEdgesMap = new IndexGraphMap() {
+
+			@Override
+			public int indexToId(int index) {
+				return edgesIDStrat.idxToId(index);
+			}
+
+			@Override
+			public int idToIndex(int id) {
+				return edgesIDStrat.idToIdx(id);
+			}
+
+		};
+
+		@Override
+		public IndexGraphMap indexGraphVerticesMap() {
+			return indexGraphVerticesMap;
+		}
+
+		@Override
+		public IndexGraphMap indexGraphEdgesMap() {
+			return indexGraphEdgesMap;
 		}
 
 		@Override
@@ -313,53 +286,66 @@ class GraphBuilderImpl implements Graph.Builder {
 		}
 
 		@Override
+		@SuppressWarnings("unchecked")
 		public <V, WeightsT extends Weights<V>> WeightsT getVerticesWeights(Object key) {
-			return verticesWeights.getWeights(key);
+			WeightsT indexWeights = g.getVerticesWeights(key);
+			if (indexWeights == null)
+				return null;
+			return (WeightsT) verticesWeights.computeIfAbsent(indexWeights,
+					iw -> WeightsImpl.wrapContainerMapped(iw, indexGraphVerticesMap()));
 		}
 
 		@Override
 		public Set<Object> getVerticesWeightKeys() {
-			return verticesWeights.weightsKeys();
+			return g.getVerticesWeightKeys();
 		}
 
 		@Override
 		public void removeVerticesWeights(Object key) {
-			verticesWeights.removeWeights(key);
+			g.removeVerticesWeights(key);
 		}
 
 		@Override
+		@SuppressWarnings("unchecked")
 		public <E, WeightsT extends Weights<E>> WeightsT getEdgesWeights(Object key) {
-			return edgesWeights.getWeights(key);
+			WeightsT indexWeights = g.getEdgesWeights(key);
+			if (indexWeights == null)
+				return null;
+			return (WeightsT) edgesWeights.computeIfAbsent(indexWeights,
+					iw -> WeightsImpl.wrapContainerMapped(iw, indexGraphEdgesMap()));
+		}
+
+		@Override
+		public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, Class<? super V> type,
+				V defVal) {
+			g.addVerticesWeights(key, type, defVal);
+			return getVerticesWeights(key);
+		}
+
+		@Override
+		public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, Class<? super E> type, E defVal) {
+			g.addEdgesWeights(key, type, defVal);
+			return getEdgesWeights(key);
 		}
 
 		@Override
 		public Set<Object> getEdgesWeightsKeys() {
-			return edgesWeights.weightsKeys();
+			return g.getEdgesWeightsKeys();
 		}
 
 		@Override
 		public void removeEdgesWeights(Object key) {
-			edgesWeights.removeWeights(key);
+			g.removeEdgesWeights(key);
 		}
 
 		@Override
-		public IDStrategy.Continues getVerticesIDStrategy() {
+		public IDStrategy getVerticesIDStrategy() {
 			return verticesIDStrat;
 		}
 
 		@Override
 		public IDStrategy getEdgesIDStrategy() {
 			return edgesIDStrat;
-		}
-
-		@Override
-		void addVerticesWeightsContainer(Object key, Weights<?> weights) {
-			verticesWeights.addWeights(key, weights);
-		}
-
-		@Override
-		void addEdgesWeightsContainer(Object key, Weights<?> weights) {
-			edgesWeights.addWeights(key, weights);
 		}
 
 		class EdgeSetMapped extends AbstractIntSet implements EdgeSet {
@@ -452,8 +438,9 @@ class GraphBuilderImpl implements Graph.Builder {
 
 	private static class GraphCustomIDStrategiesDirected extends GraphCustomIDStrategies {
 
-		GraphCustomIDStrategiesDirected(GraphBaseContinues g, IDStrategyImpl edgesIDStrategy) {
-			super(g, edgesIDStrategy);
+		GraphCustomIDStrategiesDirected(GraphBaseContinues g, IDStrategyImpl verticesIDStrat,
+				IDStrategyImpl edgesIDStrategy) {
+			super(g, verticesIDStrat, edgesIDStrategy);
 			ArgumentCheck.onlyDirected(g);
 		}
 
@@ -477,8 +464,9 @@ class GraphBuilderImpl implements Graph.Builder {
 	private static class GraphCustomIDStrategiesUndirected extends GraphCustomIDStrategies
 			implements UndirectedGraphImpl {
 
-		GraphCustomIDStrategiesUndirected(GraphBaseContinues g, IDStrategyImpl edgesIDStrategy) {
-			super(g, edgesIDStrategy);
+		GraphCustomIDStrategiesUndirected(GraphBaseContinues g, IDStrategyImpl verticesIDStrat,
+				IDStrategyImpl edgesIDStrategy) {
+			super(g, verticesIDStrat, edgesIDStrategy);
 			ArgumentCheck.onlyUndirected(g);
 		}
 

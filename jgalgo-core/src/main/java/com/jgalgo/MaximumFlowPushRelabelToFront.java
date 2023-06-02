@@ -48,12 +48,12 @@ class MaximumFlowPushRelabelToFront extends MaximumFlowPushRelabelAbstract {
 	MaximumFlowPushRelabelToFront() {}
 
 	@Override
-	WorkerDouble newWorkerDouble(Graph gOrig, FlowNetwork net, int source, int sink) {
+	WorkerDouble newWorkerDouble(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
 		return new WorkerDouble(gOrig, net, source, sink);
 	}
 
 	@Override
-	WorkerInt newWorkerInt(Graph gOrig, FlowNetwork.Int net, int source, int sink) {
+	WorkerInt newWorkerInt(IndexGraph gOrig, FlowNetwork.Int net, int source, int sink) {
 		return new WorkerInt(gOrig, net, source, sink);
 	}
 
@@ -61,7 +61,7 @@ class MaximumFlowPushRelabelToFront extends MaximumFlowPushRelabelAbstract {
 
 		final VertexList list;
 
-		WorkerDouble(Graph gOrig, FlowNetwork net, int source, int sink) {
+		WorkerDouble(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
 			super(gOrig, net, source, sink);
 			list = new VertexList(this);
 		}
@@ -110,7 +110,7 @@ class MaximumFlowPushRelabelToFront extends MaximumFlowPushRelabelAbstract {
 
 		final VertexList list;
 
-		WorkerInt(Graph gOrig, FlowNetwork.Int net, int source, int sink) {
+		WorkerInt(IndexGraph gOrig, FlowNetwork.Int net, int source, int sink) {
 			super(gOrig, net, source, sink);
 			list = new VertexList(this);
 		}

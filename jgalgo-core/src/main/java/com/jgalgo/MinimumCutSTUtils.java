@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.jgalgo;
 
 import java.util.BitSet;
@@ -21,22 +20,38 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
-class MinimumCutSTBuilderImpl {
+class MinimumCutSTUtils {
 
-	private MinimumCutSTBuilderImpl() {}
+	private MinimumCutSTUtils() {}
 
-	static class Default implements MinimumCutST.Builder {
+	static interface AbstractImpl extends MinimumCutST {
+
 		@Override
-		public MinimumCutST build() {
-			return new MaximumFlowPushRelabelHighestFirst();
+		default Cut computeMinimumCut(Graph g, WeightFunction w, int source, int sink) {
+			if (g instanceof IndexGraph)
+				return computeMinimumCut((IndexGraph) g, w, source, sink);
+
+			IndexGraph iGraph = g.indexGraph();
+			IndexGraphMap viMap = g.indexGraphVerticesMap();
+			IndexGraphMap eiMap = g.indexGraphEdgesMap();
+
+			w = WeightsImpl.indexWeightFuncFromIdWeightFunc(w, eiMap);
+			int iSource = viMap.idToIndex(source);
+			int iSink = viMap.idToIndex(sink);
+
+			Cut indexCut = computeMinimumCut(iGraph, w, iSource, iSink);
+			return new CutImpl.CutFromIndexCut(indexCut, viMap, eiMap);
 		}
+
+		abstract Cut computeMinimumCut(IndexGraph g, WeightFunction w, int source, int sink);
+
 	}
 
 	static MinimumCutST buildFromMaxFlow(MaximumFlow maxFlowAlg) {
-		return new MinimumCutST() {
+		return new AbstractImpl() {
 
 			@Override
-			public Cut computeMinimumCut(Graph g, WeightFunction w, int source, int sink) {
+			public Cut computeMinimumCut(IndexGraph g, WeightFunction w, int source, int sink) {
 				final int n = g.vertices().size();
 				BitSet visited = new BitSet(n);
 				IntPriorityQueue queue = new IntArrayFIFOQueue();
@@ -139,10 +154,9 @@ class MinimumCutSTBuilderImpl {
 	}
 
 	static MinimumCutGlobal globalMinCutFromStMinCut(MinimumCutST stMinCut) {
-		return new MinimumCutGlobal() {
-
+		return new MinimumCutGlobalAbstract() {
 			@Override
-			public Cut computeMinimumCut(Graph g, WeightFunction w) {
+			Cut computeMinimumCut(IndexGraph g, WeightFunction w) {
 				final int n = g.vertices().size();
 				if (n < 2)
 					throw new IllegalArgumentException("no valid cut in graphs with less than two vertices");

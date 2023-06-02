@@ -35,7 +35,7 @@ import java.util.Objects;
  * @see    <a href= "https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm">Wikipedia</a>
  * @author Barak Ugav
  */
-class ShortestPathSingleSourceDijkstra implements ShortestPathSingleSource {
+class ShortestPathSingleSourceDijkstra extends ShortestPathSingleSourceUtils.AbstractImpl {
 
 	private HeapReferenceable.Builder<?, ?> heapBuilder;
 
@@ -61,7 +61,7 @@ class ShortestPathSingleSourceDijkstra implements ShortestPathSingleSource {
 	 * @throws IllegalArgumentException if one of the edge weights is negative
 	 */
 	@Override
-	public ShortestPathSingleSource.Result computeShortestPaths(Graph g, WeightFunction w, int source) {
+	ShortestPathSingleSource.Result computeShortestPaths(IndexGraph g, WeightFunction w, int source) {
 		if (w == null)
 			w = WeightFunction.CardinalityWeightFunction;
 		ArgumentCheck.onlyPositiveWeights(g, w);
@@ -72,7 +72,7 @@ class ShortestPathSingleSourceDijkstra implements ShortestPathSingleSource {
 		}
 	}
 
-	private ShortestPathSingleSource.Result computeSsspDoubles(Graph g, WeightFunction w, int source) {
+	private ShortestPathSingleSource.Result computeSsspDoubles(IndexGraph g, WeightFunction w, int source) {
 		final int n = g.vertices().size();
 		HeapReferenceable<Double, Integer> heap =
 				heapBuilder.keysTypePrimitive(double.class).valuesTypePrimitive(int.class).build();
@@ -112,7 +112,7 @@ class ShortestPathSingleSourceDijkstra implements ShortestPathSingleSource {
 		return res;
 	}
 
-	private ShortestPathSingleSource.Result computeSsspInts(Graph g, WeightFunction.Int w, int source) {
+	private ShortestPathSingleSource.Result computeSsspInts(IndexGraph g, WeightFunction.Int w, int source) {
 		final int n = g.vertices().size();
 		HeapReferenceable<Integer, Integer> heap =
 				heapBuilder.keysTypePrimitive(int.class).valuesTypePrimitive(int.class).build();

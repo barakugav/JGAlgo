@@ -38,10 +38,10 @@ import it.unimi.dsi.fastutil.ints.IntLists;
  *
  * @author Barak Ugav
  */
-class BiConnectedComponentsAlgoHopcroftTarjan implements BiConnectedComponentsAlgo {
+class BiConnectedComponentsAlgoHopcroftTarjan extends BiConnectedComponentsAlgoAbstract {
 
 	@Override
-	public Result computeBiConnectivityComponents(Graph g) {
+	BiConnectedComponentsAlgo.Result computeBiConnectivityComponents(IndexGraph g) {
 		ArgumentCheck.onlyUndirected(g);
 
 		final int n = g.vertices().size();
@@ -163,14 +163,14 @@ class BiConnectedComponentsAlgoHopcroftTarjan implements BiConnectedComponentsAl
 
 	private static class Res implements BiConnectedComponentsAlgo.Result {
 
-		private final Graph g;
+		private final IndexGraph g;
 		private final IntList[] biccsVertices;
 		private IntList[] biccsEdges;
 		private IntList[] vertexBiCcs;
 		// private final BitSet separatingVerticesBitmap;
 		// private IntList separatingVertices;
 
-		Res(Graph g, IntList[] biccsVertices) {
+		Res(IndexGraph g, IntList[] biccsVertices) {
 			this.g = Objects.requireNonNull(g);
 			this.biccsVertices = Objects.requireNonNull(biccsVertices);
 			for (int biccIdx = 0; biccIdx < biccsVertices.length; biccIdx++)

@@ -27,11 +27,11 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 abstract class GraphBase implements Graph {
 
-	final IDStrategyImpl.Continues verticesIDStrat;
-	final IDStrategyImpl edgesIDStrat;
+	final IDStrategyImpl verticesIDStrat; // TODO remove
+	final IDStrategyImpl edgesIDStrat; // TODO remove
 
-	GraphBase(IDStrategy.Continues verticesIDStrat, IDStrategy edgesIDStrat) {
-		this.verticesIDStrat = (IDStrategyImpl.Continues) Objects.requireNonNull(verticesIDStrat);
+	GraphBase(IDStrategy verticesIDStrat, IDStrategy edgesIDStrat) {
+		this.verticesIDStrat = (IDStrategyImpl) Objects.requireNonNull(verticesIDStrat);
 		this.edgesIDStrat = (IDStrategyImpl) Objects.requireNonNull(edgesIDStrat);
 	}
 
@@ -68,35 +68,15 @@ abstract class GraphBase implements Graph {
 	}
 
 	@Override
-	public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, Class<? super V> type, V defVal) {
-		WeightsT weights = WeightsImpl.newInstance((IDStrategyImpl) getVerticesIDStrategy(), type, defVal);
-		addVerticesWeightsContainer(key, weights);
-		return weights;
-	}
-
-	@Override
 	public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, Class<? super E> type) {
 		return addEdgesWeights(key, type, null);
 	}
 
-	@Override
-	public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, Class<? super E> type, E defVal) {
-		WeightsT weights = WeightsImpl.newInstance((IDStrategyImpl) getEdgesIDStrategy(), type, defVal);
-		addEdgesWeightsContainer(key, weights);
-		return weights;
-	}
-
-	abstract void addVerticesWeightsContainer(Object key, Weights<?> weights);
-
-	abstract void addEdgesWeightsContainer(Object key, Weights<?> weights);
-
-	@Override
-	public IDStrategy.Continues getVerticesIDStrategy() {
+	IDStrategy getVerticesIDStrategy() {
 		return verticesIDStrat;
 	}
 
-	@Override
-	public IDStrategy getEdgesIDStrategy() {
+	IDStrategy getEdgesIDStrategy() {
 		return edgesIDStrat;
 	}
 
@@ -104,7 +84,6 @@ abstract class GraphBase implements Graph {
 	public String toString() {
 		StringBuilder s = new StringBuilder();
 		s.append('{');
-		int n = vertices().size();
 
 		Set<Object> verticesWeightsKeys = getVerticesWeightKeys();
 		Collection<Weights<?>> verticesWeights = new ArrayList<>(verticesWeightsKeys.size());
@@ -131,7 +110,7 @@ abstract class GraphBase implements Graph {
 		};
 
 		boolean firstVertex = true;
-		for (int u = 0; u < n; u++) {
+		for (int u : vertices()) {
 			if (firstVertex) {
 				firstVertex = false;
 			} else {

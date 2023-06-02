@@ -196,33 +196,13 @@ public interface TreePathMaxima {
 	 * @throws IllegalArgumentException if {@code g} is a directed graph
 	 */
 	public static boolean verifyMST(Graph g, WeightFunction w, IntCollection mstEdges, TreePathMaxima tpmAlgo) {
-		ArgumentCheck.onlyUndirected(g);
-		int n = g.vertices().size();
-		Graph mst = Graph.newBuilderUndirected().expectedVerticesNum(n).expectedEdgesNum(mstEdges.size()).build();
-		for (int v = 0; v < n; v++)
-			mst.addVertex();
-		Weights.Int edgeRef = mst.addEdgesWeights("edgeRef", int.class);
-		for (int e : mstEdges) {
-			int u = g.edgeSource(e), v = g.edgeTarget(e);
-			int ne = mst.addEdge(u, v);
-			edgeRef.set(ne, e);
-		}
-		if (!Trees.isTree(mst))
-			return false;
-
-		TreePathMaxima.Queries queries = TreePathMaxima.Queries.newInstance();
-		for (int e : g.edges())
-			queries.addQuery(g.edgeSource(e), g.edgeTarget(e));
-		WeightFunction w0 = e -> w.weight(edgeRef.getInt(e));
-		TreePathMaxima.Result tpmResults = tpmAlgo.computeHeaviestEdgeInTreePaths(mst, w0, queries);
-
-		int i = 0;
-		for (int e : g.edges()) {
-			int mstEdge = tpmResults.getHeaviestEdge(i++);
-			if (mstEdge == -1 || w.weight(e) < w0.weight(mstEdge))
-				return false;
-		}
-		return true;
+		if (g instanceof IndexGraph)
+			return TreePathMaximaUtils.verifyMST((IndexGraph) g, w, mstEdges, tpmAlgo);
+		IndexGraph iGraph = g.indexGraph();
+		IndexGraphMap eiMap = g.indexGraphEdgesMap();
+		w = WeightsImpl.indexWeightFuncFromIdWeightFunc(w, eiMap);
+		mstEdges = new IndexGraphMapUtils.IndexCollectionFromCollection(mstEdges, eiMap);
+		return TreePathMaximaUtils.verifyMST(iGraph, w, mstEdges, tpmAlgo);
 	}
 
 }

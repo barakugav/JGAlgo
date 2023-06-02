@@ -16,9 +16,7 @@
 
 package com.jgalgo;
 
-import java.util.Arrays;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntListIterator;
 import it.unimi.dsi.fastutil.ints.IntLists;
@@ -145,40 +143,18 @@ public interface Path extends IntList {
 	 * @param  target target vertex
 	 * @return        a path from \(u\) to \(v\), or {@code null} if no such path was found
 	 */
-	public static Path findPath(Graph g, final int source, final int target) {
-		if (source == target)
-			return new PathImpl(g, source, target, IntLists.emptyList());
-		boolean reverse = true;
-		int u0 = source, v0 = target;
-		if (!g.getCapabilities().directed()) {
-			u0 = target;
-			v0 = source;
-			reverse = false;
-		}
-		int n = g.vertices().size();
-		int[] backtrack = new int[n];
-		Arrays.fill(backtrack, -1);
+	public static Path findPath(Graph g, int source, int target) {
+		if (g instanceof IndexGraph)
+			return PathImpl.findPath((IndexGraph) g, source, target);
 
-		IntArrayList path = new IntArrayList();
-		for (BFSIter it = BFSIter.newInstance(g, u0); it.hasNext();) {
-			int p = it.nextInt();
-			backtrack[p] = it.inEdge();
-			if (p == v0)
-				break;
-		}
+		IndexGraph iGraph = g.indexGraph();
+		IndexGraphMap viMap = g.indexGraphVerticesMap();
+		IndexGraphMap eiMap = g.indexGraphEdgesMap();
+		int iSource = viMap.idToIndex(source);
+		int iTarget = viMap.idToIndex(target);
 
-		if (backtrack[v0] == -1)
-			return null;
-
-		for (int p = v0; p != u0;) {
-			int e = backtrack[p];
-			path.add(e);
-			p = g.edgeEndpoint(e, p);
-		}
-
-		if (reverse)
-			IntArrays.reverse(path.elements(), 0, path.size());
-		return new PathImpl(g, source, target, path);
+		Path indexPath = PathImpl.findPath(iGraph, iSource, iTarget);
+		return PathImpl.pathFromIndexPath(indexPath, viMap, eiMap);
 	}
 
 }

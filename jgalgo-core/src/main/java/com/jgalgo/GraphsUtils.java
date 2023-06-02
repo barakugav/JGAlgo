@@ -24,7 +24,7 @@ class GraphsUtils {
 
 	private GraphsUtils() {}
 
-	static int[] calcDegree(Graph g, IntCollection edges) {
+	static int[] calcDegree(IndexGraph g, IntCollection edges) {
 		int[] degree = new int[g.vertices().size()];
 		for (int e : edges) {
 			degree[g.edgeSource(e)]++;
@@ -33,9 +33,9 @@ class GraphsUtils {
 		return degree;
 	}
 
-	static Graph referenceGraph(Graph g, Object refEdgeWeightKey) {
+	static IndexGraph referenceGraph(IndexGraph g, Object refEdgeWeightKey) {
 		final int n = g.vertices().size(), m = g.edges().size();
-		Graph gRef = Graph.newBuilderDirected().setDirected(g.getCapabilities().directed()).expectedVerticesNum(n)
+		IndexGraph gRef = IndexGraph.newBuilderDirected().setDirected(g.getCapabilities().directed()).expectedVerticesNum(n)
 				.expectedEdgesNum(m).build();
 		Weights.Int edgeRef = gRef.addEdgesWeights(refEdgeWeightKey, int.class);
 
@@ -51,8 +51,7 @@ class GraphsUtils {
 	static boolean containsSelfLoops(Graph g) {
 		if (!g.getCapabilities().selfEdges())
 			return false;
-		int n = g.vertices().size();
-		for (int u = 0; u < n; u++) {
+		for (int u : g.vertices()) {
 			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
 				eit.nextInt();
 				if (u == eit.target())
@@ -62,7 +61,7 @@ class GraphsUtils {
 		return false;
 	}
 
-	static boolean containsParallelEdges(Graph g) {
+	static boolean containsParallelEdges(IndexGraph g) {
 		if (!g.getCapabilities().parallelEdges())
 			return false;
 		int n = g.vertices().size();
@@ -269,6 +268,20 @@ class GraphsUtils {
 			while (it.hasNext())
 				sum += w.weight(it.nextInt());
 			return sum;
+		}
+	}
+
+	static final IndexGraphMap IndexGraphMapIdentify = new IndexGraphMapIdentify();
+
+	private static class IndexGraphMapIdentify implements IndexGraphMap {
+		@Override
+		public int indexToId(int index) {
+			return index;
+		}
+
+		@Override
+		public int idToIndex(int id) {
+			return id;
 		}
 	}
 

@@ -37,7 +37,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  *
  * @author Barak Ugav
  */
-class TreePathMaximaHagerup implements TreePathMaxima {
+class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 
 	private boolean useBitsLookupTables = false;
 
@@ -65,7 +65,7 @@ class TreePathMaximaHagerup implements TreePathMaxima {
 	}
 
 	@Override
-	public TreePathMaxima.Result computeHeaviestEdgeInTreePaths(Graph tree, WeightFunction w,
+	TreePathMaxima.Result computeHeaviestEdgeInTreePaths(IndexGraph tree, WeightFunction w,
 			TreePathMaxima.Queries queries) {
 		ArgumentCheck.onlyUndirected(tree);
 		if (!Trees.isTree(tree))
@@ -75,11 +75,11 @@ class TreePathMaximaHagerup implements TreePathMaxima {
 
 	private static class Worker {
 
-		private final Graph tOrig;
+		private final IndexGraph tOrig;
 		private final WeightFunction w;
 
 		/* The tree we operate on, actually the Boruvka fully branching tree */
-		private final Graph tree = Graph.newBuilderUndirected().build();
+		private final IndexGraph tree = IndexGraph.newBuilderUndirected().build();
 		private int[] parents;
 		private int[] depths;
 		private int treeHeight;
@@ -94,7 +94,7 @@ class TreePathMaximaHagerup implements TreePathMaxima {
 		private final BiInt2IntFunction getIthbit;
 		private final Int2IntFunction getNumberOfTrailingZeros;
 
-		Worker(Graph tOrig, WeightFunction w, boolean useBitsLookupTables) {
+		Worker(IndexGraph tOrig, WeightFunction w, boolean useBitsLookupTables) {
 			this.tOrig = tOrig;
 			this.w = w;
 
@@ -164,7 +164,7 @@ class TreePathMaximaHagerup implements TreePathMaxima {
 						: /* va != -1 */ edgeRef.getInt(va);
 			}
 
-			return new Result(res);
+			return new TreePathMaximaUtils.ResultImpl(res);
 		}
 
 		private int[][] calcAnswersPerVertex(int[] q) {
@@ -456,26 +456,6 @@ class TreePathMaximaHagerup implements TreePathMaxima {
 			}
 
 			return q;
-		}
-
-	}
-
-	private static class Result implements TreePathMaxima.Result {
-
-		private final int[] res;
-
-		Result(int[] res) {
-			this.res = res;
-		}
-
-		@Override
-		public int getHeaviestEdge(int queryIdx) {
-			return res[queryIdx];
-		}
-
-		@Override
-		public int size() {
-			return res.length;
 		}
 
 	}

@@ -36,7 +36,7 @@ import java.util.BitSet;
  * @see    <a href= "https://en.wikipedia.org/wiki/Recursive_largest_first_algorithm">Wikipedia</a>
  * @author Barak Ugav
  */
-class ColoringRecursiveLargestFirst implements Coloring {
+class ColoringRecursiveLargestFirst extends ColoringUtils.AbstractImpl {
 
 	/**
 	 * Create a new coloring algorithm object.
@@ -44,11 +44,11 @@ class ColoringRecursiveLargestFirst implements Coloring {
 	ColoringRecursiveLargestFirst() {}
 
 	@Override
-	public Result computeColoring(Graph g) {
+	Coloring.Result computeColoring(IndexGraph g) {
 		ArgumentCheck.onlyUndirected(g);
 		ArgumentCheck.noSelfLoops(g, "no valid coloring in graphs with self loops");
 
-		ColoringResultImpl res = new ColoringResultImpl(g);
+		ColoringUtils.ResultImpl res = new ColoringUtils.ResultImpl(g);
 		int n = g.vertices().size();
 		int[] degree = new int[n];
 		for (int u = 0; u < n; u++)

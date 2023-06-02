@@ -39,7 +39,8 @@ import it.unimi.dsi.fastutil.ints.IntList;
  *
  * @author Barak Ugav
  */
-class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSource, AlgorithmWithDiagnostics {
+class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.AbstractImpl
+		implements AlgorithmWithDiagnostics {
 
 	private ShortestPathSingleSource positiveSsspAlgo = new ShortestPathSingleSourceDijkstra();
 	private final ShortestPathSingleSourceDial ssspDial = new ShortestPathSingleSourceDial();
@@ -72,7 +73,7 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSource, Algo
 	 *                                      {@link WeightFunction.Int}
 	 */
 	@Override
-	public ShortestPathSingleSource.Result computeShortestPaths(Graph g, WeightFunction w, int source) {
+	ShortestPathSingleSource.Result computeShortestPaths(IndexGraph g, WeightFunction w, int source) {
 		ArgumentCheck.onlyDirected(g);
 		if (w == null)
 			w = WeightFunction.CardinalityWeightFunction;
@@ -81,7 +82,7 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSource, Algo
 		return computeShortestPaths0(g, (WeightFunction.Int) w, source);
 	}
 
-	private ShortestPathSingleSource.Result computeShortestPaths0(Graph g, WeightFunction.Int w, int source) {
+	private ShortestPathSingleSource.Result computeShortestPaths0(IndexGraph g, WeightFunction.Int w, int source) {
 		int minWeight = Integer.MAX_VALUE;
 		for (int e : g.edges())
 			minWeight = Math.min(minWeight, w.weightInt(e));
@@ -103,7 +104,7 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSource, Algo
 		return Result.ofSuccess(source, potential, res);
 	}
 
-	private Pair<int[], Path> calcPotential(Graph g, WeightFunction.Int w0, int minWeight) {
+	private Pair<int[], Path> calcPotential(IndexGraph g, WeightFunction.Int w0, int minWeight) {
 		diagnostics.runBegin();
 		final int n = g.vertices().size();
 		int[] potential = new int[n];
@@ -115,13 +116,13 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSource, Algo
 		Weights.Int w = Weights.createExternalEdgesWeights(g, int.class);
 
 		/* gNeg is the graph g with only 0,-1 edges */
-		Graph gNeg = Graph.newBuilderDirected().expectedVerticesNum(n).build();
+		IndexGraph gNeg = IndexGraph.newBuilderDirected().expectedVerticesNum(n).build();
 		for (int v = 0; v < n; v++)
 			gNeg.addVertex();
 		Weights.Int gNegEdgeRefs = gNeg.addEdgesWeights("edgeRef", int.class, Integer.valueOf(-1));
 
 		/* G is the graph of strong connectivity components of gNeg, each vertex is a super vertex of gNeg */
-		Graph G = Graph.newBuilderDirected().expectedVerticesNum(n + 2).build();
+		IndexGraph G = IndexGraph.newBuilderDirected().expectedVerticesNum(n + 2).build();
 		Weights.Int GWeights = G.addEdgesWeights("weights", int.class, Integer.valueOf(-1));
 		/* Two fake vertices used to add 0-edges and (r-i)-edges to all other (super) vertices */
 
@@ -271,7 +272,8 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSource, Algo
 		return Pair.of(potential, null);
 	}
 
-	private static int calcWeightWithPotential(Graph g, int e, WeightFunction.Int w, int[] potential, int weightMask) {
+	private static int calcWeightWithPotential(IndexGraph g, int e, WeightFunction.Int w, int[] potential,
+			int weightMask) {
 		int weight = w.weightInt(e);
 		// weight = ceil(weight / 2^weightMask)
 		if (weightMask != 0) {
