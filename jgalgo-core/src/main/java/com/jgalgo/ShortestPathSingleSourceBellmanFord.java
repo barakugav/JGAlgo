@@ -53,7 +53,7 @@ class ShortestPathSingleSourceBellmanFord implements ShortestPathSingleSource {
 		Result res = new Result(g, source);
 		res.distances[source] = 0;
 
-		for (int i = 0; i < n - 1; i++) {
+		for (int i = 0; i < n; i++) {
 			for (int e : g.edges()) {
 				int u = g.edgeSource(e), v = g.edgeTarget(e);
 				double d = res.distances[u] + w.weight(e);
