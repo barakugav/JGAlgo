@@ -231,8 +231,8 @@ class MinimumSpanningTreeKargerKleinTarjan implements MinimumSpanningTree {
 						MemoryReuse.ensureAllocated(trees[tIdx], () -> Graph.newBuilderUndirected().build());
 				treeData[tIdx] =
 						MemoryReuse.ensureAllocated(treeData[tIdx], () -> tree.addEdgesWeights("weight", double.class));
-
-				tpmQueries[tIdx] = MemoryReuse.ensureAllocated(tpmQueries[tIdx], () -> new TreePathMaxima.Queries());
+				tpmQueries[tIdx] =
+						MemoryReuse.ensureAllocated(tpmQueries[tIdx], () -> TreePathMaxima.Queries.newInstance());
 			}
 		}
 	}

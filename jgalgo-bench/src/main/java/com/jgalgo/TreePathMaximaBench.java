@@ -100,7 +100,7 @@ public class TreePathMaximaBench {
 
 	private static TreePathMaxima.Queries generateRandQueries(int n, int m, long seed) {
 		Random rand = new Random(seed);
-		TreePathMaxima.Queries queries = new TreePathMaxima.Queries();
+		TreePathMaxima.Queries queries = TreePathMaxima.Queries.newInstance();
 		for (int q = 0; q < m; q++)
 			queries.addQuery(rand.nextInt(n), rand.nextInt(n));
 		return queries;

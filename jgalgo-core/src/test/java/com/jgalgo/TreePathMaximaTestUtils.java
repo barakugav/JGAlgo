@@ -53,7 +53,7 @@ public class TreePathMaximaTestUtils extends TestUtils {
 	}
 
 	public static TreePathMaxima.Queries generateAllPossibleQueries(int n) {
-		TreePathMaxima.Queries queries = new TreePathMaxima.Queries();
+		TreePathMaxima.Queries queries = TreePathMaxima.Queries.newInstance();
 		for (int i = 0; i < n; i++)
 			for (int j = i; j < n; j++)
 				queries.addQuery(i, j);
@@ -62,7 +62,7 @@ public class TreePathMaximaTestUtils extends TestUtils {
 
 	public static TreePathMaxima.Queries generateRandQueries(int n, int m, long seed) {
 		Random rand = new Random(seed);
-		TreePathMaxima.Queries queries = new TreePathMaxima.Queries();
+		TreePathMaxima.Queries queries = TreePathMaxima.Queries.newInstance();
 		for (int q = 0; q < m; q++)
 			queries.addQuery(rand.nextInt(n), rand.nextInt(n));
 		return queries;

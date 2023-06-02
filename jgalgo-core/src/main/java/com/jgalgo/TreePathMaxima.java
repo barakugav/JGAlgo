@@ -16,10 +16,8 @@
 
 package com.jgalgo;
 
-import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIntPair;
-import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
  * Tree Path Maxima (TPM) algorithm.
@@ -59,14 +57,15 @@ public interface TreePathMaxima {
 	 *
 	 * @author Barak Ugav
 	 */
-	static class Queries {
-		private final IntList qs;
+	static interface Queries {
 
 		/**
 		 * Create an empty queries container.
+		 *
+		 * @return a new queries container
 		 */
-		public Queries() {
-			qs = new IntArrayList();
+		static TreePathMaxima.Queries newInstance() {
+			return new TreePathMaximaUtils.QueriesImpl();
 		}
 
 		/**
@@ -75,10 +74,7 @@ public interface TreePathMaxima {
 		 * @param u the first vertex
 		 * @param v the second vertex
 		 */
-		public void addQuery(int u, int v) {
-			qs.add(u);
-			qs.add(v);
-		}
+		void addQuery(int u, int v);
 
 		/**
 		 * Get a query by index.
@@ -87,25 +83,19 @@ public interface TreePathMaxima {
 		 * @return                           pair with the two vertices of the query
 		 * @throws IndexOutOfBoundsException if {@code idx < 0} or {@code idx >= size()}
 		 */
-		public IntIntPair getQuery(int idx) {
-			return IntIntPair.of(qs.getInt(idx * 2), qs.getInt(idx * 2 + 1));
-		}
+		IntIntPair getQuery(int idx);
 
 		/**
 		 * Get the number of queries in this container.
 		 *
 		 * @return the number of queries in this container
 		 */
-		public int size() {
-			return qs.size() / 2;
-		}
+		int size();
 
 		/**
 		 * Clear the container from all existing queries.
 		 */
-		public void clear() {
-			qs.clear();
-		}
+		void clear();
 
 	}
 
@@ -220,7 +210,7 @@ public interface TreePathMaxima {
 		if (!Trees.isTree(mst))
 			return false;
 
-		TreePathMaxima.Queries queries = new TreePathMaxima.Queries();
+		TreePathMaxima.Queries queries = TreePathMaxima.Queries.newInstance();
 		for (int e : g.edges())
 			queries.addQuery(g.edgeSource(e), g.edgeTarget(e));
 		WeightFunction w0 = e -> w.weight(edgeRef.getInt(e));
