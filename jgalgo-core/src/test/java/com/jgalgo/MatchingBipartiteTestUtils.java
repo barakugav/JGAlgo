@@ -27,14 +27,14 @@ class MatchingBipartiteTestUtils extends TestUtils {
 
 	private MatchingBipartiteTestUtils() {}
 
-	static Graph randGraphBipartite(int sn, int tn, int m, GraphBuilder graphImpl, long seed) {
+	static Graph randGraphBipartite(int sn, int tn, int m, Graph.Builder graphImpl, long seed) {
 		return new RandomGraphBuilder(seed).sn(sn).tn(tn).m(m).directed(false).bipartite(true).parallelEdges(false)
 				.selfEdges(false).cycles(true).connected(false).graphImpl(graphImpl).build();
 	}
 
 	static Graph createGraphBipartiteFromAdjacencyMatrix(int sSize, int[][] m) {
 		int n = m.length;
-		Graph g = GraphBuilder.newUndirected().build();
+		Graph g = Graph.newBuilderUndirected().build();
 		for (int i = 0; i < n; i++)
 			g.addVertex();
 		Weights.Bool partition = g.addVerticesWeights(Weights.DefaultBipartiteWeightKey, boolean.class);
@@ -54,10 +54,10 @@ class MatchingBipartiteTestUtils extends TestUtils {
 	}
 
 	static void randBipartiteGraphs(MaximumMatching algo, long seed) {
-		randBipartiteGraphs(algo, GraphBuilder.newUndirected(), seed);
+		randBipartiteGraphs(algo, Graph.newBuilderUndirected(), seed);
 	}
 
-	static void randBipartiteGraphs(MaximumMatching algo, GraphBuilder graphImpl, long seed) {
+	static void randBipartiteGraphs(MaximumMatching algo, Graph.Builder graphImpl, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(128, 4, 4, 4), phase(64, 16, 16, 64), phase(8, 128, 128, 128),
 				phase(8, 128, 128, 512), phase(1, 300, 300, 1100));

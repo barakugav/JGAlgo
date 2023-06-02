@@ -86,7 +86,7 @@ class MaximumMatchingCardinalityBipartiteHopcroftKarp implements MaximumMatching
 		int[] matched = new int[n];
 		final int MatchedNone = -1;
 		Arrays.fill(matched, MatchedNone);
-		Graph f = GraphBuilder.newUndirected().expectedVerticesNum(n).build();
+		Graph f = Graph.newBuilderUndirected().expectedVerticesNum(n).build();
 		for (int v = 0; v < n; v++)
 			f.addVertex();
 		Weights.Int edgeRef = f.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));

@@ -15,10 +15,9 @@
  */
 package com.jgalgo.example;
 
-import com.jgalgo.WeightFunction;
 import com.jgalgo.Graph;
-import com.jgalgo.GraphBuilder;
 import com.jgalgo.MinimumSpanningTree;
+import com.jgalgo.WeightFunction;
 import com.jgalgo.Weights;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -26,7 +25,7 @@ public class MinimumSpanningTreeExample {
 
 	public static void MSTExample() {
 		/* Create a graph with 7 vertices */
-		Graph g = GraphBuilder.newUndirected().build();
+		Graph g = Graph.newBuilderUndirected().build();
 		int v1 = g.addVertex();
 		int v2 = g.addVertex();
 		int v3 = g.addVertex();

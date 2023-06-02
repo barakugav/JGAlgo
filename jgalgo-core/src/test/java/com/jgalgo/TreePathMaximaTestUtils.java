@@ -132,7 +132,7 @@ public class TreePathMaximaTestUtils extends TestUtils {
 
 			IntCollection mstEdges =
 					new IntArrayList(new MinimumSpanningTreeKruskal().computeMinimumSpanningTree(g, w).edges());
-			Graph mst = GraphBuilder.newUndirected().build();
+			Graph mst = Graph.newBuilderUndirected().build();
 			for (int i = 0; i < g.vertices().size(); i++)
 				mst.addVertex();
 			Weights.Int edgeRef = mst.addEdgesWeights("edgeRef", int.class, Integer.valueOf(-1));

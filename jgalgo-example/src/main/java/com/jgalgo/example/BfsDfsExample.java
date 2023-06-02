@@ -18,7 +18,6 @@ package com.jgalgo.example;
 import com.jgalgo.BFSIter;
 import com.jgalgo.DFSIter;
 import com.jgalgo.Graph;
-import com.jgalgo.GraphBuilder;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 public class BfsDfsExample {
@@ -57,7 +56,7 @@ public class BfsDfsExample {
 	}
 
 	public static Graph createGraph() {
-		Graph g = GraphBuilder.newUndirected().build();
+		Graph g = Graph.newBuilderUndirected().build();
 		int v1 = g.addVertex();
 		int v2 = g.addVertex();
 		int v3 = g.addVertex();

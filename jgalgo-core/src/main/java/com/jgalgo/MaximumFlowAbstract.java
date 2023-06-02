@@ -42,7 +42,7 @@ class MaximumFlowAbstract {
 			this.n = gOrig.vertices().size();
 			this.net = net;
 
-			g = GraphBuilder.newDirected().expectedVerticesNum(n).build();
+			g = Graph.newBuilderDirected().expectedVerticesNum(n).build();
 			for (int v = 0; v < n; v++)
 				g.addVertex();
 			edgeRef = g.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));

@@ -107,7 +107,7 @@ class GraphsTestUtils extends TestUtils {
 			if (!bipartite) {
 				if (n < 0 || m < 0)
 					throw new IllegalStateException();
-				g = GraphBuilder.newDirected().setDirected(directed).expectedVerticesNum(n).expectedEdgesNum(m).build();
+				g = Graph.newBuilderDirected().setDirected(directed).expectedVerticesNum(n).expectedEdgesNum(m).build();
 				for (int i = 0; i < n; i++)
 					g.addVertex();
 			} else {
@@ -116,7 +116,7 @@ class GraphsTestUtils extends TestUtils {
 				if ((sn == 0 || tn == 0) && m != 0)
 					throw new IllegalStateException();
 				n = sn + tn;
-				g = GraphBuilder.newDirected().setDirected(directed).expectedVerticesNum(n).expectedEdgesNum(m).build();
+				g = Graph.newBuilderDirected().setDirected(directed).expectedVerticesNum(n).expectedEdgesNum(m).build();
 				for (int i = 0; i < n; i++)
 					g.addVertex();
 				Weights.Bool partition = g.addVerticesWeights(Weights.DefaultBipartiteWeightKey, boolean.class);

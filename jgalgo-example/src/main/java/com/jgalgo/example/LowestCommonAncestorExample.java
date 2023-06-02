@@ -16,7 +16,6 @@
 package com.jgalgo.example;
 
 import com.jgalgo.Graph;
-import com.jgalgo.GraphBuilder;
 import com.jgalgo.LowestCommonAncestorDynamic;
 import com.jgalgo.LowestCommonAncestorStatic;
 
@@ -24,7 +23,7 @@ public class LowestCommonAncestorExample {
 
 	public static void staticLCAExample() {
 		/* Create a full binary tree of height 3 */
-		Graph tree = GraphBuilder.newUndirected().build();
+		Graph tree = Graph.newBuilderUndirected().build();
 		int rt = tree.addVertex();
 		int v1 = tree.addVertex();
 		int v2 = tree.addVertex();

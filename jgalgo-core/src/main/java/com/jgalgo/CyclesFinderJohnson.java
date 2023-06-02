@@ -153,7 +153,7 @@ class CyclesFinderJohnson implements CyclesFinder {
 		int nFull = g.vertices().size();
 		int subToFull = startIdx;
 		int nSub = nFull - subToFull;
-		Graph gSub = GraphBuilder.newDirected().expectedVerticesNum(nSub).build();
+		Graph gSub = Graph.newBuilderDirected().expectedVerticesNum(nSub).build();
 		for (int i = 0; i < nSub; i++)
 			gSub.addVertex();
 		for (int uSub = 0; uSub < nSub; uSub++) {

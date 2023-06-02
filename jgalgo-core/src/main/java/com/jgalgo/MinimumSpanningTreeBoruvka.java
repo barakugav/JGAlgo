@@ -59,7 +59,7 @@ class MinimumSpanningTreeBoruvka implements MinimumSpanningTree {
 			throw new IllegalArgumentException();
 		Res mstRes = computeMST(g, w, numberOfRounds);
 
-		Graph contractedG = GraphBuilder.newUndirected().expectedVerticesNum(mstRes.treeNum).build();
+		Graph contractedG = Graph.newBuilderUndirected().expectedVerticesNum(mstRes.treeNum).build();
 		for (int v = 0; v < mstRes.treeNum; v++)
 			contractedG.addVertex();
 		Weights.Int edgeRef = contractedG.addEdgesWeights(edgeRefKey, int.class);

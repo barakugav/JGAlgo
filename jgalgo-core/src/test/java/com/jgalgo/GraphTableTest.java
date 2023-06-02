@@ -20,8 +20,8 @@ import org.junit.jupiter.api.Test;
 
 public class GraphTableTest extends TestBase {
 
-	private static GraphBuilder graphImpl() {
-		return GraphBuilder.newUndirected().setOption("impl", "GraphTable");
+	private static Graph.Builder graphImpl() {
+		return Graph.newBuilderUndirected().setOption("impl", "GraphTable");
 	}
 
 	@Test

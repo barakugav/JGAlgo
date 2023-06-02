@@ -113,7 +113,7 @@ public class AStarTest extends TestBase {
 
 	private static GraphReverseResult reverseGraph(Graph g, WeightFunction w) {
 		final int n = g.vertices().size(), m = g.edges().size();
-		Graph revG = GraphBuilder.newDirected().expectedVerticesNum(n).expectedEdgesNum(m).build();
+		Graph revG = Graph.newBuilderDirected().expectedVerticesNum(n).expectedEdgesNum(m).build();
 		for (int v = 0; v < n; v++)
 			revG.addVertex();
 		Weights.Double revW = revG.addEdgesWeights("w", double.class);

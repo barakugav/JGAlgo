@@ -79,7 +79,7 @@ class TreePathMaximaHagerup implements TreePathMaxima {
 		private final WeightFunction w;
 
 		/* The tree we operate on, actually the Boruvka fully branching tree */
-		private final Graph tree = GraphBuilder.newUndirected().build();
+		private final Graph tree = Graph.newBuilderUndirected().build();
 		private int[] parents;
 		private int[] depths;
 		private int treeHeight;

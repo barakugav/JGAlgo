@@ -29,7 +29,7 @@ public class MaximumFlowTestUtils extends TestUtils {
 
 	private MaximumFlowTestUtils() {}
 
-	private static Graph randGraph(int n, int m, GraphBuilder graphImpl, long seed, boolean directed) {
+	private static Graph randGraph(int n, int m, Graph.Builder graphImpl, long seed, boolean directed) {
 		return new RandomGraphBuilder(seed).n(n).m(m).directed(directed).parallelEdges(false).selfEdges(false)
 				.cycles(true).connected(false).graphImpl(graphImpl).build();
 	}
@@ -69,14 +69,14 @@ public class MaximumFlowTestUtils extends TestUtils {
 	}
 
 	static void testRandGraphs(MaximumFlow algo, long seed, boolean directed) {
-		testRandGraphs(algo, GraphBuilder.newUndirected(), seed, directed);
+		testRandGraphs(algo, Graph.newBuilderUndirected(), seed, directed);
 	}
 
 	static void testRandGraphsInt(MaximumFlow algo, long seed, boolean directed) {
-		testRandGraphsInt(algo, GraphBuilder.newUndirected(), seed, directed);
+		testRandGraphsInt(algo, Graph.newBuilderUndirected(), seed, directed);
 	}
 
-	static void testRandGraphs(MaximumFlow algo, GraphBuilder graphImpl, long seed, boolean directed) {
+	static void testRandGraphs(MaximumFlow algo, Graph.Builder graphImpl, long seed, boolean directed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
 		List<Phase> phases = List.of(phase(256, 6, 6), phase(64, 16, 16), phase(64, 16, 32), phase(32, 64, 64),
@@ -97,7 +97,7 @@ public class MaximumFlowTestUtils extends TestUtils {
 		});
 	}
 
-	static void testRandGraphsInt(MaximumFlow algo, GraphBuilder graphImpl, long seed, boolean directed) {
+	static void testRandGraphsInt(MaximumFlow algo, Graph.Builder graphImpl, long seed, boolean directed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
 		List<Phase> phases = List.of(phase(256, 3, 3), phase(256, 6, 6), phase(64, 16, 16), phase(64, 16, 32),

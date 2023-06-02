@@ -27,10 +27,10 @@ class MatchingWeightedTestUtils extends TestUtils {
 	private MatchingWeightedTestUtils() {}
 
 	static void randGraphsBipartiteWeighted(MaximumMatching algo, long seed) {
-		randGraphsBipartiteWeighted(algo, GraphBuilder.newUndirected(), seed);
+		randGraphsBipartiteWeighted(algo, Graph.newBuilderUndirected(), seed);
 	}
 
-	static void randGraphsBipartiteWeighted(MaximumMatching algo, GraphBuilder graphImpl, long seed) {
+	static void randGraphsBipartiteWeighted(MaximumMatching algo, Graph.Builder graphImpl, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(256, 8, 8, 8), phase(128, 16, 16, 64), phase(12, 128, 128, 128),
 				phase(2, 256, 256, 1200));
@@ -58,7 +58,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 			int tn = args[1];
 			int m = args[2];
 
-			Graph g = MatchingBipartiteTestUtils.randGraphBipartite(sn, tn, m, GraphBuilder.newUndirected(),
+			Graph g = MatchingBipartiteTestUtils.randGraphBipartite(sn, tn, m, Graph.newBuilderUndirected(),
 					seedGen.nextSeed());
 			int maxWeight = m < 50 ? 100 : m * 2 + 2;
 			WeightFunction.Int w =
@@ -175,7 +175,7 @@ class MatchingWeightedTestUtils extends TestUtils {
 			int n = g.vertices().size();
 			int[] shuffle = randPermutation(n, seedGen.nextSeed());
 
-			Graph shuffledG = GraphBuilder.newUndirected().build();
+			Graph shuffledG = Graph.newBuilderUndirected().build();
 			for (int i = 0; i < n; i++)
 				shuffledG.addVertex();
 

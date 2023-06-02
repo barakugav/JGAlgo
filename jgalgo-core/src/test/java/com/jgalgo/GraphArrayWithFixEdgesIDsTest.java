@@ -20,8 +20,8 @@ import org.junit.jupiter.api.Test;
 
 public class GraphArrayWithFixEdgesIDsTest extends TestBase {
 
-	static GraphBuilder graphImpl() {
-		return GraphBuilder.newUndirected().setOption("impl", "GraphArray").useFixedEdgesIDs(true);
+	static Graph.Builder graphImpl() {
+		return Graph.newBuilderUndirected().setOption("impl", "GraphArray").useFixedEdgesIDs(true);
 	}
 
 	@Test

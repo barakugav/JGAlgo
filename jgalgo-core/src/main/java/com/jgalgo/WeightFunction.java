@@ -31,7 +31,7 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
  *
  * <pre> {@code
  * // Create a directed graph with three vertices and edges between them
- * Graph g = GraphBuilder.newDirected().build();
+ * Graph g = Graph.newBuilderDirected().build();
  * int v1 = g.addVertex();
  * int v2 = g.addVertex();
  * int v3 = g.addVertex();
@@ -91,7 +91,7 @@ public interface WeightFunction extends IntComparator {
 	 *
 	 * <pre> {@code
 	 * // Create a directed graph with three vertices and edges between them
-	 * Graph g = GraphBuilder.newDirected().build();
+	 * Graph g = Graph.newBuilderDirected().build();
 	 * int v1 = g.addVertex();
 	 * int v2 = g.addVertex();
 	 * int v3 = g.addVertex();

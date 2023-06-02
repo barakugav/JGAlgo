@@ -18,7 +18,6 @@ package com.jgalgo.example;
 import com.jgalgo.Coloring;
 import com.jgalgo.EdgeIter;
 import com.jgalgo.Graph;
-import com.jgalgo.GraphBuilder;
 
 public class ColoringExample {
 
@@ -45,7 +44,7 @@ public class ColoringExample {
 	}
 
 	public static Graph createGraph() {
-		Graph g = GraphBuilder.newUndirected().build();
+		Graph g = Graph.newBuilderUndirected().build();
 		int v1 = g.addVertex();
 		int v2 = g.addVertex();
 		int v3 = g.addVertex();

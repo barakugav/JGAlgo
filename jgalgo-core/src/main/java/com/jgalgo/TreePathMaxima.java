@@ -208,7 +208,7 @@ public interface TreePathMaxima {
 	public static boolean verifyMST(Graph g, WeightFunction w, IntCollection mstEdges, TreePathMaxima tpmAlgo) {
 		ArgumentCheck.onlyUndirected(g);
 		int n = g.vertices().size();
-		Graph mst = GraphBuilder.newUndirected().expectedVerticesNum(n).expectedEdgesNum(mstEdges.size()).build();
+		Graph mst = Graph.newBuilderUndirected().expectedVerticesNum(n).expectedEdgesNum(mstEdges.size()).build();
 		for (int v = 0; v < n; v++)
 			mst.addVertex();
 		Weights.Int edgeRef = mst.addEdgesWeights("edgeRef", int.class);

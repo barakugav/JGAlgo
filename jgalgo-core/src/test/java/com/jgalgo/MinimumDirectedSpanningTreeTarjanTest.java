@@ -37,7 +37,7 @@ public class MinimumDirectedSpanningTreeTarjanTest extends TestBase {
 			if (g.getCapabilities().directed())
 				return algo.computeMinimumSpanningTree(g, w, 0);
 			int n = g.vertices().size();
-			Graph dg = GraphBuilder.newDirected().expectedVerticesNum(n).build();
+			Graph dg = Graph.newBuilderDirected().expectedVerticesNum(n).build();
 			for (int i = 0; i < n; i++)
 				dg.addVertex();
 			Weights.Int edgeRef = dg.addEdgesWeights("edgeRef", int.class, Integer.valueOf(-1));
@@ -71,10 +71,10 @@ public class MinimumDirectedSpanningTreeTarjanTest extends TestBase {
 	}
 
 	private static void testRandGraph(MinimumDirectedSpanningTree algo, long seed) {
-		testRandGraph(algo, GraphBuilder.newUndirected(), seed);
+		testRandGraph(algo, Graph.newBuilderUndirected(), seed);
 	}
 
-	static void testRandGraph(MinimumDirectedSpanningTree algo, GraphBuilder graphImpl, long seed) {
+	static void testRandGraph(MinimumDirectedSpanningTree algo, Graph.Builder graphImpl, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		List<Phase> phases = List.of(phase(1, 0, 0), phase(256, 6, 5), phase(128, 16, 32), phase(64, 64, 128),
 				phase(32, 128, 256), phase(8, 1024, 4096), phase(2, 4096, 16384));

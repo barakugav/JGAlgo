@@ -24,13 +24,13 @@ import com.jgalgo.GraphsUtils.UndirectedGraphImpl;
 import com.jgalgo.IDStrategy.IDAddRemoveListener;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 
-class GraphBuilderImpl implements GraphBuilder {
+class GraphBuilderImpl implements Graph.Builder {
 
 	private boolean directed;
 	private int expectedVerticesNum;
 	private int expectedEdgesNum;
 	private boolean fixedEdgesIDs;
-	private final EnumSet<GraphBuilder.Hint> hints = EnumSet.noneOf(GraphBuilder.Hint.class);
+	private final EnumSet<Graph.Builder.Hint> hints = EnumSet.noneOf(Graph.Builder.Hint.class);
 	private String impl;
 
 	GraphBuilderImpl(boolean directed) {
@@ -57,9 +57,9 @@ class GraphBuilderImpl implements GraphBuilder {
 			else
 				throw new IllegalArgumentException("unknown 'impl' value: " + impl);
 		} else {
-			if (hints.contains(GraphBuilder.Hint.FastEdgeLookup))
+			if (hints.contains(Graph.Builder.Hint.FastEdgeLookup))
 				baseBuilder = baseBuilderTable;
-			else if (hints.contains(GraphBuilder.Hint.FastEdgeLookup))
+			else if (hints.contains(Graph.Builder.Hint.FastEdgeLookup))
 				baseBuilder = baseBuilderLinked;
 			else
 				baseBuilder = baseBuilderArray;
@@ -81,13 +81,13 @@ class GraphBuilderImpl implements GraphBuilder {
 	}
 
 	@Override
-	public GraphBuilder setDirected(boolean directed) {
+	public Graph.Builder setDirected(boolean directed) {
 		this.directed = directed;
 		return this;
 	}
 
 	@Override
-	public GraphBuilder expectedVerticesNum(int expectedVerticesNum) {
+	public Graph.Builder expectedVerticesNum(int expectedVerticesNum) {
 		if (expectedVerticesNum < 0)
 			throw new IllegalArgumentException("invalid expected size: " + expectedVerticesNum);
 		this.expectedVerticesNum = expectedVerticesNum;
@@ -95,7 +95,7 @@ class GraphBuilderImpl implements GraphBuilder {
 	}
 
 	@Override
-	public GraphBuilder expectedEdgesNum(int expectedEdgesNum) {
+	public Graph.Builder expectedEdgesNum(int expectedEdgesNum) {
 		if (expectedEdgesNum < 0)
 			throw new IllegalArgumentException("invalid expected size: " + expectedEdgesNum);
 		this.expectedEdgesNum = expectedEdgesNum;
@@ -103,25 +103,25 @@ class GraphBuilderImpl implements GraphBuilder {
 	}
 
 	@Override
-	public GraphBuilder useFixedEdgesIDs(boolean enable) {
+	public Graph.Builder useFixedEdgesIDs(boolean enable) {
 		fixedEdgesIDs = enable;
 		return this;
 	}
 
 	@Override
-	public GraphBuilder addHint(GraphBuilder.Hint hint) {
+	public Graph.Builder addHint(Graph.Builder.Hint hint) {
 		hints.add(hint);
 		return this;
 	}
 
 	@Override
-	public GraphBuilder removeHint(GraphBuilder.Hint hint) {
+	public Graph.Builder removeHint(Graph.Builder.Hint hint) {
 		hints.remove(hint);
 		return this;
 	}
 
 	@Override
-	public GraphBuilder setOption(String key, Object value) {
+	public Graph.Builder setOption(String key, Object value) {
 		if ("impl".equals(key)) {
 			impl = (String) value;
 		} else {

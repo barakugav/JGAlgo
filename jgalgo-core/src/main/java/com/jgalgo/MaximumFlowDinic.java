@@ -37,7 +37,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
  */
 class MaximumFlowDinic implements MaximumFlow {
 
-	private GraphBuilder layerGraphBuilder = GraphBuilder.newDirected().setOption("impl", "GraphLinked");
+	private Graph.Builder layerGraphBuilder = Graph.newBuilderDirected().setOption("impl", "GraphLinked");
 
 	private static final Object FlowWeightKey = new Utils.Obj("flow");
 	private static final Object CapacityWeightKey = new Utils.Obj("capacity");
@@ -56,7 +56,7 @@ class MaximumFlowDinic implements MaximumFlow {
 	 *
 	 * @param builder a builder that provide instances of graphs for the layers graph
 	 */
-	void setLayerGraphFactory(GraphBuilder builder) {
+	void setLayerGraphFactory(Graph.Builder builder) {
 		layerGraphBuilder = Objects.requireNonNull(builder);
 	}
 

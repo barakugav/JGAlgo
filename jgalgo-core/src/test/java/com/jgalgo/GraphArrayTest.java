@@ -20,8 +20,8 @@ import org.junit.jupiter.api.Test;
 
 public class GraphArrayTest extends TestBase {
 
-	private static GraphBuilder graphImpl() {
-		return GraphBuilder.newUndirected().setOption("impl", "GraphArray");
+	private static Graph.Builder graphImpl() {
+		return Graph.newBuilderUndirected().setOption("impl", "GraphArray");
 	}
 
 	@Test

@@ -58,7 +58,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  *
  * <pre> {@code
  * // Create a directed graph with three vertices and edges between them
- * Graph g = GraphBuilder.newDirected().build();
+ * Graph g = Graph.newBuilderDirected().build();
  * int v1 = g.addVertex();
  * int v2 = g.addVertex();
  * int v3 = g.addVertex();
@@ -87,7 +87,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * }
  * }</pre>
  *
- * @see    GraphBuilder
+ * @see    Graph.Builder
  * @see    GraphCapabilities
  * @author Barak Ugav
  */
@@ -626,6 +626,120 @@ public interface Graph {
 	 */
 	default Graph reverseView() {
 		return Graphs.reverseView(this);
+	}
+
+	/**
+	 * Create an undirected graph builder.
+	 * <p>
+	 * This is the recommended way to instantiate a new undirected graph.
+	 *
+	 * @return a new builder that can build undirected graphs
+	 */
+	static Graph.Builder newBuilderUndirected() {
+		return new GraphBuilderImpl(false);
+	}
+
+	/**
+	 * Create a directed graph builder.
+	 * <p>
+	 * This is the recommended way to instantiate a new directed graph.
+	 *
+	 * @return a new builder that can build directed graphs
+	 */
+	static Graph.Builder newBuilderDirected() {
+		return new GraphBuilderImpl(true);
+	}
+
+	/**
+	 * A builder for {@link Graph} objects.
+	 *
+	 * @see    Graph#newBuilderDirected()
+	 * @see    Graph#newBuilderUndirected()
+	 * @author Barak Ugav
+	 */
+	static interface Builder extends BuilderAbstract<Graph.Builder> {
+
+		/**
+		 * Create a new empty graph.
+		 *
+		 * @return a new graph with the builder options
+		 */
+		Graph build();
+
+		/**
+		 * Determine if graphs built by this builder should be directed or not.
+		 *
+		 * @param  directed if {@code true}, graphs built by this builder will be directed
+		 * @return          this builder
+		 */
+		Graph.Builder setDirected(boolean directed);
+
+		/**
+		 * Set the expected number of vertices that will exist in the graph.
+		 *
+		 * @param  expectedVerticesNum the expected number of vertices in the graph
+		 * @return                     this builder
+		 */
+		Graph.Builder expectedVerticesNum(int expectedVerticesNum);
+
+		/**
+		 * Set the expected number of edges that will exist in the graph.
+		 *
+		 * @param  expectedEdgesNum the expected number of edges in the graph
+		 * @return                  this builder
+		 */
+		Graph.Builder expectedEdgesNum(int expectedEdgesNum);
+
+		/**
+		 * Enable/disable fixed edges IDs for graphs built by this builder.
+		 * <p>
+		 * By default, IDs of both vertices and edges are always {@code 0,1,2,...,verticesNum1} (and
+		 * {@code 0,1,2,...edgesNum-1}). To maintain this invariant, graphs must rename vertices/edges when an
+		 * vertex/edge is removed. The IDs of the edges can be fixed, namely once an edge is assigned an ID, it will
+		 * never change. If such option is chosen, the edges IDs will not always be {@code 0,1,2,...,edgesNum-1}.
+		 * <p>
+		 * Note that by using fixed IDs, some map is required, and therefore its slightly less efficient.
+		 *
+		 * @param  enable if {@code true}, graphs built by this builder will have fixed IDs for edges
+		 * @return        this builder
+		 * @see           IDStrategy
+		 */
+		Graph.Builder useFixedEdgesIDs(boolean enable);
+
+		/**
+		 * Add a hint to this builder.
+		 * <p>
+		 * Hints do not change the behavior of the graphs built by this builder, by may affect performance.
+		 *
+		 * @param  hint the hint to add
+		 * @return      this builder
+		 */
+		Graph.Builder addHint(Graph.Builder.Hint hint);
+
+		/**
+		 * Remove a hint from this builder.
+		 * <p>
+		 * Hints do not change the behavior of the graphs built by this builder, by may affect performance.
+		 *
+		 * @param  hint the hint to remove
+		 * @return      this builder
+		 */
+		Graph.Builder removeHint(Graph.Builder.Hint hint);
+
+		/**
+		 * Hints for a graph builder.
+		 * <p>
+		 * Hints do not change the behavior of the graphs built by this builder, by may affect performance.
+		 *
+		 * @author Barak Ugav
+		 */
+		static enum Hint {
+			/** The graph should support fast edge removal via {@link Graph#removeEdge(int)} */
+			FastEdgeRemoval,
+			/** The graph should support fast edge lookup via {@link Graph#getEdge(int, int)} */
+			FastEdgeLookup,
+		}
+
 	}
 
 }

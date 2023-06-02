@@ -56,7 +56,7 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 		 * Build graph for the matching calculation, containing only vertices with odd degree from the MST
 		 */
 		int[] degree = GraphsUtils.calcDegree(g, mst);
-		Graph mG = GraphBuilder.newUndirected().build();
+		Graph mG = Graph.newBuilderUndirected().build();
 		int[] mVtoV = new int[n];
 		for (int u = 0; u < n; u++)
 			if (degree[u] % 2 != 0)
@@ -77,7 +77,7 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 		Matching matching = matchingAlgo.computeMaximumWeightedPerfectMatching(mG, mGWeightsNeg);
 
 		/* Build a graph of the union of the MST and the matching result */
-		Graph g1 = GraphBuilder.newUndirected().expectedVerticesNum(n).expectedEdgesNum(mst.size()).build();
+		Graph g1 = Graph.newBuilderUndirected().expectedVerticesNum(n).expectedEdgesNum(mst.size()).build();
 		for (int v = 0; v < n; v++)
 			g1.addVertex();
 		Weights.Int g1EdgeRef = g1.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));

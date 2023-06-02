@@ -28,7 +28,7 @@ package com.jgalgo;
  * Each color is represented as an integer in range \([0, \textit{colorsNum})\).
  *
  * <pre> {@code
- * Graph g = GraphBuilder.newUndirected().build();
+ * Graph g = Graph.newBuilderUndirected().build();
  * int v1 = g.addVertex();
  * int v2 = g.addVertex();
  * int v3 = g.addVertex();

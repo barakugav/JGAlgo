@@ -41,7 +41,7 @@ public class GraphsTestUtils extends TestUtils {
 		private boolean selfEdges;
 		private boolean cycles;
 		private boolean connected;
-		private GraphBuilder impl = GraphBuilder.newUndirected();
+		private Graph.Builder impl = Graph.newBuilderUndirected();
 
 		public RandomGraphBuilder(long seed) {
 			seedGen = new SeedGenerator(seed);
@@ -103,7 +103,7 @@ public class GraphsTestUtils extends TestUtils {
 			return this;
 		}
 
-		public RandomGraphBuilder graphImpl(GraphBuilder impl) {
+		public RandomGraphBuilder graphImpl(Graph.Builder impl) {
 			this.impl = impl;
 			return this;
 		}
@@ -299,10 +299,10 @@ public class GraphsTestUtils extends TestUtils {
 	}
 
 	public static Graph randGraph(int n, int m, long seed) {
-		return randGraph(n, m, GraphBuilder.newUndirected(), seed);
+		return randGraph(n, m, Graph.newBuilderUndirected(), seed);
 	}
 
-	static Graph randGraph(int n, int m, GraphBuilder graphImpl, long seed) {
+	static Graph randGraph(int n, int m, Graph.Builder graphImpl, long seed) {
 		return new RandomGraphBuilder(seed).graphImpl(graphImpl).n(n).m(m).directed(false).parallelEdges(false)
 				.selfEdges(false).cycles(true).connected(false).build();
 	}
@@ -336,7 +336,7 @@ public class GraphsTestUtils extends TestUtils {
 	static Graph parseGraphFromAdjacencyMatrix01(String s) {
 		String[] lines = s.split("\r\n");
 		int n = lines.length;
-		Graph g = GraphBuilder.newUndirected().build();
+		Graph g = Graph.newBuilderUndirected().build();
 		for (int u = 0; u < n; u++) {
 			g.addVertex();
 			String[] chars = lines[u].split(" ");
@@ -350,7 +350,7 @@ public class GraphsTestUtils extends TestUtils {
 	static Graph parseGraphWeighted(String s) {
 		String[] lines = s.split("\r\n");
 		int n = lines.length;
-		Graph g = GraphBuilder.newUndirected().build();
+		Graph g = Graph.newBuilderUndirected().build();
 		for (int u = 0; u < n; u++) {
 			g.addVertex();
 			String[] chars = lines[u].split(" ");

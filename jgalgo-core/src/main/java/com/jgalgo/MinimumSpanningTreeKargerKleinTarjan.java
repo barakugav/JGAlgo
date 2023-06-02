@@ -111,7 +111,7 @@ class MinimumSpanningTreeKargerKleinTarjan implements MinimumSpanningTree {
 
 	static Graph subGraph(Graph g, IntCollection edgeSet, Object edgeDataKey, Weights.Int edgeRef) {
 		final int n = g.vertices().size();
-		Graph subG = GraphBuilder.newUndirected().expectedVerticesNum(n).expectedEdgesNum(edgeSet.size()).build();
+		Graph subG = Graph.newBuilderUndirected().expectedVerticesNum(n).expectedEdgesNum(edgeSet.size()).build();
 		for (int v = 0; v < n; v++)
 			subG.addVertex();
 		Weights.Int edgeRefSub = subG.addEdgesWeights(edgeDataKey, int.class);
@@ -228,7 +228,7 @@ class MinimumSpanningTreeKargerKleinTarjan implements MinimumSpanningTree {
 
 			for (int tIdx = 0; tIdx < treeCount; tIdx++) {
 				Graph tree = trees[tIdx] =
-						MemoryReuse.ensureAllocated(trees[tIdx], () -> GraphBuilder.newUndirected().build());
+						MemoryReuse.ensureAllocated(trees[tIdx], () -> Graph.newBuilderUndirected().build());
 				treeData[tIdx] =
 						MemoryReuse.ensureAllocated(treeData[tIdx], () -> tree.addEdgesWeights("weight", double.class));
 

@@ -17,7 +17,6 @@
 package com.jgalgo.example;
 
 import com.jgalgo.Graph;
-import com.jgalgo.GraphBuilder;
 import com.jgalgo.ShortestPathSingleSource;
 import com.jgalgo.Weights;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -26,7 +25,7 @@ public class ShortestPathExample {
 
 	public static void shortestPathExample() {
 		/* Create a directed graph with three vertices and edges between them */
-		Graph g = GraphBuilder.newDirected().build();
+		Graph g = Graph.newBuilderDirected().build();
 		int v1 = g.addVertex();
 		int v2 = g.addVertex();
 		int v3 = g.addVertex();
