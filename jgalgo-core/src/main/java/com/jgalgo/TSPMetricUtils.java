@@ -32,7 +32,7 @@ class TSPMetricUtils {
 			assert g1.edgesOut(u).size() % 2 == 0;
 
 		/* Calculate Eulerian tour in the new graph */
-		Path tour = EulerianTourAlgorithm.newBuilder().build().computeEulerianTour(g1);
+		Path tour = EulerianTourAlgo.newBuilder().build().computeEulerianTour(g1);
 		assert isValidCycle(g1, tour);
 		assert isPathVisitEvery(g1, tour);
 

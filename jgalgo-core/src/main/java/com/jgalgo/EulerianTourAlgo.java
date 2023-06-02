@@ -32,7 +32,7 @@ package com.jgalgo;
  * @see    TSPMetricMatchingAppx
  * @author Barak Ugav
  */
-public interface EulerianTourAlgorithm {
+public interface EulerianTourAlgo {
 
 	/**
 	 * Compute an Eulerian tour in the graph that visit all edges exactly once.
@@ -49,28 +49,28 @@ public interface EulerianTourAlgorithm {
 	/**
 	 * Create a new Eulerian tour algorithm builder.
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link EulerianTourAlgorithm} object.
+	 * This is the recommended way to instantiate a new {@link EulerianTourAlgo} object.
 	 *
-	 * @return a new builder that can build {@link EulerianTourAlgorithm} objects
+	 * @return a new builder that can build {@link EulerianTourAlgo} objects
 	 */
-	static EulerianTourAlgorithm.Builder newBuilder() {
+	static EulerianTourAlgo.Builder newBuilder() {
 		return EulerianTourImpl::new;
 	}
 
 	/**
-	 * A builder for {@link EulerianTourAlgorithm} objects.
+	 * A builder for {@link EulerianTourAlgo} objects.
 	 *
-	 * @see    EulerianTourAlgorithm#newBuilder()
+	 * @see    EulerianTourAlgo#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder extends BuilderAbstract<EulerianTourAlgorithm.Builder> {
+	static interface Builder extends BuilderAbstract<EulerianTourAlgo.Builder> {
 
 		/**
 		 * Create a new algorithm object for Eulerian tours computation.
 		 *
 		 * @return a new Eulerian tour algorithm
 		 */
-		EulerianTourAlgorithm build();
+		EulerianTourAlgo build();
 	}
 
 }

@@ -20,7 +20,7 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntStack;
 
-class EulerianTourImpl implements EulerianTourAlgorithm {
+class EulerianTourImpl implements EulerianTourAlgo {
 
 	/**
 	 * {@inheritDoc}
