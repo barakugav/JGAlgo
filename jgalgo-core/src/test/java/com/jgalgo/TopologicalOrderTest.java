@@ -46,7 +46,7 @@ public class TopologicalOrderTest extends TestBase {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
 					.selfEdges(false).cycles(false).connected(connected).build();
 
-			IntIterator topolSort = new TopologicalOrderAlgorithmImpl().computeTopologicalSorting(g).verticesIterator();
+			IntIterator topolSort = new TopologicalOrderAlgoImpl().computeTopologicalSorting(g).verticesIterator();
 
 			Set<Integer> seenVertices = new HashSet<>(n);
 			while (topolSort.hasNext()) {

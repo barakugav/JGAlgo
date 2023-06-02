@@ -29,7 +29,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  * @see    <a href= "https://en.wikipedia.org/wiki/Topological_sorting">Wikipedia</a>
  * @author Barak Ugav
  */
-public interface TopologicalOrderAlgorithm {
+public interface TopologicalOrderAlgo {
 
 	/**
 	 * Compute the topological order of a DAG vertices.
@@ -38,17 +38,17 @@ public interface TopologicalOrderAlgorithm {
 	 * @return                          a result object containing the computed order
 	 * @throws IllegalArgumentException if the graph is not DAG
 	 */
-	TopologicalOrderAlgorithm.Result computeTopologicalSorting(Graph g);
+	TopologicalOrderAlgo.Result computeTopologicalSorting(Graph g);
 
 	/**
-	 * A result object of a {@link TopologicalOrderAlgorithm} algorithm.
+	 * A result object of a {@link TopologicalOrderAlgo} algorithm.
 	 *
 	 * @author Barak Ugav
 	 */
 	static interface Result {
 		/**
 		 * Get an iterator that iterate over the vertices of the graph in the order computed by the
-		 * {@link TopologicalOrderAlgorithm}.
+		 * {@link TopologicalOrderAlgo}.
 		 *
 		 * @return an iterator that iterate over the vertices of the graph in the order computed
 		 */
@@ -58,28 +58,28 @@ public interface TopologicalOrderAlgorithm {
 	/**
 	 * Create a new topological order algorithm builder.
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link TopologicalOrderAlgorithm} object.
+	 * This is the recommended way to instantiate a new {@link TopologicalOrderAlgo} object.
 	 *
-	 * @return a new builder that can build {@link TopologicalOrderAlgorithm} objects
+	 * @return a new builder that can build {@link TopologicalOrderAlgo} objects
 	 */
-	static TopologicalOrderAlgorithm.Builder newBuilder() {
-		return TopologicalOrderAlgorithmImpl::new;
+	static TopologicalOrderAlgo.Builder newBuilder() {
+		return TopologicalOrderAlgoImpl::new;
 	}
 
 	/**
-	 * A builder for {@link TopologicalOrderAlgorithm} objects.
+	 * A builder for {@link TopologicalOrderAlgo} objects.
 	 *
-	 * @see    TopologicalOrderAlgorithm#newBuilder()
+	 * @see    TopologicalOrderAlgo#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder extends BuilderAbstract<TopologicalOrderAlgorithm.Builder> {
+	static interface Builder extends BuilderAbstract<TopologicalOrderAlgo.Builder> {
 
 		/**
 		 * Create a new algorithm object for topological order computation.
 		 *
 		 * @return a new topological order algorithm
 		 */
-		TopologicalOrderAlgorithm build();
+		TopologicalOrderAlgo build();
 	}
 
 }
