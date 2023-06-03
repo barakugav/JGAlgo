@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TopologicalOrderAlgorithm.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">TopologicalOrderAlgorithm.java</span></div><h1>TopologicalOrderAlgorithm.java</h1><pre class="source lang-java linenums">/*-
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TopologicalOrderAlgo.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">TopologicalOrderAlgo.java</span></div><h1>TopologicalOrderAlgo.java</h1><pre class="source lang-java linenums">/*-
  * Copyright 2023 Barak Ugav
  *
  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
@@ -29,7 +29,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  * @see    &lt;a href= &quot;https://en.wikipedia.org/wiki/Topological_sorting&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
  */
-public interface TopologicalOrderAlgorithm {
+public interface TopologicalOrderAlgo {
 
 	/**
 	 * Compute the topological order of a DAG vertices.
@@ -38,17 +38,17 @@ public interface TopologicalOrderAlgorithm {
 	 * @return                          a result object containing the computed order
 	 * @throws IllegalArgumentException if the graph is not DAG
 	 */
-	TopologicalOrderAlgorithm.Result computeTopologicalSorting(Graph g);
+	TopologicalOrderAlgo.Result computeTopologicalSorting(Graph g);
 
 	/**
-	 * A result object of a {@link TopologicalOrderAlgorithm} algorithm.
+	 * A result object of a {@link TopologicalOrderAlgo} algorithm.
 	 *
 	 * @author Barak Ugav
 	 */
 	static interface Result {
 		/**
 		 * Get an iterator that iterate over the vertices of the graph in the order computed by the
-		 * {@link TopologicalOrderAlgorithm}.
+		 * {@link TopologicalOrderAlgo}.
 		 *
 		 * @return an iterator that iterate over the vertices of the graph in the order computed
 		 */
@@ -58,28 +58,28 @@ public interface TopologicalOrderAlgorithm {
 	/**
 	 * Create a new topological order algorithm builder.
 	 * &lt;p&gt;
-	 * This is the recommended way to instantiate a new {@link TopologicalOrderAlgorithm} object.
+	 * This is the recommended way to instantiate a new {@link TopologicalOrderAlgo} object.
 	 *
-	 * @return a new builder that can build {@link TopologicalOrderAlgorithm} objects
+	 * @return a new builder that can build {@link TopologicalOrderAlgo} objects
 	 */
-	static TopologicalOrderAlgorithm.Builder newBuilder() {
-<span class="fc" id="L66">		return TopologicalOrderAlgorithmImpl::new;</span>
+	static TopologicalOrderAlgo.Builder newBuilder() {
+<span class="fc" id="L66">		return TopologicalOrderAlgoImpl::new;</span>
 	}
 
 	/**
-	 * A builder for {@link TopologicalOrderAlgorithm} objects.
+	 * A builder for {@link TopologicalOrderAlgo} objects.
 	 *
-	 * @see    TopologicalOrderAlgorithm#newBuilder()
+	 * @see    TopologicalOrderAlgo#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder extends BuilderAbstract&lt;TopologicalOrderAlgorithm.Builder&gt; {
+	static interface Builder extends BuilderAbstract&lt;TopologicalOrderAlgo.Builder&gt; {
 
 		/**
 		 * Create a new algorithm object for topological order computation.
 		 *
 		 * @return a new topological order algorithm
 		 */
-		TopologicalOrderAlgorithm build();
+		TopologicalOrderAlgo build();
 	}
 
 }

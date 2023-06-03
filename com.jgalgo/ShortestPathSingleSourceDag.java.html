@@ -24,12 +24,12 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  * The algorithm first compute a topological sorting of the vertices in linear time, and then traverse the vertices in
  * that order and determine the distance for each one of them.
  *
- * @see    TopologicalOrderAlgorithm
+ * @see    TopologicalOrderAlgo
  * @author Barak Ugav
  */
 class ShortestPathSingleSourceDag implements ShortestPathSingleSource {
 
-<span class="fc" id="L32">	private final TopologicalOrderAlgorithm topoAlg = TopologicalOrderAlgorithm.newBuilder().build();</span>
+<span class="fc" id="L32">	private final TopologicalOrderAlgo topoAlg = TopologicalOrderAlgo.newBuilder().build();</span>
 
 	/**
 	 * Construct a new SSSP algorithm.

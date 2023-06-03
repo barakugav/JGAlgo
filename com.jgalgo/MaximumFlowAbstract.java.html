@@ -42,7 +42,7 @@ class MaximumFlowAbstract {
 <span class="fc" id="L42">			this.n = gOrig.vertices().size();</span>
 <span class="fc" id="L43">			this.net = net;</span>
 
-<span class="fc" id="L45">			g = GraphBuilder.newDirected().expectedVerticesNum(n).build();</span>
+<span class="fc" id="L45">			g = Graph.newBuilderDirected().expectedVerticesNum(n).build();</span>
 <span class="fc bfc" id="L46" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++)</span>
 <span class="fc" id="L47">				g.addVertex();</span>
 <span class="fc" id="L48">			edgeRef = g.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));</span>

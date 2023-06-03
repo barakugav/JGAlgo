@@ -56,7 +56,7 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 		 * Build graph for the matching calculation, containing only vertices with odd degree from the MST
 		 */
 <span class="fc" id="L58">		int[] degree = GraphsUtils.calcDegree(g, mst);</span>
-<span class="fc" id="L59">		Graph mG = GraphBuilder.newUndirected().build();</span>
+<span class="fc" id="L59">		Graph mG = Graph.newBuilderUndirected().build();</span>
 <span class="fc" id="L60">		int[] mVtoV = new int[n];</span>
 <span class="fc bfc" id="L61" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
 <span class="fc bfc" id="L62" title="All 2 branches covered.">			if (degree[u] % 2 != 0)</span>
@@ -77,7 +77,7 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 <span class="fc" id="L77">		Matching matching = matchingAlgo.computeMaximumWeightedPerfectMatching(mG, mGWeightsNeg);</span>
 
 		/* Build a graph of the union of the MST and the matching result */
-<span class="fc" id="L80">		Graph g1 = GraphBuilder.newUndirected().expectedVerticesNum(n).expectedEdgesNum(mst.size()).build();</span>
+<span class="fc" id="L80">		Graph g1 = Graph.newBuilderUndirected().expectedVerticesNum(n).expectedEdgesNum(mst.size()).build();</span>
 <span class="fc bfc" id="L81" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
 <span class="fc" id="L82">			g1.addVertex();</span>
 <span class="fc" id="L83">		Weights.Int g1EdgeRef = g1.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));</span>

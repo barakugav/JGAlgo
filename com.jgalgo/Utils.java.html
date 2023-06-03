@@ -573,6 +573,13 @@ class Utils {
 		};
 	}
 
+	static int size(IntIterable c) {
+<span class="fc" id="L577">		int count = 0;</span>
+<span class="fc bfc" id="L578" title="All 2 branches covered.">		for (IntIterator it = c.iterator(); it.hasNext(); it.nextInt())</span>
+<span class="fc" id="L579">			count++;</span>
+<span class="fc" id="L580">		return count;</span>
+	}
+
 	@FunctionalInterface
 	static interface BiInt2IntFunction {
 		int apply(int a1, int a2);
@@ -584,38 +591,38 @@ class Utils {
 	}
 
 	static void sort(int[] arr, int from, int to, IntComparator cmp, boolean parallel) {
-<span class="pc bpc" id="L587" title="1 of 2 branches missed.">		if (parallel) {</span>
-<span class="fc" id="L588">			IntArrays.parallelQuickSort(arr, from, to, cmp);</span>
+<span class="pc bpc" id="L594" title="1 of 2 branches missed.">		if (parallel) {</span>
+<span class="fc" id="L595">			IntArrays.parallelQuickSort(arr, from, to, cmp);</span>
 		} else {
-<span class="nc" id="L590">			IntArrays.quickSort(arr, from, to, cmp);</span>
+<span class="nc" id="L597">			IntArrays.quickSort(arr, from, to, cmp);</span>
 		}
-<span class="fc" id="L592">	}</span>
+<span class="fc" id="L599">	}</span>
 
 	static ForkJoinPool getPool() {
-<span class="fc" id="L595">		ForkJoinPool current = ForkJoinTask.getPool();</span>
-<span class="pc bpc" id="L596" title="1 of 2 branches missed.">		return current == null ? ForkJoinPool.commonPool() : current;</span>
+<span class="fc" id="L602">		ForkJoinPool current = ForkJoinTask.getPool();</span>
+<span class="pc bpc" id="L603" title="1 of 2 branches missed.">		return current == null ? ForkJoinPool.commonPool() : current;</span>
 	}
 
 	static &lt;Exec extends Runnable &amp; Serializable&gt; RecursiveAction recursiveAction(Exec exec) {
-<span class="nc" id="L600">		return new RecursiveActionFromRunnable&lt;&gt;(exec);</span>
+<span class="nc" id="L607">		return new RecursiveActionFromRunnable&lt;&gt;(exec);</span>
 	}
 
 	static &lt;V, Exec extends Supplier&lt;? extends V&gt; &amp; Serializable&gt; RecursiveTask&lt;V&gt; recursiveTask(Exec exec) {
-<span class="nc" id="L604">		return new RecursiveTaskFromSupplier&lt;&gt;(exec);</span>
+<span class="nc" id="L611">		return new RecursiveTaskFromSupplier&lt;&gt;(exec);</span>
 	}
 
 	private static class RecursiveActionFromRunnable&lt;Exec extends Runnable &amp; Serializable&gt; extends RecursiveAction {
 		private Exec exec;
 		private static final long serialVersionUID = 1L;
 
-<span class="nc" id="L611">		RecursiveActionFromRunnable(Exec exec) {</span>
-<span class="nc" id="L612">			this.exec = exec;</span>
-<span class="nc" id="L613">		}</span>
+<span class="nc" id="L618">		RecursiveActionFromRunnable(Exec exec) {</span>
+<span class="nc" id="L619">			this.exec = exec;</span>
+<span class="nc" id="L620">		}</span>
 
 		@Override
 		protected void compute() {
-<span class="nc" id="L617">			exec.run();</span>
-<span class="nc" id="L618">		}</span>
+<span class="nc" id="L624">			exec.run();</span>
+<span class="nc" id="L625">		}</span>
 	}
 
 	private static class RecursiveTaskFromSupplier&lt;V, Exec extends Supplier&lt;? extends V&gt; &amp; Serializable&gt;
@@ -623,26 +630,26 @@ class Utils {
 		private Exec exec;
 		private static final long serialVersionUID = 1L;
 
-<span class="nc" id="L626">		RecursiveTaskFromSupplier(Exec exec) {</span>
-<span class="nc" id="L627">			this.exec = exec;</span>
-<span class="nc" id="L628">		}</span>
+<span class="nc" id="L633">		RecursiveTaskFromSupplier(Exec exec) {</span>
+<span class="nc" id="L634">			this.exec = exec;</span>
+<span class="nc" id="L635">		}</span>
 
 		@Override
 		protected V compute() {
-<span class="nc" id="L632">			return exec.get();</span>
+<span class="nc" id="L639">			return exec.get();</span>
 		}
 	}
 
 	static class Obj {
 		private final String s;
 
-<span class="fc" id="L639">		Obj(String s) {</span>
-<span class="fc" id="L640">			this.s = Objects.requireNonNull(s);</span>
-<span class="fc" id="L641">		}</span>
+<span class="fc" id="L646">		Obj(String s) {</span>
+<span class="fc" id="L647">			this.s = Objects.requireNonNull(s);</span>
+<span class="fc" id="L648">		}</span>
 
 		@Override
 		public String toString() {
-<span class="fc" id="L645">			return s;</span>
+<span class="fc" id="L652">			return s;</span>
 		}
 	}
 

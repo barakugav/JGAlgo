@@ -77,7 +77,7 @@ class MaximumFlowDinicDynamicTrees implements MaximumFlow {
 <span class="fc bfc" id="L77" title="All 2 branches covered.">			for (int e : gOrig.edges())</span>
 <span class="fc" id="L78">				maxCapacity = Math.max(maxCapacity, net.getCapacity(e));</span>
 
-<span class="fc" id="L80">			GraphBuilder builder = GraphBuilder.newDirected().setOption(&quot;impl&quot;, &quot;GraphLinked&quot;);</span>
+<span class="fc" id="L80">			Graph.Builder builder = Graph.newBuilderDirected().setOption(&quot;impl&quot;, &quot;GraphLinked&quot;);</span>
 <span class="fc" id="L81">			Graph L = builder.useFixedEdgesIDs(true).expectedVerticesNum(n).build();</span>
 <span class="fc bfc" id="L82" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++)</span>
 <span class="fc" id="L83">				L.addVertex();</span>

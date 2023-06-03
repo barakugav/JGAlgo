@@ -115,13 +115,13 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSource, Algo
 <span class="fc" id="L115">		Weights.Int w = Weights.createExternalEdgesWeights(g, int.class);</span>
 
 		/* gNeg is the graph g with only 0,-1 edges */
-<span class="fc" id="L118">		Graph gNeg = GraphBuilder.newDirected().expectedVerticesNum(n).build();</span>
+<span class="fc" id="L118">		Graph gNeg = Graph.newBuilderDirected().expectedVerticesNum(n).build();</span>
 <span class="fc bfc" id="L119" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
 <span class="fc" id="L120">			gNeg.addVertex();</span>
 <span class="fc" id="L121">		Weights.Int gNegEdgeRefs = gNeg.addEdgesWeights(&quot;edgeRef&quot;, int.class, Integer.valueOf(-1));</span>
 
 		/* G is the graph of strong connectivity components of gNeg, each vertex is a super vertex of gNeg */
-<span class="fc" id="L124">		Graph G = GraphBuilder.newDirected().expectedVerticesNum(n + 2).build();</span>
+<span class="fc" id="L124">		Graph G = Graph.newBuilderDirected().expectedVerticesNum(n + 2).build();</span>
 <span class="fc" id="L125">		Weights.Int GWeights = G.addEdgesWeights(&quot;weights&quot;, int.class, Integer.valueOf(-1));</span>
 		/* Two fake vertices used to add 0-edges and (r-i)-edges to all other (super) vertices */
 

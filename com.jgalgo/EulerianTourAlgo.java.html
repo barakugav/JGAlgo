@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EulerianTourAlgorithm.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">EulerianTourAlgorithm.java</span></div><h1>EulerianTourAlgorithm.java</h1><pre class="source lang-java linenums">/*-
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EulerianTourAlgo.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">EulerianTourAlgo.java</span></div><h1>EulerianTourAlgo.java</h1><pre class="source lang-java linenums">/*-
  * Copyright 2023 Barak Ugav
  *
  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
@@ -32,7 +32,7 @@ package com.jgalgo;
  * @see    TSPMetricMatchingAppx
  * @author Barak Ugav
  */
-public interface EulerianTourAlgorithm {
+public interface EulerianTourAlgo {
 
 	/**
 	 * Compute an Eulerian tour in the graph that visit all edges exactly once.
@@ -49,28 +49,28 @@ public interface EulerianTourAlgorithm {
 	/**
 	 * Create a new Eulerian tour algorithm builder.
 	 * &lt;p&gt;
-	 * This is the recommended way to instantiate a new {@link EulerianTourAlgorithm} object.
+	 * This is the recommended way to instantiate a new {@link EulerianTourAlgo} object.
 	 *
-	 * @return a new builder that can build {@link EulerianTourAlgorithm} objects
+	 * @return a new builder that can build {@link EulerianTourAlgo} objects
 	 */
-	static EulerianTourAlgorithm.Builder newBuilder() {
+	static EulerianTourAlgo.Builder newBuilder() {
 <span class="fc" id="L57">		return EulerianTourImpl::new;</span>
 	}
 
 	/**
-	 * A builder for {@link EulerianTourAlgorithm} objects.
+	 * A builder for {@link EulerianTourAlgo} objects.
 	 *
-	 * @see    EulerianTourAlgorithm#newBuilder()
+	 * @see    EulerianTourAlgo#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder extends BuilderAbstract&lt;EulerianTourAlgorithm.Builder&gt; {
+	static interface Builder extends BuilderAbstract&lt;EulerianTourAlgo.Builder&gt; {
 
 		/**
 		 * Create a new algorithm object for Eulerian tours computation.
 		 *
 		 * @return a new Eulerian tour algorithm
 		 */
-		EulerianTourAlgorithm build();
+		EulerianTourAlgo build();
 	}
 
 }

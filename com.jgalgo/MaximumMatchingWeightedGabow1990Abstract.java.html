@@ -453,7 +453,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L453">				DebugPrintsManager debugPrint) {</span>
 <span class="fc" id="L454">			int n = gOrig.vertices().size();</span>
 <span class="fc" id="L455">			this.gOrig = gOrig;</span>
-<span class="fc" id="L456">			this.g = GraphBuilder.newDirected().expectedVerticesNum(n).build();</span>
+<span class="fc" id="L456">			this.g = Graph.newBuilderDirected().expectedVerticesNum(n).build();</span>
 <span class="fc bfc" id="L457" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++)</span>
 <span class="fc" id="L458">				g.addVertex();</span>
 <span class="fc" id="L459">			edgeVal = g.addEdgesWeights(EdgeValKey, EdgeVal.class);</span>

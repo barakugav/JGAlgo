@@ -111,7 +111,7 @@ class MinimumSpanningTreeKargerKleinTarjan implements MinimumSpanningTree {
 
 	static Graph subGraph(Graph g, IntCollection edgeSet, Object edgeDataKey, Weights.Int edgeRef) {
 <span class="fc" id="L113">		final int n = g.vertices().size();</span>
-<span class="fc" id="L114">		Graph subG = GraphBuilder.newUndirected().expectedVerticesNum(n).expectedEdgesNum(edgeSet.size()).build();</span>
+<span class="fc" id="L114">		Graph subG = Graph.newBuilderUndirected().expectedVerticesNum(n).expectedEdgesNum(edgeSet.size()).build();</span>
 <span class="fc bfc" id="L115" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
 <span class="fc" id="L116">			subG.addVertex();</span>
 <span class="fc" id="L117">		Weights.Int edgeRefSub = subG.addEdgesWeights(edgeDataKey, int.class);</span>
@@ -228,11 +228,11 @@ class MinimumSpanningTreeKargerKleinTarjan implements MinimumSpanningTree {
 
 <span class="fc bfc" id="L229" title="All 2 branches covered.">			for (int tIdx = 0; tIdx &lt; treeCount; tIdx++) {</span>
 <span class="fc" id="L230">				Graph tree = trees[tIdx] =</span>
-<span class="fc" id="L231">						MemoryReuse.ensureAllocated(trees[tIdx], () -&gt; GraphBuilder.newUndirected().build());</span>
+<span class="fc" id="L231">						MemoryReuse.ensureAllocated(trees[tIdx], () -&gt; Graph.newBuilderUndirected().build());</span>
 <span class="fc" id="L232">				treeData[tIdx] =</span>
 <span class="fc" id="L233">						MemoryReuse.ensureAllocated(treeData[tIdx], () -&gt; tree.addEdgesWeights(&quot;weight&quot;, double.class));</span>
-
-<span class="fc" id="L235">				tpmQueries[tIdx] = MemoryReuse.ensureAllocated(tpmQueries[tIdx], () -&gt; new TreePathMaxima.Queries());</span>
+<span class="fc" id="L234">				tpmQueries[tIdx] =</span>
+<span class="fc" id="L235">						MemoryReuse.ensureAllocated(tpmQueries[tIdx], () -&gt; TreePathMaxima.Queries.newInstance());</span>
 			}
 <span class="fc" id="L237">		}</span>
 	}

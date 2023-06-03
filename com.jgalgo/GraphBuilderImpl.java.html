@@ -24,13 +24,13 @@ import com.jgalgo.GraphsUtils.UndirectedGraphImpl;
 import com.jgalgo.IDStrategy.IDAddRemoveListener;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 
-class GraphBuilderImpl implements GraphBuilder {
+class GraphBuilderImpl implements Graph.Builder {
 
 	private boolean directed;
 	private int expectedVerticesNum;
 	private int expectedEdgesNum;
 	private boolean fixedEdgesIDs;
-<span class="fc" id="L33">	private final EnumSet&lt;GraphBuilder.Hint&gt; hints = EnumSet.noneOf(GraphBuilder.Hint.class);</span>
+<span class="fc" id="L33">	private final EnumSet&lt;Graph.Builder.Hint&gt; hints = EnumSet.noneOf(Graph.Builder.Hint.class);</span>
 	private String impl;
 
 <span class="fc" id="L36">	GraphBuilderImpl(boolean directed) {</span>
@@ -57,9 +57,9 @@ class GraphBuilderImpl implements GraphBuilder {
 			else
 <span class="nc" id="L58">				throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
 		} else {
-<span class="pc bpc" id="L60" title="1 of 2 branches missed.">			if (hints.contains(GraphBuilder.Hint.FastEdgeLookup))</span>
+<span class="pc bpc" id="L60" title="1 of 2 branches missed.">			if (hints.contains(Graph.Builder.Hint.FastEdgeLookup))</span>
 <span class="nc" id="L61">				baseBuilder = baseBuilderTable;</span>
-<span class="pc bpc" id="L62" title="1 of 2 branches missed.">			else if (hints.contains(GraphBuilder.Hint.FastEdgeLookup))</span>
+<span class="pc bpc" id="L62" title="1 of 2 branches missed.">			else if (hints.contains(Graph.Builder.Hint.FastEdgeLookup))</span>
 <span class="nc" id="L63">				baseBuilder = baseBuilderLinked;</span>
 			else
 <span class="fc" id="L65">				baseBuilder = baseBuilderArray;</span>
@@ -81,13 +81,13 @@ class GraphBuilderImpl implements GraphBuilder {
 	}
 
 	@Override
-	public GraphBuilder setDirected(boolean directed) {
+	public Graph.Builder setDirected(boolean directed) {
 <span class="fc" id="L85">		this.directed = directed;</span>
 <span class="fc" id="L86">		return this;</span>
 	}
 
 	@Override
-	public GraphBuilder expectedVerticesNum(int expectedVerticesNum) {
+	public Graph.Builder expectedVerticesNum(int expectedVerticesNum) {
 <span class="pc bpc" id="L91" title="1 of 2 branches missed.">		if (expectedVerticesNum &lt; 0)</span>
 <span class="nc" id="L92">			throw new IllegalArgumentException(&quot;invalid expected size: &quot; + expectedVerticesNum);</span>
 <span class="fc" id="L93">		this.expectedVerticesNum = expectedVerticesNum;</span>
@@ -95,7 +95,7 @@ class GraphBuilderImpl implements GraphBuilder {
 	}
 
 	@Override
-	public GraphBuilder expectedEdgesNum(int expectedEdgesNum) {
+	public Graph.Builder expectedEdgesNum(int expectedEdgesNum) {
 <span class="pc bpc" id="L99" title="1 of 2 branches missed.">		if (expectedEdgesNum &lt; 0)</span>
 <span class="nc" id="L100">			throw new IllegalArgumentException(&quot;invalid expected size: &quot; + expectedEdgesNum);</span>
 <span class="fc" id="L101">		this.expectedEdgesNum = expectedEdgesNum;</span>
@@ -103,25 +103,25 @@ class GraphBuilderImpl implements GraphBuilder {
 	}
 
 	@Override
-	public GraphBuilder useFixedEdgesIDs(boolean enable) {
+	public Graph.Builder useFixedEdgesIDs(boolean enable) {
 <span class="fc" id="L107">		fixedEdgesIDs = enable;</span>
 <span class="fc" id="L108">		return this;</span>
 	}
 
 	@Override
-	public GraphBuilder addHint(GraphBuilder.Hint hint) {
+	public Graph.Builder addHint(Graph.Builder.Hint hint) {
 <span class="nc" id="L113">		hints.add(hint);</span>
 <span class="nc" id="L114">		return this;</span>
 	}
 
 	@Override
-	public GraphBuilder removeHint(GraphBuilder.Hint hint) {
+	public Graph.Builder removeHint(Graph.Builder.Hint hint) {
 <span class="nc" id="L119">		hints.remove(hint);</span>
 <span class="nc" id="L120">		return this;</span>
 	}
 
 	@Override
-	public GraphBuilder setOption(String key, Object value) {
+	public Graph.Builder setOption(String key, Object value) {
 <span class="pc bpc" id="L125" title="1 of 2 branches missed.">		if (&quot;impl&quot;.equals(key)) {</span>
 <span class="fc" id="L126">			impl = (String) value;</span>
 		} else {
@@ -240,11 +240,11 @@ class GraphBuilderImpl implements GraphBuilder {
 		}
 
 		@Override
-		public EdgeIter getEdges(int source, int target) {
+		public EdgeSet getEdges(int source, int target) {
 <span class="fc" id="L244">			int uIdx = verticesIDStrat.idToIdx(source);</span>
 <span class="fc" id="L245">			int vIdx = verticesIDStrat.idToIdx(target);</span>
-<span class="fc" id="L246">			EdgeIter it = g.getEdges(uIdx, vIdx);</span>
-<span class="fc" id="L247">			return new EdgeIterMapped(it);</span>
+<span class="fc" id="L246">			EdgeSet s = g.getEdges(uIdx, vIdx);</span>
+<span class="fc" id="L247">			return new EdgeSetMapped(s);</span>
 		}
 
 		@Override
@@ -280,119 +280,121 @@ class GraphBuilderImpl implements GraphBuilder {
 		@Override
 		public int edgeSource(int edge) {
 <span class="fc" id="L282">			int eIdx = edgesIDStrat.idToIdx(edge);</span>
-<span class="fc" id="L283">			return g.edgeSource(eIdx);</span>
+<span class="fc" id="L283">			int uIdx = g.edgeSource(eIdx);</span>
+<span class="fc" id="L284">			return verticesIDStrat.idxToId(uIdx);</span>
 		}
 
 		@Override
 		public int edgeTarget(int edge) {
-<span class="fc" id="L288">			int eIdx = edgesIDStrat.idToIdx(edge);</span>
-<span class="fc" id="L289">			return g.edgeTarget(eIdx);</span>
+<span class="fc" id="L289">			int eIdx = edgesIDStrat.idToIdx(edge);</span>
+<span class="fc" id="L290">			int vIdx = g.edgeTarget(eIdx);</span>
+<span class="fc" id="L291">			return verticesIDStrat.idxToId(vIdx);</span>
 		}
 
 		@Override
 		public int edgeEndpoint(int edge, int endpoint) {
-<span class="fc" id="L294">			int eIdx = edgesIDStrat.idToIdx(edge);</span>
-<span class="fc" id="L295">			int endpointIdx = verticesIDStrat.idToIdx(endpoint);</span>
-<span class="fc" id="L296">			int resIdx = g.edgeEndpoint(eIdx, endpointIdx);</span>
-<span class="fc" id="L297">			return verticesIDStrat.idxToId(resIdx);</span>
+<span class="fc" id="L296">			int eIdx = edgesIDStrat.idToIdx(edge);</span>
+<span class="fc" id="L297">			int endpointIdx = verticesIDStrat.idToIdx(endpoint);</span>
+<span class="fc" id="L298">			int resIdx = g.edgeEndpoint(eIdx, endpointIdx);</span>
+<span class="fc" id="L299">			return verticesIDStrat.idxToId(resIdx);</span>
 		}
 
 		@Override
 		public void clear() {
-<span class="fc" id="L302">			g.clear();</span>
-<span class="fc" id="L303">			verticesIDStrat.clear();</span>
-<span class="fc" id="L304">			edgesIDStrat.clear();</span>
-<span class="fc" id="L305">		}</span>
+<span class="fc" id="L304">			g.clear();</span>
+<span class="fc" id="L305">			verticesIDStrat.clear();</span>
+<span class="fc" id="L306">			edgesIDStrat.clear();</span>
+<span class="fc" id="L307">		}</span>
 
 		@Override
 		public void clearEdges() {
-<span class="fc" id="L309">			g.clearEdges();</span>
-<span class="fc" id="L310">			edgesIDStrat.clear();</span>
-<span class="fc" id="L311">		}</span>
+<span class="fc" id="L311">			g.clearEdges();</span>
+<span class="fc" id="L312">			edgesIDStrat.clear();</span>
+<span class="fc" id="L313">		}</span>
 
 		@Override
 		public &lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT getVerticesWeights(Object key) {
-<span class="fc" id="L315">			return verticesWeights.getWeights(key);</span>
+<span class="fc" id="L317">			return verticesWeights.getWeights(key);</span>
 		}
 
 		@Override
 		public Set&lt;Object&gt; getVerticesWeightKeys() {
-<span class="nc" id="L320">			return verticesWeights.weightsKeys();</span>
+<span class="nc" id="L322">			return verticesWeights.weightsKeys();</span>
 		}
 
 		@Override
 		public void removeVerticesWeights(Object key) {
-<span class="nc" id="L325">			verticesWeights.removeWeights(key);</span>
-<span class="nc" id="L326">		}</span>
+<span class="nc" id="L327">			verticesWeights.removeWeights(key);</span>
+<span class="nc" id="L328">		}</span>
 
 		@Override
 		public &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT getEdgesWeights(Object key) {
-<span class="fc" id="L330">			return edgesWeights.getWeights(key);</span>
+<span class="fc" id="L332">			return edgesWeights.getWeights(key);</span>
 		}
 
 		@Override
 		public Set&lt;Object&gt; getEdgesWeightsKeys() {
-<span class="nc" id="L335">			return edgesWeights.weightsKeys();</span>
+<span class="nc" id="L337">			return edgesWeights.weightsKeys();</span>
 		}
 
 		@Override
 		public void removeEdgesWeights(Object key) {
-<span class="nc" id="L340">			edgesWeights.removeWeights(key);</span>
-<span class="nc" id="L341">		}</span>
+<span class="nc" id="L342">			edgesWeights.removeWeights(key);</span>
+<span class="nc" id="L343">		}</span>
 
 		@Override
 		public IDStrategy.Continues getVerticesIDStrategy() {
-<span class="fc" id="L345">			return verticesIDStrat;</span>
+<span class="fc" id="L347">			return verticesIDStrat;</span>
 		}
 
 		@Override
 		public IDStrategy getEdgesIDStrategy() {
-<span class="fc" id="L350">			return edgesIDStrat;</span>
+<span class="fc" id="L352">			return edgesIDStrat;</span>
 		}
 
 		@Override
 		void addVerticesWeightsContainer(Object key, Weights&lt;?&gt; weights) {
-<span class="fc" id="L355">			verticesWeights.addWeights(key, weights);</span>
-<span class="fc" id="L356">		}</span>
+<span class="fc" id="L357">			verticesWeights.addWeights(key, weights);</span>
+<span class="fc" id="L358">		}</span>
 
 		@Override
 		void addEdgesWeightsContainer(Object key, Weights&lt;?&gt; weights) {
-<span class="fc" id="L360">			edgesWeights.addWeights(key, weights);</span>
-<span class="fc" id="L361">		}</span>
+<span class="fc" id="L362">			edgesWeights.addWeights(key, weights);</span>
+<span class="fc" id="L363">		}</span>
 
 		class EdgeSetMapped extends AbstractIntSet implements EdgeSet {
 
 			private final EdgeSet set;
 
-<span class="fc" id="L367">			EdgeSetMapped(EdgeSet set) {</span>
-<span class="fc" id="L368">				this.set = Objects.requireNonNull(set);</span>
-<span class="fc" id="L369">			}</span>
+<span class="fc" id="L369">			EdgeSetMapped(EdgeSet set) {</span>
+<span class="fc" id="L370">				this.set = Objects.requireNonNull(set);</span>
+<span class="fc" id="L371">			}</span>
 
 			@Override
 			public boolean remove(int edge) {
-<span class="nc" id="L373">				int eIdx = edgesIDStrat.idToIdx(edge);</span>
-<span class="nc" id="L374">				return set.remove(eIdx);</span>
+<span class="nc" id="L375">				int eIdx = edgesIDStrat.idToIdx(edge);</span>
+<span class="nc" id="L376">				return set.remove(eIdx);</span>
 			}
 
 			@Override
 			public boolean contains(int edge) {
-<span class="fc" id="L379">				int eIdx = edgesIDStrat.idToIdx(edge);</span>
-<span class="fc" id="L380">				return set.contains(eIdx);</span>
+<span class="fc" id="L381">				int eIdx = edgesIDStrat.idToIdx(edge);</span>
+<span class="fc" id="L382">				return set.contains(eIdx);</span>
 			}
 
 			@Override
 			public int size() {
-<span class="fc" id="L385">				return set.size();</span>
+<span class="fc" id="L387">				return set.size();</span>
 			}
 
 			@Override
 			public void clear() {
-<span class="nc" id="L390">				set.clear();</span>
-<span class="nc" id="L391">			}</span>
+<span class="nc" id="L392">				set.clear();</span>
+<span class="nc" id="L393">			}</span>
 
 			@Override
 			public EdgeIter iterator() {
-<span class="fc" id="L395">				return new EdgeIterMapped(set.iterator());</span>
+<span class="fc" id="L397">				return new EdgeIterMapped(set.iterator());</span>
 			}
 
 		}
@@ -401,49 +403,49 @@ class GraphBuilderImpl implements GraphBuilder {
 
 			private final EdgeIterImpl it;
 
-<span class="fc" id="L404">			EdgeIterMapped(EdgeIter it) {</span>
-<span class="fc" id="L405">				this.it = (EdgeIterImpl) it;</span>
-<span class="fc" id="L406">			}</span>
+<span class="fc" id="L406">			EdgeIterMapped(EdgeIter it) {</span>
+<span class="fc" id="L407">				this.it = (EdgeIterImpl) it;</span>
+<span class="fc" id="L408">			}</span>
 
 			@Override
 			public boolean hasNext() {
-<span class="fc" id="L410">				return it.hasNext();</span>
+<span class="fc" id="L412">				return it.hasNext();</span>
 			}
 
 			@Override
 			public int nextInt() {
-<span class="fc" id="L415">				int eIdx = it.nextInt();</span>
-<span class="fc" id="L416">				return edgesIDStrat.idxToId(eIdx);</span>
+<span class="fc" id="L417">				int eIdx = it.nextInt();</span>
+<span class="fc" id="L418">				return edgesIDStrat.idxToId(eIdx);</span>
 			}
 
 			@Override
 			public int peekNext() {
-<span class="nc" id="L421">				int eIdx = it.peekNext();</span>
-<span class="nc" id="L422">				return edgesIDStrat.idxToId(eIdx);</span>
+<span class="nc" id="L423">				int eIdx = it.peekNext();</span>
+<span class="nc" id="L424">				return edgesIDStrat.idxToId(eIdx);</span>
 			}
 
 			@Override
 			public void remove() {
-<span class="fc" id="L427">				it.remove();</span>
-<span class="fc" id="L428">			}</span>
+<span class="fc" id="L429">				it.remove();</span>
+<span class="fc" id="L430">			}</span>
 
 			@Override
 			public int target() {
-<span class="fc" id="L432">				int vIdx = it.target();</span>
-<span class="fc" id="L433">				return verticesIDStrat.idxToId(vIdx);</span>
+<span class="fc" id="L434">				int vIdx = it.target();</span>
+<span class="fc" id="L435">				return verticesIDStrat.idxToId(vIdx);</span>
 			}
 
 			@Override
 			public int source() {
-<span class="fc" id="L438">				int uIdx = it.source();</span>
-<span class="fc" id="L439">				return verticesIDStrat.idxToId(uIdx);</span>
+<span class="fc" id="L440">				int uIdx = it.source();</span>
+<span class="fc" id="L441">				return verticesIDStrat.idxToId(uIdx);</span>
 			}
 
 		}
 
 		@Override
 		public GraphCapabilities getCapabilities() {
-<span class="fc" id="L446">			return g.getCapabilities();</span>
+<span class="fc" id="L448">			return g.getCapabilities();</span>
 		}
 
 	}
@@ -451,23 +453,23 @@ class GraphBuilderImpl implements GraphBuilder {
 	private static class GraphCustomIDStrategiesDirected extends GraphCustomIDStrategies {
 
 		GraphCustomIDStrategiesDirected(GraphBaseContinues g, IDStrategyImpl edgesIDStrategy) {
-<span class="fc" id="L454">			super(g, edgesIDStrategy);</span>
-<span class="fc" id="L455">			ArgumentCheck.onlyDirected(g);</span>
-<span class="fc" id="L456">		}</span>
+<span class="fc" id="L456">			super(g, edgesIDStrategy);</span>
+<span class="fc" id="L457">			ArgumentCheck.onlyDirected(g);</span>
+<span class="fc" id="L458">		}</span>
 
 		GraphCustomIDStrategiesDirected(GraphCustomIDStrategiesDirected g) {
-<span class="fc" id="L459">			super(g);</span>
-<span class="fc" id="L460">		}</span>
+<span class="fc" id="L461">			super(g);</span>
+<span class="fc" id="L462">		}</span>
 
 		@Override
 		public void reverseEdge(int edge) {
-<span class="fc" id="L464">			int eIdx = edgesIDStrat.idToIdx(edge);</span>
-<span class="fc" id="L465">			g.reverseEdge(eIdx);</span>
-<span class="fc" id="L466">		}</span>
+<span class="fc" id="L466">			int eIdx = edgesIDStrat.idToIdx(edge);</span>
+<span class="fc" id="L467">			g.reverseEdge(eIdx);</span>
+<span class="fc" id="L468">		}</span>
 
 		@Override
 		public Graph copy() {
-<span class="fc" id="L470">			return new GraphCustomIDStrategiesDirected(this);</span>
+<span class="fc" id="L472">			return new GraphCustomIDStrategiesDirected(this);</span>
 		}
 
 	}
@@ -476,17 +478,17 @@ class GraphBuilderImpl implements GraphBuilder {
 			implements UndirectedGraphImpl {
 
 		GraphCustomIDStrategiesUndirected(GraphBaseContinues g, IDStrategyImpl edgesIDStrategy) {
-<span class="fc" id="L479">			super(g, edgesIDStrategy);</span>
-<span class="fc" id="L480">			ArgumentCheck.onlyUndirected(g);</span>
-<span class="fc" id="L481">		}</span>
+<span class="fc" id="L481">			super(g, edgesIDStrategy);</span>
+<span class="fc" id="L482">			ArgumentCheck.onlyUndirected(g);</span>
+<span class="fc" id="L483">		}</span>
 
 		GraphCustomIDStrategiesUndirected(GraphCustomIDStrategiesUndirected g) {
-<span class="fc" id="L484">			super(g);</span>
-<span class="fc" id="L485">		}</span>
+<span class="fc" id="L486">			super(g);</span>
+<span class="fc" id="L487">		}</span>
 
 		@Override
 		public Graph copy() {
-<span class="fc" id="L489">			return new GraphCustomIDStrategiesUndirected(this);</span>
+<span class="fc" id="L491">			return new GraphCustomIDStrategiesUndirected(this);</span>
 		}
 
 	}

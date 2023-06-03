@@ -59,7 +59,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 <span class="nc" id="L59">			throw new IllegalArgumentException();</span>
 <span class="fc" id="L60">		Res mstRes = computeMST(g, w, numberOfRounds);</span>
 
-<span class="fc" id="L62">		Graph contractedG = GraphBuilder.newUndirected().expectedVerticesNum(mstRes.treeNum).build();</span>
+<span class="fc" id="L62">		Graph contractedG = Graph.newBuilderUndirected().expectedVerticesNum(mstRes.treeNum).build();</span>
 <span class="fc bfc" id="L63" title="All 2 branches covered.">		for (int v = 0; v &lt; mstRes.treeNum; v++)</span>
 <span class="fc" id="L64">			contractedG.addVertex();</span>
 <span class="fc" id="L65">		Weights.Int edgeRef = contractedG.addEdgesWeights(edgeRefKey, int.class);</span>

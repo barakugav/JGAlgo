@@ -17,36 +17,60 @@
 package com.jgalgo;
 
 import java.util.NoSuchElementException;
+import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 
 interface EdgeIterImpl extends EdgeIter, Utils.IterPeekable.Int {
 
-<span class="fc" id="L23">	static final EdgeIterImpl Empty = new EdgeIterImpl() {</span>
+<span class="fc" id="L24">	static final EdgeIterImpl EmptyEdgeIter = new EdgeIterImpl() {</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="fc" id="L27">			return false;</span>
+<span class="fc" id="L28">			return false;</span>
 		}
 
 		@Override
 		public int nextInt() {
-<span class="nc" id="L32">			throw new NoSuchElementException();</span>
+<span class="nc" id="L33">			throw new NoSuchElementException();</span>
 		}
 
 		@Override
 		public int peekNext() {
-<span class="nc" id="L37">			throw new NoSuchElementException();</span>
+<span class="nc" id="L38">			throw new NoSuchElementException();</span>
 		}
 
 		@Override
 		public int source() {
-<span class="nc" id="L42">			throw new NoSuchElementException();</span>
+<span class="nc" id="L43">			throw new NoSuchElementException();</span>
 		}
 
 		@Override
 		public int target() {
-<span class="nc" id="L47">			throw new NoSuchElementException();</span>
+<span class="nc" id="L48">			throw new NoSuchElementException();</span>
 		}
 	};
+
+<span class="fc" id="L52">	static final EdgeSet EmptyEdgeSet = new EmptyEdgeSet();</span>
+
+	static class EmptyEdgeSet extends AbstractIntSet implements EdgeSet {
+
+		private EmptyEdgeSet() {}
+
+		@Override
+		public boolean contains(int key) {
+<span class="nc" id="L60">			return false;</span>
+		}
+
+		@Override
+		public int size() {
+<span class="nc" id="L65">			return 0;</span>
+		}
+
+		@Override
+		public EdgeIter iterator() {
+<span class="nc" id="L70">			return EmptyEdgeIter;</span>
+		}
+
+	}
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

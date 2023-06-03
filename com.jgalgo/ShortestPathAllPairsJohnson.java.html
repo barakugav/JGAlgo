@@ -125,7 +125,7 @@ class ShortestPathAllPairsJohnson implements ShortestPathAllPairs {
 
 	private Pair&lt;double[], Path&gt; calcPotential(Graph g, WeightFunction w) {
 <span class="fc" id="L127">		int n = g.vertices().size();</span>
-<span class="fc" id="L128">		Graph refG = GraphBuilder.newDirected().expectedVerticesNum(n + 1).build();</span>
+<span class="fc" id="L128">		Graph refG = Graph.newBuilderDirected().expectedVerticesNum(n + 1).build();</span>
 <span class="fc bfc" id="L129" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
 <span class="fc" id="L130">			refG.addVertex();</span>
 <span class="fc" id="L131">		Weights.Int edgeEef = refG.addEdgesWeights(&quot;edgeEef&quot;, int.class, Integer.valueOf(-1));</span>
