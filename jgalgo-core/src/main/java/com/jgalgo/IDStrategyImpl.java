@@ -18,10 +18,8 @@ package com.jgalgo;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
-import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
@@ -33,7 +31,7 @@ abstract class IDStrategyImpl implements IDStrategy {
 
 	IDStrategyImpl() {}
 
-	static class Continues extends IDStrategyImpl implements IDStrategy.Continues {
+	static class Continues extends IDStrategyImpl {
 
 		private int size;
 		private final IntSet idSet;
@@ -64,7 +62,7 @@ abstract class IDStrategyImpl implements IDStrategy {
 		@Override
 		int newIdx() {
 			int id = size++;
-			notifyIDAdd(id);
+			notifyIdAdd(id);
 			return id;
 		}
 
@@ -72,8 +70,8 @@ abstract class IDStrategyImpl implements IDStrategy {
 		void removeIdx(int idx) {
 			assert idx == size - 1;
 			assert size > 0;
+			notifyIdRemove(idx);
 			size--;
-			notifyIDRemove(idx);
 		}
 
 		@Override
@@ -83,6 +81,7 @@ abstract class IDStrategyImpl implements IDStrategy {
 
 		@Override
 		void clear() {
+			notifyIdsClear();
 			size = 0;
 		}
 
@@ -105,16 +104,13 @@ abstract class IDStrategyImpl implements IDStrategy {
 		}
 
 		@Override
-		void ensureSize(int n) {}
-
-		@Override
 		void idxSwap(int idx1, int idx2) {
 			int id1 = idxToId(idx1), id2 = idxToId(idx2);
 			notifyIDSwap(id1, id2);
 		}
 
 		@Override
-		IDStrategy.Continues copy() {
+		IDStrategyImpl copy() {
 			return new IDStrategyImpl.Continues(size);
 		}
 
@@ -124,7 +120,7 @@ abstract class IDStrategyImpl implements IDStrategy {
 		}
 	}
 
-	static class ContinuesEmpty extends IDStrategyImpl implements IDStrategy.Continues {
+	static class ContinuesEmpty extends IDStrategyImpl {
 
 		@Override
 		int newIdx() {
@@ -167,155 +163,10 @@ abstract class IDStrategyImpl implements IDStrategy {
 		}
 
 		@Override
-		void ensureSize(int n) {}
-
-		@Override
-		IDStrategy copy() {
+		IDStrategyImpl copy() {
 			return new IDStrategyImpl.ContinuesEmpty();
 		}
 
-	}
-
-	private abstract static class FixedAbstract extends IDStrategyImpl implements IDStrategy.Fixed {
-
-		private final Int2IntOpenHashMap idToIdx;
-		private final IntSet idsView; // move to graph abstract implementation
-		private final DataContainer.Int idxToId;
-
-		FixedAbstract() {
-			idToIdx = new Int2IntOpenHashMap();
-			idToIdx.defaultReturnValue(-1);
-			idsView = IntSets.unmodifiable(idToIdx.keySet());
-			idxToId = new DataContainer.Int(this, -1);
-		}
-
-		FixedAbstract(FixedAbstract orig) {
-			idToIdx = new Int2IntOpenHashMap(orig.idToIdx);
-			idToIdx.defaultReturnValue(-1);
-			idsView = IntSets.unmodifiable(idToIdx.keySet());
-			idxToId = orig.idxToId.copy(this);
-		}
-
-		@Override
-		int newIdx() {
-			int idx = idToIdx.size();
-			int id = nextID();
-			assert id >= 0;
-			idToIdx.put(id, idx);
-			if (idx == idxToId.capacity())
-				idxToId.expand(Math.max(2, 2 * idxToId.capacity()));
-			idxToId.set(idx, id);
-			notifyIDAdd(id);
-			return idx;
-		}
-
-		abstract int nextID();
-
-		@Override
-		void removeIdx(int idx) {
-			final int id = idxToId.getInt(idx);
-			idxToId.clear(idx);
-			idToIdx.remove(id);
-			notifyIDRemove(id);
-		}
-
-		@Override
-		int size() {
-			return idToIdx.size();
-		}
-
-		@Override
-		void clear() {
-			idToIdx.clear();
-			idxToId.clear();
-		}
-
-		@Override
-		int idToIdx(int id) {
-			int idx = idToIdx.get(id);
-			if (idx < 0)
-				throw new IndexOutOfBoundsException(id);
-			return idx;
-		}
-
-		@Override
-		int idxToId(int idx) {
-			return idxToId.getInt(idx);
-		}
-
-		@Override
-		IntSet idSet() {
-			return idsView;
-		}
-
-		@Override
-		void ensureSize(int n) {
-			idToIdx.ensureCapacity(n);
-		}
-
-		@Override
-		void idxSwap(int idx1, int idx2) {
-			int id1 = idxToId.getInt(idx1);
-			int id2 = idxToId.getInt(idx2);
-			idxToId.set(idx1, id2);
-			idxToId.set(idx2, id1);
-			int oldIdx1 = idToIdx.put(id1, idx2);
-			int oldIdx2 = idToIdx.put(id2, idx1);
-			assert idx1 == oldIdx1;
-			assert idx2 == oldIdx2;
-
-			// The user IDs were not changed, no need to call notifyIDSwap
-		}
-	}
-
-	static class Fixed extends FixedAbstract {
-
-		private int counter;
-
-		Fixed() {
-			counter = 0;
-		}
-
-		Fixed(IDStrategyImpl.Fixed orig) {
-			super(orig);
-			this.counter = orig.counter;
-		}
-
-		@Override
-		int nextID() {
-			return counter++;
-		}
-
-		@Override
-		IDStrategy.Fixed copy() {
-			return new IDStrategyImpl.Fixed(this);
-		}
-	}
-
-	static class Rand extends FixedAbstract {
-
-		private final Random rand = new Random();
-
-		Rand() {}
-
-		Rand(Rand orig) {
-			super(orig);
-		}
-
-		@Override
-		int nextID() {
-			for (;;) {
-				int id = rand.nextInt();
-				if (id >= 1 && !idSet().contains(id))
-					// We prefer non zero IDs because fastutil handle zero (null) separately
-					return id;
-			}
-		}
-
-		@Override
-		IDStrategyImpl.Rand copy() {
-			return new IDStrategyImpl.Rand(this);
-		}
 	}
 
 	abstract int newIdx();
@@ -351,19 +202,22 @@ abstract class IDStrategyImpl implements IDStrategy {
 			listener.idSwap(id1, id2);
 	}
 
-	void notifyIDAdd(int id) {
+	void notifyIdAdd(int id) {
 		for (IDAddRemoveListener listener : idAddRemoveListeners)
 			listener.idAdd(id);
 	}
 
-	void notifyIDRemove(int id) {
+	void notifyIdRemove(int id) {
 		for (IDAddRemoveListener listener : idAddRemoveListeners)
 			listener.idRemove(id);
 	}
 
-	abstract void ensureSize(int n);
+	void notifyIdsClear() {
+		for (IDAddRemoveListener listener : idAddRemoveListeners)
+			listener.idsClear();
+	}
 
-	abstract IDStrategy copy();
+	abstract IDStrategyImpl copy();
 
 	@Override
 	public void addIDSwapListener(IDSwapListener listener) {

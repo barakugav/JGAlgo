@@ -34,8 +34,8 @@ public class Graphs {
 
 	private abstract static class EmptyGraph implements IndexGraph {
 
-		private final IDStrategy.Continues verticesIDStrat = new IDStrategyImpl.ContinuesEmpty();
-		private final IDStrategy.Continues edgesIDStrat = new IDStrategyImpl.ContinuesEmpty();
+		private final IDStrategy verticesIDStrat = new IDStrategyImpl.ContinuesEmpty();
+		private final IDStrategy edgesIDStrat = new IDStrategyImpl.ContinuesEmpty();
 
 		@Override
 		public IntSet vertices() {
@@ -151,12 +151,12 @@ public class Graphs {
 		}
 
 		@Override
-		public IDStrategy.Continues getVerticesIDStrategy() {
+		public IDStrategy getVerticesIDStrategy() {
 			return verticesIDStrat;
 		}
 
 		@Override
-		public IDStrategy.Continues getEdgesIDStrategy() {
+		public IDStrategy getEdgesIDStrategy() {
 			return edgesIDStrat;
 		}
 
@@ -378,7 +378,6 @@ public class Graphs {
 				}
 			};
 		}
-
 	}
 
 	private static class CompleteGraphDirected extends CompleteGraph {
@@ -471,11 +470,14 @@ public class Graphs {
 	private static abstract class CompleteGraph extends GraphBase implements IndexGraph {
 
 		final int n, m;
+		private final IDStrategyImpl verticesIDStrat;
+		private final IDStrategyImpl edgesIDStrat;
 		private final WeightsImpl.Manager verticesWeights;
 		private final WeightsImpl.Manager edgesWeights;
 
 		CompleteGraph(int n, int m) {
-			super(new IDStrategyImpl.Continues(n), new IDStrategyImpl.Continues(m));
+			verticesIDStrat = new IDStrategyImpl.Continues(n);
+			edgesIDStrat = new IDStrategyImpl.Continues(m);
 			if (n < 0 || m < 0)
 				throw new IllegalArgumentException();
 			this.n = n;
@@ -485,11 +487,22 @@ public class Graphs {
 		}
 
 		CompleteGraph(CompleteGraph g) {
-			super(new IDStrategyImpl.Continues(g.n), new IDStrategyImpl.Continues(g.m));
+			verticesIDStrat = new IDStrategyImpl.Continues(g.n);
+			edgesIDStrat = new IDStrategyImpl.Continues(g.m);
 			this.n = g.n;
 			this.m = g.m;
 			verticesWeights = new WeightsImpl.Manager(g.verticesWeights, verticesIDStrat, null);
 			edgesWeights = new WeightsImpl.Manager(g.edgesWeights, edgesIDStrat, null);
+		}
+
+		@Override
+		public IntSet vertices() {
+			return verticesIDStrat.idSet();
+		}
+
+		@Override
+		public IntSet edges() {
+			return edgesIDStrat.idSet();
 		}
 
 		void checkVertex(int vertex) {
@@ -740,13 +753,13 @@ public class Graphs {
 		}
 
 		@Override
-		public IDStrategy.Continues getVerticesIDStrategy() {
-			return (IDStrategy.Continues) super.getVerticesIDStrategy();
+		public IDStrategy getVerticesIDStrategy() {
+			return verticesIDStrat;
 		}
 
 		@Override
-		public IDStrategy.Continues getEdgesIDStrategy() {
-			return (IDStrategy.Continues) super.getEdgesIDStrategy();
+		public IDStrategy getEdgesIDStrategy() {
+			return edgesIDStrat;
 		}
 
 		@Override
@@ -980,12 +993,12 @@ public class Graphs {
 		}
 
 		@Override
-		public IDStrategy.Continues getVerticesIDStrategy() {
+		public IDStrategy getVerticesIDStrategy() {
 			return g().getVerticesIDStrategy();
 		}
 
 		@Override
-		public IDStrategy.Continues getEdgesIDStrategy() {
+		public IDStrategy getEdgesIDStrategy() {
 			return g().getEdgesIDStrategy();
 		}
 
@@ -1231,12 +1244,12 @@ public class Graphs {
 		}
 
 		@Override
-		public IDStrategy.Continues getVerticesIDStrategy() {
+		public IDStrategy getVerticesIDStrategy() {
 			return graph().getVerticesIDStrategy();
 		}
 
 		@Override
-		public IDStrategy.Continues getEdgesIDStrategy() {
+		public IDStrategy getEdgesIDStrategy() {
 			return graph().getEdgesIDStrategy();
 		}
 

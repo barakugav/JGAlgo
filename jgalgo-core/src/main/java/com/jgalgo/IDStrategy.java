@@ -33,33 +33,6 @@ package com.jgalgo;
 public interface IDStrategy {
 
 	/**
-	 * An ID strategy that ensure the IDs of a graph vertices/edges are always {@code 0,1,..., n-1}.
-	 * <p>
-	 * When a graph is using this strategy, the graph implementation is allowed to store information of vertices/edges
-	 * in a simple continues array, which is best for performance. In case no vertices/edges removal are required, the
-	 * the IDs do not change and its equivalent to {@link Fixed}, therefore its the default one.
-	 * <p>
-	 * To ensure the invariants of this class, the implementation might rename some vertices/edges. These renames can be
-	 * subscribed using {@link com.jgalgo.IDStrategy#addIDSwapListener}.
-	 *
-	 * @author Barak Ugav
-	 */
-	public static interface Continues extends IDStrategy {
-	}
-
-	/**
-	 * An ID strategy that ensure the IDs of a graph vertices/edges never change once assigned.
-	 * <p>
-	 * When a graph is using this strategy, some sort of map is required to 'random' access information of
-	 * vertices/edges, which is slightly less efficient than {@link IDStrategy.Continues} but may be more convenient
-	 * when vertices/edges removal are required.
-	 *
-	 * @author Barak Ugav
-	 */
-	public static interface Fixed extends IDStrategy {
-	}
-
-	/**
 	 * Add a listener that will be notified each time the strategy chooses to swap two IDs.
 	 * <p>
 	 * The strategy implementation might swap IDs to maintain its invariants. These swaps can be subscribed using this

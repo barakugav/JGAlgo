@@ -30,7 +30,7 @@ public interface IndexGraph extends Graph {
 	 *
 	 * @return the vertices IDs strategy
 	 */
-	public IDStrategy.Continues getVerticesIDStrategy();
+	public IDStrategy getVerticesIDStrategy();
 
 	/**
 	 * Get the ID strategy of the edges of the graph.
@@ -47,7 +47,7 @@ public interface IndexGraph extends Graph {
 	 *
 	 * @return the edges IDs strategy
 	 */
-	public IDStrategy.Continues getEdgesIDStrategy();
+	public IDStrategy getEdgesIDStrategy();
 
 	@Override
 	public IndexGraph copy();

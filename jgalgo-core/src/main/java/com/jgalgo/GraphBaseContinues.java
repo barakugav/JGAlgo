@@ -17,16 +17,20 @@
 package com.jgalgo;
 
 import java.util.Set;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 abstract class GraphBaseContinues extends GraphBase implements IndexGraph {
 
+	final IDStrategyImpl verticesIDStrat;
+	final IDStrategyImpl edgesIDStrat;
 	private final DataContainer.Manager verticesInternalData;
 	private final DataContainer.Manager edgesInternalData;
 	private final WeightsImpl.Manager verticesUserData;
 	private final WeightsImpl.Manager edgesUserData;
 
 	GraphBaseContinues(int expectedVerticesNum, int expectedEdgesNum) {
-		super(new IDStrategyImpl.Continues(0), new IDStrategyImpl.Continues(0));
+		verticesIDStrat = new IDStrategyImpl.Continues(0);
+		edgesIDStrat = new IDStrategyImpl.Continues(0);
 		verticesInternalData = new DataContainer.Manager(expectedVerticesNum);
 		edgesInternalData = new DataContainer.Manager(expectedEdgesNum);
 		verticesUserData = new WeightsImpl.Manager(expectedVerticesNum);
@@ -34,7 +38,8 @@ abstract class GraphBaseContinues extends GraphBase implements IndexGraph {
 	}
 
 	GraphBaseContinues(GraphBaseContinues g) {
-		super(g.verticesIDStrat.copy(), g.edgesIDStrat.copy());
+		verticesIDStrat = g.verticesIDStrat.copy();
+		edgesIDStrat = g.edgesIDStrat.copy();
 
 		/* internal data containers should be copied manually */
 		// verticesInternalData = g.verticesInternalData.copy(verticesIDStrategy);
@@ -44,6 +49,16 @@ abstract class GraphBaseContinues extends GraphBase implements IndexGraph {
 
 		verticesUserData = new WeightsImpl.Manager(g.verticesUserData, verticesIDStrat, null);
 		edgesUserData = new WeightsImpl.Manager(g.edgesUserData, edgesIDStrat, null);
+	}
+
+	@Override
+	public final IntSet vertices() {
+		return verticesIDStrat.idSet();
+	}
+
+	@Override
+	public final IntSet edges() {
+		return edgesIDStrat.idSet();
 	}
 
 	@Override
@@ -64,37 +79,6 @@ abstract class GraphBaseContinues extends GraphBase implements IndexGraph {
 		verticesUserData.clearElement(vertex);
 		verticesIDStrat.removeIdx(vertex);
 	}
-
-	// /**
-	// * Remove multiple vertices.
-	// * <p>
-	// * After removing a vertex, the vertices ID strategy may rename other vertices identifiers to maintain its
-	// * invariants, see {@link #getVerticesIDStrategy()}. Theses renames can be subscribed using
-	// * {@link IDStrategy#addIDSwapListener}.
-	// * <p>
-	// * This function may be useful in case a user want to remove a collection of vertices, and does not want to update
-	// * IDs within the collection due to IDs renames.
-	// *
-	// * @param vs a collection of vertices to remove
-	// * @throws IndexOutOfBoundsException if one of the edges is not a valid edge identifier
-	// * @throws IllegalArgumentException if the vertices collection to remove contains duplications
-	// */
-	// @Override public
-	// void removeVertices(IntCollection vs) {
-	// int[] vsArr = vs.toIntArray();
-	// IntArrays.parallelQuickSort(vsArr);
-	// for (int i = 0; i < vsArr.length - 1; i++) {
-	// int v1 = vsArr[i], v2 = vsArr[i + 1];
-	// if (v1 == v2)
-	// throw new IllegalArgumentException("vertex identifier duplication: " + v1);
-	// }
-	// /*
-	// * When we remove a vertex, a rename may be performed, swapping the removed vertex id with numberOfVertices-1.
-	// * By removing them in decreasing order, the smaller IDs remain valid.
-	// */
-	// for (int i = vsArr.length - 1; i >= 0; i--)
-	// removeVertex(vsArr[i]);
-	// }
 
 	int vertexSwapBeforeRemove(int v) {
 		int vn = verticesIDStrat.isSwapNeededBeforeRemove(v);
@@ -132,38 +116,6 @@ abstract class GraphBaseContinues extends GraphBase implements IndexGraph {
 		edgesIDStrat.removeIdx(edge);
 	}
 
-	// /**
-	// * Remove multiple edges.
-	// * <p>
-	// * After removing an edge, the edges ID strategy may rename other edges identifiers to maintain its invariants,
-	// see
-	// * {@link #getEdgesIDStrategy()}. Theses renames can be subscribed using {@link IDStrategy#addIDSwapListener}.
-	// * <p>
-	// * This function may be useful in case a user want to remove a collection of edges, and does not want to update
-	// IDs
-	// * within the collection due to IDs renames.
-	// *
-	// * @param edges a collection of edges to remove
-	// * @throws IndexOutOfBoundsException if one of the edges is not a valid edge identifier
-	// * @throws IllegalArgumentException if the edges collection to remove contains duplications
-	// */
-	// @Override public
-	// void removeEdges(IntCollection edges) {
-	// int[] edgesArr = edges.toIntArray();
-	// IntArrays.parallelQuickSort(edgesArr);
-	// for (int i = 0; i < edgesArr.length - 1; i++) {
-	// int e1 = edgesArr[i], e2 = edgesArr[i + 1];
-	// if (e1 == e2)
-	// throw new IllegalArgumentException("edge identifier duplication: " + e1);
-	// }
-	// /*
-	// * When we remove an edge, a rename may be performed, swapping the removed edge id with numberOfEdges-1. By
-	// * removing them in decreasing order, the smaller IDs remain valid.
-	// */
-	// for (int i = edgesArr.length - 1; i >= 0; i--)
-	// removeEdge(edgesArr[i]);
-	// }
-
 	int edgeSwapBeforeRemove(int e) {
 		int en = edgesIDStrat.isSwapNeededBeforeRemove(e);
 		if (e != en) {
@@ -182,7 +134,8 @@ abstract class GraphBaseContinues extends GraphBase implements IndexGraph {
 
 	@Override
 	public void clear() {
-		super.clear();
+		clearEdges();
+		verticesIDStrat.clear();
 		// internal weights are handled manually
 		// verticesWeightsInternal.clearContainers();
 		verticesUserData.clearContainers();
@@ -190,20 +143,20 @@ abstract class GraphBaseContinues extends GraphBase implements IndexGraph {
 
 	@Override
 	public void clearEdges() {
-		super.clearEdges();
+		edgesIDStrat.clear();
 		// internal weights are handled manually
 		// edgesWeightsInternal.clearContainers();
 		edgesUserData.clearContainers();
 	}
 
 	@Override
-	public IDStrategy.Continues getVerticesIDStrategy() {
-		return (IDStrategy.Continues) super.getVerticesIDStrategy();
+	public IDStrategy getVerticesIDStrategy() {
+		return verticesIDStrat;
 	}
 
 	@Override
-	public IDStrategy.Continues getEdgesIDStrategy() {
-		return (IDStrategy.Continues) super.getEdgesIDStrategy();
+	public IDStrategy getEdgesIDStrategy() {
+		return edgesIDStrat;
 	}
 
 	@Override

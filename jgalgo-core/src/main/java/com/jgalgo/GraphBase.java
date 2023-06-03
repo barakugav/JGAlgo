@@ -19,47 +19,16 @@ package com.jgalgo;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.ObjIntConsumer;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
 
 abstract class GraphBase implements Graph {
-
-	final IDStrategyImpl verticesIDStrat; // TODO remove
-	final IDStrategyImpl edgesIDStrat; // TODO remove
-
-	GraphBase(IDStrategy verticesIDStrat, IDStrategy edgesIDStrat) {
-		this.verticesIDStrat = (IDStrategyImpl) Objects.requireNonNull(verticesIDStrat);
-		this.edgesIDStrat = (IDStrategyImpl) Objects.requireNonNull(edgesIDStrat);
-	}
-
-	@Override
-	public final IntSet vertices() {
-		return verticesIDStrat.idSet();
-	}
-
-	@Override
-	public final IntSet edges() {
-		return edgesIDStrat.idSet();
-	}
 
 	@Override
 	public EdgeSet getEdges(int source, int target) {
 		return getCapabilities().directed() ? new EdgeSetSourceTargetDirected(source, target)
 				: new EdgeSetSourceTargetUndirected(source, target);
-	}
-
-	@Override
-	public void clear() {
-		clearEdges();
-		verticesIDStrat.clear();
-	}
-
-	@Override
-	public void clearEdges() {
-		edgesIDStrat.clear();
 	}
 
 	@Override
@@ -70,14 +39,6 @@ abstract class GraphBase implements Graph {
 	@Override
 	public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, Class<? super E> type) {
 		return addEdgesWeights(key, type, null);
-	}
-
-	IDStrategy getVerticesIDStrategy() {
-		return verticesIDStrat;
-	}
-
-	IDStrategy getEdgesIDStrategy() {
-		return edgesIDStrat;
 	}
 
 	@Override
