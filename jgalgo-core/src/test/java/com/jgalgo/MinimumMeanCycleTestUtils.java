@@ -31,9 +31,6 @@ public class MinimumMeanCycleTestUtils extends TestBase {
 		List<Phase> phases = List.of(phase(128, 3, 2), phase(128, 16, 32), phase(64, 64, 128), phase(8, 500, 2010));
 		runTestMultiple(phases, (testIter, args) -> {
 			int n = args[0], m = args[1];
-			// Graph g = new
-			// RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
-			// .selfEdges(true).cycles(true).connected(false).build();
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(false)
 					.selfEdges(false).cycles(true).connected(false).build();
 			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());

@@ -71,7 +71,7 @@ class MinimumMeanCycleDasdanGupta implements MinimumMeanCycle {
 		/* operate on each SCC separately */
 		double bestCycleMeanWeight = Double.POSITIVE_INFINITY;
 		int bestCycleMeanWeightVertex = -1;
-		int bestCycleLength = -1;
+		IntList bestCycleLengths = null;
 		for (int ccIdx = 0; ccIdx < ccNum; ccIdx++) {
 			final int ccSize = cc.getCcVertices(ccIdx).size();
 			if (ccSize < 2)
@@ -110,18 +110,22 @@ class MinimumMeanCycleDasdanGupta implements MinimumMeanCycle {
 				if (!lastVisit[u])
 					continue;
 				double bestVertexCycleMeanWeight = Double.NEGATIVE_INFINITY;
-				int bestVertexCycleLength = -1;
+				IntList bestVertexCycleLengths = new IntArrayList();
 				for (int k = 0; k < ccSize; k++) {
-					double cycleMeanWeight = (d[ccSize][u] - d[k][u]) / (ccSize - k);
+					int len = ccSize - k;
+					double cycleMeanWeight = (d[ccSize][u] - d[k][u]) / len;
 					if (bestVertexCycleMeanWeight < cycleMeanWeight) {
 						bestVertexCycleMeanWeight = cycleMeanWeight;
-						bestVertexCycleLength = ccSize - k;
+						bestVertexCycleLengths.clear();
+						bestVertexCycleLengths.add(len);
+					} else if (bestVertexCycleMeanWeight == cycleMeanWeight) {
+						bestVertexCycleLengths.add(len);
 					}
 				}
 				if (bestCycleMeanWeight > bestVertexCycleMeanWeight) {
 					bestCycleMeanWeight = bestVertexCycleMeanWeight;
 					bestCycleMeanWeightVertex = u;
-					bestCycleLength = bestVertexCycleLength;
+					bestCycleLengths = new IntArrayList(bestVertexCycleLengths);
 				}
 			}
 		}
@@ -140,14 +144,15 @@ class MinimumMeanCycleDasdanGupta implements MinimumMeanCycle {
 		for (int k = 1; k < ccSize + 1; k++)
 			pathWeights[k] = pathWeights[k - 1] + w.weight(path[k - 1]);
 
-		int len = bestCycleLength;
-		for (int k = 0; k <= ccSize - bestCycleLength; k++) {
-			if (g.edgeSource(path[k]) != g.edgeTarget(path[k + len - 1]))
-				continue;
-			if (Math.abs((pathWeights[k + len] - pathWeights[k]) - bestCycleMeanWeight * len) < EPS) {
-				IntList cycleList = new IntArrayList(path, k, len);
-				int cycleVertex = g.edgeSource(cycleList.getInt(0));
-				return new PathImpl(g, cycleVertex, cycleVertex, cycleList);
+		for (int len : bestCycleLengths) {
+			for (int k = 0; k <= ccSize - len; k++) {
+				if (g.edgeSource(path[k]) != g.edgeTarget(path[k + len - 1]))
+					continue;
+				if (Math.abs((pathWeights[k + len] - pathWeights[k]) - bestCycleMeanWeight * len) < EPS) {
+					IntList cycleList = new IntArrayList(path, k, len);
+					int cycleVertex = g.edgeSource(cycleList.getInt(0));
+					return new PathImpl(g, cycleVertex, cycleVertex, cycleList);
+				}
 			}
 		}
 		throw new IllegalStateException();
