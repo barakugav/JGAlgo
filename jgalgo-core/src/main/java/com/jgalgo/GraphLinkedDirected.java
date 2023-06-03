@@ -30,11 +30,11 @@ import com.jgalgo.GraphsUtils.GraphCapabilitiesBuilder;
  */
 class GraphLinkedDirected extends GraphLinkedAbstract {
 
-	private final DataContainer.Obj<Node> edgesIn;
-	private final DataContainer.Obj<Node> edgesOut;
+	private final WeightsImpl.Index.Obj<Node> edgesIn;
+	private final WeightsImpl.Index.Obj<Node> edgesOut;
 
-	private static final Object DataContainerKeyEdgesOut = new Utils.Obj("edgesOut");
-	private static final Object DataContainerKeyEdgesIn = new Utils.Obj("edgesIn");
+	private static final Object WeightsKeyEdgesOut = new Utils.Obj("edgesOut");
+	private static final Object WeightsKeyEdgesIn = new Utils.Obj("edgesIn");
 
 	/**
 	 * Create a new graph with no vertices and edges.
@@ -52,19 +52,19 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	GraphLinkedDirected(int expectedVerticesNum, int expectedEdgesNum) {
 		super(expectedVerticesNum, expectedEdgesNum);
 
-		edgesOut = new DataContainer.Obj<>(verticesIDStrat, null, Node.class);
-		edgesIn = new DataContainer.Obj<>(verticesIDStrat, null, Node.class);
-		addInternalVerticesDataContainer(DataContainerKeyEdgesOut, edgesOut);
-		addInternalVerticesDataContainer(DataContainerKeyEdgesIn, edgesIn);
+		edgesOut = new WeightsImpl.Index.Obj<>(verticesIDStrat, null, Node.class);
+		edgesIn = new WeightsImpl.Index.Obj<>(verticesIDStrat, null, Node.class);
+		addInternalVerticesWeights(WeightsKeyEdgesOut, edgesOut);
+		addInternalVerticesWeights(WeightsKeyEdgesIn, edgesIn);
 	}
 
 	GraphLinkedDirected(GraphLinkedDirected g) {
 		super(g);
 
-		edgesOut = new DataContainer.Obj<>(verticesIDStrat, null, Node.class);
-		edgesIn = new DataContainer.Obj<>(verticesIDStrat, null, Node.class);
-		addInternalVerticesDataContainer(DataContainerKeyEdgesOut, edgesOut);
-		addInternalVerticesDataContainer(DataContainerKeyEdgesIn, edgesIn);
+		edgesOut = new WeightsImpl.Index.Obj<>(verticesIDStrat, null, Node.class);
+		edgesIn = new WeightsImpl.Index.Obj<>(verticesIDStrat, null, Node.class);
+		addInternalVerticesWeights(WeightsKeyEdgesOut, edgesOut);
+		addInternalVerticesWeights(WeightsKeyEdgesIn, edgesIn);
 
 		final int m = g.edges().size();
 		for (int e = 0; e < m; e++)

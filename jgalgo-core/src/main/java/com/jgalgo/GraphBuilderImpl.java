@@ -86,8 +86,10 @@ class GraphBuilderImpl implements Graph.Builder {
 		final GraphBaseContinues g;
 		final FixedAbstract verticesIDStrat;
 		final FixedAbstract edgesIDStrat;
-		private final WeakIdentityHashMap<Weights<?>, Weights<?>> verticesWeights = new WeakIdentityHashMap<>();
-		private final WeakIdentityHashMap<Weights<?>, Weights<?>> edgesWeights = new WeakIdentityHashMap<>();
+		private final WeakIdentityHashMap<WeightsImpl.Index<?>, WeightsImpl.Mapped<?>> verticesWeights =
+				new WeakIdentityHashMap<>();
+		private final WeakIdentityHashMap<WeightsImpl.Index<?>, WeightsImpl.Mapped<?>> edgesWeights =
+				new WeakIdentityHashMap<>();
 
 		GraphCustomIDStrategies(GraphBaseContinues g, boolean rand) {
 			this.g = Objects.requireNonNull(g);
@@ -234,11 +236,11 @@ class GraphBuilderImpl implements Graph.Builder {
 		@Override
 		@SuppressWarnings("unchecked")
 		public <V, WeightsT extends Weights<V>> WeightsT getVerticesWeights(Object key) {
-			WeightsT indexWeights = g.getVerticesWeights(key);
+			WeightsImpl.Index<V> indexWeights = g.getVerticesWeights(key);
 			if (indexWeights == null)
 				return null;
 			return (WeightsT) verticesWeights.computeIfAbsent(indexWeights,
-					iw -> WeightsImpl.wrapContainerMapped(iw, indexGraphVerticesMap()));
+					iw -> WeightsImpl.Mapped.newInstance(iw, indexGraphVerticesMap()));
 		}
 
 		@Override
@@ -254,11 +256,11 @@ class GraphBuilderImpl implements Graph.Builder {
 		@Override
 		@SuppressWarnings("unchecked")
 		public <E, WeightsT extends Weights<E>> WeightsT getEdgesWeights(Object key) {
-			WeightsT indexWeights = g.getEdgesWeights(key);
+			WeightsImpl.Index<E> indexWeights = g.getEdgesWeights(key);
 			if (indexWeights == null)
 				return null;
 			return (WeightsT) edgesWeights.computeIfAbsent(indexWeights,
-					iw -> WeightsImpl.wrapContainerMapped(iw, indexGraphEdgesMap()));
+					iw -> WeightsImpl.Mapped.newInstance(iw, indexGraphEdgesMap()));
 		}
 
 		@Override
@@ -418,13 +420,13 @@ class GraphBuilderImpl implements Graph.Builder {
 
 		private final Int2IntOpenHashMap idToIdx;
 		private final IntSet idsView; // move to graph abstract implementation
-		private final DataContainer.Int idxToId;
+		private final WeightsImpl.Index.Int idxToId;
 
 		FixedAbstract(IDStrategyImpl idStrat) {
 			idToIdx = new Int2IntOpenHashMap();
 			idToIdx.defaultReturnValue(-1);
 			idsView = IntSets.unmodifiable(idToIdx.keySet());
-			idxToId = new DataContainer.Int(idStrat, -1);
+			idxToId = new WeightsImpl.Index.Int(idStrat, -1);
 			initListeners(idStrat);
 		}
 
@@ -517,7 +519,7 @@ class GraphBuilderImpl implements Graph.Builder {
 			return counter++;
 		}
 
-		 @Override
+		@Override
 		GraphBuilderImpl.Fixed copy(IDStrategyImpl idStrat) {
 			return new GraphBuilderImpl.Fixed(this, idStrat);
 		}
@@ -545,7 +547,7 @@ class GraphBuilderImpl implements Graph.Builder {
 			}
 		}
 
-		 @Override
+		@Override
 		GraphBuilderImpl.Rand copy(IDStrategyImpl idStrat) {
 			return new GraphBuilderImpl.Rand(this, idStrat);
 		}

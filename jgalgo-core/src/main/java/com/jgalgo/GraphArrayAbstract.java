@@ -24,18 +24,18 @@ abstract class GraphArrayAbstract extends GraphBaseContinues implements GraphWit
 
 	private final EdgeEndpointsContainer edgeEndpoints;
 
-	private static final Object DataContainerKeyEdgeEndpoints = new Utils.Obj("edgeEndpoints");
+	private static final Object WeightsKeyEdgeEndpoints = new Utils.Obj("edgeEndpoints");
 
 	GraphArrayAbstract(int expectedVerticesNum, int expectedEdgesNum) {
 		super(expectedVerticesNum, expectedEdgesNum);
 		edgeEndpoints = new EdgeEndpointsContainer(edgesIDStrat);
-		addInternalEdgesDataContainer(DataContainerKeyEdgeEndpoints, edgeEndpoints);
+		addInternalEdgesWeights(WeightsKeyEdgeEndpoints, edgeEndpoints);
 	}
 
 	GraphArrayAbstract(GraphArrayAbstract g) {
 		super(g);
 		edgeEndpoints = g.edgeEndpoints.copy(edgesIDStrat);
-		addInternalEdgesDataContainer(DataContainerKeyEdgeEndpoints, edgeEndpoints);
+		addInternalEdgesWeights(WeightsKeyEdgeEndpoints, edgeEndpoints);
 	}
 
 	@Override
@@ -58,7 +58,7 @@ abstract class GraphArrayAbstract extends GraphBaseContinues implements GraphWit
 		super.edgeSwap(e1, e2);
 	}
 
-	static void addEdgeToList(DataContainer.Obj<int[]> edges, DataContainer.Int edgesNum, int w, int e) {
+	static void addEdgeToList(WeightsImpl.Index.Obj<int[]> edges, WeightsImpl.Index.Int edgesNum, int w, int e) {
 		int[] es = edges.get(w);
 		int num = edgesNum.getInt(w);
 		if (es.length <= num) {
@@ -76,7 +76,7 @@ abstract class GraphArrayAbstract extends GraphBaseContinues implements GraphWit
 		return -1;
 	}
 
-	static void removeEdgeFromList(DataContainer.Obj<int[]> edges, DataContainer.Int edgesNum, int w, int e) {
+	static void removeEdgeFromList(WeightsImpl.Index.Obj<int[]> edges, WeightsImpl.Index.Int edgesNum, int w, int e) {
 		int[] es = edges.get(w);
 		int num = edgesNum.getInt(w);
 		int i = edgeIndexOf(es, num, e);

@@ -31,9 +31,9 @@ import com.jgalgo.GraphsUtils.UndirectedGraphImpl;
  */
 class GraphLinkedUndirected extends GraphLinkedAbstract implements UndirectedGraphImpl {
 
-	private final DataContainer.Obj<Node> edges;
+	private final WeightsImpl.Index.Obj<Node> edges;
 
-	private static final Object DataContainerKeyEdges = new Utils.Obj("edges");
+	private static final Object WeightsKeyEdges = new Utils.Obj("edges");
 
 	/**
 	 * Create a new graph with no vertices and edges.
@@ -50,15 +50,15 @@ class GraphLinkedUndirected extends GraphLinkedAbstract implements UndirectedGra
 	 */
 	GraphLinkedUndirected(int expectedVerticesNum, int expectedEdgesNum) {
 		super(expectedVerticesNum, expectedEdgesNum);
-		edges = new DataContainer.Obj<>(verticesIDStrat, null, Node.class);
-		addInternalVerticesDataContainer(DataContainerKeyEdges, edges);
+		edges = new WeightsImpl.Index.Obj<>(verticesIDStrat, null, Node.class);
+		addInternalVerticesWeights(WeightsKeyEdges, edges);
 	}
 
 	GraphLinkedUndirected(GraphLinkedUndirected g) {
 		super(g);
 
-		edges = new DataContainer.Obj<>(verticesIDStrat, null, Node.class);
-		addInternalVerticesDataContainer(DataContainerKeyEdges, edges);
+		edges = new WeightsImpl.Index.Obj<>(verticesIDStrat, null, Node.class);
+		addInternalVerticesWeights(WeightsKeyEdges, edges);
 
 		final int m = g.edges().size();
 		for (int e = 0; e < m; e++)

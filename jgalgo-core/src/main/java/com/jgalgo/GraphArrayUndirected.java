@@ -34,11 +34,11 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
  */
 class GraphArrayUndirected extends GraphArrayAbstract implements UndirectedGraphImpl {
 
-	private final DataContainer.Obj<int[]> edges;
-	private final DataContainer.Int edgesNum;
+	private final WeightsImpl.Index.Obj<int[]> edges;
+	private final WeightsImpl.Index.Int edgesNum;
 
-	private static final Object DataContainerKeyEdges = new Utils.Obj("edges");
-	private static final Object DataContainerKeyEdgesNum = new Utils.Obj("edgesNum");
+	private static final Object WeightsKeyEdges = new Utils.Obj("edges");
+	private static final Object WeightsKeyEdgesNum = new Utils.Obj("edgesNum");
 
 	/**
 	 * Create a new graph with no vertices and edges.
@@ -55,11 +55,11 @@ class GraphArrayUndirected extends GraphArrayAbstract implements UndirectedGraph
 	 */
 	GraphArrayUndirected(int expectedVerticesNum, int expectedEdgesNum) {
 		super(expectedVerticesNum, expectedEdgesNum);
-		edges = new DataContainer.Obj<>(verticesIDStrat, IntArrays.EMPTY_ARRAY, int[].class);
-		edgesNum = new DataContainer.Int(verticesIDStrat, 0);
+		edges = new WeightsImpl.Index.Obj<>(verticesIDStrat, IntArrays.EMPTY_ARRAY, int[].class);
+		edgesNum = new WeightsImpl.Index.Int(verticesIDStrat, 0);
 
-		addInternalVerticesDataContainer(DataContainerKeyEdges, edges);
-		addInternalVerticesDataContainer(DataContainerKeyEdgesNum, edgesNum);
+		addInternalVerticesWeights(WeightsKeyEdges, edges);
+		addInternalVerticesWeights(WeightsKeyEdgesNum, edgesNum);
 	}
 
 	GraphArrayUndirected(GraphArrayUndirected g) {
@@ -68,8 +68,8 @@ class GraphArrayUndirected extends GraphArrayAbstract implements UndirectedGraph
 
 		edges = g.edges.copy(verticesIDStrat);
 		edgesNum = g.edgesNum.copy(verticesIDStrat);
-		addInternalVerticesDataContainer(DataContainerKeyEdges, edges);
-		addInternalVerticesDataContainer(DataContainerKeyEdgesNum, edgesNum);
+		addInternalVerticesWeights(WeightsKeyEdges, edges);
+		addInternalVerticesWeights(WeightsKeyEdgesNum, edgesNum);
 
 		for (int v = 0; v < n; v++)
 			edges.set(v, Arrays.copyOf(edges.get(v), edgesNum.getInt(v)));

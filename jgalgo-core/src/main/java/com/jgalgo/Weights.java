@@ -612,13 +612,12 @@ public interface Weights<W> {
 	public static <E, WeightsT extends Weights<E>> WeightsT createExternalVerticesWeights(Graph g,
 			Class<? super E> type, E defVal) {
 		IDStrategyImpl idStrat = (IDStrategyImpl) g.indexGraph().getVerticesIDStrategy();
-		DataContainer<E> container = DataContainer.newInstance(idStrat, type, defVal);
-		container.expand(idStrat.size());
-		WeightsT weights = (WeightsT) WeightsImpl.wrapContainerDirected(container);
+		WeightsImpl.Index<E> weights = WeightsImpl.Index.newInstance(idStrat, type, defVal);
+		weights.expand(idStrat.size());
 		if (g instanceof IndexGraph) {
-			return weights;
+			return (WeightsT) weights;
 		} else {
-			return (WeightsT) WeightsImpl.wrapContainerMapped(weights, g.indexGraphVerticesMap());
+			return (WeightsT) WeightsImpl.Mapped.newInstance(weights, g.indexGraphVerticesMap());
 		}
 	}
 
@@ -655,13 +654,12 @@ public interface Weights<W> {
 	public static <E, WeightsT extends Weights<E>> WeightsT createExternalEdgesWeights(Graph g, Class<? super E> type,
 			E defVal) {
 		IDStrategyImpl idStrat = (IDStrategyImpl) g.indexGraph().getEdgesIDStrategy();
-		DataContainer<E> container = DataContainer.newInstance(idStrat, type, defVal);
-		container.expand(idStrat.size());
-		WeightsT weights = (WeightsT) WeightsImpl.wrapContainerDirected(container);
+		WeightsImpl.Index<E> weights = WeightsImpl.Index.newInstance(idStrat, type, defVal);
+		weights.expand(idStrat.size());
 		if (g instanceof IndexGraph) {
-			return weights;
+			return (WeightsT) weights;
 		} else {
-			return (WeightsT) WeightsImpl.wrapContainerMapped(weights, g.indexGraphEdgesMap());
+			return (WeightsT) WeightsImpl.Mapped.newInstance(weights, g.indexGraphEdgesMap());
 		}
 	}
 

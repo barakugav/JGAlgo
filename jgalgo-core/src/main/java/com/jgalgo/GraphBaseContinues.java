@@ -23,18 +23,18 @@ abstract class GraphBaseContinues extends GraphBase implements IndexGraph {
 
 	final IDStrategyImpl verticesIDStrat;
 	final IDStrategyImpl edgesIDStrat;
-	private final DataContainer.Manager verticesInternalData;
-	private final DataContainer.Manager edgesInternalData;
-	private final WeightsImpl.Manager verticesUserData;
-	private final WeightsImpl.Manager edgesUserData;
+	private final WeightsImpl.Index.Manager verticesInternalWeights;
+	private final WeightsImpl.Index.Manager edgesInternalWeights;
+	private final WeightsImpl.Index.Manager verticesUserWeights;
+	private final WeightsImpl.Index.Manager edgesUserWeights;
 
 	GraphBaseContinues(int expectedVerticesNum, int expectedEdgesNum) {
 		verticesIDStrat = new IDStrategyImpl.Continues(0);
 		edgesIDStrat = new IDStrategyImpl.Continues(0);
-		verticesInternalData = new DataContainer.Manager(expectedVerticesNum);
-		edgesInternalData = new DataContainer.Manager(expectedEdgesNum);
-		verticesUserData = new WeightsImpl.Manager(expectedVerticesNum);
-		edgesUserData = new WeightsImpl.Manager(expectedEdgesNum);
+		verticesInternalWeights = new WeightsImpl.Index.Manager(expectedVerticesNum);
+		edgesInternalWeights = new WeightsImpl.Index.Manager(expectedEdgesNum);
+		verticesUserWeights = new WeightsImpl.Index.Manager(expectedVerticesNum);
+		edgesUserWeights = new WeightsImpl.Index.Manager(expectedEdgesNum);
 	}
 
 	GraphBaseContinues(GraphBaseContinues g) {
@@ -42,13 +42,13 @@ abstract class GraphBaseContinues extends GraphBase implements IndexGraph {
 		edgesIDStrat = g.edgesIDStrat.copy();
 
 		/* internal data containers should be copied manually */
-		// verticesInternalData = g.verticesInternalData.copy(verticesIDStrategy);
-		// edgesInternalData = g.edgesInternalData.copy(edgesIDStrategy);
-		verticesInternalData = new DataContainer.Manager(verticesIDStrat.size());
-		edgesInternalData = new DataContainer.Manager(edgesIDStrat.size());
+		// verticesInternalWeights = g.verticesInternalWeights.copy(verticesIDStrategy);
+		// edgesInternalWeights = g.edgesInternalWeights.copy(edgesIDStrategy);
+		verticesInternalWeights = new WeightsImpl.Index.Manager(verticesIDStrat.size());
+		edgesInternalWeights = new WeightsImpl.Index.Manager(edgesIDStrat.size());
 
-		verticesUserData = new WeightsImpl.Manager(g.verticesUserData, verticesIDStrat, null);
-		edgesUserData = new WeightsImpl.Manager(g.edgesUserData, edgesIDStrat, null);
+		verticesUserWeights = new WeightsImpl.Index.Manager(g.verticesUserWeights, verticesIDStrat);
+		edgesUserWeights = new WeightsImpl.Index.Manager(g.edgesUserWeights, edgesIDStrat);
 	}
 
 	@Override
@@ -65,8 +65,8 @@ abstract class GraphBaseContinues extends GraphBase implements IndexGraph {
 	public int addVertex() {
 		int u = verticesIDStrat.newIdx();
 		assert u >= 0;
-		verticesInternalData.ensureCapacity(u + 1);
-		verticesUserData.ensureCapacity(u + 1);
+		verticesInternalWeights.ensureCapacity(u + 1);
+		verticesUserWeights.ensureCapacity(u + 1);
 		return u;
 	}
 
@@ -76,7 +76,7 @@ abstract class GraphBaseContinues extends GraphBase implements IndexGraph {
 		vertex = vertexSwapBeforeRemove(vertex);
 		// internal weights are handled manually
 		// verticesWeightsInternal.clearElement(vertex);
-		verticesUserData.clearElement(vertex);
+		verticesUserWeights.clearElement(vertex);
 		verticesIDStrat.removeIdx(vertex);
 	}
 
@@ -93,7 +93,7 @@ abstract class GraphBaseContinues extends GraphBase implements IndexGraph {
 		verticesIDStrat.idxSwap(v1, v2);
 		// internal weights are handled manually
 		// verticesWeightsInternal.swapElements(v1, v2);
-		verticesUserData.swapElements(v1, v2);
+		verticesUserWeights.swapElements(v1, v2);
 	}
 
 	@Override
@@ -102,8 +102,8 @@ abstract class GraphBaseContinues extends GraphBase implements IndexGraph {
 		checkVertex(target);
 		int e = edgesIDStrat.newIdx();
 		assert e >= 0;
-		edgesInternalData.ensureCapacity(e + 1);
-		edgesUserData.ensureCapacity(e + 1);
+		edgesInternalWeights.ensureCapacity(e + 1);
+		edgesUserWeights.ensureCapacity(e + 1);
 		return e;
 	}
 
@@ -112,7 +112,7 @@ abstract class GraphBaseContinues extends GraphBase implements IndexGraph {
 		edge = edgeSwapBeforeRemove(edge);
 		// internal weights are handled manually
 		// edgesWeightsInternal.clearElement(edge);
-		edgesUserData.clearElement(edge);
+		edgesUserWeights.clearElement(edge);
 		edgesIDStrat.removeIdx(edge);
 	}
 
@@ -129,7 +129,7 @@ abstract class GraphBaseContinues extends GraphBase implements IndexGraph {
 		edgesIDStrat.idxSwap(e1, e2);
 		// internal weights are handled manually
 		// edgesWeightsInternal.swapElements(e1, e2);
-		edgesUserData.swapElements(e1, e2);
+		edgesUserWeights.swapElements(e1, e2);
 	}
 
 	@Override
@@ -138,7 +138,7 @@ abstract class GraphBaseContinues extends GraphBase implements IndexGraph {
 		verticesIDStrat.clear();
 		// internal weights are handled manually
 		// verticesWeightsInternal.clearContainers();
-		verticesUserData.clearContainers();
+		verticesUserWeights.clearContainers();
 	}
 
 	@Override
@@ -146,7 +146,7 @@ abstract class GraphBaseContinues extends GraphBase implements IndexGraph {
 		edgesIDStrat.clear();
 		// internal weights are handled manually
 		// edgesWeightsInternal.clearContainers();
-		edgesUserData.clearContainers();
+		edgesUserWeights.clearContainers();
 	}
 
 	@Override
@@ -161,49 +161,48 @@ abstract class GraphBaseContinues extends GraphBase implements IndexGraph {
 
 	@Override
 	public <V, WeightsT extends Weights<V>> WeightsT getVerticesWeights(Object key) {
-		return verticesUserData.getWeights(key);
+		return verticesUserWeights.getWeights(key);
 	}
 
 	@Override
 	public Set<Object> getVerticesWeightKeys() {
-		return verticesUserData.weightsKeys();
+		return verticesUserWeights.weightsKeys();
 	}
 
 	@Override
 	public void removeVerticesWeights(Object key) {
-		verticesUserData.removeWeights(key);
+		verticesUserWeights.removeWeights(key);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public <E, WeightsT extends Weights<E>> WeightsT getEdgesWeights(Object key) {
-		return (WeightsT) edgesUserData.getWeights(key);
+		return (WeightsT) edgesUserWeights.getWeights(key);
 	}
 
 	@Override
 	public Set<Object> getEdgesWeightsKeys() {
-		return edgesUserData.weightsKeys();
+		return edgesUserWeights.weightsKeys();
 	}
 
 	@Override
 	public void removeEdgesWeights(Object key) {
-		edgesUserData.removeWeights(key);
+		edgesUserWeights.removeWeights(key);
 	}
 
-	void addInternalVerticesDataContainer(Object key, DataContainer<?> container) {
-		verticesInternalData.addContainer(key, container);
+	void addInternalVerticesWeights(Object key, WeightsImpl.Index<?> container) {
+		verticesInternalWeights.addWeights(key, container);
 	}
 
-	void addInternalEdgesDataContainer(Object key, DataContainer<?> container) {
-		edgesInternalData.addContainer(key, container);
+	void addInternalEdgesWeights(Object key, WeightsImpl.Index<?> container) {
+		edgesInternalWeights.addWeights(key, container);
 	}
 
 	@Override
 	public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, Class<? super V> type, V defVal) {
 		IDStrategyImpl idStrat = (IDStrategyImpl) getVerticesIDStrategy();
-		DataContainer<V> container = DataContainer.newInstance(idStrat, type, defVal);
-		Weights<?> weights = WeightsImpl.wrapContainerDirected(container);
-		verticesUserData.addWeights(key, weights);
+		WeightsImpl.Index<V> weights = WeightsImpl.Index.newInstance(idStrat, type, defVal);
+		verticesUserWeights.addWeights(key, weights);
 		@SuppressWarnings("unchecked")
 		WeightsT weights0 = (WeightsT) weights;
 		return weights0;
@@ -212,9 +211,8 @@ abstract class GraphBaseContinues extends GraphBase implements IndexGraph {
 	@Override
 	public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, Class<? super E> type, E defVal) {
 		IDStrategyImpl idStrat = (IDStrategyImpl) getEdgesIDStrategy();
-		DataContainer<E> container = DataContainer.newInstance(idStrat, type, defVal);
-		Weights<?> weights = WeightsImpl.wrapContainerDirected(container);
-		edgesUserData.addWeights(key, weights);
+		WeightsImpl.Index<E> weights = WeightsImpl.Index.newInstance(idStrat, type, defVal);
+		edgesUserWeights.addWeights(key, weights);
 		@SuppressWarnings("unchecked")
 		WeightsT weights0 = (WeightsT) weights;
 		return weights0;

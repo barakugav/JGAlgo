@@ -33,15 +33,15 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
  */
 class GraphArrayDirected extends GraphArrayAbstract {
 
-	private final DataContainer.Obj<int[]> edgesOut;
-	private final DataContainer.Int edgesOutNum;
-	private final DataContainer.Obj<int[]> edgesIn;
-	private final DataContainer.Int edgesInNum;
+	private final WeightsImpl.Index.Obj<int[]> edgesOut;
+	private final WeightsImpl.Index.Int edgesOutNum;
+	private final WeightsImpl.Index.Obj<int[]> edgesIn;
+	private final WeightsImpl.Index.Int edgesInNum;
 
-	private static final Object DataContainerKeyEdgesOut = new Utils.Obj("edgesOut");
-	private static final Object DataContainerKeyEdgesOutNum = new Utils.Obj("edgesOutNum");
-	private static final Object DataContainerKeyEdgesIn = new Utils.Obj("edgesIn");
-	private static final Object DataContainerKeyEdgesInNum = new Utils.Obj("edgesInNum");
+	private static final Object WeightsKeyEdgesOut = new Utils.Obj("edgesOut");
+	private static final Object WeightsKeyEdgesOutNum = new Utils.Obj("edgesOutNum");
+	private static final Object WeightsKeyEdgesIn = new Utils.Obj("edgesIn");
+	private static final Object WeightsKeyEdgesInNum = new Utils.Obj("edgesInNum");
 
 	/**
 	 * Create a new graph with no vertices and edges.
@@ -58,15 +58,15 @@ class GraphArrayDirected extends GraphArrayAbstract {
 	 */
 	GraphArrayDirected(int expectedVerticesNum, int expectedEdgesNum) {
 		super(expectedVerticesNum, expectedEdgesNum);
-		edgesOut = new DataContainer.Obj<>(verticesIDStrat, IntArrays.EMPTY_ARRAY, int[].class);
-		edgesOutNum = new DataContainer.Int(verticesIDStrat, 0);
-		edgesIn = new DataContainer.Obj<>(verticesIDStrat, IntArrays.EMPTY_ARRAY, int[].class);
-		edgesInNum = new DataContainer.Int(verticesIDStrat, 0);
+		edgesOut = new WeightsImpl.Index.Obj<>(verticesIDStrat, IntArrays.EMPTY_ARRAY, int[].class);
+		edgesOutNum = new WeightsImpl.Index.Int(verticesIDStrat, 0);
+		edgesIn = new WeightsImpl.Index.Obj<>(verticesIDStrat, IntArrays.EMPTY_ARRAY, int[].class);
+		edgesInNum = new WeightsImpl.Index.Int(verticesIDStrat, 0);
 
-		addInternalVerticesDataContainer(DataContainerKeyEdgesOut, edgesOut);
-		addInternalVerticesDataContainer(DataContainerKeyEdgesOutNum, edgesOutNum);
-		addInternalVerticesDataContainer(DataContainerKeyEdgesIn, edgesIn);
-		addInternalVerticesDataContainer(DataContainerKeyEdgesInNum, edgesInNum);
+		addInternalVerticesWeights(WeightsKeyEdgesOut, edgesOut);
+		addInternalVerticesWeights(WeightsKeyEdgesOutNum, edgesOutNum);
+		addInternalVerticesWeights(WeightsKeyEdgesIn, edgesIn);
+		addInternalVerticesWeights(WeightsKeyEdgesInNum, edgesInNum);
 	}
 
 	GraphArrayDirected(GraphArrayDirected g) {
@@ -77,10 +77,10 @@ class GraphArrayDirected extends GraphArrayAbstract {
 		edgesOutNum = g.edgesOutNum.copy(verticesIDStrat);
 		edgesIn = g.edgesIn.copy(verticesIDStrat);
 		edgesInNum = g.edgesInNum.copy(verticesIDStrat);
-		addInternalVerticesDataContainer(DataContainerKeyEdgesOut, edgesOut);
-		addInternalVerticesDataContainer(DataContainerKeyEdgesOutNum, edgesOutNum);
-		addInternalVerticesDataContainer(DataContainerKeyEdgesIn, edgesIn);
-		addInternalVerticesDataContainer(DataContainerKeyEdgesInNum, edgesInNum);
+		addInternalVerticesWeights(WeightsKeyEdgesOut, edgesOut);
+		addInternalVerticesWeights(WeightsKeyEdgesOutNum, edgesOutNum);
+		addInternalVerticesWeights(WeightsKeyEdgesIn, edgesIn);
+		addInternalVerticesWeights(WeightsKeyEdgesInNum, edgesInNum);
 
 		for (int v = 0; v < n; v++) {
 			edgesOut.set(v, Arrays.copyOf(edgesOut.get(v), edgesOutNum.getInt(v)));

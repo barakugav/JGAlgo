@@ -472,8 +472,8 @@ public class Graphs {
 		final int n, m;
 		private final IDStrategyImpl verticesIDStrat;
 		private final IDStrategyImpl edgesIDStrat;
-		private final WeightsImpl.Manager verticesWeights;
-		private final WeightsImpl.Manager edgesWeights;
+		private final WeightsImpl.Index.Manager verticesWeights;
+		private final WeightsImpl.Index.Manager edgesWeights;
 
 		CompleteGraph(int n, int m) {
 			verticesIDStrat = new IDStrategyImpl.Continues(n);
@@ -482,8 +482,8 @@ public class Graphs {
 				throw new IllegalArgumentException();
 			this.n = n;
 			this.m = m;
-			verticesWeights = new WeightsImpl.Manager(n);
-			edgesWeights = new WeightsImpl.Manager(m);
+			verticesWeights = new WeightsImpl.Index.Manager(n);
+			edgesWeights = new WeightsImpl.Index.Manager(m);
 		}
 
 		CompleteGraph(CompleteGraph g) {
@@ -491,8 +491,8 @@ public class Graphs {
 			edgesIDStrat = new IDStrategyImpl.Continues(g.m);
 			this.n = g.n;
 			this.m = g.m;
-			verticesWeights = new WeightsImpl.Manager(g.verticesWeights, verticesIDStrat, null);
-			edgesWeights = new WeightsImpl.Manager(g.edgesWeights, edgesIDStrat, null);
+			verticesWeights = new WeightsImpl.Index.Manager(g.verticesWeights, verticesIDStrat);
+			edgesWeights = new WeightsImpl.Index.Manager(g.edgesWeights, edgesIDStrat);
 		}
 
 		@Override
@@ -723,8 +723,7 @@ public class Graphs {
 		public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, Class<? super V> type,
 				V defVal) {
 			IDStrategyImpl idStrat = (IDStrategyImpl) getVerticesIDStrategy();
-			DataContainer<V> container = DataContainer.newInstance(idStrat, type, defVal);
-			Weights<?> weights = WeightsImpl.wrapContainerDirected(container);
+			WeightsImpl.Index<V> weights = WeightsImpl.Index.newInstance(idStrat, type, defVal);
 			verticesWeights.addWeights(key, weights);
 			@SuppressWarnings("unchecked")
 			WeightsT weights0 = (WeightsT) weights;
@@ -734,8 +733,7 @@ public class Graphs {
 		@Override
 		public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, Class<? super E> type, E defVal) {
 			IDStrategyImpl idStrat = (IDStrategyImpl) getEdgesIDStrategy();
-			DataContainer<E> container = DataContainer.newInstance(idStrat, type, defVal);
-			Weights<?> weights = WeightsImpl.wrapContainerDirected(container);
+			WeightsImpl.Index<E> weights = WeightsImpl.Index.newInstance(idStrat, type, defVal);
 			edgesWeights.addWeights(key, weights);
 			@SuppressWarnings("unchecked")
 			WeightsT weights0 = (WeightsT) weights;
@@ -896,7 +894,7 @@ public class Graphs {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <V, WeightsT extends Weights<V>> WeightsT getVerticesWeights(Object key) {
-			return (WeightsT) ((WeightsImpl<V>) g.getVerticesWeights(key)).unmodifiable();
+			return (WeightsT) ((WeightsImpl<V>) g.getVerticesWeights(key)).unmodifiableView();
 		}
 
 		@Override
@@ -923,7 +921,7 @@ public class Graphs {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <E, WeightsT extends Weights<E>> WeightsT getEdgesWeights(Object key) {
-			return (WeightsT) ((WeightsImpl<E>) g.getEdgesWeights(key)).unmodifiable();
+			return (WeightsT) ((WeightsImpl<E>) g.getEdgesWeights(key)).unmodifiableView();
 		}
 
 		@Override

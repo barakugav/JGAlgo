@@ -15,7 +15,7 @@
  */
 package com.jgalgo;
 
-class EdgeEndpointsContainer extends DataContainer.Long {
+class EdgeEndpointsContainer extends WeightsImpl.Index.Long {
 
 	private static final int None = -1;
 
@@ -85,7 +85,7 @@ class EdgeEndpointsContainer extends DataContainer.Long {
 	}
 
 	@Override
-	EdgeEndpointsContainer copy(IDStrategyImpl idStrat) {
+	public EdgeEndpointsContainer copy(IDStrategyImpl idStrat) {
 		return new EdgeEndpointsContainer(this, idStrat);
 	}
 

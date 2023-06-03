@@ -21,20 +21,20 @@ import java.util.NoSuchElementException;
 
 abstract class GraphLinkedAbstract extends GraphBaseContinues {
 
-	private final DataContainer.Obj<Node> edges;
+	private final WeightsImpl.Index.Obj<Node> edges;
 
-	private static final Object DataContainerKeyEdgeEndpoints = new Utils.Obj("edgeEndpoints");
+	private static final Object WeightsKeyEdgeEndpoints = new Utils.Obj("edgeEndpoints");
 
 	GraphLinkedAbstract(int expectedVerticesNum, int expectedEdgesNum) {
 		super(expectedVerticesNum, expectedEdgesNum);
-		edges = new DataContainer.Obj<>(edgesIDStrat, null, Node.class);
-		addInternalEdgesDataContainer(DataContainerKeyEdgeEndpoints, edges);
+		edges = new WeightsImpl.Index.Obj<>(edgesIDStrat, null, Node.class);
+		addInternalEdgesWeights(WeightsKeyEdgeEndpoints, edges);
 	}
 
 	GraphLinkedAbstract(GraphLinkedAbstract g) {
 		super(g);
-		edges = new DataContainer.Obj<>(edgesIDStrat, null, Node.class);
-		addInternalEdgesDataContainer(DataContainerKeyEdgeEndpoints, edges);
+		edges = new WeightsImpl.Index.Obj<>(edgesIDStrat, null, Node.class);
+		addInternalEdgesWeights(WeightsKeyEdgeEndpoints, edges);
 		final int m = g.edges().size();
 		for (int e = 0; e < m; e++)
 			edges.set(e, allocNode(e, g.edgeSource(e), g.edgeTarget(e)));

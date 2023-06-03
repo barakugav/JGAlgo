@@ -22,22 +22,22 @@ import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 
 abstract class GraphTableAbstract extends GraphBaseContinues implements GraphWithEdgeEndpointsContainer {
 
-	final DataContainer.Obj<DataContainer.Int> edges;
+	final WeightsImpl.Index.Obj<WeightsImpl.Index.Int> edges;
 	private final EdgeEndpointsContainer edgeEndpoints;
 
 	static final int EdgeNone = -1;
 
-	private static final Object DataContainerKeyEdges = new Utils.Obj("edges");
-	private static final Object DataContainerKeyEdgeEndpoints = new Utils.Obj("edgeEndpoints");
+	private static final Object WeightsKeyEdges = new Utils.Obj("edges");
+	private static final Object WeightsKeyEdgeEndpoints = new Utils.Obj("edgeEndpoints");
 
 	GraphTableAbstract(int expectedVerticesNum, int expectedEdgesNum) {
 		super(expectedVerticesNum, expectedEdgesNum);
 
-		edges = new DataContainer.Obj<>(verticesIDStrat, null, DataContainer.Int.class);
-		addInternalVerticesDataContainer(DataContainerKeyEdges, edges);
+		edges = new WeightsImpl.Index.Obj<>(verticesIDStrat, null, WeightsImpl.Index.Int.class);
+		addInternalVerticesWeights(WeightsKeyEdges, edges);
 
 		edgeEndpoints = new EdgeEndpointsContainer(edgesIDStrat);
-		addInternalEdgesDataContainer(DataContainerKeyEdgeEndpoints, edgeEndpoints);
+		addInternalEdgesWeights(WeightsKeyEdgeEndpoints, edgeEndpoints);
 	}
 
 	GraphTableAbstract(GraphTableAbstract g) {
@@ -45,24 +45,24 @@ abstract class GraphTableAbstract extends GraphBaseContinues implements GraphWit
 
 		final int n = g.vertices().size();
 		edges = g.edges.copy(verticesIDStrat);
-		addInternalVerticesDataContainer(DataContainerKeyEdges, edges);
+		addInternalVerticesWeights(WeightsKeyEdges, edges);
 		for (int u = 0; u < n; u++) {
-			DataContainer.Int uEdges = edges.get(u).copy(verticesIDStrat);
+			WeightsImpl.Index.Int uEdges = edges.get(u).copy(verticesIDStrat);
 			edges.set(u, uEdges);
-			addInternalVerticesDataContainer(new Utils.Obj("perVertexEdges"), uEdges);
+			addInternalVerticesWeights(new Utils.Obj("perVertexEdges"), uEdges);
 		}
 
 		edgeEndpoints = g.edgeEndpoints.copy(edgesIDStrat);
-		addInternalEdgesDataContainer(DataContainerKeyEdgeEndpoints, edgeEndpoints);
+		addInternalEdgesWeights(WeightsKeyEdgeEndpoints, edgeEndpoints);
 	}
 
 	@Override
 	public int addVertex() {
 		int v = super.addVertex();
-		DataContainer.Int vEdges = edges.get(v);
+		WeightsImpl.Index.Int vEdges = edges.get(v);
 		if (vEdges == null) {
-			vEdges = new DataContainer.Int(verticesIDStrat, EdgeNone);
-			addInternalVerticesDataContainer(new Utils.Obj("perVertexEdges"), vEdges);
+			vEdges = new WeightsImpl.Index.Int(verticesIDStrat, EdgeNone);
+			addInternalVerticesWeights(new Utils.Obj("perVertexEdges"), vEdges);
 			edges.set(v, vEdges);
 		}
 		return v;
@@ -71,7 +71,7 @@ abstract class GraphTableAbstract extends GraphBaseContinues implements GraphWit
 	@Override
 	public void removeVertex(int vertex) {
 		vertex = vertexSwapBeforeRemove(vertex);
-		DataContainer.Int edgesV = edges.get(vertex);
+		WeightsImpl.Index.Int edgesV = edges.get(vertex);
 		super.removeVertex(vertex);
 		edgesV.clear();
 		// Don't deallocate v array
@@ -159,7 +159,7 @@ abstract class GraphTableAbstract extends GraphBaseContinues implements GraphWit
 		private final int source;
 		private int target;
 		private int lastTarget = -1;
-		private final DataContainer.Int sourceEdges;
+		private final WeightsImpl.Index.Int sourceEdges;
 
 		EdgeIterOut(int source) {
 			checkVertex(source);
@@ -222,7 +222,7 @@ abstract class GraphTableAbstract extends GraphBaseContinues implements GraphWit
 		private int source;
 		private final int target;
 		private int lastSource = -1;
-		private final DataContainer.Int targetEdges;
+		private final WeightsImpl.Index.Int targetEdges;
 
 		EdgeIterInUndirected(int target) {
 			checkVertex(target);
