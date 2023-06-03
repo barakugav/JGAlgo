@@ -117,37 +117,7 @@ public interface FlowNetwork {
      * @return   a flow network implemented as edge weights
      */
     static FlowNetwork createAsEdgeWeight(Graph g) {
-        Weights.Double capacityWeights = g.addEdgesWeights(new Utils.Obj("capacity"), double.class);
-        Weights.Double flowWeights = g.addEdgesWeights(new Utils.Obj("flow"), double.class);
-        return new FlowNetwork() {
-
-            private static final double EPS = 0.0001;
-
-            @Override
-            public double getCapacity(int edge) {
-                return capacityWeights.getDouble(edge);
-            }
-
-            @Override
-            public void setCapacity(int edge, double capacity) {
-                if (capacity < 0)
-                    throw new IllegalArgumentException("capacity can't be negative");
-                capacityWeights.set(edge, capacity);
-            }
-
-            @Override
-            public double getFlow(int edge) {
-                return flowWeights.getDouble(edge);
-            }
-
-            @Override
-            public void setFlow(int edge, double flow) {
-                double capacity = getCapacity(edge);
-                if (flow > capacity + EPS)
-                    throw new IllegalArgumentException("Illegal flow " + flow + " on edge " + edge);
-                flowWeights.set(edge, Math.min(flow, capacity));
-            }
-        };
+        return MaximumFlowAbstract.EdgeWeightsFlowNetwork.newInstance(g);
     }
 
     /**
@@ -240,35 +210,7 @@ public interface FlowNetwork {
          * @return   a flow network implemented as edge weights
          */
         static FlowNetwork.Int createAsEdgeWeight(Graph g) {
-            Weights.Int capacityWeights = g.addEdgesWeights(new Utils.Obj("capacity"), int.class);
-            Weights.Int flowWeights = g.addEdgesWeights(new Utils.Obj("flow"), int.class);
-            return new FlowNetwork.Int() {
-
-                @Override
-                public int getCapacityInt(int edge) {
-                    return capacityWeights.getInt(edge);
-                }
-
-                @Override
-                public void setCapacity(int edge, int capacity) {
-                    if (capacity < 0)
-                        throw new IllegalArgumentException("capacity can't be negative");
-                    capacityWeights.set(edge, capacity);
-                }
-
-                @Override
-                public int getFlowInt(int edge) {
-                    return flowWeights.getInt(edge);
-                }
-
-                @Override
-                public void setFlow(int edge, int flow) {
-                    int capacity = getCapacityInt(edge);
-                    if (flow > capacity)
-                        throw new IllegalArgumentException("Illegal flow " + flow + " on edge " + edge);
-                    flowWeights.set(edge, Math.min(flow, capacity));
-                }
-            };
+            return MaximumFlowAbstract.EdgeWeightsFlowNetworkInt.newInstance(g);
         }
 
     }

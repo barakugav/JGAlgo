@@ -15,6 +15,8 @@
  */
 package com.jgalgo;
 
+import java.util.Objects;
+
 abstract class MaximumFlowAbstract implements MaximumFlow {
 
 	@Override
@@ -34,8 +36,133 @@ abstract class MaximumFlowAbstract implements MaximumFlow {
 
 	abstract double computeMaximumFlow(IndexGraph g, FlowNetwork net, int source, int sink);
 
+	static class EdgeWeightsFlowNetwork implements FlowNetwork {
+
+		private final Weights.Double capacityWeights;
+		private final Weights.Double flowWeights;
+		private static final double EPS = 0.0001;
+
+		EdgeWeightsFlowNetwork(Weights.Double capacityWeights, Weights.Double flowWeights) {
+			this.capacityWeights = Objects.requireNonNull(capacityWeights);
+			this.flowWeights = Objects.requireNonNull(flowWeights);
+		}
+
+		static EdgeWeightsFlowNetwork newInstance(Graph g) {
+			Weights.Double capacityWeights = g.addEdgesWeights(new Utils.Obj("capacity"), double.class);
+			Weights.Double flowWeights = g.addEdgesWeights(new Utils.Obj("flow"), double.class);
+			return new EdgeWeightsFlowNetwork(capacityWeights, flowWeights);
+		}
+
+		@Override
+		public double getCapacity(int edge) {
+			return capacityWeights.getDouble(edge);
+		}
+
+		@Override
+		public void setCapacity(int edge, double capacity) {
+			if (capacity < 0)
+				throw new IllegalArgumentException("capacity can't be negative");
+			capacityWeights.set(edge, capacity);
+		}
+
+		@Override
+		public double getFlow(int edge) {
+			return flowWeights.getDouble(edge);
+		}
+
+		@Override
+		public void setFlow(int edge, double flow) {
+			double capacity = getCapacity(edge);
+			if (flow > capacity + EPS)
+				throw new IllegalArgumentException("Illegal flow " + flow + " on edge " + edge);
+			flowWeights.set(edge, Math.min(flow, capacity));
+		}
+
+	}
+
+	static class EdgeWeightsFlowNetworkInt implements FlowNetwork.Int {
+
+		private final Weights.Int capacityWeights;
+		private final Weights.Int flowWeights;
+
+		EdgeWeightsFlowNetworkInt(Weights.Int capacityWeights, Weights.Int flowWeights) {
+			this.capacityWeights = Objects.requireNonNull(capacityWeights);
+			this.flowWeights = Objects.requireNonNull(flowWeights);
+		}
+
+		static EdgeWeightsFlowNetworkInt newInstance(Graph g) {
+			Weights.Int capacityWeights = g.addEdgesWeights(new Utils.Obj("capacity"), int.class);
+			Weights.Int flowWeights = g.addEdgesWeights(new Utils.Obj("flow"), int.class);
+			return new EdgeWeightsFlowNetworkInt(capacityWeights, flowWeights);
+		}
+
+		@Override
+		public int getCapacityInt(int edge) {
+			return capacityWeights.getInt(edge);
+		}
+
+		@Override
+		public void setCapacity(int edge, int capacity) {
+			if (capacity < 0)
+				throw new IllegalArgumentException("capacity can't be negative");
+			capacityWeights.set(edge, capacity);
+		}
+
+		@Override
+		public int getFlowInt(int edge) {
+			return flowWeights.getInt(edge);
+		}
+
+		@Override
+		public void setFlow(int edge, int flow) {
+			int capacity = getCapacityInt(edge);
+			if (flow > capacity)
+				throw new IllegalArgumentException("Illegal flow " + flow + " on edge " + edge);
+			flowWeights.set(edge, Math.min(flow, capacity));
+		}
+
+	}
+
 	private static FlowNetwork indexFlowFromFlow(FlowNetwork net, IndexGraphMap eiMap) {
-		// TODO
+		if (net instanceof EdgeWeightsFlowNetwork) {
+			EdgeWeightsFlowNetwork net0 = (EdgeWeightsFlowNetwork) net;
+			boolean mappedCapacity = net0.capacityWeights instanceof WeightsImpl.Mapped.Double;
+			boolean mappedFlow = net0.flowWeights instanceof WeightsImpl.Mapped.Double;
+			if (mappedCapacity && mappedFlow) {
+				/* The network is a composition of edge weights */
+				WeightsImpl.Mapped.Double capacityWeightsMapped = ((WeightsImpl.Mapped.Double) net0.capacityWeights);
+				WeightsImpl.Mapped.Double flowWeightsMapped = ((WeightsImpl.Mapped.Double) net0.flowWeights);
+
+				/* The weights are a mapped wrappers to index weights containers */
+				/* Get the underlying index weights containers */
+				Weights.Double capacityWeights = capacityWeightsMapped.weights();
+				Weights.Double flowWeights = flowWeightsMapped.weights();
+
+				/* Create a network from the underlying index weights containers */
+				return new EdgeWeightsFlowNetwork(capacityWeights, flowWeights);
+			}
+
+		} else if (net instanceof EdgeWeightsFlowNetworkInt) {
+			EdgeWeightsFlowNetworkInt net0 = (EdgeWeightsFlowNetworkInt) net;
+			boolean mappedCapacity = net0.capacityWeights instanceof WeightsImpl.Mapped.Int;
+			boolean mappedFlow = net0.flowWeights instanceof WeightsImpl.Mapped.Int;
+			if (mappedCapacity && mappedFlow) {
+				/* The network is a composition of edge weights */
+				WeightsImpl.Mapped.Int capacityWeightsMapped = ((WeightsImpl.Mapped.Int) net0.capacityWeights);
+				WeightsImpl.Mapped.Int flowWeightsMapped = ((WeightsImpl.Mapped.Int) net0.flowWeights);
+
+				/* The weights are a mapped wrappers to index weights containers */
+				/* Get the underlying index weights containers */
+				Weights.Int capacityWeights = capacityWeightsMapped.weights();
+				Weights.Int flowWeights = flowWeightsMapped.weights();
+
+				/* Create a network from the underlying index weights containers */
+				return new EdgeWeightsFlowNetworkInt(capacityWeights, flowWeights);
+			}
+		}
+
+		/* Unknown network implementation, create a mapped wrapper */
+
 		if (net instanceof FlowNetwork.Int) {
 			FlowNetwork.Int netInt = (FlowNetwork.Int) net;
 			return new FlowNetwork.Int() {
