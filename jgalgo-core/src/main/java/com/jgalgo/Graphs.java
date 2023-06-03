@@ -815,20 +815,20 @@ public class Graphs {
 
 	private static class UnmodifiableGraph implements Graph {
 
-		private final Graph g;
+		private final Graph graph;
 
 		UnmodifiableGraph(Graph g) {
-			this.g = Objects.requireNonNull(g);
+			this.graph = Objects.requireNonNull(g);
 		}
 
 		@Override
 		public IntSet vertices() {
-			return g.vertices();
+			return graph.vertices();
 		}
 
 		@Override
 		public IntSet edges() {
-			return g.edges();
+			return graph.edges();
 		}
 
 		@Override
@@ -843,17 +843,17 @@ public class Graphs {
 
 		@Override
 		public EdgeSet edgesOut(int source) {
-			return new UnmodifiableEdgeSet(g.edgesOut(source));
+			return new UnmodifiableEdgeSet(graph.edgesOut(source));
 		}
 
 		@Override
 		public EdgeSet edgesIn(int target) {
-			return new UnmodifiableEdgeSet(g.edgesIn(target));
+			return new UnmodifiableEdgeSet(graph.edgesIn(target));
 		}
 
 		@Override
 		public EdgeSet getEdges(int source, int target) {
-			return new UnmodifiableEdgeSet(g.getEdges(source, target));
+			return new UnmodifiableEdgeSet(graph.getEdges(source, target));
 		}
 
 		@Override
@@ -873,12 +873,12 @@ public class Graphs {
 
 		@Override
 		public int edgeSource(int edge) {
-			return g.edgeSource(edge);
+			return graph.edgeSource(edge);
 		}
 
 		@Override
 		public int edgeTarget(int edge) {
-			return g.edgeTarget(edge);
+			return graph.edgeTarget(edge);
 		}
 
 		@Override
@@ -894,7 +894,7 @@ public class Graphs {
 		@SuppressWarnings("unchecked")
 		@Override
 		public <V, WeightsT extends Weights<V>> WeightsT getVerticesWeights(Object key) {
-			return (WeightsT) ((WeightsImpl<V>) g.getVerticesWeights(key)).unmodifiableView();
+			return (WeightsT) ((WeightsImpl<V>) graph.getVerticesWeights(key)).unmodifiableView();
 		}
 
 		@Override
@@ -915,13 +915,13 @@ public class Graphs {
 
 		@Override
 		public Set<Object> getVerticesWeightKeys() {
-			return g.getVerticesWeightKeys();
+			return graph.getVerticesWeightKeys();
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public <E, WeightsT extends Weights<E>> WeightsT getEdgesWeights(Object key) {
-			return (WeightsT) ((WeightsImpl<E>) g.getEdgesWeights(key)).unmodifiableView();
+			return (WeightsT) ((WeightsImpl<E>) graph.getEdgesWeights(key)).unmodifiableView();
 		}
 
 		@Override
@@ -941,36 +941,36 @@ public class Graphs {
 
 		@Override
 		public Set<Object> getEdgesWeightsKeys() {
-			return g.getEdgesWeightsKeys();
+			return graph.getEdgesWeightsKeys();
 		}
 
 		@Override
 		public GraphCapabilities getCapabilities() {
-			return g.getCapabilities();
+			return graph.getCapabilities();
 		}
 
 		@Override
 		public Graph copy() {
-			return g.copy();
+			return graph.copy();
 		}
 
 		@Override
 		public IndexGraph indexGraph() {
-			return this instanceof IndexGraph ? (IndexGraph) this : Graphs.unmodifiableView(g.indexGraph());
+			return this instanceof IndexGraph ? (IndexGraph) this : Graphs.unmodifiableView(graph.indexGraph());
 		}
 
 		@Override
 		public IndexGraphMap indexGraphVerticesMap() {
-			return g.indexGraphVerticesMap();
+			return graph.indexGraphVerticesMap();
 		}
 
 		@Override
 		public IndexGraphMap indexGraphEdgesMap() {
-			return g.indexGraphEdgesMap();
+			return graph.indexGraphEdgesMap();
 		}
 
 		Graph g() {
-			return g;
+			return graph;
 		}
 	}
 
@@ -1072,160 +1072,160 @@ public class Graphs {
 
 	private static class ReverseGraph implements Graph {
 
-		private final Graph g; // TODO rename
+		private final Graph graph;
 
 		ReverseGraph(Graph g) {
-			this.g = Objects.requireNonNull(g);
+			this.graph = Objects.requireNonNull(g);
 		}
 
 		Graph graph() {
-			return g;
+			return graph;
 		}
 
 		@Override
 		public IntSet vertices() {
-			return g.vertices();
+			return graph.vertices();
 		}
 
 		@Override
 		public IntSet edges() {
-			return g.edges();
+			return graph.edges();
 		}
 
 		@Override
 		public int addVertex() {
-			return g.addVertex();
+			return graph.addVertex();
 		}
 
 		@Override
 		public void removeVertex(int vertex) {
-			g.removeVertex(vertex);
+			graph.removeVertex(vertex);
 		}
 
 		@Override
 		public EdgeSet edgesOut(int source) {
-			return new ReversedEdgeSet(g.edgesIn(source));
+			return new ReversedEdgeSet(graph.edgesIn(source));
 		}
 
 		@Override
 		public EdgeSet edgesIn(int target) {
-			return new ReversedEdgeSet(g.edgesOut(target));
+			return new ReversedEdgeSet(graph.edgesOut(target));
 		}
 
 		@Override
 		public EdgeSet getEdges(int source, int target) {
-			return new ReversedEdgeSet(g.getEdges(target, source));
+			return new ReversedEdgeSet(graph.getEdges(target, source));
 		}
 
 		@Override
 		public int addEdge(int source, int target) {
-			return g.addEdge(target, source);
+			return graph.addEdge(target, source);
 		}
 
 		@Override
 		public void removeEdge(int edge) {
-			g.removeEdge(edge);
+			graph.removeEdge(edge);
 		}
 
 		@Override
 		public int edgeSource(int edge) {
-			return g.edgeTarget(edge);
+			return graph.edgeTarget(edge);
 		}
 
 		@Override
 		public int edgeTarget(int edge) {
-			return g.edgeSource(edge);
+			return graph.edgeSource(edge);
 		}
 
 		@Override
 		public void clear() {
-			g.clear();
+			graph.clear();
 		}
 
 		@Override
 		public void clearEdges() {
-			g.clearEdges();
+			graph.clearEdges();
 		}
 
 		@Override
 		public <V, WeightsT extends Weights<V>> WeightsT getVerticesWeights(Object key) {
-			return g.getVerticesWeights(key);
+			return graph.getVerticesWeights(key);
 		}
 
 		@Override
 		public Set<Object> getVerticesWeightKeys() {
-			return g.getVerticesWeightKeys();
+			return graph.getVerticesWeightKeys();
 		}
 
 		@Override
 		public void removeVerticesWeights(Object key) {
-			g.removeVerticesWeights(key);
+			graph.removeVerticesWeights(key);
 		}
 
 		@Override
 		public <E, WeightsT extends Weights<E>> WeightsT getEdgesWeights(Object key) {
-			return g.getEdgesWeights(key);
+			return graph.getEdgesWeights(key);
 		}
 
 		@Override
 		public Set<Object> getEdgesWeightsKeys() {
-			return g.getEdgesWeightsKeys();
+			return graph.getEdgesWeightsKeys();
 		}
 
 		@Override
 		public void removeEdgesWeights(Object key) {
-			g.removeEdgesWeights(key);
+			graph.removeEdgesWeights(key);
 		}
 
 		@Override
 		public GraphCapabilities getCapabilities() {
-			return g.getCapabilities();
+			return graph.getCapabilities();
 		}
 
 		@Override
 		public void reverseEdge(int edge) {
-			g.reverseEdge(edge);
+			graph.reverseEdge(edge);
 		}
 
 		@Override
 		public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, Class<? super V> type) {
-			return g.addVerticesWeights(key, type);
+			return graph.addVerticesWeights(key, type);
 		}
 
 		@Override
 		public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, Class<? super V> type,
 				V defVal) {
-			return g.addVerticesWeights(key, type, defVal);
+			return graph.addVerticesWeights(key, type, defVal);
 		}
 
 		@Override
 		public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, Class<? super E> type) {
-			return g.addEdgesWeights(key, type);
+			return graph.addEdgesWeights(key, type);
 		}
 
 		@Override
 		public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, Class<? super E> type, E defVal) {
-			return g.addEdgesWeights(key, type, defVal);
+			return graph.addEdgesWeights(key, type, defVal);
 		}
 
 		@Override
 		public IndexGraph indexGraph() {
-			return this instanceof IndexGraph ? (IndexGraph) this : Graphs.reverseView(g.indexGraph());
+			return this instanceof IndexGraph ? (IndexGraph) this : Graphs.reverseView(graph.indexGraph());
 		}
 
 		@Override
 		public IndexGraphMap indexGraphVerticesMap() {
-			return g.indexGraphVerticesMap();
+			return graph.indexGraphVerticesMap();
 		}
 
 		@Override
 		public IndexGraphMap indexGraphEdgesMap() {
-			return g.indexGraphEdgesMap();
+			return graph.indexGraphEdgesMap();
 		}
 
 		@Override
 		public Graph copy() {
-			return new ReverseGraph(g.copy());
+			return new ReverseGraph(graph.copy());
 		}
 
 	}
@@ -1334,11 +1334,11 @@ public class Graphs {
 	static Graph reverseView(Graph g) {
 		if (g instanceof IndexGraph)
 			return reverseView((IndexGraph) g);
-		return g instanceof ReverseGraph ? ((ReverseGraph) g).g : new ReverseGraph(g);
+		return g instanceof ReverseGraph ? ((ReverseGraph) g).graph : new ReverseGraph(g);
 	}
 
 	static IndexGraph reverseView(IndexGraph g) {
-		return g instanceof ReverseGraph ? ((ReverseGraph) g).g.indexGraph() : new ReverseIndexGraph(g);
+		return g instanceof ReverseGraph ? ((ReverseGraph) g).graph.indexGraph() : new ReverseIndexGraph(g);
 	}
 
 }

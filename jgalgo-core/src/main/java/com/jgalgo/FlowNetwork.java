@@ -62,157 +62,157 @@ package com.jgalgo;
  */
 public interface FlowNetwork {
 
-    /**
-     * Get the capacity of an edge.
-     *
-     * @param  edge                      an edge identifier in the graph
-     * @return                           the capacity of the edge
-     * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
-     */
-    double getCapacity(int edge);
+	/**
+	 * Get the capacity of an edge.
+	 *
+	 * @param  edge                      an edge identifier in the graph
+	 * @return                           the capacity of the edge
+	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
+	 */
+	double getCapacity(int edge);
 
-    /**
-     * Set the capacity of an edge.
-     *
-     * @param  edge                      an edge identifier in the graph
-     * @param  capacity                  the new capacity of the edge
-     * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
-     * @throws IllegalArgumentException  if {@code capacity} is negative
-     */
-    void setCapacity(int edge, double capacity);
+	/**
+	 * Set the capacity of an edge.
+	 *
+	 * @param  edge                      an edge identifier in the graph
+	 * @param  capacity                  the new capacity of the edge
+	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
+	 * @throws IllegalArgumentException  if {@code capacity} is negative
+	 */
+	void setCapacity(int edge, double capacity);
 
-    /**
-     * Get the amount of flow units going along an edge.
-     * <p>
-     * If the graph is directed, a flow of \(f\) units on {@code e}, for \(0 \leq f \leq cap(e)\), means a flow of \(f\)
-     * units of flow from {@code edgeSource(e)} to {@code edgeTarget(e)}.
-     * <p>
-     * If the graph is undirected, a flow of \(+f\) units on {@code e}, for \(0 \leq f \leq cap(e)\), means a flow of
-     * \(f\) units of flow from {@code edgeSource(e)} to {@code edgeTarget(e)}, while a flow of \(-f\) units on
-     * {@code e}, for \(-cap(e) \leq -f &lt; 0\), means a flow of \(|-f|\) units of flow from {@code edgeTarget(e)} to
-     * {@code edgeSource(e)} (opposite direction).
-     *
-     * @param  edge                      an edge identifier in the graph
-     * @return                           the amount of flow units going along an edge
-     * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
-     */
-    double getFlow(int edge);
+	/**
+	 * Get the amount of flow units going along an edge.
+	 * <p>
+	 * If the graph is directed, a flow of \(f\) units on {@code e}, for \(0 \leq f \leq cap(e)\), means a flow of \(f\)
+	 * units of flow from {@code edgeSource(e)} to {@code edgeTarget(e)}.
+	 * <p>
+	 * If the graph is undirected, a flow of \(+f\) units on {@code e}, for \(0 \leq f \leq cap(e)\), means a flow of
+	 * \(f\) units of flow from {@code edgeSource(e)} to {@code edgeTarget(e)}, while a flow of \(-f\) units on
+	 * {@code e}, for \(-cap(e) \leq -f &lt; 0\), means a flow of \(|-f|\) units of flow from {@code edgeTarget(e)} to
+	 * {@code edgeSource(e)} (opposite direction).
+	 *
+	 * @param  edge                      an edge identifier in the graph
+	 * @return                           the amount of flow units going along an edge
+	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
+	 */
+	double getFlow(int edge);
 
-    /**
-     * Set the amount of flow units going along an edge.
-     *
-     * @param  edge                      an edge identifier in the graph
-     * @param  flow                      the new flow of the edge
-     * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
-     */
-    void setFlow(int edge, double flow);
+	/**
+	 * Set the amount of flow units going along an edge.
+	 *
+	 * @param  edge                      an edge identifier in the graph
+	 * @param  flow                      the new flow of the edge
+	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
+	 */
+	void setFlow(int edge, double flow);
 
-    /**
-     * Create a flow network by adding edge weights using {@link Graph#addEdgesWeights}.
-     * <p>
-     * Unless {@link #setCapacity(int, double)} or {@link #setFlow(int, double)} are used, the capacity and flow of each
-     * edge will be zero.
-     *
-     * @param  g a graph
-     * @return   a flow network implemented as edge weights
-     */
-    static FlowNetwork createAsEdgeWeight(Graph g) {
-        return MaximumFlowAbstract.EdgeWeightsFlowNetwork.newInstance(g);
-    }
+	/**
+	 * Create a flow network by adding edge weights using {@link Graph#addEdgesWeights}.
+	 * <p>
+	 * Unless {@link #setCapacity(int, double)} or {@link #setFlow(int, double)} are used, the capacity and flow of each
+	 * edge will be zero.
+	 *
+	 * @param  g a graph
+	 * @return   a flow network implemented as edge weights
+	 */
+	static FlowNetwork createAsEdgeWeight(Graph g) {
+		return MaximumFlowAbstract.EdgeWeightsFlowNetwork.newInstance(g);
+	}
 
-    /**
-     * Flow on graph edges, with integer capacities and flows values.
-     * <p>
-     * Similar to the regular {@link FlowNetwork} interface, but with integer capacities and flows. Some algorithms that
-     * work on flow networks are specifically for integers networks, or may performed faster if the capacities and flows
-     * are integers.
-     *
-     * @author Barak Ugav
-     */
-    static interface Int extends FlowNetwork {
+	/**
+	 * Flow on graph edges, with integer capacities and flows values.
+	 * <p>
+	 * Similar to the regular {@link FlowNetwork} interface, but with integer capacities and flows. Some algorithms that
+	 * work on flow networks are specifically for integers networks, or may performed faster if the capacities and flows
+	 * are integers.
+	 *
+	 * @author Barak Ugav
+	 */
+	static interface Int extends FlowNetwork {
 
-        /**
-         * Get the integer capacity of an edge.
-         *
-         * @param  edge                      an edge identifier in the graph
-         * @return                           the capacity of the edge
-         * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
-         */
-        public int getCapacityInt(int edge);
+		/**
+		 * Get the integer capacity of an edge.
+		 *
+		 * @param  edge                      an edge identifier in the graph
+		 * @return                           the capacity of the edge
+		 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
+		 */
+		public int getCapacityInt(int edge);
 
-        @Deprecated
-        @Override
-        default double getCapacity(int edge) {
-            return getCapacityInt(edge);
-        }
+		@Deprecated
+		@Override
+		default double getCapacity(int edge) {
+			return getCapacityInt(edge);
+		}
 
-        /**
-         * Set the integer capacity of an edge.
-         *
-         * @param  edge                      an edge identifier in the graph
-         * @param  capacity                  the new capacity of the edge
-         * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
-         * @throws IllegalArgumentException  if {@code capacity} is negative
-         */
-        public void setCapacity(int edge, int capacity);
+		/**
+		 * Set the integer capacity of an edge.
+		 *
+		 * @param  edge                      an edge identifier in the graph
+		 * @param  capacity                  the new capacity of the edge
+		 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
+		 * @throws IllegalArgumentException  if {@code capacity} is negative
+		 */
+		public void setCapacity(int edge, int capacity);
 
-        @Deprecated
-        @Override
-        default void setCapacity(int edge, double capacity) {
-            setCapacity(edge, (int) capacity);
-        }
+		@Deprecated
+		@Override
+		default void setCapacity(int edge, double capacity) {
+			setCapacity(edge, (int) capacity);
+		}
 
-        /**
-         * Get the integer amount of flow units going along an edge.
-         * <p>
-         * If the graph is directed, a flow of \(f\) units on {@code e}, for \(0 \leq f \leq cap(e)\), means a flow of
-         * \(f\) units of flow from {@code edgeSource(e)} to {@code edgeTarget(e)}.
-         * <p>
-         * If the graph is undirected, a flow of \(+f\) units on {@code e}, for \(0 \leq f \leq cap(e)\), means a flow
-         * of \(f\) units of flow from {@code edgeSource(e)} to {@code edgeTarget(e)}, while a flow of \(-f\) units on
-         * {@code e}, for \(-cap(e) \leq -f &lt; 0\), means a flow of \(|-f|\) units of flow from {@code edgeTarget(e)}
-         * to {@code edgeSource(e)} (opposite direction).
-         *
-         * @param  edge                      an edge identifier in the graph
-         * @return                           the amount of flow units going along an edge
-         * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
-         */
-        public int getFlowInt(int edge);
+		/**
+		 * Get the integer amount of flow units going along an edge.
+		 * <p>
+		 * If the graph is directed, a flow of \(f\) units on {@code e}, for \(0 \leq f \leq cap(e)\), means a flow of
+		 * \(f\) units of flow from {@code edgeSource(e)} to {@code edgeTarget(e)}.
+		 * <p>
+		 * If the graph is undirected, a flow of \(+f\) units on {@code e}, for \(0 \leq f \leq cap(e)\), means a flow
+		 * of \(f\) units of flow from {@code edgeSource(e)} to {@code edgeTarget(e)}, while a flow of \(-f\) units on
+		 * {@code e}, for \(-cap(e) \leq -f &lt; 0\), means a flow of \(|-f|\) units of flow from {@code edgeTarget(e)}
+		 * to {@code edgeSource(e)} (opposite direction).
+		 *
+		 * @param  edge                      an edge identifier in the graph
+		 * @return                           the amount of flow units going along an edge
+		 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
+		 */
+		public int getFlowInt(int edge);
 
-        @Deprecated
-        @Override
-        default double getFlow(int edge) {
-            return getFlowInt(edge);
-        }
+		@Deprecated
+		@Override
+		default double getFlow(int edge) {
+			return getFlowInt(edge);
+		}
 
-        /**
-         * Set the integer amount of flow units going along an edge.
-         *
-         * @param  edge                      an edge identifier in the graph
-         * @param  flow                      the new flow of the edge
-         * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
-         */
-        public void setFlow(int edge, int flow);
+		/**
+		 * Set the integer amount of flow units going along an edge.
+		 *
+		 * @param  edge                      an edge identifier in the graph
+		 * @param  flow                      the new flow of the edge
+		 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
+		 */
+		public void setFlow(int edge, int flow);
 
-        @Deprecated
-        @Override
-        default void setFlow(int edge, double flow) {
-            setFlow(edge, (int) flow);
-        }
+		@Deprecated
+		@Override
+		default void setFlow(int edge, double flow) {
+			setFlow(edge, (int) flow);
+		}
 
-        /**
-         * Create an integer flow network by adding edge weights using {@link Graph#addEdgesWeights}.
-         * <p>
-         * Unless {@link #setCapacity(int, int)} or {@link #setFlow(int, int)} are used, the capacity and flow of each
-         * edge will be zero.
-         *
-         * @param  g a graph
-         * @return   a flow network implemented as edge weights
-         */
-        static FlowNetwork.Int createAsEdgeWeight(Graph g) {
-            return MaximumFlowAbstract.EdgeWeightsFlowNetworkInt.newInstance(g);
-        }
+		/**
+		 * Create an integer flow network by adding edge weights using {@link Graph#addEdgesWeights}.
+		 * <p>
+		 * Unless {@link #setCapacity(int, int)} or {@link #setFlow(int, int)} are used, the capacity and flow of each
+		 * edge will be zero.
+		 *
+		 * @param  g a graph
+		 * @return   a flow network implemented as edge weights
+		 */
+		static FlowNetwork.Int createAsEdgeWeight(Graph g) {
+			return MaximumFlowAbstract.EdgeWeightsFlowNetworkInt.newInstance(g);
+		}
 
-    }
+	}
 
 }
