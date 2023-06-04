@@ -504,7 +504,7 @@ abstract class GraphImpl extends GraphBase {
 		@Override
 		public Graph build() {
 			GraphBaseIndex base = (GraphBaseIndex) builder.build();
-			final boolean rand = true; // TODO
+			final boolean rand = false; // TODO add option to global configuration class
 			if (base.getCapabilities().directed()) {
 				return new GraphImpl.Directed(base, rand);
 			} else {
