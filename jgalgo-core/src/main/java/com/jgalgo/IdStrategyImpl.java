@@ -26,17 +26,23 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 
 abstract class IdStrategyImpl implements IdStrategy {
 
-	private final List<IdSwapListener> idSwapListeners = new CopyOnWriteArrayList<>();
-	private final List<IdAddRemoveListener> idAddRemoveListeners = new CopyOnWriteArrayList<>();
+	abstract int size();
 
-	IdStrategyImpl() {}
+	abstract IntSet idSet();
 
-	static class Continues extends IdStrategyImpl {
+	@Override
+	public String toString() {
+		return idSet().toString();
+	}
+
+	static class Index extends IdStrategyImpl {
 
 		private int size;
 		private final IntSet idSet;
+		private final List<IdSwapListener> idSwapListeners = new CopyOnWriteArrayList<>();
+		private final List<IdAddRemoveListener> idAddRemoveListeners = new CopyOnWriteArrayList<>();
 
-		Continues(int initSize) {
+		Index(int initSize) {
 			if (initSize < 0)
 				throw new IllegalArgumentException("Initial size can not be negative: " + initSize);
 			size = initSize;
@@ -49,29 +55,32 @@ abstract class IdStrategyImpl implements IdStrategy {
 
 				@Override
 				public boolean contains(int key) {
-					return key >= 0 && key < size();
+					return key >= 0 && key < size;
 				}
 
 				@Override
 				public IntIterator iterator() {
-					return new Utils.RangeIter(size());
+					return new Utils.RangeIter(size);
 				}
 			};
 		}
 
-		@Override
 		int newIdx() {
 			int id = size++;
 			notifyIdAdd(id);
 			return id;
 		}
 
-		@Override
 		void removeIdx(int idx) {
 			assert idx == size - 1;
 			assert size > 0;
 			notifyIdRemove(idx);
 			size--;
+		}
+
+		void clear() {
+			notifyIdsClear();
+			size = 0;
 		}
 
 		@Override
@@ -80,76 +89,72 @@ abstract class IdStrategyImpl implements IdStrategy {
 		}
 
 		@Override
-		void clear() {
-			notifyIdsClear();
-			size = 0;
-		}
-
-		@Override
-		int idToIdx(int id) {
-			if (!(0 <= id && id < size))
-				throw new IndexOutOfBoundsException(id);
-			return id;
-		}
-
-		@Override
-		int idxToId(int idx) {
-			checkIdx(idx);
-			return idx;
-		}
-
-		@Override
 		IntSet idSet() {
 			return idSet;
 		}
 
-		@Override
-		void idxSwap(int idx1, int idx2) {
-			int id1 = idxToId(idx1), id2 = idxToId(idx2);
-			notifyIDSwap(id1, id2);
+		int isSwapNeededBeforeRemove(int idx) {
+			checkIdx(idx);
+			return size - 1;
 		}
 
-		@Override
-		IdStrategyImpl copy() {
-			return new IdStrategyImpl.Continues(size);
+		void idxSwap(int idx1, int idx2) {
+			notifyIDSwap(idx1, idx2);
+		}
+
+		IdStrategyImpl.Index copy() {
+			return new IdStrategyImpl.Index(size);
 		}
 
 		private void checkIdx(int idx) {
 			if (!(0 <= idx && idx < size))
 				throw new IndexOutOfBoundsException(idx);
 		}
+
+		void notifyIDSwap(int id1, int id2) {
+			for (IdSwapListener listener : idSwapListeners)
+				listener.idSwap(id1, id2);
+		}
+
+		void notifyIdAdd(int id) {
+			for (IdAddRemoveListener listener : idAddRemoveListeners)
+				listener.idAdd(id);
+		}
+
+		void notifyIdRemove(int id) {
+			for (IdAddRemoveListener listener : idAddRemoveListeners)
+				listener.idRemove(id);
+		}
+
+		void notifyIdsClear() {
+			for (IdAddRemoveListener listener : idAddRemoveListeners)
+				listener.idsClear();
+		}
+
+		@Override
+		public void addIdSwapListener(IdSwapListener listener) {
+			idSwapListeners.add(Objects.requireNonNull(listener));
+		}
+
+		@Override
+		public void removeIdSwapListener(IdSwapListener listener) {
+			idSwapListeners.remove(listener);
+		}
+
+		void addIdAddRemoveListener(IdAddRemoveListener listener) {
+			idAddRemoveListeners.add(Objects.requireNonNull(listener));
+		}
+
+		void removeIdAddRemoveListener(IdAddRemoveListener listener) {
+			idAddRemoveListeners.remove(listener);
+		}
 	}
 
-	static class ContinuesEmpty extends IdStrategyImpl {
-
-		@Override
-		int newIdx() {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		void removeIdx(int idx) {
-			throw new IndexOutOfBoundsException(idx);
-		}
+	static class Empty extends IdStrategyImpl {
 
 		@Override
 		int size() {
 			return 0;
-		}
-
-		@Override
-		void clear() {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		int idToIdx(int id) {
-			throw new IndexOutOfBoundsException(id);
-		}
-
-		@Override
-		int idxToId(int idx) {
-			throw new IndexOutOfBoundsException(idx);
 		}
 
 		@Override
@@ -158,83 +163,12 @@ abstract class IdStrategyImpl implements IdStrategy {
 		}
 
 		@Override
-		void idxSwap(int idx1, int idx2) {
-			throw new IndexOutOfBoundsException(idx1);
+		public void addIdSwapListener(IdSwapListener listener) {
+			Objects.requireNonNull(listener);
 		}
 
 		@Override
-		IdStrategyImpl copy() {
-			return new IdStrategyImpl.ContinuesEmpty();
-		}
-
-	}
-
-	abstract int newIdx();
-
-	abstract void removeIdx(int idx);
-
-	abstract int size();
-
-	abstract void clear();
-
-	abstract int idToIdx(int id);
-
-	abstract int idxToId(int idx);
-
-	abstract IntSet idSet();
-
-	@Override
-	public String toString() {
-		return idSet().toString();
-	}
-
-	int isSwapNeededBeforeRemove(int idx) {
-		int size = idSet().size();
-		if (!(0 <= idx && idx < size))
-			throw new IndexOutOfBoundsException(idx);
-		return size - 1;
-	}
-
-	abstract void idxSwap(int idx1, int idx2);
-
-	void notifyIDSwap(int id1, int id2) {
-		for (IdSwapListener listener : idSwapListeners)
-			listener.idSwap(id1, id2);
-	}
-
-	void notifyIdAdd(int id) {
-		for (IdAddRemoveListener listener : idAddRemoveListeners)
-			listener.idAdd(id);
-	}
-
-	void notifyIdRemove(int id) {
-		for (IdAddRemoveListener listener : idAddRemoveListeners)
-			listener.idRemove(id);
-	}
-
-	void notifyIdsClear() {
-		for (IdAddRemoveListener listener : idAddRemoveListeners)
-			listener.idsClear();
-	}
-
-	abstract IdStrategyImpl copy();
-
-	@Override
-	public void addIdSwapListener(IdSwapListener listener) {
-		idSwapListeners.add(Objects.requireNonNull(listener));
-	}
-
-	@Override
-	public void removeIdSwapListener(IdSwapListener listener) {
-		idSwapListeners.remove(listener);
-	}
-
-	void addIdAddRemoveListener(IdAddRemoveListener listener) {
-		idAddRemoveListeners.add(Objects.requireNonNull(listener));
-	}
-
-	void removeIdAddRemoveListener(IdAddRemoveListener listener) {
-		idAddRemoveListeners.remove(listener);
+		public void removeIdSwapListener(IdSwapListener listener) {}
 	}
 
 	/**

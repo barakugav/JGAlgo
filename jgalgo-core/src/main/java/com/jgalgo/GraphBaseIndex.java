@@ -21,16 +21,16 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 abstract class GraphBaseIndex extends GraphBase implements IndexGraph {
 
-	final IdStrategyImpl verticesIdStrat;
-	final IdStrategyImpl edgesIdStrat;
+	final IdStrategyImpl.Index verticesIdStrat;
+	final IdStrategyImpl.Index edgesIdStrat;
 	private final WeightsImpl.Index.Manager verticesInternalWeights;
 	private final WeightsImpl.Index.Manager edgesInternalWeights;
 	private final WeightsImpl.Index.Manager verticesUserWeights;
 	private final WeightsImpl.Index.Manager edgesUserWeights;
 
 	GraphBaseIndex(int expectedVerticesNum, int expectedEdgesNum) {
-		verticesIdStrat = new IdStrategyImpl.Continues(0);
-		edgesIdStrat = new IdStrategyImpl.Continues(0);
+		verticesIdStrat = new IdStrategyImpl.Index(0);
+		edgesIdStrat = new IdStrategyImpl.Index(0);
 		verticesInternalWeights = new WeightsImpl.Index.Manager(expectedVerticesNum);
 		edgesInternalWeights = new WeightsImpl.Index.Manager(expectedEdgesNum);
 		verticesUserWeights = new WeightsImpl.Index.Manager(expectedVerticesNum);

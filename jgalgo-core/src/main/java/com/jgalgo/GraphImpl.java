@@ -363,7 +363,7 @@ abstract class GraphImpl extends GraphBase {
 		private final IntSet idsView; // TODO move to graph abstract implementation
 		private final WeightsImpl.Index.Int idxToId;
 
-		IdIdxMapImpl(IdStrategyImpl idStrat) {
+		IdIdxMapImpl(IdStrategyImpl.Index idStrat) {
 			idToIdx = new Int2IntOpenHashMap();
 			idToIdx.defaultReturnValue(-1);
 			idsView = IntSets.unmodifiable(idToIdx.keySet());
@@ -371,7 +371,7 @@ abstract class GraphImpl extends GraphBase {
 			initListeners(idStrat);
 		}
 
-		IdIdxMapImpl(IdIdxMapImpl orig, IdStrategyImpl idStrat) {
+		IdIdxMapImpl(IdIdxMapImpl orig, IdStrategyImpl.Index idStrat) {
 			idToIdx = new Int2IntOpenHashMap(orig.idToIdx);
 			idToIdx.defaultReturnValue(-1);
 			idsView = IntSets.unmodifiable(idToIdx.keySet());
@@ -379,7 +379,7 @@ abstract class GraphImpl extends GraphBase {
 			initListeners(idStrat);
 		}
 
-		private void initListeners(IdStrategyImpl idStrat) {
+		private void initListeners(IdStrategyImpl.Index idStrat) {
 			idStrat.addIdSwapListener((idx1, idx2) -> {
 				int id1 = idxToId.getInt(idx1);
 				int id2 = idxToId.getInt(idx2);
@@ -437,20 +437,20 @@ abstract class GraphImpl extends GraphBase {
 			return idsView;
 		}
 
-		abstract GraphImpl.IdIdxMapImpl copy(IdStrategyImpl idStrat);
+		abstract GraphImpl.IdIdxMapImpl copy(IdStrategyImpl.Index idStrat);
 	}
 
 	private static class IdIdxMapCounter extends IdIdxMapImpl {
 
 		private int counter;
 
-		IdIdxMapCounter(IdStrategyImpl idStrat) {
+		IdIdxMapCounter(IdStrategyImpl.Index idStrat) {
 			super(idStrat);
 			// We prefer non zero IDs because fastutil handle zero (null) keys separately
 			counter = 1;
 		}
 
-		IdIdxMapCounter(GraphImpl.IdIdxMapCounter orig, IdStrategyImpl idStrat) {
+		IdIdxMapCounter(GraphImpl.IdIdxMapCounter orig, IdStrategyImpl.Index idStrat) {
 			super(orig, idStrat);
 			this.counter = orig.counter;
 		}
@@ -461,7 +461,7 @@ abstract class GraphImpl extends GraphBase {
 		}
 
 		@Override
-		GraphImpl.IdIdxMapCounter copy(IdStrategyImpl idStrat) {
+		GraphImpl.IdIdxMapCounter copy(IdStrategyImpl.Index idStrat) {
 			return new GraphImpl.IdIdxMapCounter(this, idStrat);
 		}
 	}
@@ -470,11 +470,11 @@ abstract class GraphImpl extends GraphBase {
 
 		private final Random rand = new Random();
 
-		IdIdxMapRand(IdStrategyImpl idStrat) {
+		IdIdxMapRand(IdStrategyImpl.Index idStrat) {
 			super(idStrat);
 		}
 
-		IdIdxMapRand(GraphImpl.IdIdxMapRand orig, IdStrategyImpl idStrat) {
+		IdIdxMapRand(GraphImpl.IdIdxMapRand orig, IdStrategyImpl.Index idStrat) {
 			super(orig, idStrat);
 		}
 
@@ -489,7 +489,7 @@ abstract class GraphImpl extends GraphBase {
 		}
 
 		@Override
-		GraphImpl.IdIdxMapRand copy(IdStrategyImpl idStrat) {
+		GraphImpl.IdIdxMapRand copy(IdStrategyImpl.Index idStrat) {
 			return new GraphImpl.IdIdxMapRand(this, idStrat);
 		}
 	}

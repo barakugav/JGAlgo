@@ -34,8 +34,8 @@ public class Graphs {
 
 	private abstract static class EmptyGraph implements IndexGraph {
 
-		private final IdStrategy verticesIdStrat = new IdStrategyImpl.ContinuesEmpty();
-		private final IdStrategy edgesIdStrat = new IdStrategyImpl.ContinuesEmpty();
+		private final IdStrategy verticesIdStrat = new IdStrategyImpl.Empty();
+		private final IdStrategy edgesIdStrat = new IdStrategyImpl.Empty();
 
 		@Override
 		public IntSet vertices() {
@@ -476,8 +476,8 @@ public class Graphs {
 		private final WeightsImpl.Index.Manager edgesWeights;
 
 		CompleteGraph(int n, int m) {
-			verticesIdStrat = new IdStrategyImpl.Continues(n);
-			edgesIdStrat = new IdStrategyImpl.Continues(m);
+			verticesIdStrat = new IdStrategyImpl.Index(n);
+			edgesIdStrat = new IdStrategyImpl.Index(m);
 			if (n < 0 || m < 0)
 				throw new IllegalArgumentException();
 			this.n = n;
@@ -487,8 +487,8 @@ public class Graphs {
 		}
 
 		CompleteGraph(CompleteGraph g) {
-			verticesIdStrat = new IdStrategyImpl.Continues(g.n);
-			edgesIdStrat = new IdStrategyImpl.Continues(g.m);
+			verticesIdStrat = new IdStrategyImpl.Index(g.n);
+			edgesIdStrat = new IdStrategyImpl.Index(g.m);
 			this.n = g.n;
 			this.m = g.m;
 			verticesWeights = new WeightsImpl.Index.Manager(g.verticesWeights, verticesIdStrat);
