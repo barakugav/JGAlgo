@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BiConnectedComponentsAlgoAbstract.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">BiConnectedComponentsAlgoAbstract.java</span></div><h1>BiConnectedComponentsAlgoAbstract.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo;
+
+import java.util.Objects;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+
+<span class="fc" id="L21">abstract class BiConnectedComponentsAlgoAbstract implements BiConnectedComponentsAlgo {</span>
+
+	@Override
+	public BiConnectedComponentsAlgo.Result computeBiConnectivityComponents(Graph g) {
+<span class="pc bpc" id="L25" title="1 of 2 branches missed.">		if (g instanceof IndexGraph)</span>
+<span class="nc" id="L26">			return computeBiConnectivityComponents((IndexGraph) g);</span>
+
+<span class="fc" id="L28">		IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L29">		IndexIdMap viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L30">		IndexIdMap eiMap = g.indexGraphEdgesMap();</span>
+
+<span class="fc" id="L32">		BiConnectedComponentsAlgo.Result indexResult = computeBiConnectivityComponents(iGraph);</span>
+<span class="fc" id="L33">		return new ResultFromIndexResult(indexResult, viMap, eiMap);</span>
+	}
+
+	abstract BiConnectedComponentsAlgo.Result computeBiConnectivityComponents(IndexGraph g);
+
+	private static class ResultFromIndexResult implements BiConnectedComponentsAlgo.Result {
+
+		private final BiConnectedComponentsAlgo.Result res;
+		private final IndexIdMap viMap;
+		private final IndexIdMap eiMap;
+
+<span class="fc" id="L44">		ResultFromIndexResult(BiConnectedComponentsAlgo.Result res, IndexIdMap viMap, IndexIdMap eiMap) {</span>
+<span class="fc" id="L45">			this.res = Objects.requireNonNull(res);</span>
+<span class="fc" id="L46">			this.viMap = Objects.requireNonNull(viMap);</span>
+<span class="fc" id="L47">			this.eiMap = Objects.requireNonNull(eiMap);</span>
+<span class="fc" id="L48">		}</span>
+
+		@Override
+		public IntCollection getVertexBiCcs(int vertex) {
+<span class="fc" id="L52">			return res.getVertexBiCcs(viMap.idToIndex(vertex));</span>
+		}
+
+		@Override
+		public int getNumberOfBiCcs() {
+<span class="fc" id="L57">			return res.getNumberOfBiCcs();</span>
+		}
+
+		@Override
+		public IntCollection getBiCcVertices(int biccIdx) {
+<span class="fc" id="L62">			return new IndexIdMapUtils.CollectionFromIndexCollection(res.getBiCcVertices(biccIdx), viMap);</span>
+		}
+
+		@Override
+		public IntCollection getBiCcEdges(int biccIdx) {
+<span class="fc" id="L67">			return new IndexIdMapUtils.CollectionFromIndexCollection(res.getBiCcEdges(biccIdx), eiMap);</span>
+		}
+
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

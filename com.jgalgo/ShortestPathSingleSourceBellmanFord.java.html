@@ -32,7 +32,7 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
  * @see    &lt;a href= &quot;https://en.wikipedia.org/wiki/Bellman%E2%80%93Ford_algorithm&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
  */
-class ShortestPathSingleSourceBellmanFord implements ShortestPathSingleSource {
+class ShortestPathSingleSourceBellmanFord extends ShortestPathSingleSourceUtils.AbstractImpl {
 
 	/**
 	 * Construct a new SSSP algorithm.
@@ -45,7 +45,7 @@ class ShortestPathSingleSourceBellmanFord implements ShortestPathSingleSource {
 	 * @throws IllegalArgumentException if the graph is not directed
 	 */
 	@Override
-	public ShortestPathSingleSource.Result computeShortestPaths(Graph g, WeightFunction w, int source) {
+	ShortestPathSingleSource.Result computeShortestPaths(IndexGraph g, WeightFunction w, int source) {
 <span class="fc" id="L49">		ArgumentCheck.onlyDirected(g);</span>
 <span class="pc bpc" id="L50" title="1 of 2 branches missed.">		if (w == null)</span>
 <span class="nc" id="L51">			w = WeightFunction.CardinalityWeightFunction;</span>
@@ -100,7 +100,7 @@ class ShortestPathSingleSourceBellmanFord implements ShortestPathSingleSource {
 
 		private Path negCycle;
 
-		private Result(Graph g, int source) {
+		private Result(IndexGraph g, int source) {
 <span class="fc" id="L104">			super(g, source);</span>
 <span class="fc" id="L105">		}</span>
 

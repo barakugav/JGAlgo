@@ -16,11 +16,6 @@
 package com.jgalgo;
 
 import java.util.BitSet;
-import java.util.Objects;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.ints.IntLists;
 
 /**
  * Bar Yehuda's vertex cover algorithm.
@@ -31,69 +26,33 @@ import it.unimi.dsi.fastutil.ints.IntLists;
  *
  * @author Barak Ugav
  */
-<span class="fc" id="L34">class VertexCoverBarYehuda implements VertexCover {</span>
+<span class="fc" id="L29">class VertexCoverBarYehuda extends VertexCoverUtils.AbstractImpl {</span>
 
 	@Override
-	public Result computeMinimumVertexCover(Graph g, WeightFunction w) {
-<span class="fc" id="L38">		final int n = g.vertices().size();</span>
-<span class="fc" id="L39">		double[] sw = new double[n];</span>
-<span class="fc bfc" id="L40" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L41">			sw[v] = w.weight(v);</span>
+	public VertexCover.Result computeMinimumVertexCover(IndexGraph g, WeightFunction w) {
+<span class="fc" id="L33">		final int n = g.vertices().size();</span>
+<span class="fc" id="L34">		double[] sw = new double[n];</span>
+<span class="fc bfc" id="L35" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
+<span class="fc" id="L36">			sw[v] = w.weight(v);</span>
 
-<span class="fc" id="L43">		BitSet cover = new BitSet(n);</span>
+<span class="fc" id="L38">		BitSet cover = new BitSet(n);</span>
 
-<span class="fc bfc" id="L45" title="All 2 branches covered.">		for (int e : g.edges()) {</span>
+<span class="fc bfc" id="L40" title="All 2 branches covered.">		for (int e : g.edges()) {</span>
 			int u, v;
-<span class="fc bfc" id="L47" title="All 4 branches covered.">			if (cover.get(u = g.edgeSource(e)) || cover.get(v = g.edgeTarget(e)))</span>
-<span class="fc" id="L48">				continue;</span>
-<span class="fc bfc" id="L49" title="All 2 branches covered.">			if (sw[u] &lt;= sw[v]) {</span>
-<span class="fc" id="L50">				sw[v] -= sw[u];</span>
+<span class="fc bfc" id="L42" title="All 4 branches covered.">			if (cover.get(u = g.edgeSource(e)) || cover.get(v = g.edgeTarget(e)))</span>
+<span class="fc" id="L43">				continue;</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">			if (sw[u] &lt;= sw[v]) {</span>
+<span class="fc" id="L45">				sw[v] -= sw[u];</span>
 				// sw[u] -= sw[u]; don't bother
-<span class="fc" id="L52">				cover.set(u);</span>
+<span class="fc" id="L47">				cover.set(u);</span>
 			} else {
-<span class="fc" id="L54">				sw[u] -= sw[v];</span>
+<span class="fc" id="L49">				sw[u] -= sw[v];</span>
 				// sw[v] -= sw[v]; don't bother
-<span class="fc" id="L56">				cover.set(v);</span>
+<span class="fc" id="L51">				cover.set(v);</span>
 			}
-<span class="fc" id="L58">		}</span>
+<span class="fc" id="L53">		}</span>
 
-<span class="fc" id="L60">		return new Result(g, cover);</span>
-	}
-
-	private static class Result implements VertexCover.Result {
-
-		private final Graph g;
-		private final BitSet cover;
-		private IntCollection vertices;
-
-<span class="fc" id="L69">		Result(Graph g, BitSet cover) {</span>
-<span class="fc" id="L70">			this.g = Objects.requireNonNull(g);</span>
-<span class="fc" id="L71">			this.cover = Objects.requireNonNull(cover);</span>
-<span class="fc" id="L72">		}</span>
-
-		@Override
-		public IntCollection vertices() {
-<span class="pc bpc" id="L76" title="1 of 2 branches missed.">			if (this.vertices == null) {</span>
-<span class="fc" id="L77">				IntList vertices = new IntArrayList(cover.cardinality());</span>
-<span class="fc bfc" id="L78" title="All 2 branches covered.">				for (int v : Utils.iterable(cover))</span>
-<span class="fc" id="L79">					vertices.add(v);</span>
-<span class="fc" id="L80">				this.vertices = IntLists.unmodifiable(vertices);</span>
-			}
-<span class="fc" id="L82">			return this.vertices;</span>
-		}
-
-		@Override
-		public boolean isInCover(int vertex) {
-<span class="pc bpc" id="L87" title="1 of 2 branches missed.">			if (!g.vertices().contains(vertex))</span>
-<span class="nc" id="L88">				throw new IndexOutOfBoundsException(vertex);</span>
-<span class="fc" id="L89">			return cover.get(vertex);</span>
-		}
-
-		@Override
-		public double weight(WeightFunction w) {
-<span class="fc" id="L94">			return GraphsUtils.weightSum(vertices(), w);</span>
-		}
-
+<span class="fc" id="L55">		return new VertexCoverUtils.ResultImpl(g, cover);</span>
 	}
 
 }

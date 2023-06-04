@@ -16,984 +16,1804 @@
 
 package com.jgalgo;
 
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
+import it.unimi.dsi.fastutil.booleans.AbstractBooleanList;
+import it.unimi.dsi.fastutil.booleans.BooleanCollection;
+import it.unimi.dsi.fastutil.booleans.BooleanListIterator;
+import it.unimi.dsi.fastutil.bytes.AbstractByteList;
+import it.unimi.dsi.fastutil.bytes.ByteArrays;
+import it.unimi.dsi.fastutil.bytes.ByteCollection;
+import it.unimi.dsi.fastutil.bytes.ByteIterators;
+import it.unimi.dsi.fastutil.bytes.ByteListIterator;
+import it.unimi.dsi.fastutil.chars.AbstractCharList;
+import it.unimi.dsi.fastutil.chars.CharArrays;
+import it.unimi.dsi.fastutil.chars.CharCollection;
+import it.unimi.dsi.fastutil.chars.CharIterators;
+import it.unimi.dsi.fastutil.chars.CharListIterator;
+import it.unimi.dsi.fastutil.doubles.AbstractDoubleList;
+import it.unimi.dsi.fastutil.doubles.DoubleArrays;
+import it.unimi.dsi.fastutil.doubles.DoubleCollection;
+import it.unimi.dsi.fastutil.doubles.DoubleIterators;
+import it.unimi.dsi.fastutil.doubles.DoubleListIterator;
+import it.unimi.dsi.fastutil.floats.AbstractFloatList;
+import it.unimi.dsi.fastutil.floats.FloatArrays;
+import it.unimi.dsi.fastutil.floats.FloatCollection;
+import it.unimi.dsi.fastutil.floats.FloatIterators;
+import it.unimi.dsi.fastutil.floats.FloatListIterator;
+import it.unimi.dsi.fastutil.ints.AbstractIntList;
+import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntIterators;
+import it.unimi.dsi.fastutil.ints.IntListIterator;
+import it.unimi.dsi.fastutil.longs.AbstractLongList;
+import it.unimi.dsi.fastutil.longs.LongArrays;
+import it.unimi.dsi.fastutil.longs.LongCollection;
+import it.unimi.dsi.fastutil.longs.LongIterators;
+import it.unimi.dsi.fastutil.longs.LongListIterator;
+import it.unimi.dsi.fastutil.objects.AbstractObjectList;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrays;
+import it.unimi.dsi.fastutil.objects.ObjectCollection;
+import it.unimi.dsi.fastutil.objects.ObjectIterators;
+import it.unimi.dsi.fastutil.objects.ObjectListIterator;
+import it.unimi.dsi.fastutil.shorts.AbstractShortList;
+import it.unimi.dsi.fastutil.shorts.ShortArrays;
+import it.unimi.dsi.fastutil.shorts.ShortCollection;
+import it.unimi.dsi.fastutil.shorts.ShortIterators;
+import it.unimi.dsi.fastutil.shorts.ShortListIterator;
 
 interface WeightsImpl&lt;E&gt; extends Weights&lt;E&gt; {
 
-	DataContainer&lt;E&gt; container();
-
-	WeightsImpl&lt;E&gt; copy(IDStrategyImpl idStrat);
-
 	@SuppressWarnings(&quot;unchecked&quot;)
-	default WeightsImpl&lt;E&gt; unmodifiable() {
-<span class="nc bnc" id="L33" title="All 2 branches missed.">		if (this instanceof UnmodifiableWeights&lt;?&gt;)</span>
-<span class="nc" id="L34">			return this;</span>
-<span class="nc bnc" id="L35" title="All 2 branches missed.">		if (this instanceof Weights.Byte)</span>
-<span class="nc" id="L36">			return (WeightsImpl&lt;E&gt;) new UnmodifiableWeights.Byte((Weights.Byte) this);</span>
-<span class="nc bnc" id="L37" title="All 2 branches missed.">		if (this instanceof Weights.Short)</span>
-<span class="nc" id="L38">			return (WeightsImpl&lt;E&gt;) new UnmodifiableWeights.Short((Weights.Short) this);</span>
-<span class="nc bnc" id="L39" title="All 2 branches missed.">		if (this instanceof Weights.Int)</span>
-<span class="nc" id="L40">			return (WeightsImpl&lt;E&gt;) new UnmodifiableWeights.Int((Weights.Int) this);</span>
-<span class="nc bnc" id="L41" title="All 2 branches missed.">		if (this instanceof Weights.Long)</span>
-<span class="nc" id="L42">			return (WeightsImpl&lt;E&gt;) new UnmodifiableWeights.Long((Weights.Long) this);</span>
-<span class="nc bnc" id="L43" title="All 2 branches missed.">		if (this instanceof Weights.Float)</span>
-<span class="nc" id="L44">			return (WeightsImpl&lt;E&gt;) new UnmodifiableWeights.Float((Weights.Float) this);</span>
-<span class="nc bnc" id="L45" title="All 2 branches missed.">		if (this instanceof Weights.Double)</span>
-<span class="nc" id="L46">			return (WeightsImpl&lt;E&gt;) new UnmodifiableWeights.Double((Weights.Double) this);</span>
-<span class="nc bnc" id="L47" title="All 2 branches missed.">		if (this instanceof Weights.Bool)</span>
-<span class="nc" id="L48">			return (WeightsImpl&lt;E&gt;) new UnmodifiableWeights.Bool((Weights.Bool) this);</span>
-<span class="nc bnc" id="L49" title="All 2 branches missed.">		if (this instanceof Weights.Char)</span>
-<span class="nc" id="L50">			return (WeightsImpl&lt;E&gt;) new UnmodifiableWeights.Char((Weights.Char) this);</span>
-<span class="nc" id="L51">		return new UnmodifiableWeights.Obj&lt;&gt;(this);</span>
+	default WeightsImpl&lt;E&gt; unmodifiableView() {
+<span class="nc bnc" id="L76" title="All 2 branches missed.">		if (this instanceof Unmodifiable&lt;?&gt;)</span>
+<span class="nc" id="L77">			return this;</span>
+<span class="nc bnc" id="L78" title="All 2 branches missed.">		if (this instanceof Weights.Byte)</span>
+<span class="nc" id="L79">			return (WeightsImpl&lt;E&gt;) new Unmodifiable.Byte((Weights.Byte) this);</span>
+<span class="nc bnc" id="L80" title="All 2 branches missed.">		if (this instanceof Weights.Short)</span>
+<span class="nc" id="L81">			return (WeightsImpl&lt;E&gt;) new Unmodifiable.Short((Weights.Short) this);</span>
+<span class="nc bnc" id="L82" title="All 2 branches missed.">		if (this instanceof Weights.Int)</span>
+<span class="nc" id="L83">			return (WeightsImpl&lt;E&gt;) new Unmodifiable.Int((Weights.Int) this);</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">		if (this instanceof Weights.Long)</span>
+<span class="nc" id="L85">			return (WeightsImpl&lt;E&gt;) new Unmodifiable.Long((Weights.Long) this);</span>
+<span class="nc bnc" id="L86" title="All 2 branches missed.">		if (this instanceof Weights.Float)</span>
+<span class="nc" id="L87">			return (WeightsImpl&lt;E&gt;) new Unmodifiable.Float((Weights.Float) this);</span>
+<span class="nc bnc" id="L88" title="All 2 branches missed.">		if (this instanceof Weights.Double)</span>
+<span class="nc" id="L89">			return (WeightsImpl&lt;E&gt;) new Unmodifiable.Double((Weights.Double) this);</span>
+<span class="nc bnc" id="L90" title="All 2 branches missed.">		if (this instanceof Weights.Bool)</span>
+<span class="nc" id="L91">			return (WeightsImpl&lt;E&gt;) new Unmodifiable.Bool((Weights.Bool) this);</span>
+<span class="nc bnc" id="L92" title="All 2 branches missed.">		if (this instanceof Weights.Char)</span>
+<span class="nc" id="L93">			return (WeightsImpl&lt;E&gt;) new Unmodifiable.Char((Weights.Char) this);</span>
+<span class="nc" id="L94">		return new Unmodifiable.Obj&lt;&gt;(this);</span>
 	}
 
-	@SuppressWarnings(&quot;unchecked&quot;)
-	static &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT newInstance(IDStrategyImpl idStrat, Class&lt;? super E&gt; type,
-			E defVal) {
-<span class="fc" id="L57">		DataContainer&lt;E&gt; container = DataContainer.newInstance(idStrat, type, defVal);</span>
-<span class="fc" id="L58">		boolean isContinues = idStrat instanceof IDStrategyImpl.Continues;</span>
-<span class="fc bfc" id="L59" title="All 2 branches covered.">		return (WeightsT) (isContinues ? wrapContainerDirected(container) : wrapContainerMapped(container, idStrat));</span>
-	}
+	static interface Index&lt;E&gt; extends WeightsImpl&lt;E&gt; {
 
-	private static Weights&lt;?&gt; wrapContainerDirected(DataContainer&lt;?&gt; container) {
-<span class="fc bfc" id="L63" title="All 2 branches covered.">		if (container instanceof DataContainer.Obj&lt;?&gt;) {</span>
-<span class="fc" id="L64">			return new WeightsImpl.Direct.Obj&lt;&gt;((DataContainer.Obj&lt;?&gt;) container);</span>
-<span class="fc bfc" id="L65" title="All 2 branches covered.">		} else if (container instanceof DataContainer.Byte) {</span>
-<span class="fc" id="L66">			return new WeightsImpl.Direct.Byte((DataContainer.Byte) container);</span>
-<span class="fc bfc" id="L67" title="All 2 branches covered.">		} else if (container instanceof DataContainer.Short) {</span>
-<span class="fc" id="L68">			return new WeightsImpl.Direct.Short((DataContainer.Short) container);</span>
-<span class="fc bfc" id="L69" title="All 2 branches covered.">		} else if (container instanceof DataContainer.Int) {</span>
-<span class="fc" id="L70">			return new WeightsImpl.Direct.Int((DataContainer.Int) container);</span>
-<span class="fc bfc" id="L71" title="All 2 branches covered.">		} else if (container instanceof DataContainer.Long) {</span>
-<span class="fc" id="L72">			return new WeightsImpl.Direct.Long((DataContainer.Long) container);</span>
-<span class="fc bfc" id="L73" title="All 2 branches covered.">		} else if (container instanceof DataContainer.Float) {</span>
-<span class="fc" id="L74">			return new WeightsImpl.Direct.Float((DataContainer.Float) container);</span>
-<span class="fc bfc" id="L75" title="All 2 branches covered.">		} else if (container instanceof DataContainer.Double) {</span>
-<span class="fc" id="L76">			return new WeightsImpl.Direct.Double((DataContainer.Double) container);</span>
-<span class="fc bfc" id="L77" title="All 2 branches covered.">		} else if (container instanceof DataContainer.Bool) {</span>
-<span class="fc" id="L78">			return new WeightsImpl.Direct.Bool((DataContainer.Bool) container);</span>
-<span class="pc bpc" id="L79" title="1 of 2 branches missed.">		} else if (container instanceof DataContainer.Char) {</span>
-<span class="fc" id="L80">			return new WeightsImpl.Direct.Char((DataContainer.Char) container);</span>
-		} else {
-<span class="nc" id="L82">			throw new IllegalArgumentException(container.getClass().toString());</span>
+		int capacity();
+
+		void expand(int newCapacity);
+
+		void clear(int idx);
+
+		void clear();
+
+		void swap(int idx1, int idx2);
+
+		Collection&lt;E&gt; values();
+
+		Class&lt;E&gt; getTypeClass();
+
+		WeightsImpl.Index&lt;E&gt; copy(IdStrategyImpl idStrat);
+
+		static &lt;D&gt; WeightsImpl.Index&lt;D&gt; newInstance(IdStrategyImpl idStart, Class&lt;? super D&gt; type, D defVal) {
+			@SuppressWarnings(&quot;rawtypes&quot;)
+			WeightsImpl container;
+<span class="fc bfc" id="L118" title="All 2 branches covered.">			if (type == byte.class) {</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">				byte defVal0 = defVal != null ? ((java.lang.Byte) defVal).byteValue() : 0;</span>
+<span class="fc" id="L120">				container = new WeightsImpl.Index.Byte(idStart, defVal0);</span>
+
+<span class="fc bfc" id="L122" title="All 2 branches covered.">			} else if (type == short.class) {</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">				short defVal0 = defVal != null ? ((java.lang.Short) defVal).shortValue() : 0;</span>
+<span class="fc" id="L124">				container = new WeightsImpl.Index.Short(idStart, defVal0);</span>
+
+<span class="fc bfc" id="L126" title="All 2 branches covered.">			} else if (type == int.class) {</span>
+<span class="fc bfc" id="L127" title="All 2 branches covered.">				int defVal0 = defVal != null ? ((Integer) defVal).intValue() : 0;</span>
+<span class="fc" id="L128">				container = new WeightsImpl.Index.Int(idStart, defVal0);</span>
+
+<span class="fc bfc" id="L130" title="All 2 branches covered.">			} else if (type == long.class) {</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">				long defVal0 = defVal != null ? ((java.lang.Long) defVal).longValue() : 0;</span>
+<span class="fc" id="L132">				container = new WeightsImpl.Index.Long(idStart, defVal0);</span>
+
+<span class="fc bfc" id="L134" title="All 2 branches covered.">			} else if (type == float.class) {</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">				float defVal0 = defVal != null ? ((java.lang.Float) defVal).floatValue() : 0;</span>
+<span class="fc" id="L136">				container = new WeightsImpl.Index.Float(idStart, defVal0);</span>
+
+<span class="fc bfc" id="L138" title="All 2 branches covered.">			} else if (type == double.class) {</span>
+<span class="fc bfc" id="L139" title="All 2 branches covered.">				double defVal0 = defVal != null ? ((java.lang.Double) defVal).doubleValue() : 0;</span>
+<span class="fc" id="L140">				container = new WeightsImpl.Index.Double(idStart, defVal0);</span>
+
+<span class="fc bfc" id="L142" title="All 2 branches covered.">			} else if (type == boolean.class) {</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">				boolean defVal0 = defVal != null ? ((Boolean) defVal).booleanValue() : false;</span>
+<span class="fc" id="L144">				container = new WeightsImpl.Index.Bool(idStart, defVal0);</span>
+
+<span class="fc bfc" id="L146" title="All 2 branches covered.">			} else if (type == char.class) {</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">				char defVal0 = defVal != null ? ((Character) defVal).charValue() : 0;</span>
+<span class="fc" id="L148">				container = new WeightsImpl.Index.Char(idStart, defVal0);</span>
+
+<span class="fc" id="L150">			} else {</span>
+<span class="fc" id="L151">				container = new WeightsImpl.Index.Obj&lt;&gt;(idStart, defVal, type);</span>
+			}
+			@SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L154">			WeightsImpl.Index&lt;D&gt; container0 = (WeightsImpl.Index&lt;D&gt;) container;</span>
+<span class="fc" id="L155">			return container0;</span>
 		}
-	}
 
-	private static Weights&lt;?&gt; wrapContainerMapped(DataContainer&lt;?&gt; container, IDStrategyImpl idStrat) {
-<span class="fc bfc" id="L87" title="All 2 branches covered.">		if (container instanceof DataContainer.Obj&lt;?&gt;) {</span>
-<span class="fc" id="L88">			return new WeightsImpl.Mapped.Obj&lt;&gt;((DataContainer.Obj&lt;?&gt;) container, idStrat);</span>
-<span class="fc bfc" id="L89" title="All 2 branches covered.">		} else if (container instanceof DataContainer.Byte) {</span>
-<span class="fc" id="L90">			return new WeightsImpl.Mapped.Byte((DataContainer.Byte) container, idStrat);</span>
-<span class="fc bfc" id="L91" title="All 2 branches covered.">		} else if (container instanceof DataContainer.Short) {</span>
-<span class="fc" id="L92">			return new WeightsImpl.Mapped.Short((DataContainer.Short) container, idStrat);</span>
-<span class="fc bfc" id="L93" title="All 2 branches covered.">		} else if (container instanceof DataContainer.Int) {</span>
-<span class="fc" id="L94">			return new WeightsImpl.Mapped.Int((DataContainer.Int) container, idStrat);</span>
-<span class="fc bfc" id="L95" title="All 2 branches covered.">		} else if (container instanceof DataContainer.Long) {</span>
-<span class="fc" id="L96">			return new WeightsImpl.Mapped.Long((DataContainer.Long) container, idStrat);</span>
-<span class="fc bfc" id="L97" title="All 2 branches covered.">		} else if (container instanceof DataContainer.Float) {</span>
-<span class="fc" id="L98">			return new WeightsImpl.Mapped.Float((DataContainer.Float) container, idStrat);</span>
-<span class="fc bfc" id="L99" title="All 2 branches covered.">		} else if (container instanceof DataContainer.Double) {</span>
-<span class="fc" id="L100">			return new WeightsImpl.Mapped.Double((DataContainer.Double) container, idStrat);</span>
-<span class="fc bfc" id="L101" title="All 2 branches covered.">		} else if (container instanceof DataContainer.Bool) {</span>
-<span class="fc" id="L102">			return new WeightsImpl.Mapped.Bool((DataContainer.Bool) container, idStrat);</span>
-<span class="pc bpc" id="L103" title="1 of 2 branches missed.">		} else if (container instanceof DataContainer.Char) {</span>
-<span class="fc" id="L104">			return new WeightsImpl.Mapped.Char((DataContainer.Char) container, idStrat);</span>
-		} else {
-<span class="nc" id="L106">			throw new IllegalArgumentException(container.getClass().toString());</span>
-		}
-	}
+		static abstract class Abstract&lt;E&gt; implements WeightsImpl.Index&lt;E&gt; {
 
-	static abstract class Abstract&lt;E&gt; implements WeightsImpl&lt;E&gt; {
+			final IdStrategyImpl idStrat;
 
-		private final DataContainer&lt;E&gt; container;
+<span class="fc" id="L162">			Abstract(IdStrategyImpl idStrat) {</span>
+<span class="fc" id="L163">				this.idStrat = Objects.requireNonNull(idStrat);</span>
+<span class="fc" id="L164">			}</span>
 
-<span class="fc" id="L114">		private Abstract(DataContainer&lt;E&gt; container) {</span>
-<span class="fc" id="L115">			this.container = container;</span>
-<span class="fc" id="L116">		}</span>
-
-		@Override
-		public DataContainer&lt;E&gt; container() {
-<span class="fc" id="L120">			return container;</span>
-		}
-	}
-
-	static abstract class Direct&lt;E&gt; extends WeightsImpl.Abstract&lt;E&gt; {
-		private Direct(DataContainer&lt;E&gt; data) {
-<span class="fc" id="L126">			super(data);</span>
-<span class="fc" id="L127">		}</span>
-
-		static class Obj&lt;E&gt; extends Direct&lt;E&gt; {
-			Obj(DataContainer.Obj&lt;E&gt; container) {
-<span class="fc" id="L131">				super(container);</span>
-<span class="fc" id="L132">			}</span>
-
-			@Override
-			public DataContainer.Obj&lt;E&gt; container() {
-<span class="fc" id="L136">				return (DataContainer.Obj&lt;E&gt;) super.container();</span>
+			int size() {
+<span class="fc" id="L167">				return idStrat.size();</span>
 			}
 
 			@Override
-			public E get(int id) {
-<span class="fc" id="L141">				return container().get(id);</span>
+			public int hashCode() {
+<span class="nc" id="L172">				return values().hashCode();</span>
 			}
 
 			@Override
-			public void set(int id, E val) {
-<span class="fc" id="L146">				container().set(id, val);</span>
-<span class="fc" id="L147">			}</span>
+			public String toString() {
+<span class="nc" id="L177">				return values().toString();</span>
+			}
+
+			void checkIdx(int idx) {
+<span class="pc bpc" id="L181" title="2 of 4 branches missed.">				if (!(0 &lt;= idx &amp;&amp; idx &lt; idStrat.size()))</span>
+<span class="nc" id="L182">					throw new IndexOutOfBoundsException(idx);</span>
+<span class="fc" id="L183">			}</span>
+		}
+
+<span class="fc" id="L186">		static class Obj&lt;E&gt; extends WeightsImpl.Index.Abstract&lt;E&gt; {</span>
+
+			private Object[] weights;
+			private final E defaultWeight;
+			private final ObjectCollection&lt;E&gt; values;
+			private final Class&lt;E&gt; type;
+
+			Obj(IdStrategyImpl idStrat, E defVal, Class&lt;E&gt; type) {
+<span class="fc" id="L194">				super(idStrat);</span>
+
+<span class="fc" id="L196">				defaultWeight = defVal;</span>
+<span class="fc" id="L197">				weights = ObjectArrays.EMPTY_ARRAY;</span>
+<span class="fc" id="L198">				Arrays.fill(weights, defaultWeight);</span>
+
+<span class="fc" id="L200">				this.type = Objects.requireNonNull(type);</span>
+<span class="fc" id="L201">				values = new AbstractObjectList&lt;&gt;() {</span>
+					@Override
+					public int size() {
+<span class="fc" id="L204">						return WeightsImpl.Index.Obj.super.size();</span>
+					}
+
+					@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
+					@Override
+					public ObjectListIterator&lt;E&gt; iterator() {
+<span class="fc" id="L210">						return (ObjectListIterator) ObjectIterators.wrap(weights, 0, size());</span>
+					}
+
+					@SuppressWarnings(&quot;unchecked&quot;)
+					@Override
+					public E get(int index) {
+<span class="nc" id="L216">						checkIdx(index);</span>
+<span class="nc" id="L217">						return (E) weights[index];</span>
+					}
+				};
+<span class="fc" id="L220">			}</span>
+
+			@Override
+			@SuppressWarnings(&quot;unchecked&quot;)
+			public E get(int idx) {
+<span class="fc" id="L225">				checkIdx(idx);</span>
+<span class="fc" id="L226">				return (E) weights[idx];</span>
+			}
+
+			@Override
+			public void set(int idx, E weight) {
+<span class="fc" id="L231">				checkIdx(idx);</span>
+<span class="fc" id="L232">				weights[idx] = weight;</span>
+<span class="fc" id="L233">			}</span>
 
 			@Override
 			public E defaultWeight() {
-<span class="fc" id="L151">				return container().defaultVal();</span>
+<span class="fc" id="L237">				return defaultWeight;</span>
 			}
 
 			@Override
-			public WeightsImpl.Direct.Obj&lt;E&gt; copy(IDStrategyImpl idStrat) {
-<span class="fc" id="L156">				return new WeightsImpl.Direct.Obj&lt;&gt;(container().copy(idStrat));</span>
+			public int capacity() {
+<span class="fc" id="L242">				return weights.length;</span>
+			}
+
+			@Override
+			public void expand(int newCapacity) {
+<span class="fc" id="L247">				int oldCapacity = weights.length;</span>
+<span class="pc bpc" id="L248" title="1 of 2 branches missed.">				assert oldCapacity &lt; newCapacity;</span>
+<span class="fc" id="L249">				weights = Arrays.copyOf(weights, newCapacity);</span>
+<span class="fc" id="L250">				Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);</span>
+<span class="fc" id="L251">			}</span>
+
+			@Override
+			public void swap(int idx1, int idx2) {
+<span class="fc" id="L255">				checkIdx(idx1);</span>
+<span class="fc" id="L256">				checkIdx(idx2);</span>
+<span class="fc" id="L257">				ObjectArrays.swap(weights, idx1, idx2);</span>
+<span class="fc" id="L258">			}</span>
+
+			@Override
+			public void clear(int idx) {
+				// checkIdx(idx);
+<span class="fc" id="L263">				weights[idx] = defaultWeight;</span>
+<span class="fc" id="L264">			}</span>
+
+			@Override
+			public void clear() {
+<span class="fc" id="L268">				Arrays.fill(weights, 0, size(), defaultWeight);</span>
+<span class="fc" id="L269">			}</span>
+
+			@Override
+			public Collection&lt;E&gt; values() {
+<span class="fc" id="L273">				return values;</span>
+			}
+
+			@Override
+			public Class&lt;E&gt; getTypeClass() {
+<span class="nc" id="L278">				return type;</span>
+			}
+
+			@Override
+			public WeightsImpl.Index.Obj&lt;E&gt; copy(IdStrategyImpl idStrat) {
+<span class="pc bpc" id="L283" title="1 of 2 branches missed.">				if (idStrat.size() != this.idStrat.size())</span>
+<span class="nc" id="L284">					throw new IllegalArgumentException();</span>
+<span class="fc" id="L285">				WeightsImpl.Index.Obj&lt;E&gt; copy = new WeightsImpl.Index.Obj&lt;&gt;(idStrat, defaultWeight, type);</span>
+<span class="fc" id="L286">				copy.weights = Arrays.copyOf(weights, idStrat.size());</span>
+<span class="fc" id="L287">				return copy;</span>
+			}
+
+			@Override
+			public boolean equals(Object other) {
+<span class="nc bnc" id="L292" title="All 2 branches missed.">				if (other == this)</span>
+<span class="nc" id="L293">					return true;</span>
+<span class="nc bnc" id="L294" title="All 2 branches missed.">				if (!(other instanceof WeightsImpl.Index.Obj&lt;?&gt;))</span>
+<span class="nc" id="L295">					return false;</span>
+<span class="nc" id="L296">				WeightsImpl.Index.Obj&lt;?&gt; o = (WeightsImpl.Index.Obj&lt;?&gt;) other;</span>
+<span class="nc" id="L297">				return Arrays.equals(weights, 0, size(), o.weights, 0, o.size());</span>
 			}
 		}
 
-		static class Byte extends Direct&lt;java.lang.Byte&gt; implements Weights.Byte {
-			Byte(DataContainer.Byte container) {
-<span class="fc" id="L162">				super(container);</span>
-<span class="fc" id="L163">			}</span>
+<span class="fc" id="L301">		static class Byte extends WeightsImpl.Index.Abstract&lt;java.lang.Byte&gt; implements Weights.Byte {</span>
+
+			private byte[] weights;
+			private final byte defaultWeight;
+			private final ByteCollection values;
+
+			Byte(IdStrategyImpl idStrat, byte defVal) {
+<span class="fc" id="L308">				super(idStrat);</span>
+
+<span class="fc" id="L310">				weights = ByteArrays.EMPTY_ARRAY;</span>
+<span class="fc" id="L311">				defaultWeight = defVal;</span>
+<span class="fc" id="L312">				values = new AbstractByteList() {</span>
+
+					@Override
+					public int size() {
+<span class="nc" id="L316">						return WeightsImpl.Index.Byte.super.size();</span>
+					}
+
+					@Override
+					public ByteListIterator iterator() {
+<span class="nc" id="L321">						return ByteIterators.wrap(weights, 0, size());</span>
+					}
+
+					@Override
+					public byte getByte(int index) {
+<span class="nc" id="L326">						checkIdx(index);</span>
+<span class="nc" id="L327">						return weights[index];</span>
+					}
+				};
+<span class="fc" id="L330">			}</span>
 
 			@Override
-			public DataContainer.Byte container() {
-<span class="fc" id="L167">				return (DataContainer.Byte) super.container();</span>
+			public byte getByte(int idx) {
+<span class="fc" id="L334">				checkIdx(idx);</span>
+<span class="fc" id="L335">				return weights[idx];</span>
 			}
 
 			@Override
-			public byte getByte(int id) {
-<span class="fc" id="L172">				return container().getByte(id);</span>
-			}
-
-			@Override
-			public void set(int key, byte weight) {
-<span class="fc" id="L177">				container().set(key, weight);</span>
-<span class="fc" id="L178">			}</span>
+			public void set(int idx, byte weight) {
+<span class="fc" id="L340">				checkIdx(idx);</span>
+<span class="fc" id="L341">				weights[idx] = weight;</span>
+<span class="fc" id="L342">			}</span>
 
 			@Override
 			public byte defaultWeightByte() {
-<span class="fc" id="L182">				return container().defaultValByte();</span>
+<span class="fc" id="L346">				return defaultWeight;</span>
 			}
 
 			@Override
-			public WeightsImpl.Direct.Byte copy(IDStrategyImpl idStrat) {
-<span class="nc" id="L187">				return new WeightsImpl.Direct.Byte(container().copy(idStrat));</span>
+			public int capacity() {
+<span class="fc" id="L351">				return weights.length;</span>
+			}
+
+			@Override
+			public void expand(int newCapacity) {
+<span class="fc" id="L356">				int oldCapacity = weights.length;</span>
+<span class="pc bpc" id="L357" title="1 of 2 branches missed.">				assert oldCapacity &lt; newCapacity;</span>
+<span class="fc" id="L358">				weights = Arrays.copyOf(weights, newCapacity);</span>
+<span class="fc" id="L359">				Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);</span>
+<span class="fc" id="L360">			}</span>
+
+			@Override
+			public void swap(int idx1, int idx2) {
+<span class="fc" id="L364">				checkIdx(idx1);</span>
+<span class="fc" id="L365">				checkIdx(idx2);</span>
+<span class="fc" id="L366">				ByteArrays.swap(weights, idx1, idx2);</span>
+<span class="fc" id="L367">			}</span>
+
+			@Override
+			public void clear(int idx) {
+				// checkIdx(idx);
+<span class="fc" id="L372">				weights[idx] = defaultWeight;</span>
+<span class="fc" id="L373">			}</span>
+
+			@Override
+			public void clear() {
+<span class="nc" id="L377">				Arrays.fill(weights, 0, size(), defaultWeight);</span>
+<span class="nc" id="L378">			}</span>
+
+			@Override
+			public ByteCollection values() {
+<span class="nc" id="L382">				return values;</span>
+			}
+
+			@Override
+			public Class&lt;java.lang.Byte&gt; getTypeClass() {
+<span class="nc" id="L387">				return byte.class;</span>
+			}
+
+			@Override
+			public WeightsImpl.Index.Byte copy(IdStrategyImpl idStrat) {
+<span class="nc bnc" id="L392" title="All 2 branches missed.">				if (idStrat.size() != this.idStrat.size())</span>
+<span class="nc" id="L393">					throw new IllegalArgumentException();</span>
+<span class="nc" id="L394">				WeightsImpl.Index.Byte copy = new WeightsImpl.Index.Byte(idStrat, defaultWeight);</span>
+<span class="nc" id="L395">				copy.weights = Arrays.copyOf(weights, idStrat.size());</span>
+<span class="nc" id="L396">				return copy;</span>
+			}
+
+			@Override
+			public boolean equals(Object other) {
+<span class="nc bnc" id="L401" title="All 2 branches missed.">				if (this == other)</span>
+<span class="nc" id="L402">					return true;</span>
+<span class="nc bnc" id="L403" title="All 2 branches missed.">				if (!(other instanceof WeightsImpl.Index.Byte))</span>
+<span class="nc" id="L404">					return false;</span>
+<span class="nc" id="L405">				WeightsImpl.Index.Byte o = (WeightsImpl.Index.Byte) other;</span>
+<span class="nc" id="L406">				return Arrays.equals(weights, 0, size(), o.weights, 0, o.size());</span>
 			}
 		}
 
-		static class Short extends Direct&lt;java.lang.Short&gt; implements Weights.Short {
-			Short(DataContainer.Short container) {
-<span class="fc" id="L193">				super(container);</span>
-<span class="fc" id="L194">			}</span>
+<span class="fc" id="L410">		static class Short extends WeightsImpl.Index.Abstract&lt;java.lang.Short&gt; implements Weights.Short {</span>
+
+			private short[] weights;
+			private final short defaultWeight;
+			private final ShortCollection values;
+
+			Short(IdStrategyImpl idStrat, short defVal) {
+<span class="fc" id="L417">				super(idStrat);</span>
+
+<span class="fc" id="L419">				weights = ShortArrays.EMPTY_ARRAY;</span>
+<span class="fc" id="L420">				defaultWeight = defVal;</span>
+<span class="fc" id="L421">				values = new AbstractShortList() {</span>
+
+					@Override
+					public int size() {
+<span class="nc" id="L425">						return WeightsImpl.Index.Short.super.size();</span>
+					}
+
+					@Override
+					public ShortListIterator iterator() {
+<span class="nc" id="L430">						return ShortIterators.wrap(weights, 0, size());</span>
+					}
+
+					@Override
+					public short getShort(int index) {
+<span class="nc" id="L435">						checkIdx(index);</span>
+<span class="nc" id="L436">						return weights[index];</span>
+					}
+				};
+<span class="fc" id="L439">			}</span>
 
 			@Override
-			public DataContainer.Short container() {
-<span class="fc" id="L198">				return (DataContainer.Short) super.container();</span>
+			public short getShort(int idx) {
+<span class="fc" id="L443">				checkIdx(idx);</span>
+<span class="fc" id="L444">				return weights[idx];</span>
 			}
 
 			@Override
-			public short getShort(int id) {
-<span class="fc" id="L203">				return container().getShort(id);</span>
-			}
-
-			@Override
-			public void set(int key, short weight) {
-<span class="fc" id="L208">				container().set(key, weight);</span>
-<span class="fc" id="L209">			}</span>
+			public void set(int idx, short weight) {
+<span class="fc" id="L449">				checkIdx(idx);</span>
+<span class="fc" id="L450">				weights[idx] = weight;</span>
+<span class="fc" id="L451">			}</span>
 
 			@Override
 			public short defaultWeightShort() {
-<span class="fc" id="L213">				return container().defaultValShort();</span>
+<span class="fc" id="L455">				return defaultWeight;</span>
 			}
 
 			@Override
-			public WeightsImpl.Direct.Short copy(IDStrategyImpl idStrat) {
-<span class="nc" id="L218">				return new WeightsImpl.Direct.Short(container().copy(idStrat));</span>
+			public int capacity() {
+<span class="fc" id="L460">				return weights.length;</span>
+			}
+
+			@Override
+			public void expand(int newCapacity) {
+<span class="fc" id="L465">				int oldCapacity = weights.length;</span>
+<span class="pc bpc" id="L466" title="1 of 2 branches missed.">				assert oldCapacity &lt; newCapacity;</span>
+<span class="fc" id="L467">				weights = Arrays.copyOf(weights, newCapacity);</span>
+<span class="fc" id="L468">				Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);</span>
+<span class="fc" id="L469">			}</span>
+
+			@Override
+			public void swap(int idx1, int idx2) {
+<span class="fc" id="L473">				checkIdx(idx1);</span>
+<span class="fc" id="L474">				checkIdx(idx2);</span>
+<span class="fc" id="L475">				ShortArrays.swap(weights, idx1, idx2);</span>
+<span class="fc" id="L476">			}</span>
+
+			@Override
+			public void clear(int idx) {
+				// checkIdx(idx);
+<span class="fc" id="L481">				weights[idx] = defaultWeight;</span>
+<span class="fc" id="L482">			}</span>
+
+			@Override
+			public void clear() {
+<span class="nc" id="L486">				Arrays.fill(weights, 0, size(), defaultWeight);</span>
+<span class="nc" id="L487">			}</span>
+
+			@Override
+			public ShortCollection values() {
+<span class="nc" id="L491">				return values;</span>
+			}
+
+			@Override
+			public Class&lt;java.lang.Short&gt; getTypeClass() {
+<span class="nc" id="L496">				return short.class;</span>
+			}
+
+			@Override
+			public WeightsImpl.Index.Short copy(IdStrategyImpl idStrat) {
+<span class="nc bnc" id="L501" title="All 2 branches missed.">				if (idStrat.size() != this.idStrat.size())</span>
+<span class="nc" id="L502">					throw new IllegalArgumentException();</span>
+<span class="nc" id="L503">				WeightsImpl.Index.Short copy = new WeightsImpl.Index.Short(idStrat, defaultWeight);</span>
+<span class="nc" id="L504">				copy.weights = Arrays.copyOf(weights, idStrat.size());</span>
+<span class="nc" id="L505">				return copy;</span>
+			}
+
+			@Override
+			public boolean equals(Object other) {
+<span class="nc bnc" id="L510" title="All 2 branches missed.">				if (this == other)</span>
+<span class="nc" id="L511">					return true;</span>
+<span class="nc bnc" id="L512" title="All 2 branches missed.">				if (!(other instanceof WeightsImpl.Index.Short))</span>
+<span class="nc" id="L513">					return false;</span>
+<span class="nc" id="L514">				WeightsImpl.Index.Short o = (WeightsImpl.Index.Short) other;</span>
+<span class="nc" id="L515">				return Arrays.equals(weights, 0, size(), o.weights, 0, o.size());</span>
 			}
 		}
 
-		static class Int extends Direct&lt;Integer&gt; implements Weights.Int {
-			Int(DataContainer.Int container) {
-<span class="fc" id="L224">				super(container);</span>
-<span class="fc" id="L225">			}</span>
+<span class="fc" id="L519">		static class Int extends WeightsImpl.Index.Abstract&lt;Integer&gt; implements Weights.Int {</span>
+
+			private int[] weights;
+			private final int defaultWeight;
+			private final IntCollection values;
+
+			Int(IdStrategyImpl idStrat, int defVal) {
+<span class="fc" id="L526">				super(idStrat);</span>
+
+<span class="fc" id="L528">				weights = IntArrays.EMPTY_ARRAY;</span>
+<span class="fc" id="L529">				defaultWeight = defVal;</span>
+<span class="fc" id="L530">				values = new AbstractIntList() {</span>
+
+					@Override
+					public int size() {
+<span class="nc" id="L534">						return WeightsImpl.Index.Int.super.size();</span>
+					}
+
+					@Override
+					public IntListIterator iterator() {
+<span class="nc" id="L539">						return IntIterators.wrap(weights, 0, size());</span>
+					}
+
+					@Override
+					public int getInt(int index) {
+<span class="nc" id="L544">						checkIdx(index);</span>
+<span class="nc" id="L545">						return weights[index];</span>
+					}
+				};
+<span class="fc" id="L548">			}</span>
 
 			@Override
-			public DataContainer.Int container() {
-<span class="fc" id="L229">				return (DataContainer.Int) super.container();</span>
+			public int getInt(int idx) {
+<span class="fc" id="L552">				checkIdx(idx);</span>
+<span class="fc" id="L553">				return weights[idx];</span>
 			}
 
 			@Override
-			public int getInt(int id) {
-<span class="fc" id="L234">				return container().getInt(id);</span>
-			}
-
-			@Override
-			public void set(int id, int weight) {
-<span class="fc" id="L239">				container().set(id, weight);</span>
-<span class="fc" id="L240">			}</span>
+			public void set(int idx, int weight) {
+<span class="fc" id="L558">				checkIdx(idx);</span>
+<span class="fc" id="L559">				weights[idx] = weight;</span>
+<span class="fc" id="L560">			}</span>
 
 			@Override
 			public int defaultWeightInt() {
-<span class="fc" id="L244">				return container().defaultValInt();</span>
+<span class="fc" id="L564">				return defaultWeight;</span>
 			}
 
 			@Override
-			public WeightsImpl.Direct.Int copy(IDStrategyImpl idStrat) {
-<span class="nc" id="L249">				return new WeightsImpl.Direct.Int(container().copy(idStrat));</span>
+			public int capacity() {
+<span class="fc" id="L569">				return weights.length;</span>
+			}
+
+			@Override
+			public void expand(int newCapacity) {
+<span class="fc" id="L574">				int oldCapacity = weights.length;</span>
+<span class="pc bpc" id="L575" title="1 of 2 branches missed.">				assert oldCapacity &lt; newCapacity;</span>
+<span class="fc" id="L576">				weights = Arrays.copyOf(weights, newCapacity);</span>
+<span class="fc" id="L577">				Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);</span>
+<span class="fc" id="L578">			}</span>
+
+			@Override
+			public void swap(int idx1, int idx2) {
+<span class="fc" id="L582">				checkIdx(idx1);</span>
+<span class="fc" id="L583">				checkIdx(idx2);</span>
+<span class="fc" id="L584">				IntArrays.swap(weights, idx1, idx2);</span>
+<span class="fc" id="L585">			}</span>
+
+			@Override
+			public void clear(int idx) {
+				// checkIdx(idx);
+<span class="fc" id="L590">				weights[idx] = defaultWeight;</span>
+<span class="fc" id="L591">			}</span>
+
+			@Override
+			public void clear() {
+<span class="fc" id="L595">				Arrays.fill(weights, 0, size(), defaultWeight);</span>
+<span class="fc" id="L596">			}</span>
+
+			@Override
+			public IntCollection values() {
+<span class="nc" id="L600">				return values;</span>
+			}
+
+			@Override
+			public Class&lt;Integer&gt; getTypeClass() {
+<span class="nc" id="L605">				return int.class;</span>
+			}
+
+			@Override
+			public WeightsImpl.Index.Int copy(IdStrategyImpl idStrat) {
+<span class="pc bpc" id="L610" title="1 of 2 branches missed.">				if (idStrat.size() != this.idStrat.size())</span>
+<span class="nc" id="L611">					throw new IllegalArgumentException();</span>
+<span class="fc" id="L612">				WeightsImpl.Index.Int copy = new WeightsImpl.Index.Int(idStrat, defaultWeight);</span>
+<span class="fc" id="L613">				copy.weights = Arrays.copyOf(weights, idStrat.size());</span>
+<span class="fc" id="L614">				return copy;</span>
+			}
+
+			@Override
+			public boolean equals(Object other) {
+<span class="nc bnc" id="L619" title="All 2 branches missed.">				if (this == other)</span>
+<span class="nc" id="L620">					return true;</span>
+<span class="nc bnc" id="L621" title="All 2 branches missed.">				if (!(other instanceof WeightsImpl.Index.Int))</span>
+<span class="nc" id="L622">					return false;</span>
+<span class="nc" id="L623">				WeightsImpl.Index.Int o = (WeightsImpl.Index.Int) other;</span>
+<span class="nc" id="L624">				return Arrays.equals(weights, 0, size(), o.weights, 0, o.size());</span>
 			}
 		}
 
-		static class Long extends Direct&lt;java.lang.Long&gt; implements Weights.Long {
-			Long(DataContainer.Long container) {
-<span class="fc" id="L255">				super(container);</span>
-<span class="fc" id="L256">			}</span>
+<span class="fc" id="L628">		static class Long extends WeightsImpl.Index.Abstract&lt;java.lang.Long&gt; implements Weights.Long {</span>
+
+			private long[] weights;
+			private final long defaultWeight;
+<span class="fc" id="L632">			private final LongCollection values = new AbstractLongList() {</span>
+
+				@Override
+				public int size() {
+<span class="nc" id="L636">					return WeightsImpl.Index.Long.super.size();</span>
+				}
+
+				@Override
+				public LongListIterator iterator() {
+<span class="nc" id="L641">					return LongIterators.wrap(weights, 0, size());</span>
+				}
+
+				@Override
+				public long getLong(int index) {
+<span class="nc" id="L646">					checkIdx(index);</span>
+<span class="nc" id="L647">					return weights[index];</span>
+				}
+			};
+
+			Long(IdStrategyImpl idStrat, long defVal) {
+<span class="fc" id="L652">				super(idStrat);</span>
+
+<span class="fc" id="L654">				weights = LongArrays.EMPTY_ARRAY;</span>
+<span class="fc" id="L655">				defaultWeight = defVal;</span>
+<span class="fc" id="L656">			}</span>
+
+			Long(WeightsImpl.Index.Long orig, IdStrategyImpl idStrat) {
+<span class="fc" id="L659">				super(idStrat);</span>
+<span class="pc bpc" id="L660" title="1 of 2 branches missed.">				if (idStrat.size() != this.idStrat.size())</span>
+<span class="nc" id="L661">					throw new IllegalArgumentException();</span>
+
+<span class="fc" id="L663">				weights = Arrays.copyOf(orig.weights, idStrat.size());</span>
+<span class="fc" id="L664">				defaultWeight = orig.defaultWeight;</span>
+<span class="fc" id="L665">			}</span>
 
 			@Override
-			public DataContainer.Long container() {
-<span class="fc" id="L260">				return (DataContainer.Long) super.container();</span>
+			public long getLong(int idx) {
+<span class="fc" id="L669">				checkIdx(idx);</span>
+<span class="fc" id="L670">				return weights[idx];</span>
 			}
 
 			@Override
-			public long getLong(int id) {
-<span class="fc" id="L265">				return container().getLong(id);</span>
-			}
-
-			@Override
-			public void set(int key, long weight) {
-<span class="fc" id="L270">				container().set(key, weight);</span>
-<span class="fc" id="L271">			}</span>
+			public void set(int idx, long weight) {
+<span class="fc" id="L675">				checkIdx(idx);</span>
+<span class="fc" id="L676">				weights[idx] = weight;</span>
+<span class="fc" id="L677">			}</span>
 
 			@Override
 			public long defaultWeightLong() {
-<span class="fc" id="L275">				return container().defaultValLong();</span>
+<span class="fc" id="L681">				return defaultWeight;</span>
 			}
 
 			@Override
-			public WeightsImpl.Direct.Long copy(IDStrategyImpl idStrat) {
-<span class="nc" id="L280">				return new WeightsImpl.Direct.Long(container().copy(idStrat));</span>
+			public int capacity() {
+<span class="fc" id="L686">				return weights.length;</span>
+			}
+
+			@Override
+			public void expand(int newCapacity) {
+<span class="fc" id="L691">				int oldCapacity = weights.length;</span>
+<span class="pc bpc" id="L692" title="1 of 2 branches missed.">				assert oldCapacity &lt; newCapacity;</span>
+<span class="fc" id="L693">				weights = Arrays.copyOf(weights, newCapacity);</span>
+<span class="fc" id="L694">				Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);</span>
+<span class="fc" id="L695">			}</span>
+
+			@Override
+			public void swap(int idx1, int idx2) {
+<span class="fc" id="L699">				checkIdx(idx1);</span>
+<span class="fc" id="L700">				checkIdx(idx2);</span>
+<span class="fc" id="L701">				LongArrays.swap(weights, idx1, idx2);</span>
+<span class="fc" id="L702">			}</span>
+
+			@Override
+			public void clear(int idx) {
+				// checkIdx(idx);
+<span class="fc" id="L707">				weights[idx] = defaultWeight;</span>
+<span class="fc" id="L708">			}</span>
+
+			@Override
+			public void clear() {
+<span class="fc" id="L712">				Arrays.fill(weights, 0, size(), defaultWeight);</span>
+<span class="fc" id="L713">			}</span>
+
+			@Override
+			public LongCollection values() {
+<span class="nc" id="L717">				return values;</span>
+			}
+
+			@Override
+			public Class&lt;java.lang.Long&gt; getTypeClass() {
+<span class="nc" id="L722">				return long.class;</span>
+			}
+
+			@Override
+			public WeightsImpl.Index.Long copy(IdStrategyImpl idStrat) {
+<span class="nc" id="L727">				return new WeightsImpl.Index.Long(this, idStrat);</span>
+			}
+
+			@Override
+			public boolean equals(Object other) {
+<span class="nc bnc" id="L732" title="All 2 branches missed.">				if (this == other)</span>
+<span class="nc" id="L733">					return true;</span>
+<span class="nc bnc" id="L734" title="All 2 branches missed.">				if (!(other instanceof WeightsImpl.Index.Long))</span>
+<span class="nc" id="L735">					return false;</span>
+<span class="nc" id="L736">				WeightsImpl.Index.Long o = (WeightsImpl.Index.Long) other;</span>
+<span class="nc" id="L737">				return Arrays.equals(weights, 0, size(), o.weights, 0, o.size());</span>
 			}
 		}
 
-		static class Float extends Direct&lt;java.lang.Float&gt; implements Weights.Float {
-			Float(DataContainer.Float container) {
-<span class="fc" id="L286">				super(container);</span>
-<span class="fc" id="L287">			}</span>
+<span class="fc" id="L741">		static class Float extends WeightsImpl.Index.Abstract&lt;java.lang.Float&gt; implements Weights.Float {</span>
+
+			private float[] weights;
+			private final float defaultWeight;
+			private final FloatCollection values;
+
+			Float(IdStrategyImpl idStrat, float defVal) {
+<span class="fc" id="L748">				super(idStrat);</span>
+
+<span class="fc" id="L750">				weights = FloatArrays.EMPTY_ARRAY;</span>
+<span class="fc" id="L751">				defaultWeight = defVal;</span>
+<span class="fc" id="L752">				values = new AbstractFloatList() {</span>
+
+					@Override
+					public int size() {
+<span class="nc" id="L756">						return WeightsImpl.Index.Float.super.size();</span>
+					}
+
+					@Override
+					public FloatListIterator iterator() {
+<span class="nc" id="L761">						return FloatIterators.wrap(weights, 0, size());</span>
+					}
+
+					@Override
+					public float getFloat(int index) {
+<span class="nc" id="L766">						checkIdx(index);</span>
+<span class="nc" id="L767">						return weights[index];</span>
+					}
+				};
+<span class="fc" id="L770">			}</span>
 
 			@Override
-			public DataContainer.Float container() {
-<span class="fc" id="L291">				return (DataContainer.Float) super.container();</span>
+			public float getFloat(int idx) {
+<span class="fc" id="L774">				checkIdx(idx);</span>
+<span class="fc" id="L775">				return weights[idx];</span>
 			}
 
 			@Override
-			public float getFloat(int id) {
-<span class="fc" id="L296">				return container().getFloat(id);</span>
-			}
-
-			@Override
-			public void set(int key, float weight) {
-<span class="fc" id="L301">				container().set(key, weight);</span>
-<span class="fc" id="L302">			}</span>
+			public void set(int idx, float weight) {
+<span class="fc" id="L780">				checkIdx(idx);</span>
+<span class="fc" id="L781">				weights[idx] = weight;</span>
+<span class="fc" id="L782">			}</span>
 
 			@Override
 			public float defaultWeightFloat() {
-<span class="fc" id="L306">				return container().defaultValFloat();</span>
+<span class="fc" id="L786">				return defaultWeight;</span>
 			}
 
 			@Override
-			public WeightsImpl.Direct.Float copy(IDStrategyImpl idStrat) {
-<span class="nc" id="L311">				return new WeightsImpl.Direct.Float(container().copy(idStrat));</span>
+			public int capacity() {
+<span class="fc" id="L791">				return weights.length;</span>
+			}
+
+			@Override
+			public void expand(int newCapacity) {
+<span class="fc" id="L796">				int oldCapacity = weights.length;</span>
+<span class="pc bpc" id="L797" title="1 of 2 branches missed.">				assert oldCapacity &lt; newCapacity;</span>
+<span class="fc" id="L798">				weights = Arrays.copyOf(weights, newCapacity);</span>
+<span class="fc" id="L799">				Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);</span>
+<span class="fc" id="L800">			}</span>
+
+			@Override
+			public void swap(int idx1, int idx2) {
+<span class="fc" id="L804">				checkIdx(idx1);</span>
+<span class="fc" id="L805">				checkIdx(idx2);</span>
+<span class="fc" id="L806">				FloatArrays.swap(weights, idx1, idx2);</span>
+<span class="fc" id="L807">			}</span>
+
+			@Override
+			public void clear(int idx) {
+				// checkIdx(idx);
+<span class="fc" id="L812">				weights[idx] = defaultWeight;</span>
+<span class="fc" id="L813">			}</span>
+
+			@Override
+			public void clear() {
+<span class="nc" id="L817">				Arrays.fill(weights, 0, size(), defaultWeight);</span>
+<span class="nc" id="L818">			}</span>
+
+			@Override
+			public FloatCollection values() {
+<span class="nc" id="L822">				return values;</span>
+			}
+
+			@Override
+			public Class&lt;java.lang.Float&gt; getTypeClass() {
+<span class="nc" id="L827">				return float.class;</span>
+			}
+
+			@Override
+			public WeightsImpl.Index.Float copy(IdStrategyImpl idStrat) {
+<span class="nc bnc" id="L832" title="All 2 branches missed.">				if (idStrat.size() != this.idStrat.size())</span>
+<span class="nc" id="L833">					throw new IllegalArgumentException();</span>
+<span class="nc" id="L834">				WeightsImpl.Index.Float copy = new WeightsImpl.Index.Float(idStrat, defaultWeight);</span>
+<span class="nc" id="L835">				copy.weights = Arrays.copyOf(weights, idStrat.size());</span>
+<span class="nc" id="L836">				return copy;</span>
+			}
+
+			@Override
+			public boolean equals(Object other) {
+<span class="nc bnc" id="L841" title="All 2 branches missed.">				if (this == other)</span>
+<span class="nc" id="L842">					return true;</span>
+<span class="nc bnc" id="L843" title="All 2 branches missed.">				if (!(other instanceof WeightsImpl.Index.Float))</span>
+<span class="nc" id="L844">					return false;</span>
+<span class="nc" id="L845">				WeightsImpl.Index.Float o = (WeightsImpl.Index.Float) other;</span>
+<span class="nc" id="L846">				return Arrays.equals(weights, 0, size(), o.weights, 0, o.size());</span>
 			}
 		}
 
-		static class Double extends Direct&lt;java.lang.Double&gt; implements Weights.Double {
-			Double(DataContainer.Double container) {
-<span class="fc" id="L317">				super(container);</span>
-<span class="fc" id="L318">			}</span>
+<span class="fc" id="L850">		static class Double extends WeightsImpl.Index.Abstract&lt;java.lang.Double&gt; implements Weights.Double {</span>
+
+			private double[] weights;
+			private final double defaultWeight;
+			private final DoubleCollection values;
+
+			Double(IdStrategyImpl idStrat, double defVal) {
+<span class="fc" id="L857">				super(idStrat);</span>
+
+<span class="fc" id="L859">				weights = DoubleArrays.EMPTY_ARRAY;</span>
+<span class="fc" id="L860">				defaultWeight = defVal;</span>
+<span class="fc" id="L861">				values = new AbstractDoubleList() {</span>
+
+					@Override
+					public int size() {
+<span class="nc" id="L865">						return WeightsImpl.Index.Double.super.size();</span>
+					}
+
+					@Override
+					public DoubleListIterator iterator() {
+<span class="nc" id="L870">						return DoubleIterators.wrap(weights, 0, size());</span>
+					}
+
+					@Override
+					public double getDouble(int index) {
+<span class="nc" id="L875">						checkIdx(index);</span>
+<span class="nc" id="L876">						return weights[index];</span>
+					}
+				};
+<span class="fc" id="L879">			}</span>
 
 			@Override
-			public DataContainer.Double container() {
-<span class="fc" id="L322">				return (DataContainer.Double) super.container();</span>
+			public double getDouble(int idx) {
+<span class="fc" id="L883">				checkIdx(idx);</span>
+<span class="fc" id="L884">				return weights[idx];</span>
 			}
 
 			@Override
-			public double getDouble(int id) {
-<span class="fc" id="L327">				return container().getDouble(id);</span>
-			}
-
-			@Override
-			public void set(int key, double weight) {
-<span class="fc" id="L332">				container().set(key, weight);</span>
-<span class="fc" id="L333">			}</span>
+			public void set(int idx, double weight) {
+<span class="fc" id="L889">				checkIdx(idx);</span>
+<span class="fc" id="L890">				weights[idx] = weight;</span>
+<span class="fc" id="L891">			}</span>
 
 			@Override
 			public double defaultWeightDouble() {
-<span class="fc" id="L337">				return container().defaultValDouble();</span>
+<span class="fc" id="L895">				return defaultWeight;</span>
 			}
 
 			@Override
-			public WeightsImpl.Direct.Double copy(IDStrategyImpl idStrat) {
-<span class="nc" id="L342">				return new WeightsImpl.Direct.Double(container().copy(idStrat));</span>
+			public int capacity() {
+<span class="fc" id="L900">				return weights.length;</span>
+			}
+
+			@Override
+			public void expand(int newCapacity) {
+<span class="fc" id="L905">				int oldCapacity = weights.length;</span>
+<span class="pc bpc" id="L906" title="1 of 2 branches missed.">				assert oldCapacity &lt; newCapacity;</span>
+<span class="fc" id="L907">				weights = Arrays.copyOf(weights, newCapacity);</span>
+<span class="fc" id="L908">				Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);</span>
+<span class="fc" id="L909">			}</span>
+
+			@Override
+			public void swap(int idx1, int idx2) {
+<span class="fc" id="L913">				checkIdx(idx1);</span>
+<span class="fc" id="L914">				checkIdx(idx2);</span>
+<span class="fc" id="L915">				DoubleArrays.swap(weights, idx1, idx2);</span>
+<span class="fc" id="L916">			}</span>
+
+			@Override
+			public void clear(int idx) {
+				// checkIdx(idx);
+<span class="fc" id="L921">				weights[idx] = defaultWeight;</span>
+<span class="fc" id="L922">			}</span>
+
+			@Override
+			public void clear() {
+<span class="fc" id="L926">				Arrays.fill(weights, 0, size(), defaultWeight);</span>
+<span class="fc" id="L927">			}</span>
+
+			@Override
+			public DoubleCollection values() {
+<span class="nc" id="L931">				return values;</span>
+			}
+
+			@Override
+			public Class&lt;java.lang.Double&gt; getTypeClass() {
+<span class="nc" id="L936">				return double.class;</span>
+			}
+
+			@Override
+			public WeightsImpl.Index.Double copy(IdStrategyImpl idStrat) {
+<span class="nc bnc" id="L941" title="All 2 branches missed.">				if (idStrat.size() != this.idStrat.size())</span>
+<span class="nc" id="L942">					throw new IllegalArgumentException();</span>
+<span class="nc" id="L943">				WeightsImpl.Index.Double copy = new WeightsImpl.Index.Double(idStrat, defaultWeight);</span>
+<span class="nc" id="L944">				copy.weights = Arrays.copyOf(weights, idStrat.size());</span>
+<span class="nc" id="L945">				return copy;</span>
+			}
+
+			@Override
+			public boolean equals(Object other) {
+<span class="nc bnc" id="L950" title="All 2 branches missed.">				if (this == other)</span>
+<span class="nc" id="L951">					return true;</span>
+<span class="nc bnc" id="L952" title="All 2 branches missed.">				if (!(other instanceof WeightsImpl.Index.Double))</span>
+<span class="nc" id="L953">					return false;</span>
+<span class="nc" id="L954">				WeightsImpl.Index.Double o = (WeightsImpl.Index.Double) other;</span>
+<span class="nc" id="L955">				return Arrays.equals(weights, 0, size(), o.weights, 0, o.size());</span>
 			}
 		}
 
-		static class Bool extends Direct&lt;Boolean&gt; implements Weights.Bool {
-			Bool(DataContainer.Bool container) {
-<span class="fc" id="L348">				super(container);</span>
-<span class="fc" id="L349">			}</span>
+<span class="fc" id="L959">		static class Bool extends WeightsImpl.Index.Abstract&lt;Boolean&gt; implements Weights.Bool {</span>
+
+			private final BitSet weights;
+			private int capacity;
+			private final boolean defaultWeight;
+<span class="pc" id="L964">			private final BooleanCollection values = new AbstractBooleanList() {</span>
+
+				@Override
+				public int size() {
+<span class="nc" id="L968">					return WeightsImpl.Index.Bool.super.size();</span>
+				}
+
+				@Override
+				public BooleanListIterator iterator() {
+<span class="nc" id="L973">					return new BooleanListIterator() {</span>
+<span class="nc" id="L974">						int idx = 0;</span>
+
+						@Override
+						public boolean hasNext() {
+<span class="nc bnc" id="L978" title="All 2 branches missed.">							return idx &lt; size();</span>
+						}
+
+						@Override
+						public boolean nextBoolean() {
+<span class="nc bnc" id="L983" title="All 2 branches missed.">							if (!hasNext())</span>
+<span class="nc" id="L984">								throw new NoSuchElementException();</span>
+<span class="nc" id="L985">							return weights.get(idx++);</span>
+						}
+
+						@Override
+						public boolean previousBoolean() {
+<span class="nc bnc" id="L990" title="All 2 branches missed.">							if (!hasPrevious())</span>
+<span class="nc" id="L991">								throw new NoSuchElementException();</span>
+<span class="nc" id="L992">							return weights.get(--idx);</span>
+						}
+
+						@Override
+						public boolean hasPrevious() {
+<span class="nc bnc" id="L997" title="All 2 branches missed.">							return idx &gt; 0;</span>
+						}
+
+						@Override
+						public int nextIndex() {
+<span class="nc" id="L1002">							return idx;</span>
+						}
+
+						@Override
+						public int previousIndex() {
+<span class="nc" id="L1007">							return idx - 1;</span>
+						}
+					};
+				}
+
+				@Override
+				public boolean getBoolean(int index) {
+<span class="nc" id="L1014">					checkIdx(index);</span>
+<span class="nc" id="L1015">					return weights.get(index);</span>
+				}
+			};
+
+			Bool(WeightsImpl.Index.Bool orig, IdStrategyImpl idStrat) {
+<span class="nc" id="L1020">				super(idStrat);</span>
+<span class="nc" id="L1021">				defaultWeight = orig.defaultWeight;</span>
+<span class="nc" id="L1022">				weights = (BitSet) orig.weights.clone();</span>
+<span class="nc" id="L1023">			}</span>
+
+			Bool(IdStrategyImpl idStrat, boolean defVal) {
+<span class="fc" id="L1026">				super(idStrat);</span>
+
+<span class="fc" id="L1028">				defaultWeight = defVal;</span>
+<span class="fc" id="L1029">				weights = new BitSet();</span>
+<span class="fc" id="L1030">			}</span>
 
 			@Override
-			public DataContainer.Bool container() {
-<span class="fc" id="L353">				return (DataContainer.Bool) super.container();</span>
+			public boolean getBool(int idx) {
+<span class="fc" id="L1034">				checkIdx(idx);</span>
+<span class="fc" id="L1035">				return weights.get(idx);</span>
 			}
 
 			@Override
-			public boolean getBool(int id) {
-<span class="fc" id="L358">				return container().getBool(id);</span>
-			}
-
-			@Override
-			public void set(int id, boolean weight) {
-<span class="fc" id="L363">				container().set(id, weight);</span>
-<span class="fc" id="L364">			}</span>
+			public void set(int idx, boolean weight) {
+<span class="fc" id="L1040">				checkIdx(idx);</span>
+<span class="fc" id="L1041">				weights.set(idx, weight);</span>
+<span class="fc" id="L1042">			}</span>
 
 			@Override
 			public boolean defaultWeightBool() {
-<span class="fc" id="L368">				return container().defaultValBool();</span>
+<span class="fc" id="L1046">				return defaultWeight;</span>
 			}
 
 			@Override
-			public WeightsImpl.Direct.Bool copy(IDStrategyImpl idStrat) {
-<span class="nc" id="L373">				return new WeightsImpl.Direct.Bool(container().copy(idStrat));</span>
+			public int capacity() {
+<span class="fc" id="L1051">				return capacity;</span>
+			}
+
+			@Override
+			public void expand(int newCapacity) {
+<span class="fc" id="L1056">				int oldCapacity = capacity;</span>
+<span class="pc bpc" id="L1057" title="1 of 2 branches missed.">				assert oldCapacity &lt; newCapacity;</span>
+<span class="fc" id="L1058">				capacity = newCapacity;</span>
+<span class="fc bfc" id="L1059" title="All 2 branches covered.">				if (defaultWeight)</span>
+<span class="fc" id="L1060">					weights.set(oldCapacity, newCapacity);</span>
+<span class="fc" id="L1061">			}</span>
+
+			@Override
+			public void swap(int idx1, int idx2) {
+<span class="fc" id="L1065">				checkIdx(idx1);</span>
+<span class="fc" id="L1066">				checkIdx(idx2);</span>
+<span class="fc" id="L1067">				boolean temp = weights.get(idx1);</span>
+<span class="fc" id="L1068">				weights.set(idx1, weights.get(idx2));</span>
+<span class="fc" id="L1069">				weights.set(idx2, temp);</span>
+<span class="fc" id="L1070">			}</span>
+
+			@Override
+			public void clear(int idx) {
+				// checkIdx(idx);
+<span class="fc" id="L1075">				weights.set(idx, defaultWeight);</span>
+<span class="fc" id="L1076">			}</span>
+
+			@Override
+			public void clear() {
+<span class="nc" id="L1080">				weights.set(0, capacity, defaultWeight);</span>
+<span class="nc" id="L1081">			}</span>
+
+			@Override
+			public BooleanCollection values() {
+<span class="nc" id="L1085">				return values;</span>
+			}
+
+			@Override
+			public Class&lt;Boolean&gt; getTypeClass() {
+<span class="nc" id="L1090">				return boolean.class;</span>
+			}
+
+			@Override
+			public WeightsImpl.Index.Bool copy(IdStrategyImpl idStrat) {
+<span class="nc bnc" id="L1095" title="All 2 branches missed.">				if (idStrat.size() != this.idStrat.size())</span>
+<span class="nc" id="L1096">					throw new IllegalArgumentException();</span>
+<span class="nc" id="L1097">				return new WeightsImpl.Index.Bool(this, idStrat);</span>
+			}
+
+			@Override
+			public boolean equals(Object other) {
+<span class="nc bnc" id="L1102" title="All 2 branches missed.">				if (this == other)</span>
+<span class="nc" id="L1103">					return true;</span>
+<span class="nc bnc" id="L1104" title="All 2 branches missed.">				if (!(other instanceof WeightsImpl.Index.Bool))</span>
+<span class="nc" id="L1105">					return false;</span>
+<span class="nc" id="L1106">				WeightsImpl.Index.Bool o = (WeightsImpl.Index.Bool) other;</span>
+<span class="nc bnc" id="L1107" title="All 4 branches missed.">				return size() == o.size() &amp;&amp; weights.equals(o.weights);</span>
 			}
 		}
 
-		static class Char extends Direct&lt;Character&gt; implements Weights.Char {
-			Char(DataContainer.Char container) {
-<span class="fc" id="L379">				super(container);</span>
-<span class="fc" id="L380">			}</span>
+<span class="fc" id="L1111">		static class Char extends WeightsImpl.Index.Abstract&lt;Character&gt; implements Weights.Char {</span>
+
+			private char[] weights;
+			private final char defaultWeight;
+			private final CharCollection values;
+
+			Char(IdStrategyImpl idStrat, char defVal) {
+<span class="fc" id="L1118">				super(idStrat);</span>
+
+<span class="fc" id="L1120">				weights = CharArrays.EMPTY_ARRAY;</span>
+<span class="fc" id="L1121">				defaultWeight = defVal;</span>
+<span class="fc" id="L1122">				values = new AbstractCharList() {</span>
+
+					@Override
+					public int size() {
+<span class="nc" id="L1126">						return WeightsImpl.Index.Char.super.size();</span>
+					}
+
+					@Override
+					public CharListIterator iterator() {
+<span class="nc" id="L1131">						return CharIterators.wrap(weights, 0, size());</span>
+					}
+
+					@Override
+					public char getChar(int index) {
+<span class="nc" id="L1136">						checkIdx(index);</span>
+<span class="nc" id="L1137">						return weights[index];</span>
+					}
+				};
+<span class="fc" id="L1140">			}</span>
 
 			@Override
-			public DataContainer.Char container() {
-<span class="fc" id="L384">				return (DataContainer.Char) super.container();</span>
+			public char getChar(int idx) {
+<span class="fc" id="L1144">				checkIdx(idx);</span>
+<span class="fc" id="L1145">				return weights[idx];</span>
 			}
 
 			@Override
-			public char getChar(int id) {
-<span class="fc" id="L389">				return container().getChar(id);</span>
-			}
-
-			@Override
-			public void set(int id, char weight) {
-<span class="fc" id="L394">				container().set(id, weight);</span>
-<span class="fc" id="L395">			}</span>
+			public void set(int idx, char weight) {
+<span class="fc" id="L1150">				checkIdx(idx);</span>
+<span class="fc" id="L1151">				weights[idx] = weight;</span>
+<span class="fc" id="L1152">			}</span>
 
 			@Override
 			public char defaultWeightChar() {
-<span class="fc" id="L399">				return container().defaultValChar();</span>
+<span class="fc" id="L1156">				return defaultWeight;</span>
 			}
 
 			@Override
-			public WeightsImpl.Direct.Char copy(IDStrategyImpl idStrat) {
-<span class="nc" id="L404">				return new WeightsImpl.Direct.Char(container().copy(idStrat));</span>
+			public int capacity() {
+<span class="fc" id="L1161">				return weights.length;</span>
 			}
+
+			@Override
+			public void expand(int newCapacity) {
+<span class="fc" id="L1166">				int oldCapacity = weights.length;</span>
+<span class="pc bpc" id="L1167" title="1 of 2 branches missed.">				assert oldCapacity &lt; newCapacity;</span>
+<span class="fc" id="L1168">				weights = Arrays.copyOf(weights, newCapacity);</span>
+<span class="fc" id="L1169">				Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);</span>
+<span class="fc" id="L1170">			}</span>
+
+			@Override
+			public void swap(int idx1, int idx2) {
+<span class="fc" id="L1174">				checkIdx(idx1);</span>
+<span class="fc" id="L1175">				checkIdx(idx2);</span>
+<span class="fc" id="L1176">				CharArrays.swap(weights, idx1, idx2);</span>
+<span class="fc" id="L1177">			}</span>
+
+			@Override
+			public void clear(int idx) {
+				// checkIdx(idx);
+<span class="fc" id="L1182">				weights[idx] = defaultWeight;</span>
+<span class="fc" id="L1183">			}</span>
+
+			@Override
+			public void clear() {
+<span class="nc" id="L1187">				Arrays.fill(weights, 0, size(), defaultWeight);</span>
+<span class="nc" id="L1188">			}</span>
+
+			@Override
+			public CharCollection values() {
+<span class="nc" id="L1192">				return values;</span>
+			}
+
+			@Override
+			public Class&lt;Character&gt; getTypeClass() {
+<span class="nc" id="L1197">				return char.class;</span>
+			}
+
+			@Override
+			public WeightsImpl.Index.Char copy(IdStrategyImpl idStrat) {
+<span class="nc bnc" id="L1202" title="All 2 branches missed.">				if (idStrat.size() != this.idStrat.size())</span>
+<span class="nc" id="L1203">					throw new IllegalArgumentException();</span>
+<span class="nc" id="L1204">				WeightsImpl.Index.Char copy = new WeightsImpl.Index.Char(idStrat, defaultWeight);</span>
+<span class="nc" id="L1205">				copy.weights = Arrays.copyOf(weights, idStrat.size());</span>
+<span class="nc" id="L1206">				return copy;</span>
+			}
+
+			@Override
+			public boolean equals(Object other) {
+<span class="nc bnc" id="L1211" title="All 2 branches missed.">				if (this == other)</span>
+<span class="nc" id="L1212">					return true;</span>
+<span class="nc bnc" id="L1213" title="All 2 branches missed.">				if (!(other instanceof WeightsImpl.Index.Char))</span>
+<span class="nc" id="L1214">					return false;</span>
+<span class="nc" id="L1215">				WeightsImpl.Index.Char o = (WeightsImpl.Index.Char) other;</span>
+<span class="nc" id="L1216">				return Arrays.equals(weights, 0, size(), o.weights, 0, o.size());</span>
+			}
+		}
+
+		static class Manager {
+
+<span class="fc" id="L1222">			final Map&lt;Object, WeightsImpl.Index&lt;?&gt;&gt; weights = new Object2ObjectArrayMap&lt;&gt;();</span>
+			private int weightsCapacity;
+
+<span class="fc" id="L1225">			Manager(int initCapacity) {</span>
+<span class="fc" id="L1226">				weightsCapacity = initCapacity;</span>
+<span class="fc" id="L1227">			}</span>
+
+			Manager(Manager orig, IdStrategyImpl idStrat) {
+<span class="fc" id="L1230">				this(idStrat.size());</span>
+<span class="fc bfc" id="L1231" title="All 2 branches covered.">				for (var entry : orig.weights.entrySet())</span>
+<span class="fc" id="L1232">					weights.put(entry.getKey(), entry.getValue().copy(idStrat));</span>
+<span class="fc" id="L1233">			}</span>
+
+			void addWeights(Object key, WeightsImpl.Index&lt;?&gt; weight) {
+<span class="fc" id="L1236">				WeightsImpl.Index&lt;?&gt; oldContainer = weights.put(key, weight);</span>
+<span class="pc bpc" id="L1237" title="1 of 2 branches missed.">				if (oldContainer != null)</span>
+<span class="nc" id="L1238">					throw new IllegalArgumentException(&quot;Two weights types with the same key: &quot; + key);</span>
+<span class="fc bfc" id="L1239" title="All 2 branches covered.">				if (weightsCapacity &gt; weight.capacity())</span>
+<span class="fc" id="L1240">					weight.expand(weightsCapacity);</span>
+<span class="fc" id="L1241">			}</span>
+
+			void removeWeights(Object key) {
+<span class="nc" id="L1244">				weights.remove(key);</span>
+<span class="nc" id="L1245">			}</span>
+
+			@SuppressWarnings(&quot;unchecked&quot;)
+			&lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT getWeights(Object key) {
+<span class="fc" id="L1249">				return (WeightsT) weights.get(key);</span>
+			}
+
+			Set&lt;Object&gt; weightsKeys() {
+<span class="fc" id="L1253">				return Collections.unmodifiableSet(weights.keySet());</span>
+			}
+
+			void ensureCapacity(int capacity) {
+<span class="fc bfc" id="L1257" title="All 2 branches covered.">				if (capacity &lt;= weightsCapacity)</span>
+<span class="fc" id="L1258">					return;</span>
+<span class="fc" id="L1259">				int newCapacity = Math.max(Math.max(2, 2 * weightsCapacity), capacity);</span>
+<span class="fc bfc" id="L1260" title="All 2 branches covered.">				for (WeightsImpl.Index&lt;?&gt; container : weights.values())</span>
+<span class="fc" id="L1261">					container.expand(newCapacity);</span>
+<span class="fc" id="L1262">				weightsCapacity = newCapacity;</span>
+<span class="fc" id="L1263">			}</span>
+
+			void swapElements(int idx1, int idx2) {
+<span class="fc bfc" id="L1266" title="All 2 branches covered.">				for (WeightsImpl.Index&lt;?&gt; container : weights.values())</span>
+<span class="fc" id="L1267">					container.swap(idx1, idx2);</span>
+<span class="fc" id="L1268">			}</span>
+
+			void clearElement(int idx) {
+<span class="fc bfc" id="L1271" title="All 2 branches covered.">				for (WeightsImpl.Index&lt;?&gt; container : weights.values())</span>
+<span class="fc" id="L1272">					container.clear(idx);</span>
+<span class="fc" id="L1273">			}</span>
+
+			void clearContainers() {
+<span class="fc bfc" id="L1276" title="All 2 branches covered.">				for (WeightsImpl.Index&lt;?&gt; container : weights.values())</span>
+<span class="fc" id="L1277">					container.clear();</span>
+<span class="fc" id="L1278">			}</span>
 		}
 	}
 
-	static abstract class Mapped&lt;E&gt; extends WeightsImpl.Abstract&lt;E&gt; {
+	static abstract class Mapped&lt;E&gt; implements Weights&lt;E&gt; {
 
-		final IDStrategyImpl idStrategy;
+		private final WeightsImpl.Index&lt;E&gt; weights;
+		final IndexIdMap indexMap;
 
-		private Mapped(DataContainer&lt;E&gt; data, IDStrategyImpl idStrategy) {
-<span class="fc" id="L414">			super(data);</span>
-<span class="fc" id="L415">			this.idStrategy = idStrategy;</span>
-<span class="fc" id="L416">		}</span>
+<span class="fc" id="L1287">		private Mapped(Weights&lt;E&gt; weights, IndexIdMap indexMap) {</span>
+<span class="fc" id="L1288">			this.weights = (WeightsImpl.Index&lt;E&gt;) Objects.requireNonNull(weights);</span>
+<span class="fc" id="L1289">			this.indexMap = indexMap;</span>
+<span class="fc" id="L1290">		}</span>
+
+		Weights&lt;E&gt; weights() {
+<span class="fc" id="L1293">			return weights;</span>
+		}
+
+		static WeightsImpl.Mapped&lt;?&gt; newInstance(WeightsImpl.Index&lt;?&gt; weights, IndexIdMap indexMap) {
+<span class="fc bfc" id="L1297" title="All 2 branches covered.">			if (weights instanceof Weights.Byte) {</span>
+<span class="fc" id="L1298">				return new WeightsImpl.Mapped.Byte((Weights.Byte) weights, indexMap);</span>
+<span class="fc bfc" id="L1299" title="All 2 branches covered.">			} else if (weights instanceof Weights.Short) {</span>
+<span class="fc" id="L1300">				return new WeightsImpl.Mapped.Short((Weights.Short) weights, indexMap);</span>
+<span class="fc bfc" id="L1301" title="All 2 branches covered.">			} else if (weights instanceof Weights.Int) {</span>
+<span class="fc" id="L1302">				return new WeightsImpl.Mapped.Int((Weights.Int) weights, indexMap);</span>
+<span class="fc bfc" id="L1303" title="All 2 branches covered.">			} else if (weights instanceof Weights.Long) {</span>
+<span class="fc" id="L1304">				return new WeightsImpl.Mapped.Long((Weights.Long) weights, indexMap);</span>
+<span class="fc bfc" id="L1305" title="All 2 branches covered.">			} else if (weights instanceof Weights.Float) {</span>
+<span class="fc" id="L1306">				return new WeightsImpl.Mapped.Float((Weights.Float) weights, indexMap);</span>
+<span class="fc bfc" id="L1307" title="All 2 branches covered.">			} else if (weights instanceof Weights.Double) {</span>
+<span class="fc" id="L1308">				return new WeightsImpl.Mapped.Double((Weights.Double) weights, indexMap);</span>
+<span class="fc bfc" id="L1309" title="All 2 branches covered.">			} else if (weights instanceof Weights.Bool) {</span>
+<span class="fc" id="L1310">				return new WeightsImpl.Mapped.Bool((Weights.Bool) weights, indexMap);</span>
+<span class="fc bfc" id="L1311" title="All 2 branches covered.">			} else if (weights instanceof Weights.Char) {</span>
+<span class="fc" id="L1312">				return new WeightsImpl.Mapped.Char((Weights.Char) weights, indexMap);</span>
+			} else {
+<span class="fc" id="L1314">				return new WeightsImpl.Mapped.Obj&lt;&gt;(weights, indexMap);</span>
+			}
+		}
 
 		static class Obj&lt;E&gt; extends Mapped&lt;E&gt; {
-			Obj(DataContainer.Obj&lt;E&gt; container, IDStrategyImpl idStrategy) {
-<span class="fc" id="L420">				super(container, idStrategy);</span>
-<span class="fc" id="L421">			}</span>
-
-			@Override
-			public DataContainer.Obj&lt;E&gt; container() {
-<span class="fc" id="L425">				return (DataContainer.Obj&lt;E&gt;) super.container();</span>
-			}
+			Obj(Weights&lt;E&gt; weights, IndexIdMap indexMap) {
+<span class="fc" id="L1320">				super(weights, indexMap);</span>
+<span class="fc" id="L1321">			}</span>
 
 			@Override
 			public E get(int id) {
-<span class="fc" id="L430">				return container().get(idStrategy.idToIdx(id));</span>
+<span class="fc" id="L1325">				return weights().get(indexMap.idToIndex(id));</span>
 			}
 
 			@Override
 			public void set(int id, E val) {
-<span class="fc" id="L435">				container().set(idStrategy.idToIdx(id), val);</span>
-<span class="fc" id="L436">			}</span>
+<span class="fc" id="L1330">				weights().set(indexMap.idToIndex(id), val);</span>
+<span class="fc" id="L1331">			}</span>
 
 			@Override
 			public E defaultWeight() {
-<span class="fc" id="L440">				return container().defaultVal();</span>
-			}
-
-			@Override
-			public WeightsImpl.Mapped.Obj&lt;E&gt; copy(IDStrategyImpl idStrat) {
-<span class="fc" id="L445">				return new WeightsImpl.Mapped.Obj&lt;&gt;(container().copy(idStrat), idStrat);</span>
+<span class="fc" id="L1335">				return weights().defaultWeight();</span>
 			}
 		}
 
 		static class Byte extends Mapped&lt;java.lang.Byte&gt; implements Weights.Byte {
-			Byte(DataContainer.Byte container, IDStrategyImpl idStrategy) {
-<span class="fc" id="L451">				super(container, idStrategy);</span>
-<span class="fc" id="L452">			}</span>
+			Byte(Weights.Byte weights, IndexIdMap indexMap) {
+<span class="fc" id="L1341">				super(weights, indexMap);</span>
+<span class="fc" id="L1342">			}</span>
 
 			@Override
-			public DataContainer.Byte container() {
-<span class="fc" id="L456">				return (DataContainer.Byte) super.container();</span>
+			public Weights.Byte weights() {
+<span class="fc" id="L1346">				return (Weights.Byte) super.weights();</span>
 			}
 
 			@Override
 			public byte getByte(int id) {
-<span class="fc" id="L461">				return container().getByte(idStrategy.idToIdx(id));</span>
+<span class="fc" id="L1351">				return weights().getByte(indexMap.idToIndex(id));</span>
 			}
 
 			@Override
 			public void set(int id, byte weight) {
-<span class="fc" id="L466">				container().set(idStrategy.idToIdx(id), weight);</span>
-<span class="fc" id="L467">			}</span>
+<span class="fc" id="L1356">				weights().set(indexMap.idToIndex(id), weight);</span>
+<span class="fc" id="L1357">			}</span>
 
 			@Override
 			public byte defaultWeightByte() {
-<span class="fc" id="L471">				return container().defaultValByte();</span>
-			}
-
-			@Override
-			public WeightsImpl.Mapped.Byte copy(IDStrategyImpl idStrat) {
-<span class="nc" id="L476">				return new WeightsImpl.Mapped.Byte(container().copy(idStrat), idStrat);</span>
+<span class="fc" id="L1361">				return weights().defaultWeightByte();</span>
 			}
 		}
 
 		static class Short extends Mapped&lt;java.lang.Short&gt; implements Weights.Short {
-			Short(DataContainer.Short container, IDStrategyImpl idStrategy) {
-<span class="fc" id="L482">				super(container, idStrategy);</span>
-<span class="fc" id="L483">			}</span>
+			Short(Weights.Short container, IndexIdMap indexMap) {
+<span class="fc" id="L1367">				super(container, indexMap);</span>
+<span class="fc" id="L1368">			}</span>
 
 			@Override
-			public DataContainer.Short container() {
-<span class="fc" id="L487">				return (DataContainer.Short) super.container();</span>
+			public Weights.Short weights() {
+<span class="fc" id="L1372">				return (Weights.Short) super.weights();</span>
 			}
 
 			@Override
 			public short getShort(int id) {
-<span class="fc" id="L492">				return container().getShort(idStrategy.idToIdx(id));</span>
+<span class="fc" id="L1377">				return weights().getShort(indexMap.idToIndex(id));</span>
 			}
 
 			@Override
 			public void set(int id, short weight) {
-<span class="fc" id="L497">				container().set(idStrategy.idToIdx(id), weight);</span>
-<span class="fc" id="L498">			}</span>
+<span class="fc" id="L1382">				weights().set(indexMap.idToIndex(id), weight);</span>
+<span class="fc" id="L1383">			}</span>
 
 			@Override
 			public short defaultWeightShort() {
-<span class="fc" id="L502">				return container().defaultValShort();</span>
-			}
-
-			@Override
-			public WeightsImpl.Mapped.Short copy(IDStrategyImpl idStrat) {
-<span class="nc" id="L507">				return new WeightsImpl.Mapped.Short(container().copy(idStrat), idStrat);</span>
+<span class="fc" id="L1387">				return weights().defaultWeightShort();</span>
 			}
 		}
 
 		static class Int extends Mapped&lt;Integer&gt; implements Weights.Int {
-			Int(DataContainer.Int container, IDStrategyImpl idStrategy) {
-<span class="fc" id="L513">				super(container, idStrategy);</span>
-<span class="fc" id="L514">			}</span>
+			Int(Weights.Int container, IndexIdMap indexMap) {
+<span class="fc" id="L1393">				super(container, indexMap);</span>
+<span class="fc" id="L1394">			}</span>
 
 			@Override
-			public DataContainer.Int container() {
-<span class="fc" id="L518">				return (DataContainer.Int) super.container();</span>
+			public Weights.Int weights() {
+<span class="fc" id="L1398">				return (Weights.Int) super.weights();</span>
 			}
 
 			@Override
 			public int getInt(int id) {
-<span class="fc" id="L523">				return container().getInt(idStrategy.idToIdx(id));</span>
+<span class="fc" id="L1403">				return weights().getInt(indexMap.idToIndex(id));</span>
 			}
 
 			@Override
 			public void set(int id, int weight) {
-<span class="fc" id="L528">				container().set(idStrategy.idToIdx(id), weight);</span>
-<span class="fc" id="L529">			}</span>
+<span class="fc" id="L1408">				weights().set(indexMap.idToIndex(id), weight);</span>
+<span class="fc" id="L1409">			}</span>
 
 			@Override
 			public int defaultWeightInt() {
-<span class="fc" id="L533">				return container().defaultValInt();</span>
-			}
-
-			@Override
-			public WeightsImpl.Mapped.Int copy(IDStrategyImpl idStrat) {
-<span class="nc" id="L538">				return new WeightsImpl.Mapped.Int(container().copy(idStrat), idStrat);</span>
+<span class="fc" id="L1413">				return weights().defaultWeightInt();</span>
 			}
 		}
 
 		static class Long extends Mapped&lt;java.lang.Long&gt; implements Weights.Long {
-			Long(DataContainer.Long container, IDStrategyImpl idStrategy) {
-<span class="fc" id="L544">				super(container, idStrategy);</span>
-<span class="fc" id="L545">			}</span>
+			Long(Weights.Long container, IndexIdMap indexMap) {
+<span class="fc" id="L1419">				super(container, indexMap);</span>
+<span class="fc" id="L1420">			}</span>
 
 			@Override
-			public DataContainer.Long container() {
-<span class="fc" id="L549">				return (DataContainer.Long) super.container();</span>
+			public Weights.Long weights() {
+<span class="fc" id="L1424">				return (Weights.Long) super.weights();</span>
 			}
 
 			@Override
 			public long getLong(int id) {
-<span class="fc" id="L554">				return container().getLong(idStrategy.idToIdx(id));</span>
+<span class="fc" id="L1429">				return weights().getLong(indexMap.idToIndex(id));</span>
 			}
 
 			@Override
 			public void set(int id, long weight) {
-<span class="fc" id="L559">				container().set(idStrategy.idToIdx(id), weight);</span>
-<span class="fc" id="L560">			}</span>
+<span class="fc" id="L1434">				weights().set(indexMap.idToIndex(id), weight);</span>
+<span class="fc" id="L1435">			}</span>
 
 			@Override
 			public long defaultWeightLong() {
-<span class="fc" id="L564">				return container().defaultValLong();</span>
-			}
-
-			@Override
-			public WeightsImpl.Mapped.Long copy(IDStrategyImpl idStrat) {
-<span class="nc" id="L569">				return new WeightsImpl.Mapped.Long(container().copy(idStrat), idStrat);</span>
+<span class="fc" id="L1439">				return weights().defaultWeightLong();</span>
 			}
 		}
 
 		static class Float extends Mapped&lt;java.lang.Float&gt; implements Weights.Float {
-			Float(DataContainer.Float container, IDStrategyImpl idStrategy) {
-<span class="fc" id="L575">				super(container, idStrategy);</span>
-<span class="fc" id="L576">			}</span>
+			Float(Weights.Float container, IndexIdMap indexMap) {
+<span class="fc" id="L1445">				super(container, indexMap);</span>
+<span class="fc" id="L1446">			}</span>
 
 			@Override
-			public DataContainer.Float container() {
-<span class="fc" id="L580">				return (DataContainer.Float) super.container();</span>
+			public Weights.Float weights() {
+<span class="fc" id="L1450">				return (Weights.Float) super.weights();</span>
 			}
 
 			@Override
 			public float getFloat(int id) {
-<span class="fc" id="L585">				return container().getFloat(idStrategy.idToIdx(id));</span>
+<span class="fc" id="L1455">				return weights().getFloat(indexMap.idToIndex(id));</span>
 			}
 
 			@Override
 			public void set(int id, float weight) {
-<span class="fc" id="L590">				container().set(idStrategy.idToIdx(id), weight);</span>
-<span class="fc" id="L591">			}</span>
+<span class="fc" id="L1460">				weights().set(indexMap.idToIndex(id), weight);</span>
+<span class="fc" id="L1461">			}</span>
 
 			@Override
 			public float defaultWeightFloat() {
-<span class="fc" id="L595">				return container().defaultValFloat();</span>
-			}
-
-			@Override
-			public WeightsImpl.Mapped.Float copy(IDStrategyImpl idStrat) {
-<span class="nc" id="L600">				return new WeightsImpl.Mapped.Float(container().copy(idStrat), idStrat);</span>
+<span class="fc" id="L1465">				return weights().defaultWeightFloat();</span>
 			}
 		}
 
 		static class Double extends Mapped&lt;java.lang.Double&gt; implements Weights.Double {
-			Double(DataContainer.Double container, IDStrategyImpl idStrategy) {
-<span class="fc" id="L606">				super(container, idStrategy);</span>
-<span class="fc" id="L607">			}</span>
+			Double(Weights.Double container, IndexIdMap indexMap) {
+<span class="fc" id="L1471">				super(container, indexMap);</span>
+<span class="fc" id="L1472">			}</span>
 
 			@Override
-			public DataContainer.Double container() {
-<span class="fc" id="L611">				return (DataContainer.Double) super.container();</span>
+			Weights.Double weights() {
+<span class="fc" id="L1476">				return (Weights.Double) super.weights();</span>
 			}
 
 			@Override
 			public double getDouble(int id) {
-<span class="fc" id="L616">				return container().getDouble(idStrategy.idToIdx(id));</span>
+<span class="fc" id="L1481">				return weights().getDouble(indexMap.idToIndex(id));</span>
 			}
 
 			@Override
 			public void set(int id, double weight) {
-<span class="fc" id="L621">				container().set(idStrategy.idToIdx(id), weight);</span>
-<span class="fc" id="L622">			}</span>
+<span class="fc" id="L1486">				weights().set(indexMap.idToIndex(id), weight);</span>
+<span class="fc" id="L1487">			}</span>
 
 			@Override
 			public double defaultWeightDouble() {
-<span class="fc" id="L626">				return container().defaultValDouble();</span>
-			}
-
-			@Override
-			public WeightsImpl.Mapped.Double copy(IDStrategyImpl idStrat) {
-<span class="nc" id="L631">				return new WeightsImpl.Mapped.Double(container().copy(idStrat), idStrat);</span>
+<span class="fc" id="L1491">				return weights().defaultWeightDouble();</span>
 			}
 		}
 
 		static class Bool extends Mapped&lt;Boolean&gt; implements Weights.Bool {
-			Bool(DataContainer.Bool container, IDStrategyImpl idStrategy) {
-<span class="fc" id="L637">				super(container, idStrategy);</span>
-<span class="fc" id="L638">			}</span>
+			Bool(Weights.Bool container, IndexIdMap indexMap) {
+<span class="fc" id="L1497">				super(container, indexMap);</span>
+<span class="fc" id="L1498">			}</span>
 
 			@Override
-			public DataContainer.Bool container() {
-<span class="fc" id="L642">				return (DataContainer.Bool) super.container();</span>
+			Weights.Bool weights() {
+<span class="fc" id="L1502">				return (Weights.Bool) super.weights();</span>
 			}
 
 			@Override
 			public boolean getBool(int id) {
-<span class="fc" id="L647">				return container().getBool(idStrategy.idToIdx(id));</span>
+<span class="fc" id="L1507">				return weights().getBool(indexMap.idToIndex(id));</span>
 			}
 
 			@Override
 			public void set(int id, boolean weight) {
-<span class="fc" id="L652">				container().set(idStrategy.idToIdx(id), weight);</span>
-<span class="fc" id="L653">			}</span>
+<span class="fc" id="L1512">				weights().set(indexMap.idToIndex(id), weight);</span>
+<span class="fc" id="L1513">			}</span>
 
 			@Override
 			public boolean defaultWeightBool() {
-<span class="fc" id="L657">				return container().defaultValBool();</span>
-			}
-
-			@Override
-			public WeightsImpl.Mapped.Bool copy(IDStrategyImpl idStrat) {
-<span class="nc" id="L662">				return new WeightsImpl.Mapped.Bool(container().copy(idStrat), idStrat);</span>
+<span class="fc" id="L1517">				return weights().defaultWeightBool();</span>
 			}
 		}
 
 		static class Char extends Mapped&lt;Character&gt; implements Weights.Char {
-			Char(DataContainer.Char container, IDStrategyImpl idStrategy) {
-<span class="fc" id="L668">				super(container, idStrategy);</span>
-<span class="fc" id="L669">			}</span>
+			Char(Weights.Char container, IndexIdMap indexMap) {
+<span class="fc" id="L1523">				super(container, indexMap);</span>
+<span class="fc" id="L1524">			}</span>
 
 			@Override
-			public DataContainer.Char container() {
-<span class="fc" id="L673">				return (DataContainer.Char) super.container();</span>
+			Weights.Char weights() {
+<span class="fc" id="L1528">				return (Weights.Char) super.weights();</span>
 			}
 
 			@Override
 			public char getChar(int id) {
-<span class="fc" id="L678">				return container().getChar(idStrategy.idToIdx(id));</span>
+<span class="fc" id="L1533">				return weights().getChar(indexMap.idToIndex(id));</span>
 			}
 
 			@Override
 			public void set(int id, char weight) {
-<span class="fc" id="L683">				container().set(idStrategy.idToIdx(id), weight);</span>
-<span class="fc" id="L684">			}</span>
+<span class="fc" id="L1538">				weights().set(indexMap.idToIndex(id), weight);</span>
+<span class="fc" id="L1539">			}</span>
 
 			@Override
 			public char defaultWeightChar() {
-<span class="fc" id="L688">				return container().defaultValChar();</span>
-			}
-
-			@Override
-			public WeightsImpl.Mapped.Char copy(IDStrategyImpl idStrat) {
-<span class="nc" id="L693">				return new WeightsImpl.Mapped.Char(container().copy(idStrat), idStrat);</span>
+<span class="fc" id="L1543">				return weights().defaultWeightChar();</span>
 			}
 		}
 	}
 
-<span class="fc" id="L698">	static class Manager extends DataContainer.Manager {</span>
-
-<span class="fc" id="L700">		private final Map&lt;Object, WeightsImpl&lt;?&gt;&gt; weights = new Object2ObjectArrayMap&lt;&gt;();</span>
-
-		Manager(int initialCapacity) {
-<span class="fc" id="L703">			super(initialCapacity);</span>
-<span class="fc" id="L704">		}</span>
-
-		Manager(Manager orig, IDStrategyImpl idStrat) {
-<span class="fc" id="L707">			this(idStrat.size());</span>
-<span class="fc bfc" id="L708" title="All 2 branches covered.">			for (var entry : orig.weights.entrySet())</span>
-<span class="fc" id="L709">				addWeights(entry.getKey(), entry.getValue().copy(idStrat));</span>
-<span class="fc" id="L710">		}</span>
-
-		@Override
-		Manager copy(IDStrategyImpl idStrat) {
-<span class="fc" id="L714">			return new Manager(this, idStrat);</span>
-		}
-
-		@SuppressWarnings(&quot;unchecked&quot;)
-		&lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT getWeights(Object key) {
-<span class="fc" id="L719">			return (WeightsT) weights.get(key);</span>
-		}
-
-		@Override
-		final void addContainer(Object key, DataContainer&lt;?&gt; container) {
-<span class="nc" id="L724">			throw new UnsupportedOperationException();</span>
-		}
-
-		void addWeights(Object key, Weights&lt;?&gt; weights) {
-<span class="fc" id="L728">			super.addContainer(key, ((WeightsImpl&lt;?&gt;) weights).container());</span>
-<span class="fc" id="L729">			Object o = this.weights.put(key, (WeightsImpl&lt;?&gt;) weights);</span>
-<span class="pc bpc" id="L730" title="1 of 2 branches missed.">			assert o == null;</span>
-<span class="fc" id="L731">		}</span>
-
-		void removeWeights(Object key) {
-<span class="nc" id="L734">			Object o1 = weights.remove(key);</span>
-<span class="nc bnc" id="L735" title="All 2 branches missed.">			if (o1 == null)</span>
-<span class="nc" id="L736">				return;</span>
-<span class="nc" id="L737">			Object o2 = containers.remove(key);</span>
-<span class="nc bnc" id="L738" title="All 2 branches missed.">			assert o2 != null;</span>
-<span class="nc" id="L739">		}</span>
-
-		Set&lt;Object&gt; weightsKeys() {
-<span class="fc" id="L742">			return Collections.unmodifiableSet(weights.keySet());</span>
-		}
-
-	}
-
-	static abstract class UnmodifiableWeights&lt;E&gt; implements WeightsImpl&lt;E&gt; {
+	static abstract class Unmodifiable&lt;E&gt; implements WeightsImpl&lt;E&gt; {
 
 		private final WeightsImpl&lt;E&gt; weights;
 
-<span class="nc" id="L751">		UnmodifiableWeights(Weights&lt;E&gt; w) {</span>
-<span class="nc" id="L752">			this.weights = (WeightsImpl&lt;E&gt;) Objects.requireNonNull(w);</span>
-<span class="nc" id="L753">		}</span>
-
-		@Override
-		public DataContainer&lt;E&gt; container() {
-<span class="nc" id="L757">			return weights.container();</span>
-		}
-
-		@Override
-		public WeightsImpl&lt;E&gt; copy(IDStrategyImpl idStrat) {
-<span class="nc" id="L762">			return weights.copy(idStrat);</span>
-		}
+<span class="nc" id="L1552">		Unmodifiable(Weights&lt;E&gt; w) {</span>
+<span class="nc" id="L1553">			this.weights = (WeightsImpl&lt;E&gt;) Objects.requireNonNull(w);</span>
+<span class="nc" id="L1554">		}</span>
 
 		Weights&lt;E&gt; weights() {
-<span class="nc" id="L766">			return weights;</span>
+<span class="nc" id="L1557">			return weights;</span>
 		}
 
-		static class Obj&lt;E&gt; extends UnmodifiableWeights&lt;E&gt; {
+		static class Obj&lt;E&gt; extends Unmodifiable&lt;E&gt; {
 
 			Obj(Weights&lt;E&gt; w) {
-<span class="nc" id="L772">				super(w);</span>
-<span class="nc" id="L773">			}</span>
+<span class="nc" id="L1563">				super(w);</span>
+<span class="nc" id="L1564">			}</span>
 
 			@Override
 			public E get(int id) {
-<span class="nc" id="L777">				return weights().get(id);</span>
+<span class="nc" id="L1568">				return weights().get(id);</span>
 			}
 
 			@Override
 			public void set(int id, E weight) {
-<span class="nc" id="L782">				throw new UnsupportedOperationException();</span>
+<span class="nc" id="L1573">				throw new UnsupportedOperationException();</span>
 			}
 
 			@Override
 			public E defaultWeight() {
-<span class="nc" id="L787">				return weights().defaultWeight();</span>
+<span class="nc" id="L1578">				return weights().defaultWeight();</span>
 			}
-
 		}
 
-		static class Byte extends UnmodifiableWeights&lt;java.lang.Byte&gt; implements Weights.Byte {
+		static class Byte extends Unmodifiable&lt;java.lang.Byte&gt; implements Weights.Byte {
 			Byte(Weights.Byte w) {
-<span class="nc" id="L794">				super(w);</span>
-<span class="nc" id="L795">			}</span>
+<span class="nc" id="L1584">				super(w);</span>
+<span class="nc" id="L1585">			}</span>
 
 			@Override
 			Weights.Byte weights() {
-<span class="nc" id="L799">				return (Weights.Byte) super.weights();</span>
+<span class="nc" id="L1589">				return (Weights.Byte) super.weights();</span>
 			}
 
 			@Override
 			public byte getByte(int id) {
-<span class="nc" id="L804">				return weights().getByte(id);</span>
+<span class="nc" id="L1594">				return weights().getByte(id);</span>
 			}
 
 			@Override
 			public void set(int id, byte weight) {
-<span class="nc" id="L809">				throw new UnsupportedOperationException();</span>
+<span class="nc" id="L1599">				throw new UnsupportedOperationException();</span>
 			}
 
 			@Override
 			public byte defaultWeightByte() {
-<span class="nc" id="L814">				return weights().defaultWeightByte();</span>
+<span class="nc" id="L1604">				return weights().defaultWeightByte();</span>
 			}
 		}
 
-		static class Short extends UnmodifiableWeights&lt;java.lang.Short&gt; implements Weights.Short {
+		static class Short extends Unmodifiable&lt;java.lang.Short&gt; implements Weights.Short {
 			Short(Weights.Short w) {
-<span class="nc" id="L820">				super(w);</span>
-<span class="nc" id="L821">			}</span>
+<span class="nc" id="L1610">				super(w);</span>
+<span class="nc" id="L1611">			}</span>
 
 			@Override
 			Weights.Short weights() {
-<span class="nc" id="L825">				return (Weights.Short) super.weights();</span>
+<span class="nc" id="L1615">				return (Weights.Short) super.weights();</span>
 			}
 
 			@Override
 			public short getShort(int id) {
-<span class="nc" id="L830">				return weights().getShort(id);</span>
+<span class="nc" id="L1620">				return weights().getShort(id);</span>
 			}
 
 			@Override
 			public void set(int id, short weight) {
-<span class="nc" id="L835">				throw new UnsupportedOperationException();</span>
+<span class="nc" id="L1625">				throw new UnsupportedOperationException();</span>
 			}
 
 			@Override
 			public short defaultWeightShort() {
-<span class="nc" id="L840">				return weights().defaultWeightShort();</span>
+<span class="nc" id="L1630">				return weights().defaultWeightShort();</span>
 			}
 		}
 
-		static class Int extends UnmodifiableWeights&lt;Integer&gt; implements Weights.Int {
+		static class Int extends Unmodifiable&lt;Integer&gt; implements Weights.Int {
 			Int(Weights.Int w) {
-<span class="nc" id="L846">				super(w);</span>
-<span class="nc" id="L847">			}</span>
+<span class="nc" id="L1636">				super(w);</span>
+<span class="nc" id="L1637">			}</span>
 
 			@Override
 			Weights.Int weights() {
-<span class="nc" id="L851">				return (Weights.Int) super.weights();</span>
+<span class="nc" id="L1641">				return (Weights.Int) super.weights();</span>
 			}
 
 			@Override
 			public int getInt(int id) {
-<span class="nc" id="L856">				return weights().getInt(id);</span>
+<span class="nc" id="L1646">				return weights().getInt(id);</span>
 			}
 
 			@Override
 			public void set(int id, int weight) {
-<span class="nc" id="L861">				throw new UnsupportedOperationException();</span>
+<span class="nc" id="L1651">				throw new UnsupportedOperationException();</span>
 			}
 
 			@Override
 			public int defaultWeightInt() {
-<span class="nc" id="L866">				return weights().defaultWeightInt();</span>
+<span class="nc" id="L1656">				return weights().defaultWeightInt();</span>
 			}
 		}
 
-		static class Long extends UnmodifiableWeights&lt;java.lang.Long&gt; implements Weights.Long {
+		static class Long extends Unmodifiable&lt;java.lang.Long&gt; implements Weights.Long {
 			Long(Weights.Long w) {
-<span class="nc" id="L872">				super(w);</span>
-<span class="nc" id="L873">			}</span>
+<span class="nc" id="L1662">				super(w);</span>
+<span class="nc" id="L1663">			}</span>
 
 			@Override
 			Weights.Long weights() {
-<span class="nc" id="L877">				return (Weights.Long) super.weights();</span>
+<span class="nc" id="L1667">				return (Weights.Long) super.weights();</span>
 			}
 
 			@Override
 			public long getLong(int id) {
-<span class="nc" id="L882">				return weights().getLong(id);</span>
+<span class="nc" id="L1672">				return weights().getLong(id);</span>
 			}
 
 			@Override
 			public void set(int id, long weight) {
-<span class="nc" id="L887">				throw new UnsupportedOperationException();</span>
+<span class="nc" id="L1677">				throw new UnsupportedOperationException();</span>
 			}
 
 			@Override
 			public long defaultWeightLong() {
-<span class="nc" id="L892">				return weights().defaultWeightLong();</span>
+<span class="nc" id="L1682">				return weights().defaultWeightLong();</span>
 			}
 		}
 
-		static class Float extends UnmodifiableWeights&lt;java.lang.Float&gt; implements Weights.Float {
+		static class Float extends Unmodifiable&lt;java.lang.Float&gt; implements Weights.Float {
 			Float(Weights.Float w) {
-<span class="nc" id="L898">				super(w);</span>
-<span class="nc" id="L899">			}</span>
+<span class="nc" id="L1688">				super(w);</span>
+<span class="nc" id="L1689">			}</span>
 
 			@Override
 			Weights.Float weights() {
-<span class="nc" id="L903">				return (Weights.Float) super.weights();</span>
+<span class="nc" id="L1693">				return (Weights.Float) super.weights();</span>
 			}
 
 			@Override
 			public float getFloat(int id) {
-<span class="nc" id="L908">				return weights().getFloat(id);</span>
+<span class="nc" id="L1698">				return weights().getFloat(id);</span>
 			}
 
 			@Override
 			public void set(int id, float weight) {
-<span class="nc" id="L913">				throw new UnsupportedOperationException();</span>
+<span class="nc" id="L1703">				throw new UnsupportedOperationException();</span>
 			}
 
 			@Override
 			public float defaultWeightFloat() {
-<span class="nc" id="L918">				return weights().defaultWeightFloat();</span>
+<span class="nc" id="L1708">				return weights().defaultWeightFloat();</span>
 			}
 		}
 
-		static class Double extends UnmodifiableWeights&lt;java.lang.Double&gt; implements Weights.Double {
+		static class Double extends Unmodifiable&lt;java.lang.Double&gt; implements Weights.Double {
 			Double(Weights.Double w) {
-<span class="nc" id="L924">				super(w);</span>
-<span class="nc" id="L925">			}</span>
+<span class="nc" id="L1714">				super(w);</span>
+<span class="nc" id="L1715">			}</span>
 
 			@Override
 			Weights.Double weights() {
-<span class="nc" id="L929">				return (Weights.Double) super.weights();</span>
+<span class="nc" id="L1719">				return (Weights.Double) super.weights();</span>
 			}
 
 			@Override
 			public double getDouble(int id) {
-<span class="nc" id="L934">				return weights().getDouble(id);</span>
+<span class="nc" id="L1724">				return weights().getDouble(id);</span>
 			}
 
 			@Override
 			public void set(int id, double weight) {
-<span class="nc" id="L939">				throw new UnsupportedOperationException();</span>
+<span class="nc" id="L1729">				throw new UnsupportedOperationException();</span>
 			}
 
 			@Override
 			public double defaultWeightDouble() {
-<span class="nc" id="L944">				return weights().defaultWeightDouble();</span>
+<span class="nc" id="L1734">				return weights().defaultWeightDouble();</span>
 			}
 		}
 
-		static class Bool extends UnmodifiableWeights&lt;Boolean&gt; implements Weights.Bool {
+		static class Bool extends Unmodifiable&lt;Boolean&gt; implements Weights.Bool {
 			Bool(Weights.Bool w) {
-<span class="nc" id="L950">				super(w);</span>
-<span class="nc" id="L951">			}</span>
+<span class="nc" id="L1740">				super(w);</span>
+<span class="nc" id="L1741">			}</span>
 
 			@Override
 			Weights.Bool weights() {
-<span class="nc" id="L955">				return (Weights.Bool) super.weights();</span>
+<span class="nc" id="L1745">				return (Weights.Bool) super.weights();</span>
 			}
 
 			@Override
 			public boolean getBool(int id) {
-<span class="nc" id="L960">				return weights().getBool(id);</span>
+<span class="nc" id="L1750">				return weights().getBool(id);</span>
 			}
 
 			@Override
 			public void set(int id, boolean weight) {
-<span class="nc" id="L965">				throw new UnsupportedOperationException();</span>
+<span class="nc" id="L1755">				throw new UnsupportedOperationException();</span>
 			}
 
 			@Override
 			public boolean defaultWeightBool() {
-<span class="nc" id="L970">				return weights().defaultWeightBool();</span>
+<span class="nc" id="L1760">				return weights().defaultWeightBool();</span>
 			}
 		}
 
-		static class Char extends UnmodifiableWeights&lt;Character&gt; implements Weights.Char {
+		static class Char extends Unmodifiable&lt;Character&gt; implements Weights.Char {
 			Char(Weights.Char w) {
-<span class="nc" id="L976">				super(w);</span>
-<span class="nc" id="L977">			}</span>
+<span class="nc" id="L1766">				super(w);</span>
+<span class="nc" id="L1767">			}</span>
 
 			@Override
 			Weights.Char weights() {
-<span class="nc" id="L981">				return (Weights.Char) super.weights();</span>
+<span class="nc" id="L1771">				return (Weights.Char) super.weights();</span>
 			}
 
 			@Override
 			public char getChar(int id) {
-<span class="nc" id="L986">				return weights().getChar(id);</span>
+<span class="nc" id="L1776">				return weights().getChar(id);</span>
 			}
 
 			@Override
 			public void set(int id, char weight) {
-<span class="nc" id="L991">				throw new UnsupportedOperationException();</span>
+<span class="nc" id="L1781">				throw new UnsupportedOperationException();</span>
 			}
 
 			@Override
 			public char defaultWeightChar() {
-<span class="nc" id="L996">				return weights().defaultWeightChar();</span>
+<span class="nc" id="L1786">				return weights().defaultWeightChar();</span>
+			}
+		}
+	}
+
+	static WeightFunction indexWeightFuncFromIdWeightFunc(WeightFunction w, IndexIdMap map) {
+<span class="pc bpc" id="L1792" title="1 of 4 branches missed.">		if (w == null || w == WeightFunction.CardinalityWeightFunction) {</span>
+<span class="fc" id="L1793">			return w;</span>
+
+<span class="pc bpc" id="L1795" title="1 of 2 branches missed.">		} else if (w instanceof WeightsImpl&lt;?&gt;) {</span>
+			/* The weight function is some implementation of a mapped weights object */
+			/* Instead of re-mapping by wrapping the weight function, return the underlying index weights container */
+<span class="nc" id="L1798">			WeightsImpl&lt;?&gt; weights = (WeightsImpl&lt;?&gt;) w;</span>
+<span class="nc" id="L1799">			final boolean unmodifiable = weights instanceof WeightsImpl.Unmodifiable&lt;?&gt;;</span>
+<span class="nc bnc" id="L1800" title="All 2 branches missed.">			if (unmodifiable)</span>
+<span class="nc" id="L1801">				weights = ((WeightsImpl.Unmodifiable&lt;?&gt;) weights).weights;</span>
+<span class="nc bnc" id="L1802" title="All 2 branches missed.">			if (!(weights instanceof WeightsImpl.Mapped&lt;?&gt;))</span>
+<span class="nc" id="L1803">				throw new IllegalArgumentException(&quot;weights of index graph used with non index graph&quot;);</span>
+<span class="nc" id="L1804">			weights = ((WeightsImpl.Mapped&lt;?&gt;) weights).weights;</span>
+<span class="nc bnc" id="L1805" title="All 2 branches missed.">			if (unmodifiable)</span>
+<span class="nc" id="L1806">				weights = weights.unmodifiableView();</span>
+<span class="nc" id="L1807">			return (WeightFunction) weights;</span>
+
+		} else {
+			/* Unknown weight function, return a mapped wrapper */
+<span class="fc bfc" id="L1811" title="All 2 branches covered.">			if (w instanceof WeightFunction.Int) {</span>
+<span class="fc" id="L1812">				WeightFunction.Int wInt = (WeightFunction.Int) w;</span>
+<span class="fc" id="L1813">				WeightFunction.Int wIntMapped = idx -&gt; wInt.weightInt(map.indexToId(idx));</span>
+<span class="fc" id="L1814">				return wIntMapped;</span>
+			} else {
+<span class="fc" id="L1816">				return idx -&gt; w.weight(map.indexToId(idx));</span>
 			}
 		}
 	}

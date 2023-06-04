@@ -196,33 +196,13 @@ public interface TreePathMaxima {
 	 * @throws IllegalArgumentException if {@code g} is a directed graph
 	 */
 	public static boolean verifyMST(Graph g, WeightFunction w, IntCollection mstEdges, TreePathMaxima tpmAlgo) {
-<span class="fc" id="L199">		ArgumentCheck.onlyUndirected(g);</span>
-<span class="fc" id="L200">		int n = g.vertices().size();</span>
-<span class="fc" id="L201">		Graph mst = Graph.newBuilderUndirected().expectedVerticesNum(n).expectedEdgesNum(mstEdges.size()).build();</span>
-<span class="fc bfc" id="L202" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L203">			mst.addVertex();</span>
-<span class="fc" id="L204">		Weights.Int edgeRef = mst.addEdgesWeights(&quot;edgeRef&quot;, int.class);</span>
-<span class="fc bfc" id="L205" title="All 2 branches covered.">		for (int e : mstEdges) {</span>
-<span class="fc" id="L206">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
-<span class="fc" id="L207">			int ne = mst.addEdge(u, v);</span>
-<span class="fc" id="L208">			edgeRef.set(ne, e);</span>
-<span class="fc" id="L209">		}</span>
-<span class="fc bfc" id="L210" title="All 2 branches covered.">		if (!Trees.isTree(mst))</span>
-<span class="fc" id="L211">			return false;</span>
-
-<span class="fc" id="L213">		TreePathMaxima.Queries queries = TreePathMaxima.Queries.newInstance();</span>
-<span class="fc bfc" id="L214" title="All 2 branches covered.">		for (int e : g.edges())</span>
-<span class="fc" id="L215">			queries.addQuery(g.edgeSource(e), g.edgeTarget(e));</span>
-<span class="fc" id="L216">		WeightFunction w0 = e -&gt; w.weight(edgeRef.getInt(e));</span>
-<span class="fc" id="L217">		TreePathMaxima.Result tpmResults = tpmAlgo.computeHeaviestEdgeInTreePaths(mst, w0, queries);</span>
-
-<span class="fc" id="L219">		int i = 0;</span>
-<span class="fc bfc" id="L220" title="All 2 branches covered.">		for (int e : g.edges()) {</span>
-<span class="fc" id="L221">			int mstEdge = tpmResults.getHeaviestEdge(i++);</span>
-<span class="pc bpc" id="L222" title="1 of 4 branches missed.">			if (mstEdge == -1 || w.weight(e) &lt; w0.weight(mstEdge))</span>
-<span class="fc" id="L223">				return false;</span>
-<span class="fc" id="L224">		}</span>
-<span class="fc" id="L225">		return true;</span>
+<span class="pc bpc" id="L199" title="1 of 2 branches missed.">		if (g instanceof IndexGraph)</span>
+<span class="nc" id="L200">			return TreePathMaximaUtils.verifyMST((IndexGraph) g, w, mstEdges, tpmAlgo);</span>
+<span class="fc" id="L201">		IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L202">		IndexIdMap eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L203">		w = WeightsImpl.indexWeightFuncFromIdWeightFunc(w, eiMap);</span>
+<span class="fc" id="L204">		mstEdges = new IndexIdMapUtils.IndexCollectionFromCollection(mstEdges, eiMap);</span>
+<span class="fc" id="L205">		return TreePathMaximaUtils.verifyMST(iGraph, w, mstEdges, tpmAlgo);</span>
 	}
 
 }

@@ -30,7 +30,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  *
  * @author Barak Ugav
  */
-public class TSPMetricMSTAppx implements TSPMetric {
+public class TSPMetricMSTAppx extends TSPMetricUtils.AbstractImpl {
 
 <span class="fc" id="L35">	private final MinimumSpanningTree mstAlgo = MinimumSpanningTree.newBuilder().build();</span>
 	// /*
@@ -46,7 +46,7 @@ public class TSPMetricMSTAppx implements TSPMetric {
 <span class="fc" id="L46">	public TSPMetricMSTAppx() {}</span>
 
 	@Override
-	public Path computeShortestTour(Graph g, WeightFunction w) {
+	Path computeShortestTour(IndexGraph g, WeightFunction w) {
 <span class="fc" id="L50">		final int n = g.vertices().size();</span>
 <span class="pc bpc" id="L51" title="1 of 2 branches missed.">		if (n == 0)</span>
 <span class="nc" id="L52">			return null;</span>
@@ -61,7 +61,7 @@ public class TSPMetricMSTAppx implements TSPMetric {
 <span class="nc" id="L61">			throw new IllegalArgumentException(&quot;graph is not connected&quot;);</span>
 
 		/* Build a graph with each MST edge duplicated */
-<span class="fc" id="L64">		Graph g1 = Graph.newBuilderUndirected().expectedVerticesNum(n).expectedEdgesNum(mst.size()).build();</span>
+<span class="fc" id="L64">		IndexGraph g1 = IndexGraph.newBuilderUndirected().expectedVerticesNum(n).expectedEdgesNum(mst.size()).build();</span>
 <span class="fc bfc" id="L65" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
 <span class="fc" id="L66">			g1.addVertex();</span>
 <span class="fc" id="L67">		Weights.Int edgeRef = g1.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));</span>

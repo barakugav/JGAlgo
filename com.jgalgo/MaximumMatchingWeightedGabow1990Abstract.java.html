@@ -36,26 +36,26 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
-<span class="fc" id="L39">abstract class MaximumMatchingWeightedGabow1990Abstract implements MaximumMatchingWeighted {</span>
+<span class="fc" id="L39">abstract class MaximumMatchingWeightedGabow1990Abstract extends MaximumMatchingWeighted {</span>
 
 <span class="fc" id="L41">	final DebugPrintsManager debugPrintManager = new DebugPrintsManager();</span>
 <span class="fc" id="L42">	HeapReferenceable.Builder&lt;Object, Object&gt; heapBuilder = HeapReferenceable.newBuilder();</span>
 	static final double EPS = 0.00001;
 
 	@Override
-	public Matching computeMaximumWeightedMatching(Graph g, WeightFunction w) {
+	Matching computeMaximumWeightedMatching(IndexGraph g, WeightFunction w) {
 <span class="fc" id="L47">		ArgumentCheck.onlyUndirected(g);</span>
 <span class="fc" id="L48">		return newWorker(g, w, heapBuilder, debugPrintManager).computeMaxMatching(false);</span>
 
 	}
 
 	@Override
-	public Matching computeMaximumWeightedPerfectMatching(Graph g, WeightFunction w) {
+	Matching computeMaximumWeightedPerfectMatching(IndexGraph g, WeightFunction w) {
 <span class="fc" id="L54">		ArgumentCheck.onlyUndirected(g);</span>
 <span class="fc" id="L55">		return newWorker(g, w, heapBuilder, debugPrintManager).computeMaxMatching(true);</span>
 	}
 
-	abstract Worker newWorker(Graph gOrig, WeightFunction w, HeapReferenceable.Builder&lt;Object, Object&gt; heapBuilder,
+	abstract Worker newWorker(IndexGraph gOrig, WeightFunction w, HeapReferenceable.Builder&lt;Object, Object&gt; heapBuilder,
 			DebugPrintsManager debugPrint);
 
 	/**
@@ -365,10 +365,10 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	static abstract class Worker {
 
 		/* The original graph */
-		final Graph gOrig;
+		final IndexGraph gOrig;
 
 		/* the graph */
-		final Graph g;
+		final IndexGraph g;
 
 		final Weights&lt;EdgeVal&gt; edgeVal;
 
@@ -449,11 +449,11 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 <span class="fc" id="L450">		private static final Object EdgeValKey = new Utils.Obj(&quot;edgeVal&quot;);</span>
 
-		Worker(Graph gOrig, WeightFunction w, HeapReferenceable.Builder&lt;Object, Object&gt; heapBuilder,
+		Worker(IndexGraph gOrig, WeightFunction w, HeapReferenceable.Builder&lt;Object, Object&gt; heapBuilder,
 <span class="fc" id="L453">				DebugPrintsManager debugPrint) {</span>
 <span class="fc" id="L454">			int n = gOrig.vertices().size();</span>
 <span class="fc" id="L455">			this.gOrig = gOrig;</span>
-<span class="fc" id="L456">			this.g = Graph.newBuilderDirected().expectedVerticesNum(n).build();</span>
+<span class="fc" id="L456">			this.g = IndexGraph.newBuilderDirected().expectedVerticesNum(n).build();</span>
 <span class="fc bfc" id="L457" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++)</span>
 <span class="fc" id="L458">				g.addVertex();</span>
 <span class="fc" id="L459">			edgeVal = g.addEdgesWeights(EdgeValKey, EdgeVal.class);</span>
@@ -866,7 +866,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 		Blossom topBlossom(Blossom v) {
 <span class="pc bpc" id="L868" title="1 of 2 branches missed.">			assert v.isSingleton();</span>
-<span class="pc bpc" id="L869" title="1 of 2 branches missed.">			return v.isEven ? evens.findBlossom(v.base) : odds.findBlossom(v.base);</span>
+<span class="fc bfc" id="L869" title="All 2 branches covered.">			return v.isEven ? evens.findBlossom(v.base) : odds.findBlossom(v.base);</span>
 		}
 
 		Iterable&lt;Blossom&gt; allBlossoms() {

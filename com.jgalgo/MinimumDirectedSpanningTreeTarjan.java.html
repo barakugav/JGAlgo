@@ -31,7 +31,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
  *
  * @author Barak Ugav
  */
-class MinimumDirectedSpanningTreeTarjan implements MinimumDirectedSpanningTree {
+class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.AbstractDirected {
 
 <span class="fc" id="L36">	private HeapReferenceable.Builder&lt;Integer, Void&gt; heapBuilder =</span>
 <span class="fc" id="L37">			HeapReferenceable.newBuilder().keysTypePrimitive(int.class).valuesTypeVoid();</span>
@@ -54,11 +54,11 @@ class MinimumDirectedSpanningTreeTarjan implements MinimumDirectedSpanningTree {
 <span class="nc" id="L54">		this.heapBuilder = heapBuilder.keysTypePrimitive(int.class).valuesTypeVoid();</span>
 <span class="nc" id="L55">	}</span>
 
-	MinimumSpanningTree.Result computeMinimumSpanningTree(Graph g, WeightFunction w) {
+	MinimumSpanningTree.Result computeMinimumSpanningTree(IndexGraph g, WeightFunction w) {
 <span class="nc" id="L58">		ArgumentCheck.onlyDirected(g);</span>
 <span class="nc bnc" id="L59" title="All 4 branches missed.">		if (g.vertices().size() == 0 || g.edges().size() == 0)</span>
-<span class="nc" id="L60">			return MinimumSpanningTreeResultImpl.Empty;</span>
-<span class="nc" id="L61">		Graph gRef = GraphsUtils.referenceGraph(g, EdgeRefWeightKey);</span>
+<span class="nc" id="L60">			return MinimumSpanningTreeUtils.ResultImpl.Empty;</span>
+<span class="nc" id="L61">		IndexGraph gRef = GraphsUtils.referenceGraph(g, EdgeRefWeightKey);</span>
 <span class="nc" id="L62">		Weights.Int edgeRefs = gRef.getEdgesWeights(EdgeRefWeightKey);</span>
 
 		// Connect new root to all vertices
@@ -72,17 +72,17 @@ class MinimumDirectedSpanningTreeTarjan implements MinimumDirectedSpanningTree {
 	}
 
 	@Override
-	public MinimumSpanningTree.Result computeMinimumSpanningTree(Graph g, WeightFunction w, int root) {
+	MinimumSpanningTree.Result computeMinimumDirectedSpanningTree(IndexGraph g, WeightFunction w, int root) {
 <span class="fc" id="L76">		ArgumentCheck.onlyDirected(g);</span>
-<span class="pc bpc" id="L77" title="1 of 4 branches missed.">		if (g.vertices().size() == 0 || g.edges().size() == 0)</span>
-<span class="fc" id="L78">			return MinimumSpanningTreeResultImpl.Empty;</span>
-<span class="fc" id="L79">		Graph gRef = GraphsUtils.referenceGraph(g, EdgeRefWeightKey);</span>
+<span class="pc bpc" id="L77" title="2 of 4 branches missed.">		if (g.vertices().size() == 0 || g.edges().size() == 0)</span>
+<span class="nc" id="L78">			return MinimumSpanningTreeUtils.ResultImpl.Empty;</span>
+<span class="fc" id="L79">		IndexGraph gRef = GraphsUtils.referenceGraph(g, EdgeRefWeightKey);</span>
 
 <span class="fc" id="L81">		ContractedGraph contractedGraph = contract(gRef, w);</span>
 <span class="fc" id="L82">		return expand(gRef, contractedGraph, root);</span>
 	}
 
-	private static MinimumSpanningTree.Result expand(Graph g, ContractedGraph cg, int root) {
+	private static MinimumSpanningTree.Result expand(IndexGraph g, ContractedGraph cg, int root) {
 <span class="fc" id="L86">		int[] inEdge = new int[cg.n];</span>
 
 <span class="fc" id="L88">		IntStack roots = new IntArrayList();</span>
@@ -116,10 +116,10 @@ class MinimumDirectedSpanningTreeTarjan implements MinimumDirectedSpanningTree {
 <span class="fc bfc" id="L116" title="All 4 branches covered.">			if (v != root &amp;&amp; e != HeavyEdge)</span>
 <span class="fc" id="L117">				mst.add(e);</span>
 		}
-<span class="fc" id="L119">		return new MinimumSpanningTreeResultImpl(mst);</span>
+<span class="fc" id="L119">		return new MinimumSpanningTreeUtils.ResultImpl(mst);</span>
 	}
 
-	private void addEdgesUntilStronglyConnected(Graph g) {
+	private void addEdgesUntilStronglyConnected(IndexGraph g) {
 <span class="fc" id="L123">		ConnectedComponentsAlgo.Result connectivityRes = ccAlg.computeConnectivityComponents(g);</span>
 <span class="fc" id="L124">		int N = connectivityRes.getNumberOfCcs();</span>
 <span class="fc bfc" id="L125" title="All 2 branches covered.">		if (N &lt;= 1)</span>
@@ -141,7 +141,7 @@ class MinimumDirectedSpanningTreeTarjan implements MinimumDirectedSpanningTree {
 		}
 <span class="fc" id="L142">	}</span>
 
-	private ContractedGraph contract(Graph g, WeightFunction w0) {
+	private ContractedGraph contract(IndexGraph g, WeightFunction w0) {
 <span class="fc" id="L145">		addEdgesUntilStronglyConnected(g);</span>
 
 <span class="fc" id="L147">		int n = g.vertices().size();</span>

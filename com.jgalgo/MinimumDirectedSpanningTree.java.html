@@ -35,7 +35,7 @@ public interface MinimumDirectedSpanningTree {
 	 * @return                          all edges composing the spanning tree
 	 * @throws IllegalArgumentException if {@code g} is not directed
 	 */
-	public MinimumSpanningTree.Result computeMinimumSpanningTree(Graph g, WeightFunction w, int root);
+	public MinimumSpanningTree.Result computeMinimumDirectedSpanningTree(Graph g, WeightFunction w, int root);
 
 	/**
 	 * Create a new minimum directed spanning tree algorithm builder.

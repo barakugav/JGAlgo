@@ -24,14 +24,14 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntLists;
 import it.unimi.dsi.fastutil.ints.IntStack;
 
-<span class="fc" id="L27">class ConnectedComponentsAlgoImpl implements ConnectedComponentsAlgo {</span>
+<span class="fc" id="L27">class ConnectedComponentsAlgoImpl extends ConnectedComponentsAlgoAbstract {</span>
 
 	@Override
-	public ConnectedComponentsAlgo.Result computeConnectivityComponents(Graph g) {
+	ConnectedComponentsAlgo.Result computeConnectivityComponents(IndexGraph g) {
 <span class="fc bfc" id="L31" title="All 2 branches covered.">		return g.getCapabilities().directed() ? computeSCCDirected(g) : computeSCCUndirected(g);</span>
 	}
 
-	private static ConnectedComponentsAlgo.Result computeSCCDirected(Graph g) {
+	private static ConnectedComponentsAlgo.Result computeSCCDirected(IndexGraph g) {
 <span class="fc" id="L35">		final int n = g.vertices().size();</span>
 <span class="fc" id="L36">		IntStack s = new IntArrayList();</span>
 <span class="fc" id="L37">		IntStack p = new IntArrayList();</span>
@@ -94,7 +94,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L94">		return new Result(g, compNum, comp);</span>
 	}
 
-	private static ConnectedComponentsAlgo.Result computeSCCUndirected(Graph g) {
+	private static ConnectedComponentsAlgo.Result computeSCCUndirected(IndexGraph g) {
 <span class="fc" id="L98">		final int n = g.vertices().size();</span>
 <span class="fc" id="L99">		int[] comp = new int[n];</span>
 <span class="fc" id="L100">		Arrays.fill(comp, -1);</span>
@@ -127,13 +127,13 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 	}
 
 	private static class Result implements ConnectedComponentsAlgo.Result {
-		private final Graph g;
+		private final IndexGraph g;
 		private final int ccNum;
 		private final int[] vertexToCc;
 		private IntList[] ccVertices;
 		private IntList[] ccEdges;
 
-<span class="fc" id="L136">		private Result(Graph g, int ccNum, int[] vertexToCc) {</span>
+<span class="fc" id="L136">		private Result(IndexGraph g, int ccNum, int[] vertexToCc) {</span>
 <span class="fc" id="L137">			this.g = Objects.requireNonNull(g);</span>
 <span class="fc" id="L138">			this.ccNum = ccNum;</span>
 <span class="fc" id="L139">			this.vertexToCc = Objects.requireNonNull(vertexToCc);</span>

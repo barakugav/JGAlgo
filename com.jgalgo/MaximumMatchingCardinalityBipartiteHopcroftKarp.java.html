@@ -31,7 +31,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  * @see    &lt;a href= &quot;https://en.wikipedia.org/wiki/Hopcroft%E2%80%93Karp_algorithm&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
  */
-class MaximumMatchingCardinalityBipartiteHopcroftKarp implements MaximumMatchingCardinality {
+class MaximumMatchingCardinalityBipartiteHopcroftKarp extends MaximumMatchingCardinality {
 
 <span class="fc" id="L36">	private Object bipartiteVerticesWeightKey = Weights.DefaultBipartiteWeightKey;</span>
 <span class="fc" id="L37">	private static final Object EdgeRefWeightKey = new Utils.Obj(&quot;refToOrig&quot;);</span>
@@ -64,7 +64,7 @@ class MaximumMatchingCardinalityBipartiteHopcroftKarp implements MaximumMatching
 	 * @throws IllegalArgumentException if the graph is no bipartite with respect to the provided partition
 	 */
 	@Override
-	public Matching computeMaximumCardinalityMatching(Graph g) {
+	Matching computeMaximumCardinalityMatching(IndexGraph g) {
 <span class="fc" id="L68">		ArgumentCheck.onlyUndirected(g);</span>
 <span class="fc" id="L69">		int n = g.vertices().size();</span>
 
@@ -86,7 +86,7 @@ class MaximumMatchingCardinalityBipartiteHopcroftKarp implements MaximumMatching
 <span class="fc" id="L86">		int[] matched = new int[n];</span>
 <span class="fc" id="L87">		final int MatchedNone = -1;</span>
 <span class="fc" id="L88">		Arrays.fill(matched, MatchedNone);</span>
-<span class="fc" id="L89">		Graph f = Graph.newBuilderUndirected().expectedVerticesNum(n).build();</span>
+<span class="fc" id="L89">		IndexGraph f = IndexGraph.newBuilderUndirected().expectedVerticesNum(n).build();</span>
 <span class="fc bfc" id="L90" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
 <span class="fc" id="L91">			f.addVertex();</span>
 <span class="fc" id="L92">		Weights.Int edgeRef = f.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));</span>

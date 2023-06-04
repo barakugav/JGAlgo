@@ -23,22 +23,22 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 /**
  * Fredman and Tarjan’s minimum spanning tree algorithm.
  * &lt;p&gt;
- * The algorithm runs in iterations. In each iteration, multiple runs of the {@link MinimumSpanningTreePrim} algorithm will be run
- * (sequently) on the vertices: instead of growing the tree of Prim's algorithm until it connect all vertices, we grow
- * the heap that is used to order the out going edges until it reaches a certain size limit. Once the heap reached the
- * limit, we start Prim's algorithm from another vertex until the new heap reaches the limit, and repeat that until we
- * have a spanning forest. Than, we &lt;i&gt;contract&lt;/i&gt; each tree to a single super vertex, and we advance to the next
- * iteration.
+ * The algorithm runs in iterations. In each iteration, multiple runs of the {@link MinimumSpanningTreePrim} algorithm
+ * will be run (sequently) on the vertices: instead of growing the tree of Prim's algorithm until it connect all
+ * vertices, we grow the heap that is used to order the out going edges until it reaches a certain size limit. Once the
+ * heap reached the limit, we start Prim's algorithm from another vertex until the new heap reaches the limit, and
+ * repeat that until we have a spanning forest. Than, we &lt;i&gt;contract&lt;/i&gt; each tree to a single super vertex, and we
+ * advance to the next iteration.
  * &lt;p&gt;
- * The algorithm runs in \(O(m \log^* n)\) time and uses linear space. In practice, {@link MinimumSpanningTreePrim} usually out-preform
- * this algorithm. Note that only undirected graphs are supported.
+ * The algorithm runs in \(O(m \log^* n)\) time and uses linear space. In practice, {@link MinimumSpanningTreePrim}
+ * usually out-preform this algorithm. Note that only undirected graphs are supported.
  * &lt;p&gt;
  * Based on &quot;Fibonacci Heaps and Their Uses in Improved Network Optimization Algorithms&quot; by M.L. Fredman and R.E.
  * Tarjan.
  *
  * @author Barak Ugav
  */
-class MinimumSpanningTreeFredmanTarjan implements MinimumSpanningTree {
+class MinimumSpanningTreeFredmanTarjan extends MinimumSpanningTreeUtils.AbstractUndirected {
 
 <span class="fc" id="L43">	private HeapReferenceable.Builder&lt;Integer, Void&gt; heapBuilder =</span>
 <span class="fc" id="L44">			HeapReferenceable.newBuilder().keysTypePrimitive(int.class).valuesTypeVoid();</span>
@@ -63,11 +63,11 @@ class MinimumSpanningTreeFredmanTarjan implements MinimumSpanningTree {
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	public MinimumSpanningTree.Result computeMinimumSpanningTree(Graph g, WeightFunction w) {
+	MinimumSpanningTree.Result computeMinimumSpanningTree(IndexGraph g, WeightFunction w) {
 <span class="fc" id="L67">		ArgumentCheck.onlyUndirected(g);</span>
 <span class="fc" id="L68">		int n = g.vertices().size(), m = g.edges().size();</span>
-<span class="fc bfc" id="L69" title="All 2 branches covered.">		if (n == 0)</span>
-<span class="fc" id="L70">			return MinimumSpanningTreeResultImpl.Empty;</span>
+<span class="pc bpc" id="L69" title="1 of 2 branches missed.">		if (n == 0)</span>
+<span class="nc" id="L70">			return MinimumSpanningTreeUtils.ResultImpl.Empty;</span>
 
 		// following variables are used to maintain the super vertices
 
@@ -214,7 +214,7 @@ class MinimumSpanningTreeFredmanTarjan implements MinimumSpanningTree {
 
 		}
 
-<span class="fc" id="L217">		return new MinimumSpanningTreeResultImpl(mst);</span>
+<span class="fc" id="L217">		return new MinimumSpanningTreeUtils.ResultImpl(mst);</span>
 	}
 
 }

@@ -33,7 +33,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
  *
  * @author Barak Ugav
  */
-class CyclesFinderTarjan implements CyclesFinder {
+class CyclesFinderTarjan extends CyclesFinderAbstract {
 
 	/**
 	 * Create a new cycles finder algorithm object.
@@ -41,7 +41,7 @@ class CyclesFinderTarjan implements CyclesFinder {
 <span class="fc" id="L41">	CyclesFinderTarjan() {}</span>
 
 	@Override
-	public Iterator&lt;Path&gt; findAllCycles(Graph g) {
+	Iterator&lt;Path&gt; findAllCycles(IndexGraph g) {
 <span class="fc" id="L45">		ArgumentCheck.onlyDirected(g);</span>
 <span class="fc" id="L46">		Worker worker = new Worker(g);</span>
 <span class="fc" id="L47">		int n = g.vertices().size();</span>
@@ -54,13 +54,13 @@ class CyclesFinderTarjan implements CyclesFinder {
 	}
 
 	private static class Worker {
-		private final Graph g;
+		private final IndexGraph g;
 <span class="fc" id="L58">		private final IntStack path = new IntArrayList();</span>
 <span class="fc" id="L59">		private final IntStack markedStack = new IntArrayList();</span>
 		private final BitSet isMarked;
 <span class="fc" id="L61">		private final List&lt;Path&gt; cycles = new ArrayList&lt;&gt;();</span>
 
-<span class="fc" id="L63">		Worker(Graph g) {</span>
+<span class="fc" id="L63">		Worker(IndexGraph g) {</span>
 <span class="fc" id="L64">			this.g = g;</span>
 <span class="fc" id="L65">			int n = g.vertices().size();</span>
 <span class="fc" id="L66">			isMarked = new BitSet(n);</span>

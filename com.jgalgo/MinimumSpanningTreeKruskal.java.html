@@ -28,8 +28,8 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * edge is added to the forest. The algorithm terminate after all edges were examined.
  * &lt;p&gt;
  * The running time of the algorithm is \(O(m \log n)\) and it uses linear time. This algorithm perform good in practice
- * and its running time compete with other algorithms such as {@link MinimumSpanningTreePrim}, which have better time bounds in theory.
- * Note that only undirected graphs are supported.
+ * and its running time compete with other algorithms such as {@link MinimumSpanningTreePrim}, which have better time
+ * bounds in theory. Note that only undirected graphs are supported.
  * &lt;p&gt;
  * Based on &quot;On the shortest spanning subtree of a graph and the traveling salesman problem&quot; by Kruskal, J. B. (1956) in
  * the book &quot;Proceedings of the American Mathematical Society&quot;.
@@ -37,10 +37,10 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * @see    &lt;a href= &quot;https://en.wikipedia.org/wiki/Kruskal%27s_algorithm&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
  */
-class MinimumSpanningTreeKruskal implements MinimumSpanningTree {
+class MinimumSpanningTreeKruskal extends MinimumSpanningTreeUtils.AbstractUndirected {
 
 <span class="fc" id="L42">	private UnionFind.Builder unionFindBuilder = UnionFind.newBuilder();</span>
-<span class="fc" id="L43">	private boolean parallelEnable = Config.parallelByDefault;</span>
+<span class="fc" id="L43">	private boolean parallelEnable = JGAlgoConfig.parallelByDefault;</span>
 
 	/**
 	 * Construct a new MST algorithm object.
@@ -63,12 +63,12 @@ class MinimumSpanningTreeKruskal implements MinimumSpanningTree {
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	public MinimumSpanningTree.Result computeMinimumSpanningTree(Graph g, WeightFunction w) {
+	MinimumSpanningTree.Result computeMinimumSpanningTree(IndexGraph g, WeightFunction w) {
 <span class="fc" id="L67">		ArgumentCheck.onlyUndirected(g);</span>
 <span class="fc" id="L68">		final int n = g.vertices().size();</span>
 <span class="fc" id="L69">		final int m = g.edges().size();</span>
-<span class="pc bpc" id="L70" title="1 of 4 branches missed.">		if (n == 0 || m == 0)</span>
-<span class="fc" id="L71">			return MinimumSpanningTreeResultImpl.Empty;</span>
+<span class="pc bpc" id="L70" title="2 of 4 branches missed.">		if (n == 0 || m == 0)</span>
+<span class="nc" id="L71">			return MinimumSpanningTreeUtils.ResultImpl.Empty;</span>
 
 		/* sort edges */
 <span class="fc" id="L74">		int[] edges = g.edges().toIntArray();</span>
@@ -91,7 +91,7 @@ class MinimumSpanningTreeKruskal implements MinimumSpanningTree {
 			}
 		}
 <span class="fc" id="L93">		uf.clear();</span>
-<span class="fc" id="L94">		return new MinimumSpanningTreeResultImpl(mst);</span>
+<span class="fc" id="L94">		return new MinimumSpanningTreeUtils.ResultImpl(mst);</span>
 	}
 
 }

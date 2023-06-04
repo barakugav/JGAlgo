@@ -32,7 +32,7 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
  *
  * @author Barak Ugav
  */
-class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumMatchingWeighted {
+class MaximumMatchingWeightedBipartiteHungarianMethod extends MaximumMatchingWeighted {
 
 <span class="fc" id="L37">	private Object bipartiteVerticesWeightKey = Weights.DefaultBipartiteWeightKey;</span>
 <span class="fc" id="L38">	private HeapReferenceable.Builder&lt;Integer, Void&gt; heapBuilder =</span>
@@ -75,7 +75,7 @@ class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumMatching
 	 * @throws IllegalArgumentException if the graph is no bipartite with respect to the provided partition
 	 */
 	@Override
-	public Matching computeMaximumWeightedMatching(Graph g, WeightFunction w) {
+	Matching computeMaximumWeightedMatching(IndexGraph g, WeightFunction w) {
 <span class="fc" id="L79">		ArgumentCheck.onlyUndirected(g);</span>
 <span class="fc" id="L80">		Weights.Bool partition = g.getVerticesWeights(bipartiteVerticesWeightKey);</span>
 <span class="fc" id="L81">		Objects.requireNonNull(partition,</span>
@@ -91,7 +91,7 @@ class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumMatching
 	 * @throws IllegalArgumentException if the graph is no bipartite with respect to the provided partition
 	 */
 	@Override
-	public Matching computeMaximumWeightedPerfectMatching(Graph g, WeightFunction w) {
+	 Matching computeMaximumWeightedPerfectMatching(IndexGraph g, WeightFunction w) {
 <span class="fc" id="L95">		ArgumentCheck.onlyUndirected(g);</span>
 <span class="fc" id="L96">		Weights.Bool partition = g.getVerticesWeights(bipartiteVerticesWeightKey);</span>
 <span class="fc" id="L97">		Objects.requireNonNull(partition,</span>
@@ -101,7 +101,7 @@ class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumMatching
 
 	private class Worker {
 
-		private final Graph g;
+		private final IndexGraph g;
 		private final Weights.Bool partition;
 		private final WeightFunction w;
 
@@ -116,7 +116,7 @@ class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumMatching
 		private final double[] dualVal0;
 
 		@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L119">		Worker(Graph g, Weights.Bool partition, WeightFunction w) {</span>
+<span class="fc" id="L119">		Worker(IndexGraph g, Weights.Bool partition, WeightFunction w) {</span>
 <span class="fc" id="L120">			ArgumentCheck.onlyBipartite(g, partition);</span>
 
 <span class="fc" id="L122">			this.g = g;</span>
@@ -168,12 +168,12 @@ class MaximumMatchingWeightedBipartiteHungarianMethod implements MaximumMatching
 <span class="fc" id="L168">						int e = minRef.key().intValue();</span>
 <span class="fc" id="L169">						int u0 = g.edgeSource(e), v0 = g.edgeTarget(e);</span>
 
-<span class="pc bpc" id="L171" title="2 of 4 branches missed.">						if (inTree.get(u0) &amp;&amp; inTree.get(v0)) {</span>
+<span class="pc bpc" id="L171" title="1 of 4 branches missed.">						if (inTree.get(u0) &amp;&amp; inTree.get(v0)) {</span>
 							// Vertex already in tree, edge is irrelevant
 <span class="nc" id="L173">							nextTightEdge.remove(minRef);</span>
 <span class="nc" id="L174">							continue;</span>
 						}
-<span class="pc bpc" id="L176" title="1 of 2 branches missed.">						int v = inTree.get(u0) ? v0 : u0;</span>
+<span class="fc bfc" id="L176" title="All 2 branches covered.">						int v = inTree.get(u0) ? v0 : u0;</span>
 
 						// No more tight edges from the tree, go out and adjust dual values
 <span class="fc bfc" id="L179" title="All 2 branches covered.">						if (edgeSlack(e) &gt; 0)</span>

@@ -20,49 +20,49 @@ import java.util.NoSuchElementException;
 import com.jgalgo.EdgeEndpointsContainer.GraphWithEdgeEndpointsContainer;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 
-abstract class GraphTableAbstract extends GraphBaseContinues implements GraphWithEdgeEndpointsContainer {
+abstract class GraphTableAbstract extends GraphBaseIndex implements GraphWithEdgeEndpointsContainer {
 
-	final DataContainer.Obj&lt;DataContainer.Int&gt; edges;
+	final WeightsImpl.Index.Obj&lt;WeightsImpl.Index.Int&gt; edges;
 	private final EdgeEndpointsContainer edgeEndpoints;
 
 	static final int EdgeNone = -1;
 
-<span class="fc" id="L30">	private static final Object DataContainerKeyEdges = new Utils.Obj(&quot;edges&quot;);</span>
-<span class="fc" id="L31">	private static final Object DataContainerKeyEdgeEndpoints = new Utils.Obj(&quot;edgeEndpoints&quot;);</span>
+<span class="fc" id="L30">	private static final Object WeightsKeyEdges = new Utils.Obj(&quot;edges&quot;);</span>
+<span class="fc" id="L31">	private static final Object WeightsKeyEdgeEndpoints = new Utils.Obj(&quot;edgeEndpoints&quot;);</span>
 
 	GraphTableAbstract(int expectedVerticesNum, int expectedEdgesNum) {
 <span class="fc" id="L34">		super(expectedVerticesNum, expectedEdgesNum);</span>
 
-<span class="fc" id="L36">		edges = new DataContainer.Obj&lt;&gt;(verticesIDStrat, null, DataContainer.Int.class);</span>
-<span class="fc" id="L37">		addInternalVerticesDataContainer(DataContainerKeyEdges, edges);</span>
+<span class="fc" id="L36">		edges = new WeightsImpl.Index.Obj&lt;&gt;(verticesIdStrat, null, WeightsImpl.Index.Int.class);</span>
+<span class="fc" id="L37">		addInternalVerticesWeights(WeightsKeyEdges, edges);</span>
 
-<span class="fc" id="L39">		edgeEndpoints = new EdgeEndpointsContainer(edgesIDStrat);</span>
-<span class="fc" id="L40">		addInternalEdgesDataContainer(DataContainerKeyEdgeEndpoints, edgeEndpoints);</span>
+<span class="fc" id="L39">		edgeEndpoints = new EdgeEndpointsContainer(edgesIdStrat);</span>
+<span class="fc" id="L40">		addInternalEdgesWeights(WeightsKeyEdgeEndpoints, edgeEndpoints);</span>
 <span class="fc" id="L41">	}</span>
 
 	GraphTableAbstract(GraphTableAbstract g) {
 <span class="fc" id="L44">		super(g);</span>
 
 <span class="fc" id="L46">		final int n = g.vertices().size();</span>
-<span class="fc" id="L47">		edges = g.edges.copy(verticesIDStrat);</span>
-<span class="fc" id="L48">		addInternalVerticesDataContainer(DataContainerKeyEdges, edges);</span>
+<span class="fc" id="L47">		edges = g.edges.copy(verticesIdStrat);</span>
+<span class="fc" id="L48">		addInternalVerticesWeights(WeightsKeyEdges, edges);</span>
 <span class="fc bfc" id="L49" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc" id="L50">			DataContainer.Int uEdges = edges.get(u).copy(verticesIDStrat);</span>
+<span class="fc" id="L50">			WeightsImpl.Index.Int uEdges = edges.get(u).copy(verticesIdStrat);</span>
 <span class="fc" id="L51">			edges.set(u, uEdges);</span>
-<span class="fc" id="L52">			addInternalVerticesDataContainer(new Utils.Obj(&quot;perVertexEdges&quot;), uEdges);</span>
+<span class="fc" id="L52">			addInternalVerticesWeights(new Utils.Obj(&quot;perVertexEdges&quot;), uEdges);</span>
 		}
 
-<span class="fc" id="L55">		edgeEndpoints = g.edgeEndpoints.copy(edgesIDStrat);</span>
-<span class="fc" id="L56">		addInternalEdgesDataContainer(DataContainerKeyEdgeEndpoints, edgeEndpoints);</span>
+<span class="fc" id="L55">		edgeEndpoints = g.edgeEndpoints.copy(edgesIdStrat);</span>
+<span class="fc" id="L56">		addInternalEdgesWeights(WeightsKeyEdgeEndpoints, edgeEndpoints);</span>
 <span class="fc" id="L57">	}</span>
 
 	@Override
 	public int addVertex() {
 <span class="fc" id="L61">		int v = super.addVertex();</span>
-<span class="fc" id="L62">		DataContainer.Int vEdges = edges.get(v);</span>
+<span class="fc" id="L62">		WeightsImpl.Index.Int vEdges = edges.get(v);</span>
 <span class="fc bfc" id="L63" title="All 2 branches covered.">		if (vEdges == null) {</span>
-<span class="fc" id="L64">			vEdges = new DataContainer.Int(verticesIDStrat, EdgeNone);</span>
-<span class="fc" id="L65">			addInternalVerticesDataContainer(new Utils.Obj(&quot;perVertexEdges&quot;), vEdges);</span>
+<span class="fc" id="L64">			vEdges = new WeightsImpl.Index.Int(verticesIdStrat, EdgeNone);</span>
+<span class="fc" id="L65">			addInternalVerticesWeights(new Utils.Obj(&quot;perVertexEdges&quot;), vEdges);</span>
 <span class="fc" id="L66">			edges.set(v, vEdges);</span>
 		}
 <span class="fc" id="L68">		return v;</span>
@@ -71,7 +71,7 @@ abstract class GraphTableAbstract extends GraphBaseContinues implements GraphWit
 	@Override
 	public void removeVertex(int vertex) {
 <span class="fc" id="L73">		vertex = vertexSwapBeforeRemove(vertex);</span>
-<span class="fc" id="L74">		DataContainer.Int edgesV = edges.get(vertex);</span>
+<span class="fc" id="L74">		WeightsImpl.Index.Int edgesV = edges.get(vertex);</span>
 <span class="fc" id="L75">		super.removeVertex(vertex);</span>
 <span class="fc" id="L76">		edgesV.clear();</span>
 		// Don't deallocate v array
@@ -159,7 +159,7 @@ abstract class GraphTableAbstract extends GraphBaseContinues implements GraphWit
 		private final int source;
 		private int target;
 <span class="fc" id="L161">		private int lastTarget = -1;</span>
-		private final DataContainer.Int sourceEdges;
+		private final WeightsImpl.Index.Int sourceEdges;
 
 <span class="fc" id="L164">		EdgeIterOut(int source) {</span>
 <span class="fc" id="L165">			checkVertex(source);</span>
@@ -222,7 +222,7 @@ abstract class GraphTableAbstract extends GraphBaseContinues implements GraphWit
 		private int source;
 		private final int target;
 <span class="fc" id="L224">		private int lastSource = -1;</span>
-		private final DataContainer.Int targetEdges;
+		private final WeightsImpl.Index.Int targetEdges;
 
 <span class="fc" id="L227">		EdgeIterInUndirected(int target) {</span>
 <span class="fc" id="L228">			checkVertex(target);</span>

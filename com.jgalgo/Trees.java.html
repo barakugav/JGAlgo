@@ -48,7 +48,7 @@ public class Trees {
 	 */
 	public static boolean isTree(Graph g) {
 <span class="fc" id="L50">		ArgumentCheck.onlyUndirected(g);</span>
-<span class="pc bpc" id="L51" title="1 of 2 branches missed.">		return g.vertices().isEmpty() ? true : isTree(g, 0);</span>
+<span class="pc bpc" id="L51" title="1 of 2 branches missed.">		return g.vertices().isEmpty() ? true : isTree(g, g.vertices().iterator().nextInt());</span>
 	}
 
 	/**
@@ -100,48 +100,57 @@ public class Trees {
 	}
 
 	private static boolean isForest(Graph g, IntIterator roots, boolean allowVisitedRoot) {
-<span class="fc" id="L103">		int n = g.vertices().size();</span>
-<span class="pc bpc" id="L104" title="1 of 2 branches missed.">		if (n == 0)</span>
-<span class="nc" id="L105">			return true;</span>
-<span class="fc" id="L106">		boolean directed = g.getCapabilities().directed();</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">		if (g instanceof IndexGraph)</span>
+<span class="fc" id="L104">			return isForest((IndexGraph) g, roots, allowVisitedRoot);</span>
+<span class="fc" id="L105">		IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L106">		IndexIdMap viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L107">		roots = new IndexIdMapUtils.IndexIteratorFromIterator(roots, viMap);</span>
+<span class="fc" id="L108">		return isForest(iGraph, roots, allowVisitedRoot);</span>
+	}
 
-<span class="fc" id="L108">		BitSet visited = new BitSet(n);</span>
-<span class="fc" id="L109">		int[] parent = new int[n];</span>
-<span class="fc" id="L110">		Arrays.fill(parent, -1);</span>
+	private static boolean isForest(IndexGraph g, IntIterator roots, boolean allowVisitedRoot) {
+<span class="fc" id="L112">		int n = g.vertices().size();</span>
+<span class="pc bpc" id="L113" title="1 of 2 branches missed.">		if (n == 0)</span>
+<span class="nc" id="L114">			return true;</span>
+<span class="fc" id="L115">		boolean directed = g.getCapabilities().directed();</span>
 
-<span class="fc" id="L112">		IntStack stack = new IntArrayList();</span>
-<span class="fc" id="L113">		int visitedCount = 0;</span>
+<span class="fc" id="L117">		BitSet visited = new BitSet(n);</span>
+<span class="fc" id="L118">		int[] parent = new int[n];</span>
+<span class="fc" id="L119">		Arrays.fill(parent, -1);</span>
 
-<span class="fc bfc" id="L115" title="All 2 branches covered.">		while (roots.hasNext()) {</span>
-<span class="fc" id="L116">			int root = roots.nextInt();</span>
-<span class="fc bfc" id="L117" title="All 2 branches covered.">			if (visited.get(root)) {</span>
-<span class="pc bpc" id="L118" title="1 of 2 branches missed.">				if (allowVisitedRoot)</span>
-<span class="fc" id="L119">					continue;</span>
-<span class="nc" id="L120">				return false;</span>
+<span class="fc" id="L121">		IntStack stack = new IntArrayList();</span>
+<span class="fc" id="L122">		int visitedCount = 0;</span>
+
+<span class="fc bfc" id="L124" title="All 2 branches covered.">		while (roots.hasNext()) {</span>
+<span class="fc" id="L125">			int root = roots.nextInt();</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">			if (visited.get(root)) {</span>
+<span class="pc bpc" id="L127" title="1 of 2 branches missed.">				if (allowVisitedRoot)</span>
+<span class="fc" id="L128">					continue;</span>
+<span class="nc" id="L129">				return false;</span>
 			}
 
-<span class="fc" id="L123">			stack.push(root);</span>
-<span class="fc" id="L124">			visited.set(root);</span>
+<span class="fc" id="L132">			stack.push(root);</span>
+<span class="fc" id="L133">			visited.set(root);</span>
 
-<span class="fc bfc" id="L126" title="All 2 branches covered.">			while (!stack.isEmpty()) {</span>
-<span class="fc" id="L127">				int u = stack.popInt();</span>
-<span class="fc" id="L128">				visitedCount++;</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">			while (!stack.isEmpty()) {</span>
+<span class="fc" id="L136">				int u = stack.popInt();</span>
+<span class="fc" id="L137">				visitedCount++;</span>
 
-<span class="fc bfc" id="L130" title="All 2 branches covered.">				for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L131">					eit.nextInt();</span>
-<span class="fc" id="L132">					int v = eit.target();</span>
-<span class="pc bpc" id="L133" title="1 of 4 branches missed.">					if (!directed &amp;&amp; v == parent[u])</span>
-<span class="fc" id="L134">						continue;</span>
-<span class="fc bfc" id="L135" title="All 2 branches covered.">					if (visited.get(v))</span>
-<span class="fc" id="L136">						return false;</span>
-<span class="fc" id="L137">					visited.set(v);</span>
-<span class="fc" id="L138">					stack.push(v);</span>
-<span class="fc" id="L139">					parent[v] = u;</span>
-<span class="fc" id="L140">				}</span>
-<span class="fc" id="L141">			}</span>
-<span class="fc" id="L142">		}</span>
+<span class="fc bfc" id="L139" title="All 2 branches covered.">				for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L140">					eit.nextInt();</span>
+<span class="fc" id="L141">					int v = eit.target();</span>
+<span class="pc bpc" id="L142" title="1 of 4 branches missed.">					if (!directed &amp;&amp; v == parent[u])</span>
+<span class="fc" id="L143">						continue;</span>
+<span class="fc bfc" id="L144" title="All 2 branches covered.">					if (visited.get(v))</span>
+<span class="fc" id="L145">						return false;</span>
+<span class="fc" id="L146">					visited.set(v);</span>
+<span class="fc" id="L147">					stack.push(v);</span>
+<span class="fc" id="L148">					parent[v] = u;</span>
+<span class="fc" id="L149">				}</span>
+<span class="fc" id="L150">			}</span>
+<span class="fc" id="L151">		}</span>
 
-<span class="fc bfc" id="L144" title="All 2 branches covered.">		return visitedCount == n;</span>
+<span class="fc bfc" id="L153" title="All 2 branches covered.">		return visitedCount == n;</span>
 	}
 
 	interface TreeNode&lt;Node extends TreeNode&lt;Node&gt;&gt; {
@@ -164,7 +173,7 @@ public class Trees {
 
 	}
 
-<span class="fc" id="L167">	static class TreeNodeImpl&lt;Node extends TreeNodeImpl&lt;Node&gt;&gt; implements TreeNode&lt;Node&gt; {</span>
+<span class="fc" id="L176">	static class TreeNodeImpl&lt;Node extends TreeNodeImpl&lt;Node&gt;&gt; implements TreeNode&lt;Node&gt; {</span>
 
 		Node parent;
 		Node next;
@@ -173,111 +182,111 @@ public class Trees {
 
 		@Override
 		public Node parent() {
-<span class="fc" id="L176">			return parent;</span>
+<span class="fc" id="L185">			return parent;</span>
 		}
 
 		@Override
 		public Node next() {
-<span class="fc" id="L181">			return next;</span>
+<span class="fc" id="L190">			return next;</span>
 		}
 
 		@Override
 		public Node prev() {
-<span class="fc" id="L186">			return prev;</span>
+<span class="fc" id="L195">			return prev;</span>
 		}
 
 		@Override
 		public Node child() {
-<span class="fc" id="L191">			return child;</span>
+<span class="fc" id="L200">			return child;</span>
 		}
 
 		@Override
 		public void setParent(Node x) {
-<span class="fc" id="L196">			parent = x;</span>
-<span class="fc" id="L197">		}</span>
+<span class="fc" id="L205">			parent = x;</span>
+<span class="fc" id="L206">		}</span>
 
 		@Override
 		public void setNext(Node x) {
-<span class="fc" id="L201">			next = x;</span>
-<span class="fc" id="L202">		}</span>
+<span class="fc" id="L210">			next = x;</span>
+<span class="fc" id="L211">		}</span>
 
 		@Override
 		public void setPrev(Node x) {
-<span class="fc" id="L206">			prev = x;</span>
-<span class="fc" id="L207">		}</span>
+<span class="fc" id="L215">			prev = x;</span>
+<span class="fc" id="L216">		}</span>
 
 		@Override
 		public void setChild(Node x) {
-<span class="fc" id="L211">			child = x;</span>
-<span class="fc" id="L212">		}</span>
+<span class="fc" id="L220">			child = x;</span>
+<span class="fc" id="L221">		}</span>
 	}
 
 	static &lt;Node extends TreeNode&lt;Node&gt;&gt; void clear(Node root, Consumer&lt;? super Node&gt; finalizer) {
-<span class="fc" id="L216">		for (Node p = root;;) {</span>
-<span class="fc bfc" id="L217" title="All 2 branches covered.">			while (p.child() != null) {</span>
-<span class="fc" id="L218">				p = p.child();</span>
-<span class="fc bfc" id="L219" title="All 2 branches covered.">				while (p.next() != null)</span>
-<span class="fc" id="L220">					p = p.next();</span>
+<span class="fc" id="L225">		for (Node p = root;;) {</span>
+<span class="fc bfc" id="L226" title="All 2 branches covered.">			while (p.child() != null) {</span>
+<span class="fc" id="L227">				p = p.child();</span>
+<span class="fc bfc" id="L228" title="All 2 branches covered.">				while (p.next() != null)</span>
+<span class="fc" id="L229">					p = p.next();</span>
 			}
 
 			Node prev;
-<span class="fc bfc" id="L224" title="All 2 branches covered.">			if (p.prev() != null) {</span>
-<span class="fc" id="L225">				prev = p.prev();</span>
-<span class="fc" id="L226">				prev.setNext(null);</span>
-<span class="fc" id="L227">				p.setPrev(null);</span>
-<span class="fc bfc" id="L228" title="All 2 branches covered.">			} else if (p.parent() != null) {</span>
-<span class="fc" id="L229">				prev = p.parent();</span>
-<span class="fc" id="L230">				prev.setChild(null);</span>
-<span class="fc" id="L231">				p.setParent(null);</span>
+<span class="fc bfc" id="L233" title="All 2 branches covered.">			if (p.prev() != null) {</span>
+<span class="fc" id="L234">				prev = p.prev();</span>
+<span class="fc" id="L235">				prev.setNext(null);</span>
+<span class="fc" id="L236">				p.setPrev(null);</span>
+<span class="fc bfc" id="L237" title="All 2 branches covered.">			} else if (p.parent() != null) {</span>
+<span class="fc" id="L238">				prev = p.parent();</span>
+<span class="fc" id="L239">				prev.setChild(null);</span>
+<span class="fc" id="L240">				p.setParent(null);</span>
 			} else {
-<span class="fc" id="L233">				prev = null;</span>
+<span class="fc" id="L242">				prev = null;</span>
 			}
 
-<span class="fc" id="L236">			finalizer.accept(p);</span>
-<span class="fc bfc" id="L237" title="All 2 branches covered.">			if (prev == null)</span>
-<span class="fc" id="L238">				break;</span>
-<span class="fc" id="L239">			p = prev;</span>
-<span class="fc" id="L240">		}</span>
-<span class="fc" id="L241">	}</span>
+<span class="fc" id="L245">			finalizer.accept(p);</span>
+<span class="fc bfc" id="L246" title="All 2 branches covered.">			if (prev == null)</span>
+<span class="fc" id="L247">				break;</span>
+<span class="fc" id="L248">			p = prev;</span>
+<span class="fc" id="L249">		}</span>
+<span class="fc" id="L250">	}</span>
 
 	static class PreOrderIter&lt;Node extends TreeNode&lt;Node&gt;&gt; implements Iterator&lt;Node&gt; {
 
 		private Node p;
 
-<span class="fc" id="L247">		PreOrderIter(Node p) {</span>
-<span class="fc" id="L248">			reset(p);</span>
-<span class="fc" id="L249">		}</span>
+<span class="fc" id="L256">		PreOrderIter(Node p) {</span>
+<span class="fc" id="L257">			reset(p);</span>
+<span class="fc" id="L258">		}</span>
 
 		void reset(Node p) {
-<span class="fc" id="L252">			this.p = p;</span>
-<span class="fc" id="L253">		}</span>
+<span class="fc" id="L261">			this.p = p;</span>
+<span class="fc" id="L262">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="fc bfc" id="L257" title="All 2 branches covered.">			return p != null;</span>
+<span class="fc bfc" id="L266" title="All 2 branches covered.">			return p != null;</span>
 		}
 
 		@Override
 		public Node next() {
-<span class="pc bpc" id="L262" title="1 of 2 branches missed.">			if (!hasNext())</span>
-<span class="nc" id="L263">				throw new NoSuchElementException();</span>
-<span class="fc" id="L264">			final Node ret = p;</span>
+<span class="pc bpc" id="L271" title="1 of 2 branches missed.">			if (!hasNext())</span>
+<span class="nc" id="L272">				throw new NoSuchElementException();</span>
+<span class="fc" id="L273">			final Node ret = p;</span>
 
 			Node next;
-<span class="fc bfc" id="L267" title="All 2 branches covered.">			if ((next = ret.child()) != null) {</span>
-<span class="fc" id="L268">				p = next;</span>
+<span class="fc bfc" id="L276" title="All 2 branches covered.">			if ((next = ret.child()) != null) {</span>
+<span class="fc" id="L277">				p = next;</span>
 			} else {
-<span class="fc" id="L270">				Node p0 = ret;</span>
+<span class="fc" id="L279">				Node p0 = ret;</span>
 				do {
-<span class="fc bfc" id="L272" title="All 2 branches covered.">					if ((next = p0.next()) != null) {</span>
-<span class="fc" id="L273">						p0 = next;</span>
-<span class="fc" id="L274">						break;</span>
+<span class="fc bfc" id="L281" title="All 2 branches covered.">					if ((next = p0.next()) != null) {</span>
+<span class="fc" id="L282">						p0 = next;</span>
+<span class="fc" id="L283">						break;</span>
 					}
-<span class="fc bfc" id="L276" title="All 2 branches covered.">				} while ((p0 = p0.parent()) != null);</span>
-<span class="fc" id="L277">				p = p0;</span>
+<span class="fc bfc" id="L285" title="All 2 branches covered.">				} while ((p0 = p0.parent()) != null);</span>
+<span class="fc" id="L286">				p = p0;</span>
 			}
 
-<span class="fc" id="L280">			return ret;</span>
+<span class="fc" id="L289">			return ret;</span>
 		}
 
 	}
@@ -286,38 +295,38 @@ public class Trees {
 
 		private N p;
 
-<span class="nc" id="L289">		PostOrderIter(N p) {</span>
-<span class="nc" id="L290">			reset(p);</span>
-<span class="nc" id="L291">		}</span>
+<span class="nc" id="L298">		PostOrderIter(N p) {</span>
+<span class="nc" id="L299">			reset(p);</span>
+<span class="nc" id="L300">		}</span>
 
 		void reset(N p) {
-<span class="nc bnc" id="L294" title="All 2 branches missed.">			for (N next; (next = p.child()) != null;)</span>
-<span class="nc" id="L295">				p = next;</span>
-<span class="nc" id="L296">			this.p = p;</span>
-<span class="nc" id="L297">		}</span>
+<span class="nc bnc" id="L303" title="All 2 branches missed.">			for (N next; (next = p.child()) != null;)</span>
+<span class="nc" id="L304">				p = next;</span>
+<span class="nc" id="L305">			this.p = p;</span>
+<span class="nc" id="L306">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="nc bnc" id="L301" title="All 2 branches missed.">			return p != null;</span>
+<span class="nc bnc" id="L310" title="All 2 branches missed.">			return p != null;</span>
 		}
 
 		@Override
 		public N next() {
-<span class="nc bnc" id="L306" title="All 2 branches missed.">			if (!hasNext())</span>
-<span class="nc" id="L307">				throw new NoSuchElementException();</span>
-<span class="nc" id="L308">			final N ret = p;</span>
+<span class="nc bnc" id="L315" title="All 2 branches missed.">			if (!hasNext())</span>
+<span class="nc" id="L316">				throw new NoSuchElementException();</span>
+<span class="nc" id="L317">			final N ret = p;</span>
 
 			N next;
-<span class="nc bnc" id="L311" title="All 2 branches missed.">			if ((next = ret.next()) != null) {</span>
+<span class="nc bnc" id="L320" title="All 2 branches missed.">			if ((next = ret.next()) != null) {</span>
 				/* lower child */
-<span class="nc bnc" id="L313" title="All 2 branches missed.">				for (N child; (child = next.child()) != null;)</span>
-<span class="nc" id="L314">					next = child;</span>
-<span class="nc" id="L315">				p = next;</span>
+<span class="nc bnc" id="L322" title="All 2 branches missed.">				for (N child; (child = next.child()) != null;)</span>
+<span class="nc" id="L323">					next = child;</span>
+<span class="nc" id="L324">				p = next;</span>
 			} else {
-<span class="nc" id="L317">				p = ret.parent();</span>
+<span class="nc" id="L326">				p = ret.parent();</span>
 			}
 
-<span class="nc" id="L320">			return ret;</span>
+<span class="nc" id="L329">			return ret;</span>
 		}
 
 	}

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MaximumMatchingAbstract.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">MaximumMatchingAbstract.java</span></div><h1>MaximumMatchingAbstract.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo;
+
+import java.util.Objects;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+
+<span class="fc" id="L21">abstract class MaximumMatchingAbstract implements MaximumMatching {</span>
+
+	@Override
+	public Matching computeMaximumCardinalityMatching(Graph g) {
+<span class="fc bfc" id="L25" title="All 2 branches covered.">		if (g instanceof IndexGraph)</span>
+<span class="fc" id="L26">			return computeMaximumCardinalityMatching((IndexGraph) g);</span>
+
+<span class="fc" id="L28">		IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L29">		IndexIdMap viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L30">		IndexIdMap eiMap = g.indexGraphEdgesMap();</span>
+
+<span class="fc" id="L32">		Matching indexMatch = computeMaximumCardinalityMatching(iGraph);</span>
+<span class="fc" id="L33">		return new MatchingFromIndexMatching(indexMatch, viMap, eiMap);</span>
+	}
+
+	@Override
+	public Matching computeMaximumWeightedMatching(Graph g, WeightFunction w) {
+<span class="fc bfc" id="L38" title="All 2 branches covered.">		if (g instanceof IndexGraph)</span>
+<span class="fc" id="L39">			return computeMaximumWeightedMatching((IndexGraph) g, w);</span>
+
+<span class="fc" id="L41">		IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L42">		IndexIdMap viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L43">		IndexIdMap eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L44">		w = WeightsImpl.indexWeightFuncFromIdWeightFunc(w, eiMap);</span>
+
+<span class="fc" id="L46">		Matching indexMatch = computeMaximumWeightedMatching(iGraph, w);</span>
+<span class="fc" id="L47">		return new MatchingFromIndexMatching(indexMatch, viMap, eiMap);</span>
+	}
+
+	@Override
+	public Matching computeMaximumWeightedPerfectMatching(Graph g, WeightFunction w) {
+<span class="fc bfc" id="L52" title="All 2 branches covered.">		if (g instanceof IndexGraph)</span>
+<span class="fc" id="L53">			return computeMaximumWeightedPerfectMatching((IndexGraph) g, w);</span>
+
+<span class="fc" id="L55">		IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L56">		IndexIdMap viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L57">		IndexIdMap eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L58">		w = WeightsImpl.indexWeightFuncFromIdWeightFunc(w, eiMap);</span>
+
+<span class="fc" id="L60">		Matching indexMatch = computeMaximumWeightedPerfectMatching(iGraph, w);</span>
+<span class="fc" id="L61">		return new MatchingFromIndexMatching(indexMatch, viMap, eiMap);</span>
+	}
+
+	abstract Matching computeMaximumCardinalityMatching(IndexGraph g);
+
+	abstract Matching computeMaximumWeightedMatching(IndexGraph g, WeightFunction w);
+
+	abstract Matching computeMaximumWeightedPerfectMatching(IndexGraph g, WeightFunction w);
+
+	private static class MatchingFromIndexMatching implements Matching {
+
+		private final Matching match;
+		private final IndexIdMap viMap;
+		private final IndexIdMap eiMap;
+
+<span class="fc" id="L76">		MatchingFromIndexMatching(Matching match, IndexIdMap viMap, IndexIdMap eiMap) {</span>
+<span class="fc" id="L77">			this.match = Objects.requireNonNull(match);</span>
+<span class="fc" id="L78">			this.viMap = Objects.requireNonNull(viMap);</span>
+<span class="fc" id="L79">			this.eiMap = Objects.requireNonNull(eiMap);</span>
+<span class="fc" id="L80">		}</span>
+
+		@Override
+		public boolean isVertexMatched(int vertex) {
+<span class="nc" id="L84">			return match.isVertexMatched(viMap.idToIndex(vertex));</span>
+		}
+
+		@Override
+		public boolean containsEdge(int edge) {
+<span class="nc" id="L89">			return match.containsEdge(eiMap.idToIndex(edge));</span>
+		}
+
+		@Override
+		public IntCollection edges() {
+<span class="fc" id="L94">			return new IndexIdMapUtils.CollectionFromIndexCollection(match.edges(), eiMap);</span>
+		}
+
+		@Override
+		public double weight(WeightFunction w) {
+<span class="fc" id="L99">			return match.weight(WeightsImpl.indexWeightFuncFromIdWeightFunc(w, eiMap));</span>
+		}
+
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

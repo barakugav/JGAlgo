@@ -38,10 +38,10 @@ import it.unimi.dsi.fastutil.ints.IntLists;
  *
  * @author Barak Ugav
  */
-<span class="fc" id="L41">class BiConnectedComponentsAlgoHopcroftTarjan implements BiConnectedComponentsAlgo {</span>
+<span class="fc" id="L41">class BiConnectedComponentsAlgoHopcroftTarjan extends BiConnectedComponentsAlgoAbstract {</span>
 
 	@Override
-	public Result computeBiConnectivityComponents(Graph g) {
+	BiConnectedComponentsAlgo.Result computeBiConnectivityComponents(IndexGraph g) {
 <span class="fc" id="L45">		ArgumentCheck.onlyUndirected(g);</span>
 
 <span class="fc" id="L47">		final int n = g.vertices().size();</span>
@@ -163,14 +163,14 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 
 	private static class Res implements BiConnectedComponentsAlgo.Result {
 
-		private final Graph g;
+		private final IndexGraph g;
 		private final IntList[] biccsVertices;
 		private IntList[] biccsEdges;
 		private IntList[] vertexBiCcs;
 		// private final BitSet separatingVerticesBitmap;
 		// private IntList separatingVertices;
 
-<span class="fc" id="L173">		Res(Graph g, IntList[] biccsVertices) {</span>
+<span class="fc" id="L173">		Res(IndexGraph g, IntList[] biccsVertices) {</span>
 <span class="fc" id="L174">			this.g = Objects.requireNonNull(g);</span>
 <span class="fc" id="L175">			this.biccsVertices = Objects.requireNonNull(biccsVertices);</span>
 <span class="fc bfc" id="L176" title="All 2 branches covered.">			for (int biccIdx = 0; biccIdx &lt; biccsVertices.length; biccIdx++)</span>

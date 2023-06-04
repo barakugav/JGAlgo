@@ -15,7 +15,7 @@
  */
 package com.jgalgo;
 
-interface MaximumMatchingCardinality extends MaximumMatching {
+<span class="fc" id="L18">abstract class MaximumMatchingCardinality extends MaximumMatchingAbstract {</span>
 
 	/**
 	 * {@inheritDoc}
@@ -25,8 +25,8 @@ interface MaximumMatchingCardinality extends MaximumMatching {
 	 * @throws IllegalArgumentException if {@code w} is not {@code null}
 	 */
 	@Override
-	default Matching computeMaximumWeightedMatching(Graph g, WeightFunction w) {
-<span class="nc bnc" id="L29" title="All 2 branches missed.">		if (w != null)</span>
+	Matching computeMaximumWeightedMatching(IndexGraph g, WeightFunction w) {
+<span class="nc bnc" id="L29" title="All 4 branches missed.">		if (w != null &amp;&amp; w != WeightFunction.CardinalityWeightFunction)</span>
 <span class="nc" id="L30">			throw new IllegalArgumentException(&quot;Only cardinality matching is supported by this algorithm&quot;);</span>
 <span class="nc" id="L31">		return computeMaximumCardinalityMatching(g);</span>
 	}
@@ -39,8 +39,8 @@ interface MaximumMatchingCardinality extends MaximumMatching {
 	 * @throws IllegalArgumentException if {@code w} is not {@code null}
 	 */
 	@Override
-	default Matching computeMaximumWeightedPerfectMatching(Graph g, WeightFunction w) {
-<span class="nc bnc" id="L43" title="All 2 branches missed.">		if (w != null)</span>
+	Matching computeMaximumWeightedPerfectMatching(IndexGraph g, WeightFunction w) {
+<span class="nc bnc" id="L43" title="All 4 branches missed.">		if (w != null &amp;&amp; w != WeightFunction.CardinalityWeightFunction)</span>
 <span class="nc" id="L44">			throw new IllegalArgumentException(&quot;Only cardinality matching is supported by this algorithm&quot;);</span>
 <span class="nc" id="L45">		return computeMaximumCardinalityMatching(g);</span>
 	}

@@ -34,7 +34,7 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
  * @see    &lt;a href=&quot;https://en.wikipedia.org/wiki/Greedy_coloring&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
  */
-class ColoringGreedy implements Coloring {
+class ColoringGreedy extends ColoringUtils.AbstractImpl {
 
 	private final Random rand;
 
@@ -55,11 +55,11 @@ class ColoringGreedy implements Coloring {
 <span class="fc" id="L55">	}</span>
 
 	@Override
-	public Coloring.Result computeColoring(Graph g) {
+	Coloring.Result computeColoring(IndexGraph g) {
 <span class="fc" id="L59">		ArgumentCheck.onlyUndirected(g);</span>
 <span class="fc" id="L60">		ArgumentCheck.noSelfLoops(g, &quot;no valid coloring in graphs with self loops&quot;);</span>
 
-<span class="fc" id="L62">		ColoringResultImpl res = new ColoringResultImpl(g);</span>
+<span class="fc" id="L62">		ColoringUtils.ResultImpl res = new ColoringUtils.ResultImpl(g);</span>
 <span class="fc" id="L63">		int n = g.vertices().size();</span>
 <span class="fc" id="L64">		int[] order = new int[n];</span>
 <span class="fc bfc" id="L65" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>

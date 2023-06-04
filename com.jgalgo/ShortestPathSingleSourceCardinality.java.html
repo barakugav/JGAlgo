@@ -26,7 +26,7 @@ package com.jgalgo;
  * @see    BFSIter
  * @author Barak Ugav
  */
-class ShortestPathSingleSourceCardinality implements ShortestPathSingleSource {
+class ShortestPathSingleSourceCardinality extends ShortestPathSingleSourceUtils.AbstractImpl {
 
 	/**
 	 * Construct a new cardinality SSSP algorithm.
@@ -34,7 +34,7 @@ class ShortestPathSingleSourceCardinality implements ShortestPathSingleSource {
 <span class="fc" id="L34">	ShortestPathSingleSourceCardinality() {}</span>
 
 	@Override
-	public ShortestPathSingleSource.Result computeCardinalityShortestPaths(Graph g, int source) {
+	ShortestPathSingleSource.Result computeCardinalityShortestPaths(IndexGraph g, int source) {
 <span class="fc" id="L38">		ShortestPathSingleSourceUtils.ResultImpl.Int res = new ShortestPathSingleSourceUtils.ResultImpl.Int(g, source);</span>
 <span class="fc bfc" id="L39" title="All 2 branches covered.">		for (BFSIter it = BFSIter.newInstance(g, source); it.hasNext();) {</span>
 <span class="fc" id="L40">			int v = it.nextInt();</span>
@@ -51,7 +51,7 @@ class ShortestPathSingleSourceCardinality implements ShortestPathSingleSource {
 	 *                                      {@link WeightFunction#CardinalityWeightFunction}
 	 */
 	@Override
-	public ShortestPathSingleSource.Result computeShortestPaths(Graph g, WeightFunction w, int source) {
+	ShortestPathSingleSource.Result computeShortestPaths(IndexGraph g, WeightFunction w, int source) {
 <span class="pc bpc" id="L55" title="3 of 4 branches missed.">		if (!(w == null || w == WeightFunction.CardinalityWeightFunction))</span>
 <span class="nc" id="L56">			throw new IllegalArgumentException(&quot;only cardinality shortest paths are supported&quot;);</span>
 <span class="fc" id="L57">		return computeCardinalityShortestPaths(g, source);</span>

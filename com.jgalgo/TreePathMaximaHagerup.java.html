@@ -37,7 +37,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  *
  * @author Barak Ugav
  */
-class TreePathMaximaHagerup implements TreePathMaxima {
+class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 
 <span class="fc" id="L42">	private boolean useBitsLookupTables = false;</span>
 
@@ -65,7 +65,7 @@ class TreePathMaximaHagerup implements TreePathMaxima {
 <span class="fc" id="L65">	}</span>
 
 	@Override
-	public TreePathMaxima.Result computeHeaviestEdgeInTreePaths(Graph tree, WeightFunction w,
+	TreePathMaxima.Result computeHeaviestEdgeInTreePaths(IndexGraph tree, WeightFunction w,
 			TreePathMaxima.Queries queries) {
 <span class="fc" id="L70">		ArgumentCheck.onlyUndirected(tree);</span>
 <span class="pc bpc" id="L71" title="1 of 2 branches missed.">		if (!Trees.isTree(tree))</span>
@@ -75,11 +75,11 @@ class TreePathMaximaHagerup implements TreePathMaxima {
 
 	private static class Worker {
 
-		private final Graph tOrig;
+		private final IndexGraph tOrig;
 		private final WeightFunction w;
 
 		/* The tree we operate on, actually the Boruvka fully branching tree */
-<span class="fc" id="L82">		private final Graph tree = Graph.newBuilderUndirected().build();</span>
+<span class="fc" id="L82">		private final IndexGraph tree = IndexGraph.newBuilderUndirected().build();</span>
 		private int[] parents;
 		private int[] depths;
 		private int treeHeight;
@@ -94,7 +94,7 @@ class TreePathMaximaHagerup implements TreePathMaxima {
 		private final BiInt2IntFunction getIthbit;
 		private final Int2IntFunction getNumberOfTrailingZeros;
 
-<span class="fc" id="L97">		Worker(Graph tOrig, WeightFunction w, boolean useBitsLookupTables) {</span>
+<span class="fc" id="L97">		Worker(IndexGraph tOrig, WeightFunction w, boolean useBitsLookupTables) {</span>
 <span class="fc" id="L98">			this.tOrig = tOrig;</span>
 <span class="fc" id="L99">			this.w = w;</span>
 
@@ -164,7 +164,7 @@ class TreePathMaximaHagerup implements TreePathMaxima {
 <span class="fc" id="L164">						: /* va != -1 */ edgeRef.getInt(va);</span>
 			}
 
-<span class="fc" id="L167">			return new Result(res);</span>
+<span class="fc" id="L167">			return new TreePathMaximaUtils.ResultImpl(res);</span>
 		}
 
 		private int[][] calcAnswersPerVertex(int[] q) {
@@ -456,26 +456,6 @@ class TreePathMaximaHagerup implements TreePathMaxima {
 <span class="fc" id="L456">			}</span>
 
 <span class="fc" id="L458">			return q;</span>
-		}
-
-	}
-
-	private static class Result implements TreePathMaxima.Result {
-
-		private final int[] res;
-
-<span class="fc" id="L467">		Result(int[] res) {</span>
-<span class="fc" id="L468">			this.res = res;</span>
-<span class="fc" id="L469">		}</span>
-
-		@Override
-		public int getHeaviestEdge(int queryIdx) {
-<span class="fc" id="L473">			return res[queryIdx];</span>
-		}
-
-		@Override
-		public int size() {
-<span class="fc" id="L478">			return res.length;</span>
 		}
 
 	}

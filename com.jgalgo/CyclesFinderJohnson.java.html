@@ -37,7 +37,7 @@ import it.unimi.dsi.fastutil.objects.ObjectIntPair;
  *
  * @author Barak Ugav
  */
-class CyclesFinderJohnson implements CyclesFinder {
+class CyclesFinderJohnson extends CyclesFinderAbstract {
 
 <span class="fc" id="L42">	private final ConnectedComponentsAlgo ccAlg = ConnectedComponentsAlgo.newBuilder().build();</span>
 
@@ -47,7 +47,7 @@ class CyclesFinderJohnson implements CyclesFinder {
 <span class="fc" id="L47">	CyclesFinderJohnson() {}</span>
 
 	@Override
-	public Iterator&lt;Path&gt; findAllCycles(Graph g) {
+	Iterator&lt;Path&gt; findAllCycles(IndexGraph g) {
 <span class="fc" id="L51">		ArgumentCheck.onlyDirected(g);</span>
 <span class="pc bpc" id="L52" title="1 of 2 branches missed.">		if (GraphsUtils.containsParallelEdges(g))</span>
 <span class="nc" id="L53">			throw new IllegalArgumentException(&quot;graphs with self loops are not supported&quot;);</span>
@@ -68,14 +68,14 @@ class CyclesFinderJohnson implements CyclesFinder {
 
 <span class="fc" id="L69">	private static class Worker {</span>
 
-		private final Graph g;
+		private final IndexGraph g;
 		private final BitSet isBlocked;
 		private final IntSet[] blockingSet;
 <span class="fc" id="L74">		private final IntStack unblockStack = new IntArrayList();</span>
 <span class="fc" id="L75">		private final IntStack path = new IntArrayList();</span>
 <span class="fc" id="L76">		private final List&lt;Path&gt; cycles = new ArrayList&lt;&gt;();</span>
 
-<span class="fc" id="L78">		Worker(Graph g) {</span>
+<span class="fc" id="L78">		Worker(IndexGraph g) {</span>
 <span class="fc" id="L79">			this.g = g;</span>
 <span class="fc" id="L80">			int n = g.vertices().size();</span>
 <span class="fc" id="L81">			isBlocked = new BitSet(n);</span>
@@ -149,11 +149,11 @@ class CyclesFinderJohnson implements CyclesFinder {
 <span class="fc" id="L149">		}</span>
 	}
 
-	private ObjectIntPair&lt;StronglyConnectedComponent&gt; chooseSCCInSubGraph(Graph g, int startIdx) {
+	private ObjectIntPair&lt;StronglyConnectedComponent&gt; chooseSCCInSubGraph(IndexGraph g, int startIdx) {
 <span class="fc" id="L153">		int nFull = g.vertices().size();</span>
 <span class="fc" id="L154">		int subToFull = startIdx;</span>
 <span class="fc" id="L155">		int nSub = nFull - subToFull;</span>
-<span class="fc" id="L156">		Graph gSub = Graph.newBuilderDirected().expectedVerticesNum(nSub).build();</span>
+<span class="fc" id="L156">		IndexGraph gSub = IndexGraph.newBuilderDirected().expectedVerticesNum(nSub).build();</span>
 <span class="fc bfc" id="L157" title="All 2 branches covered.">		for (int i = 0; i &lt; nSub; i++)</span>
 <span class="fc" id="L158">			gSub.addVertex();</span>
 <span class="fc bfc" id="L159" title="All 2 branches covered.">		for (int uSub = 0; uSub &lt; nSub; uSub++) {</span>
@@ -180,7 +180,7 @@ class CyclesFinderJohnson implements CyclesFinder {
 <span class="fc" id="L180">		return ObjectIntPair.of(new StronglyConnectedComponent(subToFull, connectivityResult, ccIdx), startIdx);</span>
 	}
 
-	private static boolean hasSelfEdge(Graph g, int u) {
+	private static boolean hasSelfEdge(IndexGraph g, int u) {
 <span class="fc bfc" id="L184" title="All 2 branches covered.">		return g.getEdge(u, u) != -1;</span>
 	}
 

@@ -30,11 +30,11 @@ import com.jgalgo.GraphsUtils.GraphCapabilitiesBuilder;
  */
 class GraphLinkedDirected extends GraphLinkedAbstract {
 
-	private final DataContainer.Obj&lt;Node&gt; edgesIn;
-	private final DataContainer.Obj&lt;Node&gt; edgesOut;
+	private final WeightsImpl.Index.Obj&lt;Node&gt; edgesIn;
+	private final WeightsImpl.Index.Obj&lt;Node&gt; edgesOut;
 
-<span class="fc" id="L36">	private static final Object DataContainerKeyEdgesOut = new Utils.Obj(&quot;edgesOut&quot;);</span>
-<span class="fc" id="L37">	private static final Object DataContainerKeyEdgesIn = new Utils.Obj(&quot;edgesIn&quot;);</span>
+<span class="fc" id="L36">	private static final Object WeightsKeyEdgesOut = new Utils.Obj(&quot;edgesOut&quot;);</span>
+<span class="fc" id="L37">	private static final Object WeightsKeyEdgesIn = new Utils.Obj(&quot;edgesIn&quot;);</span>
 
 	/**
 	 * Create a new graph with no vertices and edges.
@@ -52,19 +52,19 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	GraphLinkedDirected(int expectedVerticesNum, int expectedEdgesNum) {
 <span class="fc" id="L53">		super(expectedVerticesNum, expectedEdgesNum);</span>
 
-<span class="fc" id="L55">		edgesOut = new DataContainer.Obj&lt;&gt;(verticesIDStrat, null, Node.class);</span>
-<span class="fc" id="L56">		edgesIn = new DataContainer.Obj&lt;&gt;(verticesIDStrat, null, Node.class);</span>
-<span class="fc" id="L57">		addInternalVerticesDataContainer(DataContainerKeyEdgesOut, edgesOut);</span>
-<span class="fc" id="L58">		addInternalVerticesDataContainer(DataContainerKeyEdgesIn, edgesIn);</span>
+<span class="fc" id="L55">		edgesOut = new WeightsImpl.Index.Obj&lt;&gt;(verticesIdStrat, null, Node.class);</span>
+<span class="fc" id="L56">		edgesIn = new WeightsImpl.Index.Obj&lt;&gt;(verticesIdStrat, null, Node.class);</span>
+<span class="fc" id="L57">		addInternalVerticesWeights(WeightsKeyEdgesOut, edgesOut);</span>
+<span class="fc" id="L58">		addInternalVerticesWeights(WeightsKeyEdgesIn, edgesIn);</span>
 <span class="fc" id="L59">	}</span>
 
 	GraphLinkedDirected(GraphLinkedDirected g) {
 <span class="fc" id="L62">		super(g);</span>
 
-<span class="fc" id="L64">		edgesOut = new DataContainer.Obj&lt;&gt;(verticesIDStrat, null, Node.class);</span>
-<span class="fc" id="L65">		edgesIn = new DataContainer.Obj&lt;&gt;(verticesIDStrat, null, Node.class);</span>
-<span class="fc" id="L66">		addInternalVerticesDataContainer(DataContainerKeyEdgesOut, edgesOut);</span>
-<span class="fc" id="L67">		addInternalVerticesDataContainer(DataContainerKeyEdgesIn, edgesIn);</span>
+<span class="fc" id="L64">		edgesOut = new WeightsImpl.Index.Obj&lt;&gt;(verticesIdStrat, null, Node.class);</span>
+<span class="fc" id="L65">		edgesIn = new WeightsImpl.Index.Obj&lt;&gt;(verticesIdStrat, null, Node.class);</span>
+<span class="fc" id="L66">		addInternalVerticesWeights(WeightsKeyEdgesOut, edgesOut);</span>
+<span class="fc" id="L67">		addInternalVerticesWeights(WeightsKeyEdgesIn, edgesIn);</span>
 
 <span class="fc" id="L69">		final int m = g.edges().size();</span>
 <span class="fc bfc" id="L70" title="All 2 branches covered.">		for (int e = 0; e &lt; m; e++)</span>
@@ -235,7 +235,7 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 <span class="fc" id="L235">			.vertexRemove(true).edgeAdd(true).edgeRemove(true).parallelEdges(true).selfEdges(true).build();</span>
 
 	@Override
-	public Graph copy() {
+	public IndexGraph copy() {
 <span class="fc" id="L239">		return new GraphLinkedDirected(this);</span>
 	}
 

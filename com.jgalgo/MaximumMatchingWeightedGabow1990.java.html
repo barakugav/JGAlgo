@@ -39,7 +39,7 @@ class MaximumMatchingWeightedGabow1990 extends MaximumMatchingWeightedGabow1990A
 <span class="fc" id="L39">	MaximumMatchingWeightedGabow1990() {}</span>
 
 	@Override
-	Worker newWorker(Graph gOrig, WeightFunction w, HeapReferenceable.Builder&lt;Object, Object&gt; heapBuilder,
+	Worker newWorker(IndexGraph gOrig, WeightFunction w, HeapReferenceable.Builder&lt;Object, Object&gt; heapBuilder,
 			DebugPrintsManager debugPrint) {
 <span class="fc" id="L44">		return new Worker(gOrig, w, heapBuilder, debugPrint);</span>
 	}
@@ -61,7 +61,7 @@ class MaximumMatchingWeightedGabow1990 extends MaximumMatchingWeightedGabow1990A
 		 */
 		final int[] oddBlossomPath;
 
-		Worker(Graph gOrig, WeightFunction w, HeapReferenceable.Builder&lt;Object, Object&gt; heapBuilder,
+		Worker(IndexGraph gOrig, WeightFunction w, HeapReferenceable.Builder&lt;Object, Object&gt; heapBuilder,
 				DebugPrintsManager debugPrint) {
 <span class="fc" id="L66">			super(gOrig, w, heapBuilder, debugPrint);</span>
 <span class="fc" id="L67">			int n = gOrig.vertices().size();</span>
@@ -277,11 +277,11 @@ class MaximumMatchingWeightedGabow1990 extends MaximumMatchingWeightedGabow1990A
 <span class="pc bpc" id="L277" title="1 of 2 branches missed.">			assert smfBaseNode != null;</span>
 <span class="fc" id="L278">			for (SubtreeMergeFindMin.Node smfId = smfBaseNode;;) {</span>
 <span class="fc" id="L279">				SubtreeMergeFindMin.Node parentSmf = smfParent(smfId);</span>
-<span class="pc bpc" id="L280" title="2 of 4 branches missed.">				if (parentSmf == null || topBlossom(parentSmf.getNodeData()) != V)</span>
+<span class="pc bpc" id="L280" title="1 of 4 branches missed.">				if (parentSmf == null || topBlossom(parentSmf.getNodeData()) != V)</span>
 <span class="fc" id="L281">					break;</span>
-<span class="nc" id="L282">				smf.mergeSubTrees(smfBaseNode, parentSmf);</span>
-<span class="nc" id="L283">				smfId = parentSmf;</span>
-<span class="nc" id="L284">			}</span>
+<span class="fc" id="L282">				smf.mergeSubTrees(smfBaseNode, parentSmf);</span>
+<span class="fc" id="L283">				smfId = parentSmf;</span>
+<span class="fc" id="L284">			}</span>
 
 <span class="fc bfc" id="L286" title="All 2 branches covered.">			for (IntIterator vit = V.vertices(); vit.hasNext();) {</span>
 <span class="fc" id="L287">				int v = vit.nextInt();</span>
@@ -290,11 +290,11 @@ class MaximumMatchingWeightedGabow1990 extends MaximumMatchingWeightedGabow1990A
 <span class="fc" id="L290">					smfNode = smfAddLeaf(v, smfBaseNode);</span>
 <span class="fc" id="L291">					smf.mergeSubTrees(smfBaseNode, smfNode);</span>
 				} else {
-<span class="pc bpc" id="L293" title="1 of 2 branches missed.">					while (!smf.isSameSubTree(smfNode, smfBaseNode)) {</span>
-<span class="nc" id="L294">						SubtreeMergeFindMin.Node p = smfParent(smfNode);</span>
-<span class="nc" id="L295">						smf.mergeSubTrees(smfNode, p);</span>
-<span class="nc" id="L296">						smfNode = p;</span>
-<span class="nc" id="L297">					}</span>
+<span class="fc bfc" id="L293" title="All 2 branches covered.">					while (!smf.isSameSubTree(smfNode, smfBaseNode)) {</span>
+<span class="fc" id="L294">						SubtreeMergeFindMin.Node p = smfParent(smfNode);</span>
+<span class="fc" id="L295">						smf.mergeSubTrees(smfNode, p);</span>
+<span class="fc" id="L296">						smfNode = p;</span>
+<span class="fc" id="L297">					}</span>
 				}
 <span class="fc" id="L299">			}</span>
 

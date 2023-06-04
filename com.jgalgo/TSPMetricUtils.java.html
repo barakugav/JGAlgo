@@ -24,7 +24,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 	private TSPMetricUtils() {}
 
-	static Path calcEulerianTourAndConvertToHamiltonianCycle(Graph g, Graph g1, Weights.Int edgeRef) {
+	static Path calcEulerianTourAndConvertToHamiltonianCycle(IndexGraph g, IndexGraph g1, Weights.Int edgeRef) {
 <span class="fc" id="L28">		int n = g.vertices().size();</span>
 
 		/* Assert degree is actually even in the new graph */
@@ -62,7 +62,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 <span class="fc" id="L62">		return cycle0;</span>
 	}
 
-	private static boolean isValidCycle(Graph g, Path path) {
+	private static boolean isValidCycle(IndexGraph g, Path path) {
 <span class="fc" id="L66">		EdgeIter it = path.edgeIter();</span>
 <span class="fc" id="L67">		it.nextInt();</span>
 <span class="fc" id="L68">		final int begin = it.source();</span>
@@ -76,7 +76,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 <span class="fc" id="L76">		}</span>
 	}
 
-	private static boolean isPathVisitEvery(Graph g, Path path) {
+	private static boolean isPathVisitEvery(IndexGraph g, Path path) {
 <span class="fc" id="L80">		final int n = g.vertices().size();</span>
 <span class="fc" id="L81">		BitSet visited = new BitSet(n);</span>
 <span class="fc bfc" id="L82" title="All 2 branches covered.">		for (int e : path) {</span>
@@ -90,24 +90,30 @@ import it.unimi.dsi.fastutil.ints.IntList;
 <span class="fc" id="L90">		return true;</span>
 	}
 
-	static void checkNoParallelEdges(Graph g) {
+	static void checkNoParallelEdges(IndexGraph g) {
 <span class="pc bpc" id="L94" title="1 of 2 branches missed.">		if (GraphsUtils.containsParallelEdges(g))</span>
 <span class="nc" id="L95">			throw new IllegalArgumentException(&quot;Graph contains parallel edges&quot;);</span>
 <span class="fc" id="L96">	}</span>
 
-	// static void checkArgDistanceTableIsMetric(double[][] distances) {
-	// final double eps = 0.001;
-	// int n = distances.length;
-	// for (int u = 0; u &lt; n; u++)
-	// if (distances[u].length != n)
-	// throw new IllegalArgumentException(&quot;Distances table is not full&quot;);
-	// for (int u = 0; u &lt; n; u++)
-	// for (int v = u + 1; v &lt; n; v++)
-	// for (int w = v + 1; w &lt; n; w++)
-	// if (distances[u][v] + distances[v][w] + eps &lt; distances[u][w])
-	// throw new IllegalArgumentException(&quot;Distance table is not metric: (&quot; + u + &quot;, &quot; + v + &quot;, &quot; + w
-	// + &quot;) &quot; + distances[u][v] + &quot; + &quot; + distances[v][w] + &quot; &lt; &quot; + distances[u][w]);
-	// }
+<span class="fc" id="L98">	static abstract class AbstractImpl implements TSPMetric {</span>
+
+		@Override
+		public Path computeShortestTour(Graph g, WeightFunction w) {
+<span class="nc bnc" id="L102" title="All 2 branches missed.">			if (g instanceof IndexGraph)</span>
+<span class="nc" id="L103">				return computeShortestTour((IndexGraph) g, w);</span>
+
+<span class="nc" id="L105">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="nc" id="L106">			IndexIdMap viMap = g.indexGraphVerticesMap();</span>
+<span class="nc" id="L107">			IndexIdMap eiMap = g.indexGraphEdgesMap();</span>
+<span class="nc" id="L108">			w = WeightsImpl.indexWeightFuncFromIdWeightFunc(w, eiMap);</span>
+
+<span class="nc" id="L110">			Path indexPath = computeShortestTour(iGraph, w);</span>
+<span class="nc" id="L111">			return PathImpl.pathFromIndexPath(indexPath, viMap, eiMap);</span>
+		}
+
+		abstract Path computeShortestTour(IndexGraph g, WeightFunction w);
+
+	}
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

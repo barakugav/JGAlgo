@@ -20,7 +20,7 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntStack;
 
-<span class="fc" id="L23">class EulerianTourImpl implements EulerianTourAlgo {</span>
+<span class="fc" id="L23">class EulerianTourImpl extends EulerianTourAlgoAbstract {</span>
 
 	/**
 	 * {@inheritDoc}
@@ -28,11 +28,11 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 	 * The running time and space of this function is \(O(n + m)\).
 	 */
 	@Override
-	public Path computeEulerianTour(Graph g) {
+	Path computeEulerianTour(IndexGraph g) {
 <span class="fc bfc" id="L32" title="All 2 branches covered.">		return g.getCapabilities().directed() ? computeTourDirected(g) : computeTourUndirected(g);</span>
 	}
 
-	private static Path computeTourUndirected(Graph g) {
+	private static Path computeTourUndirected(IndexGraph g) {
 <span class="fc" id="L36">		int n = g.vertices().size();</span>
 
 <span class="fc" id="L38">		int start = -1, end = -1;</span>
@@ -94,7 +94,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L94">		return new PathImpl(g, start, end, tour);</span>
 	}
 
-	private static int degreeWithoutSelfLoops(Graph g, int u) {
+	private static int degreeWithoutSelfLoops(IndexGraph g, int u) {
 <span class="fc" id="L98">		int d = 0;</span>
 <span class="fc bfc" id="L99" title="All 2 branches covered.">		for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L100">			eit.nextInt();</span>
@@ -104,7 +104,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L104">		return d;</span>
 	}
 
-	private static Path computeTourDirected(Graph g) {
+	private static Path computeTourDirected(IndexGraph g) {
 <span class="fc" id="L108">		int n = g.vertices().size();</span>
 
 <span class="fc" id="L110">		int start = -1, end = -1;</span>

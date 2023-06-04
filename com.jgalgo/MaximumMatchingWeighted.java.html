@@ -15,7 +15,7 @@
  */
 package com.jgalgo;
 
-interface MaximumMatchingWeighted extends MaximumMatching {
+<span class="fc" id="L18">abstract class MaximumMatchingWeighted extends MaximumMatchingAbstract {</span>
 
 	/**
 	 * {@inheritDoc}
@@ -23,7 +23,7 @@ interface MaximumMatchingWeighted extends MaximumMatching {
 	 * Compute the maximum cardinality matching of a undirected graph.
 	 */
 	@Override
-	default Matching computeMaximumCardinalityMatching(Graph g) {
+	Matching computeMaximumCardinalityMatching(IndexGraph g) {
 <span class="fc" id="L27">		return computeMaximumWeightedMatching(g, WeightFunction.CardinalityWeightFunction);</span>
 	}
 

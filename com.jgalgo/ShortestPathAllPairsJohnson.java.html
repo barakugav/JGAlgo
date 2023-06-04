@@ -37,10 +37,10 @@ import it.unimi.dsi.fastutil.ints.IntList;
  *
  * @author Barak Ugav
  */
-class ShortestPathAllPairsJohnson implements ShortestPathAllPairs {
+class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl {
 
 <span class="fc" id="L42">	private ShortestPathSingleSource negativeSssp = new ShortestPathSingleSourceBellmanFord();</span>
-<span class="fc" id="L43">	private boolean parallel = Config.parallelByDefault;</span>
+<span class="fc" id="L43">	private boolean parallel = JGAlgoConfig.parallelByDefault;</span>
 	private static final int PARALLEL_VERTICES_THRESHOLD = 32;
 
 	/**
@@ -54,7 +54,7 @@ class ShortestPathAllPairsJohnson implements ShortestPathAllPairs {
 	 * @throws IllegalArgumentException if the graph is not directed
 	 */
 	@Override
-	public ShortestPathAllPairs.Result computeAllShortestPaths(Graph g, WeightFunction w) {
+	ShortestPathAllPairs.Result computeAllShortestPaths(IndexGraph g, WeightFunction w) {
 <span class="fc bfc" id="L58" title="All 2 branches covered.">		if (w == null)</span>
 <span class="fc" id="L59">			w = WeightFunction.CardinalityWeightFunction;</span>
 <span class="fc" id="L60">		ArgumentCheck.onlyDirected(g);</span>
@@ -95,7 +95,7 @@ class ShortestPathAllPairsJohnson implements ShortestPathAllPairs {
 <span class="fc" id="L95">		return res;</span>
 	}
 
-	private SuccessRes computeAPSPPositive(Graph g, WeightFunction w) {
+	private SuccessRes computeAPSPPositive(IndexGraph g, WeightFunction w) {
 <span class="fc" id="L99">		final int n = g.vertices().size();</span>
 <span class="fc" id="L100">		SuccessRes res = new SuccessRes(n);</span>
 
@@ -123,9 +123,9 @@ class ShortestPathAllPairsJohnson implements ShortestPathAllPairs {
 <span class="fc" id="L123">		return res;</span>
 	}
 
-	private Pair&lt;double[], Path&gt; calcPotential(Graph g, WeightFunction w) {
+	private Pair&lt;double[], Path&gt; calcPotential(IndexGraph g, WeightFunction w) {
 <span class="fc" id="L127">		int n = g.vertices().size();</span>
-<span class="fc" id="L128">		Graph refG = Graph.newBuilderDirected().expectedVerticesNum(n + 1).build();</span>
+<span class="fc" id="L128">		IndexGraph refG = IndexGraph.newBuilderDirected().expectedVerticesNum(n + 1).build();</span>
 <span class="fc bfc" id="L129" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
 <span class="fc" id="L130">			refG.addVertex();</span>
 <span class="fc" id="L131">		Weights.Int edgeEef = refG.addEdgesWeights(&quot;edgeEef&quot;, int.class, Integer.valueOf(-1));</span>

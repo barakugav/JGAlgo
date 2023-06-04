@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>IdStrategyImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">IdStrategyImpl.java</span></div><h1>IdStrategyImpl.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
+import it.unimi.dsi.fastutil.ints.AbstractIntSet;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.ints.IntSets;
+
+abstract class IdStrategyImpl implements IdStrategy {
+
+<span class="fc" id="L29">	private final List&lt;IdSwapListener&gt; idSwapListeners = new CopyOnWriteArrayList&lt;&gt;();</span>
+<span class="fc" id="L30">	private final List&lt;IdAddRemoveListener&gt; idAddRemoveListeners = new CopyOnWriteArrayList&lt;&gt;();</span>
+
+<span class="fc" id="L32">	IdStrategyImpl() {}</span>
+
+<span class="fc" id="L34">	static class Continues extends IdStrategyImpl {</span>
+
+		private int size;
+		private final IntSet idSet;
+
+<span class="fc" id="L39">		Continues(int initSize) {</span>
+<span class="pc bpc" id="L40" title="1 of 2 branches missed.">			if (initSize &lt; 0)</span>
+<span class="nc" id="L41">				throw new IllegalArgumentException(&quot;Initial size can not be negative: &quot; + initSize);</span>
+<span class="fc" id="L42">			size = initSize;</span>
+<span class="fc" id="L43">			idSet = new AbstractIntSet() {</span>
+
+				@Override
+				public int size() {
+<span class="fc" id="L47">					return size;</span>
+				}
+
+				@Override
+				public boolean contains(int key) {
+<span class="pc bpc" id="L52" title="2 of 4 branches missed.">					return key &gt;= 0 &amp;&amp; key &lt; size();</span>
+				}
+
+				@Override
+				public IntIterator iterator() {
+<span class="fc" id="L57">					return new Utils.RangeIter(size());</span>
+				}
+			};
+<span class="fc" id="L60">		}</span>
+
+		@Override
+		int newIdx() {
+<span class="fc" id="L64">			int id = size++;</span>
+<span class="fc" id="L65">			notifyIdAdd(id);</span>
+<span class="fc" id="L66">			return id;</span>
+		}
+
+		@Override
+		void removeIdx(int idx) {
+<span class="pc bpc" id="L71" title="1 of 2 branches missed.">			assert idx == size - 1;</span>
+<span class="pc bpc" id="L72" title="1 of 2 branches missed.">			assert size &gt; 0;</span>
+<span class="fc" id="L73">			notifyIdRemove(idx);</span>
+<span class="fc" id="L74">			size--;</span>
+<span class="fc" id="L75">		}</span>
+
+		@Override
+		int size() {
+<span class="fc" id="L79">			return size;</span>
+		}
+
+		@Override
+		void clear() {
+<span class="fc" id="L84">			notifyIdsClear();</span>
+<span class="fc" id="L85">			size = 0;</span>
+<span class="fc" id="L86">		}</span>
+
+		@Override
+		int idToIdx(int id) {
+<span class="nc bnc" id="L90" title="All 4 branches missed.">			if (!(0 &lt;= id &amp;&amp; id &lt; size))</span>
+<span class="nc" id="L91">				throw new IndexOutOfBoundsException(id);</span>
+<span class="nc" id="L92">			return id;</span>
+		}
+
+		@Override
+		int idxToId(int idx) {
+<span class="fc" id="L97">			checkIdx(idx);</span>
+<span class="fc" id="L98">			return idx;</span>
+		}
+
+		@Override
+		IntSet idSet() {
+<span class="fc" id="L103">			return idSet;</span>
+		}
+
+		@Override
+		void idxSwap(int idx1, int idx2) {
+<span class="fc" id="L108">			int id1 = idxToId(idx1), id2 = idxToId(idx2);</span>
+<span class="fc" id="L109">			notifyIDSwap(id1, id2);</span>
+<span class="fc" id="L110">		}</span>
+
+		@Override
+		IdStrategyImpl copy() {
+<span class="fc" id="L114">			return new IdStrategyImpl.Continues(size);</span>
+		}
+
+		private void checkIdx(int idx) {
+<span class="pc bpc" id="L118" title="2 of 4 branches missed.">			if (!(0 &lt;= idx &amp;&amp; idx &lt; size))</span>
+<span class="nc" id="L119">				throw new IndexOutOfBoundsException(idx);</span>
+<span class="fc" id="L120">		}</span>
+	}
+
+<span class="fc" id="L123">	static class ContinuesEmpty extends IdStrategyImpl {</span>
+
+		@Override
+		int newIdx() {
+<span class="nc" id="L127">			throw new UnsupportedOperationException();</span>
+		}
+
+		@Override
+		void removeIdx(int idx) {
+<span class="nc" id="L132">			throw new IndexOutOfBoundsException(idx);</span>
+		}
+
+		@Override
+		int size() {
+<span class="nc" id="L137">			return 0;</span>
+		}
+
+		@Override
+		void clear() {
+<span class="nc" id="L142">			throw new UnsupportedOperationException();</span>
+		}
+
+		@Override
+		int idToIdx(int id) {
+<span class="nc" id="L147">			throw new IndexOutOfBoundsException(id);</span>
+		}
+
+		@Override
+		int idxToId(int idx) {
+<span class="nc" id="L152">			throw new IndexOutOfBoundsException(idx);</span>
+		}
+
+		@Override
+		IntSet idSet() {
+<span class="nc" id="L157">			return IntSets.emptySet();</span>
+		}
+
+		@Override
+		void idxSwap(int idx1, int idx2) {
+<span class="nc" id="L162">			throw new IndexOutOfBoundsException(idx1);</span>
+		}
+
+		@Override
+		IdStrategyImpl copy() {
+<span class="nc" id="L167">			return new IdStrategyImpl.ContinuesEmpty();</span>
+		}
+
+	}
+
+	abstract int newIdx();
+
+	abstract void removeIdx(int idx);
+
+	abstract int size();
+
+	abstract void clear();
+
+	abstract int idToIdx(int id);
+
+	abstract int idxToId(int idx);
+
+	abstract IntSet idSet();
+
+	@Override
+	public String toString() {
+<span class="nc" id="L188">		return idSet().toString();</span>
+	}
+
+	int isSwapNeededBeforeRemove(int idx) {
+<span class="fc" id="L192">		int size = idSet().size();</span>
+<span class="pc bpc" id="L193" title="2 of 4 branches missed.">		if (!(0 &lt;= idx &amp;&amp; idx &lt; size))</span>
+<span class="nc" id="L194">			throw new IndexOutOfBoundsException(idx);</span>
+<span class="fc" id="L195">		return size - 1;</span>
+	}
+
+	abstract void idxSwap(int idx1, int idx2);
+
+	void notifyIDSwap(int id1, int id2) {
+<span class="fc bfc" id="L201" title="All 2 branches covered.">		for (IdSwapListener listener : idSwapListeners)</span>
+<span class="fc" id="L202">			listener.idSwap(id1, id2);</span>
+<span class="fc" id="L203">	}</span>
+
+	void notifyIdAdd(int id) {
+<span class="fc bfc" id="L206" title="All 2 branches covered.">		for (IdAddRemoveListener listener : idAddRemoveListeners)</span>
+<span class="fc" id="L207">			listener.idAdd(id);</span>
+<span class="fc" id="L208">	}</span>
+
+	void notifyIdRemove(int id) {
+<span class="fc bfc" id="L211" title="All 2 branches covered.">		for (IdAddRemoveListener listener : idAddRemoveListeners)</span>
+<span class="fc" id="L212">			listener.idRemove(id);</span>
+<span class="fc" id="L213">	}</span>
+
+	void notifyIdsClear() {
+<span class="fc bfc" id="L216" title="All 2 branches covered.">		for (IdAddRemoveListener listener : idAddRemoveListeners)</span>
+<span class="fc" id="L217">			listener.idsClear();</span>
+<span class="fc" id="L218">	}</span>
+
+	abstract IdStrategyImpl copy();
+
+	@Override
+	public void addIdSwapListener(IdSwapListener listener) {
+<span class="fc" id="L224">		idSwapListeners.add(Objects.requireNonNull(listener));</span>
+<span class="fc" id="L225">	}</span>
+
+	@Override
+	public void removeIdSwapListener(IdSwapListener listener) {
+<span class="nc" id="L229">		idSwapListeners.remove(listener);</span>
+<span class="nc" id="L230">	}</span>
+
+	void addIdAddRemoveListener(IdAddRemoveListener listener) {
+<span class="fc" id="L233">		idAddRemoveListeners.add(Objects.requireNonNull(listener));</span>
+<span class="fc" id="L234">	}</span>
+
+	void removeIdAddRemoveListener(IdAddRemoveListener listener) {
+<span class="nc" id="L237">		idAddRemoveListeners.remove(listener);</span>
+<span class="nc" id="L238">	}</span>
+
+	/**
+	 * A listener that will be notified each time a strategy add or remove an id.
+	 *
+	 * @author Barak Ugav
+	 */
+	static interface IdAddRemoveListener {
+		/**
+		 * A callback that is called when {@code id} is added by the strategy.
+		 *
+		 * @param id the new id
+		 */
+		void idAdd(int id);
+
+		/**
+		 * A callback that is called when {@code id} is removed by the strategy.
+		 *
+		 * @param id the removed id
+		 */
+		void idRemove(int id);
+
+		/**
+		 * A callback that is called when all ids are removed from the strategy.
+		 */
+		void idsClear();
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -25,7 +25,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  *
  * @author Barak Ugav
  */
-public class TSPMetricMatchingAppx implements TSPMetric {
+public class TSPMetricMatchingAppx extends TSPMetricUtils.AbstractImpl {
 
 <span class="fc" id="L30">	private final MinimumSpanningTree mstAlgo = MinimumSpanningTree.newBuilder().build();</span>
 <span class="fc" id="L31">	private final MaximumMatching matchingAlgo = MaximumMatching.newBuilder().build();</span>
@@ -39,7 +39,7 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 <span class="fc" id="L39">	public TSPMetricMatchingAppx() {}</span>
 
 	@Override
-	public Path computeShortestTour(Graph g, WeightFunction w) {
+	Path computeShortestTour(IndexGraph g, WeightFunction w) {
 <span class="fc" id="L43">		final int n = g.vertices().size();</span>
 <span class="pc bpc" id="L44" title="1 of 2 branches missed.">		if (n == 0)</span>
 <span class="nc" id="L45">			return null;</span>
@@ -56,7 +56,7 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 		 * Build graph for the matching calculation, containing only vertices with odd degree from the MST
 		 */
 <span class="fc" id="L58">		int[] degree = GraphsUtils.calcDegree(g, mst);</span>
-<span class="fc" id="L59">		Graph mG = Graph.newBuilderUndirected().build();</span>
+<span class="fc" id="L59">		IndexGraph mG = IndexGraph.newBuilderUndirected().build();</span>
 <span class="fc" id="L60">		int[] mVtoV = new int[n];</span>
 <span class="fc bfc" id="L61" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
 <span class="fc bfc" id="L62" title="All 2 branches covered.">			if (degree[u] % 2 != 0)</span>
@@ -77,7 +77,7 @@ public class TSPMetricMatchingAppx implements TSPMetric {
 <span class="fc" id="L77">		Matching matching = matchingAlgo.computeMaximumWeightedPerfectMatching(mG, mGWeightsNeg);</span>
 
 		/* Build a graph of the union of the MST and the matching result */
-<span class="fc" id="L80">		Graph g1 = Graph.newBuilderUndirected().expectedVerticesNum(n).expectedEdgesNum(mst.size()).build();</span>
+<span class="fc" id="L80">		IndexGraph g1 = IndexGraph.newBuilderUndirected().expectedVerticesNum(n).expectedEdgesNum(mst.size()).build();</span>
 <span class="fc bfc" id="L81" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
 <span class="fc" id="L82">			g1.addVertex();</span>
 <span class="fc" id="L83">		Weights.Int g1EdgeRef = g1.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));</span>

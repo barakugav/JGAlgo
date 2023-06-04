@@ -22,11 +22,11 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 /**
  * A discrete graph with vertices and edges.
  * &lt;p&gt;
- * A graph consist of a finite set of vertices \(V\) and edges \(E\). Vertices are some objects, and edges are
- * connections between the vertices, for example vertices can be cities and edges could be the roads between them. Edges
- * could be directed or undirected. Weights may be assigned to vertices or edges, for example the length of a road might
- * be a weight of an edge. Than, questions such as &quot;what is the shortest path between two cities?&quot; might be answered
- * using graph algorithms.
+ * A graph consist of a finite set of vertices \(V\) and edges \(E\). Vertices are some abstract entities, and edges are
+ * connections between the vertices, for example vertices can be cities and edges could be the roads between them, or
+ * vertices can be people the edges are the relation of &quot;friends&quot;. Edges could be directed or undirected. Weights may be
+ * assigned to vertices or edges, for example the length of a road might be a weight of an edge. Than, questions such as
+ * &quot;what is the shortest path between two cities?&quot; might be answered using graph algorithms.
  * &lt;p&gt;
  * Each edge \(e=(u, v)\) in the graph has a &lt;i&gt;source&lt;/i&gt;, \(u\), and a &lt;i&gt;target&lt;/i&gt; \(v\). In undirected graphs the
  * 'source' and 'target' can be switched, as the edge is not directed, and we treat the source and target as
@@ -46,14 +46,27 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * {@link #removeEdgesOutOf(int)} are equivalent for the same vertex. To check if a graph is directed or not, use the
  * {@link #getCapabilities()} method.
  * &lt;p&gt;
- * Each vertex in the graph is identified by a unique non negative int ID. The set of vertices in the graph is always
- * {@code (0,1,2, ...,verticesNum-1)}. To maintain this, the graph implementation may rename existing vertices when the
- * user remove a vertex, see {@link #getVerticesIDStrategy()}. Similar to vertices, each edge in the graph is identified
- * by a unique non negative int ID. In contrast to the vertices IDs, it's not specified how the graph implementation
- * assign new IDs to added edges, or if it rename some of them when the user remove an edge, see
- * {@link #getEdgesIDStrategy()}.
+ * Each vertex and edge in the graph is identified by a unique non negative {@code int} ID. For example.
+ * {@link #vertices()} returns an {@link IntSet} of all the {@code int} IDs of the vertices of the graph. This allow for
+ * a more efficient graph implementations, rather then creating objects for vertices and edges.
  * &lt;p&gt;
- * The number of vertices, \(|V|\), is usually denoted as \(n\) in algorithms time and space complexities. And
+ * Weights may be assigned to the graph vertices and/or edges. A &lt;i&gt;weight&lt;/i&gt; is some value such as {@code double}
+ * primitive, {@code boolean} flag or an arbitrary Object. Multiple different weights can be added to the vertices
+ * and/or edges, each is identified by some key. When a new weights type is added to a graph, its added to all
+ * vertices/edges with either user provided default weight value, or null (0 in case the weight type is primitive). The
+ * weights are accessed via the {@link Weights} container, which can be used to get or set an vertex/edge weight, and
+ * can be passed to algorithms as {@link WeightFunction} for example. See {@link #addVerticesWeights(Object, Class)} and
+ * {@link #addEdgesWeights(Object, Class)}, or {@link Weights} for the full weights documentation.
+ * &lt;p&gt;
+ * Each graph expose an &lt;i&gt;Index&lt;/i&gt; view on itself via the {@link #indexGraph()} method. The returned
+ * {@link IndexGraph} is a graph in which the identifiers of the vertices are always {@code (0,1,2, ...,verticesNum-1)},
+ * and the identifiers of the edges are always {@code (0,1,2, ...,edgesNum-1)}. To maintain this, the index graph
+ * implementation may rename existing vertices or edges along the graph lifetime. This rename behavior is less user
+ * friendly, but allow for high performance boost as no hash tables are needed, a simple array or bitmap can be used to
+ * map each vertex/edge to a value/weight/flag. See {@link IndexGraph} for more information. The {@link IndexGraph}
+ * should not be used in scenarios where performance does not matter.
+ * &lt;p&gt;
+ * The number of vertices, \(|V|\), is usually denoted as \(n\) in algorithms time and space complexities, and
  * similarly, the number of edges, \(|E|\), is usually denoted as \(m\).
  *
  * &lt;pre&gt; {@code
@@ -89,6 +102,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  *
  * @see    Graph.Builder
  * @see    GraphCapabilities
+ * @see    IndexGraph
  * @author Barak Ugav
  */
 public interface Graph {
@@ -96,8 +110,8 @@ public interface Graph {
 	/**
 	 * Get the set of all vertices of the graph.
 	 * &lt;p&gt;
-	 * Each vertex in the graph is identified by a unique non negative integer ID, determined by
-	 * {@link #getVerticesIDStrategy()}. The returned set is a set of all these identifiers.
+	 * Each vertex in the graph is identified by a unique non negative integer ID and the returned set is a set of all
+	 * these identifiers.
 	 * &lt;p&gt;
 	 * The Graph object does not expose an explicit method to get the number of vertices, but it can accessed using this
 	 * method by {@code g.vertices().size()}.
@@ -109,8 +123,8 @@ public interface Graph {
 	/**
 	 * Get the set of all edges of the graph.
 	 * &lt;p&gt;
-	 * Each edge in the graph is identified by a unique non negative integer ID, determined by
-	 * {@link #getEdgesIDStrategy()}. The returned set is a set of all these identifiers.
+	 * Each edge in the graph is identified by a unique non negative integer ID, and the returned set is a set of all
+	 * these identifiers.
 	 * &lt;p&gt;
 	 * The Graph object does not expose an explicit method to get the number of edges, but it can accessed using this
 	 * method by {@code g.edges().size()}.
@@ -129,13 +143,6 @@ public interface Graph {
 	/**
 	 * Remove a vertex and all its edges from the graph.
 	 *
-	 * &lt;p&gt;
-	 * After removing a vertex, the vertices ID strategy may rename other vertices identifiers to maintain its
-	 * invariants, see {@link #getVerticesIDStrategy()}. Theses renames can be subscribed using
-	 * {@link IDStrategy#addIDSwapListener}. It may be more convenient to remove all edges of a vertex and ignore it,
-	 * instead of actually removing it and dealing with IDs renames, but that depends on the specific use case.
-	 *
-	 * @see                              IDStrategy
 	 * @param  vertex                    the vertex identifier to remove
 	 * @throws IndexOutOfBoundsException if {@code vertex} is not a valid vertex identifier
 	 */
@@ -161,7 +168,7 @@ public interface Graph {
 	 * In case the graph is undirected, the set will contain all edges whose {@code target} is one of their end points.
 	 * &lt;p&gt;
 	 * The Graph object does not expose an explicit method to get the (in) degree of a vertex, but it can accessed using
-	 * this method by {@code g.edgesOut(vertex).size()}.
+	 * this method by {@code g.edgesIn(vertex).size()}.
 	 *
 	 * @param  target                    a target vertex
 	 * @return                           all the edges whose target is {@code target}
@@ -171,11 +178,9 @@ public interface Graph {
 
 	/**
 	 * Get the edge whose source is {@code source} and target is {@code target}.
-	 *
 	 * &lt;p&gt;
 	 * If the graph is not directed, the return edge is an edge that its end-points are {@code source} and
 	 * {@code target}.
-	 *
 	 * &lt;p&gt;
 	 * In case there are multiple (parallel) edges between {@code source} and {@code target}, a single arbitrary one is
 	 * returned.
@@ -186,12 +191,12 @@ public interface Graph {
 	 * @throws IndexOutOfBoundsException if {@code source} or {@code target} are not valid vertices identifiers
 	 */
 	default int getEdge(int source, int target) {
-<span class="fc bfc" id="L189" title="All 2 branches covered.">		for (EdgeIter it = edgesOut(source).iterator(); it.hasNext();) {</span>
-<span class="fc" id="L190">			int e = it.nextInt();</span>
-<span class="fc bfc" id="L191" title="All 2 branches covered.">			if (it.target() == target)</span>
-<span class="fc" id="L192">				return e;</span>
-<span class="fc" id="L193">		}</span>
-<span class="fc" id="L194">		return -1;</span>
+<span class="fc bfc" id="L194" title="All 2 branches covered.">		for (EdgeIter it = edgesOut(source).iterator(); it.hasNext();) {</span>
+<span class="fc" id="L195">			int e = it.nextInt();</span>
+<span class="fc bfc" id="L196" title="All 2 branches covered.">			if (it.target() == target)</span>
+<span class="fc" id="L197">				return e;</span>
+<span class="fc" id="L198">		}</span>
+<span class="fc" id="L199">		return -1;</span>
 	}
 
 	/**
@@ -217,10 +222,6 @@ public interface Graph {
 	/**
 	 * Remove an edge from the graph.
 	 *
-	 * &lt;p&gt;
-	 * After removing an edge, the edges ID strategy may rename other edges identifiers to maintain its invariants, see
-	 * {@link #getEdgesIDStrategy()}. Theses renames can be subscribed using {@link IDStrategy#addIDSwapListener}.
-	 *
 	 * @param  edge                      the edge identifier
 	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
 	 */
@@ -229,49 +230,39 @@ public interface Graph {
 	/**
 	 * Remove all the edges of a vertex.
 	 *
-	 * &lt;p&gt;
-	 * After removing an edge, the edges ID strategy may rename other edges identifiers to maintain its invariants, see
-	 * {@link #getEdgesIDStrategy()}. Theses renames can be subscribed using {@link IDStrategy#addIDSwapListener}.
-	 *
 	 * @param  vertex                    a vertex in the graph
 	 * @throws IndexOutOfBoundsException if {@code vertex} is not a valid vertex identifier
 	 */
 	default void removeEdgesOf(int vertex) {
-<span class="fc" id="L240">		removeEdgesOutOf(vertex);</span>
-<span class="fc" id="L241">		removeEdgesInOf(vertex);</span>
-<span class="fc" id="L242">	}</span>
+<span class="fc" id="L237">		removeEdgesOutOf(vertex);</span>
+<span class="fc" id="L238">		removeEdgesInOf(vertex);</span>
+<span class="fc" id="L239">	}</span>
 
 	/**
 	 * Remove all edges whose source is {@code source}.
-	 * &lt;p&gt;
-	 * After removing an edge, the edges ID strategy may rename other edges identifiers to maintain its invariants, see
-	 * {@link #getEdgesIDStrategy()}. Theses renames can be subscribed using {@link IDStrategy#addIDSwapListener}.
 	 *
 	 * @param  source                    a vertex in the graph
 	 * @throws IndexOutOfBoundsException if {@code source} is not a valid vertex identifier
 	 */
 	default void removeEdgesOutOf(int source) {
-<span class="fc bfc" id="L254" title="All 2 branches covered.">		for (EdgeIter eit = edgesOut(source).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L255">			eit.nextInt();</span>
-<span class="fc" id="L256">			eit.remove();</span>
+<span class="fc bfc" id="L248" title="All 2 branches covered.">		for (EdgeIter eit = edgesOut(source).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L249">			eit.nextInt();</span>
+<span class="fc" id="L250">			eit.remove();</span>
 		}
-<span class="fc" id="L258">	}</span>
+<span class="fc" id="L252">	}</span>
 
 	/**
 	 * Remove all edges whose target is {@code target}.
-	 * &lt;p&gt;
-	 * After removing an edge, the edges ID strategy may rename other edges identifiers to maintain its invariants, see
-	 * {@link #getEdgesIDStrategy()}. Theses renames can be subscribed using {@link IDStrategy#addIDSwapListener}.
 	 *
 	 * @param  target                    a vertex in the graph
 	 * @throws IndexOutOfBoundsException if {@code target} is not a valid vertex identifier
 	 */
 	default void removeEdgesInOf(int target) {
-<span class="fc bfc" id="L270" title="All 2 branches covered.">		for (EdgeIter eit = edgesIn(target).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L271">			eit.nextInt();</span>
-<span class="fc" id="L272">			eit.remove();</span>
+<span class="fc bfc" id="L261" title="All 2 branches covered.">		for (EdgeIter eit = edgesIn(target).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L262">			eit.nextInt();</span>
+<span class="fc" id="L263">			eit.remove();</span>
 		}
-<span class="fc" id="L274">	}</span>
+<span class="fc" id="L265">	}</span>
 
 	/**
 	 * Reverse an edge by switching its source and target.
@@ -281,11 +272,10 @@ public interface Graph {
 	 * @param  edge                      an existing edge in the graph
 	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
 	 */
-	public void reverseEdge(int edge);
+	void reverseEdge(int edge);
 
 	/**
 	 * Get the source vertex of an edge.
-	 *
 	 * &lt;p&gt;
 	 * If the graph is undirected, this function return an arbitrary end-point of the edge, but always other end-point
 	 * than {@link #edgeTarget(int)} returns.
@@ -294,11 +284,10 @@ public interface Graph {
 	 * @return                           the edge source vertex
 	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
 	 */
-	public int edgeSource(int edge);
+	int edgeSource(int edge);
 
 	/**
 	 * Get the target vertex of an edge.
-	 *
 	 * &lt;p&gt;
 	 * If the graph is undirected, this function return an arbitrary end-point of the edge, but always the other
 	 * end-point than {@link #edgeSource(int)} returns.
@@ -307,10 +296,14 @@ public interface Graph {
 	 * @return                           the edge target vertex
 	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
 	 */
-	public int edgeTarget(int edge);
+	int edgeTarget(int edge);
 
 	/**
 	 * Get the other end-point of an edge.
+	 * &lt;p&gt;
+	 * Given an edge \((u,v)\) and a vertex \(w\), assuming \(w\) is an endpoint of the edge, namely that \(w\) is
+	 * either \(u\) or \(v\), the method will return the &lt;i&gt;other&lt;/i&gt; endpoint which is not \(w\). If \(w=u\) the method
+	 * will return \(v\), if \(w=v\) the method will return \(u\).
 	 *
 	 * @param  edge                      an edge identifier
 	 * @param  endpoint                  one of the edge end-point
@@ -319,35 +312,33 @@ public interface Graph {
 	 * @throws IllegalArgumentException  if {@code endpoint} is not an endpoint of the edge
 	 */
 	default int edgeEndpoint(int edge, int endpoint) {
-<span class="fc" id="L322">		int u = edgeSource(edge);</span>
-<span class="fc" id="L323">		int v = edgeTarget(edge);</span>
-<span class="fc bfc" id="L324" title="All 2 branches covered.">		if (endpoint == u) {</span>
-<span class="fc" id="L325">			return v;</span>
-<span class="pc bpc" id="L326" title="1 of 2 branches missed.">		} else if (endpoint == v) {</span>
-<span class="fc" id="L327">			return u;</span>
+<span class="fc" id="L315">		int u = edgeSource(edge);</span>
+<span class="fc" id="L316">		int v = edgeTarget(edge);</span>
+<span class="fc bfc" id="L317" title="All 2 branches covered.">		if (endpoint == u) {</span>
+<span class="fc" id="L318">			return v;</span>
+<span class="pc bpc" id="L319" title="1 of 2 branches missed.">		} else if (endpoint == v) {</span>
+<span class="fc" id="L320">			return u;</span>
 		} else {
-<span class="nc" id="L329">			throw new IllegalArgumentException(</span>
+<span class="nc" id="L322">			throw new IllegalArgumentException(</span>
 					&quot;The given vertex (&quot; + endpoint + &quot;) is not an endpoint of the edge (&quot; + u + &quot;, &quot; + v + &quot;)&quot;);
 		}
 	}
 
 	/**
 	 * Clear the graph completely by removing all vertices and edges.
-	 *
 	 * &lt;p&gt;
 	 * This function might be used to reuse an already allocated graph object.
 	 * &lt;p&gt;
 	 * Note that this function also clears any weights associated with the vertices or edges.
 	 */
-	public void clear();
+	void clear();
 
 	/**
 	 * Remove all the edges from the graph.
-	 *
 	 * &lt;p&gt;
 	 * Note that this function also clears any weights associated with the edges.
 	 */
-	public void clearEdges();
+	void clearEdges();
 
 	/**
 	 * Get the vertices weights of some key.
@@ -359,7 +350,7 @@ public interface Graph {
 	 * @param  &lt;V&gt;        The weight data type
 	 * @param  &lt;WeightsT&gt; the weights container, used to avoid casts of containers of primitive types
 	 */
-	public &lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT getVerticesWeights(Object key);
+	&lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT getVerticesWeights(Object key);
 
 	/**
 	 * Add a new weights container associated with the vertices of this graph.
@@ -381,7 +372,6 @@ public interface Graph {
 	 * ages.set(v1, 42);
 	 * ages.set(v2, 35);
 	 * }&lt;/pre&gt;
-	 *
 	 * &lt;p&gt;
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
@@ -392,7 +382,7 @@ public interface Graph {
 	 * @param  &lt;V&gt;                      The weight data type
 	 * @param  &lt;WeightsT&gt;               the weights container, used to avoid casts of containers of primitive types
 	 */
-	public &lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT addVerticesWeights(Object key, Class&lt;? super V&gt; type);
+	&lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT addVerticesWeights(Object key, Class&lt;? super V&gt; type);
 
 	/**
 	 * Add a new weights container associated with the vertices of this graph with default value.
@@ -415,7 +405,6 @@ public interface Graph {
 	 * assert &quot;Bob&quot;.equals(names.get(v2))
 	 * assert &quot;Unknown&quot;.equals(names.get(v3))
 	 * }&lt;/pre&gt;
-	 *
 	 * &lt;p&gt;
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
@@ -427,7 +416,7 @@ public interface Graph {
 	 * @param  &lt;V&gt;                      The weight data type
 	 * @param  &lt;WeightsT&gt;               the weights container, used to avoid casts of containers of primitive types
 	 */
-	public &lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT addVerticesWeights(Object key, Class&lt;? super V&gt; type, V defVal);
+	&lt;V, WeightsT extends Weights&lt;V&gt;&gt; WeightsT addVerticesWeights(Object key, Class&lt;? super V&gt; type, V defVal);
 
 	/**
 	 * Remove a weight type associated with the vertices of the graph.
@@ -436,7 +425,7 @@ public interface Graph {
 	 *
 	 * @param key the key of the weights
 	 */
-	public void removeVerticesWeights(Object key);
+	void removeVerticesWeights(Object key);
 
 	/**
 	 * Get the keys of all the associated vertices weights.
@@ -445,7 +434,7 @@ public interface Graph {
 	 *
 	 * @return the keys of all the associated vertices weights
 	 */
-	public Set&lt;Object&gt; getVerticesWeightKeys();
+	Set&lt;Object&gt; getVerticesWeightKeys();
 
 	/**
 	 * Get the edges weights of some key.
@@ -457,7 +446,7 @@ public interface Graph {
 	 * @param  &lt;E&gt;        The weight data type
 	 * @param  &lt;WeightsT&gt; the weights container, used to avoid casts of containers of primitive types
 	 */
-	public &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT getEdgesWeights(Object key);
+	&lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT getEdgesWeights(Object key);
 
 	/**
 	 * Add a new weights container associated with the edges of this graph.
@@ -482,7 +471,6 @@ public interface Graph {
 	 * roadLengths.set(e1, 42);
 	 * roadLengths.set(e2, 35);
 	 * }&lt;/pre&gt;
-	 *
 	 * &lt;p&gt;
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
@@ -493,7 +481,7 @@ public interface Graph {
 	 * @param  &lt;E&gt;                      The weight data type
 	 * @param  &lt;WeightsT&gt;               the weights container, used to avoid casts of containers of primitive types
 	 */
-	public &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT addEdgesWeights(Object key, Class&lt;? super E&gt; type);
+	&lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT addEdgesWeights(Object key, Class&lt;? super E&gt; type);
 
 	/**
 	 * Add a new weights container associated with the edges of this graph with default value.
@@ -519,7 +507,6 @@ public interface Graph {
 	 * assert &quot;Gravel&quot;.equals(names.get(e2))
 	 * assert &quot;Unknown&quot;.equals(names.get(e3))
 	 * }&lt;/pre&gt;
-	 *
 	 * &lt;p&gt;
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
@@ -531,7 +518,7 @@ public interface Graph {
 	 * @param  &lt;E&gt;                      The weight data type
 	 * @param  &lt;WeightsT&gt;               the weights container, used to avoid casts of containers of primitive types
 	 */
-	public &lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT addEdgesWeights(Object key, Class&lt;? super E&gt; type, E defVal);
+	&lt;E, WeightsT extends Weights&lt;E&gt;&gt; WeightsT addEdgesWeights(Object key, Class&lt;? super E&gt; type, E defVal);
 
 	/**
 	 * Remove a weight type associated with the edges of the graph.
@@ -540,7 +527,7 @@ public interface Graph {
 	 *
 	 * @param key the key of the weights
 	 */
-	public void removeEdgesWeights(Object key);
+	void removeEdgesWeights(Object key);
 
 	/**
 	 * Get the keys of all the associated edges weights.
@@ -549,39 +536,7 @@ public interface Graph {
 	 *
 	 * @return the keys of all the associated edges weights
 	 */
-	public Set&lt;Object&gt; getEdgesWeightsKeys();
-
-	/**
-	 * Get the ID strategy of the vertices of the graph.
-	 *
-	 * &lt;p&gt;
-	 * Each vertex in the graph is identified by a unique non negative int ID, which is determined by some strategy.
-	 * Only {@link IDStrategy.Continues} is supported for vertices, which ensure that at all times the vertices IDs are
-	 * {@code 0,1,..., verticesNum-1}, and it might rename some vertices when a vertex is removed to maintain this
-	 * invariant. This rename can be subscribed using {@link IDStrategy#addIDSwapListener}.
-	 *
-	 * @see    IDStrategy
-	 *
-	 * @return the vertices IDs strategy
-	 */
-	public IDStrategy.Continues getVerticesIDStrategy();
-
-	/**
-	 * Get the ID strategy of the edges of the graph.
-	 *
-	 * &lt;p&gt;
-	 * Each edge in the graph is identified by a unique non negative int ID, which is determined by some strategy. For
-	 * example, {@link IDStrategy.Continues} ensure that at all times the edges IDs are {@code 0,1,..., edgesNum-1}, and
-	 * it might rename some edges when an edge is removed to maintain this invariant. This rename can be subscribed
-	 * using {@link IDStrategy#addIDSwapListener}. Another option for an ID strategy is {@link IDStrategy.Fixed} which
-	 * ensure once an edge is assigned an ID, it will not change. There might be some performance differences between
-	 * different ID strategies.
-	 *
-	 * @see    IDStrategy
-	 *
-	 * @return the edges IDs strategy
-	 */
-	public IDStrategy getEdgesIDStrategy();
+	Set&lt;Object&gt; getEdgesWeightsKeys();
 
 	/**
 	 * Get the {@linkplain GraphCapabilities capabilities} of this graph.
@@ -589,7 +544,59 @@ public interface Graph {
 	 * @return a {@link GraphCapabilities} object describing what this graph support and what not.
 	 * @see    GraphCapabilities
 	 */
-	public GraphCapabilities getCapabilities();
+	GraphCapabilities getCapabilities();
+
+	/**
+	 * Get an Index graph view of this graph.
+	 * &lt;p&gt;
+	 * The returned {@link IndexGraph} is a graph in which the identifiers of the vertices are always
+	 * {@code (0,1,2, ...,verticesNum-1)}, and the identifiers of the edges are always {@code (0,1,2, ...,edgesNum-1)}.
+	 * To maintain this, the index graph implementation may rename existing vertices or edges along the graph lifetime.
+	 * This rename behavior is less user friendly, but allow for high performance boost as no hash tables are needed, a
+	 * simple array or bitmap can be used to map each vertex/edge to a value/weight/flag. See {@link IndexGraph} for
+	 * more information. The {@link IndexGraph} should not be used in scenarios where performance does not matter.
+	 * &lt;p&gt;
+	 * The returned graph is a view, namely a graph that will contain the same vertices and edges (with different
+	 * {@code int} identifiers), and the same associated weights, that is automatically updated when the original graph
+	 * is updated and visa versa.
+	 * &lt;p&gt;
+	 * If this graph is an Index graph, this method returns this graph.
+	 *
+	 * @return an {@link IndexGraph} view of this graph
+	 */
+	IndexGraph indexGraph();
+
+	/**
+	 * Get the index-id vertices mapping of this graph.
+	 * &lt;p&gt;
+	 * A regular graph contains vertices and edges which are identified by a fixed {@code int} IDs. An
+	 * {@link IndexGraph} view is provided by the {@link #indexGraph()} method, which is a graph in which all methods
+	 * are accessed with &lt;b&gt;indices&lt;/b&gt; rather than fixed IDs. This method expose the mapping between the indices and
+	 * the fixed IDs of the graph vertices.
+	 * &lt;p&gt;
+	 * Note that the mapping may change during the graph lifetime, as vertices are added and removed from the graph, and
+	 * a regular graph IDs are fixed, while a index graph indices are always {@code (0,1,2, ...,verticesNum-1)}. The
+	 * returned mapping object will be updated automatically in such cases.
+	 *
+	 * @return a mapping that map vertices IDs to vertices indices
+	 */
+	IndexIdMap indexGraphVerticesMap();
+
+	/**
+	 * Get the index-id edges mapping of this graph.
+	 * &lt;p&gt;
+	 * A regular graph contains vertices and edges which are identified by a fixed {@code int} IDs. An
+	 * {@link IndexGraph} view is provided by the {@link #indexGraph()} method, which is a graph in which all methods
+	 * are accessed with &lt;b&gt;indices&lt;/b&gt; rather than fixed IDs. This method expose the mapping between the indices and
+	 * the fixed IDs of the graph edges.
+	 * &lt;p&gt;
+	 * Note that the mapping may change during the graph lifetime, as edges are added and removed from the graph, and a
+	 * regular graph IDs are fixed, while a index graph indices are always {@code (0,1,2, ...,edgesNum-1)}. The returned
+	 * mapping object will be updated automatically in such cases.
+	 *
+	 * @return a mapping that map edges IDs to edges indices
+	 */
+	IndexIdMap indexGraphEdgesMap();
 
 	/**
 	 * Create a copy of this graph.
@@ -598,7 +605,7 @@ public interface Graph {
 	 *
 	 * @return an identical copy of this graph
 	 */
-	public Graph copy();
+	Graph copy();
 
 	/**
 	 * Get an unmodifiable view of this graph.
@@ -610,7 +617,7 @@ public interface Graph {
 	 * @return an unmodifiable view of this graph
 	 */
 	default Graph unmodifiableView() {
-<span class="fc" id="L613">		return Graphs.unmodifiableView(this);</span>
+<span class="fc" id="L620">		return Graphs.unmodifiableView(this);</span>
 	}
 
 	/**
@@ -625,7 +632,7 @@ public interface Graph {
 	 * @return a reversed view of this graph
 	 */
 	default Graph reverseView() {
-<span class="fc" id="L628">		return Graphs.reverseView(this);</span>
+<span class="fc" id="L635">		return Graphs.reverseView(this);</span>
 	}
 
 	/**
@@ -636,7 +643,7 @@ public interface Graph {
 	 * @return a new builder that can build undirected graphs
 	 */
 	static Graph.Builder newBuilderUndirected() {
-<span class="fc" id="L639">		return new GraphBuilderImpl(false);</span>
+<span class="fc" id="L646">		return new GraphImpl.Builder(false);</span>
 	}
 
 	/**
@@ -647,7 +654,7 @@ public interface Graph {
 	 * @return a new builder that can build directed graphs
 	 */
 	static Graph.Builder newBuilderDirected() {
-<span class="fc" id="L650">		return new GraphBuilderImpl(true);</span>
+<span class="fc" id="L657">		return new GraphImpl.Builder(true);</span>
 	}
 
 	/**
@@ -691,22 +698,6 @@ public interface Graph {
 		Graph.Builder expectedEdgesNum(int expectedEdgesNum);
 
 		/**
-		 * Enable/disable fixed edges IDs for graphs built by this builder.
-		 * &lt;p&gt;
-		 * By default, IDs of both vertices and edges are always {@code 0,1,2,...,verticesNum1} (and
-		 * {@code 0,1,2,...edgesNum-1}). To maintain this invariant, graphs must rename vertices/edges when an
-		 * vertex/edge is removed. The IDs of the edges can be fixed, namely once an edge is assigned an ID, it will
-		 * never change. If such option is chosen, the edges IDs will not always be {@code 0,1,2,...,edgesNum-1}.
-		 * &lt;p&gt;
-		 * Note that by using fixed IDs, some map is required, and therefore its slightly less efficient.
-		 *
-		 * @param  enable if {@code true}, graphs built by this builder will have fixed IDs for edges
-		 * @return        this builder
-		 * @see           IDStrategy
-		 */
-		Graph.Builder useFixedEdgesIDs(boolean enable);
-
-		/**
 		 * Add a hint to this builder.
 		 * &lt;p&gt;
 		 * Hints do not change the behavior of the graphs built by this builder, by may affect performance.
@@ -733,11 +724,11 @@ public interface Graph {
 		 *
 		 * @author Barak Ugav
 		 */
-<span class="fc" id="L736">		static enum Hint {</span>
+<span class="fc" id="L727">		static enum Hint {</span>
 			/** The graph should support fast edge removal via {@link Graph#removeEdge(int)} */
-<span class="fc" id="L738">			FastEdgeRemoval,</span>
+<span class="fc" id="L729">			FastEdgeRemoval,</span>
 			/** The graph should support fast edge lookup via {@link Graph#getEdge(int, int)} */
-<span class="fc" id="L740">			FastEdgeLookup,</span>
+<span class="fc" id="L731">			FastEdgeLookup,</span>
 		}
 
 	}

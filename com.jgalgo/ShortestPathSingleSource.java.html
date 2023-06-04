@@ -97,7 +97,7 @@ public interface ShortestPathSingleSource {
 	 *                other vertex
 	 */
 	default ShortestPathSingleSource.Result computeCardinalityShortestPaths(Graph g, int source) {
-<span class="fc" id="L100">		return computeShortestPaths(g, WeightFunction.CardinalityWeightFunction, source);</span>
+<span class="nc" id="L100">		return computeShortestPaths(g, WeightFunction.CardinalityWeightFunction, source);</span>
 	}
 
 	/**

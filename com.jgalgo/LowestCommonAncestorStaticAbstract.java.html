@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LowestCommonAncestorStaticAbstract.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">LowestCommonAncestorStaticAbstract.java</span></div><h1>LowestCommonAncestorStaticAbstract.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo;
+
+import java.util.Objects;
+
+<span class="fc" id="L20">abstract class LowestCommonAncestorStaticAbstract implements LowestCommonAncestorStatic {</span>
+
+	@Override
+	public LowestCommonAncestorStatic.DataStructure preProcessTree(Graph tree, int root) {
+<span class="fc bfc" id="L24" title="All 2 branches covered.">		if (tree instanceof IndexGraph)</span>
+<span class="fc" id="L25">			return preProcessTree((IndexGraph) tree, root);</span>
+
+<span class="fc" id="L27">		IndexGraph iGraph = tree.indexGraph();</span>
+<span class="fc" id="L28">		IndexIdMap viMap = tree.indexGraphVerticesMap();</span>
+
+<span class="fc" id="L30">		int iRoot = viMap.idToIndex(root);</span>
+<span class="fc" id="L31">		LowestCommonAncestorStatic.DataStructure indexResult = preProcessTree(iGraph, iRoot);</span>
+<span class="fc" id="L32">		return new DSFromIndexDS(indexResult, viMap);</span>
+	}
+
+	abstract LowestCommonAncestorStatic.DataStructure preProcessTree(IndexGraph tree, int root);
+
+	private static class DSFromIndexDS implements LowestCommonAncestorStatic.DataStructure {
+
+		private final LowestCommonAncestorStatic.DataStructure ds;
+		private final IndexIdMap viMap;
+
+<span class="fc" id="L42">		DSFromIndexDS(LowestCommonAncestorStatic.DataStructure ds, IndexIdMap viMap) {</span>
+<span class="fc" id="L43">			this.ds = Objects.requireNonNull(ds);</span>
+<span class="fc" id="L44">			this.viMap = Objects.requireNonNull(viMap);</span>
+<span class="fc" id="L45">		}</span>
+
+		@Override
+		public int findLowestCommonAncestor(int u, int v) {
+<span class="fc" id="L49">			return viMap.indexToId(ds.findLowestCommonAncestor(viMap.idToIndex(u), viMap.idToIndex(v)));</span>
+		}
+
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -33,7 +33,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  * @see    &lt;a href= &quot;https://en.wikipedia.org/wiki/Edmonds%E2%80%93Karp_algorithm&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
  */
-class MaximumFlowEdmondsKarp implements MaximumFlow {
+class MaximumFlowEdmondsKarp extends MaximumFlowAbstract {
 
 <span class="fc" id="L38">	private static final Object FlowWeightKey = new Utils.Obj(&quot;flow&quot;);</span>
 <span class="fc" id="L39">	private static final Object CapacityWeightKey = new Utils.Obj(&quot;capacity&quot;);</span>
@@ -44,7 +44,7 @@ class MaximumFlowEdmondsKarp implements MaximumFlow {
 <span class="fc" id="L44">	MaximumFlowEdmondsKarp() {}</span>
 
 	@Override
-	public double computeMaximumFlow(Graph g, FlowNetwork net, int source, int sink) {
+	 double computeMaximumFlow(IndexGraph g, FlowNetwork net, int source, int sink) {
 <span class="fc bfc" id="L48" title="All 2 branches covered.">		if (net instanceof FlowNetwork.Int) {</span>
 <span class="fc" id="L49">			return new WorkerInt(g, (FlowNetwork.Int) net, source, sink).computeMaxFlow();</span>
 		} else {
@@ -54,7 +54,7 @@ class MaximumFlowEdmondsKarp implements MaximumFlow {
 
 	private abstract class Worker extends MaximumFlowAbstract.Worker {
 
-<span class="fc" id="L57">		Worker(Graph gOrig, FlowNetwork net, int source, int sink) {</span>
+<span class="fc" id="L57">		Worker(IndexGraph gOrig, FlowNetwork net, int source, int sink) {</span>
 <span class="fc" id="L58">			super(gOrig, net, source, sink);</span>
 <span class="fc" id="L59">		}</span>
 
@@ -108,7 +108,7 @@ class MaximumFlowEdmondsKarp implements MaximumFlow {
 
 		private static final double EPS = 0.0001;
 
-<span class="fc" id="L111">		WorkerDouble(Graph gOrig, FlowNetwork net, int source, int sink) {</span>
+<span class="fc" id="L111">		WorkerDouble(IndexGraph gOrig, FlowNetwork net, int source, int sink) {</span>
 <span class="fc" id="L112">			super(gOrig, net, source, sink);</span>
 
 <span class="fc" id="L114">			flow = g.addEdgesWeights(FlowWeightKey, double.class);</span>
@@ -155,7 +155,7 @@ class MaximumFlowEdmondsKarp implements MaximumFlow {
 		final Weights.Int flow;
 		final Weights.Int capacity;
 
-<span class="fc" id="L158">		WorkerInt(Graph gOrig, FlowNetwork.Int net, int source, int sink) {</span>
+<span class="fc" id="L158">		WorkerInt(IndexGraph gOrig, FlowNetwork.Int net, int source, int sink) {</span>
 <span class="fc" id="L159">			super(gOrig, net, source, sink);</span>
 
 <span class="fc" id="L161">			flow = g.addEdgesWeights(FlowWeightKey, int.class);</span>

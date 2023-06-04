@@ -20,22 +20,22 @@ import java.util.Arrays;
 import java.util.NoSuchElementException;
 import com.jgalgo.EdgeEndpointsContainer.GraphWithEdgeEndpointsContainer;
 
-abstract class GraphArrayAbstract extends GraphBaseContinues implements GraphWithEdgeEndpointsContainer {
+abstract class GraphArrayAbstract extends GraphBaseIndex implements GraphWithEdgeEndpointsContainer {
 
 	private final EdgeEndpointsContainer edgeEndpoints;
 
-<span class="fc" id="L27">	private static final Object DataContainerKeyEdgeEndpoints = new Utils.Obj(&quot;edgeEndpoints&quot;);</span>
+<span class="fc" id="L27">	private static final Object WeightsKeyEdgeEndpoints = new Utils.Obj(&quot;edgeEndpoints&quot;);</span>
 
 	GraphArrayAbstract(int expectedVerticesNum, int expectedEdgesNum) {
 <span class="fc" id="L30">		super(expectedVerticesNum, expectedEdgesNum);</span>
-<span class="fc" id="L31">		edgeEndpoints = new EdgeEndpointsContainer(edgesIDStrat);</span>
-<span class="fc" id="L32">		addInternalEdgesDataContainer(DataContainerKeyEdgeEndpoints, edgeEndpoints);</span>
+<span class="fc" id="L31">		edgeEndpoints = new EdgeEndpointsContainer(edgesIdStrat);</span>
+<span class="fc" id="L32">		addInternalEdgesWeights(WeightsKeyEdgeEndpoints, edgeEndpoints);</span>
 <span class="fc" id="L33">	}</span>
 
 	GraphArrayAbstract(GraphArrayAbstract g) {
 <span class="fc" id="L36">		super(g);</span>
-<span class="fc" id="L37">		edgeEndpoints = g.edgeEndpoints.copy(edgesIDStrat);</span>
-<span class="fc" id="L38">		addInternalEdgesDataContainer(DataContainerKeyEdgeEndpoints, edgeEndpoints);</span>
+<span class="fc" id="L37">		edgeEndpoints = g.edgeEndpoints.copy(edgesIdStrat);</span>
+<span class="fc" id="L38">		addInternalEdgesWeights(WeightsKeyEdgeEndpoints, edgeEndpoints);</span>
 <span class="fc" id="L39">	}</span>
 
 	@Override
@@ -58,7 +58,7 @@ abstract class GraphArrayAbstract extends GraphBaseContinues implements GraphWit
 <span class="fc" id="L58">		super.edgeSwap(e1, e2);</span>
 <span class="fc" id="L59">	}</span>
 
-	static void addEdgeToList(DataContainer.Obj&lt;int[]&gt; edges, DataContainer.Int edgesNum, int w, int e) {
+	static void addEdgeToList(WeightsImpl.Index.Obj&lt;int[]&gt; edges, WeightsImpl.Index.Int edgesNum, int w, int e) {
 <span class="fc" id="L62">		int[] es = edges.get(w);</span>
 <span class="fc" id="L63">		int num = edgesNum.getInt(w);</span>
 <span class="fc bfc" id="L64" title="All 2 branches covered.">		if (es.length &lt;= num) {</span>
@@ -76,7 +76,7 @@ abstract class GraphArrayAbstract extends GraphBaseContinues implements GraphWit
 <span class="nc" id="L76">		return -1;</span>
 	}
 
-	static void removeEdgeFromList(DataContainer.Obj&lt;int[]&gt; edges, DataContainer.Int edgesNum, int w, int e) {
+	static void removeEdgeFromList(WeightsImpl.Index.Obj&lt;int[]&gt; edges, WeightsImpl.Index.Int edgesNum, int w, int e) {
 <span class="fc" id="L80">		int[] es = edges.get(w);</span>
 <span class="fc" id="L81">		int num = edgesNum.getInt(w);</span>
 <span class="fc" id="L82">		int i = edgeIndexOf(es, num, e);</span>

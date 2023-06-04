@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>IndexGraphBuilderImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">IndexGraphBuilderImpl.java</span></div><h1>IndexGraphBuilderImpl.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo;
+
+import java.util.EnumSet;
+import java.util.function.BiFunction;
+
+class IndexGraphBuilderImpl implements IndexGraph.Builder {
+
+	private boolean directed;
+	private int expectedVerticesNum;
+	private int expectedEdgesNum;
+<span class="fc" id="L26">	private final EnumSet&lt;Graph.Builder.Hint&gt; hints = EnumSet.noneOf(Graph.Builder.Hint.class);</span>
+	private String impl;
+
+<span class="fc" id="L29">	IndexGraphBuilderImpl(boolean directed) {</span>
+<span class="fc" id="L30">		this.directed = directed;</span>
+<span class="fc" id="L31">	}</span>
+
+	@Override
+	public IndexGraph build() {
+		BiFunction&lt;Integer, Integer, ? extends GraphBaseIndex&gt; baseBuilderArray =
+<span class="fc bfc" id="L36" title="All 2 branches covered.">				directed ? GraphArrayDirected::new : GraphArrayUndirected::new;</span>
+		BiFunction&lt;Integer, Integer, ? extends GraphBaseIndex&gt; baseBuilderLinked =
+<span class="fc bfc" id="L38" title="All 2 branches covered.">				directed ? GraphLinkedDirected::new : GraphLinkedUndirected::new;</span>
+		BiFunction&lt;Integer, Integer, ? extends GraphBaseIndex&gt; baseBuilderTable =
+<span class="fc bfc" id="L40" title="All 2 branches covered.">				directed ? GraphTableDirected::new : GraphTableUndirected::new;</span>
+
+		BiFunction&lt;Integer, Integer, ? extends GraphBaseIndex&gt; baseBuilder;
+<span class="fc bfc" id="L43" title="All 4 branches covered.">		if (impl != null &amp;&amp; !&quot;GraphArray&quot;.equals(impl)) {</span>
+<span class="pc bpc" id="L44" title="1 of 2 branches missed.">			if (&quot;GraphArray&quot;.equals(impl))</span>
+<span class="nc" id="L45">				baseBuilder = baseBuilderArray;</span>
+<span class="fc bfc" id="L46" title="All 2 branches covered.">			else if (&quot;GraphLinked&quot;.equals(impl))</span>
+<span class="fc" id="L47">				baseBuilder = baseBuilderLinked;</span>
+<span class="pc bpc" id="L48" title="1 of 2 branches missed.">			else if (&quot;GraphTable&quot;.equals(impl))</span>
+<span class="fc" id="L49">				baseBuilder = baseBuilderTable;</span>
+			else
+<span class="nc" id="L51">				throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+		} else {
+<span class="pc bpc" id="L53" title="1 of 2 branches missed.">			if (hints.contains(Graph.Builder.Hint.FastEdgeLookup))</span>
+<span class="nc" id="L54">				baseBuilder = baseBuilderTable;</span>
+<span class="pc bpc" id="L55" title="1 of 2 branches missed.">			else if (hints.contains(Graph.Builder.Hint.FastEdgeLookup))</span>
+<span class="nc" id="L56">				baseBuilder = baseBuilderLinked;</span>
+			else
+<span class="fc" id="L58">				baseBuilder = baseBuilderArray;</span>
+		}
+<span class="fc" id="L60">		return baseBuilder.apply(Integer.valueOf(expectedVerticesNum), Integer.valueOf(expectedEdgesNum));</span>
+	}
+
+	@Override
+	public IndexGraph.Builder setDirected(boolean directed) {
+<span class="fc" id="L65">		this.directed = directed;</span>
+<span class="fc" id="L66">		return this;</span>
+	}
+
+	@Override
+	public IndexGraph.Builder expectedVerticesNum(int expectedVerticesNum) {
+<span class="pc bpc" id="L71" title="1 of 2 branches missed.">		if (expectedVerticesNum &lt; 0)</span>
+<span class="nc" id="L72">			throw new IllegalArgumentException(&quot;invalid expected size: &quot; + expectedVerticesNum);</span>
+<span class="fc" id="L73">		this.expectedVerticesNum = expectedVerticesNum;</span>
+<span class="fc" id="L74">		return this;</span>
+	}
+
+	@Override
+	public IndexGraph.Builder expectedEdgesNum(int expectedEdgesNum) {
+<span class="pc bpc" id="L79" title="1 of 2 branches missed.">		if (expectedEdgesNum &lt; 0)</span>
+<span class="nc" id="L80">			throw new IllegalArgumentException(&quot;invalid expected size: &quot; + expectedEdgesNum);</span>
+<span class="fc" id="L81">		this.expectedEdgesNum = expectedEdgesNum;</span>
+<span class="fc" id="L82">		return this;</span>
+	}
+
+	@Override
+	public IndexGraph.Builder addHint(Graph.Builder.Hint hint) {
+<span class="nc" id="L87">		hints.add(hint);</span>
+<span class="nc" id="L88">		return this;</span>
+	}
+
+	@Override
+	public IndexGraph.Builder removeHint(Graph.Builder.Hint hint) {
+<span class="nc" id="L93">		hints.remove(hint);</span>
+<span class="nc" id="L94">		return this;</span>
+	}
+
+	@Override
+	public IndexGraph.Builder setOption(String key, Object value) {
+<span class="pc bpc" id="L99" title="1 of 2 branches missed.">		if (&quot;impl&quot;.equals(key)) {</span>
+<span class="fc" id="L100">			impl = (String) value;</span>
+		} else {
+<span class="nc" id="L102">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+		}
+<span class="fc" id="L104">		return this;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

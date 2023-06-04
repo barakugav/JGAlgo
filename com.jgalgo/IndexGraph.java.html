@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>IndexGraph.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo</a> &gt; <span class="el_source">IndexGraph.java</span></div><h1>IndexGraph.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo;
+
+import it.unimi.dsi.fastutil.ints.IntSet;
+
+/**
+ * A graph whose vertices and edges identifiers are indices.
+ * &lt;p&gt;
+ * The {@link Graph} interface provide addition, removal and querying of vertices and edges, all using {@code int}
+ * identifiers. These identifiers are fixed, and once a vertex or edge is assigned an ID, it will not change during the
+ * graph lifetime. On the other hand, an &lt;i&gt;Index&lt;/i&gt; graph is a {@link Graph} object in which the vertices and edges
+ * identifiers of the graph are &lt;b&gt;always&lt;/b&gt; {@code (0,1,2, ...,verticesNum-1)} and {@code (0,1,2, ...,edgesNum-1)}.
+ * &lt;p&gt;
+ * The index graph invariants allow for a great performance boost, as a simple array or bitmap can be used to associate
+ * a value/weight/flag with each vertex/edge. But it does come with a cost: to maintain the invariants, implementations
+ * may need to rename existing vertices or edges along the graph lifetime. These renames are managed by a
+ * {@link IdStrategy} that can be accessed using {@link #getVerticesIdStrategy()} or {@link #getEdgesIdStrategy()} which
+ * allow for a subscription to these renames via
+ * {@link IdStrategy#addIdSwapListener(com.jgalgo.IdStrategy.IDSwapListener)}.
+ * &lt;p&gt;
+ * An index graph may be obtained as a view from a regular {@link Graph} using {@link Graph#indexGraph()}, or it can be
+ * created by its own using {@link IndexGraph.Builder}. In cases where no removal of vertices or edges is required, and
+ * there is no need to use per-defined IDs, there is no drawback to use the {@link IndexGraph} as regular {@link Graph},
+ * as it will provide the best performance.
+ * &lt;p&gt;
+ * All graph algorithms implementations should operation on Index graphs only, for best performance. If a regular
+ * {@link Graph} is provided to an algorithm, the Index graph should be retrieved using {@link Graph#indexGraph()}, the
+ * algorithm expensive logic should operate on the returned Index graph and finally the result should be transformed
+ * back to the regular graph IDs. The mapping from a regular graph IDs to indices and visa versa is exposed using
+ * {@link IndexIdMap}, which can be accessed using {@link Graph#indexGraphVerticesMap()} and
+ * {@link Graph#indexGraphEdgesMap()}.
+ *
+ * @see    IdStrategy
+ * @see    IndexIdMap
+ * @author Barak Ugav
+ */
+public interface IndexGraph extends Graph {
+
+	/**
+	 * {@inheritDoc}
+	 * &lt;p&gt;
+	 * In an Index graph, the set of vertices are always {@code (0,1,2, ...,verticesNum-1)}.
+	 */
+	@Override
+	IntSet vertices();
+
+	/**
+	 * {@inheritDoc}
+	 * &lt;p&gt;
+	 * In an Index graph, the set of edges are always {@code (0,1,2, ...,edgesNum-1)}.
+	 */
+	@Override
+	IntSet edges();
+
+	/**
+	 * {@inheritDoc}
+	 * &lt;p&gt;
+	 * After removing a vertex, the vertices ID strategy may rename other vertices identifiers to maintain its
+	 * invariants, see {@link #getVerticesIdStrategy()}. Theses renames can be subscribed using
+	 * {@link IdStrategy#addIDSwapListener}.
+	 */
+	@Override
+	void removeVertex(int vertex);
+
+	/**
+	 * {@inheritDoc}
+	 * &lt;p&gt;
+	 * After removing an edge, the edges ID strategy may rename other edges identifiers to maintain its invariants, see
+	 * {@link #getEdgesIdStrategy()}. Theses renames can be subscribed using {@link IdStrategy#addIDSwapListener}.
+	 */
+	@Override
+	void removeEdge(int edge);
+
+	/**
+	 * {@inheritDoc}
+	 * &lt;p&gt;
+	 * After removing an edge, the edges ID strategy may rename other edges identifiers to maintain its invariants, see
+	 * {@link #getEdgesIdStrategy()}. Theses renames can be subscribed using {@link IdStrategy#addIDSwapListener}.
+	 */
+	@Override
+	default void removeEdgesOf(int vertex) {
+<span class="fc" id="L96">		Graph.super.removeEdgesOf(vertex);</span>
+<span class="fc" id="L97">	}</span>
+
+	/**
+	 * {@inheritDoc}
+	 * &lt;p&gt;
+	 * After removing an edge, the edges ID strategy may rename other edges identifiers to maintain its invariants, see
+	 * {@link #getEdgesIdStrategy()}. Theses renames can be subscribed using {@link IdStrategy#addIDSwapListener}.
+	 */
+	@Override
+	default void removeEdgesOutOf(int source) {
+<span class="fc" id="L107">		Graph.super.removeEdgesOutOf(source);</span>
+<span class="fc" id="L108">	}</span>
+
+	/**
+	 * {@inheritDoc}
+	 * &lt;p&gt;
+	 * After removing an edge, the edges ID strategy may rename other edges identifiers to maintain its invariants, see
+	 * {@link #getEdgesIdStrategy()}. Theses renames can be subscribed using {@link IdStrategy#addIDSwapListener}.
+	 *
+	 * @param  target                    a vertex in the graph
+	 * @throws IndexOutOfBoundsException if {@code target} is not a valid vertex identifier
+	 */
+	@Override
+	default void removeEdgesInOf(int target) {
+<span class="fc" id="L121">		Graph.super.removeEdgesInOf(target);</span>
+<span class="fc" id="L122">	}</span>
+
+	/**
+	 * Get the ID strategy of the vertices of the graph.
+	 * &lt;p&gt;
+	 * In an Index graph, the set of vertices are always {@code (0,1,2, ...,verticesNum-1)}. To maintain this invariant
+	 * during the lifetime of the graph, an {@link IdStrategy} determine how to rename existing vertices when needed.
+	 * These renames can be subscribed using {@link IdStrategy#addIDSwapListener}.
+	 *
+	 * @see    IdStrategy
+	 * @return the vertices IDs strategy
+	 */
+	IdStrategy getVerticesIdStrategy();
+
+	/**
+	 * Get the ID strategy of the edges of the graph.
+	 * &lt;p&gt;
+	 * In an Index graph, the set of edges are always {@code (0,1,2, ...,edgesNum-1)}. To maintain this invariant during
+	 * the lifetime of the graph, an {@link IdStrategy} determine how to rename existing edges when needed. These
+	 * renames can be subscribed using {@link IdStrategy#addIDSwapListener}.
+	 *
+	 * @see    IdStrategy
+	 * @return the edges IDs strategy
+	 */
+	IdStrategy getEdgesIdStrategy();
+
+	@Override
+	IndexGraph copy();
+
+	@Override
+	default IndexGraph unmodifiableView() {
+<span class="nc" id="L153">		return Graphs.unmodifiableView(this);</span>
+	}
+
+	@Override
+	default IndexGraph reverseView() {
+<span class="nc" id="L158">		return Graphs.reverseView(this);</span>
+	}
+
+	static IndexGraph.Builder newBuilderUndirected() {
+<span class="fc" id="L162">		return new IndexGraphBuilderImpl(false);</span>
+	}
+
+	static IndexGraph.Builder newBuilderDirected() {
+<span class="fc" id="L166">		return new IndexGraphBuilderImpl(true);</span>
+	}
+
+	/**
+	 * A builder for {@link IndexGraph} objects.
+	 *
+	 * @see    IndexGraph#newBuilderDirected()
+	 * @see    IndexGraph#newBuilderUndirected()
+	 * @author Barak Ugav
+	 */
+	static interface Builder extends BuilderAbstract&lt;IndexGraph.Builder&gt; {
+
+		/**
+		 * Create a new empty index graph.
+		 *
+		 * @return a new index graph with the builder options
+		 */
+		IndexGraph build();
+
+		/**
+		 * Determine if graphs built by this builder should be directed or not.
+		 *
+		 * @param  directed if {@code true}, graphs built by this builder will be directed
+		 * @return          this builder
+		 */
+		IndexGraph.Builder setDirected(boolean directed);
+
+		/**
+		 * Set the expected number of vertices that will exist in the graph.
+		 *
+		 * @param  expectedVerticesNum the expected number of vertices in the graph
+		 * @return                     this builder
+		 */
+		IndexGraph.Builder expectedVerticesNum(int expectedVerticesNum);
+
+		/**
+		 * Set the expected number of edges that will exist in the graph.
+		 *
+		 * @param  expectedEdgesNum the expected number of edges in the graph
+		 * @return                  this builder
+		 */
+		IndexGraph.Builder expectedEdgesNum(int expectedEdgesNum);
+
+		/**
+		 * Add a hint to this builder.
+		 * &lt;p&gt;
+		 * Hints do not change the behavior of the graphs built by this builder, by may affect performance.
+		 *
+		 * @param  hint the hint to add
+		 * @return      this builder
+		 */
+		IndexGraph.Builder addHint(Graph.Builder.Hint hint);
+
+		/**
+		 * Remove a hint from this builder.
+		 * &lt;p&gt;
+		 * Hints do not change the behavior of the graphs built by this builder, by may affect performance.
+		 *
+		 * @param  hint the hint to remove
+		 * @return      this builder
+		 */
+		IndexGraph.Builder removeHint(Graph.Builder.Hint hint);
+
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

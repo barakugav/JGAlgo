@@ -35,7 +35,7 @@ import it.unimi.dsi.fastutil.ints.IntIterators;
  *
  * @author Barak Ugav
  */
-<span class="fc" id="L38">class ShortestPathSingleSourceDial implements ShortestPathSingleSource {</span>
+<span class="fc" id="L38">class ShortestPathSingleSourceDial extends ShortestPathSingleSourceUtils.AbstractImpl {</span>
 
 	/**
 	 * Construct a new SSSP algorithm.
@@ -49,7 +49,7 @@ import it.unimi.dsi.fastutil.ints.IntIterators;
 	 *                                      {@link WeightFunction.Int}
 	 */
 	@Override
-	public ShortestPathSingleSource.Result computeShortestPaths(Graph g, WeightFunction w, int source) {
+	 ShortestPathSingleSource.Result computeShortestPaths(IndexGraph g, WeightFunction w, int source) {
 <span class="fc bfc" id="L53" title="All 2 branches covered.">		if (w == null)</span>
 <span class="fc" id="L54">			w = WeightFunction.CardinalityWeightFunction;</span>
 <span class="pc bpc" id="L55" title="1 of 2 branches missed.">		if (!(w instanceof WeightFunction.Int))</span>
@@ -84,7 +84,7 @@ import it.unimi.dsi.fastutil.ints.IntIterators;
 	 *                     vertex
 	 * @see                #computeShortestPaths(Graph, WeightFunction, int)
 	 */
-	ShortestPathSingleSource.Result computeShortestPaths(Graph g, WeightFunction.Int w, int source, int maxDistance) {
+	ShortestPathSingleSource.Result computeShortestPaths(IndexGraph g, WeightFunction.Int w, int source, int maxDistance) {
 <span class="fc" id="L88">		ArgumentCheck.onlyPositiveWeights(g, w);</span>
 
 <span class="fc" id="L90">		ShortestPathSingleSourceUtils.ResultImpl.Int res = new ShortestPathSingleSourceUtils.ResultImpl.Int(g, source);</span>

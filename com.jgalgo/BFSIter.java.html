@@ -52,7 +52,11 @@ public interface BFSIter extends IntIterator {
 	 * @return        a BFS iterator that iterate over the vertices of the graph
 	 */
 	public static BFSIter newInstance(Graph g, int source) {
-<span class="fc" id="L55">		return new BFSIterImpl(g, source);</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">		if (g instanceof IndexGraph)</span>
+<span class="fc" id="L56">			return new BFSIterImpl((IndexGraph) g, source);</span>
+<span class="fc" id="L57">		IndexIdMap viMap = g.indexGraphVerticesMap(), eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L58">		BFSIter indexBFS = new BFSIterImpl(g.indexGraph(), viMap.idToIndex(source));</span>
+<span class="fc" id="L59">		return new BFSIterImpl.BFSFromIndexBFS(indexBFS, viMap, eiMap);</span>
 	}
 
 	/**

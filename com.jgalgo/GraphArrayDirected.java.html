@@ -33,15 +33,15 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
  */
 class GraphArrayDirected extends GraphArrayAbstract {
 
-	private final DataContainer.Obj&lt;int[]&gt; edgesOut;
-	private final DataContainer.Int edgesOutNum;
-	private final DataContainer.Obj&lt;int[]&gt; edgesIn;
-	private final DataContainer.Int edgesInNum;
+	private final WeightsImpl.Index.Obj&lt;int[]&gt; edgesOut;
+	private final WeightsImpl.Index.Int edgesOutNum;
+	private final WeightsImpl.Index.Obj&lt;int[]&gt; edgesIn;
+	private final WeightsImpl.Index.Int edgesInNum;
 
-<span class="fc" id="L41">	private static final Object DataContainerKeyEdgesOut = new Utils.Obj(&quot;edgesOut&quot;);</span>
-<span class="fc" id="L42">	private static final Object DataContainerKeyEdgesOutNum = new Utils.Obj(&quot;edgesOutNum&quot;);</span>
-<span class="fc" id="L43">	private static final Object DataContainerKeyEdgesIn = new Utils.Obj(&quot;edgesIn&quot;);</span>
-<span class="fc" id="L44">	private static final Object DataContainerKeyEdgesInNum = new Utils.Obj(&quot;edgesInNum&quot;);</span>
+<span class="fc" id="L41">	private static final Object WeightsKeyEdgesOut = new Utils.Obj(&quot;edgesOut&quot;);</span>
+<span class="fc" id="L42">	private static final Object WeightsKeyEdgesOutNum = new Utils.Obj(&quot;edgesOutNum&quot;);</span>
+<span class="fc" id="L43">	private static final Object WeightsKeyEdgesIn = new Utils.Obj(&quot;edgesIn&quot;);</span>
+<span class="fc" id="L44">	private static final Object WeightsKeyEdgesInNum = new Utils.Obj(&quot;edgesInNum&quot;);</span>
 
 	/**
 	 * Create a new graph with no vertices and edges.
@@ -58,29 +58,29 @@ class GraphArrayDirected extends GraphArrayAbstract {
 	 */
 	GraphArrayDirected(int expectedVerticesNum, int expectedEdgesNum) {
 <span class="fc" id="L60">		super(expectedVerticesNum, expectedEdgesNum);</span>
-<span class="fc" id="L61">		edgesOut = new DataContainer.Obj&lt;&gt;(verticesIDStrat, IntArrays.EMPTY_ARRAY, int[].class);</span>
-<span class="fc" id="L62">		edgesOutNum = new DataContainer.Int(verticesIDStrat, 0);</span>
-<span class="fc" id="L63">		edgesIn = new DataContainer.Obj&lt;&gt;(verticesIDStrat, IntArrays.EMPTY_ARRAY, int[].class);</span>
-<span class="fc" id="L64">		edgesInNum = new DataContainer.Int(verticesIDStrat, 0);</span>
+<span class="fc" id="L61">		edgesOut = new WeightsImpl.Index.Obj&lt;&gt;(verticesIdStrat, IntArrays.EMPTY_ARRAY, int[].class);</span>
+<span class="fc" id="L62">		edgesOutNum = new WeightsImpl.Index.Int(verticesIdStrat, 0);</span>
+<span class="fc" id="L63">		edgesIn = new WeightsImpl.Index.Obj&lt;&gt;(verticesIdStrat, IntArrays.EMPTY_ARRAY, int[].class);</span>
+<span class="fc" id="L64">		edgesInNum = new WeightsImpl.Index.Int(verticesIdStrat, 0);</span>
 
-<span class="fc" id="L66">		addInternalVerticesDataContainer(DataContainerKeyEdgesOut, edgesOut);</span>
-<span class="fc" id="L67">		addInternalVerticesDataContainer(DataContainerKeyEdgesOutNum, edgesOutNum);</span>
-<span class="fc" id="L68">		addInternalVerticesDataContainer(DataContainerKeyEdgesIn, edgesIn);</span>
-<span class="fc" id="L69">		addInternalVerticesDataContainer(DataContainerKeyEdgesInNum, edgesInNum);</span>
+<span class="fc" id="L66">		addInternalVerticesWeights(WeightsKeyEdgesOut, edgesOut);</span>
+<span class="fc" id="L67">		addInternalVerticesWeights(WeightsKeyEdgesOutNum, edgesOutNum);</span>
+<span class="fc" id="L68">		addInternalVerticesWeights(WeightsKeyEdgesIn, edgesIn);</span>
+<span class="fc" id="L69">		addInternalVerticesWeights(WeightsKeyEdgesInNum, edgesInNum);</span>
 <span class="fc" id="L70">	}</span>
 
 	GraphArrayDirected(GraphArrayDirected g) {
 <span class="fc" id="L73">		super(g);</span>
 <span class="fc" id="L74">		final int n = g.vertices().size();</span>
 
-<span class="fc" id="L76">		edgesOut = g.edgesOut.copy(verticesIDStrat);</span>
-<span class="fc" id="L77">		edgesOutNum = g.edgesOutNum.copy(verticesIDStrat);</span>
-<span class="fc" id="L78">		edgesIn = g.edgesIn.copy(verticesIDStrat);</span>
-<span class="fc" id="L79">		edgesInNum = g.edgesInNum.copy(verticesIDStrat);</span>
-<span class="fc" id="L80">		addInternalVerticesDataContainer(DataContainerKeyEdgesOut, edgesOut);</span>
-<span class="fc" id="L81">		addInternalVerticesDataContainer(DataContainerKeyEdgesOutNum, edgesOutNum);</span>
-<span class="fc" id="L82">		addInternalVerticesDataContainer(DataContainerKeyEdgesIn, edgesIn);</span>
-<span class="fc" id="L83">		addInternalVerticesDataContainer(DataContainerKeyEdgesInNum, edgesInNum);</span>
+<span class="fc" id="L76">		edgesOut = g.edgesOut.copy(verticesIdStrat);</span>
+<span class="fc" id="L77">		edgesOutNum = g.edgesOutNum.copy(verticesIdStrat);</span>
+<span class="fc" id="L78">		edgesIn = g.edgesIn.copy(verticesIdStrat);</span>
+<span class="fc" id="L79">		edgesInNum = g.edgesInNum.copy(verticesIdStrat);</span>
+<span class="fc" id="L80">		addInternalVerticesWeights(WeightsKeyEdgesOut, edgesOut);</span>
+<span class="fc" id="L81">		addInternalVerticesWeights(WeightsKeyEdgesOutNum, edgesOutNum);</span>
+<span class="fc" id="L82">		addInternalVerticesWeights(WeightsKeyEdgesIn, edgesIn);</span>
+<span class="fc" id="L83">		addInternalVerticesWeights(WeightsKeyEdgesInNum, edgesInNum);</span>
 
 <span class="fc bfc" id="L85" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++) {</span>
 <span class="fc" id="L86">			edgesOut.set(v, Arrays.copyOf(edgesOut.get(v), edgesOutNum.getInt(v)));</span>
@@ -226,7 +226,7 @@ class GraphArrayDirected extends GraphArrayAbstract {
 <span class="fc" id="L226">			.vertexRemove(true).edgeAdd(true).edgeRemove(true).parallelEdges(true).selfEdges(true).build();</span>
 
 	@Override
-	public Graph copy() {
+	public IndexGraph copy() {
 <span class="fc" id="L230">		return new GraphArrayDirected(this);</span>
 	}
 

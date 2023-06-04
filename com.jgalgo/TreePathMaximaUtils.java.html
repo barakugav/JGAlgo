@@ -15,59 +15,168 @@
  */
 package com.jgalgo;
 
+import java.util.Objects;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIntPair;
 import it.unimi.dsi.fastutil.ints.IntList;
 
-<span class="nc" id="L22">class TreePathMaximaUtils {</span>
+<span class="nc" id="L24">class TreePathMaximaUtils {</span>
+
+<span class="fc" id="L26">	static abstract class AbstractImpl implements TreePathMaxima {</span>
+
+		@Override
+		public TreePathMaxima.Result computeHeaviestEdgeInTreePaths(Graph tree, WeightFunction w,
+				TreePathMaxima.Queries queries) {
+<span class="fc bfc" id="L31" title="All 2 branches covered.">			if (tree instanceof IndexGraph)</span>
+<span class="fc" id="L32">				return computeHeaviestEdgeInTreePaths((IndexGraph) tree, w, queries);</span>
+
+<span class="fc" id="L34">			IndexGraph iGraph = tree.indexGraph();</span>
+<span class="fc" id="L35">			IndexIdMap viMap = tree.indexGraphVerticesMap();</span>
+<span class="fc" id="L36">			IndexIdMap eiMap = tree.indexGraphEdgesMap();</span>
+<span class="fc" id="L37">			w = WeightsImpl.indexWeightFuncFromIdWeightFunc(w, eiMap);</span>
+<span class="fc" id="L38">			queries = new IndexQueriesFromQueries(queries, viMap);</span>
+
+<span class="fc" id="L40">			TreePathMaxima.Result indexResult = computeHeaviestEdgeInTreePaths(iGraph, w, queries);</span>
+<span class="fc" id="L41">			return new ResultFromIndexResult(indexResult, eiMap);</span>
+		}
+
+		abstract TreePathMaxima.Result computeHeaviestEdgeInTreePaths(IndexGraph tree, WeightFunction w,
+				TreePathMaxima.Queries queries);
+
+	}
 
 	static class QueriesImpl implements TreePathMaxima.Queries {
 		private final IntList qs;
 
-<span class="fc" id="L27">		QueriesImpl() {</span>
-<span class="fc" id="L28">			qs = new IntArrayList();</span>
-<span class="fc" id="L29">		}</span>
+<span class="fc" id="L52">		QueriesImpl() {</span>
+<span class="fc" id="L53">			qs = new IntArrayList();</span>
+<span class="fc" id="L54">		}</span>
 
 		@Override
 		public void addQuery(int u, int v) {
-<span class="fc" id="L33">			qs.add(u);</span>
-<span class="fc" id="L34">			qs.add(v);</span>
-<span class="fc" id="L35">		}</span>
+<span class="fc" id="L58">			qs.add(u);</span>
+<span class="fc" id="L59">			qs.add(v);</span>
+<span class="fc" id="L60">		}</span>
 
 		@Override
 		public IntIntPair getQuery(int idx) {
-<span class="fc" id="L39">			return IntIntPair.of(qs.getInt(idx * 2), qs.getInt(idx * 2 + 1));</span>
+<span class="fc" id="L64">			return IntIntPair.of(qs.getInt(idx * 2), qs.getInt(idx * 2 + 1));</span>
 		}
 
 		@Override
 		public int size() {
-<span class="fc" id="L44">			return qs.size() / 2;</span>
+<span class="fc" id="L69">			return qs.size() / 2;</span>
 		}
 
 		@Override
 		public void clear() {
-<span class="fc" id="L49">			qs.clear();</span>
-<span class="fc" id="L50">		}</span>
+<span class="fc" id="L74">			qs.clear();</span>
+<span class="fc" id="L75">		}</span>
 	}
 
 	static class ResultImpl implements TreePathMaxima.Result {
 
 		private final int[] res;
 
-<span class="nc" id="L57">		ResultImpl(int[] res) {</span>
-<span class="nc" id="L58">			this.res = res;</span>
-<span class="nc" id="L59">		}</span>
+<span class="fc" id="L82">		ResultImpl(int[] res) {</span>
+<span class="fc" id="L83">			this.res = res;</span>
+<span class="fc" id="L84">		}</span>
 
 		@Override
 		public int getHeaviestEdge(int queryIdx) {
-<span class="nc" id="L63">			return res[queryIdx];</span>
+<span class="fc" id="L88">			return res[queryIdx];</span>
 		}
 
 		@Override
 		public int size() {
-<span class="nc" id="L68">			return res.length;</span>
+<span class="fc" id="L93">			return res.length;</span>
 		}
 
+	}
+
+	static class IndexQueriesFromQueries implements TreePathMaxima.Queries {
+		private final TreePathMaxima.Queries qs;
+		private final IndexIdMap viMap;
+
+<span class="fc" id="L102">		IndexQueriesFromQueries(TreePathMaxima.Queries qs, IndexIdMap viMap) {</span>
+<span class="fc" id="L103">			this.qs = Objects.requireNonNull(qs);</span>
+<span class="fc" id="L104">			this.viMap = Objects.requireNonNull(viMap);</span>
+<span class="fc" id="L105">		}</span>
+
+		@Override
+		public void addQuery(int u, int v) {
+<span class="nc" id="L109">			qs.addQuery(viMap.indexToId(u), viMap.indexToId(v));</span>
+<span class="nc" id="L110">		}</span>
+
+		@Override
+		public IntIntPair getQuery(int idx) {
+<span class="fc" id="L114">			IntIntPair idQuery = qs.getQuery(idx);</span>
+<span class="fc" id="L115">			return IntIntPair.of(viMap.idToIndex(idQuery.firstInt()), viMap.idToIndex(idQuery.secondInt()));</span>
+		}
+
+		@Override
+		public int size() {
+<span class="fc" id="L120">			return qs.size();</span>
+		}
+
+		@Override
+		public void clear() {
+<span class="nc" id="L125">			qs.clear();</span>
+<span class="nc" id="L126">		}</span>
+	}
+
+	private static class ResultFromIndexResult implements TreePathMaxima.Result {
+
+		private final TreePathMaxima.Result res;
+		private final IndexIdMap eiMap;
+
+<span class="fc" id="L134">		ResultFromIndexResult(TreePathMaxima.Result res, IndexIdMap eiMap) {</span>
+<span class="fc" id="L135">			this.res = Objects.requireNonNull(res);</span>
+<span class="fc" id="L136">			this.eiMap = Objects.requireNonNull(eiMap);</span>
+<span class="fc" id="L137">		}</span>
+
+		@Override
+		public int getHeaviestEdge(int queryIdx) {
+<span class="fc" id="L141">			int eIdx = res.getHeaviestEdge(queryIdx);</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">			return eIdx == -1 ? -1 : eiMap.indexToId(eIdx);</span>
+		}
+
+		@Override
+		public int size() {
+<span class="fc" id="L147">			return res.size();</span>
+		}
+	}
+
+	static boolean verifyMST(IndexGraph g, WeightFunction w, IntCollection mstEdges, TreePathMaxima tpmAlgo) {
+<span class="fc" id="L152">		ArgumentCheck.onlyUndirected(g);</span>
+<span class="fc" id="L153">		int n = g.vertices().size();</span>
+		IndexGraph mst =
+<span class="fc" id="L155">				IndexGraph.newBuilderUndirected().expectedVerticesNum(n).expectedEdgesNum(mstEdges.size()).build();</span>
+<span class="fc bfc" id="L156" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
+<span class="fc" id="L157">			mst.addVertex();</span>
+<span class="fc" id="L158">		Weights.Int edgeRef = mst.addEdgesWeights(&quot;edgeRef&quot;, int.class);</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">		for (int e : mstEdges) {</span>
+<span class="fc" id="L160">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+<span class="fc" id="L161">			int ne = mst.addEdge(u, v);</span>
+<span class="fc" id="L162">			edgeRef.set(ne, e);</span>
+<span class="fc" id="L163">		}</span>
+<span class="fc bfc" id="L164" title="All 2 branches covered.">		if (!Trees.isTree(mst))</span>
+<span class="fc" id="L165">			return false;</span>
+
+<span class="fc" id="L167">		TreePathMaxima.Queries queries = TreePathMaxima.Queries.newInstance();</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">		for (int e : g.edges())</span>
+<span class="fc" id="L169">			queries.addQuery(g.edgeSource(e), g.edgeTarget(e));</span>
+<span class="fc" id="L170">		WeightFunction w0 = e -&gt; w.weight(edgeRef.getInt(e));</span>
+<span class="fc" id="L171">		TreePathMaxima.Result tpmResults = tpmAlgo.computeHeaviestEdgeInTreePaths(mst, w0, queries);</span>
+
+<span class="fc" id="L173">		int i = 0;</span>
+<span class="fc bfc" id="L174" title="All 2 branches covered.">		for (int e : g.edges()) {</span>
+<span class="fc" id="L175">			int mstEdge = tpmResults.getHeaviestEdge(i++);</span>
+<span class="pc bpc" id="L176" title="1 of 4 branches missed.">			if (mstEdge == -1 || w.weight(e) &lt; w0.weight(mstEdge))</span>
+<span class="fc" id="L177">				return false;</span>
+<span class="fc" id="L178">		}</span>
+<span class="fc" id="L179">		return true;</span>
 	}
 
 }

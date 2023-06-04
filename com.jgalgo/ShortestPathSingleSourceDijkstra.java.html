@@ -35,7 +35,7 @@ import java.util.Objects;
  * @see    &lt;a href= &quot;https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
  */
-class ShortestPathSingleSourceDijkstra implements ShortestPathSingleSource {
+class ShortestPathSingleSourceDijkstra extends ShortestPathSingleSourceUtils.AbstractImpl {
 
 	private HeapReferenceable.Builder&lt;?, ?&gt; heapBuilder;
 
@@ -61,7 +61,7 @@ class ShortestPathSingleSourceDijkstra implements ShortestPathSingleSource {
 	 * @throws IllegalArgumentException if one of the edge weights is negative
 	 */
 	@Override
-	public ShortestPathSingleSource.Result computeShortestPaths(Graph g, WeightFunction w, int source) {
+	ShortestPathSingleSource.Result computeShortestPaths(IndexGraph g, WeightFunction w, int source) {
 <span class="fc bfc" id="L65" title="All 2 branches covered.">		if (w == null)</span>
 <span class="fc" id="L66">			w = WeightFunction.CardinalityWeightFunction;</span>
 <span class="fc" id="L67">		ArgumentCheck.onlyPositiveWeights(g, w);</span>
@@ -72,7 +72,7 @@ class ShortestPathSingleSourceDijkstra implements ShortestPathSingleSource {
 		}
 	}
 
-	private ShortestPathSingleSource.Result computeSsspDoubles(Graph g, WeightFunction w, int source) {
+	private ShortestPathSingleSource.Result computeSsspDoubles(IndexGraph g, WeightFunction w, int source) {
 <span class="fc" id="L76">		final int n = g.vertices().size();</span>
 <span class="fc" id="L77">		HeapReferenceable&lt;Double, Integer&gt; heap =</span>
 <span class="fc" id="L78">				heapBuilder.keysTypePrimitive(double.class).valuesTypePrimitive(int.class).build();</span>
@@ -112,7 +112,7 @@ class ShortestPathSingleSourceDijkstra implements ShortestPathSingleSource {
 <span class="fc" id="L112">		return res;</span>
 	}
 
-	private ShortestPathSingleSource.Result computeSsspInts(Graph g, WeightFunction.Int w, int source) {
+	private ShortestPathSingleSource.Result computeSsspInts(IndexGraph g, WeightFunction.Int w, int source) {
 <span class="fc" id="L116">		final int n = g.vertices().size();</span>
 <span class="fc" id="L117">		HeapReferenceable&lt;Integer, Integer&gt; heap =</span>
 <span class="fc" id="L118">				heapBuilder.keysTypePrimitive(int.class).valuesTypePrimitive(int.class).build();</span>

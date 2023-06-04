@@ -24,17 +24,17 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 
 class CutImpl implements Cut {
 
-	private final Graph g;
+	private final IndexGraph g;
 	private BitSet cutBitmap;
 	private IntCollection cutVertices;
 	private IntCollection crossEdges;
 
-<span class="fc" id="L32">	CutImpl(Graph g, IntCollection cutVertices) {</span>
+<span class="fc" id="L32">	CutImpl(IndexGraph g, IntCollection cutVertices) {</span>
 <span class="fc" id="L33">		this.g = Objects.requireNonNull(g);</span>
 <span class="fc" id="L34">		this.cutVertices = IntCollections.unmodifiable(Objects.requireNonNull(cutVertices));</span>
 <span class="fc" id="L35">	}</span>
 
-<span class="fc" id="L37">	CutImpl(Graph g, BitSet cutBitmap) {</span>
+<span class="fc" id="L37">	CutImpl(IndexGraph g, BitSet cutBitmap) {</span>
 <span class="fc" id="L38">		this.g = Objects.requireNonNull(g);</span>
 <span class="fc" id="L39">		this.cutBitmap = Objects.requireNonNull(cutBitmap);</span>
 <span class="fc" id="L40">	}</span>
@@ -104,6 +104,40 @@ class CutImpl implements Cut {
 	public String toString() {
 <span class="nc" id="L105">		computeCutBitmap();</span>
 <span class="nc" id="L106">		return cutBitmap.toString();</span>
+	}
+
+	static class CutFromIndexCut implements Cut {
+
+		private final Cut cut;
+		private final IndexIdMap viMap;
+		private final IndexIdMap eiMap;
+
+<span class="fc" id="L115">		CutFromIndexCut(Cut cut, IndexIdMap viMap, IndexIdMap eiMap) {</span>
+<span class="fc" id="L116">			this.cut = Objects.requireNonNull(cut);</span>
+<span class="fc" id="L117">			this.viMap = Objects.requireNonNull(viMap);</span>
+<span class="fc" id="L118">			this.eiMap = Objects.requireNonNull(eiMap);</span>
+<span class="fc" id="L119">		}</span>
+
+		@Override
+		public boolean containsVertex(int vertex) {
+<span class="nc" id="L123">			return cut.containsVertex(viMap.idToIndex(vertex));</span>
+		}
+
+		@Override
+		public IntCollection vertices() {
+<span class="nc" id="L128">			return new IndexIdMapUtils.CollectionFromIndexCollection(cut.vertices(), viMap);</span>
+		}
+
+		@Override
+		public IntCollection edges() {
+<span class="nc" id="L133">			return new IndexIdMapUtils.CollectionFromIndexCollection(cut.edges(), eiMap);</span>
+		}
+
+		@Override
+		public double weight(WeightFunction w) {
+<span class="fc" id="L138">			return cut.weight(WeightsImpl.indexWeightFuncFromIdWeightFunc(w, eiMap));</span>
+		}
+
 	}
 
 }

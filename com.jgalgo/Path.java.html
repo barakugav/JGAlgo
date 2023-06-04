@@ -16,9 +16,7 @@
 
 package com.jgalgo;
 
-import java.util.Arrays;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntListIterator;
 import it.unimi.dsi.fastutil.ints.IntLists;
@@ -52,7 +50,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
  *
  * @author Barak Ugav
  */
-<span class="pc bpc" id="L55" title="1 of 2 branches missed.">public interface Path extends IntList {</span>
+<span class="pc bpc" id="L53" title="1 of 2 branches missed.">public interface Path extends IntList {</span>
 
 	/**
 	 * Get the source vertex of the path.
@@ -93,7 +91,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 	 * @return {@code true} if this path form a cycle, else {@code false}
 	 */
 	default boolean isCycle() {
-<span class="pc bpc" id="L96" title="1 of 2 branches missed.">		return source() == target();</span>
+<span class="pc bpc" id="L94" title="1 of 2 branches missed.">		return source() == target();</span>
 	}
 
 	/**
@@ -107,18 +105,18 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 	 * @return the vertices visited by this path, by the path order
 	 */
 	default IntList toVerticesList() {
-<span class="pc bpc" id="L110" title="1 of 2 branches missed.">		if (isEmpty())</span>
-<span class="nc" id="L111">			return IntLists.emptyList();</span>
-<span class="pc bpc" id="L112" title="1 of 2 branches missed.">		IntList res = new IntArrayList(size() + (isCycle() ? 0 : 1));</span>
-<span class="fc" id="L113">		for (EdgeIter it = edgeIter();;) {</span>
-<span class="fc" id="L114">			it.nextInt();</span>
-<span class="fc" id="L115">			res.add(it.source());</span>
-<span class="fc bfc" id="L116" title="All 2 branches covered.">			if (!it.hasNext()) {</span>
-<span class="pc bpc" id="L117" title="1 of 2 branches missed.">				if (!isCycle()) {</span>
-<span class="nc bnc" id="L118" title="All 4 branches missed.">					assert it.target() == target();</span>
-<span class="nc" id="L119">					res.add(target());</span>
+<span class="pc bpc" id="L108" title="1 of 2 branches missed.">		if (isEmpty())</span>
+<span class="nc" id="L109">			return IntLists.emptyList();</span>
+<span class="pc bpc" id="L110" title="1 of 2 branches missed.">		IntList res = new IntArrayList(size() + (isCycle() ? 0 : 1));</span>
+<span class="fc" id="L111">		for (EdgeIter it = edgeIter();;) {</span>
+<span class="fc" id="L112">			it.nextInt();</span>
+<span class="fc" id="L113">			res.add(it.source());</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">			if (!it.hasNext()) {</span>
+<span class="pc bpc" id="L115" title="1 of 2 branches missed.">				if (!isCycle()) {</span>
+<span class="nc bnc" id="L116" title="All 4 branches missed.">					assert it.target() == target();</span>
+<span class="nc" id="L117">					res.add(target());</span>
 				}
-<span class="fc" id="L121">				return res;</span>
+<span class="fc" id="L119">				return res;</span>
 			}
 		}
 	}
@@ -132,7 +130,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 	 * @return   the sum of this path edges weights
 	 */
 	default double weight(WeightFunction w) {
-<span class="fc" id="L135">		return GraphsUtils.weightSum(this, w);</span>
+<span class="fc" id="L133">		return GraphsUtils.weightSum(this, w);</span>
 	}
 
 	/**
@@ -145,40 +143,18 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 	 * @param  target target vertex
 	 * @return        a path from \(u\) to \(v\), or {@code null} if no such path was found
 	 */
-	public static Path findPath(Graph g, final int source, final int target) {
-<span class="fc bfc" id="L149" title="All 2 branches covered.">		if (source == target)</span>
-<span class="fc" id="L150">			return new PathImpl(g, source, target, IntLists.emptyList());</span>
-<span class="fc" id="L151">		boolean reverse = true;</span>
-<span class="fc" id="L152">		int u0 = source, v0 = target;</span>
-<span class="fc bfc" id="L153" title="All 2 branches covered.">		if (!g.getCapabilities().directed()) {</span>
-<span class="fc" id="L154">			u0 = target;</span>
-<span class="fc" id="L155">			v0 = source;</span>
-<span class="fc" id="L156">			reverse = false;</span>
-		}
-<span class="fc" id="L158">		int n = g.vertices().size();</span>
-<span class="fc" id="L159">		int[] backtrack = new int[n];</span>
-<span class="fc" id="L160">		Arrays.fill(backtrack, -1);</span>
+	public static Path findPath(Graph g, int source, int target) {
+<span class="fc bfc" id="L147" title="All 2 branches covered.">		if (g instanceof IndexGraph)</span>
+<span class="fc" id="L148">			return PathImpl.findPath((IndexGraph) g, source, target);</span>
 
-<span class="fc" id="L162">		IntArrayList path = new IntArrayList();</span>
-<span class="fc bfc" id="L163" title="All 2 branches covered.">		for (BFSIter it = BFSIter.newInstance(g, u0); it.hasNext();) {</span>
-<span class="fc" id="L164">			int p = it.nextInt();</span>
-<span class="fc" id="L165">			backtrack[p] = it.inEdge();</span>
-<span class="fc bfc" id="L166" title="All 2 branches covered.">			if (p == v0)</span>
-<span class="fc" id="L167">				break;</span>
-<span class="fc" id="L168">		}</span>
+<span class="fc" id="L150">		IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L151">		IndexIdMap viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L152">		IndexIdMap eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L153">		int iSource = viMap.idToIndex(source);</span>
+<span class="fc" id="L154">		int iTarget = viMap.idToIndex(target);</span>
 
-<span class="fc bfc" id="L170" title="All 2 branches covered.">		if (backtrack[v0] == -1)</span>
-<span class="fc" id="L171">			return null;</span>
-
-<span class="fc bfc" id="L173" title="All 2 branches covered.">		for (int p = v0; p != u0;) {</span>
-<span class="fc" id="L174">			int e = backtrack[p];</span>
-<span class="fc" id="L175">			path.add(e);</span>
-<span class="fc" id="L176">			p = g.edgeEndpoint(e, p);</span>
-<span class="fc" id="L177">		}</span>
-
-<span class="fc bfc" id="L179" title="All 2 branches covered.">		if (reverse)</span>
-<span class="fc" id="L180">			IntArrays.reverse(path.elements(), 0, path.size());</span>
-<span class="fc" id="L181">		return new PathImpl(g, source, target, path);</span>
+<span class="fc" id="L156">		Path indexPath = PathImpl.findPath(iGraph, iSource, iTarget);</span>
+<span class="fc" id="L157">		return PathImpl.pathFromIndexPath(indexPath, viMap, eiMap);</span>
 	}
 
 }

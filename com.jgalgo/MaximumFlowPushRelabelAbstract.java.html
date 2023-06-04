@@ -23,14 +23,14 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
-<span class="fc" id="L26">abstract class MaximumFlowPushRelabelAbstract implements MaximumFlow, MinimumCutST {</span>
+<span class="fc" id="L26">abstract class MaximumFlowPushRelabelAbstract extends MaximumFlowAbstract implements MinimumCutSTUtils.AbstractImpl {</span>
 
 <span class="fc" id="L28">	private static final Object FlowWeightKey = new Utils.Obj(&quot;flow&quot;);</span>
 <span class="fc" id="L29">	private static final Object CapacityWeightKey = new Utils.Obj(&quot;capacity&quot;);</span>
 
-	abstract WorkerDouble newWorkerDouble(Graph gOrig, FlowNetwork net, int source, int sink);
+	abstract WorkerDouble newWorkerDouble(IndexGraph gOrig, FlowNetwork net, int source, int sink);
 
-	abstract WorkerInt newWorkerInt(Graph gOrig, FlowNetwork.Int net, int source, int sink);
+	abstract WorkerInt newWorkerInt(IndexGraph gOrig, FlowNetwork.Int net, int source, int sink);
 
 	/**
 	 * {@inheritDoc}
@@ -38,7 +38,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 	 * @throws IllegalArgumentException if the graph is not directed
 	 */
 	@Override
-	public double computeMaximumFlow(Graph g, FlowNetwork net, int source, int sink) {
+	double computeMaximumFlow(IndexGraph g, FlowNetwork net, int source, int sink) {
 <span class="fc bfc" id="L42" title="All 2 branches covered.">		if (net instanceof FlowNetwork.Int) {</span>
 <span class="fc" id="L43">			return newWorkerInt(g, (FlowNetwork.Int) net, source, sink).computeMaxFlow();</span>
 		} else {
@@ -47,7 +47,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 	}
 
 	@Override
-	public Cut computeMinimumCut(Graph g, WeightFunction w, int source, int sink) {
+	public Cut computeMinimumCut(IndexGraph g, WeightFunction w, int source, int sink) {
 <span class="pc bpc" id="L51" title="1 of 2 branches missed.">		if (w instanceof WeightFunction.Int) {</span>
 <span class="fc" id="L52">			WeightFunction.Int wInt = (WeightFunction.Int) w;</span>
 <span class="fc" id="L53">			FlowNetwork.Int net = new FlowNetwork.Int() {</span>
@@ -120,7 +120,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 		private final int[] layersHeadInactive;
 		private int maxLayerInactive;
 
-		Worker(Graph gOrig, FlowNetwork net, int source, int sink) {
+		Worker(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
 <span class="fc" id="L124">			super(gOrig, net, source, sink);</span>
 
 <span class="fc" id="L126">			label = new int[n];</span>
@@ -454,7 +454,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 		private static final double EPS = 0.0001;
 
-		WorkerDouble(Graph gOrig, FlowNetwork net, int source, int sink) {
+		WorkerDouble(IndexGraph gOrig, FlowNetwork net, int source, int sink) {
 <span class="fc" id="L458">			super(gOrig, net, source, sink);</span>
 
 <span class="fc" id="L460">			flow = g.addEdgesWeights(FlowWeightKey, double.class);</span>
@@ -607,7 +607,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 		final int[] excess;
 
-		WorkerInt(Graph gOrig, FlowNetwork.Int net, int source, int sink) {
+		WorkerInt(IndexGraph gOrig, FlowNetwork.Int net, int source, int sink) {
 <span class="fc" id="L611">			super(gOrig, net, source, sink);</span>
 
 <span class="fc" id="L613">			flow = g.addEdgesWeights(FlowWeightKey, int.class);</span>

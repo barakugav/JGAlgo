@@ -17,13 +17,15 @@ package com.jgalgo;
 
 import java.util.BitSet;
 import java.util.NoSuchElementException;
+import java.util.Objects;
+
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntIterators;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 class BFSIterImpl implements BFSIter {
 
-	private final Graph g;
+	private final IndexGraph g;
 	private final BitSet visited;
 	private final IntPriorityQueue queue;
 	private int inEdge;
@@ -36,9 +38,9 @@ class BFSIterImpl implements BFSIter {
 	 * @param g      a graph
 	 * @param source a vertex in the graph from which the search will start from
 	 */
-	public BFSIterImpl(Graph g, int source) {
-<span class="fc" id="L40">		this(g, IntIterators.singleton(source));</span>
-<span class="fc" id="L41">	}</span>
+	BFSIterImpl(IndexGraph g, int source) {
+<span class="fc" id="L42">		this(g, IntIterators.singleton(source));</span>
+<span class="fc" id="L43">	}</span>
 
 	/**
 	 * Create a BFS iterator rooted at multiple sources vertices.
@@ -47,66 +49,101 @@ class BFSIterImpl implements BFSIter {
 	 * @param  sources                  multiple sources vertices in the graph from which the search will start from
 	 * @throws IllegalArgumentException if the sources iterator is empty
 	 */
-<span class="fc" id="L50">	private BFSIterImpl(Graph g, IntIterator sources) {</span>
-<span class="pc bpc" id="L51" title="1 of 2 branches missed.">		if (!sources.hasNext())</span>
-<span class="nc" id="L52">			throw new IllegalArgumentException(&quot;no sources provided&quot;);</span>
-<span class="fc" id="L53">		this.g = g;</span>
-<span class="fc" id="L54">		int n = g.vertices().size();</span>
-<span class="fc" id="L55">		visited = new BitSet(n);</span>
-<span class="fc" id="L56">		queue = new IntArrayFIFOQueue();</span>
-<span class="fc" id="L57">		inEdge = -1;</span>
-<span class="fc" id="L58">		layer = -1;</span>
+<span class="fc" id="L52">	private BFSIterImpl(IndexGraph g, IntIterator sources) {</span>
+<span class="pc bpc" id="L53" title="1 of 2 branches missed.">		if (!sources.hasNext())</span>
+<span class="nc" id="L54">			throw new IllegalArgumentException(&quot;no sources provided&quot;);</span>
+<span class="fc" id="L55">		this.g = g;</span>
+<span class="fc" id="L56">		int n = g.vertices().size();</span>
+<span class="fc" id="L57">		visited = new BitSet(n);</span>
+<span class="fc" id="L58">		queue = new IntArrayFIFOQueue();</span>
+<span class="fc" id="L59">		inEdge = -1;</span>
+<span class="fc" id="L60">		layer = -1;</span>
 
-<span class="fc" id="L60">		firstVInLayer = -1;</span>
-<span class="fc bfc" id="L61" title="All 2 branches covered.">		while (sources.hasNext()) {</span>
-<span class="fc" id="L62">			int source = sources.nextInt();</span>
-<span class="fc" id="L63">			visited.set(source);</span>
-<span class="fc" id="L64">			queue.enqueue(source);</span>
-<span class="fc" id="L65">			queue.enqueue(-1);</span>
-<span class="pc bpc" id="L66" title="1 of 2 branches missed.">			if (firstVInLayer == -1)</span>
-<span class="fc" id="L67">				firstVInLayer = source;</span>
-<span class="fc" id="L68">		}</span>
-<span class="fc" id="L69">	}</span>
+<span class="fc" id="L62">		firstVInLayer = -1;</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">		while (sources.hasNext()) {</span>
+<span class="fc" id="L64">			int source = sources.nextInt();</span>
+<span class="fc" id="L65">			visited.set(source);</span>
+<span class="fc" id="L66">			queue.enqueue(source);</span>
+<span class="fc" id="L67">			queue.enqueue(-1);</span>
+<span class="pc bpc" id="L68" title="1 of 2 branches missed.">			if (firstVInLayer == -1)</span>
+<span class="fc" id="L69">				firstVInLayer = source;</span>
+<span class="fc" id="L70">		}</span>
+<span class="fc" id="L71">	}</span>
 
 	@Override
 	public boolean hasNext() {
-<span class="fc bfc" id="L73" title="All 2 branches covered.">		return !queue.isEmpty();</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">		return !queue.isEmpty();</span>
 	}
 
 	@Override
 	public int nextInt() {
-<span class="pc bpc" id="L78" title="1 of 2 branches missed.">		if (!hasNext())</span>
-<span class="nc" id="L79">			throw new NoSuchElementException();</span>
-<span class="fc" id="L80">		final int u = queue.dequeueInt();</span>
-<span class="fc" id="L81">		inEdge = queue.dequeueInt();</span>
-<span class="fc bfc" id="L82" title="All 2 branches covered.">		if (u == firstVInLayer) {</span>
-<span class="fc" id="L83">			layer++;</span>
-<span class="fc" id="L84">			firstVInLayer = -1;</span>
+<span class="pc bpc" id="L80" title="1 of 2 branches missed.">		if (!hasNext())</span>
+<span class="nc" id="L81">			throw new NoSuchElementException();</span>
+<span class="fc" id="L82">		final int u = queue.dequeueInt();</span>
+<span class="fc" id="L83">		inEdge = queue.dequeueInt();</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">		if (u == firstVInLayer) {</span>
+<span class="fc" id="L85">			layer++;</span>
+<span class="fc" id="L86">			firstVInLayer = -1;</span>
 		}
 
-<span class="fc bfc" id="L87" title="All 2 branches covered.">		for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L88">			int e = eit.nextInt();</span>
-<span class="fc" id="L89">			int v = eit.target();</span>
-<span class="fc bfc" id="L90" title="All 2 branches covered.">			if (visited.get(v))</span>
-<span class="fc" id="L91">				continue;</span>
-<span class="fc" id="L92">			visited.set(v);</span>
-<span class="fc" id="L93">			queue.enqueue(v);</span>
-<span class="fc" id="L94">			queue.enqueue(e);</span>
-<span class="fc bfc" id="L95" title="All 2 branches covered.">			if (firstVInLayer == -1)</span>
-<span class="fc" id="L96">				firstVInLayer = v;</span>
-<span class="fc" id="L97">		}</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">		for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L90">			int e = eit.nextInt();</span>
+<span class="fc" id="L91">			int v = eit.target();</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">			if (visited.get(v))</span>
+<span class="fc" id="L93">				continue;</span>
+<span class="fc" id="L94">			visited.set(v);</span>
+<span class="fc" id="L95">			queue.enqueue(v);</span>
+<span class="fc" id="L96">			queue.enqueue(e);</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">			if (firstVInLayer == -1)</span>
+<span class="fc" id="L98">				firstVInLayer = v;</span>
+<span class="fc" id="L99">		}</span>
 
-<span class="fc" id="L99">		return u;</span>
+<span class="fc" id="L101">		return u;</span>
 	}
 
 	@Override
 	public int inEdge() {
-<span class="fc" id="L104">		return inEdge;</span>
+<span class="fc" id="L106">		return inEdge;</span>
 	}
 
 	@Override
 	public int layer() {
-<span class="fc" id="L109">		return layer;</span>
+<span class="fc" id="L111">		return layer;</span>
+	}
+
+	static class BFSFromIndexBFS implements BFSIter {
+
+		private final BFSIter it;
+		private final IndexIdMap viMap;
+		private final IndexIdMap eiMap;
+
+<span class="fc" id="L120">		BFSFromIndexBFS(BFSIter it, IndexIdMap viMap, IndexIdMap eiMap) {</span>
+<span class="fc" id="L121">			this.it = Objects.requireNonNull(it);</span>
+<span class="fc" id="L122">			this.viMap = Objects.requireNonNull(viMap);</span>
+<span class="fc" id="L123">			this.eiMap = Objects.requireNonNull(eiMap);</span>
+<span class="fc" id="L124">		}</span>
+
+		@Override
+		public boolean hasNext() {
+<span class="fc" id="L128">			return it.hasNext();</span>
+		}
+
+		@Override
+		public int nextInt() {
+<span class="fc" id="L133">			return viMap.indexToId(it.nextInt());</span>
+		}
+
+		@Override
+		public int inEdge() {
+<span class="fc" id="L138">			int e = it.inEdge();</span>
+<span class="fc bfc" id="L139" title="All 2 branches covered.">			return e == -1 ? -1 : eiMap.indexToId(e);</span>
+		}
+
+		@Override
+		public int layer() {
+<span class="nc" id="L144">			return it.layer();</span>
+		}
+
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -88,7 +88,6 @@ interface BinarySearchTree&lt;K, V&gt; extends HeapReferenceable&lt;K, V&gt; {
 
 	/**
 	 * Get the predecessor of a node in the tree.
-	 *
 	 * &lt;p&gt;
 	 * The predecessor node depends on the tree structure. If there are no duplicate keys, the predecessor is the
 	 * greatest value strictly smaller than the given element. If there are duplicate keys, it may be smaller or equal.
@@ -104,7 +103,6 @@ interface BinarySearchTree&lt;K, V&gt; extends HeapReferenceable&lt;K, V&gt; {
 
 	/**
 	 * Finds the successor of an element in the tree.
-	 *
 	 * &lt;p&gt;
 	 * The successor node depends on the tree structure. If there are no duplicate keys, the successor is the smallest
 	 * value strictly greater than the given element. If there are duplicate keys, it may be greater or equal.
@@ -120,7 +118,6 @@ interface BinarySearchTree&lt;K, V&gt; extends HeapReferenceable&lt;K, V&gt; {
 
 	/**
 	 * Split the current BST into two different BSTs with keys strictly smaller and greater or equal than a key.
-	 *
 	 * &lt;p&gt;
 	 * After this operation, all elements in this tree will have keys greater or equal than the given key, and the
 	 * returned new tree will contain elements with keys strictly smaller than the given key.
@@ -132,7 +129,6 @@ interface BinarySearchTree&lt;K, V&gt; extends HeapReferenceable&lt;K, V&gt; {
 
 	/**
 	 * Split the current BST into two different BSTs with keys smaller or equal and strictly greater than a key.
-	 *
 	 * &lt;p&gt;
 	 * After this operation, all elements in this tree will have keys be smaller or equal than the given key, and the
 	 * returned new tree will contain elements with keys strictly greater than the given key.
@@ -144,14 +140,12 @@ interface BinarySearchTree&lt;K, V&gt; extends HeapReferenceable&lt;K, V&gt; {
 
 	/**
 	 * Split the current BST into two different BSTs with elements smaller and greater than an element's key.
-	 *
 	 * &lt;p&gt;
 	 * After this operation, all elements keys in this tree will be smaller or equal to the given element's key, and the
 	 * returned new tree will contain elements with keys greater than the given element's key. If the tree contains
 	 * duplications of the given element's key, the elements keys in the returned tree will be greater or equal (rather
 	 * than strictly greater). To split a tree more precisely, use {@link #splitSmaller(Object)} or
 	 * {@link #splitGreater(Object)}.
-	 *
 	 * &lt;p&gt;
 	 * This method behavior is undefined if the reference is not valid, namely if it refer to an element already
 	 * removed, or to an element in another heap.
@@ -171,7 +165,7 @@ interface BinarySearchTree&lt;K, V&gt; extends HeapReferenceable&lt;K, V&gt; {
 	 */
 	@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
 	static BinarySearchTree.Builder&lt;Object, Object&gt; newBuilder() {
-<span class="fc" id="L174">		return new BinarySearchTree.Builder&lt;&gt;() {</span>
+<span class="fc" id="L168">		return new BinarySearchTree.Builder&lt;&gt;() {</span>
 
 			boolean splitRequired;
 			boolean meldRequired;
@@ -179,65 +173,65 @@ interface BinarySearchTree&lt;K, V&gt; extends HeapReferenceable&lt;K, V&gt; {
 
 			@Override
 			public BinarySearchTree build(Comparator cmp) {
-<span class="pc bpc" id="L182" title="1 of 2 branches missed.">				if (impl != null) {</span>
-<span class="fc bfc" id="L183" title="All 2 branches covered.">					if (SplayTree.class.getSimpleName().equals(impl))</span>
-<span class="fc" id="L184">						return new SplayTree(cmp);</span>
-<span class="pc bpc" id="L185" title="1 of 2 branches missed.">					if (RedBlackTree.class.getSimpleName().equals(impl))</span>
-<span class="fc" id="L186">						return new RedBlackTree(cmp);</span>
-<span class="nc" id="L187">					throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+<span class="pc bpc" id="L176" title="1 of 2 branches missed.">				if (impl != null) {</span>
+<span class="fc bfc" id="L177" title="All 2 branches covered.">					if (SplayTree.class.getSimpleName().equals(impl))</span>
+<span class="fc" id="L178">						return new SplayTree(cmp);</span>
+<span class="pc bpc" id="L179" title="1 of 2 branches missed.">					if (RedBlackTree.class.getSimpleName().equals(impl))</span>
+<span class="fc" id="L180">						return new RedBlackTree(cmp);</span>
+<span class="nc" id="L181">					throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
 				}
-<span class="nc bnc" id="L189" title="All 4 branches missed.">				if (splitRequired || meldRequired) {</span>
-<span class="nc" id="L190">					return new SplayTree(cmp);</span>
+<span class="nc bnc" id="L183" title="All 4 branches missed.">				if (splitRequired || meldRequired) {</span>
+<span class="nc" id="L184">					return new SplayTree(cmp);</span>
 				} else {
-<span class="nc" id="L192">					return new RedBlackTree(cmp);</span>
+<span class="nc" id="L186">					return new RedBlackTree(cmp);</span>
 				}
 			}
 
 			@Override
 			public BinarySearchTree.Builder setSplits(boolean enable) {
-<span class="nc" id="L198">				splitRequired = enable;</span>
-<span class="nc" id="L199">				return this;</span>
+<span class="nc" id="L192">				splitRequired = enable;</span>
+<span class="nc" id="L193">				return this;</span>
 			}
 
 			@Override
 			public BinarySearchTree.Builder setMelds(boolean enable) {
-<span class="nc" id="L204">				meldRequired = enable;</span>
-<span class="nc" id="L205">				return this;</span>
+<span class="nc" id="L198">				meldRequired = enable;</span>
+<span class="nc" id="L199">				return this;</span>
 			}
 
 			@Override
 			public BinarySearchTree.Builder keysTypeObj() {
-<span class="nc" id="L210">				return this;</span>
+<span class="nc" id="L204">				return this;</span>
 			}
 
 			@Override
 			public BinarySearchTree.Builder keysTypePrimitive(Class primitiveType) {
-<span class="fc" id="L215">				return this;</span>
+<span class="fc" id="L209">				return this;</span>
 			}
 
 			@Override
 			public BinarySearchTree.Builder valuesTypeObj() {
-<span class="nc" id="L220">				return this;</span>
+<span class="nc" id="L214">				return this;</span>
 			}
 
 			@Override
 			public BinarySearchTree.Builder valuesTypePrimitive(Class primitiveType) {
-<span class="nc" id="L225">				return this;</span>
+<span class="nc" id="L219">				return this;</span>
 			}
 
 			@Override
 			public BinarySearchTree.Builder valuesTypeVoid() {
-<span class="fc" id="L230">				return this;</span>
+<span class="fc" id="L224">				return this;</span>
 			}
 
 			@Override
 			public BinarySearchTree.Builder setOption(String key, Object value) {
-<span class="pc bpc" id="L235" title="1 of 2 branches missed.">				if (&quot;impl&quot;.equals(key)) {</span>
-<span class="fc" id="L236">					impl = (String) value;</span>
+<span class="pc bpc" id="L229" title="1 of 2 branches missed.">				if (&quot;impl&quot;.equals(key)) {</span>
+<span class="fc" id="L230">					impl = (String) value;</span>
 				} else {
-<span class="nc" id="L238">					throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L232">					throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 				}
-<span class="fc" id="L240">				return this;</span>
+<span class="fc" id="L234">				return this;</span>
 			}
 		};
 	}
@@ -255,7 +249,7 @@ interface BinarySearchTree&lt;K, V&gt; extends HeapReferenceable&lt;K, V&gt; {
 
 		@Override
 		default BinarySearchTree&lt;K, V&gt; build() {
-<span class="nc" id="L258">			return build(null);</span>
+<span class="nc" id="L252">			return build(null);</span>
 		}
 
 		/**
@@ -295,8 +289,8 @@ interface BinarySearchTree&lt;K, V&gt; extends HeapReferenceable&lt;K, V&gt; {
 
 		@Override
 		default BinarySearchTree.Builder&lt;K, V&gt; setOption(String key, Object value) {
-<span class="nc" id="L298">			HeapReferenceable.Builder.super.setOption(key, value);</span>
-<span class="nc" id="L299">			return this;</span>
+<span class="nc" id="L292">			HeapReferenceable.Builder.super.setOption(key, value);</span>
+<span class="nc" id="L293">			return this;</span>
 		}
 	}
 
