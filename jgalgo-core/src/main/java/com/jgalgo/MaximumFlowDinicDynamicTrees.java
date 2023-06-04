@@ -177,11 +177,13 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract {
 							int e = eit.nextInt();
 							int gEdge = edgeRefL.getInt(e);
 							int u = g.edgeSource(gEdge);
-							if (vToDt[u].getParent() != vToDt[v])
+							if (edgeToParent[u] != e)
 								continue; /* If the edge is not in the DT, ignore */
+							assert vToDt[u].getParent() == vToDt[v];
 
 							MinEdge m = dt.findMinEdge(vToDt[u]);
 							assert e == edgeToParent[m.source().<Integer>getNodeData().intValue()];
+							edgeToParent[u] = -1;
 							updateFlow.accept(gEdge, m.weight());
 
 							dt.cut(m.source());
@@ -209,7 +211,9 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract {
 						DynamicTree.Node uDt = cleanupStack.pop();
 						assert uDt.getParent() == dt.findRoot(uDt);
 						MinEdge m = dt.findMinEdge(uDt);
-						int gEdge = edgeRefL.getInt(edgeToParent[m.source().<Integer>getNodeData().intValue()]);
+						int eSource = m.source().<Integer>getNodeData().intValue();
+						int gEdge = edgeRefL.getInt(edgeToParent[eSource]);
+						edgeToParent[eSource] = -1;
 						updateFlow.accept(gEdge, m.weight());
 						dt.cut(m.source());
 					}
