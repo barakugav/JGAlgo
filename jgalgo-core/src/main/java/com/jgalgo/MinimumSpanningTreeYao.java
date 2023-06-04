@@ -33,7 +33,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  */
 class MinimumSpanningTreeYao extends MinimumSpanningTreeUtils.AbstractUndirected {
 
-	private boolean parallel = Config.parallelByDefault;
+	private boolean parallel = JGAlgoConfig.parallelByDefault;
 
 	/**
 	 * Construct a new MST algorithm object.

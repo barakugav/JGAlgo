@@ -40,7 +40,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 class MinimumSpanningTreeKruskal extends MinimumSpanningTreeUtils.AbstractUndirected {
 
 	private UnionFind.Builder unionFindBuilder = UnionFind.newBuilder();
-	private boolean parallelEnable = Config.parallelByDefault;
+	private boolean parallelEnable = JGAlgoConfig.parallelByDefault;
 
 	/**
 	 * Construct a new MST algorithm object.

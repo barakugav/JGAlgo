@@ -20,9 +20,9 @@ package com.jgalgo;
  *
  * @author Barak Ugav
  */
-public class Config {
+public class JGAlgoConfig {
 
-	private Config() {}
+	private JGAlgoConfig() {}
 
 	static boolean parallelByDefault = true;
 

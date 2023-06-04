@@ -40,7 +40,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl {
 
 	private ShortestPathSingleSource negativeSssp = new ShortestPathSingleSourceBellmanFord();
-	private boolean parallel = Config.parallelByDefault;
+	private boolean parallel = JGAlgoConfig.parallelByDefault;
 	private static final int PARALLEL_VERTICES_THRESHOLD = 32;
 
 	/**

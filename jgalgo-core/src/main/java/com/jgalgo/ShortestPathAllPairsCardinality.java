@@ -35,7 +35,7 @@ import java.util.concurrent.RecursiveAction;
  */
 class ShortestPathAllPairsCardinality extends ShortestPathAllPairsUtils.AbstractImpl {
 
-	private boolean parallel = Config.parallelByDefault;
+	private boolean parallel = JGAlgoConfig.parallelByDefault;
 	private static final int PARALLEL_VERTICES_THRESHOLD = 32;
 
 	/**
