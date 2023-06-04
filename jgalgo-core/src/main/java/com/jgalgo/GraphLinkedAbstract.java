@@ -60,18 +60,9 @@ abstract class GraphLinkedAbstract extends GraphBaseIndex {
 	}
 
 	@Override
-	public void removeEdge(int edge) {
-		removeEdge0(edge);
-	}
-
-	private void removeEdge0(int edge) {
-		edge = edgeSwapBeforeRemove(edge);
+	void removeEdgeImpl(int edge) {
 		edges.clear(edge);
-		super.removeEdge(edge);
-	}
-
-	void removeEdge(Node node) {
-		removeEdge0(node.id);
+		super.removeEdgeImpl(edge);
 	}
 
 	Node addEdgeNode(int source, int target) {
@@ -149,7 +140,7 @@ abstract class GraphLinkedAbstract extends GraphBaseIndex {
 		public void remove() {
 			if (last == null)
 				throw new IllegalStateException();
-			removeEdge(last);
+			removeEdge(last.id);
 			last = null;
 		}
 	}

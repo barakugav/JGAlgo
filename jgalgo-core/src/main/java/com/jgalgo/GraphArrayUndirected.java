@@ -75,9 +75,8 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 	}
 
 	@Override
-	public void removeVertex(int vertex) {
-		vertex = vertexSwapBeforeRemove(vertex);
-		super.removeVertex(vertex);
+	void removeVertexImpl(int vertex) {
+		super.removeVertexImpl(vertex);
 		edgesNum.clear(vertex);
 		// Reuse allocated edges array for v
 		// edges.clear(v);
@@ -126,13 +125,12 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 	}
 
 	@Override
-	public void removeEdge(int edge) {
-		edge = edgeSwapBeforeRemove(edge);
+	void removeEdgeImpl(int edge) {
 		int u = edgeSource(edge), v = edgeTarget(edge);
 		removeEdgeFromList(edges, edgesNum, u, edge);
 		if (u != v)
 			removeEdgeFromList(edges, edgesNum, v, edge);
-		super.removeEdge(edge);
+		super.removeEdgeImpl(edge);
 	}
 
 	@Override

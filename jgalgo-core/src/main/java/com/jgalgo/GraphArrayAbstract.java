@@ -46,10 +46,9 @@ abstract class GraphArrayAbstract extends GraphBaseIndex implements GraphWithEdg
 	}
 
 	@Override
-	public void removeEdge(int edge) {
-		edge = edgeSwapBeforeRemove(edge);
+	void removeEdgeImpl(int edge) {
 		edgeEndpoints.clear(edge);
-		super.removeEdge(edge);
+		super.removeEdgeImpl(edge);
 	}
 
 	@Override

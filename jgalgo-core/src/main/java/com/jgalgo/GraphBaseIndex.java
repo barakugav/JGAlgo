@@ -71,16 +71,20 @@ abstract class GraphBaseIndex extends GraphBase implements IndexGraph {
 	}
 
 	@Override
-	public void removeVertex(int vertex) {
+	public final void removeVertex(int vertex) {
 		removeEdgesOf(vertex);
 		vertex = vertexSwapBeforeRemove(vertex);
+		removeVertexImpl(vertex);
+	}
+
+	void removeVertexImpl(int vertex) {
 		// internal weights are handled manually
 		// verticesWeightsInternal.clearElement(vertex);
 		verticesUserWeights.clearElement(vertex);
 		verticesIdStrat.removeIdx(vertex);
 	}
 
-	int vertexSwapBeforeRemove(int v) {
+	private int vertexSwapBeforeRemove(int v) {
 		int vn = verticesIdStrat.isSwapNeededBeforeRemove(v);
 		if (v != vn) {
 			vertexSwap(v, vn);
@@ -108,8 +112,12 @@ abstract class GraphBaseIndex extends GraphBase implements IndexGraph {
 	}
 
 	@Override
-	public void removeEdge(int edge) {
+	public final void removeEdge(int edge) {
 		edge = edgeSwapBeforeRemove(edge);
+		removeEdgeImpl(edge);
+	}
+
+	void removeEdgeImpl(int edge) {
 		// internal weights are handled manually
 		// edgesWeightsInternal.clearElement(edge);
 		edgesUserWeights.clearElement(edge);

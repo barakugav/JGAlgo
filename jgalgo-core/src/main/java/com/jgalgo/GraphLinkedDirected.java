@@ -68,13 +68,12 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 
 		final int m = g.edges().size();
 		for (int e = 0; e < m; e++)
-			addEdgeToLists((Node) getNode(e));
+			addEdgeToLists(getNode(e));
 	}
 
 	@Override
-	public void removeVertex(int vertex) {
-		vertex = vertexSwapBeforeRemove(vertex);
-		super.removeVertex(vertex);
+	void removeVertexImpl(int vertex) {
+		super.removeVertexImpl(vertex);
 		edgesOut.clear(vertex);
 		edgesIn.clear(vertex);
 	}
@@ -138,16 +137,16 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	}
 
 	@Override
-	public void removeEdge(int edge) {
-		removeEdge(getNode(edge));
+	Node getNode(int edge) {
+		return (Node) super.getNode(edge);
 	}
 
 	@Override
-	void removeEdge(GraphLinkedAbstract.Node node) {
-		Node n = (Node) node;
-		removeEdgeOutNode(n);
-		removeEdgeInNode(n);
-		super.removeEdge(node);
+	void removeEdgeImpl(int edge) {
+		Node node = getNode(edge);
+		removeEdgeOutNode(node);
+		removeEdgeInNode(node);
+		super.removeEdgeImpl(edge);
 	}
 
 	@Override
@@ -157,7 +156,8 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 			next = p.nextOut;
 			p.nextOut = p.prevOut = null;
 			removeEdgeInNode(p);
-			super.removeEdge(p.id);
+			edgeSwapBeforeRemove(p.id);
+			super.removeEdgeImpl(p.id);
 		}
 		edgesOut.set(source, null);
 	}
@@ -169,7 +169,8 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 			next = p.nextIn;
 			p.nextIn = p.prevIn = null;
 			removeEdgeOutNode(p);
-			super.removeEdge(p.id);
+			edgeSwapBeforeRemove(p.id);
+			super.removeEdgeImpl(p.id);
 		}
 		edgesIn.set(target, null);
 	}
@@ -204,7 +205,7 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 
 	@Override
 	public void reverseEdge(int edge) {
-		Node n = (Node) getNode(edge);
+		Node n = getNode(edge);
 		if (n.source == n.target)
 			return;
 		removeEdgeOutNode(n);

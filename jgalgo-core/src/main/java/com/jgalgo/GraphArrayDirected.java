@@ -89,9 +89,8 @@ class GraphArrayDirected extends GraphArrayAbstract {
 	}
 
 	@Override
-	public void removeVertex(int vertex) {
-		vertex = vertexSwapBeforeRemove(vertex);
-		super.removeVertex(vertex);
+	void removeVertexImpl(int vertex) {
+		super.removeVertexImpl(vertex);
 		edgesOutNum.clear(vertex);
 		edgesInNum.clear(vertex);
 		// Reuse allocated edges arrays for v
@@ -150,12 +149,11 @@ class GraphArrayDirected extends GraphArrayAbstract {
 	}
 
 	@Override
-	public void removeEdge(int edge) {
-		edge = edgeSwapBeforeRemove(edge);
+	void removeEdgeImpl(int edge) {
 		int u = edgeSource(edge), v = edgeTarget(edge);
 		removeEdgeFromList(edgesOut, edgesOutNum, u, edge);
 		removeEdgeFromList(edgesIn, edgesInNum, v, edge);
-		super.removeEdge(edge);
+		super.removeEdgeImpl(edge);
 	}
 
 	@Override

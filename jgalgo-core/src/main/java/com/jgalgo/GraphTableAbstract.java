@@ -69,10 +69,9 @@ abstract class GraphTableAbstract extends GraphBaseIndex implements GraphWithEdg
 	}
 
 	@Override
-	public void removeVertex(int vertex) {
-		vertex = vertexSwapBeforeRemove(vertex);
+	void removeVertexImpl(int vertex) {
 		WeightsImpl.Index.Int edgesV = edges.get(vertex);
-		super.removeVertex(vertex);
+		super.removeVertexImpl(vertex);
 		edgesV.clear();
 		// Don't deallocate v array
 		// edges.clear(v);
@@ -116,10 +115,9 @@ abstract class GraphTableAbstract extends GraphBaseIndex implements GraphWithEdg
 	}
 
 	@Override
-	public void removeEdge(int edge) {
-		edge = edgeSwapBeforeRemove(edge);
+	void removeEdgeImpl(int edge) {
 		edgeEndpoints.clear(edge);
-		super.removeEdge(edge);
+		super.removeEdgeImpl(edge);
 	}
 
 	@Override

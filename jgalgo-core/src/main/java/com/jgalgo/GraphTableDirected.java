@@ -68,11 +68,10 @@ class GraphTableDirected extends GraphTableAbstract {
 	}
 
 	@Override
-	public void removeEdge(int edge) {
-		edge = edgeSwapBeforeRemove(edge);
+	void removeEdgeImpl(int edge) {
 		int u = edgeSource(edge), v = edgeTarget(edge);
 		edges.get(u).set(v, EdgeNone);
-		super.removeEdge(edge);
+		super.removeEdgeImpl(edge);
 	}
 
 	@Override

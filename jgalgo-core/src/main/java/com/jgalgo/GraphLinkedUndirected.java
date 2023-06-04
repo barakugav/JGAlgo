@@ -61,13 +61,12 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 
 		final int m = g.edges().size();
 		for (int e = 0; e < m; e++)
-			addEdgeToLists((Node) getNode(e));
+			addEdgeToLists(getNode(e));
 	}
 
 	@Override
-	public void removeVertex(int vertex) {
-		vertex = vertexSwapBeforeRemove(vertex);
-		super.removeVertex(vertex);
+	void removeVertexImpl(int vertex) {
+		super.removeVertexImpl(vertex);
 		edges.clear(vertex);
 	}
 
@@ -143,16 +142,30 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 	}
 
 	@Override
-	public void removeEdge(int edge) {
-		removeEdge(getNode(edge));
+	Node getNode(int edge) {
+		return (Node) super.getNode(edge);
 	}
 
 	@Override
-	void removeEdge(GraphLinkedAbstract.Node node) {
-		Node n = (Node) node;
-		removeEdge0(n, n.source);
-		removeEdge0(n, n.target);
-		super.removeEdge(node);
+	void removeEdgeImpl(int edge) {
+		Node node = getNode(edge);
+		removeEdgeNodePointers(node, node.source);
+		removeEdgeNodePointers(node, node.target);
+		super.removeEdgeImpl(edge);
+	}
+
+	void removeEdgeNodePointers(Node e, int w) {
+		Node next = e.next(w), prev = e.prev(w);
+		if (prev == null) {
+			edges.set(w, next);
+		} else {
+			prev.nextSet(w, next);
+			e.prevSet(w, null);
+		}
+		if (next != null) {
+			next.prevSet(w, prev);
+			e.nextSet(w, null);
+		}
 	}
 
 	@Override
@@ -166,25 +179,11 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 
 			// update v list
 			int v = p.getEndpoint(source);
-			removeEdge0(p, v);
-
-			super.removeEdge(p.id);
+			removeEdgeNodePointers(p, v);
+			edgeSwapBeforeRemove(p.id);
+			super.removeEdgeImpl(p.id);
 		}
 		edges.set(source, null);
-	}
-
-	void removeEdge0(Node e, int w) {
-		Node next = e.next(w), prev = e.prev(w);
-		if (prev == null) {
-			edges.set(w, next);
-		} else {
-			prev.nextSet(w, next);
-			e.prevSet(w, null);
-		}
-		if (next != null) {
-			next.prevSet(w, prev);
-			e.nextSet(w, null);
-		}
 	}
 
 	@Override
