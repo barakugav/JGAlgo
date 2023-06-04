@@ -18,16 +18,14 @@ package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.function.DoubleFunction;
 import java.util.function.Function;
 import java.util.function.ToIntFunction;
-
 import org.junit.jupiter.api.Test;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public class DynamicTreeSplayTest extends TestBase {
 
@@ -70,7 +68,7 @@ public class DynamicTreeSplayTest extends TestBase {
 		final int id;
 		DynamicTree.Node dtNode;
 		TrackerNode parent;
-		final List<TrackerNode> children = new ArrayList<>();
+		final List<TrackerNode> children = new ObjectArrayList<>();
 		int edgeWeight;
 
 		TrackerNode(int id) {
@@ -93,8 +91,8 @@ public class DynamicTreeSplayTest extends TestBase {
 		final int MAX_WEIGHT = 10000000;
 		final int MAX_WEIGHT_LINK = 1000;
 		final int MAX_WEIGHT_ADD = 100;
-		List<TrackerNode> nodes = new ArrayList<>();
-		List<TrackerNode> roots = new ArrayList<>();
+		List<TrackerNode> nodes = new ObjectArrayList<>();
+		List<TrackerNode> roots = new ObjectArrayList<>();
 		DynamicTree tree = builder.apply(MAX_WEIGHT);
 
 		Function<TrackerNode, TrackerNode> findRoot = node -> {
@@ -223,7 +221,7 @@ public class DynamicTreeSplayTest extends TestBase {
 					TrackerNode node = nodes.get(rand.nextInt(nodes.size()));
 
 					int expected = 0;
-					List<TrackerNode> stack = new ArrayList<>();
+					List<TrackerNode> stack = new ObjectArrayList<>();
 					stack.add(findRoot.apply(node));
 					while (!stack.isEmpty()) {
 						expected++;

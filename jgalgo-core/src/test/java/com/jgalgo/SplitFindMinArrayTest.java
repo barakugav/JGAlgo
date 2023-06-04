@@ -17,13 +17,11 @@
 package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
-
 import org.junit.jupiter.api.Test;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 @SuppressWarnings("boxing")
 public class SplitFindMinArrayTest extends TestBase {
@@ -89,7 +87,7 @@ public class SplitFindMinArrayTest extends TestBase {
 		Random rand = new Random(seed);
 		SplitFindMin<Double> sf = builder.get();
 
-		List<Double> keys = new ArrayList<>(n);
+		List<Double> keys = new ObjectArrayList<>(n);
 		for (int i = 0; i < n; i++)
 			keys.add(nextDouble(rand, 0, 100));
 		sf.init(keys, null);

@@ -18,15 +18,15 @@ package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 class HeapTestUtils extends TestUtils {
 
@@ -93,7 +93,7 @@ class HeapTestUtils extends TestUtils {
 	private static void testMeld(Heap.Builder<Integer> heapBuilder, boolean orderedValues, int hCount,
 			Comparator<? super Integer> compare, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		Set<HeapTracker> heaps = new HashSet<>();
+		Set<HeapTracker> heaps = new ObjectOpenHashSet<>();
 		HeapTrackerIdGenerator heapTrackerIdGen = new HeapTrackerIdGenerator(seedGen.nextSeed());
 
 		int elm = 0;
@@ -114,8 +114,8 @@ class HeapTestUtils extends TestUtils {
 
 		while (heaps.size() > 1) {
 			/* meld half of the heaps */
-			Set<HeapTracker> heapsNext = new HashSet<>();
-			List<HeapTracker> heapsSuffled = new ArrayList<>(heaps);
+			Set<HeapTracker> heapsNext = new ObjectOpenHashSet<>();
+			List<HeapTracker> heapsSuffled = new ObjectArrayList<>(heaps);
 
 			for (int i = 0; i < heapsSuffled.size() / 2; i++) {
 				HeapTracker h1 = heapsSuffled.get(i * 2);
@@ -272,7 +272,8 @@ class HeapTestUtils extends TestUtils {
 		Random rand = new Random(seedGen.nextSeed());
 		int insertFirst = mode == TestMode.InsertFirst ? m / 2 : 0;
 
-		List<HeapOp> ops = new ArrayList<>(List.of(HeapOp.Insert, HeapOp.Remove, HeapOp.FindMin, HeapOp.ExtractMin));
+		List<HeapOp> ops =
+				new ObjectArrayList<>(List.of(HeapOp.Insert, HeapOp.Remove, HeapOp.FindMin, HeapOp.ExtractMin));
 
 		int[] elmsToInsertIds = randPermutation(values.length, seedGen.nextSeed());
 		int elmsToInsertCursor = 0;

@@ -16,12 +16,12 @@
 
 package com.jgalgo;
 
-import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntStack;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
  * Tarjan's algorithm for finding all cycles in a directed graph.
@@ -58,7 +58,7 @@ class CyclesFinderTarjan extends CyclesFinderAbstract {
 		private final IntStack path = new IntArrayList();
 		private final IntStack markedStack = new IntArrayList();
 		private final BitSet isMarked;
-		private final List<Path> cycles = new ArrayList<>();
+		private final List<Path> cycles = new ObjectArrayList<>();
 
 		Worker(IndexGraph g) {
 			this.g = g;

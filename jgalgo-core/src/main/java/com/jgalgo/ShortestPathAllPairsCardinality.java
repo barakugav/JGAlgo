@@ -15,10 +15,10 @@
  */
 package com.jgalgo;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveAction;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
  * All pairs cardinality shortest path algorithm.
@@ -57,7 +57,7 @@ class ShortestPathAllPairsCardinality extends ShortestPathAllPairsUtils.Abstract
 
 		} else {
 			/* parallel */
-			List<RecursiveAction> tasks = new ArrayList<>(n);
+			List<RecursiveAction> tasks = new ObjectArrayList<>(n);
 			ThreadLocal<ShortestPathSingleSource> sssp =
 					ThreadLocal.withInitial(ShortestPathSingleSourceCardinality::new);
 			for (int source = 0; source < n; source++) {

@@ -16,11 +16,10 @@
 
 package com.jgalgo;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 
 class DynamicTreeBuilderImpl implements DynamicTree.Builder {
@@ -42,7 +41,7 @@ class DynamicTreeBuilderImpl implements DynamicTree.Builder {
 			else
 				return new DynamicTreeSplay(maxWeight);
 		} else {
-			List<DynamicTreeSplayExtension> extensions = new ArrayList<>(this.extensions.size());
+			List<DynamicTreeSplayExtension> extensions = new ObjectArrayList<>(this.extensions.size());
 			for (Class<? extends DynamicTreeExtension> extClass : this.extensions) {
 				if (extClass.equals(DynamicTreeExtension.TreeSize.class)) {
 					extensions.add(new DynamicTreeSplayExtension.TreeSize());

@@ -16,7 +16,6 @@
 
 package com.jgalgo;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ForkJoinPool;
@@ -24,6 +23,7 @@ import java.util.concurrent.RecursiveAction;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
  * Johnson's algorithm for all pairs shortest path.
@@ -108,7 +108,7 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 
 		} else {
 			/* parallel */
-			List<RecursiveAction> tasks = new ArrayList<>(n);
+			List<RecursiveAction> tasks = new ObjectArrayList<>(n);
 			ThreadLocal<ShortestPathSingleSource> sssp = ThreadLocal.withInitial(ShortestPathSingleSourceDijkstra::new);
 			for (int source = 0; source < n; source++) {
 				final int source0 = source;

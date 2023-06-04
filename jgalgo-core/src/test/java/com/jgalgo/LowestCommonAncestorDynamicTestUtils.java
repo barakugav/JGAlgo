@@ -17,12 +17,12 @@
 package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public class LowestCommonAncestorDynamicTestUtils extends TestUtils {
 
@@ -63,7 +63,7 @@ public class LowestCommonAncestorDynamicTestUtils extends TestUtils {
 		Arrays.fill(opsOrder, n - 2, n - 2 + m, lcaOp);
 		IntArrays.shuffle(opsOrder, rand);
 
-		List<Op> ops = new ArrayList<>();
+		List<Op> ops = new ObjectArrayList<>();
 		int nodesCount = 0;
 
 		/* insert first two elements */
@@ -106,7 +106,7 @@ public class LowestCommonAncestorDynamicTestUtils extends TestUtils {
 		Arrays.fill(opsOrder, n - 2, n - 2 + m, lcaOp);
 		IntArrays.shuffle(opsOrder, rand);
 
-		List<Op> ops = new ArrayList<>();
+		List<Op> ops = new ObjectArrayList<>();
 		int nodesCount = 0;
 
 		/* insert first two elements */
@@ -138,7 +138,7 @@ public class LowestCommonAncestorDynamicTestUtils extends TestUtils {
 
 	@SuppressWarnings("boxing")
 	static void testLCA(LowestCommonAncestorDynamic.Builder builder, int n, Collection<Op> ops) {
-		List<LowestCommonAncestorDynamic.Node> nodes = new ArrayList<>();
+		List<LowestCommonAncestorDynamic.Node> nodes = new ObjectArrayList<>();
 		LowestCommonAncestorDynamic lca = builder.build();
 
 		for (Op op0 : ops) {
@@ -171,7 +171,8 @@ public class LowestCommonAncestorDynamicTestUtils extends TestUtils {
 				}
 
 				LowestCommonAncestorDynamic.Node lcaExpected = x;
-				LowestCommonAncestorDynamic.Node lcaActual = lca.findLowestCommonAncestor(nodes.get(op.x), nodes.get(op.y));
+				LowestCommonAncestorDynamic.Node lcaActual =
+						lca.findLowestCommonAncestor(nodes.get(op.x), nodes.get(op.y));
 				assertEquals(lcaExpected, lcaActual, "LCA has an expected value");
 
 			} else {

@@ -19,10 +19,8 @@ package com.jgalgo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -30,6 +28,8 @@ import com.jgalgo.HeapReferenceableTestUtils.HeapReferenceableTracker;
 import com.jgalgo.HeapReferenceableTestUtils.HeapTrackerIdGenerator;
 import com.jgalgo.HeapReferenceableTestUtils.TestMode;
 import it.unimi.dsi.fastutil.ints.IntComparator;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 class BinarySearchTreeTestUtils extends TestUtils {
 
@@ -244,7 +244,7 @@ class BinarySearchTreeTestUtils extends TestUtils {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
 		HeapTrackerIdGenerator heapTrackerIdGen = new HeapTrackerIdGenerator(seedGen.nextSeed());
-		Set<BSTTracker> trees = new HashSet<>();
+		Set<BSTTracker> trees = new ObjectOpenHashSet<>();
 		final int maxVal = tCount * (1 << 12);
 
 		for (int i = 0; i < tCount; i++) {
@@ -258,8 +258,8 @@ class BinarySearchTreeTestUtils extends TestUtils {
 		Runnable meld = () -> {
 			if (trees.size() < 2)
 				return;
-			Set<BSTTracker> treesNext = new HashSet<>();
-			List<BSTTracker> heapsSuffled = new ArrayList<>(trees);
+			Set<BSTTracker> treesNext = new ObjectOpenHashSet<>();
+			List<BSTTracker> heapsSuffled = new ObjectArrayList<>(trees);
 			Collections.shuffle(heapsSuffled, new Random(seedGen.nextSeed()));
 
 			for (int i = 0; i < heapsSuffled.size() / 2; i++) {
@@ -276,7 +276,7 @@ class BinarySearchTreeTestUtils extends TestUtils {
 		};
 
 		Runnable split = () -> {
-			Set<BSTTracker> treesNext = new HashSet<>();
+			Set<BSTTracker> treesNext = new ObjectOpenHashSet<>();
 			for (BSTTracker h : trees) {
 				if (h.tree().isEmpty())
 					continue;

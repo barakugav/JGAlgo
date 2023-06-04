@@ -16,12 +16,12 @@
 
 package com.jgalgo;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.function.ObjIntConsumer;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 abstract class GraphBase implements Graph {
 
@@ -47,12 +47,12 @@ abstract class GraphBase implements Graph {
 		s.append('{');
 
 		Set<Object> verticesWeightsKeys = getVerticesWeightKeys();
-		Collection<Weights<?>> verticesWeights = new ArrayList<>(verticesWeightsKeys.size());
+		Collection<Weights<?>> verticesWeights = new ObjectArrayList<>(verticesWeightsKeys.size());
 		for (Object key : verticesWeightsKeys)
 			verticesWeights.add(getVerticesWeights(key));
 
 		Set<Object> edgesWeightsKeys = getEdgesWeightsKeys();
-		Collection<Weights<?>> edgesWeights = new ArrayList<>(edgesWeightsKeys.size());
+		Collection<Weights<?>> edgesWeights = new ObjectArrayList<>(edgesWeightsKeys.size());
 		for (Object key : edgesWeightsKeys)
 			edgesWeights.add(getEdgesWeights(key));
 

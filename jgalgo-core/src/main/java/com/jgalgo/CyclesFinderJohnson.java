@@ -16,7 +16,6 @@
 
 package com.jgalgo;
 
-import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
@@ -25,6 +24,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntStack;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectIntPair;
 
 /**
@@ -73,7 +73,7 @@ class CyclesFinderJohnson extends CyclesFinderAbstract {
 		private final IntSet[] blockingSet;
 		private final IntStack unblockStack = new IntArrayList();
 		private final IntStack path = new IntArrayList();
-		private final List<Path> cycles = new ArrayList<>();
+		private final List<Path> cycles = new ObjectArrayList<>();
 
 		Worker(IndexGraph g) {
 			this.g = g;

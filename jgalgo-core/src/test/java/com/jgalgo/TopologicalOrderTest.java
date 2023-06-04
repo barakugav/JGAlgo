@@ -17,12 +17,12 @@
 package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
 import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 public class TopologicalOrderTest extends TestBase {
 
@@ -48,7 +48,7 @@ public class TopologicalOrderTest extends TestBase {
 
 			IntIterator topolSort = new TopologicalOrderAlgoImpl().computeTopologicalSorting(g).verticesIterator();
 
-			Set<Integer> seenVertices = new HashSet<>(n);
+			Set<Integer> seenVertices = new ObjectOpenHashSet<>(n);
 			while (topolSort.hasNext()) {
 				int u = topolSort.nextInt();
 				for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {

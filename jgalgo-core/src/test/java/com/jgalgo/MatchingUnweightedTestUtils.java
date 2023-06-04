@@ -18,11 +18,11 @@ package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 class MatchingUnweightedTestUtils extends TestUtils {
 
@@ -47,7 +47,7 @@ class MatchingUnweightedTestUtils extends TestUtils {
 	}
 
 	static void validateMatching(Graph g, Matching matching) {
-		Set<Integer> matched = new HashSet<>();
+		Set<Integer> matched = new ObjectOpenHashSet<>();
 		for (int e : matching.edges()) {
 			for (int v : new int[] { g.edgeSource(e), g.edgeTarget(e) }) {
 				boolean dup = matched.contains(Integer.valueOf(v));
@@ -65,7 +65,7 @@ class MatchingUnweightedTestUtils extends TestUtils {
 		List<Integer>[] graph = new List[n];
 		IndexIdMap vToIdx = g.indexGraphVerticesMap();
 		for (int u : g.vertices()) {
-			graph[vToIdx.idToIndex(u)] = new ArrayList<>();
+			graph[vToIdx.idToIndex(u)] = new ObjectArrayList<>();
 			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
 				eit.nextInt();
 				int v = eit.target();

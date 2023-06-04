@@ -16,7 +16,6 @@
 
 package com.jgalgo;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -37,6 +36,7 @@ import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.TestUtils.SeedGenerator;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
@@ -60,7 +60,7 @@ public class UnionFindBench {
 		int m = Integer.parseInt(argsMap.get("|E|"));
 
 		final SeedGenerator seedGen = new SeedGenerator(0xecbc984604fcd0afL);
-		graphs = new ArrayList<>(graphsNum);
+		graphs = new ObjectArrayList<>(graphsNum);
 		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
 			IndexGraph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed()).indexGraph();
 			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());

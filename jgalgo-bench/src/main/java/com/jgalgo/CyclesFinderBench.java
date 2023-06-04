@@ -16,7 +16,6 @@
 
 package com.jgalgo;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -61,7 +60,7 @@ public class CyclesFinderBench {
 		int m = Integer.parseInt(argsMap.get("|E|"));
 
 		final SeedGenerator seedGen = new SeedGenerator(0x29b0e6d2a833e386L);
-		graphs = new ArrayList<>(graphsNum);
+		graphs = new ObjectArrayList<>(graphsNum);
 		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(false)
 					.selfEdges(false).cycles(true).connected(false).build();

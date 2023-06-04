@@ -16,9 +16,9 @@
 
 package com.jgalgo;
 
-import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 class RandomIntUnique {
 
@@ -34,7 +34,7 @@ class RandomIntUnique {
 		rand = new Random(seed);
 		this.min = min;
 		this.max = max;
-		usedVals = new HashSet<>();
+		usedVals = new ObjectOpenHashSet<>();
 	}
 
 	int next() {

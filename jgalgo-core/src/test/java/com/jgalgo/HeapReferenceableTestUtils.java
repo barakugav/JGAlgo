@@ -17,8 +17,6 @@ package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
@@ -28,6 +26,8 @@ import java.util.TreeMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 public class HeapReferenceableTestUtils extends TestUtils {
 
@@ -97,7 +97,7 @@ public class HeapReferenceableTestUtils extends TestUtils {
 	private static void testMeld(HeapReferenceable.Builder<Integer, Void> heapBuilder, boolean orderedValues,
 			int hCount, IntComparator compare, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		Set<HeapReferenceableTracker> heaps = new HashSet<>();
+		Set<HeapReferenceableTracker> heaps = new ObjectOpenHashSet<>();
 		HeapTrackerIdGenerator heapTrackerIdGen = new HeapTrackerIdGenerator(seedGen.nextSeed());
 
 		int elm = 0;
@@ -118,8 +118,8 @@ public class HeapReferenceableTestUtils extends TestUtils {
 
 		while (heaps.size() > 1) {
 			/* meld half of the heaps */
-			Set<HeapReferenceableTracker> heapsNext = new HashSet<>();
-			List<HeapReferenceableTracker> heapsSuffled = new ArrayList<>(heaps);
+			Set<HeapReferenceableTracker> heapsNext = new ObjectOpenHashSet<>();
+			List<HeapReferenceableTracker> heapsSuffled = new ObjectArrayList<>(heaps);
 
 			for (int i = 0; i < heapsSuffled.size() / 2; i++) {
 				HeapReferenceableTracker h1 = heapsSuffled.get(i * 2);
@@ -200,7 +200,7 @@ public class HeapReferenceableTestUtils extends TestUtils {
 		}
 
 		void insert(int x, HeapReference<Integer, Void> ref) {
-			elms.computeIfAbsent(x, dontCare -> new ArrayList<>()).add(ref);
+			elms.computeIfAbsent(x, dontCare -> new ObjectArrayList<>()).add(ref);
 		}
 
 		void remove(int x, HeapReference<Integer, Void> ref) {
@@ -223,7 +223,7 @@ public class HeapReferenceableTestUtils extends TestUtils {
 		void meld(HeapReferenceableTracker other) {
 			for (Map.Entry<Integer, List<HeapReference<Integer, Void>>> e : other.elms.entrySet()) {
 				elms.merge(e.getKey(), e.getValue(), (c1, c2) -> {
-					List<HeapReference<Integer, Void>> l = new ArrayList<>();
+					List<HeapReference<Integer, Void>> l = new ObjectArrayList<>();
 					if (c1 != null)
 						l.addAll(c1);
 					if (c2 != null)
@@ -249,7 +249,7 @@ public class HeapReferenceableTestUtils extends TestUtils {
 		}
 
 		HeapReference<Integer, Void> randRef() {
-			List<HeapReference<Integer, Void>> elms0 = new ArrayList<>();
+			List<HeapReference<Integer, Void>> elms0 = new ObjectArrayList<>();
 			for (Map.Entry<Integer, List<HeapReference<Integer, Void>>> e : elms.entrySet())
 				elms0.addAll(e.getValue());
 			return elms0.get(rand.nextInt(elms0.size()));
@@ -318,7 +318,7 @@ public class HeapReferenceableTestUtils extends TestUtils {
 		Random rand = new Random(seedGen.nextSeed());
 		int insertFirst = mode == TestMode.InsertFirst ? m / 2 : 0;
 
-		List<HeapOp> ops = new ArrayList<>(List.of(HeapOp.Insert, HeapOp.FindMin, HeapOp.ExtractMin));
+		List<HeapOp> ops = new ObjectArrayList<>(List.of(HeapOp.Insert, HeapOp.FindMin, HeapOp.ExtractMin));
 		if (mode == TestMode.DecreaseKey)
 			ops.add(HeapOp.DecreaseKey);
 		ops.add(HeapOp.RemoveRef);

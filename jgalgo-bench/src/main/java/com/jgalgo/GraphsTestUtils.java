@@ -16,7 +16,6 @@
 
 package com.jgalgo;
 
-import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
@@ -28,6 +27,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntLists;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 class GraphsTestUtils extends TestUtils {
 
@@ -160,7 +160,7 @@ class GraphsTestUtils extends TestUtils {
 					throw new IllegalArgumentException("too much edges for random sampling (limit=" + limit + ")");
 			}
 
-			Set<IntList> existingEdges = new HashSet<>();
+			Set<IntList> existingEdges = new ObjectOpenHashSet<>();
 			UnionFind uf = UnionFind.newBuilder().expectedSize(n).build();
 			Weights.Int vertexToUf = Weights.createExternalVerticesWeights(g, int.class, Integer.valueOf(-1));
 			for (int v : g.vertices()) {

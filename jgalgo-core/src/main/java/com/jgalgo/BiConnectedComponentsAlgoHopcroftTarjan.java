@@ -15,7 +15,6 @@
  */
 package com.jgalgo;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -26,6 +25,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntListIterator;
 import it.unimi.dsi.fastutil.ints.IntLists;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
  * Hopcroft-Tarjan algorithm for bi-connected components.
@@ -75,8 +75,8 @@ class BiConnectedComponentsAlgoHopcroftTarjan extends BiConnectedComponentsAlgoA
 		};
 
 		// BitSet separatingVertex = new BitSet(n);
-		List<IntList> biccsVertices = new ArrayList<>();
-		// List<IntList> biccsEdges = new ArrayList<>();
+		List<IntList> biccsVertices = new ObjectArrayList<>();
+		// List<IntList> biccsEdges = new ObjectArrayList<>();
 
 		for (int root = 0; root < n; root++) {
 			if (depths[root] != -1)

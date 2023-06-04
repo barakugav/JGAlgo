@@ -16,7 +16,6 @@
 
 package com.jgalgo;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -37,6 +36,7 @@ import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.TestUtils.SeedGenerator;
 import it.unimi.dsi.fastutil.Pair;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public class RMQStaticBench {
 
@@ -62,7 +62,7 @@ public class RMQStaticBench {
 			n = Integer.parseInt(argsMap.get("N"));
 
 			final SeedGenerator seedGen = new SeedGenerator(0xea7471a0349fe14eL);
-			arrays = new ArrayList<>();
+			arrays = new ObjectArrayList<>();
 			for (int aIdx = 0; aIdx < arrsNum; aIdx++) {
 				int[] arr = TestUtils.randArray(n, seedGen.nextSeed());
 				arrays.add(Pair.of(Integer.valueOf(n), RMQStaticComparator.ofIntArray(arr)));
@@ -115,7 +115,7 @@ public class RMQStaticBench {
 			n = Integer.parseInt(argsMap.get("N"));
 
 			final Random rand = new Random(0x9fc881bb3f61bc29L);
-			arrays = new ArrayList<>();
+			arrays = new ObjectArrayList<>();
 			for (int aIdx = 0; aIdx < arrsNum; aIdx++) {
 				int[] arr = new int[n];
 				for (int i = 1; i < n; i++)

@@ -15,7 +15,6 @@
  */
 package com.jgalgo;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -594,7 +593,7 @@ abstract class MaximumMatchingWeightedGabow1990Abstract extends MaximumMatchingW
 					debug.printExec(() -> {
 						debug.print(" ", Arrays.asList(blossoms).stream().map(b -> String.valueOf(dualVal(b.base)))
 								.collect(Collectors.joining(", ", "[", "]")));
-						List<Blossom> topLevelBlossoms = new ArrayList<>();
+						List<Blossom> topLevelBlossoms = new ObjectArrayList<>();
 						for (Blossom b : blossoms) {
 							for (; b.parent != null; b = b.parent);
 							topLevelBlossoms.add(b);

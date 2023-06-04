@@ -16,7 +16,6 @@
 
 package com.jgalgo;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -39,6 +38,7 @@ import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.TestUtils.SeedGenerator;
 import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
@@ -63,7 +63,7 @@ public class LCADynamicBench {
 		int m = Integer.parseInt(argsMap.get("M"));
 
 		final SeedGenerator seedGen = new SeedGenerator(0x66fed18e0b594b55L);
-		lcaOps = new ArrayList<>(graphsNum);
+		lcaOps = new ObjectArrayList<>(graphsNum);
 		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
 			Collection<Op> ops = generateRandOps(n, m, seedGen.nextSeed());
 			lcaOps.add(ops);
@@ -123,7 +123,7 @@ public class LCADynamicBench {
 		Arrays.fill(opsOrder, n - 2, n - 2 + m, lcaOp);
 		IntArrays.shuffle(opsOrder, rand);
 
-		List<Op> ops = new ArrayList<>();
+		List<Op> ops = new ObjectArrayList<>();
 		int nodesCount = 0;
 
 		/* insert first two elements */

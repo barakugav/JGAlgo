@@ -16,7 +16,6 @@
 
 package com.jgalgo;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -36,6 +35,7 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.TestUtils.SeedGenerator;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
@@ -59,7 +59,7 @@ public class ColoringBench {
 		int m = Integer.parseInt(argsMap.get("|E|"));
 
 		final SeedGenerator seedGen = new SeedGenerator(0x566c25f996355cb4L);
-		graphs = new ArrayList<>(graphsNum);
+		graphs = new ObjectArrayList<>(graphsNum);
 		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
 			Graph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
 			graphs.add(g);

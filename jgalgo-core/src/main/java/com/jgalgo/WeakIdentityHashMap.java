@@ -20,7 +20,6 @@ import java.lang.ref.WeakReference;
 import java.util.AbstractCollection;
 import java.util.AbstractMap;
 import java.util.AbstractSet;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
@@ -33,6 +32,7 @@ import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
  * Identity hash map with weak keys.
@@ -865,7 +865,7 @@ class WeakIdentityHashMap<K, V> extends AbstractMap<K, V> {
 		}
 
 		private List<Map.Entry<K, V>> deepCopy() {
-			List<Map.Entry<K, V>> list = new ArrayList<>(size());
+			List<Map.Entry<K, V>> list = new ObjectArrayList<>(size());
 			for (Map.Entry<K, V> e : this)
 				list.add(new AbstractMap.SimpleEntry<>(e));
 			return list;

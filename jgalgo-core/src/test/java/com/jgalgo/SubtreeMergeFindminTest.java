@@ -17,7 +17,6 @@
 package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Iterator;
@@ -27,6 +26,7 @@ import java.util.Random;
 import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;
 import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArrays;
 
 public class SubtreeMergeFindminTest extends TestBase {
@@ -81,7 +81,7 @@ public class SubtreeMergeFindminTest extends TestBase {
 		ops2[0] = Op.AddLeaf;
 		ops = ops2;
 
-		List<SubtreeMergeFindMin.Node> nodes = new ArrayList<>();
+		List<SubtreeMergeFindMin.Node> nodes = new ObjectArrayList<>();
 		UnionFind uf = UnionFind.newBuilder().build();
 		List<int[]>[] subtreeEdges = new List[n];
 		int[] edgeInsertWeights = randPermutation(ops.length, seedGen.nextSeed());

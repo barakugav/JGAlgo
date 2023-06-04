@@ -16,7 +16,6 @@
 
 package com.jgalgo;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -36,6 +35,7 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.TestUtils.SeedGenerator;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
@@ -60,7 +60,7 @@ public class TreePathMaximaBench {
 		m = Integer.parseInt(argsMap.get("M"));
 
 		final SeedGenerator seedGen = new SeedGenerator(0x28ddf3f2d9c5c873L);
-		graphs = new ArrayList<>(graphsNum);
+		graphs = new ObjectArrayList<>(graphsNum);
 		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
 			Graph tree = GraphsTestUtils.randTree(n, seedGen.nextSeed());
 			WeightFunction.Int w = GraphsTestUtils.assignRandWeightsIntPos(tree, seedGen.nextSeed());

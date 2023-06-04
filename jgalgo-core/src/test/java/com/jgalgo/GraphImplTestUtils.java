@@ -21,9 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -43,6 +41,8 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 class GraphImplTestUtils extends TestUtils {
 
@@ -515,7 +515,7 @@ class GraphImplTestUtils extends TestUtils {
 	}
 
 	private static class RandWeighted<E> {
-		private final List<E> elms = new ArrayList<>();
+		private final List<E> elms = new ObjectArrayList<>();
 		private final IntList weights = new IntArrayList();
 		private int totalWeight;
 
@@ -541,9 +541,9 @@ class GraphImplTestUtils extends TestUtils {
 
 	private static class GraphTracker {
 		private final Int2ObjectMap<Vertex> vertices = new Int2ObjectOpenHashMap<>();
-		private final List<Vertex> verticesArr = new ArrayList<>();
+		private final List<Vertex> verticesArr = new ObjectArrayList<>();
 		// private final Int2ObjectMap<Edge> edges = new Int2ObjectOpenHashMap<>();
-		private final List<Edge> edges = new ArrayList<>();
+		private final List<Edge> edges = new ObjectArrayList<>();
 		private final boolean directed;
 		private final Object dataKey;
 		private final boolean debugPrints = false;
@@ -682,8 +682,8 @@ class GraphImplTestUtils extends TestUtils {
 			assertEquals(edgesNum(), g.edges().size());
 			Weights.Int edgeData = g.getEdgesWeights(dataKey);
 
-			List<IntList> actual = new ArrayList<>();
-			List<IntList> expected = new ArrayList<>();
+			List<IntList> actual = new ObjectArrayList<>();
+			List<IntList> expected = new ObjectArrayList<>();
 
 			for (int e : g.edges()) {
 				int u = g.edgeSource(e), v = g.edgeTarget(e);
@@ -896,7 +896,7 @@ class GraphImplTestUtils extends TestUtils {
 					GraphTracker.Edge edge = tracker.getRandEdge(rand);
 					GraphTracker.Vertex source = edge.u;
 
-					Set<GraphTracker.Edge> iterationExpected = new HashSet<>();
+					Set<GraphTracker.Edge> iterationExpected = new ObjectOpenHashSet<>();
 					for (int eOther : g.edgesOut(source.id)) {
 						if (edgeData.getInt(eOther) != edge.data) {
 							GraphTracker.Edge edgeOther = tracker.getEdge(edgeData.getInt(eOther));
@@ -905,7 +905,7 @@ class GraphImplTestUtils extends TestUtils {
 						}
 					}
 					boolean removed = false;
-					Set<GraphTracker.Edge> iterationActual = new HashSet<>();
+					Set<GraphTracker.Edge> iterationActual = new ObjectOpenHashSet<>();
 					for (EdgeIter it = g.edgesOut(source.id).iterator(); it.hasNext();) {
 						int eOther = it.nextInt();
 						if (edgeData.getInt(eOther) != edge.data) {
@@ -929,7 +929,7 @@ class GraphImplTestUtils extends TestUtils {
 					GraphTracker.Edge edge = tracker.getRandEdge(rand);
 					GraphTracker.Vertex target = edge.v;
 
-					Set<GraphTracker.Edge> iterationExpected = new HashSet<>();
+					Set<GraphTracker.Edge> iterationExpected = new ObjectOpenHashSet<>();
 					for (int eOther : g.edgesIn(target.id)) {
 						if (edgeData.getInt(eOther) != edge.data) {
 							GraphTracker.Edge edgeOther = tracker.getEdge(edgeData.getInt(eOther));
@@ -938,7 +938,7 @@ class GraphImplTestUtils extends TestUtils {
 						}
 					}
 					boolean removed = false;
-					Set<GraphTracker.Edge> iterationActual = new HashSet<>();
+					Set<GraphTracker.Edge> iterationActual = new ObjectOpenHashSet<>();
 					for (EdgeIter it = g.edgesIn(target.id).iterator(); it.hasNext();) {
 						int eOther = it.nextInt();
 						if (edgeData.getInt(eOther) != edge.data) {
@@ -959,7 +959,7 @@ class GraphImplTestUtils extends TestUtils {
 				// case RemoveEdgesMulti: {
 				// if (tracker.edgesNum() < 3)
 				// continue;
-				// Set<GraphTracker.Edge> edges = new HashSet<>(3);
+				// Set<GraphTracker.Edge> edges = new ObjectOpenHashSet<>(3);
 				// while (edges.size() < 3)
 				// edges.add(tracker.getRandEdge(rand));
 				// IntSet edgesInt = new IntOpenHashSet(3);
@@ -1065,7 +1065,7 @@ class GraphImplTestUtils extends TestUtils {
 				// case RemoveVertices: {
 				// if (tracker.verticesNum() < 3)
 				// continue;
-				// Set<GraphTracker.Vertex> vertices = new HashSet<>(3);
+				// Set<GraphTracker.Vertex> vertices = new ObjectOpenHashSet<>(3);
 				// while (vertices.size() < 3)
 				// vertices.add(tracker.getRandVertex(rand));
 				// IntSet verticesInt = new IntOpenHashSet(3);

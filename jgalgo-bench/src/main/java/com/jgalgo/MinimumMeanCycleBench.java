@@ -16,7 +16,6 @@
 
 package com.jgalgo;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -38,6 +37,7 @@ import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.GraphsTestUtils.RandomGraphBuilder;
 import com.jgalgo.TestUtils.SeedGenerator;
 import it.unimi.dsi.fastutil.Pair;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
@@ -61,7 +61,7 @@ public class MinimumMeanCycleBench {
 		int m = Integer.parseInt(argsMap.get("|E|"));
 
 		final SeedGenerator seedGen = new SeedGenerator(0xe75b8a2fb16463ecL);
-		graphs = new ArrayList<>(graphsNum);
+		graphs = new ObjectArrayList<>(graphsNum);
 		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
 			Graph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
 					.selfEdges(false).cycles(true).connected(false).build();

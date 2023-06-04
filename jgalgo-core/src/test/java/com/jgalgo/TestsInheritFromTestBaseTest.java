@@ -17,24 +17,22 @@
 package com.jgalgo;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public class TestsInheritFromTestBaseTest extends TestBase {
 
 	private static final List<String> ExcludeList;
 	static {
-		List<String> excludeList = new ArrayList<>();
+		List<String> excludeList = new ObjectArrayList<>();
 		excludeList.add("AllExamplesTest");
 		ExcludeList = Collections.unmodifiableList(excludeList);
 	}
@@ -59,12 +57,12 @@ public class TestsInheritFromTestBaseTest extends TestBase {
 			assert classLoader != null;
 			String path = packageName.replace('.', '/');
 			Enumeration<URL> resources = classLoader.getResources(path);
-			List<File> dirs = new ArrayList<>();
+			List<File> dirs = new ObjectArrayList<>();
 			while (resources.hasMoreElements()) {
 				URL resource = resources.nextElement();
 				dirs.add(new File(resource.getFile()));
 			}
-			List<Class<?>> classes = new ArrayList<>();
+			List<Class<?>> classes = new ObjectArrayList<>();
 			for (File directory : dirs)
 				classes.addAll(findClasses(directory, packageName));
 			return classes;
@@ -74,7 +72,7 @@ public class TestsInheritFromTestBaseTest extends TestBase {
 	}
 
 	private static List<Class<?>> findClasses(File directory, String packageName) throws ClassNotFoundException {
-		List<Class<?>> classes = new ArrayList<>();
+		List<Class<?>> classes = new ObjectArrayList<>();
 		if (!directory.exists())
 			return classes;
 
