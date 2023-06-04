@@ -53,9 +53,27 @@ public interface BFSIter extends IntIterator {
 	 */
 	public static BFSIter newInstance(Graph g, int source) {
 		if (g instanceof IndexGraph)
-			return new BFSIterImpl((IndexGraph) g, source);
+			return new BFSIterImpl.Forward((IndexGraph) g, source);
 		IndexIdMap viMap = g.indexGraphVerticesMap(), eiMap = g.indexGraphEdgesMap();
-		BFSIter indexBFS = new BFSIterImpl(g.indexGraph(), viMap.idToIndex(source));
+		BFSIter indexBFS = new BFSIterImpl.Forward(g.indexGraph(), viMap.idToIndex(source));
+		return new BFSIterImpl.BFSFromIndexBFS(indexBFS, viMap, eiMap);
+	}
+
+	/**
+	 * Create a backward BFS iterator rooted at a single source vertex.
+	 * <p>
+	 * The regular BFS uses the out-edges of each vertex to explore its neighbors, while the <i>backward</i> BFS uses
+	 * the in-edges to do so.
+	 *
+	 * @param  g      a graph
+	 * @param  source a vertex in the graph from which the search will start from
+	 * @return        a BFS iterator that iterate over the vertices of the graph using the in-edges
+	 */
+	public static BFSIter newInstanceBackward(Graph g, int source) {
+		if (g instanceof IndexGraph)
+			return new BFSIterImpl.Backward((IndexGraph) g, source);
+		IndexIdMap viMap = g.indexGraphVerticesMap(), eiMap = g.indexGraphEdgesMap();
+		BFSIter indexBFS = new BFSIterImpl.Backward(g.indexGraph(), viMap.idToIndex(source));
 		return new BFSIterImpl.BFSFromIndexBFS(indexBFS, viMap, eiMap);
 	}
 
@@ -78,7 +96,7 @@ public interface BFSIter extends IntIterator {
 	 *
 	 * @return the edge that led to the last vertex returned by {@link nextInt}
 	 */
-	public int inEdge();
+	public int lastEdge();
 
 	/**
 	 * Get the layer of the last vertex returned by {@link nextInt}.

@@ -33,7 +33,7 @@ public class BfsDfsExample {
 			int v = iter.nextInt();
 			/* e is the edge used to reach v */
 			/* In a directed graph, v is the 'target' of e */
-			int e = iter.inEdge();
+			int e = iter.lastEdge();
 			/* the layer is the distance of v from the source vertex */
 			int layer = iter.layer();
 			System.out.println("BFS reached vertex " + v + " at layer " + layer + " using edge " + e);

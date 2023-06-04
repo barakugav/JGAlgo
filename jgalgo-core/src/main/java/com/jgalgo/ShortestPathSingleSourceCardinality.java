@@ -39,7 +39,7 @@ class ShortestPathSingleSourceCardinality extends ShortestPathSingleSourceUtils.
 		for (BFSIter it = BFSIter.newInstance(g, source); it.hasNext();) {
 			int v = it.nextInt();
 			res.distances[v] = it.layer();
-			res.backtrack[v] = it.inEdge();
+			res.backtrack[v] = it.lastEdge();
 		}
 		return res;
 	}

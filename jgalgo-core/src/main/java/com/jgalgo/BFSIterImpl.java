@@ -23,92 +23,139 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntIterators;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
-class BFSIterImpl implements BFSIter {
+class BFSIterImpl {
 
-	private final IndexGraph g;
-	private final BitSet visited;
-	private final IntPriorityQueue queue;
-	private int inEdge;
-	private int layer;
-	private int firstVInLayer;
+	private static abstract class Abstract implements BFSIter {
 
-	/**
-	 * Create a BFS iterator rooted at a single source vertex.
-	 *
-	 * @param g      a graph
-	 * @param source a vertex in the graph from which the search will start from
-	 */
-	BFSIterImpl(IndexGraph g, int source) {
-		this(g, IntIterators.singleton(source));
-	}
+		final IndexGraph g;
+		final BitSet visited;
+		final IntPriorityQueue queue;
+		int inEdge;
+		int layer;
+		int firstVInLayer;
 
-	/**
-	 * Create a BFS iterator rooted at multiple sources vertices.
-	 *
-	 * @param  g                        a graph
-	 * @param  sources                  multiple sources vertices in the graph from which the search will start from
-	 * @throws IllegalArgumentException if the sources iterator is empty
-	 */
-	private BFSIterImpl(IndexGraph g, IntIterator sources) {
-		if (!sources.hasNext())
-			throw new IllegalArgumentException("no sources provided");
-		this.g = g;
-		int n = g.vertices().size();
-		visited = new BitSet(n);
-		queue = new IntArrayFIFOQueue();
-		inEdge = -1;
-		layer = -1;
+		private Abstract(IndexGraph g, IntIterator sources) {
+			if (!sources.hasNext())
+				throw new IllegalArgumentException("no sources provided");
+			this.g = g;
+			int n = g.vertices().size();
+			visited = new BitSet(n);
+			queue = new IntArrayFIFOQueue();
+			inEdge = -1;
+			layer = -1;
 
-		firstVInLayer = -1;
-		while (sources.hasNext()) {
-			int source = sources.nextInt();
-			visited.set(source);
-			queue.enqueue(source);
-			queue.enqueue(-1);
-			if (firstVInLayer == -1)
-				firstVInLayer = source;
-		}
-	}
-
-	@Override
-	public boolean hasNext() {
-		return !queue.isEmpty();
-	}
-
-	@Override
-	public int nextInt() {
-		if (!hasNext())
-			throw new NoSuchElementException();
-		final int u = queue.dequeueInt();
-		inEdge = queue.dequeueInt();
-		if (u == firstVInLayer) {
-			layer++;
 			firstVInLayer = -1;
+			while (sources.hasNext()) {
+				int source = sources.nextInt();
+				visited.set(source);
+				queue.enqueue(source);
+				queue.enqueue(-1);
+				if (firstVInLayer == -1)
+					firstVInLayer = source;
+			}
 		}
 
-		for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
-			int e = eit.nextInt();
-			int v = eit.target();
-			if (visited.get(v))
-				continue;
-			visited.set(v);
-			queue.enqueue(v);
-			queue.enqueue(e);
-			if (firstVInLayer == -1)
-				firstVInLayer = v;
+		@Override
+		public boolean hasNext() {
+			return !queue.isEmpty();
 		}
 
-		return u;
+		@Override
+		public int lastEdge() {
+			return inEdge;
+		}
+
+		@Override
+		public int layer() {
+			return layer;
+		}
 	}
 
-	@Override
-	public int inEdge() {
-		return inEdge;
+	static class Forward extends BFSIterImpl.Abstract {
+
+		/**
+		 * Create a BFS iterator rooted at a single source vertex.
+		 *
+		 * @param g      a graph
+		 * @param source a vertex in the graph from which the search will start from
+		 */
+		Forward(IndexGraph g, int source) {
+			this(g, IntIterators.singleton(source));
+		}
+
+		/**
+		 * Create a BFS iterator rooted at multiple sources vertices.
+		 *
+		 * @param  g                        a graph
+		 * @param  sources                  multiple sources vertices in the graph from which the search will start from
+		 * @throws IllegalArgumentException if the sources iterator is empty
+		 */
+		private Forward(IndexGraph g, IntIterator sources) {
+			super(g, sources);
+		}
+
+		@Override
+		public int nextInt() {
+			if (!hasNext())
+				throw new NoSuchElementException();
+			final int u = queue.dequeueInt();
+			inEdge = queue.dequeueInt();
+			if (u == firstVInLayer) {
+				layer++;
+				firstVInLayer = -1;
+			}
+
+			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
+				int e = eit.nextInt();
+				int v = eit.target();
+				if (visited.get(v))
+					continue;
+				visited.set(v);
+				queue.enqueue(v);
+				queue.enqueue(e);
+				if (firstVInLayer == -1)
+					firstVInLayer = v;
+			}
+
+			return u;
+		}
 	}
 
-	@Override
-	public int layer() {
-		return layer;
+	static class Backward extends BFSIterImpl.Abstract {
+
+		Backward(IndexGraph g, int source) {
+			this(g, IntIterators.singleton(source));
+		}
+
+		private Backward(IndexGraph g, IntIterator sources) {
+			super(g, sources);
+		}
+
+		@Override
+		public int nextInt() {
+			if (!hasNext())
+				throw new NoSuchElementException();
+			final int v = queue.dequeueInt();
+			inEdge = queue.dequeueInt();
+			if (v == firstVInLayer) {
+				layer++;
+				firstVInLayer = -1;
+			}
+
+			for (EdgeIter eit = g.edgesIn(v).iterator(); eit.hasNext();) {
+				int e = eit.nextInt();
+				int u = eit.source();
+				if (visited.get(u))
+					continue;
+				visited.set(u);
+				queue.enqueue(u);
+				queue.enqueue(e);
+				if (firstVInLayer == -1)
+					firstVInLayer = u;
+			}
+
+			return v;
+		}
 	}
 
 	static class BFSFromIndexBFS implements BFSIter {
@@ -134,8 +181,8 @@ class BFSIterImpl implements BFSIter {
 		}
 
 		@Override
-		public int inEdge() {
-			int e = it.inEdge();
+		public int lastEdge() {
+			int e = it.lastEdge();
 			return e == -1 ? -1 : eiMap.indexToId(e);
 		}
 

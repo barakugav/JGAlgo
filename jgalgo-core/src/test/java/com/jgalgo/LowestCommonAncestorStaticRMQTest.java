@@ -36,7 +36,7 @@ public class LowestCommonAncestorStaticRMQTest extends TestBase {
 
 		for (BFSIter it = BFSIter.newInstance(g, root); it.hasNext();) {
 			int v = it.nextInt();
-			int e = it.inEdge();
+			int e = it.lastEdge();
 			if (e == -1) {
 				parent.put(v, -1);
 				depth.put(v, 0);

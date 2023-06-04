@@ -45,7 +45,7 @@ public class BFSIterTest extends TestBase {
 			IntSet visited = new IntOpenHashSet(n);
 			for (BFSIter it = BFSIter.newInstance(g, source); it.hasNext();) {
 				int v = it.nextInt();
-				int e = it.inEdge();
+				int e = it.lastEdge();
 				assertFalse(visited.contains(v), "already visited vertex " + v);
 				if (v != source)
 					assertTrue(g.edgeEndpoint(e, g.edgeEndpoint(e, v)) == v, "v is not an endpoint of inEdge");

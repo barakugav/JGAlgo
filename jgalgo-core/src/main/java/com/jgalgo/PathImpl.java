@@ -19,7 +19,6 @@ import java.util.Arrays;
 import java.util.Objects;
 import it.unimi.dsi.fastutil.ints.AbstractIntList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntListIterator;
 import it.unimi.dsi.fastutil.ints.IntLists;
@@ -183,37 +182,27 @@ class PathImpl extends AbstractIntList implements Path {
 	static Path findPath(IndexGraph g, final int source, final int target) {
 		if (source == target)
 			return new PathImpl(g, source, target, IntLists.emptyList());
-		boolean reverse = true;
-		int u0 = source, v0 = target;
-		if (!g.getCapabilities().directed()) {
-			u0 = target;
-			v0 = source;
-			reverse = false;
-		}
 		int n = g.vertices().size();
 		int[] backtrack = new int[n];
 		Arrays.fill(backtrack, -1);
 
 		IntArrayList path = new IntArrayList();
-		for (BFSIter it = BFSIter.newInstance(g, u0); it.hasNext();) {
+		for (BFSIter it = BFSIter.newInstanceBackward(g, target); it.hasNext();) {
 			int p = it.nextInt();
-			backtrack[p] = it.inEdge();
-			if (p == v0)
+			backtrack[p] = it.lastEdge();
+			if (p == source)
 				break;
 		}
 
-		if (backtrack[v0] == -1)
+		if (backtrack[source] == -1)
 			return null;
 
-		for (int p = v0; p != u0;) {
+		for (int p = source; p != target;) {
 			int e = backtrack[p];
 			path.add(e);
 			p = g.edgeEndpoint(e, p);
 		}
 
-		// TODO use backward BFS iterator to avoid reversing
-		if (reverse)
-			IntArrays.reverse(path.elements(), 0, path.size());
 		return new PathImpl(g, source, target, path);
 	}
 
