@@ -24,6 +24,7 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -31,12 +32,21 @@ import org.junit.jupiter.api.Test;
 
 public class TestsInheritFromTestBaseTest extends TestBase {
 
+	private static final List<String> ExcludeList;
+	static {
+		List<String> excludeList = new ArrayList<>();
+		excludeList.add("AllExamplesTest");
+		ExcludeList = Collections.unmodifiableList(excludeList);
+	}
+
 	@Test
 	public void testAllTestsInheritFromTestBase() {
 		String packageName = TestsInheritFromTestBaseTest.class.getPackageName();
 		Collection<Class<?>> classes = getClasses(packageName);
 		for (Class<?> clazz : classes) {
 			if (clazz.isInterface() || !isClassContainsTests(clazz))
+				continue;
+			if (ExcludeList.contains(clazz.getSimpleName()))
 				continue;
 			assertTrue(isClassInheritFromTestBase(clazz),
 					"Test class does not inherit from " + TestBase.class.getSimpleName() + ": " + clazz);
