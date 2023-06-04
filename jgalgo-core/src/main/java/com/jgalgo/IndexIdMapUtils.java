@@ -22,14 +22,14 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 
-class IndexGraphMapUtils {
+class IndexIdMapUtils {
 
 	static class IteratorFromIndexIterator implements IntIterator {
 
 		private final IntIterator it;
-		private final IndexGraphMap map;
+		private final IndexIdMap map;
 
-		IteratorFromIndexIterator(IntIterator it, IndexGraphMap map) {
+		IteratorFromIndexIterator(IntIterator it, IndexIdMap map) {
 			this.it = Objects.requireNonNull(it);
 			this.map = Objects.requireNonNull(map);
 		}
@@ -54,9 +54,9 @@ class IndexGraphMapUtils {
 	static class IndexIteratorFromIterator implements IntIterator {
 
 		private final IntIterator it;
-		private final IndexGraphMap map;
+		private final IndexIdMap map;
 
-		IndexIteratorFromIterator(IntIterator it, IndexGraphMap map) {
+		IndexIteratorFromIterator(IntIterator it, IndexIdMap map) {
 			this.it = Objects.requireNonNull(it);
 			this.map = Objects.requireNonNull(map);
 		}
@@ -81,9 +81,9 @@ class IndexGraphMapUtils {
 	static class CollectionFromIndexCollection extends AbstractIntCollection {
 
 		private final IntCollection c;
-		private final IndexGraphMap map;
+		private final IndexIdMap map;
 
-		CollectionFromIndexCollection(IntCollection c, IndexGraphMap map) {
+		CollectionFromIndexCollection(IntCollection c, IndexIdMap map) {
 			this.c = Objects.requireNonNull(c);
 			this.map = Objects.requireNonNull(map);
 		}
@@ -122,9 +122,9 @@ class IndexGraphMapUtils {
 	static class IndexCollectionFromCollection extends AbstractIntCollection {
 
 		private final IntCollection c;
-		private final IndexGraphMap map;
+		private final IndexIdMap map;
 
-		IndexCollectionFromCollection(IntCollection c, IndexGraphMap map) {
+		IndexCollectionFromCollection(IntCollection c, IndexIdMap map) {
 			this.c = Objects.requireNonNull(c);
 			this.map = Objects.requireNonNull(map);
 		}
@@ -163,9 +163,9 @@ class IndexGraphMapUtils {
 	static class ListFromIndexList extends AbstractIntList {
 
 		private final IntList list;
-		private final IndexGraphMap map;
+		private final IndexIdMap map;
 
-		ListFromIndexList(IntList list, IndexGraphMap map) {
+		ListFromIndexList(IntList list, IndexIdMap map) {
 			this.list = Objects.requireNonNull(list);
 			this.map = Objects.requireNonNull(map);
 		}

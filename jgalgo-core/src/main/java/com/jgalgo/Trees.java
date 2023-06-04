@@ -103,8 +103,8 @@ public class Trees {
 		if (g instanceof IndexGraph)
 			return isForest((IndexGraph) g, roots, allowVisitedRoot);
 		IndexGraph iGraph = g.indexGraph();
-		IndexGraphMap viMap = g.indexGraphVerticesMap();
-		roots = new IndexGraphMapUtils.IndexIteratorFromIterator(roots, viMap);
+		IndexIdMap viMap = g.indexGraphVerticesMap();
+		roots = new IndexIdMapUtils.IndexIteratorFromIterator(roots, viMap);
 		return isForest(iGraph, roots, allowVisitedRoot);
 	}
 

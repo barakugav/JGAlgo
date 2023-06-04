@@ -114,10 +114,10 @@ class BFSIterImpl implements BFSIter {
 	static class BFSFromIndexBFS implements BFSIter {
 
 		private final BFSIter it;
-		private final IndexGraphMap viMap;
-		private final IndexGraphMap eiMap;
+		private final IndexIdMap viMap;
+		private final IndexIdMap eiMap;
 
-		BFSFromIndexBFS(BFSIter it, IndexGraphMap viMap, IndexGraphMap eiMap) {
+		BFSFromIndexBFS(BFSIter it, IndexIdMap viMap, IndexIdMap eiMap) {
 			this.it = Objects.requireNonNull(it);
 			this.viMap = Objects.requireNonNull(viMap);
 			this.eiMap = Objects.requireNonNull(eiMap);

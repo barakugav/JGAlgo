@@ -35,8 +35,8 @@ class GraphsUtils {
 
 	static IndexGraph referenceGraph(IndexGraph g, Object refEdgeWeightKey) {
 		final int n = g.vertices().size(), m = g.edges().size();
-		IndexGraph gRef = IndexGraph.newBuilderDirected().setDirected(g.getCapabilities().directed()).expectedVerticesNum(n)
-				.expectedEdgesNum(m).build();
+		IndexGraph gRef = IndexGraph.newBuilderDirected().setDirected(g.getCapabilities().directed())
+				.expectedVerticesNum(n).expectedEdgesNum(m).build();
 		Weights.Int edgeRef = gRef.addEdgesWeights(refEdgeWeightKey, int.class);
 
 		for (int v = 0; v < n; v++)
@@ -77,32 +77,6 @@ class GraphsUtils {
 			}
 		}
 		return false;
-	}
-
-	static interface UndirectedGraphImpl extends Graph {
-
-		@Override
-		default void removeEdgesOf(int source) {
-			for (EdgeIter eit = edgesOut(source).iterator(); eit.hasNext();) {
-				eit.nextInt();
-				eit.remove();
-			}
-		}
-
-		@Override
-		default void removeEdgesOutOf(int source) {
-			removeEdgesOf(source);
-		}
-
-		@Override
-		default void removeEdgesInOf(int target) {
-			removeEdgesOf(target);
-		}
-
-		@Override
-		default void reverseEdge(int edge) {
-			// Do nothing
-		}
 	}
 
 	static class GraphCapabilitiesBuilder {
@@ -271,9 +245,9 @@ class GraphsUtils {
 		}
 	}
 
-	static final IndexGraphMap IndexGraphMapIdentify = new IndexGraphMapIdentify();
+	static final IndexIdMap IndexGraphMapIdentify = new IndexGraphMapIdentify();
 
-	private static class IndexGraphMapIdentify implements IndexGraphMap {
+	private static class IndexGraphMapIdentify implements IndexIdMap {
 		@Override
 		public int indexToId(int index) {
 			return index;

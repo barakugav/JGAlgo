@@ -148,8 +148,8 @@ public interface Path extends IntList {
 			return PathImpl.findPath((IndexGraph) g, source, target);
 
 		IndexGraph iGraph = g.indexGraph();
-		IndexGraphMap viMap = g.indexGraphVerticesMap();
-		IndexGraphMap eiMap = g.indexGraphEdgesMap();
+		IndexIdMap viMap = g.indexGraphVerticesMap();
+		IndexIdMap eiMap = g.indexGraphEdgesMap();
 		int iSource = viMap.idToIndex(source);
 		int iTarget = viMap.idToIndex(target);
 

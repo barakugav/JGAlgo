@@ -26,8 +26,8 @@ abstract class ConnectedComponentsAlgoAbstract implements ConnectedComponentsAlg
 			return computeConnectivityComponents((IndexGraph) g);
 
 		IndexGraph iGraph = g.indexGraph();
-		IndexGraphMap viMap = g.indexGraphVerticesMap();
-		IndexGraphMap eiMap = g.indexGraphEdgesMap();
+		IndexIdMap viMap = g.indexGraphVerticesMap();
+		IndexIdMap eiMap = g.indexGraphEdgesMap();
 
 		ConnectedComponentsAlgo.Result indexResult = computeConnectivityComponents(iGraph);
 		return new ResultFromIndexResult(indexResult, viMap, eiMap);
@@ -38,10 +38,10 @@ abstract class ConnectedComponentsAlgoAbstract implements ConnectedComponentsAlg
 	private static class ResultFromIndexResult implements ConnectedComponentsAlgo.Result {
 
 		private final ConnectedComponentsAlgo.Result res;
-		private final IndexGraphMap viMap;
-		private final IndexGraphMap eiMap;
+		private final IndexIdMap viMap;
+		private final IndexIdMap eiMap;
 
-		ResultFromIndexResult(ConnectedComponentsAlgo.Result res, IndexGraphMap viMap, IndexGraphMap eiMap) {
+		ResultFromIndexResult(ConnectedComponentsAlgo.Result res, IndexIdMap viMap, IndexIdMap eiMap) {
 			this.res = Objects.requireNonNull(res);
 			this.viMap = Objects.requireNonNull(viMap);
 			this.eiMap = Objects.requireNonNull(eiMap);
@@ -59,12 +59,12 @@ abstract class ConnectedComponentsAlgoAbstract implements ConnectedComponentsAlg
 
 		@Override
 		public IntCollection getCcVertices(int ccIdx) {
-			return new IndexGraphMapUtils.CollectionFromIndexCollection(res.getCcVertices(ccIdx), viMap);
+			return new IndexIdMapUtils.CollectionFromIndexCollection(res.getCcVertices(ccIdx), viMap);
 		}
 
 		@Override
 		public IntCollection getCcEdges(int ccIdx) {
-			return new IndexGraphMapUtils.CollectionFromIndexCollection(res.getCcEdges(ccIdx), eiMap);
+			return new IndexIdMapUtils.CollectionFromIndexCollection(res.getCcEdges(ccIdx), eiMap);
 		}
 
 	}

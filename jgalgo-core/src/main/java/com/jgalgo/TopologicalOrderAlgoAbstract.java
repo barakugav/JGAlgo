@@ -26,7 +26,7 @@ abstract class TopologicalOrderAlgoAbstract implements TopologicalOrderAlgo {
 			return computeTopologicalSorting((IndexGraph) g);
 
 		IndexGraph iGraph = g.indexGraph();
-		IndexGraphMap viMap = g.indexGraphVerticesMap();
+		IndexIdMap viMap = g.indexGraphVerticesMap();
 
 		TopologicalOrderAlgo.Result indexResult = computeTopologicalSorting(iGraph);
 		return new ResultFromIndexResult(indexResult, viMap);
@@ -37,16 +37,16 @@ abstract class TopologicalOrderAlgoAbstract implements TopologicalOrderAlgo {
 	private static class ResultFromIndexResult implements TopologicalOrderAlgo.Result {
 
 		private final TopologicalOrderAlgo.Result res;
-		private final IndexGraphMap viMap;
+		private final IndexIdMap viMap;
 
-		ResultFromIndexResult(TopologicalOrderAlgo.Result res, IndexGraphMap viMap) {
+		ResultFromIndexResult(TopologicalOrderAlgo.Result res, IndexIdMap viMap) {
 			this.res = Objects.requireNonNull(res);
 			this.viMap = Objects.requireNonNull(viMap);
 		}
 
 		@Override
 		public IntIterator verticesIterator() {
-			return new IndexGraphMapUtils.IteratorFromIndexIterator(res.verticesIterator(), viMap);
+			return new IndexIdMapUtils.IteratorFromIndexIterator(res.verticesIterator(), viMap);
 		}
 
 	}

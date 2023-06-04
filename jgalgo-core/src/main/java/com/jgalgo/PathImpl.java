@@ -176,7 +176,7 @@ class PathImpl extends AbstractIntList implements Path {
 		return edges.lastIndexOf(k);
 	}
 
-	static Path pathFromIndexPath(Path path, IndexGraphMap viMap, IndexGraphMap eiMap) {
+	static Path pathFromIndexPath(Path path, IndexIdMap viMap, IndexIdMap eiMap) {
 		return path == null ? null : new PathFromIndexPath(path, viMap, eiMap);
 	}
 
@@ -220,10 +220,10 @@ class PathImpl extends AbstractIntList implements Path {
 	private static class PathFromIndexPath extends AbstractIntList implements Path {
 
 		private final Path path;
-		private final IndexGraphMap viMap;
-		private final IndexGraphMap eiMap;
+		private final IndexIdMap viMap;
+		private final IndexIdMap eiMap;
 
-		PathFromIndexPath(Path path, IndexGraphMap viMap, IndexGraphMap eiMap) {
+		PathFromIndexPath(Path path, IndexIdMap viMap, IndexIdMap eiMap) {
 			this.path = Objects.requireNonNull(path);
 			this.viMap = Objects.requireNonNull(viMap);
 			this.eiMap = Objects.requireNonNull(eiMap);

@@ -75,10 +75,10 @@ interface EdgeIterImpl extends EdgeIter, Utils.IterPeekable.Int {
 
 	static class EdgeIterFromIndexEdgeIter implements EdgeIterImpl {
 		private final EdgeIterImpl it;
-		private final IndexGraphMap viMap;
-		private final IndexGraphMap eiMap;
+		private final IndexIdMap viMap;
+		private final IndexIdMap eiMap;
 
-		EdgeIterFromIndexEdgeIter(EdgeIter it, IndexGraphMap viMap, IndexGraphMap eiMap) {
+		EdgeIterFromIndexEdgeIter(EdgeIter it, IndexIdMap viMap, IndexIdMap eiMap) {
 			this.it = (EdgeIterImpl) Objects.requireNonNull(it);
 			this.viMap = Objects.requireNonNull(viMap);
 			this.eiMap = Objects.requireNonNull(eiMap);

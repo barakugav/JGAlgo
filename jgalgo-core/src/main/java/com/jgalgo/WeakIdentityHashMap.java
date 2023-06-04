@@ -268,12 +268,10 @@ class WeakIdentityHashMap<K, V> extends AbstractMap<K, V> {
 	/**
 	 * Returns the value to which the specified key is mapped, or {@code null} if this map contains no mapping for the
 	 * key.
-	 *
 	 * <p>
 	 * More formally, if this map contains a mapping from a key {@code k} to a value {@code v} such that
 	 * {@code key == k}, then this method returns {@code v}; otherwise it returns {@code null}. (There can be at most
 	 * one such mapping.)
-	 *
 	 * <p>
 	 * A return value of {@code null} does not <i>necessarily</i> indicate that the map contains no mapping for the key;
 	 * it's also possible that the map explicitly maps the key to {@code null}. The {@link #containsKey containsKey}
@@ -451,12 +449,10 @@ class WeakIdentityHashMap<K, V> extends AbstractMap<K, V> {
 	 * Removes the mapping for a key from this weak hash map if it is present. More formally, if this map contains a
 	 * mapping from key {@code k} to value {@code v} such that <code>(key==k)</code>, that mapping is removed. (The map
 	 * can contain at most one such mapping.)
-	 *
 	 * <p>
 	 * Returns the value to which this map previously associated the key, or {@code null} if the map contained no
 	 * mapping for the key. A return value of {@code null} does not <i>necessarily</i> indicate that the map contained
 	 * no mapping for the key; it's also possible that the map explicitly mapped the key to {@code null}.
-	 *
 	 * <p>
 	 * The map will not contain a mapping for the specified key once the call returns.
 	 *

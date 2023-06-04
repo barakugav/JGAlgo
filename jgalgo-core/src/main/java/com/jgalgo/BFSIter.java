@@ -54,7 +54,7 @@ public interface BFSIter extends IntIterator {
 	public static BFSIter newInstance(Graph g, int source) {
 		if (g instanceof IndexGraph)
 			return new BFSIterImpl((IndexGraph) g, source);
-		IndexGraphMap viMap = g.indexGraphVerticesMap(), eiMap = g.indexGraphEdgesMap();
+		IndexIdMap viMap = g.indexGraphVerticesMap(), eiMap = g.indexGraphEdgesMap();
 		BFSIter indexBFS = new BFSIterImpl(g.indexGraph(), viMap.idToIndex(source));
 		return new BFSIterImpl.BFSFromIndexBFS(indexBFS, viMap, eiMap);
 	}

@@ -52,8 +52,8 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	GraphLinkedDirected(int expectedVerticesNum, int expectedEdgesNum) {
 		super(expectedVerticesNum, expectedEdgesNum);
 
-		edgesOut = new WeightsImpl.Index.Obj<>(verticesIDStrat, null, Node.class);
-		edgesIn = new WeightsImpl.Index.Obj<>(verticesIDStrat, null, Node.class);
+		edgesOut = new WeightsImpl.Index.Obj<>(verticesIdStrat, null, Node.class);
+		edgesIn = new WeightsImpl.Index.Obj<>(verticesIdStrat, null, Node.class);
 		addInternalVerticesWeights(WeightsKeyEdgesOut, edgesOut);
 		addInternalVerticesWeights(WeightsKeyEdgesIn, edgesIn);
 	}
@@ -61,8 +61,8 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	GraphLinkedDirected(GraphLinkedDirected g) {
 		super(g);
 
-		edgesOut = new WeightsImpl.Index.Obj<>(verticesIDStrat, null, Node.class);
-		edgesIn = new WeightsImpl.Index.Obj<>(verticesIDStrat, null, Node.class);
+		edgesOut = new WeightsImpl.Index.Obj<>(verticesIdStrat, null, Node.class);
+		edgesIn = new WeightsImpl.Index.Obj<>(verticesIdStrat, null, Node.class);
 		addInternalVerticesWeights(WeightsKeyEdgesOut, edgesOut);
 		addInternalVerticesWeights(WeightsKeyEdgesIn, edgesIn);
 

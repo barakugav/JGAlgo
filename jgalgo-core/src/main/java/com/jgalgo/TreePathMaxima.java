@@ -199,9 +199,9 @@ public interface TreePathMaxima {
 		if (g instanceof IndexGraph)
 			return TreePathMaximaUtils.verifyMST((IndexGraph) g, w, mstEdges, tpmAlgo);
 		IndexGraph iGraph = g.indexGraph();
-		IndexGraphMap eiMap = g.indexGraphEdgesMap();
+		IndexIdMap eiMap = g.indexGraphEdgesMap();
 		w = WeightsImpl.indexWeightFuncFromIdWeightFunc(w, eiMap);
-		mstEdges = new IndexGraphMapUtils.IndexCollectionFromCollection(mstEdges, eiMap);
+		mstEdges = new IndexIdMapUtils.IndexCollectionFromCollection(mstEdges, eiMap);
 		return TreePathMaximaUtils.verifyMST(iGraph, w, mstEdges, tpmAlgo);
 	}
 

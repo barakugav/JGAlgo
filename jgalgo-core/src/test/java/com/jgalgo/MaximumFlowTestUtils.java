@@ -173,7 +173,7 @@ public class MaximumFlowTestUtils extends TestUtils {
 		int n = g.vertices().size();
 		double[][] capacities = new double[n][n];
 
-		IndexGraphMap vToIdx = g.indexGraphVerticesMap();
+		IndexIdMap vToIdx = g.indexGraphVerticesMap();
 
 		for (int u : g.vertices()) {
 			for (EdgeIter it = g.edgesOut(u).iterator(); it.hasNext();) {

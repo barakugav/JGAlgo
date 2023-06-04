@@ -33,7 +33,7 @@ class VertexCoverUtils {
 				return computeMinimumVertexCover((IndexGraph) g, w);
 
 			IndexGraph iGraph = g.indexGraph();
-			IndexGraphMap viMap = g.indexGraphVerticesMap();
+			IndexIdMap viMap = g.indexGraphVerticesMap();
 			w = WeightsImpl.indexWeightFuncFromIdWeightFunc(w, viMap);
 
 			VertexCover.Result indexResult = computeMinimumVertexCover(iGraph, w);
@@ -83,16 +83,16 @@ class VertexCoverUtils {
 	private static class ResultFromIndexResult implements VertexCover.Result {
 
 		private final VertexCover.Result res;
-		private final IndexGraphMap viMap;
+		private final IndexIdMap viMap;
 
-		ResultFromIndexResult(VertexCover.Result res, IndexGraphMap viMap) {
+		ResultFromIndexResult(VertexCover.Result res, IndexIdMap viMap) {
 			this.res = Objects.requireNonNull(res);
 			this.viMap = Objects.requireNonNull(viMap);
 		}
 
 		@Override
 		public IntCollection vertices() {
-			return new IndexGraphMapUtils.CollectionFromIndexCollection(res.vertices(), viMap);
+			return new IndexIdMapUtils.CollectionFromIndexCollection(res.vertices(), viMap);
 		}
 
 		@Override

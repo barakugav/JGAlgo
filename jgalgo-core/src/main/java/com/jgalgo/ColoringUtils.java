@@ -50,7 +50,7 @@ class ColoringUtils {
 				return computeColoring((IndexGraph) g);
 
 			IndexGraph iGraph = g.indexGraph();
-			IndexGraphMap viMap = g.indexGraphVerticesMap();
+			IndexIdMap viMap = g.indexGraphVerticesMap();
 
 			Coloring.Result indexResult = computeColoring(iGraph);
 			return new ResultFromIndexResult(indexResult, viMap);
@@ -63,9 +63,9 @@ class ColoringUtils {
 	static class ResultFromIndexResult implements Coloring.Result {
 
 		private final Coloring.Result res;
-		private final IndexGraphMap viMap;
+		private final IndexIdMap viMap;
 
-		ResultFromIndexResult(Coloring.Result res, IndexGraphMap viMap) {
+		ResultFromIndexResult(Coloring.Result res, IndexIdMap viMap) {
 			this.res = Objects.requireNonNull(res);
 			this.viMap = Objects.requireNonNull(viMap);
 		}

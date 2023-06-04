@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.NoSuchElementException;
 import com.jgalgo.EdgeEndpointsContainer.GraphWithEdgeEndpointsContainer;
 
-abstract class GraphArrayAbstract extends GraphBaseContinues implements GraphWithEdgeEndpointsContainer {
+abstract class GraphArrayAbstract extends GraphBaseIndex implements GraphWithEdgeEndpointsContainer {
 
 	private final EdgeEndpointsContainer edgeEndpoints;
 
@@ -28,13 +28,13 @@ abstract class GraphArrayAbstract extends GraphBaseContinues implements GraphWit
 
 	GraphArrayAbstract(int expectedVerticesNum, int expectedEdgesNum) {
 		super(expectedVerticesNum, expectedEdgesNum);
-		edgeEndpoints = new EdgeEndpointsContainer(edgesIDStrat);
+		edgeEndpoints = new EdgeEndpointsContainer(edgesIdStrat);
 		addInternalEdgesWeights(WeightsKeyEdgeEndpoints, edgeEndpoints);
 	}
 
 	GraphArrayAbstract(GraphArrayAbstract g) {
 		super(g);
-		edgeEndpoints = g.edgeEndpoints.copy(edgesIDStrat);
+		edgeEndpoints = g.edgeEndpoints.copy(edgesIdStrat);
 		addInternalEdgesWeights(WeightsKeyEdgeEndpoints, edgeEndpoints);
 	}
 

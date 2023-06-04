@@ -25,7 +25,7 @@ abstract class LowestCommonAncestorStaticAbstract implements LowestCommonAncesto
 			return preProcessTree((IndexGraph) tree, root);
 
 		IndexGraph iGraph = tree.indexGraph();
-		IndexGraphMap viMap = tree.indexGraphVerticesMap();
+		IndexIdMap viMap = tree.indexGraphVerticesMap();
 
 		int iRoot = viMap.idToIndex(root);
 		LowestCommonAncestorStatic.DataStructure indexResult = preProcessTree(iGraph, iRoot);
@@ -37,9 +37,9 @@ abstract class LowestCommonAncestorStaticAbstract implements LowestCommonAncesto
 	private static class DSFromIndexDS implements LowestCommonAncestorStatic.DataStructure {
 
 		private final LowestCommonAncestorStatic.DataStructure ds;
-		private final IndexGraphMap viMap;
+		private final IndexIdMap viMap;
 
-		DSFromIndexDS(LowestCommonAncestorStatic.DataStructure ds, IndexGraphMap viMap) {
+		DSFromIndexDS(LowestCommonAncestorStatic.DataStructure ds, IndexIdMap viMap) {
 			this.ds = Objects.requireNonNull(ds);
 			this.viMap = Objects.requireNonNull(viMap);
 		}

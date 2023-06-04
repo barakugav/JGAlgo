@@ -17,7 +17,6 @@
 package com.jgalgo;
 
 import com.jgalgo.GraphsUtils.GraphCapabilitiesBuilder;
-import com.jgalgo.GraphsUtils.UndirectedGraphImpl;
 
 /**
  * An undirected graph implementation using linked lists to store edge lists.
@@ -29,7 +28,7 @@ import com.jgalgo.GraphsUtils.UndirectedGraphImpl;
  * @see    GraphArrayUndirected
  * @author Barak Ugav
  */
-class GraphLinkedUndirected extends GraphLinkedAbstract implements UndirectedGraphImpl {
+class GraphLinkedUndirected extends GraphLinkedAbstract {
 
 	private final WeightsImpl.Index.Obj<Node> edges;
 
@@ -50,14 +49,14 @@ class GraphLinkedUndirected extends GraphLinkedAbstract implements UndirectedGra
 	 */
 	GraphLinkedUndirected(int expectedVerticesNum, int expectedEdgesNum) {
 		super(expectedVerticesNum, expectedEdgesNum);
-		edges = new WeightsImpl.Index.Obj<>(verticesIDStrat, null, Node.class);
+		edges = new WeightsImpl.Index.Obj<>(verticesIdStrat, null, Node.class);
 		addInternalVerticesWeights(WeightsKeyEdges, edges);
 	}
 
 	GraphLinkedUndirected(GraphLinkedUndirected g) {
 		super(g);
 
-		edges = new WeightsImpl.Index.Obj<>(verticesIDStrat, null, Node.class);
+		edges = new WeightsImpl.Index.Obj<>(verticesIdStrat, null, Node.class);
 		addInternalVerticesWeights(WeightsKeyEdges, edges);
 
 		final int m = g.edges().size();
@@ -186,6 +185,21 @@ class GraphLinkedUndirected extends GraphLinkedAbstract implements UndirectedGra
 			next.prevSet(w, prev);
 			e.nextSet(w, null);
 		}
+	}
+
+	@Override
+	public void removeEdgesOutOf(int source) {
+		removeEdgesOf(source);
+	}
+
+	@Override
+	public void removeEdgesInOf(int target) {
+		removeEdgesOf(target);
+	}
+
+	@Override
+	public void reverseEdge(int edge) {
+		// Do nothing
 	}
 
 	@Override

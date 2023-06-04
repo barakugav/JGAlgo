@@ -25,8 +25,8 @@ abstract class MaximumFlowAbstract implements MaximumFlow {
 			return computeMaximumFlow((IndexGraph) g, net, source, sink);
 
 		IndexGraph iGraph = g.indexGraph();
-		IndexGraphMap viMap = g.indexGraphVerticesMap();
-		IndexGraphMap eiMap = g.indexGraphEdgesMap();
+		IndexIdMap viMap = g.indexGraphVerticesMap();
+		IndexIdMap eiMap = g.indexGraphEdgesMap();
 
 		net = indexFlowFromFlow(net, eiMap);
 		int iSource = viMap.idToIndex(source);
@@ -123,7 +123,7 @@ abstract class MaximumFlowAbstract implements MaximumFlow {
 
 	}
 
-	private static FlowNetwork indexFlowFromFlow(FlowNetwork net, IndexGraphMap eiMap) {
+	private static FlowNetwork indexFlowFromFlow(FlowNetwork net, IndexIdMap eiMap) {
 		if (net instanceof EdgeWeightsFlowNetwork) {
 			EdgeWeightsFlowNetwork net0 = (EdgeWeightsFlowNetwork) net;
 			boolean mappedCapacity = net0.capacityWeights instanceof WeightsImpl.Mapped.Double;

@@ -109,10 +109,10 @@ class CutImpl implements Cut {
 	static class CutFromIndexCut implements Cut {
 
 		private final Cut cut;
-		private final IndexGraphMap viMap;
-		private final IndexGraphMap eiMap;
+		private final IndexIdMap viMap;
+		private final IndexIdMap eiMap;
 
-		CutFromIndexCut(Cut cut, IndexGraphMap viMap, IndexGraphMap eiMap) {
+		CutFromIndexCut(Cut cut, IndexIdMap viMap, IndexIdMap eiMap) {
 			this.cut = Objects.requireNonNull(cut);
 			this.viMap = Objects.requireNonNull(viMap);
 			this.eiMap = Objects.requireNonNull(eiMap);
@@ -125,12 +125,12 @@ class CutImpl implements Cut {
 
 		@Override
 		public IntCollection vertices() {
-			return new IndexGraphMapUtils.CollectionFromIndexCollection(cut.vertices(), viMap);
+			return new IndexIdMapUtils.CollectionFromIndexCollection(cut.vertices(), viMap);
 		}
 
 		@Override
 		public IntCollection edges() {
-			return new IndexGraphMapUtils.CollectionFromIndexCollection(cut.edges(), eiMap);
+			return new IndexIdMapUtils.CollectionFromIndexCollection(cut.edges(), eiMap);
 		}
 
 		@Override

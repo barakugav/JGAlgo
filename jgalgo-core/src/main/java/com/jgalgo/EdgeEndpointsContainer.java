@@ -19,11 +19,11 @@ class EdgeEndpointsContainer extends WeightsImpl.Index.Long {
 
 	private static final int None = -1;
 
-	EdgeEndpointsContainer(IDStrategyImpl idStrat) {
+	EdgeEndpointsContainer(IdStrategyImpl idStrat) {
 		super(idStrat, sourceTarget2Endpoints(None, None));
 	}
 
-	EdgeEndpointsContainer(EdgeEndpointsContainer orig, IDStrategyImpl idStrat) {
+	EdgeEndpointsContainer(EdgeEndpointsContainer orig, IdStrategyImpl idStrat) {
 		super(orig, idStrat);
 	}
 
@@ -85,7 +85,7 @@ class EdgeEndpointsContainer extends WeightsImpl.Index.Long {
 	}
 
 	@Override
-	public EdgeEndpointsContainer copy(IDStrategyImpl idStrat) {
+	public EdgeEndpointsContainer copy(IdStrategyImpl idStrat) {
 		return new EdgeEndpointsContainer(this, idStrat);
 	}
 

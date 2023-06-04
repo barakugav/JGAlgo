@@ -34,8 +34,8 @@ public class Graphs {
 
 	private abstract static class EmptyGraph implements IndexGraph {
 
-		private final IDStrategy verticesIDStrat = new IDStrategyImpl.ContinuesEmpty();
-		private final IDStrategy edgesIDStrat = new IDStrategyImpl.ContinuesEmpty();
+		private final IdStrategy verticesIdStrat = new IdStrategyImpl.ContinuesEmpty();
+		private final IdStrategy edgesIdStrat = new IdStrategyImpl.ContinuesEmpty();
 
 		@Override
 		public IntSet vertices() {
@@ -151,13 +151,13 @@ public class Graphs {
 		}
 
 		@Override
-		public IDStrategy getVerticesIDStrategy() {
-			return verticesIDStrat;
+		public IdStrategy getVerticesIdStrategy() {
+			return verticesIdStrat;
 		}
 
 		@Override
-		public IDStrategy getEdgesIDStrategy() {
-			return edgesIDStrat;
+		public IdStrategy getEdgesIdStrategy() {
+			return edgesIdStrat;
 		}
 
 		@Override
@@ -166,12 +166,12 @@ public class Graphs {
 		}
 
 		@Override
-		public IndexGraphMap indexGraphVerticesMap() {
+		public IndexIdMap indexGraphVerticesMap() {
 			return GraphsUtils.IndexGraphMapIdentify;
 		}
 
 		@Override
-		public IndexGraphMap indexGraphEdgesMap() {
+		public IndexIdMap indexGraphEdgesMap() {
 			return GraphsUtils.IndexGraphMapIdentify;
 		}
 
@@ -470,14 +470,14 @@ public class Graphs {
 	private static abstract class CompleteGraph extends GraphBase implements IndexGraph {
 
 		final int n, m;
-		private final IDStrategyImpl verticesIDStrat;
-		private final IDStrategyImpl edgesIDStrat;
+		private final IdStrategyImpl verticesIdStrat;
+		private final IdStrategyImpl edgesIdStrat;
 		private final WeightsImpl.Index.Manager verticesWeights;
 		private final WeightsImpl.Index.Manager edgesWeights;
 
 		CompleteGraph(int n, int m) {
-			verticesIDStrat = new IDStrategyImpl.Continues(n);
-			edgesIDStrat = new IDStrategyImpl.Continues(m);
+			verticesIdStrat = new IdStrategyImpl.Continues(n);
+			edgesIdStrat = new IdStrategyImpl.Continues(m);
 			if (n < 0 || m < 0)
 				throw new IllegalArgumentException();
 			this.n = n;
@@ -487,22 +487,22 @@ public class Graphs {
 		}
 
 		CompleteGraph(CompleteGraph g) {
-			verticesIDStrat = new IDStrategyImpl.Continues(g.n);
-			edgesIDStrat = new IDStrategyImpl.Continues(g.m);
+			verticesIdStrat = new IdStrategyImpl.Continues(g.n);
+			edgesIdStrat = new IdStrategyImpl.Continues(g.m);
 			this.n = g.n;
 			this.m = g.m;
-			verticesWeights = new WeightsImpl.Index.Manager(g.verticesWeights, verticesIDStrat);
-			edgesWeights = new WeightsImpl.Index.Manager(g.edgesWeights, edgesIDStrat);
+			verticesWeights = new WeightsImpl.Index.Manager(g.verticesWeights, verticesIdStrat);
+			edgesWeights = new WeightsImpl.Index.Manager(g.edgesWeights, edgesIdStrat);
 		}
 
 		@Override
 		public IntSet vertices() {
-			return verticesIDStrat.idSet();
+			return verticesIdStrat.idSet();
 		}
 
 		@Override
 		public IntSet edges() {
-			return edgesIDStrat.idSet();
+			return edgesIdStrat.idSet();
 		}
 
 		void checkVertex(int vertex) {
@@ -722,7 +722,7 @@ public class Graphs {
 		@Override
 		public <V, WeightsT extends Weights<V>> WeightsT addVerticesWeights(Object key, Class<? super V> type,
 				V defVal) {
-			IDStrategyImpl idStrat = (IDStrategyImpl) getVerticesIDStrategy();
+			IdStrategyImpl idStrat = (IdStrategyImpl) getVerticesIdStrategy();
 			WeightsImpl.Index<V> weights = WeightsImpl.Index.newInstance(idStrat, type, defVal);
 			verticesWeights.addWeights(key, weights);
 			@SuppressWarnings("unchecked")
@@ -732,7 +732,7 @@ public class Graphs {
 
 		@Override
 		public <E, WeightsT extends Weights<E>> WeightsT addEdgesWeights(Object key, Class<? super E> type, E defVal) {
-			IDStrategyImpl idStrat = (IDStrategyImpl) getEdgesIDStrategy();
+			IdStrategyImpl idStrat = (IdStrategyImpl) getEdgesIdStrategy();
 			WeightsImpl.Index<E> weights = WeightsImpl.Index.newInstance(idStrat, type, defVal);
 			edgesWeights.addWeights(key, weights);
 			@SuppressWarnings("unchecked")
@@ -751,13 +751,13 @@ public class Graphs {
 		}
 
 		@Override
-		public IDStrategy getVerticesIDStrategy() {
-			return verticesIDStrat;
+		public IdStrategy getVerticesIdStrategy() {
+			return verticesIdStrat;
 		}
 
 		@Override
-		public IDStrategy getEdgesIDStrategy() {
-			return edgesIDStrat;
+		public IdStrategy getEdgesIdStrategy() {
+			return edgesIdStrat;
 		}
 
 		@Override
@@ -766,12 +766,12 @@ public class Graphs {
 		}
 
 		@Override
-		public IndexGraphMap indexGraphVerticesMap() {
+		public IndexIdMap indexGraphVerticesMap() {
 			return GraphsUtils.IndexGraphMapIdentify;
 		}
 
 		@Override
-		public IndexGraphMap indexGraphEdgesMap() {
+		public IndexIdMap indexGraphEdgesMap() {
 			return GraphsUtils.IndexGraphMapIdentify;
 		}
 	}
@@ -960,12 +960,12 @@ public class Graphs {
 		}
 
 		@Override
-		public IndexGraphMap indexGraphVerticesMap() {
+		public IndexIdMap indexGraphVerticesMap() {
 			return graph.indexGraphVerticesMap();
 		}
 
 		@Override
-		public IndexGraphMap indexGraphEdgesMap() {
+		public IndexIdMap indexGraphEdgesMap() {
 			return graph.indexGraphEdgesMap();
 		}
 
@@ -991,13 +991,13 @@ public class Graphs {
 		}
 
 		@Override
-		public IDStrategy getVerticesIDStrategy() {
-			return g().getVerticesIDStrategy();
+		public IdStrategy getVerticesIdStrategy() {
+			return g().getVerticesIdStrategy();
 		}
 
 		@Override
-		public IDStrategy getEdgesIDStrategy() {
-			return g().getEdgesIDStrategy();
+		public IdStrategy getEdgesIdStrategy() {
+			return g().getEdgesIdStrategy();
 		}
 
 	}
@@ -1214,12 +1214,12 @@ public class Graphs {
 		}
 
 		@Override
-		public IndexGraphMap indexGraphVerticesMap() {
+		public IndexIdMap indexGraphVerticesMap() {
 			return graph.indexGraphVerticesMap();
 		}
 
 		@Override
-		public IndexGraphMap indexGraphEdgesMap() {
+		public IndexIdMap indexGraphEdgesMap() {
 			return graph.indexGraphEdgesMap();
 		}
 
@@ -1242,13 +1242,13 @@ public class Graphs {
 		}
 
 		@Override
-		public IDStrategy getVerticesIDStrategy() {
-			return graph().getVerticesIDStrategy();
+		public IdStrategy getVerticesIdStrategy() {
+			return graph().getVerticesIdStrategy();
 		}
 
 		@Override
-		public IDStrategy getEdgesIDStrategy() {
-			return graph().getEdgesIDStrategy();
+		public IdStrategy getEdgesIdStrategy() {
+			return graph().getEdgesIdStrategy();
 		}
 
 		@Override

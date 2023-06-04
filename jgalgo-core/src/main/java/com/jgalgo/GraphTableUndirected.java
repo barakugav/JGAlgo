@@ -17,7 +17,6 @@
 package com.jgalgo;
 
 import com.jgalgo.GraphsUtils.GraphCapabilitiesBuilder;
-import com.jgalgo.GraphsUtils.UndirectedGraphImpl;
 
 /**
  * A undirected graph implementation using a two dimensional table to store all edges.
@@ -31,7 +30,7 @@ import com.jgalgo.GraphsUtils.UndirectedGraphImpl;
  * @see    GraphTableDirected
  * @author Barak Ugav
  */
-class GraphTableUndirected extends GraphTableAbstract implements UndirectedGraphImpl {
+class GraphTableUndirected extends GraphTableAbstract {
 
 	GraphTableUndirected() {
 		this(0, 0);
@@ -66,6 +65,29 @@ class GraphTableUndirected extends GraphTableAbstract implements UndirectedGraph
 		edges.get(u).set(v, EdgeNone);
 		edges.get(v).set(u, EdgeNone);
 		super.removeEdge(edge);
+	}
+
+	@Override
+	public void removeEdgesOf(int source) {
+		for (EdgeIter eit = edgesOut(source).iterator(); eit.hasNext();) {
+			eit.nextInt();
+			eit.remove();
+		}
+	}
+
+	@Override
+	public void removeEdgesOutOf(int source) {
+		removeEdgesOf(source);
+	}
+
+	@Override
+	public void removeEdgesInOf(int target) {
+		removeEdgesOf(target);
+	}
+
+	@Override
+	public void reverseEdge(int edge) {
+		// Do nothing
 	}
 
 	@Override

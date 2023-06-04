@@ -19,7 +19,7 @@ package com.jgalgo;
 import java.util.Collection;
 import java.util.NoSuchElementException;
 
-abstract class GraphLinkedAbstract extends GraphBaseContinues {
+abstract class GraphLinkedAbstract extends GraphBaseIndex {
 
 	private final WeightsImpl.Index.Obj<Node> edges;
 
@@ -27,13 +27,13 @@ abstract class GraphLinkedAbstract extends GraphBaseContinues {
 
 	GraphLinkedAbstract(int expectedVerticesNum, int expectedEdgesNum) {
 		super(expectedVerticesNum, expectedEdgesNum);
-		edges = new WeightsImpl.Index.Obj<>(edgesIDStrat, null, Node.class);
+		edges = new WeightsImpl.Index.Obj<>(edgesIdStrat, null, Node.class);
 		addInternalEdgesWeights(WeightsKeyEdgeEndpoints, edges);
 	}
 
 	GraphLinkedAbstract(GraphLinkedAbstract g) {
 		super(g);
-		edges = new WeightsImpl.Index.Obj<>(edgesIDStrat, null, Node.class);
+		edges = new WeightsImpl.Index.Obj<>(edgesIdStrat, null, Node.class);
 		addInternalEdgesWeights(WeightsKeyEdgeEndpoints, edges);
 		final int m = g.edges().size();
 		for (int e = 0; e < m; e++)

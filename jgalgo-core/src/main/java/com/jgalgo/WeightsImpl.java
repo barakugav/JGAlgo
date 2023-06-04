@@ -110,9 +110,9 @@ interface WeightsImpl<E> extends Weights<E> {
 
 		Class<E> getTypeClass();
 
-		WeightsImpl.Index<E> copy(IDStrategyImpl idStrat);
+		WeightsImpl.Index<E> copy(IdStrategyImpl idStrat);
 
-		static <D> WeightsImpl.Index<D> newInstance(IDStrategyImpl idStart, Class<? super D> type, D defVal) {
+		static <D> WeightsImpl.Index<D> newInstance(IdStrategyImpl idStart, Class<? super D> type, D defVal) {
 			@SuppressWarnings("rawtypes")
 			WeightsImpl container;
 			if (type == byte.class) {
@@ -157,9 +157,9 @@ interface WeightsImpl<E> extends Weights<E> {
 
 		static abstract class Abstract<E> implements WeightsImpl.Index<E> {
 
-			final IDStrategyImpl idStrat;
+			final IdStrategyImpl idStrat;
 
-			Abstract(IDStrategyImpl idStrat) {
+			Abstract(IdStrategyImpl idStrat) {
 				this.idStrat = Objects.requireNonNull(idStrat);
 			}
 
@@ -190,7 +190,7 @@ interface WeightsImpl<E> extends Weights<E> {
 			private final ObjectCollection<E> values;
 			private final Class<E> type;
 
-			Obj(IDStrategyImpl idStrat, E defVal, Class<E> type) {
+			Obj(IdStrategyImpl idStrat, E defVal, Class<E> type) {
 				super(idStrat);
 
 				defaultWeight = defVal;
@@ -279,7 +279,7 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public WeightsImpl.Index.Obj<E> copy(IDStrategyImpl idStrat) {
+			public WeightsImpl.Index.Obj<E> copy(IdStrategyImpl idStrat) {
 				if (idStrat.size() != this.idStrat.size())
 					throw new IllegalArgumentException();
 				WeightsImpl.Index.Obj<E> copy = new WeightsImpl.Index.Obj<>(idStrat, defaultWeight, type);
@@ -304,7 +304,7 @@ interface WeightsImpl<E> extends Weights<E> {
 			private final byte defaultWeight;
 			private final ByteCollection values;
 
-			Byte(IDStrategyImpl idStrat, byte defVal) {
+			Byte(IdStrategyImpl idStrat, byte defVal) {
 				super(idStrat);
 
 				weights = ByteArrays.EMPTY_ARRAY;
@@ -388,7 +388,7 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public WeightsImpl.Index.Byte copy(IDStrategyImpl idStrat) {
+			public WeightsImpl.Index.Byte copy(IdStrategyImpl idStrat) {
 				if (idStrat.size() != this.idStrat.size())
 					throw new IllegalArgumentException();
 				WeightsImpl.Index.Byte copy = new WeightsImpl.Index.Byte(idStrat, defaultWeight);
@@ -413,7 +413,7 @@ interface WeightsImpl<E> extends Weights<E> {
 			private final short defaultWeight;
 			private final ShortCollection values;
 
-			Short(IDStrategyImpl idStrat, short defVal) {
+			Short(IdStrategyImpl idStrat, short defVal) {
 				super(idStrat);
 
 				weights = ShortArrays.EMPTY_ARRAY;
@@ -497,7 +497,7 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public WeightsImpl.Index.Short copy(IDStrategyImpl idStrat) {
+			public WeightsImpl.Index.Short copy(IdStrategyImpl idStrat) {
 				if (idStrat.size() != this.idStrat.size())
 					throw new IllegalArgumentException();
 				WeightsImpl.Index.Short copy = new WeightsImpl.Index.Short(idStrat, defaultWeight);
@@ -522,7 +522,7 @@ interface WeightsImpl<E> extends Weights<E> {
 			private final int defaultWeight;
 			private final IntCollection values;
 
-			Int(IDStrategyImpl idStrat, int defVal) {
+			Int(IdStrategyImpl idStrat, int defVal) {
 				super(idStrat);
 
 				weights = IntArrays.EMPTY_ARRAY;
@@ -606,7 +606,7 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public WeightsImpl.Index.Int copy(IDStrategyImpl idStrat) {
+			public WeightsImpl.Index.Int copy(IdStrategyImpl idStrat) {
 				if (idStrat.size() != this.idStrat.size())
 					throw new IllegalArgumentException();
 				WeightsImpl.Index.Int copy = new WeightsImpl.Index.Int(idStrat, defaultWeight);
@@ -648,14 +648,14 @@ interface WeightsImpl<E> extends Weights<E> {
 				}
 			};
 
-			Long(IDStrategyImpl idStrat, long defVal) {
+			Long(IdStrategyImpl idStrat, long defVal) {
 				super(idStrat);
 
 				weights = LongArrays.EMPTY_ARRAY;
 				defaultWeight = defVal;
 			}
 
-			Long(WeightsImpl.Index.Long orig, IDStrategyImpl idStrat) {
+			Long(WeightsImpl.Index.Long orig, IdStrategyImpl idStrat) {
 				super(idStrat);
 				if (idStrat.size() != this.idStrat.size())
 					throw new IllegalArgumentException();
@@ -723,7 +723,7 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public WeightsImpl.Index.Long copy(IDStrategyImpl idStrat) {
+			public WeightsImpl.Index.Long copy(IdStrategyImpl idStrat) {
 				return new WeightsImpl.Index.Long(this, idStrat);
 			}
 
@@ -744,7 +744,7 @@ interface WeightsImpl<E> extends Weights<E> {
 			private final float defaultWeight;
 			private final FloatCollection values;
 
-			Float(IDStrategyImpl idStrat, float defVal) {
+			Float(IdStrategyImpl idStrat, float defVal) {
 				super(idStrat);
 
 				weights = FloatArrays.EMPTY_ARRAY;
@@ -828,7 +828,7 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public WeightsImpl.Index.Float copy(IDStrategyImpl idStrat) {
+			public WeightsImpl.Index.Float copy(IdStrategyImpl idStrat) {
 				if (idStrat.size() != this.idStrat.size())
 					throw new IllegalArgumentException();
 				WeightsImpl.Index.Float copy = new WeightsImpl.Index.Float(idStrat, defaultWeight);
@@ -853,7 +853,7 @@ interface WeightsImpl<E> extends Weights<E> {
 			private final double defaultWeight;
 			private final DoubleCollection values;
 
-			Double(IDStrategyImpl idStrat, double defVal) {
+			Double(IdStrategyImpl idStrat, double defVal) {
 				super(idStrat);
 
 				weights = DoubleArrays.EMPTY_ARRAY;
@@ -937,7 +937,7 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public WeightsImpl.Index.Double copy(IDStrategyImpl idStrat) {
+			public WeightsImpl.Index.Double copy(IdStrategyImpl idStrat) {
 				if (idStrat.size() != this.idStrat.size())
 					throw new IllegalArgumentException();
 				WeightsImpl.Index.Double copy = new WeightsImpl.Index.Double(idStrat, defaultWeight);
@@ -1016,13 +1016,13 @@ interface WeightsImpl<E> extends Weights<E> {
 				}
 			};
 
-			Bool(WeightsImpl.Index.Bool orig, IDStrategyImpl idStrat) {
+			Bool(WeightsImpl.Index.Bool orig, IdStrategyImpl idStrat) {
 				super(idStrat);
 				defaultWeight = orig.defaultWeight;
 				weights = (BitSet) orig.weights.clone();
 			}
 
-			Bool(IDStrategyImpl idStrat, boolean defVal) {
+			Bool(IdStrategyImpl idStrat, boolean defVal) {
 				super(idStrat);
 
 				defaultWeight = defVal;
@@ -1091,7 +1091,7 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public WeightsImpl.Index.Bool copy(IDStrategyImpl idStrat) {
+			public WeightsImpl.Index.Bool copy(IdStrategyImpl idStrat) {
 				if (idStrat.size() != this.idStrat.size())
 					throw new IllegalArgumentException();
 				return new WeightsImpl.Index.Bool(this, idStrat);
@@ -1114,7 +1114,7 @@ interface WeightsImpl<E> extends Weights<E> {
 			private final char defaultWeight;
 			private final CharCollection values;
 
-			Char(IDStrategyImpl idStrat, char defVal) {
+			Char(IdStrategyImpl idStrat, char defVal) {
 				super(idStrat);
 
 				weights = CharArrays.EMPTY_ARRAY;
@@ -1198,7 +1198,7 @@ interface WeightsImpl<E> extends Weights<E> {
 			}
 
 			@Override
-			public WeightsImpl.Index.Char copy(IDStrategyImpl idStrat) {
+			public WeightsImpl.Index.Char copy(IdStrategyImpl idStrat) {
 				if (idStrat.size() != this.idStrat.size())
 					throw new IllegalArgumentException();
 				WeightsImpl.Index.Char copy = new WeightsImpl.Index.Char(idStrat, defaultWeight);
@@ -1226,7 +1226,7 @@ interface WeightsImpl<E> extends Weights<E> {
 				weightsCapacity = initCapacity;
 			}
 
-			Manager(Manager orig, IDStrategyImpl idStrat) {
+			Manager(Manager orig, IdStrategyImpl idStrat) {
 				this(idStrat.size());
 				for (var entry : orig.weights.entrySet())
 					weights.put(entry.getKey(), entry.getValue().copy(idStrat));
@@ -1282,9 +1282,9 @@ interface WeightsImpl<E> extends Weights<E> {
 	static abstract class Mapped<E> implements Weights<E> {
 
 		private final WeightsImpl.Index<E> weights;
-		final IndexGraphMap indexMap;
+		final IndexIdMap indexMap;
 
-		private Mapped(Weights<E> weights, IndexGraphMap indexMap) {
+		private Mapped(Weights<E> weights, IndexIdMap indexMap) {
 			this.weights = (WeightsImpl.Index<E>) Objects.requireNonNull(weights);
 			this.indexMap = indexMap;
 		}
@@ -1293,7 +1293,7 @@ interface WeightsImpl<E> extends Weights<E> {
 			return weights;
 		}
 
-		static WeightsImpl.Mapped<?> newInstance(WeightsImpl.Index<?> weights, IndexGraphMap indexMap) {
+		static WeightsImpl.Mapped<?> newInstance(WeightsImpl.Index<?> weights, IndexIdMap indexMap) {
 			if (weights instanceof Weights.Byte) {
 				return new WeightsImpl.Mapped.Byte((Weights.Byte) weights, indexMap);
 			} else if (weights instanceof Weights.Short) {
@@ -1316,7 +1316,7 @@ interface WeightsImpl<E> extends Weights<E> {
 		}
 
 		static class Obj<E> extends Mapped<E> {
-			Obj(Weights<E> weights, IndexGraphMap indexMap) {
+			Obj(Weights<E> weights, IndexIdMap indexMap) {
 				super(weights, indexMap);
 			}
 
@@ -1337,7 +1337,7 @@ interface WeightsImpl<E> extends Weights<E> {
 		}
 
 		static class Byte extends Mapped<java.lang.Byte> implements Weights.Byte {
-			Byte(Weights.Byte weights, IndexGraphMap indexMap) {
+			Byte(Weights.Byte weights, IndexIdMap indexMap) {
 				super(weights, indexMap);
 			}
 
@@ -1363,7 +1363,7 @@ interface WeightsImpl<E> extends Weights<E> {
 		}
 
 		static class Short extends Mapped<java.lang.Short> implements Weights.Short {
-			Short(Weights.Short container, IndexGraphMap indexMap) {
+			Short(Weights.Short container, IndexIdMap indexMap) {
 				super(container, indexMap);
 			}
 
@@ -1389,7 +1389,7 @@ interface WeightsImpl<E> extends Weights<E> {
 		}
 
 		static class Int extends Mapped<Integer> implements Weights.Int {
-			Int(Weights.Int container, IndexGraphMap indexMap) {
+			Int(Weights.Int container, IndexIdMap indexMap) {
 				super(container, indexMap);
 			}
 
@@ -1415,7 +1415,7 @@ interface WeightsImpl<E> extends Weights<E> {
 		}
 
 		static class Long extends Mapped<java.lang.Long> implements Weights.Long {
-			Long(Weights.Long container, IndexGraphMap indexMap) {
+			Long(Weights.Long container, IndexIdMap indexMap) {
 				super(container, indexMap);
 			}
 
@@ -1441,7 +1441,7 @@ interface WeightsImpl<E> extends Weights<E> {
 		}
 
 		static class Float extends Mapped<java.lang.Float> implements Weights.Float {
-			Float(Weights.Float container, IndexGraphMap indexMap) {
+			Float(Weights.Float container, IndexIdMap indexMap) {
 				super(container, indexMap);
 			}
 
@@ -1467,7 +1467,7 @@ interface WeightsImpl<E> extends Weights<E> {
 		}
 
 		static class Double extends Mapped<java.lang.Double> implements Weights.Double {
-			Double(Weights.Double container, IndexGraphMap indexMap) {
+			Double(Weights.Double container, IndexIdMap indexMap) {
 				super(container, indexMap);
 			}
 
@@ -1493,7 +1493,7 @@ interface WeightsImpl<E> extends Weights<E> {
 		}
 
 		static class Bool extends Mapped<Boolean> implements Weights.Bool {
-			Bool(Weights.Bool container, IndexGraphMap indexMap) {
+			Bool(Weights.Bool container, IndexIdMap indexMap) {
 				super(container, indexMap);
 			}
 
@@ -1519,7 +1519,7 @@ interface WeightsImpl<E> extends Weights<E> {
 		}
 
 		static class Char extends Mapped<Character> implements Weights.Char {
-			Char(Weights.Char container, IndexGraphMap indexMap) {
+			Char(Weights.Char container, IndexIdMap indexMap) {
 				super(container, indexMap);
 			}
 
@@ -1788,7 +1788,7 @@ interface WeightsImpl<E> extends Weights<E> {
 		}
 	}
 
-	static WeightFunction indexWeightFuncFromIdWeightFunc(WeightFunction w, IndexGraphMap map) {
+	static WeightFunction indexWeightFuncFromIdWeightFunc(WeightFunction w, IndexIdMap map) {
 		if (w == null || w == WeightFunction.CardinalityWeightFunction) {
 			return w;
 

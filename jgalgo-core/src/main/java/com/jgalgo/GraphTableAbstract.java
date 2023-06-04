@@ -20,7 +20,7 @@ import java.util.NoSuchElementException;
 import com.jgalgo.EdgeEndpointsContainer.GraphWithEdgeEndpointsContainer;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 
-abstract class GraphTableAbstract extends GraphBaseContinues implements GraphWithEdgeEndpointsContainer {
+abstract class GraphTableAbstract extends GraphBaseIndex implements GraphWithEdgeEndpointsContainer {
 
 	final WeightsImpl.Index.Obj<WeightsImpl.Index.Int> edges;
 	private final EdgeEndpointsContainer edgeEndpoints;
@@ -33,10 +33,10 @@ abstract class GraphTableAbstract extends GraphBaseContinues implements GraphWit
 	GraphTableAbstract(int expectedVerticesNum, int expectedEdgesNum) {
 		super(expectedVerticesNum, expectedEdgesNum);
 
-		edges = new WeightsImpl.Index.Obj<>(verticesIDStrat, null, WeightsImpl.Index.Int.class);
+		edges = new WeightsImpl.Index.Obj<>(verticesIdStrat, null, WeightsImpl.Index.Int.class);
 		addInternalVerticesWeights(WeightsKeyEdges, edges);
 
-		edgeEndpoints = new EdgeEndpointsContainer(edgesIDStrat);
+		edgeEndpoints = new EdgeEndpointsContainer(edgesIdStrat);
 		addInternalEdgesWeights(WeightsKeyEdgeEndpoints, edgeEndpoints);
 	}
 
@@ -44,15 +44,15 @@ abstract class GraphTableAbstract extends GraphBaseContinues implements GraphWit
 		super(g);
 
 		final int n = g.vertices().size();
-		edges = g.edges.copy(verticesIDStrat);
+		edges = g.edges.copy(verticesIdStrat);
 		addInternalVerticesWeights(WeightsKeyEdges, edges);
 		for (int u = 0; u < n; u++) {
-			WeightsImpl.Index.Int uEdges = edges.get(u).copy(verticesIDStrat);
+			WeightsImpl.Index.Int uEdges = edges.get(u).copy(verticesIdStrat);
 			edges.set(u, uEdges);
 			addInternalVerticesWeights(new Utils.Obj("perVertexEdges"), uEdges);
 		}
 
-		edgeEndpoints = g.edgeEndpoints.copy(edgesIDStrat);
+		edgeEndpoints = g.edgeEndpoints.copy(edgesIdStrat);
 		addInternalEdgesWeights(WeightsKeyEdgeEndpoints, edgeEndpoints);
 	}
 
@@ -61,7 +61,7 @@ abstract class GraphTableAbstract extends GraphBaseContinues implements GraphWit
 		int v = super.addVertex();
 		WeightsImpl.Index.Int vEdges = edges.get(v);
 		if (vEdges == null) {
-			vEdges = new WeightsImpl.Index.Int(verticesIDStrat, EdgeNone);
+			vEdges = new WeightsImpl.Index.Int(verticesIdStrat, EdgeNone);
 			addInternalVerticesWeights(new Utils.Obj("perVertexEdges"), vEdges);
 			edges.set(v, vEdges);
 		}

@@ -31,7 +31,7 @@ class MinimumSpanningTreeUtils {
 				return computeMinimumSpanningTree((IndexGraph) g, w);
 
 			IndexGraph iGraph = g.indexGraph();
-			IndexGraphMap eiMap = g.indexGraphEdgesMap();
+			IndexIdMap eiMap = g.indexGraphEdgesMap();
 			w = WeightsImpl.indexWeightFuncFromIdWeightFunc(w, eiMap);
 
 			MinimumSpanningTree.Result indexResult = computeMinimumSpanningTree(iGraph, w);
@@ -50,8 +50,8 @@ class MinimumSpanningTreeUtils {
 				return computeMinimumDirectedSpanningTree((IndexGraph) g, w, root);
 
 			IndexGraph iGraph = g.indexGraph();
-			IndexGraphMap viMap = g.indexGraphVerticesMap();
-			IndexGraphMap eiMap = g.indexGraphEdgesMap();
+			IndexIdMap viMap = g.indexGraphVerticesMap();
+			IndexIdMap eiMap = g.indexGraphEdgesMap();
 			w = WeightsImpl.indexWeightFuncFromIdWeightFunc(w, eiMap);
 			int iRoot = viMap.idToIndex(root);
 
@@ -93,16 +93,16 @@ class MinimumSpanningTreeUtils {
 	private static class ResultFromIndexResult implements MinimumSpanningTree.Result {
 
 		private final MinimumSpanningTree.Result res;
-		private final IndexGraphMap eiMap;
+		private final IndexIdMap eiMap;
 
-		ResultFromIndexResult(MinimumSpanningTree.Result res, IndexGraphMap eiMap) {
+		ResultFromIndexResult(MinimumSpanningTree.Result res, IndexIdMap eiMap) {
 			this.res = Objects.requireNonNull(res);
 			this.eiMap = Objects.requireNonNull(eiMap);
 		}
 
 		@Override
 		public IntCollection edges() {
-			return new IndexGraphMapUtils.CollectionFromIndexCollection(res.edges(), eiMap);
+			return new IndexIdMapUtils.CollectionFromIndexCollection(res.edges(), eiMap);
 		}
 
 		@Override

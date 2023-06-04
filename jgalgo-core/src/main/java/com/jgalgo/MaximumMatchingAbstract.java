@@ -26,8 +26,8 @@ abstract class MaximumMatchingAbstract implements MaximumMatching {
 			return computeMaximumCardinalityMatching((IndexGraph) g);
 
 		IndexGraph iGraph = g.indexGraph();
-		IndexGraphMap viMap = g.indexGraphVerticesMap();
-		IndexGraphMap eiMap = g.indexGraphEdgesMap();
+		IndexIdMap viMap = g.indexGraphVerticesMap();
+		IndexIdMap eiMap = g.indexGraphEdgesMap();
 
 		Matching indexMatch = computeMaximumCardinalityMatching(iGraph);
 		return new MatchingFromIndexMatching(indexMatch, viMap, eiMap);
@@ -39,8 +39,8 @@ abstract class MaximumMatchingAbstract implements MaximumMatching {
 			return computeMaximumWeightedMatching((IndexGraph) g, w);
 
 		IndexGraph iGraph = g.indexGraph();
-		IndexGraphMap viMap = g.indexGraphVerticesMap();
-		IndexGraphMap eiMap = g.indexGraphEdgesMap();
+		IndexIdMap viMap = g.indexGraphVerticesMap();
+		IndexIdMap eiMap = g.indexGraphEdgesMap();
 		w = WeightsImpl.indexWeightFuncFromIdWeightFunc(w, eiMap);
 
 		Matching indexMatch = computeMaximumWeightedMatching(iGraph, w);
@@ -53,8 +53,8 @@ abstract class MaximumMatchingAbstract implements MaximumMatching {
 			return computeMaximumWeightedPerfectMatching((IndexGraph) g, w);
 
 		IndexGraph iGraph = g.indexGraph();
-		IndexGraphMap viMap = g.indexGraphVerticesMap();
-		IndexGraphMap eiMap = g.indexGraphEdgesMap();
+		IndexIdMap viMap = g.indexGraphVerticesMap();
+		IndexIdMap eiMap = g.indexGraphEdgesMap();
 		w = WeightsImpl.indexWeightFuncFromIdWeightFunc(w, eiMap);
 
 		Matching indexMatch = computeMaximumWeightedPerfectMatching(iGraph, w);
@@ -70,10 +70,10 @@ abstract class MaximumMatchingAbstract implements MaximumMatching {
 	private static class MatchingFromIndexMatching implements Matching {
 
 		private final Matching match;
-		private final IndexGraphMap viMap;
-		private final IndexGraphMap eiMap;
+		private final IndexIdMap viMap;
+		private final IndexIdMap eiMap;
 
-		MatchingFromIndexMatching(Matching match, IndexGraphMap viMap, IndexGraphMap eiMap) {
+		MatchingFromIndexMatching(Matching match, IndexIdMap viMap, IndexIdMap eiMap) {
 			this.match = Objects.requireNonNull(match);
 			this.viMap = Objects.requireNonNull(viMap);
 			this.eiMap = Objects.requireNonNull(eiMap);
@@ -91,7 +91,7 @@ abstract class MaximumMatchingAbstract implements MaximumMatching {
 
 		@Override
 		public IntCollection edges() {
-			return new IndexGraphMapUtils.CollectionFromIndexCollection(match.edges(), eiMap);
+			return new IndexIdMapUtils.CollectionFromIndexCollection(match.edges(), eiMap);
 		}
 
 		@Override

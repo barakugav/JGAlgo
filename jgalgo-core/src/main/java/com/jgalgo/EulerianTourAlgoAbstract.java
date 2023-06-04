@@ -23,8 +23,8 @@ abstract class EulerianTourAlgoAbstract implements EulerianTourAlgo {
 			return computeEulerianTour((IndexGraph) g);
 
 		IndexGraph iGraph = g.indexGraph();
-		IndexGraphMap viMap = g.indexGraphVerticesMap();
-		IndexGraphMap eiMap = g.indexGraphEdgesMap();
+		IndexIdMap viMap = g.indexGraphVerticesMap();
+		IndexIdMap eiMap = g.indexGraphEdgesMap();
 
 		Path indexPath = computeEulerianTour(iGraph);
 		return PathImpl.pathFromIndexPath(indexPath, viMap, eiMap);

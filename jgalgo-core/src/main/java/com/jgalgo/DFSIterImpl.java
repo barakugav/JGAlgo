@@ -95,10 +95,10 @@ class DFSIterImpl implements DFSIter {
 	static class DFSFromIndexDFS implements DFSIter {
 
 		private final DFSIter it;
-		private final IndexGraphMap viMap;
-		private final IndexGraphMap eiMap;
+		private final IndexIdMap viMap;
+		private final IndexIdMap eiMap;
 
-		DFSFromIndexDFS(DFSIter it, IndexGraphMap viMap, IndexGraphMap eiMap) {
+		DFSFromIndexDFS(DFSIter it, IndexIdMap viMap, IndexIdMap eiMap) {
 			this.it = Objects.requireNonNull(it);
 			this.viMap = Objects.requireNonNull(viMap);
 			this.eiMap = Objects.requireNonNull(eiMap);
@@ -116,7 +116,7 @@ class DFSIterImpl implements DFSIter {
 
 		@Override
 		public IntList edgePath() {
-			return new IndexGraphMapUtils.ListFromIndexList(it.edgePath(), eiMap);
+			return new IndexIdMapUtils.ListFromIndexList(it.edgePath(), eiMap);
 		}
 
 	}

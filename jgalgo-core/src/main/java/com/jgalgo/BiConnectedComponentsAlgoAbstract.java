@@ -26,8 +26,8 @@ abstract class BiConnectedComponentsAlgoAbstract implements BiConnectedComponent
 			return computeBiConnectivityComponents((IndexGraph) g);
 
 		IndexGraph iGraph = g.indexGraph();
-		IndexGraphMap viMap = g.indexGraphVerticesMap();
-		IndexGraphMap eiMap = g.indexGraphEdgesMap();
+		IndexIdMap viMap = g.indexGraphVerticesMap();
+		IndexIdMap eiMap = g.indexGraphEdgesMap();
 
 		BiConnectedComponentsAlgo.Result indexResult = computeBiConnectivityComponents(iGraph);
 		return new ResultFromIndexResult(indexResult, viMap, eiMap);
@@ -38,10 +38,10 @@ abstract class BiConnectedComponentsAlgoAbstract implements BiConnectedComponent
 	private static class ResultFromIndexResult implements BiConnectedComponentsAlgo.Result {
 
 		private final BiConnectedComponentsAlgo.Result res;
-		private final IndexGraphMap viMap;
-		private final IndexGraphMap eiMap;
+		private final IndexIdMap viMap;
+		private final IndexIdMap eiMap;
 
-		ResultFromIndexResult(BiConnectedComponentsAlgo.Result res, IndexGraphMap viMap, IndexGraphMap eiMap) {
+		ResultFromIndexResult(BiConnectedComponentsAlgo.Result res, IndexIdMap viMap, IndexIdMap eiMap) {
 			this.res = Objects.requireNonNull(res);
 			this.viMap = Objects.requireNonNull(viMap);
 			this.eiMap = Objects.requireNonNull(eiMap);
@@ -59,12 +59,12 @@ abstract class BiConnectedComponentsAlgoAbstract implements BiConnectedComponent
 
 		@Override
 		public IntCollection getBiCcVertices(int biccIdx) {
-			return new IndexGraphMapUtils.CollectionFromIndexCollection(res.getBiCcVertices(biccIdx), viMap);
+			return new IndexIdMapUtils.CollectionFromIndexCollection(res.getBiCcVertices(biccIdx), viMap);
 		}
 
 		@Override
 		public IntCollection getBiCcEdges(int biccIdx) {
-			return new IndexGraphMapUtils.CollectionFromIndexCollection(res.getBiCcEdges(biccIdx), eiMap);
+			return new IndexIdMapUtils.CollectionFromIndexCollection(res.getBiCcEdges(biccIdx), eiMap);
 		}
 
 	}

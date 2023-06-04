@@ -26,8 +26,8 @@ abstract class CyclesFinderAbstract implements CyclesFinder {
 			return findAllCycles((IndexGraph) g);
 
 		IndexGraph iGraph = g.indexGraph();
-		IndexGraphMap viMap = g.indexGraphVerticesMap();
-		IndexGraphMap eiMap = g.indexGraphEdgesMap();
+		IndexIdMap viMap = g.indexGraphVerticesMap();
+		IndexIdMap eiMap = g.indexGraphEdgesMap();
 
 		Iterator<Path> indexResult = findAllCycles(iGraph);
 		return new ResultFromIndexResult(indexResult, viMap, eiMap);
@@ -38,10 +38,10 @@ abstract class CyclesFinderAbstract implements CyclesFinder {
 	private static class ResultFromIndexResult implements Iterator<Path> {
 
 		private final Iterator<Path> res;
-		private final IndexGraphMap viMap;
-		private final IndexGraphMap eiMap;
+		private final IndexIdMap viMap;
+		private final IndexIdMap eiMap;
 
-		ResultFromIndexResult(Iterator<Path> res, IndexGraphMap viMap, IndexGraphMap eiMap) {
+		ResultFromIndexResult(Iterator<Path> res, IndexIdMap viMap, IndexIdMap eiMap) {
 			this.res = Objects.requireNonNull(res);
 			this.viMap = Objects.requireNonNull(viMap);
 			this.eiMap = Objects.requireNonNull(eiMap);

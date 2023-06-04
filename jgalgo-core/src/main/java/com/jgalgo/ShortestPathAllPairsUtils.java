@@ -31,8 +31,8 @@ class ShortestPathAllPairsUtils {
 				return computeAllShortestPaths((IndexGraph) g, w);
 
 			IndexGraph iGraph = g.indexGraph();
-			IndexGraphMap viMap = g.indexGraphVerticesMap();
-			IndexGraphMap eiMap = g.indexGraphEdgesMap();
+			IndexIdMap viMap = g.indexGraphVerticesMap();
+			IndexIdMap eiMap = g.indexGraphEdgesMap();
 			w = WeightsImpl.indexWeightFuncFromIdWeightFunc(w, eiMap);
 
 			ShortestPathAllPairs.Result indexResult = computeAllShortestPaths(iGraph, w);
@@ -45,8 +45,8 @@ class ShortestPathAllPairsUtils {
 				return computeAllCardinalityShortestPaths((IndexGraph) g);
 
 			IndexGraph iGraph = g.indexGraph();
-			IndexGraphMap viMap = g.indexGraphVerticesMap();
-			IndexGraphMap eiMap = g.indexGraphEdgesMap();
+			IndexIdMap viMap = g.indexGraphVerticesMap();
+			IndexIdMap eiMap = g.indexGraphEdgesMap();
 
 			ShortestPathAllPairs.Result indexResult = computeAllCardinalityShortestPaths(iGraph);
 			return new ResultFromIndexResult(indexResult, viMap, eiMap);
@@ -248,10 +248,10 @@ class ShortestPathAllPairsUtils {
 	private static class ResultFromIndexResult implements ShortestPathAllPairs.Result {
 
 		private final ShortestPathAllPairs.Result res;
-		private final IndexGraphMap viMap;
-		private final IndexGraphMap eiMap;
+		private final IndexIdMap viMap;
+		private final IndexIdMap eiMap;
 
-		ResultFromIndexResult(ShortestPathAllPairs.Result res, IndexGraphMap viMap, IndexGraphMap eiMap) {
+		ResultFromIndexResult(ShortestPathAllPairs.Result res, IndexIdMap viMap, IndexIdMap eiMap) {
 			this.res = Objects.requireNonNull(res);
 			this.eiMap = Objects.requireNonNull(eiMap);
 			this.viMap = Objects.requireNonNull(viMap);

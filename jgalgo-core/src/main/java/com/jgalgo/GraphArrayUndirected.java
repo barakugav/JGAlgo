@@ -18,7 +18,6 @@ package com.jgalgo;
 
 import java.util.Arrays;
 import com.jgalgo.GraphsUtils.GraphCapabilitiesBuilder;
-import com.jgalgo.GraphsUtils.UndirectedGraphImpl;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 
 /**
@@ -32,7 +31,7 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
  * @see    GraphArrayDirected
  * @author Barak Ugav
  */
-class GraphArrayUndirected extends GraphArrayAbstract implements UndirectedGraphImpl {
+class GraphArrayUndirected extends GraphArrayAbstract {
 
 	private final WeightsImpl.Index.Obj<int[]> edges;
 	private final WeightsImpl.Index.Int edgesNum;
@@ -55,8 +54,8 @@ class GraphArrayUndirected extends GraphArrayAbstract implements UndirectedGraph
 	 */
 	GraphArrayUndirected(int expectedVerticesNum, int expectedEdgesNum) {
 		super(expectedVerticesNum, expectedEdgesNum);
-		edges = new WeightsImpl.Index.Obj<>(verticesIDStrat, IntArrays.EMPTY_ARRAY, int[].class);
-		edgesNum = new WeightsImpl.Index.Int(verticesIDStrat, 0);
+		edges = new WeightsImpl.Index.Obj<>(verticesIdStrat, IntArrays.EMPTY_ARRAY, int[].class);
+		edgesNum = new WeightsImpl.Index.Int(verticesIdStrat, 0);
 
 		addInternalVerticesWeights(WeightsKeyEdges, edges);
 		addInternalVerticesWeights(WeightsKeyEdgesNum, edgesNum);
@@ -66,8 +65,8 @@ class GraphArrayUndirected extends GraphArrayAbstract implements UndirectedGraph
 		super(g);
 		final int n = g.vertices().size();
 
-		edges = g.edges.copy(verticesIDStrat);
-		edgesNum = g.edgesNum.copy(verticesIDStrat);
+		edges = g.edges.copy(verticesIdStrat);
+		edgesNum = g.edgesNum.copy(verticesIdStrat);
 		addInternalVerticesWeights(WeightsKeyEdges, edges);
 		addInternalVerticesWeights(WeightsKeyEdgesNum, edgesNum);
 
@@ -168,6 +167,21 @@ class GraphArrayUndirected extends GraphArrayAbstract implements UndirectedGraph
 		checkVertex(source);
 		while (edgesNum.getInt(source) > 0)
 			removeEdge(edges.get(source)[0]);
+	}
+
+	@Override
+	public void removeEdgesOutOf(int source) {
+		removeEdgesOf(source);
+	}
+
+	@Override
+	public void removeEdgesInOf(int target) {
+		removeEdgesOf(target);
+	}
+
+	@Override
+	public void reverseEdge(int edge) {
+		// Do nothing
 	}
 
 	@Override

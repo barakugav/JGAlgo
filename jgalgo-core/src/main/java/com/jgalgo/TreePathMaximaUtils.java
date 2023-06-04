@@ -32,8 +32,8 @@ class TreePathMaximaUtils {
 				return computeHeaviestEdgeInTreePaths((IndexGraph) tree, w, queries);
 
 			IndexGraph iGraph = tree.indexGraph();
-			IndexGraphMap viMap = tree.indexGraphVerticesMap();
-			IndexGraphMap eiMap = tree.indexGraphEdgesMap();
+			IndexIdMap viMap = tree.indexGraphVerticesMap();
+			IndexIdMap eiMap = tree.indexGraphEdgesMap();
 			w = WeightsImpl.indexWeightFuncFromIdWeightFunc(w, eiMap);
 			queries = new IndexQueriesFromQueries(queries, viMap);
 
@@ -97,9 +97,9 @@ class TreePathMaximaUtils {
 
 	static class IndexQueriesFromQueries implements TreePathMaxima.Queries {
 		private final TreePathMaxima.Queries qs;
-		private final IndexGraphMap viMap;
+		private final IndexIdMap viMap;
 
-		IndexQueriesFromQueries(TreePathMaxima.Queries qs, IndexGraphMap viMap) {
+		IndexQueriesFromQueries(TreePathMaxima.Queries qs, IndexIdMap viMap) {
 			this.qs = Objects.requireNonNull(qs);
 			this.viMap = Objects.requireNonNull(viMap);
 		}
@@ -129,9 +129,9 @@ class TreePathMaximaUtils {
 	private static class ResultFromIndexResult implements TreePathMaxima.Result {
 
 		private final TreePathMaxima.Result res;
-		private final IndexGraphMap eiMap;
+		private final IndexIdMap eiMap;
 
-		ResultFromIndexResult(TreePathMaxima.Result res, IndexGraphMap eiMap) {
+		ResultFromIndexResult(TreePathMaxima.Result res, IndexIdMap eiMap) {
 			this.res = Objects.requireNonNull(res);
 			this.eiMap = Objects.requireNonNull(eiMap);
 		}

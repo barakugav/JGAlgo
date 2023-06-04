@@ -56,8 +56,8 @@ public interface DFSIter extends IntIterator {
 			return new DFSIterImpl((IndexGraph) g, source);
 
 		IndexGraph iGraph = g.indexGraph();
-		IndexGraphMap viMap = g.indexGraphVerticesMap();
-		IndexGraphMap eiMap = g.indexGraphEdgesMap();
+		IndexIdMap viMap = g.indexGraphVerticesMap();
+		IndexIdMap eiMap = g.indexGraphEdgesMap();
 
 		int iSource = viMap.idToIndex(source);
 		DFSIter indexIter = new DFSIterImpl(iGraph, iSource);

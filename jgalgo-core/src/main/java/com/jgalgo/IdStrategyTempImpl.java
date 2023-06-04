@@ -24,14 +24,14 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
 
-abstract class IDStrategyImpl implements IDStrategy {
+abstract class IdStrategyImpl implements IdStrategy {
 
-	private final List<IDSwapListener> idSwapListeners = new CopyOnWriteArrayList<>();
-	private final List<IDAddRemoveListener> idAddRemoveListeners = new CopyOnWriteArrayList<>();
+	private final List<IdSwapListener> idSwapListeners = new CopyOnWriteArrayList<>();
+	private final List<IdAddRemoveListener> idAddRemoveListeners = new CopyOnWriteArrayList<>();
 
-	IDStrategyImpl() {}
+	IdStrategyImpl() {}
 
-	static class Continues extends IDStrategyImpl {
+	static class Continues extends IdStrategyImpl {
 
 		private int size;
 		private final IntSet idSet;
@@ -110,8 +110,8 @@ abstract class IDStrategyImpl implements IDStrategy {
 		}
 
 		@Override
-		IDStrategyImpl copy() {
-			return new IDStrategyImpl.Continues(size);
+		IdStrategyImpl copy() {
+			return new IdStrategyImpl.Continues(size);
 		}
 
 		private void checkIdx(int idx) {
@@ -120,7 +120,7 @@ abstract class IDStrategyImpl implements IDStrategy {
 		}
 	}
 
-	static class ContinuesEmpty extends IDStrategyImpl {
+	static class ContinuesEmpty extends IdStrategyImpl {
 
 		@Override
 		int newIdx() {
@@ -163,8 +163,8 @@ abstract class IDStrategyImpl implements IDStrategy {
 		}
 
 		@Override
-		IDStrategyImpl copy() {
-			return new IDStrategyImpl.ContinuesEmpty();
+		IdStrategyImpl copy() {
+			return new IdStrategyImpl.ContinuesEmpty();
 		}
 
 	}
@@ -198,45 +198,69 @@ abstract class IDStrategyImpl implements IDStrategy {
 	abstract void idxSwap(int idx1, int idx2);
 
 	void notifyIDSwap(int id1, int id2) {
-		for (IDSwapListener listener : idSwapListeners)
+		for (IdSwapListener listener : idSwapListeners)
 			listener.idSwap(id1, id2);
 	}
 
 	void notifyIdAdd(int id) {
-		for (IDAddRemoveListener listener : idAddRemoveListeners)
+		for (IdAddRemoveListener listener : idAddRemoveListeners)
 			listener.idAdd(id);
 	}
 
 	void notifyIdRemove(int id) {
-		for (IDAddRemoveListener listener : idAddRemoveListeners)
+		for (IdAddRemoveListener listener : idAddRemoveListeners)
 			listener.idRemove(id);
 	}
 
 	void notifyIdsClear() {
-		for (IDAddRemoveListener listener : idAddRemoveListeners)
+		for (IdAddRemoveListener listener : idAddRemoveListeners)
 			listener.idsClear();
 	}
 
-	abstract IDStrategyImpl copy();
+	abstract IdStrategyImpl copy();
 
 	@Override
-	public void addIDSwapListener(IDSwapListener listener) {
+	public void addIdSwapListener(IdSwapListener listener) {
 		idSwapListeners.add(Objects.requireNonNull(listener));
 	}
 
 	@Override
-	public void removeIDSwapListener(IDSwapListener listener) {
+	public void removeIdSwapListener(IdSwapListener listener) {
 		idSwapListeners.remove(listener);
 	}
 
-	@Override
-	public void addIDAddRemoveListener(IDAddRemoveListener listener) {
+	void addIdAddRemoveListener(IdAddRemoveListener listener) {
 		idAddRemoveListeners.add(Objects.requireNonNull(listener));
 	}
 
-	@Override
-	public void removeIDAddRemoveListener(IDAddRemoveListener listener) {
+	void removeIdAddRemoveListener(IdAddRemoveListener listener) {
 		idAddRemoveListeners.remove(listener);
+	}
+
+	/**
+	 * A listener that will be notified each time a strategy add or remove an id.
+	 *
+	 * @author Barak Ugav
+	 */
+	static interface IdAddRemoveListener {
+		/**
+		 * A callback that is called when {@code id} is added by the strategy.
+		 *
+		 * @param id the new id
+		 */
+		void idAdd(int id);
+
+		/**
+		 * A callback that is called when {@code id} is removed by the strategy.
+		 *
+		 * @param id the removed id
+		 */
+		void idRemove(int id);
+
+		/**
+		 * A callback that is called when all ids are removed from the strategy.
+		 */
+		void idsClear();
 	}
 
 }

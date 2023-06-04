@@ -23,8 +23,8 @@ abstract class MinimumCutGlobalAbstract implements MinimumCutGlobal {
 			return computeMinimumCut((IndexGraph) g, w);
 
 		IndexGraph iGraph = g.indexGraph();
-		IndexGraphMap viMap = g.indexGraphVerticesMap();
-		IndexGraphMap eiMap = g.indexGraphEdgesMap();
+		IndexIdMap viMap = g.indexGraphVerticesMap();
+		IndexIdMap eiMap = g.indexGraphEdgesMap();
 		w = WeightsImpl.indexWeightFuncFromIdWeightFunc(w, eiMap);
 
 		Cut indexCut = computeMinimumCut(iGraph, w);

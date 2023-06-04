@@ -67,9 +67,9 @@ package com.jgalgo;
  * {@link #get(int)} method for every edge (vertex) that was not explicitly set another value using
  * {@link #set(int, Object)}.
  * <p>
- * If the weights container is associated with the edges of the graph, and the {@link IDStrategy} of the edges performed
- * some swaps to maintain its invariant (see {@link IDStrategy#addIDSwapListener(IDStrategy.IDSwapListener)}) the
- * weights container will be updated to the edges ids automatically.
+ * If the weights container is associated with the edges of the graph, and the {@link IdStrategy} of the edges performed
+ * some swaps to maintain its invariant (see {@link IdStrategy#addIdSwapListener(com.jgalgo.IdStrategy.IdSwapListener)})
+ * the weights container will be updated to the edges ids automatically.
  *
  * @param  <W> the weights type
  * @author     Barak Ugav
@@ -611,7 +611,7 @@ public interface Weights<W> {
 	@SuppressWarnings("unchecked")
 	public static <E, WeightsT extends Weights<E>> WeightsT createExternalVerticesWeights(Graph g,
 			Class<? super E> type, E defVal) {
-		IDStrategyImpl idStrat = (IDStrategyImpl) g.indexGraph().getVerticesIDStrategy();
+		IdStrategyImpl idStrat = (IdStrategyImpl) g.indexGraph().getVerticesIdStrategy();
 		WeightsImpl.Index<E> weights = WeightsImpl.Index.newInstance(idStrat, type, defVal);
 		weights.expand(idStrat.size());
 		if (g instanceof IndexGraph) {
@@ -653,7 +653,7 @@ public interface Weights<W> {
 	@SuppressWarnings("unchecked")
 	public static <E, WeightsT extends Weights<E>> WeightsT createExternalEdgesWeights(Graph g, Class<? super E> type,
 			E defVal) {
-		IDStrategyImpl idStrat = (IDStrategyImpl) g.indexGraph().getEdgesIDStrategy();
+		IdStrategyImpl idStrat = (IdStrategyImpl) g.indexGraph().getEdgesIdStrategy();
 		WeightsImpl.Index<E> weights = WeightsImpl.Index.newInstance(idStrat, type, defVal);
 		weights.expand(idStrat.size());
 		if (g instanceof IndexGraph) {

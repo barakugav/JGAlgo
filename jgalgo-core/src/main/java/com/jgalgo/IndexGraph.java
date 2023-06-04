@@ -15,42 +15,142 @@
  */
 package com.jgalgo;
 
+import it.unimi.dsi.fastutil.ints.IntSet;
+
+/**
+ * A graph whose vertices and edges identifiers are indices.
+ * <p>
+ * The {@link Graph} interface provide addition, removal and querying of vertices and edges, all using {@code int}
+ * identifiers. These identifiers are fixed, and once a vertex or edge is assigned an ID, it will not change during the
+ * graph lifetime. On the other hand, an <i>Index</i> graph is a {@link Graph} object in which the vertices and edges
+ * identifiers of the graph are <b>always</b> {@code (0,1,2, ...,verticesNum-1)} and {@code (0,1,2, ...,edgesNum-1)}.
+ * <p>
+ * The index graph invariants allow for a great performance boost, as a simple array or bitmap can be used to associate
+ * a value/weight/flag with each vertex/edge. But it does come with a cost: to maintain the invariants, implementations
+ * may need to rename existing vertices or edges along the graph lifetime. These renames are managed by a
+ * {@link IdStrategy} that can be accessed using {@link #getVerticesIdStrategy()} or {@link #getEdgesIdStrategy()} which
+ * allow for a subscription to these renames via
+ * {@link IdStrategy#addIdSwapListener(com.jgalgo.IdStrategy.IdSwapListener)}.
+ * <p>
+ * An index graph may be obtained as a view from a regular {@link Graph} using {@link Graph#indexGraph()}, or it can be
+ * created by its own using {@link IndexGraph.Builder}. In cases where no removal of vertices or edges is required, and
+ * there is no need to use per-defined IDs, there is no drawback to use the {@link IndexGraph} as regular {@link Graph},
+ * as it will provide the best performance.
+ * <p>
+ * All graph algorithms implementations should operation on Index graphs only, for best performance. If a regular
+ * {@link Graph} is provided to an algorithm, the Index graph should be retrieved using {@link Graph#indexGraph()}, the
+ * algorithm expensive logic should operate on the returned Index graph and finally the result should be transformed
+ * back to the regular graph IDs. The mapping from a regular graph IDs to indices and visa versa is exposed using
+ * {@link IndexIdMap}, which can be accessed using {@link Graph#indexGraphVerticesMap()} and
+ * {@link Graph#indexGraphEdgesMap()}.
+ *
+ * @see    IdStrategy
+ * @see    IndexIdMap
+ * @author Barak Ugav
+ */
 public interface IndexGraph extends Graph {
 
 	/**
-	 * Get the ID strategy of the vertices of the graph.
-	 *
+	 * {@inheritDoc}
 	 * <p>
-	 * Each vertex in the graph is identified by a unique non negative int ID, which is determined by some strategy.
-	 * Only {@link IDStrategy.Continues} is supported for vertices, which ensure that at all times the vertices IDs are
-	 * {@code 0,1,..., verticesNum-1}, and it might rename some vertices when a vertex is removed to maintain this
-	 * invariant. This rename can be subscribed using {@link IDStrategy#addIDSwapListener}.
+	 * In an Index graph, the set of vertices are always {@code (0,1,2, ...,verticesNum-1)}.
+	 */
+	@Override
+	IntSet vertices();
+
+	/**
+	 * {@inheritDoc}
+	 * <p>
+	 * In an Index graph, the set of edges are always {@code (0,1,2, ...,edgesNum-1)}.
+	 */
+	@Override
+	IntSet edges();
+
+	/**
+	 * {@inheritDoc}
+	 * <p>
+	 * After removing a vertex, the vertices ID strategy may rename other vertices identifiers to maintain its
+	 * invariants, see {@link #getVerticesIdStrategy()}. Theses renames can be subscribed using
+	 * {@link IdStrategy#addIdSwapListener(com.jgalgo.IdStrategy.IdSwapListener)}.
+	 */
+	@Override
+	void removeVertex(int vertex);
+
+	/**
+	 * {@inheritDoc}
+	 * <p>
+	 * After removing an edge, the edges ID strategy may rename other edges identifiers to maintain its invariants, see
+	 * {@link #getEdgesIdStrategy()}. Theses renames can be subscribed using
+	 * {@link IdStrategy#addIdSwapListener(com.jgalgo.IdStrategy.IdSwapListener)}.
+	 */
+	@Override
+	void removeEdge(int edge);
+
+	/**
+	 * {@inheritDoc}
+	 * <p>
+	 * After removing an edge, the edges ID strategy may rename other edges identifiers to maintain its invariants, see
+	 * {@link #getEdgesIdStrategy()}. Theses renames can be subscribed using
+	 * {@link IdStrategy#addIdSwapListener(com.jgalgo.IdStrategy.IdSwapListener)}.
+	 */
+	@Override
+	default void removeEdgesOf(int vertex) {
+		Graph.super.removeEdgesOf(vertex);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * <p>
+	 * After removing an edge, the edges ID strategy may rename other edges identifiers to maintain its invariants, see
+	 * {@link #getEdgesIdStrategy()}. Theses renames can be subscribed using
+	 * {@link IdStrategy#addIdSwapListener(com.jgalgo.IdStrategy.IdSwapListener)}.
+	 */
+	@Override
+	default void removeEdgesOutOf(int source) {
+		Graph.super.removeEdgesOutOf(source);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * <p>
+	 * After removing an edge, the edges ID strategy may rename other edges identifiers to maintain its invariants, see
+	 * {@link #getEdgesIdStrategy()}. Theses renames can be subscribed using
+	 * {@link IdStrategy#addIdSwapListener(com.jgalgo.IdStrategy.IdSwapListener)}.
 	 *
-	 * @see    IDStrategy
+	 * @param  target                    a vertex in the graph
+	 * @throws IndexOutOfBoundsException if {@code target} is not a valid vertex identifier
+	 */
+	@Override
+	default void removeEdgesInOf(int target) {
+		Graph.super.removeEdgesInOf(target);
+	}
+
+	/**
+	 * Get the ID strategy of the vertices of the graph.
+	 * <p>
+	 * In an Index graph, the set of vertices are always {@code (0,1,2, ...,verticesNum-1)}. To maintain this invariant
+	 * during the lifetime of the graph, an {@link IdStrategy} determine how to rename existing vertices when needed.
+	 * These renames can be subscribed using {@link IdStrategy#addIdSwapListener(com.jgalgo.IdStrategy.IdSwapListener)}.
 	 *
+	 * @see    IdStrategy
 	 * @return the vertices IDs strategy
 	 */
-	public IDStrategy getVerticesIDStrategy();
+	IdStrategy getVerticesIdStrategy();
 
 	/**
 	 * Get the ID strategy of the edges of the graph.
-	 *
 	 * <p>
-	 * Each edge in the graph is identified by a unique non negative int ID, which is determined by some strategy. For
-	 * example, {@link IDStrategy.Continues} ensure that at all times the edges IDs are {@code 0,1,..., edgesNum-1}, and
-	 * it might rename some edges when an edge is removed to maintain this invariant. This rename can be subscribed
-	 * using {@link IDStrategy#addIDSwapListener}. Another option for an ID strategy is {@link IDStrategy.Fixed} which
-	 * ensure once an edge is assigned an ID, it will not change. There might be some performance differences between
-	 * different ID strategies.
+	 * In an Index graph, the set of edges are always {@code (0,1,2, ...,edgesNum-1)}. To maintain this invariant during
+	 * the lifetime of the graph, an {@link IdStrategy} determine how to rename existing edges when needed. These
+	 * renames can be subscribed using {@link IdStrategy#addIdSwapListener(com.jgalgo.IdStrategy.IdSwapListener)}.
 	 *
-	 * @see    IDStrategy
-	 *
+	 * @see    IdStrategy
 	 * @return the edges IDs strategy
 	 */
-	public IDStrategy getEdgesIDStrategy();
+	IdStrategy getEdgesIdStrategy();
 
 	@Override
-	public IndexGraph copy();
+	IndexGraph copy();
 
 	@Override
 	default IndexGraph unmodifiableView() {
@@ -62,10 +162,24 @@ public interface IndexGraph extends Graph {
 		return Graphs.reverseView(this);
 	}
 
+	/**
+	 * Create an undirected index graph builder.
+	 * <p>
+	 * This is the recommended way to instantiate a new undirected index graph.
+	 *
+	 * @return a new builder that can build undirected index graphs
+	 */
 	static IndexGraph.Builder newBuilderUndirected() {
 		return new IndexGraphBuilderImpl(false);
 	}
 
+	/**
+	 * Create a directed index graph builder.
+	 * <p>
+	 * This is the recommended way to instantiate a new directed index graph.
+	 *
+	 * @return a new builder that can build directed index graphs
+	 */
 	static IndexGraph.Builder newBuilderDirected() {
 		return new IndexGraphBuilderImpl(true);
 	}
@@ -77,12 +191,12 @@ public interface IndexGraph extends Graph {
 	 * @see    IndexGraph#newBuilderUndirected()
 	 * @author Barak Ugav
 	 */
-	public interface Builder extends BuilderAbstract<IndexGraph.Builder> {
+	static interface Builder extends BuilderAbstract<IndexGraph.Builder> {
 
 		/**
-		 * Create a new empty graph.
+		 * Create a new empty index graph.
 		 *
-		 * @return a new graph with the builder options
+		 * @return a new index graph with the builder options
 		 */
 		IndexGraph build();
 

@@ -63,7 +63,7 @@ class MatchingUnweightedTestUtils extends TestUtils {
 		int n = g.vertices().size();
 		@SuppressWarnings("unchecked")
 		List<Integer>[] graph = new List[n];
-		IndexGraphMap vToIdx = g.indexGraphVerticesMap();
+		IndexIdMap vToIdx = g.indexGraphVerticesMap();
 		for (int u : g.vertices()) {
 			graph[vToIdx.idToIndex(u)] = new ArrayList<>();
 			for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {

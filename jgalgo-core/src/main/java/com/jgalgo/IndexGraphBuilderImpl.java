@@ -32,14 +32,14 @@ class IndexGraphBuilderImpl implements IndexGraph.Builder {
 
 	@Override
 	public IndexGraph build() {
-		BiFunction<Integer, Integer, ? extends GraphBaseContinues> baseBuilderArray =
+		BiFunction<Integer, Integer, ? extends GraphBaseIndex> baseBuilderArray =
 				directed ? GraphArrayDirected::new : GraphArrayUndirected::new;
-		BiFunction<Integer, Integer, ? extends GraphBaseContinues> baseBuilderLinked =
+		BiFunction<Integer, Integer, ? extends GraphBaseIndex> baseBuilderLinked =
 				directed ? GraphLinkedDirected::new : GraphLinkedUndirected::new;
-		BiFunction<Integer, Integer, ? extends GraphBaseContinues> baseBuilderTable =
+		BiFunction<Integer, Integer, ? extends GraphBaseIndex> baseBuilderTable =
 				directed ? GraphTableDirected::new : GraphTableUndirected::new;
 
-		BiFunction<Integer, Integer, ? extends GraphBaseContinues> baseBuilder;
+		BiFunction<Integer, Integer, ? extends GraphBaseIndex> baseBuilder;
 		if (impl != null && !"GraphArray".equals(impl)) {
 			if ("GraphArray".equals(impl))
 				baseBuilder = baseBuilderArray;
