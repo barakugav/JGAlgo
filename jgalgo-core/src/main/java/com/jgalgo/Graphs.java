@@ -837,6 +837,11 @@ public class Graphs {
 		}
 
 		@Override
+		public void addVertex(int vertex) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
 		public void removeVertex(int vertex) {
 			throw new UnsupportedOperationException();
 		}
@@ -858,6 +863,11 @@ public class Graphs {
 
 		@Override
 		public int addEdge(int source, int target) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void addEdge(int source, int target, int edge) {
 			throw new UnsupportedOperationException();
 		}
 
@@ -969,7 +979,7 @@ public class Graphs {
 			return graph.indexGraphEdgesMap();
 		}
 
-		Graph g() {
+		Graph graph() {
 			return graph;
 		}
 	}
@@ -981,23 +991,35 @@ public class Graphs {
 		}
 
 		@Override
-		IndexGraph g() { // TOOD rename
-			return (IndexGraph) super.g();
+		IndexGraph graph() {
+			return (IndexGraph) super.graph();
 		}
 
 		@Override
 		public IndexGraph copy() {
-			return g().copy();
+			return graph().copy();
 		}
 
 		@Override
 		public IdStrategy getVerticesIdStrategy() {
-			return g().getVerticesIdStrategy();
+			return graph().getVerticesIdStrategy();
 		}
 
 		@Override
 		public IdStrategy getEdgesIdStrategy() {
-			return g().getEdgesIdStrategy();
+			return graph().getEdgesIdStrategy();
+		}
+
+		@Override
+		@Deprecated
+		public void addVertex(int vertex) {
+			IndexGraph.super.addVertex(vertex);
+		}
+
+		@Override
+		@Deprecated
+		public void addEdge(int source, int target, int edge) {
+			IndexGraph.super.addEdge(source, target, edge);
 		}
 
 	}
@@ -1098,6 +1120,11 @@ public class Graphs {
 		}
 
 		@Override
+		public void addVertex(int vertex) {
+			graph.addVertex(vertex);
+		}
+
+		@Override
 		public void removeVertex(int vertex) {
 			graph.removeVertex(vertex);
 		}
@@ -1120,6 +1147,11 @@ public class Graphs {
 		@Override
 		public int addEdge(int source, int target) {
 			return graph.addEdge(target, source);
+		}
+
+		@Override
+		public void addEdge(int source, int target, int edge) {
+			graph.addEdge(source, target, edge);
 		}
 
 		@Override
@@ -1254,6 +1286,18 @@ public class Graphs {
 		@Override
 		public IndexGraph copy() {
 			return new ReverseIndexGraph(graph().copy());
+		}
+
+		@Override
+		@Deprecated
+		public void addVertex(int vertex) {
+			IndexGraph.super.addVertex(vertex);
+		}
+
+		@Override
+		@Deprecated
+		public void addEdge(int source, int target, int edge) {
+			IndexGraph.super.addEdge(source, target, edge);
 		}
 
 	}

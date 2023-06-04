@@ -67,6 +67,19 @@ public interface IndexGraph extends Graph {
 	IntSet edges();
 
 	/**
+	 * Unsupported operation.
+	 * <p>
+	 * Index graphs vertices IDs are always {@code (0,1,2, ...,verticesNum-1)} and do not support user chosen IDs.
+	 *
+	 * @throws UnsupportedOperationException always
+	 */
+	@Override
+	@Deprecated
+	default void addVertex(int vertex) {
+		throw new UnsupportedOperationException("Index graphs do not support user chosen IDs");
+	}
+
+	/**
 	 * {@inheritDoc}
 	 * <p>
 	 * After removing a vertex, the vertices ID strategy may rename other vertices identifiers to maintain its
@@ -75,6 +88,19 @@ public interface IndexGraph extends Graph {
 	 */
 	@Override
 	void removeVertex(int vertex);
+
+	/**
+	 * Unsupported operation.
+	 * <p>
+	 * Index graphs edges IDs are always {@code (0,1,2, ...,edgesNum-1)} and do not support user chosen IDs.
+	 *
+	 * @throws UnsupportedOperationException always
+	 */
+	@Override
+	@Deprecated
+	default void addEdge(int source, int target, int edge) {
+		throw new UnsupportedOperationException("Index graphs do not support user chosen IDs");
+	}
 
 	/**
 	 * {@inheritDoc}

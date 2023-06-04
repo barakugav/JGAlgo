@@ -85,16 +85,8 @@ class MaximumFlowDinic extends MaximumFlowAbstract {
 
 		double computeMaximumFlow() {
 			Graph L = layerGraphBuilder.setDirected(true).expectedVerticesNum(n).build();
-			Weights.Int L2GvMap = L.addVerticesWeights(EdgeRefWeightKey, int.class);
-			Weights.Int g2LvMap = Weights.createExternalVerticesWeights(g, int.class, Integer.valueOf(-1));
-			for (int v = 0; v < n; v++) {
-				int vL = L.addVertex();
-				L2GvMap.set(vL, v);
-				g2LvMap.set(v, vL);
-			}
-			final int sourceL = g2LvMap.getInt(source);
-			final int sinkL = g2LvMap.getInt(sink);
-			Weights.Int edgeRefL = L.addEdgesWeights(EdgeRefWeightKey, int.class, Integer.valueOf(-1));
+			for (int v : g.vertices())
+				L.addVertex(v);
 
 			IntPriorityQueue bfsQueue = new IntArrayFIFOQueue();
 			int[] level = new int[n];
@@ -112,16 +104,13 @@ class MaximumFlowDinic extends MaximumFlowAbstract {
 					int u = bfsQueue.dequeueInt();
 					if (u == sink)
 						break bfs;
-					int uL = g2LvMap.getInt(u);
 					int lvl = level[u];
 					for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
 						int e = eit.nextInt();
 						int v = eit.target();
 						if (flow.getDouble(e) >= capacity.getDouble(e) || level[v] <= lvl)
 							continue;
-						int vL = g2LvMap.getInt(v);
-						int eL = L.addEdge(uL, vL);
-						edgeRefL.set(eL, e);
+						L.addEdge(u, v, e);
 						if (level[v] != unvisited)
 							continue;
 						level[v] = lvl + 1;
@@ -134,8 +123,8 @@ class MaximumFlowDinic extends MaximumFlowAbstract {
 				searchBlockingFlow: for (;;) {
 					IntStack path = new IntArrayList();
 					searchAugPath: for (;;) {
-						int uL = path.isEmpty() ? sourceL : L.edgeTarget(path.topInt());
-						EdgeIter eit = L.edgesOut(uL).iterator();
+						int u = path.isEmpty() ? source : L.edgeTarget(path.topInt());
+						EdgeIter eit = L.edgesOut(u).iterator();
 						if (!eit.hasNext()) {
 							if (path.isEmpty()) {
 								// no path from source to sink
@@ -150,7 +139,7 @@ class MaximumFlowDinic extends MaximumFlowAbstract {
 
 						int e = eit.nextInt();
 						path.push(e);
-						if (eit.target() == sinkL) {
+						if (eit.target() == sink) {
 							// augment
 							break searchAugPath;
 						} else {
@@ -164,14 +153,11 @@ class MaximumFlowDinic extends MaximumFlowAbstract {
 
 					// find out what is the maximum flow we can pass
 					double f = Double.MAX_VALUE;
-					for (int eL : pathList) {
-						int e = edgeRefL.getInt(eL);
+					for (int e : pathList)
 						f = Math.min(f, capacity.getDouble(e) - flow.getDouble(e));
-					}
 
 					// update flow of all edges on path
-					for (int eL : pathList) {
-						int e = edgeRefL.getInt(eL);
+					for (int e : pathList) {
 						int rev = twin.getInt(e);
 						double newFlow = flow.getDouble(e) + f;
 						double cap = capacity.getDouble(e);
@@ -180,7 +166,7 @@ class MaximumFlowDinic extends MaximumFlowAbstract {
 						} else {
 							/* saturated, remove edge */
 							flow.set(e, cap);
-							L.removeEdge(eL);
+							L.removeEdge(e);
 						}
 						flow.set(rev, flow.getDouble(rev) - f);
 					}

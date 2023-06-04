@@ -79,14 +79,8 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract {
 
 			Graph.Builder builder = Graph.newBuilderDirected().setOption("impl", "GraphLinked");
 			Graph L = builder.expectedVerticesNum(n).build();
-			Weights.Int L2GvMap = L.addVerticesWeights(EdgeRefWeightKey, int.class);
-			Weights.Int g2LvMap = Weights.createExternalVerticesWeights(g, int.class, Integer.valueOf(-1));
-			for (int v = 0; v < n; v++) {
-				int vL = L.addVertex();
-				L2GvMap.set(vL, v);
-				g2LvMap.set(v, vL);
-			}
-			Weights.Int edgeRefL = L.addEdgesWeights(EdgeRefWeightKey, int.class);
+			for (int v : g.vertices())
+				L.addVertex(v);
 
 			IntPriorityQueue bfsQueue = new IntArrayFIFOQueue();
 			int[] level = new int[n];
@@ -111,16 +105,13 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract {
 					int u = bfsQueue.dequeueInt();
 					if (u == sink)
 						break bfs;
-					int uL = g2LvMap.getInt(u);
 					int lvl = level[u];
 					for (EdgeIter eit = g.edgesOut(u).iterator(); eit.hasNext();) {
 						int e = eit.nextInt();
 						int v = eit.target();
 						if (flow.getDouble(e) >= capacity.getDouble(e) || level[v] <= lvl)
 							continue;
-						int vL = g2LvMap.getInt(v);
-						int eL = L.addEdge(uL, vL);
-						edgeRefL.set(eL, e);
+						L.addEdge(u, v, e);
 						if (level[v] != unvisited)
 							continue;
 						level[v] = lvl + 1;
@@ -145,7 +136,6 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract {
 
 				calcBlockFlow: for (;;) {
 					int v = dt.findRoot(vToDt[source]).<Integer>getNodeData().intValue();
-					int vL = g2LvMap.getInt(v);
 					if (v == sink) {
 
 						/* Augment */
@@ -157,26 +147,24 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract {
 						debug.println("Delete");
 						do {
 							int e = edgeToParent[min.source().<Integer>getNodeData().intValue()];
-							assert vToDt[L2GvMap.getInt(L.edgeSource(e))] == min.source();
-							int gEdge = edgeRefL.getInt(e);
+							assert vToDt[L.edgeSource(e)] == min.source();
 							L.removeEdge(e);
 
-							updateFlow.accept(gEdge, 0);
+							updateFlow.accept(e, 0);
 							dt.cut(min.source());
 
 							min = dt.findMinEdge(vToDt[source]);
 						} while (min != null && Math.abs(min.weight()) < EPS);
 
-					} else if (L.edgesOut(vL).isEmpty()) {
+					} else if (L.edgesOut(v).isEmpty()) {
 
 						/* Retreat */
 						debug.println("Retreat");
 						if (v == source)
 							break calcBlockFlow;
-						for (EdgeIter eit = L.edgesIn(vL).iterator(); eit.hasNext();) {
+						for (EdgeIter eit = L.edgesIn(v).iterator(); eit.hasNext();) {
 							int e = eit.nextInt();
-							int gEdge = edgeRefL.getInt(e);
-							int u = g.edgeSource(gEdge);
+							int u = g.edgeSource(e);
 							if (edgeToParent[u] != e)
 								continue; /* If the edge is not in the DT, ignore */
 							assert vToDt[u].getParent() == vToDt[v];
@@ -184,21 +172,20 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract {
 							MinEdge m = dt.findMinEdge(vToDt[u]);
 							assert e == edgeToParent[m.source().<Integer>getNodeData().intValue()];
 							edgeToParent[u] = -1;
-							updateFlow.accept(gEdge, m.weight());
+							updateFlow.accept(e, m.weight());
 
 							dt.cut(m.source());
 						}
-						L.removeEdgesInOf(vL);
+						L.removeEdgesInOf(v);
 
 					} else {
 						/* Advance */
 						debug.println("Advance");
-						EdgeIter eit = L.edgesOut(vL).iterator();
+						EdgeIter eit = L.edgesOut(v).iterator();
 						int e = eit.nextInt();
-						int gEdge = edgeRefL.getInt(e);
-						int eSource = g.edgeSource(gEdge);
-						int eTarget = g.edgeTarget(gEdge);
-						dt.link(vToDt[eSource], vToDt[eTarget], capacity.getDouble(gEdge) - flow.getDouble(gEdge));
+						int eSource = g.edgeSource(e);
+						int eTarget = g.edgeTarget(e);
+						dt.link(vToDt[eSource], vToDt[eTarget], capacity.getDouble(e) - flow.getDouble(e));
 						edgeToParent[eSource] = e;
 					}
 				}
@@ -212,9 +199,9 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract {
 						assert uDt.getParent() == dt.findRoot(uDt);
 						MinEdge m = dt.findMinEdge(uDt);
 						int eSource = m.source().<Integer>getNodeData().intValue();
-						int gEdge = edgeRefL.getInt(edgeToParent[eSource]);
+						int e = edgeToParent[eSource];
 						edgeToParent[eSource] = -1;
-						updateFlow.accept(gEdge, m.weight());
+						updateFlow.accept(e, m.weight());
 						dt.cut(m.source());
 					}
 				}

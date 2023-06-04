@@ -83,6 +83,17 @@ abstract class GraphImpl extends GraphBase {
 	}
 
 	@Override
+	public void addVertex(int vertex) {
+		if (vertex < 0)
+			throw new IllegalArgumentException("User chosen vertex ID must be non negative: " + vertex);
+		if (vertices().contains(vertex))
+			throw new IllegalArgumentException("Graph already contain a vertex with the specified ID: " + vertex);
+		/* The listener of new IDs will be called by the index graph implementation, and the user ID will be used */
+		viMap.userChosenId = vertex;
+		indexGraph.addVertex();
+	}
+
+	@Override
 	public void removeVertex(int vertex) {
 		int vIdx = viMap.idToIndex(vertex);
 		indexGraph.removeVertex(vIdx);
@@ -120,6 +131,19 @@ abstract class GraphImpl extends GraphBase {
 		int vIdx = viMap.idToIndex(target);
 		int eIdx = indexGraph.addEdge(uIdx, vIdx);
 		return eiMap.indexToId(eIdx);
+	}
+
+	@Override
+	public void addEdge(int source, int target, int edge) {
+		if (edge < 0)
+			throw new IllegalArgumentException("User chosen edge ID must be non negative: " + edge);
+		if (edges().contains(edge))
+			throw new IllegalArgumentException("Graph already contain a edge with the specified ID: " + edge);
+		int uIdx = viMap.idToIndex(source);
+		int vIdx = viMap.idToIndex(target);
+		/* The listener of new IDs will be called by the index graph implementation, and the user ID will be used */
+		eiMap.userChosenId = edge;
+		indexGraph.addEdge(uIdx, vIdx);
 	}
 
 	@Override
@@ -362,6 +386,7 @@ abstract class GraphImpl extends GraphBase {
 		private final Int2IntOpenHashMap idToIdx;
 		private final IntSet idsView; // TODO move to graph abstract implementation
 		private final WeightsImpl.Index.Int idxToId;
+		private int userChosenId = -1;
 
 		IdIdxMapImpl(IdStrategyImpl.Index idStrat) {
 			idToIdx = new Int2IntOpenHashMap();
@@ -402,12 +427,17 @@ abstract class GraphImpl extends GraphBase {
 				@Override
 				public void idAdd(int idx) {
 					assert idx == idToIdx.size();
-					int id = nextID();
+					int id = userChosenId != -1 ? userChosenId : nextID();
 					assert id >= 0;
-					idToIdx.put(id, idx);
+
+					int oldIdx = idToIdx.put(id, idx);
+					assert oldIdx == -1;
+
 					if (idx == idxToId.capacity())
 						idxToId.expand(Math.max(2, 2 * idxToId.capacity()));
 					idxToId.set(idx, id);
+
+					userChosenId = -1;
 				}
 
 				@Override
@@ -457,7 +487,11 @@ abstract class GraphImpl extends GraphBase {
 
 		@Override
 		int nextID() {
-			return counter++;
+			for (;;) {
+				int id = counter++;
+				if (!idSet().contains(id))
+					return id;
+			}
 		}
 
 		@Override

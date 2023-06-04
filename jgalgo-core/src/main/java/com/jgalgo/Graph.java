@@ -48,7 +48,10 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * <p>
  * Each vertex and edge in the graph is identified by a unique non negative {@code int} ID. For example.
  * {@link #vertices()} returns an {@link IntSet} of all the {@code int} IDs of the vertices of the graph. This allow for
- * a more efficient graph implementations, rather then creating objects for vertices and edges.
+ * a more efficient graph implementations, rather then creating objects for vertices and edges. Vertices and edges may
+ * be created by {@link #addVertex()} and {@link #addEdge(int, int)}, in which case the graph implementation will choose
+ * the {@code int} ID and will return it to the user. Alternativaly, the methods {@link #addVertex(int)} and
+ * {@link #addEdge(int, int, int)} can be used to add new vertices and edges with user chosen identifiers.
  * <p>
  * Weights may be assigned to the graph vertices and/or edges. A <i>weight</i> is some value such as {@code double}
  * primitive, {@code boolean} flag or an arbitrary Object. Multiple different weights can be added to the vertices
@@ -135,10 +138,28 @@ public interface Graph {
 
 	/**
 	 * Add a new vertex to the graph.
+	 * <p>
+	 * The graph implementation will choose a new {@code int} identifier which is not currently used as one of the graph
+	 * edges, and will return it as the new vertex ID.
 	 *
 	 * @return the new vertex identifier
 	 */
 	int addVertex();
+
+	/**
+	 * Add a new vertex to the graph with user chosen ID.
+	 * <p>
+	 * In contrast to {@link #addVertex()}, in which the implementation chooses ,the new vertex identifier, the user can
+	 * specified what {@code int} ID the new vertex should be assigned. The set of graph vertices must not contain
+	 * duplications, therefore the provided identifier must not be currently used as one of the graph vertices IDs.
+	 * <p>
+	 * Note that vertices IDs must be non negative.
+	 *
+	 * @param  vertex                   a user chosen identifier for the new vertex
+	 * @throws IllegalArgumentException if the provided identifier is already used as identifier of one of the graph
+	 *                                      vertices, or if its negative
+	 */
+	void addVertex(int vertex);
 
 	/**
 	 * Remove a vertex and all its edges from the graph.
@@ -211,6 +232,9 @@ public interface Graph {
 
 	/**
 	 * Add a new edge to the graph.
+	 * <p>
+	 * The graph implementation will choose a new {@code int} identifier which is not currently used as one of the graph
+	 * edges, and will return it as the new edge ID.
 	 *
 	 * @param  source                    a source vertex
 	 * @param  target                    a target vertex
@@ -218,6 +242,21 @@ public interface Graph {
 	 * @throws IndexOutOfBoundsException if {@code source} or {@code target} are not valid vertices identifiers
 	 */
 	int addEdge(int source, int target);
+
+	/**
+	 * Add a new edge to the graph with user chosen ID.
+	 * <p>
+	 * In contrast to {@link #addEdge(int, int)}, in which the implementation chooses the new edge identifier, the user
+	 * can specified what {@code int} ID the new edge should be assigned. The set of graph edges must not contain
+	 * duplications, therefore the provided identifier must not be currently used as one of the graph edges IDs.
+	 *
+	 * @param  source                   a source vertex
+	 * @param  target                   a target vertex
+	 * @param  edge                     a user chosen identifier for the new edge
+	 * @throws IllegalArgumentException if the provided identifier is already used as identifier of one of the graph
+	 *                                      edges, or if its negative
+	 */
+	void addEdge(int source, int target, int edge);
 
 	/**
 	 * Remove an edge from the graph.
