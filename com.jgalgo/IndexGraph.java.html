@@ -30,7 +30,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * may need to rename existing vertices or edges along the graph lifetime. These renames are managed by a
  * {@link IdStrategy} that can be accessed using {@link #getVerticesIdStrategy()} or {@link #getEdgesIdStrategy()} which
  * allow for a subscription to these renames via
- * {@link IdStrategy#addIdSwapListener(com.jgalgo.IdStrategy.IDSwapListener)}.
+ * {@link IdStrategy#addIdSwapListener(com.jgalgo.IdStrategy.IdSwapListener)}.
  * &lt;p&gt;
  * An index graph may be obtained as a view from a regular {@link Graph} using {@link Graph#indexGraph()}, or it can be
  * created by its own using {@link IndexGraph.Builder}. In cases where no removal of vertices or edges is required, and

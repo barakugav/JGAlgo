@@ -39,7 +39,7 @@ class ShortestPathSingleSourceCardinality extends ShortestPathSingleSourceUtils.
 <span class="fc bfc" id="L39" title="All 2 branches covered.">		for (BFSIter it = BFSIter.newInstance(g, source); it.hasNext();) {</span>
 <span class="fc" id="L40">			int v = it.nextInt();</span>
 <span class="fc" id="L41">			res.distances[v] = it.layer();</span>
-<span class="fc" id="L42">			res.backtrack[v] = it.inEdge();</span>
+<span class="fc" id="L42">			res.backtrack[v] = it.lastEdge();</span>
 <span class="fc" id="L43">		}</span>
 <span class="fc" id="L44">		return res;</span>
 	}

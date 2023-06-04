@@ -53,10 +53,28 @@ public interface BFSIter extends IntIterator {
 	 */
 	public static BFSIter newInstance(Graph g, int source) {
 <span class="fc bfc" id="L55" title="All 2 branches covered.">		if (g instanceof IndexGraph)</span>
-<span class="fc" id="L56">			return new BFSIterImpl((IndexGraph) g, source);</span>
+<span class="fc" id="L56">			return new BFSIterImpl.Forward((IndexGraph) g, source);</span>
 <span class="fc" id="L57">		IndexIdMap viMap = g.indexGraphVerticesMap(), eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L58">		BFSIter indexBFS = new BFSIterImpl(g.indexGraph(), viMap.idToIndex(source));</span>
+<span class="fc" id="L58">		BFSIter indexBFS = new BFSIterImpl.Forward(g.indexGraph(), viMap.idToIndex(source));</span>
 <span class="fc" id="L59">		return new BFSIterImpl.BFSFromIndexBFS(indexBFS, viMap, eiMap);</span>
+	}
+
+	/**
+	 * Create a backward BFS iterator rooted at a single source vertex.
+	 * &lt;p&gt;
+	 * The regular BFS uses the out-edges of each vertex to explore its neighbors, while the &lt;i&gt;backward&lt;/i&gt; BFS uses
+	 * the in-edges to do so.
+	 *
+	 * @param  g      a graph
+	 * @param  source a vertex in the graph from which the search will start from
+	 * @return        a BFS iterator that iterate over the vertices of the graph using the in-edges
+	 */
+	public static BFSIter newInstanceBackward(Graph g, int source) {
+<span class="pc bpc" id="L73" title="1 of 2 branches missed.">		if (g instanceof IndexGraph)</span>
+<span class="fc" id="L74">			return new BFSIterImpl.Backward((IndexGraph) g, source);</span>
+<span class="nc" id="L75">		IndexIdMap viMap = g.indexGraphVerticesMap(), eiMap = g.indexGraphEdgesMap();</span>
+<span class="nc" id="L76">		BFSIter indexBFS = new BFSIterImpl.Backward(g.indexGraph(), viMap.idToIndex(source));</span>
+<span class="nc" id="L77">		return new BFSIterImpl.BFSFromIndexBFS(indexBFS, viMap, eiMap);</span>
 	}
 
 	/**
@@ -78,7 +96,7 @@ public interface BFSIter extends IntIterator {
 	 *
 	 * @return the edge that led to the last vertex returned by {@link nextInt}
 	 */
-	public int inEdge();
+	public int lastEdge();
 
 	/**
 	 * Get the layer of the last vertex returned by {@link nextInt}.
