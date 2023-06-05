@@ -73,9 +73,10 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract {
 		double computeMaximumFlow() {
 			debug.println("\t", getClass().getSimpleName());
 
-			double maxCapacity = 100;
+			double capacitySum = 100;
 			for (int e : gOrig.edges())
-				maxCapacity = Math.max(maxCapacity, net.getCapacity(e));
+				capacitySum += net.getCapacity(e);
+			capacitySum *= 16;
 
 			Graph.Builder builder = Graph.newBuilderDirected().setOption("impl", "GraphLinked");
 			Graph L = builder.expectedVerticesNum(n).build();
@@ -84,7 +85,7 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract {
 
 			IntPriorityQueue bfsQueue = new IntArrayFIFOQueue();
 			int[] level = new int[n];
-			DynamicTree dt = new DynamicTreeSplay(maxCapacity * 10);
+			DynamicTree dt = new DynamicTreeSplay(capacitySum > 0 ? capacitySum : 1e100);
 			DynamicTree.Node[] vToDt = new DynamicTree.Node[n];
 			Stack<DynamicTree.Node> cleanupStack = new ObjectArrayList<>();
 
