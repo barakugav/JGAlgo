@@ -31,6 +31,16 @@ jobs:
         generate-coverage-badge: true
         badges-directory: jgalgo-core/target/site/jacoco/badges
 
+    - name: Zip coverage artifacts
+      run: |
+        tar -czf jgalgo-core/target/site/jacoco.tar.gz jgalgo-core/target/site/jacoco/
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: jacoco-coverage-report
+        path: jgalgo-core/target/site/jacoco.tar.gz
+
     - name: Publish Jacoco Coverage Report
       uses: JamesIves/github-pages-deploy-action@v4.4.1
       with:
